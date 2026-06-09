@@ -275,6 +275,7 @@ export default function AuthPage() {
   const [newPassword, setNewPassword] = useState('');
   const [confirmNewPassword, setConfirmNewPassword] = useState('');
   const [otpResendKey, setOtpResendKey] = useState(0);
+  const [devOtp, setDevOtp] = useState('');   // shown on-screen when no email is configured
 
   const from = (location.state as { from?: { pathname: string } })?.from?.pathname || '/dashboard';
 
@@ -313,8 +314,14 @@ export default function AuthPage() {
     if (password.length < 8) { setError('Password must be at least 8 characters.'); return; }
     setLoading(true);
     try {
-      await apiCall('/api/auth/signup', { name: name.trim(), email, password });
-      toast.info('OTP sent to your email. Check your inbox!');
+      const data = await apiCall('/api/auth/signup', { name: name.trim(), email, password });
+      if (data.devOtp) {
+        setDevOtp(data.devOtp);
+        setOtp(data.devOtp);
+        toast.info('No email configured — your code is shown on screen.');
+      } else {
+        toast.info('OTP sent to your email. Check your inbox!');
+      }
       setScreen('verify-signup');
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Sign up failed');
@@ -343,8 +350,14 @@ export default function AuthPage() {
     if (!email) { setError('Please enter your email address.'); return; }
     setLoading(true);
     try {
-      await apiCall('/api/auth/forgot-password', { email });
-      toast.info('OTP sent. Check your email inbox.');
+      const data = await apiCall('/api/auth/forgot-password', { email });
+      if (data.devOtp) {
+        setDevOtp(data.devOtp);
+        setOtp(data.devOtp);
+        toast.info('No email configured — your reset code is shown on screen.');
+      } else {
+        toast.info('OTP sent. Check your email inbox.');
+      }
       setScreen('reset');
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Failed to send OTP');
@@ -453,6 +466,13 @@ export default function AuthPage() {
                   <p className="text-white font-semibold mt-1">{email}</p>
                 </div>
                 <form onSubmit={handleVerifySignup} className="space-y-6">
+                  {devOtp && (
+                    <div className="p-4 rounded-xl bg-amber-500/15 border-2 border-amber-500/40 text-center">
+                      <p className="text-amber-400 text-xs font-semibold uppercase tracking-wider mb-2">📧 No email configured — your code is:</p>
+                      <p className="text-amber-300 font-black text-3xl tracking-[0.3em]">{devOtp}</p>
+                      <p className="text-amber-600 text-xs mt-2">It has been auto-filled below. Just click Verify.</p>
+                    </div>
+                  )}
                   <OTPInput value={otp} onChange={v => { setOtp(v); clearError(); }} disabled={loading} />
                   {error && <div className="flex items-center gap-2 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-300 text-sm text-center justify-center"><AlertCircle size={15} />{error}</div>}
                   <button type="submit" disabled={loading || otp.length < 6} className="w-full py-3 rounded-xl bg-gold-500 hover:bg-gold-400 disabled:opacity-50 text-navy-950 font-bold flex items-center justify-center gap-2 transition-all hover:scale-[1.02]">
@@ -494,6 +514,13 @@ export default function AuthPage() {
                   <p className="text-slate-400 text-sm">Code sent to <span className="text-white font-medium">{email}</span></p>
                 </div>
                 <form onSubmit={handleResetPassword} className="space-y-5">
+                  {devOtp && (
+                    <div className="p-4 rounded-xl bg-amber-500/15 border-2 border-amber-500/40 text-center">
+                      <p className="text-amber-400 text-xs font-semibold uppercase tracking-wider mb-2">📧 No email configured — your reset code is:</p>
+                      <p className="text-amber-300 font-black text-3xl tracking-[0.3em]">{devOtp}</p>
+                      <p className="text-amber-600 text-xs mt-2">It has been auto-filled below.</p>
+                    </div>
+                  )}
                   <OTPInput value={otp} onChange={v => { setOtp(v); clearError(); }} disabled={loading} />
                   <div>
                     <Field label="New password" icon={Lock} type="password" value={newPassword} onChange={setNewPassword} placeholder="Create new password" autoComplete="new-password" disabled={loading} />

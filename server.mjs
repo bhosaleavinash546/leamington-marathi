@@ -109,9 +109,9 @@ async function sendOTPEmail(email, otp, type) {
   if (!transporter) {
     console.log('\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
     console.log(`📧  OTP for ${email} [${type}]: \x1b[33m${otp}\x1b[0m`);
-    console.log('    (Configure EMAIL_USER in .env for real emails)');
+    console.log('    (No email configured — OTP shown on screen)');
     console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
-    return;
+    return { devMode: true };   // signals caller to include otp in response
   }
 
   await transporter.sendMail({
@@ -162,8 +162,12 @@ app.post('/api/auth/signup', async (req, res) => {
   otpStore.set(pendingKey, { name: name.trim(), email: email.toLowerCase(), passwordHash });
 
   try {
-    await sendOTPEmail(email, otp, 'signup');
-    res.json({ message: 'OTP sent to your email. Please check your inbox.' });
+    const emailResult = await sendOTPEmail(email, otp, 'signup');
+    if (emailResult?.devMode) {
+      res.json({ message: 'No email configured — your verification code is shown below.', devOtp: otp });
+    } else {
+      res.json({ message: 'OTP sent to your email. Please check your inbox.' });
+    }
   } catch (err) {
     console.error('Email error:', err.message);
     res.status(500).json({ error: 'Failed to send verification email. Check your email address and try again.' });
@@ -220,12 +224,21 @@ app.post('/api/auth/forgot-password', async (req, res) => {
   const user = users.find(u => u.email.toLowerCase() === email.toLowerCase());
 
   // Always return success to prevent email enumeration
+  let devOtp = undefined;
   if (user) {
     const otp = storeOTP(email, 'reset');
-    try { await sendOTPEmail(email, otp, 'reset'); } catch (err) { console.error('Email error:', err.message); }
+    try {
+      const emailResult = await sendOTPEmail(email, otp, 'reset');
+      if (emailResult?.devMode) devOtp = otp;
+    } catch (err) { console.error('Email error:', err.message); }
   }
 
-  res.json({ message: 'If an account exists with this email, an OTP has been sent.' });
+  res.json({
+    message: devOtp
+      ? 'No email configured — your reset code is shown below.'
+      : 'If an account exists with this email, an OTP has been sent.',
+    ...(devOtp && { devOtp }),
+  });
 });
 
 // Forgot Password — step 2: verify OTP + set new password
@@ -385,11 +398,36 @@ app.post('/api/analyze', requireAuth, async (req, res) => {
 
 app.get('/api/health', (_, res) => res.json({ status: 'ok', version: APP_VERSION, timestamp: new Date().toISOString() }));
 
+// ─── ADMIN SEED ──────────────────────────────────────────────────────────────
+
+const ADMIN_EMAIL    = 'admin@autocost.ai';
+const ADMIN_PASSWORD = 'AutoCost@Admin2025';
+
+async function seedAdminAccount() {
+  const users = readUsers();
+  const exists = users.find(u => u.email === ADMIN_EMAIL);
+  if (exists) return;
+  const passwordHash = await bcrypt.hash(ADMIN_PASSWORD, 10);
+  users.unshift({
+    id: 'admin-00000000-0000-0000-0000-000000000001',
+    name: 'Admin — Avinash Bhosale',
+    email: ADMIN_EMAIL,
+    passwordHash,
+    isAdmin: true,
+    verified: true,
+    createdAt: new Date().toISOString(),
+  });
+  writeUsers(users);
+  console.log('   Admin account ready: admin@autocost.ai');
+}
+
 // ─── START ────────────────────────────────────────────────────────────────────
 
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
   console.log(`\n🚗 AutoCost AI Server v${APP_VERSION}`);
   console.log(`   Running on http://localhost:${PORT}`);
-  console.log(`   Email mode: ${process.env.EMAIL_USER ? `SMTP (${process.env.EMAIL_USER})` : 'DEV (OTP logged to console)'}`);
-  console.log(`   Users file: ${USERS_FILE}\n`);
+  console.log(`   Email mode: ${process.env.EMAIL_USER ? `SMTP (${process.env.EMAIL_USER})` : 'DEV (OTP shown on screen)'}`);
+  console.log(`   Users file: ${USERS_FILE}`);
+  await seedAdminAccount();
+  console.log();
 });
