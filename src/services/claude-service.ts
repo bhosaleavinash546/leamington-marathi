@@ -7,7 +7,7 @@ export interface AnalysisResponse {
 
 function getAuthToken(): string | null {
   try {
-    const stored = localStorage.getItem('autocost_auth');
+    const stored = localStorage.getItem('brainspark_auth');
     if (stored) {
       const { token } = JSON.parse(stored);
       return token ?? null;
@@ -23,7 +23,7 @@ export function saveRecentAnalysis(
   ideasCount: number
 ) {
   try {
-    const stored = localStorage.getItem('autocost_recent_analyses');
+    const stored = localStorage.getItem('brainspark_recent_analyses');
     const analyses = stored ? JSON.parse(stored) : [];
     analyses.unshift({
       id: Math.random().toString(36).slice(2),
@@ -33,7 +33,7 @@ export function saveRecentAnalysis(
       ideasCount,
       date: new Date().toLocaleString('en-GB', { dateStyle: 'short', timeStyle: 'short' }),
     });
-    localStorage.setItem('autocost_recent_analyses', JSON.stringify(analyses.slice(0, 20)));
+    localStorage.setItem('brainspark_recent_analyses', JSON.stringify(analyses.slice(0, 20)));
   } catch {}
 }
 

@@ -49,8 +49,8 @@ export default function AnalyzePage() {
   const [partId, setPartId] = useState('');
   const [vehicleType, setVehicleType] = useState(VEHICLE_TYPES[0]);
   const [additionalContext, setAdditionalContext] = useState('');
-  const [apiKey, setApiKey] = useState(() => localStorage.getItem('autocost_api_key') || '');
-  const [searchApiKey, setSearchApiKey] = useState(() => localStorage.getItem('autocost_brave_key') || '');
+  const [apiKey, setApiKey] = useState(() => localStorage.getItem('brainspark_api_key') || '');
+  const [searchApiKey, setSearchApiKey] = useState(() => localStorage.getItem('brainspark_brave_key') || '');
   const [showApiKey, setShowApiKey] = useState(false);
   const [enableSearch, setEnableSearch] = useState(true);
   const [cadFile, setCadFile] = useState<File | null>(null);
@@ -83,8 +83,8 @@ export default function AnalyzePage() {
 
     setLoading(true);
     setError('');
-    localStorage.setItem('autocost_api_key', apiKey);
-    if (searchApiKey) localStorage.setItem('autocost_brave_key', searchApiKey);
+    localStorage.setItem('brainspark_api_key', apiKey);
+    if (searchApiKey) localStorage.setItem('brainspark_brave_key', searchApiKey);
 
     const statusMessages = enableSearch
       ? ['Connecting to AI chief engineer...', 'Searching web for material cost data...', 'Fetching OEM benchmark references...', 'Searching for technology innovations...', 'Analysing supplier capabilities...', 'Synthesising cost reduction ideas...', 'Quantifying savings and validating...']
@@ -137,7 +137,7 @@ export default function AnalyzePage() {
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : String(err);
       setError(message.includes('ECONNREFUSED') || message.includes('fetch')
-        ? 'Cannot connect to AutoCost AI server. Run "npm run server" in a separate terminal and retry.'
+        ? 'Cannot connect to BrainSpark server. Run "npm run server" in a separate terminal and retry.'
         : `Analysis failed: ${message}`);
     } finally {
       clearInterval(statusInterval);

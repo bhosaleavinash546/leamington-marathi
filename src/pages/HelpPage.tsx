@@ -13,7 +13,7 @@ const FAQ: FaqSection[] = [
     category: 'Getting Started',
     icon: BookOpen,
     items: [
-      { q: 'What is AutoCost AI?', a: 'AutoCost AI is an AI-powered cost reduction tool for automotive products. It uses a Chief Engineer AI persona backed by Claude claude-opus-4-8 with live internet search to generate actionable DFMA and cost engineering ideas across 13 vehicle systems and 260+ parts.' },
+      { q: 'What is BrainSpark?', a: 'BrainSpark is an AI-powered cost reduction tool for automotive products. It uses a Chief Engineer AI persona backed by Claude claude-opus-4-8 with live internet search to generate actionable DFMA and cost engineering ideas across 13 vehicle systems and 260+ parts.' },
       { q: 'Do I need an API key to use this?', a: 'Yes — you need an Anthropic API key (for Claude AI). You enter it on the Analyze page. It is stored only in your browser session and never saved to any server.' },
       { q: 'How do I run the tool locally?', a: 'Install Node.js v18+, run "npm install" once, then "npm run dev" to start both the backend (port 3001) and frontend (port 5173). Open http://localhost:5173 in your browser.' },
       { q: 'Is an internet connection required?', a: 'An internet connection is required to call the Claude AI API. The optional web search feature (enabled by default) also uses internet to fetch live pricing and supplier data for more accurate estimates.' },
@@ -115,7 +115,7 @@ export default function HelpPage() {
         {/* Header */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-gold-500/10 border border-gold-500/20 text-gold-400 text-xs font-medium mb-4">
-            <HelpCircle size={12} /> Help Centre · AutoCost AI v{APP_VERSION}
+            <HelpCircle size={12} /> Help Centre · BrainSpark v{APP_VERSION}
           </div>
           <h1 className="text-4xl font-bold text-white mb-3">How can we help?</h1>
           <p className="text-slate-400 max-w-xl mx-auto">Search our documentation, browse FAQs, or contact the tool author directly.</p>
@@ -246,7 +246,7 @@ export default function HelpPage() {
                 </div>
                 <dl className="space-y-2">
                   {[
-                    ['Application', `AutoCost AI v${APP_VERSION}`],
+                    ['Application', `BrainSpark v${APP_VERSION}`],
                     ['Build', BUILD_DATE],
                     ['AI Model', 'Anthropic Claude claude-opus-4-8'],
                     ['Frontend', 'React 18 + TypeScript + Vite'],
@@ -297,7 +297,7 @@ export default function HelpPage() {
                   <span className="px-2 py-0.5 rounded-full bg-gold-500/15 border border-gold-500/30 text-gold-400 text-xs font-medium">Tool Author</span>
                 </div>
                 <p className="text-slate-400 text-sm mb-4 leading-relaxed">
-                  Automotive Cost Engineer & AI Product Designer. Creator of AutoCost AI — built to give cost engineers a superpower.
+                  Automotive Cost Engineer & AI Product Designer. Creator of BrainSpark — built to give cost engineers a superpower.
                   Reach out for feature requests, bug reports, or collaboration.
                 </p>
                 <div className="flex flex-wrap gap-3">

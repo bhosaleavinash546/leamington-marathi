@@ -2,7 +2,7 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  Zap, Eye, EyeOff, Mail, Lock, User, ArrowRight,
+  Eye, EyeOff, Mail, Lock, User, ArrowRight,
   ArrowLeft, Loader2, CheckCircle, AlertCircle, RefreshCw
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
@@ -186,12 +186,10 @@ function BrandPanel() {
       </div>
 
       <div className="flex items-center gap-3 relative">
-        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-gold-400 to-gold-600 flex items-center justify-center shadow-lg">
-          <Zap size={20} className="text-navy-950" strokeWidth={2.5} />
-        </div>
+        <img src="/brainspark-logo.svg" alt="BrainSpark" className="w-10 h-10" />
         <div>
-          <span className="text-white font-black text-xl">AutoCost</span>
-          <span className="text-gold-400 font-black text-xl"> AI</span>
+          <span className="text-white font-black text-xl">Brain</span>
+          <span className="text-gold-400 font-black text-xl">Spark</span>
         </div>
       </div>
 
@@ -337,7 +335,7 @@ export default function AuthPage() {
     try {
       const { token, user } = await apiCall('/api/auth/verify-signup', { email, otp });
       signIn(token, user);
-      toast.success(`Account verified! Welcome to AutoCost AI, ${user.name}!`);
+      toast.success(`Account verified! Welcome to BrainSpark, ${user.name}!`);
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Verification failed');
     } finally { setLoading(false); }
@@ -391,10 +389,8 @@ export default function AuthPage() {
       <div className="flex-1 flex flex-col justify-center items-center px-6 py-12 min-h-screen">
         {/* Mobile logo */}
         <div className="lg:hidden flex items-center gap-2.5 mb-8">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-gold-400 to-gold-600 flex items-center justify-center">
-            <Zap size={18} className="text-navy-950" strokeWidth={2.5} />
-          </div>
-          <span className="text-white font-black text-xl">AutoCost <span className="text-gold-400">AI</span></span>
+          <img src="/brainspark-logo.svg" alt="BrainSpark" className="w-9 h-9" />
+          <span className="text-white font-black text-xl">Brain<span className="text-gold-400">Spark</span></span>
         </div>
 
         <div className="w-full max-w-md">
@@ -404,7 +400,7 @@ export default function AuthPage() {
               <motion.div key="signin" {...slide}>
                 <div className="mb-8">
                   <h1 className="text-3xl font-black text-white mb-2">Welcome back</h1>
-                  <p className="text-slate-400">Sign in to your AutoCost AI account</p>
+                  <p className="text-slate-400">Sign in to your BrainSpark account</p>
                 </div>
                 <form onSubmit={handleSignIn} className="space-y-4">
                   <Field label="Email address" icon={Mail} type="email" value={email} onChange={setEmail} placeholder="you@company.com" autoComplete="email" disabled={loading} />
@@ -539,7 +535,7 @@ export default function AuthPage() {
         </div>
 
         <p className="mt-10 text-slate-700 text-xs text-center">
-          AutoCost AI v2.1 · Designed &amp; Created by <span className="text-slate-600 font-medium">Avinash Bhosale</span>
+          BrainSpark v2.1 · Designed &amp; Created by <span className="text-slate-600 font-medium">Avinash Bhosale</span>
         </p>
       </div>
     </div>

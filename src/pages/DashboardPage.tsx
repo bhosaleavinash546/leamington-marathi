@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Zap, ChevronRight, TrendingDown, Clock, BarChart3, Lightbulb, ArrowRight, Star, BookOpen, Target, Activity, Trash2 } from 'lucide-react';
+import { ChevronRight, TrendingDown, Clock, BarChart3, Lightbulb, ArrowRight, Star, BookOpen, Target, Activity, Trash2 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
 interface RecentAnalysis {
@@ -35,13 +35,13 @@ export default function DashboardPage() {
 
   useEffect(() => {
     try {
-      const stored = localStorage.getItem('autocost_recent_analyses');
+      const stored = localStorage.getItem('brainspark_recent_analyses');
       if (stored) setRecentAnalyses(JSON.parse(stored));
     } catch {}
   }, []);
 
   function clearHistory() {
-    localStorage.removeItem('autocost_recent_analyses');
+    localStorage.removeItem('brainspark_recent_analyses');
     setRecentAnalyses([]);
   }
 
@@ -126,7 +126,7 @@ export default function DashboardPage() {
 
             {recentAnalyses.length === 0 ? (
               <div className="text-center py-12 text-slate-500">
-                <Zap size={32} className="mx-auto mb-3 opacity-30" />
+                <img src="/brainspark-logo.svg" className="w-8 h-8 mx-auto mb-3 opacity-30" alt="" />
                 <p className="text-sm">No analyses yet.</p>
                 <p className="text-xs mt-1">Run your first analysis to see it here.</p>
                 <Link to="/analyze" className="inline-flex items-center gap-1 mt-4 text-gold-400 text-sm hover:text-gold-300 transition-colors">

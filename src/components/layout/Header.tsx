@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Zap, Menu, X, ChevronDown, LayoutDashboard, HelpCircle, LogOut, User, Sun, Moon } from 'lucide-react';
+import { Menu, X, ChevronDown, LayoutDashboard, HelpCircle, LogOut, User, Sun, Moon } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
 
@@ -44,13 +44,15 @@ export default function Header() {
 
           {/* Logo */}
           <Link to={isAuthenticated ? '/dashboard' : '/'} className="flex items-center gap-2.5 group">
-            <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-gold-400 to-gold-600 flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform">
-              <Zap size={18} className="text-navy-950" strokeWidth={2.5} />
-            </div>
+            <img
+              src="/brainspark-logo.svg"
+              alt="BrainSpark"
+              className="w-9 h-9 group-hover:scale-105 transition-transform"
+            />
             <div className="flex items-end gap-1.5">
               <div>
-                <span className="text-white font-bold text-lg leading-none tracking-tight">AutoCost</span>
-                <span className="text-gold-400 font-bold text-lg leading-none"> AI</span>
+                <span className="text-white font-bold text-lg leading-none tracking-tight">Brain</span>
+                <span className="text-gold-400 font-bold text-lg leading-none">Spark</span>
               </div>
               <span className="mb-0.5 px-1.5 py-0.5 rounded bg-gold-500/15 border border-gold-500/30 text-gold-400 text-[10px] font-semibold leading-none">
                 v{APP_VERSION}
@@ -114,6 +116,7 @@ export default function Header() {
                 ? <Sun size={15} className="text-slate-400 group-hover:text-gold-400 transition-colors" />
                 : <Moon size={15} className="text-slate-500 group-hover:text-navy-950 transition-colors" />}
             </button>
+
             {isAuthenticated ? (
               <div className="relative" ref={userMenuRef}>
                 <button
@@ -171,10 +174,7 @@ export default function Header() {
           </div>
 
           {/* Mobile menu button */}
-          <button
-            className="md:hidden text-white p-2"
-            onClick={() => setMenuOpen(!menuOpen)}
-          >
+          <button className="md:hidden text-white p-2" onClick={() => setMenuOpen(!menuOpen)}>
             {menuOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
         </div>
@@ -186,9 +186,7 @@ export default function Header() {
           {isAuthenticated ? (
             <>
               <div className="flex items-center gap-3 px-3 py-2 mb-2 border-b border-white/8 pb-3">
-                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-gold-400 to-gold-600 flex items-center justify-center text-navy-950 font-bold text-xs">
-                  {initials}
-                </div>
+                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-gold-400 to-gold-600 flex items-center justify-center text-navy-950 font-bold text-xs">{initials}</div>
                 <div>
                   <p className="text-white text-sm font-medium">{user?.name}</p>
                   <p className="text-slate-500 text-xs">{user?.email}</p>
@@ -197,6 +195,9 @@ export default function Header() {
               <Link to="/dashboard" className="block px-3 py-2 text-sm text-slate-300 hover:text-white rounded-lg hover:bg-white/5" onClick={() => setMenuOpen(false)}>Dashboard</Link>
               <Link to="/analyze" className="block px-3 py-2 text-sm text-slate-300 hover:text-white rounded-lg hover:bg-white/5" onClick={() => setMenuOpen(false)}>Analyze</Link>
               <Link to="/help" className="block px-3 py-2 text-sm text-slate-300 hover:text-white rounded-lg hover:bg-white/5" onClick={() => setMenuOpen(false)}>Help</Link>
+              <button onClick={() => { toggleTheme(); setMenuOpen(false); }} className="w-full text-left px-3 py-2 text-sm text-slate-300 hover:bg-white/5 rounded-lg">
+                {theme === 'dark' ? '☀️ Light Theme' : '🌙 Dark Theme'}
+              </button>
               <button onClick={handleSignOut} className="w-full text-left px-3 py-2 text-sm text-red-400 hover:bg-red-500/10 rounded-lg">Sign Out</button>
             </>
           ) : (

@@ -1,5 +1,5 @@
 /**
- * AutoCost AI — Backend Server v2.1
+ * BrainSpark — Backend Server v2.1
  * • AI cost-reduction analysis with agentic web-search loop
  * • Complete auth system: signup, signin, email OTP, password reset
  * • JSON-file user store (no external DB required)
@@ -80,7 +80,7 @@ function otpEmailHtml(otp, title, message) {
       <div style="background:#f59e0b;width:36px;height:36px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center">
         <span style="color:#07111e;font-weight:900;font-size:18px">⚡</span>
       </div>
-      <span style="color:#fff;font-size:20px;font-weight:800">AutoCost <span style="color:#f59e0b">AI</span></span>
+      <span style="color:#fff;font-size:20px;font-weight:800">Brain<span style="color:#f59e0b">Spark</span></span>
     </div>
   </div>
   <div style="padding:36px">
@@ -93,7 +93,7 @@ function otpEmailHtml(otp, title, message) {
     <p style="color:#475569;font-size:13px;line-height:1.6">If you didn't request this code, you can safely ignore this email. Your account remains secure.</p>
   </div>
   <div style="background:#07111e;padding:20px;text-align:center;border-top:1px solid #1e3a5f">
-    <p style="color:#334155;font-size:12px;margin:0">AutoCost AI v${APP_VERSION} · Designed &amp; Created by <strong style="color:#475569">Avinash Bhosale</strong></p>
+    <p style="color:#334155;font-size:12px;margin:0">BrainSpark v${APP_VERSION} · Designed &amp; Created by <strong style="color:#475569">Avinash Bhosale</strong></p>
   </div>
 </div>
 </body></html>`;
@@ -101,10 +101,10 @@ function otpEmailHtml(otp, title, message) {
 
 async function sendOTPEmail(email, otp, type) {
   const isSignup = type === 'signup';
-  const title = isSignup ? 'Verify your AutoCost AI account' : 'Reset your AutoCost AI password';
+  const title = isSignup ? 'Verify your BrainSpark account' : 'Reset your BrainSpark password';
   const message = isSignup
     ? 'Welcome! Enter the code below in the app to verify your email address and activate your account.'
-    : 'Use the code below to reset your AutoCost AI password. If you didn\'t request this, please ignore this email.';
+    : 'Use the code below to reset your BrainSpark password. If you didn\'t request this, please ignore this email.';
 
   if (!transporter) {
     console.log('\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
@@ -115,7 +115,7 @@ async function sendOTPEmail(email, otp, type) {
   }
 
   await transporter.sendMail({
-    from: `"${process.env.EMAIL_FROM_NAME || 'AutoCost AI'}" <${process.env.EMAIL_USER}>`,
+    from: `"${process.env.EMAIL_FROM_NAME || 'BrainSpark'}" <${process.env.EMAIL_USER}>`,
     to: email,
     subject: title,
     html: otpEmailHtml(otp, title, message),
@@ -340,7 +340,7 @@ async function performSearch(query, braveApiKey) {
     } catch {}
   }
   try {
-    const resp = await fetch(`https://api.duckduckgo.com/?q=${encodeURIComponent(query)}&format=json&no_redirect=1&no_html=1`, { headers: { 'User-Agent': 'AutoCostAI/2.1' }, signal: AbortSignal.timeout(8000) });
+    const resp = await fetch(`https://api.duckduckgo.com/?q=${encodeURIComponent(query)}&format=json&no_redirect=1&no_html=1`, { headers: { 'User-Agent': 'BrainSpark/2.1' }, signal: AbortSignal.timeout(8000) });
     const data = await resp.json();
     const results = [];
     if (data.Abstract) results.push({ title: data.Heading || query, url: data.AbstractURL || '', snippet: data.Abstract, source: data.AbstractSource || 'Wikipedia' });
@@ -424,7 +424,7 @@ async function seedAdminAccount() {
 // ─── START ────────────────────────────────────────────────────────────────────
 
 app.listen(PORT, async () => {
-  console.log(`\n🚗 AutoCost AI Server v${APP_VERSION}`);
+  console.log(`\n⚡ BrainSpark Server v${APP_VERSION}`);
   console.log(`   Running on http://localhost:${PORT}`);
   console.log(`   Email mode: ${process.env.EMAIL_USER ? `SMTP (${process.env.EMAIL_USER})` : 'DEV (OTP shown on screen)'}`);
   console.log(`   Users file: ${USERS_FILE}`);

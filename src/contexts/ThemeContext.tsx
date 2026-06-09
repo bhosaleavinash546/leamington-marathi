@@ -15,7 +15,7 @@ const ThemeContext = createContext<ThemeContextValue>({
 });
 
 function getInitialTheme(): Theme {
-  try { return (localStorage.getItem('autocost_theme') as Theme) || 'dark'; }
+  try { return (localStorage.getItem('brainspark_theme') as Theme) || 'dark'; }
   catch { return 'dark'; }
 }
 
@@ -24,7 +24,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
-    localStorage.setItem('autocost_theme', theme);
+    localStorage.setItem('brainspark_theme', theme);
   }, [theme]);
 
   // Apply on first paint to prevent flash

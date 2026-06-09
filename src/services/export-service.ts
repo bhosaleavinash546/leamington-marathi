@@ -13,7 +13,7 @@ export function exportToExcel(result: AnalysisResult, systemName: string, subNam
 
   // --- Sheet 1: Summary ---
   const summaryData = [
-    ['AutoCost AI — Cost Reduction Analysis Report'],
+    ['BrainSpark — Cost Reduction Analysis Report'],
     [''],
     ['Analysis Date', result.generatedAt],
     ['Vehicle Type', result.config.vehicleType],
@@ -111,7 +111,7 @@ export function exportToExcel(result: AnalysisResult, systemName: string, subNam
   ];
   XLSX.utils.book_append_sheet(wb, wsRoadmap, 'Implementation Roadmap');
 
-  const filename = `AutoCost_AI_${systemName}_${subName}_${new Date().toISOString().split('T')[0]}.xlsx`;
+  const filename = `BrainSpark_${systemName}_${subName}_${new Date().toISOString().split('T')[0]}.xlsx`;
   XLSX.writeFile(wb, filename);
 }
 
@@ -123,9 +123,9 @@ export async function exportToPowerPoint(
   const pptx = new PptxGenJS();
 
   pptx.layout = 'LAYOUT_WIDE';
-  pptx.title = 'AutoCost AI Cost Reduction Report';
+  pptx.title = 'BrainSpark Cost Reduction Report';
   pptx.subject = `${systemName} – ${subName}`;
-  pptx.author = 'AutoCost AI Platform';
+  pptx.author = 'BrainSpark Platform';
 
   const NAVY = '0d1f33';
   const GOLD = 'f59e0b';
@@ -155,7 +155,7 @@ export async function exportToPowerPoint(
       line: { color: GOLD },
     });
 
-    slide.addText('AutoCost AI', {
+    slide.addText('BrainSpark', {
       x: 0.8, y: 0.6, w: 11, h: 0.8,
       fontSize: 14, bold: true, color: GOLD, fontFace: 'Calibri',
     });
@@ -376,11 +376,11 @@ export async function exportToPowerPoint(
       });
     });
 
-    slide.addText('AutoCost AI Platform  |  Confidential — Internal Use Only', {
+    slide.addText('BrainSpark Platform  |  Confidential — Internal Use Only', {
       x: 0.3, y: 5.2, w: 12, h: 0.3, fontSize: 8, color: '64748b', align: 'center', fontFace: 'Calibri',
     });
   }
 
-  const filename = `AutoCost_AI_${systemName}_${subName}_${new Date().toISOString().split('T')[0]}.pptx`;
+  const filename = `BrainSpark_${systemName}_${subName}_${new Date().toISOString().split('T')[0]}.pptx`;
   pptx.writeFile({ fileName: filename });
 }

@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Zap, Mail, HelpCircle, ExternalLink } from 'lucide-react';
+import { Mail, HelpCircle, ExternalLink } from 'lucide-react';
 
 const APP_VERSION = '2.1.0';
 
@@ -12,16 +12,14 @@ export default function Footer() {
           {/* Brand */}
           <div>
             <div className="flex items-center gap-2 mb-3">
-              <div className="w-7 h-7 rounded-md bg-gradient-to-br from-gold-400 to-gold-600 flex items-center justify-center">
-                <Zap size={14} className="text-navy-950" strokeWidth={2.5} />
-              </div>
-              <span className="text-white font-semibold text-sm">AutoCost AI</span>
+              <img src="/brainspark-logo.svg" alt="BrainSpark" className="w-7 h-7" />
+              <span className="text-white font-semibold text-sm">Brain<span className="text-gold-400">Spark</span></span>
               <span className="px-1.5 py-0.5 rounded bg-gold-500/15 border border-gold-500/25 text-gold-400 text-[10px] font-semibold">
                 v{APP_VERSION}
               </span>
             </div>
             <p className="text-slate-500 text-xs leading-relaxed">
-              Intelligent Cost Reduction Platform for Premium Automotive.<br />
+              AI-Powered Idea Generation Platform.<br />
               Confidential Internal Tool.
             </p>
           </div>
@@ -73,7 +71,7 @@ export default function Footer() {
         {/* Bottom bar */}
         <div className="pt-6 border-t border-white/8 flex flex-col sm:flex-row items-center justify-between gap-3">
           <p className="text-slate-600 text-xs">
-            © {new Date().getFullYear()} AutoCost AI — All rights reserved
+            © {new Date().getFullYear()} BrainSpark — All rights reserved
           </p>
           <p className="text-slate-600 text-xs text-center">
             Designed &amp; Created by{' '}
