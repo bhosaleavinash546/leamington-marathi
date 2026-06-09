@@ -9,6 +9,8 @@ import {
 } from 'lucide-react';
 import { AnalysisResult, CostReductionIdea, CostSavingType, Difficulty, SearchSource } from '../types';
 import { exportToExcel, exportToPowerPoint } from '../services/export-service';
+import IdeasDashboard from '../components/results/IdeasDashboard';
+import BusinessCaseCalculator from '../components/results/BusinessCaseCalculator';
 
 const DIFFICULTY_CONFIG: Record<Difficulty, { color: string; bg: string; border: string; icon: typeof CheckCircle }> = {
   Low:    { color: 'text-green-400', bg: 'bg-green-500/10',  border: 'border-green-500/30',  icon: CheckCircle },
@@ -41,7 +43,8 @@ function IdeaCard({ idea, index }: { idea: CostReductionIdea; index: number }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.06 }}
-      className="bg-navy-900 border border-white/10 rounded-2xl overflow-hidden hover:border-white/20 transition-all"
+      whileHover={{ y: -2, boxShadow: '0 8px 32px rgba(245,158,11,0.08)' }}
+      className="bg-navy-900 border border-white/10 rounded-2xl overflow-hidden hover:border-gold-500/25 transition-all cursor-default"
     >
       <div className="p-5 pb-4">
         {/* Title row */}
@@ -319,6 +322,9 @@ export default function ResultsPage() {
           </div>
         </div>
 
+        {/* Ideas Analytics Dashboard */}
+        <IdeasDashboard ideas={result.ideas} />
+
         {/* Summary cards */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
           {[
@@ -363,19 +369,21 @@ export default function ResultsPage() {
           </div>
           <div className="flex flex-wrap gap-1.5">
             {(['All', 'Low', 'Medium', 'High'] as const).map(d => (
-              <button key={d} onClick={() => setFilterDifficulty(d)}
-                className={`px-3 py-1 rounded-lg text-xs font-medium border transition-colors ${filterDifficulty === d ? 'bg-gold-500/20 text-gold-400 border-gold-500/30' : 'text-slate-400 border-white/10 hover:border-white/20'}`}>
+              <motion.button key={d} onClick={() => setFilterDifficulty(d)}
+                whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
+                className={`px-3 py-1 rounded-lg text-xs font-medium border transition-colors ${filterDifficulty === d ? 'bg-gold-500/20 text-gold-400 border-gold-500/30' : 'text-slate-400 border-white/10 hover:border-white/25 hover:text-white'}`}>
                 {d === 'All' ? 'All Difficulty' : d}
-              </button>
+              </motion.button>
             ))}
           </div>
           <div className="w-px h-4 bg-white/10 hidden sm:block" />
           <div className="flex flex-wrap gap-1.5">
             {(['All', 'material', 'process', 'tooling', 'weight', 'complexity', 'warranty', 'logistics', 'commonisation'] as const).map(t => (
-              <button key={t} onClick={() => setFilterType(t)}
-                className={`px-3 py-1 rounded-lg text-xs font-medium border capitalize transition-colors ${filterType === t ? 'bg-gold-500/20 text-gold-400 border-gold-500/30' : 'text-slate-400 border-white/10 hover:border-white/20'}`}>
+              <motion.button key={t} onClick={() => setFilterType(t)}
+                whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
+                className={`px-3 py-1 rounded-lg text-xs font-medium border capitalize transition-colors ${filterType === t ? 'bg-gold-500/20 text-gold-400 border-gold-500/30' : 'text-slate-400 border-white/10 hover:border-white/25 hover:text-white'}`}>
                 {t === 'All' ? 'All Types' : t}
-              </button>
+              </motion.button>
             ))}
           </div>
           <div className="ml-auto flex items-center gap-1.5 text-slate-500 text-xs">
@@ -398,6 +406,9 @@ export default function ResultsPage() {
             <SourcesPanel sources={result.sources} />
           </div>
         )}
+
+        {/* Business Case Calculator */}
+        <BusinessCaseCalculator />
 
         {/* Export footer */}
         <div className="p-6 rounded-2xl bg-navy-900 border border-white/10 flex flex-col md:flex-row items-center justify-between gap-4">

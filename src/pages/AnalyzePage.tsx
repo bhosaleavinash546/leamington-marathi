@@ -191,14 +191,18 @@ export default function AnalyzePage() {
 
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 mb-8">
                   {AUTOMOTIVE_SYSTEMS.map((sys) => (
-                    <button
+                    <motion.button
                       key={sys.id}
                       onClick={() => { setSystemId(sys.id); setSubassemblyId(''); setPartId(''); }}
-                      className={`p-3.5 rounded-xl border text-left transition-all hover:-translate-y-0.5 ${
+                      whileHover={{ y: -3, scale: 1.02 }}
+                      whileTap={{ scale: 0.97 }}
+                      transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+                      className={`p-3.5 rounded-xl border text-left ${
                         systemId === sys.id
-                          ? 'border-gold-500 bg-gold-500/10'
-                          : 'border-white/10 bg-white/5 hover:border-white/25'
+                          ? 'border-gold-500 bg-gold-500/10 shadow-lg shadow-gold-500/10'
+                          : 'border-white/10 bg-white/5 hover:border-gold-500/30 hover:bg-gold-500/5'
                       }`}
+                      style={systemId === sys.id ? { boxShadow: '0 0 20px rgba(245,158,11,0.12)' } : {}}
                     >
                       <div className={`w-9 h-9 rounded-lg bg-gradient-to-br ${sys.color} flex items-center justify-center text-lg mb-2`}>
                         {sys.icon}
@@ -210,7 +214,7 @@ export default function AnalyzePage() {
                           <CheckCircle size={10} /> Selected
                         </div>
                       )}
-                    </button>
+                    </motion.button>
                   ))}
                 </div>
 

@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
+import { ThemeProvider } from './contexts/ThemeContext';
 import { ToastContainer } from './hooks/useToast';
 import Header from './components/layout/Header';
 import Footer from './components/layout/Footer';
@@ -13,6 +14,7 @@ import HelpPage from './pages/HelpPage';
 
 export default function App() {
   return (
+    <ThemeProvider>
     <AuthProvider>
       <BrowserRouter>
         <div className="flex flex-col min-h-screen">
@@ -38,5 +40,6 @@ export default function App() {
         <ToastContainer />
       </BrowserRouter>
     </AuthProvider>
+    </ThemeProvider>
   );
 }

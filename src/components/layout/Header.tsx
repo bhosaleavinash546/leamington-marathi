@@ -1,7 +1,8 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Zap, Menu, X, ChevronDown, LayoutDashboard, HelpCircle, LogOut, User } from 'lucide-react';
+import { Zap, Menu, X, ChevronDown, LayoutDashboard, HelpCircle, LogOut, User, Sun, Moon } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
+import { useTheme } from '../../contexts/ThemeContext';
 
 const APP_VERSION = '2.1';
 
@@ -9,6 +10,7 @@ export default function Header() {
   const location = useLocation();
   const navigate = useNavigate();
   const { isAuthenticated, user, signOut } = useAuth();
+  const { theme, toggleTheme } = useTheme();
   const [menuOpen, setMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const userMenuRef = useRef<HTMLDivElement>(null);
@@ -102,6 +104,16 @@ export default function Header() {
 
           {/* Right side */}
           <div className="hidden md:flex items-center gap-3">
+            {/* Theme toggle */}
+            <button
+              onClick={toggleTheme}
+              title={theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
+              className="w-9 h-9 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10 hover:border-gold-500/30 transition-all group"
+            >
+              {theme === 'dark'
+                ? <Sun size={15} className="text-slate-400 group-hover:text-gold-400 transition-colors" />
+                : <Moon size={15} className="text-slate-500 group-hover:text-navy-950 transition-colors" />}
+            </button>
             {isAuthenticated ? (
               <div className="relative" ref={userMenuRef}>
                 <button
