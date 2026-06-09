@@ -22,7 +22,10 @@ export interface System {
   subassemblies: Subassembly[];
 }
 
-export type CostSavingType = 'material' | 'process' | 'logistics' | 'complexity' | 'warranty' | 'tooling' | 'weight';
+export type CostSavingType =
+  | 'material' | 'process' | 'logistics' | 'complexity'
+  | 'warranty' | 'tooling' | 'weight' | 'commonisation';
+
 export type Difficulty = 'Low' | 'Medium' | 'High';
 export type SystemLevel = 'Assembly' | 'Subassembly' | 'Part';
 
@@ -30,6 +33,7 @@ export interface CostSavingPotential {
   qualitative: string;
   percentage?: string;
   annualValue?: string;
+  calculationBasis?: string;
 }
 
 export interface CostReductionIdea {
@@ -45,6 +49,21 @@ export interface CostReductionIdea {
   systemLevel: SystemLevel;
   timeToImplement: string;
   benchmarkReference?: string;
+  searchDataUsed?: boolean;
+}
+
+export interface SearchResult {
+  title: string;
+  url: string;
+  snippet: string;
+  source: string;
+}
+
+export interface SearchSource {
+  query: string;
+  purpose: string;
+  results: SearchResult[];
+  timestamp: string;
 }
 
 export interface AnalysisConfig {
@@ -61,11 +80,12 @@ export interface AnalysisConfig {
 export interface AnalysisResult {
   config: AnalysisConfig;
   ideas: CostReductionIdea[];
+  sources: SearchSource[];
   summary: {
     totalIdeas: number;
-    totalPotentialSaving: string;
     quickWins: number;
     strategicItems: number;
+    searchesPerformed: number;
   };
   generatedAt: string;
 }

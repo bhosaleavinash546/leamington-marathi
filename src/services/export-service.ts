@@ -23,9 +23,9 @@ export function exportToExcel(result: AnalysisResult, systemName: string, subNam
     [''],
     ['SUMMARY METRICS'],
     ['Total Ideas Generated', result.summary.totalIdeas],
-    ['Total Indicative Saving Potential', result.summary.totalPotentialSaving],
     ['Quick Wins (Low Difficulty)', result.summary.quickWins],
     ['Strategic Items (Medium/High)', result.summary.strategicItems],
+    ['Web Searches Performed', result.summary.searchesPerformed],
   ];
   const wsSummary = XLSX.utils.aoa_to_sheet(summaryData);
   wsSummary['!cols'] = [{ wch: 35 }, { wch: 50 }];
@@ -180,7 +180,7 @@ export async function exportToPowerPoint(
       fontSize: 12, color: 'cbd5e1', fontFace: 'Calibri',
     });
 
-    slide.addText(`${result.summary.totalIdeas} ideas generated | ${result.summary.quickWins} Quick Wins | ${result.summary.totalPotentialSaving}`, {
+    slide.addText(`${result.summary.totalIdeas} ideas generated | ${result.summary.quickWins} Quick Wins | ${result.summary.searchesPerformed} live web searches`, {
       x: 0.8, y: 4.8, w: 11, h: 0.5,
       fontSize: 13, color: GOLD, bold: true, fontFace: 'Calibri',
     });
@@ -204,7 +204,7 @@ export async function exportToPowerPoint(
       { label: 'Total Ideas', value: String(result.summary.totalIdeas), color: '3b82f6' },
       { label: 'Quick Wins', value: String(result.summary.quickWins), color: '22c55e' },
       { label: 'Strategic Items', value: String(result.summary.strategicItems), color: 'f59e0b' },
-      { label: 'Total Saving', value: result.summary.totalPotentialSaving, color: '8b5cf6' },
+      { label: 'Web Searches', value: String(result.summary.searchesPerformed), color: '8b5cf6' },
     ];
 
     metrics.forEach((m, i) => {
