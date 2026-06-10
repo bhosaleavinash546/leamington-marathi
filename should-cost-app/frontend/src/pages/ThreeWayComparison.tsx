@@ -33,7 +33,8 @@ interface ThreeWayData {
   };
 }
 
-const API = import.meta.env.VITE_API_URL ?? 'http://localhost:4000';
+// Same-origin by default — nginx (Docker) and the Vite dev server both proxy /api
+const API = import.meta.env.VITE_API_URL ?? '';
 const token = () => localStorage.getItem('sc_token') ?? '';
 
 function pctColor(pct: number): string {

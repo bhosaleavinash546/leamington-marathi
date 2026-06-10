@@ -171,13 +171,7 @@ export default function SystemTreemap({ data, onSelect, selectedId }: Props) {
           data={treeData.children}
           dataKey="value"
           aspectRatio={4 / 3}
-          content={(p) => (
-            <CustomContent
-              {...(p as ContentProps)}
-              selectedId={selectedId}
-              onSelect={onSelect}
-            />
-          )}
+          content={<CustomContent selectedId={selectedId} onSelect={onSelect} />}
         >
           <Tooltip content={<CustomTooltip />} />
         </Treemap>

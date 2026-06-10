@@ -45,12 +45,6 @@ const flagColor = (pct: number): string => {
   return '';
 };
 
-const recBadge: Record<string, string> = {
-  recommended: 'badge-accepted',
-  negotiate:   'badge-negotiating',
-  reject:      'badge-rejected',
-};
-
 export default function MultiSupplierComparison() {
   const [list, setList]           = useState<MultiComparison[]>([]);
   const [selected, setSelected]   = useState<FullData | null>(null);

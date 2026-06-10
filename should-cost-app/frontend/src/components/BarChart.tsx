@@ -6,6 +6,7 @@ import {
   Title,
   Tooltip,
   Legend,
+  TooltipItem,
 } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
 import { ComparisonDetail } from '../types';
@@ -51,8 +52,8 @@ export default function BarChart({ details }: Props) {
       legend: { position: 'top' as const },
       tooltip: {
         callbacks: {
-          label: (ctx: { dataset: { label?: string }; parsed: { y: number } }) =>
-            `${ctx.dataset.label}: ${ctx.parsed.y.toFixed(4)}`,
+          label: (ctx: TooltipItem<'bar'>) =>
+            `${ctx.dataset.label}: ${Number(ctx.parsed.y ?? 0).toFixed(4)}`,
         },
       },
     },

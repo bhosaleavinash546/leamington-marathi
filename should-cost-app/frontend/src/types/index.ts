@@ -98,6 +98,7 @@ export interface ComparisonSnapshot {
   total_variance?: number;
   variance_pct?: number;
   status: 'open' | 'reviewed' | 'closed';
+  currency?: string;
   created_at: string;
 }
 

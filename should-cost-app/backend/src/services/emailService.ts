@@ -70,8 +70,9 @@ export async function sendOtpEmail({ to, otp, purpose, name }: OtpEmailPayload):
   if (process.env.NODE_ENV !== 'production') {
     // Always print to console in dev so you can test without SMTP
     console.log(`\n[emailService] OTP for ${to} → ${otp}\n`);
-    if ((info as { message?: string }).message) {
-      console.log('[emailService] json transport payload:', (info as { message: string }).message);
+    const payload = (info as unknown as { message?: string }).message;
+    if (payload) {
+      console.log('[emailService] json transport payload:', payload);
     }
   }
 }

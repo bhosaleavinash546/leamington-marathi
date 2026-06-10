@@ -10,6 +10,7 @@ import {
   Title,
   Tooltip,
   Legend,
+  TooltipItem,
 } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
 import { ComparisonDetail } from '../types';
@@ -46,8 +47,6 @@ export default function WaterfallChart({ details }: Props) {
         data: spacerData,
         backgroundColor: 'rgba(0,0,0,0)',
         stack: 'waterfall',
-        // Hide spacer from tooltip
-        tooltip: { enabled: false },
       },
       {
         label: 'Over target (quote higher)',
@@ -75,11 +74,11 @@ export default function WaterfallChart({ details }: Props) {
     plugins: {
       legend: { position: 'top' as const },
       tooltip: {
-        filter: (item: { datasetIndex: number }) => item.datasetIndex !== 0, // hide spacer
+        filter: (item: TooltipItem<'bar'>) => item.datasetIndex !== 0, // hide spacer
         callbacks: {
-          label: (ctx: { dataset: { label?: string }; parsed: { y: number } }) => {
+          label: (ctx: TooltipItem<'bar'>) => {
             const isNeg = ctx.dataset.label?.includes('Under');
-            const val = ctx.parsed.y;
+            const val = Number(ctx.parsed.y ?? 0);
             return `${ctx.dataset.label}: ${isNeg ? '-' : '+'}${val.toFixed(4)}`;
           },
         },
