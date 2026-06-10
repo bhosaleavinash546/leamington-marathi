@@ -1,20 +1,23 @@
 {
   "name": "should-cost-backend",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Should-Cost vs Supplier Quotes comparison engine",
   "main": "dist/server.js",
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
     "build": "tsc",
     "start": "node dist/server.js",
-    "db:migrate": "psql $DATABASE_URL -f src/db/schema.sql"
+    "db:migrate": "psql $DATABASE_URL -f src/db/schema.sql && psql $DATABASE_URL -f src/db/schema_v2.sql",
+    "db:seed": "psql $DATABASE_URL -f src/db/seed_vehicle_hierarchy.sql"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
+    "exceljs": "^4.4.0",
     "express": "^4.19.2",
     "jsonwebtoken": "^9.0.2",
+    "nodemailer": "^6.9.13",
     "pg": "^8.11.5"
   },
   "devDependencies": {
@@ -23,6 +26,7 @@
     "@types/express": "^4.17.21",
     "@types/jsonwebtoken": "^9.0.6",
     "@types/node": "^20.12.7",
+    "@types/nodemailer": "^6.4.14",
     "@types/pg": "^8.11.5",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.4.5"

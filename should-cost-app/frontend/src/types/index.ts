@@ -1,11 +1,15 @@
-// Mirror of backend model types for the frontend
-
 export interface PartMaster {
   id: number;
   part_number: string;
   description?: string;
   uom?: string;
   commodity?: string;
+  system_id?: number;
+  subsystem_id?: number;
+  component_id?: number;
+  system_name?: string;
+  subsystem_name?: string;
+  component_name?: string;
 }
 
 export interface Supplier {
@@ -133,6 +137,10 @@ export interface ComparisonFull {
   details: ComparisonDetail[];
   latestInsight: AIInsight | null;
 }
+
+export interface VehicleSystem    { id: number; code: string; name: string; icon?: string; sort_order: number; }
+export interface VehicleSubsystem { id: number; system_id: number; code: string; name: string; }
+export interface VehicleComponent { id: number; subsystem_id: number; code: string; name: string; }
 
 export interface AuthUser {
   id: string;
