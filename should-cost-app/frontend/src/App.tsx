@@ -48,7 +48,7 @@ function AppShell() {
       {/* ── Sidebar ── */}
       <nav className="sidebar">
         <div className="sidebar-logo" style={{ padding: '4px 0' }}>
-          <Logo size={38} />
+          <Logo height={52} />
         </div>
 
         {!isSupplier && (

@@ -192,7 +192,7 @@ export default function AuthPage({ initialView = 'login', onLogin }: Props) {
       <div className="auth-left">
         <div className="auth-left-content">
           <Link to="/" style={{ display: 'inline-flex', marginBottom: 48 }}>
-            <Logo size={52} />
+            <Logo height={68} />
           </Link>
           <h2>{leftCopy.title}</h2>
           <p>{leftCopy.desc}</p>

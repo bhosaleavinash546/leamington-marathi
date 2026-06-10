@@ -88,7 +88,7 @@ export default function LandingPage() {
       {/* ── Nav ── */}
       <nav className="landing-nav">
         <div className="landing-nav-logo" style={{ lineHeight: 0 }}>
-          <Logo size={44} />
+          <Logo height={52} />
         </div>
         <div className="landing-nav-links">
           <button className="theme-toggle" data-on={theme === 'dark'} onClick={toggle} title="Toggle theme" />
@@ -334,7 +334,7 @@ export default function LandingPage() {
       }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12, marginBottom: 14 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <Logo size={28} />
+            <Logo height={32} />
             <span><strong style={{ color: 'var(--text-1)' }}>CostLens</strong> — Automotive Cost Engineering Platform</span>
           </div>
           <div>© {new Date().getFullYear()} CostLens. All rights reserved.</div>
