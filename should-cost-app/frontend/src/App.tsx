@@ -5,6 +5,7 @@ import ComparisonView from './components/ComparisonView';
 import QuoteForm from './components/QuoteForm';
 import SupplierPortal from './components/SupplierPortal';
 import MultiSupplierComparison from './components/MultiSupplierComparison';
+import OpportunityDashboard from './pages/OpportunityDashboard';
 import LandingPage from './pages/LandingPage';
 import AuthPage from './pages/AuthPage';
 import ThemeToggle from './components/ThemeToggle';
@@ -54,6 +55,9 @@ function AppShell() {
             <div className="sidebar-section">Analytics</div>
             <NavLink to="/dashboard"  className={({ isActive }) => isActive ? 'active' : ''}>
               📊 Dashboard
+            </NavLink>
+            <NavLink to="/opportunity" className={({ isActive }) => isActive ? 'active' : ''}>
+              🎯 Opportunity
             </NavLink>
             <NavLink to="/comparisons" className={({ isActive }) => isActive ? 'active' : ''}>
               🔍 Comparisons
@@ -107,6 +111,7 @@ function AppShell() {
           {!isSupplier && (
             <>
               <Route path="/dashboard"        element={<Dashboard user={user} />} />
+              <Route path="/opportunity"      element={<OpportunityDashboard />} />
               <Route path="/comparisons"      element={<ComparisonView />} />
               <Route path="/comparisons/:id"  element={<ComparisonView />} />
               <Route path="/multi-comparison" element={<MultiSupplierComparison />} />

@@ -11,6 +11,7 @@ import vehicleRoutes        from './routes/vehicle';
 import multiCompRoutes      from './routes/multiComparison';
 import commentRoutes        from './routes/comments';
 import exportRoutes         from './routes/export';
+import opportunityRoutes    from './routes/opportunity';
 
 const app  = express();
 const PORT = process.env.PORT ?? 4000;
@@ -29,6 +30,7 @@ app.use('/api/ai',               aiRoutes);
 app.use('/api/vehicle',          vehicleRoutes);
 app.use('/api/multi-comparison', multiCompRoutes);
 app.use('/api/export',           exportRoutes);
+app.use('/api/opportunity',      opportunityRoutes);
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
