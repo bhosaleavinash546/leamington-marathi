@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '../context/ThemeContext';
+import Logo from '../components/Logo';
 
 const FEATURES = [
   { icon: '📊', title: 'Should-Cost Engineering', desc: 'Build rigorous should-cost models by cost element — material, labor, overhead, logistics, and profit — with full version history.' },
@@ -86,9 +87,8 @@ export default function LandingPage() {
     <div className="landing">
       {/* ── Nav ── */}
       <nav className="landing-nav">
-        <div className="landing-nav-logo">
-          <span style={{ color: 'var(--accent)' }}>Cost</span>
-          <span>Lens</span>
+        <div className="landing-nav-logo" style={{ lineHeight: 0 }}>
+          <Logo size={44} />
         </div>
         <div className="landing-nav-links">
           <button className="theme-toggle" data-on={theme === 'dark'} onClick={toggle} title="Toggle theme" />
@@ -333,7 +333,10 @@ export default function LandingPage() {
         gap: 12,
       }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12, marginBottom: 14 }}>
-          <div><strong style={{ color: 'var(--accent)' }}>CostLens</strong> — Automotive Cost Engineering Platform</div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <Logo size={28} />
+            <span><strong style={{ color: 'var(--text-1)' }}>CostLens</strong> — Automotive Cost Engineering Platform</span>
+          </div>
           <div>© {new Date().getFullYear()} CostLens. All rights reserved.</div>
         </div>
         <div style={{

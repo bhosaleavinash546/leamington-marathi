@@ -10,6 +10,7 @@ import ThreeWayComparison from './pages/ThreeWayComparison';
 import LandingPage from './pages/LandingPage';
 import AuthPage from './pages/AuthPage';
 import ThemeToggle from './components/ThemeToggle';
+import Logo from './components/Logo';
 import { AuthUser } from './types';
 import { ThemeProvider } from './context/ThemeContext';
 
@@ -46,9 +47,8 @@ function AppShell() {
     <div className="app-shell">
       {/* ── Sidebar ── */}
       <nav className="sidebar">
-        <div className="sidebar-logo">
-          <div className="logo-dot" />
-          <span style={{ color: 'var(--accent)' }}>Cost</span>Lens
+        <div className="sidebar-logo" style={{ padding: '4px 0' }}>
+          <Logo size={38} />
         </div>
 
         {!isSupplier && (

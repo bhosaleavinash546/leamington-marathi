@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import api from '../utils/api';
 import { AuthUser } from '../types';
 import { useTheme } from '../context/ThemeContext';
+import Logo from '../components/Logo';
 
 type View = 'login' | 'signup-details' | 'signup-otp' | 'forgot-email' | 'forgot-otp' | 'forgot-reset';
 
@@ -190,10 +191,8 @@ export default function AuthPage({ initialView = 'login', onLogin }: Props) {
       {/* ── Left panel ── */}
       <div className="auth-left">
         <div className="auth-left-content">
-          <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 48 }}>
-            <span style={{ fontSize: 22, fontWeight: 800, color: '#fff' }}>
-              <span style={{ color: '#a78bfa' }}>Cost</span>Lens
-            </span>
+          <Link to="/" style={{ display: 'inline-flex', marginBottom: 48 }}>
+            <Logo size={52} />
           </Link>
           <h2>{leftCopy.title}</h2>
           <p>{leftCopy.desc}</p>
