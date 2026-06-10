@@ -384,6 +384,12 @@ app.post('/api/analyze', requireAuth, async (req, res) => {
         if (!textBlock) throw new Error('No text response from AI.');
         let raw = textBlock.text.trim();
         if (raw.startsWith('```')) raw = raw.replace(/^```[a-z]*\n?/, '').replace(/\n?```$/, '').trim();
+        // Extract JSON array even if the AI prefixed with plain text
+        const jsonStart = raw.indexOf('[');
+        const jsonEnd = raw.lastIndexOf(']');
+        if (jsonStart !== -1 && jsonEnd > jsonStart) {
+          raw = raw.slice(jsonStart, jsonEnd + 1);
+        }
         return res.json({ ideas: JSON.parse(raw), sources });
       }
     }
