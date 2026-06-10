@@ -22,14 +22,14 @@ export async function exportComparisonExcel(req: Request, res: Response): Promis
   );
 
   const wb = new ExcelJS.Workbook();
-  wb.creator = 'CostIQ';
+  wb.creator = 'CostLens';
   wb.created = new Date();
 
   const ws = wb.addWorksheet('Comparison');
 
   // Header metadata
   const snap = snapshotRes.rows[0];
-  ws.getCell('A1').value = 'CostIQ — Should-Cost vs Supplier Quote';
+  ws.getCell('A1').value = 'CostLens — Should-Cost vs Supplier Quote';
   ws.getCell('A1').font = { bold: true, size: 14, color: { argb: 'FF4F46E5' } };
   ws.getCell('A2').value = `Part: ${snap.part_number}`;
   ws.getCell('A3').value = `Supplier: ${snap.supplier_name}`;
@@ -129,7 +129,7 @@ export async function exportMultiComparisonExcel(req: Request, res: Response): P
   }
 
   const wb = new ExcelJS.Workbook();
-  wb.creator = 'CostIQ';
+  wb.creator = 'CostLens';
   const ws = wb.addWorksheet('Multi-Supplier');
 
   const supplierNames = entriesRes.rows.map((e) => `${e.supplier_name} v${e.version}`);

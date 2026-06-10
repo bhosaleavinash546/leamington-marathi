@@ -8,7 +8,7 @@
     "build": "tsc",
     "start": "node dist/server.js",
     "db:migrate": "psql $DATABASE_URL -f src/db/schema.sql && psql $DATABASE_URL -f src/db/schema_v2.sql && psql $DATABASE_URL -f src/db/schema_v3.sql",
-    "db:seed": "psql $DATABASE_URL -f src/db/seed_vehicle_hierarchy.sql && psql $DATABASE_URL -f src/db/seed_programs.sql",
+    "db:seed": "psql $DATABASE_URL -f src/db/seed_vehicle_hierarchy.sql && psql $DATABASE_URL -f src/db/seed_programs.sql && psql $DATABASE_URL -f src/db/seed_demo_users.sql",
     "db:setup": "npm run db:migrate && npm run db:seed"
   },
   "dependencies": {

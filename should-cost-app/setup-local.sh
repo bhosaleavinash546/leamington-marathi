@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ============================================================
-# CostIQ – Local Dev Setup for macOS (Apple Silicon / M4)
+# CostLens – Local Dev Setup for macOS (Apple Silicon / M4)
 # Usage:  chmod +x setup-local.sh && ./setup-local.sh
 # ============================================================
 set -euo pipefail
@@ -143,28 +143,15 @@ step "Installing frontend dependencies"
 cd "$FRONTEND" && npm install
 info "Frontend packages installed"
 
-# ── 9. Create demo admin user ────────────────────────────────
-step "Creating demo admin account"
-ADMIN_HASH='$2b$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi'  # password: "password"
-psql "$DB_URL" <<'SQL' 2>/dev/null || true
-INSERT INTO "user" (email, password_hash, full_name, role_id)
-SELECT 'admin@costiq.local', '$2b$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
-       'CostIQ Admin',
-       (SELECT id FROM role WHERE name = 'admin')
-ON CONFLICT (email) DO NOTHING;
-
-INSERT INTO "user" (email, password_hash, full_name, role_id)
-SELECT 'engineer@costiq.local', '$2b$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
-       'Cost Engineer',
-       (SELECT id FROM role WHERE name = 'internal')
-ON CONFLICT (email) DO NOTHING;
-SQL
+# ── 9. Create demo users ─────────────────────────────────────
+step "Creating demo user accounts"
+psql "$DB_URL" -f "$BACKEND/src/db/seed_demo_users.sql" 2>/dev/null || true
 info "Demo users created (password for all: password)"
 
 # ── Done ─────────────────────────────────────────────────────
 echo ""
 echo -e "${GREEN}╔══════════════════════════════════════════════════╗${NC}"
-echo -e "${GREEN}║         ✅  Setup Complete!                       ║${NC}"
+echo -e "${GREEN}║         ✅  CostLens Setup Complete!              ║${NC}"
 echo -e "${GREEN}╚══════════════════════════════════════════════════╝${NC}"
 echo ""
 echo -e "  ${YELLOW}To start the app, open two terminal tabs:${NC}"
@@ -177,7 +164,8 @@ echo -e "    cd $(realpath "$FRONTEND") && npm run dev"
 echo ""
 echo -e "  ${GREEN}Then open:${NC}  http://localhost:5173"
 echo ""
-echo -e "  ${YELLOW}Demo credentials:${NC}"
-echo -e "    admin@costiq.local    /  password   (admin)"
-echo -e "    engineer@costiq.local /  password   (internal)"
+echo -e "  ${YELLOW}Demo credentials (password for all: password):${NC}"
+echo -e "    admin@costlens.io               /  password   (admin)"
+echo -e "    avinash.bhosale@costlens.io     /  password   (internal)"
+echo -e "    procurement@costlens.io         /  password   (internal)"
 echo ""

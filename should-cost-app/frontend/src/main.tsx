@@ -5,7 +5,7 @@ import App from './App';
 import './index.css';
 
 // Apply saved theme immediately to avoid flash
-const savedTheme = localStorage.getItem('costiq_theme') ??
+const savedTheme = localStorage.getItem('costlens_theme') ??
   (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
 document.documentElement.setAttribute('data-theme', savedTheme);
 

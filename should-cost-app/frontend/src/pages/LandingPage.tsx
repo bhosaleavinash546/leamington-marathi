@@ -88,7 +88,7 @@ export default function LandingPage() {
       <nav className="landing-nav">
         <div className="landing-nav-logo">
           <span style={{ color: 'var(--accent)' }}>Cost</span>
-          <span>IQ</span>
+          <span>Lens</span>
         </div>
         <div className="landing-nav-links">
           <button className="theme-toggle" data-on={theme === 'dark'} onClick={toggle} title="Toggle theme" />
@@ -315,7 +315,7 @@ export default function LandingPage() {
           Ready to take control of your cost structure?
         </h2>
         <p style={{ color: 'var(--text-2)', fontSize: 16, marginBottom: 32 }}>
-          Join procurement and cost engineering teams who use CostIQ to negotiate with data.
+          Join procurement and cost engineering teams who use CostLens to negotiate with data.
         </p>
         <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
           <button className="btn btn-primary btn-lg" onClick={() => navigate('/signup')}>Create Account</button>
@@ -327,11 +327,26 @@ export default function LandingPage() {
       <footer style={{
         borderTop: '1px solid var(--border)',
         padding: '28px 48px',
-        display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-        color: 'var(--text-3)', fontSize: 13, flexWrap: 'wrap', gap: 12,
+        color: 'var(--text-3)',
+        fontSize: 13,
+        flexWrap: 'wrap',
+        gap: 12,
       }}>
-        <div><strong style={{ color: 'var(--accent)' }}>CostIQ</strong> — Automotive Cost Engineering Platform</div>
-        <div>© {new Date().getFullYear()} CostIQ. All rights reserved.</div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12, marginBottom: 14 }}>
+          <div><strong style={{ color: 'var(--accent)' }}>CostLens</strong> — Automotive Cost Engineering Platform</div>
+          <div>© {new Date().getFullYear()} CostLens. All rights reserved.</div>
+        </div>
+        <div style={{
+          borderTop: '1px solid var(--border)',
+          paddingTop: 14,
+          textAlign: 'center',
+          fontSize: 12,
+          color: 'var(--text-3)',
+        }}>
+          Designed &amp; developed by —{' '}
+          <strong style={{ color: 'var(--text-2)' }}>Avinash Bhosale</strong>
+          <span style={{ color: 'var(--text-3)', marginLeft: 6 }}>(Senior Cost Improvement Engineer)</span>
+        </div>
       </footer>
     </div>
   );

@@ -48,7 +48,7 @@ function AppShell() {
       <nav className="sidebar">
         <div className="sidebar-logo">
           <div className="logo-dot" />
-          CostIQ
+          <span style={{ color: 'var(--accent)' }}>Cost</span>Lens
         </div>
 
         {!isSupplier && (
@@ -106,6 +106,11 @@ function AppShell() {
           <button onClick={logout} className="btn btn-secondary btn-sm" style={{ width: '100%' }}>
             Sign out
           </button>
+          <div style={{ marginTop: 14, paddingTop: 12, borderTop: '1px solid var(--border)', fontSize: 10, color: 'var(--text-3)', lineHeight: 1.5 }}>
+            Designed &amp; developed by<br />
+            <span style={{ color: 'var(--text-2)', fontWeight: 600 }}>Avinash Bhosale</span><br />
+            <span style={{ opacity: 0.8 }}>Senior Cost Improvement Engineer</span>
+          </div>
         </div>
       </nav>
 

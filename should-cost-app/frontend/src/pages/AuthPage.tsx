@@ -12,7 +12,7 @@ interface Props {
 }
 
 const LEFT_COPY: Record<string, { title: string; desc: string }> = {
-  login:         { title: 'Welcome back to CostIQ',      desc: 'Access your should-cost models, supplier quotes, and AI-driven comparison reports.' },
+  login:         { title: 'Welcome back to CostLens',      desc: 'Access your should-cost models, supplier quotes, and AI-driven comparison reports.' },
   signup:        { title: 'Start engineering smarter costs', desc: 'Join teams who use data to negotiate better prices across 22 automotive systems.' },
   forgot:        { title: 'Secure password recovery',    desc: 'We verify your identity with a one-time code before allowing a password reset.' },
 };
@@ -192,18 +192,23 @@ export default function AuthPage({ initialView = 'login', onLogin }: Props) {
         <div className="auth-left-content">
           <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 48 }}>
             <span style={{ fontSize: 22, fontWeight: 800, color: '#fff' }}>
-              <span style={{ color: '#a78bfa' }}>Cost</span>IQ
+              <span style={{ color: '#a78bfa' }}>Cost</span>Lens
             </span>
           </Link>
           <h2>{leftCopy.title}</h2>
           <p>{leftCopy.desc}</p>
           <ul className="auth-features">
             <li>22 Automotive systems with 3-level hierarchy</li>
+            <li>Three-way analysis: Should-Cost · Live Price · New Quotes</li>
             <li>Compare up to 5 supplier quotes simultaneously</li>
-            <li>AI-powered variance analysis and recommendations</li>
+            <li>AI-powered cost driver analysis and recommendations</li>
             <li>Full negotiation thread with audit trail</li>
-            <li>Excel export for stakeholder reporting</li>
           </ul>
+          <div style={{ marginTop: 'auto', paddingTop: 32, fontSize: 11, color: 'rgba(255,255,255,0.4)', lineHeight: 1.6 }}>
+            Designed &amp; developed by<br />
+            <strong style={{ color: 'rgba(255,255,255,0.7)' }}>Avinash Bhosale</strong><br />
+            Senior Cost Improvement Engineer
+          </div>
         </div>
       </div>
 
@@ -219,7 +224,7 @@ export default function AuthPage({ initialView = 'login', onLogin }: Props) {
           {view === 'login' && (
             <>
               <h1>Sign in</h1>
-              <p className="auth-sub">Access your CostIQ workspace</p>
+              <p className="auth-sub">Access your CostLens workspace</p>
               <form onSubmit={handleLogin}>
                 <div className="form-group">
                   <label className="form-label">Email address</label>
@@ -251,7 +256,7 @@ export default function AuthPage({ initialView = 'login', onLogin }: Props) {
           {view === 'signup-details' && (
             <>
               <h1>Create account</h1>
-              <p className="auth-sub">Set up your CostIQ workspace</p>
+              <p className="auth-sub">Set up your CostLens workspace</p>
               <form onSubmit={handleSignupRequest}>
                 <div className="form-group">
                   <label className="form-label">Full name</label>

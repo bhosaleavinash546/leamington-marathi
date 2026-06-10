@@ -32,7 +32,7 @@ export default function Login({ onLogin }: Props) {
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', background: '#f0f2f5' }}>
       <div className="card" style={{ width: 360 }}>
         <div style={{ textAlign: 'center', marginBottom: 24 }}>
-          <div style={{ fontSize: 28, fontWeight: 800, color: '#4f46e5', marginBottom: 4 }}>CostIQ</div>
+          <div style={{ fontSize: 28, fontWeight: 800, color: '#4f46e5', marginBottom: 4 }}>CostLens</div>
           <div style={{ color: '#888', fontSize: 13 }}>Should-Cost Comparison Platform</div>
         </div>
         <form onSubmit={handleSubmit}>

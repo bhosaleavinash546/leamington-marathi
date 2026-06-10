@@ -28,18 +28,18 @@ function createTransporter() {
 }
 
 const transporter = createTransporter();
-const FROM = process.env.EMAIL_FROM ?? '"CostIQ Platform" <noreply@costiq.io>';
+const FROM = process.env.EMAIL_FROM ?? '"CostLens Platform" <noreply@costlens.io>';
 
 export async function sendOtpEmail({ to, otp, purpose, name }: OtpEmailPayload): Promise<void> {
   const subjectMap = {
-    signup:         'Your CostIQ verification code',
-    reset_password: 'Reset your CostIQ password',
+    signup:         'Your CostLens verification code',
+    reset_password: 'Reset your CostLens password',
   };
 
   const bodyMap = {
     signup:
       `Hi ${name ?? 'there'},\n\n` +
-      `Your CostIQ account verification code is:\n\n  ${otp}\n\n` +
+      `Your CostLens account verification code is:\n\n  ${otp}\n\n` +
       `This code expires in 10 minutes.\n\nIf you didn't request this, ignore this email.`,
     reset_password:
       `Hi ${name ?? 'there'},\n\n` +
@@ -55,7 +55,7 @@ export async function sendOtpEmail({ to, otp, purpose, name }: OtpEmailPayload):
     html: `
       <div style="font-family:Inter,sans-serif;max-width:480px;margin:0 auto;padding:32px;background:#f8fafc;border-radius:12px">
         <div style="background:#4f46e5;border-radius:8px;padding:16px 24px;margin-bottom:24px">
-          <span style="color:#fff;font-size:20px;font-weight:700">CostIQ</span>
+          <span style="color:#fff;font-size:20px;font-weight:700">CostLens</span>
         </div>
         <h2 style="color:#1a1a2e;margin:0 0 16px">${subjectMap[purpose]}</h2>
         <p style="color:#555">Hi ${name ?? 'there'},</p>

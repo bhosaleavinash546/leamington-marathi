@@ -11,14 +11,14 @@ const ThemeContext = createContext<ThemeCtx>({ theme: 'light', toggle: () => {} 
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const [theme, setTheme] = useState<Theme>(() => {
-    const stored = localStorage.getItem('costiq_theme') as Theme | null;
+    const stored = localStorage.getItem('costlens_theme') as Theme | null;
     if (stored) return stored;
     return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
   });
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
-    localStorage.setItem('costiq_theme', theme);
+    localStorage.setItem('costlens_theme', theme);
   }, [theme]);
 
   const toggle = () => setTheme((t) => (t === 'light' ? 'dark' : 'light'));
