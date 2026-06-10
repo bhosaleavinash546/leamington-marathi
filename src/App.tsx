@@ -11,6 +11,7 @@ import DashboardPage from './pages/DashboardPage';
 import AnalyzePage from './pages/AnalyzePage';
 import ResultsPage from './pages/ResultsPage';
 import HelpPage from './pages/HelpPage';
+import TrendsPage from './pages/TrendsPage';
 
 export default function App() {
   return (
@@ -30,6 +31,7 @@ export default function App() {
               <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
               <Route path="/analyze" element={<ProtectedRoute><AnalyzePage /></ProtectedRoute>} />
               <Route path="/results" element={<ProtectedRoute><ResultsPage /></ProtectedRoute>} />
+              <Route path="/trends" element={<ProtectedRoute><TrendsPage /></ProtectedRoute>} />
 
               {/* Fallback */}
               <Route path="*" element={<Navigate to="/" replace />} />

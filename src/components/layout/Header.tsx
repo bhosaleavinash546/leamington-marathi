@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Menu, X, ChevronDown, LayoutDashboard, HelpCircle, LogOut, User, Sun, Moon } from 'lucide-react';
+import { Menu, X, ChevronDown, LayoutDashboard, HelpCircle, LogOut, User, Sun, Moon, TrendingUp } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
 
@@ -67,6 +67,7 @@ export default function Header() {
                 {[
                   { path: '/dashboard', label: 'Dashboard' },
                   { path: '/analyze', label: 'Analyze' },
+                  { path: '/trends', label: 'Trends' },
                   { path: '/help', label: 'Help' },
                 ].map(({ path, label }) => (
                   <Link
@@ -139,6 +140,7 @@ export default function Header() {
                     {[
                       { icon: LayoutDashboard, label: 'Dashboard', path: '/dashboard' },
                       { icon: User, label: 'Analyze', path: '/analyze' },
+                      { icon: TrendingUp, label: 'Trends', path: '/trends' },
                       { icon: HelpCircle, label: 'Help', path: '/help' },
                     ].map(({ icon: Icon, label, path }) => (
                       <Link
@@ -194,6 +196,7 @@ export default function Header() {
               </div>
               <Link to="/dashboard" className="block px-3 py-2 text-sm text-slate-300 hover:text-white rounded-lg hover:bg-white/5" onClick={() => setMenuOpen(false)}>Dashboard</Link>
               <Link to="/analyze" className="block px-3 py-2 text-sm text-slate-300 hover:text-white rounded-lg hover:bg-white/5" onClick={() => setMenuOpen(false)}>Analyze</Link>
+              <Link to="/trends" className="block px-3 py-2 text-sm text-slate-300 hover:text-white rounded-lg hover:bg-white/5" onClick={() => setMenuOpen(false)}>Trends</Link>
               <Link to="/help" className="block px-3 py-2 text-sm text-slate-300 hover:text-white rounded-lg hover:bg-white/5" onClick={() => setMenuOpen(false)}>Help</Link>
               <button onClick={() => { toggleTheme(); setMenuOpen(false); }} className="w-full text-left px-3 py-2 text-sm text-slate-300 hover:bg-white/5 rounded-lg">
                 {theme === 'dark' ? '☀️ Light Theme' : '🌙 Dark Theme'}

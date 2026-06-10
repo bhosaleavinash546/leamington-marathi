@@ -307,12 +307,84 @@ You ALWAYS search the web before generating ideas. Execute 3–5 targeted search
 
 OUTPUT FORMAT: Return ONLY valid JSON — a single array of 8 idea objects. No markdown, no preamble.`;
 
+// EDU curated knowledge — injected when an Electric Drive Unit component is selected
+const EDU_CONTEXT_MAP = {
+  'stator-winding':   { levers: ['Round→hairpin bar winding: 10-20% copper (VW APP550, BMW Gen5, Hyundai E-GMP)', '800V conductor right-size: 3-7% copper (current halved at 800V)', 'End-winding reduction: 3-8% copper', 'Square flat-wire 8-layer hairpin: +fill → shorter stack (XPeng G6 97.86% motor eff.)', 'W-pin continuous-wave: fewer welds, −30% mass (NIO ET9 4.3 kW/kg)'], trends: 'Flat-wire hairpin + oil-cooling now mainstream. 8-layer square hairpin & W-pin emerging. Oil-spray direct cooling enables lower insulation class (Class-F under oil). At 800V conductor cross-section halves vs 400V.' },
+  'stator-core':      { levers: ['Grade/gauge right-size: 5-20% core cost (M330 where frequency moderate)', 'Segmented/nested blanking: 5-12% (lift utilisation 60%→85%)', 'GBD thin-gauge 0.1mm only at >18k rpm (Yangwang 30k rpm)'], trends: 'High-speed motors (>20k rpm) demand 0.10-0.15mm NO steel — others can use thicker/cheaper grade. Strip-nesting + scrap reclaim mandatory at volume.' },
+  'rotor-magnets':    { levers: ['GBD of Dy/Tb: 10-25% magnet cost (Toyota, Hyundai IPM mainstream)', 'EESM delete magnets entirely (BMW Gen6 Neue Klasse, −20% cost −40% losses vs Gen5)', 'Rotor oil-cooling → cut Dy/Tb + 20% density (Audi/Porsche PPE)', 'Ferrite/non-REE PM motor (Tesla next-gen, zero rare earths)', 'Iron-nitride Fe16N2 watch (Niron+Stellantis CES 2026)'], trends: 'GBD mainstream. EESM coming to volume (BMW Gen6, Renault/ZF 2027). Axial-flux (YASA/Mercedes 2026) −50% copper+iron+magnet mass. Magnets typically 40-50% of motor cost.' },
+  'rotor-shaft':      { levers: ['Hollow shaft via flow-forming: 15-25% shaft mass + enables oil-through cooling (Tesla, BMW)', 'IPM vs surface-PM: delete costly CFRP retention sleeve', 'Speed up (16-20k rpm) + higher ratio: 10-20% active material reduction'], trends: '800V SiC enables high-speed designs. Oil-through hollow shaft unlocks rotor cooling, reduces active material.' },
+  'motor-bearings':   { levers: ['Shaft-current grounding ring vs hybrid-ceramic: avoid premium bearing cost (SiC dv/dt issue)', 'Bearing grade/size right-size: 5-12%', 'Cassette seal standardisation'], trends: 'Fast SiC switching raises bearing EDM currents — grounding ring is low-cost mitigation. Resolver → compact inductive/TMR sensor (Munro praised Rivian).' },
+  'motor-housing':    { levers: ['HPDC AlSi10MnMg + topology ribs: 5-12% Al mass (VW MEB, Tesla)', 'Cast-in cooling jacket: deletes separate jacket part + leak points', 'Large-format gigacasting (Tesla, NIO): part count −30-50%'], trends: 'Integration gigacasting now proven at scale. Cast-in coolant channels standard on modern EDUs. AlSiC only where CTE-match truly needed.' },
+  'power-module':     { levers: ['SiC MOSFET 1200V for 800V: system −8-18% (Hyundai E-GMP, Porsche Taycan, BYD)', 'Die-area right-size to duty cycle: 5-15% semiconductor', 'Hybrid Si/SiC (6:1): cost bridge on entry trims', 'In-house SiC module: −10-20% inverter cost (Li Auto, NIO 1315 kW/L, BYD 8-in-1)', 'Tesla multi-chip SiC: −60-75% SiC die via superior thermal extraction'], trends: 'SiC ~56% of 800V inverter module cost. 1200V-class SiC now mainstream. NIO in-house 1200V module 1315 kW/L. Stellantis ONE inverter: selectable Si-or-SiC. Double-sided cooling + sintered-silver + Si3N4 AMB frontier.' },
+  'gate-driver':      { levers: ['Single isolated gate-driver ASIC/SoC: cuts board area + part count', 'One PCB family across power classes: SKU + volume pricing', 'Integrated current sensing on-module: delete discrete sensors'], trends: 'Integration of gate-driver, isolation and protection into one IC is standard. Common board platforms across power classes becoming the norm.' },
+  'dc-link-cap':      { levers: ['Downsize 20-40% via SiC ripple reduction (higher switching freq = less capacitance needed)', 'Integrate cap + laminated busbar into power stack: delete interconnects'], trends: 'SiC enables 20-40% capacitor downsizing. Integrated power stacks merging cap+busbar becoming mainstream.' },
+  'busbar':           { levers: ['Al busbar with Cu-clad terminals: conductor $/kg halved vs Cu (at 800V current halved)', 'Laser/ultrasonic-welded terminations: fewer joints, lower resistance, less labour', 'Direct hairpin→busbar weld: delete connector interface'], trends: '800V halves current so Al busbar viable. Welded terminations replacing bolted lugs.' },
+  'inverter-cooling': { levers: ['FSW/brazed pin-fin cold plate: less machining vs deep-milled channels', 'Direct-cooled pin-fin baseplate: delete separate cold plate (pairs with DSC SiC)', 'Avoid AlSiC unless CTE-match genuinely needed'], trends: 'Direct-cooled power modules (DSC) becoming mainstream with SiC. AlSiC only justified at highest power density.' },
+  'gears':            { levers: ['LPC + press quench → hone (skip grinding): 30-60% hard-finish cost', 'Near-net forged blanks: 10-20% soft-machining', 'Isotropic superfinish on flanks → lower-viscosity oil → efficiency gain', 'Reduce ratio (e.g. 13:1→9.8:1): lower friction (VW APP550)'], trends: 'LPC + press-quench + hone stack is best-in-class. Superfinish enables lower ATF viscosity. Ratio right-size key for efficiency at 800V power targets.' },
+  'gearbox-housing':  { levers: ['Cast-in oil galleries: delete drilling/plugging ops', 'Tolerance right-size (IT6/IT7 only on dynamic surfaces)', 'Mg covers (AZ91D): −30% cover mass vs Al'], trends: 'Cast-in galleries and sensor bosses standard. Tolerance right-sizing massive lever on EDU housings.' },
+  'park-lock':        { levers: ['Delete park-lock via EPB brake-based park: removes entire sub-assembly', 'Simplify pawl + integrate actuator: cut part count'], trends: 'Brake-based park gaining acceptance in lean EDU designs (Munro teardowns). Safety case is key gating.' },
+  'differential':     { levers: ['Net-shape forged/PM bevel & side gears: 15-30% machining saving', 'Welded ring gear to diff case: delete bolt circle + machining', 'Delete diff via dual-motor torque vectoring (performance EVs)'], trends: 'Net-shape diff gears mainstream. E-differential (torque vectoring) eliminating mechanical diffs on performance platforms.' },
+  'thermal-cooling':  { levers: ['Single-fluid (ATF) cooling: −20-35% thermal subsystem (Ford F-150 Lightning)', 'Delete electric oil pump → passive gear-splash (VW APP550)', 'Direct rotor/end-turn oil spray: unlocks magnet/copper material savings (Tesla, Audi PPE)'], trends: 'Single-fluid (ATF for both cooling and lubrication) now mainstream. 800V SiC produces less heat — shrinks the thermal system further.' },
+  'lubrication':      { levers: ['Lifetime fill at reduced volume + baffled sump: cut oil cost + churning', 'Low-viscosity ATF (superfinished flanks) → efficiency gain', 'Right-size pump type to actual need'], trends: 'Reduced oil fill with baffled sump standard on efficiency-led EVs. Superfinish enabling thinner ATF.' },
+  'hv-interface':     { levers: ['Inverter integration onto EDU: delete external HV cables + connectors (Hyundai E-GMP, Tesla)', 'Thinner harness from 800V: current halved → smaller gauge', 'Smart 4th-lead inverter (delete 400→800V boost converter) (Hyundai/Kia E-GMP)', 'Al HV conductor: 20-30% lighter than Cu at 800V (lower current)'], trends: 'Inverter integration into EDU housing deleting external HV connectors is the mainstream direction. 4th-lead inverter for 400/800V compatibility is displacing dedicated boost converters.' },
+  'position-sensor':  { levers: ['Resolver → inductive/TMR-GMR sensor: 20-40% sensor cost reduction', 'Sensorless control at mid/high speed: delete sensor entirely', 'Model-based NTC estimation: delete redundant temperature sensors'], trends: 'Inductive position sensors replacing wound resolvers. Munro praised Rivian compact inductive sensor. Software-based thermal estimation deleting hardware NTCs.' },
+  'integration':      { levers: ['3-in-1 → 8-in-1 integration: −30-50% part count (BYD 8-in-1 Seal, ~89% system eff.)', 'Scalable EDU family (one diameter, varied stack length): amortise tooling (Audi PPE, Mercedes eATS 2.0, XPeng SEPA2.0 80% shared)', 'Shared front/rear EDU base (Ford F-150 Lightning)', '48V LV net: cut LV copper (Tesla Cybertruck)', 'Inverter re-use for charging/boost: delete dedicated OBC (Hyundai/Kia E-GMP)'], trends: 'n-in-1 integration is the cost battleground. BYD 8-in-1 world-first. Scalable platform families (Audi PPE, Mercedes eATS 2.0, XPeng SEPA2.0) now proven route. Controller consolidation (one processor for motor+gearbox, Mercedes eATS 2.0).' },
+};
+
+const EDU_KEYWORDS = {
+  'stator-winding':  ['stator winding','winding','hairpin','bar winding','coil'],
+  'stator-core':     ['stator core','lamination','electrical steel','no steel'],
+  'rotor-magnets':   ['rotor magnet','magnet','ndfeb','rare earth','eesm','ipm rotor'],
+  'rotor-shaft':     ['rotor shaft','rotor','shaft','rotor assembly'],
+  'motor-bearings':  ['motor bearing','bearing','seal','edm current'],
+  'motor-housing':   ['motor housing','e-motor housing','stator housing'],
+  'power-module':    ['power module','sic mosfet','igbt','sic module','inverter module','silicon carbide'],
+  'gate-driver':     ['gate driver','gate drive','pcb','inverter control','inverter pcb'],
+  'dc-link-cap':     ['dc-link cap','dc link cap','dc link capacitor','film capacitor','dc bus capacitor'],
+  'busbar':          ['busbar','bus bar','interconnect','hv busbar'],
+  'inverter-cooling':['inverter cooling','cold plate','inverter thermal','heat sink'],
+  'gears':           ['gear train','gear','helical gear','planetary gear','reduction gear'],
+  'gearbox-housing': ['gearbox housing','gear housing','transmission housing'],
+  'park-lock':       ['park lock','park pawl'],
+  'differential':    ['differential','diff','output shaft','half shaft'],
+  'thermal-cooling': ['thermal management','cooling circuit','oil cooling','thermal system'],
+  'lubrication':     ['lubrication','oil system','atf','gear oil'],
+  'hv-interface':    ['hv interface','hv harness','hv cable','hv connector','high voltage cable'],
+  'position-sensor': ['position sensor','resolver','encoder','rotor position','current sensor'],
+  'integration':     ['edu integration','e-axle integration','3-in-1','3in1','integrated drive'],
+};
+
+// EDU system/subassembly detection
+const EDU_SYSTEM_KEYWORDS = ['edu','electric drive unit','e-drive','e-axle','bev','mhev','powertrain bev','electric machine','inverter','e-motor'];
+
+function detectEduComponent(systemName, subassemblyName, partName) {
+  const haystack = [systemName, subassemblyName, partName].filter(Boolean).join(' ').toLowerCase();
+  // Check if this is an EDU-related analysis
+  if (!EDU_SYSTEM_KEYWORDS.some(k => haystack.includes(k))) return null;
+  // Try to match the specific component
+  for (const [compId, keywords] of Object.entries(EDU_KEYWORDS)) {
+    if (keywords.some(k => haystack.includes(k))) return compId;
+  }
+  return 'integration'; // fallback for EDU analyses without specific component match
+}
+
 function buildAnalysisPrompt(config, systemName, subassemblyName, partName, enableSearch) {
   const scope = partName ? `Part: **${partName}** (within ${subassemblyName}, System: ${systemName})` : `Subassembly: **${subassemblyName}** (System: ${systemName})`;
   const cadLine = config.cadFileName ? `\nCAD file: ${config.cadFileName} (${config.cadFileType}) — reference typical geometry, feature count, wall thickness.` : '';
   const searchInstruction = enableSearch ? `\nIMPORTANT: Use web_search NOW for: (1) current material costs, (2) recent 2024–2025 innovations, (3) OEM/Tier-1 benchmarks. Do 3–5 searches before generating ideas.` : '';
 
-  return `Generate 8 expert-level cost reduction ideas for: Vehicle: ${config.vehicleType} | ${scope}${config.additionalContext ? ` | Context: ${config.additionalContext}` : ''}${cadLine}${searchInstruction}
+  // Inject EDU curated knowledge if relevant
+  const eduCompId = detectEduComponent(systemName, subassemblyName, partName);
+  const eduContext = eduCompId && EDU_CONTEXT_MAP[eduCompId] ? `
+CURATED EDU KNOWLEDGE BASE (use as grounding for this component):
+Key cost-reduction levers:
+${EDU_CONTEXT_MAP[eduCompId].levers.map((l, i) => `  ${i+1}. ${l}`).join('\n')}
+Industry trend context: ${EDU_CONTEXT_MAP[eduCompId].trends}
+800V context: At 800V, phase current halves for equal power → smaller conductors, thinner cables, smaller capacitors. SiC MOSFETs enable higher switching frequency → smaller magnetics and DC-link cap. Heat rejection per kW drops ~30% vs 400V.
+OEM cost benchmarks: NdFeB magnets €60-90/kg | SiC module €1.5-3/kW | Copper (LME) €8,500-10,000/t | HPDC Al alloy €2,400-2,800/t | Assembly labour Germany €45-55/hr
+` : '';
+
+  return `Generate 8 expert-level cost reduction ideas for: Vehicle: ${config.vehicleType} | ${scope}${config.additionalContext ? ` | Context: ${config.additionalContext}` : ''}${cadLine}${searchInstruction}${eduContext}
 
 Each idea JSON object must have EXACTLY:
 {"id":"slug","title":"≤12 words","technicalDescription":"180-220 words, specific grades/processes/benchmarks","manufacturingImpact":"90-130 words","costSavingTypes":["material|process|logistics|complexity|warranty|tooling|weight|commonisation"],"costSavingPotential":{"qualitative":"High/Medium/Low — reason","percentage":"e.g. 10-18%","annualValue":"e.g. €350K–€650K at 80K units/yr","calculationBasis":"brief calc logic"},"implementationDifficulty":"Low|Medium|High","riskNotes":"70-90 words on NCAP/NVH/durability/regulatory risks + mitigations","dfmaPrinciples":["3-6 principles"],"systemLevel":"Assembly|Subassembly|Part","timeToImplement":"e.g. 6-12 months","benchmarkReference":"specific OEM/supplier example","searchDataUsed":true|false}
