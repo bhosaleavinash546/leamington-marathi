@@ -12,6 +12,9 @@ import multiCompRoutes      from './routes/multiComparison';
 import commentRoutes        from './routes/comments';
 import exportRoutes         from './routes/export';
 import opportunityRoutes    from './routes/opportunity';
+import programRoutes        from './routes/programs';
+import currentPriceRoutes   from './routes/currentPrice';
+import threeWayRoutes       from './routes/threeWay';
 
 const app  = express();
 const PORT = process.env.PORT ?? 4000;
@@ -31,6 +34,9 @@ app.use('/api/vehicle',          vehicleRoutes);
 app.use('/api/multi-comparison', multiCompRoutes);
 app.use('/api/export',           exportRoutes);
 app.use('/api/opportunity',      opportunityRoutes);
+app.use('/api/programs',         programRoutes);
+app.use('/api/current-price',    currentPriceRoutes);
+app.use('/api/three-way',        threeWayRoutes);
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {

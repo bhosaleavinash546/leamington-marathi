@@ -6,6 +6,7 @@ import QuoteForm from './components/QuoteForm';
 import SupplierPortal from './components/SupplierPortal';
 import MultiSupplierComparison from './components/MultiSupplierComparison';
 import OpportunityDashboard from './pages/OpportunityDashboard';
+import ThreeWayComparison from './pages/ThreeWayComparison';
 import LandingPage from './pages/LandingPage';
 import AuthPage from './pages/AuthPage';
 import ThemeToggle from './components/ThemeToggle';
@@ -58,6 +59,9 @@ function AppShell() {
             </NavLink>
             <NavLink to="/opportunity" className={({ isActive }) => isActive ? 'active' : ''}>
               🎯 Opportunity
+            </NavLink>
+            <NavLink to="/three-way" className={({ isActive }) => isActive ? 'active' : ''}>
+              ⚖ Three-Way Analysis
             </NavLink>
             <NavLink to="/comparisons" className={({ isActive }) => isActive ? 'active' : ''}>
               🔍 Comparisons
@@ -112,6 +116,7 @@ function AppShell() {
             <>
               <Route path="/dashboard"        element={<Dashboard user={user} />} />
               <Route path="/opportunity"      element={<OpportunityDashboard />} />
+              <Route path="/three-way"        element={<ThreeWayComparison />} />
               <Route path="/comparisons"      element={<ComparisonView />} />
               <Route path="/comparisons/:id"  element={<ComparisonView />} />
               <Route path="/multi-comparison" element={<MultiSupplierComparison />} />
