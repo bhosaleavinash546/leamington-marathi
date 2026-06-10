@@ -13,12 +13,22 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
       - ./backend/src/db/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+      - ./backend/src/db/schema_v2.sql:/docker-entrypoint-initdb.d/02-schema_v2.sql
+      - ./backend/src/db/schema_v3.sql:/docker-entrypoint-initdb.d/03-schema_v3.sql
+      - ./backend/src/db/seed_vehicle_hierarchy.sql:/docker-entrypoint-initdb.d/04-seed_hierarchy.sql
+      - ./backend/src/db/seed_programs.sql:/docker-entrypoint-initdb.d/05-seed_programs.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d should_cost_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
 
   backend:
     build: ./backend
     restart: unless-stopped
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     environment:
       PORT: 4000
       DATABASE_URL: postgres://postgres:password@db:5432/should_cost_db
