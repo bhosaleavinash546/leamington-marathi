@@ -44,6 +44,7 @@ export default function NegotiationTracker() {
   const [list, setList]           = useState<Negotiation[]>([]);
   const [summary, setSummary]     = useState<Summary | null>(null);
   const [loading, setLoading]     = useState(true);
+  const [error, setError]         = useState<string | null>(null);
   const [showForm, setShowForm]   = useState(false);
   const [editItem, setEditItem]   = useState<Negotiation | null>(null);
   const [filterStatus, setFilter] = useState('');
@@ -59,13 +60,19 @@ export default function NegotiationTracker() {
   });
 
   const fetchAll = async () => {
-    const [listRes, sumRes] = await Promise.all([
-      api.get<Negotiation[]>('/negotiations', { params: filterStatus ? { status: filterStatus } : {} }),
-      api.get<Summary>('/negotiations/summary'),
-    ]);
-    setList(listRes.data);
-    setSummary(sumRes.data);
-    setLoading(false);
+    setError(null);
+    try {
+      const [listRes, sumRes] = await Promise.all([
+        api.get<Negotiation[]>('/negotiations', { params: filterStatus ? { status: filterStatus } : {} }),
+        api.get<Summary>('/negotiations/summary'),
+      ]);
+      setList(listRes.data);
+      setSummary(sumRes.data);
+    } catch {
+      setError('Could not load negotiations. If this is a fresh install, try "Reset CostLens Data" to update the database.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => { fetchAll(); }, [filterStatus]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -126,6 +133,13 @@ export default function NegotiationTracker() {
   const isDue = (d?: string) => d && new Date(d) <= new Date(Date.now() + 7 * 86400_000);
 
   if (loading) return <div className="loading">Loading negotiations…</div>;
+  if (error) return (
+    <div className="card" style={{ padding: 32, textAlign: 'center' }}>
+      <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--danger)', marginBottom: 8 }}>Failed to load negotiations</div>
+      <div style={{ fontSize: 13, color: 'var(--text-2)', marginBottom: 20 }}>{error}</div>
+      <button className="btn btn-primary" onClick={() => { setLoading(true); fetchAll(); }}>Retry</button>
+    </div>
+  );
 
   return (
     <div>

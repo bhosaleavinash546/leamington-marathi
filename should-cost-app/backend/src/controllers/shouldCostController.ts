@@ -58,17 +58,23 @@ export async function getShouldCost(req: Request, res: Response): Promise<void> 
     subitems: subitems.filter((s) => s.breakdown_id === b.id),
   }));
 
-  // Version audit trail (P5)
-  const auditRes = await pool.query(
-    `SELECT a.*, u.full_name AS changed_by_name
-     FROM should_cost_header_audit a
-     LEFT JOIN "user" u ON u.id = a.changed_by
-     WHERE a.should_cost_header_id = $1
-     ORDER BY a.changed_at DESC`,
-    [id]
-  );
+  // Version audit trail (P5) — table may not exist on older database volumes
+  let auditRows: unknown[] = [];
+  try {
+    const auditRes = await pool.query(
+      `SELECT a.*, u.full_name AS changed_by_name
+       FROM should_cost_header_audit a
+       LEFT JOIN "user" u ON u.id = a.changed_by
+       WHERE a.should_cost_header_id = $1
+       ORDER BY a.changed_at DESC`,
+      [id]
+    );
+    auditRows = auditRes.rows;
+  } catch {
+    // table not yet created on this database volume
+  }
 
-  res.json({ header: headerResult.rows[0], breakdown, auditTrail: auditRes.rows });
+  res.json({ header: headerResult.rows[0], breakdown, auditTrail: auditRows });
 }
 
 // POST /api/should-cost
@@ -105,13 +111,15 @@ export async function createShouldCost(req: Request, res: Response): Promise<voi
       );
     }
 
-    // Audit entry (P5)
-    await client.query(
-      `INSERT INTO should_cost_header_audit
-         (should_cost_header_id, changed_by, change_type, new_total_cost, new_status)
-       VALUES ($1, $2, 'created', $3, 'draft')`,
-      [header.id, req.user?.sub ?? null, totalCost]
-    );
+    // Audit entry (P5) — best-effort, table may not exist on older volumes
+    try {
+      await client.query(
+        `INSERT INTO should_cost_header_audit
+           (should_cost_header_id, changed_by, change_type, new_total_cost, new_status)
+         VALUES ($1, $2, 'created', $3, 'draft')`,
+        [header.id, req.user?.sub ?? null, totalCost]
+      );
+    } catch { /* table not yet created on this database volume */ }
 
     await client.query('COMMIT');
     res.status(201).json({ header, breakdown: dto.breakdown });
@@ -149,20 +157,22 @@ export async function updateShouldCostStatus(req: Request, res: Response): Promi
       [status, id]
     );
 
-    // Audit entry (P5)
-    await client.query(
-      `INSERT INTO should_cost_header_audit
-         (should_cost_header_id, changed_by, change_type,
-          old_status, new_status, old_total_cost, new_total_cost, notes)
-       VALUES ($1, $2, $3, $4, $5, $6, $6, $7)`,
-      [
-        id, req.user?.sub ?? null,
-        status === 'published' ? 'published' : status === 'archived' ? 'archived' : 'updated',
-        prev.rows[0].status, status,
-        prev.rows[0].total_cost,
-        notes ?? null,
-      ]
-    );
+    // Audit entry (P5) — best-effort, table may not exist on older volumes
+    try {
+      await client.query(
+        `INSERT INTO should_cost_header_audit
+           (should_cost_header_id, changed_by, change_type,
+            old_status, new_status, old_total_cost, new_total_cost, notes)
+         VALUES ($1, $2, $3, $4, $5, $6, $6, $7)`,
+        [
+          id, req.user?.sub ?? null,
+          status === 'published' ? 'published' : status === 'archived' ? 'archived' : 'updated',
+          prev.rows[0].status, status,
+          prev.rows[0].total_cost,
+          notes ?? null,
+        ]
+      );
+    } catch { /* table not yet created on this database volume */ }
 
     await client.query('COMMIT');
     res.json(rows[0]);

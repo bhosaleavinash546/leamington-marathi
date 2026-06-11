@@ -51,6 +51,7 @@ export default function ShouldCostDetail() {
   const [search, setSearch]     = useState('');
   const [loading, setLoading]   = useState(true);
   const [loadingDetail, setLoadingDetail] = useState(false);
+  const [detailError, setDetailError] = useState<string | null>(null);
   const [openCats, setOpenCats] = useState<Set<string>>(new Set());
   const [openEls, setOpenEls]   = useState<Set<number>>(new Set());
   const [showAiBuilder, setShowAiBuilder] = useState(false);
@@ -73,12 +74,16 @@ export default function ShouldCostDetail() {
   useEffect(() => {
     if (selected == null) { setDetail(null); return; }
     setLoadingDetail(true);
+    setDetailError(null);
     api.get<ScDetail>(`/should-cost/${selected}`)
       .then((r) => {
         setDetail(r.data);
         // Open all categories by default so the breakup is visible immediately
         setOpenCats(new Set(r.data.breakdown.map((b) => b.category)));
         setOpenEls(new Set());
+      })
+      .catch(() => {
+        setDetailError('Failed to load breakdown. Try "Reset CostLens Data" to update the database schema.');
       })
       .finally(() => setLoadingDetail(false));
   }, [selected]);
@@ -270,8 +275,16 @@ export default function ShouldCostDetail() {
             )}
           </div>
 
-          {loadingDetail || !detail ? (
+          {loadingDetail ? (
             <div className="card"><div className="loading">Loading breakdown…</div></div>
+          ) : detailError ? (
+            <div className="card" style={{ padding: 32, textAlign: 'center' }}>
+              <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--danger)', marginBottom: 8 }}>Could not load breakdown</div>
+              <div style={{ fontSize: 13, color: 'var(--text-2)', marginBottom: 20 }}>{detailError}</div>
+              <button className="btn btn-primary" onClick={() => { if (selected != null) { setLoadingDetail(true); setDetailError(null); api.get<ScDetail>(`/should-cost/${selected}`).then((r) => { setDetail(r.data); setOpenCats(new Set(r.data.breakdown.map((b) => b.category))); setOpenEls(new Set()); }).catch(() => setDetailError('Failed to load breakdown. Try "Reset CostLens Data" to update the database schema.')).finally(() => setLoadingDetail(false)); } }}>Retry</button>
+            </div>
+          ) : !detail ? (
+            <div className="card"><div className="empty" style={{ padding: 32, textAlign: 'center' }}>Select a part to view its breakdown.</div></div>
           ) : (
             <>
               {/* Summary */}
