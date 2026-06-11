@@ -15,7 +15,7 @@ interface TrendRow {
 interface Props { data: TrendRow[]; }
 
 // Generate a stable colour per supplier
-const PALETTE = ['#6366f1','#f59e0b','#10b981','#ef4444','#8b5cf6','#06b6d4'];
+const PALETTE = ['#2563eb','#f59e0b','#10b981','#ef4444','#8b5cf6','#06b6d4'];
 
 function CustomTooltip({ active, payload }: { active?: boolean; payload?: Array<{ name: string; value: number; color: string; payload: TrendRow }> }) {
   if (!active || !payload?.length) return null;

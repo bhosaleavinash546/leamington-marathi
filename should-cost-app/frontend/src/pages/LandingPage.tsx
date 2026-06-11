@@ -38,7 +38,7 @@ const PROGRAMS = [
     code: 'SUV1', name: 'Compact SUV Alpha',
     segment: 'Compact SUV', year: 2024, platform: 'MX-A1',
     desc: 'Entry-level compact crossover, FWD/AWD option, 5-seat',
-    highlight: '#6366f1',
+    highlight: '#2563eb',
     systems: ['Vehicle Body & BIW', 'Suspension Systems', 'Powertrain – ICE', 'Transmission & Driveline', 'Braking Systems', 'Interior Systems & Trim', 'Infotainment, HMI & Connectivity', 'Electrical & Electronics'],
     stats: { parts: 312, sc: 22, quotes: 58 },
   },

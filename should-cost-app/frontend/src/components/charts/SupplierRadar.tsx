@@ -16,7 +16,7 @@ interface SupplierRow {
 
 interface Props { data: SupplierRow[]; }
 
-const PALETTE = ['#6366f1','#f59e0b','#10b981','#ef4444','#8b5cf6'];
+const PALETTE = ['#2563eb','#f59e0b','#10b981','#ef4444','#8b5cf6'];
 
 export default function SupplierRadar({ data }: Props) {
   if (data.length < 2) return (

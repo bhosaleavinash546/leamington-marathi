@@ -16,6 +16,19 @@ interface CompRow {
   best_quote_value: number; best_supplier: string;
 }
 interface CatBreakdown { category: string; label: string; sc: number; cp: number; best_quote: number; sc_pct: number; cp_pct: number; }
+interface BriefDetail {
+  cost_element: string; sc: number; cp: number; gap: number; gap_pct: number;
+  best_quote: number | null; annual_impact: number | null; talking_point: string;
+}
+interface BriefTopic {
+  category: string; label: string; sc: number; cp: number; best_quote: number | null;
+  gap: number; gap_pct: number; annual_impact: number | null;
+  priority: 'high' | 'medium' | 'low'; action: string; detail_points: BriefDetail[];
+}
+interface NegotiationSummary {
+  annual_volume: number; total_gap_per_unit: number;
+  total_annual_opportunity: number | null; headline: string;
+}
 interface ThreeWayData {
   part: { id: number; part_number: string; description: string; commodity: string; system_name: string; program: { code: string; name: string } | null };
   shouldCost: { total: number; version: number; currency: string } | null;
@@ -28,6 +41,8 @@ interface ThreeWayData {
     biggestOverpayments: { cost_element: string; category: string; delta: number; pct: number }[];
     savingsOpportunities: { cost_element: string; category: string; best_supplier: string; current_value: number; best_value: number; savings: number; savings_pct: number }[];
     categoryBreakdown: CatBreakdown[];
+    negotiationBrief: BriefTopic[];
+    negotiationSummary: NegotiationSummary;
     riskFlags: { element: string; reason: string; severity: string }[];
     recommendations: string[];
   };
@@ -60,7 +75,7 @@ function SeverityDot({ severity }: { severity: string }) {
 }
 
 const CATEGORY_COLORS: Record<string, string> = {
-  RAW_MATERIAL: '#6366f1', BOP: '#f59e0b', MANUFACTURING: '#10b981',
+  RAW_MATERIAL: '#2563eb', BOP: '#f59e0b', MANUFACTURING: '#10b981',
   OVERHEAD: '#8b5cf6', LOGISTICS: '#06b6d4', TOOLING: '#ef4444', PROFIT: '#ec4899', UNCATEGORIZED: '#94a3b8',
 };
 
@@ -74,8 +89,7 @@ export default function ThreeWayComparison() {
   const [data, setData]             = useState<ThreeWayData | null>(null);
   const [loading, setLoading]       = useState(false);
   const [error, setError]           = useState('');
-  const [sortCol, setSortCol]       = useState<'element' | 'sc' | 'cp' | 'delta'>('element');
-  const [sortDir, setSortDir]       = useState<'asc' | 'desc'>('asc');
+  const [expandedCats, setExpandedCats] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     fetch(`${API}/api/programs`, { headers: { Authorization: `Bearer ${token()}` } })
@@ -106,29 +120,58 @@ export default function ThreeWayComparison() {
 
   useEffect(() => { if (selectedPart) loadComparison(selectedPart); }, [selectedPart, loadComparison]);
 
-  const sortedRows = data ? [...data.rows].sort((a, b) => {
-    let va = 0, vb = 0;
-    if (sortCol === 'element') return sortDir === 'asc' ? a.cost_element.localeCompare(b.cost_element) : b.cost_element.localeCompare(a.cost_element);
-    if (sortCol === 'sc')    { va = a.sc_value;          vb = b.sc_value; }
-    if (sortCol === 'cp')    { va = a.cp_value;          vb = b.cp_value; }
-    if (sortCol === 'delta') { va = a.cp_vs_sc.pct;      vb = b.cp_vs_sc.pct; }
-    return sortDir === 'asc' ? va - vb : vb - va;
-  }) : [];
-
-  function toggleSort(col: typeof sortCol) {
-    if (sortCol === col) setSortDir(d => d === 'asc' ? 'desc' : 'asc');
-    else { setSortCol(col); setSortDir('desc'); }
-  }
-
   const suppliers = data?.supplierQuotes ?? [];
   const an = data?.analysis;
+
+  // Currency symbol from the should-cost header (GBP demo data → £)
+  const sym = ({ GBP: '£', USD: '$', EUR: '€', INR: '₹' } as Record<string, string>)[
+    data?.shouldCost?.currency?.trim() ?? 'GBP'
+  ] ?? '£';
+
+  // ── Two-level grouping: Level 1 = summary category, Level 2 = detail elements ──
+  const CAT_ORDER = ['RAW_MATERIAL', 'BOP', 'MANUFACTURING', 'OVERHEAD', 'LOGISTICS', 'TOOLING', 'PROFIT', 'UNCATEGORIZED'];
+  const groupedRows = data
+    ? CAT_ORDER
+        .map(cat => {
+          const elements = data.rows.filter(r => r.category === cat);
+          if (elements.length === 0) return null;
+          const sum = (fn: (r: CompRow) => number) => elements.reduce((s, r) => s + fn(r), 0);
+          const scSum = sum(r => r.sc_value);
+          const cpSum = sum(r => r.cp_value);
+          const supplierSums = suppliers.map(s => ({
+            name: s.supplier_name,
+            total: sum(r => r.quotes.find(q => q.supplier_name === s.supplier_name)?.value ?? 0),
+          }));
+          const bestSum = sum(r => r.best_quote_value);
+          return {
+            category: cat,
+            label: elements[0].category_label,
+            elements,
+            sc: scSum, cp: cpSum,
+            delta: cpSum - scSum,
+            pct: scSum > 0 ? ((cpSum - scSum) / scSum) * 100 : 0,
+            supplierSums, best: bestSum,
+          };
+        })
+        .filter((g): g is NonNullable<typeof g> => g !== null)
+    : [];
+
+  const toggleCat = (cat: string) =>
+    setExpandedCats(prev => {
+      const next = new Set(prev);
+      if (next.has(cat)) next.delete(cat); else next.add(cat);
+      return next;
+    });
+  const allExpanded = groupedRows.length > 0 && groupedRows.every(g => expandedCats.has(g.category));
+  const toggleAll = () =>
+    setExpandedCats(allExpanded ? new Set() : new Set(groupedRows.map(g => g.category)));
 
   return (
     <div style={{ padding: '28px 32px', maxWidth: 1600, margin: '0 auto' }}>
       {/* ── Header ── */}
       <div style={{ marginBottom: 24 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 6 }}>
-          <div style={{ width: 36, height: 36, borderRadius: 10, background: 'linear-gradient(135deg,#6366f1,#8b5cf6)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18 }}>⚖</div>
+          <div style={{ width: 36, height: 36, borderRadius: 10, background: 'linear-gradient(135deg,var(--accent),var(--accent-2))', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18 }}>⚖</div>
           <div>
             <h1 style={{ margin: 0, fontSize: 22, fontWeight: 800, color: 'var(--text-1)' }}>Three-Way Cost Analysis</h1>
             <p style={{ margin: 0, fontSize: 13, color: 'var(--text-3)' }}>Should-Cost · Current Live Price · New Supplier Quotes — side by side</p>
@@ -201,7 +244,7 @@ export default function ThreeWayComparison() {
               {
                 label: 'Should Cost', icon: '🏗',
                 total: an.totals.sc, sub: data.shouldCost ? `v${data.shouldCost.version} · ${data.shouldCost.currency}` : 'No data',
-                color: '#6366f1', delta: null,
+                color: '#2563eb', delta: null,
               },
               {
                 label: 'Current Live Price', icon: '💼',
@@ -228,7 +271,7 @@ export default function ThreeWayComparison() {
               <div key={kpi.label} style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 14, padding: '18px 20px' }}>
                 <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-3)', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 6 }}>{kpi.icon} {kpi.label}</div>
                 <div style={{ fontSize: 28, fontWeight: 900, color: kpi.color, lineHeight: 1.1 }}>
-                  ${kpi.total > 0 ? kpi.total.toFixed(2) : '—'}
+                  {kpi.total > 0 ? `${sym}${kpi.total.toFixed(2)}` : '—'}
                 </div>
                 {kpi.delta && kpi.total > 0 && (
                   <div style={{ marginTop: 4 }}>
@@ -252,10 +295,10 @@ export default function ThreeWayComparison() {
                   <YAxis tick={{ fill: 'var(--text-3)', fontSize: 11 }} />
                   <Tooltip
                     contentStyle={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 12 }}
-                    formatter={(value: number, name: string) => [`$${value.toFixed(2)}`, name]}
+                    formatter={(value: number, name: string) => [`${sym}${value.toFixed(2)}`, name]}
                   />
                   <Legend wrapperStyle={{ fontSize: 12, paddingTop: 8 }} />
-                  <Bar dataKey="sc"         name="Should Cost"     fill="#6366f1" radius={[4,4,0,0]} maxBarSize={28} />
+                  <Bar dataKey="sc"         name="Should Cost"     fill="#2563eb" radius={[4,4,0,0]} maxBarSize={28} />
                   <Bar dataKey="cp"         name="Current Price"   fill="#f59e0b" radius={[4,4,0,0]} maxBarSize={28} />
                   <Bar dataKey="best_quote" name="Best New Quote"  fill="#10b981" radius={[4,4,0,0]} maxBarSize={28} />
                 </BarChart>
@@ -263,100 +306,130 @@ export default function ThreeWayComparison() {
             </div>
           )}
 
-          {/* ── Detailed Element Table ── */}
+          {/* ── Two-Level Cost Breakup: Summary → Detail ── */}
           <div style={{ background: 'var(--surface)', borderRadius: 14, border: '1px solid var(--border)', padding: '20px 24px', marginBottom: 24 }}>
-            <h3 style={{ margin: '0 0 14px', fontSize: 15, fontWeight: 700, color: 'var(--text-1)' }}>Element-Level Comparison</h3>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
+              <h3 style={{ margin: 0, fontSize: 15, fontWeight: 700, color: 'var(--text-1)' }}>Cost Breakup — Summary &amp; Detail</h3>
+              <button onClick={toggleAll}
+                style={{ background: 'var(--bg-alt)', border: '1px solid var(--border)', borderRadius: 8, padding: '6px 14px', color: 'var(--accent)', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}>
+                {allExpanded ? '⊟ Collapse all' : '⊞ Expand all detail'}
+              </button>
+            </div>
+            <p style={{ margin: '0 0 14px', fontSize: 12, color: 'var(--text-3)' }}>
+              Level 1 — summary cost blocks. Click any row (or “Expand all”) to drill into the Level 2 element detail behind it.
+            </p>
             <div style={{ overflowX: 'auto' }}>
               <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
                 <thead>
                   <tr style={{ borderBottom: '2px solid var(--border)' }}>
                     {[
-                      { key: 'element', label: 'Cost Element' },
-                      { key: 'cat',     label: 'Category', noSort: true },
+                      { key: 'element', label: 'Cost Block / Element', left: true },
                       { key: 'sc',      label: '🏗 Should Cost' },
                       { key: 'cp',      label: '💼 Current Price' },
                       { key: 'delta',   label: 'Δ CP vs SC' },
-                      ...suppliers.map(s => ({ key: s.supplier_name, label: `📋 ${s.supplier_name}`, noSort: true })),
-                      { key: 'best',    label: '🏆 Best Quote', noSort: true },
+                      ...suppliers.map(s => ({ key: s.supplier_name, label: `📋 ${s.supplier_name}`, left: false })),
+                      { key: 'best',    label: '🏆 Best Quote' },
                     ].map(col => (
                       <th key={col.key}
-                        onClick={() => !col.noSort && toggleSort(col.key as typeof sortCol)}
-                        style={{ padding: '10px 12px', textAlign: 'right', fontWeight: 700, color: 'var(--text-2)', fontSize: 11, textTransform: 'uppercase', letterSpacing: 0.5, cursor: col.noSort ? 'default' : 'pointer', background: 'var(--bg-alt)', whiteSpace: 'nowrap' }}
-                      >
-                        {col.key === 'element' || col.key === 'cat' ? <span style={{ textAlign: 'left', display: 'block' }}>{col.label}</span> : col.label}
-                        {!col.noSort && sortCol === col.key ? (sortDir === 'asc' ? ' ▲' : ' ▼') : ''}
+                        style={{ padding: '10px 12px', textAlign: ('left' in col && col.left) ? 'left' : 'right', fontWeight: 700, color: 'var(--text-2)', fontSize: 11, textTransform: 'uppercase', letterSpacing: 0.5, background: 'var(--bg-alt)', whiteSpace: 'nowrap' }}>
+                        {col.label}
                       </th>
                     ))}
                   </tr>
                 </thead>
                 <tbody>
-                  {sortedRows.map((row, idx) => {
-                    const cpPct  = row.cp_vs_sc.pct;
-                    const rowBg  = idx % 2 === 0 ? 'transparent' : 'var(--bg-alt)';
-                    const catColor = CATEGORY_COLORS[row.category] ?? 'var(--text-3)';
+                  {groupedRows.map(group => {
+                    const open = expandedCats.has(group.category);
+                    const catColor = CATEGORY_COLORS[group.category] ?? 'var(--text-3)';
                     return (
-                      <tr key={row.cost_element} style={{ borderBottom: '1px solid var(--border)', background: rowBg }}>
-                        <td style={{ padding: '10px 12px', fontWeight: 600, color: 'var(--text-1)', whiteSpace: 'nowrap' }}>{row.cost_element}</td>
-                        <td style={{ padding: '10px 12px' }}>
-                          <span style={{ fontSize: 10, fontWeight: 700, color: catColor, background: catColor + '20', borderRadius: 20, padding: '2px 8px', whiteSpace: 'nowrap' }}>
-                            {row.category_label}
-                          </span>
-                        </td>
-                        <td style={{ padding: '10px 12px', textAlign: 'right', fontWeight: 600, color: 'var(--text-1)' }}>
-                          {row.sc_value > 0 ? `$${row.sc_value.toFixed(2)}` : <span style={{ color: 'var(--text-3)' }}>—</span>}
-                        </td>
-                        <td style={{ padding: '10px 12px', textAlign: 'right', fontWeight: 600, color: cpPct > 15 ? 'var(--danger)' : cpPct > 5 ? 'var(--warn)' : 'var(--text-1)' }}>
-                          {row.cp_value > 0 ? `$${row.cp_value.toFixed(2)}` : <span style={{ color: 'var(--text-3)' }}>—</span>}
-                        </td>
-                        <td style={{ padding: '10px 12px', textAlign: 'right' }}>
-                          {row.cp_value > 0 && row.sc_value > 0
-                            ? <DeltaBadge delta={row.cp_vs_sc.delta} pct={row.cp_vs_sc.pct} />
-                            : <span style={{ color: 'var(--text-3)' }}>—</span>
-                          }
-                        </td>
-                        {suppliers.map(s => {
-                          const q = row.quotes.find(q => q.supplier_name === s.supplier_name);
-                          const isBest = q && row.best_supplier === s.supplier_name;
+                      <>{/* Level 1 — summary row */}
+                        <tr key={group.category}
+                          onClick={() => toggleCat(group.category)}
+                          style={{ borderBottom: '1px solid var(--border)', background: 'var(--bg-alt)', cursor: 'pointer' }}>
+                          <td style={{ padding: '12px', fontWeight: 800, color: 'var(--text-1)', whiteSpace: 'nowrap' }}>
+                            <span style={{ display: 'inline-block', width: 18, color: 'var(--accent)', fontWeight: 900 }}>{open ? '▾' : '▸'}</span>
+                            <span style={{ display: 'inline-block', width: 10, height: 10, borderRadius: 3, background: catColor, marginRight: 8, verticalAlign: 'baseline' }} />
+                            {group.label}
+                            <span style={{ fontSize: 10, color: 'var(--text-3)', fontWeight: 500, marginLeft: 8 }}>{group.elements.length} lines</span>
+                          </td>
+                          <td style={{ padding: '12px', textAlign: 'right', fontWeight: 800, color: 'var(--text-1)' }}>{sym}{group.sc.toFixed(2)}</td>
+                          <td style={{ padding: '12px', textAlign: 'right', fontWeight: 800, color: group.pct > 15 ? 'var(--danger)' : group.pct > 5 ? 'var(--warn)' : 'var(--text-1)' }}>{sym}{group.cp.toFixed(2)}</td>
+                          <td style={{ padding: '12px', textAlign: 'right' }}>
+                            {group.sc > 0 && group.cp > 0
+                              ? <DeltaBadge delta={group.delta} pct={group.pct} />
+                              : <span style={{ color: 'var(--text-3)' }}>—</span>}
+                          </td>
+                          {group.supplierSums.map(ss => (
+                            <td key={ss.name} style={{ padding: '12px', textAlign: 'right', fontWeight: 700, color: 'var(--text-1)' }}>{sym}{ss.total.toFixed(2)}</td>
+                          ))}
+                          <td style={{ padding: '12px', textAlign: 'right', fontWeight: 800, color: '#10b981' }}>{group.best > 0 ? `${sym}${group.best.toFixed(2)}` : '—'}</td>
+                        </tr>
+
+                        {/* Level 2 — detail element rows */}
+                        {open && group.elements.map(row => {
+                          const cpPct = row.cp_vs_sc.pct;
                           return (
-                            <td key={s.supplier_name} style={{ padding: '10px 12px', textAlign: 'right' }}>
-                              {q ? (
-                                <div>
-                                  <span style={{ fontWeight: isBest ? 800 : 500, color: isBest ? '#10b981' : 'var(--text-1)' }}>
-                                    {isBest ? '★ ' : ''}${q.value.toFixed(2)}
-                                  </span>
-                                  <div><DeltaBadge delta={q.vs_cp.delta} pct={q.vs_cp.pct} /></div>
-                                </div>
-                              ) : <span style={{ color: 'var(--text-3)' }}>—</span>}
-                            </td>
+                            <tr key={`${group.category}-${row.cost_element}`} style={{ borderBottom: '1px solid var(--border)' }}>
+                              <td style={{ padding: '9px 12px 9px 44px', fontWeight: 500, color: 'var(--text-2)', whiteSpace: 'nowrap', fontSize: 12.5 }}>
+                                {row.cost_element}
+                              </td>
+                              <td style={{ padding: '9px 12px', textAlign: 'right', fontWeight: 600, color: 'var(--text-1)' }}>
+                                {row.sc_value > 0 ? `${sym}${row.sc_value.toFixed(2)}` : <span style={{ color: 'var(--text-3)' }}>—</span>}
+                              </td>
+                              <td style={{ padding: '9px 12px', textAlign: 'right', fontWeight: 600, color: cpPct > 15 ? 'var(--danger)' : cpPct > 5 ? 'var(--warn)' : 'var(--text-1)' }}>
+                                {row.cp_value > 0 ? `${sym}${row.cp_value.toFixed(2)}` : <span style={{ color: 'var(--text-3)' }}>—</span>}
+                              </td>
+                              <td style={{ padding: '9px 12px', textAlign: 'right' }}>
+                                {row.cp_value > 0 && row.sc_value > 0
+                                  ? <DeltaBadge delta={row.cp_vs_sc.delta} pct={row.cp_vs_sc.pct} />
+                                  : <span style={{ color: 'var(--text-3)' }}>—</span>}
+                              </td>
+                              {suppliers.map(s => {
+                                const q = row.quotes.find(q => q.supplier_name === s.supplier_name);
+                                const isBest = q && row.best_supplier === s.supplier_name;
+                                return (
+                                  <td key={s.supplier_name} style={{ padding: '9px 12px', textAlign: 'right' }}>
+                                    {q ? (
+                                      <div>
+                                        <span style={{ fontWeight: isBest ? 800 : 500, color: isBest ? '#10b981' : 'var(--text-1)' }}>
+                                          {isBest ? '★ ' : ''}{sym}{q.value.toFixed(2)}
+                                        </span>
+                                        <div><DeltaBadge delta={q.vs_cp.delta} pct={q.vs_cp.pct} /></div>
+                                      </div>
+                                    ) : <span style={{ color: 'var(--text-3)' }}>—</span>}
+                                  </td>
+                                );
+                              })}
+                              <td style={{ padding: '9px 12px', textAlign: 'right' }}>
+                                {row.best_quote_value > 0 ? (
+                                  <div>
+                                    <span style={{ fontWeight: 700, color: '#10b981' }}>{sym}{row.best_quote_value.toFixed(2)}</span>
+                                    <div style={{ fontSize: 10, color: 'var(--text-3)' }}>{row.best_supplier}</div>
+                                  </div>
+                                ) : <span style={{ color: 'var(--text-3)' }}>—</span>}
+                              </td>
+                            </tr>
                           );
                         })}
-                        <td style={{ padding: '10px 12px', textAlign: 'right' }}>
-                          {row.best_quote_value > 0 ? (
-                            <div>
-                              <span style={{ fontWeight: 700, color: '#10b981' }}>${row.best_quote_value.toFixed(2)}</span>
-                              <div style={{ fontSize: 10, color: 'var(--text-3)' }}>{row.best_supplier}</div>
-                            </div>
-                          ) : <span style={{ color: 'var(--text-3)' }}>—</span>}
-                        </td>
-                      </tr>
+                      </>
                     );
                   })}
 
                   {/* Totals row */}
                   <tr style={{ borderTop: '2px solid var(--border)', fontWeight: 800, background: 'var(--bg-alt)' }}>
-                    <td colSpan={2} style={{ padding: '12px 12px', color: 'var(--text-1)' }}>TOTAL</td>
-                    <td style={{ padding: '12px 12px', textAlign: 'right', color: '#6366f1' }}>${an.totals.sc.toFixed(2)}</td>
-                    <td style={{ padding: '12px 12px', textAlign: 'right', color: an.totals.cp_vs_sc.pct > 10 ? 'var(--danger)' : 'var(--text-1)' }}>${an.totals.cp.toFixed(2)}</td>
+                    <td style={{ padding: '12px 12px', color: 'var(--text-1)' }}>TOTAL / UNIT</td>
+                    <td style={{ padding: '12px 12px', textAlign: 'right', color: 'var(--accent)' }}>{sym}{an.totals.sc.toFixed(2)}</td>
+                    <td style={{ padding: '12px 12px', textAlign: 'right', color: an.totals.cp_vs_sc.pct > 10 ? 'var(--danger)' : 'var(--text-1)' }}>{sym}{an.totals.cp.toFixed(2)}</td>
                     <td style={{ padding: '12px 12px', textAlign: 'right' }}>
                       <DeltaBadge delta={an.totals.cp_vs_sc.delta} pct={an.totals.cp_vs_sc.pct} />
                     </td>
                     {suppliers.map(s => (
                       <td key={s.supplier_name} style={{ padding: '12px 12px', textAlign: 'right', color: 'var(--text-1)' }}>
-                        ${s.total_price.toFixed(2)}
+                        {sym}{s.total_price.toFixed(2)}
                       </td>
                     ))}
                     <td style={{ padding: '12px 12px', textAlign: 'right', color: '#10b981' }}>
-                      {an.totals.best_quote > 0 ? `$${an.totals.best_quote.toFixed(2)}` : '—'}
+                      {an.totals.best_quote > 0 ? `${sym}${an.totals.best_quote.toFixed(2)}` : '—'}
                     </td>
                   </tr>
                 </tbody>
@@ -364,10 +437,69 @@ export default function ThreeWayComparison() {
             </div>
           </div>
 
+          {/* ── AI Negotiation Brief ── */}
+          {an.negotiationBrief && an.negotiationBrief.length > 0 && (
+            <div style={{ marginBottom: 24 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
+                <div style={{ width: 32, height: 32, borderRadius: 8, background: 'linear-gradient(135deg,var(--accent),#7c3aed)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16 }}>🤝</div>
+                <h2 style={{ margin: 0, fontSize: 16, fontWeight: 800, color: 'var(--text-1)' }}>AI Negotiation Brief</h2>
+                <span style={{ fontSize: 11, color: 'var(--text-3)' }}>summary-level gap → element-level talking points</span>
+              </div>
+
+              {/* Headline banner */}
+              <div style={{ background: 'linear-gradient(135deg,var(--accent),#7c3aed)', borderRadius: 14, padding: '18px 22px', marginBottom: 16, color: '#fff' }}>
+                <div style={{ fontSize: 12, fontWeight: 700, opacity: 0.85, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 4 }}>Total negotiation opportunity</div>
+                <div style={{ fontSize: 22, fontWeight: 900, lineHeight: 1.3 }}>{an.negotiationSummary.headline}</div>
+              </div>
+
+              {/* Topic cards by category gap, biggest first */}
+              <div style={{ display: 'grid', gap: 14 }}>
+                {an.negotiationBrief.map((topic, ti) => (
+                  <div key={topic.category} style={{ background: 'var(--surface)', borderRadius: 14, border: '1px solid var(--border)', borderLeft: `4px solid ${topic.priority === 'high' ? 'var(--danger)' : topic.priority === 'medium' ? 'var(--warn)' : 'var(--success)'}`, padding: '16px 20px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', marginBottom: 8 }}>
+                      <span style={{ fontWeight: 800, fontSize: 14, color: 'var(--text-1)' }}>{ti + 1}. {topic.label}</span>
+                      <span style={{ fontSize: 10, fontWeight: 800, textTransform: 'uppercase', letterSpacing: 0.5, borderRadius: 20, padding: '3px 10px', background: topic.priority === 'high' ? 'var(--danger-bg)' : topic.priority === 'medium' ? 'rgba(245,158,11,0.12)' : 'var(--success-bg)', color: topic.priority === 'high' ? 'var(--danger)' : topic.priority === 'medium' ? 'var(--warn)' : 'var(--success)' }}>
+                        {topic.priority} priority
+                      </span>
+                      <span style={{ marginLeft: 'auto', fontSize: 13, fontWeight: 800, color: 'var(--danger)' }}>
+                        +{sym}{topic.gap.toFixed(2)}/unit ({topic.gap_pct > 0 ? '+' : ''}{topic.gap_pct.toFixed(0)}%)
+                      </span>
+                      {topic.annual_impact !== null && (
+                        <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-2)', background: 'var(--bg-alt)', borderRadius: 20, padding: '3px 12px' }}>
+                          ≈ {sym}{topic.annual_impact.toLocaleString('en-GB')}/yr
+                        </span>
+                      )}
+                    </div>
+                    <div style={{ fontSize: 12.5, color: 'var(--text-2)', lineHeight: 1.55, marginBottom: topic.detail_points.length > 0 ? 12 : 0 }}>
+                      <strong style={{ color: 'var(--text-1)' }}>Action:</strong> {topic.action}
+                    </div>
+                    {topic.detail_points.length > 0 && (
+                      <div style={{ display: 'grid', gap: 6 }}>
+                        {topic.detail_points.map(dp => (
+                          <div key={dp.cost_element} style={{ display: 'flex', gap: 8, alignItems: 'flex-start', background: 'var(--bg-alt)', borderRadius: 8, padding: '8px 12px' }}>
+                            <span style={{ color: 'var(--accent)', fontWeight: 900, fontSize: 12, marginTop: 1 }}>→</span>
+                            <div style={{ flex: 1 }}>
+                              <div style={{ fontSize: 12.5, color: 'var(--text-1)', lineHeight: 1.5 }}>{dp.talking_point}</div>
+                              {dp.annual_impact !== null && dp.annual_impact > 0 && (
+                                <div style={{ fontSize: 11, color: 'var(--text-3)', marginTop: 2 }}>
+                                  Annual impact if closed: <strong style={{ color: 'var(--danger)' }}>{sym}{dp.annual_impact.toLocaleString('en-GB')}</strong>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* ── AI Cost Driver Analysis ── */}
           <div style={{ marginBottom: 24 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
-              <div style={{ width: 32, height: 32, borderRadius: 8, background: 'linear-gradient(135deg,#6366f1,#8b5cf6)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16 }}>🤖</div>
+              <div style={{ width: 32, height: 32, borderRadius: 8, background: 'linear-gradient(135deg,var(--accent),var(--accent-2))', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16 }}>🤖</div>
               <h2 style={{ margin: 0, fontSize: 16, fontWeight: 800, color: 'var(--text-1)' }}>AI Cost Driver Analysis</h2>
             </div>
 
@@ -383,11 +515,11 @@ export default function ThreeWayComparison() {
                   <div key={d.cost_element} style={{ marginBottom: 10 }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
                       <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-1)' }}>{i + 1}. {d.cost_element}</span>
-                      <span style={{ fontSize: 12, fontWeight: 700, color: '#6366f1' }}>${d.sc_value.toFixed(2)}</span>
+                      <span style={{ fontSize: 12, fontWeight: 700, color: '#2563eb' }}>{sym}{d.sc_value.toFixed(2)}</span>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8 }}>
                       <div style={{ flex: 1, height: 6, borderRadius: 4, background: 'var(--border)', overflow: 'hidden' }}>
-                        <div style={{ height: '100%', width: `${Math.min(100, d.pct_of_total)}%`, background: '#6366f1', borderRadius: 4 }} />
+                        <div style={{ height: '100%', width: `${Math.min(100, d.pct_of_total)}%`, background: '#2563eb', borderRadius: 4 }} />
                       </div>
                       <span style={{ fontSize: 11, color: 'var(--text-3)', minWidth: 36, textAlign: 'right' }}>{d.pct_of_total}%</span>
                     </div>
@@ -409,7 +541,7 @@ export default function ThreeWayComparison() {
                   <div key={d.cost_element} style={{ marginBottom: 10, padding: '8px 10px', background: 'var(--danger-bg)', borderRadius: 8, borderLeft: '3px solid var(--danger)' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 2 }}>
                       <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--danger)' }}>{d.cost_element}</span>
-                      <span style={{ fontSize: 12, fontWeight: 800, color: 'var(--danger)' }}>+${d.delta.toFixed(2)}</span>
+                      <span style={{ fontSize: 12, fontWeight: 800, color: 'var(--danger)' }}>+{sym}{d.delta.toFixed(2)}</span>
                     </div>
                     <div style={{ fontSize: 11, color: 'var(--text-3)' }}>{d.category} · +{d.pct}% above should-cost</div>
                   </div>
@@ -429,7 +561,7 @@ export default function ThreeWayComparison() {
                   <div key={d.cost_element} style={{ marginBottom: 10, padding: '8px 10px', background: 'var(--success-bg)', borderRadius: 8, borderLeft: '3px solid var(--success)' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 2 }}>
                       <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--success)' }}>{d.cost_element}</span>
-                      <span style={{ fontSize: 12, fontWeight: 800, color: 'var(--success)' }}>-${d.savings.toFixed(2)}</span>
+                      <span style={{ fontSize: 12, fontWeight: 800, color: 'var(--success)' }}>-{sym}{d.savings.toFixed(2)}</span>
                     </div>
                     <div style={{ fontSize: 11, color: 'var(--text-3)' }}>{d.best_supplier} · -{d.savings_pct}% vs current</div>
                   </div>
@@ -463,7 +595,7 @@ export default function ThreeWayComparison() {
                 </div>
                 {an.recommendations.map((rec, i) => (
                   <div key={i} style={{ display: 'flex', gap: 10, marginBottom: 10, alignItems: 'flex-start' }}>
-                    <div style={{ minWidth: 22, height: 22, borderRadius: '50%', background: 'linear-gradient(135deg,#6366f1,#8b5cf6)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 800, color: '#fff', flexShrink: 0, marginTop: 1 }}>
+                    <div style={{ minWidth: 22, height: 22, borderRadius: '50%', background: 'linear-gradient(135deg,var(--accent),var(--accent-2))', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 800, color: '#fff', flexShrink: 0, marginTop: 1 }}>
                       {i + 1}
                     </div>
                     <div style={{ fontSize: 13, color: 'var(--text-2)', lineHeight: 1.5 }}>{rec}</div>

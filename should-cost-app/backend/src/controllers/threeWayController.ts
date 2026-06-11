@@ -40,11 +40,23 @@ interface ElementData {
   quotes: Map<string, number>;
 }
 
+// Category-specific negotiation guidance used by the AI brief
+const CATEGORY_ACTION: Record<string, string> = {
+  RAW_MATERIAL:  'Validate material grade, net weight and scrap recovery rate. Request mill certificates and index the price to LME/commodity rates with a quarterly adjustment clause.',
+  BOP:           'Request sub-supplier quotes and open-book costing for purchased parts. Consider directed-buy or leveraging group volume agreements for these components.',
+  MANUFACTURING: 'Challenge cycle times, machine hour rates and OEE assumptions against the should-cost model. Ask the supplier to walk through their process routing line by line.',
+  OVERHEAD:      'Benchmark factory overhead and SG&A markup — best-in-class suppliers run SG&A at 6–8% of cost. Ask for the overhead allocation basis.',
+  LOGISTICS:     'Re-tender freight separately, review packaging spec (returnable vs expendable), and check Incoterms — consider ex-works pricing with your own freight contract.',
+  TOOLING:       'Verify tooling amortisation: remaining volume × rate should equal unamortised balance. If tooling is already paid off, this line should drop to zero.',
+  PROFIT:        'Profit above 8% of total cost is a direct negotiation lever — trade margin for volume commitment or longer contract duration.',
+};
+
 function buildAnalysis(
   elementMap: Map<string, ElementData>,
   totalSC: number,
   totalCP: number,
   supplierTotals: { name: string; total: number }[],
+  annualVolume: number,
 ) {
   const bestTotalEntry = supplierTotals.sort((a, b) => a.total - b.total)[0];
   const bestTotal = bestTotalEntry?.total ?? 0;
@@ -119,6 +131,62 @@ function buildAnalysis(
       cp_pct: totalCP > 0 ? +((catMap[cat].cp / totalCP) * 100).toFixed(1) : 0,
     }));
 
+  // ── AI Negotiation Brief ─────────────────────────────────────
+  // Level 1: which summary category drives the gap vs should-cost.
+  // Level 2: the detail elements inside that category causing it,
+  // each with a ready-to-use talking point and annual impact.
+  const negotiationBrief = CATEGORY_ORDER
+    .filter(cat => catMap[cat] && catMap[cat].cp > 0 && catMap[cat].sc > 0)
+    .map(cat => {
+      const c = catMap[cat];
+      const gap = c.cp - c.sc;
+      const gapPct = c.sc > 0 ? (gap / c.sc) * 100 : 0;
+      const bestQ = c.best_quote > 0 ? c.best_quote : null;
+
+      const detailPoints = [...elementMap.entries()]
+        .filter(([, d]) => normalizeCategory(d.category) === cat && d.cp - d.sc > 0.005)
+        .sort((a, b) => (b[1].cp - b[1].sc) - (a[1].cp - a[1].sc))
+        .slice(0, 4)
+        .map(([el, d]) => {
+          const eGap = d.cp - d.sc;
+          const eGapPct = d.sc > 0 ? (eGap / d.sc) * 100 : 0;
+          const minQuote = d.quotes.size > 0 ? Math.min(...d.quotes.values()) : null;
+          const quoteEvidence = minQuote !== null && minQuote < d.cp
+            ? ` Market evidence: best new quote is £${minQuote.toFixed(2)} for this line.`
+            : '';
+          return {
+            cost_element: el,
+            sc: +d.sc.toFixed(4),
+            cp: +d.cp.toFixed(4),
+            gap: +eGap.toFixed(4),
+            gap_pct: +eGapPct.toFixed(1),
+            best_quote: minQuote !== null ? +minQuote.toFixed(4) : null,
+            annual_impact: annualVolume > 0 ? +(eGap * annualVolume).toFixed(0) : null,
+            talking_point:
+              `"${el}": you pay £${d.cp.toFixed(2)} vs should-cost £${d.sc.toFixed(2)} ` +
+              `(+${eGapPct.toFixed(0)}%).${quoteEvidence}`,
+          };
+        });
+
+      return {
+        category: cat,
+        label: CATEGORY_LABEL[cat] ?? cat,
+        sc: +c.sc.toFixed(2),
+        cp: +c.cp.toFixed(2),
+        best_quote: bestQ !== null ? +bestQ.toFixed(2) : null,
+        gap: +gap.toFixed(2),
+        gap_pct: +gapPct.toFixed(1),
+        annual_impact: annualVolume > 0 ? +(gap * annualVolume).toFixed(0) : null,
+        priority: gapPct > 25 ? 'high' : gapPct > 12 ? 'medium' : 'low',
+        action: CATEGORY_ACTION[cat] ?? 'Review this cost block with the supplier.',
+        detail_points: detailPoints,
+      };
+    })
+    .filter(b => b.gap > 0.01)
+    .sort((a, b) => b.gap - a.gap);
+
+  const totalNegotiationValue = negotiationBrief.reduce((s, b) => s + b.gap, 0);
+
   // Risk flags
   const riskFlags: { element: string; reason: string; severity: 'high' | 'medium' | 'low' }[] = [];
   for (const [el, d] of elementMap) {
@@ -190,6 +258,16 @@ function buildAnalysis(
     biggestOverpayments,
     savingsOpportunities,
     categoryBreakdown,
+    negotiationBrief,
+    negotiationSummary: {
+      annual_volume: annualVolume,
+      total_gap_per_unit: +totalNegotiationValue.toFixed(2),
+      total_annual_opportunity: annualVolume > 0 ? +(totalNegotiationValue * annualVolume).toFixed(0) : null,
+      headline: totalNegotiationValue > 0
+        ? `Closing the gap to should-cost is worth £${totalNegotiationValue.toFixed(2)}/part` +
+          (annualVolume > 0 ? ` — £${Math.round(totalNegotiationValue * annualVolume).toLocaleString('en-GB')} per year at ${annualVolume.toLocaleString('en-GB')} units.` : '.')
+        : 'Current pricing is at or below the should-cost model.',
+    },
     riskFlags: riskFlags.slice(0, 8),
     recommendations,
   };
@@ -219,7 +297,7 @@ export async function getThreeWayComparison(req: Request, res: Response) {
 
     // Latest published SC
     const { rows: scHdrRows } = await pool.query(
-      `SELECT DISTINCT ON (part_id) id, version, total_cost, currency, status, notes, created_at
+      `SELECT DISTINCT ON (part_id) id, version, total_cost, currency, status, notes, annual_volume, created_at
        FROM   should_cost_header
        WHERE  part_id = $1 AND status = 'published'
        ORDER  BY part_id, version DESC`,
@@ -359,7 +437,8 @@ export async function getThreeWayComparison(req: Request, res: Response) {
     const totalCP = cpHdr ? Number(cpHdr.total_cost) : cpElements.reduce((s, e) => s + Number(e.value), 0);
     const supplierTotals = quoteHdrs.map(q => ({ name: q.supplier_name, total: Number(q.total_price) }));
 
-    const analysis = buildAnalysis(elementMap, totalSC, totalCP, supplierTotals);
+    const annualVolume = scHdr?.annual_volume ? Number(scHdr.annual_volume) : 0;
+    const analysis = buildAnalysis(elementMap, totalSC, totalCP, supplierTotals, annualVolume);
 
     res.json({
       part: {
