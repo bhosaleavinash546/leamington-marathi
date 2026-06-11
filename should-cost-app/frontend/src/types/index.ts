@@ -130,6 +130,7 @@ export interface AIInsight {
   flags?: AIInsightFlag[];
   questions?: string[];
   recommendations?: string[];
+  raw_response?: Record<string, unknown>;
   generated_at: string;
 }
 

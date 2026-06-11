@@ -29,7 +29,7 @@ export default function AIInsightsPanel({ insight, streamingText }: Props) {
   const flags = [...(insight.flags ?? [])].sort(
     (a, b) => severityOrder[a.severity] - severityOrder[b.severity]
   );
-  const confidence = (insight.rawResponse as Record<string, unknown> | undefined)?.confidence as number | undefined;
+  const confidence = (insight.raw_response as Record<string, unknown> | undefined)?.confidence as number | undefined;
 
   // Streaming live-text mode
   if (streamingText !== undefined) {

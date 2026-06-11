@@ -56,7 +56,7 @@ export default function ShouldCostDetail() {
   const [showAiBuilder, setShowAiBuilder] = useState(false);
   const [showAudit, setShowAudit]         = useState(false);
   const [aiBuilding, setAiBuilding]       = useState(false);
-  const [aiProposal, setAiProposal]       = useState<{ total_cost: number; basis: string; breakdown: AiBreakdownItem[] } | null>(null);
+  const [aiProposal, setAiProposal]       = useState<{ total_cost: number; currency?: string; basis: string; breakdown: AiBreakdownItem[] } | null>(null);
   const [aiForm, setAiForm] = useState({ partDescription: '', commodity: 'Stamped Steel', annualVolume: '10000', currency: 'GBP', processNotes: '' });
 
   // Load the list of published should-cost models
@@ -224,7 +224,7 @@ export default function ShouldCostDetail() {
                         currency: aiForm.currency,
                         processNotes: aiForm.processNotes || undefined,
                       });
-                      setAiProposal(r.data as { total_cost: number; basis: string; breakdown: AiBreakdownItem[] });
+                      setAiProposal(r.data as { total_cost: number; currency?: string; basis: string; breakdown: AiBreakdownItem[] });
                     } finally { setAiBuilding(false); }
                   }}>
                     {aiBuilding ? 'Claude is thinking…' : '✨ Generate Breakdown'}
