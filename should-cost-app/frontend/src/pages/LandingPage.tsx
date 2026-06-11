@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '../context/ThemeContext';
-import Logo from '../components/Logo';
+import Logo, { HeroMark } from '../components/Logo';
 
 const FEATURES = [
   { icon: '📊', title: 'Should-Cost Engineering', desc: 'Build rigorous should-cost models by cost element — material, labor, overhead, logistics, and profit — with full version history.' },
@@ -100,24 +100,31 @@ export default function LandingPage() {
       {/* ── Hero ── */}
       <section className="hero">
         <div className="hero-bg" />
-        <div className="hero-badge">
-          <span className="pulse" style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--accent)', display: 'inline-block' }} />
-          Automotive Cost Engineering Platform
-        </div>
-        <h1>
-          Know exactly what <span className="gradient-text">every part should cost</span> before the supplier quotes
-        </h1>
-        <p className="hero-desc">
-          Build rigorous should-cost models, compare current live prices against targets,
-          and let AI surface the biggest cost-reduction opportunities — by system, by category, by part.
-        </p>
-        <div className="hero-cta">
-          <button className="btn btn-primary btn-lg" onClick={() => navigate('/signup')}>
-            Start Free Trial
-          </button>
-          <button className="btn btn-ghost btn-lg" onClick={() => navigate('/login')}>
-            Sign In →
-          </button>
+        <div className="hero-inner">
+          <div className="hero-visual">
+            <HeroMark size={340} style={{ width: '100%', maxWidth: 380, height: 'auto' }} />
+          </div>
+          <div className="hero-content">
+            <div className="hero-badge">
+              <span className="pulse" style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--accent)', display: 'inline-block' }} />
+              AI cost &amp; quote analysis
+            </div>
+            <h1>
+              AI-Powered <span className="gradient-text">Cost Intelligence</span>
+            </h1>
+            <p className="hero-desc">
+              AI-powered analysis of current costs, should-cost models, and supplier quotes
+              to uncover savings opportunities and strengthen sourcing decisions.
+            </p>
+            <div className="hero-cta">
+              <button className="btn btn-primary btn-lg" onClick={() => navigate('/signup')}>
+                Start Free Trial
+              </button>
+              <button className="btn btn-ghost btn-lg" onClick={() => navigate('/login')}>
+                Sign In →
+              </button>
+            </div>
+          </div>
         </div>
 
         <div className="hero-stats">

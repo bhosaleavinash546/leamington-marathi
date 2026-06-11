@@ -1,4 +1,4 @@
-import { Routes, Route, NavLink, Navigate } from 'react-router-dom';
+import { Routes, Route, NavLink, Navigate, Link } from 'react-router-dom';
 import { useState } from 'react';
 import Dashboard from './components/Dashboard';
 import ComparisonView from './components/ComparisonView';
@@ -52,7 +52,9 @@ function AppShell() {
       {/* ── Sidebar ── */}
       <nav className="sidebar">
         <div className="sidebar-logo" style={{ padding: '4px 0' }}>
-          <Logo height={52} />
+          <Link to="/dashboard" style={{ display: 'block', textDecoration: 'none' }}>
+            <Logo height={52} />
+          </Link>
         </div>
 
         {!isSupplier && (

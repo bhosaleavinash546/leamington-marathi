@@ -487,10 +487,40 @@ tbody tr:hover td { background: var(--bg-alt); }
   animation: fadeInDown 0.7s 0.3s ease both;
 }
 
+.hero-inner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  align-items: center;
+  max-width: 1160px;
+  width: 100%;
+  position: relative;
+  z-index: 1;
+}
+
+.hero-visual {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeInDown 0.7s ease both;
+}
+
+.hero-content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  gap: 0;
+}
+.hero-content .hero-badge  { margin-bottom: 24px; }
+.hero-content h1           { text-align: left; margin: 0 0 24px; }
+.hero-content .hero-desc   { text-align: left; margin: 0 0 36px; max-width: 520px; }
+.hero-content .hero-cta    { justify-content: flex-start; }
+
 .hero-stats {
-  display: grid; grid-template-columns: repeat(3, 1fr);
-  gap: 0; margin-top: 80px;
-  max-width: 600px; width: 100%;
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 0; margin-top: 72px;
+  max-width: 700px; width: 100%;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
@@ -691,6 +721,13 @@ tbody tr:hover td { background: var(--bg-alt); }
   .hero { padding: 100px 24px 60px; }
   .features, .how-it-works, .systems-showcase { padding: 64px 24px; }
   .landing-nav { padding: 14px 24px; }
+  .hero-inner { grid-template-columns: 1fr; gap: 40px; }
+  .hero-visual { display: none; }
+  .hero-content { align-items: center; text-align: center; }
+  .hero-content h1 { text-align: center; }
+  .hero-content .hero-desc { text-align: center; margin: 0 auto 36px; }
+  .hero-content .hero-cta { justify-content: center; }
+  .hero-stats { grid-template-columns: repeat(2, 1fr); max-width: 400px; }
 }
 
 /* ── Animations ────────────────────────────────────────────── */
