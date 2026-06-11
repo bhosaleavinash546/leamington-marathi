@@ -21,6 +21,8 @@ services:
       - ./backend/src/db/seed_demo_users.sql:/docker-entrypoint-initdb.d/06-seed_users.sql
       - ./backend/src/db/seed_demo_data.sql:/docker-entrypoint-initdb.d/07-seed_demo_data.sql
       - ./backend/src/db/schema_v4.sql:/docker-entrypoint-initdb.d/08-schema_v4.sql
+      - ./backend/src/db/schema_v5.sql:/docker-entrypoint-initdb.d/085-schema_v5.sql
+      - ./backend/src/db/seed_part_families.sql:/docker-entrypoint-initdb.d/086-seed_part_families.sql
       - ./backend/src/db/seed_should_cost_detail.sql:/docker-entrypoint-initdb.d/09-seed_should_cost_detail.sql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres -d should_cost_db"]

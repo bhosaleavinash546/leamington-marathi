@@ -53,7 +53,17 @@ export default function ComparisonView() {
       <div>
         <div className="page-header"><h1>Comparisons</h1></div>
         {list.length === 0 ? (
-          <div className="card"><div className="empty">No comparison snapshots yet.</div></div>
+          <div className="card">
+            <div className="empty" style={{ textAlign: 'center', padding: '12px 0' }}>
+              <div style={{ marginBottom: 12 }}>No saved comparison snapshots yet.</div>
+              <div style={{ fontSize: 13, color: 'var(--text-3)', marginBottom: 16 }}>
+                Want to compare the same part across different vehicle models and let AI find the cost gap?
+              </div>
+              <button className="btn btn-primary btn-sm" onClick={() => navigate('/cross-model')}>
+                🌐 Open Cross-Model Comparison →
+              </button>
+            </div>
+          </div>
         ) : (
           <div className="card">
             <table>

@@ -8,6 +8,7 @@ import MultiSupplierComparison from './components/MultiSupplierComparison';
 import OpportunityDashboard from './pages/OpportunityDashboard';
 import ThreeWayComparison from './pages/ThreeWayComparison';
 import ShouldCostDetail from './pages/ShouldCostDetail';
+import CrossModelComparison from './pages/CrossModelComparison';
 import LandingPage from './pages/LandingPage';
 import AuthPage from './pages/AuthPage';
 import ThemeToggle from './components/ThemeToggle';
@@ -78,6 +79,9 @@ function AppShell() {
             <NavLink to="/comparisons" className={({ isActive }) => isActive ? 'active' : ''}>
               🔍 Comparisons
             </NavLink>
+            <NavLink to="/cross-model" className={({ isActive }) => isActive ? 'active' : ''}>
+              🌐 Cross-Model
+            </NavLink>
             <NavLink to="/multi-comparison" className={({ isActive }) => isActive ? 'active' : ''}>
               📋 Multi-Supplier
             </NavLink>
@@ -132,6 +136,7 @@ function AppShell() {
               <Route path="/three-way"        element={<ThreeWayComparison />} />
               <Route path="/comparisons"      element={<ComparisonView />} />
               <Route path="/comparisons/:id"  element={<ComparisonView />} />
+              <Route path="/cross-model"      element={<CrossModelComparison />} />
               <Route path="/multi-comparison" element={<MultiSupplierComparison />} />
               <Route path="/should-costs"     element={<ShouldCostDetail />} />
               <Route path="/quotes"           element={<SupplierPortal user={user} />} />
