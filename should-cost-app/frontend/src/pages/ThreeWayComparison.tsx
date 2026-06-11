@@ -90,6 +90,7 @@ export default function ThreeWayComparison() {
   const [loading, setLoading]       = useState(false);
   const [error, setError]           = useState('');
   const [expandedCats, setExpandedCats] = useState<Set<string>>(new Set());
+  const [exporting, setExporting]   = useState<'xlsx' | 'pptx' | null>(null);
 
   useEffect(() => {
     fetch(`${API}/api/programs`, { headers: { Authorization: `Bearer ${token()}` } })
@@ -119,6 +120,28 @@ export default function ThreeWayComparison() {
   }, []);
 
   useEffect(() => { if (selectedPart) loadComparison(selectedPart); }, [selectedPart, loadComparison]);
+
+  const exportFile = useCallback(async (fmt: 'xlsx' | 'pptx') => {
+    if (!selectedPart) return;
+    setExporting(fmt);
+    try {
+      const r = await fetch(`${API}/api/export/three-way/${selectedPart}.${fmt}`, {
+        headers: { Authorization: `Bearer ${token()}` },
+      });
+      if (!r.ok) throw new Error(await r.text());
+      const blob = await r.blob();
+      const url  = URL.createObjectURL(blob);
+      const a    = document.createElement('a');
+      a.href     = url;
+      a.download = `three-way-${data?.part.part_number ?? selectedPart}.${fmt}`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch (e) {
+      alert('Export failed: ' + String(e));
+    } finally {
+      setExporting(null);
+    }
+  }, [selectedPart, data]);
 
   const suppliers = data?.supplierQuotes ?? [];
   const an = data?.analysis;
@@ -169,14 +192,36 @@ export default function ThreeWayComparison() {
   return (
     <div style={{ padding: '28px 32px', maxWidth: 1600, margin: '0 auto' }}>
       {/* ── Header ── */}
-      <div style={{ marginBottom: 24 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 6 }}>
+      <div style={{ marginBottom: 24, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <div style={{ width: 36, height: 36, borderRadius: 10, background: 'linear-gradient(135deg,var(--accent),var(--accent-2))', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18 }}>⚖</div>
           <div>
             <h1 style={{ margin: 0, fontSize: 22, fontWeight: 800, color: 'var(--text-1)' }}>Three-Way Cost Analysis</h1>
             <p style={{ margin: 0, fontSize: 13, color: 'var(--text-3)' }}>Should-Cost · Current Live Price · New Supplier Quotes — side by side</p>
           </div>
         </div>
+
+        {/* ── Export buttons (only shown once a part is loaded) ── */}
+        {data && (
+          <div style={{ display: 'flex', gap: 10, flexShrink: 0 }}>
+            <button
+              onClick={() => exportFile('xlsx')}
+              disabled={exporting !== null}
+              title="Export full four-sheet Excel workbook (Summary, Cost Breakup, AI Brief, Insights)"
+              style={{ display: 'flex', alignItems: 'center', gap: 7, padding: '9px 16px', borderRadius: 10, border: '1.5px solid #217346', background: exporting === 'xlsx' ? '#d1fae5' : '#fff', color: '#217346', fontWeight: 700, fontSize: 13, cursor: exporting ? 'wait' : 'pointer', transition: 'all 0.15s' }}>
+              <span style={{ fontSize: 16 }}>📊</span>
+              {exporting === 'xlsx' ? 'Exporting…' : 'Export Excel'}
+            </button>
+            <button
+              onClick={() => exportFile('pptx')}
+              disabled={exporting !== null}
+              title="Export executive PowerPoint deck (Title, KPIs, Breakup, AI Brief per category, Recommendations)"
+              style={{ display: 'flex', alignItems: 'center', gap: 7, padding: '9px 16px', borderRadius: 10, border: '1.5px solid #C43E1C', background: exporting === 'pptx' ? '#fee2e2' : '#fff', color: '#C43E1C', fontWeight: 700, fontSize: 13, cursor: exporting ? 'wait' : 'pointer', transition: 'all 0.15s' }}>
+              <span style={{ fontSize: 16 }}>📑</span>
+              {exporting === 'pptx' ? 'Exporting…' : 'Export PowerPoint'}
+            </button>
+          </div>
+        )}
       </div>
 
       {/* ── Filters ── */}

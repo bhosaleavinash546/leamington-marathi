@@ -273,12 +273,8 @@ function buildAnalysis(
   };
 }
 
-// GET /api/three-way/compare/:partId
-export async function getThreeWayComparison(req: Request, res: Response) {
-  const partId = Number(req.params.partId);
-  if (isNaN(partId)) return res.status(400).json({ error: 'Invalid partId' });
-
-  try {
+// ─── Shared data-fetch helper (reused by export endpoints) ───────────────────
+export async function fetchThreeWayData(partId: number) {
     // Part info
     const { rows: partRows } = await pool.query(
       `SELECT pm.id, pm.part_number, pm.description, pm.commodity,
@@ -292,7 +288,7 @@ export async function getThreeWayComparison(req: Request, res: Response) {
        WHERE  pm.id = $1`,
       [partId],
     );
-    if (!partRows.length) return res.status(404).json({ error: 'Part not found' });
+    if (!partRows.length) return null;
     const part = partRows[0];
 
     // Latest published SC
@@ -440,7 +436,7 @@ export async function getThreeWayComparison(req: Request, res: Response) {
     const annualVolume = scHdr?.annual_volume ? Number(scHdr.annual_volume) : 0;
     const analysis = buildAnalysis(elementMap, totalSC, totalCP, supplierTotals, annualVolume);
 
-    res.json({
+    return {
       part: {
         id: part.id,
         part_number: part.part_number,
@@ -460,7 +456,20 @@ export async function getThreeWayComparison(req: Request, res: Response) {
       supplierQuotes,
       rows,
       analysis,
-    });
+      currency: scHdr?.currency ?? 'GBP',
+      annualVolume,
+    };
+}
+
+// GET /api/three-way/compare/:partId
+export async function getThreeWayComparison(req: Request, res: Response) {
+  const partId = Number(req.params.partId);
+  if (isNaN(partId)) return res.status(400).json({ error: 'Invalid partId' });
+
+  try {
+    const data = await fetchThreeWayData(partId);
+    if (!data) return res.status(404).json({ error: 'Part not found' });
+    res.json(data);
   } catch (err) {
     console.error('getThreeWayComparison', err);
     res.status(500).json({ error: 'Failed to build three-way comparison' });
