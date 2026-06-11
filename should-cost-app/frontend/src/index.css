@@ -156,7 +156,7 @@ img { display: block; max-width: 100%; }
 }
 
 /* ── Main Content ──────────────────────────────────────────── */
-.main-content { flex: 1; padding: 28px 32px; overflow-y: auto; min-height: 100vh; }
+.main-content { flex: 1; padding: 60px 32px 28px; overflow-y: auto; min-height: 100vh; }
 
 /* ── Page Header ───────────────────────────────────────────── */
 .page-header {
@@ -710,6 +710,21 @@ tbody tr:hover td { background: var(--bg-alt); }
 }
 .auth-divider::before, .auth-divider::after {
   content: ''; flex: 1; height: 1px; background: var(--border);
+}
+
+/* ── Persistent top-right theme toggle ─────────────────────── */
+.app-theme-toggle {
+  position: fixed;
+  top: 16px;
+  right: 18px;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  padding: 7px 10px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  box-shadow: var(--shadow-sm);
 }
 
 /* ── Export Buttons ────────────────────────────────────────── */

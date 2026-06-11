@@ -10,9 +10,16 @@ export default function SupplierPortal({ user }: Props) {
   const [quotes, setQuotes]       = useState<SupplierQuoteHeader[]>([]);
   const [loading, setLoading]     = useState(true);
   const [showImport, setShowImport] = useState(false);
+  const [showChooser, setShowChooser] = useState(false);
   const navigate = useNavigate();
 
   const isInternal = user.role === 'internal' || user.role === 'admin';
+
+  // Suppliers go straight to the web form; internal users pick web-form vs CSV.
+  const startNewQuote = () => {
+    if (isInternal) setShowChooser(true);
+    else navigate('/portal/new');
+  };
 
   const loadQuotes = useCallback(() => {
     setLoading(true);
@@ -34,6 +41,67 @@ export default function SupplierPortal({ user }: Props) {
         />
       )}
 
+      {showChooser && (
+        <div
+          onClick={() => setShowChooser(false)}
+          style={{
+            position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 999,
+          }}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              background: 'var(--surface)', borderRadius: 16, width: '90%', maxWidth: 560,
+              boxShadow: '0 20px 60px rgba(0,0,0,0.4)', border: '1px solid var(--border)',
+              padding: 28,
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 6 }}>
+              <h2 style={{ margin: 0, fontSize: 19 }}>Submit a New Quote</h2>
+              <button onClick={() => setShowChooser(false)} style={{ background: 'none', border: 'none', fontSize: 22, cursor: 'pointer', color: 'var(--text-3)', lineHeight: 1 }}>✕</button>
+            </div>
+            <p style={{ margin: '0 0 20px', fontSize: 13, color: 'var(--text-3)' }}>
+              Choose how you'd like to enter the supplier quote.
+            </p>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+              <button
+                onClick={() => { setShowChooser(false); navigate('/portal/new'); }}
+                style={{
+                  textAlign: 'left', cursor: 'pointer', borderRadius: 14,
+                  border: '1px solid var(--border)', background: 'var(--bg)', padding: 20,
+                  transition: 'border-color 0.15s, transform 0.15s',
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--accent)'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.transform = 'none'; }}
+              >
+                <div style={{ fontSize: 30, marginBottom: 10 }}>📝</div>
+                <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-1)', marginBottom: 4 }}>Web Form</div>
+                <div style={{ fontSize: 12, color: 'var(--text-3)', lineHeight: 1.5 }}>
+                  Type a single quote with a cost-element breakdown directly into the system.
+                </div>
+              </button>
+              <button
+                onClick={() => { setShowChooser(false); setShowImport(true); }}
+                style={{
+                  textAlign: 'left', cursor: 'pointer', borderRadius: 14,
+                  border: '1px solid var(--border)', background: 'var(--bg)', padding: 20,
+                  transition: 'border-color 0.15s, transform 0.15s',
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--accent)'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.transform = 'none'; }}
+              >
+                <div style={{ fontSize: 30, marginBottom: 10 }}>📄</div>
+                <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-1)', marginBottom: 4 }}>CSV Import</div>
+                <div style={{ fontSize: 12, color: 'var(--text-3)', lineHeight: 1.5 }}>
+                  Bulk-upload one or many quotes from a CSV file using the downloadable template.
+                </div>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="page-header">
         <div>
           <h1>{isInternal ? 'All Quotes' : 'My Quotes'}</h1>
@@ -49,7 +117,7 @@ export default function SupplierPortal({ user }: Props) {
               ⬆ Import CSV
             </button>
           )}
-          <button className="btn btn-primary" onClick={() => navigate('/portal/new')}>
+          <button className="btn btn-primary" onClick={startNewQuote}>
             + Submit New Quote
           </button>
         </div>
@@ -62,7 +130,7 @@ export default function SupplierPortal({ user }: Props) {
             {isInternal
               ? <><button className="btn btn-secondary btn-sm" onClick={() => setShowImport(true)}>Import CSV</button>{' or '}</>
               : null}
-            <button className="btn btn-primary btn-sm" onClick={() => navigate('/portal/new')}>
+            <button className="btn btn-primary btn-sm" onClick={startNewQuote}>
               Submit a quote
             </button>
           </div>

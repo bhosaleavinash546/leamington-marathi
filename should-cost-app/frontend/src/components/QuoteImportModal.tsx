@@ -36,8 +36,22 @@ export default function QuoteImportModal({ onClose, onImported }: Props) {
   const [loading, setLoading]     = useState(false);
   const [result, setResult]       = useState<ImportResult | null>(null);
 
-  const downloadTemplate = () => {
-    window.location.href = '/api/quotes/import/template';
+  const downloadTemplate = async () => {
+    setParseError('');
+    try {
+      // Fetch through the API client so the JWT Authorization header is sent.
+      // A plain browser navigation would hit the protected route unauthenticated
+      // and return "Missing or malformed Authorization header".
+      const r = await api.get('/quotes/import/template', { responseType: 'blob' });
+      const url = URL.createObjectURL(r.data as Blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'costlens_quote_template.csv';
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch {
+      setParseError('Could not download the template. Please try again.');
+    }
   };
 
   const handleFile = (e: ChangeEvent<HTMLInputElement>) => {

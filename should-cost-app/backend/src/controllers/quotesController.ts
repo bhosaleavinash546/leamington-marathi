@@ -36,6 +36,15 @@ export async function listQuotes(req: Request, res: Response): Promise<void> {
   res.json(rows);
 }
 
+// GET /api/quotes/suppliers — list active suppliers (for internal quote entry)
+export async function listSuppliers(_req: Request, res: Response): Promise<void> {
+  const { rows } = await pool.query(
+    `SELECT id, code, name, country FROM supplier
+     WHERE is_active = TRUE ORDER BY name`
+  );
+  res.json(rows);
+}
+
 // GET /api/quotes/:id
 export async function getQuote(req: Request, res: Response): Promise<void> {
   const { id } = req.params;

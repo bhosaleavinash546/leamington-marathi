@@ -49,6 +49,11 @@ function AppShell() {
 
   return (
     <div className="app-shell">
+      {/* ── Persistent theme toggle (always top-right) ── */}
+      <div className="app-theme-toggle" title="Toggle light / dark theme">
+        <ThemeToggle />
+      </div>
+
       {/* ── Sidebar ── */}
       <nav className="sidebar">
         <div className="sidebar-logo" style={{ padding: '4px 0' }}>
@@ -99,10 +104,6 @@ function AppShell() {
         )}
 
         <div className="sidebar-footer">
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
-            <span style={{ fontSize: 11, color: 'var(--text-3)' }}>Theme</span>
-            <ThemeToggle />
-          </div>
           <div style={{ fontSize: 12, color: 'var(--text-2)', marginBottom: 8, fontWeight: 600 }}>
             {user.fullName}
           </div>
@@ -133,6 +134,7 @@ function AppShell() {
               <Route path="/multi-comparison" element={<MultiSupplierComparison />} />
               <Route path="/should-costs"     element={<Dashboard user={user} />} />
               <Route path="/quotes"           element={<SupplierPortal user={user} />} />
+              <Route path="/portal/new"       element={<QuoteForm user={user} />} />
               <Route path="*"                 element={<Navigate to="/dashboard" replace />} />
             </>
           )}

@@ -20,12 +20,17 @@ const DEFAULT_ELEMENTS: BreakdownRow[] = [
   { costElement: 'Profit / Margin',       category: 'profit',    value: '', basis: '% of total' },
 ];
 
+interface SupplierLite { id: number; code: string; name: string; country?: string }
+
 interface Props { user: AuthUser; }
 
 export default function QuoteForm({ user }: Props) {
   const navigate = useNavigate();
+  const isInternal = user.role === 'internal' || user.role === 'admin';
   const [parts, setParts]     = useState<PartMaster[]>([]);
   const [partId, setPartId]   = useState('');
+  const [suppliers, setSuppliers] = useState<SupplierLite[]>([]);
+  const [supplierId, setSupplierId] = useState('');
   const [rfqNumber, setRfqNumber] = useState('');
   const [annualVolume, setAnnualVolume] = useState('');
   const [currency, setCurrency] = useState('USD');
@@ -49,6 +54,13 @@ export default function QuoteForm({ user }: Props) {
     });
   }, []);
 
+  // Internal/admin users submit on behalf of a supplier, so load the supplier list.
+  useEffect(() => {
+    if (isInternal) {
+      api.get<SupplierLite[]>('/quotes/suppliers').then((r) => setSuppliers(r.data)).catch(() => {});
+    }
+  }, [isInternal]);
+
   const updateRow = (idx: number, field: keyof BreakdownRow, val: string) => {
     setBreakdown((prev) => prev.map((r, i) => i === idx ? { ...r, [field]: val } : r));
   };
@@ -58,11 +70,16 @@ export default function QuoteForm({ user }: Props) {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError('');
+    const effectiveSupplierId = isInternal ? parseInt(supplierId) : user.supplierId;
+    if (!effectiveSupplierId) {
+      setError(isInternal ? 'Please select a supplier.' : 'No supplier is linked to your account.');
+      return;
+    }
     setSubmitting(true);
     try {
       await api.post('/quotes', {
         partId: parseInt(partId),
-        supplierId: user.supplierId,
+        supplierId: effectiveSupplierId,
         rfqNumber: rfqNumber || undefined,
         annualVolume: annualVolume ? parseFloat(annualVolume) : undefined,
         currency,
@@ -120,6 +137,17 @@ export default function QuoteForm({ user }: Props) {
                 ))}
               </select>
             </div>
+            {isInternal && (
+              <div className="form-group">
+                <label>Supplier *</label>
+                <select value={supplierId} onChange={(e) => setSupplierId(e.target.value)} required>
+                  <option value="">Select a supplier…</option>
+                  {suppliers.map((s) => (
+                    <option key={s.id} value={s.id}>{s.name} ({s.code})</option>
+                  ))}
+                </select>
+              </div>
+            )}
             <div className="form-group">
               <label>RFQ Number</label>
               <input type="text" value={rfqNumber} onChange={(e) => setRfqNumber(e.target.value)} placeholder="RFQ-2024-001" />
@@ -204,7 +232,7 @@ export default function QuoteForm({ user }: Props) {
 
         <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end' }}>
           <button type="button" className="btn btn-secondary" onClick={() => navigate('/portal')}>Cancel</button>
-          <button type="submit" className="btn btn-primary" disabled={submitting || !partId}>
+          <button type="submit" className="btn btn-primary" disabled={submitting || !partId || (isInternal && !supplierId)}>
             {submitting ? 'Submitting…' : 'Submit Quote'}
           </button>
         </div>
