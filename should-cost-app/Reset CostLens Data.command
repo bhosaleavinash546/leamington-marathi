@@ -13,6 +13,9 @@ echo "  🔭 CostLens — Resetting demo data..."
 echo "================================================"
 echo ""
 
+# Load .env so API key is preserved after the data reset
+export $(grep -v '^#' .env 2>/dev/null | grep -v '^[[:space:]]*$' | xargs) 2>/dev/null || true
+
 docker compose down -v
 docker compose up --build -d
 
