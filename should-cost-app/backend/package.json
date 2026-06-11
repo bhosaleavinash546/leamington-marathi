@@ -7,17 +7,20 @@
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
     "build": "tsc",
     "start": "node dist/server.js",
-    "db:migrate": "psql $DATABASE_URL -f src/db/schema.sql && psql $DATABASE_URL -f src/db/schema_v2.sql && psql $DATABASE_URL -f src/db/schema_v3.sql && psql $DATABASE_URL -f src/db/schema_v4.sql && psql $DATABASE_URL -f src/db/schema_v5.sql",
+    "db:migrate": "psql $DATABASE_URL -f src/db/schema.sql && psql $DATABASE_URL -f src/db/schema_v2.sql && psql $DATABASE_URL -f src/db/schema_v3.sql && psql $DATABASE_URL -f src/db/schema_v4.sql && psql $DATABASE_URL -f src/db/schema_v5.sql && psql $DATABASE_URL -f src/db/schema_v6.sql",
     "db:seed": "psql $DATABASE_URL -f src/db/seed_vehicle_hierarchy.sql && psql $DATABASE_URL -f src/db/seed_programs.sql && psql $DATABASE_URL -f src/db/seed_demo_users.sql && psql $DATABASE_URL -f src/db/seed_demo_data.sql && psql $DATABASE_URL -f src/db/seed_part_families.sql && psql $DATABASE_URL -f src/db/seed_should_cost_detail.sql",
     "db:setup": "npm run db:migrate && npm run db:seed"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.104.1",
+    "@types/node-cron": "^3.0.11",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "exceljs": "^4.4.0",
     "express": "^4.19.2",
     "jsonwebtoken": "^9.0.2",
+    "node-cron": "^4.2.1",
     "nodemailer": "^6.9.13",
     "pg": "^8.11.5",
     "pptxgenjs": "^4.0.1"

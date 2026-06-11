@@ -759,3 +759,163 @@ tbody tr:hover td { background: var(--bg-alt); }
   50% { transform: scale(1.4); opacity: 0.7; }
 }
 .pulse { animation: pulse-dot 2s ease-in-out infinite; }
+
+/* ── Mobile sidebar toggle (P7) ────────────────────────────── */
+.sidebar-toggle {
+  display: none;
+  position: fixed;
+  top: 14px;
+  left: 14px;
+  z-index: 300;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 18px;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  line-height: 1;
+}
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  z-index: 150;
+}
+
+@media (max-width: 768px) {
+  .sidebar-toggle { display: block; }
+  .sidebar {
+    position: fixed;
+    left: -260px;
+    top: 0;
+    bottom: 0;
+    z-index: 200;
+    transition: left 0.25s ease;
+    box-shadow: 4px 0 24px rgba(0,0,0,0.18);
+  }
+  .sidebar.sidebar-open { left: 0; }
+  .sidebar-overlay { display: block; }
+  .main-content {
+    padding: 60px 14px 24px !important;
+    margin-left: 0 !important;
+  }
+  .stats-row { grid-template-columns: 1fr 1fr !important; }
+  .page-header { flex-direction: column; align-items: flex-start !important; gap: 10px; }
+  .app-theme-toggle { top: 14px; right: 10px; padding: 5px 8px; }
+}
+
+/* ── Command Palette (P9) ───────────────────────────────────── */
+.cmd-palette-trigger {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 190;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 10px 18px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: var(--shadow);
+  color: var(--text-2);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: transform 0.15s;
+}
+.cmd-palette-trigger:hover { transform: scale(1.04); }
+.cmd-palette-trigger kbd {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 1px 5px;
+  font-size: 11px;
+}
+
+.cmd-palette-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 500;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 80px;
+}
+.cmd-palette {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  width: 100%;
+  max-width: 680px;
+  box-shadow: 0 24px 64px rgba(0,0,0,0.25);
+  overflow: hidden;
+  max-height: calc(100vh - 120px);
+  display: flex;
+  flex-direction: column;
+}
+.cmd-palette-input-row {
+  display: flex;
+  align-items: center;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+}
+.cmd-palette-input {
+  flex: 1;
+  background: none;
+  border: none;
+  outline: none;
+  font-size: 16px;
+  color: var(--text-1);
+  font-family: inherit;
+}
+.cmd-palette-input::placeholder { color: var(--text-3); }
+.cmd-palette-section { padding: 8px 0; overflow-y: auto; }
+.cmd-palette-section-label {
+  padding: 4px 16px 6px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+.cmd-palette-item {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 10px 16px;
+  background: none;
+  border: none;
+  text-align: left;
+  font-size: 14px;
+  color: var(--text-1);
+  cursor: pointer;
+  transition: background 0.1s;
+}
+.cmd-palette-item:hover { background: var(--bg-alt); }
+.cmd-palette-item kbd {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 1px 6px;
+  font-size: 11px;
+  color: var(--text-3);
+}
+
+/* ── Form helpers ───────────────────────────────────────────── */
+.form-label { display: block; font-size: 12px; font-weight: 600; color: var(--text-3); margin-bottom: 4px; }
+.form-control {
+  width: 100%;
+  padding: 8px 10px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text-1);
+  font-size: 13px;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+.form-control:focus { outline: 2px solid var(--accent); border-color: transparent; }

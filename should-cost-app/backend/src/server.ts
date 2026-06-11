@@ -15,7 +15,12 @@ import opportunityRoutes    from './routes/opportunity';
 import programRoutes        from './routes/programs';
 import currentPriceRoutes   from './routes/currentPrice';
 import threeWayRoutes       from './routes/threeWay';
-import crossModelRoutes     from './routes/crossModel';
+import crossModelRoutes       from './routes/crossModel';
+import negotiationRoutes      from './routes/negotiation';
+import supplierScorecardRoutes from './routes/supplierScorecard';
+
+import { startWeeklyDigest, generateAndSendDigest } from './services/weeklyDigest';
+import { requireAuth, requireRole } from './middleware/auth';
 
 const app  = express();
 const PORT = process.env.PORT ?? 4000;
@@ -38,7 +43,20 @@ app.use('/api/opportunity',      opportunityRoutes);
 app.use('/api/programs',         programRoutes);
 app.use('/api/current-price',    currentPriceRoutes);
 app.use('/api/three-way',        threeWayRoutes);
-app.use('/api/cross-model',      crossModelRoutes);
+app.use('/api/cross-model',        crossModelRoutes);
+app.use('/api/negotiations',       negotiationRoutes);
+app.use('/api/supplier-scorecard', supplierScorecardRoutes);
+
+// Manual digest trigger for admins
+app.post(
+  '/api/admin/trigger-digest',
+  requireAuth,
+  requireRole('admin'),
+  async (_req, res) => {
+    generateAndSendDigest().catch(console.error);
+    res.json({ message: 'Digest generation triggered' });
+  }
+);
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
@@ -48,6 +66,7 @@ app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
 
 app.listen(PORT, () => {
   console.log(`[server] Listening on http://localhost:${PORT}`);
+  startWeeklyDigest();
 });
 
 export default app;

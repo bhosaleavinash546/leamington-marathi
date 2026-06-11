@@ -44,7 +44,6 @@ export async function getShouldCost(req: Request, res: Response): Promise<void> 
     [id]
   );
 
-  // Level-3 sub-items, nested under their parent breakdown element
   const breakdownIds = breakdownResult.rows.map((b) => b.id);
   let subitems: Array<{ breakdown_id: number }> = [];
   if (breakdownIds.length) {
@@ -59,21 +58,29 @@ export async function getShouldCost(req: Request, res: Response): Promise<void> 
     subitems: subitems.filter((s) => s.breakdown_id === b.id),
   }));
 
-  res.json({ header: headerResult.rows[0], breakdown });
+  // Version audit trail (P5)
+  const auditRes = await pool.query(
+    `SELECT a.*, u.full_name AS changed_by_name
+     FROM should_cost_header_audit a
+     LEFT JOIN "user" u ON u.id = a.changed_by
+     WHERE a.should_cost_header_id = $1
+     ORDER BY a.changed_at DESC`,
+    [id]
+  );
+
+  res.json({ header: headerResult.rows[0], breakdown, auditTrail: auditRes.rows });
 }
 
 // POST /api/should-cost
 export async function createShouldCost(req: Request, res: Response): Promise<void> {
   const dto = req.body as CreateShouldCostDto;
 
-  // Determine next version for this part
   const versionResult = await pool.query(
     `SELECT COALESCE(MAX(version), 0) + 1 AS next_version
      FROM should_cost_header WHERE part_id = $1`,
     [dto.partId]
   );
   const nextVersion: number = versionResult.rows[0].next_version;
-
   const totalCost = dto.breakdown.reduce((sum, b) => sum + (b.value ?? 0), 0);
 
   const client = await pool.connect();
@@ -98,6 +105,14 @@ export async function createShouldCost(req: Request, res: Response): Promise<voi
       );
     }
 
+    // Audit entry (P5)
+    await client.query(
+      `INSERT INTO should_cost_header_audit
+         (should_cost_header_id, changed_by, change_type, new_total_cost, new_status)
+       VALUES ($1, $2, 'created', $3, 'draft')`,
+      [header.id, req.user?.sub ?? null, totalCost]
+    );
+
     await client.query('COMMIT');
     res.status(201).json({ header, breakdown: dto.breakdown });
   } catch (err) {
@@ -112,21 +127,50 @@ export async function createShouldCost(req: Request, res: Response): Promise<voi
 // PATCH /api/should-cost/:id/status
 export async function updateShouldCostStatus(req: Request, res: Response): Promise<void> {
   const { id } = req.params;
-  const { status } = req.body as { status: string };
+  const { status, notes } = req.body as { status: string; notes?: string };
   const allowed = ['draft', 'published', 'archived'];
   if (!allowed.includes(status)) {
     res.status(400).json({ error: `status must be one of: ${allowed.join(', ')}` });
     return;
   }
 
-  const { rows } = await pool.query(
-    `UPDATE should_cost_header SET status = $1, updated_at = NOW()
-     WHERE id = $2 RETURNING *`,
-    [status, id]
-  );
-  if (rows.length === 0) {
-    res.status(404).json({ error: 'Should-Cost not found' });
-    return;
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+    const prev = await client.query(
+      `SELECT status, total_cost FROM should_cost_header WHERE id = $1`,
+      [id]
+    );
+    if (prev.rowCount === 0) { res.status(404).json({ error: 'Should-Cost not found' }); return; }
+
+    const { rows } = await client.query(
+      `UPDATE should_cost_header SET status = $1, updated_at = NOW()
+       WHERE id = $2 RETURNING *`,
+      [status, id]
+    );
+
+    // Audit entry (P5)
+    await client.query(
+      `INSERT INTO should_cost_header_audit
+         (should_cost_header_id, changed_by, change_type,
+          old_status, new_status, old_total_cost, new_total_cost, notes)
+       VALUES ($1, $2, $3, $4, $5, $6, $6, $7)`,
+      [
+        id, req.user?.sub ?? null,
+        status === 'published' ? 'published' : status === 'archived' ? 'archived' : 'updated',
+        prev.rows[0].status, status,
+        prev.rows[0].total_cost,
+        notes ?? null,
+      ]
+    );
+
+    await client.query('COMMIT');
+    res.json(rows[0]);
+  } catch (err) {
+    await client.query('ROLLBACK');
+    console.error('updateShouldCostStatus error', err);
+    res.status(500).json({ error: 'Failed to update status' });
+  } finally {
+    client.release();
   }
-  res.json(rows[0]);
 }

@@ -22,7 +22,15 @@ interface Header {
   status?: string;
   version?: number;
 }
-interface ScDetail { header: Header; breakdown: Breakdown[] }
+interface AuditEntry {
+  id: number; change_type: string; changed_at: string;
+  changed_by_name?: string; old_status?: string; new_status?: string;
+  old_total_cost?: number; new_total_cost?: number; notes?: string;
+}
+interface AiBreakdownItem {
+  cost_element: string; category: string; value: number; basis?: string; notes?: string;
+}
+interface ScDetail { header: Header; breakdown: Breakdown[]; auditTrail?: AuditEntry[] }
 
 /* ── Category metadata (Level 1) ────────────────────────────── */
 const CAT_META: Record<string, { label: string; color: string }> = {
@@ -45,6 +53,11 @@ export default function ShouldCostDetail() {
   const [loadingDetail, setLoadingDetail] = useState(false);
   const [openCats, setOpenCats] = useState<Set<string>>(new Set());
   const [openEls, setOpenEls]   = useState<Set<number>>(new Set());
+  const [showAiBuilder, setShowAiBuilder] = useState(false);
+  const [showAudit, setShowAudit]         = useState(false);
+  const [aiBuilding, setAiBuilding]       = useState(false);
+  const [aiProposal, setAiProposal]       = useState<{ total_cost: number; basis: string; breakdown: AiBreakdownItem[] } | null>(null);
+  const [aiForm, setAiForm] = useState({ partDescription: '', commodity: 'Stamped Steel', annualVolume: '10000', currency: 'GBP', processNotes: '' });
 
   // Load the list of published should-cost models
   useEffect(() => {
@@ -168,6 +181,95 @@ export default function ShouldCostDetail() {
 
         {/* ── Breakdown ── */}
         <div>
+          {/* AI Builder panel */}
+          <div className="card" style={{ marginBottom: 16 }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div style={{ fontWeight: 700, fontSize: 14 }}>🤖 AI Should-Cost Builder</div>
+              <button className="btn btn-primary btn-sm" onClick={() => setShowAiBuilder((v) => !v)}>
+                {showAiBuilder ? 'Hide' : 'Build with AI'}
+              </button>
+            </div>
+            {showAiBuilder && (
+              <div style={{ marginTop: 14, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                <div>
+                  <label className="form-label">Part Description *</label>
+                  <input className="form-control" value={aiForm.partDescription} onChange={(e) => setAiForm({ ...aiForm, partDescription: e.target.value })} placeholder="e.g. Front brake disc, grey cast iron" />
+                </div>
+                <div>
+                  <label className="form-label">Commodity</label>
+                  <input className="form-control" value={aiForm.commodity} onChange={(e) => setAiForm({ ...aiForm, commodity: e.target.value })} placeholder="e.g. Stamped Steel, Cast Iron…" />
+                </div>
+                <div>
+                  <label className="form-label">Annual Volume (units)</label>
+                  <input className="form-control" type="number" value={aiForm.annualVolume} onChange={(e) => setAiForm({ ...aiForm, annualVolume: e.target.value })} />
+                </div>
+                <div>
+                  <label className="form-label">Currency</label>
+                  <select className="form-control" value={aiForm.currency} onChange={(e) => setAiForm({ ...aiForm, currency: e.target.value })}>
+                    {['GBP','EUR','USD'].map((c) => <option key={c}>{c}</option>)}
+                  </select>
+                </div>
+                <div style={{ gridColumn: '1 / -1' }}>
+                  <label className="form-label">Process Notes (optional)</label>
+                  <input className="form-control" value={aiForm.processNotes} onChange={(e) => setAiForm({ ...aiForm, processNotes: e.target.value })} placeholder="e.g. high-volume stamping, robotised welding" />
+                </div>
+                <div style={{ gridColumn: '1 / -1', display: 'flex', gap: 8 }}>
+                  <button className="btn btn-primary" disabled={aiBuilding || !aiForm.partDescription} onClick={async () => {
+                    setAiBuilding(true); setAiProposal(null);
+                    try {
+                      const r = await api.post('/ai/build-should-cost', {
+                        partDescription: aiForm.partDescription,
+                        commodity: aiForm.commodity,
+                        annualVolume: parseInt(aiForm.annualVolume),
+                        currency: aiForm.currency,
+                        processNotes: aiForm.processNotes || undefined,
+                      });
+                      setAiProposal(r.data as { total_cost: number; basis: string; breakdown: AiBreakdownItem[] });
+                    } finally { setAiBuilding(false); }
+                  }}>
+                    {aiBuilding ? 'Claude is thinking…' : '✨ Generate Breakdown'}
+                  </button>
+                  {aiProposal && <button className="btn btn-secondary" onClick={() => setAiProposal(null)}>Clear</button>}
+                </div>
+                {aiProposal && (
+                  <div style={{ gridColumn: '1 / -1' }}>
+                    <div style={{ marginBottom: 8, fontSize: 13, color: 'var(--text-2)' }}>
+                      <strong>Total:</strong> {aiProposal.currency ?? aiForm.currency} {Number(aiProposal.total_cost).toFixed(2)} — {aiProposal.basis}
+                    </div>
+                    <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
+                      <thead>
+                        <tr style={{ background: 'var(--bg)' }}>
+                          <th style={{ padding: '7px 10px', textAlign: 'left' }}>Element</th>
+                          <th style={{ padding: '7px 10px', textAlign: 'left' }}>Category</th>
+                          <th style={{ padding: '7px 10px', textAlign: 'right' }}>Value</th>
+                          <th style={{ padding: '7px 10px', textAlign: 'right' }}>%</th>
+                          <th style={{ padding: '7px 10px', textAlign: 'left' }}>Basis</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {aiProposal.breakdown.map((b, i) => {
+                          const pctVal = aiProposal.total_cost ? ((b.value / aiProposal.total_cost) * 100).toFixed(1) : '—';
+                          return (
+                            <tr key={i} style={{ borderTop: '1px solid var(--border)' }}>
+                              <td style={{ padding: '7px 10px', fontWeight: 600 }}>{b.cost_element}</td>
+                              <td style={{ padding: '7px 10px', fontSize: 12, color: 'var(--text-3)' }}>{b.category}</td>
+                              <td style={{ padding: '7px 10px', textAlign: 'right', fontWeight: 700 }}>{Number(b.value).toFixed(2)}</td>
+                              <td style={{ padding: '7px 10px', textAlign: 'right', color: 'var(--text-3)' }}>{pctVal}%</td>
+                              <td style={{ padding: '7px 10px', fontSize: 12, color: 'var(--text-3)' }}>{b.basis}</td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                    <div style={{ marginTop: 8, fontSize: 12, color: 'var(--text-3)' }}>
+                      This is an AI-generated estimate. Review and adjust before saving as a formal should-cost.
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+
           {loadingDetail || !detail ? (
             <div className="card"><div className="loading">Loading breakdown…</div></div>
           ) : (
@@ -230,6 +332,45 @@ export default function ShouldCostDetail() {
                   </tfoot>
                 </table>
               </div>
+
+              {/* Version History / Audit Trail (P5) */}
+              {detail.auditTrail && detail.auditTrail.length > 0 && (
+                <div className="card">
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: showAudit ? 12 : 0 }}>
+                    <div style={{ fontWeight: 700, fontSize: 14 }}>📋 Version History</div>
+                    <button className="btn btn-secondary btn-sm" onClick={() => setShowAudit((v) => !v)}>
+                      {showAudit ? 'Hide' : `Show (${detail.auditTrail!.length})`}
+                    </button>
+                  </div>
+                  {showAudit && (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 4 }}>
+                      {detail.auditTrail!.map((a) => (
+                        <div key={a.id} style={{ display: 'flex', gap: 12, alignItems: 'flex-start', padding: '8px 0', borderBottom: '1px solid var(--border)', fontSize: 13 }}>
+                          <div style={{ width: 8, height: 8, borderRadius: '50%', background: a.change_type === 'published' ? 'var(--success)' : a.change_type === 'archived' ? 'var(--text-3)' : 'var(--accent)', marginTop: 5, flexShrink: 0 }} />
+                          <div style={{ flex: 1 }}>
+                            <div style={{ fontWeight: 600, textTransform: 'capitalize' }}>{a.change_type.replace('_', ' ')}</div>
+                            {(a.old_status || a.new_status) && (
+                              <div style={{ fontSize: 12, color: 'var(--text-3)' }}>
+                                Status: {a.old_status ?? '—'} → <strong>{a.new_status}</strong>
+                              </div>
+                            )}
+                            {(a.old_total_cost != null || a.new_total_cost != null) && (
+                              <div style={{ fontSize: 12, color: 'var(--text-3)' }}>
+                                Cost: {a.old_total_cost ? `${cur} ${Number(a.old_total_cost).toFixed(2)}` : '—'} → <strong>{cur} {Number(a.new_total_cost).toFixed(2)}</strong>
+                              </div>
+                            )}
+                            {a.notes && <div style={{ fontSize: 12, color: 'var(--text-2)', marginTop: 2 }}>{a.notes}</div>}
+                          </div>
+                          <div style={{ fontSize: 11, color: 'var(--text-3)', whiteSpace: 'nowrap' }}>
+                            {a.changed_by_name ?? 'System'}<br />
+                            {new Date(a.changed_at).toLocaleDateString('en-GB')}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
             </>
           )}
         </div>

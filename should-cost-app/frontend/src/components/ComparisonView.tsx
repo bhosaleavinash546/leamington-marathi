@@ -15,6 +15,7 @@ export default function ComparisonView() {
   const [loadingList, setLoadingList] = useState(true);
   const [loadingDetail, setLoadingDetail] = useState(false);
   const [aiLoading, setAiLoading] = useState(false);
+  const [streamingText, setStreamingText] = useState<string | undefined>(undefined);
 
   // Load list
   useEffect(() => {
@@ -35,11 +36,44 @@ export default function ComparisonView() {
   const handleGenerateAI = async () => {
     if (!detail) return;
     setAiLoading(true);
+    setStreamingText('');
     try {
-      await api.post('/ai/insights', { snapshotId: detail.snapshot.id });
-      // Reload to pick up the new insight
-      const r = await api.get<ComparisonFull>(`/comparisons/${detail.snapshot.id}`);
-      setDetail(r.data);
+      const token = localStorage.getItem('sc_token');
+      const resp = await fetch('/api/ai/insights/stream', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ snapshotId: detail.snapshot.id }),
+      });
+
+      const reader = resp.body?.getReader();
+      const decoder = new TextDecoder();
+      let buffer = '';
+
+      if (reader) {
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split('\n\n');
+          buffer = lines.pop() ?? '';
+          for (const line of lines) {
+            if (!line.startsWith('data: ')) continue;
+            const payload = JSON.parse(line.slice(6)) as { token?: string; done?: boolean; insight?: unknown };
+            if (payload.token) setStreamingText((t) => (t ?? '') + payload.token);
+            if (payload.done) {
+              // Reload full detail to get the persisted insight
+              const r = await api.get<ComparisonFull>(`/comparisons/${detail.snapshot.id}`);
+              setDetail(r.data);
+              setStreamingText(undefined);
+            }
+          }
+        }
+      }
+    } catch {
+      setStreamingText(undefined);
     } finally {
       setAiLoading(false);
     }
@@ -206,7 +240,11 @@ export default function ComparisonView() {
       </div>
 
       {/* AI Insights */}
-      {latestInsight && (
+      {/* Show streaming panel while generating, then switch to saved insight */}
+      {streamingText !== undefined && (
+        <AIInsightsPanel insight={{} as never} streamingText={streamingText} />
+      )}
+      {streamingText === undefined && latestInsight && (
         <AIInsightsPanel insight={latestInsight} />
       )}
     </div>

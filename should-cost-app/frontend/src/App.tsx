@@ -1,5 +1,6 @@
 import { Routes, Route, NavLink, Navigate, Link } from 'react-router-dom';
 import { useState } from 'react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import Dashboard from './components/Dashboard';
 import ComparisonView from './components/ComparisonView';
 import QuoteForm from './components/QuoteForm';
@@ -9,16 +10,21 @@ import OpportunityDashboard from './pages/OpportunityDashboard';
 import ThreeWayComparison from './pages/ThreeWayComparison';
 import ShouldCostDetail from './pages/ShouldCostDetail';
 import CrossModelComparison from './pages/CrossModelComparison';
+import NegotiationTracker from './pages/NegotiationTracker';
+import SupplierScorecard from './pages/SupplierScorecard';
 import LandingPage from './pages/LandingPage';
 import AuthPage from './pages/AuthPage';
 import ThemeToggle from './components/ThemeToggle';
+import CommandPalette from './components/CommandPalette';
 import Logo from './components/Logo';
 import { AuthUser } from './types';
 import { ThemeProvider } from './context/ThemeContext';
 
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { staleTime: 60_000, retry: 1 } },
+});
+
 function AppShell() {
-  // Read the stored user synchronously so a hard refresh on a deep link
-  // (e.g. /three-way) doesn't bounce through the public routes first.
   const [user, setUser] = useState<AuthUser | null>(() => {
     try {
       const stored = localStorage.getItem('sc_user');
@@ -27,6 +33,7 @@ function AppShell() {
       return null;
     }
   });
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const logout = () => {
     localStorage.removeItem('sc_token');
@@ -34,7 +41,6 @@ function AppShell() {
     setUser(null);
   };
 
-  // Public routes
   if (!user) {
     return (
       <Routes>
@@ -48,6 +54,7 @@ function AppShell() {
   }
 
   const isSupplier = user.role === 'supplier';
+  const isInternal = user.role === 'internal' || user.role === 'admin';
 
   return (
     <div className="app-shell">
@@ -56,10 +63,24 @@ function AppShell() {
         <ThemeToggle />
       </div>
 
+      {/* ── Mobile hamburger ── */}
+      <button
+        className="sidebar-toggle"
+        onClick={() => setSidebarOpen((o) => !o)}
+        aria-label="Toggle sidebar"
+      >
+        {sidebarOpen ? '✕' : '☰'}
+      </button>
+
+      {/* ── Sidebar overlay (mobile) ── */}
+      {sidebarOpen && (
+        <div className="sidebar-overlay" onClick={() => setSidebarOpen(false)} />
+      )}
+
       {/* ── Sidebar ── */}
-      <nav className="sidebar">
+      <nav className={`sidebar${sidebarOpen ? ' sidebar-open' : ''}`}>
         <div className="sidebar-logo" style={{ padding: '4px 0' }}>
-          <Link to="/dashboard" style={{ display: 'block', textDecoration: 'none' }}>
+          <Link to="/dashboard" style={{ display: 'block', textDecoration: 'none' }} onClick={() => setSidebarOpen(false)}>
             <Logo height={52} />
           </Link>
         </div>
@@ -67,44 +88,28 @@ function AppShell() {
         {!isSupplier && (
           <>
             <div className="sidebar-section">Analytics</div>
-            <NavLink to="/dashboard"  className={({ isActive }) => isActive ? 'active' : ''}>
-              📊 Dashboard
-            </NavLink>
-            <NavLink to="/opportunity" className={({ isActive }) => isActive ? 'active' : ''}>
-              🎯 Opportunity
-            </NavLink>
-            <NavLink to="/three-way" className={({ isActive }) => isActive ? 'active' : ''}>
-              ⚖ Three-Way Analysis
-            </NavLink>
-            <NavLink to="/comparisons" className={({ isActive }) => isActive ? 'active' : ''}>
-              🔍 Comparisons
-            </NavLink>
-            <NavLink to="/cross-model" className={({ isActive }) => isActive ? 'active' : ''}>
-              🌐 Cross-Model
-            </NavLink>
-            <NavLink to="/multi-comparison" className={({ isActive }) => isActive ? 'active' : ''}>
-              📋 Multi-Supplier
-            </NavLink>
+            <NavLink to="/dashboard"       className={({ isActive }) => isActive ? 'active' : ''} onClick={() => setSidebarOpen(false)}>📊 Dashboard</NavLink>
+            <NavLink to="/opportunity"     className={({ isActive }) => isActive ? 'active' : ''} onClick={() => setSidebarOpen(false)}>🎯 Opportunity</NavLink>
+            <NavLink to="/three-way"       className={({ isActive }) => isActive ? 'active' : ''} onClick={() => setSidebarOpen(false)}>⚖ Three-Way Analysis</NavLink>
+            <NavLink to="/comparisons"     className={({ isActive }) => isActive ? 'active' : ''} onClick={() => setSidebarOpen(false)}>🔍 Comparisons</NavLink>
+            <NavLink to="/cross-model"     className={({ isActive }) => isActive ? 'active' : ''} onClick={() => setSidebarOpen(false)}>🌐 Cross-Model</NavLink>
+            <NavLink to="/multi-comparison" className={({ isActive }) => isActive ? 'active' : ''} onClick={() => setSidebarOpen(false)}>📋 Multi-Supplier</NavLink>
+
+            <div className="sidebar-section">Procurement</div>
+            <NavLink to="/negotiations"    className={({ isActive }) => isActive ? 'active' : ''} onClick={() => setSidebarOpen(false)}>🤝 Negotiations</NavLink>
+            <NavLink to="/scorecard"       className={({ isActive }) => isActive ? 'active' : ''} onClick={() => setSidebarOpen(false)}>🏆 Supplier Scorecard</NavLink>
 
             <div className="sidebar-section">Data</div>
-            <NavLink to="/should-costs" className={({ isActive }) => isActive ? 'active' : ''}>
-              🏗 Should-Costs
-            </NavLink>
-            <NavLink to="/quotes" className={({ isActive }) => isActive ? 'active' : ''}>
-              📄 All Quotes
-            </NavLink>
+            <NavLink to="/should-costs"    className={({ isActive }) => isActive ? 'active' : ''} onClick={() => setSidebarOpen(false)}>🏗 Should-Costs</NavLink>
+            <NavLink to="/quotes"          className={({ isActive }) => isActive ? 'active' : ''} onClick={() => setSidebarOpen(false)}>📄 All Quotes</NavLink>
           </>
         )}
 
         {isSupplier && (
           <>
             <div className="sidebar-section">Supplier</div>
-            <NavLink to="/portal"     className={({ isActive }) => isActive ? 'active' : ''}>
-              📄 My Quotes
-            </NavLink>
-            <NavLink to="/portal/new" className={({ isActive }) => isActive ? 'active' : ''}>
-              ＋ Submit Quote
-            </NavLink>
+            <NavLink to="/portal"     className={({ isActive }) => isActive ? 'active' : ''} onClick={() => setSidebarOpen(false)}>📄 My Quotes</NavLink>
+            <NavLink to="/portal/new" className={({ isActive }) => isActive ? 'active' : ''} onClick={() => setSidebarOpen(false)}>＋ Submit Quote</NavLink>
           </>
         )}
 
@@ -127,7 +132,7 @@ function AppShell() {
       </nav>
 
       {/* ── Main ── */}
-      <main className="main-content">
+      <main className="main-content" onClick={() => sidebarOpen && setSidebarOpen(false)}>
         <Routes>
           {!isSupplier && (
             <>
@@ -138,6 +143,8 @@ function AppShell() {
               <Route path="/comparisons/:id"  element={<ComparisonView />} />
               <Route path="/cross-model"      element={<CrossModelComparison />} />
               <Route path="/multi-comparison" element={<MultiSupplierComparison />} />
+              <Route path="/negotiations"     element={<NegotiationTracker />} />
+              <Route path="/scorecard"        element={<SupplierScorecard />} />
               <Route path="/should-costs"     element={<ShouldCostDetail />} />
               <Route path="/quotes"           element={<SupplierPortal user={user} />} />
               <Route path="/portal/new"       element={<QuoteForm user={user} />} />
@@ -153,6 +160,9 @@ function AppShell() {
           )}
         </Routes>
       </main>
+
+      {/* ── Command Palette (Cmd+K / Ctrl+K) — internal users only (P9) ── */}
+      {isInternal && <CommandPalette />}
     </div>
   );
 }
@@ -160,7 +170,9 @@ function AppShell() {
 export default function App() {
   return (
     <ThemeProvider>
-      <AppShell />
+      <QueryClientProvider client={queryClient}>
+        <AppShell />
+      </QueryClientProvider>
     </ThemeProvider>
   );
 }
