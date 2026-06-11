@@ -44,7 +44,22 @@ export async function getShouldCost(req: Request, res: Response): Promise<void> 
     [id]
   );
 
-  res.json({ header: headerResult.rows[0], breakdown: breakdownResult.rows });
+  // Level-3 sub-items, nested under their parent breakdown element
+  const breakdownIds = breakdownResult.rows.map((b) => b.id);
+  let subitems: Array<{ breakdown_id: number }> = [];
+  if (breakdownIds.length) {
+    const subRes = await pool.query(
+      `SELECT * FROM should_cost_subitem WHERE breakdown_id = ANY($1) ORDER BY breakdown_id, sort_order`,
+      [breakdownIds]
+    );
+    subitems = subRes.rows;
+  }
+  const breakdown = breakdownResult.rows.map((b) => ({
+    ...b,
+    subitems: subitems.filter((s) => s.breakdown_id === b.id),
+  }));
+
+  res.json({ header: headerResult.rows[0], breakdown });
 }
 
 // POST /api/should-cost

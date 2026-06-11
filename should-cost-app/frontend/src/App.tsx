@@ -7,6 +7,7 @@ import SupplierPortal from './components/SupplierPortal';
 import MultiSupplierComparison from './components/MultiSupplierComparison';
 import OpportunityDashboard from './pages/OpportunityDashboard';
 import ThreeWayComparison from './pages/ThreeWayComparison';
+import ShouldCostDetail from './pages/ShouldCostDetail';
 import LandingPage from './pages/LandingPage';
 import AuthPage from './pages/AuthPage';
 import ThemeToggle from './components/ThemeToggle';
@@ -132,7 +133,7 @@ function AppShell() {
               <Route path="/comparisons"      element={<ComparisonView />} />
               <Route path="/comparisons/:id"  element={<ComparisonView />} />
               <Route path="/multi-comparison" element={<MultiSupplierComparison />} />
-              <Route path="/should-costs"     element={<Dashboard user={user} />} />
+              <Route path="/should-costs"     element={<ShouldCostDetail />} />
               <Route path="/quotes"           element={<SupplierPortal user={user} />} />
               <Route path="/portal/new"       element={<QuoteForm user={user} />} />
               <Route path="*"                 element={<Navigate to="/dashboard" replace />} />
