@@ -1,5 +1,5 @@
 import { Routes, Route, NavLink, Navigate } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Dashboard from './components/Dashboard';
 import ComparisonView from './components/ComparisonView';
 import QuoteForm from './components/QuoteForm';
@@ -15,12 +15,16 @@ import { AuthUser } from './types';
 import { ThemeProvider } from './context/ThemeContext';
 
 function AppShell() {
-  const [user, setUser] = useState<AuthUser | null>(null);
-
-  useEffect(() => {
-    const stored = localStorage.getItem('sc_user');
-    if (stored) setUser(JSON.parse(stored) as AuthUser);
-  }, []);
+  // Read the stored user synchronously so a hard refresh on a deep link
+  // (e.g. /three-way) doesn't bounce through the public routes first.
+  const [user, setUser] = useState<AuthUser | null>(() => {
+    try {
+      const stored = localStorage.getItem('sc_user');
+      return stored ? (JSON.parse(stored) as AuthUser) : null;
+    } catch {
+      return null;
+    }
+  });
 
   const logout = () => {
     localStorage.removeItem('sc_token');

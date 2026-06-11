@@ -15,6 +15,25 @@ INSERT INTO supplier (code, name, country, contact_name, contact_email) VALUES
   ('SUP-102', 'Mitra Auto Industries',    'India',          'Ananya Mitra',    'ananya@mitraauto.example')
 ON CONFLICT (code) DO NOTHING;
 
+-- Supplier portal logins (password: "password", same bcrypt hash as demo users)
+INSERT INTO "user" (email, password_hash, full_name, role_id, supplier_id)
+SELECT
+  'james@sterlingprecision.example',
+  '$2b$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
+  'James Whitfield',
+  (SELECT id FROM role WHERE name = 'supplier'),
+  (SELECT id FROM supplier WHERE code = 'SUP-101')
+ON CONFLICT (email) DO NOTHING;
+
+INSERT INTO "user" (email, password_hash, full_name, role_id, supplier_id)
+SELECT
+  'ananya@mitraauto.example',
+  '$2b$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
+  'Ananya Mitra',
+  (SELECT id FROM role WHERE name = 'supplier'),
+  (SELECT id FROM supplier WHERE code = 'SUP-102')
+ON CONFLICT (email) DO NOTHING;
+
 DO $$
 DECLARE
   v_sup1     INTEGER;  -- Sterling Precision (UK)
