@@ -14,3 +14,4 @@ export * from './modules/pcb-fab.js';
 export * from './modules/pcba.js';
 export * from './process-taxonomy.js';
 export * from './modules/cast-and-machine.js';
+export * from './ai-analysis.js';

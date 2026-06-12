@@ -3,6 +3,7 @@ import {
   computeUniversalStack, validateStackInput, breakdownPercentages,
   DEFAULT_RATE_LIBRARY, recomputeMachineRates, getLibraryFromStorage, saveLibraryToStorage,
 } from '../engine/index.js';
+import type { CADAnalysisResult } from '../engine/ai-analysis.js';
 import { computeMachiningDrivers } from '../engine/modules/machining.js';
 import { computeSheetMetalDrivers } from '../engine/modules/sheet-metal.js';
 import { computeInjectionMouldingDrivers } from '../engine/modules/injection-moulding.js';
@@ -41,6 +42,8 @@ let joinCount = 0;
 let stationCount = 0;
 let bomCount = 0;
 let camMachOpCount = 0;
+let cadFile: File | null = null;
+let cadAnalysisResult: CADAnalysisResult | null = null;
 
 // ─── DOM helpers ──────────────────────────────────────────────────────────────
 
@@ -905,6 +908,345 @@ function addCAMMachOp(d?: Partial<MachiningOperation>): void {
   div.querySelector('.remove-op')!.addEventListener('click', () => div.remove());
 }
 
+// ─── Form: AI CAD Analysis ────────────────────────────────────────────────────
+
+function renderCADAnalysisForm(): string {
+  return `
+    <div class="section-title">AI CAD Analysis</div>
+    <div id="cad-drop-zone" class="cad-upload-zone">
+      <div class="cad-upload-icon">📐</div>
+      <div style="font-size:0.85rem;color:#555;margin-bottom:8px">Drop your CAD file here, or click to browse</div>
+      <label class="btn btn-primary btn-sm" for="cad-file-input" style="cursor:pointer">Browse Files</label>
+      <input type="file" id="cad-file-input" accept=".stp,.step,.igs,.iges" style="display:none"/>
+      <div class="cad-file-formats">STEP (.stp, .step) &nbsp;·&nbsp; IGES (.igs, .iges)</div>
+    </div>
+    <div id="cad-file-info" class="cad-file-info" style="display:none">
+      <span class="file-icon">📄</span>
+      <div class="file-details">
+        <div id="cad-fname" style="font-weight:600"></div>
+        <div id="cad-fsize" style="color:#888;font-size:0.72rem"></div>
+      </div>
+      <button class="btn btn-secondary btn-sm" id="cad-clear-btn">✕ Clear</button>
+    </div>
+    <div class="field-group" style="margin-top:4px">
+      <label style="font-size:0.75rem">Claude API Key <span style="color:#aaa;font-weight:400">(or set ANTHROPIC_API_KEY on server)</span></label>
+      <input type="password" id="cad-api-key" placeholder="sk-ant-api03-… (optional if server has key)"
+             value="${localStorage.getItem('cad-api-key') ?? ''}" style="font-family:monospace;font-size:0.8rem"/>
+    </div>
+    <button class="btn btn-primary" id="cad-analyze-btn" disabled style="margin-top:6px;width:100%">
+      Analyze CAD File
+    </button>
+    <div id="cad-progress-wrap" class="cad-progress-wrap" style="display:none">
+      <div class="cad-progress-label" id="cad-progress-label">Uploading file…</div>
+      <div class="cad-progress-bar"><div class="cad-progress-fill" id="cad-progress-fill" style="width:0%"></div></div>
+    </div>
+    <div id="cad-results"></div>`;
+}
+
+function wireCADEvents(): void {
+  const dropZone = el('cad-drop-zone');
+  const fileInput = el<HTMLInputElement>('cad-file-input');
+  const analyzeBtn = el('cad-analyze-btn');
+
+  // File input change
+  fileInput.addEventListener('change', () => {
+    const f = fileInput.files?.[0];
+    if (f) setCADFile(f);
+  });
+
+  // Drag-drop
+  dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragover'); });
+  dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+  dropZone.addEventListener('drop', e => {
+    e.preventDefault();
+    dropZone.classList.remove('dragover');
+    const f = e.dataTransfer?.files?.[0];
+    if (f) setCADFile(f);
+  });
+  dropZone.addEventListener('click', (e) => {
+    if ((e.target as HTMLElement).tagName !== 'LABEL' && (e.target as HTMLElement).tagName !== 'INPUT')
+      fileInput.click();
+  });
+
+  // Clear button
+  el('cad-clear-btn')?.addEventListener('click', () => {
+    cadFile = null; cadAnalysisResult = null;
+    el('cad-file-info').style.display = 'none';
+    el('cad-drop-zone').style.display = '';
+    analyzeBtn.setAttribute('disabled', 'true');
+    el('cad-results').innerHTML = '';
+  });
+
+  // Analyze button
+  analyzeBtn.addEventListener('click', () => { void analyzeCAD(); });
+}
+
+function setCADFile(f: File): void {
+  const ext = f.name.toLowerCase().split('.').pop() ?? '';
+  if (!['stp', 'step', 'igs', 'iges'].includes(ext)) {
+    alert('Unsupported file format. Please use STEP (.stp/.step) or IGES (.igs/.iges).');
+    return;
+  }
+  cadFile = f;
+  el('cad-drop-zone').style.display = 'none';
+  el('cad-file-info').style.display = 'flex';
+  el('cad-fname').textContent = f.name;
+  el('cad-fsize').textContent = (f.size / 1024).toFixed(1) + ' KB';
+  el('cad-analyze-btn').removeAttribute('disabled');
+  el('cad-results').innerHTML = '';
+  cadAnalysisResult = null;
+}
+
+async function analyzeCAD(): Promise<void> {
+  if (!cadFile) return;
+
+  const apiKey = val('cad-api-key');
+  if (apiKey) localStorage.setItem('cad-api-key', apiKey);
+
+  const progress = el('cad-progress-wrap');
+  const progressFill = el('cad-progress-fill');
+  const progressLabel = el('cad-progress-label');
+  const analyzeBtn = el('cad-analyze-btn');
+
+  progress.style.display = '';
+  analyzeBtn.setAttribute('disabled', 'true');
+  el('cad-results').innerHTML = '';
+
+  const updateProgress = (pct: number, label: string) => {
+    progressFill.style.width = pct + '%';
+    progressLabel.textContent = label;
+  };
+
+  try {
+    updateProgress(20, 'Uploading file…');
+    const formData = new FormData();
+    formData.append('cadFile', cadFile);
+
+    const headers: HeadersInit = {};
+    if (apiKey) headers['x-api-key'] = apiKey;
+
+    updateProgress(40, 'Preprocessing geometry…');
+    const res = await fetch('/api/cad/analyze', { method: 'POST', headers, body: formData });
+
+    updateProgress(80, 'AI analysis in progress…');
+    const data = await res.json() as { success?: boolean; analysis?: CADAnalysisResult; error?: string };
+
+    if (!res.ok || !data.success) throw new Error(data.error ?? `Server error ${res.status}`);
+
+    updateProgress(100, 'Complete!');
+    cadAnalysisResult = data.analysis!;
+
+    // Update part name from AI analysis
+    const partNameEl = el<HTMLInputElement>('part-name');
+    if (partNameEl && cadAnalysisResult.partName) partNameEl.value = cadAnalysisResult.partName;
+
+    setTimeout(() => { progress.style.display = 'none'; }, 500);
+    renderCADResults(cadAnalysisResult);
+  } catch (err) {
+    progress.style.display = 'none';
+    analyzeBtn.removeAttribute('disabled');
+    el('cad-results').innerHTML = `
+      <div class="risk-card High" style="margin-top:10px">
+        <div class="risk-feature">Analysis Error</div>
+        <div>${err instanceof Error ? err.message : String(err)}</div>
+        <div class="risk-suggestion">Ensure the API server is running (<code>npm run server</code>) and ANTHROPIC_API_KEY is configured.</div>
+      </div>`;
+  }
+}
+
+function renderCADResults(r: CADAnalysisResult): void {
+  const panel = el('cad-results');
+  const g = r.geometry;
+  const bb = g.boundingBoxMm;
+  const scoreClass = r.manufacturabilityScore >= 75 ? 'score-high' : r.manufacturabilityScore >= 50 ? 'score-med' : 'score-low';
+
+  const recommendedCommodity = r.costInputSuggestions.recommendedCommodity as CommodityType;
+  const commodityLabel: Record<string, string> = {
+    machining: 'Machining', sheet_metal: 'Sheet Metal', injection_moulding: 'Injection Moulding',
+    casting: 'Casting', forging: 'Forging', cast_and_machine: 'Cast+Machine',
+  };
+
+  panel.innerHTML = `
+    <!-- Header summary -->
+    <div style="display:flex;align-items:center;gap:16px;padding:12px 0;border-bottom:1px solid #eee;margin-bottom:12px">
+      <div style="text-align:center">
+        <div class="cad-score-ring ${scoreClass}">${r.manufacturabilityScore}</div>
+        <div style="font-size:0.7rem;color:#888">Manufacturability</div>
+      </div>
+      <div style="flex:1">
+        <div style="font-weight:700;font-size:0.9rem">${r.partName}</div>
+        <div style="font-size:0.78rem;color:#555;margin-top:2px">
+          ${bb.x.toFixed(0)}×${bb.y.toFixed(0)}×${bb.z.toFixed(0)} mm &nbsp;·&nbsp;
+          ~${g.estimatedVolumeCm3.toFixed(1)} cm³ &nbsp;·&nbsp;
+          ~${g.estimatedWeightKg.aluminum.toFixed(2)} kg (Al) / ${g.estimatedWeightKg.steel.toFixed(2)} kg (Steel)
+        </div>
+        <div style="margin-top:4px">
+          <span class="cad-confidence-badge ${r.confidenceLevel}">AI confidence: ${r.confidenceLevel}</span>
+          &nbsp;
+          <span style="font-size:0.72rem;color:#888">~${g.estimatedSurfaceAreaCm2.toFixed(0)} cm² surface</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Detected features -->
+    <div style="margin-bottom:12px">
+      <div class="panel-title" style="margin-bottom:6px">Detected Features</div>
+      <div>
+        ${r.detectedFeatures.map(f =>
+          `<span class="feature-badge ${f.significance}" title="${f.description}">${f.type}${f.count > 1 ? ' ×' + f.count : ''}</span>`
+        ).join('')}
+      </div>
+    </div>
+
+    <!-- Material suggestion -->
+    <div style="margin-bottom:12px">
+      <div class="panel-title" style="margin-bottom:6px">Material Analysis</div>
+      <div style="font-size:0.8rem">
+        <strong>${r.materialAnalysis.primarySuggestion.name}</strong>
+        <span class="cad-confidence-badge ${r.materialAnalysis.primarySuggestion.confidencePct >= 75 ? 'High' : r.materialAnalysis.primarySuggestion.confidencePct >= 50 ? 'Medium' : 'Low'}"
+              style="margin-left:6px">${r.materialAnalysis.primarySuggestion.confidencePct}%</span>
+        ${r.materialAnalysis.fromMetadata ? '<span style="font-size:0.7rem;color:#2e7d32;margin-left:6px">from CAD metadata</span>' : ''}
+        <div style="color:#666;margin-top:3px">${r.materialAnalysis.primarySuggestion.reasoning}</div>
+        ${r.materialAnalysis.alternatives.length > 0 ? `
+          <div style="margin-top:4px;font-size:0.72rem;color:#888">Alternatives: ${r.materialAnalysis.alternatives.map(a => `${a.name} (${a.confidencePct}%)`).join(', ')}</div>` : ''}
+      </div>
+    </div>
+
+    <!-- Process recommendations -->
+    <div style="margin-bottom:12px">
+      <div class="panel-title" style="margin-bottom:6px">Process Recommendations</div>
+      ${r.processRecommendations.slice(0, 5).map(p => `
+        <div class="process-rec-row">
+          <div>
+            <strong style="font-size:0.8rem">${p.process}</strong>
+            <div style="font-size:0.7rem;color:#888">${p.reasoning}</div>
+          </div>
+          <span class="cad-confidence-badge ${p.confidencePct >= 75 ? 'High' : p.confidencePct >= 50 ? 'Medium' : 'Low'}">${p.confidencePct}%</span>
+          <div class="confidence-bar-wrap">
+            <div class="confidence-bar-bg">
+              <div class="confidence-bar-fill" style="width:${p.confidencePct}%;background:${p.confidencePct >= 75 ? '#2e7d32' : p.confidencePct >= 50 ? '#e65100' : '#c62828'}"></div>
+            </div>
+          </div>
+        </div>`).join('')}
+    </div>
+
+    <!-- Risks -->
+    ${r.manufacturabilityRisks.length > 0 ? `
+    <div style="margin-bottom:12px">
+      <div class="panel-title" style="margin-bottom:6px">Manufacturability Risks</div>
+      ${r.manufacturabilityRisks.map(risk => `
+        <div class="risk-card ${risk.severity}">
+          <div class="risk-feature">${risk.severity} · ${risk.feature}</div>
+          <div>${risk.description}</div>
+          <div class="risk-suggestion">→ ${risk.suggestion}</div>
+        </div>`).join('')}
+    </div>` : ''}
+
+    <!-- AI Explanation -->
+    <div style="margin-bottom:12px">
+      <div class="panel-title" style="margin-bottom:6px">AI Explanation</div>
+      <div style="font-size:0.78rem;color:#444;line-height:1.5">${r.aiExplanation}</div>
+    </div>
+
+    <!-- Suggested cost inputs -->
+    <div style="margin-bottom:12px">
+      <div class="panel-title" style="margin-bottom:6px">Suggested Cost Inputs</div>
+      <table class="breakdown-table" style="font-size:0.78rem">
+        <tr><td>Weight (net)</td><td>${r.costInputSuggestions.netWeightKg.toFixed(3)} kg</td></tr>
+        <tr><td>Material</td><td>${r.materialAnalysis.primarySuggestion.name} (${r.costInputSuggestions.materialId})</td></tr>
+        <tr><td>Estimated cycle time</td><td>${r.costInputSuggestions.estimatedCycleTimeHr.toFixed(3)} hr/part</td></tr>
+        <tr><td>Setup time</td><td>${r.costInputSuggestions.estimatedSetupTimeHr.toFixed(2)} hr</td></tr>
+        <tr><td>Operations</td><td>${r.costInputSuggestions.estimatedOperations.map(o => o.name).join(', ')}</td></tr>
+      </table>
+    </div>
+
+    <!-- Apply to form -->
+    <div class="cad-apply-btn-row">
+      <strong style="font-size:0.8rem;align-self:center">Apply to cost engine:</strong>
+      <button class="btn btn-primary btn-sm" id="cad-apply-btn" data-commodity="${recommendedCommodity}">
+        → ${commodityLabel[recommendedCommodity] ?? recommendedCommodity} (Recommended)
+      </button>
+      ${r.processRecommendations.slice(1, 3).map(p => {
+        const ct = p.commodityType as CommodityType;
+        return `<button class="btn btn-secondary btn-sm cad-apply-alt-btn" data-commodity="${ct}">${commodityLabel[ct] ?? ct}</button>`;
+      }).join('')}
+    </div>
+
+    ${r.analysisLimitations.length > 0 ? `
+    <div class="cad-limitations">
+      <strong>Limitations:</strong> ${r.analysisLimitations.join(' · ')}
+    </div>` : ''}
+  `;
+
+  // Wire apply buttons
+  el('cad-apply-btn')?.addEventListener('click', () => {
+    const ct = (el('cad-apply-btn') as HTMLElement).dataset.commodity as CommodityType;
+    applyCADToForm(ct);
+  });
+  panel.querySelectorAll<HTMLElement>('.cad-apply-alt-btn').forEach(btn => {
+    btn.addEventListener('click', () => applyCADToForm(btn.dataset.commodity as CommodityType));
+  });
+}
+
+function applyCADToForm(targetCommodity: CommodityType): void {
+  if (!cadAnalysisResult) return;
+  const r = cadAnalysisResult;
+  const c = r.costInputSuggestions;
+
+  switchCommodity(targetCommodity);
+
+  setTimeout(() => {
+    // Set part name
+    const partNameEl = el<HTMLInputElement>('part-name');
+    if (partNameEl) partNameEl.value = r.partName || cadFile?.name.replace(/\.[^.]+$/, '') || 'CAD Part';
+
+    if (targetCommodity === 'machining') {
+      // Fill material
+      const matEl = el<HTMLSelectElement>('mach-mat');
+      if (matEl && c.materialId) {
+        const opt = Array.from(matEl.options).find(o => o.value === c.materialId);
+        if (opt) matEl.value = opt.value;
+      }
+      // Fill weight
+      const wtEl = el<HTMLInputElement>('mach-net-wt');
+      if (wtEl) wtEl.value = c.netWeightKg.toFixed(3);
+      const stockWt = el<HTMLInputElement>('mach-stock-wt');
+      if (stockWt) stockWt.value = (c.netWeightKg * 1.4).toFixed(3);
+      const util = el<HTMLInputElement>('mach-mat-util');
+      if (util) util.value = '0'; // will be computed from net/stock
+
+      // Add operations
+      const container = el('mach-ops-container');
+      if (container) {
+        container.innerHTML = '';
+        machOpCount = 0;
+        for (const op of c.estimatedOperations) {
+          addMachOp({
+            name: op.name,
+            type: 'milling_3ax',
+            machineId: op.machineId,
+            labourId: op.labourId || 'lab-uk-skilled',
+            cycleTimeHr: op.cycleTimeHr,
+            partsPerCycle: 1,
+            oee: op.oee,
+            manning: op.manning,
+            labourTimeHr: op.cycleTimeHr,
+            labourEfficiency: op.labourEfficiency,
+          });
+        }
+      }
+    } else if (targetCommodity === 'casting' || targetCommodity === 'cast_and_machine') {
+      const matEl = el<HTMLSelectElement>('cast-mat') ?? el<HTMLSelectElement>('cam-mat');
+      if (matEl && c.materialId) {
+        const opt = Array.from(matEl.options).find(o => o.value === c.materialId);
+        if (opt) matEl.value = opt.value;
+      }
+      const wtEl = el<HTMLInputElement>('cast-net-wt') ?? el<HTMLInputElement>('cam-net-wt');
+      if (wtEl) wtEl.value = c.netWeightKg.toFixed(3);
+    }
+  }, 100);
+}
+
 // ─── Commodity switching ──────────────────────────────────────────────────────
 
 function switchCommodity(type: CommodityType): void {
@@ -1029,6 +1371,11 @@ function switchCommodity(type: CommodityType): void {
         if (setupMachEl) { const opt = Array.from(setupMachEl.options).find(o => o.value.includes('mach-haas-vf2')); if (opt) setupMachEl.value = opt.value; }
       }, 0);
       addCAMMachOp({ name: 'Face Mill', type: 'milling_3ax', machineId: 'mach-haas-vf2', labourId: 'lab-uk-skilled', cycleTimeHr: 0.05, partsPerCycle: 1, oee: 0.85, manning: 1, labourTimeHr: 0.05, labourEfficiency: 0.92 });
+      break;
+
+    case 'cad_analysis':
+      area.innerHTML = renderCADAnalysisForm();
+      wireCADEvents();
       break;
   }
 }
@@ -1378,6 +1725,8 @@ function collectInput(): UniversalStackInput {
     case 'pcb_fab':           return collectPCBFabInput();
     case 'pcba':              return collectPCBAInput();
     case 'cast_and_machine':  return collectCastAndMachineInput();
+    case 'cad_analysis':
+      throw new Error('Apply CAD analysis results to a commodity form first using the "Apply to cost engine" button, then calculate.');
   }
 }
 
@@ -1845,6 +2194,10 @@ function loadExample(): void {
         (el<HTMLInputElement>('margin-pct')).value = '9';
         compute();
       }, 0);
+      break;
+
+    case 'cad_analysis':
+      el('cad-results').innerHTML = `<div style="padding:12px;font-size:0.8rem;color:#555;background:#fff8f3;border-radius:6px;border:1px solid #ffd699">Upload a STEP or IGES file and click "Analyze CAD File" to get AI-powered cost estimates.</div>`;
       break;
 
     default:

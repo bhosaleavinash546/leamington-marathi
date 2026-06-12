@@ -11,7 +11,8 @@ export type CommodityType =
   | 'biw_assembly'
   | 'pcb_fab'
   | 'pcba'
-  | 'cast_and_machine';
+  | 'cast_and_machine'
+  | 'cad_analysis';
 export type ToolingMode = 'amortized' | 'one_time_nre';
 
 export interface MaterialRate {
