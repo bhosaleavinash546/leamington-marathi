@@ -10,7 +10,8 @@ export type CommodityType =
   | 'painting'
   | 'biw_assembly'
   | 'pcb_fab'
-  | 'pcba';
+  | 'pcba'
+  | 'cast_and_machine';
 export type ToolingMode = 'amortized' | 'one_time_nre';
 
 export interface MaterialRate {

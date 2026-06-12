@@ -119,6 +119,12 @@ export const DEFAULT_RATE_LIBRARY: RateLibrary = {
     { id: 'mat-adc12', grade: 'ADC12 / A383', category: 'Die Cast Aluminium', pricePerKg: 2.40, scrapRecoveryPricePerKg: 0.50, densityKgPerM3: 2700, region: 'UK', effectiveDate: '2024-01-01', sourceNote: 'UK Al alloy ingot, Jan 2024', confidence: 'Medium' },
     { id: 'mat-a380', grade: 'A380', category: 'Die Cast Aluminium', pricePerKg: 2.45, scrapRecoveryPricePerKg: 0.50, densityKgPerM3: 2680, region: 'UK', effectiveDate: '2024-01-01', sourceNote: 'UK Al alloy ingot, Jan 2024', confidence: 'Medium' },
     { id: 'mat-gjl250', grade: 'EN-GJL-250', category: 'Grey Cast Iron', pricePerKg: 0.55, scrapRecoveryPricePerKg: 0.12, densityKgPerM3: 7200, region: 'UK', effectiveDate: '2024-01-01', sourceNote: 'UK iron foundry, Jan 2024', confidence: 'Low' },
+    // ── Additional casting alloys (Cast+Machine module) ────────────────────
+    { id: 'mat-lm25', grade: 'LM25 / A356', category: 'Gravity/Sand Aluminium', pricePerKg: 2.65, scrapRecoveryPricePerKg: 0.50, densityKgPerM3: 2680, region: 'UK', effectiveDate: '2024-01-01', sourceNote: 'UK Al alloy ingot, Jan 2024', confidence: 'Medium' },
+    { id: 'mat-gjl350', grade: 'EN-GJL-350', category: 'Grey Cast Iron', pricePerKg: 0.65, scrapRecoveryPricePerKg: 0.12, densityKgPerM3: 7200, region: 'UK', effectiveDate: '2024-01-01', sourceNote: 'UK iron foundry, Jan 2024', confidence: 'Low' },
+    { id: 'mat-bronze-c905', grade: 'C905 Phosphor Bronze', category: 'Copper Alloy', pricePerKg: 7.50, scrapRecoveryPricePerKg: 2.50, densityKgPerM3: 8800, region: 'UK', effectiveDate: '2024-01-01', sourceNote: 'UK copper alloy distributor, Jan 2024', confidence: 'Low' },
+    { id: 'mat-mag-az91', grade: 'AZ91D Magnesium Die Cast', category: 'Magnesium Alloy', pricePerKg: 3.80, scrapRecoveryPricePerKg: 0.80, densityKgPerM3: 1810, region: 'UK', effectiveDate: '2024-01-01', sourceNote: 'UK Mg alloy ingot, Jan 2024', confidence: 'Low' },
+    { id: 'mat-ss304-cast', grade: 'CF8 / 304 Cast Stainless', category: 'Cast Stainless Steel', pricePerKg: 4.80, scrapRecoveryPricePerKg: 1.20, densityKgPerM3: 7900, region: 'UK', effectiveDate: '2024-01-01', sourceNote: 'UK stainless foundry, Jan 2024', confidence: 'Low' },
     // ── Forging billets ────────────────────────────────────────────────────
     { id: 'mat-steel1020', grade: '1020 / S20C', category: 'Carbon Steel Billet', pricePerKg: 0.72, scrapRecoveryPricePerKg: 0.19, densityKgPerM3: 7850, region: 'UK', effectiveDate: '2024-01-01', sourceNote: 'UK steel billet, Jan 2024', confidence: 'Medium' },
     { id: 'mat-steel4340', grade: '4340', category: 'Alloy Steel Billet', pricePerKg: 1.30, scrapRecoveryPricePerKg: 0.22, densityKgPerM3: 7850, region: 'UK', effectiveDate: '2024-01-01', sourceNote: 'UK alloy billet, Jan 2024', confidence: 'Medium' },
@@ -217,6 +223,31 @@ export const DEFAULT_RATE_LIBRARY: RateLibrary = {
       { annualDepreciation: 500, maintenance: 200, energy: 300, floorSpace: 800, indirectSupport: 500, financeCost: 50, annualAvailableHours: 4000, machineUtilization: 0.85 },
       'UK', 'Assembly bench — low machine rate; cost primarily driven by labour'
     ),
+    // ── Named Machining Centres (Cast+Machine dataset) ─────────────────────
+    // HAAS VF-2 3-axis Mill: total=90000, util=0.50 → rate=90000/(4000×0.50)=£45/hr
+    makeMachine('mach-haas-vf2', 'HAAS VF-2 (3-axis Mill)',
+      { annualDepreciation: 38000, maintenance: 18000, energy: 10500, floorSpace: 5000, indirectSupport: 9500, financeCost: 9000, annualAvailableHours: 4000, machineUtilization: 0.50 },
+      'UK', 'HAAS VF-2 benchmark, UK Tier-2 machining shop'),
+    // DMG Mori DMU 50 5-axis Mill: total=190000, util=0.50 → rate=£95/hr
+    makeMachine('mach-dmg-dmu50', 'DMG Mori DMU 50 (5-axis Mill)',
+      { annualDepreciation: 85000, maintenance: 35000, energy: 20000, floorSpace: 8000, indirectSupport: 22000, financeCost: 20000, annualAvailableHours: 4000, machineUtilization: 0.50 },
+      'UK', 'DMG Mori DMU 50 benchmark, UK Tier-1 precision shop'),
+    // HAAS UMC-500 5-axis Mill: total=150000, util=0.50 → rate=£75/hr
+    makeMachine('mach-haas-umc500', 'HAAS UMC-500 (5-axis Mill)',
+      { annualDepreciation: 65000, maintenance: 28000, energy: 16000, floorSpace: 7000, indirectSupport: 18000, financeCost: 16000, annualAvailableHours: 4000, machineUtilization: 0.50 },
+      'UK', 'HAAS UMC-500 benchmark, UK Tier-2 machining shop'),
+    // Mazak Quick Turn 200 Turning: total=100000, util=0.50 → rate=£50/hr
+    makeMachine('mach-mazak-qt200', 'Mazak Quick Turn 200 (Turning)',
+      { annualDepreciation: 42000, maintenance: 20000, energy: 11000, floorSpace: 5000, indirectSupport: 12000, financeCost: 10000, annualAvailableHours: 4000, machineUtilization: 0.50 },
+      'UK', 'Mazak Quick Turn 200 benchmark, UK Tier-2 machining shop'),
+    // Gravity Die Casting Machine: total=76000, util=0.50 → rate=76000/(4000×0.50)=£38/hr ≈ £35/hr target
+    makeMachine('grav-die-cast-std', 'Gravity Die Casting Machine',
+      { annualDepreciation: 28000, maintenance: 14000, energy: 10000, floorSpace: 8000, indirectSupport: 9000, financeCost: 7000, annualAvailableHours: 4000, machineUtilization: 0.50 },
+      'UK', 'Standard gravity die casting machine, UK foundry benchmark'),
+    // Investment Casting Furnace: total=100000, util=0.60 → rate=100000/(4000×0.60)≈£41.67/hr ≈ £42/hr
+    makeMachine('invest-cast-furnace', 'Investment Casting Furnace',
+      { annualDepreciation: 40000, maintenance: 16000, energy: 18000, floorSpace: 8000, indirectSupport: 9600, financeCost: 8400, annualAvailableHours: 4000, machineUtilization: 0.60 },
+      'UK', 'Investment casting furnace, UK foundry benchmark'),
     // ── Sheet Metal Presses ────────────────────────────────────────────────
     makeMachine('press-100t', '100T Mechanical Press',
       { annualDepreciation: 18000, maintenance: 9000, energy: 5000, floorSpace: 5000, indirectSupport: 4000, financeCost: 2250, annualAvailableHours: 3500, machineUtilization: 0.80 },
@@ -364,6 +395,7 @@ export const DEFAULT_RATE_LIBRARY: RateLibrary = {
     { id: 'oh-biw-t2',               commodityType: 'biw_assembly',       supplierTier: 'Tier 2', overheadPct: 0.10, marginPct: 0.07, sourceNote: 'Industry benchmark' },
     { id: 'oh-pcb-fab-t2',           commodityType: 'pcb_fab',            supplierTier: 'Tier 2', overheadPct: 0.08, marginPct: 0.10, sourceNote: 'Industry benchmark' },
     { id: 'oh-pcba-t2',              commodityType: 'pcba',               supplierTier: 'Tier 2', overheadPct: 0.08, marginPct: 0.10, sourceNote: 'Industry benchmark' },
+    { id: 'oh-cast-and-machine-t2',  commodityType: 'cast_and_machine',   supplierTier: 'Tier 2', overheadPct: 0.12, marginPct: 0.09, sourceNote: 'Industry benchmark' },
   ],
 };
 

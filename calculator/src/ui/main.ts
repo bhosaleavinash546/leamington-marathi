@@ -12,6 +12,8 @@ import { computePaintingDrivers } from '../engine/modules/painting.js';
 import { computeBIWDrivers } from '../engine/modules/biw-assembly.js';
 import { computePCBFabDrivers } from '../engine/modules/pcb-fab.js';
 import { computePCBADrivers } from '../engine/modules/pcba.js';
+import { computeCastAndMachineDrivers } from '../engine/modules/cast-and-machine.js';
+import { recommendMachineIds } from '../engine/process-taxonomy.js';
 import { runSensitivity } from '../engine/sensitivity.js';
 import {
   saveScenario, listScenarios, deleteScenario, compareScenarios,
@@ -24,6 +26,8 @@ import type { BOMLine, ComponentType } from '../engine/modules/pcba.js';
 import type { MachiningOperation } from '../engine/modules/machining.js';
 import type { CoatType } from '../engine/modules/painting.js';
 import type { JoiningType } from '../engine/modules/biw-assembly.js';
+import type { CastAndMachineInputs } from '../engine/modules/cast-and-machine.js';
+import type { CastingSubtype } from '../engine/modules/casting.js';
 
 // ─── State ────────────────────────────────────────────────────────────────────
 
@@ -36,6 +40,7 @@ let coatCount = 0;
 let joinCount = 0;
 let stationCount = 0;
 let bomCount = 0;
+let camMachOpCount = 0;
 
 // ─── DOM helpers ──────────────────────────────────────────────────────────────
 
@@ -710,6 +715,196 @@ function importBOMFromCSV(): void {
   reader.readAsText(file);
 }
 
+// ─── Form: Cast + Machine ─────────────────────────────────────────────────────
+
+function renderCastAndMachineForm(): string {
+  return `
+    <div class="section-title">Casting — Common</div>
+    <div class="field-row">
+      <div class="field-group"><label>Casting Subtype</label><select id="cam-cast-subtype">
+        <option value="hpdc">HPDC</option><option value="sand">Sand</option>
+        <option value="gravity">Gravity Die</option><option value="investment">Investment</option>
+      </select></div>
+      <div class="field-group"><label>Material</label><select id="cam-mat" class="material-select"></select></div>
+    </div>
+    <div class="field-row" style="margin-top:6px">
+      <div class="field-group"><label>Cast Part Weight (kg)</label><input type="number" id="cam-cast-wt" step="0.01" min="0.001" value="1.5"/></div>
+      <div class="field-group"><label>Finished Weight (kg)</label><input type="number" id="cam-finish-wt" step="0.01" min="0.001" value="1.3"/></div>
+    </div>
+    <div class="field-row" style="margin-top:6px">
+      <div class="field-group"><label>Casting Yield (0–1)</label><input type="number" id="cam-cast-yield" step="0.01" min="0.01" max="1" value="0.75"/></div>
+      <div class="field-group"><label>Reject Rate (0–1)</label><input type="number" id="cam-reject" step="0.01" min="0" max="0.5" value="0.03"/></div>
+    </div>
+    <div class="field-row" style="margin-top:6px">
+      <div class="field-group"><label>Casting Labour</label><select id="cam-cast-lab" class="labour-select"></select></div>
+      <div class="field-group"><label>Casting OEE</label><input type="number" id="cam-cast-oee" step="0.01" min="0.01" max="1" value="0.80"/></div>
+    </div>
+    <div class="field-row" style="margin-top:6px">
+      <div class="field-group"><label>Casting Manning</label><input type="number" id="cam-cast-manning" step="0.5" min="0" value="1"/></div>
+      <div class="field-group"><label>Casting Labour Eff.</label><input type="number" id="cam-cast-lab-eff" step="0.01" min="0.01" max="1" value="0.92"/></div>
+    </div>
+    <!-- HPDC subtype -->
+    <div id="cam-cast-hpdc" class="cast-section">
+      <div class="section-title" style="margin-top:8px">HPDC</div>
+      <div class="field-row">
+        <div class="field-group"><label>Machine</label><select id="cam-hpdc-mach" class="machine-select"></select></div>
+        <div class="field-group"><label>Cycle Time (s)</label><input type="number" id="cam-hpdc-ct" step="1" min="1" value="45"/></div>
+      </div>
+      <div class="field-row" style="margin-top:6px">
+        <div class="field-group"><label>Cavities</label><input type="number" id="cam-hpdc-cav" min="1" step="1" value="2"/></div>
+        <div class="field-group"><label>Die Cost (£)</label><input type="number" id="cam-hpdc-die-cost" step="1000" min="0" value="120000"/></div>
+      </div>
+      <div class="field-row" style="margin-top:6px">
+        <div class="field-group"><label>Die Life (shots)</label><input type="number" id="cam-hpdc-die-life" step="1000" min="0" value="200000"/></div>
+      </div>
+    </div>
+    <!-- Sand subtype -->
+    <div id="cam-cast-sand" class="cast-section">
+      <div class="section-title" style="margin-top:8px">Sand Casting</div>
+      <div class="field-row">
+        <div class="field-group"><label>Mould Line</label><select id="cam-sand-line" class="machine-select"></select></div>
+        <div class="field-group"><label>Cycle Time (hr)</label><input type="number" id="cam-sand-ct" step="0.1" min="0.01" value="0.5"/></div>
+      </div>
+      <div class="field-row" style="margin-top:6px">
+        <div class="field-group"><label>Pattern Cost (£)</label><input type="number" id="cam-sand-pat-cost" step="100" min="0" value="5000"/></div>
+        <div class="field-group"><label>Pattern Life (casts)</label><input type="number" id="cam-sand-pat-life" step="100" min="0" value="10000"/></div>
+      </div>
+      <div class="field-row" style="margin-top:6px">
+        <div class="field-group"><label>Core Cost/Part (£)</label><input type="number" id="cam-sand-core" step="0.1" min="0" value="1.5"/></div>
+      </div>
+    </div>
+    <!-- Gravity subtype -->
+    <div id="cam-cast-gravity" class="cast-section">
+      <div class="section-title" style="margin-top:8px">Gravity Die</div>
+      <div class="field-row">
+        <div class="field-group"><label>Machine</label><select id="cam-grav-mach" class="machine-select"></select></div>
+        <div class="field-group"><label>Cycle Time (hr)</label><input type="number" id="cam-grav-ct" step="0.01" min="0.01" value="0.083"/></div>
+      </div>
+      <div class="field-row" style="margin-top:6px">
+        <div class="field-group"><label>Mould Cost (£)</label><input type="number" id="cam-grav-mould-cost" step="1000" min="0" value="20000"/></div>
+        <div class="field-group"><label>Mould Life (casts)</label><input type="number" id="cam-grav-mould-life" step="1000" min="0" value="50000"/></div>
+      </div>
+    </div>
+    <!-- Investment subtype -->
+    <div id="cam-cast-invest" class="cast-section">
+      <div class="section-title" style="margin-top:8px">Investment Casting</div>
+      <div class="field-row">
+        <div class="field-group"><label>Pour Machine</label><select id="cam-inv-mach" class="machine-select"></select></div>
+        <div class="field-group"><label>Pour Labour</label><select id="cam-inv-lab" class="labour-select"></select></div>
+      </div>
+      <div class="field-row" style="margin-top:6px">
+        <div class="field-group"><label>Pour Cycle (hr)</label><input type="number" id="cam-inv-ct" step="0.01" min="0.01" value="0.5"/></div>
+        <div class="field-group"><label>Wax Cost/Part (£)</label><input type="number" id="cam-inv-wax" step="0.1" min="0" value="0.80"/></div>
+      </div>
+      <div class="field-row" style="margin-top:6px">
+        <div class="field-group"><label>Shell Cost/Part (£)</label><input type="number" id="cam-inv-shell" step="0.1" min="0" value="1.20"/></div>
+      </div>
+    </div>
+    <div class="section-title" style="margin-top:8px">Machining</div>
+    <div class="field-row">
+      <div class="field-group"><label>Geometry Complexity (1–5)</label><select id="cam-complexity">
+        <option value="1">1 — Simple 2D</option>
+        <option value="2" selected>2 — 2.5D pockets/slots</option>
+        <option value="3">3 — Multi-face (4+ setups)</option>
+        <option value="4">4 — Angled + freeform</option>
+        <option value="5">5 — Complex organic</option>
+      </select></div>
+    </div>
+    <div id="cam-recommend" style="font-size:0.75rem;color:#888;margin:4px 0 6px;padding:4px 8px;background:#f9f9f9;border-radius:4px"></div>
+    <div class="field-row">
+      <div class="field-group"><label>Setup Time (hr)</label><input type="number" id="cam-mach-setup-time" step="0.25" min="0" value="0.5"/></div>
+      <div class="field-group"><label>Batch Size</label><input type="number" id="cam-mach-batch-size" step="1" min="1" value="50"/></div>
+    </div>
+    <div class="field-row" style="margin-top:6px">
+      <div class="field-group"><label>Setup Machine</label><select id="cam-mach-setup-mach" class="machine-select"></select></div>
+      <div class="field-group"><label>Setup Labour</label><select id="cam-mach-setup-lab" class="labour-select"></select></div>
+    </div>
+    <div class="section-title-row" style="margin-top:8px">
+      <span class="section-title" style="margin:0;border:none;padding:0">Machining Operations</span>
+      <button class="btn btn-secondary btn-sm" id="add-cam-mach-op-btn">+ Add</button>
+    </div>
+    <div id="cam-mach-ops-container"></div>
+    <div class="section-title" style="margin-top:8px">Tooling / NRE</div>
+    <div class="field-row">
+      <div class="field-group"><label>Machining Tooling (£)</label><input type="number" id="cam-mach-tooling" step="500" min="0" value="5000"/></div>
+      <div class="field-group"><label>Programming NRE (£)</label><input type="number" id="cam-mach-prog-nre" step="100" min="0" value="2000"/></div>
+    </div>
+    <div class="field-row" style="margin-top:6px">
+      <div class="field-group"><label>Amort. Volume</label><input type="number" id="cam-amort" step="1000" min="1" value="50000"/></div>
+    </div>`;
+}
+
+function updateCAMCastSubtype(): void {
+  const subtype = sel('cam-cast-subtype');
+  ['hpdc', 'sand', 'gravity', 'invest'].forEach(s => {
+    el(`cam-cast-${s}`)?.classList.toggle('visible', s === subtype || (s === 'invest' && subtype === 'investment'));
+  });
+}
+
+function updateCAMRecommendation(): void {
+  const level = (num('cam-complexity') || 2) as 1 | 2 | 3 | 4 | 5;
+  const ids = recommendMachineIds(level);
+  const names = ids.map(id => {
+    const m = library.machines.find(x => x.id === id);
+    return m ? m.machineClass : id;
+  });
+  const rec = el('cam-recommend');
+  if (rec) {
+    const levelData: Record<number, string> = {
+      1: 'Simple 2D — external features only',
+      2: '2.5D — pockets/slots/drilled holes',
+      3: 'Multi-face — 4+ setups or indexed',
+      4: 'Angled features + freeform surfaces',
+      5: 'Complex organic/turbine geometry',
+    };
+    rec.textContent = `Level ${level}: ${levelData[level]} → Recommended: ${names.join(', ')}`;
+  }
+}
+
+function addCAMMachOp(d?: Partial<MachiningOperation>): void {
+  camMachOpCount++;
+  const id = `cammop${camMachOpCount}`;
+  const c = el('cam-mach-ops-container');
+  if (!c) return;
+  const div = document.createElement('div');
+  div.className = 'op-card'; div.dataset.opId = id;
+  div.innerHTML = `
+    <div class="op-title">Machining Op ${camMachOpCount}
+      <button class="remove-op" style="float:right">✕</button>
+    </div>
+    <div class="field-row">
+      <div class="field-group"><label>Name</label><input type="text" id="${id}-name" value="${d?.name ?? 'Face Mill'}"/></div>
+      <div class="field-group"><label>Type</label><select id="${id}-type">
+        <option value="turning">Turning</option><option value="milling_3ax" selected>Milling 3ax</option>
+        <option value="milling_5ax">Milling 5ax</option><option value="drilling">Drilling</option>
+        <option value="grinding">Grinding</option><option value="tapping">Tapping</option>
+        <option value="boring">Boring</option>
+      </select></div>
+    </div>
+    <div class="field-row" style="margin-top:4px">
+      <div class="field-group"><label>Machine</label><select id="${id}-mach" class="machine-select"></select></div>
+      <div class="field-group"><label>Labour</label><select id="${id}-lab" class="labour-select"></select></div>
+    </div>
+    <div class="field-row" style="margin-top:4px">
+      <div class="field-group"><label>Cycle Time (hr)</label><input type="number" id="${id}-ct" step="0.001" min="0" value="${d?.cycleTimeHr ?? 0.05}"/></div>
+      <div class="field-group"><label>Parts/Cycle</label><input type="number" id="${id}-ppc" min="1" value="${d?.partsPerCycle ?? 1}"/></div>
+    </div>
+    <div class="field-row" style="margin-top:4px">
+      <div class="field-group"><label>OEE</label><input type="number" id="${id}-oee" step="0.01" min="0.01" max="1" value="${d?.oee ?? 0.85}"/></div>
+      <div class="field-group"><label>Manning</label><input type="number" id="${id}-manning" step="0.5" min="0" value="${d?.manning ?? 1}"/></div>
+    </div>
+    <div class="field-row" style="margin-top:4px">
+      <div class="field-group"><label>Labour Time (hr)</label><input type="number" id="${id}-lt" step="0.001" min="0" value="${d?.labourTimeHr ?? 0.05}"/></div>
+      <div class="field-group"><label>Labour Eff.</label><input type="number" id="${id}-le" step="0.01" min="0.01" max="1" value="${d?.labourEfficiency ?? 0.92}"/></div>
+    </div>`;
+  c.appendChild(div);
+  populateSelects();
+  if (d?.machineId) (el<HTMLSelectElement>(`${id}-mach`)).value = d.machineId;
+  if (d?.labourId)  (el<HTMLSelectElement>(`${id}-lab`)).value  = d.labourId;
+  if (d?.type)      (el<HTMLSelectElement>(`${id}-type`)).value = d.type;
+  div.querySelector('.remove-op')!.addEventListener('click', () => div.remove());
+}
+
 // ─── Commodity switching ──────────────────────────────────────────────────────
 
 function switchCommodity(type: CommodityType): void {
@@ -719,7 +914,7 @@ function switchCommodity(type: CommodityType): void {
   });
 
   const area = el('commodity-form-area');
-  machOpCount = 0; coatCount = 0; joinCount = 0; stationCount = 0; bomCount = 0;
+  machOpCount = 0; coatCount = 0; joinCount = 0; stationCount = 0; bomCount = 0; camMachOpCount = 0;
 
   switch (type) {
     case 'machining':
@@ -814,6 +1009,26 @@ function switchCommodity(type: CommodityType): void {
       }, 0);
       addBOMRow({ refDes: 'R1-R10', componentType: 'passive_0402', description: '10k 0402', qty: 10, unitPriceGBP: 0.008, moq: 1000 });
       addBOMRow({ refDes: 'U1',     componentType: 'ic_qfn',        description: 'MCU QFN',   qty: 1,  unitPriceGBP: 2.80,  moq: 10 });
+      break;
+
+    case 'cast_and_machine':
+      area.innerHTML = renderCastAndMachineForm();
+      populateSelects();
+      el('cam-cast-subtype')?.addEventListener('change', updateCAMCastSubtype);
+      el('cam-complexity')?.addEventListener('change', updateCAMRecommendation);
+      el('add-cam-mach-op-btn')?.addEventListener('click', () => addCAMMachOp());
+      updateCAMCastSubtype();
+      updateCAMRecommendation();
+      camMachOpCount = 0;
+      setTimeout(() => {
+        const matEl = el<HTMLSelectElement>('cam-mat');
+        if (matEl) { const opt = Array.from(matEl.options).find(o => o.value.includes('mat-adc12')); if (opt) matEl.value = opt.value; }
+        const machEl = el<HTMLSelectElement>('cam-hpdc-mach');
+        if (machEl) { const opt = Array.from(machEl.options).find(o => o.value.includes('hpdc-800t')); if (opt) machEl.value = opt.value; }
+        const setupMachEl = el<HTMLSelectElement>('cam-mach-setup-mach');
+        if (setupMachEl) { const opt = Array.from(setupMachEl.options).find(o => o.value.includes('mach-haas-vf2')); if (opt) setupMachEl.value = opt.value; }
+      }, 0);
+      addCAMMachOp({ name: 'Face Mill', type: 'milling_3ax', machineId: 'mach-haas-vf2', labourId: 'lab-uk-skilled', cycleTimeHr: 0.05, partsPerCycle: 1, oee: 0.85, manning: 1, labourTimeHr: 0.05, labourEfficiency: 0.92 });
       break;
   }
 }
@@ -1090,6 +1305,67 @@ function collectPCBAInput(): UniversalStackInput {
   return { ...getUniversalTail(), rawMaterial: drivers.rawMaterial, operations: drivers.operations, tooling: drivers.tooling };
 }
 
+function collectCastAndMachineInput(): UniversalStackInput {
+  const subtype = sel('cam-cast-subtype') as CastingSubtype;
+
+  const camOps: MachiningOperation[] = Array.from(
+    document.querySelectorAll<HTMLElement>('#cam-mach-ops-container .op-card')
+  ).map(card => {
+    const id = card.dataset.opId!;
+    return {
+      name: (el<HTMLInputElement>(`${id}-name`))?.value ?? '',
+      type: (el<HTMLSelectElement>(`${id}-type`))?.value as MachiningOperation['type'] ?? 'milling_3ax',
+      machineId: sel(`${id}-mach`),
+      labourId: sel(`${id}-lab`),
+      cycleTimeHr: parseFloat((el<HTMLInputElement>(`${id}-ct`))?.value) || 0,
+      partsPerCycle: parseInt((el<HTMLInputElement>(`${id}-ppc`))?.value) || 1,
+      oee: parseFloat((el<HTMLInputElement>(`${id}-oee`))?.value) || 0.85,
+      manning: parseFloat((el<HTMLInputElement>(`${id}-manning`))?.value) || 1,
+      labourTimeHr: parseFloat((el<HTMLInputElement>(`${id}-lt`))?.value) || 0,
+      labourEfficiency: parseFloat((el<HTMLInputElement>(`${id}-le`))?.value) || 0.92,
+    };
+  });
+
+  let subtypeExtra: Partial<CastAndMachineInputs> = {};
+  if (subtype === 'hpdc') {
+    subtypeExtra = { hpdc: { machineId: sel('cam-hpdc-mach'), cycleTimeSec: num('cam-hpdc-ct'), cavities: num('cam-hpdc-cav') || 1, dieCost: num('cam-hpdc-die-cost'), dieLife: num('cam-hpdc-die-life') } };
+  } else if (subtype === 'sand') {
+    subtypeExtra = { sand: { mouldLineId: sel('cam-sand-line'), cycleTimeHr: num('cam-sand-ct'), patternCost: num('cam-sand-pat-cost'), patternLife: num('cam-sand-pat-life'), coreCostPerPart: num('cam-sand-core') } };
+  } else if (subtype === 'gravity') {
+    subtypeExtra = { gravity: { machineId: sel('cam-grav-mach'), cycleTimeHr: num('cam-grav-ct'), mouldCost: num('cam-grav-mould-cost'), mouldLife: num('cam-grav-mould-life') } };
+  } else if (subtype === 'investment') {
+    subtypeExtra = { investment: { pourMachineId: sel('cam-inv-mach'), pourLabourId: sel('cam-inv-lab') || sel('cam-cast-lab'), pourCycleHr: num('cam-inv-ct'), waxCostPerPart: num('cam-inv-wax'), shellBuildCostPerPart: num('cam-inv-shell') } };
+  }
+
+  const inputs: CastAndMachineInputs = {
+    castingSubtype: subtype,
+    materialId: sel('cam-mat'),
+    castPartWeightKg: num('cam-cast-wt'),
+    finishedWeightKg: num('cam-finish-wt'),
+    castingYield: num('cam-cast-yield'),
+    rejectRate: num('cam-reject'),
+    castingLabourId: sel('cam-cast-lab'),
+    castingOee: num('cam-cast-oee'),
+    castingManning: num('cam-cast-manning'),
+    castingLabourEfficiency: num('cam-cast-lab-eff'),
+    geometryComplexity: (num('cam-complexity') || 2) as 1 | 2 | 3 | 4 | 5,
+    machiningOps: camOps,
+    machiningSetup: {
+      setupTimeHr: num('cam-mach-setup-time'),
+      batchSize: num('cam-mach-batch-size') || 50,
+      machineId: sel('cam-mach-setup-mach'),
+      labourId: sel('cam-mach-setup-lab'),
+    },
+    machiningToolingCost: num('cam-mach-tooling'),
+    machiningProgrammingNRE: num('cam-mach-prog-nre'),
+    amortizationVolume: num('cam-amort') || 1,
+    ...subtypeExtra,
+  };
+
+  const drivers = computeCastAndMachineDrivers(inputs);
+  return { ...getUniversalTail(), rawMaterial: drivers.rawMaterial, operations: drivers.operations, tooling: drivers.tooling };
+}
+
 function collectInput(): UniversalStackInput {
   switch (activeCommodity) {
     case 'machining':         return collectMachiningInput();
@@ -1101,6 +1377,7 @@ function collectInput(): UniversalStackInput {
     case 'biw_assembly':      return collectBIWInput();
     case 'pcb_fab':           return collectPCBFabInput();
     case 'pcba':              return collectPCBAInput();
+    case 'cast_and_machine':  return collectCastAndMachineInput();
   }
 }
 
@@ -1533,6 +1810,39 @@ function loadExample(): void {
         const matEl = el<HTMLSelectElement>('sm-mat');
         if (matEl) { const opt = Array.from(matEl.options).find(o => o.value === 'mat-dc01'); if (opt) matEl.value = opt.value; }
         (el<HTMLInputElement>('part-name')).value = 'DC01 Bracket';
+        compute();
+      }, 0);
+      break;
+
+    case 'cast_and_machine':
+      setTimeout(() => {
+        (el<HTMLInputElement>('part-name')).value = 'HPDC Al Bracket + Machined';
+        (el<HTMLInputElement>('cam-cast-wt')).value = '1.5';
+        (el<HTMLInputElement>('cam-finish-wt')).value = '1.3';
+        (el<HTMLInputElement>('cam-cast-yield')).value = '0.75';
+        (el<HTMLInputElement>('cam-reject')).value = '0.03';
+        (el<HTMLInputElement>('cam-cast-oee')).value = '0.80';
+        (el<HTMLInputElement>('cam-cast-manning')).value = '1';
+        (el<HTMLInputElement>('cam-cast-lab-eff')).value = '0.92';
+        (el<HTMLInputElement>('cam-hpdc-ct')).value = '45';
+        (el<HTMLInputElement>('cam-hpdc-cav')).value = '2';
+        (el<HTMLInputElement>('cam-hpdc-die-cost')).value = '120000';
+        (el<HTMLInputElement>('cam-hpdc-die-life')).value = '200000';
+        (el<HTMLInputElement>('cam-mach-setup-time')).value = '0.5';
+        (el<HTMLInputElement>('cam-mach-batch-size')).value = '50';
+        (el<HTMLInputElement>('cam-mach-tooling')).value = '5000';
+        (el<HTMLInputElement>('cam-mach-prog-nre')).value = '2000';
+        (el<HTMLInputElement>('cam-amort')).value = '50000';
+        const matEl = el<HTMLSelectElement>('cam-mat');
+        if (matEl) { const opt = Array.from(matEl.options).find(o => o.value === 'mat-adc12'); if (opt) matEl.value = opt.value; }
+        const machEl = el<HTMLSelectElement>('cam-hpdc-mach');
+        if (machEl) { const opt = Array.from(machEl.options).find(o => o.value === 'hpdc-800t'); if (opt) machEl.value = opt.value; }
+        const setupMachEl = el<HTMLSelectElement>('cam-mach-setup-mach');
+        if (setupMachEl) { const opt = Array.from(setupMachEl.options).find(o => o.value === 'mach-haas-vf2'); if (opt) setupMachEl.value = opt.value; }
+        (el<HTMLInputElement>('packaging')).value = '0.15';
+        (el<HTMLInputElement>('logistics')).value = '0.25';
+        (el<HTMLInputElement>('overhead-pct')).value = '12';
+        (el<HTMLInputElement>('margin-pct')).value = '9';
         compute();
       }, 0);
       break;
