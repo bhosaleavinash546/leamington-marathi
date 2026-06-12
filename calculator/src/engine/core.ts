@@ -18,20 +18,29 @@ export function validateStackInput(
 
   const rm = input.rawMaterial;
 
-  if (rm.netWeightKg <= 0)
-    errors.push({ field: 'rawMaterial.netWeightKg', message: 'Must be positive' });
+  if (rm.directCost !== undefined) {
+    // directCost mode: skip weight/utilization checks; only validate the material exists for traceability
+    if (rm.directCost < 0)
+      errors.push({ field: 'rawMaterial.directCost', message: 'Cannot be negative' });
+    const mat = library.materials.find(m => m.id === rm.materialId);
+    if (!mat)
+      errors.push({ field: 'rawMaterial.materialId', message: `Material '${rm.materialId}' not found in rate library` });
+  } else {
+    if (rm.netWeightKg <= 0)
+      errors.push({ field: 'rawMaterial.netWeightKg', message: 'Must be positive' });
 
-  if (rm.materialUtilization <= 0 || rm.materialUtilization > 1)
-    errors.push({ field: 'rawMaterial.materialUtilization', message: 'Must be in range (0, 1]' });
+    if (rm.materialUtilization <= 0 || rm.materialUtilization > 1)
+      errors.push({ field: 'rawMaterial.materialUtilization', message: 'Must be in range (0, 1]' });
 
-  const mat = library.materials.find(m => m.id === rm.materialId);
-  if (!mat)
-    errors.push({ field: 'rawMaterial.materialId', message: `Material '${rm.materialId}' not found in rate library` });
-  else if (mat.confidence !== 'High')
-    warnings.push({ field: 'rawMaterial.materialId', message: `Material rate confidence: ${mat.confidence}` });
+    const mat = library.materials.find(m => m.id === rm.materialId);
+    if (!mat)
+      errors.push({ field: 'rawMaterial.materialId', message: `Material '${rm.materialId}' not found in rate library` });
+    else if (mat.confidence !== 'High')
+      warnings.push({ field: 'rawMaterial.materialId', message: `Material rate confidence: ${mat.confidence}` });
 
-  if (rm.materialUtilization < 0.3)
-    warnings.push({ field: 'rawMaterial.materialUtilization', message: 'Very low utilisation (<30%) — verify strip layout' });
+    if (rm.materialUtilization < 0.3)
+      warnings.push({ field: 'rawMaterial.materialUtilization', message: 'Very low utilisation (<30%) — verify strip layout' });
+  }
 
   for (let i = 0; i < input.operations.length; i++) {
     const op = input.operations[i];
@@ -73,30 +82,44 @@ export function computeUniversalStack(
   const traceability: TraceabilityRecord[] = [];
 
   // 1. Raw Material
-  const mat = library.materials.find(m => m.id === input.rawMaterial.materialId);
-  if (!mat) throw new Error(`Material '${input.rawMaterial.materialId}' not found`);
+  // directCost bypasses weight-based calculation (used by painting, BIW, PCB)
+  let rawMaterialCost: number;
+  if (input.rawMaterial.directCost !== undefined) {
+    rawMaterialCost = input.rawMaterial.directCost;
+    traceability.push({
+      field: 'rawMaterial.directCost',
+      value: rawMaterialCost,
+      unit: '£',
+      rateSource: 'Pre-computed by commodity module',
+      rateId: input.rawMaterial.materialId,
+      confidence: 'Medium',
+    });
+  } else {
+    const mat = library.materials.find(m => m.id === input.rawMaterial.materialId);
+    if (!mat) throw new Error(`Material '${input.rawMaterial.materialId}' not found`);
 
-  const grossWeight = input.rawMaterial.netWeightKg / input.rawMaterial.materialUtilization;
-  const rmGross = grossWeight * mat.pricePerKg;
-  const scrapCredit = (grossWeight - input.rawMaterial.netWeightKg) * mat.scrapRecoveryPricePerKg;
-  const rawMaterialCost = rmGross - scrapCredit;
+    const grossWeight = input.rawMaterial.netWeightKg / input.rawMaterial.materialUtilization;
+    const rmGross = grossWeight * mat.pricePerKg;
+    const scrapCredit = (grossWeight - input.rawMaterial.netWeightKg) * mat.scrapRecoveryPricePerKg;
+    rawMaterialCost = rmGross - scrapCredit;
 
-  traceability.push({
-    field: 'material.pricePerKg',
-    value: mat.pricePerKg,
-    unit: '£/kg',
-    rateSource: mat.sourceNote,
-    rateId: mat.id,
-    confidence: mat.confidence,
-  });
-  traceability.push({
-    field: 'material.scrapRecoveryPricePerKg',
-    value: mat.scrapRecoveryPricePerKg,
-    unit: '£/kg',
-    rateSource: mat.sourceNote,
-    rateId: mat.id,
-    confidence: mat.confidence,
-  });
+    traceability.push({
+      field: 'material.pricePerKg',
+      value: mat.pricePerKg,
+      unit: '£/kg',
+      rateSource: mat.sourceNote,
+      rateId: mat.id,
+      confidence: mat.confidence,
+    });
+    traceability.push({
+      field: 'material.scrapRecoveryPricePerKg',
+      value: mat.scrapRecoveryPricePerKg,
+      unit: '£/kg',
+      rateSource: mat.sourceNote,
+      rateId: mat.id,
+      confidence: mat.confidence,
+    });
+  }
 
   // 2 & 3. Process + Labour
   const operationDetails: OperationResult[] = [];
@@ -210,7 +233,7 @@ export function breakdownPercentages(result: PartCostResult): Record<keyof Break
   };
 }
 
-export function compareScenarios(
+export function computeResultDelta(
   baseResult: PartCostResult,
   targetResult: PartCostResult
 ) {

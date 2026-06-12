@@ -31,6 +31,7 @@ export const DEFAULT_RATE_LIBRARY: RateLibrary = {
   lastModified: '2024-01-01',
 
   materials: [
+    // ── Machining ──────────────────────────────────────────────────────────
     {
       id: 'mat-al6061',
       grade: '6061-T6',
@@ -91,6 +92,42 @@ export const DEFAULT_RATE_LIBRARY: RateLibrary = {
       sourceNote: 'Titanium distributor UK, Jan 2024',
       confidence: 'Low',
     },
+    {
+      id: 'mat-virtual',
+      grade: 'Virtual / Pass-through',
+      category: 'Virtual',
+      pricePerKg: 1.00,
+      scrapRecoveryPricePerKg: 0.00,
+      densityKgPerM3: 1000,
+      region: 'UK',
+      effectiveDate: '2024-01-01',
+      sourceNote: 'Placeholder for directCost modules (painting, BIW, PCB, PCBA). Price is irrelevant — directCost overrides.',
+      confidence: 'Medium',
+    },
+    // ── Sheet Metal ────────────────────────────────────────────────────────
+    { id: 'mat-dc01', grade: 'DC01', category: 'Mild Steel Sheet', pricePerKg: 0.75, scrapRecoveryPricePerKg: 0.20, densityKgPerM3: 7850, region: 'UK', effectiveDate: '2024-01-01', sourceNote: 'UK steel coil, Jan 2024', confidence: 'Medium' },
+    { id: 'mat-dp600', grade: 'DP600', category: 'AHSS Sheet', pricePerKg: 1.10, scrapRecoveryPricePerKg: 0.22, densityKgPerM3: 7850, region: 'UK', effectiveDate: '2024-01-01', sourceNote: 'UK AHSS coil, Jan 2024', confidence: 'Medium' },
+    { id: 'mat-hsla340', grade: 'HSLA 340', category: 'High Strength Steel Sheet', pricePerKg: 1.00, scrapRecoveryPricePerKg: 0.21, densityKgPerM3: 7850, region: 'UK', effectiveDate: '2024-01-01', sourceNote: 'UK HSLA coil, Jan 2024', confidence: 'Medium' },
+    { id: 'mat-aa5182', grade: 'AA5182', category: 'Aluminium Sheet', pricePerKg: 2.90, scrapRecoveryPricePerKg: 0.45, densityKgPerM3: 2700, region: 'UK', effectiveDate: '2024-01-01', sourceNote: 'UK Al sheet, Jan 2024', confidence: 'Medium' },
+    // ── Injection Moulding (resins) ────────────────────────────────────────
+    { id: 'mat-pp', grade: 'PP Copolymer', category: 'Thermoplastic', pricePerKg: 0.95, scrapRecoveryPricePerKg: 0.10, densityKgPerM3: 900, region: 'UK', effectiveDate: '2024-01-01', sourceNote: 'UK resin distributor, Jan 2024', confidence: 'Medium' },
+    { id: 'mat-abs', grade: 'ABS', category: 'Thermoplastic', pricePerKg: 1.45, scrapRecoveryPricePerKg: 0.10, densityKgPerM3: 1050, region: 'UK', effectiveDate: '2024-01-01', sourceNote: 'UK resin distributor, Jan 2024', confidence: 'Medium' },
+    { id: 'mat-pa66gf30', grade: 'PA66 GF30', category: 'Thermoplastic', pricePerKg: 2.60, scrapRecoveryPricePerKg: 0.05, densityKgPerM3: 1300, region: 'UK', effectiveDate: '2024-01-01', sourceNote: 'UK resin distributor, Jan 2024', confidence: 'Medium' },
+    { id: 'mat-pc', grade: 'PC (Lexan)', category: 'Thermoplastic', pricePerKg: 2.25, scrapRecoveryPricePerKg: 0.08, densityKgPerM3: 1200, region: 'UK', effectiveDate: '2024-01-01', sourceNote: 'UK resin distributor, Jan 2024', confidence: 'Medium' },
+    { id: 'mat-hdpe', grade: 'HDPE', category: 'Thermoplastic', pricePerKg: 0.90, scrapRecoveryPricePerKg: 0.12, densityKgPerM3: 960, region: 'UK', effectiveDate: '2024-01-01', sourceNote: 'UK resin distributor, Jan 2024', confidence: 'Medium' },
+    // ── Casting alloys ─────────────────────────────────────────────────────
+    { id: 'mat-adc12', grade: 'ADC12 / A383', category: 'Die Cast Aluminium', pricePerKg: 2.40, scrapRecoveryPricePerKg: 0.50, densityKgPerM3: 2700, region: 'UK', effectiveDate: '2024-01-01', sourceNote: 'UK Al alloy ingot, Jan 2024', confidence: 'Medium' },
+    { id: 'mat-a380', grade: 'A380', category: 'Die Cast Aluminium', pricePerKg: 2.45, scrapRecoveryPricePerKg: 0.50, densityKgPerM3: 2680, region: 'UK', effectiveDate: '2024-01-01', sourceNote: 'UK Al alloy ingot, Jan 2024', confidence: 'Medium' },
+    { id: 'mat-gjl250', grade: 'EN-GJL-250', category: 'Grey Cast Iron', pricePerKg: 0.55, scrapRecoveryPricePerKg: 0.12, densityKgPerM3: 7200, region: 'UK', effectiveDate: '2024-01-01', sourceNote: 'UK iron foundry, Jan 2024', confidence: 'Low' },
+    // ── Forging billets ────────────────────────────────────────────────────
+    { id: 'mat-steel1020', grade: '1020 / S20C', category: 'Carbon Steel Billet', pricePerKg: 0.72, scrapRecoveryPricePerKg: 0.19, densityKgPerM3: 7850, region: 'UK', effectiveDate: '2024-01-01', sourceNote: 'UK steel billet, Jan 2024', confidence: 'Medium' },
+    { id: 'mat-steel4340', grade: '4340', category: 'Alloy Steel Billet', pricePerKg: 1.30, scrapRecoveryPricePerKg: 0.22, densityKgPerM3: 7850, region: 'UK', effectiveDate: '2024-01-01', sourceNote: 'UK alloy billet, Jan 2024', confidence: 'Medium' },
+    // ── Paint / coating materials (price per kg wet paint) ─────────────────
+    { id: 'mat-paint-ecoat', grade: 'E-coat (Cathodic)', category: 'Paint', pricePerKg: 3.50, scrapRecoveryPricePerKg: 0.00, densityKgPerM3: 1300, region: 'UK', effectiveDate: '2024-01-01', sourceNote: 'UK coating supplier, Jan 2024', confidence: 'Low' },
+    { id: 'mat-paint-primer', grade: '2K Primer', category: 'Paint', pricePerKg: 5.80, scrapRecoveryPricePerKg: 0.00, densityKgPerM3: 1350, region: 'UK', effectiveDate: '2024-01-01', sourceNote: 'UK coating supplier, Jan 2024', confidence: 'Low' },
+    { id: 'mat-paint-basecoat', grade: 'Waterborne Basecoat', category: 'Paint', pricePerKg: 8.20, scrapRecoveryPricePerKg: 0.00, densityKgPerM3: 1250, region: 'UK', effectiveDate: '2024-01-01', sourceNote: 'UK coating supplier, Jan 2024', confidence: 'Low' },
+    { id: 'mat-paint-clearcoat', grade: '2K Clearcoat', category: 'Paint', pricePerKg: 9.50, scrapRecoveryPricePerKg: 0.00, densityKgPerM3: 1100, region: 'UK', effectiveDate: '2024-01-01', sourceNote: 'UK coating supplier, Jan 2024', confidence: 'Low' },
+    { id: 'mat-paint-powder', grade: 'Powder Coat (Polyester)', category: 'Paint', pricePerKg: 3.20, scrapRecoveryPricePerKg: 0.50, densityKgPerM3: 1400, region: 'UK', effectiveDate: '2024-01-01', sourceNote: 'UK powder coat supplier, Jan 2024', confidence: 'Medium' },
   ],
 
   machines: [
@@ -174,6 +211,70 @@ export const DEFAULT_RATE_LIBRARY: RateLibrary = {
       'UK',
       'Internal benchmark, UK precision grinding shop'
     ),
+    makeMachine(
+      'bench-assembly',
+      'Assembly Workbench',
+      { annualDepreciation: 500, maintenance: 200, energy: 300, floorSpace: 800, indirectSupport: 500, financeCost: 50, annualAvailableHours: 4000, machineUtilization: 0.85 },
+      'UK', 'Assembly bench — low machine rate; cost primarily driven by labour'
+    ),
+    // ── Sheet Metal Presses ────────────────────────────────────────────────
+    makeMachine('press-100t', '100T Mechanical Press',
+      { annualDepreciation: 18000, maintenance: 9000, energy: 5000, floorSpace: 5000, indirectSupport: 4000, financeCost: 2250, annualAvailableHours: 3500, machineUtilization: 0.80 },
+      'UK', 'UK press shop benchmark, Jan 2024'),
+    makeMachine('press-200t', '200T Mechanical Press',
+      { annualDepreciation: 28000, maintenance: 14000, energy: 7500, floorSpace: 7500, indirectSupport: 6000, financeCost: 3500, annualAvailableHours: 3500, machineUtilization: 0.80 },
+      'UK', 'UK press shop benchmark, Jan 2024'),
+    makeMachine('press-400t', '400T Servo Transfer Press',
+      { annualDepreciation: 50000, maintenance: 22000, energy: 11000, floorSpace: 10000, indirectSupport: 9000, financeCost: 6250, annualAvailableHours: 3500, machineUtilization: 0.80 },
+      'UK', 'UK press shop benchmark, Jan 2024'),
+    makeMachine('press-630t', '630T Transfer Press',
+      { annualDepreciation: 75000, maintenance: 35000, energy: 15000, floorSpace: 15000, indirectSupport: 14000, financeCost: 9375, annualAvailableHours: 3500, machineUtilization: 0.78 },
+      'UK', 'UK press shop benchmark, Jan 2024'),
+    // ── Injection Moulding Machines ────────────────────────────────────────
+    makeMachine('imm-100t', '100T Injection Moulding Machine',
+      { annualDepreciation: 14000, maintenance: 7000, energy: 9000, floorSpace: 3500, indirectSupport: 3000, financeCost: 1750, annualAvailableHours: 4000, machineUtilization: 0.80 },
+      'UK', 'UK plastics benchmark, Jan 2024'),
+    makeMachine('imm-200t', '200T Injection Moulding Machine',
+      { annualDepreciation: 22000, maintenance: 11000, energy: 13000, floorSpace: 5000, indirectSupport: 4500, financeCost: 2750, annualAvailableHours: 4000, machineUtilization: 0.80 },
+      'UK', 'UK plastics benchmark, Jan 2024'),
+    makeMachine('imm-400t', '400T Injection Moulding Machine',
+      { annualDepreciation: 40000, maintenance: 18000, energy: 20000, floorSpace: 8000, indirectSupport: 8000, financeCost: 5000, annualAvailableHours: 4000, machineUtilization: 0.80 },
+      'UK', 'UK plastics benchmark, Jan 2024'),
+    makeMachine('imm-800t', '800T Injection Moulding Machine',
+      { annualDepreciation: 70000, maintenance: 32000, energy: 35000, floorSpace: 14000, indirectSupport: 14000, financeCost: 8750, annualAvailableHours: 4000, machineUtilization: 0.78 },
+      'UK', 'UK plastics benchmark, Jan 2024'),
+    // ── HPDC Machines ─────────────────────────────────────────────────────
+    makeMachine('hpdc-500t', 'HPDC 500T',
+      { annualDepreciation: 50000, maintenance: 25000, energy: 18000, floorSpace: 12000, indirectSupport: 10000, financeCost: 6250, annualAvailableHours: 3500, machineUtilization: 0.78 },
+      'UK', 'UK foundry benchmark, Jan 2024'),
+    makeMachine('hpdc-800t', 'HPDC 800T',
+      { annualDepreciation: 80000, maintenance: 38000, energy: 25000, floorSpace: 18000, indirectSupport: 15000, financeCost: 10000, annualAvailableHours: 3500, machineUtilization: 0.78 },
+      'UK', 'UK foundry benchmark, Jan 2024'),
+    makeMachine('hpdc-1600t', 'HPDC 1600T',
+      { annualDepreciation: 140000, maintenance: 65000, energy: 42000, floorSpace: 28000, indirectSupport: 25000, financeCost: 17500, annualAvailableHours: 3500, machineUtilization: 0.78 },
+      'UK', 'UK foundry benchmark, Jan 2024'),
+    makeMachine('sand-cast-line', 'Sand Casting Moulding Line',
+      { annualDepreciation: 25000, maintenance: 12000, energy: 8000, floorSpace: 10000, indirectSupport: 8000, financeCost: 3125, annualAvailableHours: 3500, machineUtilization: 0.75 },
+      'UK', 'UK foundry benchmark, Jan 2024'),
+    // ── Forging Machines ──────────────────────────────────────────────────
+    makeMachine('forge-press-500t', '500T Forge Press',
+      { annualDepreciation: 45000, maintenance: 22000, energy: 15000, floorSpace: 12000, indirectSupport: 10000, financeCost: 5625, annualAvailableHours: 3500, machineUtilization: 0.78 },
+      'UK', 'UK forge shop benchmark, Jan 2024'),
+    makeMachine('forge-hammer-5t', '5T Pneumatic Forge Hammer',
+      { annualDepreciation: 35000, maintenance: 18000, energy: 12000, floorSpace: 15000, indirectSupport: 9000, financeCost: 4375, annualAvailableHours: 3500, machineUtilization: 0.78 },
+      'UK', 'UK forge shop benchmark, Jan 2024'),
+    // ── Painting ──────────────────────────────────────────────────────────
+    makeMachine('paint-line-std', 'Standard Paint Line (E-coat + Topcoat)',
+      { annualDepreciation: 120000, maintenance: 50000, energy: 80000, floorSpace: 40000, indirectSupport: 30000, financeCost: 15000, annualAvailableHours: 4000, machineUtilization: 0.82 },
+      'UK', 'UK OEM paint line benchmark, Jan 2024'),
+    // ── BIW / Assembly ────────────────────────────────────────────────────
+    makeMachine('robot-weld-station', 'Robot Welding Station',
+      { annualDepreciation: 35000, maintenance: 14000, energy: 6000, floorSpace: 8000, indirectSupport: 7000, financeCost: 4375, annualAvailableHours: 4000, machineUtilization: 0.82 },
+      'UK', 'UK body shop benchmark, Jan 2024'),
+    // ── Electronics ───────────────────────────────────────────────────────
+    makeMachine('smt-line', 'SMT Pick & Place + Reflow Line',
+      { annualDepreciation: 80000, maintenance: 30000, energy: 15000, floorSpace: 20000, indirectSupport: 20000, financeCost: 10000, annualAvailableHours: 4000, machineUtilization: 0.82 },
+      'UK', 'UK EMS benchmark, Jan 2024'),
   ],
 
   labour: [
@@ -253,8 +354,16 @@ export const DEFAULT_RATE_LIBRARY: RateLibrary = {
   ],
 
   overheadDefaults: [
-    { id: 'oh-machining-t2', commodityType: 'machining', supplierTier: 'Tier 2', overheadPct: 0.12, marginPct: 0.08, sourceNote: 'Industry benchmark' },
-    { id: 'oh-machining-t1', commodityType: 'machining', supplierTier: 'Tier 1', overheadPct: 0.15, marginPct: 0.10, sourceNote: 'Industry benchmark' },
+    { id: 'oh-machining-t2',         commodityType: 'machining',          supplierTier: 'Tier 2', overheadPct: 0.12, marginPct: 0.08, sourceNote: 'Industry benchmark' },
+    { id: 'oh-machining-t1',         commodityType: 'machining',          supplierTier: 'Tier 1', overheadPct: 0.15, marginPct: 0.10, sourceNote: 'Industry benchmark' },
+    { id: 'oh-sheet-metal-t2',       commodityType: 'sheet_metal',        supplierTier: 'Tier 2', overheadPct: 0.10, marginPct: 0.07, sourceNote: 'Industry benchmark' },
+    { id: 'oh-injection-moulding-t2',commodityType: 'injection_moulding', supplierTier: 'Tier 2', overheadPct: 0.11, marginPct: 0.08, sourceNote: 'Industry benchmark' },
+    { id: 'oh-casting-t2',           commodityType: 'casting',            supplierTier: 'Tier 2', overheadPct: 0.10, marginPct: 0.08, sourceNote: 'Industry benchmark' },
+    { id: 'oh-forging-t2',           commodityType: 'forging',            supplierTier: 'Tier 2', overheadPct: 0.12, marginPct: 0.08, sourceNote: 'Industry benchmark' },
+    { id: 'oh-painting-t2',          commodityType: 'painting',           supplierTier: 'Tier 2', overheadPct: 0.08, marginPct: 0.06, sourceNote: 'Industry benchmark' },
+    { id: 'oh-biw-t2',               commodityType: 'biw_assembly',       supplierTier: 'Tier 2', overheadPct: 0.10, marginPct: 0.07, sourceNote: 'Industry benchmark' },
+    { id: 'oh-pcb-fab-t2',           commodityType: 'pcb_fab',            supplierTier: 'Tier 2', overheadPct: 0.08, marginPct: 0.10, sourceNote: 'Industry benchmark' },
+    { id: 'oh-pcba-t2',              commodityType: 'pcba',               supplierTier: 'Tier 2', overheadPct: 0.08, marginPct: 0.10, sourceNote: 'Industry benchmark' },
   ],
 };
 

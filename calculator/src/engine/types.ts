@@ -103,6 +103,8 @@ export interface RawMaterialInput {
   materialId: string;
   netWeightKg: number;
   materialUtilization: number;
+  /** When set, bypasses weight-based cost calculation (used by painting, BIW, PCB). */
+  directCost?: number;
 }
 
 export interface OperationInput {

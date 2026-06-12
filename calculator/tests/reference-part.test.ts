@@ -64,7 +64,7 @@ import type { UniversalStackInput, PartCostResult, RateLibrary } from '../src/en
 
 // Pull the actual computed rates from the library to keep the test consistent
 // with any rate-library updates (the workings above used rounded values for readability).
-function buildReferenceInput(lib: RateLibrary): UniversalStackInput {
+function buildReferenceInput(_lib: RateLibrary): UniversalStackInput {
   return {
     partName: 'Al6061 Bracket — Reference Part',
     rawMaterial: {

@@ -212,3 +212,194 @@ header .back-link:hover { text-decoration: underline; }
   .layout { grid-template-columns: 1fr; height: auto; }
   .input-panel { border-right: none; border-bottom: 1px solid var(--border); }
 }
+
+/* ── Commodity tabs ──────────────────────────────────────────────────────── */
+.commodity-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 8px 4px 8px;
+  border-bottom: 1px solid var(--border);
+  background: #fafafa;
+}
+
+.ctab {
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 3px 10px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  cursor: pointer;
+  background: #fff;
+  color: #666;
+  transition: all 0.12s;
+}
+.ctab:hover { background: var(--orange-light); color: var(--orange); border-color: var(--orange); }
+.ctab.active { background: var(--orange); color: #fff; border-color: var(--orange); }
+
+/* ── Results tabs ─────────────────────────────────────────────────────────── */
+.results-tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 2px solid var(--border);
+  margin-bottom: 0;
+}
+
+.rtab {
+  border: none;
+  background: none;
+  padding: 7px 18px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  color: #888;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+}
+.rtab:hover { color: var(--orange); }
+.rtab.active { color: var(--orange-dark); border-bottom-color: var(--orange); }
+
+/* ── Tornado / Sensitivity chart ─────────────────────────────────────────── */
+.tornado-chart {
+  background: #fff;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  overflow: hidden;
+  font-size: 0.8rem;
+}
+
+.tornado-header {
+  display: grid;
+  grid-template-columns: 200px 1fr 1fr;
+  padding: 7px 12px;
+  background: var(--orange-light);
+  font-size: 0.71rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--orange-dark);
+}
+
+.tornado-row {
+  display: grid;
+  grid-template-columns: 200px 1fr 1fr;
+  padding: 5px 12px;
+  border-top: 1px solid #f0f0f0;
+  align-items: center;
+  gap: 8px;
+}
+.tornado-row:hover { background: var(--orange-mid); }
+
+.tornado-label { font-size: 0.76rem; font-weight: 600; line-height: 1.3; }
+
+.tornado-minus-col {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+}
+.tornado-plus-col {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.t-bar {
+  height: 14px;
+  border-radius: 2px;
+  min-width: 3px;
+  flex-shrink: 0;
+}
+.t-bar-plus  { background: #c62828; opacity: 0.65; }
+.t-bar-minus { background: #2e7d32; opacity: 0.65; }
+
+.t-pct {
+  font-size: 0.71rem;
+  font-family: monospace;
+  min-width: 40px;
+  white-space: nowrap;
+}
+.t-pct-plus  { color: #c62828; }
+.t-pct-minus { color: #2e7d32; text-align: right; }
+
+/* ── Scenario list / compare ──────────────────────────────────────────────── */
+.scenario-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.scenario-card {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.82rem;
+}
+.scenario-card .sc-name { font-weight: 700; flex: 1; }
+.scenario-card .sc-meta { font-size: 0.72rem; color: #999; }
+.scenario-card .sc-total { font-weight: 700; color: var(--orange-dark); min-width: 55px; text-align: right; }
+
+.scenario-compare-box {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 14px 16px;
+}
+
+.compare-table { width: 100%; border-collapse: collapse; font-size: 0.79rem; }
+.compare-table th { background: var(--orange-light); padding: 6px 10px; text-align: left; font-size: 0.71rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--orange-dark); }
+.compare-table td { padding: 5px 10px; border-top: 1px solid #f0f0f0; }
+.compare-table .delta-pos { color: var(--red); font-weight: 700; }
+.compare-table .delta-neg { color: var(--green); font-weight: 700; }
+.compare-table .total-row td { font-weight: 700; background: #f9f9f9; }
+
+/* ── Inline dynamic rows (coats, BOM, joining, stations) ─────────────────── */
+.dyn-table { width: 100%; border-collapse: collapse; font-size: 0.76rem; margin-bottom: 4px; }
+.dyn-table th { background: #f0f0f0; padding: 4px 5px; text-align: left; font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.04em; color: #666; }
+.dyn-table td { padding: 3px 3px; border-top: 1px solid #f5f5f5; vertical-align: middle; }
+.dyn-table td input, .dyn-table td select {
+  width: 100%;
+  padding: 3px 4px;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  font-size: 0.74rem;
+  background: #fafafa;
+}
+.dyn-table td input:focus, .dyn-table td select:focus {
+  outline: none;
+  border-color: var(--orange);
+  background: #fff;
+}
+.btn-icon {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--red);
+  font-size: 0.85rem;
+  padding: 2px 4px;
+}
+
+/* ── Casting subtype sections ────────────────────────────────────────────── */
+.cast-section { display: none; }
+.cast-section.visible { display: block; }
+
+/* ── Section title with flex ────────────────────────────────────────────── */
+.section-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--orange);
+  margin-bottom: 8px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--orange-mid);
+}
+.section-title-row button { text-transform: none; letter-spacing: 0; }
