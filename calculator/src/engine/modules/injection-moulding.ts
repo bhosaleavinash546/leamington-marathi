@@ -24,6 +24,8 @@ export interface InjectionMouldingInputs {
   mouldCost: number;
   mouldLife: number;         // shots per mould life
   amortizationVolume: number;
+  toleranceMm?: number;            // tightest tolerance on part mm. Affects mould complexity cost.
+  surfaceFinishGrade?: 'standard' | 'textured' | 'high_gloss' | 'painted';
 }
 
 export function getInjectionMouldingInputSchema(): Record<string, string> {
@@ -48,12 +50,31 @@ export function getInjectionMouldingInputSchema(): Record<string, string> {
     mouldCost: 'number — total mould cost £',
     mouldLife: 'number — shots per mould life. numMoulds = ceil(amortVol / (mouldLife × cavities)); drives total tooling cost',
     amortizationVolume: 'number — parts over which to amortize mould cost',
+    toleranceMm: 'number? — tightest part tolerance mm. Multiplier applied to mould cost: >=0.2→×1.0, >=0.1→×1.2, >=0.05→×1.5, <0.05→×2.0',
+    surfaceFinishGrade: 'standard|textured|high_gloss|painted — mould surface finish. Multiplier on mould cost: standard×1.0, textured×1.1, high_gloss×1.4, painted×1.6 (cosmetic mould only)',
   };
 }
 
 export function computeInjectionMouldingDrivers(inputs: InjectionMouldingInputs): CommodityDrivers {
+  // Tolerance → mould cost multiplier
+  const toleranceFactor =
+    inputs.toleranceMm === undefined ? 1.0 :
+    inputs.toleranceMm >= 0.20 ? 1.0 :
+    inputs.toleranceMm >= 0.10 ? 1.2 :
+    inputs.toleranceMm >= 0.05 ? 1.5 :
+    2.0;
+
+  // Surface finish → mould cost multiplier (also slows cooling for high-gloss)
+  const finishFactors: Record<string, { tooling: number; coolTime: number }> = {
+    standard:   { tooling: 1.00, coolTime: 1.00 },
+    textured:   { tooling: 1.10, coolTime: 1.00 },
+    high_gloss: { tooling: 1.40, coolTime: 1.15 },
+    painted:    { tooling: 1.60, coolTime: 1.00 },
+  };
+  const finishFactor = finishFactors[inputs.surfaceFinishGrade ?? 'standard'] ?? finishFactors.standard;
+
   // Cooling time
-  const coolTimeSec = inputs.coolTimeFactorSPerMm2 * inputs.wallThicknessMm ** 2;
+  const coolTimeSec = inputs.coolTimeFactorSPerMm2 * inputs.wallThicknessMm ** 2 * finishFactor.coolTime;
   const totalCycleTimeSec = inputs.fillTimeSec + inputs.packTimeSec + coolTimeSec + inputs.ejectTimeSec;
   const cycleTimeHr = totalCycleTimeSec / 3600;
 
@@ -87,7 +108,7 @@ export function computeInjectionMouldingDrivers(inputs: InjectionMouldingInputs)
   const shotsNeeded = inputs.amortizationVolume / inputs.cavities;
   const numMoulds = inputs.mouldLife > 0 ? Math.ceil(shotsNeeded / inputs.mouldLife) : 1;
   const tooling: ToolingInput = {
-    totalToolingCost: inputs.mouldCost * numMoulds,
+    totalToolingCost: inputs.mouldCost * numMoulds * toleranceFactor * finishFactor.tooling,
     amortizationVolume: inputs.amortizationVolume,
     mode: 'amortized',
   };

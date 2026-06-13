@@ -14,6 +14,10 @@ import { computeBIWDrivers } from '../engine/modules/biw-assembly.js';
 import { computePCBFabDrivers } from '../engine/modules/pcb-fab.js';
 import { computePCBADrivers } from '../engine/modules/pcba.js';
 import { computeCastAndMachineDrivers } from '../engine/modules/cast-and-machine.js';
+import { computeBlowMouldingDrivers } from '../engine/modules/blow-moulding.js';
+import { computeExtrusionDrivers } from '../engine/modules/extrusion.js';
+import { computeThermoformingDrivers } from '../engine/modules/thermoforming.js';
+import { computeRotationalMouldingDrivers } from '../engine/modules/rotational-moulding.js';
 import { recommendMachineIds } from '../engine/process-taxonomy.js';
 import { runSensitivity } from '../engine/sensitivity.js';
 import {
@@ -326,6 +330,11 @@ function renderInjectionForm(): string {
     <div class="field-row" style="margin-top:6px">
       <div class="field-group"><label>Labour Eff.</label><input type="number" id="imm-lab-eff" step="0.01" min="0.01" max="1" value="0.95"/></div>
     </div>
+    <div class="section-title" style="margin-top:8px">Quality &amp; Complexity</div>
+    <div class="field-row">
+      <div class="field-group"><label>Tightest Tolerance (mm) <span title="Drives mould precision: ≥0.20→×1.0, ≥0.10→×1.2, ≥0.05→×1.5, <0.05→×2.0 on mould cost. Leave 0 for standard ±0.2mm.">ℹ</span></label><input type="number" id="imm-tolerance" step="0.01" min="0" value="0.2" title="Tightest critical dimension tolerance on part mm"/></div>
+      <div class="field-group"><label>Surface Finish <span title="Affects mould cost: standard×1.0, textured×1.1, high_gloss×1.4 (+15% cool time), painted×1.6.">ℹ</span></label><select id="imm-finish"><option value="standard" selected>Standard moulded</option><option value="textured">Textured mould</option><option value="high_gloss">High gloss / optical</option><option value="painted">Painted / coated</option></select></div>
+    </div>
     <div class="section-title" style="margin-top:8px">Tooling</div>
     <div class="field-row">
       <div class="field-group"><label>Mould Cost (£)</label><input type="number" id="imm-mould-cost" step="1000" min="0" value="25000"/></div>
@@ -333,6 +342,180 @@ function renderInjectionForm(): string {
     </div>
     <div class="field-row" style="margin-top:6px">
       <div class="field-group"><label>Amort. Volume</label><input type="number" id="imm-amort" step="10000" min="1" value="500000"/></div>
+    </div>`;
+}
+
+// ─── Form: Blow Moulding ──────────────────────────────────────────────────────
+
+function renderBlowMouldingForm(): string {
+  return `
+    <div class="section-title">Material &amp; Part</div>
+    <div class="field-row">
+      <div class="field-group"><label>Material</label><select id="bm-mat" class="material-select"></select></div>
+      <div class="field-group"><label>Part Weight (kg)</label><input type="number" id="bm-part-wt" step="0.001" min="0.001" value="0.05"/></div>
+    </div>
+    <div class="field-row" style="margin-top:6px">
+      <div class="field-group"><label>Flash Weight (kg) <span title="Pinch-off flash + neck trim scrap weight per part.">ℹ</span></label><input type="number" id="bm-flash-wt" step="0.001" min="0" value="0.005"/></div>
+      <div class="field-group"><label>Wall Thickness (mm)</label><input type="number" id="bm-wall" step="0.1" min="0.1" value="1.5"/></div>
+    </div>
+    <div class="section-title" style="margin-top:8px">Cycle Time</div>
+    <div class="field-row">
+      <div class="field-group"><label>Cool Factor (s/mm²) <span title="HDPE/LDPE ~3.5, PP ~3.16, PET ~3.0">ℹ</span></label><input type="number" id="bm-cool-f" step="0.1" min="0" value="3.5"/></div>
+      <div class="field-group"><label>Blow Time (s) <span title="Pressurisation + hold (3–8s for bottles)">ℹ</span></label><input type="number" id="bm-blow-t" step="0.5" min="0.5" value="5"/></div>
+    </div>
+    <div class="field-row" style="margin-top:6px">
+      <div class="field-group"><label>Open/Close (s) <span title="Mould open / index / close time (4–8s)">ℹ</span></label><input type="number" id="bm-open-close" step="0.5" min="0.5" value="5"/></div>
+      <div class="field-group"><label>Cavities</label><input type="number" id="bm-cav" step="1" min="1" value="2"/></div>
+    </div>
+    <div class="section-title" style="margin-top:8px">Machine &amp; Labour</div>
+    <div class="field-row">
+      <div class="field-group"><label>EBM Machine</label><select id="bm-mach" class="machine-select"></select></div>
+      <div class="field-group"><label>Labour</label><select id="bm-lab" class="labour-select"></select></div>
+    </div>
+    <div class="field-row" style="margin-top:6px">
+      <div class="field-group"><label>OEE</label><input type="number" id="bm-oee" step="0.01" min="0.01" max="1" value="0.80"/></div>
+      <div class="field-group"><label>Manning</label><input type="number" id="bm-manning" step="0.25" min="0" value="1"/></div>
+    </div>
+    <div class="field-row" style="margin-top:6px">
+      <div class="field-group"><label>Labour Eff.</label><input type="number" id="bm-lab-eff" step="0.01" min="0.01" max="1" value="0.95"/></div>
+    </div>
+    <div class="section-title" style="margin-top:8px">Tooling</div>
+    <div class="field-row">
+      <div class="field-group"><label>Mould Cost (£)</label><input type="number" id="bm-mould-cost" step="500" min="0" value="8000"/></div>
+      <div class="field-group"><label>Mould Life (cycles) <span title="Al blow moulds: 500k–2M cycles">ℹ</span></label><input type="number" id="bm-mould-life" step="50000" min="0" value="1000000"/></div>
+    </div>
+    <div class="field-row" style="margin-top:6px">
+      <div class="field-group"><label>Amort. Volume</label><input type="number" id="bm-amort" step="10000" min="1" value="500000"/></div>
+    </div>
+    <div class="section-title" style="margin-top:8px">Deflashing (optional)</div>
+    <div class="field-row">
+      <div class="field-group"><label>Deflash Machine</label><select id="bm-deflash-mach" class="machine-select"><option value="">None</option></select></div>
+      <div class="field-group"><label>Deflash Labour</label><select id="bm-deflash-lab" class="labour-select"><option value="">None</option></select></div>
+    </div>
+    <div class="field-row" style="margin-top:6px">
+      <div class="field-group"><label>Deflash Cycle (s, 0=none)</label><input type="number" id="bm-deflash-ct" step="1" min="0" value="0"/></div>
+    </div>`;
+}
+
+// ─── Form: Extrusion ──────────────────────────────────────────────────────────
+
+function renderExtrusionForm(): string {
+  return `
+    <div class="section-title">Material &amp; Profile</div>
+    <div class="field-row">
+      <div class="field-group"><label>Material</label><select id="ext-mat" class="material-select"></select></div>
+      <div class="field-group"><label>Profile kg/m <span title="Linear weight density of the extruded profile kg/m. E.g. 20mm dia rod PE: ~0.28 kg/m.">ℹ</span></label><input type="number" id="ext-kg-per-m" step="0.01" min="0.001" value="0.20"/></div>
+    </div>
+    <div class="field-row" style="margin-top:6px">
+      <div class="field-group"><label>Part Length (m)</label><input type="number" id="ext-length" step="0.1" min="0.01" value="2.0"/></div>
+      <div class="field-group"><label>Line Rate (kg/hr) <span title="Extrusion throughput. 75mm SSE: ~200–400 kg/hr for PE pipe; lower for complex profiles.">ℹ</span></label><input type="number" id="ext-rate" step="10" min="1" value="250"/></div>
+    </div>
+    <div class="field-row" style="margin-top:6px">
+      <div class="field-group"><label>Startup Scrap <span title="Fraction of run lost to startup purge, colour change. Typically 0.02–0.08.">ℹ</span></label><input type="number" id="ext-scrap" step="0.01" min="0" max="0.4" value="0.03"/></div>
+    </div>
+    <div class="section-title" style="margin-top:8px">Machine &amp; Labour</div>
+    <div class="field-row">
+      <div class="field-group"><label>Extruder</label><select id="ext-mach" class="machine-select"></select></div>
+      <div class="field-group"><label>Labour</label><select id="ext-lab" class="labour-select"></select></div>
+    </div>
+    <div class="field-row" style="margin-top:6px">
+      <div class="field-group"><label>OEE</label><input type="number" id="ext-oee" step="0.01" min="0.01" max="1" value="0.82"/></div>
+      <div class="field-group"><label>Manning</label><input type="number" id="ext-manning" step="0.5" min="0" value="1"/></div>
+    </div>
+    <div class="field-row" style="margin-top:6px">
+      <div class="field-group"><label>Labour Eff.</label><input type="number" id="ext-lab-eff" step="0.01" min="0.01" max="1" value="0.95"/></div>
+    </div>
+    <div class="section-title" style="margin-top:8px">Tooling</div>
+    <div class="field-row">
+      <div class="field-group"><label>Die Cost (£)</label><input type="number" id="ext-die-cost" step="500" min="0" value="3000"/></div>
+      <div class="field-group"><label>Amort. Volume</label><input type="number" id="ext-amort" step="1000" min="1" value="100000"/></div>
+    </div>`;
+}
+
+// ─── Form: Thermoforming ──────────────────────────────────────────────────────
+
+function renderThermoformingForm(): string {
+  return `
+    <div class="section-title">Sheet &amp; Part</div>
+    <div class="field-row">
+      <div class="field-group"><label>Material</label><select id="tf-mat" class="material-select"></select></div>
+      <div class="field-group"><label>Sheet Weight (kg) <span title="Gross sheet weight per cycle before forming.">ℹ</span></label><input type="number" id="tf-sheet-wt" step="0.01" min="0.001" value="1.2"/></div>
+    </div>
+    <div class="field-row" style="margin-top:6px">
+      <div class="field-group"><label>Part Weight (kg) <span title="Net part weight after trim.">ℹ</span></label><input type="number" id="tf-part-wt" step="0.001" min="0.001" value="0.25"/></div>
+      <div class="field-group"><label>Parts / Sheet</label><input type="number" id="tf-pps" step="1" min="1" value="4"/></div>
+    </div>
+    <div class="field-row" style="margin-top:6px">
+      <div class="field-group"><label>Method</label><select id="tf-method"><option value="vacuum" selected>Vacuum</option><option value="pressure">Pressure</option><option value="twin_sheet">Twin-Sheet</option></select></div>
+    </div>
+    <div class="section-title" style="margin-top:8px">Cycle Time</div>
+    <div class="field-row">
+      <div class="field-group"><label>Heat Time (s)</label><input type="number" id="tf-heat" step="1" min="1" value="30"/></div>
+      <div class="field-group"><label>Form Time (s)</label><input type="number" id="tf-form" step="1" min="1" value="10"/></div>
+    </div>
+    <div class="field-row" style="margin-top:6px">
+      <div class="field-group"><label>Trim Time (s)</label><input type="number" id="tf-trim" step="1" min="0" value="20"/></div>
+      <div class="field-group"><label>Index Time (s)</label><input type="number" id="tf-index" step="1" min="1" value="10"/></div>
+    </div>
+    <div class="section-title" style="margin-top:8px">Machine &amp; Labour</div>
+    <div class="field-row">
+      <div class="field-group"><label>Thermoformer</label><select id="tf-mach" class="machine-select"></select></div>
+      <div class="field-group"><label>Labour</label><select id="tf-lab" class="labour-select"></select></div>
+    </div>
+    <div class="field-row" style="margin-top:6px">
+      <div class="field-group"><label>OEE</label><input type="number" id="tf-oee" step="0.01" min="0.01" max="1" value="0.80"/></div>
+      <div class="field-group"><label>Manning</label><input type="number" id="tf-manning" step="0.5" min="0" value="1"/></div>
+    </div>
+    <div class="field-row" style="margin-top:6px">
+      <div class="field-group"><label>Labour Eff.</label><input type="number" id="tf-lab-eff" step="0.01" min="0.01" max="1" value="0.92"/></div>
+    </div>
+    <div class="section-title" style="margin-top:8px">Tooling</div>
+    <div class="field-row">
+      <div class="field-group"><label>Tool Cost (£) <span title="Forming tool + trim die. Much lower than injection mould — typically £2k–£20k.">ℹ</span></label><input type="number" id="tf-tool-cost" step="500" min="0" value="5000"/></div>
+      <div class="field-group"><label>Amort. Volume</label><input type="number" id="tf-amort" step="1000" min="1" value="50000"/></div>
+    </div>`;
+}
+
+// ─── Form: Rotational Moulding ────────────────────────────────────────────────
+
+function renderRotationalMouldingForm(): string {
+  return `
+    <div class="section-title">Material &amp; Part</div>
+    <div class="field-row">
+      <div class="field-group"><label>Material <span title="LLDPE powder is most common. Set pellet price in library; add grinding premium below.">ℹ</span></label><select id="rm-mat" class="material-select"></select></div>
+      <div class="field-group"><label>Part Weight (kg) <span title="Equals the powder charge weight.">ℹ</span></label><input type="number" id="rm-part-wt" step="0.1" min="0.1" value="5.0"/></div>
+    </div>
+    <div class="field-row" style="margin-top:6px">
+      <div class="field-group"><label>Powder Adder (£/kg) <span title="Grinding/screening premium over pellet price. Typically £0.15–0.40/kg.">ℹ</span></label><input type="number" id="rm-powder-adder" step="0.05" min="0" value="0.25"/></div>
+      <div class="field-group"><label>Parts / Arm</label><input type="number" id="rm-parts-per-arm" step="1" min="1" value="1"/></div>
+    </div>
+    <div class="section-title" style="margin-top:8px">Cycle Time</div>
+    <div class="field-row">
+      <div class="field-group"><label>Heating Time (s) <span title="Oven residence time. Typically 600–1800s.">ℹ</span></label><input type="number" id="rm-heat" step="30" min="60" value="900"/></div>
+      <div class="field-group"><label>Cooling Time (s) <span title="Forced air cooling. Typically 900–2400s.">ℹ</span></label><input type="number" id="rm-cool" step="30" min="60" value="1200"/></div>
+    </div>
+    <div class="field-row" style="margin-top:6px">
+      <div class="field-group"><label>Load/Unload (s) <span title="Demould + charge load. Typically 120–300s.">ℹ</span></label><input type="number" id="rm-load" step="30" min="30" value="180"/></div>
+    </div>
+    <div class="section-title" style="margin-top:8px">Machine &amp; Labour</div>
+    <div class="field-row">
+      <div class="field-group"><label>Rotomoulder</label><select id="rm-mach" class="machine-select"></select></div>
+      <div class="field-group"><label>Labour</label><select id="rm-lab" class="labour-select"></select></div>
+    </div>
+    <div class="field-row" style="margin-top:6px">
+      <div class="field-group"><label>OEE</label><input type="number" id="rm-oee" step="0.01" min="0.01" max="1" value="0.75"/></div>
+      <div class="field-group"><label>Manning</label><input type="number" id="rm-manning" step="0.5" min="0" value="2"/></div>
+    </div>
+    <div class="field-row" style="margin-top:6px">
+      <div class="field-group"><label>Labour Eff.</label><input type="number" id="rm-lab-eff" step="0.01" min="0.01" max="1" value="0.92"/></div>
+    </div>
+    <div class="section-title" style="margin-top:8px">Tooling</div>
+    <div class="field-row">
+      <div class="field-group"><label>Mould Cost (£) <span title="Al casting tool. Much cheaper than IM: typically £3k–£30k.">ℹ</span></label><input type="number" id="rm-mould-cost" step="500" min="0" value="8000"/></div>
+      <div class="field-group"><label>Mould Life (cycles) <span title="Rotomould Al tools: 50k–200k cycles">ℹ</span></label><input type="number" id="rm-mould-life" step="10000" min="0" value="100000"/></div>
+    </div>
+    <div class="field-row" style="margin-top:6px">
+      <div class="field-group"><label>Amort. Volume</label><input type="number" id="rm-amort" step="1000" min="1" value="5000"/></div>
     </div>`;
 }
 
@@ -1468,6 +1651,50 @@ function switchCommodity(type: CommodityType): void {
       addCAMMachOp({ name: 'Face Mill', type: 'milling_3ax', machineId: 'mach-haas-vf2', labourId: 'lab-uk-skilled', cycleTimeHr: 0.05, partsPerCycle: 1, oee: 0.85, manning: 1, labourTimeHr: 0.05, labourEfficiency: 0.92 });
       break;
 
+    case 'blow_moulding':
+      area.innerHTML = renderBlowMouldingForm();
+      populateSelects();
+      setTimeout(() => {
+        const machEl = el<HTMLSelectElement>('bm-mach');
+        if (machEl) { const opt = Array.from(machEl.options).find(o => o.value.includes('blow-ebm-100l')); if (opt) machEl.value = opt.value; }
+        const matEl = el<HTMLSelectElement>('bm-mat');
+        if (matEl) { const opt = Array.from(matEl.options).find(o => o.value.includes('mat-hdpe')); if (opt) matEl.value = opt.value; }
+      }, 0);
+      break;
+
+    case 'extrusion':
+      area.innerHTML = renderExtrusionForm();
+      populateSelects();
+      setTimeout(() => {
+        const machEl = el<HTMLSelectElement>('ext-mach');
+        if (machEl) { const opt = Array.from(machEl.options).find(o => o.value.includes('extruder-75mm')); if (opt) machEl.value = opt.value; }
+        const matEl = el<HTMLSelectElement>('ext-mat');
+        if (matEl) { const opt = Array.from(matEl.options).find(o => o.value.includes('mat-hdpe')); if (opt) matEl.value = opt.value; }
+      }, 0);
+      break;
+
+    case 'thermoforming':
+      area.innerHTML = renderThermoformingForm();
+      populateSelects();
+      setTimeout(() => {
+        const machEl = el<HTMLSelectElement>('tf-mach');
+        if (machEl) { const opt = Array.from(machEl.options).find(o => o.value.includes('thermoform-small')); if (opt) machEl.value = opt.value; }
+        const matEl = el<HTMLSelectElement>('tf-mat');
+        if (matEl) { const opt = Array.from(matEl.options).find(o => o.value.includes('mat-hips')); if (opt) matEl.value = opt.value; }
+      }, 0);
+      break;
+
+    case 'rotational_moulding':
+      area.innerHTML = renderRotationalMouldingForm();
+      populateSelects();
+      setTimeout(() => {
+        const machEl = el<HTMLSelectElement>('rm-mach');
+        if (machEl) { const opt = Array.from(machEl.options).find(o => o.value.includes('rotomould-biaxial')); if (opt) machEl.value = opt.value; }
+        const matEl = el<HTMLSelectElement>('rm-mat');
+        if (matEl) { const opt = Array.from(matEl.options).find(o => o.value.includes('mat-lldpe')); if (opt) matEl.value = opt.value; }
+      }, 0);
+      break;
+
     case 'cad_analysis':
       area.innerHTML = renderCADAnalysisForm();
       wireCADEvents();
@@ -1582,6 +1809,8 @@ function collectIMMInput(): UniversalStackInput {
     mouldCost: num('imm-mould-cost'),
     mouldLife: num('imm-mould-life'),
     amortizationVolume: num('imm-amort') || 1,
+    toleranceMm: num('imm-tolerance') || undefined,
+    surfaceFinishGrade: validSel<'standard'|'textured'|'high_gloss'|'painted'>('imm-finish', ['standard','textured','high_gloss','painted'], 'standard'),
   });
   return { ...getUniversalTail(), rawMaterial: drivers.rawMaterial, operations: drivers.operations, tooling: drivers.tooling };
 }
@@ -1825,18 +2054,111 @@ function collectCastAndMachineInput(): UniversalStackInput {
   return { ...getUniversalTail(), rawMaterial: drivers.rawMaterial, operations: drivers.operations, tooling: drivers.tooling };
 }
 
+function collectBlowMouldingInput(): UniversalStackInput {
+  const deflashCt = num('bm-deflash-ct');
+  const deflashMach = sel('bm-deflash-mach') || undefined;
+  const deflashLab = sel('bm-deflash-lab') || undefined;
+  const drivers = computeBlowMouldingDrivers({
+    materialId: sel('bm-mat'),
+    partWeightKg: num('bm-part-wt'),
+    flashWeightKg: num('bm-flash-wt'),
+    wallThicknessMm: num('bm-wall'),
+    coolTimeFactorSPerMm2: num('bm-cool-f'),
+    blowTimeSec: num('bm-blow-t'),
+    openCloseSec: num('bm-open-close'),
+    machineId: sel('bm-mach'),
+    labourId: sel('bm-lab'),
+    cavities: num('bm-cav') || 1,
+    oee: num('bm-oee'),
+    manning: num('bm-manning'),
+    labourEfficiency: num('bm-lab-eff'),
+    mouldCost: num('bm-mould-cost'),
+    mouldLife: num('bm-mould-life'),
+    amortizationVolume: num('bm-amort') || 1,
+    deflashMachineId: deflashCt > 0 ? deflashMach : undefined,
+    deflashLabourId: deflashCt > 0 ? deflashLab : undefined,
+    deflashCycleTimeSec: deflashCt > 0 ? deflashCt : undefined,
+  });
+  return { ...getUniversalTail(), rawMaterial: drivers.rawMaterial, operations: drivers.operations, tooling: drivers.tooling };
+}
+
+function collectExtrusionInput(): UniversalStackInput {
+  const drivers = computeExtrusionDrivers({
+    materialId: sel('ext-mat'),
+    profileWeightKgPerM: num('ext-kg-per-m'),
+    partLengthM: num('ext-length'),
+    lineRateKgPerHr: num('ext-rate'),
+    extruderId: sel('ext-mach'),
+    labourId: sel('ext-lab'),
+    oee: num('ext-oee'),
+    manning: num('ext-manning'),
+    labourEfficiency: num('ext-lab-eff'),
+    startupScrapFraction: num('ext-scrap'),
+    dieCost: num('ext-die-cost'),
+    amortizationVolume: num('ext-amort') || 1,
+  });
+  return { ...getUniversalTail(), rawMaterial: drivers.rawMaterial, operations: drivers.operations, tooling: drivers.tooling };
+}
+
+function collectThermoformingInput(): UniversalStackInput {
+  const drivers = computeThermoformingDrivers({
+    materialId: sel('tf-mat'),
+    sheetWeightKg: num('tf-sheet-wt'),
+    partsPerSheet: num('tf-pps') || 1,
+    partWeightKg: num('tf-part-wt'),
+    method: validSel<'vacuum'|'pressure'|'twin_sheet'>('tf-method', ['vacuum','pressure','twin_sheet'], 'vacuum'),
+    machineId: sel('tf-mach'),
+    labourId: sel('tf-lab'),
+    heatTimeSec: num('tf-heat'),
+    formTimeSec: num('tf-form'),
+    trimTimeSec: num('tf-trim'),
+    indexTimeSec: num('tf-index'),
+    oee: num('tf-oee'),
+    manning: num('tf-manning'),
+    labourEfficiency: num('tf-lab-eff'),
+    toolCost: num('tf-tool-cost'),
+    amortizationVolume: num('tf-amort') || 1,
+  });
+  return { ...getUniversalTail(), rawMaterial: drivers.rawMaterial, operations: drivers.operations, tooling: drivers.tooling };
+}
+
+function collectRotationalMouldingInput(): UniversalStackInput {
+  const drivers = computeRotationalMouldingDrivers({
+    materialId: sel('rm-mat'),
+    partWeightKg: num('rm-part-wt'),
+    powderCostAdderPerKg: num('rm-powder-adder'),
+    partsPerArm: num('rm-parts-per-arm') || 1,
+    heatingTimeSec: num('rm-heat'),
+    coolingTimeSec: num('rm-cool'),
+    loadUnloadTimeSec: num('rm-load'),
+    machineId: sel('rm-mach'),
+    labourId: sel('rm-lab'),
+    oee: num('rm-oee'),
+    manning: num('rm-manning'),
+    labourEfficiency: num('rm-lab-eff'),
+    mouldCost: num('rm-mould-cost'),
+    mouldLife: num('rm-mould-life'),
+    amortizationVolume: num('rm-amort') || 1,
+  });
+  return { ...getUniversalTail(), rawMaterial: drivers.rawMaterial, operations: drivers.operations, tooling: drivers.tooling };
+}
+
 function collectInput(): UniversalStackInput {
   switch (activeCommodity) {
-    case 'machining':         return collectMachiningInput();
-    case 'sheet_metal':       return collectSheetMetalInput();
-    case 'injection_moulding': return collectIMMInput();
-    case 'casting':           return collectCastingInput();
-    case 'forging':           return collectForgingInput();
-    case 'painting':          return collectPaintingInput();
-    case 'biw_assembly':      return collectBIWInput();
-    case 'pcb_fab':           return collectPCBFabInput();
-    case 'pcba':              return collectPCBAInput();
-    case 'cast_and_machine':  return collectCastAndMachineInput();
+    case 'machining':            return collectMachiningInput();
+    case 'sheet_metal':          return collectSheetMetalInput();
+    case 'injection_moulding':   return collectIMMInput();
+    case 'blow_moulding':        return collectBlowMouldingInput();
+    case 'extrusion':            return collectExtrusionInput();
+    case 'thermoforming':        return collectThermoformingInput();
+    case 'rotational_moulding':  return collectRotationalMouldingInput();
+    case 'casting':              return collectCastingInput();
+    case 'forging':              return collectForgingInput();
+    case 'painting':             return collectPaintingInput();
+    case 'biw_assembly':         return collectBIWInput();
+    case 'pcb_fab':              return collectPCBFabInput();
+    case 'pcba':                 return collectPCBAInput();
+    case 'cast_and_machine':     return collectCastAndMachineInput();
     case 'cad_analysis':
       throw new Error('Apply CAD analysis results to a commodity form first using the "Apply to cost engine" button, then calculate.');
     case 'assembly':

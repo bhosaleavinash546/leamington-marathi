@@ -123,6 +123,30 @@ export const DEFAULT_RATE_LIBRARY: RateLibrary = {
     { id: 'mat-pom', grade: 'POM / Acetal (Delrin)', category: 'Thermoplastic', pricePerKg: 1.85, scrapRecoveryPricePerKg: 0.05, densityKgPerM3: 1410, region: 'UK', effectiveDate: '2024-01-01', sourceNote: 'UK resin distributor, Jan 2024. coolFactor ~2.8 s/mm²', confidence: 'Medium' },
     { id: 'mat-pbt-gf30', grade: 'PBT GF30', category: 'Thermoplastic', pricePerKg: 2.80, scrapRecoveryPricePerKg: 0.05, densityKgPerM3: 1520, region: 'UK', effectiveDate: '2024-01-01', sourceNote: 'UK resin distributor, Jan 2024. Common connector/housing material.', confidence: 'Medium' },
     { id: 'mat-tpu-shore85', grade: 'TPU Shore 85A', category: 'Thermoplastic Elastomer', pricePerKg: 2.40, scrapRecoveryPricePerKg: 0.05, densityKgPerM3: 1200, region: 'UK', effectiveDate: '2024-01-01', sourceNote: 'UK resin distributor, Jan 2024. coolFactor ~4.0 s/mm²', confidence: 'Low' },
+    // ── Polyethylene family ────────────────────────────────────────────────────
+    { id: 'mat-ldpe', grade: 'LDPE (2426H)', category: 'Thermoplastic', pricePerKg: 0.82, scrapRecoveryPricePerKg: 0.08, densityKgPerM3: 910, region: 'UK', effectiveDate: '2024-01-01', sourceNote: 'UK resin distributor Jan 2024. EBM film bags. coolFactor ~3.5 s/mm²', confidence: 'Medium' },
+    { id: 'mat-lldpe', grade: 'LLDPE C6', category: 'Thermoplastic', pricePerKg: 0.88, scrapRecoveryPricePerKg: 0.08, densityKgPerM3: 920, region: 'UK', effectiveDate: '2024-01-01', sourceNote: 'UK resin distributor Jan 2024. Stretch/packaging film, rotomoulding. coolFactor ~3.5 s/mm²', confidence: 'Medium' },
+    // ── PP grades ──────────────────────────────────────────────────────────────
+    { id: 'mat-pp-homo', grade: 'PP Homopolymer (MFI 12)', category: 'Thermoplastic', pricePerKg: 0.90, scrapRecoveryPricePerKg: 0.10, densityKgPerM3: 905, region: 'UK', effectiveDate: '2024-01-01', sourceNote: 'UK resin distributor Jan 2024. High stiffness housings, caps. coolFactor ~3.16 s/mm²', confidence: 'Medium' },
+    { id: 'mat-pp-impact', grade: 'PP Impact Copolymer (PP-B)', category: 'Thermoplastic', pricePerKg: 0.95, scrapRecoveryPricePerKg: 0.10, densityKgPerM3: 900, region: 'UK', effectiveDate: '2024-01-01', sourceNote: 'UK resin distributor Jan 2024. Bumpers, battery cases. coolFactor ~3.16 s/mm²', confidence: 'Medium' },
+    // ── PET ────────────────────────────────────────────────────────────────────
+    { id: 'mat-pet-bg', grade: 'PET Bottle Grade (1101)', category: 'Thermoplastic', pricePerKg: 1.15, scrapRecoveryPricePerKg: 0.08, densityKgPerM3: 1380, region: 'UK', effectiveDate: '2024-01-01', sourceNote: 'UK resin distributor Jan 2024. SBM beverage bottles. coolFactor ~3.0 s/mm²', confidence: 'Medium' },
+    { id: 'mat-pet-gf30', grade: 'PET GF30 (Engineering)', category: 'Thermoplastic', pricePerKg: 2.90, scrapRecoveryPricePerKg: 0.05, densityKgPerM3: 1520, region: 'UK', effectiveDate: '2024-01-01', sourceNote: 'UK resin distributor Jan 2024. Gears, precision parts. coolFactor ~2.5 s/mm²', confidence: 'Medium' },
+    // ── PVC ────────────────────────────────────────────────────────────────────
+    { id: 'mat-upvc', grade: 'Rigid PVC (uPVC pipe grade)', category: 'Thermoplastic', pricePerKg: 0.78, scrapRecoveryPricePerKg: 0.05, densityKgPerM3: 1400, region: 'UK', effectiveDate: '2024-01-01', sourceNote: 'UK resin distributor Jan 2024. Pipes, window profiles. coolFactor ~2.5 s/mm²', confidence: 'Medium' },
+    { id: 'mat-fpvc', grade: 'Flexible PVC (fPVC plasticised)', category: 'Thermoplastic', pricePerKg: 1.10, scrapRecoveryPricePerKg: 0.05, densityKgPerM3: 1250, region: 'UK', effectiveDate: '2024-01-01', sourceNote: 'UK resin distributor Jan 2024. Cables, hoses, medical tubing. coolFactor ~3.0 s/mm²', confidence: 'Medium' },
+    // ── PS grades ──────────────────────────────────────────────────────────────
+    { id: 'mat-gpps', grade: 'GPPS (Crystal PS)', category: 'Thermoplastic', pricePerKg: 0.95, scrapRecoveryPricePerKg: 0.08, densityKgPerM3: 1050, region: 'UK', effectiveDate: '2024-01-01', sourceNote: 'UK resin distributor Jan 2024. Clear, rigid, brittle. CD cases, cutlery. coolFactor ~2.0 s/mm²', confidence: 'Medium' },
+    { id: 'mat-hips', grade: 'HIPS (High Impact PS)', category: 'Thermoplastic', pricePerKg: 0.92, scrapRecoveryPricePerKg: 0.08, densityKgPerM3: 1040, region: 'UK', effectiveDate: '2024-01-01', sourceNote: 'UK resin distributor Jan 2024. TV housings, fridge liners, thermoforming sheet. coolFactor ~2.0 s/mm²', confidence: 'Medium' },
+    // ── PC/ABS Blend ───────────────────────────────────────────────────────────
+    { id: 'mat-pc-abs', grade: 'PC/ABS Blend (automotive grade)', category: 'Thermoplastic', pricePerKg: 1.85, scrapRecoveryPricePerKg: 0.08, densityKgPerM3: 1150, region: 'UK', effectiveDate: '2024-01-01', sourceNote: 'UK resin distributor Jan 2024. Automotive interior, electronics housings. coolFactor ~2.2 s/mm²', confidence: 'Medium' },
+    // ── Polyamide (PA) grades ──────────────────────────────────────────────────
+    { id: 'mat-pa6', grade: 'PA6 Unfilled', category: 'Thermoplastic', pricePerKg: 1.60, scrapRecoveryPricePerKg: 0.06, densityKgPerM3: 1130, region: 'UK', effectiveDate: '2024-01-01', sourceNote: 'UK resin distributor Jan 2024. Gears, under-hood. Moisture sensitive — dry before moulding. coolFactor ~2.0 s/mm²', confidence: 'Medium' },
+    { id: 'mat-pa6-gf30', grade: 'PA6 GF30', category: 'Thermoplastic', pricePerKg: 2.40, scrapRecoveryPricePerKg: 0.05, densityKgPerM3: 1280, region: 'UK', effectiveDate: '2024-01-01', sourceNote: 'UK resin distributor Jan 2024. Structural PA6 with glass fill. coolFactor ~2.0 s/mm²', confidence: 'Medium' },
+    { id: 'mat-pa66', grade: 'PA66 Unfilled', category: 'Thermoplastic', pricePerKg: 1.80, scrapRecoveryPricePerKg: 0.06, densityKgPerM3: 1140, region: 'UK', effectiveDate: '2024-01-01', sourceNote: 'UK resin distributor Jan 2024. Higher temp than PA6. Connectors, structural. coolFactor ~2.0 s/mm²', confidence: 'Medium' },
+    // ── High-Performance ───────────────────────────────────────────────────────
+    { id: 'mat-peek', grade: 'PEEK Unfilled', category: 'High-Performance Thermoplastic', pricePerKg: 72.00, scrapRecoveryPricePerKg: 5.00, densityKgPerM3: 1300, region: 'UK', effectiveDate: '2024-01-01', sourceNote: 'UK speciality resin supplier Jan 2024. Aerospace/medical/oil&gas. High temp (Tg~143°C, use to 250°C). coolFactor ~2.5 s/mm²', confidence: 'Low' },
+    { id: 'mat-peek-gf30', grade: 'PEEK GF30', category: 'High-Performance Thermoplastic', pricePerKg: 88.00, scrapRecoveryPricePerKg: 5.00, densityKgPerM3: 1430, region: 'UK', effectiveDate: '2024-01-01', sourceNote: 'UK speciality resin supplier Jan 2024. High-stiffness structural PEEK.', confidence: 'Low' },
     // ── Casting alloys ─────────────────────────────────────────────────────
     { id: 'mat-adc12', grade: 'ADC12 / A383', category: 'Die Cast Aluminium', pricePerKg: 2.40, scrapRecoveryPricePerKg: 0.50, densityKgPerM3: 2700, region: 'UK', effectiveDate: '2024-01-01', sourceNote: 'UK Al alloy ingot, Jan 2024', confidence: 'Medium' },
     { id: 'mat-a380', grade: 'A380', category: 'Die Cast Aluminium', pricePerKg: 2.45, scrapRecoveryPricePerKg: 0.50, densityKgPerM3: 2680, region: 'UK', effectiveDate: '2024-01-01', sourceNote: 'UK Al alloy ingot, Jan 2024', confidence: 'Medium' },
@@ -332,6 +356,41 @@ export const DEFAULT_RATE_LIBRARY: RateLibrary = {
     makeMachine('smt-line', 'SMT Pick & Place + Reflow Line',
       { annualDepreciation: 80000, maintenance: 30000, energy: 15000, floorSpace: 20000, indirectSupport: 20000, financeCost: 10000, annualAvailableHours: 4000, machineUtilization: 0.82 },
       'UK', 'UK EMS benchmark, Jan 2024'),
+    // ── Blow Moulding ─────────────────────────────────────────────────────────
+    makeMachine('blow-ebm-100l', 'EBM Blow Moulder (up to 5L)',
+      { annualDepreciation: 25000, maintenance: 12000, energy: 18000, floorSpace: 6000, indirectSupport: 5000, financeCost: 3125, annualAvailableHours: 4000, machineUtilization: 0.80 },
+      'UK', 'UK plastics benchmark. EBM for bottles/containers up to 5L. Jan 2024'),
+    makeMachine('blow-ebm-500l', 'EBM Blow Moulder (5–100L tanks/drums)',
+      { annualDepreciation: 45000, maintenance: 20000, energy: 30000, floorSpace: 12000, indirectSupport: 9000, financeCost: 5625, annualAvailableHours: 4000, machineUtilization: 0.80 },
+      'UK', 'UK plastics benchmark. EBM for large industrial containers, automotive fuel tanks. Jan 2024'),
+    // ── Extrusion Lines ────────────────────────────────────────────────────────
+    makeMachine('extruder-75mm', 'Single Screw Extruder 75mm',
+      { annualDepreciation: 20000, maintenance: 8000, energy: 35000, floorSpace: 5000, indirectSupport: 4000, financeCost: 2500, annualAvailableHours: 5000, machineUtilization: 0.82 },
+      'UK', 'UK plastics benchmark. 75mm SSE for profile/pipe/sheet. ~200–400 kg/hr. Jan 2024'),
+    makeMachine('extruder-150mm', 'Twin Screw Compounding/Extrusion Line 150mm',
+      { annualDepreciation: 80000, maintenance: 30000, energy: 70000, floorSpace: 15000, indirectSupport: 15000, financeCost: 10000, annualAvailableHours: 5000, machineUtilization: 0.80 },
+      'UK', 'UK plastics benchmark. 150mm TSE compounding/extrusion line. ~800–1500 kg/hr. Jan 2024'),
+    // ── Thermoforming ──────────────────────────────────────────────────────────
+    makeMachine('thermoform-small', 'Thermoformer (Small/Single Station)',
+      { annualDepreciation: 15000, maintenance: 6000, energy: 12000, floorSpace: 4000, indirectSupport: 3000, financeCost: 1875, annualAvailableHours: 4000, machineUtilization: 0.80 },
+      'UK', 'UK plastics benchmark. Single-station vacuum former, up to 800×600mm sheet. Jan 2024'),
+    makeMachine('thermoform-large', 'Thermoformer (Inline/Rotary, Large)',
+      { annualDepreciation: 45000, maintenance: 18000, energy: 28000, floorSpace: 10000, indirectSupport: 9000, financeCost: 5625, annualAvailableHours: 4000, machineUtilization: 0.82 },
+      'UK', 'UK plastics benchmark. Inline rotary thermoformer, 1200×1000mm+ sheet. Jan 2024'),
+    // ── Rotational Moulding ────────────────────────────────────────────────────
+    makeMachine('rotomould-biaxial', 'Biaxial Rotational Moulder (3-arm)',
+      { annualDepreciation: 30000, maintenance: 14000, energy: 40000, floorSpace: 20000, indirectSupport: 8000, financeCost: 3750, annualAvailableHours: 3500, machineUtilization: 0.75 },
+      'UK', 'UK plastics benchmark. 3-arm biaxial carousel. Large tanks/playground equip. Jan 2024'),
+    // ── Plastic Joining / Welding ──────────────────────────────────────────────
+    makeMachine('ultrasonic-welder', 'Ultrasonic Welder',
+      { annualDepreciation: 8000, maintenance: 3000, energy: 2000, floorSpace: 1500, indirectSupport: 2000, financeCost: 1000, annualAvailableHours: 4000, machineUtilization: 0.80 },
+      'UK', 'UK plastics assembly benchmark. 3kW+ ultrasonic welder, small–medium plastic parts. Jan 2024'),
+    makeMachine('hot-plate-welder', 'Hot Plate Welder',
+      { annualDepreciation: 12000, maintenance: 4000, energy: 3000, floorSpace: 3000, indirectSupport: 2500, financeCost: 1500, annualAvailableHours: 4000, machineUtilization: 0.80 },
+      'UK', 'UK plastics assembly benchmark. Hot plate welding for tanks and manifolds. Jan 2024'),
+    makeMachine('vibration-welder', 'Vibration Welder',
+      { annualDepreciation: 18000, maintenance: 7000, energy: 4000, floorSpace: 4000, indirectSupport: 4000, financeCost: 2250, annualAvailableHours: 4000, machineUtilization: 0.80 },
+      'UK', 'UK plastics assembly benchmark. Vibration welding, large flat interfaces (automotive ducts). Jan 2024'),
   ],
 
   labour: [
@@ -467,6 +526,10 @@ export const DEFAULT_RATE_LIBRARY: RateLibrary = {
     { id: 'oh-pcb-fab-t2',           commodityType: 'pcb_fab',            supplierTier: 'Tier 2', overheadPct: 0.08, marginPct: 0.10, sourceNote: 'Industry benchmark' },
     { id: 'oh-pcba-t2',              commodityType: 'pcba',               supplierTier: 'Tier 2', overheadPct: 0.08, marginPct: 0.10, sourceNote: 'Industry benchmark' },
     { id: 'oh-cast-and-machine-t2',  commodityType: 'cast_and_machine',   supplierTier: 'Tier 2', overheadPct: 0.12, marginPct: 0.09, sourceNote: 'Industry benchmark' },
+    { id: 'oh-blow-moulding-t2',    commodityType: 'blow_moulding',       supplierTier: 'Tier 2', overheadPct: 0.10, marginPct: 0.08, sourceNote: 'Industry benchmark' },
+    { id: 'oh-extrusion-t2',        commodityType: 'extrusion',           supplierTier: 'Tier 2', overheadPct: 0.09, marginPct: 0.07, sourceNote: 'Industry benchmark' },
+    { id: 'oh-thermoforming-t2',    commodityType: 'thermoforming',       supplierTier: 'Tier 2', overheadPct: 0.10, marginPct: 0.08, sourceNote: 'Industry benchmark' },
+    { id: 'oh-rotomoulding-t2',     commodityType: 'rotational_moulding', supplierTier: 'Tier 2', overheadPct: 0.11, marginPct: 0.09, sourceNote: 'Industry benchmark' },
   ],
 };
 
