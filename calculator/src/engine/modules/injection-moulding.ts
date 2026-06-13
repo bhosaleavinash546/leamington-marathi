@@ -1,10 +1,13 @@
 import type { CommodityDrivers, OperationInput, RawMaterialInput, ToolingInput } from '../types.js';
 
+export type RunnerSystem = 'cold' | 'hot';
+
 export interface InjectionMouldingInputs {
   materialId: string;
   partWeightKg: number;
   runnerWeightKg: number;
-  regrindFraction: number;   // 0–1, fraction of runner recovered
+  regrindFraction: number;   // 0–1, fraction of runner recovered (ignored for hot runners)
+  runnerSystem?: RunnerSystem; // 'hot' → no runner waste; include hot-runner cost in mouldCost
   cavities: number;
   projectedAreaCm2: number;  // total projected area of all cavities
   cavityPressureMPa: number; // default 30 for standard resins
@@ -54,8 +57,9 @@ export function computeInjectionMouldingDrivers(inputs: InjectionMouldingInputs)
   const totalCycleTimeSec = inputs.fillTimeSec + inputs.packTimeSec + coolTimeSec + inputs.ejectTimeSec;
   const cycleTimeHr = totalCycleTimeSec / 3600;
 
-  // Effective material: runner loss not recovered becomes waste
-  const runnerWastePerCavity = (inputs.runnerWeightKg / inputs.cavities) * (1 - inputs.regrindFraction);
+  // Effective material: for hot runners there is no runner waste (plastic stays in manifold)
+  const effectiveRunnerWeightKg = inputs.runnerSystem === 'hot' ? 0 : inputs.runnerWeightKg;
+  const runnerWastePerCavity = (effectiveRunnerWeightKg / inputs.cavities) * (1 - inputs.regrindFraction);
   const grossPerPart = inputs.partWeightKg + runnerWastePerCavity;
   const materialUtilization = inputs.partWeightKg / grossPerPart;
 

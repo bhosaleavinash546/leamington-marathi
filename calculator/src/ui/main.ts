@@ -161,6 +161,7 @@ function renderMachiningForm(): string {
     </div>
     <div class="field-row" style="margin-top:6px">
       <div class="field-group"><label>Programming NRE (£)</label><input type="number" id="mach-prog-nre" step="100" min="0" value="0"/></div>
+      <div class="field-group"><label title="Fraction of parts scrapped (dimensional/quality). Uplifts both material consumption and machine time. Typical: 0.5–2% for CNC turning, 1–3% for milling complex parts.">Reject Rate (0=none) ⓘ</label><input type="number" id="mach-reject" step="0.005" min="0" max="0.3" value="0" title="Machining scrap rate. CNC turning: 0.005–0.02. Milling complex: 0.01–0.03. Leave 0 if negligible."/></div>
     </div>`;
 }
 
@@ -261,6 +262,22 @@ function renderSheetMetalForm(): string {
     <div class="field-row" style="margin-top:6px">
       <div class="field-group"><label>Die Cost (£)</label><input type="number" id="sm-die-cost" step="1000" min="0" value="45000"/></div>
       <div class="field-group"><label>Amort. Volume</label><input type="number" id="sm-amort" step="10000" min="1" value="500000"/></div>
+    </div>
+    <div class="field-row" style="margin-top:6px">
+      <div class="field-group"><label title="Press shop scrap rate. Progressive tool good quality: 0.5–1%. Complex draw/form: 1–3%. Leave 0 if scrap is included in material utilisation already.">Reject Rate (0=none) ⓘ</label><input type="number" id="sm-reject" step="0.005" min="0" max="0.2" value="0" title="Press scrap fraction. Progressive tool: 0.005–0.01. Draw/form: 0.01–0.03."/></div>
+    </div>
+    <div class="section-title" style="margin-top:8px">Secondary Operation (optional)</div>
+    <div class="field-row">
+      <div class="field-group"><label>Machine (opt.)</label><select id="sm-sec-mach" class="machine-select"><option value="">— None —</option></select></div>
+      <div class="field-group"><label>Labour (opt.)</label><select id="sm-sec-lab" class="labour-select"><option value="">— None —</option></select></div>
+    </div>
+    <div class="field-row" style="margin-top:6px">
+      <div class="field-group"><label>Cycle Time (hr, 0=none)</label><input type="number" id="sm-sec-ct" step="0.001" min="0" value="0"/></div>
+      <div class="field-group"><label>OEE</label><input type="number" id="sm-sec-oee" step="0.01" min="0.01" max="1" value="0.85"/></div>
+    </div>
+    <div class="field-row" style="margin-top:6px">
+      <div class="field-group"><label>Manning</label><input type="number" id="sm-sec-manning" step="0.25" min="0" value="1"/></div>
+      <div class="field-group"><label>Labour Eff.</label><input type="number" id="sm-sec-lab-eff" step="0.01" min="0.01" max="1" value="0.92"/></div>
     </div>`;
 }
 
@@ -274,8 +291,11 @@ function renderInjectionForm(): string {
       <div class="field-group"><label>Part Weight (kg)</label><input type="number" id="imm-part-wt" step="0.001" min="0.001" value="0.05"/></div>
     </div>
     <div class="field-row" style="margin-top:6px">
-      <div class="field-group"><label>Runner Weight (kg)</label><input type="number" id="imm-runner-wt" step="0.001" min="0" value="0.01"/></div>
-      <div class="field-group"><label>Regrind Fraction</label><input type="number" id="imm-regrind" step="0.01" min="0" max="1" value="0.2"/></div>
+      <div class="field-group"><label>Runner System</label><select id="imm-runner-sys"><option value="cold">Cold Runner</option><option value="hot">Hot Runner (no waste)</option></select></div>
+      <div class="field-group"><label>Runner Weight (kg)</label><input type="number" id="imm-runner-wt" step="0.001" min="0" value="0.01" title="Ignored when Hot Runner selected"/></div>
+    </div>
+    <div class="field-row" style="margin-top:6px">
+      <div class="field-group"><label>Regrind Fraction <span title="Cold runner only. Hot runner = 0 waste. Max ~0.3 for unfilled resins; 0 for glass-filled.">ℹ</span></label><input type="number" id="imm-regrind" step="0.01" min="0" max="1" value="0.2"/></div>
     </div>
     <div class="section-title" style="margin-top:8px">Mould &amp; Cycle</div>
     <div class="field-row">
@@ -436,7 +456,10 @@ function renderForgingForm(): string {
     </div>
     <div class="field-row" style="margin-top:6px">
       <div class="field-group"><label>Strokes to Form</label><input type="number" id="forge-strokes" step="1" min="1" value="3"/></div>
-      <div class="field-group"><label>Cycle Time (hr)</label><input type="number" id="forge-ct" step="0.001" min="0.001" value="0.008"/></div>
+      <div class="field-group"><label>Time/Blow (s) <span title="Seconds per blow including dwell and ram travel. Default 10s. Used to compute cycle time when Cycle Time (hr) is 0.">ℹ</span></label><input type="number" id="forge-time-per-blow" step="1" min="1" value="10"/></div>
+    </div>
+    <div class="field-row" style="margin-top:6px">
+      <div class="field-group"><label>Cycle Time (hr) <span title="Explicit cycle time override. Set to 0 to compute from Strokes × Time/Blow.">ℹ</span></label><input type="number" id="forge-ct" step="0.001" min="0" value="0"/></div>
     </div>
     <div class="field-row" style="margin-top:6px">
       <div class="field-group"><label>OEE</label><input type="number" id="forge-oee" step="0.01" min="0.01" max="1" value="0.8"/></div>
@@ -647,6 +670,9 @@ function renderPCBFabForm(): string {
       <div class="field-group"><label>Fab Yield (0–1)</label><input type="number" id="pcbf-yield" step="0.01" min="0.01" max="1" value="0.96"/></div>
       <div class="field-group"><label>Testable % (0–1)</label><input type="number" id="pcbf-test-pct" step="0.05" min="0" max="1" value="0.5"/></div>
     </div>
+    <div class="field-row" style="margin-top:6px">
+      <div class="field-group" style="align-items:center;gap:6px"><label>Impedance Controlled <span title="Adds ~8% to panel cost for controlled-impedance stackup (test coupons, tighter dielectric tolerances).">ℹ</span></label><input type="checkbox" id="pcbf-impedance" style="width:auto;margin-top:2px"/></div>
+    </div>
     <div class="section-title" style="margin-top:8px">Pricing &amp; NRE</div>
     <div class="field-row">
       <div class="field-group"><label>Base Panel Price (£)</label><input type="number" id="pcbf-panel-price" step="1" min="0" value="18"/></div>
@@ -675,6 +701,7 @@ function renderPCBAForm(): string {
     </div>
     <div class="field-row" style="margin-top:6px">
       <div class="field-group"><label>SMT OEE</label><input type="number" id="pcba-smt-oee" step="0.01" min="0.01" max="1" value="0.85"/></div>
+      <div class="field-group"><label>SMT Sides <span title="1 = single-sided (1 SMT pass). 2 = double-sided (2× placement passes through the line).">ℹ</span></label><select id="pcba-smt-sides"><option value="1" selected>1 — Single-sided</option><option value="2">2 — Double-sided</option></select></div>
     </div>
     <div class="section-title" style="margin-top:8px">Through-hole &amp; Manual</div>
     <div class="field-row">
@@ -1492,6 +1519,7 @@ function collectMachiningInput(): UniversalStackInput {
     programmingNRE: num('mach-prog-nre'),
     toolingCost: num('mach-tooling'),
     amortizationVolume: num('mach-amort') || 1,
+    rejectRate: num('mach-reject') || undefined,
   });
 
   return { ...getUniversalTail(), rawMaterial: drivers.rawMaterial, operations: drivers.operations, tooling: drivers.tooling };
@@ -1520,6 +1548,13 @@ function collectSheetMetalInput(): UniversalStackInput {
     dieLife: num('sm-die-life'),
     dieCostEstimate: num('sm-die-cost'),
     amortizationVolume: num('sm-amort') || 1,
+    rejectRate: num('sm-reject') || undefined,
+    secondaryOpsMachineId: sel('sm-sec-mach') || undefined,
+    secondaryOpsLabourId: sel('sm-sec-lab') || undefined,
+    secondaryOpsCycleHr: num('sm-sec-ct') || undefined,
+    secondaryOpsOee: num('sm-sec-oee') || undefined,
+    secondaryOpsManning: num('sm-sec-manning') || undefined,
+    secondaryOpsLabourEfficiency: num('sm-sec-lab-eff') || undefined,
   });
   return { ...getUniversalTail(), rawMaterial: drivers.rawMaterial, operations: drivers.operations, tooling: drivers.tooling };
 }
@@ -1528,6 +1563,7 @@ function collectIMMInput(): UniversalStackInput {
   const drivers = computeInjectionMouldingDrivers({
     materialId: sel('imm-mat'),
     partWeightKg: num('imm-part-wt'),
+    runnerSystem: validSel<'cold'|'hot'>('imm-runner-sys', ['cold','hot'], 'cold'),
     runnerWeightKg: num('imm-runner-wt'),
     regrindFraction: num('imm-regrind'),
     cavities: num('imm-cav') || 1,
@@ -1585,6 +1621,7 @@ function collectForgingInput(): UniversalStackInput {
     forgeId: sel('forge-mach'),
     labourId: sel('forge-lab'),
     strokesToForm: num('forge-strokes') || 1,
+    timePerBlowSec: num('forge-time-per-blow') || undefined,
     cycleTimeHr: num('forge-ct'),
     oee: num('forge-oee'),
     manning: num('forge-manning'),
@@ -1677,6 +1714,7 @@ function collectPCBFabInput(): UniversalStackInput {
     microViaCount: num('pcbf-uvias'),
     surfaceFinish: validSel<'hasl' | 'enig' | 'osp' | 'hasl_lf' | 'iteq'>('pcbf-finish', ['hasl', 'enig', 'osp', 'hasl_lf', 'iteq'], 'hasl'),
     minTraceSpaceMm: num('pcbf-trace'),
+    impedanceControlled: (document.getElementById('pcbf-impedance') as HTMLInputElement)?.checked ?? false,
     fabYield: num('pcbf-yield'),
     testablePct: num('pcbf-test-pct'),
     nreCost: num('pcbf-nre'),
@@ -1707,6 +1745,7 @@ function collectPCBAInput(): UniversalStackInput {
     smtLines: num('pcba-smt-lines') || 1,
     smtLineRatePerHr: num('pcba-smt-rate'),
     smtOee: num('pcba-smt-oee'),
+    smtSides: (parseInt(sel('pcba-smt-sides')) as 1|2) || 1,
     throughHoleCount: num('pcba-th-count'),
     manualSolderCount: num('pcba-man-count'),
     thLabourId: sel('pcba-th-lab'),

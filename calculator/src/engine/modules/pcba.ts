@@ -55,6 +55,7 @@ export interface PCBAInputs {
   thLabourId: string;
   thLabourTimeSecPerJoint: number;  // default 12 s/joint for TH insertion
   manualLabourTimeSecPerJoint: number; // default 20 s/joint for hand soldering
+  smtSides?: 1 | 2;                 // 1 = single-sided (default), 2 = double-sided (2× SMT passes)
   testCostPerBoard?: number;        // externally supplied test cost per board £
   conformalCoatAreaCm2?: number;    // area to be conformal coated cm²
   conformalCoatPricePerCm2?: number; // conformal coat material cost £/cm²
@@ -136,6 +137,8 @@ export function computePCBADrivers(inputs: PCBAInputs): CommodityDrivers {
     }
   }
   smtPlacementTimeHr /= inputs.smtLines;
+  // Double-sided boards require two SMT passes through the line
+  smtPlacementTimeHr *= (inputs.smtSides ?? 1);
 
   // 5. Through-hole + manual solder time
   const thAndManualTimeHr =

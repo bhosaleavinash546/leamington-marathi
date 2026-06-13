@@ -27,6 +27,7 @@ export interface MachiningInputs {
   netWeightKg: number;
   stockWeightKg: number;
   materialUtilization: number;
+  rejectRate?: number;           // 0–1 fraction of parts scrapped; uplifts material and cycle time
   operations: MachiningOperation[];
   setup: MachiningSetup;
   programmingNRE: number;
@@ -66,9 +67,14 @@ export function computeMachiningDrivers(inputs: MachiningInputs): CommodityDrive
       ? inputs.materialUtilization
       : inputs.netWeightKg / inputs.stockWeightKg;
 
+  // Reject uplift: must machine more parts (and consume more material) to yield one good part
+  const rejectUplift = inputs.rejectRate && inputs.rejectRate > 0
+    ? 1 / (1 - inputs.rejectRate)
+    : 1;
+
   const rawMaterial: RawMaterialInput = {
     materialId: inputs.materialId,
-    netWeightKg: inputs.netWeightKg,
+    netWeightKg: inputs.netWeightKg * rejectUplift,
     materialUtilization: utilization,
   };
 
@@ -87,16 +93,16 @@ export function computeMachiningDrivers(inputs: MachiningInputs): CommodityDrive
       labourTimeHr: setupPerPart,
       labourEfficiency: 1.0,
     },
-    // Main machining operations
+    // Main machining operations (reject uplift applied to cycle/labour time)
     ...inputs.operations.map(op => ({
       operationName: op.name,
       machineId: op.machineId,
       labourId: op.labourId,
-      cycleTimeHr: op.cycleTimeHr,
+      cycleTimeHr: op.cycleTimeHr * rejectUplift,
       partsPerCycle: op.partsPerCycle,
       oee: op.oee,
       manning: op.manning,
-      labourTimeHr: op.labourTimeHr,
+      labourTimeHr: op.labourTimeHr * rejectUplift,
       labourEfficiency: op.labourEfficiency,
     })),
   ];

@@ -68,7 +68,7 @@ export function computePaintingDrivers(inputs: PaintingInputs): CommodityDrivers
     totalPaintCostPerPart += wetVolL * coat.pricePerL;
   }
 
-  // Apply rework uplift
+  // Apply rework uplift to material cost
   totalPaintCostPerPart *= 1 + inputs.rejectReworkPct;
 
   // Use directCost to bypass weight-based material calculation.
@@ -80,7 +80,8 @@ export function computePaintingDrivers(inputs: PaintingInputs): CommodityDrivers
     directCost: totalPaintCostPerPart,
   };
 
-  const cycleTimeHr = 1 / inputs.lineRatePartsPerHr;
+  // Rework uplift also applies to machine/labour time: re-run parts add line time
+  const cycleTimeHr = (1 / inputs.lineRatePartsPerHr) * (1 + inputs.rejectReworkPct);
 
   const operations: OperationInput[] = [
     {

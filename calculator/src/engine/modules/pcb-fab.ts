@@ -13,6 +13,7 @@ export interface PCBFabInputs {
   microViaCount: number;      // laser micro-vias per board (HDI)
   surfaceFinish: SurfaceFinish;
   minTraceSpaceMm: number;    // minimum trace/space mm (yield driver; <0.1mm reduces yield)
+  impedanceControlled?: boolean; // true adds ~8% to panel cost for controlled-impedance stackup
   fabYield: number;           // 0–1 — good boards / panels processed
   testablePct: number;        // fraction of boards subjected to flying-probe / AOI
   nreCost: number;            // tooling NRE £ (Gerbers, drill files, stencil)
@@ -90,8 +91,11 @@ export function computePCBFabDrivers(inputs: PCBFabInputs): CommodityDrivers {
   // Fine-pitch yield penalty (< 0.1 mm trace/space adds cost via reduced panel yield)
   const finePitchFactor = inputs.minTraceSpaceMm < 0.10 ? 1.10 : 1.00;
 
+  // Impedance-controlled stackup adds ~8% (test coupons, tighter dielectric tolerances)
+  const impedanceFactor = inputs.impedanceControlled ? 1.08 : 1.00;
+
   // Raw panel cost
-  const rawPanelCost = inputs.basePanelPriceGBP * layerFactor * materialFactor * finePitchFactor;
+  const rawPanelCost = inputs.basePanelPriceGBP * layerFactor * materialFactor * finePitchFactor * impedanceFactor;
 
   // Cost per board before NRE (yield adjustment applied at panel level)
   const costPerBoardBase = rawPanelCost / boardsPerPanel / inputs.fabYield;

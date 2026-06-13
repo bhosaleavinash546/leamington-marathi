@@ -7,8 +7,9 @@ export interface ForgingInputs {
   yieldFraction: number;     // billet → forgeable fraction 0–1 (accounts for end-of-bar crop, etc.)
   forgeId: string;           // forge machine ID
   labourId: string;
-  strokesToForm: number;     // number of blows/strokes (informational)
-  cycleTimeHr: number;       // total forge cycle time hr
+  strokesToForm: number;     // number of blows/strokes — used to compute cycle time when cycleTimeHr is 0
+  timePerBlowSec?: number;   // seconds per blow including dwell + ram travel (default 10 s)
+  cycleTimeHr: number;       // explicit cycle time hr; if 0, computed from strokesToForm × timePerBlowSec
   oee: number;
   manning: number;
   labourEfficiency: number;
@@ -63,17 +64,22 @@ export function computeForgingDrivers(inputs: ForgingInputs): CommodityDrivers {
     materialUtilization,
   };
 
+  // Cycle time: use explicit value if given, else compute from strokes × time-per-blow
+  const effectiveCycleHr = inputs.cycleTimeHr > 0
+    ? inputs.cycleTimeHr
+    : (inputs.strokesToForm * (inputs.timePerBlowSec ?? 10)) / 3600;
+
   // Primary forge operation
   const operations: OperationInput[] = [
     {
       operationName: 'Forging',
       machineId: inputs.forgeId,
       labourId: inputs.labourId,
-      cycleTimeHr: inputs.cycleTimeHr,
+      cycleTimeHr: effectiveCycleHr,
       partsPerCycle: 1,
       oee: inputs.oee,
       manning: inputs.manning,
-      labourTimeHr: inputs.cycleTimeHr,
+      labourTimeHr: effectiveCycleHr,
       labourEfficiency: inputs.labourEfficiency,
     },
   ];
@@ -82,7 +88,8 @@ export function computeForgingDrivers(inputs: ForgingInputs): CommodityDrivers {
   if (
     inputs.trimmingMachineId !== undefined &&
     inputs.trimmingLabourId !== undefined &&
-    inputs.trimmingCycleHr !== undefined
+    inputs.trimmingCycleHr !== undefined &&
+    inputs.trimmingCycleHr > 0
   ) {
     operations.push({
       operationName: 'Flash Trimming',

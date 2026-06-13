@@ -147,9 +147,10 @@ describe('Painting module', () => {
     expect(r.total).toBeGreaterThan(0);
   });
 
-  it('cycle time = 1 / lineRatePartsPerHr', () => {
+  it('cycle time = 1 / lineRatePartsPerHr × (1 + rejectReworkPct)', () => {
     const d = computePaintingDrivers(PAINT_INPUTS);
-    expect(d.operations[0].cycleTimeHr).toBeCloseTo(1 / 60, 8);
+    const expected = (1 / 60) * (1 + PAINT_INPUTS.rejectReworkPct);
+    expect(d.operations[0].cycleTimeHr).toBeCloseTo(expected, 8);
   });
 });
 

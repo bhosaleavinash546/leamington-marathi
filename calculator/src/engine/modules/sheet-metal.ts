@@ -27,6 +27,10 @@ export interface SheetMetalInputs {
   secondaryOpsMachineId?: string;
   secondaryOpsLabourId?: string;
   secondaryOpsCycleHr?: number;
+  secondaryOpsOee?: number;             // defaults to press OEE if not supplied
+  secondaryOpsManning?: number;         // defaults to press manning if not supplied
+  secondaryOpsLabourEfficiency?: number;// defaults to press labourEfficiency if not supplied
+  rejectRate?: number;                  // 0–1 scrap fraction; uplifts both material and cycle time
 }
 
 export function getSheetMetalInputSchema(): Record<string, string> {
@@ -64,14 +68,19 @@ export function computeSheetMetalDrivers(inputs: SheetMetalInputs): CommodityDri
   const stripCellArea = inputs.stripWidthMm * inputs.pitchMm;
   const materialUtilization = Math.min((blankArea / stripCellArea) * inputs.partsPerStroke, 1.0);
 
+  const rejectUplift = inputs.rejectRate && inputs.rejectRate > 0
+    ? 1 / (1 - inputs.rejectRate)
+    : 1;
+
   const rawMaterial: RawMaterialInput = {
     materialId: inputs.materialId,
-    netWeightKg: inputs.netWeightKg,
+    netWeightKg: inputs.netWeightKg * rejectUplift,
     materialUtilization,
   };
 
   // Cycle time per part: 1 stroke takes 1/SPM minutes = 1/(SPM*60) hours
-  const cycleTimeHr = 1 / (inputs.strokesPerMin * 60 * inputs.partsPerStroke);
+  const baseCycleHr = 1 / (inputs.strokesPerMin * 60 * inputs.partsPerStroke);
+  const cycleTimeHr = baseCycleHr * rejectUplift;
 
   const operations: OperationInput[] = [
     {
@@ -96,12 +105,12 @@ export function computeSheetMetalDrivers(inputs: SheetMetalInputs): CommodityDri
       operationName: 'Secondary Operation',
       machineId: inputs.secondaryOpsMachineId,
       labourId: inputs.secondaryOpsLabourId,
-      cycleTimeHr: inputs.secondaryOpsCycleHr,
+      cycleTimeHr: inputs.secondaryOpsCycleHr * rejectUplift,
       partsPerCycle: 1,
-      oee: inputs.oee,
-      manning: inputs.manning,
-      labourTimeHr: inputs.secondaryOpsCycleHr,
-      labourEfficiency: inputs.labourEfficiency,
+      oee: inputs.secondaryOpsOee ?? inputs.oee,
+      manning: inputs.secondaryOpsManning ?? inputs.manning,
+      labourTimeHr: inputs.secondaryOpsCycleHr * rejectUplift,
+      labourEfficiency: inputs.secondaryOpsLabourEfficiency ?? inputs.labourEfficiency,
     });
   }
 
