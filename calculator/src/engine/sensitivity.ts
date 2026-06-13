@@ -39,8 +39,9 @@ export function runSensitivity(
     try {
       const plus = computeUniversalStack(makeVariant(1 + f), library);
       const minus = computeUniversalStack(makeVariant(1 - f), library);
-      const plusPct = ((plus.total - baseline.total) / baseline.total) * 100;
-      const minusPct = ((minus.total - baseline.total) / baseline.total) * 100;
+      const pctBase = baseline.total > 0 ? baseline.total : 1;
+      const plusPct = ((plus.total - baseline.total) / pctBase) * 100;
+      const minusPct = ((minus.total - baseline.total) / pctBase) * 100;
       drivers.push({
         driver,
         parameter,
@@ -61,19 +62,8 @@ export function runSensitivity(
   if (input.rawMaterial.directCost === undefined) {
     const mat = library.materials.find(m => m.id === input.rawMaterial.materialId);
     if (mat) {
-      tryDriver(
-        `Material: ${mat.grade}`,
-        'rawMaterial.materialId → pricePerKg',
-        mat.pricePerKg,
-        '£/kg',
-        _factor => ({
-          ...input,
-          rawMaterial: { ...input.rawMaterial },
-        // inject a temporary library with adjusted price via closure in makeVariant below
-        })
-      );
-      // Re-implement properly with library variant
       try {
+        const pctBase = baseline.total > 0 ? baseline.total : 1;
         const modLib = (factor: number): RateLibrary => ({
           ...library,
           materials: library.materials.map(m =>
@@ -84,22 +74,18 @@ export function runSensitivity(
         });
         const plus = computeUniversalStack(input, modLib(1 + f));
         const minus = computeUniversalStack(input, modLib(1 - f));
-        const plusPct = ((plus.total - baseline.total) / baseline.total) * 100;
-        const minusPct = ((minus.total - baseline.total) / baseline.total) * 100;
-        // Replace the incorrectly computed entry with the correct one
-        drivers.pop();
         drivers.push({
           driver: `Material: ${mat.grade}`,
           parameter: 'rawMaterial → pricePerKg',
           baseValue: mat.pricePerKg,
           unit: '£/kg',
-          plusPct,
-          minusPct,
+          plusPct: ((plus.total - baseline.total) / pctBase) * 100,
+          minusPct: ((minus.total - baseline.total) / pctBase) * 100,
           plusCost: plus.total,
           minusCost: minus.total,
           range: Math.abs(plus.total - minus.total),
         });
-      } catch { drivers.pop(); }
+      } catch { /* skip */ }
     }
 
     // Material utilization
@@ -148,8 +134,8 @@ export function runSensitivity(
         });
         const plus = computeUniversalStack(input, modLib(1 + f));
         const minus = computeUniversalStack(input, modLib(1 - f));
-        const plusPct = ((plus.total - baseline.total) / baseline.total) * 100;
-        const minusPct = ((minus.total - baseline.total) / baseline.total) * 100;
+        const plusPct = ((plus.total - baseline.total) / (baseline.total > 0 ? baseline.total : 1)) * 100;
+        const minusPct = ((minus.total - baseline.total) / (baseline.total > 0 ? baseline.total : 1)) * 100;
         drivers.push({
           driver: `${op.operationName}: Machine Rate`,
           parameter: `operations[${i}].machineId → computedRatePerHr`,
@@ -178,8 +164,8 @@ export function runSensitivity(
         });
         const plus = computeUniversalStack(input, modLib(1 + f));
         const minus = computeUniversalStack(input, modLib(1 - f));
-        const plusPct = ((plus.total - baseline.total) / baseline.total) * 100;
-        const minusPct = ((minus.total - baseline.total) / baseline.total) * 100;
+        const plusPct = ((plus.total - baseline.total) / (baseline.total > 0 ? baseline.total : 1)) * 100;
+        const minusPct = ((minus.total - baseline.total) / (baseline.total > 0 ? baseline.total : 1)) * 100;
         drivers.push({
           driver: `${op.operationName}: Labour Rate`,
           parameter: `operations[${i}].labourId → fullyLoadedRatePerHr`,

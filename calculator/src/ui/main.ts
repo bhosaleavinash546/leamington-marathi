@@ -67,6 +67,10 @@ function sel(id: string): string { return el<HTMLSelectElement>(id)?.value ?? ''
 function fmt(n: number): string { return '£' + n.toFixed(2); }
 function fmtPct(n: number): string { return n.toFixed(1) + '%'; }
 
+function escHtml(s: string): string {
+  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
 // ─── Populate selects ─────────────────────────────────────────────────────────
 
 function populateSelects(): void {
@@ -942,7 +946,7 @@ function renderCADAnalysisForm(): string {
     <div class="field-group" style="margin-top:4px">
       <label style="font-size:0.75rem">Claude API Key <span style="color:#aaa;font-weight:400">(or set ANTHROPIC_API_KEY on server)</span></label>
       <input type="password" id="cad-api-key" placeholder="sk-ant-api03-… (optional if server has key)"
-             value="${localStorage.getItem('cad-api-key') ?? ''}" style="font-family:monospace;font-size:0.8rem"/>
+             value="${sessionStorage.getItem('cad-api-key') ?? ''}" style="font-family:monospace;font-size:0.8rem"/>
     </div>
     <button class="btn btn-primary" id="cad-analyze-btn" disabled style="margin-top:6px;width:100%">
       Analyze CAD File
@@ -1012,7 +1016,7 @@ async function analyzeCAD(): Promise<void> {
   if (!cadFile) return;
 
   const apiKey = val('cad-api-key');
-  if (apiKey) localStorage.setItem('cad-api-key', apiKey);
+  if (apiKey) sessionStorage.setItem('cad-api-key', apiKey);
 
   const progress = el('cad-progress-wrap');
   const progressFill = el('cad-progress-fill');
@@ -1059,7 +1063,7 @@ async function analyzeCAD(): Promise<void> {
     el('cad-results').innerHTML = `
       <div class="risk-card High" style="margin-top:10px">
         <div class="risk-feature">Analysis Error</div>
-        <div>${err instanceof Error ? err.message : String(err)}</div>
+        <div>${escHtml(err instanceof Error ? err.message : String(err))}</div>
         <div class="risk-suggestion">Ensure the API server is running (<code>npm run server</code>) and ANTHROPIC_API_KEY is configured.</div>
       </div>`;
   }
@@ -1762,7 +1766,7 @@ function compute(): void {
     input = collectInput();
   } catch (err) {
     errBox.style.display = 'block';
-    errBox.innerHTML = `<strong>Input error:</strong> ${err instanceof Error ? err.message : String(err)}`;
+    errBox.innerHTML = `<strong>Input error:</strong> ${escHtml(err instanceof Error ? err.message : String(err))}`;
     return;
   }
 
@@ -1770,7 +1774,7 @@ function compute(): void {
 
   if (!validation.valid) {
     errBox.style.display = 'block';
-    errBox.innerHTML = `<strong>Errors:</strong><ul>${validation.errors.map(e => `<li>${e.field}: ${e.message}</li>`).join('')}</ul>`;
+    errBox.innerHTML = `<strong>Errors:</strong><ul>${validation.errors.map(e => `<li>${escHtml(e.field)}: ${escHtml(e.message)}</li>`).join('')}</ul>`;
     warnBox.style.display = 'none';
     return;
   }
@@ -1778,7 +1782,7 @@ function compute(): void {
 
   if (validation.warnings.length > 0) {
     warnBox.style.display = 'block';
-    warnBox.innerHTML = `<strong>Warnings:</strong><ul>${validation.warnings.map(w => `<li>${w.field}: ${w.message}</li>`).join('')}</ul>`;
+    warnBox.innerHTML = `<strong>Warnings:</strong><ul>${validation.warnings.map(w => `<li>${escHtml(w.field)}: ${escHtml(w.message)}</li>`).join('')}</ul>`;
   } else {
     warnBox.style.display = 'none';
   }
@@ -1797,7 +1801,12 @@ function compute(): void {
       const labourDelta = lcResult.volumeEffect;
       result = {
         ...result,
-        breakdown: { ...result.breakdown, labour: lcResult.adjustedLabourCost },
+        breakdown: {
+          ...result.breakdown,
+          labour: lcResult.adjustedLabourCost,
+          overhead: result.breakdown.overhead + labourDelta * input.overheadPct,
+          margin: result.breakdown.margin + labourDelta * (1 + input.overheadPct) * input.marginPct,
+        },
         factoryCost: result.factoryCost + labourDelta,
         subtotal: result.subtotal + labourDelta * (1 + input.overheadPct),
         total: result.total + labourDelta * (1 + input.overheadPct) * (1 + input.marginPct),
@@ -1815,7 +1824,7 @@ function compute(): void {
     el('save-scenario-btn').style.display = '';
   } catch (err) {
     errBox.style.display = 'block';
-    errBox.innerHTML = `<strong>Calculation error:</strong> ${err instanceof Error ? err.message : String(err)}`;
+    errBox.innerHTML = `<strong>Calculation error:</strong> ${escHtml(err instanceof Error ? err.message : String(err))}`;
   }
 }
 
@@ -2063,7 +2072,7 @@ function renderSensitivity(): void {
           </div>
         </div>`;
     } catch (err) {
-      panel.innerHTML = `<div class="placeholder" style="color:var(--red)">Sensitivity error: ${err instanceof Error ? err.message : String(err)}</div>`;
+      panel.innerHTML = `<div class="placeholder" style="color:var(--red)">Sensitivity error: ${escHtml(err instanceof Error ? err.message : String(err))}</div>`;
     }
   }, 20);
 }
@@ -2124,7 +2133,7 @@ function renderScenarios(): void {
       const comp = compareScenarios(id1, id2, library);
       renderCompareResult(comp);
     } catch (err) {
-      el('compare-result').innerHTML = `<span style="color:var(--red)">${err instanceof Error ? err.message : String(err)}</span>`;
+      el('compare-result').innerHTML = `<span style="color:var(--red)">${escHtml(err instanceof Error ? err.message : String(err))}</span>`;
     }
   });
 
@@ -2611,11 +2620,8 @@ async function init(): Promise<void> {
   document.querySelectorAll<HTMLElement>('.ctab').forEach(tab => {
     tab.addEventListener('click', () => {
       const type = tab.dataset.commodity as CommodityType;
-      if (type === 'assembly') {
-        el('calc-btn').onclick = computeAssembly;
-      } else {
-        el('calc-btn').onclick = compute;
-      }
+      // Use .onclick exclusively to avoid duplicate listeners when tab is clicked multiple times
+      el('calc-btn').onclick = type === 'assembly' ? computeAssembly : compute;
       switchCommodity(type);
     });
   });
@@ -2625,8 +2631,8 @@ async function init(): Promise<void> {
     tab.addEventListener('click', () => switchResultTab(tab.dataset.panel!));
   });
 
-  // Action buttons
-  el('calc-btn')?.addEventListener('click', compute);
+  // Action buttons — use .onclick so tab switching can override without stacking listeners
+  el('calc-btn').onclick = compute;
   el('export-excel-btn')?.addEventListener('click', downloadExcel);
   el('export-pdf-btn')?.addEventListener('click', openPDF);
   el('save-scenario-btn')?.addEventListener('click', openScenarioModal);
@@ -2648,6 +2654,17 @@ async function init(): Promise<void> {
   el('confirm-add-quote')?.addEventListener('click', addSupplierQuote);
   el('cancel-add-quote')?.addEventListener('click', () => { el('quote-modal').style.display = 'none'; });
   el('quote-modal')?.addEventListener('click', e => { if (e.target === el('quote-modal')) el('quote-modal').style.display = 'none'; });
+
+  // Learning curve: disable inputs when checkbox is unchecked
+  function syncLCInputs(): void {
+    const enabled = (el<HTMLInputElement>('lc-enabled')).checked;
+    ['annual-volume', 'learning-curve-pct', 'reference-volume'].forEach(id => {
+      const inp = document.getElementById(id) as HTMLInputElement | null;
+      if (inp) { inp.disabled = !enabled; inp.style.opacity = enabled ? '' : '0.4'; }
+    });
+  }
+  el<HTMLInputElement>('lc-enabled')?.addEventListener('change', syncLCInputs);
+  syncLCInputs(); // enforce initial disabled state
 
   // Start on machining
   switchCommodity('machining');
