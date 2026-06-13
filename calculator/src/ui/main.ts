@@ -65,6 +65,8 @@ let asmLineCount = 0;
 let cadFile: File | null = null;
 let cadAnalysisResult: CADAnalysisResult | null = null;
 let supplierQuotes: SupplierQuote[] = [];
+let partPhotoDataUrl: string | null = null;
+let partPhotoName: string | null = null;
 let _breakdownChart: Chart | null = null;
 let _displayCurrency = 'GBP';
 let _displayFxRate = 1.0;
@@ -92,6 +94,49 @@ function escHtml(s: string): string {
 function validSel<T extends string>(id: string, valid: readonly T[], fallback: T): T {
   const v = sel(id);
   return (valid as readonly string[]).includes(v) ? (v as T) : fallback;
+}
+
+// ─── Part photo upload ────────────────────────────────────────────────────────
+
+function _updatePhotoUI(): void {
+  const thumb    = el<HTMLImageElement>('part-photo-thumb');
+  const holder   = el('part-photo-placeholder');
+  const nameEl   = el('part-photo-name');
+  const clearBtn = el('part-photo-clear');
+  const zone     = el('part-photo-zone');
+  if (!thumb) return;
+  if (partPhotoDataUrl) {
+    thumb.src = partPhotoDataUrl;
+    thumb.style.display = '';
+    holder.style.display = 'none';
+    nameEl.textContent = partPhotoName ?? '';
+    nameEl.style.display = '';
+    clearBtn.style.display = '';
+    zone.style.borderColor = '#e65100';
+    zone.style.borderStyle = 'solid';
+  } else {
+    thumb.src = '';
+    thumb.style.display = 'none';
+    holder.style.display = '';
+    nameEl.style.display = 'none';
+    clearBtn.style.display = 'none';
+    zone.style.borderColor = '#ddd';
+    zone.style.borderStyle = 'dashed';
+  }
+}
+
+function _processPhotoFile(file: File): void {
+  const ext = file.name.split('.').pop()?.toLowerCase() ?? '';
+  const okTypes = new Set(['image/jpeg', 'image/png', 'image/heic', 'image/heif']);
+  const okExts  = new Set(['jpg', 'jpeg', 'png', 'heic', 'heif']);
+  if (!okTypes.has(file.type) && !okExts.has(ext)) return;
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    partPhotoDataUrl = ev.target?.result as string;
+    partPhotoName = file.name;
+    _updatePhotoUI();
+  };
+  reader.readAsDataURL(file);
 }
 
 // ─── Populate selects ─────────────────────────────────────────────────────────
@@ -2589,7 +2634,20 @@ function renderBreakdown(result: PartCostResult): void {
       <button class="btn btn-secondary btn-sm" id="add-quote-btn-inline">+ Add Supplier Quote</button>
     </div>`;
 
+  const commodityLabel = activeCommodity.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+  const photoHtml = partPhotoDataUrl ? `
+    <div style="display:flex;gap:16px;align-items:center;background:#fafafa;border:1px solid #eee;border-radius:8px;padding:12px 16px;margin-bottom:14px">
+      <img src="${partPhotoDataUrl}" style="width:130px;height:88px;object-fit:contain;border-radius:6px;border:1px solid #e0e0e0;background:#fff;padding:4px;flex-shrink:0" alt="Part photo"/>
+      <div style="flex:1;min-width:0">
+        <div style="font-weight:700;font-size:0.95rem;color:#1a1a1a;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${escHtml(result.partName)}</div>
+        <div style="font-size:0.75rem;color:#888;margin-bottom:6px">${escHtml(commodityLabel)} · Should-Cost Analysis</div>
+        <div style="font-size:1.25rem;font-weight:700;color:#e65100;letter-spacing:-0.5px">${fmt(result.total)} <span style="font-size:0.76rem;font-weight:400;color:#888">/ part</span></div>
+        ${result.toolingNRE !== undefined && result.toolingNRE > 0 ? `<div style="font-size:0.73rem;color:#888;margin-top:2px">+ NRE ${fmt(result.toolingNRE)} (one-time)</div>` : ''}
+      </div>
+    </div>` : '';
+
   panel.innerHTML = `
+    ${photoHtml}
     <div class="summary-cards">
       <div class="summary-card total-card">
         <div class="card-label">Total Should Cost</div>
@@ -3566,6 +3624,34 @@ async function init(): Promise<void> {
       if (activePanel === 'detail') renderDetail(lastResult, lastInput);
       if (activePanel === 'insights') renderInsights(lastResult, lastInput);
     }
+  });
+
+  // Part photo upload
+  el<HTMLInputElement>('part-photo-input')?.addEventListener('change', () => {
+    const file = el<HTMLInputElement>('part-photo-input').files?.[0];
+    if (file) _processPhotoFile(file);
+  });
+  el('part-photo-clear')?.addEventListener('click', () => {
+    partPhotoDataUrl = null;
+    partPhotoName = null;
+    (el<HTMLInputElement>('part-photo-input')).value = '';
+    _updatePhotoUI();
+  });
+  const zone = el('part-photo-zone');
+  zone?.addEventListener('click', () => el<HTMLInputElement>('part-photo-input').click());
+  zone?.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    zone.style.borderColor = '#e65100';
+    zone.style.borderStyle = 'solid';
+  });
+  zone?.addEventListener('dragleave', () => {
+    if (!partPhotoDataUrl) { zone.style.borderColor = '#ddd'; zone.style.borderStyle = 'dashed'; }
+  });
+  zone?.addEventListener('drop', (e) => {
+    e.preventDefault();
+    const file = (e as DragEvent).dataTransfer?.files[0];
+    if (file) _processPhotoFile(file);
+    else if (!partPhotoDataUrl) { zone.style.borderColor = '#ddd'; zone.style.borderStyle = 'dashed'; }
   });
 
   // Action buttons — use .onclick so tab switching can override without stacking listeners

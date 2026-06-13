@@ -60,6 +60,21 @@
       </div>
     </div>
 
+    <!-- Part photo upload (always visible) -->
+    <div style="padding:0 4px 2px" id="part-photo-row">
+      <div class="field-group" style="gap:4px">
+        <label style="font-size:0.76rem;color:#777">Part Photo <span style="color:#bbb;font-weight:400">— JPG · PNG · HEIC (optional, appears on report)</span></label>
+        <div id="part-photo-zone" style="border:1.5px dashed #ddd;border-radius:6px;padding:6px 10px;cursor:pointer;display:flex;align-items:center;gap:10px;min-height:44px;transition:border-color 0.15s">
+          <input type="file" id="part-photo-input" accept=".jpg,.jpeg,.png,.heic,.heif,image/jpeg,image/png,image/heic,image/heif" style="display:none"/>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#bbb" stroke-width="1.8" style="flex-shrink:0"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+          <span id="part-photo-placeholder" style="font-size:0.77rem;color:#bbb;flex:1">Click or drag to upload part photo…</span>
+          <img id="part-photo-thumb" style="display:none;height:40px;width:56px;object-fit:contain;border-radius:4px;border:1px solid #eee;background:#fafafa"/>
+          <span id="part-photo-name" style="font-size:0.73rem;color:#555;flex:1;display:none;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;max-width:120px"></span>
+          <button id="part-photo-clear" type="button" style="display:none;background:none;border:none;color:#bbb;cursor:pointer;font-size:1.1rem;padding:0 2px;line-height:1" title="Remove photo">×</button>
+        </div>
+      </div>
+    </div>
+
     <!-- Dynamic commodity form area -->
     <div id="commodity-form-area"></div>
 
