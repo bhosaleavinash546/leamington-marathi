@@ -43,6 +43,7 @@ export interface CastingInputs {
     pourLabourId: string;
     pourCycleHr: number;
     pourMachineId: string;
+    waxDieCost: number;
   };
 }
 
@@ -77,10 +78,12 @@ export function getCastingInputSchema(): Record<string, string> {
     'investment.pourLabourId': 'string — labour rate ID for pour/casting operation',
     'investment.pourCycleHr': 'number — pour + solidify cycle time hr',
     'investment.pourMachineId': 'string — furnace machine ID',
+    'investment.waxDieCost': 'number — wax injection die set cost £ (typically £3000–25000)',
   };
 }
 
 export function computeCastingDrivers(inputs: CastingInputs): CommodityDrivers {
+  if (inputs.rejectRate >= 1) throw new Error('rejectRate must be < 1');
   // Reject uplift: need to cast more parts to achieve target yield
   const rejectUplift = 1 / (1 - inputs.rejectRate);
   // Pour weight accounts for runner/gating loss (yield)
@@ -194,7 +197,7 @@ export function computeCastingDrivers(inputs: CastingInputs): CommodityDrivers {
         labourEfficiency: inputs.labourEfficiency,
       });
       tooling = {
-        totalToolingCost: 0,
+        totalToolingCost: inputs.investment.waxDieCost,
         amortizationVolume: inputs.amortizationVolume,
         mode: 'amortized',
       };

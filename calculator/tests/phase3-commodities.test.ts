@@ -187,19 +187,19 @@ const BIW_INPUTS: BIWAssemblyInputs = {
 };
 
 describe('BIW Assembly module', () => {
-  it('subPartTotalCost is passed as directCost', () => {
+  it('directCost = subPartTotalCost + joiningCostPerPart (joining folded into directCost)', () => {
     const d = computeBIWDrivers(BIW_INPUTS);
-    expect(d.rawMaterial.directCost).toBe(BIW_INPUTS.subPartTotalCost);
+    const joiningCostPerPart = 120 * 0.05 + 0.8 * 1.20;  // 6.96
+    expect(d.rawMaterial.directCost).toBeCloseTo(BIW_INPUTS.subPartTotalCost + joiningCostPerPart, 4);
   });
 
-  it('joining consumables move to rawMaterial; tooling = fixturing cost only', () => {
+  it('joining in directCost not consumables; tooling = fixturing cost only', () => {
     const d = computeBIWDrivers(BIW_INPUTS);
-    const joiningCostPerPart = 120 * 0.05 + 0.8 * 1.20;
     const r = computeUniversalStack({ partName: 'BIW Test', ...d, ...STACK_DEFAULTS }, DEFAULT_RATE_LIBRARY);
-    // Tooling = fixturing only (joining consumables are recurring material costs, not capital)
+    // Tooling = fixturing only (joining is a recurring cost, amortized into directCost)
     expect(r.breakdown.tooling).toBeCloseTo(BIW_INPUTS.fixturingToolingCost / BIW_INPUTS.amortizationVolume, 4);
-    // Joining cost (electrode wear, rivets, adhesive) appears in rawMaterial.consumablesCostPerPart
-    expect(d.rawMaterial.consumablesCostPerPart).toBeCloseTo(joiningCostPerPart, 4);
+    // Joining cost moved to directCost, so consumablesCostPerPart is now undefined
+    expect(d.rawMaterial.consumablesCostPerPart).toBeUndefined();
   });
 
   it('station count = number of operations', () => {

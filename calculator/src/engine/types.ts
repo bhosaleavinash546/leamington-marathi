@@ -17,6 +17,7 @@ export type CommodityType =
   | 'pcb_fab'
   | 'pcba'
   | 'cast_and_machine'
+  | 'rubber'
   | 'cad_analysis'
   | 'assembly';
 export type ToolingMode = 'amortized' | 'one_time_nre';

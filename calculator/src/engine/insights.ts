@@ -92,6 +92,11 @@ const COMMODITY_BENCHMARKS: Record<string, CommodityBenchmarks> = {
     toolingPct: [1, 6], overheadPct: [8, 16], marginPct: [5, 12],
     typicalMatUtil: 0.95, oeeBenchmark: 0.90,
   },
+  rubber: {
+    materialPct: [30, 55], processPct: [15, 30], labourPct: [6, 18],
+    toolingPct: [2, 12], overheadPct: [8, 16], marginPct: [5, 12],
+    typicalMatUtil: 0.83, oeeBenchmark: 0.80,
+  },
 };
 
 const DEFAULT_BENCHMARK = COMMODITY_BENCHMARKS['machining'];
@@ -112,7 +117,8 @@ export const REGIONAL_COST_INDEX: Record<string, { label: string; index: number;
 // ─── FX rates to GBP ─────────────────────────────────────────────────────────
 
 export const FX_TO_GBP: Record<string, number> = {
-  GBP: 1.00, EUR: 1.18, USD: 1.27, CNY: 0.11, INR: 0.0096, MXN: 0.045,
+  GBP: 1.00, EUR: 1.18, USD: 1.28, CNY: 0.109, INR: 0.0094, MXN: 0.043,
+  THB: 0.0227, VND: 0.0000308, BRL: 0.154, KRW: 0.000581,
 };
 
 // ─── Insight generation ───────────────────────────────────────────────────────

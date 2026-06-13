@@ -10,16 +10,43 @@
 <header>
   <a class="back-link" href="../index.html">← Back</a>
   <h1>Should-Cost Calculator — Bottom-Up (Phases 1–5)</h1>
-  <div style="margin-left:auto;display:flex;align-items:center;gap:8px">
-    <label style="font-size:0.78rem;color:#888;white-space:nowrap">Display Currency</label>
-    <select id="currency-selector" style="font-size:0.8rem;padding:3px 7px;border:1px solid #ddd;border-radius:4px">
-      <option value="GBP">GBP £</option>
-      <option value="EUR">EUR €</option>
-      <option value="USD">USD $</option>
-      <option value="CNY">CNY ¥</option>
-      <option value="INR">INR ₹</option>
-      <option value="MXN">MXN $M</option>
-    </select>
+  <div style="margin-left:auto;display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+    <div style="display:flex;align-items:center;gap:6px">
+      <label style="font-size:0.78rem;color:#888;white-space:nowrap">🌍 Mfg Location</label>
+      <select id="mfg-region-selector" style="font-size:0.8rem;padding:3px 7px;border:1.5px solid #e65100;border-radius:4px;background:#fff9f5;color:#333" title="Select manufacturing country/region — rates (labour, machine, material, energy) adjust automatically for the selected location">
+        <option value="UK">🇬🇧 United Kingdom</option>
+        <option value="DE">🇩🇪 Germany</option>
+        <option value="FR">🇫🇷 France</option>
+        <option value="IT">🇮🇹 Italy</option>
+        <option value="ES">🇪🇸 Spain</option>
+        <option value="PL">🇵🇱 Poland</option>
+        <option value="CZ">🇨🇿 Czech Republic</option>
+        <option value="RO">🇷🇴 Romania</option>
+        <option value="HU">🇭🇺 Hungary</option>
+        <option value="SE">🇸🇪 Sweden</option>
+        <option value="NL">🇳🇱 Netherlands</option>
+        <option value="TR">🇹🇷 Turkey</option>
+        <option value="CN">🇨🇳 China</option>
+        <option value="IN">🇮🇳 India</option>
+        <option value="MX">🇲🇽 Mexico</option>
+        <option value="US">🇺🇸 United States</option>
+        <option value="TH">🇹🇭 Thailand</option>
+        <option value="VN">🇻🇳 Vietnam</option>
+        <option value="BR">🇧🇷 Brazil</option>
+        <option value="KR">🇰🇷 South Korea</option>
+      </select>
+    </div>
+    <div style="display:flex;align-items:center;gap:6px">
+      <label style="font-size:0.78rem;color:#888;white-space:nowrap">Display Currency</label>
+      <select id="currency-selector" style="font-size:0.8rem;padding:3px 7px;border:1px solid #ddd;border-radius:4px">
+        <option value="GBP">GBP £</option>
+        <option value="EUR">EUR €</option>
+        <option value="USD">USD $</option>
+        <option value="CNY">CNY ¥</option>
+        <option value="INR">INR ₹</option>
+        <option value="MXN">MXN $M</option>
+      </select>
+    </div>
   </div>
 </header>
 
@@ -50,6 +77,7 @@
       <button class="ctab" data-commodity="pcb_fab">PCB Fab</button>
       <button class="ctab" data-commodity="pcba">PCBA / SMD</button>
       <button class="ctab" data-commodity="cast_and_machine" title="Casting + machining in one model. Covers: die cast housing → face mill → bore → drill+tap. Includes post-casting operations (heat treatment, shot blast, impregnation).">Cast+Machine ✓</button>
+      <button class="ctab" data-commodity="rubber" title="Rubber moulding and extrusion — compression, transfer, LSR injection, extrusion+vulcanise. EPDM, NBR, Silicone, NR, FKM/Viton.">Rubber ✓</button>
       <button class="ctab" data-commodity="assembly">Assembly BOM</button>
     </div>
 

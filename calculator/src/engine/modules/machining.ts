@@ -28,6 +28,9 @@ export interface MachiningInputs {
   stockWeightKg: number;
   materialUtilization: number;
   rejectRate?: number;           // 0–1 fraction of parts scrapped; uplifts material and cycle time
+  /** Tightest tolerance on part mm. Multiplies cycle time for all operations.
+   *  ≥0.10mm → ×1.0, ≥0.05mm → ×1.15, ≥0.02mm → ×1.35, ≥0.01mm → ×1.60, <0.01mm → ×2.00 */
+  toleranceMm?: number;
   operations: MachiningOperation[];
   setup: MachiningSetup;
   programmingNRE: number;
@@ -58,7 +61,16 @@ export function getMachiningInputSchema(): Record<string, string> {
     programmingNRE: 'number — one-off CNC programming cost £',
     toolingCost: 'number — total fixture + tooling cost £',
     amortizationVolume: 'number — parts over which to amortize tooling',
+    toleranceMm: 'number? — tightest part tolerance mm. Cycle-time multiplier: ≥0.10→×1.0, ≥0.05→×1.15, ≥0.02→×1.35, ≥0.01→×1.60, <0.01→×2.0',
   };
+}
+
+function resolveMachiningToleranceFactor(toleranceMm: number | undefined): number {
+  if (toleranceMm === undefined || toleranceMm >= 0.10) return 1.0;
+  if (toleranceMm >= 0.05) return 1.15;
+  if (toleranceMm >= 0.02) return 1.35;
+  if (toleranceMm >= 0.01) return 1.60;
+  return 2.00;
 }
 
 export function computeMachiningDrivers(inputs: MachiningInputs): CommodityDrivers {
@@ -71,6 +83,8 @@ export function computeMachiningDrivers(inputs: MachiningInputs): CommodityDrive
   const rejectUplift = inputs.rejectRate && inputs.rejectRate > 0
     ? 1 / (1 - inputs.rejectRate)
     : 1;
+
+  const toleranceFactor = resolveMachiningToleranceFactor(inputs.toleranceMm);
 
   const rawMaterial: RawMaterialInput = {
     materialId: inputs.materialId,
@@ -86,23 +100,23 @@ export function computeMachiningDrivers(inputs: MachiningInputs): CommodityDrive
       operationName: 'Setup (amortised)',
       machineId: inputs.setup.machineId,
       labourId: inputs.setup.labourId,
-      cycleTimeHr: setupPerPart,
+      cycleTimeHr: setupPerPart * toleranceFactor,
       partsPerCycle: 1,
       oee: 1.0,
       manning: 1,
-      labourTimeHr: setupPerPart,
+      labourTimeHr: setupPerPart * toleranceFactor,
       labourEfficiency: 1.0,
     },
-    // Main machining operations (reject uplift applied to cycle/labour time)
+    // Main machining operations (reject uplift and tolerance factor applied to cycle/labour time)
     ...inputs.operations.map(op => ({
       operationName: op.name,
       machineId: op.machineId,
       labourId: op.labourId,
-      cycleTimeHr: op.cycleTimeHr * rejectUplift,
+      cycleTimeHr: op.cycleTimeHr * rejectUplift * toleranceFactor,
       partsPerCycle: op.partsPerCycle,
       oee: op.oee,
       manning: op.manning,
-      labourTimeHr: op.labourTimeHr * rejectUplift,
+      labourTimeHr: op.labourTimeHr * rejectUplift * toleranceFactor,
       labourEfficiency: op.labourEfficiency,
     })),
   ];

@@ -171,8 +171,16 @@ export function computePCBFabDrivers(inputs: PCBFabInputs): CommodityDrivers {
   // Via cost adder per board (standard: £0.002 each; micro-via: £0.012 each)
   const viaAdder = inputs.viaCount * 0.002 + inputs.microViaCount * 0.012;
 
-  // Test cost per board (AOI / flying probe fraction)
-  const testCost = inputs.testablePct * 0.15;
+  // Test cost per board: quality-grade-indexed base cost × tested fraction
+  const TEST_BASE_COST_GBP: Record<string, number> = {
+    consumer:    0.50,
+    industrial:  1.50,
+    auto_grade2: 5.00,
+    auto_grade1: 9.00,
+    aerospace:   18.00,
+  };
+  const testBaseCost = TEST_BASE_COST_GBP[inputs.qualityGrade ?? 'consumer'] ?? 0.50;
+  const testCost = inputs.testablePct * testBaseCost;
 
   // Copper weight adder per board
   const cuAdder = inputs.copperWeightOz * 0.08;
@@ -181,7 +189,7 @@ export function computePCBFabDrivers(inputs: PCBFabInputs): CommodityDrivers {
   const finePitchFactor = inputs.minTraceSpaceMm < 0.10 ? 1.10 : 1.00;
 
   // Impedance control (test coupons, tighter dielectric tolerances)
-  const impedanceFactor = inputs.impedanceControlled ? 1.08 : 1.00;
+  const impedanceFactor = inputs.impedanceControlled ? 1.18 : 1.00;
 
   // Raw panel cost including all multipliers
   const rawPanelCost =

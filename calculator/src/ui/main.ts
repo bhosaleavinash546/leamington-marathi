@@ -23,6 +23,10 @@ import { computeBlowMouldingDrivers } from '../engine/modules/blow-moulding.js';
 import { computeExtrusionDrivers } from '../engine/modules/extrusion.js';
 import { computeThermoformingDrivers } from '../engine/modules/thermoforming.js';
 import { computeRotationalMouldingDrivers } from '../engine/modules/rotational-moulding.js';
+import { computeRubberDrivers } from '../engine/modules/rubber.js';
+import type { RubberProcess } from '../engine/modules/rubber.js';
+import { buildRegionalLibrary } from '../engine/regional-rates.js';
+import type { ManufacturingRegion } from '../engine/regional-rates.js';
 import { recommendMachineIds } from '../engine/process-taxonomy.js';
 import { runSensitivity } from '../engine/sensitivity.js';
 import {
@@ -67,6 +71,7 @@ let cadAnalysisResult: CADAnalysisResult | null = null;
 let supplierQuotes: SupplierQuote[] = [];
 let partPhotoDataUrl: string | null = null;
 let partPhotoName: string | null = null;
+let _mfgRegion: ManufacturingRegion = 'UK';
 let _breakdownChart: Chart | null = null;
 let _displayCurrency = 'GBP';
 let _displayFxRate = 1.0;
@@ -1067,6 +1072,58 @@ function renderRotationalMouldingForm(): string {
     </div>`;
 }
 
+// ─── Form: Rubber ─────────────────────────────────────────────────────────────
+
+function renderRubberForm(): string {
+  return `
+  <div class="section-title">Rubber Moulding / Extrusion</div>
+  <div class="field-row">
+    <div class="field-group"><label>Material</label><select id="rub-mat" class="mat-select"></select></div>
+    <div class="field-group"><label>Process</label>
+      <select id="rub-process">
+        <option value="compression_mould">Compression Mould</option>
+        <option value="transfer_mould">Transfer Mould</option>
+        <option value="injection_mould_lsr">Injection Mould (LSR)</option>
+        <option value="extrusion_vulcanise">Extrusion + Vulcanise</option>
+        <option value="calendering">Calendering</option>
+      </select>
+    </div>
+  </div>
+  <div class="field-row">
+    <div class="field-group"><label>Machine</label><select id="rub-mach" class="mach-select"></select></div>
+    <div class="field-group"><label>Labour</label><select id="rub-lab" class="lab-select"></select></div>
+  </div>
+  <div class="field-row">
+    <div class="field-group"><label>Part Weight (kg)</label><input type="number" id="rub-part-wt" step="0.001" min="0.001" value="0.050" title="Finished rubber part weight kg"/></div>
+    <div class="field-group"><label>Flash + Runner (kg)</label><input type="number" id="rub-flash-wt" step="0.001" min="0" value="0.010" title="Flash trim + runner scrap weight kg"/></div>
+  </div>
+  <div class="field-row">
+    <div class="field-group"><label>Cycle Time (sec)</label><input type="number" id="rub-cycle-sec" step="1" min="1" value="120" title="Full moulding cycle time per shot in seconds"/></div>
+    <div class="field-group"><label>Cavities</label><input type="number" id="rub-cavities" step="1" min="1" value="4" title="Cavities per mould (1 for extrusion)"/></div>
+  </div>
+  <div class="field-row">
+    <div class="field-group"><label>OEE</label><input type="number" id="rub-oee" step="0.01" min="0.3" max="1" value="0.80"/></div>
+    <div class="field-group"><label>Manning</label><input type="number" id="rub-manning" step="0.5" min="0.5" value="1"/></div>
+  </div>
+  <div class="field-row">
+    <div class="field-group"><label>Labour Efficiency</label><input type="number" id="rub-lab-eff" step="0.01" min="0.5" max="1" value="0.90"/></div>
+    <div class="field-group"><label>Reject Rate (0–1)</label><input type="number" id="rub-reject" step="0.01" min="0" max="0.3" value="0.03" title="Fraction of parts scrapped (flash defects, dimensional)"/></div>
+  </div>
+  <div class="field-row">
+    <div class="field-group"><label>Cure Time (sec, optional)</label><input type="number" id="rub-cure-sec" step="1" min="0" value="0" title="Separate offline cure oven time s (0 = included in cycle)"/></div>
+    <div class="field-group"><label>Cure Oven Machine (optional)</label><select id="rub-cure-mach" class="mach-select"><option value="">— none —</option></select></div>
+  </div>
+  <div class="section-title" style="margin-top:6px">Tooling</div>
+  <div class="field-row">
+    <div class="field-group"><label>Mould Cost (£)</label><input type="number" id="rub-mould-cost" step="100" min="0" value="5000" title="Compression/transfer mould cost £. Compression: £2k–£15k, LSR: £8k–£40k"/></div>
+    <div class="field-group"><label>Mould Life (cycles)</label><input type="number" id="rub-mould-life" step="10000" min="1000" value="200000" title="Cycles per mould life. Compression: 200k, LSR injection: 500k"/></div>
+  </div>
+  <div class="field-row">
+    <div class="field-group"><label>Amortisation Volume (parts)</label><input type="number" id="rub-amort" step="1000" min="100" value="50000"/></div>
+    <div class="field-group"><label>Bonding Primer (£/part)</label><input type="number" id="rub-primer" step="0.01" min="0" value="0" title="Rubber-to-metal adhesive primer cost per part (0 if not applicable)"/></div>
+  </div>`;
+}
+
 // ─── Form: Casting ────────────────────────────────────────────────────────────
 
 function renderCastingForm(): string {
@@ -1935,7 +1992,7 @@ function renderCADResults(r: CADAnalysisResult): void {
   const recommendedCommodity = r.costInputSuggestions.recommendedCommodity as CommodityType;
   const commodityLabel: Record<string, string> = {
     machining: 'Machining', sheet_metal: 'Sheet Metal', injection_moulding: 'Injection Moulding',
-    casting: 'Casting', forging: 'Forging', cast_and_machine: 'Cast+Machine',
+    casting: 'Casting', forging: 'Forging', cast_and_machine: 'Cast+Machine', rubber: 'Rubber',
   };
 
   panel.innerHTML = `
@@ -2315,6 +2372,19 @@ function switchCommodity(type: CommodityType): void {
       }, 0);
       break;
 
+    case 'rubber':
+      area.innerHTML = renderRubberForm();
+      populateSelects();
+      setTimeout(() => {
+        const machEl = el<HTMLSelectElement>('rub-mach');
+        if (machEl) { const opt = Array.from(machEl.options).find(o => o.value.includes('compression-mould-std')); if (opt) machEl.value = opt.value; }
+        const matEl = el<HTMLSelectElement>('rub-mat');
+        if (matEl) { const opt = Array.from(matEl.options).find(o => o.value.includes('mat-epdm')); if (opt) matEl.value = opt.value; }
+        const labEl = el<HTMLSelectElement>('rub-lab');
+        if (labEl) { const opt = Array.from(labEl.options).find(o => o.value.includes('semiskilled')); if (opt) labEl.value = opt.value; }
+      }, 0);
+      break;
+
     case 'ai_agent' as CommodityType:
       area.innerHTML = renderAgentForm();
       _wireAgentInputEvents();
@@ -2661,7 +2731,7 @@ function collectCastAndMachineInput(): UniversalStackInput {
   } else if (subtype === 'gravity') {
     subtypeExtra = { gravity: { machineId: sel('cam-grav-mach'), cycleTimeHr: num('cam-grav-ct'), mouldCost: num('cam-grav-mould-cost'), mouldLife: num('cam-grav-mould-life') } };
   } else if (subtype === 'investment') {
-    subtypeExtra = { investment: { pourMachineId: sel('cam-inv-mach'), pourLabourId: sel('cam-inv-lab') || sel('cam-cast-lab'), pourCycleHr: num('cam-inv-ct'), waxCostPerPart: num('cam-inv-wax'), shellBuildCostPerPart: num('cam-inv-shell') } };
+    subtypeExtra = { investment: { pourMachineId: sel('cam-inv-mach'), pourLabourId: sel('cam-inv-lab') || sel('cam-cast-lab'), pourCycleHr: num('cam-inv-ct'), waxCostPerPart: num('cam-inv-wax'), shellBuildCostPerPart: num('cam-inv-shell'), waxDieCost: num('cam-inv-wax-die') } };
   }
 
   const inputs: CastAndMachineInputs = {
@@ -2815,6 +2885,7 @@ function collectRotationalMouldingInput(): UniversalStackInput {
     materialId: sel('rm-mat'),
     partWeightKg: num('rm-part-wt'),
     powderCostAdderPerKg: num('rm-powder-adder'),
+    numArms: num('rm-num-arms') || 3,
     partsPerArm: num('rm-parts-per-arm') || 1,
     heatingTimeSec: num('rm-heat'),
     coolingTimeSec: num('rm-cool'),
@@ -2827,6 +2898,30 @@ function collectRotationalMouldingInput(): UniversalStackInput {
     mouldCost: num('rm-mould-cost'),
     mouldLife: num('rm-mould-life'),
     amortizationVolume: num('rm-amort') || 1,
+  });
+  return { ...getUniversalTail(), rawMaterial: drivers.rawMaterial, operations: drivers.operations, tooling: drivers.tooling };
+}
+
+function collectRubberInput(): UniversalStackInput {
+  const drivers = computeRubberDrivers({
+    materialId: sel('rub-mat'),
+    partWeightKg: num('rub-part-wt') || 0.05,
+    flashAndRunnerWeightKg: num('rub-flash-wt'),
+    process: (sel('rub-process') || 'compression_mould') as RubberProcess,
+    machineId: sel('rub-mach'),
+    labourId: sel('rub-lab'),
+    cycleTimeSec: num('rub-cycle-sec') || 120,
+    cavities: num('rub-cavities') || 4,
+    oee: num('rub-oee') || 0.80,
+    manning: num('rub-manning') || 1,
+    labourEfficiency: num('rub-lab-eff') || 0.90,
+    rejectRate: num('rub-reject') || 0,
+    cureTimeSec: num('rub-cure-sec') || undefined,
+    cureOvenMachineId: sel('rub-cure-mach') || undefined,
+    mouldCost: num('rub-mould-cost') || 5000,
+    mouldLife: num('rub-mould-life') || 200000,
+    amortizationVolume: num('rub-amort') || 50000,
+    bondingPrimerCostPerPart: num('rub-primer') || undefined,
   });
   return { ...getUniversalTail(), rawMaterial: drivers.rawMaterial, operations: drivers.operations, tooling: drivers.tooling };
 }
@@ -2848,6 +2943,7 @@ function collectInput(): UniversalStackInput {
     case 'pcb_fab':              return collectPCBFabInput();
     case 'pcba':                 return collectPCBAInput();
     case 'cast_and_machine':     return collectCastAndMachineInput();
+    case 'rubber':               return collectRubberInput();
     case 'cad_analysis':
       throw new Error('Apply CAD analysis results to a commodity form first using the "Apply to cost engine" button, then calculate.');
     case 'ai_agent' as CommodityType:
@@ -4014,6 +4110,21 @@ async function init(): Promise<void> {
       if (activePanel === 'detail') renderDetail(lastResult, lastInput);
       if (activePanel === 'insights') renderInsights(lastResult, lastInput);
     }
+  });
+
+  // Manufacturing region selector — rebuilds rate library for the selected region
+  const _regionSel = el<HTMLSelectElement>('mfg-region-selector');
+  if (_regionSel) _regionSel.value = _mfgRegion;
+  _regionSel?.addEventListener('change', e => {
+    const region = (e.target as HTMLSelectElement).value as ManufacturingRegion;
+    _mfgRegion = region;
+    if (region === 'UK') {
+      library = recomputeMachineRates(getLibraryFromStorage());
+    } else {
+      library = buildRegionalLibrary(recomputeMachineRates(getLibraryFromStorage()), region);
+    }
+    // Refresh populateSelects in case UI is open
+    if (typeof populateSelects === 'function') populateSelects();
   });
 
   // Part photo upload

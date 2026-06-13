@@ -4,6 +4,7 @@ export interface RotationalMouldingInputs {
   materialId: string;
   partWeightKg: number;
   powderCostAdderPerKg: number;
+  numArms: number;
   partsPerArm: number;
   heatingTimeSec: number;
   coolingTimeSec: number;
@@ -23,6 +24,7 @@ export function getRotationalMouldingInputSchema(): Record<string, string> {
     materialId: 'string — material ID from rate library (LLDPE powder most common)',
     partWeightKg: 'number — finished part weight kg (equals powder charge weight)',
     powderCostAdderPerKg: 'number — grinding/screening premium over pellet price £/kg (0.15–0.40 typical)',
+    numArms: 'number — number of carousel arms (1=single, 3=biaxial standard, 4=rock-and-roll). One full cycle produces numArms × partsPerArm parts total',
     partsPerArm: 'number — number of moulds per arm (1–4 typically)',
     heatingTimeSec: 'number — oven residence time s (600–1800s typical)',
     coolingTimeSec: 'number — cooling booth time s (900–2400s typical)',
@@ -55,14 +57,16 @@ export function computeRotationalMouldingDrivers(inputs: RotationalMouldingInput
     consumablesCostPerPart,
   };
 
-  // Arms rotate simultaneously; one arm completes per full oven cycle
+  // All arms rotate simultaneously; one full carousel cycle produces numArms × partsPerArm parts
+  const totalMouldCount = inputs.numArms * inputs.partsPerArm;
+
   const operations: OperationInput[] = [
     {
       operationName: 'Rotational Moulding',
       machineId: inputs.machineId,
       labourId: inputs.labourId,
       cycleTimeHr,
-      partsPerCycle: inputs.partsPerArm,
+      partsPerCycle: inputs.numArms * inputs.partsPerArm,
       oee: inputs.oee,
       manning: inputs.manning,
       labourTimeHr: cycleTimeHr,
@@ -70,12 +74,13 @@ export function computeRotationalMouldingDrivers(inputs: RotationalMouldingInput
     },
   ];
 
-  const numMoulds = inputs.mouldLife > 0
-    ? Math.ceil(inputs.amortizationVolume / (inputs.mouldLife * inputs.partsPerArm))
+  // mouldLife is cycles per individual mould; total parts per full mould set = mouldLife × totalMouldCount
+  const numMouldSets = inputs.mouldLife > 0
+    ? Math.ceil(inputs.amortizationVolume / (inputs.mouldLife * totalMouldCount))
     : 1;
 
   const tooling: ToolingInput = {
-    totalToolingCost: inputs.mouldCost * numMoulds,
+    totalToolingCost: inputs.mouldCost * totalMouldCount * numMouldSets,
     amortizationVolume: inputs.amortizationVolume,
     mode: 'amortized',
   };

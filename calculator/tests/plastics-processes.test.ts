@@ -25,6 +25,7 @@ const BM_INPUTS = {
   coolTimeFactorSPerMm2: 3.5,
   blowTimeSec: 5,
   openCloseSec: 5,
+  parisonExtrusionTimeSec: 0,    // disable parison time to isolate cooling time in this test
   machineId: 'blow-ebm-100l',
   labourId: 'lab-uk-semiskilled',
   cavities: 2,
@@ -194,6 +195,7 @@ const RM_INPUTS = {
   materialId: 'mat-lldpe',
   partWeightKg: 5.0,
   powderCostAdderPerKg: 0.25,
+  numArms: 1,
   partsPerArm: 1,
   heatingTimeSec: 900,
   coolingTimeSec: 1200,

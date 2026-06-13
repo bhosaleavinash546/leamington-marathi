@@ -26,6 +26,7 @@ export interface InjectionMouldingInputs {
   amortizationVolume: number;
   toleranceMm?: number;            // tightest tolerance on part mm. Affects mould complexity cost.
   surfaceFinishGrade?: 'standard' | 'textured' | 'high_gloss' | 'painted';
+  rejectRate?: number;             // moulding scrap fraction 0–1
 }
 
 export function getInjectionMouldingInputSchema(): Record<string, string> {
@@ -52,10 +53,26 @@ export function getInjectionMouldingInputSchema(): Record<string, string> {
     amortizationVolume: 'number — parts over which to amortize mould cost',
     toleranceMm: 'number? — tightest part tolerance mm. Multiplier applied to mould cost: >=0.2→×1.0, >=0.1→×1.2, >=0.05→×1.5, <0.05→×2.0',
     surfaceFinishGrade: 'standard|textured|high_gloss|painted — mould surface finish. Multiplier on mould cost: standard×1.0, textured×1.1, high_gloss×1.4, painted×1.6 (cosmetic mould only)',
+    rejectRate: 'number 0–1 (optional) — moulding scrap fraction; uplifts effective cycle time and material',
   };
 }
 
+/**
+ * Estimate required clamping force (tonnes) from projected area and cavity pressure.
+ * Use to validate machine selection. Safety factor = 1.15 standard.
+ */
+export function estimateClampingTonnage(inputs: Pick<InjectionMouldingInputs, 'projectedAreaCm2' | 'cavityPressureMPa'> & { safetyfactor?: number }): number {
+  const sf = inputs.safetyfactor ?? 1.15;
+  // Force (N) = area_m2 × pressure_Pa = area_cm2 × 1e-4 m2 × pressure_MPa × 1e6 Pa
+  const forceN = inputs.projectedAreaCm2 * 1e-4 * inputs.cavityPressureMPa * 1e6 * sf;
+  return forceN / 9806.65; // convert N to tonnes-force
+}
+
 export function computeInjectionMouldingDrivers(inputs: InjectionMouldingInputs): CommodityDrivers {
+  const rejectUplift = (inputs.rejectRate && inputs.rejectRate > 0)
+    ? 1 / (1 - inputs.rejectRate)
+    : 1;
+
   // Tolerance → mould cost multiplier
   const toleranceFactor =
     inputs.toleranceMm === undefined ? 1.0 :
@@ -86,20 +103,22 @@ export function computeInjectionMouldingDrivers(inputs: InjectionMouldingInputs)
 
   const rawMaterial: RawMaterialInput = {
     materialId: inputs.materialId,
-    netWeightKg: inputs.partWeightKg,
+    netWeightKg: inputs.partWeightKg * rejectUplift,
     materialUtilization,
   };
+
+  const effectiveCycleTimeHr = cycleTimeHr * rejectUplift;
 
   const operations: OperationInput[] = [
     {
       operationName: 'Injection Moulding',
       machineId: inputs.machineId,
       labourId: inputs.labourId,
-      cycleTimeHr,
+      cycleTimeHr: effectiveCycleTimeHr,
       partsPerCycle: inputs.cavities,
       oee: inputs.oee,
       manning: inputs.manning,
-      labourTimeHr: cycleTimeHr,
+      labourTimeHr: effectiveCycleTimeHr,
       labourEfficiency: inputs.labourEfficiency,
     },
   ];

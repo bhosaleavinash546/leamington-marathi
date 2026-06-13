@@ -55,21 +55,19 @@ export function getBIWAssemblyInputSchema(): Record<string, string> {
 }
 
 export function computeBIWDrivers(inputs: BIWAssemblyInputs): CommodityDrivers {
-  // Sub-part cost is the "material" input for the BIW cell; use directCost to pass it through
-  const rawMaterial: RawMaterialInput = {
-    materialId: 'mat-virtual',
-    netWeightKg: 0,
-    materialUtilization: 1,
-    directCost: inputs.subPartTotalCost,
-  };
-
-  // Joining consumable cost per assembly (electrodes, rivets, adhesive, wire)
   const joiningCostPerPart = inputs.joining.reduce(
     (acc, j) => acc + j.count * j.costPerJoint,
     0
   );
 
-  // Each BIW station becomes an operation
+  // Sub-part cost + joining consumables form the material/parts bucket for BIW
+  const rawMaterial: RawMaterialInput = {
+    materialId: 'mat-virtual',
+    netWeightKg: 0,
+    materialUtilization: 1,
+    directCost: inputs.subPartTotalCost + joiningCostPerPart, // joining consumables included in material bucket
+  };
+
   const operations: OperationInput[] = inputs.stations.map(s => ({
     operationName: s.stationName,
     machineId: s.machineId,
@@ -82,17 +80,11 @@ export function computeBIWDrivers(inputs: BIWAssemblyInputs): CommodityDrivers {
     labourEfficiency: s.labourEfficiency,
   }));
 
-  // Fixturing tooling only — joining consumables are recurring material costs, not capital tooling
   const tooling: ToolingInput = {
     totalToolingCost: inputs.fixturingToolingCost,
     amortizationVolume: inputs.amortizationVolume,
     mode: 'amortized',
   };
 
-  // Joining consumables (electrode wear, rivets, adhesive, wire) → rawMaterial.consumablesCostPerPart
-  const rawMaterialFinal: RawMaterialInput = joiningCostPerPart > 0
-    ? { ...rawMaterial, consumablesCostPerPart: joiningCostPerPart }
-    : rawMaterial;
-
-  return { rawMaterial: rawMaterialFinal, operations, tooling };
+  return { rawMaterial, operations, tooling };
 }

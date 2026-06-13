@@ -19,6 +19,7 @@ export interface ThermoformingInputs {
   labourEfficiency: number;
   toolCost: number;
   amortizationVolume: number;
+  rejectRate?: number;   // scrap fraction 0–1
 }
 
 export function getThermoformingInputSchema(): Record<string, string> {
@@ -39,33 +40,39 @@ export function getThermoformingInputSchema(): Record<string, string> {
     labourEfficiency: 'number 0–1',
     toolCost: 'number — forming tool + trim die cost £',
     amortizationVolume: 'number — parts over which to amortize tooling cost',
+    rejectRate: 'number 0–1 (optional) — scrap fraction; uplifts material and cycle time',
   };
 }
 
 export function computeThermoformingDrivers(inputs: ThermoformingInputs): CommodityDrivers {
+  const rejectUplift = (inputs.rejectRate && inputs.rejectRate > 0)
+    ? 1 / (1 - inputs.rejectRate)
+    : 1;
+
   const materialUtilization = (inputs.partWeightKg * inputs.partsPerSheet) / inputs.sheetWeightKg;
 
   // grossWeightKgPerPart is used by the universal stack via netWeightKg / materialUtilization
   // netWeightKg represents the net part weight; utilization carries the skeletal waste
   const rawMaterial: RawMaterialInput = {
     materialId: inputs.materialId,
-    netWeightKg: inputs.partWeightKg,
+    netWeightKg: inputs.partWeightKg * rejectUplift,
     materialUtilization,
   };
 
   // One machine cycle forms an entire sheet producing partsPerSheet parts
   const cycleTimeHr = (inputs.heatTimeSec + inputs.formTimeSec + inputs.trimTimeSec + inputs.indexTimeSec) / 3600;
+  const effectiveCycleTimeHr = cycleTimeHr * rejectUplift;
 
   const operations: OperationInput[] = [
     {
       operationName: 'Thermoforming',
       machineId: inputs.machineId,
       labourId: inputs.labourId,
-      cycleTimeHr,
+      cycleTimeHr: effectiveCycleTimeHr,
       partsPerCycle: inputs.partsPerSheet,
       oee: inputs.oee,
       manning: inputs.manning,
-      labourTimeHr: cycleTimeHr,
+      labourTimeHr: effectiveCycleTimeHr,
       labourEfficiency: inputs.labourEfficiency,
     },
   ];

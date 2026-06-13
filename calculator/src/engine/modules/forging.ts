@@ -21,6 +21,7 @@ export interface ForgingInputs {
   trimmingCycleHr?: number;
   heatTreatCostPerKg?: number;  // external heat treat cost £/kg of part
   descaleCostPerKg?: number;    // descaling / shot blast cost £/kg of billet
+  rejectRate?: number;          // forging scrap fraction 0–1
   amortizationVolume: number;
 }
 
@@ -47,20 +48,25 @@ export function getForgingInputSchema(): Record<string, string> {
     trimmingCycleHr: 'number? — trimming cycle time hr',
     heatTreatCostPerKg: 'number? — external heat treatment cost £/kg of part',
     descaleCostPerKg: 'number? — descaling/shot blast cost £/kg of billet',
+    rejectRate: 'number 0–1 (optional) — forging scrap fraction; uplifts material and cycle time',
     amortizationVolume: 'number — volume over which to amortize tooling and ancillary costs',
   };
 }
 
 export function computeForgingDrivers(inputs: ForgingInputs): CommodityDrivers {
+  const rejectUplift = (inputs.rejectRate && inputs.rejectRate > 0)
+    ? 1 / (1 - inputs.rejectRate)
+    : 1;
+
   // Billet weight purchased: (part + flash/scale) / yield
   const billetWeightKg = (inputs.partWeightKg + inputs.flashAndScaleKg) / inputs.yieldFraction;
 
-  // materialUtilization = net part weight / billet weight
+  // materialUtilization = net part weight / billet weight (based on per-billet geometry, not reject)
   const materialUtilization = inputs.partWeightKg / billetWeightKg;
 
   const rawMaterial: RawMaterialInput = {
     materialId: inputs.materialId,
-    netWeightKg: inputs.partWeightKg,
+    netWeightKg: inputs.partWeightKg * rejectUplift, // buy more billets to cover rejects
     materialUtilization,
   };
 
@@ -75,11 +81,11 @@ export function computeForgingDrivers(inputs: ForgingInputs): CommodityDrivers {
       operationName: 'Forging',
       machineId: inputs.forgeId,
       labourId: inputs.labourId,
-      cycleTimeHr: effectiveCycleHr,
+      cycleTimeHr: effectiveCycleHr * rejectUplift,
       partsPerCycle: 1,
       oee: inputs.oee,
       manning: inputs.manning,
-      labourTimeHr: effectiveCycleHr,
+      labourTimeHr: effectiveCycleHr * rejectUplift,
       labourEfficiency: inputs.labourEfficiency,
     },
   ];
@@ -95,11 +101,11 @@ export function computeForgingDrivers(inputs: ForgingInputs): CommodityDrivers {
       operationName: 'Flash Trimming',
       machineId: inputs.trimmingMachineId,
       labourId: inputs.trimmingLabourId,
-      cycleTimeHr: inputs.trimmingCycleHr,
+      cycleTimeHr: inputs.trimmingCycleHr * rejectUplift,
       partsPerCycle: 1,
       oee: inputs.oee,
-      manning: 1,
-      labourTimeHr: inputs.trimmingCycleHr,
+      manning: inputs.manning,
+      labourTimeHr: inputs.trimmingCycleHr * rejectUplift,
       labourEfficiency: inputs.labourEfficiency,
     });
   }

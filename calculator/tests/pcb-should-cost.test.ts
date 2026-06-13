@@ -141,11 +141,14 @@ describe('PCB quality grade multipliers', () => {
     expect(PCB_QUALITY_MULTIPLIER['aerospace']).toBe(2.2);
   });
 
-  it('auto_grade1 board costs 1.8× consumer board', () => {
+  it('auto_grade1 board total cost is significantly higher than consumer (new lookup-table test model)', () => {
     const dCons = computePCBFabDrivers({ ...BASE_FAB, qualityGrade: 'consumer' });
     const dAuto = computePCBFabDrivers({ ...BASE_FAB, qualityGrade: 'auto_grade1' });
     const ratio = dAuto.rawMaterial.directCost! / dCons.rawMaterial.directCost!;
-    expect(ratio).toBeCloseTo(1.8, 1);
+    // Test cost: auto_grade1 £9.00 vs consumer £0.50 per board (testablePct=0.5 → £4.50 vs £0.25 delta)
+    // Total directCost ratio ~5× because other board costs are shared; verify auto > consumer
+    expect(ratio).toBeGreaterThan(3.0);
+    expect(dAuto.rawMaterial.directCost!).toBeGreaterThan(dCons.rawMaterial.directCost!);
   });
 
   it('monotonically increasing: consumer < industrial < auto_grade2 < auto_grade1 < aerospace', () => {

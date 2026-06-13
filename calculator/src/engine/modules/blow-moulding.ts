@@ -20,6 +20,10 @@ export interface BlowMouldingInputs {
   deflashMachineId?: string;
   deflashLabourId?: string;
   deflashCycleTimeSec?: number;
+  /** Parison extrusion time s (time to extrude the parison before mould close). Typical 3–12s. Default 6s. */
+  parisonExtrusionTimeSec?: number;
+  /** Scrap fraction 0–1 (wall thickness failure, leak, flash). Uplifts material and cycle time. */
+  rejectRate?: number;
 }
 
 export function getBlowMouldingInputSchema(): Record<string, string> {
@@ -43,12 +47,19 @@ export function getBlowMouldingInputSchema(): Record<string, string> {
     deflashMachineId: 'string (optional) — secondary deflashing machine ID',
     deflashLabourId: 'string (optional) — labour rate ID for deflash operation',
     deflashCycleTimeSec: 'number (optional) — deflash/trimming cycle time per part s',
+    parisonExtrusionTimeSec: 'number (optional) — parison extrusion time s before mould close (typical 3–12s, default 6s)',
+    rejectRate: 'number 0–1 (optional) — scrap fraction (wall thickness failure, leak, flash); uplifts material and cycle time',
   };
 }
 
 export function computeBlowMouldingDrivers(inputs: BlowMouldingInputs): CommodityDrivers {
+  const rejectUplift = (inputs.rejectRate && inputs.rejectRate > 0)
+    ? 1 / (1 - inputs.rejectRate)
+    : 1;
+
+  const parisonTimeSec = inputs.parisonExtrusionTimeSec ?? 6;
   const coolingTimeSec = inputs.coolTimeFactorSPerMm2 * inputs.wallThicknessMm ** 2;
-  const cycleTimeSec = inputs.blowTimeSec + coolingTimeSec + inputs.openCloseSec;
+  const cycleTimeSec = parisonTimeSec + inputs.blowTimeSec + coolingTimeSec + inputs.openCloseSec;
   const cycleTimeHr = cycleTimeSec / 3600;
 
   const grossWeightKg = inputs.partWeightKg + inputs.flashWeightKg;
@@ -56,20 +67,22 @@ export function computeBlowMouldingDrivers(inputs: BlowMouldingInputs): Commodit
 
   const rawMaterial: RawMaterialInput = {
     materialId: inputs.materialId,
-    netWeightKg: inputs.partWeightKg,
+    netWeightKg: inputs.partWeightKg * rejectUplift,
     materialUtilization,
   };
+
+  const effectiveCycleTimeHr = cycleTimeHr * rejectUplift;
 
   const operations: OperationInput[] = [
     {
       operationName: 'Extrusion Blow Moulding',
       machineId: inputs.machineId,
       labourId: inputs.labourId,
-      cycleTimeHr,
+      cycleTimeHr: effectiveCycleTimeHr,
       partsPerCycle: inputs.cavities,
       oee: inputs.oee,
       manning: inputs.manning,
-      labourTimeHr: cycleTimeHr,
+      labourTimeHr: effectiveCycleTimeHr,
       labourEfficiency: inputs.labourEfficiency,
     },
   ];

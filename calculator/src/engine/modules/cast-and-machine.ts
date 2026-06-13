@@ -19,7 +19,7 @@ export interface CastAndMachineInputs {
   hpdc?: { machineId: string; cycleTimeSec: number; cavities: number; dieCost: number; dieLife: number; };
   sand?: { mouldLineId: string; cycleTimeHr: number; patternCost: number; patternLife: number; coreCostPerPart: number; };
   gravity?: { machineId: string; cycleTimeHr: number; mouldCost: number; mouldLife: number; };
-  investment?: { waxCostPerPart: number; shellBuildCostPerPart: number; pourLabourId: string; pourCycleHr: number; pourMachineId: string; };
+  investment?: { waxCostPerPart: number; shellBuildCostPerPart: number; pourLabourId: string; pourCycleHr: number; pourMachineId: string; waxDieCost: number; };
 
   // === MACHINING ===
   geometryComplexity: 1 | 2 | 3 | 4 | 5;
@@ -71,7 +71,9 @@ export function computeCastAndMachineDrivers(inputs: CastAndMachineInputs): Comm
   });
 
   // 2. Build machining operations (setup pseudo-op + main ops)
-  const setupPerPart = inputs.machiningSetup.setupTimeHr / Math.max(inputs.machiningSetup.batchSize, 1);
+  const GEOMETRY_COMPLEXITY_SETUP_FACTOR = [0, 0.5, 0.75, 1.0, 1.4, 1.8];
+  const complexitySetupFactor = GEOMETRY_COMPLEXITY_SETUP_FACTOR[inputs.geometryComplexity] ?? 1.0;
+  const setupPerPart = (inputs.machiningSetup.setupTimeHr / Math.max(inputs.machiningSetup.batchSize, 1)) * complexitySetupFactor;
   const machOps: OperationInput[] = [
     {
       operationName: 'Machining Setup (amortised)',

@@ -113,6 +113,10 @@ export interface PCBAInputs {
   ictLabourId?: string;
   /** ICT fixture test time per board in seconds. Default: 120 s. */
   ictCycleTimeSec?: number;
+  /** NRE: solder paste stencil + ICT fixture + programming cost £. Default 0. */
+  nreCost?: number;
+  /** Volume over which to amortize NRE. Required if nreCost > 0. */
+  nreAmortizationVolume?: number;
 }
 
 // ─── Schema ───────────────────────────────────────────────────────────────────
@@ -143,6 +147,8 @@ export function getPCBAInputSchema(): Record<string, string> {
     xrayMachineId: 'string? — X-ray BGA inspection machine ID',
     ictMachineId: 'string? — ICT / functional test machine ID',
     ictCycleTimeSec: 'number? — ICT test time per board s (default 120)',
+    nreCost: 'number? — NRE cost £ (solder paste stencil + ICT fixture + programming). Default 0.',
+    nreAmortizationVolume: 'number? — volume over which to amortize NRE. Required if nreCost > 0.',
   };
 }
 
@@ -229,7 +235,9 @@ export function computePCBADrivers(inputs: PCBAInputs): CommodityDrivers {
 
   // 7. BGA X-ray inspection (quality-scaled)
   if ((inputs.bgaCount ?? 0) > 0 && inputs.xrayMachineId) {
-    const xrayCycleHr = (6 / 60) * qualityMult; // 6 min base × quality multiplier
+    // X-ray cycle time scales with BGA count: 2min base + 0.8min per BGA, capped at 20min
+    const xrayBaseMin = Math.min(2 + (inputs.bgaCount ?? 1) * 0.8, 20);
+    const xrayCycleHr = (xrayBaseMin / 60) * qualityMult;
     operations.push({
       operationName: 'BGA X-Ray Inspection',
       machineId: inputs.xrayMachineId,
@@ -260,8 +268,8 @@ export function computePCBADrivers(inputs: PCBAInputs): CommodityDrivers {
   }
 
   const tooling: ToolingInput = {
-    totalToolingCost: 0,
-    amortizationVolume: 1,
+    totalToolingCost: inputs.nreCost ?? 0,
+    amortizationVolume: inputs.nreAmortizationVolume ?? inputs.amortizationVolume,
     mode: 'amortized',
   };
 
