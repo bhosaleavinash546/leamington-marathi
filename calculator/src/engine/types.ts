@@ -143,10 +143,19 @@ export interface UniversalStackInput {
 
 export interface OperationResult {
   operationName: string;
+  machineId: string;
+  labourId: string;
   processCost: number;
   labourCost: number;
   machineRateUsed: number;
   labourRateUsed: number;
+  // Input fields retained for downstream display & export
+  cycleTimeHr: number;
+  partsPerCycle: number;
+  oee: number;
+  manning: number;
+  labourTimeHr: number;
+  labourEfficiency: number;
 }
 
 export interface Breakdown8Bucket {

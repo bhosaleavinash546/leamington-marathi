@@ -26,6 +26,7 @@ import type { Assembly, AssemblyLine } from '../engine/assembly.js';
 import type { LearningCurveResult } from '../engine/learning-curve.js';
 import { exportToExcelBlob } from '../export/excel.js';
 import { printPDF } from '../export/pdf.js';
+import { generateInsights, totalPotentialSaving, REGIONAL_COST_INDEX, FX_TO_GBP } from '../engine/insights.js';
 import type { RateLibrary, UniversalStackInput, PartCostResult, CommodityType, SupplierQuote } from '../engine/types.js';
 import type { BOMLine, ComponentType } from '../engine/modules/pcba.js';
 import { parseBOMCSV } from '../engine/bom-csv.js';
@@ -56,6 +57,13 @@ let cadFile: File | null = null;
 let cadAnalysisResult: CADAnalysisResult | null = null;
 let supplierQuotes: SupplierQuote[] = [];
 let _breakdownChart: Chart | null = null;
+let _displayCurrency = 'GBP';
+let _displayFxRate = 1.0;
+
+function _currFmt(n: number): string {
+  const sym = _displayCurrency === 'GBP' ? '£' : _displayCurrency === 'EUR' ? '€' : _displayCurrency === 'USD' ? '$' : _displayCurrency;
+  return `${sym}${(n * _displayFxRate).toFixed(2)}`;
+}
 
 // ─── DOM helpers ──────────────────────────────────────────────────────────────
 
@@ -1867,9 +1875,13 @@ function switchResultTab(tab: string): void {
     t.classList.toggle('active', t.dataset.panel === tab);
   });
   el('results-breakdown').style.display = tab === 'breakdown' ? '' : 'none';
+  el('results-detail').style.display = tab === 'detail' ? '' : 'none';
+  el('results-insights').style.display = tab === 'insights' ? '' : 'none';
   el('results-sensitivity').style.display = tab === 'sensitivity' ? '' : 'none';
   el('results-scenarios').style.display = tab === 'scenarios' ? '' : 'none';
 
+  if (tab === 'detail' && lastResult && lastInput) renderDetail(lastResult, lastInput);
+  if (tab === 'insights' && lastResult && lastInput) renderInsights(lastResult, lastInput);
   if (tab === 'sensitivity' && lastInput) renderSensitivity();
   if (tab === 'scenarios') renderScenarios();
 }
@@ -2051,6 +2063,237 @@ function renderBreakdown(result: PartCostResult): void {
       if (lastResult) renderBreakdown(lastResult);
     });
   });
+}
+
+// ─── Render: Detail Tab ───────────────────────────────────────────────────────
+
+function renderDetail(result: PartCostResult, input: UniversalStackInput): void {
+  const panel = el('results-detail');
+  const cf = _currFmt;
+  const pct = (n: number) => `${n.toFixed(1)}%`;
+
+  const mat = library.materials.find(m => m.id === input.rawMaterial.materialId);
+  const grossWeight = input.rawMaterial.directCost === undefined
+    ? input.rawMaterial.netWeightKg / input.rawMaterial.materialUtilization : 0;
+  const scrapWeight = Math.max(0, grossWeight - input.rawMaterial.netWeightKg);
+
+  // ── Material section
+  let matSection = `
+    <div class="detail-section-title">1 · Raw Material</div>
+    <table class="detail-table">
+      <thead><tr><th>Parameter</th><th>Value</th><th>Unit</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>Material Grade</td><td>${mat?.grade ?? 'Direct cost'}</td><td></td><td class="detail-src">${mat?.sourceNote?.slice(0,55) ?? ''}</td></tr>
+        <tr><td>Region</td><td>${mat?.region ?? '—'}</td><td></td><td></td></tr>`;
+
+  if (input.rawMaterial.directCost !== undefined) {
+    matSection += `<tr><td>Direct Material Cost</td><td class="num"><strong>${cf(input.rawMaterial.directCost)}</strong></td><td></td><td>Pre-computed — bypasses weight calculation</td></tr>`;
+  } else {
+    matSection += `
+        <tr><td>Net (Finished) Weight</td><td class="num">${input.rawMaterial.netWeightKg.toFixed(4)}</td><td>kg</td><td>Weight in finished part</td></tr>
+        <tr><td>Gross (Stock/Cast) Weight</td><td class="num">${grossWeight.toFixed(4)}</td><td>kg</td><td>= net ÷ utilisation</td></tr>
+        <tr><td>Scrap Weight</td><td class="num">${scrapWeight.toFixed(4)}</td><td>kg</td><td>= gross − net</td></tr>
+        <tr><td>Material Utilisation</td><td class="num">${pct(input.rawMaterial.materialUtilization * 100)}</td><td></td><td>Benchmark: 72–85% for machined parts</td></tr>
+        <tr><td>Material Price</td><td class="num">${cf(mat?.pricePerKg ?? 0)}</td><td>${_displayCurrency}/kg</td><td>Source: ${mat?.sourceNote?.slice(0,40) ?? '—'}</td></tr>
+        <tr><td>Scrap Recovery Price</td><td class="num">${cf(mat?.scrapRecoveryPricePerKg ?? 0)}</td><td>${_displayCurrency}/kg</td><td></td></tr>
+        <tr><td>Gross Material Cost</td><td class="num">${cf(grossWeight * (mat?.pricePerKg ?? 0))}</td><td>${_displayCurrency}</td><td>= gross weight × price/kg</td></tr>
+        <tr><td>Scrap Credit</td><td class="num">(${cf(scrapWeight * (mat?.scrapRecoveryPricePerKg ?? 0))})</td><td>${_displayCurrency}</td><td>= scrap weight × recovery price</td></tr>
+        <tr class="total-row"><td><strong>NET MATERIAL COST</strong></td><td class="num"><strong>${cf(result.breakdown.rawMaterial)}</strong></td><td>${_displayCurrency}</td><td>${pct((result.breakdown.rawMaterial / result.total) * 100)} of total</td></tr>`;
+  }
+  matSection += `<tr><td>Data Confidence</td><td><span class="badge ${mat?.confidence}">${mat?.confidence ?? '—'}</span></td><td></td><td>Effective: ${mat?.effectiveDate ?? '—'}</td></tr>
+      </tbody></table>`;
+
+  // ── Operations sections
+  let opsSection = '';
+  for (let i = 0; i < result.operationDetails.length; i++) {
+    const op = result.operationDetails[i];
+    const machObj = library.machines.find(m => m.id === op.machineId);
+    const labObj = library.labour.find(l => l.id === op.labourId);
+    const b = machObj?.buildup;
+    const effHrs = b ? b.annualAvailableHours * b.machineUtilization : 1;
+    const effectiveCycleHr = op.cycleTimeHr / op.partsPerCycle / op.oee;
+    const effectiveLabHr = op.manning * op.labourTimeHr / op.partsPerCycle / op.labourEfficiency;
+
+    opsSection += `
+    <div class="detail-section-title">${i + 2} · Operation: ${escHtml(op.operationName)}</div>
+    <table class="detail-table">
+      <thead><tr><th>Parameter</th><th>Value</th><th>Unit</th><th>Calculation / Notes</th></tr></thead>
+      <tbody>
+        <tr><td><strong>MACHINE</strong></td><td>${machObj?.machineClass ?? op.machineId}</td><td></td><td>${machObj?.region ?? ''}</td></tr>
+        <tr><td>Machine Rate (computed)</td><td class="num">${cf(op.machineRateUsed)}</td><td>${_displayCurrency}/hr</td><td>Confidence: ${machObj?.confidence ?? '—'}</td></tr>`;
+
+    if (b) {
+      opsSection += `
+        <tr class="buildup-sub"><td>&nbsp;&nbsp;↳ Depreciation</td><td class="num">${cf(b.annualDepreciation / effHrs)}</td><td>${_displayCurrency}/hr</td><td>Annual: ${cf(b.annualDepreciation)}</td></tr>
+        <tr class="buildup-sub"><td>&nbsp;&nbsp;↳ Maintenance</td><td class="num">${cf(b.maintenance / effHrs)}</td><td>${_displayCurrency}/hr</td><td>Annual: ${cf(b.maintenance)}</td></tr>
+        <tr class="buildup-sub"><td>&nbsp;&nbsp;↳ Energy</td><td class="num">${cf(b.energy / effHrs)}</td><td>${_displayCurrency}/hr</td><td>Annual: ${cf(b.energy)}</td></tr>
+        <tr class="buildup-sub"><td>&nbsp;&nbsp;↳ Floor Space</td><td class="num">${cf(b.floorSpace / effHrs)}</td><td>${_displayCurrency}/hr</td><td>Annual: ${cf(b.floorSpace)}</td></tr>
+        <tr class="buildup-sub"><td>&nbsp;&nbsp;↳ Indirect Support</td><td class="num">${cf(b.indirectSupport / effHrs)}</td><td>${_displayCurrency}/hr</td><td>Annual: ${cf(b.indirectSupport)}</td></tr>
+        <tr class="buildup-sub"><td>&nbsp;&nbsp;↳ Finance Cost</td><td class="num">${cf(b.financeCost / effHrs)}</td><td>${_displayCurrency}/hr</td><td>Annual: ${cf(b.financeCost)}</td></tr>
+        <tr class="buildup-sub"><td>&nbsp;&nbsp;↳ Annual Available Hours</td><td class="num">${b.annualAvailableHours.toLocaleString()}</td><td>hr/yr</td><td>Machine utilisation: ${pct(b.machineUtilization * 100)}</td></tr>`;
+    }
+
+    opsSection += `
+        <tr><td>Cycle Time</td><td class="num">${op.cycleTimeHr.toFixed(4)}</td><td>hr</td><td>= ${(op.cycleTimeHr * 60).toFixed(2)} min per cycle</td></tr>
+        <tr><td>Parts per Cycle</td><td class="num">${op.partsPerCycle}</td><td>parts</td><td></td></tr>
+        <tr><td>OEE</td><td class="num">${pct(op.oee * 100)}</td><td></td><td>Overall Equipment Effectiveness — benchmark 85%+</td></tr>
+        <tr><td>Effective Machine Time</td><td class="num">${effectiveCycleHr.toFixed(5)}</td><td>hr/part</td><td>= cycle ÷ ppc ÷ OEE</td></tr>
+        <tr class="subtotal-row"><td><strong>Process Cost per Part</strong></td><td class="num"><strong>${cf(op.processCost)}</strong></td><td>${_displayCurrency}</td><td>= machine rate × effective time</td></tr>
+
+        <tr><td><strong>LABOUR</strong></td><td>${labObj?.skillLevel ?? op.labourId}</td><td></td><td>${labObj?.region ?? ''}</td></tr>
+        <tr><td>Fully Loaded Labour Rate</td><td class="num">${cf(op.labourRateUsed)}</td><td>${_displayCurrency}/hr</td><td>Incl. social costs, benefits. Confidence: ${labObj?.confidence ?? '—'}</td></tr>
+        <tr><td>Manning</td><td class="num">${op.manning}</td><td>persons</td><td>Operators per machine</td></tr>
+        <tr><td>Labour Time</td><td class="num">${op.labourTimeHr.toFixed(4)}</td><td>hr</td><td>= ${(op.labourTimeHr * 60).toFixed(2)} min per cycle</td></tr>
+        <tr><td>Labour Efficiency</td><td class="num">${pct(op.labourEfficiency * 100)}</td><td></td><td>Productive time / paid time</td></tr>
+        <tr><td>Effective Labour Time</td><td class="num">${effectiveLabHr.toFixed(5)}</td><td>hr/part</td><td>= manning × lab time ÷ ppc ÷ efficiency</td></tr>
+        <tr class="subtotal-row"><td><strong>Labour Cost per Part</strong></td><td class="num"><strong>${cf(op.labourCost)}</strong></td><td>${_displayCurrency}</td><td>= labour rate × effective labour time</td></tr>
+        <tr class="total-row"><td><strong>Operation Total</strong></td><td class="num"><strong>${cf(op.processCost + op.labourCost)}</strong></td><td>${_displayCurrency}</td><td>${pct(((op.processCost + op.labourCost) / result.total) * 100)} of total</td></tr>
+      </tbody>
+    </table>`;
+  }
+
+  // ── Tooling section
+  const toolSection = `
+    <div class="detail-section-title">${result.operationDetails.length + 2} · Tooling &amp; NRE</div>
+    <table class="detail-table">
+      <thead><tr><th>Parameter</th><th>Value</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>Mode</td><td>${input.tooling.mode === 'amortized' ? 'Amortised into piece price' : 'One-time NRE (not in unit cost)'}</td><td></td></tr>
+        <tr><td>Total Tooling Cost</td><td class="num">${cf(input.tooling.totalToolingCost)}</td><td></td></tr>
+        ${input.tooling.mode === 'amortized' ? `
+        <tr><td>Amortisation Volume</td><td class="num">${input.tooling.amortizationVolume.toLocaleString()} parts</td><td></td></tr>
+        <tr class="total-row"><td><strong>Tooling per Part</strong></td><td class="num"><strong>${cf(result.breakdown.tooling)}</strong></td><td>= total cost ÷ volume</td></tr>
+        ` : `<tr class="total-row"><td><strong>NRE (one-time)</strong></td><td class="num"><strong>${cf(result.toolingNRE ?? 0)}</strong></td><td>Not included in unit cost</td></tr>`}
+      </tbody>
+    </table>`;
+
+  // ── Commercial stack
+  const commSection = `
+    <div class="detail-section-title">${result.operationDetails.length + 3} · Commercial Stack</div>
+    <table class="detail-table">
+      <thead><tr><th>Parameter</th><th>Rate</th><th>Amount</th><th>Basis</th></tr></thead>
+      <tbody>
+        <tr><td>Packaging</td><td></td><td class="num">${cf(input.packagingPerPart)}</td><td>Per-part fixed cost</td></tr>
+        <tr><td>Logistics</td><td></td><td class="num">${cf(input.logisticsPerPart)}</td><td>Per-part fixed cost</td></tr>
+        <tr class="subtotal-row"><td><strong>Factory Cost</strong></td><td></td><td class="num"><strong>${cf(result.factoryCost)}</strong></td><td>Sum of buckets 1–6</td></tr>
+        <tr><td>Overhead (SG&amp;A)</td><td class="num">${pct(input.overheadPct * 100)}</td><td class="num">${cf(result.breakdown.overhead)}</td><td>Applied to factory cost</td></tr>
+        <tr class="subtotal-row"><td><strong>Subtotal</strong></td><td></td><td class="num"><strong>${cf(result.subtotal)}</strong></td><td>Factory cost + overhead</td></tr>
+        <tr><td>Supplier Margin</td><td class="num">${pct(input.marginPct * 100)}</td><td class="num">${cf(result.breakdown.margin)}</td><td>Applied to subtotal</td></tr>
+        <tr class="total-row"><td><strong>TOTAL SHOULD COST</strong></td><td></td><td class="num"><strong>${cf(result.total)}</strong></td><td></td></tr>
+      </tbody>
+    </table>`;
+
+  panel.innerHTML = `
+    <div style="padding:12px 16px;overflow-y:auto">
+      <div class="detail-kpi-row">
+        <div class="detail-kpi"><div class="kpi-label">Total Should Cost</div><div class="kpi-value">${cf(result.total)}</div></div>
+        <div class="detail-kpi"><div class="kpi-label">Raw Material</div><div class="kpi-value">${cf(result.breakdown.rawMaterial)}</div><div class="kpi-sub">${pct((result.breakdown.rawMaterial / result.total) * 100)} of total</div></div>
+        <div class="detail-kpi"><div class="kpi-label">Process</div><div class="kpi-value">${cf(result.breakdown.process)}</div><div class="kpi-sub">${pct((result.breakdown.process / result.total) * 100)} of total</div></div>
+        <div class="detail-kpi"><div class="kpi-label">Labour</div><div class="kpi-value">${cf(result.breakdown.labour)}</div><div class="kpi-sub">${pct((result.breakdown.labour / result.total) * 100)} of total</div></div>
+        <div class="detail-kpi"><div class="kpi-label">Tooling</div><div class="kpi-value">${cf(result.breakdown.tooling)}</div><div class="kpi-sub">${pct((result.breakdown.tooling / result.total) * 100)} of total</div></div>
+        <div class="detail-kpi"><div class="kpi-label">OH + Margin</div><div class="kpi-value">${cf(result.breakdown.overhead + result.breakdown.margin)}</div><div class="kpi-sub">${pct(((result.breakdown.overhead + result.breakdown.margin) / result.total) * 100)} of total</div></div>
+      </div>
+      ${matSection}
+      ${opsSection}
+      ${toolSection}
+      ${commSection}
+    </div>`;
+}
+
+// ─── Render: AI Insights Tab ──────────────────────────────────────────────────
+
+function renderInsights(result: PartCostResult, input: UniversalStackInput): void {
+  const panel = el('results-insights');
+  const cf = _currFmt;
+  const insights = generateInsights(result, input, library, activeCommodity);
+  const totalSaving = totalPotentialSaving(insights);
+
+  const typeLabel: Record<string, string> = {
+    critical: 'Critical', warning: 'Warning', opportunity: 'Opportunity', benchmark: 'Benchmark', info: 'Info',
+  };
+
+  const insightCards = insights.map(ins => {
+    const bmBar = ins.benchmark ? (() => {
+      const maxVal = Math.max(ins.benchmark.industryHigh * 1.3, ins.benchmark.yourValue * 1.1);
+      const rangeLow = (ins.benchmark.industryLow / maxVal) * 100;
+      const rangeWidth = ((ins.benchmark.industryHigh - ins.benchmark.industryLow) / maxVal) * 100;
+      const yourPos = (ins.benchmark.yourValue / maxVal) * 100;
+      return `
+        <div class="insight-benchmark-bar">
+          <span style="white-space:nowrap;font-weight:600">${ins.benchmark.label}</span>
+          <div class="bm-bar-track">
+            <div class="bm-bar-range" style="left:${rangeLow}%;width:${rangeWidth}%" title="Industry range: ${ins.benchmark.industryLow}–${ins.benchmark.industryHigh}${ins.benchmark.unit}"></div>
+            <div class="bm-bar-yours" style="left:${Math.min(97, yourPos)}%" title="Your value: ${ins.benchmark.yourValue.toFixed(1)}${ins.benchmark.unit}"></div>
+          </div>
+          <span style="white-space:nowrap">Yours: <strong>${ins.benchmark.yourValue.toFixed(1)}${ins.benchmark.unit}</strong></span>
+          <span style="white-space:nowrap;color:#888">Benchmark: ${ins.benchmark.industryLow}–${ins.benchmark.industryHigh}${ins.benchmark.unit}</span>
+        </div>`;
+    })() : '';
+
+    const actions = ins.actions.map(a => `<li>${escHtml(a)}</li>`).join('');
+    const savingBadge = ins.potentialSavingPct > 0
+      ? `<span class="insight-saving">~${ins.potentialSavingPct.toFixed(0)}% saving potential</span>` : '';
+
+    return `
+    <div class="insight-card ${ins.type}">
+      <div class="insight-header">
+        <span class="insight-badge ${ins.type}">${typeLabel[ins.type] ?? ins.type}</span>
+        <span class="insight-title">${escHtml(ins.title)}</span>
+        ${savingBadge}
+        <span class="insight-impact ${ins.impact}">${ins.impact} Impact</span>
+      </div>
+      <p class="insight-finding">${escHtml(ins.finding)}</p>
+      <ul class="insight-actions">${actions}</ul>
+      ${bmBar}
+    </div>`;
+  }).join('');
+
+  // Regional comparison grid
+  const baseTotal = result.total;
+  const labConvPct = ((result.breakdown.process + result.breakdown.labour) / baseTotal);
+  const regionalCards = Object.values(REGIONAL_COST_INDEX).map(r => {
+    const estCost = baseTotal * (1 - labConvPct * (1 - r.labourFactor));
+    const saving = ((baseTotal - estCost) / baseTotal) * 100;
+    const isCurrent = r.label === 'UK';
+    return `
+    <div class="regional-card" style="${isCurrent ? 'border-color:var(--orange);background:var(--orange-light)' : ''}">
+      <div class="r-name">${r.label}</div>
+      <div class="r-cost">${cf(estCost)}</div>
+      ${saving > 1 ? `<div class="r-save">▼ ${saving.toFixed(0)}% vs UK</div>` : `<div class="r-save" style="color:#888">Base</div>`}
+      <div class="r-risk">${r.currency}</div>
+    </div>`;
+  }).join('');
+
+  panel.innerHTML = `
+    <div style="padding:12px 16px;overflow-y:auto">
+      <div class="insights-summary-bar">
+        <div>
+          <div class="big-lbl">Combined Saving Potential</div>
+          <div class="big-num">~${totalSaving.toFixed(0)}%</div>
+        </div>
+        <div style="flex:1;font-size:0.78rem;color:#555">
+          Based on ${insights.length} insights across material, process, commercial and regional dimensions.
+          Savings are illustrative — not all measures are simultaneously achievable.
+        </div>
+        <div style="font-size:0.72rem;color:#888;text-align:right">
+          Methodology: aPriori-calibrated benchmarks<br>
+          Commodity: <strong>${activeCommodity.replace(/_/g, ' ')}</strong>
+        </div>
+      </div>
+
+      ${insights.length === 0
+        ? '<div class="placeholder">Cost structure is within industry benchmarks. No significant optimisation opportunities identified.</div>'
+        : insightCards}
+
+      <div style="margin-top:16px">
+        <div class="detail-section-title">Regional Cost Comparison (Estimated)</div>
+        <div style="font-size:0.72rem;color:#888;margin-bottom:8px">
+          Estimates conversion costs scaled by regional labour index. Material, tooling and logistics remain at UK rates.
+          Indicative only — requires detailed regional RFQ for confirmation.
+        </div>
+        <div class="regional-grid">${regionalCards}</div>
+      </div>
+    </div>`;
 }
 
 // ─── Render: Sensitivity ──────────────────────────────────────────────────────
@@ -2235,8 +2478,8 @@ function renderCompareResult(comp: { baseline: { name: string; result: PartCostR
 // ─── Export ───────────────────────────────────────────────────────────────────
 
 function downloadExcel(): void {
-  if (!lastResult) return;
-  const blob = exportToExcelBlob(lastResult);
+  if (!lastResult || !lastInput) return;
+  const blob = exportToExcelBlob(lastResult, lastInput, library, _displayCurrency, _displayFxRate);
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
   a.download = `should-cost-${lastResult.partName.replace(/\s+/g, '-')}.xlsx`;
@@ -2244,8 +2487,8 @@ function downloadExcel(): void {
 }
 
 function openPDF(): void {
-  if (!lastResult) return;
-  printPDF(lastResult);
+  if (!lastResult || !lastInput) return;
+  printPDF(lastResult, lastInput, library, _displayCurrency, _displayFxRate);
 }
 
 // ─── Scenario modal ───────────────────────────────────────────────────────────
@@ -2656,6 +2899,20 @@ async function init(): Promise<void> {
   // Results tabs
   document.querySelectorAll<HTMLElement>('.rtab').forEach(tab => {
     tab.addEventListener('click', () => switchResultTab(tab.dataset.panel!));
+  });
+
+  // Currency selector
+  el<HTMLSelectElement>('currency-selector')?.addEventListener('change', e => {
+    const cur = (e.target as HTMLSelectElement).value;
+    _displayCurrency = cur;
+    _displayFxRate = FX_TO_GBP[cur] !== undefined ? 1 / FX_TO_GBP[cur] : 1;
+    // Re-render active tab if result exists
+    if (lastResult && lastInput) {
+      renderBreakdown(lastResult);
+      const activePanel = document.querySelector<HTMLElement>('.rtab.active')?.dataset.panel;
+      if (activePanel === 'detail') renderDetail(lastResult, lastInput);
+      if (activePanel === 'insights') renderInsights(lastResult, lastInput);
+    }
   });
 
   // Action buttons — use .onclick so tab switching can override without stacking listeners

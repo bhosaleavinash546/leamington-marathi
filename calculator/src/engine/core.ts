@@ -141,10 +141,18 @@ export function computeUniversalStack(
 
     operationDetails.push({
       operationName: op.operationName,
+      machineId: op.machineId,
+      labourId: op.labourId,
       processCost,
       labourCost,
       machineRateUsed: machine.computedRatePerHr,
       labourRateUsed: labour.fullyLoadedRatePerHr,
+      cycleTimeHr: op.cycleTimeHr,
+      partsPerCycle: op.partsPerCycle,
+      oee: op.oee,
+      manning: op.manning,
+      labourTimeHr: op.labourTimeHr,
+      labourEfficiency: op.labourEfficiency,
     });
 
     traceability.push({

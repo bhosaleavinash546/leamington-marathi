@@ -1,116 +1,216 @@
 import * as XLSX from 'xlsx';
-import type { PartCostResult } from '../engine/types.js';
+import type { PartCostResult, UniversalStackInput, RateLibrary } from '../engine/types.js';
 import { breakdownPercentages } from '../engine/core.js';
 
-const CURRENCY = '£';
-const fmt2 = (n: number) => `${CURRENCY}${n.toFixed(2)}`;
-const fmtPct = (n: number) => `${n.toFixed(1)}%`;
+const pct = (n: number) => `${n.toFixed(1)}%`;
+const num4 = (n: number) => +n.toFixed(4);
 
-export function exportToExcel(result: PartCostResult, filename = 'should-cost.xlsx'): void {
+export function exportToExcelBlob(
+  result: PartCostResult,
+  input: UniversalStackInput,
+  library: RateLibrary,
+  currency = 'GBP',
+  fxRate = 1
+): Blob {
+  const sym = currency === 'GBP' ? '£' : currency === 'EUR' ? '€' : currency === 'USD' ? '$' : currency;
+  const c = (n: number) => `${sym}${(n * fxRate).toFixed(2)}`;
   const wb = XLSX.utils.book_new();
-
-  // ── Sheet 1: Summary ──────────────────────────────────────────────────────
   const pcts = breakdownPercentages(result);
-  const summaryRows: (string | number)[][] = [
-    ['Should-Cost Summary', result.partName, '', ''],
-    ['', '', '', ''],
-    ['Cost Bucket', 'Amount (£)', '% of Total', ''],
-    ['1. Raw Material', result.breakdown.rawMaterial, pcts.rawMaterial / 100, ''],
-    ['2. Process (Machine)', result.breakdown.process, pcts.process / 100, ''],
-    ['3. Direct Labour', result.breakdown.labour, pcts.labour / 100, ''],
-    ['4. Tooling', result.breakdown.tooling, pcts.tooling / 100, ''],
-    ['5. Packaging', result.breakdown.packaging, pcts.packaging / 100, ''],
-    ['6. Logistics', result.breakdown.logistics, pcts.logistics / 100, ''],
-    ['─ Factory Cost', result.factoryCost, result.factoryCost / result.total, ''],
-    ['7. Overhead (SG&A)', result.breakdown.overhead, pcts.overhead / 100, ''],
-    ['─ Subtotal', result.subtotal, result.subtotal / result.total, ''],
-    ['8. Supplier Margin', result.breakdown.margin, pcts.margin / 100, ''],
-    ['TOTAL SHOULD COST', result.total, 1.0, ''],
+
+  // ── Sheet 1: Summary ────────────────────────────────────────────────────────
+  const mat = library.materials.find(m => m.id === input.rawMaterial.materialId);
+  const grossWeight = input.rawMaterial.directCost === undefined
+    ? input.rawMaterial.netWeightKg / input.rawMaterial.materialUtilization
+    : 0;
+  const scrapWeight = Math.max(0, grossWeight - input.rawMaterial.netWeightKg);
+
+  const sum: unknown[][] = [
+    ['SHOULD-COST ANALYSIS REPORT'],
+    ['Part Name', result.partName],
+    ['Report Date', new Date().toLocaleDateString('en-GB')],
+    ['Currency', `${currency} (FX: ${fxRate.toFixed(4)} to GBP)`],
+    [],
+    ['── COST SUMMARY ──'],
+    ['Cost Bucket', `Amount (${currency})`, '% of Total', 'Bar (scaled)'],
+    ['1. Raw Material', c(result.breakdown.rawMaterial), pct(pcts.rawMaterial), '█'.repeat(Math.round(pcts.rawMaterial / 2))],
+    ['2. Process (Machine)', c(result.breakdown.process), pct(pcts.process), '█'.repeat(Math.round(pcts.process / 2))],
+    ['3. Direct Labour', c(result.breakdown.labour), pct(pcts.labour), '█'.repeat(Math.round(pcts.labour / 2))],
+    ['4. Tooling (amortised)', c(result.breakdown.tooling), pct(pcts.tooling), '█'.repeat(Math.round(pcts.tooling / 2))],
+    ['5. Packaging', c(result.breakdown.packaging), pct(pcts.packaging), ''],
+    ['6. Logistics', c(result.breakdown.logistics), pct(pcts.logistics), ''],
+    ['── Factory Cost', c(result.factoryCost), pct((result.factoryCost / result.total) * 100), ''],
+    ['7. Overhead (SG&A)', c(result.breakdown.overhead), pct(pcts.overhead), '█'.repeat(Math.round(pcts.overhead / 2))],
+    ['── Subtotal', c(result.subtotal), pct((result.subtotal / result.total) * 100), ''],
+    ['8. Supplier Margin', c(result.breakdown.margin), pct(pcts.margin), '█'.repeat(Math.round(pcts.margin / 2))],
+    ['TOTAL SHOULD COST', c(result.total), '100.0%', ''],
   ];
   if (result.toolingNRE !== undefined) {
-    summaryRows.push(['NRE / Tooling (one-time)', result.toolingNRE, '', 'Not in unit cost']);
+    sum.push(['NRE / Tooling (one-time, not in unit cost)', c(result.toolingNRE), '', '']);
+  }
+  sum.push([], ['── COMMERCIAL PARAMETERS ──']);
+  sum.push(['Overhead Rate', pct(input.overheadPct * 100)]);
+  sum.push(['Supplier Margin Rate', pct(input.marginPct * 100)]);
+  sum.push(['Packaging per Part', c(input.packagingPerPart)]);
+  sum.push(['Logistics per Part', c(input.logisticsPerPart)]);
+  if (input.tooling.mode === 'amortized') {
+    sum.push(['Total Tooling Cost', c(input.tooling.totalToolingCost)]);
+    sum.push(['Amortisation Volume', `${input.tooling.amortizationVolume.toLocaleString()} parts`]);
   }
 
-  const wsSummary = XLSX.utils.aoa_to_sheet(summaryRows);
-  wsSummary['!cols'] = [{ wch: 28 }, { wch: 16 }, { wch: 14 }, { wch: 22 }];
-  XLSX.utils.book_append_sheet(wb, wsSummary, 'Summary');
+  const wsSummary = XLSX.utils.aoa_to_sheet(sum);
+  wsSummary['!cols'] = [{ wch: 34 }, { wch: 18 }, { wch: 14 }, { wch: 30 }];
+  XLSX.utils.book_append_sheet(wb, wsSummary, '1-Summary');
 
-  // ── Sheet 2: Operations ───────────────────────────────────────────────────
-  const opRows: (string | number)[][] = [
-    ['Operation', 'Machine Rate (£/hr)', 'Cycle Time (hr)', 'Parts/Cycle', 'OEE', 'Process Cost (£)', 'Labour Rate (£/hr)', 'Labour Cost (£)', 'Total Op Cost (£)'],
+  // ── Sheet 2: Material Detail ────────────────────────────────────────────────
+  const matDetail: unknown[][] = [
+    ['MATERIAL DETAIL'],
+    [],
+    ['Parameter', 'Value', 'Unit', 'Notes'],
+    ['Material ID', input.rawMaterial.materialId, '', ''],
+    ['Grade / Description', mat?.grade ?? 'Direct Cost', '', mat?.sourceNote ?? ''],
+    ['Region', mat?.region ?? '—', '', ''],
+    ['Net (Finished) Weight', num4(input.rawMaterial.netWeightKg), 'kg', 'Weight in finished part'],
   ];
+
+  if (input.rawMaterial.directCost !== undefined) {
+    matDetail.push(['Direct Material Cost', c(input.rawMaterial.directCost), currency, 'Bypasses weight-based calculation']);
+  } else {
+    matDetail.push(
+      ['Gross Weight (stock/casting)', num4(grossWeight), 'kg', `= net ÷ utilisation`],
+      ['Scrap Weight', num4(scrapWeight), 'kg', `= gross − net`],
+      ['Material Utilisation', pct(input.rawMaterial.materialUtilization * 100), '', `Benchmark: ${mat ? '75-85%' : '—'}`],
+      ['Material Price', c(mat?.pricePerKg ?? 0), `${currency}/kg`, mat?.sourceNote ?? ''],
+      ['Scrap Recovery Price', c(mat?.scrapRecoveryPricePerKg ?? 0), `${currency}/kg`, ''],
+      ['Gross Material Cost', c(grossWeight * (mat?.pricePerKg ?? 0)), currency, `= gross × price/kg`],
+      ['Scrap Credit', c(scrapWeight * (mat?.scrapRecoveryPricePerKg ?? 0)), currency, `= scrap × recovery price`],
+      ['NET RAW MATERIAL COST', c(result.breakdown.rawMaterial), currency, '= gross cost − scrap credit'],
+    );
+  }
+  matDetail.push(
+    [],
+    ['Data confidence', mat?.confidence ?? '—', '', ''],
+    ['Effective date', mat?.effectiveDate ?? '—', '', ''],
+  );
+
+  const wsMatl = XLSX.utils.aoa_to_sheet(matDetail);
+  wsMatl['!cols'] = [{ wch: 32 }, { wch: 20 }, { wch: 10 }, { wch: 50 }];
+  XLSX.utils.book_append_sheet(wb, wsMatl, '2-Material');
+
+  // ── Sheet 3: Operations Detail ──────────────────────────────────────────────
+  const opHdr: string[] = [
+    'Operation', 'Machine ID', 'Machine Class', 'Machine Rate', 'Cycle Time (hr)', 'Cycle Time (min)',
+    'Parts/Cycle', 'OEE %', 'Effective Time (hr)', 'Process Cost',
+    'Labour ID', 'Labour Grade', 'Labour Rate', 'Manning', 'Labour Time (hr)',
+    'Labour Efficiency %', 'Labour Cost', 'Op Total', '% of Total',
+  ];
+  const opRows: unknown[][] = [opHdr];
+
   for (const op of result.operationDetails) {
+    const mach = library.machines.find(m => m.id === op.machineId);
+    const lab = library.labour.find(l => l.id === op.labourId);
+    const effectiveTimeHr = op.cycleTimeHr / op.oee;
     opRows.push([
       op.operationName,
-      op.machineRateUsed,
-      '',
-      '',
-      '',
-      op.processCost,
-      op.labourRateUsed,
-      op.labourCost,
-      op.processCost + op.labourCost,
+      op.machineId,
+      mach?.machineClass ?? '—',
+      c(op.machineRateUsed),
+      num4(op.cycleTimeHr),
+      +(op.cycleTimeHr * 60).toFixed(2),
+      op.partsPerCycle,
+      pct(op.oee * 100),
+      num4(effectiveTimeHr),
+      c(op.processCost),
+      op.labourId,
+      lab?.skillLevel ?? '—',
+      c(op.labourRateUsed),
+      op.manning,
+      num4(op.labourTimeHr),
+      pct(op.labourEfficiency * 100),
+      c(op.labourCost),
+      c(op.processCost + op.labourCost),
+      pct(((op.processCost + op.labourCost) / result.total) * 100),
     ]);
   }
-  opRows.push(['TOTAL', '', '', '', '', result.breakdown.process, '', result.breakdown.labour, result.breakdown.process + result.breakdown.labour]);
+  opRows.push([
+    'TOTAL', '', '', '', '', '', '', '', '',
+    c(result.breakdown.process), '', '', '', '', '', '',
+    c(result.breakdown.labour),
+    c(result.breakdown.process + result.breakdown.labour),
+    pct(((result.breakdown.process + result.breakdown.labour) / result.total) * 100),
+  ]);
+
   const wsOps = XLSX.utils.aoa_to_sheet(opRows);
-  wsOps['!cols'] = [{ wch: 28 }, { wch: 20 }, { wch: 16 }, { wch: 12 }, { wch: 8 }, { wch: 18 }, { wch: 20 }, { wch: 16 }, { wch: 18 }];
-  XLSX.utils.book_append_sheet(wb, wsOps, 'Operations');
-
-  // ── Sheet 3: Rate Traceability ────────────────────────────────────────────
-  const traceRows: (string | number)[][] = [
-    ['Field', 'Value', 'Unit', 'Rate Source', 'Rate ID', 'Confidence'],
+  wsOps['!cols'] = [
+    { wch: 26 }, { wch: 18 }, { wch: 22 }, { wch: 16 }, { wch: 16 }, { wch: 16 },
+    { wch: 12 }, { wch: 10 }, { wch: 18 }, { wch: 16 }, { wch: 18 }, { wch: 18 },
+    { wch: 16 }, { wch: 10 }, { wch: 16 }, { wch: 18 }, { wch: 16 }, { wch: 14 }, { wch: 12 },
   ];
+  XLSX.utils.book_append_sheet(wb, wsOps, '3-Operations');
+
+  // ── Sheet 4: Machine Rate Buildup ───────────────────────────────────────────
+  const machHdr: string[] = [
+    'Machine ID', 'Machine Class', 'Region', 'Computed Rate',
+    'Annual Depreciation', 'Maintenance', 'Energy', 'Floor Space',
+    'Indirect Support', 'Finance Cost', 'Annual Hours', 'Utilisation %',
+    'Effective Rate Check', 'Confidence',
+  ];
+  const machRows: unknown[][] = [machHdr];
+
+  const usedMachIds = new Set(result.operationDetails.map(op => op.machineId));
+  for (const mach of library.machines.filter(m => usedMachIds.has(m.id))) {
+    const b = mach.buildup;
+    const totalAnnualCost = b.annualDepreciation + b.maintenance + b.energy + b.floorSpace + b.indirectSupport + b.financeCost;
+    const effectiveHrs = b.annualAvailableHours * b.machineUtilization;
+    machRows.push([
+      mach.id, mach.machineClass, mach.region, c(mach.computedRatePerHr),
+      c(b.annualDepreciation / effectiveHrs),
+      c(b.maintenance / effectiveHrs),
+      c(b.energy / effectiveHrs),
+      c(b.floorSpace / effectiveHrs),
+      c(b.indirectSupport / effectiveHrs),
+      c(b.financeCost / effectiveHrs),
+      b.annualAvailableHours,
+      pct(b.machineUtilization * 100),
+      c(totalAnnualCost / effectiveHrs),
+      mach.confidence,
+    ]);
+  }
+
+  const wsMach = XLSX.utils.aoa_to_sheet(machRows);
+  wsMach['!cols'] = Array(14).fill({ wch: 18 });
+  XLSX.utils.book_append_sheet(wb, wsMach, '4-MachineRates');
+
+  // ── Sheet 5: Labour Rates ───────────────────────────────────────────────────
+  const labHdr: string[] = ['Labour ID', 'Region', 'Skill Level', 'Fully Loaded Rate', 'Effective Date', 'Source', 'Confidence'];
+  const labRows: unknown[][] = [labHdr];
+  const usedLabIds = new Set(result.operationDetails.map(op => op.labourId));
+  for (const lab of library.labour.filter(l => usedLabIds.has(l.id))) {
+    labRows.push([lab.id, lab.region, lab.skillLevel, c(lab.fullyLoadedRatePerHr), lab.effectiveDate, lab.sourceNote, lab.confidence]);
+  }
+  labRows.push([], ['ALL AVAILABLE LABOUR RATES IN LIBRARY:']);
+  labRows.push(labHdr);
+  for (const lab of library.labour) {
+    labRows.push([lab.id, lab.region, lab.skillLevel, c(lab.fullyLoadedRatePerHr), lab.effectiveDate, lab.sourceNote, lab.confidence]);
+  }
+
+  const wsLab = XLSX.utils.aoa_to_sheet(labRows);
+  wsLab['!cols'] = [{ wch: 22 }, { wch: 14 }, { wch: 20 }, { wch: 20 }, { wch: 14 }, { wch: 50 }, { wch: 12 }];
+  XLSX.utils.book_append_sheet(wb, wsLab, '5-LabourRates');
+
+  // ── Sheet 6: Rate Traceability ──────────────────────────────────────────────
+  const trHdr: string[] = ['Field', 'Value', 'Unit', 'Rate Source / Reference', 'Rate ID', 'Confidence'];
+  const trRows: unknown[][] = [trHdr];
   for (const t of result.traceability) {
-    traceRows.push([t.field, t.value, t.unit, t.rateSource, t.rateId, t.confidence]);
+    trRows.push([t.field, num4(t.value), t.unit, t.rateSource, t.rateId, t.confidence]);
   }
-  const wsTrace = XLSX.utils.aoa_to_sheet(traceRows);
-  wsTrace['!cols'] = [{ wch: 36 }, { wch: 12 }, { wch: 10 }, { wch: 50 }, { wch: 20 }, { wch: 12 }];
-  XLSX.utils.book_append_sheet(wb, wsTrace, 'Rate Traceability');
 
-  XLSX.writeFile(wb, filename);
-}
-
-export function exportToExcelBlob(result: PartCostResult): Blob {
-  const wb = XLSX.utils.book_new();
-
-  const pcts = breakdownPercentages(result);
-  const summaryRows: (string | number)[][] = [
-    ['Should-Cost Summary', result.partName],
-    [],
-    ['Cost Bucket', 'Amount', '% of Total'],
-    ['1. Raw Material', result.breakdown.rawMaterial, fmtPct(pcts.rawMaterial)],
-    ['2. Process (Machine)', result.breakdown.process, fmtPct(pcts.process)],
-    ['3. Direct Labour', result.breakdown.labour, fmtPct(pcts.labour)],
-    ['4. Tooling', result.breakdown.tooling, fmtPct(pcts.tooling)],
-    ['5. Packaging', result.breakdown.packaging, fmtPct(pcts.packaging)],
-    ['6. Logistics', result.breakdown.logistics, fmtPct(pcts.logistics)],
-    ['Factory Cost', result.factoryCost, fmtPct((result.factoryCost / result.total) * 100)],
-    ['7. Overhead (SG&A)', result.breakdown.overhead, fmtPct(pcts.overhead)],
-    ['Subtotal', result.subtotal, fmtPct((result.subtotal / result.total) * 100)],
-    ['8. Supplier Margin', result.breakdown.margin, fmtPct(pcts.margin)],
-    ['TOTAL', fmt2(result.total), '100.0%'],
-  ];
-
-  const wsSummary = XLSX.utils.aoa_to_sheet(summaryRows);
-  XLSX.utils.book_append_sheet(wb, wsSummary, 'Summary');
-
-  const opRows: (string | number)[][] = [
-    ['Operation', 'Process Cost', 'Labour Cost', 'Total'],
-  ];
-  for (const op of result.operationDetails) {
-    opRows.push([op.operationName, fmt2(op.processCost), fmt2(op.labourCost), fmt2(op.processCost + op.labourCost)]);
-  }
-  const wsOps = XLSX.utils.aoa_to_sheet(opRows);
-  XLSX.utils.book_append_sheet(wb, wsOps, 'Operations');
-
-  const traceRows: (string | number)[][] = [['Field', 'Value', 'Unit', 'Source', 'ID', 'Confidence']];
-  for (const t of result.traceability) {
-    traceRows.push([t.field, t.value, t.unit, t.rateSource, t.rateId, t.confidence]);
-  }
-  const wsTrace = XLSX.utils.aoa_to_sheet(traceRows);
-  XLSX.utils.book_append_sheet(wb, wsTrace, 'Rate Traceability');
+  const wsTrace = XLSX.utils.aoa_to_sheet(trRows);
+  wsTrace['!cols'] = [{ wch: 36 }, { wch: 12 }, { wch: 10 }, { wch: 55 }, { wch: 22 }, { wch: 12 }];
+  XLSX.utils.book_append_sheet(wb, wsTrace, '6-Traceability');
 
   const buffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' }) as ArrayBuffer;
   return new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
 }
+
+// Legacy compat wrapper (called by old main.ts path)
+export { exportToExcelBlob as exportToExcel };

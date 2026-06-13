@@ -18,3 +18,4 @@ export * from './ai-analysis.js';
 export * from './assembly.js';
 export * from './learning-curve.js';
 export * from './bom-csv.js';
+export * from './insights.js';
