@@ -139,6 +139,378 @@ function _processPhotoFile(file: File): void {
   reader.readAsDataURL(file);
 }
 
+// ─── AI Agent ─────────────────────────────────────────────────────────────────
+
+interface AgentMessage { role: 'user' | 'assistant'; content: string }
+interface AgentAction { type: string; commodity: string; partName: string; params: Record<string, unknown> }
+
+let agentHistory: AgentMessage[] = [];
+let agentPending = false;
+let agentLastAction: AgentAction | null = null;
+let agentLastResult: Record<string, unknown> | null = null;
+
+function renderAgentForm(): string {
+  return `
+    <div id="agent-chat-wrap" style="display:flex;flex-direction:column;gap:8px;padding:0 4px">
+      <div id="agent-api-row" style="display:flex;align-items:center;gap:6px;margin-bottom:2px">
+        <label style="font-size:0.73rem;color:#888;white-space:nowrap">API Key</label>
+        <input type="password" id="agent-api-key" placeholder="sk-ant-… (optional if server configured)"
+          style="flex:1;font-size:0.73rem;padding:4px 8px;border:1px solid #ddd;border-radius:4px"
+          value="${sessionStorage.getItem('cad_api_key') ?? ''}"/>
+      </div>
+      <div id="agent-messages"
+        style="height:320px;overflow-y:auto;padding:10px;display:flex;flex-direction:column;gap:8px;background:#f8f9fa;border-radius:8px;border:1px solid #e8e8e8">
+        <div style="text-align:center;padding:20px 10px;color:#888;font-size:0.80rem">
+          <div style="font-size:1.4rem;margin-bottom:8px">🤖</div>
+          <div style="font-weight:600;color:#1565c0;margin-bottom:6px">Unified Should-Cost AI Agent</div>
+          <div style="line-height:1.5">Describe your part — material, dimensions, features, volume, region — and I'll orchestrate the full should-cost model. Attach a photo for better accuracy.</div>
+          <div style="margin-top:8px;font-size:0.72rem;color:#aaa">Supports: Machining · Sheet Metal · Castings · Injection Moulding · Forgings · PCB · and more</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:6px;align-items:flex-end">
+        <textarea id="agent-input" rows="3"
+          placeholder="e.g. 'Al6061 bracket, 200×120×15mm, 4 tapped holes M6, 2 counterbores, 10,000/yr, UK supplier'"
+          style="flex:1;resize:vertical;font-size:0.82rem;padding:8px;border:1px solid #ddd;border-radius:6px;font-family:inherit;line-height:1.4"></textarea>
+        <button id="agent-send-btn" class="btn btn-primary" style="flex-shrink:0;padding:10px 14px;align-self:flex-end">Send ▶</button>
+      </div>
+      <div id="agent-status" style="font-size:0.72rem;color:#888;min-height:16px;text-align:center"></div>
+    </div>`;
+}
+
+function _agentBubble(role: 'user' | 'assistant', content: string, showApplyBtn = false): string {
+  const isUser = role === 'user';
+  const photoThumb = isUser && partPhotoDataUrl
+    ? `<img src="${partPhotoDataUrl}" style="height:36px;width:50px;object-fit:cover;border-radius:4px;margin-bottom:4px;display:block"/>`
+    : '';
+  const applyBtn = showApplyBtn
+    ? `<button class="agent-apply-btn btn btn-primary btn-sm" style="margin-top:8px;font-size:0.75rem">Apply to Calculator &amp; Calculate →</button>`
+    : '';
+  return `<div style="display:flex;flex-direction:column;align-items:${isUser ? 'flex-end' : 'flex-start'}">
+    ${photoThumb}
+    <div style="max-width:85%;padding:8px 12px;border-radius:10px;font-size:0.80rem;line-height:1.5;
+      background:${isUser ? '#1565c0' : '#fff'};color:${isUser ? '#fff' : '#222'};
+      border:${isUser ? 'none' : '1px solid #e0e0e0'};white-space:pre-wrap">${escHtml(content).replace(/\n/g,'<br/>')}</div>
+    ${applyBtn}
+  </div>`;
+}
+
+function _appendAgentBubble(role: 'user' | 'assistant', content: string, showApplyBtn = false): void {
+  const box = el('agent-messages');
+  if (!box) return;
+  const div = document.createElement('div');
+  div.innerHTML = _agentBubble(role, content, showApplyBtn);
+  box.appendChild(div.firstElementChild!);
+  box.scrollTop = box.scrollHeight;
+  if (showApplyBtn) {
+    div.firstElementChild!.querySelector<HTMLButtonElement>('.agent-apply-btn')
+      ?.addEventListener('click', _applyAgentActionAndCompute);
+  }
+}
+
+async function sendAgentMessage(): Promise<void> {
+  if (agentPending) return;
+  const inputEl = el<HTMLTextAreaElement>('agent-input');
+  const msg = inputEl.value.trim();
+  if (!msg) return;
+
+  agentPending = true;
+  el('agent-send-btn').setAttribute('disabled', '');
+  el('agent-status').textContent = '⏳ Thinking…';
+
+  // Render user bubble
+  _appendAgentBubble('user', msg);
+  inputEl.value = '';
+
+  // Build photo payload (only JPEG/PNG for vision)
+  let photoBase64: string | undefined;
+  let photoMime: string | undefined;
+  if (partPhotoDataUrl) {
+    const match = partPhotoDataUrl.match(/^data:(image\/(?:jpeg|png|gif|webp));base64,(.+)$/);
+    if (match) { photoMime = match[1]; photoBase64 = match[2]; }
+  }
+
+  // Store in history (text only for history tracking)
+  agentHistory.push({ role: 'user', content: msg });
+
+  // Payload
+  const payload: Record<string, unknown> = {
+    message: msg,
+    history: agentHistory.slice(0, -1), // prior turns only
+    ...(photoBase64 ? { photoBase64, photoMime } : {}),
+    ...(agentLastResult ? { costResult: agentLastResult } : {}),
+  };
+
+  const apiKey = (el<HTMLInputElement>('agent-api-key')?.value ?? '').trim();
+  if (apiKey) sessionStorage.setItem('cad_api_key', apiKey);
+
+  try {
+    const resp = await fetch('/api/agent/chat', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(apiKey ? { 'x-api-key': apiKey } : {}),
+      },
+      body: JSON.stringify(payload),
+      signal: AbortSignal.timeout(90_000),
+    });
+
+    if (!resp.ok) {
+      const errJson = await resp.json().catch(() => ({ error: resp.statusText }));
+      throw new Error(errJson.error ?? resp.statusText);
+    }
+
+    const data = await resp.json() as { success: boolean; response: { chat: string; needsInput: string[] | null; action: AgentAction | null }; error?: string };
+    if (!data.success) throw new Error(data.error ?? 'Unknown error');
+
+    const agentResp = data.response;
+    agentHistory.push({ role: 'assistant', content: agentResp.chat });
+
+    const hasAction = agentResp.action?.type === 'populate_form';
+    if (hasAction) agentLastAction = agentResp.action!;
+
+    _appendAgentBubble('assistant', agentResp.chat, hasAction);
+    agentLastResult = null; // clear stale result after interpretation
+
+    el('agent-status').textContent = hasAction
+      ? '✓ Parameters extracted — click "Apply to Calculator & Calculate" below'
+      : agentResp.needsInput?.length
+        ? `⚠ Missing: ${agentResp.needsInput.join(', ')}`
+        : '';
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : String(err);
+    _appendAgentBubble('assistant', `❌ Error: ${msg}`);
+    el('agent-status').textContent = '';
+  } finally {
+    agentPending = false;
+    el('agent-send-btn').removeAttribute('disabled');
+  }
+}
+
+function _applyAgentActionAndCompute(): void {
+  if (!agentLastAction) return;
+  const action = agentLastAction;
+
+  // Switch to the target commodity tab
+  const targetCommodity = action.commodity as CommodityType;
+  document.querySelectorAll<HTMLElement>('.ctab').forEach(t => {
+    t.classList.toggle('active', t.dataset.commodity === targetCommodity);
+  });
+  switchCommodity(targetCommodity);
+
+  // Populate form fields after DOM settles
+  setTimeout(() => {
+    _fillAgentParams(targetCommodity, action.params, action.partName);
+    // Set part name
+    const pn = el<HTMLInputElement>('part-name');
+    if (pn && action.partName) pn.value = action.partName;
+    // Compute
+    try {
+      const input = collectInput();
+      if (!input) return;
+      const validation = validateStackInput(input, library);
+      const result = computeUniversalStack(input, library);
+      lastResult = result;
+      lastInput = input;
+      showResultsArea();
+      renderBreakdown(result);
+      el('export-excel-btn').style.display = '';
+      el('export-pdf-btn').style.display = '';
+      el('save-scenario-btn').style.display = '';
+
+      // Send result to agent for interpretation (return to agent mode after brief delay)
+      agentLastResult = {
+        total: result.total,
+        factoryCost: result.factoryCost,
+        breakdown: result.breakdown,
+        operationDetails: result.operationDetails.map(op => ({
+          name: op.operationName,
+          processCost: op.processCost,
+          labourCost: op.labourCost,
+          machineRate: op.machineRateUsed,
+          labourRate: op.labourRateUsed,
+        })),
+        warnings: validation.warnings.map(w => w.message),
+      };
+
+      // Switch back to agent tab and show interpretation prompt
+      setTimeout(() => {
+        document.querySelectorAll<HTMLElement>('.ctab').forEach(t => {
+          t.classList.toggle('active', t.dataset.commodity === 'ai_agent');
+        });
+        _showAgentChatPanel();
+        el('universal-costs').style.display = 'none';
+        sendAgentInterpretation();
+      }, 500);
+    } catch (e) {
+      console.error('Agent compute error:', e);
+    }
+  }, 150);
+}
+
+async function sendAgentInterpretation(): Promise<void> {
+  if (!agentLastResult) return;
+  agentPending = true;
+  el('agent-status').textContent = '⏳ Interpreting cost results…';
+  const apiKey = (el<HTMLInputElement>('agent-api-key')?.value ?? '').trim();
+
+  const interpretMsg = 'The cost calculation is complete. Please interpret the results, identify the top cost drivers, and provide your top 3 DFM recommendations.';
+  agentHistory.push({ role: 'user', content: interpretMsg });
+  _appendAgentBubble('user', interpretMsg);
+
+  try {
+    const resp = await fetch('/api/agent/chat', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(apiKey ? { 'x-api-key': apiKey } : {}),
+      },
+      body: JSON.stringify({
+        message: interpretMsg,
+        history: agentHistory.slice(0, -1),
+        costResult: agentLastResult,
+      }),
+      signal: AbortSignal.timeout(90_000),
+    });
+    if (!resp.ok) throw new Error((await resp.json().catch(() => ({}))).error ?? resp.statusText);
+    const data = await resp.json() as { success: boolean; response: { chat: string; action: AgentAction | null } };
+    if (!data.success) throw new Error('Interpretation failed');
+    agentHistory.push({ role: 'assistant', content: data.response.chat });
+    _appendAgentBubble('assistant', data.response.chat);
+    agentLastResult = null;
+    el('agent-status').textContent = '✓ Analysis complete — ask follow-up questions or try another scenario';
+  } catch (err: unknown) {
+    el('agent-status').textContent = 'Interpretation error — see console';
+  } finally {
+    agentPending = false;
+    el('agent-send-btn')?.removeAttribute('disabled');
+  }
+}
+
+function _showAgentChatPanel(): void {
+  const area = el('commodity-form-area');
+  if (!area.querySelector('#agent-chat-wrap')) {
+    area.innerHTML = renderAgentForm();
+    _wireAgentInputEvents();
+  }
+  el('universal-costs').style.display = 'none';
+  el('calc-btn').style.display = 'none';
+}
+
+function _wireAgentInputEvents(): void {
+  el('agent-send-btn')?.addEventListener('click', sendAgentMessage);
+  el('agent-input')?.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendAgentMessage(); }
+  });
+}
+
+function _fillAgentParams(commodity: CommodityType, params: Record<string, unknown>, partName?: string): void {
+  function setVal(id: string, v: unknown): void {
+    const el2 = document.getElementById(id) as HTMLInputElement | HTMLSelectElement | null;
+    if (!el2 || v === undefined || v === null) return;
+    if (el2.tagName === 'SELECT') {
+      const opt = Array.from((el2 as HTMLSelectElement).options).find(o => o.value === String(v));
+      if (opt) (el2 as HTMLSelectElement).value = String(v);
+    } else {
+      (el2 as HTMLInputElement).value = String(v);
+    }
+  }
+
+  switch (commodity) {
+    case 'machining': {
+      setVal('mach-mat', params.materialId);
+      if (typeof params.netWeightKg === 'number') {
+        setVal('mach-net-wt', params.netWeightKg.toFixed(3));
+        const util = typeof params.materialUtilization === 'number' ? params.materialUtilization : 0.65;
+        setVal('mach-stock-wt', (params.netWeightKg / util).toFixed(3));
+      }
+      setVal('mach-tooling', params.toolingCost);
+      setVal('mach-amort', params.amortizationVolume);
+      if (Array.isArray(params.operations) && params.operations.length > 0) {
+        const container = el('mach-ops-container');
+        if (container) container.innerHTML = '';
+        machOpCount = 0;
+        for (const op of params.operations as Record<string, unknown>[]) {
+          addMachOp({
+            machineId: String(op.machineId ?? 'mach-vmc3'),
+            labourId: String(op.labourId ?? 'lab-uk-skilled'),
+            cycleTimeHr: Number(op.cycleTimeHr ?? 0.08),
+            oee: Number(op.oee ?? 0.85),
+            manning: Number(op.manning ?? 1),
+            labourTimeHr: Number(op.labourTimeHr ?? op.cycleTimeHr ?? 0.08),
+            labourEfficiency: Number(op.labourEfficiency ?? 0.92),
+          });
+        }
+      }
+      break;
+    }
+    case 'sheet_metal_fab': {
+      setVal('smf-mat', params.materialId);
+      setVal('smf-part-wt', params.partWeightKg);
+      setVal('smf-mat-util', params.materialUtilization);
+      setVal('smf-blank-method', params.blankingMethod);
+      setVal('smf-blank-ct', params.blankingCycleTimeSec);
+      setVal('smf-bends', params.bendCount);
+      setVal('smf-bend-t', params.timePerBendSec);
+      setVal('smf-tool-chg', params.toolChangeCount ?? 1);
+      setVal('smf-tool-chg-t', params.toolChangeTimeSec ?? 300);
+      setVal('smf-tolerance', params.toleranceMm);
+      setVal('smf-tooling', params.toolingCost);
+      setVal('smf-amort', params.amortizationVolume);
+      setTimeout(() => {
+        setVal('smf-blank-mach', params.blankingMachineId ?? 'laser-trumpf-3030');
+        setVal('smf-blank-lab', params.blankingLabourId ?? 'lab-uk-semiskilled');
+        setVal('smf-brake-mach', params.bendMachineId ?? 'brake-amada-hfe100');
+        setVal('smf-brake-lab', params.bendLabourId ?? 'lab-uk-semiskilled');
+      }, 50);
+      break;
+    }
+    case 'injection_moulding': {
+      setVal('imm-mat', params.materialId);
+      setVal('imm-part-wt', params.partWeightKg);
+      setVal('imm-runner-wt', params.runnerWeightKg ?? 0.01);
+      setVal('imm-wall', params.wallThicknessMm ?? 2.0);
+      setVal('imm-cav', params.cavities ?? 4);
+      setVal('imm-mould-cost', params.mouldCost ?? 25000);
+      setVal('imm-mould-life', params.mouldLife ?? 500000);
+      setVal('imm-amort', params.amortizationVolume);
+      setVal('imm-tolerance', params.toleranceMm ?? 0.2);
+      setVal('imm-finish', params.surfaceFinishGrade ?? 'standard');
+      if (params.runnerSystem) setVal('imm-runner-sys', params.runnerSystem);
+      setTimeout(() => setVal('imm-mach', params.machineId ?? 'imm-160t'), 50);
+      break;
+    }
+    case 'casting': {
+      setVal('cast-subtype', params.subtype ?? 'hpdc');
+      setVal('cast-mat', params.materialId);
+      setVal('cast-part-wt', params.grossWeightKg ?? params.netWeightKg);
+      if (typeof params.grossWeightKg === 'number' && typeof params.netWeightKg === 'number') {
+        setVal('cast-yield', (params.netWeightKg / params.grossWeightKg).toFixed(2));
+      }
+      setVal('cast-amort', params.amortizationVolume);
+      if ((params.subtype ?? 'hpdc') === 'hpdc') {
+        setVal('cast-hpdc-cav', params.cavitiesPerMould ?? 2);
+        setVal('cast-hpdc-die-cost', params.toolingCost ?? 80000);
+      }
+      break;
+    }
+    case 'forging': {
+      setVal('forge-mat', params.materialId);
+      setVal('forge-part-wt', params.netWeightKg);
+      if (typeof params.grossWeightKg === 'number' && typeof params.netWeightKg === 'number') {
+        setVal('forge-flash', (params.grossWeightKg - params.netWeightKg).toFixed(3));
+        setVal('forge-yield', (params.netWeightKg / params.grossWeightKg).toFixed(2));
+      }
+      break;
+    }
+    default:
+      break;
+  }
+  if (partName) {
+    const pn = el<HTMLInputElement>('part-name');
+    if (pn) pn.value = partName;
+  }
+}
+
 // ─── Populate selects ─────────────────────────────────────────────────────────
 
 let _libSig = '';
@@ -1943,6 +2315,13 @@ function switchCommodity(type: CommodityType): void {
       }, 0);
       break;
 
+    case 'ai_agent' as CommodityType:
+      area.innerHTML = renderAgentForm();
+      _wireAgentInputEvents();
+      el('universal-costs').style.display = 'none';
+      el('calc-btn').style.display = 'none';
+      break;
+
     case 'cad_analysis':
       area.innerHTML = renderCADAnalysisForm();
       wireCADEvents();
@@ -2471,8 +2850,12 @@ function collectInput(): UniversalStackInput {
     case 'cast_and_machine':     return collectCastAndMachineInput();
     case 'cad_analysis':
       throw new Error('Apply CAD analysis results to a commodity form first using the "Apply to cost engine" button, then calculate.');
+    case 'ai_agent' as CommodityType:
+      throw new Error('Use the AI Agent chat to build and compute your cost estimate.');
     case 'assembly':
       throw new Error('Use the Calculate Assembly button for Assembly BOM mode.');
+    default:
+      throw new Error(`Unknown commodity: ${activeCommodity}`);
   }
 }
 
@@ -3594,10 +3977,17 @@ async function init(): Promise<void> {
   // Commodity tabs
   document.querySelectorAll<HTMLElement>('.ctab').forEach(tab => {
     tab.addEventListener('click', () => {
-      const type = tab.dataset.commodity as CommodityType;
+      const type = tab.dataset.commodity;
+      if (type === 'ai_agent') {
+        document.querySelectorAll<HTMLElement>('.ctab').forEach(t => t.classList.toggle('active', t === tab));
+        switchCommodity('ai_agent' as CommodityType);
+        return;
+      }
       // Use .onclick exclusively to avoid duplicate listeners when tab is clicked multiple times
       el('calc-btn').onclick = type === 'assembly' ? computeAssembly : compute;
-      switchCommodity(type);
+      el('calc-btn').style.display = '';
+      el('universal-costs').style.display = '';
+      switchCommodity(type as CommodityType);
     });
   });
 

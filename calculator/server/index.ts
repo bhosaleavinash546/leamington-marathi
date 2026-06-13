@@ -2,15 +2,17 @@ import express from 'express';
 import { config } from 'dotenv';
 import cadRouter from './routes/cad.js';
 import syncRouter from './routes/sync.js';
+import agentRouter from './routes/agent.js';
 
 config(); // load .env
 
 const app = express();
 const PORT = parseInt(process.env.PORT ?? '3001', 10);
 
-app.use(express.json({ limit: '2mb' }));
+app.use(express.json({ limit: '10mb' })); // increased for base64 photo payloads
 app.use('/api/cad', cadRouter);
 app.use('/api/sync', syncRouter);
+app.use('/api/agent', agentRouter);
 
 app.get('/api/health', (_req, res) => {
   res.json({
