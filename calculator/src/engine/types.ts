@@ -4,6 +4,7 @@ export type Confidence = 'High' | 'Medium' | 'Low';
 export type CommodityType =
   | 'machining'
   | 'sheet_metal'
+  | 'sheet_metal_fab'
   | 'injection_moulding'
   | 'blow_moulding'
   | 'extrusion'

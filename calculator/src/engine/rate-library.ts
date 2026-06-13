@@ -113,6 +113,14 @@ export const DEFAULT_RATE_LIBRARY: RateLibrary = {
     { id: 'mat-22mnb5', grade: '22MnB5 (Hot Press Forming / Boron Steel)', category: 'Ultra-High Strength Steel', pricePerKg: 1.55, scrapRecoveryPricePerKg: 0.22, densityKgPerM3: 7850, region: 'UK', effectiveDate: '2024-01-01', sourceNote: 'UK PHS coil for hot stamping (A/B-pillar, roof rail). Jan 2024', confidence: 'Low' },
     { id: 'mat-aa5182', grade: 'AA5182', category: 'Aluminium Sheet', pricePerKg: 2.90, scrapRecoveryPricePerKg: 0.45, densityKgPerM3: 2700, region: 'UK', effectiveDate: '2024-01-01', sourceNote: 'UK Al sheet, Jan 2024', confidence: 'Medium' },
     { id: 'mat-ss304-sheet', grade: '304L Stainless Sheet', category: 'Stainless Steel Sheet', pricePerKg: 3.20, scrapRecoveryPricePerKg: 0.80, densityKgPerM3: 7900, region: 'UK', effectiveDate: '2024-01-01', sourceNote: 'UK stainless coil, food/pharma stampings. Jan 2024', confidence: 'Medium' },
+    // ── Sheet Metal (extended — fabs & alloys) ─────────────────────────────
+    { id: 'mat-aa5052', grade: 'AA5052-H32 Sheet', category: 'Aluminium Sheet', pricePerKg: 3.10, scrapRecoveryPricePerKg: 0.50, densityKgPerM3: 2680, region: 'UK', effectiveDate: '2024-01-01', sourceNote: 'UK Al sheet stockholder Jan 2024. 5xxx series — marine/vehicle panels, excellent corrosion resistance. Yield 195 MPa.', confidence: 'Medium' },
+    { id: 'mat-aa5083', grade: 'AA5083-H111 Sheet', category: 'Aluminium Sheet', pricePerKg: 3.30, scrapRecoveryPricePerKg: 0.50, densityKgPerM3: 2660, region: 'UK', effectiveDate: '2024-01-01', sourceNote: 'UK Al sheet stockholder Jan 2024. 5xxx series — marine structures, shipbuilding. Higher strength than 5052. Yield 228 MPa.', confidence: 'Medium' },
+    { id: 'mat-aa6082-sheet', grade: 'AA6082-T6 Sheet', category: 'Aluminium Sheet', pricePerKg: 3.45, scrapRecoveryPricePerKg: 0.50, densityKgPerM3: 2700, region: 'UK', effectiveDate: '2024-01-01', sourceNote: 'UK Al sheet/plate stockholder Jan 2024. 6xxx series structural alloy — frames, structural parts. Yield 250 MPa.', confidence: 'Low' },
+    { id: 'mat-aisi430', grade: 'AISI 430 Ferritic SS Sheet', category: 'Stainless Steel Sheet', pricePerKg: 2.80, scrapRecoveryPricePerKg: 0.70, densityKgPerM3: 7700, region: 'UK', effectiveDate: '2024-01-01', sourceNote: 'UK SS stockholder Jan 2024. Ferritic (magnetic) stainless — appliance panels, automotive trim. Moderate corrosion resistance. Yield 250 MPa.', confidence: 'Low' },
+    { id: 'mat-ss316-sheet', grade: 'AISI 316L Stainless Sheet', category: 'Stainless Steel Sheet', pricePerKg: 4.20, scrapRecoveryPricePerKg: 0.90, densityKgPerM3: 7990, region: 'UK', effectiveDate: '2024-01-01', sourceNote: 'UK SS stockholder Jan 2024. 316L — food processing, medical, marine (Mo addition gives better chloride resistance than 304). Yield 170 MPa.', confidence: 'Medium' },
+    { id: 'mat-dc01-ze', grade: 'DC01+ZE (Electrogalvanised)', category: 'Electrogalvanised Steel Sheet', pricePerKg: 0.88, scrapRecoveryPricePerKg: 0.20, densityKgPerM3: 7850, region: 'UK', effectiveDate: '2024-01-01', sourceNote: 'UK steel coil Jan 2024. Thin zinc coating — automotive body, appliance housings. Better paintability than hot-dip. Yield 140 MPa.', confidence: 'Medium' },
+    { id: 'mat-hsla420', grade: 'HSLA 420 Sheet', category: 'High Strength Steel Sheet', pricePerKg: 1.18, scrapRecoveryPricePerKg: 0.22, densityKgPerM3: 7850, region: 'UK', effectiveDate: '2024-01-01', sourceNote: 'UK HSLA coil Jan 2024. 420 MPa min yield — structural reinforcements, crash components. Higher strength premium over HSLA 340.', confidence: 'Low' },
     // ── Injection Moulding (resins) ────────────────────────────────────────
     // coolTimeFactorSPerMm2: PP=3.16, ABS=2.0, PA66=2.0, PC=2.5, HDPE=3.5, POM=2.8, TPU=4.0
     { id: 'mat-pp', grade: 'PP Copolymer', category: 'Thermoplastic', pricePerKg: 0.95, scrapRecoveryPricePerKg: 0.10, densityKgPerM3: 900, region: 'UK', effectiveDate: '2024-01-01', sourceNote: 'UK resin distributor, Jan 2024', confidence: 'Medium' },
@@ -391,6 +399,48 @@ export const DEFAULT_RATE_LIBRARY: RateLibrary = {
     makeMachine('vibration-welder', 'Vibration Welder',
       { annualDepreciation: 18000, maintenance: 7000, energy: 4000, floorSpace: 4000, indirectSupport: 4000, financeCost: 2250, annualAvailableHours: 4000, machineUtilization: 0.80 },
       'UK', 'UK plastics assembly benchmark. Vibration welding, large flat interfaces (automotive ducts). Jan 2024'),
+    // ── Sheet Metal Fab — Laser Cutters (named brands) ──────────────────────────
+    makeMachine('laser-trumpf-3030', 'Trumpf TruLaser 3030 (6kW Fiber)',
+      { annualDepreciation: 90000, maintenance: 65000, energy: 32000, floorSpace: 10000, indirectSupport: 40000, financeCost: 18000, annualAvailableHours: 4000, machineUtilization: 0.75 },
+      'UK', 'Trumpf TruLaser 3030, 6kW fiber, 3000×1500 bed. UK fab shop benchmark. Target £85/hr. Jan 2024'),
+    makeMachine('laser-bystronic-3015', 'Bystronic BySmart 3015 (4kW Fiber)',
+      { annualDepreciation: 68000, maintenance: 50000, energy: 24000, floorSpace: 9000, indirectSupport: 35000, financeCost: 24000, annualAvailableHours: 4000, machineUtilization: 0.75 },
+      'UK', 'Bystronic BySmart 3015, 4kW fiber, 3000×1500 bed. UK fab shop benchmark. Target £70/hr. Jan 2024'),
+    // ── Sheet Metal Fab — Turret Punches ──────────────────────────────────────────
+    makeMachine('punch-amada-emz3610', 'Amada EMZ 3610 Turret Punch (30T)',
+      { annualDepreciation: 58000, maintenance: 45000, energy: 18000, floorSpace: 9000, indirectSupport: 30000, financeCost: 18000, annualAvailableHours: 3500, machineUtilization: 0.78 },
+      'UK', 'Amada EMZ 3610, 30T, 58-tool capacity. UK fab shop benchmark. Target £65/hr. Jan 2024'),
+    makeMachine('punch-trumpf-5000', 'Trumpf TruPunch 5000 (30T)',
+      { annualDepreciation: 68000, maintenance: 55000, energy: 22000, floorSpace: 10000, indirectSupport: 33000, financeCost: 22000, annualAvailableHours: 3500, machineUtilization: 0.78 },
+      'UK', 'Trumpf TruPunch 5000, 30T, 72-tool capacity. UK fab shop benchmark. Target £75/hr. Jan 2024'),
+    // ── Sheet Metal Fab — Press Brakes ────────────────────────────────────────────
+    makeMachine('brake-amada-hfe100', 'Amada HFE 100T Press Brake (3m)',
+      { annualDepreciation: 48000, maintenance: 38000, energy: 14000, floorSpace: 9000, indirectSupport: 22000, financeCost: 14000, annualAvailableHours: 3500, machineUtilization: 0.75 },
+      'UK', 'Amada HFE3i 100T, 3000mm. UK fab shop benchmark. Target £55/hr. Jan 2024'),
+    makeMachine('brake-trumpf-5230', 'Trumpf TruBend 5230 (230T)',
+      { annualDepreciation: 62000, maintenance: 48000, energy: 18000, floorSpace: 10000, indirectSupport: 28000, financeCost: 18000, annualAvailableHours: 3500, machineUtilization: 0.75 },
+      'UK', 'Trumpf TruBend 5230, 230T, 3230mm. UK fab shop benchmark. Target £70/hr. Jan 2024'),
+    // ── Sheet Metal Fab — High-Volume Stamping Presses ────────────────────────────
+    makeMachine('press-schuler-400t', 'Schuler 400T Stamping Press',
+      { annualDepreciation: 145000, maintenance: 84500, energy: 55000, floorSpace: 20000, indirectSupport: 65000, financeCost: 40000, annualAvailableHours: 3500, machineUtilization: 0.78 },
+      'UK', 'Schuler 400T mechanical stamping press. UK automotive press shop. Target £150/hr. Jan 2024'),
+    makeMachine('press-aida-200t', 'AIDA 200T Stamping Press',
+      { annualDepreciation: 110000, maintenance: 70000, energy: 40000, floorSpace: 18000, indirectSupport: 55000, financeCost: 35000, annualAvailableHours: 3500, machineUtilization: 0.78 },
+      'UK', 'AIDA 200T servo stamping press. UK press shop benchmark. Target £120/hr. Jan 2024'),
+    // ── Sheet Metal Fab — Roll Forming ────────────────────────────────────────────
+    makeMachine('rollform-dimeco-20st', 'Dimeco Roll Forming Line (20 stations)',
+      { annualDepreciation: 150000, maintenance: 95000, energy: 55000, floorSpace: 35000, indirectSupport: 70000, financeCost: 40000, annualAvailableHours: 5000, machineUtilization: 0.80 },
+      'UK', 'Dimeco 20-station roll forming line. UK fabricator. Target £110/hr. Jan 2024'),
+    // ── Sheet Metal Fab — Joining ──────────────────────────────────────────────────
+    makeMachine('robot-spotweld-kuka', 'KUKA Spot Welding Robot Cell',
+      { annualDepreciation: 90000, maintenance: 55000, energy: 25000, floorSpace: 15000, indirectSupport: 65000, financeCost: 38000, annualAvailableHours: 4000, machineUtilization: 0.80 },
+      'UK', 'KUKA robot spot weld cell. UK automotive body shop. Target £90/hr. Jan 2024'),
+    makeMachine('mig-welder-manual', 'Manual MIG/MAG Welder Station',
+      { annualDepreciation: 4000, maintenance: 2000, energy: 4000, floorSpace: 2000, indirectSupport: 2000, financeCost: 500, annualAvailableHours: 4000, machineUtilization: 0.75 },
+      'UK', 'Manual MIG/MAG station. Machine rate low — cost dominated by operator labour. UK fab shop. Jan 2024'),
+    makeMachine('tig-welder-manual', 'Manual TIG Welder Station',
+      { annualDepreciation: 5000, maintenance: 2500, energy: 3500, floorSpace: 2000, indirectSupport: 2000, financeCost: 700, annualAvailableHours: 4000, machineUtilization: 0.75 },
+      'UK', 'Manual TIG station. Machine rate low — cost dominated by skilled operator labour. UK fab shop. Jan 2024'),
   ],
 
   labour: [
@@ -530,6 +580,7 @@ export const DEFAULT_RATE_LIBRARY: RateLibrary = {
     { id: 'oh-extrusion-t2',        commodityType: 'extrusion',           supplierTier: 'Tier 2', overheadPct: 0.09, marginPct: 0.07, sourceNote: 'Industry benchmark' },
     { id: 'oh-thermoforming-t2',    commodityType: 'thermoforming',       supplierTier: 'Tier 2', overheadPct: 0.10, marginPct: 0.08, sourceNote: 'Industry benchmark' },
     { id: 'oh-rotomoulding-t2',     commodityType: 'rotational_moulding', supplierTier: 'Tier 2', overheadPct: 0.11, marginPct: 0.09, sourceNote: 'Industry benchmark' },
+    { id: 'oh-sheet-metal-fab-t2', commodityType: 'sheet_metal_fab',     supplierTier: 'Tier 2', overheadPct: 0.10, marginPct: 0.08, sourceNote: 'Industry benchmark' },
   ],
 };
 

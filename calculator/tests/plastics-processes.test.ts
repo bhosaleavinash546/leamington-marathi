@@ -116,7 +116,6 @@ describe('Extrusion module', () => {
 
   it('material utilization reflects startup scrap', () => {
     const d = computeExtrusionDrivers(EXT_INPUTS);
-    const expected = 1 - 0.03;   // 1 - scrapFraction (approx)
     expect(d.rawMaterial.materialUtilization).toBeCloseTo(1 - 0.03, 4);
   });
 
