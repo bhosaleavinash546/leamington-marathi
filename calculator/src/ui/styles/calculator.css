@@ -541,3 +541,23 @@ header .back-link:hover { text-decoration: underline; }
   border-radius: 4px;
   border-left: 3px solid #ddd;
 }
+
+/* ── New Feature Styles ──────────────────────────────────────────────────── */
+
+.chart-wrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 8px 0;
+}
+
+.ppv-table .badge.ppv-rag-green  { background: #e8f5e9; color: #2e7d32; border: 1px solid #2e7d32; padding: 2px 6px; border-radius: 10px; font-size: 0.7rem; }
+.ppv-table .badge.ppv-rag-amber  { background: #fff8e1; color: #e65100; border: 1px solid #e65100; padding: 2px 6px; border-radius: 10px; font-size: 0.7rem; }
+.ppv-table .badge.ppv-rag-red    { background: #ffebee; color: #c62828; border: 1px solid #c62828; padding: 2px 6px; border-radius: 10px; font-size: 0.7rem; }
+
+.asm-line-row input {
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  background: #fafafa;
+}
+.asm-line-row input:focus { outline: 1px solid var(--orange); background: #fff; }

@@ -33,6 +33,7 @@
       <button class="ctab" data-commodity="pcb_fab">PCB Fab</button>
       <button class="ctab" data-commodity="pcba">PCBA / SMD</button>
       <button class="ctab" data-commodity="cast_and_machine">Cast+Machine</button>
+      <button class="ctab" data-commodity="assembly">Assembly BOM</button>
     </div>
 
     <!-- Part name (always visible) -->
@@ -56,6 +57,19 @@
       <div class="field-row" style="margin-top:6px">
         <div class="field-group"><label>Overhead % (SG&amp;A)</label><input type="number" id="overhead-pct" step="0.5" min="0" value="12"/></div>
         <div class="field-group"><label>Margin %</label><input type="number" id="margin-pct" step="0.5" min="0" value="8"/></div>
+      </div>
+      <div class="field-row" style="margin-top:6px" id="lc-row">
+        <div class="field-group"><label>Annual Volume (pcs)</label><input type="number" id="annual-volume" step="1000" min="0" value="10000"/></div>
+        <div class="field-group"><label>Learning Curve %</label><input type="number" id="learning-curve-pct" step="1" min="50" max="100" value="85" title="Wright's Law: 85% = 15% cost reduction per doubling of volume"/></div>
+      </div>
+      <div class="field-row" style="margin-top:4px" id="lc-ref-row">
+        <div class="field-group"><label>Reference Volume (pcs)</label><input type="number" id="reference-volume" step="1000" min="1" value="1000" title="Volume at which the base labour cost was estimated"/></div>
+        <div class="field-group" style="display:flex;align-items:flex-end;padding-bottom:2px">
+          <label style="display:flex;align-items:center;gap:6px;cursor:pointer">
+            <input type="checkbox" id="lc-enabled" style="width:auto"/>
+            Apply learning curve
+          </label>
+        </div>
       </div>
     </div>
 
@@ -119,6 +133,38 @@
     <div class="btn-row">
       <button class="btn btn-primary" id="confirm-save-sc">Save</button>
       <button class="btn btn-secondary" id="cancel-save-sc">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Supplier Quote Modal ──────────────────────────────────────────────── -->
+<div id="quote-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:100;align-items:center;justify-content:center">
+  <div style="background:#fff;border-radius:10px;padding:24px;max-width:520px;width:100%">
+    <h2 style="font-size:1rem;color:#e65100;margin-bottom:16px">Add Supplier Quote</h2>
+    <div class="field-row">
+      <div class="field-group"><label>Supplier Name</label><input type="text" id="sq-supplier" placeholder="e.g. ABC Machining Ltd"/></div>
+      <div class="field-group"><label>Quote Date</label><input type="date" id="sq-date"/></div>
+    </div>
+    <div class="field-row" style="margin-top:6px">
+      <div class="field-group"><label>Quoted Price</label><input type="number" id="sq-price" step="0.01" min="0" placeholder="0.00"/></div>
+      <div class="field-group"><label>Currency</label>
+        <select id="sq-currency">
+          <option value="GBP">GBP £</option>
+          <option value="EUR">EUR €</option>
+          <option value="USD">USD $</option>
+          <option value="INR">INR ₹</option>
+          <option value="CNY">CNY ¥</option>
+        </select>
+      </div>
+    </div>
+    <div class="field-row" style="margin-top:6px">
+      <div class="field-group"><label>FX Rate to GBP</label><input type="number" id="sq-fx" step="0.0001" min="0" value="1"/></div>
+      <div class="field-group"><label>Lead Time (days)</label><input type="number" id="sq-lead" step="1" min="0" value="30"/></div>
+    </div>
+    <div class="field-group" style="margin-top:6px"><label>Notes</label><input type="text" id="sq-notes" placeholder="e.g. Based on 500pcs, 8 wk lead time"/></div>
+    <div class="btn-row" style="margin-top:16px">
+      <button class="btn btn-primary" id="confirm-add-quote">Add Quote</button>
+      <button class="btn btn-secondary" id="cancel-add-quote">Cancel</button>
     </div>
   </div>
 </div>

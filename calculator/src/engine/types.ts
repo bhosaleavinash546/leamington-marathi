@@ -12,7 +12,8 @@ export type CommodityType =
   | 'pcb_fab'
   | 'pcba'
   | 'cast_and_machine'
-  | 'cad_analysis';
+  | 'cad_analysis'
+  | 'assembly';
 export type ToolingMode = 'amortized' | 'one_time_nre';
 
 export interface MaterialRate {
@@ -198,6 +199,18 @@ export interface CommodityDrivers {
   rawMaterial: RawMaterialInput;
   operations: OperationInput[];
   tooling: ToolingInput;
+}
+
+// ─── Supplier Quote ──────────────────────────────────────────────────────────
+
+export interface SupplierQuote {
+  supplierName: string;
+  quotedPriceGBP: number;
+  quoteDate: string;
+  leadTimeDays: number;
+  currency: string;
+  fxRate: number;
+  notes: string;
 }
 
 // ─── Scenario ────────────────────────────────────────────────────────────────

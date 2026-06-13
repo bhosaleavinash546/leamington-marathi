@@ -18,23 +18,31 @@ import { recommendMachineIds } from '../engine/process-taxonomy.js';
 import { runSensitivity } from '../engine/sensitivity.js';
 import {
   saveScenario, listScenarios, deleteScenario, compareScenarios,
-  exportScenarios, importScenarios,
+  exportScenarios, importScenarios, initScenarioStore,
 } from '../engine/scenario.js';
+import { computeAssemblyRollup, newAssembly, saveAssembly, deleteAssembly, listAssemblies } from '../engine/assembly.js';
+import { computeLearningCurveAdjustment } from '../engine/learning-curve.js';
+import type { Assembly, AssemblyLine } from '../engine/assembly.js';
+import type { LearningCurveResult } from '../engine/learning-curve.js';
 import { exportToExcelBlob } from '../export/excel.js';
 import { printPDF } from '../export/pdf.js';
-import type { RateLibrary, UniversalStackInput, PartCostResult, CommodityType } from '../engine/types.js';
+import type { RateLibrary, UniversalStackInput, PartCostResult, CommodityType, SupplierQuote } from '../engine/types.js';
 import type { BOMLine, ComponentType } from '../engine/modules/pcba.js';
 import type { MachiningOperation } from '../engine/modules/machining.js';
 import type { CoatType } from '../engine/modules/painting.js';
 import type { JoiningType } from '../engine/modules/biw-assembly.js';
 import type { CastAndMachineInputs } from '../engine/modules/cast-and-machine.js';
 import type { CastingSubtype } from '../engine/modules/casting.js';
+import { Chart, ArcElement, BarElement, CategoryScale, LinearScale, Tooltip, Legend, DoughnutController, BarController } from 'chart.js';
+
+Chart.register(ArcElement, BarElement, CategoryScale, LinearScale, Tooltip, Legend, DoughnutController, BarController);
 
 // ─── State ────────────────────────────────────────────────────────────────────
 
 let library: RateLibrary = recomputeMachineRates(getLibraryFromStorage());
 let lastResult: PartCostResult | null = null;
 let lastInput: UniversalStackInput | null = null;
+let lastLCResult: LearningCurveResult | null = null;
 let activeCommodity: CommodityType = 'machining';
 let machOpCount = 0;
 let coatCount = 0;
@@ -42,8 +50,11 @@ let joinCount = 0;
 let stationCount = 0;
 let bomCount = 0;
 let camMachOpCount = 0;
+let asmLineCount = 0;
 let cadFile: File | null = null;
 let cadAnalysisResult: CADAnalysisResult | null = null;
+let supplierQuotes: SupplierQuote[] = [];
+let _breakdownChart: Chart | null = null;
 
 // ─── DOM helpers ──────────────────────────────────────────────────────────────
 
@@ -1255,8 +1266,16 @@ function switchCommodity(type: CommodityType): void {
     t.classList.toggle('active', t.dataset.commodity === type);
   });
 
+  // Reset calc button label for non-assembly modes
+  const calcBtn = el('calc-btn');
+  if (type !== 'assembly') calcBtn.textContent = 'Calculate';
+
+  // Show/hide part-name for non-assembly modes
+  const partNameWrap = el('part-name').closest<HTMLElement>('div[style]');
+  if (partNameWrap) partNameWrap.style.display = type === 'assembly' ? 'none' : '';
+
   const area = el('commodity-form-area');
-  machOpCount = 0; coatCount = 0; joinCount = 0; stationCount = 0; bomCount = 0; camMachOpCount = 0;
+  machOpCount = 0; coatCount = 0; joinCount = 0; stationCount = 0; bomCount = 0; camMachOpCount = 0; asmLineCount = 0;
 
   switch (type) {
     case 'machining':
@@ -1727,6 +1746,8 @@ function collectInput(): UniversalStackInput {
     case 'cast_and_machine':  return collectCastAndMachineInput();
     case 'cad_analysis':
       throw new Error('Apply CAD analysis results to a commodity form first using the "Apply to cost engine" button, then calculate.');
+    case 'assembly':
+      throw new Error('Use the Calculate Assembly button for Assembly BOM mode.');
   }
 }
 
@@ -1763,7 +1784,26 @@ function compute(): void {
   }
 
   try {
-    const result = computeUniversalStack(input, library);
+    let result = computeUniversalStack(input, library);
+    lastLCResult = null;
+
+    const lcEnabled = (document.getElementById('lc-enabled') as HTMLInputElement)?.checked;
+    if (lcEnabled && result.breakdown.labour > 0) {
+      const annualVolume = parseFloat((document.getElementById('annual-volume') as HTMLInputElement)?.value) || 10000;
+      const referenceVolume = parseFloat((document.getElementById('reference-volume') as HTMLInputElement)?.value) || 1000;
+      const curvePct = parseFloat((document.getElementById('learning-curve-pct') as HTMLInputElement)?.value) || 85;
+      const lcResult = computeLearningCurveAdjustment(result.breakdown.labour, { annualVolume, referenceVolume, curvePct });
+      lastLCResult = lcResult;
+      const labourDelta = lcResult.volumeEffect;
+      result = {
+        ...result,
+        breakdown: { ...result.breakdown, labour: lcResult.adjustedLabourCost },
+        factoryCost: result.factoryCost + labourDelta,
+        subtotal: result.subtotal + labourDelta * (1 + input.overheadPct),
+        total: result.total + labourDelta * (1 + input.overheadPct) * (1 + input.marginPct),
+      };
+    }
+
     lastResult = result;
     lastInput = input;
     showResultsArea();
@@ -1814,6 +1854,46 @@ function renderBreakdown(result: PartCostResult): void {
   ];
   const maxPct = Math.max(...buckets.map(b => b.pct), pcts.overhead, pcts.margin, 1);
 
+  const lcHtml = lastLCResult ? `
+    <div style="background:#fff8f3;border:1px solid #ffd699;border-radius:6px;padding:10px 14px;margin-bottom:12px;font-size:0.8rem">
+      <strong>Learning Curve Applied</strong> (Wright's Law ${lastLCResult.params.curvePct}%, ${lastLCResult.params.annualVolume.toLocaleString()} pcs/yr vs. ref ${lastLCResult.params.referenceVolume.toLocaleString()} pcs/yr)<br/>
+      Factor: <strong>×${lastLCResult.adjustmentFactor.toFixed(3)}</strong> &nbsp;|&nbsp;
+      Labour: <strong>${fmt(lastLCResult.baseLabourCost)}</strong> → <strong>${fmt(lastLCResult.adjustedLabourCost)}</strong>
+      <span style="color:${lastLCResult.volumeEffect < 0 ? '#2e7d32' : '#c62828'}">(${lastLCResult.volumeEffect >= 0 ? '+' : ''}${fmt(lastLCResult.volumeEffect)})</span>
+    </div>` : '';
+
+  const sqHtml = supplierQuotes.length > 0 ? `
+    <div>
+      <div class="panel-title" style="display:flex;justify-content:space-between;align-items:center">
+        <span>Supplier Quote vs Should-Cost (PPV)</span>
+        <button class="btn btn-secondary btn-sm" id="add-quote-btn-inline" style="font-size:0.72rem">+ Add Quote</button>
+      </div>
+      <table class="breakdown-table ppv-table">
+        <thead><tr><th>Supplier</th><th>Quoted (GBP)</th><th>Should Cost</th><th>PPV £</th><th>PPV %</th><th>Status</th><th></th></tr></thead>
+        <tbody>
+          ${supplierQuotes.map((q, i) => {
+            const quotedGBP = q.quotedPriceGBP * q.fxRate;
+            const ppv = quotedGBP - result.total;
+            const ppvPct = result.total > 0 ? (ppv / result.total) * 100 : 0;
+            const ragCls = Math.abs(ppvPct) <= 5 ? 'ppv-rag-green' : Math.abs(ppvPct) <= 15 ? 'ppv-rag-amber' : 'ppv-rag-red';
+            const ragLabel = Math.abs(ppvPct) <= 5 ? 'ON TARGET' : ppv > 0 ? 'OVERPRICED' : 'BELOW COST';
+            return `<tr>
+              <td>${q.supplierName || 'Unnamed'}</td>
+              <td>${fmt(quotedGBP)}${q.currency !== 'GBP' ? ` <span style="font-size:0.7rem;color:#888">(${q.currency} ${q.quotedPriceGBP.toFixed(2)} × ${q.fxRate})</span>` : ''}</td>
+              <td>${fmt(result.total)}</td>
+              <td class="${ppv > 0 ? 'delta-pos' : 'delta-neg'}">${ppv >= 0 ? '+' : ''}${fmt(ppv)}</td>
+              <td class="${ppv > 0 ? 'delta-pos' : 'delta-neg'}">${ppvPct >= 0 ? '+' : ''}${ppvPct.toFixed(1)}%</td>
+              <td><span class="badge ${ragCls}">${ragLabel}</span></td>
+              <td><button class="btn btn-secondary btn-sm del-quote-btn" data-qi="${i}" style="font-size:0.7rem">×</button></td>
+            </tr>`;
+          }).join('')}
+        </tbody>
+      </table>
+    </div>` : `
+    <div style="display:flex;justify-content:flex-end;margin-bottom:8px">
+      <button class="btn btn-secondary btn-sm" id="add-quote-btn-inline">+ Add Supplier Quote</button>
+    </div>`;
+
   panel.innerHTML = `
     <div class="summary-cards">
       <div class="summary-card total-card">
@@ -1838,29 +1918,39 @@ function renderBreakdown(result: PartCostResult): void {
       </div>
     </div>
 
-    <div>
-      <div class="panel-title">8-Bucket Breakdown</div>
-      <table class="breakdown-table">
-        <thead><tr><th>Bucket</th><th>Amount</th><th>%</th><th style="width:180px">Bar</th></tr></thead>
-        <tbody>
-          ${buckets.map(b => `<tr>
-            <td>${b.label}</td><td>${fmt(b.value)}</td><td>${fmtPct(b.pct)}</td>
-            <td><div class="pct-bar"><div class="pct-fill" style="width:${Math.max(3, (b.pct / maxPct) * 160)}px"></div></div></td>
-          </tr>`).join('')}
-          <tr class="subtotal-row"><td>Factory Cost</td><td>${fmt(result.factoryCost)}</td><td>${fmtPct((result.factoryCost / result.total) * 100)}</td><td></td></tr>
-          <tr>
-            <td>7. Overhead (SG&amp;A)</td><td>${fmt(result.breakdown.overhead)}</td><td>${fmtPct(pcts.overhead)}</td>
-            <td><div class="pct-bar"><div class="pct-fill" style="width:${Math.max(3, (pcts.overhead / maxPct) * 160)}px;opacity:0.4"></div></div></td>
-          </tr>
-          <tr class="subtotal-row"><td>Subtotal</td><td>${fmt(result.subtotal)}</td><td>${fmtPct((result.subtotal / result.total) * 100)}</td><td></td></tr>
-          <tr>
-            <td>8. Supplier Margin</td><td>${fmt(result.breakdown.margin)}</td><td>${fmtPct(pcts.margin)}</td>
-            <td><div class="pct-bar"><div class="pct-fill" style="width:${Math.max(3, (pcts.margin / maxPct) * 160)}px;opacity:0.4"></div></div></td>
-          </tr>
-          <tr class="total-row"><td>TOTAL SHOULD COST</td><td>${fmt(result.total)}</td><td>100.0%</td><td></td></tr>
-          ${result.toolingNRE !== undefined ? `<tr><td>NRE (one-time)</td><td>${fmt(result.toolingNRE)}</td><td>—</td><td style="font-size:0.73rem;color:#888">Not in unit cost</td></tr>` : ''}
-        </tbody>
-      </table>
+    ${lcHtml}
+
+    ${sqHtml}
+
+    <div style="display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap">
+      <div style="flex:1;min-width:280px">
+        <div class="panel-title">8-Bucket Breakdown</div>
+        <table class="breakdown-table">
+          <thead><tr><th>Bucket</th><th>Amount</th><th>%</th><th style="width:180px">Bar</th></tr></thead>
+          <tbody>
+            ${buckets.map(b => `<tr>
+              <td>${b.label}</td><td>${fmt(b.value)}</td><td>${fmtPct(b.pct)}</td>
+              <td><div class="pct-bar"><div class="pct-fill" style="width:${Math.max(3, (b.pct / maxPct) * 160)}px"></div></div></td>
+            </tr>`).join('')}
+            <tr class="subtotal-row"><td>Factory Cost</td><td>${fmt(result.factoryCost)}</td><td>${fmtPct((result.factoryCost / result.total) * 100)}</td><td></td></tr>
+            <tr>
+              <td>7. Overhead (SG&amp;A)</td><td>${fmt(result.breakdown.overhead)}</td><td>${fmtPct(pcts.overhead)}</td>
+              <td><div class="pct-bar"><div class="pct-fill" style="width:${Math.max(3, (pcts.overhead / maxPct) * 160)}px;opacity:0.4"></div></div></td>
+            </tr>
+            <tr class="subtotal-row"><td>Subtotal</td><td>${fmt(result.subtotal)}</td><td>${fmtPct((result.subtotal / result.total) * 100)}</td><td></td></tr>
+            <tr>
+              <td>8. Supplier Margin</td><td>${fmt(result.breakdown.margin)}</td><td>${fmtPct(pcts.margin)}</td>
+              <td><div class="pct-bar"><div class="pct-fill" style="width:${Math.max(3, (pcts.margin / maxPct) * 160)}px;opacity:0.4"></div></div></td>
+            </tr>
+            <tr class="total-row"><td>TOTAL SHOULD COST</td><td>${fmt(result.total)}</td><td>100.0%</td><td></td></tr>
+            ${result.toolingNRE !== undefined ? `<tr><td>NRE (one-time)</td><td>${fmt(result.toolingNRE)}</td><td>—</td><td style="font-size:0.73rem;color:#888">Not in unit cost</td></tr>` : ''}
+          </tbody>
+        </table>
+      </div>
+      <div style="width:220px;flex-shrink:0">
+        <div class="panel-title">Cost Mix</div>
+        <div class="chart-wrap"><canvas id="breakdown-doughnut" width="200" height="200"></canvas></div>
+      </div>
     </div>
 
     <div>
@@ -1892,6 +1982,39 @@ function renderBreakdown(result: PartCostResult): void {
         </tbody>
       </table>
     </div>`;
+
+  // Doughnut chart
+  if (_breakdownChart) { _breakdownChart.destroy(); _breakdownChart = null; }
+  const canvas = document.getElementById('breakdown-doughnut') as HTMLCanvasElement;
+  if (canvas) {
+    _breakdownChart = new Chart(canvas, {
+      type: 'doughnut',
+      data: {
+        labels: ['Material', 'Process', 'Labour', 'Tooling', 'Pkg+Log', 'Overhead', 'Margin'],
+        datasets: [{
+          data: [
+            result.breakdown.rawMaterial, result.breakdown.process, result.breakdown.labour,
+            result.breakdown.tooling,
+            result.breakdown.packaging + result.breakdown.logistics,
+            result.breakdown.overhead, result.breakdown.margin,
+          ],
+          backgroundColor: ['#e65100','#f4511e','#ff7043','#ff8a65','#ffccbc','#b0bec5','#78909c'],
+          borderWidth: 1,
+        }],
+      },
+      options: { plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 } } } }, cutout: '60%' },
+    });
+  }
+
+  // Wire add-quote button
+  panel.querySelector('#add-quote-btn-inline')?.addEventListener('click', openQuoteModal);
+  panel.querySelectorAll('.del-quote-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const qi = parseInt((btn as HTMLElement).dataset.qi ?? '0');
+      supplierQuotes.splice(qi, 1);
+      if (lastResult) renderBreakdown(lastResult);
+    });
+  });
 }
 
 // ─── Render: Sensitivity ──────────────────────────────────────────────────────
@@ -2200,9 +2323,208 @@ function loadExample(): void {
       el('cad-results').innerHTML = `<div style="padding:12px;font-size:0.8rem;color:#555;background:#fff8f3;border-radius:6px;border:1px solid #ffd699">Upload a STEP or IGES file and click "Analyze CAD File" to get AI-powered cost estimates.</div>`;
       break;
 
+    case 'assembly': {
+      asmLineCount = 0;
+      el('commodity-form-area').innerHTML = renderAssemblyForm();
+      el('add-asm-line-btn')?.addEventListener('click', () => addAsmLine());
+      addAsmLine();
+      renderSavedAssemblies();
+      el('universal-costs').style.display = '';
+      el('part-name').closest<HTMLElement>('div[style]')!.style.display = 'none';
+      el('calc-btn').textContent = 'Calculate Assembly';
+      // calc btn is re-wired in init to call computeAssembly for assembly mode
+      break;
+    }
+
     default:
       compute();
   }
+}
+
+// ─── Supplier Quote Modal ─────────────────────────────────────────────────────
+
+function openQuoteModal(): void {
+  const today = new Date().toISOString().slice(0, 10);
+  const dateEl = document.getElementById('sq-date') as HTMLInputElement;
+  if (dateEl && !dateEl.value) dateEl.value = today;
+  el('quote-modal').style.display = 'flex';
+}
+
+function addSupplierQuote(): void {
+  const price = parseFloat((el<HTMLInputElement>('sq-price')).value) || 0;
+  const fxRate = parseFloat((el<HTMLInputElement>('sq-fx')).value) || 1;
+  const currency = (el<HTMLSelectElement>('sq-currency')).value;
+  const quotedGBP = currency === 'GBP' ? price : price * fxRate;
+  const quote: SupplierQuote = {
+    supplierName: (el<HTMLInputElement>('sq-supplier')).value.trim() || 'Unnamed Supplier',
+    quotedPriceGBP: quotedGBP,
+    quoteDate: (el<HTMLInputElement>('sq-date')).value,
+    leadTimeDays: parseInt((el<HTMLInputElement>('sq-lead')).value) || 0,
+    currency,
+    fxRate,
+    notes: (el<HTMLInputElement>('sq-notes')).value.trim(),
+  };
+  supplierQuotes.push(quote);
+  el('quote-modal').style.display = 'none';
+  if (lastResult) renderBreakdown(lastResult);
+}
+
+// ─── Assembly BOM ─────────────────────────────────────────────────────────────
+
+function renderAssemblyForm(): string {
+  return `
+    <div class="section-title">Assembly BOM Lines</div>
+    <div style="font-size:0.76rem;color:#888;margin-bottom:8px">Enter each bought-out / sub-assembled part. Should-Cost is applied on top.</div>
+    <div id="asm-lines-container">
+      <div class="asm-line-header" style="display:grid;grid-template-columns:2fr 60px 90px 80px 80px 80px 36px;gap:4px;font-size:0.72rem;color:#888;padding:0 2px;margin-bottom:4px">
+        <span>Description</span><span>Qty</span><span>Unit Cost £</span><span>Unit Wt kg</span><span>Ext Cost</span><span>Ext Wt</span><span></span>
+      </div>
+    </div>
+    <button class="btn btn-secondary btn-sm" id="add-asm-line-btn" style="margin-top:4px">+ Add Part</button>
+    <div class="field-row" style="margin-top:10px">
+      <div class="field-group"><label>Assembly Name</label><input type="text" id="asm-name" value="New Assembly"/></div>
+    </div>
+    <div style="margin-top:10px">
+      <div class="panel-title">Saved Assemblies</div>
+      <div id="saved-assemblies-list"></div>
+    </div>`;
+}
+
+function addAsmLine(defaults?: Partial<AssemblyLine>): void {
+  asmLineCount++;
+  const i = asmLineCount;
+  const container = el('asm-lines-container');
+  const row = document.createElement('div');
+  row.className = 'asm-line-row';
+  row.dataset.asmIdx = String(i);
+  row.style.cssText = 'display:grid;grid-template-columns:2fr 60px 90px 80px 80px 80px 36px;gap:4px;margin-bottom:4px;align-items:center';
+  row.innerHTML = `
+    <input type="text" class="asm-desc" value="${defaults?.description ?? ''}" placeholder="Part description" style="font-size:0.78rem;padding:3px 6px"/>
+    <input type="number" class="asm-qty" value="${defaults?.qty ?? 1}" min="0" step="1" style="font-size:0.78rem;padding:3px 4px"/>
+    <input type="number" class="asm-cost" value="${defaults?.unitCostGBP ?? 0}" min="0" step="0.01" style="font-size:0.78rem;padding:3px 4px"/>
+    <input type="number" class="asm-wt" value="${defaults?.unitWeightKg ?? 0}" min="0" step="0.001" style="font-size:0.78rem;padding:3px 4px"/>
+    <span class="asm-ext-cost" style="font-size:0.77rem;color:#555;text-align:right">£0.00</span>
+    <span class="asm-ext-wt" style="font-size:0.77rem;color:#555;text-align:right">0.000 kg</span>
+    <button class="btn btn-secondary btn-sm del-asm-btn" style="padding:2px 6px">×</button>`;
+
+  function updateExt(): void {
+    const qty = parseFloat(row.querySelector<HTMLInputElement>('.asm-qty')!.value) || 0;
+    const cost = parseFloat(row.querySelector<HTMLInputElement>('.asm-cost')!.value) || 0;
+    const wt = parseFloat(row.querySelector<HTMLInputElement>('.asm-wt')!.value) || 0;
+    row.querySelector<HTMLSpanElement>('.asm-ext-cost')!.textContent = fmt(qty * cost);
+    row.querySelector<HTMLSpanElement>('.asm-ext-wt')!.textContent = (qty * wt).toFixed(3) + ' kg';
+  }
+
+  row.querySelectorAll('input').forEach(inp => inp.addEventListener('input', updateExt));
+  row.querySelector('.del-asm-btn')!.addEventListener('click', () => { row.remove(); });
+  container.appendChild(row);
+  updateExt();
+}
+
+function collectAssemblyLines(): AssemblyLine[] {
+  const rows = el('asm-lines-container').querySelectorAll<HTMLElement>('.asm-line-row');
+  return Array.from(rows).map((row, i) => ({
+    id: `line-${i+1}`,
+    description: row.querySelector<HTMLInputElement>('.asm-desc')!.value.trim(),
+    qty: parseFloat(row.querySelector<HTMLInputElement>('.asm-qty')!.value) || 0,
+    unitCostGBP: parseFloat(row.querySelector<HTMLInputElement>('.asm-cost')!.value) || 0,
+    unitWeightKg: parseFloat(row.querySelector<HTMLInputElement>('.asm-wt')!.value) || 0,
+    notes: '',
+  }));
+}
+
+function computeAssembly(): void {
+  const lines = collectAssemblyLines();
+  if (lines.length === 0) { alert('Add at least one part to the BOM.'); return; }
+  const name = (el<HTMLInputElement>('asm-name'))?.value?.trim() || 'Assembly';
+  const assembly: Assembly = newAssembly(name);
+  assembly.lines = lines;
+  assembly.overheadPct = num('overhead-pct');
+  assembly.marginPct = num('margin-pct');
+
+  const rollup = computeAssemblyRollup(assembly);
+
+  el('results-breakdown').innerHTML = `
+    <div class="summary-cards">
+      <div class="summary-card total-card">
+        <div class="card-label">Assembly Total</div>
+        <div class="card-value">${fmt(rollup.total)}</div>
+        <div class="card-sub">${rollup.assembly.name}</div>
+      </div>
+      <div class="summary-card">
+        <div class="card-label">Parts Cost</div>
+        <div class="card-value">${fmt(rollup.totalPartsCost)}</div>
+        <div class="card-sub">${rollup.lineSubtotals.length} lines</div>
+      </div>
+      <div class="summary-card">
+        <div class="card-label">OH + Margin</div>
+        <div class="card-value">${fmt(rollup.overhead + rollup.margin)}</div>
+        <div class="card-sub">${fmtPct(((rollup.overhead + rollup.margin) / rollup.total) * 100)} of total</div>
+      </div>
+      <div class="summary-card">
+        <div class="card-label">Total Weight</div>
+        <div class="card-value">${rollup.totalWeightKg.toFixed(3)} kg</div>
+        <div class="card-sub">Assembly mass</div>
+      </div>
+    </div>
+    <div>
+      <div class="panel-title">BOM Rollup</div>
+      <table class="breakdown-table">
+        <thead><tr><th>Description</th><th>Qty</th><th>Unit Cost</th><th>Unit Wt (kg)</th><th>Ext Cost</th><th>Ext Wt (kg)</th></tr></thead>
+        <tbody>
+          ${rollup.lineSubtotals.map(ls => `<tr>
+            <td>${ls.line.description || '—'}</td>
+            <td style="text-align:right">${ls.line.qty}</td>
+            <td>${fmt(ls.line.unitCostGBP)}</td>
+            <td style="text-align:right">${ls.line.unitWeightKg.toFixed(3)}</td>
+            <td>${fmt(ls.extendedCost)}</td>
+            <td style="text-align:right">${ls.extendedWeight.toFixed(3)}</td>
+          </tr>`).join('')}
+          <tr class="subtotal-row"><td colspan="4">Total Parts Cost</td><td>${fmt(rollup.totalPartsCost)}</td><td style="text-align:right">${rollup.totalWeightKg.toFixed(3)}</td></tr>
+          <tr><td colspan="4">Overhead (${rollup.assembly.overheadPct}%)</td><td>${fmt(rollup.overhead)}</td><td></td></tr>
+          <tr class="subtotal-row"><td colspan="4">Subtotal</td><td>${fmt(rollup.subtotal)}</td><td></td></tr>
+          <tr><td colspan="4">Margin (${rollup.assembly.marginPct}%)</td><td>${fmt(rollup.margin)}</td><td></td></tr>
+          <tr class="total-row"><td colspan="4">ASSEMBLY TOTAL</td><td>${fmt(rollup.total)}</td><td style="text-align:right">${rollup.totalWeightKg.toFixed(3)} kg</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="btn-row" style="margin-top:10px">
+      <button class="btn btn-secondary btn-sm" id="save-asm-btn">Save Assembly</button>
+    </div>`;
+
+  showResultsArea();
+
+  el('save-asm-btn')?.addEventListener('click', () => {
+    assembly.lines = collectAssemblyLines();
+    saveAssembly(assembly);
+    renderSavedAssemblies();
+    alert(`Assembly "${assembly.name}" saved.`);
+  });
+}
+
+function renderSavedAssemblies(): void {
+  const list = listAssemblies();
+  const container = document.getElementById('saved-assemblies-list');
+  if (!container) return;
+  if (list.length === 0) {
+    container.innerHTML = '<div style="color:#aaa;font-size:0.78rem">No saved assemblies.</div>';
+    return;
+  }
+  container.innerHTML = list.map(a => {
+    const rollup = computeAssemblyRollup(a);
+    return `<div class="scenario-card" style="margin-bottom:6px">
+      <div class="sc-name">${a.name}</div>
+      <div class="sc-meta">${a.lines.length} parts · ${fmt(rollup.totalPartsCost)} parts cost</div>
+      <div class="sc-total">${fmt(rollup.total)} total</div>
+      <button class="btn btn-secondary btn-sm del-asm-saved-btn" data-asm-id="${a.id}" style="font-size:0.7rem">Delete</button>
+    </div>`;
+  }).join('');
+  container.querySelectorAll('.del-asm-saved-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      deleteAssembly((btn as HTMLElement).dataset.asmId!);
+      renderSavedAssemblies();
+    });
+  });
 }
 
 // ─── Rate Library Editor ──────────────────────────────────────────────────────
@@ -2281,10 +2603,21 @@ function resetRateLibrary(): void {
 
 // ─── Init ─────────────────────────────────────────────────────────────────────
 
-function init(): void {
+async function init(): Promise<void> {
+  // Init IndexedDB scenario store (migrates from localStorage automatically)
+  await initScenarioStore();
+
   // Commodity tabs
   document.querySelectorAll<HTMLElement>('.ctab').forEach(tab => {
-    tab.addEventListener('click', () => switchCommodity(tab.dataset.commodity as CommodityType));
+    tab.addEventListener('click', () => {
+      const type = tab.dataset.commodity as CommodityType;
+      if (type === 'assembly') {
+        el('calc-btn').onclick = computeAssembly;
+      } else {
+        el('calc-btn').onclick = compute;
+      }
+      switchCommodity(type);
+    });
   });
 
   // Results tabs
@@ -2311,8 +2644,13 @@ function init(): void {
   el('cancel-save-sc')?.addEventListener('click', () => { el('scenario-modal').style.display = 'none'; });
   el('scenario-modal')?.addEventListener('click', e => { if (e.target === el('scenario-modal')) el('scenario-modal').style.display = 'none'; });
 
+  // Quote modal
+  el('confirm-add-quote')?.addEventListener('click', addSupplierQuote);
+  el('cancel-add-quote')?.addEventListener('click', () => { el('quote-modal').style.display = 'none'; });
+  el('quote-modal')?.addEventListener('click', e => { if (e.target === el('quote-modal')) el('quote-modal').style.display = 'none'; });
+
   // Start on machining
   switchCommodity('machining');
 }
 
-document.addEventListener('DOMContentLoaded', init);
+document.addEventListener('DOMContentLoaded', () => { void init(); });

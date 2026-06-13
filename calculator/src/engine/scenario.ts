@@ -1,27 +1,55 @@
 import type { Scenario, ScenarioDelta, UniversalStackInput, PartCostResult } from './types.js';
 import { computeUniversalStack } from './core.js';
 import type { RateLibrary } from './types.js';
+let _idb: { set: typeof import('idb-keyval').set; get: typeof import('idb-keyval').get; del: typeof import('idb-keyval').del; keys: typeof import('idb-keyval').keys } | null = null;
 
-const STORAGE_KEY = 'shouldCostScenarios';
+async function getIDB() {
+  if (_idb) return _idb;
+  if (typeof indexedDB === 'undefined') return null;
+  const mod = await import('idb-keyval');
+  _idb = { set: mod.set, get: mod.get, del: mod.del, keys: mod.keys };
+  return _idb;
+}
+
+const PREFIX = 'sc:';
+const LEGACY_KEY = 'shouldCostScenarios';
 
 let _scenarios: Scenario[] = [];
+let _ready = false;
 
-function load(): void {
+/** Call once on app startup before reading scenarios. */
+export async function initScenarioStore(): Promise<void> {
+  if (_ready) return;
+  const idb = await getIDB();
+  if (idb) {
+    await _migrateFromLocalStorage();
+    const allKeys = await idb.keys();
+    const scKeys = allKeys.filter((k): k is string => typeof k === 'string' && k.startsWith(PREFIX));
+    const loaded = await Promise.all(scKeys.map(k => idb.get<Scenario>(k)));
+    _scenarios = (loaded.filter(Boolean) as Scenario[])
+      .sort((a, b) => a.createdAt.localeCompare(b.createdAt));
+  }
+  _ready = true;
+}
+
+async function _migrateFromLocalStorage(): Promise<void> {
   if (typeof localStorage === 'undefined') return;
+  const raw = localStorage.getItem(LEGACY_KEY);
+  if (!raw) return;
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    _scenarios = raw ? (JSON.parse(raw) as Scenario[]) : [];
+    const idb = await getIDB();
+    if (!idb) return;
+    const list = JSON.parse(raw) as Scenario[];
+    await Promise.all(list.map(s => idb.set(`${PREFIX}${s.id}`, s)));
+    localStorage.removeItem(LEGACY_KEY);
   } catch {
-    _scenarios = [];
+    // ignore migration errors
   }
 }
 
-function persist(): void {
-  if (typeof localStorage === 'undefined') return;
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(_scenarios));
+function _persist(scenario: Scenario): void {
+  getIDB().then(idb => idb?.set(`${PREFIX}${scenario.id}`, scenario)).catch(() => {/* silent */});
 }
-
-load();
 
 export function saveScenario(
   name: string,
@@ -38,7 +66,7 @@ export function saveScenario(
     createdAt: new Date().toISOString(),
   };
   _scenarios.push(scenario);
-  persist();
+  _persist(scenario);
   return scenario;
 }
 
@@ -52,12 +80,13 @@ export function getScenario(id: string): Scenario | undefined {
 
 export function deleteScenario(id: string): void {
   _scenarios = _scenarios.filter(s => s.id !== id);
-  persist();
+  getIDB().then(idb => idb?.del(`${PREFIX}${id}`)).catch(() => {/* silent */});
 }
 
 export function clearScenarios(): void {
+  const ids = _scenarios.map(s => s.id);
   _scenarios = [];
-  persist();
+  getIDB().then(idb => { if (idb) ids.forEach(id => idb.del(`${PREFIX}${id}`).catch(() => {/* silent */})); }).catch(() => {/* silent */});
 }
 
 export function compareScenarios(
@@ -70,7 +99,6 @@ export function compareScenarios(
   if (!baseline) throw new Error(`Scenario '${baselineId}' not found`);
   if (!target) throw new Error(`Scenario '${targetId}' not found`);
 
-  // Re-compute results to ensure they reflect current library
   const bResult = computeUniversalStack(baseline.input, library);
   const tResult = computeUniversalStack(target.input, library);
 
@@ -115,13 +143,13 @@ export function importScenarios(json: string): { imported: number; errors: strin
         const s = item as Scenario;
         if (!_scenarios.find(ex => ex.id === s.id)) {
           _scenarios.push(s);
+          _persist(s);
           imported++;
         }
       } else {
         errors.push(`Skipped malformed scenario: ${JSON.stringify(item).slice(0, 80)}`);
       }
     }
-    persist();
   } catch (err) {
     errors.push(`Parse error: ${err instanceof Error ? err.message : String(err)}`);
   }
