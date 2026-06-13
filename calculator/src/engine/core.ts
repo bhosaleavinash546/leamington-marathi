@@ -121,6 +121,19 @@ export function computeUniversalStack(
     });
   }
 
+  // Add recurring consumables (cores, wax, shell, etc.) to raw material cost
+  if (input.rawMaterial.consumablesCostPerPart && input.rawMaterial.consumablesCostPerPart > 0) {
+    rawMaterialCost += input.rawMaterial.consumablesCostPerPart;
+    traceability.push({
+      field: 'rawMaterial.consumablesCostPerPart',
+      value: input.rawMaterial.consumablesCostPerPart,
+      unit: '£',
+      rateSource: 'Per-part consumable (core/wax/shell)',
+      rateId: input.rawMaterial.materialId,
+      confidence: 'Medium',
+    });
+  }
+
   // 2 & 3. Process + Labour
   const operationDetails: OperationResult[] = [];
   let processTotal = 0;

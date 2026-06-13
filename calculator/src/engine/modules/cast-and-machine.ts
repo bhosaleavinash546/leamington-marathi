@@ -35,6 +35,20 @@ export interface CastAndMachineInputs {
 
   // === SHARED ===
   amortizationVolume: number;
+
+  // === POST-CASTING SECONDARY OPERATIONS (optional) ===
+  /** T5/T6/T4 heat treatment cost per kg (0 or undefined = none) */
+  heatTreatmentCostPerKg?: number;
+  /** Shot blast / surface prep cost per part (0 or undefined = none) */
+  shotBlastCostPerPart?: number;
+  /** Impregnation (porosity sealing) cost per part — common for pressure-critical HPDC */
+  impregnationCostPerPart?: number;
+  /** Deburring / fettling cost per part */
+  deburringCostPerPart?: number;
+  /** Post-casting labour ID (for heat treat/shot blast operations) */
+  postCastLabourId?: string;
+  /** Post-casting machine ID (heat treat furnace) */
+  heatTreatMachineId?: string;
 }
 
 export function computeCastAndMachineDrivers(inputs: CastAndMachineInputs): CommodityDrivers {
@@ -90,8 +104,22 @@ export function computeCastAndMachineDrivers(inputs: CastAndMachineInputs): Comm
     mode: 'amortized',
   };
 
+  // 4. Aggregate post-casting consumable costs into material line
+  const postCastCost =
+    (inputs.heatTreatmentCostPerKg ?? 0) * inputs.castPartWeightKg +
+    (inputs.shotBlastCostPerPart ?? 0) +
+    (inputs.impregnationCostPerPart ?? 0) +
+    (inputs.deburringCostPerPart ?? 0);
+
+  const finalRawMaterial = postCastCost > 0
+    ? {
+        ...castDrivers.rawMaterial,
+        consumablesCostPerPart: (castDrivers.rawMaterial.consumablesCostPerPart ?? 0) + postCastCost,
+      }
+    : castDrivers.rawMaterial;
+
   return {
-    rawMaterial: castDrivers.rawMaterial,
+    rawMaterial: finalRawMaterial,
     operations: [...castDrivers.operations, ...machOps],
     tooling: combinedTooling,
   };

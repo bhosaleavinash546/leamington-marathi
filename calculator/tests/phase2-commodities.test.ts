@@ -165,9 +165,11 @@ describe('Casting module — HPDC', () => {
     expect(d.rawMaterial.netWeightKg).toBeCloseTo(expected, 6);
   });
 
-  it('cycle time in hr = cycleTimeSec / 3600', () => {
+  it('cycle time in hr = (cycleTimeSec / 3600) × rejectUplift', () => {
     const d = computeCastingDrivers(HPDC_INPUTS);
-    expect(d.operations[0].cycleTimeHr).toBeCloseTo(45 / 3600, 8);
+    // Reject uplift is applied to cycle time so that scrapped parts' machine time is costed
+    const rejectUplift = 1 / (1 - HPDC_INPUTS.rejectRate);
+    expect(d.operations[0].cycleTimeHr).toBeCloseTo((45 / 3600) * rejectUplift, 6);
   });
 
   it('partsPerCycle = cavities', () => {
@@ -203,11 +205,15 @@ describe('Casting module — Sand', () => {
     },
   };
 
-  it('toolingPerPart = patternCost/vol + coreCostPerPart', () => {
+  it('toolingPerPart = patternCost×sets/vol; core cost moves to material consumables', () => {
     const d = computeCastingDrivers(sandInputs);
     const r = computeUniversalStack({ partName: 'Sand Test', ...d, ...STACK_DEFAULTS }, DEFAULT_RATE_LIBRARY);
-    const expected = 5000 / 10000 + 1.50;
-    expect(r.breakdown.tooling).toBeCloseTo(expected, 4);
+    // Pattern replacement: ceil(10000 / 10000) = 1 set → tooling = 5000/10000 = 0.50
+    // Core cost (£1.50/part) is now a material consumable, not tooling
+    const expectedTooling = (5000 * Math.ceil(sandInputs.amortizationVolume / sandInputs.sand!.patternLife)) / sandInputs.amortizationVolume;
+    expect(r.breakdown.tooling).toBeCloseTo(expectedTooling, 4);
+    // Core cost appears in rawMaterial instead
+    expect(r.breakdown.rawMaterial).toBeGreaterThan(0);
   });
 
   it('full stack produces positive total', () => {

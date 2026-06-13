@@ -341,6 +341,83 @@ export function generateInsights(
     });
   }
 
+  // ── Casting-specific: Low casting yield (runner/gating waste) ─────────────
+  if ((commodity === 'casting' || commodity === 'cast_and_machine') &&
+      input.rawMaterial.directCost === undefined &&
+      input.rawMaterial.materialUtilization < 0.68) {
+    const util = input.rawMaterial.materialUtilization * 100;
+    const benchmarkUtil = commodity === 'casting' ? 75 : 78;
+    insights.push({
+      type: 'warning',
+      category: 'material',
+      title: 'Low casting yield — excess runner/gating material',
+      finding: `Casting yield of ${util.toFixed(0)}% means ${((1/input.rawMaterial.materialUtilization - 1)*100).toFixed(0)}% of poured metal is returned as runner/gate scrap. HPDC benchmark is 65–75%; sand/gravity 75–85%. Scrap recovery credits are partial — you are paying for metal that doesn't end up in the part.`,
+      impact: 'Medium',
+      potentialSavingPct: Math.min(6, (benchmarkUtil/100 - input.rawMaterial.materialUtilization) * 15),
+      actions: [
+        'Work with die designer to optimise runner/gate geometry and reduce pour weight',
+        'Consider vacuum-assisted HPDC (vacural) to allow thinner gates and reduce gating volume',
+        'Evaluate multi-cavity tooling — more parts per shot reduces gate-to-part ratio',
+        'Review scrap alloy buy-back rate — negotiate higher recovery price for clean alloy returns',
+        `Improving yield to ${benchmarkUtil}% saves ~£${(result.breakdown.rawMaterial * (benchmarkUtil/100 - input.rawMaterial.materialUtilization) / input.rawMaterial.materialUtilization).toFixed(2)}/part`,
+      ],
+      benchmark: {
+        label: 'Casting Yield',
+        yourValue: util,
+        unit: '%',
+        industryLow: 65,
+        industryHigh: 85,
+        status: 'watch',
+      },
+    });
+  }
+
+  // ── Casting-specific: Missing post-casting operations ─────────────────────
+  if ((commodity === 'casting' || commodity === 'cast_and_machine') &&
+      input.operations.length <= 2) {
+    insights.push({
+      type: 'info',
+      category: 'process',
+      title: 'Post-casting operations may be missing from cost model',
+      finding: `Only ${input.operations.length} operation(s) detected for a casting process. Structural aluminium castings (especially HPDC) typically require: T5/T6 heat treatment (£1.20–2.80/kg), shot blasting (£0.15–0.40/part), impregnation for pressure-critical parts (£0.80–1.80/part), and deburring/fettling (£0.10–0.60/part). These are often omitted from initial estimates and can add 8–18% to part cost.`,
+      impact: 'High',
+      potentialSavingPct: 0,
+      actions: [
+        'Add heat treatment (T5 ageing or T6 solution + ageing) to Cast+Machine module if not already included',
+        'Include shot blast / vibratory finishing — mandatory for most OEM castings',
+        'Check if impregnation is required by the pressure/leak specification',
+        'Include CMM/gauging cost for first-article and in-process inspection',
+        'Validate with foundry quotation template that all secondary ops are captured',
+      ],
+    });
+  }
+
+  // ── Casting-specific: High reject rate ────────────────────────────────────
+  // Infer reject rate from the ratio of effective process time to base cycle time.
+  // High process cost relative to material suggests reject uplift is significant.
+  // We detect this via OEE-adjusted vs non-adjusted comparison — proxy: if worst OEE op
+  // has rejectUplift baked in AND total process cost is above benchmark high.
+  // Simpler proxy: material utilization is fine (>0.70) but process% is still very high.
+  if ((commodity === 'casting' || commodity === 'cast_and_machine') &&
+      pcts.proc > bm.processPct[1] * 1.2 &&
+      input.rawMaterial.materialUtilization >= 0.65) {
+    insights.push({
+      type: 'warning',
+      category: 'process',
+      title: 'Elevated process cost — possible high reject/scrap rate',
+      finding: `Process cost is ${pcts.proc.toFixed(1)}% vs benchmark max of ${bm.processPct[1]}%. For castings, this may indicate a high reject rate (>5%) inflating effective machine time, poor OEE on the casting cell, or cycle time above industry benchmark for this alloy/weight range.`,
+      impact: 'Medium',
+      potentialSavingPct: Math.min(8, (pcts.proc - bm.processPct[1]) * 0.4),
+      actions: [
+        'Audit actual first-pass yield (FPY) data from the foundry — target >96% for HPDC Al',
+        'Root-cause the dominant reject type: porosity, dimensional, surface, or cold shut',
+        'Optimise shot profile: slow/fast transition velocity and intensification pressure',
+        'Increase die temperature uniformity — thermal imaging of die face recommended',
+        'Review die lubrication frequency and release agent concentration',
+      ],
+    });
+  }
+
   // ── Design for manufacturability ─────────────────────────────────────────
   if (input.operations.length > 4) {
     insights.push({

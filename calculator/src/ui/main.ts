@@ -320,85 +320,91 @@ function renderInjectionForm(): string {
 
 function renderCastingForm(): string {
   return `
+    <div style="font-size:0.72rem;color:#888;padding:2px 4px 6px;background:#fff8f3;border-radius:4px;border-left:3px solid #e65100;margin-bottom:4px">
+      For as-cast parts only. Use <strong>Cast+Machine</strong> if the casting is subsequently machined.
+    </div>
     <div class="section-title">Common</div>
     <div class="field-row">
-      <div class="field-group"><label>Subtype</label><select id="cast-subtype">
+      <div class="field-group"><label>Subtype</label><select id="cast-subtype" title="HPDC: high pressure die casting — fastest, highest tooling. Sand: lowest tooling, any shape. Gravity: medium volume. Investment: best accuracy, highest secondary cost.">
         <option value="hpdc">HPDC</option><option value="sand">Sand</option>
         <option value="gravity">Gravity Die</option><option value="investment">Investment</option>
       </select></div>
       <div class="field-group"><label>Material</label><select id="cast-mat" class="material-select"></select></div>
     </div>
     <div class="field-row" style="margin-top:6px">
-      <div class="field-group"><label>Part Weight (kg)</label><input type="number" id="cast-part-wt" step="0.01" min="0.001" value="1.2"/></div>
-      <div class="field-group"><label>Casting Yield (0–1)</label><input type="number" id="cast-yield" step="0.01" min="0.01" max="1" value="0.75"/></div>
+      <div class="field-group"><label>Part Weight (kg)</label><input type="number" id="cast-part-wt" step="0.01" min="0.001" value="1.2" title="Finished casting weight (as-cast, before any machining). Weigh from CAD or design."/></div>
+      <div class="field-group"><label title="Part weight ÷ total pour weight. HPDC: 0.55–0.70 (heavy runners). Sand: 0.70–0.85. Gravity: 0.65–0.80. Investment: 0.85–0.95. Lower yield = more scrap metal cost.">Casting Yield (0–1) ⓘ</label><input type="number" id="cast-yield" step="0.01" min="0.01" max="1" value="0.75" title="Part weight ÷ total pour weight. HPDC: 0.55–0.70 (heavy runners). Sand: 0.70–0.85. Gravity: 0.65–0.80. Investment: 0.85–0.95."/></div>
     </div>
     <div class="field-row" style="margin-top:6px">
-      <div class="field-group"><label>Reject Rate (0–1)</label><input type="number" id="cast-reject" step="0.01" min="0" max="0.5" value="0.03"/></div>
-      <div class="field-group"><label>Labour</label><select id="cast-lab" class="labour-select"></select></div>
+      <div class="field-group"><label title="First-pass reject rate. HPDC Al cosmetic: 0.02–0.05. HPDC functional/pressure: 0.005–0.02. Sand: 0.05–0.15. Affects BOTH material AND machine time (must cast more to hit target yield).">Reject Rate (0–1) ⓘ</label><input type="number" id="cast-reject" step="0.01" min="0" max="0.5" value="0.03" title="First-pass reject rate. HPDC Al cosmetic: 0.02–0.05. HPDC functional: 0.005–0.02. Sand: 0.05–0.15. Uplifts both material and machine time."/></div>
+      <div class="field-group"><label>Labour</label><select id="cast-lab" class="labour-select" title="Use Foundry Operative for HPDC/gravity. Use Skilled Machinist for investment/precision work."></select></div>
     </div>
     <div class="field-row" style="margin-top:6px">
-      <div class="field-group"><label>OEE</label><input type="number" id="cast-oee" step="0.01" min="0.01" max="1" value="0.8"/></div>
-      <div class="field-group"><label>Manning</label><input type="number" id="cast-manning" step="0.5" min="0" value="1"/></div>
+      <div class="field-group"><label title="Overall Equipment Effectiveness. HPDC benchmark: 0.75–0.82 (losses: die spray, thermal cycling, shot sleeve change). Sand: 0.70–0.78. Gravity: 0.72–0.80.">OEE ⓘ</label><input type="number" id="cast-oee" step="0.01" min="0.01" max="1" value="0.8" title="HPDC benchmark: 0.75–0.82. Sand: 0.70–0.78. Gravity: 0.72–0.80."/></div>
+      <div class="field-group"><label title="Operators per casting machine. HPDC: 1–2. Sand (manual): 2–3. Investment (pour): 1–2.">Manning ⓘ</label><input type="number" id="cast-manning" step="0.5" min="0" value="1" title="Operators per machine. HPDC: 1–2. Sand manual: 2–3."/></div>
     </div>
     <div class="field-row" style="margin-top:6px">
-      <div class="field-group"><label>Labour Eff.</label><input type="number" id="cast-lab-eff" step="0.01" min="0.01" max="1" value="0.92"/></div>
-      <div class="field-group"><label>Amort. Volume</label><input type="number" id="cast-amort" step="1000" min="1" value="200000"/></div>
+      <div class="field-group"><label>Labour Eff.</label><input type="number" id="cast-lab-eff" step="0.01" min="0.01" max="1" value="0.92" title="Labour efficiency: accounts for breaks, waiting, indirect time. 0.90–0.95 typical."/></div>
+      <div class="field-group"><label title="Lifetime production volume over which tooling cost is amortised. Use total programme volume (e.g. 5-year platform life × annual volume). Directly sets tooling cost per part.">Amort. Volume ⓘ</label><input type="number" id="cast-amort" step="1000" min="1" value="200000" title="Total programme volume for tooling amortisation. Die life and cavity count determine how many die sets are needed across this volume."/></div>
     </div>
     <!-- HPDC -->
     <div id="cast-hpdc" class="cast-section">
-      <div class="section-title" style="margin-top:8px">HPDC</div>
+      <div class="section-title" style="margin-top:8px">HPDC — High Pressure Die Casting</div>
+      <div style="font-size:0.7rem;color:#888;margin-bottom:4px">Typical: 500–1600T machines, 30–90s cycle, 1–4 cavities. Total die cost = die cost per set × ceil(volume ÷ (life × cavities)).</div>
       <div class="field-row">
         <div class="field-group"><label>Machine</label><select id="cast-hpdc-mach" class="machine-select"></select></div>
-        <div class="field-group"><label>Cycle Time (s)</label><input type="number" id="cast-hpdc-ct" step="1" min="1" value="45"/></div>
+        <div class="field-group"><label title="Full HPDC cycle: slow shot + fast shot + solidification + die open + spray + part removal. Al 1–5kg: 35–80s. Large structural: 60–120s.">Cycle Time (s) ⓘ</label><input type="number" id="cast-hpdc-ct" step="1" min="1" value="45" title="Full HPDC cycle: slow+fast shot, solidification, die open, spray, part removal. Small Al part: 30–60s. Medium (1–3kg): 45–90s. Large: 80–150s."/></div>
       </div>
       <div class="field-row" style="margin-top:6px">
-        <div class="field-group"><label>Cavities</label><input type="number" id="cast-hpdc-cav" min="1" step="1" value="2"/></div>
-        <div class="field-group"><label>Die Cost (£)</label><input type="number" id="cast-hpdc-die-cost" step="1000" min="0" value="120000"/></div>
+        <div class="field-group"><label title="Number of parts produced per shot. 1–2 cavities for large parts (>1kg). 4–8 cavities for small parts (<0.3kg). Multi-cavity reduces part cost but increases die cost ~1.5–1.8× per additional cavity.">Cavities ⓘ</label><input type="number" id="cast-hpdc-cav" min="1" step="1" value="2" title="Parts per shot. More cavities = lower piece cost, higher die cost. Multi-cavity factor: 2-cav ≈ 1.5× single-cav die cost."/></div>
+        <div class="field-group"><label title="Cost per die set (complete tool with all inserts). Al HPDC small (≤0.5kg): £40–80k. Medium (0.5–3kg): £80–180k. Large (3kg+): £150–350k. Includes steel, machining, trials.">Die Cost (£) ⓘ</label><input type="number" id="cast-hpdc-die-cost" step="1000" min="0" value="120000" title="Cost per die set. Al HPDC small: £40–80k. Medium: £80–180k. Large: £150–350k."/></div>
       </div>
       <div class="field-row" style="margin-top:6px">
-        <div class="field-group"><label>Die Life (shots)</label><input type="number" id="cast-hpdc-die-life" step="1000" min="0" value="200000"/></div>
+        <div class="field-group"><label title="Shots before die requires major refurbishment or replacement. Al alloys: 80,000–300,000 shots. Zinc: 500,000–2,000,000 shots. Die life × cavities = parts per die set. Tool cost = die cost × ceil(volume ÷ parts per set).">Die Life (shots) ⓘ — affects total die cost</label><input type="number" id="cast-hpdc-die-life" step="1000" min="0" value="200000" title="Shots before die replacement. Al: 80k–300k. Zinc: 500k–2M. Formula: total die sets = ceil(amort volume ÷ (die life × cavities))."/></div>
       </div>
     </div>
     <!-- Sand -->
     <div id="cast-sand" class="cast-section">
       <div class="section-title" style="margin-top:8px">Sand Casting</div>
+      <div style="font-size:0.7rem;color:#888;margin-bottom:4px">Core cost is classified as a per-part material consumable (not tooling). Pattern cost amortised by pattern life.</div>
       <div class="field-row">
         <div class="field-group"><label>Mould Line</label><select id="cast-sand-line" class="machine-select"></select></div>
-        <div class="field-group"><label>Cycle Time (hr)</label><input type="number" id="cast-sand-ct" step="0.1" min="0.01" value="0.5"/></div>
+        <div class="field-group"><label title="Time per mould: mould preparation + pour + solidification + knockout. Small iron: 0.3–0.5hr. Medium Al: 0.4–0.8hr. Large iron/steel: 1–4hr.">Cycle Time (hr) ⓘ</label><input type="number" id="cast-sand-ct" step="0.1" min="0.01" value="0.5" title="Per-part mould cycle. Small Al: 0.3–0.5hr. Medium: 0.5–1hr. Large iron: 1–4hr."/></div>
       </div>
       <div class="field-row" style="margin-top:6px">
-        <div class="field-group"><label>Pattern Cost (£)</label><input type="number" id="cast-sand-pat-cost" step="100" min="0" value="5000"/></div>
-        <div class="field-group"><label>Pattern Life (casts)</label><input type="number" id="cast-sand-pat-life" step="100" min="0" value="10000"/></div>
+        <div class="field-group"><label>Pattern Cost (£)</label><input type="number" id="cast-sand-pat-cost" step="100" min="0" value="5000" title="Pattern/core box cost. Wood pattern: £500–5k. Aluminium: £2k–25k. Multiple patterns for complex parts."/></div>
+        <div class="field-group"><label title="Castings before pattern wears out. Wood: 500–5,000. Al: 5,000–50,000. Pattern cost = pattern cost × ceil(volume ÷ pattern life).">Pattern Life (casts) ⓘ</label><input type="number" id="cast-sand-pat-life" step="100" min="0" value="10000" title="Castings per pattern. Wood: 500–5k. Aluminium: 5k–50k. Pattern replacements calculated automatically."/></div>
       </div>
       <div class="field-row" style="margin-top:6px">
-        <div class="field-group"><label>Core Cost/Part (£)</label><input type="number" id="cast-sand-core" step="0.1" min="0" value="1.5"/></div>
+        <div class="field-group"><label title="Cost of sand cores per casting. Simple cavity core: £0.50–2.00. Complex multi-core: £2–8. Water jacket core: £3–12. Appears in MATERIAL cost line, not tooling.">Core Cost/Part (£) ⓘ — material cost</label><input type="number" id="cast-sand-core" step="0.1" min="0" value="1.5" title="Per-part core cost (sand + binder + labour). Classified as material consumable, not tooling. Simple: £0.50–2. Complex: £2–8."/></div>
       </div>
     </div>
     <!-- Gravity -->
     <div id="cast-gravity" class="cast-section">
-      <div class="section-title" style="margin-top:8px">Gravity Die</div>
+      <div class="section-title" style="margin-top:8px">Gravity Die Casting</div>
       <div class="field-row">
         <div class="field-group"><label>Machine</label><select id="cast-grav-mach" class="machine-select"></select></div>
-        <div class="field-group"><label>Cycle Time (hr)</label><input type="number" id="cast-grav-ct" step="0.01" min="0.01" value="0.083"/></div>
+        <div class="field-group"><label title="Tilt/gravity die cycle: load + pour + solidify + tilt + extract. Al: 2–6 min (0.033–0.1hr). Fe/Cu alloys: longer due to thermal mass.">Cycle Time (hr) ⓘ</label><input type="number" id="cast-grav-ct" step="0.01" min="0.01" value="0.083" title="Gravity die cycle. Al small: 0.03–0.06hr. Medium: 0.07–0.12hr. Large: 0.12–0.25hr."/></div>
       </div>
       <div class="field-row" style="margin-top:6px">
-        <div class="field-group"><label>Mould Cost (£)</label><input type="number" id="cast-grav-mould-cost" step="1000" min="0" value="20000"/></div>
-        <div class="field-group"><label>Mould Life (casts)</label><input type="number" id="cast-grav-mould-life" step="1000" min="0" value="50000"/></div>
+        <div class="field-group"><label>Mould Cost (£)</label><input type="number" id="cast-grav-mould-cost" step="1000" min="0" value="20000" title="Permanent mould (gravity die) cost. Simple: £8–20k. Complex with slides: £20–60k."/></div>
+        <div class="field-group"><label title="Castings before mould refurbishment. Al alloys: 30,000–100,000. Mould replacements calculated automatically from volume ÷ life.">Mould Life (casts) ⓘ</label><input type="number" id="cast-grav-mould-life" step="1000" min="0" value="50000" title="Castings per mould. Al: 30k–100k. Mould sets = ceil(volume ÷ mould life)."/></div>
       </div>
     </div>
     <!-- Investment -->
     <div id="cast-invest" class="cast-section">
-      <div class="section-title" style="margin-top:8px">Investment Casting</div>
+      <div class="section-title" style="margin-top:8px">Investment Casting (Lost Wax)</div>
+      <div style="font-size:0.7rem;color:#888;margin-bottom:4px">Wax and shell costs appear in the MATERIAL cost line as recurring consumables.</div>
       <div class="field-row">
         <div class="field-group"><label>Pour Machine</label><select id="cast-inv-mach" class="machine-select"></select></div>
         <div class="field-group"><label>Pour Labour</label><select id="cast-inv-lab" class="labour-select"></select></div>
       </div>
       <div class="field-row" style="margin-top:6px">
-        <div class="field-group"><label>Pour Cycle (hr)</label><input type="number" id="cast-inv-ct" step="0.01" min="0.01" value="0.5"/></div>
-        <div class="field-group"><label>Wax Cost/Part (£)</label><input type="number" id="cast-inv-wax" step="0.1" min="0" value="0.80"/></div>
+        <div class="field-group"><label>Pour Cycle (hr)</label><input type="number" id="cast-inv-ct" step="0.01" min="0.01" value="0.5" title="Pour + solidification + knockout time. Simple small: 0.3–0.5hr. Complex: 0.5–1hr."/></div>
+        <div class="field-group"><label title="Cost of wax pattern per part (injection moulded wax). Small: £0.30–1.20. Medium: £0.80–2.50. Classified as MATERIAL cost (recurring consumable).">Wax Cost/Part (£) ⓘ</label><input type="number" id="cast-inv-wax" step="0.1" min="0" value="0.80" title="Wax pattern injection cost per part. Small: £0.30–1.20. Medium: £0.80–2.50. Classified as material consumable."/></div>
       </div>
       <div class="field-row" style="margin-top:6px">
-        <div class="field-group"><label>Shell Cost/Part (£)</label><input type="number" id="cast-inv-shell" step="0.1" min="0" value="1.20"/></div>
+        <div class="field-group"><label title="Ceramic shell build cost per part (multiple dip coats + stucco + dry). Simple: £0.80–2.00. Complex: £1.50–5.00. Classified as MATERIAL cost.">Shell Cost/Part (£) ⓘ</label><input type="number" id="cast-inv-shell" step="0.1" min="0" value="1.20" title="Ceramic shell build per part. Simple: £0.80–2.00. Complex: £1.50–5.00. Classified as material consumable."/></div>
       </div>
     </div>`;
 }
@@ -871,6 +877,16 @@ function renderCastAndMachineForm(): string {
     </div>
     <div class="field-row" style="margin-top:6px">
       <div class="field-group"><label>Amort. Volume</label><input type="number" id="cam-amort" step="1000" min="1" value="50000"/></div>
+    </div>
+    <div class="section-title" style="margin-top:8px">Post-Casting Secondary Operations</div>
+    <div style="font-size:0.7rem;color:#888;margin-bottom:4px">These costs are added to the material cost line. Leave at 0 if not applicable. Check specification for mandatory operations.</div>
+    <div class="field-row">
+      <div class="field-group"><label title="T5 (artificial ageing only) or T6 (solution treat + ageing) heat treatment. Structural Al castings (EDU housings, brackets, knuckles) typically REQUIRE T6. T5: £0.80–1.40/kg. T6: £1.40–2.80/kg. Enter 0 if not required.">Heat Treatment (£/kg) ⓘ</label><input type="number" id="cam-ht-cost" step="0.1" min="0" value="0" title="T5: £0.80–1.40/kg. T6: £1.40–2.80/kg. Leave 0 if not required."/></div>
+      <div class="field-group"><label title="Shot blast, vibratory deburr, or tumbling. Mandatory for most OEM castings to remove flash and improve surface finish. Typical: £0.15–0.40/part for small, £0.30–0.80 for large. Enter 0 if surface as-cast is acceptable.">Shot Blast / Deburr (£/part) ⓘ</label><input type="number" id="cam-shot-blast" step="0.05" min="0" value="0" title="Shot blast / vibratory deburr. Typical: £0.15–0.40/part small, £0.30–0.80 large."/></div>
+    </div>
+    <div class="field-row" style="margin-top:6px">
+      <div class="field-group"><label title="Vacuum or pressure impregnation (Ultraseal / Loctite process) to seal micro-porosity. Required for pressure-critical parts: fuel rails, oil passages, coolant circuits. Typical: £0.80–1.80/part depending on part size.">Impregnation (£/part) ⓘ</label><input type="number" id="cam-impreg" step="0.1" min="0" value="0" title="Vacuum impregnation for pressure-critical castings. Typical: £0.80–1.80/part."/></div>
+      <div class="field-group"><label title="Manual fettling / gate removal / deburring labour cost per part if not covered by shot blast. Complex castings: £0.20–1.20/part. Simple HPDC trim press: £0.05–0.15/part.">Fettling / Gate Remove (£/part) ⓘ</label><input type="number" id="cam-fettle" step="0.05" min="0" value="0" title="Manual fettling / gate removal. Simple HPDC with trim press: £0.05–0.15. Complex: £0.20–1.20."/></div>
     </div>`;
 }
 
@@ -1758,6 +1774,11 @@ function collectCastAndMachineInput(): UniversalStackInput {
     machiningToolingCost: num('cam-mach-tooling'),
     machiningProgrammingNRE: num('cam-mach-prog-nre'),
     amortizationVolume: num('cam-amort') || 1,
+    // Post-casting secondary operations
+    heatTreatmentCostPerKg: num('cam-ht-cost') || undefined,
+    shotBlastCostPerPart: num('cam-shot-blast') || undefined,
+    impregnationCostPerPart: num('cam-impreg') || undefined,
+    deburringCostPerPart: num('cam-fettle') || undefined,
     ...subtypeExtra,
   };
 
@@ -2906,6 +2927,12 @@ async function init(): Promise<void> {
     const cur = (e.target as HTMLSelectElement).value;
     _displayCurrency = cur;
     _displayFxRate = FX_TO_GBP[cur] !== undefined ? 1 / FX_TO_GBP[cur] : 1;
+    // Update currency labels in Universal Costs section
+    const sym = cur === 'GBP' ? '£' : cur === 'EUR' ? '€' : cur === 'USD' ? '$' : cur === 'INR' ? '₹' : cur === 'CNY' ? '¥' : cur;
+    const pkgLabel = document.getElementById('lbl-packaging');
+    const logLabel = document.getElementById('lbl-logistics');
+    if (pkgLabel) pkgLabel.textContent = `Packaging (${sym}/part)`;
+    if (logLabel) logLabel.textContent = `Logistics (${sym}/part)`;
     // Re-render active tab if result exists
     if (lastResult && lastInput) {
       renderBreakdown(lastResult);

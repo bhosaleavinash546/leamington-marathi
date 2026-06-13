@@ -1,3 +1,5 @@
+import { jsPDF } from 'jspdf';
+import autoTable from 'jspdf-autotable';
 import type { PartCostResult, UniversalStackInput, RateLibrary } from '../engine/types.js';
 import { breakdownPercentages } from '../engine/core.js';
 
@@ -10,279 +12,392 @@ export function printPDF(
 ): void {
   const sym = currency === 'GBP' ? '£' : currency === 'EUR' ? '€' : currency === 'USD' ? '$' : currency;
   const c = (n: number) => `${sym}${(n * fxRate).toFixed(2)}`;
-  const pctFmt = (n: number) => `${n.toFixed(1)}%`;
+  const pct = (n: number) => `${n.toFixed(1)}%`;
   const pcts = breakdownPercentages(result);
+
+  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+  const W = 210;
+  const margin = 14;
+  const contentW = W - margin * 2;
+
+  // ── Colour palette ──────────────────────────────────────────────────────────
+  const ORANGE: [number, number, number] = [230, 81, 0];
+  const DARK: [number, number, number] = [30, 30, 30];
+  const GREY: [number, number, number] = [100, 100, 100];
+  const LIGHT_BG: [number, number, number] = [248, 248, 248];
+  const HEADER_BG: [number, number, number] = [245, 245, 245];
+
+  let y = 0;
+
+  function newSection(title: string): void {
+    if (y > 240) { doc.addPage(); y = 16; }
+    doc.setFillColor(...ORANGE);
+    doc.rect(margin, y, contentW, 7, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'bold');
+    doc.text(title.toUpperCase(), margin + 3, y + 5);
+    doc.setTextColor(...DARK);
+    doc.setFont('helvetica', 'normal');
+    y += 10;
+  }
+
+  function kv(label: string, value: string, col = 0): void {
+    const colW = contentW / 2;
+    const x = margin + col * colW;
+    doc.setFontSize(8);
+    doc.setTextColor(...GREY);
+    doc.text(label, x, y);
+    doc.setTextColor(...DARK);
+    doc.setFont('helvetica', 'bold');
+    doc.text(value, x + colW * 0.55, y);
+    doc.setFont('helvetica', 'normal');
+  }
+
+  function addPageFooter(): void {
+    const pageCount = (doc as unknown as { internal: { getNumberOfPages: () => number } }).internal.getNumberOfPages();
+    for (let i = 1; i <= pageCount; i++) {
+      doc.setPage(i);
+      doc.setFontSize(7);
+      doc.setTextColor(...GREY);
+      doc.text('Leamington Marathi Should-Cost Calculator — CONFIDENTIAL', margin, 290);
+      doc.text(`Page ${i} of ${pageCount}`, W - margin - 20, 290);
+      doc.text(`Generated: ${new Date().toLocaleString('en-GB')}`, W / 2 - 20, 290);
+    }
+  }
+
+  // ══════════════════════════════════════════════════════════════════════════════
+  // PAGE 1 — Cover + Cost Summary
+  // ══════════════════════════════════════════════════════════════════════════════
+
+  // Header bar
+  doc.setFillColor(...ORANGE);
+  doc.rect(0, 0, W, 28, 'F');
+  doc.setTextColor(255, 255, 255);
+  doc.setFontSize(16);
+  doc.setFont('helvetica', 'bold');
+  doc.text('SHOULD-COST ANALYSIS REPORT', margin, 12);
+  doc.setFontSize(9);
+  doc.setFont('helvetica', 'normal');
+  doc.text('Bottom-Up Manufacturing Cost Model  ·  aPriori-calibrated Benchmarks', margin, 20);
+  doc.text(`${new Date().toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric' })}`, W - margin - 45, 20);
+
+  y = 34;
+
+  // Part info KV row
+  doc.setFillColor(...LIGHT_BG);
+  doc.rect(margin, y, contentW, 18, 'F');
+  doc.setFontSize(13);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(...ORANGE);
+  doc.text(result.partName, margin + 4, y + 8);
+  doc.setFontSize(8);
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(...DARK);
+  doc.text(`Currency: ${currency}  ·  FX Rate: ${fxRate.toFixed(4)} to GBP  ·  Operations: ${result.operationDetails.length}`, margin + 4, y + 14);
+  y += 22;
+
+  // ── 8-Bucket Breakdown Table ────────────────────────────────────────────────
+  newSection('§1 — 8-Bucket Cost Breakdown');
+
+  const buckets: [string, number, number, string][] = [
+    ['1. Raw Material', result.breakdown.rawMaterial, pcts.rawMaterial, ''],
+    ['2. Process (Machine)', result.breakdown.process, pcts.process, ''],
+    ['3. Direct Labour', result.breakdown.labour, pcts.labour, ''],
+    ['4. Tooling (amortised)', result.breakdown.tooling, pcts.tooling, ''],
+    ['5. Packaging', result.breakdown.packaging, pcts.packaging, ''],
+    ['6. Logistics', result.breakdown.logistics, pcts.logistics, ''],
+    ['— Factory Cost', result.factoryCost, (result.factoryCost / result.total) * 100, 'subtotal'],
+    ['7. Overhead (SG&A)', result.breakdown.overhead, pcts.overhead, ''],
+    ['— Subtotal', result.subtotal, (result.subtotal / result.total) * 100, 'subtotal'],
+    ['8. Supplier Margin', result.breakdown.margin, pcts.margin, ''],
+    ['TOTAL SHOULD COST', result.total, 100, 'total'],
+  ];
+
+  autoTable(doc, {
+    startY: y,
+    head: [['Cost Bucket', `Amount (${currency})`, '% of Total', 'Cost Bar']],
+    body: buckets.map(([label, value, p, _rowType]) => {
+      const bar = '█'.repeat(Math.round(Math.max(0, Math.min(p, 50)) / 2));
+      return [label, c(value), pct(p), bar];
+    }),
+    theme: 'plain',
+    headStyles: { fillColor: HEADER_BG, textColor: DARK, fontStyle: 'bold', fontSize: 8 },
+    bodyStyles: { fontSize: 8, textColor: DARK },
+    columnStyles: {
+      0: { cellWidth: 70 },
+      1: { cellWidth: 30, halign: 'right' },
+      2: { cellWidth: 22, halign: 'right' },
+      3: { cellWidth: contentW - 125, font: 'courier', fontSize: 6, textColor: ORANGE as [number,number,number] },
+    },
+    didParseCell: (data) => {
+      const rowType = buckets[data.row.index]?.[3];
+      if (rowType === 'total') {
+        data.cell.styles.fontStyle = 'bold';
+        data.cell.styles.fillColor = [255, 243, 230] as [number,number,number];
+        data.cell.styles.fontSize = 9;
+      } else if (rowType === 'subtotal') {
+        data.cell.styles.fontStyle = 'bold';
+        data.cell.styles.fillColor = HEADER_BG as [number,number,number];
+      }
+    },
+    margin: { left: margin, right: margin },
+  });
+
+  y = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 6;
+
+  if (result.toolingNRE !== undefined) {
+    doc.setFontSize(8);
+    doc.setTextColor(...GREY);
+    doc.text(`NRE / Tooling (one-time, not in unit cost): ${c(result.toolingNRE)}`, margin, y);
+    y += 6;
+  }
+
+  // Commercial parameters
+  newSection('§2 — Commercial Parameters');
+  kv('Overhead Rate:', pct(input.overheadPct * 100), 0);
+  kv('Supplier Margin:', pct(input.marginPct * 100), 1);
+  y += 6;
+  kv('Packaging / part:', c(input.packagingPerPart), 0);
+  kv('Logistics / part:', c(input.logisticsPerPart), 1);
+  y += 6;
+  if (input.tooling.mode === 'amortized') {
+    kv('Total Tooling Cost:', c(input.tooling.totalToolingCost), 0);
+    kv('Amortisation Volume:', `${input.tooling.amortizationVolume.toLocaleString()} parts`, 1);
+    y += 6;
+  }
+  y += 4;
+
+  // ══════════════════════════════════════════════════════════════════════════════
+  // PAGE 2 — Material Detail
+  // ══════════════════════════════════════════════════════════════════════════════
+  doc.addPage();
+  y = 16;
 
   const mat = library.materials.find(m => m.id === input.rawMaterial.materialId);
   const grossWeight = input.rawMaterial.directCost === undefined
     ? input.rawMaterial.netWeightKg / input.rawMaterial.materialUtilization : 0;
   const scrapWeight = Math.max(0, grossWeight - input.rawMaterial.netWeightKg);
 
-  const buckets: [string, number, number][] = [
-    ['1. Raw Material', result.breakdown.rawMaterial, pcts.rawMaterial],
-    ['2. Process (Machine)', result.breakdown.process, pcts.process],
-    ['3. Direct Labour', result.breakdown.labour, pcts.labour],
-    ['4. Tooling', result.breakdown.tooling, pcts.tooling],
-    ['5. Packaging', result.breakdown.packaging, pcts.packaging],
-    ['6. Logistics', result.breakdown.logistics, pcts.logistics],
-    ['7. Overhead (SG&A)', result.breakdown.overhead, pcts.overhead],
-    ['8. Supplier Margin', result.breakdown.margin, pcts.margin],
+  newSection('§3 — Material Detail');
+
+  const matRows: string[][] = [
+    ['Material ID', input.rawMaterial.materialId, '', ''],
+    ['Grade / Description', mat?.grade ?? 'Direct Cost', '', mat?.sourceNote ?? ''],
+    ['Region', mat?.region ?? '—', '', ''],
+    ['Net (Finished) Weight', `${input.rawMaterial.netWeightKg.toFixed(4)} kg`, '', 'Weight in finished part'],
   ];
 
-  const breakdownRows = buckets.map(([label, value, pct]) => `
-    <tr>
-      <td>${label}</td>
-      <td class="num">${c(value)}</td>
-      <td class="num">${pctFmt(pct)}</td>
-      <td><div class="bar" style="width:${Math.max(2, pct * 2.8)}px"></div></td>
-    </tr>`).join('');
+  if (input.rawMaterial.directCost !== undefined) {
+    matRows.push(['Direct Material Cost', c(input.rawMaterial.directCost), currency, 'Bypasses weight-based calculation']);
+  } else {
+    matRows.push(
+      ['Gross Weight (stock/casting)', `${grossWeight.toFixed(4)} kg`, '', `= net ÷ utilisation`],
+      ['Scrap / Runner Weight', `${scrapWeight.toFixed(4)} kg`, '', `= gross − net`],
+      ['Material Utilisation', pct(input.rawMaterial.materialUtilization * 100), '', `Benchmark: casting 65–85%, machining 60–75%`],
+      ['Material Price', c(mat?.pricePerKg ?? 0), `${currency}/kg`, mat?.sourceNote ?? ''],
+      ['Scrap Recovery Price', c(mat?.scrapRecoveryPricePerKg ?? 0), `${currency}/kg`, ''],
+      ['Gross Material Cost', c(grossWeight * (mat?.pricePerKg ?? 0)), currency, `= gross × price/kg`],
+      ['Scrap Credit', `−${c(scrapWeight * (mat?.scrapRecoveryPricePerKg ?? 0))}`, currency, `= scrap × recovery price`],
+    );
+    if (input.rawMaterial.consumablesCostPerPart && input.rawMaterial.consumablesCostPerPart > 0) {
+      matRows.push(['Consumables (core/wax/shell)', c(input.rawMaterial.consumablesCostPerPart), currency, 'Per-part recurring consumable cost']);
+    }
+    matRows.push(['NET RAW MATERIAL COST', c(result.breakdown.rawMaterial), currency, '= gross − scrap credit + consumables']);
+  }
+  matRows.push(
+    ['', '', '', ''],
+    ['Data Confidence', mat?.confidence ?? '—', '', ''],
+    ['Effective Date', mat?.effectiveDate ?? '—', '', ''],
+  );
 
-  // Operations table
-  const opRows = result.operationDetails.map(op => {
+  autoTable(doc, {
+    startY: y,
+    head: [['Parameter', 'Value', 'Unit', 'Notes']],
+    body: matRows,
+    theme: 'plain',
+    headStyles: { fillColor: HEADER_BG, textColor: DARK, fontStyle: 'bold', fontSize: 8 },
+    bodyStyles: { fontSize: 8, textColor: DARK },
+    columnStyles: {
+      0: { cellWidth: 58 },
+      1: { cellWidth: 32, halign: 'right' },
+      2: { cellWidth: 16 },
+      3: { cellWidth: contentW - 109, textColor: GREY as [number,number,number] },
+    },
+    didParseCell: (data) => {
+      if (data.row.index === matRows.length - 1 - 2 || (data.cell.text[0] && data.cell.text[0].startsWith('NET RAW'))) {
+        data.cell.styles.fontStyle = 'bold';
+      }
+    },
+    margin: { left: margin, right: margin },
+  });
+
+  y = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 8;
+
+  // ══════════════════════════════════════════════════════════════════════════════
+  // PAGE 3 — Operations Detail
+  // ══════════════════════════════════════════════════════════════════════════════
+  if (y > 200) { doc.addPage(); y = 16; }
+
+  newSection('§4 — Operations Detail (Full Calculation)');
+
+  const opHead = [['Operation', 'Machine', 'Rate/hr', 'Cycle min', 'OEE', 'Process £', 'Labour Grade', 'Rate/hr', 'Manning', 'Lab min', 'Eff%', 'Labour £', 'Op Total', '%']];
+  const opBody = result.operationDetails.map(op => {
     const machObj = library.machines.find(m => m.id === op.machineId);
     const labObj = library.labour.find(l => l.id === op.labourId);
-    return `
-    <tr>
-      <td><strong>${op.operationName}</strong></td>
-      <td>${machObj?.machineClass ?? op.machineId}</td>
-      <td class="num">${c(op.machineRateUsed)}/hr</td>
-      <td class="num">${(op.cycleTimeHr * 60).toFixed(2)} min</td>
-      <td class="num">${(op.oee * 100).toFixed(0)}%</td>
-      <td class="num">${c(op.processCost)}</td>
-      <td>${labObj?.skillLevel ?? op.labourId}</td>
-      <td class="num">${c(op.labourRateUsed)}/hr</td>
-      <td class="num">${op.manning}×</td>
-      <td class="num">${(op.labourTimeHr * 60).toFixed(2)} min</td>
-      <td class="num">${(op.labourEfficiency * 100).toFixed(0)}%</td>
-      <td class="num">${c(op.labourCost)}</td>
-      <td class="num bold">${c(op.processCost + op.labourCost)}</td>
-    </tr>`;
-  }).join('');
+    return [
+      op.operationName,
+      machObj?.machineClass ?? op.machineId,
+      c(op.machineRateUsed),
+      (op.cycleTimeHr * 60).toFixed(2),
+      pct(op.oee * 100),
+      c(op.processCost),
+      labObj?.skillLevel ?? op.labourId,
+      c(op.labourRateUsed),
+      op.manning.toString(),
+      (op.labourTimeHr * 60).toFixed(2),
+      pct(op.labourEfficiency * 100),
+      c(op.labourCost),
+      c(op.processCost + op.labourCost),
+      pct(((op.processCost + op.labourCost) / result.total) * 100),
+    ];
+  });
+  opBody.push([
+    'TOTAL', '', '', '', '', c(result.breakdown.process),
+    '', '', '', '', '', c(result.breakdown.labour),
+    c(result.breakdown.process + result.breakdown.labour),
+    pct(((result.breakdown.process + result.breakdown.labour) / result.total) * 100),
+  ]);
 
-  // Machine rate buildup
+  autoTable(doc, {
+    startY: y,
+    head: opHead,
+    body: opBody,
+    theme: 'striped',
+    headStyles: { fillColor: HEADER_BG, textColor: DARK, fontStyle: 'bold', fontSize: 7 },
+    bodyStyles: { fontSize: 7, textColor: DARK },
+    columnStyles: {
+      0: { cellWidth: 32 },
+      1: { cellWidth: 22 },
+      2: { cellWidth: 14, halign: 'right' },
+      3: { cellWidth: 13, halign: 'right' },
+      4: { cellWidth: 11, halign: 'right' },
+      5: { cellWidth: 13, halign: 'right' },
+      6: { cellWidth: 20 },
+      7: { cellWidth: 14, halign: 'right' },
+      8: { cellWidth: 11, halign: 'right' },
+      9: { cellWidth: 12, halign: 'right' },
+      10: { cellWidth: 11, halign: 'right' },
+      11: { cellWidth: 13, halign: 'right' },
+      12: { cellWidth: 14, halign: 'right', fontStyle: 'bold' },
+      13: { cellWidth: 12, halign: 'right' },
+    },
+    didParseCell: (data) => {
+      if (data.row.index === opBody.length - 1) {
+        data.cell.styles.fontStyle = 'bold';
+        data.cell.styles.fillColor = [255, 243, 230] as [number,number,number];
+      }
+    },
+    margin: { left: margin, right: margin },
+  });
+
+  y = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 8;
+
+  // ══════════════════════════════════════════════════════════════════════════════
+  // PAGE 4 — Machine Rate Buildup
+  // ══════════════════════════════════════════════════════════════════════════════
+  if (y > 200) { doc.addPage(); y = 16; }
+
+  newSection('§5 — Machine Rate Buildup (aPriori-Style Transparency)');
+
   const usedMachIds = new Set(result.operationDetails.map(op => op.machineId));
-  const machBuildup = library.machines.filter(m => usedMachIds.has(m.id)).map(mach => {
+  const machBuildupRows: string[][] = [];
+
+  library.machines.filter(m => usedMachIds.has(m.id)).forEach(mach => {
     const b = mach.buildup;
     const eff = b.annualAvailableHours * b.machineUtilization;
-    const _compRateCheck = (b.annualDepreciation + b.maintenance + b.energy + b.floorSpace + b.indirectSupport + b.financeCost) / eff; void _compRateCheck;
-    return `
-    <div class="buildup-block">
-      <div class="buildup-title">${mach.machineClass} <span class="conf ${mach.confidence}">${mach.confidence}</span></div>
-      <table class="detail-table">
-        <tbody>
-          <tr><td>Depreciation</td><td class="num">${c(b.annualDepreciation / eff)}/hr</td><td class="src">Annual: ${c(b.annualDepreciation)}</td></tr>
-          <tr><td>Maintenance</td><td class="num">${c(b.maintenance / eff)}/hr</td><td class="src">Annual: ${c(b.maintenance)}</td></tr>
-          <tr><td>Energy</td><td class="num">${c(b.energy / eff)}/hr</td><td class="src">Annual: ${c(b.energy)}</td></tr>
-          <tr><td>Floor Space</td><td class="num">${c(b.floorSpace / eff)}/hr</td><td class="src">Annual: ${c(b.floorSpace)}</td></tr>
-          <tr><td>Indirect Support</td><td class="num">${c(b.indirectSupport / eff)}/hr</td><td class="src">Annual: ${c(b.indirectSupport)}</td></tr>
-          <tr><td>Finance Cost</td><td class="num">${c(b.financeCost / eff)}/hr</td><td class="src">Annual: ${c(b.financeCost)}</td></tr>
-          <tr class="subtotal-row"><td>Annual Available Hours</td><td class="num">${b.annualAvailableHours.toLocaleString()} hr</td><td></td></tr>
-          <tr class="subtotal-row"><td>Machine Utilisation</td><td class="num">${(b.machineUtilization * 100).toFixed(0)}%</td><td class="src">Effective: ${eff.toFixed(0)} hr/yr</td></tr>
-          <tr class="total-row"><td>Computed Rate</td><td class="num">${c(mach.computedRatePerHr)}/hr</td><td class="src">Source: ${mach.sourceNote.slice(0, 45)}</td></tr>
-        </tbody>
-      </table>
-    </div>`;
-  }).join('');
+    const totalAnnual = b.annualDepreciation + b.maintenance + b.energy + b.floorSpace + b.indirectSupport + b.financeCost;
+    machBuildupRows.push(
+      [{ content: `${mach.machineClass}  [${mach.id}]  Confidence: ${mach.confidence}  ·  Source: ${mach.sourceNote}`, colSpan: 5, styles: { fontStyle: 'bold' as const, fillColor: [240, 240, 240] as [number,number,number] } } as unknown as string],
+      ['Cost Component', `Annual Cost (${currency})`, `Rate/hr at ${(b.machineUtilization*100).toFixed(0)}% util`, '', ''],
+      ['Depreciation', c(b.annualDepreciation), c(b.annualDepreciation / eff), '', `${b.annualAvailableHours.toLocaleString()} hr/yr avail`],
+      ['Maintenance', c(b.maintenance), c(b.maintenance / eff), '', ''],
+      ['Energy', c(b.energy), c(b.energy / eff), '', ''],
+      ['Floor Space', c(b.floorSpace), c(b.floorSpace / eff), '', ''],
+      ['Indirect Support', c(b.indirectSupport), c(b.indirectSupport / eff), '', ''],
+      ['Finance Cost', c(b.financeCost), c(b.financeCost / eff), '', ''],
+      [`TOTAL — ${mach.machineClass}`, c(totalAnnual), c(mach.computedRatePerHr), '', `Eff. hrs: ${eff.toFixed(0)}/yr`],
+    );
+  });
 
-  // Traceability
-  const traceRows = result.traceability.map(t => `
-    <tr>
-      <td class="mono">${t.field}</td>
-      <td class="num">${t.value}</td>
-      <td>${t.unit}</td>
-      <td class="src">${t.rateSource.slice(0, 55)}</td>
-      <td><span class="conf ${t.confidence}">${t.confidence}</span></td>
-    </tr>`).join('');
-
-  const nreBlock = result.toolingNRE !== undefined ? `
-    <p style="color:#888;font-size:10px;margin-top:4px">
-      NRE / Tooling one-time cost: <strong>${c(result.toolingNRE)}</strong> — not included in unit cost above.
-    </p>` : '';
-
-  const html = `<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8"/>
-<title>Should-Cost: ${result.partName}</title>
-<style>
-  :root { --orange:#e65100; --orange-dark:#bf360c; --orange-light:#fff3e0; --border:#ddd; }
-  * { box-sizing:border-box; margin:0; padding:0; }
-  body { font-family:Arial,sans-serif; font-size:11px; color:#333; margin:18px 32px; }
-  h1 { font-size:20px; color:var(--orange-dark); font-weight:700; }
-  h2 { font-size:12px; color:#555; font-weight:700; margin:18px 0 5px; border-bottom:2px solid var(--orange); padding-bottom:3px; text-transform:uppercase; letter-spacing:0.06em; }
-  .subtitle { font-size:10px; color:#888; margin-bottom:14px; }
-  .hero { display:flex; gap:16px; margin-bottom:16px; flex-wrap:wrap; }
-  .hero-card { border:2px solid var(--orange); border-radius:5px; padding:8px 14px; min-width:160px; }
-  .hero-card .lbl { font-size:9px; color:#888; text-transform:uppercase; letter-spacing:0.05em; }
-  .hero-card .val { font-size:22px; font-weight:700; color:var(--orange-dark); }
-  .hero-card .sub { font-size:9px; color:#aaa; }
-  table { width:100%; border-collapse:collapse; margin-bottom:12px; font-size:10px; }
-  th { background:var(--orange-light); color:var(--orange-dark); text-align:left; padding:5px 7px; font-size:9px; text-transform:uppercase; letter-spacing:0.04em; white-space:nowrap; }
-  td { padding:4px 7px; border-top:1px solid #f0f0f0; vertical-align:top; }
-  .num { text-align:right; font-family:monospace; white-space:nowrap; }
-  .src { font-size:9px; color:#888; }
-  .mono { font-family:monospace; font-size:9px; }
-  .bold { font-weight:700; }
-  .bar { height:7px; border-radius:3px; background:var(--orange); }
-  .total-row td { font-weight:700; font-size:12px; background:var(--orange-light); color:var(--orange-dark); }
-  .subtotal-row td { font-weight:600; background:#fafafa; }
-  .conf.High { background:#e8f5e9; color:#2e7d32; padding:1px 5px; border-radius:8px; font-size:8px; font-weight:700; }
-  .conf.Medium { background:#fff8e1; color:#e65100; padding:1px 5px; border-radius:8px; font-size:8px; font-weight:700; }
-  .conf.Low { background:#ffebee; color:#c62828; padding:1px 5px; border-radius:8px; font-size:8px; font-weight:700; }
-  .buildup-block { margin-bottom:12px; }
-  .buildup-title { font-weight:700; margin-bottom:4px; font-size:11px; }
-  .detail-table td { padding:3px 7px; }
-  .page-break { page-break-before:always; }
-  .footer { margin-top:16px; font-size:8px; color:#bbb; border-top:1px solid #eee; padding-top:6px; }
-  @page { margin:12mm; }
-  @media print {
-    body { margin:0; }
-    .no-print { display:none; }
+  if (machBuildupRows.length > 0) {
+    autoTable(doc, {
+      startY: y,
+      head: [['Component', `Annual (${currency})`, `Rate/hr`, '', 'Notes']],
+      body: machBuildupRows,
+      theme: 'plain',
+      headStyles: { fillColor: HEADER_BG, textColor: DARK, fontStyle: 'bold', fontSize: 8 },
+      bodyStyles: { fontSize: 7.5, textColor: DARK },
+      columnStyles: {
+        0: { cellWidth: 45 },
+        1: { cellWidth: 28, halign: 'right' },
+        2: { cellWidth: 28, halign: 'right' },
+        3: { cellWidth: 10 },
+        4: { cellWidth: contentW - 114, textColor: GREY as [number,number,number] },
+      },
+      didParseCell: (data) => {
+        const text = Array.isArray(data.cell.text) ? data.cell.text[0] : '';
+        if (text && text.startsWith('TOTAL')) {
+          data.cell.styles.fontStyle = 'bold';
+          data.cell.styles.fillColor = [255, 243, 230] as [number,number,number];
+        }
+      },
+      margin: { left: margin, right: margin },
+    });
+    y = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 8;
   }
-</style>
-</head>
-<body>
 
-<h1>Should-Cost Analysis Report</h1>
-<div class="subtitle">
-  Part: <strong>${result.partName}</strong> &nbsp;|&nbsp;
-  Date: ${new Date().toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' })} &nbsp;|&nbsp;
-  Currency: ${currency} (rate: ${fxRate.toFixed(4)} to GBP)
-</div>
+  // ══════════════════════════════════════════════════════════════════════════════
+  // PAGE 5 — Rate Traceability
+  // ══════════════════════════════════════════════════════════════════════════════
+  if (y > 200) { doc.addPage(); y = 16; }
 
-<div class="hero">
-  <div class="hero-card">
-    <div class="lbl">Total Should Cost</div>
-    <div class="val">${c(result.total)}</div>
-  </div>
-  <div class="hero-card">
-    <div class="lbl">Factory Cost</div>
-    <div class="val">${c(result.factoryCost)}</div>
-    <div class="sub">${pctFmt((result.factoryCost / result.total) * 100)} of total</div>
-  </div>
-  <div class="hero-card">
-    <div class="lbl">Conversion (Process+Labour)</div>
-    <div class="val">${c(result.breakdown.process + result.breakdown.labour)}</div>
-    <div class="sub">${pctFmt(((result.breakdown.process + result.breakdown.labour) / result.total) * 100)} of total</div>
-  </div>
-  <div class="hero-card">
-    <div class="lbl">OH + Margin</div>
-    <div class="val">${c(result.breakdown.overhead + result.breakdown.margin)}</div>
-    <div class="sub">${pctFmt(((result.breakdown.overhead + result.breakdown.margin) / result.total) * 100)} of total</div>
-  </div>
-</div>
+  newSection('§6 — Rate Traceability');
 
-<h2>1 · 8-Bucket Cost Breakdown</h2>
-<table>
-  <thead><tr><th>Bucket</th><th>Amount</th><th>% Total</th><th style="width:200px">Relative Bar</th></tr></thead>
-  <tbody>
-    ${breakdownRows}
-    <tr class="subtotal-row"><td>Factory Cost</td><td class="num">${c(result.factoryCost)}</td><td class="num">${pctFmt((result.factoryCost / result.total) * 100)}</td><td></td></tr>
-    <tr class="subtotal-row"><td>Subtotal</td><td class="num">${c(result.subtotal)}</td><td class="num">${pctFmt((result.subtotal / result.total) * 100)}</td><td></td></tr>
-    <tr class="total-row"><td>TOTAL SHOULD COST</td><td class="num" colspan="3">${c(result.total)}</td></tr>
-  </tbody>
-</table>
-${nreBlock}
+  autoTable(doc, {
+    startY: y,
+    head: [['Field', 'Value', 'Unit', 'Rate Source / Reference', 'Rate ID', 'Conf.']],
+    body: result.traceability.map(t => [
+      t.field, t.value.toFixed(4), t.unit, t.rateSource, t.rateId, t.confidence,
+    ]),
+    theme: 'striped',
+    headStyles: { fillColor: HEADER_BG, textColor: DARK, fontStyle: 'bold', fontSize: 7.5 },
+    bodyStyles: { fontSize: 7, textColor: DARK },
+    columnStyles: {
+      0: { cellWidth: 48 },
+      1: { cellWidth: 18, halign: 'right' },
+      2: { cellWidth: 12 },
+      3: { cellWidth: 72, textColor: GREY as [number,number,number] },
+      4: { cellWidth: 22 },
+      5: { cellWidth: 12 },
+    },
+    didParseCell: (data) => {
+      const conf = data.cell.text[0];
+      if (data.column.index === 5) {
+        if (conf === 'High') data.cell.styles.textColor = [46, 125, 50] as [number,number,number];
+        else if (conf === 'Low') data.cell.styles.textColor = [198, 40, 40] as [number,number,number];
+      }
+    },
+    margin: { left: margin, right: margin },
+  });
 
-<h2>2 · Material Detail</h2>
-<table>
-  <thead><tr><th>Parameter</th><th>Value</th><th>Unit</th><th>Notes</th></tr></thead>
-  <tbody>
-    <tr><td>Material Grade</td><td>${mat?.grade ?? 'Direct cost'}</td><td></td><td>${mat?.sourceNote?.slice(0,50) ?? ''}</td></tr>
-    <tr><td>Region</td><td>${mat?.region ?? '—'}</td><td></td><td></td></tr>
-    ${input.rawMaterial.directCost !== undefined ? `
-    <tr><td>Direct Material Cost</td><td class="num">${c(input.rawMaterial.directCost)}</td><td>${currency}</td><td>Pre-computed — bypasses weight calc</td></tr>
-    ` : `
-    <tr><td>Net (finished) Weight</td><td class="num">${input.rawMaterial.netWeightKg.toFixed(4)}</td><td>kg</td><td></td></tr>
-    <tr><td>Gross (stock/cast) Weight</td><td class="num">${grossWeight.toFixed(4)}</td><td>kg</td><td>= net ÷ utilisation</td></tr>
-    <tr><td>Scrap Weight</td><td class="num">${scrapWeight.toFixed(4)}</td><td>kg</td><td></td></tr>
-    <tr><td>Material Utilisation</td><td class="num">${pctFmt(input.rawMaterial.materialUtilization * 100)}</td><td></td><td>Benchmark: 72–85%</td></tr>
-    <tr><td>Material Price</td><td class="num">${c(mat?.pricePerKg ?? 0)}</td><td>${currency}/kg</td><td></td></tr>
-    <tr><td>Scrap Recovery Price</td><td class="num">${c(mat?.scrapRecoveryPricePerKg ?? 0)}</td><td>${currency}/kg</td><td></td></tr>
-    <tr><td>Gross Material Cost</td><td class="num">${c(grossWeight * (mat?.pricePerKg ?? 0))}</td><td>${currency}</td><td>= gross wt × price</td></tr>
-    <tr><td>Scrap Credit</td><td class="num">(${c(scrapWeight * (mat?.scrapRecoveryPricePerKg ?? 0))})</td><td>${currency}</td><td></td></tr>
-    <tr class="total-row"><td>NET MATERIAL COST</td><td class="num">${c(result.breakdown.rawMaterial)}</td><td>${currency}</td><td></td></tr>
-    `}
-  </tbody>
-</table>
+  // ── Page footers ────────────────────────────────────────────────────────────
+  addPageFooter();
 
-<h2>3 · Operations Detail — Full Calculation</h2>
-<table>
-  <thead>
-    <tr>
-      <th>Operation</th><th>Machine</th><th>Rate/hr</th>
-      <th>Cycle (min)</th><th>OEE</th><th>Proc Cost</th>
-      <th>Labour Grade</th><th>Rate/hr</th><th>Manning</th>
-      <th>Lab Time</th><th>Eff%</th><th>Lab Cost</th><th>Op Total</th>
-    </tr>
-  </thead>
-  <tbody>
-    ${opRows}
-    <tr class="subtotal-row">
-      <td colspan="5"><strong>TOTAL</strong></td>
-      <td class="num bold">${c(result.breakdown.process)}</td>
-      <td colspan="5"></td>
-      <td class="num bold">${c(result.breakdown.labour)}</td>
-      <td class="num bold">${c(result.breakdown.process + result.breakdown.labour)}</td>
-    </tr>
-  </tbody>
-</table>
-
-<div class="page-break"></div>
-
-<h2>4 · Machine Rate Buildup (aPriori-style)</h2>
-${machBuildup}
-
-<h2>5 · Tooling &amp; NRE</h2>
-<table>
-  <thead><tr><th>Parameter</th><th>Value</th></tr></thead>
-  <tbody>
-    <tr><td>Tooling Mode</td><td>${input.tooling.mode === 'amortized' ? 'Amortised into piece price' : 'One-time NRE (not in unit cost)'}</td></tr>
-    <tr><td>Total Tooling Cost</td><td class="num">${c(input.tooling.totalToolingCost)}</td></tr>
-    ${input.tooling.mode === 'amortized' ? `
-    <tr><td>Amortisation Volume</td><td class="num">${input.tooling.amortizationVolume.toLocaleString()} parts</td></tr>
-    <tr><td>Tooling Per Part</td><td class="num">${c(result.breakdown.tooling)}</td></tr>
-    ` : `<tr><td>NRE (one-time)</td><td class="num">${c(result.toolingNRE ?? 0)}</td></tr>`}
-  </tbody>
-</table>
-
-<h2>6 · Commercial Stack</h2>
-<table>
-  <thead><tr><th>Parameter</th><th>Rate / Amount</th><th>Basis</th></tr></thead>
-  <tbody>
-    <tr><td>Packaging per Part</td><td class="num">${c(input.packagingPerPart)}</td><td>Per-part fixed cost</td></tr>
-    <tr><td>Logistics per Part</td><td class="num">${c(input.logisticsPerPart)}</td><td>Per-part fixed cost</td></tr>
-    <tr class="subtotal-row"><td>Factory Cost</td><td class="num">${c(result.factoryCost)}</td><td>Sum of buckets 1–6</td></tr>
-    <tr><td>Overhead Rate</td><td class="num">${pctFmt(input.overheadPct * 100)}</td><td>Applied to factory cost</td></tr>
-    <tr><td>Overhead Amount</td><td class="num">${c(result.breakdown.overhead)}</td><td></td></tr>
-    <tr class="subtotal-row"><td>Subtotal</td><td class="num">${c(result.subtotal)}</td><td>Factory cost + overhead</td></tr>
-    <tr><td>Supplier Margin Rate</td><td class="num">${pctFmt(input.marginPct * 100)}</td><td>Applied to subtotal</td></tr>
-    <tr><td>Supplier Margin Amount</td><td class="num">${c(result.breakdown.margin)}</td><td></td></tr>
-    <tr class="total-row"><td>TOTAL SHOULD COST</td><td class="num">${c(result.total)}</td><td></td></tr>
-  </tbody>
-</table>
-
-<h2>7 · Rate Traceability &amp; Assumptions</h2>
-<table>
-  <thead><tr><th>Field</th><th>Value</th><th>Unit</th><th>Source</th><th>Confidence</th></tr></thead>
-  <tbody>${traceRows}</tbody>
-</table>
-
-<div class="footer">
-  Generated by Should-Cost Calculator &nbsp;|&nbsp; All rates from editable Rate Library &nbsp;|&nbsp;
-  This is a cost estimate — not a supplier quotation. &nbsp;|&nbsp; ${new Date().toISOString().slice(0, 19).replace('T', ' ')} UTC
-</div>
-
-</body>
-</html>`;
-
-  const win = window.open('', '_blank', 'width=1050,height=800');
-  if (!win) {
-    alert('Pop-up blocked — please allow pop-ups for this site and try again.');
-    return;
-  }
-  win.document.write(html);
-  win.document.close();
-  win.focus();
-  setTimeout(() => { win.print(); }, 600);
+  // ── Save / download ─────────────────────────────────────────────────────────
+  const filename = `should-cost-${result.partName.replace(/[^a-z0-9]/gi, '-').toLowerCase()}-${new Date().toISOString().slice(0, 10)}.pdf`;
+  doc.save(filename);
 }
+
+// Legacy compat
+export { printPDF as openPDF };

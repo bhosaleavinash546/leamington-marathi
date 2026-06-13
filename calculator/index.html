@@ -37,13 +37,13 @@
       <button class="ctab active" data-commodity="machining">Machining</button>
       <button class="ctab" data-commodity="sheet_metal">Sheet Metal</button>
       <button class="ctab" data-commodity="injection_moulding">Injection</button>
-      <button class="ctab" data-commodity="casting">Casting</button>
+      <button class="ctab" data-commodity="casting" title="As-cast parts only (HPDC, sand, gravity, investment). No machining. Use Cast+Machine if subsequent machining is required.">Casting</button>
       <button class="ctab" data-commodity="forging">Forging</button>
       <button class="ctab" data-commodity="painting">Painting</button>
       <button class="ctab" data-commodity="biw_assembly">BIW / Assembly</button>
       <button class="ctab" data-commodity="pcb_fab">PCB Fab</button>
       <button class="ctab" data-commodity="pcba">PCBA / SMD</button>
-      <button class="ctab" data-commodity="cast_and_machine">Cast+Machine</button>
+      <button class="ctab" data-commodity="cast_and_machine" title="Casting + machining in one model. Covers: die cast housing → face mill → bore → drill+tap. Includes post-casting operations (heat treatment, shot blast, impregnation).">Cast+Machine ✓</button>
       <button class="ctab" data-commodity="assembly">Assembly BOM</button>
     </div>
 
@@ -62,8 +62,8 @@
     <div id="universal-costs">
       <div class="section-title">Universal Costs</div>
       <div class="field-row">
-        <div class="field-group"><label>Packaging (£/part)</label><input type="number" id="packaging" step="0.01" min="0" value="0.15"/></div>
-        <div class="field-group"><label>Logistics (£/part)</label><input type="number" id="logistics" step="0.01" min="0" value="0.25"/></div>
+        <div class="field-group"><label id="lbl-packaging">Packaging (£/part)</label><input type="number" id="packaging" step="0.01" min="0" value="0.15" title="Expendable packaging cost per part — box, foam, dunnage. High-vol: £0.05–0.20, large parts: £0.30–1.50"/></div>
+        <div class="field-group"><label id="lbl-logistics">Logistics (£/part)</label><input type="number" id="logistics" step="0.01" min="0" value="0.25" title="Inbound freight from supplier to assembly plant per part. UK–UK: £0.10–0.40, overseas: £0.40–2.00+"/></div>
       </div>
       <div class="field-row" style="margin-top:6px">
         <div class="field-group"><label>Overhead % (SG&amp;A)</label><input type="number" id="overhead-pct" step="0.5" min="0" value="12"/></div>
@@ -87,8 +87,8 @@
     <!-- Action buttons -->
     <div class="btn-row">
       <button class="btn btn-primary" id="calc-btn">Calculate</button>
-      <button class="btn btn-secondary" id="export-excel-btn" style="display:none">Export Excel</button>
-      <button class="btn btn-secondary" id="export-pdf-btn"   style="display:none">Print / PDF</button>
+      <button class="btn btn-secondary" id="export-excel-btn" style="display:none" title="Export 6-sheet Excel workbook: Summary, Material, Operations, Machine Rates, Labour Rates, Traceability">Export Excel ↗</button>
+      <button class="btn btn-secondary" id="export-pdf-btn"   style="display:none" title="Generate professional PDF report: 5 pages, aPriori-style cost breakdown with full machine rate buildup">PDF Report ↗</button>
       <button class="btn btn-secondary" id="save-scenario-btn" style="display:none">Save Scenario</button>
       <button class="btn btn-secondary" id="load-ref-btn">Load Example</button>
       <button class="btn btn-secondary" id="rates-btn">Edit Rates</button>

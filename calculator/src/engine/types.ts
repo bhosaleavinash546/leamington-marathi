@@ -108,6 +108,8 @@ export interface RawMaterialInput {
   materialUtilization: number;
   /** When set, bypasses weight-based cost calculation (used by painting, BIW, PCB). */
   directCost?: number;
+  /** Per-part recurring consumable cost (cores, wax patterns, shell, etc.) added to raw material cost line. */
+  consumablesCostPerPart?: number;
 }
 
 export interface OperationInput {

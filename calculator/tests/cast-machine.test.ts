@@ -120,17 +120,19 @@ describe('Cast + Machine module', () => {
     expect(drivers.rawMaterial.materialId).toBe(HPDC_INPUTS.materialId);
   });
 
-  it('sand casting + machining: tooling correctly includes core consumables + machining NRE', () => {
+  it('sand casting + machining: tooling is pattern sets × cost; core cost moves to rawMaterial', () => {
     const drivers = computeCastAndMachineDrivers(SAND_INPUTS);
-    // Sand casting tooling = patternCost + coreCostPerPart * amortizationVolume
-    const sandTooling =
-      SAND_INPUTS.sand!.patternCost +
-      SAND_INPUTS.sand!.coreCostPerPart * SAND_INPUTS.amortizationVolume;
+    // Core cost is now a rawMaterial consumable, not tooling.
+    // Pattern tooling = patternCost × ceil(amortVol / patternLife)
+    const patternSets = Math.ceil(SAND_INPUTS.amortizationVolume / SAND_INPUTS.sand!.patternLife);
+    const sandPatternTooling = SAND_INPUTS.sand!.patternCost * patternSets;
     const expectedTotal =
-      sandTooling +
+      sandPatternTooling +
       SAND_INPUTS.machiningToolingCost +
       SAND_INPUTS.machiningProgrammingNRE;
     expect(drivers.tooling.totalToolingCost).toBeCloseTo(expectedTotal, 4);
+    // Core cost (£1.50/part) should appear in rawMaterial consumables, not tooling
+    expect(drivers.rawMaterial.consumablesCostPerPart).toBeCloseTo(SAND_INPUTS.sand!.coreCostPerPart, 4);
   });
 
   it('full stack computeUniversalStack gives positive total for HPDC+machining input', () => {

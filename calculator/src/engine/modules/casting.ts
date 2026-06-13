@@ -100,19 +100,26 @@ export function computeCastingDrivers(inputs: CastingInputs): CommodityDrivers {
     case 'hpdc': {
       if (!inputs.hpdc) throw new Error('hpdc config required when subtype is hpdc');
       const cycleTimeHr = inputs.hpdc.cycleTimeSec / 3600;
+      // Reject uplift: must cast rejectUplift × more parts to yield target volume
+      const hpdcCycleEff = cycleTimeHr * rejectUplift;
       operations.push({
         operationName: 'HPDC Casting',
         machineId: inputs.hpdc.machineId,
         labourId: inputs.labourId,
-        cycleTimeHr,
+        cycleTimeHr: hpdcCycleEff,
         partsPerCycle: inputs.hpdc.cavities,
         oee: inputs.oee,
         manning: inputs.manning,
-        labourTimeHr: cycleTimeHr,
+        labourTimeHr: hpdcCycleEff,
         labourEfficiency: inputs.labourEfficiency,
       });
+      // Die replacement: number of die sets = ceil(volume / (dieLife × cavities))
+      const hpdcPartsPerDieSet = inputs.hpdc.dieLife * inputs.hpdc.cavities;
+      const hpdcNumDieSets = hpdcPartsPerDieSet > 0
+        ? Math.ceil(inputs.amortizationVolume / hpdcPartsPerDieSet)
+        : 1;
       tooling = {
-        totalToolingCost: inputs.hpdc.dieCost,
+        totalToolingCost: inputs.hpdc.dieCost * hpdcNumDieSets,
         amortizationVolume: inputs.amortizationVolume,
         mode: 'amortized',
       };
@@ -121,22 +128,24 @@ export function computeCastingDrivers(inputs: CastingInputs): CommodityDrivers {
 
     case 'sand': {
       if (!inputs.sand) throw new Error('sand config required when subtype is sand');
+      const sandCycleEff = inputs.sand.cycleTimeHr * rejectUplift;
       operations.push({
         operationName: 'Sand Casting — Moulding',
         machineId: inputs.sand.mouldLineId,
         labourId: inputs.labourId,
-        cycleTimeHr: inputs.sand.cycleTimeHr,
+        cycleTimeHr: sandCycleEff,
         partsPerCycle: 1,
         oee: inputs.oee,
         manning: inputs.manning,
-        labourTimeHr: inputs.sand.cycleTimeHr,
+        labourTimeHr: sandCycleEff,
         labourEfficiency: inputs.labourEfficiency,
       });
-      // Core cost is a recurring per-part consumable; fold into tooling so that
-      // toolingPerPart = patternCost/amortizationVolume + coreCostPerPart
+      // Pattern replacement based on pattern life
+      const sandNumPatterns = inputs.sand.patternLife > 0
+        ? Math.ceil(inputs.amortizationVolume / inputs.sand.patternLife)
+        : 1;
       tooling = {
-        totalToolingCost:
-          inputs.sand.patternCost + inputs.sand.coreCostPerPart * inputs.amortizationVolume,
+        totalToolingCost: inputs.sand.patternCost * sandNumPatterns,
         amortizationVolume: inputs.amortizationVolume,
         mode: 'amortized',
       };
@@ -145,19 +154,24 @@ export function computeCastingDrivers(inputs: CastingInputs): CommodityDrivers {
 
     case 'gravity': {
       if (!inputs.gravity) throw new Error('gravity config required when subtype is gravity');
+      const gravCycleEff = inputs.gravity.cycleTimeHr * rejectUplift;
       operations.push({
         operationName: 'Gravity Die Casting',
         machineId: inputs.gravity.machineId,
         labourId: inputs.labourId,
-        cycleTimeHr: inputs.gravity.cycleTimeHr,
+        cycleTimeHr: gravCycleEff,
         partsPerCycle: 1,
         oee: inputs.oee,
         manning: inputs.manning,
-        labourTimeHr: inputs.gravity.cycleTimeHr,
+        labourTimeHr: gravCycleEff,
         labourEfficiency: inputs.labourEfficiency,
       });
+      // Mould replacement based on mould life
+      const gravNumMoulds = inputs.gravity.mouldLife > 0
+        ? Math.ceil(inputs.amortizationVolume / inputs.gravity.mouldLife)
+        : 1;
       tooling = {
-        totalToolingCost: inputs.gravity.mouldCost,
+        totalToolingCost: inputs.gravity.mouldCost * gravNumMoulds,
         amortizationVolume: inputs.amortizationVolume,
         mode: 'amortized',
       };
@@ -167,23 +181,20 @@ export function computeCastingDrivers(inputs: CastingInputs): CommodityDrivers {
     case 'investment': {
       if (!inputs.investment) throw new Error('investment config required when subtype is investment');
       // Pour operation on the furnace
+      const invCycleEff = inputs.investment.pourCycleHr * rejectUplift;
       operations.push({
         operationName: 'Investment Casting — Pour',
         machineId: inputs.investment.pourMachineId,
         labourId: inputs.investment.pourLabourId,
-        cycleTimeHr: inputs.investment.pourCycleHr,
+        cycleTimeHr: invCycleEff,
         partsPerCycle: 1,
         oee: inputs.oee,
         manning: inputs.manning,
-        labourTimeHr: inputs.investment.pourCycleHr,
+        labourTimeHr: invCycleEff,
         labourEfficiency: inputs.labourEfficiency,
       });
-      // Wax + shell costs are recurring per-part consumables; fold into tooling
-      const consumablesTotalCost =
-        (inputs.investment.waxCostPerPart + inputs.investment.shellBuildCostPerPart) *
-        inputs.amortizationVolume;
       tooling = {
-        totalToolingCost: consumablesTotalCost,
+        totalToolingCost: 0,
         amortizationVolume: inputs.amortizationVolume,
         mode: 'amortized',
       };
@@ -194,5 +205,19 @@ export function computeCastingDrivers(inputs: CastingInputs): CommodityDrivers {
       throw new Error(`Unknown casting subtype: ${(inputs as CastingInputs).subtype}`);
   }
 
-  return { rawMaterial, operations, tooling };
+  // Move consumables to rawMaterial so they appear in material cost bucket, not tooling
+  let consumablesCostPerPart = 0;
+  if (inputs.subtype === 'sand' && inputs.sand) {
+    consumablesCostPerPart = inputs.sand.coreCostPerPart;
+  } else if (inputs.subtype === 'investment' && inputs.investment) {
+    consumablesCostPerPart = inputs.investment.waxCostPerPart + inputs.investment.shellBuildCostPerPart;
+  }
+
+  return {
+    rawMaterial: consumablesCostPerPart > 0
+      ? { ...rawMaterial, consumablesCostPerPart }
+      : rawMaterial,
+    operations,
+    tooling,
+  };
 }
