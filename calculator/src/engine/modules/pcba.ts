@@ -27,8 +27,43 @@ export const CPH_BY_TYPE: Record<ComponentType, number> = {
   ic_bga: 2000,
   ic_tqfp: 6000,
   connector_smt: 3000,
-  through_hole: 0,     // not placed by SMT
-  manual_solder: 0,    // hand-soldered, not SMT
+  through_hole: 0,
+  manual_solder: 0,
+};
+
+// ─── Assembly complexity & quality ───────────────────────────────────────────
+
+/** Assembly complexity level — scales SMT placement time per the dataset formula. */
+export type AssemblyComplexityLevel = 'low' | 'medium' | 'high' | 'very_high';
+
+/**
+ * Multiplier applied to SMT placement cycle time.
+ * low: ≤100 components, no BGAs.
+ * medium: 100–300, some fine-pitch.
+ * high: >300, BGAs, double-sided.
+ * very_high: ADAS / domain controller level.
+ */
+export const ASSEMBLY_COMPLEXITY_MULTIPLIER: Record<AssemblyComplexityLevel, number> = {
+  low:       1.0,
+  medium:    1.3,
+  high:      1.7,
+  very_high: 2.0,
+};
+
+/** Quality / reliability grade — scales test and inspection operations. */
+export type PCBAQualityGrade =
+  | 'consumer'
+  | 'industrial'
+  | 'auto_grade2'
+  | 'auto_grade1'
+  | 'aerospace';
+
+export const PCBA_QUALITY_MULTIPLIER: Record<PCBAQualityGrade, number> = {
+  consumer:    1.0,
+  industrial:  1.2,
+  auto_grade2: 1.5,
+  auto_grade1: 1.8,
+  aerospace:   2.2,
 };
 
 // ─── Interfaces ───────────────────────────────────────────────────────────────
@@ -43,57 +78,71 @@ export interface BOMLine {
 }
 
 export interface PCBAInputs {
-  pcbCostPerBoard: number;          // from PCB Fab module output (directCost result)
+  pcbCostPerBoard: number;            // from PCB Fab module output (directCost result)
   bom: BOMLine[];
-  smtMachineId: string;             // SMT pick-and-place machine ID
+  smtMachineId: string;
   smtLabourId: string;
-  smtLines: number;                 // parallel SMT lines
-  smtLineRatePerHr: number;         // machine rate £/hr (overridden by library; informational)
+  smtLines: number;
+  smtLineRatePerHr: number;           // informational; actual rate read from library
   smtOee: number;
-  throughHoleCount: number;         // total TH pads/joints per board
-  manualSolderCount: number;        // hand-solder joints per board
+  throughHoleCount: number;
+  manualSolderCount: number;
   thLabourId: string;
-  thLabourTimeSecPerJoint: number;  // default 12 s/joint for TH insertion
-  manualLabourTimeSecPerJoint: number; // default 20 s/joint for hand soldering
-  smtSides?: 1 | 2;                 // 1 = single-sided (default), 2 = double-sided (2× SMT passes)
-  testCostPerBoard?: number;        // externally supplied test cost per board £
-  conformalCoatAreaCm2?: number;    // area to be conformal coated cm²
-  conformalCoatPricePerCm2?: number; // conformal coat material cost £/cm²
-  assemblyYield: number;            // 0–1 first-pass yield
-  reworkCostPerFailure: number;     // rework cost per failed board £
+  thLabourTimeSecPerJoint: number;    // default 12 s/joint
+  manualLabourTimeSecPerJoint: number; // default 20 s/joint
+  smtSides?: 1 | 2;                   // 1 = single-sided (default), 2 = double-sided
+  testCostPerBoard?: number;           // externally supplied test cost £
+  conformalCoatAreaCm2?: number;
+  conformalCoatPricePerCm2?: number;
+  assemblyYield: number;              // 0–1 first-pass yield
+  reworkCostPerFailure: number;       // rework cost per failed board £
   amortizationVolume: number;
+  /** Assembly complexity level — multiplies SMT placement cycle time. Default: low. */
+  assemblyComplexity?: AssemblyComplexityLevel;
+  /** Quality / reliability grade — multiplies test/inspection cycle times. Default: consumer. */
+  qualityGrade?: PCBAQualityGrade;
+  /** Number of BGA packages — enables X-ray inspection operation when > 0. */
+  bgaCount?: number;
+  /** Machine ID for BGA X-ray inspection (e.g. 'xray-bga-inspection'). */
+  xrayMachineId?: string;
+  /** Labour rate ID for X-ray operator. Falls back to smtLabourId if omitted. */
+  xrayLabourId?: string;
+  /** Machine ID for ICT / functional test (e.g. 'ict-automotive'). */
+  ictMachineId?: string;
+  /** Labour rate ID for ICT operator. Falls back to thLabourId if omitted. */
+  ictLabourId?: string;
+  /** ICT fixture test time per board in seconds. Default: 120 s. */
+  ictCycleTimeSec?: number;
 }
 
 // ─── Schema ───────────────────────────────────────────────────────────────────
 
 export function getPCBAInputSchema(): Record<string, string> {
   return {
-    pcbCostPerBoard:
-      'number — bare PCB cost per board £ (from PCB Fab module or supplier quote)',
-    'bom[].refDes': 'string — reference designator (e.g. R1, U5)',
-    'bom[].componentType':
-      'passive_0402 | passive_0603 | passive_0805 | ic_soic | ic_qfn | ic_bga | ic_tqfp | connector_smt | through_hole | manual_solder',
-    'bom[].description': 'string — component description',
+    pcbCostPerBoard: 'number — bare PCB cost per board £',
+    'bom[].refDes': 'string — reference designator',
+    'bom[].componentType': 'passive_0402 | passive_0603 | passive_0805 | ic_soic | ic_qfn | ic_bga | ic_tqfp | connector_smt | through_hole | manual_solder',
     'bom[].qty': 'number — quantity per board',
-    'bom[].unitPriceGBP': 'number — unit price £ at volume (above MOQ)',
-    'bom[].moq': 'number — minimum order quantity (informational)',
-    smtMachineId: 'string — SMT pick-and-place machine ID from rate library',
+    'bom[].unitPriceGBP': 'number — unit price £ at volume',
+    smtMachineId: 'string — SMT pick-and-place machine ID',
     smtLabourId: 'string — SMT operator labour rate ID',
-    smtLines: 'number — parallel SMT lines running this product',
-    smtLineRatePerHr:
-      'number — informational machine rate £/hr; actual rate read from library via smtMachineId',
+    smtLines: 'number — parallel SMT lines',
     smtOee: 'number 0–1 — SMT line OEE',
-    throughHoleCount: 'number — total through-hole pads/joints per board',
+    smtSides: '1 | 2 — single or double-sided assembly',
+    throughHoleCount: 'number — TH pads/joints per board',
     manualSolderCount: 'number — hand-solder joints per board',
     thLabourId: 'string — TH insertion / manual solder labour rate ID',
     thLabourTimeSecPerJoint: 'number — time per TH joint s (default 12)',
     manualLabourTimeSecPerJoint: 'number — time per hand-solder joint s (default 20)',
-    testCostPerBoard: 'number? — external test cost per board £ (ICT/FCT outsourced)',
-    conformalCoatAreaCm2: 'number? — conformal coat area cm²',
-    conformalCoatPricePerCm2: 'number? — conformal coat material + application cost £/cm²',
     assemblyYield: 'number 0–1 — first-pass assembly yield',
     reworkCostPerFailure: 'number — rework cost per failed board £',
-    amortizationVolume: 'number — build volume (informational for tooling amortization)',
+    amortizationVolume: 'number — build volume',
+    assemblyComplexity: 'low | medium | high | very_high — multiplies SMT placement time',
+    qualityGrade: 'consumer | industrial | auto_grade2 | auto_grade1 | aerospace — multiplies test/inspection time',
+    bgaCount: 'number? — BGA package count; triggers X-ray inspection operation',
+    xrayMachineId: 'string? — X-ray BGA inspection machine ID',
+    ictMachineId: 'string? — ICT / functional test machine ID',
+    ictCycleTimeSec: 'number? — ICT test time per board s (default 120)',
   };
 }
 
@@ -103,13 +152,12 @@ export function computePCBADrivers(inputs: PCBAInputs): CommodityDrivers {
   // 1. Bill-of-materials cost
   const componentCost = inputs.bom.reduce((acc, line) => acc + line.qty * line.unitPriceGBP, 0);
 
-  // 2. Ancillary material costs
+  // 2. Ancillary costs
   const conformalCoatCost =
     (inputs.conformalCoatAreaCm2 ?? 0) * (inputs.conformalCoatPricePerCm2 ?? 0);
   const externalTestCost = inputs.testCostPerBoard ?? 0;
 
   // 3. Rework / yield adjustment
-  //    Expected rework events per board = (1 / assemblyYield - 1)
   const reworkCostPerBoard =
     (1 / inputs.assemblyYield - 1) * inputs.reworkCostPerFailure;
 
@@ -127,8 +175,11 @@ export function computePCBADrivers(inputs: PCBAInputs): CommodityDrivers {
     directCost: totalDirectCost,
   };
 
-  // 4. SMT placement time
-  //    placementTimeHr = Σ( qty_i / CPH_i ) / smtLines  [hours per board]
+  // 4. Assembly complexity & quality multipliers
+  const complexityMult = ASSEMBLY_COMPLEXITY_MULTIPLIER[inputs.assemblyComplexity ?? 'low'];
+  const qualityMult = PCBA_QUALITY_MULTIPLIER[inputs.qualityGrade ?? 'consumer'];
+
+  // 5. SMT placement time (scaled by complexity)
   let smtPlacementTimeHr = 0;
   for (const line of inputs.bom) {
     const cph = CPH_BY_TYPE[line.componentType];
@@ -137,10 +188,10 @@ export function computePCBADrivers(inputs: PCBAInputs): CommodityDrivers {
     }
   }
   smtPlacementTimeHr /= inputs.smtLines;
-  // Double-sided boards require two SMT passes through the line
   smtPlacementTimeHr *= (inputs.smtSides ?? 1);
+  smtPlacementTimeHr *= complexityMult;
 
-  // 5. Through-hole + manual solder time
+  // 6. Through-hole + manual solder time
   const thAndManualTimeHr =
     (inputs.throughHoleCount * inputs.thLabourTimeSecPerJoint +
       inputs.manualSolderCount * inputs.manualLabourTimeSecPerJoint) /
@@ -148,7 +199,6 @@ export function computePCBADrivers(inputs: PCBAInputs): CommodityDrivers {
 
   const operations: OperationInput[] = [];
 
-  // SMT placement operation (only if any SMT components exist)
   if (smtPlacementTimeHr > 0) {
     operations.push({
       operationName: 'SMT Placement & Reflow',
@@ -163,7 +213,6 @@ export function computePCBADrivers(inputs: PCBAInputs): CommodityDrivers {
     });
   }
 
-  // Through-hole / hand-solder operation (bench-assembly machine; labour-dominated)
   if (thAndManualTimeHr > 0) {
     operations.push({
       operationName: 'TH Insertion & Hand Soldering',
@@ -178,7 +227,38 @@ export function computePCBADrivers(inputs: PCBAInputs): CommodityDrivers {
     });
   }
 
-  // No PCBA-level NRE tooling (covered by PCB Fab module)
+  // 7. BGA X-ray inspection (quality-scaled)
+  if ((inputs.bgaCount ?? 0) > 0 && inputs.xrayMachineId) {
+    const xrayCycleHr = (6 / 60) * qualityMult; // 6 min base × quality multiplier
+    operations.push({
+      operationName: 'BGA X-Ray Inspection',
+      machineId: inputs.xrayMachineId,
+      labourId: inputs.xrayLabourId ?? inputs.smtLabourId,
+      cycleTimeHr: xrayCycleHr,
+      partsPerCycle: 1,
+      oee: 0.90,
+      manning: 1,
+      labourTimeHr: xrayCycleHr,
+      labourEfficiency: 1.0,
+    });
+  }
+
+  // 8. ICT / functional test (quality-scaled)
+  if (inputs.ictMachineId) {
+    const ictCycleHr = ((inputs.ictCycleTimeSec ?? 120) / 3600) * qualityMult;
+    operations.push({
+      operationName: 'ICT / Functional Test',
+      machineId: inputs.ictMachineId,
+      labourId: inputs.ictLabourId ?? inputs.thLabourId,
+      cycleTimeHr: ictCycleHr,
+      partsPerCycle: 1,
+      oee: 0.95,
+      manning: 1,
+      labourTimeHr: ictCycleHr,
+      labourEfficiency: 1.0,
+    });
+  }
+
   const tooling: ToolingInput = {
     totalToolingCost: 0,
     amortizationVolume: 1,

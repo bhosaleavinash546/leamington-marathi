@@ -12,7 +12,9 @@ import { computeForgingDrivers } from '../engine/modules/forging.js';
 import { computePaintingDrivers } from '../engine/modules/painting.js';
 import { computeBIWDrivers } from '../engine/modules/biw-assembly.js';
 import { computePCBFabDrivers } from '../engine/modules/pcb-fab.js';
+import type { PCBTechnology, PCBQualityGrade } from '../engine/modules/pcb-fab.js';
 import { computePCBADrivers } from '../engine/modules/pcba.js';
+import type { AssemblyComplexityLevel, PCBAQualityGrade } from '../engine/modules/pcba.js';
 import { computeCastAndMachineDrivers } from '../engine/modules/cast-and-machine.js';
 import { computeSheetMetalFabDrivers } from '../engine/modules/sheet-metal-fab.js';
 import { adviseSheetMetalProcess } from '../engine/modules/sheet-metal-advisor.js';
@@ -953,7 +955,31 @@ function addBIWStation(d?: {stationName?: string; machineId?: string; labourId?:
 
 function renderPCBFabForm(): string {
   return `
-    <div class="section-title">Board Specification</div>
+    <div class="section-title">Technology &amp; Grade</div>
+    <div class="field-row">
+      <div class="field-group"><label>PCB Technology <span title="FR4_STD=×1.0 | FR4_HTg=×1.15 | HDI_RIGID=×2.2 | RIGID_FLEX=×3.5 | FLEX=×2.0 | RF_MICRO=×1.8 | MCPCB=×1.6 | CERAMIC=×4.0">ℹ</span></label>
+        <select id="pcbf-technology">
+          <option value="FR4_STD" selected>FR-4 Standard (×1.0)</option>
+          <option value="FR4_HTg">FR-4 High-Tg (×1.15)</option>
+          <option value="HDI_RIGID">HDI Rigid — microvias (×2.2)</option>
+          <option value="RIGID_FLEX">Rigid-Flex (×3.5)</option>
+          <option value="FLEX">Flex / Polyimide (×2.0)</option>
+          <option value="RF_MICRO">RF/Microwave — Rogers/PTFE (×1.8)</option>
+          <option value="MCPCB">Metal Core PCPCB (×1.6)</option>
+          <option value="CERAMIC">Ceramic DBC/AlN (×4.0)</option>
+        </select>
+      </div>
+      <div class="field-group"><label>Quality Grade <span title="Consumer=×1.0 | Industrial=×1.2 | Auto Gr.2=×1.5 | Auto Gr.1=×1.8 | Aerospace=×2.2">ℹ</span></label>
+        <select id="pcbf-quality">
+          <option value="consumer" selected>Consumer (×1.0)</option>
+          <option value="industrial">Industrial IPC Cls 2 (×1.2)</option>
+          <option value="auto_grade2">Automotive Grade 2 (×1.5)</option>
+          <option value="auto_grade1">Automotive Grade 1 (×1.8)</option>
+          <option value="aerospace">Aerospace IPC Cls 3 (×2.2)</option>
+        </select>
+      </div>
+    </div>
+    <div class="section-title" style="margin-top:8px">Board Specification</div>
     <div class="field-row">
       <div class="field-group"><label>Layers</label><input type="number" id="pcbf-layers" step="2" min="1" value="4"/></div>
       <div class="field-group"><label>Board Area (cm²)</label><input type="number" id="pcbf-board-area" step="1" min="1" value="50"/></div>
@@ -968,22 +994,23 @@ function renderPCBFabForm(): string {
     </div>
     <div class="field-row" style="margin-top:6px">
       <div class="field-group"><label>Via Count</label><input type="number" id="pcbf-vias" step="10" min="0" value="200"/></div>
-      <div class="field-group"><label>Micro Via Count</label><input type="number" id="pcbf-uvias" step="1" min="0" value="0"/></div>
+      <div class="field-group"><label>Micro Via Count</label><input type="number" id="pcbf-uvias" step="1" min="0" value="0" title="Laser micro-vias (HDI). Each adds £0.012 to via cost."/></div>
     </div>
     <div class="field-row" style="margin-top:6px">
       <div class="field-group"><label>Surface Finish</label><select id="pcbf-finish">
-        <option value="hasl">HASL</option><option value="enig" selected>ENIG</option>
-        <option value="osp">OSP</option><option value="hasl_lf">HASL Lead-Free</option>
-        <option value="iteq">ITEQ</option>
+        <option value="hasl">HASL</option><option value="enig" selected>ENIG (+£0.80)</option>
+        <option value="osp">OSP (+£0.30)</option><option value="hasl_lf">HASL Lead-Free (+£0.20)</option>
+        <option value="iteq">ITEQ (+£1.50)</option>
       </select></div>
-      <div class="field-group"><label>Min Trace/Space (mm)</label><input type="number" id="pcbf-trace" step="0.05" min="0.05" value="0.15"/></div>
+      <div class="field-group"><label>Min Trace/Space (mm)</label><input type="number" id="pcbf-trace" step="0.05" min="0.05" value="0.15" title="&lt;0.1 mm adds 10% fine-pitch penalty"/></div>
     </div>
     <div class="field-row" style="margin-top:6px">
-      <div class="field-group"><label>Fab Yield (0–1)</label><input type="number" id="pcbf-yield" step="0.01" min="0.01" max="1" value="0.96"/></div>
+      <div class="field-group"><label>Fab Yield (0–1)</label><input type="number" id="pcbf-yield" step="0.01" min="0.01" max="1" value="0.96" title="Good boards per panel. Use the yield model: HDI → ~0.91, Ceramic → ~0.88"/></div>
       <div class="field-group"><label>Testable % (0–1)</label><input type="number" id="pcbf-test-pct" step="0.05" min="0" max="1" value="0.5"/></div>
     </div>
     <div class="field-row" style="margin-top:6px">
       <div class="field-group" style="align-items:center;gap:6px"><label>Impedance Controlled <span title="Adds ~8% to panel cost for controlled-impedance stackup (test coupons, tighter dielectric tolerances).">ℹ</span></label><input type="checkbox" id="pcbf-impedance" style="width:auto;margin-top:2px"/></div>
+      <div class="field-group" style="align-items:center;gap:6px"><label>Fine-pitch BGA present <span title="Used by yield model for guidance only; affects fab yield suggestion.">ℹ</span></label><input type="checkbox" id="pcbf-finepitch-bga" style="width:auto;margin-top:2px"/></div>
     </div>
     <div class="section-title" style="margin-top:8px">Pricing &amp; NRE</div>
     <div class="field-row">
@@ -999,7 +1026,27 @@ function renderPCBFabForm(): string {
 
 function renderPCBAForm(): string {
   return `
-    <div class="section-title">PCB &amp; Assembly</div>
+    <div class="section-title">Complexity &amp; Grade</div>
+    <div class="field-row">
+      <div class="field-group"><label>Assembly Complexity <span title="Multiplies SMT placement time. Low=×1.0 (≤100 comps, no BGAs), Medium=×1.3 (100–300, fine-pitch), High=×1.7 (>300, BGAs, 2-sided), Very High=×2.0 (ADAS/domain)">ℹ</span></label>
+        <select id="pcba-complexity">
+          <option value="low" selected>Low ≤100 comps (×1.0)</option>
+          <option value="medium">Medium 100–300, fine-pitch (×1.3)</option>
+          <option value="high">High >300, BGAs, 2-sided (×1.7)</option>
+          <option value="very_high">Very High — ADAS/Domain (×2.0)</option>
+        </select>
+      </div>
+      <div class="field-group"><label>Quality Grade <span title="Multiplies test/inspection time. Auto Gr.2=×1.5, Gr.1=×1.8">ℹ</span></label>
+        <select id="pcba-quality">
+          <option value="consumer" selected>Consumer (×1.0)</option>
+          <option value="industrial">Industrial (×1.2)</option>
+          <option value="auto_grade2">Automotive Grade 2 (×1.5)</option>
+          <option value="auto_grade1">Automotive Grade 1 (×1.8)</option>
+          <option value="aerospace">Aerospace (×2.2)</option>
+        </select>
+      </div>
+    </div>
+    <div class="section-title" style="margin-top:8px">PCB &amp; SMT</div>
     <div class="field-row">
       <div class="field-group"><label>PCB Cost/Board (£)</label><input type="number" id="pcba-pcb-cost" step="0.1" min="0" value="2.50"/></div>
     </div>
@@ -1026,6 +1073,15 @@ function renderPCBAForm(): string {
     </div>
     <div class="field-row" style="margin-top:6px">
       <div class="field-group"><label>Manual Time/Joint (s)</label><input type="number" id="pcba-man-time" step="1" min="1" value="20"/></div>
+    </div>
+    <div class="section-title" style="margin-top:8px">Inspection &amp; Test</div>
+    <div class="field-row">
+      <div class="field-group"><label>BGA Count <span title="Number of BGA packages. If >0 and X-ray machine is set, an X-ray inspection operation is added.">ℹ</span></label><input type="number" id="pcba-bga-count" step="1" min="0" value="0"/></div>
+      <div class="field-group"><label>ICT Cycle Time (s)</label><input type="number" id="pcba-ict-time" step="10" min="0" value="0" title="ICT fixture test time per board. 0 = no ICT operation. Typical: 90–180 s."/></div>
+    </div>
+    <div class="field-row" style="margin-top:6px">
+      <div class="field-group"><label>X-Ray Machine <span title="Required if BGA Count > 0. Select 'xray-bga-inspection' (£90/hr).">ℹ</span></label><select id="pcba-xray-mach" class="machine-select"></select></div>
+      <div class="field-group"><label>ICT Machine <span title="Select 'ict-automotive' (£110/hr) or leave at default for no ICT.">ℹ</span></label><select id="pcba-ict-mach" class="machine-select"></select></div>
     </div>
     <div class="section-title" style="margin-top:8px">Yield &amp; Rework</div>
     <div class="field-row">
@@ -2079,6 +2135,8 @@ function collectBIWInput(): UniversalStackInput {
 }
 
 function collectPCBFabInput(): UniversalStackInput {
+  const PCB_TECHS: PCBTechnology[] = ['FR4_STD','FR4_HTg','HDI_RIGID','RIGID_FLEX','FLEX','RF_MICRO','MCPCB','CERAMIC'];
+  const PCB_QUALS: PCBQualityGrade[] = ['consumer','industrial','auto_grade2','auto_grade1','aerospace'];
   const drivers = computePCBFabDrivers({
     layers: num('pcbf-layers') || 2,
     boardAreaCm2: num('pcbf-board-area'),
@@ -2091,11 +2149,14 @@ function collectPCBFabInput(): UniversalStackInput {
     surfaceFinish: validSel<'hasl' | 'enig' | 'osp' | 'hasl_lf' | 'iteq'>('pcbf-finish', ['hasl', 'enig', 'osp', 'hasl_lf', 'iteq'], 'hasl'),
     minTraceSpaceMm: num('pcbf-trace'),
     impedanceControlled: (document.getElementById('pcbf-impedance') as HTMLInputElement)?.checked ?? false,
+    hasFinePitchBGA: (document.getElementById('pcbf-finepitch-bga') as HTMLInputElement)?.checked ?? false,
     fabYield: num('pcbf-yield'),
     testablePct: num('pcbf-test-pct'),
     nreCost: num('pcbf-nre'),
     amortizationVolume: num('pcbf-amort') || 1,
     basePanelPriceGBP: num('pcbf-panel-price'),
+    technology: validSel<PCBTechnology>('pcbf-technology', PCB_TECHS, 'FR4_STD'),
+    qualityGrade: validSel<PCBQualityGrade>('pcbf-quality', PCB_QUALS, 'consumer'),
   });
   return { ...getUniversalTail(), rawMaterial: drivers.rawMaterial, operations: drivers.operations, tooling: drivers.tooling };
 }
@@ -2113,6 +2174,12 @@ function collectPCBAInput(): UniversalStackInput {
       moq: parseInt((el<HTMLInputElement>(`${id}-moq`))?.value) || 1,
     };
   });
+  const ASSEMBLY_LEVELS: AssemblyComplexityLevel[] = ['low','medium','high','very_high'];
+  const PCBA_QUALS: PCBAQualityGrade[] = ['consumer','industrial','auto_grade2','auto_grade1','aerospace'];
+  const bgaCount = num('pcba-bga-count') || 0;
+  const ictTimeSec = num('pcba-ict-time') || 0;
+  const xrayMachId = sel('pcba-xray-mach');
+  const ictMachId = sel('pcba-ict-mach');
   const drivers = computePCBADrivers({
     pcbCostPerBoard: num('pcba-pcb-cost'),
     bom,
@@ -2131,6 +2198,12 @@ function collectPCBAInput(): UniversalStackInput {
     reworkCostPerFailure: num('pcba-rework-cost'),
     amortizationVolume: num('pcba-amort') || 1,
     testCostPerBoard: num('pcba-test-cost') || undefined,
+    assemblyComplexity: validSel<AssemblyComplexityLevel>('pcba-complexity', ASSEMBLY_LEVELS, 'low'),
+    qualityGrade: validSel<PCBAQualityGrade>('pcba-quality', PCBA_QUALS, 'consumer'),
+    bgaCount: bgaCount || undefined,
+    xrayMachineId: (bgaCount > 0 && xrayMachId) ? xrayMachId : undefined,
+    ictMachineId: (ictTimeSec > 0 && ictMachId) ? ictMachId : undefined,
+    ictCycleTimeSec: ictTimeSec || undefined,
   });
   return { ...getUniversalTail(), rawMaterial: drivers.rawMaterial, operations: drivers.operations, tooling: drivers.tooling };
 }

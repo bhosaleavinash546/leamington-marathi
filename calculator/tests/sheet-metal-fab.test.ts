@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { computeSheetMetalFabDrivers, SM_FAB_TOLERANCE_FACTOR, ASSIST_GAS_COST_PER_HR } from '../src/engine/modules/sheet-metal-fab.js';
+import { computeSheetMetalFabDrivers, ASSIST_GAS_COST_PER_HR } from '../src/engine/modules/sheet-metal-fab.js';
 import { adviseSheetMetalProcess, classifyVolume } from '../src/engine/modules/sheet-metal-advisor.js';
 import { computeUniversalStack } from '../src/engine/core.js';
 import { DEFAULT_RATE_LIBRARY } from '../src/engine/rate-library.js';
