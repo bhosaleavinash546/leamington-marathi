@@ -63,7 +63,7 @@ export function computeBIWDrivers(inputs: BIWAssemblyInputs): CommodityDrivers {
     directCost: inputs.subPartTotalCost,
   };
 
-  // Joining consumable cost per assembly
+  // Joining consumable cost per assembly (electrodes, rivets, adhesive, wire)
   const joiningCostPerPart = inputs.joining.reduce(
     (acc, j) => acc + j.count * j.costPerJoint,
     0
@@ -82,13 +82,17 @@ export function computeBIWDrivers(inputs: BIWAssemblyInputs): CommodityDrivers {
     labourEfficiency: s.labourEfficiency,
   }));
 
-  // Joining consumables are recurring per-part costs; fold into tooling so that:
-  //   toolingPerPart = fixturingToolingCost / amortizationVolume + joiningCostPerPart
+  // Fixturing tooling only — joining consumables are recurring material costs, not capital tooling
   const tooling: ToolingInput = {
-    totalToolingCost: inputs.fixturingToolingCost + joiningCostPerPart * inputs.amortizationVolume,
+    totalToolingCost: inputs.fixturingToolingCost,
     amortizationVolume: inputs.amortizationVolume,
     mode: 'amortized',
   };
 
-  return { rawMaterial, operations, tooling };
+  // Joining consumables (electrode wear, rivets, adhesive, wire) → rawMaterial.consumablesCostPerPart
+  const rawMaterialFinal: RawMaterialInput = joiningCostPerPart > 0
+    ? { ...rawMaterial, consumablesCostPerPart: joiningCostPerPart }
+    : rawMaterial;
+
+  return { rawMaterial: rawMaterialFinal, operations, tooling };
 }

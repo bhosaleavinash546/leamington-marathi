@@ -200,9 +200,10 @@ export function computeUniversalStack(
   const packaging = input.packagingPerPart;
   const logistics = input.logisticsPerPart;
 
-  // 7. Overhead
-  const factoryCost = rawMaterialCost + processTotal + labourTotal + toolingPerPart + packaging + logistics;
-  const overhead = input.overheadPct * factoryCost;
+  // 7. Overhead — base is conversion cost only (excl. packaging/logistics which are outbound costs)
+  const factoryCostBase = rawMaterialCost + processTotal + labourTotal + toolingPerPart;
+  const overhead = input.overheadPct * factoryCostBase;
+  const factoryCost = factoryCostBase + packaging + logistics;
   const subtotal = factoryCost + overhead;
 
   // 8. Margin

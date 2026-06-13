@@ -60,7 +60,7 @@ describe('Forging module', () => {
     expect(r.total).toBeGreaterThan(0);
   });
 
-  it('heat treat cost folds into tooling bucket', () => {
+  it('heat treat moves to rawMaterial consumables; die life drives tooling count', () => {
     const withHT: ForgingInputs = {
       ...FORGE_INPUTS,
       heatTreatCostPerKg: 0.80,
@@ -68,9 +68,11 @@ describe('Forging module', () => {
     };
     const d = computeForgingDrivers(withHT);
     const r = computeUniversalStack({ partName: 'Forge HT', ...d, ...STACK_DEFAULTS }, DEFAULT_RATE_LIBRARY);
-    const expectedHT = 0.80 * FORGE_INPUTS.partWeightKg;
-    const baseTool = FORGE_INPUTS.dieCost / FORGE_INPUTS.amortizationVolume;
-    expect(r.breakdown.tooling).toBeCloseTo(baseTool + expectedHT, 3);
+    // Die life=50000, amortVol=100000 → 2 die sets → tooling = dieCost×2 / amortVol
+    const numSets = Math.ceil(withHT.amortizationVolume / FORGE_INPUTS.dieLife);
+    expect(r.breakdown.tooling).toBeCloseTo((FORGE_INPUTS.dieCost * numSets) / withHT.amortizationVolume, 3);
+    // Heat treat is a per-part recurring cost → appears in rawMaterial, not tooling
+    expect(d.rawMaterial.consumablesCostPerPart).toBeCloseTo(0.80 * FORGE_INPUTS.partWeightKg, 4);
   });
 });
 
@@ -189,12 +191,14 @@ describe('BIW Assembly module', () => {
     expect(d.rawMaterial.directCost).toBe(BIW_INPUTS.subPartTotalCost);
   });
 
-  it('joining cost folds into tooling bucket correctly', () => {
+  it('joining consumables move to rawMaterial; tooling = fixturing cost only', () => {
     const d = computeBIWDrivers(BIW_INPUTS);
     const joiningCostPerPart = 120 * 0.05 + 0.8 * 1.20;
     const r = computeUniversalStack({ partName: 'BIW Test', ...d, ...STACK_DEFAULTS }, DEFAULT_RATE_LIBRARY);
-    const expectedTooling = BIW_INPUTS.fixturingToolingCost / BIW_INPUTS.amortizationVolume + joiningCostPerPart;
-    expect(r.breakdown.tooling).toBeCloseTo(expectedTooling, 4);
+    // Tooling = fixturing only (joining consumables are recurring material costs, not capital)
+    expect(r.breakdown.tooling).toBeCloseTo(BIW_INPUTS.fixturingToolingCost / BIW_INPUTS.amortizationVolume, 4);
+    // Joining cost (electrode wear, rivets, adhesive) appears in rawMaterial.consumablesCostPerPart
+    expect(d.rawMaterial.consumablesCostPerPart).toBeCloseTo(joiningCostPerPart, 4);
   });
 
   it('station count = number of operations', () => {

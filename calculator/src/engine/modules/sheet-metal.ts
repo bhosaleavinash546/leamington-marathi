@@ -105,8 +105,10 @@ export function computeSheetMetalDrivers(inputs: SheetMetalInputs): CommodityDri
     });
   }
 
+  // Number of die sets needed over the programme life
+  const numDieSets = inputs.dieLife > 0 ? Math.ceil(inputs.amortizationVolume / inputs.dieLife) : 1;
   const tooling: ToolingInput = {
-    totalToolingCost: inputs.dieCostEstimate,
+    totalToolingCost: inputs.dieCostEstimate * numDieSets,
     amortizationVolume: inputs.amortizationVolume,
     mode: 'amortized',
   };

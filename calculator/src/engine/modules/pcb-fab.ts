@@ -69,10 +69,10 @@ export function computePCBFabDrivers(inputs: PCBFabInputs): CommodityDrivers {
   // Layer complexity factor (clamp to nearest known; extrapolate linearly above 10)
   const layerFactor = LAYER_FACTOR[inputs.layers] ?? inputs.layers * 0.5;
 
-  // Base material Tg uplift
+  // Base material Tg uplift (>= 170 = high-Tg, >= 150 = mid-Tg, < 150 = standard FR4)
   const materialFactor =
-    inputs.baseMaterialTg > 170 ? 1.30 :
-    inputs.baseMaterialTg > 150 ? 1.15 :
+    inputs.baseMaterialTg >= 170 ? 1.30 :
+    inputs.baseMaterialTg >= 150 ? 1.15 :
     1.00;
 
   // Surface finish adder per board

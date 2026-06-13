@@ -45,12 +45,13 @@
  *   packaging     =                         £0.150000
  *   logistics     =                         £0.250000
  *
- *   factory_cost  = 2.326923 + 11.470588 + 4.782609 + 0.30 + 0.15 + 0.25
- *                 = £19.280120
- *   overhead      = 0.12 × 19.280120      = £2.313614
- *   subtotal      = 19.280120 + 2.313614  = £21.593734
- *   margin        = 0.08 × 21.593734      = £1.727499
- *   total         = 21.593734 + 1.727499  = £23.321233
+ *   factory_cost_base = 2.326923 + 11.470588 + 4.782609 + 0.30
+ *                     = £18.880120
+ *   overhead      = 0.12 × 18.880120      = £2.265614   (overhead on conversion only, not on P&L)
+ *   factory_cost  = 18.880120 + 0.15 + 0.25 = £19.280120
+ *   subtotal      = 19.280120 + 2.265614  = £21.545734
+ *   margin        = 0.08 × 21.545734      = £1.723659
+ *   total         = 21.545734 + 1.723659  = £23.269393
  *
  * NOTE: machine rates above are derived from the DEFAULT_RATE_LIBRARY buildups.
  * The tests below verify that the engine reproduces those buildups correctly.
@@ -150,8 +151,10 @@ function handCalc(lib: RateLibrary) {
   const packaging = 0.15;
   const logistics = 0.25;
 
-  const factoryCost = rawMaterial + process + labourCost + tooling + packaging + logistics;
-  const overhead = 0.12 * factoryCost;
+  // Overhead base excludes packaging and logistics (outbound costs)
+  const factoryCostBase = rawMaterial + process + labourCost + tooling;
+  const overhead = 0.12 * factoryCostBase;
+  const factoryCost = factoryCostBase + packaging + logistics;
   const subtotal = factoryCost + overhead;
   const margin = 0.08 * subtotal;
   const total = subtotal + margin;

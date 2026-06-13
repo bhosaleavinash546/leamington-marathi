@@ -43,7 +43,7 @@ export function getInjectionMouldingInputSchema(): Record<string, string> {
     manning: 'number — operators per machine',
     labourEfficiency: 'number 0–1',
     mouldCost: 'number — total mould cost £',
-    mouldLife: 'number — shots per mould life (used for information; amortizationVolume controls £/part)',
+    mouldLife: 'number — shots per mould life. numMoulds = ceil(amortVol / (mouldLife × cavities)); drives total tooling cost',
     amortizationVolume: 'number — parts over which to amortize mould cost',
   };
 }
@@ -79,8 +79,11 @@ export function computeInjectionMouldingDrivers(inputs: InjectionMouldingInputs)
     },
   ];
 
+  // mouldLife is in shots; one shot produces `cavities` parts
+  const shotsNeeded = inputs.amortizationVolume / inputs.cavities;
+  const numMoulds = inputs.mouldLife > 0 ? Math.ceil(shotsNeeded / inputs.mouldLife) : 1;
   const tooling: ToolingInput = {
-    totalToolingCost: inputs.mouldCost,
+    totalToolingCost: inputs.mouldCost * numMoulds,
     amortizationVolume: inputs.amortizationVolume,
     mode: 'amortized',
   };

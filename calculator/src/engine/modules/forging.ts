@@ -97,17 +97,23 @@ export function computeForgingDrivers(inputs: ForgingInputs): CommodityDrivers {
     });
   }
 
-  // Ancillary per-part costs (heat treat, descale) folded into tooling
-  // toolingPerPart = dieCost/amortizationVolume + heatTreatCostPerPart + descaleCostPerPart
-  const heatTreatCostPerPart = (inputs.heatTreatCostPerKg ?? 0) * inputs.partWeightKg;
-  const descaleCostPerPart = (inputs.descaleCostPerKg ?? 0) * billetWeightKg;
-  const ancillaryCostTotal = (heatTreatCostPerPart + descaleCostPerPart) * inputs.amortizationVolume;
+  // Number of die sets needed over the programme life
+  const numDieSets = inputs.dieLife > 0 ? Math.ceil(inputs.amortizationVolume / inputs.dieLife) : 1;
 
   const tooling: ToolingInput = {
-    totalToolingCost: inputs.dieCost + ancillaryCostTotal,
+    totalToolingCost: inputs.dieCost * numDieSets,
     amortizationVolume: inputs.amortizationVolume,
     mode: 'amortized',
   };
 
-  return { rawMaterial, operations, tooling };
+  // Heat treat and descale are recurring per-part costs → rawMaterial.consumablesCostPerPart
+  const heatTreatCostPerPart = (inputs.heatTreatCostPerKg ?? 0) * inputs.partWeightKg;
+  const descaleCostPerPart = (inputs.descaleCostPerKg ?? 0) * billetWeightKg;
+  const consumablesCostPerPart = heatTreatCostPerPart + descaleCostPerPart;
+
+  return {
+    rawMaterial: consumablesCostPerPart > 0 ? { ...rawMaterial, consumablesCostPerPart } : rawMaterial,
+    operations,
+    tooling,
+  };
 }
