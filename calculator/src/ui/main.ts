@@ -28,6 +28,7 @@ import { exportToExcelBlob } from '../export/excel.js';
 import { printPDF } from '../export/pdf.js';
 import type { RateLibrary, UniversalStackInput, PartCostResult, CommodityType, SupplierQuote } from '../engine/types.js';
 import type { BOMLine, ComponentType } from '../engine/modules/pcba.js';
+import { parseBOMCSV } from '../engine/bom-csv.js';
 import type { MachiningOperation } from '../engine/modules/machining.js';
 import type { CoatType } from '../engine/modules/painting.js';
 import type { JoiningType } from '../engine/modules/biw-assembly.js';
@@ -71,9 +72,38 @@ function escHtml(s: string): string {
   return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
+function validSel<T extends string>(id: string, valid: readonly T[], fallback: T): T {
+  const v = sel(id);
+  return (valid as readonly string[]).includes(v) ? (v as T) : fallback;
+}
+
 // ─── Populate selects ─────────────────────────────────────────────────────────
 
+let _libSig = '';
+
+function _currentLibSig(): string {
+  return `${library.materials.length}:${library.machines.length}:${library.labour.length}`;
+}
+
+function _setSelectOpts(sel: HTMLSelectElement, html: string, sig: string): void {
+  if (sel.dataset.libSig === sig) return;
+  const current = sel.value;
+  sel.innerHTML = html;
+  if (current) sel.value = current;
+  sel.dataset.libSig = sig;
+}
+
 function populateSelects(): void {
+  const sig = _currentLibSig();
+  if (sig === _libSig) {
+    // Library unchanged — only populate selects that are new (no sig yet)
+    const hasNew =
+      Array.from(document.querySelectorAll<HTMLSelectElement>('.material-select,.machine-select,.labour-select'))
+        .some(s => !s.dataset.libSig);
+    if (!hasNew) return;
+  }
+  _libSig = sig;
+
   const matOpts = library.materials.map(m =>
     `<option value="${m.id}">${m.grade} (${m.region}) — £${m.pricePerKg.toFixed(2)}/kg</option>`
   ).join('');
@@ -84,15 +114,9 @@ function populateSelects(): void {
     `<option value="${l.id}">${l.skillLevel} (${l.region}) — £${l.fullyLoadedRatePerHr}/hr</option>`
   ).join('');
 
-  document.querySelectorAll<HTMLSelectElement>('.material-select').forEach(s => {
-    const c = s.value; s.innerHTML = matOpts; if (c) s.value = c;
-  });
-  document.querySelectorAll<HTMLSelectElement>('.machine-select').forEach(s => {
-    const c = s.value; s.innerHTML = machOpts; if (c) s.value = c;
-  });
-  document.querySelectorAll<HTMLSelectElement>('.labour-select').forEach(s => {
-    const c = s.value; s.innerHTML = labOpts; if (c) s.value = c;
-  });
+  document.querySelectorAll<HTMLSelectElement>('.material-select').forEach(s => _setSelectOpts(s, matOpts, sig));
+  document.querySelectorAll<HTMLSelectElement>('.machine-select').forEach(s => _setSelectOpts(s, machOpts, sig));
+  document.querySelectorAll<HTMLSelectElement>('.labour-select').forEach(s => _setSelectOpts(s, labOpts, sig));
 }
 
 // ─── Form: Machining ─────────────────────────────────────────────────────────
@@ -712,21 +736,11 @@ function importBOMFromCSV(): void {
   const reader = new FileReader();
   reader.onload = (e) => {
     const text = e.target?.result as string;
-    const lines = text.split(/\r?\n/).filter(l => l.trim());
-    const startIdx = lines[0].toLowerCase().includes('refdes') ? 1 : 0;
+    const { rows } = parseBOMCSV(text);
     el('bom-body').innerHTML = '';
     bomCount = 0;
-    for (const line of lines.slice(startIdx)) {
-      const parts = line.split(',');
-      if (parts.length < 6) continue;
-      addBOMRow({
-        refDes: parts[0].trim(),
-        componentType: parts[1].trim() as ComponentType,
-        description: parts[2].trim(),
-        qty: parseInt(parts[3]) || 1,
-        unitPriceGBP: parseFloat(parts[4]) || 0,
-        moq: parseInt(parts[5]) || 1,
-      });
+    for (const row of rows) {
+      addBOMRow(row);
     }
     inp.value = '';
   };
@@ -1032,6 +1046,9 @@ async function analyzeCAD(): Promise<void> {
     progressLabel.textContent = label;
   };
 
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(new DOMException('Analysis timed out after 90s', 'TimeoutError')), 90_000);
+
   try {
     updateProgress(20, 'Uploading file…');
     const formData = new FormData();
@@ -1041,7 +1058,9 @@ async function analyzeCAD(): Promise<void> {
     if (apiKey) headers['x-api-key'] = apiKey;
 
     updateProgress(40, 'Preprocessing geometry…');
-    const res = await fetch('/api/cad/analyze', { method: 'POST', headers, body: formData });
+    const res = await fetch('/api/cad/analyze', {
+      method: 'POST', headers, body: formData, signal: controller.signal,
+    });
 
     updateProgress(80, 'AI analysis in progress…');
     const data = await res.json() as { success?: boolean; analysis?: CADAnalysisResult; error?: string };
@@ -1059,13 +1078,15 @@ async function analyzeCAD(): Promise<void> {
     renderCADResults(cadAnalysisResult);
   } catch (err) {
     progress.style.display = 'none';
-    analyzeBtn.removeAttribute('disabled');
     el('cad-results').innerHTML = `
       <div class="risk-card High" style="margin-top:10px">
         <div class="risk-feature">Analysis Error</div>
         <div>${escHtml(err instanceof Error ? err.message : String(err))}</div>
         <div class="risk-suggestion">Ensure the API server is running (<code>npm run server</code>) and ANTHROPIC_API_KEY is configured.</div>
       </div>`;
+  } finally {
+    clearTimeout(timeoutId);
+    analyzeBtn.removeAttribute('disabled');
   }
 }
 
@@ -1420,7 +1441,7 @@ function collectMachiningInput(): UniversalStackInput {
     const id = card.dataset.opId!;
     return {
       name: (el<HTMLInputElement>(`${id}-name`))?.value ?? '',
-      type: (el<HTMLSelectElement>(`${id}-type`))?.value as MachiningOperation['type'] ?? 'turning',
+      type: validSel<MachiningOperation['type']>(`${id}-type`, ['turning','milling_3ax','milling_5ax','drilling','grinding','tapping','boring'], 'turning'),
       machineId: sel(`${id}-mach`),
       labourId: sel(`${id}-lab`),
       cycleTimeHr: parseFloat((el<HTMLInputElement>(`${id}-ct`))?.value) || 0,
@@ -1471,7 +1492,7 @@ function collectSheetMetalInput(): UniversalStackInput {
     manning: num('sm-manning'),
     labourEfficiency: num('sm-lab-eff'),
     numOperations: num('sm-num-ops') || 1,
-    dieType: sel('sm-die-type') as 'progressive' | 'transfer' | 'single_stage',
+    dieType: validSel<'progressive' | 'transfer' | 'single_stage'>('sm-die-type', ['progressive', 'transfer', 'single_stage'], 'progressive'),
     dieLife: num('sm-die-life'),
     dieCostEstimate: num('sm-die-cost'),
     amortizationVolume: num('sm-amort') || 1,
@@ -1506,7 +1527,7 @@ function collectIMMInput(): UniversalStackInput {
 }
 
 function collectCastingInput(): UniversalStackInput {
-  const subtype = sel('cast-subtype') as 'hpdc' | 'sand' | 'gravity' | 'investment';
+  const subtype = validSel<CastingSubtype>('cast-subtype', ['hpdc', 'sand', 'gravity', 'investment'], 'hpdc');
   const common = {
     subtype,
     materialId: sel('cast-mat'),
@@ -1562,7 +1583,7 @@ function collectPaintingInput(): UniversalStackInput {
   const coats = Array.from(coatRows).map(row => {
     const id = row.dataset.coatId!;
     return {
-      coatType: (el<HTMLSelectElement>(`${id}-type`))?.value as CoatType ?? 'basecoat',
+      coatType: validSel<CoatType>(`${id}-type`, ['pretreat','e_coat','primer','basecoat','clearcoat','powder'], 'basecoat'),
       materialId: (el<HTMLInputElement>(`${id}-mat`))?.value ?? 'mat-virtual',
       dftMicrons: parseFloat((el<HTMLInputElement>(`${id}-dft`))?.value) || 20,
       solidsPct: parseFloat((el<HTMLInputElement>(`${id}-sol`))?.value) || 0.35,
@@ -1592,7 +1613,7 @@ function collectBIWInput(): UniversalStackInput {
   const joining = Array.from(joinRows).map(row => {
     const id = row.dataset.joinId!;
     return {
-      type: (el<HTMLSelectElement>(`${id}-type`))?.value as JoiningType ?? 'spot_weld',
+      type: validSel<JoiningType>(`${id}-type`, ['spot_weld','spr_rivet','adhesive_m','sealer_m','mig_weld_m','clinch'], 'spot_weld'),
       count: parseFloat((el<HTMLInputElement>(`${id}-count`))?.value) || 0,
       costPerJoint: parseFloat((el<HTMLInputElement>(`${id}-cost`))?.value) || 0,
     };
@@ -1630,7 +1651,7 @@ function collectPCBFabInput(): UniversalStackInput {
     copperWeightOz: num('pcbf-cu'),
     viaCount: num('pcbf-vias'),
     microViaCount: num('pcbf-uvias'),
-    surfaceFinish: sel('pcbf-finish') as 'hasl' | 'enig' | 'osp' | 'hasl_lf' | 'iteq',
+    surfaceFinish: validSel<'hasl' | 'enig' | 'osp' | 'hasl_lf' | 'iteq'>('pcbf-finish', ['hasl', 'enig', 'osp', 'hasl_lf', 'iteq'], 'hasl'),
     minTraceSpaceMm: num('pcbf-trace'),
     fabYield: num('pcbf-yield'),
     testablePct: num('pcbf-test-pct'),
@@ -1676,7 +1697,7 @@ function collectPCBAInput(): UniversalStackInput {
 }
 
 function collectCastAndMachineInput(): UniversalStackInput {
-  const subtype = sel('cam-cast-subtype') as CastingSubtype;
+  const subtype = validSel<CastingSubtype>('cam-cast-subtype', ['hpdc', 'sand', 'gravity', 'investment'], 'hpdc');
 
   const camOps: MachiningOperation[] = Array.from(
     document.querySelectorAll<HTMLElement>('#cam-mach-ops-container .op-card')
@@ -1684,7 +1705,7 @@ function collectCastAndMachineInput(): UniversalStackInput {
     const id = card.dataset.opId!;
     return {
       name: (el<HTMLInputElement>(`${id}-name`))?.value ?? '',
-      type: (el<HTMLSelectElement>(`${id}-type`))?.value as MachiningOperation['type'] ?? 'milling_3ax',
+      type: validSel<MachiningOperation['type']>(`${id}-type`, ['turning','milling_3ax','milling_5ax','drilling','grinding','tapping','boring'], 'milling_3ax'),
       machineId: sel(`${id}-mach`),
       labourId: sel(`${id}-lab`),
       cycleTimeHr: parseFloat((el<HTMLInputElement>(`${id}-ct`))?.value) || 0,
@@ -1760,11 +1781,14 @@ function collectInput(): UniversalStackInput {
 function compute(): void {
   const errBox = el('validation-errors');
   const warnBox = el('validation-warnings');
+  const calcBtn = el<HTMLButtonElement>('calc-btn');
+  calcBtn.disabled = true;
 
   let input: UniversalStackInput;
   try {
     input = collectInput();
   } catch (err) {
+    calcBtn.disabled = false;
     errBox.style.display = 'block';
     errBox.innerHTML = `<strong>Input error:</strong> ${escHtml(err instanceof Error ? err.message : String(err))}`;
     return;
@@ -1773,6 +1797,7 @@ function compute(): void {
   const validation = validateStackInput(input, library);
 
   if (!validation.valid) {
+    calcBtn.disabled = false;
     errBox.style.display = 'block';
     errBox.innerHTML = `<strong>Errors:</strong><ul>${validation.errors.map(e => `<li>${escHtml(e.field)}: ${escHtml(e.message)}</li>`).join('')}</ul>`;
     warnBox.style.display = 'none';
@@ -1825,6 +1850,8 @@ function compute(): void {
   } catch (err) {
     errBox.style.display = 'block';
     errBox.innerHTML = `<strong>Calculation error:</strong> ${escHtml(err instanceof Error ? err.message : String(err))}`;
+  } finally {
+    calcBtn.disabled = false;
   }
 }
 

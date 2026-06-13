@@ -69,8 +69,11 @@ export function deleteAssembly(id: string): void {
 }
 
 export function newAssembly(name: string): Assembly {
+  const uid = typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
+    ? crypto.randomUUID()
+    : `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 9)}`;
   return {
-    id: `asm-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+    id: `asm-${uid}`,
     name,
     description: '',
     createdAt: new Date().toISOString(),

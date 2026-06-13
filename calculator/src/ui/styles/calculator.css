@@ -208,9 +208,45 @@ header .back-link:hover { text-decoration: underline; }
   margin-bottom: 8px;
 }
 
+/* ── Tablet (769px–1024px): two-column but narrower input panel ─────────── */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .layout { grid-template-columns: 300px 1fr; }
+  .field-row { flex-direction: column; gap: 6px; }
+  .field-group { min-width: 0; width: 100%; }
+  .commodity-tabs { gap: 3px; }
+  .ctab { padding: 3px 7px; font-size: 0.68rem; }
+}
+
+/* ── Mobile (≤768px): single-column stack ───────────────────────────────── */
 @media (max-width: 768px) {
-  .layout { grid-template-columns: 1fr; height: auto; }
-  .input-panel { border-right: none; border-bottom: 1px solid var(--border); }
+  .layout { grid-template-columns: 1fr; height: auto; overflow: visible; }
+  .input-panel {
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+    max-height: 60vh;
+  }
+  .results-panel { min-height: 50vh; }
+  .field-row { flex-direction: column; gap: 6px; }
+  .field-group { min-width: 0; width: 100%; }
+  .commodity-tabs { gap: 3px; padding: 6px 4px; }
+  .ctab { padding: 3px 8px; font-size: 0.7rem; }
+  .results-tabs { overflow-x: auto; white-space: nowrap; }
+  .rtab { padding: 7px 12px; font-size: 0.75rem; }
+  .breakdown-table th, .breakdown-table td { padding: 5px 6px; font-size: 0.78rem; }
+  .tornado-bar-wrap { min-width: 80px; }
+  .modal-inner { width: 96vw; margin: 8px auto; padding: 16px; }
+  header { padding: 10px 14px; }
+  header h1 { font-size: 1rem; }
+}
+
+/* ── Small mobile (≤480px) ─────────────────────────────────────────────── */
+@media (max-width: 480px) {
+  .layout { grid-template-columns: 1fr; }
+  .input-panel { max-height: 55vh; padding: 10px; }
+  .ctab { padding: 2px 6px; font-size: 0.65rem; }
+  .calc-btn { font-size: 0.85rem; padding: 10px; }
+  .breakdown-total-row td { font-size: 0.85rem; }
+  .chart-wrap canvas { max-width: 200px !important; max-height: 200px !important; }
 }
 
 /* ── Commodity tabs ──────────────────────────────────────────────────────── */

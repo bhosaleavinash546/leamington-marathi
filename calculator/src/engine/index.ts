@@ -17,3 +17,4 @@ export * from './modules/cast-and-machine.js';
 export * from './ai-analysis.js';
 export * from './assembly.js';
 export * from './learning-curve.js';
+export * from './bom-csv.js';

@@ -27,7 +27,7 @@ export async function initScenarioStore(): Promise<void> {
     const scKeys = allKeys.filter((k): k is string => typeof k === 'string' && k.startsWith(PREFIX));
     const loaded = await Promise.all(scKeys.map(k => idb.get<Scenario>(k)));
     _scenarios = (loaded.filter(Boolean) as Scenario[])
-      .sort((a, b) => a.createdAt.localeCompare(b.createdAt));
+      .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
   }
   _ready = true;
 }
