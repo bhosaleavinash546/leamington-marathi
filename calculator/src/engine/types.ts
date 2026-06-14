@@ -138,6 +138,12 @@ export interface ToolingInput {
   mode: ToolingMode;
 }
 
+export interface LearningCurveConfig {
+  enabled: boolean;
+  curvePct: number;          // e.g. 85 = Wright's 85% (cost drops 15% per volume doubling)
+  referenceVolume: number;   // cumulative volume at which base labour cost was established
+}
+
 export interface UniversalStackInput {
   partName: string;
   rawMaterial: RawMaterialInput;
@@ -147,6 +153,10 @@ export interface UniversalStackInput {
   logisticsPerPart: number;
   overheadPct: number;
   marginPct: number;
+  /** Optional: when set, adjusts total labour cost using Wright's Law */
+  learningCurve?: LearningCurveConfig;
+  /** Annual production volume — required when learningCurve is enabled */
+  annualVolume?: number;
 }
 
 // ─── Universal Stack Output ──────────────────────────────────────────────────
@@ -188,6 +198,14 @@ export interface TraceabilityRecord {
   confidence: Confidence;
 }
 
+export interface LearningCurveApplied {
+  adjustmentFactor: number;
+  labourSaving: number;
+  curvePct: number;
+  referenceVolume: number;
+  annualVolume: number;
+}
+
 export interface PartCostResult {
   partName: string;
   breakdown: Breakdown8Bucket;
@@ -197,6 +215,8 @@ export interface PartCostResult {
   total: number;
   toolingNRE?: number;
   traceability: TraceabilityRecord[];
+  learningCurveApplied?: LearningCurveApplied;
+  warnings?: string[];
 }
 
 // ─── Validation ──────────────────────────────────────────────────────────────

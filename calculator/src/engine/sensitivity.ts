@@ -53,8 +53,9 @@ export function runSensitivity(
         minusCost: minus.total,
         range: Math.abs(plus.total - minus.total),
       });
-    } catch {
-      // skip drivers that produce invalid states
+    } catch (e) {
+      // Driver produced an invalid state (e.g. zero cycle time at -100% variation) — log and skip
+      console.warn(`[sensitivity] Skipped driver "${driver}" (${parameter}):`, e instanceof Error ? e.message : e);
     }
   }
 
@@ -85,7 +86,7 @@ export function runSensitivity(
           minusCost: minus.total,
           range: Math.abs(plus.total - minus.total),
         });
-      } catch { /* skip */ }
+      } catch (e) { console.warn('[sensitivity] Material price driver skipped:', e instanceof Error ? e.message : e); }
     }
 
     // Material utilization
@@ -147,7 +148,7 @@ export function runSensitivity(
           minusCost: minus.total,
           range: Math.abs(plus.total - minus.total),
         });
-      } catch { /* skip */ }
+      } catch (e) { console.warn('[sensitivity] Machine rate driver skipped:', e instanceof Error ? e.message : e); }
     }
 
     // Labour rate
@@ -177,7 +178,7 @@ export function runSensitivity(
           minusCost: minus.total,
           range: Math.abs(plus.total - minus.total),
         });
-      } catch { /* skip */ }
+      } catch (e) { console.warn('[sensitivity] Labour rate driver skipped:', e instanceof Error ? e.message : e); }
     }
 
     // Cycle time

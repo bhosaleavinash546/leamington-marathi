@@ -7,7 +7,9 @@ import type {
   ValidationResult,
   ValidationIssue,
   RateLibrary,
+  LearningCurveApplied,
 } from './types.js';
+import { computeLearningCurveAdjustment } from './learning-curve.js';
 
 export function validateStackInput(
   input: UniversalStackInput,
@@ -59,6 +61,13 @@ export function validateStackInput(
 
     if (!library.labour.find(l => l.id === op.labourId))
       errors.push({ field: `${p}.labourId`, message: `Labour rate '${op.labourId}' not found in rate library` });
+
+    if (op.partsPerCycle > 1) {
+      warnings.push({
+        field: `${p}.partsPerCycle`,
+        message: `Multi-cavity/multi-part (×${op.partsPerCycle}): cost allocated equally across cavities — verify all cavities have identical cycle times`,
+      });
+    }
   }
 
   if (input.tooling.totalToolingCost < 0)
@@ -186,6 +195,24 @@ export function computeUniversalStack(
     });
   }
 
+  // 2b. Learning curve adjustment (Wright's Law) — applied to aggregate labour cost
+  let learningCurveApplied: LearningCurveApplied | undefined;
+  if (input.learningCurve?.enabled && input.annualVolume && input.annualVolume > 0) {
+    const lc = computeLearningCurveAdjustment(labourTotal, {
+      annualVolume: input.annualVolume,
+      referenceVolume: input.learningCurve.referenceVolume,
+      curvePct: input.learningCurve.curvePct,
+    });
+    learningCurveApplied = {
+      adjustmentFactor: lc.adjustmentFactor,
+      labourSaving: lc.volumeEffect,          // negative = saving
+      curvePct: input.learningCurve.curvePct,
+      referenceVolume: input.learningCurve.referenceVolume,
+      annualVolume: input.annualVolume,
+    };
+    labourTotal = lc.adjustedLabourCost;
+  }
+
   // 4. Tooling
   let toolingPerPart = 0;
   let toolingNRE: number | undefined;
@@ -236,6 +263,7 @@ export function computeUniversalStack(
   };
 
   if (toolingNRE !== undefined) result.toolingNRE = toolingNRE;
+  if (learningCurveApplied !== undefined) result.learningCurveApplied = learningCurveApplied;
 
   return result;
 }

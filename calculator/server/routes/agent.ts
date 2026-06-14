@@ -1,5 +1,7 @@
 import { Router } from 'express';
 import Anthropic from '@anthropic-ai/sdk';
+import { z } from 'zod';
+import { DEFAULT_RATE_LIBRARY } from '../../src/engine/rate-library.js';
 
 const router = Router();
 
@@ -34,6 +36,96 @@ function extractJSON(text: string): Record<string, unknown> {
   } catch {
     return { chat: text, needsInput: null, action: null, confidence: 0.5 };
   }
+}
+
+// ─── Zod schema for agent response ───────────────────────────────────────────
+
+const AgentActionSchema = z.object({
+  type: z.literal('populate_form'),
+  commodity: z.string(),
+  data: z.record(z.unknown()),
+}).nullable();
+
+const AgentResponseSchema = z.object({
+  chat: z.string(),
+  needsInput: z.array(z.string()).nullable().optional(),
+  action: AgentActionSchema.optional(),
+  confidence: z.number().min(0).max(1).optional(),
+  insights: z.array(z.string()).optional(),
+  dfcRecommendations: z.array(z.string()).optional(),
+});
+
+// ─── Valid rate library ID sets (built once at module load) ───────────────────
+
+const VALID_MATERIAL_IDS = new Set(DEFAULT_RATE_LIBRARY.materials.map(m => m.id));
+const VALID_MACHINE_IDS  = new Set(DEFAULT_RATE_LIBRARY.machines.map(m => m.id));
+const VALID_LABOUR_IDS   = new Set(DEFAULT_RATE_LIBRARY.labour.map(l => l.id));
+
+const ID_FIELDS = {
+  materialId: VALID_MATERIAL_IDS,
+  machineId:  VALID_MACHINE_IDS,
+  labourId:   VALID_LABOUR_IDS,
+  cureMachineId:  VALID_MACHINE_IDS,
+  cureLabourId:   VALID_LABOUR_IDS,
+  layupLabourId:  VALID_LABOUR_IDS,
+  trimMachineId:  VALID_MACHINE_IDS,
+  trimLabourId:   VALID_LABOUR_IDS,
+  testMachineId:  VALID_MACHINE_IDS,
+  testLabourId:   VALID_LABOUR_IDS,
+  forgeId:    VALID_MACHINE_IDS,
+};
+
+function validateAgentResponse(raw: Record<string, unknown>): {
+  response: Record<string, unknown>;
+  idWarnings: string[];
+} {
+  const idWarnings: string[] = [];
+
+  // Schema validation
+  const parsed = AgentResponseSchema.safeParse(raw);
+  if (!parsed.success) {
+    console.warn('[agent] Response failed schema validation:', parsed.error.issues.map(i => i.message).join('; '));
+    return {
+      response: { chat: typeof raw.chat === 'string' ? raw.chat : 'I had trouble formatting my response. Please try again.', needsInput: null, action: null, confidence: 0.5 },
+      idWarnings: [],
+    };
+  }
+
+  const response = parsed.data as Record<string, unknown>;
+
+  // Validate IDs in action.data against rate library
+  const actionData = (response.action as { data?: Record<string, unknown> } | null | undefined)?.data;
+  if (actionData && typeof actionData === 'object') {
+    for (const [field, validSet] of Object.entries(ID_FIELDS)) {
+      const val = actionData[field];
+      if (typeof val === 'string' && val && !validSet.has(val)) {
+        idWarnings.push(`"${field}": "${val}" is not in the rate library`);
+        // Null out invalid ID so the form doesn't silently use a non-existent rate
+        actionData[field] = null;
+      }
+    }
+
+    if (idWarnings.length > 0) {
+      const listStr = idWarnings.join('; ');
+      console.warn(`[agent] Unknown rate library IDs in response: ${listStr}`);
+      // Append warning to chat so user knows what happened
+      response.chat = (response.chat as string) +
+        `\n\n⚠️ Note: Some suggested IDs were not found in the current rate library (${listStr}). ` +
+        `Those fields have been cleared — please select them manually from the dropdowns.`;
+      response.confidence = Math.min((response.confidence as number ?? 0.8) - 0.15, 0.7);
+    }
+  }
+
+  return { response, idWarnings };
+}
+
+// ─── Circuit breaker: 30-second timeout on Anthropic API calls ───────────────
+
+function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
+  return Promise.race([
+    promise,
+    new Promise<T>((_, reject) => setTimeout(() => reject(new Error(`Agent request timed out after ${ms / 1000}s`)), ms)),
+  ]);
 }
 
 // ─── System Prompt ────────────────────────────────────────────────────────────
@@ -823,19 +915,27 @@ router.post('/chat', async (req, res): Promise<void> => {
   const messages = buildMessages(message, photoBase64, photoMime, history, costResult, region);
 
   try {
-    const response = await anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
-      max_tokens: 8192,
-      system: SYSTEM_PROMPT,
-      messages,
-    });
+    const response = await withTimeout(
+      anthropic.messages.create({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 8192,
+        system: SYSTEM_PROMPT,
+        messages,
+      }),
+      30_000,
+    );
 
     const raw = response.content[0].type === 'text' ? response.content[0].text : '{}';
-    const parsed = extractJSON(raw);
-    res.json({ success: true, response: parsed });
+    const { response: validated } = validateAgentResponse(extractJSON(raw));
+    res.json({ success: true, response: validated });
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : String(err);
-    res.status(500).json({ error: `Agent error: ${msg}` });
+    const isTimeout = msg.includes('timed out');
+    res.status(isTimeout ? 504 : 500).json({
+      error: isTimeout
+        ? 'The AI agent is taking too long to respond. Please try again.'
+        : `Agent error: ${msg}`,
+    });
   }
 });
 
@@ -885,8 +985,8 @@ router.post('/chat/stream', async (req, res): Promise<void> => {
       }
     }
 
-    const parsed = extractJSON(fullText);
-    res.write(`data: ${JSON.stringify({ type: 'done', response: parsed })}\n\n`);
+    const { response: validated, idWarnings } = validateAgentResponse(extractJSON(fullText));
+    res.write(`data: ${JSON.stringify({ type: 'done', response: validated, idWarnings })}\n\n`);
     res.end();
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : String(err);

@@ -37,7 +37,6 @@ import {
   exportScenarios, importScenarios, initScenarioStore,
 } from '../engine/scenario.js';
 import { computeAssemblyRollup, newAssembly, saveAssembly, deleteAssembly, listAssemblies } from '../engine/assembly.js';
-import { computeLearningCurveAdjustment } from '../engine/learning-curve.js';
 import type { Assembly, AssemblyLine } from '../engine/assembly.js';
 import type { LearningCurveResult } from '../engine/learning-curve.js';
 import { exportToExcelBlob } from '../export/excel.js';
@@ -1695,7 +1694,7 @@ function renderPCBAForm(): string {
     </div>
     <div class="field-row" style="margin-top:6px">
       <div class="field-group"><label>SMT Lines</label><input type="number" id="pcba-smt-lines" step="1" min="1" value="1"/></div>
-      <div class="field-group"><label>SMT Line Rate (CPH)</label><input type="number" id="pcba-smt-rate" step="100" min="100" value="120"/></div>
+      <div class="field-group"><label>SMT Throughput (CPH) <span title="Components placed per hour per SMT line. Typical: 15,000–25,000 CPH for mixed boards (0402+IC). Modern high-speed: 50,000–100,000 CPH for passives only.">ℹ</span></label><input type="number" id="pcba-smt-rate" step="1000" min="500" value="15000"/></div>
     </div>
     <div class="field-row" style="margin-top:6px">
       <div class="field-group"><label>SMT OEE</label><input type="number" id="pcba-smt-oee" step="0.01" min="0.01" max="1" value="0.85"/></div>
@@ -1732,6 +1731,16 @@ function renderPCBAForm(): string {
     </div>
     <div class="field-row" style="margin-top:6px">
       <div class="field-group"><label>Amort. Volume</label><input type="number" id="pcba-amort" step="1000" min="1" value="5000"/></div>
+    </div>
+    <div class="section-title" style="margin-top:8px">Conformal Coating <span style="font-weight:400;font-size:0.8em;color:#888">(optional — automotive/aerospace/marine)</span></div>
+    <div class="field-row">
+      <div class="field-group"><label>Coated Area (cm²) <span title="Board area covered by conformal coat. 0 = no conformal coating.">ℹ</span></label><input type="number" id="pcba-coat-area" step="1" min="0" value="0"/></div>
+      <div class="field-group"><label>Coat Price (£/cm²) <span title="Typical selective coat: £0.003–0.008/cm². Full-board dip: £0.001–0.003/cm².">ℹ</span></label><input type="number" id="pcba-coat-price" step="0.001" min="0" value="0.005"/></div>
+    </div>
+    <div class="section-title" style="margin-top:8px">NRE Costs <span style="font-weight:400;font-size:0.8em;color:#888">(amortised over programme life)</span></div>
+    <div class="field-row">
+      <div class="field-group"><label>NRE Total (£) <span title="Solder paste stencil, ICT fixture, programming, AOI setup. Typical: £500–£5,000.">ℹ</span></label><input type="number" id="pcba-nre-cost" step="100" min="0" value="0"/></div>
+      <div class="field-group"><label>NRE Amort. Volume <span title="Programme volume over which NRE is spread. Usually equals amortisation volume above.">ℹ</span></label><input type="number" id="pcba-nre-amort" step="1000" min="1" value="5000"/></div>
     </div>
     <div class="section-title-row" style="margin-top:8px">
       <span class="section-title" style="margin:0;border:none;padding:0">Bill of Materials</span>
@@ -2885,6 +2894,10 @@ function collectPCBAInput(): UniversalStackInput {
     xrayMachineId: (bgaCount > 0 && xrayMachId) ? xrayMachId : undefined,
     ictMachineId: (ictTimeSec > 0 && ictMachId) ? ictMachId : undefined,
     ictCycleTimeSec: ictTimeSec || undefined,
+    conformalCoatAreaCm2: num('pcba-coat-area') || undefined,
+    conformalCoatPricePerCm2: num('pcba-coat-price') || undefined,
+    nreCost: num('pcba-nre-cost') || undefined,
+    nreAmortizationVolume: num('pcba-nre-amort') || undefined,
   });
   return { ...getUniversalTail(), rawMaterial: drivers.rawMaterial, operations: drivers.operations, tooling: drivers.tooling };
 }
@@ -3226,13 +3239,16 @@ function compute(): void {
   const errBox = el('validation-errors');
   const warnBox = el('validation-warnings');
   const calcBtn = el<HTMLButtonElement>('calc-btn');
+  const originalLabel = calcBtn.textContent ?? 'Calculate';
   calcBtn.disabled = true;
+  calcBtn.textContent = '⏳ Calculating…';
 
   let input: UniversalStackInput;
   try {
     input = collectInput();
   } catch (err) {
     calcBtn.disabled = false;
+    calcBtn.textContent = originalLabel;
     errBox.style.display = 'block';
     errBox.innerHTML = `<strong>Input error:</strong> ${escHtml(err instanceof Error ? err.message : String(err))}`;
     return;
@@ -3242,6 +3258,7 @@ function compute(): void {
 
   if (!validation.valid) {
     calcBtn.disabled = false;
+    calcBtn.textContent = originalLabel;
     errBox.style.display = 'block';
     errBox.innerHTML = `<strong>Errors:</strong><ul>${validation.errors.map(e => `<li>${escHtml(e.field)}: ${escHtml(e.message)}</li>`).join('')}</ul>`;
     warnBox.style.display = 'none';
@@ -3257,28 +3274,31 @@ function compute(): void {
   }
 
   try {
-    let result = computeUniversalStack(input, library);
     lastLCResult = null;
 
+    // Inject learning curve config into the formal input (wires through computeUniversalStack)
     const lcEnabled = (document.getElementById('lc-enabled') as HTMLInputElement)?.checked;
-    if (lcEnabled && result.breakdown.labour > 0) {
+    if (lcEnabled) {
       const annualVolume = parseFloat((document.getElementById('annual-volume') as HTMLInputElement)?.value) || 10000;
       const referenceVolume = parseFloat((document.getElementById('reference-volume') as HTMLInputElement)?.value) || 1000;
       const curvePct = parseFloat((document.getElementById('learning-curve-pct') as HTMLInputElement)?.value) || 85;
-      const lcResult = computeLearningCurveAdjustment(result.breakdown.labour, { annualVolume, referenceVolume, curvePct });
-      lastLCResult = lcResult;
-      const labourDelta = lcResult.volumeEffect;
-      result = {
-        ...result,
-        breakdown: {
-          ...result.breakdown,
-          labour: lcResult.adjustedLabourCost,
-          overhead: result.breakdown.overhead + labourDelta * input.overheadPct,
-          margin: result.breakdown.margin + labourDelta * (1 + input.overheadPct) * input.marginPct,
+      input = { ...input, annualVolume, learningCurve: { enabled: true, curvePct, referenceVolume } };
+    }
+
+    const result = computeUniversalStack(input, library);
+
+    // Populate lastLCResult from formal result for display compatibility
+    if (result.learningCurveApplied) {
+      lastLCResult = {
+        baseLabourCost: result.breakdown.labour - result.learningCurveApplied.labourSaving,
+        adjustedLabourCost: result.breakdown.labour,
+        adjustmentFactor: result.learningCurveApplied.adjustmentFactor,
+        volumeEffect: result.learningCurveApplied.labourSaving,
+        params: {
+          annualVolume: result.learningCurveApplied.annualVolume,
+          referenceVolume: result.learningCurveApplied.referenceVolume,
+          curvePct: result.learningCurveApplied.curvePct,
         },
-        factoryCost: result.factoryCost + labourDelta,
-        subtotal: result.subtotal + labourDelta * (1 + input.overheadPct),
-        total: result.total + labourDelta * (1 + input.overheadPct) * (1 + input.marginPct),
       };
     }
 
@@ -3296,6 +3316,7 @@ function compute(): void {
     errBox.innerHTML = `<strong>Calculation error:</strong> ${escHtml(err instanceof Error ? err.message : String(err))}`;
   } finally {
     calcBtn.disabled = false;
+    calcBtn.textContent = originalLabel;
   }
 }
 
