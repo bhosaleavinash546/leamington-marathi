@@ -4394,6 +4394,21 @@ async function init(): Promise<void> {
   // M11: Surface IndexedDB failures to the user
   setScenarioErrorHandler(msg => showToast(msg, 'warning'));
 
+  // Theme toggle
+  const savedTheme = localStorage.getItem('sc-theme') || 'dark';
+  document.documentElement.setAttribute('data-theme', savedTheme);
+  const themeBtn = document.getElementById('theme-toggle-btn');
+  if (themeBtn) {
+    themeBtn.textContent = savedTheme === 'dark' ? '🌙' : '☀️';
+    themeBtn.addEventListener('click', () => {
+      const current = document.documentElement.getAttribute('data-theme') || 'dark';
+      const next = current === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      localStorage.setItem('sc-theme', next);
+      themeBtn.textContent = next === 'dark' ? '🌙' : '☀️';
+    });
+  }
+
   // Init IndexedDB scenario store (migrates from localStorage automatically)
   await initScenarioStore();
 

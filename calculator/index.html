@@ -4,6 +4,16 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Should-Cost Calculator | Leamington Marathi</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <script>
+    // Apply saved theme before render to prevent flash
+    (function() {
+      const t = localStorage.getItem('sc-theme') || 'dark';
+      document.documentElement.setAttribute('data-theme', t);
+    })();
+  </script>
   <script>
     // Auth guard — redirect to sign-in if no valid token
     (function() {
@@ -22,13 +32,14 @@
 </head>
 <body>
 
-<header>
-  <a class="back-link" href="../index.html">← Back</a>
-  <h1>Should-Cost Calculator — Bottom-Up (Phases 1–5)</h1>
-  <div style="margin-left:auto;display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+<header class="header">
+  <a class="back-link" href="../index.html" style="color:var(--text-muted);text-decoration:none;font-size:0.8rem;display:flex;align-items:center;gap:4px;white-space:nowrap">← Back</a>
+  <h1 style="font-size:1rem;font-weight:700;color:var(--text-primary);white-space:nowrap;flex-shrink:0">Should-Cost Calculator</h1>
+  <div style="flex:1"></div>
+  <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
     <div style="display:flex;align-items:center;gap:6px">
-      <label style="font-size:0.78rem;color:#888;white-space:nowrap">🌍 Mfg Location</label>
-      <select id="mfg-region-selector" style="font-size:0.8rem;padding:3px 7px;border:1.5px solid #e65100;border-radius:4px;background:#fff9f5;color:#333" title="Select manufacturing country/region — rates (labour, machine, material, energy) adjust automatically for the selected location">
+      <label style="font-size:0.75rem;color:var(--text-muted);white-space:nowrap">🌍 Region</label>
+      <select id="mfg-region-selector" style="font-size:0.78rem;padding:4px 8px;border:1px solid var(--border-strong);border-radius:6px;background:var(--surface-elevated);color:var(--text-primary)" title="Select manufacturing country/region — rates (labour, machine, material, energy) adjust automatically for the selected location">
         <option value="UK">🇬🇧 United Kingdom</option>
         <option value="DE">🇩🇪 Germany</option>
         <option value="FR">🇫🇷 France</option>
@@ -52,8 +63,8 @@
       </select>
     </div>
     <div style="display:flex;align-items:center;gap:6px">
-      <label style="font-size:0.78rem;color:#888;white-space:nowrap">Display Currency</label>
-      <select id="currency-selector" style="font-size:0.8rem;padding:3px 7px;border:1px solid #ddd;border-radius:4px">
+      <label style="font-size:0.75rem;color:var(--text-muted);white-space:nowrap">Currency</label>
+      <select id="currency-selector" style="font-size:0.78rem;padding:4px 8px;border:1px solid var(--border-strong);border-radius:6px;background:var(--surface-elevated);color:var(--text-primary)">
         <option value="GBP">GBP £</option>
         <option value="EUR">EUR €</option>
         <option value="USD">USD $</option>
@@ -62,9 +73,10 @@
         <option value="MXN">MXN $M</option>
       </select>
     </div>
-    <div id="user-menu" style="display:flex;align-items:center;gap:8px;margin-left:4px">
-      <span id="user-greeting" style="font-size:0.78rem;color:#555;white-space:nowrap"></span>
-      <button onclick="signOut()" style="font-size:0.78rem;padding:4px 12px;background:#fff;border:1.5px solid #e2e8f0;border-radius:6px;cursor:pointer;color:#374151;font-weight:500" title="Sign out">Sign Out</button>
+    <button class="theme-toggle" id="theme-toggle-btn" title="Toggle dark/light theme" aria-label="Toggle theme">🌙</button>
+    <div id="user-menu" style="display:flex;align-items:center;gap:8px">
+      <span id="user-greeting" style="font-size:0.75rem;color:var(--text-muted);white-space:nowrap"></span>
+      <button onclick="signOut()" style="font-size:0.75rem;padding:5px 12px;background:var(--surface-elevated);border:1px solid var(--border-strong);border-radius:6px;cursor:pointer;color:var(--text-secondary);font-weight:500;font-family:var(--font)" title="Sign out">Sign Out</button>
     </div>
   </div>
 </header>
@@ -207,9 +219,9 @@
 </div>
 
 <!-- ── Rate Library Modal ────────────────────────────────────────────────── -->
-<div id="rate-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:100;align-items:flex-start;justify-content:center;overflow-y:auto;padding:40px 20px">
-  <div style="background:#fff;border-radius:10px;padding:24px;max-width:1100px;width:100%;position:relative">
-    <h2 style="font-size:1rem;color:#e65100;margin-bottom:16px">Rate Library — Edit &amp; Version</h2>
+<div id="rate-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:100;align-items:flex-start;justify-content:center;overflow-y:auto;padding:40px 20px">
+  <div class="modal-inner" style="max-width:1100px;width:100%;position:relative">
+    <h2 style="font-size:1rem;color:var(--accent);margin-bottom:16px">Rate Library — Edit &amp; Version</h2>
     <div id="rate-library-content"></div>
     <div class="btn-row" style="margin-top:16px">
       <button class="btn btn-primary" id="apply-rates-btn">Apply Changes</button>
@@ -220,9 +232,9 @@
 </div>
 
 <!-- ── Save Scenario Modal ───────────────────────────────────────────────── -->
-<div id="scenario-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:100;align-items:center;justify-content:center">
-  <div style="background:#fff;border-radius:10px;padding:24px;max-width:460px;width:100%">
-    <h2 style="font-size:1rem;color:#e65100;margin-bottom:16px">Save Scenario</h2>
+<div id="scenario-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:100;align-items:center;justify-content:center">
+  <div class="modal-inner" style="max-width:460px;width:100%">
+    <h2 style="font-size:1rem;color:var(--accent);margin-bottom:16px">Save Scenario</h2>
     <div class="field-group" style="margin-bottom:10px">
       <label>Scenario Name</label>
       <input type="text" id="sc-name" value="Baseline" />
@@ -239,9 +251,9 @@
 </div>
 
 <!-- ── Supplier Quote Modal ──────────────────────────────────────────────── -->
-<div id="quote-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:100;align-items:center;justify-content:center">
-  <div style="background:#fff;border-radius:10px;padding:24px;max-width:520px;width:100%">
-    <h2 style="font-size:1rem;color:#e65100;margin-bottom:16px">Add Supplier Quote</h2>
+<div id="quote-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:100;align-items:center;justify-content:center">
+  <div class="modal-inner" style="max-width:520px;width:100%">
+    <h2 style="font-size:1rem;color:var(--accent);margin-bottom:16px">Add Supplier Quote</h2>
     <div class="field-row">
       <div class="field-group"><label>Supplier Name</label><input type="text" id="sq-supplier" placeholder="e.g. ABC Machining Ltd"/></div>
       <div class="field-group"><label>Quote Date</label><input type="date" id="sq-date"/></div>
