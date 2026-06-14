@@ -1,34 +1,100 @@
 #!/bin/bash
+# ──────────────────────────────────────────────────────────────────────────────
+#  CostVision — One-Command Installer & Launcher  (macOS / Linux)
+#  Usage:  ./start.sh
+# ──────────────────────────────────────────────────────────────────────────────
 set -e
 
+ENV_FILE="calculator/.env"
+EXAMPLE_FILE="calculator/.env.example"
+URL="http://localhost:5173"
+
 echo ""
-echo "  ╔═══════════════════════════════════╗"
-echo "  ║       CostVision — Starting       ║"
-echo "  ╚═══════════════════════════════════╝"
+echo "  ╔═══════════════════════════════════════════╗"
+echo "  ║   CostVision — AI Cost Intelligence        ║"
+echo "  ║   One-command setup & launch               ║"
+echo "  ╚═══════════════════════════════════════════╝"
 echo ""
 
-# First-time .env setup
-if [ ! -f calculator/.env ]; then
-  cp calculator/.env.example calculator/.env
-  echo "  ✅ Created calculator/.env"
-  echo ""
-  echo "  ⚠️  ACTION REQUIRED:"
-  echo "  Open calculator/.env and fill in:"
-  echo "    ANTHROPIC_API_KEY=sk-ant-..."
-  echo "    JWT_SECRET=$(openssl rand -hex 32)"
-  echo ""
-  read -p "  Press Enter once you've saved .env to continue..." _
+# ── 1. Check Docker is installed & running ────────────────────────────────────
+if ! command -v docker >/dev/null 2>&1; then
+  echo "  ❌ Docker is not installed."
+  echo "     Install Docker Desktop for Mac:  https://www.docker.com/products/docker-desktop/"
+  echo "     Then re-run:  ./start.sh"
+  exit 1
+fi
+if ! docker info >/dev/null 2>&1; then
+  echo "  ❌ Docker is installed but not running."
+  echo "     ➜ Open the Docker Desktop app, wait for it to start, then re-run ./start.sh"
+  exit 1
+fi
+echo "  ✅ Docker is ready"
+
+# ── Helper: set or replace a KEY=value line in .env (portable) ────────────────
+set_env_var() {
+  local key="$1" val="$2"
+  if grep -q "^${key}=" "$ENV_FILE" 2>/dev/null; then
+    awk -v k="$key" -v v="$val" '
+      BEGIN{FS="="} $1==k{print k"="v; next} {print}
+    ' "$ENV_FILE" > "$ENV_FILE.tmp" && mv "$ENV_FILE.tmp" "$ENV_FILE"
+  else
+    echo "${key}=${val}" >> "$ENV_FILE"
+  fi
+}
+
+# ── 2. First-time .env setup ──────────────────────────────────────────────────
+if [ ! -f "$ENV_FILE" ]; then
+  cp "$EXAMPLE_FILE" "$ENV_FILE"
+  echo "  ✅ Created $ENV_FILE"
 fi
 
-# Start Docker
-echo "  🐳 Starting Docker containers..."
+# ── 3. Auto-generate JWT_SECRET if still placeholder ──────────────────────────
+if grep -q "^JWT_SECRET=replace-with" "$ENV_FILE" 2>/dev/null || ! grep -q "^JWT_SECRET=" "$ENV_FILE" 2>/dev/null; then
+  SECRET="$(openssl rand -hex 32 2>/dev/null || head -c 32 /dev/urandom | xxd -p | tr -d '\n')"
+  set_env_var "JWT_SECRET" "$SECRET"
+  echo "  ✅ Generated a secure JWT_SECRET (no action needed)"
+fi
+
+# ── 4. Prompt for the Anthropic API key if still placeholder ──────────────────
+CURRENT_KEY="$(grep '^ANTHROPIC_API_KEY=' "$ENV_FILE" | cut -d= -f2-)"
+if [ -z "$CURRENT_KEY" ] || [ "$CURRENT_KEY" = "sk-ant-..." ]; then
+  echo ""
+  echo "  🔑 Paste your Anthropic API key (starts with sk-ant-...)."
+  echo "     (Find/create one at https://console.anthropic.com/settings/keys)"
+  echo "     Your existing key from any other app works fine."
+  echo ""
+  printf "  API key: "
+  read -r USER_KEY
+  if [ -n "$USER_KEY" ]; then
+    set_env_var "ANTHROPIC_API_KEY" "$USER_KEY"
+    echo "  ✅ Saved API key to $ENV_FILE"
+  else
+    echo "  ⚠️  No key entered — AI features will be disabled until you add one to $ENV_FILE"
+  fi
+fi
+
+# ── 5. Build & start ──────────────────────────────────────────────────────────
+echo ""
+echo "  🐳 Building & starting containers (first run downloads ~1 min)..."
 docker compose up -d --build
 
+# ── 6. Wait for the app to respond, then open the browser ─────────────────────
 echo ""
-echo "  ✅ CostVision is running!"
-echo "  🌐 Opening http://localhost:5173 ..."
-echo ""
+printf "  ⏳ Waiting for CostVision to come online"
+for _ in $(seq 1 40); do
+  if curl -fsS "$URL" >/dev/null 2>&1; then
+    echo ""
+    echo "  ✅ CostVision is running!"
+    echo "  🌐 Opening $URL"
+    ( command -v open >/dev/null 2>&1 && open "$URL" ) || \
+    ( command -v xdg-open >/dev/null 2>&1 && xdg-open "$URL" ) || \
+    echo "     Open this in your browser:  $URL"
+    exit 0
+  fi
+  printf "."
+  sleep 2
+done
 
-# Open in browser
-sleep 2
-open http://localhost:5173
+echo ""
+echo "  ⚠️  App is taking longer than expected. Check logs with:  make logs"
+echo "     Then open:  $URL"

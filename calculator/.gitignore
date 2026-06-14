@@ -2,3 +2,7 @@ node_modules/
 dist/
 *.tsbuildinfo
 *.deb
+
+# Secrets — never commit (API key, JWT secret live here)
+.env
+.env.local
