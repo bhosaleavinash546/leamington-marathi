@@ -92,22 +92,41 @@ if [ -z "$CURRENT_KEY" ] || [ "$CURRENT_KEY" = "sk-ant-..." ]; then
   fi
 fi
 
-# ── 5. Build & start ──────────────────────────────────────────────────────────
+# ── 5. Build & start (stop stale container first if port is occupied) ─────────
+
+# Helper to open the browser
+open_browser() {
+  ( command -v open >/dev/null 2>&1 && open "$URL" ) || \
+  ( command -v xdg-open >/dev/null 2>&1 && xdg-open "$URL" ) || \
+  echo "     ➜ Open this in your browser:  $URL"
+}
+
+# If the app is already running, just open it and exit
+if curl -fsS "$URL" >/dev/null 2>&1; then
+  echo "  ✅ CostVision is already running!"
+  echo "  🌐 Opening $URL ..."
+  open_browser
+  exit 0
+fi
+
+# Tear down any stale containers that may be holding port 5173
 echo ""
-echo "  🐳 Building & starting containers (first run downloads ~1 min)..."
+echo "  🔄 Stopping any previous CostVision containers..."
+docker compose down 2>/dev/null || true
+
+echo ""
+echo "  🐳 Building & starting (first run may take 2-3 minutes)..."
 docker compose up -d --build
 
 # ── 6. Wait for the app to respond, then open the browser ─────────────────────
 echo ""
-printf "  ⏳ Waiting for CostVision to come online"
-for _ in $(seq 1 40); do
+printf "  ⏳ Waiting for CostVision to come online (up to 3 min on first run)"
+for _ in $(seq 1 90); do
   if curl -fsS "$URL" >/dev/null 2>&1; then
     echo ""
     echo "  ✅ CostVision is running!"
-    echo "  🌐 Opening $URL"
-    ( command -v open >/dev/null 2>&1 && open "$URL" ) || \
-    ( command -v xdg-open >/dev/null 2>&1 && xdg-open "$URL" ) || \
-    echo "     Open this in your browser:  $URL"
+    echo "  🌐 Opening $URL ..."
+    open_browser
     exit 0
   fi
   printf "."
@@ -115,5 +134,8 @@ for _ in $(seq 1 40); do
 done
 
 echo ""
-echo "  ⚠️  App is taking longer than expected. Check logs with:  make logs"
-echo "     Then open:  $URL"
+echo "  ⚠️  Still starting — opening browser anyway (page will load when ready)..."
+echo "     $URL"
+open_browser
+echo ""
+echo "     If nothing loads after 30 s, check logs with:  make logs"
