@@ -4,7 +4,7 @@ import bcrypt from 'bcrypt';
 import crypto from 'crypto';
 import rateLimit from 'express-rate-limit';
 import db from '../db.js';
-import { sendOTPEmail } from '../utils/email.js';
+import { sendOTPEmail, SMTP_CONFIGURED } from '../utils/email.js';
 import { signToken } from '../middleware/auth-middleware.js';
 
 const router = Router();
@@ -130,7 +130,10 @@ router.post('/signup', otpLimiter, async (req: Request, res: Response): Promise<
     const otp = generateOTP();
     await storeOTP(email, otp, 'signup');
     await sendOTPEmail(email, otp, 'signup', fullName);
-    res.json({ message: 'Verification code resent. Please check your email.' });
+    res.json({
+      message: 'Verification code resent. Please check your email.',
+      ...(!SMTP_CONFIGURED && { devOtp: otp }),
+    });
     return;
   }
 
@@ -146,7 +149,10 @@ router.post('/signup', otpLimiter, async (req: Request, res: Response): Promise<
   await storeOTP(email.toLowerCase(), otp, 'signup');
   await sendOTPEmail(email, otp, 'signup', fullName);
 
-  res.status(201).json({ message: 'Account created. Please check your email for a verification code.' });
+  res.status(201).json({
+    message: 'Account created. Please check your email for a verification code.',
+    ...(!SMTP_CONFIGURED && { devOtp: otp }),
+  });
 });
 
 // ─── POST /api/auth/signin ────────────────────────────────────────────────────
@@ -392,7 +398,10 @@ router.post('/resend-otp', otpLimiter, async (req: Request, res: Response): Prom
   await storeOTP(email.toLowerCase(), otp, purpose);
   await sendOTPEmail(email, otp, purpose, user.full_name);
 
-  res.json({ message: 'New verification code sent. Please check your email.' });
+  res.json({
+    message: 'New verification code sent. Please check your email.',
+    ...(!SMTP_CONFIGURED && { devOtp: otp }),
+  });
 });
 
 // ─── GET /api/auth/me ─────────────────────────────────────────────────────────

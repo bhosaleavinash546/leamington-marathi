@@ -687,6 +687,12 @@
         <h2 class="view-heading">Check your email</h2>
         <p class="otp-email-label">We sent a 6-digit code to<br><strong id="otp-email-display"></strong></p>
 
+        <!-- Shown only when SMTP is not configured (dev/local mode) -->
+        <div id="dev-otp-banner" style="display:none;background:#fefce8;border:1.5px solid #fbbf24;border-radius:10px;padding:14px 18px;margin-bottom:16px;text-align:center">
+          <p style="margin:0 0 6px;font-size:12px;color:#92400e;font-weight:600;text-transform:uppercase;letter-spacing:.5px">📧 Email not configured — your code is</p>
+          <p id="dev-otp-code" style="margin:0;font-size:32px;font-weight:800;letter-spacing:10px;color:#1a3a5c;font-variant-numeric:tabular-nums"></p>
+        </div>
+
         <div id="otp-banner" class="banner error">
           <span class="banner-icon">⚠</span>
           <span class="banner-text" id="otp-banner-text"></span>
@@ -963,11 +969,25 @@ function startOTPTimer(seconds = 300) {
 }
 
 /* ── Enter OTP view ─────────────────────────────────────────────────── */
-function showOTPView(email, purpose) {
+function showOTPView(email, purpose, devOtp) {
   state.otpEmail   = email;
   state.otpPurpose = purpose;
   document.getElementById('otp-email-display').textContent = email;
   clearOTPInputs();
+
+  const devBanner = document.getElementById('dev-otp-banner');
+  if (devOtp) {
+    document.getElementById('dev-otp-code').textContent = devOtp;
+    devBanner.style.display = 'block';
+    // Auto-fill the OTP inputs
+    devOtp.split('').forEach((d, i) => {
+      const inputs = document.querySelectorAll('#otp-inputs input');
+      if (inputs[i]) inputs[i].value = d;
+    });
+  } else {
+    devBanner.style.display = 'none';
+  }
+
   gotoView('otp');
   startOTPTimer();
   document.querySelector('#otp-inputs input').focus();
@@ -1034,7 +1054,7 @@ document.getElementById('form-signup').addEventListener('submit', async e => {
 
     if (!res.ok) { showBanner('signup', data.error ?? 'Sign-up failed.'); return; }
 
-    showOTPView(email, 'signup');
+    showOTPView(email, 'signup', data.devOtp);
 
   } catch {
     showBanner('signup', 'Network error. Please try again.');
@@ -1154,12 +1174,21 @@ async function resendOTP() {
   document.getElementById('btn-resend').disabled = true;
 
   try {
-    await fetch(API + '/resend-otp', {
+    const res  = await fetch(API + '/resend-otp', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email: state.otpEmail, purpose: state.otpPurpose }),
     });
+    const data = await res.json();
     clearOTPInputs();
     startOTPTimer();
+    if (data.devOtp) {
+      document.getElementById('dev-otp-code').textContent = data.devOtp;
+      document.getElementById('dev-otp-banner').style.display = 'block';
+      data.devOtp.split('').forEach((d, i) => {
+        const inputs = document.querySelectorAll('#otp-inputs input');
+        if (inputs[i]) inputs[i].value = d;
+      });
+    }
     showBanner('otp', 'New code sent — please check your email.', 'info');
   } catch {
     showBanner('otp', 'Could not resend code. Please try again.');

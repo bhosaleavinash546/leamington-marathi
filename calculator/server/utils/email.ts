@@ -1,6 +1,6 @@
 import nodemailer from 'nodemailer';
 
-const SMTP_CONFIGURED = !!(process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS);
+export const SMTP_CONFIGURED = !!(process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS);
 
 const transporter = SMTP_CONFIGURED
   ? nodemailer.createTransport({
