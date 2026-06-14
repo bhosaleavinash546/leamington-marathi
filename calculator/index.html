@@ -84,6 +84,8 @@
       <option value="INR">₹ INR</option>
       <option value="MXN">$M MXN</option>
     </select>
+    <!-- Demo Gallery button -->
+    <button class="nav-action-btn demo-btn" id="demo-btn" aria-label="Open demo gallery" title="Load luxury SUV demo examples for any commodity">🚗 Demos</button>
     <!-- Help button -->
     <button class="nav-action-btn" id="help-btn" aria-label="Open help centre">? Help</button>
     <!-- Contact button -->
@@ -668,6 +670,397 @@
       window.open('mailto:avinash.bhosale8925@gmail.com?subject=' + subjectLine + '&body=' + body);
       document.getElementById('contact-form-wrap').style.display = 'none';
       document.getElementById('contact-success').style.display = 'block';
+    });
+  });
+})();
+</script>
+
+<!-- ── Demo Gallery Modal ──────────────────────────────────────────────────── -->
+<div id="demo-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:3000;align-items:flex-start;justify-content:center;overflow-y:auto;padding:24px 12px">
+  <div style="background:var(--surface);border:1px solid var(--border-strong);border-radius:14px;max-width:820px;width:100%;padding:0;box-shadow:0 24px 80px rgba(0,0,0,0.5)">
+    <!-- Header -->
+    <div style="padding:20px 24px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px">
+      <div style="font-size:1.5rem">🚗</div>
+      <div style="flex:1">
+        <div style="font-size:1.1rem;font-weight:700;color:var(--text-primary);font-family:var(--font)">Luxury SUV Demo Gallery</div>
+        <div style="font-size:0.76rem;color:var(--text-muted);margin-top:2px">Real-world automotive cost examples — click any card to load it instantly with AI insights</div>
+      </div>
+      <button id="close-demo-modal" style="background:none;border:none;font-size:1.4rem;cursor:pointer;color:var(--text-muted);padding:4px 8px;border-radius:6px;line-height:1" aria-label="Close">×</button>
+    </div>
+    <!-- Gallery body -->
+    <div id="demo-gallery-body" style="padding:16px 20px 24px;display:flex;flex-direction:column;gap:14px">
+
+      <!-- Machining -->
+      <div class="demo-commodity-section">
+        <div class="demo-commodity-title">⚙️ Machining (CNC)</div>
+        <div class="demo-card-row">
+          <div class="demo-card" data-commodity="machining" data-slot="1">
+            <div class="demo-card-brand">BMW X7</div>
+            <div class="demo-card-name">Rear Suspension Knuckle</div>
+            <div class="demo-card-spec">Al6061-T6 · 5-axis VMC · 1.85 kg</div>
+            <div class="demo-card-tags"><span class="demo-tag">3 ops</span><span class="demo-tag">£25k tooling</span></div>
+          </div>
+          <div class="demo-card" data-commodity="machining" data-slot="2">
+            <div class="demo-card-brand">Range Rover Velar</div>
+            <div class="demo-card-name">Steering Rack Housing</div>
+            <div class="demo-card-spec">Al6061-T6 · 3-axis VMC · 2.10 kg</div>
+            <div class="demo-card-tags"><span class="demo-tag">3 ops</span><span class="demo-tag">Turn + Mill + Drill</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sheet Metal Stamping -->
+      <div class="demo-commodity-section">
+        <div class="demo-commodity-title">🔩 Sheet Metal Stamping</div>
+        <div class="demo-card-row">
+          <div class="demo-card" data-commodity="sheet_metal" data-slot="1">
+            <div class="demo-card-brand">Porsche Cayenne</div>
+            <div class="demo-card-name">Door Outer Panel</div>
+            <div class="demo-card-spec">AA5182 Al · 1.0 mm · 2.20 kg</div>
+            <div class="demo-card-tags"><span class="demo-tag">Progressive die</span><span class="demo-tag">£180k tooling</span></div>
+          </div>
+          <div class="demo-card" data-commodity="sheet_metal" data-slot="2">
+            <div class="demo-card-brand">Mercedes GLE</div>
+            <div class="demo-card-name">B-Pillar Reinforcement</div>
+            <div class="demo-card-spec">DP600 AHSS · 1.8 mm · 3.20 kg</div>
+            <div class="demo-card-tags"><span class="demo-tag">AHSS</span><span class="demo-tag">£120k die</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sheet Metal Fabrication -->
+      <div class="demo-commodity-section">
+        <div class="demo-commodity-title">✂️ Sheet Metal Fabrication</div>
+        <div class="demo-card-row">
+          <div class="demo-card" data-commodity="sheet_metal_fab" data-slot="1">
+            <div class="demo-card-brand">Audi Q7</div>
+            <div class="demo-card-name">Side Sill Bracket</div>
+            <div class="demo-card-spec">DC01 · Laser + 4 bends + MIG weld</div>
+            <div class="demo-card-tags"><span class="demo-tag">Trumpf 3030</span><span class="demo-tag">1.85 kg</span></div>
+          </div>
+          <div class="demo-card" data-commodity="sheet_metal_fab" data-slot="2">
+            <div class="demo-card-brand">BMW X5</div>
+            <div class="demo-card-name">Engine Undertray Bracket</div>
+            <div class="demo-card-spec">DC01 · Laser + 3 bends + 8 spot welds</div>
+            <div class="demo-card-tags"><span class="demo-tag">Bystronic</span><span class="demo-tag">KUKA spot weld</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Injection Moulding -->
+      <div class="demo-commodity-section">
+        <div class="demo-commodity-title">🏭 Injection Moulding</div>
+        <div class="demo-card-row">
+          <div class="demo-card" data-commodity="injection_moulding" data-slot="1">
+            <div class="demo-card-brand">Range Rover Sport</div>
+            <div class="demo-card-name">Front Grille Housing</div>
+            <div class="demo-card-spec">ABS · 2-cavity · 0.45 kg · textured</div>
+            <div class="demo-card-tags"><span class="demo-tag">400T IMM</span><span class="demo-tag">£55k mould</span></div>
+          </div>
+          <div class="demo-card" data-commodity="injection_moulding" data-slot="2">
+            <div class="demo-card-brand">Bentley Bentayga</div>
+            <div class="demo-card-name">Centre Console Trim Panel</div>
+            <div class="demo-card-spec">PC/ABS · 1-cavity · hot runner · high gloss</div>
+            <div class="demo-card-tags"><span class="demo-tag">400T IMM</span><span class="demo-tag">£95k mould</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Blow Moulding -->
+      <div class="demo-commodity-section">
+        <div class="demo-commodity-title">💨 Blow Moulding</div>
+        <div class="demo-card-row">
+          <div class="demo-card" data-commodity="blow_moulding" data-slot="1">
+            <div class="demo-card-brand">BMW X7</div>
+            <div class="demo-card-name">Washer Fluid Reservoir</div>
+            <div class="demo-card-spec">HDPE · EBM · 2-cavity · 0.35 kg</div>
+            <div class="demo-card-tags"><span class="demo-tag">EBM 5L</span><span class="demo-tag">£14k mould</span></div>
+          </div>
+          <div class="demo-card" data-commodity="blow_moulding" data-slot="2">
+            <div class="demo-card-brand">Land Rover Defender</div>
+            <div class="demo-card-name">Coolant Expansion Tank</div>
+            <div class="demo-card-spec">HDPE · EBM · 1-cavity · 0.55 kg</div>
+            <div class="demo-card-tags"><span class="demo-tag">EBM 5L</span><span class="demo-tag">£18k mould</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Extrusion -->
+      <div class="demo-commodity-section">
+        <div class="demo-commodity-title">📏 Extrusion</div>
+        <div class="demo-card-row">
+          <div class="demo-card" data-commodity="extrusion" data-slot="1">
+            <div class="demo-card-brand">Rolls-Royce Cullinan</div>
+            <div class="demo-card-name">Door Sealing Strip Profile</div>
+            <div class="demo-card-spec">Flexible PVC · 0.18 kg/m · 2.4 m/part</div>
+            <div class="demo-card-tags"><span class="demo-tag">75mm extruder</span><span class="demo-tag">£3.5k die</span></div>
+          </div>
+          <div class="demo-card" data-commodity="extrusion" data-slot="2">
+            <div class="demo-card-brand">Range Rover Vogue</div>
+            <div class="demo-card-name">Weatherstrip Profile</div>
+            <div class="demo-card-spec">Flexible PVC · 0.12 kg/m · 3.2 m/part</div>
+            <div class="demo-card-tags"><span class="demo-tag">75mm extruder</span><span class="demo-tag">£4.5k die</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Thermoforming -->
+      <div class="demo-commodity-section">
+        <div class="demo-commodity-title">🌡️ Thermoforming</div>
+        <div class="demo-card-row">
+          <div class="demo-card" data-commodity="thermoforming" data-slot="1">
+            <div class="demo-card-brand">Mercedes GLS</div>
+            <div class="demo-card-name">Boot / Cargo Liner</div>
+            <div class="demo-card-spec">HIPS · Vacuum form · 0.92 kg</div>
+            <div class="demo-card-tags"><span class="demo-tag">Large thermoformer</span><span class="demo-tag">£8k tool</span></div>
+          </div>
+          <div class="demo-card" data-commodity="thermoforming" data-slot="2">
+            <div class="demo-card-brand">Porsche Cayenne</div>
+            <div class="demo-card-name">Dashboard Lower Cover</div>
+            <div class="demo-card-spec">ABS · Pressure form · 0.65 kg</div>
+            <div class="demo-card-tags"><span class="demo-tag">Pressure forming</span><span class="demo-tag">£12k tool</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Rotomoulding -->
+      <div class="demo-commodity-section">
+        <div class="demo-commodity-title">🔄 Rotational Moulding</div>
+        <div class="demo-card-row">
+          <div class="demo-card" data-commodity="rotational_moulding" data-slot="1">
+            <div class="demo-card-brand">Land Rover Defender</div>
+            <div class="demo-card-name">Fuel Tank (40L)</div>
+            <div class="demo-card-spec">LLDPE · 3.80 kg · Biaxial rotomould</div>
+            <div class="demo-card-tags"><span class="demo-tag">3-arm carousel</span><span class="demo-tag">£22k mould</span></div>
+          </div>
+          <div class="demo-card" data-commodity="rotational_moulding" data-slot="2">
+            <div class="demo-card-brand">Mercedes G-Class</div>
+            <div class="demo-card-name">Roof Storage Box</div>
+            <div class="demo-card-spec">LLDPE · 6.50 kg · Biaxial rotomould</div>
+            <div class="demo-card-tags"><span class="demo-tag">3-arm carousel</span><span class="demo-tag">£28k mould</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Casting -->
+      <div class="demo-commodity-section">
+        <div class="demo-commodity-title">🔥 Casting (HPDC)</div>
+        <div class="demo-card-row">
+          <div class="demo-card" data-commodity="casting" data-slot="1">
+            <div class="demo-card-brand">Bentley Bentayga</div>
+            <div class="demo-card-name">Aluminium Differential Housing</div>
+            <div class="demo-card-spec">ADC12 · HPDC 800T · 4.80 kg</div>
+            <div class="demo-card-tags"><span class="demo-tag">1-cavity</span><span class="demo-tag">£180k die</span></div>
+          </div>
+          <div class="demo-card" data-commodity="casting" data-slot="2">
+            <div class="demo-card-brand">Rolls-Royce Cullinan</div>
+            <div class="demo-card-name">Brake Caliper Housing</div>
+            <div class="demo-card-spec">A380 Al · HPDC 800T · 3.20 kg</div>
+            <div class="demo-card-tags"><span class="demo-tag">1-cavity</span><span class="demo-tag">£140k die</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Forging -->
+      <div class="demo-commodity-section">
+        <div class="demo-commodity-title">🔨 Forging</div>
+        <div class="demo-card-row">
+          <div class="demo-card" data-commodity="forging" data-slot="1">
+            <div class="demo-card-brand">BMW X7</div>
+            <div class="demo-card-name">Front Lower Control Arm</div>
+            <div class="demo-card-spec">Al 6082 · 500T forge press · 1.85 kg</div>
+            <div class="demo-card-tags"><span class="demo-tag">4 blows</span><span class="demo-tag">£95k die</span></div>
+          </div>
+          <div class="demo-card" data-commodity="forging" data-slot="2">
+            <div class="demo-card-brand">Range Rover Vogue</div>
+            <div class="demo-card-name">4WD Drive Shaft Yoke</div>
+            <div class="demo-card-spec">4340 Steel · 5T hammer · 2.80 kg</div>
+            <div class="demo-card-tags"><span class="demo-tag">5 blows</span><span class="demo-tag">£75k die</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Painting -->
+      <div class="demo-commodity-section">
+        <div class="demo-commodity-title">🎨 Painting</div>
+        <div class="demo-card-row">
+          <div class="demo-card" data-commodity="painting" data-slot="1">
+            <div class="demo-card-brand">Lamborghini Urus</div>
+            <div class="demo-card-name">Body Panel OEM Paint System</div>
+            <div class="demo-card-spec">E-coat + primer + base + clear · 8.5 m²</div>
+            <div class="demo-card-tags"><span class="demo-tag">OEM paint line</span><span class="demo-tag">5% rework</span></div>
+          </div>
+          <div class="demo-card" data-commodity="painting" data-slot="2">
+            <div class="demo-card-brand">Aston Martin DBX</div>
+            <div class="demo-card-name">Instrument Panel Painting</div>
+            <div class="demo-card-spec">Waterborne basecoat + clearcoat · 0.65 m²</div>
+            <div class="demo-card-tags"><span class="demo-tag">Premium finish</span><span class="demo-tag">3% rework</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- BIW Assembly -->
+      <div class="demo-commodity-section">
+        <div class="demo-commodity-title">🚗 BIW / Body Assembly</div>
+        <div class="demo-card-row">
+          <div class="demo-card" data-commodity="biw_assembly" data-slot="1">
+            <div class="demo-card-brand">Mercedes GLS</div>
+            <div class="demo-card-name">Door Inner Panel Assembly</div>
+            <div class="demo-card-spec">3 robot weld stations · £85 sub-parts</div>
+            <div class="demo-card-tags"><span class="demo-tag">KUKA welding</span><span class="demo-tag">£350k fixture</span></div>
+          </div>
+          <div class="demo-card" data-commodity="biw_assembly" data-slot="2">
+            <div class="demo-card-brand">Porsche Cayenne</div>
+            <div class="demo-card-name">BIW Side Frame Assembly</div>
+            <div class="demo-card-spec">4 stations · robot frame + spot + hem</div>
+            <div class="demo-card-tags"><span class="demo-tag">Robot cell</span><span class="demo-tag">£600k fixture</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PCB Fab -->
+      <div class="demo-commodity-section">
+        <div class="demo-commodity-title">🖥️ PCB Fabrication</div>
+        <div class="demo-card-row">
+          <div class="demo-card" data-commodity="pcb_fab" data-slot="1">
+            <div class="demo-card-brand">BMW iX</div>
+            <div class="demo-card-name">Battery Management System PCB</div>
+            <div class="demo-card-spec">6-layer FR-4 High-Tg · ENIG · Automotive Gr.2</div>
+            <div class="demo-card-tags"><span class="demo-tag">75 cm²</span><span class="demo-tag">450 vias</span></div>
+          </div>
+          <div class="demo-card" data-commodity="pcb_fab" data-slot="2">
+            <div class="demo-card-brand">Mercedes AMG</div>
+            <div class="demo-card-name">ADAS Sensor Interface PCB</div>
+            <div class="demo-card-spec">8-layer HDI · ENIG · Automotive Gr.1 · BGA</div>
+            <div class="demo-card-tags"><span class="demo-tag">55 cm²</span><span class="demo-tag">80 microvias</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PCBA -->
+      <div class="demo-commodity-section">
+        <div class="demo-commodity-title">🔌 PCBA / SMT Assembly</div>
+        <div class="demo-card-row">
+          <div class="demo-card" data-commodity="pcba" data-slot="1">
+            <div class="demo-card-brand">Range Rover</div>
+            <div class="demo-card-name">Adaptive Cruise Control ECU</div>
+            <div class="demo-card-spec">High complexity · Automotive Gr.2 · 250 comps</div>
+            <div class="demo-card-tags"><span class="demo-tag">High-speed SMT</span><span class="demo-tag">Double-sided</span></div>
+          </div>
+          <div class="demo-card" data-commodity="pcba" data-slot="2">
+            <div class="demo-card-brand">Porsche Taycan</div>
+            <div class="demo-card-name">Engine Control Unit PCBA</div>
+            <div class="demo-card-spec">Very high complexity · Auto Gr.1 · BGA · ICT</div>
+            <div class="demo-card-tags"><span class="demo-tag">Dual SMT line</span><span class="demo-tag">X-ray + ICT</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cast + Machine -->
+      <div class="demo-commodity-section">
+        <div class="demo-commodity-title">⚙️🔥 Cast + Machine</div>
+        <div class="demo-card-row">
+          <div class="demo-card" data-commodity="cast_and_machine" data-slot="1">
+            <div class="demo-card-brand">Porsche Cayenne</div>
+            <div class="demo-card-name">Aluminium Brake Caliper</div>
+            <div class="demo-card-spec">ADC12 HPDC 800T + 3-axis machining</div>
+            <div class="demo-card-tags"><span class="demo-tag">HAAS VF-2</span><span class="demo-tag">£120k die</span></div>
+          </div>
+          <div class="demo-card" data-commodity="cast_and_machine" data-slot="2">
+            <div class="demo-card-brand">BMW X5</div>
+            <div class="demo-card-name">Transfer Case Housing</div>
+            <div class="demo-card-spec">ADC12 HPDC 1600T + 5-axis machining</div>
+            <div class="demo-card-tags"><span class="demo-tag">DMG Mori 5-axis</span><span class="demo-tag">£280k die</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Rubber -->
+      <div class="demo-commodity-section">
+        <div class="demo-commodity-title">🔶 Rubber Moulding</div>
+        <div class="demo-card-row">
+          <div class="demo-card" data-commodity="rubber" data-slot="1">
+            <div class="demo-card-brand">Range Rover</div>
+            <div class="demo-card-name">Door Seal Profile (Moulded)</div>
+            <div class="demo-card-spec">EPDM 70A · Compression mould · 0.12 kg</div>
+            <div class="demo-card-tags"><span class="demo-tag">4-cavity</span><span class="demo-tag">£8k mould</span></div>
+          </div>
+          <div class="demo-card" data-commodity="rubber" data-slot="2">
+            <div class="demo-card-brand">Mercedes GLE</div>
+            <div class="demo-card-name">Engine Mount Anti-Vibration Pad</div>
+            <div class="demo-card-spec">NBR 70A · Transfer mould · 0.28 kg</div>
+            <div class="demo-card-tags"><span class="demo-tag">2-cavity</span><span class="demo-tag">Metal bonded</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Composites -->
+      <div class="demo-commodity-section">
+        <div class="demo-commodity-title">🧵 Composites (CFRP)</div>
+        <div class="demo-card-row">
+          <div class="demo-card" data-commodity="composites" data-slot="1">
+            <div class="demo-card-brand">Lamborghini Urus</div>
+            <div class="demo-card-name">Active Rear Spoiler Panel</div>
+            <div class="demo-card-spec">T700 CFRP Prepreg · Autoclave · 1.80 kg</div>
+            <div class="demo-card-tags"><span class="demo-tag">8 plies</span><span class="demo-tag">£25k mould</span></div>
+          </div>
+          <div class="demo-card" data-commodity="composites" data-slot="2">
+            <div class="demo-card-brand">McLaren GT</div>
+            <div class="demo-card-name">Front Bonnet (Hood) Panel</div>
+            <div class="demo-card-spec">T700 CFRP Prepreg · Autoclave · 3.20 kg</div>
+            <div class="demo-card-tags"><span class="demo-tag">12 plies</span><span class="demo-tag">£45k mould</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Wiring Harness -->
+      <div class="demo-commodity-section">
+        <div class="demo-commodity-title">🔌 Wiring Harness</div>
+        <div class="demo-card-row">
+          <div class="demo-card" data-commodity="wiring_harness" data-slot="1">
+            <div class="demo-card-brand">Rolls-Royce Ghost</div>
+            <div class="demo-card-name">Door Wiring Harness</div>
+            <div class="demo-card-spec">14 circuits · 4 connectors · 5.6m wire</div>
+            <div class="demo-card-tags"><span class="demo-tag">0.45 hr assembly</span><span class="demo-tag">HiPot test</span></div>
+          </div>
+          <div class="demo-card" data-commodity="wiring_harness" data-slot="2">
+            <div class="demo-card-brand">Bentley Bentayga</div>
+            <div class="demo-card-name">Engine Bay Harness</div>
+            <div class="demo-card-spec">28 circuits · 6 connectors · 12m wire</div>
+            <div class="demo-card-tags"><span class="demo-tag">0.90 hr assembly</span><span class="demo-tag">Auto Gr.2</span></div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /demo-gallery-body -->
+  </div>
+</div>
+
+<script>
+// ── Demo Gallery Modal ────────────────────────────────────────────────────
+(function() {
+  function openDemo() {
+    const m = document.getElementById('demo-modal');
+    if (m) { m.style.display = 'flex'; document.body.style.overflow = 'hidden'; }
+  }
+  function closeDemo() {
+    const m = document.getElementById('demo-modal');
+    if (m) { m.style.display = 'none'; document.body.style.overflow = ''; }
+  }
+  document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('demo-btn')?.addEventListener('click', openDemo);
+    document.getElementById('close-demo-modal')?.addEventListener('click', closeDemo);
+    document.getElementById('demo-modal')?.addEventListener('click', function(e) { if (e.target === this) closeDemo(); });
+
+    document.querySelectorAll('.demo-card').forEach(function(card) {
+      card.addEventListener('click', function() {
+        const commodity = card.getAttribute('data-commodity');
+        const slot = parseInt(card.getAttribute('data-slot'), 10);
+        if (window.loadSUVDemo) {
+          window.loadSUVDemo(commodity, slot);
+          closeDemo();
+        }
+      });
     });
   });
 })();
