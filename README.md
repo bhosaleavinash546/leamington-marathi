@@ -26,7 +26,7 @@ That's it. The script will:
 3. ✅ Generate a secure login secret for you (no manual steps)
 4. 🔑 Ask you to **paste your Anthropic API key** once (it remembers it)
 5. 🐳 Build and start the app
-6. 🌐 Open <http://localhost:5174> in your browser
+6. 🌐 Open <http://localhost:5174/calculator/> in your browser
 
 > **API key:** your existing Anthropic key from any other app works fine —
 > you do **not** need a new one. Find or create one at
@@ -45,7 +45,7 @@ That's it. The script will:
 | Container status | `make status` |
 | Open in browser | `make open` |
 
-The app runs at **<http://localhost:5174>**. Your data (saved scenarios,
+The app runs at **<http://localhost:5174/calculator/>**. Your data (saved scenarios,
 accounts) persists across restarts in a Docker volume.
 
 ---

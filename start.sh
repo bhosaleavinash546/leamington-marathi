@@ -7,7 +7,7 @@ set -e
 
 ENV_FILE="calculator/.env"
 EXAMPLE_FILE="calculator/.env.example"
-URL="http://localhost:5174"
+URL="http://localhost:5174/calculator/"
 
 echo ""
 echo "  ╔═══════════════════════════════════════════╗"
