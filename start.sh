@@ -95,7 +95,7 @@ if [ -z "$CURRENT_KEY" ] || [ "$CURRENT_KEY" = "sk-ant-..." ]; then
   fi
 fi
 
-# ── 5. Build & start (stop stale container first if port is occupied) ─────────
+# ── 5. Build & start ──────────────────────────────────────────────────────────
 
 # Helper to open the browser
 open_browser() {
@@ -112,10 +112,11 @@ if curl -fsS "$URL" >/dev/null 2>&1; then
   exit 0
 fi
 
-# Tear down any stale containers that may be holding port 5173
+# Tear down any stale containers (by compose project AND by fixed name)
 echo ""
 echo "  🔄 Stopping any previous CostVision containers..."
-docker compose down 2>/dev/null || true
+docker compose down --remove-orphans 2>/dev/null || true
+docker rm -f costvision 2>/dev/null || true
 
 echo ""
 echo "  🐳 Building & starting (first run may take 2-3 minutes)..."
