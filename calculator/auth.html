@@ -1,0 +1,1187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Should-Cost · Sign In</title>
+  <meta name="description" content="Manufacturing Cost Intelligence Platform" />
+  <style>
+    /* ── Reset & base ───────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --brand-dark:    #1a3a5c;
+      --brand-mid:     #1e4976;
+      --brand-accent:  #2563eb;
+      --brand-light:   #3b82f6;
+      --brand-pale:    #dbeafe;
+      --success:       #059669;
+      --success-bg:    #ecfdf5;
+      --error:         #dc2626;
+      --error-bg:      #fef2f2;
+      --warning:       #d97706;
+      --warning-bg:    #fffbeb;
+      --bg:            #f1f5f9;
+      --card:          #ffffff;
+      --border:        #e2e8f0;
+      --text-primary:  #0f172a;
+      --text-secondary:#64748b;
+      --text-muted:    #94a3b8;
+      --input-focus:   #eff6ff;
+      --radius:        12px;
+      --radius-sm:     8px;
+      --shadow:        0 4px 24px rgba(0,0,0,.08);
+      --shadow-lg:     0 8px 40px rgba(0,0,0,.12);
+      --transition:    .18s ease;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+      background: var(--bg);
+      color: var(--text-primary);
+      min-height: 100vh;
+      display: flex;
+      align-items: stretch;
+      font-size: 15px;
+      line-height: 1.5;
+    }
+
+    /* ── Layout ─────────────────────────────────────────────────── */
+    .auth-wrapper {
+      display: flex;
+      width: 100%;
+      min-height: 100vh;
+    }
+
+    /* Left brand panel */
+    .brand-panel {
+      flex: 0 0 420px;
+      background: linear-gradient(145deg, var(--brand-dark) 0%, #0f2744 60%, #162e4a 100%);
+      padding: 48px 48px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .brand-panel::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 80% 60% at 20% 110%, rgba(37,99,235,.18) 0%, transparent 70%);
+    }
+
+    .brand-logo {
+      position: relative;
+      z-index: 1;
+    }
+
+    .brand-logo h1 {
+      font-size: 26px;
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: -.5px;
+    }
+
+    .brand-logo p {
+      font-size: 13px;
+      color: #93c5fd;
+      margin-top: 4px;
+      letter-spacing: .3px;
+    }
+
+    .brand-body {
+      position: relative;
+      z-index: 1;
+    }
+
+    .brand-body h2 {
+      font-size: 30px;
+      font-weight: 700;
+      color: #fff;
+      line-height: 1.25;
+      margin-bottom: 16px;
+    }
+
+    .brand-body p {
+      font-size: 15px;
+      color: #93c5fd;
+      line-height: 1.6;
+      margin-bottom: 36px;
+    }
+
+    .features {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .features li {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      color: #bfdbfe;
+      font-size: 14px;
+      line-height: 1.4;
+    }
+
+    .features li .icon {
+      flex-shrink: 0;
+      width: 28px;
+      height: 28px;
+      background: rgba(59,130,246,.2);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      margin-top: -1px;
+    }
+
+    .brand-footer {
+      position: relative;
+      z-index: 1;
+      font-size: 12px;
+      color: #475569;
+    }
+
+    /* Right form panel */
+    .form-panel {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 24px;
+      overflow-y: auto;
+    }
+
+    .auth-card {
+      width: 100%;
+      max-width: 440px;
+    }
+
+    /* ── Views ──────────────────────────────────────────────────── */
+    .view { display: none; }
+    .view.active { display: block; }
+
+    /* ── Typography ─────────────────────────────────────────────── */
+    .view-heading {
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 6px;
+      letter-spacing: -.4px;
+    }
+
+    .view-sub {
+      font-size: 14px;
+      color: var(--text-secondary);
+      margin-bottom: 32px;
+    }
+
+    .view-sub a {
+      color: var(--brand-accent);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .view-sub a:hover { text-decoration: underline; }
+
+    /* ── Form elements ──────────────────────────────────────────── */
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 6px;
+    }
+
+    .input-wrap {
+      position: relative;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="password"] {
+      width: 100%;
+      height: 48px;
+      padding: 0 44px 0 14px;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: #fff;
+      color: var(--text-primary);
+      font-size: 15px;
+      font-family: inherit;
+      transition: border-color var(--transition), box-shadow var(--transition), background var(--transition);
+      outline: none;
+    }
+
+    input[type="text"]:focus,
+    input[type="email"]:focus,
+    input[type="password"]:focus {
+      border-color: var(--brand-accent);
+      box-shadow: 0 0 0 3px rgba(37,99,235,.12);
+      background: var(--input-focus);
+    }
+
+    input.error {
+      border-color: var(--error);
+      box-shadow: 0 0 0 3px rgba(220,38,38,.08);
+    }
+
+    .toggle-pw {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--text-muted);
+      padding: 4px;
+      display: flex;
+      align-items: center;
+      transition: color var(--transition);
+    }
+
+    .toggle-pw:hover { color: var(--text-secondary); }
+
+    /* ── Password strength ──────────────────────────────────────── */
+    .pw-strength {
+      margin-top: 8px;
+      display: none;
+    }
+
+    .pw-strength.visible { display: block; }
+
+    .pw-bar-track {
+      height: 4px;
+      background: var(--border);
+      border-radius: 2px;
+      overflow: hidden;
+      margin-bottom: 4px;
+    }
+
+    .pw-bar-fill {
+      height: 100%;
+      border-radius: 2px;
+      width: 0%;
+      transition: width .3s ease, background .3s ease;
+    }
+
+    .pw-bar-fill.weak   { width: 33%; background: var(--error); }
+    .pw-bar-fill.fair   { width: 66%; background: var(--warning); }
+    .pw-bar-fill.strong { width: 100%; background: var(--success); }
+
+    .pw-label {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .pw-label.weak   { color: var(--error); }
+    .pw-label.fair   { color: var(--warning); }
+    .pw-label.strong { color: var(--success); }
+
+    /* ── Banners ────────────────────────────────────────────────── */
+    .banner {
+      display: none;
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      font-size: 14px;
+      margin-bottom: 18px;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .banner.visible { display: flex; }
+    .banner-icon { flex-shrink: 0; font-size: 16px; }
+    .banner-text { flex: 1; line-height: 1.4; }
+
+    .banner.error   { background: var(--error-bg);   border: 1px solid #fca5a5; color: #991b1b; }
+    .banner.success { background: var(--success-bg); border: 1px solid #6ee7b7; color: #065f46; }
+    .banner.info    { background: #eff6ff;            border: 1px solid #bfdbfe; color: #1e40af; }
+
+    /* ── Buttons ────────────────────────────────────────────────── */
+    .btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      height: 48px;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-size: 15px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: background var(--transition), box-shadow var(--transition), transform var(--transition);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-primary {
+      background: var(--brand-accent);
+      color: #fff;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background: #1d4ed8;
+      box-shadow: 0 4px 16px rgba(37,99,235,.35);
+      transform: translateY(-1px);
+    }
+
+    .btn-primary:active:not(:disabled) {
+      transform: translateY(0);
+    }
+
+    .btn-primary:disabled {
+      background: #93c5fd;
+      cursor: not-allowed;
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-secondary);
+      border: 1.5px solid var(--border);
+      margin-top: 10px;
+    }
+
+    .btn-ghost:hover {
+      background: var(--bg);
+      color: var(--text-primary);
+    }
+
+    .btn-link {
+      background: none;
+      border: none;
+      color: var(--brand-accent);
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      font-family: inherit;
+      padding: 0;
+      text-decoration: none;
+    }
+
+    .btn-link:hover { text-decoration: underline; }
+
+    /* Loading spinner */
+    .spinner {
+      width: 18px;
+      height: 18px;
+      border: 2.5px solid rgba(255,255,255,.4);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+      display: none;
+    }
+
+    .btn.loading .spinner { display: block; }
+    .btn.loading .btn-text { opacity: 0; position: absolute; }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Row helpers ────────────────────────────────────────────── */
+    .row-between {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 18px;
+    }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 24px 0;
+      color: var(--text-muted);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .8px;
+    }
+
+    .divider::before, .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* ── OTP Input ──────────────────────────────────────────────── */
+    .otp-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    .otp-grid input {
+      height: 60px;
+      padding: 0;
+      text-align: center;
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: 0;
+      border-radius: var(--radius-sm);
+      border: 1.5px solid var(--border);
+      background: #fff;
+      color: var(--text-primary);
+      outline: none;
+      transition: border-color var(--transition), box-shadow var(--transition), background var(--transition);
+      -moz-appearance: textfield;
+    }
+
+    .otp-grid input::-webkit-inner-spin-button,
+    .otp-grid input::-webkit-outer-spin-button { -webkit-appearance: none; }
+
+    .otp-grid input:focus {
+      border-color: var(--brand-accent);
+      box-shadow: 0 0 0 3px rgba(37,99,235,.12);
+      background: var(--input-focus);
+    }
+
+    .otp-grid input.filled {
+      border-color: var(--brand-dark);
+      background: #f0f7ff;
+    }
+
+    .otp-grid input.error {
+      border-color: var(--error);
+      animation: shake .3s ease;
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25%       { transform: translateX(-6px); }
+      75%       { transform: translateX(6px); }
+    }
+
+    /* OTP timer */
+    .otp-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-bottom: 24px;
+    }
+
+    .otp-timer { font-weight: 600; color: var(--brand-accent); }
+    .otp-timer.expired { color: var(--error); }
+
+    .otp-email-label {
+      text-align: center;
+      font-size: 14px;
+      color: var(--text-secondary);
+      margin-bottom: 28px;
+      line-height: 1.5;
+    }
+
+    .otp-email-label strong { color: var(--text-primary); }
+
+    /* ── Success state ──────────────────────────────────────────── */
+    .success-view {
+      text-align: center;
+      padding: 20px 0;
+    }
+
+    .success-icon {
+      width: 72px;
+      height: 72px;
+      background: var(--success-bg);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 36px;
+      margin: 0 auto 24px;
+      border: 2px solid #6ee7b7;
+    }
+
+    /* ── Responsive ─────────────────────────────────────────────── */
+    @media (max-width: 900px) {
+      .brand-panel { flex: 0 0 320px; padding: 40px 32px; }
+      .brand-body h2 { font-size: 24px; }
+    }
+
+    @media (max-width: 680px) {
+      .auth-wrapper { flex-direction: column; }
+      .brand-panel {
+        flex: none;
+        position: static;
+        height: auto;
+        padding: 28px 24px;
+      }
+      .brand-body { display: none; }
+      .brand-footer { display: none; }
+      .form-panel { padding: 28px 20px; }
+    }
+
+    @media (max-width: 400px) {
+      .otp-grid input { height: 52px; font-size: 20px; }
+      .otp-grid { gap: 7px; }
+    }
+  </style>
+</head>
+<body>
+<div class="auth-wrapper">
+
+  <!-- ── Left: Brand panel ── -->
+  <aside class="brand-panel">
+    <div class="brand-logo">
+      <h1>Should-Cost</h1>
+      <p>Manufacturing Cost Intelligence</p>
+    </div>
+
+    <div class="brand-body">
+      <h2>Precision cost modelling for engineers</h2>
+      <p>Calculate should-cost for any manufactured component — from forgings to PCBAs — in seconds.</p>
+      <ul class="features">
+        <li>
+          <span class="icon">⚙️</span>
+          <span>20+ manufacturing commodities — machining, casting, composites, PCBAs and more</span>
+        </li>
+        <li>
+          <span class="icon">🌍</span>
+          <span>20-country regional cost intelligence with labour &amp; machine rate benchmarks</span>
+        </li>
+        <li>
+          <span class="icon">🤖</span>
+          <span>AI-powered cost agent — describe any part and get an instant should-cost breakdown</span>
+        </li>
+        <li>
+          <span class="icon">📊</span>
+          <span>8-bucket cost stack with sensitivity analysis, DFM insights, and export to Excel/PDF</span>
+        </li>
+      </ul>
+    </div>
+
+    <div class="brand-footer">
+      &copy; 2025 Should-Cost &middot; Manufacturing Intelligence Platform
+    </div>
+  </aside>
+
+  <!-- ── Right: Form panel ── -->
+  <main class="form-panel">
+    <div class="auth-card">
+
+      <!-- ────────────── SIGN IN ────────────── -->
+      <div id="view-signin" class="view active">
+        <h2 class="view-heading">Welcome back</h2>
+        <p class="view-sub">Sign in to your account to continue</p>
+
+        <div id="signin-banner" class="banner error">
+          <span class="banner-icon">⚠</span>
+          <span class="banner-text" id="signin-banner-text"></span>
+        </div>
+
+        <form id="form-signin" novalidate>
+          <div class="form-group">
+            <label for="signin-email">Email address</label>
+            <div class="input-wrap">
+              <input type="email" id="signin-email" placeholder="you@company.com" autocomplete="email" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="row-between" style="margin-bottom:6px">
+              <label for="signin-pw" style="margin:0">Password</label>
+              <button type="button" class="btn-link" onclick="gotoView('forgot')">Forgot password?</button>
+            </div>
+            <div class="input-wrap">
+              <input type="password" id="signin-pw" placeholder="Enter your password" autocomplete="current-password" />
+              <button type="button" class="toggle-pw" onclick="togglePw('signin-pw', this)" tabindex="-1">
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary" id="btn-signin">
+            <div class="spinner"></div>
+            <span class="btn-text">Sign In</span>
+          </button>
+        </form>
+
+        <div class="divider">or</div>
+
+        <button type="button" class="btn btn-ghost" onclick="gotoView('signup')">
+          Create an account
+        </button>
+      </div>
+
+      <!-- ────────────── SIGN UP ────────────── -->
+      <div id="view-signup" class="view">
+        <h2 class="view-heading">Create your account</h2>
+        <p class="view-sub">Already have an account? <a href="#" onclick="gotoView('signin');return false">Sign in</a></p>
+
+        <div id="signup-banner" class="banner error">
+          <span class="banner-icon">⚠</span>
+          <span class="banner-text" id="signup-banner-text"></span>
+        </div>
+
+        <form id="form-signup" novalidate>
+          <div class="form-group">
+            <label for="signup-name">Full Name</label>
+            <div class="input-wrap">
+              <input type="text" id="signup-name" placeholder="Jane Smith" autocomplete="name" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="signup-company">Company Name <span style="color:var(--text-muted);font-weight:400">(optional)</span></label>
+            <div class="input-wrap">
+              <input type="text" id="signup-company" placeholder="Acme Engineering Ltd" autocomplete="organization" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="signup-email">Email address</label>
+            <div class="input-wrap">
+              <input type="email" id="signup-email" placeholder="you@company.com" autocomplete="email" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="signup-pw">Password</label>
+            <div class="input-wrap">
+              <input type="password" id="signup-pw" placeholder="Min. 8 characters" autocomplete="new-password"
+                     oninput="checkPwStrength(this.value, 'signup-pw-strength')" />
+              <button type="button" class="toggle-pw" onclick="togglePw('signup-pw', this)" tabindex="-1">
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
+            <div class="pw-strength" id="signup-pw-strength">
+              <div class="pw-bar-track"><div class="pw-bar-fill" id="signup-pw-bar"></div></div>
+              <p class="pw-label" id="signup-pw-label"></p>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="signup-pw2">Confirm Password</label>
+            <div class="input-wrap">
+              <input type="password" id="signup-pw2" placeholder="Re-enter your password" autocomplete="new-password" />
+              <button type="button" class="toggle-pw" onclick="togglePw('signup-pw2', this)" tabindex="-1">
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary" id="btn-signup">
+            <div class="spinner"></div>
+            <span class="btn-text">Create Account &amp; Send Verification Code</span>
+          </button>
+        </form>
+      </div>
+
+      <!-- ────────────── OTP VERIFY ────────────── -->
+      <div id="view-otp" class="view">
+        <h2 class="view-heading">Check your email</h2>
+        <p class="otp-email-label">We sent a 6-digit code to<br><strong id="otp-email-display"></strong></p>
+
+        <div id="otp-banner" class="banner error">
+          <span class="banner-icon">⚠</span>
+          <span class="banner-text" id="otp-banner-text"></span>
+        </div>
+
+        <div class="otp-grid" id="otp-inputs">
+          <input type="number" maxlength="1" min="0" max="9" inputmode="numeric" />
+          <input type="number" maxlength="1" min="0" max="9" inputmode="numeric" />
+          <input type="number" maxlength="1" min="0" max="9" inputmode="numeric" />
+          <input type="number" maxlength="1" min="0" max="9" inputmode="numeric" />
+          <input type="number" maxlength="1" min="0" max="9" inputmode="numeric" />
+          <input type="number" maxlength="1" min="0" max="9" inputmode="numeric" />
+        </div>
+
+        <div class="otp-meta">
+          <span>Code expires in</span>
+          <span class="otp-timer" id="otp-timer">5:00</span>
+        </div>
+
+        <button type="button" class="btn btn-primary" id="btn-verify" onclick="submitOTP()">
+          <div class="spinner"></div>
+          <span class="btn-text">Verify Code</span>
+        </button>
+
+        <div style="text-align:center;margin-top:18px">
+          <button type="button" class="btn-link" id="btn-resend" onclick="resendOTP()" disabled>
+            Resend code
+          </button>
+          <span id="resend-hint" style="font-size:13px;color:var(--text-muted)"> · available when timer expires</span>
+        </div>
+      </div>
+
+      <!-- ────────────── FORGOT PASSWORD ────────────── -->
+      <div id="view-forgot" class="view">
+        <h2 class="view-heading">Reset your password</h2>
+        <p class="view-sub">Enter your email and we'll send you a reset code. <a href="#" onclick="gotoView('signin');return false">Back to sign in</a></p>
+
+        <div id="forgot-banner" class="banner error">
+          <span class="banner-icon">⚠</span>
+          <span class="banner-text" id="forgot-banner-text"></span>
+        </div>
+
+        <form id="form-forgot" novalidate>
+          <div class="form-group">
+            <label for="forgot-email">Email address</label>
+            <div class="input-wrap">
+              <input type="email" id="forgot-email" placeholder="you@company.com" autocomplete="email" />
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary" id="btn-forgot">
+            <div class="spinner"></div>
+            <span class="btn-text">Send Reset Code</span>
+          </button>
+
+          <button type="button" class="btn btn-ghost" onclick="gotoView('signin')">
+            Back to Sign In
+          </button>
+        </form>
+      </div>
+
+      <!-- ────────────── RESET PASSWORD ────────────── -->
+      <div id="view-reset" class="view">
+        <h2 class="view-heading">Set new password</h2>
+        <p class="view-sub">Choose a strong password for your account</p>
+
+        <div id="reset-banner" class="banner error">
+          <span class="banner-icon">⚠</span>
+          <span class="banner-text" id="reset-banner-text"></span>
+        </div>
+
+        <form id="form-reset" novalidate>
+          <div class="form-group">
+            <label for="reset-pw">New Password</label>
+            <div class="input-wrap">
+              <input type="password" id="reset-pw" placeholder="Min. 8 characters"
+                     oninput="checkPwStrength(this.value, 'reset-pw-strength')" />
+              <button type="button" class="toggle-pw" onclick="togglePw('reset-pw', this)" tabindex="-1">
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
+            <div class="pw-strength" id="reset-pw-strength">
+              <div class="pw-bar-track"><div class="pw-bar-fill" id="reset-pw-bar"></div></div>
+              <p class="pw-label" id="reset-pw-label"></p>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="reset-pw2">Confirm New Password</label>
+            <div class="input-wrap">
+              <input type="password" id="reset-pw2" placeholder="Re-enter your new password" />
+              <button type="button" class="toggle-pw" onclick="togglePw('reset-pw2', this)" tabindex="-1">
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary" id="btn-reset">
+            <div class="spinner"></div>
+            <span class="btn-text">Set New Password</span>
+          </button>
+        </form>
+      </div>
+
+      <!-- ────────────── SUCCESS ────────────── -->
+      <div id="view-success" class="view">
+        <div class="success-view">
+          <div class="success-icon">✅</div>
+          <h2 class="view-heading" id="success-heading">Password reset!</h2>
+          <p class="view-sub" id="success-msg">Your password has been updated. Redirecting to sign in…</p>
+        </div>
+      </div>
+
+    </div><!-- /.auth-card -->
+  </main>
+</div><!-- /.auth-wrapper -->
+
+<script>
+/* ── State ──────────────────────────────────────────────────────────── */
+const state = {
+  otpPurpose:   'signup',   // 'signup' | 'reset'
+  otpEmail:     '',
+  resetToken:   '',
+  timerInterval: null,
+};
+
+/* ── API base ────────────────────────────────────────────────────────── */
+const API = '/api/auth';
+
+/* ── View routing ───────────────────────────────────────────────────── */
+function gotoView(name) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById('view-' + name).classList.add('active');
+  clearBanners();
+}
+
+function clearBanners() {
+  document.querySelectorAll('.banner').forEach(b => b.classList.remove('visible'));
+}
+
+/* ── Banner helpers ─────────────────────────────────────────────────── */
+function showBanner(prefix, msg, type = 'error') {
+  const b = document.getElementById(prefix + '-banner');
+  const t = document.getElementById(prefix + '-banner-text');
+  b.className = 'banner ' + type + ' visible';
+  t.textContent = msg;
+}
+
+/* ── Button loading state ───────────────────────────────────────────── */
+function setLoading(btnId, on) {
+  const btn = document.getElementById(btnId);
+  if (on) btn.classList.add('loading');
+  else     btn.classList.remove('loading');
+  btn.disabled = on;
+}
+
+/* ── Password toggle ────────────────────────────────────────────────── */
+const EYE_ON  = `<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;
+const EYE_OFF = `<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`;
+
+function togglePw(inputId, btn) {
+  const inp = document.getElementById(inputId);
+  if (inp.type === 'password') { inp.type = 'text';     btn.innerHTML = EYE_OFF; }
+  else                         { inp.type = 'password'; btn.innerHTML = EYE_ON;  }
+}
+
+/* ── Password strength ──────────────────────────────────────────────── */
+function checkPwStrength(pw, wrapperId) {
+  const wrap = document.getElementById(wrapperId);
+  const viewId = wrapperId.replace('-pw-strength', '');
+  const bar    = document.getElementById(viewId + '-pw-bar');
+  const label  = document.getElementById(viewId + '-pw-label');
+
+  if (!pw) { wrap.classList.remove('visible'); return; }
+  wrap.classList.add('visible');
+
+  let score = 0;
+  if (pw.length >= 8)                           score++;
+  if (/[A-Z]/.test(pw) && /[a-z]/.test(pw))    score++;
+  if (/\d/.test(pw))                             score++;
+  if (/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(pw)) score++;
+
+  const levels = ['', 'weak', 'weak', 'fair', 'strong'];
+  const labels = ['', 'Weak', 'Weak', 'Fair — add symbols', 'Strong ✓'];
+  const level  = levels[score];
+  const text   = labels[score];
+
+  bar.className   = 'pw-bar-fill ' + level;
+  label.className = 'pw-label ' + level;
+  label.textContent = text;
+}
+
+/* ── OTP input wiring ───────────────────────────────────────────────── */
+function setupOTPInputs() {
+  const inputs = [...document.querySelectorAll('#otp-inputs input')];
+
+  inputs.forEach((inp, i) => {
+    // Accept single digit
+    inp.addEventListener('input', () => {
+      const val = inp.value.replace(/\D/g, '').slice(-1);
+      inp.value = val;
+      inp.classList.toggle('filled', val !== '');
+      inp.classList.remove('error');
+      if (val && i < 5) inputs[i + 1].focus();
+      if (getOTPValue().length === 6) submitOTP();
+    });
+
+    inp.addEventListener('keydown', e => {
+      if (e.key === 'Backspace' && !inp.value && i > 0) {
+        inputs[i - 1].value = '';
+        inputs[i - 1].classList.remove('filled');
+        inputs[i - 1].focus();
+      }
+      if (e.key === 'ArrowLeft'  && i > 0) inputs[i - 1].focus();
+      if (e.key === 'ArrowRight' && i < 5) inputs[i + 1].focus();
+    });
+
+    inp.addEventListener('paste', e => {
+      e.preventDefault();
+      const text = (e.clipboardData || window.clipboardData).getData('text').replace(/\D/g, '').slice(0, 6);
+      [...text].forEach((ch, j) => {
+        if (inputs[j]) { inputs[j].value = ch; inputs[j].classList.add('filled'); }
+      });
+      if (text.length === 6) submitOTP();
+      else if (inputs[text.length]) inputs[text.length].focus();
+    });
+  });
+}
+
+function getOTPValue() {
+  return [...document.querySelectorAll('#otp-inputs input')].map(i => i.value).join('');
+}
+
+function clearOTPInputs() {
+  document.querySelectorAll('#otp-inputs input').forEach(i => {
+    i.value = '';
+    i.classList.remove('filled', 'error');
+  });
+  document.querySelector('#otp-inputs input').focus();
+}
+
+function shakeOTPInputs() {
+  document.querySelectorAll('#otp-inputs input').forEach(i => i.classList.add('error'));
+  setTimeout(() => document.querySelectorAll('#otp-inputs input').forEach(i => i.classList.remove('error')), 600);
+}
+
+/* ── OTP timer ──────────────────────────────────────────────────────── */
+function startOTPTimer(seconds = 300) {
+  clearInterval(state.timerInterval);
+  const timerEl    = document.getElementById('otp-timer');
+  const resendBtn  = document.getElementById('btn-resend');
+  const resendHint = document.getElementById('resend-hint');
+
+  resendBtn.disabled = true;
+  resendHint.style.display = 'inline';
+
+  let remaining = seconds;
+
+  function tick() {
+    const m = Math.floor(remaining / 60);
+    const s = remaining % 60;
+    timerEl.textContent = `${m}:${s.toString().padStart(2, '0')}`;
+    timerEl.className   = 'otp-timer' + (remaining <= 30 ? ' expired' : '');
+    if (remaining <= 0) {
+      clearInterval(state.timerInterval);
+      resendBtn.disabled   = false;
+      resendHint.style.display = 'none';
+    }
+    remaining--;
+  }
+
+  tick();
+  state.timerInterval = setInterval(tick, 1000);
+}
+
+/* ── Enter OTP view ─────────────────────────────────────────────────── */
+function showOTPView(email, purpose) {
+  state.otpEmail   = email;
+  state.otpPurpose = purpose;
+  document.getElementById('otp-email-display').textContent = email;
+  clearOTPInputs();
+  gotoView('otp');
+  startOTPTimer();
+  document.querySelector('#otp-inputs input').focus();
+}
+
+/* ── FORM: Sign In ──────────────────────────────────────────────────── */
+document.getElementById('form-signin').addEventListener('submit', async e => {
+  e.preventDefault();
+  const email = document.getElementById('signin-email').value.trim();
+  const pw    = document.getElementById('signin-pw').value;
+  if (!email || !pw) { showBanner('signin', 'Please enter your email and password.'); return; }
+
+  setLoading('btn-signin', true);
+  clearBanners();
+
+  try {
+    const res  = await fetch(API + '/signin', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password: pw }),
+    });
+    const data = await res.json();
+
+    if (!res.ok) {
+      if (data.requiresVerification) {
+        showOTPView(data.email, 'signup');
+        return;
+      }
+      showBanner('signin', data.error ?? 'Sign-in failed.');
+      return;
+    }
+
+    localStorage.setItem('auth_token', data.token);
+    localStorage.setItem('auth_user', JSON.stringify(data.user));
+    window.location.href = '/calculator/';
+
+  } catch {
+    showBanner('signin', 'Network error. Please check your connection and try again.');
+  } finally {
+    setLoading('btn-signin', false);
+  }
+});
+
+/* ── FORM: Sign Up ──────────────────────────────────────────────────── */
+document.getElementById('form-signup').addEventListener('submit', async e => {
+  e.preventDefault();
+  const fullName    = document.getElementById('signup-name').value.trim();
+  const companyName = document.getElementById('signup-company').value.trim();
+  const email       = document.getElementById('signup-email').value.trim();
+  const pw          = document.getElementById('signup-pw').value;
+  const pw2         = document.getElementById('signup-pw2').value;
+
+  if (!fullName || !email || !pw || !pw2) { showBanner('signup', 'Please fill in all required fields.'); return; }
+  if (pw !== pw2)                          { showBanner('signup', 'Passwords do not match.'); return; }
+
+  setLoading('btn-signup', true);
+  clearBanners();
+
+  try {
+    const res  = await fetch(API + '/signup', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password: pw, fullName, companyName }),
+    });
+    const data = await res.json();
+
+    if (!res.ok) { showBanner('signup', data.error ?? 'Sign-up failed.'); return; }
+
+    showOTPView(email, 'signup');
+
+  } catch {
+    showBanner('signup', 'Network error. Please try again.');
+  } finally {
+    setLoading('btn-signup', false);
+  }
+});
+
+/* ── FORM: Forgot Password ──────────────────────────────────────────── */
+document.getElementById('form-forgot').addEventListener('submit', async e => {
+  e.preventDefault();
+  const email = document.getElementById('forgot-email').value.trim();
+  if (!email) { showBanner('forgot', 'Please enter your email address.'); return; }
+
+  setLoading('btn-forgot', true);
+  clearBanners();
+
+  try {
+    const res  = await fetch(API + '/forgot-password', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email }),
+    });
+    const data = await res.json();
+
+    if (!res.ok) { showBanner('forgot', data.error ?? 'Request failed.'); return; }
+
+    showOTPView(email, 'reset');
+    showBanner('otp', data.message, 'info');
+
+  } catch {
+    showBanner('forgot', 'Network error. Please try again.');
+  } finally {
+    setLoading('btn-forgot', false);
+  }
+});
+
+/* ── FORM: Reset Password ───────────────────────────────────────────── */
+document.getElementById('form-reset').addEventListener('submit', async e => {
+  e.preventDefault();
+  const pw  = document.getElementById('reset-pw').value;
+  const pw2 = document.getElementById('reset-pw2').value;
+
+  if (!pw || !pw2)      { showBanner('reset', 'Please fill in both password fields.'); return; }
+  if (pw !== pw2)        { showBanner('reset', 'Passwords do not match.'); return; }
+
+  setLoading('btn-reset', true);
+  clearBanners();
+
+  try {
+    const res  = await fetch(API + '/reset-password', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: state.otpEmail, resetToken: state.resetToken, newPassword: pw }),
+    });
+    const data = await res.json();
+
+    if (!res.ok) { showBanner('reset', data.error ?? 'Reset failed.'); return; }
+
+    gotoView('success');
+    document.getElementById('success-heading').textContent = 'Password updated!';
+    document.getElementById('success-msg').textContent = 'Your password has been reset. Redirecting to sign in…';
+    setTimeout(() => gotoView('signin'), 2800);
+
+  } catch {
+    showBanner('reset', 'Network error. Please try again.');
+  } finally {
+    setLoading('btn-reset', false);
+  }
+});
+
+/* ── Submit OTP ─────────────────────────────────────────────────────── */
+async function submitOTP() {
+  const otp = getOTPValue();
+  if (otp.length < 6) return;
+
+  setLoading('btn-verify', true);
+  clearBanners();
+
+  try {
+    const res  = await fetch(API + '/verify-otp', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: state.otpEmail, otp, purpose: state.otpPurpose }),
+    });
+    const data = await res.json();
+
+    if (!res.ok) {
+      shakeOTPInputs();
+      clearOTPInputs();
+      showBanner('otp', data.error ?? 'Invalid code. Please try again.');
+      return;
+    }
+
+    clearInterval(state.timerInterval);
+
+    if (state.otpPurpose === 'signup') {
+      localStorage.setItem('auth_token', data.token);
+      localStorage.setItem('auth_user', JSON.stringify(data.user));
+
+      gotoView('success');
+      document.getElementById('success-heading').textContent = 'Account verified!';
+      document.getElementById('success-msg').textContent = 'Welcome to Should-Cost. Redirecting to the app…';
+      setTimeout(() => window.location.href = '/calculator/', 2000);
+
+    } else {
+      state.resetToken = data.resetToken;
+      gotoView('reset');
+    }
+
+  } catch {
+    showBanner('otp', 'Network error. Please try again.');
+  } finally {
+    setLoading('btn-verify', false);
+  }
+}
+
+/* ── Resend OTP ─────────────────────────────────────────────────────── */
+async function resendOTP() {
+  document.getElementById('btn-resend').disabled = true;
+
+  try {
+    await fetch(API + '/resend-otp', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: state.otpEmail, purpose: state.otpPurpose }),
+    });
+    clearOTPInputs();
+    startOTPTimer();
+    showBanner('otp', 'New code sent — please check your email.', 'info');
+  } catch {
+    showBanner('otp', 'Could not resend code. Please try again.');
+    document.getElementById('btn-resend').disabled = false;
+  }
+}
+
+/* ── Auth guard: redirect if already logged in ──────────────────────── */
+(function checkAlreadyAuthed() {
+  const token = localStorage.getItem('auth_token');
+  if (!token) return;
+  // Quick decode — not verification (server verifies on each API call)
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    if (payload.exp * 1000 > Date.now()) {
+      window.location.href = '/calculator/';
+    }
+  } catch { localStorage.removeItem('auth_token'); }
+})();
+
+/* ── Init ───────────────────────────────────────────────────────────── */
+setupOTPInputs();
+</script>
+</body>
+</html>

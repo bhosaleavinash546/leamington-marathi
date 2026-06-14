@@ -27,6 +27,31 @@ db.exec(`
     created_at TEXT NOT NULL,
     created_by TEXT NOT NULL DEFAULT 'system'
   );
+
+  CREATE TABLE IF NOT EXISTS users (
+    id TEXT PRIMARY KEY,
+    email TEXT UNIQUE NOT NULL,
+    password_hash TEXT NOT NULL,
+    full_name TEXT NOT NULL,
+    company_name TEXT NOT NULL DEFAULT '',
+    email_verified INTEGER NOT NULL DEFAULT 0,
+    failed_attempts INTEGER NOT NULL DEFAULT 0,
+    locked_until TEXT,
+    created_at TEXT NOT NULL
+  );
+
+  CREATE TABLE IF NOT EXISTS otp_tokens (
+    id TEXT PRIMARY KEY,
+    email TEXT NOT NULL,
+    otp_hash TEXT NOT NULL,
+    purpose TEXT NOT NULL,
+    expires_at TEXT NOT NULL,
+    used INTEGER NOT NULL DEFAULT 0,
+    created_at TEXT NOT NULL
+  );
+
+  CREATE INDEX IF NOT EXISTS idx_otp_email ON otp_tokens(email, purpose);
+  CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
 `);
 
 export default db;

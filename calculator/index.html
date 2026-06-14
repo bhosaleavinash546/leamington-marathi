@@ -4,6 +4,21 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Should-Cost Calculator | Leamington Marathi</title>
+  <script>
+    // Auth guard — redirect to sign-in if no valid token
+    (function() {
+      const token = localStorage.getItem('auth_token');
+      if (!token) { window.location.replace('/auth.html'); return; }
+      try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        if (payload.exp * 1000 <= Date.now()) {
+          localStorage.removeItem('auth_token');
+          localStorage.removeItem('auth_user');
+          window.location.replace('/auth.html');
+        }
+      } catch { window.location.replace('/auth.html'); }
+    })();
+  </script>
 </head>
 <body>
 
@@ -47,8 +62,28 @@
         <option value="MXN">MXN $M</option>
       </select>
     </div>
+    <div id="user-menu" style="display:flex;align-items:center;gap:8px;margin-left:4px">
+      <span id="user-greeting" style="font-size:0.78rem;color:#555;white-space:nowrap"></span>
+      <button onclick="signOut()" style="font-size:0.78rem;padding:4px 12px;background:#fff;border:1.5px solid #e2e8f0;border-radius:6px;cursor:pointer;color:#374151;font-weight:500" title="Sign out">Sign Out</button>
+    </div>
   </div>
 </header>
+<script>
+  (function() {
+    try {
+      const user = JSON.parse(localStorage.getItem('auth_user') || '{}');
+      if (user.fullName) {
+        const el = document.getElementById('user-greeting');
+        if (el) el.textContent = 'Hi, ' + user.fullName.split(' ')[0];
+      }
+    } catch {}
+  })();
+  function signOut() {
+    localStorage.removeItem('auth_token');
+    localStorage.removeItem('auth_user');
+    window.location.replace('/auth.html');
+  }
+</script>
 
 <div id="validation-errors"   class="validation-box error"   style="display:none;margin:6px 16px 0"></div>
 <div id="validation-warnings" class="validation-box warning" style="display:none;margin:4px 16px 0"></div>
