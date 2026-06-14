@@ -120,6 +120,9 @@ docker rm -f costvision 2>/dev/null || true
 
 echo ""
 echo "  🐳 Building & starting (first run may take 2-3 minutes)..."
+# Write a timestamp so Docker always re-copies source (busts code cache,
+# but keeps the npm install layer cached for fast rebuilds)
+date +%s > calculator/.build-ts
 docker compose up -d --build
 
 # ── 6. Wait for the app to respond, then open the browser ─────────────────────

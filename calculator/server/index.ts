@@ -31,12 +31,14 @@ app.use(helmet({
 // Request logging — combined in prod (Apache format with IPs), dev in concise format
 app.use(morgan(IS_PROD ? 'combined' : 'dev'));
 
-// CORS — allow Vite dev server and production origin
+// CORS — in dev allow all localhost origins; in prod restrict to ALLOWED_ORIGINS
 const ALLOWED_ORIGINS = (process.env.ALLOWED_ORIGINS ?? 'http://localhost:5174,http://localhost:4174').split(',');
 app.use(cors({
   origin: (origin, cb) => {
-    if (!origin || ALLOWED_ORIGINS.includes(origin)) cb(null, true);
-    else cb(new Error('Not allowed by CORS'));
+    if (!origin) return cb(null, true); // same-origin / non-browser calls
+    if (!IS_PROD) return cb(null, true); // dev: allow everything on localhost
+    if (ALLOWED_ORIGINS.includes(origin)) return cb(null, true);
+    cb(new Error('Not allowed by CORS'));
   },
   credentials: true,
 }));
