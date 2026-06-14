@@ -67,8 +67,8 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
     name: 'United Kingdom',
     currency: 'GBP',
     fxToGBP: 1.00,
-    labour: { skilled: 24.00, semiskilled: 18.50, engineer: 40.00, foundry: 17.00, electronics: 16.50, inspector: 26.00 },
-    energy: { electricityPerKwh: 0.22, gasPerKwh: 0.07 },
+    labour: { skilled: 26.00, semiskilled: 19.80, engineer: 42.50, foundry: 18.50, electronics: 17.50, inspector: 27.50 },
+    energy: { electricityPerKwh: 0.23, gasPerKwh: 0.065 },
     materialMultiplier: 1.00,
     machineRateMultiplier: 1.00,
     overheadMultiplier: 1.00,
@@ -340,7 +340,7 @@ export function buildRegionalLibrary(baseLibrary: RateLibrary, region: Manufactu
     // Adjust labour rates
     labour: baseLibrary.labour.map(l => ({
       ...l,
-      fullyLoadedRatePerHr: labourMap[l.id] !== undefined ? labourMap[l.id] : l.fullyLoadedRatePerHr * (rd.labour.skilled / 24.00),
+      fullyLoadedRatePerHr: labourMap[l.id] !== undefined ? labourMap[l.id] : l.fullyLoadedRatePerHr * (rd.labour.skilled / 26.00),
       region: rd.name,
       sourceNote: `Regional benchmark ${rd.name} — 2025 Q2`,
       confidence: 'Low' as const,

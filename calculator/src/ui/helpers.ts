@@ -9,6 +9,8 @@ export function sel(id: string): string { return el<HTMLSelectElement>(id)?.valu
 export function fmt(n: number): string { return '£' + n.toFixed(2); }
 export function fmtPct(n: number): string { return n.toFixed(1) + '%'; }
 
+export function chk(id: string): boolean { return (document.getElementById(id) as HTMLInputElement)?.checked ?? false; }
+
 export function getUniversalTail(): Pick<UniversalStackInput, 'partName' | 'packagingPerPart' | 'logisticsPerPart' | 'overheadPct' | 'marginPct'> {
   return {
     partName: val('part-name') || 'Unnamed Part',

@@ -20,20 +20,33 @@ import { DEFAULT_RATE_LIBRARY } from '../src/engine/rate-library.js';
 
 const BASE_FAB: PCBFabInputs = {
   layers: 4,
-  boardAreaCm2: 50,
+  boardWidthMm: 100,
+  boardHeightMm: 50,
+  panelWidthMm: 500,
+  panelHeightMm: 600,
   panelUtilization: 0.72,
-  panelAreaCm2: 3000,
+  technology: 'FR4_STD',
   baseMaterialTg: 130,
   copperWeightOz: 1,
-  viaCount: 200,
+  outerCopperWeightOz: 1,
+  viaType: 'through_only',
+  throughViaCount: 200,
+  blindViaCount: 0,
+  buriedViaCount: 0,
   microViaCount: 0,
-  surfaceFinish: 'enig',
+  hdiStructure: 'none',
   minTraceSpaceMm: 0.15,
-  fabYield: 0.96,
-  testablePct: 0.5,
+  impedanceControlled: false,
+  hasFinePitchBGA: false,
+  solderMaskColor: 'green',
+  silkscreenSides: 2,
+  surfaceFinish: 'enig',
+  testMethod: 'flying_probe',
+  qualityGrade: 'consumer',
+  region: 'uk',
   nreCost: 800,
   amortizationVolume: 10000,
-  basePanelPriceGBP: 18,
+  fabYieldOverride: 0.96,
 };
 
 const BASE_PCBA: PCBAInputs = {
@@ -95,14 +108,15 @@ describe('PCB technology multipliers', () => {
 // ─── Technology multiplier drives cost ───────────────────────────────────────
 
 // Minimal-adder fixture isolates the panel cost so tech ratios are accurate.
-// hasl=£0, vias=0, testablePct=0, copperWeightOz=0.5 → all adders ≈ £0.04.
+// hasl=£0, vias=0, testMethod=none, copperWeightOz=0.5 → adders are silk only.
 const BASE_FAB_PURE: PCBFabInputs = {
   ...BASE_FAB,
   surfaceFinish: 'hasl',
-  viaCount: 0,
+  throughViaCount: 0,
   microViaCount: 0,
-  testablePct: 0,
+  testMethod: 'none',
   copperWeightOz: 0.5,
+  outerCopperWeightOz: 0.5,
 };
 
 describe('PCB Fab — technology multiplier effect', () => {
@@ -141,13 +155,11 @@ describe('PCB quality grade multipliers', () => {
     expect(PCB_QUALITY_MULTIPLIER['aerospace']).toBe(2.2);
   });
 
-  it('auto_grade1 board total cost is significantly higher than consumer (new lookup-table test model)', () => {
+  it('auto_grade1 board total cost is 1.8× consumer (quality multiplier ×1.8)', () => {
     const dCons = computePCBFabDrivers({ ...BASE_FAB, qualityGrade: 'consumer' });
     const dAuto = computePCBFabDrivers({ ...BASE_FAB, qualityGrade: 'auto_grade1' });
     const ratio = dAuto.rawMaterial.directCost! / dCons.rawMaterial.directCost!;
-    // Test cost: auto_grade1 £9.00 vs consumer £0.50 per board (testablePct=0.5 → £4.50 vs £0.25 delta)
-    // Total directCost ratio ~5× because other board costs are shared; verify auto > consumer
-    expect(ratio).toBeGreaterThan(3.0);
+    expect(ratio).toBeCloseTo(1.8, 1);
     expect(dAuto.rawMaterial.directCost!).toBeGreaterThan(dCons.rawMaterial.directCost!);
   });
 
@@ -186,38 +198,42 @@ describe('PCB Fab — extended layer counts', () => {
 
 // ─── Yield model ─────────────────────────────────────────────────────────────
 
+const YIELD_BASE = { layers: 4, buriedViaCount: 0, minTraceSpaceMm: 0.15, hdiStructure: 'none' as const };
+
 describe('computeSuggestedFabYield', () => {
-  it('standard FR4_STD with no penalties → 0.98', () => {
+  it('standard FR4_STD with no penalties → 0.985', () => {
     const y = computeSuggestedFabYield({
-      technology: 'FR4_STD', microViaCount: 0, hasFinePitchBGA: false, boardAreaCm2: 50,
+      ...YIELD_BASE, technology: 'FR4_STD', microViaCount: 0, hasFinePitchBGA: false, boardAreaCm2: 50,
     });
-    expect(y).toBeCloseTo(0.98, 4);
+    expect(y).toBeCloseTo(0.985, 3);
   });
 
   it('HDI with high microvia count, fine-pitch BGA → penalties reduce yield', () => {
     const y = computeSuggestedFabYield({
-      technology: 'HDI_RIGID', microViaCount: 200, hasFinePitchBGA: true, boardAreaCm2: 50,
+      ...YIELD_BASE, technology: 'HDI_RIGID', microViaCount: 200, hasFinePitchBGA: true, boardAreaCm2: 50,
+      hdiStructure: '1plus_n_plus1',
     });
-    // -3% (microvia) -2% (BGA) -4% (HDI) = 0.89
-    expect(y).toBeCloseTo(0.89, 4);
+    // Start 98.5%, -2% (mv>100) -1.5% (BGA) -3% (HDI) = 92.0% → 0.920
+    expect(y).toBeCloseTo(0.92, 3);
   });
 
-  it('CERAMIC substrate → large penalty (-5% for ceramic)', () => {
+  it('CERAMIC substrate → large penalty (-4% for ceramic)', () => {
     const y = computeSuggestedFabYield({
-      technology: 'CERAMIC', microViaCount: 0, hasFinePitchBGA: false, boardAreaCm2: 50,
+      ...YIELD_BASE, technology: 'CERAMIC', microViaCount: 0, hasFinePitchBGA: false, boardAreaCm2: 50,
     });
-    expect(y).toBeCloseTo(0.93, 4);
+    // Start 98.5%, -4% (CERAMIC) = 94.5% → 0.945
+    expect(y).toBeCloseTo(0.945, 3);
   });
 
   it('large board area (>300 cm²) → additional -1%', () => {
-    const ySmall = computeSuggestedFabYield({ technology: 'FR4_STD', microViaCount: 0, hasFinePitchBGA: false, boardAreaCm2: 50 });
-    const yLarge = computeSuggestedFabYield({ technology: 'FR4_STD', microViaCount: 0, hasFinePitchBGA: false, boardAreaCm2: 400 });
+    const ySmall = computeSuggestedFabYield({ ...YIELD_BASE, technology: 'FR4_STD', microViaCount: 0, hasFinePitchBGA: false, boardAreaCm2: 50 });
+    const yLarge = computeSuggestedFabYield({ ...YIELD_BASE, technology: 'FR4_STD', microViaCount: 0, hasFinePitchBGA: false, boardAreaCm2: 400 });
     expect(yLarge).toBeCloseTo(ySmall - 0.01, 4);
   });
 
   it('worst-case (all penalties) clamped to 0.70 minimum', () => {
     const y = computeSuggestedFabYield({
-      technology: 'CERAMIC', microViaCount: 500, hasFinePitchBGA: true, boardAreaCm2: 600,
+      ...YIELD_BASE, technology: 'CERAMIC', microViaCount: 500, hasFinePitchBGA: true, boardAreaCm2: 600,
     });
     expect(y).toBeGreaterThanOrEqual(0.70);
   });

@@ -1615,70 +1615,163 @@ function addBIWStation(d?: {stationName?: string; machineId?: string; labourId?:
 
 function renderPCBFabForm(): string {
   return `
-    <div class="section-title">Technology &amp; Grade</div>
+    <div class="section-title">PCB Technology & Quality</div>
     <div class="field-row">
-      <div class="field-group"><label>PCB Technology <span title="FR4_STD=×1.0 | FR4_HTg=×1.15 | HDI_RIGID=×2.2 | RIGID_FLEX=×3.5 | FLEX=×2.0 | RF_MICRO=×1.8 | MCPCB=×1.6 | CERAMIC=×4.0">ℹ</span></label>
-        <select id="pcbf-technology">
-          <option value="FR4_STD" selected>FR-4 Standard (×1.0)</option>
-          <option value="FR4_HTg">FR-4 High-Tg (×1.15)</option>
-          <option value="HDI_RIGID">HDI Rigid — microvias (×2.2)</option>
-          <option value="RIGID_FLEX">Rigid-Flex (×3.5)</option>
-          <option value="FLEX">Flex / Polyimide (×2.0)</option>
-          <option value="RF_MICRO">RF/Microwave — Rogers/PTFE (×1.8)</option>
-          <option value="MCPCB">Metal Core PCPCB (×1.6)</option>
-          <option value="CERAMIC">Ceramic DBC/AlN (×4.0)</option>
-        </select>
-      </div>
-      <div class="field-group"><label>Quality Grade <span title="Consumer=×1.0 | Industrial=×1.2 | Auto Gr.2=×1.5 | Auto Gr.1=×1.8 | Aerospace=×2.2">ℹ</span></label>
-        <select id="pcbf-quality">
-          <option value="consumer" selected>Consumer (×1.0)</option>
-          <option value="industrial">Industrial IPC Cls 2 (×1.2)</option>
-          <option value="auto_grade2">Automotive Grade 2 (×1.5)</option>
-          <option value="auto_grade1">Automotive Grade 1 (×1.8)</option>
-          <option value="aerospace">Aerospace IPC Cls 3 (×2.2)</option>
-        </select>
-      </div>
-    </div>
-    <div class="section-title" style="margin-top:8px">Board Specification</div>
-    <div class="field-row">
-      <div class="field-group"><label>Layers</label><input type="number" id="pcbf-layers" step="2" min="1" value="4"/></div>
-      <div class="field-group"><label>Board Area (cm²)</label><input type="number" id="pcbf-board-area" step="1" min="1" value="50"/></div>
-    </div>
-    <div class="field-row" style="margin-top:6px">
-      <div class="field-group"><label>Panel Area (cm²)</label><input type="number" id="pcbf-panel-area" step="100" min="100" value="3000"/></div>
-      <div class="field-group"><label>Panel Util. (0–1)</label><input type="number" id="pcbf-panel-util" step="0.01" min="0.1" max="1" value="0.72"/></div>
-    </div>
-    <div class="field-row" style="margin-top:6px">
-      <div class="field-group"><label>Base Material Tg (°C)</label><input type="number" id="pcbf-tg" step="5" min="100" value="130"/></div>
-      <div class="field-group"><label>Copper Weight (oz)</label><input type="number" id="pcbf-cu" step="0.5" min="0.5" value="1"/></div>
-    </div>
-    <div class="field-row" style="margin-top:6px">
-      <div class="field-group"><label>Via Count</label><input type="number" id="pcbf-vias" step="10" min="0" value="200"/></div>
-      <div class="field-group"><label>Micro Via Count</label><input type="number" id="pcbf-uvias" step="1" min="0" value="0" title="Laser micro-vias (HDI). Each adds £0.012 to via cost."/></div>
-    </div>
-    <div class="field-row" style="margin-top:6px">
-      <div class="field-group"><label>Surface Finish</label><select id="pcbf-finish">
-        <option value="hasl">HASL</option><option value="enig" selected>ENIG (+£0.80)</option>
-        <option value="osp">OSP (+£0.30)</option><option value="hasl_lf">HASL Lead-Free (+£0.20)</option>
-        <option value="iteq">ITEQ (+£1.50)</option>
+      <div class="field-group"><label>PCB Technology</label><select id="pcbf-technology">
+        <option value="FR4_STD">FR4 Standard (1–8L, Tg 130°C)</option>
+        <option value="FR4_HTg">FR4 High-Tg (4–16L, Tg 150–170°C)</option>
+        <option value="HDI_RIGID" selected>HDI Rigid (6–24L, microvias)</option>
+        <option value="RIGID_FLEX">Rigid-Flex (polyimide + FR4)</option>
+        <option value="FLEX">Pure Flex (polyimide, 1–6L)</option>
+        <option value="RF_MICRO">RF/Microwave (Rogers/PTFE)</option>
+        <option value="MCPCB">Metal-Core PCB (MCPCB)</option>
+        <option value="CERAMIC">Ceramic Substrate</option>
       </select></div>
-      <div class="field-group"><label>Min Trace/Space (mm)</label><input type="number" id="pcbf-trace" step="0.05" min="0.05" value="0.15" title="&lt;0.1 mm adds 10% fine-pitch penalty"/></div>
+      <div class="field-group"><label>Quality Grade</label><select id="pcbf-quality">
+        <option value="consumer">Consumer (IPC Class 1)</option>
+        <option value="industrial">Industrial (IPC Class 2)</option>
+        <option value="auto_grade2">Automotive Grade 2 (AEC-Q)</option>
+        <option value="auto_grade1" selected>Automotive Grade 1 (IATF 16949)</option>
+        <option value="aerospace">Aerospace (IPC Class 3 / AS9100)</option>
+      </select></div>
     </div>
     <div class="field-row" style="margin-top:6px">
-      <div class="field-group"><label>Fab Yield (0–1)</label><input type="number" id="pcbf-yield" step="0.01" min="0.01" max="1" value="0.96" title="Good boards per panel. Use the yield model: HDI → ~0.91, Ceramic → ~0.88"/></div>
-      <div class="field-group"><label>Testable % (0–1)</label><input type="number" id="pcbf-test-pct" step="0.05" min="0" max="1" value="0.5"/></div>
+      <div class="field-group"><label>Sourcing Region</label><select id="pcbf-region">
+        <option value="uk" selected>UK</option>
+        <option value="eu">EU</option>
+        <option value="china">China</option>
+        <option value="india">India</option>
+        <option value="na">North America</option>
+      </select></div>
+      <div class="field-group"><label>Layer Count</label><select id="pcbf-layers">
+        <option value="1">1 Layer</option>
+        <option value="2">2 Layers</option>
+        <option value="4">4 Layers</option>
+        <option value="6">6 Layers</option>
+        <option value="8" selected>8 Layers</option>
+        <option value="10">10 Layers</option>
+        <option value="12">12 Layers</option>
+        <option value="16">16 Layers</option>
+        <option value="20">20 Layers</option>
+        <option value="24">24 Layers</option>
+      </select></div>
     </div>
-    <div class="field-row" style="margin-top:6px">
-      <div class="field-group" style="align-items:center;gap:6px"><label>Impedance Controlled <span title="Adds ~8% to panel cost for controlled-impedance stackup (test coupons, tighter dielectric tolerances).">ℹ</span></label><input type="checkbox" id="pcbf-impedance" style="width:auto;margin-top:2px"/></div>
-      <div class="field-group" style="align-items:center;gap:6px"><label>Fine-pitch BGA present <span title="Used by yield model for guidance only; affects fab yield suggestion.">ℹ</span></label><input type="checkbox" id="pcbf-finepitch-bga" style="width:auto;margin-top:2px"/></div>
-    </div>
-    <div class="section-title" style="margin-top:8px">Pricing &amp; NRE</div>
+
+    <div class="section-title" style="margin-top:8px">Board Geometry</div>
     <div class="field-row">
-      <div class="field-group"><label>Base Panel Price (£)</label><input type="number" id="pcbf-panel-price" step="1" min="0" value="18"/></div>
-      <div class="field-group"><label>NRE Cost (£)</label><input type="number" id="pcbf-nre" step="100" min="0" value="800"/></div>
+      <div class="field-group"><label>Board Width (mm)</label><input type="number" id="pcbf-board-w" step="1" min="5" value="200"/></div>
+      <div class="field-group"><label>Board Height (mm)</label><input type="number" id="pcbf-board-h" step="1" min="5" value="150"/></div>
     </div>
     <div class="field-row" style="margin-top:6px">
-      <div class="field-group"><label>Amort. Volume</label><input type="number" id="pcbf-amort" step="1000" min="1" value="10000"/></div>
+      <div class="field-group"><label>Panel Width (mm)</label><input type="number" id="pcbf-panel-w" step="50" min="100" value="500"/></div>
+      <div class="field-group"><label>Panel Height (mm)</label><input type="number" id="pcbf-panel-h" step="50" min="100" value="600"/></div>
+    </div>
+    <div class="field-row" style="margin-top:6px">
+      <div class="field-group"><label>Panel Utilisation (0–1)</label><input type="number" id="pcbf-panel-util" step="0.01" min="0.1" max="1" value="0.72"/></div>
+      <div class="field-group"><label>Base Material Tg (°C)</label><select id="pcbf-tg">
+        <option value="130">130°C — Standard FR4</option>
+        <option value="150">150°C — Mid-Tg FR4</option>
+        <option value="170" selected>170°C — High-Tg FR4</option>
+      </select></div>
+    </div>
+
+    <div class="section-title" style="margin-top:8px">Copper & Stack-Up</div>
+    <div class="field-row">
+      <div class="field-group"><label>Inner Copper (oz/ft²)</label><select id="pcbf-cu">
+        <option value="0.5">0.5 oz — signal layers</option>
+        <option value="1" selected>1 oz — standard</option>
+        <option value="2">2 oz — power/ground</option>
+      </select></div>
+      <div class="field-group"><label>Outer Copper (oz/ft²)</label><select id="pcbf-outer-cu">
+        <option value="1" selected>1 oz — standard</option>
+        <option value="2">2 oz — power</option>
+        <option value="3">3 oz — high current</option>
+      </select></div>
+    </div>
+
+    <div class="section-title" style="margin-top:8px">Via Technology</div>
+    <div class="field-row">
+      <div class="field-group"><label>Via Type</label><select id="pcbf-via-type">
+        <option value="through_only">Through-hole only</option>
+        <option value="through_blind">Through + Blind vias</option>
+        <option value="through_blind_buried">Through + Blind + Buried</option>
+        <option value="microvia_hdi" selected>Microvias (HDI laser-drilled)</option>
+      </select></div>
+      <div class="field-group"><label>HDI Structure</label><select id="pcbf-hdi-structure">
+        <option value="none">None — standard through-vias</option>
+        <option value="1plus_n_plus1" selected>1+N+1 — single build-up</option>
+        <option value="2plus_n_plus2">2+N+2 — double build-up</option>
+        <option value="any_layer">Any-layer HDI</option>
+      </select></div>
+    </div>
+    <div class="field-row" style="margin-top:6px">
+      <div class="field-group"><label>Through-Vias / Board</label><input type="number" id="pcbf-vias" step="10" min="0" value="300"/></div>
+      <div class="field-group"><label>Blind Vias / Board</label><input type="number" id="pcbf-blind-vias" step="10" min="0" value="0"/></div>
+    </div>
+    <div class="field-row" style="margin-top:6px">
+      <div class="field-group"><label>Buried Vias / Board</label><input type="number" id="pcbf-buried-vias" step="10" min="0" value="0"/></div>
+      <div class="field-group"><label>Micro-Vias / Board</label><input type="number" id="pcbf-uvias" step="50" min="0" value="200"/></div>
+    </div>
+
+    <div class="section-title" style="margin-top:8px">Design Rules & Features</div>
+    <div class="field-row">
+      <div class="field-group"><label>Min Trace/Space (mm)</label><select id="pcbf-trace">
+        <option value="0.20">0.20 mm — standard</option>
+        <option value="0.15">0.15 mm — fine pitch</option>
+        <option value="0.10" selected>0.10 mm — HDI</option>
+        <option value="0.075">0.075 mm — ultra-HDI</option>
+      </select></div>
+      <div class="field-group"><label>Surface Finish</label><select id="pcbf-finish">
+        <option value="hasl">HASL (leaded)</option>
+        <option value="hasl_lf">HASL Lead-Free</option>
+        <option value="osp">OSP</option>
+        <option value="enig" selected>ENIG (automotive std)</option>
+        <option value="enepig">ENEPIG (wire bond)</option>
+        <option value="iteq">ITEQ / ImAg</option>
+      </select></div>
+    </div>
+    <div class="field-row" style="margin-top:6px">
+      <div class="field-group"><label>Solder Mask Colour</label><select id="pcbf-solder-mask">
+        <option value="green" selected>Green (standard)</option>
+        <option value="black">Black</option>
+        <option value="white">White</option>
+        <option value="red">Red</option>
+        <option value="blue">Blue</option>
+      </select></div>
+      <div class="field-group"><label>Silkscreen Sides</label><select id="pcbf-silkscreen">
+        <option value="0">None</option>
+        <option value="1">1 side</option>
+        <option value="2" selected>2 sides</option>
+      </select></div>
+    </div>
+    <div class="field-row" style="margin-top:6px">
+      <div class="field-group" style="display:flex;align-items:center;gap:8px;padding-top:18px">
+        <input type="checkbox" id="pcbf-impedance" checked/>
+        <label for="pcbf-impedance" style="font-weight:normal">Impedance controlled (+18%)</label>
+      </div>
+      <div class="field-group" style="display:flex;align-items:center;gap:8px;padding-top:18px">
+        <input type="checkbox" id="pcbf-bga"/>
+        <label for="pcbf-bga" style="font-weight:normal">Fine-pitch BGA ≤0.65 mm</label>
+      </div>
+    </div>
+
+    <div class="section-title" style="margin-top:8px">Testing & Inspection</div>
+    <div class="field-row">
+      <div class="field-group"><label>Test Method</label><select id="pcbf-test-method">
+        <option value="none">None</option>
+        <option value="aoi_only">AOI only</option>
+        <option value="flying_probe" selected>Flying Probe (electrical)</option>
+        <option value="ict_fixtureless">ICT Fixtureless</option>
+        <option value="ict_fixture">ICT Bed-of-Nails Fixture</option>
+        <option value="ict_xray">ICT + X-Ray (BGA/CSP)</option>
+      </select></div>
+      <div class="field-group"><label>Fab Yield Override (0–1, leave 0 for auto)</label><input type="number" id="pcbf-yield" step="0.01" min="0" max="1" value="0"/></div>
+    </div>
+
+    <div class="section-title" style="margin-top:8px">NRE & Amortisation</div>
+    <div class="field-row">
+      <div class="field-group"><label>NRE Cost (£)</label><input type="number" id="pcbf-nre" step="100" min="0" value="2500"/></div>
+      <div class="field-group"><label>Amortisation Volume</label><input type="number" id="pcbf-amort" step="1000" min="1" value="5000"/></div>
     </div>`;
 }
 
@@ -2859,28 +2952,36 @@ function collectBIWInput(): UniversalStackInput {
 }
 
 function collectPCBFabInput(): UniversalStackInput {
-  const PCB_TECHS: PCBTechnology[] = ['FR4_STD','FR4_HTg','HDI_RIGID','RIGID_FLEX','FLEX','RF_MICRO','MCPCB','CERAMIC'];
-  const PCB_QUALS: PCBQualityGrade[] = ['consumer','industrial','auto_grade2','auto_grade1','aerospace'];
+  const yieldOverride = num('pcbf-yield');
   const drivers = computePCBFabDrivers({
-    layers: num('pcbf-layers') || 2,
-    boardAreaCm2: num('pcbf-board-area'),
-    panelUtilization: num('pcbf-panel-util'),
-    panelAreaCm2: num('pcbf-panel-area'),
-    baseMaterialTg: num('pcbf-tg'),
-    copperWeightOz: num('pcbf-cu'),
-    viaCount: num('pcbf-vias'),
-    microViaCount: num('pcbf-uvias'),
-    surfaceFinish: validSel<'hasl' | 'enig' | 'osp' | 'hasl_lf' | 'iteq'>('pcbf-finish', ['hasl', 'enig', 'osp', 'hasl_lf', 'iteq'], 'hasl'),
-    minTraceSpaceMm: num('pcbf-trace'),
-    impedanceControlled: (document.getElementById('pcbf-impedance') as HTMLInputElement)?.checked ?? false,
-    hasFinePitchBGA: (document.getElementById('pcbf-finepitch-bga') as HTMLInputElement)?.checked ?? false,
-    fabYield: num('pcbf-yield'),
-    testablePct: num('pcbf-test-pct'),
-    nreCost: num('pcbf-nre'),
-    amortizationVolume: num('pcbf-amort') || 1,
-    basePanelPriceGBP: num('pcbf-panel-price'),
-    technology: validSel<PCBTechnology>('pcbf-technology', PCB_TECHS, 'FR4_STD'),
-    qualityGrade: validSel<PCBQualityGrade>('pcbf-quality', PCB_QUALS, 'consumer'),
+    layers:               parseInt(sel('pcbf-layers')) || 8,
+    boardWidthMm:         num('pcbf-board-w') || 200,
+    boardHeightMm:        num('pcbf-board-h') || 150,
+    panelWidthMm:         num('pcbf-panel-w') || 500,
+    panelHeightMm:        num('pcbf-panel-h') || 600,
+    panelUtilization:     num('pcbf-panel-util') || 0.72,
+    technology:           sel('pcbf-technology') as PCBTechnology,
+    baseMaterialTg:       parseInt(sel('pcbf-tg')) || 170,
+    copperWeightOz:       parseFloat(sel('pcbf-cu')) || 1,
+    outerCopperWeightOz:  parseFloat(sel('pcbf-outer-cu')) || 1,
+    viaType:              sel('pcbf-via-type') as any,
+    throughViaCount:      num('pcbf-vias'),
+    blindViaCount:        num('pcbf-blind-vias'),
+    buriedViaCount:       num('pcbf-buried-vias'),
+    microViaCount:        num('pcbf-uvias'),
+    hdiStructure:         sel('pcbf-hdi-structure') as any,
+    minTraceSpaceMm:      parseFloat(sel('pcbf-trace')) || 0.10,
+    surfaceFinish:        sel('pcbf-finish') as any,
+    solderMaskColor:      sel('pcbf-solder-mask') as any,
+    silkscreenSides:      parseInt(sel('pcbf-silkscreen')) || 2,
+    impedanceControlled:  (document.getElementById('pcbf-impedance') as HTMLInputElement)?.checked ?? false,
+    hasFinePitchBGA:      (document.getElementById('pcbf-bga') as HTMLInputElement)?.checked ?? false,
+    testMethod:           sel('pcbf-test-method') as any,
+    qualityGrade:         sel('pcbf-quality') as PCBQualityGrade,
+    region:               sel('pcbf-region') as any,
+    nreCost:              num('pcbf-nre'),
+    amortizationVolume:   num('pcbf-amort') || 1,
+    fabYieldOverride:     yieldOverride > 0 ? yieldOverride : undefined,
   });
   return { ...getUniversalTail(), rawMaterial: drivers.rawMaterial, operations: drivers.operations, tooling: drivers.tooling };
 }
@@ -4573,24 +4674,44 @@ function loadSUVDemo(commodity: string, slot: number): void {
         if (techEl) techEl.value = slot === 1 ? 'FR4_HTg' : 'HDI_RIGID';
         const qualEl = el<HTMLSelectElement>('pcbf-quality');
         if (qualEl) qualEl.value = slot === 1 ? 'auto_grade2' : 'auto_grade1';
-        (el<HTMLInputElement>('pcbf-layers')).value = slot === 1 ? '6' : '8';
-        (el<HTMLInputElement>('pcbf-board-area')).value = slot === 1 ? '75' : '55';
-        (el<HTMLInputElement>('pcbf-panel-area')).value = '3000';
+        const regionEl = el<HTMLSelectElement>('pcbf-region');
+        if (regionEl) regionEl.value = 'uk';
+        const layersEl = el<HTMLSelectElement>('pcbf-layers');
+        if (layersEl) layersEl.value = slot === 1 ? '6' : '8';
+        (el<HTMLInputElement>('pcbf-board-w')).value = slot === 1 ? '122' : '100';
+        (el<HTMLInputElement>('pcbf-board-h')).value = slot === 1 ? '61' : '55';
+        (el<HTMLInputElement>('pcbf-panel-w')).value = '500';
+        (el<HTMLInputElement>('pcbf-panel-h')).value = '600';
         (el<HTMLInputElement>('pcbf-panel-util')).value = slot === 1 ? '0.72' : '0.65';
-        (el<HTMLInputElement>('pcbf-tg')).value = slot === 1 ? '150' : '170';
-        (el<HTMLInputElement>('pcbf-cu')).value = '1';
+        const tgEl = el<HTMLSelectElement>('pcbf-tg');
+        if (tgEl) tgEl.value = slot === 1 ? '150' : '170';
+        const cuEl = el<HTMLSelectElement>('pcbf-cu');
+        if (cuEl) cuEl.value = '1';
+        const outerCuEl = el<HTMLSelectElement>('pcbf-outer-cu');
+        if (outerCuEl) outerCuEl.value = '1';
+        const viaTypeEl = el<HTMLSelectElement>('pcbf-via-type');
+        if (viaTypeEl) viaTypeEl.value = slot === 1 ? 'through_only' : 'microvia_hdi';
+        const hdiEl = el<HTMLSelectElement>('pcbf-hdi-structure');
+        if (hdiEl) hdiEl.value = slot === 1 ? 'none' : '1plus_n_plus1';
         (el<HTMLInputElement>('pcbf-vias')).value = slot === 1 ? '450' : '320';
+        (el<HTMLInputElement>('pcbf-blind-vias')).value = '0';
+        (el<HTMLInputElement>('pcbf-buried-vias')).value = '0';
         (el<HTMLInputElement>('pcbf-uvias')).value = slot === 1 ? '0' : '80';
+        const traceEl = el<HTMLSelectElement>('pcbf-trace');
+        if (traceEl) traceEl.value = slot === 1 ? '0.15' : '0.10';
         const finEl = el<HTMLSelectElement>('pcbf-finish');
         if (finEl) finEl.value = 'enig';
-        (el<HTMLInputElement>('pcbf-trace')).value = slot === 1 ? '0.15' : '0.10';
-        (el<HTMLInputElement>('pcbf-yield')).value = slot === 1 ? '0.95' : '0.91';
-        (el<HTMLInputElement>('pcbf-test-pct')).value = '1.0';
+        const smEl = el<HTMLSelectElement>('pcbf-solder-mask');
+        if (smEl) smEl.value = 'green';
+        const silkEl = el<HTMLSelectElement>('pcbf-silkscreen');
+        if (silkEl) silkEl.value = '2';
         const impEl = el<HTMLInputElement>('pcbf-impedance');
         if (impEl) impEl.checked = true;
-        const bgaEl = el<HTMLInputElement>('pcbf-finepitch-bga');
+        const bgaEl = el<HTMLInputElement>('pcbf-bga');
         if (bgaEl) bgaEl.checked = slot === 2;
-        (el<HTMLInputElement>('pcbf-panel-price')).value = slot === 1 ? '28' : '55';
+        const testMethEl = el<HTMLSelectElement>('pcbf-test-method');
+        if (testMethEl) testMethEl.value = 'flying_probe';
+        (el<HTMLInputElement>('pcbf-yield')).value = '0';
         (el<HTMLInputElement>('pcbf-nre')).value = slot === 1 ? '1500' : '3500';
         (el<HTMLInputElement>('pcbf-amort')).value = slot === 1 ? '25000' : '15000';
         (el<HTMLInputElement>('packaging')).value = '0.15';
