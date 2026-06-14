@@ -28,7 +28,7 @@ import type { RubberProcess } from '../engine/modules/rubber.js';
 import { computeCompositeDrivers } from '../engine/modules/composites.js';
 import type { CompositeProcess } from '../engine/modules/composites.js';
 import { computeWiringHarnessDrivers } from '../engine/modules/wiring-harness.js';
-import { buildRegionalLibrary } from '../engine/regional-rates.js';
+import { buildRegionalLibrary, REGIONAL_DATA } from '../engine/regional-rates.js';
 import type { ManufacturingRegion } from '../engine/regional-rates.js';
 import { recommendMachineIds } from '../engine/process-taxonomy.js';
 import { runSensitivity } from '../engine/sensitivity.js';
@@ -78,8 +78,13 @@ let _breakdownChart: Chart | null = null;
 let _displayCurrency = 'GBP';
 let _displayFxRate = 1.0;
 
+const CURRENCY_SYMBOL: Record<string, string> = {
+  GBP: '£', EUR: '€', USD: '$', CNY: '¥', INR: '₹',
+  MXN: '$M', THB: '฿', VND: '₫', BRL: 'R$', KRW: '₩',
+};
+
 function _currFmt(n: number): string {
-  const sym = _displayCurrency === 'GBP' ? '£' : _displayCurrency === 'EUR' ? '€' : _displayCurrency === 'USD' ? '$' : _displayCurrency;
+  const sym = CURRENCY_SYMBOL[_displayCurrency] ?? _displayCurrency;
   return `${sym}${(n * _displayFxRate).toFixed(2)}`;
 }
 
@@ -5278,26 +5283,26 @@ async function init(): Promise<void> {
   });
 
   // Currency selector
-  el<HTMLSelectElement>('currency-selector')?.addEventListener('change', e => {
-    const cur = (e.target as HTMLSelectElement).value;
+  const _applyCurrency = (cur: string) => {
     _displayCurrency = cur;
     _displayFxRate = FX_TO_GBP[cur] !== undefined ? 1 / FX_TO_GBP[cur] : 1;
-    // Update currency labels in Universal Costs section
-    const sym = cur === 'GBP' ? '£' : cur === 'EUR' ? '€' : cur === 'USD' ? '$' : cur === 'INR' ? '₹' : cur === 'CNY' ? '¥' : cur;
+    const sym = CURRENCY_SYMBOL[cur] ?? cur;
     const pkgLabel = document.getElementById('lbl-packaging');
     const logLabel = document.getElementById('lbl-logistics');
     if (pkgLabel) pkgLabel.textContent = `Packaging (${sym}/part)`;
     if (logLabel) logLabel.textContent = `Logistics (${sym}/part)`;
-    // Re-render active tab if result exists
     if (lastResult && lastInput) {
       renderBreakdown(lastResult);
       const activePanel = document.querySelector<HTMLElement>('.rtab.active')?.dataset.panel;
       if (activePanel === 'detail') renderDetail(lastResult, lastInput);
       if (activePanel === 'insights') renderInsights(lastResult, lastInput);
     }
+  };
+  el<HTMLSelectElement>('currency-selector')?.addEventListener('change', e => {
+    _applyCurrency((e.target as HTMLSelectElement).value);
   });
 
-  // Manufacturing region selector — rebuilds rate library for the selected region
+  // Manufacturing region selector — rebuilds rate library and auto-switches display currency
   const _regionSel = el<HTMLSelectElement>('mfg-region-selector');
   if (_regionSel) _regionSel.value = _mfgRegion;
   _regionSel?.addEventListener('change', e => {
@@ -5307,6 +5312,13 @@ async function init(): Promise<void> {
       library = recomputeMachineRates(getLibraryFromStorage());
     } else {
       library = buildRegionalLibrary(recomputeMachineRates(getLibraryFromStorage()), region);
+    }
+    // Auto-switch display currency to region's native currency
+    const nativeCur = REGIONAL_DATA[region]?.currency;
+    const curSel = el<HTMLSelectElement>('currency-selector');
+    if (nativeCur && curSel && Array.from(curSel.options).some(o => o.value === nativeCur)) {
+      curSel.value = nativeCur;
+      _applyCurrency(nativeCur);
     }
     // Refresh populateSelects in case UI is open
     if (typeof populateSelects === 'function') populateSelects();

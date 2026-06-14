@@ -78,7 +78,7 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
   DE: {
     name: 'Germany',
     currency: 'EUR',
-    fxToGBP: 1.18,
+    fxToGBP: 1.16,
     labour: { skilled: 38.00, semiskilled: 29.00, engineer: 58.00, foundry: 28.00, electronics: 25.00, inspector: 35.00 },
     energy: { electricityPerKwh: 0.22, gasPerKwh: 0.08 },
     materialMultiplier: 1.03,
@@ -90,7 +90,7 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
   FR: {
     name: 'France',
     currency: 'EUR',
-    fxToGBP: 1.18,
+    fxToGBP: 1.16,
     labour: { skilled: 30.00, semiskilled: 23.00, engineer: 48.00, foundry: 22.00, electronics: 20.00, inspector: 28.00 },
     energy: { electricityPerKwh: 0.16, gasPerKwh: 0.07 },
     materialMultiplier: 1.02,
@@ -102,7 +102,7 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
   IT: {
     name: 'Italy',
     currency: 'EUR',
-    fxToGBP: 1.18,
+    fxToGBP: 1.16,
     labour: { skilled: 24.00, semiskilled: 18.00, engineer: 42.00, foundry: 17.00, electronics: 16.00, inspector: 24.00 },
     energy: { electricityPerKwh: 0.26, gasPerKwh: 0.09 },
     materialMultiplier: 1.02,
@@ -114,7 +114,7 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
   ES: {
     name: 'Spain',
     currency: 'EUR',
-    fxToGBP: 1.18,
+    fxToGBP: 1.16,
     labour: { skilled: 19.00, semiskilled: 14.50, engineer: 34.00, foundry: 13.50, electronics: 13.00, inspector: 20.00 },
     energy: { electricityPerKwh: 0.19, gasPerKwh: 0.07 },
     materialMultiplier: 1.00,
@@ -126,7 +126,7 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
   PL: {
     name: 'Poland',
     currency: 'EUR',
-    fxToGBP: 1.18,
+    fxToGBP: 1.16,
     labour: { skilled: 11.00, semiskilled: 8.50, engineer: 20.00, foundry: 8.00, electronics: 7.50, inspector: 12.00 },
     energy: { electricityPerKwh: 0.14, gasPerKwh: 0.06 },
     materialMultiplier: 0.97,
@@ -138,7 +138,7 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
   CZ: {
     name: 'Czech Republic',
     currency: 'EUR',
-    fxToGBP: 1.18,
+    fxToGBP: 1.16,
     labour: { skilled: 13.00, semiskilled: 10.00, engineer: 22.00, foundry: 9.50, electronics: 9.00, inspector: 14.00 },
     energy: { electricityPerKwh: 0.13, gasPerKwh: 0.05 },
     materialMultiplier: 0.97,
@@ -150,7 +150,7 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
   RO: {
     name: 'Romania',
     currency: 'EUR',
-    fxToGBP: 1.18,
+    fxToGBP: 1.16,
     labour: { skilled: 7.50, semiskilled: 5.80, engineer: 13.00, foundry: 5.50, electronics: 5.20, inspector: 8.50 },
     energy: { electricityPerKwh: 0.11, gasPerKwh: 0.05 },
     materialMultiplier: 0.96,
@@ -162,7 +162,7 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
   HU: {
     name: 'Hungary',
     currency: 'EUR',
-    fxToGBP: 1.18,
+    fxToGBP: 1.16,
     labour: { skilled: 9.50, semiskilled: 7.50, engineer: 17.00, foundry: 7.00, electronics: 6.80, inspector: 11.00 },
     energy: { electricityPerKwh: 0.12, gasPerKwh: 0.05 },
     materialMultiplier: 0.97,
@@ -174,7 +174,7 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
   SE: {
     name: 'Sweden',
     currency: 'EUR',
-    fxToGBP: 1.18,
+    fxToGBP: 1.16,
     labour: { skilled: 40.00, semiskilled: 32.00, engineer: 62.00, foundry: 30.00, electronics: 28.00, inspector: 38.00 },
     energy: { electricityPerKwh: 0.09, gasPerKwh: 0.04 },
     materialMultiplier: 1.04,
@@ -186,7 +186,7 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
   NL: {
     name: 'Netherlands',
     currency: 'EUR',
-    fxToGBP: 1.18,
+    fxToGBP: 1.16,
     labour: { skilled: 34.00, semiskilled: 27.00, engineer: 52.00, foundry: 25.00, electronics: 23.00, inspector: 32.00 },
     energy: { electricityPerKwh: 0.22, gasPerKwh: 0.08 },
     materialMultiplier: 1.02,
@@ -198,7 +198,7 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
   TR: {
     name: 'Turkey',
     currency: 'USD',
-    fxToGBP: 1.28,
+    fxToGBP: 1.27,
     labour: { skilled: 6.50, semiskilled: 5.00, engineer: 12.00, foundry: 4.80, electronics: 4.50, inspector: 7.00 },
     energy: { electricityPerKwh: 0.09, gasPerKwh: 0.04 },
     materialMultiplier: 0.90,
@@ -210,7 +210,7 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
   CN: {
     name: 'China',
     currency: 'CNY',
-    fxToGBP: 9.20,
+    fxToGBP: 9.05,
     labour: { skilled: 7.50, semiskilled: 5.50, engineer: 13.00, foundry: 5.00, electronics: 5.20, inspector: 8.00 },
     energy: { electricityPerKwh: 0.07, gasPerKwh: 0.03 },
     materialMultiplier: 0.88,
@@ -222,7 +222,7 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
   IN: {
     name: 'India',
     currency: 'INR',
-    fxToGBP: 107.0,
+    fxToGBP: 109.5,
     labour: { skilled: 4.80, semiskilled: 3.20, engineer: 9.00, foundry: 3.00, electronics: 3.50, inspector: 5.50 },
     energy: { electricityPerKwh: 0.07, gasPerKwh: 0.03 },
     materialMultiplier: 0.90,
@@ -233,8 +233,8 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
   },
   MX: {
     name: 'Mexico',
-    currency: 'USD',
-    fxToGBP: 1.28,
+    currency: 'MXN',
+    fxToGBP: 25.5,
     labour: { skilled: 7.00, semiskilled: 5.20, engineer: 12.00, foundry: 4.80, electronics: 5.00, inspector: 7.50 },
     energy: { electricityPerKwh: 0.08, gasPerKwh: 0.04 },
     materialMultiplier: 0.95,
@@ -246,7 +246,7 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
   US: {
     name: 'United States',
     currency: 'USD',
-    fxToGBP: 1.28,
+    fxToGBP: 1.27,
     labour: { skilled: 34.00, semiskilled: 26.00, engineer: 58.00, foundry: 24.00, electronics: 24.00, inspector: 32.00 },
     energy: { electricityPerKwh: 0.10, gasPerKwh: 0.04 },
     materialMultiplier: 1.00,
@@ -257,8 +257,8 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
   },
   TH: {
     name: 'Thailand',
-    currency: 'USD',
-    fxToGBP: 1.28,
+    currency: 'THB',
+    fxToGBP: 45.5,
     labour: { skilled: 5.80, semiskilled: 4.20, engineer: 10.00, foundry: 3.80, electronics: 4.00, inspector: 6.00 },
     energy: { electricityPerKwh: 0.08, gasPerKwh: 0.04 },
     materialMultiplier: 0.93,
@@ -269,8 +269,8 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
   },
   VN: {
     name: 'Vietnam',
-    currency: 'USD',
-    fxToGBP: 1.28,
+    currency: 'VND',
+    fxToGBP: 33800,
     labour: { skilled: 3.80, semiskilled: 2.80, engineer: 7.50, foundry: 2.50, electronics: 3.00, inspector: 4.50 },
     energy: { electricityPerKwh: 0.06, gasPerKwh: 0.03 },
     materialMultiplier: 0.94,
@@ -281,8 +281,8 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
   },
   BR: {
     name: 'Brazil',
-    currency: 'USD',
-    fxToGBP: 1.28,
+    currency: 'BRL',
+    fxToGBP: 6.85,
     labour: { skilled: 8.50, semiskilled: 6.50, engineer: 16.00, foundry: 6.00, electronics: 6.50, inspector: 9.50 },
     energy: { electricityPerKwh: 0.11, gasPerKwh: 0.05 },
     materialMultiplier: 1.02,
@@ -293,8 +293,8 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
   },
   KR: {
     name: 'South Korea',
-    currency: 'USD',
-    fxToGBP: 1.28,
+    currency: 'KRW',
+    fxToGBP: 1790,
     labour: { skilled: 22.00, semiskilled: 17.00, engineer: 38.00, foundry: 16.00, electronics: 17.00, inspector: 24.00 },
     energy: { electricityPerKwh: 0.13, gasPerKwh: 0.06 },
     materialMultiplier: 1.00,

@@ -126,9 +126,10 @@ export const REGIONAL_COST_INDEX: Record<string, { label: string; index: number;
 
 // ─── FX rates to GBP ─────────────────────────────────────────────────────────
 
+// All values are "price of 1 unit of X in GBP" (X/GBP rate). Jun 2026 BOE rates.
 export const FX_TO_GBP: Record<string, number> = {
-  GBP: 1.00, EUR: 1.18, USD: 1.28, CNY: 0.109, INR: 0.0094, MXN: 0.043,
-  THB: 0.0227, VND: 0.0000308, BRL: 0.154, KRW: 0.000581,
+  GBP: 1.0000, EUR: 0.8621, USD: 0.7874, CNY: 0.1105, INR: 0.009132,
+  MXN: 0.03922, THB: 0.02198, VND: 0.00002959, BRL: 0.14599, KRW: 0.000559,
 };
 
 // ─── Insight generation ───────────────────────────────────────────────────────
