@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Should-Cost Calculator | Leamington Marathi</title>
+  <title>CostVision — AI-Powered Cost Intelligence</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -33,20 +33,33 @@
 <body>
 
 <header class="header">
-  <a class="back-link" href="../index.html" style="color:var(--text-muted);text-decoration:none;font-size:0.8rem;display:flex;align-items:center;gap:4px;white-space:nowrap">← Back</a>
-  <h1 style="font-size:1rem;font-weight:700;color:var(--text-primary);white-space:nowrap;flex-shrink:0">Should-Cost Calculator</h1>
+  <!-- Logo -->
+  <div class="nav-logo" title="CostVision — AI-Powered Cost Intelligence">
+    <div class="logo-icon">CV</div>
+    <div class="logo-text">
+      <span class="logo-name">CostVision</span>
+      <span class="logo-tagline">AI Cost Intelligence</span>
+    </div>
+  </div>
+
+  <!-- Center title (desktop only) -->
+  <div class="nav-title">Should-Cost Calculator</div>
+
   <div style="flex:1"></div>
-  <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
-    <div style="display:flex;align-items:center;gap:6px">
-      <label style="font-size:0.75rem;color:var(--text-muted);white-space:nowrap">🌍 Region</label>
-      <select id="mfg-region-selector" style="font-size:0.78rem;padding:4px 8px;border:1px solid var(--border-strong);border-radius:6px;background:var(--surface-elevated);color:var(--text-primary)" title="Select manufacturing country/region — rates (labour, machine, material, energy) adjust automatically for the selected location">
-        <option value="UK">🇬🇧 United Kingdom</option>
+
+  <!-- Right controls -->
+  <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+    <!-- Manufacturing region -->
+    <div style="display:flex;align-items:center;gap:5px">
+      <label style="font-size:0.72rem;color:var(--text-muted);white-space:nowrap">🌍</label>
+      <select id="mfg-region-selector" style="font-size:0.77rem;padding:4px 8px;border:1px solid var(--border-strong);border-radius:6px;background:var(--surface-elevated);color:var(--text-primary);font-family:var(--font)" title="Select manufacturing country/region — rates (labour, machine, material, energy) adjust automatically for the selected location">
+        <option value="UK">🇬🇧 UK</option>
         <option value="DE">🇩🇪 Germany</option>
         <option value="FR">🇫🇷 France</option>
         <option value="IT">🇮🇹 Italy</option>
         <option value="ES">🇪🇸 Spain</option>
         <option value="PL">🇵🇱 Poland</option>
-        <option value="CZ">🇨🇿 Czech Republic</option>
+        <option value="CZ">🇨🇿 Czech Rep.</option>
         <option value="RO">🇷🇴 Romania</option>
         <option value="HU">🇭🇺 Hungary</option>
         <option value="SE">🇸🇪 Sweden</option>
@@ -55,28 +68,32 @@
         <option value="CN">🇨🇳 China</option>
         <option value="IN">🇮🇳 India</option>
         <option value="MX">🇲🇽 Mexico</option>
-        <option value="US">🇺🇸 United States</option>
+        <option value="US">🇺🇸 USA</option>
         <option value="TH">🇹🇭 Thailand</option>
         <option value="VN">🇻🇳 Vietnam</option>
         <option value="BR">🇧🇷 Brazil</option>
-        <option value="KR">🇰🇷 South Korea</option>
+        <option value="KR">🇰🇷 S. Korea</option>
       </select>
     </div>
-    <div style="display:flex;align-items:center;gap:6px">
-      <label style="font-size:0.75rem;color:var(--text-muted);white-space:nowrap">Currency</label>
-      <select id="currency-selector" style="font-size:0.78rem;padding:4px 8px;border:1px solid var(--border-strong);border-radius:6px;background:var(--surface-elevated);color:var(--text-primary)">
-        <option value="GBP">GBP £</option>
-        <option value="EUR">EUR €</option>
-        <option value="USD">USD $</option>
-        <option value="CNY">CNY ¥</option>
-        <option value="INR">INR ₹</option>
-        <option value="MXN">MXN $M</option>
-      </select>
-    </div>
+    <!-- Currency -->
+    <select id="currency-selector" style="font-size:0.77rem;padding:4px 8px;border:1px solid var(--border-strong);border-radius:6px;background:var(--surface-elevated);color:var(--text-primary);font-family:var(--font)" title="Display currency">
+      <option value="GBP">£ GBP</option>
+      <option value="EUR">€ EUR</option>
+      <option value="USD">$ USD</option>
+      <option value="CNY">¥ CNY</option>
+      <option value="INR">₹ INR</option>
+      <option value="MXN">$M MXN</option>
+    </select>
+    <!-- Help button -->
+    <button class="nav-action-btn" id="help-btn" aria-label="Open help centre">? Help</button>
+    <!-- Contact button -->
+    <button class="nav-action-btn" id="contact-btn" aria-label="Contact support">✉ Contact</button>
+    <!-- Theme toggle -->
     <button class="theme-toggle" id="theme-toggle-btn" title="Toggle dark/light theme" aria-label="Toggle theme">🌙</button>
-    <div id="user-menu" style="display:flex;align-items:center;gap:8px">
-      <span id="user-greeting" style="font-size:0.75rem;color:var(--text-muted);white-space:nowrap"></span>
-      <button onclick="signOut()" style="font-size:0.75rem;padding:5px 12px;background:var(--surface-elevated);border:1px solid var(--border-strong);border-radius:6px;cursor:pointer;color:var(--text-secondary);font-weight:500;font-family:var(--font)" title="Sign out">Sign Out</button>
+    <!-- User -->
+    <div id="user-menu" style="display:flex;align-items:center;gap:7px">
+      <span id="user-greeting" style="font-size:0.73rem;color:var(--text-muted);white-space:nowrap"></span>
+      <button onclick="signOut()" style="font-size:0.73rem;padding:5px 11px;background:var(--surface-elevated);border:1px solid var(--border-strong);border-radius:6px;cursor:pointer;color:var(--text-secondary);font-weight:500;font-family:var(--font)" title="Sign out">Sign Out</button>
     </div>
   </div>
 </header>
@@ -141,14 +158,14 @@
     <!-- Part photo upload (always visible) -->
     <div style="padding:0 4px 2px" id="part-photo-row">
       <div class="field-group" style="gap:4px">
-        <label style="font-size:0.76rem;color:#777">Part Photo <span style="color:#bbb;font-weight:400">— JPG · PNG · HEIC (optional, appears on report)</span></label>
-        <div id="part-photo-zone" style="border:1.5px dashed #ddd;border-radius:6px;padding:6px 10px;cursor:pointer;display:flex;align-items:center;gap:10px;min-height:44px;transition:border-color 0.15s">
+        <label style="font-size:0.76rem;color:var(--text-secondary)">Part Photo <span style="color:var(--text-muted);font-weight:400">— JPG · PNG · HEIC (optional, appears on report)</span></label>
+        <div id="part-photo-zone" style="border:1.5px dashed var(--border-strong);border-radius:6px;padding:6px 10px;cursor:pointer;display:flex;align-items:center;gap:10px;min-height:44px;transition:border-color 0.15s,background 0.15s;background:var(--surface-elevated)">
           <input type="file" id="part-photo-input" accept=".jpg,.jpeg,.png,.heic,.heif,image/jpeg,image/png,image/heic,image/heif" style="display:none"/>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#bbb" stroke-width="1.8" style="flex-shrink:0"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-          <span id="part-photo-placeholder" style="font-size:0.77rem;color:#bbb;flex:1">Click or drag to upload part photo…</span>
-          <img id="part-photo-thumb" style="display:none;height:40px;width:56px;object-fit:contain;border-radius:4px;border:1px solid #eee;background:#fafafa"/>
-          <span id="part-photo-name" style="font-size:0.73rem;color:#555;flex:1;display:none;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;max-width:120px"></span>
-          <button id="part-photo-clear" type="button" style="display:none;background:none;border:none;color:#bbb;cursor:pointer;font-size:1.1rem;padding:0 2px;line-height:1" title="Remove photo">×</button>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.8" style="flex-shrink:0"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+          <span id="part-photo-placeholder" style="font-size:0.77rem;color:var(--text-muted);flex:1">Click or drag to upload part photo…</span>
+          <img id="part-photo-thumb" style="display:none;height:40px;width:56px;object-fit:contain;border-radius:4px;border:1px solid var(--border-strong);background:var(--surface)"/>
+          <span id="part-photo-name" style="font-size:0.73rem;color:var(--text-secondary);flex:1;display:none;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;max-width:120px"></span>
+          <button id="part-photo-clear" type="button" style="display:none;background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:1.1rem;padding:0 2px;line-height:1" title="Remove photo">×</button>
         </div>
       </div>
     </div>
@@ -281,6 +298,380 @@
     </div>
   </div>
 </div>
+
+<!-- ── Footer ─────────────────────────────────────────────────────────────── -->
+<footer class="footer">
+  <span>Designed &amp; Developed by <strong>Avinash Bhosale</strong></span>
+  <span class="footer-divider">·</span>
+  <span>CostVision &copy; 2026</span>
+  <span class="footer-divider">·</span>
+  <a href="#" id="footer-help-link">Help</a>
+  <span class="footer-divider">·</span>
+  <a href="#" id="footer-contact-link">Contact</a>
+</footer>
+
+<!-- ── Help Modal ─────────────────────────────────────────────────────────── -->
+<div id="help-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:200;align-items:flex-start;justify-content:center;overflow-y:auto;padding:32px 16px">
+  <div class="modal-inner" style="max-width:860px;width:100%;position:relative">
+    <!-- Header -->
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-size:0.85rem;font-weight:800;color:#fff">CV</div>
+        <div>
+          <h2 style="font-size:1rem;font-weight:800;color:var(--text-primary);margin:0">CostVision — Help Centre</h2>
+          <p style="font-size:0.7rem;color:var(--text-muted);margin:0">Everything you need to master AI-powered should-costing</p>
+        </div>
+      </div>
+      <button id="close-help-modal" style="background:none;border:none;font-size:1.4rem;color:var(--text-muted);cursor:pointer;padding:4px 8px;line-height:1;border-radius:6px" title="Close help" aria-label="Close help">&times;</button>
+    </div>
+
+    <!-- Tab bar -->
+    <div class="help-tabs">
+      <button class="help-tab active" data-help="getting-started">Getting Started</button>
+      <button class="help-tab" data-help="ai-agent">AI Agent</button>
+      <button class="help-tab" data-help="cad-upload">CAD &amp; Photo</button>
+      <button class="help-tab" data-help="commodities">Commodities</button>
+      <button class="help-tab" data-help="faq">FAQ</button>
+      <button class="help-tab" data-help="glossary">Glossary</button>
+      <button class="help-tab" data-help="troubleshoot">Troubleshooting</button>
+    </div>
+
+    <!-- Getting Started -->
+    <div class="help-section active" id="help-getting-started">
+      <div class="help-card">
+        <div class="help-card-title"><div class="help-icon">1</div>Select a Commodity</div>
+        <p>Choose the manufacturing process from the tabs at the top of the input panel. CostVision supports 20+ commodity types including Machining, Casting, Injection Moulding, Sheet Metal, PCBA, Composites, Wiring Harness, and more.</p>
+      </div>
+      <div class="help-card">
+        <div class="help-card-title"><div class="help-icon">2</div>Enter Part Data</div>
+        <ul>
+          <li>Fill in the <strong>Part Name</strong> at the top of the form.</li>
+          <li>Enter material, operations, and process-specific parameters.</li>
+          <li>Set <strong>Volume, Overhead %, and Margin %</strong> in Universal Costs.</li>
+          <li>Optionally upload a <strong>part photo</strong> — it appears on the PDF report.</li>
+        </ul>
+      </div>
+      <div class="help-card">
+        <div class="help-card-title"><div class="help-icon">3</div>Select Region &amp; Currency</div>
+        <p>Use the <strong>Region</strong> selector in the top bar to switch manufacturing location. All machine rates, labour rates, and material prices adjust automatically for the selected country. Use the <strong>Currency</strong> dropdown to display costs in your preferred currency.</p>
+      </div>
+      <div class="help-card">
+        <div class="help-card-title"><div class="help-icon">4</div>Click Calculate</div>
+        <p>Press <strong>Calculate</strong> to run the 8-bucket cost model: Raw Material → Process → Labour → Tooling → Packaging → Logistics → Overhead → Margin. Results appear in the right panel with interactive charts, sensitivity analysis, and AI-powered insights.</p>
+      </div>
+      <div class="help-card">
+        <div class="help-card-title"><div class="help-icon">5</div>Export &amp; Save</div>
+        <ul>
+          <li><strong>Export Excel</strong> — 6-sheet workbook with full cost breakdown and rate buildup.</li>
+          <li><strong>PDF Report</strong> — 7-section professional report with AI insights.</li>
+          <li><strong>Save Scenario</strong> — store configurations and compare multiple designs side-by-side.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- AI Agent -->
+    <div class="help-section" id="help-ai-agent">
+      <div class="help-card">
+        <div class="help-card-title"><div class="help-icon">✦</div>What is the AI Agent?</div>
+        <p>The AI Agent tab uses Claude (Anthropic) to understand natural language descriptions of your part and automatically populate the cost model. Simply describe what you need costed — the AI handles the rest.</p>
+      </div>
+      <div class="help-card">
+        <div class="help-card-title"><div class="help-icon">→</div>How to Use the AI Agent</div>
+        <ol>
+          <li>Click the <strong>AI Agent ✦</strong> tab.</li>
+          <li>Type a description, e.g.: <code>"Aluminium 6061 bracket, 0.8kg, CNC milled, 3 operations, 50k annual volume, UK manufacture"</code></li>
+          <li>Optionally upload a part photo or CAD file.</li>
+          <li>The AI will auto-fill material, machine selections, cycle times, and volumes.</li>
+          <li>Review the suggestions, adjust if needed, then click Calculate.</li>
+        </ol>
+      </div>
+      <div class="help-card">
+        <div class="help-card-title"><div class="help-icon">⚠</div>AI Validation</div>
+        <p>CostVision validates all AI-returned IDs against the rate library. If the AI suggests a material or machine that doesn't exist in the library, it will be flagged with a warning toast and nulled out — you'll need to select manually.</p>
+      </div>
+      <div class="help-card">
+        <div class="help-card-title"><div class="help-icon">⚡</div>Tips for Better Results</div>
+        <ul>
+          <li>Mention specific alloys: <em>"Al 6082-T6"</em>, <em>"Grade 304 stainless"</em></li>
+          <li>Include annual volume for accurate tooling amortisation</li>
+          <li>Specify the manufacturing country for regional rate accuracy</li>
+          <li>Add surface finish requirements (anodising, powder coat, painting)</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- CAD & Photo -->
+    <div class="help-section" id="help-cad-upload">
+      <div class="help-card">
+        <div class="help-card-title"><div class="help-icon">📁</div>Supported File Types</div>
+        <ul>
+          <li><strong>Photos</strong>: JPG, PNG, HEIC — uploaded via the Part Photo zone (always visible)</li>
+          <li><strong>CAD for AI analysis</strong>: PNG/JPG screenshots of STEP, DXF, or SolidWorks files via the <strong>AI CAD ✦</strong> tab</li>
+        </ul>
+      </div>
+      <div class="help-card">
+        <div class="help-card-title"><div class="help-icon">🖼</div>Part Photo</div>
+        <p>The part photo appears on the PDF report cover page. Drag and drop an image onto the upload zone, or click to browse. Maximum recommended size: 5 MB. Photos are stored in-browser only — never uploaded to any server.</p>
+      </div>
+      <div class="help-card">
+        <div class="help-card-title"><div class="help-icon">🤖</div>AI CAD Analysis</div>
+        <p>Select the <strong>AI CAD ✦</strong> tab and upload a screenshot or rendering of your part. The AI will detect features (holes, pockets, walls, ribs), estimate complexity, suggest manufacturing processes, and auto-fill relevant cost model parameters. A <strong>DfM Score</strong> and <strong>Process Confidence</strong> rating are shown.</p>
+      </div>
+    </div>
+
+    <!-- Commodities -->
+    <div class="help-section" id="help-commodities">
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:8px">
+        <div class="help-card" style="margin:0"><div class="help-card-title">Machining</div><p>CNC turning, milling, grinding. Enter material, operations with machine/labour IDs, cycle times, and OEE.</p></div>
+        <div class="help-card" style="margin:0"><div class="help-card-title">Sheet Metal</div><p>Press shop stamping — blanking + forming dies. Progressive or transfer tooling options.</p></div>
+        <div class="help-card" style="margin:0"><div class="help-card-title">SM Fabrication</div><p>Fabrication shop: Laser Cut / Turret / Shear → Press Brake → optional welding. Process advisor included.</p></div>
+        <div class="help-card" style="margin:0"><div class="help-card-title">Injection Moulding</div><p>Thermoplastics. Includes runner system, tolerance and surface finish multipliers, multi-cavity tooling.</p></div>
+        <div class="help-card" style="margin:0"><div class="help-card-title">Casting</div><p>HPDC, sand, gravity, investment casting. Reject rate and yield modelling. As-cast parts only.</p></div>
+        <div class="help-card" style="margin:0"><div class="help-card-title">Cast+Machine</div><p>Combined casting + post-machining operations. Heat treatment and impregnation included.</p></div>
+        <div class="help-card" style="margin:0"><div class="help-card-title">Forging</div><p>Open die, closed die, and near-net-shape forging. Flash and trim allowance modelling.</p></div>
+        <div class="help-card" style="margin:0"><div class="help-card-title">PCBA / SMD</div><p>PCB assembly: SMT placement, reflow, wave solder, conformal coat, NRE. CPH-based line modelling.</p></div>
+        <div class="help-card" style="margin:0"><div class="help-card-title">Composites</div><p>CFRP/GFRP: hand layup, prepreg, RTM, VARTM, filament winding. Autoclave/press cure cycles.</p></div>
+        <div class="help-card" style="margin:0"><div class="help-card-title">Wiring Harness</div><p>Wire gauges, connectors, splices, conduit, tape, crimping assembly, electrical test included.</p></div>
+        <div class="help-card" style="margin:0"><div class="help-card-title">Rubber</div><p>Compression, transfer, LSR injection moulding, extrusion+vulcanise. EPDM, NBR, Silicone, FKM.</p></div>
+        <div class="help-card" style="margin:0"><div class="help-card-title">Assembly BOM</div><p>Full BOM costing: upload or enter component list with costs, then add assembly operations on top.</p></div>
+      </div>
+    </div>
+
+    <!-- FAQ -->
+    <div class="help-section" id="help-faq">
+      <div class="faq-item">
+        <div class="faq-q" id="faq-q1">How do I change the manufacturing region?</div>
+        <div class="faq-a" id="faq-a1" style="display:none">Use the 🌍 dropdown in the top navigation bar. Selecting a different country automatically adjusts machine rates, labour rates, energy costs, and material transport costs for that region. All rates are from the Rate Library which you can inspect and edit via <strong>Edit Rates</strong>.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" id="faq-q2">Can I edit the rate library?</div>
+        <div class="faq-a" id="faq-a2" style="display:none">Yes. Click <strong>Edit Rates</strong> in the action bar. You can modify machine hourly rates, labour rates, and material prices. Changes apply immediately to the next Calculate run. Use <strong>Reset to Defaults</strong> to revert to the original published rates.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" id="faq-q3">What is the 8-bucket cost model?</div>
+        <div class="faq-a" id="faq-a3" style="display:none">CostVision computes: <strong>Raw Material + Process + Labour + Tooling + Packaging + Logistics + Overhead + Margin</strong>. This mirrors the aPriori / Siemens Teamcenter Sourcing should-cost methodology used by Tier 1 automotive and aerospace OEMs.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" id="faq-q4">What is Wright's Law / Learning Curve?</div>
+        <div class="faq-a" id="faq-a4" style="display:none">Wright's Law states that for every doubling of cumulative production volume, unit cost decreases by a fixed percentage (typically 10–20% for manufacturing). Enable the <strong>Apply learning curve</strong> checkbox and set the curve % (default 85% = 15% reduction per doubling). Set your annual volume and reference volume for the calculation.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" id="faq-q5">How do I compare two designs?</div>
+        <div class="faq-a" id="faq-a5" style="display:none">Save each design as a scenario using <strong>Save Scenario</strong>. Then click the <strong>Scenarios</strong> tab in the results panel, select two scenarios, and click <strong>Compare</strong>. A delta breakdown table shows cost differences by bucket, with colour-coded savings/increases.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" id="faq-q6">Are my scenarios saved if I close the browser?</div>
+        <div class="faq-a" id="faq-a6" style="display:none">Yes — CostVision uses IndexedDB for persistent browser storage. Scenarios survive page reloads and browser restarts. Use <strong>Export Scenarios</strong> to create a portable JSON backup file. If IndexedDB storage is full or unavailable, a warning toast will appear.</div>
+      </div>
+    </div>
+
+    <!-- Glossary -->
+    <div class="help-section" id="help-glossary">
+      <div class="glossary-grid">
+        <div class="glossary-item"><div class="glossary-term">OEE</div><div class="glossary-def">Overall Equipment Effectiveness — uptime × performance × quality. Typical range 60–95%.</div></div>
+        <div class="glossary-item"><div class="glossary-term">Cycle Time</div><div class="glossary-def">Time per machine cycle in hours. Includes machining + handling. Parts per cycle divides this.</div></div>
+        <div class="glossary-item"><div class="glossary-term">Manning</div><div class="glossary-def">Number of operators per machine. Affects labour cost per part.</div></div>
+        <div class="glossary-item"><div class="glossary-term">MOQ</div><div class="glossary-def">Minimum Order Quantity — minimum batch a supplier will accept per purchase order.</div></div>
+        <div class="glossary-item"><div class="glossary-term">NRE</div><div class="glossary-def">Non-Recurring Engineering cost — one-time tooling, setup, or design cost.</div></div>
+        <div class="glossary-item"><div class="glossary-term">PPV</div><div class="glossary-def">Purchase Price Variance — % difference between quoted supplier price and the should-cost model.</div></div>
+        <div class="glossary-item"><div class="glossary-term">Amortisation</div><div class="glossary-def">Spreading tooling NRE cost over the expected production volume to compute per-part tooling cost.</div></div>
+        <div class="glossary-item"><div class="glossary-term">Casting Yield</div><div class="glossary-def">Ratio of finished part weight to total pour weight (runner + gate loss). Typically 0.6–0.95.</div></div>
+        <div class="glossary-item"><div class="glossary-term">Labour Efficiency</div><div class="glossary-def">Effective labour utilisation (0–1). Accounts for non-value-added time. Typical: 0.80–0.95.</div></div>
+        <div class="glossary-item"><div class="glossary-term">DfM Score</div><div class="glossary-def">Design for Manufacturability score (0–100) from AI CAD analysis. Higher = easier to manufacture.</div></div>
+        <div class="glossary-item"><div class="glossary-term">Tornado Chart</div><div class="glossary-def">Sensitivity analysis chart showing which input variables have the largest impact on total cost.</div></div>
+        <div class="glossary-item"><div class="glossary-term">Wax Recovery</div><div class="glossary-def">In investment casting, fraction of wax recovered via autoclave dewaxing. Default 80%.</div></div>
+      </div>
+    </div>
+
+    <!-- Troubleshooting -->
+    <div class="help-section" id="help-troubleshoot">
+      <div class="help-card">
+        <div class="help-card-title"><div class="help-icon">!</div>"Scenario could not be saved" warning</div>
+        <p>Your browser's IndexedDB storage may be full or blocked. Go to browser settings → Site Data → clear storage for this site, then reload. Alternatively, export your scenarios to JSON before clearing.</p>
+      </div>
+      <div class="help-card">
+        <div class="help-card-title"><div class="help-icon">!</div>AI Agent returns invalid material/machine IDs</div>
+        <p>The AI may suggest IDs not in the current rate library. Invalid IDs are automatically nulled and a warning toast is shown. Manually select the correct material or machine from the dropdown after the AI populates other fields.</p>
+      </div>
+      <div class="help-card">
+        <div class="help-card-title"><div class="help-icon">!</div>PDF export is missing the Insights section</div>
+        <p>The §7 AI Insights section only appears if the AI Insights tab has generated recommendations (click Calculate, then view the Insights tab to trigger generation). Run Calculate before exporting the PDF.</p>
+      </div>
+      <div class="help-card">
+        <div class="help-card-title"><div class="help-icon">!</div>Rate library shows "stale" warning</div>
+        <p>The rate library data is over 90 days old. Click <strong>Edit Rates</strong> to review and update material prices, machine rates, and labour rates to current market values.</p>
+      </div>
+      <div class="help-card">
+        <div class="help-card-title"><div class="help-icon">!</div>Results show unexpectedly high material cost</div>
+        <p>Check the <strong>Material Utilisation</strong> field — a value less than 1 means significant scrap allowance. For casting, check <strong>Casting Yield</strong> and <strong>Reject Rate</strong>. Verify the <strong>Consumables</strong> cost per part is not accidentally large.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Contact Modal ───────────────────────────────────────────────────────── -->
+<div id="contact-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:200;align-items:center;justify-content:center;padding:16px">
+  <div class="modal-inner" style="max-width:500px;width:100%">
+    <!-- Header -->
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+      <div>
+        <h2 style="font-size:1rem;font-weight:800;color:var(--text-primary);margin:0">Contact Support</h2>
+        <p style="font-size:0.72rem;color:var(--text-muted);margin:2px 0 0">We usually respond within 24 hours</p>
+      </div>
+      <button id="close-contact-modal" style="background:none;border:none;font-size:1.4rem;color:var(--text-muted);cursor:pointer;padding:4px 8px;line-height:1;border-radius:6px" aria-label="Close contact">&times;</button>
+    </div>
+
+    <!-- Contact info -->
+    <div style="border:1px solid var(--border);border-radius:var(--radius);margin-bottom:20px">
+      <div class="contact-info-row" style="padding:12px 14px">
+        <div class="contact-icon">✉</div>
+        <div>
+          <div class="contact-label">Email</div>
+          <div class="contact-value"><a href="mailto:avinash.bhosale8925@gmail.com">avinash.bhosale8925@gmail.com</a></div>
+        </div>
+      </div>
+      <div class="contact-info-row" style="padding:12px 14px">
+        <div class="contact-icon">⏱</div>
+        <div>
+          <div class="contact-label">Response Time</div>
+          <div class="contact-value">Within 24 hours (Mon–Fri)</div>
+        </div>
+      </div>
+      <div class="contact-info-row" style="padding:12px 14px">
+        <div class="contact-icon">🌐</div>
+        <div>
+          <div class="contact-label">Product</div>
+          <div class="contact-value">CostVision — AI-Powered Cost Intelligence</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Contact form -->
+    <div id="contact-form-wrap">
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div style="display:flex;gap:8px">
+          <div style="flex:1">
+            <label style="font-size:0.72rem;font-weight:600;color:var(--text-secondary);display:block;margin-bottom:4px">Your Name</label>
+            <input type="text" id="ct-name" class="contact-form-input" placeholder="e.g. John Smith" />
+          </div>
+          <div style="flex:1">
+            <label style="font-size:0.72rem;font-weight:600;color:var(--text-secondary);display:block;margin-bottom:4px">Email Address</label>
+            <input type="email" id="ct-email" class="contact-form-input" placeholder="you@example.com" />
+          </div>
+        </div>
+        <div>
+          <label style="font-size:0.72rem;font-weight:600;color:var(--text-secondary);display:block;margin-bottom:4px">Subject</label>
+          <select id="ct-subject" class="contact-form-input">
+            <option value="">Select a topic…</option>
+            <option value="bug">Bug Report</option>
+            <option value="feature">Feature Request</option>
+            <option value="data">Rate Library / Data Question</option>
+            <option value="ai">AI Agent Issue</option>
+            <option value="other">General Enquiry</option>
+          </select>
+        </div>
+        <div>
+          <label style="font-size:0.72rem;font-weight:600;color:var(--text-secondary);display:block;margin-bottom:4px">Message</label>
+          <textarea id="ct-message" class="contact-form-input" placeholder="Describe your question or issue in detail…" rows="4"></textarea>
+        </div>
+      </div>
+      <div class="btn-row" style="margin-top:14px">
+        <button class="btn btn-primary" id="contact-send-btn">Send Message</button>
+        <button class="btn btn-secondary" id="close-contact-modal-2">Cancel</button>
+      </div>
+    </div>
+
+    <!-- Success state -->
+    <div class="contact-success" id="contact-success">
+      <div class="cs-icon">✓</div>
+      <div style="font-weight:700;font-size:1rem;margin-bottom:6px;color:var(--text-primary)">Message Sent!</div>
+      <div style="font-size:0.82rem;color:var(--text-secondary)">Thanks for reaching out. We'll get back to you within 24 hours.</div>
+      <button class="btn btn-secondary" style="margin-top:16px" id="contact-close-success">Close</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── Help Modal ────────────────────────────────────────────────────────────
+(function() {
+  function openHelp() {
+    const m = document.getElementById('help-modal');
+    if (m) { m.style.display = 'flex'; document.body.style.overflow = 'hidden'; }
+  }
+  function closeHelp() {
+    const m = document.getElementById('help-modal');
+    if (m) { m.style.display = 'none'; document.body.style.overflow = ''; }
+  }
+  document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('help-btn')?.addEventListener('click', openHelp);
+    document.getElementById('footer-help-link')?.addEventListener('click', function(e) { e.preventDefault(); openHelp(); });
+    document.getElementById('close-help-modal')?.addEventListener('click', closeHelp);
+    document.getElementById('help-modal')?.addEventListener('click', function(e) { if (e.target === this) closeHelp(); });
+
+    // Help tabs
+    document.querySelectorAll('.help-tab').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('.help-tab').forEach(function(b) { b.classList.remove('active'); });
+        document.querySelectorAll('.help-section').forEach(function(s) { s.classList.remove('active'); });
+        btn.classList.add('active');
+        const target = document.getElementById('help-' + btn.getAttribute('data-help'));
+        if (target) target.classList.add('active');
+      });
+    });
+
+    // FAQ accordion
+    [1,2,3,4,5,6].forEach(function(i) {
+      const q = document.getElementById('faq-q' + i);
+      const a = document.getElementById('faq-a' + i);
+      if (q && a) {
+        q.addEventListener('click', function() {
+          const open = a.style.display !== 'none';
+          a.style.display = open ? 'none' : 'block';
+          q.classList.toggle('open', !open);
+        });
+      }
+    });
+  });
+})();
+
+// ── Contact Modal ─────────────────────────────────────────────────────────
+(function() {
+  function openContact() {
+    const m = document.getElementById('contact-modal');
+    if (m) { m.style.display = 'flex'; document.body.style.overflow = 'hidden'; }
+  }
+  function closeContact() {
+    const m = document.getElementById('contact-modal');
+    if (m) { m.style.display = 'none'; document.body.style.overflow = ''; }
+  }
+  document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('contact-btn')?.addEventListener('click', openContact);
+    document.getElementById('footer-contact-link')?.addEventListener('click', function(e) { e.preventDefault(); openContact(); });
+    document.getElementById('close-contact-modal')?.addEventListener('click', closeContact);
+    document.getElementById('close-contact-modal-2')?.addEventListener('click', closeContact);
+    document.getElementById('contact-modal')?.addEventListener('click', function(e) { if (e.target === this) closeContact(); });
+    document.getElementById('contact-close-success')?.addEventListener('click', closeContact);
+
+    document.getElementById('contact-send-btn')?.addEventListener('click', function() {
+      const name = document.getElementById('ct-name').value.trim();
+      const email = document.getElementById('ct-email').value.trim();
+      const subject = document.getElementById('ct-subject').value;
+      const message = document.getElementById('ct-message').value.trim();
+      if (!name || !email || !subject || !message) {
+        alert('Please fill in all fields before sending.');
+        return;
+      }
+      // Build mailto link as fallback (no backend required)
+      const body = encodeURIComponent('Name: ' + name + '\nEmail: ' + email + '\n\nMessage:\n' + message);
+      const subjectMap = { bug: 'Bug Report', feature: 'Feature Request', data: 'Rate Library / Data Question', ai: 'AI Agent Issue', other: 'General Enquiry' };
+      const subjectLine = encodeURIComponent('[CostVision] ' + (subjectMap[subject] || subject));
+      window.open('mailto:avinash.bhosale8925@gmail.com?subject=' + subjectLine + '&body=' + body);
+      document.getElementById('contact-form-wrap').style.display = 'none';
+      document.getElementById('contact-success').style.display = 'block';
+    });
+  });
+})();
+</script>
 
 <script type="module" src="/src/ui/main.ts"></script>
 </body>
