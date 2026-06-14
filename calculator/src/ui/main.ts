@@ -642,7 +642,7 @@ function addMachOp(d?: Partial<MachiningOperation>): void {
       <div class="field-group"><label>Labour</label><select id="${id}-lab" class="labour-select"></select></div>
     </div>
     <div class="field-row" style="margin-top:4px">
-      <div class="field-group"><label>Cycle Time (hr)</label><input type="number" id="${id}-ct" step="0.001" min="0" value="${d?.cycleTimeHr ?? 0.05}"/></div>
+      <div class="field-group"><label>Cycle Time (hr)</label><input type="number" id="${id}-ct" step="0.001" min="0.0001" value="${d?.cycleTimeHr ?? 0.05}"/></div>
       <div class="field-group"><label>Parts/Cycle</label><input type="number" id="${id}-ppc" min="1" value="${d?.partsPerCycle ?? 1}"/></div>
     </div>
     <div class="field-row" style="margin-top:4px">
@@ -878,14 +878,14 @@ function renderInjectionForm(): string {
     <div class="section-title" style="margin-top:8px">Mould &amp; Cycle</div>
     <div class="field-row">
       <div class="field-group"><label>Cavities</label><input type="number" id="imm-cav" min="1" step="1" value="2"/></div>
-      <div class="field-group"><label>Projected Area (cm²)</label><input type="number" id="imm-area" step="1" min="0" value="40"/></div>
+      <div class="field-group"><label>Projected Area (cm²)</label><input type="number" id="imm-area" step="1" min="1" value="40"/></div>
     </div>
     <div class="field-row" style="margin-top:6px">
-      <div class="field-group"><label>Cavity Pressure (MPa)</label><input type="number" id="imm-cav-press" step="1" min="0" value="30"/></div>
+      <div class="field-group"><label>Cavity Pressure (MPa)</label><input type="number" id="imm-cav-press" step="1" min="1" value="30"/></div>
       <div class="field-group"><label>Wall Thickness (mm)</label><input type="number" id="imm-wall" step="0.1" min="0.1" value="2.0"/></div>
     </div>
     <div class="field-row" style="margin-top:6px">
-      <div class="field-group"><label>Cool Factor (s/mm²)</label><input type="number" id="imm-cool-f" step="0.1" min="0" value="3.16"/></div>
+      <div class="field-group"><label>Cool Factor (s/mm²)</label><input type="number" id="imm-cool-f" step="0.1" min="0.1" value="3.16"/></div>
       <div class="field-group"><label>Fill Time (s)</label><input type="number" id="imm-fill" step="0.5" min="0" value="2"/></div>
     </div>
     <div class="field-row" style="margin-top:6px">
@@ -1597,7 +1597,7 @@ function addBIWStation(d?: {stationName?: string; machineId?: string; labourId?:
       <div class="field-group"><label>Labour</label><select id="${id}-lab" class="labour-select"></select></div>
     </div>
     <div class="field-row" style="margin-top:4px">
-      <div class="field-group"><label>Cycle Time (hr)</label><input type="number" id="${id}-ct" step="0.001" min="0" value="${d?.cycleTimeHr ?? 0.0167}"/></div>
+      <div class="field-group"><label>Cycle Time (hr)</label><input type="number" id="${id}-ct" step="0.001" min="0.0001" value="${d?.cycleTimeHr ?? 0.0167}"/></div>
       <div class="field-group"><label>OEE</label><input type="number" id="${id}-oee" step="0.01" min="0.01" max="1" value="${d?.oee ?? 0.85}"/></div>
     </div>
     <div class="field-row" style="margin-top:4px">
@@ -2007,7 +2007,7 @@ function addCAMMachOp(d?: Partial<MachiningOperation>): void {
       <div class="field-group"><label>Labour</label><select id="${id}-lab" class="labour-select"></select></div>
     </div>
     <div class="field-row" style="margin-top:4px">
-      <div class="field-group"><label>Cycle Time (hr)</label><input type="number" id="${id}-ct" step="0.001" min="0" value="${d?.cycleTimeHr ?? 0.05}"/></div>
+      <div class="field-group"><label>Cycle Time (hr)</label><input type="number" id="${id}-ct" step="0.001" min="0.0001" value="${d?.cycleTimeHr ?? 0.05}"/></div>
       <div class="field-group"><label>Parts/Cycle</label><input type="number" id="${id}-ppc" min="1" value="${d?.partsPerCycle ?? 1}"/></div>
     </div>
     <div class="field-row" style="margin-top:4px">
