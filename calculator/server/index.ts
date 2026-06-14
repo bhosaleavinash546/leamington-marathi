@@ -12,7 +12,7 @@ import authRouter from './routes/auth.js';
 config(); // load .env
 
 const app = express();
-const PORT = parseInt(process.env.PORT ?? '3001', 10);
+const PORT = parseInt(process.env.PORT ?? '3002', 10);
 const IS_PROD = process.env.NODE_ENV === 'production';
 
 // Security headers
@@ -32,7 +32,7 @@ app.use(helmet({
 app.use(morgan(IS_PROD ? 'combined' : 'dev'));
 
 // CORS — allow Vite dev server and production origin
-const ALLOWED_ORIGINS = (process.env.ALLOWED_ORIGINS ?? 'http://localhost:5173,http://localhost:4173').split(',');
+const ALLOWED_ORIGINS = (process.env.ALLOWED_ORIGINS ?? 'http://localhost:5174,http://localhost:4174').split(',');
 app.use(cors({
   origin: (origin, cb) => {
     if (!origin || ALLOWED_ORIGINS.includes(origin)) cb(null, true);
