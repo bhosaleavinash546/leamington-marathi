@@ -13,7 +13,7 @@ stop:
 # ── Restart ──────────────────────────────────────────────────────────────────
 restart:
 	@docker compose restart
-	@echo "  ✅ Restarted → http://localhost:5173"
+	@echo "  ✅ Restarted → http://localhost:5174"
 
 # ── View live logs ────────────────────────────────────────────────────────────
 logs:
@@ -25,4 +25,4 @@ status:
 
 # ── Open in browser (macOS) ───────────────────────────────────────────────────
 open:
-	@open http://localhost:5173
+	@open http://localhost:5174

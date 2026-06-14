@@ -7,7 +7,7 @@ set -e
 
 ENV_FILE="calculator/.env"
 EXAMPLE_FILE="calculator/.env.example"
-URL="http://localhost:5173"
+URL="http://localhost:5174"
 
 echo ""
 echo "  ╔═══════════════════════════════════════════╗"
@@ -66,6 +66,9 @@ if [ ! -f "$ENV_FILE" ]; then
   cp "$EXAMPLE_FILE" "$ENV_FILE"
   echo "  ✅ Created $ENV_FILE"
 fi
+
+# ── 2b. Migrate PORT to 3002 if still on old default ─────────────────────────
+set_env_var "PORT" "3002"
 
 # ── 3. Auto-generate JWT_SECRET if still placeholder ──────────────────────────
 if grep -q "^JWT_SECRET=replace-with" "$ENV_FILE" 2>/dev/null || ! grep -q "^JWT_SECRET=" "$ENV_FILE" 2>/dev/null; then
