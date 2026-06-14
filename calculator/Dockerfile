@@ -13,6 +13,6 @@ RUN npm install
 COPY . .
 
 # Frontend (Vite) + Backend (Express)
-EXPOSE 5173 3001
+EXPOSE 5174 3002
 
 CMD ["npm", "run", "dev:full"]
