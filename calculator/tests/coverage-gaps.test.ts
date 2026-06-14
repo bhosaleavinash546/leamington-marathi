@@ -227,14 +227,16 @@ describe('Scenario import/export edge cases', () => {
     expect(errors[0]).toMatch(/parse error/i);
   });
 
-  it('exportScenarios produces valid JSON array', () => {
+  it('exportScenarios produces valid JSON with metadata wrapper', () => {
     const r = computeUniversalStack(mockInput, DEFAULT_RATE_LIBRARY);
     saveScenario('Export test', 'desc', mockInput, r);
-    const json = exportScenarios();
+    const json = exportScenarios({ version: '2.0.0', lastModified: '2025-01-01' });
     const parsed = JSON.parse(json);
-    expect(Array.isArray(parsed)).toBe(true);
-    expect(parsed).toHaveLength(1);
-    expect(parsed[0].name).toBe('Export test');
+    expect(parsed).toHaveProperty('scenarios');
+    expect(Array.isArray(parsed.scenarios)).toBe(true);
+    expect(parsed.scenarios).toHaveLength(1);
+    expect(parsed.scenarios[0].name).toBe('Export test');
+    expect(parsed.rateLibraryVersion).toBe('2.0.0');
   });
 
   it('scenarios are sorted by createdAt ascending after import', () => {

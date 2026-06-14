@@ -1,14 +1,16 @@
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
-import type { PartCostResult, UniversalStackInput, RateLibrary } from '../engine/types.js';
+import type { PartCostResult, UniversalStackInput, RateLibrary, CommodityType } from '../engine/types.js';
 import { breakdownPercentages } from '../engine/core.js';
+import { generateInsights } from '../engine/insights.js';
 
 export function printPDF(
   result: PartCostResult,
   input: UniversalStackInput,
   library: RateLibrary,
   currency = 'GBP',
-  fxRate = 1
+  fxRate = 1,
+  commodityType: CommodityType = 'machining'
 ): void {
   const sym = currency === 'GBP' ? '£' : currency === 'EUR' ? '€' : currency === 'USD' ? '$' : currency;
   const c = (n: number) => `${sym}${(n * fxRate).toFixed(2)}`;
@@ -390,6 +392,56 @@ export function printPDF(
     },
     margin: { left: margin, right: margin },
   });
+
+  // ══════════════════════════════════════════════════════════════════════════════
+  // PAGE — Cost Intelligence Insights
+  // ══════════════════════════════════════════════════════════════════════════════
+  const insights = generateInsights(result, input, library, commodityType);
+  if (insights.length > 0) {
+    if (y > 220) { doc.addPage(); y = 16; }
+    newSection('§7 — Cost Intelligence Insights');
+
+    const impactColor = (imp: string): [number, number, number] =>
+      imp === 'High' ? [198, 40, 40] : imp === 'Medium' ? [230, 81, 0] : [69, 90, 100];
+
+    const typeLabel: Record<string, string> = {
+      critical: 'CRITICAL', warning: 'WARNING', opportunity: 'OPPORTUNITY',
+      benchmark: 'BENCHMARK', info: 'INFO',
+    };
+
+    const topInsights = insights.slice(0, 6);
+    const insightRows: (string | object)[][] = [];
+
+    topInsights.forEach((ins) => {
+      insightRows.push([
+        { content: `[${typeLabel[ins.type] ?? ins.type.toUpperCase()}] ${ins.title}`, colSpan: 2, styles: { fontStyle: 'bold' as const, fillColor: [248, 248, 248] as [number,number,number], textColor: impactColor(ins.impact) } },
+      ]);
+      insightRows.push(['Finding', ins.finding]);
+      insightRows.push(['Impact', `${ins.impact}${ins.potentialSavingPct > 0 ? ` — up to ${ins.potentialSavingPct.toFixed(0)}% potential saving` : ''}`]);
+      if (ins.benchmark) {
+        insightRows.push(['Benchmark', `${ins.benchmark.label}: yours ${ins.benchmark.yourValue.toFixed(1)}${ins.benchmark.unit} vs industry ${ins.benchmark.industryLow}–${ins.benchmark.industryHigh}${ins.benchmark.unit}`]);
+      }
+      ins.actions.slice(0, 2).forEach((act, i) => {
+        insightRows.push([`Action ${i + 1}`, act]);
+      });
+      insightRows.push(['', '']);
+    });
+
+    autoTable(doc, {
+      startY: y,
+      head: [['', 'Detail']],
+      body: insightRows as string[][],
+      theme: 'plain',
+      headStyles: { fillColor: HEADER_BG, textColor: DARK, fontStyle: 'bold', fontSize: 8 },
+      bodyStyles: { fontSize: 7.5, textColor: DARK, cellPadding: 2 },
+      columnStyles: {
+        0: { cellWidth: 28, textColor: GREY as [number,number,number], fontStyle: 'bold' },
+        1: { cellWidth: contentW - 31 },
+      },
+      margin: { left: margin, right: margin },
+    });
+    y = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 8;
+  }
 
   // ── Page footers ────────────────────────────────────────────────────────────
   addPageFooter();

@@ -34,7 +34,7 @@ import { recommendMachineIds } from '../engine/process-taxonomy.js';
 import { runSensitivity } from '../engine/sensitivity.js';
 import {
   saveScenario, listScenarios, deleteScenario, compareScenarios,
-  exportScenarios, importScenarios, initScenarioStore,
+  exportScenarios, importScenarios, initScenarioStore, setScenarioErrorHandler,
 } from '../engine/scenario.js';
 import { computeAssemblyRollup, newAssembly, saveAssembly, deleteAssembly, listAssemblies } from '../engine/assembly.js';
 import type { Assembly, AssemblyLine } from '../engine/assembly.js';
@@ -81,6 +81,25 @@ let _displayFxRate = 1.0;
 function _currFmt(n: number): string {
   const sym = _displayCurrency === 'GBP' ? '£' : _displayCurrency === 'EUR' ? '€' : _displayCurrency === 'USD' ? '$' : _displayCurrency;
   return `${sym}${(n * _displayFxRate).toFixed(2)}`;
+}
+
+// ─── Toast notification ───────────────────────────────────────────────────────
+
+function showToast(message: string, type: 'error' | 'warning' | 'info' = 'info'): void {
+  const container = document.getElementById('toast-container') ?? (() => {
+    const c = document.createElement('div');
+    c.id = 'toast-container';
+    c.style.cssText = 'position:fixed;top:12px;right:12px;z-index:9999;display:flex;flex-direction:column;gap:8px;max-width:360px';
+    document.body.appendChild(c);
+    return c;
+  })();
+  const bg = type === 'error' ? '#c62828' : type === 'warning' ? '#e65100' : '#1565c0';
+  const icon = type === 'error' ? '✕' : type === 'warning' ? '⚠' : 'ℹ';
+  const toast = document.createElement('div');
+  toast.style.cssText = `background:${bg};color:#fff;border-radius:6px;padding:10px 14px;font-size:0.78rem;box-shadow:0 4px 12px rgba(0,0,0,0.25);display:flex;gap:8px;align-items:flex-start;animation:toastIn .2s ease`;
+  toast.innerHTML = `<span style="font-weight:700;flex-shrink:0">${icon}</span><span>${message}</span>`;
+  container.appendChild(toast);
+  setTimeout(() => { toast.style.opacity = '0'; toast.style.transition = 'opacity .3s'; setTimeout(() => toast.remove(), 300); }, 6000);
 }
 
 // ─── DOM helpers ──────────────────────────────────────────────────────────────
@@ -1377,6 +1396,9 @@ function renderCastingForm(): string {
       </div>
       <div class="field-row" style="margin-top:6px">
         <div class="field-group"><label title="Ceramic shell build cost per part (multiple dip coats + stucco + dry). Simple: £0.80–2.00. Complex: £1.50–5.00. Classified as MATERIAL cost.">Shell Cost/Part (£) ⓘ</label><input type="number" id="cast-inv-shell" step="0.1" min="0" value="1.20" title="Ceramic shell build per part. Simple: £0.80–2.00. Complex: £1.50–5.00. Classified as material consumable."/></div>
+      </div>
+      <div class="field-row" style="margin-top:6px">
+        <div class="field-group"><label title="Fraction of wax recovered via dewaxing autoclave and reused. Typical: 80–90% (0.80–0.90). Reduces effective wax cost per part. Lost wax = 10–20% contamination/loss.">Wax Recovery (0–1) ⓘ</label><input type="number" id="cast-inv-wax-rec" step="0.05" min="0" max="1" value="0.80" title="Wax recovery fraction via autoclave dewaxing. 0.80 = 80% reused. Typical foundry: 0.75–0.90."/></div>
       </div>
     </div>`;
 }
@@ -2726,7 +2748,19 @@ function collectCastingInput(): UniversalStackInput {
   if (subtype === 'hpdc') extra = { hpdc: { machineId: sel('cast-hpdc-mach'), cycleTimeSec: num('cast-hpdc-ct'), cavities: num('cast-hpdc-cav') || 1, dieCost: num('cast-hpdc-die-cost'), dieLife: num('cast-hpdc-die-life') } };
   else if (subtype === 'sand') extra = { sand: { mouldLineId: sel('cast-sand-line'), cycleTimeHr: num('cast-sand-ct'), patternCost: num('cast-sand-pat-cost'), patternLife: num('cast-sand-pat-life'), coreCostPerPart: num('cast-sand-core') } };
   else if (subtype === 'gravity') extra = { gravity: { machineId: sel('cast-grav-mach'), cycleTimeHr: num('cast-grav-ct'), mouldCost: num('cast-grav-mould-cost'), mouldLife: num('cast-grav-mould-life') } };
-  else if (subtype === 'investment') extra = { investment: { pourMachineId: sel('cast-inv-mach'), pourLabourId: sel('cast-inv-lab') || sel('cast-lab'), pourCycleHr: num('cast-inv-ct'), waxCostPerPart: num('cast-inv-wax'), shellBuildCostPerPart: num('cast-inv-shell') } };
+  else if (subtype === 'investment') extra = { investment: { pourMachineId: sel('cast-inv-mach'), pourLabourId: sel('cast-inv-lab') || sel('cast-lab'), pourCycleHr: num('cast-inv-ct'), waxCostPerPart: num('cast-inv-wax'), shellBuildCostPerPart: num('cast-inv-shell'), waxRecoveryFraction: num('cast-inv-wax-rec') } };
+
+  // C17: Warn when casting yield and reject rate appear to double-count losses
+  const castYield = num('cast-yield');
+  const castReject = num('cast-reject');
+  if (castYield < 0.55 && castReject > 0.08) {
+    showToast(
+      `Casting: yield ${(castYield * 100).toFixed(0)}% AND reject rate ${(castReject * 100).toFixed(0)}% are both high. ` +
+      'Yield (runner/gate loss) and reject rate (quality scrap) are additive — verify both are not capturing the same losses.',
+      'warning'
+    );
+  }
+
   const drivers = computeCastingDrivers({ ...common, ...extra });
   return { ...getUniversalTail(), rawMaterial: drivers.rawMaterial, operations: drivers.operations, tooling: drivers.tooling };
 }
@@ -3381,6 +3415,7 @@ function renderBreakdown(result: PartCostResult): void {
             const ppv = quotedGBP - result.total;
             const ppvPct = result.total > 0 ? (ppv / result.total) * 100 : 0;
             const ragCls = Math.abs(ppvPct) <= 5 ? 'ppv-rag-green' : Math.abs(ppvPct) <= 15 ? 'ppv-rag-amber' : 'ppv-rag-red';
+            const ragIcon = Math.abs(ppvPct) <= 5 ? '✓' : ppv > 0 ? '▲' : '▼';
             const ragLabel = Math.abs(ppvPct) <= 5 ? 'ON TARGET' : ppv > 0 ? 'OVERPRICED' : 'BELOW COST';
             return `<tr>
               <td>${q.supplierName || 'Unnamed'}</td>
@@ -3388,7 +3423,7 @@ function renderBreakdown(result: PartCostResult): void {
               <td>${fmt(result.total)}</td>
               <td class="${ppv > 0 ? 'delta-pos' : 'delta-neg'}">${ppv >= 0 ? '+' : ''}${fmt(ppv)}</td>
               <td class="${ppv > 0 ? 'delta-pos' : 'delta-neg'}">${ppvPct >= 0 ? '+' : ''}${ppvPct.toFixed(1)}%</td>
-              <td><span class="badge ${ragCls}">${ragLabel}</span></td>
+              <td><span class="badge ${ragCls}" aria-label="${ragLabel}">${ragIcon} ${ragLabel}</span></td>
               <td><button class="btn btn-secondary btn-sm del-quote-btn" data-qi="${i}" style="font-size:0.7rem">×</button></td>
             </tr>`;
           }).join('')}
@@ -3878,10 +3913,10 @@ function renderScenarios(): void {
   });
 
   el('export-sc-btn')?.addEventListener('click', () => {
-    const blob = new Blob([exportScenarios()], { type: 'application/json' });
+    const blob = new Blob([exportScenarios({ version: library.version, lastModified: library.lastModified })], { type: 'application/json' });
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
-    a.download = 'scenarios.json';
+    a.download = `scenarios-v${library.version}-${new Date().toISOString().slice(0, 10)}.json`;
     a.click();
   });
 
@@ -3890,7 +3925,10 @@ function renderScenarios(): void {
     if (!file) return;
     const reader = new FileReader();
     reader.onload = (ev) => {
-      const { imported, errors } = importScenarios(ev.target?.result as string);
+      const { imported, errors, meta } = importScenarios(ev.target?.result as string);
+      if (meta && meta.version !== 'unknown' && meta.version !== library.version) {
+        showToast(`Imported scenarios were computed with rate library v${meta.version}; current library is v${library.version}. Results may differ — recompute scenarios to update.`, 'warning');
+      }
       alert(`Imported ${imported} scenario(s).${errors.length ? '\nErrors: ' + errors.join(', ') : ''}`);
       renderScenarios();
     };
@@ -3958,7 +3996,7 @@ function downloadExcel(): void {
 
 function openPDF(): void {
   if (!lastResult || !lastInput) return;
-  printPDF(lastResult, lastInput, library, _displayCurrency, _displayFxRate);
+  printPDF(lastResult, lastInput, library, _displayCurrency, _displayFxRate, activeCommodity);
 }
 
 // ─── Scenario modal ───────────────────────────────────────────────────────────
@@ -4353,8 +4391,20 @@ function resetRateLibrary(): void {
 // ─── Init ─────────────────────────────────────────────────────────────────────
 
 async function init(): Promise<void> {
+  // M11: Surface IndexedDB failures to the user
+  setScenarioErrorHandler(msg => showToast(msg, 'warning'));
+
   // Init IndexedDB scenario store (migrates from localStorage automatically)
   await initScenarioStore();
+
+  // M13: Warn if rate library data is stale (> 90 days)
+  const lastMod = library.lastModified ? new Date(library.lastModified) : null;
+  if (lastMod && !isNaN(lastMod.getTime())) {
+    const ageDays = (Date.now() - lastMod.getTime()) / 86_400_000;
+    if (ageDays > 90) {
+      showToast(`Rate library data is ${Math.round(ageDays)} days old (last updated ${lastMod.toLocaleDateString('en-GB')}). Consider refreshing material and machine rates for accurate results.`, 'warning');
+    }
+  }
 
   // Commodity tabs
   document.querySelectorAll<HTMLElement>('.ctab').forEach(tab => {

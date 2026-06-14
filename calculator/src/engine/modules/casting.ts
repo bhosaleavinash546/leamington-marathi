@@ -44,6 +44,8 @@ export interface CastingInputs {
     pourCycleHr: number;
     pourMachineId: string;
     waxDieCost: number;
+    /** Fraction of wax recovered and reused (dewaxing autoclave). Default 0.80. Reduces effective wax cost. */
+    waxRecoveryFraction?: number;
   };
 }
 
@@ -213,7 +215,9 @@ export function computeCastingDrivers(inputs: CastingInputs): CommodityDrivers {
   if (inputs.subtype === 'sand' && inputs.sand) {
     consumablesCostPerPart = inputs.sand.coreCostPerPart;
   } else if (inputs.subtype === 'investment' && inputs.investment) {
-    consumablesCostPerPart = inputs.investment.waxCostPerPart + inputs.investment.shellBuildCostPerPart;
+    const waxRecovery = inputs.investment.waxRecoveryFraction ?? 0.80;
+    const effectiveWaxCost = inputs.investment.waxCostPerPart * (1 - waxRecovery);
+    consumablesCostPerPart = effectiveWaxCost + inputs.investment.shellBuildCostPerPart;
   }
 
   return {

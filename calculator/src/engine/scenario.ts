@@ -16,6 +16,11 @@ const LEGACY_KEY = 'shouldCostScenarios';
 
 let _scenarios: Scenario[] = [];
 let _ready = false;
+let _onError: ((msg: string) => void) | null = null;
+
+export function setScenarioErrorHandler(fn: (msg: string) => void): void {
+  _onError = fn;
+}
 
 /** Call once on app startup before reading scenarios. */
 export async function initScenarioStore(): Promise<void> {
@@ -48,7 +53,12 @@ async function _migrateFromLocalStorage(): Promise<void> {
 }
 
 function _persist(scenario: Scenario): void {
-  getIDB().then(idb => idb?.set(`${PREFIX}${scenario.id}`, scenario)).catch(() => {/* silent */});
+  getIDB()
+    .then(idb => idb?.set(`${PREFIX}${scenario.id}`, scenario))
+    .catch((err: unknown) => {
+      console.error('[scenario] IDB persist failed:', err);
+      _onError?.('Scenario could not be saved to local storage — changes may be lost on page reload. Check browser storage quota or permissions.');
+    });
 }
 
 export function saveScenario(
@@ -80,13 +90,15 @@ export function getScenario(id: string): Scenario | undefined {
 
 export function deleteScenario(id: string): void {
   _scenarios = _scenarios.filter(s => s.id !== id);
-  getIDB().then(idb => idb?.del(`${PREFIX}${id}`)).catch(() => {/* silent */});
+  getIDB().then(idb => idb?.del(`${PREFIX}${id}`)).catch((err: unknown) => {
+    console.error('[scenario] IDB delete failed:', err);
+  });
 }
 
 export function clearScenarios(): void {
   const ids = _scenarios.map(s => s.id);
   _scenarios = [];
-  getIDB().then(idb => { if (idb) ids.forEach(id => idb.del(`${PREFIX}${id}`).catch(() => {/* silent */})); }).catch(() => {/* silent */});
+  getIDB().then(idb => { if (idb) ids.forEach(id => idb.del(`${PREFIX}${id}`).catch((err: unknown) => console.error('[scenario] IDB del failed:', err))); }).catch((err: unknown) => console.error('[scenario] IDB clear failed:', err));
 }
 
 export function compareScenarios(
@@ -125,16 +137,25 @@ export function compareScenarios(
   };
 }
 
-export function importScenarios(json: string): { imported: number; errors: string[] } {
+export function importScenarios(json: string): { imported: number; errors: string[]; meta?: { version: string; exportedAt: string } } {
   const errors: string[] = [];
   let imported = 0;
+  let meta: { version: string; exportedAt: string } | undefined;
   try {
     const data = JSON.parse(json) as unknown;
-    if (!Array.isArray(data)) {
-      errors.push('Expected a JSON array of scenarios');
+    // Support both old (plain array) and new (object with metadata) formats
+    let scenarioList: unknown[];
+    if (Array.isArray(data)) {
+      scenarioList = data;
+    } else if (typeof data === 'object' && data !== null && 'scenarios' in data && Array.isArray((data as { scenarios: unknown[] }).scenarios)) {
+      const d = data as { scenarios: unknown[]; rateLibraryVersion?: string; exportedAt?: string };
+      scenarioList = d.scenarios;
+      meta = { version: d.rateLibraryVersion ?? 'unknown', exportedAt: d.exportedAt ?? 'unknown' };
+    } else {
+      errors.push('Expected a JSON array or export object with scenarios field');
       return { imported, errors };
     }
-    for (const item of data as unknown[]) {
+    for (const item of scenarioList) {
       if (
         typeof item === 'object' &&
         item !== null &&
@@ -153,9 +174,16 @@ export function importScenarios(json: string): { imported: number; errors: strin
   } catch (err) {
     errors.push(`Parse error: ${err instanceof Error ? err.message : String(err)}`);
   }
-  return { imported, errors };
+  return { imported, errors, meta };
 }
 
-export function exportScenarios(): string {
-  return JSON.stringify(_scenarios, null, 2);
+export function exportScenarios(libraryMeta?: { version: string; lastModified: string }): string {
+  const exportData = {
+    exportedAt: new Date().toISOString(),
+    rateLibraryVersion: libraryMeta?.version ?? 'unknown',
+    rateLibraryLastModified: libraryMeta?.lastModified ?? 'unknown',
+    scenarioCount: _scenarios.length,
+    scenarios: _scenarios,
+  };
+  return JSON.stringify(exportData, null, 2);
 }
