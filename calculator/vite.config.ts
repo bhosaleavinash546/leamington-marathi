@@ -8,6 +8,7 @@ export default defineConfig({
     rollupOptions: { input: 'index.html' },
   },
   server: {
+    host: '0.0.0.0',
     proxy: {
       '/api': {
         target: 'http://localhost:3001',

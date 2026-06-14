@@ -1,0 +1,20 @@
+services:
+  costvision:
+    build:
+      context: ./calculator
+      dockerfile: Dockerfile
+    container_name: costvision
+    ports:
+      - "5173:5173"
+      - "3001:3001"
+    volumes:
+      # Persist the SQLite database across container restarts
+      - costvision-data:/app/data
+    env_file:
+      - ./calculator/.env
+    environment:
+      - NODE_ENV=development
+    restart: unless-stopped
+
+volumes:
+  costvision-data:
