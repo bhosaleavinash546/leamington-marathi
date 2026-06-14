@@ -25,6 +25,9 @@ import { computeThermoformingDrivers } from '../engine/modules/thermoforming.js'
 import { computeRotationalMouldingDrivers } from '../engine/modules/rotational-moulding.js';
 import { computeRubberDrivers } from '../engine/modules/rubber.js';
 import type { RubberProcess } from '../engine/modules/rubber.js';
+import { computeCompositeDrivers } from '../engine/modules/composites.js';
+import type { CompositeProcess } from '../engine/modules/composites.js';
+import { computeWiringHarnessDrivers } from '../engine/modules/wiring-harness.js';
 import { buildRegionalLibrary } from '../engine/regional-rates.js';
 import type { ManufacturingRegion } from '../engine/regional-rates.js';
 import { recommendMachineIds } from '../engine/process-taxonomy.js';
@@ -1121,6 +1124,168 @@ function renderRubberForm(): string {
   <div class="field-row">
     <div class="field-group"><label>Amortisation Volume (parts)</label><input type="number" id="rub-amort" step="1000" min="100" value="50000"/></div>
     <div class="field-group"><label>Bonding Primer (£/part)</label><input type="number" id="rub-primer" step="0.01" min="0" value="0" title="Rubber-to-metal adhesive primer cost per part (0 if not applicable)"/></div>
+  </div>`;
+}
+
+// ─── Form: Composites ─────────────────────────────────────────────────────────
+
+function renderCompositesForm(): string {
+  return `
+  <div class="section-title">Composite Manufacturing — Material</div>
+  <div class="field-row">
+    <div class="field-group"><label>Process</label>
+      <select id="comp-process">
+        <option value="prepreg_layup">Prepreg Hand Layup</option>
+        <option value="hand_layup">Wet Hand Layup</option>
+        <option value="rtm">RTM / VARTM</option>
+        <option value="vartm">VARTM Infusion</option>
+        <option value="filament_winding">Filament Winding</option>
+        <option value="pultrusion">Pultrusion</option>
+      </select>
+    </div>
+    <div class="field-group"><label>Part Weight (kg)</label><input type="number" id="comp-part-wt" step="0.01" min="0.01" value="1.80" title="Cured finished part weight kg"/></div>
+  </div>
+  <div class="field-row">
+    <div class="field-group"><label>Fibre Price (£/kg)</label><input type="number" id="comp-fibre-price" step="0.50" min="1" value="32.00" title="Dry fabric or prepreg price £/kg. CF prepreg: £28–80, dry CF: £20–35, E-glass prepreg: £6–15, dry GF: £3–6"/></div>
+    <div class="field-group"><label>Resin Price (£/kg)</label><input type="number" id="comp-resin-price" step="0.50" min="0" value="0" title="Infusion/RTM resin £/kg. Use 0 for prepreg (resin included in fibre price). Epoxy infusion: £8–18, vinyl ester: £4–8"/></div>
+  </div>
+  <div class="field-row">
+    <div class="field-group"><label>Fibre Weight Fraction</label><input type="number" id="comp-fibre-frac" step="0.01" min="0.30" max="0.75" value="0.60" title="Mass fraction of fibre in cured part. Prepreg: 0.60, hand layup: 0.50, RTM: 0.55, GFRP: 0.45–0.55"/></div>
+    <div class="field-group"><label>Waste Fraction</label><input type="number" id="comp-waste-frac" step="0.01" min="0.02" max="0.50" value="0.20" title="Trim/offcut waste fraction. Prepreg hand layup: 0.15–0.30, RTM: 0.05–0.10, pultrusion: 0.02–0.05"/></div>
+  </div>
+  <div class="field-row">
+    <div class="field-group"><label>Area (m²)</label><input type="number" id="comp-area" step="0.01" min="0.01" value="0.65" title="Developed part surface area m²"/></div>
+    <div class="field-group"><label>Plies</label><input type="number" id="comp-plies" step="1" min="1" value="8" title="Number of laminate plies"/></div>
+  </div>
+
+  <div class="section-title" style="margin-top:6px">Layup Operation</div>
+  <div class="field-row">
+    <div class="field-group"><label>Layup Labour</label><select id="comp-layup-lab" class="lab-select"></select></div>
+    <div class="field-group"><label>Layup Time (hr/part)</label><input type="number" id="comp-layup-time" step="0.10" min="0.05" value="3.50" title="Total layup time hr per part. Hand CF: 2–8hr, prepreg: 1–12hr, RTM: 0.2–1hr"/></div>
+  </div>
+  <div class="field-row">
+    <div class="field-group"><label>OEE</label><input type="number" id="comp-oee" step="0.01" min="0.30" max="1" value="0.78"/></div>
+    <div class="field-group"><label>Manning</label><input type="number" id="comp-manning" step="0.5" min="0.5" value="2"/></div>
+  </div>
+  <div class="field-row">
+    <div class="field-group"><label>Labour Efficiency</label><input type="number" id="comp-lab-eff" step="0.01" min="0.50" max="1" value="0.90"/></div>
+    <div class="field-group"><label>Reject Rate (0–1)</label><input type="number" id="comp-reject" step="0.01" min="0" max="0.30" value="0.04" title="Composite scrap rate (delamination, porosity, dimensional). 0.03–0.08 typical"/></div>
+  </div>
+
+  <div class="section-title" style="margin-top:6px">Cure Operation</div>
+  <div class="field-row">
+    <div class="field-group"><label>Cure Machine</label><select id="comp-cure-mach" class="mach-select"></select></div>
+    <div class="field-group"><label>Cure Labour</label><select id="comp-cure-lab" class="lab-select"></select></div>
+  </div>
+  <div class="field-row">
+    <div class="field-group"><label>Cure Time (hr/cycle)</label><input type="number" id="comp-cure-time" step="0.25" min="0.25" value="4.00" title="Full cure cycle time in machine hr. Autoclave CFRP: 3–8hr; oven: 2–4hr; RTM press: 0.5–2hr"/></div>
+    <div class="field-group"><label>Parts per Cure Batch</label><input type="number" id="comp-cure-batch" step="1" min="1" value="4" title="Parts per autoclave/oven load. Autoclave batching reduces per-part cure machine cost significantly"/></div>
+  </div>
+
+  <div class="section-title" style="margin-top:6px">Trim &amp; Finish</div>
+  <div class="field-row">
+    <div class="field-group"><label>Trim Machine (optional)</label><select id="comp-trim-mach" class="mach-select"></select></div>
+    <div class="field-group"><label>Trim Labour</label><select id="comp-trim-lab" class="lab-select"></select></div>
+  </div>
+  <div class="field-row">
+    <div class="field-group"><label>Trim + Drill Time (hr)</label><input type="number" id="comp-trim-time" step="0.05" min="0" value="0.50" title="Waterjet/router trim + drill time hr per part. Waterjet CFRP: 0.25–1.5hr; manual: 0.5–3hr"/></div>
+    <div class="field-group"><label>NDI Inspection (£/part)</label><input type="number" id="comp-ndi" step="0.50" min="0" value="25.00" title="C-scan/UT NDI cost per part. Automotive structural: £15–50, aerospace: £80–250. Use 0 if no NDI required"/></div>
+  </div>
+
+  <div class="section-title" style="margin-top:6px">Tooling</div>
+  <div class="field-row">
+    <div class="field-group"><label>Mould / Mandrel Cost (£)</label><input type="number" id="comp-tool-cost" step="500" min="500" value="18000" title="Mould/mandrel cost £. Al tool: £8k–50k; CFRP mould: £15k–150k; invar: £100k–500k"/></div>
+    <div class="field-group"><label>Tool Life (parts)</label><input type="number" id="comp-tool-life" step="50" min="10" value="400" title="Parts per tool life. Al mould: 500–2000, CFRP mould: 100–400, invar: 2000–5000"/></div>
+  </div>
+  <div class="field-row">
+    <div class="field-group"><label>Amortisation Volume (parts)</label><input type="number" id="comp-amort" step="100" min="10" value="2000"/></div>
+  </div>`;
+}
+
+// ─── Form: Wiring Harness ─────────────────────────────────────────────────────
+
+function renderWiringHarnessForm(): string {
+  return `
+  <div class="section-title">Wiring Harness — Purchased Materials</div>
+  <div style="font-size:0.72rem;color:#888;margin-bottom:4px">Wire cost = length × price/m for each gauge. Add rows as needed.</div>
+
+  <div id="wire-rows">
+    <div class="field-row wire-row" data-idx="0">
+      <div class="field-group" style="flex:0.8"><label>Gauge (mm²)</label><input type="number" class="wire-gauge" step="0.25" min="0.1" value="0.50" title="Wire cross-section mm²"/></div>
+      <div class="field-group"><label>Length (m)</label><input type="number" class="wire-length" step="0.1" min="0" value="3.20" title="Total harness length for this gauge m"/></div>
+      <div class="field-group" style="flex:0.8"><label>Price (£/m)</label><input type="number" class="wire-price" step="0.01" min="0" value="0.10" title="Wire price £/m. 0.5mm²: £0.10, 1.5mm²: £0.18, 4mm²: £0.40"/></div>
+    </div>
+    <div class="field-row wire-row" data-idx="1">
+      <div class="field-group" style="flex:0.8"><label>Gauge (mm²)</label><input type="number" class="wire-gauge" step="0.25" min="0.1" value="1.50"/></div>
+      <div class="field-group"><label>Length (m)</label><input type="number" class="wire-length" step="0.1" min="0" value="1.40"/></div>
+      <div class="field-group" style="flex:0.8"><label>Price (£/m)</label><input type="number" class="wire-price" step="0.01" min="0" value="0.18"/></div>
+    </div>
+    <div class="field-row wire-row" data-idx="2">
+      <div class="field-group" style="flex:0.8"><label>Gauge (mm²)</label><input type="number" class="wire-gauge" step="0.25" min="0.1" value="4.00"/></div>
+      <div class="field-group"><label>Length (m)</label><input type="number" class="wire-length" step="0.1" min="0" value="0.60"/></div>
+      <div class="field-group" style="flex:0.8"><label>Price (£/m)</label><input type="number" class="wire-price" step="0.01" min="0" value="0.40"/></div>
+    </div>
+  </div>
+
+  <div style="margin:4px 0">
+    <div class="section-title" style="margin-top:6px">Connectors</div>
+    <div id="conn-rows">
+      <div class="field-row conn-row" data-idx="0">
+        <div class="field-group" style="flex:0.7"><label>Count</label><input type="number" class="conn-count" step="1" min="0" value="4" title="Number of connector housings of this type"/></div>
+        <div class="field-group"><label>Cost Each (£)</label><input type="number" class="conn-cost" step="0.10" min="0" value="1.20" title="Connector + terminals cost £ each. 2–6 pin: £0.40–1.20; 12–18 pin: £1.80–4.50"/></div>
+        <div class="field-group" style="flex:0.7"><label>Circuits</label><input type="number" class="conn-circuits" step="1" min="1" value="6" title="Pins/circuits per connector"/></div>
+        <div class="field-group" style="flex:0.8"><label>Term.Time(s)</label><input type="number" class="conn-term-time" step="1" min="1" value="10" title="Crimp time per terminal s (10s semi-auto, 20s manual)"/></div>
+      </div>
+      <div class="field-row conn-row" data-idx="1">
+        <div class="field-group" style="flex:0.7"><label>Count</label><input type="number" class="conn-count" step="1" min="0" value="2"/></div>
+        <div class="field-group"><label>Cost Each (£)</label><input type="number" class="conn-cost" step="0.10" min="0" value="2.80"/></div>
+        <div class="field-group" style="flex:0.7"><label>Circuits</label><input type="number" class="conn-circuits" step="1" min="1" value="12"/></div>
+        <div class="field-group" style="flex:0.8"><label>Term.Time(s)</label><input type="number" class="conn-term-time" step="1" min="1" value="10"/></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="field-row">
+    <div class="field-group"><label>Splices</label><input type="number" id="harn-splices" step="1" min="0" value="6" title="Number of in-line splice connections"/></div>
+    <div class="field-group"><label>Splice Cost Each (£)</label><input type="number" id="harn-splice-cost" step="0.01" min="0" value="0.08" title="Splice terminal cost £ each (£0.04–0.15)"/></div>
+  </div>
+  <div class="field-row">
+    <div class="field-group"><label>Conduit Length (m)</label><input type="number" id="harn-conduit-len" step="0.1" min="0" value="2.00" title="Corrugated conduit / protective sleeving total m"/></div>
+    <div class="field-group"><label>Conduit Price (£/m)</label><input type="number" id="harn-conduit-price" step="0.01" min="0" value="0.35" title="Conduit £/m (£0.25–1.20 depending on type)"/></div>
+  </div>
+  <div class="field-row">
+    <div class="field-group"><label>Tape (metres)</label><input type="number" id="harn-tape-m" step="0.5" min="0" value="5.00" title="Wiring loom tape total metres (0.5–2× wire length typically)"/></div>
+    <div class="field-group"><label>Tape Price (£/m)</label><input type="number" id="harn-tape-price" step="0.005" min="0" value="0.12" title="Loom tape £/m (£0.08–0.25)"/></div>
+  </div>
+
+  <div class="section-title" style="margin-top:6px">Assembly &amp; Test</div>
+  <div class="field-row">
+    <div class="field-group"><label>Assembly Labour</label><select id="harn-asm-lab" class="lab-select"></select></div>
+    <div class="field-group"><label>Assembly Time (hr)</label><input type="number" id="harn-asm-time" step="0.05" min="0.01" value="0.45" title="Total manual assembly hr per harness. Simple 5-cct: 0.1hr; complex 80+ cct: 2–6hr"/></div>
+  </div>
+  <div class="field-row">
+    <div class="field-group"><label>OEE</label><input type="number" id="harn-oee" step="0.01" min="0.30" max="1" value="0.85"/></div>
+    <div class="field-group"><label>Manning</label><input type="number" id="harn-manning" step="0.5" min="0.5" value="1"/></div>
+  </div>
+  <div class="field-row">
+    <div class="field-group"><label>Labour Efficiency</label><input type="number" id="harn-lab-eff" step="0.01" min="0.50" max="1" value="0.90"/></div>
+    <div class="field-group"><label>Reject Rate (0–1)</label><input type="number" id="harn-reject" step="0.01" min="0" max="0.20" value="0.02" title="Harness scrap rate (0.01–0.04 with semi-auto crimping)"/></div>
+  </div>
+  <div class="field-row">
+    <div class="field-group"><label>Test Machine</label><select id="harn-test-mach" class="mach-select"></select></div>
+    <div class="field-group"><label>Test Labour</label><select id="harn-test-lab" class="lab-select"></select></div>
+  </div>
+  <div class="field-row">
+    <div class="field-group"><label>Test Time (hr)</label><input type="number" id="harn-test-time" step="0.01" min="0" value="0.05" title="Continuity + HiPot test time hr per harness (0.02–0.15)"/></div>
+  </div>
+
+  <div class="section-title" style="margin-top:6px">Tooling (Boarding Board / Routing Jig)</div>
+  <div class="field-row">
+    <div class="field-group"><label>Board Cost (£)</label><input type="number" id="harn-board-cost" step="50" min="0" value="800" title="Routing/boarding board + jig cost £ (£200–3000 typical)"/></div>
+    <div class="field-group"><label>Board Life (parts)</label><input type="number" id="harn-board-life" step="1000" min="100" value="20000" title="Parts per board life (5000–50000)"/></div>
+  </div>
+  <div class="field-row">
+    <div class="field-group"><label>Amortisation Volume (parts)</label><input type="number" id="harn-amort" step="1000" min="100" value="10000"/></div>
   </div>`;
 }
 
@@ -2385,6 +2550,28 @@ function switchCommodity(type: CommodityType): void {
       }, 0);
       break;
 
+    case 'composites':
+      area.innerHTML = renderCompositesForm();
+      populateSelects();
+      setTimeout(() => {
+        const cureEl = el<HTMLSelectElement>('comp-cure-mach');
+        if (cureEl) { const opt = Array.from(cureEl.options).find(o => o.value.includes('autoclave') || o.value.includes('oven-composite')); if (opt) cureEl.value = opt.value; }
+        const layupLabEl = el<HTMLSelectElement>('comp-layup-lab');
+        if (layupLabEl) { const opt = Array.from(layupLabEl.options).find(o => o.value.includes('skilled')); if (opt) layupLabEl.value = opt.value; }
+      }, 0);
+      break;
+
+    case 'wiring_harness':
+      area.innerHTML = renderWiringHarnessForm();
+      populateSelects();
+      setTimeout(() => {
+        const testMachEl = el<HTMLSelectElement>('harn-test-mach');
+        if (testMachEl) { const opt = Array.from(testMachEl.options).find(o => o.value.includes('harness-test')); if (opt) testMachEl.value = opt.value; }
+        const labEl = el<HTMLSelectElement>('harn-asm-lab');
+        if (labEl) { const opt = Array.from(labEl.options).find(o => o.value.includes('semiskilled')); if (opt) labEl.value = opt.value; }
+      }, 0);
+      break;
+
     case 'ai_agent' as CommodityType:
       area.innerHTML = renderAgentForm();
       _wireAgentInputEvents();
@@ -2926,6 +3113,82 @@ function collectRubberInput(): UniversalStackInput {
   return { ...getUniversalTail(), rawMaterial: drivers.rawMaterial, operations: drivers.operations, tooling: drivers.tooling };
 }
 
+function collectCompositesInput(): UniversalStackInput {
+  const drivers = computeCompositeDrivers({
+    fibrePricePerKg: num('comp-fibre-price') || 32.00,
+    resinPricePerKg: num('comp-resin-price') || 0,
+    fibreWeightFraction: num('comp-fibre-frac') || 0.60,
+    partWeightKg: num('comp-part-wt') || 1.80,
+    wasteFraction: num('comp-waste-frac') || 0.20,
+    process: (sel('comp-process') || 'prepreg_layup') as CompositeProcess,
+    areaM2: num('comp-area') || 0.65,
+    plies: num('comp-plies') || 8,
+    layupLabourId: sel('comp-layup-lab'),
+    layupTimeHrPerPart: num('comp-layup-time') || 3.50,
+    oee: num('comp-oee') || 0.78,
+    manning: num('comp-manning') || 2,
+    labourEfficiency: num('comp-lab-eff') || 0.90,
+    cureMachineId: sel('comp-cure-mach'),
+    cureLabourId: sel('comp-cure-lab'),
+    cureTimeHr: num('comp-cure-time') || 4.00,
+    partsPerCureCycle: num('comp-cure-batch') || 4,
+    trimMachineId: sel('comp-trim-mach') || undefined,
+    trimLabourId: sel('comp-trim-lab'),
+    trimTimeHr: num('comp-trim-time') || 0.50,
+    ndiCostPerPart: num('comp-ndi') || undefined,
+    rejectRate: num('comp-reject') || 0.04,
+    toolingCost: num('comp-tool-cost') || 18000,
+    toolingLife: num('comp-tool-life') || 400,
+    amortizationVolume: num('comp-amort') || 2000,
+  });
+  return { ...getUniversalTail(), rawMaterial: drivers.rawMaterial, operations: drivers.operations, tooling: drivers.tooling };
+}
+
+function collectWiringHarnessInput(): UniversalStackInput {
+  const wireRows = Array.from(document.querySelectorAll('.wire-row'));
+  const wires = wireRows
+    .map(row => ({
+      crossSectionMm2: parseFloat((row.querySelector('.wire-gauge') as HTMLInputElement)?.value || '0.5'),
+      lengthM: parseFloat((row.querySelector('.wire-length') as HTMLInputElement)?.value || '0'),
+      pricePerM: parseFloat((row.querySelector('.wire-price') as HTMLInputElement)?.value || '0'),
+    }))
+    .filter(w => w.lengthM > 0);
+
+  const connRows = Array.from(document.querySelectorAll('.conn-row'));
+  const connectors = connRows
+    .map(row => ({
+      count: parseInt((row.querySelector('.conn-count') as HTMLInputElement)?.value || '0', 10),
+      costEach: parseFloat((row.querySelector('.conn-cost') as HTMLInputElement)?.value || '0'),
+      circuitsPerConnector: parseInt((row.querySelector('.conn-circuits') as HTMLInputElement)?.value || '1', 10),
+      terminationTimeSec: parseFloat((row.querySelector('.conn-term-time') as HTMLInputElement)?.value || '10'),
+    }))
+    .filter(c => c.count > 0);
+
+  const drivers = computeWiringHarnessDrivers({
+    wires,
+    connectors,
+    spliceCount: num('harn-splices') || 0,
+    spliceCostEach: num('harn-splice-cost') || 0.08,
+    conduitLengthM: num('harn-conduit-len') || 0,
+    conduitCostPerM: num('harn-conduit-price') || 0.35,
+    tapeMetres: num('harn-tape-m') || 0,
+    tapeCostPerM: num('harn-tape-price') || 0.12,
+    labourId: sel('harn-asm-lab'),
+    assemblyTimeHr: num('harn-asm-time') || 0.45,
+    oee: num('harn-oee') || 0.85,
+    manning: num('harn-manning') || 1,
+    labourEfficiency: num('harn-lab-eff') || 0.90,
+    testMachineId: sel('harn-test-mach') || undefined,
+    testLabourId: sel('harn-test-lab'),
+    testTimeHr: num('harn-test-time') || 0.05,
+    rejectRate: num('harn-reject') || 0.02,
+    boardingBoardCost: num('harn-board-cost') || 800,
+    boardingBoardLife: num('harn-board-life') || 20000,
+    amortizationVolume: num('harn-amort') || 10000,
+  });
+  return { ...getUniversalTail(), rawMaterial: drivers.rawMaterial, operations: drivers.operations, tooling: drivers.tooling };
+}
+
 function collectInput(): UniversalStackInput {
   switch (activeCommodity) {
     case 'machining':            return collectMachiningInput();
@@ -2944,6 +3207,8 @@ function collectInput(): UniversalStackInput {
     case 'pcba':                 return collectPCBAInput();
     case 'cast_and_machine':     return collectCastAndMachineInput();
     case 'rubber':               return collectRubberInput();
+    case 'composites':           return collectCompositesInput();
+    case 'wiring_harness':       return collectWiringHarnessInput();
     case 'cad_analysis':
       throw new Error('Apply CAD analysis results to a commodity form first using the "Apply to cost engine" button, then calculate.');
     case 'ai_agent' as CommodityType:

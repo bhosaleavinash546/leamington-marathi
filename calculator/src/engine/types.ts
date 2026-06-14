@@ -18,6 +18,8 @@ export type CommodityType =
   | 'pcba'
   | 'cast_and_machine'
   | 'rubber'
+  | 'composites'
+  | 'wiring_harness'
   | 'cad_analysis'
   | 'assembly';
 export type ToolingMode = 'amortized' | 'one_time_nre';

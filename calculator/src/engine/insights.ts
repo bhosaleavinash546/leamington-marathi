@@ -97,6 +97,16 @@ const COMMODITY_BENCHMARKS: Record<string, CommodityBenchmarks> = {
     toolingPct: [2, 12], overheadPct: [8, 16], marginPct: [5, 12],
     typicalMatUtil: 0.83, oeeBenchmark: 0.80,
   },
+  composites: {
+    materialPct: [40, 65], processPct: [12, 28], labourPct: [8, 25],
+    toolingPct: [3, 18], overheadPct: [10, 18], marginPct: [6, 14],
+    typicalMatUtil: 0.75, oeeBenchmark: 0.78,
+  },
+  wiring_harness: {
+    materialPct: [35, 55], processPct: [8, 18], labourPct: [20, 45],
+    toolingPct: [1, 5], overheadPct: [8, 14], marginPct: [5, 12],
+    typicalMatUtil: 0.97, oeeBenchmark: 0.82,
+  },
 };
 
 const DEFAULT_BENCHMARK = COMMODITY_BENCHMARKS['machining'];

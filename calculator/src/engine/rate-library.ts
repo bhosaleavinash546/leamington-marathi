@@ -189,6 +189,14 @@ export const DEFAULT_RATE_LIBRARY: RateLibrary = {
     { id: 'mat-lsr', grade: 'LSR 40 Shore A', category: 'Rubber', pricePerKg: 15.00, scrapRecoveryPricePerKg: 0.10, densityKgPerM3: 1130, region: 'UK', effectiveDate: '2025-06-01', sourceNote: 'UK silicone supplier 2025. Liquid Silicone Rubber — injection moulding, medical/auto seals. Shore 40A.', confidence: 'Low' },
     { id: 'mat-nr', grade: 'Natural Rubber SMR20', category: 'Rubber', pricePerKg: 1.50, scrapRecoveryPricePerKg: 0.05, densityKgPerM3: 920, region: 'UK', effectiveDate: '2025-06-01', sourceNote: 'UK rubber importer 2025. Natural rubber SMR20 grade — tyre compounds, anti-vibration mounts.', confidence: 'Low' },
     { id: 'mat-viton-fkm', grade: 'FKM Viton 75 Shore A', category: 'Rubber', pricePerKg: 22.00, scrapRecoveryPricePerKg: 0.20, densityKgPerM3: 1850, region: 'UK', effectiveDate: '2025-06-01', sourceNote: 'UK fluoroelastomer supplier 2025. FKM Viton — high-temp/chemical seals (>200°C). Shore 75A.', confidence: 'Low' },
+    // ── Composite fibre and resin materials ────────────────────────────────────
+    { id: 'mat-cfrp-prepreg-t700', grade: 'T700 CF/Epoxy Prepreg (125°C cure)', category: 'Composite', pricePerKg: 32.00, scrapRecoveryPricePerKg: 0.50, densityKgPerM3: 1560, region: 'UK', effectiveDate: '2025-06-01', sourceNote: 'UK composite supplier 2025. T700/250F prepreg — structural automotive/aerospace hand layup. Vf~0.60.', confidence: 'Low' },
+    { id: 'mat-gfrp-prepreg-e', grade: 'E-glass/Epoxy Prepreg (120°C cure)', category: 'Composite', pricePerKg: 7.50, scrapRecoveryPricePerKg: 0.10, densityKgPerM3: 1800, region: 'UK', effectiveDate: '2025-06-01', sourceNote: 'UK composite supplier 2025. E-glass/epoxy prepreg — semi-structural panels, marine. Vf~0.55.', confidence: 'Low' },
+    { id: 'mat-cf-dry-3k', grade: 'Carbon Fibre 3K Twill Dry Fabric', category: 'Composite', pricePerKg: 24.00, scrapRecoveryPricePerKg: 0.50, densityKgPerM3: 1750, region: 'UK', effectiveDate: '2025-06-01', sourceNote: 'UK composite supplier 2025. 3K 2×2 twill dry CF — RTM, VARTM, filament winding. Pair with infusion resin.', confidence: 'Low' },
+    { id: 'mat-gf-dry-e', grade: 'E-glass Woven Dry Fabric (600 g/m²)', category: 'Composite', pricePerKg: 3.80, scrapRecoveryPricePerKg: 0.05, densityKgPerM3: 1800, region: 'UK', effectiveDate: '2025-06-01', sourceNote: 'UK composite supplier 2025. Woven E-glass 600 g/m² — marine, wind, automotive GFRP.', confidence: 'Medium' },
+    { id: 'mat-epoxy-infusion', grade: 'Epoxy Infusion Resin System (LT cure)', category: 'Composite', pricePerKg: 13.00, scrapRecoveryPricePerKg: 0.00, densityKgPerM3: 1200, region: 'UK', effectiveDate: '2025-06-01', sourceNote: 'UK composite supplier 2025. Low-temp infusion epoxy (Gurit / Hexion). RTM/VARTM. Vf 0.50–0.60.', confidence: 'Low' },
+    { id: 'mat-vinylester-rtm', grade: 'Vinyl Ester RTM Resin', category: 'Composite', pricePerKg: 5.20, scrapRecoveryPricePerKg: 0.00, densityKgPerM3: 1140, region: 'UK', effectiveDate: '2025-06-01', sourceNote: 'UK composite supplier 2025. Vinyl ester RTM resin — marine, pipes, corrosion-resistant structures.', confidence: 'Medium' },
+    { id: 'mat-aramid-k49', grade: 'Aramid (Kevlar 49) Woven Fabric', category: 'Composite', pricePerKg: 30.00, scrapRecoveryPricePerKg: 0.50, densityKgPerM3: 1440, region: 'UK', effectiveDate: '2025-06-01', sourceNote: 'UK composite supplier 2025. Kevlar 49 — ballistic protection, aircraft flooring, helmets.', confidence: 'Low' },
   ],
 
   machines: [
@@ -476,6 +484,23 @@ export const DEFAULT_RATE_LIBRARY: RateLibrary = {
     makeMachine('extruder-rubber-60mm', 'Rubber Extruder 60mm (Cold-feed)',
       { annualDepreciation: 15000, maintenance: 6000, energy: 18000, floorSpace: 4000, indirectSupport: 3500, financeCost: 1875, annualAvailableHours: 5000, machineUtilization: 0.80 },
       'UK', 'UK rubber benchmark 2025. 60mm cold-feed rubber extruder — EPDM seals, hose profiles.'),
+    // ── Composite Manufacturing Equipment ────────────────────────────────────
+    makeMachine('autoclave-1200mm', 'Production Autoclave 1200mm dia',
+      { annualDepreciation: 60000, maintenance: 25000, energy: 50000, floorSpace: 20000, indirectSupport: 15000, financeCost: 7500, annualAvailableHours: 4000, machineUtilization: 0.70 },
+      'UK', 'UK composites benchmark 2025. 1200mm × 3000mm production autoclave. CFRP aerospace/auto structures.'),
+    makeMachine('oven-composite-cure', 'Composite Cure Oven (Fan-Assisted)',
+      { annualDepreciation: 18000, maintenance: 6000, energy: 30000, floorSpace: 12000, indirectSupport: 5000, financeCost: 2250, annualAvailableHours: 5000, machineUtilization: 0.75 },
+      'UK', 'UK composites benchmark 2025. Fan-assisted oven cure — prepreg (no autoclave pressure), wet layup post-cure.'),
+    makeMachine('rtm-press-std', 'RTM / VARTM Injection Press',
+      { annualDepreciation: 22000, maintenance: 9000, energy: 12000, floorSpace: 8000, indirectSupport: 6000, financeCost: 2750, annualAvailableHours: 3500, machineUtilization: 0.78 },
+      'UK', 'UK composites benchmark 2025. Resin Transfer Moulding injection press. Structural automotive CFRP/GFRP.'),
+    makeMachine('waterjet-5ax-composite', '5-Axis Waterjet Trim System',
+      { annualDepreciation: 35000, maintenance: 14000, energy: 20000, floorSpace: 12000, indirectSupport: 10000, financeCost: 4375, annualAvailableHours: 4000, machineUtilization: 0.75 },
+      'UK', 'UK composites benchmark 2025. 5-axis waterjet trim/drill for CFRP panels. 380 MPa, 0.4mm orifice.'),
+    // ── Wiring Harness Equipment ───────────────────────────────────────────
+    makeMachine('harness-test-sys', 'Electrical Harness Test System (Continuity + HiPot)',
+      { annualDepreciation: 18000, maintenance: 5000, energy: 3000, floorSpace: 4000, indirectSupport: 5000, financeCost: 2250, annualAvailableHours: 4000, machineUtilization: 0.80 },
+      'UK', 'UK harness benchmark 2025. Automated electrical test: continuity, insulation resistance, HiPot. IATF-compliant.'),
   ],
 
   labour: [
@@ -631,6 +656,8 @@ export const DEFAULT_RATE_LIBRARY: RateLibrary = {
     { id: 'oh-rotomoulding-t2',     commodityType: 'rotational_moulding', supplierTier: 'Tier 2', overheadPct: 0.11, marginPct: 0.09, sourceNote: 'Industry benchmark' },
     { id: 'oh-sheet-metal-fab-t2', commodityType: 'sheet_metal_fab',     supplierTier: 'Tier 2', overheadPct: 0.10, marginPct: 0.08, sourceNote: 'Industry benchmark' },
     { id: 'oh-rubber-t2', commodityType: 'rubber', supplierTier: 'Tier 2', overheadPct: 0.11, marginPct: 0.09, sourceNote: 'Industry benchmark' },
+    { id: 'oh-composites-t2',    commodityType: 'composites',     supplierTier: 'Tier 2', overheadPct: 0.14, marginPct: 0.10, sourceNote: 'Industry benchmark' },
+    { id: 'oh-wiring-harness-t2',commodityType: 'wiring_harness', supplierTier: 'Tier 2', overheadPct: 0.10, marginPct: 0.08, sourceNote: 'Industry benchmark' },
   ],
 };
 
