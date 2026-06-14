@@ -30,6 +30,25 @@ if ! docker info >/dev/null 2>&1; then
 fi
 echo "  ✅ Docker is ready"
 
+# ── 1b. Give the launcher a CostVision icon (macOS, once, best-effort) ─────────
+ICON="assets/CostVision-icon.png"
+LAUNCHER="CostVision.command"
+if [ -f "$ICON" ] && [ ! -f ".costvision-icon-set" ] && command -v osascript >/dev/null 2>&1; then
+  ABS_ICON="$(cd "$(dirname "$ICON")" && pwd)/$(basename "$ICON")"
+  ABS_LAUNCH="$(pwd)/$LAUNCHER"
+  osascript - "$ABS_ICON" "$ABS_LAUNCH" >/dev/null 2>&1 <<'OSA' && touch .costvision-icon-set
+use framework "Foundation"
+use framework "AppKit"
+use scripting additions
+on run argv
+  set iconPath to item 1 of argv
+  set targetPath to item 2 of argv
+  set img to current application's NSImage's alloc()'s initWithContentsOfFile:iconPath
+  current application's NSWorkspace's sharedWorkspace()'s setIcon:img forFile:targetPath options:0
+end run
+OSA
+fi
+
 # ── Helper: set or replace a KEY=value line in .env (portable) ────────────────
 set_env_var() {
   local key="$1" val="$2"
