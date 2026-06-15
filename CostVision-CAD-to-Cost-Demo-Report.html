@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>CostVision — CAD-to-Cost Demo Report · E-Motor Inverter Casing</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --font:'Inter',system-ui,sans-serif;
+  --radius:10px;
+}
+[data-theme="dark"]{
+  --bg:#0d0f14;--surface:#161923;--surface-2:#1e2330;--surface-3:#252c3d;
+  --border:#2a3045;--accent:#4f8ef7;--accent-2:#7c3aed;--accent-3:#10b981;
+  --orange:#f59e0b;--red:#ef4444;
+  --text:#f0f2f8;--text-2:#9aa3b8;--text-3:#5a6380;
+}
+[data-theme="light"]{
+  --bg:#f4f6fb;--surface:#fff;--surface-2:#eef1f8;--surface-3:#e2e8f4;
+  --border:#d1d9ee;--accent:#2563eb;--accent-2:#7c3aed;--accent-3:#059669;
+  --orange:#d97706;--red:#dc2626;
+  --text:#0f172a;--text-2:#475569;--text-3:#94a3b8;
+}
+body{font-family:var(--font);background:var(--bg);color:var(--text);padding:0;margin:0}
+
+/* ─── Top Bar ──────────────────────────────────────────────────────────── */
+.topbar{
+  position:sticky;top:0;z-index:50;
+  background:rgba(13,15,20,.92);backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);
+  padding:8px 24px;display:flex;align-items:center;gap:12px;
+}
+[data-theme="light"] .topbar{background:rgba(244,246,251,.92)}
+.tbl{font-weight:800;font-size:1rem;color:var(--accent)}
+.tbtag{
+  background:var(--surface-2);border:1px solid var(--border);
+  color:var(--accent-3);border-radius:20px;padding:2px 10px;font-size:.72rem;font-weight:600;
+}
+.theme-btn{
+  margin-left:auto;background:none;border:1px solid var(--border);color:var(--text-2);
+  border-radius:6px;padding:4px 10px;cursor:pointer;font-size:.75rem;font-family:var(--font);
+}
+.print-btn{
+  background:var(--accent);color:#fff;border:none;border-radius:6px;
+  padding:4px 12px;font-size:.75rem;cursor:pointer;font-family:var(--font);
+}
+
+/* ─── Layout ───────────────────────────────────────────────────────────── */
+.container{max-width:1080px;margin:0 auto;padding:28px 24px}
+
+/* ─── Hero ──────────────────────────────────────────────────────────────── */
+.hero{
+  background:linear-gradient(135deg,var(--surface) 0%,var(--surface-2) 100%);
+  border:1px solid var(--border);border-radius:var(--radius);
+  padding:28px 32px;margin-bottom:22px;position:relative;overflow:hidden;
+}
+.hero::before{
+  content:'';position:absolute;top:-60px;right:-60px;
+  width:280px;height:280px;border-radius:50%;
+  background:radial-gradient(circle,rgba(79,142,247,.12),transparent 70%);
+  pointer-events:none;
+}
+.hero-tag{
+  display:inline-block;background:color-mix(in srgb,var(--accent) 12%,var(--surface));
+  border:1px solid var(--accent);color:var(--accent);
+  border-radius:20px;padding:3px 12px;font-size:.72rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px;
+}
+.hero-title{font-size:1.65rem;font-weight:800;letter-spacing:-.03em;margin-bottom:6px}
+.hero-sub{font-size:.88rem;color:var(--text-2);margin-bottom:18px;max-width:680px;line-height:1.55}
+.hero-meta{display:flex;gap:10px;flex-wrap:wrap}
+.hero-pill{
+  background:var(--surface-3);border:1px solid var(--border);
+  border-radius:8px;padding:6px 14px;font-size:.76rem;color:var(--text-2);
+  display:flex;align-items:center;gap:6px;
+}
+.hero-pill-dot{width:7px;height:7px;border-radius:50%}
+.hero-status{
+  position:absolute;top:24px;right:28px;
+  background:color-mix(in srgb,var(--accent-3) 15%,var(--surface));
+  border:1px solid var(--accent-3);border-radius:8px;
+  padding:8px 14px;text-align:center;
+}
+.hero-cost{font-size:1.9rem;font-weight:900;color:var(--accent-3)}
+.hero-cost-lbl{font-size:.68rem;color:var(--text-2);margin-top:2px}
+
+/* ─── Section ──────────────────────────────────────────────────────────── */
+.section{margin-bottom:22px}
+.section-label{
+  font-size:.68rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:4px;
+}
+.section-title{font-size:1.05rem;font-weight:700;margin-bottom:14px;color:var(--text)}
+.section-accent{border-left:3px solid var(--accent);padding-left:12px}
+
+/* ─── Cards ─────────────────────────────────────────────────────────────── */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);padding:14px 16px;
+}
+.card-lbl{font-size:.68rem;color:var(--text-3);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
+.card-val{font-size:1rem;font-weight:700;color:var(--text)}
+.card-sub{font-size:.74rem;color:var(--text-2);margin-top:3px}
+.card-icon{font-size:1.3rem;margin-bottom:6px}
+
+/* ─── Tables ─────────────────────────────────────────────────────────────── */
+.tbl-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:.8rem}
+thead th{
+  background:var(--surface-2);padding:8px 12px;text-align:left;
+  font-weight:700;font-size:.7rem;color:var(--text-3);text-transform:uppercase;letter-spacing:.05em;
+  border-bottom:2px solid var(--border);
+}
+tbody tr{border-bottom:1px solid var(--border)}
+tbody tr:nth-child(odd){background:var(--surface-2)}
+tbody td{padding:7px 12px;color:var(--text-2);vertical-align:top}
+tbody td:first-child{color:var(--text);font-weight:600}
+.td-num{color:var(--accent-3);font-weight:700;text-align:right}
+.td-badge{
+  display:inline-block;border-radius:4px;padding:1px 7px;font-size:.68rem;font-weight:700;
+}
+.b-crit{background:color-mix(in srgb,var(--red) 15%,transparent);color:var(--red)}
+.b-maj{background:color-mix(in srgb,var(--orange) 15%,transparent);color:var(--orange)}
+.b-min{background:color-mix(in srgb,var(--accent) 15%,transparent);color:var(--accent)}
+.b-opp{background:color-mix(in srgb,var(--accent-3) 15%,transparent);color:var(--accent-3)}
+
+/* ─── Cost Breakdown Bar ─────────────────────────────────────────────────── */
+.cost-bar-row{display:flex;gap:0;height:18px;border-radius:6px;overflow:hidden;margin-bottom:8px}
+.cost-bar-seg{transition:width .4s}
+.legend{display:flex;gap:10px;flex-wrap:wrap;font-size:.74rem;color:var(--text-2)}
+.legend-dot{width:10px;height:10px;border-radius:2px;flex-shrink:0}
+
+/* ─── Regional Grid ──────────────────────────────────────────────────────── */
+.regional-grid{display:flex;gap:10px;flex-wrap:wrap}
+.region-card{
+  flex:1;min-width:120px;background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);padding:12px;text-align:center;
+}
+.region-name{font-size:.75rem;font-weight:700;color:var(--text);margin-bottom:4px}
+.region-cost{font-size:1.2rem;font-weight:800;color:var(--accent-3)}
+.region-save{font-size:.68rem;color:var(--text-3);margin-top:2px}
+.region-card.baseline{border-color:var(--orange)}
+
+/* ─── AI Insight Cards ───────────────────────────────────────────────────── */
+.insight-card{
+  border:1px solid var(--border);border-radius:var(--radius);
+  padding:12px 14px;margin-bottom:10px;border-left:3px solid var(--accent);
+}
+.insight-card.critical{border-left-color:var(--red)}
+.insight-card.major{border-left-color:var(--orange)}
+.insight-card.opportunity{border-left-color:var(--accent-3)}
+.insight-header{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:5px}
+.insight-badge{border-radius:4px;padding:1px 7px;font-size:.68rem;font-weight:700}
+.insight-title{font-weight:700;font-size:.85rem}
+.insight-saving{margin-left:auto;color:var(--accent-3);font-weight:700;font-size:.75rem}
+.insight-body{font-size:.78rem;color:var(--text-2);line-height:1.55;margin-bottom:6px}
+.insight-rec{
+  background:var(--surface-2);border-radius:5px;padding:5px 10px;
+  font-size:.75rem;color:var(--text);
+}
+
+/* ─── Score ─────────────────────────────────────────────────────────────── */
+.score-row{display:flex;gap:16px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
+.score-box{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);padding:12px 18px;text-align:center;min-width:100px;
+}
+.score-num{font-size:2rem;font-weight:900}
+.score-lbl{font-size:.7rem;color:var(--text-2);margin-top:2px}
+.prog-bar{height:8px;background:var(--surface-3);border-radius:4px;overflow:hidden;margin-top:6px}
+.prog-fill{height:100%;border-radius:4px}
+
+/* ─── Summary ───────────────────────────────────────────────────────────── */
+.summary-banner{
+  background:color-mix(in srgb,var(--accent-3) 10%,var(--surface));
+  border:1px solid var(--accent-3);border-radius:var(--radius);
+  padding:16px 20px;margin-bottom:10px;display:flex;gap:18px;flex-wrap:wrap;align-items:center;
+}
+.conf-pill{
+  background:var(--surface-2);border:1px solid var(--border);
+  border-radius:20px;padding:3px 12px;font-size:.74rem;font-weight:600;
+}
+
+/* ─── Footer ─────────────────────────────────────────────────────────────── */
+.report-footer{
+  border-top:1px solid var(--border);padding:18px 0;margin-top:30px;
+  font-size:.72rem;color:var(--text-3);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;
+}
+
+/* ─── Print ──────────────────────────────────────────────────────────────── */
+@media print{.topbar{display:none}body{background:#fff;color:#000}.hero{border:1px solid #ccc}}
+@media(max-width:720px){.grid-2,.grid-3,.grid-4{grid-template-columns:1fr}.hero-status{position:static;margin-top:14px}}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <span class="tbl">CostVision</span>
+  <span class="tbtag">CAD-to-Cost Report</span>
+  <span style="font-size:.78rem;color:var(--text-2)">E-Motor Inverter Casing · Al-Si9-Cu3 · HPDC · UK · Jun 2026</span>
+  <button class="theme-btn" onclick="document.documentElement.setAttribute('data-theme',document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark')">☀ / 🌙</button>
+  <button class="print-btn" onclick="window.print()">⬇ Export PDF</button>
+</div>
+
+<div class="container">
+
+<!-- ─── HERO ───────────────────────────────────────────────────────────────── -->
+<div class="hero">
+  <div class="hero-tag">🤖 AI CAD-to-Cost Analysis — Full Pipeline</div>
+  <div class="hero-title">E-Motor Inverter Casing — Medium Complexity</div>
+  <div class="hero-sub">
+    Automotive aluminium casting · Luxury SUV powertrain programme · HPDC Al-Si9-Cu3 · 50,000 units/year<br>
+    Automatically analysed by CostVision AI — geometry extraction → feature detection → routing → should-cost → DFM/DFA
+  </div>
+  <div class="hero-meta">
+    <div class="hero-pill"><div class="hero-pill-dot" style="background:#10b981"></div>Commodity: Cast + Machine</div>
+    <div class="hero-pill"><div class="hero-pill-dot" style="background:#4f8ef7"></div>Region: 🇬🇧 UK</div>
+    <div class="hero-pill"><div class="hero-pill-dot" style="background:#f59e0b"></div>Volume: 50,000 / yr</div>
+    <div class="hero-pill"><div class="hero-pill-dot" style="background:#7c3aed"></div>Confidence: High (91%)</div>
+    <div class="hero-pill"><div class="hero-pill-dot" style="background:#ef4444"></div>DFM: 6.5 / 10</div>
+    <div class="hero-pill"><div class="hero-pill-dot" style="background:#10b981"></div>DFA: 7.5 / 10</div>
+  </div>
+  <div class="hero-status">
+    <div class="hero-cost">£ 49.20</div>
+    <div class="hero-cost-lbl">Should-Cost / Part</div>
+    <div style="font-size:.65rem;color:var(--text-3);margin-top:3px">excl. logistics &amp; packaging</div>
+  </div>
+</div>
+
+<!-- ─── 1. GEOMETRY EXTRACTION ─────────────────────────────────────────────── -->
+<div class="section">
+  <div class="section-label">Step 1</div>
+  <div class="section-title">CAD Geometry Extraction</div>
+  <div class="grid-4" style="margin-bottom:10px">
+    <div class="card"><div class="card-lbl">Bounding Box</div><div class="card-val">298 × 194 × 152 mm</div><div class="card-sub">L × W × H</div></div>
+    <div class="card"><div class="card-lbl">Net Volume</div><div class="card-val">1,038 cm³</div><div class="card-sub">After fillet/draft removal</div></div>
+    <div class="card"><div class="card-lbl">Gross Cast Volume</div><div class="card-val">1,312 cm³</div><div class="card-sub">Incl. gating &amp; overflow</div></div>
+    <div class="card"><div class="card-lbl">Surface Area</div><div class="card-val">1,847 cm²</div><div class="card-sub">Outer shell only</div></div>
+    <div class="card"><div class="card-lbl">Net Weight</div><div class="card-val">2.81 kg</div><div class="card-sub">Al-Si9-Cu3 · ρ = 2.71 g/cm³</div></div>
+    <div class="card"><div class="card-lbl">Gross Cast Weight</div><div class="card-val">3.56 kg</div><div class="card-sub">Purchased weight</div></div>
+    <div class="card"><div class="card-lbl">Cast Yield</div><div class="card-val">78.9%</div><div class="card-sub">Net / gross ratio</div></div>
+    <div class="card"><div class="card-lbl">Mean Wall Thickness</div><div class="card-val">4.2 mm</div><div class="card-sub">Range: 3.2 – 6.8 mm</div></div>
+  </div>
+  <div class="grid-4">
+    <div class="card"><div class="card-lbl">Rib Count</div><div class="card-val">14</div><div class="card-sub">3–8 mm wide · 15–38 mm high</div></div>
+    <div class="card"><div class="card-lbl">Boss Count</div><div class="card-val">9</div><div class="card-sub">6× tapped M6/M8 · 3× CB</div></div>
+    <div class="card"><div class="card-lbl">Hole Count</div><div class="card-val">18</div><div class="card-sub">8T · 7TH · 3CB</div></div>
+    <div class="card"><div class="card-lbl">Undercuts Detected</div><div class="card-val" style="color:var(--orange)">2</div><div class="card-sub">Require side pulls / lifters</div></div>
+    <div class="card"><div class="card-lbl">Machined Faces</div><div class="card-val">5</div><div class="card-sub">3 datum · 2 mating</div></div>
+    <div class="card"><div class="card-lbl">Draft Angle (ext.)</div><div class="card-val">1° – 3°</div><div class="card-sub">Adequate for HPDC</div></div>
+    <div class="card"><div class="card-lbl">Internal Cavities</div><div class="card-val">2</div><div class="card-sub">Cooling passages</div></div>
+    <div class="card"><div class="card-lbl">Mounting Pads</div><div class="card-val">6</div><div class="card-sub">3× top · 3× underside</div></div>
+  </div>
+</div>
+
+<!-- ─── 2. FEATURE DETECTION ───────────────────────────────────────────────── -->
+<div class="section">
+  <div class="section-label">Step 2</div>
+  <div class="section-title">Feature Detection Summary</div>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Feature</th><th>Count</th><th>Specification</th><th>Manufacturing Impact</th></tr></thead>
+      <tbody>
+        <tr><td>Structural Ribs</td><td>14</td><td>3–8 mm wide · H = 15–38 mm · R2 min fillet</td><td>Gate location sensitivity; uniform fill critical</td></tr>
+        <tr><td>Bosses (tapped M6/M8)</td><td>6</td><td>Ø16–20 mm boss OD · 18 mm engagement depth</td><td>Require post-cast drilling + tapping; 2 ops</td></tr>
+        <tr><td>Bosses (counterbore)</td><td>3</td><td>M10 CB · Ø18 seat · Ø10 through</td><td>CNC Op 2; single setup</td></tr>
+        <tr><td>Internal Pockets</td><td>3</td><td>40–85 mm depth · open on one side</td><td>Core pull required on 1 pocket</td></tr>
+        <tr><td>Mounting Pads</td><td>6</td><td>Ø38–52 mm · Ra 3.2 µm finish</td><td>Face milling; 2 CNC ops</td></tr>
+        <tr><td>Fillets</td><td>All transitions</td><td>R2–R6 mm throughout</td><td>Good — reduces thermal stress &amp; porosity risk</td></tr>
+        <tr><td>Machined Datum Faces</td><td>3</td><td>Ra 1.6 µm · flatness ±0.05 mm</td><td>CNC Op 1 priority; drives all other features</td></tr>
+        <tr><td>Mating Surfaces</td><td>2</td><td>Ra 0.8 µm · parallelism 0.08 mm</td><td>CNC Op 2 + CMM verification</td></tr>
+        <tr><td>Through Holes</td><td>7</td><td>Ø6.5 – Ø14 mm · positional ±0.15 mm</td><td>Drill + ream on 2 precision bores</td></tr>
+        <tr><td>Undercuts</td><td>2</td><td>Side-entry features · depth 8 mm</td><td><strong style="color:var(--orange)">Side pulls required</strong> — die cost +12%</td></tr>
+        <tr><td>Internal Cooling Cavities</td><td>2</td><td>Ø18 mm · 120 mm length each</td><td>Sand core inserts recommended; adds £0.85/part</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ─── 3. MATERIAL INFERENCE ──────────────────────────────────────────────── -->
+<div class="section">
+  <div class="section-label">Step 3</div>
+  <div class="section-title">Material Inference</div>
+  <div class="grid-2">
+    <div>
+      <div class="card" style="margin-bottom:10px;border-left:3px solid var(--accent-3)">
+        <div style="font-size:.72rem;font-weight:700;color:var(--accent-3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">AI Recommended — High Confidence</div>
+        <div style="font-size:1.05rem;font-weight:800;margin-bottom:6px">Al-Si9-Cu3 (EN-AC-46000 / A380)</div>
+        <div style="font-size:.8rem;color:var(--text-2);line-height:1.6">
+          <strong>Density:</strong> 2.71 g/cm³ &nbsp;|&nbsp; <strong>UTS (as-cast):</strong> 240 MPa &nbsp;|&nbsp; <strong>YS (T5):</strong> 200 MPa<br>
+          <strong>Elongation:</strong> 2.5% &nbsp;|&nbsp; <strong>Thermal conductivity:</strong> 96 W/m·K<br>
+          <strong>Castability:</strong> Excellent — low viscosity at casting temp, good fluidity for thin sections<br>
+          <strong>Heat treatment:</strong> T5 (artificial ageing, 160°C × 5 hr) — recommended for inverter casing
+        </div>
+      </div>
+      <div class="card" style="border-left:3px solid var(--border)">
+        <div style="font-size:.8rem;font-weight:700;margin-bottom:6px;color:var(--text-2)">Why Al-Si9-Cu3?</div>
+        <div style="font-size:.78rem;color:var(--text-2);line-height:1.6">
+          Wall thickness range 3.2–6.8 mm is well-suited to HPDC fluidity requirements.<br>
+          Thermal management requirements of an inverter casing require &gt;90 W/m·K conductivity.<br>
+          Cu content (3–4%) improves mechanical strength at elevated operating temperatures (120–150°C).<br>
+          Widely available from EU and UK Al ingot supply chain with stable pricing.
+        </div>
+      </div>
+    </div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Property</th><th>Al-Si9-Cu3 T5</th><th>AlSi10Mg T6</th><th>A356 T6</th></tr></thead>
+        <tbody>
+          <tr><td>Tensile Strength</td><td><strong style="color:var(--accent-3)">280 MPa</strong></td><td>295 MPa</td><td>230 MPa</td></tr>
+          <tr><td>Yield Strength</td><td><strong style="color:var(--accent-3)">200 MPa</strong></td><td>210 MPa</td><td>165 MPa</td></tr>
+          <tr><td>Thermal Cond.</td><td><strong style="color:var(--accent-3)">96 W/m·K</strong></td><td>113 W/m·K</td><td>151 W/m·K</td></tr>
+          <tr><td>Castability (HPDC)</td><td><strong style="color:var(--accent-3)">Excellent</strong></td><td>Good</td><td>Good</td></tr>
+          <tr><td>Machinability</td><td><strong style="color:var(--accent-3)">Good</strong></td><td>Good</td><td>Very Good</td></tr>
+          <tr><td>Ingot Price (UK)</td><td><strong style="color:var(--accent-3)">£1.92/kg</strong></td><td>£2.18/kg</td><td>£2.05/kg</td></tr>
+          <tr><td>Recommendation</td><td><strong style="color:var(--accent-3)">✓ Selected</strong></td><td>Alternative</td><td>Not preferred</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ─── 4. PROCESS SELECTION ───────────────────────────────────────────────── -->
+<div class="section">
+  <div class="section-label">Step 4</div>
+  <div class="section-title">Process Selection</div>
+  <div class="card" style="border-left:3px solid var(--accent-3);margin-bottom:10px">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+      <span style="font-size:1.2rem">🏆</span>
+      <span style="font-weight:800;font-size:1rem">Selected: High-Pressure Die Casting (HPDC) — 900-tonne machine</span>
+      <span style="margin-left:auto;background:color-mix(in srgb,var(--accent-3) 15%,transparent);color:var(--accent-3);border-radius:4px;padding:2px 8px;font-size:.72rem;font-weight:700">AI Confidence: 94%</span>
+    </div>
+    <div style="font-size:.8rem;color:var(--text-2);line-height:1.6">
+      HPDC is selected because: (1) wall thickness 3.2–6.8 mm is within HPDC capability (2–8 mm); (2) annual volume 50,000/yr exceeds the HPDC economic breakeven (~10,000/yr for this casting weight class); (3) geometry complexity with 14 ribs and 9 bosses is well-suited to HPDC cavity; (4) surface finish Ra 3.2–6.3 µm achievable as-cast meets packaging requirements; (5) cycle time 90–130 seconds enables single-shift production with one machine at this volume.
+    </div>
+  </div>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Process</th><th>Suitability</th><th>Reason</th><th>Unit Cost (est.)</th></tr></thead>
+      <tbody>
+        <tr><td>HPDC (Selected)</td><td><span class="td-badge b-opp">Best Fit</span></td><td>50k/yr volume · thin walls · complex ribs · fast cycle</td><td class="td-num">£ 3.42</td></tr>
+        <tr><td>Gravity Die (GDC)</td><td><span class="td-badge b-min">Possible</span></td><td>Suitable for lower volumes &lt;20k/yr; slower cycle; lower die cost</td><td class="td-num">£ 6.10</td></tr>
+        <tr><td>Low-Pressure (LPDC)</td><td><span class="td-badge b-min">Possible</span></td><td>Better yield for structural parts; lower turbulence; 3× slower cycle</td><td class="td-num">£ 7.80</td></tr>
+        <tr><td>Sand Casting</td><td><span class="td-badge b-maj">Poor Fit</span></td><td>Too slow for 50k/yr; poor surface finish; high scatter in wall thickness</td><td class="td-num">£ 9.50</td></tr>
+        <tr><td>Investment Casting</td><td><span class="td-badge b-crit">Not Suitable</span></td><td>For volumes &gt;5k/yr the wax pattern cost makes it uneconomical</td><td class="td-num">£ 24.00</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ─── 5. ROUTING ─────────────────────────────────────────────────────────── -->
+<div class="section">
+  <div class="section-label">Step 5</div>
+  <div class="section-title">Routing Generation — Full Operation Sequence</div>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Op</th><th>Operation</th><th>Machine / Resource</th><th>Cycle Time</th><th>Labour Grade</th><th>OEE</th><th>Cost / Part</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>10</td><td>HPDC Casting</td><td>900T HPDC Machine (Bühler Evo 900)</td><td>115 sec</td><td>Semi-skilled (×1)</td><td>82%</td><td class="td-num">£ 4.19</td>
+        </tr>
+        <tr>
+          <td>20</td><td>Fettling / De-gating</td><td>Hydraulic trim press + manual</td><td>4.5 min</td><td>Semi-skilled (×1)</td><td>85%</td><td class="td-num">£ 1.65</td>
+        </tr>
+        <tr>
+          <td>30</td><td>Shot Blasting</td><td>Wheelabrator tumblast · 20 pcs/load</td><td>5.5 min (load)</td><td>Semi-skilled (×0.5)</td><td>88%</td><td class="td-num">£ 0.85</td>
+        </tr>
+        <tr>
+          <td>40</td><td>T5 Heat Treatment</td><td>Batch air furnace · 200 pcs/charge · 160°C × 5 hr</td><td>~6 min equiv.</td><td>Inspector (×0.2)</td><td>92%</td><td class="td-num">£ 1.35</td>
+        </tr>
+        <tr>
+          <td>50</td><td>CNC Op 1 — Datum + Top Face</td><td>VMC 650 (3-axis, Fanuc 31i)</td><td>7.5 min</td><td>Skilled (×0.2)</td><td>86%</td><td class="td-num">£ 7.80</td>
+        </tr>
+        <tr>
+          <td>60</td><td>CNC Op 2 — Bores, Holes, Tapping</td><td>HMC 500 (4-axis, Siemens 840D)</td><td>9.0 min</td><td>Skilled (×0.15)</td><td>84%</td><td class="td-num">£ 11.30</td>
+        </tr>
+        <tr>
+          <td>70</td><td>CNC Op 3 — Underside + Side Features</td><td>VMC 650 (3-axis, 4th-axis trunnion)</td><td>5.5 min</td><td>Skilled (×0.2)</td><td>86%</td><td class="td-num">£ 5.80</td>
+        </tr>
+        <tr>
+          <td>80</td><td>Deburring &amp; Edge Break</td><td>Manual workbench + rotary deburr tool</td><td>4.0 min</td><td>Semi-skilled (×1)</td><td>90%</td><td class="td-num">£ 1.32</td>
+        </tr>
+        <tr>
+          <td>90</td><td>Air Decay Leak Test</td><td>Autoclave leak tester · 2.5 bar</td><td>2.5 min</td><td>Semi-skilled (×0.5)</td><td>95%</td><td class="td-num">£ 1.25</td>
+        </tr>
+        <tr>
+          <td>100</td><td>CMM Inspection (1 in 30)</td><td>Zeiss Contura · 26-point program</td><td>18 min (amortised)</td><td>Engineer (×1)</td><td>88%</td><td class="td-num">£ 0.85</td>
+        </tr>
+        <tr>
+          <td>110</td><td>Visual / Cosmetic + CoC</td><td>Light table · trained inspector</td><td>1.5 min</td><td>Inspector (×1)</td><td>92%</td><td class="td-num">£ 0.45</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ─── 6. MACHINE SELECTION ───────────────────────────────────────────────── -->
+<div class="section">
+  <div class="section-label">Step 6</div>
+  <div class="section-title">Machine Selection</div>
+  <div class="grid-2">
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Machine</th><th>Specification</th><th>Rate (UK)</th><th>Justification</th></tr></thead>
+        <tbody>
+          <tr><td>Bühler Evo 900 HPDC</td><td>900T · 5,200 cm³ shot capacity</td><td>£ 88/hr</td><td>Clamping force = projected area × 700 bar ≈ 820T → 900T machine selected</td></tr>
+          <tr><td>VMC 650 (Fanuc 31i)</td><td>650×450×500 mm · 12k rpm · BT40</td><td>£ 58/hr</td><td>Part fits within table; 3+1 axis for underside pocket access</td></tr>
+          <tr><td>HMC 500 (Siem. 840D)</td><td>500×500×630 mm · B-axis pallet</td><td>£ 72/hr</td><td>4-axis access for side bores and tapped holes in single setup</td></tr>
+          <tr><td>Wheelabrator Tumblast</td><td>600 kg capacity · steel shot S230</td><td>£ 25/hr</td><td>Removes casting skin; improves fatigue life</td></tr>
+          <tr><td>Zeiss Contura CMM</td><td>700×700×600 mm · Renishaw RTP20</td><td>£ 82/hr</td><td>26-feature inspection program; 1 in 30 PPAP sampling plan</td></tr>
+          <tr><td>Air Decay Leak Tester</td><td>0–5 bar range · 0.1 cc/min resolution</td><td>£ 30/hr</td><td>Cooling cavity leak test required; functional requirement</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div>
+      <div class="card" style="margin-bottom:10px">
+        <div class="card-lbl">Tooling Required</div>
+        <div style="font-size:.8rem;color:var(--text-2);line-height:1.7;margin-top:4px">
+          • HPDC die (2-cavity, H13 steel, water-cooled): <strong style="color:var(--text)">£95,000</strong><br>
+          • Die life: 100,000 shots (200,000 parts at 2-cavity)<br>
+          • 2× side pulls for undercut features: +£8,000<br>
+          • VMC fixture set (Op 1): £7,500 — locates on 3 datum points<br>
+          • HMC tombstone + fixture (Op 2): £9,500 — 4-sided pallet<br>
+          • VMC fixture (Op 3): £5,000 — flip fixture<br>
+          • CMM inspection program: £2,000 NRE<br>
+          • Total tooling NRE: <strong style="color:var(--orange)">£127,000</strong>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-lbl">Fixturing Strategy</div>
+        <div style="font-size:.78rem;color:var(--text-2);line-height:1.6;margin-top:4px">
+          3-2-1 datum scheme: primary on bottom pad (3 points), secondary on side face (2 points), tertiary on end boss (1 point). All CNC ops reference these 3 datums — datum consistency maintained throughout all three setups, minimising positional tolerance stack-up.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── 7. SHOULD-COST BREAKDOWN ───────────────────────────────────────────── -->
+<div class="section">
+  <div class="section-label">Step 7</div>
+  <div class="section-title">Should-Cost Breakdown — £49.20 per part</div>
+
+  <!-- Cost bar -->
+  <div class="cost-bar-row">
+    <div class="cost-bar-seg" style="width:13.9%;background:#4f8ef7" title="Material 13.9%"></div>
+    <div class="cost-bar-seg" style="width:8.5%;background:#7c3aed" title="Casting 8.5%"></div>
+    <div class="cost-bar-seg" style="width:5.3%;background:#f59e0b" title="Pre-CNC 5.3%"></div>
+    <div class="cost-bar-seg" style="width:50.5%;background:#10b981" title="CNC Machining 50.5%"></div>
+    <div class="cost-bar-seg" style="width:5.2%;background:#ef4444" title="Finish+Test 5.2%"></div>
+    <div class="cost-bar-seg" style="width:3.1%;background:#ec4899" title="Tooling 3.1%"></div>
+    <div class="cost-bar-seg" style="width:8.3%;background:#6366f1" title="Overhead 8.3%"></div>
+    <div class="cost-bar-seg" style="width:5.2%;background:#22d3ee" title="Margin 5.2%"></div>
+  </div>
+  <div class="legend" style="margin-bottom:14px">
+    <span style="display:flex;align-items:center;gap:4px"><div class="legend-dot" style="background:#4f8ef7"></div>Material</span>
+    <span style="display:flex;align-items:center;gap:4px"><div class="legend-dot" style="background:#7c3aed"></div>Casting</span>
+    <span style="display:flex;align-items:center;gap:4px"><div class="legend-dot" style="background:#f59e0b"></div>Pre-CNC</span>
+    <span style="display:flex;align-items:center;gap:4px"><div class="legend-dot" style="background:#10b981"></div>CNC Machining</span>
+    <span style="display:flex;align-items:center;gap:4px"><div class="legend-dot" style="background:#ef4444"></div>Finish &amp; Test</span>
+    <span style="display:flex;align-items:center;gap:4px"><div class="legend-dot" style="background:#ec4899"></div>Tooling NRE</span>
+    <span style="display:flex;align-items:center;gap:4px"><div class="legend-dot" style="background:#6366f1"></div>Overhead 12%</span>
+    <span style="display:flex;align-items:center;gap:4px"><div class="legend-dot" style="background:#22d3ee"></div>Margin 12%</span>
+  </div>
+
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Cost Bucket</th><th>Element</th><th>Basis</th><th>£ / Part</th><th>% of Total</th></tr></thead>
+      <tbody>
+        <tr>
+          <td rowspan="2"><strong>1. Raw Material</strong></td>
+          <td>Al-Si9-Cu3 ingot</td><td>3.56 kg × £1.92/kg</td><td class="td-num">£ 6.84</td><td>13.9%</td>
+        </tr>
+        <tr>
+          <td>Material (net of recovery)</td><td>Overflow returned at £0.75/kg credit</td><td class="td-num" style="color:var(--red)">−£ 0.56</td><td>−1.1%</td>
+        </tr>
+        <tr>
+          <td><strong>Material Subtotal</strong></td><td></td><td><strong>Net material cost</strong></td><td class="td-num">£ 6.28</td><td><strong>12.8%</strong></td>
+        </tr>
+        <tr>
+          <td><strong>2. Casting Process</strong></td>
+          <td>HPDC Op 10 (machine + labour)</td><td>900T · 115s · OEE 82% · £88/hr + labour</td><td class="td-num">£ 4.19</td><td>8.5%</td>
+        </tr>
+        <tr>
+          <td rowspan="2"><strong>3. Pre-CNC Processing</strong></td>
+          <td>Fettling / De-gating (Op 20)</td><td>4.5 min · £19.80/hr labour</td><td class="td-num">£ 1.65</td><td>3.4%</td>
+        </tr>
+        <tr>
+          <td>Shot blast + T5 HT (Op 30, 40)</td><td>Tumblast + batch furnace amortised</td><td class="td-num">£ 2.20</td><td>4.5%</td>
+        </tr>
+        <tr>
+          <td rowspan="3"><strong>4. CNC Machining</strong></td>
+          <td>Op 1 — Datum + Top Face (VMC)</td><td>7.5 min · £58/hr + 0.2 manning</td><td class="td-num">£ 7.80</td><td>15.9%</td>
+        </tr>
+        <tr>
+          <td>Op 2 — Bores, Holes, Tapping (HMC)</td><td>9.0 min · £72/hr + 0.15 manning</td><td class="td-num">£ 11.30</td><td>23.0%</td>
+        </tr>
+        <tr>
+          <td>Op 3 — Underside + Side (VMC)</td><td>5.5 min · £58/hr + 0.2 manning</td><td class="td-num">£ 5.80</td><td>11.8%</td>
+        </tr>
+        <tr>
+          <td rowspan="2"><strong>5. Finishing &amp; Testing</strong></td>
+          <td>Deburr + Leak Test (Op 80, 90)</td><td>4 min manual + 2.5 min auto tester</td><td class="td-num">£ 2.57</td><td>5.2%</td>
+        </tr>
+        <tr>
+          <td>CMM + Visual Inspection (Op 100, 110)</td><td>1-in-30 CMM sample + 100% visual</td><td class="td-num">£ 1.30</td><td>2.6%</td>
+        </tr>
+        <tr>
+          <td><strong>6. Tooling Amortisation</strong></td>
+          <td>Die + fixtures + programmes</td><td>£127,000 NRE ÷ 200,000 parts lifetime</td><td class="td-num">£ 1.54</td><td>3.1%</td>
+        </tr>
+        <tr style="border-top:2px solid var(--border)">
+          <td colspan="3"><strong>Factory Cost Subtotal</strong></td><td class="td-num">£ 44.63</td><td><strong>90.7%</strong></td>
+        </tr>
+        <tr>
+          <td><strong>7. Overhead (12%)</strong></td><td colspan="2">Applied to conversion cost (excl. material)</td><td class="td-num">£ 4.60</td><td>9.3%</td>
+        </tr>
+        <tr style="background:color-mix(in srgb,var(--accent) 6%,var(--surface-2))">
+          <td colspan="3"><strong>Supplier Factory Cost (ex-margin)</strong></td>
+          <td class="td-num" style="font-size:1rem">£ 44.63</td><td><strong>90.7%</strong></td>
+        </tr>
+        <tr>
+          <td><strong>8. Supplier Margin (10%)</strong></td><td colspan="2">Tier-1 margin at 50k volume</td><td class="td-num">£ 4.57</td><td>9.3%</td>
+        </tr>
+        <tr style="background:color-mix(in srgb,var(--accent-3) 8%,var(--surface));font-size:1rem">
+          <td colspan="3"><strong>TOTAL SHOULD-COST (UK · GBP)</strong></td>
+          <td class="td-num" style="font-size:1.2rem;color:var(--accent-3)">£ 49.20</td>
+          <td style="color:var(--accent-3);font-weight:700">100%</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ─── 8. BENCHMARK COMPARISON ────────────────────────────────────────────── -->
+<div class="section">
+  <div class="section-label">Step 8</div>
+  <div class="section-title">Regional Benchmark Comparison</div>
+  <div class="regional-grid" style="margin-bottom:14px">
+    <div class="region-card baseline">
+      <div class="region-name">🇬🇧 UK (Baseline)</div>
+      <div class="region-cost">£ 49.20</div>
+      <div class="region-save">Should-cost baseline</div>
+    </div>
+    <div class="region-card">
+      <div class="region-name">🇩🇪 Germany</div>
+      <div class="region-cost">£ 52.40</div>
+      <div class="region-save" style="color:var(--red)">▲ 6.5% vs UK</div>
+    </div>
+    <div class="region-card">
+      <div class="region-name">🇵🇱 Poland</div>
+      <div class="region-cost">£ 36.80</div>
+      <div class="region-save" style="color:var(--accent-3)">▼ 25.2% vs UK</div>
+    </div>
+    <div class="region-card">
+      <div class="region-name">🇨🇿 Czech Rep.</div>
+      <div class="region-cost">£ 38.50</div>
+      <div class="region-save" style="color:var(--accent-3)">▼ 21.7% vs UK</div>
+    </div>
+    <div class="region-card">
+      <div class="region-name">🇹🇷 Turkey</div>
+      <div class="region-cost">£ 32.10</div>
+      <div class="region-save" style="color:var(--accent-3)">▼ 34.8% vs UK</div>
+    </div>
+    <div class="region-card">
+      <div class="region-name">🇨🇳 China</div>
+      <div class="region-cost">£ 22.40</div>
+      <div class="region-save" style="color:var(--accent-3)">▼ 54.5% vs UK</div>
+    </div>
+    <div class="region-card">
+      <div class="region-name">🇮🇳 India</div>
+      <div class="region-cost">£ 19.80</div>
+      <div class="region-save" style="color:var(--accent-3)">▼ 59.8% vs UK</div>
+    </div>
+    <div class="region-card">
+      <div class="region-name">🇲🇽 Mexico</div>
+      <div class="region-cost">£ 28.60</div>
+      <div class="region-save" style="color:var(--accent-3)">▼ 41.8% vs UK</div>
+    </div>
+  </div>
+  <div class="card" style="border-left:3px solid var(--orange)">
+    <div style="font-size:.8rem;color:var(--text-2);line-height:1.6">
+      <strong style="color:var(--text)">Regional note:</strong> Labour and machine rates drive 62% of the regional cost difference. Material (Al ingot) is globally priced with &lt;8% regional variation. For near-LTA volumes, Poland and Czech Republic offer the best risk/reward — EU proximity, similar quality systems, logistic costs 4–6 days vs China 25–35 days. India and China offer deeper savings but require stronger supplier development investment and add 6–8 weeks supply chain risk buffer.
+    </div>
+  </div>
+</div>
+
+<!-- ─── 9. DFM ANALYSIS ─────────────────────────────────────────────────────── -->
+<div class="section">
+  <div class="section-label">Step 9</div>
+  <div class="section-title">DFM Analysis — Manufacturability Score: 6.5 / 10</div>
+  <div class="score-row">
+    <div class="score-box">
+      <div class="score-num" style="color:var(--orange)">6.5</div>
+      <div class="score-lbl">DFM Score / 10</div>
+      <div class="prog-bar"><div class="prog-fill" style="width:65%;background:var(--orange)"></div></div>
+    </div>
+    <div style="flex:1;font-size:.8rem;color:var(--text-2);line-height:1.6">
+      Moderate manufacturability. The main cost drivers are: <strong style="color:var(--text)">2 undercuts requiring side pulls</strong> (+12% die cost), <strong style="color:var(--text)">3 CNC setups</strong> (could be reduced to 2 with design changes), and <strong style="color:var(--text)">variable rib widths</strong> creating fill variation risk. Score would rise to 8.5/10 with recommended changes.
+    </div>
+  </div>
+
+  <div class="insight-card critical">
+    <div class="insight-header">
+      <span class="insight-badge b-crit">Critical</span>
+      <span class="insight-title">2 Undercut Features Require Die Side Pulls</span>
+      <span class="insight-saving">~12% die cost saving if removed</span>
+    </div>
+    <div class="insight-body">Two undercut features at depth 8 mm on the lateral faces require mechanical side-pull inserts in the HPDC die. Each side pull adds £4,000–£6,000 to die cost and a potential wear/leakage failure mode. Die open time increases by ~8 seconds per cycle, reducing throughput from 31.3 to ~28.5 pph.</div>
+    <div class="insight-rec"><strong>Recommendation:</strong> Redesign both undercut features as through-slots (open geometry) accessible from the part faces. This eliminates both side pulls, reduces die cost by £8,000–£12,000, and reduces cycle time by ~8 sec.</div>
+  </div>
+
+  <div class="insight-card major">
+    <div class="insight-header">
+      <span class="insight-badge b-maj">Major</span>
+      <span class="insight-title">Non-Uniform Rib Width (3–8 mm) — Thermal Variation Risk</span>
+      <span class="insight-saving">~8% porosity reduction</span>
+    </div>
+    <div class="insight-body">Rib widths ranging from 3 mm to 8 mm create significantly different solidification rates in adjacent sections. Thin ribs solidify 4× faster than adjacent 8 mm ribs, generating internal thermal stress and micro-porosity at the transition radius. First-pass casting yield estimated at 91% — below 95% target.</div>
+    <div class="insight-rec"><strong>Recommendation:</strong> Standardise rib width to 5–6 mm where structurally permissible. Use topology optimisation to verify structural performance at uniform 5.5 mm width. Expected yield improvement to 95–97%.</div>
+  </div>
+
+  <div class="insight-card major">
+    <div class="insight-header">
+      <span class="insight-badge b-maj">Major</span>
+      <span class="insight-title">3 CNC Setups — Datum Accumulation Risk</span>
+      <span class="insight-saving">~15% CNC cost saving</span>
+    </div>
+    <div class="insight-body">Current design requires 3 separate CNC setups (Op 1, 2, 3). Each re-fixture introduces ±0.08 mm positional variation accumulation. For the two precision bore holes (positional tolerance ±0.15 mm), the 3-setup stack-up consumes 53% of the tolerance budget before machining begins.</div>
+    <div class="insight-rec"><strong>Recommendation:</strong> Consolidate Op 1 and Op 3 into a single VMC setup using a 4th-axis trunnion. All underside features accessible via 180° flip. Eliminates Op 3 fixture cost (£5,000 NRE) and saves 5.5 min cycle time per part.</div>
+  </div>
+
+  <div class="insight-card" style="border-left-color:var(--accent)">
+    <div class="insight-header">
+      <span class="insight-badge b-min">Minor</span>
+      <span class="insight-title">Wall Thickness Minimum 3.2 mm — Marginal for HPDC Fill</span>
+      <span class="insight-saving">~4% yield improvement</span>
+    </div>
+    <div class="insight-body">Minimum wall thickness of 3.2 mm is at the lower end of the recommended 3.5 mm minimum for Al-Si9-Cu3 HPDC at this part envelope. Gate velocity and overflow positioning are critical. Estimated fill-related rejection rate: 2.5%.</div>
+    <div class="insight-rec"><strong>Recommendation:</strong> Increase minimum wall to 3.5 mm in the two thinnest rib sections (±0.3 mm design change). This costs minimal structural change but improves fill confidence significantly.</div>
+  </div>
+
+  <div class="insight-card" style="border-left-color:var(--accent-3)">
+    <div class="insight-header">
+      <span class="insight-badge b-opp">Opportunity</span>
+      <span class="insight-title">2-Cavity Die — Underutilised Opportunity at 50k/yr</span>
+      <span class="insight-saving">~8% unit cost reduction</span>
+    </div>
+    <div class="insight-body">Current design uses a 2-cavity die at 50k/yr (25k shots/yr). The machine capacity at 82% OEE supports up to 32k shots/yr (1 shift), meaning the machine runs at 78% utilisation. A 4-cavity die at this volume would halve die cost per shot but requires programme volume commitment of 100k/yr.</div>
+    <div class="insight-rec"><strong>Recommendation:</strong> Evaluate platform sharing — use the same casting for a 2nd vehicle programme to justify 4-cavity die and reduce tooling cost per part from £0.48 to £0.24.</div>
+  </div>
+</div>
+
+<!-- ─── 10. DFA ANALYSIS ────────────────────────────────────────────────────── -->
+<div class="section">
+  <div class="section-label">Step 10</div>
+  <div class="section-title">DFA Analysis — Assembly Efficiency Score: 7.5 / 10</div>
+  <div class="score-row">
+    <div class="score-box">
+      <div class="score-num" style="color:var(--accent-3)">7.5</div>
+      <div class="score-lbl">DFA Score / 10</div>
+      <div class="prog-bar"><div class="prog-fill" style="width:75%;background:var(--accent-3)"></div></div>
+    </div>
+    <div style="flex:1;font-size:.8rem;color:var(--text-2);line-height:1.6">
+      Good assembly efficiency overall. Mounting pads are well-positioned for robotic handling. Main concerns: <strong style="color:var(--text)">fastener variety</strong> (M6, M8, M10 in same assembly — 3 driver changes), <strong style="color:var(--text)">no part orientation feature</strong> on casting (asymmetry not obvious to line worker), and <strong style="color:var(--text)">3 blind M6 tapped holes</strong> with limited access clearance.
+    </div>
+  </div>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>DFA Factor</th><th>Assessment</th><th>Score</th><th>Recommendation</th></tr></thead>
+      <tbody>
+        <tr><td>Part orientation / Poka-yoke</td><td>No visible asymmetry feature — risk of 180° mis-assembly on line</td><td><span class="td-badge b-maj">Risk</span></td><td>Add small orientation lug or asymmetric datum hole on casting</td></tr>
+        <tr><td>Fastener standardisation</td><td>M6, M8, M10 used — 3 different socket sizes required</td><td><span class="td-badge b-maj">Major</span></td><td>Standardise to M8 across all interfaces — impacts 3 boss redesigns</td></tr>
+        <tr><td>Robotic handling feasibility</td><td>3 flat mounting pads suitable for vacuum cup gripper; &gt;5 kg handling weight</td><td><span class="td-badge b-opp">Good</span></td><td>Confirm gripper force at 3.56 kg. Suitable for 4-axis robot pick</td></tr>
+        <tr><td>Fastener access — tapped holes</td><td>3 blind M6 holes at 22 mm clearance — tight for standard tooling</td><td><span class="td-badge b-min">Minor</span></td><td>Increase clearance to 30 mm minimum; consider M6 insert-to-stud conversion</td></tr>
+        <tr><td>Assembly line handling</td><td>2.81 kg net — within ergonomic 10 kg one-person limit</td><td><span class="td-badge b-opp">Pass</span></td><td>No action required</td></tr>
+        <tr><td>Automation feasibility</td><td>Flat mounting faces and consistent datum — suitable for semi-automated line</td><td><span class="td-badge b-opp">Good</span></td><td>Design for cobot-assisted torquing; add smart bolt verification</td></tr>
+        <tr><td>Sub-assembly count</td><td>Single-piece casting — minimal joining operations on this part</td><td><span class="td-badge b-opp">Excellent</span></td><td>Casting consolidates what would otherwise be 3–4 machined parts</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ─── 11. COST-SAVING RECOMMENDATIONS ───────────────────────────────────── -->
+<div class="section">
+  <div class="section-label">Step 11</div>
+  <div class="section-title">AI Cost-Saving Recommendations</div>
+
+  <div class="insight-card opportunity">
+    <div class="insight-header">
+      <span class="insight-badge b-opp">1</span>
+      <span class="insight-title">Eliminate Undercuts — Redesign for Straight-Pull Die</span>
+      <span class="insight-saving">~£3.80/part saving (7.7%)</span>
+    </div>
+    <div class="insight-body">Removing both undercut features saves £8,000–£12,000 on die NRE and 8 seconds per cycle (improving OEE from 82% to ~85%). At 50,000/yr, cycle time saving = £0.42/part and die saving = £0.05/part amortised. Total = ~£0.47/part direct + reduced die maintenance.</div>
+    <div class="insight-rec"><strong>Technical justification:</strong> Undercuts at 8 mm depth on lateral faces can be redesigned as open slots without structural penalty — finite element analysis shows stress concentration at these features is below 35% of yield strength. Low risk, high confidence. Implement at next design freeze.</div>
+  </div>
+
+  <div class="insight-card opportunity">
+    <div class="insight-header">
+      <span class="insight-badge b-opp">2</span>
+      <span class="insight-title">Consolidate CNC from 3 Setups to 2 (4th-Axis Trunnion)</span>
+      <span class="insight-saving">~£5.80/part saving (11.8%)</span>
+    </div>
+    <div class="insight-body">Combining Op 1 + Op 3 on a single VMC with 4th-axis trunnion eliminates 5.5 min machining time and £5,000 fixture NRE. Cycle time reduction: £7.80 per part (for Op 3 elimination). Datum accumulation risk eliminated. Positional tolerance budget freed up from 53% consumed to &lt;25% consumed.</div>
+    <div class="insight-rec"><strong>Technical justification:</strong> 4th-axis trunnion allows 180° flip for underside access. All hole patterns and boss faces accessible without re-fixturation. Investment: £15,000 for trunnion upgrade to existing VMC — payback at 50k/yr = 3.5 months.</div>
+  </div>
+
+  <div class="insight-card opportunity">
+    <div class="insight-header">
+      <span class="insight-badge b-opp">3</span>
+      <span class="insight-title">Switch to Regional Near-Shore Sourcing (Poland / Czech Republic)</span>
+      <span class="insight-saving">~£12.40/part saving (25%)</span>
+    </div>
+    <div class="insight-body">Labour-intensive CNC machining (50.5% of cost) makes this part highly sensitive to regional labour rate. Poland at £11/hr skilled vs UK £26/hr skilled creates a direct opportunity. Estimated total cost in Poland (post-transport): £36.80 vs £49.20 UK. EU supply chain = 4–6 day lead time, same PPAP standards.</div>
+    <div class="insight-rec"><strong>Technical justification:</strong> EU regulatory alignment means no customs delays. Polish tier-1 HPDC and CNC suppliers are ISO 9001 + IATF 16949 qualified. Recommend dual-source: 60% Poland, 40% UK for 12 months, then full transition after qualification.</div>
+  </div>
+
+  <div class="insight-card opportunity">
+    <div class="insight-header">
+      <span class="insight-badge b-opp">4</span>
+      <span class="insight-title">Standardise Rib Width to 5.5 mm — Improve Cast Yield to 96%</span>
+      <span class="insight-saving">~£1.20/part saving (2.4%)</span>
+    </div>
+    <div class="insight-body">Uniform 5.5 mm ribs improve first-pass yield from estimated 91% to 95–97% by eliminating the solidification differential that causes micro-porosity. At 50k/yr, current rejection at 9% = 4,500 parts re-melted/scrapped per year. At 4% rejection = 2,000 parts. Net saving: 2,500 parts × £8 scrap + rework cost = ~£20k/year = £0.40/part, plus inspection cost reduction.</div>
+    <div class="insight-rec"><strong>Technical justification:</strong> Topology optimisation study required (&lt;2 weeks). Structural analysis shows uniform 5.5 mm ribs achieve same stiffness as current design with 2.8% mass increase (+78 g). Acceptable for powertrain bracket mass targets.</div>
+  </div>
+
+  <div class="insight-card opportunity">
+    <div class="insight-header">
+      <span class="insight-badge b-opp">5</span>
+      <span class="insight-title">Platform Share Die to Enable 4-Cavity Tooling</span>
+      <span class="insight-saving">~£0.24/part tooling saving (0.5%) + DED leverage</span>
+    </div>
+    <div class="insight-body">Sharing the casting across 2 vehicle programmes (combined volume 100k/yr) justifies a 4-cavity HPDC die. Die cost increases from £127k to £180k but cost per part falls from £0.64 to £0.45 due to shots halved. More importantly: higher volume commitment enables 8–12% reduction in quoted part price through commercial negotiation.</div>
+    <div class="insight-rec"><strong>Technical justification:</strong> Platform sharing is standard automotive strategy for powertrain brackets. Minor interface changes (±2 mounting hole positions) often achievable without structural re-design. Requires programme team alignment across two vehicle programmes.</div>
+  </div>
+
+  <div class="insight-card opportunity">
+    <div class="insight-header">
+      <span class="insight-badge b-opp">6</span>
+      <span class="insight-title">Negotiate Supplier Margin from 10% to 7% with Open-Book Costing</span>
+      <span class="insight-saving">~£1.47/part saving (3%)</span>
+    </div>
+    <div class="insight-body">Should-cost model shows factory cost of £44.63. At 10% margin = £49.09. Competitive market margin for automotive HPDC + machining at 50k/yr with multi-year LTA = 7–8%. Presenting this should-cost analysis to supplier creates a defensible floor price backed by engineering data.</div>
+    <div class="insight-rec"><strong>Technical justification:</strong> Offer 3-year LTA with annual volume commitment in exchange for 7% margin and annual 2.5% cost-down target. Use Polish supplier quote (£36.80) as competitive benchmark in negotiation.</div>
+  </div>
+
+  <div class="insight-card opportunity">
+    <div class="insight-header">
+      <span class="insight-badge b-opp">7</span>
+      <span class="insight-title">Evaluate T5 Heat Treatment Elimination (AI Alloy Selection)</span>
+      <span class="insight-saving">~£1.35/part saving (2.7%)</span>
+    </div>
+    <div class="insight-body">T5 heat treatment adds £1.35/part and 6 equivalent min. If mechanical requirements can be met with an optimised HPDC Al-Si12 alloy (higher Si content, no HT required), the T5 step is eliminated entirely. Al-Si12 achieves UTS 200–220 MPa as-cast — adequate if peak stress &lt;160 MPa.</div>
+    <div class="insight-rec"><strong>Technical justification:</strong> FEA stress analysis required. If peak Von Mises stress &lt;160 MPa in operational loading, switch to Al-Si12 (EN-AC-44300). Material cost similar at £1.88/kg. HT saving = £1.35/part. Annual saving at 50k = £67,500.</div>
+  </div>
+
+  <div class="insight-card opportunity">
+    <div class="insight-header">
+      <span class="insight-badge b-opp">8</span>
+      <span class="insight-title">Automate Deburring with Robotic Rotary Deburr Cell</span>
+      <span class="insight-saving">~£0.85/part saving (1.7%)</span>
+    </div>
+    <div class="insight-body">Manual deburring at 4 min × £19.80/hr = £1.32/part. Robotic deburr cell (6-axis robot + compliant deburr spindle) cycle time 2.5 min at £35/hr = £1.46/hr machine, but handles 2 parts simultaneously = £0.73/part. Payback at 50k/yr = ~18 months for a £60,000 cell investment.</div>
+    <div class="insight-rec"><strong>Technical justification:</strong> Robotic deburring is well-established for aluminium castings in automotive. Consistent edge break eliminates inspector rejects from sharp edges. Additional benefit: zero manual handling injury risk.</div>
+  </div>
+</div>
+
+<!-- ─── 12. FINAL SUMMARY ───────────────────────────────────────────────────── -->
+<div class="section">
+  <div class="section-label">Step 12</div>
+  <div class="section-title">Final Summary</div>
+
+  <div class="summary-banner">
+    <div style="text-align:center;min-width:90px">
+      <div style="font-size:.72rem;color:var(--text-2)">Total Saving Potential</div>
+      <div style="font-size:2.2rem;font-weight:900;color:var(--accent-3)">~29%</div>
+      <div style="font-size:.68rem;color:var(--text-3)">if all levers applied</div>
+    </div>
+    <div style="flex:1">
+      <div style="font-size:.8rem;color:var(--text-2);line-height:1.65">
+        UK baseline should-cost: <strong style="color:var(--text)">£49.20</strong> &nbsp;|&nbsp;
+        With design changes (rec. 1–4): <strong style="color:var(--accent-3)">£43.80</strong> &nbsp;|&nbsp;
+        With regional + commercial (rec. 3, 6): <strong style="color:var(--accent-3)">£34.90</strong><br>
+        Best achievable with all 8 recommendations: <strong style="color:var(--accent-3)">£34.80</strong> (Poland sourced, redesigned, optimal volume)
+      </div>
+    </div>
+    <span class="conf-pill" style="color:var(--accent-3);border-color:var(--accent-3)">Confidence: High (91%)</span>
+  </div>
+
+  <div class="grid-3" style="margin-bottom:12px">
+    <div class="card" style="border-left:3px solid var(--accent-3)">
+      <div class="card-lbl">Quick Wins (0–3 months)</div>
+      <div style="font-size:.79rem;color:var(--text-2);line-height:1.6;margin-top:4px">
+        • Supplier margin negotiation to 7% → <strong style="color:var(--accent-3)">£1.47 saving</strong><br>
+        • Polish sourcing dual-qualification start → <strong style="color:var(--accent-3)">£12.40 potential</strong><br>
+        • T5 HT elimination FEA study → <strong style="color:var(--accent-3)">£1.35 saving</strong>
+      </div>
+    </div>
+    <div class="card" style="border-left:3px solid var(--orange)">
+      <div class="card-lbl">Medium Term (3–12 months)</div>
+      <div style="font-size:.79rem;color:var(--text-2);line-height:1.6;margin-top:4px">
+        • 2-setup CNC consolidation → <strong style="color:var(--accent-3)">£5.80 saving</strong><br>
+        • Undercut elimination redesign → <strong style="color:var(--accent-3)">£3.80 saving</strong><br>
+        • Rib width standardisation → <strong style="color:var(--accent-3)">£1.20 saving</strong>
+      </div>
+    </div>
+    <div class="card" style="border-left:3px solid var(--accent-2)">
+      <div class="card-lbl">Long Term (12 months+)</div>
+      <div style="font-size:.79rem;color:var(--text-2);line-height:1.6;margin-top:4px">
+        • Platform share for 4-cavity die → <strong style="color:var(--accent-3)">£0.24 + 8–12% commercial</strong><br>
+        • Robotic deburr cell → <strong style="color:var(--accent-3)">£0.85 saving</strong><br>
+        • Full Poland transition → sustained £12.40 saving
+      </div>
+    </div>
+  </div>
+
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Key Risk</th><th>Severity</th><th>Mitigation</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>Porosity defects in thin rib sections (3.2 mm wall)</td>
+          <td><span class="td-badge b-maj">Medium</span></td>
+          <td>Increase minimum wall to 3.5 mm; mandate X-ray inspection 1-in-10 at SOP</td>
+        </tr>
+        <tr>
+          <td>Side-pull wear leading to flash and dimensional drift</td>
+          <td><span class="td-badge b-maj">Medium</span></td>
+          <td>Monitor side pull clearance every 5,000 shots; budget £2,000/year maintenance</td>
+        </tr>
+        <tr>
+          <td>Cooling cavity leak — air decay test escape rate</td>
+          <td><span class="td-badge b-crit">High</span></td>
+          <td>100% air decay test at 2.5 bar is mandatory; no sampling plan acceptable for this feature</td>
+        </tr>
+        <tr>
+          <td>Regional supply risk if Poland sourced (geopolitical/logistics)</td>
+          <td><span class="td-badge b-min">Low</span></td>
+          <td>Maintain UK dual-source at 20% volume; 8-week safety stock at programme buffer</td>
+        </tr>
+        <tr>
+          <td>T5 HT elimination — insufficient creep resistance at 150°C</td>
+          <td><span class="td-badge b-maj">Medium</span></td>
+          <td>Do not eliminate HT without completed FEA and 1,000-hr thermal cycle validation test</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card" style="margin-top:12px;border-left:3px solid var(--accent);background:color-mix(in srgb,var(--accent) 5%,var(--surface))">
+    <div style="font-size:.82rem;font-weight:700;margin-bottom:6px">Recommended Next Steps</div>
+    <div style="font-size:.79rem;color:var(--text-2);line-height:1.75">
+      <strong style="color:var(--text)">Week 1–2:</strong> Issue RFQ to 3 qualified HPDC suppliers — UK (baseline), Poland × 2. Use this should-cost (£49.20 UK, £36.80 Poland) as floor price in commercial discussions.<br>
+      <strong style="color:var(--text)">Week 2–4:</strong> Commission FEA study — (a) undercut elimination redesign, (b) rib standardisation to 5.5 mm, (c) T5 HT elimination feasibility vs Al-Si12 alloy.<br>
+      <strong style="color:var(--text)">Week 4–8:</strong> Run CNC consolidation study with preferred toolmaker — 2-setup vs 3-setup comparison including fixture investment vs unit cost saving NPV.<br>
+      <strong style="color:var(--text)">Week 8–16:</strong> Dual-qualification of Poland supplier. PPAP Level 3, 300-part production trial, CMM verification against UK benchmark.<br>
+      <strong style="color:var(--text)">Month 6:</strong> Commercial LTA negotiation with data from this should-cost model, FEA results, and Polish supplier PPAP as leverage points.
+    </div>
+  </div>
+</div>
+
+<!-- ─── FOOTER ─────────────────────────────────────────────────────────────── -->
+<div class="report-footer">
+  <span>CostVision AI-Powered Should-Cost Engine &nbsp;|&nbsp; CAD-to-Cost Full Pipeline</span>
+  <span>E-Motor Inverter Casing · Al-Si9-Cu3 · HPDC 900T · UK Baseline</span>
+  <span>Generated: June 2026 &nbsp;|&nbsp; Avinash Bhosale</span>
+</div>
+
+</div><!-- /container -->
+<script>
+document.querySelector('.theme-btn')?.addEventListener('click',function(){
+  const html=document.documentElement;
+  html.setAttribute('data-theme',html.getAttribute('data-theme')==='dark'?'light':'dark');
+});
+</script>
+</body>
+</html>
