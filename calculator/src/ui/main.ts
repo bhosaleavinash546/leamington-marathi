@@ -2736,6 +2736,12 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
           setNumericField('forge-flash', c.netWeightKg * 0.1, 3);
           setNumericField('forge-yield', 0.9, 2);
         }
+        // Material-specific heating energy (kWh/kg)
+        const forgeHeatMap: Record<string, number> = {
+          'mat-dc01': 0.35, 'mat-hss': 0.38, 'mat-stainless-316': 0.42, 'mat-ss304c': 0.42,
+          'mat-al6061': 0.25, 'mat-al5052': 0.23, 'mat-brass-crz': 0.18,
+        };
+        setNumericField('forge-heat-energy', forgeHeatMap[c.materialId] ?? 0.40, 2);
         break;
       }
 
@@ -2744,19 +2750,38 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
         setNumericField('sm-net-wt', c.netWeightKg, 3);
         // Derive blank dims from OCCT bounding box (sorted: L ≥ W ≥ thickness)
         const smBB = cadOCCTGeometry?.boundingBox;
+        let smBlankL = 0;
+        let smBlankW = 0;
         if (smBB) {
           const dims = [smBB.xMm, smBB.yMm, smBB.zMm].sort((a, b) => b - a);
-          setNumericField('sm-blank-l', dims[0] * 1.05, 0);
-          setNumericField('sm-blank-w', dims[1] * 1.05, 0);
+          smBlankL = dims[0] * 1.05;
+          smBlankW = dims[1] * 1.05;
+          setNumericField('sm-blank-l', smBlankL, 0);
+          setNumericField('sm-blank-w', smBlankW, 0);
           const wallMin = cadOCCTGeometry?.wallThickness?.minMm;
           setNumericField('sm-thick', wallMin ?? dims[2], 1);
+          // Perimeter ≈ 2×(L+W), strip width and pitch with typical scrap allowances
+          setNumericField('sm-perim', 2 * (smBlankL + smBlankW), 0);
+          setNumericField('sm-strip-w', smBlankW * 1.06, 0);
+          setNumericField('sm-pitch', smBlankL * 1.04, 0);
         }
+        // Material shear strength lookup
+        const smShearMap: Record<string, number> = {
+          'mat-dc01': 290, 'mat-hss': 420, 'mat-stainless-316': 520,
+          'mat-al5052': 125, 'mat-al6061': 195, 'mat-brass-crz': 350, 'mat-ss304c': 510,
+        };
+        setNumericField('sm-shear', smShearMap[c.materialId] ?? 280, 0);
         const sm = c.sheetMetal;
         if (sm) {
           if (!smBB) {
             setNumericField('sm-blank-l', sm.blankLengthMm, 0);
             setNumericField('sm-blank-w', sm.blankWidthMm, 0);
             setNumericField('sm-thick', sm.thicknessMm, 1);
+            smBlankL = sm.blankLengthMm;
+            smBlankW = sm.blankWidthMm;
+            setNumericField('sm-perim', 2 * (smBlankL + smBlankW), 0);
+            setNumericField('sm-strip-w', smBlankW * 1.06, 0);
+            setNumericField('sm-pitch', smBlankL * 1.04, 0);
           }
           setNumericField('sm-die-cost', sm.dieCostGBP, 0);
           setNumericField('sm-die-life', sm.dieLife, 0);
@@ -2778,6 +2803,16 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
         const smfWallMean = cadOCCTGeometry?.wallThickness?.meanMm;
         if (smfWallMean) {
           setNumericField('smf-tolerance', Math.max(0.1, smfWallMean * 0.05), 2);
+        }
+        // Laser blanking cycle time: perimeter / laser speed + pierce time per hole
+        const smfBB = cadOCCTGeometry?.boundingBox;
+        if (smfBB) {
+          const fbDims = [smfBB.xMm, smfBB.yMm, smfBB.zMm].sort((a, b) => b - a);
+          const perimMm = 2 * (fbDims[0] * 1.05 + fbDims[1] * 1.05);
+          const holeCount = cadOCCTGeometry?.features?.estimatedHoleCount ?? 0;
+          const laserSpeedMmPerSec = 333; // ~20 m/min typical laser feed
+          const blankCt = Math.max(15, Math.round(perimMm / laserSpeedMmPerSec + holeCount * 2 + 5));
+          setNumericField('smf-blank-ct', blankCt, 0);
         }
         const smFab = c.sheetMetal;
         if (smFab) {
@@ -2808,6 +2843,20 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
           setNumericField('imm-mould-life', im.mouldLife, 0);
           setNumericField('imm-runner-wt', im.runnerWeightKg, 4);
         }
+        // Material-specific cooling factor and cavity pressure (key cycle time drivers)
+        const immCoolMap: Record<string, number> = {
+          'mat-pp': 3.16, 'mat-pa6': 2.20, 'mat-pc': 4.50,
+        };
+        const immPressMap: Record<string, number> = {
+          'mat-pp': 35, 'mat-pa6': 55, 'mat-pc': 65,
+        };
+        setNumericField('imm-cool-f', immCoolMap[c.materialId] ?? 3.0, 2);
+        setNumericField('imm-cav-press', immPressMap[c.materialId] ?? 50, 0);
+        // Cycle time sub-components from wall thickness
+        const wallForCycle = immWall ?? im?.wallThicknessMm ?? 2.5;
+        setNumericField('imm-fill', Math.max(1.5, parseFloat((wallForCycle * 0.5).toFixed(1))), 1);
+        setNumericField('imm-pack', Math.max(2.0, parseFloat((wallForCycle * 0.8).toFixed(1))), 1);
+        setNumericField('imm-eject', 2, 0);
         break;
       }
     }
