@@ -9,6 +9,7 @@ import syncRouter from './routes/sync.js';
 import agentRouter from './routes/agent.js';
 import authRouter from './routes/auth.js';
 import dfmRouter from './routes/dfm.js';
+import pcbRouter from './routes/pcb.js';
 
 config(); // load .env
 
@@ -48,6 +49,7 @@ app.use(express.json({ limit: '10mb' })); // increased for base64 photo payloads
 
 app.use('/api/auth', authRouter);
 app.use('/api/cad', cadRouter);
+app.use('/api/pcb', pcbRouter);
 app.use('/api/sync', syncRouter);
 app.use('/api/agent', agentRouter);
 app.use('/api/dfm', dfmRouter);

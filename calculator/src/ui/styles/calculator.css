@@ -1425,8 +1425,180 @@ textarea.contact-form-input { resize: vertical; min-height: 100px; }
   font-weight: 700;
 }
 
+/* ── PCB Image-to-BOM panel ─────────────────────────────────────────────── */
+
+.pcb-img-zone {
+  border: 2px dashed var(--border-strong);
+  border-radius: var(--radius-lg);
+  padding: 20px 16px;
+  text-align: center;
+  cursor: default;
+  transition: border-color var(--transition), background var(--transition);
+  margin-bottom: 12px;
+  background: var(--surface-elevated);
+}
+.pcb-img-zone.drag-over {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 6%, var(--surface-elevated));
+}
+.pcb-img-zone--analyzing {
+  border-color: var(--amber);
+  animation: pcb-pulse 1.4s ease-in-out infinite;
+}
+@keyframes pcb-pulse {
+  0%, 100% { border-color: var(--amber); }
+  50%       { border-color: color-mix(in srgb, var(--amber) 30%, transparent); }
+}
+.pcb-img-zone-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.pcb-analysis-panel {
+  background: var(--surface-elevated);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-lg);
+  padding: 14px;
+  margin-bottom: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.pcb-analysis-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+
+.pcb-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 8px;
+}
+
+.pcb-apply-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.pcb-analysis-section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 10px 12px;
+}
+.pcb-analysis-section-title {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 8px;
+}
+
+.pcb-bom-wrap {
+  overflow-x: auto;
+  border-radius: var(--radius-sm);
+  margin-top: 4px;
+}
+.pcb-bom-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.72rem;
+  font-family: var(--font-mono);
+  min-width: 640px;
+}
+.pcb-bom-table th {
+  background: var(--surface-elevated);
+  color: var(--text-secondary);
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 5px 8px;
+  text-align: left;
+  border-bottom: 1px solid var(--border-strong);
+  white-space: nowrap;
+}
+.pcb-bom-table td {
+  padding: 5px 8px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-primary);
+  vertical-align: middle;
+}
+.pcb-bom-table tfoot td {
+  border-bottom: none;
+  border-top: 1px solid var(--border-strong);
+  background: var(--surface-elevated);
+  font-size: 0.72rem;
+}
+.pcb-bom-row--high-cost td {
+  background: color-mix(in srgb, var(--amber) 8%, transparent);
+}
+
+.pcb-insights-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+@media (max-width: 640px) {
+  .pcb-insights-grid { grid-template-columns: 1fr; }
+}
+
+.pcb-insight-list {
+  margin: 0;
+  padding: 0 0 0 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.pcb-insight-list li {
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+  line-height: 1.45;
+}
+.pcb-insight-list--warn li { color: var(--amber); }
+.pcb-insight-list--cost li { color: var(--red); }
+.pcb-insight-list--opt  li { color: var(--green); }
+
+.pcb-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 5px;
+  border-radius: 10px;
+  font-size: 0.6rem;
+  font-weight: 700;
+  margin-left: 2px;
+}
+.pcb-badge--auto {
+  background: color-mix(in srgb, var(--blue) 18%, transparent);
+  color: var(--blue);
+  border: 1px solid color-mix(in srgb, var(--blue) 30%, transparent);
+}
+.pcb-badge--cost {
+  background: color-mix(in srgb, var(--amber) 18%, transparent);
+  color: var(--amber);
+  border: 1px solid color-mix(in srgb, var(--amber) 30%, transparent);
+}
+
+.pcb-img-error {
+  padding: 10px 14px;
+  background: var(--red-bg);
+  border: 1px solid color-mix(in srgb, var(--red) 30%, transparent);
+  border-radius: var(--radius);
+  color: var(--red);
+  font-size: 0.75rem;
+  margin-bottom: 8px;
+}
+
 @media (max-width: 640px) {
   .demo-card-row { grid-template-columns: 1fr; }
+  .pcb-stat-grid { grid-template-columns: repeat(3, 1fr); }
 }
 
 /* ── Small mobile (≤480px) ──────────────────────────────────────────────── */

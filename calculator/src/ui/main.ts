@@ -74,6 +74,8 @@ let cadFile: File | null = null;
 let cadAnalysisResult: CADAnalysisResult | null = null;
 let cadOCCTGeometry: OCCTGeometry | null = null;
 let cadGeometrySource: 'occt' | 'text_parsing' = 'text_parsing';
+let pcbImageResult: PCBImageAnalysis | null = null;
+let pcbImageLoading = false;
 let supplierQuotes: SupplierQuote[] = [];
 let partPhotoDataUrl: string | null = null;
 let partPhotoName: string | null = null;
@@ -178,6 +180,65 @@ function _processPhotoFile(file: File): void {
 
 interface AgentMessage { role: 'user' | 'assistant'; content: string }
 interface AgentAction { type: string; commodity: string; partName: string; params: Record<string, unknown> }
+
+interface PCBBOMItem {
+  refDes: string;
+  componentType: string;
+  description: string;
+  pkg: string;
+  value: string;
+  voltage: string;
+  qty: number;
+  unitPriceGBP: number;
+  moq: number;
+  automotive: boolean;
+  highCost: boolean;
+}
+interface PCBImageAnalysis {
+  partName: string;
+  boardSpec: {
+    estimatedLayers: number;
+    widthMm: number;
+    heightMm: number;
+    surfaceFinish: string;
+    solderMaskColour: string;
+    silkscreenSides: number;
+    throughVias: number;
+    blindVias: number;
+    buriedVias: number;
+    microVias: number;
+    bgaDetected: boolean;
+    minTraceSpaceMm: number;
+    technologyType: string;
+    hdiStructure: string;
+    impedanceControlRequired: boolean;
+    copperWeightOz: number;
+    qualityGrade: string;
+    panelUtilisation: number;
+  };
+  bom: PCBBOMItem[];
+  assembly: {
+    smtPlacements: number;
+    throughHoleJoints: number;
+    manualJoints: number;
+    bgaCount: number;
+    complexity: string;
+    reflowSides: number;
+    aoiRequired: boolean;
+    ictTimeSec: number;
+  };
+  costEstimates: {
+    pcbFabGBP: { min: number; mid: number; max: number };
+    totalBOMCostGBP: number;
+    smtAssemblyCostGBP: number;
+  };
+  aiInsights: string[];
+  dfmIssues: string[];
+  highCostComponents: string[];
+  optimisationSuggestions: string[];
+  confidenceLevel: 'High' | 'Medium' | 'Low';
+  analysisLimitations: string[];
+}
 
 let agentHistory: AgentMessage[] = [];
 let agentPending = false;
@@ -1624,6 +1685,8 @@ function addBIWStation(d?: {stationName?: string; machineId?: string; labourId?:
 
 function renderPCBFabForm(): string {
   return `
+    ${buildPCBImageUploadZone()}
+    <div id="pcb-img-results"></div>
     <div class="section-title">PCB Technology & Quality</div>
     <div class="field-row">
       <div class="field-group"><label>PCB Technology</label><select id="pcbf-technology">
@@ -1788,6 +1851,8 @@ function renderPCBFabForm(): string {
 
 function renderPCBAForm(): string {
   return `
+    ${buildPCBImageUploadZone()}
+    <div id="pcb-img-results"></div>
     <div class="section-title">Complexity &amp; Grade</div>
     <div class="field-row">
       <div class="field-group"><label>Assembly Complexity <span title="Multiplies SMT placement time. Low=×1.0 (≤100 comps, no BGAs), Medium=×1.3 (100–300, fine-pitch), High=×1.7 (>300, BGAs, 2-sided), Very High=×2.0 (ADAS/domain)">ℹ</span></label>
@@ -2464,6 +2529,332 @@ const FACE_COLOURS: Record<string, string> = {
   REVOLUTION: '#06b6d4', OTHER: '#94a3b8',
 };
 
+// ─── PCB Image Analysis ───────────────────────────────────────────────────────
+
+function buildPCBImageUploadZone(): string {
+  return `
+    <div class="pcb-img-zone" id="pcb-img-zone">
+      <input type="file" id="pcb-img-input" accept="image/jpeg,image/png,image/webp" style="display:none"/>
+      <div class="pcb-img-zone-content" id="pcb-img-zone-content">
+        <div style="font-size:1.4rem;margin-bottom:4px">🔬</div>
+        <div style="font-size:0.78rem;font-weight:600;color:var(--text-secondary)">PCB Image-to-BOM Analysis</div>
+        <div style="font-size:0.68rem;color:var(--text-muted);margin-top:2px">Upload a PCB photo or silkscreen image — AI detects all components and builds the BOM automatically</div>
+        <div style="display:flex;gap:6px;margin-top:8px;justify-content:center;flex-wrap:wrap">
+          <button class="btn btn-secondary btn-sm" id="pcb-img-pick-btn">📷 Choose Image</button>
+          <button class="btn btn-primary btn-sm" id="pcb-img-analyze-btn" disabled>🔬 Analyze PCB</button>
+        </div>
+        <div id="pcb-img-filename" style="font-size:0.65rem;color:var(--text-muted);margin-top:4px"></div>
+      </div>
+    </div>`;
+}
+
+function wirePCBImageZone(): void {
+  const pickBtn  = el<HTMLButtonElement>('pcb-img-pick-btn');
+  const fileInput = el<HTMLInputElement>('pcb-img-input');
+  const analyzeBtn = el<HTMLButtonElement>('pcb-img-analyze-btn');
+  const fileLabel = el('pcb-img-filename');
+
+  pickBtn?.addEventListener('click', () => fileInput?.click());
+
+  fileInput?.addEventListener('change', () => {
+    const file = fileInput?.files?.[0] ?? null;
+    if (!file) return;
+    if (fileLabel) fileLabel.textContent = `📎 ${file.name} (${(file.size / 1024).toFixed(0)} KB)`;
+    if (analyzeBtn) analyzeBtn.disabled = false;
+    analyzeBtn?.addEventListener('click', () => analyzePCBImage(file), { once: true });
+  });
+
+  // Drag-and-drop support
+  const zone = el('pcb-img-zone');
+  zone?.addEventListener('dragover', (e) => { e.preventDefault(); zone.classList.add('drag-over'); });
+  zone?.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+  zone?.addEventListener('drop', (e) => {
+    e.preventDefault();
+    zone.classList.remove('drag-over');
+    const file = (e as DragEvent).dataTransfer?.files[0];
+    if (!file || !file.type.startsWith('image/')) return;
+    if (fileLabel) fileLabel.textContent = `📎 ${file.name} (${(file.size / 1024).toFixed(0)} KB)`;
+    if (analyzeBtn) { analyzeBtn.disabled = false; analyzeBtn.addEventListener('click', () => analyzePCBImage(file), { once: true }); }
+  });
+}
+
+async function analyzePCBImage(file: File): Promise<void> {
+  if (pcbImageLoading) return;
+  pcbImageLoading = true;
+
+  const analyzeBtn = el<HTMLButtonElement>('pcb-img-analyze-btn');
+  if (analyzeBtn) { analyzeBtn.disabled = true; analyzeBtn.textContent = '⏳ Analyzing…'; }
+
+  const zone = el('pcb-img-zone');
+  if (zone) zone.classList.add('pcb-img-zone--analyzing');
+
+  const apiKey = (document.querySelector<HTMLInputElement>('#api-key-input'))?.value?.trim()
+    ?? sessionStorage.getItem('cv_api_key') ?? '';
+
+  const formData = new FormData();
+  formData.append('pcbImage', file);
+
+  try {
+    const resp = await fetch('/api/pcb/analyze-image', {
+      method: 'POST',
+      headers: apiKey ? { 'x-api-key': apiKey } : {},
+      body: formData,
+    });
+    if (!resp.ok) {
+      const err = await resp.json().catch(() => ({ error: resp.statusText })) as { error: string };
+      throw new Error(err.error ?? resp.statusText);
+    }
+    const data = await resp.json() as { success: boolean; analysis: PCBImageAnalysis };
+    pcbImageResult = data.analysis;
+    injectPCBImagePanel();
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    const resultsEl = el('pcb-img-results');
+    if (resultsEl) resultsEl.innerHTML = `<div class="pcb-img-error">⚠ Analysis failed: ${msg}</div>`;
+  } finally {
+    pcbImageLoading = false;
+    if (analyzeBtn) { analyzeBtn.disabled = false; analyzeBtn.textContent = '🔬 Re-analyze'; }
+    if (zone) zone.classList.remove('pcb-img-zone--analyzing');
+  }
+}
+
+function injectPCBImagePanel(): void {
+  const resultsEl = el('pcb-img-results');
+  if (!resultsEl || !pcbImageResult) return;
+  resultsEl.innerHTML = buildPCBImagePanel(pcbImageResult);
+
+  el('pcb-apply-fab-btn')?.addEventListener('click', () => applyPCBImageToFab());
+  el('pcb-apply-pcba-btn')?.addEventListener('click', () => applyPCBImageToPCBA());
+  el('pcb-clear-btn')?.addEventListener('click', () => {
+    pcbImageResult = null;
+    if (resultsEl) resultsEl.innerHTML = '';
+  });
+}
+
+function buildPCBImagePanel(r: PCBImageAnalysis): string {
+  const b = r.boardSpec;
+  const a = r.assembly;
+  const c = r.costEstimates;
+  const confClass = r.confidenceLevel === 'High' ? 'score-high' : r.confidenceLevel === 'Medium' ? 'score-med' : 'score-low';
+
+  const totalBOMLines = r.bom.length;
+  const totalPlacements = a.smtPlacements;
+  const totalBOMCost = c.totalBOMCostGBP.toFixed(2);
+
+  const bomRows = r.bom.map((item, i) => `
+    <tr class="${item.highCost ? 'pcb-bom-row--high-cost' : ''}">
+      <td>${i + 1}</td>
+      <td>${item.refDes}</td>
+      <td>${item.description}</td>
+      <td>${item.pkg}</td>
+      <td>${item.value}</td>
+      <td>${item.voltage}</td>
+      <td>${item.qty}</td>
+      <td>£${item.unitPriceGBP.toFixed(3)}</td>
+      <td>£${(item.qty * item.unitPriceGBP).toFixed(2)}</td>
+      <td>${item.automotive ? '<span class="pcb-badge pcb-badge--auto">AEC</span>' : ''}${item.highCost ? '<span class="pcb-badge pcb-badge--cost">$$</span>' : ''}</td>
+    </tr>`).join('');
+
+  const insights = r.aiInsights.map(s => `<li>${s}</li>`).join('');
+  const dfm = r.dfmIssues.map(s => `<li>⚠ ${s}</li>`).join('');
+  const opts = r.optimisationSuggestions.map(s => `<li>💡 ${s}</li>`).join('');
+  const limits = r.analysisLimitations.map(s => `<li>${s}</li>`).join('');
+
+  return `
+    <div class="pcb-analysis-panel">
+      <div class="pcb-analysis-header">
+        <span style="font-size:1rem">🔬</span>
+        <div style="flex:1">
+          <strong>${r.partName}</strong>
+          <span style="font-size:0.65rem;color:var(--text-muted);margin-left:8px">PCB Image Analysis</span>
+        </div>
+        <span class="occt-mfg-score ${confClass}">${r.confidenceLevel} Confidence</span>
+        <button class="btn btn-secondary btn-sm" id="pcb-clear-btn" style="font-size:0.65rem;padding:2px 8px">✕ Clear</button>
+      </div>
+
+      <div class="pcb-stat-grid">
+        <div class="occt-stat"><div class="occt-stat-value">${b.estimatedLayers}</div><div class="occt-stat-label">Layers</div></div>
+        <div class="occt-stat"><div class="occt-stat-value">${b.widthMm}×${b.heightMm}</div><div class="occt-stat-label">Board (mm)</div></div>
+        <div class="occt-stat"><div class="occt-stat-value">${b.technologyType.replace('_', ' ')}</div><div class="occt-stat-label">Technology</div></div>
+        <div class="occt-stat"><div class="occt-stat-value">${b.surfaceFinish.toUpperCase()}</div><div class="occt-stat-label">Surface finish</div></div>
+        <div class="occt-stat"><div class="occt-stat-value">${b.throughVias + b.blindVias + b.microVias}</div><div class="occt-stat-label">Total vias</div></div>
+        <div class="occt-stat"><div class="occt-stat-value">${b.qualityGrade.replace('_', ' ')}</div><div class="occt-stat-label">Quality grade</div></div>
+        <div class="occt-stat"><div class="occt-stat-value">${totalPlacements}</div><div class="occt-stat-label">SMT placements</div></div>
+        <div class="occt-stat"><div class="occt-stat-value">${a.throughHoleJoints}</div><div class="occt-stat-label">TH joints</div></div>
+        <div class="occt-stat"><div class="occt-stat-value">${a.complexity}</div><div class="occt-stat-label">Assembly complexity</div></div>
+        <div class="occt-stat"><div class="occt-stat-value">${a.reflowSides === 2 ? 'Double' : 'Single'}</div><div class="occt-stat-label">Reflow sides</div></div>
+        <div class="occt-stat"><div class="occt-stat-value">£${c.pcbFabGBP.min.toFixed(2)}–£${c.pcbFabGBP.max.toFixed(2)}</div><div class="occt-stat-label">PCB fab est.</div></div>
+        <div class="occt-stat"><div class="occt-stat-value">£${totalBOMCost}</div><div class="occt-stat-label">BOM total (${totalBOMLines} lines)</div></div>
+      </div>
+
+      <div class="pcb-apply-row">
+        <button class="btn btn-primary btn-sm" id="pcb-apply-fab-btn">⚡ Apply to PCB Fab Form</button>
+        <button class="btn btn-primary btn-sm" id="pcb-apply-pcba-btn">⚡ Apply to PCBA BOM + Assembly</button>
+      </div>
+
+      <div class="pcb-analysis-section">
+        <div class="pcb-analysis-section-title">📋 Bill of Materials (${totalBOMLines} lines · ${totalPlacements} placements)</div>
+        <div class="pcb-bom-wrap">
+          <table class="pcb-bom-table">
+            <thead><tr><th>#</th><th>Ref Des</th><th>Description</th><th>Pkg</th><th>Value</th><th>Voltage</th><th>Qty</th><th>Unit £</th><th>Ext £</th><th>Flags</th></tr></thead>
+            <tbody>${bomRows}</tbody>
+            <tfoot><tr><td colspan="8" style="text-align:right;font-weight:700">Total BOM Cost</td><td colspan="2" style="font-weight:700;color:var(--accent)">£${totalBOMCost}</td></tr></tfoot>
+          </table>
+        </div>
+      </div>
+
+      <div class="pcb-insights-grid">
+        <div class="pcb-analysis-section">
+          <div class="pcb-analysis-section-title">💡 AI Insights</div>
+          <ul class="pcb-insight-list">${insights}</ul>
+        </div>
+        <div class="pcb-analysis-section">
+          <div class="pcb-analysis-section-title">⚠ DFM / DFA Issues</div>
+          <ul class="pcb-insight-list pcb-insight-list--warn">${dfm}</ul>
+        </div>
+        <div class="pcb-analysis-section">
+          <div class="pcb-analysis-section-title">🔑 High-Cost Components</div>
+          <ul class="pcb-insight-list pcb-insight-list--cost">${r.highCostComponents.map(s => `<li>${s}</li>`).join('')}</ul>
+        </div>
+        <div class="pcb-analysis-section">
+          <div class="pcb-analysis-section-title">✂ Optimisation Opportunities</div>
+          <ul class="pcb-insight-list pcb-insight-list--opt">${opts}</ul>
+        </div>
+      </div>
+
+      <div class="pcb-analysis-section" style="margin-top:8px">
+        <div class="pcb-analysis-section-title" style="color:var(--text-muted)">Analysis Limitations</div>
+        <ul class="pcb-insight-list" style="color:var(--text-muted)">${limits}</ul>
+      </div>
+    </div>`;
+}
+
+function applyPCBImageToFab(): void {
+  if (!pcbImageResult) return;
+  const b = pcbImageResult.boardSpec;
+
+  const setF = (id: string, val: string | number) => {
+    const el2 = document.getElementById(id) as HTMLInputElement | HTMLSelectElement | null;
+    if (!el2) return;
+    el2.value = String(val);
+    el2.classList.add('ai-filled');
+    el2.addEventListener('input', () => el2.classList.remove('ai-filled'), { once: true });
+  };
+  const setCheck = (id: string, val: boolean) => {
+    const el2 = document.getElementById(id) as HTMLInputElement | null;
+    if (el2) { el2.checked = val; el2.classList.add('ai-filled'); }
+  };
+
+  setF('pcbf-technology', b.technologyType);
+  setF('pcbf-quality', b.qualityGrade);
+  setF('pcbf-layers', String(b.estimatedLayers));
+  setF('pcbf-board-w', b.widthMm);
+  setF('pcbf-board-h', b.heightMm);
+  setF('pcbf-panel-util', b.panelUtilisation);
+  setF('pcbf-cu', String(b.copperWeightOz));
+  setF('pcbf-outer-cu', String(b.copperWeightOz));
+  setF('pcbf-via-type', b.microVias > 0 ? 'microvia_hdi' : 'through_only');
+  setF('pcbf-hdi-structure', b.hdiStructure);
+  setF('pcbf-vias', b.throughVias);
+  setF('pcbf-blind-vias', b.blindVias);
+  setF('pcbf-buried-vias', b.buriedVias);
+  setF('pcbf-uvias', b.microVias);
+  setF('pcbf-trace', String(b.minTraceSpaceMm));
+  setF('pcbf-finish', b.surfaceFinish);
+  setF('pcbf-solder-mask', b.solderMaskColour);
+  setF('pcbf-silkscreen', String(b.silkscreenSides));
+  setCheck('pcbf-impedance', b.impedanceControlRequired);
+  setCheck('pcbf-bga', b.bgaDetected);
+
+  // Infer Tg from technology
+  const tgMap: Record<string, string> = { FR4_STD: '130', FR4_HTg: '150', HDI_RIGID: '170', RF_MICRO: '170' };
+  setF('pcbf-tg', tgMap[b.technologyType] ?? '150');
+
+  const partNameEl = el<HTMLInputElement>('part-name');
+  if (partNameEl && pcbImageResult.partName) {
+    partNameEl.value = pcbImageResult.partName;
+    partNameEl.classList.add('ai-filled');
+  }
+
+  switchCommodity('pcb_fab');
+}
+
+function applyPCBImageToPCBA(): void {
+  if (!pcbImageResult) return;
+  const r = pcbImageResult;
+  const a = r.assembly;
+
+  const setF = (id: string, val: string | number) => {
+    const el2 = document.getElementById(id) as HTMLInputElement | HTMLSelectElement | null;
+    if (!el2) return;
+    el2.value = String(val);
+    el2.classList.add('ai-filled');
+    el2.addEventListener('input', () => el2.classList.remove('ai-filled'), { once: true });
+  };
+
+  // Ensure we're on PCBA
+  if (activeCommodity !== 'pcba') switchCommodity('pcba');
+
+  setTimeout(() => {
+    // Assembly parameters
+    setF('pcba-complexity', a.complexity);
+    setF('pcba-quality', r.boardSpec.qualityGrade);
+    setF('pcba-smt-sides', String(a.reflowSides));
+    setF('pcba-th-count', a.throughHoleJoints);
+    setF('pcba-man-count', a.manualJoints);
+    setF('pcba-bga-count', a.bgaCount);
+    if (a.ictTimeSec > 0) setF('pcba-ict-time', a.ictTimeSec);
+
+    // PCB cost from fab estimate mid
+    setF('pcba-pcb-cost', r.costEstimates.pcbFabGBP.mid.toFixed(2));
+
+    // Auto-set X-ray if BGAs detected
+    if (a.bgaCount > 0) {
+      const xrayEl = el<HTMLSelectElement>('pcba-xray-mach');
+      if (xrayEl) {
+        const xrayOpt = Array.from(xrayEl.options).find(o => o.value.includes('xray'));
+        if (xrayOpt) xrayEl.value = xrayOpt.value;
+      }
+      const ictEl = el<HTMLSelectElement>('pcba-ict-mach');
+      if (ictEl) {
+        const ictOpt = Array.from(ictEl.options).find(o => o.value.includes('ict-auto'));
+        if (ictOpt) ictEl.value = ictOpt.value;
+      }
+    }
+
+    // Populate BOM table from image analysis
+    const bomBody = el('bom-body');
+    if (bomBody && r.bom.length > 0) {
+      bomBody.innerHTML = '';
+      bomCount = 0;
+      for (const item of r.bom) {
+        const validTypes: ComponentType[] = [
+          'passive_0402','passive_0603','passive_0805',
+          'ic_soic','ic_qfn','ic_bga','ic_tqfp',
+          'connector_smt','through_hole','manual_solder',
+        ];
+        const ct = validTypes.includes(item.componentType as ComponentType)
+          ? (item.componentType as ComponentType)
+          : 'passive_0402';
+        addBOMRow({
+          refDes: item.refDes,
+          componentType: ct,
+          description: `${item.description}${item.pkg ? ` [${item.pkg}]` : ''}${item.value ? ` ${item.value}` : ''}`,
+          qty: item.qty,
+          unitPriceGBP: item.unitPriceGBP,
+          moq: item.moq,
+        });
+      }
+    }
+
+    const partNameEl = el<HTMLInputElement>('part-name');
+    if (partNameEl && r.partName) {
+      partNameEl.value = r.partName;
+      partNameEl.classList.add('ai-filled');
+    }
+  }, 150);
+}
+
 function buildOCCTPanel(geo: OCCTGeometry | null, source: string): string {
   if (!geo || geo.status !== 'success') return '';
 
@@ -3011,11 +3402,15 @@ function switchCommodity(type: CommodityType): void {
     case 'pcb_fab':
       area.innerHTML = renderPCBFabForm();
       populateSelects();
+      wirePCBImageZone();
+      if (pcbImageResult) injectPCBImagePanel();
       break;
 
     case 'pcba':
       area.innerHTML = renderPCBAForm();
       populateSelects();
+      wirePCBImageZone();
+      if (pcbImageResult) injectPCBImagePanel();
       el('add-bom-btn')?.addEventListener('click', () => addBOMRow());
       el('bom-csv-input')?.addEventListener('change', importBOMFromCSV);
       setTimeout(() => {
