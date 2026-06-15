@@ -1411,6 +1411,20 @@ textarea.contact-form-input { resize: vertical; min-height: 100px; }
   font-family: var(--font);
 }
 
+.demo-card--cad {
+  border-color: color-mix(in srgb, var(--accent) 40%, transparent);
+  background: color-mix(in srgb, var(--accent) 4%, var(--surface-elevated));
+}
+.demo-card--cad:hover {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 8%, var(--surface-elevated));
+}
+.demo-tag--cad {
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
+  color: var(--accent);
+  font-weight: 700;
+}
+
 @media (max-width: 640px) {
   .demo-card-row { grid-template-columns: 1fr; }
 }

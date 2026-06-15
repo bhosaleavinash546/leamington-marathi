@@ -4869,7 +4869,7 @@ function loadSUVDemo(commodity: string, slot: number): void {
           addMachOp({ name: 'CNC Turning — Datum Faces', type: 'turning', machineId: 'mach-lathe-cnc', labourId: 'lab-uk-skilled', cycleTimeHr: 0.08, partsPerCycle: 1, oee: 0.85, manning: 1, labourTimeHr: 0.08, labourEfficiency: 0.92 });
           addMachOp({ name: '5-Axis Milling — Profile', type: 'milling_5ax', machineId: 'mach-vmc5', labourId: 'lab-uk-skilled', cycleTimeHr: 0.35, partsPerCycle: 1, oee: 0.82, manning: 1, labourTimeHr: 0.35, labourEfficiency: 0.90 });
           addMachOp({ name: 'CNC Drilling — Ball Joint Bores', type: 'drilling', machineId: 'mach-drill', labourId: 'lab-uk-skilled', cycleTimeHr: 0.07, partsPerCycle: 1, oee: 0.85, manning: 1, labourTimeHr: 0.07, labourEfficiency: 0.92 });
-        } else {
+        } else if (slot === 2) {
           (el<HTMLInputElement>('part-name')).value = 'Range Rover Velar Steering Rack Housing';
           const matEl = el<HTMLSelectElement>('mach-mat');
           if (matEl) { const o = Array.from(matEl.options).find(x => x.value === 'mat-al6061'); if (o) matEl.value = o.value; }
@@ -4889,6 +4889,27 @@ function loadSUVDemo(commodity: string, slot: number): void {
           addMachOp({ name: 'CNC Turning — OD Profile', type: 'turning', machineId: 'mach-lathe-cnc', labourId: 'lab-uk-skilled', cycleTimeHr: 0.12, partsPerCycle: 1, oee: 0.85, manning: 1, labourTimeHr: 0.12, labourEfficiency: 0.92 });
           addMachOp({ name: '3-Axis Milling — Rack Bore', type: 'milling_3ax', machineId: 'mach-vmc3', labourId: 'lab-uk-skilled', cycleTimeHr: 0.45, partsPerCycle: 1, oee: 0.85, manning: 1, labourTimeHr: 0.45, labourEfficiency: 0.92 });
           addMachOp({ name: 'Drilling — Mounting Holes', type: 'drilling', machineId: 'mach-drill', labourId: 'lab-uk-skilled', cycleTimeHr: 0.08, partsPerCycle: 1, oee: 0.85, manning: 1, labourTimeHr: 0.08, labourEfficiency: 0.92 });
+        } else {
+          (el<HTMLInputElement>('part-name')).value = 'Toyota Land Cruiser 300 Rear Hub Carrier';
+          const matEl3 = el<HTMLSelectElement>('mach-mat');
+          if (matEl3) { const o = Array.from(matEl3.options).find(x => x.value === 'mat-al6061'); if (o) matEl3.value = o.value; }
+          (el<HTMLInputElement>('mach-net-wt')).value = '2.45';
+          (el<HTMLInputElement>('mach-stock-wt')).value = '3.20';
+          (el<HTMLInputElement>('mach-mat-util')).value = '0';
+          (el<HTMLInputElement>('mach-setup-time')).value = '0.75';
+          (el<HTMLInputElement>('mach-batch-size')).value = '20';
+          (el<HTMLInputElement>('mach-tooling')).value = '22000';
+          (el<HTMLInputElement>('mach-amort')).value = '50000';
+          (el<HTMLInputElement>('mach-prog-nre')).value = '4000';
+          (el<HTMLInputElement>('packaging')).value = '0.45';
+          (el<HTMLInputElement>('logistics')).value = '1.00';
+          (el<HTMLInputElement>('overhead-pct')).value = '14';
+          (el<HTMLInputElement>('margin-pct')).value = '10';
+          el('mach-ops-container').innerHTML = ''; machOpCount = 0;
+          addMachOp({ name: '5-Axis Profile Mill — Hub Body', type: 'milling_5ax', machineId: 'mach-dmg-dmu50', labourId: 'lab-uk-skilled', cycleTimeHr: 0.22, partsPerCycle: 1, oee: 0.82, manning: 1, labourTimeHr: 0.22, labourEfficiency: 0.90 });
+          addMachOp({ name: 'CNC Boring — Hub + Stub Axle Bores', type: 'boring', machineId: 'mach-lathe-cnc', labourId: 'lab-uk-skilled', cycleTimeHr: 0.12, partsPerCycle: 1, oee: 0.85, manning: 1, labourTimeHr: 0.12, labourEfficiency: 0.92 });
+          addMachOp({ name: 'CNC Drilling — 12-Hole Bolt Circle', type: 'drilling', machineId: 'mach-drill', labourId: 'lab-uk-skilled', cycleTimeHr: 0.08, partsPerCycle: 1, oee: 0.85, manning: 1, labourTimeHr: 0.08, labourEfficiency: 0.92 });
+          addMachOp({ name: 'CNC Milling — ABS Ring Flange', type: 'milling_3ax', machineId: 'mach-vmc3', labourId: 'lab-uk-skilled', cycleTimeHr: 0.07, partsPerCycle: 1, oee: 0.85, manning: 1, labourTimeHr: 0.07, labourEfficiency: 0.92 });
         }
         compute();
         setTimeout(switchToInsights, 300);
@@ -4921,7 +4942,7 @@ function loadSUVDemo(commodity: string, slot: number): void {
           (el<HTMLInputElement>('logistics')).value = '2.50';
           (el<HTMLInputElement>('overhead-pct')).value = '10';
           (el<HTMLInputElement>('margin-pct')).value = '8';
-        } else {
+        } else if (slot === 2) {
           (el<HTMLInputElement>('part-name')).value = 'Mercedes GLE B-Pillar Reinforcement';
           const matEl = el<HTMLSelectElement>('sm-mat');
           if (matEl) { const o = Array.from(matEl.options).find(x => x.value === 'mat-dp600'); if (o) matEl.value = o.value; }
@@ -4946,6 +4967,31 @@ function loadSUVDemo(commodity: string, slot: number): void {
           (el<HTMLInputElement>('logistics')).value = '1.80';
           (el<HTMLInputElement>('overhead-pct')).value = '10';
           (el<HTMLInputElement>('margin-pct')).value = '7';
+        } else {
+          (el<HTMLInputElement>('part-name')).value = 'Ford Bronco Sport Floor Cross-Member';
+          const matEl3 = el<HTMLSelectElement>('sm-mat');
+          if (matEl3) { const o = Array.from(matEl3.options).find(x => x.value === 'mat-dp600'); if (o) matEl3.value = o.value; }
+          (el<HTMLInputElement>('sm-net-wt')).value = '4.20';
+          (el<HTMLInputElement>('sm-blank-l')).value = '900';
+          (el<HTMLInputElement>('sm-blank-w')).value = '420';
+          (el<HTMLInputElement>('sm-thick')).value = '2.0';
+          (el<HTMLInputElement>('sm-perim')).value = '2640';
+          (el<HTMLInputElement>('sm-shear')).value = '480';
+          (el<HTMLInputElement>('sm-strip-w')).value = '435';
+          (el<HTMLInputElement>('sm-pitch')).value = '915';
+          (el<HTMLInputElement>('sm-pps')).value = '1';
+          (el<HTMLInputElement>('sm-spm')).value = '30';
+          (el<HTMLInputElement>('sm-oee')).value = '0.82';
+          (el<HTMLInputElement>('sm-manning')).value = '0.5';
+          (el<HTMLInputElement>('sm-lab-eff')).value = '0.95';
+          (el<HTMLInputElement>('sm-num-ops')).value = '3';
+          (el<HTMLInputElement>('sm-die-cost')).value = '138000';
+          (el<HTMLInputElement>('sm-die-life')).value = '800000';
+          (el<HTMLInputElement>('sm-amort')).value = '300000';
+          (el<HTMLInputElement>('packaging')).value = '0.90';
+          (el<HTMLInputElement>('logistics')).value = '2.00';
+          (el<HTMLInputElement>('overhead-pct')).value = '10';
+          (el<HTMLInputElement>('margin-pct')).value = '8';
         }
         compute();
         setTimeout(switchToInsights, 300);
@@ -4953,608 +4999,1121 @@ function loadSUVDemo(commodity: string, slot: number): void {
       }
 
       case 'sheet_metal_fab': {
-        (el<HTMLInputElement>('part-name')).value = slot === 1 ? 'Audi Q7 Side Sill Bracket' : 'BMW X5 Engine Undertray Bracket';
-        const matEl = el<HTMLSelectElement>('smf-mat');
-        if (matEl) { const o = Array.from(matEl.options).find(x => x.value === 'mat-dc01'); if (o) matEl.value = o.value; }
-        (el<HTMLInputElement>('smf-part-wt')).value = slot === 1 ? '1.85' : '0.95';
-        (el<HTMLInputElement>('smf-mat-util')).value = slot === 1 ? '0.82' : '0.85';
-        (el<HTMLInputElement>('smf-tolerance')).value = '0.5';
-        const blankMeth = el<HTMLSelectElement>('smf-blank-method');
-        if (blankMeth) blankMeth.value = 'laser';
-        (el<HTMLInputElement>('smf-blank-ct')).value = slot === 1 ? '120' : '75';
-        const blankMach = el<HTMLSelectElement>('smf-blank-mach');
-        if (blankMach) { const o = Array.from(blankMach.options).find(x => x.value === (slot === 1 ? 'laser-trumpf-3030' : 'laser-bystronic-3015')); if (o) blankMach.value = o.value; }
-        const blankLab = el<HTMLSelectElement>('smf-blank-lab');
-        if (blankLab) { const o = Array.from(blankLab.options).find(x => x.value === 'lab-uk-skilled'); if (o) blankLab.value = o.value; }
-        (el<HTMLInputElement>('smf-bends')).value = slot === 1 ? '4' : '3';
-        (el<HTMLInputElement>('smf-bend-t')).value = slot === 1 ? '60' : '45';
-        const brakeMach = el<HTMLSelectElement>('smf-brake-mach');
-        if (brakeMach) { const o = Array.from(brakeMach.options).find(x => x.value === 'brake-amada-hfe100'); if (o) brakeMach.value = o.value; }
-        const brakeLab = el<HTMLSelectElement>('smf-brake-lab');
-        if (brakeLab) { const o = Array.from(brakeLab.options).find(x => x.value === 'lab-uk-skilled'); if (o) brakeLab.value = o.value; }
-        (el<HTMLInputElement>('smf-oee')).value = slot === 1 ? '0.80' : '0.82';
-        (el<HTMLInputElement>('smf-manning')).value = '1';
-        (el<HTMLInputElement>('smf-lab-eff')).value = '0.92';
-        (el<HTMLInputElement>('smf-reject')).value = '0.01';
-        if (slot === 1) {
-          // MIG weld
-          (el<HTMLInputElement>('smf-mig-len')).value = '0.60';
-          (el<HTMLInputElement>('smf-mig-spd')).value = '0.30';
-          const migMach = el<HTMLSelectElement>('smf-mig-mach');
-          if (migMach) { const o = Array.from(migMach.options).find(x => x.value === 'mig-welder-manual'); if (o) migMach.value = o.value; }
-          const migLab = el<HTMLSelectElement>('smf-mig-lab');
-          if (migLab) { const o = Array.from(migLab.options).find(x => x.value === 'lab-uk-skilled'); if (o) migLab.value = o.value; }
-          (el<HTMLInputElement>('smf-mig-cons')).value = '0.40';
-          (el<HTMLInputElement>('smf-sw-count')).value = '0';
-        } else {
-          // Spot weld
-          (el<HTMLInputElement>('smf-sw-count')).value = '8';
-          (el<HTMLInputElement>('smf-sw-t')).value = '3';
-          const swMach = el<HTMLSelectElement>('smf-sw-mach');
-          if (swMach) { const o = Array.from(swMach.options).find(x => x.value === 'robot-spotweld-kuka'); if (o) swMach.value = o.value; }
-          const swLab = el<HTMLSelectElement>('smf-sw-lab');
-          if (swLab) { const o = Array.from(swLab.options).find(x => x.value === 'lab-uk-skilled'); if (o) swLab.value = o.value; }
+        if (slot === 3) {
+          (el<HTMLInputElement>('part-name')).value = 'Volvo XC60 Rear Subframe Mount Bracket';
+          const matEl3 = el<HTMLSelectElement>('smf-mat');
+          if (matEl3) { const o = Array.from(matEl3.options).find(x => x.value === 'mat-dc01'); if (o) matEl3.value = o.value; }
+          (el<HTMLInputElement>('smf-part-wt')).value = '2.80';
+          (el<HTMLInputElement>('smf-mat-util')).value = '0.80';
+          (el<HTMLInputElement>('smf-tolerance')).value = '0.50';
+          const blankMeth3 = el<HTMLSelectElement>('smf-blank-method');
+          if (blankMeth3) blankMeth3.value = 'laser';
+          (el<HTMLInputElement>('smf-blank-ct')).value = '95';
+          const blankMach3 = el<HTMLSelectElement>('smf-blank-mach');
+          if (blankMach3) { const o = Array.from(blankMach3.options).find(x => x.value === 'laser-trumpf-3030'); if (o) blankMach3.value = o.value; }
+          const blankLab3 = el<HTMLSelectElement>('smf-blank-lab');
+          if (blankLab3) { const o = Array.from(blankLab3.options).find(x => x.value === 'lab-uk-skilled'); if (o) blankLab3.value = o.value; }
+          (el<HTMLInputElement>('smf-bends')).value = '5';
+          (el<HTMLInputElement>('smf-bend-t')).value = '55';
+          const brakeMach3 = el<HTMLSelectElement>('smf-brake-mach');
+          if (brakeMach3) { const o = Array.from(brakeMach3.options).find(x => x.value === 'brake-amada-hfe100'); if (o) brakeMach3.value = o.value; }
+          const brakeLab3 = el<HTMLSelectElement>('smf-brake-lab');
+          if (brakeLab3) { const o = Array.from(brakeLab3.options).find(x => x.value === 'lab-uk-skilled'); if (o) brakeLab3.value = o.value; }
+          (el<HTMLInputElement>('smf-oee')).value = '0.82';
+          (el<HTMLInputElement>('smf-manning')).value = '1';
+          (el<HTMLInputElement>('smf-lab-eff')).value = '0.92';
+          (el<HTMLInputElement>('smf-reject')).value = '0.015';
+          // Spot weld only
+          (el<HTMLInputElement>('smf-sw-count')).value = '6';
+          (el<HTMLInputElement>('smf-sw-t')).value = '4';
+          const swMach3 = el<HTMLSelectElement>('smf-sw-mach');
+          if (swMach3) { const o = Array.from(swMach3.options).find(x => x.value === 'robot-spotweld-kuka'); if (o) swMach3.value = o.value; }
+          const swLab3 = el<HTMLSelectElement>('smf-sw-lab');
+          if (swLab3) { const o = Array.from(swLab3.options).find(x => x.value === 'lab-uk-skilled'); if (o) swLab3.value = o.value; }
           (el<HTMLInputElement>('smf-mig-len')).value = '0';
+          (el<HTMLInputElement>('smf-tooling')).value = '3500';
+          (el<HTMLInputElement>('smf-amort')).value = '12000';
+          (el<HTMLInputElement>('packaging')).value = '0.55';
+          (el<HTMLInputElement>('logistics')).value = '1.20';
+          (el<HTMLInputElement>('overhead-pct')).value = '10';
+          (el<HTMLInputElement>('margin-pct')).value = '8';
+        } else {
+          (el<HTMLInputElement>('part-name')).value = slot === 1 ? 'Audi Q7 Side Sill Bracket' : 'BMW X5 Engine Undertray Bracket';
+          const matEl = el<HTMLSelectElement>('smf-mat');
+          if (matEl) { const o = Array.from(matEl.options).find(x => x.value === 'mat-dc01'); if (o) matEl.value = o.value; }
+          (el<HTMLInputElement>('smf-part-wt')).value = slot === 1 ? '1.85' : '0.95';
+          (el<HTMLInputElement>('smf-mat-util')).value = slot === 1 ? '0.82' : '0.85';
+          (el<HTMLInputElement>('smf-tolerance')).value = '0.5';
+          const blankMeth = el<HTMLSelectElement>('smf-blank-method');
+          if (blankMeth) blankMeth.value = 'laser';
+          (el<HTMLInputElement>('smf-blank-ct')).value = slot === 1 ? '120' : '75';
+          const blankMach = el<HTMLSelectElement>('smf-blank-mach');
+          if (blankMach) { const o = Array.from(blankMach.options).find(x => x.value === (slot === 1 ? 'laser-trumpf-3030' : 'laser-bystronic-3015')); if (o) blankMach.value = o.value; }
+          const blankLab = el<HTMLSelectElement>('smf-blank-lab');
+          if (blankLab) { const o = Array.from(blankLab.options).find(x => x.value === 'lab-uk-skilled'); if (o) blankLab.value = o.value; }
+          (el<HTMLInputElement>('smf-bends')).value = slot === 1 ? '4' : '3';
+          (el<HTMLInputElement>('smf-bend-t')).value = slot === 1 ? '60' : '45';
+          const brakeMach = el<HTMLSelectElement>('smf-brake-mach');
+          if (brakeMach) { const o = Array.from(brakeMach.options).find(x => x.value === 'brake-amada-hfe100'); if (o) brakeMach.value = o.value; }
+          const brakeLab = el<HTMLSelectElement>('smf-brake-lab');
+          if (brakeLab) { const o = Array.from(brakeLab.options).find(x => x.value === 'lab-uk-skilled'); if (o) brakeLab.value = o.value; }
+          (el<HTMLInputElement>('smf-oee')).value = slot === 1 ? '0.80' : '0.82';
+          (el<HTMLInputElement>('smf-manning')).value = '1';
+          (el<HTMLInputElement>('smf-lab-eff')).value = '0.92';
+          (el<HTMLInputElement>('smf-reject')).value = '0.01';
+          if (slot === 1) {
+            // MIG weld
+            (el<HTMLInputElement>('smf-mig-len')).value = '0.60';
+            (el<HTMLInputElement>('smf-mig-spd')).value = '0.30';
+            const migMach = el<HTMLSelectElement>('smf-mig-mach');
+            if (migMach) { const o = Array.from(migMach.options).find(x => x.value === 'mig-welder-manual'); if (o) migMach.value = o.value; }
+            const migLab = el<HTMLSelectElement>('smf-mig-lab');
+            if (migLab) { const o = Array.from(migLab.options).find(x => x.value === 'lab-uk-skilled'); if (o) migLab.value = o.value; }
+            (el<HTMLInputElement>('smf-mig-cons')).value = '0.40';
+            (el<HTMLInputElement>('smf-sw-count')).value = '0';
+          } else {
+            // Spot weld
+            (el<HTMLInputElement>('smf-sw-count')).value = '8';
+            (el<HTMLInputElement>('smf-sw-t')).value = '3';
+            const swMach = el<HTMLSelectElement>('smf-sw-mach');
+            if (swMach) { const o = Array.from(swMach.options).find(x => x.value === 'robot-spotweld-kuka'); if (o) swMach.value = o.value; }
+            const swLab = el<HTMLSelectElement>('smf-sw-lab');
+            if (swLab) { const o = Array.from(swLab.options).find(x => x.value === 'lab-uk-skilled'); if (o) swLab.value = o.value; }
+            (el<HTMLInputElement>('smf-mig-len')).value = '0';
+          }
+          (el<HTMLInputElement>('smf-tooling')).value = slot === 1 ? '3000' : '2500';
+          (el<HTMLInputElement>('smf-amort')).value = slot === 1 ? '10000' : '15000';
+          (el<HTMLInputElement>('packaging')).value = '0.35';
+          (el<HTMLInputElement>('logistics')).value = '0.75';
+          (el<HTMLInputElement>('overhead-pct')).value = '10';
+          (el<HTMLInputElement>('margin-pct')).value = '8';
         }
-        (el<HTMLInputElement>('smf-tooling')).value = slot === 1 ? '3000' : '2500';
-        (el<HTMLInputElement>('smf-amort')).value = slot === 1 ? '10000' : '15000';
-        (el<HTMLInputElement>('packaging')).value = '0.35';
-        (el<HTMLInputElement>('logistics')).value = '0.75';
-        (el<HTMLInputElement>('overhead-pct')).value = '10';
-        (el<HTMLInputElement>('margin-pct')).value = '8';
         compute();
         setTimeout(switchToInsights, 300);
         break;
       }
 
       case 'injection_moulding': {
-        (el<HTMLInputElement>('part-name')).value = slot === 1 ? 'Range Rover Sport Grille Housing' : 'Bentley Bentayga Centre Console Trim';
-        const matEl = el<HTMLSelectElement>('imm-mat');
-        if (matEl) { const o = Array.from(matEl.options).find(x => x.value === (slot === 1 ? 'mat-abs' : 'mat-pc-abs')); if (o) matEl.value = o.value; }
-        (el<HTMLInputElement>('imm-part-wt')).value = slot === 1 ? '0.45' : '0.38';
-        const runnerSys = el<HTMLSelectElement>('imm-runner-sys');
-        if (runnerSys) runnerSys.value = slot === 1 ? 'cold' : 'hot';
-        (el<HTMLInputElement>('imm-runner-wt')).value = slot === 1 ? '0.08' : '0';
-        (el<HTMLInputElement>('imm-regrind')).value = slot === 1 ? '0.2' : '0';
-        (el<HTMLInputElement>('imm-cav')).value = slot === 1 ? '2' : '1';
-        (el<HTMLInputElement>('imm-area')).value = slot === 1 ? '180' : '220';
-        (el<HTMLInputElement>('imm-cav-press')).value = slot === 1 ? '25' : '30';
-        (el<HTMLInputElement>('imm-wall')).value = slot === 1 ? '2.5' : '2.8';
-        (el<HTMLInputElement>('imm-cool-f')).value = slot === 1 ? '3.16' : '2.2';
-        (el<HTMLInputElement>('imm-fill')).value = slot === 1 ? '2' : '3';
-        (el<HTMLInputElement>('imm-pack')).value = slot === 1 ? '4' : '5';
-        (el<HTMLInputElement>('imm-eject')).value = '3';
-        const immMach = el<HTMLSelectElement>('imm-mach');
-        if (immMach) { const o = Array.from(immMach.options).find(x => x.value === 'imm-400t'); if (o) immMach.value = o.value; }
-        const immLab = el<HTMLSelectElement>('imm-lab');
-        if (immLab) { const o = Array.from(immLab.options).find(x => x.value === 'lab-uk-skilled'); if (o) immLab.value = o.value; }
-        (el<HTMLInputElement>('imm-oee')).value = '0.85';
-        (el<HTMLInputElement>('imm-manning')).value = '0.25';
-        (el<HTMLInputElement>('imm-lab-eff')).value = '0.95';
-        (el<HTMLInputElement>('imm-tolerance')).value = slot === 1 ? '0.3' : '0.1';
-        const immFinish = el<HTMLSelectElement>('imm-finish');
-        if (immFinish) immFinish.value = slot === 1 ? 'textured' : 'high_gloss';
-        (el<HTMLInputElement>('imm-mould-cost')).value = slot === 1 ? '55000' : '95000';
-        (el<HTMLInputElement>('imm-mould-life')).value = slot === 1 ? '500000' : '300000';
-        (el<HTMLInputElement>('imm-amort')).value = slot === 1 ? '100000' : '50000';
-        (el<HTMLInputElement>('packaging')).value = '0.20';
-        (el<HTMLInputElement>('logistics')).value = '0.45';
-        (el<HTMLInputElement>('overhead-pct')).value = '11';
-        (el<HTMLInputElement>('margin-pct')).value = '9';
+        if (slot === 3) {
+          (el<HTMLInputElement>('part-name')).value = 'Toyota RAV4 Rear Bumper Fascia';
+          const matEl3 = el<HTMLSelectElement>('imm-mat');
+          if (matEl3) { const o = Array.from(matEl3.options).find(x => x.value === 'mat-pp'); if (o) matEl3.value = o.value; }
+          (el<HTMLInputElement>('imm-part-wt')).value = '1.85';
+          const runnerSys3 = el<HTMLSelectElement>('imm-runner-sys');
+          if (runnerSys3) runnerSys3.value = 'cold';
+          (el<HTMLInputElement>('imm-runner-wt')).value = '0.28';
+          (el<HTMLInputElement>('imm-regrind')).value = '0.3';
+          (el<HTMLInputElement>('imm-cav')).value = '2';
+          (el<HTMLInputElement>('imm-area')).value = '750';
+          (el<HTMLInputElement>('imm-cav-press')).value = '35';
+          (el<HTMLInputElement>('imm-wall')).value = '3.0';
+          (el<HTMLInputElement>('imm-cool-f')).value = '3.16';
+          (el<HTMLInputElement>('imm-fill')).value = '2.5';
+          (el<HTMLInputElement>('imm-pack')).value = '4.0';
+          (el<HTMLInputElement>('imm-eject')).value = '3';
+          const immMach3 = el<HTMLSelectElement>('imm-mach');
+          if (immMach3) { const o = Array.from(immMach3.options).find(x => x.value === 'imm-800t') || Array.from(immMach3.options).find(x => x.value === 'imm-400t'); if (o) immMach3.value = o.value; }
+          const immLab3 = el<HTMLSelectElement>('imm-lab');
+          if (immLab3) { const o = Array.from(immLab3.options).find(x => x.value === 'lab-uk-skilled'); if (o) immLab3.value = o.value; }
+          (el<HTMLInputElement>('imm-oee')).value = '0.85';
+          (el<HTMLInputElement>('imm-manning')).value = '0.5';
+          (el<HTMLInputElement>('imm-lab-eff')).value = '0.95';
+          (el<HTMLInputElement>('imm-tolerance')).value = '0.5';
+          const immFinish3 = el<HTMLSelectElement>('imm-finish');
+          if (immFinish3) immFinish3.value = 'textured';
+          (el<HTMLInputElement>('imm-mould-cost')).value = '72000';
+          (el<HTMLInputElement>('imm-mould-life')).value = '500000';
+          (el<HTMLInputElement>('imm-amort')).value = '80000';
+          (el<HTMLInputElement>('packaging')).value = '0.65';
+          (el<HTMLInputElement>('logistics')).value = '1.50';
+          (el<HTMLInputElement>('overhead-pct')).value = '10';
+          (el<HTMLInputElement>('margin-pct')).value = '8';
+        } else {
+          (el<HTMLInputElement>('part-name')).value = slot === 1 ? 'Range Rover Sport Grille Housing' : 'Bentley Bentayga Centre Console Trim';
+          const matEl = el<HTMLSelectElement>('imm-mat');
+          if (matEl) { const o = Array.from(matEl.options).find(x => x.value === (slot === 1 ? 'mat-abs' : 'mat-pc-abs')); if (o) matEl.value = o.value; }
+          (el<HTMLInputElement>('imm-part-wt')).value = slot === 1 ? '0.45' : '0.38';
+          const runnerSys = el<HTMLSelectElement>('imm-runner-sys');
+          if (runnerSys) runnerSys.value = slot === 1 ? 'cold' : 'hot';
+          (el<HTMLInputElement>('imm-runner-wt')).value = slot === 1 ? '0.08' : '0';
+          (el<HTMLInputElement>('imm-regrind')).value = slot === 1 ? '0.2' : '0';
+          (el<HTMLInputElement>('imm-cav')).value = slot === 1 ? '2' : '1';
+          (el<HTMLInputElement>('imm-area')).value = slot === 1 ? '180' : '220';
+          (el<HTMLInputElement>('imm-cav-press')).value = slot === 1 ? '25' : '30';
+          (el<HTMLInputElement>('imm-wall')).value = slot === 1 ? '2.5' : '2.8';
+          (el<HTMLInputElement>('imm-cool-f')).value = slot === 1 ? '3.16' : '2.2';
+          (el<HTMLInputElement>('imm-fill')).value = slot === 1 ? '2' : '3';
+          (el<HTMLInputElement>('imm-pack')).value = slot === 1 ? '4' : '5';
+          (el<HTMLInputElement>('imm-eject')).value = '3';
+          const immMach = el<HTMLSelectElement>('imm-mach');
+          if (immMach) { const o = Array.from(immMach.options).find(x => x.value === 'imm-400t'); if (o) immMach.value = o.value; }
+          const immLab = el<HTMLSelectElement>('imm-lab');
+          if (immLab) { const o = Array.from(immLab.options).find(x => x.value === 'lab-uk-skilled'); if (o) immLab.value = o.value; }
+          (el<HTMLInputElement>('imm-oee')).value = '0.85';
+          (el<HTMLInputElement>('imm-manning')).value = '0.25';
+          (el<HTMLInputElement>('imm-lab-eff')).value = '0.95';
+          (el<HTMLInputElement>('imm-tolerance')).value = slot === 1 ? '0.3' : '0.1';
+          const immFinish = el<HTMLSelectElement>('imm-finish');
+          if (immFinish) immFinish.value = slot === 1 ? 'textured' : 'high_gloss';
+          (el<HTMLInputElement>('imm-mould-cost')).value = slot === 1 ? '55000' : '95000';
+          (el<HTMLInputElement>('imm-mould-life')).value = slot === 1 ? '500000' : '300000';
+          (el<HTMLInputElement>('imm-amort')).value = slot === 1 ? '100000' : '50000';
+          (el<HTMLInputElement>('packaging')).value = '0.20';
+          (el<HTMLInputElement>('logistics')).value = '0.45';
+          (el<HTMLInputElement>('overhead-pct')).value = '11';
+          (el<HTMLInputElement>('margin-pct')).value = '9';
+        }
         compute();
         setTimeout(switchToInsights, 300);
         break;
       }
 
       case 'blow_moulding': {
-        (el<HTMLInputElement>('part-name')).value = slot === 1 ? 'BMW X7 Washer Fluid Reservoir' : 'Land Rover Defender Coolant Tank';
-        const matEl = el<HTMLSelectElement>('bm-mat');
-        if (matEl) { const o = Array.from(matEl.options).find(x => x.value === 'mat-hdpe'); if (o) matEl.value = o.value; }
-        (el<HTMLInputElement>('bm-part-wt')).value = slot === 1 ? '0.35' : '0.55';
-        (el<HTMLInputElement>('bm-flash-wt')).value = slot === 1 ? '0.04' : '0.06';
-        (el<HTMLInputElement>('bm-wall')).value = slot === 1 ? '2.0' : '2.5';
-        (el<HTMLInputElement>('bm-cool-f')).value = '3.5';
-        (el<HTMLInputElement>('bm-blow-t')).value = slot === 1 ? '6' : '7';
-        (el<HTMLInputElement>('bm-open-close')).value = slot === 1 ? '5' : '6';
-        (el<HTMLInputElement>('bm-cav')).value = slot === 1 ? '2' : '1';
-        const bmMach = el<HTMLSelectElement>('bm-mach');
-        if (bmMach) { const o = Array.from(bmMach.options).find(x => x.value === 'blow-ebm-100l'); if (o) bmMach.value = o.value; }
-        const bmLab = el<HTMLSelectElement>('bm-lab');
-        if (bmLab) { const o = Array.from(bmLab.options).find(x => x.value === 'lab-uk-skilled'); if (o) bmLab.value = o.value; }
-        (el<HTMLInputElement>('bm-oee')).value = slot === 1 ? '0.82' : '0.80';
-        (el<HTMLInputElement>('bm-manning')).value = '0.5';
-        (el<HTMLInputElement>('bm-lab-eff')).value = '0.95';
-        (el<HTMLInputElement>('bm-mould-cost')).value = slot === 1 ? '14000' : '18000';
-        (el<HTMLInputElement>('bm-mould-life')).value = slot === 1 ? '1000000' : '800000';
-        (el<HTMLInputElement>('bm-amort')).value = slot === 1 ? '200000' : '100000';
-        (el<HTMLInputElement>('packaging')).value = '0.12';
-        (el<HTMLInputElement>('logistics')).value = '0.30';
-        (el<HTMLInputElement>('overhead-pct')).value = '10';
-        (el<HTMLInputElement>('margin-pct')).value = '8';
+        if (slot === 3) {
+          (el<HTMLInputElement>('part-name')).value = 'Volvo XC90 Windscreen Washer Fluid Reservoir';
+          const matEl3 = el<HTMLSelectElement>('bm-mat');
+          if (matEl3) { const o = Array.from(matEl3.options).find(x => x.value === 'mat-hdpe'); if (o) matEl3.value = o.value; }
+          (el<HTMLInputElement>('bm-part-wt')).value = '0.48';
+          (el<HTMLInputElement>('bm-flash-wt')).value = '0.05';
+          (el<HTMLInputElement>('bm-wall')).value = '2.2';
+          (el<HTMLInputElement>('bm-cool-f')).value = '3.5';
+          (el<HTMLInputElement>('bm-blow-t')).value = '7';
+          (el<HTMLInputElement>('bm-open-close')).value = '6';
+          (el<HTMLInputElement>('bm-cav')).value = '2';
+          const bmMach3 = el<HTMLSelectElement>('bm-mach');
+          if (bmMach3) { const o = Array.from(bmMach3.options).find(x => x.value === 'blow-ebm-100l'); if (o) bmMach3.value = o.value; }
+          const bmLab3 = el<HTMLSelectElement>('bm-lab');
+          if (bmLab3) { const o = Array.from(bmLab3.options).find(x => x.value === 'lab-uk-skilled'); if (o) bmLab3.value = o.value; }
+          (el<HTMLInputElement>('bm-oee')).value = '0.82';
+          (el<HTMLInputElement>('bm-manning')).value = '0.5';
+          (el<HTMLInputElement>('bm-lab-eff')).value = '0.95';
+          (el<HTMLInputElement>('bm-mould-cost')).value = '12000';
+          (el<HTMLInputElement>('bm-mould-life')).value = '800000';
+          (el<HTMLInputElement>('bm-amort')).value = '150000';
+          (el<HTMLInputElement>('packaging')).value = '0.10';
+          (el<HTMLInputElement>('logistics')).value = '0.25';
+          (el<HTMLInputElement>('overhead-pct')).value = '10';
+          (el<HTMLInputElement>('margin-pct')).value = '8';
+        } else {
+          (el<HTMLInputElement>('part-name')).value = slot === 1 ? 'BMW X7 Washer Fluid Reservoir' : 'Land Rover Defender Coolant Tank';
+          const matEl = el<HTMLSelectElement>('bm-mat');
+          if (matEl) { const o = Array.from(matEl.options).find(x => x.value === 'mat-hdpe'); if (o) matEl.value = o.value; }
+          (el<HTMLInputElement>('bm-part-wt')).value = slot === 1 ? '0.35' : '0.55';
+          (el<HTMLInputElement>('bm-flash-wt')).value = slot === 1 ? '0.04' : '0.06';
+          (el<HTMLInputElement>('bm-wall')).value = slot === 1 ? '2.0' : '2.5';
+          (el<HTMLInputElement>('bm-cool-f')).value = '3.5';
+          (el<HTMLInputElement>('bm-blow-t')).value = slot === 1 ? '6' : '7';
+          (el<HTMLInputElement>('bm-open-close')).value = slot === 1 ? '5' : '6';
+          (el<HTMLInputElement>('bm-cav')).value = slot === 1 ? '2' : '1';
+          const bmMach = el<HTMLSelectElement>('bm-mach');
+          if (bmMach) { const o = Array.from(bmMach.options).find(x => x.value === 'blow-ebm-100l'); if (o) bmMach.value = o.value; }
+          const bmLab = el<HTMLSelectElement>('bm-lab');
+          if (bmLab) { const o = Array.from(bmLab.options).find(x => x.value === 'lab-uk-skilled'); if (o) bmLab.value = o.value; }
+          (el<HTMLInputElement>('bm-oee')).value = slot === 1 ? '0.82' : '0.80';
+          (el<HTMLInputElement>('bm-manning')).value = '0.5';
+          (el<HTMLInputElement>('bm-lab-eff')).value = '0.95';
+          (el<HTMLInputElement>('bm-mould-cost')).value = slot === 1 ? '14000' : '18000';
+          (el<HTMLInputElement>('bm-mould-life')).value = slot === 1 ? '1000000' : '800000';
+          (el<HTMLInputElement>('bm-amort')).value = slot === 1 ? '200000' : '100000';
+          (el<HTMLInputElement>('packaging')).value = '0.12';
+          (el<HTMLInputElement>('logistics')).value = '0.30';
+          (el<HTMLInputElement>('overhead-pct')).value = '10';
+          (el<HTMLInputElement>('margin-pct')).value = '8';
+        }
         compute();
         setTimeout(switchToInsights, 300);
         break;
       }
 
       case 'extrusion': {
-        (el<HTMLInputElement>('part-name')).value = slot === 1 ? 'Rolls-Royce Cullinan Door Seal Profile' : 'Range Rover Vogue Weatherstrip Profile';
-        const matEl = el<HTMLSelectElement>('ext-mat');
-        if (matEl) { const o = Array.from(matEl.options).find(x => x.value === 'mat-fpvc'); if (o) matEl.value = o.value; }
-        (el<HTMLInputElement>('ext-kg-per-m')).value = slot === 1 ? '0.18' : '0.12';
-        (el<HTMLInputElement>('ext-length')).value = slot === 1 ? '2.4' : '3.2';
-        (el<HTMLInputElement>('ext-rate')).value = slot === 1 ? '120' : '150';
-        (el<HTMLInputElement>('ext-scrap')).value = slot === 1 ? '0.04' : '0.03';
-        const extMach = el<HTMLSelectElement>('ext-mach');
-        if (extMach) { const o = Array.from(extMach.options).find(x => x.value === 'extruder-75mm'); if (o) extMach.value = o.value; }
-        const extLab = el<HTMLSelectElement>('ext-lab');
-        if (extLab) { const o = Array.from(extLab.options).find(x => x.value === 'lab-uk-skilled'); if (o) extLab.value = o.value; }
-        (el<HTMLInputElement>('ext-oee')).value = '0.82';
-        (el<HTMLInputElement>('ext-manning')).value = '1';
-        (el<HTMLInputElement>('ext-lab-eff')).value = '0.95';
-        (el<HTMLInputElement>('ext-die-cost')).value = slot === 1 ? '3500' : '4500';
-        (el<HTMLInputElement>('ext-amort')).value = slot === 1 ? '50000' : '80000';
-        (el<HTMLInputElement>('packaging')).value = '0.08';
-        (el<HTMLInputElement>('logistics')).value = '0.15';
-        (el<HTMLInputElement>('overhead-pct')).value = '9';
-        (el<HTMLInputElement>('margin-pct')).value = '7';
+        if (slot === 3) {
+          (el<HTMLInputElement>('part-name')).value = 'BMW X5 M Rear Bumper Rubber Trim Profile';
+          const matEl3 = el<HTMLSelectElement>('ext-mat');
+          if (matEl3) { const o = Array.from(matEl3.options).find(x => x.value === 'mat-epdm') || Array.from(matEl3.options).find(x => x.value === 'mat-fpvc'); if (o) matEl3.value = o.value; }
+          (el<HTMLInputElement>('ext-kg-per-m')).value = '0.22';
+          (el<HTMLInputElement>('ext-length')).value = '1.60';
+          (el<HTMLInputElement>('ext-rate')).value = '90';
+          (el<HTMLInputElement>('ext-scrap')).value = '0.04';
+          const extMach3 = el<HTMLSelectElement>('ext-mach');
+          if (extMach3) { const o = Array.from(extMach3.options).find(x => x.value === 'extruder-75mm'); if (o) extMach3.value = o.value; }
+          const extLab3 = el<HTMLSelectElement>('ext-lab');
+          if (extLab3) { const o = Array.from(extLab3.options).find(x => x.value === 'lab-uk-skilled'); if (o) extLab3.value = o.value; }
+          (el<HTMLInputElement>('ext-oee')).value = '0.80';
+          (el<HTMLInputElement>('ext-manning')).value = '1';
+          (el<HTMLInputElement>('ext-lab-eff')).value = '0.95';
+          (el<HTMLInputElement>('ext-die-cost')).value = '2800';
+          (el<HTMLInputElement>('ext-amort')).value = '30000';
+          (el<HTMLInputElement>('packaging')).value = '0.06';
+          (el<HTMLInputElement>('logistics')).value = '0.12';
+          (el<HTMLInputElement>('overhead-pct')).value = '9';
+          (el<HTMLInputElement>('margin-pct')).value = '7';
+        } else {
+          (el<HTMLInputElement>('part-name')).value = slot === 1 ? 'Rolls-Royce Cullinan Door Seal Profile' : 'Range Rover Vogue Weatherstrip Profile';
+          const matEl = el<HTMLSelectElement>('ext-mat');
+          if (matEl) { const o = Array.from(matEl.options).find(x => x.value === 'mat-fpvc'); if (o) matEl.value = o.value; }
+          (el<HTMLInputElement>('ext-kg-per-m')).value = slot === 1 ? '0.18' : '0.12';
+          (el<HTMLInputElement>('ext-length')).value = slot === 1 ? '2.4' : '3.2';
+          (el<HTMLInputElement>('ext-rate')).value = slot === 1 ? '120' : '150';
+          (el<HTMLInputElement>('ext-scrap')).value = slot === 1 ? '0.04' : '0.03';
+          const extMach = el<HTMLSelectElement>('ext-mach');
+          if (extMach) { const o = Array.from(extMach.options).find(x => x.value === 'extruder-75mm'); if (o) extMach.value = o.value; }
+          const extLab = el<HTMLSelectElement>('ext-lab');
+          if (extLab) { const o = Array.from(extLab.options).find(x => x.value === 'lab-uk-skilled'); if (o) extLab.value = o.value; }
+          (el<HTMLInputElement>('ext-oee')).value = '0.82';
+          (el<HTMLInputElement>('ext-manning')).value = '1';
+          (el<HTMLInputElement>('ext-lab-eff')).value = '0.95';
+          (el<HTMLInputElement>('ext-die-cost')).value = slot === 1 ? '3500' : '4500';
+          (el<HTMLInputElement>('ext-amort')).value = slot === 1 ? '50000' : '80000';
+          (el<HTMLInputElement>('packaging')).value = '0.08';
+          (el<HTMLInputElement>('logistics')).value = '0.15';
+          (el<HTMLInputElement>('overhead-pct')).value = '9';
+          (el<HTMLInputElement>('margin-pct')).value = '7';
+        }
         compute();
         setTimeout(switchToInsights, 300);
         break;
       }
 
       case 'thermoforming': {
-        (el<HTMLInputElement>('part-name')).value = slot === 1 ? 'Mercedes GLS Boot / Cargo Liner' : 'Porsche Cayenne Dashboard Lower Cover';
-        const matEl = el<HTMLSelectElement>('tf-mat');
-        if (matEl) { const o = Array.from(matEl.options).find(x => x.value === (slot === 1 ? 'mat-hips' : 'mat-abs')); if (o) matEl.value = o.value; }
-        (el<HTMLInputElement>('tf-sheet-wt')).value = slot === 1 ? '2.80' : '1.85';
-        (el<HTMLInputElement>('tf-part-wt')).value = slot === 1 ? '0.92' : '0.65';
-        (el<HTMLInputElement>('tf-pps')).value = '1';
-        const tfMeth = el<HTMLSelectElement>('tf-method');
-        if (tfMeth) tfMeth.value = slot === 1 ? 'vacuum' : 'pressure';
-        (el<HTMLInputElement>('tf-heat')).value = slot === 1 ? '60' : '45';
-        (el<HTMLInputElement>('tf-form')).value = slot === 1 ? '15' : '12';
-        (el<HTMLInputElement>('tf-trim')).value = slot === 1 ? '30' : '25';
-        (el<HTMLInputElement>('tf-index')).value = slot === 1 ? '12' : '10';
-        const tfMach = el<HTMLSelectElement>('tf-mach');
-        if (tfMach) { const o = Array.from(tfMach.options).find(x => x.value === 'thermoform-large'); if (o) tfMach.value = o.value; }
-        const tfLab = el<HTMLSelectElement>('tf-lab');
-        if (tfLab) { const o = Array.from(tfLab.options).find(x => x.value === 'lab-uk-skilled'); if (o) tfLab.value = o.value; }
-        (el<HTMLInputElement>('tf-oee')).value = '0.80';
-        (el<HTMLInputElement>('tf-manning')).value = '1';
-        (el<HTMLInputElement>('tf-lab-eff')).value = '0.92';
-        (el<HTMLInputElement>('tf-tool-cost')).value = slot === 1 ? '8000' : '12000';
-        (el<HTMLInputElement>('tf-amort')).value = slot === 1 ? '20000' : '15000';
-        (el<HTMLInputElement>('packaging')).value = slot === 1 ? '0.45' : '0.30';
-        (el<HTMLInputElement>('logistics')).value = slot === 1 ? '0.80' : '0.60';
-        (el<HTMLInputElement>('overhead-pct')).value = '10';
-        (el<HTMLInputElement>('margin-pct')).value = '8';
+        if (slot === 3) {
+          (el<HTMLInputElement>('part-name')).value = 'Land Rover Defender Spare Wheel Carrier Cover';
+          const matEl3 = el<HTMLSelectElement>('tf-mat');
+          if (matEl3) { const o = Array.from(matEl3.options).find(x => x.value === 'mat-abs'); if (o) matEl3.value = o.value; }
+          (el<HTMLInputElement>('tf-sheet-wt')).value = '2.10';
+          (el<HTMLInputElement>('tf-part-wt')).value = '1.15';
+          (el<HTMLInputElement>('tf-pps')).value = '1';
+          const tfMeth3 = el<HTMLSelectElement>('tf-method');
+          if (tfMeth3) tfMeth3.value = 'vacuum';
+          (el<HTMLInputElement>('tf-heat')).value = '55';
+          (el<HTMLInputElement>('tf-form')).value = '18';
+          (el<HTMLInputElement>('tf-trim')).value = '28';
+          (el<HTMLInputElement>('tf-index')).value = '12';
+          const tfMach3 = el<HTMLSelectElement>('tf-mach');
+          if (tfMach3) { const o = Array.from(tfMach3.options).find(x => x.value === 'thermoform-large'); if (o) tfMach3.value = o.value; }
+          const tfLab3 = el<HTMLSelectElement>('tf-lab');
+          if (tfLab3) { const o = Array.from(tfLab3.options).find(x => x.value === 'lab-uk-skilled'); if (o) tfLab3.value = o.value; }
+          (el<HTMLInputElement>('tf-oee')).value = '0.80';
+          (el<HTMLInputElement>('tf-manning')).value = '1';
+          (el<HTMLInputElement>('tf-lab-eff')).value = '0.92';
+          (el<HTMLInputElement>('tf-tool-cost')).value = '9500';
+          (el<HTMLInputElement>('tf-amort')).value = '15000';
+          (el<HTMLInputElement>('packaging')).value = '0.55';
+          (el<HTMLInputElement>('logistics')).value = '1.00';
+          (el<HTMLInputElement>('overhead-pct')).value = '10';
+          (el<HTMLInputElement>('margin-pct')).value = '8';
+        } else {
+          (el<HTMLInputElement>('part-name')).value = slot === 1 ? 'Mercedes GLS Boot / Cargo Liner' : 'Porsche Cayenne Dashboard Lower Cover';
+          const matEl = el<HTMLSelectElement>('tf-mat');
+          if (matEl) { const o = Array.from(matEl.options).find(x => x.value === (slot === 1 ? 'mat-hips' : 'mat-abs')); if (o) matEl.value = o.value; }
+          (el<HTMLInputElement>('tf-sheet-wt')).value = slot === 1 ? '2.80' : '1.85';
+          (el<HTMLInputElement>('tf-part-wt')).value = slot === 1 ? '0.92' : '0.65';
+          (el<HTMLInputElement>('tf-pps')).value = '1';
+          const tfMeth = el<HTMLSelectElement>('tf-method');
+          if (tfMeth) tfMeth.value = slot === 1 ? 'vacuum' : 'pressure';
+          (el<HTMLInputElement>('tf-heat')).value = slot === 1 ? '60' : '45';
+          (el<HTMLInputElement>('tf-form')).value = slot === 1 ? '15' : '12';
+          (el<HTMLInputElement>('tf-trim')).value = slot === 1 ? '30' : '25';
+          (el<HTMLInputElement>('tf-index')).value = slot === 1 ? '12' : '10';
+          const tfMach = el<HTMLSelectElement>('tf-mach');
+          if (tfMach) { const o = Array.from(tfMach.options).find(x => x.value === 'thermoform-large'); if (o) tfMach.value = o.value; }
+          const tfLab = el<HTMLSelectElement>('tf-lab');
+          if (tfLab) { const o = Array.from(tfLab.options).find(x => x.value === 'lab-uk-skilled'); if (o) tfLab.value = o.value; }
+          (el<HTMLInputElement>('tf-oee')).value = '0.80';
+          (el<HTMLInputElement>('tf-manning')).value = '1';
+          (el<HTMLInputElement>('tf-lab-eff')).value = '0.92';
+          (el<HTMLInputElement>('tf-tool-cost')).value = slot === 1 ? '8000' : '12000';
+          (el<HTMLInputElement>('tf-amort')).value = slot === 1 ? '20000' : '15000';
+          (el<HTMLInputElement>('packaging')).value = slot === 1 ? '0.45' : '0.30';
+          (el<HTMLInputElement>('logistics')).value = slot === 1 ? '0.80' : '0.60';
+          (el<HTMLInputElement>('overhead-pct')).value = '10';
+          (el<HTMLInputElement>('margin-pct')).value = '8';
+        }
         compute();
         setTimeout(switchToInsights, 300);
         break;
       }
 
       case 'rotational_moulding': {
-        (el<HTMLInputElement>('part-name')).value = slot === 1 ? 'Land Rover Defender Fuel Tank (40L)' : 'Mercedes G-Class Roof Storage Box';
-        const matEl = el<HTMLSelectElement>('rm-mat');
-        if (matEl) { const o = Array.from(matEl.options).find(x => x.value === 'mat-lldpe'); if (o) matEl.value = o.value; }
-        (el<HTMLInputElement>('rm-part-wt')).value = slot === 1 ? '3.80' : '6.50';
-        (el<HTMLInputElement>('rm-powder-adder')).value = slot === 1 ? '0.28' : '0.30';
-        (el<HTMLInputElement>('rm-parts-per-arm')).value = '1';
-        (el<HTMLInputElement>('rm-heat')).value = slot === 1 ? '1200' : '1500';
-        (el<HTMLInputElement>('rm-cool')).value = slot === 1 ? '1500' : '1800';
-        (el<HTMLInputElement>('rm-load')).value = slot === 1 ? '240' : '300';
-        const rmMach = el<HTMLSelectElement>('rm-mach');
-        if (rmMach) { const o = Array.from(rmMach.options).find(x => x.value === 'rotomould-biaxial'); if (o) rmMach.value = o.value; }
-        const rmLab = el<HTMLSelectElement>('rm-lab');
-        if (rmLab) { const o = Array.from(rmLab.options).find(x => x.value === 'lab-uk-skilled'); if (o) rmLab.value = o.value; }
-        (el<HTMLInputElement>('rm-oee')).value = '0.75';
-        (el<HTMLInputElement>('rm-manning')).value = '2';
-        (el<HTMLInputElement>('rm-lab-eff')).value = '0.90';
-        (el<HTMLInputElement>('rm-mould-cost')).value = slot === 1 ? '22000' : '28000';
-        (el<HTMLInputElement>('rm-mould-life')).value = slot === 1 ? '100000' : '80000';
-        (el<HTMLInputElement>('rm-amort')).value = slot === 1 ? '20000' : '10000';
-        (el<HTMLInputElement>('packaging')).value = slot === 1 ? '0.80' : '1.20';
-        (el<HTMLInputElement>('logistics')).value = slot === 1 ? '1.50' : '2.00';
-        (el<HTMLInputElement>('overhead-pct')).value = '11';
-        (el<HTMLInputElement>('margin-pct')).value = '9';
+        if (slot === 3) {
+          (el<HTMLInputElement>('part-name')).value = 'Jeep Grand Cherokee Air Intake Snorkel Box';
+          const matEl3 = el<HTMLSelectElement>('rm-mat');
+          if (matEl3) { const o = Array.from(matEl3.options).find(x => x.value === 'mat-lldpe'); if (o) matEl3.value = o.value; }
+          (el<HTMLInputElement>('rm-part-wt')).value = '2.80';
+          (el<HTMLInputElement>('rm-powder-adder')).value = '0.25';
+          (el<HTMLInputElement>('rm-parts-per-arm')).value = '2';
+          (el<HTMLInputElement>('rm-heat')).value = '1100';
+          (el<HTMLInputElement>('rm-cool')).value = '1300';
+          (el<HTMLInputElement>('rm-load')).value = '210';
+          const rmMach3 = el<HTMLSelectElement>('rm-mach');
+          if (rmMach3) { const o = Array.from(rmMach3.options).find(x => x.value === 'rotomould-biaxial'); if (o) rmMach3.value = o.value; }
+          const rmLab3 = el<HTMLSelectElement>('rm-lab');
+          if (rmLab3) { const o = Array.from(rmLab3.options).find(x => x.value === 'lab-uk-skilled'); if (o) rmLab3.value = o.value; }
+          (el<HTMLInputElement>('rm-oee')).value = '0.78';
+          (el<HTMLInputElement>('rm-manning')).value = '2';
+          (el<HTMLInputElement>('rm-lab-eff')).value = '0.90';
+          (el<HTMLInputElement>('rm-mould-cost')).value = '18000';
+          (el<HTMLInputElement>('rm-mould-life')).value = '120000';
+          (el<HTMLInputElement>('rm-amort')).value = '25000';
+          (el<HTMLInputElement>('packaging')).value = '0.60';
+          (el<HTMLInputElement>('logistics')).value = '1.10';
+          (el<HTMLInputElement>('overhead-pct')).value = '11';
+          (el<HTMLInputElement>('margin-pct')).value = '9';
+        } else {
+          (el<HTMLInputElement>('part-name')).value = slot === 1 ? 'Land Rover Defender Fuel Tank (40L)' : 'Mercedes G-Class Roof Storage Box';
+          const matEl = el<HTMLSelectElement>('rm-mat');
+          if (matEl) { const o = Array.from(matEl.options).find(x => x.value === 'mat-lldpe'); if (o) matEl.value = o.value; }
+          (el<HTMLInputElement>('rm-part-wt')).value = slot === 1 ? '3.80' : '6.50';
+          (el<HTMLInputElement>('rm-powder-adder')).value = slot === 1 ? '0.28' : '0.30';
+          (el<HTMLInputElement>('rm-parts-per-arm')).value = '1';
+          (el<HTMLInputElement>('rm-heat')).value = slot === 1 ? '1200' : '1500';
+          (el<HTMLInputElement>('rm-cool')).value = slot === 1 ? '1500' : '1800';
+          (el<HTMLInputElement>('rm-load')).value = slot === 1 ? '240' : '300';
+          const rmMach = el<HTMLSelectElement>('rm-mach');
+          if (rmMach) { const o = Array.from(rmMach.options).find(x => x.value === 'rotomould-biaxial'); if (o) rmMach.value = o.value; }
+          const rmLab = el<HTMLSelectElement>('rm-lab');
+          if (rmLab) { const o = Array.from(rmLab.options).find(x => x.value === 'lab-uk-skilled'); if (o) rmLab.value = o.value; }
+          (el<HTMLInputElement>('rm-oee')).value = '0.75';
+          (el<HTMLInputElement>('rm-manning')).value = '2';
+          (el<HTMLInputElement>('rm-lab-eff')).value = '0.90';
+          (el<HTMLInputElement>('rm-mould-cost')).value = slot === 1 ? '22000' : '28000';
+          (el<HTMLInputElement>('rm-mould-life')).value = slot === 1 ? '100000' : '80000';
+          (el<HTMLInputElement>('rm-amort')).value = slot === 1 ? '20000' : '10000';
+          (el<HTMLInputElement>('packaging')).value = slot === 1 ? '0.80' : '1.20';
+          (el<HTMLInputElement>('logistics')).value = slot === 1 ? '1.50' : '2.00';
+          (el<HTMLInputElement>('overhead-pct')).value = '11';
+          (el<HTMLInputElement>('margin-pct')).value = '9';
+        }
         compute();
         setTimeout(switchToInsights, 300);
         break;
       }
 
       case 'casting': {
-        (el<HTMLInputElement>('part-name')).value = slot === 1 ? 'Bentley Bentayga Differential Housing (HPDC)' : 'Rolls-Royce Cullinan Brake Caliper (HPDC)';
-        const subEl = el<HTMLSelectElement>('cast-subtype');
-        if (subEl) { subEl.value = 'hpdc'; subEl.dispatchEvent(new Event('change')); }
-        const matEl = el<HTMLSelectElement>('cast-mat');
-        if (matEl) { const o = Array.from(matEl.options).find(x => x.value === (slot === 1 ? 'mat-adc12' : 'mat-a380')); if (o) matEl.value = o.value; }
-        (el<HTMLInputElement>('cast-part-wt')).value = slot === 1 ? '4.80' : '3.20';
-        (el<HTMLInputElement>('cast-yield')).value = slot === 1 ? '0.65' : '0.62';
-        (el<HTMLInputElement>('cast-reject')).value = slot === 1 ? '0.025' : '0.02';
-        const castLab = el<HTMLSelectElement>('cast-lab');
-        if (castLab) { const o = Array.from(castLab.options).find(x => x.value === 'lab-uk-foundry'); if (o) castLab.value = o.value; }
-        (el<HTMLInputElement>('cast-oee')).value = '0.80';
-        (el<HTMLInputElement>('cast-manning')).value = '2';
-        (el<HTMLInputElement>('cast-lab-eff')).value = '0.92';
-        (el<HTMLInputElement>('cast-amort')).value = slot === 1 ? '100000' : '80000';
-        const hpdcMach = el<HTMLSelectElement>('cast-hpdc-mach');
-        if (hpdcMach) { const o = Array.from(hpdcMach.options).find(x => x.value === 'hpdc-800t'); if (o) hpdcMach.value = o.value; }
-        (el<HTMLInputElement>('cast-hpdc-ct')).value = slot === 1 ? '75' : '60';
-        (el<HTMLInputElement>('cast-hpdc-cav')).value = '1';
-        (el<HTMLInputElement>('cast-hpdc-die-cost')).value = slot === 1 ? '180000' : '140000';
-        (el<HTMLInputElement>('cast-hpdc-die-life')).value = slot === 1 ? '150000' : '180000';
-        (el<HTMLInputElement>('packaging')).value = slot === 1 ? '0.80' : '0.60';
-        (el<HTMLInputElement>('logistics')).value = slot === 1 ? '1.80' : '1.40';
-        (el<HTMLInputElement>('overhead-pct')).value = '10';
-        (el<HTMLInputElement>('margin-pct')).value = '8';
+        if (slot === 3) {
+          (el<HTMLInputElement>('part-name')).value = 'Toyota Hilux Rear Differential Carrier (Sand Cast)';
+          const subEl3 = el<HTMLSelectElement>('cast-subtype');
+          if (subEl3) { subEl3.value = 'sand'; subEl3.dispatchEvent(new Event('change')); }
+          const matEl3 = el<HTMLSelectElement>('cast-mat');
+          if (matEl3) { const o = Array.from(matEl3.options).find(x => x.value === 'mat-gjl350') || Array.from(matEl3.options).find(x => x.value === 'mat-gjl250'); if (o) matEl3.value = o.value; }
+          (el<HTMLInputElement>('cast-part-wt')).value = '8.50';
+          (el<HTMLInputElement>('cast-yield')).value = '0.78';
+          (el<HTMLInputElement>('cast-reject')).value = '0.03';
+          const castLab3 = el<HTMLSelectElement>('cast-lab');
+          if (castLab3) { const o = Array.from(castLab3.options).find(x => x.value === 'lab-uk-foundry'); if (o) castLab3.value = o.value; }
+          (el<HTMLInputElement>('cast-oee')).value = '0.78';
+          (el<HTMLInputElement>('cast-manning')).value = '2';
+          (el<HTMLInputElement>('cast-lab-eff')).value = '0.90';
+          (el<HTMLInputElement>('cast-amort')).value = '50000';
+          const sandCt3 = el<HTMLInputElement>('cast-sand-ct');
+          if (sandCt3) sandCt3.value = '0.575';
+          const sandPat3 = el<HTMLInputElement>('cast-sand-pat-cost');
+          if (sandPat3) sandPat3.value = '28000';
+          const sandPatLife3 = el<HTMLInputElement>('cast-sand-pat-life');
+          if (sandPatLife3) sandPatLife3.value = '8000';
+          (el<HTMLInputElement>('packaging')).value = '1.20';
+          (el<HTMLInputElement>('logistics')).value = '2.80';
+          (el<HTMLInputElement>('overhead-pct')).value = '11';
+          (el<HTMLInputElement>('margin-pct')).value = '9';
+        } else {
+          (el<HTMLInputElement>('part-name')).value = slot === 1 ? 'Bentley Bentayga Differential Housing (HPDC)' : 'Rolls-Royce Cullinan Brake Caliper (HPDC)';
+          const subEl = el<HTMLSelectElement>('cast-subtype');
+          if (subEl) { subEl.value = 'hpdc'; subEl.dispatchEvent(new Event('change')); }
+          const matEl = el<HTMLSelectElement>('cast-mat');
+          if (matEl) { const o = Array.from(matEl.options).find(x => x.value === (slot === 1 ? 'mat-adc12' : 'mat-a380')); if (o) matEl.value = o.value; }
+          (el<HTMLInputElement>('cast-part-wt')).value = slot === 1 ? '4.80' : '3.20';
+          (el<HTMLInputElement>('cast-yield')).value = slot === 1 ? '0.65' : '0.62';
+          (el<HTMLInputElement>('cast-reject')).value = slot === 1 ? '0.025' : '0.02';
+          const castLab = el<HTMLSelectElement>('cast-lab');
+          if (castLab) { const o = Array.from(castLab.options).find(x => x.value === 'lab-uk-foundry'); if (o) castLab.value = o.value; }
+          (el<HTMLInputElement>('cast-oee')).value = '0.80';
+          (el<HTMLInputElement>('cast-manning')).value = '2';
+          (el<HTMLInputElement>('cast-lab-eff')).value = '0.92';
+          (el<HTMLInputElement>('cast-amort')).value = slot === 1 ? '100000' : '80000';
+          const hpdcMach = el<HTMLSelectElement>('cast-hpdc-mach');
+          if (hpdcMach) { const o = Array.from(hpdcMach.options).find(x => x.value === 'hpdc-800t'); if (o) hpdcMach.value = o.value; }
+          (el<HTMLInputElement>('cast-hpdc-ct')).value = slot === 1 ? '75' : '60';
+          (el<HTMLInputElement>('cast-hpdc-cav')).value = '1';
+          (el<HTMLInputElement>('cast-hpdc-die-cost')).value = slot === 1 ? '180000' : '140000';
+          (el<HTMLInputElement>('cast-hpdc-die-life')).value = slot === 1 ? '150000' : '180000';
+          (el<HTMLInputElement>('packaging')).value = slot === 1 ? '0.80' : '0.60';
+          (el<HTMLInputElement>('logistics')).value = slot === 1 ? '1.80' : '1.40';
+          (el<HTMLInputElement>('overhead-pct')).value = '10';
+          (el<HTMLInputElement>('margin-pct')).value = '8';
+        }
         compute();
         setTimeout(switchToInsights, 300);
         break;
       }
 
       case 'forging': {
-        (el<HTMLInputElement>('part-name')).value = slot === 1 ? 'BMW X7 Front Lower Control Arm (Al Forging)' : 'Range Rover Vogue 4WD Drive Shaft Yoke (Steel Forging)';
-        const matEl = el<HTMLSelectElement>('forge-mat');
-        if (matEl) { const o = Array.from(matEl.options).find(x => x.value === (slot === 1 ? 'mat-aa6082-sheet' : 'mat-steel4340')); if (o) matEl.value = o.value; }
-        (el<HTMLInputElement>('forge-part-wt')).value = slot === 1 ? '1.85' : '2.80';
-        (el<HTMLInputElement>('forge-flash')).value = slot === 1 ? '0.28' : '0.55';
-        (el<HTMLInputElement>('forge-yield')).value = slot === 1 ? '0.87' : '0.84';
-        const forgeMach = el<HTMLSelectElement>('forge-mach');
-        if (forgeMach) { const o = Array.from(forgeMach.options).find(x => x.value === (slot === 1 ? 'forge-press-500t' : 'forge-hammer-5t')); if (o) forgeMach.value = o.value; }
-        const forgeLab = el<HTMLSelectElement>('forge-lab');
-        if (forgeLab) { const o = Array.from(forgeLab.options).find(x => x.value === 'lab-uk-skilled'); if (o) forgeLab.value = o.value; }
-        (el<HTMLInputElement>('forge-strokes')).value = slot === 1 ? '4' : '5';
-        (el<HTMLInputElement>('forge-time-per-blow')).value = slot === 1 ? '8' : '12';
-        (el<HTMLInputElement>('forge-ct')).value = '0';
-        (el<HTMLInputElement>('forge-oee')).value = slot === 1 ? '0.82' : '0.78';
-        (el<HTMLInputElement>('forge-manning')).value = '2';
-        (el<HTMLInputElement>('forge-lab-eff')).value = slot === 1 ? '0.92' : '0.90';
-        (el<HTMLInputElement>('forge-heat-energy')).value = slot === 1 ? '0.30' : '0.50';
-        (el<HTMLInputElement>('forge-die-cost')).value = slot === 1 ? '95000' : '75000';
-        (el<HTMLInputElement>('forge-die-life')).value = slot === 1 ? '100000' : '80000';
-        (el<HTMLInputElement>('forge-amort')).value = slot === 1 ? '150000' : '100000';
-        (el<HTMLInputElement>('forge-ht-cost')).value = slot === 1 ? '0' : '0.85';
-        (el<HTMLInputElement>('forge-descale')).value = slot === 1 ? '0' : '0.20';
-        (el<HTMLInputElement>('packaging')).value = slot === 1 ? '0.40' : '0.65';
-        (el<HTMLInputElement>('logistics')).value = slot === 1 ? '1.00' : '1.50';
-        (el<HTMLInputElement>('overhead-pct')).value = '12';
-        (el<HTMLInputElement>('margin-pct')).value = '8';
+        if (slot === 3) {
+          (el<HTMLInputElement>('part-name')).value = 'Jeep Wrangler Front Axle Shaft Flange (Steel Forging)';
+          const matEl3 = el<HTMLSelectElement>('forge-mat');
+          if (matEl3) { const o = Array.from(matEl3.options).find(x => x.value === 'mat-steel4340'); if (o) matEl3.value = o.value; }
+          (el<HTMLInputElement>('forge-part-wt')).value = '4.20';
+          (el<HTMLInputElement>('forge-flash')).value = '0.48';
+          (el<HTMLInputElement>('forge-yield')).value = '0.90';
+          const forgeMach3 = el<HTMLSelectElement>('forge-mach');
+          if (forgeMach3) { const o = Array.from(forgeMach3.options).find(x => x.value === 'forge-hammer-5t'); if (o) forgeMach3.value = o.value; }
+          const forgeLab3 = el<HTMLSelectElement>('forge-lab');
+          if (forgeLab3) { const o = Array.from(forgeLab3.options).find(x => x.value === 'lab-uk-skilled'); if (o) forgeLab3.value = o.value; }
+          (el<HTMLInputElement>('forge-strokes')).value = '6';
+          (el<HTMLInputElement>('forge-time-per-blow')).value = '10';
+          (el<HTMLInputElement>('forge-ct')).value = '0';
+          (el<HTMLInputElement>('forge-oee')).value = '0.78';
+          (el<HTMLInputElement>('forge-manning')).value = '2';
+          (el<HTMLInputElement>('forge-lab-eff')).value = '0.90';
+          (el<HTMLInputElement>('forge-heat-energy')).value = '0.50';
+          (el<HTMLInputElement>('forge-die-cost')).value = '88000';
+          (el<HTMLInputElement>('forge-die-life')).value = '80000';
+          (el<HTMLInputElement>('forge-amort')).value = '80000';
+          (el<HTMLInputElement>('forge-ht-cost')).value = '1.20';
+          (el<HTMLInputElement>('forge-descale')).value = '0.30';
+          (el<HTMLInputElement>('packaging')).value = '0.80';
+          (el<HTMLInputElement>('logistics')).value = '1.80';
+          (el<HTMLInputElement>('overhead-pct')).value = '12';
+          (el<HTMLInputElement>('margin-pct')).value = '9';
+        } else {
+          (el<HTMLInputElement>('part-name')).value = slot === 1 ? 'BMW X7 Front Lower Control Arm (Al Forging)' : 'Range Rover Vogue 4WD Drive Shaft Yoke (Steel Forging)';
+          const matEl = el<HTMLSelectElement>('forge-mat');
+          if (matEl) { const o = Array.from(matEl.options).find(x => x.value === (slot === 1 ? 'mat-aa6082-sheet' : 'mat-steel4340')); if (o) matEl.value = o.value; }
+          (el<HTMLInputElement>('forge-part-wt')).value = slot === 1 ? '1.85' : '2.80';
+          (el<HTMLInputElement>('forge-flash')).value = slot === 1 ? '0.28' : '0.55';
+          (el<HTMLInputElement>('forge-yield')).value = slot === 1 ? '0.87' : '0.84';
+          const forgeMach = el<HTMLSelectElement>('forge-mach');
+          if (forgeMach) { const o = Array.from(forgeMach.options).find(x => x.value === (slot === 1 ? 'forge-press-500t' : 'forge-hammer-5t')); if (o) forgeMach.value = o.value; }
+          const forgeLab = el<HTMLSelectElement>('forge-lab');
+          if (forgeLab) { const o = Array.from(forgeLab.options).find(x => x.value === 'lab-uk-skilled'); if (o) forgeLab.value = o.value; }
+          (el<HTMLInputElement>('forge-strokes')).value = slot === 1 ? '4' : '5';
+          (el<HTMLInputElement>('forge-time-per-blow')).value = slot === 1 ? '8' : '12';
+          (el<HTMLInputElement>('forge-ct')).value = '0';
+          (el<HTMLInputElement>('forge-oee')).value = slot === 1 ? '0.82' : '0.78';
+          (el<HTMLInputElement>('forge-manning')).value = '2';
+          (el<HTMLInputElement>('forge-lab-eff')).value = slot === 1 ? '0.92' : '0.90';
+          (el<HTMLInputElement>('forge-heat-energy')).value = slot === 1 ? '0.30' : '0.50';
+          (el<HTMLInputElement>('forge-die-cost')).value = slot === 1 ? '95000' : '75000';
+          (el<HTMLInputElement>('forge-die-life')).value = slot === 1 ? '100000' : '80000';
+          (el<HTMLInputElement>('forge-amort')).value = slot === 1 ? '150000' : '100000';
+          (el<HTMLInputElement>('forge-ht-cost')).value = slot === 1 ? '0' : '0.85';
+          (el<HTMLInputElement>('forge-descale')).value = slot === 1 ? '0' : '0.20';
+          (el<HTMLInputElement>('packaging')).value = slot === 1 ? '0.40' : '0.65';
+          (el<HTMLInputElement>('logistics')).value = slot === 1 ? '1.00' : '1.50';
+          (el<HTMLInputElement>('overhead-pct')).value = '12';
+          (el<HTMLInputElement>('margin-pct')).value = '8';
+        }
         compute();
         setTimeout(switchToInsights, 300);
         break;
       }
 
       case 'painting': {
-        (el<HTMLInputElement>('part-name')).value = slot === 1 ? 'Lamborghini Urus Body Panel (OEM Paint System)' : 'Aston Martin DBX Instrument Panel (Premium Paint)';
-        (el<HTMLInputElement>('paint-area')).value = slot === 1 ? '8.5' : '0.65';
-        const paintLine = el<HTMLSelectElement>('paint-line');
-        if (paintLine) { const o = Array.from(paintLine.options).find(x => x.value === 'paint-line-std'); if (o) paintLine.value = o.value; }
-        const paintLab = el<HTMLSelectElement>('paint-lab');
-        if (paintLab) { const o = Array.from(paintLab.options).find(x => x.value === 'lab-uk-skilled'); if (o) paintLab.value = o.value; }
-        (el<HTMLInputElement>('paint-line-rate')).value = slot === 1 ? '15' : '60';
-        (el<HTMLInputElement>('paint-oee')).value = slot === 1 ? '0.85' : '0.88';
-        (el<HTMLInputElement>('paint-manning')).value = slot === 1 ? '6' : '4';
-        (el<HTMLInputElement>('paint-lab-eff')).value = slot === 1 ? '0.92' : '0.95';
-        (el<HTMLInputElement>('paint-rework')).value = slot === 1 ? '0.05' : '0.03';
-        (el<HTMLInputElement>('paint-tooling')).value = slot === 1 ? '12000' : '5000';
-        (el<HTMLInputElement>('paint-amort')).value = slot === 1 ? '50000' : '30000';
-        (el<HTMLInputElement>('packaging')).value = slot === 1 ? '1.50' : '0.40';
-        (el<HTMLInputElement>('logistics')).value = slot === 1 ? '3.00' : '0.80';
-        (el<HTMLInputElement>('overhead-pct')).value = '8';
-        (el<HTMLInputElement>('margin-pct')).value = '6';
+        if (slot === 3) {
+          (el<HTMLInputElement>('part-name')).value = 'Toyota Land Cruiser 300 Tailgate (OEM 4-Coat Paint System)';
+          (el<HTMLInputElement>('paint-area')).value = '2.80';
+          const paintLine3 = el<HTMLSelectElement>('paint-line');
+          if (paintLine3) { const o = Array.from(paintLine3.options).find(x => x.value === 'paint-line-std'); if (o) paintLine3.value = o.value; }
+          const paintLab3 = el<HTMLSelectElement>('paint-lab');
+          if (paintLab3) { const o = Array.from(paintLab3.options).find(x => x.value === 'lab-uk-skilled'); if (o) paintLab3.value = o.value; }
+          (el<HTMLInputElement>('paint-line-rate')).value = '18';
+          (el<HTMLInputElement>('paint-oee')).value = '0.85';
+          (el<HTMLInputElement>('paint-manning')).value = '5';
+          (el<HTMLInputElement>('paint-lab-eff')).value = '0.92';
+          (el<HTMLInputElement>('paint-rework')).value = '0.04';
+          (el<HTMLInputElement>('paint-tooling')).value = '8000';
+          (el<HTMLInputElement>('paint-amort')).value = '40000';
+          (el<HTMLInputElement>('packaging')).value = '0.80';
+          (el<HTMLInputElement>('logistics')).value = '1.80';
+          (el<HTMLInputElement>('overhead-pct')).value = '9';
+          (el<HTMLInputElement>('margin-pct')).value = '7';
+        } else {
+          (el<HTMLInputElement>('part-name')).value = slot === 1 ? 'Lamborghini Urus Body Panel (OEM Paint System)' : 'Aston Martin DBX Instrument Panel (Premium Paint)';
+          (el<HTMLInputElement>('paint-area')).value = slot === 1 ? '8.5' : '0.65';
+          const paintLine = el<HTMLSelectElement>('paint-line');
+          if (paintLine) { const o = Array.from(paintLine.options).find(x => x.value === 'paint-line-std'); if (o) paintLine.value = o.value; }
+          const paintLab = el<HTMLSelectElement>('paint-lab');
+          if (paintLab) { const o = Array.from(paintLab.options).find(x => x.value === 'lab-uk-skilled'); if (o) paintLab.value = o.value; }
+          (el<HTMLInputElement>('paint-line-rate')).value = slot === 1 ? '15' : '60';
+          (el<HTMLInputElement>('paint-oee')).value = slot === 1 ? '0.85' : '0.88';
+          (el<HTMLInputElement>('paint-manning')).value = slot === 1 ? '6' : '4';
+          (el<HTMLInputElement>('paint-lab-eff')).value = slot === 1 ? '0.92' : '0.95';
+          (el<HTMLInputElement>('paint-rework')).value = slot === 1 ? '0.05' : '0.03';
+          (el<HTMLInputElement>('paint-tooling')).value = slot === 1 ? '12000' : '5000';
+          (el<HTMLInputElement>('paint-amort')).value = slot === 1 ? '50000' : '30000';
+          (el<HTMLInputElement>('packaging')).value = slot === 1 ? '1.50' : '0.40';
+          (el<HTMLInputElement>('logistics')).value = slot === 1 ? '3.00' : '0.80';
+          (el<HTMLInputElement>('overhead-pct')).value = '8';
+          (el<HTMLInputElement>('margin-pct')).value = '6';
+        }
         compute();
         setTimeout(switchToInsights, 300);
         break;
       }
 
       case 'biw_assembly': {
-        (el<HTMLInputElement>('part-name')).value = slot === 1 ? 'Mercedes GLS Door Inner Panel Assembly' : 'Porsche Cayenne BIW Side Frame';
-        (el<HTMLInputElement>('biw-sub-cost')).value = slot === 1 ? '85.00' : '145.00';
-        (el<HTMLInputElement>('biw-tooling')).value = slot === 1 ? '350000' : '600000';
-        (el<HTMLInputElement>('biw-amort')).value = slot === 1 ? '80000' : '50000';
         el('biw-stations-container').innerHTML = ''; stationCount = 0;
-        if (slot === 1) {
-          addBIWStation({ stationName: 'Robot Framing Station', machineId: 'robot-weld-station', labourId: 'lab-uk-skilled', cycleTimeHr: 1/60, oee: 0.85, manning: 1, labourEfficiency: 0.92 });
-          addBIWStation({ stationName: 'Robot Spot Weld (Inner)', machineId: 'robot-weld-station', labourId: 'lab-uk-skilled', cycleTimeHr: 1.5/60, oee: 0.85, manning: 1, labourEfficiency: 0.92 });
-          addBIWStation({ stationName: 'MIG Weld — Seam', machineId: 'mig-welder-manual', labourId: 'lab-uk-skilled', cycleTimeHr: 2/60, oee: 0.80, manning: 1, labourEfficiency: 0.90 });
+        if (slot === 3) {
+          (el<HTMLInputElement>('part-name')).value = 'Volkswagen Touareg Front Door Inner Assembly';
+          (el<HTMLInputElement>('biw-sub-cost')).value = '62.00';
+          (el<HTMLInputElement>('biw-tooling')).value = '280000';
+          (el<HTMLInputElement>('biw-amort')).value = '60000';
+          addBIWStation({ stationName: 'Robot Framing Jig', machineId: 'robot-weld-station', labourId: 'lab-uk-skilled', cycleTimeHr: 1/60, oee: 0.85, manning: 1, labourEfficiency: 0.92 });
+          addBIWStation({ stationName: 'Robot Spot Weld Array (28 welds)', machineId: 'robot-weld-station', labourId: 'lab-uk-skilled', cycleTimeHr: 1.8/60, oee: 0.85, manning: 1, labourEfficiency: 0.92 });
+          addBIWStation({ stationName: 'MIG Seam Weld — Inner Frame', machineId: 'mig-welder-manual', labourId: 'lab-uk-skilled', cycleTimeHr: 1.5/60, oee: 0.80, manning: 1, labourEfficiency: 0.90 });
+          addBIWStation({ stationName: 'Quality Inspection Station', machineId: 'bench-assembly', labourId: 'lab-uk-inspector', cycleTimeHr: 0.5/60, oee: 0.90, manning: 1, labourEfficiency: 0.95 });
+          (el<HTMLInputElement>('packaging')).value = '1.80';
+          (el<HTMLInputElement>('logistics')).value = '3.50';
+          (el<HTMLInputElement>('overhead-pct')).value = '10';
+          (el<HTMLInputElement>('margin-pct')).value = '7';
         } else {
-          addBIWStation({ stationName: 'Robot Framing Station', machineId: 'robot-weld-station', labourId: 'lab-uk-skilled', cycleTimeHr: 1.5/60, oee: 0.85, manning: 1, labourEfficiency: 0.92 });
-          addBIWStation({ stationName: 'Robot Spot Weld Array', machineId: 'robot-weld-station', labourId: 'lab-uk-skilled', cycleTimeHr: 2/60, oee: 0.85, manning: 1, labourEfficiency: 0.92 });
-          addBIWStation({ stationName: 'Hemming Station', machineId: 'bench-assembly', labourId: 'lab-uk-skilled', cycleTimeHr: 1/60, oee: 0.80, manning: 2, labourEfficiency: 0.90 });
-          addBIWStation({ stationName: 'Quality Inspection', machineId: 'bench-assembly', labourId: 'lab-uk-inspector', cycleTimeHr: 0.5/60, oee: 0.90, manning: 1, labourEfficiency: 0.95 });
+          (el<HTMLInputElement>('part-name')).value = slot === 1 ? 'Mercedes GLS Door Inner Panel Assembly' : 'Porsche Cayenne BIW Side Frame';
+          (el<HTMLInputElement>('biw-sub-cost')).value = slot === 1 ? '85.00' : '145.00';
+          (el<HTMLInputElement>('biw-tooling')).value = slot === 1 ? '350000' : '600000';
+          (el<HTMLInputElement>('biw-amort')).value = slot === 1 ? '80000' : '50000';
+          if (slot === 1) {
+            addBIWStation({ stationName: 'Robot Framing Station', machineId: 'robot-weld-station', labourId: 'lab-uk-skilled', cycleTimeHr: 1/60, oee: 0.85, manning: 1, labourEfficiency: 0.92 });
+            addBIWStation({ stationName: 'Robot Spot Weld (Inner)', machineId: 'robot-weld-station', labourId: 'lab-uk-skilled', cycleTimeHr: 1.5/60, oee: 0.85, manning: 1, labourEfficiency: 0.92 });
+            addBIWStation({ stationName: 'MIG Weld — Seam', machineId: 'mig-welder-manual', labourId: 'lab-uk-skilled', cycleTimeHr: 2/60, oee: 0.80, manning: 1, labourEfficiency: 0.90 });
+          } else {
+            addBIWStation({ stationName: 'Robot Framing Station', machineId: 'robot-weld-station', labourId: 'lab-uk-skilled', cycleTimeHr: 1.5/60, oee: 0.85, manning: 1, labourEfficiency: 0.92 });
+            addBIWStation({ stationName: 'Robot Spot Weld Array', machineId: 'robot-weld-station', labourId: 'lab-uk-skilled', cycleTimeHr: 2/60, oee: 0.85, manning: 1, labourEfficiency: 0.92 });
+            addBIWStation({ stationName: 'Hemming Station', machineId: 'bench-assembly', labourId: 'lab-uk-skilled', cycleTimeHr: 1/60, oee: 0.80, manning: 2, labourEfficiency: 0.90 });
+            addBIWStation({ stationName: 'Quality Inspection', machineId: 'bench-assembly', labourId: 'lab-uk-inspector', cycleTimeHr: 0.5/60, oee: 0.90, manning: 1, labourEfficiency: 0.95 });
+          }
+          (el<HTMLInputElement>('packaging')).value = slot === 1 ? '2.50' : '4.00';
+          (el<HTMLInputElement>('logistics')).value = slot === 1 ? '5.00' : '8.00';
+          (el<HTMLInputElement>('overhead-pct')).value = '10';
+          (el<HTMLInputElement>('margin-pct')).value = '7';
         }
-        (el<HTMLInputElement>('packaging')).value = slot === 1 ? '2.50' : '4.00';
-        (el<HTMLInputElement>('logistics')).value = slot === 1 ? '5.00' : '8.00';
-        (el<HTMLInputElement>('overhead-pct')).value = '10';
-        (el<HTMLInputElement>('margin-pct')).value = '7';
         compute();
         setTimeout(switchToInsights, 300);
         break;
       }
 
       case 'pcb_fab': {
-        (el<HTMLInputElement>('part-name')).value = slot === 1 ? 'BMW iX Battery Management PCB (6-Layer)' : 'Mercedes AMG ADAS Sensor PCB (8-Layer HDI)';
-        const techEl = el<HTMLSelectElement>('pcbf-technology');
-        if (techEl) techEl.value = slot === 1 ? 'FR4_HTg' : 'HDI_RIGID';
-        const qualEl = el<HTMLSelectElement>('pcbf-quality');
-        if (qualEl) qualEl.value = slot === 1 ? 'auto_grade2' : 'auto_grade1';
-        const regionEl = el<HTMLSelectElement>('pcbf-region');
-        if (regionEl) regionEl.value = 'uk';
-        const layersEl = el<HTMLSelectElement>('pcbf-layers');
-        if (layersEl) layersEl.value = slot === 1 ? '6' : '8';
-        (el<HTMLInputElement>('pcbf-board-w')).value = slot === 1 ? '122' : '100';
-        (el<HTMLInputElement>('pcbf-board-h')).value = slot === 1 ? '61' : '55';
-        (el<HTMLInputElement>('pcbf-panel-w')).value = '500';
-        (el<HTMLInputElement>('pcbf-panel-h')).value = '600';
-        (el<HTMLInputElement>('pcbf-panel-util')).value = slot === 1 ? '0.72' : '0.65';
-        const tgEl = el<HTMLSelectElement>('pcbf-tg');
-        if (tgEl) tgEl.value = slot === 1 ? '150' : '170';
-        const cuEl = el<HTMLSelectElement>('pcbf-cu');
-        if (cuEl) cuEl.value = '1';
-        const outerCuEl = el<HTMLSelectElement>('pcbf-outer-cu');
-        if (outerCuEl) outerCuEl.value = '1';
-        const viaTypeEl = el<HTMLSelectElement>('pcbf-via-type');
-        if (viaTypeEl) viaTypeEl.value = slot === 1 ? 'through_only' : 'microvia_hdi';
-        const hdiEl = el<HTMLSelectElement>('pcbf-hdi-structure');
-        if (hdiEl) hdiEl.value = slot === 1 ? 'none' : '1plus_n_plus1';
-        (el<HTMLInputElement>('pcbf-vias')).value = slot === 1 ? '450' : '320';
-        (el<HTMLInputElement>('pcbf-blind-vias')).value = '0';
-        (el<HTMLInputElement>('pcbf-buried-vias')).value = '0';
-        (el<HTMLInputElement>('pcbf-uvias')).value = slot === 1 ? '0' : '80';
-        const traceEl = el<HTMLSelectElement>('pcbf-trace');
-        if (traceEl) traceEl.value = slot === 1 ? '0.15' : '0.10';
-        const finEl = el<HTMLSelectElement>('pcbf-finish');
-        if (finEl) finEl.value = 'enig';
-        const smEl = el<HTMLSelectElement>('pcbf-solder-mask');
-        if (smEl) smEl.value = 'green';
-        const silkEl = el<HTMLSelectElement>('pcbf-silkscreen');
-        if (silkEl) silkEl.value = '2';
-        const impEl = el<HTMLInputElement>('pcbf-impedance');
-        if (impEl) impEl.checked = true;
-        const bgaEl = el<HTMLInputElement>('pcbf-bga');
-        if (bgaEl) bgaEl.checked = slot === 2;
-        const testMethEl = el<HTMLSelectElement>('pcbf-test-method');
-        if (testMethEl) testMethEl.value = 'flying_probe';
-        (el<HTMLInputElement>('pcbf-yield')).value = '0';
-        (el<HTMLInputElement>('pcbf-nre')).value = slot === 1 ? '1500' : '3500';
-        (el<HTMLInputElement>('pcbf-amort')).value = slot === 1 ? '25000' : '15000';
-        (el<HTMLInputElement>('packaging')).value = '0.15';
-        (el<HTMLInputElement>('logistics')).value = '0.30';
-        (el<HTMLInputElement>('overhead-pct')).value = '8';
-        (el<HTMLInputElement>('margin-pct')).value = '10';
+        if (slot === 3) {
+          (el<HTMLInputElement>('part-name')).value = 'Volvo XC90 Pilot Assist Camera ECU PCB';
+          const techEl3 = el<HTMLSelectElement>('pcbf-technology');
+          if (techEl3) techEl3.value = 'FR4_standard';
+          const qualEl3 = el<HTMLSelectElement>('pcbf-quality');
+          if (qualEl3) qualEl3.value = 'auto_grade2';
+          const regionEl3 = el<HTMLSelectElement>('pcbf-region');
+          if (regionEl3) regionEl3.value = 'uk';
+          const layersEl3 = el<HTMLSelectElement>('pcbf-layers');
+          if (layersEl3) layersEl3.value = '4';
+          (el<HTMLInputElement>('pcbf-board-w')).value = '85';
+          (el<HTMLInputElement>('pcbf-board-h')).value = '65';
+          (el<HTMLInputElement>('pcbf-panel-w')).value = '500';
+          (el<HTMLInputElement>('pcbf-panel-h')).value = '600';
+          (el<HTMLInputElement>('pcbf-panel-util')).value = '0.72';
+          const tgEl3 = el<HTMLSelectElement>('pcbf-tg');
+          if (tgEl3) tgEl3.value = '135';
+          const cuEl3 = el<HTMLSelectElement>('pcbf-cu');
+          if (cuEl3) cuEl3.value = '1';
+          const outerCuEl3 = el<HTMLSelectElement>('pcbf-outer-cu');
+          if (outerCuEl3) outerCuEl3.value = '1';
+          const viaTypeEl3 = el<HTMLSelectElement>('pcbf-via-type');
+          if (viaTypeEl3) viaTypeEl3.value = 'through_only';
+          const hdiEl3 = el<HTMLSelectElement>('pcbf-hdi-structure');
+          if (hdiEl3) hdiEl3.value = 'none';
+          (el<HTMLInputElement>('pcbf-vias')).value = '280';
+          (el<HTMLInputElement>('pcbf-blind-vias')).value = '0';
+          (el<HTMLInputElement>('pcbf-buried-vias')).value = '0';
+          (el<HTMLInputElement>('pcbf-uvias')).value = '0';
+          const traceEl3 = el<HTMLSelectElement>('pcbf-trace');
+          if (traceEl3) traceEl3.value = '0.15';
+          const finEl3 = el<HTMLSelectElement>('pcbf-finish');
+          if (finEl3) finEl3.value = 'enig';
+          const smEl3 = el<HTMLSelectElement>('pcbf-solder-mask');
+          if (smEl3) smEl3.value = 'green';
+          const silkEl3 = el<HTMLSelectElement>('pcbf-silkscreen');
+          if (silkEl3) silkEl3.value = '2';
+          const impEl3 = el<HTMLInputElement>('pcbf-impedance');
+          if (impEl3) impEl3.checked = true;
+          const bgaEl3 = el<HTMLInputElement>('pcbf-bga');
+          if (bgaEl3) bgaEl3.checked = false;
+          const testMethEl3 = el<HTMLSelectElement>('pcbf-test-method');
+          if (testMethEl3) testMethEl3.value = 'flying_probe';
+          (el<HTMLInputElement>('pcbf-yield')).value = '0';
+          (el<HTMLInputElement>('pcbf-nre')).value = '1200';
+          (el<HTMLInputElement>('pcbf-amort')).value = '20000';
+          (el<HTMLInputElement>('packaging')).value = '0.12';
+          (el<HTMLInputElement>('logistics')).value = '0.25';
+          (el<HTMLInputElement>('overhead-pct')).value = '8';
+          (el<HTMLInputElement>('margin-pct')).value = '10';
+        } else {
+          (el<HTMLInputElement>('part-name')).value = slot === 1 ? 'BMW iX Battery Management PCB (6-Layer)' : 'Mercedes AMG ADAS Sensor PCB (8-Layer HDI)';
+          const techEl = el<HTMLSelectElement>('pcbf-technology');
+          if (techEl) techEl.value = slot === 1 ? 'FR4_HTg' : 'HDI_RIGID';
+          const qualEl = el<HTMLSelectElement>('pcbf-quality');
+          if (qualEl) qualEl.value = slot === 1 ? 'auto_grade2' : 'auto_grade1';
+          const regionEl = el<HTMLSelectElement>('pcbf-region');
+          if (regionEl) regionEl.value = 'uk';
+          const layersEl = el<HTMLSelectElement>('pcbf-layers');
+          if (layersEl) layersEl.value = slot === 1 ? '6' : '8';
+          (el<HTMLInputElement>('pcbf-board-w')).value = slot === 1 ? '122' : '100';
+          (el<HTMLInputElement>('pcbf-board-h')).value = slot === 1 ? '61' : '55';
+          (el<HTMLInputElement>('pcbf-panel-w')).value = '500';
+          (el<HTMLInputElement>('pcbf-panel-h')).value = '600';
+          (el<HTMLInputElement>('pcbf-panel-util')).value = slot === 1 ? '0.72' : '0.65';
+          const tgEl = el<HTMLSelectElement>('pcbf-tg');
+          if (tgEl) tgEl.value = slot === 1 ? '150' : '170';
+          const cuEl = el<HTMLSelectElement>('pcbf-cu');
+          if (cuEl) cuEl.value = '1';
+          const outerCuEl = el<HTMLSelectElement>('pcbf-outer-cu');
+          if (outerCuEl) outerCuEl.value = '1';
+          const viaTypeEl = el<HTMLSelectElement>('pcbf-via-type');
+          if (viaTypeEl) viaTypeEl.value = slot === 1 ? 'through_only' : 'microvia_hdi';
+          const hdiEl = el<HTMLSelectElement>('pcbf-hdi-structure');
+          if (hdiEl) hdiEl.value = slot === 1 ? 'none' : '1plus_n_plus1';
+          (el<HTMLInputElement>('pcbf-vias')).value = slot === 1 ? '450' : '320';
+          (el<HTMLInputElement>('pcbf-blind-vias')).value = '0';
+          (el<HTMLInputElement>('pcbf-buried-vias')).value = '0';
+          (el<HTMLInputElement>('pcbf-uvias')).value = slot === 1 ? '0' : '80';
+          const traceEl = el<HTMLSelectElement>('pcbf-trace');
+          if (traceEl) traceEl.value = slot === 1 ? '0.15' : '0.10';
+          const finEl = el<HTMLSelectElement>('pcbf-finish');
+          if (finEl) finEl.value = 'enig';
+          const smEl = el<HTMLSelectElement>('pcbf-solder-mask');
+          if (smEl) smEl.value = 'green';
+          const silkEl = el<HTMLSelectElement>('pcbf-silkscreen');
+          if (silkEl) silkEl.value = '2';
+          const impEl = el<HTMLInputElement>('pcbf-impedance');
+          if (impEl) impEl.checked = true;
+          const bgaEl = el<HTMLInputElement>('pcbf-bga');
+          if (bgaEl) bgaEl.checked = slot === 2;
+          const testMethEl = el<HTMLSelectElement>('pcbf-test-method');
+          if (testMethEl) testMethEl.value = 'flying_probe';
+          (el<HTMLInputElement>('pcbf-yield')).value = '0';
+          (el<HTMLInputElement>('pcbf-nre')).value = slot === 1 ? '1500' : '3500';
+          (el<HTMLInputElement>('pcbf-amort')).value = slot === 1 ? '25000' : '15000';
+          (el<HTMLInputElement>('packaging')).value = '0.15';
+          (el<HTMLInputElement>('logistics')).value = '0.30';
+          (el<HTMLInputElement>('overhead-pct')).value = '8';
+          (el<HTMLInputElement>('margin-pct')).value = '10';
+        }
         compute();
         setTimeout(switchToInsights, 300);
         break;
       }
 
       case 'pcba': {
-        (el<HTMLInputElement>('part-name')).value = slot === 1 ? 'Range Rover Adaptive Cruise Control ECU' : 'Porsche Taycan Engine Control Unit (PCBA)';
-        const cxEl = el<HTMLSelectElement>('pcba-complexity');
-        if (cxEl) cxEl.value = slot === 1 ? 'high' : 'very_high';
-        const qEl = el<HTMLSelectElement>('pcba-quality');
-        if (qEl) qEl.value = slot === 1 ? 'auto_grade2' : 'auto_grade1';
-        (el<HTMLInputElement>('pcba-pcb-cost')).value = slot === 1 ? '6.50' : '9.80';
-        const smtMach = el<HTMLSelectElement>('pcba-smt-mach');
-        if (smtMach) { const o = Array.from(smtMach.options).find(x => x.value === 'smt-high-speed-line'); if (o) smtMach.value = o.value; }
-        const smtLab = el<HTMLSelectElement>('pcba-smt-lab');
-        if (smtLab) { const o = Array.from(smtLab.options).find(x => x.value === 'lab-uk-electronics'); if (o) smtLab.value = o.value; }
-        (el<HTMLInputElement>('pcba-smt-lines')).value = slot === 1 ? '1' : '2';
-        (el<HTMLInputElement>('pcba-smt-rate')).value = '25000';
-        (el<HTMLInputElement>('pcba-smt-oee')).value = '0.85';
-        const sidesEl = el<HTMLSelectElement>('pcba-smt-sides');
-        if (sidesEl) sidesEl.value = '2';
-        (el<HTMLInputElement>('pcba-th-count')).value = slot === 1 ? '8' : '12';
-        (el<HTMLInputElement>('pcba-man-count')).value = slot === 1 ? '0' : '2';
-        (el<HTMLInputElement>('pcba-bga-count')).value = slot === 1 ? '1' : '3';
-        (el<HTMLInputElement>('pcba-ict-time')).value = slot === 1 ? '120' : '180';
-        const xrayMach = el<HTMLSelectElement>('pcba-xray-mach');
-        if (xrayMach) { const o = Array.from(xrayMach.options).find(x => x.value === 'xray-bga-inspection'); if (o) xrayMach.value = o.value; }
-        const ictMach = el<HTMLSelectElement>('pcba-ict-mach');
-        if (ictMach) { const o = Array.from(ictMach.options).find(x => x.value === 'ict-automotive'); if (o) ictMach.value = o.value; }
-        (el<HTMLInputElement>('pcba-yield')).value = slot === 1 ? '0.97' : '0.96';
-        (el<HTMLInputElement>('pcba-rework-cost')).value = slot === 1 ? '12.00' : '18.00';
-        (el<HTMLInputElement>('pcba-test-cost')).value = '0';
-        (el<HTMLInputElement>('pcba-amort')).value = slot === 1 ? '8000' : '5000';
-        (el<HTMLInputElement>('pcba-coat-area')).value = slot === 1 ? '0' : '50';
-        (el<HTMLInputElement>('pcba-coat-price')).value = '0.005';
-        (el<HTMLInputElement>('pcba-nre-cost')).value = slot === 1 ? '2500' : '5000';
-        (el<HTMLInputElement>('pcba-nre-amort')).value = slot === 1 ? '8000' : '5000';
-        (el<HTMLInputElement>('packaging')).value = '0.25';
-        (el<HTMLInputElement>('logistics')).value = '0.50';
-        (el<HTMLInputElement>('overhead-pct')).value = '8';
-        (el<HTMLInputElement>('margin-pct')).value = '10';
+        if (slot === 3) {
+          (el<HTMLInputElement>('part-name')).value = 'Toyota RAV4 Hybrid HV Battery Monitoring PCBA';
+          const cxEl3 = el<HTMLSelectElement>('pcba-complexity');
+          if (cxEl3) cxEl3.value = 'high';
+          const qEl3 = el<HTMLSelectElement>('pcba-quality');
+          if (qEl3) qEl3.value = 'auto_grade2';
+          (el<HTMLInputElement>('pcba-pcb-cost')).value = '4.80';
+          const smtMach3 = el<HTMLSelectElement>('pcba-smt-mach');
+          if (smtMach3) { const o = Array.from(smtMach3.options).find(x => x.value === 'smt-high-speed-line'); if (o) smtMach3.value = o.value; }
+          const smtLab3 = el<HTMLSelectElement>('pcba-smt-lab');
+          if (smtLab3) { const o = Array.from(smtLab3.options).find(x => x.value === 'lab-uk-electronics'); if (o) smtLab3.value = o.value; }
+          (el<HTMLInputElement>('pcba-smt-lines')).value = '1';
+          (el<HTMLInputElement>('pcba-smt-rate')).value = '25000';
+          (el<HTMLInputElement>('pcba-smt-oee')).value = '0.85';
+          const sidesEl3 = el<HTMLSelectElement>('pcba-smt-sides');
+          if (sidesEl3) sidesEl3.value = '2';
+          (el<HTMLInputElement>('pcba-th-count')).value = '12';
+          (el<HTMLInputElement>('pcba-man-count')).value = '0';
+          (el<HTMLInputElement>('pcba-bga-count')).value = '1';
+          (el<HTMLInputElement>('pcba-ict-time')).value = '90';
+          const xrayMach3 = el<HTMLSelectElement>('pcba-xray-mach');
+          if (xrayMach3) { const o = Array.from(xrayMach3.options).find(x => x.value === 'xray-bga-inspection'); if (o) xrayMach3.value = o.value; }
+          const ictMach3 = el<HTMLSelectElement>('pcba-ict-mach');
+          if (ictMach3) { const o = Array.from(ictMach3.options).find(x => x.value === 'ict-automotive'); if (o) ictMach3.value = o.value; }
+          (el<HTMLInputElement>('pcba-yield')).value = '0.97';
+          (el<HTMLInputElement>('pcba-rework-cost')).value = '10.00';
+          (el<HTMLInputElement>('pcba-test-cost')).value = '0';
+          (el<HTMLInputElement>('pcba-amort')).value = '6000';
+          (el<HTMLInputElement>('pcba-coat-area')).value = '0';
+          (el<HTMLInputElement>('pcba-coat-price')).value = '0.005';
+          (el<HTMLInputElement>('pcba-nre-cost')).value = '2000';
+          (el<HTMLInputElement>('pcba-nre-amort')).value = '6000';
+          (el<HTMLInputElement>('packaging')).value = '0.20';
+          (el<HTMLInputElement>('logistics')).value = '0.40';
+          (el<HTMLInputElement>('overhead-pct')).value = '8';
+          (el<HTMLInputElement>('margin-pct')).value = '10';
+        } else {
+          (el<HTMLInputElement>('part-name')).value = slot === 1 ? 'Range Rover Adaptive Cruise Control ECU' : 'Porsche Taycan Engine Control Unit (PCBA)';
+          const cxEl = el<HTMLSelectElement>('pcba-complexity');
+          if (cxEl) cxEl.value = slot === 1 ? 'high' : 'very_high';
+          const qEl = el<HTMLSelectElement>('pcba-quality');
+          if (qEl) qEl.value = slot === 1 ? 'auto_grade2' : 'auto_grade1';
+          (el<HTMLInputElement>('pcba-pcb-cost')).value = slot === 1 ? '6.50' : '9.80';
+          const smtMach = el<HTMLSelectElement>('pcba-smt-mach');
+          if (smtMach) { const o = Array.from(smtMach.options).find(x => x.value === 'smt-high-speed-line'); if (o) smtMach.value = o.value; }
+          const smtLab = el<HTMLSelectElement>('pcba-smt-lab');
+          if (smtLab) { const o = Array.from(smtLab.options).find(x => x.value === 'lab-uk-electronics'); if (o) smtLab.value = o.value; }
+          (el<HTMLInputElement>('pcba-smt-lines')).value = slot === 1 ? '1' : '2';
+          (el<HTMLInputElement>('pcba-smt-rate')).value = '25000';
+          (el<HTMLInputElement>('pcba-smt-oee')).value = '0.85';
+          const sidesEl = el<HTMLSelectElement>('pcba-smt-sides');
+          if (sidesEl) sidesEl.value = '2';
+          (el<HTMLInputElement>('pcba-th-count')).value = slot === 1 ? '8' : '12';
+          (el<HTMLInputElement>('pcba-man-count')).value = slot === 1 ? '0' : '2';
+          (el<HTMLInputElement>('pcba-bga-count')).value = slot === 1 ? '1' : '3';
+          (el<HTMLInputElement>('pcba-ict-time')).value = slot === 1 ? '120' : '180';
+          const xrayMach = el<HTMLSelectElement>('pcba-xray-mach');
+          if (xrayMach) { const o = Array.from(xrayMach.options).find(x => x.value === 'xray-bga-inspection'); if (o) xrayMach.value = o.value; }
+          const ictMach = el<HTMLSelectElement>('pcba-ict-mach');
+          if (ictMach) { const o = Array.from(ictMach.options).find(x => x.value === 'ict-automotive'); if (o) ictMach.value = o.value; }
+          (el<HTMLInputElement>('pcba-yield')).value = slot === 1 ? '0.97' : '0.96';
+          (el<HTMLInputElement>('pcba-rework-cost')).value = slot === 1 ? '12.00' : '18.00';
+          (el<HTMLInputElement>('pcba-test-cost')).value = '0';
+          (el<HTMLInputElement>('pcba-amort')).value = slot === 1 ? '8000' : '5000';
+          (el<HTMLInputElement>('pcba-coat-area')).value = slot === 1 ? '0' : '50';
+          (el<HTMLInputElement>('pcba-coat-price')).value = '0.005';
+          (el<HTMLInputElement>('pcba-nre-cost')).value = slot === 1 ? '2500' : '5000';
+          (el<HTMLInputElement>('pcba-nre-amort')).value = slot === 1 ? '8000' : '5000';
+          (el<HTMLInputElement>('packaging')).value = '0.25';
+          (el<HTMLInputElement>('logistics')).value = '0.50';
+          (el<HTMLInputElement>('overhead-pct')).value = '8';
+          (el<HTMLInputElement>('margin-pct')).value = '10';
+        }
         compute();
         setTimeout(switchToInsights, 300);
         break;
       }
 
       case 'cast_and_machine': {
-        (el<HTMLInputElement>('part-name')).value = slot === 1 ? 'Porsche Cayenne Aluminium Brake Caliper (Cast+Machine)' : 'BMW X5 Transfer Case Housing (Cast+Machine)';
-        const matEl = el<HTMLSelectElement>('cam-mat');
-        if (matEl) { const o = Array.from(matEl.options).find(x => x.value === 'mat-adc12'); if (o) matEl.value = o.value; }
-        (el<HTMLInputElement>('cam-cast-wt')).value = slot === 1 ? '3.20' : '5.80';
-        (el<HTMLInputElement>('cam-finish-wt')).value = slot === 1 ? '2.65' : '4.90';
-        (el<HTMLInputElement>('cam-cast-yield')).value = slot === 1 ? '0.65' : '0.62';
-        (el<HTMLInputElement>('cam-reject')).value = slot === 1 ? '0.025' : '0.03';
-        (el<HTMLInputElement>('cam-cast-oee')).value = '0.80';
-        (el<HTMLInputElement>('cam-cast-manning')).value = '2';
-        (el<HTMLInputElement>('cam-cast-lab-eff')).value = '0.92';
-        const hpdcMach = el<HTMLSelectElement>('cam-hpdc-mach');
-        if (hpdcMach) { const o = Array.from(hpdcMach.options).find(x => x.value === (slot === 1 ? 'hpdc-800t' : 'hpdc-1600t')); if (o) hpdcMach.value = o.value; }
-        (el<HTMLInputElement>('cam-hpdc-ct')).value = slot === 1 ? '60' : '90';
-        (el<HTMLInputElement>('cam-hpdc-cav')).value = '1';
-        (el<HTMLInputElement>('cam-hpdc-die-cost')).value = slot === 1 ? '120000' : '280000';
-        (el<HTMLInputElement>('cam-hpdc-die-life')).value = slot === 1 ? '180000' : '150000';
-        const camMach = el<HTMLSelectElement>('cam-mach-setup-mach');
-        if (camMach) { const o = Array.from(camMach.options).find(x => x.value === (slot === 1 ? 'mach-haas-vf2' : 'mach-dmg-dmu50')); if (o) camMach.value = o.value; }
-        (el<HTMLInputElement>('cam-mach-setup-time')).value = slot === 1 ? '0.5' : '0.75';
-        (el<HTMLInputElement>('cam-mach-batch-size')).value = slot === 1 ? '25' : '15';
-        (el<HTMLInputElement>('cam-mach-tooling')).value = slot === 1 ? '8000' : '18000';
-        (el<HTMLInputElement>('cam-mach-prog-nre')).value = slot === 1 ? '3000' : '6000';
-        (el<HTMLInputElement>('cam-amort')).value = slot === 1 ? '60000' : '40000';
-        (el<HTMLInputElement>('packaging')).value = slot === 1 ? '0.60' : '1.20';
-        (el<HTMLInputElement>('logistics')).value = slot === 1 ? '1.40' : '2.50';
-        (el<HTMLInputElement>('overhead-pct')).value = '12';
-        (el<HTMLInputElement>('margin-pct')).value = '9';
+        if (slot === 3) {
+          (el<HTMLInputElement>('part-name')).value = 'Volkswagen Touareg Engine Mount Bracket (HPDC + Machine)';
+          const matEl3 = el<HTMLSelectElement>('cam-mat');
+          if (matEl3) { const o = Array.from(matEl3.options).find(x => x.value === 'mat-adc12'); if (o) matEl3.value = o.value; }
+          (el<HTMLInputElement>('cam-cast-wt')).value = '2.80';
+          (el<HTMLInputElement>('cam-finish-wt')).value = '2.35';
+          (el<HTMLInputElement>('cam-cast-yield')).value = '0.68';
+          (el<HTMLInputElement>('cam-reject')).value = '0.025';
+          (el<HTMLInputElement>('cam-cast-oee')).value = '0.82';
+          (el<HTMLInputElement>('cam-cast-manning')).value = '1';
+          (el<HTMLInputElement>('cam-cast-lab-eff')).value = '0.92';
+          const camSubtype3 = el<HTMLSelectElement>('cam-cast-subtype');
+          if (camSubtype3) { camSubtype3.value = 'hpdc'; camSubtype3.dispatchEvent(new Event('change')); }
+          const hpdcMach3 = el<HTMLSelectElement>('cam-hpdc-mach');
+          if (hpdcMach3) { const o = Array.from(hpdcMach3.options).find(x => x.value === 'hpdc-800t'); if (o) hpdcMach3.value = o.value; }
+          (el<HTMLInputElement>('cam-hpdc-ct')).value = '55';
+          (el<HTMLInputElement>('cam-hpdc-cav')).value = '2';
+          (el<HTMLInputElement>('cam-hpdc-die-cost')).value = '95000';
+          (el<HTMLInputElement>('cam-hpdc-die-life')).value = '180000';
+          const camSetupMach3 = el<HTMLSelectElement>('cam-mach-setup-mach');
+          if (camSetupMach3) { const o = Array.from(camSetupMach3.options).find(x => x.value === 'mach-haas-vf2'); if (o) camSetupMach3.value = o.value; }
+          (el<HTMLInputElement>('cam-mach-setup-time')).value = '0.42';
+          (el<HTMLInputElement>('cam-mach-batch-size')).value = '30';
+          (el<HTMLInputElement>('cam-mach-tooling')).value = '6500';
+          (el<HTMLInputElement>('cam-mach-prog-nre')).value = '2200';
+          (el<HTMLInputElement>('cam-amort')).value = '50000';
+          const camOpsContainer3 = el('cam-mach-ops-container');
+          if (camOpsContainer3) { camOpsContainer3.innerHTML = ''; camMachOpCount = 0; }
+          addCAMMachOp({ name: '3-Axis Mill — Mounting Faces', type: 'milling_3ax', machineId: 'mach-haas-vf2', labourId: 'lab-uk-skilled', cycleTimeHr: 0.15, partsPerCycle: 1, oee: 0.85, manning: 1, labourTimeHr: 0.15, labourEfficiency: 0.92 });
+          addCAMMachOp({ name: 'CNC Drilling — Stud Holes ×6', type: 'drilling', machineId: 'mach-drill', labourId: 'lab-uk-skilled', cycleTimeHr: 0.05, partsPerCycle: 1, oee: 0.85, manning: 1, labourTimeHr: 0.05, labourEfficiency: 0.92 });
+          (el<HTMLInputElement>('packaging')).value = '0.50';
+          (el<HTMLInputElement>('logistics')).value = '1.10';
+          (el<HTMLInputElement>('overhead-pct')).value = '12';
+          (el<HTMLInputElement>('margin-pct')).value = '9';
+        } else {
+          (el<HTMLInputElement>('part-name')).value = slot === 1 ? 'Porsche Cayenne Aluminium Brake Caliper (Cast+Machine)' : 'BMW X5 Transfer Case Housing (Cast+Machine)';
+          const matEl = el<HTMLSelectElement>('cam-mat');
+          if (matEl) { const o = Array.from(matEl.options).find(x => x.value === 'mat-adc12'); if (o) matEl.value = o.value; }
+          (el<HTMLInputElement>('cam-cast-wt')).value = slot === 1 ? '3.20' : '5.80';
+          (el<HTMLInputElement>('cam-finish-wt')).value = slot === 1 ? '2.65' : '4.90';
+          (el<HTMLInputElement>('cam-cast-yield')).value = slot === 1 ? '0.65' : '0.62';
+          (el<HTMLInputElement>('cam-reject')).value = slot === 1 ? '0.025' : '0.03';
+          (el<HTMLInputElement>('cam-cast-oee')).value = '0.80';
+          (el<HTMLInputElement>('cam-cast-manning')).value = '2';
+          (el<HTMLInputElement>('cam-cast-lab-eff')).value = '0.92';
+          const hpdcMach = el<HTMLSelectElement>('cam-hpdc-mach');
+          if (hpdcMach) { const o = Array.from(hpdcMach.options).find(x => x.value === (slot === 1 ? 'hpdc-800t' : 'hpdc-1600t')); if (o) hpdcMach.value = o.value; }
+          (el<HTMLInputElement>('cam-hpdc-ct')).value = slot === 1 ? '60' : '90';
+          (el<HTMLInputElement>('cam-hpdc-cav')).value = '1';
+          (el<HTMLInputElement>('cam-hpdc-die-cost')).value = slot === 1 ? '120000' : '280000';
+          (el<HTMLInputElement>('cam-hpdc-die-life')).value = slot === 1 ? '180000' : '150000';
+          const camMach = el<HTMLSelectElement>('cam-mach-setup-mach');
+          if (camMach) { const o = Array.from(camMach.options).find(x => x.value === (slot === 1 ? 'mach-haas-vf2' : 'mach-dmg-dmu50')); if (o) camMach.value = o.value; }
+          (el<HTMLInputElement>('cam-mach-setup-time')).value = slot === 1 ? '0.5' : '0.75';
+          (el<HTMLInputElement>('cam-mach-batch-size')).value = slot === 1 ? '25' : '15';
+          (el<HTMLInputElement>('cam-mach-tooling')).value = slot === 1 ? '8000' : '18000';
+          (el<HTMLInputElement>('cam-mach-prog-nre')).value = slot === 1 ? '3000' : '6000';
+          (el<HTMLInputElement>('cam-amort')).value = slot === 1 ? '60000' : '40000';
+          (el<HTMLInputElement>('packaging')).value = slot === 1 ? '0.60' : '1.20';
+          (el<HTMLInputElement>('logistics')).value = slot === 1 ? '1.40' : '2.50';
+          (el<HTMLInputElement>('overhead-pct')).value = '12';
+          (el<HTMLInputElement>('margin-pct')).value = '9';
+        }
         compute();
         setTimeout(switchToInsights, 300);
         break;
       }
 
       case 'rubber': {
-        (el<HTMLInputElement>('part-name')).value = slot === 1 ? 'Range Rover Door Seal (Moulded EPDM)' : 'Mercedes GLE Engine Mount Anti-Vibration Pad';
-        const matEl = el<HTMLSelectElement>('rub-mat');
-        if (matEl) { const o = Array.from(matEl.options).find(x => x.value === (slot === 1 ? 'mat-epdm' : 'mat-nbr')); if (o) matEl.value = o.value; }
-        const procEl = el<HTMLSelectElement>('rub-process');
-        if (procEl) procEl.value = slot === 1 ? 'compression_mould' : 'transfer_mould';
-        const rubMach = el<HTMLSelectElement>('rub-mach');
-        if (rubMach) { const o = Array.from(rubMach.options).find(x => x.value === (slot === 1 ? 'compression-mould-std' : 'transfer-mould-std')); if (o) rubMach.value = o.value; }
-        const rubLab = el<HTMLSelectElement>('rub-lab');
-        if (rubLab) { const o = Array.from(rubLab.options).find(x => x.value === 'lab-uk-skilled'); if (o) rubLab.value = o.value; }
-        (el<HTMLInputElement>('rub-part-wt')).value = slot === 1 ? '0.120' : '0.280';
-        (el<HTMLInputElement>('rub-flash-wt')).value = slot === 1 ? '0.015' : '0.030';
-        (el<HTMLInputElement>('rub-cycle-sec')).value = slot === 1 ? '180' : '240';
-        (el<HTMLInputElement>('rub-cavities')).value = slot === 1 ? '4' : '2';
-        (el<HTMLInputElement>('rub-oee')).value = '0.80';
-        (el<HTMLInputElement>('rub-manning')).value = '1';
-        (el<HTMLInputElement>('rub-lab-eff')).value = '0.90';
-        (el<HTMLInputElement>('rub-reject')).value = '0.03';
-        (el<HTMLInputElement>('rub-cure-sec')).value = '0';
-        (el<HTMLInputElement>('rub-mould-cost')).value = slot === 1 ? '8000' : '15000';
-        (el<HTMLInputElement>('rub-mould-life')).value = slot === 1 ? '200000' : '150000';
-        (el<HTMLInputElement>('rub-amort')).value = slot === 1 ? '80000' : '50000';
-        (el<HTMLInputElement>('rub-primer')).value = slot === 1 ? '0' : '0.35';
-        (el<HTMLInputElement>('packaging')).value = slot === 1 ? '0.08' : '0.15';
-        (el<HTMLInputElement>('logistics')).value = slot === 1 ? '0.20' : '0.40';
-        (el<HTMLInputElement>('overhead-pct')).value = '11';
-        (el<HTMLInputElement>('margin-pct')).value = '9';
+        if (slot === 3) {
+          (el<HTMLInputElement>('part-name')).value = 'BMW X5 Anti-Vibration Engine Mount Bush (NR Bonded)';
+          const matEl3 = el<HTMLSelectElement>('rub-mat');
+          if (matEl3) { const o = Array.from(matEl3.options).find(x => x.value === 'mat-nr') || Array.from(matEl3.options).find(x => x.value === 'mat-nbr'); if (o) matEl3.value = o.value; }
+          const procEl3 = el<HTMLSelectElement>('rub-process');
+          if (procEl3) procEl3.value = 'compression_mould';
+          const rubMach3 = el<HTMLSelectElement>('rub-mach');
+          if (rubMach3) { const o = Array.from(rubMach3.options).find(x => x.value === 'compression-mould-std'); if (o) rubMach3.value = o.value; }
+          const rubLab3 = el<HTMLSelectElement>('rub-lab');
+          if (rubLab3) { const o = Array.from(rubLab3.options).find(x => x.value === 'lab-uk-skilled'); if (o) rubLab3.value = o.value; }
+          (el<HTMLInputElement>('rub-part-wt')).value = '0.380';
+          (el<HTMLInputElement>('rub-flash-wt')).value = '0.035';
+          (el<HTMLInputElement>('rub-cycle-sec')).value = '210';
+          (el<HTMLInputElement>('rub-cavities')).value = '2';
+          (el<HTMLInputElement>('rub-oee')).value = '0.80';
+          (el<HTMLInputElement>('rub-manning')).value = '1';
+          (el<HTMLInputElement>('rub-lab-eff')).value = '0.90';
+          (el<HTMLInputElement>('rub-reject')).value = '0.025';
+          (el<HTMLInputElement>('rub-cure-sec')).value = '0';
+          (el<HTMLInputElement>('rub-mould-cost')).value = '12000';
+          (el<HTMLInputElement>('rub-mould-life')).value = '150000';
+          (el<HTMLInputElement>('rub-amort')).value = '60000';
+          (el<HTMLInputElement>('rub-primer')).value = '0.45';
+          (el<HTMLInputElement>('packaging')).value = '0.12';
+          (el<HTMLInputElement>('logistics')).value = '0.30';
+          (el<HTMLInputElement>('overhead-pct')).value = '11';
+          (el<HTMLInputElement>('margin-pct')).value = '9';
+        } else {
+          (el<HTMLInputElement>('part-name')).value = slot === 1 ? 'Range Rover Door Seal (Moulded EPDM)' : 'Mercedes GLE Engine Mount Anti-Vibration Pad';
+          const matEl = el<HTMLSelectElement>('rub-mat');
+          if (matEl) { const o = Array.from(matEl.options).find(x => x.value === (slot === 1 ? 'mat-epdm' : 'mat-nbr')); if (o) matEl.value = o.value; }
+          const procEl = el<HTMLSelectElement>('rub-process');
+          if (procEl) procEl.value = slot === 1 ? 'compression_mould' : 'transfer_mould';
+          const rubMach = el<HTMLSelectElement>('rub-mach');
+          if (rubMach) { const o = Array.from(rubMach.options).find(x => x.value === (slot === 1 ? 'compression-mould-std' : 'transfer-mould-std')); if (o) rubMach.value = o.value; }
+          const rubLab = el<HTMLSelectElement>('rub-lab');
+          if (rubLab) { const o = Array.from(rubLab.options).find(x => x.value === 'lab-uk-skilled'); if (o) rubLab.value = o.value; }
+          (el<HTMLInputElement>('rub-part-wt')).value = slot === 1 ? '0.120' : '0.280';
+          (el<HTMLInputElement>('rub-flash-wt')).value = slot === 1 ? '0.015' : '0.030';
+          (el<HTMLInputElement>('rub-cycle-sec')).value = slot === 1 ? '180' : '240';
+          (el<HTMLInputElement>('rub-cavities')).value = slot === 1 ? '4' : '2';
+          (el<HTMLInputElement>('rub-oee')).value = '0.80';
+          (el<HTMLInputElement>('rub-manning')).value = '1';
+          (el<HTMLInputElement>('rub-lab-eff')).value = '0.90';
+          (el<HTMLInputElement>('rub-reject')).value = '0.03';
+          (el<HTMLInputElement>('rub-cure-sec')).value = '0';
+          (el<HTMLInputElement>('rub-mould-cost')).value = slot === 1 ? '8000' : '15000';
+          (el<HTMLInputElement>('rub-mould-life')).value = slot === 1 ? '200000' : '150000';
+          (el<HTMLInputElement>('rub-amort')).value = slot === 1 ? '80000' : '50000';
+          (el<HTMLInputElement>('rub-primer')).value = slot === 1 ? '0' : '0.35';
+          (el<HTMLInputElement>('packaging')).value = slot === 1 ? '0.08' : '0.15';
+          (el<HTMLInputElement>('logistics')).value = slot === 1 ? '0.20' : '0.40';
+          (el<HTMLInputElement>('overhead-pct')).value = '11';
+          (el<HTMLInputElement>('margin-pct')).value = '9';
+        }
         compute();
         setTimeout(switchToInsights, 300);
         break;
       }
 
       case 'composites': {
-        (el<HTMLInputElement>('part-name')).value = slot === 1 ? 'Lamborghini Urus Active Rear Spoiler (CFRP Prepreg)' : 'McLaren GT Front Bonnet Panel (CFRP Prepreg)';
-        const procEl = el<HTMLSelectElement>('comp-process');
-        if (procEl) procEl.value = 'prepreg_layup';
-        (el<HTMLInputElement>('comp-part-wt')).value = slot === 1 ? '1.80' : '3.20';
-        (el<HTMLInputElement>('comp-fibre-price')).value = '32.00';
-        (el<HTMLInputElement>('comp-resin-price')).value = '0';
-        (el<HTMLInputElement>('comp-fibre-frac')).value = '0.60';
-        (el<HTMLInputElement>('comp-waste-frac')).value = slot === 1 ? '0.18' : '0.22';
-        (el<HTMLInputElement>('comp-area')).value = slot === 1 ? '0.65' : '1.20';
-        (el<HTMLInputElement>('comp-plies')).value = slot === 1 ? '8' : '12';
-        const layupLab = el<HTMLSelectElement>('comp-layup-lab');
-        if (layupLab) { const o = Array.from(layupLab.options).find(x => x.value === 'lab-uk-skilled'); if (o) layupLab.value = o.value; }
-        (el<HTMLInputElement>('comp-layup-time')).value = slot === 1 ? '3.50' : '6.00';
-        (el<HTMLInputElement>('comp-oee')).value = '0.78';
-        (el<HTMLInputElement>('comp-manning')).value = '2';
-        (el<HTMLInputElement>('comp-lab-eff')).value = '0.90';
-        (el<HTMLInputElement>('comp-reject')).value = '0.04';
-        const cureMach = el<HTMLSelectElement>('comp-cure-mach');
-        if (cureMach) { const o = Array.from(cureMach.options).find(x => x.value === 'autoclave-1200mm'); if (o) cureMach.value = o.value; }
-        const cureLab = el<HTMLSelectElement>('comp-cure-lab');
-        if (cureLab) { const o = Array.from(cureLab.options).find(x => x.value === 'lab-uk-skilled'); if (o) cureLab.value = o.value; }
-        (el<HTMLInputElement>('comp-cure-time')).value = slot === 1 ? '3.50' : '4.00';
-        (el<HTMLInputElement>('comp-cure-batch')).value = slot === 1 ? '4' : '2';
-        const trimMach = el<HTMLSelectElement>('comp-trim-mach');
-        if (trimMach) { const o = Array.from(trimMach.options).find(x => x.value === 'waterjet-5ax-composite'); if (o) trimMach.value = o.value; }
-        const trimLab = el<HTMLSelectElement>('comp-trim-lab');
-        if (trimLab) { const o = Array.from(trimLab.options).find(x => x.value === 'lab-uk-skilled'); if (o) trimLab.value = o.value; }
-        (el<HTMLInputElement>('comp-trim-time')).value = slot === 1 ? '0.50' : '0.75';
-        (el<HTMLInputElement>('comp-ndi')).value = slot === 1 ? '28.00' : '40.00';
-        (el<HTMLInputElement>('comp-tool-cost')).value = slot === 1 ? '25000' : '45000';
-        (el<HTMLInputElement>('comp-tool-life')).value = slot === 1 ? '400' : '300';
-        (el<HTMLInputElement>('comp-amort')).value = slot === 1 ? '2000' : '1500';
-        (el<HTMLInputElement>('packaging')).value = slot === 1 ? '1.50' : '3.00';
-        (el<HTMLInputElement>('logistics')).value = slot === 1 ? '2.50' : '4.50';
-        (el<HTMLInputElement>('overhead-pct')).value = '14';
-        (el<HTMLInputElement>('margin-pct')).value = '10';
+        if (slot === 3) {
+          (el<HTMLInputElement>('part-name')).value = 'BMW X7 M Sport Front Lip Splitter (CFRP Prepreg)';
+          const procEl3 = el<HTMLSelectElement>('comp-process');
+          if (procEl3) procEl3.value = 'prepreg_layup';
+          (el<HTMLInputElement>('comp-part-wt')).value = '2.40';
+          (el<HTMLInputElement>('comp-fibre-price')).value = '32.00';
+          (el<HTMLInputElement>('comp-resin-price')).value = '0';
+          (el<HTMLInputElement>('comp-fibre-frac')).value = '0.60';
+          (el<HTMLInputElement>('comp-waste-frac')).value = '0.20';
+          (el<HTMLInputElement>('comp-area')).value = '0.85';
+          (el<HTMLInputElement>('comp-plies')).value = '10';
+          const layupLab3 = el<HTMLSelectElement>('comp-layup-lab');
+          if (layupLab3) { const o = Array.from(layupLab3.options).find(x => x.value === 'lab-uk-skilled'); if (o) layupLab3.value = o.value; }
+          (el<HTMLInputElement>('comp-layup-time')).value = '4.50';
+          (el<HTMLInputElement>('comp-oee')).value = '0.78';
+          (el<HTMLInputElement>('comp-manning')).value = '2';
+          (el<HTMLInputElement>('comp-lab-eff')).value = '0.90';
+          (el<HTMLInputElement>('comp-reject')).value = '0.04';
+          const cureMach3 = el<HTMLSelectElement>('comp-cure-mach');
+          if (cureMach3) { const o = Array.from(cureMach3.options).find(x => x.value === 'autoclave-1200mm'); if (o) cureMach3.value = o.value; }
+          const cureLab3 = el<HTMLSelectElement>('comp-cure-lab');
+          if (cureLab3) { const o = Array.from(cureLab3.options).find(x => x.value === 'lab-uk-skilled'); if (o) cureLab3.value = o.value; }
+          (el<HTMLInputElement>('comp-cure-time')).value = '3.00';
+          (el<HTMLInputElement>('comp-cure-batch')).value = '6';
+          const trimMach3 = el<HTMLSelectElement>('comp-trim-mach');
+          if (trimMach3) { const o = Array.from(trimMach3.options).find(x => x.value === 'waterjet-5ax-composite'); if (o) trimMach3.value = o.value; }
+          const trimLab3 = el<HTMLSelectElement>('comp-trim-lab');
+          if (trimLab3) { const o = Array.from(trimLab3.options).find(x => x.value === 'lab-uk-skilled'); if (o) trimLab3.value = o.value; }
+          (el<HTMLInputElement>('comp-trim-time')).value = '0.60';
+          (el<HTMLInputElement>('comp-ndi')).value = '32.00';
+          (el<HTMLInputElement>('comp-tool-cost')).value = '32000';
+          (el<HTMLInputElement>('comp-tool-life')).value = '350';
+          (el<HTMLInputElement>('comp-amort')).value = '2500';
+          (el<HTMLInputElement>('packaging')).value = '2.00';
+          (el<HTMLInputElement>('logistics')).value = '3.50';
+          (el<HTMLInputElement>('overhead-pct')).value = '14';
+          (el<HTMLInputElement>('margin-pct')).value = '10';
+        } else {
+          (el<HTMLInputElement>('part-name')).value = slot === 1 ? 'Lamborghini Urus Active Rear Spoiler (CFRP Prepreg)' : 'McLaren GT Front Bonnet Panel (CFRP Prepreg)';
+          const procEl = el<HTMLSelectElement>('comp-process');
+          if (procEl) procEl.value = 'prepreg_layup';
+          (el<HTMLInputElement>('comp-part-wt')).value = slot === 1 ? '1.80' : '3.20';
+          (el<HTMLInputElement>('comp-fibre-price')).value = '32.00';
+          (el<HTMLInputElement>('comp-resin-price')).value = '0';
+          (el<HTMLInputElement>('comp-fibre-frac')).value = '0.60';
+          (el<HTMLInputElement>('comp-waste-frac')).value = slot === 1 ? '0.18' : '0.22';
+          (el<HTMLInputElement>('comp-area')).value = slot === 1 ? '0.65' : '1.20';
+          (el<HTMLInputElement>('comp-plies')).value = slot === 1 ? '8' : '12';
+          const layupLab = el<HTMLSelectElement>('comp-layup-lab');
+          if (layupLab) { const o = Array.from(layupLab.options).find(x => x.value === 'lab-uk-skilled'); if (o) layupLab.value = o.value; }
+          (el<HTMLInputElement>('comp-layup-time')).value = slot === 1 ? '3.50' : '6.00';
+          (el<HTMLInputElement>('comp-oee')).value = '0.78';
+          (el<HTMLInputElement>('comp-manning')).value = '2';
+          (el<HTMLInputElement>('comp-lab-eff')).value = '0.90';
+          (el<HTMLInputElement>('comp-reject')).value = '0.04';
+          const cureMach = el<HTMLSelectElement>('comp-cure-mach');
+          if (cureMach) { const o = Array.from(cureMach.options).find(x => x.value === 'autoclave-1200mm'); if (o) cureMach.value = o.value; }
+          const cureLab = el<HTMLSelectElement>('comp-cure-lab');
+          if (cureLab) { const o = Array.from(cureLab.options).find(x => x.value === 'lab-uk-skilled'); if (o) cureLab.value = o.value; }
+          (el<HTMLInputElement>('comp-cure-time')).value = slot === 1 ? '3.50' : '4.00';
+          (el<HTMLInputElement>('comp-cure-batch')).value = slot === 1 ? '4' : '2';
+          const trimMach = el<HTMLSelectElement>('comp-trim-mach');
+          if (trimMach) { const o = Array.from(trimMach.options).find(x => x.value === 'waterjet-5ax-composite'); if (o) trimMach.value = o.value; }
+          const trimLab = el<HTMLSelectElement>('comp-trim-lab');
+          if (trimLab) { const o = Array.from(trimLab.options).find(x => x.value === 'lab-uk-skilled'); if (o) trimLab.value = o.value; }
+          (el<HTMLInputElement>('comp-trim-time')).value = slot === 1 ? '0.50' : '0.75';
+          (el<HTMLInputElement>('comp-ndi')).value = slot === 1 ? '28.00' : '40.00';
+          (el<HTMLInputElement>('comp-tool-cost')).value = slot === 1 ? '25000' : '45000';
+          (el<HTMLInputElement>('comp-tool-life')).value = slot === 1 ? '400' : '300';
+          (el<HTMLInputElement>('comp-amort')).value = slot === 1 ? '2000' : '1500';
+          (el<HTMLInputElement>('packaging')).value = slot === 1 ? '1.50' : '3.00';
+          (el<HTMLInputElement>('logistics')).value = slot === 1 ? '2.50' : '4.50';
+          (el<HTMLInputElement>('overhead-pct')).value = '14';
+          (el<HTMLInputElement>('margin-pct')).value = '10';
+        }
         compute();
         setTimeout(switchToInsights, 300);
         break;
       }
 
       case 'wiring_harness': {
-        (el<HTMLInputElement>('part-name')).value = slot === 1 ? 'Rolls-Royce Ghost Door Wiring Harness' : 'Bentley Bentayga Engine Bay Harness';
-        // Clear and set wire rows
         const wireRows = document.querySelectorAll<HTMLElement>('.wire-row');
-        if (slot === 1) {
-          const gauges = ['0.50', '1.50', '2.50'];
-          const lengths = ['3.20', '1.80', '0.60'];
-          const prices = ['0.10', '0.18', '0.28'];
-          wireRows.forEach((row, i) => {
-            const gEl = row.querySelector<HTMLInputElement>('.wire-gauge');
-            const lEl = row.querySelector<HTMLInputElement>('.wire-length');
-            const pEl = row.querySelector<HTMLInputElement>('.wire-price');
-            if (gEl && gauges[i]) gEl.value = gauges[i];
-            if (lEl && lengths[i]) lEl.value = lengths[i];
-            if (pEl && prices[i]) pEl.value = prices[i];
-          });
-        } else {
-          const gauges = ['0.50', '1.50', '4.00'];
-          const lengths = ['6.50', '4.20', '1.30'];
-          const prices = ['0.10', '0.18', '0.40'];
-          wireRows.forEach((row, i) => {
-            const gEl = row.querySelector<HTMLInputElement>('.wire-gauge');
-            const lEl = row.querySelector<HTMLInputElement>('.wire-length');
-            const pEl = row.querySelector<HTMLInputElement>('.wire-price');
-            if (gEl && gauges[i]) gEl.value = gauges[i];
-            if (lEl && lengths[i]) lEl.value = lengths[i];
-            if (pEl && prices[i]) pEl.value = prices[i];
-          });
-        }
-        // Connectors
         const connRows = document.querySelectorAll<HTMLElement>('.conn-row');
-        if (slot === 1) {
-          const counts = ['4', '2']; const costs = ['1.20', '2.80']; const circuits = ['6', '8']; const termTimes = ['10', '10'];
+        if (slot === 3) {
+          (el<HTMLInputElement>('part-name')).value = 'Toyota Land Cruiser 300 Engine Bay Control Harness';
+          const gauges3 = ['0.75', '1.50', '4.00'];
+          const lengths3 = ['4.50', '2.80', '0.80'];
+          const prices3 = ['0.12', '0.20', '0.42'];
+          wireRows.forEach((row, i) => {
+            const gEl = row.querySelector<HTMLInputElement>('.wire-gauge');
+            const lEl = row.querySelector<HTMLInputElement>('.wire-length');
+            const pEl = row.querySelector<HTMLInputElement>('.wire-price');
+            if (gEl && gauges3[i]) gEl.value = gauges3[i];
+            if (lEl && lengths3[i]) lEl.value = lengths3[i];
+            if (pEl && prices3[i]) pEl.value = prices3[i];
+          });
+          const counts3 = ['5', '3']; const costs3 = ['1.40', '3.20']; const circuits3 = ['8', '10']; const termTimes3 = ['10', '12'];
           connRows.forEach((row, i) => {
             const cn = row.querySelector<HTMLInputElement>('.conn-count');
             const cc = row.querySelector<HTMLInputElement>('.conn-cost');
             const ci = row.querySelector<HTMLInputElement>('.conn-circuits');
             const ct = row.querySelector<HTMLInputElement>('.conn-term-time');
-            if (cn && counts[i]) cn.value = counts[i];
-            if (cc && costs[i]) cc.value = costs[i];
-            if (ci && circuits[i]) ci.value = circuits[i];
-            if (ct && termTimes[i]) ct.value = termTimes[i];
+            if (cn && counts3[i]) cn.value = counts3[i];
+            if (cc && costs3[i]) cc.value = costs3[i];
+            if (ci && circuits3[i]) ci.value = circuits3[i];
+            if (ct && termTimes3[i]) ct.value = termTimes3[i];
           });
+          (el<HTMLInputElement>('harn-splices')).value = '8';
+          (el<HTMLInputElement>('harn-splice-cost')).value = '0.08';
+          (el<HTMLInputElement>('harn-conduit-len')).value = '2.80';
+          (el<HTMLInputElement>('harn-conduit-price')).value = '0.35';
+          (el<HTMLInputElement>('harn-tape-m')).value = '7.00';
+          (el<HTMLInputElement>('harn-tape-price')).value = '0.12';
+          const asmLab3 = el<HTMLSelectElement>('harn-asm-lab');
+          if (asmLab3) { const o = Array.from(asmLab3.options).find(x => x.value === 'lab-uk-skilled'); if (o) asmLab3.value = o.value; }
+          (el<HTMLInputElement>('harn-asm-time')).value = '0.65';
+          (el<HTMLInputElement>('harn-oee')).value = '0.85';
+          (el<HTMLInputElement>('harn-manning')).value = '1';
+          (el<HTMLInputElement>('harn-lab-eff')).value = '0.90';
+          (el<HTMLInputElement>('harn-reject')).value = '0.02';
+          const testMach3 = el<HTMLSelectElement>('harn-test-mach');
+          if (testMach3) { const o = Array.from(testMach3.options).find(x => x.value === 'harness-test-sys'); if (o) testMach3.value = o.value; }
+          const testLab3 = el<HTMLSelectElement>('harn-test-lab');
+          if (testLab3) { const o = Array.from(testLab3.options).find(x => x.value === 'lab-uk-skilled'); if (o) testLab3.value = o.value; }
+          (el<HTMLInputElement>('harn-test-time')).value = '0.06';
+          (el<HTMLInputElement>('harn-board-cost')).value = '1000';
+          (el<HTMLInputElement>('harn-board-life')).value = '20000';
+          (el<HTMLInputElement>('packaging')).value = '0.30';
+          (el<HTMLInputElement>('logistics')).value = '0.70';
+          (el<HTMLInputElement>('overhead-pct')).value = '10';
+          (el<HTMLInputElement>('margin-pct')).value = '8';
         } else {
-          const counts = ['6', '4']; const costs = ['1.80', '3.50']; const circuits = ['10', '12']; const termTimes = ['10', '12'];
-          connRows.forEach((row, i) => {
-            const cn = row.querySelector<HTMLInputElement>('.conn-count');
-            const cc = row.querySelector<HTMLInputElement>('.conn-cost');
-            const ci = row.querySelector<HTMLInputElement>('.conn-circuits');
-            const ct = row.querySelector<HTMLInputElement>('.conn-term-time');
-            if (cn && counts[i]) cn.value = counts[i];
-            if (cc && costs[i]) cc.value = costs[i];
-            if (ci && circuits[i]) ci.value = circuits[i];
-            if (ct && termTimes[i]) ct.value = termTimes[i];
-          });
+          (el<HTMLInputElement>('part-name')).value = slot === 1 ? 'Rolls-Royce Ghost Door Wiring Harness' : 'Bentley Bentayga Engine Bay Harness';
+          if (slot === 1) {
+            const gauges = ['0.50', '1.50', '2.50'];
+            const lengths = ['3.20', '1.80', '0.60'];
+            const prices = ['0.10', '0.18', '0.28'];
+            wireRows.forEach((row, i) => {
+              const gEl = row.querySelector<HTMLInputElement>('.wire-gauge');
+              const lEl = row.querySelector<HTMLInputElement>('.wire-length');
+              const pEl = row.querySelector<HTMLInputElement>('.wire-price');
+              if (gEl && gauges[i]) gEl.value = gauges[i];
+              if (lEl && lengths[i]) lEl.value = lengths[i];
+              if (pEl && prices[i]) pEl.value = prices[i];
+            });
+          } else {
+            const gauges = ['0.50', '1.50', '4.00'];
+            const lengths = ['6.50', '4.20', '1.30'];
+            const prices = ['0.10', '0.18', '0.40'];
+            wireRows.forEach((row, i) => {
+              const gEl = row.querySelector<HTMLInputElement>('.wire-gauge');
+              const lEl = row.querySelector<HTMLInputElement>('.wire-length');
+              const pEl = row.querySelector<HTMLInputElement>('.wire-price');
+              if (gEl && gauges[i]) gEl.value = gauges[i];
+              if (lEl && lengths[i]) lEl.value = lengths[i];
+              if (pEl && prices[i]) pEl.value = prices[i];
+            });
+          }
+          if (slot === 1) {
+            const counts = ['4', '2']; const costs = ['1.20', '2.80']; const circuits = ['6', '8']; const termTimes = ['10', '10'];
+            connRows.forEach((row, i) => {
+              const cn = row.querySelector<HTMLInputElement>('.conn-count');
+              const cc = row.querySelector<HTMLInputElement>('.conn-cost');
+              const ci = row.querySelector<HTMLInputElement>('.conn-circuits');
+              const ct = row.querySelector<HTMLInputElement>('.conn-term-time');
+              if (cn && counts[i]) cn.value = counts[i];
+              if (cc && costs[i]) cc.value = costs[i];
+              if (ci && circuits[i]) ci.value = circuits[i];
+              if (ct && termTimes[i]) ct.value = termTimes[i];
+            });
+          } else {
+            const counts = ['6', '4']; const costs = ['1.80', '3.50']; const circuits = ['10', '12']; const termTimes = ['10', '12'];
+            connRows.forEach((row, i) => {
+              const cn = row.querySelector<HTMLInputElement>('.conn-count');
+              const cc = row.querySelector<HTMLInputElement>('.conn-cost');
+              const ci = row.querySelector<HTMLInputElement>('.conn-circuits');
+              const ct = row.querySelector<HTMLInputElement>('.conn-term-time');
+              if (cn && counts[i]) cn.value = counts[i];
+              if (cc && costs[i]) cc.value = costs[i];
+              if (ci && circuits[i]) ci.value = circuits[i];
+              if (ct && termTimes[i]) ct.value = termTimes[i];
+            });
+          }
+          (el<HTMLInputElement>('harn-splices')).value = slot === 1 ? '6' : '12';
+          (el<HTMLInputElement>('harn-splice-cost')).value = '0.08';
+          (el<HTMLInputElement>('harn-conduit-len')).value = slot === 1 ? '2.00' : '4.50';
+          (el<HTMLInputElement>('harn-conduit-price')).value = '0.35';
+          (el<HTMLInputElement>('harn-tape-m')).value = slot === 1 ? '5.00' : '11.00';
+          (el<HTMLInputElement>('harn-tape-price')).value = '0.12';
+          const asmLab = el<HTMLSelectElement>('harn-asm-lab');
+          if (asmLab) { const o = Array.from(asmLab.options).find(x => x.value === 'lab-uk-skilled'); if (o) asmLab.value = o.value; }
+          (el<HTMLInputElement>('harn-asm-time')).value = slot === 1 ? '0.45' : '0.90';
+          (el<HTMLInputElement>('harn-oee')).value = '0.85';
+          (el<HTMLInputElement>('harn-manning')).value = '1';
+          (el<HTMLInputElement>('harn-lab-eff')).value = '0.90';
+          (el<HTMLInputElement>('harn-reject')).value = '0.02';
+          const testMach = el<HTMLSelectElement>('harn-test-mach');
+          if (testMach) { const o = Array.from(testMach.options).find(x => x.value === 'harness-test-sys'); if (o) testMach.value = o.value; }
+          const testLab = el<HTMLSelectElement>('harn-test-lab');
+          if (testLab) { const o = Array.from(testLab.options).find(x => x.value === 'lab-uk-skilled'); if (o) testLab.value = o.value; }
+          (el<HTMLInputElement>('harn-test-time')).value = slot === 1 ? '0.05' : '0.08';
+          (el<HTMLInputElement>('harn-board-cost')).value = slot === 1 ? '800' : '1500';
+          (el<HTMLInputElement>('harn-board-life')).value = '20000';
+          (el<HTMLInputElement>('packaging')).value = slot === 1 ? '0.20' : '0.45';
+          (el<HTMLInputElement>('logistics')).value = slot === 1 ? '0.50' : '1.00';
+          (el<HTMLInputElement>('overhead-pct')).value = '10';
+          (el<HTMLInputElement>('margin-pct')).value = '8';
         }
-        (el<HTMLInputElement>('harn-splices')).value = slot === 1 ? '6' : '12';
-        (el<HTMLInputElement>('harn-splice-cost')).value = '0.08';
-        (el<HTMLInputElement>('harn-conduit-len')).value = slot === 1 ? '2.00' : '4.50';
-        (el<HTMLInputElement>('harn-conduit-price')).value = '0.35';
-        (el<HTMLInputElement>('harn-tape-m')).value = slot === 1 ? '5.00' : '11.00';
-        (el<HTMLInputElement>('harn-tape-price')).value = '0.12';
-        const asmLab = el<HTMLSelectElement>('harn-asm-lab');
-        if (asmLab) { const o = Array.from(asmLab.options).find(x => x.value === 'lab-uk-skilled'); if (o) asmLab.value = o.value; }
-        (el<HTMLInputElement>('harn-asm-time')).value = slot === 1 ? '0.45' : '0.90';
-        (el<HTMLInputElement>('harn-oee')).value = '0.85';
-        (el<HTMLInputElement>('harn-manning')).value = '1';
-        (el<HTMLInputElement>('harn-lab-eff')).value = '0.90';
-        (el<HTMLInputElement>('harn-reject')).value = '0.02';
-        const testMach = el<HTMLSelectElement>('harn-test-mach');
-        if (testMach) { const o = Array.from(testMach.options).find(x => x.value === 'harness-test-sys'); if (o) testMach.value = o.value; }
-        const testLab = el<HTMLSelectElement>('harn-test-lab');
-        if (testLab) { const o = Array.from(testLab.options).find(x => x.value === 'lab-uk-skilled'); if (o) testLab.value = o.value; }
-        (el<HTMLInputElement>('harn-test-time')).value = slot === 1 ? '0.05' : '0.08';
-        (el<HTMLInputElement>('harn-board-cost')).value = slot === 1 ? '800' : '1500';
-        (el<HTMLInputElement>('harn-board-life')).value = '20000';
-        (el<HTMLInputElement>('packaging')).value = slot === 1 ? '0.20' : '0.45';
-        (el<HTMLInputElement>('logistics')).value = slot === 1 ? '0.50' : '1.00';
-        (el<HTMLInputElement>('overhead-pct')).value = '10';
-        (el<HTMLInputElement>('margin-pct')).value = '8';
         compute();
         setTimeout(switchToInsights, 300);
         break;
