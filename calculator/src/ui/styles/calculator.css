@@ -979,6 +979,121 @@ textarea.contact-form-input { resize: vertical; min-height: 100px; }
   border-left: 3px solid var(--border-strong);
 }
 
+/* ── AI-filled field highlight ───────────────────────────────────────────── */
+.ai-filled {
+  border-color: var(--accent) !important;
+  background: color-mix(in srgb, var(--accent) 6%, var(--surface)) !important;
+  transition: border-color 0.3s, background 0.3s;
+}
+.ai-filled-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.ai-badge {
+  font-size: 0.55rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  padding: 1px 5px;
+  border-radius: 3px;
+  background: var(--accent);
+  color: white;
+  vertical-align: middle;
+}
+
+/* ── OCCT Geometry Panel ─────────────────────────────────────────────────── */
+.occt-panel {
+  background: var(--surface-elevated);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  padding: 10px 12px;
+  margin-bottom: 12px;
+}
+.occt-panel-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.occt-source-badge {
+  font-size: 0.6rem;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 100px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.occt-source-badge.occt {
+  background: color-mix(in srgb, var(--accent) 15%, transparent);
+  color: var(--accent);
+  border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+}
+.occt-source-badge.text {
+  background: var(--surface);
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+}
+.occt-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  margin-bottom: 8px;
+}
+.occt-stat {
+  background: var(--surface);
+  border-radius: 4px;
+  padding: 6px 8px;
+  text-align: center;
+}
+.occt-stat-value {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--accent);
+  white-space: nowrap;
+}
+.occt-stat-label {
+  font-size: 0.62rem;
+  color: var(--text-muted);
+  margin-top: 1px;
+}
+.occt-face-bar {
+  display: flex;
+  height: 8px;
+  border-radius: 4px;
+  overflow: hidden;
+  gap: 1px;
+  margin-bottom: 4px;
+}
+.occt-face-segment { height: 100%; transition: width 0.3s; }
+.occt-face-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  font-size: 0.62rem;
+  color: var(--text-secondary);
+}
+.occt-legend-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  margin-right: 3px;
+  vertical-align: middle;
+}
+
+/* ── CAD two-button row ─────────────────────────────────────────────────── */
+.cad-btn-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 6px;
+}
+
 /* ── Charts ──────────────────────────────────────────────────────────────── */
 
 .chart-wrap { display: flex; justify-content: center; align-items: center; padding: 8px 0; }

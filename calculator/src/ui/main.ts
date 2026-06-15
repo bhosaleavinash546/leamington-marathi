@@ -3,7 +3,7 @@ import {
   computeUniversalStack, validateStackInput, breakdownPercentages,
   DEFAULT_RATE_LIBRARY, recomputeMachineRates, getLibraryFromStorage, saveLibraryToStorage,
 } from '../engine/index.js';
-import type { CADAnalysisResult } from '../engine/ai-analysis.js';
+import type { CADAnalysisResult, OCCTGeometry } from '../engine/ai-analysis.js';
 import { computeMachiningDrivers } from '../engine/modules/machining.js';
 import { computeSheetMetalDrivers } from '../engine/modules/sheet-metal.js';
 import { computeInjectionMouldingDrivers } from '../engine/modules/injection-moulding.js';
@@ -72,6 +72,8 @@ let camMachOpCount = 0;
 let asmLineCount = 0;
 let cadFile: File | null = null;
 let cadAnalysisResult: CADAnalysisResult | null = null;
+let cadOCCTGeometry: OCCTGeometry | null = null;
+let cadGeometrySource: 'occt' | 'text_parsing' = 'text_parsing';
 let supplierQuotes: SupplierQuote[] = [];
 let partPhotoDataUrl: string | null = null;
 let partPhotoName: string | null = null;
@@ -2151,9 +2153,14 @@ function renderCADAnalysisForm(): string {
       <input type="password" id="cad-api-key" placeholder="sk-ant-api03-… (optional if server has key)"
              value="${sessionStorage.getItem('cad-api-key') ?? ''}" style="font-family:monospace;font-size:0.8rem"/>
     </div>
-    <button class="btn btn-primary" id="cad-analyze-btn" disabled style="margin-top:6px;width:100%">
-      Analyze CAD File
-    </button>
+    <div class="cad-btn-row">
+      <button class="btn btn-secondary" id="cad-analyze-btn" disabled>
+        Analyze Only
+      </button>
+      <button class="btn btn-primary" id="cad-analyze-calc-btn" disabled>
+        Analyze &amp; Calculate ⚡
+      </button>
+    </div>
     <div id="cad-progress-wrap" class="cad-progress-wrap" style="display:none">
       <div class="cad-progress-label" id="cad-progress-label">Uploading file…</div>
       <div class="cad-progress-bar"><div class="cad-progress-fill" id="cad-progress-fill" style="width:0%"></div></div>
@@ -2188,15 +2195,17 @@ function wireCADEvents(): void {
 
   // Clear button
   el('cad-clear-btn')?.addEventListener('click', () => {
-    cadFile = null; cadAnalysisResult = null;
+    cadFile = null; cadAnalysisResult = null; cadOCCTGeometry = null;
     el('cad-file-info').style.display = 'none';
     el('cad-drop-zone').style.display = '';
     analyzeBtn.setAttribute('disabled', 'true');
+    el('cad-analyze-calc-btn').setAttribute('disabled', 'true');
     el('cad-results').innerHTML = '';
   });
 
   // Analyze button
-  analyzeBtn.addEventListener('click', () => { void analyzeCAD(); });
+  analyzeBtn.addEventListener('click', () => { void analyzeCAD(false); });
+  el('cad-analyze-calc-btn')?.addEventListener('click', () => { void analyzeCAD(true); });
 }
 
 function setCADFile(f: File): void {
@@ -2211,11 +2220,13 @@ function setCADFile(f: File): void {
   el('cad-fname').textContent = f.name;
   el('cad-fsize').textContent = (f.size / 1024).toFixed(1) + ' KB';
   el('cad-analyze-btn').removeAttribute('disabled');
+  el('cad-analyze-calc-btn').removeAttribute('disabled');
   el('cad-results').innerHTML = '';
   cadAnalysisResult = null;
+  cadOCCTGeometry = null;
 }
 
-async function analyzeCAD(): Promise<void> {
+async function analyzeCAD(autoCalculate = false): Promise<void> {
   if (!cadFile) return;
 
   const apiKey = val('cad-api-key');
@@ -2225,46 +2236,58 @@ async function analyzeCAD(): Promise<void> {
   const progressFill = el('cad-progress-fill');
   const progressLabel = el('cad-progress-label');
   const analyzeBtn = el('cad-analyze-btn');
-
-  progress.style.display = '';
-  analyzeBtn.setAttribute('disabled', 'true');
-  el('cad-results').innerHTML = '';
+  const analyzeCalcBtn = el('cad-analyze-calc-btn');
 
   const updateProgress = (pct: number, label: string) => {
     progressFill.style.width = pct + '%';
     progressLabel.textContent = label;
   };
 
+  progress.style.display = '';
+  analyzeBtn.setAttribute('disabled', 'true');
+  analyzeCalcBtn.setAttribute('disabled', 'true');
+  el('cad-results').innerHTML = '';
+
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(new DOMException('Analysis timed out after 90s', 'TimeoutError')), 90_000);
+  const timeoutId = setTimeout(
+    () => controller.abort(new DOMException('Analysis timed out after 150s', 'TimeoutError')),
+    150_000,
+  );
 
   try {
-    updateProgress(20, 'Uploading file…');
+    updateProgress(10, 'Uploading file…');
     const formData = new FormData();
     formData.append('cadFile', cadFile);
 
     const headers: HeadersInit = {};
     if (apiKey) headers['x-api-key'] = apiKey;
 
-    updateProgress(40, 'Preprocessing geometry…');
+    updateProgress(20, 'Running OCCT geometry engine…');
     const res = await fetch('/api/cad/analyze', {
       method: 'POST', headers, body: formData, signal: controller.signal,
     });
 
-    updateProgress(80, 'AI analysis in progress…');
-    const data = await res.json() as { success?: boolean; analysis?: CADAnalysisResult; error?: string };
+    updateProgress(85, 'AI feature analysis…');
+    const data = await res.json() as {
+      success?: boolean;
+      analysis?: CADAnalysisResult;
+      occtGeometry?: OCCTGeometry | null;
+      geometrySource?: 'occt' | 'text_parsing';
+      error?: string;
+    };
 
     if (!res.ok || !data.success) throw new Error(data.error ?? `Server error ${res.status}`);
 
-    updateProgress(100, 'Complete!');
+    updateProgress(100, data.geometrySource === 'occt' ? 'OCCT complete — precise geometry extracted' : 'Complete (text-parsed)');
     cadAnalysisResult = data.analysis!;
+    cadOCCTGeometry = data.occtGeometry ?? null;
+    cadGeometrySource = data.geometrySource ?? 'text_parsing';
 
-    // Update part name from AI analysis
     const partNameEl = el<HTMLInputElement>('part-name');
     if (partNameEl && cadAnalysisResult.partName) partNameEl.value = cadAnalysisResult.partName;
 
-    setTimeout(() => { progress.style.display = 'none'; }, 500);
-    renderCADResults(cadAnalysisResult);
+    setTimeout(() => { progress.style.display = 'none'; }, 600);
+    renderCADResults(cadAnalysisResult, autoCalculate);
   } catch (err) {
     progress.style.display = 'none';
     el('cad-results').innerHTML = `
@@ -2276,10 +2299,11 @@ async function analyzeCAD(): Promise<void> {
   } finally {
     clearTimeout(timeoutId);
     analyzeBtn.removeAttribute('disabled');
+    analyzeCalcBtn.removeAttribute('disabled');
   }
 }
 
-function renderCADResults(r: CADAnalysisResult): void {
+function renderCADResults(r: CADAnalysisResult, autoCalculate = false): void {
   const panel = el('cad-results');
   const g = r.geometry;
   const bb = g.boundingBoxMm;
@@ -2291,34 +2315,41 @@ function renderCADResults(r: CADAnalysisResult): void {
     casting: 'Casting', forging: 'Forging', cast_and_machine: 'Cast+Machine', rubber: 'Rubber',
   };
 
+  // Build OCCT geometry panel HTML
+  const occtPanel = buildOCCTPanel(cadOCCTGeometry, cadGeometrySource);
+
   panel.innerHTML = `
     <!-- Header summary -->
-    <div style="display:flex;align-items:center;gap:16px;padding:12px 0;border-bottom:1px solid #eee;margin-bottom:12px">
+    <div style="display:flex;align-items:center;gap:16px;padding:12px 0;border-bottom:1px solid var(--border);margin-bottom:12px">
       <div style="text-align:center">
         <div class="cad-score-ring ${scoreClass}">${r.manufacturabilityScore}</div>
-        <div style="font-size:0.7rem;color:#888">Manufacturability</div>
+        <div style="font-size:0.7rem;color:var(--text-muted)">Manufacturability</div>
       </div>
       <div style="flex:1">
-        <div style="font-weight:700;font-size:0.9rem">${r.partName}</div>
-        <div style="font-size:0.78rem;color:#555;margin-top:2px">
+        <div style="font-weight:700;font-size:0.9rem">${escHtml(r.partName)}</div>
+        <div style="font-size:0.78rem;color:var(--text-secondary);margin-top:2px">
           ${bb.x.toFixed(0)}×${bb.y.toFixed(0)}×${bb.z.toFixed(0)} mm &nbsp;·&nbsp;
-          ~${g.estimatedVolumeCm3.toFixed(1)} cm³ &nbsp;·&nbsp;
-          ~${g.estimatedWeightKg.aluminum.toFixed(2)} kg (Al) / ${g.estimatedWeightKg.steel.toFixed(2)} kg (Steel)
+          ${g.estimatedVolumeCm3.toFixed(1)} cm³ &nbsp;·&nbsp;
+          ${g.estimatedWeightKg.aluminum.toFixed(3)} kg Al / ${g.estimatedWeightKg.steel.toFixed(3)} kg Steel
         </div>
         <div style="margin-top:4px">
-          <span class="cad-confidence-badge ${r.confidenceLevel}">AI confidence: ${r.confidenceLevel}</span>
+          <span class="cad-confidence-badge ${r.confidenceLevel}">AI: ${r.confidenceLevel}</span>
           &nbsp;
-          <span style="font-size:0.72rem;color:#888">~${g.estimatedSurfaceAreaCm2.toFixed(0)} cm² surface</span>
+          <span class="occt-source-badge ${cadGeometrySource === 'occt' ? 'occt' : 'text'}">${cadGeometrySource === 'occt' ? 'OCCT Kernel' : 'Text-parsed'}</span>
+          &nbsp;
+          <span style="font-size:0.72rem;color:var(--text-muted)">${g.estimatedSurfaceAreaCm2.toFixed(0)} cm² surface</span>
         </div>
       </div>
     </div>
+
+    ${occtPanel}
 
     <!-- Detected features -->
     <div style="margin-bottom:12px">
       <div class="panel-title" style="margin-bottom:6px">Detected Features</div>
       <div>
         ${r.detectedFeatures.map(f =>
-          `<span class="feature-badge ${f.significance}" title="${f.description}">${f.type}${f.count > 1 ? ' ×' + f.count : ''}</span>`
+          `<span class="feature-badge ${f.significance}" title="${escHtml(f.description)}">${escHtml(f.type)}${f.count > 1 ? ' ×' + f.count : ''}</span>`
         ).join('')}
       </div>
     </div>
@@ -2327,13 +2358,15 @@ function renderCADResults(r: CADAnalysisResult): void {
     <div style="margin-bottom:12px">
       <div class="panel-title" style="margin-bottom:6px">Material Analysis</div>
       <div style="font-size:0.8rem">
-        <strong>${r.materialAnalysis.primarySuggestion.name}</strong>
+        <strong>${escHtml(r.materialAnalysis.primarySuggestion.name)}</strong>
         <span class="cad-confidence-badge ${r.materialAnalysis.primarySuggestion.confidencePct >= 75 ? 'High' : r.materialAnalysis.primarySuggestion.confidencePct >= 50 ? 'Medium' : 'Low'}"
               style="margin-left:6px">${r.materialAnalysis.primarySuggestion.confidencePct}%</span>
-        ${r.materialAnalysis.fromMetadata ? '<span style="font-size:0.7rem;color:#2e7d32;margin-left:6px">from CAD metadata</span>' : ''}
-        <div style="color:#666;margin-top:3px">${r.materialAnalysis.primarySuggestion.reasoning}</div>
+        ${r.materialAnalysis.fromMetadata ? '<span style="font-size:0.7rem;color:var(--green);margin-left:6px">✓ from CAD metadata</span>' : ''}
+        <div style="color:var(--text-secondary);margin-top:3px">${escHtml(r.materialAnalysis.primarySuggestion.reasoning)}</div>
         ${r.materialAnalysis.alternatives.length > 0 ? `
-          <div style="margin-top:4px;font-size:0.72rem;color:#888">Alternatives: ${r.materialAnalysis.alternatives.map(a => `${a.name} (${a.confidencePct}%)`).join(', ')}</div>` : ''}
+          <div style="margin-top:4px;font-size:0.72rem;color:var(--text-muted)">
+            Alternatives: ${r.materialAnalysis.alternatives.map(a => `${escHtml(a.name)} (${a.confidencePct}%)`).join(', ')}
+          </div>` : ''}
       </div>
     </div>
 
@@ -2343,77 +2376,180 @@ function renderCADResults(r: CADAnalysisResult): void {
       ${r.processRecommendations.slice(0, 5).map(p => `
         <div class="process-rec-row">
           <div>
-            <strong style="font-size:0.8rem">${p.process}</strong>
-            <div style="font-size:0.7rem;color:#888">${p.reasoning}</div>
+            <strong style="font-size:0.8rem">${escHtml(p.process)}</strong>
+            <div style="font-size:0.7rem;color:var(--text-muted)">${escHtml(p.reasoning)}</div>
           </div>
           <span class="cad-confidence-badge ${p.confidencePct >= 75 ? 'High' : p.confidencePct >= 50 ? 'Medium' : 'Low'}">${p.confidencePct}%</span>
           <div class="confidence-bar-wrap">
             <div class="confidence-bar-bg">
-              <div class="confidence-bar-fill" style="width:${p.confidencePct}%;background:${p.confidencePct >= 75 ? '#2e7d32' : p.confidencePct >= 50 ? '#e65100' : '#c62828'}"></div>
+              <div class="confidence-bar-fill" style="width:${p.confidencePct}%"></div>
             </div>
           </div>
         </div>`).join('')}
     </div>
 
-    <!-- Risks -->
+    <!-- Manufacturability Risks -->
     ${r.manufacturabilityRisks.length > 0 ? `
     <div style="margin-bottom:12px">
       <div class="panel-title" style="margin-bottom:6px">Manufacturability Risks</div>
       ${r.manufacturabilityRisks.map(risk => `
         <div class="risk-card ${risk.severity}">
-          <div class="risk-feature">${risk.severity} · ${risk.feature}</div>
-          <div>${risk.description}</div>
-          <div class="risk-suggestion">→ ${risk.suggestion}</div>
+          <div class="risk-feature">${risk.severity} · ${escHtml(risk.feature)}</div>
+          <div>${escHtml(risk.description)}</div>
+          <div class="risk-suggestion">→ ${escHtml(risk.suggestion)}</div>
         </div>`).join('')}
     </div>` : ''}
 
     <!-- AI Explanation -->
     <div style="margin-bottom:12px">
-      <div class="panel-title" style="margin-bottom:6px">AI Explanation</div>
-      <div style="font-size:0.78rem;color:#444;line-height:1.5">${r.aiExplanation}</div>
+      <div class="panel-title" style="margin-bottom:6px">AI Analysis</div>
+      <div style="font-size:0.78rem;color:var(--text-secondary);line-height:1.55">${escHtml(r.aiExplanation)}</div>
     </div>
 
     <!-- Suggested cost inputs -->
     <div style="margin-bottom:12px">
       <div class="panel-title" style="margin-bottom:6px">Suggested Cost Inputs</div>
       <table class="breakdown-table" style="font-size:0.78rem">
-        <tr><td>Weight (net)</td><td>${r.costInputSuggestions.netWeightKg.toFixed(3)} kg</td></tr>
-        <tr><td>Material</td><td>${r.materialAnalysis.primarySuggestion.name} (${r.costInputSuggestions.materialId})</td></tr>
-        <tr><td>Estimated cycle time</td><td>${r.costInputSuggestions.estimatedCycleTimeHr.toFixed(3)} hr/part</td></tr>
+        <tr><td>Net weight</td><td><strong>${r.costInputSuggestions.netWeightKg.toFixed(3)} kg</strong></td></tr>
+        <tr><td>Material</td><td>${escHtml(r.materialAnalysis.primarySuggestion.name)} (${r.costInputSuggestions.materialId})</td></tr>
+        <tr><td>Est. cycle time</td><td>${r.costInputSuggestions.estimatedCycleTimeHr.toFixed(4)} hr/part</td></tr>
         <tr><td>Setup time</td><td>${r.costInputSuggestions.estimatedSetupTimeHr.toFixed(2)} hr</td></tr>
-        <tr><td>Operations</td><td>${r.costInputSuggestions.estimatedOperations.map(o => o.name).join(', ')}</td></tr>
+        <tr><td>Operations</td><td>${r.costInputSuggestions.estimatedOperations.map(o => escHtml(o.name)).join(', ')}</td></tr>
       </table>
     </div>
 
     <!-- Apply to form -->
     <div class="cad-apply-btn-row">
       <strong style="font-size:0.8rem;align-self:center">Apply to cost engine:</strong>
-      <button class="btn btn-primary btn-sm" id="cad-apply-btn" data-commodity="${recommendedCommodity}">
-        → ${commodityLabel[recommendedCommodity] ?? recommendedCommodity} (Recommended)
+      <button class="btn btn-primary btn-sm" id="cad-apply-btn" data-commodity="${escHtml(recommendedCommodity)}">
+        → ${escHtml(commodityLabel[recommendedCommodity] ?? recommendedCommodity)} (Recommended)
+      </button>
+      <button class="btn btn-secondary btn-sm" id="cad-apply-calc-btn" data-commodity="${escHtml(recommendedCommodity)}">
+        Apply &amp; Calculate ⚡
       </button>
       ${r.processRecommendations.slice(1, 3).map(p => {
         const ct = p.commodityType as CommodityType;
-        return `<button class="btn btn-secondary btn-sm cad-apply-alt-btn" data-commodity="${ct}">${commodityLabel[ct] ?? ct}</button>`;
+        return `<button class="btn btn-secondary btn-sm cad-apply-alt-btn" data-commodity="${ct}">${escHtml(commodityLabel[ct] ?? ct)}</button>`;
       }).join('')}
     </div>
 
     ${r.analysisLimitations.length > 0 ? `
     <div class="cad-limitations">
-      <strong>Limitations:</strong> ${r.analysisLimitations.join(' · ')}
+      <strong>Note:</strong> ${escHtml(r.analysisLimitations.join(' · '))}
     </div>` : ''}
   `;
 
   // Wire apply buttons
   el('cad-apply-btn')?.addEventListener('click', () => {
     const ct = (el('cad-apply-btn') as HTMLElement).dataset.commodity as CommodityType;
-    applyCADToForm(ct);
+    applyCADToForm(ct, false);
+  });
+  el('cad-apply-calc-btn')?.addEventListener('click', () => {
+    const ct = (el('cad-apply-calc-btn') as HTMLElement).dataset.commodity as CommodityType;
+    applyCADToForm(ct, true);
   });
   panel.querySelectorAll<HTMLElement>('.cad-apply-alt-btn').forEach(btn => {
-    btn.addEventListener('click', () => applyCADToForm(btn.dataset.commodity as CommodityType));
+    btn.addEventListener('click', () => applyCADToForm(btn.dataset.commodity as CommodityType, false));
   });
+
+  // Auto-calculate if triggered from "Analyze & Calculate" button
+  if (autoCalculate) {
+    applyCADToForm(recommendedCommodity, true);
+  }
 }
 
-function applyCADToForm(targetCommodity: CommodityType): void {
+const FACE_COLOURS: Record<string, string> = {
+  PLANE: '#4f8ef7', CYLINDER: '#10b981', CONE: '#f59e0b',
+  TORUS: '#7c3aed', BSPLINE: '#ec4899', BEZIER: '#ef4444',
+  REVOLUTION: '#06b6d4', OTHER: '#94a3b8',
+};
+
+function buildOCCTPanel(geo: OCCTGeometry | null, source: string): string {
+  if (!geo || geo.status !== 'success') return '';
+
+  const bb = geo.boundingBox!;
+  const vol = geo.volume!;
+  const sa = geo.surfaceArea!;
+  const w = geo.weights!;
+  const f = geo.features!;
+  const faces = geo.faces!;
+
+  const totalFaces = faces.total || 1;
+  const faceEntries = Object.entries(faces.byType).sort(([, a], [, b]) => b - a);
+
+  const barSegments = faceEntries.map(([k, v]) => {
+    const pct = (v / totalFaces * 100).toFixed(1);
+    const colour = FACE_COLOURS[k] ?? FACE_COLOURS.OTHER;
+    return `<div class="occt-face-segment" style="width:${pct}%;background:${colour}" title="${k}: ${v} (${pct}%)"></div>`;
+  }).join('');
+
+  const legend = faceEntries.slice(0, 6).map(([k, v]) => {
+    const colour = FACE_COLOURS[k] ?? FACE_COLOURS.OTHER;
+    return `<span><span class="occt-legend-dot" style="background:${colour}"></span>${k} ${v}</span>`;
+  }).join('');
+
+  return `
+    <div class="occt-panel">
+      <div class="occt-panel-header">
+        Geometry — Open CASCADE Kernel
+        <span class="occt-source-badge ${source === 'occt' ? 'occt' : 'text'}">Precise</span>
+      </div>
+      <div class="occt-stat-grid">
+        <div class="occt-stat">
+          <div class="occt-stat-value">${bb.xMm}×${bb.yMm}×${bb.zMm}</div>
+          <div class="occt-stat-label">Bounding box (mm)</div>
+        </div>
+        <div class="occt-stat">
+          <div class="occt-stat-value">${vol.cm3.toFixed(2)} cm³</div>
+          <div class="occt-stat-label">True volume</div>
+        </div>
+        <div class="occt-stat">
+          <div class="occt-stat-value">${sa.cm2.toFixed(0)} cm²</div>
+          <div class="occt-stat-label">True surface area</div>
+        </div>
+        <div class="occt-stat">
+          <div class="occt-stat-value">${(geo.fillRatio! * 100).toFixed(1)}%</div>
+          <div class="occt-stat-label">Fill ratio</div>
+        </div>
+        <div class="occt-stat">
+          <div class="occt-stat-value">${geo.estimatedWallThicknessMm != null ? geo.estimatedWallThicknessMm + ' mm' : '—'}</div>
+          <div class="occt-stat-label">Mean wall thickness</div>
+        </div>
+        <div class="occt-stat">
+          <div class="occt-stat-value">${w.aluminiumKg.toFixed(3)} kg</div>
+          <div class="occt-stat-label">Al weight (2.70 g/cm³)</div>
+        </div>
+      </div>
+      <div style="font-size:0.7rem;color:var(--text-muted);margin-bottom:4px">
+        Face topology — ${faces.total} faces total
+        ${f.estimatedHoleCount > 0 ? `· ${f.estimatedHoleCount} holes [${f.holeRadiiMm.slice(0,5).join(', ')} mm]` : ''}
+        ${f.bossShaftRadiiMm.length > 0 ? `· bosses [${f.bossShaftRadiiMm.join(', ')} mm]` : ''}
+        ${f.threadFeaturesDetected ? '· <strong>threads detected</strong>' : ''}
+      </div>
+      <div class="occt-face-bar">${barSegments}</div>
+      <div class="occt-face-legend">${legend}</div>
+    </div>`;
+}
+
+function markAIFilled(element: HTMLInputElement | HTMLSelectElement | null): void {
+  if (!element) return;
+  element.classList.add('ai-filled');
+  // Remove highlight after user edits
+  element.addEventListener('input', () => element.classList.remove('ai-filled'), { once: true });
+}
+
+function setMaterial(selectEl: HTMLSelectElement | null, materialId: string): void {
+  if (!selectEl || !materialId) return;
+  const opt = Array.from(selectEl.options).find(o => o.value === materialId);
+  if (opt) { selectEl.value = opt.value; markAIFilled(selectEl); }
+}
+
+function setNumericField(id: string, value: number, decimals = 3): void {
+  const el2 = el<HTMLInputElement>(id);
+  if (el2) { el2.value = value.toFixed(decimals); markAIFilled(el2); }
+}
+
+function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): void {
   if (!cadAnalysisResult) return;
   const r = cadAnalysisResult;
   const c = r.costInputSuggestions;
@@ -2421,55 +2557,83 @@ function applyCADToForm(targetCommodity: CommodityType): void {
   switchCommodity(targetCommodity);
 
   setTimeout(() => {
-    // Set part name
+    // Part name
     const partNameEl = el<HTMLInputElement>('part-name');
-    if (partNameEl) partNameEl.value = r.partName || cadFile?.name.replace(/\.[^.]+$/, '') || 'CAD Part';
-
-    if (targetCommodity === 'machining') {
-      // Fill material
-      const matEl = el<HTMLSelectElement>('mach-mat');
-      if (matEl && c.materialId) {
-        const opt = Array.from(matEl.options).find(o => o.value === c.materialId);
-        if (opt) matEl.value = opt.value;
-      }
-      // Fill weight
-      const wtEl = el<HTMLInputElement>('mach-net-wt');
-      if (wtEl) wtEl.value = c.netWeightKg.toFixed(3);
-      const stockWt = el<HTMLInputElement>('mach-stock-wt');
-      if (stockWt) stockWt.value = (c.netWeightKg * 1.4).toFixed(3);
-      const util = el<HTMLInputElement>('mach-mat-util');
-      if (util) util.value = '0'; // will be computed from net/stock
-
-      // Add operations
-      const container = el('mach-ops-container');
-      if (container) {
-        container.innerHTML = '';
-        machOpCount = 0;
-        for (const op of c.estimatedOperations) {
-          addMachOp({
-            name: op.name,
-            type: 'milling_3ax',
-            machineId: op.machineId,
-            labourId: op.labourId || 'lab-uk-skilled',
-            cycleTimeHr: op.cycleTimeHr,
-            partsPerCycle: 1,
-            oee: op.oee,
-            manning: op.manning,
-            labourTimeHr: op.cycleTimeHr,
-            labourEfficiency: op.labourEfficiency,
-          });
-        }
-      }
-    } else if (targetCommodity === 'casting' || targetCommodity === 'cast_and_machine') {
-      const matEl = el<HTMLSelectElement>('cast-mat') ?? el<HTMLSelectElement>('cam-mat');
-      if (matEl && c.materialId) {
-        const opt = Array.from(matEl.options).find(o => o.value === c.materialId);
-        if (opt) matEl.value = opt.value;
-      }
-      const wtEl = el<HTMLInputElement>('cast-net-wt') ?? el<HTMLInputElement>('cam-net-wt');
-      if (wtEl) wtEl.value = c.netWeightKg.toFixed(3);
+    if (partNameEl) {
+      partNameEl.value = r.partName || cadFile?.name.replace(/\.[^.]+$/, '') || 'CAD Part';
+      markAIFilled(partNameEl);
     }
-  }, 100);
+
+    switch (targetCommodity) {
+      case 'machining': {
+        setMaterial(el<HTMLSelectElement>('mach-mat'), c.materialId);
+        setNumericField('mach-net-wt', c.netWeightKg, 3);
+        setNumericField('mach-stock-wt', c.netWeightKg * 1.4, 3);
+        // Operations
+        const container = el('mach-ops-container');
+        if (container && c.estimatedOperations.length > 0) {
+          container.innerHTML = '';
+          machOpCount = 0;
+          for (const op of c.estimatedOperations) {
+            addMachOp({
+              name: op.name,
+              type: 'milling_3ax',
+              machineId: op.machineId,
+              labourId: op.labourId || 'lab-uk-skilled',
+              cycleTimeHr: op.cycleTimeHr,
+              partsPerCycle: 1,
+              oee: op.oee,
+              manning: op.manning,
+              labourTimeHr: op.cycleTimeHr,
+              labourEfficiency: op.labourEfficiency,
+            });
+          }
+        }
+        break;
+      }
+
+      case 'casting': {
+        setMaterial(el<HTMLSelectElement>('cast-mat'), c.materialId);
+        setNumericField('cast-part-wt', c.netWeightKg, 3);
+        break;
+      }
+
+      case 'cast_and_machine': {
+        setMaterial(el<HTMLSelectElement>('cam-mat'), c.materialId);
+        setNumericField('cam-cast-wt', c.netWeightKg * 1.15, 3);
+        setNumericField('cam-finish-wt', c.netWeightKg, 3);
+        break;
+      }
+
+      case 'forging': {
+        setMaterial(el<HTMLSelectElement>('forge-mat'), c.materialId);
+        setNumericField('forge-part-wt', c.netWeightKg, 3);
+        break;
+      }
+
+      case 'sheet_metal': {
+        setMaterial(el<HTMLSelectElement>('sm-mat'), c.materialId);
+        setNumericField('sm-net-wt', c.netWeightKg, 3);
+        break;
+      }
+
+      case 'sheet_metal_fab': {
+        setMaterial(el<HTMLSelectElement>('smf-mat'), c.materialId);
+        setNumericField('smf-part-wt', c.netWeightKg, 3);
+        break;
+      }
+
+      case 'injection_moulding': {
+        setMaterial(el<HTMLSelectElement>('imm-mat'), c.materialId);
+        setNumericField('imm-part-wt', c.netWeightKg, 4);
+        break;
+      }
+    }
+
+    if (autoCalculate) {
+      compute();
+    }
+  }, 150);
 }
 
 // ─── Commodity switching ──────────────────────────────────────────────────────

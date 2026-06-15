@@ -5,6 +5,34 @@ export interface CADGeometry {
   estimatedWeightKg: { aluminum: number; steel: number; plastic: number };
 }
 
+/** Raw output from the OCCT Python geometry engine — present only when the engine succeeded. */
+export interface OCCTGeometry {
+  status: 'success' | 'error';
+  partName?: string;
+  boundingBox?: { xMm: number; yMm: number; zMm: number };
+  volume?: { mm3: number; cm3: number };
+  surfaceArea?: { mm2: number; cm2: number };
+  fillRatio?: number;
+  estimatedWallThicknessMm?: number | null;
+  weights?: {
+    aluminiumKg: number; steelKg: number; plasticKg: number;
+    castIronKg: number; copperKg: number; titaniumKg: number;
+  };
+  faces?: { total: number; byType: Record<string, number> };
+  edges?: { total: number; byType: Record<string, number>; sampleCircleRadiiMm: number[] };
+  features?: {
+    cylindricalFaceCount: number;
+    cylindricalFaceRadiiMm: number[];
+    estimatedHoleCount: number;
+    holeRadiiMm: number[];
+    bossShaftRadiiMm: number[];
+    threadFeaturesDetected: boolean;
+    planarFaceCount: number;
+    freeFormFaceCount: number;
+  };
+  error?: string;
+}
+
 export interface DetectedFeature {
   type: string;
   description: string;
