@@ -345,10 +345,12 @@ body{
       <span style="font-size:.82rem;color:var(--text-3);margin-top:4px;display:block">Cost Engineering &amp; Digital Innovation</span>
     </div>
     <div class="s1-meta">
-      <div class="s1-pill"><div class="s1-pill-dot" style="background:var(--accent-3)"></div>17 Commodity Models</div>
-      <div class="s1-pill"><div class="s1-pill-dot" style="background:var(--accent)"></div>AI-Powered CAD Analysis</div>
+      <div class="s1-pill"><div class="s1-pill-dot" style="background:var(--accent-3)"></div>21 Commodity Models</div>
+      <div class="s1-pill"><div class="s1-pill-dot" style="background:var(--accent)"></div>AI Agent + CAD Analysis</div>
       <div class="s1-pill"><div class="s1-pill-dot" style="background:var(--accent-2)"></div>DFM / DFA Intelligence</div>
-      <div class="s1-pill"><div class="s1-pill-dot" style="background:var(--orange)"></div>20 Global Regions</div>
+      <div class="s1-pill"><div class="s1-pill-dot" style="background:var(--orange)"></div>20 Regions · 10 Currencies</div>
+      <div class="s1-pill"><div class="s1-pill-dot" style="background:#10b981"></div>Assembly BOM Rollup</div>
+      <div class="s1-pill"><div class="s1-pill-dot" style="background:#f472b6"></div>Wright's Law Learning Curve</div>
     </div>
   </div>
 </div>
@@ -440,38 +442,53 @@ body{
     <div class="three-col" style="flex:1">
       <div style="display:flex;flex-direction:column;gap:10px">
         <div class="card card-accent">
-          <div class="card-icon">🧠</div>
-          <div class="card-title">AI-Powered Core Engine</div>
-          <div class="card-body">Physics-based cost models for 17 manufacturing commodities. Each model encodes industry-standard routing logic, machine rates, yield curves, and tooling amortisation.</div>
+          <div class="card-icon">🤖</div>
+          <div class="card-title">AI Agent — Natural Language Costing</div>
+          <div class="card-body">Describe a part in plain English. AI Agent auto-builds the complete cost model: material, process route, machines, operations, and cycle times — no manual form filling.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">📐</div>
+          <div class="card-title">CAD-to-Cost Automation</div>
+          <div class="card-body">Upload STEP / IGES / photo. AI extracts geometry, infers material, selects the correct process model, and generates a full cost breakdown — automatically.</div>
         </div>
         <div class="card">
           <div class="card-icon">🌍</div>
-          <div class="card-title">20 Global Manufacturing Regions</div>
-          <div class="card-body">Real-time labour, machine, material and energy rates for UK, EU, China, India, USA, Korea, Vietnam, Brazil and more. Currency auto-switches per region.</div>
+          <div class="card-title">20 Global Regions · 10 Currencies</div>
+          <div class="card-body">Labour, machine, material and energy rates for UK, EU, China, India, USA, Korea, Vietnam, Brazil and more. Currency auto-switches when region is selected.</div>
         </div>
       </div>
       <div style="display:flex;flex-direction:column;gap:10px">
         <div class="card card-purple">
-          <div class="card-icon">📐</div>
-          <div class="card-title">CAD-to-Cost Automation</div>
-          <div class="card-body">Upload a CAD file or part photo. AI extracts geometry, infers material, selects the correct process model, and generates a full cost breakdown — automatically.</div>
+          <div class="card-icon">🧠</div>
+          <div class="card-title">21 Engineering-Grade Cost Models</div>
+          <div class="card-body">Physics-based models for every major commodity — machining, casting, plastics, sheet metal, PCB, PCBA, composites, harness and more. Each encodes routing logic, yield curves, and tooling amortisation.</div>
         </div>
         <div class="card">
-          <div class="card-icon">⚡</div>
-          <div class="card-title">Instant Should-Cost Results</div>
-          <div class="card-body">Material + Process + Labour + Tooling + Overhead + Margin — fully itemised. Sensitivity analysis, scenario comparison, and multi-region benchmarking.</div>
+          <div class="card-icon">🔗</div>
+          <div class="card-title">Assembly BOM Rollup</div>
+          <div class="card-body">Cost entire assemblies, not just single parts. Build a multi-level BOM, assign commodity models per component, and roll up to a total assembly should-cost with full breakdown.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">📉</div>
+          <div class="card-title">Learning Curve / Wright's Law</div>
+          <div class="card-body">Model volume-driven cost reduction. Configure the learning curve % (default 85%). CostVision projects cost at any volume — critical for programme pricing and LTA negotiations.</div>
         </div>
       </div>
       <div style="display:flex;flex-direction:column;gap:10px">
         <div class="card card-green">
           <div class="card-icon">🔬</div>
           <div class="card-title">DFM / DFA Intelligence</div>
-          <div class="card-body">Bolt-on AI layer scores manufacturability and assembly efficiency. Identifies critical issues, estimates saving potential, and provides actionable engineering recommendations.</div>
+          <div class="card-body">Bolt-on AI layer scores manufacturability and assembly efficiency 1–10. Identifies critical issues, estimates saving potential, and provides actionable engineering recommendations.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">💰</div>
+          <div class="card-title">Supplier Quote Comparison</div>
+          <div class="card-body">Enter supplier quotes directly into CostVision. Compare vs should-cost side-by-side, identify margin gaps, and generate data-driven negotiation talking points.</div>
         </div>
         <div class="card">
           <div class="card-icon">📈</div>
           <div class="card-title">Scenarios, Sensitivity &amp; Export</div>
-          <div class="card-body">Save and compare scenarios. Run ±10% sensitivity tornado charts. Export to Excel, PDF, or share with the team. Full audit trail.</div>
+          <div class="card-body">Save and compare A/B/C scenarios. Tornado sensitivity charts (±10%). Export 6-sheet Excel workbook or professional PDF report. Cloud sync for team sharing.</div>
         </div>
       </div>
     </div>
@@ -551,13 +568,20 @@ body{
       </div>
     </div>
 
+    <div style="background:var(--surface-2);border-radius:var(--radius);padding:10px 16px;border:1px solid var(--border);font-size:.75rem;color:var(--text-2)">
+      <strong style="color:var(--accent)">Two entry points — same outcome:</strong> &nbsp;
+      <span style="color:var(--accent-3)">🤖 AI Agent</span> — type a description in plain English and AI auto-fills the cost model &nbsp;|&nbsp;
+      <span style="color:var(--accent-2)">📐 CAD Upload</span> — upload STEP/photo and AI extracts geometry automatically &nbsp;|&nbsp;
+      <span style="color:var(--text)">✏️ Manual Entry</span> — directly enter parameters for full control
+    </div>
     <div style="display:flex;gap:10px;flex-wrap:wrap">
       <div class="tag blue">⚡ Minutes, not weeks</div>
       <div class="tag green">✓ Auditable assumptions</div>
       <div class="tag purple">🤖 Claude AI powered</div>
-      <div class="tag orange">🌍 20 regions</div>
-      <div class="tag blue">📊 Scenario comparison</div>
-      <div class="tag green">📐 CAD automation</div>
+      <div class="tag orange">🌍 20 regions · 10 currencies</div>
+      <div class="tag blue">📊 Scenario A/B/C comparison</div>
+      <div class="tag green">📐 Assembly BOM rollup</div>
+      <div class="tag purple">📉 Wright's Law learning curve</div>
     </div>
   </div>
   <div class="slide-footer"><span>CostVision — AI-Powered Should-Cost Intelligence</span><span>Avinash Bhosale</span></div>
@@ -698,7 +722,7 @@ body{
     <div>
       <div class="section-label">Full Commodity Coverage</div>
       <div class="slide-title">Every Major Manufacturing Process — One Platform</div>
-      <div class="slide-subtitle">From stamped sheet metal to 16-layer HDI PCBs — all modelled to engineering depth.</div>
+      <div class="slide-subtitle">From stamped sheet metal to 16-layer HDI PCBs — all 21 commodities modelled to engineering depth.</div>
     </div>
 
     <div class="comm-grid" style="flex:1">
@@ -782,10 +806,25 @@ body{
         <div class="comm-name">Painting / Coating</div>
         <div class="comm-sub">Electro-coat, powder, wet paint</div>
       </div>
+      <div class="comm-card">
+        <div class="comm-icon">🔩</div>
+        <div class="comm-name">Extrusion</div>
+        <div class="comm-sub">Profile, pipe, sheet, rod, continuous</div>
+      </div>
+      <div class="comm-card">
+        <div class="comm-icon">🏗️</div>
+        <div class="comm-name">Cast + Machine</div>
+        <div class="comm-sub">Casting + post-machining + HT</div>
+      </div>
+      <div class="comm-card">
+        <div class="comm-icon">🤖</div>
+        <div class="comm-name">AI Agent</div>
+        <div class="comm-sub">Natural language → any commodity</div>
+      </div>
       <div class="comm-card" style="border-color:var(--accent-3);background:color-mix(in srgb,var(--accent-3) 8%,var(--surface))">
         <div class="comm-icon">🔗</div>
-        <div class="comm-name">Assembly Rollup</div>
-        <div class="comm-sub">Multi-part assemblies, BOM rollup</div>
+        <div class="comm-name">Assembly BOM Rollup</div>
+        <div class="comm-sub">Multi-part BOM, full cost rollup</div>
       </div>
     </div>
   </div>
@@ -856,6 +895,14 @@ body{
         <div class="card card-purple">
           <div class="card-title">🤖 AI-Driven Assumptions</div>
           <div class="card-body">Where geometry is unknown, Claude AI fills assumptions using engineering judgement — material, complexity, process, geometry — with transparent explanation of every assumption made.</div>
+        </div>
+        <div class="card card-green">
+          <div class="card-title">📉 Learning Curve (Wright's Law)</div>
+          <div class="card-body">Configure an 85% (or custom) learning curve to model volume-driven cost reduction. Project programme cost at any volume milestone — essential for LTA negotiations and make-vs-buy decisions.</div>
+        </div>
+        <div class="card card-orange">
+          <div class="card-title">💰 Supplier Quote Comparison</div>
+          <div class="card-body">Log supplier quotes (name, date, currency, price) directly into CostVision. Compare vs should-cost instantly. Identify margin gaps and generate data-driven negotiation talking points.</div>
         </div>
       </div>
     </div>
@@ -966,11 +1013,16 @@ body{
       </table>
     </div>
 
+    <div style="background:var(--surface-2);border-radius:8px;padding:10px 14px;border:1px solid var(--border);display:flex;gap:24px;flex-wrap:wrap;align-items:center;font-size:.75rem">
+      <span><strong style="color:var(--accent)">AI Agent:</strong> <span style="color:var(--text-2)">Describe "4-layer PCB for automotive ECU, ENIG finish, 10k/yr" — AI generates the full cost model automatically</span></span>
+      <span><strong style="color:var(--accent-3)">Assembly Rollup:</strong> <span style="color:var(--text-2)">BIW + Painting + Harness + Electronics = full vehicle-level should-cost in one session</span></span>
+    </div>
     <div style="display:flex;gap:8px;flex-wrap:wrap">
-      <div class="tag blue">All costs in GBP (auto-converts per region)</div>
-      <div class="tag green">AI insights generated per part</div>
-      <div class="tag orange">DFM/DFA score shown for each</div>
-      <div class="tag purple">Export to Excel / PDF available</div>
+      <div class="tag blue">All costs in GBP · auto-converts per region</div>
+      <div class="tag green">AI insights + DFM/DFA per part</div>
+      <div class="tag orange">6-sheet Excel · PDF report per part</div>
+      <div class="tag purple">Supplier quote comparison built-in</div>
+      <div class="tag blue">Wright's Law learning curve per part</div>
     </div>
   </div>
   <div class="slide-footer"><span>CostVision — AI-Powered Should-Cost Intelligence</span><span>Avinash Bhosale</span></div>
@@ -1030,18 +1082,30 @@ body{
       </div>
       <div class="benefit-card b7">
         <div class="benefit-num" style="color:#22d3ee">20</div>
-        <div class="benefit-label">Global Regions Covered</div>
-        <div class="benefit-desc">Instantly compare UK, China, India, Mexico, Korea — true regional cost transparency for make-vs-buy decisions.</div>
+        <div class="benefit-label">Global Regions + 10 Currencies</div>
+        <div class="benefit-desc">Instantly compare UK, China, India, Mexico, Korea — true regional cost transparency. Currency auto-switches per region selection.</div>
       </div>
     </div>
 
-    <div style="background:var(--surface-2);border-radius:var(--radius);padding:14px 18px;border:1px solid var(--border);display:flex;align-items:center;gap:16px">
-      <div style="font-size:1.4rem">💼</div>
-      <div>
-        <div style="font-weight:700;font-size:.85rem;margin-bottom:3px">Strategic Business Case</div>
-        <div style="font-size:.76rem;color:var(--text-2);line-height:1.5">
-          On a £500M commodity spend, a <strong style="color:var(--accent-3)">3% improvement in supplier pricing</strong> through better should-cost intelligence delivers
-          <strong style="color:var(--accent-3)">£15M annual saving</strong>. CostVision makes that number achievable through data, not negotiation luck.
+    <div style="background:var(--surface-2);border-radius:var(--radius);padding:14px 18px;border:1px solid var(--border);display:flex;align-items:stretch;gap:16px">
+      <div style="display:flex;align-items:flex-start;gap:12px;flex:1">
+        <div style="font-size:1.4rem">💼</div>
+        <div>
+          <div style="font-weight:700;font-size:.85rem;margin-bottom:3px">Strategic Business Case</div>
+          <div style="font-size:.76rem;color:var(--text-2);line-height:1.5">
+            On a £500M commodity spend, a <strong style="color:var(--accent-3)">3% improvement in supplier pricing</strong> through should-cost intelligence delivers
+            <strong style="color:var(--accent-3)">£15M annual saving</strong>. CostVision makes that achievable through data, not negotiation luck.
+          </div>
+        </div>
+      </div>
+      <div style="width:1px;background:var(--border)"></div>
+      <div style="display:flex;align-items:flex-start;gap:12px;flex:1">
+        <div style="font-size:1.4rem">☁️</div>
+        <div>
+          <div style="font-weight:700;font-size:.85rem;margin-bottom:3px">Team &amp; Cloud Collaboration</div>
+          <div style="font-size:.76rem;color:var(--text-2);line-height:1.5">
+            Scenarios sync to the cloud — engineers across sites share a consistent cost baseline. Secure JWT authentication, multi-user access, and full audit trail per calculation.
+          </div>
         </div>
       </div>
     </div>
@@ -1074,14 +1138,18 @@ body{
       <!-- Roadmap -->
       <div style="display:flex;flex-direction:column;gap:12px">
         <div class="card">
-          <div style="font-weight:700;font-size:.88rem;margin-bottom:10px;color:var(--accent)">📍 Current Capabilities (Live)</div>
+          <div style="font-weight:700;font-size:.88rem;margin-bottom:10px;color:var(--accent)">📍 Current Capabilities (Live Today)</div>
           <ul class="bullet-list">
-            <li><strong>17 commodity should-cost models</strong> — fully parametric, engineering-grade</li>
-            <li><strong>AI CAD analysis</strong> — geometry to cost in minutes</li>
-            <li><strong>DFM / DFA intelligence</strong> — bolt-on AI optimisation layer</li>
-            <li><strong>20 global regions</strong> with live currency conversion</li>
-            <li><strong>Scenarios, sensitivity, export</strong> to Excel and PDF</li>
-            <li><strong>Team sync &amp; secure authentication</strong> — multi-user ready</li>
+            <li><strong>21 commodity should-cost models</strong> — fully parametric, engineering-grade</li>
+            <li><strong>AI Agent</strong> — describe a part in plain English, AI builds the cost model</li>
+            <li><strong>AI CAD analysis</strong> — STEP / photo → geometry → cost in minutes</li>
+            <li><strong>Assembly BOM Rollup</strong> — multi-part, multi-commodity assemblies</li>
+            <li><strong>Learning Curve (Wright's Law)</strong> — volume-cost projection at any milestone</li>
+            <li><strong>Supplier Quote Comparison</strong> — log quotes, identify margin gaps instantly</li>
+            <li><strong>DFM / DFA intelligence</strong> — bolt-on AI optimisation layer, 1–10 scores</li>
+            <li><strong>20 global regions · 10 currencies</strong> with live auto-switching</li>
+            <li><strong>6-sheet Excel export + PDF report</strong> with part photo and full traceability</li>
+            <li><strong>Cloud sync, team sharing &amp; secure authentication</strong> — multi-user ready</li>
           </ul>
         </div>
         <div style="display:flex;gap:10px">
