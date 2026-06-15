@@ -2632,6 +2632,32 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
       case 'casting': {
         setMaterial(el<HTMLSelectElement>('cast-mat'), c.materialId);
         setNumericField('cast-part-wt', c.netWeightKg, 3);
+        const cast = c.casting;
+        if (cast) {
+          const subtypeEl = el<HTMLSelectElement>('cast-subtype');
+          if (subtypeEl) {
+            subtypeEl.value = cast.subtype;
+            markAIFilled(subtypeEl);
+            subtypeEl.dispatchEvent(new Event('change'));
+          }
+          setNumericField('cast-yield', cast.yieldFraction, 2);
+          if (cast.subtype === 'hpdc') {
+            setNumericField('cast-hpdc-ct', cast.cycleTimeHpdcSec, 0);
+            setNumericField('cast-hpdc-cav', cast.cavities, 0);
+            setNumericField('cast-hpdc-die-cost', cast.dieMouldCostGBP, 0);
+            setNumericField('cast-hpdc-die-life', cast.dieMouldLife, 0);
+          } else if (cast.subtype === 'sand') {
+            setNumericField('cast-sand-ct', cast.cycleTimeSandGravHr, 4);
+            setNumericField('cast-sand-pat-cost', cast.dieMouldCostGBP, 0);
+            setNumericField('cast-sand-pat-life', cast.dieMouldLife, 0);
+          } else if (cast.subtype === 'gravity') {
+            setNumericField('cast-grav-ct', cast.cycleTimeSandGravHr, 4);
+            setNumericField('cast-grav-mould-cost', cast.dieMouldCostGBP, 0);
+            setNumericField('cast-grav-mould-life', cast.dieMouldLife, 0);
+          } else if (cast.subtype === 'investment') {
+            setNumericField('cast-inv-ct', cast.cycleTimeSandGravHr, 4);
+          }
+        }
         break;
       }
 
@@ -2639,30 +2665,149 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
         setMaterial(el<HTMLSelectElement>('cam-mat'), c.materialId);
         setNumericField('cam-cast-wt', c.netWeightKg * 1.15, 3);
         setNumericField('cam-finish-wt', c.netWeightKg, 3);
+        // Casting section
+        const castCAM = c.casting;
+        if (castCAM) {
+          const camSubEl = el<HTMLSelectElement>('cam-cast-subtype');
+          if (camSubEl) {
+            camSubEl.value = castCAM.subtype;
+            markAIFilled(camSubEl);
+            camSubEl.dispatchEvent(new Event('change'));
+          }
+          setNumericField('cam-cast-yield', castCAM.yieldFraction, 2);
+          if (castCAM.subtype === 'hpdc') {
+            setNumericField('cam-hpdc-ct', castCAM.cycleTimeHpdcSec, 0);
+            setNumericField('cam-hpdc-cav', castCAM.cavities, 0);
+            setNumericField('cam-hpdc-die-cost', castCAM.dieMouldCostGBP, 0);
+            setNumericField('cam-hpdc-die-life', castCAM.dieMouldLife, 0);
+          } else if (castCAM.subtype === 'sand') {
+            setNumericField('cam-sand-ct', castCAM.cycleTimeSandGravHr, 4);
+            setNumericField('cam-sand-pat-cost', castCAM.dieMouldCostGBP, 0);
+            setNumericField('cam-sand-pat-life', castCAM.dieMouldLife, 0);
+          } else if (castCAM.subtype === 'gravity') {
+            setNumericField('cam-grav-ct', castCAM.cycleTimeSandGravHr, 4);
+            setNumericField('cam-grav-mould-cost', castCAM.dieMouldCostGBP, 0);
+            setNumericField('cam-grav-mould-life', castCAM.dieMouldLife, 0);
+          } else if (castCAM.subtype === 'investment') {
+            setNumericField('cam-inv-ct', castCAM.cycleTimeSandGravHr, 4);
+          }
+        }
+        // Machining section — populate ops and setup time
+        const camCycleHrs = cadOCCTGeometry?.cncCycleTimeEstimate?.estimatedTotalHrs ?? null;
+        const camSetupCount = cadOCCTGeometry?.setupAnalysis?.estimatedSetupCount ?? null;
+        const camSetupMins = cadOCCTGeometry?.cncCycleTimeEstimate?.assumedSetupTimeMinsPerSetup ?? 45;
+        const camContainer = el('cam-mach-ops-container');
+        if (camContainer && c.estimatedOperations.length > 0) {
+          camContainer.innerHTML = '';
+          camMachOpCount = 0;
+          const aiTotalCAM = c.estimatedOperations.reduce((s, op) => s + op.cycleTimeHr, 0);
+          const scaleCAM = (camCycleHrs !== null && aiTotalCAM > 0) ? camCycleHrs / aiTotalCAM : 1;
+          for (const op of c.estimatedOperations) {
+            addCAMMachOp({
+              name: op.name, type: 'milling_3ax', machineId: op.machineId,
+              labourId: op.labourId || 'lab-uk-skilled',
+              cycleTimeHr: op.cycleTimeHr * scaleCAM, partsPerCycle: 1,
+              oee: op.oee, manning: op.manning,
+              labourTimeHr: op.cycleTimeHr * scaleCAM, labourEfficiency: op.labourEfficiency,
+            });
+          }
+        }
+        if (camSetupCount !== null) {
+          setNumericField('cam-mach-setup-time', (camSetupCount * camSetupMins) / 60, 3);
+        } else {
+          setNumericField('cam-mach-setup-time', c.estimatedSetupTimeHr, 3);
+        }
         break;
       }
 
       case 'forging': {
         setMaterial(el<HTMLSelectElement>('forge-mat'), c.materialId);
         setNumericField('forge-part-wt', c.netWeightKg, 3);
+        const forging = c.forging;
+        if (forging) {
+          setNumericField('forge-flash', forging.flashKg, 3);
+          setNumericField('forge-yield', forging.yieldFraction, 2);
+          setNumericField('forge-strokes', forging.strokes, 0);
+          setNumericField('forge-time-per-blow', forging.timePerBlowSec, 0);
+          setNumericField('forge-die-cost', forging.dieCostGBP, 0);
+          setNumericField('forge-die-life', forging.dieLife, 0);
+        } else {
+          // Fallback geometry-derived estimates
+          setNumericField('forge-flash', c.netWeightKg * 0.1, 3);
+          setNumericField('forge-yield', 0.9, 2);
+        }
         break;
       }
 
       case 'sheet_metal': {
         setMaterial(el<HTMLSelectElement>('sm-mat'), c.materialId);
         setNumericField('sm-net-wt', c.netWeightKg, 3);
+        // Derive blank dims from OCCT bounding box (sorted: L ≥ W ≥ thickness)
+        const smBB = cadOCCTGeometry?.boundingBox;
+        if (smBB) {
+          const dims = [smBB.xMm, smBB.yMm, smBB.zMm].sort((a, b) => b - a);
+          setNumericField('sm-blank-l', dims[0] * 1.05, 0);
+          setNumericField('sm-blank-w', dims[1] * 1.05, 0);
+          const wallMin = cadOCCTGeometry?.wallThickness?.minMm;
+          setNumericField('sm-thick', wallMin ?? dims[2], 1);
+        }
+        const sm = c.sheetMetal;
+        if (sm) {
+          if (!smBB) {
+            setNumericField('sm-blank-l', sm.blankLengthMm, 0);
+            setNumericField('sm-blank-w', sm.blankWidthMm, 0);
+            setNumericField('sm-thick', sm.thicknessMm, 1);
+          }
+          setNumericField('sm-die-cost', sm.dieCostGBP, 0);
+          setNumericField('sm-die-life', sm.dieLife, 0);
+          setNumericField('sm-num-ops', sm.numOps, 0);
+        }
         break;
       }
 
       case 'sheet_metal_fab': {
         setMaterial(el<HTMLSelectElement>('smf-mat'), c.materialId);
         setNumericField('smf-part-wt', c.netWeightKg, 3);
+        // Estimate bend count: planar faces form bends; 2 faces per 90° bend minus the flat base
+        const smfPlanar = cadOCCTGeometry?.features?.planarFaceCount ?? 0;
+        if (smfPlanar > 2) {
+          const estimatedBends = Math.max(1, Math.round((smfPlanar - 2) / 2));
+          setNumericField('smf-bends', estimatedBends, 0);
+        }
+        // Tolerance from wall thickness (5% of mean wall, min 0.1mm)
+        const smfWallMean = cadOCCTGeometry?.wallThickness?.meanMm;
+        if (smfWallMean) {
+          setNumericField('smf-tolerance', Math.max(0.1, smfWallMean * 0.05), 2);
+        }
+        const smFab = c.sheetMetal;
+        if (smFab) {
+          setNumericField('smf-tooling', smFab.dieCostGBP, 0);
+        }
         break;
       }
 
       case 'injection_moulding': {
         setMaterial(el<HTMLSelectElement>('imm-mat'), c.materialId);
         setNumericField('imm-part-wt', c.netWeightKg, 4);
+        // OCCT-derived: projected area and wall thickness
+        const immBB = cadOCCTGeometry?.boundingBox;
+        const immWall = cadOCCTGeometry?.wallThickness?.meanMm;
+        if (immBB) {
+          const projCm2 = (immBB.xMm * immBB.yMm) / 100;
+          setNumericField('imm-area', projCm2, 1);
+        }
+        if (immWall) {
+          setNumericField('imm-wall', immWall, 1);
+        }
+        const im = c.injectionMoulding;
+        if (im) {
+          setNumericField('imm-cav', im.cavities, 0);
+          if (!immBB) setNumericField('imm-area', im.projectedAreaCm2, 1);
+          if (!immWall) setNumericField('imm-wall', im.wallThicknessMm, 1);
+          setNumericField('imm-mould-cost', im.mouldCostGBP, 0);
+          setNumericField('imm-mould-life', im.mouldLife, 0);
+          setNumericField('imm-runner-wt', im.runnerWeightKg, 4);
+        }
         break;
       }
     }

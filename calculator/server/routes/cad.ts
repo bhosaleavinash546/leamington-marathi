@@ -205,6 +205,11 @@ ${pre.summary}`;
   const setupCount = geo.setupAnalysis?.estimatedSetupCount ?? null;
   const undercutCount = geo.draftAnalysis?.undercutFaceCount ?? 0;
 
+  const bb = geo.status === 'success' ? geo.boundingBox! : null;
+  const bbDimsSorted = bb ? [bb.xMm, bb.yMm, bb.zMm].sort((a, b) => b - a) : null;
+  const wallMean = geo.wallThickness?.meanMm ?? null;
+  const wallMin  = geo.wallThickness?.minMm ?? null;
+
   const instructions = geo.status === 'success'
     ? `IMPORTANT GUIDELINES:
 - Use the PRECISE OCCT measurements above — do NOT re-estimate geometry
@@ -216,14 +221,44 @@ ${pre.summary}`;
 - ${geo.features!.freeFormFaceCount > (geo.faces!.total * 0.15) ? `High free-form content (${geo.features!.freeFormFaceCount}/${geo.faces!.total} faces) → organic shape → favour casting or 5-axis` : 'Mostly prismatic geometry → favour machining or forging'}
 - ${geo.features!.estimatedHoleCount > 8 ? `${geo.features!.estimatedHoleCount} holes detected → significant drilling/boring operations required` : ''}
 - ${geo.features!.threadFeaturesDetected ? 'Threads detected → include threading operation' : ''}
-- ${cncHrs !== null ? `For machining: use estimatedCycleTimeHr=${cncHrs.toFixed(3)} from the bottom-up CNC estimate above (do NOT guess)` : ''}
-- ${setupCount !== null ? `For machining: estimatedSetupTimeHr=${((setupCount * (geo.cncCycleTimeEstimate?.assumedSetupTimeMinsPerSetup ?? 45)) / 60).toFixed(3)} (${setupCount} setups × assumed mins/setup)` : ''}
-- ${undercutCount > 0 ? `${undercutCount} undercuts detected → add manufacturability risk (High severity) for casting/moulding; machining may need 5-axis` : 'No undercuts — standard tooling angles acceptable'}
-- manufacturabilityScore: 0–100 (100 = easiest); deduct 5–15 pts per undercut, 5 pts per zero-draft face cluster`
+- ${cncHrs !== null ? `For machining: use estimatedCycleTimeHr=${cncHrs.toFixed(3)} from bottom-up CNC estimate (do NOT guess)` : ''}
+- ${setupCount !== null ? `For machining/CAM: estimatedSetupTimeHr=${((setupCount * (geo.cncCycleTimeEstimate?.assumedSetupTimeMinsPerSetup ?? 45)) / 60).toFixed(3)} (${setupCount} setups)` : ''}
+- ${undercutCount > 0 ? `${undercutCount} undercuts detected → add High severity manufacturability risk for casting/moulding; machining may need 5-axis` : 'No undercuts — standard tooling angles acceptable'}
+- manufacturabilityScore: 0–100 (100 = easiest); deduct 5–15 pts per undercut, 5 pts per zero-draft cluster
+
+PROCESS-SPECIFIC COST INPUT RULES (populate the matching sub-object in costInputSuggestions):
+
+CASTING / CAST_AND_MACHINE — always populate "casting" sub-object:
+  subtype: "hpdc" if Al/Mg and mean_wall<6mm; "sand" if Fe/iron or >8kg or complex cores; "gravity" if Al/Zn 0.5–5kg moderate; "investment" if precision <0.5kg or >40% free-form faces
+  HPDC: cycleTimeHpdcSec=${wallMean ? Math.round(45 + wallMean * 3) : 75} (45+3×wall), cavities=1 if >1kg else 2, dieMouldCostGBP=<1kg→60000 / 1–3kg→110000 / >3kg→180000, dieMouldLife=150000, yieldFraction=0.65
+  Sand: cycleTimeSandGravHr=0.5, dieMouldCostGBP=6000, dieMouldLife=8000, yieldFraction=0.78
+  Gravity: cycleTimeSandGravHr=0.08, dieMouldCostGBP=22000, dieMouldLife=50000, yieldFraction=0.85
+  Investment: cycleTimeSandGravHr=0.40, dieMouldCostGBP=12000, dieMouldLife=5000, yieldFraction=0.90
+
+FORGING — always populate "forging" sub-object:
+  flashKg=netWeightKg×0.10, yieldFraction=0.90
+  strokes: 3–5 for simple prismatic, 6–9 for complex; timePerBlowSec=10
+  dieCostGBP: simple→25000, medium→55000, complex→120000; dieLife=20000
+
+SHEET_METAL / SHEET_METAL_FAB — always populate "sheetMetal" sub-object:
+  thicknessMm=${wallMin ? wallMin.toFixed(1) : '1.5'} (use OCCT min wall thickness)
+  blankLengthMm=${bbDimsSorted ? (bbDimsSorted[0] * 1.05).toFixed(0) : '?'} (largest bbox × 1.05)
+  blankWidthMm=${bbDimsSorted ? (bbDimsSorted[1] * 1.05).toFixed(0) : '?'} (second-largest × 1.05)
+  dieCostGBP: progressive→80000 if >3 ops; single-stage→15000; laser+brake→3000 (fab only)
+  dieLife: progressive→1000000; single-stage→300000; laser+brake→999999
+  numOps: 2 for simple bracket, 3–5 for formed, 6–8 for complex progressive
+
+INJECTION_MOULDING — always populate "injectionMoulding" sub-object:
+  wallThicknessMm=${wallMean ? wallMean.toFixed(1) : '2.5'} (use OCCT mean wall)
+  projectedAreaCm2=${bb ? ((bb.xMm * bb.yMm) / 100).toFixed(1) : '?'} (bbox X×Y÷100)
+  cavities: >50g→1; 10–50g→2; <10g→4–8
+  mouldCostGBP: 1-cav small→20000 / medium→50000 / large→100000; ×1.5 per extra cavity
+  mouldLife=1000000, runnerWeightKg=netWeightKg×0.15 (cold runner) or 0 (hot runner)`
     : `GUIDELINES:
 - estimatedVolumeCm3: bbox_cm3 × fill_factor (machined: 0.35–0.55, cast: 0.5–0.7, sheet metal: 0.1–0.25)
 - estimatedWeightKg: volume × density (Al 2.70, steel 7.85, plastic 1.05 g/cm³)
-- manufacturabilityScore: 0–100`;
+- manufacturabilityScore: 0–100
+- Populate casting/forging/sheetMetal/injectionMoulding sub-objects for the recommended process`;
 
   return `${geometrySection}
 
@@ -265,7 +300,40 @@ Return ONLY this JSON structure (no prose, no markdown fences):
     "estimatedSetupTimeHr": number,
     "estimatedOperations": [
       {"name": string, "machineId": string, "cycleTimeHr": number, "labourId": "lab-uk-skilled", "oee": 0.85, "manning": 1, "labourEfficiency": 0.92}
-    ]
+    ],
+    "casting": {
+      "subtype": "hpdc"|"sand"|"gravity"|"investment",
+      "dieMouldCostGBP": number,
+      "dieMouldLife": number,
+      "cavities": number,
+      "yieldFraction": number,
+      "cycleTimeHpdcSec": number,
+      "cycleTimeSandGravHr": number
+    },
+    "forging": {
+      "flashKg": number,
+      "yieldFraction": number,
+      "dieCostGBP": number,
+      "dieLife": number,
+      "strokes": number,
+      "timePerBlowSec": number
+    },
+    "sheetMetal": {
+      "thicknessMm": number,
+      "blankLengthMm": number,
+      "blankWidthMm": number,
+      "dieCostGBP": number,
+      "dieLife": number,
+      "numOps": number
+    },
+    "injectionMoulding": {
+      "cavities": number,
+      "projectedAreaCm2": number,
+      "wallThicknessMm": number,
+      "mouldCostGBP": number,
+      "mouldLife": number,
+      "runnerWeightKg": number
+    }
   },
   "aiExplanation": string,
   "confidenceLevel": "${geo.status === 'success' ? 'High' : 'Medium'}",

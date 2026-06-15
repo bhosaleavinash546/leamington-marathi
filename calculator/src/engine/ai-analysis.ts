@@ -110,6 +110,39 @@ export interface CADAnalysisResult {
     estimatedCycleTimeHr: number;
     estimatedSetupTimeHr: number;
     estimatedOperations: SuggestedOperation[];
+    casting?: {
+      subtype: 'hpdc' | 'sand' | 'gravity' | 'investment';
+      dieMouldCostGBP: number;
+      dieMouldLife: number;
+      cavities: number;
+      yieldFraction: number;
+      cycleTimeHpdcSec: number;
+      cycleTimeSandGravHr: number;
+    };
+    forging?: {
+      flashKg: number;
+      yieldFraction: number;
+      dieCostGBP: number;
+      dieLife: number;
+      strokes: number;
+      timePerBlowSec: number;
+    };
+    sheetMetal?: {
+      thicknessMm: number;
+      blankLengthMm: number;
+      blankWidthMm: number;
+      dieCostGBP: number;
+      dieLife: number;
+      numOps: number;
+    };
+    injectionMoulding?: {
+      cavities: number;
+      projectedAreaCm2: number;
+      wallThicknessMm: number;
+      mouldCostGBP: number;
+      mouldLife: number;
+      runnerWeightKg: number;
+    };
   };
   aiExplanation: string;
   confidenceLevel: 'High' | 'Medium' | 'Low';
