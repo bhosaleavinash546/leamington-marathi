@@ -129,36 +129,43 @@ INSTRUCTIONS:
   const anthropic = new Anthropic({ apiKey });
 
   let analysis: unknown;
-  for (let attempt = 1; attempt <= 2; attempt++) {
-    const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
-      max_tokens: 4096,
-      system: systemPrompt,
-      messages: [{
-        role: 'user',
-        content: [
-          {
-            type: 'image',
-            source: { type: 'base64', media_type: mediaType, data: base64Data },
-          },
-          { type: 'text', text: userPrompt },
-        ],
-      }],
-    });
+  try {
+    for (let attempt = 1; attempt <= 2; attempt++) {
+      const message = await anthropic.messages.create({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 4096,
+        system: systemPrompt,
+        messages: [{
+          role: 'user',
+          content: [
+            {
+              type: 'image',
+              source: { type: 'base64', media_type: mediaType, data: base64Data },
+            },
+            { type: 'text', text: userPrompt },
+          ],
+        }],
+      });
 
-    const raw = message.content[0]?.type === 'text' ? message.content[0].text : '';
-    const jsonStr = raw.replace(/^```[a-z]*\n?/m, '').replace(/\n?```$/m, '').trim();
+      const raw = message.content[0]?.type === 'text' ? message.content[0].text : '';
+      const jsonStr = raw.replace(/^```[a-z]*\n?/m, '').replace(/\n?```$/m, '').trim();
 
-    try {
-      analysis = JSON.parse(jsonStr);
-      break;
-    } catch {
-      if (attempt === 2) {
-        res.status(500).json({ error: `AI returned unparseable JSON. Raw: ${raw.slice(0, 300)}` });
-        return;
+      try {
+        analysis = JSON.parse(jsonStr);
+        break;
+      } catch {
+        if (attempt === 2) {
+          res.status(500).json({ error: `AI returned unparseable JSON. Raw: ${raw.slice(0, 300)}` });
+          return;
+        }
+        console.warn('[PCB] JSON parse failed on attempt 1, retrying…');
       }
-      console.warn('[PCB] JSON parse failed on attempt 1, retrying…');
     }
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    console.error('[PCB] Anthropic API error:', msg);
+    res.status(502).json({ error: `AI service error: ${msg}` });
+    return;
   }
 
   res.json({ success: true, analysis });
