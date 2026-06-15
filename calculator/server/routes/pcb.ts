@@ -48,7 +48,19 @@ PCB TECHNOLOGY VALUES (use EXACTLY):
 - RIGID_FLEX — rigid-flex construction visible
 - RF_MICRO   — Rogers/PTFE material (RF/microwave)
 
-SURFACE FINISH VALUES: hasl | hasl_lf | enig | osp | hard_gold
+SURFACE FINISH VALUES (use EXACTLY these strings): hasl | hasl_lf | enig | osp | enepig | iteq
+- hasl: Hot-air solder levelling (leaded)
+- hasl_lf: Lead-free HASL
+- enig: Electroless nickel immersion gold (most common auto-grade)
+- osp: Organic solderability preservative
+- enepig: Electroless nickel electroless palladium immersion gold (replaces hard_gold)
+- iteq: Immersion tin for fine-pitch
+
+HDI STRUCTURE VALUES (use EXACTLY these strings): none | 1plus_n_plus1 | 2plus_n_plus2 | any_layer
+- none: No HDI (standard through-via only)
+- 1plus_n_plus1: One HDI buildup layer each side
+- 2plus_n_plus2: Two HDI buildup layers each side
+- any_layer: Full any-layer HDI (ELIC)
 
 QUALITY GRADE VALUES: consumer | industrial | auto_grade2 | auto_grade1 | aerospace
 
@@ -71,7 +83,7 @@ Return EXACTLY this JSON structure:
     "bgaDetected": boolean,
     "minTraceSpaceMm": number,
     "technologyType": string,
-    "hdiStructure": string,
+    "hdiStructure": "none" | "1plus_n_plus1" | "2plus_n_plus2" | "any_layer",
     "impedanceControlRequired": boolean,
     "copperWeightOz": number,
     "qualityGrade": string,

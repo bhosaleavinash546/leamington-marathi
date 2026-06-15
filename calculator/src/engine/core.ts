@@ -22,8 +22,8 @@ export function validateStackInput(
 
   if (rm.directCost !== undefined) {
     // directCost mode: skip weight/utilization checks; only validate the material exists for traceability
-    if (rm.directCost < 0)
-      errors.push({ field: 'rawMaterial.directCost', message: 'Cannot be negative' });
+    if (!Number.isFinite(rm.directCost) || rm.directCost < 0)
+      errors.push({ field: 'rawMaterial.directCost', message: 'Must be a finite non-negative number' });
     const mat = library.materials.find(m => m.id === rm.materialId);
     if (!mat)
       errors.push({ field: 'rawMaterial.materialId', message: `Material '${rm.materialId}' not found in rate library` });

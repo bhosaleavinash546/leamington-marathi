@@ -12,6 +12,7 @@ export * from './modules/painting.js';
 export * from './modules/biw-assembly.js';
 export * from './modules/pcb-fab.js';
 export * from './modules/pcba.js';
+export * from './modules/wiring-harness.js';
 export * from './process-taxonomy.js';
 export * from './modules/cast-and-machine.js';
 export * from './ai-analysis.js';

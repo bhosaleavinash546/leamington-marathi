@@ -2740,10 +2740,50 @@ function applyPCBImageToFab(): void {
     el2.classList.add('ai-filled');
     el2.addEventListener('input', () => el2.classList.remove('ai-filled'), { once: true });
   };
+  // Safe select setter: only assigns if the value is a valid <option>; logs a warning otherwise
+  const setSelectSafe = (id: string, val: string, fallback: string) => {
+    const sel = document.getElementById(id) as HTMLSelectElement | null;
+    if (!sel) return;
+    const valid = Array.from(sel.options).some(o => o.value === val);
+    sel.value = valid ? val : fallback;
+    sel.classList.add('ai-filled');
+    if (!valid) console.warn(`[PCB→Fab] "${val}" is not a valid option for #${id} — defaulted to "${fallback}"`);
+    sel.addEventListener('input', () => sel.classList.remove('ai-filled'), { once: true });
+  };
   const setCheck = (id: string, val: boolean) => {
     const el2 = document.getElementById(id) as HTMLInputElement | null;
     if (el2) { el2.checked = val; el2.classList.add('ai-filled'); }
   };
+
+  // Map Vision free-text HDI strings → engine enum
+  const HDI_MAP: Record<string, string> = {
+    'none': 'none',
+    '1+n+1': '1plus_n_plus1',
+    '1plus_n_plus1': '1plus_n_plus1',
+    '2+n+2': '2plus_n_plus2',
+    '2plus_n_plus2': '2plus_n_plus2',
+    'any_layer': 'any_layer',
+    'elic': 'any_layer',
+    'any layer': 'any_layer',
+  };
+  const rawHdi = (b.hdiStructure ?? '').toLowerCase().replace(/\s+/g, ' ').trim();
+  const mappedHdi = HDI_MAP[rawHdi] ?? (rawHdi.includes('2') ? '2plus_n_plus2' : rawHdi.includes('any') ? 'any_layer' : rawHdi.includes('1') ? '1plus_n_plus1' : 'none');
+
+  // Map Vision surface finish values → engine enum (hard_gold → enepig as nearest equivalent)
+  const FINISH_MAP: Record<string, string> = {
+    'hasl': 'hasl',
+    'hasl_lf': 'hasl_lf',
+    'enig': 'enig',
+    'osp': 'osp',
+    'enepig': 'enepig',
+    'iteq': 'iteq',
+    'hard_gold': 'enepig',
+    'hard gold': 'enepig',
+    'immersion gold': 'enig',
+    'immersion silver': 'hasl_lf',
+  };
+  const rawFinish = (b.surfaceFinish ?? '').toLowerCase().trim();
+  const mappedFinish = FINISH_MAP[rawFinish] ?? 'enig';
 
   setF('pcbf-technology', b.technologyType);
   setF('pcbf-quality', b.qualityGrade);
@@ -2754,13 +2794,13 @@ function applyPCBImageToFab(): void {
   setF('pcbf-cu', String(b.copperWeightOz));
   setF('pcbf-outer-cu', String(b.copperWeightOz));
   setF('pcbf-via-type', b.microVias > 0 ? 'microvia_hdi' : 'through_only');
-  setF('pcbf-hdi-structure', b.hdiStructure);
+  setSelectSafe('pcbf-hdi-structure', mappedHdi, 'none');
   setF('pcbf-vias', b.throughVias);
   setF('pcbf-blind-vias', b.blindVias);
   setF('pcbf-buried-vias', b.buriedVias);
   setF('pcbf-uvias', b.microVias);
   setF('pcbf-trace', String(b.minTraceSpaceMm));
-  setF('pcbf-finish', b.surfaceFinish);
+  setSelectSafe('pcbf-finish', mappedFinish, 'enig');
   setF('pcbf-solder-mask', b.solderMaskColour);
   setF('pcbf-silkscreen', String(b.silkscreenSides));
   setCheck('pcbf-impedance', b.impedanceControlRequired);
@@ -2833,13 +2873,17 @@ function applyPCBImageToPCBA(): void {
           'ic_soic','ic_qfn','ic_bga','ic_tqfp',
           'connector_smt','through_hole','manual_solder',
         ];
-        const ct = validTypes.includes(item.componentType as ComponentType)
+        const isKnownType = validTypes.includes(item.componentType as ComponentType);
+        const ct = isKnownType
           ? (item.componentType as ComponentType)
           : 'passive_0402';
+        const descSuffix = !isKnownType
+          ? ` ⚠ type "${item.componentType}" unrecognised — defaulted to 0402`
+          : '';
         addBOMRow({
           refDes: item.refDes,
           componentType: ct,
-          description: `${item.description}${item.pkg ? ` [${item.pkg}]` : ''}${item.value ? ` ${item.value}` : ''}`,
+          description: `${item.description}${item.pkg ? ` [${item.pkg}]` : ''}${item.value ? ` ${item.value}` : ''}${descSuffix}`,
           qty: item.qty,
           unitPriceGBP: item.unitPriceGBP,
           moq: item.moq,
