@@ -8,6 +8,7 @@ import cadRouter from './routes/cad.js';
 import syncRouter from './routes/sync.js';
 import agentRouter from './routes/agent.js';
 import authRouter from './routes/auth.js';
+import dfmRouter from './routes/dfm.js';
 
 config(); // load .env
 
@@ -49,6 +50,7 @@ app.use('/api/auth', authRouter);
 app.use('/api/cad', cadRouter);
 app.use('/api/sync', syncRouter);
 app.use('/api/agent', agentRouter);
+app.use('/api/dfm', dfmRouter);
 
 app.get('/api/health', (_req, res) => {
   res.json({

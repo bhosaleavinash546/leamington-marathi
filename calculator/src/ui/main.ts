@@ -42,6 +42,8 @@ import type { LearningCurveResult } from '../engine/learning-curve.js';
 import { exportToExcelBlob } from '../export/excel.js';
 import { printPDF } from '../export/pdf.js';
 import { generateInsights, totalPotentialSaving, REGIONAL_COST_INDEX, FX_TO_GBP } from '../engine/insights.js';
+import { generateDFMDFA } from '../engine/dfm-dfa.js';
+import type { DFMIssue, CostOptimisation } from '../engine/dfm-dfa.js';
 import type { RateLibrary, UniversalStackInput, PartCostResult, CommodityType, SupplierQuote } from '../engine/types.js';
 import type { BOMLine, ComponentType } from '../engine/modules/pcba.js';
 import { parseBOMCSV } from '../engine/bom-csv.js';
@@ -3476,11 +3478,13 @@ function switchResultTab(tab: string): void {
   el('results-insights').style.display = tab === 'insights' ? '' : 'none';
   el('results-sensitivity').style.display = tab === 'sensitivity' ? '' : 'none';
   el('results-scenarios').style.display = tab === 'scenarios' ? '' : 'none';
+  el('results-dfm').style.display = tab === 'dfm' ? '' : 'none';
 
   if (tab === 'detail' && lastResult && lastInput) renderDetail(lastResult, lastInput);
   if (tab === 'insights' && lastResult && lastInput) renderInsights(lastResult, lastInput);
   if (tab === 'sensitivity' && lastInput) renderSensitivity();
   if (tab === 'scenarios') renderScenarios();
+  if (tab === 'dfm' && lastResult && lastInput) renderDFMDFA(lastResult, lastInput);
 }
 
 // ─── Render: Breakdown ────────────────────────────────────────────────────────
@@ -3905,6 +3909,179 @@ function renderInsights(result: PartCostResult, input: UniversalStackInput): voi
         <div class="regional-grid">${regionalCards}</div>
       </div>
     </div>`;
+}
+
+// ─── Render: DFM / DFA Tab ────────────────────────────────────────────────────
+
+function renderDFMDFA(result: PartCostResult, input: UniversalStackInput): void {
+  const panel = el('results-dfm');
+  if (!result || !input) { panel.innerHTML = '<div class="placeholder">Run a calculation first.</div>'; return; }
+
+  panel.innerHTML = '<div class="placeholder">Analysing design for manufacture…</div>';
+
+  setTimeout(() => {
+    try {
+      const dfmResult = generateDFMDFA(result, input, activeCommodity);
+
+      const severityColor: Record<string, string> = {
+        critical: '#e63b3b',
+        major: '#f59e0b',
+        minor: '#3b82f6',
+        opportunity: '#10b981',
+      };
+
+      const severityLabel: Record<string, string> = {
+        critical: 'Critical',
+        major: 'Major',
+        minor: 'Minor',
+        opportunity: 'Opportunity',
+      };
+
+      const riskColor = (r: string) => r === 'High' ? '#e63b3b' : r === 'Medium' ? '#f59e0b' : '#10b981';
+
+      const issueCard = (issue: DFMIssue) => `
+        <div style="border-left:3px solid ${severityColor[issue.severity]};background:var(--surface-elevated);border-radius:6px;padding:10px 14px;margin-bottom:8px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap">
+            <span style="font-size:0.7rem;font-weight:700;color:${severityColor[issue.severity]};text-transform:uppercase;border:1px solid ${severityColor[issue.severity]};border-radius:4px;padding:1px 6px">${severityLabel[issue.severity]}</span>
+            <span style="font-weight:600;font-size:0.85rem">${escHtml(issue.title)}</span>
+            ${issue.savingPct > 0 ? `<span style="margin-left:auto;font-size:0.72rem;color:#10b981;font-weight:700">~${issue.savingPct}% saving</span>` : ''}
+          </div>
+          <p style="font-size:0.78rem;color:var(--text-secondary);margin:0 0 6px 0">${escHtml(issue.description)}</p>
+          <div style="font-size:0.75rem;background:var(--surface);border-radius:4px;padding:5px 8px;color:var(--text-primary)">
+            <strong>Recommendation:</strong> ${escHtml(issue.recommendation)}
+            <span style="float:right;color:${riskColor(issue.risk)};font-weight:600">Risk: ${issue.risk}</span>
+          </div>
+        </div>`;
+
+      const optimCard = (opt: CostOptimisation) => `
+        <div style="background:var(--surface-elevated);border-radius:6px;padding:10px 14px;margin-bottom:8px;border:1px solid var(--border)">
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px">
+            <span style="font-weight:600;font-size:0.85rem">${escHtml(opt.title)}</span>
+            <span style="font-size:0.72rem;color:#10b981;font-weight:700;margin-left:auto">~${opt.expectedSavingPct.toFixed(1)}% saving</span>
+            <span style="font-size:0.7rem;background:${opt.timeframe === 'Quick Win' ? '#10b981' : opt.timeframe === 'Medium Term' ? '#f59e0b' : '#6366f1'};color:#fff;border-radius:4px;padding:1px 6px">${opt.timeframe}</span>
+          </div>
+          <p style="font-size:0.78rem;color:var(--text-secondary);margin:0 0 5px 0">${escHtml(opt.description)}</p>
+          <p style="font-size:0.73rem;color:#888;margin:0;font-style:italic">${escHtml(opt.technicalJustification)}</p>
+        </div>`;
+
+      const scoreBar = (score: number, label: string) => {
+        const pct = (score / 10) * 100;
+        const col = score >= 8 ? '#10b981' : score >= 6 ? '#f59e0b' : '#e63b3b';
+        return `
+          <div style="margin-bottom:10px">
+            <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+              <span style="font-weight:600;font-size:0.83rem">${label}</span>
+              <span style="font-weight:700;color:${col};font-size:0.9rem">${score}/10</span>
+            </div>
+            <div style="height:8px;background:var(--surface);border-radius:4px;overflow:hidden">
+              <div style="height:100%;width:${pct}%;background:${col};border-radius:4px;transition:width 0.4s"></div>
+            </div>
+          </div>`;
+      };
+
+      const dfmIssuesHtml = dfmResult.dfm.issues.map(issueCard).join('') || '<p style="color:#888;font-size:0.82rem">No DFM issues detected.</p>';
+      const dfaIssuesHtml = dfmResult.dfa.issues.map(issueCard).join('') || '<p style="color:#888;font-size:0.82rem">No DFA issues detected.</p>';
+      const optimHtml = dfmResult.costOptimisations.map(optimCard).join('');
+
+      const quickWinBadges = dfmResult.quickWins.map(w => `<span style="background:var(--surface-elevated);border:1px solid #10b981;color:#10b981;border-radius:4px;padding:2px 8px;font-size:0.73rem;display:inline-block;margin:2px">${escHtml(w)}</span>`).join('');
+      const ltBadges = dfmResult.longTermChanges.map(w => `<span style="background:var(--surface-elevated);border:1px solid #6366f1;color:#6366f1;border-radius:4px;padding:2px 8px;font-size:0.73rem;display:inline-block;margin:2px">${escHtml(w)}</span>`).join('');
+
+      panel.innerHTML = `
+        <div style="padding:12px 16px;overflow-y:auto">
+
+          <!-- Summary banner -->
+          <div style="display:flex;gap:12px;flex-wrap:wrap;background:var(--surface-elevated);border-radius:8px;padding:14px 16px;margin-bottom:16px;align-items:center">
+            <div style="text-align:center;min-width:80px">
+              <div style="font-size:0.72rem;color:var(--text-muted);text-transform:uppercase">Total Saving</div>
+              <div style="font-size:1.6rem;font-weight:800;color:#10b981">~${dfmResult.totalPotentialSavingPct.toFixed(1)}%</div>
+            </div>
+            <div style="flex:1;min-width:200px">
+              ${scoreBar(dfmResult.dfm.score, 'Manufacturability (DFM)')}
+              ${scoreBar(dfmResult.dfa.score, 'Assembly Efficiency (DFA)')}
+            </div>
+            <div style="min-width:160px;font-size:0.75rem;color:var(--text-muted)">
+              Commodity: <strong>${activeCommodity.replace(/_/g, ' ')}</strong><br>
+              DFM issues: <strong>${dfmResult.dfm.issues.length}</strong> &nbsp;|&nbsp; DFA issues: <strong>${dfmResult.dfa.issues.length}</strong><br>
+              Cost levers: <strong>${dfmResult.costOptimisations.length}</strong>
+            </div>
+          </div>
+
+          <!-- DFM Section -->
+          <div style="margin-bottom:20px">
+            <div class="detail-section-title" style="margin-bottom:6px">Design for Manufacture (DFM)</div>
+            <p style="font-size:0.78rem;color:var(--text-secondary);margin:0 0 10px 0">${escHtml(dfmResult.dfm.summary)}</p>
+            ${dfmIssuesHtml}
+          </div>
+
+          <!-- DFA Section -->
+          <div style="margin-bottom:20px">
+            <div class="detail-section-title" style="margin-bottom:6px">Design for Assembly (DFA)</div>
+            <p style="font-size:0.78rem;color:var(--text-secondary);margin:0 0 10px 0">${escHtml(dfmResult.dfa.summary)}</p>
+            ${dfaIssuesHtml}
+          </div>
+
+          <!-- Cost Optimisations -->
+          <div style="margin-bottom:20px">
+            <div class="detail-section-title" style="margin-bottom:6px">Cost Optimisation Levers</div>
+            ${optimHtml}
+          </div>
+
+          <!-- Quick wins / long term -->
+          ${dfmResult.quickWins.length > 0 ? `
+          <div style="margin-bottom:12px">
+            <div style="font-weight:600;font-size:0.82rem;margin-bottom:5px;color:#10b981">Quick Wins (Low Risk)</div>
+            <div>${quickWinBadges}</div>
+          </div>` : ''}
+
+          ${dfmResult.longTermChanges.length > 0 ? `
+          <div style="margin-bottom:16px">
+            <div style="font-weight:600;font-size:0.82rem;margin-bottom:5px;color:#6366f1">Long-Term Strategic Changes</div>
+            <div>${ltBadges}</div>
+          </div>` : ''}
+
+          <!-- AI Deep Analysis Button -->
+          <div style="border-top:1px solid var(--border);padding-top:14px;margin-top:6px">
+            <div style="font-weight:600;font-size:0.83rem;margin-bottom:6px">AI Deep Analysis</div>
+            <p style="font-size:0.75rem;color:var(--text-muted);margin:0 0 10px 0">
+              Request a deeper engineering analysis from Claude AI. Provides expert commentary on design risks,
+              supplier negotiation strategy, and process alternatives specific to this commodity.
+            </p>
+            <button class="btn btn-primary" id="dfm-ai-btn" style="gap:6px">⚡ Run AI Deep Analysis</button>
+            <div id="dfm-ai-result" style="margin-top:12px"></div>
+          </div>
+
+        </div>`;
+
+      // Wire AI button
+      document.getElementById('dfm-ai-btn')?.addEventListener('click', async () => {
+        const btn = document.getElementById('dfm-ai-btn') as HTMLButtonElement;
+        const aiResult = document.getElementById('dfm-ai-result')!;
+        btn.disabled = true;
+        btn.textContent = '⏳ Analysing…';
+        aiResult.innerHTML = '<div class="placeholder">Waiting for AI analysis…</div>';
+        try {
+          const token = localStorage.getItem('auth_token') ?? '';
+          const resp = await fetch('/api/dfm/analyze', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+            body: JSON.stringify({ result, input, commodity: activeCommodity, dfmResult }),
+          });
+          if (!resp.ok) throw new Error(`Server error ${resp.status}`);
+          const data = await resp.json() as { analysis: string };
+          aiResult.innerHTML = `
+            <div style="background:var(--surface-elevated);border-radius:6px;padding:14px 16px;font-size:0.8rem;line-height:1.65;color:var(--text-primary);white-space:pre-wrap;border-left:3px solid var(--accent)">${escHtml(data.analysis)}</div>`;
+        } catch (err) {
+          aiResult.innerHTML = `<div style="color:#e63b3b;font-size:0.78rem">AI analysis failed: ${escHtml(String(err))}. Ensure the server is running and ANTHROPIC_API_KEY is set.</div>`;
+        } finally {
+          btn.disabled = false;
+          btn.textContent = '⚡ Run AI Deep Analysis';
+        }
+      });
+
+    } catch (err) {
+      panel.innerHTML = `<div class="placeholder" style="color:#e63b3b">DFM/DFA analysis failed: ${escHtml(String(err))}</div>`;
+    }
+  }, 50);
 }
 
 // ─── Render: Sensitivity ──────────────────────────────────────────────────────
