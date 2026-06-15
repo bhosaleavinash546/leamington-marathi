@@ -2512,12 +2512,36 @@ function buildOCCTPanel(geo: OCCTGeometry | null, source: string): string {
           <div class="occt-stat-label">Fill ratio</div>
         </div>
         <div class="occt-stat">
-          <div class="occt-stat-value">${geo.estimatedWallThicknessMm != null ? geo.estimatedWallThicknessMm + ' mm' : '—'}</div>
-          <div class="occt-stat-label">Mean wall thickness</div>
+          <div class="occt-stat-value">${geo.wallThickness ? geo.wallThickness.meanMm.toFixed(2) + ' mm' : '—'}</div>
+          <div class="occt-stat-label">Mean wall thickness${geo.wallThickness ? ` (${geo.wallThickness.method === 'ray_cast' ? 'ray-cast' : 'formula'})` : ''}</div>
+        </div>
+        <div class="occt-stat">
+          <div class="occt-stat-value">${geo.wallThickness ? `${geo.wallThickness.minMm.toFixed(1)}–${geo.wallThickness.maxMm.toFixed(1)} mm` : '—'}</div>
+          <div class="occt-stat-label">Wall thickness range</div>
+        </div>
+        <div class="occt-stat">
+          <div class="occt-stat-value">${geo.draftAnalysis ? (geo.draftAnalysis.undercutFaceCount > 0 ? `⚠ ${geo.draftAnalysis.undercutFaceCount}` : '0') : '—'}</div>
+          <div class="occt-stat-label">Undercut faces</div>
+        </div>
+        <div class="occt-stat">
+          <div class="occt-stat-value">${geo.draftAnalysis ? `${geo.draftAnalysis.minPositiveDraftDeg?.toFixed(1) ?? '?'}°–${geo.draftAnalysis.maxPositiveDraftDeg?.toFixed(1) ?? '?'}°` : '—'}</div>
+          <div class="occt-stat-label">Draft angle range</div>
+        </div>
+        <div class="occt-stat">
+          <div class="occt-stat-value">${geo.setupAnalysis ? geo.setupAnalysis.estimatedSetupCount : '—'}</div>
+          <div class="occt-stat-label">Est. CNC setups</div>
+        </div>
+        <div class="occt-stat">
+          <div class="occt-stat-value">${geo.cncCycleTimeEstimate ? geo.cncCycleTimeEstimate.estimatedTotalHrs.toFixed(3) + ' hr' : '—'}</div>
+          <div class="occt-stat-label">CNC cycle estimate</div>
         </div>
         <div class="occt-stat">
           <div class="occt-stat-value">${w.aluminiumKg.toFixed(3)} kg</div>
           <div class="occt-stat-label">Al weight (2.70 g/cm³)</div>
+        </div>
+        <div class="occt-stat">
+          <div class="occt-stat-value">${w.steelKg.toFixed(3)} kg</div>
+          <div class="occt-stat-label">Steel weight (7.85 g/cm³)</div>
         </div>
       </div>
       <div style="font-size:0.7rem;color:var(--text-muted);margin-bottom:4px">
@@ -2525,6 +2549,7 @@ function buildOCCTPanel(geo: OCCTGeometry | null, source: string): string {
         ${f.estimatedHoleCount > 0 ? `· ${f.estimatedHoleCount} holes [${f.holeRadiiMm.slice(0,5).join(', ')} mm]` : ''}
         ${f.bossShaftRadiiMm.length > 0 ? `· bosses [${f.bossShaftRadiiMm.join(', ')} mm]` : ''}
         ${f.threadFeaturesDetected ? '· <strong>threads detected</strong>' : ''}
+        ${geo.draftAnalysis?.undercutFaceCount ? `· <span style="color:#ef4444"><strong>${geo.draftAnalysis.undercutFaceCount} undercuts</strong></span>` : ''}
       </div>
       <div class="occt-face-bar">${barSegments}</div>
       <div class="occt-face-legend">${legend}</div>
@@ -2569,25 +2594,37 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
         setMaterial(el<HTMLSelectElement>('mach-mat'), c.materialId);
         setNumericField('mach-net-wt', c.netWeightKg, 3);
         setNumericField('mach-stock-wt', c.netWeightKg * 1.4, 3);
+        // Prefer OCCT bottom-up cycle time over Claude's AI estimate
+        const occtCycleHrs = cadOCCTGeometry?.cncCycleTimeEstimate?.estimatedTotalHrs ?? null;
+        const occtSetupCount = cadOCCTGeometry?.setupAnalysis?.estimatedSetupCount ?? null;
+        const occtSetupMinsPerSetup = cadOCCTGeometry?.cncCycleTimeEstimate?.assumedSetupTimeMinsPerSetup ?? 45;
         // Operations
         const container = el('mach-ops-container');
         if (container && c.estimatedOperations.length > 0) {
           container.innerHTML = '';
           machOpCount = 0;
+          // Scale AI cycle times proportionally if OCCT total differs from AI total
+          const aiTotalHrs = c.estimatedOperations.reduce((s, op) => s + op.cycleTimeHr, 0);
+          const scaleFactor = (occtCycleHrs !== null && aiTotalHrs > 0) ? occtCycleHrs / aiTotalHrs : 1;
           for (const op of c.estimatedOperations) {
             addMachOp({
               name: op.name,
               type: 'milling_3ax',
               machineId: op.machineId,
               labourId: op.labourId || 'lab-uk-skilled',
-              cycleTimeHr: op.cycleTimeHr,
+              cycleTimeHr: op.cycleTimeHr * scaleFactor,
               partsPerCycle: 1,
               oee: op.oee,
               manning: op.manning,
-              labourTimeHr: op.cycleTimeHr,
+              labourTimeHr: op.cycleTimeHr * scaleFactor,
               labourEfficiency: op.labourEfficiency,
             });
           }
+        }
+        // Override setup time with OCCT estimate if available
+        if (occtSetupCount !== null) {
+          const setupHrs = (occtSetupCount * occtSetupMinsPerSetup) / 60;
+          setNumericField('mach-setup-time', setupHrs, 3);
         }
         break;
       }

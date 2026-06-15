@@ -129,13 +129,46 @@ function buildPrompt(
       : geo.fillRatio! < 0.65 ? 'semi-solid → forging or heavy section casting'
       : 'near-solid → forging or machined from solid bar';
 
+    const wt = geo.wallThickness;
+    const wallThicknessStr = wt
+      ? `min=${wt.minMm.toFixed(2)}mm  mean=${wt.meanMm.toFixed(2)}mm  max=${wt.maxMm.toFixed(2)}mm  σ=${wt.stdDevMm.toFixed(2)}mm  [${wt.method}, ${wt.uniformity}, n=${wt.sampleCount}]`
+      : 'N/A (ray-cast not available)';
+
+    const da = geo.draftAnalysis;
+    const draftStr = da
+      ? `undercuts=${da.undercutFaceCount}  zero-draft=${da.zeroDraftFaceCount}  adequate=${da.adequateDraftFaceCount}  range=${da.minPositiveDraftDeg?.toFixed(1) ?? '?'}°–${da.maxPositiveDraftDeg?.toFixed(1) ?? '?'}°  (draw dir=[${da.drawDirectionXYZ.join(',')}])`
+      : 'N/A';
+
+    const sa2 = geo.setupAnalysis;
+    const setupStr = sa2
+      ? `${sa2.estimatedSetupCount} setups  [${sa2.principalDirections.map(d => `${d.directionLabel}:${d.faceCount}f`).join(', ')}]`
+      : 'N/A';
+
+    const cnc = geo.cncCycleTimeEstimate;
+    const cncStr = cnc
+      ? `total=${cnc.estimatedTotalHrs.toFixed(3)} hr (${cnc.estimatedTotalMins.toFixed(1)} min)  setup=${cnc.setupTimeMins.toFixed(1)}min  milling=${cnc.planarMillingTimeMins.toFixed(1)}min  drill/bore=${cnc.drillBoreTimeMins.toFixed(1)}min`
+      : 'N/A';
+
     geometrySection = `=== GEOMETRY (measured by Open CASCADE OCCT — all values are precise) ===
 File: ${filename}
 Bounding box: ${bb.xMm}mm × ${bb.yMm}mm × ${bb.zMm}mm
 True volume: ${vol.cm3} cm³ (${vol.mm3.toFixed(0)} mm³)
 True surface area: ${sa.cm2} cm²
 Fill ratio: ${geo.fillRatio} → ${fillHint}
-Estimated mean wall thickness: ${geo.estimatedWallThicknessMm ?? 'N/A'} mm
+
+=== WALL THICKNESS ANALYSIS ===
+${wallThicknessStr}
+
+=== DRAFT & UNDERCUT ANALYSIS ===
+${draftStr}
+${da && da.undercutFaceCount > 0 ? `⚠ ${da.undercutFaceCount} undercut faces detected — casting/moulding will require side actions or re-orientation` : 'No undercuts detected'}
+
+=== MACHINING SETUP ESTIMATION ===
+${setupStr}
+
+=== CNC CYCLE TIME ESTIMATE (bottom-up) ===
+${cncStr}
+${cnc ? `  Assumptions: feed=${cnc.assumedFeedRateMm2PerMin}mm²/min, drill=${cnc.assumedDrillBoreMinPerFeature}min/feature, setup=${cnc.assumedSetupTimeMinsPerSetup}min/setup` : ''}
 
 Weight at density:
   Aluminium 2.70 g/cm³: ${w.aluminiumKg.toFixed(3)} kg
@@ -168,6 +201,10 @@ File: ${filename}  Size: ${pre.fileSizeKB.toFixed(0)} KB
 ${pre.summary}`;
   }
 
+  const cncHrs = geo.cncCycleTimeEstimate?.estimatedTotalHrs ?? null;
+  const setupCount = geo.setupAnalysis?.estimatedSetupCount ?? null;
+  const undercutCount = geo.draftAnalysis?.undercutFaceCount ?? 0;
+
   const instructions = geo.status === 'success'
     ? `IMPORTANT GUIDELINES:
 - Use the PRECISE OCCT measurements above — do NOT re-estimate geometry
@@ -179,7 +216,10 @@ ${pre.summary}`;
 - ${geo.features!.freeFormFaceCount > (geo.faces!.total * 0.15) ? `High free-form content (${geo.features!.freeFormFaceCount}/${geo.faces!.total} faces) → organic shape → favour casting or 5-axis` : 'Mostly prismatic geometry → favour machining or forging'}
 - ${geo.features!.estimatedHoleCount > 8 ? `${geo.features!.estimatedHoleCount} holes detected → significant drilling/boring operations required` : ''}
 - ${geo.features!.threadFeaturesDetected ? 'Threads detected → include threading operation' : ''}
-- manufacturabilityScore: 0–100 (100 = easiest)`
+- ${cncHrs !== null ? `For machining: use estimatedCycleTimeHr=${cncHrs.toFixed(3)} from the bottom-up CNC estimate above (do NOT guess)` : ''}
+- ${setupCount !== null ? `For machining: estimatedSetupTimeHr=${((setupCount * (geo.cncCycleTimeEstimate?.assumedSetupTimeMinsPerSetup ?? 45)) / 60).toFixed(3)} (${setupCount} setups × assumed mins/setup)` : ''}
+- ${undercutCount > 0 ? `${undercutCount} undercuts detected → add manufacturability risk (High severity) for casting/moulding; machining may need 5-axis` : 'No undercuts — standard tooling angles acceptable'}
+- manufacturabilityScore: 0–100 (100 = easiest); deduct 5–15 pts per undercut, 5 pts per zero-draft face cluster`
     : `GUIDELINES:
 - estimatedVolumeCm3: bbox_cm3 × fill_factor (machined: 0.35–0.55, cast: 0.5–0.7, sheet metal: 0.1–0.25)
 - estimatedWeightKg: volume × density (Al 2.70, steel 7.85, plastic 1.05 g/cm³)

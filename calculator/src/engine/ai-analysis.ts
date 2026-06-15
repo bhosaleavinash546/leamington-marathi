@@ -13,7 +13,33 @@ export interface OCCTGeometry {
   volume?: { mm3: number; cm3: number };
   surfaceArea?: { mm2: number; cm2: number };
   fillRatio?: number;
-  estimatedWallThicknessMm?: number | null;
+  wallThickness?: {
+    minMm: number; maxMm: number; meanMm: number; stdDevMm: number;
+    sampleCount: number; method: 'ray_cast' | 'formula'; uniformity: string;
+  } | null;
+  draftAnalysis?: {
+    drawDirectionXYZ: [number, number, number];
+    undercutFaceCount: number;
+    zeroDraftFaceCount: number;
+    adequateDraftFaceCount: number;
+    minPositiveDraftDeg: number | null;
+    maxPositiveDraftDeg: number | null;
+    analyzedFaceCount: number;
+  } | null;
+  setupAnalysis?: {
+    estimatedSetupCount: number;
+    principalDirections: Array<{ directionLabel: string; faceCount: number }>;
+  } | null;
+  cncCycleTimeEstimate?: {
+    setupTimeMins: number;
+    planarMillingTimeMins: number;
+    drillBoreTimeMins: number;
+    estimatedTotalMins: number;
+    estimatedTotalHrs: number;
+    assumedFeedRateMm2PerMin: number;
+    assumedDrillBoreMinPerFeature: number;
+    assumedSetupTimeMinsPerSetup: number;
+  } | null;
   weights?: {
     aluminiumKg: number; steelKg: number; plasticKg: number;
     castIronKg: number; copperKg: number; titaniumKg: number;
