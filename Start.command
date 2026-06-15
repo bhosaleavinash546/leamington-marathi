@@ -17,6 +17,7 @@ echo ""
 
 # ── Pull latest code ──────────────────────────────────────────────────────────
 BRANCH="claude/new-session-ts4byp"
+CODE_CHANGED=false
 
 if command -v git >/dev/null 2>&1 && [ -d ".git" ]; then
   echo "  🔄 Checking for updates..."
@@ -26,6 +27,7 @@ if command -v git >/dev/null 2>&1 && [ -d ".git" ]; then
   if [ "$CURRENT" != "$BRANCH" ]; then
     echo "  🔀 Switching to branch: $BRANCH"
     git checkout "$BRANCH" --quiet 2>/dev/null || true
+    CODE_CHANGED=true
   fi
 
   LOCAL=$(git rev-parse HEAD 2>/dev/null)
@@ -33,7 +35,8 @@ if command -v git >/dev/null 2>&1 && [ -d ".git" ]; then
   if [ "$LOCAL" != "$REMOTE" ]; then
     echo "  ⬇  Pulling latest changes..."
     git pull origin "$BRANCH" --quiet 2>/dev/null || true
-    echo "  ✅ Code is up to date"
+    CODE_CHANGED=true
+    echo "  ✅ Code updated — will rebuild Docker image"
   else
     echo "  ✅ Already on latest version"
   fi
@@ -42,6 +45,15 @@ else
 fi
 
 echo ""
+
+# ── If code changed, force stop the old container so start.sh rebuilds it ────
+# (start.sh skips rebuild if container is already running — we avoid that here)
+if [ "$CODE_CHANGED" = true ]; then
+  echo "  🛑 Stopping old container to apply code update..."
+  docker compose down --remove-orphans 2>/dev/null || true
+  docker rm -f costvision 2>/dev/null || true
+  echo ""
+fi
 
 # ── Launch via the main start script ─────────────────────────────────────────
 ./start.sh
