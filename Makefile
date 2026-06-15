@@ -1,4 +1,4 @@
-.PHONY: start stop restart logs open status
+.PHONY: start stop restart logs open status update
 
 # ── Start the app (guided first-run setup + launch) ───────────────────────────
 start:
@@ -26,3 +26,15 @@ status:
 # ── Open in browser (macOS) ───────────────────────────────────────────────────
 open:
 	@open http://localhost:5174/calculator/
+
+# ── Pull latest code + force full rebuild ─────────────────────────────────────
+update:
+	@echo "⬇  Pulling latest code..."
+	@git pull origin claude/new-session-ts4byp
+	@echo "🛑 Stopping old container..."
+	@docker compose down --remove-orphans
+	@docker rm -f costvision 2>/dev/null || true
+	@echo "🐳 Rebuilding with latest code..."
+	@docker compose up -d --build
+	@echo "✅ Done → http://localhost:5174/calculator/"
+	@open http://localhost:5174/calculator/ 2>/dev/null || true
