@@ -149,13 +149,29 @@ function buildPrompt(
       ? `total=${cnc.estimatedTotalHrs.toFixed(3)} hr (${cnc.estimatedTotalMins.toFixed(1)} min)  setup=${cnc.setupTimeMins.toFixed(1)}min  milling=${cnc.planarMillingTimeMins.toFixed(1)}min  drill/bore=${cnc.drillBoreTimeMins.toFixed(1)}min`
       : 'N/A';
 
+    const tc = geo.toolingCostEstimates;
+    const toolingStr = tc
+      ? `HPDC die=${tc.hpdcDieCostGBP.toFixed(0)}  Gravity mould=${tc.gravityMouldCostGBP.toFixed(0)}  Sand pattern=${tc.sandPatternCostGBP.toFixed(0)}  IM mould=${tc.imMouldCostGBP.toFixed(0)}  Forge die=${tc.forgeDieCostGBP.toFixed(0)}  Progressive die=${tc.progressiveDieCostGBP.toFixed(0)} (all GBP)`
+      : 'N/A';
+
+    const ps = geo.processSpecificEstimates;
+    const psStr = ps
+      ? `Sand cycle=${ps.sandCycleTimeHr.toFixed(3)}hr  Sand(ferrous)=${ps.sandCycleTimeHrFerrous.toFixed(3)}hr  Forge strokes=${ps.forgeStrokes}  Invest wax=${ps.investWaxCostGBP.toFixed(2)}GBP  Invest shell=${ps.investShellCostGBP.toFixed(2)}GBP`
+      : 'N/A';
+
+    const mfgScore = geo.manufacturabilityScore ?? null;
+
+    const warningLines: string[] = [];
+    if (geo.assemblyWarning) warningLines.push(`⚠ ASSEMBLY DETECTED: ${geo.assemblyWarning} — cost per component, not per assembly`);
+    if (geo.unitWarning)    warningLines.push(`⚠ UNIT WARNING: ${geo.unitWarning}`);
+
     geometrySection = `=== GEOMETRY (measured by Open CASCADE OCCT — all values are precise) ===
 File: ${filename}
 Bounding box: ${bb.xMm}mm × ${bb.yMm}mm × ${bb.zMm}mm
 True volume: ${vol.cm3} cm³ (${vol.mm3.toFixed(0)} mm³)
 True surface area: ${sa.cm2} cm²
 Fill ratio: ${geo.fillRatio} → ${fillHint}
-
+${warningLines.length ? '\n' + warningLines.join('\n') + '\n' : ''}
 === WALL THICKNESS ANALYSIS ===
 ${wallThicknessStr}
 
@@ -169,6 +185,15 @@ ${setupStr}
 === CNC CYCLE TIME ESTIMATE (bottom-up) ===
 ${cncStr}
 ${cnc ? `  Assumptions: feed=${cnc.assumedFeedRateMm2PerMin}mm²/min, drill=${cnc.assumedDrillBoreMinPerFeature}min/feature, setup=${cnc.assumedSetupTimeMinsPerSetup}min/setup` : ''}
+
+=== COMPUTED MANUFACTURABILITY SCORE ===
+${mfgScore !== null ? `Score: ${mfgScore}/100 (geometry-derived — use this value verbatim in manufacturabilityScore field)` : 'N/A — use your own assessment'}
+
+=== PARAMETRIC TOOLING COST ESTIMATES (geometry-derived — use these verbatim) ===
+${toolingStr}
+
+=== PROCESS-SPECIFIC ESTIMATES (geometry-derived — use these verbatim) ===
+${psStr}
 
 Weight at density:
   Aluminium 2.70 g/cm³: ${w.aluminiumKg.toFixed(3)} kg
@@ -210,6 +235,10 @@ ${pre.summary}`;
   const wallMean = geo.wallThickness?.meanMm ?? null;
   const wallMin  = geo.wallThickness?.minMm ?? null;
 
+  const ps  = geo.processSpecificEstimates;
+  const tc  = geo.toolingCostEstimates;
+  const mfgScore = geo.manufacturabilityScore ?? null;
+
   const instructions = geo.status === 'success'
     ? `IMPORTANT GUIDELINES:
 - Use the PRECISE OCCT measurements above — do NOT re-estimate geometry
@@ -224,27 +253,30 @@ ${pre.summary}`;
 - ${cncHrs !== null ? `For machining: use estimatedCycleTimeHr=${cncHrs.toFixed(3)} from bottom-up CNC estimate (do NOT guess)` : ''}
 - ${setupCount !== null ? `For machining/CAM: estimatedSetupTimeHr=${((setupCount * (geo.cncCycleTimeEstimate?.assumedSetupTimeMinsPerSetup ?? 45)) / 60).toFixed(3)} (${setupCount} setups)` : ''}
 - ${undercutCount > 0 ? `${undercutCount} undercuts detected → add High severity manufacturability risk for casting/moulding; machining may need 5-axis` : 'No undercuts — standard tooling angles acceptable'}
-- manufacturabilityScore: 0–100 (100 = easiest); deduct 5–15 pts per undercut, 5 pts per zero-draft cluster
+- manufacturabilityScore: ${mfgScore !== null ? `use EXACTLY ${mfgScore} (geometry-derived, do NOT alter)` : '0–100 (100 = easiest); deduct 5–15 pts per undercut, 5 pts per zero-draft cluster'}
 
 PROCESS-SPECIFIC COST INPUT RULES (populate the matching sub-object in costInputSuggestions):
 
 CASTING / CAST_AND_MACHINE — always populate "casting" sub-object:
   subtype: "hpdc" if Al/Mg and mean_wall<6mm; "sand" if Fe/iron or >8kg or complex cores; "gravity" if Al/Zn 0.5–5kg moderate; "investment" if precision <0.5kg or >40% free-form faces
-  HPDC: cycleTimeHpdcSec=${wallMean ? Math.round(45 + wallMean * 3) : 75} (45+3×wall), cavities=1 if >1kg else 2, dieMouldCostGBP=<1kg→60000 / 1–3kg→110000 / >3kg→180000, dieMouldLife=150000, yieldFraction=0.65
-  Sand: cycleTimeSandGravHr=0.5, dieMouldCostGBP=6000, dieMouldLife=8000, yieldFraction=0.78
-  Gravity: cycleTimeSandGravHr=0.08, dieMouldCostGBP=22000, dieMouldLife=50000, yieldFraction=0.85
+  HPDC: cycleTimeHpdcSec=${wallMean ? Math.round(45 + wallMean * 3) : 75} (45+3×wall), cavities=1 if >1kg else 2
+        dieMouldCostGBP=${tc ? tc.hpdcDieCostGBP.toFixed(0) : '<1kg→60000/1-3kg→110000/>3kg→180000'} (OCCT parametric — use verbatim), dieMouldLife=150000, yieldFraction=0.65
+  Sand: cycleTimeSandGravHr=${ps ? ps.sandCycleTimeHr.toFixed(3) : '0.5'} (mass-based OCCT — use verbatim)
+        dieMouldCostGBP=${tc ? tc.sandPatternCostGBP.toFixed(0) : '6000'} (OCCT — use verbatim), dieMouldLife=8000, yieldFraction=0.78
+  Gravity: cycleTimeSandGravHr=0.08, dieMouldCostGBP=${tc ? tc.gravityMouldCostGBP.toFixed(0) : '22000'} (OCCT — use verbatim), dieMouldLife=50000, yieldFraction=0.85
   Investment: cycleTimeSandGravHr=0.40, dieMouldCostGBP=12000, dieMouldLife=5000, yieldFraction=0.90
+              (investment consumables: wax≈${ps ? ps.investWaxCostGBP.toFixed(2) : '?'}GBP, shell≈${ps ? ps.investShellCostGBP.toFixed(2) : '?'}GBP per part — note in aiExplanation)
 
 FORGING — always populate "forging" sub-object:
   flashKg=netWeightKg×0.10, yieldFraction=0.90
-  strokes: 3–5 for simple prismatic, 6–9 for complex; timePerBlowSec=10
-  dieCostGBP: simple→25000, medium→55000, complex→120000; dieLife=20000
+  strokes=${ps ? ps.forgeStrokes : '3–5 for simple prismatic, 6–9 for complex'} (OCCT-derived — use verbatim if number given); timePerBlowSec=10
+  dieCostGBP=${tc ? tc.forgeDieCostGBP.toFixed(0) : 'simple→25000/medium→55000/complex→120000'} (OCCT — use verbatim), dieLife=20000
 
 SHEET_METAL / SHEET_METAL_FAB — always populate "sheetMetal" sub-object:
   thicknessMm=${wallMin ? wallMin.toFixed(1) : '1.5'} (use OCCT min wall thickness)
   blankLengthMm=${bbDimsSorted ? (bbDimsSorted[0] * 1.05).toFixed(0) : '?'} (largest bbox × 1.05)
   blankWidthMm=${bbDimsSorted ? (bbDimsSorted[1] * 1.05).toFixed(0) : '?'} (second-largest × 1.05)
-  dieCostGBP: progressive→80000 if >3 ops; single-stage→15000; laser+brake→3000 (fab only)
+  dieCostGBP=${tc ? tc.progressiveDieCostGBP.toFixed(0) : 'progressive→80000/single→15000/laser+brake→3000'} (OCCT — use verbatim)
   dieLife: progressive→1000000; single-stage→300000; laser+brake→999999
   numOps: 2 for simple bracket, 3–5 for formed, 6–8 for complex progressive
 
@@ -252,7 +284,7 @@ INJECTION_MOULDING — always populate "injectionMoulding" sub-object:
   wallThicknessMm=${wallMean ? wallMean.toFixed(1) : '2.5'} (use OCCT mean wall)
   projectedAreaCm2=${bb ? ((bb.xMm * bb.yMm) / 100).toFixed(1) : '?'} (bbox X×Y÷100)
   cavities: >50g→1; 10–50g→2; <10g→4–8
-  mouldCostGBP: 1-cav small→20000 / medium→50000 / large→100000; ×1.5 per extra cavity
+  mouldCostGBP=${tc ? tc.imMouldCostGBP.toFixed(0) : '1-cav small→20000/medium→50000/large→100000'} (OCCT — use verbatim)
   mouldLife=1000000, runnerWeightKg=netWeightKg×0.15 (cold runner) or 0 (hot runner)`
     : `GUIDELINES:
 - estimatedVolumeCm3: bbox_cm3 × fill_factor (machined: 0.35–0.55, cast: 0.5–0.7, sheet metal: 0.1–0.25)

@@ -67,6 +67,24 @@ export interface OCCTGeometry {
     freeFormFaceCount: number;
   };
   error?: string;
+  toolingCostEstimates?: {
+    hpdcDieCostGBP: number;
+    gravityMouldCostGBP: number;
+    sandPatternCostGBP: number;
+    imMouldCostGBP: number;
+    forgeDieCostGBP: number;
+    progressiveDieCostGBP: number;
+  };
+  manufacturabilityScore?: number;
+  processSpecificEstimates?: {
+    sandCycleTimeHr: number;
+    sandCycleTimeHrFerrous: number;
+    forgeStrokes: number;
+    investWaxCostGBP: number;
+    investShellCostGBP: number;
+  };
+  assemblyWarning?: string | null;
+  unitWarning?: string | null;
 }
 
 export async function analyzeGeometry(

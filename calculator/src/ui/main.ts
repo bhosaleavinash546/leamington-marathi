@@ -2488,11 +2488,20 @@ function buildOCCTPanel(geo: OCCTGeometry | null, source: string): string {
     return `<span><span class="occt-legend-dot" style="background:${colour}"></span>${k} ${v}</span>`;
   }).join('');
 
+  const mfgScore = geo.manufacturabilityScore;
+  const mfgScoreClass = mfgScore === undefined ? '' : mfgScore >= 75 ? 'score-high' : mfgScore >= 50 ? 'score-med' : 'score-low';
+  const warningBanners = [
+    geo.assemblyWarning ? `<div class="occt-warning occt-warning--red">⚠ Assembly detected: ${geo.assemblyWarning} — costs shown per component</div>` : '',
+    geo.unitWarning    ? `<div class="occt-warning occt-warning--orange">⚠ ${geo.unitWarning}</div>` : '',
+  ].join('');
+
   return `
     <div class="occt-panel">
+      ${warningBanners}
       <div class="occt-panel-header">
         Geometry — Open CASCADE Kernel
         <span class="occt-source-badge ${source === 'occt' ? 'occt' : 'text'}">Precise</span>
+        ${mfgScore !== undefined ? `<span class="occt-mfg-score ${mfgScoreClass}" title="Geometry-derived manufacturability score">MFG ${mfgScore}/100</span>` : ''}
       </div>
       <div class="occt-stat-grid">
         <div class="occt-stat">
@@ -2633,6 +2642,8 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
         setMaterial(el<HTMLSelectElement>('cast-mat'), c.materialId);
         setNumericField('cast-part-wt', c.netWeightKg, 3);
         const cast = c.casting;
+        const occtTC = cadOCCTGeometry?.toolingCostEstimates;
+        const occtPS = cadOCCTGeometry?.processSpecificEstimates;
         if (cast) {
           const subtypeEl = el<HTMLSelectElement>('cast-subtype');
           if (subtypeEl) {
@@ -2644,15 +2655,15 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
           if (cast.subtype === 'hpdc') {
             setNumericField('cast-hpdc-ct', cast.cycleTimeHpdcSec, 0);
             setNumericField('cast-hpdc-cav', cast.cavities, 0);
-            setNumericField('cast-hpdc-die-cost', cast.dieMouldCostGBP, 0);
+            setNumericField('cast-hpdc-die-cost', occtTC?.hpdcDieCostGBP ?? cast.dieMouldCostGBP, 0);
             setNumericField('cast-hpdc-die-life', cast.dieMouldLife, 0);
           } else if (cast.subtype === 'sand') {
-            setNumericField('cast-sand-ct', cast.cycleTimeSandGravHr, 4);
-            setNumericField('cast-sand-pat-cost', cast.dieMouldCostGBP, 0);
+            setNumericField('cast-sand-ct', occtPS?.sandCycleTimeHr ?? cast.cycleTimeSandGravHr, 4);
+            setNumericField('cast-sand-pat-cost', occtTC?.sandPatternCostGBP ?? cast.dieMouldCostGBP, 0);
             setNumericField('cast-sand-pat-life', cast.dieMouldLife, 0);
           } else if (cast.subtype === 'gravity') {
             setNumericField('cast-grav-ct', cast.cycleTimeSandGravHr, 4);
-            setNumericField('cast-grav-mould-cost', cast.dieMouldCostGBP, 0);
+            setNumericField('cast-grav-mould-cost', occtTC?.gravityMouldCostGBP ?? cast.dieMouldCostGBP, 0);
             setNumericField('cast-grav-mould-life', cast.dieMouldLife, 0);
           } else if (cast.subtype === 'investment') {
             setNumericField('cast-inv-ct', cast.cycleTimeSandGravHr, 4);
@@ -2667,6 +2678,8 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
         setNumericField('cam-finish-wt', c.netWeightKg, 3);
         // Casting section
         const castCAM = c.casting;
+        const camTC = cadOCCTGeometry?.toolingCostEstimates;
+        const camPS = cadOCCTGeometry?.processSpecificEstimates;
         if (castCAM) {
           const camSubEl = el<HTMLSelectElement>('cam-cast-subtype');
           if (camSubEl) {
@@ -2678,15 +2691,15 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
           if (castCAM.subtype === 'hpdc') {
             setNumericField('cam-hpdc-ct', castCAM.cycleTimeHpdcSec, 0);
             setNumericField('cam-hpdc-cav', castCAM.cavities, 0);
-            setNumericField('cam-hpdc-die-cost', castCAM.dieMouldCostGBP, 0);
+            setNumericField('cam-hpdc-die-cost', camTC?.hpdcDieCostGBP ?? castCAM.dieMouldCostGBP, 0);
             setNumericField('cam-hpdc-die-life', castCAM.dieMouldLife, 0);
           } else if (castCAM.subtype === 'sand') {
-            setNumericField('cam-sand-ct', castCAM.cycleTimeSandGravHr, 4);
-            setNumericField('cam-sand-pat-cost', castCAM.dieMouldCostGBP, 0);
+            setNumericField('cam-sand-ct', camPS?.sandCycleTimeHr ?? castCAM.cycleTimeSandGravHr, 4);
+            setNumericField('cam-sand-pat-cost', camTC?.sandPatternCostGBP ?? castCAM.dieMouldCostGBP, 0);
             setNumericField('cam-sand-pat-life', castCAM.dieMouldLife, 0);
           } else if (castCAM.subtype === 'gravity') {
             setNumericField('cam-grav-ct', castCAM.cycleTimeSandGravHr, 4);
-            setNumericField('cam-grav-mould-cost', castCAM.dieMouldCostGBP, 0);
+            setNumericField('cam-grav-mould-cost', camTC?.gravityMouldCostGBP ?? castCAM.dieMouldCostGBP, 0);
             setNumericField('cam-grav-mould-life', castCAM.dieMouldLife, 0);
           } else if (castCAM.subtype === 'investment') {
             setNumericField('cam-inv-ct', castCAM.cycleTimeSandGravHr, 4);
@@ -2724,17 +2737,23 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
         setMaterial(el<HTMLSelectElement>('forge-mat'), c.materialId);
         setNumericField('forge-part-wt', c.netWeightKg, 3);
         const forging = c.forging;
+        const forgeTC = cadOCCTGeometry?.toolingCostEstimates;
+        const forgePS = cadOCCTGeometry?.processSpecificEstimates;
         if (forging) {
           setNumericField('forge-flash', forging.flashKg, 3);
           setNumericField('forge-yield', forging.yieldFraction, 2);
-          setNumericField('forge-strokes', forging.strokes, 0);
+          // Prefer OCCT geometry-derived stroke count over AI guess
+          setNumericField('forge-strokes', forgePS?.forgeStrokes ?? forging.strokes, 0);
           setNumericField('forge-time-per-blow', forging.timePerBlowSec, 0);
-          setNumericField('forge-die-cost', forging.dieCostGBP, 0);
+          // Prefer OCCT parametric die cost over AI bracket estimate
+          setNumericField('forge-die-cost', forgeTC?.forgeDieCostGBP ?? forging.dieCostGBP, 0);
           setNumericField('forge-die-life', forging.dieLife, 0);
         } else {
           // Fallback geometry-derived estimates
           setNumericField('forge-flash', c.netWeightKg * 0.1, 3);
           setNumericField('forge-yield', 0.9, 2);
+          if (forgePS) setNumericField('forge-strokes', forgePS.forgeStrokes, 0);
+          if (forgeTC) setNumericField('forge-die-cost', forgeTC.forgeDieCostGBP, 0);
         }
         // Material-specific heating energy (kWh/kg)
         const forgeHeatMap: Record<string, number> = {
@@ -2772,6 +2791,7 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
         };
         setNumericField('sm-shear', smShearMap[c.materialId] ?? 280, 0);
         const sm = c.sheetMetal;
+        const smTC = cadOCCTGeometry?.toolingCostEstimates;
         if (sm) {
           if (!smBB) {
             setNumericField('sm-blank-l', sm.blankLengthMm, 0);
@@ -2783,9 +2803,12 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
             setNumericField('sm-strip-w', smBlankW * 1.06, 0);
             setNumericField('sm-pitch', smBlankL * 1.04, 0);
           }
-          setNumericField('sm-die-cost', sm.dieCostGBP, 0);
+          // Prefer OCCT parametric progressive die cost over AI bracket estimate
+          setNumericField('sm-die-cost', smTC?.progressiveDieCostGBP ?? sm.dieCostGBP, 0);
           setNumericField('sm-die-life', sm.dieLife, 0);
           setNumericField('sm-num-ops', sm.numOps, 0);
+        } else if (smTC) {
+          setNumericField('sm-die-cost', smTC.progressiveDieCostGBP, 0);
         }
         break;
       }
@@ -2835,13 +2858,17 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
           setNumericField('imm-wall', immWall, 1);
         }
         const im = c.injectionMoulding;
+        const immTC = cadOCCTGeometry?.toolingCostEstimates;
         if (im) {
           setNumericField('imm-cav', im.cavities, 0);
           if (!immBB) setNumericField('imm-area', im.projectedAreaCm2, 1);
           if (!immWall) setNumericField('imm-wall', im.wallThicknessMm, 1);
-          setNumericField('imm-mould-cost', im.mouldCostGBP, 0);
+          // Prefer OCCT parametric mould cost over AI bracket estimate
+          setNumericField('imm-mould-cost', immTC?.imMouldCostGBP ?? im.mouldCostGBP, 0);
           setNumericField('imm-mould-life', im.mouldLife, 0);
           setNumericField('imm-runner-wt', im.runnerWeightKg, 4);
+        } else if (immTC) {
+          setNumericField('imm-mould-cost', immTC.imMouldCostGBP, 0);
         }
         // Material-specific cooling factor and cavity pressure (key cycle time drivers)
         const immCoolMap: Record<string, number> = {
