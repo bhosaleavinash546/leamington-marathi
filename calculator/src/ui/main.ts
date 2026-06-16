@@ -1291,7 +1291,7 @@ function _fillAgentParams(commodity: CommodityType, params: Record<string, unkno
 let _libSig = '';
 
 function _currentLibSig(): string {
-  return `${library.materials.length}:${library.machines.length}:${library.labour.length}`;
+  return `${library.version}:${library.materials.length}:${library.machines.length}:${library.labour.length}`;
 }
 
 function _setSelectOpts(sel: HTMLSelectElement, html: string, sig: string): void {
@@ -8644,6 +8644,8 @@ async function init(): Promise<void> {
         infoEl.textContent = `${rd.name} · ${sym} ${cur} · Mat ${sign(matDelta)}${matDelta.toFixed(0)}% · Labour ${sign(labDelta)}${labDelta.toFixed(0)}%`;
       }
     }
+    // Refresh select option labels to reflect new regional rates
+    populateSelects();
     // Auto-recalculate if results exist
     if (lastResult && lastInput) el('calc-btn')?.click();
   };
