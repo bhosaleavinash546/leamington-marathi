@@ -90,6 +90,7 @@
     </select>
     <!-- Home button -->
     <button class="nav-action-btn home-btn" id="home-btn" aria-label="Go to dashboard">⌂ Home</button>
+    <button class="nav-action-btn new-costing-btn" id="new-costing-btn" aria-label="Start new should-costing">⊕ New Costing</button>
     <!-- Demo Gallery button -->
     <button class="nav-action-btn demo-btn" id="demo-btn" aria-label="Open demo gallery" title="Load luxury SUV demo examples for any commodity">🚗 Demos</button>
     <!-- Help button -->
@@ -346,6 +347,100 @@
 
 </section>
 
+<!-- ── Commodity Picker ─────────────────────────────────────────────────────── -->
+<section id="commodity-picker-view" style="display:none">
+  <div class="cpicker-header">
+    <button class="cpicker-back-btn" id="cpicker-back-btn" aria-label="Back to dashboard">← Dashboard</button>
+    <div class="cpicker-title-wrap">
+      <h1 class="cpicker-title">Start New Should Costing</h1>
+      <p class="cpicker-sub">Select a manufacturing commodity to begin your cost analysis</p>
+    </div>
+  </div>
+  <div class="cpicker-section-label">Manufacturing Commodities</div>
+  <div class="cpicker-grid">
+    <button class="cpicker-tile" data-commodity="injection_moulding">
+      <div class="cpicker-tile-icon">🧪</div>
+      <div class="cpicker-tile-label">Plastics</div>
+      <div class="cpicker-tile-sub">Injection · Blow · Thermo</div>
+    </button>
+    <button class="cpicker-tile" data-commodity="sheet_metal_fab">
+      <div class="cpicker-tile-icon">✂️</div>
+      <div class="cpicker-tile-label">Sheet Metal</div>
+      <div class="cpicker-tile-sub">Stamp · Laser · Fold</div>
+    </button>
+    <button class="cpicker-tile" data-commodity="casting">
+      <div class="cpicker-tile-icon">🔥</div>
+      <div class="cpicker-tile-label">Castings</div>
+      <div class="cpicker-tile-sub">HPDC · Sand · Investment</div>
+    </button>
+    <button class="cpicker-tile" data-commodity="machining">
+      <div class="cpicker-tile-icon">⚙️</div>
+      <div class="cpicker-tile-label">Machining</div>
+      <div class="cpicker-tile-sub">CNC · Turning · Grinding</div>
+    </button>
+    <button class="cpicker-tile" data-commodity="forging">
+      <div class="cpicker-tile-icon">🔨</div>
+      <div class="cpicker-tile-label">Forgings</div>
+      <div class="cpicker-tile-sub">Open · Closed · Near-Net</div>
+    </button>
+    <button class="cpicker-tile" data-commodity="rubber">
+      <div class="cpicker-tile-icon">🔶</div>
+      <div class="cpicker-tile-label">Rubber</div>
+      <div class="cpicker-tile-sub">Compression · Transfer · LSR</div>
+    </button>
+    <button class="cpicker-tile" data-commodity="composites">
+      <div class="cpicker-tile-icon">🧵</div>
+      <div class="cpicker-tile-label">Composites</div>
+      <div class="cpicker-tile-sub">CFRP · GFRP · Prepreg · RTM</div>
+    </button>
+    <button class="cpicker-tile cpicker-tile--primary" data-commodity="pcb_fab">
+      <div class="cpicker-tile-icon">🖥️</div>
+      <div class="cpicker-tile-label">PCB</div>
+      <div class="cpicker-tile-sub">FR4 · HDI · RF · Rigid-Flex</div>
+    </button>
+    <button class="cpicker-tile cpicker-tile--primary" data-commodity="pcba">
+      <div class="cpicker-tile-icon">🔌</div>
+      <div class="cpicker-tile-label">PCBA</div>
+      <div class="cpicker-tile-sub">SMT · Through-Hole · BGA</div>
+    </button>
+    <button class="cpicker-tile" data-commodity="wiring_harness">
+      <div class="cpicker-tile-icon">🔋</div>
+      <div class="cpicker-tile-label">Wiring Harness</div>
+      <div class="cpicker-tile-sub">Wire · Connectors · Crimping</div>
+    </button>
+    <button class="cpicker-tile" data-commodity="cast_and_machine">
+      <div class="cpicker-tile-icon">🏭</div>
+      <div class="cpicker-tile-label">Cast + Machine</div>
+      <div class="cpicker-tile-sub">HPDC + CNC Post-ops</div>
+    </button>
+    <button class="cpicker-tile" data-commodity="assembly">
+      <div class="cpicker-tile-icon">🔧</div>
+      <div class="cpicker-tile-label">Assemblies</div>
+      <div class="cpicker-tile-sub">BOM Rollup · Sub-Assembly</div>
+    </button>
+  </div>
+  <div class="cpicker-section-label" style="margin-top:8px">AI-Powered</div>
+  <div class="cpicker-ai-row">
+    <button class="cpicker-tile cpicker-tile--ai" data-commodity="ai_agent">
+      <div class="cpicker-tile-icon">✦</div>
+      <div class="cpicker-tile-label">AI Agent</div>
+      <div class="cpicker-tile-sub">Natural language costing</div>
+    </button>
+    <button class="cpicker-tile cpicker-tile--ai" data-commodity="cad_analysis">
+      <div class="cpicker-tile-icon">📐</div>
+      <div class="cpicker-tile-label">CAD-to-Cost</div>
+      <div class="cpicker-tile-sub">Upload STEP / STL / photo</div>
+    </button>
+    <button class="cpicker-tile cpicker-tile--ai" data-commodity="pcb_fab">
+      <div class="cpicker-tile-icon">🔬</div>
+      <div class="cpicker-tile-label">PCB Image-to-BOM</div>
+      <div class="cpicker-tile-sub">AI-extract BOM from photo</div>
+    </button>
+  </div>
+</section>
+
+<div id="picker-backdrop" class="picker-backdrop" style="display:none"></div>
+
 <!-- ── Floating AI Chat ──────────────────────────────────────────────────────── -->
 <button id="ai-chat-fab" class="ai-chat-fab" aria-label="Open AI assistant" aria-expanded="false" title="Ask the AI cost assistant">
   <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
@@ -362,10 +457,16 @@
   </div>
 </div>
 
-<div id="validation-errors"   class="validation-box error"   style="display:none;margin:6px 16px 0"></div>
-<div id="validation-warnings" class="validation-box warning" style="display:none;margin:4px 16px 0"></div>
-
 <div class="layout" id="costing-view" style="display:none">
+
+  <!-- Panel close header (only shown in right-panel mode) -->
+  <div class="wf-panel-header" id="wf-panel-header" style="display:none">
+    <div class="wf-panel-commodity">
+      <span class="wf-panel-commodity-icon" id="wf-panel-icon">⚙️</span>
+      <span class="wf-panel-commodity-name" id="wf-panel-name">Machining</span>
+    </div>
+    <button class="wf-panel-close" id="wf-panel-close" aria-label="Close workflow panel">✕ Close</button>
+  </div>
 
   <!-- ── Input Panel ──────────────────────────────────────────────────── -->
   <div class="input-panel">
@@ -446,6 +547,9 @@
         </div>
       </div>
     </div>
+
+    <div id="validation-errors"   class="validation-box error"   style="display:none"></div>
+    <div id="validation-warnings" class="validation-box warning" style="display:none"></div>
 
     <!-- Action buttons -->
     <div class="btn-row">

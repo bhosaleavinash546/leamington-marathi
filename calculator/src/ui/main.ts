@@ -134,6 +134,24 @@ let _compareSelected: Set<string> = new Set();
 let _chatMessages: { role: 'user' | 'ai'; text: string }[] = [];
 let _chatOpen = false;
 
+const CPICKER_META: Record<string, { icon: string; name: string }> = {
+  injection_moulding: { icon: '🧪', name: 'Plastics' },
+  sheet_metal_fab:    { icon: '✂️', name: 'Sheet Metal Fab' },
+  sheet_metal:        { icon: '🔩', name: 'Sheet Metal' },
+  casting:            { icon: '🔥', name: 'Castings' },
+  machining:          { icon: '⚙️', name: 'Machining' },
+  forging:            { icon: '🔨', name: 'Forgings' },
+  rubber:             { icon: '🔶', name: 'Rubber' },
+  composites:         { icon: '🧵', name: 'Composites' },
+  pcb_fab:            { icon: '🖥️', name: 'PCB Fabrication' },
+  pcba:               { icon: '🔌', name: 'PCBA Assembly' },
+  wiring_harness:     { icon: '🔋', name: 'Wiring Harness' },
+  cast_and_machine:   { icon: '🏭', name: 'Cast + Machine' },
+  assembly:           { icon: '🔧', name: 'Assemblies' },
+  ai_agent:           { icon: '✦',  name: 'AI Agent' },
+  cad_analysis:       { icon: '📐', name: 'CAD-to-Cost' },
+};
+
 function getCostingHistory(): CostingRecord[] {
   try { return JSON.parse(localStorage.getItem('cv-history') ?? '[]'); } catch { return []; }
 }
@@ -181,11 +199,19 @@ function filterHistory(records: CostingRecord[]): CostingRecord[] {
 
 function showHome(): void {
   const homeEl = document.getElementById('home-view');
+  const pickerEl = document.getElementById('commodity-picker-view');
   const costingEl = document.getElementById('costing-view');
+  const backdrop = document.getElementById('picker-backdrop');
   const errEl = document.getElementById('validation-errors');
   const warnEl = document.getElementById('validation-warnings');
   if (homeEl) homeEl.style.display = '';
-  if (costingEl) costingEl.style.display = 'none';
+  if (pickerEl) pickerEl.style.display = 'none';
+  if (backdrop) { backdrop.classList.remove('visible'); backdrop.style.display = 'none'; }
+  if (costingEl) {
+    costingEl.classList.remove('wf-panel', 'wf-panel--open');
+    costingEl.style.display = 'none';
+  }
+  document.getElementById('wf-panel-header')?.style?.setProperty('display','none');
   if (errEl) errEl.style.display = 'none';
   if (warnEl) warnEl.style.display = 'none';
   renderDashboard();
@@ -193,10 +219,81 @@ function showHome(): void {
 
 function showCosting(commodity?: string): void {
   const homeEl = document.getElementById('home-view');
+  const pickerEl = document.getElementById('commodity-picker-view');
   const costingEl = document.getElementById('costing-view');
+  const backdrop = document.getElementById('picker-backdrop');
   if (homeEl) homeEl.style.display = 'none';
-  if (costingEl) costingEl.style.display = '';
+  if (pickerEl) pickerEl.style.display = 'none';
+  if (backdrop) { backdrop.classList.remove('visible'); backdrop.style.display = 'none'; }
+  if (costingEl) {
+    costingEl.classList.remove('wf-panel', 'wf-panel--open');
+    costingEl.style.display = '';
+  }
+  document.getElementById('wf-panel-header')?.style?.setProperty('display','none');
   if (commodity) switchCommodity(commodity as CommodityType);
+}
+
+function showCommodityPicker(): void {
+  const homeEl = document.getElementById('home-view');
+  const pickerEl = document.getElementById('commodity-picker-view');
+  const costingEl = document.getElementById('costing-view');
+  const backdrop = document.getElementById('picker-backdrop');
+  const errEl = document.getElementById('validation-errors');
+  const warnEl = document.getElementById('validation-warnings');
+  if (homeEl) homeEl.style.display = 'none';
+  if (pickerEl) pickerEl.style.display = '';
+  if (costingEl) {
+    costingEl.classList.remove('wf-panel', 'wf-panel--open');
+    costingEl.style.display = 'none';
+  }
+  if (backdrop) { backdrop.classList.remove('visible'); backdrop.style.display = 'none'; }
+  document.getElementById('wf-panel-header')?.style?.setProperty('display','none');
+  if (errEl) errEl.style.display = 'none';
+  if (warnEl) warnEl.style.display = 'none';
+}
+
+function showWorkflowPanel(commodity: string): void {
+  const costingEl = document.getElementById('costing-view');
+  const backdrop = document.getElementById('picker-backdrop');
+  const headerEl = document.getElementById('wf-panel-header');
+  const iconEl = document.getElementById('wf-panel-icon');
+  const nameEl = document.getElementById('wf-panel-name');
+  const errEl = document.getElementById('validation-errors');
+  const warnEl = document.getElementById('validation-warnings');
+  if (errEl) errEl.style.display = 'none';
+  if (warnEl) warnEl.style.display = 'none';
+
+  const meta = CPICKER_META[commodity] ?? { icon: '⚙️', name: commodity };
+  if (iconEl) iconEl.textContent = meta.icon;
+  if (nameEl) nameEl.textContent = meta.name;
+
+  if (costingEl) {
+    costingEl.style.display = '';
+    costingEl.classList.add('wf-panel');
+  }
+  if (headerEl) headerEl.style.display = '';
+  if (backdrop) {
+    backdrop.style.display = '';
+    requestAnimationFrame(() => backdrop.classList.add('visible'));
+  }
+  requestAnimationFrame(() =>
+    requestAnimationFrame(() => costingEl?.classList.add('wf-panel--open'))
+  );
+  switchCommodity(commodity as CommodityType);
+}
+
+function closeWorkflowPanel(): void {
+  const costingEl = document.getElementById('costing-view');
+  const backdrop = document.getElementById('picker-backdrop');
+  const headerEl = document.getElementById('wf-panel-header');
+  costingEl?.classList.remove('wf-panel--open');
+  backdrop?.classList.remove('visible');
+  setTimeout(() => {
+    costingEl?.classList.remove('wf-panel');
+    if (costingEl) costingEl.style.display = 'none';
+    if (backdrop) backdrop.style.display = 'none';
+    if (headerEl) headerEl.style.display = 'none';
+  }, 280);
 }
 
 // ─── Dashboard render ─────────────────────────────────────────────────────────
@@ -7463,6 +7560,32 @@ async function init(): Promise<void> {
   // Home navigation
   document.getElementById('home-btn')?.addEventListener('click', showHome);
   document.getElementById('logo-home-btn')?.addEventListener('click', showHome);
+
+  // New Costing button → commodity picker
+  document.getElementById('new-costing-btn')?.addEventListener('click', showCommodityPicker);
+
+  // Commodity picker — back button
+  document.getElementById('cpicker-back-btn')?.addEventListener('click', showHome);
+
+  // Commodity picker — tile clicks → workflow panel
+  document.querySelectorAll('#commodity-picker-view .cpicker-tile[data-commodity]').forEach(tile => {
+    tile.addEventListener('click', () => {
+      showWorkflowPanel((tile as HTMLElement).dataset.commodity ?? 'machining');
+    });
+  });
+
+  // Picker backdrop click → close panel
+  document.getElementById('picker-backdrop')?.addEventListener('click', closeWorkflowPanel);
+
+  // Panel header close button
+  document.getElementById('wf-panel-close')?.addEventListener('click', closeWorkflowPanel);
+
+  // Escape key closes panel when open
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && document.getElementById('costing-view')?.classList.contains('wf-panel')) {
+      closeWorkflowPanel();
+    }
+  });
 
   // Dashboard filter chips
   function initFilterChips(groupId: string, key: keyof typeof _dashFilters): void {
