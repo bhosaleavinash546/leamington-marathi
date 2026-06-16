@@ -1669,29 +1669,101 @@ function renderInjectionForm(): string {
 
 // ─── Form: Blow Moulding ──────────────────────────────────────────────────────
 
+const _BM_PROCESS_DEFS: Record<string, {
+  desc: string; parisonTime: number; blowTime: number; openClose: number;
+  coolFactor: number; cavities: number; oee: number; manning: number;
+  reject: number; mouldCost: number; mouldLife: number;
+  machId: string; flashFraction: number; showParison: boolean;
+}> = {
+  ebm_2head:  { desc: '2-Head continuous EBM for HDPE/LDPE/PP bottles &amp; containers 1–5L. High output, low tooling cost, standard dairy/detergent packaging.', parisonTime: 6,  blowTime: 5,  openClose: 5,  coolFactor: 3.50, cavities: 2, oee: 0.80, manning: 1.0, reject: 0.025, mouldCost: 8000,  mouldLife: 1000000, machId: 'blow-ebm-2head',  flashFraction: 0.10, showParison: true  },
+  ebm_coex3:  { desc: '3-Layer Co-Ex EBM — HDPE/regrind/HDPE or barrier layering for fuel tanks, automotive ducts and barrier packaging. Higher capital &amp; manning.', parisonTime: 8,  blowTime: 6,  openClose: 6,  coolFactor: 3.50, cavities: 2, oee: 0.78, manning: 1.5, reject: 0.030, mouldCost: 15000, mouldLife: 750000,  machId: 'blow-ebm-coex3', flashFraction: 0.12, showParison: true  },
+  ebm_coex5:  { desc: '5-Layer Co-Ex EBM — HDPE/tie/EVOH/tie/HDPE high-barrier structure for automotive fuel systems and food packaging. Complex, high capital, specialist skill.', parisonTime: 10, blowTime: 8,  openClose: 6,  coolFactor: 3.50, cavities: 1, oee: 0.75, manning: 2.0, reject: 0.035, mouldCost: 22000, mouldLife: 600000,  machId: 'blow-ebm-coex5', flashFraction: 0.12, showParison: true  },
+  ebm_large:  { desc: 'Large accumulator-head EBM for drums, IBCs and automotive fuel tanks (20–200L). Long parison extrusion, single cavity, high-tonnage clamp.', parisonTime: 20, blowTime: 15, openClose: 10, coolFactor: 3.50, cavities: 1, oee: 0.75, manning: 1.5, reject: 0.030, mouldCost: 18000, mouldLife: 500000,  machId: 'blow-ebm-large', flashFraction: 0.08, showParison: true  },
+  ibm_rotary: { desc: 'IBM Rotary — 3/4-station indexing, no flash, ±0.05mm accuracy. Pharma vials, cosmetics jars, eye-drop bottles. Very high throughput, multi-cavity.', parisonTime: 2,  blowTime: 3,  openClose: 2,  coolFactor: 1.50, cavities: 4, oee: 0.88, manning: 0.5, reject: 0.012, mouldCost: 25000, mouldLife: 2000000, machId: 'blow-ibm-rotary', flashFraction: 0.01, showParison: false },
+  ibm_linear: { desc: 'IBM Linear indexing — wide-mouth jars, pharmaceutical bottles, narrow-neck containers. No flash. PP/PE. Lower speed than rotary.', parisonTime: 2,  blowTime: 4,  openClose: 3,  coolFactor: 1.50, cavities: 2, oee: 0.83, manning: 0.5, reject: 0.015, mouldCost: 20000, mouldLife: 1500000, machId: 'blow-ibm-linear', flashFraction: 0.01, showParison: false },
+  sbm_1stage: { desc: 'Single-Stage SBM — preform injection + stretch-blow in one machine. Excellent clarity for PET/PP jars, cosmetics, condiment bottles. Flexible but slower than 2-stage.', parisonTime: 15, blowTime: 4,  openClose: 4,  coolFactor: 2.80, cavities: 1, oee: 0.80, manning: 1.0, reject: 0.020, mouldCost: 12000, mouldLife: 1000000, machId: 'blow-sbm-1stage', flashFraction: 0.03, showParison: false },
+  sbm_2stage: { desc: 'Two-Stage Reheat SBM — preforms made separately, reheated and blown at 20k–80k bph. Dominant for PET water/CSD/juice bottles. Very low per-part cost at high volume.', parisonTime: 4,  blowTime: 2,  openClose: 2,  coolFactor: 2.80, cavities: 4, oee: 0.87, manning: 0.5, reject: 0.015, mouldCost: 18000, mouldLife: 2000000, machId: 'blow-sbm-2stage', flashFraction: 0.02, showParison: false },
+};
+
+function wireBlowMouldingProcessChange(): void {
+  const procSel = document.getElementById('bm-process') as HTMLSelectElement | null;
+  if (!procSel) return;
+  const update = () => {
+    const proc = procSel.value;
+    const def = _BM_PROCESS_DEFS[proc];
+    if (!def) return;
+    const band = document.getElementById('bm-process-info');
+    const label = procSel.options[procSel.selectedIndex]?.text ?? proc;
+    if (band) band.innerHTML = `<strong style="color:var(--accent)">${escHtml(label)}</strong> — ${def.desc}`;
+    const parisonSec = document.getElementById('bm-parison-section');
+    if (parisonSec) parisonSec.style.display = def.showParison ? '' : 'none';
+    const setV = (id: string, v: number) => { const e = document.getElementById(id) as HTMLInputElement | null; if (e) e.value = String(v); };
+    setV('bm-parison-t', def.parisonTime);
+    setV('bm-blow-t', def.blowTime);
+    setV('bm-open-close', def.openClose);
+    setV('bm-cool-f', def.coolFactor);
+    setV('bm-cav', def.cavities);
+    setV('bm-oee', def.oee);
+    setV('bm-manning', def.manning);
+    setV('bm-reject', def.reject);
+    setV('bm-mould-cost', def.mouldCost);
+    setV('bm-mould-life', def.mouldLife);
+    const partWt = parseFloat((document.getElementById('bm-part-wt') as HTMLInputElement)?.value ?? '0') || 0.050;
+    setV('bm-flash-wt', parseFloat((partWt * def.flashFraction).toFixed(4)));
+    const machEl = document.getElementById('bm-mach') as HTMLSelectElement | null;
+    if (machEl) { const opt = Array.from(machEl.options).find(o => o.value === def.machId); if (opt) machEl.value = def.machId; }
+  };
+  procSel.addEventListener('change', update);
+  update();
+}
+
 function renderBlowMouldingForm(): string {
   return `
-    <div class="section-title">Material &amp; Part</div>
+    <div class="section-title">Process</div>
+    <div class="field-row">
+      <div class="field-group" style="flex:2"><label>Process Type</label>
+        <select id="bm-process">
+          <option value="ebm_2head" selected>EBM — 2-Head (Bottles 1–5L)</option>
+          <option value="ebm_coex3">EBM — 3-Layer Co-Ex (Barrier packaging)</option>
+          <option value="ebm_coex5">EBM — 5-Layer Co-Ex (High-barrier fuel/food)</option>
+          <option value="ebm_large">EBM — Large Accumulator (Tanks 20–200L)</option>
+          <option value="ibm_rotary">IBM — Rotary (Pharma/cosmetics, no flash)</option>
+          <option value="ibm_linear">IBM — Linear (Jars/pharma, medium volume)</option>
+          <option value="sbm_1stage">SBM — Single-Stage (PET/PP jars, clarity)</option>
+          <option value="sbm_2stage">SBM — Two-Stage Reheat (High-speed PET bottles)</option>
+        </select>
+      </div>
+    </div>
+    <div id="bm-process-info" class="process-info-band" style="margin:6px 0 8px;padding:6px 10px;background:var(--surface);border-left:3px solid var(--accent);border-radius:4px;font-size:0.82em;line-height:1.4"></div>
+    <div class="section-title" style="margin-top:8px">Material &amp; Part</div>
     <div class="field-row">
       <div class="field-group"><label>Material</label><select id="bm-mat" class="material-select"></select></div>
       <div class="field-group"><label>Part Weight (kg)</label><input type="number" id="bm-part-wt" step="0.001" min="0.001" value="0.05"/></div>
     </div>
     <div class="field-row" style="margin-top:6px">
-      <div class="field-group"><label>Flash Weight (kg) <span title="Pinch-off flash + neck trim scrap weight per part.">ℹ</span></label><input type="number" id="bm-flash-wt" step="0.001" min="0" value="0.005"/></div>
-      <div class="field-group"><label>Wall Thickness (mm)</label><input type="number" id="bm-wall" step="0.1" min="0.1" value="1.5"/></div>
-    </div>
-    <div class="section-title" style="margin-top:8px">Cycle Time</div>
-    <div class="field-row">
-      <div class="field-group"><label>Cool Factor (s/mm²) <span title="HDPE/LDPE ~3.5, PP ~3.16, PET ~3.0">ℹ</span></label><input type="number" id="bm-cool-f" step="0.1" min="0" value="3.5"/></div>
-      <div class="field-group"><label>Blow Time (s) <span title="Pressurisation + hold (3–8s for bottles)">ℹ</span></label><input type="number" id="bm-blow-t" step="0.5" min="0.5" value="5"/></div>
+      <div class="field-group"><label>Flash Weight (kg) <span title="Pinch-off flash + neck trim scrap weight per part. IBM has near-zero flash.">ℹ</span></label><input type="number" id="bm-flash-wt" step="0.001" min="0" value="0.005"/></div>
+      <div class="field-group"><label>Wall Thickness (mm) <span title="Average wall thickness — drives cooling time via coolFactor × t².">ℹ</span></label><input type="number" id="bm-wall" step="0.1" min="0.1" value="1.5"/></div>
     </div>
     <div class="field-row" style="margin-top:6px">
-      <div class="field-group"><label>Open/Close (s) <span title="Mould open / index / close time (4–8s)">ℹ</span></label><input type="number" id="bm-open-close" step="0.5" min="0.5" value="5"/></div>
+      <div class="field-group"><label>Reject Rate <span title="Fraction of parts scrapped (wall failure, leak, flash defect). Uplifts material and cycle cost. Typical EBM 2–3%, IBM &lt;1.5%.">ℹ</span></label><input type="number" id="bm-reject" step="0.005" min="0" max="0.5" value="0.025"/></div>
+    </div>
+    <div class="section-title" style="margin-top:8px">Cycle Time</div>
+    <div id="bm-parison-section">
+      <div class="field-row">
+        <div class="field-group"><label>Parison Extrusion (s) <span title="Time to extrude the parison before mould close. Typical 4–20s for EBM depending on part size.">ℹ</span></label><input type="number" id="bm-parison-t" step="0.5" min="0" value="6"/></div>
+      </div>
+    </div>
+    <div class="field-row" style="margin-top:6px">
+      <div class="field-group"><label>Cool Factor (s/mm²) <span title="Cooling constant. HDPE/LDPE ~3.5, PP ~3.16, PET ~2.8–3.0, IBM ~1.5 (water-cooled core rod).">ℹ</span></label><input type="number" id="bm-cool-f" step="0.1" min="0" value="3.5"/></div>
+      <div class="field-group"><label>Blow Time (s) <span title="Pressurisation + hold. EBM bottles 3–8s, large tanks 10–20s. IBM ~3s.">ℹ</span></label><input type="number" id="bm-blow-t" step="0.5" min="0.5" value="5"/></div>
+    </div>
+    <div class="field-row" style="margin-top:6px">
+      <div class="field-group"><label>Open/Close (s) <span title="Mould open / index / close time. EBM 4–8s, IBM rotary 2s, SBM 2–4s.">ℹ</span></label><input type="number" id="bm-open-close" step="0.5" min="0.5" value="5"/></div>
       <div class="field-group"><label>Cavities</label><input type="number" id="bm-cav" step="1" min="1" value="2"/></div>
     </div>
     <div class="section-title" style="margin-top:8px">Machine &amp; Labour</div>
     <div class="field-row">
-      <div class="field-group"><label>EBM Machine</label><select id="bm-mach" class="machine-select"></select></div>
+      <div class="field-group"><label>Blow Machine</label><select id="bm-mach" class="machine-select"></select></div>
       <div class="field-group"><label>Labour</label><select id="bm-lab" class="labour-select"></select></div>
     </div>
     <div class="field-row" style="margin-top:6px">
@@ -1703,19 +1775,19 @@ function renderBlowMouldingForm(): string {
     </div>
     <div class="section-title" style="margin-top:8px">Tooling</div>
     <div class="field-row">
-      <div class="field-group"><label>Mould Cost (£)</label><input type="number" id="bm-mould-cost" step="500" min="0" value="8000"/></div>
-      <div class="field-group"><label>Mould Life (cycles) <span title="Al blow moulds: 500k–2M cycles">ℹ</span></label><input type="number" id="bm-mould-life" step="50000" min="0" value="1000000"/></div>
+      <div class="field-group"><label>Mould Cost (£) <span title="Al blow mould: £5k–£25k. Steel (high cavities): higher. IBM mould: £20k–£40k.">ℹ</span></label><input type="number" id="bm-mould-cost" step="500" min="0" value="8000"/></div>
+      <div class="field-group"><label>Mould Life (cycles) <span title="Al blow moulds: 500k–2M cycles. IBM steel: up to 5M.">ℹ</span></label><input type="number" id="bm-mould-life" step="50000" min="0" value="1000000"/></div>
     </div>
     <div class="field-row" style="margin-top:6px">
       <div class="field-group"><label>Amort. Volume</label><input type="number" id="bm-amort" step="10000" min="1" value="500000"/></div>
     </div>
     <div class="section-title" style="margin-top:8px">Deflashing (optional)</div>
     <div class="field-row">
-      <div class="field-group"><label>Deflash Machine</label><select id="bm-deflash-mach" class="machine-select"><option value="">None</option></select></div>
+      <div class="field-group"><label>Deflash Machine <span title="Use 'Deflash Trim Robot / Station' for automated EBM flash removal. IBM/SBM typically need no deflash.">ℹ</span></label><select id="bm-deflash-mach" class="machine-select"><option value="">None</option></select></div>
       <div class="field-group"><label>Deflash Labour</label><select id="bm-deflash-lab" class="labour-select"><option value="">None</option></select></div>
     </div>
     <div class="field-row" style="margin-top:6px">
-      <div class="field-group"><label>Deflash Cycle (s, 0=none)</label><input type="number" id="bm-deflash-ct" step="1" min="0" value="0"/></div>
+      <div class="field-group"><label>Deflash Cycle (s, 0=none) <span title="Time per part for automated deflash. Typical 6–15s for EBM parts with pinch-off flash.">ℹ</span></label><input type="number" id="bm-deflash-ct" step="1" min="0" value="0"/></div>
     </div>`;
 }
 
@@ -4313,10 +4385,31 @@ function switchCommodity(type: CommodityType): void {
       area.innerHTML = renderBlowMouldingForm();
       populateSelects();
       setTimeout(() => {
-        const machEl = el<HTMLSelectElement>('bm-mach');
-        if (machEl) { const opt = Array.from(machEl.options).find(o => o.value.includes('blow-ebm-100l')); if (opt) machEl.value = opt.value; }
+        // Filter material select to blow-moulding-relevant materials only
         const matEl = el<HTMLSelectElement>('bm-mat');
-        if (matEl) { const opt = Array.from(matEl.options).find(o => o.value.includes('mat-hdpe')); if (opt) matEl.value = opt.value; }
+        if (matEl) {
+          const bmMatIds = new Set(['mat-hdpe', 'mat-ldpe', 'mat-pet-bg']);
+          const bmMats = library.materials.filter(m => m.category === 'Blow Moulding' || bmMatIds.has(m.id));
+          matEl.innerHTML = bmMats.map(m => `<option value="${escHtml(m.id)}">${escHtml(m.grade)} — £${m.pricePerKg.toFixed(2)}/kg</option>`).join('');
+          if (Array.from(matEl.options).some(o => o.value === 'mat-hdpe')) matEl.value = 'mat-hdpe';
+        }
+        // Filter machine select to blow-moulding machines only
+        const bmMachIds = new Set(['blow-ebm-100l','blow-ebm-500l','blow-ebm-2head','blow-ebm-coex3','blow-ebm-coex5','blow-ebm-large','blow-ibm-rotary','blow-ibm-linear','blow-sbm-1stage','blow-sbm-2stage','blow-deflash-trimmer']);
+        const machEl = el<HTMLSelectElement>('bm-mach');
+        if (machEl) {
+          const bmMachs = library.machines.filter(m => bmMachIds.has(m.id));
+          machEl.innerHTML = bmMachs.map(m => `<option value="${escHtml(m.id)}">${escHtml(m.machineClass)} — £${m.computedRatePerHr.toFixed(2)}/hr</option>`).join('');
+        }
+        // Deflash machine select — only the deflash trimmer
+        const deflashEl = el<HTMLSelectElement>('bm-deflash-mach');
+        if (deflashEl) {
+          const deflashMach = library.machines.find(m => m.id === 'blow-deflash-trimmer');
+          deflashEl.innerHTML = `<option value="">None</option>${deflashMach ? `<option value="${deflashMach.id}">${escHtml(deflashMach.machineClass)} — £${deflashMach.computedRatePerHr.toFixed(2)}/hr</option>` : ''}`;
+        }
+        // Labour default to semiskilled
+        const labEl = el<HTMLSelectElement>('bm-lab');
+        if (labEl) { const opt = Array.from(labEl.options).find(o => o.value === 'lab-uk-semiskilled'); if (opt) labEl.value = 'lab-uk-semiskilled'; }
+        wireBlowMouldingProcessChange();
       }, 0);
       break;
 
@@ -4869,6 +4962,8 @@ function collectBlowMouldingInput(): UniversalStackInput {
   const deflashCt = num('bm-deflash-ct');
   const deflashMach = sel('bm-deflash-mach') || undefined;
   const deflashLab = sel('bm-deflash-lab') || undefined;
+  const parisonT = num('bm-parison-t');
+  const rejectR = num('bm-reject');
   const drivers = computeBlowMouldingDrivers({
     materialId: sel('bm-mat'),
     partWeightKg: num('bm-part-wt'),
@@ -4889,6 +4984,8 @@ function collectBlowMouldingInput(): UniversalStackInput {
     deflashMachineId: deflashCt > 0 ? deflashMach : undefined,
     deflashLabourId: deflashCt > 0 ? deflashLab : undefined,
     deflashCycleTimeSec: deflashCt > 0 ? deflashCt : undefined,
+    parisonExtrusionTimeSec: parisonT > 0 ? parisonT : undefined,
+    rejectRate: rejectR > 0 ? rejectR : undefined,
   });
   return { ...getUniversalTail(), rawMaterial: drivers.rawMaterial, operations: drivers.operations, tooling: drivers.tooling };
 }
