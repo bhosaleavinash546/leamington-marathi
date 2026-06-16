@@ -5497,9 +5497,11 @@ function fetchAICommentary(result: PartCostResult): void {
     <span class="ai-commentary-loading">Analysing cost structure…</span>`;
   div.style.display = '';
 
-  const prompt = `Should-cost result for "${result.partName}" (${activeCommodity.replace(/_/g,' ')}):
-Total: ${fmt(result.total)}, Material ${pcts.rawMaterial.toFixed(0)}%, Process ${pcts.process.toFixed(0)}%, Labour ${pcts.labour.toFixed(0)}%, Tooling ${pcts.tooling.toFixed(0)}%, Overhead ${pcts.overhead.toFixed(0)}%.
-In exactly 2-3 sentences: identify the dominant cost driver, whether it is above or below benchmark for this commodity type at this volume, and the single highest-leverage action to reduce unit cost.`;
+  const commLabel = COMMODITY_LABELS[activeCommodity] ?? activeCommodity.replace(/_/g,' ');
+  const regionName = REGIONAL_DATA[_mfgRegion]?.name ?? _mfgRegion;
+  const prompt = `Should-cost result for "${result.partName}" (${commLabel}), manufactured in ${regionName}:
+Total: ${fmt(result.total)} (${_displayCurrency}), Material ${pcts.rawMaterial.toFixed(0)}%, Process ${pcts.process.toFixed(0)}%, Labour ${pcts.labour.toFixed(0)}%, Tooling ${pcts.tooling.toFixed(0)}%, Overhead ${pcts.overhead.toFixed(0)}%.
+In exactly 2-3 sentences: identify the dominant cost driver, whether it is above or below benchmark for this commodity type at this volume in ${regionName}, and the single highest-leverage action to reduce unit cost.`;
 
   fetch('/api/aichat', {
     method: 'POST',
@@ -8606,6 +8608,15 @@ async function init(): Promise<void> {
     if (logLabel) logLabel.textContent = `Logistics (${sym}/part)`;
     const tpSym = document.getElementById('target-price-sym');
     if (tpSym) tpSym.textContent = sym;
+    // Update smart filter cost-range labels (thresholds remain in GBP; labels show display-currency equivalent)
+    const costRangeEl = el<HTMLSelectElement>('filter-cost-range');
+    if (costRangeEl) {
+      const lo = _currFmt(10);
+      const hi = _currFmt(100);
+      if (costRangeEl.options[1]) costRangeEl.options[1].text = `Low (<${lo})`;
+      if (costRangeEl.options[2]) costRangeEl.options[2].text = `Medium (${lo}–${hi})`;
+      if (costRangeEl.options[3]) costRangeEl.options[3].text = `High (>${hi})`;
+    }
     if (lastResult && lastInput) {
       renderBreakdown(lastResult);
       const activePanel = document.querySelector<HTMLElement>('.rtab.active')?.dataset.panel;

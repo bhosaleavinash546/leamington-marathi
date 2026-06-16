@@ -509,7 +509,7 @@
 
     <!-- Country for Costing bar -->
     <div class="wf-country-bar" id="wf-country-bar" style="display:none">
-      <span class="wf-country-label">🌍 Country</span>
+      <label class="wf-country-label" for="costing-country-sel">🌍 Country</label>
       <select id="costing-country-sel" class="wf-country-sel">
         <option value="UK">🇬🇧 United Kingdom</option>
         <option value="DE">🇩🇪 Germany</option>
@@ -627,9 +627,9 @@
 </div>
 
 <!-- ── Rate Library Modal ────────────────────────────────────────────────── -->
-<div id="rate-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:100;align-items:flex-start;justify-content:center;overflow-y:auto;padding:40px 20px">
+<div id="rate-modal" role="dialog" aria-modal="true" aria-labelledby="rate-modal-title" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:100;align-items:flex-start;justify-content:center;overflow-y:auto;padding:40px 20px">
   <div class="modal-inner" style="max-width:1100px;width:100%;position:relative">
-    <h2 style="font-size:1rem;color:var(--accent);margin-bottom:16px">Rate Library — Edit &amp; Version</h2>
+    <h2 id="rate-modal-title" style="font-size:1rem;color:var(--accent);margin-bottom:16px">Rate Library — Edit &amp; Version</h2>
     <div id="rate-library-content"></div>
     <div class="btn-row" style="margin-top:16px">
       <button class="btn btn-primary" id="apply-rates-btn">Apply Changes</button>
@@ -640,9 +640,9 @@
 </div>
 
 <!-- ── Save Scenario Modal ───────────────────────────────────────────────── -->
-<div id="scenario-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:100;align-items:center;justify-content:center">
+<div id="scenario-modal" role="dialog" aria-modal="true" aria-labelledby="scenario-modal-title" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:100;align-items:center;justify-content:center">
   <div class="modal-inner" style="max-width:460px;width:100%">
-    <h2 style="font-size:1rem;color:var(--accent);margin-bottom:16px">Save Scenario</h2>
+    <h2 id="scenario-modal-title" style="font-size:1rem;color:var(--accent);margin-bottom:16px">Save Scenario</h2>
     <div class="field-group" style="margin-bottom:10px">
       <label>Scenario Name</label>
       <input type="text" id="sc-name" value="Baseline" />
@@ -659,9 +659,9 @@
 </div>
 
 <!-- ── Supplier Quote Modal ──────────────────────────────────────────────── -->
-<div id="quote-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:100;align-items:center;justify-content:center">
+<div id="quote-modal" role="dialog" aria-modal="true" aria-labelledby="quote-modal-title" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:100;align-items:center;justify-content:center">
   <div class="modal-inner" style="max-width:520px;width:100%">
-    <h2 style="font-size:1rem;color:var(--accent);margin-bottom:16px">Add Supplier Quote</h2>
+    <h2 id="quote-modal-title" style="font-size:1rem;color:var(--accent);margin-bottom:16px">Add Supplier Quote</h2>
     <div class="field-row">
       <div class="field-group"><label>Supplier Name</label><input type="text" id="sq-supplier" placeholder="e.g. ABC Machining Ltd"/></div>
       <div class="field-group"><label>Quote Date</label><input type="date" id="sq-date"/></div>
@@ -702,14 +702,14 @@
 </footer>
 
 <!-- ── Help Modal ─────────────────────────────────────────────────────────── -->
-<div id="help-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:200;align-items:flex-start;justify-content:center;overflow-y:auto;padding:32px 16px">
+<div id="help-modal" role="dialog" aria-modal="true" aria-labelledby="help-modal-title" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:200;align-items:flex-start;justify-content:center;overflow-y:auto;padding:32px 16px">
   <div class="modal-inner" style="max-width:860px;width:100%;position:relative">
     <!-- Header -->
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
       <div style="display:flex;align-items:center;gap:10px">
         <div style="width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-size:0.85rem;font-weight:800;color:#fff">CV</div>
         <div>
-          <h2 style="font-size:1rem;font-weight:800;color:var(--text-primary);margin:0">CostVision — Help Centre</h2>
+          <h2 id="help-modal-title" style="font-size:1rem;font-weight:800;color:var(--text-primary);margin:0">CostVision — Help Centre</h2>
           <p style="font-size:0.7rem;color:var(--text-muted);margin:0">Everything you need to master AI-powered should-costing</p>
         </div>
       </div>
@@ -960,6 +960,11 @@
           <p>The floating chat button (bottom-right) opens the AI Cost Assistant — a real-time manufacturing cost engineering chatbot. Ask commodity-specific questions and get structured, numbered step-by-step guidance. Works independently of any active costing session.</p>
         </div>
 
+        <div class="help-card" style="margin:0">
+          <div class="help-card-title">🌍 Country for Costing</div>
+          <p>A <strong>Country for Costing</strong> bar now appears inside every should-cost form (except AI Agent). Select from 8 countries: UK, Germany, USA Midwest, China, India, Mexico, Poland, and Czech Republic. On selection, currency, labour rates, machine rates, material prices, and overhead % all update automatically and the result recalculates instantly.</p>
+        </div>
+
       </div>
     </div>
 
@@ -978,6 +983,12 @@
           <option value="wiring">Wiring Harness</option>
           <option value="cast-machine">Cast + Machine</option>
           <option value="assemblies">Assemblies / BOM Rollup</option>
+          <option value="blow-moulding">Blow Moulding (EBM/IBM/SBM)</option>
+          <option value="thermoforming">Thermoforming</option>
+          <option value="rotomoulding">Rotational Moulding</option>
+          <option value="rubber">Rubber Moulding</option>
+          <option value="composites">Composites (CFRP/GFRP)</option>
+          <option value="extrusion">Extrusion</option>
         </select>
       </div>
 
@@ -1475,6 +1486,171 @@
         </div>
       </div>
 
+      <!-- Guide: Blow Moulding -->
+      <div class="cg-guide" id="cg-blow-moulding" style="display:none">
+        <div class="help-card">
+          <div class="help-card-title">Overview — Blow Moulding</div>
+          <p>Blow moulding produces hollow thermoplastic parts (bottles, tanks, ducts). Three main variants: <strong>EBM</strong> (extrusion blow — parison extruded then blown), <strong>IBM</strong> (injection blow — preform injection-moulded then blown), and <strong>SBM/ISBM</strong> (stretch blow — PET preform biaxially oriented for bottles). EBM dominates automotive (fuel tanks, ducting); SBM/ISBM for PET bottles.</p>
+        </div>
+        <div class="help-card">
+          <div class="help-card-title">Inputs Required</div>
+          <ul>
+            <li>Material (HDPE, PP, PET-BG, PA6, ABS-EBM)</li>
+            <li>Part weight (kg) and flash weight (kg) — total shot weight is sum of both</li>
+            <li>Wall thickness (mm) — drives cooling time via cool time constant</li>
+            <li>Parison extrusion time (s), blow time (s), open/close time (s)</li>
+            <li>Machine type: EBM (continuous extrusion), IBM (injected preform), SBM (stretch blow)</li>
+            <li>Cavities, OEE, manning, mould cost and life</li>
+            <li>Optional: deflash operation (cycle time, machine, labour)</li>
+            <li>Optional: reject rate (0–1) — uplifts material and cycle time</li>
+          </ul>
+        </div>
+        <div class="help-card">
+          <div class="help-card-title">Cost Drivers</div>
+          <ul>
+            <li><strong>Material:</strong> 45–70% of cost. HDPE is cheapest (~£1.20/kg), PA6 highest (~£3.80/kg).</li>
+            <li><strong>Tooling:</strong> Aluminium blow moulds £8–60k (far cheaper than injection moulds); life 500k–3M cycles.</li>
+            <li><strong>Cycle time:</strong> Dominated by cooling. Thin-wall HDPE (2mm): ~12s. Thick-wall PA6 (5mm): ~80s.</li>
+            <li><strong>Flash:</strong> EBM generates 10–30% flash (pinch-off scrap). Reground and re-used in most plants.</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Guide: Thermoforming -->
+      <div class="cg-guide" id="cg-thermoforming" style="display:none">
+        <div class="help-card">
+          <div class="help-card-title">Overview — Thermoforming</div>
+          <p>Thermoforming heats a thermoplastic sheet until pliable, then forms it over a tool using vacuum, pressure, or matched dies. It produces large shallow panels (instrument panels, trunk liners, door skins) at lower tooling cost than injection moulding. Sheet can be single-material or multi-layer co-extruded.</p>
+        </div>
+        <div class="help-card">
+          <div class="help-card-title">Inputs Required</div>
+          <ul>
+            <li>Material grade and sheet thickness (mm)</li>
+            <li>Part weight (kg) and draw ratio (affects material utilisation 50–80%)</li>
+            <li>Process type: vacuum form, pressure form, or twin-sheet</li>
+            <li>Heating time (s), forming time (s), trim time (s)</li>
+            <li>Machine (roll-fed inline or cut-sheet), tool cost and life</li>
+            <li>Optional: in-mould laminate or foam backing</li>
+          </ul>
+        </div>
+        <div class="help-card">
+          <div class="help-card-title">Cost Drivers</div>
+          <ul>
+            <li><strong>Material utilisation:</strong> Trim scrap is 20–50% of sheet area; utilisation 50–80%. Include scrap value recovery.</li>
+            <li><strong>Tooling:</strong> Aluminium tools £5–40k (vs. steel injection tools £20–200k); matched-die tools higher.</li>
+            <li><strong>Trim operation:</strong> Robotic trimming cell adds £15–35/hr but is essential for Class A surfaces.</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Guide: Rotomoulding -->
+      <div class="cg-guide" id="cg-rotomoulding" style="display:none">
+        <div class="help-card">
+          <div class="help-card-title">Overview — Rotational Moulding</div>
+          <p>Rotational moulding (rotomoulding) is a low-pressure process for large, hollow, seamless parts. Powdered resin is loaded into a mould mounted on a rotating arm, heated in an oven until the powder fuses to the mould walls, then cooled and demoulded. Ideal for tanks, playground equipment, kayaks, and large automotive components. Typical part weight 0.5–30 kg.</p>
+        </div>
+        <div class="help-card">
+          <div class="help-card-title">Inputs Required</div>
+          <ul>
+            <li>Material (LLDPE powder is most common; HDPE, nylon, PP also available)</li>
+            <li>Part weight (kg) and powder adder (£/kg grinding premium over pellet price)</li>
+            <li>Number of arms on carousel (typically 2–4) and parts per arm</li>
+            <li>Heating time (s), cooling time (s), load/unload time (s)</li>
+            <li>Machine (carousel rotomoulder), OEE, manning</li>
+            <li>Mould cost and expected life (typically 3–10k cycles for aluminium moulds)</li>
+          </ul>
+        </div>
+        <div class="help-card">
+          <div class="help-card-title">Cost Drivers</div>
+          <ul>
+            <li><strong>Cycle time:</strong> Very long (30–90 min) due to oven and cooling. Multiple arms partially offset this — one arm loads/unloads while others heat/cool.</li>
+            <li><strong>Material:</strong> LLDPE powder costs ~30–40% more per kg than injection pellets (grinding cost). This is captured by the "Powder Adder" field.</li>
+            <li><strong>Tooling:</strong> Cast aluminium moulds are relatively cheap (£2–15k) but have shorter life than steel injection tools.</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Guide: Rubber -->
+      <div class="cg-guide" id="cg-rubber" style="display:none">
+        <div class="help-card">
+          <div class="help-card-title">Overview — Rubber Moulding</div>
+          <p>Rubber moulding covers compression moulding, transfer moulding, and injection moulding of elastomers (NR, SBR, EPDM, NBR, silicone). Key automotive applications: seals, gaskets, grommets, vibration mounts, and hoses. Cycle includes a cure (vulcanisation) step that is time and temperature sensitive.</p>
+        </div>
+        <div class="help-card">
+          <div class="help-card-title">Inputs Required</div>
+          <ul>
+            <li>Compound type and part weight (g or kg)</li>
+            <li>Process type: compression, transfer, or injection</li>
+            <li>Cure temperature (°C) and cure time (min)</li>
+            <li>Cavities per mould, mould cost and life</li>
+            <li>Optional: post-cure, trimming (deflashing), secondary operations</li>
+          </ul>
+        </div>
+        <div class="help-card">
+          <div class="help-card-title">Cost Drivers</div>
+          <ul>
+            <li><strong>Cure time:</strong> Unlike thermoplastics (cool to eject), rubber must chemically cure. Typical cure time 2–15 min at 150–190°C.</li>
+            <li><strong>Flash:</strong> Compression and transfer moulding produce flash that requires manual or automated trimming — add 0.05–0.15 hr/part for deflash.</li>
+            <li><strong>Material:</strong> EPDM 30–40% of cost at £1.80–3.50/kg; silicone is 3–5× more expensive than EPDM.</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Guide: Composites -->
+      <div class="cg-guide" id="cg-composites" style="display:none">
+        <div class="help-card">
+          <div class="help-card-title">Overview — Composites (CFRP / GFRP)</div>
+          <p>Composites combine reinforcing fibres (carbon or glass) with a resin matrix (epoxy, polyester, vinyl ester). Processes range from manual hand layup to automated AFP/ATL. Key automotive applications: CFRP structural components (floor tunnels, crash structures, body panels), GFRP body panels, and continuous fibre composite spring leaves.</p>
+        </div>
+        <div class="help-card">
+          <div class="help-card-title">Inputs Required</div>
+          <ul>
+            <li>Fibre type (carbon/glass), form (prepreg/dry), and price (£/kg)</li>
+            <li>Resin type and price if dry fibre (epoxy, vinyl ester)</li>
+            <li>Part weight (kg), fibre volume fraction (Vf), fibre/matrix weight ratio</li>
+            <li>Layup labour and time (hr/part) — depends on ply count and geometry</li>
+            <li>Cure machine (autoclave, press, oven, RTM press) and cure cycle time</li>
+            <li>Trim machine (5-axis router, waterjet) and trim time</li>
+            <li>Tooling cost and life (INVAR for autoclave, aluminium for press)</li>
+          </ul>
+        </div>
+        <div class="help-card">
+          <div class="help-card-title">Cost Drivers</div>
+          <ul>
+            <li><strong>Material:</strong> 40–65% of cost. Carbon fibre prepreg: £28–80/kg. Dry CF: £20–35/kg. E-glass: £3–6/kg.</li>
+            <li><strong>Labour:</strong> Hand layup is 60–80% of non-material cost. AFP/ATL reduces labour but requires £250–350/hr cell rate.</li>
+            <li><strong>Cure cycle:</strong> Autoclave curing: £35–80/hr but adds 4–8 hr/cycle. Resin transfer moulding (RTM) cures in 10–30 min but needs matched metal tools.</li>
+            <li><strong>Scrap:</strong> High — unacceptable porosity or delamination. Budget 5–15% reject rate.</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Guide: Extrusion -->
+      <div class="cg-guide" id="cg-extrusion" style="display:none">
+        <div class="help-card">
+          <div class="help-card-title">Overview — Extrusion</div>
+          <p>Extrusion forces molten thermoplastic through a shaped die to produce continuous profiles (tubes, channels, seals, weatherstripping). The profile is then cut to length, cooled, and optionally co-extruded with a second material. Key automotive applications: window seals (EPDM co-extruded TPE/EPDM), fluid tubes (PA/PE), structural profiles.</p>
+        </div>
+        <div class="help-card">
+          <div class="help-card-title">Inputs Required</div>
+          <ul>
+            <li>Material grade and linear density (kg/m) — determines material cost per metre</li>
+            <li>Part length (m) and cut-to-length operation</li>
+            <li>Extrusion speed (m/min) and line speed</li>
+            <li>Die cost and life (typically 3–10M metres)</li>
+            <li>Optional: co-extrusion (second material weight and price), downstream punching/notching</li>
+          </ul>
+        </div>
+        <div class="help-card">
+          <div class="help-card-title">Cost Drivers</div>
+          <ul>
+            <li><strong>Material:</strong> Typically 50–70% of cost. EPDM seals: £2.50–4.50/kg. PA12 tube: £4.00–6.00/kg.</li>
+            <li><strong>Line rate:</strong> Extrusion lines run at £35–75/hr all-in. High-speed lines (>10 m/min) dramatically reduce per-part cost at volume.</li>
+            <li><strong>Die tooling:</strong> Extrusion dies £2–20k, co-extrusion dies £8–40k. Life is very long (millions of metres) so amortisation is low.</li>
+          </ul>
+        </div>
+      </div>
+
       <script>
       (function() {
         var sel = document.getElementById('cg-select');
@@ -1492,12 +1668,12 @@
 </div>
 
 <!-- ── Contact Modal ───────────────────────────────────────────────────────── -->
-<div id="contact-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:200;align-items:center;justify-content:center;padding:16px">
+<div id="contact-modal" role="dialog" aria-modal="true" aria-labelledby="contact-modal-title" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:200;align-items:center;justify-content:center;padding:16px">
   <div class="modal-inner" style="max-width:500px;width:100%">
     <!-- Header -->
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
       <div>
-        <h2 style="font-size:1rem;font-weight:800;color:var(--text-primary);margin:0">Contact Support</h2>
+        <h2 id="contact-modal-title" style="font-size:1rem;font-weight:800;color:var(--text-primary);margin:0">Contact Support</h2>
         <p style="font-size:0.72rem;color:var(--text-muted);margin:2px 0 0">We usually respond within 24 hours</p>
       </div>
       <button id="close-contact-modal" style="background:none;border:none;font-size:1.4rem;color:var(--text-muted);cursor:pointer;padding:4px 8px;line-height:1;border-radius:6px" aria-label="Close contact">&times;</button>
@@ -1656,13 +1832,13 @@
 </script>
 
 <!-- ── Demo Gallery Modal ──────────────────────────────────────────────────── -->
-<div id="demo-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:3000;align-items:flex-start;justify-content:center;overflow-y:auto;padding:24px 12px">
+<div id="demo-modal" role="dialog" aria-modal="true" aria-labelledby="demo-modal-title" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:3000;align-items:flex-start;justify-content:center;overflow-y:auto;padding:24px 12px">
   <div style="background:var(--surface);border:1px solid var(--border-strong);border-radius:14px;max-width:820px;width:100%;padding:0;box-shadow:0 24px 80px rgba(0,0,0,0.5)">
     <!-- Header -->
     <div style="padding:20px 24px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px">
       <div style="font-size:1.5rem">🚗</div>
       <div style="flex:1">
-        <div style="font-size:1.1rem;font-weight:700;color:var(--text-primary);font-family:var(--font)">Luxury SUV Demo Gallery</div>
+        <div id="demo-modal-title" style="font-size:1.1rem;font-weight:700;color:var(--text-primary);font-family:var(--font)">Luxury SUV Demo Gallery</div>
         <div style="font-size:0.76rem;color:var(--text-muted);margin-top:2px">Real-world automotive cost examples — click any card to load it instantly with AI insights</div>
       </div>
       <button id="close-demo-modal" style="background:none;border:none;font-size:1.4rem;cursor:pointer;color:var(--text-muted);padding:4px 8px;border-radius:6px;line-height:1" aria-label="Close">×</button>
