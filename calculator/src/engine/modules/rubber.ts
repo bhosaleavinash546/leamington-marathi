@@ -5,7 +5,8 @@ export type RubberProcess =
   | 'compression_mould'     // Simple gaskets, O-rings, solid mounts
   | 'transfer_mould'        // Bonded rubber-metal parts, complex geometry
   | 'injection_mould_lsr'   // Liquid Silicone Rubber — precision medical/auto seals
-  | 'calendering';          // Sheet/strip rubber (flat gaskets)
+  | 'calendering'           // Sheet/strip rubber (flat gaskets)
+  | 'die_cut';              // Die-cutting / punching of pre-vulcanised sheet rubber
 
 export interface RubberInputs {
   materialId: string;         // rubber compound material ID

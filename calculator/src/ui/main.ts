@@ -1843,53 +1843,185 @@ function renderRotationalMouldingForm(): string {
 
 // ─── Form: Rubber ─────────────────────────────────────────────────────────────
 
+const _RUBBER_PROCESS_DEFS: Record<string, {
+  desc: string; cycleTime: number; cavities: number; oee: number; manning: number;
+  reject: number; mouldCost: number; mouldLife: number; machId: string; flashFraction: number; showCure: boolean;
+}> = {
+  compression_mould: {
+    desc: 'Preform loaded into open mould → closed under heat + pressure → rubber vulcanises in cavity → mould opens, flash trimmed manually. Best for: solid mounts, gaskets, O-rings, bushings, anti-vibration pads. Tooling: moderate cost, very high volume.',
+    cycleTime: 180, cavities: 4, oee: 0.78, manning: 1.0, reject: 0.030, mouldCost: 5000, mouldLife: 200000, machId: 'compression-mould-std', flashFraction: 0.20, showCure: false,
+  },
+  transfer_mould: {
+    desc: 'Rubber compound placed in transfer pot → plunger forces material through sprue into closed mould → cures under pressure. Better dimensional accuracy than compression; suited to rubber-metal bonded inserts and complex cross-sections.',
+    cycleTime: 120, cavities: 8, oee: 0.80, manning: 1.0, reject: 0.025, mouldCost: 9000, mouldLife: 150000, machId: 'transfer-mould-std', flashFraction: 0.12, showCure: false,
+  },
+  injection_mould_lsr: {
+    desc: 'Liquid Silicone Rubber (LSR) metered and injected under pressure into precision hardened steel tool. Flash-free, fast cycle, high automation potential. Optimal for high-volume precision seals, connectors and medical components.',
+    cycleTime: 30, cavities: 16, oee: 0.85, manning: 0.5, reject: 0.008, mouldCost: 28000, mouldLife: 500000, machId: 'lsr-injection-machine', flashFraction: 0.03, showCure: false,
+  },
+  extrusion_vulcanise: {
+    desc: 'Rubber compound extruded through a profile die into continuous length, then vulcanised inline (microwave/hot air) or offline in salt bath / oven, and cut to length. Best for: weatherstrips, hoses, tube profiles, door/window seals. Low tooling cost.',
+    cycleTime: 60, cavities: 1, oee: 0.80, manning: 1.5, reject: 0.020, mouldCost: 2500, mouldLife: 500000, machId: 'extruder-rubber-60mm', flashFraction: 0.05, showCure: true,
+  },
+  calendering: {
+    desc: 'Rubber compound sheeted between counter-rotating rolls at controlled gap and temperature. Produces flat rubber sheet or fabric-reinforced composite for subsequent die-cutting. Best for: anti-vibration pads, flat gaskets, sheet goods.',
+    cycleTime: 30, cavities: 1, oee: 0.82, manning: 2.0, reject: 0.015, mouldCost: 1200, mouldLife: 500000, machId: 'compression-mould-std', flashFraction: 0.05, showCure: false,
+  },
+  die_cut: {
+    desc: 'Pre-vulcanised rubber sheet punched or blanked to final shape by hydraulic die-cutting press. Very fast cycle, minimal tooling cost. Best for: flat gaskets, anti-vibration pads, seals, washers, strips. Inherently higher material scrap from nesting.',
+    cycleTime: 8, cavities: 6, oee: 0.88, manning: 1.0, reject: 0.025, mouldCost: 2000, mouldLife: 500000, machId: 'die-cut-press-rubber', flashFraction: 0.20, showCure: false,
+  },
+};
+
+function wireRubberProcessChange(): void {
+  const procSel = document.getElementById('rub-process') as HTMLSelectElement | null;
+  if (!procSel) return;
+
+  const update = () => {
+    const proc = procSel.value;
+    const def = _RUBBER_PROCESS_DEFS[proc];
+    if (!def) return;
+
+    // Update info band
+    const band = document.getElementById('rub-process-info');
+    if (band) {
+      const label = procSel.options[procSel.selectedIndex]?.text ?? proc;
+      band.innerHTML = `<strong style="color:var(--text-primary)">${escHtml(label)}</strong> — ${escHtml(def.desc)}`;
+    }
+
+    // Show/hide offline cure section (only for extrusion)
+    const cureSection = document.getElementById('rub-cure-section');
+    if (cureSection) cureSection.style.display = def.showCure ? '' : 'none';
+
+    // Apply process-specific defaults
+    const setVal = (id: string, v: number) => {
+      const inp = document.getElementById(id) as HTMLInputElement | null;
+      if (inp) inp.value = String(v);
+    };
+    setVal('rub-cycle-sec', def.cycleTime);
+    setVal('rub-cavities', def.cavities);
+    setVal('rub-oee', def.oee);
+    setVal('rub-manning', def.manning);
+    setVal('rub-reject', def.reject);
+    setVal('rub-mould-cost', def.mouldCost);
+    setVal('rub-mould-life', def.mouldLife);
+
+    // Flash weight derived from current part weight × flash fraction
+    const partWt = parseFloat((document.getElementById('rub-part-wt') as HTMLInputElement)?.value) || 0.050;
+    setVal('rub-flash-wt', parseFloat((partWt * def.flashFraction).toFixed(4)));
+
+    // Switch machine to process-appropriate default
+    const machEl = document.getElementById('rub-mach') as HTMLSelectElement | null;
+    if (machEl) {
+      const opt = Array.from(machEl.options).find(o => o.value === def.machId);
+      if (opt) machEl.value = def.machId;
+    }
+  };
+
+  procSel.addEventListener('change', update);
+  update();
+}
+
 function renderRubberForm(): string {
   return `
-  <div class="section-title">Rubber Moulding / Extrusion</div>
+  <div class="section-title">Process &amp; Material</div>
   <div class="field-row">
-    <div class="field-group"><label>Material</label><select id="rub-mat" class="mat-select"></select></div>
-    <div class="field-group"><label>Process</label>
+    <div class="field-group">
+      <label>Process Route</label>
       <select id="rub-process">
-        <option value="compression_mould">Compression Mould</option>
-        <option value="transfer_mould">Transfer Mould</option>
-        <option value="injection_mould_lsr">Injection Mould (LSR)</option>
+        <option value="compression_mould">Compression Moulding</option>
+        <option value="transfer_mould">Transfer Moulding</option>
+        <option value="injection_mould_lsr">Injection Moulding (LSR)</option>
         <option value="extrusion_vulcanise">Extrusion + Vulcanise</option>
-        <option value="calendering">Calendering</option>
+        <option value="calendering">Calendering (Sheet/Strip)</option>
+        <option value="die_cut">Die-Cut / Punching (Gaskets)</option>
       </select>
     </div>
+    <div class="field-group">
+      <label>Rubber Compound</label>
+      <select id="rub-mat" class="material-select"></select>
+    </div>
   </div>
+  <div id="rub-process-info" style="background:var(--bg-secondary);border:1px solid var(--border);border-radius:6px;padding:8px 12px;margin:6px 0 8px;font-size:0.74rem;color:var(--text-secondary);line-height:1.55"></div>
+  <div class="section-title" style="margin-top:2px">Part Geometry</div>
   <div class="field-row">
-    <div class="field-group"><label>Machine</label><select id="rub-mach" class="mach-select"></select></div>
-    <div class="field-group"><label>Labour</label><select id="rub-lab" class="lab-select"></select></div>
+    <div class="field-group">
+      <label title="Finished rubber part weight in kg">Part Weight (kg)</label>
+      <input type="number" id="rub-part-wt" step="0.001" min="0.001" value="0.050"/>
+    </div>
+    <div class="field-group">
+      <label title="Flash, sprue and runner weight per part. Compression: ~20% of part wt, Transfer: ~12%, LSR: ~3%, Die-cut: ~20% blanking loss.">Flash + Sprue (kg)</label>
+      <input type="number" id="rub-flash-wt" step="0.001" min="0" value="0.010"/>
+    </div>
   </div>
+  <div class="section-title" style="margin-top:6px">Machine &amp; Labour</div>
   <div class="field-row">
-    <div class="field-group"><label>Part Weight (kg)</label><input type="number" id="rub-part-wt" step="0.001" min="0.001" value="0.050" title="Finished rubber part weight kg"/></div>
-    <div class="field-group"><label>Flash + Runner (kg)</label><input type="number" id="rub-flash-wt" step="0.001" min="0" value="0.010" title="Flash trim + runner scrap weight kg"/></div>
+    <div class="field-group"><label>Press / Machine</label><select id="rub-mach" class="machine-select"></select></div>
+    <div class="field-group"><label>Labour Grade</label><select id="rub-lab" class="labour-select"></select></div>
   </div>
-  <div class="field-row">
-    <div class="field-group"><label>Cycle Time (sec)</label><input type="number" id="rub-cycle-sec" step="1" min="1" value="120" title="Full moulding cycle time per shot in seconds"/></div>
-    <div class="field-group"><label>Cavities</label><input type="number" id="rub-cavities" step="1" min="1" value="4" title="Cavities per mould (1 for extrusion)"/></div>
+  <div class="field-row" style="margin-top:4px">
+    <div class="field-group">
+      <label title="Full cycle time per shot in seconds (mould close to next mould close). Includes loading, cure, eject. Compression: 120–600s, Transfer: 60–240s, LSR: 15–60s, Die-cut: 5–20s per shot.">Cycle Time (sec)</label>
+      <input type="number" id="rub-cycle-sec" step="1" min="1" value="180"/>
+    </div>
+    <div class="field-group">
+      <label title="Parts per shot (cavities per mould). Compression: 4–64, Transfer: 4–32, LSR: 8–128, Die-cut: 1–12.">Cavities</label>
+      <input type="number" id="rub-cavities" step="1" min="1" value="4"/>
+    </div>
   </div>
-  <div class="field-row">
-    <div class="field-group"><label>OEE</label><input type="number" id="rub-oee" step="0.01" min="0.3" max="1" value="0.80"/></div>
-    <div class="field-group"><label>Manning</label><input type="number" id="rub-manning" step="0.5" min="0.5" value="1"/></div>
+  <div class="field-row" style="margin-top:4px">
+    <div class="field-group">
+      <label title="Overall Equipment Effectiveness (0–1). Rubber moulding typical: 0.72–0.82. LSR: 0.82–0.88.">OEE</label>
+      <input type="number" id="rub-oee" step="0.01" min="0.30" max="1" value="0.78"/>
+    </div>
+    <div class="field-group">
+      <label title="Operators per machine. Compression: 1–2 (manual flash trim). Transfer: 1. LSR injection: 0.5 (one operator per two machines). Extrusion: 1–2.">Manning</label>
+      <input type="number" id="rub-manning" step="0.5" min="0.5" value="1"/>
+    </div>
   </div>
-  <div class="field-row">
-    <div class="field-group"><label>Labour Efficiency</label><input type="number" id="rub-lab-eff" step="0.01" min="0.5" max="1" value="0.90"/></div>
-    <div class="field-group"><label>Reject Rate (0–1)</label><input type="number" id="rub-reject" step="0.01" min="0" max="0.3" value="0.03" title="Fraction of parts scrapped (flash defects, dimensional)"/></div>
+  <div class="field-row" style="margin-top:4px">
+    <div class="field-group">
+      <label title="Labour efficiency (0–1). Productive fraction of shift time — excludes breaks, meetings. Typical: 0.85–0.92.">Labour Efficiency</label>
+      <input type="number" id="rub-lab-eff" step="0.01" min="0.50" max="1" value="0.88"/>
+    </div>
+    <div class="field-group">
+      <label title="Scrap/reject fraction (0–1). Compression: 0.02–0.05, Transfer: 0.02–0.04, LSR: 0.005–0.01, Die-cut: 0.02–0.03.">Reject Rate (0–1)</label>
+      <input type="number" id="rub-reject" step="0.005" min="0" max="0.30" value="0.030"/>
+    </div>
   </div>
-  <div class="field-row">
-    <div class="field-group"><label>Cure Time (sec, optional)</label><input type="number" id="rub-cure-sec" step="1" min="0" value="0" title="Separate offline cure oven time s (0 = included in cycle)"/></div>
-    <div class="field-group"><label>Cure Oven Machine (optional)</label><select id="rub-cure-mach" class="mach-select"><option value="">— none —</option></select></div>
+  <div id="rub-cure-section" style="display:none">
+    <div class="section-title" style="margin-top:6px">Vulcanisation Cure (Offline — Extrusion)</div>
+    <div class="field-row">
+      <div class="field-group">
+        <label title="Separate offline cure oven time in seconds per part. Set to 0 if curing is inline with the extruder (microwave/UHF tunnel).">Cure Time (sec)</label>
+        <input type="number" id="rub-cure-sec" step="1" min="0" value="0"/>
+      </div>
+      <div class="field-group">
+        <label>Cure Oven Machine</label>
+        <select id="rub-cure-mach" class="machine-select"><option value="">— none —</option></select>
+      </div>
+    </div>
   </div>
-  <div class="section-title" style="margin-top:6px">Tooling</div>
+  <div class="section-title" style="margin-top:6px">Tooling &amp; NRE</div>
   <div class="field-row">
-    <div class="field-group"><label>Mould Cost (£)</label><input type="number" id="rub-mould-cost" step="100" min="0" value="5000" title="Compression/transfer mould cost £. Compression: £2k–£15k, LSR: £8k–£40k"/></div>
-    <div class="field-group"><label>Mould Life (cycles)</label><input type="number" id="rub-mould-life" step="10000" min="1000" value="200000" title="Cycles per mould life. Compression: 200k, LSR injection: 500k"/></div>
+    <div class="field-group">
+      <label title="Mould / die cost £. Compression 4-cav: £3k–£12k. Transfer 8-cav: £6k–£25k. LSR 16-cav: £15k–£60k. Extrusion die: £1k–£4k. Die-cut tool: £0.5k–£5k.">Mould / Die Cost (£)</label>
+      <input type="number" id="rub-mould-cost" step="100" min="0" value="5000"/>
+    </div>
+    <div class="field-group">
+      <label title="Tool life in shots (not parts — multiply by cavities for total parts). Steel compression: 200k–500k shots. LSR hardened: 500k+.">Mould Life (shots)</label>
+      <input type="number" id="rub-mould-life" step="10000" min="1000" value="200000"/>
+    </div>
   </div>
-  <div class="field-row">
-    <div class="field-group"><label>Amortisation Volume (parts)</label><input type="number" id="rub-amort" step="1000" min="100" value="50000"/></div>
-    <div class="field-group"><label>Bonding Primer (£/part)</label><input type="number" id="rub-primer" step="0.01" min="0" value="0" title="Rubber-to-metal adhesive primer cost per part (0 if not applicable)"/></div>
+  <div class="field-row" style="margin-top:4px">
+    <div class="field-group">
+      <label title="Programme volume to amortise tooling over (total parts). Usually = annual volume × amortisation years (3–5 yr typical).">Amortisation Vol.</label>
+      <input type="number" id="rub-amort" step="1000" min="100" value="50000"/>
+    </div>
+    <div class="field-group">
+      <label title="Adhesive primer / bonding agent cost per part (£). For rubber-to-metal bonded mounts and bushes. Set to 0 for plain rubber-only parts.">Bonding Primer (£/part)</label>
+      <input type="number" id="rub-primer" step="0.01" min="0" value="0"/>
+    </div>
   </div>`;
 }
 
@@ -4225,12 +4357,38 @@ function switchCommodity(type: CommodityType): void {
       area.innerHTML = renderRubberForm();
       populateSelects();
       setTimeout(() => {
-        const machEl = el<HTMLSelectElement>('rub-mach');
-        if (machEl) { const opt = Array.from(machEl.options).find(o => o.value.includes('compression-mould-std')); if (opt) machEl.value = opt.value; }
+        // Filter material select to rubber compounds only
         const matEl = el<HTMLSelectElement>('rub-mat');
-        if (matEl) { const opt = Array.from(matEl.options).find(o => o.value.includes('mat-epdm')); if (opt) matEl.value = opt.value; }
+        if (matEl) {
+          const rubberMats = library.materials.filter(m => m.category === 'Rubber');
+          matEl.innerHTML = rubberMats.map(m =>
+            `<option value="${m.id}">${m.grade} — £${m.pricePerKg.toFixed(2)}/kg</option>`
+          ).join('');
+          if (Array.from(matEl.options).some(o => o.value === 'mat-epdm')) matEl.value = 'mat-epdm';
+        }
+        // Filter main machine select to rubber-specific machines only
+        const rubberMachIds = new Set(['compression-mould-std','transfer-mould-std','lsr-injection-machine','extruder-rubber-60mm','die-cut-press-rubber']);
+        const machEl = el<HTMLSelectElement>('rub-mach');
+        if (machEl) {
+          const rubberMachs = library.machines.filter(m => rubberMachIds.has(m.id));
+          machEl.innerHTML = rubberMachs.map(m =>
+            `<option value="${m.id}">${m.machineClass} — £${m.computedRatePerHr.toFixed(2)}/hr</option>`
+          ).join('');
+        }
+        // Filter cure oven select to only the rubber cure oven
+        const cureMachEl = el<HTMLSelectElement>('rub-cure-mach');
+        if (cureMachEl) {
+          const cureOven = library.machines.find(m => m.id === 'cure-oven-rubber');
+          cureMachEl.innerHTML = `<option value="">— none —</option>${cureOven ? `<option value="${cureOven.id}">${cureOven.machineClass} — £${cureOven.computedRatePerHr.toFixed(2)}/hr</option>` : ''}`;
+        }
+        // Labour — default semi-skilled operator
         const labEl = el<HTMLSelectElement>('rub-lab');
-        if (labEl) { const opt = Array.from(labEl.options).find(o => o.value.includes('semiskilled')); if (opt) labEl.value = opt.value; }
+        if (labEl) {
+          const opt = Array.from(labEl.options).find(o => o.value === 'lab-uk-semiskilled');
+          if (opt) labEl.value = 'lab-uk-semiskilled';
+        }
+        // Wire process change handler — sets defaults + info band for initial process
+        wireRubberProcessChange();
       }, 0);
       break;
 
