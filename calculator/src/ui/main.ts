@@ -130,6 +130,10 @@ const VEHICLE_OPTS = ['SUV1','SUV2','SUV3','SUV4','SUV5'];
 let _dashFilters = { vehicle: '', commodity: '', system: '', costRange: '', region: '', confidence: '' };
 let _dashCommodityChart: Chart | null = null;
 let _dashProgramChart: Chart | null = null;
+let _waterfallChart: Chart | null = null;
+let _chartMode: 'donut' | 'waterfall' = 'donut';
+let _landedCostMode = false;
+let _wizardSeen: Set<string> = new Set();
 let _compareSelected: Set<string> = new Set();
 let _chatMessages: { role: 'user' | 'ai'; text: string }[] = [];
 let _chatOpen = false;
@@ -205,6 +209,7 @@ function showHome(): void {
   const errEl = document.getElementById('validation-errors');
   const warnEl = document.getElementById('validation-warnings');
   document.body.classList.remove('cv-new-costing');
+  document.body.classList.remove('sidebar-collapsed');
   if (homeEl) homeEl.style.display = '';
   if (pickerEl) pickerEl.style.display = 'none';
   if (backdrop) { backdrop.classList.remove('visible'); backdrop.style.display = 'none'; }
@@ -224,6 +229,7 @@ function showCosting(commodity?: string): void {
   const costingEl = document.getElementById('costing-view');
   const backdrop = document.getElementById('picker-backdrop');
   document.body.classList.remove('cv-new-costing');
+  document.body.classList.remove('sidebar-collapsed');
   if (homeEl) homeEl.style.display = 'none';
   if (pickerEl) pickerEl.style.display = 'none';
   if (backdrop) { backdrop.classList.remove('visible'); backdrop.style.display = 'none'; }
@@ -279,11 +285,15 @@ function showWorkflowPanel(commodity: string): void {
   if (headerEl) headerEl.style.display = '';
   if (backdrop) { backdrop.classList.remove('visible'); backdrop.style.display = 'none'; }
   switchCommodity(commodity as CommodityType);
+  setTimeout(() => maybeShowWizard(commodity), 400);
 }
 
 function closeWorkflowPanel(): void {
   // Return to full-screen picker (remove split-screen mode, hide costing)
   document.body.classList.remove('cv-new-costing');
+  document.body.classList.remove('sidebar-collapsed');
+  const sidebarBtn = document.getElementById('sidebar-toggle-btn');
+  if (sidebarBtn) sidebarBtn.textContent = '‹';
   const costingEl = document.getElementById('costing-view');
   const backdrop = document.getElementById('picker-backdrop');
   const headerEl = document.getElementById('wf-panel-header');
@@ -4992,10 +5002,13 @@ function compute(): void {
     pushCostingRecord({ totalCost: result.total, confidence: result.warnings?.length ? 'Medium' : 'High', breakdown: result.breakdown, warnings: result.warnings });
     showResultsArea();
     renderBreakdown(result);
+    updateTabBadges(result, input);
+    fetchAICommentary(result);
 
     // Show action buttons
     el('export-excel-btn').style.display = '';
     el('export-pdf-btn').style.display = '';
+    el('export-card-btn').style.display = '';
     el('save-scenario-btn').style.display = '';
   } catch (err) {
     errBox.style.display = 'block';
@@ -5029,6 +5042,456 @@ function switchResultTab(tab: string): void {
   if (tab === 'sensitivity' && lastInput) renderSensitivity();
   if (tab === 'scenarios') renderScenarios();
   if (tab === 'dfm' && lastResult && lastInput) renderDFMDFA(lastResult, lastInput);
+}
+
+// ─── Tab Badges ────────────────────────────────────────────────────────────────
+
+function updateTabBadges(result: PartCostResult, input: UniversalStackInput): void {
+  const insightsBadge = document.getElementById('badge-insights');
+  const dfmBadge = document.getElementById('badge-dfm');
+
+  if (insightsBadge) {
+    try {
+      const insights = generateInsights(result, input, library, activeCommodity);
+      const highVal = insights.filter(i => (i as any).savingPct >= 10);
+      const count = highVal.length || insights.length;
+      if (count > 0) {
+        insightsBadge.textContent = String(count);
+        insightsBadge.className = `rtab-badge rtab-badge--${highVal.length > 0 ? 'green' : 'amber'}`;
+        insightsBadge.style.display = '';
+      } else {
+        insightsBadge.style.display = 'none';
+      }
+    } catch { insightsBadge.style.display = 'none'; }
+  }
+
+  if (dfmBadge) {
+    try {
+      const dfm = generateDFMDFA(result, input, activeCommodity);
+      const critCount = [...dfm.dfm.issues, ...dfm.dfa.issues]
+        .filter(i => i.severity === 'critical' || i.severity === 'major').length;
+      if (critCount > 0) {
+        dfmBadge.textContent = String(critCount);
+        dfmBadge.className = 'rtab-badge rtab-badge--red';
+        dfmBadge.style.display = '';
+      } else {
+        dfmBadge.style.display = 'none';
+      }
+    } catch { dfmBadge.style.display = 'none'; }
+  }
+}
+
+// ─── AI Commentary ─────────────────────────────────────────────────────────────
+
+function fetchAICommentary(result: PartCostResult): void {
+  const div = document.getElementById('ai-commentary-box');
+  if (!div) return;
+  const pcts = breakdownPercentages(result);
+  div.innerHTML = `<div class="ai-commentary-label">✦ AI Cost Commentary</div>
+    <span class="ai-commentary-loading">Analysing cost structure…</span>`;
+  div.style.display = '';
+
+  const prompt = `Should-cost result for "${result.partName}" (${activeCommodity.replace(/_/g,' ')}):
+Total: ${fmt(result.total)}, Material ${pcts.rawMaterial.toFixed(0)}%, Process ${pcts.process.toFixed(0)}%, Labour ${pcts.labour.toFixed(0)}%, Tooling ${pcts.tooling.toFixed(0)}%, Overhead ${pcts.overhead.toFixed(0)}%.
+In exactly 2-3 sentences: identify the dominant cost driver, whether it is above or below benchmark for this commodity type at this volume, and the single highest-leverage action to reduce unit cost.`;
+
+  fetch('/api/aichat', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ message: prompt }),
+  })
+    .then(r => r.json())
+    .then(data => {
+      if (data.reply && !data.error) {
+        div.innerHTML = `<div class="ai-commentary-label">✦ AI Cost Commentary</div><div>${escHtml(data.reply)}</div>`;
+      } else {
+        div.style.display = 'none';
+      }
+    })
+    .catch(() => { div.style.display = 'none'; });
+}
+
+// ─── AI Autofill ──────────────────────────────────────────────────────────────
+
+function handleAIAutofill(): void {
+  const inputEl = document.getElementById('ai-autofill-input') as HTMLInputElement | null;
+  const btn = document.getElementById('ai-autofill-btn') as HTMLButtonElement | null;
+  if (!inputEl || !inputEl.value.trim()) { showToast('Enter a part description first.', 'warning'); return; }
+  if (btn) { btn.disabled = true; btn.textContent = '⏳ Filling…'; }
+
+  const prompt = `Extract manufacturing cost parameters from this part description. Respond with ONLY valid JSON, no explanation:
+"${inputEl.value.trim()}"
+
+{
+  "partName": "string or null",
+  "weightKg": number or null,
+  "annualVolume": number or null,
+  "batchSize": number or null,
+  "overheadPct": number or null,
+  "marginPct": number or null
+}`;
+
+  fetch('/api/aichat', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ message: prompt }),
+  })
+    .then(r => r.json())
+    .then(data => {
+      try {
+        const text: string = data.reply ?? '';
+        const m = text.match(/\{[\s\S]*\}/);
+        if (!m) throw new Error('no json');
+        const p = JSON.parse(m[0]);
+        let filled = 0;
+        const setF = (id: string, v: unknown) => {
+          if (v == null) return;
+          const e = document.getElementById(id) as HTMLInputElement | null;
+          if (e) { e.value = String(v); filled++; }
+        };
+        if (p.partName)     setF('part-name', p.partName);
+        if (p.annualVolume) setF('annual-volume', p.annualVolume);
+        if (p.batchSize)    setF('batch-size', p.batchSize);
+        if (p.overheadPct)  setF('overhead-pct', p.overheadPct);
+        if (p.marginPct)    setF('margin-pct', p.marginPct);
+        // Fill commodity-specific weight
+        if (p.weightKg) {
+          const wtMap: Record<string, string> = {
+            machining:'mach-net-wt', injection_moulding:'imm-part-wt', casting:'cast-part-wt',
+            forging:'forge-part-wt', sheet_metal_fab:'smf-part-wt', sheet_metal:'sm-net-wt',
+            blow_moulding:'bm-part-wt', thermoforming:'tf-part-wt', rotational_moulding:'rm-part-wt',
+            rubber:'rub-part-wt', composites:'comp-part-wt',
+          };
+          const wtId = wtMap[activeCommodity];
+          if (wtId) setF(wtId, p.weightKg);
+        }
+        showToast(`AI filled ${filled} field${filled !== 1 ? 's' : ''} — review and calculate.`, 'info');
+      } catch { showToast('Could not parse AI response. Try a more specific description.', 'error'); }
+    })
+    .catch(() => showToast('AI autofill unavailable — check server API key.', 'error'))
+    .finally(() => { if (btn) { btn.disabled = false; btn.textContent = '✦ AI Fill'; } });
+}
+
+// ─── Waterfall Chart ──────────────────────────────────────────────────────────
+
+function renderWaterfallChart(result: PartCostResult): void {
+  const canvas = document.getElementById('breakdown-waterfall') as HTMLCanvasElement | null;
+  if (!canvas) return;
+  if (_waterfallChart) { _waterfallChart.destroy(); _waterfallChart = null; }
+
+  const bkd = result.breakdown;
+  const items = [
+    { label: 'Material',  val: bkd.rawMaterial },
+    { label: 'Process',   val: bkd.process },
+    { label: 'Labour',    val: bkd.labour },
+    { label: 'Tooling',   val: bkd.tooling },
+    { label: 'Pkg+Log',   val: bkd.packaging + bkd.logistics },
+    { label: 'Overhead',  val: bkd.overhead },
+    { label: 'Margin',    val: bkd.margin },
+  ];
+  const floatData: [number, number][] = [];
+  let run = 0;
+  items.forEach(it => { floatData.push([run, run + it.val]); run += it.val; });
+  floatData.push([0, result.total]);
+
+  const colours = ['#3b82f6','#6366f1','#8b5cf6','#0ea5e9','#14b8a6','#64748b','#94a3b8','#e65100'];
+  const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
+  const textCol = isDark ? '#94a3b8' : '#475569';
+  const gridCol = isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)';
+
+  _waterfallChart = new Chart(canvas, {
+    type: 'bar',
+    data: {
+      labels: [...items.map(i => i.label), 'TOTAL'],
+      datasets: [{ data: floatData as any, backgroundColor: colours, borderRadius: 4, borderWidth: 0 }],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: isDark ? '#1e293b' : '#fff',
+          titleColor: isDark ? '#f0f0f0' : '#0a0a0a',
+          bodyColor: textCol,
+          borderColor: isDark ? '#334155' : '#e2e8f0',
+          borderWidth: 1,
+          callbacks: {
+            label: (ctx) => {
+              const d = ctx.raw as [number, number];
+              return ` ${fmt(Math.abs(d[1] - d[0]))}`;
+            },
+          },
+        },
+      },
+      scales: {
+        y: { ticks: { callback: (v) => fmt(Number(v)), color: textCol }, grid: { color: gridCol } },
+        x: { ticks: { color: textCol }, grid: { display: false } },
+      },
+    },
+  });
+}
+
+// ─── Export Cost Card ──────────────────────────────────────────────────────────
+
+function exportCostCard(): void {
+  if (!lastResult) return;
+  const r = lastResult;
+  const pcts = breakdownPercentages(r);
+  const commodity = activeCommodity.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+  const targetPrice = parseFloat((document.getElementById('target-price') as HTMLInputElement)?.value) || 0;
+  const gap = targetPrice > 0 ? r.total - targetPrice : null;
+  const gapPct = gap !== null && targetPrice > 0 ? (gap / targetPrice) * 100 : null;
+  const ragColor = gap === null ? '#3b82f6' : Math.abs(gapPct!) <= 5 ? '#10b981' : gap > 0 ? '#e63b3b' : '#f59e0b';
+  const ragLabel = gap === null ? '' : Math.abs(gapPct!) <= 5 ? '✓ ON TARGET' : gap > 0 ? `▲ OVER TARGET ${gapPct!.toFixed(0)}%` : `▼ UNDER TARGET ${Math.abs(gapPct!).toFixed(0)}%`;
+
+  const bkts = [
+    { l:'Raw Material', v:r.breakdown.rawMaterial, p:pcts.rawMaterial },
+    { l:'Process',      v:r.breakdown.process,     p:pcts.process },
+    { l:'Labour',       v:r.breakdown.labour,       p:pcts.labour },
+    { l:'Tooling',      v:r.breakdown.tooling,      p:pcts.tooling },
+    { l:'Packaging',    v:r.breakdown.packaging,    p:pcts.packaging },
+    { l:'Logistics',    v:r.breakdown.logistics,    p:pcts.logistics },
+    { l:'Overhead',     v:r.breakdown.overhead,     p:pcts.overhead },
+    { l:'Margin',       v:r.breakdown.margin,       p:pcts.margin },
+  ];
+  const bktRows = bkts.map(b =>
+    `<tr><td>${b.l}</td><td style="text-align:right">${fmt(b.v)}</td><td style="text-align:right;color:#888">${b.p.toFixed(1)}%</td>
+     <td style="padding-left:8px"><div style="background:#3b82f6;height:8px;border-radius:4px;width:${Math.max(4,b.p*2.5)}px"></div></td></tr>`
+  ).join('');
+
+  const date = new Date().toLocaleDateString('en-GB', { day:'numeric', month:'long', year:'numeric' });
+
+  const html = `<!DOCTYPE html><html><head><meta charset="utf-8">
+<title>Cost Card — ${escHtml(r.partName)}</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f8fafc;color:#0a0a0a;padding:32px}
+@media print{body{padding:0;background:#fff}@page{size:A4;margin:20mm}}
+.card{background:#fff;border-radius:12px;padding:32px;max-width:720px;margin:0 auto;box-shadow:0 4px 24px rgba(0,0,0,0.08)}
+.header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px;padding-bottom:20px;border-bottom:2px solid #f1f5f9}
+.logo{font-size:1.4rem;font-weight:900;color:#2563eb;letter-spacing:-0.03em}
+.date{font-size:0.75rem;color:#94a3b8}
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px}
+.kpi{background:#f8fafc;border-radius:8px;padding:14px 16px;border:1px solid #e2e8f0}
+.kpi-label{font-size:0.68rem;text-transform:uppercase;letter-spacing:0.06em;color:#64748b;font-weight:600;margin-bottom:4px}
+.kpi-val{font-size:1.5rem;font-weight:800;color:#0a0a0a;letter-spacing:-0.02em}
+.kpi-sub{font-size:0.72rem;color:#94a3b8;margin-top:2px}
+.rag{display:inline-block;padding:5px 12px;border-radius:6px;font-weight:700;font-size:0.82rem;margin-bottom:20px;background:${ragColor}18;color:${ragColor};border:1px solid ${ragColor}}
+h2{font-size:0.72rem;text-transform:uppercase;letter-spacing:0.07em;color:#64748b;font-weight:700;margin-bottom:10px}
+table{width:100%;border-collapse:collapse;font-size:0.82rem;margin-bottom:20px}
+td,th{padding:7px 8px;text-align:left}
+th{font-size:0.65rem;text-transform:uppercase;letter-spacing:0.05em;color:#94a3b8;border-bottom:1px solid #e2e8f0;padding-bottom:6px}
+tr:not(:last-child) td{border-bottom:1px solid #f1f5f9}
+.total-row td{font-weight:700;border-top:2px solid #e2e8f0;padding-top:10px}
+.footer{margin-top:24px;padding-top:16px;border-top:1px solid #f1f5f9;font-size:0.68rem;color:#94a3b8;display:flex;justify-content:space-between}
+</style></head><body>
+<div class="card">
+  <div class="header">
+    <div><div class="logo">CostVision</div><div style="font-size:0.8rem;color:#64748b;margin-top:3px">Should-Cost Analysis</div></div>
+    <div style="text-align:right"><div style="font-weight:700;font-size:1.05rem">${escHtml(r.partName)}</div><div style="font-size:0.8rem;color:#64748b">${escHtml(commodity)}</div><div class="date">${date}</div></div>
+  </div>
+  <div class="kpis">
+    <div class="kpi"><div class="kpi-label">Total Should-Cost</div><div class="kpi-val">${fmt(r.total)}</div><div class="kpi-sub">per part</div></div>
+    <div class="kpi"><div class="kpi-label">Factory Cost</div><div class="kpi-val">${fmt(r.factoryCost)}</div><div class="kpi-sub">${pcts.rawMaterial + pcts.process + pcts.labour + pcts.tooling > 0 ? (pcts.rawMaterial + pcts.process + pcts.labour + pcts.tooling).toFixed(0) : '—'}% of total</div></div>
+    <div class="kpi"><div class="kpi-label">Conversion Cost</div><div class="kpi-val">${fmt(r.breakdown.process + r.breakdown.labour)}</div><div class="kpi-sub">${(pcts.process + pcts.labour).toFixed(0)}% of total</div></div>
+  </div>
+  ${gap !== null ? `<div class="rag">${ragLabel} — Target: ${fmt(targetPrice)} | Gap: ${fmt(Math.abs(gap))}</div>` : ''}
+  <h2>Cost Breakdown</h2>
+  <table>
+    <thead><tr><th>Bucket</th><th style="text-align:right">Amount</th><th style="text-align:right">%</th><th>Bar</th></tr></thead>
+    <tbody>
+      ${bktRows}
+      <tr class="total-row"><td>TOTAL SHOULD-COST</td><td style="text-align:right">${fmt(r.total)}</td><td style="text-align:right">100%</td><td></td></tr>
+    </tbody>
+  </table>
+  <div class="footer">
+    <span>Generated by CostVision • ${date}</span>
+    <span>Indicative only — based on published 2025 Q2 rate benchmarks</span>
+  </div>
+</div>
+<script>window.print();<\/script>
+</body></html>`;
+
+  const w = window.open('', '_blank');
+  if (w) { w.document.write(html); w.document.close(); }
+  else showToast('Allow pop-ups to open the cost card.', 'warning');
+}
+
+// ─── Guided Wizard ─────────────────────────────────────────────────────────────
+
+function getWeightInputId(commodity: string): string | null {
+  const wt: Record<string, string> = {
+    machining:'mach-net-wt', injection_moulding:'imm-part-wt', casting:'cast-part-wt',
+    forging:'forge-part-wt', sheet_metal_fab:'smf-part-wt', sheet_metal:'sm-net-wt',
+    blow_moulding:'bm-part-wt', thermoforming:'tf-part-wt', rotational_moulding:'rm-part-wt',
+    rubber:'rub-part-wt', composites:'comp-part-wt',
+  };
+  return wt[commodity] ?? null;
+}
+
+function maybeShowWizard(commodity: string): void {
+  if (_wizardSeen.has(commodity)) return;
+  _wizardSeen.add(commodity);
+  const history = getCostingHistory();
+  if (history.some(r => r.commodity === commodity)) return;
+  setTimeout(() => showWizard(commodity), 400);
+}
+
+function showWizard(commodity: string): void {
+  const existing = document.getElementById('wizard-overlay');
+  if (existing) existing.remove();
+  let step = 1;
+  const overlay = document.createElement('div');
+  overlay.id = 'wizard-overlay';
+  overlay.className = 'wizard-overlay';
+
+  const draw = () => {
+    const dots = [1,2,3].map(n => {
+      const cls = n < step ? 'done' : n === step ? 'active' : '';
+      return `<div class="wizard-step-dot ${cls}">${n < step ? '✓' : n}</div>${n < 3 ? '<div class="wizard-step-line"></div>' : ''}`;
+    }).join('');
+
+    let content = '';
+    let title = '';
+    let sub = '';
+    if (step === 1) {
+      title = 'Part Basics'; sub = 'Set the key commercial parameters';
+      content = `<div class="wizard-field-grid">
+        <div class="field-group" style="grid-column:1/-1">
+          <label>Part Name</label>
+          <input type="text" id="wiz-part-name" placeholder="e.g. Upper Bracket Assembly" autocomplete="off">
+        </div>
+        <div class="field-group">
+          <label>Annual Volume (pcs)</label>
+          <input type="number" id="wiz-volume" placeholder="10000" min="1">
+        </div>
+        <div class="field-group">
+          <label>Target Price (£/part) <span style="font-size:0.7rem;color:var(--text-muted)">optional</span></label>
+          <input type="number" id="wiz-target" placeholder="e.g. 4.50" step="0.01" min="0">
+        </div>
+      </div>`;
+    } else if (step === 2) {
+      title = 'Geometry & Weight'; sub = 'Key physical parameters for cost drivers';
+      content = `<div class="wizard-field-grid">
+        <div class="field-group">
+          <label>Part Weight (kg)</label>
+          <input type="number" id="wiz-weight" placeholder="e.g. 0.35" step="0.001" min="0">
+        </div>
+        <div class="field-group">
+          <label>Batch / Order Size (pcs)</label>
+          <input type="number" id="wiz-batch" placeholder="e.g. 500" min="1">
+        </div>
+      </div>
+      <div style="margin-top:12px;font-size:0.75rem;color:var(--text-muted)">Leave blank to use defaults. You can fine-tune in the full form.</div>`;
+    } else {
+      title = 'Commercial'; sub = 'Overhead and margin assumptions';
+      content = `<div class="wizard-field-grid">
+        <div class="field-group">
+          <label>Overhead % (SG&A)</label>
+          <input type="number" id="wiz-overhead" value="12" step="0.5" min="0" max="50">
+        </div>
+        <div class="field-group">
+          <label>Supplier Margin %</label>
+          <input type="number" id="wiz-margin" value="8" step="0.5" min="0" max="40">
+        </div>
+      </div>
+      <div style="margin-top:12px;font-size:0.75rem;color:var(--text-muted)">Industry default: 12% overhead, 8–12% supplier margin. Adjust per programme.</div>`;
+    }
+
+    overlay.innerHTML = `<div class="wizard-box">
+      <div class="wizard-step-header">
+        <div class="wizard-step-indicator">${dots}</div>
+        <div style="flex:1;margin-left:14px">
+          <div class="wizard-title">${title}</div>
+          <div class="wizard-subtitle">${sub}</div>
+        </div>
+      </div>
+      ${content}
+      <div class="wizard-actions">
+        <button class="wizard-skip" id="wiz-skip">Skip — use full form</button>
+        <div style="display:flex;gap:8px">
+          ${step > 1 ? '<button class="btn btn-secondary" id="wiz-back">← Back</button>' : ''}
+          <button class="btn btn-primary" id="wiz-next">${step < 3 ? 'Next →' : '✓ Done — Calculate'}</button>
+        </div>
+      </div>
+    </div>`;
+
+    overlay.querySelector('#wiz-skip')?.addEventListener('click', () => overlay.remove());
+    overlay.querySelector('#wiz-back')?.addEventListener('click', () => { step--; draw(); });
+    overlay.querySelector('#wiz-next')?.addEventListener('click', () => {
+      const g = (id: string) => (overlay.querySelector(`#${id}`) as HTMLInputElement | null)?.value ?? '';
+      if (step === 1) {
+        const name = g('wiz-part-name');
+        const vol  = g('wiz-volume');
+        const tgt  = g('wiz-target');
+        if (name) { const e = document.getElementById('part-name') as HTMLInputElement | null; if(e) e.value = name; }
+        if (vol)  { const e = document.getElementById('annual-volume') as HTMLInputElement | null; if(e) e.value = vol; }
+        if (tgt)  { const e = document.getElementById('target-price') as HTMLInputElement | null; if(e) e.value = tgt; }
+        step = 2; draw();
+      } else if (step === 2) {
+        const wt    = g('wiz-weight');
+        const batch = g('wiz-batch');
+        if (wt) {
+          const wtId = getWeightInputId(commodity);
+          if (wtId) { const e = document.getElementById(wtId) as HTMLInputElement | null; if(e) e.value = wt; }
+        }
+        if (batch) {
+          const batchId = commodity === 'machining' ? 'mach-batch-size' : null;
+          if (batchId) { const e = document.getElementById(batchId) as HTMLInputElement | null; if(e) e.value = batch; }
+        }
+        step = 3; draw();
+      } else {
+        const oh = g('wiz-overhead');
+        const mg = g('wiz-margin');
+        if (oh) { const e = document.getElementById('overhead-pct') as HTMLInputElement | null; if(e) e.value = oh; }
+        if (mg) { const e = document.getElementById('margin-pct') as HTMLInputElement | null; if(e) e.value = mg; }
+        overlay.remove();
+        showToast('Form pre-filled — review inputs and click Calculate.', 'info');
+      }
+    });
+  };
+
+  draw();
+  document.body.appendChild(overlay);
+}
+
+// ─── Input Confidence Indicators ──────────────────────────────────────────────
+
+interface ConfRange { min: number; low: number; high: number; max: number; }
+
+function confClass(val: number, r: ConfRange): string {
+  if (val < r.min || val > r.max) return 'conf-dot--red';
+  if (val < r.low || val > r.high) return 'conf-dot--amber';
+  return 'conf-dot--green';
+}
+
+function attachConfDot(inputId: string, labelId: string, range: ConfRange): void {
+  const inp = document.getElementById(inputId) as HTMLInputElement | null;
+  const lbl = document.getElementById(labelId) ?? inp?.parentElement?.querySelector('label');
+  if (!inp || !lbl) return;
+  const dot = document.createElement('span');
+  dot.className = 'conf-dot';
+  dot.id = `conf-${inputId}`;
+  lbl.appendChild(dot);
+  const update = () => {
+    const v = parseFloat(inp.value);
+    if (!isNaN(v) && v > 0) {
+      dot.className = `conf-dot ${confClass(v, range)}`;
+      dot.style.display = '';
+    } else {
+      dot.style.display = 'none';
+    }
+  };
+  inp.addEventListener('input', update);
+  inp.addEventListener('change', update);
+  update();
+}
+
+function initConfidenceIndicators(): void {
+  attachConfDot('overhead-pct',  'lbl-overhead-pct',  { min:0, low:8,   high:22,     max:50      });
+  attachConfDot('margin-pct',    'lbl-margin-pct',    { min:0, low:5,   high:20,     max:40      });
+  attachConfDot('annual-volume', 'lbl-annual-volume', { min:1, low:500, high:500000, max:5000000 });
 }
 
 // ─── Render: Breakdown ────────────────────────────────────────────────────────
@@ -5100,7 +5563,29 @@ function renderBreakdown(result: PartCostResult): void {
       </div>
     </div>` : '';
 
+  // Target Price RAG banner
+  const _tpEl = document.getElementById('target-price') as HTMLInputElement | null;
+  const _tp = parseFloat(_tpEl?.value ?? '');
+  let targetBannerHtml = '';
+  if (!isNaN(_tp) && _tp > 0) {
+    const _gap = result.total - _tp;
+    const _gapPct = (_gap / _tp) * 100;
+    let _bcls = 'target-banner--green';
+    let _bicon = '✓';
+    let _bmsg = `ON TARGET — ${fmt(Math.abs(_gap))} under target (${Math.abs(_gapPct).toFixed(1)}% headroom)`;
+    if (_gapPct > 10) {
+      _bcls = 'target-banner--red'; _bicon = '✗';
+      _bmsg = `OVER TARGET — ${fmt(Math.abs(_gap))} above target (+${_gapPct.toFixed(1)}%)`;
+    } else if (_gapPct > 0) {
+      _bcls = 'target-banner--amber'; _bicon = '⚠';
+      _bmsg = `CLOSE TO TARGET — ${fmt(Math.abs(_gap))} above target (+${_gapPct.toFixed(1)}%)`;
+    }
+    targetBannerHtml = `<div class="target-banner ${_bcls}">${_bicon} ${escHtml(_bmsg)}</div>`;
+  }
+
   panel.innerHTML = `
+    ${targetBannerHtml}
+    <div id="ai-commentary-box" class="ai-commentary" style="display:none"></div>
     ${photoHtml}
     <div class="summary-cards">
       <div class="summary-card total-card">
@@ -5155,8 +5640,15 @@ function renderBreakdown(result: PartCostResult): void {
         </table>
       </div>
       <div style="width:220px;flex-shrink:0">
-        <div class="panel-title">Cost Mix</div>
-        <div class="chart-wrap"><canvas id="breakdown-doughnut" width="200" height="200"></canvas></div>
+        <div class="panel-title" style="display:flex;justify-content:space-between;align-items:center">
+          <span>Cost Mix</span>
+          <div class="chart-mode-toggle">
+            <button id="chart-mode-donut" class="chart-mode-btn${_chartMode === 'donut' ? ' active' : ''}">Donut</button>
+            <button id="chart-mode-waterfall" class="chart-mode-btn${_chartMode === 'waterfall' ? ' active' : ''}">Waterfall</button>
+          </div>
+        </div>
+        <div class="chart-wrap" id="donut-wrap" style="${_chartMode === 'waterfall' ? 'display:none' : ''}"><canvas id="breakdown-doughnut" width="200" height="200"></canvas></div>
+        <div id="waterfall-wrap" style="width:100%;height:160px;${_chartMode === 'donut' ? 'display:none' : ''}"><canvas id="breakdown-waterfall"></canvas></div>
       </div>
     </div>
 
@@ -5212,6 +5704,32 @@ function renderBreakdown(result: PartCostResult): void {
       options: { plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 } } } }, cutout: '60%' },
     });
   }
+
+  // If waterfall mode is active, render it now
+  if (_chartMode === 'waterfall') {
+    renderWaterfallChart(result);
+  }
+
+  // Wire chart mode toggle buttons
+  document.getElementById('chart-mode-donut')?.addEventListener('click', () => {
+    _chartMode = 'donut';
+    const dw = document.getElementById('donut-wrap');
+    const ww = document.getElementById('waterfall-wrap');
+    if (dw) dw.style.display = '';
+    if (ww) ww.style.display = 'none';
+    document.getElementById('chart-mode-donut')?.classList.add('active');
+    document.getElementById('chart-mode-waterfall')?.classList.remove('active');
+  });
+  document.getElementById('chart-mode-waterfall')?.addEventListener('click', () => {
+    _chartMode = 'waterfall';
+    const dw = document.getElementById('donut-wrap');
+    const ww = document.getElementById('waterfall-wrap');
+    if (dw) dw.style.display = 'none';
+    if (ww) ww.style.display = '';
+    document.getElementById('chart-mode-donut')?.classList.remove('active');
+    document.getElementById('chart-mode-waterfall')?.classList.add('active');
+    renderWaterfallChart(result);
+  });
 
   // Wire add-quote button
   panel.querySelector('#add-quote-btn-inline')?.addEventListener('click', openQuoteModal);
@@ -5427,6 +5945,20 @@ function renderInsights(result: PartCostResult, input: UniversalStackInput): voi
     total: number;
   }
 
+  // Landed cost adders: import duty + international shipping as fraction of exWorks
+  const landedAdders: Partial<Record<ManufacturingRegion, { duty: number; shipping: number }>> = {
+    UK: { duty: 0,     shipping: 0     },
+    DE: { duty: 0,     shipping: 0.020 },
+    FR: { duty: 0,     shipping: 0.022 },
+    ES: { duty: 0,     shipping: 0.025 },
+    PL: { duty: 0,     shipping: 0.030 },
+    TR: { duty: 0.035, shipping: 0.040 },
+    CN: { duty: 0.065, shipping: 0.070 },
+    IN: { duty: 0.065, shipping: 0.065 },
+    MX: { duty: 0.050, shipping: 0.060 },
+    US: { duty: 0,     shipping: 0.045 },
+  };
+
   const rcRows: RCRow[] = RC_REGIONS.map(code => {
     const rd = REGIONAL_DATA[code];
     if (!rd) return null as unknown as RCRow;
@@ -5437,7 +5969,9 @@ function renderInsights(result: PartCostResult, input: UniversalStackInput): voi
     const overhead  = bkd.overhead   * rd.overheadMultiplier;
     const exWorks   = material + process + labour + tooling + overhead;
     const logistics = bkd.logistics  * rd.logisticsMultiplier;
-    const total     = exWorks + (bkd.packaging * rd.packagingMultiplier) + logistics + bkd.margin;
+    const adder = _landedCostMode ? (landedAdders[code] ?? { duty: 0.05, shipping: 0.05 }) : { duty: 0, shipping: 0 };
+    const total = exWorks + (bkd.packaging * rd.packagingMultiplier) + logistics + bkd.margin
+                  + exWorks * adder.duty + exWorks * adder.shipping;
     return { code, name: rd.name, currency: rd.currency, material, process, labour, tooling, overhead, exWorks, logistics, total };
   }).filter(r => r !== null);
 
@@ -5528,13 +6062,23 @@ function renderInsights(result: PartCostResult, input: UniversalStackInput): voi
 
       <div style="margin-top:16px">
         <div class="detail-section-title">Regional Cost Comparison — Full Breakdown</div>
-        <div style="font-size:0.72rem;color:#888;margin-bottom:8px">
-          Per-region should-cost using 2025 Q2 labour, energy and rate benchmarks. Green = cheapest per column, Red = highest.
-          Tooling is fixed (amortized). Indicative only — confirm with regional RFQ.
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px">
+          <span style="font-size:0.72rem;color:var(--text-muted)">
+            Per-region should-cost using 2025 Q2 labour, energy and rate benchmarks.
+            Green = cheapest per column, Red = highest. Tooling fixed. Indicative — confirm with RFQ.
+          </span>
+          <button id="landed-cost-toggle" class="btn ${_landedCostMode ? 'btn-primary' : 'btn-secondary'} btn-sm" style="flex-shrink:0">
+            ${_landedCostMode ? '🚢 Landed: ON' : '🚢 Landed Cost'}
+          </button>
         </div>
         ${regionalTable}
       </div>
     </div>`;
+
+  panel.querySelector('#landed-cost-toggle')?.addEventListener('click', () => {
+    _landedCostMode = !_landedCostMode;
+    if (lastResult && lastInput) renderInsights(lastResult, lastInput);
+  });
 }
 
 // ─── Render: DFM / DFA Tab ────────────────────────────────────────────────────
@@ -7886,6 +8430,25 @@ async function init(): Promise<void> {
   document.getElementById('ai-chat-input')?.addEventListener('keydown', e => {
     if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); void sendChatMessage(); }
   });
+
+  // Sidebar collapse toggle
+  document.getElementById('sidebar-toggle-btn')?.addEventListener('click', () => {
+    const collapsed = document.body.classList.toggle('sidebar-collapsed');
+    const btn = document.getElementById('sidebar-toggle-btn');
+    if (btn) btn.textContent = collapsed ? '›' : '‹';
+  });
+
+  // AI Autofill
+  document.getElementById('ai-autofill-btn')?.addEventListener('click', handleAIAutofill);
+  document.getElementById('ai-autofill-input')?.addEventListener('keydown', e => {
+    if (e.key === 'Enter') handleAIAutofill();
+  });
+
+  // Share Card export
+  document.getElementById('export-card-btn')?.addEventListener('click', exportCostCard);
+
+  // Input confidence indicators
+  initConfidenceIndicators();
 
   // Initial view: show home on load
   showHome();

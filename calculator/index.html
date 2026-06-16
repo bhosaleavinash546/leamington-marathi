@@ -465,11 +465,20 @@
       <span class="wf-panel-commodity-icon" id="wf-panel-icon">⚙️</span>
       <span class="wf-panel-commodity-name" id="wf-panel-name">Machining</span>
     </div>
-    <button class="wf-panel-close" id="wf-panel-close" aria-label="Close workflow panel">✕ Close</button>
+    <div style="display:flex;gap:6px;align-items:center">
+      <button class="sidebar-toggle-btn" id="sidebar-toggle-btn" title="Collapse/expand commodity sidebar" aria-label="Toggle sidebar">‹</button>
+      <button class="wf-panel-close" id="wf-panel-close" aria-label="Close workflow panel">✕ Close</button>
+    </div>
   </div>
 
   <!-- ── Input Panel ──────────────────────────────────────────────────── -->
   <div class="input-panel">
+
+    <!-- AI Autofill bar -->
+    <div class="ai-autofill-bar" id="ai-autofill-bar">
+      <input type="text" id="ai-autofill-input" placeholder='Describe part: e.g. "Die-cast Al bracket 320g, 8k/yr, automotive grade"' autocomplete="off">
+      <button class="btn btn-secondary btn-sm" id="ai-autofill-btn" style="white-space:nowrap;flex-shrink:0">✦ AI Fill</button>
+    </div>
 
     <!-- Commodity selector tabs -->
     <div class="commodity-tabs" id="commodity-tabs">
@@ -546,6 +555,15 @@
           </label>
         </div>
       </div>
+      <div class="field-row" style="margin-top:6px">
+        <div class="field-group">
+          <label id="lbl-target-price" title="Set a target price to see a RAG status banner on your results">Target Price <span id="target-price-sym">£</span>/part <span style="font-size:0.63rem;color:var(--text-muted)">(optional)</span></label>
+          <input type="number" id="target-price" step="0.01" min="0" placeholder="e.g. 4.50" title="Target unit price — sets the RAG banner in results"/>
+        </div>
+        <div class="field-group" style="display:flex;align-items:flex-end;padding-bottom:2px">
+          <span style="font-size:0.72rem;color:var(--text-muted)">Leave blank if no target set</span>
+        </div>
+      </div>
     </div>
 
     <div id="validation-errors"   class="validation-box error"   style="display:none"></div>
@@ -556,6 +574,7 @@
       <button class="btn btn-primary" id="calc-btn">Calculate</button>
       <button class="btn btn-secondary" id="export-excel-btn" style="display:none" title="Export 6-sheet Excel workbook: Summary, Material, Operations, Machine Rates, Labour Rates, Traceability">Export Excel ↗</button>
       <button class="btn btn-secondary" id="export-pdf-btn"   style="display:none" title="Generate professional PDF report: 5 pages, aPriori-style cost breakdown with full machine rate buildup">PDF Report ↗</button>
+      <button class="btn btn-secondary" id="export-card-btn"  style="display:none" title="Export a one-page shareable cost summary card">Share Card ↗</button>
       <button class="btn btn-secondary" id="save-scenario-btn" style="display:none">Save Scenario</button>
       <button class="btn btn-secondary" id="load-ref-btn">Load Example</button>
       <button class="btn btn-secondary" id="rates-btn">Edit Rates</button>
@@ -570,10 +589,10 @@
     <div class="results-tabs" id="results-tabs" style="display:none">
       <button class="rtab active" data-panel="breakdown">Breakdown</button>
       <button class="rtab" data-panel="detail">Detail</button>
-      <button class="rtab" data-panel="insights">AI Insights</button>
+      <button class="rtab" data-panel="insights">AI Insights<span class="rtab-badge" id="badge-insights" style="display:none"></span></button>
       <button class="rtab" data-panel="sensitivity">Sensitivity</button>
       <button class="rtab" data-panel="scenarios">Scenarios</button>
-      <button class="rtab" data-panel="dfm">DFM / DFA</button>
+      <button class="rtab" data-panel="dfm">DFM / DFA<span class="rtab-badge" id="badge-dfm" style="display:none"></span></button>
     </div>
 
     <div id="results-breakdown">
