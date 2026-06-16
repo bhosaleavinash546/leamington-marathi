@@ -878,6 +878,579 @@
         <p>Check the <strong>Material Utilisation</strong> field — a value less than 1 means significant scrap allowance. For casting, check <strong>Casting Yield</strong> and <strong>Reject Rate</strong>. Verify the <strong>Consumables</strong> cost per part is not accidentally large.</p>
       </div>
     </div>
+
+    <!-- What's New -->
+    <div class="help-section" id="help-whats-new">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+
+        <div class="help-card" style="margin:0">
+          <div class="help-card-title">⊕ New Costing Button</div>
+          <p>The gradient <strong>⊕ New Costing</strong> button in the top navigation bar opens a full-width commodity picker. Select from 12 manufacturing commodities plus 3 AI-powered options. The costing workflow slides in from the right side as a panel.</p>
+        </div>
+
+        <div class="help-card" style="margin:0">
+          <div class="help-card-title">Right-Side Workflow Panel</div>
+          <p>When you select a commodity from the picker, the full costing form slides in from the right (52% width). The left side dims. Close the panel with the <strong>✕ Close</strong> button, click the backdrop, or press <strong>Escape</strong>.</p>
+        </div>
+
+        <div class="help-card" style="margin:0">
+          <div class="help-card-title">Dynamic Dashboard</div>
+          <p>The Home dashboard shows live KPI cards (Total Costings, Savings Identified, Top Commodity, Avg Part Cost, High-Cost Parts). Charts update in real time as you complete costings. Filter by Vehicle, Commodity, System, Cost Range, Region, and Confidence.</p>
+        </div>
+
+        <div class="help-card" style="margin:0">
+          <div class="help-card-title">Quick Compare</div>
+          <p>In the <strong>Recent Costings</strong> table, tick the checkbox on exactly 2 rows to activate the <strong>Compare Side-by-Side</strong> bar. A detailed breakdown panel appears below showing cost differences by bucket (Material, Process, Labour, Tooling, etc.) with colour-coded Δ values.</p>
+        </div>
+
+        <div class="help-card" style="margin:0">
+          <div class="help-card-title">AI Confidence Badges</div>
+          <p>Every completed costing is tagged with an AI confidence badge: <strong>● High</strong> (green), <strong>● Medium</strong> (amber), or <strong>● Low</strong> (red). These reflect how certain the AI is about the returned parameter values and are visible in the Recent Costings table.</p>
+        </div>
+
+        <div class="help-card" style="margin:0">
+          <div class="help-card-title">PCB Image-to-BOM</div>
+          <p>Upload a PCB photo and the AI automatically extracts the full Bill of Materials — component types, quantities, unit prices, board specifications, and assembly complexity. The results populate the PCB Fab and PCBA forms directly. Supports JPEG, PNG, and WebP up to 20 MB.</p>
+        </div>
+
+        <div class="help-card" style="margin:0">
+          <div class="help-card-title">Demo Gallery</div>
+          <p>Click <strong>🚗 Demos</strong> in the top nav to open the Luxury SUV Demo Gallery — 50+ pre-configured automotive examples across all commodity types. Click any card to load it instantly with AI insights, sensitivity analysis, and full cost breakdown.</p>
+        </div>
+
+        <div class="help-card" style="margin:0">
+          <div class="help-card-title">AI Cost Assistant</div>
+          <p>The floating chat button (bottom-right) opens the AI Cost Assistant — a real-time manufacturing cost engineering chatbot. Ask commodity-specific questions and get structured, numbered step-by-step guidance. Works independently of any active costing session.</p>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Commodity Guides -->
+    <div class="help-section" id="help-commodity-guides">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px">
+        <label style="font-size:0.78rem;font-weight:600;color:var(--text-secondary);white-space:nowrap">Select Commodity:</label>
+        <select id="cg-select" style="font-size:0.82rem;padding:7px 12px;border:1px solid var(--border-strong);border-radius:8px;background:var(--surface-elevated);color:var(--text-primary);font-family:var(--font);flex:1;max-width:280px">
+          <option value="plastics">Plastics (Injection Moulding)</option>
+          <option value="sheet-metal">Sheet Metal Fabrication</option>
+          <option value="castings">Castings (HPDC / Sand)</option>
+          <option value="machining">Machining (CNC)</option>
+          <option value="forgings">Forgings</option>
+          <option value="pcb">PCB Fabrication</option>
+          <option value="pcba">PCBA Assembly</option>
+          <option value="wiring">Wiring Harness</option>
+          <option value="cast-machine">Cast + Machine</option>
+          <option value="assemblies">Assemblies / BOM Rollup</option>
+        </select>
+      </div>
+
+      <!-- Guide: Plastics -->
+      <div class="cg-guide" id="cg-plastics">
+        <div class="help-card">
+          <div class="help-card-title">Overview — Injection Moulding</div>
+          <p>Injection moulding is a high-volume thermoplastic process. A heated screw injects molten polymer into a steel or aluminium tool. Cycle times are typically 15–90 seconds. Cost is dominated by tooling amortisation at low-to-medium volumes and material at high volumes.</p>
+        </div>
+        <div class="help-card">
+          <div class="help-card-title">Inputs Required</div>
+          <ul>
+            <li>Material grade (PP, ABS, PC/ABS, PA66-GF30, etc.) and part weight (kg)</li>
+            <li>Projected area (cm²) and tool type (single/multi-cavity, hot or cold runner)</li>
+            <li>Machine tonnage (determined by projected area × cavity pressure)</li>
+            <li>Cycle time (s), OEE (%), cavities per shot</li>
+            <li>Tooling cost (£) and amortisation volume</li>
+            <li>Surface finish and tolerance class (affects multiplier)</li>
+            <li>Annual volume (pcs) and manufacturing region</li>
+          </ul>
+        </div>
+        <div class="help-card">
+          <div class="help-card-title">Step-by-Step Workflow</div>
+          <ol>
+            <li>Select <strong>Injection</strong> tab or use ⊕ New Costing → Plastics tile.</li>
+            <li>Choose the material grade and enter part weight. The tool auto-prices material from the rate library.</li>
+            <li>Enter projected area and cavity count. Machine tonnage is auto-recommended.</li>
+            <li>Enter cycle time (shoot time + cooling + eject). A typical 0.3 kg part runs 35–55 s.</li>
+            <li>Enter OEE (typically 75–90%), Manning (usually 0.25–0.5 per machine), and parts per cycle.</li>
+            <li>Enter tooling cost and amortisation volume. For 50k ppa, a single-cavity ABS tool is typically £18–45k.</li>
+            <li>Set annual volume, overhead %, margin %, and region, then click <strong>Calculate</strong>.</li>
+          </ol>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <div class="help-card" style="margin:0">
+            <div class="help-card-title">Tips</div>
+            <ul>
+              <li>Add a 1.08–1.15× surface finish multiplier for textured or Class A surfaces.</li>
+              <li>Multi-cavity tools reduce per-part cost but increase tooling NRE — break-even is usually above 30k ppa.</li>
+              <li>Hot runners reduce cycle time and scrap but add £8–25k to tooling cost.</li>
+            </ul>
+          </div>
+          <div class="help-card" style="margin:0">
+            <div class="help-card-title">Common Mistakes</div>
+            <ul>
+              <li>Forgetting runner/gate scrap — add 5–15% material uplift for cold runner tools.</li>
+              <li>Under-estimating cycle time for thick-wall or large parts (rule: 1 s per mm wall thickness minimum).</li>
+              <li>Using a 1-cavity assumption when the supplier will almost certainly use 2-cavity for volumes above 20k.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Guide: Sheet Metal -->
+      <div class="cg-guide" id="cg-sheet-metal" style="display:none">
+        <div class="help-card">
+          <div class="help-card-title">Overview — Sheet Metal Fabrication</div>
+          <p>Sheet metal fabrication covers laser cutting, turret punching, press brake bending, and optional welding. It is a low-tooling, high-flexibility route suited to low-to-medium volumes (1–50k). Cost is labour-intensive and driven by machine time, bends, and weld length.</p>
+        </div>
+        <div class="help-card">
+          <div class="help-card-title">Inputs Required</div>
+          <ul>
+            <li>Material grade (DC01, S355, 304 SS, 5052 Al) and sheet thickness (mm)</li>
+            <li>Blank dimensions (mm × mm) and part weight (kg)</li>
+            <li>Blanking method: Laser (Fiber / CO₂), Turret punch, or Shear</li>
+            <li>Number of bends and bend length (mm) for press brake</li>
+            <li>Welding: type (MIG, TIG, spot), length (mm), and number of joints</li>
+            <li>Surface treatment (powder coat, galvanise, primer)</li>
+            <li>Annual volume and manufacturing region</li>
+          </ul>
+        </div>
+        <div class="help-card">
+          <div class="help-card-title">Step-by-Step Workflow</div>
+          <ol>
+            <li>Select <strong>SM Fab ✓</strong> tab or use ⊕ New Costing → Sheet Metal tile.</li>
+            <li>Choose material grade and enter sheet thickness. The process advisor recommends a blanking method.</li>
+            <li>Enter blank size and part weight. Material cost is auto-calculated including nesting utilisation.</li>
+            <li>Select laser machine (fiber for stainless / non-ferrous; CO₂ for mild steel below 8 mm).</li>
+            <li>Enter cut perimeter (mm) — the tool calculates cut time from machine speed.</li>
+            <li>Add press brake operations: number of bends, bend length, setup time.</li>
+            <li>Add weld operations if required (MIG seam / spot weld / TIG).</li>
+            <li>Set volume, overhead, margin, and click <strong>Calculate</strong>.</li>
+          </ol>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <div class="help-card" style="margin:0">
+            <div class="help-card-title">Tips</div>
+            <ul>
+              <li>Fiber laser is 3× faster than CO₂ for stainless and aluminium — always choose fiber for these materials.</li>
+              <li>Spot welding is 5–10× cheaper than MIG for overlapping flanges — recommend DFM change if possible.</li>
+              <li>Powder coating adds £1.50–4.00/part for small brackets; include it in universal costs.</li>
+            </ul>
+          </div>
+          <div class="help-card" style="margin:0">
+            <div class="help-card-title">Common Mistakes</div>
+            <ul>
+              <li>Forgetting pierce time for hole features — each pierce adds 1–3 s on a laser.</li>
+              <li>Under-estimating sheet nesting efficiency (typically 65–80%); use 0.72 as default material utilisation.</li>
+              <li>Ignoring setup time for small batches — a press brake setup is 20–45 min regardless of volume.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Guide: Castings -->
+      <div class="cg-guide" id="cg-castings" style="display:none">
+        <div class="help-card">
+          <div class="help-card-title">Overview — Castings (HPDC / Sand)</div>
+          <p>Casting fills a die or mould with molten metal. HPDC (High Pressure Die Casting) uses permanent steel dies for aluminium/zinc at high volumes. Sand casting uses expendable moulds for iron/steel/aluminium at lower volumes or large parts. Cost is driven by die cost, cycle time, and yield.</p>
+        </div>
+        <div class="help-card">
+          <div class="help-card-title">Inputs Required</div>
+          <ul>
+            <li>Alloy (ADC12, A380, GJL250, EN-GJS-400) and process (HPDC, sand, gravity, investment)</li>
+            <li>Part weight (kg) and casting yield (typically 0.70–0.95 for HPDC)</li>
+            <li>Machine tonnage (HPDC: use projected area × 600 bar / 1000 as starting point)</li>
+            <li>Cycle time (s), number of cavities, OEE (%)</li>
+            <li>Die/pattern cost (£) and amortisation volume</li>
+            <li>Reject rate (%), post-cast operations (shot blast, impregnation, heat treat)</li>
+            <li>Annual volume and region</li>
+          </ul>
+        </div>
+        <div class="help-card">
+          <div class="help-card-title">Step-by-Step Workflow</div>
+          <ol>
+            <li>Select <strong>Casting</strong> tab or ⊕ New Costing → Castings tile.</li>
+            <li>Choose alloy and casting process. The model sets appropriate material price and yield defaults.</li>
+            <li>Enter part weight and casting yield. Poured weight = part weight ÷ yield.</li>
+            <li>Select machine tonnage. For HPDC: typical 800T die cast produces 2–6 kg parts.</li>
+            <li>Enter cycle time (HPDC typical: 25–60 s; sand cast: 5–30 min per pour).</li>
+            <li>Enter die cost. HPDC dies: £80–350k; sand cast patterns: £5–40k.</li>
+            <li>Enter reject rate (HPDC: 2–5%; sand: 5–12%) and post-cast treatment costs.</li>
+            <li>Click <strong>Calculate</strong> to get the full as-cast cost breakdown.</li>
+          </ol>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <div class="help-card" style="margin:0">
+            <div class="help-card-title">Tips</div>
+            <ul>
+              <li>For cast + machined parts, use the <strong>Cast+Machine ✓</strong> tab which combines both in one model.</li>
+              <li>HPDC at 2-cavity doubles output without proportionally doubling die cost — check cavity economics above 40k ppa.</li>
+              <li>Investment casting is more expensive per part but achieves ±0.1 mm tolerances without machining.</li>
+            </ul>
+          </div>
+          <div class="help-card" style="margin:0">
+            <div class="help-card-title">Common Mistakes</div>
+            <ul>
+              <li>Confusing part weight with poured weight — always model poured weight for material cost.</li>
+              <li>Ignoring heat treatment cost for structural aluminium castings (T5/T6 adds £0.40–1.20/kg).</li>
+              <li>Underestimating HPDC die life — budget for 1 die replacement per 100k shots for aluminium.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Guide: Machining -->
+      <div class="cg-guide" id="cg-machining" style="display:none">
+        <div class="help-card">
+          <div class="help-card-title">Overview — CNC Machining</div>
+          <p>CNC machining removes material from bar, billet, or casting stock using turning centres, VMCs (3/4/5-axis), and grinders. Cost is dominated by machine hourly rate × cycle time. Material waste (buy-to-fly ratio) can be significant for aerospace or complex geometries.</p>
+        </div>
+        <div class="help-card">
+          <div class="help-card-title">Inputs Required</div>
+          <ul>
+            <li>Material (Al6061-T6, 304 SS, Ti-6Al-4V) and billet/bar weight (kg)</li>
+            <li>Finished part weight (kg) — determines buy-to-fly ratio</li>
+            <li>Operations list: machine type, cycle time (h), OEE, Manning</li>
+            <li>Tooling cost per operation (cutting tools, fixtures)</li>
+            <li>Annual volume and region</li>
+          </ul>
+        </div>
+        <div class="help-card">
+          <div class="help-card-title">Step-by-Step Workflow</div>
+          <ol>
+            <li>Select <strong>Machining</strong> tab or ⊕ New Costing → Machining tile.</li>
+            <li>Choose material grade. Enter billet weight (raw input) and finished part weight.</li>
+            <li>Add Operation 1: select machine (VMC 3-axis, Turn/Mill, 5-axis DMG), enter cycle time and OEE.</li>
+            <li>Add further operations as required (e.g., Op 2: drill and tap on HMC).</li>
+            <li>Enter per-operation tooling consumable cost (typical: £0.50–3.00 per part for Al, £2–8 for steel).</li>
+            <li>Set Manning ratio (usually 0.25–1.0 depending on automation level).</li>
+            <li>Set volume, overhead, margin, region, and click <strong>Calculate</strong>.</li>
+          </ol>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <div class="help-card" style="margin:0">
+            <div class="help-card-title">Tips</div>
+            <ul>
+              <li>UK 3-axis VMC rates: £55–85/hr; 5-axis: £90–140/hr. Use <strong>Edit Rates</strong> to customise.</li>
+              <li>For Al parts, OEE of 82–88% is typical. For titanium, expect 65–75% due to tool change frequency.</li>
+              <li>Buy-to-fly above 3:1 signals a DFM opportunity — consider near-net casting or forging.</li>
+            </ul>
+          </div>
+          <div class="help-card" style="margin:0">
+            <div class="help-card-title">Common Mistakes</div>
+            <ul>
+              <li>Forgetting setup amortisation — a complex 5-axis fixture setup can add £0.50–2.00/part at 10k volume.</li>
+              <li>Using finished weight instead of billet weight for material cost calculation.</li>
+              <li>Assuming 100% OEE — always apply real-world OEE (75–90%) to avoid under-costing.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Guide: Forgings -->
+      <div class="cg-guide" id="cg-forgings" style="display:none">
+        <div class="help-card">
+          <div class="help-card-title">Overview — Forgings</div>
+          <p>Forging plastically deforms metal (hot or warm) into a die to produce high-strength near-net-shape parts. Closed-die forging produces tighter tolerances than open-die. Cost is driven by material, press tonnage, die cost, and heat treatment. Forgings have superior grain structure vs. castings.</p>
+        </div>
+        <div class="help-card">
+          <div class="help-card-title">Inputs Required</div>
+          <ul>
+            <li>Material (Al6082, 4340 Steel, Ti-6Al-4V, Inconel 718)</li>
+            <li>Billet weight (kg) and finished forging weight (kg) — flash loss typically 10–25%</li>
+            <li>Process (open-die, closed-die, near-net-shape) and press tonnage</li>
+            <li>Number of blows/strikes, die cost (£), amortisation volume</li>
+            <li>Heat treatment requirement (T4, T6, normalise, quench+temper)</li>
+            <li>Annual volume and region</li>
+          </ul>
+        </div>
+        <div class="help-card">
+          <div class="help-card-title">Step-by-Step Workflow</div>
+          <ol>
+            <li>Select <strong>Forging</strong> tab or ⊕ New Costing → Forgings tile.</li>
+            <li>Choose material and enter billet weight. Add flash allowance (15% typical for closed-die Al).</li>
+            <li>Select press tonnage. Rule of thumb: projected area (cm²) × 3 = tonnes required for Al; ×5 for steel.</li>
+            <li>Enter number of strikes (typically 3–6 for complex closed-die). Each strike has a machine cycle time.</li>
+            <li>Enter die cost: Al forgings typically £40–120k; steel £70–180k. Die life: 20–80k shots.</li>
+            <li>Add heat treatment if required (T6 for aluminium adds £0.60–1.50/kg).</li>
+            <li>Calculate and review tooling amortisation — major cost driver at low volumes.</li>
+          </ol>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <div class="help-card" style="margin:0">
+            <div class="help-card-title">Tips</div>
+            <ul>
+              <li>Forging vs. casting: forgings are 20–40% stronger but 30–80% more expensive per part — justify with fatigue or safety requirements.</li>
+              <li>Near-net-shape forgings can eliminate machining steps, reducing total cost by 15–25%.</li>
+              <li>China forging: 35–55% lower piece price but factor in 8–12 week lead time and quality risk.</li>
+            </ul>
+          </div>
+          <div class="help-card" style="margin:0">
+            <div class="help-card-title">Common Mistakes</div>
+            <ul>
+              <li>Forgetting flash trimming cost — typically 10–20% of forging cycle cost for closed-die parts.</li>
+              <li>Under-sizing the press — always add 20% safety margin to minimum required tonnage.</li>
+              <li>Ignoring die maintenance cost at high volumes — budget 15–20% of die cost for lifetime maintenance.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Guide: PCB -->
+      <div class="cg-guide" id="cg-pcb" style="display:none">
+        <div class="help-card">
+          <div class="help-card-title">Overview — PCB Fabrication</div>
+          <p>PCB fabrication converts a bare laminate into a circuit board via lamination, drilling, plating, etching, solder mask, and surface finish. Cost is driven by layer count, board area, HDI complexity, surface finish, and quality grade. Use the 🔬 Image-to-BOM feature to auto-extract specs from a photo.</p>
+        </div>
+        <div class="help-card">
+          <div class="help-card-title">Inputs Required</div>
+          <ul>
+            <li>Board dimensions (mm × mm) and layer count (2, 4, 6, 8+)</li>
+            <li>Technology type (FR4 standard, High-Tg FR4, HDI, Rigid-Flex, RF/Rogers)</li>
+            <li>Surface finish (HASL, HASL-LF, ENIG, OSP, ENEPIG)</li>
+            <li>Via counts: through, blind, buried, micro-vias</li>
+            <li>HDI structure (none, 1+N+1, 2+N+2, any-layer)</li>
+            <li>Quality grade (consumer, industrial, automotive Gr.2, Gr.1, aerospace)</li>
+            <li>Annual volume (panels) and region</li>
+          </ul>
+        </div>
+        <div class="help-card">
+          <div class="help-card-title">Step-by-Step Workflow</div>
+          <ol>
+            <li>Select <strong>PCB Fab 🔬</strong> tab or ⊕ New Costing → PCB tile.</li>
+            <li>Optional: upload a PCB photo via the 🔬 Image-to-BOM zone — the AI auto-fills all fields.</li>
+            <li>Enter board dimensions and layer count. Each pair of inner layers adds 35–55% to fab cost.</li>
+            <li>Select technology type. HDI costs 2.5–4× standard FR4 due to laser drilling of microvias.</li>
+            <li>Select surface finish. ENIG is standard for automotive; HASL-LF for consumer cost reduction.</li>
+            <li>Enter via counts. Blind/buried vias add 20–60% cost uplift vs. through-vias only.</li>
+            <li>Select quality grade. Automotive Gr.1/2 adds 25–80% to base fab cost for testing and traceability.</li>
+            <li>Click <strong>Calculate</strong> for per-panel and per-board cost with min/mid/max range.</li>
+          </ol>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <div class="help-card" style="margin:0">
+            <div class="help-card-title">Tips</div>
+            <ul>
+              <li>PCB cost scales with area² — halving the board size reduces fab cost by 60–70%.</li>
+              <li>ENIG is worth the premium over HASL for fine-pitch BGAs and SMD pads below 0.5 mm pitch.</li>
+              <li>Panel utilisation (default 75%) — tighter layouts increase this and reduce per-board cost.</li>
+            </ul>
+          </div>
+          <div class="help-card" style="margin:0">
+            <div class="help-card-title">Common Mistakes</div>
+            <ul>
+              <li>Confusing layer count with copper layer count — a 4-layer board has 2 inner + 2 outer layers.</li>
+              <li>Selecting ENEPIG when ENIG is sufficient — ENEPIG costs 40–60% more and is only needed for wire bonding.</li>
+              <li>Forgetting flying probe or ICT test cost — add £0.15–0.60 per board for automotive quality grades.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Guide: PCBA -->
+      <div class="cg-guide" id="cg-pcba" style="display:none">
+        <div class="help-card">
+          <div class="help-card-title">Overview — PCBA Assembly</div>
+          <p>PCBA assembly involves SMT placement (solder paste → pick-and-place → reflow), through-hole soldering (wave or selective), and optional processes (BGA underfill, conformal coat, ICT, X-ray). Cost is driven by component count, placement complexity, BGA presence, and quality grade.</p>
+        </div>
+        <div class="help-card">
+          <div class="help-card-title">Inputs Required</div>
+          <ul>
+            <li>BOM: component type, quantity, unit price, automotive grade flag</li>
+            <li>SMT placements (total qty of all SMT components)</li>
+            <li>Through-hole joints (qty × pin count for THT components)</li>
+            <li>BGA count (drives X-ray requirement)</li>
+            <li>Assembly complexity (low/medium/high/very high)</li>
+            <li>Reflow sides (1 or 2), conformal coat area (cm²)</li>
+            <li>Quality grade and ICT test time (s)</li>
+          </ul>
+        </div>
+        <div class="help-card">
+          <div class="help-card-title">Step-by-Step Workflow</div>
+          <ol>
+            <li>Select <strong>PCBA 🔬</strong> tab or ⊕ New Costing → PCBA tile.</li>
+            <li>Optional: upload a PCB photo to auto-extract BOM via AI Image-to-BOM.</li>
+            <li>Review or enter the BOM. Mark any automotive-grade components (3–5× price premium).</li>
+            <li>Enter assembly parameters: SMT placements, TH joints, BGA count.</li>
+            <li>Select complexity (high = fine-pitch QFN/BGA, double-sided, tight spacing).</li>
+            <li>Add ICT test time (s) — automotive Gr.2 minimum is 90 s; Gr.1 is 180+ s.</li>
+            <li>Enter conformal coat area if applicable (automotive standard IPC-CC-830).</li>
+            <li>Click <strong>Calculate</strong> for per-board PCBA cost split by BOM, SMT, and test.</li>
+          </ol>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <div class="help-card" style="margin:0">
+            <div class="help-card-title">Tips</div>
+            <ul>
+              <li>CPH (components per hour) for a modern high-speed SMT line: 40,000–80,000 CPH.</li>
+              <li>BGA rework is £8–25 each — minimise BGA count or specify sockets for prototypes.</li>
+              <li>AEC-Q100/Q200 automotive parts cost 3–8× the consumer equivalent — always flag these in the BOM.</li>
+            </ul>
+          </div>
+          <div class="help-card" style="margin:0">
+            <div class="help-card-title">Common Mistakes</div>
+            <ul>
+              <li>Forgetting NRE (stencil, programming, first article inspection) — typically £350–800 one-time.</li>
+              <li>Using consumer IC pricing for automotive designs — always verify AEC-Q grade pricing.</li>
+              <li>Under-stating placement count — count every pad on every SMT component including decoupling caps.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Guide: Wiring Harness -->
+      <div class="cg-guide" id="cg-wiring" style="display:none">
+        <div class="help-card">
+          <div class="help-card-title">Overview — Wiring Harness</div>
+          <p>A wiring harness bundles multiple wire circuits into a routed assembly with connectors, terminals, splices, conduit, and tape. Cost is labour-intensive (60–75% of total cost for simple harnesses). Assembly is largely manual, making labour rate and assembly time the primary cost drivers.</p>
+        </div>
+        <div class="help-card">
+          <div class="help-card-title">Inputs Required</div>
+          <ul>
+            <li>Wire circuits: gauge (mm²), length per circuit (m), insulation type</li>
+            <li>Connector types and pin counts (Delphi MX150, TE AMP, Molex, etc.)</li>
+            <li>Splices, seals, and terminal count</li>
+            <li>Conduit/corrugated tube length (m) and tape area (m²)</li>
+            <li>Assembly time estimate (hours per harness)</li>
+            <li>Test type (continuity, HiPot, functional)</li>
+            <li>Annual volume and manufacturing region</li>
+          </ul>
+        </div>
+        <div class="help-card">
+          <div class="help-card-title">Step-by-Step Workflow</div>
+          <ol>
+            <li>Select <strong>Harness ✓</strong> tab or ⊕ New Costing → Wiring Harness tile.</li>
+            <li>Add wire circuits: for each circuit, enter gauge, length, and insulation type.</li>
+            <li>Add connectors: housing unit price, terminal count, and seal cost.</li>
+            <li>Enter conduit length and tape area. Tape is typically 120% of circuit length.</li>
+            <li>Enter assembly time (h). A 10-circuit door harness typically takes 0.25–0.45 h to assemble.</li>
+            <li>Select test type. HiPot test adds £0.05–0.15 per harness; functional adds £0.20–0.60.</li>
+            <li>Set region — harness assembly in Romania/Morocco is 40–60% lower labour cost than UK.</li>
+            <li>Click <strong>Calculate</strong> for material, assembly, and test cost breakdown.</li>
+          </ol>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <div class="help-card" style="margin:0">
+            <div class="help-card-title">Tips</div>
+            <ul>
+              <li>For automotive harnesses, use 0.35–0.5 mm² for signal circuits and 1.5–4.0 mm² for power circuits.</li>
+              <li>Splice usage: each splice saves a connector pin but adds crimping time — net saving only above 5k volume.</li>
+              <li>Romania and Morocco rates are £3.50–5.50/hr — benchmark for all volume automotive harness work.</li>
+            </ul>
+          </div>
+          <div class="help-card" style="margin:0">
+            <div class="help-card-title">Common Mistakes</div>
+            <ul>
+              <li>Forgetting terminal crimp time — each crimp adds 4–8 s assembly time.</li>
+              <li>Under-estimating tape usage — use 1.2× circuit length for full wrap, 0.6× for partial wrap.</li>
+              <li>Ignoring drawing/BOM preparation NRE — a complex harness drawing takes 4–16 engineering hours.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Guide: Cast+Machine -->
+      <div class="cg-guide" id="cg-cast-machine" style="display:none">
+        <div class="help-card">
+          <div class="help-card-title">Overview — Cast + Machine</div>
+          <p>Cast+Machine combines HPDC (or sand/gravity) casting with post-cast CNC machining in a single integrated model. This is the correct approach for any cast part that requires subsequent machining for critical dimensions, threads, or sealing faces. Do not model these separately.</p>
+        </div>
+        <div class="help-card">
+          <div class="help-card-title">Inputs Required</div>
+          <ul>
+            <li>Casting: alloy, process, poured weight, die cost, machine tonnage, cycle time</li>
+            <li>Post-cast: heat treatment (T5, T6, HT, none), shot blast, impregnation</li>
+            <li>Machining operations: machine type, cycle time, OEE, tooling cost per op</li>
+            <li>Annual volume and region</li>
+          </ul>
+        </div>
+        <div class="help-card">
+          <div class="help-card-title">Step-by-Step Workflow</div>
+          <ol>
+            <li>Select <strong>Cast+Machine ✓</strong> tab or ⊕ New Costing → Cast + Machine tile.</li>
+            <li>Complete the Casting section: alloy, process, poured/part weight, die cost, cycle time.</li>
+            <li>Add post-cast operations: heat treatment (T6 for structural Al: +£0.80–1.50/kg), shot blast (£0.10–0.30/part), impregnation (£0.25–0.60/part).</li>
+            <li>Add machining operations for critical features: bore diameter, face mill, drill and tap.</li>
+            <li>For each machining op, select machine (3-axis HAAS, 5-axis DMG) and enter cycle time.</li>
+            <li>Review the combined cost breakdown — casting typically represents 40–65% of total cost.</li>
+          </ol>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <div class="help-card" style="margin:0">
+            <div class="help-card-title">Tips</div>
+            <ul>
+              <li>Move machining tolerances into the casting wherever possible — every machined feature adds £0.30–1.50 per part.</li>
+              <li>For sealing faces, minimum machining (0.5 mm stock removal) is faster and cheaper than full face milling.</li>
+              <li>Specify T5 instead of T6 where mechanical properties allow — saves 3–4 h heat treatment cycle time.</li>
+            </ul>
+          </div>
+          <div class="help-card" style="margin:0">
+            <div class="help-card-title">Common Mistakes</div>
+            <ul>
+              <li>Costing the casting and machining separately — use Cast+Machine tab for accurate combined tooling amortisation.</li>
+              <li>Forgetting impregnation for HPDC housings — porosity in HPDC is common; impregnation is mandatory for fluid-tight parts.</li>
+              <li>Under-estimating fixturing time — a complex 5-axis fixture changeover can add 12–25 min per batch.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Guide: Assemblies -->
+      <div class="cg-guide" id="cg-assemblies" style="display:none">
+        <div class="help-card">
+          <div class="help-card-title">Overview — Assembly BOM Rollup</div>
+          <p>The Assembly BOM model computes total assembly cost from a component list plus assembly operations. It supports multi-level BOM rollup, sub-assembly costing, and BOM import from CSV. Use this for any part where you are buying sub-components and adding value through assembly.</p>
+        </div>
+        <div class="help-card">
+          <div class="help-card-title">Inputs Required</div>
+          <ul>
+            <li>BOM lines: part number, description, unit cost (£), quantity per assembly</li>
+            <li>Assembly operations: operation name, machine/station type, cycle time (h), OEE, Manning</li>
+            <li>Sub-assembly costs (nested assemblies)</li>
+            <li>Annual volume and region</li>
+          </ul>
+        </div>
+        <div class="help-card">
+          <div class="help-card-title">Step-by-Step Workflow</div>
+          <ol>
+            <li>Select <strong>Assembly BOM</strong> tab or ⊕ New Costing → Assemblies tile.</li>
+            <li>Add BOM lines: enter each component with unit cost and quantity. Use <strong>Import CSV</strong> for large BOMs.</li>
+            <li>Add assembly operations: torque tighten, press fit, clip, weld, test. Enter cycle time per operation.</li>
+            <li>For sub-assemblies, enter the sub-assembly cost as a BOM line item.</li>
+            <li>Set overhead %, margin %, and annual volume.</li>
+            <li>Click <strong>Calculate</strong>. The model sums BOM cost + assembly labour + machine cost + overhead + margin.</li>
+          </ol>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <div class="help-card" style="margin:0">
+            <div class="help-card-title">Tips</div>
+            <ul>
+              <li>For manual assembly stations, use Manning = 1.0 and set machine cost = 0 (labour-only station).</li>
+              <li>Robotic assembly: Manning = 0.1–0.25 but machine hourly rate is £45–120/hr vs. £18–35/hr manual.</li>
+              <li>CSV import saves time for 20+ component BOMs — download the template from the Import button.</li>
+            </ul>
+          </div>
+          <div class="help-card" style="margin:0">
+            <div class="help-card-title">Common Mistakes</div>
+            <ul>
+              <li>Forgetting fasteners and consumables (adhesives, lubricants) — these are often 2–5% of total BOM cost.</li>
+              <li>Using supplier quoted sub-assembly costs without should-cost validation — always cost critical sub-assemblies independently.</li>
+              <li>Ignoring end-of-line test cost — functional test at 30–90 s per assembly adds £0.20–0.80/part at UK labour rates.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <script>
+      (function() {
+        var sel = document.getElementById('cg-select');
+        var guides = document.querySelectorAll('.cg-guide');
+        if (!sel) return;
+        sel.addEventListener('change', function() {
+          guides.forEach(function(g) { g.style.display = 'none'; });
+          var target = document.getElementById('cg-' + sel.value);
+          if (target) target.style.display = '';
+        });
+      })();
+      </script>
+    </div>
   </div>
 </div>
 
