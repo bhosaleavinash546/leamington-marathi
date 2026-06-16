@@ -107,6 +107,11 @@ interface CostingRecord {
   vehicle: string;
   system: string;
   confidence: string;
+  breakdown?: {
+    rawMaterial: number; process: number; labour: number; tooling: number;
+    overhead: number; packaging: number; logistics: number; margin: number;
+  };
+  warnings?: string[];
 }
 
 const COMMODITY_LABELS: Record<string, string> = {
@@ -125,6 +130,9 @@ const VEHICLE_OPTS = ['SUV1','SUV2','SUV3','SUV4','SUV5'];
 let _dashFilters = { vehicle: '', commodity: '', system: '', costRange: '', region: '', confidence: '' };
 let _dashCommodityChart: Chart | null = null;
 let _dashProgramChart: Chart | null = null;
+let _compareSelected: Set<string> = new Set();
+let _chatMessages: { role: 'user' | 'ai'; text: string }[] = [];
+let _chatOpen = false;
 
 function getCostingHistory(): CostingRecord[] {
   try { return JSON.parse(localStorage.getItem('cv-history') ?? '[]'); } catch { return []; }
@@ -336,13 +344,24 @@ function renderProgramChart(records: CostingRecord[]): void {
   });
 }
 
+function confBadgeHtml(conf: string): string {
+  const map: Record<string, [string, string]> = {
+    High:   ['conf-badge conf-badge--high',   '● High'],
+    Medium: ['conf-badge conf-badge--medium', '● Med'],
+    Low:    ['conf-badge conf-badge--low',    '● Low'],
+  };
+  const [cls, label] = map[conf] ?? ['conf-badge conf-badge--medium', '● Med'];
+  return `<span class="${cls}">${label}</span>`;
+}
+
 function renderRecentTable(records: CostingRecord[]): void {
   const tbody = document.getElementById('dash-recent-tbody');
   if (!tbody) return;
 
-  const sorted = [...records].sort((a,b) => b.timestamp - a.timestamp).slice(0, 50);
+  const sorted = [...records].sort((a,b) => b.timestamp - a.timestamp).slice(0, 10);
   if (sorted.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="8" class="dash-empty-row">No costings yet. Click "New Costing" to get started.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="10" class="dash-empty-row">No costings yet. Click a shortcut above to get started.</td></tr>';
+    updateCompareBar();
     return;
   }
 
@@ -350,20 +369,186 @@ function renderRecentTable(records: CostingRecord[]): void {
     const date = new Date(r.timestamp).toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'2-digit' });
     const commLabel = COMMODITY_LABELS[r.commodity] ?? r.commodity;
     const costStr = `£${r.totalCost.toFixed(2)}`;
+    const checked = _compareSelected.has(r.id) ? 'checked' : '';
     return `<tr data-record-id="${r.id}">
-      <td>${r.partName}</td>
+      <td><input type="checkbox" class="cmp-chk" data-id="${r.id}" ${checked} title="Select for comparison"/></td>
+      <td>${escHtml(r.partName)}</td>
       <td><span class="dash-commodity-badge">${commLabel}</span></td>
       <td>${r.vehicle || '—'}</td>
-      <td>${r.system || '—'}</td>
       <td class="dash-cost-val">${costStr}</td>
-      <td>${r.region || '—'}</td>
+      <td>${confBadgeHtml(r.confidence)}</td>
       <td>${date}</td>
       <td><button class="dash-reopen-btn" data-record-id="${r.id}">Open ↗</button></td>
     </tr>`;
   }).join('');
+
+  // Wire checkboxes
+  tbody.querySelectorAll<HTMLInputElement>('.cmp-chk').forEach(chk => {
+    chk.addEventListener('change', () => {
+      const id = chk.dataset.id!;
+      if (chk.checked) {
+        if (_compareSelected.size >= 2) {
+          // Deselect oldest — find first checked that isn't this one
+          const first = [..._compareSelected][0];
+          _compareSelected.delete(first);
+          const old = tbody.querySelector<HTMLInputElement>(`.cmp-chk[data-id="${first}"]`);
+          if (old) old.checked = false;
+        }
+        _compareSelected.add(id);
+      } else {
+        _compareSelected.delete(id);
+      }
+      updateCompareBar();
+    });
+  });
+
+  updateCompareBar();
+}
+
+function updateCompareBar(): void {
+  const bar = document.getElementById('compare-bar');
+  if (!bar) return;
+  bar.style.display = _compareSelected.size === 2 ? 'flex' : 'none';
+}
+
+function renderComparePanel(): void {
+  const all = getCostingHistory();
+  const ids = [..._compareSelected];
+  const recs = ids.map(id => all.find(r => r.id === id)).filter(Boolean) as CostingRecord[];
+  if (recs.length !== 2) return;
+
+  const panel = document.getElementById('compare-panel');
+  if (!panel) return;
+  panel.style.display = '';
+
+  const [a, b] = recs;
+  const LABELS: Record<string, string> = {
+    rawMaterial: 'Raw Material', process: 'Process (Machine)', labour: 'Labour',
+    tooling: 'Tooling', overhead: 'Overhead', packaging: 'Packaging',
+    logistics: 'Logistics', margin: 'Margin',
+  };
+
+  const bkdRows = (Object.keys(LABELS) as (keyof NonNullable<CostingRecord['breakdown']>)[]).map(k => {
+    const va = a.breakdown?.[k] ?? null;
+    const vb = b.breakdown?.[k] ?? null;
+    const delta = va != null && vb != null ? vb - va : null;
+    const deltaStr = delta != null
+      ? `<span class="${delta > 0 ? 'cmp-worse' : delta < 0 ? 'cmp-better' : ''}">${delta >= 0 ? '+' : ''}£${delta.toFixed(3)}</span>`
+      : '—';
+    return `<tr>
+      <td class="cmp-row-label">${LABELS[k]}</td>
+      <td class="cmp-val">${va != null ? '£' + va.toFixed(3) : '—'}</td>
+      <td class="cmp-val">${vb != null ? '£' + vb.toFixed(3) : '—'}</td>
+      <td class="cmp-delta">${deltaStr}</td>
+    </tr>`;
+  }).join('');
+
+  const totalDelta = b.totalCost - a.totalCost;
+  const fmtDate = (ts: number) => new Date(ts).toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' });
+
+  panel.innerHTML = `
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+      <div class="dash-section-title" style="margin:0">Side-by-Side Comparison</div>
+      <button id="close-compare-btn" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:1.2rem;line-height:1" title="Close comparison">✕</button>
+    </div>
+    <div class="cmp-header-row">
+      <div class="cmp-label-col"></div>
+      <div class="cmp-part-col">
+        <div class="cmp-part-name">${escHtml(a.partName)}</div>
+        <div class="cmp-part-meta">${COMMODITY_LABELS[a.commodity] ?? a.commodity} · ${a.region} · ${fmtDate(a.timestamp)}</div>
+        <div style="margin-top:4px">${confBadgeHtml(a.confidence)}</div>
+      </div>
+      <div class="cmp-part-col">
+        <div class="cmp-part-name">${escHtml(b.partName)}</div>
+        <div class="cmp-part-meta">${COMMODITY_LABELS[b.commodity] ?? b.commodity} · ${b.region} · ${fmtDate(b.timestamp)}</div>
+        <div style="margin-top:4px">${confBadgeHtml(b.confidence)}</div>
+      </div>
+      <div class="cmp-delta-col">Δ (B−A)</div>
+    </div>
+    <table class="cmp-table">
+      <tbody>
+        ${bkdRows}
+        <tr class="cmp-total-row">
+          <td class="cmp-row-label">TOTAL</td>
+          <td class="cmp-val cmp-total-val">£${a.totalCost.toFixed(3)}</td>
+          <td class="cmp-val cmp-total-val">£${b.totalCost.toFixed(3)}</td>
+          <td class="cmp-delta"><span class="${totalDelta > 0 ? 'cmp-worse' : totalDelta < 0 ? 'cmp-better' : ''}">${totalDelta >= 0 ? '+' : ''}£${totalDelta.toFixed(3)}</span></td>
+        </tr>
+      </tbody>
+    </table>
+    ${a.warnings?.length || b.warnings?.length ? `
+    <div style="margin-top:12px">
+      <div class="dash-section-title" style="margin-bottom:6px">Warnings</div>
+      ${a.warnings?.length ? `<div style="font-size:0.75rem;color:var(--amber);margin-bottom:4px"><strong>A:</strong> ${a.warnings.join('; ')}</div>` : ''}
+      ${b.warnings?.length ? `<div style="font-size:0.75rem;color:var(--amber)"><strong>B:</strong> ${b.warnings.join('; ')}</div>` : ''}
+    </div>` : ''}
+  `;
+
+  panel.querySelector('#close-compare-btn')?.addEventListener('click', () => {
+    panel.style.display = 'none';
+    _compareSelected.clear();
+    renderDashboard();
+  });
+
+  // Smooth scroll to panel
+  panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 (window as any).showHome = showHome;
+
+// ─── AI Chat Drawer ───────────────────────────────────────────────────────────
+
+function toggleChat(): void {
+  _chatOpen = !_chatOpen;
+  const drawer = document.getElementById('ai-chat-drawer');
+  const fab = document.getElementById('ai-chat-fab');
+  if (drawer) drawer.style.display = _chatOpen ? 'flex' : 'none';
+  if (fab) fab.setAttribute('aria-expanded', String(_chatOpen));
+  if (_chatOpen && _chatMessages.length === 0) {
+    _chatMessages.push({ role: 'ai', text: 'Hi! I\'m your CostVision AI assistant. Ask me anything about should-cost analysis, commodity pricing, DFM, or manufacturing processes.' });
+    renderChatMessages();
+  }
+  if (_chatOpen) document.getElementById('ai-chat-input')?.focus();
+}
+
+function renderChatMessages(): void {
+  const list = document.getElementById('ai-chat-messages');
+  if (!list) return;
+  list.innerHTML = _chatMessages.map(m => `
+    <div class="chat-msg chat-msg--${m.role}">
+      ${m.role === 'ai' ? '<span class="chat-avatar">AI</span>' : ''}
+      <div class="chat-bubble">${escHtml(m.text)}</div>
+    </div>`).join('');
+  list.scrollTop = list.scrollHeight;
+}
+
+async function sendChatMessage(): Promise<void> {
+  const input = document.getElementById('ai-chat-input') as HTMLInputElement;
+  const text = input?.value.trim();
+  if (!text) return;
+  input.value = '';
+  _chatMessages.push({ role: 'user', text });
+  renderChatMessages();
+
+  const sendBtn = document.getElementById('ai-chat-send') as HTMLButtonElement;
+  if (sendBtn) sendBtn.disabled = true;
+
+  try {
+    const apiKey = localStorage.getItem('sc-api-key') ?? '';
+    const res = await fetch('/api/aichat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...(apiKey ? { 'x-api-key': apiKey } : {}) },
+      body: JSON.stringify({ message: text }),
+    });
+    const data = await res.json() as { reply?: string; error?: string };
+    _chatMessages.push({ role: 'ai', text: data.reply ?? data.error ?? 'Sorry, I could not get a response.' });
+  } catch {
+    _chatMessages.push({ role: 'ai', text: 'Unable to reach AI service. Please check your connection and API key.' });
+  }
+  renderChatMessages();
+  if (sendBtn) sendBtn.disabled = false;
+  document.getElementById('ai-chat-input')?.focus();
+}
 
 // ─── Toast notification ───────────────────────────────────────────────────────
 
@@ -4592,7 +4777,7 @@ function compute(): void {
 
     lastResult = result;
     lastInput = input;
-    pushCostingRecord({ totalCost: result.total, confidence: result.warnings?.length ? 'Medium' : 'High' });
+    pushCostingRecord({ totalCost: result.total, confidence: result.warnings?.length ? 'Medium' : 'High', breakdown: result.breakdown, warnings: result.warnings });
     showResultsArea();
     renderBreakdown(result);
 
@@ -7326,25 +7511,43 @@ async function init(): Promise<void> {
     }
   });
 
-  // Quick action tiles
-  document.getElementById('tile-new-costing')?.addEventListener('click', () => showCosting('machining'));
-  document.getElementById('tile-pcb-image')?.addEventListener('click', () => showCosting('pcb_fab'));
+  // Quick action tiles (commodity-specific shortcuts)
+  document.getElementById('tile-casting')?.addEventListener('click', () => showCosting('casting'));
+  document.getElementById('tile-sheet-metal')?.addEventListener('click', () => showCosting('sheet_metal'));
+  document.getElementById('tile-plastic')?.addEventListener('click', () => showCosting('injection_moulding'));
   document.getElementById('tile-cad')?.addEventListener('click', () => showCosting('cad_analysis'));
+  document.getElementById('tile-pcb-image')?.addEventListener('click', () => showCosting('pcb_fab'));
   document.getElementById('tile-ai-agent')?.addEventListener('click', () => showCosting('ai_agent'));
+  // legacy ids from Phase 1 (kept for safety)
+  document.getElementById('tile-new-costing')?.addEventListener('click', () => showCosting('machining'));
   document.getElementById('tile-assembly')?.addEventListener('click', () => showCosting('assembly'));
   document.getElementById('tile-scenarios')?.addEventListener('click', () => {
     showCosting('machining');
-    setTimeout(() => {
-      document.querySelector<HTMLButtonElement>('.rtab[data-panel="scenarios"]')?.click();
-    }, 200);
+    setTimeout(() => document.querySelector<HTMLButtonElement>('.rtab[data-panel="scenarios"]')?.click(), 200);
   });
 
   // Re-open record from table
   document.getElementById('dash-recent-tbody')?.addEventListener('click', e => {
     const btn = (e.target as HTMLElement).closest('.dash-reopen-btn');
-    if (btn) {
-      showCosting();
-    }
+    if (btn) showCosting();
+  });
+
+  // Compare bar
+  document.getElementById('compare-btn')?.addEventListener('click', () => renderComparePanel());
+  document.getElementById('compare-cancel-btn')?.addEventListener('click', () => {
+    _compareSelected.clear();
+    updateCompareBar();
+    const panel = document.getElementById('compare-panel');
+    if (panel) panel.style.display = 'none';
+    renderDashboard();
+  });
+
+  // AI Chat FAB
+  document.getElementById('ai-chat-fab')?.addEventListener('click', toggleChat);
+  document.getElementById('ai-chat-close')?.addEventListener('click', toggleChat);
+  document.getElementById('ai-chat-send')?.addEventListener('click', () => { void sendChatMessage(); });
+  document.getElementById('ai-chat-input')?.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); void sendChatMessage(); }
   });
 
   // Initial view: show home on load

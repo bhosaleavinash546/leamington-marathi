@@ -240,37 +240,37 @@
 
     <!-- Quick Action Tiles -->
     <div class="dash-tiles-col">
-      <div class="dash-section-title">Quick Actions</div>
+      <div class="dash-section-title">One-Click Start</div>
       <div class="dash-tiles-grid">
-        <button class="dash-tile dash-tile--primary" id="tile-new-costing">
-          <div class="tile-icon">⚡</div>
-          <div class="tile-label">New Costing</div>
-          <div class="tile-sub">Start should-cost analysis</div>
+        <button class="dash-tile" id="tile-casting">
+          <div class="tile-icon">⚙️</div>
+          <div class="tile-label">Casting</div>
+          <div class="tile-sub">HPDC · Sand · Investment</div>
         </button>
-        <button class="dash-tile" id="tile-pcb-image">
-          <div class="tile-icon">🔬</div>
-          <div class="tile-label">PCB Image-to-BOM</div>
-          <div class="tile-sub">AI-extract BOM from photo</div>
+        <button class="dash-tile" id="tile-sheet-metal">
+          <div class="tile-icon">🔨</div>
+          <div class="tile-label">Sheet Metal</div>
+          <div class="tile-sub">Stamp · Laser · Fold</div>
+        </button>
+        <button class="dash-tile" id="tile-plastic">
+          <div class="tile-icon">🧪</div>
+          <div class="tile-label">Plastics</div>
+          <div class="tile-sub">Injection · Blow · Thermo</div>
         </button>
         <button class="dash-tile" id="tile-cad">
           <div class="tile-icon">📐</div>
           <div class="tile-label">CAD-to-Cost</div>
           <div class="tile-sub">Upload STEP / STL file</div>
         </button>
+        <button class="dash-tile dash-tile--primary" id="tile-pcb-image">
+          <div class="tile-icon">🔬</div>
+          <div class="tile-label">PCB Image-to-BOM</div>
+          <div class="tile-sub">AI-extract BOM from photo</div>
+        </button>
         <button class="dash-tile" id="tile-ai-agent">
           <div class="tile-icon">✦</div>
           <div class="tile-label">AI Agent</div>
           <div class="tile-sub">Natural language costing</div>
-        </button>
-        <button class="dash-tile" id="tile-assembly">
-          <div class="tile-icon">🔩</div>
-          <div class="tile-label">Assembly BOM</div>
-          <div class="tile-sub">Roll up multi-part BOM</div>
-        </button>
-        <button class="dash-tile" id="tile-scenarios">
-          <div class="tile-icon">📋</div>
-          <div class="tile-label">Scenarios</div>
-          <div class="tile-sub">Compare saved costings</div>
         </button>
       </div>
 
@@ -311,30 +311,56 @@
   <!-- Recent Costings Table -->
   <div class="dash-recent-section">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
-      <div class="dash-section-title" style="margin:0">Recent Costings</div>
+      <div class="dash-section-title" style="margin:0">Recent Costings <span style="font-size:0.68rem;color:var(--text-muted);font-weight:400;margin-left:6px">— last 10 · select 2 to compare</span></div>
       <button class="dash-clear-hist" id="dash-clear-hist" title="Clear costing history">Clear History</button>
+    </div>
+    <!-- Compare selected bar (hidden until 2 selected) -->
+    <div id="compare-bar" class="compare-bar" style="display:none">
+      <span class="compare-bar-label">2 costings selected</span>
+      <button class="btn btn-primary compare-bar-btn" id="compare-btn">Compare Side-by-Side →</button>
+      <button class="compare-bar-cancel" id="compare-cancel-btn">✕ Cancel</button>
     </div>
     <div class="dash-recent-wrap">
       <table class="dash-recent-table" id="dash-recent-table">
         <thead>
           <tr>
+            <th style="width:28px"></th>
             <th>Part Name</th>
             <th>Commodity</th>
             <th>Vehicle</th>
-            <th>System</th>
             <th>Total Cost</th>
-            <th>Region</th>
+            <th>Confidence</th>
             <th>Date</th>
             <th></th>
           </tr>
         </thead>
         <tbody id="dash-recent-tbody">
-          <tr><td colspan="8" class="dash-empty-row">No costings yet. Click "New Costing" to get started.</td></tr>
+          <tr><td colspan="10" class="dash-empty-row">No costings yet. Click a shortcut above to get started.</td></tr>
         </tbody>
       </table>
     </div>
   </div>
+
+  <!-- Compare Panel (hidden, rendered by JS) -->
+  <div id="compare-panel" class="compare-panel" style="display:none;margin-top:16px"></div>
+
 </section>
+
+<!-- ── Floating AI Chat ──────────────────────────────────────────────────────── -->
+<button id="ai-chat-fab" class="ai-chat-fab" aria-label="Open AI assistant" aria-expanded="false" title="Ask the AI cost assistant">
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+</button>
+<div id="ai-chat-drawer" class="ai-chat-drawer" style="display:none">
+  <div class="ai-chat-header">
+    <span class="ai-chat-title">AI Cost Assistant</span>
+    <button id="ai-chat-close" class="ai-chat-close" aria-label="Close chat">✕</button>
+  </div>
+  <div id="ai-chat-messages" class="ai-chat-messages"></div>
+  <div class="ai-chat-input-row">
+    <input id="ai-chat-input" class="ai-chat-input" type="text" placeholder="Ask about costs, materials, processes…" autocomplete="off"/>
+    <button id="ai-chat-send" class="ai-chat-send" aria-label="Send">↑</button>
+  </div>
+</div>
 
 <div id="validation-errors"   class="validation-box error"   style="display:none;margin:6px 16px 0"></div>
 <div id="validation-warnings" class="validation-box warning" style="display:none;margin:4px 16px 0"></div>
