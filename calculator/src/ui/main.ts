@@ -353,8 +353,18 @@ function renderDashboard(): void {
 }
 
 const COMM_COLOURS = [
-  '#00d2ff','#a855f7','#10b981','#f59e0b','#f87171',
-  '#818cf8','#06b6d4','#84cc16','#fb923c','#e879f9','#34d399',
+  '#3b82f6', // Blue
+  '#6366f1', // Indigo
+  '#8b5cf6', // Violet
+  '#0ea5e9', // Sky Blue
+  '#14b8a6', // Teal
+  '#06b6d4', // Cyan/Aqua
+  '#f59e0b', // Amber
+  '#d97706', // Gold
+  '#64748b', // Slate
+  '#7c3aed', // Purple
+  '#2563eb', // Royal Blue
+  '#0891b2', // Steel Blue
 ];
 
 function renderCommodityChart(records: CostingRecord[]): void {
@@ -377,7 +387,29 @@ function renderCommodityChart(records: CostingRecord[]): void {
   if (emptyEl) emptyEl.style.display = 'none';
 
   const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
-  const textCol = isDark ? '#a0a0a0' : '#404040';
+  const textCol = isDark ? '#94a3b8' : '#475569';
+  const total = entries.reduce((s, [,v]) => s + v, 0);
+
+  // Custom centre-text plugin for doughnut
+  const centreTextPlugin = {
+    id: 'cvCentreText',
+    afterDraw(chart: any) {
+      const { ctx, chartArea } = chart;
+      if (!chartArea) return;
+      const cx = (chartArea.left + chartArea.right) / 2;
+      const cy = (chartArea.top + chartArea.bottom) / 2;
+      ctx.save();
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.font = `700 22px Inter, sans-serif`;
+      ctx.fillStyle = isDark ? '#f0f0f0' : '#0a0a0a';
+      ctx.fillText(String(total), cx, cy - 7);
+      ctx.font = `400 10px Inter, sans-serif`;
+      ctx.fillStyle = isDark ? '#64748b' : '#94a3b8';
+      ctx.fillText('costings', cx, cy + 10);
+      ctx.restore();
+    },
+  };
 
   _dashCommodityChart = new Chart(canvas, {
     type: 'doughnut',
@@ -386,17 +418,47 @@ function renderCommodityChart(records: CostingRecord[]): void {
       datasets: [{
         data: entries.map(([,v]) => v),
         backgroundColor: entries.map((_, i) => COMM_COLOURS[i % COMM_COLOURS.length]),
-        borderWidth: 1,
-        borderColor: isDark ? '#141414' : '#fff',
+        borderWidth: 2,
+        borderColor: isDark ? '#141414' : '#ffffff',
+        hoverOffset: 8,
+        hoverBorderWidth: 3,
       }],
     },
     options: {
-      cutout: '60%',
+      animation: { animateRotate: true, animateScale: false, duration: 420 },
+      cutout: '64%',
+      responsive: true,
+      maintainAspectRatio: true,
       plugins: {
-        legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 }, color: textCol } },
-        tooltip: { callbacks: { label: ctx => ` ${ctx.label}: ${ctx.raw} costings` } },
+        legend: {
+          position: 'bottom',
+          labels: {
+            boxWidth: 10,
+            boxHeight: 10,
+            font: { size: 11, family: 'Inter, sans-serif' },
+            color: textCol,
+            padding: 14,
+            usePointStyle: true,
+            pointStyleWidth: 10,
+          },
+        },
+        tooltip: {
+          backgroundColor: isDark ? '#1e293b' : '#fff',
+          titleColor: isDark ? '#f0f0f0' : '#0a0a0a',
+          bodyColor: textCol,
+          borderColor: isDark ? '#334155' : '#e2e8f0',
+          borderWidth: 1,
+          padding: 10,
+          callbacks: {
+            label: ctx => {
+              const pct = total > 0 ? ((ctx.raw as number) / total * 100).toFixed(0) : 0;
+              return ` ${ctx.label}: ${ctx.raw} (${pct}%)`;
+            },
+          },
+        },
       },
     },
+    plugins: [centreTextPlugin],
   });
 }
 
@@ -405,7 +467,6 @@ function renderProgramChart(records: CostingRecord[]): void {
   if (!canvas) return;
   if (_dashProgramChart) { _dashProgramChart.destroy(); _dashProgramChart = null; }
 
-  // Aggregate cost by vehicle program
   const byCost: Record<string, number> = {};
   VEHICLE_OPTS.forEach(v => { byCost[v] = 0; });
   records.forEach(r => {
@@ -416,8 +477,38 @@ function renderProgramChart(records: CostingRecord[]): void {
   const labels = Object.keys(byCost);
   const data = Object.values(byCost);
   const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
-  const textCol = isDark ? '#a0a0a0' : '#404040';
-  const gridCol = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)';
+  const textCol = isDark ? '#94a3b8' : '#475569';
+  const gridCol = isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)';
+
+  // Custom data-label plugin: value above each bar
+  const barLabelPlugin = {
+    id: 'cvBarLabel',
+    afterDatasetsDraw(chart: any) {
+      const { ctx } = chart;
+      chart.data.datasets.forEach((_ds: any, di: number) => {
+        const meta = chart.getDatasetMeta(di);
+        if (meta.hidden) return;
+        meta.data.forEach((bar: any, idx: number) => {
+          const val = chart.data.datasets[di].data[idx] as number;
+          if (!val) return;
+          const text = `£${val < 1000 ? val.toFixed(0) : (val/1000).toFixed(1)+'k'}`;
+          const barHeight = (bar as any).height ?? 0;
+          ctx.save();
+          ctx.font = `600 9.5px Inter, sans-serif`;
+          ctx.textAlign = 'center';
+          ctx.textBaseline = barHeight > 18 ? 'middle' : 'bottom';
+          ctx.fillStyle = barHeight > 18
+            ? '#ffffff'
+            : (isDark ? '#94a3b8' : '#475569');
+          const yPos = barHeight > 18
+            ? bar.y + barHeight / 2
+            : bar.y - 4;
+          ctx.fillText(text, bar.x, yPos);
+          ctx.restore();
+        });
+      });
+    },
+  };
 
   _dashProgramChart = new Chart(canvas, {
     type: 'bar',
@@ -427,17 +518,43 @@ function renderProgramChart(records: CostingRecord[]): void {
         label: 'Total Cost (£)',
         data,
         backgroundColor: COMM_COLOURS.slice(0, labels.length),
-        borderRadius: 4,
+        borderRadius: 6,
         borderSkipped: false,
+        barPercentage: 0.65,
+        categoryPercentage: 0.8,
       }],
     },
     options: {
-      plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ` £${Number(ctx.raw).toFixed(2)}` } } },
+      animation: { duration: 380, easing: 'easeInOutQuart' as const },
+      responsive: true,
+      maintainAspectRatio: true,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: isDark ? '#1e293b' : '#fff',
+          titleColor: isDark ? '#f0f0f0' : '#0a0a0a',
+          bodyColor: textCol,
+          borderColor: isDark ? '#334155' : '#e2e8f0',
+          borderWidth: 1,
+          padding: 10,
+          callbacks: { label: ctx => ` £${Number(ctx.raw).toFixed(2)}` },
+        },
+      },
       scales: {
-        x: { grid: { color: gridCol }, ticks: { color: textCol, font: { size: 10 } } },
-        y: { grid: { color: gridCol }, ticks: { color: textCol, font: { size: 10 }, callback: v => `£${v}` } },
+        x: {
+          grid: { color: gridCol },
+          border: { color: 'transparent' },
+          ticks: { color: textCol, font: { size: 10, family: 'Inter, sans-serif' } },
+        },
+        y: {
+          grid: { color: gridCol },
+          border: { color: 'transparent' },
+          beginAtZero: true,
+          ticks: { color: textCol, font: { size: 10, family: 'Inter, sans-serif' }, callback: (v: any) => `£${v}` },
+        },
       },
     },
+    plugins: [barLabelPlugin],
   });
 }
 
