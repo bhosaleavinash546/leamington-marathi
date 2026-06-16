@@ -776,7 +776,7 @@ function showToast(message: string, type: 'error' | 'warning' | 'info' = 'info')
   const icon = type === 'error' ? '✕' : type === 'warning' ? '⚠' : 'ℹ';
   const toast = document.createElement('div');
   toast.style.cssText = `background:${bg};color:#fff;border-radius:6px;padding:10px 14px;font-size:0.78rem;box-shadow:0 4px 12px rgba(0,0,0,0.25);display:flex;gap:8px;align-items:flex-start;animation:toastIn .2s ease`;
-  toast.innerHTML = `<span style="font-weight:700;flex-shrink:0">${icon}</span><span>${message}</span>`;
+  toast.innerHTML = `<span style="font-weight:700;flex-shrink:0">${icon}</span><span>${escHtml(message)}</span>`;
   container.appendChild(toast);
   setTimeout(() => { toast.style.opacity = '0'; toast.style.transition = 'opacity .3s'; setTimeout(() => toast.remove(), 300); }, 6000);
 }
@@ -5812,7 +5812,8 @@ function renderScenarios(): void {
   el('run-compare-btn')?.addEventListener('click', () => {
     const id1 = sel('sc-cmp1');
     const id2 = sel('sc-cmp2');
-    if (!id1 || !id2) return;
+    if (!id1 || !id2) { showToast('Select two scenarios to compare.', 'warning'); return; }
+    if (id1 === id2) { showToast('Select two different scenarios to compare.', 'warning'); return; }
     try {
       const comp = compareScenarios(id1, id2, library);
       renderCompareResult(comp);
@@ -7684,6 +7685,8 @@ async function init(): Promise<void> {
     }
     // Auto-recalculate so results reflect new regional rates
     if (lastResult && lastInput) el('calc-btn')?.click();
+    // Refresh dashboard if it's visible
+    if (document.getElementById('home-view')?.style.display !== 'none') renderDashboard();
     // Refresh populateSelects in case UI is open
     if (typeof populateSelects === 'function') populateSelects();
   });
@@ -7779,11 +7782,18 @@ async function init(): Promise<void> {
   // Panel header close button
   document.getElementById('wf-panel-close')?.addEventListener('click', closeWorkflowPanel);
 
-  // Escape key closes panel when open
+  // Escape key closes panel/modals when open
   document.addEventListener('keydown', e => {
-    if (e.key === 'Escape' && document.getElementById('costing-view')?.classList.contains('wf-panel')) {
+    if (e.key !== 'Escape') return;
+    if (document.body.classList.contains('cv-new-costing')) {
+      closeWorkflowPanel();
+    } else if (document.getElementById('costing-view')?.classList.contains('wf-panel')) {
       closeWorkflowPanel();
     }
+    const rateModal = el('rate-modal');
+    if (rateModal?.style.display === 'flex') { rateModal.style.display = 'none'; return; }
+    const scenarioModal = el('scenario-modal');
+    if (scenarioModal?.style.display === 'flex') { scenarioModal.style.display = 'none'; return; }
   });
 
   // Dashboard filter chips
@@ -7851,7 +7861,12 @@ async function init(): Promise<void> {
   // Re-open record from table
   document.getElementById('dash-recent-tbody')?.addEventListener('click', e => {
     const btn = (e.target as HTMLElement).closest('.dash-reopen-btn');
-    if (btn) showCosting();
+    if (btn) {
+      const recordId = (btn as HTMLElement).dataset.recordId;
+      const record = getCostingHistory().find(r => r.id === recordId);
+      if (record) showCosting(record.commodity);
+      else showCosting();
+    }
   });
 
   // Compare bar
