@@ -2785,23 +2785,37 @@ function applyPCBImageToFab(): void {
   const rawFinish = (b.surfaceFinish ?? '').toLowerCase().trim();
   const mappedFinish = FINISH_MAP[rawFinish] ?? 'enig';
 
-  setF('pcbf-technology', b.technologyType);
-  setF('pcbf-quality', b.qualityGrade);
+  // Map Vision solder mask colour → form option values (lowercase, normalise)
+  const MASK_MAP: Record<string, string> = {
+    'green': 'green', 'black': 'black', 'white': 'white', 'red': 'red', 'blue': 'blue',
+    'enig green': 'green', 'hasl green': 'green', 'yellow': 'green',
+  };
+  const rawMask = (b.solderMaskColour ?? '').toLowerCase().trim();
+  const mappedMask = MASK_MAP[rawMask] ?? 'green';
+
+  // Snap Vision's minTraceSpaceMm to nearest valid select option
+  const VALID_TRACES = ['0.075', '0.10', '0.15', '0.20'];
+  const nearestTrace = VALID_TRACES.reduce((prev, cur) =>
+    Math.abs(parseFloat(cur) - b.minTraceSpaceMm) < Math.abs(parseFloat(prev) - b.minTraceSpaceMm) ? cur : prev
+  );
+
+  setSelectSafe('pcbf-technology', b.technologyType, 'HDI_RIGID');
+  setSelectSafe('pcbf-quality', b.qualityGrade, 'auto_grade1');
   setF('pcbf-layers', String(b.estimatedLayers));
   setF('pcbf-board-w', b.widthMm);
   setF('pcbf-board-h', b.heightMm);
   setF('pcbf-panel-util', b.panelUtilisation);
-  setF('pcbf-cu', String(b.copperWeightOz));
-  setF('pcbf-outer-cu', String(b.copperWeightOz));
-  setF('pcbf-via-type', b.microVias > 0 ? 'microvia_hdi' : 'through_only');
+  setSelectSafe('pcbf-cu', String(b.copperWeightOz), '1');
+  setSelectSafe('pcbf-outer-cu', String(b.copperWeightOz), '1');
+  setSelectSafe('pcbf-via-type', b.microVias > 0 ? 'microvia_hdi' : 'through_only', 'through_only');
   setSelectSafe('pcbf-hdi-structure', mappedHdi, 'none');
   setF('pcbf-vias', b.throughVias);
   setF('pcbf-blind-vias', b.blindVias);
   setF('pcbf-buried-vias', b.buriedVias);
   setF('pcbf-uvias', b.microVias);
-  setF('pcbf-trace', String(b.minTraceSpaceMm));
+  setSelectSafe('pcbf-trace', nearestTrace, '0.10');
   setSelectSafe('pcbf-finish', mappedFinish, 'enig');
-  setF('pcbf-solder-mask', b.solderMaskColour);
+  setSelectSafe('pcbf-solder-mask', mappedMask, 'green');
   setF('pcbf-silkscreen', String(b.silkscreenSides));
   setCheck('pcbf-impedance', b.impedanceControlRequired);
   setCheck('pcbf-bga', b.bgaDetected);

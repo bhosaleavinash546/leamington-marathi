@@ -70,16 +70,16 @@ export function validateStackInput(
     }
   }
 
-  if (input.tooling.totalToolingCost < 0)
-    errors.push({ field: 'tooling.totalToolingCost', message: 'Cannot be negative' });
+  if (!Number.isFinite(input.tooling.totalToolingCost) || input.tooling.totalToolingCost < 0)
+    errors.push({ field: 'tooling.totalToolingCost', message: 'Must be a finite non-negative number' });
 
-  if (input.tooling.mode === 'amortized' && input.tooling.amortizationVolume <= 0)
+  if (input.tooling.mode === 'amortized' && !(input.tooling.amortizationVolume > 0))
     errors.push({ field: 'tooling.amortizationVolume', message: 'Must be positive when mode is amortized' });
 
-  if (input.packagingPerPart < 0) errors.push({ field: 'packagingPerPart', message: 'Cannot be negative' });
-  if (input.logisticsPerPart < 0) errors.push({ field: 'logisticsPerPart', message: 'Cannot be negative' });
-  if (input.overheadPct < 0) errors.push({ field: 'overheadPct', message: 'Cannot be negative' });
-  if (input.marginPct < 0) errors.push({ field: 'marginPct', message: 'Cannot be negative' });
+  if (!Number.isFinite(input.packagingPerPart) || input.packagingPerPart < 0) errors.push({ field: 'packagingPerPart', message: 'Must be a finite non-negative number' });
+  if (!Number.isFinite(input.logisticsPerPart) || input.logisticsPerPart < 0) errors.push({ field: 'logisticsPerPart', message: 'Must be a finite non-negative number' });
+  if (!Number.isFinite(input.overheadPct) || input.overheadPct < 0) errors.push({ field: 'overheadPct', message: 'Must be a finite non-negative number' });
+  if (!Number.isFinite(input.marginPct) || input.marginPct < 0) errors.push({ field: 'marginPct', message: 'Must be a finite non-negative number' });
 
   return { valid: errors.length === 0, errors, warnings };
 }
