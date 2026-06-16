@@ -1483,6 +1483,44 @@ function renderSheetMetalForm(): string {
 
 // ─── Form: Sheet Metal Fabrication ───────────────────────────────────────────
 
+const _SMF_BLANKING_DEFS: Record<string, {
+  desc: string; defaultCycleSec: number; defaultGas: string; showGas: boolean; machId: string;
+}> = {
+  laser:    { desc: 'Fiber laser — fastest for thin/medium sheet (0.5–20mm), excellent edge quality, no tool wear. Best for complex profiles and small-to-medium batches. Use N₂ for SS/Al, O₂ for mild steel.', defaultCycleSec: 45,  defaultGas: 'nitrogen', showGas: true,  machId: 'laser-trumpf-3030'          },
+  plasma:   { desc: 'Plasma cutting — cost-effective for thick plate (6–80mm), faster than laser on thick sections. Wider kerf and more dross than fiber laser. Best for heavy structural fabrication.', defaultCycleSec: 30,  defaultGas: 'air',      showGas: true,  machId: 'plasma-hypertherm-xpr300'    },
+  waterjet: { desc: 'Waterjet — no heat affected zone, cuts any material (metal, glass, ceramics, composites). Slower than laser but zero thermal distortion. Ideal for hardened steel or heat-sensitive alloys.', defaultCycleSec: 120, defaultGas: '',         showGas: false, machId: 'waterjet-flow-mach500'       },
+  punch:    { desc: 'Turret punching — fastest for parts with many standard holes/louvres/features. High-speed for thin sheet (0.5–6mm). Requires tooling investment. Best for high-volume parts with repetitive features.', defaultCycleSec: 60,  defaultGas: '',         showGas: false, machId: 'punch-amada-emz3610'         },
+  shear:    { desc: 'Guillotine shearing — straight-line blanks only. Lowest cost per part, fastest cycle. Best for simple rectangular blanks, strip cutting at high volume. No complex profiles.', defaultCycleSec: 8,   defaultGas: '',         showGas: false, machId: 'shear-hydraulic-3m'          },
+};
+
+function wireSheetMetalBlankingChange(): void {
+  const methodSel = document.getElementById('smf-blank-method') as HTMLSelectElement | null;
+  if (!methodSel) return;
+  const update = () => {
+    const method = methodSel.value;
+    const def = _SMF_BLANKING_DEFS[method];
+    if (!def) return;
+    const band = document.getElementById('smf-blank-info');
+    const label = methodSel.options[methodSel.selectedIndex]?.text ?? method;
+    if (band) band.innerHTML = `<strong style="color:var(--accent)">${escHtml(label)}</strong> — ${escHtml(def.desc)}`;
+    const gasRow = document.getElementById('smf-gas-row');
+    if (gasRow) gasRow.style.display = def.showGas ? '' : 'none';
+    const gasEl = document.getElementById('smf-gas') as HTMLSelectElement | null;
+    if (gasEl) gasEl.value = def.showGas && def.defaultGas ? def.defaultGas : '';
+    const ctEl = document.getElementById('smf-blank-ct') as HTMLInputElement | null;
+    if (ctEl && ctEl.value === ctEl.defaultValue || ctEl) {
+      // Only update cycle time if it hasn't been manually changed from a process default
+      const prevDefault = (methodSel as any)._prevCycleDef as number | undefined;
+      if (!prevDefault || Number(ctEl.value) === prevDefault) ctEl.value = String(def.defaultCycleSec);
+      (methodSel as any)._prevCycleDef = def.defaultCycleSec;
+    }
+    const machEl = document.getElementById('smf-blank-mach') as HTMLSelectElement | null;
+    if (machEl) { const opt = Array.from(machEl.options).find(o => o.value === def.machId); if (opt) machEl.value = def.machId; }
+  };
+  methodSel.addEventListener('change', update);
+  update();
+}
+
 function renderSheetMetalFabAdvisor(): string {
   return `
     <details style="background:#fff8f3;border:1px solid #ffd699;border-radius:6px;padding:6px 8px;margin-bottom:6px">
@@ -1510,32 +1548,43 @@ function renderSheetMetalFabForm(): string {
     <div class="section-title">Material</div>
     <div class="field-row">
       <div class="field-group"><label>Material</label><select id="smf-mat" class="material-select"></select></div>
-      <div class="field-group"><label>Part Weight (kg)</label><input type="number" id="smf-part-wt" step="0.01" min="0.001" value="0.50"/></div>
+      <div class="field-group"><label>Part Weight (kg) <span title="Net finished part weight. Used with material utilisation to compute gross blank weight and scrap.">ℹ</span></label><input type="number" id="smf-part-wt" step="0.01" min="0.001" value="0.50"/></div>
     </div>
     <div class="field-row" style="margin-top:6px">
-      <div class="field-group"><label>Material Utilization <span title="Net part weight / gross blank weight. Driven by flat-pattern nesting efficiency. Typical 0.70–0.90 for laser cut, 0.75–0.85 for stamped.">ℹ</span></label><input type="number" id="smf-mat-util" step="0.01" min="0.1" max="1" value="0.78"/></div>
-      <div class="field-group"><label>Tolerance (mm) <span title="Tightest part tolerance. Multiplier on cycle times: ≥0.5→×1.0, ≥0.3→×1.1, ≥0.2→×1.3, ≥0.1→×1.6">ℹ</span></label><input type="number" id="smf-tolerance" step="0.05" min="0.05" value="0.2"/></div>
+      <div class="field-group"><label>Material Utilisation <span title="Net part weight / gross blank weight. Driven by flat-pattern nesting efficiency. Laser cut: 0.70–0.90. Stamped: 0.75–0.85.">ℹ</span></label><input type="number" id="smf-mat-util" step="0.01" min="0.1" max="1" value="0.78"/></div>
+      <div class="field-group"><label>Tolerance (mm) <span title="Tightest part tolerance. Multiplier on cycle times: ≥0.5→×1.0, ≥0.3→×1.1, ≥0.2→×1.3, ≥0.1→×1.6.">ℹ</span></label><input type="number" id="smf-tolerance" step="0.05" min="0.05" value="0.2"/></div>
     </div>
     <div class="section-title" style="margin-top:8px">Blanking</div>
     <div class="field-row">
-      <div class="field-group"><label>Method</label><select id="smf-blank-method"><option value="laser" selected>Laser Cutting</option><option value="punch">Turret Punching</option><option value="shear">Shearing</option></select></div>
-      <div class="field-group"><label>Cycle Time (s) <span title="Total blanking time per part including sheet load/index. Laser: estimate from cut length ÷ speed + pierce count × pierce time. Punch: hits ÷ hits/min.">ℹ</span></label><input type="number" id="smf-blank-ct" step="1" min="1" value="45"/></div>
+      <div class="field-group" style="flex:2"><label>Method</label>
+        <select id="smf-blank-method">
+          <option value="laser"    selected>Laser Cutting (Fiber)</option>
+          <option value="plasma"          >Plasma Cutting</option>
+          <option value="waterjet"        >Waterjet Cutting</option>
+          <option value="punch"           >Turret Punching</option>
+          <option value="shear"           >Guillotine Shearing</option>
+        </select>
+      </div>
     </div>
-    <div class="field-row" style="margin-top:6px">
+    <div id="smf-blank-info" class="process-info-band" style="margin:6px 0 6px;padding:6px 10px;background:var(--surface);border-left:3px solid var(--accent);border-radius:4px;font-size:0.82em;line-height:1.4"></div>
+    <div class="field-row">
       <div class="field-group"><label>Blanking Machine</label><select id="smf-blank-mach" class="machine-select"></select></div>
       <div class="field-group"><label>Blanking Labour</label><select id="smf-blank-lab" class="labour-select"></select></div>
     </div>
     <div class="field-row" style="margin-top:6px">
-      <div class="field-group"><label>Assist Gas <span title="Laser only. N₂ for SS/Al (clean edge, £3.50/hr). O₂ for mild steel (faster, £1.20/hr). Air for low-cost/non-critical (£0.40/hr).">ℹ</span></label><select id="smf-gas"><option value="">None / not laser</option><option value="nitrogen">Nitrogen (N₂) — SS/Al</option><option value="oxygen">Oxygen (O₂) — Mild Steel</option><option value="air">Compressed Air</option></select></div>
+      <div class="field-group"><label>Cycle Time (s) <span title="Total blanking time per part including sheet load/index. Laser: cut length ÷ speed + pierces × pierce time. Punch: hit count ÷ hits/min. Shear: 5–15s.">ℹ</span></label><input type="number" id="smf-blank-ct" step="1" min="1" value="45"/></div>
+    </div>
+    <div id="smf-gas-row" class="field-row" style="margin-top:6px">
+      <div class="field-group"><label>Assist Gas <span title="Laser: N₂ for SS/Al (clean edge £3.50/hr), O₂ for mild steel (faster £1.20/hr), Air for low cost (£0.40/hr). Plasma: Air standard, O₂ for faster cut on mild steel.">ℹ</span></label><select id="smf-gas"><option value="">None / not applicable</option><option value="nitrogen">Nitrogen (N₂) — SS / Aluminium</option><option value="oxygen">Oxygen (O₂) — Mild Steel, faster</option><option value="air">Compressed Air — low cost / plasma</option></select></div>
     </div>
     <div class="section-title" style="margin-top:8px">Press Brake Bending</div>
     <div class="field-row">
-      <div class="field-group"><label>Bend Count</label><input type="number" id="smf-bends" step="1" min="0" value="3"/></div>
-      <div class="field-group"><label>Time / Bend (s) <span title="Per bend including repositioning. Typical: 30–60s simple, 60–120s complex back-gauge repositioning.">ℹ</span></label><input type="number" id="smf-bend-t" step="5" min="0" value="45"/></div>
+      <div class="field-group"><label>Bend Count <span title="Number of bends per part. 0 if no bending required.">ℹ</span></label><input type="number" id="smf-bends" step="1" min="0" value="3"/></div>
+      <div class="field-group"><label>Time / Bend (s) <span title="Per bend including repositioning. Simple bends: 30–45s. Complex back-gauge reposition: 60–120s.">ℹ</span></label><input type="number" id="smf-bend-t" step="5" min="0" value="45"/></div>
     </div>
     <div class="field-row" style="margin-top:6px">
-      <div class="field-group"><label>Tool Changes</label><input type="number" id="smf-tool-chg" step="1" min="0" value="1"/></div>
-      <div class="field-group"><label>Tool Change (s) <span title="Per die/punch setup amortized over batch. Typically 300–600s.">ℹ</span></label><input type="number" id="smf-tool-chg-t" step="30" min="0" value="300"/></div>
+      <div class="field-group"><label>Tool Changes <span title="Number of die/punch setups per part run. Multi-radius bends need multiple setups.">ℹ</span></label><input type="number" id="smf-tool-chg" step="1" min="0" value="1"/></div>
+      <div class="field-group"><label>Tool Change (s) <span title="Setup time per tool change, amortized over batch. Typically 300–600s per setup.">ℹ</span></label><input type="number" id="smf-tool-chg-t" step="30" min="0" value="300"/></div>
     </div>
     <div class="field-row" style="margin-top:6px">
       <div class="field-group"><label>Brake Machine</label><select id="smf-brake-mach" class="machine-select"></select></div>
@@ -1543,37 +1592,63 @@ function renderSheetMetalFabForm(): string {
     </div>
     <div class="section-title" style="margin-top:8px">Machine Parameters</div>
     <div class="field-row">
-      <div class="field-group"><label>OEE</label><input type="number" id="smf-oee" step="0.01" min="0.01" max="1" value="0.80"/></div>
-      <div class="field-group"><label>Manning</label><input type="number" id="smf-manning" step="0.5" min="0" value="1"/></div>
+      <div class="field-group"><label>OEE <span title="Overall Equipment Effectiveness — applies to blanking and bending. Typical fab shop: 0.75–0.85.">ℹ</span></label><input type="number" id="smf-oee" step="0.01" min="0.01" max="1" value="0.80"/></div>
+      <div class="field-group"><label>Manning <span title="Operators per machine. Laser/punch CNC: 0.5–1. Brake: 1–2. Robotic cell: 0.25–0.5.">ℹ</span></label><input type="number" id="smf-manning" step="0.25" min="0" value="1"/></div>
     </div>
     <div class="field-row" style="margin-top:6px">
-      <div class="field-group"><label>Labour Eff.</label><input type="number" id="smf-lab-eff" step="0.01" min="0.01" max="1" value="0.92"/></div>
-      <div class="field-group"><label>Reject Rate</label><input type="number" id="smf-reject" step="0.005" min="0" max="0.2" value="0"/></div>
+      <div class="field-group"><label>Labour Eff. <span title="Actual productive time fraction per paid hour. Typical 0.88–0.95 for sheet metal.">ℹ</span></label><input type="number" id="smf-lab-eff" step="0.01" min="0.01" max="1" value="0.92"/></div>
+      <div class="field-group"><label>Reject Rate <span title="Overall fab scrap fraction. Uplifts material and cycle costs. Typical laser cut: 0–1%. Forming: 0.5–2%.">ℹ</span></label><input type="number" id="smf-reject" step="0.005" min="0" max="0.2" value="0"/></div>
     </div>
     <div class="section-title" style="margin-top:8px">Joining (optional)</div>
-    <div class="field-row">
-      <div class="field-group"><label>Spot Welds</label><input type="number" id="smf-sw-count" step="1" min="0" value="0"/></div>
-      <div class="field-group"><label>Time / Spot (s)</label><input type="number" id="smf-sw-t" step="0.5" min="0" value="3"/></div>
-    </div>
-    <div class="field-row" style="margin-top:4px">
-      <div class="field-group"><label>Spot Weld Machine</label><select id="smf-sw-mach" class="machine-select"><option value="">None</option></select></div>
-      <div class="field-group"><label>Spot Weld Labour</label><select id="smf-sw-lab" class="labour-select"><option value="">None</option></select></div>
-    </div>
-    <div class="field-row" style="margin-top:6px">
-      <div class="field-group"><label>MIG Weld Length (m)</label><input type="number" id="smf-mig-len" step="0.05" min="0" value="0"/></div>
-      <div class="field-group"><label>MIG Speed (m/min) <span title="Deposition speed. Robotic MIG: 0.5–1.0 m/min. Manual: 0.2–0.4 m/min.">ℹ</span></label><input type="number" id="smf-mig-spd" step="0.05" min="0.05" value="0.3"/></div>
-    </div>
-    <div class="field-row" style="margin-top:4px">
-      <div class="field-group"><label>MIG Machine</label><select id="smf-mig-mach" class="machine-select"><option value="">None</option></select></div>
-      <div class="field-group"><label>MIG Labour</label><select id="smf-mig-lab" class="labour-select"><option value="">None</option></select></div>
-    </div>
-    <div class="field-row" style="margin-top:4px">
-      <div class="field-group"><label>MIG Consumable (£/m) <span title="Wire + shielding gas cost per metre of weld bead. Typically £0.30–0.60/m for MIG.">ℹ</span></label><input type="number" id="smf-mig-cons" step="0.05" min="0" value="0.40"/></div>
-    </div>
+    <details style="margin-bottom:2px">
+      <summary style="font-size:0.80rem;font-weight:600;cursor:pointer;padding:4px 0;color:var(--text-muted)">▶ Spot Welding</summary>
+      <div style="padding:4px 0">
+        <div class="field-row" style="margin-top:4px">
+          <div class="field-group"><label>Spot Weld Count <span title="Number of spot welds per part. 0 = not used.">ℹ</span></label><input type="number" id="smf-sw-count" step="1" min="0" value="0"/></div>
+          <div class="field-group"><label>Time / Spot (s) <span title="Per spot weld including electrode approach. Typical: 2–4s pedestal, 1–2s robotic.">ℹ</span></label><input type="number" id="smf-sw-t" step="0.5" min="0" value="3"/></div>
+        </div>
+        <div class="field-row" style="margin-top:4px">
+          <div class="field-group"><label>Spot Weld Machine <span title="Pedestal spot welder for manual, KUKA robot cell for automated body shop production.">ℹ</span></label><select id="smf-sw-mach" class="machine-select"><option value="">None</option></select></div>
+          <div class="field-group"><label>Spot Weld Labour</label><select id="smf-sw-lab" class="labour-select"><option value="">None</option></select></div>
+        </div>
+      </div>
+    </details>
+    <details style="margin-bottom:2px">
+      <summary style="font-size:0.80rem;font-weight:600;cursor:pointer;padding:4px 0;color:var(--text-muted)">▶ MIG / MAG Welding</summary>
+      <div style="padding:4px 0">
+        <div class="field-row" style="margin-top:4px">
+          <div class="field-group"><label>MIG Weld Length (m) <span title="Total weld bead length per part in metres. 0 = not used.">ℹ</span></label><input type="number" id="smf-mig-len" step="0.05" min="0" value="0"/></div>
+          <div class="field-group"><label>MIG Speed (m/min) <span title="Deposition speed. Manual MIG: 0.2–0.4 m/min. Robotic MIG: 0.5–1.2 m/min.">ℹ</span></label><input type="number" id="smf-mig-spd" step="0.05" min="0.05" value="0.3"/></div>
+        </div>
+        <div class="field-row" style="margin-top:4px">
+          <div class="field-group"><label>MIG Machine</label><select id="smf-mig-mach" class="machine-select"><option value="">None</option></select></div>
+          <div class="field-group"><label>MIG Labour</label><select id="smf-mig-lab" class="labour-select"><option value="">None</option></select></div>
+        </div>
+        <div class="field-row" style="margin-top:4px">
+          <div class="field-group"><label>MIG Consumable (£/m) <span title="Wire + shielding gas cost per metre of weld bead. Typical £0.30–0.60/m for MIG/MAG.">ℹ</span></label><input type="number" id="smf-mig-cons" step="0.05" min="0" value="0.40"/></div>
+        </div>
+      </div>
+    </details>
+    <details style="margin-bottom:2px">
+      <summary style="font-size:0.80rem;font-weight:600;cursor:pointer;padding:4px 0;color:var(--text-muted)">▶ TIG Welding</summary>
+      <div style="padding:4px 0">
+        <div class="field-row" style="margin-top:4px">
+          <div class="field-group"><label>TIG Weld Length (m) <span title="Total TIG bead length per part. Typical 0.05–2.0m. 0 = not used.">ℹ</span></label><input type="number" id="smf-tig-len" step="0.05" min="0" value="0"/></div>
+          <div class="field-group"><label>TIG Speed (m/min) <span title="Manual TIG: 0.05–0.12 m/min. Much slower than MIG. Use TIG for SS, aluminium and critical welds.">ℹ</span></label><input type="number" id="smf-tig-spd" step="0.01" min="0.01" value="0.08"/></div>
+        </div>
+        <div class="field-row" style="margin-top:4px">
+          <div class="field-group"><label>TIG Machine</label><select id="smf-tig-mach" class="machine-select"><option value="">None</option></select></div>
+          <div class="field-group"><label>TIG Labour <span title="TIG requires a skilled welder — select skilled or highly skilled labour rate.">ℹ</span></label><select id="smf-tig-lab" class="labour-select"><option value="">None</option></select></div>
+        </div>
+        <div class="field-row" style="margin-top:4px">
+          <div class="field-group"><label>TIG Consumable (£/m) <span title="Argon shielding gas + filler rod per metre of TIG bead. Typical £0.50–0.80/m.">ℹ</span></label><input type="number" id="smf-tig-cons" step="0.05" min="0" value="0.60"/></div>
+        </div>
+      </div>
+    </details>
     <div class="section-title" style="margin-top:8px">Tooling</div>
     <div class="field-row">
-      <div class="field-group"><label>Tooling Cost (£) <span title="Press brake tooling + nesting/CNC programming NRE. Laser cut: £500–3k programming. Punch: £2k–10k. No hard blanking die needed for laser.">ℹ</span></label><input type="number" id="smf-tooling" step="500" min="0" value="2000"/></div>
-      <div class="field-group"><label>Amort. Volume</label><input type="number" id="smf-amort" step="1000" min="1" value="5000"/></div>
+      <div class="field-group"><label>Tooling Cost (£) <span title="Press brake tooling + nesting/CNC programming NRE. Laser: £500–3k. Punch: £2k–10k. Stamping die: £15k–150k.">ℹ</span></label><input type="number" id="smf-tooling" step="500" min="0" value="2000"/></div>
+      <div class="field-group"><label>Amort. Volume <span title="Annual volume over which to amortize tooling. Higher volume = lower tooling cost per part.">ℹ</span></label><input type="number" id="smf-amort" step="1000" min="1" value="5000"/></div>
     </div>`;
 }
 
@@ -4252,23 +4327,77 @@ function switchCommodity(type: CommodityType): void {
       addMachOp({ name: 'CNC Turning', type: 'turning', machineId: 'mach-lathe-cnc', labourId: 'lab-uk-skilled', cycleTimeHr: 0.05, partsPerCycle: 1, oee: 0.85, manning: 1, labourTimeHr: 0.05, labourEfficiency: 0.92 });
       break;
 
-    case 'sheet_metal_fab':
+    case 'sheet_metal_fab': {
       area.innerHTML = renderSheetMetalFabForm();
       populateSelects();
       wireSheetMetalFabAdvisor();
       setTimeout(() => {
-        const blankMachEl = el<HTMLSelectElement>('smf-blank-mach');
-        if (blankMachEl) { const opt = Array.from(blankMachEl.options).find(o => o.value.includes('laser-trumpf-3030')); if (opt) blankMachEl.value = opt.value; }
-        const brakeMachEl = el<HTMLSelectElement>('smf-brake-mach');
-        if (brakeMachEl) { const opt = Array.from(brakeMachEl.options).find(o => o.value.includes('brake-amada-hfe100')); if (opt) brakeMachEl.value = opt.value; }
+        // ── Material — filter to sheet metal categories only ──────────────────
+        const smfMatCats = new Set([
+          'Mild Steel Sheet', 'Galvanised Steel Sheet', 'Electrogalvanised Steel Sheet',
+          'AHSS Sheet', 'High Strength Steel Sheet', 'Ultra-High Strength Steel',
+          'Aluminium Sheet', 'Stainless Steel Sheet', 'Copper & Brass Sheet',
+        ]);
         const matEl = el<HTMLSelectElement>('smf-mat');
-        if (matEl) { const opt = Array.from(matEl.options).find(o => o.value.includes('mat-dc01')); if (opt) matEl.value = opt.value; }
-        const blankLabEl = el<HTMLSelectElement>('smf-blank-lab');
-        if (blankLabEl) { const opt = Array.from(blankLabEl.options).find(o => o.value.includes('semiskilled')); if (opt) blankLabEl.value = opt.value; }
-        const brakeLabEl = el<HTMLSelectElement>('smf-brake-lab');
-        if (brakeLabEl) { const opt = Array.from(brakeLabEl.options).find(o => o.value.includes('semiskilled')); if (opt) brakeLabEl.value = opt.value; }
+        if (matEl) {
+          const smfMats = library.materials.filter(m => smfMatCats.has(m.category));
+          matEl.innerHTML = smfMats.map(m => `<option value="${escHtml(m.id)}">${escHtml(m.grade)} — £${m.pricePerKg.toFixed(2)}/kg</option>`).join('');
+          if (Array.from(matEl.options).some(o => o.value === 'mat-dc01')) matEl.value = 'mat-dc01';
+        }
+        // ── Blanking machine — filter to laser/plasma/waterjet/punch/shear ────
+        const blankMachIds = new Set([
+          'laser-trumpf-3030', 'laser-trumpf-5030', 'laser-amada-ensis-3015', 'laser-bystronic-3015',
+          'plasma-hypertherm-xpr300', 'plasma-kjellberg-hifocus280',
+          'waterjet-flow-mach500', 'waterjet-omax-80x',
+          'punch-amada-emz3610', 'punch-trumpf-5000',
+          'shear-hydraulic-3m', 'shear-guillotine-6mm',
+        ]);
+        const blankMachEl = el<HTMLSelectElement>('smf-blank-mach');
+        if (blankMachEl) {
+          const blankMachs = library.machines.filter(m => blankMachIds.has(m.id));
+          blankMachEl.innerHTML = blankMachs.map(m => `<option value="${escHtml(m.id)}">${escHtml(m.machineClass)} — £${m.computedRatePerHr.toFixed(2)}/hr</option>`).join('');
+        }
+        // ── Brake machine — filter to press brake machines ────────────────────
+        const brakeMachIds = new Set([
+          'brake-amada-hfe100', 'brake-amada-hfe170', 'brake-trumpf-trubend3100',
+          'brake-lvd-ppeb135', 'brake-trumpf-5230',
+        ]);
+        const brakeMachEl = el<HTMLSelectElement>('smf-brake-mach');
+        if (brakeMachEl) {
+          const brakeMachs = library.machines.filter(m => brakeMachIds.has(m.id));
+          brakeMachEl.innerHTML = brakeMachs.map(m => `<option value="${escHtml(m.id)}">${escHtml(m.machineClass)} — £${m.computedRatePerHr.toFixed(2)}/hr</option>`).join('');
+        }
+        // ── Spot weld machine — pedestal + robotic ────────────────────────────
+        const swMachEl = el<HTMLSelectElement>('smf-sw-mach');
+        if (swMachEl) {
+          const swMachs = library.machines.filter(m => ['spotweld-gun-manual','robot-spotweld-kuka'].includes(m.id));
+          swMachEl.innerHTML = `<option value="">None</option>${swMachs.map(m => `<option value="${escHtml(m.id)}">${escHtml(m.machineClass)} — £${m.computedRatePerHr.toFixed(2)}/hr</option>`).join('')}`;
+        }
+        // ── MIG machine — manual station + robotic cell ───────────────────────
+        const migMachEl = el<HTMLSelectElement>('smf-mig-mach');
+        if (migMachEl) {
+          const migMachs = library.machines.filter(m => ['mig-welder-manual','robot-mig-cell'].includes(m.id));
+          migMachEl.innerHTML = `<option value="">None</option>${migMachs.map(m => `<option value="${escHtml(m.id)}">${escHtml(m.machineClass)} — £${m.computedRatePerHr.toFixed(2)}/hr</option>`).join('')}`;
+        }
+        // ── TIG machine ───────────────────────────────────────────────────────
+        const tigMachEl = el<HTMLSelectElement>('smf-tig-mach');
+        if (tigMachEl) {
+          const tigM = library.machines.find(m => m.id === 'tig-welder-manual');
+          tigMachEl.innerHTML = `<option value="">None</option>${tigM ? `<option value="${tigM.id}">${escHtml(tigM.machineClass)} — £${tigM.computedRatePerHr.toFixed(2)}/hr</option>` : ''}`;
+        }
+        // ── Labour defaults ───────────────────────────────────────────────────
+        for (const id of ['smf-blank-lab', 'smf-brake-lab']) {
+          const labEl = el<HTMLSelectElement>(id);
+          if (labEl) { const opt = Array.from(labEl.options).find(o => o.value === 'lab-uk-semiskilled'); if (opt) labEl.value = 'lab-uk-semiskilled'; }
+        }
+        for (const id of ['smf-sw-lab', 'smf-mig-lab', 'smf-tig-lab']) {
+          const labEl = el<HTMLSelectElement>(id);
+          if (labEl) { const opt = Array.from(labEl.options).find(o => o.value === 'lab-uk-skilled'); if (opt) labEl.value = 'lab-uk-skilled'; }
+        }
+        wireSheetMetalBlankingChange();
       }, 0);
       break;
+    }
 
     case 'sheet_metal':
       area.innerHTML = renderSheetMetalForm();
@@ -4921,13 +5050,16 @@ function collectSheetMetalFabInput(): UniversalStackInput {
   const migLen = num('smf-mig-len');
   const migMach = sel('smf-mig-mach') || undefined;
   const migLab = sel('smf-mig-lab') || undefined;
+  const tigLen = num('smf-tig-len');
+  const tigMach = sel('smf-tig-mach') || undefined;
+  const tigLab = sel('smf-tig-lab') || undefined;
   const gasVal = sel('smf-gas') || undefined;
 
   const drivers = computeSheetMetalFabDrivers({
     materialId: sel('smf-mat'),
     partWeightKg: num('smf-part-wt'),
     materialUtilization: num('smf-mat-util') || 0.78,
-    blankingMethod: validSel<FabBlankingMethod>('smf-blank-method', ['laser','punch','shear'], 'laser'),
+    blankingMethod: validSel<FabBlankingMethod>('smf-blank-method', ['laser','plasma','waterjet','punch','shear'], 'laser'),
     blankingMachineId: sel('smf-blank-mach'),
     blankingLabourId: sel('smf-blank-lab'),
     blankingCycleTimeSec: num('smf-blank-ct'),
@@ -4952,6 +5084,11 @@ function collectSheetMetalFabInput(): UniversalStackInput {
     migWeldMachineId: migLen > 0 ? migMach : undefined,
     migWeldLabourId: migLen > 0 ? migLab : undefined,
     migWeldConsumableCostPerM: num('smf-mig-cons') || 0.40,
+    tigWeldLengthM: tigLen > 0 ? tigLen : undefined,
+    tigWeldSpeedMPerMin: num('smf-tig-spd') || 0.08,
+    tigWeldMachineId: tigLen > 0 ? tigMach : undefined,
+    tigWeldLabourId: tigLen > 0 ? tigLab : undefined,
+    tigWeldConsumableCostPerM: num('smf-tig-cons') || 0.60,
     toolingCost: num('smf-tooling'),
     amortizationVolume: num('smf-amort') || 1,
   });

@@ -1,6 +1,6 @@
 import type { CommodityDrivers, OperationInput, RawMaterialInput, ToolingInput } from '../types.js';
 
-export type FabBlankingMethod = 'laser' | 'punch' | 'shear';
+export type FabBlankingMethod = 'laser' | 'plasma' | 'waterjet' | 'punch' | 'shear';
 export type AssistGas = 'nitrogen' | 'oxygen' | 'air';
 
 export const ASSIST_GAS_COST_PER_HR: Record<AssistGas, number> = {
@@ -28,6 +28,7 @@ export interface SheetMetalFabInputs {
   blankingMachineId: string;
   blankingLabourId: string;
   blankingCycleTimeSec: number;
+  /** Assist gas for laser (N₂/O₂/Air) or plasma (Air/O₂) cutting */
   assistGas?: AssistGas;
 
   // ── Bending ─────────────────────────────────────────────────────────────────
@@ -60,6 +61,16 @@ export interface SheetMetalFabInputs {
   migWeldLabourId?: string;
   migWeldConsumableCostPerM?: number;
 
+  // ── TIG welding (optional) ───────────────────────────────────────────────────
+  /** TIG weld bead length per part in metres. Typical 0.1–2.0m. */
+  tigWeldLengthM?: number;
+  /** TIG deposition speed m/min. Manual TIG: 0.05–0.12 m/min. Default 0.08. */
+  tigWeldSpeedMPerMin?: number;
+  tigWeldMachineId?: string;
+  tigWeldLabourId?: string;
+  /** Argon gas + filler rod cost per metre of TIG bead. Typical £0.50–0.80/m. Default 0.60. */
+  tigWeldConsumableCostPerM?: number;
+
   // ── Tooling ──────────────────────────────────────────────────────────────────
   toolingCost: number;
   amortizationVolume: number;
@@ -67,14 +78,14 @@ export interface SheetMetalFabInputs {
 
 export function getSheetMetalFabInputSchema(): Record<string, string> {
   return {
-    materialId: 'string — ID from rate library materials (e.g. mat-steel-cr)',
+    materialId: 'string — ID from rate library materials (e.g. mat-dc01, mat-ss304-sheet)',
     partWeightKg: 'number — finished part weight kg',
     materialUtilization: 'number 0–1 — net part weight / gross blank weight including nesting scrap',
-    blankingMethod: 'laser | punch | shear — primary blanking/cutting process',
+    blankingMethod: 'laser | plasma | waterjet | punch | shear — primary blanking/cutting process',
     blankingMachineId: 'string — machine ID for the blanking operation',
     blankingLabourId: 'string — labour rate ID for blanking',
     blankingCycleTimeSec: 'number — total blanking cycle time per part in seconds including sheet load/index',
-    assistGas: 'nitrogen | oxygen | air — laser assist gas (laser method only)',
+    assistGas: 'nitrogen | oxygen | air — assist gas for laser (N₂ for SS/Al, O₂ for mild steel) or plasma gas type',
     bendCount: 'number — number of bends per part',
     timePerBendSec: 'number — seconds per bend including repositioning (default 45s)',
     toolChangeCount: 'number — press brake die/punch tool setups per part run',
@@ -95,15 +106,22 @@ export function getSheetMetalFabInputSchema(): Record<string, string> {
     migWeldMachineId: 'string? — MIG welder machine ID (required when migWeldLengthM > 0)',
     migWeldLabourId: 'string? — labour rate ID for MIG welding (required when migWeldLengthM > 0)',
     migWeldConsumableCostPerM: 'number? — wire + shielding gas cost £/m of weld bead (default 0.40)',
+    tigWeldLengthM: 'number? — total TIG weld bead length per part in metres',
+    tigWeldSpeedMPerMin: 'number? — TIG deposition speed m/min (manual: 0.05–0.12, default 0.08)',
+    tigWeldMachineId: 'string? — TIG welder machine ID (required when tigWeldLengthM > 0)',
+    tigWeldLabourId: 'string? — labour rate ID for TIG welding (skilled welder required)',
+    tigWeldConsumableCostPerM: 'number? — argon + filler rod cost £/m of TIG bead (default 0.60)',
     toolingCost: 'number — press brake tooling + nesting/CNC programming NRE £',
     amortizationVolume: 'number — volume over which to amortize tooling',
   };
 }
 
 const BLANKING_OP_NAME: Record<FabBlankingMethod, string> = {
-  laser: 'Laser Cutting',
-  punch: 'Turret Punching',
-  shear: 'Shearing',
+  laser:    'Laser Cutting',
+  plasma:   'Plasma Cutting',
+  waterjet: 'Waterjet Cutting',
+  punch:    'Turret Punching',
+  shear:    'Shearing',
 };
 
 function resolveToleranceFactor(toleranceMm: number | undefined): number {
@@ -123,16 +141,21 @@ export function computeSheetMetalFabDrivers(inputs: SheetMetalFabInputs): Commod
     ? 1 / (1 - inputs.rejectRate)
     : 1.0;
 
-  const gasAdder =
-    inputs.assistGas && inputs.blankingMethod === 'laser'
-      ? ASSIST_GAS_COST_PER_HR[inputs.assistGas] *
-        (inputs.blankingCycleTimeSec / 3600) * toleranceFactor * rejectUplift
-      : 0;
+  // Assist gas applies to laser and plasma
+  const gasApplies = inputs.assistGas &&
+    (inputs.blankingMethod === 'laser' || inputs.blankingMethod === 'plasma');
+  const gasAdder = gasApplies
+    ? ASSIST_GAS_COST_PER_HR[inputs.assistGas!] *
+      (inputs.blankingCycleTimeSec / 3600) * toleranceFactor * rejectUplift
+    : 0;
 
   const migConsumableCost =
     (inputs.migWeldLengthM ?? 0) * (inputs.migWeldConsumableCostPerM ?? 0.40);
 
-  const consumablesCostPerPart = gasAdder + migConsumableCost;
+  const tigConsumableCost =
+    (inputs.tigWeldLengthM ?? 0) * (inputs.tigWeldConsumableCostPerM ?? 0.60);
+
+  const consumablesCostPerPart = gasAdder + migConsumableCost + tigConsumableCost;
 
   const rawMaterial: RawMaterialInput = {
     materialId: inputs.materialId,
@@ -212,6 +235,26 @@ export function computeSheetMetalFabDrivers(inputs: SheetMetalFabInputs): Commod
       oee: 1.0,
       manning: inputs.manning,
       labourTimeHr: migCycleHr,
+      labourEfficiency: inputs.labourEfficiency,
+    });
+  }
+
+  if (
+    (inputs.tigWeldLengthM ?? 0) > 0 &&
+    inputs.tigWeldMachineId !== undefined &&
+    inputs.tigWeldLabourId !== undefined
+  ) {
+    const tigCycleHr =
+      inputs.tigWeldLengthM! / (inputs.tigWeldSpeedMPerMin ?? 0.08) / 60 * rejectUplift;
+    operations.push({
+      operationName: 'TIG Welding',
+      machineId: inputs.tigWeldMachineId,
+      labourId: inputs.tigWeldLabourId,
+      cycleTimeHr: tigCycleHr,
+      partsPerCycle: 1,
+      oee: 1.0,
+      manning: inputs.manning,
+      labourTimeHr: tigCycleHr,
       labourEfficiency: inputs.labourEfficiency,
     });
   }
