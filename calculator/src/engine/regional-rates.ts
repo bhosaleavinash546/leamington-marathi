@@ -36,7 +36,7 @@ interface RegionalData {
   currency: string;
   /** FX rate to GBP (1 GBP = X local currency) */
   fxToGBP: number;
-  /** Fully-loaded labour rates in £/hr equivalent (2025 Q2) */
+  /** Fully-loaded labour rates in £/hr equivalent (2026 Q2) */
   labour: {
     skilled: number;       // machinist / toolmaker
     semiskilled: number;   // press operator / assembler
@@ -45,7 +45,7 @@ interface RegionalData {
     electronics: number;   // SMT / EMS operator
     inspector: number;     // QA / CMM inspector
   };
-  /** Industrial energy rates £/kWh (2025 Q2) */
+  /** Industrial energy rates £/kWh (2026 Q2) */
   energy: {
     electricityPerKwh: number;
     gasPerKwh: number;
@@ -149,8 +149,8 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
   },
   RO: {
     name: 'Romania',
-    currency: 'EUR',
-    fxToGBP: 1.16,
+    currency: 'RON',
+    fxToGBP: 5.8,
     labour: { skilled: 7.50, semiskilled: 5.80, engineer: 13.00, foundry: 5.50, electronics: 5.20, inspector: 8.50 },
     energy: { electricityPerKwh: 0.11, gasPerKwh: 0.05 },
     materialMultiplier: 0.96,
@@ -161,8 +161,8 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
   },
   HU: {
     name: 'Hungary',
-    currency: 'EUR',
-    fxToGBP: 1.16,
+    currency: 'HUF',
+    fxToGBP: 450,
     labour: { skilled: 9.50, semiskilled: 7.50, engineer: 17.00, foundry: 7.00, electronics: 6.80, inspector: 11.00 },
     energy: { electricityPerKwh: 0.12, gasPerKwh: 0.05 },
     materialMultiplier: 0.97,
@@ -173,8 +173,8 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
   },
   SE: {
     name: 'Sweden',
-    currency: 'EUR',
-    fxToGBP: 1.16,
+    currency: 'SEK',
+    fxToGBP: 13.8,
     labour: { skilled: 40.00, semiskilled: 32.00, engineer: 62.00, foundry: 30.00, electronics: 28.00, inspector: 38.00 },
     energy: { electricityPerKwh: 0.09, gasPerKwh: 0.04 },
     materialMultiplier: 1.04,
@@ -197,8 +197,8 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
   },
   TR: {
     name: 'Turkey',
-    currency: 'USD',
-    fxToGBP: 1.27,
+    currency: 'TRY',
+    fxToGBP: 42.0,
     labour: { skilled: 6.50, semiskilled: 5.00, engineer: 12.00, foundry: 4.80, electronics: 4.50, inspector: 7.00 },
     energy: { electricityPerKwh: 0.09, gasPerKwh: 0.04 },
     materialMultiplier: 0.90,
@@ -342,7 +342,7 @@ export function buildRegionalLibrary(baseLibrary: RateLibrary, region: Manufactu
       ...l,
       fullyLoadedRatePerHr: labourMap[l.id] !== undefined ? labourMap[l.id] : l.fullyLoadedRatePerHr * (rd.labour.skilled / 26.00),
       region: rd.name,
-      sourceNote: `Regional benchmark ${rd.name} — 2025 Q2`,
+      sourceNote: `Regional benchmark ${rd.name} — 2026 Q2`,
       confidence: 'Low' as const,
     })),
 
@@ -372,7 +372,7 @@ export function buildRegionalLibrary(baseLibrary: RateLibrary, region: Manufactu
         electricityPerKwh: rd.energy.electricityPerKwh,
         gasPerKwh: rd.energy.gasPerKwh,
         effectiveDate: new Date().toISOString().slice(0, 10),
-        sourceNote: `${rd.name} industrial energy benchmark 2025 Q2`,
+        sourceNote: `${rd.name} industrial energy benchmark 2026 Q2`,
         confidence: 'Low' as const,
       },
     ],

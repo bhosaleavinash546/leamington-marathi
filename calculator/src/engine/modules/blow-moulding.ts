@@ -73,9 +73,15 @@ export function computeBlowMouldingDrivers(inputs: BlowMouldingInputs): Commodit
 
   const effectiveCycleTimeHr = cycleTimeHr * rejectUplift;
 
+  const processName = inputs.machineId.startsWith('bm-ibm')
+    ? 'Injection Blow Moulding'
+    : inputs.machineId.startsWith('bm-sbm') || inputs.machineId.startsWith('bm-pet')
+      ? 'Stretch Blow Moulding'
+      : 'Extrusion Blow Moulding';
+
   const operations: OperationInput[] = [
     {
-      operationName: 'Extrusion Blow Moulding',
+      operationName: processName,
       machineId: inputs.machineId,
       labourId: inputs.labourId,
       cycleTimeHr: effectiveCycleTimeHr,

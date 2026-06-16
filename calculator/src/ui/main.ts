@@ -87,7 +87,7 @@ let _displayFxRate = 1.0;
 const CURRENCY_SYMBOL: Record<string, string> = {
   GBP: '£', EUR: '€', USD: '$', CNY: '¥', INR: '₹',
   MXN: '$M', THB: '฿', VND: '₫', BRL: 'R$', KRW: '₩',
-  PLN: 'zł', CZK: 'Kč',
+  PLN: 'zł', CZK: 'Kč', TRY: '₺', SEK: 'kr', RON: 'lei', HUF: 'Ft',
 };
 
 function _currFmt(n: number): string {
@@ -322,7 +322,11 @@ function renderDashboard(): void {
   // Estimate savings: 12% of total spend (industry benchmark)
   const totalSpend = records.reduce((s, r) => s + r.totalCost, 0);
   const savings = totalSpend * 0.12;
-  if (kpiSaving) kpiSaving.textContent = records.length ? `£${savings < 1000 ? savings.toFixed(0) : (savings/1000).toFixed(1)+'k'}` : '—';
+  if (kpiSaving) {
+    const sym = CURRENCY_SYMBOL[_displayCurrency] ?? _displayCurrency;
+    const dispSavings = savings * _displayFxRate;
+    kpiSaving.textContent = records.length ? `${sym}${dispSavings < 1000 ? dispSavings.toFixed(0) : (dispSavings/1000).toFixed(1)+'k'}` : '—';
+  }
 
   // Top commodity by count
   const commCount: Record<string, number> = {};
@@ -331,7 +335,7 @@ function renderDashboard(): void {
   if (kpiTopCom) kpiTopCom.textContent = topComm ? COMMODITY_LABELS[topComm[0]] ?? topComm[0] : '—';
 
   const avgCost = records.length ? totalSpend / records.length : 0;
-  if (kpiAvg) kpiAvg.textContent = records.length ? `£${avgCost.toFixed(2)}` : '—';
+  if (kpiAvg) kpiAvg.textContent = records.length ? _currFmt(avgCost) : '—';
 
   const highCostCount = records.filter(r => r.totalCost > 100).length;
   if (kpiHighCost) kpiHighCost.textContent = String(highCostCount);
@@ -343,10 +347,10 @@ function renderDashboard(): void {
       daiEl.innerHTML = '';
     } else if (highCostCount > 0) {
       daiEl.className = 'dash-ai-item dash-ai-item--warn';
-      daiEl.innerHTML = `<span class="dai-icon">🎯</span><span>${highCostCount} part${highCostCount>1?'s':''} exceed £100 — prioritise these for detailed supplier negotiation.</span>`;
+      daiEl.innerHTML = `<span class="dai-icon">🎯</span><span>${highCostCount} part${highCostCount>1?'s':''} exceed ${_currFmt(100)} — prioritise these for detailed supplier negotiation.</span>`;
     } else {
       daiEl.className = 'dash-ai-item dash-ai-item--opt';
-      daiEl.innerHTML = `<span class="dai-icon">✅</span><span>All costed parts are below £100. Consider checking wiring harness and PCB assemblies next.</span>`;
+      daiEl.innerHTML = `<span class="dai-icon">✅</span><span>All costed parts are below ${_currFmt(100)}. Consider checking wiring harness and PCB assemblies next.</span>`;
     }
   }
 
@@ -500,7 +504,9 @@ function renderProgramChart(records: CostingRecord[]): void {
         meta.data.forEach((bar: any, idx: number) => {
           const val = chart.data.datasets[di].data[idx] as number;
           if (!val) return;
-          const text = `£${val < 1000 ? val.toFixed(0) : (val/1000).toFixed(1)+'k'}`;
+          const _sym = CURRENCY_SYMBOL[_displayCurrency] ?? _displayCurrency;
+          const _dv = val * _displayFxRate;
+          const text = `${_sym}${_dv < 1000 ? _dv.toFixed(0) : (_dv/1000).toFixed(1)+'k'}`;
           const barHeight = (bar as any).height ?? 0;
           ctx.save();
           ctx.font = `600 9.5px Inter, sans-serif`;
@@ -524,7 +530,7 @@ function renderProgramChart(records: CostingRecord[]): void {
     data: {
       labels,
       datasets: [{
-        label: 'Total Cost (£)',
+        label: `Total Cost (${_displayCurrency})`,
         data,
         backgroundColor: COMM_COLOURS.slice(0, labels.length),
         borderRadius: 6,
@@ -546,7 +552,7 @@ function renderProgramChart(records: CostingRecord[]): void {
           borderColor: isDark ? '#334155' : '#e2e8f0',
           borderWidth: 1,
           padding: 10,
-          callbacks: { label: ctx => ` £${Number(ctx.raw).toFixed(2)}` },
+          callbacks: { label: ctx => ` ${_currFmt(Number(ctx.raw))}` },
         },
       },
       scales: {
@@ -559,7 +565,7 @@ function renderProgramChart(records: CostingRecord[]): void {
           grid: { color: gridCol },
           border: { color: 'transparent' },
           beginAtZero: true,
-          ticks: { color: textCol, font: { size: 10, family: 'Inter, sans-serif' }, callback: (v: any) => `£${v}` },
+          ticks: { color: textCol, font: { size: 10, family: 'Inter, sans-serif' }, callback: (v: any) => `${CURRENCY_SYMBOL[_displayCurrency] ?? _displayCurrency}${Number(v) * _displayFxRate}` },
         },
       },
     },
@@ -583,7 +589,7 @@ function renderRecentTable(records: CostingRecord[]): void {
 
   const sorted = [...records].sort((a,b) => b.timestamp - a.timestamp).slice(0, 10);
   if (sorted.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="10" class="dash-empty-row">No costings yet. Click a shortcut above to get started.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="8" class="dash-empty-row">No costings yet. Click a shortcut above to get started.</td></tr>';
     updateCompareBar();
     return;
   }
@@ -591,7 +597,7 @@ function renderRecentTable(records: CostingRecord[]): void {
   tbody.innerHTML = sorted.map(r => {
     const date = new Date(r.timestamp).toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'2-digit' });
     const commLabel = COMMODITY_LABELS[r.commodity] ?? r.commodity;
-    const costStr = `£${r.totalCost.toFixed(2)}`;
+    const costStr = _currFmt(r.totalCost);
     const checked = _compareSelected.has(r.id) ? 'checked' : '';
     return `<tr data-record-id="${r.id}">
       <td><input type="checkbox" class="cmp-chk" data-id="${r.id}" ${checked} title="Select for comparison"/></td>
@@ -655,14 +661,13 @@ function renderComparePanel(): void {
     const va = a.breakdown?.[k] ?? null;
     const vb = b.breakdown?.[k] ?? null;
     const delta = va != null && vb != null ? vb - va : null;
-    const deltaStr = delta != null
-      ? `<span class="${delta > 0 ? 'cmp-worse' : delta < 0 ? 'cmp-better' : ''}">${delta >= 0 ? '+' : ''}£${delta.toFixed(3)}</span>`
-      : '—';
+    const sym = CURRENCY_SYMBOL[_displayCurrency] ?? _displayCurrency;
+    const _s = (v: number) => `${sym}${(v * _displayFxRate).toFixed(3)}`;
     return `<tr>
       <td class="cmp-row-label">${LABELS[k]}</td>
-      <td class="cmp-val">${va != null ? '£' + va.toFixed(3) : '—'}</td>
-      <td class="cmp-val">${vb != null ? '£' + vb.toFixed(3) : '—'}</td>
-      <td class="cmp-delta">${deltaStr}</td>
+      <td class="cmp-val">${va != null ? _s(va) : '—'}</td>
+      <td class="cmp-val">${vb != null ? _s(vb) : '—'}</td>
+      <td class="cmp-delta">${delta != null ? `<span class="${delta > 0 ? 'cmp-worse' : delta < 0 ? 'cmp-better' : ''}">${delta >= 0 ? '+' : ''}${_s(delta)}</span>` : '—'}</td>
     </tr>`;
   }).join('');
 
@@ -693,9 +698,9 @@ function renderComparePanel(): void {
         ${bkdRows}
         <tr class="cmp-total-row">
           <td class="cmp-row-label">TOTAL</td>
-          <td class="cmp-val cmp-total-val">£${a.totalCost.toFixed(3)}</td>
-          <td class="cmp-val cmp-total-val">£${b.totalCost.toFixed(3)}</td>
-          <td class="cmp-delta"><span class="${totalDelta > 0 ? 'cmp-worse' : totalDelta < 0 ? 'cmp-better' : ''}">${totalDelta >= 0 ? '+' : ''}£${totalDelta.toFixed(3)}</span></td>
+          <td class="cmp-val cmp-total-val">${(CURRENCY_SYMBOL[_displayCurrency] ?? _displayCurrency)}${(a.totalCost * _displayFxRate).toFixed(3)}</td>
+          <td class="cmp-val cmp-total-val">${(CURRENCY_SYMBOL[_displayCurrency] ?? _displayCurrency)}${(b.totalCost * _displayFxRate).toFixed(3)}</td>
+          <td class="cmp-delta"><span class="${totalDelta > 0 ? 'cmp-worse' : totalDelta < 0 ? 'cmp-better' : ''}">${totalDelta >= 0 ? '+' : ''}${(CURRENCY_SYMBOL[_displayCurrency] ?? _displayCurrency)}${(totalDelta * _displayFxRate).toFixed(3)}</span></td>
         </tr>
       </tbody>
     </table>
@@ -1291,7 +1296,7 @@ function _fillAgentParams(commodity: CommodityType, params: Record<string, unkno
 let _libSig = '';
 
 function _currentLibSig(): string {
-  return `${library.version}:${library.materials.length}:${library.machines.length}:${library.labour.length}`;
+  return `${library.version}:${library.materials.length}:${library.machines.length}:${library.labour.length}:${_displayCurrency}`;
 }
 
 function _setSelectOpts(sel: HTMLSelectElement, html: string, sig: string): void {
@@ -1314,13 +1319,13 @@ function populateSelects(): void {
   _libSig = sig;
 
   const matOpts = library.materials.map(m =>
-    `<option value="${m.id}">${m.grade} (${m.region}) — £${m.pricePerKg.toFixed(2)}/kg</option>`
+    `<option value="${m.id}">${m.grade} (${m.region}) — ${_currFmt(m.pricePerKg)}/kg</option>`
   ).join('');
   const machOpts = library.machines.map(m =>
-    `<option value="${m.id}">${m.machineClass} — £${m.computedRatePerHr.toFixed(2)}/hr</option>`
+    `<option value="${m.id}">${m.machineClass} — ${_currFmt(m.computedRatePerHr)}/hr</option>`
   ).join('');
   const labOpts = library.labour.map(l =>
-    `<option value="${l.id}">${l.skillLevel} (${l.region}) — £${l.fullyLoadedRatePerHr}/hr</option>`
+    `<option value="${l.id}">${l.skillLevel} (${l.region}) — ${_currFmt(l.fullyLoadedRatePerHr)}/hr</option>`
   ).join('');
 
   document.querySelectorAll<HTMLSelectElement>('.material-select').forEach(s => _setSelectOpts(s, matOpts, sig));
@@ -1957,6 +1962,9 @@ function renderRotationalMouldingForm(): string {
     </div>
     <div class="field-row" style="margin-top:6px">
       <div class="field-group"><label>Powder Adder (£/kg) <span title="Grinding/screening premium over pellet price. Typically £0.15–0.40/kg.">ℹ</span></label><input type="number" id="rm-powder-adder" step="0.05" min="0" value="0.25"/></div>
+      <div class="field-group"><label>No. of Arms <span title="Number of rotating arms on the machine carousel. Typically 2–4.">ℹ</span></label><input type="number" id="rm-num-arms" step="1" min="1" max="6" value="3"/></div>
+    </div>
+    <div class="field-row" style="margin-top:6px">
       <div class="field-group"><label>Parts / Arm</label><input type="number" id="rm-parts-per-arm" step="1" min="1" value="1"/></div>
     </div>
     <div class="section-title" style="margin-top:8px">Cycle Time</div>
@@ -2206,7 +2214,7 @@ function renderCompositesForm(): string {
 
   <div class="section-title" style="margin-top:6px">Layup Operation</div>
   <div class="field-row">
-    <div class="field-group"><label>Layup Labour</label><select id="comp-layup-lab" class="lab-select"></select></div>
+    <div class="field-group"><label>Layup Labour</label><select id="comp-layup-lab" class="labour-select"></select></div>
     <div class="field-group"><label>Layup Time (hr/part)</label><input type="number" id="comp-layup-time" step="0.10" min="0.05" value="3.50" title="Total layup time hr per part. Hand CF: 2–8hr, prepreg: 1–12hr, RTM: 0.2–1hr"/></div>
   </div>
   <div class="field-row">
@@ -2220,8 +2228,8 @@ function renderCompositesForm(): string {
 
   <div class="section-title" style="margin-top:6px">Cure Operation</div>
   <div class="field-row">
-    <div class="field-group"><label>Cure Machine</label><select id="comp-cure-mach" class="mach-select"></select></div>
-    <div class="field-group"><label>Cure Labour</label><select id="comp-cure-lab" class="lab-select"></select></div>
+    <div class="field-group"><label>Cure Machine</label><select id="comp-cure-mach" class="machine-select"></select></div>
+    <div class="field-group"><label>Cure Labour</label><select id="comp-cure-lab" class="labour-select"></select></div>
   </div>
   <div class="field-row">
     <div class="field-group"><label>Cure Time (hr/cycle)</label><input type="number" id="comp-cure-time" step="0.25" min="0.25" value="4.00" title="Full cure cycle time in machine hr. Autoclave CFRP: 3–8hr; oven: 2–4hr; RTM press: 0.5–2hr"/></div>
@@ -2230,8 +2238,8 @@ function renderCompositesForm(): string {
 
   <div class="section-title" style="margin-top:6px">Trim &amp; Finish</div>
   <div class="field-row">
-    <div class="field-group"><label>Trim Machine (optional)</label><select id="comp-trim-mach" class="mach-select"></select></div>
-    <div class="field-group"><label>Trim Labour</label><select id="comp-trim-lab" class="lab-select"></select></div>
+    <div class="field-group"><label>Trim Machine (optional)</label><select id="comp-trim-mach" class="machine-select"></select></div>
+    <div class="field-group"><label>Trim Labour</label><select id="comp-trim-lab" class="labour-select"></select></div>
   </div>
   <div class="field-row">
     <div class="field-group"><label>Trim + Drill Time (hr)</label><input type="number" id="comp-trim-time" step="0.05" min="0" value="0.50" title="Waterjet/router trim + drill time hr per part. Waterjet CFRP: 0.25–1.5hr; manual: 0.5–3hr"/></div>
@@ -2306,7 +2314,7 @@ function renderWiringHarnessForm(): string {
 
   <div class="section-title" style="margin-top:6px">Assembly &amp; Test</div>
   <div class="field-row">
-    <div class="field-group"><label>Assembly Labour</label><select id="harn-asm-lab" class="lab-select"></select></div>
+    <div class="field-group"><label>Assembly Labour</label><select id="harn-asm-lab" class="labour-select"></select></div>
     <div class="field-group"><label>Assembly Time (hr)</label><input type="number" id="harn-asm-time" step="0.05" min="0.01" value="0.45" title="Total manual assembly hr per harness. Simple 5-cct: 0.1hr; complex 80+ cct: 2–6hr"/></div>
   </div>
   <div class="field-row">
@@ -2318,8 +2326,8 @@ function renderWiringHarnessForm(): string {
     <div class="field-group"><label>Reject Rate (0–1)</label><input type="number" id="harn-reject" step="0.01" min="0" max="0.20" value="0.02" title="Harness scrap rate (0.01–0.04 with semi-auto crimping)"/></div>
   </div>
   <div class="field-row">
-    <div class="field-group"><label>Test Machine</label><select id="harn-test-mach" class="mach-select"></select></div>
-    <div class="field-group"><label>Test Labour</label><select id="harn-test-lab" class="lab-select"></select></div>
+    <div class="field-group"><label>Test Machine</label><select id="harn-test-mach" class="machine-select"></select></div>
+    <div class="field-group"><label>Test Labour</label><select id="harn-test-lab" class="labour-select"></select></div>
   </div>
   <div class="field-row">
     <div class="field-group"><label>Test Time (hr)</label><input type="number" id="harn-test-time" step="0.01" min="0" value="0.05" title="Continuity + HiPot test time hr per harness (0.02–0.15)"/></div>
@@ -3034,6 +3042,7 @@ function renderCastAndMachineForm(): string {
       </div>
       <div class="field-row" style="margin-top:6px">
         <div class="field-group"><label>Shell Cost/Part (£)</label><input type="number" id="cam-inv-shell" step="0.1" min="0" value="1.20"/></div>
+        <div class="field-group"><label>Wax Die Cost (£) <span title="One-off wax die tooling cost. Typically £3,000–15,000.">ℹ</span></label><input type="number" id="cam-inv-wax-die" step="100" min="0" value="5000"/></div>
       </div>
     </div>
     <div class="section-title" style="margin-top:8px">Machining</div>
@@ -5555,9 +5564,9 @@ function handleAIAutofill(): void {
         if (p.weightKg) {
           const wtMap: Record<string, string> = {
             machining:'mach-net-wt', injection_moulding:'imm-part-wt', casting:'cast-part-wt',
-            forging:'forge-part-wt', sheet_metal_fab:'smf-part-wt', sheet_metal:'sm-net-wt',
-            blow_moulding:'bm-part-wt', thermoforming:'tf-part-wt', rotational_moulding:'rm-part-wt',
-            rubber:'rub-part-wt', composites:'comp-part-wt',
+            cast_and_machine:'cam-cast-wt', forging:'forge-part-wt', sheet_metal_fab:'smf-part-wt',
+            sheet_metal:'sm-net-wt', blow_moulding:'bm-part-wt', thermoforming:'tf-part-wt',
+            rotational_moulding:'rm-part-wt', rubber:'rub-part-wt', composites:'comp-part-wt',
           };
           const wtId = wtMap[activeCommodity];
           if (wtId) setF(wtId, p.weightKg);
@@ -6056,8 +6065,8 @@ function renderBreakdown(result: PartCostResult): void {
         <tbody>
           ${result.operationDetails.map(op => `<tr>
             <td>${op.operationName}</td>
-            <td>£${op.machineRateUsed.toFixed(2)}/hr</td><td>${fmt(op.processCost)}</td>
-            <td>£${op.labourRateUsed.toFixed(2)}/hr</td><td>${fmt(op.labourCost)}</td>
+            <td>${_currFmt(op.machineRateUsed)}/hr</td><td>${fmt(op.processCost)}</td>
+            <td>${_currFmt(op.labourRateUsed)}/hr</td><td>${fmt(op.labourCost)}</td>
             <td>${fmt(op.processCost + op.labourCost)}</td>
           </tr>`).join('')}
           <tr class="total-row"><td>Total</td><td></td><td>${fmt(result.breakdown.process)}</td><td></td><td>${fmt(result.breakdown.labour)}</td><td>${fmt(result.breakdown.process + result.breakdown.labour)}</td></tr>
@@ -8307,7 +8316,7 @@ function renderAssemblyForm(): string {
     <div style="font-size:0.76rem;color:#888;margin-bottom:8px">Enter each bought-out / sub-assembled part. Should-Cost is applied on top.</div>
     <div id="asm-lines-container">
       <div class="asm-line-header" style="display:grid;grid-template-columns:2fr 60px 90px 80px 80px 80px 36px;gap:4px;font-size:0.72rem;color:#888;padding:0 2px;margin-bottom:4px">
-        <span>Description</span><span>Qty</span><span>Unit Cost £</span><span>Unit Wt kg</span><span>Ext Cost</span><span>Ext Wt</span><span></span>
+        <span>Description</span><span>Qty</span><span>Unit Cost (${CURRENCY_SYMBOL[_displayCurrency] ?? _displayCurrency})</span><span>Unit Wt kg</span><span>Ext Cost</span><span>Ext Wt</span><span></span>
       </div>
     </div>
     <button class="btn btn-secondary btn-sm" id="add-asm-line-btn" style="margin-top:4px">+ Add Part</button>
@@ -8333,7 +8342,7 @@ function addAsmLine(defaults?: Partial<AssemblyLine>): void {
     <input type="number" class="asm-qty" value="${defaults?.qty ?? 1}" min="0" step="1" style="font-size:0.78rem;padding:3px 4px"/>
     <input type="number" class="asm-cost" value="${defaults?.unitCostGBP ?? 0}" min="0" step="0.01" style="font-size:0.78rem;padding:3px 4px"/>
     <input type="number" class="asm-wt" value="${defaults?.unitWeightKg ?? 0}" min="0" step="0.001" style="font-size:0.78rem;padding:3px 4px"/>
-    <span class="asm-ext-cost" style="font-size:0.77rem;color:#555;text-align:right">£0.00</span>
+    <span class="asm-ext-cost" style="font-size:0.77rem;color:#555;text-align:right">${_currFmt(0)}</span>
     <span class="asm-ext-wt" style="font-size:0.77rem;color:#555;text-align:right">0.000 kg</span>
     <button class="btn btn-secondary btn-sm del-asm-btn" style="padding:2px 6px">×</button>`;
 
@@ -8469,7 +8478,7 @@ function renderRateLibraryTable(): void {
   c.innerHTML = `
     <div class="panel-title" style="margin-bottom:8px">Materials</div>
     <table class="breakdown-table" style="margin-bottom:16px;font-size:0.76rem">
-      <thead><tr><th>ID</th><th>Grade</th><th>£/kg</th><th>Scrap £/kg</th><th>Region</th><th>Conf.</th></tr></thead>
+      <thead><tr><th>ID</th><th>Grade</th><th>${_displayCurrency}/kg</th><th>Scrap ${_displayCurrency}/kg</th><th>Region</th><th>Conf.</th></tr></thead>
       <tbody>${library.materials.map(m => `<tr>
         <td style="font-family:monospace">${m.id}</td><td>${m.grade}</td>
         <td><input type="number" step="0.01" value="${m.pricePerKg}" data-update="material.${m.id}.pricePerKg" style="width:65px;padding:2px 4px;border:1px solid #ddd;border-radius:3px"/></td>
@@ -8479,10 +8488,10 @@ function renderRateLibraryTable(): void {
     </table>
     <div class="panel-title" style="margin-bottom:8px">Machine Rates</div>
     <table class="breakdown-table" style="margin-bottom:16px;font-size:0.76rem">
-      <thead><tr><th>ID</th><th>Class</th><th>Rate (£/hr)</th><th>Deprec.</th><th>Maint.</th><th>Energy</th><th>Hrs/yr</th><th>Util.</th></tr></thead>
+      <thead><tr><th>ID</th><th>Class</th><th>Rate (${_displayCurrency}/hr)</th><th>Deprec.</th><th>Maint.</th><th>Energy</th><th>Hrs/yr</th><th>Util.</th></tr></thead>
       <tbody>${library.machines.map(m => `<tr>
         <td style="font-family:monospace">${m.id}</td><td>${m.machineClass}</td>
-        <td style="font-weight:700">£${m.computedRatePerHr.toFixed(2)}</td>
+        <td style="font-weight:700">${_currFmt(m.computedRatePerHr)}</td>
         <td><input type="number" step="100" value="${m.buildup.annualDepreciation}" data-update="machine.${m.id}.annualDepreciation" style="width:62px;padding:2px 4px;border:1px solid #ddd;border-radius:3px"/></td>
         <td><input type="number" step="100" value="${m.buildup.maintenance}" data-update="machine.${m.id}.maintenance" style="width:62px;padding:2px 4px;border:1px solid #ddd;border-radius:3px"/></td>
         <td><input type="number" step="100" value="${m.buildup.energy}" data-update="machine.${m.id}.energy" style="width:62px;padding:2px 4px;border:1px solid #ddd;border-radius:3px"/></td>
@@ -8492,7 +8501,7 @@ function renderRateLibraryTable(): void {
     </table>
     <div class="panel-title" style="margin-bottom:8px">Labour Rates</div>
     <table class="breakdown-table" style="font-size:0.76rem">
-      <thead><tr><th>ID</th><th>Region</th><th>Skill</th><th>£/hr</th><th>Conf.</th></tr></thead>
+      <thead><tr><th>ID</th><th>Region</th><th>Skill</th><th>${_displayCurrency}/hr</th><th>Conf.</th></tr></thead>
       <tbody>${library.labour.map(l => `<tr>
         <td style="font-family:monospace">${l.id}</td><td>${l.region}</td><td>${l.skillLevel}</td>
         <td><input type="number" step="0.5" value="${l.fullyLoadedRatePerHr}" data-update="labour.${l.id}.fullyLoadedRatePerHr" style="width:65px;padding:2px 4px;border:1px solid #ddd;border-radius:3px"/></td>
@@ -8595,6 +8604,8 @@ async function init(): Promise<void> {
     const logLabel = document.getElementById('lbl-logistics');
     if (pkgLabel) pkgLabel.textContent = `Packaging (${sym}/part)`;
     if (logLabel) logLabel.textContent = `Logistics (${sym}/part)`;
+    const tpSym = document.getElementById('target-price-sym');
+    if (tpSym) tpSym.textContent = sym;
     if (lastResult && lastInput) {
       renderBreakdown(lastResult);
       const activePanel = document.querySelector<HTMLElement>('.rtab.active')?.dataset.panel;
@@ -8620,7 +8631,18 @@ async function init(): Promise<void> {
       // Update overhead-pct to country-scaled default (base 12% × overheadMultiplier)
       const ohPct = Math.round(12 * rd.overheadMultiplier);
       const ohEl = el<HTMLInputElement>('overhead-pct');
-      if (ohEl) ohEl.value = String(ohPct);
+      if (ohEl) {
+        const prevOh = Number(ohEl.value);
+        ohEl.value = String(ohPct);
+        if (Math.abs(prevOh - ohPct) >= 1) {
+          showToast(`Overhead updated to ${ohPct}% (${rd.name} regional default). Adjust if needed.`, 'info');
+        }
+      }
+      // Scale packaging and logistics to regional defaults
+      const pkgEl = el<HTMLInputElement>('packaging-cost');
+      const logEl = el<HTMLInputElement>('logistics-cost');
+      if (pkgEl) pkgEl.value = (0.15 * rd.packagingMultiplier).toFixed(2);
+      if (logEl) logEl.value = (0.25 * rd.logisticsMultiplier).toFixed(2);
       // Update display currency
       const cur = rd.currency;
       const curSel = el<HTMLSelectElement>('currency-selector');
@@ -8670,6 +8692,16 @@ async function init(): Promise<void> {
     if (nativeCur && curSel && Array.from(curSel.options).some(o => o.value === nativeCur)) {
       curSel.value = nativeCur;
       _applyCurrency(nativeCur);
+    }
+    // Sync country bar selector to match region (best-effort, only when code matches)
+    const countrySel = el<HTMLSelectElement>('costing-country-sel');
+    if (countrySel && Array.from(countrySel.options).some(o => o.value === region)) {
+      countrySel.value = region;
+      const infoEl = document.getElementById('country-bar-info');
+      if (infoEl) {
+        const rd = REGIONAL_DATA[region];
+        if (rd) infoEl.textContent = `${rd.name} · ${nativeCur ?? region}`;
+      }
     }
     // Auto-recalculate so results reflect new regional rates
     if (lastResult && lastInput) el('calc-btn')?.click();

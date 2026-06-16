@@ -28,7 +28,7 @@ function makeMachine(
 // UK default rate library — all rates editable at runtime
 export const DEFAULT_RATE_LIBRARY: RateLibrary = {
   version: '2.1.0',
-  lastModified: '2026-06-14',
+  lastModified: '2026-06-16',
 
   materials: [
     // ── Machining ──────────────────────────────────────────────────────────
@@ -590,6 +590,9 @@ export const DEFAULT_RATE_LIBRARY: RateLibrary = {
     makeMachine('waterjet-5ax-composite', '5-Axis Waterjet Trim System',
       { annualDepreciation: 35000, maintenance: 14000, energy: 20000, floorSpace: 12000, indirectSupport: 10000, financeCost: 4375, annualAvailableHours: 4000, machineUtilization: 0.75 },
       'UK', 'UK composites benchmark Jun 2026. 5-axis waterjet trim/drill for CFRP panels. 380 MPa, 0.4mm orifice.'),
+    makeMachine('mach-afp-atl', 'AFP/ATL Composite Cell',
+      { annualDepreciation: 420000, maintenance: 160000, energy: 80000, floorSpace: 40000, indirectSupport: 60000, financeCost: 24000, annualAvailableHours: 4000, machineUtilization: 0.70 },
+      'UK', 'Automated Fibre/Tape Placement cell. Rate includes robot, gantry, head, NC software, maintenance. Setup: 4.0 hr. UK composites benchmark Jun 2026.'),
     // ── Wiring Harness Equipment ───────────────────────────────────────────
     makeMachine('harness-test-sys', 'Electrical Harness Test System (Continuity + HiPot)',
       { annualDepreciation: 18000, maintenance: 5000, energy: 3000, floorSpace: 4000, indirectSupport: 5000, financeCost: 2250, annualAvailableHours: 4000, machineUtilization: 0.80 },
