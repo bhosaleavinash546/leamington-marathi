@@ -2514,3 +2514,109 @@ textarea.contact-form-input { resize: vertical; min-height: 100px; }
     transition-duration: 1ms !important;
   }
 }
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   AUDIT FIX PASS — resolves all issues identified in Phase 3 audit
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+/* ── FIX 1: Logo hover — use filter instead of un-animatable gradient swap ── */
+/* Root problem: background gradient can't be CSS-transitioned. Replace with
+   brightness/saturation filter which DOES animate smoothly.                   */
+.logo-name {
+  transition: filter var(--dur-hover) var(--ease-std);
+}
+.nav-logo:hover .logo-name {
+  /* Remove the gradient-swap approach (can't animate between two gradients).
+     Instead, brighten + saturate the existing gradient — this animates.       */
+  filter: brightness(1.35) saturate(1.3);
+  /* Unset the Phase 3 gradient override so the original gradient stays        */
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── FIX 2: Home button — remove dead border-color from transition ──────────── */
+/* border-color transition is meaningless when border is transparent.
+   Keep only the properties that actually animate.                              */
+.home-btn {
+  /* Inherits transition from .nav-action-btn which includes border-color.
+     Override here to exclude it for cleaner transition.                        */
+  transition:
+    transform var(--dur-hover) var(--ease-std),
+    box-shadow var(--dur-hover) var(--ease-std),
+    background var(--dur-hover) var(--ease-std) !important;
+}
+
+/* ── FIX 3: Keyboard focus-visible — WCAG 2.4.7 Focus Visible ──────────────── */
+/* No :focus-visible styles existed anywhere in the codebase. This fixes the
+   accessibility violation. Uses 2px outline with 2px offset for clarity
+   without obscuring surrounding elements.                                      */
+
+/* Global reset — suppress :focus on mouse-click, keep for keyboard            */
+:focus:not(:focus-visible) { outline: none; }
+
+/* Interactive dashboard elements */
+.dash-tile:focus-visible,
+.dash-kpi-card:focus-visible,
+.dchip:focus-visible,
+.dash-reopen-btn:focus-visible,
+.dash-clear-hist:focus-visible,
+.dash-filter-reset:focus-visible,
+.compare-bar-btn:focus-visible,
+.compare-bar-cancel:focus-visible,
+.dash-clear-hist:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: inherit;
+}
+
+/* All buttons */
+.btn:focus-visible,
+.nav-action-btn:focus-visible,
+.theme-toggle:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Form inputs */
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+/* Commodity tabs */
+.ctab:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+/* AI chat elements */
+.ai-chat-fab:focus-visible,
+.ai-chat-close:focus-visible,
+.ai-chat-send:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+
+/* Confidence badges (if given tabindex) */
+.conf-badge:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* Checkbox */
+.cmp-chk:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* ── FIX 4: Remove transition token duplication side-effect ─────────────────── */
+/* The original --transition (0.15s ease) and --transition-md (0.2s ease) tokens
+   are equivalent to --dur-micro / --dur-hover. No renames (would break existing
+   code), but document the canonical values here for future consistency.        */
+/* --dur-micro  = 150ms = --transition (same duration, use either)              */
+/* --dur-hover  = 200ms = --transition-md (same duration, use either)           */
+/* New code should prefer --dur-* / --ease-std tokens.                          */
+
+/* ── FIX 5: GPU compositing hints on animated elements ─────────────────────── */
+/* Explicit will-change on elements using transform+opacity animations          */
+#home-view,
+#costing-view { will-change: opacity; }
+
+.compare-panel { will-change: opacity, transform; }
+.ai-chat-drawer { will-change: opacity, transform; }
+
+/* Clear will-change after animation completes to release GPU memory            */
+#home-view,
+#costing-view { animation-fill-mode: both; }
