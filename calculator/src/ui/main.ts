@@ -41,7 +41,7 @@ import type { Assembly, AssemblyLine } from '../engine/assembly.js';
 import type { LearningCurveResult } from '../engine/learning-curve.js';
 import { exportToExcelBlob } from '../export/excel.js';
 import { printPDF } from '../export/pdf.js';
-import { generateInsights, totalPotentialSaving, REGIONAL_COST_INDEX, FX_TO_GBP } from '../engine/insights.js';
+import { generateInsights, totalPotentialSaving, FX_TO_GBP } from '../engine/insights.js';
 import { generateDFMDFA } from '../engine/dfm-dfa.js';
 import type { DFMIssue, CostOptimisation } from '../engine/dfm-dfa.js';
 import type { RateLibrary, UniversalStackInput, PartCostResult, CommodityType, SupplierQuote } from '../engine/types.js';
@@ -204,6 +204,7 @@ function showHome(): void {
   const backdrop = document.getElementById('picker-backdrop');
   const errEl = document.getElementById('validation-errors');
   const warnEl = document.getElementById('validation-warnings');
+  document.body.classList.remove('cv-new-costing');
   if (homeEl) homeEl.style.display = '';
   if (pickerEl) pickerEl.style.display = 'none';
   if (backdrop) { backdrop.classList.remove('visible'); backdrop.style.display = 'none'; }
@@ -222,6 +223,7 @@ function showCosting(commodity?: string): void {
   const pickerEl = document.getElementById('commodity-picker-view');
   const costingEl = document.getElementById('costing-view');
   const backdrop = document.getElementById('picker-backdrop');
+  document.body.classList.remove('cv-new-costing');
   if (homeEl) homeEl.style.display = 'none';
   if (pickerEl) pickerEl.style.display = 'none';
   if (backdrop) { backdrop.classList.remove('visible'); backdrop.style.display = 'none'; }
@@ -267,33 +269,27 @@ function showWorkflowPanel(commodity: string): void {
   if (iconEl) iconEl.textContent = meta.icon;
   if (nameEl) nameEl.textContent = meta.name;
 
+  // Full-screen split layout: picker becomes narrow sidebar, costing takes remaining width
+  document.body.classList.add('cv-new-costing');
   if (costingEl) {
     costingEl.style.display = '';
-    costingEl.classList.add('wf-panel');
+    costingEl.classList.remove('wf-panel', 'wf-panel--open');
   }
   if (headerEl) headerEl.style.display = '';
-  if (backdrop) {
-    backdrop.style.display = '';
-    requestAnimationFrame(() => backdrop.classList.add('visible'));
-  }
-  requestAnimationFrame(() =>
-    requestAnimationFrame(() => costingEl?.classList.add('wf-panel--open'))
-  );
+  if (backdrop) { backdrop.classList.remove('visible'); backdrop.style.display = 'none'; }
   switchCommodity(commodity as CommodityType);
 }
 
 function closeWorkflowPanel(): void {
+  // Return to full-screen picker (remove split-screen mode, hide costing)
+  document.body.classList.remove('cv-new-costing');
   const costingEl = document.getElementById('costing-view');
   const backdrop = document.getElementById('picker-backdrop');
   const headerEl = document.getElementById('wf-panel-header');
-  costingEl?.classList.remove('wf-panel--open');
-  backdrop?.classList.remove('visible');
-  setTimeout(() => {
-    costingEl?.classList.remove('wf-panel');
-    if (costingEl) costingEl.style.display = 'none';
-    if (backdrop) backdrop.style.display = 'none';
-    if (headerEl) headerEl.style.display = 'none';
-  }, 280);
+  costingEl?.classList.remove('wf-panel', 'wf-panel--open');
+  if (costingEl) costingEl.style.display = 'none';
+  if (backdrop) { backdrop.classList.remove('visible'); backdrop.style.display = 'none'; }
+  if (headerEl) headerEl.style.display = 'none';
 }
 
 // ─── Dashboard render ─────────────────────────────────────────────────────────
@@ -429,6 +425,7 @@ function renderCommodityChart(records: CostingRecord[]): void {
       cutout: '64%',
       responsive: true,
       maintainAspectRatio: true,
+      aspectRatio: 2.2,
       plugins: {
         legend: {
           position: 'bottom',
@@ -5409,21 +5406,103 @@ function renderInsights(result: PartCostResult, input: UniversalStackInput): voi
     </div>`;
   }).join('');
 
-  // Regional comparison grid
-  const baseTotal = result.total;
-  const labConvPct = ((result.breakdown.process + result.breakdown.labour) / baseTotal);
-  const regionalCards = Object.values(REGIONAL_COST_INDEX).map(r => {
-    const estCost = baseTotal * (1 - labConvPct * (1 - r.labourFactor));
-    const saving = ((baseTotal - estCost) / baseTotal) * 100;
-    const isCurrent = r.label === 'UK';
-    return `
-    <div class="regional-card" style="${isCurrent ? 'border-color:var(--orange);background:var(--orange-light)' : ''}">
-      <div class="r-name">${r.label}</div>
-      <div class="r-cost">${cf(estCost)}</div>
-      ${saving > 1 ? `<div class="r-save">▼ ${saving.toFixed(0)}% vs UK</div>` : `<div class="r-save" style="color:#888">Base</div>`}
-      <div class="r-risk">${r.currency}</div>
-    </div>`;
+  // Regional comparison detailed breakdown table (10 key regions)
+  const RC_REGIONS: ManufacturingRegion[] = ['UK', 'DE', 'FR', 'ES', 'PL', 'TR', 'CN', 'IN', 'MX', 'US'];
+  const ukRd = REGIONAL_DATA['UK'];
+  const ukSemiSkilled = ukRd.labour.semiskilled;
+  const bkd = result.breakdown;
+
+  interface RCRow {
+    code: ManufacturingRegion;
+    name: string;
+    currency: string;
+    material: number;
+    process: number;
+    labour: number;
+    tooling: number;
+    overhead: number;
+    exWorks: number;
+    logistics: number;
+    total: number;
+  }
+
+  const rcRows: RCRow[] = RC_REGIONS.map(code => {
+    const rd = REGIONAL_DATA[code];
+    if (!rd) return null as unknown as RCRow;
+    const material  = bkd.rawMaterial * rd.materialMultiplier;
+    const process   = bkd.process    * rd.machineRateMultiplier;
+    const labour    = bkd.labour     * (rd.labour.semiskilled / ukSemiSkilled);
+    const tooling   = bkd.tooling;
+    const overhead  = bkd.overhead   * rd.overheadMultiplier;
+    const exWorks   = material + process + labour + tooling + overhead;
+    const logistics = bkd.logistics  * rd.logisticsMultiplier;
+    const total     = exWorks + (bkd.packaging * rd.packagingMultiplier) + logistics + bkd.margin;
+    return { code, name: rd.name, currency: rd.currency, material, process, labour, tooling, overhead, exWorks, logistics, total };
+  }).filter(r => r !== null);
+
+  type RCCol = 'material' | 'process' | 'labour' | 'overhead' | 'exWorks' | 'total';
+  const rcCols: RCCol[] = ['material', 'process', 'labour', 'overhead', 'exWorks', 'total'];
+  const rcMin = {} as Record<RCCol, number>;
+  const rcMax = {} as Record<RCCol, number>;
+  rcCols.forEach(c => {
+    const vals = rcRows.map(r => r[c]);
+    rcMin[c] = Math.min(...vals);
+    rcMax[c] = Math.max(...vals);
+  });
+
+  const rcCell = (val: number, col: RCCol) => {
+    if (rcRows.length < 2) return '';
+    if (val === rcMin[col]) return 'background:#d1fae5;color:#065f46;font-weight:700';
+    if (val === rcMax[col]) return 'background:#fee2e2;color:#991b1b;font-weight:700';
+    return '';
+  };
+
+  const ukTotal = rcRows.find(r => r.code === 'UK')?.total ?? result.total;
+  const isDarkMode = document.documentElement.getAttribute('data-theme') !== 'light';
+  const thRowBg = isDarkMode ? '#1e293b' : '#f8fafc';
+
+  const rcTableRows = rcRows.map(r => {
+    const savingPct = ((ukTotal - r.total) / ukTotal) * 100;
+    const isUK = r.code === 'UK';
+    const rowStyle = isUK ? `background:var(--accent-light);font-weight:600` : '';
+    const vsUK = isUK ? '<span style="color:#888;font-size:0.72rem">Base</span>'
+      : savingPct > 0.5
+        ? `<span style="color:#10b981;font-weight:700;font-size:0.75rem">▼ ${savingPct.toFixed(0)}%</span>`
+        : `<span style="color:#e63b3b;font-weight:600;font-size:0.75rem">▲ ${Math.abs(savingPct).toFixed(0)}%</span>`;
+    return `<tr style="${rowStyle}">
+      <td style="white-space:nowrap;font-weight:${isUK ? '700' : '600'}">${r.name}<br><span style="font-size:0.63rem;color:#999;font-weight:400">${r.currency}</span></td>
+      <td style="text-align:right;font-size:0.78rem;${rcCell(r.material,'material')}">${cf(r.material)}</td>
+      <td style="text-align:right;font-size:0.78rem;${rcCell(r.process,'process')}">${cf(r.process)}</td>
+      <td style="text-align:right;font-size:0.78rem;${rcCell(r.labour,'labour')}">${cf(r.labour)}</td>
+      <td style="text-align:right;font-size:0.78rem;color:var(--text-secondary)">${cf(r.tooling)}</td>
+      <td style="text-align:right;font-size:0.78rem;${rcCell(r.overhead,'overhead')}">${cf(r.overhead)}</td>
+      <td style="text-align:right;font-size:0.82rem;font-weight:700;border-left:2px solid var(--border);${rcCell(r.exWorks,'exWorks')}">${cf(r.exWorks)}</td>
+      <td style="text-align:right;font-size:0.78rem;color:var(--text-secondary)">${cf(r.logistics)}</td>
+      <td style="text-align:right;font-size:0.85rem;font-weight:700;border-left:2px solid var(--border);${rcCell(r.total,'total')}">${cf(r.total)}</td>
+      <td style="text-align:center">${vsUK}</td>
+    </tr>`;
   }).join('');
+
+  const regionalTable = `
+    <div style="overflow-x:auto;margin-top:4px">
+      <table class="rc-table">
+        <thead>
+          <tr style="background:${thRowBg}">
+            <th style="text-align:left;min-width:110px">Region</th>
+            <th>Material</th>
+            <th>Process</th>
+            <th>Labour</th>
+            <th>Tooling</th>
+            <th>Overhead</th>
+            <th style="border-left:2px solid var(--border)">Ex-Works</th>
+            <th>Logistics</th>
+            <th style="border-left:2px solid var(--border)">Total</th>
+            <th>vs UK</th>
+          </tr>
+        </thead>
+        <tbody>${rcTableRows}</tbody>
+      </table>
+    </div>`;
 
   panel.innerHTML = `
     <div style="padding:12px 16px;overflow-y:auto">
@@ -5447,12 +5526,12 @@ function renderInsights(result: PartCostResult, input: UniversalStackInput): voi
         : insightCards}
 
       <div style="margin-top:16px">
-        <div class="detail-section-title">Regional Cost Comparison (Estimated)</div>
+        <div class="detail-section-title">Regional Cost Comparison — Full Breakdown</div>
         <div style="font-size:0.72rem;color:#888;margin-bottom:8px">
-          Estimates conversion costs scaled by regional labour index. Material, tooling and logistics remain at UK rates.
-          Indicative only — requires detailed regional RFQ for confirmation.
+          Per-region should-cost using 2025 Q2 labour, energy and rate benchmarks. Green = cheapest per column, Red = highest.
+          Tooling is fixed (amortized). Indicative only — confirm with regional RFQ.
         </div>
-        <div class="regional-grid">${regionalCards}</div>
+        ${regionalTable}
       </div>
     </div>`;
 }
@@ -7602,6 +7681,8 @@ async function init(): Promise<void> {
       curSel.value = nativeCur;
       _applyCurrency(nativeCur);
     }
+    // Auto-recalculate so results reflect new regional rates
+    if (lastResult && lastInput) el('calc-btn')?.click();
     // Refresh populateSelects in case UI is open
     if (typeof populateSelects === 'function') populateSelects();
   });
