@@ -52,9 +52,9 @@ import type { CoatType } from '../engine/modules/painting.js';
 import type { JoiningType } from '../engine/modules/biw-assembly.js';
 import type { CastAndMachineInputs } from '../engine/modules/cast-and-machine.js';
 import type { CastingSubtype } from '../engine/modules/casting.js';
-import { Chart, ArcElement, BarElement, CategoryScale, LinearScale, Tooltip, Legend, DoughnutController, BarController } from 'chart.js';
+import { Chart, ArcElement, BarElement, LineElement, PointElement, CategoryScale, LinearScale, Tooltip, Legend, DoughnutController, BarController, LineController } from 'chart.js';
 
-Chart.register(ArcElement, BarElement, CategoryScale, LinearScale, Tooltip, Legend, DoughnutController, BarController);
+Chart.register(ArcElement, BarElement, LineElement, PointElement, CategoryScale, LinearScale, Tooltip, Legend, DoughnutController, BarController, LineController);
 
 // ─── State ────────────────────────────────────────────────────────────────────
 
@@ -93,6 +93,277 @@ function _currFmt(n: number): string {
   const sym = CURRENCY_SYMBOL[_displayCurrency] ?? _displayCurrency;
   return `${sym}${(n * _displayFxRate).toFixed(2)}`;
 }
+
+// ─── Dashboard state ──────────────────────────────────────────────────────────
+
+interface CostingRecord {
+  id: string;
+  partName: string;
+  commodity: string;
+  totalCost: number;
+  currency: string;
+  region: string;
+  timestamp: number;
+  vehicle: string;
+  system: string;
+  confidence: string;
+}
+
+const COMMODITY_LABELS: Record<string, string> = {
+  machining: 'Machining', casting: 'Casting', sheet_metal: 'Sheet Metal',
+  sheet_metal_fab: 'SM Fab', injection_moulding: 'Injection', blow_moulding: 'Blow Moulding',
+  extrusion: 'Extrusion', thermoforming: 'Thermoforming', rotational_moulding: 'Rotomoulding',
+  forging: 'Forging', painting: 'Painting', biw_assembly: 'BIW/Assembly',
+  pcb_fab: 'PCB Fab', pcba: 'PCBA', cast_and_machine: 'Cast+Machine',
+  rubber: 'Rubber', composites: 'Composites', wiring_harness: 'Harness',
+  assembly: 'Assembly', ai_agent: 'AI Agent', cad_analysis: 'CAD Analysis',
+};
+
+const VEHICLE_OPTS = ['SUV1','SUV2','SUV3','SUV4','SUV5'];
+// const SYSTEM_OPTS  = ['Powertrain','Chassis','BIW','Interior','Exterior','E&E','HVAC','ADAS']; // reserved for future use
+
+let _dashFilters = { vehicle: '', commodity: '', system: '', costRange: '', region: '', confidence: '' };
+let _dashCommodityChart: Chart | null = null;
+let _dashProgramChart: Chart | null = null;
+
+function getCostingHistory(): CostingRecord[] {
+  try { return JSON.parse(localStorage.getItem('cv-history') ?? '[]'); } catch { return []; }
+}
+function saveCostingHistory(records: CostingRecord[]): void {
+  // Keep last 200 records
+  localStorage.setItem('cv-history', JSON.stringify(records.slice(-200)));
+}
+function pushCostingRecord(r: Partial<CostingRecord> & { totalCost: number }): void {
+  const records = getCostingHistory();
+  const region = (document.getElementById('mfg-region-selector') as HTMLSelectElement)?.value ?? 'UK';
+  records.push({
+    ...r,
+    id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+    partName: (document.getElementById('part-name') as HTMLInputElement)?.value ?? 'Part',
+    commodity: activeCommodity,
+    totalCost: r.totalCost,
+    currency: _displayCurrency,
+    region,
+    timestamp: Date.now(),
+    vehicle: _dashFilters.vehicle || '',
+    system: _dashFilters.system || '',
+    confidence: r.confidence ?? 'Medium',
+  });
+  saveCostingHistory(records);
+}
+
+function filterHistory(records: CostingRecord[]): CostingRecord[] {
+  return records.filter(r => {
+    if (_dashFilters.vehicle && r.vehicle !== _dashFilters.vehicle) return false;
+    if (_dashFilters.commodity && r.commodity !== _dashFilters.commodity) return false;
+    if (_dashFilters.system && r.system !== _dashFilters.system) return false;
+    if (_dashFilters.region && r.region !== _dashFilters.region) return false;
+    if (_dashFilters.confidence && r.confidence !== _dashFilters.confidence) return false;
+    if (_dashFilters.costRange) {
+      if (_dashFilters.costRange === 'low' && r.totalCost >= 10) return false;
+      if (_dashFilters.costRange === 'medium' && (r.totalCost < 10 || r.totalCost > 100)) return false;
+      if (_dashFilters.costRange === 'high' && r.totalCost <= 100) return false;
+    }
+    return true;
+  });
+}
+
+// ─── View switching ───────────────────────────────────────────────────────────
+
+
+function showHome(): void {
+  const homeEl = document.getElementById('home-view');
+  const costingEl = document.getElementById('costing-view');
+  const errEl = document.getElementById('validation-errors');
+  const warnEl = document.getElementById('validation-warnings');
+  if (homeEl) homeEl.style.display = '';
+  if (costingEl) costingEl.style.display = 'none';
+  if (errEl) errEl.style.display = 'none';
+  if (warnEl) warnEl.style.display = 'none';
+  renderDashboard();
+}
+
+function showCosting(commodity?: string): void {
+  const homeEl = document.getElementById('home-view');
+  const costingEl = document.getElementById('costing-view');
+  if (homeEl) homeEl.style.display = 'none';
+  if (costingEl) costingEl.style.display = '';
+  if (commodity) switchCommodity(commodity as CommodityType);
+}
+
+// ─── Dashboard render ─────────────────────────────────────────────────────────
+
+function renderDashboard(): void {
+  const all = getCostingHistory();
+  const records = filterHistory(all);
+
+  // KPIs
+  const kpiTotal = document.getElementById('kpi-total-val');
+  const kpiSaving = document.getElementById('kpi-saving-val');
+  const kpiTopCom = document.getElementById('kpi-top-commodity-val');
+  const kpiAvg = document.getElementById('kpi-avg-val');
+  const kpiHighCost = document.getElementById('kpi-high-cost-val');
+
+  if (kpiTotal) kpiTotal.textContent = String(records.length);
+
+  // Estimate savings: 12% of total spend (industry benchmark)
+  const totalSpend = records.reduce((s, r) => s + r.totalCost, 0);
+  const savings = totalSpend * 0.12;
+  if (kpiSaving) kpiSaving.textContent = records.length ? `£${savings < 1000 ? savings.toFixed(0) : (savings/1000).toFixed(1)+'k'}` : '—';
+
+  // Top commodity by count
+  const commCount: Record<string, number> = {};
+  records.forEach(r => { commCount[r.commodity] = (commCount[r.commodity] ?? 0) + 1; });
+  const topComm = Object.entries(commCount).sort((a,b) => b[1]-a[1])[0];
+  if (kpiTopCom) kpiTopCom.textContent = topComm ? COMMODITY_LABELS[topComm[0]] ?? topComm[0] : '—';
+
+  const avgCost = records.length ? totalSpend / records.length : 0;
+  if (kpiAvg) kpiAvg.textContent = records.length ? `£${avgCost.toFixed(2)}` : '—';
+
+  const highCostCount = records.filter(r => r.totalCost > 100).length;
+  if (kpiHighCost) kpiHighCost.textContent = String(highCostCount);
+
+  // AI insight — dynamic based on data
+  const daiEl = document.getElementById('dai-dynamic');
+  if (daiEl) {
+    if (records.length === 0) {
+      daiEl.innerHTML = '';
+    } else if (highCostCount > 0) {
+      daiEl.className = 'dash-ai-item dash-ai-item--warn';
+      daiEl.innerHTML = `<span class="dai-icon">🎯</span><span>${highCostCount} part${highCostCount>1?'s':''} exceed £100 — prioritise these for detailed supplier negotiation.</span>`;
+    } else {
+      daiEl.className = 'dash-ai-item dash-ai-item--opt';
+      daiEl.innerHTML = `<span class="dai-icon">✅</span><span>All costed parts are below £100. Consider checking wiring harness and PCB assemblies next.</span>`;
+    }
+  }
+
+  // Commodity donut chart
+  renderCommodityChart(records);
+
+  // Vehicle program bar chart
+  renderProgramChart(records);
+
+  // Recent table
+  renderRecentTable(records);
+}
+
+const COMM_COLOURS = [
+  '#00d2ff','#a855f7','#10b981','#f59e0b','#f87171',
+  '#818cf8','#06b6d4','#84cc16','#fb923c','#e879f9','#34d399',
+];
+
+function renderCommodityChart(records: CostingRecord[]): void {
+  const canvas = document.getElementById('dash-commodity-chart') as HTMLCanvasElement | null;
+  const emptyEl = document.getElementById('dash-chart-empty');
+  if (!canvas) return;
+
+  if (_dashCommodityChart) { _dashCommodityChart.destroy(); _dashCommodityChart = null; }
+
+  const commCount: Record<string, number> = {};
+  records.forEach(r => { commCount[r.commodity] = (commCount[r.commodity] ?? 0) + 1; });
+  const entries = Object.entries(commCount).sort((a,b) => b[1]-a[1]);
+
+  if (entries.length === 0) {
+    canvas.style.display = 'none';
+    if (emptyEl) emptyEl.style.display = 'flex';
+    return;
+  }
+  canvas.style.display = '';
+  if (emptyEl) emptyEl.style.display = 'none';
+
+  const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
+  const textCol = isDark ? '#a0a0a0' : '#404040';
+
+  _dashCommodityChart = new Chart(canvas, {
+    type: 'doughnut',
+    data: {
+      labels: entries.map(([k]) => COMMODITY_LABELS[k] ?? k),
+      datasets: [{
+        data: entries.map(([,v]) => v),
+        backgroundColor: entries.map((_, i) => COMM_COLOURS[i % COMM_COLOURS.length]),
+        borderWidth: 1,
+        borderColor: isDark ? '#141414' : '#fff',
+      }],
+    },
+    options: {
+      cutout: '60%',
+      plugins: {
+        legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 }, color: textCol } },
+        tooltip: { callbacks: { label: ctx => ` ${ctx.label}: ${ctx.raw} costings` } },
+      },
+    },
+  });
+}
+
+function renderProgramChart(records: CostingRecord[]): void {
+  const canvas = document.getElementById('dash-program-chart') as HTMLCanvasElement | null;
+  if (!canvas) return;
+  if (_dashProgramChart) { _dashProgramChart.destroy(); _dashProgramChart = null; }
+
+  // Aggregate cost by vehicle program
+  const byCost: Record<string, number> = {};
+  VEHICLE_OPTS.forEach(v => { byCost[v] = 0; });
+  records.forEach(r => {
+    const v = r.vehicle || 'Unassigned';
+    byCost[v] = (byCost[v] ?? 0) + r.totalCost;
+  });
+
+  const labels = Object.keys(byCost);
+  const data = Object.values(byCost);
+  const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
+  const textCol = isDark ? '#a0a0a0' : '#404040';
+  const gridCol = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)';
+
+  _dashProgramChart = new Chart(canvas, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{
+        label: 'Total Cost (£)',
+        data,
+        backgroundColor: COMM_COLOURS.slice(0, labels.length),
+        borderRadius: 4,
+        borderSkipped: false,
+      }],
+    },
+    options: {
+      plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ` £${Number(ctx.raw).toFixed(2)}` } } },
+      scales: {
+        x: { grid: { color: gridCol }, ticks: { color: textCol, font: { size: 10 } } },
+        y: { grid: { color: gridCol }, ticks: { color: textCol, font: { size: 10 }, callback: v => `£${v}` } },
+      },
+    },
+  });
+}
+
+function renderRecentTable(records: CostingRecord[]): void {
+  const tbody = document.getElementById('dash-recent-tbody');
+  if (!tbody) return;
+
+  const sorted = [...records].sort((a,b) => b.timestamp - a.timestamp).slice(0, 50);
+  if (sorted.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="8" class="dash-empty-row">No costings yet. Click "New Costing" to get started.</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = sorted.map(r => {
+    const date = new Date(r.timestamp).toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'2-digit' });
+    const commLabel = COMMODITY_LABELS[r.commodity] ?? r.commodity;
+    const costStr = `£${r.totalCost.toFixed(2)}`;
+    return `<tr data-record-id="${r.id}">
+      <td>${r.partName}</td>
+      <td><span class="dash-commodity-badge">${commLabel}</span></td>
+      <td>${r.vehicle || '—'}</td>
+      <td>${r.system || '—'}</td>
+      <td class="dash-cost-val">${costStr}</td>
+      <td>${r.region || '—'}</td>
+      <td>${date}</td>
+      <td><button class="dash-reopen-btn" data-record-id="${r.id}">Open ↗</button></td>
+    </tr>`;
+  }).join('');
+}
+
+(window as any).showHome = showHome;
 
 // ─── Toast notification ───────────────────────────────────────────────────────
 
@@ -4321,6 +4592,7 @@ function compute(): void {
 
     lastResult = result;
     lastInput = input;
+    pushCostingRecord({ totalCost: result.total, confidence: result.warnings?.length ? 'Medium' : 'High' });
     showResultsArea();
     renderBreakdown(result);
 
@@ -7000,6 +7272,83 @@ async function init(): Promise<void> {
 
   // Start on machining
   switchCommodity('machining');
+
+  // ─── Home dashboard wiring ────────────────────────────────────────────────
+
+  // Home navigation
+  document.getElementById('home-btn')?.addEventListener('click', showHome);
+  document.getElementById('logo-home-btn')?.addEventListener('click', showHome);
+
+  // Dashboard filter chips
+  function initFilterChips(groupId: string, key: keyof typeof _dashFilters): void {
+    document.getElementById(groupId)?.querySelectorAll('.dchip').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.getElementById(groupId)?.querySelectorAll('.dchip').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        (_dashFilters as any)[key] = (btn as HTMLElement).dataset.val ?? '';
+        renderDashboard();
+      });
+    });
+  }
+  initFilterChips('filter-vehicle', 'vehicle');
+  initFilterChips('filter-commodity', 'commodity');
+  initFilterChips('filter-system', 'system');
+
+  document.getElementById('filter-cost-range')?.addEventListener('change', e => {
+    _dashFilters.costRange = (e.target as HTMLSelectElement).value;
+    renderDashboard();
+  });
+  document.getElementById('filter-region')?.addEventListener('change', e => {
+    _dashFilters.region = (e.target as HTMLSelectElement).value;
+    renderDashboard();
+  });
+  document.getElementById('filter-confidence')?.addEventListener('change', e => {
+    _dashFilters.confidence = (e.target as HTMLSelectElement).value;
+    renderDashboard();
+  });
+  document.getElementById('dash-filter-reset')?.addEventListener('click', () => {
+    _dashFilters = { vehicle: '', commodity: '', system: '', costRange: '', region: '', confidence: '' };
+    document.querySelectorAll('.dchip').forEach(b => {
+      const grp = b.closest('.dash-filter-chips');
+      if (grp) b.classList.toggle('active', (b as HTMLElement).dataset.val === '');
+    });
+    (document.getElementById('filter-cost-range') as HTMLSelectElement).value = '';
+    (document.getElementById('filter-region') as HTMLSelectElement).value = '';
+    (document.getElementById('filter-confidence') as HTMLSelectElement).value = '';
+    renderDashboard();
+  });
+
+  // Clear history
+  document.getElementById('dash-clear-hist')?.addEventListener('click', () => {
+    if (confirm('Clear all costing history? This cannot be undone.')) {
+      localStorage.removeItem('cv-history');
+      renderDashboard();
+    }
+  });
+
+  // Quick action tiles
+  document.getElementById('tile-new-costing')?.addEventListener('click', () => showCosting('machining'));
+  document.getElementById('tile-pcb-image')?.addEventListener('click', () => showCosting('pcb_fab'));
+  document.getElementById('tile-cad')?.addEventListener('click', () => showCosting('cad_analysis'));
+  document.getElementById('tile-ai-agent')?.addEventListener('click', () => showCosting('ai_agent'));
+  document.getElementById('tile-assembly')?.addEventListener('click', () => showCosting('assembly'));
+  document.getElementById('tile-scenarios')?.addEventListener('click', () => {
+    showCosting('machining');
+    setTimeout(() => {
+      document.querySelector<HTMLButtonElement>('.rtab[data-panel="scenarios"]')?.click();
+    }, 200);
+  });
+
+  // Re-open record from table
+  document.getElementById('dash-recent-tbody')?.addEventListener('click', e => {
+    const btn = (e.target as HTMLElement).closest('.dash-reopen-btn');
+    if (btn) {
+      showCosting();
+    }
+  });
+
+  // Initial view: show home on load
+  showHome();
 }
 
 document.addEventListener('DOMContentLoaded', () => { void init(); });

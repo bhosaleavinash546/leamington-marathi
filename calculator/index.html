@@ -34,7 +34,7 @@
 
 <header class="header">
   <!-- Logo -->
-  <div class="nav-logo" title="CostVision — AI-Powered Cost Intelligence">
+  <div class="nav-logo" id="logo-home-btn" title="CostVision — AI-Powered Cost Intelligence" style="cursor:pointer">
     <div class="logo-icon">CV</div>
     <div class="logo-text">
       <span class="logo-name">CostVision</span>
@@ -88,6 +88,8 @@
       <option value="BRL">R$ BRL</option>
       <option value="KRW">₩ KRW</option>
     </select>
+    <!-- Home button -->
+    <button class="nav-action-btn home-btn" id="home-btn" aria-label="Go to dashboard">⌂ Home</button>
     <!-- Demo Gallery button -->
     <button class="nav-action-btn demo-btn" id="demo-btn" aria-label="Open demo gallery" title="Load luxury SUV demo examples for any commodity">🚗 Demos</button>
     <!-- Help button -->
@@ -120,10 +122,224 @@
   }
 </script>
 
+<section id="home-view">
+  <!-- Filter Bar -->
+  <div class="dash-filter-bar" id="dash-filter-bar">
+    <div class="dash-filter-group">
+      <span class="dash-filter-label">Vehicle</span>
+      <div class="dash-filter-chips" id="filter-vehicle">
+        <button class="dchip active" data-val="">All</button>
+        <button class="dchip" data-val="SUV1">SUV1</button>
+        <button class="dchip" data-val="SUV2">SUV2</button>
+        <button class="dchip" data-val="SUV3">SUV3</button>
+        <button class="dchip" data-val="SUV4">SUV4</button>
+        <button class="dchip" data-val="SUV5">SUV5</button>
+      </div>
+    </div>
+    <div class="dash-filter-group">
+      <span class="dash-filter-label">Commodity</span>
+      <div class="dash-filter-chips" id="filter-commodity">
+        <button class="dchip active" data-val="">All</button>
+        <button class="dchip" data-val="machining">Machining</button>
+        <button class="dchip" data-val="casting">Castings</button>
+        <button class="dchip" data-val="sheet_metal">Sheet Metal</button>
+        <button class="dchip" data-val="injection_moulding">Plastics</button>
+        <button class="dchip" data-val="forging">Forgings</button>
+        <button class="dchip" data-val="rubber">Rubber</button>
+        <button class="dchip" data-val="composites">Composites</button>
+        <button class="dchip" data-val="pcb_fab">PCB</button>
+        <button class="dchip" data-val="pcba">PCBA</button>
+        <button class="dchip" data-val="wiring_harness">Harness</button>
+        <button class="dchip" data-val="assembly">Assembly</button>
+      </div>
+    </div>
+    <div class="dash-filter-group">
+      <span class="dash-filter-label">System</span>
+      <div class="dash-filter-chips" id="filter-system">
+        <button class="dchip active" data-val="">All</button>
+        <button class="dchip" data-val="Powertrain">Powertrain</button>
+        <button class="dchip" data-val="Chassis">Chassis</button>
+        <button class="dchip" data-val="BIW">BIW</button>
+        <button class="dchip" data-val="Interior">Interior</button>
+        <button class="dchip" data-val="Exterior">Exterior</button>
+        <button class="dchip" data-val="E&amp;E">E&amp;E</button>
+        <button class="dchip" data-val="HVAC">HVAC</button>
+        <button class="dchip" data-val="ADAS">ADAS</button>
+      </div>
+    </div>
+    <div class="dash-filter-group">
+      <span class="dash-filter-label">Smart Filters</span>
+      <div class="dash-filter-smart">
+        <select class="dash-smart-sel" id="filter-cost-range" title="Filter by cost range">
+          <option value="">Cost: All</option>
+          <option value="low">Low (&lt;&#xA3;10)</option>
+          <option value="medium">Medium (&#xA3;10&#x2013;&#xA3;100)</option>
+          <option value="high">High (&gt;&#xA3;100)</option>
+        </select>
+        <select class="dash-smart-sel" id="filter-region" title="Filter by manufacturing region">
+          <option value="">Region: All</option>
+          <option value="UK">🇬🇧 UK</option>
+          <option value="DE">🇩🇪 Germany</option>
+          <option value="CN">🇨🇳 China</option>
+          <option value="IN">🇮🇳 India</option>
+          <option value="US">🇺🇸 USA</option>
+          <option value="MX">🇲🇽 Mexico</option>
+        </select>
+        <select class="dash-smart-sel" id="filter-confidence" title="Filter by AI confidence level">
+          <option value="">Confidence: All</option>
+          <option value="High">High</option>
+          <option value="Medium">Medium</option>
+          <option value="Low">Low</option>
+        </select>
+        <button class="dash-filter-reset" id="dash-filter-reset" title="Clear all filters">&#x2715; Clear</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- KPI Cards -->
+  <div class="dash-kpi-row" id="dash-kpi-row">
+    <div class="dash-kpi-card" id="kpi-total">
+      <div class="kpi-icon">📊</div>
+      <div class="kpi-body">
+        <div class="kpi-value" id="kpi-total-val">—</div>
+        <div class="kpi-label">Total Costings</div>
+      </div>
+    </div>
+    <div class="dash-kpi-card" id="kpi-saving">
+      <div class="kpi-icon">💡</div>
+      <div class="kpi-body">
+        <div class="kpi-value" id="kpi-saving-val">—</div>
+        <div class="kpi-label">Savings Identified</div>
+      </div>
+    </div>
+    <div class="dash-kpi-card" id="kpi-top-commodity">
+      <div class="kpi-icon">🏭</div>
+      <div class="kpi-body">
+        <div class="kpi-value" id="kpi-top-commodity-val">—</div>
+        <div class="kpi-label">Top Commodity</div>
+      </div>
+    </div>
+    <div class="dash-kpi-card" id="kpi-avg-cost">
+      <div class="kpi-icon">£</div>
+      <div class="kpi-body">
+        <div class="kpi-value" id="kpi-avg-val">—</div>
+        <div class="kpi-label">Avg Part Cost</div>
+      </div>
+    </div>
+    <div class="dash-kpi-card accent" id="kpi-high-cost">
+      <div class="kpi-icon">⚠</div>
+      <div class="kpi-body">
+        <div class="kpi-value" id="kpi-high-cost-val">—</div>
+        <div class="kpi-label">High-Cost Parts</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main body: tiles + charts -->
+  <div class="dash-body">
+
+    <!-- Quick Action Tiles -->
+    <div class="dash-tiles-col">
+      <div class="dash-section-title">Quick Actions</div>
+      <div class="dash-tiles-grid">
+        <button class="dash-tile dash-tile--primary" id="tile-new-costing">
+          <div class="tile-icon">⚡</div>
+          <div class="tile-label">New Costing</div>
+          <div class="tile-sub">Start should-cost analysis</div>
+        </button>
+        <button class="dash-tile" id="tile-pcb-image">
+          <div class="tile-icon">🔬</div>
+          <div class="tile-label">PCB Image-to-BOM</div>
+          <div class="tile-sub">AI-extract BOM from photo</div>
+        </button>
+        <button class="dash-tile" id="tile-cad">
+          <div class="tile-icon">📐</div>
+          <div class="tile-label">CAD-to-Cost</div>
+          <div class="tile-sub">Upload STEP / STL file</div>
+        </button>
+        <button class="dash-tile" id="tile-ai-agent">
+          <div class="tile-icon">✦</div>
+          <div class="tile-label">AI Agent</div>
+          <div class="tile-sub">Natural language costing</div>
+        </button>
+        <button class="dash-tile" id="tile-assembly">
+          <div class="tile-icon">🔩</div>
+          <div class="tile-label">Assembly BOM</div>
+          <div class="tile-sub">Roll up multi-part BOM</div>
+        </button>
+        <button class="dash-tile" id="tile-scenarios">
+          <div class="tile-icon">📋</div>
+          <div class="tile-label">Scenarios</div>
+          <div class="tile-sub">Compare saved costings</div>
+        </button>
+      </div>
+
+      <!-- AI Insights Panel -->
+      <div class="dash-section-title" style="margin-top:20px">AI Recommendations</div>
+      <div class="dash-ai-panel" id="dash-ai-panel">
+        <div class="dash-ai-item dash-ai-item--insight">
+          <span class="dai-icon">💡</span>
+          <span>Start by costing your highest-volume parts first — typically drives 80% of the savings opportunity.</span>
+        </div>
+        <div class="dash-ai-item dash-ai-item--warn">
+          <span class="dai-icon">⚠</span>
+          <span>PCB &amp; PCBA parts often show 15–30% variance vs. supplier quotes — high-priority for should-cost.</span>
+        </div>
+        <div class="dash-ai-item dash-ai-item--opt">
+          <span class="dai-icon">📉</span>
+          <span>China-sourced castings: apply 2× complexity factor for hidden logistics/quality costs before accepting quotes.</span>
+        </div>
+        <div class="dash-ai-item dash-ai-item--insight" id="dai-dynamic"></div>
+      </div>
+    </div>
+
+    <!-- Charts -->
+    <div class="dash-charts-col">
+      <div class="dash-section-title">Commodity Distribution</div>
+      <div class="dash-chart-card">
+        <canvas id="dash-commodity-chart" height="200"></canvas>
+        <div id="dash-chart-empty" class="dash-chart-empty" style="display:none">No costings yet — run your first analysis to see distribution</div>
+      </div>
+      <div class="dash-section-title" style="margin-top:16px">Cost by Vehicle Program</div>
+      <div class="dash-chart-card">
+        <canvas id="dash-program-chart" height="160"></canvas>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Recent Costings Table -->
+  <div class="dash-recent-section">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+      <div class="dash-section-title" style="margin:0">Recent Costings</div>
+      <button class="dash-clear-hist" id="dash-clear-hist" title="Clear costing history">Clear History</button>
+    </div>
+    <div class="dash-recent-wrap">
+      <table class="dash-recent-table" id="dash-recent-table">
+        <thead>
+          <tr>
+            <th>Part Name</th>
+            <th>Commodity</th>
+            <th>Vehicle</th>
+            <th>System</th>
+            <th>Total Cost</th>
+            <th>Region</th>
+            <th>Date</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="dash-recent-tbody">
+          <tr><td colspan="8" class="dash-empty-row">No costings yet. Click "New Costing" to get started.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
 <div id="validation-errors"   class="validation-box error"   style="display:none;margin:6px 16px 0"></div>
 <div id="validation-warnings" class="validation-box warning" style="display:none;margin:4px 16px 0"></div>
 
-<div class="layout">
+<div class="layout" id="costing-view" style="display:none">
 
   <!-- ── Input Panel ──────────────────────────────────────────────────── -->
   <div class="input-panel">
