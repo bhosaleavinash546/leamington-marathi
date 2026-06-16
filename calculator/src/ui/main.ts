@@ -242,6 +242,7 @@ function showCommodityPicker(): void {
   const backdrop = document.getElementById('picker-backdrop');
   const errEl = document.getElementById('validation-errors');
   const warnEl = document.getElementById('validation-warnings');
+  document.body.classList.remove('cv-new-costing');
   if (homeEl) homeEl.style.display = 'none';
   if (pickerEl) pickerEl.style.display = '';
   if (costingEl) {
