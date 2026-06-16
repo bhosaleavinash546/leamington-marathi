@@ -2122,3 +2122,395 @@ textarea.contact-form-input { resize: vertical; min-height: 100px; }
 }
 .ai-chat-send:disabled { opacity: 0.5; cursor: not-allowed; }
 .ai-chat-send:not(:disabled):hover { background: var(--accent-dark); }
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   PREMIUM DESIGN SYSTEM — Gradients · Motion · Hover · Micro-interactions
+   Phase 3 — 2026 Edition
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+/* ── Gradient & Motion Tokens ──────────────────────────────────────────────── */
+:root {
+  /* Primary gradients */
+  --grad-primary:    linear-gradient(135deg, #0A1A3F 0%, #1E5BFF 100%);
+  --grad-indigo:     linear-gradient(135deg, #3A3FCE 0%, #4F7BFF 100%);
+  /* Secondary */
+  --grad-teal:       linear-gradient(135deg, #0F4C5C 0%, #2EC4B6 100%);
+  --grad-slate:      linear-gradient(135deg, #2A3A4A 0%, #4A6FA5 100%);
+  /* Accent */
+  --grad-purple:     linear-gradient(135deg, #5A4FCF 0%, #7A6FF0 100%);
+  --grad-amber:      linear-gradient(135deg, #F6A623 0%, #FFD56E 100%);
+  /* Neutral */
+  --grad-light:      linear-gradient(135deg, #F5F7FA 0%, #FFFFFF 100%);
+  --grad-dark:       linear-gradient(135deg, #1A1A1A 0%, #2E2E2E 100%);
+  /* Status (confidence) */
+  --grad-high:       linear-gradient(135deg, #1FA27A 0%, #3ED598 100%);
+  --grad-medium:     linear-gradient(135deg, #F6C343 0%, #FFD76E 100%);
+  --grad-low:        linear-gradient(135deg, #D64545 0%, #FF6B6B 100%);
+
+  /* Motion durations */
+  --dur-micro:       150ms;
+  --dur-hover:       200ms;
+  --dur-page:        260ms;
+  --dur-drawer:      260ms;
+
+  /* Motion easings */
+  --ease-std:        cubic-bezier(0.4, 0.0, 0.2, 1);
+  --ease-decel:      cubic-bezier(0.0, 0.0, 0.2, 1);
+}
+
+/* ── Keyframes ─────────────────────────────────────────────────────────────── */
+@keyframes cv-fade-slide-up {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes cv-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes cv-slide-right {
+  from { opacity: 0; transform: translateX(22px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes cv-drawer-up {
+  from { opacity: 0; transform: translateY(12px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes cv-badge-in {
+  from { opacity: 0; transform: scale(0.8); }
+  to   { opacity: 1; transform: scale(1); }
+}
+@keyframes cv-ripple {
+  from { transform: scale(0); opacity: 0.4; }
+  to   { transform: scale(2.5); opacity: 0; }
+}
+
+/* ── Page / View Transitions ───────────────────────────────────────────────── */
+#home-view {
+  animation: cv-fade-slide-up var(--dur-page) var(--ease-decel) both;
+}
+#costing-view {
+  animation: cv-fade-in var(--dur-page) var(--ease-decel) both;
+}
+
+/* ── Compare Panel Transition ──────────────────────────────────────────────── */
+.compare-panel {
+  animation: cv-slide-right var(--dur-page) var(--ease-decel) both;
+}
+
+/* ── AI Chat Drawer Transition ─────────────────────────────────────────────── */
+.ai-chat-drawer {
+  animation: cv-drawer-up var(--dur-drawer) var(--ease-decel) both;
+}
+
+/* ── Premium Button Upgrade ────────────────────────────────────────────────── */
+.btn {
+  position: relative;
+  overflow: hidden;
+  transition:
+    transform var(--dur-hover) var(--ease-std),
+    box-shadow var(--dur-hover) var(--ease-std),
+    background var(--dur-hover) var(--ease-std),
+    opacity var(--dur-hover) var(--ease-std);
+}
+
+/* Ripple layer */
+.btn::after {
+  content: '';
+  position: absolute;
+  inset: 50% 50% 50% 50%;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.25);
+  opacity: 0;
+  transition: none;
+  pointer-events: none;
+}
+.btn:active::after {
+  animation: cv-ripple 0.35s var(--ease-std) forwards;
+  inset: 0;
+  border-radius: inherit;
+}
+.btn:active { transform: scale(0.98); }
+
+/* Primary button — gradient background */
+.btn-primary {
+  background: var(--grad-primary);
+  color: #fff;
+  box-shadow: 0 2px 10px rgba(30, 91, 255, 0.35);
+}
+.btn-primary:hover {
+  background: var(--grad-indigo);
+  box-shadow: 0 6px 20px rgba(30, 91, 255, 0.45);
+  transform: translateY(-2px);
+}
+.btn-primary:active {
+  transform: translateY(0) scale(0.98);
+  box-shadow: 0 2px 8px rgba(30, 91, 255, 0.3);
+}
+
+/* Secondary button */
+.btn-secondary {
+  transition:
+    transform var(--dur-hover) var(--ease-std),
+    box-shadow var(--dur-hover) var(--ease-std),
+    background var(--dur-hover) var(--ease-std),
+    border-color var(--dur-hover) var(--ease-std);
+}
+.btn-secondary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+}
+
+/* ── Navigation Action Buttons ─────────────────────────────────────────────── */
+.nav-action-btn {
+  transition:
+    transform var(--dur-hover) var(--ease-std),
+    box-shadow var(--dur-hover) var(--ease-std),
+    background var(--dur-hover) var(--ease-std),
+    border-color var(--dur-hover) var(--ease-std) !important;
+}
+.nav-action-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+}
+
+/* Home button — gradient border effect */
+.home-btn {
+  background: transparent !important;
+  border: 1.5px solid transparent !important;
+  background-clip: padding-box !important;
+  position: relative;
+  color: var(--accent) !important;
+  font-weight: 600 !important;
+}
+.home-btn::before {
+  content: '';
+  position: absolute;
+  inset: -1.5px;
+  border-radius: inherit;
+  background: var(--grad-indigo);
+  z-index: -1;
+  opacity: 0.6;
+  transition: opacity var(--dur-hover) var(--ease-std);
+}
+.home-btn:hover::before { opacity: 1; }
+.home-btn:hover { color: #fff !important; background: transparent !important; }
+
+/* ── Dashboard Tiles — Premium Hover ───────────────────────────────────────── */
+.dash-tile {
+  transition:
+    transform var(--dur-hover) var(--ease-std),
+    box-shadow var(--dur-hover) var(--ease-std),
+    border-color var(--dur-hover) var(--ease-std),
+    background var(--dur-hover) var(--ease-std);
+  will-change: transform, box-shadow;
+}
+.dash-tile:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.22), 0 0 0 1px var(--accent);
+  border-color: var(--accent);
+}
+.dash-tile:active { transform: scale(0.98); transition-duration: 80ms; }
+
+/* Primary tile — gradient background */
+.dash-tile--primary {
+  background: var(--grad-primary) !important;
+  border-color: transparent !important;
+  color: #fff;
+}
+.dash-tile--primary .tile-label { color: #fff; }
+.dash-tile--primary .tile-sub { color: rgba(255,255,255,0.7); }
+.dash-tile--primary:hover {
+  background: var(--grad-indigo) !important;
+  box-shadow: 0 10px 28px rgba(30,91,255,0.4), 0 0 0 1px rgba(79,123,255,0.5);
+}
+
+/* ── KPI Cards — Hover lift ─────────────────────────────────────────────────── */
+.dash-kpi-card {
+  transition:
+    transform var(--dur-hover) var(--ease-std),
+    box-shadow var(--dur-hover) var(--ease-std),
+    border-color var(--dur-hover) var(--ease-std);
+  will-change: transform;
+}
+.dash-kpi-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.18);
+  border-color: var(--accent);
+}
+.dash-kpi-card.accent:hover { border-color: var(--amber); }
+
+/* High-cost KPI — amber gradient accent */
+.dash-kpi-card.accent .kpi-value {
+  background: var(--grad-amber);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Confidence Badges — Gradient + Animation ──────────────────────────────── */
+.conf-badge {
+  animation: cv-badge-in var(--dur-micro) var(--ease-decel) both;
+  transition: transform var(--dur-micro) var(--ease-std);
+  cursor: default;
+}
+.conf-badge:hover { transform: scale(1.06); }
+
+.conf-badge--high {
+  background: var(--grad-high);
+  color: #fff;
+  border: none;
+}
+.conf-badge--medium {
+  background: var(--grad-medium);
+  color: #5a3a00;
+  border: none;
+}
+[data-theme="dark"] .conf-badge--medium { color: #1a1000; }
+.conf-badge--low {
+  background: var(--grad-low);
+  color: #fff;
+  border: none;
+}
+
+/* ── Recent Costings Table — Row Hover ──────────────────────────────────────── */
+.dash-recent-table tbody tr {
+  transition: background var(--dur-micro) var(--ease-std);
+}
+.dash-recent-table tbody tr:hover td {
+  background: var(--surface-hover);
+}
+
+.dash-reopen-btn {
+  transition:
+    transform var(--dur-hover) var(--ease-std),
+    border-color var(--dur-hover) var(--ease-std),
+    color var(--dur-hover) var(--ease-std);
+}
+.dash-reopen-btn:hover {
+  transform: translateX(2px);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* ── Filter Chips — Hover ───────────────────────────────────────────────────── */
+.dchip {
+  transition:
+    background var(--dur-micro) var(--ease-std),
+    border-color var(--dur-micro) var(--ease-std),
+    color var(--dur-micro) var(--ease-std),
+    transform var(--dur-micro) var(--ease-std);
+}
+.dchip:hover:not(.active) { transform: translateY(-1px); }
+.dchip.active {
+  background: var(--grad-indigo);
+  border-color: transparent;
+}
+
+/* ── Compare Bar — gradient accent ─────────────────────────────────────────── */
+.compare-bar {
+  background: linear-gradient(90deg, rgba(30,91,255,0.08) 0%, rgba(79,123,255,0.04) 100%);
+  border-image: var(--grad-indigo) 1;
+  animation: cv-fade-slide-up var(--dur-micro) var(--ease-decel) both;
+}
+
+/* ── Operation / Costing Cards ─────────────────────────────────────────────── */
+.op-card {
+  transition:
+    border-color var(--dur-hover) var(--ease-std),
+    box-shadow var(--dur-hover) var(--ease-std),
+    transform var(--dur-hover) var(--ease-std) !important;
+}
+.op-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(0,0,0,0.12);
+}
+
+/* ── Commodity Tabs ─────────────────────────────────────────────────────────── */
+.ctab {
+  transition:
+    background var(--dur-micro) var(--ease-std),
+    color var(--dur-micro) var(--ease-std),
+    border-color var(--dur-micro) var(--ease-std),
+    transform var(--dur-micro) var(--ease-std) !important;
+}
+.ctab:hover:not(.active) { transform: translateY(-1px); }
+
+/* ── Header Logo ────────────────────────────────────────────────────────────── */
+.nav-logo {
+  transition: opacity var(--dur-hover) var(--ease-std);
+}
+.nav-logo:hover { opacity: 0.85; }
+.nav-logo:hover .logo-name {
+  background: var(--grad-indigo);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.logo-name {
+  transition: color var(--dur-hover) var(--ease-std);
+}
+
+/* ── Theme Toggle ───────────────────────────────────────────────────────────── */
+.theme-toggle {
+  transition:
+    transform var(--dur-hover) var(--ease-std),
+    background var(--dur-hover) var(--ease-std) !important;
+}
+.theme-toggle:hover { transform: rotate(20deg) scale(1.1); }
+
+/* ── AI Chat FAB ─────────────────────────────────────────────────────────────── */
+.ai-chat-fab {
+  background: var(--grad-primary) !important;
+  transition:
+    transform var(--dur-hover) var(--ease-std),
+    box-shadow var(--dur-hover) var(--ease-std) !important;
+}
+.ai-chat-fab:hover {
+  transform: scale(1.1) !important;
+  box-shadow: 0 8px 28px rgba(30,91,255,0.5) !important;
+}
+.ai-chat-fab:active { transform: scale(0.96) !important; }
+
+/* ── AI Chat Send Button ────────────────────────────────────────────────────── */
+.ai-chat-send {
+  background: var(--grad-indigo) !important;
+  transition: transform var(--dur-micro) var(--ease-std), box-shadow var(--dur-micro) var(--ease-std) !important;
+}
+.ai-chat-send:not(:disabled):hover {
+  transform: scale(1.06);
+  box-shadow: 0 3px 10px rgba(30,91,255,0.4);
+}
+
+/* ── AI Insight Panel Items ─────────────────────────────────────────────────── */
+.dash-ai-item {
+  transition: transform var(--dur-hover) var(--ease-std), box-shadow var(--dur-hover) var(--ease-std);
+}
+.dash-ai-item:hover {
+  transform: translateX(3px);
+  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+}
+
+/* ── Results Breakdown Rows ─────────────────────────────────────────────────── */
+.breakdown-table tr {
+  transition: background var(--dur-micro) var(--ease-std);
+}
+
+/* ── Checkbox Smooth ─────────────────────────────────────────────────────────── */
+.cmp-chk {
+  transition: transform var(--dur-micro) var(--ease-std);
+}
+.cmp-chk:checked { transform: scale(1.1); }
+
+/* ── Dashboard Section Stagger ───────────────────────────────────────────────── */
+.dash-kpi-row    { animation: cv-fade-slide-up var(--dur-page) var(--ease-decel) 40ms  both; }
+.dash-body       { animation: cv-fade-slide-up var(--dur-page) var(--ease-decel) 80ms  both; }
+.dash-recent-section { animation: cv-fade-slide-up var(--dur-page) var(--ease-decel) 120ms both; }
+.dash-filter-bar { animation: cv-fade-in       var(--dur-page) var(--ease-decel) 0ms   both; }
+
+/* ── Prefers-reduced-motion safety ──────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 1ms !important;
+    transition-duration: 1ms !important;
+  }
+}
