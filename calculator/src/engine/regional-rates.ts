@@ -125,8 +125,8 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
   },
   PL: {
     name: 'Poland',
-    currency: 'EUR',
-    fxToGBP: 1.16,
+    currency: 'PLN',
+    fxToGBP: 5.05,
     labour: { skilled: 11.00, semiskilled: 8.50, engineer: 20.00, foundry: 8.00, electronics: 7.50, inspector: 12.00 },
     energy: { electricityPerKwh: 0.14, gasPerKwh: 0.06 },
     materialMultiplier: 0.97,
@@ -137,8 +137,8 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
   },
   CZ: {
     name: 'Czech Republic',
-    currency: 'EUR',
-    fxToGBP: 1.16,
+    currency: 'CZK',
+    fxToGBP: 29.5,
     labour: { skilled: 13.00, semiskilled: 10.00, engineer: 22.00, foundry: 9.50, electronics: 9.00, inspector: 14.00 },
     energy: { electricityPerKwh: 0.13, gasPerKwh: 0.05 },
     materialMultiplier: 0.97,

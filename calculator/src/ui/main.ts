@@ -87,6 +87,7 @@ let _displayFxRate = 1.0;
 const CURRENCY_SYMBOL: Record<string, string> = {
   GBP: '£', EUR: '€', USD: '$', CNY: '¥', INR: '₹',
   MXN: '$M', THB: '฿', VND: '₫', BRL: 'R$', KRW: '₩',
+  PLN: 'zł', CZK: 'Kč',
 };
 
 function _currFmt(n: number): string {
@@ -799,7 +800,7 @@ function el<T extends HTMLElement = HTMLElement>(id: string): T {
 function val(id: string): string { return (el<HTMLInputElement>(id))?.value?.trim() ?? ''; }
 function num(id: string): number { return parseFloat(val(id)) || 0; }
 function sel(id: string): string { return el<HTMLSelectElement>(id)?.value ?? ''; }
-function fmt(n: number): string { return '£' + n.toFixed(2); }
+function fmt(n: number): string { return _currFmt(n); }
 function fmtPct(n: number): string { return n.toFixed(1) + '%'; }
 
 function escHtml(s: string): string {
@@ -4315,6 +4316,10 @@ function switchCommodity(type: CommodityType): void {
   // Show/hide part-name for non-assembly modes
   const partNameWrap = el('part-name').closest<HTMLElement>('div[style]');
   if (partNameWrap) partNameWrap.style.display = type === 'assembly' ? 'none' : '';
+
+  // Show/hide country bar (hidden for AI Agent only)
+  const countryBar = document.getElementById('wf-country-bar');
+  if (countryBar) countryBar.style.display = (type as string) === 'ai_agent' ? 'none' : '';
 
   const area = el('commodity-form-area');
   machOpCount = 0; coatCount = 0; joinCount = 0; stationCount = 0; bomCount = 0; camMachOpCount = 0; asmLineCount = 0;
@@ -8599,6 +8604,51 @@ async function init(): Promise<void> {
   };
   el<HTMLSelectElement>('currency-selector')?.addEventListener('change', e => {
     _applyCurrency((e.target as HTMLSelectElement).value);
+  });
+
+  // Country for Costing bar — rebuilds library, updates currency, overhead default, auto-recalculates
+  const _applyCountry = (code: string) => {
+    const region = code as ManufacturingRegion;
+    _mfgRegion = region;
+    if (region === 'UK') {
+      library = recomputeMachineRates(getLibraryFromStorage());
+    } else {
+      library = buildRegionalLibrary(recomputeMachineRates(getLibraryFromStorage()), region);
+    }
+    const rd = REGIONAL_DATA[region];
+    if (rd) {
+      // Update overhead-pct to country-scaled default (base 12% × overheadMultiplier)
+      const ohPct = Math.round(12 * rd.overheadMultiplier);
+      const ohEl = el<HTMLInputElement>('overhead-pct');
+      if (ohEl) ohEl.value = String(ohPct);
+      // Update display currency
+      const cur = rd.currency;
+      const curSel = el<HTMLSelectElement>('currency-selector');
+      if (curSel && Array.from(curSel.options).some(o => o.value === cur)) {
+        curSel.value = cur;
+      }
+      _applyCurrency(cur);
+      // Sync header region selector (without triggering its 'change' event)
+      const regionSel = el<HTMLSelectElement>('mfg-region-selector');
+      if (regionSel && Array.from(regionSel.options).some(o => o.value === code)) {
+        regionSel.value = code;
+      }
+      // Update info label
+      const infoEl = document.getElementById('country-bar-info');
+      if (infoEl) {
+        const sym = CURRENCY_SYMBOL[cur] ?? cur;
+        const matDelta = (rd.materialMultiplier - 1) * 100;
+        const labRatio = rd.labour.semiskilled / REGIONAL_DATA['UK'].labour.semiskilled;
+        const labDelta = (labRatio - 1) * 100;
+        const sign = (n: number) => n >= 0 ? '+' : '';
+        infoEl.textContent = `${rd.name} · ${sym} ${cur} · Mat ${sign(matDelta)}${matDelta.toFixed(0)}% · Labour ${sign(labDelta)}${labDelta.toFixed(0)}%`;
+      }
+    }
+    // Auto-recalculate if results exist
+    if (lastResult && lastInput) el('calc-btn')?.click();
+  };
+  el<HTMLSelectElement>('costing-country-sel')?.addEventListener('change', e => {
+    _applyCountry((e.target as HTMLSelectElement).value);
   });
 
   // Manufacturing region selector — rebuilds rate library and auto-switches display currency

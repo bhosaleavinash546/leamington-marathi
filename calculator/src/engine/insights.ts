@@ -130,6 +130,7 @@ export const REGIONAL_COST_INDEX: Record<string, { label: string; index: number;
 export const FX_TO_GBP: Record<string, number> = {
   GBP: 1.0000, EUR: 0.8621, USD: 0.7874, CNY: 0.1105, INR: 0.009132,
   MXN: 0.03922, THB: 0.02198, VND: 0.00002959, BRL: 0.14599, KRW: 0.000559,
+  PLN: 0.1980, CZK: 0.03390,
 };
 
 // ─── Insight generation ───────────────────────────────────────────────────────

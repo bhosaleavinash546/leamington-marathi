@@ -87,6 +87,8 @@
       <option value="VND">₫ VND</option>
       <option value="BRL">R$ BRL</option>
       <option value="KRW">₩ KRW</option>
+      <option value="PLN">zł PLN</option>
+      <option value="CZK">Kč CZK</option>
     </select>
     <!-- Home button -->
     <button class="nav-action-btn home-btn" id="home-btn" aria-label="Go to dashboard">⌂ Home</button>
@@ -503,6 +505,22 @@
       <button class="ctab" data-commodity="composites" title="Composite manufacturing — CFRP/GFRP hand layup, prepreg, RTM, VARTM, filament winding, pultrusion. Autoclave/oven/press cure.">Composites ✓</button>
       <button class="ctab" data-commodity="wiring_harness" title="Wiring harness should-cost — wire gauges, connectors, splices, conduit, tape, crimping assembly, electrical test.">Harness ✓</button>
       <button class="ctab" data-commodity="assembly">Assembly BOM</button>
+    </div>
+
+    <!-- Country for Costing bar -->
+    <div class="wf-country-bar" id="wf-country-bar" style="display:none">
+      <span class="wf-country-label">🌍 Country</span>
+      <select id="costing-country-sel" class="wf-country-sel">
+        <option value="UK">🇬🇧 United Kingdom</option>
+        <option value="DE">🇩🇪 Germany</option>
+        <option value="US">🇺🇸 USA (Midwest)</option>
+        <option value="CN">🇨🇳 China (Tier 1)</option>
+        <option value="IN">🇮🇳 India</option>
+        <option value="MX">🇲🇽 Mexico</option>
+        <option value="PL">🇵🇱 Poland</option>
+        <option value="CZ">🇨🇿 Czech Republic</option>
+      </select>
+      <span class="wf-country-info" id="country-bar-info">UK base rates · £ GBP</span>
     </div>
 
     <!-- Part name (always visible) -->

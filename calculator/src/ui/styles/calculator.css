@@ -3207,6 +3207,47 @@ body.cv-new-costing.sidebar-collapsed .cpicker-tile-icon { font-size: 1.25rem; m
 }
 .wizard-skip:hover { color: var(--text-secondary); }
 
+/* ── Country for Costing Bar ─────────────────────────────────────────────── */
+.wf-country-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 14px;
+  background: linear-gradient(to right, var(--surface-elevated), var(--surface));
+  border-bottom: 1px solid var(--border);
+  font-size: 0.78rem;
+  flex-shrink: 0;
+}
+.wf-country-label {
+  font-weight: 600;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  font-size: 0.75rem;
+  letter-spacing: 0.01em;
+}
+.wf-country-sel {
+  font-size: 0.77rem;
+  padding: 4px 8px;
+  border: 1px solid var(--border-strong);
+  border-radius: 6px;
+  background: var(--surface-elevated);
+  color: var(--text-primary);
+  font-family: var(--font);
+  cursor: pointer;
+  min-width: 160px;
+  transition: border-color 0.15s;
+}
+.wf-country-sel:focus { outline: none; border-color: var(--accent); }
+.wf-country-info {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  flex: 1;
+  text-align: right;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 /* ── Exportable Cost Card ────────────────────────────────────────────────── */
 @media print {
   .cost-card-print body { margin: 0; padding: 0; }
