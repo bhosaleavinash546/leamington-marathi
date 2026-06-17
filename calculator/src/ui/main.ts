@@ -81,6 +81,7 @@ let pcbImageDataURL: string | null = null;
 let pcbNREEnabled = false;
 // Slot 0=Top (primary), 1=Bottom, 2-4=Additional 1-3
 let pcbImageFiles: (File | null)[] = [null, null, null, null, null];
+let pcbEditMode = false;
 let _pcbVolumeChart: Chart | null = null;
 let supplierQuotes: SupplierQuote[] = [];
 let partPhotoDataUrl: string | null = null;
@@ -976,6 +977,9 @@ interface PCBImageAnalysis {
   _selectedCountryBreakdown?: PCBCountryBreakdown;
   _countryComparison?: PCBCountryBreakdown[];
   _volumeCurves?: Record<string, VolumeCurvePoint[]>;
+  _originalAIValues?: PCBImageAnalysis;  // snapshot before user edits
+  _isReanalyzed?: boolean;               // true after re-analysis completes
+  _costDeltas?: Record<string, number>;  // per-country total delta vs original (positive = more expensive)
 }
 
 let agentHistory: AgentMessage[] = [];
@@ -4240,6 +4244,52 @@ function injectPCBImagePanel(): void {
     liveFetchBtn.title = `Fetch live prices for: ${icMarkings.slice(0, 3).join(', ')}${icMarkings.length > 3 ? '…' : ''}`;
     liveFetchBtn.addEventListener('click', () => void fetchLivePricingForBOM(icMarkings));
   }
+
+  // Edit toggle
+  el('pcb-edit-toggle-btn')?.addEventListener('click', () => {
+    if (pcbEditMode) {
+      pcbEditMode = false;
+    } else {
+      // Save original values before entering edit mode (only first time)
+      if (pcbImageResult && !pcbImageResult._originalAIValues) {
+        pcbImageResult._originalAIValues = JSON.parse(JSON.stringify(pcbImageResult)) as PCBImageAnalysis;
+      }
+      pcbEditMode = true;
+    }
+    injectPCBImagePanel();
+  });
+
+  // Re-analyze with corrections
+  el('pcb-reanalyze-btn')?.addEventListener('click', () => void reanalyzePCBWithCorrections());
+
+  // Reset to AI values
+  el('pcb-reset-ai-btn')?.addEventListener('click', () => {
+    if (pcbImageResult?._originalAIValues) {
+      const orig = pcbImageResult._originalAIValues;
+      pcbImageResult = { ...orig };
+      pcbEditMode = false;
+      injectPCBImagePanel();
+      showToast('Reset to original AI values', 'info');
+    }
+  });
+
+  // Add BOM row
+  el('pcb-bom-add-row-btn')?.addEventListener('click', () => {
+    if (!pcbImageResult) return;
+    pcbImageResult.bom.push({ refDes: '', componentType: 'passive_0402', description: 'New component', pkg: '', value: '', voltage: '', qty: 1, unitPriceGBP: 0.01, moq: 1, automotive: false, highCost: false });
+    injectPCBImagePanel();
+  });
+
+  // BOM delete row buttons
+  document.querySelectorAll<HTMLButtonElement>('.pcb-bom-delete-row').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const idx = parseInt(btn.dataset.bomIdx ?? '-1', 10);
+      if (pcbImageResult && idx >= 0) {
+        pcbImageResult.bom.splice(idx, 1);
+        injectPCBImagePanel();
+      }
+    });
+  });
 }
 
 async function fetchLivePricingForBOM(icMarkings: string[]): Promise<void> {
@@ -4287,6 +4337,143 @@ async function fetchLivePricingForBOM(icMarkings: string[]): Promise<void> {
   }
 }
 
+function collectPCBEditsFromDOM(): { correctedSpec: PCBImageAnalysis['boardSpec']; correctedAssembly: PCBImageAnalysis['assembly']; correctedBOM: PCBBOMItem[] } {
+  const g = (id: string) => (document.getElementById(id) as HTMLInputElement | null);
+  const gNum = (id: string, def: number) => parseFloat(g(id)?.value ?? '') || def;
+  const gBool = (id: string) => (document.getElementById(id) as HTMLInputElement | null)?.checked ?? false;
+
+  const r = pcbImageResult!;
+  const correctedSpec: PCBImageAnalysis['boardSpec'] = {
+    estimatedLayers:          Math.round(gNum('pcb-edit-layers', r.boardSpec.estimatedLayers)),
+    widthMm:                  gNum('pcb-edit-width', r.boardSpec.widthMm),
+    heightMm:                 gNum('pcb-edit-height', r.boardSpec.heightMm),
+    surfaceFinish:            g('pcb-edit-surface')?.value ?? r.boardSpec.surfaceFinish,
+    solderMaskColour:         r.boardSpec.solderMaskColour,
+    silkscreenSides:          r.boardSpec.silkscreenSides,
+    throughVias:              Math.round(gNum('pcb-edit-through-vias', r.boardSpec.throughVias)),
+    blindVias:                Math.round(gNum('pcb-edit-blind-vias', r.boardSpec.blindVias)),
+    buriedVias:               r.boardSpec.buriedVias,
+    microVias:                Math.round(gNum('pcb-edit-micro-vias', r.boardSpec.microVias)),
+    bgaDetected:              r.boardSpec.bgaDetected,
+    minTraceSpaceMm:          r.boardSpec.minTraceSpaceMm,
+    technologyType:           g('pcb-edit-tech')?.value ?? r.boardSpec.technologyType,
+    hdiStructure:             g('pcb-edit-hdi')?.value ?? r.boardSpec.hdiStructure,
+    impedanceControlRequired: gBool('pcb-edit-impedance'),
+    copperWeightOz:           gNum('pcb-edit-copper-oz', r.boardSpec.copperWeightOz),
+    qualityGrade:             g('pcb-edit-quality')?.value ?? r.boardSpec.qualityGrade,
+    panelUtilisation:         r.boardSpec.panelUtilisation,
+  };
+
+  const correctedAssembly: PCBImageAnalysis['assembly'] = {
+    smtPlacements:    Math.round(gNum('pcb-edit-smt', r.assembly.smtPlacements)),
+    throughHoleJoints:Math.round(gNum('pcb-edit-th-joints', r.assembly.throughHoleJoints)),
+    manualJoints:     Math.round(gNum('pcb-edit-manual-joints', r.assembly.manualJoints)),
+    bgaCount:         Math.round(gNum('pcb-edit-bga-count', r.assembly.bgaCount)),
+    complexity:       g('pcb-edit-complexity')?.value ?? r.assembly.complexity,
+    reflowSides:      Math.round(gNum('pcb-edit-reflow-sides', r.assembly.reflowSides)),
+    aoiRequired:      gBool('pcb-edit-aoi'),
+    ictTimeSec:       gNum('pcb-edit-ict-time', r.assembly.ictTimeSec),
+  };
+
+  // Collect BOM edits from table
+  const correctedBOM: PCBBOMItem[] = r.bom.map((item, i) => {
+    const qtyInput = document.querySelector<HTMLInputElement>(`.pcb-edit-bom-qty[data-bom-idx="${i}"]`);
+    const priceInput = document.querySelector<HTMLInputElement>(`.pcb-edit-bom-price[data-bom-idx="${i}"]`);
+    return {
+      ...item,
+      qty: Math.round(parseFloat(qtyInput?.value ?? '') || item.qty),
+      unitPriceGBP: parseFloat(priceInput?.value ?? '') || item.unitPriceGBP,
+    };
+  });
+
+  return { correctedSpec, correctedAssembly, correctedBOM };
+}
+
+async function reanalyzePCBWithCorrections(): Promise<void> {
+  if (!pcbImageResult || pcbImageLoading) return;
+  const { correctedSpec, correctedAssembly, correctedBOM } = collectPCBEditsFromDOM();
+
+  const reanalyzeBtn = el<HTMLButtonElement>('pcb-reanalyze-btn');
+  if (reanalyzeBtn) { reanalyzeBtn.disabled = true; reanalyzeBtn.textContent = '⏳ Re-analyzing…'; }
+  pcbImageLoading = true;
+
+  const apiKey = (document.querySelector<HTMLInputElement>('#api-key-input'))?.value?.trim()
+    ?? sessionStorage.getItem('cv_api_key') ?? '';
+
+  const selectedCountry = (document.getElementById('pcb-mfg-country') as HTMLSelectElement)?.value ?? 'cn';
+  const orderQty = (document.getElementById('pcb-order-qty') as HTMLInputElement)?.value ?? '100';
+
+  const formData = new FormData();
+  // Append images if available
+  const activeFiles = pcbImageFiles.filter((f): f is File => f !== null);
+  activeFiles.forEach(f => formData.append('pcbImages', f));
+  if (activeFiles.length > 0) {
+    formData.append('pcbImageLabels', JSON.stringify(
+      pcbImageFiles.map((f, i) => f ? ['Top side','Bottom side','Close-up 1','Close-up 2','Close-up 3'][i] : null).filter(Boolean)
+    ));
+  }
+  formData.append('correctedSpec', JSON.stringify(correctedSpec));
+  formData.append('correctedBOM', JSON.stringify(correctedBOM));
+  formData.append('correctedAssembly', JSON.stringify(correctedAssembly));
+  formData.append('domain', pcbImageResult.stage1Classification?.domain ?? 'general');
+  formData.append('ocrMarkings', JSON.stringify(pcbImageResult.ocrExtraction?.icMarkings ?? []));
+  formData.append('country', selectedCountry);
+  formData.append('orderQty', orderQty);
+
+  try {
+    const resp = await fetch('/api/pcb/reanalyze', {
+      method: 'POST',
+      headers: apiKey ? { 'x-api-key': apiKey } : {},
+      body: formData,
+    });
+    if (!resp.ok) {
+      const err = await resp.json().catch(() => ({ error: resp.statusText })) as { error: string };
+      throw new Error(err.error ?? resp.statusText);
+    }
+    const data = await resp.json() as {
+      success: boolean;
+      analysis: PCBImageAnalysis;
+      selectedCountry?: string;
+      selectedCountryBreakdown?: PCBCountryBreakdown;
+      countryComparison?: PCBCountryBreakdown[];
+      volumeCurves?: Record<string, VolumeCurvePoint[]>;
+      complexityScore?: PCBComplexityScore;
+    };
+
+    // Compute cost deltas (new total - original total per country)
+    const costDeltas: Record<string, number> = {};
+    const origComparison = pcbImageResult._originalAIValues?._countryComparison ?? pcbImageResult._countryComparison ?? [];
+    const origMap = new Map(origComparison.map(c => [c.countryId, c.totalPerBoard]));
+    (data.countryComparison ?? []).forEach(c => {
+      const orig = origMap.get(c.countryId);
+      if (orig !== undefined) costDeltas[c.countryId] = c.totalPerBoard - orig;
+    });
+
+    const originalAIValues = pcbImageResult._originalAIValues ?? JSON.parse(JSON.stringify(pcbImageResult)) as PCBImageAnalysis;
+
+    pcbImageResult = data.analysis;
+    if (pcbImageResult) {
+      pcbImageResult._selectedCountry = data.selectedCountry ?? selectedCountry;
+      pcbImageResult._selectedCountryBreakdown = data.selectedCountryBreakdown ?? undefined;
+      pcbImageResult._countryComparison = data.countryComparison ?? [];
+      pcbImageResult._volumeCurves = data.volumeCurves ?? undefined;
+      if (data.complexityScore) pcbImageResult.complexityScore = data.complexityScore;
+      pcbImageResult._originalAIValues = originalAIValues;
+      pcbImageResult._isReanalyzed = true;
+      pcbImageResult._costDeltas = costDeltas;
+    }
+    pcbEditMode = false;
+    injectPCBImagePanel();
+    showToast('Re-analysis complete — updated with corrected data', 'info');
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    showToast(`Re-analysis failed: ${msg.slice(0, 100)}`, 'error');
+    if (reanalyzeBtn) { reanalyzeBtn.disabled = false; reanalyzeBtn.textContent = '♻ Re-analyze with Corrections'; }
+  } finally {
+    pcbImageLoading = false;
+  }
+}
+
 function buildPCBImagePanel(r: PCBImageAnalysis): string {
   const b = r.boardSpec;
   const a = r.assembly;
@@ -4298,27 +4485,29 @@ function buildPCBImagePanel(r: PCBImageAnalysis): string {
   const totalBOMCost = c.totalBOMCostGBP.toFixed(2);
 
   const bomRows = r.bom.map((item, i) => `
-    <tr class="${item.highCost ? 'pcb-bom-row--high-cost' : ''}">
+    <tr class="${item.highCost ? 'pcb-bom-row--high-cost' : ''}" data-bom-idx="${i}">
       <td>${i + 1}</td>
       <td>${item.refDes}</td>
       <td>${item.description}</td>
       <td>${item.pkg}</td>
       <td>${item.value}</td>
       <td>${item.voltage}</td>
-      <td>${item.partNumber ? `<span style="font-size:0.68rem;font-family:monospace;background:var(--border);padding:1px 4px;border-radius:3px">${item.partNumber}${item.ocrExtracted ? ' <span title="OCR extracted" style="color:var(--green)">✓</span>' : ''}</span>` : ''}${(item.lineConf !== undefined && item.lineConf < 0.6) ? ' <span title="Low confidence" style="color:orange;font-size:0.65rem">⚠</span>' : ''}</td>
-      <td>${item.qty}</td>
-      <td>£${item.unitPriceGBP.toFixed(3)}</td>
-      <td>£${(item.qty * item.unitPriceGBP).toFixed(2)}</td>
-      <td>${item.automotive ? '<span class="pcb-badge pcb-badge--auto">AEC</span>' : ''}${item.highCost ? '<span class="pcb-badge pcb-badge--cost">$$</span>' : ''}</td>
+      <td>${item.partNumber ? `<span style="font-size:0.68rem;font-family:monospace;background:var(--border);padding:1px 4px;border-radius:3px">${item.partNumber}${item.ocrExtracted ? ' <span title="OCR extracted" style="color:var(--green)">&#10003;</span>' : ''}</span>` : ''}${(item.lineConf !== undefined && item.lineConf < 0.6) ? ' <span title="Low confidence" style="color:orange;font-size:0.65rem">&#9888;</span>' : ''}</td>
+      <td>${pcbEditMode ? `<input class="pcb-edit-bom-qty" data-bom-idx="${i}" type="number" min="1" value="${item.qty}" style="width:50px"/>` : String(item.qty)}</td>
+      <td>${pcbEditMode ? `<input class="pcb-edit-bom-price" data-bom-idx="${i}" type="number" min="0" step="0.001" value="${item.unitPriceGBP.toFixed(3)}" style="width:65px"/>` : `&#163;${item.unitPriceGBP.toFixed(3)}`}</td>
+      <td>&#163;${(item.qty * item.unitPriceGBP).toFixed(2)}</td>
+      <td>${item.automotive ? '<span class="pcb-badge pcb-badge--auto">AEC</span>' : ''}${item.highCost ? '<span class="pcb-badge pcb-badge--cost">$$</span>' : ''}${pcbEditMode ? `<button class="pcb-bom-delete-row btn btn-secondary btn-sm" data-bom-idx="${i}" style="font-size:0.6rem;padding:1px 4px;margin-left:2px">&#128465;</button>` : ''}</td>
     </tr>`).join('');
 
   const insights = r.aiInsights.map(s => `<li>${s}</li>`).join('');
   const dfm = r.dfmIssues.map(s => `<li>⚠ ${s}</li>`).join('');
   const opts = r.optimisationSuggestions.map(s => `<li>💡 ${s}</li>`).join('');
   const limits = r.analysisLimitations.map(s => `<li>${s}</li>`).join('');
+  const complexityScoreHtml = r.complexityScore ? `<div class="occt-stat"><div class="occt-stat-value">${r.complexityScore.score}/100</div><div class="occt-stat-label">Complexity (${r.complexityScore.label})</div></div>
+        <div class="occt-stat"><div class="occt-stat-value">Class ${r.complexityScore.ipcClass}</div><div class="occt-stat-label">IPC class</div></div>` : '';
 
   return `
-    <div class="pcb-analysis-panel">
+    <div class="pcb-analysis-panel" style="${pcbEditMode ? 'border:2px solid #f59e0b;' : ''}">
       <div class="pcb-analysis-header">
         <span style="font-size:1rem">🔬</span>
         <div style="flex:1">
@@ -4326,17 +4515,48 @@ function buildPCBImagePanel(r: PCBImageAnalysis): string {
           <span style="font-size:0.65rem;color:var(--text-muted);margin-left:8px">PCB Image Analysis</span>
         </div>
         <span class="occt-mfg-score ${confClass}">${r.confidenceLevel} Confidence</span>
-        <button class="btn btn-secondary btn-sm" id="pcb-clear-btn" style="font-size:0.65rem;padding:2px 8px">✕ Clear</button>
+        ${r._isReanalyzed ? '<span style="background:#16a34a;color:#fff;font-size:0.6rem;padding:2px 6px;border-radius:10px;margin-left:6px">&#10003; Recalculated</span>' : ''}
+        <button class="btn btn-secondary btn-sm" id="pcb-edit-toggle-btn" style="font-size:0.65rem;padding:2px 8px">${pcbEditMode ? '&#10005; Cancel Edit' : '&#9999; Edit'}</button>
+        <button class="btn btn-secondary btn-sm" id="pcb-clear-btn" style="font-size:0.65rem;padding:2px 8px">&#10005; Clear</button>
       </div>
 
       <div style="display:flex;gap:6px;margin-top:6px">
-        <button class="btn btn-secondary btn-sm" id="pcb-export-csv-btn" style="font-size:0.65rem">⬇ Export CSV</button>
-        <button class="btn btn-secondary btn-sm" id="pcb-export-pdf-btn" style="font-size:0.65rem">🖨 Print/PDF</button>
+        <button class="btn btn-secondary btn-sm" id="pcb-export-csv-btn" style="font-size:0.65rem">&#11015; Export CSV</button>
+        <button class="btn btn-secondary btn-sm" id="pcb-export-pdf-btn" style="font-size:0.65rem">&#128438; Print/PDF</button>
       </div>
 
-      <div class="pcb-stat-grid">
+      ${pcbEditMode ? `<div id="pcb-edit-actions" style="display:flex;gap:8px;margin-top:6px;padding:8px;background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.3);border-radius:6px;align-items:center">
+        <span style="font-size:0.72rem;color:#f59e0b;flex:1">&#9999; Edit mode — modify spec, assembly, or BOM then re-analyze</span>
+        <button class="btn btn-primary btn-sm" id="pcb-reanalyze-btn" style="font-size:0.65rem">&#9851; Re-analyze with Corrections</button>
+        <button class="btn btn-secondary btn-sm" id="pcb-reset-ai-btn" style="font-size:0.65rem" ${!r._originalAIValues ? 'disabled' : ''}>&#8634; Reset to AI values</button>
+      </div>` : ''}
+
+      ${pcbEditMode ? `<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:8px;padding:10px;background:var(--card-bg);border-radius:6px;border:1px solid var(--border)">
+        <div style="grid-column:1/-1;font-size:0.72rem;font-weight:700;color:var(--text-secondary);margin-bottom:4px">Board Spec</div>
+        <label style="font-size:0.68rem">Layers<br/><input type="number" id="pcb-edit-layers" min="1" value="${b.estimatedLayers}" style="width:60px"/></label>
+        <label style="font-size:0.68rem">Width (mm)<br/><input type="number" id="pcb-edit-width" min="0" value="${b.widthMm}" style="width:60px"/></label>
+        <label style="font-size:0.68rem">Height (mm)<br/><input type="number" id="pcb-edit-height" min="0" value="${b.heightMm}" style="width:60px"/></label>
+        <label style="font-size:0.68rem">Surface Finish<br/><select id="pcb-edit-surface"><option value="hasl" ${b.surfaceFinish==='hasl'?'selected':''}>HASL</option><option value="hasl_lf" ${b.surfaceFinish==='hasl_lf'?'selected':''}>HASL LF</option><option value="enig" ${b.surfaceFinish==='enig'?'selected':''}>ENIG</option><option value="osp" ${b.surfaceFinish==='osp'?'selected':''}>OSP</option><option value="enepig" ${b.surfaceFinish==='enepig'?'selected':''}>ENEPIG</option><option value="iteq" ${b.surfaceFinish==='iteq'?'selected':''}>ITEQ</option></select></label>
+        <label style="font-size:0.68rem">Through Vias<br/><input type="number" id="pcb-edit-through-vias" min="0" value="${b.throughVias}" style="width:60px"/></label>
+        <label style="font-size:0.68rem">Blind Vias<br/><input type="number" id="pcb-edit-blind-vias" min="0" value="${b.blindVias}" style="width:60px"/></label>
+        <label style="font-size:0.68rem">Micro Vias<br/><input type="number" id="pcb-edit-micro-vias" min="0" value="${b.microVias}" style="width:60px"/></label>
+        <label style="font-size:0.68rem">Quality Grade<br/><select id="pcb-edit-quality"><option value="consumer" ${b.qualityGrade==='consumer'?'selected':''}>Consumer</option><option value="industrial" ${b.qualityGrade==='industrial'?'selected':''}>Industrial</option><option value="auto_grade2" ${b.qualityGrade==='auto_grade2'?'selected':''}>Auto Grade 2</option><option value="auto_grade1" ${b.qualityGrade==='auto_grade1'?'selected':''}>Auto Grade 1</option><option value="aerospace" ${b.qualityGrade==='aerospace'?'selected':''}>Aerospace</option></select></label>
+        <label style="font-size:0.68rem">Technology<br/><select id="pcb-edit-tech"><option value="FR4_STD" ${b.technologyType==='FR4_STD'?'selected':''}>FR4 Std</option><option value="FR4_HTg" ${b.technologyType==='FR4_HTg'?'selected':''}>FR4 HTg</option><option value="HDI_RIGID" ${b.technologyType==='HDI_RIGID'?'selected':''}>HDI Rigid</option><option value="RIGID_FLEX" ${b.technologyType==='RIGID_FLEX'?'selected':''}>Rigid-Flex</option><option value="RF_MICRO" ${b.technologyType==='RF_MICRO'?'selected':''}>RF Micro</option></select></label>
+        <label style="font-size:0.68rem">HDI Structure<br/><select id="pcb-edit-hdi"><option value="none" ${b.hdiStructure==='none'?'selected':''}>None</option><option value="1plus_n_plus1" ${b.hdiStructure==='1plus_n_plus1'?'selected':''}>1+N+1</option><option value="2plus_n_plus2" ${b.hdiStructure==='2plus_n_plus2'?'selected':''}>2+N+2</option><option value="any_layer" ${b.hdiStructure==='any_layer'?'selected':''}>Any Layer</option></select></label>
+        <label style="font-size:0.68rem">Impedance Ctrl<br/><input type="checkbox" id="pcb-edit-impedance" ${b.impedanceControlRequired?'checked':''}/></label>
+        <label style="font-size:0.68rem">Copper (oz)<br/><input type="number" id="pcb-edit-copper-oz" min="0" step="0.5" value="${b.copperWeightOz}" style="width:60px"/></label>
+        <div style="grid-column:1/-1;font-size:0.72rem;font-weight:700;color:var(--text-secondary);margin-top:8px;margin-bottom:4px">Assembly</div>
+        <label style="font-size:0.68rem">SMT Placements<br/><input type="number" id="pcb-edit-smt" min="0" value="${a.smtPlacements}" style="width:60px"/></label>
+        <label style="font-size:0.68rem">TH Joints<br/><input type="number" id="pcb-edit-th-joints" min="0" value="${a.throughHoleJoints}" style="width:60px"/></label>
+        <label style="font-size:0.68rem">Manual Joints<br/><input type="number" id="pcb-edit-manual-joints" min="0" value="${a.manualJoints}" style="width:60px"/></label>
+        <label style="font-size:0.68rem">BGA Count<br/><input type="number" id="pcb-edit-bga-count" min="0" value="${a.bgaCount}" style="width:60px"/></label>
+        <label style="font-size:0.68rem">Complexity<br/><select id="pcb-edit-complexity"><option value="low" ${a.complexity==='low'?'selected':''}>Low</option><option value="medium" ${a.complexity==='medium'?'selected':''}>Medium</option><option value="high" ${a.complexity==='high'?'selected':''}>High</option><option value="very_high" ${a.complexity==='very_high'?'selected':''}>Very High</option></select></label>
+        <label style="font-size:0.68rem">Reflow Sides<br/><input type="number" id="pcb-edit-reflow-sides" min="1" max="2" value="${a.reflowSides}" style="width:60px"/></label>
+        <label style="font-size:0.68rem">AOI Required<br/><input type="checkbox" id="pcb-edit-aoi" ${a.aoiRequired?'checked':''}/></label>
+        <label style="font-size:0.68rem">ICT Time (s)<br/><input type="number" id="pcb-edit-ict-time" min="0" value="${a.ictTimeSec}" style="width:60px"/></label>
+      </div>` : `<div class="pcb-stat-grid">
         <div class="occt-stat"><div class="occt-stat-value">${b.estimatedLayers}</div><div class="occt-stat-label">Layers</div></div>
-        <div class="occt-stat"><div class="occt-stat-value">${b.widthMm}×${b.heightMm}</div><div class="occt-stat-label">Board (mm)</div></div>
+        <div class="occt-stat"><div class="occt-stat-value">${b.widthMm}&#xD7;${b.heightMm}</div><div class="occt-stat-label">Board (mm)</div></div>
         <div class="occt-stat"><div class="occt-stat-value">${b.technologyType.replace('_', ' ')}</div><div class="occt-stat-label">Technology</div></div>
         <div class="occt-stat"><div class="occt-stat-value">${b.surfaceFinish.toUpperCase()}</div><div class="occt-stat-label">Surface finish</div></div>
         <div class="occt-stat"><div class="occt-stat-value">${b.throughVias + b.blindVias + b.microVias}</div><div class="occt-stat-label">Total vias</div></div>
@@ -4345,13 +4565,12 @@ function buildPCBImagePanel(r: PCBImageAnalysis): string {
         <div class="occt-stat"><div class="occt-stat-value">${a.throughHoleJoints}</div><div class="occt-stat-label">TH joints</div></div>
         <div class="occt-stat"><div class="occt-stat-value">${a.complexity}</div><div class="occt-stat-label">Assembly complexity</div></div>
         <div class="occt-stat"><div class="occt-stat-value">${a.reflowSides === 2 ? 'Double' : 'Single'}</div><div class="occt-stat-label">Reflow sides</div></div>
-        <div class="occt-stat"><div class="occt-stat-value">£${c.pcbFabGBP.min.toFixed(2)}–£${c.pcbFabGBP.max.toFixed(2)}</div><div class="occt-stat-label">PCB fab est.</div></div>
-        <div class="occt-stat"><div class="occt-stat-value">£${totalBOMCost}</div><div class="occt-stat-label">BOM total (${totalBOMLines} lines)</div></div>
+        <div class="occt-stat"><div class="occt-stat-value">&#163;${c.pcbFabGBP.min.toFixed(2)}–&#163;${c.pcbFabGBP.max.toFixed(2)}</div><div class="occt-stat-label">PCB fab est.</div></div>
+        <div class="occt-stat"><div class="occt-stat-value">&#163;${totalBOMCost}</div><div class="occt-stat-label">BOM total (${totalBOMLines} lines)</div></div>
         <div class="occt-stat"><div class="occt-stat-value">${r.stage1Classification?.domain?.replace(/_/g,' ') ?? 'general'}</div><div class="occt-stat-label">Board domain</div></div>
         <div class="occt-stat"><div class="occt-stat-value">${r.ocrExtraction?.icMarkings?.length ?? 0}</div><div class="occt-stat-label">ICs identified</div></div>
-        ${r.complexityScore ? `<div class="occt-stat"><div class="occt-stat-value">${r.complexityScore.score}/100</div><div class="occt-stat-label">Complexity (${r.complexityScore.label})</div></div>
-        <div class="occt-stat"><div class="occt-stat-value">Class ${r.complexityScore.ipcClass}</div><div class="occt-stat-label">IPC class</div></div>` : ''}
-      </div>
+        ${complexityScoreHtml}
+      </div>`}
 
       <div class="pcb-apply-row">
         <button class="btn btn-primary btn-sm" id="pcb-apply-fab-btn">⚡ Apply to PCB Fab Form</button>
@@ -4362,10 +4581,11 @@ function buildPCBImagePanel(r: PCBImageAnalysis): string {
         <div class="pcb-analysis-section-title">📋 Bill of Materials (${totalBOMLines} lines · ${totalPlacements} placements)</div>
         <div class="pcb-bom-wrap">
           <table class="pcb-bom-table">
-            <thead><tr><th>#</th><th>Ref Des</th><th>Description</th><th>Pkg</th><th>Value</th><th>Voltage</th><th>Part No.</th><th>Qty</th><th>Unit £</th><th>Ext £</th><th>Flags</th></tr></thead>
+            <thead><tr><th>#</th><th>Ref Des</th><th>Description</th><th>Pkg</th><th>Value</th><th>Voltage</th><th>Part No.</th><th>Qty</th><th>Unit &#163;</th><th>Ext &#163;</th><th>Flags${pcbEditMode ? '/Del' : ''}</th></tr></thead>
             <tbody>${bomRows}</tbody>
-            <tfoot><tr><td colspan="9" style="text-align:right;font-weight:700">Total BOM Cost</td><td colspan="2" style="font-weight:700;color:var(--accent)">£${totalBOMCost}</td></tr></tfoot>
+            <tfoot><tr><td colspan="9" style="text-align:right;font-weight:700">Total BOM Cost</td><td colspan="2" style="font-weight:700;color:var(--accent)">&#163;${totalBOMCost}</td></tr></tfoot>
           </table>
+          ${pcbEditMode ? '<button class="btn btn-secondary btn-sm" id="pcb-bom-add-row-btn" style="margin-top:6px;font-size:0.65rem">&#65291; Add Row</button>' : ''}
         </div>
       </div>
 
@@ -4457,12 +4677,17 @@ function buildCountryBreakdownSection(r: PCBImageAnalysis): string {
     const nreCell = pcbNREEnabled
       ? `<td style="white-space:nowrap" title="One-time programme NRE">£${((meta?.nre?.totalGBP ?? 0) / 1000).toFixed(1)}k</td>`
       : '';
+    const delta = r._costDeltas?.[c.countryId];
+    const deltaCell = delta !== undefined
+      ? `<td style="font-size:0.68rem;white-space:nowrap;color:${delta > 0 ? '#ef4444' : delta < 0 ? '#16a34a' : 'var(--text-muted)'}">${delta > 0 ? '↑' : delta < 0 ? '↓' : '→'}£${Math.abs(delta).toFixed(2)}</td>`
+      : (r._costDeltas ? '<td>—</td>' : '');
     return `<tr style="${isSelected ? 'background:rgba(79,142,247,0.10);font-weight:700' : ''}">
       <td style="white-space:nowrap">${c.flag} ${c.countryName.split(' (')[0]}</td>
       <td>£${c.pcbFabPerBoard.toFixed(2)}</td>
       <td>£${c.assemblyPerBoard.toFixed(2)}</td>
       <td>£${c.logisticsPerBoard.toFixed(2)}</td>
       <td style="color:var(--accent);font-weight:700">£${c.totalPerBoard.toFixed(2)}</td>
+      ${deltaCell}
       <td>
         <div style="display:flex;align-items:center;gap:4px">
           <div style="flex:1;height:6px;background:var(--border);border-radius:3px;min-width:40px">
@@ -4490,6 +4715,7 @@ function buildCountryBreakdownSection(r: PCBImageAnalysis): string {
               <th>Assembly</th>
               <th>Logistics</th>
               <th>Total/Board</th>
+              ${r._costDeltas ? '<th>&#916; vs orig</th>' : ''}
               <th style="min-width:60px">Cost bar</th>
               <th>Lead time</th>
               <th title="6-month should-cost trend">Trend</th>

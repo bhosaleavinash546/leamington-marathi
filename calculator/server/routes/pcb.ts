@@ -537,6 +537,239 @@ ${userPromptText}`;
   });
 });
 
+// ── Helper: build correction context for Stage 3 user prompt ──────────────
+function buildCorrectionContext(
+  correctedSpec: Record<string, unknown> | null,
+  correctedBOM: unknown[] | null,
+  correctedAssembly: Record<string, unknown> | null,
+): string {
+  const parts: string[] = [];
+  parts.push('=== USER CORRECTIONS — AUTHORITATIVE GROUND TRUTH ===');
+  parts.push('The user has verified and corrected the following values from the original AI analysis.');
+  parts.push('Your JSON output MUST match these exactly. Generate FRESH insights, DFM issues, and');
+  parts.push('optimisation suggestions for this exact configuration.\n');
+
+  if (correctedSpec) {
+    parts.push('=== CORRECTED BOARD SPEC ===');
+    parts.push(JSON.stringify(correctedSpec, null, 2));
+    parts.push('');
+  }
+  if (correctedAssembly) {
+    parts.push('=== CORRECTED ASSEMBLY DATA ===');
+    parts.push(JSON.stringify(correctedAssembly, null, 2));
+    parts.push('');
+  }
+  if (correctedBOM && correctedBOM.length > 0) {
+    parts.push('=== CORRECTED BOM ===');
+    parts.push(JSON.stringify(correctedBOM, null, 2));
+    parts.push('');
+  }
+  parts.push('IMPORTANT: Use the corrected values above verbatim in your boardSpec, assembly, and bom');
+  parts.push('output fields. Only generate new content for: aiInsights, dfmIssues, highCostComponents,');
+  parts.push('optimisationSuggestions, confidenceLevel, analysisLimitations, partName, and costEstimates.\n');
+  return parts.join('\n');
+}
+
+// POST /api/pcb/reanalyze — skip Stages 1 & 2, run Stage 3+4 with corrected values
+router.post('/reanalyze', upload.fields([
+  { name: 'pcbImages', maxCount: 5 },
+]), async (req, res): Promise<void> => {
+  const files = req.files as Record<string, Express.Multer.File[]> | undefined;
+  const imageFiles = files?.pcbImages ?? [];
+
+  const apiKey = process.env.ANTHROPIC_API_KEY ?? (req.headers['x-api-key'] as string);
+  if (!apiKey) {
+    res.status(400).json({ error: 'ANTHROPIC_API_KEY not configured. Add it in Settings or set the environment variable.' });
+    return;
+  }
+
+  // Parse corrected values from body
+  let correctedSpec: Record<string, unknown> | null = null;
+  let correctedBOM: unknown[] | null = null;
+  let correctedAssembly: Record<string, unknown> | null = null;
+  let ocrMarkings: string[] = [];
+
+  try { correctedSpec = JSON.parse(req.body?.correctedSpec as string ?? 'null') as Record<string, unknown>; } catch { /* keep null */ }
+  try { correctedBOM = JSON.parse(req.body?.correctedBOM as string ?? 'null') as unknown[]; } catch { /* keep null */ }
+  try { correctedAssembly = JSON.parse(req.body?.correctedAssembly as string ?? 'null') as Record<string, unknown>; } catch { /* keep null */ }
+  try { ocrMarkings = JSON.parse(req.body?.ocrMarkings as string ?? '[]') as string[]; } catch { /* keep empty */ }
+
+  const domain = (req.body?.domain as string | undefined) ?? 'general';
+
+  let imageLabels: string[] = DEFAULT_IMAGE_LABELS;
+  try {
+    const raw = req.body?.pcbImageLabels as string | undefined;
+    if (raw) imageLabels = JSON.parse(raw) as string[];
+  } catch { /* use defaults */ }
+
+  const multiImage = imageFiles.length > 1;
+
+  // Build Stage 1 and OCR stubs from supplied values
+  const stage1Result: Stage1Result = { domain, conf: 1.0, hints: [] };
+  const ocrResult: OCRResult = {
+    icMarkings: ocrMarkings,
+    refDesGroups: [],
+    connectors: [],
+    boardText: [],
+    extractionQuality: 'high',
+  };
+
+  const anthropic = new Anthropic({ apiKey });
+  console.log(`[PCB/reanalyze] domain=${domain}, ${imageFiles.length} image(s), correction context provided`);
+
+  // ── Stage 3: Specialist analysis with corrections injected ─────────────
+  const specialistSystem = SPECIALIST_SYSTEM_PROMPTS[domain] ?? SPECIALIST_SYSTEM_PROMPTS['general'];
+  const correctionContext = buildCorrectionContext(correctedSpec, correctedBOM, correctedAssembly);
+  const basePrompt = buildUserPrompt(ocrResult, stage1Result, domain);
+  const userPromptText = correctionContext + '\n' + basePrompt;
+
+  let analysis: unknown;
+  let lastRaw = '';
+
+  try {
+    // ── Attempt 1: Full analysis with correction context ─────────────────
+    const contentBlocks: Array<{ type: 'image'; source: { type: 'base64'; media_type: string; data: string } } | { type: 'text'; text: string }> =
+      imageFiles.length > 0 ? buildImageContentBlocks(imageFiles, imageLabels, multiImage) : [];
+
+    const msg1 = await anthropic.messages.create({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 8192,
+      system: specialistSystem,
+      messages: [{
+        role: 'user',
+        content: [
+          ...contentBlocks,
+          { type: 'text', text: userPromptText },
+        ],
+      }],
+    });
+
+    lastRaw = msg1.content[0]?.type === 'text' ? msg1.content[0].text : '';
+
+    try {
+      analysis = JSON.parse(extractJSON(lastRaw));
+    } catch (e1) {
+      console.warn('[PCB/reanalyze] Attempt 1 JSON parse failed:', String(e1));
+
+      // ── Attempt 2: JSON repair ────────────────────────────────────────
+      const msg2 = await anthropic.messages.create({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 8192,
+        system: 'You are a JSON repair assistant. Return ONLY valid JSON — nothing else. Start with { and end with }.',
+        messages: [{ role: 'user', content: buildRepairPrompt(lastRaw) }],
+      });
+
+      lastRaw = msg2.content[0]?.type === 'text' ? msg2.content[0].text : '';
+
+      try {
+        analysis = JSON.parse(extractJSON(lastRaw));
+      } catch (e2) {
+        console.error('[PCB/reanalyze] Attempt 2 JSON repair failed:', String(e2));
+
+        // ── Attempt 3: Minimal fallback ───────────────────────────────
+        const fallbackContentBlocks: Array<{ type: 'image'; source: { type: 'base64'; media_type: string; data: string } } | { type: 'text'; text: string }> =
+          imageFiles.length > 0 ? buildImageContentBlocks(imageFiles, imageLabels, multiImage) : [];
+
+        const msg3 = await anthropic.messages.create({
+          model: 'claude-sonnet-4-6',
+          max_tokens: 4096,
+          system: specialistSystem,
+          messages: [{
+            role: 'user',
+            content: [
+              ...fallbackContentBlocks,
+              { type: 'text', text: `A PCB was re-analysed with user corrections and the result should have been JSON. Return a minimal valid JSON object with these fields filled using the user corrections below, set confidenceLevel to "Low".\n\n${userPromptText}` },
+            ],
+          }],
+        });
+
+        lastRaw = msg3.content[0]?.type === 'text' ? msg3.content[0].text : '';
+
+        try {
+          analysis = JSON.parse(extractJSON(lastRaw));
+        } catch (e3) {
+          res.status(500).json({
+            error: `PCB re-analysis failed after 3 attempts. Parse error: ${String(e3)}. Raw response preview: ${lastRaw.slice(0, 400)}`,
+          });
+          return;
+        }
+      }
+    }
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    console.error('[PCB/reanalyze] Anthropic API error:', msg);
+    res.status(502).json({ error: `AI service error: ${msg}` });
+    return;
+  }
+
+  // ── Stage 4: Country-aware cost breakdown ─────────────────────────────
+  const selectedCountry = (req.body?.country as string | undefined) ?? 'cn';
+  const orderQty = parseInt(req.body?.orderQty as string ?? '100', 10) || 100;
+
+  let countryComparison: ReturnType<typeof computeAllCountryCosts> = [];
+  let selectedCountryBreakdown: ReturnType<typeof computePCBCountryCost> | null = null;
+  let volumeCurves: Record<string, ReturnType<typeof computeVolumeCurve>> = {};
+  let complexityScore: ReturnType<typeof computeComplexityScore> | null = null;
+
+  try {
+    const a = (analysis as Record<string, unknown>);
+    const boardSpec = a?.boardSpec as Record<string, unknown> ?? {};
+    const assemblyData = a?.assembly as Record<string, unknown> ?? {};
+    const costEst = a?.costEstimates as Record<string, unknown> ?? {};
+    const pcbFabGBP = costEst?.pcbFabGBP as { mid?: number } | undefined;
+
+    const costInput: PCBCostInput = {
+      widthMm:              Number(boardSpec.widthMm)             || 100,
+      heightMm:             Number(boardSpec.heightMm)            || 80,
+      layers:               Number(boardSpec.estimatedLayers)     || 2,
+      surfaceFinish:        String(boardSpec.surfaceFinish        || 'enig'),
+      throughVias:          Number(boardSpec.throughVias)         || 50,
+      blindVias:            Number(boardSpec.blindVias)           || 0,
+      microVias:            Number(boardSpec.microVias)           || 0,
+      hdiStructure:         String(boardSpec.hdiStructure         || 'none'),
+      impedanceControlled:  Boolean(boardSpec.impedanceControlRequired),
+      smtPlacements:        Number(assemblyData.smtPlacements)    || 0,
+      throughHoleJoints:    Number(assemblyData.throughHoleJoints)|| 0,
+      manualJoints:         Number(assemblyData.manualJoints)     || 0,
+      bgaCount:             Number(assemblyData.bgaCount)         || 0,
+      aoiRequired:          Boolean(assemblyData.aoiRequired),
+      ictTimeSec:           Number(assemblyData.ictTimeSec)       || 0,
+      conformalCoatAreaCm2: 0,
+      totalBOMCostGBP:      Number(costEst?.totalBOMCostGBP)      || pcbFabGBP?.mid || 0,
+      orderQuantity:        orderQty,
+    };
+
+    countryComparison = computeAllCountryCosts(costInput);
+    const resolvedCountry = PCB_COUNTRY_RATES[selectedCountry] ? selectedCountry : 'cn';
+    selectedCountryBreakdown = computePCBCountryCost(costInput, resolvedCountry);
+
+    const sorted = [...countryComparison].sort((x, y) => x.totalPerBoard - y.totalPerBoard);
+    const cheapestId = sorted[0]?.countryId ?? 'cn';
+    const volumeQtys = [100, 250, 500, 1000, 2500, 5000, 10000, 25000];
+    volumeCurves = {
+      [cheapestId]: computeVolumeCurve(costInput, cheapestId, volumeQtys),
+      [resolvedCountry]: computeVolumeCurve(costInput, resolvedCountry, volumeQtys),
+      gb: computeVolumeCurve(costInput, 'gb', volumeQtys),
+    };
+
+    complexityScore = computeComplexityScore(boardSpec, assemblyData);
+
+    console.log(`[PCB/reanalyze] Stage 4: Country costs computed for ${COUNTRY_DISPLAY_ORDER.length} countries`);
+  } catch (err) {
+    console.warn('[PCB/reanalyze] Stage 4 country cost computation failed:', (err as Error).message);
+  }
+
+  res.json({
+    success: true,
+    analysis,
+    selectedCountry,
+    selectedCountryBreakdown,
+    countryComparison,
+    volumeCurves,
+    complexityScore,
+  });
+});
+
 // POST /api/pcb/live-pricing  — optional live component pricing
 router.post('/live-pricing', async (req, res): Promise<void> => {
   const { partNumbers, provider, apiKey, qty } = req.body as {
