@@ -7661,17 +7661,57 @@ function renderWaterfallChart(result: PartCostResult): void {
   const colours = ['#3b82f6','#6366f1','#8b5cf6','#0ea5e9','#14b8a6','#64748b','#94a3b8','#e65100'];
   const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
   const textCol = isDark ? '#94a3b8' : '#475569';
-  const gridCol = isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)';
+  const gridCol = isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.06)';
+  const sym = CURRENCY_SYMBOL[_displayCurrency] ?? _displayCurrency;
+
+  // Plugin: draw £value and % label above each bar
+  const waterfallLabelPlugin = {
+    id: 'cvWaterfallLabels',
+    afterDatasetsDraw(chart: any) {
+      const { ctx, scales } = chart;
+      const dataset = chart.data.datasets[0] as { data: [number, number][] };
+      const meta = chart.getDatasetMeta(0);
+      const grandTotal = result.total * _displayFxRate;
+      meta.data.forEach((bar: any, idx: number) => {
+        const raw = dataset.data[idx];
+        if (!raw) return;
+        const value = Math.abs(raw[1] - raw[0]) * _displayFxRate;
+        if (value < 0.001) return;
+        const pct = grandTotal > 0 ? (value / grandTotal * 100).toFixed(0) : '0';
+        const topY = scales.y.getPixelForValue(Math.max(raw[0], raw[1]));
+        const line1 = `${sym}${value < 10 ? value.toFixed(2) : value.toFixed(1)}`;
+        const line2 = `${pct}%`;
+        ctx.save();
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'bottom';
+        ctx.fillStyle = isDark ? '#e2e8f0' : '#1e293b';
+        ctx.font = `700 10.5px Inter, sans-serif`;
+        ctx.fillText(line1, bar.x, topY - 3);
+        ctx.font = `500 9.5px Inter, sans-serif`;
+        ctx.fillStyle = textCol;
+        ctx.fillText(line2, bar.x, topY - 16);
+        ctx.restore();
+      });
+    },
+  };
 
   _waterfallChart = new Chart(canvas, {
     type: 'bar',
     data: {
       labels: [...items.map(i => i.label), 'TOTAL'],
-      datasets: [{ data: floatData as any, backgroundColor: colours, borderRadius: 4, borderWidth: 0 }],
+      datasets: [{
+        data: floatData as any,
+        backgroundColor: colours,
+        borderRadius: 5,
+        borderWidth: 0,
+        barPercentage: 0.72,
+        categoryPercentage: 0.82,
+      }],
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
+      layout: { padding: { top: 36 } },
       plugins: {
         legend: { display: false },
         tooltip: {
@@ -7680,19 +7720,41 @@ function renderWaterfallChart(result: PartCostResult): void {
           bodyColor: textCol,
           borderColor: isDark ? '#334155' : '#e2e8f0',
           borderWidth: 1,
+          padding: 10,
           callbacks: {
-            label: (ctx) => {
+            title: ctx => ctx[0].label,
+            label: ctx => {
               const d = ctx.raw as [number, number];
-              return ` ${fmt(Math.abs(d[1] - d[0]))}`;
+              const v = Math.abs(d[1] - d[0]) * _displayFxRate;
+              const pct = result.total > 0 ? (Math.abs(d[1] - d[0]) / result.total * 100).toFixed(1) : '0';
+              return ` ${sym}${v.toFixed(2)}  (${pct}% of total)`;
             },
           },
         },
       },
       scales: {
-        y: { ticks: { callback: (v) => fmt(Number(v)), color: textCol }, grid: { color: gridCol } },
-        x: { ticks: { color: textCol }, grid: { display: false } },
+        y: {
+          ticks: {
+            callback: (v) => `${sym}${(Number(v) * _displayFxRate).toFixed(0)}`,
+            color: textCol,
+            font: { size: 11, family: 'Inter, sans-serif' },
+            maxTicksLimit: 7,
+          },
+          grid: { color: gridCol },
+          border: { color: 'transparent' },
+        },
+        x: {
+          ticks: {
+            color: textCol,
+            font: { size: 11, family: 'Inter, sans-serif', weight: 'bold' as const },
+            maxRotation: 0,
+          },
+          grid: { display: false },
+          border: { color: 'transparent' },
+        },
       },
     },
+    plugins: [waterfallLabelPlugin],
   });
 }
 
@@ -8112,7 +8174,7 @@ function renderBreakdown(result: PartCostResult): void {
           </div>
         </div>
         <div class="chart-wrap" id="donut-wrap" style="width:100%;height:280px;${_chartMode === 'waterfall' ? 'display:none' : ''}"><canvas id="breakdown-doughnut"></canvas></div>
-        <div id="waterfall-wrap" style="width:100%;height:240px;${_chartMode === 'donut' ? 'display:none' : ''}"><canvas id="breakdown-waterfall"></canvas></div>
+        <div id="waterfall-wrap" style="width:100%;height:340px;${_chartMode === 'donut' ? 'display:none' : ''}"><canvas id="breakdown-waterfall"></canvas></div>
       </div>
     </div>
 
