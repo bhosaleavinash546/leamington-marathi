@@ -881,6 +881,27 @@ interface PCBBOMItem {
   lineConf?: number;         // 0–1 confidence for this BOM line
   ocrExtracted?: boolean;    // true if part number came from OCR pass
 }
+interface PCBCountryBreakdown {
+  countryId: string;
+  countryName: string;
+  flag: string;
+  pcbFabPerBoard: number;
+  assemblyPerBoard: number;
+  logisticsPerBoard: number;
+  bomCostPerBoard: number;
+  totalPerBoard: number;
+  leadTimeWeeks: number;
+  qualityIndex: number;
+  certifications: string[];
+  bestFor: string;
+  breakdown: {
+    pcbBase: number; pcbLayers: number; pcbSurface: number;
+    pcbVias: number; pcbHDI: number; pcbSetup: number;
+    smtAssembly: number; thAssembly: number; aoi: number;
+    logistics: number; importDuty: number;
+  };
+}
+
 interface PCBImageAnalysis {
   partName: string;
   boardSpec: {
@@ -927,6 +948,10 @@ interface PCBImageAnalysis {
   analysisLimitations: string[];
   stage1Classification?: { domain: string; conf: number; hints: string[] };
   ocrExtraction?: { icMarkings: string[]; extractionQuality: string };
+  // Country-aware cost data (added by server Stage 4)
+  _selectedCountry?: string;
+  _selectedCountryBreakdown?: PCBCountryBreakdown;
+  _countryComparison?: PCBCountryBreakdown[];
 }
 
 let agentHistory: AgentMessage[] = [];
@@ -3551,12 +3576,74 @@ function buildPCBImageUploadZone(): string {
       <div class="pcb-img-zone-content" id="pcb-img-zone-content">
         <div style="font-size:1.4rem;margin-bottom:4px">🔬</div>
         <div style="font-size:0.78rem;font-weight:600;color:var(--text-secondary)">PCB Image-to-BOM Analysis</div>
-        <div style="font-size:0.68rem;color:var(--text-muted);margin-top:2px">Upload a PCB photo or silkscreen image — AI detects all components and builds the BOM automatically</div>
+        <div style="font-size:0.68rem;color:var(--text-muted);margin-top:2px">Upload a PCB photo or silkscreen image — 4-stage AI pipeline detects components, builds BOM &amp; computes should-cost across 14 manufacturing countries</div>
+
+        <!-- Manufacturing Country Selector -->
+        <div style="margin-top:10px;display:flex;align-items:center;gap:8px;justify-content:center;flex-wrap:wrap">
+          <label style="font-size:0.72rem;font-weight:600;color:var(--text-secondary);white-space:nowrap">🏭 Manufacturing Country:</label>
+          <select id="pcb-mfg-country" style="font-size:0.72rem;padding:3px 8px;border:1px solid var(--border);border-radius:4px;background:var(--card-bg)">
+            <optgroup label="Asia — Low Cost">
+              <option value="cn" selected>🇨🇳 China (Shenzhen) — Default</option>
+              <option value="vn">🇻🇳 Vietnam (Ho Chi Minh City)</option>
+              <option value="in">🇮🇳 India (Pune / Bengaluru)</option>
+            </optgroup>
+            <optgroup label="Asia — Mid Tier">
+              <option value="th">🇹🇭 Thailand (Bangkok)</option>
+              <option value="my">🇲🇾 Malaysia (Penang)</option>
+              <option value="tw">🇹🇼 Taiwan (Taoyuan / Hsinchu)</option>
+              <option value="kr">🇰🇷 South Korea (Suwon)</option>
+            </optgroup>
+            <optgroup label="Americas">
+              <option value="mx">🇲🇽 Mexico (Juárez / Monterrey)</option>
+              <option value="us">🇺🇸 USA (San Jose / Austin) — ITAR</option>
+            </optgroup>
+            <optgroup label="Europe — Low Cost">
+              <option value="cz">🇨🇿 Czech Republic (Brno)</option>
+              <option value="pl">🇵🇱 Poland (Wrocław)</option>
+            </optgroup>
+            <optgroup label="Europe / Premium">
+              <option value="de">🇩🇪 Germany (München)</option>
+              <option value="gb">🇬🇧 UK (Birmingham) — Domestic</option>
+            </optgroup>
+            <optgroup label="Asia — Premium">
+              <option value="jp">🇯🇵 Japan (Nagano) — Ultra-precision</option>
+            </optgroup>
+          </select>
+          <input type="number" id="pcb-order-qty" value="100" min="1" step="50"
+            style="width:70px;font-size:0.72rem;padding:3px 6px;border:1px solid var(--border);border-radius:4px;background:var(--card-bg)"
+            title="Order quantity (affects setup amortisation)"/>
+          <label style="font-size:0.68rem;color:var(--text-muted)">qty</label>
+        </div>
+
         <div style="display:flex;gap:6px;margin-top:8px;justify-content:center;flex-wrap:wrap">
           <button class="btn btn-secondary btn-sm" id="pcb-img-pick-btn">📷 Choose Image</button>
           <button class="btn btn-primary btn-sm" id="pcb-img-analyze-btn" disabled>🔬 Analyze PCB</button>
         </div>
         <div id="pcb-img-filename" style="font-size:0.65rem;color:var(--text-muted);margin-top:4px"></div>
+
+        <!-- Live Pricing (optional, collapsible) -->
+        <details style="margin-top:8px;text-align:left">
+          <summary style="font-size:0.68rem;color:var(--text-muted);cursor:pointer;user-select:none">⚡ Live Component Pricing (optional)</summary>
+          <div style="margin-top:6px;padding:8px;background:var(--border);border-radius:6px;font-size:0.70rem">
+            <div style="color:var(--text-muted);margin-bottom:6px">Fetch real-time distributor prices for identified IC part numbers. Requires an API key from your chosen provider.</div>
+            <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-bottom:6px">
+              <label style="white-space:nowrap;font-weight:600">Provider:</label>
+              <select id="pcb-live-provider" style="font-size:0.70rem;padding:2px 6px;border:1px solid var(--border);border-radius:3px;background:var(--card-bg)">
+                <option value="octopart">Octopart / Nexar (GraphQL)</option>
+                <option value="rs">RS Components</option>
+                <option value="farnell">Farnell / element14</option>
+              </select>
+            </div>
+            <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+              <label style="white-space:nowrap;font-weight:600">API Key:</label>
+              <input type="password" id="pcb-live-api-key" placeholder="Paste your API key here"
+                style="flex:1;min-width:120px;font-size:0.70rem;padding:2px 6px;border:1px solid var(--border);border-radius:3px;background:var(--card-bg)"/>
+              <button class="btn btn-secondary btn-sm" id="pcb-live-fetch-btn" disabled
+                style="font-size:0.68rem;padding:3px 8px">Fetch Live Prices</button>
+            </div>
+            <div id="pcb-live-status" style="margin-top:4px;font-size:0.66rem;color:var(--text-muted)"></div>
+          </div>
+        </details>
       </div>
     </div>`;
 }
@@ -3604,8 +3691,13 @@ async function analyzePCBImage(file: File): Promise<void> {
   const apiKey = (document.querySelector<HTMLInputElement>('#api-key-input'))?.value?.trim()
     ?? sessionStorage.getItem('cv_api_key') ?? '';
 
+  const selectedCountry = (document.getElementById('pcb-mfg-country') as HTMLSelectElement)?.value ?? 'cn';
+  const orderQty = (document.getElementById('pcb-order-qty') as HTMLInputElement)?.value ?? '100';
+
   const formData = new FormData();
   formData.append('pcbImage', file);
+  formData.append('country', selectedCountry);
+  formData.append('orderQty', orderQty);
 
   try {
     const resp = await fetch('/api/pcb/analyze-image', {
@@ -3617,8 +3709,20 @@ async function analyzePCBImage(file: File): Promise<void> {
       const err = await resp.json().catch(() => ({ error: resp.statusText })) as { error: string };
       throw new Error(err.error ?? resp.statusText);
     }
-    const data = await resp.json() as { success: boolean; analysis: PCBImageAnalysis };
+    const data = await resp.json() as {
+      success: boolean;
+      analysis: PCBImageAnalysis;
+      selectedCountry?: string;
+      selectedCountryBreakdown?: PCBCountryBreakdown;
+      countryComparison?: PCBCountryBreakdown[];
+    };
     pcbImageResult = data.analysis;
+    // Attach country data to analysis object for rendering
+    if (pcbImageResult) {
+      pcbImageResult._selectedCountry = data.selectedCountry ?? selectedCountry;
+      pcbImageResult._selectedCountryBreakdown = data.selectedCountryBreakdown ?? undefined;
+      pcbImageResult._countryComparison = data.countryComparison ?? [];
+    }
     injectPCBImagePanel();
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
@@ -3642,6 +3746,60 @@ function injectPCBImagePanel(): void {
     pcbImageResult = null;
     if (resultsEl) resultsEl.innerHTML = '';
   });
+
+  // Enable live pricing fetch button if there are OCR-identified parts
+  const icMarkings = pcbImageResult.ocrExtraction?.icMarkings ?? [];
+  const liveFetchBtn = document.getElementById('pcb-live-fetch-btn') as HTMLButtonElement | null;
+  if (liveFetchBtn && icMarkings.length > 0) {
+    liveFetchBtn.disabled = false;
+    liveFetchBtn.title = `Fetch live prices for: ${icMarkings.slice(0, 3).join(', ')}${icMarkings.length > 3 ? '…' : ''}`;
+    liveFetchBtn.addEventListener('click', () => void fetchLivePricingForBOM(icMarkings));
+  }
+}
+
+async function fetchLivePricingForBOM(icMarkings: string[]): Promise<void> {
+  const provider = (document.getElementById('pcb-live-provider') as HTMLSelectElement)?.value ?? 'octopart';
+  const apiKey = (document.getElementById('pcb-live-api-key') as HTMLInputElement)?.value?.trim() ?? '';
+  const statusEl = document.getElementById('pcb-live-status');
+  const fetchBtn = document.getElementById('pcb-live-fetch-btn') as HTMLButtonElement | null;
+
+  if (!apiKey) {
+    if (statusEl) statusEl.textContent = '⚠ Please enter an API key first.';
+    return;
+  }
+  if (fetchBtn) { fetchBtn.disabled = true; fetchBtn.textContent = '⏳ Fetching…'; }
+  if (statusEl) statusEl.textContent = `Querying ${provider} for ${icMarkings.length} parts…`;
+
+  try {
+    const resp = await fetch('/api/pcb/live-pricing', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ partNumbers: icMarkings, provider, apiKey, qty: 100 }),
+    });
+    const data = await resp.json() as { success?: boolean; prices?: Array<{ mpn: string; unitPriceGBP: number; stockQty: number; distPartNumber: string; description: string }>; error?: string };
+    if (!resp.ok || data.error) throw new Error(data.error ?? resp.statusText);
+
+    const prices = data.prices ?? [];
+    if (statusEl) statusEl.textContent = `✓ Live prices fetched for ${prices.length}/${icMarkings.length} parts.`;
+
+    // Update BOM table rows with live prices
+    if (pcbImageResult && prices.length > 0) {
+      const priceMap = new Map(prices.map(p => [p.mpn.toUpperCase(), p]));
+      pcbImageResult.bom = pcbImageResult.bom.map(item => {
+        const live = item.partNumber ? priceMap.get(item.partNumber.toUpperCase()) : undefined;
+        if (live) return { ...item, unitPriceGBP: live.unitPriceGBP, lineConf: 0.95, ocrExtracted: true };
+        return item;
+      });
+      injectPCBImagePanel();
+      showToast(`Live prices updated for ${prices.length} components from ${provider}`, 'info');
+    }
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    if (statusEl) statusEl.textContent = `⚠ Error: ${msg.slice(0, 120)}`;
+    showToast(`Live pricing failed: ${msg.slice(0, 80)}`, 'error');
+  } finally {
+    if (fetchBtn) { fetchBtn.disabled = false; fetchBtn.textContent = 'Fetch Live Prices'; }
+  }
 }
 
 function buildPCBImagePanel(r: PCBImageAnalysis): string {
@@ -3719,6 +3877,8 @@ function buildPCBImagePanel(r: PCBImageAnalysis): string {
         </div>
       </div>
 
+      ${buildCountryBreakdownSection(r)}
+
       <div class="pcb-insights-grid">
         <div class="pcb-analysis-section">
           <div class="pcb-analysis-section-title">💡 AI Insights</div>
@@ -3741,6 +3901,86 @@ function buildPCBImagePanel(r: PCBImageAnalysis): string {
       <div class="pcb-analysis-section" style="margin-top:8px">
         <div class="pcb-analysis-section-title" style="color:var(--text-muted)">Analysis Limitations</div>
         <ul class="pcb-insight-list" style="color:var(--text-muted)">${limits}</ul>
+      </div>
+    </div>`;
+}
+
+function buildCountryBreakdownSection(r: PCBImageAnalysis): string {
+  const sel = r._selectedCountryBreakdown;
+  const comparison = r._countryComparison ?? [];
+  if (!sel && !comparison.length) return '';
+
+  const selectedCountryId = r._selectedCountry ?? 'cn';
+
+  // Selected country detail card
+  const selectedCard = sel ? `
+    <div style="margin-bottom:10px;padding:10px;background:rgba(79,142,247,0.07);border:1px solid rgba(79,142,247,0.25);border-radius:8px">
+      <div style="font-weight:700;font-size:0.82rem;margin-bottom:6px">${sel.flag} ${sel.countryName} — Should Cost Breakdown</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:6px;font-size:0.75rem">
+        <div><span style="color:var(--text-muted)">PCB Fab:</span> <strong>£${sel.pcbFabPerBoard.toFixed(2)}</strong></div>
+        <div><span style="color:var(--text-muted)">Assembly:</span> <strong>£${sel.assemblyPerBoard.toFixed(2)}</strong></div>
+        <div><span style="color:var(--text-muted)">Logistics:</span> <strong>£${sel.logisticsPerBoard.toFixed(2)}</strong></div>
+        <div><span style="color:var(--text-muted)">BOM:</span> <strong>£${sel.bomCostPerBoard.toFixed(2)}</strong></div>
+        <div><span style="color:var(--text-muted)">Lead time:</span> <strong>${sel.leadTimeWeeks}w</strong></div>
+        <div><span style="color:var(--text-muted)">Quality:</span> <strong>${Math.round(sel.qualityIndex * 100)}%</strong></div>
+      </div>
+      <div style="margin-top:8px;padding:8px;background:var(--card-bg);border-radius:6px">
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px">
+          <span style="font-size:0.72rem;font-weight:700;color:var(--text-secondary)">Total per board:</span>
+          <span style="font-size:1.1rem;font-weight:800;color:var(--accent)">£${sel.totalPerBoard.toFixed(2)}</span>
+        </div>
+        <div style="font-size:0.68rem;color:var(--text-muted)">Breakdown: PCB base £${sel.breakdown.pcbBase.toFixed(2)} + layers £${sel.breakdown.pcbLayers.toFixed(2)} + surface £${sel.breakdown.pcbSurface.toFixed(2)} + vias £${sel.breakdown.pcbVias.toFixed(2)} + HDI £${sel.breakdown.pcbHDI.toFixed(2)} + setup £${sel.breakdown.pcbSetup.toFixed(2)} | assembly £${sel.breakdown.smtAssembly.toFixed(2)} | test £${sel.breakdown.aoi.toFixed(2)} | logistics £${sel.breakdown.logistics.toFixed(2)} + duty £${sel.breakdown.importDuty.toFixed(2)}</div>
+      </div>
+      <div style="margin-top:4px;font-size:0.68rem;color:var(--text-muted)">Best for: ${escHtml(sel.bestFor)}</div>
+    </div>` : '';
+
+  // Country comparison table
+  const maxTotal = Math.max(...comparison.map(c => c.totalPerBoard), 0.01);
+  const compRows = comparison.map(c => {
+    const isSelected = c.countryId === selectedCountryId;
+    const barW = Math.round((c.totalPerBoard / maxTotal) * 100);
+    const qualityStars = '★'.repeat(Math.round(c.qualityIndex * 5)) + '☆'.repeat(5 - Math.round(c.qualityIndex * 5));
+    return `<tr style="${isSelected ? 'background:rgba(79,142,247,0.10);font-weight:700' : ''}">
+      <td style="white-space:nowrap">${c.flag} ${c.countryName.split(' (')[0]}</td>
+      <td>£${c.pcbFabPerBoard.toFixed(2)}</td>
+      <td>£${c.assemblyPerBoard.toFixed(2)}</td>
+      <td>£${c.logisticsPerBoard.toFixed(2)}</td>
+      <td style="color:var(--accent);font-weight:700">£${c.totalPerBoard.toFixed(2)}</td>
+      <td>
+        <div style="display:flex;align-items:center;gap:4px">
+          <div style="flex:1;height:6px;background:var(--border);border-radius:3px;min-width:40px">
+            <div style="height:100%;width:${barW}%;background:${isSelected ? 'var(--accent)' : 'var(--text-muted)'};border-radius:3px"></div>
+          </div>
+        </div>
+      </td>
+      <td style="white-space:nowrap">${c.leadTimeWeeks}w</td>
+      <td style="font-size:0.65rem;color:#f59e0b" title="${Math.round(c.qualityIndex * 100)}% quality">${qualityStars}</td>
+    </tr>`;
+  }).join('');
+
+  return comparison.length === 0 ? selectedCard : `
+    ${selectedCard}
+    <div class="pcb-analysis-section">
+      <div class="pcb-analysis-section-title">🌍 Global Manufacturing Cost Comparison (${comparison.length} countries · 2026 data)</div>
+      <div style="overflow-x:auto">
+        <table class="pcb-bom-table" style="font-size:0.72rem;white-space:nowrap">
+          <thead>
+            <tr>
+              <th>Country</th>
+              <th>PCB Fab</th>
+              <th>Assembly</th>
+              <th>Logistics</th>
+              <th>Total/Board</th>
+              <th style="min-width:60px">Cost bar</th>
+              <th>Lead time</th>
+              <th>Quality</th>
+            </tr>
+          </thead>
+          <tbody>${compRows}</tbody>
+        </table>
+      </div>
+      <div style="margin-top:4px;font-size:0.65rem;color:var(--text-muted)">
+        Prices include PCB fabrication + SMT/THT assembly + logistics/import duty to UK. BOM component cost (£${(comparison[0]?.bomCostPerBoard ?? 0).toFixed(2)}) is the same for all countries. Data calibrated to Jan 2026 market rates.
       </div>
     </div>`;
 }

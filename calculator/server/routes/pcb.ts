@@ -1,6 +1,14 @@
 import { Router } from 'express';
 import multer from 'multer';
 import Anthropic from '@anthropic-ai/sdk';
+import {
+  computeAllCountryCosts,
+  computePCBCountryCost,
+  PCB_COUNTRY_RATES,
+  COUNTRY_DISPLAY_ORDER,
+  type PCBCostInput,
+} from '../data/pcb-country-rates.js';
+import { fetchLivePrices, type LivePricingProvider } from '../utils/pcb-live-pricing.js';
 
 const router = Router();
 const upload = multer({
@@ -385,7 +393,117 @@ ${userPromptText}`;
     return;
   }
 
-  res.json({ success: true, analysis });
+  // ── Stage 4: Country-aware cost breakdown ─────────────────────────────
+  const selectedCountry = (req.body?.country as string | undefined) ?? 'cn';
+  const orderQty = parseInt(req.body?.orderQty as string ?? '100', 10) || 100;
+
+  let countryComparison: ReturnType<typeof computeAllCountryCosts> = [];
+  let selectedCountryBreakdown: ReturnType<typeof computePCBCountryCost> | null = null;
+
+  try {
+    const a = (analysis as Record<string, unknown>);
+    const boardSpec = a?.boardSpec as Record<string, unknown> ?? {};
+    const assemblyData = a?.assembly as Record<string, unknown> ?? {};
+    const costEst = a?.costEstimates as Record<string, unknown> ?? {};
+    const pcbFabGBP = costEst?.pcbFabGBP as { mid?: number } | undefined;
+
+    const costInput: PCBCostInput = {
+      widthMm:              Number(boardSpec.widthMm)             || 100,
+      heightMm:             Number(boardSpec.heightMm)            || 80,
+      layers:               Number(boardSpec.estimatedLayers)     || 2,
+      surfaceFinish:        String(boardSpec.surfaceFinish        || 'enig'),
+      throughVias:          Number(boardSpec.throughVias)         || 50,
+      blindVias:            Number(boardSpec.blindVias)           || 0,
+      microVias:            Number(boardSpec.microVias)           || 0,
+      hdiStructure:         String(boardSpec.hdiStructure         || 'none'),
+      impedanceControlled:  Boolean(boardSpec.impedanceControlRequired),
+      smtPlacements:        Number(assemblyData.smtPlacements)    || 0,
+      throughHoleJoints:    Number(assemblyData.throughHoleJoints)|| 0,
+      manualJoints:         Number(assemblyData.manualJoints)     || 0,
+      bgaCount:             Number(assemblyData.bgaCount)         || 0,
+      aoiRequired:          Boolean(assemblyData.aoiRequired),
+      ictTimeSec:           Number(assemblyData.ictTimeSec)       || 0,
+      conformalCoatAreaCm2: 0,
+      totalBOMCostGBP:      Number(costEst?.totalBOMCostGBP)      || pcbFabGBP?.mid || 0,
+      orderQuantity:        orderQty,
+    };
+
+    countryComparison = computeAllCountryCosts(costInput);
+    selectedCountryBreakdown = computePCBCountryCost(costInput,
+      PCB_COUNTRY_RATES[selectedCountry] ? selectedCountry : 'cn');
+    console.log(`[PCB] Stage 4: Country costs computed for ${COUNTRY_DISPLAY_ORDER.length} countries`);
+  } catch (err) {
+    console.warn('[PCB] Stage 4 country cost computation failed:', (err as Error).message);
+  }
+
+  res.json({
+    success: true,
+    analysis,
+    selectedCountry,
+    selectedCountryBreakdown,
+    countryComparison,
+  });
+});
+
+// POST /api/pcb/live-pricing  — optional live component pricing
+router.post('/live-pricing', async (req, res): Promise<void> => {
+  const { partNumbers, provider, apiKey, qty } = req.body as {
+    partNumbers?: string[];
+    provider?: string;
+    apiKey?: string;
+    qty?: number;
+  };
+
+  if (!Array.isArray(partNumbers) || partNumbers.length === 0) {
+    res.status(400).json({ error: 'partNumbers array is required' });
+    return;
+  }
+  if (!provider || !['octopart', 'rs', 'farnell'].includes(provider)) {
+    res.status(400).json({ error: 'provider must be one of: octopart, rs, farnell' });
+    return;
+  }
+  const resolvedApiKey = apiKey || (
+    provider === 'octopart' ? process.env.OCTOPART_API_KEY :
+    provider === 'rs'       ? process.env.RS_API_KEY :
+    process.env.FARNELL_API_KEY
+  );
+  if (!resolvedApiKey) {
+    res.status(400).json({ error: `No API key for provider "${provider}". Pass apiKey in body or set ${provider.toUpperCase()}_API_KEY env var.` });
+    return;
+  }
+
+  try {
+    const prices = await fetchLivePrices(
+      partNumbers,
+      provider as LivePricingProvider,
+      resolvedApiKey,
+      qty ?? 100,
+    );
+    res.json({ success: true, provider, prices, count: prices.length });
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    console.error('[PCB/live-pricing] Error:', msg);
+    res.status(502).json({ error: `Live pricing fetch failed: ${msg}` });
+  }
+});
+
+// GET /api/pcb/countries  — returns the country rate database for the UI
+router.get('/countries', (_req, res) => {
+  const summary = COUNTRY_DISPLAY_ORDER.map(id => {
+    const r = PCB_COUNTRY_RATES[id];
+    return {
+      id: r.id,
+      name: r.name,
+      shortName: r.shortName,
+      flag: r.flag,
+      region: r.region,
+      qualityIndex: r.qualityIndex,
+      leadTimeWeeks: r.leadTimeWeeks,
+      bestFor: r.bestFor,
+      certifications: r.certifications,
+    };
+  });
+  res.json({ countries: summary });
 });
 
 export default router;
