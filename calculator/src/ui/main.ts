@@ -122,6 +122,24 @@ interface CostingRecord {
   warnings?: string[];
 }
 
+interface LibraryRecord {
+  id: string;
+  savedAt: number;
+  projectName: string;
+  partNumber: string;
+  customer: string;
+  vehicleProgramme: string;
+  system: string;
+  notes: string;
+  partName: string;
+  commodity: string;
+  totalCost: number;
+  currency: string;
+  region: string;
+  confidence: string;
+  breakdown?: CostingRecord['breakdown'];
+}
+
 const COMMODITY_LABELS: Record<string, string> = {
   machining: 'Machining', casting: 'Casting', sheet_metal: 'Sheet Metal',
   sheet_metal_fab: 'SM Fab', injection_moulding: 'Injection', blow_moulding: 'Blow Moulding',
@@ -204,6 +222,14 @@ function filterHistory(records: CostingRecord[]): CostingRecord[] {
     }
     return true;
   });
+}
+
+// ─── Parts Library ────────────────────────────────────────────────────────────
+function getPartsLibrary(): LibraryRecord[] {
+  try { return JSON.parse(localStorage.getItem('cv-library') ?? '[]'); } catch { return []; }
+}
+function savePartsLibrary(records: LibraryRecord[]): void {
+  localStorage.setItem('cv-library', JSON.stringify(records));
 }
 
 // ─── View switching ───────────────────────────────────────────────────────────
@@ -369,6 +395,15 @@ function renderDashboard(): void {
 
   // Recent table
   renderRecentTable(records);
+
+  // Active filter banner
+  const banner = document.getElementById('dash-filter-active-banner');
+  const bannerText = document.getElementById('dash-filter-active-text');
+  const activeFilters = (Object.entries(_dashFilters) as [string, string][]).filter(([, v]) => v);
+  if (banner) {
+    banner.style.display = activeFilters.length ? 'flex' : 'none';
+    if (bannerText) bannerText.textContent = `Filtered by: ${activeFilters.map(([k, v]) => `${k} = ${v}`).join(' · ')} — showing ${records.length} of ${all.length} records`;
+  }
 }
 
 const COMM_COLOURS = [
@@ -477,6 +512,19 @@ function renderCommodityChart(records: CostingRecord[]): void {
           },
         },
       },
+      onClick: (_evt: unknown, elements: Array<{index: number}>) => {
+        if (!elements.length) return;
+        const commodity = entries[elements[0].index]?.[0];
+        if (!commodity) return;
+        _dashFilters.commodity = _dashFilters.commodity === commodity ? '' : commodity;
+        document.querySelectorAll('#filter-commodity .dchip').forEach(b => {
+          b.classList.toggle('active', (b as HTMLElement).dataset.val === _dashFilters.commodity);
+        });
+        renderDashboard();
+      },
+      onHover: (_evt: unknown, elements: unknown[]) => {
+        if (canvas) canvas.style.cursor = (elements as unknown[]).length ? 'pointer' : 'default';
+      },
     },
     plugins: [centreTextPlugin],
   });
@@ -562,6 +610,19 @@ function renderProgramChart(records: CostingRecord[]): void {
           callbacks: { label: ctx => ` ${_currFmt(Number(ctx.raw))}` },
         },
       },
+      onClick: (_evt: unknown, elements: Array<{index: number}>) => {
+        if (!elements.length) return;
+        const vehicle = labels[elements[0].index];
+        if (!vehicle) return;
+        _dashFilters.vehicle = _dashFilters.vehicle === vehicle ? '' : vehicle;
+        document.querySelectorAll('#filter-vehicle .dchip').forEach(b => {
+          b.classList.toggle('active', (b as HTMLElement).dataset.val === _dashFilters.vehicle);
+        });
+        renderDashboard();
+      },
+      onHover: (_evt: unknown, elements: unknown[]) => {
+        if (canvas) canvas.style.cursor = (elements as unknown[]).length ? 'pointer' : 'default';
+      },
       scales: {
         x: {
           grid: { color: gridCol },
@@ -577,6 +638,62 @@ function renderProgramChart(records: CostingRecord[]): void {
       },
     },
     plugins: [barLabelPlugin],
+  });
+}
+
+function showDashRecordDetail(rec: CostingRecord): void {
+  let panel = document.getElementById('dash-record-detail');
+  if (!panel) {
+    panel = document.createElement('div');
+    panel.id = 'dash-record-detail';
+    panel.style.cssText = 'position:fixed;right:0;top:0;bottom:0;width:340px;background:var(--surface);border-left:1px solid var(--border-strong);z-index:500;overflow-y:auto;padding:20px;box-shadow:-8px 0 32px rgba(0,0,0,0.3);transform:translateX(100%);transition:transform 0.2s ease';
+    document.body.appendChild(panel);
+  }
+
+  const commLabel = COMMODITY_LABELS[rec.commodity] ?? rec.commodity;
+  const date = new Date(rec.timestamp).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: '2-digit', hour: '2-digit', minute: '2-digit' } as Intl.DateTimeFormatOptions);
+  const sym = CURRENCY_SYMBOL[rec.currency] ?? rec.currency;
+  const bkd = rec.breakdown;
+  const bucketLabels: Record<string, string> = { rawMaterial: 'Raw Material', process: 'Process', labour: 'Labour', tooling: 'Tooling', overhead: 'Overhead', packaging: 'Packaging', logistics: 'Logistics', margin: 'Margin' };
+
+  panel.innerHTML = `
+    <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:16px">
+      <div style="flex:1;min-width:0">
+        <div style="font-size:0.67rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:2px">Cost Record</div>
+        <div style="font-size:0.95rem;font-weight:700;color:var(--text-primary);line-height:1.3">${escHtml(rec.partName)}</div>
+        <div style="font-size:0.72rem;color:var(--text-muted);margin-top:3px">${commLabel} · ${date}</div>
+      </div>
+      <button id="dash-detail-close" style="background:none;border:none;font-size:1.4rem;cursor:pointer;color:var(--text-muted);padding:2px 8px;flex-shrink:0">×</button>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px">
+      <div style="background:var(--surface-raised);border:1px solid var(--border);border-radius:8px;padding:10px">
+        <div style="font-size:0.63rem;color:var(--text-muted);margin-bottom:2px">Total Cost</div>
+        <div style="font-size:1.1rem;font-weight:700;color:var(--accent)">${sym}${rec.totalCost.toFixed(2)}</div>
+      </div>
+      <div style="background:var(--surface-raised);border:1px solid var(--border);border-radius:8px;padding:10px">
+        <div style="font-size:0.63rem;color:var(--text-muted);margin-bottom:2px">Region</div>
+        <div style="font-size:0.84rem;font-weight:600;color:var(--text-primary)">${escHtml(rec.region)}${rec.vehicle ? ' · ' + escHtml(rec.vehicle) : ''}</div>
+      </div>
+    </div>
+    ${bkd ? `<div style="margin-bottom:14px">
+      <div style="font-size:0.70rem;font-weight:700;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px">Cost Breakdown</div>
+      ${(Object.entries(bkd) as [string, number][]).filter(([, v]) => v > 0).map(([k, v]) => {
+        const pct = rec.totalCost > 0 ? Math.round(v / rec.totalCost * 100) : 0;
+        return `<div style="display:flex;align-items:center;gap:8px;margin-bottom:5px">
+          <div style="font-size:0.71rem;color:var(--text-secondary);width:88px;flex-shrink:0">${bucketLabels[k] ?? k}</div>
+          <div style="flex:1;height:6px;background:var(--border);border-radius:3px;overflow:hidden"><div style="height:100%;width:${pct}%;background:var(--accent);border-radius:3px"></div></div>
+          <div style="font-size:0.71rem;font-weight:600;color:var(--text-primary);width:48px;text-align:right">${sym}${v.toFixed(2)}</div>
+        </div>`;
+      }).join('')}
+    </div>` : ''}
+    <button id="dash-detail-open-btn" class="btn btn-primary" style="width:100%;margin-top:4px">Open in Calculator ↗</button>`;
+
+  requestAnimationFrame(() => { if (panel) panel.style.transform = 'translateX(0)'; });
+
+  document.getElementById('dash-detail-close')?.addEventListener('click', () => { if (panel) panel.style.transform = 'translateX(100%)'; });
+  document.getElementById('dash-detail-open-btn')?.addEventListener('click', () => {
+    if (panel) panel.style.transform = 'translateX(100%)';
+    showCosting(rec.commodity);
   });
 }
 
@@ -639,6 +756,16 @@ function renderRecentTable(records: CostingRecord[]): void {
   });
 
   updateCompareBar();
+
+  // Row click → slide-in detail panel
+  tbody.querySelectorAll<HTMLTableRowElement>('tr[data-record-id]').forEach(row => {
+    row.style.cursor = 'pointer';
+    row.addEventListener('click', e => {
+      if ((e.target as HTMLElement).closest('input,button')) return;
+      const rec = getCostingHistory().find(r => r.id === row.dataset.recordId);
+      if (rec) showDashRecordDetail(rec);
+    });
+  });
 }
 
 function updateCompareBar(): void {
@@ -3597,6 +3724,97 @@ const FACE_COLOURS: Record<string, string> = {
 
 // ─── PCB Image Analysis ───────────────────────────────────────────────────────
 
+// ─── Inline Demo Cards (all non-PCB commodities) ─────────────────────────────
+const COMMODITY_DEMO_SNIPPETS: Record<string, Array<{brand: string; name: string; spec: string}>> = {
+  machining: [
+    { brand: 'BMW X7', name: 'Rear Suspension Knuckle', spec: 'Al6061-T6 · 5-axis · 1.85 kg' },
+    { brand: 'Range Rover Velar', name: 'Steering Rack Housing', spec: 'Al6061-T6 · 3-axis · 2.10 kg' },
+    { brand: 'Toyota Land Cruiser', name: 'Rear Hub Carrier', spec: 'Al6061-T6 · 5-axis · 2.45 kg' },
+  ],
+  sheet_metal: [
+    { brand: 'Porsche Cayenne', name: 'Door Outer Panel', spec: 'AA5182 Al · 1.0 mm · 2.20 kg' },
+    { brand: 'Mercedes GLE', name: 'B-Pillar Reinforcement', spec: 'DP600 AHSS · 1.8 mm · 3.20 kg' },
+    { brand: 'Ford Bronco Sport', name: 'Floor Cross-Member', spec: 'DP800 AHSS · 2.0 mm · 4.20 kg' },
+  ],
+  sheet_metal_fab: [
+    { brand: 'Audi Q7', name: 'Side Sill Bracket', spec: 'DC01 · Laser + 4 bends + MIG' },
+    { brand: 'BMW X5', name: 'Engine Undertray Bracket', spec: 'DC01 · Laser + 3 bends + spot welds' },
+    { brand: 'Volvo XC60', name: 'Rear Subframe Mount Bracket', spec: 'DC01 · Laser + 5 bends · 2.80 kg' },
+  ],
+  injection_moulding: [
+    { brand: 'Range Rover Sport', name: 'Front Grille Housing', spec: 'ABS · 2-cavity · 0.45 kg' },
+    { brand: 'Bentley Bentayga', name: 'Centre Console Trim', spec: 'PC/ABS · 1-cavity · hot runner' },
+    { brand: 'Toyota RAV4', name: 'Rear Bumper Fascia', spec: 'PP-GF · 2-cavity · 1.85 kg' },
+  ],
+  blow_moulding: [
+    { brand: 'BMW X7', name: 'Washer Fluid Reservoir', spec: 'HDPE · EBM · 2-cavity · 0.35 kg' },
+    { brand: 'Land Rover Defender', name: 'Coolant Expansion Tank', spec: 'HDPE · EBM · 1-cavity · 0.55 kg' },
+    { brand: 'Volvo XC90', name: 'Washer Fluid Reservoir', spec: 'HDPE · EBM · 2-cavity · 0.48 kg' },
+  ],
+  extrusion: [
+    { brand: 'Rolls-Royce Cullinan', name: 'Door Sealing Strip', spec: 'Flexible PVC · 0.18 kg/m · 2.4 m' },
+    { brand: 'Range Rover Vogue', name: 'Weatherstrip Profile', spec: 'Flexible PVC · 0.12 kg/m · 3.2 m' },
+    { brand: 'BMW X5 M', name: 'Rear Bumper Rubber Trim', spec: 'EPDM · 0.22 kg/m · 1.6 m' },
+  ],
+  thermoforming: [
+    { brand: 'Mercedes GLS', name: 'Boot / Cargo Liner', spec: 'HIPS · Vacuum form · 0.92 kg' },
+    { brand: 'Porsche Cayenne', name: 'Dashboard Lower Cover', spec: 'ABS · Pressure form · 0.65 kg' },
+    { brand: 'Land Rover Defender', name: 'Spare Wheel Carrier Cover', spec: 'ABS · Vacuum form · 1.15 kg' },
+  ],
+  rotational_moulding: [
+    { brand: 'Land Rover Defender', name: 'Fuel Tank (40L)', spec: 'LLDPE · 3.80 kg · Biaxial' },
+    { brand: 'Mercedes G-Class', name: 'Roof Storage Box', spec: 'LLDPE · 6.50 kg · Biaxial' },
+    { brand: 'Jeep Grand Cherokee', name: 'Air Intake Snorkel Box', spec: 'LLDPE · 2.80 kg · Biaxial' },
+  ],
+  casting: [
+    { brand: 'Bentley Bentayga', name: 'Differential Housing', spec: 'ADC12 · HPDC 800T · 4.80 kg' },
+    { brand: 'Rolls-Royce Cullinan', name: 'Brake Caliper Housing', spec: 'A380 Al · HPDC 800T · 3.20 kg' },
+    { brand: 'Toyota Hilux', name: 'Rear Differential Carrier', spec: 'GJL350 · Sand Cast · 8.50 kg' },
+  ],
+  forging: [
+    { brand: 'BMW X7', name: 'Front Lower Control Arm', spec: 'Al 6082 · 500T press · 1.85 kg' },
+    { brand: 'Range Rover Vogue', name: '4WD Drive Shaft Yoke', spec: '4340 Steel · 5T hammer · 2.80 kg' },
+    { brand: 'Jeep Wrangler', name: 'Front Axle Shaft Flange', spec: '4340 Steel · 5T hammer · 4.20 kg' },
+  ],
+  painting: [
+    { brand: 'Lamborghini Urus', name: 'Body Panel OEM Paint', spec: 'E-coat + primer + base + clear · 8.5 m²' },
+    { brand: 'Aston Martin DBX', name: 'Instrument Panel Painting', spec: 'Waterborne basecoat · 0.65 m²' },
+    { brand: 'Toyota Land Cruiser', name: 'Tailgate Panel (4-Coat)', spec: 'E-coat + primer + base + clear · 2.8 m²' },
+  ],
+  biw_assembly: [
+    { brand: 'Mercedes GLS', name: 'Door Inner Panel Assembly', spec: '3 robot weld stations · £85 sub-parts' },
+    { brand: 'Porsche Cayenne', name: 'BIW Side Frame Assembly', spec: '4 stations · robot frame + spot + hem' },
+    { brand: 'Volkswagen Touareg', name: 'Front Door Inner Assembly', spec: '4 stations · 28 spot welds + MIG seam' },
+  ],
+  cast_and_machine: [
+    { brand: 'Bentley Bentayga', name: 'Differential Housing (Cast+Mill)', spec: 'ADC12 · HPDC + 3-axis VMC · 4.80 kg' },
+    { brand: 'BMW X5', name: 'Gearbox Housing (Cast+Mill)', spec: 'A380 Al · HPDC + 5-axis · 3.20 kg' },
+    { brand: 'Toyota Hilux', name: 'Diff Carrier (Cast+Drill)', spec: 'GJL350 · Sand Cast + drilling · 8.50 kg' },
+  ],
+  rubber: [
+    { brand: 'Range Rover', name: 'Engine Mount Isolator', spec: 'EPDM · Compression mould · 0.45 kg' },
+    { brand: 'BMW X7', name: 'Suspension Bush', spec: 'Natural rubber · Transfer mould · 0.12 kg' },
+    { brand: 'Land Rover Defender', name: 'Door Seal Profile', spec: 'EPDM · Extrusion · 3.2 m' },
+  ],
+  composites: [
+    { brand: 'McLaren', name: 'Carbon Fibre Monocoque Panel', spec: 'CFRP · Autoclave · 1.2 kg' },
+    { brand: 'BMW i3', name: 'CFRP Door Inner Panel', spec: 'CFRP · RTM · 2.8 kg' },
+    { brand: 'Aston Martin', name: 'Carbon Fibre Boot Lid', spec: 'CFRP · Wet lay-up · 3.5 kg' },
+  ],
+  wiring_harness: [
+    { brand: 'BMW X7', name: 'Main Body Harness', spec: '42 circuits · 18 connectors · 3.2 kg' },
+    { brand: 'Range Rover', name: 'Engine Bay Harness', spec: '28 circuits · 12 connectors · 1.8 kg' },
+    { brand: 'Porsche Taycan', name: 'HV Battery Harness', spec: 'HV shielded · 8 circuits · 2.1 kg' },
+  ],
+};
+
+function buildInlineDemoSection(commodity: string): string {
+  const snippets = COMMODITY_DEMO_SNIPPETS[commodity];
+  if (!snippets || snippets.length === 0) return '';
+  const cards = snippets.map((s, i) => `<button type="button" onclick="window.loadSUVDemo('${commodity}',${i + 1})" style="background:var(--surface-raised);border:1px solid var(--border);border-radius:8px;padding:10px 12px;cursor:pointer;text-align:left;flex:1;min-width:0;transition:border-color 0.15s"><div style="font-size:0.70rem;font-weight:700;color:var(--accent);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${escHtml(s.brand)}</div><div style="font-size:0.76rem;font-weight:600;color:var(--text-primary);margin:2px 0;line-height:1.3">${escHtml(s.name)}</div><div style="font-size:0.67rem;color:var(--text-muted)">${escHtml(s.spec)}</div></button>`).join('');
+  return `<div style="background:linear-gradient(135deg,rgba(59,130,246,0.06),rgba(99,102,241,0.06));border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:14px"><div style="display:flex;align-items:center;gap:8px;margin-bottom:10px"><span style="font-size:0.70rem;font-weight:700;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.05em">⚡ Quick Examples</span><span style="font-size:0.67rem;color:var(--text-muted)">— click any card to load instantly</span></div><div style="display:flex;gap:8px">${cards}</div></div>`;
+}
+
 // ─── PCB Demo Mode ────────────────────────────────────────────────────────────
 // Pre-computed results for two real-world automotive PCB examples.
 // All country costs were computed live from pcb-country-rates.ts engine.
@@ -6406,6 +6624,12 @@ function switchCommodity(type: CommodityType): void {
       wireCADEvents();
       break;
   }
+
+  // Inject inline demo cards for applicable commodities (after form renders)
+  const _inlineDemoCommodities = new Set(['machining','sheet_metal','sheet_metal_fab','injection_moulding','blow_moulding','extrusion','thermoforming','rotational_moulding','casting','forging','painting','biw_assembly','cast_and_machine','rubber','composites','wiring_harness']);
+  if (_inlineDemoCommodities.has(type as string)) {
+    area.insertAdjacentHTML('afterbegin', buildInlineDemoSection(type as string));
+  }
 }
 
 // ─── Input collectors ─────────────────────────────────────────────────────────
@@ -7176,6 +7400,91 @@ function showResultsArea(): void {
   switchResultTab('breakdown');
 }
 
+// ─── Upload / Parts Library Tab ───────────────────────────────────────────────
+function renderUploadPanel(): void {
+  const uploadEl = document.getElementById('results-upload');
+  if (!uploadEl) return;
+
+  const partName = (document.getElementById('part-name') as HTMLInputElement)?.value ?? '';
+  const costStr = lastResult ? _currFmt(lastResult.total) : '—';
+  const lib = getPartsLibrary();
+  const recent = [...lib].sort((a, b) => b.savedAt - a.savedAt).slice(0, 8);
+
+  uploadEl.innerHTML = `<div style="padding:4px 0 16px">
+    <div style="background:var(--surface-raised);border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:14px;display:flex;align-items:center;gap:12px">
+      <div style="flex:1;min-width:0">
+        <div style="font-size:0.67rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:2px">Current Result</div>
+        <div style="font-size:0.95rem;font-weight:700;color:var(--text-primary)">${escHtml(partName || 'Unnamed Part')}</div>
+        <div style="font-size:0.75rem;color:var(--text-secondary);margin-top:2px">${COMMODITY_LABELS[activeCommodity] ?? activeCommodity}</div>
+      </div>
+      <div style="font-size:1.3rem;font-weight:700;color:var(--accent)">${costStr}</div>
+    </div>
+
+    <div style="background:var(--surface-raised);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:14px">
+      <div style="font-size:0.8rem;font-weight:700;color:var(--text-primary);margin-bottom:12px">Save to Parts Library</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
+        <div><label style="font-size:0.70rem;font-weight:600;color:var(--text-secondary);display:block;margin-bottom:3px">Project Name</label><input id="lib-project" type="text" placeholder="e.g. X7 Facelift 2026" style="width:100%;box-sizing:border-box;padding:7px 9px;border:1px solid var(--border);border-radius:6px;background:var(--surface);color:var(--text-primary);font-size:0.79rem"/></div>
+        <div><label style="font-size:0.70rem;font-weight:600;color:var(--text-secondary);display:block;margin-bottom:3px">Part Number</label><input id="lib-partno" type="text" placeholder="e.g. 31106867257" style="width:100%;box-sizing:border-box;padding:7px 9px;border:1px solid var(--border);border-radius:6px;background:var(--surface);color:var(--text-primary);font-size:0.79rem"/></div>
+        <div><label style="font-size:0.70rem;font-weight:600;color:var(--text-secondary);display:block;margin-bottom:3px">Customer / OEM</label><input id="lib-customer" type="text" placeholder="e.g. BMW Group" style="width:100%;box-sizing:border-box;padding:7px 9px;border:1px solid var(--border);border-radius:6px;background:var(--surface);color:var(--text-primary);font-size:0.79rem"/></div>
+        <div><label style="font-size:0.70rem;font-weight:600;color:var(--text-secondary);display:block;margin-bottom:3px">Vehicle Programme</label><input id="lib-vehicle-prog" type="text" placeholder="e.g. G07 (X7) MY2026" style="width:100%;box-sizing:border-box;padding:7px 9px;border:1px solid var(--border);border-radius:6px;background:var(--surface);color:var(--text-primary);font-size:0.79rem"/></div>
+        <div><label style="font-size:0.70rem;font-weight:600;color:var(--text-secondary);display:block;margin-bottom:3px">System / Subsystem</label><input id="lib-system" type="text" placeholder="e.g. Rear Suspension" style="width:100%;box-sizing:border-box;padding:7px 9px;border:1px solid var(--border);border-radius:6px;background:var(--surface);color:var(--text-primary);font-size:0.79rem"/></div>
+        <div><label style="font-size:0.70rem;font-weight:600;color:var(--text-secondary);display:block;margin-bottom:3px">Notes</label><input id="lib-notes" type="text" placeholder="Assumptions, revision, etc." style="width:100%;box-sizing:border-box;padding:7px 9px;border:1px solid var(--border);border-radius:6px;background:var(--surface);color:var(--text-primary);font-size:0.79rem"/></div>
+      </div>
+      <button id="lib-save-btn" class="btn btn-primary" style="width:100%">Save to Library ↑</button>
+    </div>
+
+    ${recent.length > 0 ? `<div>
+      <div style="font-size:0.78rem;font-weight:700;color:var(--text-primary);margin-bottom:8px">Parts Library <span style="font-weight:400;color:var(--text-muted)">(${lib.length} records)</span></div>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        ${recent.map(r => {
+          const d = new Date(r.savedAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: '2-digit' });
+          return `<div style="background:var(--surface-raised);border:1px solid var(--border);border-radius:8px;padding:10px 12px;display:flex;align-items:center;gap:10px">
+            <div style="flex:1;min-width:0">
+              <div style="font-size:0.79rem;font-weight:600;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${escHtml(r.partName)}</div>
+              <div style="font-size:0.68rem;color:var(--text-muted);margin-top:2px">${escHtml(r.projectName || '—')} · ${COMMODITY_LABELS[r.commodity] ?? r.commodity} · ${d}</div>
+            </div>
+            <div style="font-size:0.88rem;font-weight:700;color:var(--accent);white-space:nowrap">${CURRENCY_SYMBOL[r.currency] ?? r.currency}${r.totalCost.toFixed(2)}</div>
+            <button class="lib-del-btn" data-lid="${escHtml(r.id)}" style="background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:1rem;padding:2px 6px">✕</button>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>` : `<div style="text-align:center;color:var(--text-muted);font-size:0.8rem;padding:20px 0">Library is empty — save your first result above.</div>`}
+  </div>`;
+
+  document.getElementById('lib-save-btn')?.addEventListener('click', () => {
+    if (!lastResult) { showToast('Run a calculation first', 'warning'); return; }
+    const existing = getPartsLibrary();
+    const bkd = lastResult.breakdown;
+    existing.push({
+      id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+      savedAt: Date.now(),
+      projectName: (document.getElementById('lib-project') as HTMLInputElement)?.value ?? '',
+      partNumber:  (document.getElementById('lib-partno') as HTMLInputElement)?.value ?? '',
+      customer:    (document.getElementById('lib-customer') as HTMLInputElement)?.value ?? '',
+      vehicleProgramme: (document.getElementById('lib-vehicle-prog') as HTMLInputElement)?.value ?? '',
+      system:      (document.getElementById('lib-system') as HTMLInputElement)?.value ?? '',
+      notes:       (document.getElementById('lib-notes') as HTMLInputElement)?.value ?? '',
+      partName:    (document.getElementById('part-name') as HTMLInputElement)?.value ?? 'Part',
+      commodity:   activeCommodity,
+      totalCost:   lastResult.total,
+      currency:    _displayCurrency,
+      region:      (document.getElementById('mfg-region-selector') as HTMLSelectElement)?.value ?? 'UK',
+      confidence:  'Medium',
+      breakdown:   bkd ? { rawMaterial: bkd.rawMaterial, process: bkd.process, labour: bkd.labour, tooling: bkd.tooling, overhead: bkd.overhead, packaging: bkd.packaging, logistics: bkd.logistics, margin: bkd.margin } : undefined,
+    });
+    savePartsLibrary(existing);
+    showToast('Saved to Parts Library', 'info');
+    renderUploadPanel();
+  });
+
+  uploadEl.querySelectorAll<HTMLButtonElement>('.lib-del-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      savePartsLibrary(getPartsLibrary().filter(r => r.id !== btn.dataset.lid));
+      renderUploadPanel();
+    });
+  });
+}
+
 function switchResultTab(tab: string): void {
   document.querySelectorAll<HTMLElement>('.rtab').forEach(t => {
     t.classList.toggle('active', t.dataset.panel === tab);
@@ -7186,12 +7495,15 @@ function switchResultTab(tab: string): void {
   el('results-sensitivity').style.display = tab === 'sensitivity' ? '' : 'none';
   el('results-scenarios').style.display = tab === 'scenarios' ? '' : 'none';
   el('results-dfm').style.display = tab === 'dfm' ? '' : 'none';
+  const uploadEl = document.getElementById('results-upload');
+  if (uploadEl) uploadEl.style.display = tab === 'upload' ? '' : 'none';
 
   if (tab === 'detail' && lastResult && lastInput) renderDetail(lastResult, lastInput);
   if (tab === 'insights' && lastResult && lastInput) renderInsights(lastResult, lastInput);
   if (tab === 'sensitivity' && lastInput) renderSensitivity();
   if (tab === 'scenarios') renderScenarios();
   if (tab === 'dfm' && lastResult && lastInput) renderDFMDFA(lastResult, lastInput);
+  if (tab === 'upload') renderUploadPanel();
 }
 
 // ─── Tab Badges ────────────────────────────────────────────────────────────────
@@ -10636,6 +10948,17 @@ async function init(): Promise<void> {
       localStorage.removeItem('cv-history');
       renderDashboard();
     }
+  });
+
+  // Clear active dashboard filter
+  document.getElementById('dash-filter-clear-btn')?.addEventListener('click', () => {
+    _dashFilters = { vehicle: '', commodity: '', system: '', costRange: '', region: '', confidence: '' };
+    document.querySelectorAll('.dchip').forEach(b => b.classList.toggle('active', (b as HTMLElement).dataset.val === ''));
+    (['filter-cost-range','filter-region','filter-confidence'] as const).forEach(id => {
+      const sel = document.getElementById(id) as HTMLSelectElement | null;
+      if (sel) sel.value = '';
+    });
+    renderDashboard();
   });
 
   // Quick action tiles (commodity-specific shortcuts)
