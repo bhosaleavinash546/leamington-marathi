@@ -877,6 +877,9 @@ interface PCBBOMItem {
   moq: number;
   automotive: boolean;
   highCost: boolean;
+  partNumber?: string;       // IC part number from OCR
+  lineConf?: number;         // 0–1 confidence for this BOM line
+  ocrExtracted?: boolean;    // true if part number came from OCR pass
 }
 interface PCBImageAnalysis {
   partName: string;
@@ -922,6 +925,8 @@ interface PCBImageAnalysis {
   optimisationSuggestions: string[];
   confidenceLevel: 'High' | 'Medium' | 'Low';
   analysisLimitations: string[];
+  stage1Classification?: { domain: string; conf: number; hints: string[] };
+  ocrExtraction?: { icMarkings: string[]; extractionQuality: string };
 }
 
 let agentHistory: AgentMessage[] = [];
@@ -2921,8 +2926,10 @@ function addBOMRow(d?: Partial<BOMLine>): void {
   const tbody = el('bom-body');
   if (!tbody) return;
   const compTypes: ComponentType[] = [
-    'passive_0402','passive_0603','passive_0805','ic_soic','ic_qfn',
-    'ic_bga','ic_tqfp','connector_smt','through_hole','manual_solder'
+    'passive_0402','passive_0603','passive_0805',
+    'crystal_osc','power_module','transformer','led','relay_switch','fuse_tvs',
+    'ic_soic','ic_qfn','ic_bga','ic_tqfp',
+    'connector_smt','through_hole','manual_solder',
   ];
   const typeOpts = compTypes.map(t =>
     `<option value="${t}"${t === (d?.componentType ?? 'passive_0402') ? ' selected' : ''}>${t}</option>`
@@ -3655,6 +3662,7 @@ function buildPCBImagePanel(r: PCBImageAnalysis): string {
       <td>${item.pkg}</td>
       <td>${item.value}</td>
       <td>${item.voltage}</td>
+      <td>${item.partNumber ? `<span style="font-size:0.68rem;font-family:monospace;background:var(--border);padding:1px 4px;border-radius:3px">${item.partNumber}${item.ocrExtracted ? ' <span title="OCR extracted" style="color:var(--green)">✓</span>' : ''}</span>` : ''}${(item.lineConf !== undefined && item.lineConf < 0.6) ? ' <span title="Low confidence" style="color:orange;font-size:0.65rem">⚠</span>' : ''}</td>
       <td>${item.qty}</td>
       <td>£${item.unitPriceGBP.toFixed(3)}</td>
       <td>£${(item.qty * item.unitPriceGBP).toFixed(2)}</td>
@@ -3691,6 +3699,8 @@ function buildPCBImagePanel(r: PCBImageAnalysis): string {
         <div class="occt-stat"><div class="occt-stat-value">${a.reflowSides === 2 ? 'Double' : 'Single'}</div><div class="occt-stat-label">Reflow sides</div></div>
         <div class="occt-stat"><div class="occt-stat-value">£${c.pcbFabGBP.min.toFixed(2)}–£${c.pcbFabGBP.max.toFixed(2)}</div><div class="occt-stat-label">PCB fab est.</div></div>
         <div class="occt-stat"><div class="occt-stat-value">£${totalBOMCost}</div><div class="occt-stat-label">BOM total (${totalBOMLines} lines)</div></div>
+        <div class="occt-stat"><div class="occt-stat-value">${r.stage1Classification?.domain?.replace(/_/g,' ') ?? 'general'}</div><div class="occt-stat-label">Board domain</div></div>
+        <div class="occt-stat"><div class="occt-stat-value">${r.ocrExtraction?.icMarkings?.length ?? 0}</div><div class="occt-stat-label">ICs identified</div></div>
       </div>
 
       <div class="pcb-apply-row">
@@ -3702,9 +3712,9 @@ function buildPCBImagePanel(r: PCBImageAnalysis): string {
         <div class="pcb-analysis-section-title">📋 Bill of Materials (${totalBOMLines} lines · ${totalPlacements} placements)</div>
         <div class="pcb-bom-wrap">
           <table class="pcb-bom-table">
-            <thead><tr><th>#</th><th>Ref Des</th><th>Description</th><th>Pkg</th><th>Value</th><th>Voltage</th><th>Qty</th><th>Unit £</th><th>Ext £</th><th>Flags</th></tr></thead>
+            <thead><tr><th>#</th><th>Ref Des</th><th>Description</th><th>Pkg</th><th>Value</th><th>Voltage</th><th>Part No.</th><th>Qty</th><th>Unit £</th><th>Ext £</th><th>Flags</th></tr></thead>
             <tbody>${bomRows}</tbody>
-            <tfoot><tr><td colspan="8" style="text-align:right;font-weight:700">Total BOM Cost</td><td colspan="2" style="font-weight:700;color:var(--accent)">£${totalBOMCost}</td></tr></tfoot>
+            <tfoot><tr><td colspan="9" style="text-align:right;font-weight:700">Total BOM Cost</td><td colspan="2" style="font-weight:700;color:var(--accent)">£${totalBOMCost}</td></tr></tfoot>
           </table>
         </div>
       </div>
@@ -3890,6 +3900,7 @@ function applyPCBImageToPCBA(): void {
       for (const item of r.bom) {
         const validTypes: ComponentType[] = [
           'passive_0402','passive_0603','passive_0805',
+          'crystal_osc','power_module','transformer','led','relay_switch','fuse_tvs',
           'ic_soic','ic_qfn','ic_bga','ic_tqfp',
           'connector_smt','through_hole','manual_solder',
         ];
