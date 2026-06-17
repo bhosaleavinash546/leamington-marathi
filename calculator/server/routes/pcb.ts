@@ -18,7 +18,7 @@ const upload = multer({
   storage: multer.memoryStorage(),
   limits: { fileSize: 20 * 1024 * 1024 },
   fileFilter: (_req, file, cb) => {
-    // pcbImage must be an image; bomFile accepts csv/xml/txt text formats.
+    // pcbImages (array) must be images; bomFile accepts csv/xml/txt text formats.
     if (file.fieldname === 'bomFile') {
       if (/\.(csv|xml|txt)$/i.test(file.originalname) || /^(text\/|application\/(xml|csv|vnd\.ms-excel))/i.test(file.mimetype)) cb(null, true);
       else cb(new Error('BOM file must be .csv, .xml or .txt'));
@@ -28,6 +28,25 @@ const upload = multer({
     else cb(new Error('Only JPEG, PNG, or WebP images are accepted'));
   },
 });
+
+// Slot labels sent from the frontend (Top side, Bottom side, Additional 1…3)
+const DEFAULT_IMAGE_LABELS = ['Top side', 'Bottom side', 'Additional 1', 'Additional 2', 'Additional 3'];
+
+/** Build Claude content blocks for one or more PCB images, with optional label text prefixes. */
+function buildImageContentBlocks(
+  files: Express.Multer.File[],
+  labels: string[],
+  includeLabels: boolean,
+): Array<{ type: 'image'; source: { type: 'base64'; media_type: string; data: string } } | { type: 'text'; text: string }> {
+  return files.flatMap((f, i) => {
+    const base64 = f.buffer.toString('base64');
+    const mtype = f.mimetype as 'image/jpeg' | 'image/png' | 'image/webp';
+    const blocks: Array<{ type: 'image'; source: { type: 'base64'; media_type: string; data: string } } | { type: 'text'; text: string }> = [];
+    if (includeLabels) blocks.push({ type: 'text', text: `**${labels[i] ?? `Image ${i + 1}`}:**` });
+    blocks.push({ type: 'image', source: { type: 'base64', media_type: mtype, data: base64 } });
+    return blocks;
+  });
+}
 
 // Build the user-provided BOM context block injected into the Stage 3 prompt.
 function buildParsedBOMContext(lines: ParsedBOMLine[]): string {
@@ -256,13 +275,23 @@ ${raw}`;
 
 // POST /api/pcb/analyze-image
 router.post('/analyze-image', upload.fields([
-  { name: 'pcbImage', maxCount: 1 },
+  { name: 'pcbImages', maxCount: 5 },   // up to 5 images: top, bottom, + 3 additional
   { name: 'bomFile', maxCount: 1 },
 ]), async (req, res): Promise<void> => {
   const files = req.files as Record<string, Express.Multer.File[]> | undefined;
-  const imageFile = files?.pcbImage?.[0];
+  const imageFiles = files?.pcbImages ?? [];
+  const primaryImage = imageFiles[0];
   const bomFileUpload = files?.bomFile?.[0];
-  if (!imageFile) { res.status(400).json({ error: 'No image uploaded' }); return; }
+  if (!primaryImage) { res.status(400).json({ error: 'No image uploaded' }); return; }
+
+  // Parse slot labels sent from the frontend
+  let imageLabels: string[] = DEFAULT_IMAGE_LABELS;
+  try {
+    const raw = req.body?.pcbImageLabels as string | undefined;
+    if (raw) imageLabels = JSON.parse(raw) as string[];
+  } catch { /* use defaults */ }
+
+  const multiImage = imageFiles.length > 1;
 
   // Optional user-provided BOM file — parsed and injected as ground truth.
   let parsedBOM: ParsedBOMLine[] = [];
@@ -281,9 +310,10 @@ router.post('/analyze-image', upload.fields([
     return;
   }
 
-  const mediaType = imageFile.mimetype as 'image/jpeg' | 'image/png' | 'image/webp';
-  const base64Data = imageFile.buffer.toString('base64');
+  const mediaType = primaryImage.mimetype as 'image/jpeg' | 'image/png' | 'image/webp';
+  const base64Data = primaryImage.buffer.toString('base64');
   const anthropic = new Anthropic({ apiKey });
+  console.log(`[PCB] ${imageFiles.length} image(s) received: ${imageLabels.slice(0, imageFiles.length).join(', ')}`);
 
   // ── Stage 1: Board domain classification (Haiku) ───────────────────────
   let stage1Result: Stage1Result = { domain: 'general', conf: 0.5, hints: [] };
@@ -314,9 +344,12 @@ router.post('/analyze-image', upload.fields([
 
   const domain = stage1Result.domain;
 
-  // ── Stage 2: OCR text extraction (Haiku) ──────────────────────────────
+  // ── Stage 2: OCR text extraction (Haiku) — uses ALL images ──────────
   let ocrResult: OCRResult = { icMarkings: [], refDesGroups: [], connectors: [], boardText: [], extractionQuality: 'low' };
   try {
+    const s2MultiNote = multiImage
+      ? `\n\nNOTE: ${imageFiles.length} PCB photos provided (${imageLabels.slice(0, imageFiles.length).join(', ')}). Extract text from ALL images — the bottom side and additional photos often expose component markings not visible from the top.`
+      : '';
     const s2Msg = await anthropic.messages.create({
       model: 'claude-haiku-4-5',
       max_tokens: 1024,
@@ -324,8 +357,8 @@ router.post('/analyze-image', upload.fields([
       messages: [{
         role: 'user',
         content: [
-          { type: 'image', source: { type: 'base64', media_type: mediaType, data: base64Data } },
-          { type: 'text', text: stage2Prompt },
+          ...buildImageContentBlocks(imageFiles, imageLabels, multiImage),
+          { type: 'text', text: stage2Prompt + s2MultiNote },
         ],
       }],
     });
@@ -344,9 +377,12 @@ router.post('/analyze-image', upload.fields([
   }
 
   // ── Stage 3: Full BOM analysis with specialist persona (Sonnet) ────────
-  console.log('[PCB] Stage 3: Sonnet specialist analysis...');
+  console.log(`[PCB] Stage 3: Sonnet specialist analysis (${imageFiles.length} image(s))...`);
   const specialistSystem = SPECIALIST_SYSTEM_PROMPTS[domain] ?? SPECIALIST_SYSTEM_PROMPTS['general'];
-  const userPromptText = buildUserPrompt(ocrResult, stage1Result, domain) +
+  const multiImageNote = multiImage
+    ? `\n\nNOTE: ${imageFiles.length} PCB photos provided (${imageLabels.slice(0, imageFiles.length).join(', ')}). Use ALL images together for maximum accuracy — top side for component placement, bottom side for assembly type and solder joints, additional photos for close-up markings or specific areas of interest.`
+    : '';
+  const userPromptText = buildUserPrompt(ocrResult, stage1Result, domain) + multiImageNote +
     (parsedBOM.length > 0 ? buildParsedBOMContext(parsedBOM) : '');
 
   let analysis: unknown;
@@ -354,7 +390,7 @@ router.post('/analyze-image', upload.fields([
   let lastError = '';
 
   try {
-    // ── Attempt 1: Full vision analysis ──────────────────────────────────
+    // ── Attempt 1: Full vision analysis (all images) ─────────────────────
     const msg1 = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 8192,
@@ -362,7 +398,7 @@ router.post('/analyze-image', upload.fields([
       messages: [{
         role: 'user',
         content: [
-          { type: 'image', source: { type: 'base64', media_type: mediaType, data: base64Data } },
+          ...buildImageContentBlocks(imageFiles, imageLabels, multiImage),
           { type: 'text', text: userPromptText },
         ],
       }],
@@ -406,7 +442,7 @@ ${userPromptText}`;
           messages: [{
             role: 'user',
             content: [
-              { type: 'image', source: { type: 'base64', media_type: mediaType, data: base64Data } },
+              ...buildImageContentBlocks(imageFiles, imageLabels, multiImage),
               { type: 'text', text: fallbackPrompt },
             ],
           }],

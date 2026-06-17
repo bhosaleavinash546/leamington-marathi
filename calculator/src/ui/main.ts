@@ -79,6 +79,8 @@ let pcbImageLoading = false;
 let pcbBOMFile: File | null = null;
 let pcbImageDataURL: string | null = null;
 let pcbNREEnabled = false;
+// Slot 0=Top (primary), 1=Bottom, 2-4=Additional 1-3
+let pcbImageFiles: (File | null)[] = [null, null, null, null, null];
 let _pcbVolumeChart: Chart | null = null;
 let supplierQuotes: SupplierQuote[] = [];
 let partPhotoDataUrl: string | null = null;
@@ -3932,11 +3934,37 @@ function buildPCBImageUploadZone(): string {
           <label style="font-size:0.68rem;color:var(--text-muted)">qty</label>
         </div>
 
+        <!-- Multi-image slots: Top, Bottom, + 3 Additional -->
+        <div style="margin-top:10px">
+          <div style="font-size:0.68rem;color:var(--text-muted);margin-bottom:6px;text-align:center">
+            Upload up to 5 photos — top &amp; bottom sides + close-ups for best accuracy
+          </div>
+          <div style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap">
+            ${(['Top side ★', 'Bottom side', 'Close-up 1', 'Close-up 2', 'Close-up 3'] as const).map((label, idx) => `
+              <div id="pcb-img-slot-${idx}"
+                   style="width:96px;min-height:90px;border:1.5px dashed var(--border);border-radius:8px;cursor:pointer;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;transition:border-color 0.15s;overflow:hidden;background:var(--card-bg)"
+                   title="Click to choose ${label.replace(' ★', '')} image">
+                <input type="file" id="pcb-img-input-${idx}" accept="image/jpeg,image/png,image/webp" style="display:none"/>
+                <div id="pcb-img-slot-empty-${idx}" style="display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px">
+                  <span style="font-size:1.3rem">${idx === 0 ? '📷' : idx === 1 ? '🔄' : '🔍'}</span>
+                  <span style="font-size:0.60rem;color:var(--text-muted);text-align:center;line-height:1.3">${label}</span>
+                </div>
+                <div id="pcb-img-slot-filled-${idx}" style="display:none;width:100%;height:100%;position:relative">
+                  <img id="pcb-img-thumb-${idx}" alt="${label}" style="width:100%;height:90px;object-fit:cover;display:block"/>
+                  <div style="position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0.55);padding:2px 4px">
+                    <span style="font-size:0.58rem;color:#fff;font-weight:600">${label.replace(' ★', '')}</span>
+                  </div>
+                  <button id="pcb-img-remove-${idx}"
+                          style="position:absolute;top:2px;right:2px;background:#ef4444;color:#fff;border:none;border-radius:50%;width:18px;height:18px;font-size:0.65rem;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;line-height:1"
+                          title="Remove this image">×</button>
+                </div>
+              </div>`).join('')}
+          </div>
+          <div id="pcb-img-count" style="font-size:0.62rem;color:var(--text-muted);margin-top:4px;text-align:center">No images selected</div>
+        </div>
         <div style="display:flex;gap:6px;margin-top:8px;justify-content:center;flex-wrap:wrap">
-          <button class="btn btn-secondary btn-sm" id="pcb-img-pick-btn">📷 Choose Image</button>
           <button class="btn btn-primary btn-sm" id="pcb-img-analyze-btn" disabled>🔬 Analyze PCB</button>
         </div>
-        <div id="pcb-img-filename" style="font-size:0.65rem;color:var(--text-muted);margin-top:4px"></div>
 
         <!-- Optional BOM/netlist file upload (Priority 2) -->
         <div style="margin-top:8px;font-size:0.70rem">
@@ -3984,12 +4012,85 @@ function buildPCBImageUploadZone(): string {
 }
 
 function wirePCBImageZone(): void {
-  const pickBtn  = el<HTMLButtonElement>('pcb-img-pick-btn');
-  const fileInput = el<HTMLInputElement>('pcb-img-input');
   const analyzeBtn = el<HTMLButtonElement>('pcb-img-analyze-btn');
-  const fileLabel = el('pcb-img-filename');
+  const countLabel = el('pcb-img-count');
+  const SLOT_LABELS = ['Top side', 'Bottom side', 'Close-up 1', 'Close-up 2', 'Close-up 3'];
 
-  pickBtn?.addEventListener('click', () => fileInput?.click());
+  function updateAnalyzeBtn(): void {
+    const selected = pcbImageFiles.filter(Boolean);
+    const n = selected.length;
+    if (countLabel) {
+      countLabel.textContent = n === 0
+        ? 'No images selected'
+        : `${n} image${n > 1 ? 's' : ''} selected (${pcbImageFiles.map((f, i) => f ? SLOT_LABELS[i] : null).filter(Boolean).join(', ')})`;
+    }
+    if (analyzeBtn) analyzeBtn.disabled = n === 0;
+  }
+
+  function setSlot(idx: number, file: File): void {
+    pcbImageFiles[idx] = file;
+    const thumb = el<HTMLImageElement>(`pcb-img-thumb-${idx}`);
+    if (thumb) thumb.src = URL.createObjectURL(file);
+    const emptyDiv = el(`pcb-img-slot-empty-${idx}`);
+    const filledDiv = el(`pcb-img-slot-filled-${idx}`);
+    const slot = el(`pcb-img-slot-${idx}`);
+    if (emptyDiv) emptyDiv.style.display = 'none';
+    if (filledDiv) filledDiv.style.display = 'block';
+    if (slot) slot.style.borderColor = idx === 0 ? 'var(--accent)' : 'rgba(79,142,247,0.4)';
+    updateAnalyzeBtn();
+  }
+
+  function clearSlot(idx: number): void {
+    pcbImageFiles[idx] = null;
+    const emptyDiv = el(`pcb-img-slot-empty-${idx}`);
+    const filledDiv = el(`pcb-img-slot-filled-${idx}`);
+    const slot = el(`pcb-img-slot-${idx}`);
+    const input = el<HTMLInputElement>(`pcb-img-input-${idx}`);
+    if (emptyDiv) emptyDiv.style.display = 'flex';
+    if (filledDiv) filledDiv.style.display = 'none';
+    if (slot) slot.style.borderColor = '';
+    if (input) input.value = '';
+    updateAnalyzeBtn();
+  }
+
+  // Wire each of the 5 slots
+  [0, 1, 2, 3, 4].forEach(idx => {
+    const slot = el(`pcb-img-slot-${idx}`);
+    const input = el<HTMLInputElement>(`pcb-img-input-${idx}`);
+    const removeBtn = el(`pcb-img-remove-${idx}`);
+
+    slot?.addEventListener('click', (e) => {
+      if ((e.target as HTMLElement).id === `pcb-img-remove-${idx}`) return;
+      input?.click();
+    });
+    input?.addEventListener('change', () => {
+      const f = input?.files?.[0];
+      if (f) setSlot(idx, f);
+    });
+    removeBtn?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      clearSlot(idx);
+    });
+  });
+
+  // Analyze button — no argument needed, reads pcbImageFiles state
+  analyzeBtn?.addEventListener('click', () => void analyzePCBImages());
+
+  // Drag-and-drop: drop one or multiple files, fill slots in order
+  const zone = el('pcb-img-zone');
+  zone?.addEventListener('dragover', (e) => { e.preventDefault(); zone.classList.add('drag-over'); });
+  zone?.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+  zone?.addEventListener('drop', (e) => {
+    e.preventDefault();
+    zone.classList.remove('drag-over');
+    const dropped = Array.from((e as DragEvent).dataTransfer?.files ?? [])
+      .filter(f => f.type.startsWith('image/'))
+      .slice(0, 5);
+    dropped.forEach(f => {
+      const emptySlot = pcbImageFiles.findIndex(s => s === null);
+      if (emptySlot !== -1) setSlot(emptySlot, f);
+    });
+  });
 
   // BOM file picker (Priority 2)
   const bomPickBtn = el<HTMLButtonElement>('pcb-bom-pick-btn');
@@ -4010,35 +4111,16 @@ function wirePCBImageZone(): void {
     pcbNREEnabled = !!nreToggle.checked;
     if (pcbImageResult) injectPCBImagePanel();
   });
-
-  fileInput?.addEventListener('change', () => {
-    const file = fileInput?.files?.[0] ?? null;
-    if (!file) return;
-    if (fileLabel) fileLabel.textContent = `📎 ${file.name} (${(file.size / 1024).toFixed(0)} KB)`;
-    if (analyzeBtn) analyzeBtn.disabled = false;
-    analyzeBtn?.addEventListener('click', () => analyzePCBImage(file), { once: true });
-  });
-
-  // Drag-and-drop support
-  const zone = el('pcb-img-zone');
-  zone?.addEventListener('dragover', (e) => { e.preventDefault(); zone.classList.add('drag-over'); });
-  zone?.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
-  zone?.addEventListener('drop', (e) => {
-    e.preventDefault();
-    zone.classList.remove('drag-over');
-    const file = (e as DragEvent).dataTransfer?.files[0];
-    if (!file || !file.type.startsWith('image/')) return;
-    if (fileLabel) fileLabel.textContent = `📎 ${file.name} (${(file.size / 1024).toFixed(0)} KB)`;
-    if (analyzeBtn) { analyzeBtn.disabled = false; analyzeBtn.addEventListener('click', () => analyzePCBImage(file), { once: true }); }
-  });
 }
 
-async function analyzePCBImage(file: File): Promise<void> {
-  if (pcbImageLoading) return;
+async function analyzePCBImages(): Promise<void> {
+  const selectedFiles = pcbImageFiles.map((f, i) => f ? { file: f, label: ['Top side', 'Bottom side', 'Close-up 1', 'Close-up 2', 'Close-up 3'][i] } : null).filter((x): x is { file: File; label: string } => x !== null);
+  if (!selectedFiles.length || pcbImageLoading) return;
+
   pcbImageLoading = true;
 
   const analyzeBtn = el<HTMLButtonElement>('pcb-img-analyze-btn');
-  if (analyzeBtn) { analyzeBtn.disabled = true; analyzeBtn.textContent = '⏳ Analyzing…'; }
+  if (analyzeBtn) { analyzeBtn.disabled = true; analyzeBtn.textContent = `⏳ Analyzing ${selectedFiles.length} image${selectedFiles.length > 1 ? 's' : ''}…`; }
 
   const zone = el('pcb-img-zone');
   if (zone) zone.classList.add('pcb-img-zone--analyzing');
@@ -4050,7 +4132,9 @@ async function analyzePCBImage(file: File): Promise<void> {
   const orderQty = (document.getElementById('pcb-order-qty') as HTMLInputElement)?.value ?? '100';
 
   const formData = new FormData();
-  formData.append('pcbImage', file);
+  // Append all selected images and their labels
+  selectedFiles.forEach(({ file }) => formData.append('pcbImages', file));
+  formData.append('pcbImageLabels', JSON.stringify(selectedFiles.map(x => x.label)));
   formData.append('country', selectedCountry);
   formData.append('orderQty', orderQty);
 
@@ -4059,13 +4143,14 @@ async function analyzePCBImage(file: File): Promise<void> {
   const bomFile = bomFileInput?.files?.[0] ?? pcbBOMFile;
   if (bomFile) formData.append('bomFile', bomFile);
 
-  // Store the uploaded image as a data URL for board annotation (Feature 9)
+  // Store the primary (first) image as a data URL for board annotation (Feature 9)
   try {
+    const primaryFile = selectedFiles[0].file;
     pcbImageDataURL = await new Promise<string>((resolve, reject) => {
       const reader = new FileReader();
       reader.onload = () => resolve(reader.result as string);
       reader.onerror = () => reject(reader.error);
-      reader.readAsDataURL(file);
+      reader.readAsDataURL(primaryFile);
     });
   } catch { pcbImageDataURL = null; }
 
@@ -4104,7 +4189,8 @@ async function analyzePCBImage(file: File): Promise<void> {
     if (resultsEl) resultsEl.innerHTML = `<div class="pcb-img-error">⚠ Analysis failed: ${msg}</div>`;
   } finally {
     pcbImageLoading = false;
-    if (analyzeBtn) { analyzeBtn.disabled = false; analyzeBtn.textContent = '🔬 Re-analyze'; }
+    const n = pcbImageFiles.filter(Boolean).length;
+    if (analyzeBtn) { analyzeBtn.disabled = n === 0; analyzeBtn.textContent = '🔬 Re-analyze'; }
     if (zone) zone.classList.remove('pcb-img-zone--analyzing');
   }
 }
@@ -4130,6 +4216,8 @@ function injectPCBImagePanel(): void {
   el('pcb-apply-pcba-btn')?.addEventListener('click', () => applyPCBImageToPCBA());
   el('pcb-clear-btn')?.addEventListener('click', () => {
     pcbImageResult = null;
+    pcbImageFiles = [null, null, null, null, null];
+    pcbImageDataURL = null;
     if (_pcbVolumeChart) { _pcbVolumeChart.destroy(); _pcbVolumeChart = null; }
     injectPCBDemoCards();
   });
