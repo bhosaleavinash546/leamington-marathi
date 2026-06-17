@@ -3259,6 +3259,31 @@ body.cv-new-costing.sidebar-collapsed .cpicker-tile-icon { font-size: 1.25rem; m
   .cost-card-print body { margin: 0; padding: 0; }
 }
 
+/* ── Skeleton shimmer loading state ──────────────────────────────────────── */
+@keyframes cv-skeleton-shimmer {
+  0%   { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+.skel {
+  display: inline-block;
+  border-radius: 4px;
+  background: linear-gradient(
+    90deg,
+    var(--surface-hover) 25%,
+    var(--surface-elevated) 50%,
+    var(--surface-hover) 75%
+  );
+  background-size: 800px 100%;
+  animation: cv-skeleton-shimmer 1.4s ease-in-out infinite;
+  width: 80px;
+  height: 1em;
+  vertical-align: middle;
+}
+.skel--lg  { width: 120px; height: 1.5em; }
+.skel--sm  { width: 60px;  height: 0.8em; border-radius: 3px; }
+.skel--xs  { width: 40px;  height: 0.65em; border-radius: 2px; }
+.skel--full { width: 100%; }
+
 /* ══════════════════════════════════════════════════════════════════════════════
    THEME v2 — Deep Navy Dark · Blue-Tint Light · Gradients · Motion
    ══════════════════════════════════════════════════════════════════════════════ */

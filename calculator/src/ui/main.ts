@@ -150,6 +150,38 @@ const COMMODITY_LABELS: Record<string, string> = {
   assembly: 'Assembly', ai_agent: 'AI Agent', cad_analysis: 'CAD Analysis',
 };
 
+// Unique hue per commodity — used for coloured badges throughout the dashboard
+const COMMODITY_BADGE_COLOURS: Record<string, { bg: string; color: string; border: string }> = {
+  machining:           { bg: 'rgba(59,130,246,0.13)',  color: '#3b82f6', border: 'rgba(59,130,246,0.28)' },
+  casting:             { bg: 'rgba(249,115,22,0.13)',  color: '#f97316', border: 'rgba(249,115,22,0.28)' },
+  sheet_metal:         { bg: 'rgba(148,163,184,0.15)', color: '#94a3b8', border: 'rgba(148,163,184,0.32)' },
+  sheet_metal_fab:     { bg: 'rgba(6,182,212,0.13)',   color: '#06b6d4', border: 'rgba(6,182,212,0.28)' },
+  injection_moulding:  { bg: 'rgba(139,92,246,0.13)',  color: '#8b5cf6', border: 'rgba(139,92,246,0.28)' },
+  blow_moulding:       { bg: 'rgba(20,184,166,0.13)',  color: '#14b8a6', border: 'rgba(20,184,166,0.28)' },
+  extrusion:           { bg: 'rgba(234,179,8,0.13)',   color: '#ca8a04', border: 'rgba(234,179,8,0.28)' },
+  thermoforming:       { bg: 'rgba(236,72,153,0.13)',  color: '#ec4899', border: 'rgba(236,72,153,0.28)' },
+  rotational_moulding: { bg: 'rgba(99,102,241,0.13)',  color: '#818cf8', border: 'rgba(99,102,241,0.28)' },
+  forging:             { bg: 'rgba(239,68,68,0.13)',   color: '#f87171', border: 'rgba(239,68,68,0.28)' },
+  painting:            { bg: 'rgba(132,204,22,0.13)',  color: '#65a30d', border: 'rgba(132,204,22,0.28)' },
+  biw_assembly:        { bg: 'rgba(245,158,11,0.13)',  color: '#d97706', border: 'rgba(245,158,11,0.28)' },
+  pcb_fab:             { bg: 'rgba(16,185,129,0.13)',  color: '#10b981', border: 'rgba(16,185,129,0.28)' },
+  pcba:                { bg: 'rgba(5,150,105,0.13)',   color: '#059669', border: 'rgba(5,150,105,0.28)' },
+  cast_and_machine:    { bg: 'rgba(251,146,60,0.13)',  color: '#fb923c', border: 'rgba(251,146,60,0.28)' },
+  rubber:              { bg: 'rgba(34,197,94,0.13)',   color: '#16a34a', border: 'rgba(34,197,94,0.28)' },
+  composites:          { bg: 'rgba(14,165,233,0.13)',  color: '#0ea5e9', border: 'rgba(14,165,233,0.28)' },
+  wiring_harness:      { bg: 'rgba(167,139,250,0.13)', color: '#7c3aed', border: 'rgba(167,139,250,0.28)' },
+  assembly:            { bg: 'rgba(244,63,94,0.13)',   color: '#f43f5e', border: 'rgba(244,63,94,0.28)' },
+  ai_agent:            { bg: 'rgba(168,85,247,0.13)',  color: '#a855f7', border: 'rgba(168,85,247,0.28)' },
+  cad_analysis:        { bg: 'rgba(34,211,238,0.13)',  color: '#0891b2', border: 'rgba(34,211,238,0.28)' },
+};
+
+function commodityBadgeHtml(commodity: string): string {
+  const lbl = COMMODITY_LABELS[commodity] ?? commodity;
+  const c = COMMODITY_BADGE_COLOURS[commodity];
+  if (c) return `<span class="dash-commodity-badge" style="background:${c.bg};color:${c.color};border:1px solid ${c.border}">${escHtml(lbl)}</span>`;
+  return `<span class="dash-commodity-badge">${escHtml(lbl)}</span>`;
+}
+
 const VEHICLE_OPTS = ['SUV1','SUV2','SUV3','SUV4','SUV5'];
 // const SYSTEM_OPTS  = ['Powertrain','Chassis','BIW','Interior','Exterior','E&E','HVAC','ADAS']; // reserved for future use
 
@@ -254,7 +286,8 @@ function showHome(): void {
   document.getElementById('wf-panel-header')?.style?.setProperty('display','none');
   if (errEl) errEl.style.display = 'none';
   if (warnEl) warnEl.style.display = 'none';
-  renderDashboard();
+  showDashboardSkeleton();
+  setTimeout(renderDashboard, 340);
 }
 
 function showCosting(commodity?: string): void {
@@ -339,6 +372,36 @@ function closeWorkflowPanel(): void {
 
 // ─── Dashboard render ─────────────────────────────────────────────────────────
 
+// ── Count-up number animation ──────────────────────────────────────────────
+function countUp(el: HTMLElement, target: number, fmt: (v: number) => string, dur = 700): void {
+  if (!isFinite(target) || target === 0) { el.textContent = fmt(0); return; }
+  const t0 = performance.now();
+  const tick = (t: number) => {
+    const p = Math.min((t - t0) / dur, 1);
+    const v = target * (1 - Math.pow(1 - p, 3)); // ease-out cubic
+    el.textContent = fmt(v);
+    if (p < 1) requestAnimationFrame(tick);
+    else el.textContent = fmt(target);
+  };
+  requestAnimationFrame(tick);
+}
+
+// ── Skeleton shimmer before data renders ───────────────────────────────────
+function showDashboardSkeleton(): void {
+  ['kpi-total-val','kpi-saving-val','kpi-top-commodity-val','kpi-avg-val','kpi-high-cost-val'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.innerHTML = '<span class="skel skel--lg"></span>';
+  });
+  const tbody = document.getElementById('dash-recent-tbody');
+  if (tbody) {
+    tbody.innerHTML = Array(4).fill(0).map(() =>
+      `<tr>${['14px','110px','72px','64px','70px','48px','58px','42px'].map(w =>
+        `<td><span class="skel" style="width:${w};height:11px;display:inline-block;border-radius:3px"></span></td>`
+      ).join('')}</tr>`
+    ).join('');
+  }
+}
+
 function renderDashboard(): void {
   const all = getCostingHistory();
   const records = filterHistory(all);
@@ -350,15 +413,20 @@ function renderDashboard(): void {
   const kpiAvg = document.getElementById('kpi-avg-val');
   const kpiHighCost = document.getElementById('kpi-high-cost-val');
 
-  if (kpiTotal) kpiTotal.textContent = String(records.length);
+  if (kpiTotal) {
+    if (records.length) countUp(kpiTotal, records.length, v => String(Math.round(v)));
+    else kpiTotal.textContent = '0';
+  }
 
   // Estimate savings: 12% of total spend (industry benchmark)
   const totalSpend = records.reduce((s, r) => s + r.totalCost, 0);
   const savings = totalSpend * 0.12;
   if (kpiSaving) {
     const sym = CURRENCY_SYMBOL[_displayCurrency] ?? _displayCurrency;
-    const dispSavings = savings * _displayFxRate;
-    kpiSaving.textContent = records.length ? `${sym}${dispSavings < 1000 ? dispSavings.toFixed(0) : (dispSavings/1000).toFixed(1)+'k'}` : '—';
+    if (records.length) {
+      const dispSavings = savings * _displayFxRate;
+      countUp(kpiSaving, dispSavings, v => `${sym}${v < 1000 ? v.toFixed(0) : (v/1000).toFixed(1)+'k'}`);
+    } else { kpiSaving.textContent = '—'; }
   }
 
   // Top commodity by count
@@ -368,10 +436,16 @@ function renderDashboard(): void {
   if (kpiTopCom) kpiTopCom.textContent = topComm ? COMMODITY_LABELS[topComm[0]] ?? topComm[0] : '—';
 
   const avgCost = records.length ? totalSpend / records.length : 0;
-  if (kpiAvg) kpiAvg.textContent = records.length ? _currFmt(avgCost) : '—';
+  if (kpiAvg) {
+    if (records.length) countUp(kpiAvg, avgCost, v => _currFmt(v));
+    else kpiAvg.textContent = '—';
+  }
 
   const highCostCount = records.filter(r => r.totalCost > 100).length;
-  if (kpiHighCost) kpiHighCost.textContent = String(highCostCount);
+  if (kpiHighCost) {
+    if (highCostCount) countUp(kpiHighCost, highCostCount, v => String(Math.round(v)));
+    else kpiHighCost.textContent = '0';
+  }
 
   // AI insight — dynamic based on data
   const daiEl = document.getElementById('dai-dynamic');
@@ -720,13 +794,12 @@ function renderRecentTable(records: CostingRecord[]): void {
 
   tbody.innerHTML = sorted.map(r => {
     const date = new Date(r.timestamp).toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'2-digit' });
-    const commLabel = COMMODITY_LABELS[r.commodity] ?? r.commodity;
     const costStr = _currFmt(r.totalCost);
     const checked = _compareSelected.has(r.id) ? 'checked' : '';
     return `<tr data-record-id="${r.id}">
       <td><input type="checkbox" class="cmp-chk" data-id="${r.id}" ${checked} title="Select for comparison"/></td>
       <td>${escHtml(r.partName)}</td>
-      <td><span class="dash-commodity-badge">${commLabel}</span></td>
+      <td>${commodityBadgeHtml(r.commodity)}</td>
       <td>${r.vehicle || '—'}</td>
       <td class="dash-cost-val">${costStr}</td>
       <td>${confBadgeHtml(r.confidence)}</td>
