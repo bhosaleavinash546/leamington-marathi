@@ -1,21 +1,24 @@
 /* ── Design Tokens — CostVision ─────────────────────────────────────────── */
 
 [data-theme="dark"] {
-  --bg: #0f1117;
-  --bg-secondary: #13161f;
-  --surface: #1a1d27;
-  --surface-elevated: #1e2231;
-  --surface-hover: #242840;
-  --border: rgba(255,255,255,0.07);
-  --border-strong: rgba(255,255,255,0.13);
-  --text-primary: #eef0f4;
-  --text-secondary: #9ca3b0;
-  --text-muted: #5d6475;
+  /* Deep navy-black foundation — not grey, not flat */
+  --bg: #07090f;
+  --bg-secondary: #0a0d18;
+  --surface: #0e1525;
+  --surface-elevated: #121c32;
+  --surface-hover: #162038;
+  --surface-raised: #0f1829;
+  /* Blue-tinted borders for depth */
+  --border: rgba(99,130,230,0.10);
+  --border-strong: rgba(99,130,230,0.18);
+  --text-primary: #e8ecf6;
+  --text-secondary: #8a9bbf;
+  --text-muted: #4a5870;
   /* Neon cyan primary accent */
   --accent: #00d2ff;
   --accent-dark: #00b4dc;
   --accent-light: rgba(0,210,255,0.10);
-  --accent-glow: 0 0 24px rgba(0,210,255,0.30), 0 0 48px rgba(0,210,255,0.12);
+  --accent-glow: 0 0 24px rgba(0,210,255,0.35), 0 0 60px rgba(0,210,255,0.15);
   --accent2: #a855f7;
   --accent3: #3b82f6;
   --green: #10b981;
@@ -26,31 +29,33 @@
   --amber-bg: rgba(251,191,36,0.12);
   --blue: #818cf8;
   --blue-bg: rgba(129,140,248,0.12);
-  --shadow-sm: 0 1px 4px rgba(0,0,0,0.6);
-  --shadow-md: 0 4px 20px rgba(0,0,0,0.8);
-  --shadow-lg: 0 8px 40px rgba(0,0,0,0.9);
-  --glass-bg: rgba(26,29,39,0.90);
-  --glass-border: rgba(0,210,255,0.08);
-  /* Neon logo glow */
-  --logo-glow: 0 0 16px rgba(0,210,255,0.5);
+  --shadow-sm: 0 1px 6px rgba(0,0,0,0.75);
+  --shadow-md: 0 4px 28px rgba(0,0,0,0.90);
+  --shadow-lg: 0 12px 48px rgba(0,0,0,0.95);
+  --glass-bg: rgba(14,21,37,0.94);
+  --glass-border: rgba(0,210,255,0.12);
+  --logo-glow: 0 0 20px rgba(0,210,255,0.60);
 }
 
 [data-theme="light"] {
-  --bg: #ffffff;
-  --bg-secondary: #f5f5f5;
+  /* Warm blue-tinted foundation — not flat white */
+  --bg: #f0f4ff;
+  --bg-secondary: #e8edf8;
   --surface: #ffffff;
-  --surface-elevated: #f5f5f5;
-  --surface-hover: #ebebeb;
-  --border: #e0e0e0;
-  --border-strong: #c8c8c8;
-  --text-primary: #0a0a0a;
-  --text-secondary: #404040;
-  --text-muted: #888888;
-  /* Professional blue primary accent */
+  --surface-elevated: #f4f7fe;
+  --surface-hover: #e4ebfb;
+  --surface-raised: #f8faff;
+  /* Blue-tinted borders */
+  --border: rgba(37,99,235,0.12);
+  --border-strong: rgba(37,99,235,0.22);
+  --text-primary: #0d1324;
+  --text-secondary: #374769;
+  --text-muted: #6b7da0;
+  /* Professional blue primary accent — now with glow */
   --accent: #2563eb;
   --accent-dark: #1d4ed8;
   --accent-light: #eff6ff;
-  --accent-glow: none;
+  --accent-glow: 0 0 20px rgba(37,99,235,0.22), 0 0 40px rgba(37,99,235,0.10);
   --accent2: #7c3aed;
   --accent3: #0891b2;
   --green: #059669;
@@ -61,11 +66,12 @@
   --amber-bg: #fffbeb;
   --blue: #4f46e5;
   --blue-bg: #eef2ff;
-  --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
-  --shadow-md: 0 4px 16px rgba(0,0,0,0.08);
-  --shadow-lg: 0 8px 32px rgba(0,0,0,0.10);
-  --glass-bg: rgba(255,255,255,0.95);
-  --glass-border: rgba(0,0,0,0.06);
+  /* Coloured shadows — blue-tinted, not grey */
+  --shadow-sm: 0 1px 4px rgba(37,99,235,0.08);
+  --shadow-md: 0 4px 16px rgba(37,99,235,0.10);
+  --shadow-lg: 0 8px 32px rgba(37,99,235,0.14);
+  --glass-bg: rgba(255,255,255,0.96);
+  --glass-border: rgba(37,99,235,0.08);
   --logo-glow: none;
 }
 
@@ -3251,4 +3257,220 @@ body.cv-new-costing.sidebar-collapsed .cpicker-tile-icon { font-size: 1.25rem; m
 /* ── Exportable Cost Card ────────────────────────────────────────────────── */
 @media print {
   .cost-card-print body { margin: 0; padding: 0; }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   THEME v2 — Deep Navy Dark · Blue-Tint Light · Gradients · Motion
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+/* ── Body background: gradient mesh (dark) · diagonal wash (light) ─────────── */
+[data-theme="dark"] body {
+  background:
+    radial-gradient(ellipse 80% 55% at 15% 0%,   rgba(0,210,255,0.05) 0%, transparent 65%),
+    radial-gradient(ellipse 60% 40% at 85% 100%, rgba(168,85,247,0.04) 0%, transparent 60%),
+    var(--bg);
+  background-attachment: fixed;
+}
+
+[data-theme="light"] body {
+  background: linear-gradient(155deg, #eef2ff 0%, #faf7ff 50%, #eff6ff 100%) fixed;
+}
+
+/* ── Header — glass with gradient (dark) · frosted white (light) ─────────── */
+[data-theme="dark"] .header,
+[data-theme="dark"] header {
+  background: linear-gradient(to right, rgba(14,21,37,0.97) 0%, rgba(10,16,30,0.97) 100%);
+  border-bottom-color: rgba(99,130,230,0.14);
+  backdrop-filter: blur(12px);
+}
+
+[data-theme="light"] .header,
+[data-theme="light"] header {
+  background: rgba(255,255,255,0.92);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom-color: rgba(37,99,235,0.10);
+  box-shadow: 0 1px 16px rgba(37,99,235,0.08);
+}
+
+/* ── Gradient scrollbar ─────────────────────────────────────────────────────── */
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--accent), var(--accent2));
+  border-radius: 3px;
+}
+
+/* ── Text selection ─────────────────────────────────────────────────────────── */
+[data-theme="dark"] ::selection {
+  background: rgba(0,210,255,0.20);
+  color: #fff;
+}
+[data-theme="light"] ::selection {
+  background: rgba(37,99,235,0.15);
+  color: var(--text-primary);
+}
+
+/* ── CTA pulse — fires twice on load, stops on hover ────────────────────────── */
+@keyframes cv-cta-pulse {
+  0%   { box-shadow: 0 2px 10px rgba(30,91,255,0.35), 0 0 0 0   rgba(30,91,255,0.45); }
+  65%  { box-shadow: 0 2px 10px rgba(30,91,255,0.35), 0 0 0 12px rgba(30,91,255,0);   }
+  100% { box-shadow: 0 2px 10px rgba(30,91,255,0.35), 0 0 0 0   rgba(30,91,255,0);   }
+}
+.btn-primary {
+  animation: cv-cta-pulse 2.4s cubic-bezier(0.4,0,0.6,1) 1.2s 2;
+}
+.btn-primary:hover,
+.btn-primary:active,
+.btn-primary:focus { animation: none; }
+
+/* ── Results tab — gradient sliding underline ────────────────────────────────── */
+.rtab {
+  position: relative;
+  border-bottom: 2px solid transparent;
+}
+.rtab::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 50%;
+  right: 50%;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  border-radius: 2px 2px 0 0;
+  transition: left var(--dur-hover) var(--ease-std), right var(--dur-hover) var(--ease-std);
+}
+.rtab.active::after { left: 0; right: 0; }
+.rtab.active { color: var(--accent); border-bottom-color: transparent; }
+
+/* ── Commodity tab active — gradient background ──────────────────────────────── */
+.ctab.active {
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  border-color: transparent;
+  color: #fff;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.25);
+}
+
+/* ── Dashboard cards — light mode glass surface ──────────────────────────────── */
+[data-theme="light"] .dash-kpi-card,
+[data-theme="light"] .dash-chart-card,
+[data-theme="light"] .dash-ai-panel,
+[data-theme="light"] .dash-recent-section,
+[data-theme="light"] .cpicker-tile,
+[data-theme="light"] .dash-filter-bar {
+  background: #fff;
+  box-shadow: 0 2px 12px rgba(37,99,235,0.06), 0 1px 3px rgba(37,99,235,0.04);
+  border-color: rgba(37,99,235,0.09);
+}
+[data-theme="light"] .dash-kpi-card:hover,
+[data-theme="light"] .dash-chart-card:hover {
+  box-shadow: 0 6px 24px rgba(37,99,235,0.12), 0 2px 8px rgba(37,99,235,0.07);
+  border-color: rgba(37,99,235,0.20);
+}
+[data-theme="light"] .dash-tile {
+  background: #fff;
+  box-shadow: 0 1px 6px rgba(37,99,235,0.06);
+  border-color: rgba(37,99,235,0.10);
+}
+[data-theme="light"] .dash-tile:hover {
+  box-shadow: 0 8px 24px rgba(37,99,235,0.14), 0 0 0 1px rgba(37,99,235,0.25);
+}
+
+/* ── Dashboard cards — dark mode navy gradient surface ───────────────────────── */
+[data-theme="dark"] .dash-kpi-card,
+[data-theme="dark"] .dash-chart-card,
+[data-theme="dark"] .dash-ai-panel,
+[data-theme="dark"] .dash-recent-section {
+  background: linear-gradient(145deg, var(--surface-elevated) 0%, rgba(10,15,28,0.9) 100%);
+}
+[data-theme="dark"] .dash-tile {
+  background: linear-gradient(135deg, var(--surface-elevated) 0%, rgba(14,21,37,0.85) 100%);
+}
+
+/* ── Input panel — subtle gradient ──────────────────────────────────────────── */
+[data-theme="dark"] .input-panel {
+  background: linear-gradient(180deg, var(--surface) 0%, #090e1c 100%);
+  border-right-color: rgba(99,130,230,0.14);
+}
+
+/* ── Summary cards — sheen hover effect ─────────────────────────────────────── */
+.summary-card,
+.regional-card,
+.scenario-card,
+.detail-kpi {
+  position: relative;
+  overflow: hidden;
+}
+.summary-card::after,
+.regional-card::after,
+.scenario-card::after,
+.detail-kpi::after {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%; right: 100%; bottom: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent);
+  transition: left 0.45s var(--ease-std), right 0.45s var(--ease-std);
+  pointer-events: none;
+}
+.summary-card:hover::after,
+.regional-card:hover::after,
+.scenario-card:hover::after,
+.detail-kpi:hover::after { left: 0; right: 0; }
+[data-theme="light"] .summary-card::after,
+[data-theme="light"] .regional-card::after,
+[data-theme="light"] .detail-kpi::after {
+  background: linear-gradient(90deg, transparent, rgba(37,99,235,0.04), transparent);
+}
+
+/* ── Total summary card — glow upgrade (dark) ────────────────────────────────── */
+[data-theme="dark"] .summary-card.total-card {
+  box-shadow: var(--accent-glow), 0 4px 20px rgba(0,0,0,0.6);
+}
+
+/* ── Insight cards — slide-in hover ─────────────────────────────────────────── */
+.insight-card {
+  transition: transform var(--dur-hover) var(--ease-std), box-shadow var(--dur-hover) var(--ease-std);
+}
+.insight-card:hover {
+  transform: translateX(3px);
+  box-shadow: var(--shadow-sm);
+}
+
+/* ── Form inputs — better focus glow (light) ─────────────────────────────────── */
+[data-theme="light"] .field-group input:focus,
+[data-theme="light"] .field-group select:focus {
+  box-shadow: 0 0 0 3px rgba(37,99,235,0.14);
+}
+
+/* ── Commodity picker tiles — light mode surface ─────────────────────────────── */
+[data-theme="light"] .cpicker-tile {
+  background: #fff;
+  box-shadow: 0 1px 6px rgba(37,99,235,0.06);
+}
+
+/* ── Modal — gradient border accent ─────────────────────────────────────────── */
+[data-theme="dark"] .modal-inner {
+  background: linear-gradient(160deg, var(--surface) 0%, #0a1120 100%);
+  border-color: rgba(99,130,230,0.20);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.9), 0 0 0 1px rgba(0,210,255,0.06);
+}
+[data-theme="light"] .modal-inner {
+  box-shadow: 0 20px 60px rgba(37,99,235,0.15), 0 4px 16px rgba(37,99,235,0.08);
+  border-color: rgba(37,99,235,0.12);
+}
+
+/* ── AI chat drawer — surface upgrade ────────────────────────────────────────── */
+[data-theme="dark"] .ai-chat-drawer {
+  background: linear-gradient(160deg, var(--surface-elevated) 0%, #0a1120 100%);
+  border-color: rgba(99,130,230,0.20);
+}
+
+/* ── Prefers-reduced-motion safety ───────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .btn-primary { animation: none !important; }
+  .rtab::after { transition: none !important; }
+  [data-theme="dark"] body,
+  [data-theme="light"] body { background-attachment: scroll; }
+  .summary-card::after,
+  .regional-card::after,
+  .scenario-card::after,
+  .detail-kpi::after { transition: none !important; }
 }
