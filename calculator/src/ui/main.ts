@@ -3343,8 +3343,13 @@ function renderCADResults(r: CADAnalysisResult, autoCalculate = false): void {
 
   const recommendedCommodity = r.costInputSuggestions.recommendedCommodity as CommodityType;
   const commodityLabel: Record<string, string> = {
-    machining: 'Machining', sheet_metal: 'Sheet Metal', injection_moulding: 'Injection Moulding',
-    casting: 'Casting', forging: 'Forging', cast_and_machine: 'Cast+Machine', rubber: 'Rubber',
+    machining: 'Machining', sheet_metal: 'Sheet Metal', sheet_metal_fab: 'SM Fab',
+    injection_moulding: 'Injection Moulding', casting: 'Casting', forging: 'Forging',
+    cast_and_machine: 'Cast+Machine', rubber: 'Rubber', composites: 'Composites',
+    blow_moulding: 'Blow Moulding', thermoforming: 'Thermoforming',
+    rotational_moulding: 'Rotomoulding', wiring_harness: 'Harness',
+    extrusion: 'Extrusion', pcb_fab: 'PCB Fab', pcba: 'PCBA',
+    biw_assembly: 'BIW Assembly', painting: 'Painting', assembly: 'Assembly',
   };
 
   // Build OCCT geometry panel HTML
@@ -3370,6 +3375,7 @@ function renderCADResults(r: CADAnalysisResult, autoCalculate = false): void {
           <span class="occt-source-badge ${cadGeometrySource === 'occt' ? 'occt' : 'text'}">${cadGeometrySource === 'occt' ? 'OCCT Kernel' : 'Text-parsed'}</span>
           &nbsp;
           <span style="font-size:0.72rem;color:var(--text-muted)">${g.estimatedSurfaceAreaCm2.toFixed(0)} cm² surface</span>
+          ${r.costInputSuggestions.stage1Selection ? `&nbsp;<span style="font-size:0.68rem;background:var(--border);border-radius:3px;padding:1px 5px;color:var(--text-muted)" title="Stage 1 Haiku pre-selection">⚡ ${escHtml(r.costInputSuggestions.stage1Selection.primary)} (${Math.round((r.costInputSuggestions.stage1Selection.conf ?? 0) * 100)}%)</span>` : ''}
         </div>
       </div>
     </div>
@@ -3437,6 +3443,39 @@ function renderCADResults(r: CADAnalysisResult, autoCalculate = false): void {
       <div class="panel-title" style="margin-bottom:6px">AI Analysis</div>
       <div style="font-size:0.78rem;color:var(--text-secondary);line-height:1.55">${escHtml(r.aiExplanation)}</div>
     </div>
+
+    ${r.costInputSuggestions.dfmIssues && r.costInputSuggestions.dfmIssues.length > 0 ? `
+    <!-- DFM Issues -->
+    <div style="margin-bottom:12px">
+      <div class="panel-title" style="margin-bottom:6px">DFM Issues (${escHtml(commodityLabel[recommendedCommodity] ?? recommendedCommodity)} specialist)</div>
+      ${r.costInputSuggestions.dfmIssues.map(issue => `
+        <div class="risk-card ${issue.severity === 'Critical' ? 'High' : issue.severity}">
+          <div class="risk-feature">${escHtml(issue.severity)} · ${escHtml(issue.area)}</div>
+          <div>${escHtml(issue.description)}</div>
+          <div style="font-size:0.72rem;color:var(--text-muted);margin-top:2px">Impact: ${escHtml(issue.impact)}</div>
+          <div class="risk-suggestion">→ ${escHtml(issue.fix)}</div>
+        </div>`).join('')}
+    </div>` : ''}
+
+    ${r.costInputSuggestions.costRange ? `
+    <!-- Cost range -->
+    <div style="margin-bottom:12px">
+      <div class="panel-title" style="margin-bottom:6px">Cost Range Estimate</div>
+      <div style="display:flex;gap:8px;align-items:stretch">
+        <div style="flex:1;text-align:center;padding:8px 6px;background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.2);border-radius:6px">
+          <div style="font-size:0.66rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.03em">Optimistic</div>
+          <div style="font-weight:700;font-size:0.9rem;color:var(--green)">£${r.costInputSuggestions.costRange.low.toFixed(2)}</div>
+        </div>
+        <div style="flex:1;text-align:center;padding:8px 6px;background:rgba(79,142,247,0.08);border:1px solid rgba(79,142,247,0.25);border-radius:6px">
+          <div style="font-size:0.66rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.03em">Most Likely</div>
+          <div style="font-weight:700;font-size:0.9rem;color:var(--accent)">£${r.costInputSuggestions.costRange.mid.toFixed(2)}</div>
+        </div>
+        <div style="flex:1;text-align:center;padding:8px 6px;background:rgba(239,68,68,0.07);border:1px solid rgba(239,68,68,0.2);border-radius:6px">
+          <div style="font-size:0.66rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.03em">Conservative</div>
+          <div style="font-weight:700;font-size:0.9rem;color:var(--red)">£${r.costInputSuggestions.costRange.high.toFixed(2)}</div>
+        </div>
+      </div>
+    </div>` : ''}
 
     <!-- Suggested cost inputs -->
     <div style="margin-bottom:12px">
@@ -4300,6 +4339,152 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
         setNumericField('imm-fill', Math.max(1.5, parseFloat((wallForCycle * 0.5).toFixed(1))), 1);
         setNumericField('imm-pack', Math.max(2.0, parseFloat((wallForCycle * 0.8).toFixed(1))), 1);
         setNumericField('imm-eject', 2, 0);
+        break;
+      }
+
+      case 'blow_moulding': {
+        const bm = c.blowMoulding;
+        const bmWall = cadOCCTGeometry?.wallThickness?.meanMm;
+        setMaterial(el<HTMLSelectElement>('bm-mat'), c.materialId);
+        setNumericField('bm-part-wt', c.netWeightKg, 4);
+        if (bm) {
+          setNumericField('bm-flash-wt', bm.flashWeightKg, 4);
+          setNumericField('bm-wall', bm.wallThicknessMm ?? bmWall ?? 2.0, 1);
+          setNumericField('bm-cav', bm.cavities, 0);
+          setNumericField('bm-mould-cost', bm.mouldCostGBP, 0);
+          setNumericField('bm-mould-life', bm.mouldLife, 0);
+          setNumericField('bm-blow-t', bm.blowTimeSec, 0);
+          setNumericField('bm-open-close', bm.openCloseSec, 0);
+          // Machine prefix from subtype
+          const bmMachPfx = bm.subtype === 'ibm' ? 'bm-ibm' : bm.subtype === 'sbm' ? 'bm-sbm' : 'bm-ebm';
+          const bmMachEl = el<HTMLSelectElement>('bm-mach');
+          if (bmMachEl) {
+            const match = Array.from(bmMachEl.options).find(o => o.value.startsWith(bmMachPfx));
+            if (match) { bmMachEl.value = match.value; markAIFilled(bmMachEl); }
+          }
+        } else if (bmWall) {
+          setNumericField('bm-wall', bmWall, 1);
+          setNumericField('bm-flash-wt', c.netWeightKg * 0.12, 4);
+        }
+        // Cooling time factor: HDPE/LDPE ~3.5, PP ~3.16, PET ~3.0
+        const bmCoolMap: Record<string, number> = { 'mat-pp': 3.16, 'mat-pc': 4.5 };
+        setNumericField('bm-cool-f', bmCoolMap[c.materialId] ?? 3.5, 2);
+        setNumericField('bm-amort', 100000, 0);
+        break;
+      }
+
+      case 'thermoforming': {
+        const tf = c.thermoforming;
+        setMaterial(el<HTMLSelectElement>('tf-mat'), c.materialId);
+        setNumericField('tf-part-wt', c.netWeightKg, 4);
+        if (tf) {
+          setNumericField('tf-sheet-wt', tf.sheetWeightKg, 4);
+          setNumericField('tf-tool-cost', tf.toolCostGBP, 0);
+          setNumericField('tf-heat', tf.heatTimeSec, 0);
+          setNumericField('tf-form', tf.formTimeSec, 0);
+          setNumericField('tf-trim', tf.trimTimeSec, 0);
+          const tfMethodEl = el<HTMLSelectElement>('tf-method');
+          if (tfMethodEl && tf.method) {
+            const methodMap: Record<string, string> = { vacuum: 'vacuum', pressure: 'pressure', twin_sheet: 'twin_sheet' };
+            const mv = methodMap[tf.method];
+            if (mv && Array.from(tfMethodEl.options).some(o => o.value === mv)) {
+              tfMethodEl.value = mv; markAIFilled(tfMethodEl);
+            }
+          }
+        } else {
+          // Derive from geometry: plastic weight from OCCT
+          const tfPlastic = cadOCCTGeometry?.weights?.plasticKg ?? c.netWeightKg;
+          setNumericField('tf-sheet-wt', tfPlastic * 1.35, 4);
+        }
+        setNumericField('tf-amort', 50000, 0);
+        break;
+      }
+
+      case 'rotational_moulding': {
+        const rm = c.rotationalMoulding;
+        setMaterial(el<HTMLSelectElement>('rm-mat'), c.materialId);
+        setNumericField('rm-part-wt', c.netWeightKg, 4);
+        if (rm) {
+          setNumericField('rm-num-arms', rm.numArms, 0);
+          setNumericField('rm-parts-per-arm', rm.partsPerArm, 0);
+          setNumericField('rm-heat', rm.heatTimeSec, 0);
+          setNumericField('rm-cool', rm.coolTimeSec, 0);
+          setNumericField('rm-mould-cost', rm.mouldCostGBP, 0);
+          setNumericField('rm-mould-life', rm.mouldLife, 0);
+        } else {
+          // Rule-of-thumb defaults by part weight
+          const rmHeat = Math.max(900, Math.round(c.netWeightKg * 180 + 900));
+          setNumericField('rm-heat', rmHeat, 0);
+          setNumericField('rm-cool', Math.round(rmHeat * 0.7), 0);
+          setNumericField('rm-num-arms', 3, 0);
+          setNumericField('rm-parts-per-arm', c.netWeightKg > 5 ? 1 : 2, 0);
+        }
+        setNumericField('rm-amort', 20000, 0);
+        break;
+      }
+
+      case 'rubber': {
+        const rub = c.rubber;
+        setMaterial(el<HTMLSelectElement>('rub-mat'), c.materialId);
+        setNumericField('rub-part-wt', c.netWeightKg, 4);
+        if (rub) {
+          setNumericField('rub-flash-wt', rub.flashWeightKg, 4);
+          setNumericField('rub-cavities', rub.cavities, 0);
+          setNumericField('rub-cycle-sec', rub.cycleTimeSec, 0);
+          setNumericField('rub-mould-cost', rub.mouldCostGBP, 0);
+          setNumericField('rub-mould-life', rub.mouldLife, 0);
+          const rubProcEl = el<HTMLSelectElement>('rub-process');
+          if (rubProcEl && rub.process) {
+            if (Array.from(rubProcEl.options).some(o => o.value === rub.process)) {
+              rubProcEl.value = rub.process; markAIFilled(rubProcEl);
+            }
+          }
+        } else {
+          setNumericField('rub-flash-wt', c.netWeightKg * 0.08, 4);
+          setNumericField('rub-cycle-sec', 180, 0);
+          setNumericField('rub-cavities', 2, 0);
+        }
+        setNumericField('rub-amort', 50000, 0);
+        break;
+      }
+
+      case 'composites': {
+        const comp = c.composites;
+        setNumericField('comp-part-wt', c.netWeightKg, 4);
+        const compSA = cadOCCTGeometry?.surfaceArea?.cm2 ?? null;
+        if (comp) {
+          setNumericField('comp-fibre-frac', comp.fibreFraction, 2);
+          setNumericField('comp-waste-frac', comp.wasteFraction, 2);
+          setNumericField('comp-area', comp.areaCm2 ?? compSA ?? 0, 0);
+          setNumericField('comp-plies', comp.plies, 0);
+          setNumericField('comp-tool-cost', comp.toolCostGBP, 0);
+          setNumericField('comp-tool-life', comp.toolLife, 0);
+          setNumericField('comp-cure-time', comp.cureTimeSec, 0);
+          const compProcEl = el<HTMLSelectElement>('comp-process');
+          if (compProcEl && comp.process) {
+            const procMap: Record<string, string> = {
+              hand_layup: 'hand_layup', prepreg_autoclave: 'prepreg_autoclave',
+              rtm: 'rtm', infusion: 'infusion', smc: 'smc', wet_layup: 'wet_layup',
+            };
+            const pv = procMap[comp.process];
+            if (pv && Array.from(compProcEl.options).some(o => o.value === pv)) {
+              compProcEl.value = pv; markAIFilled(compProcEl);
+            }
+          }
+        } else if (compSA) {
+          setNumericField('comp-area', compSA, 0);
+          setNumericField('comp-plies', 4, 0);
+          setNumericField('comp-fibre-frac', 0.45, 2);
+          setNumericField('comp-waste-frac', 0.20, 2);
+        }
+        setNumericField('comp-amort', 10000, 0);
+        break;
+      }
+
+      case 'wiring_harness': {
+        // Wiring harness has no geometry-driven sub-object; populate sensible defaults
+        setNumericField('harn-asm-time', c.estimatedCycleTimeHr * 3600, 0);
+        setNumericField('harn-amort', 10000, 0);
         break;
       }
     }

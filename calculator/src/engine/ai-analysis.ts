@@ -109,6 +109,33 @@ export interface SuggestedOperation {
   labourEfficiency: number;
 }
 
+/** Per-field AI confidence score 0–1. Key = form field ID (e.g. "bm-wall", "imm-cav"). */
+export type FieldConfidences = Record<string, number>;
+
+/** Stage 1 fast commodity pre-selection (Haiku model output). */
+export interface Stage1Selection {
+  primary: string;
+  conf: number;
+  alt: Array<{ type: string; conf: number }>;
+}
+
+/** Cost range low/mid/high for a recommended process. */
+export interface CostRange {
+  low: number;
+  mid: number;
+  high: number;
+  currency: string;
+}
+
+/** DFM (Design for Manufacture) issue raised by the specialist AI. */
+export interface DFMIssue {
+  severity: 'Critical' | 'High' | 'Medium' | 'Low';
+  area: string;
+  description: string;
+  impact: string;
+  fix: string;
+}
+
 export interface CADAnalysisResult {
   partName: string;
   geometry: CADGeometry;
@@ -161,6 +188,59 @@ export interface CADAnalysisResult {
       mouldLife: number;
       runnerWeightKg: number;
     };
+    blowMoulding?: {
+      /** 'ebm' | 'ibm' | 'sbm' */
+      subtype: string;
+      wallThicknessMm: number;
+      flashWeightKg: number;
+      cavities: number;
+      mouldCostGBP: number;
+      mouldLife: number;
+      blowTimeSec: number;
+      openCloseSec: number;
+    };
+    thermoforming?: {
+      /** 'vacuum' | 'pressure' | 'twin_sheet' */
+      method: string;
+      sheetWeightKg: number;
+      partWeightKg: number;
+      toolCostGBP: number;
+      heatTimeSec: number;
+      formTimeSec: number;
+      trimTimeSec: number;
+    };
+    rotationalMoulding?: {
+      numArms: number;
+      partsPerArm: number;
+      heatTimeSec: number;
+      coolTimeSec: number;
+      mouldCostGBP: number;
+      mouldLife: number;
+    };
+    rubber?: {
+      /** 'compression' | 'transfer' | 'injection' | 'extrusion' | 'calendering' | 'die_cut' */
+      process: string;
+      flashWeightKg: number;
+      cavities: number;
+      cycleTimeSec: number;
+      mouldCostGBP: number;
+      mouldLife: number;
+    };
+    composites?: {
+      /** 'hand_layup' | 'prepreg_autoclave' | 'rtm' | 'infusion' | 'smc' | 'wet_layup' */
+      process: string;
+      fibreFraction: number;
+      wasteFraction: number;
+      areaCm2: number;
+      plies: number;
+      toolCostGBP: number;
+      toolLife: number;
+      cureTimeSec: number;
+    };
+    fieldConfidences?: FieldConfidences;
+    dfmIssues?: DFMIssue[];
+    costRange?: CostRange;
+    stage1Selection?: Stage1Selection;
   };
   aiExplanation: string;
   confidenceLevel: 'High' | 'Medium' | 'Low';
