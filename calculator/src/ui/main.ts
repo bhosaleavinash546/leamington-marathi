@@ -3794,9 +3794,101 @@ const PCB_DEMO_ADAS: PCBImageAnalysis = {
   ],
 };
 
+// ─── Demo 3: Bosch-type 77 GHz Automotive Radar ECU ──────────────────────────
+const PCB_DEMO_BOSCH_RADAR: PCBImageAnalysis = {
+  partName: 'Bosch-type LRR5 77 GHz Radar ECU — Adaptive Cruise Control (DEMO)',
+  boardSpec: {
+    estimatedLayers: 6, widthMm: 100, heightMm: 70,
+    surfaceFinish: 'enig', solderMaskColour: 'green', silkscreenSides: 1,
+    throughVias: 48, blindVias: 0, buriedVias: 0, microVias: 0,
+    bgaDetected: true, minTraceSpaceMm: 0.10, technologyType: 'RF_MICRO',
+    hdiStructure: 'none', impedanceControlRequired: true, copperWeightOz: 1,
+    qualityGrade: 'auto_grade1', panelUtilisation: 72,
+  },
+  bom: [
+    { refDes: 'U1', componentType: 'ic_bga', description: 'TI AWR1843AOP 77 GHz FMCW Radar SoC with Antenna-on-Package', pkg: 'BGA-169', value: 'AWR1843AOP', voltage: '1.0/1.8/3.3V', qty: 1, unitPriceGBP: 19.50, moq: 1, automotive: true, highCost: true, partNumber: 'AWR1843AOPMOOD', lineConf: 0.93, ocrExtracted: true },
+    { refDes: 'U2', componentType: 'ic_tqfp', description: 'Infineon AURIX TC234L Safety MCU ASIL-B LQFP-144', pkg: 'LQFP-144', value: 'TC234L', voltage: '3.3/5V', qty: 1, unitPriceGBP: 26.00, moq: 1, automotive: true, highCost: true, partNumber: 'SAK-TC234L-32F200N DC', lineConf: 0.90, ocrExtracted: true },
+    { refDes: 'U3,U4', componentType: 'ic_soic', description: 'NXP TJA1044 High Speed CAN Transceiver AEC-Q100', pkg: 'SOT-23-5', value: 'TJA1044', voltage: '3.3/5V', qty: 2, unitPriceGBP: 1.20, moq: 10, automotive: true, highCost: false, partNumber: 'TJA1044GT/3', lineConf: 0.88, ocrExtracted: true },
+    { refDes: 'U5', componentType: 'ic_qfn', description: 'TI TPS62150 2.1 MHz 1A Synchronous Buck DC-DC', pkg: 'WSON-10', value: 'TPS62150', voltage: '3–17V', qty: 1, unitPriceGBP: 1.90, moq: 5, automotive: false, highCost: false, partNumber: 'TPS62150DSDJ', lineConf: 0.85 },
+    { refDes: 'U6,U7', componentType: 'ic_soic', description: 'TI TLV75833 LDO 3.3V 500mA SOT-23-5', pkg: 'SOT-23-5', value: 'TLV75833', voltage: '2.2–5.5V', qty: 2, unitPriceGBP: 0.48, moq: 25, automotive: false, highCost: false, partNumber: 'TLV75833PDRVR', lineConf: 0.80 },
+    { refDes: 'U8', componentType: 'ic_soic', description: 'NXP PCA9517D I2C Level Shifter/EEPROM Buffer', pkg: 'SOT-23-8', value: 'PCA9517D', voltage: '2.3–5.5V', qty: 1, unitPriceGBP: 0.70, moq: 25, automotive: false, highCost: false, partNumber: 'PCA9517DP', lineConf: 0.75 },
+    { refDes: 'FL1,FL2', componentType: 'passive_0805', description: 'Murata 77 GHz Band-Pass Filter for FMCW Radar', pkg: 'SMD 1.0×0.5mm', value: '77GHz BPF', voltage: '—', qty: 2, unitPriceGBP: 4.80, moq: 5, automotive: true, highCost: true, partNumber: 'BPF77A15CJP00', lineConf: 0.82 },
+    { refDes: 'J1', componentType: 'connector_smt', description: 'FAKRA SMB Automotive RF Receptacle Z-Code (Misc)', pkg: 'THT', value: 'FAKRA-Z', voltage: '—', qty: 1, unitPriceGBP: 2.20, moq: 5, automotive: true, highCost: false },
+    { refDes: 'J2', componentType: 'through_hole', description: 'TE 776165-1 Superseal 12-pin Automotive Sealed Connector', pkg: 'THT PCB mount', value: '12-pin Superseal', voltage: '—', qty: 1, unitPriceGBP: 3.60, moq: 5, automotive: true, highCost: false },
+    { refDes: 'J3,J4', componentType: 'connector_smt', description: 'SMA Edge-mount RF Connector (debug / antenna cal.)', pkg: 'SMT edge-mount', value: 'SMA-F edge', voltage: '—', qty: 2, unitPriceGBP: 0.95, moq: 10, automotive: false, highCost: false },
+    { refDes: 'X1', componentType: 'crystal_osc', description: 'Epson TG-5032CE 25 MHz TCXO ±0.5 ppm AEC-Q200', pkg: 'SMD 5.0×3.2mm', value: '25.000MHz', voltage: '3.3V', qty: 1, unitPriceGBP: 3.40, moq: 5, automotive: true, highCost: false, partNumber: 'TG5032CEN25MHZAF', lineConf: 0.78 },
+    { refDes: 'L1–L6', componentType: 'passive_0402', description: 'RF Choke 100nH ±5% AEC-Q200 for Power Line Decoupling', pkg: '0402', value: '100nH', voltage: '—', qty: 6, unitPriceGBP: 0.38, moq: 50, automotive: true, highCost: false },
+    { refDes: 'D1–D4', componentType: 'fuse_tvs', description: 'NXP PRTR5V0U2X TVS ESD Protection Array AEC-Q101', pkg: 'SOT-363', value: '5V/400W', voltage: '5V', qty: 4, unitPriceGBP: 0.58, moq: 25, automotive: true, highCost: false, partNumber: 'PRTR5V0U2X', lineConf: 0.86 },
+    { refDes: 'C1–C60', componentType: 'passive_0402', description: 'MLCC 100nF/1µF X7R AEC-Q200 Decoupling', pkg: '0402', value: '100nF/1µF', voltage: '10V', qty: 60, unitPriceGBP: 0.028, moq: 100, automotive: true, highCost: false },
+    { refDes: 'R1–R30', componentType: 'passive_0402', description: 'Thick Film Resistor AEC-Q200 Signal & Termination', pkg: '0402', value: '49.9Ω–100kΩ', voltage: '—', qty: 30, unitPriceGBP: 0.012, moq: 100, automotive: true, highCost: false },
+    { refDes: 'Y1', componentType: 'crystal_osc', description: 'NDK NX3225SA 40 MHz Crystal AEC-Q200', pkg: 'SMD 3.2×2.5mm', value: '40.000MHz', voltage: '—', qty: 1, unitPriceGBP: 0.75, moq: 25, automotive: true, highCost: false, partNumber: 'NX3225SA-40M', lineConf: 0.74 },
+  ],
+  assembly: { smtPlacements: 109, throughHoleJoints: 20, manualJoints: 0, bgaCount: 1, complexity: 'high', reflowSides: 1, aoiRequired: true, ictTimeSec: 180 },
+  costEstimates: { pcbFabGBP: { min: 16.00, mid: 24.00, max: 38.00 }, totalBOMCostGBP: 79.44, smtAssemblyCostGBP: 4.50 },
+  aiInsights: [
+    'AWR1843AOP integrates 77 GHz antenna-on-package eliminating off-chip antenna area — validates board to ~65×55mm minimum; RF keep-out zone of ≥8mm from FAKRA J1 connector is critical to prevent coupling back into receive chain',
+    'Rogers 4350B (εr=3.66, tanδ=0.0037) is the industry-standard 77 GHz substrate; validate substrate thickness 0.254mm with Bosch antenna resonance specs — Taconic TLX-9 is ≈15% cheaper alternative if Dk/Df meets tolerance budget',
+    'AURIX TC234L targets ASIL-B; for AEB primary path (ASIL-D mandate from ISO 26262), upgrade path is TC297 dual-core lockstep (~£42 BOM delta) or external safety watchdog FS8500 (~£3.20) — evaluate against functional safety concept',
+    'CAN transceivers U3/U4 (TJA1044) support Classic CAN 1Mbps; for AUTOSAR Adaptive platform readiness and higher throughput, evaluate TJA1462 (CAN-FD 5Mbps, +£0.90/unit) — no PCB footprint change required as pinout compatible',
+    'Rogers substrate RF layer count: 6-layer stackup with Rogers on L1/L6 and FR4 on L2–L5 (hybrid) reduces Rogers material cost by ~60% vs all-Rogers — validate with TI AWR1843 layout guide for signal integrity on digital-to-RF boundary vias',
+  ],
+  dfmIssues: [
+    'Rogers 4350B hybrid lamination requires controlled-atmosphere ENIG only — HASL thermal shock degrades εr uniformity; verify PCB fab has Rogers-qualified ENIG line (Taiyo/MacDermid bath preferred)',
+    'AWR1843 BGA-169 at 0.8mm pitch requires registration tolerance ±0.05mm for 77 GHz AoP alignment — any misalignment >0.1mm degrades antenna gain by 1.5–3 dB; mandate X-ray inspection 100% on first article',
+    'FAKRA J1 and Superseal J2 are THT connectors on Rogers substrate — selective wave solder or hand solder required; Rogers max wave solder dwell: 265°C/5s — exceed this and Dk shifts ±0.2%',
+    'RF filter FL1/FL2 body height 0.5mm with 0.3mm clearance to adjacent 0402 — AOI shadow zone; validate with supplier\'s AOI field-of-view spec and confirm IR backlight capability for Rogers substrate',
+    'AURIX LQFP-144 boundary scan: ICT bed-of-nails pitch 2.54mm — verify test point access on bottom copper pour; TC234L does not expose all internal nets on JTAG boundary scan chain (subset only)',
+  ],
+  highCostComponents: [
+    'U2 AURIX TC234L — £26.00 (32.7% of BOM): at ASIL-D upgrade to TC297 adds £42/unit; evaluate functional safety architecture to confirm ASIL-B ceiling before specifying higher-grade MCU',
+    'U1 AWR1843AOP — £19.50 (24.5%): TI sole-source for AoP variant; BGT60TR13C (Infineon) is architecturally different (external antenna) requiring PCB re-spin — qualifying alt adds 18–24 months',
+    'FL1,FL2 Murata 77 GHz BPF — £9.60 combined (12.1%): Murata sole-source at 16–20 week lead time; TDK HHM15A4 second-source qualification recommended before SOP',
+  ],
+  optimisationSuggestions: [
+    'Downgrade radar SoC to AWR1642 (2TX/4RX vs 3TX/4RX) for programs not requiring Doppler elevation: saves £8.30/board; range performance reduced from 250m to 180m — sufficient for front-facing ACC/AEB below 130km/h',
+    'Consolidate D1–D4 TVS arrays: replace 4× PRTR5V0U2X with 2× PRTR5V0U4X (quad-channel) — same footprint, saves 2 parts and £0.74/board',
+    'Rogers hybrid layer optimisation: use Rogers 4350B only on L1/L6 with FR4-370HR inner layers — reduces Rogers laminate cost by ~40% (£6–9/board saving depending on fab); validate with AWR1843AOP reference stackup',
+    'Evaluate Infineon TC224 (single-core, ASIL-B) as AURIX alternative if ASIL-D not required: £14.00 vs £26.00, saves £12/board; re-evaluate after ISO 26262 functional safety concept is locked',
+    'Batch C1–C60 MLCC from Yageo automotive CC series (CC0402KRX7R8BB104): at 5000 pcs programme volume, negotiate direct-from-factory at £0.018/unit vs £0.028 distributor — saves £0.60/board (£3,000 on 5k run)',
+  ],
+  confidenceLevel: 'High',
+  analysisLimitations: [
+    '77 GHz AoP antenna radiation pattern verification requires near-field antenna range measurement (Satimo SG 24 or equivalent) — outside scope of this PCB cost tool',
+    'Rogers 4350B substrate cost varies ±20% with quarterly raw material index; pricing reflects Jan 2026 spot rates from Isola/Rogers Corp',
+    'FMCW radar interference immunity (ITU-R M.2057), UNECE R152 Type Approval, and CISPR 25 Class 5 EMC pre-compliance testing not modelled in this should-cost estimate',
+    'BOM pricing at 100-unit distributor break; programme volume (5000+/yr) pricing under NDA with TI/Infineon direct typically 20–35% lower for ICs',
+  ],
+  stage1Classification: { domain: 'rf_microwave', conf: 0.96, hints: ['77 GHz FMCW radar SoC', 'Rogers 4350B substrate', 'antenna-on-package BGA', 'impedance-controlled layout', 'AURIX safety MCU', 'FAKRA RF connector'] },
+  ocrExtraction: { icMarkings: ['AWR1843AOPMOOD', 'SAK-TC234L-32F200N', 'TJA1044GT/3', 'TPS62150DSDJ', 'PRTR5V0U2X'], extractionQuality: 'Good' },
+  complexityScore: { score: 78, ipcClass: 3, label: 'Very Complex', factors: { layers: 10, viaDensity: 8, bgaScore: 10, hdiScore: 0, traceScore: 15 } },
+  _volumeCurves: {
+    cn: demoVolumeCurve(107.44, 22.00, 4.50, 1.50, 79.44),
+    gb: demoVolumeCurve(144.44, 45.00, 20.00, 0.00, 79.44),
+  },
+  _selectedCountry: 'cn',
+  _selectedCountryBreakdown: makeDemoCountry('cn','China (Shenzhen / Suzhou)','🇨🇳',22.00,4.50,1.50,79.44,3,0.83,['ISO9001','IATF16949','UL','RoHS','IPC-6012'],'High-volume consumer, cost-optimised; Rogers 4350B capable fabs: Suntak, Kingboard',{pcbBase:1.20,pcbLayers:3.60,pcbSurface:14.50,pcbVias:1.50,pcbHDI:0.80,pcbSetup:0.40,smtAssembly:3.20,thAssembly:0.55,aoi:0.75,logistics:1.00,importDuty:0.50}),
+  _countryComparison: [
+    makeDemoCountry('cn','China (Shenzhen / Suzhou)','🇨🇳',22.00,4.50,1.50,79.44,3,0.83,['ISO9001','IATF16949','UL','RoHS','IPC-6012'],'High-volume; Rogers 4350B capable fabs (Suntak, Kingboard)',{pcbBase:1.20,pcbLayers:3.60,pcbSurface:14.50,pcbVias:1.50,pcbHDI:0.80,pcbSetup:0.40,smtAssembly:3.20,thAssembly:0.55,aoi:0.75,logistics:1.00,importDuty:0.50}),
+    makeDemoCountry('vn','Vietnam (Ho Chi Minh City / Hanoi)','🇻🇳',24.50,4.30,1.80,79.44,3,0.80,['ISO9001','UL','RoHS'],'Emerging RF PCBA; limited Rogers 4350B supplier base',{pcbBase:1.35,pcbLayers:4.00,pcbSurface:16.20,pcbVias:1.65,pcbHDI:0.90,pcbSetup:0.40,smtAssembly:3.00,thAssembly:0.50,aoi:0.80,logistics:1.20,importDuty:0.60}),
+    makeDemoCountry('in','India (Pune / Bengaluru / Chennai)','🇮🇳',26.00,5.80,2.10,79.44,4,0.78,['ISO9001','UL','RoHS'],'ISRO space heritage; some RF PCBA capability in Bengaluru',{pcbBase:1.50,pcbLayers:4.40,pcbSurface:17.10,pcbVias:1.75,pcbHDI:0.95,pcbSetup:0.30,smtAssembly:4.20,thAssembly:0.60,aoi:1.00,logistics:1.40,importDuty:0.70}),
+    makeDemoCountry('th','Thailand (Bangkok / Ayutthaya)','🇹🇭',26.50,6.20,2.20,79.44,3,0.85,['ISO9001','UL','RoHS','IATF16949'],'Automotive bias; Rogers fab capability limited to Bangkok tier',{pcbBase:1.60,pcbLayers:4.55,pcbSurface:17.30,pcbVias:1.80,pcbHDI:1.00,pcbSetup:0.25,smtAssembly:4.50,thAssembly:0.65,aoi:1.05,logistics:1.50,importDuty:0.70}),
+    makeDemoCountry('my','Malaysia (Penang / Kuala Lumpur)','🇲🇾',25.00,6.50,2.10,79.44,3,0.86,['ISO9001','IATF16949','UL','RoHS'],'Keysight/Motorola heritage; strong RF/microwave process capability',{pcbBase:1.45,pcbLayers:4.25,pcbSurface:16.50,pcbVias:1.70,pcbHDI:0.90,pcbSetup:0.20,smtAssembly:4.70,thAssembly:0.68,aoi:1.12,logistics:1.40,importDuty:0.70}),
+    makeDemoCountry('tw','Taiwan (Hsinchu / Taipei)','🇹🇼',33.00,9.80,2.30,79.44,2,0.93,['ISO9001','IATF16949','IPC-6012 Class 3'],'World-class RF; TTM, Tripod, Unitech all Rogers 4350B certified',{pcbBase:2.00,pcbLayers:6.10,pcbSurface:21.50,pcbVias:2.20,pcbHDI:1.20,pcbSetup:0.00,smtAssembly:7.10,thAssembly:0.80,aoi:1.90,logistics:1.60,importDuty:0.70}),
+    makeDemoCountry('kr','South Korea (Suwon / Incheon)','🇰🇷',37.00,11.50,1.50,79.44,2,0.93,['ISO9001','IATF16949','IPC-6012 Class 3','AEC-Q100'],'Samsung EM/LG Innotek RF PCB; strong mmWave capability',{pcbBase:2.30,pcbLayers:7.00,pcbSurface:24.00,pcbVias:2.50,pcbHDI:1.20,pcbSetup:0.00,smtAssembly:8.30,thAssembly:0.90,aoi:2.30,logistics:1.00,importDuty:0.50}),
+    makeDemoCountry('mx','Mexico (Juárez / Monterrey / Guadalajara)','🇲🇽',30.00,7.80,2.50,79.44,3,0.84,['ISO9001','IATF16949','UL'],'Jabil/Foxconn sites with Rogers capability; USMCA duty-free for US programs',{pcbBase:1.80,pcbLayers:5.40,pcbSurface:19.50,pcbVias:2.05,pcbHDI:1.10,pcbSetup:0.15,smtAssembly:5.65,thAssembly:0.70,aoi:1.45,logistics:1.70,importDuty:0.80}),
+    makeDemoCountry('cz','Czech Republic (Brno / Ostrava)','🇨🇿',38.00,10.50,0.40,79.44,2,0.91,['ISO9001','IATF16949','IPC-6012 Class 3','CE'],'EU automotive (Bosch/Continental Tier-1 supply chain); EU import duty zero',{pcbBase:2.40,pcbLayers:7.20,pcbSurface:24.80,pcbVias:2.60,pcbHDI:1.00,pcbSetup:0.00,smtAssembly:7.60,thAssembly:0.84,aoi:2.06,logistics:0.40,importDuty:0.00}),
+    makeDemoCountry('pl','Poland (Wrocław / Kraków)','🇵🇱',35.00,9.80,0.38,79.44,2,0.90,['ISO9001','IATF16949','IPC-6012 Class 3','CE'],'Cost-competitive EU nearshore; Wurth Elektronik / Eltek Rogers capability',{pcbBase:2.15,pcbLayers:6.55,pcbSurface:22.70,pcbVias:2.40,pcbHDI:1.00,pcbSetup:0.20,smtAssembly:7.10,thAssembly:0.78,aoi:1.92,logistics:0.38,importDuty:0.00}),
+    makeDemoCountry('de','Germany (Munich / Stuttgart / Frankfurt)','🇩🇪',65.00,26.00,0.25,79.44,2,0.97,['ISO9001','IATF16949','AS9100','IPC-6012 Class 3','AEC-Q100','ECSS'],'Bosch/Continental home-base; AT&S Rogers capability; fastest automotive NPI',{pcbBase:4.20,pcbLayers:13.00,pcbSurface:44.00,pcbVias:2.30,pcbHDI:1.50,pcbSetup:0.00,smtAssembly:18.85,thAssembly:1.58,aoi:5.57,logistics:0.25,importDuty:0.00}),
+    makeDemoCountry('gb','United Kingdom (Birmingham / Coventry / Edinburgh)','🇬🇧',45.00,20.00,0.00,79.44,2,0.96,['ISO9001','IATF16949','AS9100','IPC-6012 Class 3','UKCA','Def Stan'],'Proteus/Chemring Rogers boards; UK domestic with zero import risk and Def Stan support',{pcbBase:2.90,pcbLayers:8.80,pcbSurface:30.20,pcbVias:1.90,pcbHDI:1.20,pcbSetup:0.00,smtAssembly:14.50,thAssembly:1.20,aoi:4.30,logistics:0.00,importDuty:0.00}),
+    makeDemoCountry('us','USA (San Jose / Austin / Milpitas)','🇺🇸',62.00,28.00,3.50,79.44,2,0.96,['ISO9001','IATF16949','AS9100','IPC-6012 Class 3','ITAR'],'TTM Rogers mmWave; Sanmina RF; ITAR-controlled variants of radar electronics',{pcbBase:4.00,pcbLayers:12.20,pcbSurface:42.10,pcbVias:2.20,pcbHDI:1.50,pcbSetup:0.00,smtAssembly:20.25,thAssembly:1.68,aoi:6.07,logistics:2.15,importDuty:1.35}),
+    makeDemoCountry('jp','Japan (Osaka / Nagoya / Tokyo)','🇯🇵',95.00,32.00,1.60,79.44,3,0.99,['ISO9001','IATF16949','AS9100','JPCA','IPC-6012 Class 3'],'Meiko/Toppan Rogers ultra-precision; Denso/Toyota heritage; world-leading antenna tolerance',{pcbBase:6.20,pcbLayers:19.10,pcbSurface:65.50,pcbVias:3.00,pcbHDI:1.20,pcbSetup:0.00,smtAssembly:23.15,thAssembly:1.93,aoi:6.92,logistics:1.00,importDuty:0.60}),
+  ],
+};
+
 function buildPCBDemoSection(): string {
   const ecuCN = PCB_DEMO_ECU._selectedCountryBreakdown!;
   const adasCN = PCB_DEMO_ADAS._selectedCountryBreakdown!;
+  const radarCN = PCB_DEMO_BOSCH_RADAR._selectedCountryBreakdown!;
   return `
     <div style="margin-top:16px">
       <div style="font-size:0.75rem;font-weight:700;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:10px;display:flex;align-items:center;gap:8px">
@@ -3804,7 +3896,7 @@ function buildPCBDemoSection(): string {
         <span>🚗 Demo: Real Automotive PCB Examples</span>
         <span style="flex:1;height:1px;background:var(--border)"></span>
       </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
         <div style="padding:12px;border:1px solid rgba(79,142,247,0.3);border-radius:10px;background:rgba(79,142,247,0.04);cursor:pointer;transition:all 0.15s"
              onmouseenter="this.style.background='rgba(79,142,247,0.09)'" onmouseleave="this.style.background='rgba(79,142,247,0.04)'"
              onclick="window.__loadPCBDemo('ecu')">
@@ -3841,6 +3933,25 @@ function buildPCBDemoSection(): string {
           </div>
           <div style="margin-top:8px;text-align:center">
             <span style="font-size:0.68rem;color:#7c3aed;font-weight:600">▶ Try this demo</span>
+          </div>
+        </div>
+        <div style="padding:12px;border:1px solid rgba(239,68,68,0.3);border-radius:10px;background:rgba(239,68,68,0.04);cursor:pointer;transition:all 0.15s"
+             onmouseenter="this.style.background='rgba(239,68,68,0.09)'" onmouseleave="this.style.background='rgba(239,68,68,0.04)'"
+             onclick="window.__loadPCBDemo('bosch_radar')">
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
+            <span style="font-size:1.1rem">📡</span>
+            <span style="font-weight:700;font-size:0.78rem;color:var(--text-primary)">77 GHz Radar ECU</span>
+            <span style="margin-left:auto;font-size:0.62rem;background:rgba(34,197,94,0.15);color:#16a34a;padding:1px 6px;border-radius:4px;font-weight:600">DEMO</span>
+          </div>
+          <div style="font-size:0.68rem;color:var(--text-muted);margin-bottom:8px">Bosch LRR5-type ACC/AEB Radar — 6-layer 100×70mm Rogers 4350B, AWR1843AOP + AURIX TC234</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;font-size:0.70rem">
+            <div><span style="color:var(--text-muted)">BOM lines:</span> <strong>16</strong></div>
+            <div><span style="color:var(--text-muted)">BOM cost:</span> <strong>£79.44</strong></div>
+            <div><span style="color:var(--text-muted)">China total:</span> <strong style="color:var(--accent)">£${radarCN.totalPerBoard.toFixed(2)}</strong></div>
+            <div><span style="color:var(--text-muted)">UK total:</span> <strong>£${(PCB_DEMO_BOSCH_RADAR._countryComparison?.find(c=>c.countryId==='gb')?.totalPerBoard??0).toFixed(2)}</strong></div>
+          </div>
+          <div style="margin-top:8px;text-align:center">
+            <span style="font-size:0.68rem;color:#dc2626;font-weight:600">▶ Try this demo</span>
           </div>
         </div>
       </div>
@@ -4206,7 +4317,7 @@ function injectPCBDemoCards(): void {
 }
 
 (window as unknown as Record<string, unknown>).__loadPCBDemo = function(id: string): void {
-  pcbImageResult = id === 'adas' ? PCB_DEMO_ADAS : PCB_DEMO_ECU;
+  pcbImageResult = id === 'adas' ? PCB_DEMO_ADAS : id === 'bosch_radar' ? PCB_DEMO_BOSCH_RADAR : PCB_DEMO_ECU;
   injectPCBImagePanel();
   el('pcb-img-results')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 };
