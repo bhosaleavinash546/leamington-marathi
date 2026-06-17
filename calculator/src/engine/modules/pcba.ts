@@ -6,6 +6,12 @@ export type ComponentType =
   | 'passive_0402'
   | 'passive_0603'
   | 'passive_0805'
+  | 'crystal_osc'
+  | 'power_module'
+  | 'transformer'
+  | 'led'
+  | 'relay_switch'
+  | 'fuse_tvs'
   | 'ic_soic'
   | 'ic_qfn'
   | 'ic_bga'
@@ -22,6 +28,12 @@ export const CPH_BY_TYPE: Record<ComponentType, number> = {
   passive_0402: 25000,
   passive_0603: 20000,
   passive_0805: 18000,
+  crystal_osc: 8000,
+  power_module: 1500,
+  transformer: 2000,
+  led: 15000,
+  relay_switch: 3000,
+  fuse_tvs: 20000,
   ic_soic: 8000,
   ic_qfn: 5000,
   ic_bga: 2000,
@@ -125,7 +137,7 @@ export function getPCBAInputSchema(): Record<string, string> {
   return {
     pcbCostPerBoard: 'number — bare PCB cost per board £',
     'bom[].refDes': 'string — reference designator',
-    'bom[].componentType': 'passive_0402 | passive_0603 | passive_0805 | ic_soic | ic_qfn | ic_bga | ic_tqfp | connector_smt | through_hole | manual_solder',
+    'bom[].componentType': 'passive_0402 | passive_0603 | passive_0805 | crystal_osc | power_module | transformer | led | relay_switch | fuse_tvs | ic_soic | ic_qfn | ic_bga | ic_tqfp | connector_smt | through_hole | manual_solder',
     'bom[].qty': 'number — quantity per board',
     'bom[].unitPriceGBP': 'number — unit price £ at volume',
     smtMachineId: 'string — SMT pick-and-place machine ID',
