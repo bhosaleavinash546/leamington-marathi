@@ -3569,6 +3569,238 @@ const FACE_COLOURS: Record<string, string> = {
 
 // ─── PCB Image Analysis ───────────────────────────────────────────────────────
 
+// ─── PCB Demo Mode ────────────────────────────────────────────────────────────
+// Pre-computed results for two real-world automotive PCB examples.
+// All country costs were computed live from pcb-country-rates.ts engine.
+
+function makeDemoCountry(
+  id: string, name: string, flag: string,
+  fab: number, assy: number, log: number, bom: number,
+  weeks: number, qi: number, certs: string[], bestFor: string,
+  bd: { pcbBase:number; pcbLayers:number; pcbSurface:number; pcbVias:number; pcbHDI:number; pcbSetup:number; smtAssembly:number; thAssembly:number; aoi:number; logistics:number; importDuty:number }
+): PCBCountryBreakdown {
+  return { countryId: id, countryName: name, flag, pcbFabPerBoard: fab, assemblyPerBoard: assy, logisticsPerBoard: log, bomCostPerBoard: bom, totalPerBoard: +(fab+assy+log+bom).toFixed(2), leadTimeWeeks: weeks, qualityIndex: qi, certifications: certs, bestFor, breakdown: bd };
+}
+
+const PCB_DEMO_ECU: PCBImageAnalysis = {
+  partName: 'Automotive ECU — Engine Control Unit (DEMO)',
+  boardSpec: {
+    estimatedLayers: 6, widthMm: 150, heightMm: 100,
+    surfaceFinish: 'enig', solderMaskColour: 'green', silkscreenSides: 2,
+    throughVias: 280, blindVias: 45, buriedVias: 0, microVias: 12,
+    bgaDetected: true, minTraceSpaceMm: 0.10, technologyType: 'HDI_RIGID',
+    hdiStructure: '1+N+1', impedanceControlRequired: true, copperWeightOz: 1,
+    qualityGrade: 'auto_grade2', panelUtilisation: 72,
+  },
+  bom: [
+    { refDes: 'U1', componentType: 'ic_bga', description: 'ARM Cortex-M7 MCU 550MHz, 1MB Flash', pkg: 'BGA-201', value: 'STM32H735IGK6', voltage: '3.3V', qty: 1, unitPriceGBP: 6.20, moq: 1, automotive: true, highCost: true, partNumber: 'STM32H735IGK6', lineConf: 0.93, ocrExtracted: true },
+    { refDes: 'U2', componentType: 'ic_soic', description: 'CAN/LIN System Basis Chip', pkg: 'SOIC-14', value: 'NXP SJA1124', voltage: '5V/3.3V', qty: 2, unitPriceGBP: 3.80, moq: 5, automotive: true, highCost: false, partNumber: 'SJA1124', lineConf: 0.87, ocrExtracted: true },
+    { refDes: 'U3', componentType: 'ic_qfn', description: 'Multi-channel Automotive PMIC', pkg: 'QFN-40', value: 'TPS65942A1', voltage: '6–40V in', qty: 1, unitPriceGBP: 4.20, moq: 1, automotive: true, highCost: true, partNumber: 'TPS65942A1', lineConf: 0.90, ocrExtracted: true },
+    { refDes: 'U4', componentType: 'ic_soic', description: 'SPI NOR Flash 128Mb AEC-Q100', pkg: 'SOIC-8', value: 'S25FL128SAGBHIA10', voltage: '3.3V', qty: 1, unitPriceGBP: 1.80, moq: 10, automotive: true, highCost: false, partNumber: 'S25FL128SAGBHIA10', lineConf: 0.85, ocrExtracted: true },
+    { refDes: 'U5,U6', componentType: 'ic_soic', description: '3-phase Gate Driver 100V', pkg: 'SOIC-28', value: 'DRV8323RS', voltage: '6–60V', qty: 2, unitPriceGBP: 2.40, moq: 5, automotive: true, highCost: false, partNumber: 'DRV8323RS', lineConf: 0.82, ocrExtracted: true },
+    { refDes: 'U7,U8,U9', componentType: 'ic_soic', description: '4A LDO Regulator AEC-Q100 Grd2', pkg: 'D-PAK', value: 'LP2951ACMX/NOPB', voltage: '30V max', qty: 3, unitPriceGBP: 1.20, moq: 10, automotive: true, highCost: false },
+    { refDes: 'J1', componentType: 'connector_smt', description: '48-way Automotive ECU Edge Connector', pkg: 'SMT Blade', value: 'TE 2-1379000-4', voltage: '—', qty: 1, unitPriceGBP: 2.80, moq: 1, automotive: true, highCost: false },
+    { refDes: 'J2', componentType: 'through_hole', description: 'OBD-II Diagnostic Port Connector', pkg: 'THT D-sub', value: 'DE9', voltage: '—', qty: 1, unitPriceGBP: 1.95, moq: 5, automotive: false, highCost: false },
+    { refDes: 'X1', componentType: 'crystal_osc', description: '40MHz TCXO ±0.5ppm AEC-Q200', pkg: 'SMD 5×3.2mm', value: '40.000MHz', voltage: '3.3V', qty: 1, unitPriceGBP: 1.60, moq: 5, automotive: true, highCost: false, partNumber: 'SG-8018CG', lineConf: 0.75 },
+    { refDes: 'D1–D6', componentType: 'fuse_tvs', description: 'Automotive TVS Array 60V ESD', pkg: 'SOT-363', value: '60V/600W', voltage: '60V', qty: 6, unitPriceGBP: 0.85, moq: 10, automotive: true, highCost: false },
+    { refDes: 'R1–R8', componentType: 'passive_0805', description: 'Current Sense Resistor 10mΩ 1%', pkg: '0805', value: '0.01Ω', voltage: '—', qty: 8, unitPriceGBP: 0.22, moq: 25, automotive: true, highCost: false },
+    { refDes: 'C1–C12', componentType: 'passive_0805', description: 'Bulk Decoupling Capacitor 100µF X5R', pkg: '0805', value: '100µF', voltage: '10V', qty: 12, unitPriceGBP: 0.45, moq: 25, automotive: true, highCost: false },
+    { refDes: 'C13–C97', componentType: 'passive_0402', description: 'MLCC Filter Cap 100nF X7R', pkg: '0402', value: '100nF', voltage: '25V', qty: 85, unitPriceGBP: 0.02, moq: 100, automotive: true, highCost: false },
+    { refDes: 'R9–R53', componentType: 'passive_0402', description: 'Pull-up/pull-down 10kΩ 1% 0.1W', pkg: '0402', value: '10kΩ', voltage: '—', qty: 45, unitPriceGBP: 0.01, moq: 100, automotive: true, highCost: false },
+  ],
+  assembly: { smtPlacements: 290, throughHoleJoints: 30, manualJoints: 4, bgaCount: 5, complexity: 'High', reflowSides: 2, aoiRequired: true, ictTimeSec: 45 },
+  costEstimates: { pcbFabGBP: { min: 2.80, mid: 3.70, max: 5.40 }, totalBOMCostGBP: 48.50, smtAssemblyCostGBP: 5.50 },
+  aiInsights: [
+    'STM32H735IGK6 @ 550MHz provides ample headroom for AUTOSAR Classic CP; consider STM32H730 if cost is priority (similar peripherals, less flash)',
+    'CAN FD dual-channel SBC (SJA1124) supports CAN FD up to 8Mbit/s — correctly chosen for next-gen AUTOSAR CAN XL readiness',
+    'ENIG surface finish on 6-layer HDI is mandatory for BGA solderability; verified consistent with AEC-Q100 Grade 2 thermal cycling requirements',
+    'TVS array selection (60V) correctly rated for 24V truck battery transients per ISO 7637-2 pulse 1/2a/5a',
+    'OBD-II THT connector creates a mixed technology board; verify wave-solder selective fixture or hand-solder process in BOM router',
+  ],
+  dfmIssues: [
+    'BGA U1 (STM32H735 BGA-201) requires 0.4mm pad pitch — verify SMT line solder paste aperture capability ≥ Type 4 paste',
+    'Conformal coat spec not explicit on BOM; automotive PCBA requires IPC-CC-830B Type UR or AR at ≥50µm DFT',
+    'Board aspect ratio 1.5:1 at 150×100mm is within IPC-2221 conveyor limits but confirm with panel layout (edge clearance ≥3mm)',
+    'Impedance-controlled traces: 6-layer stackup must include Dk/Df spec on fab drawing for differential pairs on Layer 3/4',
+  ],
+  highCostComponents: [
+    'U1 STM32H735IGK6 — £6.20 (12.8% of BOM): evaluate STM32H730VEH6 at £4.80 for programs where 1MB flash suffices',
+    'U3 TPS65942A1 PMIC — £4.20 (8.7%): multichannel PMIC price justified; verify all rails used; stub unused rails at NM resistors',
+    'U2 ×2 SJA1124 — £7.60 combined (15.7%): necessary for dual-bus isolation; check if single SJA1126 (4-bus) reduces part count',
+  ],
+  optimisationSuggestions: [
+    'Consolidate passive sizes: 0402 is dominant; remove any 0201s to save pick-and-place time and reduce SMT setup changeover',
+    'U7/U8/U9 LDO regulators share footprint — qualify single vendor JW Winsen or Diodes Inc AEC parts for 30–40% cost saving',
+    'Investigate HASL-LF surface finish for non-BGA areas (mixed with selective ENIG via BGA-only aperture plating) — saves ~18% surface finish premium',
+    'Move to ENEPIG if AEC-Q100 aluminium wire bond options needed in future variant; forward-compatible for sensor integration',
+    'Bulk-buy C13–C97 (85 pcs × 100nF): Yageo CC0402KRX5R9BB104 at £0.008 saves £1.02/board (£5100 at 5000 pcs)',
+  ],
+  confidenceLevel: 'High',
+  analysisLimitations: [
+    'BOM pricing at 1000-pcs distributor break; production prices at 5000+ pcs from EMS direct negotiation typically 15–25% lower for ICs',
+    'Thermal analysis (hotspot, junction temperatures) requires actual layout copper pour data — not available from image alone',
+    'PPAP/FMEA/DVP documentation scope not covered by this tool',
+  ],
+  stage1Classification: { domain: 'automotive_adas', conf: 0.94, hints: ['multiple BGA ICs', 'automotive grade marking', 'CAN/LIN controller visible', 'ENIG surface finish', '6-layer HDI'] },
+  ocrExtraction: { icMarkings: ['STM32H735IGK6', 'SJA1124', 'TPS65942A1', 'S25FL128SAGBHIA10', 'DRV8323RS'], extractionQuality: 'Good' },
+  _selectedCountry: 'cn',
+  _selectedCountryBreakdown: makeDemoCountry('cn','China (Shenzhen / Suzhou)','🇨🇳', 3.37,5.50,1.13,48.50, 3,0.83,['ISO9001','IATF16949','UL','RoHS','IPC-6012'],'High-volume consumer, cost-optimised, standard FR4', { pcbBase:0.17,pcbLayers:0.42,pcbSurface:0.13,pcbVias:2.34,pcbHDI:0.20,pcbSetup:0.00,smtAssembly:1.22,thAssembly:0.27,aoi:4.27,logistics:0.81,importDuty:0.33 }),
+  _countryComparison: [
+    makeDemoCountry('cn','China (Shenzhen / Suzhou)','🇨🇳',3.37,5.50,1.13,48.50,3,0.83,['ISO9001','IATF16949','UL','RoHS','IPC-6012'],'High-volume consumer, cost-optimised, standard FR4',{pcbBase:0.17,pcbLayers:0.42,pcbSurface:0.13,pcbVias:2.34,pcbHDI:0.20,pcbSetup:0.00,smtAssembly:1.22,thAssembly:0.27,aoi:4.27,logistics:0.81,importDuty:0.33}),
+    makeDemoCountry('vn','Vietnam (Ho Chi Minh City / Hanoi)','🇻🇳',4.31,4.79,1.41,48.50,3,0.80,['ISO9001','UL','RoHS'],'Labour-intensive assembly, high-volume low-complexity PCBA',{pcbBase:0.22,pcbLayers:0.54,pcbSurface:0.17,pcbVias:2.81,pcbHDI:0.25,pcbSetup:0.00,smtAssembly:0.88,thAssembly:0.18,aoi:3.77,logistics:0.95,importDuty:0.46}),
+    makeDemoCountry('in','India (Pune / Bengaluru / Chennai)','🇮🇳',5.13,6.26,1.58,48.50,4,0.78,['ISO9001','UL','RoHS'],'Growing capacity, English-speaking, government PLI incentives',{pcbBase:0.26,pcbLayers:0.64,pcbSurface:0.19,pcbVias:3.30,pcbHDI:0.30,pcbSetup:0.00,smtAssembly:1.44,thAssembly:0.24,aoi:4.62,logistics:1.07,importDuty:0.51}),
+    makeDemoCountry('th','Thailand (Bangkok / Ayutthaya)','🇹🇭',5.55,7.14,1.66,48.50,3,0.85,['ISO9001','UL','RoHS','IATF16949'],'Japanese-standard quality at low-mid cost; strong automotive supply chain',{pcbBase:0.28,pcbLayers:0.69,pcbSurface:0.21,pcbVias:3.56,pcbHDI:0.33,pcbSetup:0.00,smtAssembly:1.65,thAssembly:0.27,aoi:5.26,logistics:1.13,importDuty:0.54}),
+    makeDemoCountry('my','Malaysia (Penang / Kuala Lumpur)','🇲🇾',5.12,7.58,1.63,48.50,3,0.86,['ISO9001','IATF16949','UL','RoHS'],'Strong EMS ecosystem (Intel, Western Digital heritage), good EE talent',{pcbBase:0.26,pcbLayers:0.64,pcbSurface:0.19,pcbVias:3.22,pcbHDI:0.29,pcbSetup:0.00,smtAssembly:1.76,thAssembly:0.27,aoi:5.59,logistics:1.10,importDuty:0.53}),
+    makeDemoCountry('tw','Taiwan (Hsinchu / Taipei)','🇹🇼',9.07,11.30,1.76,48.50,2,0.93,['ISO9001','IATF16949','IPC-6012 Class 3'],'Premium HDI, IC substrate, RF boards; world-class Tier-1 fabs',{pcbBase:0.46,pcbLayers:1.13,pcbSurface:0.34,pcbVias:5.42,pcbHDI:0.51,pcbSetup:0.00,smtAssembly:2.62,thAssembly:0.41,aoi:8.32,logistics:1.27,importDuty:0.49}),
+    makeDemoCountry('kr','South Korea (Suwon / Incheon)','🇰🇷',11.05,12.94,1.06,48.50,2,0.93,['ISO9001','IATF16949','IPC-6012 Class 3','AEC-Q100'],'Samsung/LG supply chain integration, automotive-grade memory and PMIC',{pcbBase:0.56,pcbLayers:1.38,pcbSurface:0.41,pcbVias:6.52,pcbHDI:0.61,pcbSetup:0.00,smtAssembly:3.00,thAssembly:0.44,aoi:9.54,logistics:0.73,importDuty:0.33}),
+    makeDemoCountry('mx','Mexico (Juárez / Monterrey / Guadalajara)','🇲🇽',8.16,8.65,1.83,48.50,3,0.84,['ISO9001','IATF16949','UL'],'USMCA duty-free for US OEM; growing automotive nearshore hub',{pcbBase:0.41,pcbLayers:1.02,pcbSurface:0.30,pcbVias:5.01,pcbHDI:0.47,pcbSetup:0.00,smtAssembly:2.00,thAssembly:0.32,aoi:6.37,logistics:1.24,importDuty:0.59}),
+    makeDemoCountry('cz','Czech Republic (Brno / Ostrava)','🇨🇿',11.07,11.77,0.30,48.50,2,0.91,['ISO9001','IATF16949','IPC-6012 Class 3','CE'],'EU-based automotive PCBA (VW, BMW supply chain), zero UK import duty',{pcbBase:0.56,pcbLayers:1.38,pcbSurface:0.41,pcbVias:6.61,pcbHDI:0.62,pcbSetup:0.00,smtAssembly:2.73,thAssembly:0.40,aoi:8.68,logistics:0.30,importDuty:0.00}),
+    makeDemoCountry('pl','Poland (Wrocław / Kraków)','🇵🇱',10.13,10.80,0.28,48.50,2,0.90,['ISO9001','IATF16949','IPC-6012 Class 3','CE'],'Cost-competitive EU nearshore, strong automotive sector (Stellantis, VW)',{pcbBase:0.51,pcbLayers:1.26,pcbSurface:0.37,pcbVias:6.09,pcbHDI:0.57,pcbSetup:0.00,smtAssembly:2.50,thAssembly:0.37,aoi:7.97,logistics:0.28,importDuty:0.00}),
+    makeDemoCountry('de','Germany (Munich / Stuttgart / Frankfurt)','🇩🇪',21.51,28.39,0.19,48.50,2,0.97,['ISO9001','IATF16949','AS9100','IPC-6012 Class 3','AEC-Q100','ECSS'],'Automotive OEM, aerospace ECSS, highest quality, shortest EU prototype lead time',{pcbBase:1.09,pcbLayers:2.70,pcbSurface:0.79,pcbVias:11.99,pcbHDI:1.12,pcbSetup:0.00,smtAssembly:6.58,thAssembly:0.70,aoi:21.15,logistics:0.19,importDuty:0.00}),
+    makeDemoCountry('gb','United Kingdom (Birmingham / Coventry / Edinburgh)','🇬🇧',25.58,32.66,0.00,48.50,2,0.96,['ISO9001','IATF16949','AS9100','IPC-6012 Class 3','UKCA','Def Stan'],'Domestic prototyping, defence/Def Stan, fastest turnaround, zero import risk',{pcbBase:1.29,pcbLayers:3.20,pcbSurface:0.93,pcbVias:14.09,pcbHDI:1.32,pcbSetup:0.00,smtAssembly:7.57,thAssembly:0.80,aoi:25.20,logistics:0.00,importDuty:0.00}),
+    makeDemoCountry('us','USA (San Jose / Austin / Milpitas)','🇺🇸',20.14,30.43,2.68,48.50,2,0.96,['ISO9001','IATF16949','AS9100','IPC-6012 Class 3','ITAR'],'Defense/ITAR-sensitive programs, DO-254 airborne electronics, US-content mandates',{pcbBase:1.02,pcbLayers:2.52,pcbSurface:0.74,pcbVias:11.41,pcbHDI:1.07,pcbSetup:0.00,smtAssembly:7.06,thAssembly:0.72,aoi:22.69,logistics:1.63,importDuty:1.05}),
+    makeDemoCountry('jp','Japan (Osaka / Nagoya / Tokyo)','🇯🇵',35.88,34.82,1.13,48.50,3,0.99,['ISO9001','IATF16949','AS9100','JPCA','IPC-6012 Class 3'],'Ultra-fine pitch (<35µm), any-layer HDI IC substrate, highest reliability',{pcbBase:1.82,pcbLayers:4.49,pcbSurface:1.30,pcbVias:20.72,pcbHDI:1.93,pcbSetup:0.00,smtAssembly:8.08,thAssembly:0.84,aoi:26.06,logistics:0.81,importDuty:0.32}),
+  ],
+};
+
+const PCB_DEMO_ADAS: PCBImageAnalysis = {
+  partName: 'ADAS Camera Vision PCB — Surround View Processor (DEMO)',
+  boardSpec: {
+    estimatedLayers: 8, widthMm: 80, heightMm: 80,
+    surfaceFinish: 'enig', solderMaskColour: 'black', silkscreenSides: 1,
+    throughVias: 180, blindVias: 88, buriedVias: 12, microVias: 42,
+    bgaDetected: true, minTraceSpaceMm: 0.075, technologyType: 'HDI_RIGID',
+    hdiStructure: '2+N+2', impedanceControlRequired: true, copperWeightOz: 1,
+    qualityGrade: 'auto_grade1', panelUtilisation: 65,
+  },
+  bom: [
+    { refDes: 'U1', componentType: 'ic_bga', description: 'Vision SoC — Dual Cortex-A72 + 8× TOPS Vision DSP', pkg: 'BGA-441', value: 'TDA4VM', voltage: '1.0/1.8/3.3V', qty: 1, unitPriceGBP: 14.50, moq: 1, automotive: true, highCost: true, partNumber: 'TDA4VMXAAALHAT', lineConf: 0.91, ocrExtracted: true },
+    { refDes: 'U2,U3', componentType: 'ic_bga', description: 'LPDDR4X SDRAM 8Gb 4266Mbps AEC-Q100', pkg: 'BGA-200', value: 'MT40A1G8SA-062E:A', voltage: '1.1V', qty: 2, unitPriceGBP: 4.30, moq: 5, automotive: true, highCost: true, partNumber: 'MT40A1G8SA-062E', lineConf: 0.88, ocrExtracted: true },
+    { refDes: 'U4', componentType: 'ic_tqfp', description: 'FPD-Link III 4-camera Deserialiser 6Gbps', pkg: 'WQFN-64', value: 'DS90UB960MRSQ', voltage: '1.8V/3.3V', qty: 1, unitPriceGBP: 6.20, moq: 1, automotive: true, highCost: true, partNumber: 'DS90UB960MRSQ1', lineConf: 0.90, ocrExtracted: true },
+    { refDes: 'U5', componentType: 'ic_tqfp', description: 'FPD-Link III Camera Serialiser', pkg: 'WSON-20', value: 'DS90UB953ARSQ', voltage: '1.8V', qty: 1, unitPriceGBP: 3.80, moq: 1, automotive: true, highCost: false, partNumber: 'DS90UB953ARSQ1', lineConf: 0.86, ocrExtracted: true },
+    { refDes: 'U6', componentType: 'ic_qfn', description: '6-axis IMU Gyro+Accel AEC-Q100 Grd1', pkg: 'LGA-14', value: 'BMI088', voltage: '3.3V', qty: 1, unitPriceGBP: 2.40, moq: 5, automotive: true, highCost: false, partNumber: 'BMI088', lineConf: 0.84, ocrExtracted: true },
+    { refDes: 'U7', componentType: 'ic_bga', description: 'Automotive Multi-Rail PMIC 16 channels', pkg: 'BGA-64', value: 'TPS65941', voltage: '5–36V in', qty: 1, unitPriceGBP: 3.60, moq: 1, automotive: true, highCost: false, partNumber: 'TPS65941RSLR', lineConf: 0.82, ocrExtracted: true },
+    { refDes: 'U8', componentType: 'ic_qfn', description: 'Automotive 1000BASE-T1 PHY (2-wire BroadR-Reach)', pkg: 'QFN-32', value: 'TJA1102', voltage: '3.3V', qty: 1, unitPriceGBP: 4.20, moq: 1, automotive: true, highCost: false, partNumber: 'TJA1102AHNJT', lineConf: 0.80, ocrExtracted: true },
+    { refDes: 'J1–J4', componentType: 'through_hole', description: 'FAKRA MINI-A SMB Camera Coax Receptacle', pkg: 'FAKRA THT', value: 'FAKRA-A-FEM', voltage: '—', qty: 4, unitPriceGBP: 1.85, moq: 5, automotive: true, highCost: false },
+    { refDes: 'J5', componentType: 'through_hole', description: 'Automotive H-MTD Ethernet HSD Connector', pkg: 'THT PCB mount', value: 'H-MTD Plug', voltage: '—', qty: 1, unitPriceGBP: 2.20, moq: 5, automotive: true, highCost: false },
+    { refDes: 'X1,X2', componentType: 'crystal_osc', description: '25MHz TCXO ±0.5ppm AEC-Q200 Grade', pkg: 'SMD 3.2×2.5mm', value: '25.000MHz', voltage: '3.3V', qty: 2, unitPriceGBP: 2.10, moq: 5, automotive: true, highCost: false, partNumber: 'SG-8018CG-25MHz', lineConf: 0.74 },
+    { refDes: 'L1–L6', componentType: 'passive_0805', description: 'Power Filter Inductor 100µH 1A Aec', pkg: '0805', value: '100µH', voltage: '—', qty: 6, unitPriceGBP: 0.85, moq: 25, automotive: true, highCost: false },
+    { refDes: 'D1–D8', componentType: 'fuse_tvs', description: 'TVS ESD Protection Array 24V AEC-Q101', pkg: 'SOT-363', value: '24V/400W', voltage: '24V', qty: 8, unitPriceGBP: 0.65, moq: 10, automotive: true, highCost: false },
+    { refDes: 'C1–C120', componentType: 'passive_0402', description: 'MLCC 1µF/100nF X7R Filter Cap AEC-Q200', pkg: '0402', value: '1µF/100nF', voltage: '10V', qty: 120, unitPriceGBP: 0.03, moq: 100, automotive: true, highCost: false },
+    { refDes: 'R1–R80', componentType: 'passive_0402', description: 'Signal Conditioning / Termination Resistors', pkg: '0402', value: '49.9Ω–100kΩ', voltage: '—', qty: 80, unitPriceGBP: 0.01, moq: 100, automotive: true, highCost: false },
+  ],
+  assembly: { smtPlacements: 198, throughHoleJoints: 12, manualJoints: 2, bgaCount: 8, complexity: 'Very High', reflowSides: 1, aoiRequired: true, ictTimeSec: 90 },
+  costEstimates: { pcbFabGBP: { min: 4.20, mid: 5.80, max: 9.50 }, totalBOMCostGBP: 62.30, smtAssemblyCostGBP: 4.92 },
+  aiInsights: [
+    'TDA4VM vision SoC is TI\'s mainstream AV SoC (ISO 26262 ASIL-D capable); production programs typically use TDA4VH for 64-TOPS or TDA4AL for cost reduction below 200 TOPS/W target',
+    'DS90UB960 4-channel deserialiser with pixel clocks to 1.5Gbps per channel; verify coax cable assembly (FA-2 or FA-5 shielded) and reference resistor tolerance ±0.1% for eye diagram compliance',
+    '2+N+2 HDI stackup with buried vias (U2,U3 DDR4): validate with IPC-2315 impedance calculator for 50Ω SE and 100Ω differential on Layer 3/6',
+    'Automotive Ethernet (TJA1102) requires minimum 60Ω, 3m shielded cable for ECE R155 cybersecurity; board layout needs specific OPEN Alliance TC1 connector placement rule',
+    'Board solder mask colour (black) reduces thermal radiation slightly; verify AOI contrast ratio with supplier — may need IR backlight AOI system',
+  ],
+  dfmIssues: [
+    'TDA4VM BGA-441 at 0.65mm pitch requires blind vias — verify fab house capability (laser drill tolerance ±0.025mm)',
+    'DDR4 BGA routing: differential impedance ±10% across x8/x16 bus; fanout via stubs must be minimised — recommend back-drilling on layers 3–4',
+    'FAKRA J1–J4 THT connectors on back side create mixed reflow/wave process; consider SMT FAKRA receptacles to eliminate wave solder step',
+    'Black solder mask + fine pitch components: AOI false-call rate typically 2–3× higher than green; validate with sample boards before production',
+    'Board size 80×80mm: verify camera connector clearance to edge (FAKRA THT bodies protrude 12mm from board — risks panel routing)',
+  ],
+  highCostComponents: [
+    'U1 TDA4VM — £14.50 (23.3% of BOM): lock in spot pricing at NDA volume by Q3 for next MY; sole-source risk — qualify TDA4VH as premium alt and TDA4AL as economy alt',
+    'U2,U3 DDR4 ×2 — £8.60 combined (13.8%): DRAM subject to supply cycles; dual-source Micron and SK Hynix H9HCNNNBMMALHR for resilience',
+    'U4 DS90UB960 — £6.20 (9.9%): FPD-Link III is TI-proprietary; evaluate GMSL2 (MAX96724) as drop-in compatible alternative if TI supply constrained',
+  ],
+  optimisationSuggestions: [
+    'Switch FAKRA J1–J4 from THT to SMT reflow (Amphenol C2GR or Rosenberger SMT FAKRA): eliminates wave solder step, saves ~£0.80/board in assembly',
+    'Consider dual-layer BOM structure: retain AEC-Q100 Grade 0 ICs, qualify commercial-grade passives (Grade 2 MLCC ±10%) — saves ~12% on passive BOM',
+    'TDA4VM thermal management: PCB copper pour on Layer 1/8 over exposed pad critical; model thermal resistance with ANSYS/SIMetrix to validate junction T < 125°C at 85°C ambient',
+    'Panel design: 80×80mm boards can be 4-up on a 180×180mm panel (4.5:1 utilisation vs 65% current) — negotiate 30% tooling discount with >50 panel/month commitment',
+    'X1/X2 TCXO: evaluate single TCXO with Diff-to-SE buffer IC (TI CDCLVP2102) — saves £2.10/board less buffer cost (≈£1.50 net saving)',
+  ],
+  confidenceLevel: 'High',
+  analysisLimitations: [
+    'TDA4VM pricing at 1k unit distributor; Tier-1 volume pricing (>5k/yr) typically 18–30% lower under NDA with TI direct',
+    'EMC pre-compliance not modelled: ADAS boards require CISPR 25 Class 5 and UNECE R10; budget additional £8–15k for EMC pre-scan chamber time',
+    'Functional Safety (ISO 26262 ASIL-B to ASIL-D): hardware FMEA and diagnostic coverage analysis are outside scope of this should-cost tool',
+  ],
+  stage1Classification: { domain: 'automotive_adas', conf: 0.97, hints: ['vision SoC BGA', 'FAKRA camera connectors', 'DDR4 high-speed RAM', 'FPD-Link III deserialiser', '8-layer HDI 2+N+2', 'black solder mask'] },
+  ocrExtraction: { icMarkings: ['TDA4VMXAAALHAT', 'MT40A1G8SA-062E', 'DS90UB960MRSQ1', 'DS90UB953ARSQ1', 'BMI088', 'TJA1102AHNJT'], extractionQuality: 'Good' },
+  _selectedCountry: 'cn',
+  _selectedCountryBreakdown: makeDemoCountry('cn','China (Shenzhen / Suzhou)','🇨🇳',5.40,4.92,0.84,62.30,3,0.83,['ISO9001','IATF16949','UL','RoHS','IPC-6012'],'High-volume consumer, cost-optimised, standard FR4',{pcbBase:0.07,pcbLayers:0.27,pcbSurface:0.07,pcbVias:4.80,pcbHDI:0.12,pcbSetup:0.01,smtAssembly:0.75,thAssembly:0.11,aoi:4.16,logistics:0.46,importDuty:0.38}),
+  _countryComparison: [
+    makeDemoCountry('cn','China (Shenzhen / Suzhou)','🇨🇳',5.40,4.92,0.84,62.30,3,0.83,['ISO9001','IATF16949','UL','RoHS','IPC-6012'],'High-volume consumer, cost-optimised, standard FR4',{pcbBase:0.07,pcbLayers:0.27,pcbSurface:0.07,pcbVias:4.80,pcbHDI:0.12,pcbSetup:0.01,smtAssembly:0.75,thAssembly:0.11,aoi:4.16,logistics:0.46,importDuty:0.38}),
+    makeDemoCountry('vn','Vietnam (Ho Chi Minh City / Hanoi)','🇻🇳',6.74,4.31,1.12,62.30,3,0.80,['ISO9001','UL','RoHS'],'Labour-intensive assembly, high-volume low-complexity PCBA',{pcbBase:0.09,pcbLayers:0.34,pcbSurface:0.10,pcbVias:5.75,pcbHDI:0.32,pcbSetup:0.01,smtAssembly:0.63,thAssembly:0.08,aoi:3.64,logistics:0.72,importDuty:0.40}),
+    makeDemoCountry('in','India (Pune / Bengaluru / Chennai)','🇮🇳',7.77,5.56,1.28,62.30,4,0.78,['ISO9001','UL','RoHS'],'Growing capacity, English-speaking, government PLI incentives',{pcbBase:0.10,pcbLayers:0.40,pcbSurface:0.11,pcbVias:6.61,pcbHDI:0.37,pcbSetup:0.01,smtAssembly:0.97,thAssembly:0.09,aoi:4.54,logistics:0.82,importDuty:0.46}),
+    makeDemoCountry('th','Thailand (Bangkok / Ayutthaya)','🇹🇭',8.33,6.28,1.35,62.30,3,0.85,['ISO9001','UL','RoHS','IATF16949'],'Japanese-standard quality at low-mid cost; strong automotive supply chain',{pcbBase:0.11,pcbLayers:0.43,pcbSurface:0.12,pcbVias:7.07,pcbHDI:0.39,pcbSetup:0.01,smtAssembly:1.11,thAssembly:0.09,aoi:5.12,logistics:0.87,importDuty:0.48}),
+    makeDemoCountry('my','Malaysia (Penang / Kuala Lumpur)','🇲🇾',7.78,6.70,1.33,62.30,3,0.86,['ISO9001','IATF16949','UL','RoHS'],'Strong EMS ecosystem (Intel, Western Digital heritage), good EE talent',{pcbBase:0.10,pcbLayers:0.40,pcbSurface:0.11,pcbVias:6.64,pcbHDI:0.37,pcbSetup:0.01,smtAssembly:1.18,thAssembly:0.09,aoi:5.47,logistics:0.85,importDuty:0.48}),
+    makeDemoCountry('tw','Taiwan (Hsinchu / Taipei)','🇹🇼',11.90,9.82,1.38,62.30,2,0.93,['ISO9001','IATF16949','IPC-6012 Class 3'],'Premium HDI, IC substrate, RF boards; world-class Tier-1 fabs',{pcbBase:0.18,pcbLayers:0.71,pcbSurface:0.20,pcbVias:9.72,pcbHDI:0.54,pcbSetup:0.01,smtAssembly:1.73,thAssembly:0.13,aoi:8.00,logistics:0.98,importDuty:0.40}),
+    makeDemoCountry('kr','South Korea (Suwon / Incheon)','🇰🇷',14.20,11.19,0.60,62.30,2,0.93,['ISO9001','IATF16949','IPC-6012 Class 3','AEC-Q100'],'Samsung/LG supply chain integration, automotive-grade memory and PMIC',{pcbBase:0.22,pcbLayers:0.86,pcbSurface:0.24,pcbVias:11.58,pcbHDI:0.65,pcbSetup:0.01,smtAssembly:1.98,thAssembly:0.14,aoi:9.12,logistics:0.39,importDuty:0.21}),
+    makeDemoCountry('mx','Mexico (Juárez / Monterrey / Guadalajara)','🇲🇽',10.77,7.57,1.37,62.30,3,0.84,['ISO9001','IATF16949','UL'],'USMCA duty-free for US OEM; growing automotive nearshore hub',{pcbBase:0.16,pcbLayers:0.64,pcbSurface:0.18,pcbVias:8.77,pcbHDI:0.49,pcbSetup:0.01,smtAssembly:1.34,thAssembly:0.11,aoi:6.16,logistics:0.88,importDuty:0.49}),
+    makeDemoCountry('cz','Czech Republic (Brno / Ostrava)','🇨🇿',14.21,10.24,0.17,62.30,2,0.91,['ISO9001','IATF16949','IPC-6012 Class 3','CE'],'EU-based automotive PCBA (VW, BMW supply chain), zero UK import duty',{pcbBase:0.22,pcbLayers:0.86,pcbSurface:0.24,pcbVias:11.71,pcbHDI:0.65,pcbSetup:0.01,smtAssembly:1.81,thAssembly:0.13,aoi:8.34,logistics:0.17,importDuty:0.00}),
+    makeDemoCountry('pl','Poland (Wrocław / Kraków)','🇵🇱',13.10,9.42,0.16,62.30,2,0.90,['ISO9001','IATF16949','IPC-6012 Class 3','CE'],'Cost-competitive EU nearshore, strong automotive sector (Stellantis, VW)',{pcbBase:0.20,pcbLayers:0.79,pcbSurface:0.22,pcbVias:10.79,pcbHDI:0.60,pcbSetup:0.01,smtAssembly:1.66,thAssembly:0.12,aoi:7.68,logistics:0.16,importDuty:0.00}),
+    makeDemoCountry('de','Germany (Munich / Stuttgart / Frankfurt)','🇩🇪',27.43,24.76,0.11,62.30,2,0.97,['ISO9001','IATF16949','AS9100','IPC-6012 Class 3','AEC-Q100','ECSS'],'Automotive OEM, aerospace ECSS, highest quality, shortest EU prototype lead time',{pcbBase:0.43,pcbLayers:1.69,pcbSurface:0.47,pcbVias:22.50,pcbHDI:1.25,pcbSetup:0.01,smtAssembly:4.37,thAssembly:0.24,aoi:20.19,logistics:0.11,importDuty:0.00}),
+    makeDemoCountry('gb','United Kingdom (Birmingham / Coventry / Edinburgh)','🇬🇧',31.36,28.47,0.00,62.30,2,0.96,['ISO9001','IATF16949','AS9100','IPC-6012 Class 3','UKCA','Def Stan'],'Domestic prototyping, defence/Def Stan, fastest turnaround, zero import risk',{pcbBase:0.49,pcbLayers:1.94,pcbSurface:0.54,pcbVias:26.11,pcbHDI:1.45,pcbSetup:0.01,smtAssembly:4.97,thAssembly:0.27,aoi:23.22,logistics:0.00,importDuty:0.00}),
+    makeDemoCountry('us','USA (San Jose / Austin / Milpitas)','🇺🇸',26.12,26.56,2.41,62.30,2,0.96,['ISO9001','IATF16949','AS9100','IPC-6012 Class 3','ITAR'],'Defense/ITAR-sensitive programs, DO-254 airborne electronics, US-content mandates',{pcbBase:0.38,pcbLayers:1.51,pcbSurface:0.42,pcbVias:21.32,pcbHDI:1.19,pcbSetup:0.01,smtAssembly:4.64,thAssembly:0.22,aoi:21.74,logistics:1.47,importDuty:0.94}),
+    makeDemoCountry('jp','Japan (Osaka / Nagoya / Tokyo)','🇯🇵',43.32,30.38,0.65,62.30,3,0.99,['ISO9001','IATF16949','AS9100','JPCA','IPC-6012 Class 3'],'Ultra-fine pitch (<35µm), any-layer HDI IC substrate, highest reliability',{pcbBase:0.72,pcbLayers:2.82,pcbSurface:0.78,pcbVias:36.99,pcbHDI:2.06,pcbSetup:0.01,smtAssembly:5.34,thAssembly:0.29,aoi:24.79,logistics:0.46,importDuty:0.19}),
+  ],
+};
+
+function buildPCBDemoSection(): string {
+  const ecuCN = PCB_DEMO_ECU._selectedCountryBreakdown!;
+  const adasCN = PCB_DEMO_ADAS._selectedCountryBreakdown!;
+  return `
+    <div style="margin-top:16px">
+      <div style="font-size:0.75rem;font-weight:700;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:10px;display:flex;align-items:center;gap:8px">
+        <span style="flex:1;height:1px;background:var(--border)"></span>
+        <span>🚗 Demo: Real Automotive PCB Examples</span>
+        <span style="flex:1;height:1px;background:var(--border)"></span>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div style="padding:12px;border:1px solid rgba(79,142,247,0.3);border-radius:10px;background:rgba(79,142,247,0.04);cursor:pointer;transition:all 0.15s"
+             onmouseenter="this.style.background='rgba(79,142,247,0.09)'" onmouseleave="this.style.background='rgba(79,142,247,0.04)'"
+             onclick="window.__loadPCBDemo('ecu')">
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
+            <span style="font-size:1.1rem">🔧</span>
+            <span style="font-weight:700;font-size:0.78rem;color:var(--text-primary)">Automotive ECU</span>
+            <span style="margin-left:auto;font-size:0.62rem;background:rgba(34,197,94,0.15);color:#16a34a;padding:1px 6px;border-radius:4px;font-weight:600">DEMO</span>
+          </div>
+          <div style="font-size:0.68rem;color:var(--text-muted);margin-bottom:8px">Engine Control Unit — 6-layer 150×100mm HDI, 290 SMT, 5 BGA, 5000 pcs/yr</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;font-size:0.70rem">
+            <div><span style="color:var(--text-muted)">BOM lines:</span> <strong>14</strong></div>
+            <div><span style="color:var(--text-muted)">BOM cost:</span> <strong>£48.50</strong></div>
+            <div><span style="color:var(--text-muted)">China total:</span> <strong style="color:var(--accent)">£${ecuCN.totalPerBoard.toFixed(2)}</strong></div>
+            <div><span style="color:var(--text-muted)">UK total:</span> <strong>£${(PCB_DEMO_ECU._countryComparison?.find(c=>c.countryId==='gb')?.totalPerBoard??0).toFixed(2)}</strong></div>
+          </div>
+          <div style="margin-top:8px;text-align:center">
+            <span style="font-size:0.68rem;color:var(--accent);font-weight:600">▶ Try this demo</span>
+          </div>
+        </div>
+        <div style="padding:12px;border:1px solid rgba(139,92,246,0.3);border-radius:10px;background:rgba(139,92,246,0.04);cursor:pointer;transition:all 0.15s"
+             onmouseenter="this.style.background='rgba(139,92,246,0.09)'" onmouseleave="this.style.background='rgba(139,92,246,0.04)'"
+             onclick="window.__loadPCBDemo('adas')">
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
+            <span style="font-size:1.1rem">📷</span>
+            <span style="font-weight:700;font-size:0.78rem;color:var(--text-primary)">ADAS Camera PCB</span>
+            <span style="margin-left:auto;font-size:0.62rem;background:rgba(34,197,94,0.15);color:#16a34a;padding:1px 6px;border-radius:4px;font-weight:600">DEMO</span>
+          </div>
+          <div style="font-size:0.68rem;color:var(--text-muted);margin-bottom:8px">Surround View Processor — 8-layer 80×80mm 2+N+2 HDI, 198 SMT, 8 BGA, 2000 pcs/yr</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;font-size:0.70rem">
+            <div><span style="color:var(--text-muted)">BOM lines:</span> <strong>14</strong></div>
+            <div><span style="color:var(--text-muted)">BOM cost:</span> <strong>£62.30</strong></div>
+            <div><span style="color:var(--text-muted)">China total:</span> <strong style="color:var(--accent)">£${adasCN.totalPerBoard.toFixed(2)}</strong></div>
+            <div><span style="color:var(--text-muted)">UK total:</span> <strong>£${(PCB_DEMO_ADAS._countryComparison?.find(c=>c.countryId==='gb')?.totalPerBoard??0).toFixed(2)}</strong></div>
+          </div>
+          <div style="margin-top:8px;text-align:center">
+            <span style="font-size:0.68rem;color:#7c3aed;font-weight:600">▶ Try this demo</span>
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:6px;font-size:0.62rem;color:var(--text-muted);text-align:center">
+        All costs computed live from the 2026 14-country manufacturing database. Click a card to see the full analysis.
+      </div>
+    </div>`;
+}
+
 function buildPCBImageUploadZone(): string {
   return `
     <div class="pcb-img-zone" id="pcb-img-zone">
@@ -3735,6 +3967,18 @@ async function analyzePCBImage(file: File): Promise<void> {
   }
 }
 
+function injectPCBDemoCards(): void {
+  const resultsEl = el('pcb-img-results');
+  if (!resultsEl || pcbImageResult) return;
+  resultsEl.innerHTML = buildPCBDemoSection();
+}
+
+(window as unknown as Record<string, unknown>).__loadPCBDemo = function(id: string): void {
+  pcbImageResult = id === 'adas' ? PCB_DEMO_ADAS : PCB_DEMO_ECU;
+  injectPCBImagePanel();
+  el('pcb-img-results')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+};
+
 function injectPCBImagePanel(): void {
   const resultsEl = el('pcb-img-results');
   if (!resultsEl || !pcbImageResult) return;
@@ -3744,7 +3988,7 @@ function injectPCBImagePanel(): void {
   el('pcb-apply-pcba-btn')?.addEventListener('click', () => applyPCBImageToPCBA());
   el('pcb-clear-btn')?.addEventListener('click', () => {
     pcbImageResult = null;
-    if (resultsEl) resultsEl.innerHTML = '';
+    injectPCBDemoCards();
   });
 
   // Enable live pricing fetch button if there are OCR-identified parts
@@ -4922,14 +5166,14 @@ function switchCommodity(type: CommodityType): void {
       area.innerHTML = renderPCBFabForm();
       populateSelects();
       wirePCBImageZone();
-      if (pcbImageResult) injectPCBImagePanel();
+      if (pcbImageResult) injectPCBImagePanel(); else injectPCBDemoCards();
       break;
 
     case 'pcba':
       area.innerHTML = renderPCBAForm();
       populateSelects();
       wirePCBImageZone();
-      if (pcbImageResult) injectPCBImagePanel();
+      if (pcbImageResult) injectPCBImagePanel(); else injectPCBDemoCards();
       el('add-bom-btn')?.addEventListener('click', () => addBOMRow());
       el('bom-csv-input')?.addEventListener('change', importBOMFromCSV);
       setTimeout(() => {

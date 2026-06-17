@@ -835,14 +835,11 @@ export function computePCBCountryCost(input: PCBCostInput, countryId: string): P
     ? (pcbBase + pcbLayers) * r.hdiUpliftPct / 100 : 0;
   const pcbImpedance = input.impedanceControlled
     ? (pcbBase + pcbLayers) * r.impedanceUpliftPct / 100 : 0;
-  // Amortise setup over order qty (assume ~8 boards per panel)
-  const boardsPerPanel = Math.max(1, Math.floor(r.panelAreaDm2 / boardAreaDm2));
-  const panelsOrdered = Math.max(1, Math.ceil(input.orderQuantity / boardsPerPanel));
-  const pcbSetup = r.setupCostGBP / Math.max(panelsOrdered, 1);
+  // Amortise one-time Gerber/tooling setup across all boards in the order
+  const pcbSetup = r.setupCostGBP / Math.max(input.orderQuantity, 1);
   const pcbFabPerBoard = pcbBase + pcbLayers + pcbSurface + pcbVias + pcbHDI + pcbImpedance + pcbSetup;
 
-  // SMT Assembly
-  const smtCycleHr = input.smtPlacements / (a.smtLineRatePerHr * 3600 / 3600); // hr
+  // SMT Assembly — rate model: cost/placement = smtLineRatePerHr / 3600 CPH reference
   // Simplified: cost = placements × (rate / placements-per-hr)
   const smtAssembly = (input.smtPlacements / 3600) * a.smtLineRatePerHr +
     (input.smtPlacements > 0 ? a.batchSetupGBP / Math.max(input.orderQuantity, 1) : 0);
