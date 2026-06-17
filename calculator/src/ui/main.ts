@@ -8103,7 +8103,7 @@ function renderBreakdown(result: PartCostResult): void {
           </tbody>
         </table>
       </div>
-      <div style="width:220px;flex-shrink:0">
+      <div style="width:320px;flex-shrink:0">
         <div class="panel-title" style="display:flex;justify-content:space-between;align-items:center">
           <span>Cost Mix</span>
           <div class="chart-mode-toggle">
@@ -8111,8 +8111,8 @@ function renderBreakdown(result: PartCostResult): void {
             <button id="chart-mode-waterfall" class="chart-mode-btn${_chartMode === 'waterfall' ? ' active' : ''}">Waterfall</button>
           </div>
         </div>
-        <div class="chart-wrap" id="donut-wrap" style="${_chartMode === 'waterfall' ? 'display:none' : ''}"><canvas id="breakdown-doughnut" width="200" height="200"></canvas></div>
-        <div id="waterfall-wrap" style="width:100%;height:160px;${_chartMode === 'donut' ? 'display:none' : ''}"><canvas id="breakdown-waterfall"></canvas></div>
+        <div class="chart-wrap" id="donut-wrap" style="width:100%;height:280px;${_chartMode === 'waterfall' ? 'display:none' : ''}"><canvas id="breakdown-doughnut"></canvas></div>
+        <div id="waterfall-wrap" style="width:100%;height:240px;${_chartMode === 'donut' ? 'display:none' : ''}"><canvas id="breakdown-waterfall"></canvas></div>
       </div>
     </div>
 
@@ -8150,22 +8150,96 @@ function renderBreakdown(result: PartCostResult): void {
   if (_breakdownChart) { _breakdownChart.destroy(); _breakdownChart = null; }
   const canvas = document.getElementById('breakdown-doughnut') as HTMLCanvasElement;
   if (canvas) {
+    const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
+    const bkdValues = [
+      result.breakdown.rawMaterial, result.breakdown.process, result.breakdown.labour,
+      result.breakdown.tooling,
+      result.breakdown.packaging + result.breakdown.logistics,
+      result.breakdown.overhead, result.breakdown.margin,
+    ];
+    const bkdTotal = bkdValues.reduce((s, v) => s + v, 0);
+    const sym = CURRENCY_SYMBOL[_displayCurrency] ?? _displayCurrency;
+
+    // Custom plugin: draw value + % label on each visible segment
+    const doughnutLabelPlugin = {
+      id: 'cvBkdLabels',
+      afterDatasetsDraw(chart: any) {
+        const { ctx } = chart;
+        const meta = chart.getDatasetMeta(0);
+        meta.data.forEach((arc: any, idx: number) => {
+          const value = bkdValues[idx] ?? 0;
+          if (!value || bkdTotal <= 0) return;
+          const pct = value / bkdTotal;
+          if (pct < 0.04) return; // skip slices too small for labels
+          const midAngle = (arc.startAngle + arc.endAngle) / 2;
+          const r = (arc.innerRadius + arc.outerRadius) / 2;
+          const x = arc.x + Math.cos(midAngle) * r;
+          const y = arc.y + Math.sin(midAngle) * r;
+          const dispVal = value * _displayFxRate;
+          const line1 = `${sym}${dispVal < 10 ? dispVal.toFixed(2) : dispVal.toFixed(1)}`;
+          const line2 = `${(pct * 100).toFixed(0)}%`;
+          ctx.save();
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.shadowColor = 'rgba(0,0,0,0.5)';
+          ctx.shadowBlur = 3;
+          ctx.fillStyle = '#ffffff';
+          ctx.font = `700 11px Inter, sans-serif`;
+          ctx.fillText(line1, x, y - 7);
+          ctx.font = `500 10px Inter, sans-serif`;
+          ctx.fillText(line2, x, y + 7);
+          ctx.restore();
+        });
+      },
+    };
+
     _breakdownChart = new Chart(canvas, {
       type: 'doughnut',
       data: {
         labels: ['Material', 'Process', 'Labour', 'Tooling', 'Pkg+Log', 'Overhead', 'Margin'],
         datasets: [{
-          data: [
-            result.breakdown.rawMaterial, result.breakdown.process, result.breakdown.labour,
-            result.breakdown.tooling,
-            result.breakdown.packaging + result.breakdown.logistics,
-            result.breakdown.overhead, result.breakdown.margin,
-          ],
+          data: bkdValues,
           backgroundColor: ['#e65100','#f4511e','#ff7043','#ff8a65','#ffccbc','#b0bec5','#78909c'],
-          borderWidth: 1,
+          borderWidth: 2,
+          borderColor: isDark ? '#141414' : '#ffffff',
+          hoverOffset: 6,
         }],
       },
-      options: { plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 } } } }, cutout: '60%' },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        cutout: '52%',
+        animation: { animateRotate: true, duration: 420 },
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: {
+              boxWidth: 11, boxHeight: 11,
+              font: { size: 11, family: 'Inter, sans-serif' },
+              color: isDark ? '#94a3b8' : '#475569',
+              padding: 10,
+              usePointStyle: true,
+              pointStyleWidth: 11,
+            },
+          },
+          tooltip: {
+            backgroundColor: isDark ? '#1e293b' : '#fff',
+            titleColor: isDark ? '#f0f0f0' : '#0a0a0a',
+            bodyColor: isDark ? '#94a3b8' : '#475569',
+            borderColor: isDark ? '#334155' : '#e2e8f0',
+            borderWidth: 1,
+            padding: 10,
+            callbacks: {
+              label: ctx => {
+                const v = (ctx.raw as number) * _displayFxRate;
+                const p = bkdTotal > 0 ? ((ctx.raw as number) / bkdTotal * 100).toFixed(1) : '0';
+                return ` ${ctx.label}: ${sym}${v.toFixed(2)} (${p}%)`;
+              },
+            },
+          },
+        },
+      },
+      plugins: [doughnutLabelPlugin],
     });
   }
 
