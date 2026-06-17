@@ -9049,9 +9049,9 @@ function loadExample(): void {
 // ─── SUV Demo Loader ──────────────────────────────────────────────────────────
 
 function loadSUVDemo(commodity: string, slot: number): void {
-  // Switch commodity tab first
-  const tabBtn = document.querySelector<HTMLElement>(`.ctab[data-commodity="${commodity}"]`);
-  if (tabBtn) tabBtn.click();
+  // Show the costing view and switch to the right commodity
+  // (showCosting also calls switchCommodity, rendering the form)
+  showCosting(commodity);
 
   const switchToInsights = () => {
     const insightsTab = document.querySelector<HTMLElement>('.rtab[data-panel="insights"]');
