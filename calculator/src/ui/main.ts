@@ -10541,6 +10541,24 @@ async function init(): Promise<void> {
   // New Costing button → commodity picker
   document.getElementById('new-costing-btn')?.addEventListener('click', showCommodityPicker);
 
+  // ─── Demo Gallery modal ──────────────────────────────────────────────────────
+  const demoModal = document.getElementById('demo-modal');
+  const openDemoModal = () => { if (demoModal) demoModal.style.display = 'flex'; };
+  const closeDemoModal = () => { if (demoModal) demoModal.style.display = 'none'; };
+
+  document.getElementById('demo-btn')?.addEventListener('click', openDemoModal);
+  document.getElementById('close-demo-modal')?.addEventListener('click', closeDemoModal);
+  demoModal?.addEventListener('click', e => { if (e.target === demoModal) closeDemoModal(); });
+
+  document.querySelectorAll<HTMLElement>('#demo-gallery-body .demo-card').forEach(card => {
+    card.addEventListener('click', () => {
+      const commodity = card.dataset.commodity ?? '';
+      const slot = parseInt(card.dataset.slot ?? '1', 10);
+      closeDemoModal();
+      loadSUVDemo(commodity, slot);
+    });
+  });
+
   // Commodity picker — back button
   document.getElementById('cpicker-back-btn')?.addEventListener('click', showHome);
 
@@ -10565,6 +10583,8 @@ async function init(): Promise<void> {
     } else if (document.getElementById('costing-view')?.classList.contains('wf-panel')) {
       closeWorkflowPanel();
     }
+    const demoModalEsc = document.getElementById('demo-modal');
+    if (demoModalEsc?.style.display === 'flex') { demoModalEsc.style.display = 'none'; return; }
     const rateModal = el('rate-modal');
     if (rateModal?.style.display === 'flex') { rateModal.style.display = 'none'; return; }
     const scenarioModal = el('scenario-modal');
