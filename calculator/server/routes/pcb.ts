@@ -4,21 +4,41 @@ import Anthropic from '@anthropic-ai/sdk';
 import {
   computeAllCountryCosts,
   computePCBCountryCost,
+  computeVolumeCurve,
+  computeComplexityScore,
   PCB_COUNTRY_RATES,
   COUNTRY_DISPLAY_ORDER,
   type PCBCostInput,
 } from '../data/pcb-country-rates.js';
 import { fetchLivePrices, type LivePricingProvider } from '../utils/pcb-live-pricing.js';
+import { parseBOMFile, type ParsedBOMLine } from '../utils/pcb-bom-parser.js';
 
 const router = Router();
 const upload = multer({
   storage: multer.memoryStorage(),
   limits: { fileSize: 20 * 1024 * 1024 },
   fileFilter: (_req, file, cb) => {
+    // pcbImage must be an image; bomFile accepts csv/xml/txt text formats.
+    if (file.fieldname === 'bomFile') {
+      if (/\.(csv|xml|txt)$/i.test(file.originalname) || /^(text\/|application\/(xml|csv|vnd\.ms-excel))/i.test(file.mimetype)) cb(null, true);
+      else cb(new Error('BOM file must be .csv, .xml or .txt'));
+      return;
+    }
     if (/^image\/(jpeg|jpg|png|webp)$/i.test(file.mimetype)) cb(null, true);
     else cb(new Error('Only JPEG, PNG, or WebP images are accepted'));
   },
 });
+
+// Build the user-provided BOM context block injected into the Stage 3 prompt.
+function buildParsedBOMContext(lines: ParsedBOMLine[]): string {
+  const rows = lines.slice(0, 400).map(l => `${l.refDes} | ${l.partNumber} | ${l.description} | Qty:${l.qty}`).join('\n');
+  return `\n=== USER-PROVIDED BOM FILE (${lines.length} lines — treat as ground truth for part numbers) ===
+${rows}
+
+Instructions: Use the above as authoritative part numbers. Your BOM output should match these
+reference designators exactly. Focus your image analysis on: board dimensions, layer count,
+surface finish, via count, DFM issues, component pricing and optimisation insights.\n`;
+}
 
 // ── JSON extraction — robust multi-strategy parser ─────────────────────────
 function extractJSON(text: string): string {
@@ -235,8 +255,25 @@ ${raw}`;
 }
 
 // POST /api/pcb/analyze-image
-router.post('/analyze-image', upload.single('pcbImage'), async (req, res): Promise<void> => {
-  if (!req.file) { res.status(400).json({ error: 'No image uploaded' }); return; }
+router.post('/analyze-image', upload.fields([
+  { name: 'pcbImage', maxCount: 1 },
+  { name: 'bomFile', maxCount: 1 },
+]), async (req, res): Promise<void> => {
+  const files = req.files as Record<string, Express.Multer.File[]> | undefined;
+  const imageFile = files?.pcbImage?.[0];
+  const bomFileUpload = files?.bomFile?.[0];
+  if (!imageFile) { res.status(400).json({ error: 'No image uploaded' }); return; }
+
+  // Optional user-provided BOM file — parsed and injected as ground truth.
+  let parsedBOM: ParsedBOMLine[] = [];
+  if (bomFileUpload) {
+    try {
+      parsedBOM = parseBOMFile(bomFileUpload.buffer.toString('utf-8'), bomFileUpload.originalname);
+      console.log(`[PCB] BOM file parsed: ${parsedBOM.length} lines from ${bomFileUpload.originalname}`);
+    } catch (err) {
+      console.warn('[PCB] BOM file parse failed:', err instanceof Error ? err.message : String(err));
+    }
+  }
 
   const apiKey = process.env.ANTHROPIC_API_KEY ?? (req.headers['x-api-key'] as string);
   if (!apiKey) {
@@ -244,8 +281,8 @@ router.post('/analyze-image', upload.single('pcbImage'), async (req, res): Promi
     return;
   }
 
-  const mediaType = req.file.mimetype as 'image/jpeg' | 'image/png' | 'image/webp';
-  const base64Data = req.file.buffer.toString('base64');
+  const mediaType = imageFile.mimetype as 'image/jpeg' | 'image/png' | 'image/webp';
+  const base64Data = imageFile.buffer.toString('base64');
   const anthropic = new Anthropic({ apiKey });
 
   // ── Stage 1: Board domain classification (Haiku) ───────────────────────
@@ -309,7 +346,8 @@ router.post('/analyze-image', upload.single('pcbImage'), async (req, res): Promi
   // ── Stage 3: Full BOM analysis with specialist persona (Sonnet) ────────
   console.log('[PCB] Stage 3: Sonnet specialist analysis...');
   const specialistSystem = SPECIALIST_SYSTEM_PROMPTS[domain] ?? SPECIALIST_SYSTEM_PROMPTS['general'];
-  const userPromptText = buildUserPrompt(ocrResult, stage1Result, domain);
+  const userPromptText = buildUserPrompt(ocrResult, stage1Result, domain) +
+    (parsedBOM.length > 0 ? buildParsedBOMContext(parsedBOM) : '');
 
   let analysis: unknown;
   let lastRaw = '';
@@ -399,6 +437,8 @@ ${userPromptText}`;
 
   let countryComparison: ReturnType<typeof computeAllCountryCosts> = [];
   let selectedCountryBreakdown: ReturnType<typeof computePCBCountryCost> | null = null;
+  let volumeCurves: Record<string, ReturnType<typeof computeVolumeCurve>> = {};
+  let complexityScore: ReturnType<typeof computeComplexityScore> | null = null;
 
   try {
     const a = (analysis as Record<string, unknown>);
@@ -429,8 +469,22 @@ ${userPromptText}`;
     };
 
     countryComparison = computeAllCountryCosts(costInput);
-    selectedCountryBreakdown = computePCBCountryCost(costInput,
-      PCB_COUNTRY_RATES[selectedCountry] ? selectedCountry : 'cn');
+    const resolvedCountry = PCB_COUNTRY_RATES[selectedCountry] ? selectedCountry : 'cn';
+    selectedCountryBreakdown = computePCBCountryCost(costInput, resolvedCountry);
+
+    // Volume sensitivity curves for cheapest, selected, and UK.
+    const sorted = [...countryComparison].sort((x, y) => x.totalPerBoard - y.totalPerBoard);
+    const cheapestId = sorted[0]?.countryId ?? 'cn';
+    const volumeQtys = [100, 250, 500, 1000, 2500, 5000, 10000, 25000];
+    volumeCurves = {
+      [cheapestId]: computeVolumeCurve(costInput, cheapestId, volumeQtys),
+      [resolvedCountry]: computeVolumeCurve(costInput, resolvedCountry, volumeQtys),
+      gb: computeVolumeCurve(costInput, 'gb', volumeQtys),
+    };
+
+    // PCB complexity score (Feature 11).
+    complexityScore = computeComplexityScore(boardSpec, assemblyData);
+
     console.log(`[PCB] Stage 4: Country costs computed for ${COUNTRY_DISPLAY_ORDER.length} countries`);
   } catch (err) {
     console.warn('[PCB] Stage 4 country cost computation failed:', (err as Error).message);
@@ -442,6 +496,8 @@ ${userPromptText}`;
     selectedCountry,
     selectedCountryBreakdown,
     countryComparison,
+    volumeCurves,
+    complexityScore,
   });
 });
 
@@ -458,6 +514,8 @@ router.post('/live-pricing', async (req, res): Promise<void> => {
     res.status(400).json({ error: 'partNumbers array is required' });
     return;
   }
+  // Rate limiting: max 20 part numbers per request.
+  const limitedPartNumbers = partNumbers.slice(0, 20);
   if (!provider || !['octopart', 'rs', 'farnell'].includes(provider)) {
     res.status(400).json({ error: 'provider must be one of: octopart, rs, farnell' });
     return;
@@ -474,7 +532,7 @@ router.post('/live-pricing', async (req, res): Promise<void> => {
 
   try {
     const prices = await fetchLivePrices(
-      partNumbers,
+      limitedPartNumbers,
       provider as LivePricingProvider,
       resolvedApiKey,
       qty ?? 100,
@@ -504,6 +562,40 @@ router.get('/countries', (_req, res) => {
     };
   });
   res.json({ countries: summary });
+});
+
+// POST /api/pcb/scenario  — what-if recompute for the scenario builder (Feature 10)
+router.post('/scenario', (req, res): void => {
+  const b = (req.body ?? {}) as Partial<PCBCostInput> & { country?: string };
+  const countryId = PCB_COUNTRY_RATES[b.country ?? ''] ? (b.country as string) : 'cn';
+
+  const input: PCBCostInput = {
+    widthMm:              Number(b.widthMm)             || 100,
+    heightMm:             Number(b.heightMm)            || 80,
+    layers:               Number(b.layers)              || 2,
+    surfaceFinish:        String(b.surfaceFinish        || 'enig'),
+    throughVias:          Number(b.throughVias)         || 0,
+    blindVias:            Number(b.blindVias)           || 0,
+    microVias:            Number(b.microVias)           || 0,
+    hdiStructure:         String(b.hdiStructure         || 'none'),
+    impedanceControlled:  Boolean(b.impedanceControlled),
+    smtPlacements:        Number(b.smtPlacements)       || 0,
+    throughHoleJoints:    Number(b.throughHoleJoints)   || 0,
+    manualJoints:         Number(b.manualJoints)        || 0,
+    bgaCount:             Number(b.bgaCount)            || 0,
+    aoiRequired:          Boolean(b.aoiRequired),
+    ictTimeSec:           Number(b.ictTimeSec)          || 0,
+    conformalCoatAreaCm2: Number(b.conformalCoatAreaCm2) || 0,
+    totalBOMCostGBP:      Number(b.totalBOMCostGBP)     || 0,
+    orderQuantity:        Number(b.orderQuantity)       || 100,
+  };
+
+  try {
+    const breakdown = computePCBCountryCost(input, countryId);
+    res.json({ success: true, breakdown });
+  } catch (err) {
+    res.status(400).json({ error: `Scenario compute failed: ${(err as Error).message}` });
+  }
 });
 
 export default router;

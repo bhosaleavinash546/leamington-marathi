@@ -76,6 +76,10 @@ let cadOCCTGeometry: OCCTGeometry | null = null;
 let cadGeometrySource: 'occt' | 'text_parsing' = 'text_parsing';
 let pcbImageResult: PCBImageAnalysis | null = null;
 let pcbImageLoading = false;
+let pcbBOMFile: File | null = null;
+let pcbImageDataURL: string | null = null;
+let pcbNREEnabled = false;
+let _pcbVolumeChart: Chart | null = null;
 let supplierQuotes: SupplierQuote[] = [];
 let partPhotoDataUrl: string | null = null;
 let partPhotoName: string | null = null;
@@ -900,6 +904,22 @@ interface PCBCountryBreakdown {
     smtAssembly: number; thAssembly: number; aoi: number;
     logistics: number; importDuty: number;
   };
+  panelInfo?: { boardsPerPanel: number; utilisation: number; panelW: number; panelH: number };
+}
+
+interface VolumeCurvePoint {
+  qty: number;
+  totalPerBoard: number;
+  pcbFabPerBoard: number;
+  assemblyPerBoard: number;
+  logisticsPerBoard: number;
+}
+
+interface PCBComplexityScore {
+  score: number;
+  ipcClass: 1 | 2 | 3;
+  label: 'Simple' | 'Moderate' | 'Complex' | 'Very Complex' | 'Extreme';
+  factors: { layers: number; viaDensity: number; bgaScore: number; hdiScore: number; traceScore: number };
 }
 
 interface PCBImageAnalysis {
@@ -948,10 +968,12 @@ interface PCBImageAnalysis {
   analysisLimitations: string[];
   stage1Classification?: { domain: string; conf: number; hints: string[] };
   ocrExtraction?: { icMarkings: string[]; extractionQuality: string };
+  complexityScore?: PCBComplexityScore;
   // Country-aware cost data (added by server Stage 4)
   _selectedCountry?: string;
   _selectedCountryBreakdown?: PCBCountryBreakdown;
   _countryComparison?: PCBCountryBreakdown[];
+  _volumeCurves?: Record<string, VolumeCurvePoint[]>;
 }
 
 let agentHistory: AgentMessage[] = [];
@@ -3579,7 +3601,18 @@ function makeDemoCountry(
   weeks: number, qi: number, certs: string[], bestFor: string,
   bd: { pcbBase:number; pcbLayers:number; pcbSurface:number; pcbVias:number; pcbHDI:number; pcbSetup:number; smtAssembly:number; thAssembly:number; aoi:number; logistics:number; importDuty:number }
 ): PCBCountryBreakdown {
-  return { countryId: id, countryName: name, flag, pcbFabPerBoard: fab, assemblyPerBoard: assy, logisticsPerBoard: log, bomCostPerBoard: bom, totalPerBoard: +(fab+assy+log+bom).toFixed(2), leadTimeWeeks: weeks, qualityIndex: qi, certifications: certs, bestFor, breakdown: bd };
+  return { countryId: id, countryName: name, flag, pcbFabPerBoard: fab, assemblyPerBoard: assy, logisticsPerBoard: log, bomCostPerBoard: bom, totalPerBoard: +(fab+assy+log+bom).toFixed(2), leadTimeWeeks: weeks, qualityIndex: qi, certifications: certs, bestFor, breakdown: bd, panelInfo: { boardsPerPanel: 4, utilisation: 0.62, panelW: 480, panelH: 350 } };
+}
+
+// Synthesise a demo volume curve from a base per-board total (cost decays with volume).
+function demoVolumeCurve(baseTotal: number, fab: number, assy: number, log: number, _bom: number): VolumeCurvePoint[] {
+  const qtys = [100, 250, 500, 1000, 2500, 5000, 10000, 25000];
+  return qtys.map(qty => {
+    // Setup amortisation shrinks with qty; approximate a gentle decay.
+    const setupPerBoard = 165 / qty; // mid-range tooling
+    const total = +(baseTotal - 165 / 5000 + setupPerBoard).toFixed(2);
+    return { qty, totalPerBoard: total, pcbFabPerBoard: fab, assemblyPerBoard: assy, logisticsPerBoard: log };
+  });
 }
 
 const PCB_DEMO_ECU: PCBImageAnalysis = {
@@ -3643,6 +3676,11 @@ const PCB_DEMO_ECU: PCBImageAnalysis = {
   ],
   stage1Classification: { domain: 'automotive_adas', conf: 0.94, hints: ['multiple BGA ICs', 'automotive grade marking', 'CAN/LIN controller visible', 'ENIG surface finish', '6-layer HDI'] },
   ocrExtraction: { icMarkings: ['STM32H735IGK6', 'SJA1124', 'TPS65942A1', 'S25FL128SAGBHIA10', 'DRV8323RS'], extractionQuality: 'Good' },
+  complexityScore: { score: 70, ipcClass: 3, label: 'Very Complex', factors: { layers: 10, viaDensity: 15, bgaScore: 10, hdiScore: 10, traceScore: 5 } },
+  _volumeCurves: {
+    cn: demoVolumeCurve(58.50, 3.37, 5.50, 1.13, 48.50),
+    gb: demoVolumeCurve(106.74, 25.58, 32.66, 0.00, 48.50),
+  },
   _selectedCountry: 'cn',
   _selectedCountryBreakdown: makeDemoCountry('cn','China (Shenzhen / Suzhou)','🇨🇳', 3.37,5.50,1.13,48.50, 3,0.83,['ISO9001','IATF16949','UL','RoHS','IPC-6012'],'High-volume consumer, cost-optimised, standard FR4', { pcbBase:0.17,pcbLayers:0.42,pcbSurface:0.13,pcbVias:2.34,pcbHDI:0.20,pcbSetup:0.00,smtAssembly:1.22,thAssembly:0.27,aoi:4.27,logistics:0.81,importDuty:0.33 }),
   _countryComparison: [
@@ -3725,6 +3763,11 @@ const PCB_DEMO_ADAS: PCBImageAnalysis = {
   ],
   stage1Classification: { domain: 'automotive_adas', conf: 0.97, hints: ['vision SoC BGA', 'FAKRA camera connectors', 'DDR4 high-speed RAM', 'FPD-Link III deserialiser', '8-layer HDI 2+N+2', 'black solder mask'] },
   ocrExtraction: { icMarkings: ['TDA4VMXAAALHAT', 'MT40A1G8SA-062E', 'DS90UB960MRSQ1', 'DS90UB953ARSQ1', 'BMI088', 'TJA1102AHNJT'], extractionQuality: 'Good' },
+  complexityScore: { score: 88, ipcClass: 3, label: 'Very Complex', factors: { layers: 14, viaDensity: 20, bgaScore: 15, hdiScore: 16, traceScore: 15 } },
+  _volumeCurves: {
+    cn: demoVolumeCurve(73.46, 5.40, 4.92, 0.84, 62.30),
+    gb: demoVolumeCurve(122.13, 31.36, 28.47, 0.00, 62.30),
+  },
   _selectedCountry: 'cn',
   _selectedCountryBreakdown: makeDemoCountry('cn','China (Shenzhen / Suzhou)','🇨🇳',5.40,4.92,0.84,62.30,3,0.83,['ISO9001','IATF16949','UL','RoHS','IPC-6012'],'High-volume consumer, cost-optimised, standard FR4',{pcbBase:0.07,pcbLayers:0.27,pcbSurface:0.07,pcbVias:4.80,pcbHDI:0.12,pcbSetup:0.01,smtAssembly:0.75,thAssembly:0.11,aoi:4.16,logistics:0.46,importDuty:0.38}),
   _countryComparison: [
@@ -3801,6 +3844,48 @@ function buildPCBDemoSection(): string {
     </div>`;
 }
 
+// ─── Client-side country metadata (trend / NRE / risk) — Features 5,6,7 ─────
+interface PCBCountryMeta {
+  trend: { direction: 'rising' | 'stable' | 'falling'; pctChange6m: number; note: string };
+  nre: { ppapGBP: number; fmeaGBP: number; dvprGBP: number; firstArticleGBP: number; iatfAuditGBP: number; totalGBP: number };
+  risk: { geopolitical: number; logisticsReliability: number; qualityConsistency: number; leadTimeVariance: number };
+}
+function mkMeta(
+  dir: 'rising' | 'stable' | 'falling', pct: number, note: string,
+  ppap: number, fmea: number, dvpr: number, fai: number, iatf: number,
+  geo: number, log: number, qual: number, lead: number,
+): PCBCountryMeta {
+  return {
+    trend: { direction: dir, pctChange6m: pct, note },
+    nre: { ppapGBP: ppap, fmeaGBP: fmea, dvprGBP: dvpr, firstArticleGBP: fai, iatfAuditGBP: iatf, totalGBP: ppap + fmea + dvpr + fai + iatf },
+    risk: { geopolitical: geo, logisticsReliability: log, qualityConsistency: qual, leadTimeVariance: lead },
+  };
+}
+const PCB_COUNTRY_META: Record<string, PCBCountryMeta> = {
+  cn: mkMeta('rising', 4, 'Copper CCL price increase and CNY appreciation pushing fab cost up', 3500, 2800, 4200, 1800, 2500, 0.55, 0.80, 0.78, 0.80),
+  vn: mkMeta('stable', 1, 'Strong EMS investment offsetting wage growth', 3800, 3000, 4500, 1900, 2800, 0.72, 0.76, 0.75, 0.74),
+  in: mkMeta('rising', 3, 'PLI-driven capacity ramp but rising skilled-labour wages', 3600, 2900, 4300, 1850, 2700, 0.70, 0.70, 0.72, 0.68),
+  th: mkMeta('stable', 1, 'Mature automotive EMS cluster keeps pricing flat', 4200, 3400, 5000, 2100, 3000, 0.74, 0.82, 0.84, 0.80),
+  my: mkMeta('rising', 3, 'Semiconductor demand and MYR firming lift assembly rates', 4400, 3500, 5200, 2200, 3100, 0.80, 0.84, 0.85, 0.82),
+  tw: mkMeta('rising', 3, 'High demand for HDI/substrate capacity constrains supply', 5000, 4000, 6000, 2500, 3300, 0.48, 0.88, 0.93, 0.86),
+  kr: mkMeta('stable', 2, 'Premium HDI stable; KRW softness offsetting wage rises', 5200, 4200, 6200, 2600, 3400, 0.68, 0.90, 0.93, 0.88),
+  mx: mkMeta('rising', 5, 'Nearshoring surge tightening EMS capacity and labour', 4600, 3700, 5400, 2300, 3000, 0.74, 0.78, 0.82, 0.76),
+  cz: mkMeta('stable', 1, 'EU automotive demand steady; energy costs normalising', 5500, 4400, 6400, 2700, 3400, 0.92, 0.91, 0.90, 0.90),
+  pl: mkMeta('falling', -2, 'EU investment and improved yields lowering effective cost', 5000, 4000, 5900, 2500, 3200, 0.90, 0.90, 0.89, 0.89),
+  de: mkMeta('rising', 6, 'Energy costs and IG-Metall wage agreements raising rates', 7500, 6000, 8500, 3500, 4500, 0.96, 0.97, 0.97, 0.96),
+  gb: mkMeta('stable', 2, 'Domestic capacity stable; modest inflation pass-through', 5500, 4500, 6500, 2800, 3500, 0.95, 0.97, 0.96, 0.97),
+  us: mkMeta('rising', 5, 'Reshoring incentives raising demand faster than capacity', 7000, 5600, 8000, 3300, 4300, 0.90, 0.93, 0.95, 0.92),
+  jp: mkMeta('stable', 1, 'Weak JPY offsetting premium fab cost inflation', 7800, 6300, 8800, 3600, 4600, 0.88, 0.95, 0.99, 0.95),
+};
+
+function computeClientRiskProfile(countryId: string, autoCount: number): { overall: number; label: string; dims: PCBCountryMeta['risk']; singleSource: number } {
+  const dims = PCB_COUNTRY_META[countryId]?.risk ?? { geopolitical: 0.7, logisticsReliability: 0.8, qualityConsistency: 0.8, leadTimeVariance: 0.8 };
+  const singleSource = Math.max(0.3, 1 - Math.min(autoCount, 12) * 0.05);
+  const overall = dims.geopolitical * 0.25 + dims.logisticsReliability * 0.20 + dims.qualityConsistency * 0.25 + singleSource * 0.15 + dims.leadTimeVariance * 0.15;
+  const label = overall >= 0.85 ? 'Low Risk' : overall >= 0.68 ? 'Medium Risk' : 'High Risk';
+  return { overall, label, dims, singleSource };
+}
+
 function buildPCBImageUploadZone(): string {
   return `
     <div class="pcb-img-zone" id="pcb-img-zone">
@@ -3853,6 +3938,24 @@ function buildPCBImageUploadZone(): string {
         </div>
         <div id="pcb-img-filename" style="font-size:0.65rem;color:var(--text-muted);margin-top:4px"></div>
 
+        <!-- Optional BOM/netlist file upload (Priority 2) -->
+        <div style="margin-top:8px;font-size:0.70rem">
+          <label style="color:var(--text-muted)">Optional: attach BOM/netlist file</label>
+          <div style="display:flex;align-items:center;gap:6px;margin-top:4px;justify-content:center;flex-wrap:wrap">
+            <input type="file" id="pcb-bom-input" accept=".csv,.xml,.txt" style="display:none"/>
+            <button class="btn btn-secondary btn-sm" id="pcb-bom-pick-btn" style="font-size:0.65rem">📋 Attach BOM</button>
+            <span id="pcb-bom-filename" style="font-size:0.65rem;color:var(--text-muted)">No file — AI will extract BOM from image</span>
+          </div>
+        </div>
+
+        <!-- Automotive NRE toggle (Feature 7) -->
+        <div style="margin-top:8px;display:flex;justify-content:center">
+          <label style="font-size:0.70rem;display:flex;align-items:center;gap:6px;cursor:pointer">
+            <input type="checkbox" id="pcb-automotive-nre" style="margin:0"/>
+            <span>Include IATF/Automotive NRE costs (PPAP, FMEA, DVP&amp;R, first-article)</span>
+          </label>
+        </div>
+
         <!-- Live Pricing (optional, collapsible) -->
         <details style="margin-top:8px;text-align:left">
           <summary style="font-size:0.68rem;color:var(--text-muted);cursor:pointer;user-select:none">⚡ Live Component Pricing (optional)</summary>
@@ -3887,6 +3990,26 @@ function wirePCBImageZone(): void {
   const fileLabel = el('pcb-img-filename');
 
   pickBtn?.addEventListener('click', () => fileInput?.click());
+
+  // BOM file picker (Priority 2)
+  const bomPickBtn = el<HTMLButtonElement>('pcb-bom-pick-btn');
+  const bomInput = el<HTMLInputElement>('pcb-bom-input');
+  const bomLabel = el('pcb-bom-filename');
+  bomPickBtn?.addEventListener('click', () => bomInput?.click());
+  bomInput?.addEventListener('change', () => {
+    const bf = bomInput?.files?.[0] ?? null;
+    pcbBOMFile = bf;
+    if (bomLabel) bomLabel.textContent = bf
+      ? `📋 ${bf.name} (${(bf.size / 1024).toFixed(0)} KB) — used as ground truth`
+      : 'No file — AI will extract BOM from image';
+  });
+
+  // Automotive NRE toggle (Feature 7)
+  const nreToggle = el<HTMLInputElement>('pcb-automotive-nre');
+  nreToggle?.addEventListener('change', () => {
+    pcbNREEnabled = !!nreToggle.checked;
+    if (pcbImageResult) injectPCBImagePanel();
+  });
 
   fileInput?.addEventListener('change', () => {
     const file = fileInput?.files?.[0] ?? null;
@@ -3931,6 +4054,21 @@ async function analyzePCBImage(file: File): Promise<void> {
   formData.append('country', selectedCountry);
   formData.append('orderQty', orderQty);
 
+  // Optional BOM/netlist file (Priority 2)
+  const bomFileInput = document.getElementById('pcb-bom-input') as HTMLInputElement | null;
+  const bomFile = bomFileInput?.files?.[0] ?? pcbBOMFile;
+  if (bomFile) formData.append('bomFile', bomFile);
+
+  // Store the uploaded image as a data URL for board annotation (Feature 9)
+  try {
+    pcbImageDataURL = await new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = () => reject(reader.error);
+      reader.readAsDataURL(file);
+    });
+  } catch { pcbImageDataURL = null; }
+
   try {
     const resp = await fetch('/api/pcb/analyze-image', {
       method: 'POST',
@@ -3947,6 +4085,8 @@ async function analyzePCBImage(file: File): Promise<void> {
       selectedCountry?: string;
       selectedCountryBreakdown?: PCBCountryBreakdown;
       countryComparison?: PCBCountryBreakdown[];
+      volumeCurves?: Record<string, VolumeCurvePoint[]>;
+      complexityScore?: PCBComplexityScore;
     };
     pcbImageResult = data.analysis;
     // Attach country data to analysis object for rendering
@@ -3954,6 +4094,8 @@ async function analyzePCBImage(file: File): Promise<void> {
       pcbImageResult._selectedCountry = data.selectedCountry ?? selectedCountry;
       pcbImageResult._selectedCountryBreakdown = data.selectedCountryBreakdown ?? undefined;
       pcbImageResult._countryComparison = data.countryComparison ?? [];
+      pcbImageResult._volumeCurves = data.volumeCurves ?? undefined;
+      if (data.complexityScore) pcbImageResult.complexityScore = data.complexityScore;
     }
     injectPCBImagePanel();
   } catch (err) {
@@ -3988,8 +4130,19 @@ function injectPCBImagePanel(): void {
   el('pcb-apply-pcba-btn')?.addEventListener('click', () => applyPCBImageToPCBA());
   el('pcb-clear-btn')?.addEventListener('click', () => {
     pcbImageResult = null;
+    if (_pcbVolumeChart) { _pcbVolumeChart.destroy(); _pcbVolumeChart = null; }
     injectPCBDemoCards();
   });
+
+  // Feature wiring (Phase 1-2)
+  el('pcb-export-csv-btn')?.addEventListener('click', () => { if (pcbImageResult) exportPCBAnalysisCSV(pcbImageResult); });
+  el('pcb-export-pdf-btn')?.addEventListener('click', () => { if (pcbImageResult) exportPCBAnalysisPrint(pcbImageResult); });
+  if (pcbImageResult) {
+    wireScenarioBuilder(pcbImageResult);
+    wireRFQTracker(pcbImageResult);
+    wireBoardAnnotation(pcbImageResult);
+    drawVolumeCurveChart(pcbImageResult);
+  }
 
   // Enable live pricing fetch button if there are OCR-identified parts
   const icMarkings = pcbImageResult.ocrExtraction?.icMarkings ?? [];
@@ -4088,6 +4241,11 @@ function buildPCBImagePanel(r: PCBImageAnalysis): string {
         <button class="btn btn-secondary btn-sm" id="pcb-clear-btn" style="font-size:0.65rem;padding:2px 8px">✕ Clear</button>
       </div>
 
+      <div style="display:flex;gap:6px;margin-top:6px">
+        <button class="btn btn-secondary btn-sm" id="pcb-export-csv-btn" style="font-size:0.65rem">⬇ Export CSV</button>
+        <button class="btn btn-secondary btn-sm" id="pcb-export-pdf-btn" style="font-size:0.65rem">🖨 Print/PDF</button>
+      </div>
+
       <div class="pcb-stat-grid">
         <div class="occt-stat"><div class="occt-stat-value">${b.estimatedLayers}</div><div class="occt-stat-label">Layers</div></div>
         <div class="occt-stat"><div class="occt-stat-value">${b.widthMm}×${b.heightMm}</div><div class="occt-stat-label">Board (mm)</div></div>
@@ -4103,6 +4261,8 @@ function buildPCBImagePanel(r: PCBImageAnalysis): string {
         <div class="occt-stat"><div class="occt-stat-value">£${totalBOMCost}</div><div class="occt-stat-label">BOM total (${totalBOMLines} lines)</div></div>
         <div class="occt-stat"><div class="occt-stat-value">${r.stage1Classification?.domain?.replace(/_/g,' ') ?? 'general'}</div><div class="occt-stat-label">Board domain</div></div>
         <div class="occt-stat"><div class="occt-stat-value">${r.ocrExtraction?.icMarkings?.length ?? 0}</div><div class="occt-stat-label">ICs identified</div></div>
+        ${r.complexityScore ? `<div class="occt-stat"><div class="occt-stat-value">${r.complexityScore.score}/100</div><div class="occt-stat-label">Complexity (${r.complexityScore.label})</div></div>
+        <div class="occt-stat"><div class="occt-stat-value">Class ${r.complexityScore.ipcClass}</div><div class="occt-stat-label">IPC class</div></div>` : ''}
       </div>
 
       <div class="pcb-apply-row">
@@ -4122,6 +4282,16 @@ function buildPCBImagePanel(r: PCBImageAnalysis): string {
       </div>
 
       ${buildCountryBreakdownSection(r)}
+
+      ${buildVolumeCurveSection(r)}
+
+      ${buildRiskRadarSection(r)}
+
+      ${buildScenarioBuilderSection(r)}
+
+      ${buildBoardAnnotationSection()}
+
+      ${buildRFQTrackerSection(r)}
 
       <div class="pcb-insights-grid">
         <div class="pcb-analysis-section">
@@ -4175,15 +4345,30 @@ function buildCountryBreakdownSection(r: PCBImageAnalysis): string {
         </div>
         <div style="font-size:0.68rem;color:var(--text-muted)">Breakdown: PCB base £${sel.breakdown.pcbBase.toFixed(2)} + layers £${sel.breakdown.pcbLayers.toFixed(2)} + surface £${sel.breakdown.pcbSurface.toFixed(2)} + vias £${sel.breakdown.pcbVias.toFixed(2)} + HDI £${sel.breakdown.pcbHDI.toFixed(2)} + setup £${sel.breakdown.pcbSetup.toFixed(2)} | assembly £${sel.breakdown.smtAssembly.toFixed(2)} | test £${sel.breakdown.aoi.toFixed(2)} | logistics £${sel.breakdown.logistics.toFixed(2)} + duty £${sel.breakdown.importDuty.toFixed(2)}</div>
       </div>
+      ${sel.panelInfo ? `<div style="margin-top:6px;padding:6px 8px;background:var(--card-bg);border-radius:6px;font-size:0.68rem;color:var(--text-muted)">📐 Panelisation: <strong style="color:var(--text-secondary)">${sel.panelInfo.boardsPerPanel}-up</strong> on ${sel.panelInfo.panelW}×${sel.panelInfo.panelH}mm panel · utilisation <strong style="color:var(--text-secondary)">${Math.round(sel.panelInfo.utilisation * 100)}%</strong> (waste amortised into PCB base cost)</div>` : ''}
+      ${pcbNREEnabled && PCB_COUNTRY_META[selectedCountryId]?.nre ? `<div style="margin-top:6px;padding:6px 8px;background:var(--card-bg);border-radius:6px;font-size:0.68rem;color:var(--text-muted)">🏭 Automotive NRE (one-time/programme): PPAP £${PCB_COUNTRY_META[selectedCountryId].nre.ppapGBP.toLocaleString()} + FMEA £${PCB_COUNTRY_META[selectedCountryId].nre.fmeaGBP.toLocaleString()} + DVP&amp;R £${PCB_COUNTRY_META[selectedCountryId].nre.dvprGBP.toLocaleString()} + FAI £${PCB_COUNTRY_META[selectedCountryId].nre.firstArticleGBP.toLocaleString()} + IATF £${PCB_COUNTRY_META[selectedCountryId].nre.iatfAuditGBP.toLocaleString()} = <strong style="color:var(--text-secondary)">£${PCB_COUNTRY_META[selectedCountryId].nre.totalGBP.toLocaleString()}</strong></div>` : ''}
       <div style="margin-top:4px;font-size:0.68rem;color:var(--text-muted)">Best for: ${escHtml(sel.bestFor)}</div>
     </div>` : '';
 
   // Country comparison table
   const maxTotal = Math.max(...comparison.map(c => c.totalPerBoard), 0.01);
+  const orderQtyVal = (document.getElementById('pcb-order-qty') as HTMLInputElement)?.value;
+  const nreQty = parseInt(orderQtyVal ?? '', 10) || 5000;
   const compRows = comparison.map(c => {
     const isSelected = c.countryId === selectedCountryId;
     const barW = Math.round((c.totalPerBoard / maxTotal) * 100);
     const qualityStars = '★'.repeat(Math.round(c.qualityIndex * 5)) + '☆'.repeat(5 - Math.round(c.qualityIndex * 5));
+    const meta = PCB_COUNTRY_META[c.countryId];
+    const trend = meta?.trend;
+    const trendCell = trend ? (() => {
+      const arrow = trend.direction === 'rising' ? '↑' : trend.direction === 'falling' ? '↓' : '→';
+      const colour = trend.direction === 'rising' ? '#ef4444' : trend.direction === 'falling' ? '#16a34a' : 'var(--text-muted)';
+      const sign = trend.pctChange6m > 0 ? '+' : '';
+      return `<td style="color:${colour};white-space:nowrap" title="${escHtml(trend.note)}">${arrow} ${sign}${trend.pctChange6m}%</td>`;
+    })() : '<td>—</td>';
+    const nreCell = pcbNREEnabled
+      ? `<td style="white-space:nowrap" title="One-time programme NRE">£${((meta?.nre?.totalGBP ?? 0) / 1000).toFixed(1)}k</td>`
+      : '';
     return `<tr style="${isSelected ? 'background:rgba(79,142,247,0.10);font-weight:700' : ''}">
       <td style="white-space:nowrap">${c.flag} ${c.countryName.split(' (')[0]}</td>
       <td>£${c.pcbFabPerBoard.toFixed(2)}</td>
@@ -4198,6 +4383,8 @@ function buildCountryBreakdownSection(r: PCBImageAnalysis): string {
         </div>
       </td>
       <td style="white-space:nowrap">${c.leadTimeWeeks}w</td>
+      ${trendCell}
+      ${nreCell}
       <td style="font-size:0.65rem;color:#f59e0b" title="${Math.round(c.qualityIndex * 100)}% quality">${qualityStars}</td>
     </tr>`;
   }).join('');
@@ -4217,6 +4404,8 @@ function buildCountryBreakdownSection(r: PCBImageAnalysis): string {
               <th>Total/Board</th>
               <th style="min-width:60px">Cost bar</th>
               <th>Lead time</th>
+              <th title="6-month should-cost trend">Trend</th>
+              ${pcbNREEnabled ? '<th title="One-time automotive NRE per programme">NRE</th>' : ''}
               <th>Quality</th>
             </tr>
           </thead>
@@ -4225,8 +4414,458 @@ function buildCountryBreakdownSection(r: PCBImageAnalysis): string {
       </div>
       <div style="margin-top:4px;font-size:0.65rem;color:var(--text-muted)">
         Prices include PCB fabrication + SMT/THT assembly + logistics/import duty to UK. BOM component cost (£${(comparison[0]?.bomCostPerBoard ?? 0).toFixed(2)}) is the same for all countries. Data calibrated to Jan 2026 market rates.
+        ${pcbNREEnabled ? `<br/>NRE costs are one-time per programme. At ${(nreQty / 1000).toFixed(nreQty % 1000 === 0 ? 0 : 1)}k units, ${selectedCountryId.toUpperCase()} NRE adds £${(((PCB_COUNTRY_META[selectedCountryId]?.nre?.totalGBP ?? 0) / nreQty)).toFixed(2)}/board.` : ''}
       </div>
     </div>`;
+}
+
+// ─── Feature: Volume sensitivity chart (Priority 3) ────────────────────────
+function buildVolumeCurveSection(r: PCBImageAnalysis): string {
+  if (!r._volumeCurves || Object.keys(r._volumeCurves).length === 0) return '';
+  const curves = r._volumeCurves;
+  const selId = r._selectedCountry ?? 'cn';
+  const orderQty = parseInt((document.getElementById('pcb-order-qty') as HTMLInputElement)?.value ?? '5000', 10) || 5000;
+
+  // Crossover insight: compare cheapest vs UK at the user's nearest volume break.
+  const ids = Object.keys(curves);
+  const cheapestId = ids.find(id => id !== 'gb' && id !== selId) ?? ids[0];
+  const gbCurve = curves.gb ?? curves[ids[0]];
+  const cheapCurve = curves[cheapestId] ?? gbCurve;
+  const pointAt = (curve: VolumeCurvePoint[]): VolumeCurvePoint => {
+    let best = curve[0];
+    for (const p of curve) if (Math.abs(p.qty - orderQty) < Math.abs(best.qty - orderQty)) best = p;
+    return best;
+  };
+  const cheapPt = pointAt(cheapCurve);
+  const gbPt = pointAt(gbCurve);
+  const saving = gbPt.totalPerBoard - cheapPt.totalPerBoard;
+  const fullRun = saving * orderQty;
+  const cheapName = PCB_COUNTRY_META[cheapestId] ? cheapestId.toUpperCase() : cheapestId.toUpperCase();
+  const insight = saving > 0
+    ? `At your volume (${orderQty.toLocaleString()}), ${cheapName} saves £${saving.toFixed(2)}/board vs UK (£${Math.round(fullRun).toLocaleString()} on the full run).`
+    : `At your volume (${orderQty.toLocaleString()}), UK is within £${Math.abs(saving).toFixed(2)}/board of the cheapest option.`;
+
+  return `
+    <div class="pcb-analysis-section">
+      <div class="pcb-analysis-section-title">📈 Volume Sensitivity — Cost per Board vs Order Quantity</div>
+      <div style="position:relative;height:240px;background:var(--card-bg);border-radius:6px;padding:8px">
+        <canvas id="pcb-volume-chart"></canvas>
+      </div>
+      <div style="margin-top:6px;font-size:0.68rem;color:var(--text-muted)">${escHtml(insight)}</div>
+    </div>`;
+}
+
+function drawVolumeCurveChart(r: PCBImageAnalysis): void {
+  const canvas = document.getElementById('pcb-volume-chart') as HTMLCanvasElement | null;
+  if (!canvas || !r._volumeCurves) return;
+  if (_pcbVolumeChart) { _pcbVolumeChart.destroy(); _pcbVolumeChart = null; }
+
+  const curves = r._volumeCurves;
+  const selId = r._selectedCountry ?? 'cn';
+  const ids = Object.keys(curves);
+  const cheapestId = ids.find(id => id !== 'gb' && id !== selId) ?? ids[0];
+  const labels = (curves[ids[0]] ?? []).map(p => p.qty.toLocaleString());
+
+  const nameOf = (id: string): string => {
+    const c = r._countryComparison?.find(cc => cc.countryId === id);
+    return c ? `${c.flag} ${c.countryName.split(' (')[0]}` : id.toUpperCase();
+  };
+
+  const datasets: Array<{ label: string; data: number[]; borderColor: string; backgroundColor: string; tension: number; pointRadius: number }> = [];
+  const addLine = (id: string, colour: string) => {
+    if (!curves[id]) return;
+    datasets.push({
+      label: nameOf(id),
+      data: curves[id].map(p => p.totalPerBoard),
+      borderColor: colour,
+      backgroundColor: colour,
+      tension: 0.25,
+      pointRadius: 3,
+    });
+  };
+  addLine(cheapestId, '#16a34a');
+  if (selId !== cheapestId) addLine(selId, '#4f8ef7');
+  if (selId !== 'gb' && cheapestId !== 'gb') addLine('gb', '#f59e0b');
+
+  _pcbVolumeChart = new Chart(canvas, {
+    type: 'line',
+    data: { labels, datasets },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { labels: { boxWidth: 12, font: { size: 11 } } },
+        tooltip: { callbacks: { label: (ctx) => `${ctx.dataset.label}: £${Number(ctx.parsed.y).toFixed(2)}/board` } },
+      },
+      scales: {
+        x: { title: { display: true, text: 'Order quantity', font: { size: 10 } } },
+        y: { title: { display: true, text: 'Cost per board (£)', font: { size: 10 } }, beginAtZero: false },
+      },
+    },
+  });
+}
+
+// ─── Feature 6: Supply chain risk radar ────────────────────────────────────
+function riskBar(v: number): string {
+  const filled = Math.max(1, Math.min(5, Math.round(v * 5)));
+  return '■'.repeat(filled) + '□'.repeat(5 - filled);
+}
+function buildRiskRadarSection(r: PCBImageAnalysis): string {
+  const comparison = r._countryComparison ?? [];
+  if (!comparison.length) return '';
+  const selId = r._selectedCountry ?? 'cn';
+  const autoCount = r.bom.filter(b => b.automotive).length;
+
+  // Selected + top 3 cheapest alternatives (distinct)
+  const ordered = [...comparison].sort((a, b) => a.totalPerBoard - b.totalPerBoard);
+  const chosen: PCBCountryBreakdown[] = [];
+  const sel = comparison.find(c => c.countryId === selId);
+  if (sel) chosen.push(sel);
+  for (const c of ordered) {
+    if (chosen.length >= 4) break;
+    if (!chosen.some(x => x.countryId === c.countryId)) chosen.push(c);
+  }
+
+  const rows = chosen.map(c => {
+    const p = computeClientRiskProfile(c.countryId, autoCount);
+    const colour = p.label === 'Low Risk' ? '#16a34a' : p.label === 'Medium Risk' ? '#f59e0b' : '#ef4444';
+    return `<tr ${c.countryId === selId ? 'style="background:rgba(79,142,247,0.10);font-weight:700"' : ''}>
+      <td style="white-space:nowrap">${c.flag} ${c.countryName.split(' (')[0]}</td>
+      <td style="font-family:monospace" title="Geopolitical stability">${riskBar(p.dims.geopolitical)}</td>
+      <td style="font-family:monospace" title="Logistics reliability">${riskBar(p.dims.logisticsReliability)}</td>
+      <td style="font-family:monospace" title="Quality consistency">${riskBar(p.dims.qualityConsistency)}</td>
+      <td style="font-family:monospace" title="Lead-time variance">${riskBar(p.dims.leadTimeVariance)}</td>
+      <td style="color:${colour};font-weight:700;white-space:nowrap">${p.label}</td>
+    </tr>`;
+  }).join('');
+
+  const autoParts = r.bom.filter(b => b.automotive && (b.componentType.startsWith('ic_') || b.highCost)).slice(0, 3).map(b => b.value || b.partNumber || b.refDes).filter(Boolean);
+  const singleSourceLine = autoCount > 0
+    ? `${autoCount} components are automotive-grade from potential single-source suppliers${autoParts.length ? ` (e.g. ${escHtml(autoParts.join(', '))})` : ''}.`
+    : 'No automotive-grade single-source exposure detected in BOM.';
+
+  return `
+    <div class="pcb-analysis-section">
+      <div class="pcb-analysis-section-title">🛡 Supply Chain Risk Radar</div>
+      <div style="overflow-x:auto">
+        <table class="pcb-bom-table" style="font-size:0.72rem;white-space:nowrap">
+          <thead><tr><th>Country</th><th>Geopolitical</th><th>Logistics</th><th>Quality</th><th>Lead Time</th><th>Overall</th></tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>
+      <div style="margin-top:6px;font-size:0.68rem;color:var(--text-muted)">⚠ Single-source risk: ${singleSourceLine}</div>
+    </div>`;
+}
+
+// ─── Feature 10: What-if scenario builder ──────────────────────────────────
+function buildScenarioBuilderSection(r: PCBImageAnalysis): string {
+  const b = r.boardSpec;
+  const selId = r._selectedCountry ?? 'cn';
+  const curFinish = (b.surfaceFinish || 'enig').toLowerCase();
+  const orderQty = parseInt((document.getElementById('pcb-order-qty') as HTMLInputElement)?.value ?? '5000', 10) || 5000;
+
+  const finishOpt = (v: string, label: string) => `<option value="${v}"${curFinish === v ? ' selected' : ''}>${label}</option>`;
+  const layerOpt = (v: number) => `<option value="${v}"${b.estimatedLayers === v ? ' selected' : ''}>${v}-layer</option>`;
+  const countryOpt = (id: string, flag: string, name: string) => `<option value="${id}"${selId === id ? ' selected' : ''}>${flag} ${name}</option>`;
+
+  return `
+    <details class="pcb-analysis-section" style="margin-top:8px">
+      <summary class="pcb-analysis-section-title" style="cursor:pointer;list-style:revert">🧪 What-If Scenario Builder</summary>
+      <div style="margin-top:8px;display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:8px;font-size:0.72rem">
+        <label style="display:flex;flex-direction:column;gap:3px">Surface finish
+          <select id="pcb-scn-finish" style="font-size:0.72rem;padding:3px 6px;border:1px solid var(--border);border-radius:4px;background:var(--card-bg)">
+            ${finishOpt('hasl', 'HASL')}${finishOpt('hasl_lf', 'HASL-LF')}${finishOpt('enig', 'ENIG')}${finishOpt('osp', 'OSP')}${finishOpt('enepig', 'ENEPIG')}
+          </select>
+        </label>
+        <label style="display:flex;flex-direction:column;gap:3px">Layer count
+          <select id="pcb-scn-layers" style="font-size:0.72rem;padding:3px 6px;border:1px solid var(--border);border-radius:4px;background:var(--card-bg)">
+            ${[2,4,6,8,10,12].map(layerOpt).join('')}
+          </select>
+        </label>
+        <label style="display:flex;flex-direction:column;gap:3px">Order quantity: <span id="pcb-scn-qty-label">${orderQty.toLocaleString()}</span>
+          <input type="range" id="pcb-scn-qty" min="100" max="25000" step="100" value="${orderQty}"/>
+        </label>
+        <label style="display:flex;flex-direction:column;gap:3px">Country
+          <select id="pcb-scn-country" style="font-size:0.72rem;padding:3px 6px;border:1px solid var(--border);border-radius:4px;background:var(--card-bg)">
+            ${countryOpt('cn','🇨🇳','China')}${countryOpt('vn','🇻🇳','Vietnam')}${countryOpt('in','🇮🇳','India')}${countryOpt('th','🇹🇭','Thailand')}${countryOpt('my','🇲🇾','Malaysia')}${countryOpt('tw','🇹🇼','Taiwan')}${countryOpt('kr','🇰🇷','South Korea')}${countryOpt('mx','🇲🇽','Mexico')}${countryOpt('cz','🇨🇿','Czechia')}${countryOpt('pl','🇵🇱','Poland')}${countryOpt('de','🇩🇪','Germany')}${countryOpt('gb','🇬🇧','UK')}${countryOpt('us','🇺🇸','USA')}${countryOpt('jp','🇯🇵','Japan')}
+          </select>
+        </label>
+      </div>
+      <div id="pcb-scn-result" style="margin-top:8px;padding:8px;background:var(--card-bg);border-radius:6px;font-size:0.72rem;color:var(--text-muted)">Adjust a parameter to see the cost delta vs the current baseline.</div>
+    </details>`;
+}
+
+let _scnDebounce: ReturnType<typeof setTimeout> | null = null;
+function wireScenarioBuilder(r: PCBImageAnalysis): void {
+  const ids = ['pcb-scn-finish', 'pcb-scn-layers', 'pcb-scn-qty', 'pcb-scn-country'];
+  const qtyLabel = document.getElementById('pcb-scn-qty-label');
+  const resultEl = document.getElementById('pcb-scn-result');
+  if (!resultEl) return;
+
+  const baseTotal = r._selectedCountryBreakdown?.totalPerBoard ?? 0;
+
+  const recompute = async () => {
+    const finish = (document.getElementById('pcb-scn-finish') as HTMLSelectElement)?.value ?? 'enig';
+    const layers = parseInt((document.getElementById('pcb-scn-layers') as HTMLSelectElement)?.value ?? '2', 10);
+    const qty = parseInt((document.getElementById('pcb-scn-qty') as HTMLInputElement)?.value ?? '5000', 10);
+    const country = (document.getElementById('pcb-scn-country') as HTMLSelectElement)?.value ?? 'cn';
+    if (qtyLabel) qtyLabel.textContent = qty.toLocaleString();
+
+    const b = r.boardSpec; const a = r.assembly;
+    const payload = {
+      widthMm: b.widthMm, heightMm: b.heightMm, layers, surfaceFinish: finish,
+      throughVias: b.throughVias, blindVias: b.blindVias, microVias: b.microVias,
+      hdiStructure: b.hdiStructure, impedanceControlled: b.impedanceControlRequired,
+      smtPlacements: a.smtPlacements, throughHoleJoints: a.throughHoleJoints, manualJoints: a.manualJoints,
+      bgaCount: a.bgaCount, aoiRequired: a.aoiRequired, ictTimeSec: a.ictTimeSec, conformalCoatAreaCm2: 0,
+      totalBOMCostGBP: r.costEstimates.totalBOMCostGBP, orderQuantity: qty, country,
+    };
+    try {
+      const resp = await fetch('/api/pcb/scenario', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload),
+      });
+      const data = await resp.json() as { success?: boolean; breakdown?: PCBCountryBreakdown; error?: string };
+      if (!resp.ok || !data.breakdown) throw new Error(data.error ?? resp.statusText);
+      const nt = data.breakdown.totalPerBoard;
+      const delta = nt - baseTotal;
+      const pct = baseTotal > 0 ? (delta / baseTotal) * 100 : 0;
+      const totalRun = delta * qty;
+      const sign = delta >= 0 ? '+' : '−';
+      const colour = delta > 0 ? '#ef4444' : delta < 0 ? '#16a34a' : 'var(--text-muted)';
+      resultEl.innerHTML = `New total: <strong style="color:var(--accent)">£${nt.toFixed(2)}/board</strong> · Delta vs baseline (£${baseTotal.toFixed(2)}): <strong style="color:${colour}">${sign}£${Math.abs(delta).toFixed(2)} (${sign}${Math.abs(pct).toFixed(1)}%)</strong>. At ${qty.toLocaleString()} units, that is ${sign}£${Math.abs(totalRun).toLocaleString(undefined, { maximumFractionDigits: 0 })} total.`;
+    } catch (err) {
+      resultEl.textContent = `⚠ Scenario error: ${(err instanceof Error ? err.message : String(err)).slice(0, 100)}`;
+    }
+  };
+
+  for (const id of ids) {
+    const elem = document.getElementById(id);
+    elem?.addEventListener('input', () => {
+      if (_scnDebounce) clearTimeout(_scnDebounce);
+      _scnDebounce = setTimeout(() => void recompute(), 250);
+    });
+  }
+}
+
+// ─── Feature 4: RFQ tracker (localStorage) ─────────────────────────────────
+interface RFQEntry {
+  id: string; partName: string; date: string; country: string; emsName: string;
+  quotedTotalPerBoard: number; estimatedTotalPerBoard: number; variancePct: number; notes: string;
+}
+const RFQ_KEY = 'pcb_rfq_log';
+function loadRFQ(): RFQEntry[] {
+  try { return JSON.parse(localStorage.getItem(RFQ_KEY) ?? '[]') as RFQEntry[]; } catch { return []; }
+}
+function saveRFQ(entries: RFQEntry[]): void {
+  try { localStorage.setItem(RFQ_KEY, JSON.stringify(entries)); } catch { /* ignore quota */ }
+}
+function buildRFQTrackerSection(r: PCBImageAnalysis): string {
+  const estimated = r._selectedCountryBreakdown?.totalPerBoard ?? 0;
+  const countryName = r._selectedCountryBreakdown?.countryName.split(' (')[0] ?? (r._selectedCountry ?? 'cn').toUpperCase();
+  return `
+    <details class="pcb-analysis-section" style="margin-top:8px">
+      <summary class="pcb-analysis-section-title" style="cursor:pointer;list-style:revert">📥 RFQ Tracker — Log &amp; Compare EMS Quotes</summary>
+      <div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;align-items:flex-end;font-size:0.72rem">
+        <label style="display:flex;flex-direction:column;gap:3px">EMS Name
+          <input type="text" id="pcb-rfq-ems" placeholder="e.g. Jabil" style="font-size:0.72rem;padding:3px 6px;border:1px solid var(--border);border-radius:4px;background:var(--card-bg)"/>
+        </label>
+        <label style="display:flex;flex-direction:column;gap:3px">Quoted £/board
+          <input type="number" id="pcb-rfq-quoted" step="0.01" min="0" style="width:110px;font-size:0.72rem;padding:3px 6px;border:1px solid var(--border);border-radius:4px;background:var(--card-bg)"/>
+        </label>
+        <label style="display:flex;flex-direction:column;gap:3px;flex:1;min-width:120px">Notes
+          <input type="text" id="pcb-rfq-notes" placeholder="lead time, MOQ, terms…" style="font-size:0.72rem;padding:3px 6px;border:1px solid var(--border);border-radius:4px;background:var(--card-bg)"/>
+        </label>
+        <button class="btn btn-primary btn-sm" id="pcb-rfq-log-btn" style="font-size:0.68rem">Log Quote</button>
+      </div>
+      <div style="margin-top:4px;font-size:0.66rem;color:var(--text-muted)">Estimated baseline: ${countryName} £${estimated.toFixed(2)}/board</div>
+      <div id="pcb-rfq-table-wrap" style="margin-top:8px"></div>
+    </details>`;
+}
+function renderRFQTable(): void {
+  const wrap = document.getElementById('pcb-rfq-table-wrap');
+  if (!wrap) return;
+  const entries = loadRFQ().slice(-10).reverse();
+  if (!entries.length) { wrap.innerHTML = '<div style="font-size:0.68rem;color:var(--text-muted)">No quotes logged yet.</div>'; return; }
+  const rows = entries.map(e => {
+    const colour = e.variancePct > 0 ? '#ef4444' : e.variancePct < 0 ? '#16a34a' : 'var(--text-muted)';
+    const sign = e.variancePct >= 0 ? '+' : '';
+    return `<tr>
+      <td style="white-space:nowrap">${new Date(e.date).toLocaleDateString()}</td>
+      <td>${escHtml(e.emsName)}</td>
+      <td>${escHtml(e.country)}</td>
+      <td>£${e.quotedTotalPerBoard.toFixed(2)}</td>
+      <td>£${e.estimatedTotalPerBoard.toFixed(2)}</td>
+      <td style="color:${colour};font-weight:700">${sign}${e.variancePct.toFixed(1)}%</td>
+      <td style="max-width:200px;white-space:normal">${escHtml(e.notes)}</td>
+    </tr>`;
+  }).join('');
+  const avg = entries.reduce((s, e) => s + e.variancePct, 0) / entries.length;
+  const avgSign = avg >= 0 ? 'above' : 'below';
+  wrap.innerHTML = `
+    <div style="overflow-x:auto">
+      <table class="pcb-bom-table" style="font-size:0.72rem">
+        <thead><tr><th>Date</th><th>EMS</th><th>Country</th><th>Quoted</th><th>Estimated</th><th>Variance %</th><th>Notes</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>
+    <div style="margin-top:4px;font-size:0.68rem;color:var(--text-muted)">Your quotes run <strong>${Math.abs(avg).toFixed(1)}% ${avgSign}</strong> estimates on average.</div>`;
+}
+function wireRFQTracker(r: PCBImageAnalysis): void {
+  const btn = document.getElementById('pcb-rfq-log-btn');
+  btn?.addEventListener('click', () => {
+    const ems = (document.getElementById('pcb-rfq-ems') as HTMLInputElement)?.value?.trim() ?? '';
+    const quoted = parseFloat((document.getElementById('pcb-rfq-quoted') as HTMLInputElement)?.value ?? '');
+    const notes = (document.getElementById('pcb-rfq-notes') as HTMLInputElement)?.value?.trim() ?? '';
+    if (!ems || !Number.isFinite(quoted) || quoted <= 0) {
+      showToast('Enter an EMS name and a valid quoted price.', 'warning');
+      return;
+    }
+    const estimated = r._selectedCountryBreakdown?.totalPerBoard ?? 0;
+    const variancePct = estimated > 0 ? ((quoted - estimated) / estimated) * 100 : 0;
+    const entries = loadRFQ();
+    entries.push({
+      id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+      partName: r.partName,
+      date: new Date().toISOString(),
+      country: r._selectedCountryBreakdown?.countryName.split(' (')[0] ?? (r._selectedCountry ?? 'cn').toUpperCase(),
+      emsName: ems, quotedTotalPerBoard: quoted, estimatedTotalPerBoard: estimated, variancePct, notes,
+    });
+    saveRFQ(entries);
+    (document.getElementById('pcb-rfq-ems') as HTMLInputElement).value = '';
+    (document.getElementById('pcb-rfq-quoted') as HTMLInputElement).value = '';
+    (document.getElementById('pcb-rfq-notes') as HTMLInputElement).value = '';
+    renderRFQTable();
+  });
+  renderRFQTable();
+}
+
+// ─── Feature 9: Board image annotation ─────────────────────────────────────
+function buildBoardAnnotationSection(): string {
+  if (!pcbImageDataURL) return '';
+  return `
+    <div class="pcb-analysis-section">
+      <div class="pcb-analysis-section-title" style="display:flex;align-items:center;gap:8px">
+        🖼 Annotated Board
+        <button class="btn btn-secondary btn-sm" id="pcb-annot-toggle" style="font-size:0.62rem;margin-left:auto">Show Annotated Board</button>
+      </div>
+      <div id="pcb-annot-wrap" style="display:none;margin-top:6px;text-align:center">
+        <canvas id="pcb-annotated-img" style="max-width:100%;border:1px solid var(--border);border-radius:6px"></canvas>
+        <div style="margin-top:4px;font-size:0.64rem;color:var(--text-muted)">RefDes labels distributed across the board — <span style="color:#ef4444">red=high-cost</span>, <span style="color:#f59e0b">amber=automotive</span>, <span style="color:#4f8ef7">blue=standard</span>. Positions are approximate (grid layout).</div>
+      </div>
+    </div>`;
+}
+function wireBoardAnnotation(r: PCBImageAnalysis): void {
+  const toggle = document.getElementById('pcb-annot-toggle');
+  const wrap = document.getElementById('pcb-annot-wrap');
+  if (!toggle || !wrap || !pcbImageDataURL) return;
+  let drawn = false;
+  toggle.addEventListener('click', () => {
+    const visible = wrap.style.display !== 'none';
+    wrap.style.display = visible ? 'none' : 'block';
+    toggle.textContent = visible ? 'Show Annotated Board' : 'Hide Annotated Board';
+    if (!visible && !drawn) { drawBoardAnnotation(r); drawn = true; }
+  });
+}
+function drawBoardAnnotation(r: PCBImageAnalysis): void {
+  const canvas = document.getElementById('pcb-annotated-img') as HTMLCanvasElement | null;
+  if (!canvas || !pcbImageDataURL) return;
+  const img = new Image();
+  img.onload = () => {
+    const maxW = 720;
+    const scale = img.width > maxW ? maxW / img.width : 1;
+    canvas.width = img.width * scale;
+    canvas.height = img.height * scale;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    // Distribute BOM refdes labels in a grid overlay
+    const items = r.bom.slice(0, 40);
+    const cols = Math.ceil(Math.sqrt(items.length)) || 1;
+    const rows = Math.ceil(items.length / cols) || 1;
+    const cw = canvas.width / cols;
+    const ch = canvas.height / rows;
+    ctx.font = '11px system-ui, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    items.forEach((item, i) => {
+      const cx = (i % cols) * cw + cw / 2;
+      const cy = Math.floor(i / cols) * ch + ch / 2;
+      const colour = item.highCost ? '#ef4444' : item.automotive ? '#f59e0b' : '#4f8ef7';
+      const label = item.refDes.split(/[\s,]/)[0] || item.refDes;
+      const w = ctx.measureText(label).width + 8;
+      ctx.fillStyle = 'rgba(0,0,0,0.65)';
+      ctx.fillRect(cx - w / 2, cy - 8, w, 16);
+      ctx.fillStyle = colour;
+      ctx.fillText(label, cx, cy);
+    });
+  };
+  img.src = pcbImageDataURL;
+}
+
+// ─── Feature 8: Export to CSV / PDF ────────────────────────────────────────
+function csvCell(v: unknown): string {
+  const s = String(v ?? '');
+  return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+}
+function exportPCBAnalysisCSV(r: PCBImageAnalysis): void {
+  const lines: string[] = [];
+  const dateStr = new Date().toISOString().slice(0, 10);
+  lines.push(`PCB Analysis Export,${csvCell(r.partName)},${dateStr}`);
+  lines.push('');
+  lines.push('=== BILL OF MATERIALS ===');
+  lines.push('RefDes,Description,Package,Value,Voltage,PartNumber,Qty,Unit GBP,Ext GBP,Automotive,HighCost');
+  for (const b of r.bom) {
+    lines.push([b.refDes, b.description, b.pkg, b.value, b.voltage, b.partNumber ?? '', b.qty, b.unitPriceGBP.toFixed(4), (b.qty * b.unitPriceGBP).toFixed(2), b.automotive ? 'Y' : 'N', b.highCost ? 'Y' : 'N'].map(csvCell).join(','));
+  }
+  lines.push(`Total BOM Cost,,,,,,,,${r.costEstimates.totalBOMCostGBP.toFixed(2)}`);
+  lines.push('');
+  lines.push('=== COUNTRY COMPARISON ===');
+  lines.push('Country,PCB Fab,Assembly,Logistics,BOM,Total/Board,Lead Weeks,Quality %,NRE Total GBP');
+  for (const c of r._countryComparison ?? []) {
+    const nreTot = PCB_COUNTRY_META[c.countryId]?.nre?.totalGBP ?? 0;
+    lines.push([c.countryName, c.pcbFabPerBoard.toFixed(2), c.assemblyPerBoard.toFixed(2), c.logisticsPerBoard.toFixed(2), c.bomCostPerBoard.toFixed(2), c.totalPerBoard.toFixed(2), c.leadTimeWeeks, Math.round(c.qualityIndex * 100), nreTot].map(csvCell).join(','));
+  }
+  if (r._volumeCurves) {
+    lines.push('');
+    lines.push('=== VOLUME CURVES (Total GBP/board) ===');
+    const ids = Object.keys(r._volumeCurves);
+    const qtys = r._volumeCurves[ids[0]]?.map(p => p.qty) ?? [];
+    lines.push(['Qty', ...ids.map(id => id.toUpperCase())].join(','));
+    qtys.forEach((q, i) => {
+      lines.push([q, ...ids.map(id => (r._volumeCurves![id][i]?.totalPerBoard ?? 0).toFixed(2))].join(','));
+    });
+  }
+  const blob = new Blob([lines.join('\n')], { type: 'text/csv;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `pcb-analysis-${r.partName.replace(/[^a-z0-9]+/gi, '-').slice(0, 40)}-${dateStr}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+function exportPCBAnalysisPrint(r: PCBImageAnalysis): void {
+  const w = window.open('', '_blank');
+  if (!w) { showToast('Pop-up blocked — allow pop-ups to print/PDF.', 'warning'); return; }
+  const bomRows = r.bom.map(b => `<tr><td>${escHtml(b.refDes)}</td><td>${escHtml(b.description)}</td><td>${escHtml(b.pkg)}</td><td>${escHtml(b.value)}</td><td>${escHtml(b.partNumber ?? '')}</td><td>${b.qty}</td><td>£${b.unitPriceGBP.toFixed(3)}</td><td>£${(b.qty * b.unitPriceGBP).toFixed(2)}</td></tr>`).join('');
+  const compRows = (r._countryComparison ?? []).map(c => `<tr><td>${escHtml(c.countryName)}</td><td>£${c.pcbFabPerBoard.toFixed(2)}</td><td>£${c.assemblyPerBoard.toFixed(2)}</td><td>£${c.logisticsPerBoard.toFixed(2)}</td><td>£${c.totalPerBoard.toFixed(2)}</td><td>${c.leadTimeWeeks}w</td></tr>`).join('');
+  const cx = r.complexityScore;
+  w.document.write(`<!DOCTYPE html><html><head><title>PCB Analysis — ${escHtml(r.partName)}</title>
+    <style>body{font-family:system-ui,sans-serif;margin:24px;color:#111}h1{font-size:18px}h2{font-size:14px;margin-top:18px;border-bottom:1px solid #ccc;padding-bottom:4px}table{border-collapse:collapse;width:100%;font-size:11px;margin-top:6px}th,td{border:1px solid #ccc;padding:3px 6px;text-align:left}th{background:#f2f2f2}.meta{font-size:12px;color:#555}</style>
+    </head><body>
+    <h1>${escHtml(r.partName)}</h1>
+    <div class="meta">Generated ${new Date().toLocaleString()} · Confidence: ${r.confidenceLevel}${cx ? ` · Complexity: ${cx.score}/100 (IPC Class ${cx.ipcClass}, ${cx.label})` : ''}</div>
+    <h2>Board Specification</h2>
+    <div class="meta">${r.boardSpec.estimatedLayers}-layer · ${r.boardSpec.widthMm}×${r.boardSpec.heightMm}mm · ${escHtml(r.boardSpec.surfaceFinish.toUpperCase())} · ${escHtml(r.boardSpec.technologyType)} · ${r.boardSpec.throughVias + r.boardSpec.blindVias + r.boardSpec.microVias} vias</div>
+    <h2>Bill of Materials (${r.bom.length} lines)</h2>
+    <table><thead><tr><th>RefDes</th><th>Description</th><th>Pkg</th><th>Value</th><th>Part No.</th><th>Qty</th><th>Unit £</th><th>Ext £</th></tr></thead><tbody>${bomRows}</tbody>
+    <tfoot><tr><th colspan="7" style="text-align:right">Total BOM</th><th>£${r.costEstimates.totalBOMCostGBP.toFixed(2)}</th></tr></tfoot></table>
+    <h2>Global Manufacturing Cost Comparison</h2>
+    <table><thead><tr><th>Country</th><th>PCB Fab</th><th>Assembly</th><th>Logistics</th><th>Total/Board</th><th>Lead</th></tr></thead><tbody>${compRows}</tbody></table>
+    </body></html>`);
+  w.document.close();
+  setTimeout(() => { w.focus(); w.print(); }, 300);
 }
 
 function applyPCBImageToFab(): void {

@@ -113,6 +113,44 @@ export interface PCBCountryRate {
   /** Best use-case description */
   bestFor: string;
   dataYear: 2026;
+  /** 2025–2026 should-cost trend (Feature 5) */
+  priceTrend?: {
+    direction: 'rising' | 'stable' | 'falling';
+    /** % change over last 6 months, positive = rising */
+    pctChange6m: number;
+    note: string;
+  };
+  /** Automotive programme NRE cost layer (Feature 7) */
+  automotiveNRE?: AutomotiveNRECosts;
+  /** Supply-chain risk dimensions (Feature 6) — each 0..1, 1 = lowest risk */
+  riskDimensions?: {
+    geopolitical: number;
+    logisticsReliability: number;
+    qualityConsistency: number;
+    leadTimeVariance: number;
+  };
+}
+
+// ─── Automotive NRE cost layer (Feature 7) ─────────────────────────────────
+export interface AutomotiveNRECosts {
+  /** PPAP submission package prep */
+  ppapGBP: number;
+  /** DFMEA/PFMEA documentation */
+  fmeaGBP: number;
+  /** Design Verification Plan & Report */
+  dvprGBP: number;
+  /** First Article Inspection (FAIR) */
+  firstArticleGBP: number;
+  /** IATF 16949 audit amortisation per program */
+  iatfAuditGBP: number;
+  totalGBP: number;
+}
+
+function mkNRE(ppap: number, fmea: number, dvpr: number, fai: number, iatf: number): AutomotiveNRECosts {
+  return {
+    ppapGBP: ppap, fmeaGBP: fmea, dvprGBP: dvpr, firstArticleGBP: fai, iatfAuditGBP: iatf,
+    totalGBP: ppap + fmea + dvpr + fai + iatf,
+  };
 }
 
 // ─── Country Database ──────────────────────────────────────────────────────
@@ -750,6 +788,67 @@ export const PCB_COUNTRY_RATES: Record<string, PCBCountryRate> = {
   },
 };
 
+// ─── Trend / NRE / Risk augmentation (Features 5, 6, 7) ────────────────────
+// Applied after the base database so the country blocks above stay readable.
+const TREND_DATA: Record<string, NonNullable<PCBCountryRate['priceTrend']>> = {
+  cn: { direction: 'rising',  pctChange6m: 4,  note: 'Copper CCL price increase and CNY appreciation pushing fab cost up' },
+  vn: { direction: 'stable',  pctChange6m: 1,  note: 'Strong EMS investment offsetting wage growth' },
+  in: { direction: 'rising',  pctChange6m: 3,  note: 'PLI-driven capacity ramp but rising skilled-labour wages' },
+  th: { direction: 'stable',  pctChange6m: 1,  note: 'Mature automotive EMS cluster keeps pricing flat' },
+  my: { direction: 'rising',  pctChange6m: 3,  note: 'Semiconductor demand and MYR firming lift assembly rates' },
+  tw: { direction: 'rising',  pctChange6m: 3,  note: 'High demand for HDI/substrate capacity constrains supply' },
+  kr: { direction: 'stable',  pctChange6m: 2,  note: 'Premium HDI stable; KRW softness offsetting wage rises' },
+  mx: { direction: 'rising',  pctChange6m: 5,  note: 'Nearshoring surge tightening EMS capacity and labour' },
+  cz: { direction: 'stable',  pctChange6m: 1,  note: 'EU automotive demand steady; energy costs normalising' },
+  pl: { direction: 'falling', pctChange6m: -2, note: 'EU investment and improved yields lowering effective cost' },
+  de: { direction: 'rising',  pctChange6m: 6,  note: 'Energy costs and IG-Metall wage agreements raising rates' },
+  gb: { direction: 'stable',  pctChange6m: 2,  note: 'Domestic capacity stable; modest inflation pass-through' },
+  us: { direction: 'rising',  pctChange6m: 5,  note: 'Reshoring incentives raising demand faster than capacity' },
+  jp: { direction: 'stable',  pctChange6m: 1,  note: 'Weak JPY offsetting premium fab cost inflation' },
+};
+
+const NRE_DATA: Record<string, AutomotiveNRECosts> = {
+  cn: mkNRE(3500, 2800, 4200, 1800, 2500),
+  vn: mkNRE(3800, 3000, 4500, 1900, 2800),
+  in: mkNRE(3600, 2900, 4300, 1850, 2700),
+  th: mkNRE(4200, 3400, 5000, 2100, 3000),
+  my: mkNRE(4400, 3500, 5200, 2200, 3100),
+  tw: mkNRE(5000, 4000, 6000, 2500, 3300),
+  kr: mkNRE(5200, 4200, 6200, 2600, 3400),
+  mx: mkNRE(4600, 3700, 5400, 2300, 3000),
+  cz: mkNRE(5500, 4400, 6400, 2700, 3400),
+  pl: mkNRE(5000, 4000, 5900, 2500, 3200),
+  de: mkNRE(7500, 6000, 8500, 3500, 4500),
+  gb: mkNRE(5500, 4500, 6500, 2800, 3500),
+  us: mkNRE(7000, 5600, 8000, 3300, 4300),
+  jp: mkNRE(7800, 6300, 8800, 3600, 4600),
+};
+
+// Risk dimensions: each 0..1, 1 = lowest risk / most reliable
+const RISK_DATA: Record<string, NonNullable<PCBCountryRate['riskDimensions']>> = {
+  cn: { geopolitical: 0.55, logisticsReliability: 0.80, qualityConsistency: 0.78, leadTimeVariance: 0.80 },
+  vn: { geopolitical: 0.72, logisticsReliability: 0.76, qualityConsistency: 0.75, leadTimeVariance: 0.74 },
+  in: { geopolitical: 0.70, logisticsReliability: 0.70, qualityConsistency: 0.72, leadTimeVariance: 0.68 },
+  th: { geopolitical: 0.74, logisticsReliability: 0.82, qualityConsistency: 0.84, leadTimeVariance: 0.80 },
+  my: { geopolitical: 0.80, logisticsReliability: 0.84, qualityConsistency: 0.85, leadTimeVariance: 0.82 },
+  tw: { geopolitical: 0.48, logisticsReliability: 0.88, qualityConsistency: 0.93, leadTimeVariance: 0.86 },
+  kr: { geopolitical: 0.68, logisticsReliability: 0.90, qualityConsistency: 0.93, leadTimeVariance: 0.88 },
+  mx: { geopolitical: 0.74, logisticsReliability: 0.78, qualityConsistency: 0.82, leadTimeVariance: 0.76 },
+  cz: { geopolitical: 0.92, logisticsReliability: 0.91, qualityConsistency: 0.90, leadTimeVariance: 0.90 },
+  pl: { geopolitical: 0.90, logisticsReliability: 0.90, qualityConsistency: 0.89, leadTimeVariance: 0.89 },
+  de: { geopolitical: 0.96, logisticsReliability: 0.97, qualityConsistency: 0.97, leadTimeVariance: 0.96 },
+  gb: { geopolitical: 0.95, logisticsReliability: 0.97, qualityConsistency: 0.96, leadTimeVariance: 0.97 },
+  us: { geopolitical: 0.90, logisticsReliability: 0.93, qualityConsistency: 0.95, leadTimeVariance: 0.92 },
+  jp: { geopolitical: 0.88, logisticsReliability: 0.95, qualityConsistency: 0.99, leadTimeVariance: 0.95 },
+};
+
+for (const id of Object.keys(PCB_COUNTRY_RATES)) {
+  const rate = PCB_COUNTRY_RATES[id];
+  if (TREND_DATA[id]) rate.priceTrend = TREND_DATA[id];
+  if (NRE_DATA[id]) rate.automotiveNRE = NRE_DATA[id];
+  if (RISK_DATA[id]) rate.riskDimensions = RISK_DATA[id];
+}
+
 // ─── Ordered list for UI display ──────────────────────────────────────────────
 
 export const COUNTRY_DISPLAY_ORDER: string[] = [
@@ -809,6 +908,43 @@ export interface PCBCountryCostBreakdown {
     logistics: number;
     importDuty: number;
   };
+  /** Panelisation result (Feature 3 / panel optimiser) */
+  panelInfo: { boardsPerPanel: number; utilisation: number; panelW: number; panelH: number };
+}
+
+// ─── Panelisation optimiser (Feature 3) ────────────────────────────────────
+// Standard panel sizes by region (mm)
+const STANDARD_PANELS: Record<string, { w: number; h: number }[]> = {
+  default: [{ w: 480, h: 350 }, { w: 380, h: 280 }, { w: 250, h: 330 }],
+};
+
+export interface PanelFit {
+  boardsPerPanel: number;
+  utilisation: number;
+  panelW: number;
+  panelH: number;
+}
+
+/** Find the best panel fit (most boards per panel, then highest utilisation). */
+export function bestPanelFit(boardW: number, boardH: number, panels = STANDARD_PANELS.default): PanelFit {
+  let best: PanelFit = { boardsPerPanel: 1, utilisation: 0, panelW: panels[0].w, panelH: panels[0].h };
+  for (const p of panels) {
+    const marginW = 10, marginH = 10; // 5mm edge clearance each side
+    const usableW = p.w - marginW * 2;
+    const usableH = p.h - marginH * 2;
+    const gapX = 3, gapY = 3; // routing gap between boards
+    for (const [bw, bh] of [[boardW, boardH], [boardH, boardW]]) {
+      if (bw <= 0 || bh <= 0) continue;
+      const cols = Math.floor((usableW + gapX) / (bw + gapX));
+      const rows = Math.floor((usableH + gapY) / (bh + gapY));
+      const n = cols * rows;
+      const util = (n * bw * bh) / (p.w * p.h);
+      if (n > best.boardsPerPanel || (n === best.boardsPerPanel && util > best.utilisation)) {
+        best = { boardsPerPanel: Math.max(1, n), utilisation: util, panelW: p.w, panelH: p.h };
+      }
+    }
+  }
+  return best;
 }
 
 export function computePCBCountryCost(input: PCBCostInput, countryId: string): PCBCountryCostBreakdown {
@@ -822,9 +958,14 @@ export function computePCBCountryCost(input: PCBCostInput, countryId: string): P
   const boardAreaDm2 = (input.widthMm * input.heightMm) / 10000;
   const extraLayers = Math.max(0, input.layers - 2);
 
-  // PCB Fabrication
-  const pcbBase = boardAreaDm2 * r.baseCostPerDm2_2L;
-  const pcbLayers = boardAreaDm2 * r.layerAdderPerDm2 * extraLayers;
+  // Panelisation — determines material-waste fraction (Feature 3)
+  const panel = bestPanelFit(input.widthMm, input.heightMm);
+  // Panel material is paid for in full; waste = (1 - utilisation) is amortised onto each good board.
+  const wasteFactor = panel.utilisation > 0 ? 1 / Math.min(1, Math.max(0.4, panel.utilisation)) : 1;
+
+  // PCB Fabrication (base + layer cost carry the panel waste factor)
+  const pcbBase = boardAreaDm2 * r.baseCostPerDm2_2L * wasteFactor;
+  const pcbLayers = boardAreaDm2 * r.layerAdderPerDm2 * extraLayers * wasteFactor;
   const finishKey = input.surfaceFinish as keyof typeof r.surfaceFinishMultiplier;
   const finishMult = r.surfaceFinishMultiplier[finishKey] ?? r.surfaceFinishMultiplier.enig;
   const pcbSurface = (pcbBase + pcbLayers) * (finishMult - 1);
@@ -835,7 +976,9 @@ export function computePCBCountryCost(input: PCBCostInput, countryId: string): P
     ? (pcbBase + pcbLayers) * r.hdiUpliftPct / 100 : 0;
   const pcbImpedance = input.impedanceControlled
     ? (pcbBase + pcbLayers) * r.impedanceUpliftPct / 100 : 0;
-  // Amortise one-time Gerber/tooling setup across all boards in the order
+  // Amortise one-time Gerber/tooling setup across all boards in the order.
+  // Panelisation: setup is per panel-design; total boards = panels × boardsPerPanel,
+  // but cost is divided by the actual ordered board quantity for per-board figure.
   const pcbSetup = r.setupCostGBP / Math.max(input.orderQuantity, 1);
   const pcbFabPerBoard = pcbBase + pcbLayers + pcbSurface + pcbVias + pcbHDI + pcbImpedance + pcbSetup;
 
@@ -887,9 +1030,170 @@ export function computePCBCountryCost(input: PCBCostInput, countryId: string): P
       logistics: Math.round(freight * 100) / 100,
       importDuty: Math.round(importDuty * 100) / 100,
     },
+    panelInfo: {
+      boardsPerPanel: panel.boardsPerPanel,
+      utilisation: Math.round(panel.utilisation * 1000) / 1000,
+      panelW: panel.panelW,
+      panelH: panel.panelH,
+    },
   };
 }
 
 export function computeAllCountryCosts(input: PCBCostInput): PCBCountryCostBreakdown[] {
   return COUNTRY_DISPLAY_ORDER.map(id => computePCBCountryCost(input, id));
+}
+
+// ─── Volume break pricing curves (Feature / Priority 3) ────────────────────
+export interface VolumeCurvePoint {
+  qty: number;
+  totalPerBoard: number;
+  pcbFabPerBoard: number;
+  assemblyPerBoard: number;
+  logisticsPerBoard: number;
+}
+
+export function computeVolumeCurve(
+  baseInput: PCBCostInput,
+  countryId: string,
+  qtys: number[] = [100, 250, 500, 1000, 2500, 5000, 10000, 25000],
+): VolumeCurvePoint[] {
+  return qtys.map(qty => {
+    const result = computePCBCountryCost({ ...baseInput, orderQuantity: qty }, countryId);
+    return {
+      qty,
+      totalPerBoard: result.totalPerBoard,
+      pcbFabPerBoard: result.pcbFabPerBoard,
+      assemblyPerBoard: result.assemblyPerBoard,
+      logisticsPerBoard: result.logisticsPerBoard,
+    };
+  });
+}
+
+// ─── Supply chain risk radar (Feature 6) ───────────────────────────────────
+export interface PCBRiskProfile {
+  /** 0-1 (1 = lowest risk) */
+  overall: number;
+  geopolitical: number;
+  logisticsReliability: number;
+  qualityConsistency: number;
+  /** derived from BOM analysis (1 = low single-source exposure) */
+  singleSourceExposure: number;
+  leadTimeVariance: number;
+  label: 'Low Risk' | 'Medium Risk' | 'High Risk';
+}
+
+export function computeRiskProfile(countryId: string, bomAutomotiveCount = 0): PCBRiskProfile {
+  const rate = PCB_COUNTRY_RATES[countryId];
+  const dims = rate?.riskDimensions ?? {
+    geopolitical: 0.7, logisticsReliability: 0.8, qualityConsistency: 0.8, leadTimeVariance: 0.8,
+  };
+  // Single-source exposure: more automotive-grade parts → higher exposure (lower score).
+  const singleSourceExposure = Math.max(0.3, 1 - Math.min(bomAutomotiveCount, 12) * 0.05);
+  const overall = (
+    dims.geopolitical * 0.25 +
+    dims.logisticsReliability * 0.20 +
+    dims.qualityConsistency * 0.25 +
+    singleSourceExposure * 0.15 +
+    dims.leadTimeVariance * 0.15
+  );
+  const label: PCBRiskProfile['label'] =
+    overall >= 0.85 ? 'Low Risk' : overall >= 0.68 ? 'Medium Risk' : 'High Risk';
+  return {
+    overall: Math.round(overall * 1000) / 1000,
+    geopolitical: dims.geopolitical,
+    logisticsReliability: dims.logisticsReliability,
+    qualityConsistency: dims.qualityConsistency,
+    singleSourceExposure: Math.round(singleSourceExposure * 1000) / 1000,
+    leadTimeVariance: dims.leadTimeVariance,
+    label,
+  };
+}
+
+// ─── PCB complexity score (Feature 11) ─────────────────────────────────────
+export interface PCBComplexityScore {
+  score: number;
+  ipcClass: 1 | 2 | 3;
+  label: 'Simple' | 'Moderate' | 'Complex' | 'Very Complex' | 'Extreme';
+  factors: {
+    layers: number;
+    viaDensity: number;
+    bgaScore: number;
+    hdiScore: number;
+    traceScore: number;
+  };
+}
+
+interface ComplexityBoardSpec {
+  estimatedLayers?: number;
+  widthMm?: number;
+  heightMm?: number;
+  throughVias?: number;
+  blindVias?: number;
+  buriedVias?: number;
+  microVias?: number;
+  hdiStructure?: string;
+  minTraceSpaceMm?: number;
+}
+interface ComplexityAssembly {
+  bgaCount?: number;
+}
+
+export function computeComplexityScore(
+  boardSpec: ComplexityBoardSpec,
+  assembly: ComplexityAssembly,
+): PCBComplexityScore {
+  const layers = boardSpec.estimatedLayers ?? 2;
+  // Layers contribution 0-20
+  const layerScore =
+    layers >= 12 ? 20 : layers >= 10 ? 17 : layers >= 8 ? 14 : layers >= 6 ? 10 : layers >= 4 ? 6 : 0;
+
+  // Via density per dm²
+  const totalVias = (boardSpec.throughVias ?? 0) + (boardSpec.blindVias ?? 0) +
+    (boardSpec.buriedVias ?? 0) + (boardSpec.microVias ?? 0);
+  const areaDm2 = Math.max(0.01, ((boardSpec.widthMm ?? 100) * (boardSpec.heightMm ?? 80)) / 10000);
+  const viaPerDm2 = totalVias / areaDm2;
+  const viaScore =
+    viaPerDm2 >= 500 ? 20 : viaPerDm2 >= 300 ? 15 : viaPerDm2 >= 150 ? 10 : viaPerDm2 >= 50 ? 5 : 0;
+
+  // BGA score
+  const bga = assembly.bgaCount ?? 0;
+  let bgaScore = bga >= 11 ? 20 : bga >= 6 ? 15 : bga >= 3 ? 10 : bga >= 1 ? 5 : 0;
+  // Fine-pitch surcharge handled by HDI/trace; keep BGA cap at 20.
+  bgaScore = Math.min(20, bgaScore);
+
+  // HDI structure
+  const hdi = (boardSpec.hdiStructure ?? 'none').toLowerCase().replace(/[\s_]/g, '');
+  const hdiScore =
+    /anylayer/.test(hdi) ? 20 :
+    /2.?n.?2/.test(hdi) ? 16 :
+    /1.?n.?1/.test(hdi) ? 10 :
+    (hdi === 'none' || hdi === '') ? 0 : 10;
+
+  // Min trace/space
+  const tr = boardSpec.minTraceSpaceMm ?? 0.2;
+  const traceScore =
+    tr < 0.05 ? 20 : tr < 0.075 ? 15 : tr < 0.10 ? 10 : tr <= 0.15 ? 5 : 0;
+
+  const score = Math.min(100, Math.round(layerScore + viaScore + bgaScore + hdiScore + traceScore));
+
+  let ipcClass: 1 | 2 | 3;
+  let label: PCBComplexityScore['label'];
+  if (score <= 30) { ipcClass = 1; label = 'Simple'; }
+  else if (score <= 55) { ipcClass = 2; label = 'Moderate'; }
+  else if (score <= 75) { ipcClass = 2; label = 'Complex'; }
+  else if (score <= 90) { ipcClass = 3; label = 'Very Complex'; }
+  else { ipcClass = 3; label = 'Extreme'; }
+
+  return {
+    score,
+    ipcClass,
+    label,
+    factors: {
+      layers: layerScore,
+      viaDensity: viaScore,
+      bgaScore,
+      hdiScore,
+      traceScore,
+    },
+  };
 }
