@@ -1252,8 +1252,9 @@ async function sendAgentMessage(): Promise<void> {
   if (!msg) return;
 
   agentPending = true;
-  el('agent-send-btn').setAttribute('disabled', '');
-  el('agent-status').textContent = '⏳ Thinking…';
+  el('agent-send-btn')?.setAttribute('disabled', '');
+  const agentStatusEl = document.getElementById('agent-status');
+  if (agentStatusEl) agentStatusEl.textContent = '⏳ Thinking…';
 
   // Render user bubble
   _appendAgentBubble('user', msg);
@@ -1309,7 +1310,8 @@ async function sendAgentMessage(): Promise<void> {
     _appendAgentBubble('assistant', agentResp.chat, hasAction);
     agentLastResult = null; // clear stale result after interpretation
 
-    el('agent-status').textContent = hasAction
+    const statusEl = document.getElementById('agent-status');
+    if (statusEl) statusEl.textContent = hasAction
       ? '✓ Parameters extracted — click "Apply to Calculator & Calculate" below'
       : agentResp.needsInput?.length
         ? `⚠ Missing: ${agentResp.needsInput.join(', ')}`
@@ -1317,10 +1319,11 @@ async function sendAgentMessage(): Promise<void> {
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : String(err);
     _appendAgentBubble('assistant', `❌ Error: ${msg}`);
-    el('agent-status').textContent = '';
+    const statusEl = document.getElementById('agent-status');
+    if (statusEl) statusEl.textContent = '';
   } finally {
     agentPending = false;
-    el('agent-send-btn').removeAttribute('disabled');
+    document.getElementById('agent-send-btn')?.removeAttribute('disabled');
   }
 }
 
@@ -1388,7 +1391,8 @@ function _applyAgentActionAndCompute(): void {
 async function sendAgentInterpretation(): Promise<void> {
   if (!agentLastResult) return;
   agentPending = true;
-  el('agent-status').textContent = '⏳ Interpreting cost results…';
+  const agentStatusEl = document.getElementById('agent-status');
+  if (agentStatusEl) agentStatusEl.textContent = '⏳ Interpreting cost results…';
   const apiKey = (el<HTMLInputElement>('agent-api-key')?.value ?? '').trim();
 
   const interpretMsg = 'The cost calculation is complete. Please interpret the results, identify the top cost drivers, and provide your top 3 DFM recommendations.';
@@ -1415,12 +1419,14 @@ async function sendAgentInterpretation(): Promise<void> {
     agentHistory.push({ role: 'assistant', content: data.response.chat });
     _appendAgentBubble('assistant', data.response.chat);
     agentLastResult = null;
-    el('agent-status').textContent = '✓ Analysis complete — ask follow-up questions or try another scenario';
+    const statusElOk = document.getElementById('agent-status');
+    if (statusElOk) statusElOk.textContent = '✓ Analysis complete — ask follow-up questions or try another scenario';
   } catch (err: unknown) {
-    el('agent-status').textContent = 'Interpretation error — see console';
+    const statusElErr = document.getElementById('agent-status');
+    if (statusElErr) statusElErr.textContent = 'Interpretation error — see console';
   } finally {
     agentPending = false;
-    el('agent-send-btn')?.removeAttribute('disabled');
+    document.getElementById('agent-send-btn')?.removeAttribute('disabled');
   }
 }
 
@@ -3488,11 +3494,12 @@ function wireCADEvents(): void {
   // Clear button
   el('cad-clear-btn')?.addEventListener('click', () => {
     cadFile = null; cadAnalysisResult = null; cadOCCTGeometry = null;
-    el('cad-file-info').style.display = 'none';
-    el('cad-drop-zone').style.display = '';
-    analyzeBtn.setAttribute('disabled', 'true');
-    el('cad-analyze-calc-btn').setAttribute('disabled', 'true');
-    el('cad-results').innerHTML = '';
+    document.getElementById('cad-file-info')?.style.setProperty('display', 'none');
+    document.getElementById('cad-drop-zone')?.style.setProperty('display', '');
+    analyzeBtn?.setAttribute('disabled', 'true');
+    document.getElementById('cad-analyze-calc-btn')?.setAttribute('disabled', 'true');
+    const cadRes = document.getElementById('cad-results');
+    if (cadRes) cadRes.innerHTML = '';
   });
 
   // Analyze button
@@ -3507,13 +3514,17 @@ function setCADFile(f: File): void {
     return;
   }
   cadFile = f;
-  el('cad-drop-zone').style.display = 'none';
-  el('cad-file-info').style.display = 'flex';
-  el('cad-fname').textContent = f.name;
-  el('cad-fsize').textContent = (f.size / 1024).toFixed(1) + ' KB';
-  el('cad-analyze-btn').removeAttribute('disabled');
-  el('cad-analyze-calc-btn').removeAttribute('disabled');
-  el('cad-results').innerHTML = '';
+  document.getElementById('cad-drop-zone')?.style.setProperty('display', 'none');
+  const cadFileInfo = document.getElementById('cad-file-info');
+  if (cadFileInfo) cadFileInfo.style.display = 'flex';
+  const cadFname = document.getElementById('cad-fname');
+  if (cadFname) cadFname.textContent = f.name;
+  const cadFsize = document.getElementById('cad-fsize');
+  if (cadFsize) cadFsize.textContent = (f.size / 1024).toFixed(1) + ' KB';
+  document.getElementById('cad-analyze-btn')?.removeAttribute('disabled');
+  document.getElementById('cad-analyze-calc-btn')?.removeAttribute('disabled');
+  const cadResults = document.getElementById('cad-results');
+  if (cadResults) cadResults.innerHTML = '';
   cadAnalysisResult = null;
   cadOCCTGeometry = null;
 }
@@ -3524,21 +3535,24 @@ async function analyzeCAD(autoCalculate = false): Promise<void> {
   const apiKey = val('cad-api-key');
   if (apiKey) sessionStorage.setItem('cad-api-key', apiKey);
 
-  const progress = el('cad-progress-wrap');
-  const progressFill = el('cad-progress-fill');
-  const progressLabel = el('cad-progress-label');
-  const analyzeBtn = el('cad-analyze-btn');
-  const analyzeCalcBtn = el('cad-analyze-calc-btn');
+  const progress = document.getElementById('cad-progress-wrap');
+  const progressFill = document.getElementById('cad-progress-fill');
+  const progressLabel = document.getElementById('cad-progress-label');
+  const analyzeBtn = document.getElementById('cad-analyze-btn');
+  const analyzeCalcBtn = document.getElementById('cad-analyze-calc-btn');
+
+  if (!progress || !progressFill || !progressLabel || !analyzeBtn || !analyzeCalcBtn) return;
 
   const updateProgress = (pct: number, label: string) => {
-    progressFill.style.width = pct + '%';
+    (progressFill as HTMLElement).style.width = pct + '%';
     progressLabel.textContent = label;
   };
 
   progress.style.display = '';
   analyzeBtn.setAttribute('disabled', 'true');
   analyzeCalcBtn.setAttribute('disabled', 'true');
-  el('cad-results').innerHTML = '';
+  const cadResultsEl = document.getElementById('cad-results');
+  if (cadResultsEl) cadResultsEl.innerHTML = '';
 
   const controller = new AbortController();
   const timeoutId = setTimeout(
@@ -3582,7 +3596,8 @@ async function analyzeCAD(autoCalculate = false): Promise<void> {
     renderCADResults(cadAnalysisResult, autoCalculate);
   } catch (err) {
     progress.style.display = 'none';
-    el('cad-results').innerHTML = `
+    const cadErrEl = document.getElementById('cad-results');
+    if (cadErrEl) cadErrEl.innerHTML = `
       <div class="risk-card High" style="margin-top:10px">
         <div class="risk-feature">Analysis Error</div>
         <div>${escHtml(err instanceof Error ? err.message : String(err))}</div>
@@ -3590,8 +3605,8 @@ async function analyzeCAD(autoCalculate = false): Promise<void> {
       </div>`;
   } finally {
     clearTimeout(timeoutId);
-    analyzeBtn.removeAttribute('disabled');
-    analyzeCalcBtn.removeAttribute('disabled');
+    analyzeBtn?.removeAttribute('disabled');
+    analyzeCalcBtn?.removeAttribute('disabled');
   }
 }
 
@@ -7562,12 +7577,12 @@ function switchResultTab(tab: string): void {
   document.querySelectorAll<HTMLElement>('.rtab').forEach(t => {
     t.classList.toggle('active', t.dataset.panel === tab);
   });
-  el('results-breakdown').style.display = tab === 'breakdown' ? '' : 'none';
-  el('results-detail').style.display = tab === 'detail' ? '' : 'none';
-  el('results-insights').style.display = tab === 'insights' ? '' : 'none';
-  el('results-sensitivity').style.display = tab === 'sensitivity' ? '' : 'none';
-  el('results-scenarios').style.display = tab === 'scenarios' ? '' : 'none';
-  el('results-dfm').style.display = tab === 'dfm' ? '' : 'none';
+  document.getElementById('results-breakdown')?.style.setProperty('display', tab === 'breakdown' ? '' : 'none');
+  document.getElementById('results-detail')?.style.setProperty('display', tab === 'detail' ? '' : 'none');
+  document.getElementById('results-insights')?.style.setProperty('display', tab === 'insights' ? '' : 'none');
+  document.getElementById('results-sensitivity')?.style.setProperty('display', tab === 'sensitivity' ? '' : 'none');
+  document.getElementById('results-scenarios')?.style.setProperty('display', tab === 'scenarios' ? '' : 'none');
+  document.getElementById('results-dfm')?.style.setProperty('display', tab === 'dfm' ? '' : 'none');
   const uploadEl = document.getElementById('results-upload');
   if (uploadEl) uploadEl.style.display = tab === 'upload' ? '' : 'none';
 
