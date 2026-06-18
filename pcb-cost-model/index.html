@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>360° PCB Should-Cost Model — All PCB Types</title>
+  <meta name="description" content="World-class, parameterized should-cost model for ALL PCB types — rigid, HDI, flex, rigid-flex, high-speed/RF, power. Layer count and stack-up as primary cost drivers. Ready for CostVision." />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="app-header">
+    <div class="brand">
+      <div class="brand-mark">PCB</div>
+      <div class="brand-text">
+        <h1>360° PCB Should-Cost Model</h1>
+        <p class="subtitle">All PCB types · layer-count &amp; stack-up driven · DfC + AI insights · CostVision-ready</p>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button id="btnReset" class="btn btn-ghost" type="button">Reset defaults</button>
+      <button id="btnSaveScenario" class="btn btn-primary" type="button">＋ Save scenario</button>
+    </div>
+  </header>
+
+  <nav class="tabbar" aria-label="Sections">
+    <button class="tab active" data-tab="model" type="button">Cost Model</button>
+    <button class="tab" data-tab="routing" type="button">Process Routing</button>
+    <button class="tab" data-tab="scenarios" type="button">Scenario Compare</button>
+    <button class="tab" data-tab="methodology" type="button">Methodology &amp; Examples</button>
+  </nav>
+
+  <main>
+    <!-- ============ MODEL TAB ============ -->
+    <section id="tab-model" class="tab-panel active">
+      <div class="layout">
+        <!-- INPUTS -->
+        <div class="inputs">
+          <div class="preset-bar">
+            <label class="preset-label">Worked examples (luxury SUV)</label>
+            <div class="example-presets" id="examplePresets"></div>
+            <p class="hint">Load a pre-built example, then tweak any parameter. Number of layers &amp; stack-up drive the model.</p>
+          </div>
+
+          <fieldset class="group">
+            <legend>1 · Board &amp; type</legend>
+            <div class="field"><label for="pcbType">PCB type</label><select id="pcbType"></select></div>
+            <div class="field row2">
+              <div><label for="boardW">Width (mm)</label><input type="number" id="boardW" value="100" min="2" step="1" /></div>
+              <div><label for="boardH">Height (mm)</label><input type="number" id="boardH" value="80" min="2" step="1" /></div>
+            </div>
+            <div class="field"><label for="orderQty">Order quantity (boards)</label><input type="number" id="orderQty" value="50000" min="1" step="100" /></div>
+          </fieldset>
+
+          <fieldset class="group">
+            <legend>2 · Stack-up (primary driver)</legend>
+            <div class="field"><label for="layerCount">Number of layers <span class="info" data-tip="THE primary cost driver. Each added layer pair adds imaging, etch, AOI, lamination, drilling depth and yield risk. Use even counts for balanced stack-ups.">ⓘ</span></label>
+              <input type="number" id="layerCount" value="4" min="1" max="40" step="1" /></div>
+            <div class="field"><label for="material">Base material</label><select id="material"></select></div>
+            <div class="field"><label for="boardThickness">Board thickness (mm) <span class="info" data-tip="Drives aspect ratio (thickness ÷ min hole). High aspect ratio hurts plating reliability and yield.">ⓘ</span></label>
+              <input type="number" id="boardThickness" value="1.6" min="0.1" step="0.1" /></div>
+            <div class="field row2">
+              <div><label for="copperInner">Inner copper</label><select id="copperInner"></select></div>
+              <div><label for="copperOuter">Outer copper</label><select id="copperOuter"></select></div>
+            </div>
+            <div class="field"><label for="via">Via technology <span class="info" data-tip="Buried/blind vias and HDI microvias require sequential lamination — each build-up adds a press cycle and cost.">ⓘ</span></label><select id="via"></select></div>
+          </fieldset>
+
+          <fieldset class="group">
+            <legend>3 · Design rules &amp; finish</legend>
+            <div class="field"><label for="trace">Min trace / space <span class="info" data-tip="Finer lines need advanced LDI imaging and depress yield. Relax where signal integrity allows.">ⓘ</span></label><select id="trace"></select></div>
+            <div class="field check"><label><input type="checkbox" id="impedance" checked /> Controlled impedance (adds TDR test)</label></div>
+            <div class="field"><label for="finish">Surface finish</label><select id="finish"></select></div>
+            <div class="field row2">
+              <div><label for="maskColor">Solder mask</label><select id="maskColor"></select></div>
+              <div><label for="silkWrap" style="display:block">Silkscreen</label>
+                <label class="check" style="margin-top:7px"><input type="checkbox" id="silkscreen" checked /> Legend</label></div>
+            </div>
+          </fieldset>
+
+          <fieldset class="group">
+            <legend>4 · Panelisation</legend>
+            <div class="field row2">
+              <div><label for="panelW">Panel W (mm)</label><input type="number" id="panelW" value="457" min="50" step="1" /></div>
+              <div><label for="panelH">Panel H (mm)</label><input type="number" id="panelH" value="305" min="50" step="1" /></div>
+            </div>
+            <div class="field"><label for="utilization">Panel utilisation (%) <span class="info" data-tip="Share of panel area used by good boards after array spacing, tooling rails and break-out. Higher utilisation lowers $/board.">ⓘ</span></label>
+              <input type="number" id="utilization" value="80" min="20" max="95" step="1" /></div>
+            <div class="field"><label for="holeDensity">Hole density (holes/dm²)</label><input type="number" id="holeDensity" value="160" min="10" step="10" /></div>
+          </fieldset>
+
+          <fieldset class="group">
+            <legend>5 · Quality, region &amp; commercials</legend>
+            <div class="field"><label for="quality">Quality / IPC class <span class="info" data-tip="Sets yield, test depth, inspection (microsection), scrap and NRE multipliers. Automotive = IPC Class 3 / IATF flow.">ⓘ</span></label><select id="quality"></select></div>
+            <div class="field"><label for="region">Region</label><select id="region"></select></div>
+            <div class="field row2">
+              <div><label for="overheadPct">Overhead (%)</label><input type="number" id="overheadPct" value="18" min="0" step="1" /></div>
+              <div><label for="marginPct">Margin (%)</label><input type="number" id="marginPct" value="25" min="0" max="80" step="1" /></div>
+            </div>
+          </fieldset>
+        </div>
+
+        <!-- RESULTS -->
+        <div class="results">
+          <div class="result-cards">
+            <div class="result-card primary">
+              <div class="rc-label">Fab cost / board</div>
+              <div class="rc-value" id="outCost">$—</div>
+              <div class="rc-sub" id="outCostSub">fully loaded, incl. NRE &amp; overhead</div>
+            </div>
+            <div class="result-card primary">
+              <div class="rc-label">Quoted price / board</div>
+              <div class="rc-value" id="outPrice">$—</div>
+              <div class="rc-sub" id="outPriceSub">at target margin</div>
+            </div>
+            <div class="result-card">
+              <div class="rc-label">$ / dm²</div>
+              <div class="rc-value alt" id="outPerArea">$—</div>
+              <div class="rc-sub">normalised board cost</div>
+            </div>
+          </div>
+
+          <div class="metrics-strip" id="metricsStrip"></div>
+
+          <div class="panel">
+            <h3>Cost stack <span class="sub">per board</span></h3>
+            <div class="stackbar" id="stackBar"></div>
+            <div class="legend" id="stackLegend"></div>
+          </div>
+
+          <div class="panel">
+            <h3>Cost breakdown</h3>
+            <table class="breakdown" id="breakdownTable">
+              <thead><tr><th>Cost element</th><th class="num">$ / board</th><th class="num">% of total</th></tr></thead>
+              <tbody></tbody><tfoot></tfoot>
+            </table>
+          </div>
+
+          <div class="panel">
+            <h3>Benchmark sanity check <span class="sub">independent market price band</span></h3>
+            <div class="bandbar" id="bandBar"><div class="zone" id="bandZone"></div><div class="mark" id="bandMark"></div></div>
+            <div class="band-labels" id="bandLabels"></div>
+            <div class="band-verdict" id="bandVerdict"></div>
+          </div>
+
+          <div class="panel">
+            <h3>AI insights — cost drivers <span class="sub">±15% one-at-a-time</span></h3>
+            <div class="tornado" id="tornado"></div>
+          </div>
+
+          <div class="panel">
+            <h3>DfC — Design-for-Cost recommendations</h3>
+            <div class="dfc" id="dfc"></div>
+          </div>
+
+          <div class="accuracy-note" id="accuracyNote"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ ROUTING TAB ============ -->
+    <section id="tab-routing" class="tab-panel">
+      <div class="panel">
+        <h3 id="routingTitle">Process routing</h3>
+        <p class="hint">Ordered fab process steps for the current configuration, with the machine/process at each step. Steps appear/disappear with layer count, via technology, material and PCB type.</p>
+        <div class="routing" id="routingList"></div>
+      </div>
+    </section>
+
+    <!-- ============ SCENARIOS TAB ============ -->
+    <section id="tab-scenarios" class="tab-panel">
+      <div class="panel">
+        <div class="scenario-head"><h3>Saved scenarios</h3><button id="btnClearScenarios" class="btn btn-ghost" type="button">Clear all</button></div>
+        <p class="hint">Use “＋ Save scenario” to snapshot inputs &amp; results, then compare PCB types / layer counts side-by-side.</p>
+        <div class="scenario-table-wrap"><table class="scenario-table" id="scenarioTable"><tbody></tbody></table></div>
+      </div>
+    </section>
+
+    <!-- ============ METHODOLOGY TAB ============ -->
+    <section id="tab-methodology" class="tab-panel">
+      <div class="panel prose" id="methodologyProse"></div>
+    </section>
+  </main>
+
+  <div class="tooltip" id="tooltip" role="tooltip"></div>
+  <footer class="app-footer"><span>360° PCB should-cost model · industry-aligned engineering ranges, not supplier quotes · layer count &amp; stack-up central.</span></footer>
+
+  <script src="data.js"></script>
+  <script src="model.js"></script>
+  <script src="methodology.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
