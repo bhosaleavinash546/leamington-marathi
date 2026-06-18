@@ -975,6 +975,18 @@ textarea.contact-form-input { resize: vertical; min-height: 100px; }
   border-top: 1px solid var(--border);
 }
 
+.cad-proc-card {
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface-elevated);
+  transition: border-color 0.15s, background 0.15s;
+}
+.cad-proc-card:hover {
+  border-color: color-mix(in srgb, var(--accent) 40%, transparent);
+  background: color-mix(in srgb, var(--accent) 5%, var(--surface-elevated));
+}
+
 .cad-limitations {
   font-size: 0.7rem;
   color: var(--text-muted);

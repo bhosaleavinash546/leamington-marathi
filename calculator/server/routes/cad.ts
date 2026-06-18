@@ -127,6 +127,9 @@ router.post('/analyze', upload.single('cadFile'), async (req, res): Promise<void
 
   const userOverrides = { forcedCommodity, forcedMaterial, annualVolume, ovrWeightKg, ovrVolumeCm3, ovrLengthMm, ovrWidthMm, ovrHeightMm, ovrDensityGcm3 };
 
+  const partPhotoBase64 = typeof req.body?.partPhotoBase64 === 'string' ? req.body.partPhotoBase64 : '';
+  const partPhotoMime   = (typeof req.body?.partPhotoMime === 'string' ? req.body.partPhotoMime : 'image/jpeg') as 'image/jpeg' | 'image/png' | 'image/gif' | 'image/webp';
+
   if (forcedCommodity) {
     selectedCommodity = forcedCommodity;
     stage1Selection = { primary: forcedCommodity, conf: 1.0, alt: [] };
@@ -159,15 +162,23 @@ router.post('/analyze', upload.single('cadFile'), async (req, res): Promise<void
   let analysis: unknown;
   let lastRaw = '';
 
+  const buildUserContent = (text: string, withPhoto: boolean) => {
+    if (!withPhoto || !partPhotoBase64) return text;
+    return [
+      { type: 'text' as const, text },
+      { type: 'image' as const, source: { type: 'base64' as const, media_type: partPhotoMime, data: partPhotoBase64 } },
+    ];
+  };
+
   for (let attempt = 1; attempt <= 2; attempt++) {
     const message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 8192,
       system: systemPrompt,
       messages: attempt === 1
-        ? [{ role: 'user', content: userPrompt }]
+        ? [{ role: 'user', content: buildUserContent(userPrompt, true) }]
         : [
-            { role: 'user', content: userPrompt },
+            { role: 'user', content: buildUserContent(userPrompt, true) },
             { role: 'assistant', content: lastRaw },
             { role: 'user', content: 'The JSON above is malformed or incomplete. Return ONLY the corrected, complete JSON object starting with { and ending with }. No markdown, no prose.' },
           ],
@@ -741,5 +752,132 @@ ${alwaysSubs}
   "analysisLimitations": [string]
 }`;
 }
+
+// POST /api/cad/reanalyze — re-run AI analysis using pre-computed (cached) OCCT geometry; no STEP re-upload needed
+router.post('/reanalyze', async (req, res): Promise<void> => {
+  const geo = req.body.occtGeometry as OCCTGeometry;
+  const filename = (req.body.filename as string) || 'cached_part.step';
+
+  if (!geo || typeof geo !== 'object') {
+    res.status(400).json({ error: 'occtGeometry is required in the JSON body' });
+    return;
+  }
+
+  const apiKey = process.env.ANTHROPIC_API_KEY ?? (req.headers['x-api-key'] as string);
+  if (!apiKey) {
+    res.status(400).json({ error: 'ANTHROPIC_API_KEY not configured. Set it in .env or pass as x-api-key header.' });
+    return;
+  }
+
+  const forcedCommodity = typeof req.body?.commodity === 'string' ? req.body.commodity.trim() : '';
+  const forcedMaterial  = typeof req.body?.material  === 'string' ? req.body.material.trim()  : '';
+  const annualVolume    = parseFloat(req.body?.annualVolume) || 100000;
+  const ovrWeightKg     = req.body?.weightKg    ? parseFloat(req.body.weightKg)    : null;
+  const ovrVolumeCm3    = req.body?.volumeCm3   ? parseFloat(req.body.volumeCm3)   : null;
+  const ovrLengthMm     = req.body?.lengthMm    ? parseFloat(req.body.lengthMm)    : null;
+  const ovrWidthMm      = req.body?.widthMm     ? parseFloat(req.body.widthMm)     : null;
+  const ovrHeightMm     = req.body?.heightMm    ? parseFloat(req.body.heightMm)    : null;
+  const ovrDensityGcm3  = req.body?.densityGcm3 ? parseFloat(req.body.densityGcm3) : null;
+  const partPhotoBase64 = typeof req.body?.partPhotoBase64 === 'string' ? req.body.partPhotoBase64 : '';
+  const partPhotoMime   = (typeof req.body?.partPhotoMime === 'string' ? req.body.partPhotoMime : 'image/jpeg') as 'image/jpeg' | 'image/png' | 'image/gif' | 'image/webp';
+
+  const userOverrides = { forcedCommodity, forcedMaterial, annualVolume, ovrWeightKg, ovrVolumeCm3, ovrLengthMm, ovrWidthMm, ovrHeightMm, ovrDensityGcm3 };
+  const anthropic = new Anthropic({ apiKey });
+
+  let stage1Selection: { primary: string; conf: number; alt: Array<{ type: string; conf: number }> } | null = null;
+  let selectedCommodity = 'machining';
+
+  if (forcedCommodity) {
+    selectedCommodity = forcedCommodity;
+    stage1Selection = { primary: forcedCommodity, conf: 1.0, alt: [] };
+    console.log(`[CAD/reanalyze] User forced commodity: ${selectedCommodity}`);
+  } else {
+    try {
+      console.log('[CAD/reanalyze] Stage 1: Haiku commodity selection from cached geometry…');
+      const s1Msg = await anthropic.messages.create({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 256,
+        system: 'You are a manufacturing process selector. Given part geometry metrics, select the most likely manufacturing commodity. Return ONLY a JSON object, no prose, no markdown.',
+        messages: [{ role: 'user', content: stage1Prompt(geo) }],
+      });
+      const s1Raw = s1Msg.content[0]?.type === 'text' ? s1Msg.content[0].text.trim() : '';
+      const parsed = JSON.parse(extractJson(s1Raw)) as typeof stage1Selection;
+      if (parsed && typeof parsed.primary === 'string') {
+        stage1Selection = parsed;
+        selectedCommodity = parsed.primary;
+        console.log(`[CAD/reanalyze] Stage 1 result: ${selectedCommodity} (conf=${parsed.conf})`);
+      }
+    } catch (err) {
+      console.warn('[CAD/reanalyze] Stage 1 Haiku failed, using default commodity:', (err as Error).message);
+    }
+  }
+
+  // Minimal PreprocessedCAD stub — not used when geo.status === 'success'
+  const preStub = {
+    format: 'STEP' as const,
+    partName: filename.replace(/\.[^.]+$/, ''),
+    fileSizeKB: 0,
+    entityStats: {},
+    boundingBoxEstMm: null,
+    materialHint: '',
+    threadCount: 0,
+    totalEntities: 0,
+    coordinateRangeMm: null,
+    headerInfo: '',
+    summary: '',
+  };
+
+  const systemPrompt = SPECIALIST_SYSTEM_PROMPTS[selectedCommodity] ?? DEFAULT_SYSTEM_PROMPT;
+  const userPrompt = buildPrompt(geo, preStub as Parameters<typeof buildPrompt>[1], filename, selectedCommodity, stage1Selection, userOverrides);
+
+  const buildContent = (text: string, withPhoto: boolean) => {
+    if (!withPhoto || !partPhotoBase64) return text;
+    return [
+      { type: 'text' as const, text },
+      { type: 'image' as const, source: { type: 'base64' as const, media_type: partPhotoMime, data: partPhotoBase64 } },
+    ];
+  };
+
+  let analysis: unknown;
+  let lastRaw = '';
+
+  for (let attempt = 1; attempt <= 2; attempt++) {
+    const message = await anthropic.messages.create({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 8192,
+      system: systemPrompt,
+      messages: attempt === 1
+        ? [{ role: 'user', content: buildContent(userPrompt, true) }]
+        : [
+            { role: 'user', content: buildContent(userPrompt, true) },
+            { role: 'assistant', content: lastRaw },
+            { role: 'user', content: 'The JSON above is malformed or incomplete. Return ONLY the corrected, complete JSON object starting with { and ending with }. No markdown, no prose.' },
+          ],
+    });
+
+    const raw = message.content[0]?.type === 'text' ? message.content[0].text : '';
+    lastRaw = raw;
+
+    try {
+      analysis = JSON.parse(extractJson(raw));
+      break;
+    } catch {
+      if (attempt === 2) {
+        res.status(500).json({ error: `AI returned unparseable JSON after 2 attempts. Raw: ${raw.slice(0, 400)}` });
+        return;
+      }
+      console.warn('[CAD/reanalyze] JSON parse failed on attempt 1, sending repair request…');
+    }
+  }
+
+  res.json({
+    success: true,
+    analysis,
+    geometrySource: 'occt' as const,
+    annualVolume,
+    occtGeometry: geo,
+    preprocessed: { format: 'STEP', partName: filename },
+  });
+});
 
 export default router;

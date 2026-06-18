@@ -74,6 +74,8 @@ let cadFile: File | null = null;
 let cadAnalysisResult: CADAnalysisResult | null = null;
 let cadOCCTGeometry: OCCTGeometry | null = null;
 let cadGeometrySource: 'occt' | 'text_parsing' = 'text_parsing';
+let cadPartPhotoBase64 = '';
+let cadPartPhotoMime = 'image/jpeg';
 let pcbImageResult: PCBImageAnalysis | null = null;
 let pcbImageLoading = false;
 let pcbBOMFile: File | null = null;
@@ -3652,6 +3654,19 @@ function renderCADAnalysisForm(): string {
       </div>
     </details>
 
+    <!-- Optional part photo (helps AI identify material/finish) -->
+    <div style="margin-top:6px;border:1px solid var(--border);border-radius:6px;padding:6px 10px">
+      <div style="font-size:0.75rem;font-weight:600;color:var(--text-secondary)">
+        Part photo <span style="font-weight:400;color:var(--text-muted)">(optional — phone photo helps AI identify material &amp; surface finish)</span>
+      </div>
+      <div style="margin-top:6px;display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+        <label class="btn btn-secondary btn-sm" for="cad-photo-input" style="cursor:pointer">📷 Add Photo</label>
+        <input type="file" id="cad-photo-input" accept="image/jpeg,image/png,image/webp" style="display:none"/>
+        <span id="cad-photo-info" style="font-size:0.72rem;color:var(--text-muted)">No photo selected</span>
+        <button class="btn btn-secondary btn-sm" id="cad-photo-clear" style="display:none;padding:1px 8px">✕ Remove</button>
+      </div>
+    </div>
+
     <div class="cad-btn-row" style="margin-top:10px">
       <button class="btn btn-secondary" id="cad-analyze-btn" disabled>Analyze Only</button>
       <button class="btn btn-primary" id="cad-analyze-calc-btn" disabled>Analyze &amp; Calculate ⚡</button>
@@ -3705,6 +3720,44 @@ function wireCADEvents(): void {
   if (commSel && matSel) {
     commSel.addEventListener('change', () => {
       matSel.innerHTML = _buildCadMaterialOptions(commSel.value);
+    });
+  }
+
+  // Part photo
+  const photoInput = document.getElementById('cad-photo-input') as HTMLInputElement | null;
+  const photoInfo  = document.getElementById('cad-photo-info');
+  const photoClear = document.getElementById('cad-photo-clear') as HTMLButtonElement | null;
+  if (photoInput) {
+    photoInput.addEventListener('change', () => {
+      const f = photoInput.files?.[0];
+      if (!f) return;
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        const img = new Image();
+        img.onload = () => {
+          const maxDim = 1024;
+          const scale = Math.min(1, maxDim / Math.max(img.width, img.height));
+          const canvas = document.createElement('canvas');
+          canvas.width = Math.round(img.width * scale);
+          canvas.height = Math.round(img.height * scale);
+          const ctx = canvas.getContext('2d')!;
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+          cadPartPhotoBase64 = canvas.toDataURL('image/jpeg', 0.82).split(',')[1];
+          cadPartPhotoMime = 'image/jpeg';
+          if (photoInfo) photoInfo.textContent = `${f.name} (${canvas.width}×${canvas.height}px)`;
+          if (photoClear) photoClear.style.display = '';
+        };
+        img.src = ev.target?.result as string;
+      };
+      reader.readAsDataURL(f);
+    });
+  }
+  if (photoClear) {
+    photoClear.addEventListener('click', () => {
+      cadPartPhotoBase64 = '';
+      if (photoInput) photoInput.value = '';
+      if (photoInfo) photoInfo.textContent = 'No photo selected';
+      photoClear.style.display = 'none';
     });
   }
 
@@ -3791,6 +3844,10 @@ async function analyzeCAD(autoCalculate = false): Promise<void> {
     if (ovrW)    formData.append('widthMm', ovrW);
     if (ovrH)    formData.append('heightMm', ovrH);
     if (ovrDens) formData.append('densityGcm3', ovrDens);
+    if (cadPartPhotoBase64) {
+      formData.append('partPhotoBase64', cadPartPhotoBase64);
+      formData.append('partPhotoMime', cadPartPhotoMime);
+    }
 
     const headers: HeadersInit = {};
     if (apiKey) headers['x-api-key'] = apiKey;
@@ -3842,6 +3899,20 @@ async function analyzeCAD(autoCalculate = false): Promise<void> {
 function renderCADResults(r: CADAnalysisResult, autoCalculate = false, annualVolume = 100000): void {
   const panel = el('cad-results');
   const g = r.geometry;
+
+  // Confidence badge helper — looks up AI-provided per-field confidence scores
+  const fc = (r.costInputSuggestions as CADAnalysisResult['costInputSuggestions'] & { fieldConfidences?: Record<string, number> }).fieldConfidences ?? {};
+  const confBadge = (key: string, ...fallbacks: string[]): string => {
+    for (const k of [key, ...fallbacks]) {
+      if (fc[k] !== undefined) {
+        const v = fc[k];
+        const pct = Math.round(v * 100);
+        const cls = v >= 0.8 ? 'High' : v >= 0.5 ? 'Medium' : 'Low';
+        return `<span class="cad-confidence-badge ${cls}" style="font-size:0.62rem;padding:1px 5px;margin-left:4px;vertical-align:middle">${pct}%</span>`;
+      }
+    }
+    return '';
+  };
   const bb = g.boundingBoxMm;
   const scoreClass = r.manufacturabilityScore >= 75 ? 'score-high' : r.manufacturabilityScore >= 50 ? 'score-med' : 'score-low';
 
@@ -4000,10 +4071,10 @@ function renderCADResults(r: CADAnalysisResult, autoCalculate = false, annualVol
     <div style="margin-bottom:12px">
       <div class="panel-title" style="margin-bottom:6px">Suggested Cost Inputs <span style="font-size:0.68rem;color:var(--text-muted);font-weight:400">@ ${annualVolume.toLocaleString()} pcs/yr</span></div>
       <table class="breakdown-table" style="font-size:0.78rem">
-        <tr><td>Net weight</td><td><strong>${r.costInputSuggestions.netWeightKg.toFixed(3)} kg</strong></td></tr>
-        <tr><td>Material</td><td>${escHtml(r.materialAnalysis.primarySuggestion.name)} (${r.costInputSuggestions.materialId})</td></tr>
-        <tr><td>Est. cycle time</td><td>${r.costInputSuggestions.estimatedCycleTimeHr.toFixed(4)} hr/part</td></tr>
-        <tr><td>Setup time</td><td>${r.costInputSuggestions.estimatedSetupTimeHr.toFixed(2)} hr</td></tr>
+        <tr><td>Net weight</td><td><strong>${r.costInputSuggestions.netWeightKg.toFixed(3)} kg</strong>${confBadge('netWeightKg', 'mach-net-wt', 'cast-part-wt', 'bm-wall')}</td></tr>
+        <tr><td>Material</td><td>${escHtml(r.materialAnalysis.primarySuggestion.name)} (${r.costInputSuggestions.materialId})${confBadge('materialId', 'mach-mat', 'cast-mat', 'imm-mat')}</td></tr>
+        <tr><td>Est. cycle time</td><td>${r.costInputSuggestions.estimatedCycleTimeHr.toFixed(4)} hr/part${confBadge('estimatedCycleTimeHr', 'mach-cycle', 'cast-hpdc-ct')}</td></tr>
+        <tr><td>Setup time</td><td>${r.costInputSuggestions.estimatedSetupTimeHr.toFixed(2)} hr${confBadge('estimatedSetupTimeHr', 'mach-setup-time')}</td></tr>
         <tr><td>Operations</td><td>${r.costInputSuggestions.estimatedOperations.map(o => escHtml(o.name)).join(', ')}</td></tr>
         ${toolingCost > 0 ? `<tr><td>${escHtml(toolingLabel)} (OCCT est.)</td><td>£${toolingCost.toLocaleString('en-GB', { maximumFractionDigits: 0 })}</td></tr>
         <tr><td>Tooling/part @ ${annualVolume.toLocaleString()} pcs</td><td style="color:var(--accent)"><strong>£${toolingPerPart.toFixed(3)}</strong></td></tr>` : ''}
@@ -4012,20 +4083,69 @@ function renderCADResults(r: CADAnalysisResult, autoCalculate = false, annualVol
     </div>`;
     })()}
 
-    <!-- Apply to form -->
+    <!-- Apply primary recommendation to form -->
     <div class="cad-apply-btn-row">
-      <strong style="font-size:0.8rem;align-self:center">Apply to cost engine:</strong>
+      <strong style="font-size:0.8rem;align-self:center">Recommended:</strong>
       <button class="btn btn-primary btn-sm" id="cad-apply-btn" data-commodity="${escHtml(recommendedCommodity)}">
-        → ${escHtml(commodityLabel[recommendedCommodity] ?? recommendedCommodity)} (Recommended)
+        → Apply: ${escHtml(commodityLabel[recommendedCommodity] ?? recommendedCommodity)}
       </button>
       <button class="btn btn-secondary btn-sm" id="cad-apply-calc-btn" data-commodity="${escHtml(recommendedCommodity)}">
         Apply &amp; Calculate ⚡
       </button>
-      ${r.processRecommendations.slice(1, 3).map(p => {
-        const ct = p.commodityType as CommodityType;
-        return `<button class="btn btn-secondary btn-sm cad-apply-alt-btn" data-commodity="${ct}">${escHtml(commodityLabel[ct] ?? ct)}</button>`;
-      }).join('')}
     </div>
+
+    <!-- Process comparison cards (top alternative processes) -->
+    ${r.processRecommendations.length > 1 ? `
+    <div style="margin:10px 0 12px">
+      <div class="panel-title" style="margin-bottom:6px">Alternative Processes</div>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        ${r.processRecommendations.slice(1, 4).map(p => {
+          const ct = p.commodityType as string;
+          const confCls = p.confidencePct >= 75 ? 'High' : p.confidencePct >= 50 ? 'Medium' : 'Low';
+          return `<div class="cad-proc-card">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:3px">
+              <strong style="font-size:0.8rem;flex:1">${escHtml(commodityLabel[ct as CommodityType] ?? ct)}</strong>
+              <span class="cad-confidence-badge ${confCls}" style="font-size:0.65rem">${p.confidencePct}%</span>
+            </div>
+            <div class="confidence-bar-bg" style="margin-bottom:5px">
+              <div class="confidence-bar-fill" style="width:${p.confidencePct}%"></div>
+            </div>
+            <div style="font-size:0.72rem;color:var(--text-secondary);margin-bottom:6px;line-height:1.4">${escHtml(p.reasoning)}</div>
+            <div style="display:flex;gap:4px">
+              <button class="btn btn-secondary btn-sm cad-apply-alt-btn" data-commodity="${escHtml(ct)}" style="font-size:0.72rem">Apply</button>
+              <button class="btn btn-secondary btn-sm cad-apply-alt-calc-btn" data-commodity="${escHtml(ct)}" style="font-size:0.72rem">Apply &amp; Calc ⚡</button>
+            </div>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>` : ''}
+
+    <!-- Post-analysis: re-analyse with cached geometry or override & recalculate -->
+    ${cadOCCTGeometry ? `
+    <div style="margin-top:10px;padding:10px;border:1px solid var(--border);border-radius:6px;background:rgba(99,130,230,0.04)">
+      <div class="panel-title" style="margin-bottom:8px">Re-Analyse / Adjust</div>
+      <div class="field-row" style="margin-bottom:8px;gap:8px">
+        <div class="field-group">
+          <label style="font-size:0.72rem">Process (for re-analysis)</label>
+          <select id="cad-reanalyze-commodity" style="font-size:0.8rem">
+            ${CAD_COMMODITY_OPTIONS.filter(o => o.value).map(o =>
+              `<option value="${o.value}"${o.value === recommendedCommodity ? ' selected' : ''}>${escHtml(o.label)}</option>`
+            ).join('')}
+          </select>
+        </div>
+        <div class="field-group">
+          <label style="font-size:0.72rem">Material (override &amp; recalc)</label>
+          <select id="cad-reanalyze-material" style="font-size:0.8rem">
+            ${_buildCadMaterialOptions(recommendedCommodity)}
+          </select>
+        </div>
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        <button class="btn btn-primary btn-sm" id="cad-reanalyze-btn">↺ Re-analyse (no re-upload)</button>
+        <button class="btn btn-secondary btn-sm" id="cad-override-recalc-btn">Override &amp; Recalculate ⚡</button>
+      </div>
+      <div id="cad-reanalyze-status" style="display:none;margin-top:6px;font-size:0.75rem;color:var(--text-muted)">Running AI analysis…</div>
+    </div>` : ''}
 
     ${r.analysisLimitations.length > 0 ? `
     <div class="cad-limitations">
@@ -4033,7 +4153,7 @@ function renderCADResults(r: CADAnalysisResult, autoCalculate = false, annualVol
     </div>` : ''}
   `;
 
-  // Wire apply buttons
+  // Wire apply buttons (primary recommendation)
   el('cad-apply-btn')?.addEventListener('click', () => {
     const ct = (el('cad-apply-btn') as HTMLElement).dataset.commodity as CommodityType;
     applyCADToForm(ct, false);
@@ -4042,13 +4162,102 @@ function renderCADResults(r: CADAnalysisResult, autoCalculate = false, annualVol
     const ct = (el('cad-apply-calc-btn') as HTMLElement).dataset.commodity as CommodityType;
     applyCADToForm(ct, true);
   });
+
+  // Wire alternative process cards
   panel.querySelectorAll<HTMLElement>('.cad-apply-alt-btn').forEach(btn => {
     btn.addEventListener('click', () => applyCADToForm(btn.dataset.commodity as CommodityType, false));
   });
+  panel.querySelectorAll<HTMLElement>('.cad-apply-alt-calc-btn').forEach(btn => {
+    btn.addEventListener('click', () => applyCADToForm(btn.dataset.commodity as CommodityType, true));
+  });
+
+  // Wire re-analyse button (uses cached OCCT geometry — no re-upload)
+  document.getElementById('cad-reanalyze-btn')?.addEventListener('click', () => { void reanalyzeCAD(); });
+
+  // Wire override & recalculate button (mutates cached result's material, then applies)
+  document.getElementById('cad-override-recalc-btn')?.addEventListener('click', () => {
+    if (!cadAnalysisResult) return;
+    const matOvr = (document.getElementById('cad-reanalyze-material') as HTMLSelectElement | null)?.value;
+    if (matOvr) {
+      cadAnalysisResult.costInputSuggestions.materialId = matOvr;
+    }
+    applyCADToForm(cadAnalysisResult.costInputSuggestions.recommendedCommodity as CommodityType, true);
+  });
+
+  // Commodity change in re-analyse section rebuilds material dropdown
+  const reanalyzeCommSel = document.getElementById('cad-reanalyze-commodity') as HTMLSelectElement | null;
+  const reanalyzeMatSel  = document.getElementById('cad-reanalyze-material')  as HTMLSelectElement | null;
+  if (reanalyzeCommSel && reanalyzeMatSel) {
+    reanalyzeCommSel.addEventListener('change', () => {
+      reanalyzeMatSel.innerHTML = _buildCadMaterialOptions(reanalyzeCommSel.value);
+    });
+  }
 
   // Auto-calculate if triggered from "Analyze & Calculate" button
   if (autoCalculate) {
     applyCADToForm(recommendedCommodity, true);
+  }
+}
+
+// Re-analyse using cached OCCT geometry (no STEP file re-upload required)
+async function reanalyzeCAD(): Promise<void> {
+  if (!cadOCCTGeometry) {
+    alert('No cached OCCT geometry available. Please run a full analysis first.');
+    return;
+  }
+
+  const commOvr = (document.getElementById('cad-reanalyze-commodity') as HTMLSelectElement | null)?.value ?? '';
+  const matOvr  = (document.getElementById('cad-reanalyze-material')  as HTMLSelectElement | null)?.value ?? '';
+  const annVol  = (document.getElementById('cad-annual-volume') as HTMLInputElement | null)?.value ?? '100000';
+  const apiKey  = val('cad-api-key');
+
+  const statusEl  = document.getElementById('cad-reanalyze-status');
+  const reanalyzeBtn = document.getElementById('cad-reanalyze-btn') as HTMLButtonElement | null;
+
+  if (statusEl) statusEl.style.display = '';
+  if (reanalyzeBtn) reanalyzeBtn.setAttribute('disabled', 'true');
+
+  try {
+    const headers: HeadersInit = { 'Content-Type': 'application/json' };
+    if (apiKey) headers['x-api-key'] = apiKey;
+
+    const body: Record<string, unknown> = {
+      occtGeometry: cadOCCTGeometry,
+      filename: cadFile?.name ?? 'cached_part.step',
+      annualVolume: annVol || '100000',
+    };
+    if (commOvr) body['commodity'] = commOvr;
+    if (matOvr)  body['material']  = matOvr;
+    if (cadPartPhotoBase64) { body['partPhotoBase64'] = cadPartPhotoBase64; body['partPhotoMime'] = cadPartPhotoMime; }
+
+    const res = await fetch('/api/cad/reanalyze', {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(body),
+    });
+
+    const data = await res.json() as {
+      success?: boolean;
+      analysis?: CADAnalysisResult;
+      annualVolume?: number;
+      error?: string;
+    };
+
+    if (!res.ok || !data.success) throw new Error(data.error ?? `Server error ${res.status}`);
+
+    cadAnalysisResult = data.analysis!;
+    const resolvedVol = data.annualVolume ?? (parseFloat(annVol) || 100000);
+    renderCADResults(cadAnalysisResult, false, resolvedVol);
+  } catch (err) {
+    if (statusEl) {
+      statusEl.style.display = '';
+      statusEl.style.color = 'var(--red)';
+      statusEl.textContent = `Re-analysis error: ${err instanceof Error ? err.message : String(err)}`;
+    }
+  } finally {
+    if (reanalyzeBtn) reanalyzeBtn.removeAttribute('disabled');
+    const newStatus = document.getElementById('cad-reanalyze-status');
+    if (newStatus && newStatus.textContent === 'Running AI analysis…') newStatus.style.display = 'none';
   }
 }
 
