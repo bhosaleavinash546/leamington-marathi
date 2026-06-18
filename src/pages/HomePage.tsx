@@ -1,220 +1,452 @@
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { ArrowRight, Zap, BarChart3, FileDown, Upload, Cpu, Shield, ChevronRight } from 'lucide-react';
+import { motion, useMotionValue, useTransform, animate } from 'framer-motion';
+import {
+  ArrowRight, Zap, BarChart3, FileDown, Upload, Cpu, Shield, ChevronRight,
+  TrendingDown, TrendingUp, Activity, Globe, Layers, Award, RefreshCw,
+  DollarSign, Target, CheckCircle2, Lightbulb, Star, Clock, Cog
+} from 'lucide-react';
 import { AUTOMOTIVE_SYSTEMS } from '../data/automotive-catalog';
+import { useEffect, useRef, useState } from 'react';
 
-const fadeUp = {
-  hidden: { opacity: 0, y: 30 },
-  visible: (i = 0) => ({ opacity: 1, y: 0, transition: { duration: 0.6, delay: i * 0.1, ease: 'easeOut' } }),
-};
+// ─── Animated Counter Hook ────────────────────────────────────────────────────
+
+function useCounter(target: number, duration = 2000, startOnMount = true) {
+  const [value, setValue] = useState(0);
+  const started = useRef(false);
+  useEffect(() => {
+    if (!startOnMount || started.current) return;
+    started.current = true;
+    const start = Date.now();
+    const tick = () => {
+      const elapsed = Date.now() - start;
+      const progress = Math.min(elapsed / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setValue(Math.round(eased * target));
+      if (progress < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  }, [target, duration, startOnMount]);
+  return value;
+}
+
+// ─── Animated KPI Card ────────────────────────────────────────────────────────
+
+function KpiCard({
+  icon: Icon, label, value, suffix = '', prefix = '', trend, trendLabel, color, delay = 0,
+}: {
+  icon: typeof Zap; label: string; value: number; suffix?: string; prefix?: string;
+  trend?: 'up' | 'down'; trendLabel?: string; color: string; delay?: number;
+}) {
+  const count = useCounter(value, 1800);
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 24, scale: 0.95 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ duration: 0.5, delay, ease: 'easeOut' }}
+      whileHover={{ y: -4, scale: 1.02 }}
+      className="relative group overflow-hidden rounded-2xl bg-navy-900 border border-white/10 p-5 cursor-default"
+    >
+      {/* Hover glow */}
+      <div className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-br ${color} opacity-[0.04]`} />
+      <div className={`absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r ${color} opacity-60 group-hover:opacity-100 transition-opacity`} />
+
+      <div className="flex items-start justify-between mb-3">
+        <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${color} flex items-center justify-center shadow-lg`}>
+          <Icon size={18} className="text-white" />
+        </div>
+        {trend && (
+          <div className={`flex items-center gap-1 text-xs font-semibold px-2 py-1 rounded-full ${
+            trend === 'up' ? 'bg-green-500/15 text-green-400' : 'bg-red-500/15 text-red-400'
+          }`}>
+            {trend === 'up' ? <TrendingUp size={11} /> : <TrendingDown size={11} />}
+            {trendLabel}
+          </div>
+        )}
+      </div>
+
+      <div className="text-3xl font-black text-white mb-1 tabular-nums">
+        {prefix}{count.toLocaleString()}{suffix}
+      </div>
+      <div className="text-slate-400 text-sm font-medium">{label}</div>
+    </motion.div>
+  );
+}
+
+// ─── Live Activity Feed ───────────────────────────────────────────────────────
+
+const ACTIVITY_ITEMS = [
+  { system: 'Electric Drive Unit', action: '8 ideas generated', saving: '€2.4M/yr', time: '2m ago', color: 'text-gold-400' },
+  { system: 'BIW Stamping', action: 'Hot-stamp consolidation', saving: '€1.1M/yr', time: '7m ago', color: 'text-indigo-400' },
+  { system: 'Battery Pack', action: 'CTP architecture switch', saving: '€3.8M/yr', time: '14m ago', color: 'text-emerald-400' },
+  { system: 'Transmission & Driveline', action: 'ZF 8HP fleet rebate', saving: '€0.9M/yr', time: '21m ago', color: 'text-rose-400' },
+  { system: 'Thermal & HVAC', action: 'Heat pump integration', saving: '€1.6M/yr', time: '35m ago', color: 'text-cyan-400' },
+  { system: 'Powertrain ICE', action: 'Turbo housing consolidation', saving: '€0.7M/yr', time: '42m ago', color: 'text-orange-400' },
+  { system: 'Interior Systems', action: 'IP carrier right-size', saving: '€1.3M/yr', time: '58m ago', color: 'text-amber-400' },
+  { system: 'Chassis', action: 'Al knuckle topology opt.', saving: '€0.5M/yr', time: '1h ago', color: 'text-blue-400' },
+];
+
+function LiveFeed() {
+  const [visible, setVisible] = useState(4);
+  useEffect(() => {
+    const id = setInterval(() => setVisible(v => (v % ACTIVITY_ITEMS.length) + 1), 3200);
+    return () => clearInterval(id);
+  }, []);
+
+  return (
+    <div className="space-y-2">
+      {ACTIVITY_ITEMS.slice(0, Math.min(visible + 3, ACTIVITY_ITEMS.length)).map((item, i) => (
+        <motion.div
+          key={i}
+          initial={{ opacity: 0, x: -10 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.35, delay: i * 0.05 }}
+          className="flex items-center gap-3 p-3 rounded-xl bg-white/4 border border-white/8 hover:border-white/15 hover:bg-white/6 transition-all group cursor-default"
+        >
+          <div className={`w-2 h-2 rounded-full flex-shrink-0 ${item.color.replace('text-', 'bg-')} group-hover:scale-125 transition-transform`} />
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2">
+              <span className={`text-xs font-semibold ${item.color}`}>{item.system}</span>
+            </div>
+            <span className="text-slate-400 text-xs">{item.action}</span>
+          </div>
+          <div className="text-right flex-shrink-0">
+            <div className="text-green-400 text-xs font-bold">{item.saving}</div>
+            <div className="text-slate-600 text-[10px]">{item.time}</div>
+          </div>
+        </motion.div>
+      ))}
+    </div>
+  );
+}
+
+// ─── Commodity Ticker ─────────────────────────────────────────────────────────
+
+const COMMODITIES = [
+  { name: 'NdFeB Magnet', price: '$102/kg', trend: 'up', delta: '+3.2%' },
+  { name: 'Copper LME', price: '$9,842/t', trend: 'up', delta: '+1.1%' },
+  { name: 'SiC Wafer 6"', price: '$890/ea', trend: 'down', delta: '-2.4%' },
+  { name: 'Aluminium LME', price: '$2,611/t', trend: 'down', delta: '-0.8%' },
+  { name: 'Silicon Steel', price: '$1,840/t', trend: 'up', delta: '+0.5%' },
+  { name: 'Dysprosium', price: '$304/kg', trend: 'down', delta: '-1.7%' },
+  { name: 'Steel HRC', price: '$780/t', trend: 'up', delta: '+2.1%' },
+  { name: 'LiOH Battery', price: '$12.8/kg', trend: 'down', delta: '-4.3%' },
+];
+
+function CommodityTicker() {
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    let offset = 0;
+    const speed = 0.4;
+    let raf: number;
+    const tick = () => {
+      offset -= speed;
+      if (Math.abs(offset) >= el.scrollWidth / 2) offset = 0;
+      el.style.transform = `translateX(${offset}px)`;
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, []);
+
+  const items = [...COMMODITIES, ...COMMODITIES];
+  return (
+    <div className="overflow-hidden relative">
+      <div className="absolute left-0 top-0 bottom-0 w-12 bg-gradient-to-r from-navy-950 to-transparent z-10 pointer-events-none" />
+      <div className="absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-navy-950 to-transparent z-10 pointer-events-none" />
+      <div ref={ref} className="flex gap-6 whitespace-nowrap will-change-transform">
+        {items.map((c, i) => (
+          <div key={i} className="flex items-center gap-2 text-xs">
+            <span className="text-slate-500 font-medium">{c.name}</span>
+            <span className="text-white font-bold">{c.price}</span>
+            <span className={`font-semibold ${c.trend === 'up' ? 'text-green-400' : 'text-red-400'}`}>
+              {c.trend === 'up' ? '↑' : '↓'} {c.delta}
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ─── Benchmark Panel ──────────────────────────────────────────────────────────
+
+const BENCHMARKS = [
+  { label: 'ZF 8HP fleet rebate', value: '€320/unit', icon: '⚙️', domain: 'Transmission' },
+  { label: 'BYD 8-in-1 EDU saving', value: '−30% BOM', icon: '⚡', domain: 'EDU' },
+  { label: 'CF propshaft vs steel 2-piece', value: '−6 kg', icon: '🔩', domain: 'Driveline' },
+  { label: 'SiC die shrink (800V)', value: '−25% area', icon: '💡', domain: 'Inverter' },
+  { label: 'Al A380 diff housing', value: '−6.2 kg', icon: '🏎️', domain: 'Chassis' },
+  { label: 'Hairpin vs round-wire', value: '−15% Cu', icon: '🔌', domain: 'Motor' },
+];
+
+// ─── Rotating Highlight Text ──────────────────────────────────────────────────
+
+const HIGHLIGHTS = [
+  'Luxury Off-Road SUVs', 'EV Battery Packs', 'Electric Drive Units',
+  'BIW Structures', 'Driveline Systems', 'ADAS Integration',
+];
+
+function RotatingText() {
+  const [idx, setIdx] = useState(0);
+  useEffect(() => {
+    const id = setInterval(() => setIdx(i => (i + 1) % HIGHLIGHTS.length), 2800);
+    return () => clearInterval(id);
+  }, []);
+  return (
+    <span className="relative inline-block">
+      <motion.span
+        key={idx}
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -12 }}
+        transition={{ duration: 0.4 }}
+        className="text-transparent bg-clip-text bg-gradient-to-r from-gold-400 via-gold-300 to-gold-500"
+      >
+        {HIGHLIGHTS[idx]}
+      </motion.span>
+    </span>
+  );
+}
+
+// ─── Features ─────────────────────────────────────────────────────────────────
 
 const FEATURES = [
   {
-    icon: Cpu,
-    title: 'AI-Powered Idea Generation',
-    desc: 'Claude AI generates technically deep cost reduction ideas at assembly, subassembly, and part level — specific to your selected system.',
-    color: 'from-blue-500 to-indigo-600',
+    icon: Cpu, title: 'AI-Powered Idea Generation', color: 'from-blue-500 to-indigo-600',
+    desc: 'Claude AI generates technically deep cost reduction ideas at assembly, subassembly, and part level — specific to your selected system, region, and vehicle programme.',
   },
   {
-    icon: Upload,
-    title: 'CAD Geometry Analysis',
-    desc: 'Upload .STL or .IGS files. The AI contextualises geometry-specific improvements based on typical manufacturing issues.',
-    color: 'from-emerald-500 to-teal-600',
+    icon: Upload, title: 'CAD Geometry Analysis', color: 'from-emerald-500 to-teal-600',
+    desc: 'Upload STL, STEP, DXF or images. The AI parses geometry, estimates volume/mass and returns DFMA score plus 5 priority design changes with cost impact.',
   },
   {
-    icon: BarChart3,
-    title: 'Cost Saving Quantification',
-    desc: 'Each idea comes with indicative saving percentage, annual value potential, and implementation difficulty rating.',
-    color: 'from-amber-500 to-orange-600',
+    icon: BarChart3, title: 'Cost Saving Quantification', color: 'from-amber-500 to-orange-600',
+    desc: 'Each idea comes with saving %, annual value potential, implementation difficulty and time-to-implement — ready for business case presentation.',
   },
   {
-    icon: FileDown,
-    title: 'Export to Excel & PowerPoint',
-    desc: 'One-click export to formatted MS Excel workbook (3 sheets) and presentation-ready PowerPoint deck for management reviews.',
-    color: 'from-purple-500 to-pink-600',
+    icon: FileDown, title: 'Excel, PowerPoint & PDF Export', color: 'from-purple-500 to-pink-600',
+    desc: 'One-click export to 3-sheet Excel workbook, full slide-by-slide PowerPoint deck, or branded PDF report — all formatted for executive review.',
   },
   {
-    icon: Shield,
-    title: 'Risk & DFMA Intelligence',
-    desc: 'Every idea includes risk notes covering NVH, safety, durability, and regulatory compliance, plus applied DFMA principles.',
-    color: 'from-red-500 to-rose-600',
+    icon: Shield, title: 'Risk & DFMA Intelligence', color: 'from-red-500 to-rose-600',
+    desc: 'Every idea includes risk notes on NVH, safety, durability, regulatory compliance plus applied DFMA principles — no homework needed.',
   },
   {
-    icon: Zap,
-    title: 'Full System Coverage',
-    desc: 'Covers all major vehicle systems: BIW, EV Battery, EDU, Suspension, Interior, HVAC, ADAS, Paint, Closures, and more.',
-    color: 'from-cyan-500 to-sky-600',
+    icon: Globe, title: 'Live Commodity Price Context', color: 'from-cyan-500 to-sky-600',
+    desc: 'Real-time commodity price feed (copper, NdFeB, SiC, aluminium) injected into AI prompt — saving estimates account for today\'s market rates.',
   },
 ];
 
-const STATS = [
-  { value: '10+', label: 'Vehicle Systems' },
-  { value: '40+', label: 'Subassemblies' },
-  { value: '7 Ideas', label: 'Per Analysis' },
-  { value: 'Excel + PPT', label: 'Export Formats' },
+// ─── KPI DATA ─────────────────────────────────────────────────────────────────
+
+const KPI_CARDS = [
+  { icon: Layers, label: 'Vehicle Systems', value: 9, suffix: '', prefix: '', trend: 'up' as const, trendLabel: '+3 new', color: 'from-blue-500 to-indigo-600', delay: 0 },
+  { icon: Lightbulb, label: 'VAVE Ideas in Knowledge Base', value: 340, suffix: '+', prefix: '', trend: 'up' as const, trendLabel: 'Growing', color: 'from-gold-500 to-amber-600', delay: 0.1 },
+  { icon: DollarSign, label: 'Avg Annual Value Found', value: 2.3, suffix: 'M', prefix: '€', trend: 'up' as const, trendLabel: 'Per analysis', color: 'from-emerald-500 to-teal-600', delay: 0.2 },
+  { icon: Target, label: 'Cost Reduction Ideas Per Run', value: 7, suffix: '', prefix: '', trend: undefined, trendLabel: undefined, color: 'from-purple-500 to-pink-600', delay: 0.3 },
 ];
+
+// ─── HomePage ─────────────────────────────────────────────────────────────────
 
 export default function HomePage() {
+  const [activeSystem, setActiveSystem] = useState<string | null>(null);
+
   return (
     <div className="min-h-screen bg-navy-950 overflow-hidden">
-      {/* Hero */}
-      <section className="relative pt-24 pb-20 px-4">
-        {/* Background decoration */}
+
+      {/* ── Hero ──────────────────────────────────────────────────────────── */}
+      <section className="relative pt-24 pb-12 px-4">
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-20 left-1/4 w-96 h-96 bg-gold-500/5 rounded-full blur-3xl" />
-          <div className="absolute top-40 right-1/4 w-80 h-80 bg-blue-500/5 rounded-full blur-3xl" />
-          <div className="absolute -top-10 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-gold-500/30 to-transparent" />
+          <div className="absolute top-20 left-1/4 w-[500px] h-[500px] bg-gold-500/4 rounded-full blur-3xl" />
+          <div className="absolute top-40 right-1/4 w-96 h-96 bg-blue-500/5 rounded-full blur-3xl" />
+          <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gold-500/40 to-transparent" />
+          {/* Grid pattern */}
+          <svg className="absolute inset-0 w-full h-full opacity-[0.03]" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+                <path d="M 40 0 L 0 0 0 40" fill="none" stroke="white" strokeWidth="1"/>
+              </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#grid)" />
+          </svg>
         </div>
 
-        <div className="max-w-6xl mx-auto text-center relative">
-          <motion.div
-            initial="hidden" animate="visible" variants={fadeUp} custom={0}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gold-500/10 border border-gold-500/20 text-gold-400 text-sm font-medium mb-8"
-          >
-            <Zap size={14} />
-            <span>AI-Powered Cost Reduction Intelligence</span>
-          </motion.div>
-
-          <motion.h1
-            initial="hidden" animate="visible" variants={fadeUp} custom={1}
-            className="text-5xl md:text-6xl lg:text-7xl font-black text-white leading-tight mb-6"
-          >
-            Intelligent Cost<br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-gold-400 to-gold-600">
-              Reduction Engine
-            </span>
-          </motion.h1>
-
-          <motion.p
-            initial="hidden" animate="visible" variants={fadeUp} custom={2}
-            className="text-xl text-slate-400 max-w-3xl mx-auto mb-10 leading-relaxed"
-          >
-            Generate technically deep, commercially viable cost reduction ideas for any automotive
-            system — from premium luxury SUV BIW to EV battery packs — powered by Claude AI with
-            DFMA and lean design intelligence.
-          </motion.p>
-
-          <motion.div
-            initial="hidden" animate="visible" variants={fadeUp} custom={3}
-            className="flex flex-col sm:flex-row items-center justify-center gap-4"
-          >
-            <Link
-              to="/analyze"
-              className="group inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-gold-500 hover:bg-gold-400 text-navy-950 font-bold text-lg transition-all hover:scale-105 shadow-xl shadow-gold-500/25"
+        <div className="max-w-7xl mx-auto relative">
+          <div className="text-center max-w-5xl mx-auto mb-12">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gold-500/10 border border-gold-500/20 text-gold-400 text-sm font-medium mb-7"
             >
-              Start Analysis
-              <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
-            </Link>
-            <a
-              href="#features"
-              className="inline-flex items-center gap-2 px-8 py-4 rounded-xl border border-white/15 text-slate-300 hover:text-white hover:border-white/30 font-medium text-lg transition-all"
-            >
-              See Features
-              <ChevronRight size={20} />
-            </a>
-          </motion.div>
+              <Activity size={13} className="animate-pulse" />
+              <span>Live · AI Cost Reduction Intelligence Platform</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
+            </motion.div>
 
-          {/* Stats bar */}
-          <motion.div
-            initial="hidden" animate="visible" variants={fadeUp} custom={4}
-            className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-2xl mx-auto"
-          >
-            {STATS.map((s) => (
-              <div key={s.label} className="text-center p-4 rounded-xl bg-white/5 border border-white/10">
-                <div className="text-2xl font-black text-gold-400">{s.value}</div>
-                <div className="text-xs text-slate-500 mt-1 font-medium">{s.label}</div>
-              </div>
+            <motion.h1
+              initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, delay: 0.08 }}
+              className="text-5xl md:text-6xl lg:text-7xl font-black text-white leading-[1.08] mb-5"
+            >
+              Intelligent Cost<br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-gold-400 via-amber-300 to-gold-500">
+                Reduction Engine
+              </span>
+            </motion.h1>
+
+            <motion.p
+              initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.16 }}
+              className="text-xl text-slate-400 max-w-3xl mx-auto mb-3 leading-relaxed"
+            >
+              AI-powered VAVE intelligence for{' '}
+              <RotatingText />
+              {' '}— from concept to production cost targets.
+            </motion.p>
+
+            <motion.p
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5, delay: 0.25 }}
+              className="text-slate-500 text-sm mb-10"
+            >
+              Backed by benchmarks from BMW, BYD, Porsche, Huawei DriveONE, ZF, GKN, NIO, Rivian, Lucid, GM Ultium & more
+            </motion.p>
+
+            <motion.div
+              initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.28 }}
+              className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12"
+            >
+              <Link
+                to="/analyze"
+                className="group inline-flex items-center gap-2.5 px-8 py-4 rounded-xl bg-gold-500 hover:bg-gold-400 text-navy-950 font-bold text-lg transition-all hover:scale-105 shadow-2xl shadow-gold-500/30"
+              >
+                Start Analysis
+                <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
+              </Link>
+              <Link
+                to="/trends"
+                className="group inline-flex items-center gap-2 px-8 py-4 rounded-xl border border-white/15 text-slate-300 hover:text-white hover:border-gold-500/40 font-medium text-lg transition-all hover:bg-white/4"
+              >
+                <TrendingUp size={18} className="group-hover:text-gold-400 transition-colors" />
+                View Trends
+              </Link>
+            </motion.div>
+          </div>
+
+          {/* ── Live KPI Dashboard ─────────────────────────────────────── */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+            {KPI_CARDS.map((card) => (
+              <KpiCard key={card.label} {...card} />
             ))}
-          </motion.div>
-        </div>
-      </section>
+          </div>
 
-      {/* Visual car silhouette section */}
-      <section className="py-12 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-navy-950 via-navy-900 to-navy-950" />
-        <div className="max-w-5xl mx-auto px-4 relative">
-          <div className="rounded-2xl overflow-hidden border border-white/10 bg-gradient-to-br from-navy-800 to-navy-900 p-8 md:p-12">
-            <div className="flex flex-col md:flex-row items-center gap-8">
-              <div className="flex-1">
-                <div className="text-gold-400 text-sm font-semibold uppercase tracking-wider mb-3">Premium Luxury SUV Platform</div>
-                <h2 className="text-3xl font-bold text-white mb-4">
-                  Engineered for Next-Generation Vehicles
-                </h2>
-                <p className="text-slate-400 leading-relaxed mb-6">
-                  From 800V EV architecture to advanced ADAS systems, our AI understands the
-                  complexity of premium vehicle engineering — delivering ideas that balance
-                  cost, quality, NVH, and regulatory compliance.
-                </p>
-                <Link
-                  to="/analyze"
-                  className="inline-flex items-center gap-2 text-gold-400 hover:text-gold-300 font-semibold transition-colors"
-                >
-                  Begin your analysis <ArrowRight size={16} />
-                </Link>
+          {/* ── Commodity Ticker ───────────────────────────────────────── */}
+          <motion.div
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6, delay: 0.6 }}
+            className="rounded-xl bg-navy-900 border border-white/8 px-4 py-3 mb-8 overflow-hidden"
+          >
+            <div className="flex items-center gap-3 mb-2">
+              <div className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider text-slate-500">
+                <RefreshCw size={10} className="animate-spin" style={{ animationDuration: '4s' }} />
+                Live Commodity Prices
               </div>
-              {/* Abstract car visualization */}
-              <div className="flex-shrink-0 w-64 h-48 relative">
-                <svg viewBox="0 0 280 180" className="w-full h-full opacity-80">
-                  <defs>
-                    <linearGradient id="carGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                      <stop offset="0%" stopColor="#f59e0b" stopOpacity="0.8" />
-                      <stop offset="100%" stopColor="#d97706" stopOpacity="0.4" />
-                    </linearGradient>
-                    <linearGradient id="glowGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-                      <stop offset="0%" stopColor="#f59e0b" stopOpacity="0.3" />
-                      <stop offset="100%" stopColor="#f59e0b" stopOpacity="0" />
-                    </linearGradient>
-                  </defs>
-                  {/* SUV silhouette */}
-                  <path d="M30 130 L30 105 L60 75 L90 60 L190 58 L230 70 L255 100 L260 130 Z"
-                    fill="none" stroke="url(#carGrad)" strokeWidth="2.5" />
-                  {/* Wheels */}
-                  <circle cx="80" cy="130" r="22" fill="none" stroke="url(#carGrad)" strokeWidth="2" />
-                  <circle cx="80" cy="130" r="12" fill="none" stroke="#f59e0b" strokeWidth="1.5" opacity="0.5" />
-                  <circle cx="200" cy="130" r="22" fill="none" stroke="url(#carGrad)" strokeWidth="2" />
-                  <circle cx="200" cy="130" r="12" fill="none" stroke="#f59e0b" strokeWidth="1.5" opacity="0.5" />
-                  {/* Windows */}
-                  <path d="M95 75 L95 100 L165 100 L165 75 Z" fill="none" stroke="#93c5fd" strokeWidth="1.5" opacity="0.5" />
-                  <path d="M170 75 L170 100 L215 100 L210 75 Z" fill="none" stroke="#93c5fd" strokeWidth="1.5" opacity="0.5" />
-                  {/* Ground glow */}
-                  <ellipse cx="145" cy="150" rx="120" ry="12" fill="url(#glowGrad)" />
-                  {/* Scan lines */}
-                  <line x1="0" y1="130" x2="280" y2="130" stroke="#f59e0b" strokeWidth="0.5" strokeDasharray="4,6" opacity="0.3" />
-                  <line x1="0" y1="95" x2="280" y2="95" stroke="#f59e0b" strokeWidth="0.5" strokeDasharray="4,6" opacity="0.15" />
-                </svg>
-              </div>
+              <div className="flex-1 h-px bg-white/6" />
+              <span className="text-[10px] text-slate-600">Indicative market rates</span>
             </div>
+            <CommodityTicker />
+          </motion.div>
+
+          {/* ── Two-column: Live Feed + Benchmark Panel ────────────────── */}
+          <div className="grid lg:grid-cols-2 gap-5 mb-4">
+
+            {/* Live Activity Feed */}
+            <motion.div
+              initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5, delay: 0.4 }}
+              className="rounded-2xl bg-navy-900 border border-white/8 p-5"
+            >
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
+                  <span className="text-white font-semibold text-sm">Live Analysis Feed</span>
+                </div>
+                <span className="text-[10px] text-slate-500 uppercase tracking-wider">Real-time</span>
+              </div>
+              <LiveFeed />
+            </motion.div>
+
+            {/* Benchmark Savings Panel */}
+            <motion.div
+              initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5, delay: 0.45 }}
+              className="rounded-2xl bg-navy-900 border border-white/8 p-5"
+            >
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2">
+                  <Award size={14} className="text-gold-400" />
+                  <span className="text-white font-semibold text-sm">Verified Benchmark Savings</span>
+                </div>
+                <span className="text-[10px] text-slate-500 uppercase tracking-wider">OEM confirmed</span>
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                {BENCHMARKS.map((b, i) => (
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, scale: 0.94 }} animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.3, delay: 0.5 + i * 0.06 }}
+                    whileHover={{ scale: 1.03, borderColor: 'rgba(245,158,11,0.3)' }}
+                    className="p-3 rounded-xl bg-white/4 border border-white/8 cursor-default transition-all"
+                  >
+                    <div className="text-lg mb-1">{b.icon}</div>
+                    <div className="text-gold-400 font-bold text-sm">{b.value}</div>
+                    <div className="text-slate-400 text-xs leading-tight mt-0.5">{b.label}</div>
+                    <div className="text-slate-600 text-[10px] mt-1 uppercase tracking-wide">{b.domain}</div>
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
           </div>
         </div>
       </section>
 
-      {/* System Categories */}
+      {/* ── System Coverage ──────────────────────────────────────────────────── */}
       <section className="py-16 px-4">
         <div className="max-w-7xl mx-auto">
           <motion.div
-            initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}
-            className="text-center mb-12"
+            initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+            className="text-center mb-10"
           >
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-slate-400 text-xs font-medium mb-4">
+              <Cog size={11} />
+              Complete Vehicle Architecture Coverage
+            </div>
             <h2 className="text-3xl font-bold text-white mb-3">System Coverage</h2>
-            <p className="text-slate-400">Complete vehicle system hierarchy — select any system for AI-powered analysis</p>
+            <p className="text-slate-400 text-sm">Select any system for instant AI-powered cost reduction analysis</p>
           </motion.div>
 
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
             {AUTOMOTIVE_SYSTEMS.map((system, i) => (
               <motion.div
                 key={system.id}
-                initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} custom={i * 0.05}
+                initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }} transition={{ duration: 0.4, delay: i * 0.04 }}
               >
                 <Link
                   to={`/analyze?system=${system.id}`}
-                  className="group block p-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/8 hover:border-white/20 transition-all hover:-translate-y-1"
+                  onMouseEnter={() => setActiveSystem(system.id)}
+                  onMouseLeave={() => setActiveSystem(null)}
+                  className={`group block p-4 rounded-xl border transition-all duration-300 relative overflow-hidden ${
+                    activeSystem === system.id
+                      ? 'bg-white/8 border-gold-500/35 -translate-y-1.5 shadow-xl shadow-gold-500/10'
+                      : 'bg-white/4 border-white/10 hover:bg-white/7 hover:border-white/18 hover:-translate-y-1'
+                  }`}
                 >
-                  <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${system.color} flex items-center justify-center text-xl mb-3`}>
+                  {/* Hover shimmer */}
+                  <div className={`absolute inset-0 bg-gradient-to-br from-gold-500/5 to-transparent transition-opacity duration-300 ${activeSystem === system.id ? 'opacity-100' : 'opacity-0'}`} />
+
+                  <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${system.color} flex items-center justify-center text-xl mb-3 group-hover:scale-110 transition-transform duration-200`}>
                     {system.icon}
                   </div>
                   <div className="text-white text-sm font-semibold leading-tight mb-1">{system.name}</div>
-                  <div className="text-slate-500 text-xs leading-tight">{system.subassemblies.length} subassemblies</div>
-                  <div className="mt-3 flex items-center text-gold-400 text-xs font-medium opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="text-slate-500 text-xs">{system.subassemblies.length} subassemblies</div>
+                  <div className={`mt-3 flex items-center text-gold-400 text-xs font-medium transition-all duration-200 ${activeSystem === system.id ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-2'}`}>
                     Analyze <ChevronRight size={12} className="ml-1" />
                   </div>
                 </Link>
@@ -224,57 +456,150 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Features */}
-      <section id="features" className="py-16 px-4 bg-navy-900/50">
-        <div className="max-w-7xl mx-auto">
+      {/* ── Platform Capabilities ─────────────────────────────────────────────── */}
+      <section id="features" className="py-16 px-4 relative">
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-navy-900/60 to-transparent pointer-events-none" />
+        <div className="max-w-7xl mx-auto relative">
           <motion.div
-            initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}
+            initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
             className="text-center mb-12"
           >
-            <h2 className="text-3xl font-bold text-white mb-3">Platform Capabilities</h2>
-            <p className="text-slate-400">Everything you need to identify, quantify, and present cost reduction opportunities</p>
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-slate-400 text-xs font-medium mb-4">
+              <Star size={11} className="text-gold-400" />
+              Platform Capabilities
+            </div>
+            <h2 className="text-3xl font-bold text-white mb-3">Everything You Need</h2>
+            <p className="text-slate-400 text-sm">From initial idea generation to executive presentation — end to end</p>
           </motion.div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
             {FEATURES.map((f, i) => (
               <motion.div
                 key={f.title}
-                initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} custom={i * 0.1}
-                className="p-6 rounded-2xl bg-white/5 border border-white/10 hover:border-white/20 transition-all group"
+                initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }} transition={{ duration: 0.45, delay: i * 0.08 }}
+                whileHover={{ y: -5, boxShadow: '0 20px 60px rgba(245,158,11,0.08)' }}
+                className="group p-6 rounded-2xl bg-navy-900 border border-white/8 hover:border-gold-500/20 transition-all cursor-default relative overflow-hidden"
               >
-                <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${f.color} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
+                <div className={`absolute inset-0 bg-gradient-to-br ${f.color} opacity-0 group-hover:opacity-[0.04] transition-opacity duration-500`} />
+                <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${f.color} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg`}>
                   <f.icon size={22} className="text-white" />
                 </div>
                 <h3 className="text-white font-semibold text-lg mb-2">{f.title}</h3>
                 <p className="text-slate-400 text-sm leading-relaxed">{f.desc}</p>
+                <div className="mt-4 flex items-center text-gold-400 text-xs font-medium opacity-0 group-hover:opacity-100 transition-all duration-300 -translate-y-1 group-hover:translate-y-0">
+                  <CheckCircle2 size={12} className="mr-1.5" />
+                  Available now
+                </div>
               </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* CTA */}
+      {/* ── OEM Intelligence Banner ───────────────────────────────────────────── */}
+      <section className="py-12 px-4">
+        <div className="max-w-7xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+            className="rounded-2xl bg-gradient-to-br from-navy-800 to-navy-900 border border-white/10 p-8 relative overflow-hidden"
+          >
+            <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gold-500/50 to-transparent" />
+            <div className="absolute -top-32 right-0 w-64 h-64 bg-gold-500/4 rounded-full blur-3xl pointer-events-none" />
+
+            <div className="grid md:grid-cols-2 gap-8 items-center">
+              <div>
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-gold-500/10 border border-gold-500/20 text-gold-400 text-xs font-medium mb-4">
+                  <Globe size={11} />
+                  Global OEM Intelligence
+                </div>
+                <h2 className="text-2xl font-bold text-white mb-3">
+                  Benchmarked Against World-Class OEMs
+                </h2>
+                <p className="text-slate-400 text-sm leading-relaxed mb-5">
+                  Every idea is grounded in real benchmark data from teardowns, OEM press releases,
+                  patent analysis and industry teardown reports — covering Chinese, European and US manufacturers.
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {['BYD', 'BMW', 'Porsche', 'Tesla', 'NIO', 'Xiaomi', 'Huawei', 'ZF', 'GKN', 'Rivian', 'Lucid', 'GM Ultium'].map(oem => (
+                    <span key={oem} className="px-2.5 py-1 rounded-lg bg-white/6 border border-white/10 text-slate-300 text-xs font-medium hover:border-gold-500/30 hover:text-gold-300 transition-colors cursor-default">
+                      {oem}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              {/* Stats grid */}
+              <div className="grid grid-cols-2 gap-3">
+                {[
+                  { value: '14+', label: 'OEM Brands', color: 'text-gold-400' },
+                  { value: '9', label: 'Vehicle Domains', color: 'text-blue-400' },
+                  { value: '340+', label: 'VAVE Ideas', color: 'text-emerald-400' },
+                  { value: '3', label: 'Export Formats', color: 'text-purple-400' },
+                ].map((s) => (
+                  <motion.div
+                    key={s.label}
+                    whileHover={{ scale: 1.04 }}
+                    className="p-4 rounded-xl bg-white/5 border border-white/8 hover:border-white/15 transition-all cursor-default"
+                  >
+                    <div className={`text-3xl font-black ${s.color} mb-1`}>{s.value}</div>
+                    <div className="text-slate-500 text-xs font-medium">{s.label}</div>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* ── CTA ──────────────────────────────────────────────────────────────── */}
       <section className="py-20 px-4">
         <div className="max-w-3xl mx-auto text-center">
           <motion.div
-            initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}
+            initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
             className="p-10 rounded-3xl bg-gradient-to-br from-navy-800 to-navy-900 border border-gold-500/20 relative overflow-hidden"
           >
-            <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-gold-400 to-transparent" />
-            <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-60 h-60 bg-gold-500/5 rounded-full blur-3xl" />
+            <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gold-400 to-transparent" />
+            <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-64 h-64 bg-gold-500/6 rounded-full blur-3xl pointer-events-none" />
 
-            <Zap size={40} className="text-gold-400 mx-auto mb-5" />
-            <h2 className="text-3xl font-bold text-white mb-4">Ready to Find Savings?</h2>
-            <p className="text-slate-400 mb-8 max-w-xl mx-auto">
-              Start your first analysis in minutes. Select a vehicle system, configure your parameters,
-              and let the AI surface technically credible cost opportunities.
-            </p>
-            <Link
-              to="/analyze"
-              className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-gold-500 hover:bg-gold-400 text-navy-950 font-bold text-lg transition-all hover:scale-105 shadow-xl shadow-gold-500/25"
+            <motion.div
+              animate={{ rotate: [0, 10, -10, 0] }}
+              transition={{ duration: 4, repeat: Infinity, repeatDelay: 2 }}
             >
-              Start Free Analysis <ArrowRight size={20} />
-            </Link>
+              <Zap size={44} className="text-gold-400 mx-auto mb-5" />
+            </motion.div>
+
+            <h2 className="text-3xl font-bold text-white mb-4">Ready to Find Savings?</h2>
+            <p className="text-slate-400 mb-8 max-w-xl mx-auto leading-relaxed">
+              Start your first analysis in minutes. Select a vehicle system, configure your
+              programme parameters, and let the AI surface technically credible, commercially
+              validated cost opportunities.
+            </p>
+
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <Link
+                to="/analyze"
+                className="group inline-flex items-center gap-2.5 px-8 py-4 rounded-xl bg-gold-500 hover:bg-gold-400 text-navy-950 font-bold text-lg transition-all hover:scale-105 shadow-2xl shadow-gold-500/25"
+              >
+                Start Free Analysis
+                <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
+              </Link>
+              <Link
+                to="/trends"
+                className="inline-flex items-center gap-2 px-8 py-4 rounded-xl border border-white/15 text-slate-300 hover:text-white hover:border-white/25 font-medium text-lg transition-all"
+              >
+                <TrendingUp size={18} />
+                Explore Trends
+              </Link>
+            </div>
+
+            {/* Trust signals */}
+            <div className="mt-8 pt-6 border-t border-white/8 flex flex-wrap items-center justify-center gap-6 text-xs text-slate-500">
+              <div className="flex items-center gap-1.5"><CheckCircle2 size={12} className="text-green-400" /> No credit card required</div>
+              <div className="flex items-center gap-1.5"><CheckCircle2 size={12} className="text-green-400" /> Results in &lt;60 seconds</div>
+              <div className="flex items-center gap-1.5"><CheckCircle2 size={12} className="text-green-400" /> Excel + PPT + PDF export</div>
+              <div className="flex items-center gap-1.5"><Clock size={12} className="text-gold-400" /> Updated with 2025–26 benchmarks</div>
+            </div>
           </motion.div>
         </div>
       </section>
