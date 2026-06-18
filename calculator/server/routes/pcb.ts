@@ -112,42 +112,42 @@ const SPECIALIST_SYSTEM_PROMPTS: Record<string, string> = {
   industrial_control: 'You are an industrial control and automation PCB cost engineer with expertise in PLCs, motion controllers, fieldbus nodes (EtherCAT, PROFIBUS, CANopen, Modbus), and industrial Ethernet switches. You know Siemens/Beckhoff/Rockwell component choices, ruggedised connector pricing, industrial-grade MCU/DSP costs, and conformal coating requirements. Return ONLY valid JSON.',
   consumer_iot: 'You are a consumer electronics and IoT PCB cost engineer specialising in connected devices, wearables, and smart home products. You know WiFi/BT SoC pricing (ESP32, CC2340, nRF52840), MEMS sensor costs, PMIC selection, USB-C connector and PD IC pricing, and how to optimise BOM cost for high-volume consumer applications. You target the lowest reasonable BOM cost while meeting spec. Return ONLY valid JSON.',
   medical: 'You are a medical device PCB cost engineer with expertise in IEC 60601-1, ISO 13485, and patient-safety isolation requirements. You understand reinforced/basic isolation requirements, medical-grade component sourcing, IEC 60601-compliant isolation transformer and optocoupler selection, and the significant cost premium of medical-certified components (3–10× consumer). Return ONLY valid JSON.',
-  general: 'You are a world-class PCB engineer and electronics cost analyst with 20+ years of experience across multiple industries. You analyse PCB images with exceptional accuracy and provide realistic component pricing based on 2025/2026 UK production-volume market data. For should-cost analysis at 1K+ volumes, always use the lower half of the given price ranges for standard/generic parts. Return ONLY valid JSON.',
+  general: 'You are a world-class PCB engineer and electronics cost analyst with 20+ years of experience across multiple industries. You analyse PCB images with exceptional accuracy and provide realistic component pricing based on 2025/2026 UK market data at 100K unit production volumes. For should-cost analysis at 100K volumes, always use the lower half of the given price ranges for standard/generic parts — volume negotiation and direct-from-fab sourcing drives significant cost reduction at this scale. Return ONLY valid JSON.',
 };
 
 // ── Pricing reference table ────────────────────────────────────────────────
-const PRICING_TABLE = `COMPONENT PRICING REFERENCE — UK 2025/2026, production volume 1K–10K units. These are HARD ANCHORS.
-CRITICAL PRICING RULE: Default to the LOWER HALF of each range for standard/generic components at ≥1K volumes. Use the upper end only for premium/high-spec/automotive-grade variants. DO NOT use the upper bound as a default.
-passive_0402: resistors £0.001–0.006, caps £0.002–0.030 (X5R/X7R); auto-grade: 3–6× above
-passive_0603: resistors £0.002–0.009, caps £0.005–0.070, inductors £0.010–0.100
-passive_0805: resistors £0.004–0.016, caps £0.010–0.300, inductors £0.030–1.00
-crystal_osc: HC-49 crystal £0.07–0.28; SMD crystal £0.12–0.55; TCXO £0.80–4.00; OCXO £9–50; auto-grade 3×
-power_module: DC-DC SIP/DIP module £1.80–9; isolated module £6–28; automotive £16–65
-transformer: SMD signal transformer £0.60–2.80; SMD power transformer £1.50–10; common-mode choke £0.18–1.80
-led: SMD indicator 0603/0805 £0.02–0.10; RGB LED £0.08–0.40; high-power LED £0.35–3.00
-relay_switch: SMD relay SPDT £0.22–1.50; high-current relay £1.50–7.50; tactile switch £0.03–0.35
-fuse_tvs: SMD polyfuse £0.05–0.22; SMD fuse £0.03–0.18; TVS diode £0.05–0.35; TVS array £0.18–0.90
-ic_soic: logic gate £0.05–0.40; op-amp general £0.15–1.80; op-amp precision £0.80–6; driver IC £0.20–2.80; LDO regulator £0.12–1.80; comparator £0.10–1.00
-ic_qfn: simple MCU (8/32-bit low-end) £0.28–2.50; complex MCU £2–12; PMIC £1.00–9; RF IC £1.50–16; industrial MCU £2.50–20
-ic_bga: FPGA small £8–50; FPGA large £40–320; SoC/Application CPU £25–200; DDR memory £2–15; automotive SoC £30–250; ADAS processor £80–500
-ic_tqfp: MCU 32-bit mid-range £1.50–9; DSP £4–24; CPLD £2.50–16; automotive MCU £6–50
-connector_smt: 0.5mm FPC/FFC £0.10–0.65; 1.0mm FPC £0.08–0.45; USB-C £0.15–1.00; SMA/RF £0.35–2.50; DF17 board-to-board £0.90–5.00; automotive connector (Kostal/Amphenol) £1.50–12
-through_hole: electrolytic cap (small) £0.08–0.60; electrolytic cap (large) £0.35–4.00; TH connector 2-row £0.18–2.50; power connector £0.60–6.00; TO-220 transistor £0.20–4.00
-manual_solder: wire/jumper £0.04–0.35; heat-shrink joint £0.03–0.20`;
+const PRICING_TABLE = `COMPONENT PRICING REFERENCE — UK 2025/2026, production volume 100K units. These are HARD ANCHORS.
+CRITICAL PRICING RULE: Default to the LOWER HALF of each range for standard/generic components at 100K volumes. Use the upper end only for premium/high-spec/automotive-grade variants. DO NOT use the upper bound as a default.
+passive_0402: resistors £0.0005–0.003, caps £0.001–0.015 (X5R/X7R); auto-grade: 3–6× above
+passive_0603: resistors £0.001–0.005, caps £0.002–0.040, inductors £0.006–0.060
+passive_0805: resistors £0.002–0.010, caps £0.005–0.180, inductors £0.018–0.600
+crystal_osc: HC-49 crystal £0.04–0.18; SMD crystal £0.06–0.35; TCXO £0.50–2.80; OCXO £6–35; auto-grade 3×
+power_module: DC-DC SIP/DIP module £1.20–7; isolated module £4–22; automotive £12–55
+transformer: SMD signal transformer £0.35–2.00; SMD power transformer £1.00–7; common-mode choke £0.12–1.20
+led: SMD indicator 0603/0805 £0.010–0.06; RGB LED £0.05–0.25; high-power LED £0.20–2.00
+relay_switch: SMD relay SPDT £0.14–1.00; high-current relay £1.00–5.50; tactile switch £0.02–0.22
+fuse_tvs: SMD polyfuse £0.03–0.15; SMD fuse £0.02–0.12; TVS diode £0.03–0.22; TVS array £0.10–0.60
+ic_soic: logic gate £0.03–0.25; op-amp general £0.10–1.20; op-amp precision £0.50–4; driver IC £0.12–1.80; LDO regulator £0.08–1.20; comparator £0.06–0.70
+ic_qfn: simple MCU (8/32-bit low-end) £0.18–1.80; complex MCU £1.50–9; PMIC £0.70–7; RF IC £1.00–12; industrial MCU £1.80–15
+ic_bga: FPGA small £6–40; FPGA large £30–250; SoC/Application CPU £18–160; DDR memory £1.50–12; automotive SoC £22–200; ADAS processor £60–400
+ic_tqfp: MCU 32-bit mid-range £1.00–6; DSP £3–18; CPLD £1.80–12; automotive MCU £4.50–40
+connector_smt: 0.5mm FPC/FFC £0.06–0.40; 1.0mm FPC £0.05–0.28; USB-C £0.10–0.70; SMA/RF £0.22–1.80; DF17 board-to-board £0.60–3.50; automotive connector (Kostal/Amphenol) £1.00–9
+through_hole: electrolytic cap (small) £0.05–0.40; electrolytic cap (large) £0.22–2.80; TH connector 2-row £0.12–1.80; power connector £0.40–4.50; TO-220 transistor £0.14–2.80
+manual_solder: wire/jumper £0.03–0.22; heat-shrink joint £0.02–0.14`;
 
 // ── IC price hints from OCR markings ──────────────────────────────────────
 function buildICPriceHints(markings: string[], _domain: string): string {
   return markings.map(marking => {
     const m = marking.toUpperCase();
-    if (m.includes('STM32')) return `${marking} — STM32 microcontroller — £1.50–9 depending on variant`;
-    if (m.includes('TJA')) return `${marking} — NXP TJA CAN/LIN transceiver — £0.60–3.00`;
-    if (m.includes('AURIX') || m.includes('TC2') || m.includes('TC3')) return `${marking} — Infineon AURIX MCU — £20–100 automotive grade`;
-    if (m.includes('TDA4') || m.includes('TDA2')) return `${marking} — TI TDA4/2 ADAS SoC — £60–280`;
-    if (m.includes('S32K') || m.includes('S32G')) return `${marking} — NXP S32 automotive MCU/SoC — £6–75`;
-    if (m.includes('NRF') || m.includes('NRF')) return `${marking} — Nordic Semiconductor nRF MCU/SoC — £1.00–6.00`;
-    if (m.includes('ESP32') || m.includes('ESP8')) return `${marking} — Espressif ESP32/ESP8266 WiFi SoC — £0.70–3.00`;
-    if (m.includes('BCM') || m.includes('LAN')) return `${marking} — Broadcom/Microchip Ethernet IC — £1.00–12`;
-    if (m.includes('MAX') || m.includes('LM') || m.includes('TLV')) return `${marking} — Analog/TI op-amp or PMIC — £0.18–6.00`;
+    if (m.includes('STM32')) return `${marking} — STM32 microcontroller — £1.00–6 depending on variant at 100K volume`;
+    if (m.includes('TJA')) return `${marking} — NXP TJA CAN/LIN transceiver — £0.45–2.20 at 100K volume`;
+    if (m.includes('AURIX') || m.includes('TC2') || m.includes('TC3')) return `${marking} — Infineon AURIX MCU — £15–80 automotive grade at 100K volume`;
+    if (m.includes('TDA4') || m.includes('TDA2')) return `${marking} — TI TDA4/2 ADAS SoC — £45–220 at 100K volume`;
+    if (m.includes('S32K') || m.includes('S32G')) return `${marking} — NXP S32 automotive MCU/SoC — £4.50–60 at 100K volume`;
+    if (m.includes('NRF') || m.includes('NRF')) return `${marking} — Nordic Semiconductor nRF MCU/SoC — £0.70–4.50 at 100K volume`;
+    if (m.includes('ESP32') || m.includes('ESP8')) return `${marking} — Espressif ESP32/ESP8266 WiFi SoC — £0.50–2.20 at 100K volume`;
+    if (m.includes('BCM') || m.includes('LAN')) return `${marking} — Broadcom/Microchip Ethernet IC — £0.70–9 at 100K volume`;
+    if (m.includes('MAX') || m.includes('LM') || m.includes('TLV')) return `${marking} — Analog/TI op-amp or PMIC — £0.12–4.50 at 100K volume`;
     return `${marking} — price from pricing table above`;
   }).join('\n');
 }
@@ -256,7 +256,7 @@ Analyse this PCB image thoroughly. Group identical components. Return ONLY this 
 INSTRUCTIONS:
 - Replace all example values above with actual values from the image
 - Group identical components (same type + package) into one BOM line
-- unitPriceGBP: use the COMPONENT PRICING REFERENCE above as hard anchors; default to the LOWER HALF of each range for standard/generic components at production volumes ≥1K units
+- unitPriceGBP: use the COMPONENT PRICING REFERENCE above as hard anchors (calibrated to 100K unit volume); default to the LOWER HALF of each range for standard/generic components
 - For IC components identified from OCR markings, set partNumber to the exact marking, lineConf to 1.0, and ocrExtracted to true
 - For other components, set partNumber to best-guess part number or empty string, lineConf to 0.5–0.9, ocrExtracted to false
 - smtPlacements = total qty of all SMT components
