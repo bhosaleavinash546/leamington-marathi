@@ -1849,6 +1849,122 @@
     <!-- Gallery body -->
     <div id="demo-gallery-body" style="padding:16px 20px 24px;display:flex;flex-direction:column;gap:14px">
 
+      <!-- ═══════════ AI CAD TO COST ═══════════ -->
+      <div class="demo-ai-cad-section-header">
+        <div style="font-size:1.3rem">📐</div>
+        <div>
+          <div style="font-size:0.82rem;font-weight:700;color:#10b981">AI CAD-to-Cost Live Examples</div>
+          <div style="font-size:0.70rem;color:var(--text-muted)">Pre-computed AI analysis results for 16 luxury SUV parts — opens CAD-to-Cost view with full AI output</div>
+        </div>
+      </div>
+      <div class="demo-commodity-section">
+        <div class="demo-card-row" style="grid-template-columns:repeat(4,1fr)">
+          <div class="demo-card demo-card--ai-cad" data-commodity="machining" data-cad-demo="1">
+            <div class="demo-card-brand">Bentley Bentayga</div>
+            <div class="demo-card-name">Front Wheel Carrier</div>
+            <div class="demo-card-spec">Al6061-T6 · 5-axis DMG · 2.65 kg</div>
+            <div class="demo-card-tags"><span class="demo-tag demo-tag--ai-cad">AI CAD TO COST</span><span class="demo-tag">4 ops · £28k fix.</span></div>
+          </div>
+          <div class="demo-card demo-card--ai-cad" data-commodity="casting" data-cad-demo="1">
+            <div class="demo-card-brand">Range Rover Sport</div>
+            <div class="demo-card-name">Aux. Oil Pump Housing</div>
+            <div class="demo-card-spec">ADC12 Al · HPDC 800T · 1.85 kg</div>
+            <div class="demo-card-tags"><span class="demo-tag demo-tag--ai-cad">AI CAD TO COST</span><span class="demo-tag">65s cycle · £140k die</span></div>
+          </div>
+          <div class="demo-card demo-card--ai-cad" data-commodity="cast_and_machine" data-cad-demo="1">
+            <div class="demo-card-brand">Rolls-Royce Cullinan</div>
+            <div class="demo-card-name">Transfer Case Housing</div>
+            <div class="demo-card-spec">A380 Al · HPDC + 5ax · 3.40 kg</div>
+            <div class="demo-card-tags"><span class="demo-tag demo-tag--ai-cad">AI CAD TO COST</span><span class="demo-tag">£285k die</span></div>
+          </div>
+          <div class="demo-card demo-card--ai-cad" data-commodity="forging" data-cad-demo="1">
+            <div class="demo-card-brand">Mercedes GLS 580</div>
+            <div class="demo-card-name">Rear Upper Control Arm</div>
+            <div class="demo-card-spec">Al 6082-T6 · 500T · 1.45 kg</div>
+            <div class="demo-card-tags"><span class="demo-tag demo-tag--ai-cad">AI CAD TO COST</span><span class="demo-tag">4 strokes · £95k die</span></div>
+          </div>
+        </div>
+        <div class="demo-card-row" style="grid-template-columns:repeat(4,1fr);margin-top:8px">
+          <div class="demo-card demo-card--ai-cad" data-commodity="sheet_metal" data-cad-demo="1">
+            <div class="demo-card-brand">Bentley Bentayga</div>
+            <div class="demo-card-name">Boot Lid Outer Skin</div>
+            <div class="demo-card-spec">AA6016-T4 · 0.9mm · 3.85 kg</div>
+            <div class="demo-card-tags"><span class="demo-tag demo-tag--ai-cad">AI CAD TO COST</span><span class="demo-tag">Draw+restrike · £320k die</span></div>
+          </div>
+          <div class="demo-card demo-card--ai-cad" data-commodity="sheet_metal_fab" data-cad-demo="1">
+            <div class="demo-card-brand">Range Rover Vogue</div>
+            <div class="demo-card-name">Engine Undertray Support</div>
+            <div class="demo-card-spec">DC01-GI · Laser+4B+12SW · 1.95 kg</div>
+            <div class="demo-card-tags"><span class="demo-tag demo-tag--ai-cad">AI CAD TO COST</span><span class="demo-tag">Trumpf 3030 · KUKA SW</span></div>
+          </div>
+          <div class="demo-card demo-card--ai-cad" data-commodity="injection_moulding" data-cad-demo="1">
+            <div class="demo-card-brand">Rolls-Royce Cullinan</div>
+            <div class="demo-card-name">Headliner Central Trim</div>
+            <div class="demo-card-spec">PP-GF15 · 1-cav hot runner · 0.72 kg</div>
+            <div class="demo-card-tags"><span class="demo-tag demo-tag--ai-cad">AI CAD TO COST</span><span class="demo-tag">58s cycle · £115k mould</span></div>
+          </div>
+          <div class="demo-card demo-card--ai-cad" data-commodity="blow_moulding" data-cad-demo="1">
+            <div class="demo-card-brand">Mercedes GLS 580</div>
+            <div class="demo-card-name">Coolant Expansion Tank</div>
+            <div class="demo-card-spec">HDPE · EBM 2-cavity · 0.48 kg</div>
+            <div class="demo-card-tags"><span class="demo-tag demo-tag--ai-cad">AI CAD TO COST</span><span class="demo-tag">8s blow · £16.5k mould</span></div>
+          </div>
+        </div>
+        <div class="demo-card-row" style="grid-template-columns:repeat(4,1fr);margin-top:8px">
+          <div class="demo-card demo-card--ai-cad" data-commodity="thermoforming" data-cad-demo="1">
+            <div class="demo-card-brand">Lamborghini Urus</div>
+            <div class="demo-card-name">Rear Cargo Area Liner</div>
+            <div class="demo-card-spec">ABS 2.5mm · Vacuum · 1.24 kg</div>
+            <div class="demo-card-tags"><span class="demo-tag demo-tag--ai-cad">AI CAD TO COST</span><span class="demo-tag">Large thermoformer · £9.5k</span></div>
+          </div>
+          <div class="demo-card demo-card--ai-cad" data-commodity="rotational_moulding" data-cad-demo="1">
+            <div class="demo-card-brand">Land Rover Defender</div>
+            <div class="demo-card-name">Rear Fuel Tank 90L</div>
+            <div class="demo-card-spec">LLDPE · Biaxial rotomould · 8.20 kg</div>
+            <div class="demo-card-tags"><span class="demo-tag demo-tag--ai-cad">AI CAD TO COST</span><span class="demo-tag">28+18 min · £38k mould</span></div>
+          </div>
+          <div class="demo-card demo-card--ai-cad" data-commodity="rubber" data-cad-demo="1">
+            <div class="demo-card-brand">Rolls-Royce Ghost</div>
+            <div class="demo-card-name">Front Engine Isolator Mount</div>
+            <div class="demo-card-spec">NR 60A + steel insert · 0.85 kg</div>
+            <div class="demo-card-tags"><span class="demo-tag demo-tag--ai-cad">AI CAD TO COST</span><span class="demo-tag">Compression · £14.5k mould</span></div>
+          </div>
+          <div class="demo-card demo-card--ai-cad" data-commodity="composites" data-cad-demo="1">
+            <div class="demo-card-brand">Lamborghini Urus</div>
+            <div class="demo-card-name">Active Rear Diffuser Wing</div>
+            <div class="demo-card-spec">T700 CFRP · 10 plies · Autoclave · 1.62 kg</div>
+            <div class="demo-card-tags"><span class="demo-tag demo-tag--ai-cad">AI CAD TO COST</span><span class="demo-tag">3hr cure · £42k tool</span></div>
+          </div>
+        </div>
+        <div class="demo-card-row" style="grid-template-columns:repeat(4,1fr);margin-top:8px">
+          <div class="demo-card demo-card--ai-cad" data-commodity="wiring_harness" data-cad-demo="1">
+            <div class="demo-card-brand">Bentley Bentayga</div>
+            <div class="demo-card-name">Full Body Main Harness</div>
+            <div class="demo-card-spec">58 circuits · 22 connectors · 4.8 kg</div>
+            <div class="demo-card-tags"><span class="demo-tag demo-tag--ai-cad">AI CAD TO COST</span><span class="demo-tag">Auto Gr.2 · HiPot + continuity</span></div>
+          </div>
+          <div class="demo-card demo-card--ai-cad" data-commodity="extrusion" data-cad-demo="1">
+            <div class="demo-card-brand">Range Rover Vogue</div>
+            <div class="demo-card-name">EPDM Full Door Seal</div>
+            <div class="demo-card-spec">Sponge+Dense EPDM · 4.4 m · 0.38 kg</div>
+            <div class="demo-card-tags"><span class="demo-tag demo-tag--ai-cad">AI CAD TO COST</span><span class="demo-tag">75mm extruder · £4.8k die</span></div>
+          </div>
+          <div class="demo-card demo-card--ai-cad" data-commodity="biw_assembly" data-cad-demo="1">
+            <div class="demo-card-brand">Mercedes GLS 580</div>
+            <div class="demo-card-name">Front Door Inner Frame Assy</div>
+            <div class="demo-card-spec">5 robot stations · 38 SW + MIG · sub-parts £148</div>
+            <div class="demo-card-tags"><span class="demo-tag demo-tag--ai-cad">AI CAD TO COST</span><span class="demo-tag">KUKA · £380k fixture</span></div>
+          </div>
+          <div class="demo-card demo-card--ai-cad" data-commodity="painting" data-cad-demo="1">
+            <div class="demo-card-brand">Bentley Bentayga</div>
+            <div class="demo-card-name">Full Exterior Paint System</div>
+            <div class="demo-card-spec">E-coat+primer+Aquabase+clear · 11.2 m²</div>
+            <div class="demo-card-tags"><span class="demo-tag demo-tag--ai-cad">AI CAD TO COST</span><span class="demo-tag">OEM metallic 4-coat · 3% rework</span></div>
+          </div>
+        </div>
+      </div>
+      <hr style="border:none;border-top:1px solid var(--border);margin:2px 0"/>
+
       <!-- Machining -->
       <div class="demo-commodity-section">
         <div class="demo-commodity-title">⚙️ Machining (CNC)</div>
@@ -2322,10 +2438,19 @@
     document.querySelectorAll('.demo-card').forEach(function(card) {
       card.addEventListener('click', function() {
         const commodity = card.getAttribute('data-commodity');
-        const slot = parseInt(card.getAttribute('data-slot'), 10);
-        if (window.loadSUVDemo) {
-          window.loadSUVDemo(commodity, slot);
-          closeDemo();
+        const isCadDemo = card.hasAttribute('data-cad-demo');
+        if (isCadDemo) {
+          // AI CAD TO COST demo — load pre-computed analysis into CAD-to-Cost view
+          if (window.loadCADDemo) {
+            window.loadCADDemo(commodity);
+            closeDemo();
+          }
+        } else {
+          const slot = parseInt(card.getAttribute('data-slot'), 10);
+          if (window.loadSUVDemo) {
+            window.loadSUVDemo(commodity, slot);
+            closeDemo();
+          }
         }
       });
     });

@@ -1442,6 +1442,29 @@ textarea.contact-form-input { resize: vertical; min-height: 100px; }
   color: var(--accent);
   font-weight: 700;
 }
+.demo-card--ai-cad {
+  border-color: color-mix(in srgb, #10b981 40%, transparent);
+  background: color-mix(in srgb, #10b981 5%, var(--surface-elevated));
+}
+.demo-card--ai-cad:hover {
+  border-color: #10b981;
+  background: color-mix(in srgb, #10b981 9%, var(--surface-elevated));
+}
+.demo-tag--ai-cad {
+  background: color-mix(in srgb, #10b981 20%, transparent);
+  color: #10b981;
+  font-weight: 700;
+}
+.demo-ai-cad-section-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  background: linear-gradient(135deg, rgba(16,185,129,0.08), rgba(79,142,247,0.08));
+  border: 1px solid rgba(16,185,129,0.25);
+  border-radius: 8px;
+  margin-bottom: 10px;
+}
 
 /* ── PCB Image-to-BOM panel ─────────────────────────────────────────────── */
 
