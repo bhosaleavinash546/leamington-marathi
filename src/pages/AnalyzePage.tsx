@@ -5,23 +5,78 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   ChevronDown, Upload, X, Key, Settings, AlertCircle, Car,
   FileText, Loader2, Zap, CheckCircle, Globe, Search,
-  Shield, Info
+  Shield, Info, Factory, TrendingUp
 } from 'lucide-react';
 import { AUTOMOTIVE_SYSTEMS, getSystemById, getSubassemblyById } from '../data/automotive-catalog';
 import { generateCostReductionIdeas } from '../services/claude-service';
-import { AnalysisConfig, AnalysisResult } from '../types';
+import { AnalysisConfig, AnalysisResult, BodyStyle, PlantRegion, Currency } from '../types';
 
 const VEHICLE_TYPES = [
+  // BEV
+  'City Car / A-Segment — BEV',
+  'Compact Hatchback — BEV (400V)',
+  'Compact Hatchback — BEV (800V)',
+  'Family Hatchback — BEV (400V)',
+  'Family Sedan — BEV (400V)',
+  'Family Sedan — BEV (800V)',
+  'Executive Saloon — BEV (400V)',
+  'Executive Saloon — BEV (800V)',
+  'Compact Crossover / CUV — BEV (400V)',
+  'Compact Crossover / CUV — BEV (800V)',
+  'Mid-Size SUV — BEV (400V)',
+  'Mid-Size SUV — BEV (800V)',
+  'Full-Size Premium SUV — BEV (800V)',
   'Premium Luxury SUV — BEV (800V)',
-  'Premium Luxury SUV — BEV (400V)',
-  'Premium Luxury SUV — PHEV (MHEV 48V)',
-  'Premium Luxury SUV — ICE',
-  'Performance SUV — BEV (Dual-Motor)',
-  'Performance SUV — BEV (Tri-Motor)',
-  'Executive Saloon — BEV',
+  'Performance SUV — BEV (Dual-Motor, 800V)',
+  'Performance SUV — BEV (Tri-Motor, 800V)',
+  'Performance GTS Coupé — BEV (800V)',
+  'MPV / People Carrier — BEV',
+  'Pickup Truck — BEV',
+  // PHEV / MHEV
+  'Compact Hatchback — PHEV (48V MHEV)',
+  'Mid-Size SUV — PHEV (48V MHEV)',
+  'Full-Size Premium SUV — PHEV (MHEV 48V)',
+  'Executive Saloon — PHEV',
+  // ICE
+  'City Car — ICE',
+  'Compact Hatchback — ICE',
+  'Family Sedan — ICE',
   'Executive Saloon — ICE',
-  'Performance GTS Coupé — BEV',
+  'Compact SUV / Crossover — ICE / MHEV',
+  'Mid-Size SUV — ICE / MHEV',
   'Full-Size Premium SUV — ICE / MHEV',
+  'Performance Coupé — ICE',
+  'Pickup Truck — ICE / MHEV',
+];
+
+const BODY_STYLES: { value: BodyStyle; label: string }[] = [
+  { value: 'hatchback', label: 'Hatchback (3/5-door)' },
+  { value: 'sedan',     label: 'Saloon / Sedan' },
+  { value: 'suv',       label: 'SUV / 4x4' },
+  { value: 'coupe',     label: 'Coupé / Fastback' },
+  { value: 'crossover', label: 'Crossover / CUV' },
+  { value: 'mpv',       label: 'MPV / Minivan' },
+  { value: 'pickup',    label: 'Pickup Truck' },
+  { value: 'universal', label: 'Multi-body / Universal' },
+];
+
+const PLANT_REGIONS: { value: PlantRegion; label: string }[] = [
+  { value: 'germany', label: 'Germany (€45-55/hr)' },
+  { value: 'uk',      label: 'UK (£35-45/hr)' },
+  { value: 'czech',   label: 'Czech / Slovakia (€15-20/hr)' },
+  { value: 'spain',   label: 'Spain / Portugal (€20-28/hr)' },
+  { value: 'mexico',  label: 'Mexico ($8-12/hr)' },
+  { value: 'usa',     label: 'USA ($40-55/hr)' },
+  { value: 'china',   label: 'China (¥70-130/hr)' },
+  { value: 'india',   label: 'India (₹800-1200/hr)' },
+  { value: 'korea',   label: 'South Korea (₩35-45k/hr)' },
+];
+
+const CURRENCIES: { value: Currency; label: string }[] = [
+  { value: 'EUR', label: 'EUR (€)' },
+  { value: 'GBP', label: 'GBP (£)' },
+  { value: 'USD', label: 'USD ($)' },
+  { value: 'CNY', label: 'CNY (¥)' },
 ];
 
 const STEPS = [
@@ -48,6 +103,11 @@ export default function AnalyzePage() {
   const [subassemblyId, setSubassemblyId] = useState('');
   const [partId, setPartId] = useState('');
   const [vehicleType, setVehicleType] = useState(VEHICLE_TYPES[0]);
+  const [bodyStyle, setBodyStyle] = useState<BodyStyle>('suv');
+  const [annualVolume, setAnnualVolume] = useState(80000);
+  const [plantRegion, setPlantRegion] = useState<PlantRegion>('germany');
+  const [currency, setCurrency] = useState<Currency>('EUR');
+  const [programmeLengthYears, setProgrammeLengthYears] = useState(5);
   const [additionalContext, setAdditionalContext] = useState('');
   const [apiKey, setApiKey] = useState(() => localStorage.getItem('brainspark_api_key') || '');
   const [searchApiKey, setSearchApiKey] = useState(() => localStorage.getItem('brainspark_brave_key') || '');
@@ -101,7 +161,7 @@ export default function AnalyzePage() {
       const config: AnalysisConfig = {
         systemId, subassemblyId,
         partId: partId || undefined,
-        vehicleType,
+        vehicleType, bodyStyle, annualVolume, plantRegion, currency, programmeLengthYears,
         cadFileName: cadFile?.name,
         cadFileType: cadFile?.name?.split('.').pop()?.toUpperCase(),
         additionalContext,
@@ -298,6 +358,74 @@ export default function AnalyzePage() {
                   </div>
                 </div>
 
+                {/* Body Style + Programme fields */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-300 mb-2">Body Style</label>
+                    <div className="relative">
+                      <select value={bodyStyle} onChange={e => setBodyStyle(e.target.value as BodyStyle)}
+                        className="w-full bg-navy-800 border border-white/15 rounded-xl px-4 py-3 text-white appearance-none focus:outline-none focus:border-gold-500/50">
+                        {BODY_STYLES.map(b => <option key={b.value} value={b.value}>{b.label}</option>)}
+                      </select>
+                      <ChevronDown size={16} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-300 mb-2">Annual Volume <span className="text-slate-500 font-normal">(units/yr)</span></label>
+                    <input
+                      type="number"
+                      value={annualVolume}
+                      onChange={e => setAnnualVolume(Math.max(1000, parseInt(e.target.value) || 80000))}
+                      className="w-full bg-navy-800 border border-white/15 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-gold-500/50"
+                      placeholder="e.g. 80000"
+                      min={1000}
+                      step={5000}
+                    />
+                  </div>
+                </div>
+
+                {/* Plant Region + Currency + Programme */}
+                <div>
+                  <label className="flex items-center gap-2 text-sm font-medium text-slate-300 mb-2">
+                    <Factory size={14} className="text-slate-500" /> Commercial Parameters
+                  </label>
+                  <div className="grid grid-cols-3 gap-3">
+                    <div>
+                      <label className="block text-xs text-slate-500 mb-1">Plant Region</label>
+                      <div className="relative">
+                        <select value={plantRegion} onChange={e => setPlantRegion(e.target.value as PlantRegion)}
+                          className="w-full bg-navy-800 border border-white/15 rounded-lg px-3 py-2.5 text-white text-sm appearance-none focus:outline-none focus:border-gold-500/50">
+                          {PLANT_REGIONS.map(r => <option key={r.value} value={r.value}>{r.label}</option>)}
+                        </select>
+                        <ChevronDown size={14} className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-xs text-slate-500 mb-1">Currency</label>
+                      <div className="relative">
+                        <select value={currency} onChange={e => setCurrency(e.target.value as Currency)}
+                          className="w-full bg-navy-800 border border-white/15 rounded-lg px-3 py-2.5 text-white text-sm appearance-none focus:outline-none focus:border-gold-500/50">
+                          {CURRENCIES.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
+                        </select>
+                        <ChevronDown size={14} className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-xs text-slate-500 mb-1">Programme (years)</label>
+                      <div className="relative">
+                        <select value={programmeLengthYears} onChange={e => setProgrammeLengthYears(parseInt(e.target.value))}
+                          className="w-full bg-navy-800 border border-white/15 rounded-lg px-3 py-2.5 text-white text-sm appearance-none focus:outline-none focus:border-gold-500/50">
+                          {[2,3,4,5,6,7].map(y => <option key={y} value={y}>{y} years</option>)}
+                        </select>
+                        <ChevronDown size={14} className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+                      </div>
+                    </div>
+                  </div>
+                  <p className="text-slate-600 text-xs mt-1.5 flex items-center gap-1">
+                    <TrendingUp size={10} /> These parameters drive AI cost calculations — volume affects annual savings, region sets labour rate benchmarks.
+                  </p>
+                </div>
+
                 {/* Additional context */}
                 <div>
                   <label className="block text-sm font-medium text-slate-300 mb-2">Engineering Context <span className="text-slate-500">(optional but recommended)</span></label>
@@ -396,8 +524,10 @@ export default function AnalyzePage() {
                     ['Subassembly', getSubassemblyById(systemId, subassemblyId)?.name || '—'],
                     ['Part', partId ? selectedSub?.parts.find(p => p.id === partId)?.name || '—' : 'All subassembly parts'],
                     ['Vehicle', vehicleType],
+                    ['Body Style', bodyStyle.charAt(0).toUpperCase() + bodyStyle.slice(1)],
+                    ['Volume / Region', `${annualVolume.toLocaleString()} units · ${plantRegion}`],
+                    ['Currency / Programme', `${currency} · ${programmeLengthYears}yr`],
                     ['CAD File', cadFile?.name || 'None uploaded'],
-                    ['Ideas to generate', '8 detailed ideas'],
                   ].map(([k, v]) => (
                     <div key={k}>
                       <div className="text-slate-500 text-xs uppercase tracking-wide mb-0.5">{k}</div>

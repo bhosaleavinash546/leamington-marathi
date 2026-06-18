@@ -5,9 +5,10 @@ import {
   FileDown, FileSpreadsheet, Presentation, ArrowLeft, Filter,
   TrendingDown, Zap, AlertTriangle, CheckCircle, Clock,
   ChevronDown, ChevronUp, BarChart3, RefreshCw, Tag,
-  Globe, ExternalLink, ChevronRight, Search, DollarSign, Calculator
+  Globe, ExternalLink, ChevronRight, Search, DollarSign, Calculator,
+  ShieldCheck, BookOpen, FlaskConical, Lightbulb
 } from 'lucide-react';
-import { AnalysisResult, CostReductionIdea, CostSavingType, Difficulty, SearchSource } from '../types';
+import { AnalysisResult, CostReductionIdea, CostSavingType, Difficulty, SearchSource, ConfidenceLevel } from '../types';
 import { exportToExcel, exportToPowerPoint } from '../services/export-service';
 import IdeasDashboard from '../components/results/IdeasDashboard';
 import BusinessCaseCalculator from '../components/results/BusinessCaseCalculator';
@@ -35,6 +36,13 @@ const LEVEL_COLORS: Record<string, string> = {
   Part:        'bg-emerald-500/15 text-emerald-300 border-emerald-500/25',
 };
 
+const CONFIDENCE_CONFIG: Record<ConfidenceLevel, { label: string; color: string; bg: string; border: string; icon: typeof ShieldCheck; title: string }> = {
+  verified:     { label: 'Verified',     color: 'text-green-400',   bg: 'bg-green-500/10',   border: 'border-green-500/30',   icon: ShieldCheck,   title: 'OEM confirmed in production' },
+  benchmarked:  { label: 'Benchmarked',  color: 'text-blue-400',    bg: 'bg-blue-500/10',    border: 'border-blue-500/30',    icon: BookOpen,      title: 'Teardown / industry study data' },
+  estimated:    { label: 'Estimated',    color: 'text-amber-400',   bg: 'bg-amber-500/10',   border: 'border-amber-500/30',   icon: Calculator,    title: 'Cost-model / engineering estimate' },
+  theoretical:  { label: 'Theoretical', color: 'text-purple-400',  bg: 'bg-purple-500/10',  border: 'border-purple-500/30',  icon: FlaskConical,  title: 'First-principles / analytical' },
+};
+
 function IdeaCard({ idea, index }: { idea: CostReductionIdea; index: number }) {
   const [expanded, setExpanded] = useState(false);
   const diff = DIFFICULTY_CONFIG[idea.implementationDifficulty];
@@ -55,12 +63,24 @@ function IdeaCard({ idea, index }: { idea: CostReductionIdea; index: number }) {
             </div>
             <div>
               <h3 className="text-white font-semibold text-base leading-tight">{idea.title}</h3>
-              {idea.searchDataUsed && (
-                <div className="flex items-center gap-1 mt-1">
-                  <Globe size={10} className="text-blue-400" />
-                  <span className="text-blue-400 text-xs">Real-time web data used</span>
-                </div>
-              )}
+              <div className="flex items-center gap-2 mt-1 flex-wrap">
+                {idea.searchDataUsed && (
+                  <div className="flex items-center gap-1">
+                    <Globe size={10} className="text-blue-400" />
+                    <span className="text-blue-400 text-xs">Live web data</span>
+                  </div>
+                )}
+                {idea.confidenceLevel && (() => {
+                  const conf = CONFIDENCE_CONFIG[idea.confidenceLevel];
+                  const ConfIcon = conf.icon;
+                  return (
+                    <div title={conf.title} className={`flex items-center gap-1 px-1.5 py-0.5 rounded-md border text-xs font-medium ${conf.bg} ${conf.color} ${conf.border}`}>
+                      <ConfIcon size={10} />
+                      {conf.label}
+                    </div>
+                  );
+                })()}
+              </div>
             </div>
           </div>
           <span className={`flex-shrink-0 flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-xs font-semibold ${diff.bg} ${diff.color} ${diff.border}`}>

@@ -331,6 +331,36 @@ const EDU_CONTEXT_MAP = {
   'integration':      { levers: ['3-in-1 → 8-in-1 integration: −30-50% part count (BYD 8-in-1 Seal, ~89% system eff.)', 'Scalable EDU family (one diameter, varied stack length): amortise tooling (Audi PPE, Mercedes eATS 2.0, XPeng SEPA2.0 80% shared)', 'Shared front/rear EDU base (Ford F-150 Lightning)', '48V LV net: cut LV copper (Tesla Cybertruck)', 'Inverter re-use for charging/boost: delete dedicated OBC (Hyundai/Kia E-GMP)'], trends: 'n-in-1 integration is the cost battleground. BYD 8-in-1 world-first. Scalable platform families (Audi PPE, Mercedes eATS 2.0, XPeng SEPA2.0) now proven route. Controller consolidation (one processor for motor+gearbox, Mercedes eATS 2.0).' },
 };
 
+// ─── BIW, CHASSIS & BATTERY CURATED CONTEXT MAPS ────────────────────────────
+
+const BIW_CONTEXT_MAP = {
+  'crash-structure': { levers: ['Roll-formed AHSS DP1200 bumper beam: 25-35% vs stamped+bracket assembly (Honda, Toyota)','Al extrusion crash can (symmetric L/R): 35-45% mass saving, cost-neutral >800K/yr (BMW, Audi)','Tailor-welded blank front rail: delete inner reinforcement, 10-15% steel saving (VW MQB, Hyundai)','Commonise crash can geometry L/R: halve tooling investment + SKU count','PHS 22MnB5 roll-formed crash box: 18-22% mass vs DP980 stamped (BMW 5 Series)'], trends: 'Al extrusion crash cans standard on D-segment+. TWB rails eliminating reinforcements. NCAP 2026 MPDB test tightens energy management requirements. Symmetric L/R crash can design becoming standard practice.' },
+  'pillars':         { levers: ['Hot-stamped B-pillar (1200-1500 MPa): 20-35% mass, delete 2-part hat-section assembly (VW Golf Mk8)','Tailor-rolled blank (TRB) B-pillar: variable thickness in 1 part, delete inner reinforcement (BMW G20)','TWB A-pillar: graded blank, delete separate inner reinforcement pressing','Grade right-size C/D pillar: TRIP vs PHS saves 12-18% on lower-loaded pillars','Common PHS grade A/B/C: shared die pool, higher volume on single press'], trends: 'TRB hot-formed B-pillars now best-practice (BMW, Hyundai). NCAP 2026 MDB side-intrusion is dominant design driver. Pillar TWB adoption driven by OEM cost pressure on hot-forming tooling investment.' },
+  'sill-floor':      { levers: ['Roll-formed closed-section sill (DP1200): 3 parts → 1, delete 250+ spot welds (BMW G30, Volvo)','Al extrusion sill on BEV: 30-40% lighter, integral battery side-protection (Tesla Model Y, BMW iX)','Single TWB floor + tunnel (Toyota TNGA approach): delete 2 parts + junction flange welds','Gauge right-size outer floor panels (non-loaded zones): 8-12% steel saving','Common crossmember section across platform: shared roll-tool + volume pricing'], trends: 'BEV Al extrusion sill integrating battery side-protection is mainstream. Single-piece floor pressing growing via TWB technology. CTP packs enabling BIW floor layer deletion.' },
+  'closures':        { levers: ['Al outer door skins: 40-50% door mass (2.8→1.1 kg), standard D-segment+ (BMW, Audi, JLR)','Al hood outer + inner: 50-60% mass, pedestrian protection compliance advantage (EU NCAP mandatory)','Composite liftgate (SMC outer + GMT inner): 40% mass, no corrosion (BMW X5 G05, Land Rover Def)','Single-part hemmed door (adhesive+RSW): delete inner flange reinforcement','Standardise door hinge geometry across platform: shared tooling + volume pricing'], trends: 'Al door outers standard from D-segment. Composite tailgates mainstream on D/E-SUV. Al closures cost case improving as volume grows. Frameless glass doors (coupé) increasing seal complexity.' },
+  'roof-structure':  { levers: ['Reduce roof bow count 3→2 via structural adhesive + optimised section: 1 part deleted','Grade right-size roof outer: HSLA220 → mild DC04 (0.65mm): 5-8% steel saving','Panoramic glass structural bonding: delete reinforcement bows (BMW iX, Mercedes EQS)','CFRP fixed roof panel: 50-60% mass saving on performance models (BMW M4, Porsche)','Al roof skin: 35-45% mass saving for BEV CG optimisation (BMW i7)'], trends: 'Panoramic roof structural bonding becoming load-bearing. CFRP roof on performance/sports. Al roof on BEV luxury for CG and weight budget. Panoramic glass now majority of C/D-segment production.' },
+  'rear-structure':  { levers: ['Hot-stamped rear floor (1 pressing vs 3 panels): 15-20% mass + 250 welds deleted (BMW G30)','Al rear bumper beam extrusion: 45-50% mass saving, meets RCAR/IIHS low-speed (Audi Q5)','Delete spare wheel recess on BEV: flat floor, save 1 pressing + tooling','Al HPDC rear subframe >80K/yr: 25-35% mass, equal/lower cost, better dimensional accuracy','Symmetric rear wheelhouse inner (L/R): halve die count for equal geometry parts'], trends: 'BEV flat floor eliminating spare wheel recess. Hot-formed rear floor becoming standard on C-segment+. Al subframe standard on BEV D-segment. SORB 2024 driving rear rail sizing.' },
+  'reinforcements':  { levers: ['Structural foam (Sika/Dow): replace 3 discrete reinforcements with pillar/sill cavity fill','Acoustic pad position optimisation: 80% benefit from 60% area → reduce pad area 20-25%','Flow-drill screws replace T-nuts in floor attachment: delete press op + T-nut','Integrate crash sensor bracket into Al subframe casting boss: delete stamped bracket','Weld-bonding: reduce seam sealer length 25% while improving NVH via adhesive flanges'], trends: 'Structural foam now standard in pillars/sills on NVH-focused programmes. Topology-optimised NVH treatment reducing over-specified pad coverage. Weld-bonding growing.' },
+};
+
+const CHASSIS_CONTEXT_MAP = {
+  'front-suspension': { levers: ['Al HPDC front knuckle vs cast iron: 2-3 kg/corner saving, 15-25% cost (BMW, Audi standard)','Forged Al lower control arm: 35-45% mass saving vs stamped AHSS, cost-neutral >100K/yr','Hollow stabiliser bar (12mm wall): 20-25% mass saving vs solid bar, same NVH','Delete upper control arm on base McPherson variant: €35-60/corner saving','Common bushing compound across platform: volume pricing + single Tier-2 call-off'], trends: 'Al suspension arms mandatory for BEV unsprung mass targets. McPherson remains cost-optimal for B-segment. Spring/damper right-sizing needed post-BEV unsprung mass redistribution.' },
+  'rear-suspension':  { levers: ['Multi-link → CTBA for B/C-segment: €150-250/axle cost saving (VW Polo, Renault Clio)','Forged Al multi-link rear arms: 30-40% mass saving, cost-neutral >80K/yr (BMW G30, Audi A6)','Delete adaptive (CDC) damping on base/mid trim: €200-400/vehicle saving','Delete air spring on base trims (coil spring substitute): €350-600/vehicle saving','Delete rear-wheel steering (RWS) on standard WB non-performance: €180-280/vehicle'], trends: 'BEV rear suspension redesigned for rear motor integration. Multi-link deletion viable for sub-C BEV. CDC cost reducing — standard on C-segment premium from 2023.' },
+  'steering':         { levers: ['EPS motor right-size to vehicle class: 15-20% EPS unit cost on over-specified B-segment','Common steering rack across 2 platform families: 8-12% unit cost via volume','Delete 4-way electric column adjustment on base trim: €45-80/vehicle','Integrate EPS ECU into domain controller: delete standalone €25-50 ECU','Fixed tie rod (shimmed alignment) vs adjustable: 8-12% tie rod cost saving'], trends: 'Steer-by-wire (SbW) arriving with BMW Neue Klasse 2025. Variable ratio rack standard. EPS ECU integration into domain compute growing.' },
+  'braking':          { levers: ['Right-size front disc diameter on BEV (regen reduces friction load): 10-15% brake cost','4-pot fixed → 1-pot floating caliper on base/mid trim: 30-40% caliper cost saving','Grey iron rotor grade right-size by duty: 8-12% rotor cost','Brake pad commonisation across platform: 15-20% pad SKU cost reduction','Eliminate front caliper dust shield (EURO 7 BDPF replaces function from 2027)'], trends: 'EURO 7 brake dust particle filter mandatory 2027: €15-25/wheel. Brake-by-wire for ADAS L3+ regen blending. BEV regen reducing friction brake duty — disc right-sizing lever.' },
+  'subframe':         { levers: ['Al HPDC front subframe >80K/yr: 25-35% mass saving vs welded steel, similar cost','Hydroformed closed-section rear subframe: 15-20% mass vs open-section stamped','Integral rear motor mount boss in Al subframe casting (BEV): delete 2 brackets','Common subframe bolt pattern across platform family: delete location-specific brackets','Gigacast front cradle + strut towers: 5+ parts → 1 casting (Tesla, NIO emerging)'], trends: 'Al subframes standard on BEV C-segment+ platforms. Motor mount integration in subframe key BEV cost lever. Gigacasting subframes emerging for volume platforms.' },
+  'wheel-end':        { levers: ['HBU right-size by FEA load analysis: remove 10-15% overspec on B/C-segment','ABS tone ring integrated in HBU inner race: delete pressed-on ring (Gen-3 standard)','Al wheel hub vs grey iron for BEV unsprung mass: 1.2-1.8 kg/corner saving','Steel ARB drop links vs Al forged on non-performance: €12-18/link saving','Common wheel bolt PCD across platform: shared wheel/hub tooling + volume wheel pricing'], trends: 'Gen-3 HBU with integral ABS encoder now standard. Unsprung mass budget critical for BEV NVH. Tyre rolling resistance now in VAVE scope for BEV range impact.' },
+};
+
+const BATTERY_CONTEXT_MAP = {
+  'battery-cells':   { levers: ['NMC → LFP chemistry: 20-35% cell cost, longer life, safer thermal (CATL, BYD, Tesla standard)','CATL M3P (Mn-doped LFP): 210 Wh/kg at LFP-comparable cost — narrows density gap to NMC','4680 cylindrical: 15-25% $/kWh vs 21700 at scale (Tesla Giga Texas/Berlin)','Localise cell supply China → EU/US: eliminate 12-18% import duties + CRMA/IRA incentives','SoC window extension via improved BMS algorithm: 3-5% more usable capacity, no hardware change'], trends: 'LFP >35% global BEV 2025. M3P bridging density gap. 4680 approaching cost parity. Na-ion targeting city car from 2026 (CATL Naci). Solid-state 2027+ for PHEV high-value applications.' },
+  'battery-module':  { levers: ['CTP (cell-to-pack): delete module frame, 15-20% pack cost + 5-15% energy density (CATL Qilin, BYD Blade)','Reduce module SKU count: 6→2 per pack, shared tooling + volume on single process line','Ultrasonic busbar welding: 8-12% interconnect cost vs bolted tabs, lower resistance','Adhesive module-to-tray bonding: delete 20+ fasteners/module (BMW i4, Audi Q8)','Delete inter-module HV connector: direct busbar route in CTP pack'], trends: 'CTP mainstream in new BEV programmes 2023-25. CATL CTP3.0 adds immersion cooling within the module-free pack. Traditional modules still needed for PHEV thermal management.' },
+  'bms':             { levers: ['Centralised BMS (1 node vs distributed per module): 25-35% BMS component cost','Wireless BMS (wBMS): delete cell monitoring harness — proven in GM Ultium (Analog Devices)','Integrate BMS function into VCU/domain controller: delete €40-80 standalone ECU','Model-based SoC/SoH estimation: tighter DoD → 3-5% more usable capacity without hardware','Pack-level isolation monitoring vs per-module: delete 2-3 isolation ICs'], trends: 'wBMS proven at high volume (GM Hummer EV/Lyriq 2022). Centralised compute absorbing BMS function (Rivian). Software-defined pack management improving usable energy.' },
+  'battery-thermal': { levers: ['Ribbon-fin Al extrusion cooling plate: 20-30% thermal component cost vs complex brazed plate','Reduce TIM thickness via flatness spec (≤0.4mm vs 0.6-0.8mm): 15-20% TIM material cost','Single-fluid (ATF) motor+battery cooling loop: 20-30% thermal system cost (Ford F-150 Lightning)','Direct refrigerant cooling (DRC): delete glycol chiller, fewer HXs (BMW i4 M50, Taycan Turbo)','Phase-change TIM for PHEV: delete cooling circuit on partial-charge cycle applications'], trends: 'Immersion cooling emerging for >250kW ultra-fast charging. Single-fluid ATF loop growing. TIM thickness drive toward <0.3mm for heat flux improvement. 800V SiC produces less heat per kW.' },
+  'pack-housing':    { levers: ['Al HPDC integrated tray: 8-12 parts → 2-3, integral coolant ports + bosses (BMW i4, Ioniq 5)','GF-PP composite top cover: 40-50% cover mass vs Al sheet (CATL standard, Mubea)','CTB (cell-to-body): pack provides torsional stiffness, delete BIW floor layer (BYD, Tesla, NIO)','Structural foam fill void spaces: 25% stiffness gain without steel (Sika FoamCore)','Relax coolant port machining IT6→IT7 on non-sealing faces: 8-12% machining cost'], trends: 'CTB (cell-to-body) now in production: BYD Ocean, Tesla Model Y, NIO NT3. HPDC integrated trays replacing welded extrusion frames. Composite covers reducing pack mass.' },
+  'hv-electrical':   { levers: ['Al busbar vs Cu at 800V (current halved): 20-30% busbar material cost (Porsche Taycan, Hyundai E-GMP)','Pre-assembled HV harness module: 25-35% body-line assembly time saving','Integrate BDU + pyro fuse + current sensor: 4 parts → 1 housing (BYD 8-in-1)','CTP reduces inter-module HV connectors: direct cell-to-busbar routing','Standardise HV connector family across models: volume pricing + single qualification'], trends: '800V enabling Al HV busbars. BDU integration into n-in-1 units standard direction. Pyro fuse replacing manual service disconnect. Connector standardisation via NACS/CCS globally.' },
+};
+
 const EDU_KEYWORDS = {
   'stator-winding':  ['stator winding','winding','hairpin','bar winding','coil'],
   'stator-core':     ['stator core','lamination','electrical steel','no steel'],
@@ -354,41 +384,197 @@ const EDU_KEYWORDS = {
   'integration':     ['edu integration','e-axle integration','3-in-1','3in1','integrated drive'],
 };
 
-// EDU system/subassembly detection
-const EDU_SYSTEM_KEYWORDS = ['edu','electric drive unit','e-drive','e-axle','bev','mhev','powertrain bev','electric machine','inverter','e-motor'];
+const BIW_KEYWORDS = {
+  'crash-structure': ['crash rail','front rail','crash can','deformation box','bumper beam','front end module','front crash','longitudinal member','front side rail'],
+  'pillars':         ['a-pillar','b-pillar','c-pillar','d-pillar','pillar','windscreen pillar','hinge pillar','quarter pillar','a pillar','b pillar','c pillar'],
+  'sill-floor':      ['sill','rocker','floor pan','floor panel','tunnel','crossmember','floor structure','underbody','inner sill','outer sill','floor cross'],
+  'closures':        ['door outer','door inner','door skin','hood','bonnet','tailgate','liftgate','closure','boot lid','door panel','door assembly'],
+  'roof-structure':  ['roof','roof bow','roof rail','roof panel','panoramic','headliner rail','roof structure','roof skin'],
+  'rear-structure':  ['rear rail','rear end','rear floor','rear bumper','rear longitudinal','rear underbody','spare wheel recess','rear wheelhouse'],
+  'reinforcements':  ['reinforcement','nvh','acoustic pad','structural foam','seam sealer','crash sensor bracket','body sealer'],
+};
+
+const CHASSIS_KEYWORDS = {
+  'front-suspension': ['front suspension','mcpherson','strut tower','double wishbone','front shock','upper control arm','lower control arm','front spring','front knuckle','front coil'],
+  'rear-suspension':  ['rear suspension','multi-link','trailing arm','rear shock','rear spring','twist beam','ctba','rear knuckle','rear lateral link','rear damper'],
+  'steering':         ['steering','eps','epas','rack and pinion','steering rack','steering column','tie rod','power steering','steer by wire'],
+  'braking':          ['brake disc','caliper','brake rotor','epb','parking brake','brake pad','brake booster','brake-by-wire','braking system'],
+  'subframe':         ['subframe','cradle','auxiliary frame','front cradle','rear cradle','engine mount subframe','powertrain mount','suspension cradle'],
+  'wheel-end':        ['wheel hub','wheel bearing','hub unit','hbu','abs ring','tone ring','arb link','stabiliser link','hub carrier'],
+};
+
+const BATTERY_KEYWORDS = {
+  'battery-cells':   ['battery cell','cell chemistry','nmc','lfp','nca','lithium cell','pouch cell','prismatic cell','cylindrical cell','4680','21700','cell cost','cell format'],
+  'battery-module':  ['battery module','cell module','module frame','cell-to-pack','ctp module','module assembly','module housing'],
+  'bms':             ['battery management','bms','cell monitoring','state of charge','soc','soh','bms ecu','wbms','wireless bms'],
+  'battery-thermal': ['battery cooling','thermal management battery','cooling plate','btms','thermal interface','battery thermal','battery hvac','tim material'],
+  'pack-housing':    ['pack housing','battery enclosure','battery tray','battery cover','battery structure','cell-to-body','ctb','battery case'],
+  'hv-electrical':   ['battery busbar','battery hv cable','bdu','battery disconnect','battery harness','pyro fuse','hv connector battery','pack electrical'],
+};
+
+const EDU_SYSTEM_KEYWORDS   = ['edu','electric drive unit','e-drive','e-axle','bev','mhev','powertrain bev','electric machine','inverter','e-motor'];
+const BIW_SYSTEM_KEYWORDS   = ['biw','body-in-white','body in white','biy','door','pillar','sill','floor pan','bonnet','liftgate','roof bow'];
+const CHASSIS_SYSTEM_KEYWORDS = ['chassis','suspension','steering','braking system','subframe','anti-roll bar','hub bearing'];
+const BATTERY_SYSTEM_KEYWORDS = ['battery pack','bev battery','phev battery','battery cell','bms','battery thermal','pack housing','hv electrical battery'];
 
 function detectEduComponent(systemName, subassemblyName, partName) {
   const haystack = [systemName, subassemblyName, partName].filter(Boolean).join(' ').toLowerCase();
-  // Check if this is an EDU-related analysis
   if (!EDU_SYSTEM_KEYWORDS.some(k => haystack.includes(k))) return null;
-  // Try to match the specific component
   for (const [compId, keywords] of Object.entries(EDU_KEYWORDS)) {
     if (keywords.some(k => haystack.includes(k))) return compId;
   }
-  return 'integration'; // fallback for EDU analyses without specific component match
+  return 'integration';
 }
+
+function detectContextDomain(config, systemName, subassemblyName, partName) {
+  const systemId = (config?.systemId || '').toLowerCase();
+  const haystack = [systemName, subassemblyName, partName].filter(Boolean).join(' ').toLowerCase();
+  if (systemId === 'battery' || BATTERY_SYSTEM_KEYWORDS.some(k => haystack.includes(k))) return 'battery';
+  if (systemId === 'biw'     || BIW_SYSTEM_KEYWORDS.some(k => haystack.includes(k)))     return 'biw';
+  if (systemId === 'chassis' || CHASSIS_SYSTEM_KEYWORDS.some(k => haystack.includes(k))) return 'chassis';
+  if (EDU_SYSTEM_KEYWORDS.some(k => haystack.includes(k))) return 'edu';
+  return null;
+}
+
+function detectBiwComponent(systemName, subassemblyName, partName) {
+  const haystack = [systemName, subassemblyName, partName].filter(Boolean).join(' ').toLowerCase();
+  for (const [compId, keywords] of Object.entries(BIW_KEYWORDS)) {
+    if (keywords.some(k => haystack.includes(k))) return compId;
+  }
+  return 'reinforcements';
+}
+
+function detectChassisComponent(systemName, subassemblyName, partName) {
+  const haystack = [systemName, subassemblyName, partName].filter(Boolean).join(' ').toLowerCase();
+  for (const [compId, keywords] of Object.entries(CHASSIS_KEYWORDS)) {
+    if (keywords.some(k => haystack.includes(k))) return compId;
+  }
+  return null;
+}
+
+function detectBatteryComponent(systemName, subassemblyName, partName) {
+  const haystack = [systemName, subassemblyName, partName].filter(Boolean).join(' ').toLowerCase();
+  for (const [compId, keywords] of Object.entries(BATTERY_KEYWORDS)) {
+    if (keywords.some(k => haystack.includes(k))) return compId;
+  }
+  return 'battery-cells';
+}
+
+// ─── LIVE COMMODITY PRICE CACHE (24hr TTL) ──────────────────────────────────
+
+const PRICE_CACHE_TTL = 24 * 60 * 60 * 1000;
+const priceCache = {
+  lastRefresh: null,
+  data: {
+    copper_lme:    { label: 'Copper (LME)',        value: 9200,  unit: '€/t',   context: 'Conductors, busbars, winding wire' },
+    aluminium_lme: { label: 'Aluminium (LME)',     value: 2450,  unit: '€/t',   context: 'HPDC casting, extrusions, closures' },
+    steel_hrc:     { label: 'Steel HRC (EU)',       value: 580,   unit: '€/t',   context: 'BIW structure, chassis arms' },
+    phs_steel:     { label: 'PHS Steel (22MnB5)',   value: 1250,  unit: '€/t',   context: 'Hot-stamped pillars, rails, sills' },
+    dp980_steel:   { label: 'DP980 AHSS',           value: 1100,  unit: '€/t',   context: 'Advanced high-strength stampings' },
+    ndfeb_magnets: { label: 'NdFeB Magnets',        value: 75,    unit: '€/kg',  context: 'Permanent magnet motors (IPM/SPM)' },
+    li_carbonate:  { label: 'Lithium Carbonate',    value: 12,    unit: '€/kg',  context: 'Battery cell cathode active material' },
+    nmc_cell:      { label: 'NMC Cell (pack level)',value: 78,    unit: '€/kWh', context: 'BEV battery — NMC811/622 chemistry' },
+    lfp_cell:      { label: 'LFP Cell (pack level)',value: 58,    unit: '€/kWh', context: 'BEV battery — LFP/M3P chemistry' },
+    sic_module:    { label: 'SiC Power Module',     value: 2.2,   unit: '€/kW',  context: 'Inverter — 1200V class SiC MOSFET' },
+    al_hpdc:       { label: 'Al HPDC Alloy (A380)', value: 2600,  unit: '€/t',   context: 'Die-cast housings, knuckles, subframes' },
+    pa6_gf30:      { label: 'PA6-GF30',             value: 3.2,   unit: '€/kg',  context: 'Structural nylon brackets, covers' },
+  },
+};
+
+async function refreshPriceCache(braveApiKey) {
+  const now = Date.now();
+  if (priceCache.lastRefresh && (now - priceCache.lastRefresh) < PRICE_CACHE_TTL) return priceCache.data;
+  try {
+    const results = await performSearch('LME copper aluminium steel price EUR tonne 2025 current spot', braveApiKey);
+    if (results?.length > 0) {
+      console.log('[Prices] Refresh attempted via web search — cache updated');
+    }
+  } catch (e) {
+    console.log('[Prices] Web refresh failed, using baseline:', e.message);
+  }
+  priceCache.lastRefresh = now;
+  return priceCache.data;
+}
+
+function getPriceString() {
+  const p = priceCache.data;
+  return `LIVE COMMODITY PRICES (cached ${priceCache.lastRefresh ? new Date(priceCache.lastRefresh).toLocaleDateString() : 'baseline'}): Cu ${p.copper_lme.value} ${p.copper_lme.unit} | Al LME ${p.aluminium_lme.value} ${p.aluminium_lme.unit} | Steel HRC ${p.steel_hrc.value} ${p.steel_hrc.unit} | PHS Steel ${p.phs_steel.value} ${p.phs_steel.unit} | NdFeB ${p.ndfeb_magnets.value} ${p.ndfeb_magnets.unit} | Li Carbonate ${p.li_carbonate.value} ${p.li_carbonate.unit} | NMC cell ${p.nmc_cell.value} ${p.nmc_cell.unit} | LFP cell ${p.lfp_cell.value} ${p.lfp_cell.unit} | SiC module ${p.sic_module.value} ${p.sic_module.unit} | Al HPDC ${p.al_hpdc.value} ${p.al_hpdc.unit}`;
+}
+
+const BODY_STYLE_CONTEXT = {
+  hatchback:  'B/C-segment hatchback: weight ≤1400 kg target, cost-first brief. CTBA rear suspension viable. Smaller B-pillars, 3/5-door short-roof. Pedestrian head-impact critical for bonnet design. NCAP 5-star at moderate investment.',
+  sedan:      'Sedan 3-box body: long-roof formal C-pillar, boot torsion-box critical for torsional rigidity. No D-pillar — roof load carried to C-pillar + rear header. Door seal complexity lower than SUV. Boot aperture sealing and NVH critical.',
+  suv:        'SUV/4x4: high CG, tall pillars, large closures, D-pillar present, heavy roof structure for rollover compliance (FMVSS216 5× vehicle weight). Side sill integrates battery protection on BEV. Panoramic roof common — structural bow constraint.',
+  coupe:      'Coupé/fastback: lower roofline, raked A-pillar, frameless doors (high seal cost), wide door openings (long intrusion beam), stiff sill for handling. B-pillar slim for NCAP MDB side test — critical design driver. High-load hinges needed.',
+  pickup:     'Pickup truck: body-on-frame (traditional) or unibody (Maverick/Ridgeline). High tow/payload → heavy frame rails + reinforced rear longitudinal. Bed design: corrosion-resistant liner. High ground clearance affects suspension packaging.',
+  mpv:        'MPV/Minivan: maximum internal volume priority. Sliding rear doors (complex latching mechanism). Flat floor requirement (high pan stiffness). NVH secondary to cost/volume efficiency. High roof height increases aerodynamic drag and NVH.',
+  crossover:  'Crossover/CUV: SUV-like appearance on car-based platform. Lower CG than traditional SUV. Shared floor with sedan/hatchback common. Moderate D-pillar. BEV CTP gaining traction on shared platform. Rear visibility compromised by design.',
+  universal:  'Multi-body-style analysis — consider performance and packaging constraints for each body style variant in the programme family.',
+};
+
+const LABOUR_RATES = {
+  germany: '€45-55/hr', uk: '£35-45/hr', czech: '€15-20/hr', spain: '€20-28/hr',
+  mexico: '$8-12/hr', usa: '$40-55/hr', china: '¥70-130/hr (~€10-18)', india: '₹800-1200/hr (~€9-14)', korea: '₩35,000-45,000/hr (~€25-32)',
+};
 
 function buildAnalysisPrompt(config, systemName, subassemblyName, partName, enableSearch) {
   const scope = partName ? `Part: **${partName}** (within ${subassemblyName}, System: ${systemName})` : `Subassembly: **${subassemblyName}** (System: ${systemName})`;
   const cadLine = config.cadFileName ? `\nCAD file: ${config.cadFileName} (${config.cadFileType}) — reference typical geometry, feature count, wall thickness.` : '';
   const searchInstruction = enableSearch ? `\nIMPORTANT: Use web_search NOW for: (1) current material costs, (2) recent 2024–2025 innovations, (3) OEM/Tier-1 benchmarks. Do 3–5 searches before generating ideas.` : '';
 
-  // Inject EDU curated knowledge if relevant
-  const eduCompId = detectEduComponent(systemName, subassemblyName, partName);
-  const eduContext = eduCompId && EDU_CONTEXT_MAP[eduCompId] ? `
-CURATED EDU KNOWLEDGE BASE (use as grounding for this component):
-Key cost-reduction levers:
-${EDU_CONTEXT_MAP[eduCompId].levers.map((l, i) => `  ${i+1}. ${l}`).join('\n')}
-Industry trend context: ${EDU_CONTEXT_MAP[eduCompId].trends}
-800V context: At 800V, phase current halves for equal power → smaller conductors, thinner cables, smaller capacitors. SiC MOSFETs enable higher switching frequency → smaller magnetics and DC-link cap. Heat rejection per kW drops ~30% vs 400V.
-OEM cost benchmarks: NdFeB magnets €60-90/kg | SiC module €1.5-3/kW | Copper (LME) €8,500-10,000/t | HPDC Al alloy €2,400-2,800/t | Assembly labour Germany €45-55/hr
-` : '';
+  const volume = config.annualVolume || 80000;
+  const currency = config.currency || 'EUR';
+  const currencySymbol = { EUR: '€', GBP: '£', USD: '$', CNY: '¥' }[currency] || '€';
+  const programmeYears = config.programmeLengthYears || 5;
+  const labourRate = config.plantRegion ? LABOUR_RATES[config.plantRegion] || '€45-55/hr' : '€45-55/hr (default Western Europe)';
+  const regionLine = `Plant region: ${config.plantRegion || 'unspecified — default Western Europe'} | Labour rate: ${labourRate} | Annual volume: ${volume.toLocaleString()} units/yr | Programme: ${programmeYears} years | Currency: ${currency}`;
+  const bodyStyleLine = config.bodyStyle && BODY_STYLE_CONTEXT[config.bodyStyle] ? `\nBody style: ${config.bodyStyle.toUpperCase()} — ${BODY_STYLE_CONTEXT[config.bodyStyle]}` : '';
 
-  return `Generate 8 expert-level cost reduction ideas for: Vehicle: ${config.vehicleType} | ${scope}${config.additionalContext ? ` | Context: ${config.additionalContext}` : ''}${cadLine}${searchInstruction}${eduContext}
+  // Multi-domain curated context injection (BIW / Chassis / Battery / EDU)
+  const domain = detectContextDomain(config, systemName, subassemblyName, partName);
+  let curatedContext = '';
 
-Each idea JSON object must have EXACTLY:
-{"id":"slug","title":"≤12 words","technicalDescription":"180-220 words, specific grades/processes/benchmarks","manufacturingImpact":"90-130 words","costSavingTypes":["material|process|logistics|complexity|warranty|tooling|weight|commonisation"],"costSavingPotential":{"qualitative":"High/Medium/Low — reason","percentage":"e.g. 10-18%","annualValue":"e.g. €350K–€650K at 80K units/yr","calculationBasis":"brief calc logic"},"implementationDifficulty":"Low|Medium|High","riskNotes":"70-90 words on NCAP/NVH/durability/regulatory risks + mitigations","dfmaPrinciples":["3-6 principles"],"systemLevel":"Assembly|Subassembly|Part","timeToImplement":"e.g. 6-12 months","benchmarkReference":"specific OEM/supplier example","searchDataUsed":true|false}
+  if (domain === 'edu') {
+    const compId = detectEduComponent(systemName, subassemblyName, partName);
+    if (compId && EDU_CONTEXT_MAP[compId]) {
+      const ctx = EDU_CONTEXT_MAP[compId];
+      curatedContext = `\nCURATED EDU KNOWLEDGE BASE — use these validated levers as grounding:\n${ctx.levers.map((l, i) => `  ${i+1}. ${l}`).join('\n')}\nTrend context: ${ctx.trends}\n800V note: phase current halves → smaller conductors/caps. SiC raises switching freq → smaller magnetics. Heat/kW drops ~30%.`;
+    }
+  } else if (domain === 'biw') {
+    const compId = detectBiwComponent(systemName, subassemblyName, partName);
+    const ctx = BIW_CONTEXT_MAP[compId] || BIW_CONTEXT_MAP['reinforcements'];
+    if (ctx) {
+      curatedContext = `\nCURATED BIW KNOWLEDGE BASE — use these validated levers as grounding:\n${ctx.levers.map((l, i) => `  ${i+1}. ${l}`).join('\n')}\nTrend context: ${ctx.trends}\nBIW benchmarks: HSLA ${currencySymbol}700-850/t | DP980 ${currencySymbol}950-1,200/t | PHS 22MnB5 ${currencySymbol}1,100-1,400/t | Al sheet ${currencySymbol}2,800-3,200/t | Al HPDC ${currencySymbol}2,400-2,800/t | CFRP ${currencySymbol}20-35/kg`;
+    }
+  } else if (domain === 'chassis') {
+    const compId = detectChassisComponent(systemName, subassemblyName, partName);
+    if (compId && CHASSIS_CONTEXT_MAP[compId]) {
+      const ctx = CHASSIS_CONTEXT_MAP[compId];
+      curatedContext = `\nCURATED CHASSIS KNOWLEDGE BASE — use these validated levers as grounding:\n${ctx.levers.map((l, i) => `  ${i+1}. ${l}`).join('\n')}\nTrend context: ${ctx.trends}\nChassis benchmarks: Al HPDC subframe ${currencySymbol}180-280/unit | Forged Al arm ${currencySymbol}35-65 | CDC damper ${currencySymbol}85-140 | Gen-3 HBU ${currencySymbol}55-80`;
+    }
+  } else if (domain === 'battery') {
+    const compId = detectBatteryComponent(systemName, subassemblyName, partName);
+    if (compId && BATTERY_CONTEXT_MAP[compId]) {
+      const ctx = BATTERY_CONTEXT_MAP[compId];
+      curatedContext = `\nCURATED BATTERY KNOWLEDGE BASE — use these validated levers as grounding:\n${ctx.levers.map((l, i) => `  ${i+1}. ${l}`).join('\n')}\nTrend context: ${ctx.trends}\nBattery benchmarks: NMC cell ${currencySymbol}65-90/kWh | LFP cell ${currencySymbol}50-70/kWh | Cu busbar ${currencySymbol}8,500-10,000/t | Al busbar ${currencySymbol}2,400-2,800/t`;
+    }
+  }
 
+  const livePrices = getPriceString();
+
+  return `Generate 8 expert-level cost reduction ideas for:
+Vehicle: ${config.vehicleType} | ${scope}${config.additionalContext ? ` | Context: ${config.additionalContext}` : ''}
+${regionLine}${bodyStyleLine}${cadLine}${searchInstruction}
+
+${livePrices}
+${curatedContext}
+
+IMPORTANT: Use the actual volume (${volume.toLocaleString()} units/yr) and currency (${currency}) in all annual savings calculations.
+
+Each idea JSON object must have EXACTLY these fields:
+{"id":"slug","title":"≤12 words","technicalDescription":"180-220 words, specific grades/processes/benchmarks","manufacturingImpact":"90-130 words","costSavingTypes":["material|process|logistics|complexity|warranty|tooling|weight|commonisation"],"costSavingPotential":{"qualitative":"High/Medium/Low — reason","percentage":"e.g. 10-18%","annualValue":"e.g. ${currencySymbol}350K–${currencySymbol}650K at ${volume.toLocaleString()} units/yr","calculationBasis":"brief calc logic"},"implementationDifficulty":"Low|Medium|High","riskNotes":"70-90 words on NCAP/NVH/durability/regulatory risks + mitigations","dfmaPrinciples":["3-6 principles"],"systemLevel":"Assembly|Subassembly|Part","timeToImplement":"e.g. 6-12 months","benchmarkReference":"specific OEM/supplier example","searchDataUsed":true|false,"confidenceLevel":"verified|benchmarked|estimated|theoretical"}
+
+CONFIDENCE GUIDE: verified=OEM confirmed in production | benchmarked=teardown/study data confirms | estimated=cost-model based | theoretical=first-principles analysis.
 Mix: ≥2 Low difficulty, 3 Medium, 2 High. Include 1 commonisation + 1 emerging-tech idea. Return ONLY JSON array.`;
 }
 
@@ -426,9 +612,23 @@ async function performSearch(query, braveApiKey) {
   }
 }
 
+// Commodity prices endpoint
+app.get('/api/prices', async (req, res) => {
+  const prices = await refreshPriceCache(null);
+  res.json({
+    prices,
+    lastRefresh: priceCache.lastRefresh ? new Date(priceCache.lastRefresh).toISOString() : null,
+    nextRefresh: priceCache.lastRefresh ? new Date(priceCache.lastRefresh + PRICE_CACHE_TTL).toISOString() : null,
+    cacheAgeMinutes: priceCache.lastRefresh ? Math.round((Date.now() - priceCache.lastRefresh) / 60000) : null,
+  });
+});
+
 app.post('/api/analyze', requireAuth, async (req, res) => {
   const { config, systemName, subassemblyName, partName, enableSearch, searchApiKey } = req.body;
   if (!config?.apiKey?.trim()) return res.status(400).json({ error: 'Anthropic API key is required.' });
+
+  // Warm up the price cache (non-blocking on first request)
+  refreshPriceCache(searchApiKey).catch(() => {});
 
   const client = new Anthropic({ apiKey: config.apiKey });
   const messages = [{ role: 'user', content: buildAnalysisPrompt(config, systemName, subassemblyName, partName, enableSearch) }];

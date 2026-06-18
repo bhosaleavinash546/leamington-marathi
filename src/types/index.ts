@@ -29,6 +29,11 @@ export type CostSavingType =
 export type Difficulty = 'Low' | 'Medium' | 'High';
 export type SystemLevel = 'Assembly' | 'Subassembly' | 'Part';
 
+export type BodyStyle = 'hatchback' | 'sedan' | 'suv' | 'coupe' | 'pickup' | 'mpv' | 'crossover' | 'universal';
+export type PlantRegion = 'germany' | 'uk' | 'czech' | 'spain' | 'mexico' | 'usa' | 'china' | 'india' | 'korea';
+export type Currency = 'EUR' | 'GBP' | 'USD' | 'CNY';
+export type ConfidenceLevel = 'verified' | 'benchmarked' | 'estimated' | 'theoretical';
+
 export interface CostSavingPotential {
   qualitative: string;
   percentage?: string;
@@ -50,6 +55,7 @@ export interface CostReductionIdea {
   timeToImplement: string;
   benchmarkReference?: string;
   searchDataUsed?: boolean;
+  confidenceLevel?: ConfidenceLevel;
 }
 
 export interface SearchResult {
@@ -71,6 +77,11 @@ export interface AnalysisConfig {
   subassemblyId: string;
   partId?: string;
   vehicleType: string;
+  bodyStyle?: BodyStyle;
+  annualVolume?: number;
+  plantRegion?: PlantRegion;
+  currency?: Currency;
+  programmeLengthYears?: number;
   cadFileName?: string;
   cadFileType?: string;
   additionalContext?: string;
