@@ -9,7 +9,7 @@ import {
   ShieldCheck, BookOpen, FlaskConical, Lightbulb, Scale, Link2
 } from 'lucide-react';
 import { AnalysisResult, CostReductionIdea, CostSavingType, Difficulty, SearchSource, ConfidenceLevel, EvidenceSource } from '../types';
-import { exportToExcel, exportToPowerPoint } from '../services/export-service';
+import { exportToExcel, exportToPowerPoint, exportToPdf } from '../services/export-service';
 import IdeasDashboard from '../components/results/IdeasDashboard';
 import BusinessCaseCalculator from '../components/results/BusinessCaseCalculator';
 
@@ -315,7 +315,7 @@ export default function ResultsPage() {
   const [subName, setSubName] = useState('');
   const [filterDifficulty, setFilterDifficulty] = useState<Difficulty | 'All'>('All');
   const [filterType, setFilterType] = useState<CostSavingType | 'All'>('All');
-  const [exporting, setExporting] = useState<'excel' | 'pptx' | null>(null);
+  const [exporting, setExporting] = useState<'excel' | 'pptx' | 'pdf' | null>(null);
 
   useEffect(() => {
     const stored = sessionStorage.getItem('analysisResult');
@@ -341,6 +341,11 @@ export default function ResultsPage() {
   const handlePptxExport = async () => {
     setExporting('pptx');
     try { await exportToPowerPoint(result, systemName, subName); } finally { setExporting(null); }
+  };
+
+  const handlePdfExport = () => {
+    setExporting('pdf');
+    try { exportToPdf(result, systemName, subName); } finally { setExporting(null); }
   };
 
   const quickWins = result.ideas.filter(i => i.implementationDifficulty === 'Low');
@@ -385,6 +390,14 @@ export default function ResultsPage() {
               >
                 <Presentation size={16} />
                 {exporting === 'pptx' ? 'Exporting...' : 'PowerPoint'}
+              </button>
+              <button
+                onClick={handlePdfExport}
+                disabled={!!exporting}
+                className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-red-700 hover:bg-red-600 disabled:opacity-50 text-white font-semibold text-sm transition-all hover:scale-105"
+              >
+                <FileDown size={16} />
+                {exporting === 'pdf' ? 'Exporting...' : 'PDF'}
               </button>
             </div>
           </div>
@@ -492,6 +505,10 @@ export default function ResultsPage() {
             <button onClick={handlePptxExport} disabled={!!exporting}
               className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-orange-600 hover:bg-orange-500 disabled:opacity-50 text-white font-semibold text-sm">
               <FileDown size={16} /> PowerPoint Deck
+            </button>
+            <button onClick={handlePdfExport} disabled={!!exporting}
+              className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-red-700 hover:bg-red-600 disabled:opacity-50 text-white font-semibold text-sm">
+              <FileDown size={16} /> PDF Report
             </button>
           </div>
         </div>

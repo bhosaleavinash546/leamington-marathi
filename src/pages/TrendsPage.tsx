@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { TrendingUp, Cpu, Wrench, Building2, ChevronRight, Car, Battery, Settings, Flame, Wind, Armchair, Lightbulb } from 'lucide-react';
+import { TrendingUp, Cpu, Wrench, Building2, ChevronRight, Car, Battery, Settings, Flame, Wind, Armchair, Lightbulb, Cog } from 'lucide-react';
 import {
   MFG_LEVERS, EDU_TRENDS, OEM_MOVES, EDU_COST_STRUCTURE, getTotalEduIdeas, EDU_COMPONENTS,
 } from '../data/edu-knowledge-base';
@@ -10,8 +10,9 @@ import { ICE_COMPONENTS, ICE_MFG_LEVERS, ICE_TRENDS, ICE_COST_STRUCTURE, getTota
 import { HVAC_COMPONENTS, HVAC_MFG_LEVERS, HVAC_TRENDS, HVAC_COST_STRUCTURE, getTotalHvacIdeas } from '../data/hvac-knowledge-base';
 import { INTERIOR_COMPONENTS, INTERIOR_TRENDS, INTERIOR_COST_STRUCTURE, getTotalInteriorIdeas } from '../data/interior-knowledge-base';
 import { EXTERIOR_COMPONENTS, EXTERIOR_TRENDS, EXTERIOR_COST_STRUCTURE, getTotalExteriorIdeas } from '../data/exterior-knowledge-base';
+import { TRANSMISSION_COMPONENTS, TRANSMISSION_MFG_LEVERS, TRANSMISSION_TRENDS, TRANSMISSION_COST_STRUCTURE, getTotalTransmissionIdeas } from '../data/transmission-driveline-knowledge-base';
 
-type Domain = 'edu' | 'biw' | 'chassis' | 'battery' | 'ice' | 'hvac' | 'interior' | 'exterior';
+type Domain = 'edu' | 'biw' | 'chassis' | 'battery' | 'ice' | 'hvac' | 'interior' | 'exterior' | 'transmission';
 type Tab = 'trends' | 'manufacturing' | 'oem';
 
 const CONF_COLORS: Record<string, string> = {
@@ -55,8 +56,9 @@ const DOMAINS: { id: Domain; label: string; icon: typeof TrendingUp; color: stri
   { id: 'battery',  label: 'Battery Pack',          icon: Battery,  color: 'text-emerald-400', short: 'Battery' },
   { id: 'ice',      label: 'Powertrain ICE',        icon: Flame,    color: 'text-orange-400',  short: 'ICE' },
   { id: 'hvac',     label: 'Thermal & HVAC',        icon: Wind,     color: 'text-cyan-400',    short: 'HVAC' },
-  { id: 'interior', label: 'Interior Systems',      icon: Armchair, color: 'text-amber-400',   short: 'Interior' },
-  { id: 'exterior', label: 'Exterior Systems',      icon: Lightbulb,color: 'text-yellow-400',  short: 'Exterior' },
+  { id: 'interior',      label: 'Interior Systems',         icon: Armchair, color: 'text-amber-400',   short: 'Interior' },
+  { id: 'exterior',      label: 'Exterior Systems',         icon: Lightbulb,color: 'text-yellow-400',  short: 'Exterior' },
+  { id: 'transmission',  label: 'Transmission & Driveline', icon: Cog,      color: 'text-rose-400',    short: 'Driveline' },
 ];
 
 const TABS: { id: Tab; label: string; icon: typeof TrendingUp }[] = [
@@ -80,8 +82,9 @@ export default function TrendsPage() {
     if (domain === 'battery')  return [{ label: 'Components', value: BATTERY_COMPONENTS.length }, { label: 'VAVE ideas', value: getTotalBatteryIdeas() }, { label: 'Mfg levers', value: BATTERY_MFG_LEVERS.length }, { label: 'Trends', value: BATTERY_TRENDS.length }];
     if (domain === 'ice')      return [{ label: 'Components', value: ICE_COMPONENTS.length }, { label: 'VAVE ideas', value: getTotalIceIdeas() }, { label: 'Mfg levers', value: ICE_MFG_LEVERS.length }, { label: 'Trends', value: ICE_TRENDS.length }];
     if (domain === 'hvac')     return [{ label: 'Components', value: HVAC_COMPONENTS.length }, { label: 'VAVE ideas', value: getTotalHvacIdeas() }, { label: 'Mfg levers', value: HVAC_MFG_LEVERS.length }, { label: 'Trends', value: HVAC_TRENDS.length }];
-    if (domain === 'interior') return [{ label: 'Components', value: INTERIOR_COMPONENTS.length }, { label: 'VAVE ideas', value: getTotalInteriorIdeas() }, { label: 'Mfg levers', value: 0 }, { label: 'Trends', value: INTERIOR_TRENDS.length }];
-    if (domain === 'exterior') return [{ label: 'Components', value: EXTERIOR_COMPONENTS.length }, { label: 'VAVE ideas', value: getTotalExteriorIdeas() }, { label: 'Mfg levers', value: 0 }, { label: 'Trends', value: EXTERIOR_TRENDS.length }];
+    if (domain === 'interior')     return [{ label: 'Components', value: INTERIOR_COMPONENTS.length }, { label: 'VAVE ideas', value: getTotalInteriorIdeas() }, { label: 'Mfg levers', value: 0 }, { label: 'Trends', value: INTERIOR_TRENDS.length }];
+    if (domain === 'exterior')     return [{ label: 'Components', value: EXTERIOR_COMPONENTS.length }, { label: 'VAVE ideas', value: getTotalExteriorIdeas() }, { label: 'Mfg levers', value: 0 }, { label: 'Trends', value: EXTERIOR_TRENDS.length }];
+    if (domain === 'transmission') return [{ label: 'Components', value: TRANSMISSION_COMPONENTS.length }, { label: 'VAVE ideas', value: getTotalTransmissionIdeas() }, { label: 'Mfg levers', value: TRANSMISSION_MFG_LEVERS.length }, { label: 'Trends', value: TRANSMISSION_TRENDS.length }];
     return [];
   }
 
@@ -93,7 +96,8 @@ export default function TrendsPage() {
     if (domain === 'ice')      return ICE_COST_STRUCTURE;
     if (domain === 'hvac')     return HVAC_COST_STRUCTURE;
     if (domain === 'interior') return INTERIOR_COST_STRUCTURE;
-    if (domain === 'exterior') return EXTERIOR_COST_STRUCTURE;
+    if (domain === 'exterior')     return EXTERIOR_COST_STRUCTURE;
+    if (domain === 'transmission') return TRANSMISSION_COST_STRUCTURE;
     return [];
   }
 
@@ -126,12 +130,12 @@ export default function TrendsPage() {
       </div>
     );
 
-    // New-format domains (ICE, HVAC, Interior, Exterior) use { id, title, description, status, impact }
-    const isNewFormat = ['ice', 'hvac', 'interior', 'exterior'].includes(domain);
+    // New-format domains (ICE, HVAC, Interior, Exterior, Transmission) use { id, title, description, status, impact }
+    const isNewFormat = ['ice', 'hvac', 'interior', 'exterior', 'transmission'].includes(domain);
 
     if (isNewFormat) {
-      const trends = domain === 'ice' ? ICE_TRENDS : domain === 'hvac' ? HVAC_TRENDS : domain === 'interior' ? INTERIOR_TRENDS : EXTERIOR_TRENDS;
-      const components = domain === 'ice' ? ICE_COMPONENTS : domain === 'hvac' ? HVAC_COMPONENTS : domain === 'interior' ? INTERIOR_COMPONENTS : EXTERIOR_COMPONENTS;
+      const trends = domain === 'ice' ? ICE_TRENDS : domain === 'hvac' ? HVAC_TRENDS : domain === 'interior' ? INTERIOR_TRENDS : domain === 'transmission' ? TRANSMISSION_TRENDS : EXTERIOR_TRENDS;
+      const components = domain === 'ice' ? ICE_COMPONENTS : domain === 'hvac' ? HVAC_COMPONENTS : domain === 'interior' ? INTERIOR_COMPONENTS : domain === 'transmission' ? TRANSMISSION_COMPONENTS : EXTERIOR_COMPONENTS;
       return (
         <div className="space-y-10">
           <section>
@@ -282,9 +286,9 @@ export default function TrendsPage() {
     );
 
     // New-format domains with { id, name, description, saving, status }
-    const isNewMfgFormat = ['ice', 'hvac'].includes(domain);
+    const isNewMfgFormat = ['ice', 'hvac', 'transmission'].includes(domain);
     if (isNewMfgFormat) {
-      const levers = domain === 'ice' ? ICE_MFG_LEVERS : HVAC_MFG_LEVERS;
+      const levers = domain === 'ice' ? ICE_MFG_LEVERS : domain === 'hvac' ? HVAC_MFG_LEVERS : TRANSMISSION_MFG_LEVERS;
       return (
         <div>
           <div className="bg-navy-800/40 border border-white/8 border-l-2 border-l-gold-500 rounded-xl p-4 mb-6">

@@ -389,6 +389,14 @@ const EXTERIOR_CONTEXT_MAP = {
   'wipers-washers':{ levers: ['Aero flat blade standard: €2-5 saving + warranty improvement (Bosch AeroTwin standard D-segment)','Single-arm wiper on SUV/hatch: €15-25 unit saving (Mercedes CLA)','Rain sensor → ADAS camera rain detection algorithm: €18-30 sensor delete (Tesla Vision-based)','Delete heated nozzle on APAC/MENA warm-market spec: €8-15/vehicle'], trends: 'ADAS camera absorbing rain sensor function (Tesla proven 2021). Aero flat blade universal. Single-arm wiper growing for Cd and aesthetics. Heated windscreen reducing heated nozzle justification.' },
 };
 
+const TRANSMISSION_CONTEXT_MAP = {
+  'automatic-gearbox': { levers: ['ZF 8HP fleet-rate licence rebate at >80K/yr: €180-320/gearbox saving by joining shared-sourcing programme (benchmark: BMW G-series vs JLR Defender tier)','Delete ATF water-cooled HEX on non-PHEV variants: replace air-cooled pan cooler, save €35-55/unit (Toyota LC300 GX vs GR-S spec)','Commonise ZF 8HP valve body / TCM software across 8-speed and 9-speed: €25-40 saving + €80-200K NRE (BMW 3/5-Series shared valve body)','Al composite sump + delete dedicated gearbox undershield: €5-12 net saving + 0.9 kg mass (Ford Ranger Raptor)','Switch to ZF Lifeguard 8 open-spec ATF: €1.50-3.50/fill, fleet service saving (BMW ATF 6 HP open-spec verified)'], trends: 'ZF 8HP-e 48V integrated MHEV eliminating separate BSG. Predictive AWD disconnect using ADAS navigation preview. Lifetime ATF fill targeting 200K km (JLR, Toyota LC300 direction). ZF 8HP universal across luxury segment (BMW, JLR, Maserati, Dodge).' },
+  'transfer-case':     { levers: ['BorgWarner 4480 → eDTC electronic disconnect on road-spec variants: €55-85 BOM saving + WLTP fuel economy +0.4-0.8 l/100km (BMW ATC-700, Porsche PTM)','Delete 2-speed TC on road-biased LWB spec; add rear eTorque vectoring diff: net €55-100 saving + 14 kg (Bentayga S, Cullinan — no 2-speed TC)','Al TC housing with integrated oil gallery: delete external pump, save €22-38/unit + 2.8-3.5 kg (GKN ePT Al HPDC housing verified)','Integrate TC ECU into DPTCM: delete standalone module, save €45-70 (Land Rover Terrain Response 2 DPTCM architecture)','Shared ATF cooling circuit with 8HP: delete TC cooler, save €15-28/vehicle (Porsche Cayenne, BMW X5 shared ATF HEM)'], trends: 'eDTC predictive disconnect replacing viscous full-time AWD. Terrain Response AI integration via DPTCM. 2-speed TC deletion on road-biased luxury variants. eAxle replacing rear propshaft + TC output shaft on PHEV.' },
+  'half-shafts':       { levers: ['Front CV: tripod plunge + fixed Rzeppa replacing 6-ball Rzeppa at high articulation: warranty -30% (GKN UF CVJ+TJ, G-Class W464, Porsche Cayenne)','Common rear inner tripod housing diesel/petrol: 2 P/Ns → 1, €18-45K tooling saving (VW Touareg, BMW X5 G05 AW tripod)','Hytrel 5556 thermoplastic boot replacing EPDM rubber: €2.50-4/boot; cold-climate warranty -€35-55/vehicle (GKN Arctic Kit, BMW xDrive cold spec)','One-piece induction-hardened stem spline replacing insert: €6-10/shaft saving + 180g mass (GKN AW15 LC300 rear, Defender Heritage verified)','Hollow friction-welded rear shaft: 1.2-1.8 kg mass saving, improved Terrain Response responsiveness (Porsche Macan EV, BMW M hollow shafts)'], trends: 'Hollow propshaft sections standard on BEV eAxle. CF propshaft mainstream luxury segment >30K/yr. Hytrel boot universal adoption cold-climate. Sealed lifetime-lubed CV joints growing on commercial/fleet Defender.' },
+  'propshafts':        { levers: ['CF one-piece propshaft (GKN CarboFlex) replacing steel two-piece + centre bearing: €45-75 saving + 4.5-6.5 kg (Cayenne Turbo GT, BMW X5 M, G-Class AMG 63)','PU centre bearing isolator replacing NR rubber: life 150K→250K km; warranty saving €28-50/vehicle (GKN PU bearing Defender 110 2023 update)','Phased yoke front propshaft: common across SWB/LWB, €350-600K NRE saving (Ford Ranger/Everest SWB/LWB common)','GKN SDS sealed lifetime U-joints: delete grease nipples, fleet saving €25-40/event (Defender 130 Commercial, LC300 Commercial 2022)','Friction-welded tube/yoke replacing bolted flange: €4-8/shaft + 45→12 sec cycle time (Dana SPL250, Ford Ranger T6)'], trends: 'CF propshaft approaching cost parity >20K/yr. GKN CarboFlex automated filament winding at 4 min cycle. Sealed SDS lifetime U-joints growing for commercial and Nordic fleet. eAxle eliminating rear propshaft on PHEV luxury SUV.' },
+  'differentials':     { levers: ['eLSD replacing Torsen T2R front diff on PHEV: €25-45 BOM saving + front TVC function (BMW xDrive eTVC X5M, Porsche PTV+, Land Rover L460 SV)','Single 3.73 rear ratio across petrol V6/V8/diesel I6: €120-250K tooling saving (BMW X5 single ratio + TCU comp, LC300 3.909 single ratio)','Delete mechanical rear diff lock on road spec: brake-based eLSD via DPTCM, €95-145 saving (Porsche PDCC, BMW X7 electronic TVD, Rolls-Royce Shadow Drive)','Al A380 HPDC diff housing replacing GJS cast iron: €18-32 uplift recovered by downstream savings + 6.2 kg unsprung mass saving (BMW M3/M4 G-body, Defender Sport Al housing 2020)','Common rear diff carrier across D-ratio/eLSD variants: €380-650K tooling NRE saving (JLR D7x Defender/Discovery, Ford 9.75\" Dana Defender/Ranger carrier)'], trends: 'Active TVD replacing eLSD on performance luxury SUV (BMW M TVD, Lexus LX600 e-KDSS). Al HPDC diff housing standard premium segment. Software-defined diff lock via DPTCM replacing mechanical actuator. In-wheel motor next-gen BEV eliminating diff entirely (Rivian R1S quad-motor confirmed).' },
+};
+
 const EDU_KEYWORDS = {
   'stator-winding':  ['stator winding','winding','hairpin','bar winding','coil'],
   'stator-core':     ['stator core','lamination','electrical steel','no steel'],
@@ -476,6 +484,23 @@ const ICE_SYSTEM_KEYWORDS   = ['powertrain-ice','engine assembly','exhaust syste
 const HVAC_SYSTEM_KEYWORDS  = ['hvac','thermal & hvac','air conditioning','heat pump','refrigerant circuit','evaporator','heater core','blower motor','ac compressor','condenser','battery thermal management','cooling plate','tim material'];
 const INTERIOR_SYSTEM_KEYWORDS = ['interior systems','instrument panel','dashboard','cross-car beam','seat systems','door trim','centre console','headliner','digital cluster','centre display','airbag module','seat foam','seat frame'];
 const EXTERIOR_SYSTEM_KEYWORDS = ['exterior systems','bumper system','front bumper','rear bumper','headlight unit','tail lamp','lighting system','wing mirror','windscreen','panoramic glass','wiper system','sunroof mechanism','daytime running'];
+const TRANSMISSION_SYSTEM_KEYWORDS = ['transmission','driveline','transfer case','half shaft','propshaft','prop shaft','differential','gearbox','zf 8hp','automatic transmission','awd','4wd','4x4','torque vectoring','torsen','elsd','ediff','e-diff','cv joint','half-shaft','driveshaft','drive shaft','terrain response','terrain management','transfer box','centre bearing','axle shaft'];
+
+const TRANSMISSION_KEYWORDS = {
+  'automatic-gearbox': ['automatic gearbox','automatic transmission','zf 8hp','8hp','hydra-matic','10l90','gearbox','atf','torque converter','valve body','tcm','tcу','8-speed','9-speed','shift map'],
+  'transfer-case':     ['transfer case','transfer box','transfer','4wd','4x4','hi-lo','terrain response','borg warner','bw4480','edtc','atc-700','atc-500','ptm'],
+  'half-shafts':       ['half shaft','half-shaft','axle shaft','cv joint','rzeppa','tripod joint','outboard joint','inner joint','outer joint','plunge joint','boot','grease','spline'],
+  'propshafts':        ['propshaft','prop shaft','propeller shaft','driveshaft','drive shaft','centre bearing','u-joint','universal joint','cardan','cf shaft','carbon fibre shaft','carboFlex','yoke','friction weld'],
+  'differentials':     ['differential','diff','torsen','elsd','e-lsd','ediff','e-diff','locking diff','rear diff','front diff','final drive','ring gear','pinion','diff lock','tvd','torque vectoring diff'],
+};
+
+function detectTransmissionComponent(systemName, subassemblyName, partName) {
+  const haystack = [systemName, subassemblyName, partName].filter(Boolean).join(' ').toLowerCase();
+  for (const [compId, keywords] of Object.entries(TRANSMISSION_KEYWORDS)) {
+    if (keywords.some(k => haystack.includes(k))) return compId;
+  }
+  return 'automatic-gearbox';
+}
 
 function detectEduComponent(systemName, subassemblyName, partName) {
   const haystack = [systemName, subassemblyName, partName].filter(Boolean).join(' ').toLowerCase();
@@ -492,6 +517,7 @@ function detectContextDomain(config, systemName, subassemblyName, partName) {
   if (systemId === 'battery-pack' || BATTERY_SYSTEM_KEYWORDS.some(k => haystack.includes(k))) return 'battery';
   if (systemId === 'biw'          || BIW_SYSTEM_KEYWORDS.some(k => haystack.includes(k)))     return 'biw';
   if (systemId === 'chassis'      || CHASSIS_SYSTEM_KEYWORDS.some(k => haystack.includes(k))) return 'chassis';
+  if (systemId === 'transmission' || TRANSMISSION_SYSTEM_KEYWORDS.some(k => haystack.includes(k))) return 'transmission';
   if (systemId === 'powertrain-ice' || ICE_SYSTEM_KEYWORDS.some(k => haystack.includes(k)))   return 'ice';
   if (systemId === 'hvac'         || HVAC_SYSTEM_KEYWORDS.some(k => haystack.includes(k)))    return 'hvac';
   if (systemId === 'interior'     || INTERIOR_SYSTEM_KEYWORDS.some(k => haystack.includes(k))) return 'interior';
@@ -725,6 +751,12 @@ function buildAnalysisPrompt(config, systemName, subassemblyName, partName, enab
     if (compId && EXTERIOR_CONTEXT_MAP[compId]) {
       const ctx = EXTERIOR_CONTEXT_MAP[compId];
       curatedContext = `\nCURATED EXTERIOR KNOWLEDGE BASE — use these validated levers as grounding:\n${ctx.levers.map((l, i) => `  ${i+1}. ${l}`).join('\n')}\nTrend context: ${ctx.trends}\nExterior benchmarks: Matrix ADB headlight ${currencySymbol}220-380/unit | Al bumper beam extrusion ${currencySymbol}35-65/unit | EPP foam absorber ${currencySymbol}12-22 | Acoustic PVB windscreen ${currencySymbol}180-250 | Electrochromic glass ${currencySymbol}95-140 premium`;
+    }
+  } else if (domain === 'transmission') {
+    const compId = detectTransmissionComponent(systemName, subassemblyName, partName);
+    if (compId && TRANSMISSION_CONTEXT_MAP[compId]) {
+      const ctx = TRANSMISSION_CONTEXT_MAP[compId];
+      curatedContext = `\nCURATED TRANSMISSION & DRIVELINE KNOWLEDGE BASE — Luxury Off-Road SUV segment (Defender, Range Rover, Range Rover Sport vs G-Class W464, BMW X5/X7 G-series, Porsche Cayenne 9Y0, Toyota LC300, Lexus LX600, Bentayga W12, Cullinan RR):\n${ctx.levers.map((l, i) => `  ${i+1}. ${l}`).join('\n')}\nTrend context: ${ctx.trends}\nKey benchmarks: ZF 8HP70/95 fleet rate ${currencySymbol}680-980/unit | GKN CarboFlex CF propshaft ${currencySymbol}120-140 | Al A380 HPDC diff housing ${currencySymbol}85-120 | eDTC BorgWarner ${currencySymbol}220-280 | BorgWarner 4480 TC ${currencySymbol}380-450`;
     }
   }
 

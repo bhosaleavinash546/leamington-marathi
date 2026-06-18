@@ -1,5 +1,6 @@
 import * as XLSX from 'xlsx';
 import PptxGenJS from 'pptxgenjs';
+import jsPDF from 'jspdf';
 import { AnalysisResult, CostReductionIdea } from '../types';
 
 const DIFFICULTY_COLOR: Record<string, string> = {
@@ -383,4 +384,372 @@ export async function exportToPowerPoint(
 
   const filename = `BrainSpark_${systemName}_${subName}_${new Date().toISOString().split('T')[0]}.pptx`;
   pptx.writeFile({ fileName: filename });
+}
+
+// ─── Helpers ─────────────────────────────────────────────────────────────────
+
+const NAVY_RGB  = [13, 31, 51] as const;
+const GOLD_RGB  = [245, 158, 11] as const;
+const WHITE_RGB = [255, 255, 255] as const;
+const GRAY_RGB  = [100, 116, 139] as const;
+const LIGHT_RGB = [248, 250, 252] as const;
+
+function setFill(doc: jsPDF, rgb: readonly [number, number, number]) {
+  doc.setFillColor(rgb[0], rgb[1], rgb[2]);
+}
+function setColor(doc: jsPDF, rgb: readonly [number, number, number]) {
+  doc.setTextColor(rgb[0], rgb[1], rgb[2]);
+}
+function setDraw(doc: jsPDF, rgb: readonly [number, number, number]) {
+  doc.setDrawColor(rgb[0], rgb[1], rgb[2]);
+}
+
+function diffRgb(diff: string): readonly [number, number, number] {
+  if (diff === 'Low')    return [34, 197, 94];
+  if (diff === 'Medium') return [245, 158, 11];
+  return [239, 68, 68];
+}
+
+function wrapText(doc: jsPDF, text: string, maxWidth: number): string[] {
+  return doc.splitTextToSize(text, maxWidth);
+}
+
+// ─── PDF Export ───────────────────────────────────────────────────────────────
+
+export function exportToPdf(result: AnalysisResult, systemName: string, subName: string): void {
+  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+  const PW = 210;  // page width mm
+  const PH = 297;  // page height mm
+  const ML = 14;   // left margin
+  const MR = 14;   // right margin
+  const CW = PW - ML - MR;  // content width
+  const today = new Date().toISOString().split('T')[0];
+
+  let page = 1;
+
+  function addPageNumber() {
+    setColor(doc, GRAY_RGB);
+    doc.setFontSize(8);
+    doc.text(`BrainSpark  |  ${systemName} — ${subName}  |  Page ${page}`, PW / 2, PH - 6, { align: 'center' });
+  }
+
+  function newPage() {
+    doc.addPage();
+    page++;
+    addPageNumber();
+  }
+
+  // ── Page 1: Cover ──────────────────────────────────────────────────────────
+
+  // Navy background top half
+  setFill(doc, NAVY_RGB);
+  doc.rect(0, 0, PW, 120, 'F');
+
+  // Gold accent bar
+  setFill(doc, GOLD_RGB);
+  doc.rect(0, 120, PW, 1.2, 'F');
+
+  // Brand name
+  setColor(doc, GOLD_RGB);
+  doc.setFontSize(28);
+  doc.setFont('helvetica', 'bold');
+  doc.text('BrainSpark', ML, 30);
+
+  setColor(doc, WHITE_RGB);
+  doc.setFontSize(18);
+  doc.setFont('helvetica', 'bold');
+  doc.text('Cost Reduction Intelligence Report', ML, 42);
+
+  setColor(doc, [148, 163, 184]);
+  doc.setFontSize(13);
+  doc.setFont('helvetica', 'normal');
+  doc.text(`${systemName} — ${subName}`, ML, 54);
+
+  setColor(doc, [203, 213, 225]);
+  doc.setFontSize(10);
+  doc.text(`Vehicle Type: ${result.config.vehicleType}`, ML, 66);
+  doc.text(`Generated: ${result.generatedAt}`, ML, 73);
+
+  // Summary metrics row
+  const metrics = [
+    { label: 'Total Ideas',     value: String(result.summary.totalIdeas),       rgb: [59, 130, 246] as const },
+    { label: 'Quick Wins',      value: String(result.summary.quickWins),         rgb: [34, 197, 94] as const },
+    { label: 'Strategic Items', value: String(result.summary.strategicItems),    rgb: [245, 158, 11] as const },
+    { label: 'Web Searches',    value: String(result.summary.searchesPerformed), rgb: [139, 92, 246] as const },
+  ];
+
+  const boxW = (CW - 9) / 4;
+  metrics.forEach((m, i) => {
+    const bx = ML + i * (boxW + 3);
+    const by = 84;
+    setFill(doc, [30, 41, 59]);
+    doc.roundedRect(bx, by, boxW, 22, 2, 2, 'F');
+    setFill(doc, m.rgb);
+    doc.rect(bx, by, boxW, 1.5, 'F');
+    setColor(doc, m.rgb);
+    doc.setFontSize(18);
+    doc.setFont('helvetica', 'bold');
+    doc.text(m.value, bx + boxW / 2, by + 13, { align: 'center' });
+    setColor(doc, [148, 163, 184]);
+    doc.setFontSize(7);
+    doc.setFont('helvetica', 'normal');
+    doc.text(m.label, bx + boxW / 2, by + 19, { align: 'center' });
+  });
+
+  // Light section — summary table
+  setColor(doc, NAVY_RGB);
+  doc.setFontSize(13);
+  doc.setFont('helvetica', 'bold');
+  doc.text('Executive Summary', ML, 136);
+
+  // Table header
+  const cols = [8, 75, 22, 38, 30, 19];
+  const colX = cols.reduce<number[]>((acc, w, i) => [...acc, (acc[i - 1] ?? ML) + (i === 0 ? 0 : cols[i - 1])], [ML]);
+  const headers = ['No.', 'Idea Title', 'Difficulty', 'Cost Saving Types', 'Potential', 'Level'];
+  setFill(doc, NAVY_RGB);
+  doc.rect(ML, 140, CW, 7, 'F');
+  setColor(doc, WHITE_RGB);
+  doc.setFontSize(7.5);
+  doc.setFont('helvetica', 'bold');
+  headers.forEach((h, i) => doc.text(h, colX[i] + 1, 145.5));
+
+  // Table rows
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(7);
+  result.ideas.forEach((idea, idx) => {
+    const ry = 147 + idx * 8;
+    if (ry > PH - 20) return; // clip to first page
+    const bg: readonly [number, number, number] = idx % 2 === 0 ? LIGHT_RGB : WHITE_RGB;
+    setFill(doc, bg);
+    doc.rect(ML, ry, CW, 8, 'F');
+    setDraw(doc, [226, 232, 240]);
+    doc.setLineWidth(0.2);
+    doc.rect(ML, ry, CW, 8, 'S');
+
+    setColor(doc, [55, 65, 81]);
+    const rowData = [
+      String(idx + 1),
+      idea.title.length > 42 ? idea.title.slice(0, 40) + '…' : idea.title,
+      idea.implementationDifficulty,
+      idea.costSavingTypes.slice(0, 2).join(', '),
+      idea.costSavingPotential.percentage || idea.costSavingPotential.qualitative.split(' ')[0],
+      idea.systemLevel,
+    ];
+    rowData.forEach((d, i) => {
+      if (i === 2) setColor(doc, diffRgb(idea.implementationDifficulty));
+      else setColor(doc, [55, 65, 81]);
+      doc.text(d, colX[i] + 1, ry + 5);
+    });
+  });
+
+  // Confidential footer
+  setColor(doc, GRAY_RGB);
+  doc.setFontSize(7.5);
+  doc.text('BrainSpark Platform  |  Confidential — Internal Use Only', PW / 2, PH - 14, { align: 'center' });
+  addPageNumber();
+
+  // ── Pages 2+: One page per idea ───────────────────────────────────────────
+
+  result.ideas.forEach((idea, idx) => {
+    newPage();
+
+    // Header bar
+    setFill(doc, NAVY_RGB);
+    doc.rect(0, 0, PW, 22, 'F');
+
+    // Idea counter badge
+    setColor(doc, [148, 163, 184]);
+    doc.setFontSize(8);
+    doc.setFont('helvetica', 'normal');
+    doc.text(`Idea ${idx + 1} of ${result.ideas.length}`, ML, 8);
+
+    // Difficulty pill
+    const dRgb = diffRgb(idea.implementationDifficulty);
+    setFill(doc, dRgb);
+    doc.roundedRect(PW - MR - 28, 4, 28, 8, 2, 2, 'F');
+    setColor(doc, WHITE_RGB);
+    doc.setFontSize(8);
+    doc.setFont('helvetica', 'bold');
+    doc.text(idea.implementationDifficulty, PW - MR - 14, 9.5, { align: 'center' });
+
+    // Title
+    setColor(doc, WHITE_RGB);
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'bold');
+    const titleLines = wrapText(doc, idea.title, CW - 35);
+    doc.text(titleLines.slice(0, 2), ML, 14);
+
+    let y = 28;
+
+    // Metrics strip
+    const mLabels = ['System Level', 'Cost Saving', 'Potential', 'Time to Implement'];
+    const mVals = [
+      idea.systemLevel,
+      idea.costSavingTypes.slice(0, 2).join(', '),
+      idea.costSavingPotential.percentage || idea.costSavingPotential.qualitative.split('\n')[0],
+      idea.timeToImplement,
+    ];
+    const mW = CW / 4;
+    mLabels.forEach((lbl, i) => {
+      const mx = ML + i * mW;
+      setFill(doc, LIGHT_RGB);
+      doc.rect(mx, y, mW - 1, 14, 'F');
+      setColor(doc, GRAY_RGB);
+      doc.setFontSize(7);
+      doc.setFont('helvetica', 'normal');
+      doc.text(lbl, mx + 2, y + 5);
+      setColor(doc, NAVY_RGB);
+      doc.setFontSize(8.5);
+      doc.setFont('helvetica', 'bold');
+      const val = mVals[i].length > 22 ? mVals[i].slice(0, 20) + '…' : mVals[i];
+      doc.text(val, mx + 2, y + 11);
+    });
+    y += 18;
+
+    // Technical description
+    setColor(doc, NAVY_RGB);
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Technical Description', ML, y);
+    y += 4;
+    setFill(doc, LIGHT_RGB);
+    const descLines = wrapText(doc, idea.technicalDescription, CW);
+    const descH = Math.min(descLines.length * 4.5 + 4, 50);
+    doc.rect(ML, y, CW, descH, 'F');
+    setColor(doc, [55, 65, 81]);
+    doc.setFontSize(8);
+    doc.setFont('helvetica', 'normal');
+    doc.text(descLines.slice(0, 10), ML + 2, y + 5);
+    y += descH + 4;
+
+    // Manufacturing impact
+    setColor(doc, NAVY_RGB);
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Manufacturing & Assembly Impact', ML, y);
+    y += 4;
+    setFill(doc, [240, 253, 244]);
+    const mfgLines = wrapText(doc, idea.manufacturingImpact, CW);
+    const mfgH = Math.min(mfgLines.length * 4.5 + 4, 32);
+    doc.rect(ML, y, CW, mfgH, 'F');
+    setColor(doc, [55, 65, 81]);
+    doc.setFontSize(8);
+    doc.setFont('helvetica', 'normal');
+    doc.text(mfgLines.slice(0, 6), ML + 2, y + 5);
+    y += mfgH + 4;
+
+    // DFMA principles
+    if (idea.dfmaPrinciples.length > 0) {
+      setColor(doc, NAVY_RGB);
+      doc.setFontSize(9);
+      doc.setFont('helvetica', 'bold');
+      doc.text('DFMA Principles', ML, y);
+      y += 5;
+      setColor(doc, [79, 70, 229]);
+      doc.setFontSize(8);
+      doc.setFont('helvetica', 'normal');
+      doc.text(idea.dfmaPrinciples.slice(0, 4).join('  ·  '), ML, y);
+      y += 6;
+    }
+
+    // Risk notes
+    setColor(doc, [180, 83, 9]);
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Risk & Impact Notes', ML, y);
+    y += 4;
+    setFill(doc, [255, 251, 235]);
+    const riskLines = wrapText(doc, idea.riskNotes, CW);
+    const riskH = Math.min(riskLines.length * 4.5 + 4, 28);
+    doc.rect(ML, y, CW, riskH, 'F');
+    setColor(doc, [120, 53, 15]);
+    doc.setFontSize(8);
+    doc.setFont('helvetica', 'normal');
+    doc.text(riskLines.slice(0, 5), ML + 2, y + 5);
+    y += riskH + 4;
+
+    // Benchmark reference
+    if (idea.benchmarkReference) {
+      setColor(doc, NAVY_RGB);
+      doc.setFontSize(9);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Benchmark Reference', ML, y);
+      y += 5;
+      setColor(doc, [34, 197, 94]);
+      doc.setFontSize(8);
+      doc.setFont('helvetica', 'normal');
+      const bLines = wrapText(doc, idea.benchmarkReference, CW);
+      doc.text(bLines.slice(0, 3), ML, y);
+    }
+  });
+
+  // ── Final page: Implementation Roadmap ────────────────────────────────────
+
+  newPage();
+
+  setFill(doc, NAVY_RGB);
+  doc.rect(0, 0, PW, 18, 'F');
+  setColor(doc, WHITE_RGB);
+  doc.setFontSize(14);
+  doc.setFont('helvetica', 'bold');
+  doc.text('Implementation Roadmap', ML, 12);
+
+  const sorted = [...result.ideas].sort((a, b) => {
+    const order: Record<string, number> = { Low: 0, Medium: 1, High: 2 };
+    return order[a.implementationDifficulty] - order[b.implementationDifficulty];
+  });
+
+  const phases = [
+    { label: 'Quick Wins (0–6 months)',    items: sorted.filter(i => i.implementationDifficulty === 'Low'),    rgb: [34, 197, 94] as const },
+    { label: 'Medium Term (6–18 months)',  items: sorted.filter(i => i.implementationDifficulty === 'Medium'),  rgb: [245, 158, 11] as const },
+    { label: 'Strategic (18–36 months)',   items: sorted.filter(i => i.implementationDifficulty === 'High'),    rgb: [239, 68, 68] as const },
+  ];
+
+  let ry = 24;
+  phases.forEach(phase => {
+    // Phase header
+    setFill(doc, phase.rgb);
+    doc.roundedRect(ML, ry, CW, 8, 2, 2, 'F');
+    setColor(doc, WHITE_RGB);
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'bold');
+    doc.text(phase.label, ML + 3, ry + 5.5);
+    ry += 10;
+
+    if (phase.items.length === 0) {
+      setColor(doc, GRAY_RGB);
+      doc.setFontSize(8);
+      doc.setFont('helvetica', 'italic');
+      doc.text('None in this phase', ML + 3, ry + 4);
+      ry += 10;
+      return;
+    }
+
+    phase.items.forEach(item => {
+      if (ry > PH - 25) return;
+      setFill(doc, [30, 41, 59]);
+      doc.roundedRect(ML, ry, CW, 13, 1.5, 1.5, 'F');
+      setFill(doc, phase.rgb);
+      doc.rect(ML, ry, 2.5, 13, 'F');
+      setColor(doc, WHITE_RGB);
+      doc.setFontSize(8.5);
+      doc.setFont('helvetica', 'bold');
+      const title = item.title.length > 65 ? item.title.slice(0, 62) + '…' : item.title;
+      doc.text(title, ML + 5, ry + 5.5);
+      setColor(doc, phase.rgb);
+      doc.setFontSize(7.5);
+      doc.setFont('helvetica', 'normal');
+      const saving = item.costSavingPotential.percentage || item.costSavingPotential.qualitative.split(' ')[0];
+      doc.text(`${saving}  |  ${item.timeToImplement}`, ML + 5, ry + 10.5);
+      ry += 15;
+    });
+    ry += 4;
+  });
+
+  setColor(doc, GRAY_RGB);
+  doc.setFontSize(8);
+  doc.text('BrainSpark Platform  |  Confidential — Internal Use Only', PW / 2, PH - 14, { align: 'center' });
+
+  const filename = `BrainSpark_${systemName}_${subName}_${today}.pdf`;
+  doc.save(filename);
 }
