@@ -124,8 +124,7 @@ router.post('/analyze', upload.single('cadFile'), async (req, res): Promise<void
       messages: [{ role: 'user', content: stage1Prompt(geo) }],
     });
     const s1Raw = s1Msg.content[0]?.type === 'text' ? s1Msg.content[0].text.trim() : '';
-    const s1Json = s1Raw.replace(/^```[a-z]*\n?/m, '').replace(/\n?```$/m, '').trim();
-    const parsed = JSON.parse(s1Json) as typeof stage1Selection;
+    const parsed = JSON.parse(extractJson(s1Raw)) as typeof stage1Selection;
     if (parsed && typeof parsed.primary === 'string') {
       stage1Selection = parsed;
       selectedCommodity = parsed.primary;
@@ -140,26 +139,35 @@ router.post('/analyze', upload.single('cadFile'), async (req, res): Promise<void
   const userPrompt = buildPrompt(geo, preprocessed, originalname, selectedCommodity, stage1Selection);
 
   let analysis: unknown;
+  let lastRaw = '';
+
   for (let attempt = 1; attempt <= 2; attempt++) {
     const message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
-      max_tokens: 3072,
+      max_tokens: 8192,
       system: systemPrompt,
-      messages: [{ role: 'user', content: userPrompt }],
+      messages: attempt === 1
+        ? [{ role: 'user', content: userPrompt }]
+        : [
+            { role: 'user', content: userPrompt },
+            { role: 'assistant', content: lastRaw },
+            { role: 'user', content: 'The JSON above is malformed or incomplete. Return ONLY the corrected, complete JSON object starting with { and ending with }. No markdown, no prose.' },
+          ],
     });
 
     const raw = message.content[0]?.type === 'text' ? message.content[0].text : '';
-    const jsonStr = raw.replace(/^```[a-z]*\n?/m, '').replace(/\n?```$/m, '').trim();
+    lastRaw = raw;
+    const jsonStr = extractJson(raw);
 
     try {
       analysis = JSON.parse(jsonStr);
       break;
     } catch {
       if (attempt === 2) {
-        res.status(500).json({ error: `AI returned unparseable JSON after 2 attempts. Raw: ${raw.slice(0, 300)}` });
+        res.status(500).json({ error: `AI returned unparseable JSON after 2 attempts. Raw: ${raw.slice(0, 400)}` });
         return;
       }
-      console.warn('[CAD] JSON parse failed on attempt 1, retrying…');
+      console.warn('[CAD] JSON parse failed on attempt 1, sending repair request…');
     }
   }
 
@@ -176,6 +184,24 @@ router.post('/analyze', upload.single('cadFile'), async (req, res): Promise<void
     },
   });
 });
+
+// ─── JSON extraction helper ──────────────────────────────────────────────────
+// Handles: plain JSON, ```json\n{...}\n```, ```{...}```, "here is json: {...}"
+function extractJson(text: string): string {
+  let s = text.trim();
+  // Strip opening code fence (```json, ```JSON, ``` on same line or followed by newline)
+  s = s.replace(/^```(?:json)?\s*/i, '');
+  // Strip closing code fence
+  s = s.replace(/\s*```\s*$/i, '');
+  s = s.trim();
+  // Extract from first { to last } to discard any surrounding prose
+  const first = s.indexOf('{');
+  const last = s.lastIndexOf('}');
+  if (first !== -1 && last !== -1 && last > first) {
+    s = s.slice(first, last + 1);
+  }
+  return s;
+}
 
 // ─── Prompt builder ─────────────────────────────────────────────────────────
 
