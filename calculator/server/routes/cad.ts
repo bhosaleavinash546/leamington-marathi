@@ -111,32 +111,50 @@ router.post('/analyze', upload.single('cadFile'), async (req, res): Promise<void
 
   const anthropic = new Anthropic({ apiKey });
 
-  // --- Phase 3: Stage 1 — Fast commodity pre-selection (Haiku) ---
+  // --- Phase 3: Stage 1 — Fast commodity pre-selection (Haiku) OR user override ---
   let stage1Selection: { primary: string; conf: number; alt: Array<{ type: string; conf: number }> } | null = null;
   let selectedCommodity = 'machining'; // fallback
 
-  try {
-    console.log('[CAD] Stage 1: Haiku commodity selection…');
-    const s1Msg = await anthropic.messages.create({
-      model: 'claude-haiku-4-5-20251001',
-      max_tokens: 256,
-      system: 'You are a manufacturing process selector. Given part geometry metrics, select the most likely manufacturing commodity. Return ONLY a JSON object, no prose, no markdown.',
-      messages: [{ role: 'user', content: stage1Prompt(geo) }],
-    });
-    const s1Raw = s1Msg.content[0]?.type === 'text' ? s1Msg.content[0].text.trim() : '';
-    const parsed = JSON.parse(extractJson(s1Raw)) as typeof stage1Selection;
-    if (parsed && typeof parsed.primary === 'string') {
-      stage1Selection = parsed;
-      selectedCommodity = parsed.primary;
-      console.log(`[CAD] Stage 1 result: ${selectedCommodity} (conf=${parsed.conf})`);
+  const forcedCommodity = typeof req.body?.commodity === 'string' ? req.body.commodity.trim() : '';
+  const forcedMaterial  = typeof req.body?.material  === 'string' ? req.body.material.trim()  : '';
+  const annualVolume    = parseFloat(req.body?.annualVolume) || 100000;
+  const ovrWeightKg     = req.body?.weightKg    ? parseFloat(req.body.weightKg)    : null;
+  const ovrVolumeCm3    = req.body?.volumeCm3   ? parseFloat(req.body.volumeCm3)   : null;
+  const ovrLengthMm     = req.body?.lengthMm    ? parseFloat(req.body.lengthMm)    : null;
+  const ovrWidthMm      = req.body?.widthMm     ? parseFloat(req.body.widthMm)     : null;
+  const ovrHeightMm     = req.body?.heightMm    ? parseFloat(req.body.heightMm)    : null;
+  const ovrDensityGcm3  = req.body?.densityGcm3 ? parseFloat(req.body.densityGcm3) : null;
+
+  const userOverrides = { forcedCommodity, forcedMaterial, annualVolume, ovrWeightKg, ovrVolumeCm3, ovrLengthMm, ovrWidthMm, ovrHeightMm, ovrDensityGcm3 };
+
+  if (forcedCommodity) {
+    selectedCommodity = forcedCommodity;
+    stage1Selection = { primary: forcedCommodity, conf: 1.0, alt: [] };
+    console.log(`[CAD] User forced commodity: ${selectedCommodity}`);
+  } else {
+    try {
+      console.log('[CAD] Stage 1: Haiku commodity selection…');
+      const s1Msg = await anthropic.messages.create({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 256,
+        system: 'You are a manufacturing process selector. Given part geometry metrics, select the most likely manufacturing commodity. Return ONLY a JSON object, no prose, no markdown.',
+        messages: [{ role: 'user', content: stage1Prompt(geo) }],
+      });
+      const s1Raw = s1Msg.content[0]?.type === 'text' ? s1Msg.content[0].text.trim() : '';
+      const parsed = JSON.parse(extractJson(s1Raw)) as typeof stage1Selection;
+      if (parsed && typeof parsed.primary === 'string') {
+        stage1Selection = parsed;
+        selectedCommodity = parsed.primary;
+        console.log(`[CAD] Stage 1 result: ${selectedCommodity} (conf=${parsed.conf})`);
+      }
+    } catch (err) {
+      console.warn('[CAD] Stage 1 Haiku failed, using default commodity:', (err as Error).message);
     }
-  } catch (err) {
-    console.warn('[CAD] Stage 1 Haiku failed, using default commodity:', (err as Error).message);
   }
 
   // --- Phase 4: Stage 2 — Specialist deep analysis (Sonnet) ---
   const systemPrompt = SPECIALIST_SYSTEM_PROMPTS[selectedCommodity] ?? DEFAULT_SYSTEM_PROMPT;
-  const userPrompt = buildPrompt(geo, preprocessed, originalname, selectedCommodity, stage1Selection);
+  const userPrompt = buildPrompt(geo, preprocessed, originalname, selectedCommodity, stage1Selection, userOverrides);
 
   let analysis: unknown;
   let lastRaw = '';
@@ -175,6 +193,7 @@ router.post('/analyze', upload.single('cadFile'), async (req, res): Promise<void
     success: true,
     analysis,
     geometrySource,
+    annualVolume,
     occtGeometry: geo.status === 'success' ? geo : null,
     preprocessed: {
       format: preprocessed.format,
@@ -205,12 +224,25 @@ function extractJson(text: string): string {
 
 // ─── Prompt builder ─────────────────────────────────────────────────────────
 
+interface UserOverrides {
+  forcedCommodity: string;
+  forcedMaterial: string;
+  annualVolume: number;
+  ovrWeightKg: number | null;
+  ovrVolumeCm3: number | null;
+  ovrLengthMm: number | null;
+  ovrWidthMm: number | null;
+  ovrHeightMm: number | null;
+  ovrDensityGcm3: number | null;
+}
+
 function buildPrompt(
   geo: OCCTGeometry,
   pre: ReturnType<typeof preprocessCADFile>,
   filename: string,
   selectedCommodity: string,
   stage1: { primary: string; conf: number; alt: Array<{ type: string; conf: number }> } | null,
+  overrides: UserOverrides = { forcedCommodity: '', forcedMaterial: '', annualVolume: 100000, ovrWeightKg: null, ovrVolumeCm3: null, ovrLengthMm: null, ovrWidthMm: null, ovrHeightMm: null, ovrDensityGcm3: null },
 ): string {
   const validMaterials = 'mat-al6061, mat-al5052, mat-dc01, mat-hss, mat-stainless-316, mat-brass-crz, mat-pp, mat-pa6, mat-pc, mat-lm25, mat-gjl350, mat-az91d, mat-ss304c, mat-bronze-c905';
   const validCommodities = 'machining, sheet_metal, sheet_metal_fab, injection_moulding, casting, forging, cast_and_machine, blow_moulding, thermoforming, rotational_moulding, rubber, composites, wiring_harness, extrusion, pcb_fab, pcba, biw_assembly, painting, assembly';
@@ -382,8 +414,24 @@ ${pre.summary}`;
 - manufacturabilityScore: 0–100
 - Populate the appropriate costInputSuggestions sub-object for the recommended process`;
 
+  // Build user overrides block
+  const overrideLines: string[] = [];
+  if (overrides.forcedCommodity) overrideLines.push(`Manufacturing process: ${overrides.forcedCommodity} [USER-FORCED — use this as recommendedCommodity, do NOT override]`);
+  if (overrides.forcedMaterial)  overrideLines.push(`Material: ${overrides.forcedMaterial} [USER-FORCED — use this as materialId exactly]`);
+  if (overrides.ovrWeightKg !== null)    overrideLines.push(`Part weight: ${overrides.ovrWeightKg} kg [USER-PROVIDED — use this as netWeightKg]`);
+  if (overrides.ovrVolumeCm3 !== null)   overrideLines.push(`Volume: ${overrides.ovrVolumeCm3} cm³ [USER-PROVIDED — use this as estimatedVolumeCm3]`);
+  if (overrides.ovrLengthMm !== null)    overrideLines.push(`Bounding box L: ${overrides.ovrLengthMm} mm [USER-PROVIDED]`);
+  if (overrides.ovrWidthMm !== null)     overrideLines.push(`Bounding box W: ${overrides.ovrWidthMm} mm [USER-PROVIDED]`);
+  if (overrides.ovrHeightMm !== null)    overrideLines.push(`Bounding box H: ${overrides.ovrHeightMm} mm [USER-PROVIDED]`);
+  if (overrides.ovrDensityGcm3 !== null) overrideLines.push(`Material density: ${overrides.ovrDensityGcm3} g/cm³ [USER-PROVIDED — use for weight calculations]`);
+  overrideLines.push(`Annual production volume: ${overrides.annualVolume.toLocaleString()} units/year [USE THIS for tooling amortisation and cycle-time-vs-volume optimisation]`);
+
+  const overridesSection = overrideLines.length > 0
+    ? `\n=== USER-PROVIDED INPUTS (treat as GROUND TRUTH — do NOT deviate) ===\n${overrideLines.join('\n')}\n`
+    : `\n=== PRODUCTION CONTEXT ===\nAnnual production volume: ${overrides.annualVolume.toLocaleString()} units/year [use for tooling amortisation]\n`;
+
   return `${geometrySection}
-${stage1Context}
+${stage1Context}${overridesSection}
 Valid materialId values: ${validMaterials}
 Valid commodityType values: ${validCommodities}
 Valid machineId values: ${validMachines}

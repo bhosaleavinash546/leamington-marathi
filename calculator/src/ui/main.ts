@@ -3428,12 +3428,148 @@ function addCAMMachOp(d?: Partial<MachiningOperation>): void {
 
 // ─── Form: AI CAD Analysis ────────────────────────────────────────────────────
 
+const CAD_COMMODITY_OPTIONS: Array<{ value: string; label: string }> = [
+  { value: '', label: '— Auto-detect (AI selects) —' },
+  { value: 'machining', label: 'Machining (CNC)' },
+  { value: 'casting', label: 'Casting (HPDC / Sand / Gravity)' },
+  { value: 'cast_and_machine', label: 'Cast + Machine' },
+  { value: 'forging', label: 'Forging (Closed-die)' },
+  { value: 'sheet_metal', label: 'Sheet Metal (Stamping)' },
+  { value: 'sheet_metal_fab', label: 'Sheet Metal Fabrication (Laser/Bend/Weld)' },
+  { value: 'injection_moulding', label: 'Injection Moulding' },
+  { value: 'blow_moulding', label: 'Blow Moulding' },
+  { value: 'thermoforming', label: 'Thermoforming' },
+  { value: 'rotational_moulding', label: 'Rotational Moulding' },
+  { value: 'extrusion', label: 'Extrusion' },
+  { value: 'composites', label: 'Composites (CFRP / GFRP)' },
+  { value: 'rubber', label: 'Rubber Moulding' },
+  { value: 'wiring_harness', label: 'Wiring Harness' },
+  { value: 'assembly', label: 'Assembly' },
+  { value: 'painting', label: 'Painting / Coating' },
+  { value: 'pcb_fab', label: 'PCB Fabrication' },
+  { value: 'pcba', label: 'PCBA (Electronics Assembly)' },
+  { value: 'biw_assembly', label: 'BIW Assembly' },
+];
+
+const CAD_MATERIALS_BY_COMMODITY: Record<string, Array<{ id: string; label: string }>> = {
+  '': [],
+  machining: [
+    { id: 'mat-al6061', label: 'Aluminium 6061-T6' },
+    { id: 'mat-al5052', label: 'Aluminium 5052-H32' },
+    { id: 'mat-steel1045', label: 'Carbon Steel 1045' },
+    { id: 'mat-steel4140', label: 'Alloy Steel 4140 / 4340' },
+    { id: 'mat-ss316l', label: 'Stainless Steel 316L' },
+    { id: 'mat-ti6al4v', label: 'Titanium Ti-6Al-4V' },
+  ],
+  casting: [
+    { id: 'mat-al6061', label: 'LM25 / A356 Aluminium (Gravity/Sand)' },
+    { id: 'mat-al5052', label: 'ADC12 / A380 Aluminium (HPDC)' },
+    { id: 'mat-steel1045', label: 'Carbon Steel (Sand Casting)' },
+    { id: 'mat-ss316l', label: 'Stainless Steel 316 (Investment)' },
+  ],
+  cast_and_machine: [
+    { id: 'mat-al6061', label: 'Aluminium 6061 (Cast then Machine)' },
+    { id: 'mat-al5052', label: 'ADC12 Aluminium HPDC + Machine' },
+    { id: 'mat-steel1045', label: 'Carbon Steel (Sand Cast + Machine)' },
+    { id: 'mat-ss316l', label: 'Stainless Steel 316 (Cast + Machine)' },
+  ],
+  forging: [
+    { id: 'mat-steel1045', label: 'Carbon Steel 1045' },
+    { id: 'mat-steel4140', label: 'Alloy Steel 4140 (High Strength)' },
+    { id: 'mat-al6061', label: 'Aluminium 6061 Forging' },
+    { id: 'mat-ti6al4v', label: 'Titanium Ti-6Al-4V' },
+    { id: 'mat-ss316l', label: 'Stainless Steel 316' },
+  ],
+  sheet_metal: [
+    { id: 'mat-dc01', label: 'Mild Steel DC01' },
+    { id: 'mat-dp600', label: 'DP600 (Advanced High Strength)' },
+    { id: 'mat-hsla340', label: 'HSLA 340' },
+    { id: 'mat-22mnb5', label: '22MnB5 Boron Steel (Hot Stamp)' },
+    { id: 'mat-dc01-gi', label: 'DC01 GI (Galvanised)' },
+    { id: 'mat-aa5182', label: 'AA5182 Aluminium' },
+    { id: 'mat-aa5754-sheet', label: 'AA5754-H22 Aluminium' },
+    { id: 'mat-ss304-sheet', label: 'Stainless Steel 304L' },
+    { id: 'mat-ss316-sheet', label: 'Stainless Steel 316L' },
+  ],
+  sheet_metal_fab: [
+    { id: 'mat-dc01', label: 'Mild Steel DC01' },
+    { id: 'mat-hrpo', label: 'HRPO (Hot Rolled P&O)' },
+    { id: 'mat-aa5052', label: 'Aluminium AA5052-H32' },
+    { id: 'mat-aa6082-sheet', label: 'Aluminium AA6082-T6' },
+    { id: 'mat-ss304-sheet', label: 'Stainless Steel 304L' },
+    { id: 'mat-ss316-sheet', label: 'Stainless Steel 316L' },
+  ],
+  injection_moulding: [
+    { id: 'mat-pp', label: 'PP Copolymer' },
+    { id: 'mat-pp-homo', label: 'PP Homopolymer' },
+    { id: 'mat-abs', label: 'ABS' },
+    { id: 'mat-pc', label: 'PC (Polycarbonate)' },
+    { id: 'mat-pc-abs', label: 'PC/ABS Blend' },
+    { id: 'mat-pa6', label: 'PA6 Nylon' },
+    { id: 'mat-pa6-gf30', label: 'PA6 GF30 (Glass-filled)' },
+    { id: 'mat-pa66gf30', label: 'PA66 GF30' },
+    { id: 'mat-pom', label: 'POM / Acetal (Delrin)' },
+    { id: 'mat-hdpe', label: 'HDPE' },
+    { id: 'mat-pbt-gf30', label: 'PBT GF30' },
+    { id: 'mat-pet-gf30', label: 'PET GF30' },
+    { id: 'mat-tpu-shore85', label: 'TPU Shore 85A' },
+  ],
+  blow_moulding: [
+    { id: 'mat-hdpe', label: 'HDPE (EBM bottles/tanks)' },
+    { id: 'mat-pp', label: 'PP (EBM ducts/containers)' },
+    { id: 'mat-pet-bg', label: 'PET Bottle Grade (SBM)' },
+    { id: 'mat-ldpe', label: 'LDPE (Film/bags)' },
+    { id: 'mat-pc', label: 'PC (IBM precision)' },
+  ],
+  thermoforming: [
+    { id: 'mat-hips', label: 'HIPS Sheet' },
+    { id: 'mat-gpps', label: 'GPPS (Crystal PS)' },
+    { id: 'mat-abs', label: 'ABS Sheet' },
+    { id: 'mat-pet-bg', label: 'PET Sheet' },
+    { id: 'mat-hdpe', label: 'HDPE Sheet' },
+    { id: 'mat-pc', label: 'PC Sheet' },
+    { id: 'mat-pp', label: 'PP Sheet' },
+  ],
+  rotational_moulding: [
+    { id: 'mat-lldpe', label: 'LLDPE C6 Powder (most common)' },
+    { id: 'mat-hdpe', label: 'HDPE Powder' },
+    { id: 'mat-pp', label: 'PP Powder' },
+  ],
+  extrusion: [
+    { id: 'mat-al6061', label: 'Aluminium 6061 Extrusion' },
+    { id: 'mat-upvc', label: 'Rigid PVC (uPVC) Profile' },
+    { id: 'mat-fpvc', label: 'Flexible PVC (fPVC) Profile' },
+    { id: 'mat-pp', label: 'PP Profile' },
+    { id: 'mat-hdpe', label: 'HDPE Pipe/Profile' },
+  ],
+  composites: [
+    { id: 'mat-al6061', label: 'CFRP (equiv. Al ref for weight)' },
+    { id: 'mat-al5052', label: 'GFRP (equiv. Al ref for weight)' },
+  ],
+  rubber: [
+    { id: 'mat-tpu-shore85', label: 'TPU Shore 85A' },
+    { id: 'mat-pp', label: 'EPDM (natural rubber equiv.)' },
+    { id: 'mat-hdpe', label: 'Silicone (medical/food grade)' },
+  ],
+};
+
+function _buildCadMaterialOptions(commodity: string): string {
+  const mats = CAD_MATERIALS_BY_COMMODITY[commodity] ?? [];
+  if (!mats.length) return '<option value="">— AI selects material —</option>';
+  return '<option value="">— AI selects material —</option>' +
+    mats.map(m => `<option value="${m.id}">${escHtml(m.label)}</option>`).join('');
+}
+
 function renderCADAnalysisForm(): string {
+  const commOpts = CAD_COMMODITY_OPTIONS
+    .map(o => `<option value="${o.value}">${escHtml(o.label)}</option>`).join('');
   return `
-    <div class="section-title">AI CAD Analysis</div>
+    <div class="section-title">CAD-to-Cost Analysis</div>
+
+    <!-- File upload -->
     <div id="cad-drop-zone" class="cad-upload-zone">
       <div class="cad-upload-icon">📐</div>
-      <div style="font-size:0.85rem;color:#555;margin-bottom:8px">Drop your CAD file here, or click to browse</div>
+      <div style="font-size:0.85rem;color:var(--text-secondary);margin-bottom:8px">Drop your CAD file here, or click to browse</div>
       <label class="btn btn-primary btn-sm" for="cad-file-input" style="cursor:pointer">Browse Files</label>
       <input type="file" id="cad-file-input" accept=".stp,.step,.igs,.iges" style="display:none"/>
       <div class="cad-file-formats">STEP (.stp, .step) &nbsp;·&nbsp; IGES (.igs, .iges)</div>
@@ -3442,22 +3578,83 @@ function renderCADAnalysisForm(): string {
       <span class="file-icon">📄</span>
       <div class="file-details">
         <div id="cad-fname" style="font-weight:600"></div>
-        <div id="cad-fsize" style="color:#888;font-size:0.72rem"></div>
+        <div id="cad-fsize" style="color:var(--text-muted);font-size:0.72rem"></div>
       </div>
       <button class="btn btn-secondary btn-sm" id="cad-clear-btn">✕ Clear</button>
     </div>
-    <div class="field-group" style="margin-top:4px">
-      <label style="font-size:0.75rem">Claude API Key <span style="color:#aaa;font-weight:400">(or set ANTHROPIC_API_KEY on server)</span></label>
-      <input type="password" id="cad-api-key" placeholder="sk-ant-api03-… (optional if server has key)"
-             value="${sessionStorage.getItem('cad-api-key') ?? ''}" style="font-family:monospace;font-size:0.8rem"/>
+
+    <!-- Process + Material overrides -->
+    <div class="field-row" style="margin-top:10px">
+      <div class="field-group">
+        <label style="font-size:0.75rem">Manufacturing Process
+          <span style="font-size:0.68rem;background:rgba(99,130,230,0.15);color:var(--accent);border-radius:3px;padding:1px 5px;margin-left:4px">override</span>
+        </label>
+        <select id="cad-commodity-override" style="font-size:0.8rem">${commOpts}</select>
+      </div>
+      <div class="field-group">
+        <label style="font-size:0.75rem">Material
+          <span style="font-size:0.68rem;background:rgba(99,130,230,0.15);color:var(--accent);border-radius:3px;padding:1px 5px;margin-left:4px">override</span>
+        </label>
+        <select id="cad-material-override" style="font-size:0.8rem">
+          <option value="">— Auto-detect (AI selects) —</option>
+        </select>
+      </div>
     </div>
-    <div class="cad-btn-row">
-      <button class="btn btn-secondary" id="cad-analyze-btn" disabled>
-        Analyze Only
-      </button>
-      <button class="btn btn-primary" id="cad-analyze-calc-btn" disabled>
-        Analyze &amp; Calculate ⚡
-      </button>
+
+    <!-- Annual Volume -->
+    <div class="field-row" style="margin-top:2px">
+      <div class="field-group">
+        <label style="font-size:0.75rem">Annual Volume (pcs/year)</label>
+        <input type="number" id="cad-annual-volume" value="100000" min="1" step="1000"
+               style="font-size:0.8rem" title="Annual production volume — used for tooling amortisation and volume-cost optimisation"/>
+      </div>
+      <div class="field-group">
+        <label style="font-size:0.75rem">Claude API Key <span style="color:var(--text-muted);font-weight:400">(or set on server)</span></label>
+        <input type="password" id="cad-api-key" placeholder="sk-ant-api03-…"
+               value="${sessionStorage.getItem('cad-api-key') ?? ''}" style="font-family:monospace;font-size:0.78rem"/>
+      </div>
+    </div>
+
+    <!-- Optional geometry overrides (collapsible) -->
+    <details id="cad-geo-overrides" style="margin-top:6px;border:1px solid var(--border);border-radius:6px;padding:6px 10px">
+      <summary style="font-size:0.75rem;font-weight:600;cursor:pointer;color:var(--text-secondary);user-select:none">
+        Optional geometry overrides <span style="font-weight:400;color:var(--text-muted)">(fill only if you know better than OCCT)</span>
+      </summary>
+      <div style="margin-top:8px">
+        <div class="field-row">
+          <div class="field-group">
+            <label style="font-size:0.72rem">Part Weight (kg)</label>
+            <input type="number" id="cad-ovr-weight" step="0.001" min="0" placeholder="from OCCT" style="font-size:0.8rem"/>
+          </div>
+          <div class="field-group">
+            <label style="font-size:0.72rem">Volume (cm³)</label>
+            <input type="number" id="cad-ovr-volume" step="0.1" min="0" placeholder="from OCCT" style="font-size:0.8rem"/>
+          </div>
+          <div class="field-group">
+            <label style="font-size:0.72rem">Density (g/cm³)</label>
+            <input type="number" id="cad-ovr-density" step="0.01" min="0.1" placeholder="e.g. 2.70 Al" style="font-size:0.8rem"/>
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field-group">
+            <label style="font-size:0.72rem">Length (mm)</label>
+            <input type="number" id="cad-ovr-length" step="0.1" min="0" placeholder="from OCCT" style="font-size:0.8rem"/>
+          </div>
+          <div class="field-group">
+            <label style="font-size:0.72rem">Width (mm)</label>
+            <input type="number" id="cad-ovr-width" step="0.1" min="0" placeholder="from OCCT" style="font-size:0.8rem"/>
+          </div>
+          <div class="field-group">
+            <label style="font-size:0.72rem">Height (mm)</label>
+            <input type="number" id="cad-ovr-height" step="0.1" min="0" placeholder="from OCCT" style="font-size:0.8rem"/>
+          </div>
+        </div>
+      </div>
+    </details>
+
+    <div class="cad-btn-row" style="margin-top:10px">
+      <button class="btn btn-secondary" id="cad-analyze-btn" disabled>Analyze Only</button>
+      <button class="btn btn-primary" id="cad-analyze-calc-btn" disabled>Analyze &amp; Calculate ⚡</button>
     </div>
     <div id="cad-progress-wrap" class="cad-progress-wrap" style="display:none">
       <div class="cad-progress-label" id="cad-progress-label">Uploading file…</div>
@@ -3501,6 +3698,15 @@ function wireCADEvents(): void {
     const cadRes = document.getElementById('cad-results');
     if (cadRes) cadRes.innerHTML = '';
   });
+
+  // Commodity override → rebuild material dropdown
+  const commSel = document.getElementById('cad-commodity-override') as HTMLSelectElement | null;
+  const matSel  = document.getElementById('cad-material-override')  as HTMLSelectElement | null;
+  if (commSel && matSel) {
+    commSel.addEventListener('change', () => {
+      matSel.innerHTML = _buildCadMaterialOptions(commSel.value);
+    });
+  }
 
   // Analyze button
   analyzeBtn.addEventListener('click', () => { void analyzeCAD(false); });
@@ -3565,6 +3771,27 @@ async function analyzeCAD(autoCalculate = false): Promise<void> {
     const formData = new FormData();
     formData.append('cadFile', cadFile);
 
+    // User overrides
+    const commOvr = (document.getElementById('cad-commodity-override') as HTMLSelectElement | null)?.value ?? '';
+    const matOvr  = (document.getElementById('cad-material-override')  as HTMLSelectElement | null)?.value ?? '';
+    const annVol  = (document.getElementById('cad-annual-volume') as HTMLInputElement | null)?.value ?? '100000';
+    const ovrWt   = (document.getElementById('cad-ovr-weight')  as HTMLInputElement | null)?.value ?? '';
+    const ovrVol  = (document.getElementById('cad-ovr-volume')  as HTMLInputElement | null)?.value ?? '';
+    const ovrLen  = (document.getElementById('cad-ovr-length')  as HTMLInputElement | null)?.value ?? '';
+    const ovrW    = (document.getElementById('cad-ovr-width')   as HTMLInputElement | null)?.value ?? '';
+    const ovrH    = (document.getElementById('cad-ovr-height')  as HTMLInputElement | null)?.value ?? '';
+    const ovrDens = (document.getElementById('cad-ovr-density') as HTMLInputElement | null)?.value ?? '';
+
+    if (commOvr) formData.append('commodity', commOvr);
+    if (matOvr)  formData.append('material', matOvr);
+    formData.append('annualVolume', annVol || '100000');
+    if (ovrWt)   formData.append('weightKg', ovrWt);
+    if (ovrVol)  formData.append('volumeCm3', ovrVol);
+    if (ovrLen)  formData.append('lengthMm', ovrLen);
+    if (ovrW)    formData.append('widthMm', ovrW);
+    if (ovrH)    formData.append('heightMm', ovrH);
+    if (ovrDens) formData.append('densityGcm3', ovrDens);
+
     const headers: HeadersInit = {};
     if (apiKey) headers['x-api-key'] = apiKey;
 
@@ -3579,6 +3806,7 @@ async function analyzeCAD(autoCalculate = false): Promise<void> {
       analysis?: CADAnalysisResult;
       occtGeometry?: OCCTGeometry | null;
       geometrySource?: 'occt' | 'text_parsing';
+      annualVolume?: number;
       error?: string;
     };
 
@@ -3593,7 +3821,8 @@ async function analyzeCAD(autoCalculate = false): Promise<void> {
     if (partNameEl && cadAnalysisResult.partName) partNameEl.value = cadAnalysisResult.partName;
 
     setTimeout(() => { progress.style.display = 'none'; }, 600);
-    renderCADResults(cadAnalysisResult, autoCalculate);
+    const resolvedAnnualVol = data.annualVolume ?? (parseFloat(annVol) || 100000);
+    renderCADResults(cadAnalysisResult, autoCalculate, resolvedAnnualVol);
   } catch (err) {
     progress.style.display = 'none';
     const cadErrEl = document.getElementById('cad-results');
@@ -3610,7 +3839,7 @@ async function analyzeCAD(autoCalculate = false): Promise<void> {
   }
 }
 
-function renderCADResults(r: CADAnalysisResult, autoCalculate = false): void {
+function renderCADResults(r: CADAnalysisResult, autoCalculate = false, annualVolume = 100000): void {
   const panel = el('cad-results');
   const g = r.geometry;
   const bb = g.boundingBoxMm;
@@ -3752,17 +3981,36 @@ function renderCADResults(r: CADAnalysisResult, autoCalculate = false): void {
       </div>
     </div>` : ''}
 
-    <!-- Suggested cost inputs -->
+    <!-- Suggested cost inputs + tooling amortisation -->
+    ${(() => {
+      const tc = cadOCCTGeometry?.toolingCostEstimates;
+      let toolingCost = 0;
+      let toolingLabel = '';
+      const rc = recommendedCommodity;
+      if (tc) {
+        if (rc === 'casting' || rc === 'cast_and_machine') { toolingCost = tc.hpdcDieCostGBP; toolingLabel = 'HPDC die'; }
+        else if (rc === 'injection_moulding') { toolingCost = tc.imMouldCostGBP; toolingLabel = 'IM mould'; }
+        else if (rc === 'forging') { toolingCost = tc.forgeDieCostGBP; toolingLabel = 'Forge die'; }
+        else if (rc === 'sheet_metal') { toolingCost = tc.progressiveDieCostGBP; toolingLabel = 'Progressive die'; }
+      }
+      const costRange = r.costInputSuggestions.costRange;
+      const toolingPerPart = toolingCost > 0 ? toolingCost / annualVolume : 0;
+      const totalMidWithTooling = costRange ? costRange.mid + toolingPerPart : null;
+      return `
     <div style="margin-bottom:12px">
-      <div class="panel-title" style="margin-bottom:6px">Suggested Cost Inputs</div>
+      <div class="panel-title" style="margin-bottom:6px">Suggested Cost Inputs <span style="font-size:0.68rem;color:var(--text-muted);font-weight:400">@ ${annualVolume.toLocaleString()} pcs/yr</span></div>
       <table class="breakdown-table" style="font-size:0.78rem">
         <tr><td>Net weight</td><td><strong>${r.costInputSuggestions.netWeightKg.toFixed(3)} kg</strong></td></tr>
         <tr><td>Material</td><td>${escHtml(r.materialAnalysis.primarySuggestion.name)} (${r.costInputSuggestions.materialId})</td></tr>
         <tr><td>Est. cycle time</td><td>${r.costInputSuggestions.estimatedCycleTimeHr.toFixed(4)} hr/part</td></tr>
         <tr><td>Setup time</td><td>${r.costInputSuggestions.estimatedSetupTimeHr.toFixed(2)} hr</td></tr>
         <tr><td>Operations</td><td>${r.costInputSuggestions.estimatedOperations.map(o => escHtml(o.name)).join(', ')}</td></tr>
+        ${toolingCost > 0 ? `<tr><td>${escHtml(toolingLabel)} (OCCT est.)</td><td>£${toolingCost.toLocaleString('en-GB', { maximumFractionDigits: 0 })}</td></tr>
+        <tr><td>Tooling/part @ ${annualVolume.toLocaleString()} pcs</td><td style="color:var(--accent)"><strong>£${toolingPerPart.toFixed(3)}</strong></td></tr>` : ''}
+        ${totalMidWithTooling !== null && toolingCost > 0 ? `<tr style="border-top:1px solid var(--border)"><td><strong>Est. total/part (incl. tooling)</strong></td><td><strong style="color:var(--accent)">£${totalMidWithTooling.toFixed(2)}</strong></td></tr>` : ''}
       </table>
-    </div>
+    </div>`;
+    })()}
 
     <!-- Apply to form -->
     <div class="cad-apply-btn-row">
@@ -5907,6 +6155,13 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
   if (!cadAnalysisResult) return;
   const r = cadAnalysisResult;
   const c = r.costInputSuggestions;
+
+  // Sync annual volume from CAD form to Universal Costs
+  const cadAnnVol = (document.getElementById('cad-annual-volume') as HTMLInputElement | null)?.value;
+  if (cadAnnVol) {
+    const univVol = document.getElementById('annual-volume') as HTMLInputElement | null;
+    if (univVol) { univVol.value = cadAnnVol; univVol.dispatchEvent(new Event('input')); }
+  }
 
   switchCommodity(targetCommodity);
 
