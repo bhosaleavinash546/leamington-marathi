@@ -783,6 +783,146 @@ async function performSearch(query, braveApiKey) {
   }
 }
 
+// ─── CAD-TO-COST ENDPOINT ────────────────────────────────────────────────────
+
+const CAD_COST_SYSTEM_PROMPT = `You are a Senior Cost Engineer and DFMA specialist with 20+ years experience in automotive Tier-1 manufacturing. You analyse CAD geometry data and engineering drawings to produce expert-level component cost estimates and DFM recommendations. You quote specific OEM/Tier-1 benchmarks and real material prices. You return ONLY valid JSON — no preamble.`;
+
+function buildCadCostPrompt(geometry, config, livePrices) {
+  const currency = config.currency || 'EUR';
+  const currencySymbol = { EUR: '€', GBP: '£', USD: '$', CNY: '¥' }[currency] || '€';
+  const volume = config.annualVolume || 50000;
+  const region = config.plantRegion || 'germany';
+  const labourRate = LABOUR_RATES[region] || '€45-55/hr';
+
+  let geometrySection = '';
+
+  if (geometry.isImage) {
+    geometrySection = `The user has uploaded an engineering drawing/CAD screenshot. Analyse the image carefully to:
+1. Read dimensions from the title block and dimension lines
+2. Count features: holes (circle/arc callouts), ribs, pockets, threads (M-spec), bends, draft angles
+3. Identify the material specification from the title block or material callout
+4. Identify the manufacturing process from the geometry (casting, stamping, machining, moulding, etc.)
+5. Estimate complexity level based on tolerances, surface finish specs, and feature count`;
+  } else {
+    const bb = geometry.boundingBox;
+    const vol = geometry.estimatedVolume;
+    const sa = geometry.estimatedSurfaceArea;
+    const fc = geometry.featureCounts || {};
+    geometrySection = `Extracted CAD geometry data:
+• File: ${geometry.fileName} (${geometry.fileType.toUpperCase()}, ${(geometry.fileSize / 1024).toFixed(1)} KB)
+• Bounding box: ${bb ? `${bb.x} × ${bb.y} × ${bb.z} mm` : 'not extracted'}
+• Estimated volume: ${vol ? `${vol.toFixed(2)} cm³` : 'not extracted'}
+• Estimated surface area: ${sa ? `${sa.toFixed(1)} cm²` : 'not extracted'}
+• Feature counts: ${Object.entries(fc).map(([k, v]) => `${k}: ${v}`).join(' | ') || 'none extracted'}
+${geometry.extractedDimensions?.length ? `• Extracted dimensions: ${geometry.extractedDimensions.slice(0, 10).join(', ')}` : ''}
+${geometry.extractedMaterial ? `• Material from drawing: ${geometry.extractedMaterial}` : ''}
+${geometry.productName ? `• Product name: ${geometry.productName}` : ''}
+${geometry.extractedText?.length ? `• Drawing notes: ${geometry.extractedText.slice(0, 8).join(' | ')}` : ''}
+${config.materialSpec ? `• User-specified material: ${config.materialSpec}` : ''}
+${config.processSpec ? `• User-specified process: ${config.processSpec}` : ''}`;
+  }
+
+  return `Analyse this automotive component and generate a complete cost estimate + DFMA report.
+
+${geometrySection}
+
+Commercial parameters:
+• Annual volume: ${volume.toLocaleString()} units/yr | Plant region: ${region} | Labour: ${labourRate}
+• Currency: ${currency} | Programme: ${config.programmeLengthYears || 5} years
+
+${livePrices}
+
+Return a single JSON object with EXACTLY this structure:
+{
+  "partName": "inferred part name (≤8 words)",
+  "inferredMaterial": "specific grade e.g. EN-AW-A380 HPDC aluminium or DP780 AHSS",
+  "inferredProcess": "primary manufacturing process e.g. HPDC / progressive die stamp / CNC mill",
+  "complexity": "Low|Medium|High",
+  "massEstimateKg": number_or_null,
+  "dfmaScore": number_1_to_10,
+  "dfmaScoreRationale": "2-3 sentences explaining the score based on feature count, tolerances, material choice",
+  "costBreakdown": {
+    "material": { "value": number, "currency": "${currency}", "basis": "brief calc: mass × density × price/kg" },
+    "process": { "value": number, "currency": "${currency}", "basis": "cycle time × labour rate + machine burden" },
+    "tooling": { "value": number, "currency": "${currency}", "basis": "amortised tooling at ${volume.toLocaleString()} units/yr" },
+    "overhead": { "value": number, "currency": "${currency}", "basis": "overhead + profit margin" },
+    "totalUnit": { "value": number, "currency": "${currency}" }
+  },
+  "annualSpend": { "value": number, "currency": "${currency}" },
+  "confidence": "verified|benchmarked|estimated|theoretical",
+  "benchmarkReference": "specific OEM/Tier-1 comparable part and its published cost",
+  "recommendations": [
+    {
+      "id": "slug",
+      "title": "≤10 word action",
+      "category": "material|process|design|commonisation",
+      "difficulty": "Low|Medium|High",
+      "saving": "e.g. ${currencySymbol}2.50/unit (~8%)",
+      "annualSaving": "e.g. ${currencySymbol}125K at ${volume.toLocaleString()} units/yr",
+      "description": "60-90 words: specific grades/processes/benchmarks, why this saving is achievable"
+    }
+  ],
+  "topRisks": ["3-5 risk bullet points (tolerance, tooling, regulatory, NVH)"]
+}
+
+Provide 5 recommendations ordered by annual saving potential (highest first). DFMA score 10 = perfect design, 1 = highly complex. Return ONLY JSON.`;
+}
+
+app.post('/api/cad-analyze', requireAuth, async (req, res) => {
+  const { geometry, config, apiKey } = req.body;
+  if (!apiKey?.trim()) return res.status(400).json({ error: 'Anthropic API key required.' });
+  if (!geometry) return res.status(400).json({ error: 'No CAD geometry data provided.' });
+
+  await refreshPriceCache(null).catch(() => {});
+  const livePrices = getPriceString();
+
+  const client = new Anthropic({ apiKey: apiKey.trim() });
+  const prompt = buildCadCostPrompt(geometry, config || {}, livePrices);
+
+  try {
+    let messages;
+
+    if (geometry.isImage && geometry.base64Data) {
+      // Use Claude Vision for drawing images
+      const mediaType = geometry.mimeType === 'application/pdf' ? 'image/jpeg' : (geometry.mimeType || 'image/png');
+      // Claude Vision supports image/* types; PDF pages need to be sent as images
+      messages = [{
+        role: 'user',
+        content: [
+          {
+            type: 'image',
+            source: { type: 'base64', media_type: mediaType, data: geometry.base64Data },
+          },
+          { type: 'text', text: prompt },
+        ],
+      }];
+    } else {
+      messages = [{ role: 'user', content: prompt }];
+    }
+
+    const response = await client.messages.create({
+      model: 'claude-opus-4-8',
+      max_tokens: 4000,
+      system: CAD_COST_SYSTEM_PROMPT,
+      messages,
+    });
+
+    const textBlock = response.content.find(b => b.type === 'text');
+    if (!textBlock) throw new Error('No response from AI.');
+    let raw = textBlock.text.trim();
+    if (raw.startsWith('```')) raw = raw.replace(/^```[a-z]*\n?/, '').replace(/\n?```$/, '').trim();
+    const jsonStart = raw.indexOf('{');
+    const jsonEnd = raw.lastIndexOf('}');
+    if (jsonStart === -1 || jsonEnd <= jsonStart) throw new Error('Invalid JSON response from AI.');
+
+    const result = JSON.parse(raw.slice(jsonStart, jsonEnd + 1));
+    return res.json(result);
+  } catch (err) {
+    console.error('[CAD Analyze Error]', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // Commodity prices endpoint
 app.get('/api/prices', async (req, res) => {
   const prices = await refreshPriceCache(null);

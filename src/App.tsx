@@ -12,6 +12,7 @@ import AnalyzePage from './pages/AnalyzePage';
 import ResultsPage from './pages/ResultsPage';
 import HelpPage from './pages/HelpPage';
 import TrendsPage from './pages/TrendsPage';
+import CadToCostPage from './pages/CadToCostPage';
 
 export default function App() {
   return (
@@ -32,6 +33,7 @@ export default function App() {
               <Route path="/analyze" element={<ProtectedRoute><AnalyzePage /></ProtectedRoute>} />
               <Route path="/results" element={<ProtectedRoute><ResultsPage /></ProtectedRoute>} />
               <Route path="/trends" element={<ProtectedRoute><TrendsPage /></ProtectedRoute>} />
+              <Route path="/cad-to-cost" element={<ProtectedRoute><CadToCostPage /></ProtectedRoute>} />
 
               {/* Fallback */}
               <Route path="*" element={<Navigate to="/" replace />} />
