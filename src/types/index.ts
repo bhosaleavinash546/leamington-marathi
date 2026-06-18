@@ -34,6 +34,23 @@ export type PlantRegion = 'germany' | 'uk' | 'czech' | 'spain' | 'mexico' | 'usa
 export type Currency = 'EUR' | 'GBP' | 'USD' | 'CNY';
 export type ConfidenceLevel = 'verified' | 'benchmarked' | 'estimated' | 'theoretical';
 
+export type AnnotationStatus = 'pending' | 'investigating' | 'approved' | 'rejected' | 'on-hold';
+
+export interface IdeaAnnotation {
+  status: AnnotationStatus;
+  note: string;
+  updatedAt: string;
+}
+
+export interface ProgressEvent {
+  type: 'connecting' | 'searching' | 'search_done' | 'synthesizing' | 'complete' | 'error';
+  message?: string;
+  query?: string;
+  purpose?: string;
+  searchNumber?: number;
+  resultCount?: number;
+}
+
 export interface CostSavingPotential {
   qualitative: string;
   percentage?: string;
@@ -95,10 +112,12 @@ export interface AnalysisConfig {
   cadFileName?: string;
   cadFileType?: string;
   additionalContext?: string;
+  cadGeometry?: Record<string, unknown>;
   apiKey: string;
 }
 
 export interface AnalysisResult {
+  id?: string;
   config: AnalysisConfig;
   ideas: CostReductionIdea[];
   sources: SearchSource[];

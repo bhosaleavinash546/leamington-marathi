@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ChevronRight, TrendingDown, Clock, BarChart3, Lightbulb, ArrowRight, Star, BookOpen, Target, Activity, Trash2 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import { loadFullResult } from '../services/claude-service';
 
 interface RecentAnalysis {
   id: string;
@@ -21,11 +22,13 @@ const TIPS = [
 ];
 
 const WHATS_NEW = [
-  'Live internet-grounded cost estimates via agentic web search',
-  '13 automotive systems — BIW, BEV, 800V, ADAS and more',
-  'Chief Engineer AI persona with 30-year domain expertise',
-  'Export to Excel (3-sheet) and PowerPoint (per-idea slides)',
-  'Forgot password with email OTP and secure JWT sessions',
+  'Transmission & Driveline — 9th knowledge domain (ZF/BorgWarner benchmarks)',
+  'PDF export — full A4 report with per-idea pages and roadmap',
+  'Electric Drive Unit expanded — 20 OEM benchmarks incl. Chinese OEMs',
+  'CAD geometry parsing — STL/STEP/DXF wired into analysis prompt',
+  'Real-time SSE streaming — live progress as AI searches and synthesises',
+  'Idea annotations — add status & notes to any generated idea',
+  'Result persistence — re-open past analyses from Recent Analyses',
 ];
 
 export default function DashboardPage() {
@@ -87,8 +90,8 @@ export default function DashboardPage() {
           {[
             { icon: TrendingDown, label: 'Systems Covered', value: '13', sub: 'BIW to Next-Gen EV', color: 'text-gold-400', bg: 'bg-gold-500/10' },
             { icon: Lightbulb,   label: 'Parts Catalogued', value: '260+', sub: 'across all systems', color: 'text-blue-400', bg: 'bg-blue-500/10' },
-            { icon: BarChart3,   label: 'Analyses Run', value: String(recentAnalyses.length), sub: 'this session', color: 'text-emerald-400', bg: 'bg-emerald-500/10' },
-            { icon: Star,        label: 'Export Formats', value: '2', sub: 'Excel & PowerPoint', color: 'text-purple-400', bg: 'bg-purple-500/10' },
+            { icon: BarChart3,   label: 'Analyses Run', value: String(recentAnalyses.length), sub: 'saved locally', color: 'text-emerald-400', bg: 'bg-emerald-500/10' },
+            { icon: Star,        label: 'Export Formats', value: '3', sub: 'Excel, PowerPoint & PDF', color: 'text-purple-400', bg: 'bg-purple-500/10' },
           ].map(({ icon: Icon, label, value, sub, color, bg }) => (
             <div key={label} className="rounded-xl bg-navy-900 border border-white/8 p-5 flex items-start gap-4">
               <div className={`w-10 h-10 rounded-lg ${bg} flex items-center justify-center flex-shrink-0`}>
@@ -138,7 +141,17 @@ export default function DashboardPage() {
                 {recentAnalyses.slice(0, 8).map((a) => (
                   <div
                     key={a.id}
-                    onClick={() => navigate('/analyze')}
+                    onClick={() => {
+                      const full = loadFullResult(a.id);
+                      if (full) {
+                        sessionStorage.setItem('analysisResult', JSON.stringify((full as {result: unknown}).result ?? full));
+                        sessionStorage.setItem('analysisSystemName', a.systemName);
+                        sessionStorage.setItem('analysisSubName', a.subassemblyName);
+                        navigate('/results');
+                      } else {
+                        navigate('/analyze');
+                      }
+                    }}
                     className="flex items-center justify-between p-4 rounded-xl bg-navy-800 border border-white/5 hover:border-gold-500/30 cursor-pointer transition-all group"
                   >
                     <div>

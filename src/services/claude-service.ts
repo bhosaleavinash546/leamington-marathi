@@ -1,8 +1,20 @@
 import { AnalysisConfig, CostReductionIdea, SearchSource } from '../types';
 
+export interface ProgressEvent {
+  type: 'connecting' | 'searching' | 'search_done' | 'synthesizing' | 'complete' | 'error';
+  message?: string;
+  query?: string;
+  purpose?: string;
+  searchNumber?: number;
+  resultCount?: number;
+  ideas?: unknown[];
+  sources?: unknown[];
+}
+
 export interface AnalysisResponse {
   ideas: CostReductionIdea[];
   sources: SearchSource[];
+  resultId: string;
 }
 
 function getAuthToken(): string | null {
@@ -20,13 +32,15 @@ export function saveRecentAnalysis(
   systemName: string,
   subassemblyName: string,
   partName: string | undefined,
-  ideasCount: number
-) {
+  ideasCount: number,
+  id?: string
+): string {
+  const resultId = id || Math.random().toString(36).slice(2);
   try {
     const stored = localStorage.getItem('brainspark_recent_analyses');
     const analyses = stored ? JSON.parse(stored) : [];
     analyses.unshift({
-      id: Math.random().toString(36).slice(2),
+      id: resultId,
       systemName,
       subassemblyName,
       partName,
@@ -35,6 +49,27 @@ export function saveRecentAnalysis(
     });
     localStorage.setItem('brainspark_recent_analyses', JSON.stringify(analyses.slice(0, 20)));
   } catch {}
+  return resultId;
+}
+
+export function saveFullResult(id: string, result: unknown, systemName: string, subName: string): void {
+  try {
+    const stored = localStorage.getItem('brainspark_full_results');
+    const results: unknown[] = stored ? JSON.parse(stored) : [];
+    results.unshift({ id, systemName, subName, result, savedAt: new Date().toISOString() });
+    localStorage.setItem('brainspark_full_results', JSON.stringify(results.slice(0, 10)));
+  } catch {}
+}
+
+export function loadFullResult(id: string): unknown | null {
+  try {
+    const stored = localStorage.getItem('brainspark_full_results');
+    if (!stored) return null;
+    const results: Array<{ id: string; result: unknown }> = JSON.parse(stored);
+    return results.find(r => r.id === id)?.result ?? null;
+  } catch {
+    return null;
+  }
 }
 
 export async function generateCostReductionIdeas(
@@ -43,10 +78,14 @@ export async function generateCostReductionIdeas(
   subassemblyName: string,
   partName?: string,
   enableSearch = true,
-  searchApiKey?: string
+  searchApiKey?: string,
+  onProgress?: (event: ProgressEvent) => void
 ): Promise<AnalysisResponse> {
   const token = getAuthToken();
-  const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+    'Accept': 'text/event-stream',
+  };
   if (token) headers['Authorization'] = `Bearer ${token}`;
 
   const response = await fetch('/api/analyze', {
@@ -59,19 +98,50 @@ export async function generateCostReductionIdeas(
       partName,
       enableSearch,
       searchApiKey,
+      cadGeometry: config.cadGeometry,
     }),
   });
 
   if (!response.ok) {
     let errorMsg = `Server error ${response.status}`;
-    try {
-      const err = await response.json();
-      errorMsg = err.error || errorMsg;
-    } catch {}
+    try { const err = await response.json(); errorMsg = err.error || errorMsg; } catch {}
     throw new Error(errorMsg);
   }
 
-  const result: AnalysisResponse = await response.json();
-  saveRecentAnalysis(systemName, subassemblyName, partName, result.ideas.length);
-  return result;
+  const reader = response.body!.getReader();
+  const decoder = new TextDecoder();
+  let buffer = '';
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    buffer += decoder.decode(value, { stream: true });
+
+    const chunks = buffer.split('\n\n');
+    buffer = chunks.pop() ?? '';
+
+    for (const chunk of chunks) {
+      const line = chunk.trim();
+      if (!line.startsWith('data: ')) continue;
+      let data: ProgressEvent & { ideas?: CostReductionIdea[]; sources?: SearchSource[] };
+      try {
+        data = JSON.parse(line.slice(6));
+      } catch {
+        continue;
+      }
+
+      if (data.type === 'complete') {
+        const ideas = (data as unknown as { ideas: CostReductionIdea[] }).ideas;
+        const sources = (data as unknown as { sources: SearchSource[] }).sources;
+        const resultId = saveRecentAnalysis(systemName, subassemblyName, partName, ideas.length);
+        return { ideas, sources, resultId };
+      }
+      if (data.type === 'error') {
+        throw new Error(data.message || 'Analysis failed');
+      }
+      onProgress?.(data);
+    }
+  }
+
+  throw new Error('Stream ended without a complete event.');
 }

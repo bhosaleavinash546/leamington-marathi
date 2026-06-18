@@ -9,7 +9,16 @@ import {
 } from 'lucide-react';
 import { AUTOMOTIVE_SYSTEMS, getSystemById, getSubassemblyById } from '../data/automotive-catalog';
 import { generateCostReductionIdeas } from '../services/claude-service';
+import { saveFullResult, ProgressEvent } from '../services/claude-service';
+import { parseCadFile, CadGeometry, formatFileSize } from '../services/cad-parser';
 import { AnalysisConfig, AnalysisResult, BodyStyle, PlantRegion, Currency } from '../types';
+
+interface ProgressStep {
+  id: string;
+  label: string;
+  detail?: string;
+  status: 'pending' | 'active' | 'done' | 'error';
+}
 
 const VEHICLE_TYPES = [
   // BEV
@@ -114,8 +123,10 @@ export default function AnalyzePage() {
   const [showApiKey, setShowApiKey] = useState(false);
   const [enableSearch, setEnableSearch] = useState(true);
   const [cadFile, setCadFile] = useState<File | null>(null);
+  const [cadGeometry, setCadGeometry] = useState<CadGeometry | null>(null);
+  const [isParsing, setIsParsing] = useState(false);
+  const [progressSteps, setProgressSteps] = useState<ProgressStep[]>([]);
   const [loading, setLoading] = useState(false);
-  const [loadingStatus, setLoadingStatus] = useState('');
   const [error, setError] = useState('');
 
   const selectedSystem = getSystemById(systemId);
@@ -127,15 +138,60 @@ export default function AnalyzePage() {
     }
   }, [searchParams]);
 
-  const onDrop = useCallback((acceptedFiles: File[]) => {
-    if (acceptedFiles[0]) setCadFile(acceptedFiles[0]);
+  const onDrop = useCallback(async (acceptedFiles: File[]) => {
+    const file = acceptedFiles[0];
+    if (!file) return;
+    setCadFile(file);
+    setCadGeometry(null);
+    setIsParsing(true);
+    try {
+      const geo = await parseCadFile(file);
+      setCadGeometry(geo);
+    } catch {
+      setCadGeometry(null);
+    } finally {
+      setIsParsing(false);
+    }
   }, []);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
-    accept: { 'model/stl': ['.stl'], 'model/iges': ['.igs', '.iges'], 'application/octet-stream': ['.stl', '.igs'] },
+    accept: {
+      'model/stl': ['.stl'],
+      'model/iges': ['.igs', '.iges'],
+      'application/octet-stream': ['.stl', '.igs', '.step', '.stp', '.dxf'],
+      'application/step': ['.step', '.stp'],
+      'image/png': ['.png'],
+      'image/jpeg': ['.jpg', '.jpeg'],
+      'image/webp': ['.webp'],
+    },
     maxFiles: 1,
   });
+
+  const handleProgress = useCallback((event: ProgressEvent) => {
+    setProgressSteps(prev => {
+      const markActiveDone = () => prev.map(s => s.status === 'active' ? { ...s, status: 'done' as const } : s);
+      switch (event.type) {
+        case 'connecting':
+          return [{ id: 'connect', label: event.message || 'Connecting to AI chief engineer...', status: 'active' as const }];
+        case 'searching':
+          return [
+            ...markActiveDone(),
+            { id: `s-${event.searchNumber}`, label: `Searching: ${event.query?.slice(0, 55)}${(event.query?.length || 0) > 55 ? '…' : ''}`, status: 'active' as const, detail: event.purpose?.replace('_', ' ') },
+          ];
+        case 'search_done':
+          return prev.map(s =>
+            s.id === `s-${event.searchNumber}`
+              ? { ...s, status: 'done' as const, detail: `${event.resultCount} result${event.resultCount !== 1 ? 's' : ''} found` }
+              : s
+          );
+        case 'synthesizing':
+          return [...markActiveDone(), { id: 'synth', label: event.message || 'Synthesising expert ideas...', status: 'active' as const }];
+        default:
+          return prev;
+      }
+    });
+  }, []);
 
   const handleGenerate = async () => {
     if (!apiKey.trim()) { setError('Please enter your Anthropic API key.'); return; }
@@ -143,19 +199,9 @@ export default function AnalyzePage() {
 
     setLoading(true);
     setError('');
+    setProgressSteps([]);
     localStorage.setItem('brainspark_api_key', apiKey);
     if (searchApiKey) localStorage.setItem('brainspark_brave_key', searchApiKey);
-
-    const statusMessages = enableSearch
-      ? ['Connecting to AI chief engineer...', 'Searching web for material cost data...', 'Fetching OEM benchmark references...', 'Searching for technology innovations...', 'Analysing supplier capabilities...', 'Synthesising cost reduction ideas...', 'Quantifying savings and validating...']
-      : ['Connecting to AI chief engineer...', 'Applying 30-year engineering expertise...', 'Generating cost reduction ideas...', 'Quantifying savings and risk assessment...'];
-
-    let si = 0;
-    setLoadingStatus(statusMessages[0]);
-    const statusInterval = setInterval(() => {
-      si = (si + 1) % statusMessages.length;
-      setLoadingStatus(statusMessages[si]);
-    }, 4000);
 
     try {
       const config: AnalysisConfig = {
@@ -166,19 +212,21 @@ export default function AnalyzePage() {
         cadFileType: cadFile?.name?.split('.').pop()?.toUpperCase(),
         additionalContext,
         apiKey,
+        cadGeometry: cadGeometry ? (cadGeometry as unknown as Record<string, unknown>) : undefined,
       };
 
       const system = getSystemById(systemId)!;
       const sub = getSubassemblyById(systemId, subassemblyId)!;
       const part = partId ? selectedSub?.parts.find(p => p.id === partId) : undefined;
 
-      const { ideas, sources } = await generateCostReductionIdeas(
-        config, system.name, sub.name, part?.name, enableSearch, searchApiKey || undefined
+      const { ideas, sources, resultId } = await generateCostReductionIdeas(
+        config, system.name, sub.name, part?.name, enableSearch, searchApiKey || undefined, handleProgress
       );
 
       const quickWins = ideas.filter(i => i.implementationDifficulty === 'Low').length;
       const result: AnalysisResult = {
-        config,
+        id: resultId,
+        config: { ...config, apiKey: '' },  // strip API key before persistence
         ideas,
         sources,
         summary: {
@@ -193,6 +241,7 @@ export default function AnalyzePage() {
       sessionStorage.setItem('analysisResult', JSON.stringify(result));
       sessionStorage.setItem('analysisSystemName', system.name);
       sessionStorage.setItem('analysisSubName', sub.name);
+      saveFullResult(resultId, result, system.name, sub.name);
       navigate('/results');
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : String(err);
@@ -200,9 +249,7 @@ export default function AnalyzePage() {
         ? 'Cannot connect to BrainSpark server. Run "npm run server" in a separate terminal and retry.'
         : `Analysis failed: ${message}`);
     } finally {
-      clearInterval(statusInterval);
       setLoading(false);
-      setLoadingStatus('');
     }
   };
 
@@ -475,21 +522,57 @@ export default function AnalyzePage() {
                 >
                   <input {...getInputProps()} />
                   {cadFile ? (
-                    <div className="flex items-center justify-center gap-3">
-                      <FileText size={28} className="text-green-400" />
-                      <div className="text-left">
-                        <div className="text-white font-medium">{cadFile.name}</div>
-                        <div className="text-slate-400 text-sm">{(cadFile.size / 1024).toFixed(0)} KB · {cadFile.name.split('.').pop()?.toUpperCase()} format</div>
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-center gap-3">
+                        <FileText size={28} className={cadGeometry ? 'text-green-400' : isParsing ? 'text-amber-400' : 'text-slate-400'} />
+                        <div className="text-left">
+                          <div className="text-white font-medium">{cadFile.name}</div>
+                          <div className="text-slate-400 text-sm">
+                            {formatFileSize(cadFile.size)} · {cadFile.name.split('.').pop()?.toUpperCase()} ·
+                            {isParsing ? ' Parsing geometry…' : cadGeometry ? ' Geometry extracted ✓' : ' File attached'}
+                          </div>
+                        </div>
+                        <button onClick={e => { e.stopPropagation(); setCadFile(null); setCadGeometry(null); }} className="ml-4 p-1.5 rounded-lg bg-red-500/20 text-red-400 hover:bg-red-500/30">
+                          <X size={14} />
+                        </button>
                       </div>
-                      <button onClick={e => { e.stopPropagation(); setCadFile(null); }} className="ml-4 p-1.5 rounded-lg bg-red-500/20 text-red-400 hover:bg-red-500/30">
-                        <X size={14} />
-                      </button>
+                      {cadGeometry && !cadGeometry.isImage && (
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs text-center mt-1">
+                          {cadGeometry.boundingBox && (
+                            <div className="bg-white/5 rounded-lg px-2 py-1.5">
+                              <div className="text-slate-500 mb-0.5">Bounding Box</div>
+                              <div className="text-slate-300 font-mono">{cadGeometry.boundingBox.x}×{cadGeometry.boundingBox.y}×{cadGeometry.boundingBox.z} mm</div>
+                            </div>
+                          )}
+                          {cadGeometry.estimatedVolume && (
+                            <div className="bg-white/5 rounded-lg px-2 py-1.5">
+                              <div className="text-slate-500 mb-0.5">Volume</div>
+                              <div className="text-slate-300 font-mono">{cadGeometry.estimatedVolume.toFixed(1)} cm³</div>
+                            </div>
+                          )}
+                          {cadGeometry.featureCounts?.faces && (
+                            <div className="bg-white/5 rounded-lg px-2 py-1.5">
+                              <div className="text-slate-500 mb-0.5">Triangles</div>
+                              <div className="text-slate-300 font-mono">{cadGeometry.featureCounts.faces.toLocaleString()}</div>
+                            </div>
+                          )}
+                          {cadGeometry.featureCounts?.holes != null && (
+                            <div className="bg-white/5 rounded-lg px-2 py-1.5">
+                              <div className="text-slate-500 mb-0.5">Holes / Arcs</div>
+                              <div className="text-slate-300 font-mono">{cadGeometry.featureCounts.holes}</div>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                      {cadGeometry?.extractedMaterial && (
+                        <div className="text-xs text-slate-400 text-center">Material from drawing: <span className="text-amber-400">{cadGeometry.extractedMaterial}</span></div>
+                      )}
                     </div>
                   ) : (
                     <div>
                       <Upload size={28} className="text-slate-500 mx-auto mb-3" />
                       <p className="text-slate-300 font-medium">{isDragActive ? 'Drop file here...' : 'Drag & drop CAD file'}</p>
-                      <p className="text-slate-500 text-sm mt-1">Supports .STL (surface mesh) and .IGS / .IGES formats</p>
+                      <p className="text-slate-500 text-sm mt-1">STL · STEP · DXF · PNG · JPG — geometry auto-extracted</p>
                       <p className="text-slate-600 text-xs mt-2">Click to browse · Skip to continue without CAD</p>
                     </div>
                   )}
@@ -621,25 +704,39 @@ export default function AnalyzePage() {
 
                 {/* Loading status */}
                 {loading && (
-                  <div className="p-4 rounded-xl bg-navy-800 border border-white/10 space-y-3">
-                    <div className="flex items-center gap-2 text-sm">
+                  <div className="p-4 rounded-xl bg-navy-800 border border-white/10 space-y-2">
+                    <div className="flex items-center gap-2 mb-3">
                       <Loader2 size={14} className="animate-spin text-gold-400" />
-                      <span className="text-gold-400 font-medium">{loadingStatus}</span>
+                      <span className="text-gold-400 font-medium text-sm">Analysis in progress…</span>
+                      <span className="text-slate-600 text-xs ml-auto">{enableSearch ? '30–60s' : '15–25s'}</span>
                     </div>
-                    {enableSearch && (
-                      <div className="flex flex-wrap gap-2">
-                        {Object.entries(PURPOSE_LABELS).map(([key, label]) => (
-                          <div key={key} className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-xs text-slate-400">
-                            <Search size={10} className="text-blue-400" />
-                            {label}
+                    {progressSteps.length === 0 ? (
+                      <div className="h-1 bg-white/5 rounded-full overflow-hidden">
+                        <div className="h-full bg-gradient-to-r from-gold-500 to-amber-400 rounded-full animate-pulse w-1/4" />
+                      </div>
+                    ) : (
+                      <div className="space-y-1.5 max-h-48 overflow-y-auto pr-1">
+                        {progressSteps.map(step => (
+                          <div key={step.id} className="flex items-start gap-2 text-xs">
+                            <span className={`flex-shrink-0 mt-0.5 ${
+                              step.status === 'done'  ? 'text-green-400' :
+                              step.status === 'active' ? 'text-gold-400' :
+                              step.status === 'error'  ? 'text-red-400' : 'text-slate-600'
+                            }`}>
+                              {step.status === 'done' ? '✓' : step.status === 'active' ? '⟳' : step.status === 'error' ? '✕' : '○'}
+                            </span>
+                            <div className="flex-1 min-w-0">
+                              <span className={step.status === 'done' ? 'text-slate-400' : step.status === 'active' ? 'text-white' : 'text-slate-600'}>
+                                {step.label}
+                              </span>
+                              {step.detail && (
+                                <span className="text-slate-600 ml-1">({step.detail})</span>
+                              )}
+                            </div>
                           </div>
                         ))}
                       </div>
                     )}
-                    <p className="text-slate-600 text-xs">Typical time: {enableSearch ? '30–60 seconds (with web search)' : '15–25 seconds'} — Claude claude-opus-4-8 generating 8 expert ideas</p>
-                    <div className="h-1 bg-white/5 rounded-full overflow-hidden">
-                      <div className="h-full bg-gradient-to-r from-gold-500 to-amber-400 rounded-full animate-pulse w-3/4" />
-                    </div>
                   </div>
                 )}
               </div>

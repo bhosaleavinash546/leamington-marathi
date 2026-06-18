@@ -6,9 +6,10 @@ import {
   TrendingDown, Zap, AlertTriangle, CheckCircle, Clock,
   ChevronDown, ChevronUp, BarChart3, RefreshCw, Tag,
   Globe, ExternalLink, ChevronRight, Search, DollarSign, Calculator,
-  ShieldCheck, BookOpen, FlaskConical, Lightbulb, Scale, Link2
+  ShieldCheck, BookOpen, FlaskConical, Lightbulb, Scale, Link2,
+  MessageSquare, CheckSquare, XSquare
 } from 'lucide-react';
-import { AnalysisResult, CostReductionIdea, CostSavingType, Difficulty, SearchSource, ConfidenceLevel, EvidenceSource } from '../types';
+import { AnalysisResult, CostReductionIdea, CostSavingType, Difficulty, SearchSource, ConfidenceLevel, EvidenceSource, IdeaAnnotation, AnnotationStatus } from '../types';
 import { exportToExcel, exportToPowerPoint, exportToPdf } from '../services/export-service';
 import IdeasDashboard from '../components/results/IdeasDashboard';
 import BusinessCaseCalculator from '../components/results/BusinessCaseCalculator';
@@ -59,8 +60,23 @@ const CONFIDENCE_CONFIG: Record<ConfidenceLevel, { label: string; color: string;
   theoretical:  { label: 'Theoretical', color: 'text-purple-400',  bg: 'bg-purple-500/10',  border: 'border-purple-500/30',  icon: FlaskConical,  title: 'First-principles / analytical' },
 };
 
-function IdeaCard({ idea, index }: { idea: CostReductionIdea; index: number }) {
+const ANNOTATION_STATUS_CONFIG: Record<AnnotationStatus, { label: string; color: string; bg: string; border: string }> = {
+  'pending':       { label: 'Not Reviewed', color: 'text-slate-400',   bg: 'bg-slate-500/10',  border: 'border-slate-500/20' },
+  'investigating': { label: 'Investigating', color: 'text-amber-400',   bg: 'bg-amber-500/10',  border: 'border-amber-500/20' },
+  'approved':      { label: 'Approved',      color: 'text-green-400',   bg: 'bg-green-500/10',  border: 'border-green-500/20' },
+  'rejected':      { label: 'Rejected',      color: 'text-red-400',     bg: 'bg-red-500/10',    border: 'border-red-500/20' },
+  'on-hold':       { label: 'On Hold',       color: 'text-purple-400',  bg: 'bg-purple-500/10', border: 'border-purple-500/20' },
+};
+
+function IdeaCard({ idea, index, annotation, onAnnotate }: {
+  idea: CostReductionIdea;
+  index: number;
+  annotation?: IdeaAnnotation;
+  onAnnotate: (a: IdeaAnnotation) => void;
+}) {
   const [expanded, setExpanded] = useState(false);
+  const [showAnnotation, setShowAnnotation] = useState(false);
+  const [noteText, setNoteText] = useState(annotation?.note ?? '');
   const diff = DIFFICULTY_CONFIG[idea.implementationDifficulty];
   const DiffIcon = diff.icon;
 
@@ -225,6 +241,70 @@ function IdeaCard({ idea, index }: { idea: CostReductionIdea; index: number }) {
           </div>
         </div>
       )}
+
+      {/* Annotation panel */}
+      <div className="border-t border-white/5">
+        <button
+          onClick={() => setShowAnnotation(v => !v)}
+          className="w-full flex items-center justify-between px-5 py-2.5 hover:bg-white/3 transition-colors group"
+        >
+          <div className="flex items-center gap-2">
+            <MessageSquare size={12} className="text-slate-500 group-hover:text-slate-400" />
+            <span className="text-slate-500 text-xs group-hover:text-slate-400">
+              {annotation?.status && annotation.status !== 'pending'
+                ? ANNOTATION_STATUS_CONFIG[annotation.status].label
+                : 'Add annotation'}
+              {annotation?.note ? ' · Has notes' : ''}
+            </span>
+          </div>
+          {annotation?.status && annotation.status !== 'pending' && (
+            <span className={`px-2 py-0.5 rounded-full text-xs border ${ANNOTATION_STATUS_CONFIG[annotation.status].bg} ${ANNOTATION_STATUS_CONFIG[annotation.status].color} ${ANNOTATION_STATUS_CONFIG[annotation.status].border}`}>
+              {ANNOTATION_STATUS_CONFIG[annotation.status].label}
+            </span>
+          )}
+        </button>
+
+        {showAnnotation && (
+          <div className="px-5 pb-4 space-y-3 border-t border-white/5 pt-3">
+            <div>
+              <label className="block text-xs text-slate-500 mb-1.5">Implementation Status</label>
+              <div className="flex flex-wrap gap-1.5">
+                {(Object.keys(ANNOTATION_STATUS_CONFIG) as AnnotationStatus[]).map(status => (
+                  <button
+                    key={status}
+                    onClick={() => onAnnotate({ status, note: annotation?.note ?? noteText, updatedAt: new Date().toISOString() })}
+                    className={`px-2.5 py-1 rounded-lg text-xs border transition-colors ${
+                      annotation?.status === status
+                        ? `${ANNOTATION_STATUS_CONFIG[status].bg} ${ANNOTATION_STATUS_CONFIG[status].color} ${ANNOTATION_STATUS_CONFIG[status].border}`
+                        : 'text-slate-500 border-white/10 hover:border-white/25'
+                    }`}
+                  >
+                    {ANNOTATION_STATUS_CONFIG[status].label}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div>
+              <label className="block text-xs text-slate-500 mb-1.5">Engineering Notes</label>
+              <textarea
+                value={noteText}
+                onChange={e => setNoteText(e.target.value)}
+                onBlur={() => {
+                  if (noteText !== (annotation?.note ?? '')) {
+                    onAnnotate({ status: annotation?.status ?? 'pending', note: noteText, updatedAt: new Date().toISOString() });
+                  }
+                }}
+                placeholder="e.g. Reviewed with Tier-1, feasible Q3 2026. Awaiting supplier quote from Gestamp..."
+                rows={3}
+                className="w-full bg-navy-800 border border-white/10 rounded-lg px-3 py-2 text-white placeholder-slate-700 focus:outline-none focus:border-gold-500/30 resize-none text-xs leading-relaxed"
+              />
+            </div>
+            {annotation?.updatedAt && (
+              <p className="text-slate-600 text-xs">Last updated: {new Date(annotation.updatedAt).toLocaleString('en-GB', { dateStyle: 'short', timeStyle: 'short' })}</p>
+            )}
+          </div>
+        )}
+      </div>
     </motion.div>
   );
 }
@@ -316,13 +396,28 @@ export default function ResultsPage() {
   const [filterDifficulty, setFilterDifficulty] = useState<Difficulty | 'All'>('All');
   const [filterType, setFilterType] = useState<CostSavingType | 'All'>('All');
   const [exporting, setExporting] = useState<'excel' | 'pptx' | 'pdf' | null>(null);
+  const [annotations, setAnnotations] = useState<Record<string, IdeaAnnotation>>({});
 
   useEffect(() => {
-    const stored = sessionStorage.getItem('analysisResult');
-    const sys = sessionStorage.getItem('analysisSystemName');
-    const sub = sessionStorage.getItem('analysisSubName');
-    if (stored) { setResult(JSON.parse(stored)); setSystemName(sys || ''); setSubName(sub || ''); }
-    else navigate('/analyze');
+    try {
+      const stored = sessionStorage.getItem('analysisResult');
+      const sys = sessionStorage.getItem('analysisSystemName');
+      const sub = sessionStorage.getItem('analysisSubName');
+      if (!stored) { navigate('/analyze'); return; }
+      const parsed: AnalysisResult = JSON.parse(stored);
+      setResult(parsed);
+      setSystemName(sys || '');
+      setSubName(sub || '');
+      // Load saved annotations
+      if (parsed.id) {
+        try {
+          const saved = localStorage.getItem(`brainspark_annotations_${parsed.id}`);
+          if (saved) setAnnotations(JSON.parse(saved));
+        } catch {}
+      }
+    } catch {
+      navigate('/analyze');
+    }
   }, [navigate]);
 
   if (!result) return null;
@@ -343,9 +438,19 @@ export default function ResultsPage() {
     try { await exportToPowerPoint(result, systemName, subName); } finally { setExporting(null); }
   };
 
-  const handlePdfExport = () => {
+  const handlePdfExport = async () => {
     setExporting('pdf');
-    try { exportToPdf(result, systemName, subName); } finally { setExporting(null); }
+    try { await Promise.resolve(exportToPdf(result, systemName, subName)); } finally { setExporting(null); }
+  };
+
+  const handleAnnotate = (ideaId: string, annotation: IdeaAnnotation) => {
+    const updated = { ...annotations, [ideaId]: annotation };
+    setAnnotations(updated);
+    if (result?.id) {
+      try {
+        localStorage.setItem(`brainspark_annotations_${result.id}`, JSON.stringify(updated));
+      } catch {}
+    }
   };
 
   const quickWins = result.ideas.filter(i => i.implementationDifficulty === 'Low');
@@ -477,7 +582,15 @@ export default function ResultsPage() {
           <div className="text-center py-12 text-slate-500">No ideas match the current filters.</div>
         ) : (
           <div className="space-y-4 mb-8">
-            {filtered.map((idea, i) => <IdeaCard key={idea.id} idea={idea} index={i} />)}
+            {filtered.map((idea, i) => (
+              <IdeaCard
+                key={idea.id}
+                idea={idea}
+                index={i}
+                annotation={annotations[idea.id]}
+                onAnnotate={(a) => handleAnnotate(idea.id, a)}
+              />
+            ))}
           </div>
         )}
 

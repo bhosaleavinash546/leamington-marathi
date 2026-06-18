@@ -603,17 +603,69 @@ const priceCache = {
   },
 };
 
+function extractCommodityPrice(text, commodity) {
+  // Remove thousands separators for easier matching
+  const t = text.replace(/(\d),(\d{3})/g, '$1$2');
+  const patterns = {
+    copper_lme:    [/copper[^.]{0,80}([\d.]{4,7})\s*(?:USD|EUR|€|\$)?\s*(?:per\s*)?(?:tonne|ton|\/t\b)/i, /LME copper\D{0,30}([\d.]{4,7})/i],
+    aluminium_lme: [/alumini[uo]m[^.]{0,80}([\d.]{3,6})\s*(?:USD|EUR|€|\$)?\s*(?:per\s*)?(?:tonne|ton|\/t\b)/i],
+    steel_hrc:     [/hot.?roll[^.]{0,80}([\d.]{3,6})\s*(?:USD|EUR|€|\$)?\s*(?:per\s*)?(?:tonne|ton|\/t\b)/i, /HRC[^.]{0,50}([\d.]{3,6})\s*(?:USD|EUR)?\s*(?:per\s*)?(?:tonne|\/t\b)/i],
+    ndfeb_magnets: [/(?:NdFeB|neodymium)[^.]{0,80}([\d.]{2,5})\s*(?:USD|EUR|€|\$)?\s*(?:per\s*)?kg/i],
+    li_carbonate:  [/lithium carbonate[^.]{0,80}([\d.]{1,6})\s*(?:USD|EUR|€|\$)?\s*(?:per\s*)?kg/i],
+    sic_module:    [/SiC[^.]{0,60}([\d.]{1,4})\s*(?:USD|EUR|€|\$)?\s*(?:per\s*)?(?:W|watt|kW)/i],
+  };
+  for (const pat of (patterns[commodity] || [])) {
+    const m = t.match(pat);
+    if (m) {
+      const val = parseFloat(m[1]);
+      if (!isNaN(val) && val > 0) return val;
+    }
+  }
+  return null;
+}
+
+const PRICE_SANITY = {
+  copper_lme:    [4000, 18000],
+  aluminium_lme: [1200, 6000],
+  steel_hrc:     [250,  1500],
+  ndfeb_magnets: [30,   200],
+  li_carbonate:  [4,    60],
+  sic_module:    [0.5,  8],
+};
+
 async function refreshPriceCache(braveApiKey) {
   const now = Date.now();
   if (priceCache.lastRefresh && (now - priceCache.lastRefresh) < PRICE_CACHE_TTL) return priceCache.data;
+
+  const searches = [
+    'LME copper aluminium price per tonne USD EUR 2025',
+    'steel hot rolled coil HRC price per tonne Europe 2025',
+    'neodymium NdFeB magnet price per kg 2025',
+  ];
+
+  let updatedCount = 0;
   try {
-    const results = await performSearch('LME copper aluminium steel price EUR tonne 2025 current spot', braveApiKey);
-    if (results?.length > 0) {
-      console.log('[Prices] Refresh attempted via web search — cache updated');
+    for (const query of searches) {
+      const results = await performSearch(query, braveApiKey).catch(() => []);
+      if (!results?.length) continue;
+      const text = results.map(r => `${r.title} ${r.snippet}`).join(' ');
+      for (const key of Object.keys(priceCache.data)) {
+        const extracted = extractCommodityPrice(text, key);
+        if (extracted !== null) {
+          const [min, max] = PRICE_SANITY[key] || [0, Infinity];
+          if (extracted >= min && extracted <= max) {
+            priceCache.data[key].value = extracted;
+            updatedCount++;
+            console.log(`[Prices] Updated ${key}: ${extracted} ${priceCache.data[key].unit}`);
+          }
+        }
+      }
     }
+    console.log(`[Prices] Refresh complete — ${updatedCount} prices updated`);
   } catch (e) {
     console.log('[Prices] Web refresh failed, using baseline:', e.message);
   }
+
   priceCache.lastRefresh = now;
   return priceCache.data;
 }
@@ -687,9 +739,24 @@ function getRegulatorContext(config) {
   return lines.length > 0 ? `\nREGULATORY CONTEXT (${region || 'EU default'} / ${config?.vehicleType || 'passenger car'}):\n${lines.map(l => `  • ${l}`).join('\n')}` : '';
 }
 
-function buildAnalysisPrompt(config, systemName, subassemblyName, partName, enableSearch) {
+function buildAnalysisPrompt(config, systemName, subassemblyName, partName, enableSearch, cadGeometry) {
   const scope = partName ? `Part: **${partName}** (within ${subassemblyName}, System: ${systemName})` : `Subassembly: **${subassemblyName}** (System: ${systemName})`;
-  const cadLine = config.cadFileName ? `\nCAD file: ${config.cadFileName} (${config.cadFileType}) — reference typical geometry, feature count, wall thickness.` : '';
+  let cadLine = config.cadFileName ? `\nCAD file: ${config.cadFileName} (${config.cadFileType}).` : '';
+  if (cadGeometry && !cadGeometry.isImage) {
+    const bb = cadGeometry.boundingBox;
+    const vol = cadGeometry.estimatedVolume;
+    const sa = cadGeometry.estimatedSurfaceArea;
+    const fc = cadGeometry.featureCounts || {};
+    const parts = [`${cadGeometry.fileName} (${(cadGeometry.fileType || 'CAD').toUpperCase()})`];
+    if (bb) parts.push(`bbox: ${bb.x}×${bb.y}×${bb.z} mm`);
+    if (vol) parts.push(`vol: ${vol.toFixed(1)} cm³`);
+    if (sa) parts.push(`SA: ${sa.toFixed(0)} cm²`);
+    const feats = Object.entries(fc).filter(([,v]) => v > 0).map(([k,v]) => `${k}:${v}`).join(' ');
+    if (feats) parts.push(`features: ${feats}`);
+    if (cadGeometry.extractedMaterial) parts.push(`material callout: ${cadGeometry.extractedMaterial}`);
+    if (cadGeometry.productName) parts.push(`part name: ${cadGeometry.productName}`);
+    cadLine = `\nCAD GEOMETRY (parsed client-side): ${parts.join(' | ')} — use to contextualise material mass, process type, tooling complexity, and feature reduction opportunities.`;
+  }
   const searchInstruction = enableSearch ? `\nIMPORTANT: Use web_search NOW for: (1) current material costs, (2) recent 2024–2025 innovations, (3) OEM/Tier-1 benchmarks. Do 3–5 searches before generating ideas.` : '';
 
   const volume = config.annualVolume || 80000;
@@ -967,15 +1034,28 @@ app.get('/api/prices', async (req, res) => {
 });
 
 app.post('/api/analyze', requireAuth, async (req, res) => {
-  const { config, systemName, subassemblyName, partName, enableSearch, searchApiKey } = req.body;
+  const { config, systemName, subassemblyName, partName, enableSearch, searchApiKey, cadGeometry } = req.body;
   if (!config?.apiKey?.trim()) return res.status(400).json({ error: 'Anthropic API key is required.' });
 
-  // Warm up the price cache (non-blocking on first request)
+  const useSSE = (req.headers['accept'] || '').includes('text/event-stream');
+  if (useSSE) {
+    res.setHeader('Content-Type', 'text/event-stream');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Connection', 'keep-alive');
+    res.flushHeaders();
+  }
+
+  function emit(data) {
+    if (useSSE) res.write(`data: ${JSON.stringify(data)}\n\n`);
+  }
+
   refreshPriceCache(searchApiKey).catch(() => {});
 
   const client = new Anthropic({ apiKey: config.apiKey });
-  const messages = [{ role: 'user', content: buildAnalysisPrompt(config, systemName, subassemblyName, partName, enableSearch) }];
+  const messages = [{ role: 'user', content: buildAnalysisPrompt(config, systemName, subassemblyName, partName, enableSearch, cadGeometry) }];
   const sources = [];
+
+  emit({ type: 'connecting', message: 'Connecting to AI chief engineer...' });
 
   try {
     for (let i = 0; i < 8; i++) {
@@ -987,31 +1067,39 @@ app.post('/api/analyze', requireAuth, async (req, res) => {
       if (response.stop_reason === 'tool_use') {
         const toolResults = [];
         for (const block of response.content.filter(b => b.type === 'tool_use')) {
+          emit({ type: 'searching', query: block.input.query, purpose: block.input.purpose, searchNumber: sources.length + 1 });
           const results = await performSearch(block.input.query, searchApiKey);
           sources.push({ query: block.input.query, purpose: block.input.purpose, results, timestamp: new Date().toISOString() });
+          emit({ type: 'search_done', searchNumber: sources.length, resultCount: results.length, query: block.input.query });
           toolResults.push({ type: 'tool_result', tool_use_id: block.id, content: JSON.stringify({ query: block.input.query, results }) });
           console.log(`[Search] ${block.input.purpose}: "${block.input.query}"`);
         }
         messages.push({ role: 'assistant', content: response.content });
         messages.push({ role: 'user', content: toolResults });
       } else {
+        emit({ type: 'synthesizing', message: `Synthesising ${sources.length > 0 ? `(${sources.length} searches complete) ` : ''}8 expert cost-reduction ideas...` });
         const textBlock = response.content.find(b => b.type === 'text');
         if (!textBlock) throw new Error('No text response from AI.');
         let raw = textBlock.text.trim();
         if (raw.startsWith('```')) raw = raw.replace(/^```[a-z]*\n?/, '').replace(/\n?```$/, '').trim();
-        // Extract JSON array even if the AI prefixed with plain text
         const jsonStart = raw.indexOf('[');
         const jsonEnd = raw.lastIndexOf(']');
-        if (jsonStart !== -1 && jsonEnd > jsonStart) {
-          raw = raw.slice(jsonStart, jsonEnd + 1);
+        if (jsonStart !== -1 && jsonEnd > jsonStart) raw = raw.slice(jsonStart, jsonEnd + 1);
+        const ideas = JSON.parse(raw);
+        if (useSSE) {
+          emit({ type: 'complete', ideas, sources });
+          res.end();
+        } else {
+          return res.json({ ideas, sources });
         }
-        return res.json({ ideas: JSON.parse(raw), sources });
+        return;
       }
     }
-    throw new Error('Max iterations reached.');
+    throw new Error('Max search iterations reached — try disabling web search.');
   } catch (err) {
     console.error('[Analysis Error]', err.message);
-    res.status(500).json({ error: err.message });
+    if (useSSE) { emit({ type: 'error', message: err.message }); res.end(); }
+    else res.status(500).json({ error: err.message });
   }
 });
 
