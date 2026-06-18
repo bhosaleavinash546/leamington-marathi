@@ -361,6 +361,34 @@ const BATTERY_CONTEXT_MAP = {
   'hv-electrical':   { levers: ['Al busbar vs Cu at 800V (current halved): 20-30% busbar material cost (Porsche Taycan, Hyundai E-GMP)','Pre-assembled HV harness module: 25-35% body-line assembly time saving','Integrate BDU + pyro fuse + current sensor: 4 parts → 1 housing (BYD 8-in-1)','CTP reduces inter-module HV connectors: direct cell-to-busbar routing','Standardise HV connector family across models: volume pricing + single qualification'], trends: '800V enabling Al HV busbars. BDU integration into n-in-1 units standard direction. Pyro fuse replacing manual service disconnect. Connector standardisation via NACS/CCS globally.' },
 };
 
+const ICE_CONTEXT_MAP = {
+  'engine-assembly': { levers: ['Al block with Al-Si bore coating (LDS/Plasma) — delete cast-iron liners: 8-14% block mass, 12-18% machining cost (BMW N20, M254)','Integrated exhaust manifold in head (IEM): delete standalone manifold, €40-80/unit + faster warm-up (Ford EcoBoost, VW EA211)','Bedplate crankshaft carrier: 6-10% machining cost NVH -2dB (GM Ecotec)','Hollow assembled camshaft vs solid forged: 25-30% cam mass saving (BMW, Audi TFSI)','VVT phaser integration into single actuator hub: €12-20/unit (Denso, BorgWarner eTVT)'], trends: 'IEM (integrated exhaust manifold) standard on all modern DOHC from 2020. Hollow camshaft standard BMW/Audi. Al block bore coating replacing liners for mass saving.' },
+  'exhaust-system':  { levers: ['Reduce PGM loading via advanced washcoat (Pd/Rh optimisation): 15-30% catalyst metal cost (BASF, Umicore Gen5)','Thin-wall cordierite GPF substrate (100 cpsi, 6 mil wall) EU7-compliant: 8-12% GPF cost (NGK/NTK UltraThin)','Hydroformed SS manifold delete flange-to-turbo: 15-20% weight (BMW M5)','Common centre-pipe section across engine variants: €180-350K tooling saving','Acoustic resonator delete with active exhaust control valve on base trims: €35-55/vehicle'], trends: 'EU7 GPF mandatory all petrol engines 2026. PGM volatility (Rh €150-250/g) driving washcoat optimisation. Thin-wall GPF simultaneously reducing back-pressure and cost.' },
+  'turbo-system':    { levers: ['Twin-scroll single turbo vs twin turbo: €180-280/unit saving (BMW B58 vs N54)','Integrated wastegate in turbine housing: €25-45/unit + packaging (Garrett GTX, BorgWarner R2S)','Water-cooled bearing housing standard — enables oil-free idle-down, delete turbo timer: €15-25','Air-to-air FMAC vs WCAC on base/mid trim: €80-130/unit saving','Al compressor housing right-size to flow: 6-12% cost on base-trim'], trends: 'Twin-scroll single turbo now best-in-class for 2.0L-2.5L applications. Electric supercharger (eSupercharger) emerging for launch performance + MHEV integration.' },
+  'fuel-system':     { levers: ['Delete port injectors on base spec (GDI only vs CPDI): €35-55/vehicle (VW EA888 Gen3B)','Al fuel rail (Ni-plated) vs SS: 15-20% cost at same pressure rating (Bosch, Delphi)','Modular HDPE fuel tank shared across platform: €250-500K tooling saving (Toyota TNGA)','Delete HPFP accumulator on electronic pressure control systems: €8-14/unit','Common HPFP cam lobe across 1.5/2.0L on same block family: 15-25% HPFP dev cost'], trends: 'GDI-only becoming standard vs CPDI on cost-sensitive specs. Al fuel rails proving durability to 350 bar. HPFP cam integration common across engine families.' },
+  'engine-cooling':  { levers: ['Electric coolant pump + map thermostat: €20-35 net saving + 2-3% fuel improvement (BMW B48, M264)','Split cooling (head/block separate circuits): 3-5% fuel saving, confirmed CO2 -2g/km (VW EA888 Gen3B)','Brazed Al flat-tube radiator: 8-12% cost at equal thermal performance (Modine, Denso)','Coolant hose integration into single blow-moulded manifold: 3→1 part + 8-12 min assembly saving','Delete dedicated WCAC loop — share LT coolant circuit: €45-75/vehicle (Ford EcoBoost Gen3)'], trends: 'Electric coolant pumps now standard on all OBD2+ engines. Split cooling confirmed -2g/km CO2. LT shared circuit eliminating dedicated WCAC loop on mainstream applications.' },
+};
+
+const HVAC_CONTEXT_MAP = {
+  'hvac-core':          { levers: ['Single-zone housing platform serving dual-zone via add-on rear duct: €280-500K tooling saving (Valeo ThermoSystem)','BLDC brushless blower motor replacing brushed: €4-8 + warranty -40% (Valeo, MAHLE, Denso)','Delete heater core on BEV (PTC replaces): €22-38 saving + thermal loop simplification (Tesla, VW ID.3)','Delete activated carbon filter layer in low-VOC markets: €4-9/filter (Mann+Hummel market spec)','Common flap actuator stepper motor across all zones: 14→3 SKUs, €3-6 unit cost (Bosch/Hella)'], trends: 'BEV eliminating heater core (PTC replaces). BLDC blower now standard. Single-zone/dual-zone housing sharing growing on shared platforms.' },
+  'refrigerant-circuit':{ levers: ['Electric scroll compressor right-size for heat pump mode (not just cooling): 8-12% cost (MAHLE/Sanden)','R1234yf EXV enables heat pump reversal — COP 2.5-3.5 vs PTC COP 1.0 (BMW iX, Ioniq 5)','Delete receiver-dryer (internal dryer in condenser): €12-18 saving (Delphi/APTIV integrated condenser)','MPE condenser vs tube-and-fin: 8-12% cost at same capacity (standard industry)','Brazed plate chiller integrated into valve block: €35-55 saving (Denso integrated module)'], trends: 'Heat pump >80% BEV 2025. EXV mandatory for heat pump. R1234yf universal. R744 CO2 compressor gaining on sub-zero premium BEV (BMW, Daimler).' },
+  'battery-thermal':    { levers: ['TIM thickness ≤0.3mm via flatness spec: 15-20% TIM cost (Henkel Bergquist)','Single-fluid ATF cooling loop motor + battery: 20-30% thermal system cost (Ford F-150 Lightning)','Direct refrigerant cooling (DRC): delete glycol chiller, €55-80/vehicle (BMW i4 M50, Taycan Turbo)','Phase-change TIM on PHEV partial-use cycle: delete cooling circuit on short-trip duty','Ribbon-fin Al extrusion cooling plate: 20-30% vs brazed serpentine (TEA ribbon-fin for volume BEV)'], trends: 'DRC gaining on performance BEV. Single-fluid ATF growing. TIM thickness drive <0.3mm standard. Immersion cooling for 350kW+ charging emerging from 2027.' },
+};
+
+const INTERIOR_CONTEXT_MAP = {
+  'instrument-panel': { levers: ['PP-LGF CCB replacing Mg/Al die-cast: 35-45% mass, €40-80/unit (BMW iX, VW ID.4)','Delete slush PVC soft pad → IMC on PP: €18-35/IP saving (Toyota bZ4X hard pad approach)','Integrate digital cluster + centre screen into cockpit module: €15-25 assembly saving (VW MIB3, BMW Curved Display)','Delete HUD on base/mid trim: €120-200 saving (Toyota Corolla HUD vs cluster)','Common IP substrate across sedan/SUV on shared platform: €500K-1.2M tooling saving (VW MQB)'], trends: 'Single curved OLED slab replacing separate screens on premium from 2023. PP-LGF CCB replacing Mg die-cast. Digital cluster standard from B-segment 2025.' },
+  'seats':            { levers: ['Al extruded seat frame: 30-35% mass saving, €55-85 at scale (BMW M, Recaro)','Delete 4-way lumbar on base trim: €35-55/seat pair','Carbon-fibre heating mat vs resistive wire: €3-6 material + warranty improvement (Gentherm CarbonCore, BMW G)','Common seat track LHD/RHD symmetric design: €180-280K tooling saving (Toyota TNGA)','Delete rear massage on base/mid: €80-140/vehicle (Mercedes E-Class W214 trim spec)'], trends: 'Al seat frames standard premium. Sustainability driving recycled foam and vegan leather. Integrated heating/ventilation/massage in single module gaining.' },
+  'door-trim':        { levers: ['PP-NF hemp/flax composite trim carrier: 12-18% mass, CO2 -25% (BMW i3, Ford Escape)','Delete premium stitching → laser-simulated IML pattern: €8-14/door pair','Simplify rear door switch to 2-button (delete mirror/seat): €6-12/rear door (VW MQB base)','Ambient LED single flex-strip vs individual dot LEDs: €4-8 assembly saving (BMW G60)','Delete map pocket fabric lining → moulded surface: €2-5/door (Renault Espace base)'], trends: 'Natural-fibre composites growing for EU ELV compliance (25% recycled content by 2025). Single-strip ambient LED displacing individual dot LEDs.' },
+  'centre-console':   { levers: ['Wireless charging in armrest lid (Qi flush): €5-10 bracket/assembly saving (Tesla Model 3)','USB-C hub PCB replacing 12V+USB-A+USB-C modules: 3→1, €12-22 combined saving (BMW iX)','Common console carrier across SWB/LWB with geometry insert: €350-600K tooling (Mercedes S-Class)'], trends: 'USB-C only becoming standard on BEV (delete 12V socket). Wireless charging integrated into armrest standard C-segment 2024. Floating console replacing fixed tunnel on flat-floor BEV.' },
+};
+
+const EXTERIOR_CONTEXT_MAP = {
+  'bumpers':      { levers: ['EPP energy absorber replacing EPE foam + bracket: 2→1, 20-30% mass (JSP Arpro — BMW/VW standard)','Roll-formed Al extrusion bumper beam: 45-50% mass, cost-neutral >120K/yr (Audi A4/A6, BMW 5-Series)','Common F/R bumper beam mount geometry: €200-400K tooling saving (Toyota TNGA)','PP-GF15 fascia with integrated sensor mount bosses: delete 4-6 brackets (Valeo bumper module)','Delete lower NVH deflector on base trim: €12-22/vehicle (VW Golf base vs GTI)'], trends: 'Al extrusion bumper beam standard D-segment. EPP energy absorber replacing EPE globally. Bumper sensor integration moving to OEM-supplied pre-validated bumper module (€65-120 saving from bracket delete).' },
+  'lighting':     { levers: ['Zoned LED headlight vs full Matrix ADB on base trim: €180-320/unit saving (4-zone vs 84-pixel)','Single PMMA wave-guide DRL strip vs discrete LEDs: €15-28/unit (Valeo LED guide)','Front/rear inner optic carrier shared tool: €150-280K (BMW G20/G26)','Delete front fog lamp per UNECE R48 (2024): €28-45/vehicle (cornering in ADB replaces function)','Tail lamp common outer lens across hatch/estate with infill: €120-220K tooling saving'], trends: 'NCAP 2026 advanced lighting (+1.5 star ADB bonus). Matrix LED cost declining 8-12%/yr. Front fog lamp deletion now EU-legally permitted with ADB cornering function. Full-LED DRL brand signature mandatory C-segment+.' },
+  'glass-glazing':{ levers: ['Acoustic PVB windscreen: delete A-pillar NVH pad: €4-8 saving (AGC Planibel Acoustic)','Thermal comfort side glass: HVAC compressor right-size €25-40 saving (Saint-Gobain EasyCool)','Electrochromic glass replacing blind mechanism: €20-30 net saving (Continental/View)','Heated windscreen ITO coating: 3-5% BEV range gain in winter (AGC Thermo-Coat, VW ID.7)'], trends: 'Acoustic windscreen standard BEV from 2022. Electrochromic panoramic glass growing for NVH + UV benefit. Heated windscreen cost reducing: €35-55 vs €180+ traditional PTC front screen heater.' },
+  'wipers-washers':{ levers: ['Aero flat blade standard: €2-5 saving + warranty improvement (Bosch AeroTwin standard D-segment)','Single-arm wiper on SUV/hatch: €15-25 unit saving (Mercedes CLA)','Rain sensor → ADAS camera rain detection algorithm: €18-30 sensor delete (Tesla Vision-based)','Delete heated nozzle on APAC/MENA warm-market spec: €8-15/vehicle'], trends: 'ADAS camera absorbing rain sensor function (Tesla proven 2021). Aero flat blade universal. Single-arm wiper growing for Cd and aesthetics. Heated windscreen reducing heated nozzle justification.' },
+};
+
 const EDU_KEYWORDS = {
   'stator-winding':  ['stator winding','winding','hairpin','bar winding','coil'],
   'stator-core':     ['stator core','lamination','electrical steel','no steel'],
@@ -412,10 +440,42 @@ const BATTERY_KEYWORDS = {
   'hv-electrical':   ['battery busbar','battery hv cable','bdu','battery disconnect','battery harness','pyro fuse','hv connector battery','pack electrical'],
 };
 
+const ICE_KEYWORDS = {
+  'engine-assembly': ['engine assembly','cylinder block','cylinder head','crankshaft','piston','camshaft','valvetrain','timing chain','vvt','engine mount','head gasket','combustion'],
+  'exhaust-system':  ['exhaust manifold','catalyst','gpf','dpf','scr','muffler','tailpipe','silencer','adblue','aftertreatment','emission control','exhaust system'],
+  'turbo-system':    ['turbocharger','turbo','intercooler','charge air','wastegate','boost','vgt','blow-off','supercharger','forced induction','compressor housing'],
+  'fuel-system':     ['fuel tank','fuel pump','fuel rail','injector','gdi','hpfp','fuel line','fuel system','fuel pressure','injection'],
+  'engine-cooling':  ['radiator','coolant pump','thermostat','coolant hose','expansion tank','engine cooling','oil cooler cooling','cooling system'],
+};
+
+const HVAC_KEYWORDS = {
+  'hvac-core':          ['hvac housing','evaporator','heater core','blower motor','blend flap','cabin filter','hvac core','air distribution','hvac unit'],
+  'refrigerant-circuit':['ac compressor','a/c compressor','condenser','refrigerant','txv','exv','expansion valve','receiver dryer','heat pump','refrigerant chiller','ac lines','r1234yf'],
+  'battery-thermal':    ['battery cooling','cooling plate','tim','thermal interface','btms','battery thermal','single fluid','atf cooling','direct refrigerant','phase change','battery temperature'],
+};
+
+const INTERIOR_KEYWORDS = {
+  'instrument-panel': ['instrument panel','dashboard','ip substrate','cross-car beam','ccb','digital cluster','centre display','hud','head-up display','steering wheel','passenger airbag','hvac vent'],
+  'seats':            ['seat frame','seat track','seat foam','seat trim','seat heating','seat ventilation','seat massage','rear seat','isofix','lumbar','seat system'],
+  'door-trim':        ['door trim','door carrier','door armrest','door switch','speaker grille','ambient light strip','door pull','door map pocket'],
+  'centre-console':   ['centre console','console armrest','gear selector','wireless charger','usb hub','usb socket','console structure'],
+};
+
+const EXTERIOR_KEYWORDS = {
+  'bumpers':       ['bumper','fascia','energy absorber','bumper beam','underbody spoiler','front fascia','rear fascia'],
+  'lighting':      ['headlight','tail lamp','drl','daytime running','led headlight','matrix led','fog lamp','ambient exterior','headlight ecu'],
+  'glass-glazing': ['windscreen','side glass','rear screen','panoramic glass','pano glass','sunroof','glazing','acoustic glass'],
+  'wipers-washers':['wiper','washer','rain sensor','wiper blade','wiper mechanism','washer pump','jet nozzle'],
+};
+
 const EDU_SYSTEM_KEYWORDS   = ['edu','electric drive unit','e-drive','e-axle','bev','mhev','powertrain bev','electric machine','inverter','e-motor'];
 const BIW_SYSTEM_KEYWORDS   = ['biw','body-in-white','body in white','biy','door','pillar','sill','floor pan','bonnet','liftgate','roof bow'];
 const CHASSIS_SYSTEM_KEYWORDS = ['chassis','suspension','steering','braking system','subframe','anti-roll bar','hub bearing'];
 const BATTERY_SYSTEM_KEYWORDS = ['battery pack','bev battery','phev battery','battery cell','bms','battery thermal','pack housing','hv electrical battery'];
+const ICE_SYSTEM_KEYWORDS   = ['powertrain-ice','engine assembly','exhaust system','turbocharger','fuel system','engine cooling','cylinder block','cylinder head','crankshaft','camshaft','intake manifold','fuel injector','catalytic converter','gpf','dpf','scr'];
+const HVAC_SYSTEM_KEYWORDS  = ['hvac','thermal & hvac','air conditioning','heat pump','refrigerant circuit','evaporator','heater core','blower motor','ac compressor','condenser','battery thermal management','cooling plate','tim material'];
+const INTERIOR_SYSTEM_KEYWORDS = ['interior systems','instrument panel','dashboard','cross-car beam','seat systems','door trim','centre console','headliner','digital cluster','centre display','airbag module','seat foam','seat frame'];
+const EXTERIOR_SYSTEM_KEYWORDS = ['exterior systems','bumper system','front bumper','rear bumper','headlight unit','tail lamp','lighting system','wing mirror','windscreen','panoramic glass','wiper system','sunroof mechanism','daytime running'];
 
 function detectEduComponent(systemName, subassemblyName, partName) {
   const haystack = [systemName, subassemblyName, partName].filter(Boolean).join(' ').toLowerCase();
@@ -429,11 +489,47 @@ function detectEduComponent(systemName, subassemblyName, partName) {
 function detectContextDomain(config, systemName, subassemblyName, partName) {
   const systemId = (config?.systemId || '').toLowerCase();
   const haystack = [systemName, subassemblyName, partName].filter(Boolean).join(' ').toLowerCase();
-  if (systemId === 'battery' || BATTERY_SYSTEM_KEYWORDS.some(k => haystack.includes(k))) return 'battery';
-  if (systemId === 'biw'     || BIW_SYSTEM_KEYWORDS.some(k => haystack.includes(k)))     return 'biw';
-  if (systemId === 'chassis' || CHASSIS_SYSTEM_KEYWORDS.some(k => haystack.includes(k))) return 'chassis';
+  if (systemId === 'battery-pack' || BATTERY_SYSTEM_KEYWORDS.some(k => haystack.includes(k))) return 'battery';
+  if (systemId === 'biw'          || BIW_SYSTEM_KEYWORDS.some(k => haystack.includes(k)))     return 'biw';
+  if (systemId === 'chassis'      || CHASSIS_SYSTEM_KEYWORDS.some(k => haystack.includes(k))) return 'chassis';
+  if (systemId === 'powertrain-ice' || ICE_SYSTEM_KEYWORDS.some(k => haystack.includes(k)))   return 'ice';
+  if (systemId === 'hvac'         || HVAC_SYSTEM_KEYWORDS.some(k => haystack.includes(k)))    return 'hvac';
+  if (systemId === 'interior'     || INTERIOR_SYSTEM_KEYWORDS.some(k => haystack.includes(k))) return 'interior';
+  if (systemId === 'exterior'     || EXTERIOR_SYSTEM_KEYWORDS.some(k => haystack.includes(k))) return 'exterior';
   if (EDU_SYSTEM_KEYWORDS.some(k => haystack.includes(k))) return 'edu';
   return null;
+}
+
+function detectIceComponent(systemName, subassemblyName, partName) {
+  const haystack = [systemName, subassemblyName, partName].filter(Boolean).join(' ').toLowerCase();
+  for (const [compId, keywords] of Object.entries(ICE_KEYWORDS)) {
+    if (keywords.some(k => haystack.includes(k))) return compId;
+  }
+  return 'engine-assembly';
+}
+
+function detectHvacComponent(systemName, subassemblyName, partName) {
+  const haystack = [systemName, subassemblyName, partName].filter(Boolean).join(' ').toLowerCase();
+  for (const [compId, keywords] of Object.entries(HVAC_KEYWORDS)) {
+    if (keywords.some(k => haystack.includes(k))) return compId;
+  }
+  return 'hvac-core';
+}
+
+function detectInteriorComponent(systemName, subassemblyName, partName) {
+  const haystack = [systemName, subassemblyName, partName].filter(Boolean).join(' ').toLowerCase();
+  for (const [compId, keywords] of Object.entries(INTERIOR_KEYWORDS)) {
+    if (keywords.some(k => haystack.includes(k))) return compId;
+  }
+  return 'instrument-panel';
+}
+
+function detectExteriorComponent(systemName, subassemblyName, partName) {
+  const haystack = [systemName, subassemblyName, partName].filter(Boolean).join(' ').toLowerCase();
+  for (const [compId, keywords] of Object.entries(EXTERIOR_KEYWORDS)) {
+    if (keywords.some(k => haystack.includes(k))) return compId;
+  }
+  return 'bumpers';
 }
 
 function detectBiwComponent(systemName, subassemblyName, partName) {
@@ -517,6 +613,54 @@ const LABOUR_RATES = {
   mexico: '$8-12/hr', usa: '$40-55/hr', china: '¥70-130/hr (~€10-18)', india: '₹800-1200/hr (~€9-14)', korea: '₩35,000-45,000/hr (~€25-32)',
 };
 
+function getRegulatorContext(config) {
+  const region = config?.plantRegion || '';
+  const vehicleType = (config?.vehicleType || '').toLowerCase();
+  const systemId = (config?.systemId || '').toLowerCase();
+  const lines = [];
+
+  // EU / UK regulations
+  if (['germany','uk','czech','spain'].includes(region) || !region) {
+    lines.push('EU7 (2026 LD): stricter NOx/PN limits, GPF mandatory all petrol, eCAT cold-start requirement. Brake dust BDPF filter mandatory 2027 (4 mg/km PN limit).');
+    lines.push('NCAP 2026: AEB night/VRU, ESS (Emergency Steering Support), driver monitoring DMS mandatory for 5-star. Advanced lighting ADB gives +1.5 star bonus in Assisted Driving score.');
+    lines.push('REACH/SVHC: Restrict cadmium, hexavalent chromium in coatings. EU ELV 2025 revision: 25% recycled content target, PCB ban in plastics.');
+    lines.push('EU Battery Regulation 2025: Passport requirement for BEV/PHEV batteries. Recycled content targets (16% Co, 6% Li, 6% Ni by 2031). Carbon footprint declaration mandatory 2024.');
+    if (['biw','closures','door','pillar','sill','crash'].some(k => systemId.includes(k))) {
+      lines.push('ECE R94 / R95 frontal/lateral passive safety: critical for BIW pillar, door, sill sizing. NCAP MPDB (Mobile Progressive Deformable Barrier) 2023 raised energy management requirements.');
+    }
+  }
+
+  // CAFE / North America
+  if (['usa','mexico'].includes(region)) {
+    lines.push('CAFE 2032: 58 mpg combined fleet average — drives lightweight content cost-justification ($2-4/lb weight saving rule-of-thumb).');
+    lines.push('FMVSS 216 roof crush: 5× vehicle weight (≥22.24 kN) — primary SUV/pickup roof structure design driver.');
+    lines.push('IRA (Inflation Reduction Act): BEV/PHEV tax credits require ≥50% North American content for battery, ≥40% critical minerals from FTA partners by 2026.');
+    lines.push('NHTSA NCAP 5-star: AEB, LKAS standard from 2026 MY. Rear-seat reminder and camera-monitor standard from 2026.');
+  }
+
+  // China
+  if (region === 'china') {
+    lines.push('China 7 Emission Standard (2025): equivalent to EU6d-temp, targets NOx 35 mg/km. Mandatory OBD diagnostics on all emissions-related components.');
+    lines.push('MIIT NEV Mandate: BEV/PHEV targets require OEMs to meet dual-credit scoring — VAVE on BEV content directly supports dual-credit point economics.');
+    lines.push('GB/T fast charge standard: CCS/GBT compatibility. 800V architecture upgrade requirements for new BEV platform approvals 2025+.');
+  }
+
+  // India
+  if (region === 'india') {
+    lines.push('Bharat Stage VI Phase 2 (2023+): RDE (Real Driving Emissions) mandatory, OBD-IIA required. GPF optional for petrol RDE compliance.');
+    lines.push('AIS-140 mandatory telematics for commercial. CMVR safety: AEB mandatory from 2023 for M1 vehicles >3.5t. Side airbag mandate from Oct 2023.');
+    lines.push('PLI Scheme (Production-Linked Incentive): BEV battery manufacturing incentives — localisation of battery cells and pack components receives 18-26% production incentive.');
+  }
+
+  // Korea
+  if (region === 'korea') {
+    lines.push('Korea Emission Standard K-Euro6d: aligned with EU6d. RDE block required from 2024 MY. GPF requirement for petrol from 2025.');
+    lines.push('Korea EV subsidy: national + regional incentives driving BEV volume; battery domestic content requirements gaining.');
+  }
+
+  return lines.length > 0 ? `\nREGULATORY CONTEXT (${region || 'EU default'} / ${config?.vehicleType || 'passenger car'}):\n${lines.map(l => `  • ${l}`).join('\n')}` : '';
+}
+
 function buildAnalysisPrompt(config, systemName, subassemblyName, partName, enableSearch) {
   const scope = partName ? `Part: **${partName}** (within ${subassemblyName}, System: ${systemName})` : `Subassembly: **${subassemblyName}** (System: ${systemName})`;
   const cadLine = config.cadFileName ? `\nCAD file: ${config.cadFileName} (${config.cadFileType}) — reference typical geometry, feature count, wall thickness.` : '';
@@ -530,7 +674,7 @@ function buildAnalysisPrompt(config, systemName, subassemblyName, partName, enab
   const regionLine = `Plant region: ${config.plantRegion || 'unspecified — default Western Europe'} | Labour rate: ${labourRate} | Annual volume: ${volume.toLocaleString()} units/yr | Programme: ${programmeYears} years | Currency: ${currency}`;
   const bodyStyleLine = config.bodyStyle && BODY_STYLE_CONTEXT[config.bodyStyle] ? `\nBody style: ${config.bodyStyle.toUpperCase()} — ${BODY_STYLE_CONTEXT[config.bodyStyle]}` : '';
 
-  // Multi-domain curated context injection (BIW / Chassis / Battery / EDU)
+  // Multi-domain curated context injection (all 8 domains)
   const domain = detectContextDomain(config, systemName, subassemblyName, partName);
   let curatedContext = '';
 
@@ -558,9 +702,34 @@ function buildAnalysisPrompt(config, systemName, subassemblyName, partName, enab
       const ctx = BATTERY_CONTEXT_MAP[compId];
       curatedContext = `\nCURATED BATTERY KNOWLEDGE BASE — use these validated levers as grounding:\n${ctx.levers.map((l, i) => `  ${i+1}. ${l}`).join('\n')}\nTrend context: ${ctx.trends}\nBattery benchmarks: NMC cell ${currencySymbol}65-90/kWh | LFP cell ${currencySymbol}50-70/kWh | Cu busbar ${currencySymbol}8,500-10,000/t | Al busbar ${currencySymbol}2,400-2,800/t`;
     }
+  } else if (domain === 'ice') {
+    const compId = detectIceComponent(systemName, subassemblyName, partName);
+    if (compId && ICE_CONTEXT_MAP[compId]) {
+      const ctx = ICE_CONTEXT_MAP[compId];
+      curatedContext = `\nCURATED POWERTRAIN-ICE KNOWLEDGE BASE — use these validated levers as grounding:\n${ctx.levers.map((l, i) => `  ${i+1}. ${l}`).join('\n')}\nTrend context: ${ctx.trends}\nICE benchmarks: Al block (A319) ${currencySymbol}2,400-2,800/t | Forged steel crank ${currencySymbol}120-180/unit | PGM Pd ~${currencySymbol}30/g, Rh ~${currencySymbol}200/g | TWC substrate ${currencySymbol}15-25/unit | VGT turbo ${currencySymbol}280-450/unit`;
+    }
+  } else if (domain === 'hvac') {
+    const compId = detectHvacComponent(systemName, subassemblyName, partName);
+    if (compId && HVAC_CONTEXT_MAP[compId]) {
+      const ctx = HVAC_CONTEXT_MAP[compId];
+      curatedContext = `\nCURATED HVAC KNOWLEDGE BASE — use these validated levers as grounding:\n${ctx.levers.map((l, i) => `  ${i+1}. ${l}`).join('\n')}\nTrend context: ${ctx.trends}\nHVAC benchmarks: Electric scroll compressor ${currencySymbol}180-280/unit | EXV ${currencySymbol}35-55 | MPE condenser ${currencySymbol}65-95 | BLDC blower ${currencySymbol}45-70 | PTC heater ${currencySymbol}35-60`;
+    }
+  } else if (domain === 'interior') {
+    const compId = detectInteriorComponent(systemName, subassemblyName, partName);
+    if (compId && INTERIOR_CONTEXT_MAP[compId]) {
+      const ctx = INTERIOR_CONTEXT_MAP[compId];
+      curatedContext = `\nCURATED INTERIOR KNOWLEDGE BASE — use these validated levers as grounding:\n${ctx.levers.map((l, i) => `  ${i+1}. ${l}`).join('\n')}\nTrend context: ${ctx.trends}\nInterior benchmarks: Mg CCB ${currencySymbol}85-140/unit | PP-LGF CCB ${currencySymbol}45-80/unit | Digital cluster ${currencySymbol}180-280/unit | Al seat frame ${currencySymbol}65-110/seat | Heated glass ${currencySymbol}35-55 premium`;
+    }
+  } else if (domain === 'exterior') {
+    const compId = detectExteriorComponent(systemName, subassemblyName, partName);
+    if (compId && EXTERIOR_CONTEXT_MAP[compId]) {
+      const ctx = EXTERIOR_CONTEXT_MAP[compId];
+      curatedContext = `\nCURATED EXTERIOR KNOWLEDGE BASE — use these validated levers as grounding:\n${ctx.levers.map((l, i) => `  ${i+1}. ${l}`).join('\n')}\nTrend context: ${ctx.trends}\nExterior benchmarks: Matrix ADB headlight ${currencySymbol}220-380/unit | Al bumper beam extrusion ${currencySymbol}35-65/unit | EPP foam absorber ${currencySymbol}12-22 | Acoustic PVB windscreen ${currencySymbol}180-250 | Electrochromic glass ${currencySymbol}95-140 premium`;
+    }
   }
 
   const livePrices = getPriceString();
+  const regulatoryContext = getRegulatorContext(config);
 
   return `Generate 8 expert-level cost reduction ideas for:
 Vehicle: ${config.vehicleType} | ${scope}${config.additionalContext ? ` | Context: ${config.additionalContext}` : ''}
@@ -568,13 +737,15 @@ ${regionLine}${bodyStyleLine}${cadLine}${searchInstruction}
 
 ${livePrices}
 ${curatedContext}
+${regulatoryContext}
 
 IMPORTANT: Use the actual volume (${volume.toLocaleString()} units/yr) and currency (${currency}) in all annual savings calculations.
 
 Each idea JSON object must have EXACTLY these fields:
-{"id":"slug","title":"≤12 words","technicalDescription":"180-220 words, specific grades/processes/benchmarks","manufacturingImpact":"90-130 words","costSavingTypes":["material|process|logistics|complexity|warranty|tooling|weight|commonisation"],"costSavingPotential":{"qualitative":"High/Medium/Low — reason","percentage":"e.g. 10-18%","annualValue":"e.g. ${currencySymbol}350K–${currencySymbol}650K at ${volume.toLocaleString()} units/yr","calculationBasis":"brief calc logic"},"implementationDifficulty":"Low|Medium|High","riskNotes":"70-90 words on NCAP/NVH/durability/regulatory risks + mitigations","dfmaPrinciples":["3-6 principles"],"systemLevel":"Assembly|Subassembly|Part","timeToImplement":"e.g. 6-12 months","benchmarkReference":"specific OEM/supplier example","searchDataUsed":true|false,"confidenceLevel":"verified|benchmarked|estimated|theoretical"}
+{"id":"slug","title":"≤12 words","technicalDescription":"180-220 words, specific grades/processes/benchmarks","manufacturingImpact":"90-130 words","costSavingTypes":["material|process|logistics|complexity|warranty|tooling|weight|commonisation"],"costSavingPotential":{"qualitative":"High/Medium/Low — reason","percentage":"e.g. 10-18%","annualValue":"e.g. ${currencySymbol}350K–${currencySymbol}650K at ${volume.toLocaleString()} units/yr","calculationBasis":"brief calc logic"},"implementationDifficulty":"Low|Medium|High","riskNotes":"70-90 words on NCAP/NVH/durability/regulatory risks + mitigations","dfmaPrinciples":["3-6 principles"],"systemLevel":"Assembly|Subassembly|Part","timeToImplement":"e.g. 6-12 months","benchmarkReference":"specific OEM/supplier example","searchDataUsed":true|false,"confidenceLevel":"verified|benchmarked|estimated|theoretical","regulatoryContext":"1 sentence on relevant regulatory driver or compliance benefit if applicable, else null","evidenceSources":[{"type":"oem_press_release|teardown|patent|industry_report|supplier_data|web_search|regulatory","title":"short source name","year":2024,"confidence":"high|medium|low"}]}
 
 CONFIDENCE GUIDE: verified=OEM confirmed in production | benchmarked=teardown/study data confirms | estimated=cost-model based | theoretical=first-principles analysis.
+EVIDENCE SOURCES: List 1-3 real evidence sources per idea (OEM teardowns, patents, press releases, industry reports). Be specific — name the OEM/supplier and year.
 Mix: ≥2 Low difficulty, 3 Medium, 2 High. Include 1 commonisation + 1 emerging-tech idea. Return ONLY JSON array.`;
 }
 

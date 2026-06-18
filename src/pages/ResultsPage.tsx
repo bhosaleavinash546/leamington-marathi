@@ -6,9 +6,9 @@ import {
   TrendingDown, Zap, AlertTriangle, CheckCircle, Clock,
   ChevronDown, ChevronUp, BarChart3, RefreshCw, Tag,
   Globe, ExternalLink, ChevronRight, Search, DollarSign, Calculator,
-  ShieldCheck, BookOpen, FlaskConical, Lightbulb
+  ShieldCheck, BookOpen, FlaskConical, Lightbulb, Scale, Link2
 } from 'lucide-react';
-import { AnalysisResult, CostReductionIdea, CostSavingType, Difficulty, SearchSource, ConfidenceLevel } from '../types';
+import { AnalysisResult, CostReductionIdea, CostSavingType, Difficulty, SearchSource, ConfidenceLevel, EvidenceSource } from '../types';
 import { exportToExcel, exportToPowerPoint } from '../services/export-service';
 import IdeasDashboard from '../components/results/IdeasDashboard';
 import BusinessCaseCalculator from '../components/results/BusinessCaseCalculator';
@@ -34,6 +34,22 @@ const LEVEL_COLORS: Record<string, string> = {
   Assembly:    'bg-violet-500/15 text-violet-300 border-violet-500/25',
   Subassembly: 'bg-sky-500/15    text-sky-300    border-sky-500/25',
   Part:        'bg-emerald-500/15 text-emerald-300 border-emerald-500/25',
+};
+
+const EVIDENCE_TYPE_CONFIG: Record<EvidenceSource['type'], { label: string; color: string; bg: string }> = {
+  oem_press_release: { label: 'OEM Press Release', color: 'text-blue-300',   bg: 'bg-blue-500/10 border-blue-500/20' },
+  teardown:          { label: 'Teardown Study',     color: 'text-emerald-300',bg: 'bg-emerald-500/10 border-emerald-500/20' },
+  patent:            { label: 'Patent',             color: 'text-violet-300', bg: 'bg-violet-500/10 border-violet-500/20' },
+  industry_report:   { label: 'Industry Report',   color: 'text-amber-300',  bg: 'bg-amber-500/10 border-amber-500/20' },
+  supplier_data:     { label: 'Supplier Data',      color: 'text-cyan-300',   bg: 'bg-cyan-500/10 border-cyan-500/20' },
+  web_search:        { label: 'Web Search',         color: 'text-slate-300',  bg: 'bg-slate-500/10 border-slate-500/20' },
+  regulatory:        { label: 'Regulatory',         color: 'text-red-300',    bg: 'bg-red-500/10 border-red-500/20' },
+};
+
+const EVIDENCE_CONFIDENCE_DOT: Record<EvidenceSource['confidence'], string> = {
+  high:   'bg-green-400',
+  medium: 'bg-amber-400',
+  low:    'bg-red-400',
 };
 
 const CONFIDENCE_CONFIG: Record<ConfidenceLevel, { label: string; color: string; bg: string; border: string; icon: typeof ShieldCheck; title: string }> = {
@@ -162,6 +178,38 @@ function IdeaCard({ idea, index }: { idea: CostReductionIdea; index: number }) {
             <div className="p-3 rounded-xl bg-blue-500/5 border border-blue-500/15">
               <span className="text-blue-400 text-xs font-semibold uppercase tracking-wide">Industry Benchmark: </span>
               <span className="text-slate-300 text-sm">{idea.benchmarkReference}</span>
+            </div>
+          )}
+
+          {idea.regulatoryContext && idea.regulatoryContext !== 'null' && (
+            <div className="p-3 rounded-xl bg-red-500/5 border border-red-500/15 flex items-start gap-2">
+              <Scale size={14} className="text-red-400 flex-shrink-0 mt-0.5" />
+              <div>
+                <span className="text-red-400 text-xs font-semibold uppercase tracking-wide block mb-0.5">Regulatory Driver</span>
+                <span className="text-slate-300 text-sm">{idea.regulatoryContext}</span>
+              </div>
+            </div>
+          )}
+
+          {idea.evidenceSources && idea.evidenceSources.length > 0 && (
+            <div>
+              <h4 className="text-slate-300 text-xs font-semibold uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                <Link2 size={12} /> Evidence Sources
+              </h4>
+              <div className="flex flex-wrap gap-2">
+                {idea.evidenceSources.map((src, i) => {
+                  const cfg = EVIDENCE_TYPE_CONFIG[src.type] || EVIDENCE_TYPE_CONFIG.web_search;
+                  return (
+                    <div key={i} className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border text-xs ${cfg.bg}`}>
+                      <div className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${EVIDENCE_CONFIDENCE_DOT[src.confidence]}`} title={`${src.confidence} confidence`} />
+                      <div>
+                        <div className={`font-medium ${cfg.color}`}>{src.title}{src.year ? ` (${src.year})` : ''}</div>
+                        <div className="text-slate-500 text-xs">{cfg.label}</div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           )}
 

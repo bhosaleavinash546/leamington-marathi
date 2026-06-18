@@ -1,13 +1,17 @@
 import { useState } from 'react';
-import { TrendingUp, Cpu, Wrench, Building2, ChevronRight, Car, Battery, Settings } from 'lucide-react';
+import { TrendingUp, Cpu, Wrench, Building2, ChevronRight, Car, Battery, Settings, Flame, Wind, Armchair, Lightbulb } from 'lucide-react';
 import {
   MFG_LEVERS, EDU_TRENDS, OEM_MOVES, EDU_COST_STRUCTURE, getTotalEduIdeas, EDU_COMPONENTS,
 } from '../data/edu-knowledge-base';
 import { BIW_COMPONENTS, BIW_MFG_LEVERS, BIW_TRENDS, BIW_OEM_BENCHMARKS, BIW_COST_STRUCTURE, getTotalBiwIdeas } from '../data/biw-knowledge-base';
 import { CHASSIS_COMPONENTS, CHASSIS_TRENDS, CHASSIS_COST_STRUCTURE, getTotalChassisIdeas } from '../data/chassis-knowledge-base';
 import { BATTERY_COMPONENTS, BATTERY_MFG_LEVERS, BATTERY_TRENDS, BATTERY_COST_STRUCTURE, getTotalBatteryIdeas } from '../data/battery-knowledge-base';
+import { ICE_COMPONENTS, ICE_MFG_LEVERS, ICE_TRENDS, ICE_COST_STRUCTURE, getTotalIceIdeas } from '../data/powertrain-ice-knowledge-base';
+import { HVAC_COMPONENTS, HVAC_MFG_LEVERS, HVAC_TRENDS, HVAC_COST_STRUCTURE, getTotalHvacIdeas } from '../data/hvac-knowledge-base';
+import { INTERIOR_COMPONENTS, INTERIOR_TRENDS, INTERIOR_COST_STRUCTURE, getTotalInteriorIdeas } from '../data/interior-knowledge-base';
+import { EXTERIOR_COMPONENTS, EXTERIOR_TRENDS, EXTERIOR_COST_STRUCTURE, getTotalExteriorIdeas } from '../data/exterior-knowledge-base';
 
-type Domain = 'edu' | 'biw' | 'chassis' | 'battery';
+type Domain = 'edu' | 'biw' | 'chassis' | 'battery' | 'ice' | 'hvac' | 'interior' | 'exterior';
 type Tab = 'trends' | 'manufacturing' | 'oem';
 
 const CONF_COLORS: Record<string, string> = {
@@ -45,10 +49,14 @@ function getTrendStatusClass(status: string) {
 }
 
 const DOMAINS: { id: Domain; label: string; icon: typeof TrendingUp; color: string; short: string }[] = [
-  { id: 'edu',     label: 'Electric Drive Unit',   icon: Cpu,      color: 'text-gold-400',    short: 'EDU' },
-  { id: 'biw',     label: 'Body-in-White',         icon: Car,      color: 'text-indigo-400',  short: 'BIW' },
-  { id: 'chassis', label: 'Chassis & Suspension',  icon: Settings, color: 'text-blue-400',    short: 'Chassis' },
-  { id: 'battery', label: 'Battery Pack',          icon: Battery,  color: 'text-emerald-400', short: 'Battery' },
+  { id: 'edu',      label: 'Electric Drive Unit',   icon: Cpu,      color: 'text-gold-400',    short: 'EDU' },
+  { id: 'biw',      label: 'Body-in-White',         icon: Car,      color: 'text-indigo-400',  short: 'BIW' },
+  { id: 'chassis',  label: 'Chassis',               icon: Settings, color: 'text-blue-400',    short: 'Chassis' },
+  { id: 'battery',  label: 'Battery Pack',          icon: Battery,  color: 'text-emerald-400', short: 'Battery' },
+  { id: 'ice',      label: 'Powertrain ICE',        icon: Flame,    color: 'text-orange-400',  short: 'ICE' },
+  { id: 'hvac',     label: 'Thermal & HVAC',        icon: Wind,     color: 'text-cyan-400',    short: 'HVAC' },
+  { id: 'interior', label: 'Interior Systems',      icon: Armchair, color: 'text-amber-400',   short: 'Interior' },
+  { id: 'exterior', label: 'Exterior Systems',      icon: Lightbulb,color: 'text-yellow-400',  short: 'Exterior' },
 ];
 
 const TABS: { id: Tab; label: string; icon: typeof TrendingUp }[] = [
@@ -66,18 +74,26 @@ export default function TrendsPage() {
   const DomainIcon = domainMeta.icon;
 
   function getKpis() {
-    if (domain === 'edu')     return [{ label: 'Components', value: EDU_COMPONENTS.length }, { label: 'VAVE ideas', value: getTotalEduIdeas() }, { label: 'Mfg levers', value: MFG_LEVERS.edu.items.length + MFG_LEVERS.sub.items.length + MFG_LEVERS.part.items.length }, { label: 'Trends', value: EDU_TRENDS.unit.length + EDU_TRENDS.sub.length + EDU_TRENDS.part.length }];
-    if (domain === 'biw')     return [{ label: 'BIW components', value: BIW_COMPONENTS.length }, { label: 'VAVE ideas', value: getTotalBiwIdeas() }, { label: 'Mfg levers', value: BIW_MFG_LEVERS.length }, { label: 'Trends', value: BIW_TRENDS.length }];
-    if (domain === 'chassis') return [{ label: 'Components', value: CHASSIS_COMPONENTS.length }, { label: 'VAVE ideas', value: getTotalChassisIdeas() }, { label: 'Mfg levers', value: 0 }, { label: 'Trends', value: CHASSIS_TRENDS.length }];
-    if (domain === 'battery') return [{ label: 'Components', value: BATTERY_COMPONENTS.length }, { label: 'VAVE ideas', value: getTotalBatteryIdeas() }, { label: 'Mfg levers', value: BATTERY_MFG_LEVERS.length }, { label: 'Trends', value: BATTERY_TRENDS.length }];
+    if (domain === 'edu')      return [{ label: 'Components', value: EDU_COMPONENTS.length }, { label: 'VAVE ideas', value: getTotalEduIdeas() }, { label: 'Mfg levers', value: MFG_LEVERS.edu.items.length + MFG_LEVERS.sub.items.length + MFG_LEVERS.part.items.length }, { label: 'Trends', value: EDU_TRENDS.unit.length + EDU_TRENDS.sub.length + EDU_TRENDS.part.length }];
+    if (domain === 'biw')      return [{ label: 'BIW components', value: BIW_COMPONENTS.length }, { label: 'VAVE ideas', value: getTotalBiwIdeas() }, { label: 'Mfg levers', value: BIW_MFG_LEVERS.length }, { label: 'Trends', value: BIW_TRENDS.length }];
+    if (domain === 'chassis')  return [{ label: 'Components', value: CHASSIS_COMPONENTS.length }, { label: 'VAVE ideas', value: getTotalChassisIdeas() }, { label: 'Mfg levers', value: 0 }, { label: 'Trends', value: CHASSIS_TRENDS.length }];
+    if (domain === 'battery')  return [{ label: 'Components', value: BATTERY_COMPONENTS.length }, { label: 'VAVE ideas', value: getTotalBatteryIdeas() }, { label: 'Mfg levers', value: BATTERY_MFG_LEVERS.length }, { label: 'Trends', value: BATTERY_TRENDS.length }];
+    if (domain === 'ice')      return [{ label: 'Components', value: ICE_COMPONENTS.length }, { label: 'VAVE ideas', value: getTotalIceIdeas() }, { label: 'Mfg levers', value: ICE_MFG_LEVERS.length }, { label: 'Trends', value: ICE_TRENDS.length }];
+    if (domain === 'hvac')     return [{ label: 'Components', value: HVAC_COMPONENTS.length }, { label: 'VAVE ideas', value: getTotalHvacIdeas() }, { label: 'Mfg levers', value: HVAC_MFG_LEVERS.length }, { label: 'Trends', value: HVAC_TRENDS.length }];
+    if (domain === 'interior') return [{ label: 'Components', value: INTERIOR_COMPONENTS.length }, { label: 'VAVE ideas', value: getTotalInteriorIdeas() }, { label: 'Mfg levers', value: 0 }, { label: 'Trends', value: INTERIOR_TRENDS.length }];
+    if (domain === 'exterior') return [{ label: 'Components', value: EXTERIOR_COMPONENTS.length }, { label: 'VAVE ideas', value: getTotalExteriorIdeas() }, { label: 'Mfg levers', value: 0 }, { label: 'Trends', value: EXTERIOR_TRENDS.length }];
     return [];
   }
 
   function getCostStructure() {
-    if (domain === 'edu')     return EDU_COST_STRUCTURE;
-    if (domain === 'biw')     return BIW_COST_STRUCTURE;
-    if (domain === 'chassis') return CHASSIS_COST_STRUCTURE;
-    if (domain === 'battery') return BATTERY_COST_STRUCTURE;
+    if (domain === 'edu')      return EDU_COST_STRUCTURE;
+    if (domain === 'biw')      return BIW_COST_STRUCTURE;
+    if (domain === 'chassis')  return CHASSIS_COST_STRUCTURE;
+    if (domain === 'battery')  return BATTERY_COST_STRUCTURE;
+    if (domain === 'ice')      return ICE_COST_STRUCTURE;
+    if (domain === 'hvac')     return HVAC_COST_STRUCTURE;
+    if (domain === 'interior') return INTERIOR_COST_STRUCTURE;
+    if (domain === 'exterior') return EXTERIOR_COST_STRUCTURE;
     return [];
   }
 
@@ -110,6 +126,68 @@ export default function TrendsPage() {
       </div>
     );
 
+    // New-format domains (ICE, HVAC, Interior, Exterior) use { id, title, description, status, impact }
+    const isNewFormat = ['ice', 'hvac', 'interior', 'exterior'].includes(domain);
+
+    if (isNewFormat) {
+      const trends = domain === 'ice' ? ICE_TRENDS : domain === 'hvac' ? HVAC_TRENDS : domain === 'interior' ? INTERIOR_TRENDS : EXTERIOR_TRENDS;
+      const components = domain === 'ice' ? ICE_COMPONENTS : domain === 'hvac' ? HVAC_COMPONENTS : domain === 'interior' ? INTERIOR_COMPONENTS : EXTERIOR_COMPONENTS;
+      return (
+        <div className="space-y-10">
+          <section>
+            <div className="flex items-baseline gap-3 mb-4 pb-3 border-b border-white/8">
+              <h2 className="text-lg font-semibold text-white">Industry Trends</h2>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+              {trends.map((trend) => (
+                <div key={trend.id} className={`bg-navy-800/50 border border-white/8 border-l-2 rounded-xl p-4 ${trend.status === 'Next-Gen' ? 'border-l-violet-500' : trend.status === 'Mainstream' ? 'border-l-blue-500' : trend.status === 'Emerging' ? 'border-l-amber-500' : 'border-l-red-500'}`}>
+                  <div className="flex items-start justify-between gap-2 mb-2">
+                    <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border ${getTrendStatusClass(trend.status)}`}>{trend.status}</span>
+                  </div>
+                  <p className="text-white text-sm font-semibold mb-1.5">{trend.title}</p>
+                  <p className="text-slate-400 text-xs leading-relaxed mb-2">{trend.description}</p>
+                  {trend.impact && <p className="text-green-400 text-xs leading-relaxed italic">{trend.impact}</p>}
+                </div>
+              ))}
+            </div>
+          </section>
+
+          <section>
+            <div className="flex items-baseline gap-3 mb-4 pb-3 border-b border-white/8">
+              <h2 className="text-lg font-semibold text-white">Component VAVE Ideas</h2>
+              <span className="text-slate-500 text-xs font-mono">Validated cost-reduction levers by component</span>
+            </div>
+            <div className="space-y-5">
+              {components.map((comp) => (
+                <div key={comp.id} className="bg-navy-800/40 border border-white/8 rounded-xl p-5">
+                  <div className="mb-3">
+                    <p className="text-white font-semibold">{comp.name}</p>
+                  </div>
+                  <div className="space-y-2">
+                    {comp.levers.map((lever, i) => (
+                      <div key={i} className="flex items-start gap-3 text-sm">
+                        <span className="text-gold-500 text-xs font-bold flex-shrink-0 mt-0.5">{i+1}.</span>
+                        <div className="flex-1 min-w-0">
+                          <span className="text-white font-medium">{lever.action}</span>
+                          <span className="text-green-400 font-semibold ml-2 text-xs">{lever.saving}</span>
+                          {lever.conf && (
+                            <span className={`ml-2 text-[10px] px-1.5 py-0.5 rounded border font-medium ${CONF_COLORS[lever.conf] || ''}`}>{lever.conf}</span>
+                          )}
+                          {lever.note && <p className="text-slate-500 text-xs mt-0.5 leading-relaxed">{lever.note}</p>}
+                          {lever.bench && <p className="text-slate-600 text-xs">Benchmark: {lever.bench}</p>}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        </div>
+      );
+    }
+
+    // Legacy format (BIW, Chassis, Battery) use { t, dir, save, status }
     const trends = domain === 'biw' ? BIW_TRENDS : domain === 'chassis' ? CHASSIS_TRENDS : BATTERY_TRENDS;
     const components = domain === 'biw' ? BIW_COMPONENTS : domain === 'chassis' ? CHASSIS_COMPONENTS : BATTERY_COMPONENTS;
 
@@ -203,6 +281,39 @@ export default function TrendsPage() {
       </div>
     );
 
+    // New-format domains with { id, name, description, saving, status }
+    const isNewMfgFormat = ['ice', 'hvac'].includes(domain);
+    if (isNewMfgFormat) {
+      const levers = domain === 'ice' ? ICE_MFG_LEVERS : HVAC_MFG_LEVERS;
+      return (
+        <div>
+          <div className="bg-navy-800/40 border border-white/8 border-l-2 border-l-gold-500 rounded-xl p-4 mb-6">
+            <h2 className="text-lg font-semibold text-white mb-1">{domainMeta.label} — Manufacturing Levers</h2>
+            <p className="text-slate-400 text-sm">Process-driven cost reduction levers for the {domainMeta.short} domain.</p>
+          </div>
+          <div className="grid gap-3">
+            {levers.map((item) => (
+              <div key={item.id} className="bg-navy-800/50 border border-white/8 rounded-xl p-4 grid grid-cols-1 sm:grid-cols-[1fr_auto] gap-2">
+                <div>
+                  <p className="text-white text-sm font-semibold">{item.name}</p>
+                  <p className="text-slate-400 text-xs mt-1">{item.description}</p>
+                </div>
+                <div className="flex sm:flex-col items-start sm:items-end gap-2">
+                  <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border ${getTrendStatusClass(item.status)}`}>{item.status}</span>
+                  <span className="text-gold-400 text-xs font-semibold whitespace-nowrap">{item.saving}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    // Interior & Exterior don't have separate mfg levers yet
+    if (['interior', 'exterior'].includes(domain)) {
+      return <div className="text-center py-16 text-slate-500">Dedicated manufacturing levers for {domainMeta.label} coming in Phase 3.</div>;
+    }
+
     const levers = domain === 'biw' ? BIW_MFG_LEVERS : domain === 'battery' ? BATTERY_MFG_LEVERS : [];
     if (levers.length === 0) return <div className="text-center py-16 text-slate-500">Manufacturing levers coming soon for this domain.</div>;
 
@@ -247,7 +358,7 @@ export default function TrendsPage() {
     );
 
     const benchmarks = domain === 'biw' ? BIW_OEM_BENCHMARKS : [];
-    if (benchmarks.length === 0) return <div className="text-center py-16 text-slate-500">OEM benchmarks for this domain coming in Phase 2.</div>;
+    if (benchmarks.length === 0) return <div className="text-center py-16 text-slate-500">OEM benchmarks for {domainMeta.label} are being compiled — coming in Phase 3.</div>;
 
     return (
       <div>
@@ -318,11 +429,14 @@ export default function TrendsPage() {
                 Indicative {domainMeta.short} cost structure
               </p>
               <div className="flex rounded-lg overflow-hidden h-8">
-                {costStructure.map((item) => (
-                  <div key={item.name} style={{ width: `${item.share}%`, backgroundColor: item.color }} className="flex items-center justify-center text-white text-xs font-bold" title={`${item.name}: ~${item.share}%`}>
-                    {item.share >= 8 ? `${item.share}%` : ''}
-                  </div>
-                ))}
+                {costStructure.map((item) => {
+                  const pct = (item as any).share ?? (item as any).value ?? 0;
+                  return (
+                    <div key={item.name} style={{ width: `${pct}%`, backgroundColor: item.color }} className="flex items-center justify-center text-white text-xs font-bold" title={`${item.name}: ~${pct}%`}>
+                      {pct >= 8 ? `${pct}%` : ''}
+                    </div>
+                  );
+                })}
               </div>
               <div className="flex flex-wrap gap-x-4 gap-y-1 mt-2">
                 {costStructure.map((item) => (

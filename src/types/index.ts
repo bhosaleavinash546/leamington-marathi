@@ -41,6 +41,14 @@ export interface CostSavingPotential {
   calculationBasis?: string;
 }
 
+export interface EvidenceSource {
+  type: 'oem_press_release' | 'teardown' | 'patent' | 'industry_report' | 'supplier_data' | 'web_search' | 'regulatory';
+  title: string;
+  url?: string;
+  year?: number;
+  confidence: 'high' | 'medium' | 'low';
+}
+
 export interface CostReductionIdea {
   id: string;
   title: string;
@@ -56,6 +64,8 @@ export interface CostReductionIdea {
   benchmarkReference?: string;
   searchDataUsed?: boolean;
   confidenceLevel?: ConfidenceLevel;
+  evidenceSources?: EvidenceSource[];
+  regulatoryContext?: string;
 }
 
 export interface SearchResult {
