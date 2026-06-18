@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
   FileDown, FileSpreadsheet, Presentation, ArrowLeft, Filter,
-  TrendingDown, Zap, AlertTriangle, CheckCircle, Clock,
+  TrendingDown, Zap, AlertTriangle, CheckCircle, Clock, Loader2,
   ChevronDown, ChevronUp, BarChart3, RefreshCw, Tag,
   Globe, ExternalLink, ChevronRight, Search, DollarSign, Calculator,
   ShieldCheck, BookOpen, FlaskConical, Lightbulb, Scale, Link2,
@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import { AnalysisResult, CostReductionIdea, CostSavingType, Difficulty, SearchSource, ConfidenceLevel, EvidenceSource, IdeaAnnotation, AnnotationStatus } from '../types';
 import { exportToExcel, exportToPowerPoint, exportToPdf } from '../services/export-service';
+import { generateCostReductionIdeas } from '../services/claude-service';
 import IdeasDashboard from '../components/results/IdeasDashboard';
 import BusinessCaseCalculator from '../components/results/BusinessCaseCalculator';
 
@@ -397,6 +398,10 @@ export default function ResultsPage() {
   const [filterType, setFilterType] = useState<CostSavingType | 'All'>('All');
   const [exporting, setExporting] = useState<'excel' | 'pptx' | 'pdf' | null>(null);
   const [annotations, setAnnotations] = useState<Record<string, IdeaAnnotation>>({});
+  const [showRefine, setShowRefine] = useState(false);
+  const [refineFocus, setRefineFocus] = useState('');
+  const [refining, setRefining] = useState(false);
+  const [refineError, setRefineError] = useState('');
 
   useEffect(() => {
     try {
@@ -450,6 +455,46 @@ export default function ResultsPage() {
       try {
         localStorage.setItem(`brainspark_annotations_${result.id}`, JSON.stringify(updated));
       } catch {}
+    }
+  };
+
+  const handleRefine = async () => {
+    if (!refineFocus.trim() || !result) return;
+    const storedKey = localStorage.getItem('brainspark_api_key') || '';
+    if (!storedKey) { setRefineError('API key not found. Return to Analyze page and run a fresh analysis.'); return; }
+    setRefining(true);
+    setRefineError('');
+    try {
+      const existingTitles = result.ideas.map(i => i.title).join('; ');
+      const refineConfig = {
+        ...result.config,
+        apiKey: storedKey,
+        additionalContext: `${result.config.additionalContext ? result.config.additionalContext + '\n\n' : ''}REFINEMENT: Generate DIFFERENT ideas from this prior set — ${existingTitles}. Focus specifically on: ${refineFocus.trim()}`,
+      };
+      const { ideas, sources } = await generateCostReductionIdeas(
+        refineConfig, systemName, subName, undefined, true, undefined
+      );
+      setResult(prev => {
+        if (!prev) return prev;
+        const allIdeas = [...prev.ideas, ...ideas];
+        return {
+          ...prev,
+          ideas: allIdeas,
+          sources: [...(prev.sources || []), ...sources],
+          summary: {
+            totalIdeas: allIdeas.length,
+            quickWins: allIdeas.filter(i => i.implementationDifficulty === 'Low').length,
+            strategicItems: allIdeas.filter(i => i.implementationDifficulty !== 'Low').length,
+            searchesPerformed: (prev.summary.searchesPerformed || 0) + sources.length,
+          },
+        };
+      });
+      setShowRefine(false);
+      setRefineFocus('');
+    } catch (err) {
+      setRefineError(err instanceof Error ? err.message : 'Refinement failed');
+    } finally {
+      setRefining(false);
     }
   };
 
@@ -603,6 +648,64 @@ export default function ResultsPage() {
 
         {/* Business Case Calculator */}
         <BusinessCaseCalculator />
+
+        {/* Refine Analysis */}
+        <div className="mb-6 rounded-2xl bg-navy-900 border border-white/10 overflow-hidden">
+          <button
+            onClick={() => setShowRefine(v => !v)}
+            className="w-full flex items-center justify-between p-5 hover:bg-white/3 transition-colors group"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-xl bg-violet-500/20 flex items-center justify-center flex-shrink-0">
+                <RefreshCw size={16} className="text-violet-400" />
+              </div>
+              <div className="text-left">
+                <div className="text-white font-semibold text-sm">Refine Analysis — Generate More Ideas</div>
+                <div className="text-slate-400 text-xs">Focus the AI on a specific area to generate 8 additional ideas that complement this result</div>
+              </div>
+            </div>
+            {showRefine
+              ? <ChevronUp size={16} className="text-slate-400" />
+              : <ChevronRight size={16} className="text-slate-400" />}
+          </button>
+
+          {showRefine && (
+            <div className="border-t border-white/10 p-5 space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-slate-300 mb-2">
+                  Focus Area <span className="text-slate-500 font-normal">(describe what you want the AI to explore differently)</span>
+                </label>
+                <textarea
+                  value={refineFocus}
+                  onChange={e => setRefineFocus(e.target.value)}
+                  placeholder="e.g. Focus on tooling cost reduction and die consolidation opportunities. Explore Tier-2 India supplier alternatives. Prioritise ideas compatible with Euro NCAP 2026 side impact requirements."
+                  rows={3}
+                  className="w-full bg-navy-800 border border-white/15 rounded-xl px-4 py-3 text-white placeholder-slate-600 focus:outline-none focus:border-violet-500/50 resize-none text-sm"
+                />
+              </div>
+              {refineError && (
+                <div className="flex items-center gap-2 text-red-400 text-sm">
+                  <AlertTriangle size={14} /> {refineError}
+                </div>
+              )}
+              <div className="flex gap-3">
+                <button
+                  onClick={() => { setShowRefine(false); setRefineFocus(''); setRefineError(''); }}
+                  className="px-4 py-2 rounded-xl border border-white/15 text-slate-400 hover:text-white text-sm transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  disabled={!refineFocus.trim() || refining}
+                  onClick={handleRefine}
+                  className="flex items-center gap-2 px-6 py-2 rounded-xl bg-violet-600 hover:bg-violet-500 disabled:opacity-40 disabled:cursor-not-allowed text-white font-semibold text-sm transition-all"
+                >
+                  {refining ? <><Loader2 size={14} className="animate-spin" /> Generating…</> : <><Zap size={14} /> Generate 8 More Ideas</>}
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
 
         {/* Export footer */}
         <div className="p-6 rounded-2xl bg-navy-900 border border-white/10 flex flex-col md:flex-row items-center justify-between gap-4">

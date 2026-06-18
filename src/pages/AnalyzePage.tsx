@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import { useDropzone } from 'react-dropzone';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -8,8 +8,7 @@ import {
   Shield, Info, Factory, TrendingUp
 } from 'lucide-react';
 import { AUTOMOTIVE_SYSTEMS, getSystemById, getSubassemblyById } from '../data/automotive-catalog';
-import { generateCostReductionIdeas } from '../services/claude-service';
-import { saveFullResult, ProgressEvent } from '../services/claude-service';
+import { generateCostReductionIdeas, saveFullResult, ProgressEvent } from '../services/claude-service';
 import { parseCadFile, CadGeometry, formatFileSize } from '../services/cad-parser';
 import { AnalysisConfig, AnalysisResult, BodyStyle, PlantRegion, Currency } from '../types';
 
@@ -106,6 +105,7 @@ const PURPOSE_LABELS: Record<string, string> = {
 export default function AnalyzePage() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [step, setStep] = useState(0);
   const [systemId, setSystemId] = useState(searchParams.get('system') || '');
@@ -132,11 +132,20 @@ export default function AnalyzePage() {
   const selectedSystem = getSystemById(systemId);
   const selectedSub = getSubassemblyById(systemId, subassemblyId);
 
+  // Quick Start preselection — reads state passed by DashboardPage quick-start cards
   useEffect(() => {
-    if (searchParams.get('system') && step === 0) {
-      setStep(0);
+    const preselect = (location.state as { preselect?: { system: string; subassembly?: string } } | null)?.preselect;
+    if (!preselect) return;
+    const sys = AUTOMOTIVE_SYSTEMS.find(s => s.name === preselect.system || s.id === preselect.system);
+    if (!sys) return;
+    setSystemId(sys.id);
+    if (preselect.subassembly) {
+      const sub = sys.subassemblies.find(s => s.name === preselect.subassembly || s.id === preselect.subassembly);
+      if (sub) { setSubassemblyId(sub.id); setStep(1); return; }
     }
-  }, [searchParams]);
+    setStep(0);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     const file = acceptedFiles[0];

@@ -56,8 +56,8 @@ const PLANT_REGIONS = [
   { value: 'spain',   label: 'Spain (€20-28/hr)' },
   { value: 'mexico',  label: 'Mexico ($8-12/hr)' },
   { value: 'usa',     label: 'USA ($40-55/hr)' },
-  { value: 'china',   label: 'China (€10-18/hr)' },
-  { value: 'india',   label: 'India (€9-14/hr)' },
+  { value: 'china',   label: 'China (¥70-130/hr)' },
+  { value: 'india',   label: 'India (₹800-1,200/hr)' },
   { value: 'korea',   label: 'Korea (€25-32/hr)' },
 ];
 

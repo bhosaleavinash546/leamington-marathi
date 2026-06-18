@@ -2,8 +2,8 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, ChevronDown, ChevronRight, HelpCircle, BookOpen, Mail, Phone, Zap, Terminal, Download, Globe, Lock, Shield, Cpu, BarChart3 } from 'lucide-react';
 
-const APP_VERSION = '2.1.0';
-const BUILD_DATE = 'June 2025';
+const APP_VERSION = '2.2.0';
+const BUILD_DATE = 'June 2026';
 
 interface FaqItem { q: string; a: string; }
 interface FaqSection { category: string; icon: React.ElementType; items: FaqItem[]; }
@@ -13,7 +13,7 @@ const FAQ: FaqSection[] = [
     category: 'Getting Started',
     icon: BookOpen,
     items: [
-      { q: 'What is BrainSpark?', a: 'BrainSpark is an AI-powered cost reduction tool for automotive products. It uses a Chief Engineer AI persona backed by Claude claude-opus-4-8 with live internet search to generate actionable DFMA and cost engineering ideas across 13 vehicle systems and 260+ parts.' },
+      { q: 'What is BrainSpark?', a: 'BrainSpark is an AI-powered VAVE (Value Analysis / Value Engineering) tool for automotive products. It uses a Chief Engineer AI persona with 30+ years of domain expertise and live internet search to generate 8 actionable DFMA and cost-engineering ideas per run, across 13 vehicle systems, 260+ parts, and 340+ curated knowledge-base levers.' },
       { q: 'Do I need an API key to use this?', a: 'Yes — you need an Anthropic API key (for Claude AI). You enter it on the Analyze page. It is stored only in your browser session and never saved to any server.' },
       { q: 'How do I run the tool locally?', a: 'Install Node.js v18+, run "npm install" once, then "npm run dev" to start both the backend (port 3001) and frontend (port 5173). Open http://localhost:5173 in your browser.' },
       { q: 'Is an internet connection required?', a: 'An internet connection is required to call the Claude AI API. The optional web search feature (enabled by default) also uses internet to fetch live pricing and supplier data for more accurate estimates.' },
@@ -27,16 +27,18 @@ const FAQ: FaqSection[] = [
       { q: 'What does "web search" do?', a: 'When enabled, the AI performs up to 8 targeted internet searches per analysis — looking for current material prices, supplier benchmarks, and manufacturing process costs. This grounds estimates in real market data rather than training knowledge alone.' },
       { q: 'How accurate are the savings estimates?', a: 'Estimates are directionally accurate based on automotive benchmarks and live market data. They should be treated as engineering ballpark figures and validated with detailed cost studies and supplier RFQs before business case commitment.' },
       { q: 'What is the difference between Assembly, Subassembly, and Part level analysis?', a: 'System-level gives broad DFMA opportunities across the entire subsystem. Subassembly level focuses on interface and integration savings. Part level provides surgical, component-specific ideas with the highest precision. All three levels can be analysed for the same target.' },
-      { q: 'How many ideas does the AI generate?', a: 'Typically 5–8 ideas per analysis, ranging from quick wins (3–6 months, low risk) to strategic programmes (12–24 months, higher savings). The mix is tailored to the selected component\'s complexity and technology readiness.' },
+      { q: 'How many ideas does the AI generate?', a: '8 ideas per run — at least 2 quick wins (Low difficulty, 3–6 months), 3 medium-term, and 2 strategic (12–24 months). A commonisation idea and an emerging-tech idea are always included. The mix is calibrated to the selected component\'s technology readiness and benchmark data available.' },
     ],
   },
   {
     category: 'Export & Reporting',
     icon: Download,
     items: [
-      { q: 'What is included in the Excel export?', a: 'The Excel file has three sheets: (1) Summary — overview stats and metadata; (2) Ideas — all cost reduction ideas with savings estimates, implementation steps, risks, and timelines; (3) Roadmap — a chronological view of all ideas by implementation phase.' },
-      { q: 'What is included in the PowerPoint export?', a: 'The PowerPoint includes a title slide, a summary slide, one detailed slide per idea (title, savings, type, timeline, key steps, risks), and a closing roadmap slide. Formatted for direct management presentation use.' },
-      { q: 'Can I customise the export?', a: 'Not at this time. The export uses a fixed professional template optimised for automotive cost reviews. Custom branding and template options are on the product roadmap.' },
+      { q: 'What is included in the Excel export?', a: 'The Excel file has three sheets: (1) Summary — overview stats and metadata; (2) Ideas — all 8 cost reduction ideas with savings estimates, implementation steps, risks, and timelines; (3) Roadmap — a chronological view by implementation phase.' },
+      { q: 'What is included in the PowerPoint export?', a: 'The PowerPoint includes a title slide, a summary slide, one detailed slide per idea (title, savings, type, timeline, key steps, risks), and a closing roadmap slide. Formatted for direct management gate-review use.' },
+      { q: 'What is included in the PDF export?', a: 'The PDF report is an A4 portrait document with a branded cover page showing summary metrics, one page per idea with full technical detail and DFMA principles, and a final roadmap page grouped into Quick Wins / Medium Term / Strategic phases.' },
+      { q: 'Can I annotate ideas?', a: 'Yes — expand any idea card on the Results page and click "Add annotation". You can set an implementation status (Investigating / Approved / Rejected / On Hold) and add free-text engineering notes. Annotations are saved locally in your browser and restored when you re-open a past analysis.' },
+      { q: 'Can I customise the export templates?', a: 'Not at this time. The exports use a fixed professional template optimised for automotive cost reviews. Custom branding and template options are on the product roadmap.' },
     ],
   },
   {
@@ -45,7 +47,7 @@ const FAQ: FaqSection[] = [
     items: [
       { q: 'How is my data secured?', a: 'All API keys are stored only in your browser (localStorage) and sent directly to the backend only during analysis — never logged or persisted. User credentials are hashed with bcrypt. Sessions use JWT tokens with 7-day expiry.' },
       { q: 'What happens if I forget my password?', a: 'Use the "Forgot password" option on the sign-in page. An OTP (one-time password) is sent to your registered email. The OTP expires in 10 minutes and can be used only once.' },
-      { q: 'Is my analysis data stored?', a: 'Analysis results are stored only in your browser\'s localStorage for the recent history panel on the dashboard. No analysis content is stored on the server.' },
+      { q: 'Is my analysis data stored?', a: 'Analysis results are stored only in your browser\'s localStorage — recent history metadata, the full result (last 10 runs), and any idea annotations you add. No analysis content is ever stored on the server. You can re-open any of the last 10 analyses directly from the Dashboard.' },
       { q: 'Who can sign up?', a: 'Anyone with access to the running server can sign up. This tool is intended for internal engineering and cost teams. Access control via email domain restrictions can be added by your administrator.' },
     ],
   },
@@ -63,8 +65,8 @@ const FAQ: FaqSection[] = [
 const STEPS = [
   { n: 1, title: 'Sign in', desc: 'Create your account or sign in with email and password. Use "Forgot password" if needed — an OTP is sent to your email.' },
   { n: 2, title: 'Enter API key', desc: 'On the Analyze page, paste your Anthropic API key. It stays in your browser only.' },
-  { n: 3, title: 'Select target', desc: 'Choose a Vehicle System → Subassembly → Part (optional). Optionally upload a CAD file (.STL or .IGS) for geometry context.' },
-  { n: 4, title: 'Generate & export', desc: 'Click "Generate Ideas". The AI runs web searches and returns 5–8 ideas. Export to Excel or PowerPoint for your team.' },
+  { n: 3, title: 'Select target', desc: 'Choose a Vehicle System → Subassembly → Part (optional). Optionally upload a CAD file (STL / STEP / DXF / PNG) — geometry is auto-extracted and injected into the AI prompt.' },
+  { n: 4, title: 'Generate & export', desc: 'Click "Generate Ideas". Watch live as the AI searches the web and synthesises 8 expert ideas. Export to Excel, PowerPoint, or PDF. Annotate ideas with implementation status and notes.' },
 ];
 
 function FaqAccordion({ item }: { item: FaqItem }) {

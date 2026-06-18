@@ -434,7 +434,8 @@ export default function TrendsPage() {
               </p>
               <div className="flex rounded-lg overflow-hidden h-8">
                 {costStructure.map((item) => {
-                  const pct = (item as any).share ?? (item as any).value ?? 0;
+                  const itemData = item as unknown as { share?: number; value?: number };
+                  const pct = itemData.share ?? itemData.value ?? 0;
                   return (
                     <div key={item.name} style={{ width: `${pct}%`, backgroundColor: item.color }} className="flex items-center justify-center text-white text-xs font-bold" title={`${item.name}: ~${pct}%`}>
                       {pct >= 8 ? `${pct}%` : ''}
