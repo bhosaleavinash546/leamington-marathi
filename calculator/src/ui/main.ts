@@ -280,6 +280,7 @@ function showHome(): void {
   const warnEl = document.getElementById('validation-warnings');
   document.body.classList.remove('cv-new-costing');
   document.body.classList.remove('sidebar-collapsed');
+  document.getElementById('news-view')?.style.setProperty('display', 'none');
   if (homeEl) homeEl.style.display = '';
   if (pickerEl) pickerEl.style.display = 'none';
   if (backdrop) { backdrop.classList.remove('visible'); backdrop.style.display = 'none'; }
@@ -301,6 +302,7 @@ function showCosting(commodity?: string): void {
   const backdrop = document.getElementById('picker-backdrop');
   document.body.classList.remove('cv-new-costing');
   document.body.classList.remove('sidebar-collapsed');
+  document.getElementById('news-view')?.style.setProperty('display', 'none');
   if (homeEl) homeEl.style.display = 'none';
   if (pickerEl) pickerEl.style.display = 'none';
   if (backdrop) { backdrop.classList.remove('visible'); backdrop.style.display = 'none'; }
@@ -320,6 +322,7 @@ function showCommodityPicker(): void {
   const errEl = document.getElementById('validation-errors');
   const warnEl = document.getElementById('validation-warnings');
   document.body.classList.remove('cv-new-costing');
+  document.getElementById('news-view')?.style.setProperty('display', 'none');
   if (homeEl) homeEl.style.display = 'none';
   if (pickerEl) pickerEl.style.display = '';
   if (costingEl) {
@@ -372,6 +375,162 @@ function closeWorkflowPanel(): void {
   if (costingEl) costingEl.style.display = 'none';
   if (backdrop) { backdrop.classList.remove('visible'); backdrop.style.display = 'none'; }
   if (headerEl) headerEl.style.display = 'none';
+}
+
+// ─── News Section ────────────────────────────────────────────────────────────
+
+interface NewsArticle {
+  id: string;
+  title: string;
+  summary: string;
+  url: string;
+  source: string;
+  publishedAt: string;
+  category: string;
+  imageUrl?: string;
+}
+
+const NEWS_CATEGORIES = [
+  '', 'Battery', 'EV Tech', 'EDU', 'BIW', 'Chassis', 'Suspension',
+  'Casting', 'Forging', 'Machining', 'Sheet Metal', 'Composites', 'Plastics',
+  'PCB / PCBA', 'Harness', 'Lightweighting', 'Materials', 'Robotics',
+  'Sustainability', 'Cost & Commodity', 'Assembly',
+];
+
+const NEWS_CAT_LABELS: Record<string, string> = {
+  '': 'All',
+  'EDU': 'E-Drive / EDU',
+};
+
+const NEWS_CAT_COLORS: Record<string, string> = {
+  'Battery':        '#22c55e',
+  'EV Tech':        '#3b82f6',
+  'EDU':            '#8b5cf6',
+  'BIW':            '#f59e0b',
+  'Chassis':        '#64748b',
+  'Suspension':     '#94a3b8',
+  'Casting':        '#f97316',
+  'Forging':        '#ef4444',
+  'Machining':      '#06b6d4',
+  'Sheet Metal':    '#0ea5e9',
+  'Composites':     '#84cc16',
+  'Plastics':       '#a78bfa',
+  'PCB / PCBA':     '#10b981',
+  'Harness':        '#ec4899',
+  'Lightweighting': '#14b8a6',
+  'Materials':      '#f59e0b',
+  'Robotics':       '#6366f1',
+  'Sustainability': '#22c55e',
+  'Cost & Commodity': '#fb923c',
+  'Assembly':       '#60a5fa',
+};
+
+let _newsArticles: NewsArticle[] = [];
+let _newsCategory = '';
+let _newsRefreshTimer: ReturnType<typeof setInterval> | null = null;
+let _newsLastFetch = 0;
+
+function _newsEscHtml(s: string): string {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+function showNews(): void {
+  document.getElementById('home-view')?.style.setProperty('display', 'none');
+  document.getElementById('commodity-picker-view')?.style.setProperty('display', 'none');
+  const costingEl = document.getElementById('costing-view');
+  if (costingEl) { costingEl.classList.remove('wf-panel','wf-panel--open'); costingEl.style.display = 'none'; }
+  document.body.classList.remove('cv-new-costing');
+  document.getElementById('wf-panel-header')?.style.setProperty('display','none');
+  document.getElementById('picker-backdrop')?.style.setProperty('display','none');
+  const newsEl = document.getElementById('news-view');
+  if (newsEl) newsEl.style.display = '';
+  void fetchNews();
+  if (_newsRefreshTimer) clearInterval(_newsRefreshTimer);
+  _newsRefreshTimer = setInterval(() => {
+    if (document.getElementById('news-view')?.style.display !== 'none') void fetchNews(true);
+  }, 5 * 60 * 1000);
+}
+
+async function fetchNews(force = false): Promise<void> {
+  const now = Date.now();
+  if (!force && _newsArticles.length > 0 && now - _newsLastFetch < 5 * 60 * 1000) {
+    renderNewsCards();
+    return;
+  }
+  const loadEl = document.getElementById('news-loading');
+  const gridEl = document.getElementById('news-grid');
+  const emptyEl = document.getElementById('news-empty');
+  if (loadEl) loadEl.style.display = '';
+  if (gridEl) gridEl.style.display = 'none';
+  if (emptyEl) emptyEl.style.display = 'none';
+  try {
+    const res = await fetch('/api/news');
+    if (!res.ok) throw new Error('news api error');
+    const data = (await res.json()) as { articles: NewsArticle[]; cached?: boolean; ageSeconds?: number };
+    _newsArticles = data.articles ?? [];
+    _newsLastFetch = Date.now();
+    const countEl = document.getElementById('news-count');
+    if (countEl) countEl.textContent = `${_newsArticles.length} articles`;
+    const ageEl = document.getElementById('news-age');
+    if (ageEl && data.ageSeconds !== undefined) {
+      const mins = Math.round(data.ageSeconds / 60);
+      ageEl.textContent = data.cached ? `· cached ${mins}m ago` : '· live';
+    }
+  } catch {
+    // silently leave previous articles or show empty
+  } finally {
+    if (loadEl) loadEl.style.display = 'none';
+    if (gridEl) gridEl.style.display = '';
+    renderNewsCards();
+  }
+}
+
+function renderNewsCards(): void {
+  const gridEl = document.getElementById('news-grid');
+  const emptyEl = document.getElementById('news-empty');
+  if (!gridEl) return;
+  const filtered = _newsCategory
+    ? _newsArticles.filter(a => a.category === _newsCategory)
+    : _newsArticles;
+  if (!filtered.length) {
+    gridEl.innerHTML = '';
+    if (emptyEl) emptyEl.style.display = '';
+    return;
+  }
+  if (emptyEl) emptyEl.style.display = 'none';
+  gridEl.innerHTML = filtered.map(a => {
+    const d = new Date(a.publishedAt);
+    const dateStr = isNaN(d.getTime()) ? '' : d.toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' });
+    const color = NEWS_CAT_COLORS[a.category] ?? 'var(--accent)';
+    return `<a class="news-card" href="${_newsEscHtml(a.url)}" target="_blank" rel="noopener noreferrer" style="border-left-color:${color}">
+  <span class="news-card-cat" style="color:${color}">${_newsEscHtml(a.category)}</span>
+  <h3 class="news-card-title">${_newsEscHtml(a.title)}</h3>
+  <p class="news-card-summary">${_newsEscHtml(a.summary)}</p>
+  <div class="news-card-footer">
+    <span class="news-card-source">${_newsEscHtml(a.source)}</span>
+    <span class="news-card-date">${dateStr}</span>
+  </div>
+</a>`;
+  }).join('');
+}
+
+function initNewsCats(): void {
+  const catsEl = document.getElementById('news-cats');
+  if (!catsEl) return;
+  catsEl.innerHTML = NEWS_CATEGORIES.map(cat => {
+    const label = NEWS_CAT_LABELS[cat] ?? (cat || 'All');
+    const color = cat ? (NEWS_CAT_COLORS[cat] ?? 'var(--accent)') : '';
+    const style = cat && color ? ` style="--cat-color:${color}"` : '';
+    return `<button class="news-cat${cat === '' ? ' active' : ''}" data-cat="${_newsEscHtml(cat)}"${style}>${_newsEscHtml(label)}</button>`;
+  }).join('');
+  catsEl.addEventListener('click', e => {
+    const btn = (e.target as HTMLElement).closest('.news-cat') as HTMLElement | null;
+    if (!btn) return;
+    catsEl.querySelectorAll('.news-cat').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    _newsCategory = btn.dataset.cat ?? '';
+    renderNewsCards();
+  });
 }
 
 // ─── Dashboard render ─────────────────────────────────────────────────────────
@@ -13325,6 +13484,12 @@ async function init(): Promise<void> {
   document.getElementById('demo-btn')?.addEventListener('click', openDemoModal);
   document.getElementById('close-demo-modal')?.addEventListener('click', closeDemoModal);
   demoModal?.addEventListener('click', e => { if (e.target === demoModal) closeDemoModal(); });
+
+  // ─── News section wiring ──────────────────────────────────────────────────
+  document.getElementById('news-btn')?.addEventListener('click', showNews);
+  document.getElementById('news-back-btn')?.addEventListener('click', showHome);
+  document.getElementById('news-refresh-btn')?.addEventListener('click', () => { void fetchNews(true); });
+  initNewsCats();
 
   document.querySelectorAll<HTMLElement>('#demo-gallery-body .demo-card').forEach(card => {
     card.addEventListener('click', () => {

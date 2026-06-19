@@ -11,6 +11,7 @@ import authRouter from './routes/auth.js';
 import dfmRouter from './routes/dfm.js';
 import pcbRouter from './routes/pcb.js';
 import aichatRouter from './routes/aichat.js';
+import newsRouter from './routes/news.js';
 
 config(); // load .env
 
@@ -55,6 +56,7 @@ app.use('/api/aichat', aichatRouter);
 app.use('/api/sync', syncRouter);
 app.use('/api/agent', agentRouter);
 app.use('/api/dfm', dfmRouter);
+app.use('/api/news', newsRouter);
 
 app.get('/api/health', (_req, res) => {
   res.json({

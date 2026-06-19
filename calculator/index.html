@@ -95,6 +95,8 @@
     <button class="nav-action-btn new-costing-btn" id="new-costing-btn" aria-label="Start new should-costing">⊕ New Costing</button>
     <!-- Demo Gallery button -->
     <button class="nav-action-btn demo-btn" id="demo-btn" aria-label="Open demo gallery" title="Load luxury SUV demo examples for any commodity">🚗 Demos</button>
+    <!-- News button -->
+    <button class="nav-action-btn" id="news-btn" aria-label="Automotive Industry News" title="Live automotive manufacturing &amp; costing news">📰 NEWS</button>
     <!-- Help button -->
     <button class="nav-action-btn" id="help-btn" aria-label="Open help centre">? Help</button>
     <!-- Contact button -->
@@ -348,6 +350,38 @@
   <!-- Compare Panel (hidden, rendered by JS) -->
   <div id="compare-panel" class="compare-panel" style="display:none;margin-top:16px"></div>
 
+</section>
+
+<!-- ─── News View ──────────────────────────────────────────────────────── -->
+<section id="news-view" style="display:none;padding:0 24px 48px;max-width:1400px;margin:0 auto">
+  <div class="news-header">
+    <div class="news-title-bar">
+      <h2 style="font-size:1.3rem;font-weight:700;color:var(--text-primary);margin:0">📰 Automotive Industry News</h2>
+      <div style="display:flex;align-items:center;gap:12px;font-size:0.8rem;color:var(--text-muted)">
+        <span id="news-count"></span>
+        <span id="news-age"></span>
+        <button class="btn btn-secondary btn-sm" id="news-refresh-btn" style="font-size:0.78rem;padding:4px 12px">↻ Refresh</button>
+        <button class="btn btn-secondary btn-sm" id="news-back-btn" style="font-size:0.78rem;padding:4px 12px">← Back</button>
+      </div>
+    </div>
+    <div class="news-cats" id="news-cats"></div>
+  </div>
+  <!-- Loading skeleton -->
+  <div id="news-loading" style="display:none">
+    <div class="news-skel-grid">
+      <div class="news-skel-card skel"></div><div class="news-skel-card skel"></div>
+      <div class="news-skel-card skel"></div><div class="news-skel-card skel"></div>
+      <div class="news-skel-card skel"></div><div class="news-skel-card skel"></div>
+      <div class="news-skel-card skel"></div><div class="news-skel-card skel"></div>
+    </div>
+  </div>
+  <!-- Empty state -->
+  <div id="news-empty" style="display:none;text-align:center;padding:60px 20px;color:var(--text-muted)">
+    <div style="font-size:3rem;margin-bottom:12px">📰</div>
+    <p>No articles found. Try refreshing or selecting a different category.</p>
+  </div>
+  <!-- Card grid -->
+  <div id="news-grid" class="news-grid"></div>
 </section>
 
 <!-- ── Commodity Picker ─────────────────────────────────────────────────────── -->
