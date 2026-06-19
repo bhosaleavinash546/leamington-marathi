@@ -4647,3 +4647,90 @@ input, select, textarea {
   }
   .cpicker-tile-icon svg { transition: none !important; }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   PHASE 6 — READABILITY ENHANCEMENT
+   Raises muted-text contrast from ~2.5:1 → ~5.5:1 (WCAG AA)
+   Lifts all sub-12px font sizes to legible minimums
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── 1. Contrast token fixes ──────────────────────────────────────────────── */
+[data-theme="dark"] {
+  --text-muted: #7b8db0;   /* was #4a5870 (~2.5:1) → now ~5.5:1 on #0e1525 */
+}
+[data-theme="light"] {
+  --text-muted: #4a5c7a;   /* deeper than default; ~5.2:1 on white */
+}
+
+/* ── 2. Commodity picker labels ───────────────────────────────────────────── */
+.cpicker-tile-sub    { font-size: 0.76rem !important; }  /* was 0.71rem (10.4px) */
+.cpicker-section-label { font-size: 0.76rem !important; letter-spacing: 0.08em !important; } /* was 0.66rem */
+.cpicker-sub         { font-size: 0.78rem !important; }  /* was 0.68rem */
+
+/* ── 3. Navigation tabs ───────────────────────────────────────────────────── */
+.ctab  { font-size: 0.82rem !important; }  /* was 0.75rem (11.2px) */
+.rtab  { font-size: 0.82rem !important; }
+
+/* ── 4. Form labels & inputs ──────────────────────────────────────────────── */
+.field-group label,
+label { font-size: 0.82rem !important; }   /* was 0.72–0.73rem */
+input, select, textarea { font-size: 0.88rem !important; }  /* enforce legible input text */
+
+/* ── 5. KPI / metric labels ───────────────────────────────────────────────── */
+.detail-kpi .kpi-label,
+.dash-kpi-card .kpi-label,
+.kpi-label  { font-size: 0.78rem !important; }  /* was 0.62–0.68rem */
+.detail-kpi .kpi-sub,
+.kpi-sub    { font-size: 0.76rem !important; }  /* was 0.62rem */
+
+/* ── 6. Table headers ─────────────────────────────────────────────────────── */
+.dyn-table th,
+.ops-table th,
+.trace-table th,
+.detail-table th,
+.compare-table th,
+.tornado-header { font-size: 0.78rem !important; }  /* was 0.65–0.68rem */
+
+/* ── 7. Summary / card micro-labels ──────────────────────────────────────── */
+.summary-card .card-label,
+.summary-card .card-sub { font-size: 0.78rem !important; }  /* was 0.65rem */
+.section-title          { font-size: 0.80rem !important; }  /* was 0.68rem */
+
+/* ── 8. Badges & chips ────────────────────────────────────────────────────── */
+.badge { font-size: 0.76rem !important; }  /* was 0.66rem */
+
+/* ── 9. Help & FAQ text ───────────────────────────────────────────────────── */
+.help-card p      { font-size: 0.88rem !important; line-height: 1.65 !important; }
+.faq-a            { font-size: 0.88rem !important; line-height: 1.65 !important; }
+.glossary-def     { font-size: 0.82rem !important; }  /* was 0.73rem */
+
+/* ── 10. Insight / findings text ─────────────────────────────────────────── */
+.insight-finding  { font-size: 0.84rem !important; }
+.insight-actions li { font-size: 0.84rem !important; }
+
+/* ── 11. Process step labels (demo cards) ────────────────────────────────── */
+.demo-card-process-label { font-size: 0.76rem !important; }  /* was 0.60rem (8.4px) */
+
+/* ── 12. Miscellaneous small text ────────────────────────────────────────── */
+.news-card .news-meta,
+.news-card .news-date  { font-size: 0.78rem !important; }
+.comm-card .comm-sub   { font-size: 0.78rem !important; }
+.dash-tile .tile-label { font-size: 0.80rem !important; }
+.tooltip               { font-size: 0.80rem !important; }
+
+/* ── 13. Colour override: muted text everywhere ──────────────────────────── */
+.text-muted,
+[class*="--text-muted"],
+.cpicker-tile-sub,
+.cpicker-section-label,
+.kpi-label,
+.kpi-sub,
+.card-label,
+.card-sub,
+.section-title,
+.news-meta,
+.news-date,
+.glossary-def,
+.comm-sub,
+.tile-label,
+.demo-card-process-label { color: var(--text-muted) !important; }
