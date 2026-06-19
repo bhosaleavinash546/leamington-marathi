@@ -11038,7 +11038,7 @@ function renderDFMDFA(result: PartCostResult, input: UniversalStackInput): void 
         btn.textContent = '⏳ Analysing…';
         aiResult.innerHTML = '<div class="placeholder">Waiting for AI analysis…</div>';
         try {
-          const token = localStorage.getItem('auth_token') ?? '';
+          const token = localStorage.getItem('auth_token') ?? sessionStorage.getItem('auth_token') ?? '';
           const resp = await fetch('/api/dfm/analyze', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
