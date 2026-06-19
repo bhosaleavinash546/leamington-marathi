@@ -12,6 +12,7 @@ import dfmRouter from './routes/dfm.js';
 import pcbRouter from './routes/pcb.js';
 import aichatRouter from './routes/aichat.js';
 import newsRouter from './routes/news.js';
+import commoditiesRouter from './routes/commodities.js';
 
 config(); // load .env
 
@@ -57,6 +58,7 @@ app.use('/api/sync', syncRouter);
 app.use('/api/agent', agentRouter);
 app.use('/api/dfm', dfmRouter);
 app.use('/api/news', newsRouter);
+app.use('/api/commodities', commoditiesRouter);
 
 app.get('/api/health', (_req, res) => {
   res.json({

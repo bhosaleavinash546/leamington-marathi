@@ -128,6 +128,122 @@
 </script>
 
 <section id="home-view">
+  <!-- ── Commodity Intelligence Section ─────────────────────────────────────── -->
+  <div id="comm-section">
+
+    <!-- Live Commodity Ticker -->
+    <div class="comm-ticker-outer" id="comm-ticker-outer">
+      <span class="comm-ticker-label">📊 LIVE PRICES</span>
+      <div class="comm-ticker-clip">
+        <div class="comm-ticker-track" id="comm-ticker-track">
+          <span class="comm-ticker-loading">Loading commodity prices…</span>
+        </div>
+      </div>
+      <button class="comm-ticker-expand" id="comm-panel-toggle" title="Expand commodity dashboard">⌄ Dashboard</button>
+    </div>
+
+    <!-- Commodity Dashboard Panel (collapsible) -->
+    <div class="comm-panel" id="comm-panel" style="display:none">
+
+      <!-- Panel Header -->
+      <div class="comm-panel-header">
+        <div class="comm-panel-title-wrap">
+          <span class="comm-panel-icon">🏭</span>
+          <span class="comm-panel-title">Commodity Intelligence</span>
+          <span class="comm-badge" id="comm-updated-badge">Live</span>
+          <span class="comm-updated" id="comm-updated-time"></span>
+        </div>
+        <div class="comm-panel-controls">
+          <select class="comm-filter-sel" id="comm-filter-cat" title="Filter by category">
+            <option value="">All Categories</option>
+            <option value="Steel">Steel</option>
+            <option value="Aluminium">Aluminium</option>
+            <option value="Copper">Copper</option>
+            <option value="Battery">Battery</option>
+            <option value="Magnets">Magnets / Rare Earth</option>
+            <option value="EDU">Electrical Steel / EDU</option>
+            <option value="Electronics">Electronics / SiC</option>
+            <option value="Plastics">Plastics</option>
+            <option value="Rubber">Rubber</option>
+            <option value="Composites">Composites</option>
+          </select>
+          <select class="comm-filter-sel" id="comm-filter-region" title="Filter by region">
+            <option value="">All Regions</option>
+            <option value="LME Global">LME Global</option>
+            <option value="Europe">Europe</option>
+            <option value="Asia">Asia</option>
+            <option value="Global">Global</option>
+          </select>
+          <input class="comm-search" id="comm-search" type="search" placeholder="🔍 Search commodity…" />
+          <button class="btn btn-secondary btn-sm" id="comm-refresh-btn" style="font-size:0.78rem;padding:4px 10px" title="Refresh prices">↻ Refresh</button>
+          <button class="comm-close-btn" id="comm-panel-close" title="Collapse">✕</button>
+        </div>
+      </div>
+
+      <!-- KPI Strip -->
+      <div class="comm-kpi-strip" id="comm-kpi-strip">
+        <div class="comm-kpi-card comm-kpi-riser">
+          <div class="comm-kpi-label">▲ Top Riser</div>
+          <div class="comm-kpi-val" id="ck-riser-name">—</div>
+          <div class="comm-kpi-chg comm-up" id="ck-riser-chg">—</div>
+        </div>
+        <div class="comm-kpi-card comm-kpi-faller">
+          <div class="comm-kpi-label">▼ Top Faller</div>
+          <div class="comm-kpi-val" id="ck-faller-name">—</div>
+          <div class="comm-kpi-chg comm-dn" id="ck-faller-chg">—</div>
+        </div>
+        <div class="comm-kpi-card comm-kpi-volatility">
+          <div class="comm-kpi-label">⚡ Volatility</div>
+          <div class="comm-kpi-val" id="ck-vol">—</div>
+          <div class="comm-kpi-sub" id="ck-vol-sub">Market avg daily vol</div>
+        </div>
+        <div class="comm-kpi-card comm-kpi-risk">
+          <div class="comm-kpi-label">🌍 Supply Risk</div>
+          <div class="comm-kpi-val" id="ck-risk">—</div>
+          <div class="comm-kpi-sub" id="ck-risk-sub">Global index</div>
+        </div>
+        <div class="comm-kpi-card comm-kpi-pressure">
+          <div class="comm-kpi-label">⚙️ Cost Pressure</div>
+          <div class="comm-kpi-val" id="ck-pressure">—</div>
+          <div class="comm-kpi-sub">Automotive avg</div>
+        </div>
+      </div>
+
+      <!-- Region Risk Index (compact) -->
+      <div class="comm-risk-bar" id="comm-risk-bar"></div>
+
+      <!-- Commodity Card Grid -->
+      <div class="comm-grid" id="comm-grid"></div>
+
+      <!-- Forecast + Alert footer row -->
+      <div class="comm-footer-row">
+        <div class="comm-footer-note">
+          Commodity prices are indicative market values refreshed every 30 minutes, based on LME, SMM, ICIS, and Fastmarkets reference benchmarks. Not financial advice.
+        </div>
+        <button class="btn btn-secondary btn-sm" id="comm-alert-btn" style="font-size:0.78rem;padding:4px 12px;white-space:nowrap">🔔 Price Alerts</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Commodity Alert Modal -->
+  <div id="comm-alert-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:1000;align-items:center;justify-content:center">
+    <div style="background:var(--surface);border-radius:14px;padding:28px;min-width:380px;max-width:520px;width:90%;border:1px solid var(--border-strong);position:relative">
+      <button onclick="document.getElementById('comm-alert-modal').style.display='none'" style="position:absolute;top:12px;right:14px;background:none;border:none;font-size:1.2rem;cursor:pointer;color:var(--text-muted)">✕</button>
+      <h3 style="margin:0 0 16px;font-size:1rem;font-weight:700">🔔 Price Alerts</h3>
+      <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
+        <select id="alert-commodity-sel" style="flex:1;min-width:160px;padding:6px 10px;border-radius:7px;border:1px solid var(--border-strong);background:var(--surface-elevated);color:var(--text-primary);font-family:var(--font);font-size:0.83rem"></select>
+        <select id="alert-dir-sel" style="padding:6px 10px;border-radius:7px;border:1px solid var(--border-strong);background:var(--surface-elevated);color:var(--text-primary);font-family:var(--font);font-size:0.83rem">
+          <option value="above">Above</option>
+          <option value="below">Below</option>
+        </select>
+        <input id="alert-price-inp" type="number" step="any" placeholder="Price" style="width:110px;padding:6px 10px;border-radius:7px;border:1px solid var(--border-strong);background:var(--surface-elevated);color:var(--text-primary);font-family:var(--font);font-size:0.83rem" />
+        <button class="btn btn-primary btn-sm" id="alert-add-btn" style="padding:6px 14px">Add Alert</button>
+      </div>
+      <div id="alert-list" style="max-height:220px;overflow-y:auto"></div>
+    </div>
+  </div>
+
   <!-- Filter Bar -->
   <div class="dash-filter-bar" id="dash-filter-bar">
     <div class="dash-filter-group">

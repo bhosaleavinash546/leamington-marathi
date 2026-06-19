@@ -377,6 +377,241 @@ function closeWorkflowPanel(): void {
   if (headerEl) headerEl.style.display = 'none';
 }
 
+// ─── Commodity Intelligence ───────────────────────────────────────────────────
+
+interface LiveCommodity {
+  id: string;
+  name: string;
+  category: string;
+  unit: string;
+  basePrice: number;
+  currentPrice: number;
+  changeDay: number;
+  changeWeek: number;
+  history: number[];
+  volatility: number;
+  region: string;
+  source: string;
+  impactCoeff: number;
+  riskLevel: 'Low' | 'Medium' | 'High' | 'Critical';
+  forecast30?: number;
+  forecast90?: number;
+  forecastDirection?: 'up' | 'down' | 'flat';
+}
+
+interface CommodityResponse {
+  commodities: LiveCommodity[];
+  lastUpdated: string;
+  riskIndex: Record<string, { volatility: number; geopolitical: number; supply: number; energy: number; labour: number; overall: number; label: string }>;
+}
+
+let _commData: CommodityResponse | null = null;
+let _commFilterCat = '';
+let _commFilterRegion = '';
+let _commSearch = '';
+let _commPanelOpen = false;
+let _commAlerts: Array<{ id: string; commId: string; name: string; dir: 'above' | 'below'; price: number; unit: string }> = [];
+
+function _commEsc(s: string): string {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function commFmt(price: number, unit: string): string {
+  if (unit === '$/ton') return '$' + price.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+  if (unit === '$/kg') return '$' + price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  return '$' + price.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+}
+
+function commSparkline(history: number[]): string {
+  if (!history || history.length < 2) return '';
+  const w = 80, h = 32;
+  const min = Math.min(...history);
+  const max = Math.max(...history);
+  const range = max - min || 1;
+  const pts = history.map((v, i) => {
+    const x = (i / (history.length - 1)) * w;
+    const y = h - ((v - min) / range) * (h - 4) - 2;
+    return `${x.toFixed(1)},${y.toFixed(1)}`;
+  });
+  const last = history[history.length - 1];
+  const first = history[0];
+  const color = last >= first ? '#22c55e' : '#ef4444';
+  return `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" class="comm-spark"><polyline points="${pts.join(' ')}" fill="none" stroke="${color}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+}
+
+function commRiskBadge(level: string): string {
+  const map: Record<string, string> = { Low: '#22c55e', Medium: '#f59e0b', High: '#f97316', Critical: '#ef4444' };
+  const c = map[level] ?? '#94a3b8';
+  return `<span style="font-size:0.62rem;font-weight:700;padding:1px 6px;border-radius:3px;background:${c}22;color:${c};border:1px solid ${c}44">${_commEsc(level)}</span>`;
+}
+
+async function fetchCommodities(force = false): Promise<void> {
+  if (!force && _commData) { renderCommCards(); renderCommKPI(); renderCommTicker(); return; }
+  try {
+    const res = await fetch('/api/commodities');
+    if (!res.ok) throw new Error('comm api error');
+    _commData = (await res.json()) as CommodityResponse;
+    const upd = document.getElementById('comm-updated-time');
+    if (upd) upd.textContent = 'Updated ' + new Date(_commData.lastUpdated).toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit' });
+    renderCommCards();
+    renderCommKPI();
+    renderCommTicker();
+    renderCommRiskBar();
+    checkCommAlerts();
+    populateAlertSelect();
+  } catch {
+    // silently fail — keep previous data or show empty
+  }
+}
+
+function filteredComms(): LiveCommodity[] {
+  if (!_commData) return [];
+  return _commData.commodities.filter(c => {
+    if (_commFilterCat && c.category !== _commFilterCat) return false;
+    if (_commFilterRegion && c.region !== _commFilterRegion) return false;
+    if (_commSearch && !c.name.toLowerCase().includes(_commSearch.toLowerCase()) && !c.category.toLowerCase().includes(_commSearch.toLowerCase())) return false;
+    return true;
+  });
+}
+
+function renderCommCards(): void {
+  const grid = document.getElementById('comm-grid');
+  if (!grid) return;
+  const comms = filteredComms();
+  if (!comms.length) { grid.innerHTML = '<div style="padding:24px;text-align:center;color:var(--text-muted)">No commodities match the current filter.</div>'; return; }
+  grid.innerHTML = comms.map(c => {
+    const up = c.changeDay >= 0;
+    const pct = (c.changeDay >= 0 ? '+' : '') + c.changeDay.toFixed(2) + '%';
+    const wkPct = (c.changeWeek >= 0 ? '+' : '') + c.changeWeek.toFixed(2) + '%';
+    const arrow = up ? '▲' : '▼';
+    const clr = up ? '#22c55e' : '#ef4444';
+    const fDir = c.forecastDirection === 'up' ? '📈' : c.forecastDirection === 'down' ? '📉' : '➡️';
+    return `<div class="comm-card" data-id="${_commEsc(c.id)}">
+  <div class="comm-card-header">
+    <span class="comm-card-cat">${_commEsc(c.category)}</span>
+    ${commRiskBadge(c.riskLevel)}
+  </div>
+  <div class="comm-card-name">${_commEsc(c.name)}</div>
+  <div class="comm-card-price">${commFmt(c.currentPrice, c.unit)}<span class="comm-card-unit"> ${_commEsc(c.unit)}</span></div>
+  <div class="comm-card-chg" style="color:${clr}">${arrow} ${pct} today &nbsp;·&nbsp; <span style="font-size:0.78em;opacity:0.85">${wkPct} 7d</span></div>
+  <div class="comm-card-spark-row">
+    ${commSparkline(c.history)}
+    <div class="comm-card-meta">
+      <div style="font-size:0.68rem;color:var(--text-muted)">${_commEsc(c.region)}</div>
+      <div style="font-size:0.66rem;color:var(--text-muted)">src: ${_commEsc(c.source)}</div>
+      ${c.forecast30 != null ? `<div style="font-size:0.68rem;margin-top:3px">${fDir} 30d: ${commFmt(c.forecast30, c.unit)}</div>` : ''}
+    </div>
+  </div>
+  <div class="comm-card-impact" title="Should-cost sensitivity">⚙️ ${Math.round(c.impactCoeff * 100)}% cost sensitivity</div>
+</div>`;
+  }).join('');
+
+  // Pulse animation on changed cards
+  grid.querySelectorAll<HTMLElement>('.comm-card').forEach(card => {
+    card.classList.remove('comm-pulse-up','comm-pulse-dn');
+    const id = card.dataset.id;
+    const c = _commData?.commodities.find(x => x.id === id);
+    if (c) {
+      void card.offsetWidth; // reflow
+      card.classList.add(c.changeDay >= 0 ? 'comm-pulse-up' : 'comm-pulse-dn');
+    }
+  });
+}
+
+function renderCommKPI(): void {
+  if (!_commData) return;
+  const all = _commData.commodities;
+  const sorted = [...all].sort((a, b) => b.changeDay - a.changeDay);
+  const riser = sorted[0];
+  const faller = sorted[sorted.length - 1];
+  const avgVol = all.reduce((s, c) => s + c.volatility, 0) / all.length;
+  const globalRisk = _commData.riskIndex['Global'];
+  // Cost pressure: avg weighted by impactCoeff of |changeDay|
+  const wSum = all.reduce((s, c) => s + Math.abs(c.changeDay) * c.impactCoeff, 0);
+  const wCount = all.reduce((s, c) => s + c.impactCoeff, 0);
+  const pressure = wCount > 0 ? (wSum / wCount).toFixed(2) : '—';
+
+  const set = (id: string, txt: string) => { const el = document.getElementById(id); if (el) el.textContent = txt; };
+  if (riser) { set('ck-riser-name', riser.name); set('ck-riser-chg', '+' + riser.changeDay.toFixed(2) + '%'); }
+  if (faller) { set('ck-faller-name', faller.name); set('ck-faller-chg', faller.changeDay.toFixed(2) + '%'); }
+  set('ck-vol', (avgVol * 100).toFixed(2) + '%');
+  set('ck-vol-sub', 'Avg daily volatility');
+  if (globalRisk) { set('ck-risk', globalRisk.overall + '/100'); set('ck-risk-sub', globalRisk.label); }
+  set('ck-pressure', pressure + '% avg');
+}
+
+function renderCommRiskBar(): void {
+  const bar = document.getElementById('comm-risk-bar');
+  if (!bar || !_commData) return;
+  bar.innerHTML = Object.entries(_commData.riskIndex).map(([region, r]) => {
+    const color = r.overall < 35 ? '#22c55e' : r.overall < 50 ? '#f59e0b' : '#ef4444';
+    return `<div class="comm-risk-chip" title="Geopolitical: ${r.geopolitical} | Supply: ${r.supply} | Energy: ${r.energy}">
+  <span style="font-size:0.68rem;font-weight:600;color:var(--text-secondary)">${_commEsc(region)}</span>
+  <div class="comm-risk-bar-inner" style="--pct:${r.overall}%;--clr:${color}"></div>
+  <span style="font-size:0.7rem;font-weight:700;color:${color}">${r.overall}</span>
+</div>`;
+  }).join('');
+}
+
+function renderCommTicker(): void {
+  const track = document.getElementById('comm-ticker-track');
+  if (!track || !_commData) return;
+  const items = _commData.commodities.slice(0, 24);
+  const makeChips = () => items.map(c => {
+    const up = c.changeDay >= 0;
+    const clr = up ? '#22c55e' : '#ef4444';
+    const arr = up ? '▲' : '▼';
+    return `<span class="comm-tick-item"><span class="comm-tick-name">${_commEsc(c.name)}</span> <span style="color:var(--text-muted);font-size:0.75em">${_commEsc(c.unit)}</span> <span class="comm-tick-price">${commFmt(c.currentPrice, c.unit)}</span> <span style="color:${clr};font-size:0.82em">${arr} ${Math.abs(c.changeDay).toFixed(2)}%</span></span><span class="comm-tick-sep">|</span>`;
+  }).join('');
+  track.innerHTML = makeChips() + makeChips();
+  const dur = Math.max(50, items.length * 4);
+  track.style.animationDuration = `${dur}s`;
+}
+
+// Price alert management
+function loadAlerts(): void {
+  try { _commAlerts = JSON.parse(localStorage.getItem('cv-comm-alerts') ?? '[]'); } catch { _commAlerts = []; }
+}
+function saveAlerts(): void { localStorage.setItem('cv-comm-alerts', JSON.stringify(_commAlerts)); }
+
+function checkCommAlerts(): void {
+  if (!_commData) return;
+  _commAlerts.forEach(alert => {
+    const c = _commData!.commodities.find(x => x.id === alert.commId);
+    if (!c) return;
+    const triggered = alert.dir === 'above' ? c.currentPrice >= alert.price : c.currentPrice <= alert.price;
+    if (triggered) {
+      console.info(`[CostVision Alert] ${c.name} is ${alert.dir} ${commFmt(alert.price, c.unit)} (current: ${commFmt(c.currentPrice, c.unit)})`);
+    }
+  });
+}
+
+function populateAlertSelect(): void {
+  const sel = document.getElementById('alert-commodity-sel') as HTMLSelectElement | null;
+  if (!sel || !_commData) return;
+  sel.innerHTML = _commData.commodities.map(c =>
+    `<option value="${_commEsc(c.id)}">${_commEsc(c.name)} (${_commEsc(c.unit)})</option>`
+  ).join('');
+}
+
+function renderAlertList(): void {
+  const list = document.getElementById('alert-list');
+  if (!list) return;
+  if (!_commAlerts.length) { list.innerHTML = '<div style="color:var(--text-muted);font-size:0.82rem;padding:8px 0">No alerts set.</div>'; return; }
+  list.innerHTML = _commAlerts.map((a, i) =>
+    `<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--border);font-size:0.82rem">
+  <span><strong>${_commEsc(a.name)}</strong> ${a.dir} $${a.price.toLocaleString()} <span style="color:var(--text-muted)">${_commEsc(a.unit)}</span></span>
+  <button onclick="window.__removeCommAlert(${i})" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:0.85rem;padding:0 4px">✕</button>
+</div>`
+  ).join('');
+}
+
+(window as unknown as Record<string, unknown>).__removeCommAlert = (i: number) => {
+  _commAlerts.splice(i, 1);
+  saveAlerts();
+  renderAlertList();
+};
+
 // ─── News Section ────────────────────────────────────────────────────────────
 
 interface NewsArticle {
@@ -13506,6 +13741,67 @@ async function init(): Promise<void> {
   document.getElementById('demo-btn')?.addEventListener('click', openDemoModal);
   document.getElementById('close-demo-modal')?.addEventListener('click', closeDemoModal);
   demoModal?.addEventListener('click', e => { if (e.target === demoModal) closeDemoModal(); });
+
+  // ─── Commodity Intelligence wiring ───────────────────────────────────────
+  loadAlerts();
+
+  document.getElementById('comm-panel-toggle')?.addEventListener('click', () => {
+    _commPanelOpen = !_commPanelOpen;
+    const panel = document.getElementById('comm-panel');
+    const btn = document.getElementById('comm-panel-toggle');
+    if (panel) panel.style.display = _commPanelOpen ? '' : 'none';
+    if (btn) btn.textContent = _commPanelOpen ? '⌃ Close' : '⌄ Dashboard';
+    if (_commPanelOpen) void fetchCommodities();
+  });
+  document.getElementById('comm-panel-close')?.addEventListener('click', () => {
+    _commPanelOpen = false;
+    const panel = document.getElementById('comm-panel');
+    const btn = document.getElementById('comm-panel-toggle');
+    if (panel) panel.style.display = 'none';
+    if (btn) btn.textContent = '⌄ Dashboard';
+  });
+  document.getElementById('comm-refresh-btn')?.addEventListener('click', () => { void fetchCommodities(true); });
+  document.getElementById('comm-filter-cat')?.addEventListener('change', e => {
+    _commFilterCat = (e.target as HTMLSelectElement).value;
+    renderCommCards();
+  });
+  document.getElementById('comm-filter-region')?.addEventListener('change', e => {
+    _commFilterRegion = (e.target as HTMLSelectElement).value;
+    renderCommCards();
+  });
+  document.getElementById('comm-search')?.addEventListener('input', e => {
+    _commSearch = (e.target as HTMLInputElement).value;
+    renderCommCards();
+  });
+  document.getElementById('comm-alert-btn')?.addEventListener('click', () => {
+    const modal = document.getElementById('comm-alert-modal');
+    if (modal) modal.style.display = 'flex';
+    populateAlertSelect();
+    renderAlertList();
+  });
+  document.getElementById('comm-alert-modal')?.addEventListener('click', e => {
+    if (e.target === document.getElementById('comm-alert-modal'))
+      (document.getElementById('comm-alert-modal') as HTMLElement).style.display = 'none';
+  });
+  document.getElementById('alert-add-btn')?.addEventListener('click', () => {
+    const commSel = document.getElementById('alert-commodity-sel') as HTMLSelectElement | null;
+    const dirSel = document.getElementById('alert-dir-sel') as HTMLSelectElement | null;
+    const priceInp = document.getElementById('alert-price-inp') as HTMLInputElement | null;
+    if (!commSel || !dirSel || !priceInp) return;
+    const commId = commSel.value;
+    const dir = dirSel.value as 'above' | 'below';
+    const price = parseFloat(priceInp.value);
+    if (!commId || isNaN(price)) return;
+    const c = _commData?.commodities.find(x => x.id === commId);
+    if (!c) return;
+    _commAlerts.push({ id: Date.now().toString(), commId, name: c.name, dir, price, unit: c.unit });
+    saveAlerts();
+    renderAlertList();
+    priceInp.value = '';
+  });
+
+  // Auto-fetch ticker on home load (don't wait for panel open)
+  void fetchCommodities();
 
   // ─── News section wiring ──────────────────────────────────────────────────
   document.getElementById('news-btn')?.addEventListener('click', showNews);
