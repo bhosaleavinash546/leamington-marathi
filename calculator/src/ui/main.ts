@@ -664,9 +664,30 @@ let _newsArticles: NewsArticle[] = [];
 let _newsCategory = '';
 let _newsRefreshTimer: ReturnType<typeof setInterval> | null = null;
 let _newsLastFetch = 0;
+let _newsSearch = '';
 
 function _newsEscHtml(s: string): string {
   return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+function _newsTimeAgo(dateStr: string): string {
+  const d = new Date(dateStr);
+  if (isNaN(d.getTime())) return '';
+  const diff = Date.now() - d.getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 2)  return 'just now';
+  if (mins < 60) return `${mins}m ago`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24)  return `${hrs}h ago`;
+  const days = Math.floor(hrs / 24);
+  if (days === 1) return 'Yesterday';
+  if (days < 7)  return `${days}d ago`;
+  return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+}
+
+function _newsReadMins(title: string, summary: string): number {
+  const words = (title + ' ' + summary).trim().split(/\s+/).length;
+  return Math.max(1, Math.round(words / 200));
 }
 
 function showNews(): void {
@@ -679,6 +700,24 @@ function showNews(): void {
   document.getElementById('picker-backdrop')?.style.setProperty('display','none');
   const newsEl = document.getElementById('news-view');
   if (newsEl) newsEl.style.display = '';
+  // Wire search input
+  const searchInput = document.getElementById('news-search') as HTMLInputElement | null;
+  if (searchInput && !searchInput.dataset.wired) {
+    searchInput.dataset.wired = '1';
+    searchInput.addEventListener('input', () => {
+      _newsSearch = searchInput.value.trim();
+      renderNewsCards();
+    });
+    searchInput.addEventListener('keydown', e => {
+      if (e.key === 'Escape') { searchInput.value = ''; _newsSearch = ''; renderNewsCards(); }
+    });
+  }
+  // Wire empty-state refresh button
+  const emptyRefreshBtn = document.getElementById('news-empty-refresh-btn');
+  if (emptyRefreshBtn && !emptyRefreshBtn.dataset.wired) {
+    emptyRefreshBtn.dataset.wired = '1';
+    emptyRefreshBtn.addEventListener('click', () => void fetchNews(true));
+  }
   void fetchNews();
   if (_newsRefreshTimer) clearInterval(_newsRefreshTimer);
   _newsRefreshTimer = setInterval(() => {
@@ -705,8 +744,7 @@ async function fetchNews(force = false): Promise<void> {
     const data = (await res.json()) as { articles: NewsArticle[]; cached?: boolean; ageSeconds?: number };
     _newsArticles = data.articles ?? [];
     _newsLastFetch = Date.now();
-    const countEl = document.getElementById('news-count');
-    if (countEl) countEl.textContent = `${_newsArticles.length} articles`;
+    initNewsCats();
     const ageEl = document.getElementById('news-age');
     if (ageEl && data.ageSeconds !== undefined) {
       const mins = Math.round(data.ageSeconds / 60);
@@ -726,27 +764,73 @@ function renderNewsCards(): void {
   const gridEl = document.getElementById('news-grid');
   const emptyEl = document.getElementById('news-empty');
   if (!gridEl) return;
-  const filtered = _newsCategory
+
+  let filtered = _newsCategory
     ? _newsArticles.filter(a => a.category === _newsCategory)
     : _newsArticles;
+
+  if (_newsSearch) {
+    const q = _newsSearch.toLowerCase();
+    filtered = filtered.filter(a =>
+      a.title.toLowerCase().includes(q) ||
+      a.summary.toLowerCase().includes(q) ||
+      a.source.toLowerCase().includes(q)
+    );
+  }
+
+  const countEl = document.getElementById('news-count');
+  if (countEl) {
+    countEl.textContent = _newsSearch || _newsCategory
+      ? `${filtered.length} of ${_newsArticles.length} articles`
+      : `${_newsArticles.length} articles`;
+  }
+
   if (!filtered.length) {
     gridEl.innerHTML = '';
-    if (emptyEl) emptyEl.style.display = '';
+    if (emptyEl) {
+      emptyEl.style.display = '';
+      const msgEl = emptyEl.querySelector('p');
+      if (msgEl) msgEl.textContent = _newsSearch
+        ? `No articles found for "${_newsSearch}". Try a different search term.`
+        : 'No articles found. Try refreshing or selecting a different category.';
+    }
     return;
   }
   if (emptyEl) emptyEl.style.display = 'none';
-  gridEl.innerHTML = filtered.map(a => {
-    const d = new Date(a.publishedAt);
-    const dateStr = isNaN(d.getTime()) ? '' : d.toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' });
+
+  gridEl.innerHTML = filtered.map((a, idx) => {
     const color = NEWS_CAT_COLORS[a.category] ?? 'var(--accent)';
-    return `<a class="news-card" href="${_newsEscHtml(a.url)}" target="_blank" rel="noopener noreferrer" style="border-left-color:${color}">
+    const timeAgo = _newsTimeAgo(a.publishedAt);
+    const readMins = _newsReadMins(a.title, a.summary);
+    const isFeatured = idx === 0 && !_newsCategory && !_newsSearch;
+    const imgHtml = a.imageUrl
+      ? `<div class="news-card-img" style="background-image:url('${_newsEscHtml(a.imageUrl)}')"></div>`
+      : '';
+    const borderStyle = isFeatured
+      ? `border-top-color:${color}`
+      : `border-left-color:${color}`;
+
+    const bodyContent = `
   <span class="news-card-cat" style="color:${color}">${_newsEscHtml(a.category)}</span>
   <h3 class="news-card-title">${_newsEscHtml(a.title)}</h3>
   <p class="news-card-summary">${_newsEscHtml(a.summary)}</p>
   <div class="news-card-footer">
     <span class="news-card-source">${_newsEscHtml(a.source)}</span>
-    <span class="news-card-date">${dateStr}</span>
-  </div>
+    <span class="news-card-meta">
+      <span class="news-card-readtime">~${readMins}m</span>
+      <span class="news-card-date">${_newsEscHtml(timeAgo)}</span>
+    </span>
+  </div>`;
+
+    /* Featured card: image left + text body right via flex-row */
+    if (isFeatured) {
+      return `<a class="news-card news-card--featured" href="${_newsEscHtml(a.url)}" target="_blank" rel="noopener noreferrer" style="${borderStyle}">
+  ${imgHtml}<div class="news-card-body">${bodyContent}</div>
+</a>`;
+    }
+
+    return `<a class="news-card" href="${_newsEscHtml(a.url)}" target="_blank" rel="noopener noreferrer" style="${borderStyle}">
+  ${imgHtml}${bodyContent}
 </a>`;
   }).join('');
 }
@@ -774,18 +858,22 @@ function updateNewsTicker(): void {
 function initNewsCats(): void {
   const catsEl = document.getElementById('news-cats');
   if (!catsEl) return;
-  catsEl.innerHTML = NEWS_CATEGORIES.map(cat => {
-    const label = NEWS_CAT_LABELS[cat] ?? (cat || 'All');
-    const color = cat ? (NEWS_CAT_COLORS[cat] ?? 'var(--accent)') : '';
-    const style = cat && color ? ` style="--cat-color:${color}"` : '';
-    return `<button class="news-cat${cat === '' ? ' active' : ''}" data-cat="${_newsEscHtml(cat)}"${style}>${_newsEscHtml(label)}</button>`;
-  }).join('');
+  const renderCats = () => {
+    catsEl.innerHTML = NEWS_CATEGORIES.map(cat => {
+      const label = NEWS_CAT_LABELS[cat] ?? (cat || 'All');
+      const color = cat ? (NEWS_CAT_COLORS[cat] ?? 'var(--accent)') : '';
+      const style = cat && color ? ` style="--cat-color:${color}"` : '';
+      const count = cat ? _newsArticles.filter(a => a.category === cat).length : _newsArticles.length;
+      const countBadge = count > 0 ? ` <span class="news-cat-count">${count}</span>` : '';
+      return `<button class="news-cat${cat === _newsCategory ? ' active' : ''}" data-cat="${_newsEscHtml(cat)}"${style}>${_newsEscHtml(label)}${countBadge}</button>`;
+    }).join('');
+  };
+  renderCats();
   catsEl.addEventListener('click', e => {
     const btn = (e.target as HTMLElement).closest('.news-cat') as HTMLElement | null;
     if (!btn) return;
-    catsEl.querySelectorAll('.news-cat').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
     _newsCategory = btn.dataset.cat ?? '';
+    renderCats();
     renderNewsCards();
   });
 }

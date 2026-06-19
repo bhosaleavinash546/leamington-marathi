@@ -36,6 +36,21 @@ const FEED_SOURCES: FeedSource[] = [
   { url: 'https://www.engineeringnews.co.za/rss/article.rss', name: 'Engineering News', defaultCategory: 'Manufacturing' },
   { url: 'https://batterytechnology.news/feed/', name: 'Battery Technology News', defaultCategory: 'Battery' },
   { url: 'https://semiconductorengineering.com/feed/', name: 'Semiconductor Engineering', defaultCategory: 'PCB / PCBA' },
+  { url: 'https://chargedevs.com/feed/', name: 'Charged EVs', defaultCategory: 'Battery' },
+  { url: 'https://cleantechnica.com/feed/', name: 'CleanTechnica', defaultCategory: 'EV Tech' },
+  { url: 'https://www.supplychaindive.com/feeds/news/', name: 'Supply Chain Dive', defaultCategory: 'Cost & Commodity' },
+  { url: 'https://agmetalminer.com/feed/', name: 'MetalMiner', defaultCategory: 'Cost & Commodity' },
+  { url: 'https://www.plasticsnews.com/rss/news', name: 'Plastics News', defaultCategory: 'Plastics' },
+  { url: 'https://electrive.com/feed/', name: 'Electrive', defaultCategory: 'EV Tech' },
+  { url: 'https://www.mining.com/feed/', name: 'Mining.com', defaultCategory: 'Materials' },
+  { url: 'https://www.benchmarkminerals.com/feed/', name: 'Benchmark Mineral Intelligence', defaultCategory: 'Battery' },
+  { url: 'https://batteryindustry.tech/feed/', name: 'Battery Industry', defaultCategory: 'Battery' },
+  { url: 'https://www.autonews.com/rss.xml', name: 'Automotive News', defaultCategory: 'Automotive' },
+  { url: 'https://www.robotics247.com/rss/', name: 'Robotics247', defaultCategory: 'Robotics' },
+  { url: 'https://industrytoday.com/feed/', name: 'Industry Today', defaultCategory: 'Manufacturing' },
+  { url: 'https://www.thedriven.io/feed/', name: 'The Driven', defaultCategory: 'EV Tech' },
+  { url: 'https://www.autonews.com/manufacturing/rss.xml', name: 'Automotive News Mfg', defaultCategory: 'Manufacturing' },
+  { url: 'https://www.freightwaves.com/news/feed', name: 'FreightWaves', defaultCategory: 'Cost & Commodity' },
 ];
 
 const CATEGORY_KEYWORDS: Record<string, string[]> = {
@@ -72,6 +87,10 @@ const AUTOMOTIVE_FILTER = [
   'tesla', 'bmw', 'toyota', 'volkswagen', 'ford', 'gm ', 'stellantis', 'hyundai',
   'mercedes', 'audi', 'porsche', 'rivian', 'lucid', 'nio', 'byd', 'volvo', 'jaguar',
   'land rover', 'renault', 'peugeot', 'nissan', 'honda', 'mazda', 'subaru',
+  'lithium', 'cobalt', 'nickel', 'manganese', 'rare earth', 'critical mineral',
+  'press hardening', 'spot weld', 'resistance weld', 'laser weld',
+  'tier 2', 'tier 3', 'jit ', 'just-in-time', 'kanban', 'lean manufacturing',
+  'gigacast', 'structural battery', 'cell-to-pack',
 ];
 
 const EXCLUDE_FILTER = [
@@ -181,7 +200,7 @@ async function fetchFeed(source: FeedSource): Promise<NewsArticle[]> {
 }
 
 let cache: { articles: NewsArticle[]; ts: number } | null = null;
-const CACHE_MS = 30 * 60 * 1000;
+const CACHE_MS = 15 * 60 * 1000;
 
 async function buildFeed(): Promise<NewsArticle[]> {
   const results = await Promise.allSettled(FEED_SOURCES.map(fetchFeed));
@@ -201,7 +220,7 @@ async function buildFeed(): Promise<NewsArticle[]> {
     return tb - ta;
   });
 
-  return all.slice(0, 50);
+  return all.slice(0, 120);
 }
 
 router.get('/', async (_req: Request, res: Response): Promise<void> => {

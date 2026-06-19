@@ -473,11 +473,17 @@
   <div class="news-header">
     <div class="news-title-bar">
       <h2 style="font-size:1.3rem;font-weight:700;color:var(--text-primary);margin:0">📰 Automotive Industry News</h2>
-      <div style="display:flex;align-items:center;gap:12px;font-size:0.8rem;color:var(--text-muted)">
-        <span id="news-count"></span>
-        <span id="news-age"></span>
-        <button class="btn btn-secondary btn-sm" id="news-refresh-btn" style="font-size:0.78rem;padding:4px 12px">↻ Refresh</button>
-        <button class="btn btn-secondary btn-sm" id="news-back-btn" style="font-size:0.78rem;padding:4px 12px">← Back</button>
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+        <div class="news-search-wrap">
+          <svg class="news-search-icon" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          <input type="search" id="news-search" class="news-search-input" placeholder="Search articles…" autocomplete="off" />
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;font-size:0.78rem;color:var(--text-muted)">
+          <span id="news-count"></span>
+          <span id="news-age"></span>
+          <button class="btn btn-secondary btn-sm" id="news-refresh-btn" style="font-size:0.78rem;padding:4px 10px">↻ Refresh</button>
+          <button class="btn btn-secondary btn-sm" id="news-back-btn" style="font-size:0.78rem;padding:4px 10px">← Back</button>
+        </div>
       </div>
     </div>
     <div class="news-cats" id="news-cats"></div>
@@ -500,8 +506,12 @@
   </div>
   <!-- Empty state -->
   <div id="news-empty" style="display:none;text-align:center;padding:60px 20px;color:var(--text-muted)">
-    <div style="font-size:3rem;margin-bottom:12px">📰</div>
-    <p>No articles found. Try refreshing or selecting a different category.</p>
+    <div style="font-size:3rem;margin-bottom:12px">🔍</div>
+    <p style="font-size:0.95rem;margin-bottom:16px">No articles found. Try refreshing or selecting a different category.</p>
+    <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+      <button class="btn btn-secondary btn-sm" onclick="document.getElementById('news-search').value='';document.getElementById('news-search').dispatchEvent(new Event('input'))">Clear search</button>
+      <button class="btn btn-secondary btn-sm" id="news-empty-refresh-btn">↻ Refresh feed</button>
+    </div>
   </div>
   <!-- Card grid -->
   <div id="news-grid" class="news-grid"></div>
