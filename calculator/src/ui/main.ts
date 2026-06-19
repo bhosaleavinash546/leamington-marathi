@@ -10402,6 +10402,17 @@ function renderBreakdown(result: PartCostResult): void {
           </tr>`).join('')}
         </tbody>
       </table>
+    </div>
+
+    <div style="margin-top:22px;padding-top:16px;border-top:2px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+      <div style="font-size:0.76rem;color:var(--text-muted);line-height:1.5">
+        <strong style="color:var(--text-secondary)">Full PDF includes:</strong>
+        Breakdown · Commercial Params · Material Detail · Operations · Machine Rates · Rate Traceability · AI Insights · DFM Analysis · DFA Analysis · Cost Optimisations · Implementation Roadmap
+      </div>
+      <button class="btn btn-primary" id="breakdown-export-pdf-btn" style="display:flex;align-items:center;gap:7px;font-size:0.85rem;padding:9px 18px;flex-shrink:0">
+        <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12H3a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1h7l3 3v6a1 1 0 0 1-1 1h-1"/><polyline points="4 9 4 16 12 16 12 9"/><line x1="8" y1="4" x2="8" y2="12"/><polyline points="5 9 8 12 11 9"/></svg>
+        Export Full Report PDF
+      </button>
     </div>`;
 
   // Doughnut chart
@@ -10528,6 +10539,7 @@ function renderBreakdown(result: PartCostResult): void {
   });
 
   // Wire add-quote button
+  panel.querySelector('#breakdown-export-pdf-btn')?.addEventListener('click', openPDF);
   panel.querySelector('#add-quote-btn-inline')?.addEventListener('click', openQuoteModal);
   panel.querySelectorAll('.del-quote-btn').forEach(btn => {
     btn.addEventListener('click', () => {
