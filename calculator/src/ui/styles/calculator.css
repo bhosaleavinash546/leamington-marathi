@@ -2950,7 +2950,8 @@ textarea:focus-visible {
   background: rgba(168,85,247,0.06);
 }
 
-.cpicker-tile-icon { font-size: 1.5rem; line-height: 1; margin-bottom: 4px; }
+.cpicker-tile-icon { font-size: 1.5rem; line-height: 1; margin-bottom: 4px; display: flex; align-items: center; }
+.cpicker-tile-icon svg { width: 28px; height: 28px; flex-shrink: 0; }
 .cpicker-tile-label { font-size: 0.88rem; font-weight: 700; color: var(--text-primary); letter-spacing: -0.01em; }
 .cpicker-tile-sub { font-size: 0.71rem; color: var(--text-muted); line-height: 1.4; }
 
@@ -3098,6 +3099,7 @@ body.cv-new-costing #commodity-picker-view .cpicker-tile {
 body.cv-new-costing #commodity-picker-view .cpicker-tile-icon {
   font-size: 1.2rem;
 }
+body.cv-new-costing #commodity-picker-view .cpicker-tile-icon svg { width: 22px; height: 22px; }
 body.cv-new-costing #commodity-picker-view .cpicker-tile-label {
   font-size: 0.75rem;
 }
@@ -3245,6 +3247,7 @@ body.cv-new-costing.sidebar-collapsed .cpicker-tile {
   border-radius: 8px;
 }
 body.cv-new-costing.sidebar-collapsed .cpicker-tile-icon { font-size: 1.25rem; margin: 0; }
+body.cv-new-costing.sidebar-collapsed .cpicker-tile-icon svg { width: 22px; height: 22px; }
 .sidebar-toggle-btn {
   background: none;
   border: 1px solid var(--border-strong);
