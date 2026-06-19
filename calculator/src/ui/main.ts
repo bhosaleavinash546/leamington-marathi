@@ -39,6 +39,8 @@ import {
 import { computeAssemblyRollup, newAssembly, saveAssembly, deleteAssembly, listAssemblies } from '../engine/assembly.js';
 import type { Assembly, AssemblyLine } from '../engine/assembly.js';
 import type { LearningCurveResult } from '../engine/learning-curve.js';
+import { jsPDF } from 'jspdf';
+import autoTable from 'jspdf-autotable';
 import { exportToExcelBlob } from '../export/excel.js';
 import { printPDF, printCADAnalysisPDF } from '../export/pdf.js';
 import { generateInsights, totalPotentialSaving, FX_TO_GBP } from '../engine/insights.js';
@@ -6354,7 +6356,7 @@ function buildPCBImagePanel(r: PCBImageAnalysis): string {
 
       <div style="display:flex;gap:6px;margin-top:6px">
         <button class="btn btn-secondary btn-sm" id="pcb-export-csv-btn" style="font-size:0.65rem">&#11015; Export CSV</button>
-        <button class="btn btn-secondary btn-sm" id="pcb-export-pdf-btn" style="font-size:0.65rem">&#128438; Print/PDF</button>
+        <button class="btn btn-secondary btn-sm" id="pcb-export-pdf-btn" style="font-size:0.65rem;display:flex;align-items:center;gap:3px"><svg viewBox="0 0 16 16" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12H3a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1h7l3 3v6a1 1 0 0 1-1 1h-1"/><polyline points="4 9 4 16 12 16 12 9"/><line x1="8" y1="4" x2="8" y2="12"/><polyline points="5 9 8 12 11 9"/></svg> Export PDF</button>
       </div>
 
       ${pcbEditMode ? `<div id="pcb-edit-actions" style="display:flex;gap:8px;margin-top:6px;padding:8px;background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.3);border-radius:6px;align-items:center">
@@ -6992,26 +6994,282 @@ function exportPCBAnalysisCSV(r: PCBImageAnalysis): void {
   URL.revokeObjectURL(url);
 }
 function exportPCBAnalysisPrint(r: PCBImageAnalysis): void {
-  const w = window.open('', '_blank');
-  if (!w) { showToast('Pop-up blocked — allow pop-ups to print/PDF.', 'warning'); return; }
-  const bomRows = r.bom.map(b => `<tr><td>${escHtml(b.refDes)}</td><td>${escHtml(b.description)}</td><td>${escHtml(b.pkg)}</td><td>${escHtml(b.value)}</td><td>${escHtml(b.partNumber ?? '')}</td><td>${b.qty}</td><td>£${b.unitPriceGBP.toFixed(3)}</td><td>£${(b.qty * b.unitPriceGBP).toFixed(2)}</td></tr>`).join('');
-  const compRows = (r._countryComparison ?? []).map(c => `<tr><td>${escHtml(c.countryName)}</td><td>£${c.pcbFabPerBoard.toFixed(2)}</td><td>£${c.assemblyPerBoard.toFixed(2)}</td><td>£${c.logisticsPerBoard.toFixed(2)}</td><td>£${c.totalPerBoard.toFixed(2)}</td><td>${c.leadTimeWeeks}w</td></tr>`).join('');
-  const cx = r.complexityScore;
-  w.document.write(`<!DOCTYPE html><html><head><title>PCB Analysis — ${escHtml(r.partName)}</title>
-    <style>body{font-family:system-ui,sans-serif;margin:24px;color:#111}h1{font-size:18px}h2{font-size:14px;margin-top:18px;border-bottom:1px solid #ccc;padding-bottom:4px}table{border-collapse:collapse;width:100%;font-size:11px;margin-top:6px}th,td{border:1px solid #ccc;padding:3px 6px;text-align:left}th{background:#f2f2f2}.meta{font-size:12px;color:#555}</style>
-    </head><body>
-    <h1>${escHtml(r.partName)}</h1>
-    <div class="meta">Generated ${new Date().toLocaleString()} · Confidence: ${r.confidenceLevel}${cx ? ` · Complexity: ${cx.score}/100 (IPC Class ${cx.ipcClass}, ${cx.label})` : ''}</div>
-    <h2>Board Specification</h2>
-    <div class="meta">${r.boardSpec.estimatedLayers}-layer · ${r.boardSpec.widthMm}×${r.boardSpec.heightMm}mm · ${escHtml(r.boardSpec.surfaceFinish.toUpperCase())} · ${escHtml(r.boardSpec.technologyType)} · ${r.boardSpec.throughVias + r.boardSpec.blindVias + r.boardSpec.microVias} vias</div>
-    <h2>Bill of Materials (${r.bom.length} lines)</h2>
-    <table><thead><tr><th>RefDes</th><th>Description</th><th>Pkg</th><th>Value</th><th>Part No.</th><th>Qty</th><th>Unit £</th><th>Ext £</th></tr></thead><tbody>${bomRows}</tbody>
-    <tfoot><tr><th colspan="7" style="text-align:right">Total BOM</th><th>£${r.costEstimates.totalBOMCostGBP.toFixed(2)}</th></tr></tfoot></table>
-    <h2>Global Manufacturing Cost Comparison</h2>
-    <table><thead><tr><th>Country</th><th>PCB Fab</th><th>Assembly</th><th>Logistics</th><th>Total/Board</th><th>Lead</th></tr></thead><tbody>${compRows}</tbody></table>
-    </body></html>`);
-  w.document.close();
-  setTimeout(() => { w.focus(); w.print(); }, 300);
+  type RGB = [number, number, number];
+  const BLUE: RGB   = [37,  99,  235];
+  const DARK: RGB   = [15,  23,  42];
+  const GREY: RGB   = [100, 116, 139];
+  const WHITE: RGB  = [255, 255, 255];
+  const LIGHT: RGB  = [241, 245, 249];
+  const RED_R: RGB  = [220, 38,  38];
+  const AMB_R: RGB  = [180, 83,  9];
+  const GRN_R: RGB  = [22,  163, 74];
+  const CYAN: RGB   = [8,   145, 178];
+
+  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+  const margin = 14;
+  const pageW = 210;
+  const usable = pageW - margin * 2;
+  let y = margin;
+  const dateStr = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+
+  const checkPage = (need: number) => {
+    if (y + need > 285) { doc.addPage(); y = margin; }
+  };
+
+  const sectionTitle = (title: string) => {
+    checkPage(10);
+    doc.setFillColor(...BLUE);
+    doc.roundedRect(margin, y, usable, 7, 1.5, 1.5, 'F');
+    doc.setFontSize(8.5); doc.setFont('helvetica', 'bold'); doc.setTextColor(...WHITE);
+    doc.text(title, margin + 4, y + 5);
+    doc.setFont('helvetica', 'normal'); doc.setTextColor(...DARK);
+    y += 10;
+  };
+
+  const bulletList = (items: string[], colourFn?: (s: string) => RGB) => {
+    items.forEach(s => {
+      checkPage(6);
+      const col = colourFn ? colourFn(s) : DARK;
+      doc.setFontSize(7.5); doc.setTextColor(...col);
+      const lines = doc.splitTextToSize(`• ${s}`, usable - 6);
+      doc.text(lines as string[], margin + 6, y);
+      y += lines.length * 4;
+    });
+    doc.setTextColor(...DARK);
+    y += 2;
+  };
+
+  const addFooters = () => {
+    const total = (doc as unknown as { internal: { getNumberOfPages(): number } }).internal.getNumberOfPages();
+    for (let i = 1; i <= total; i++) {
+      doc.setPage(i);
+      doc.setDrawColor(...BLUE); doc.setLineWidth(0.4);
+      doc.line(margin, 290, pageW - margin, 290);
+      doc.setFontSize(6.5); doc.setTextColor(...GREY);
+      doc.text(`PCB Image Analysis Report  ·  ${r.partName}  ·  ${dateStr}`, margin, 294);
+      doc.text(`Page ${i} of ${total}  ·  CONFIDENTIAL`, pageW - margin, 294, { align: 'right' });
+    }
+  };
+
+  // ── COVER HEADER ────────────────────────────────────────────────────────────
+  doc.setFillColor(...BLUE);
+  doc.roundedRect(margin, y, usable, 34, 3, 3, 'F');
+
+  // PCB icon placeholder (circuit node dots)
+  doc.setFillColor(...CYAN);
+  doc.circle(pageW - margin - 18, y + 7, 5, 'F');
+  doc.setFillColor(...WHITE);
+  [[0,0],[4,4],[-4,4],[4,-4],[-4,-4]].forEach(([dx, dy]) => doc.circle(pageW - margin - 18 + dx, y + 7 + dy, 0.8, 'F'));
+
+  doc.setFontSize(14); doc.setFont('helvetica', 'bold'); doc.setTextColor(...WHITE);
+  doc.text(r.partName, margin + 6, y + 10);
+  doc.setFontSize(8); doc.setFont('helvetica', 'normal');
+  doc.text('PCB Image Analysis  ·  Leamington Cost Engine', margin + 6, y + 16);
+
+  const confCol: RGB = r.confidenceLevel === 'High' ? GRN_R : r.confidenceLevel === 'Medium' ? AMB_R : RED_R;
+  doc.setFillColor(...confCol);
+  doc.roundedRect(margin + 6, y + 19, 28, 6, 1, 1, 'F');
+  doc.setFontSize(7.5); doc.setFont('helvetica', 'bold');
+  doc.text(`${r.confidenceLevel} Confidence`, margin + 20, y + 23.5, { align: 'center' });
+
+  if (r.complexityScore) {
+    const cx = r.complexityScore;
+    doc.setFillColor(255, 255, 255, 0.15);
+    doc.roundedRect(margin + 38, y + 19, 42, 6, 1, 1, 'F');
+    doc.setTextColor(...WHITE); doc.setFont('helvetica', 'normal');
+    doc.text(`Complexity: ${cx.score}/100  ·  IPC Class ${cx.ipcClass}  ·  ${cx.label}`, margin + 59, y + 23.5, { align: 'center' });
+  }
+
+  doc.setFontSize(7.5); doc.setTextColor(...WHITE);
+  doc.text(`Generated: ${dateStr}  ·  Domain: ${r.stage1Classification?.domain?.replace(/_/g, ' ') ?? 'General'}`, margin + 6, y + 30);
+  y += 38;
+
+  // ── §1 BOARD SPECIFICATION ───────────────────────────────────────────────────
+  const b = r.boardSpec;
+  sectionTitle('§1  Board Specification');
+  autoTable(doc, {
+    startY: y,
+    margin: { left: margin, right: margin },
+    head: [['Parameter', 'Value', 'Parameter', 'Value']],
+    body: [
+      ['Layers', String(b.estimatedLayers), 'Technology', b.technologyType.replace(/_/g, ' ')],
+      ['Dimensions', `${b.widthMm} × ${b.heightMm} mm`, 'HDI Structure', b.hdiStructure === 'none' ? 'None' : b.hdiStructure],
+      ['Surface Finish', b.surfaceFinish.toUpperCase(), 'Impedance Control', b.impedanceControlRequired ? 'Yes' : 'No'],
+      ['Solder Mask', b.solderMaskColour, 'Copper Weight', `${b.copperWeightOz} oz`],
+      ['Through Vias', String(b.throughVias), 'Blind Vias', String(b.blindVias)],
+      ['Micro Vias', String(b.microVias), 'Buried Vias', String(b.buriedVias)],
+      ['Quality Grade', b.qualityGrade.replace(/_/g, ' '), 'Panel Utilisation', `${Math.round(b.panelUtilisation * 100)}%`],
+      ['BGA Detected', b.bgaDetected ? 'Yes' : 'No', 'Min Trace/Space', `${b.minTraceSpaceMm} mm`],
+      ['Silkscreen Sides', String(b.silkscreenSides), 'OCR ICs Found', String(r.ocrExtraction?.icMarkings?.length ?? 0)],
+    ],
+    styles: { fontSize: 7.5, cellPadding: 2 },
+    headStyles: { fillColor: BLUE, textColor: WHITE, fontStyle: 'bold', fontSize: 7.5 },
+    alternateRowStyles: { fillColor: LIGHT },
+    theme: 'grid',
+  });
+  y = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 5;
+
+  // ── §2 ASSEMBLY OVERVIEW ─────────────────────────────────────────────────────
+  const a = r.assembly;
+  sectionTitle('§2  Assembly Overview');
+  autoTable(doc, {
+    startY: y,
+    margin: { left: margin, right: margin },
+    head: [['Parameter', 'Value', 'Parameter', 'Value']],
+    body: [
+      ['SMT Placements', String(a.smtPlacements), 'Through-Hole Joints', String(a.throughHoleJoints)],
+      ['Manual Joints', String(a.manualJoints), 'BGA Count', String(a.bgaCount)],
+      ['Assembly Complexity', a.complexity, 'Reflow Sides', a.reflowSides === 2 ? 'Double-sided' : 'Single-sided'],
+      ['AOI Required', a.aoiRequired ? 'Yes' : 'No', 'ICT Time', `${a.ictTimeSec} s`],
+    ],
+    styles: { fontSize: 7.5, cellPadding: 2 },
+    headStyles: { fillColor: BLUE, textColor: WHITE, fontStyle: 'bold', fontSize: 7.5 },
+    alternateRowStyles: { fillColor: LIGHT },
+    theme: 'grid',
+  });
+  y = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 5;
+
+  // ── §3 COST OVERVIEW ──────────────────────────────────────────────────────────
+  const c = r.costEstimates;
+  sectionTitle('§3  Cost Overview');
+  autoTable(doc, {
+    startY: y,
+    margin: { left: margin, right: margin },
+    head: [['Cost Element', 'Min (£)', 'Mid (£)', 'Max (£)']],
+    body: [
+      ['PCB Fabrication', c.pcbFabGBP.min.toFixed(2), c.pcbFabGBP.mid.toFixed(2), c.pcbFabGBP.max.toFixed(2)],
+      ['BOM (components)', '—', c.totalBOMCostGBP.toFixed(2), '—'],
+      ['SMT Assembly', '—', c.smtAssemblyCostGBP.toFixed(2), '—'],
+      ['Total Estimate', (c.pcbFabGBP.min + c.totalBOMCostGBP + c.smtAssemblyCostGBP).toFixed(2),
+       (c.pcbFabGBP.mid + c.totalBOMCostGBP + c.smtAssemblyCostGBP).toFixed(2),
+       (c.pcbFabGBP.max + c.totalBOMCostGBP + c.smtAssemblyCostGBP).toFixed(2)],
+    ],
+    styles: { fontSize: 8, cellPadding: 2.5 },
+    headStyles: { fillColor: BLUE, textColor: WHITE, fontStyle: 'bold' },
+    alternateRowStyles: { fillColor: LIGHT },
+    bodyStyles: { halign: 'right' },
+    columnStyles: { 0: { halign: 'left', fontStyle: 'bold' } },
+    theme: 'grid',
+    didParseCell: (data) => {
+      if (data.section === 'body' && data.row.index === 3) {
+        data.cell.styles.fillColor = [220, 242, 255];
+        data.cell.styles.fontStyle = 'bold';
+      }
+    },
+  });
+  y = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 5;
+
+  // ── §4 GLOBAL MANUFACTURING COMPARISON ────────────────────────────────────────
+  const comparisons = r._countryComparison ?? [];
+  if (comparisons.length > 0) {
+    sectionTitle('§4  Global Manufacturing Comparison');
+    const sorted = [...comparisons].sort((a2, b2) => a2.totalPerBoard - b2.totalPerBoard);
+    autoTable(doc, {
+      startY: y,
+      margin: { left: margin, right: margin },
+      head: [['Country', 'PCB Fab', 'Assembly', 'BOM', 'Logistics', 'Total/Board', 'Lead Time', 'Quality']],
+      body: sorted.map(ct => [
+        ct.countryName,
+        `£${ct.pcbFabPerBoard.toFixed(2)}`,
+        `£${ct.assemblyPerBoard.toFixed(2)}`,
+        `£${ct.bomCostPerBoard.toFixed(2)}`,
+        `£${ct.logisticsPerBoard.toFixed(2)}`,
+        `£${ct.totalPerBoard.toFixed(2)}`,
+        `${ct.leadTimeWeeks}w`,
+        ct.qualityIndex ? `${(ct.qualityIndex * 100).toFixed(0)}%` : '—',
+      ]),
+      styles: { fontSize: 7, cellPadding: 1.8 },
+      headStyles: { fillColor: CYAN, textColor: WHITE, fontStyle: 'bold', fontSize: 7 },
+      alternateRowStyles: { fillColor: LIGHT },
+      columnStyles: {
+        0: { cellWidth: 30 },
+        5: { fontStyle: 'bold', textColor: BLUE },
+      },
+      theme: 'grid',
+      didParseCell: (data) => {
+        if (data.section === 'body' && data.row.index === 0 && data.column.index === 5) {
+          data.cell.styles.fillColor = [220, 242, 220];
+          data.cell.styles.fontStyle = 'bold';
+        }
+      },
+    });
+    y = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 5;
+  }
+
+  // ── §5 BILL OF MATERIALS ──────────────────────────────────────────────────────
+  sectionTitle(`§5  Bill of Materials  (${r.bom.length} lines · ${r.assembly.smtPlacements} placements)`);
+  autoTable(doc, {
+    startY: y,
+    margin: { left: margin, right: margin },
+    head: [['#', 'RefDes', 'Description', 'Pkg', 'Value', 'Qty', 'Unit £', 'Ext £', 'Flags']],
+    body: r.bom.map((item, i) => [
+      String(i + 1),
+      item.refDes,
+      item.description,
+      item.pkg,
+      item.value,
+      String(item.qty),
+      item.unitPriceGBP.toFixed(3),
+      (item.qty * item.unitPriceGBP).toFixed(2),
+      [item.automotive ? 'AEC' : '', item.highCost ? '$$' : '', item.ocrExtracted ? 'OCR' : ''].filter(Boolean).join(' '),
+    ]),
+    foot: [['', '', '', '', '', '', 'Total BOM', `£${r.costEstimates.totalBOMCostGBP.toFixed(2)}`, '']],
+    styles: { fontSize: 6.5, cellPadding: 1.5 },
+    headStyles: { fillColor: BLUE, textColor: WHITE, fontStyle: 'bold', fontSize: 7 },
+    footStyles: { fillColor: LIGHT, fontStyle: 'bold', fontSize: 7, textColor: DARK },
+    alternateRowStyles: { fillColor: [250, 250, 252] },
+    columnStyles: {
+      0: { cellWidth: 6, halign: 'center' },
+      1: { cellWidth: 14 },
+      5: { halign: 'right' },
+      6: { halign: 'right' },
+      7: { halign: 'right', fontStyle: 'bold' },
+      8: { cellWidth: 16 },
+    },
+    theme: 'grid',
+    didParseCell: (data) => {
+      if (data.section === 'body') {
+        const item = r.bom[data.row.index];
+        if (item?.highCost) data.cell.styles.fillColor = [255, 248, 220];
+      }
+    },
+  });
+  y = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 5;
+
+  // ── §6 HIGH COST COMPONENTS ────────────────────────────────────────────────────
+  if (r.highCostComponents.length > 0) {
+    sectionTitle('§6  High Cost Components');
+    bulletList(r.highCostComponents, () => AMB_R);
+  }
+
+  // ── §7 AI INSIGHTS ─────────────────────────────────────────────────────────────
+  sectionTitle('§7  AI Insights');
+  bulletList(r.aiInsights);
+
+  // ── §8 DFM ISSUES ─────────────────────────────────────────────────────────────
+  if (r.dfmIssues.length > 0) {
+    sectionTitle('§8  DFM Issues');
+    bulletList(r.dfmIssues, s => {
+      const l = s.toLowerCase();
+      return l.includes('critical') || l.includes('error') ? RED_R : l.includes('warn') ? AMB_R : DARK;
+    });
+  }
+
+  // ── §9 OPTIMISATION SUGGESTIONS ───────────────────────────────────────────────
+  if (r.optimisationSuggestions.length > 0) {
+    sectionTitle('§9  Optimisation Suggestions');
+    bulletList(r.optimisationSuggestions, () => GRN_R);
+  }
+
+  // ── §10 ANALYSIS LIMITATIONS ──────────────────────────────────────────────────
+  if (r.analysisLimitations.length > 0) {
+    sectionTitle('§10  Analysis Limitations');
+    bulletList(r.analysisLimitations, () => GREY);
+  }
+
+  addFooters();
+  const fname = `pcb-analysis-${r.partName.replace(/[^a-z0-9]/gi, '-').toLowerCase()}-${new Date().toISOString().slice(0, 10)}.pdf`;
+  doc.save(fname);
 }
 
 function applyPCBImageToFab(): void {
