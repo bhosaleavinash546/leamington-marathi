@@ -1,5 +1,7 @@
 import { AnalysisConfig, CostReductionIdea, SearchSource } from '../types';
 
+export type ChatHistory = { role: 'user' | 'assistant'; content: string }[];
+
 export interface ProgressEvent {
   type: 'connecting' | 'searching' | 'search_done' | 'synthesizing' | 'complete' | 'error';
   message?: string;
@@ -144,4 +146,56 @@ export async function generateCostReductionIdeas(
   }
 
   throw new Error('Stream ended without a complete event.');
+}
+
+export async function sendChatMessage(
+  ideas: CostReductionIdea[],
+  config: AnalysisConfig,
+  systemName: string,
+  subassemblyName: string,
+  history: ChatHistory,
+  message: string,
+  apiKey: string,
+  onChunk: (text: string) => void
+): Promise<string> {
+  const token = getAuthToken();
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+    'Accept': 'text/event-stream',
+  };
+  if (token) headers['Authorization'] = `Bearer ${token}`;
+
+  const response = await fetch('/api/chat', {
+    method: 'POST',
+    headers,
+    body: JSON.stringify({ apiKey, ideas, config, systemName, subassemblyName, history, message }),
+  });
+
+  if (!response.ok) {
+    let errorMsg = `Server error ${response.status}`;
+    try { const err = await response.json(); errorMsg = err.error || errorMsg; } catch {}
+    throw new Error(errorMsg);
+  }
+
+  const reader = response.body!.getReader();
+  const decoder = new TextDecoder();
+  let buffer = '';
+  let fullText = '';
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    buffer += decoder.decode(value, { stream: true });
+    const chunks = buffer.split('\n\n');
+    buffer = chunks.pop() ?? '';
+    for (const chunk of chunks) {
+      const line = chunk.trim();
+      if (!line.startsWith('data: ')) continue;
+      let data: { type: string; text?: string; message?: string };
+      try { data = JSON.parse(line.slice(6)); } catch { continue; }
+      if (data.type === 'chunk' && data.text) { fullText += data.text; onChunk(data.text); }
+      if (data.type === 'error') throw new Error(data.message || 'Chat failed');
+    }
+  }
+  return fullText;
 }

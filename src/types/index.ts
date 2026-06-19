@@ -42,6 +42,12 @@ export interface IdeaAnnotation {
   updatedAt: string;
 }
 
+export interface ChatMessage {
+  role: 'user' | 'assistant';
+  content: string;
+  timestamp: string;
+}
+
 export interface ProgressEvent {
   type: 'connecting' | 'searching' | 'search_done' | 'synthesizing' | 'complete' | 'error';
   message?: string;

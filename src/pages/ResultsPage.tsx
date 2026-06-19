@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
@@ -7,11 +7,11 @@ import {
   ChevronDown, ChevronUp, BarChart3, RefreshCw, Tag,
   Globe, ExternalLink, ChevronRight, Search, DollarSign, Calculator,
   ShieldCheck, BookOpen, FlaskConical, Lightbulb, Scale, Link2,
-  MessageSquare, CheckSquare, XSquare
+  MessageSquare, CheckSquare, XSquare, Bot, Send
 } from 'lucide-react';
-import { AnalysisResult, CostReductionIdea, CostSavingType, Difficulty, SearchSource, ConfidenceLevel, EvidenceSource, IdeaAnnotation, AnnotationStatus } from '../types';
+import { AnalysisResult, CostReductionIdea, CostSavingType, Difficulty, SearchSource, ConfidenceLevel, EvidenceSource, IdeaAnnotation, AnnotationStatus, ChatMessage } from '../types';
 import { exportToExcel, exportToPowerPoint, exportToPdf } from '../services/export-service';
-import { generateCostReductionIdeas } from '../services/claude-service';
+import { generateCostReductionIdeas, sendChatMessage } from '../services/claude-service';
 import IdeasDashboard from '../components/results/IdeasDashboard';
 import BusinessCaseCalculator from '../components/results/BusinessCaseCalculator';
 
@@ -68,6 +68,23 @@ const ANNOTATION_STATUS_CONFIG: Record<AnnotationStatus, { label: string; color:
   'rejected':      { label: 'Rejected',      color: 'text-red-400',     bg: 'bg-red-500/10',    border: 'border-red-500/20' },
   'on-hold':       { label: 'On Hold',       color: 'text-purple-400',  bg: 'bg-purple-500/10', border: 'border-purple-500/20' },
 };
+
+const CHAT_SUGGESTIONS = [
+  'Which ideas should we implement first?',
+  'What is the total savings potential across all ideas?',
+  'Which ideas are quick wins (Low difficulty)?',
+  'What are the biggest implementation risks?',
+  'Which ideas need supplier validation or RFQ?',
+  'Which ideas have OEM benchmark evidence?',
+];
+
+const CHAT_FOLLOW_UPS = [
+  'Tell me more about this',
+  'What tooling investment is needed?',
+  'Which OEMs have proven this?',
+  'What are the NCAP/regulatory risks?',
+  'How long will this take to implement?',
+];
 
 function IdeaCard({ idea, index, annotation, onAnnotate }: {
   idea: CostReductionIdea;
@@ -402,6 +419,11 @@ export default function ResultsPage() {
   const [refineFocus, setRefineFocus] = useState('');
   const [refining, setRefining] = useState(false);
   const [refineError, setRefineError] = useState('');
+  const [chatOpen, setChatOpen] = useState(false);
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
+  const [chatInput, setChatInput] = useState('');
+  const [chatLoading, setChatLoading] = useState(false);
+  const chatEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     try {
@@ -424,6 +446,10 @@ export default function ResultsPage() {
       navigate('/analyze');
     }
   }, [navigate]);
+
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [chatMessages]);
 
   if (!result) return null;
 
@@ -495,6 +521,52 @@ export default function ResultsPage() {
       setRefineError(err instanceof Error ? err.message : 'Refinement failed');
     } finally {
       setRefining(false);
+    }
+  };
+
+  const handleChat = async () => {
+    const msg = chatInput.trim();
+    if (!msg || chatLoading || !result) return;
+    const apiKey = localStorage.getItem('brainspark_api_key') || result.config.apiKey || '';
+    if (!apiKey) return;
+
+    const userMsg: ChatMessage = { role: 'user', content: msg, timestamp: new Date().toISOString() };
+    const newHistory = [...chatMessages, userMsg];
+    setChatMessages([...newHistory, { role: 'assistant', content: '', timestamp: new Date().toISOString() }]);
+    setChatInput('');
+    setChatLoading(true);
+
+    try {
+      await sendChatMessage(
+        result.ideas,
+        result.config,
+        systemName,
+        subName,
+        newHistory.map(m => ({ role: m.role, content: m.content })),
+        msg,
+        apiKey,
+        (chunk) => {
+          setChatMessages(prev => {
+            const updated = [...prev];
+            const last = updated[updated.length - 1];
+            if (last?.role === 'assistant') {
+              updated[updated.length - 1] = { ...last, content: last.content + chunk };
+            }
+            return updated;
+          });
+        }
+      );
+    } catch (err) {
+      setChatMessages(prev => {
+        const updated = [...prev];
+        const last = updated[updated.length - 1];
+        if (last?.role === 'assistant') {
+          updated[updated.length - 1] = { ...last, content: `Error: ${err instanceof Error ? err.message : 'Chat failed'}` };
+        }
+        return updated;
+      });
+    } finally {
+      setChatLoading(false);
     }
   };
 
@@ -648,6 +720,115 @@ export default function ResultsPage() {
 
         {/* Business Case Calculator */}
         <BusinessCaseCalculator />
+
+        {/* AI Chat */}
+        <div className="mb-6 rounded-2xl bg-navy-900 border border-white/10 overflow-hidden">
+          <button
+            onClick={() => setChatOpen(v => !v)}
+            className="w-full flex items-center justify-between p-5 hover:bg-white/3 transition-colors"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-xl bg-gold-500/20 border border-gold-500/25 flex items-center justify-center flex-shrink-0">
+                <Bot size={16} className="text-gold-400" />
+              </div>
+              <div className="text-left">
+                <div className="flex items-center gap-2">
+                  <span className="text-white font-semibold text-sm">Ask the Chief Engineer</span>
+                  {chatMessages.length > 0 && (
+                    <span className="text-xs bg-gold-500/15 text-gold-400 px-2 py-0.5 rounded-full border border-gold-500/20">
+                      {Math.ceil(chatMessages.length / 2)} exchange{chatMessages.length > 2 ? 's' : ''}
+                    </span>
+                  )}
+                </div>
+                <div className="text-slate-400 text-xs">Follow-up questions about any of the {result.ideas.length} generated ideas</div>
+              </div>
+            </div>
+            {chatOpen ? <ChevronUp size={16} className="text-slate-400" /> : <ChevronRight size={16} className="text-slate-400" />}
+          </button>
+
+          {chatOpen && (
+            <div className="border-t border-white/10 flex flex-col">
+              {/* Message history */}
+              {chatMessages.length === 0 ? (
+                <div className="p-5">
+                  <p className="text-slate-500 text-xs mb-3 uppercase tracking-wide font-medium">Suggested questions</p>
+                  <div className="flex flex-wrap gap-2">
+                    {CHAT_SUGGESTIONS.map(s => (
+                      <button
+                        key={s}
+                        onClick={() => setChatInput(s)}
+                        className="px-3 py-1.5 rounded-lg bg-navy-800 border border-white/10 text-slate-300 text-xs hover:border-gold-500/30 hover:text-gold-300 transition-colors text-left"
+                      >
+                        {s}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <div className="max-h-[420px] overflow-y-auto p-5 space-y-4">
+                  {chatMessages.map((msg, i) => (
+                    <div key={i} className={`flex items-start gap-2.5 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                      {msg.role === 'assistant' && (
+                        <div className="w-6 h-6 rounded-full bg-gold-500/15 border border-gold-500/20 flex items-center justify-center flex-shrink-0 mt-1">
+                          <Bot size={12} className="text-gold-400" />
+                        </div>
+                      )}
+                      <div className={`max-w-[82%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed whitespace-pre-wrap ${
+                        msg.role === 'user'
+                          ? 'bg-gold-500/12 border border-gold-500/18 text-white rounded-tr-sm'
+                          : 'bg-navy-800 border border-white/10 text-slate-200 rounded-tl-sm'
+                      }`}>
+                        {msg.content || (chatLoading && i === chatMessages.length - 1
+                          ? <span className="flex items-center gap-1.5 text-slate-500"><Loader2 size={12} className="animate-spin" /> Thinking…</span>
+                          : null
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                  <div ref={chatEndRef} />
+                </div>
+              )}
+
+              {/* Follow-up chips — shown once there's at least one AI reply */}
+              {chatMessages.some(m => m.role === 'assistant' && m.content) && (
+                <div className="px-5 pb-1 flex flex-wrap gap-1.5">
+                  {CHAT_FOLLOW_UPS.map(s => (
+                    <button
+                      key={s}
+                      onClick={() => setChatInput(s)}
+                      className="px-2.5 py-1 rounded-lg bg-navy-800 border border-white/8 text-slate-400 text-xs hover:text-slate-200 hover:border-white/20 transition-colors"
+                    >
+                      {s}
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              {/* Input row */}
+              <div className="border-t border-white/8 p-4 flex gap-2 items-center">
+                <input
+                  type="text"
+                  value={chatInput}
+                  onChange={e => setChatInput(e.target.value)}
+                  onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleChat(); } }}
+                  placeholder="Ask about any idea, risk, or savings estimate…"
+                  disabled={chatLoading}
+                  className="flex-1 bg-navy-800 border border-white/15 rounded-xl px-4 py-2.5 text-white placeholder-slate-600 focus:outline-none focus:border-gold-500/40 text-sm disabled:opacity-60"
+                />
+                <button
+                  onClick={handleChat}
+                  disabled={!chatInput.trim() || chatLoading}
+                  className="w-10 h-10 flex-shrink-0 rounded-xl bg-gold-500/15 hover:bg-gold-500/25 disabled:opacity-40 disabled:cursor-not-allowed border border-gold-500/25 flex items-center justify-center transition-colors"
+                >
+                  {chatLoading
+                    ? <Loader2 size={15} className="text-gold-400 animate-spin" />
+                    : <Send size={15} className="text-gold-400" />
+                  }
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
 
         {/* Refine Analysis */}
         <div className="mb-6 rounded-2xl bg-navy-900 border border-white/10 overflow-hidden">

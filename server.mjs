@@ -1181,6 +1181,89 @@ app.post('/api/analyze', requireAuth, async (req, res) => {
   }
 });
 
+// ─── AI CHAT ROUTE ────────────────────────────────────────────────────────────
+
+app.post('/api/chat', requireAuth, async (req, res) => {
+  const { apiKey, ideas, config, systemName, subassemblyName, history, message } = req.body;
+  if (!apiKey?.trim()) return res.status(400).json({ error: 'API key required.' });
+  if (!message?.trim()) return res.status(400).json({ error: 'Message required.' });
+
+  const safeMsg = sanitize(message, 2000);
+  const scope = `${subassemblyName} (${systemName})`;
+  const volume = config?.annualVolume || 80000;
+  const currency = config?.currency || 'EUR';
+  const currencySymbol = { EUR: '€', GBP: '£', USD: '$', CNY: '¥' }[currency] || '€';
+
+  const ideasContext = (ideas || []).map((idea, i) => [
+    `Idea ${i + 1}: "${idea.title}"`,
+    `  Technical: ${String(idea.technicalDescription || '').slice(0, 220)}`,
+    `  Savings: ${idea.costSavingPotential?.annualValue || 'N/A'} | Difficulty: ${idea.implementationDifficulty} | Timeline: ${idea.timeToImplement}`,
+    `  Types: ${(idea.costSavingTypes || []).join(', ')} | Confidence: ${idea.confidenceLevel || 'N/A'}`,
+    `  Risk: ${String(idea.riskNotes || '').slice(0, 130)}`,
+  ].join('\n')).join('\n\n');
+
+  const systemPrompt = `You are the same Chief Engineer AI who generated this VAVE analysis — 30+ years of automotive cost engineering experience. You are now in a live Q&A session with the engineering team, helping them interpret, prioritise, and act on these results.
+
+ANALYSIS CONTEXT:
+Target: ${scope} | Vehicle: ${config?.vehicleType || 'Automotive'} | Volume: ${volume.toLocaleString()} units/yr | Region: ${config?.plantRegion || 'Western Europe'} | Currency: ${currency}
+
+GENERATED IDEAS (${(ideas || []).length} total):
+${ideasContext}
+
+RULES:
+• Reference ideas by number ("Idea 3") or short title when discussing them
+• Be specific — quote material grades, process names, OEM examples, costs in ${currencySymbol} where relevant
+• When asked to prioritise, use the savings/difficulty/timeline data from the ideas above
+• Keep answers concise (150–250 words) unless the user explicitly asks to elaborate
+• If asked something beyond the scope of these ideas, say so and offer to redirect`;
+
+  const safeHistory = (history || []).slice(-20).map(m => ({
+    role: (m.role === 'user' ? 'user' : 'assistant'),
+    content: sanitize(String(m.content || ''), 2000),
+  }));
+
+  const useSSE = (req.headers['accept'] || '').includes('text/event-stream');
+  if (useSSE) {
+    res.setHeader('Content-Type', 'text/event-stream');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Connection', 'keep-alive');
+    res.flushHeaders();
+  }
+
+  try {
+    const client = new Anthropic({ apiKey: apiKey.trim() });
+    const stream = await client.messages.create({
+      model: 'claude-opus-4-8',
+      max_tokens: 1500,
+      system: systemPrompt,
+      messages: [...safeHistory, { role: 'user', content: safeMsg }],
+      stream: true,
+    });
+
+    if (useSSE) {
+      for await (const event of stream) {
+        if (event.type === 'content_block_delta' && event.delta?.type === 'text_delta') {
+          res.write(`data: ${JSON.stringify({ type: 'chunk', text: event.delta.text })}\n\n`);
+        }
+      }
+      res.write(`data: ${JSON.stringify({ type: 'done' })}\n\n`);
+      res.end();
+    } else {
+      let text = '';
+      for await (const event of stream) {
+        if (event.type === 'content_block_delta' && event.delta?.type === 'text_delta') {
+          text += event.delta.text;
+        }
+      }
+      res.json({ reply: text });
+    }
+  } catch (err) {
+    console.error('[Chat Error]', err.message);
+    if (useSSE) { res.write(`data: ${JSON.stringify({ type: 'error', message: err.message })}\n\n`); res.end(); }
+    else res.status(500).json({ error: err.message });
+  }
+});
+
 // ─── HEALTH & VERSION ─────────────────────────────────────────────────────────
 
 app.get('/api/health', (_, res) => res.json({ status: 'ok', version: APP_VERSION, timestamp: new Date().toISOString() }));
