@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence, animate } from 'framer-motion';
 import {
   FileDown, FileSpreadsheet, Presentation, ArrowLeft, Filter,
   TrendingDown, Zap, AlertTriangle, CheckCircle, Clock, Loader2,
@@ -69,6 +69,21 @@ const ANNOTATION_STATUS_CONFIG: Record<AnnotationStatus, { label: string; color:
   'on-hold':       { label: 'On Hold',       color: 'text-purple-400',  bg: 'bg-purple-500/10', border: 'border-purple-500/20' },
 };
 
+function CountUp({ to }: { to: number }) {
+  const countRef = useRef<HTMLSpanElement>(null);
+  useEffect(() => {
+    const node = countRef.current;
+    if (!node) return;
+    const ctrl = animate(0, to, {
+      duration: 0.7,
+      ease: [0.16, 1, 0.3, 1],
+      onUpdate: v => { node.textContent = Math.round(v).toString(); },
+    });
+    return ctrl.stop;
+  }, [to]);
+  return <span ref={countRef}>0</span>;
+}
+
 const CHAT_SUGGESTIONS = [
   'Which ideas should we implement first?',
   'What is the total savings potential across all ideas?',
@@ -100,8 +115,11 @@ function IdeaCard({ idea, index, annotation, onAnnotate }: {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.06 }}
-      whileHover={{ y: -2, boxShadow: '0 8px 32px rgba(245,158,11,0.08)' }}
+      layout
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0, transition: { duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94], delay: Math.min(index * 0.04, 0.4) } }}
+      exit={{ opacity: 0, scale: 0.97, transition: { duration: 0.18 } }}
+      whileHover={{ y: -2, boxShadow: '0 8px 32px rgba(245,158,11,0.12)', transition: { type: 'spring', stiffness: 400, damping: 25 } }}
       className="bg-navy-900 border border-white/10 rounded-2xl overflow-hidden hover:border-gold-500/25 transition-all cursor-default"
     >
       <div className="p-5 pb-4">
@@ -640,7 +658,7 @@ export default function ResultsPage() {
               <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${stat.color} flex items-center justify-center mb-3`}>
                 <stat.icon size={20} className="text-white" />
               </div>
-              <div className="text-3xl font-black text-white">{stat.value}</div>
+              <div className="text-3xl font-black text-white"><CountUp to={stat.value} /></div>
               <div className="text-slate-500 text-sm mt-0.5">{stat.label}</div>
             </div>
           ))}
@@ -673,7 +691,8 @@ export default function ResultsPage() {
           <div className="flex flex-wrap gap-1.5">
             {(['All', 'Low', 'Medium', 'High'] as const).map(d => (
               <motion.button key={d} onClick={() => setFilterDifficulty(d)}
-                whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
+                whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}
+                transition={{ type: 'spring', stiffness: 400, damping: 25 }}
                 className={`px-3 py-1 rounded-lg text-xs font-medium border transition-colors ${filterDifficulty === d ? 'bg-gold-500/20 text-gold-400 border-gold-500/30' : 'text-slate-400 border-white/10 hover:border-white/25 hover:text-white'}`}>
                 {d === 'All' ? 'All Difficulty' : d}
               </motion.button>
@@ -683,7 +702,8 @@ export default function ResultsPage() {
           <div className="flex flex-wrap gap-1.5">
             {(['All', 'material', 'process', 'tooling', 'weight', 'complexity', 'warranty', 'logistics', 'commonisation'] as const).map(t => (
               <motion.button key={t} onClick={() => setFilterType(t)}
-                whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
+                whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}
+                transition={{ type: 'spring', stiffness: 400, damping: 25 }}
                 className={`px-3 py-1 rounded-lg text-xs font-medium border capitalize transition-colors ${filterType === t ? 'bg-gold-500/20 text-gold-400 border-gold-500/30' : 'text-slate-400 border-white/10 hover:border-white/25 hover:text-white'}`}>
                 {t === 'All' ? 'All Types' : t}
               </motion.button>
@@ -696,19 +716,21 @@ export default function ResultsPage() {
 
         {/* Ideas */}
         {filtered.length === 0 ? (
-          <div className="text-center py-12 text-slate-500">No ideas match the current filters.</div>
+          <motion.div layout className="text-center py-12 text-slate-500">No ideas match the current filters.</motion.div>
         ) : (
-          <div className="space-y-4 mb-8">
-            {filtered.map((idea, i) => (
-              <IdeaCard
-                key={idea.id}
-                idea={idea}
-                index={i}
-                annotation={annotations[idea.id]}
-                onAnnotate={(a) => handleAnnotate(idea.id, a)}
-              />
-            ))}
-          </div>
+          <motion.div layout className="space-y-4 mb-8">
+            <AnimatePresence mode="popLayout" initial={false}>
+              {filtered.map((idea, i) => (
+                <IdeaCard
+                  key={idea.id}
+                  idea={idea}
+                  index={i}
+                  annotation={annotations[idea.id]}
+                  onAnnotate={(a) => handleAnnotate(idea.id, a)}
+                />
+              ))}
+            </AnimatePresence>
+          </motion.div>
         )}
 
         {/* Sources panel */}

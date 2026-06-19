@@ -312,7 +312,7 @@ export default function AnalyzePage() {
                       onClick={() => { setSystemId(sys.id); setSubassemblyId(''); setPartId(''); }}
                       whileHover={{ y: -3, scale: 1.02 }}
                       whileTap={{ scale: 0.97 }}
-                      transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+                      transition={{ type: 'spring', stiffness: 380, damping: 28 }}
                       className={`p-3.5 rounded-xl border text-left ${
                         systemId === sys.id
                           ? 'border-gold-500 bg-gold-500/10 shadow-lg shadow-gold-500/10'

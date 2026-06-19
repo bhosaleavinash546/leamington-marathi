@@ -43,7 +43,7 @@ function KpiCard({
       initial={{ opacity: 0, y: 24, scale: 0.95 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       transition={{ duration: 0.5, delay, ease: 'easeOut' }}
-      whileHover={{ y: -4, scale: 1.02 }}
+      whileHover={{ y: -4, scale: 1.02, transition: { type: 'spring', stiffness: 380, damping: 28 } }}
       className="relative group overflow-hidden rounded-2xl bg-navy-900 border border-white/10 p-5 cursor-default"
     >
       {/* Hover glow */}
@@ -390,7 +390,7 @@ export default function HomePage() {
                     key={i}
                     initial={{ opacity: 0, scale: 0.94 }} animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.3, delay: 0.5 + i * 0.06 }}
-                    whileHover={{ scale: 1.03, borderColor: 'rgba(245,158,11,0.3)' }}
+                    whileHover={{ scale: 1.03, borderColor: 'rgba(245,158,11,0.3)', transition: { type: 'spring', stiffness: 380, damping: 28 } }}
                     className="p-3 rounded-xl bg-white/4 border border-white/8 cursor-default transition-all"
                   >
                     <div className="text-lg mb-1">{b.icon}</div>
@@ -478,7 +478,7 @@ export default function HomePage() {
                 key={f.title}
                 initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }} transition={{ duration: 0.45, delay: i * 0.08 }}
-                whileHover={{ y: -5, boxShadow: '0 20px 60px rgba(245,158,11,0.08)' }}
+                whileHover={{ y: -5, boxShadow: '0 20px 60px rgba(245,158,11,0.08)', transition: { type: 'spring', stiffness: 380, damping: 28 } }}
                 className="group p-6 rounded-2xl bg-navy-900 border border-white/8 hover:border-gold-500/20 transition-all cursor-default relative overflow-hidden"
               >
                 <div className={`absolute inset-0 bg-gradient-to-br ${f.color} opacity-0 group-hover:opacity-[0.04] transition-opacity duration-500`} />
@@ -540,6 +540,7 @@ export default function HomePage() {
                   <motion.div
                     key={s.label}
                     whileHover={{ scale: 1.04 }}
+                    transition={{ type: 'spring', stiffness: 380, damping: 28 }}
                     className="p-4 rounded-xl bg-white/5 border border-white/8 hover:border-white/15 transition-all cursor-default"
                   >
                     <div className={`text-3xl font-black ${s.color} mb-1`}>{s.value}</div>
