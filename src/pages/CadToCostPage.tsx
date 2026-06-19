@@ -1,10 +1,11 @@
 import { useState, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  Upload, FileBox, Loader2, AlertTriangle, CheckCircle, BarChart3,
+  Upload, FileBox, AlertTriangle, CheckCircle, BarChart3,
   TrendingDown, DollarSign, Wrench, Layers, ChevronRight, RefreshCw,
   Cpu, Info, Shield, Package, Zap, Target, Star,
 } from 'lucide-react';
+import ButtonSpinner from '../components/ui/ButtonSpinner';
 import { parseCadFile, formatFileSize, estimateMass, type CadGeometry } from '../services/cad-parser';
 import { useAuth } from '../contexts/AuthContext';
 import { ConfidenceLevel } from '../types';
@@ -387,7 +388,7 @@ export default function CadToCostPage() {
 
             {parsing && (
               <div className="flex items-center gap-2 text-gold-400 text-sm">
-                <Loader2 size={14} className="animate-spin" /> Parsing geometry…
+                <ButtonSpinner size={14} /> Parsing geometry…
               </div>
             )}
 
@@ -511,7 +512,7 @@ export default function CadToCostPage() {
               disabled={analysing || !apiKey.trim()}
               className="w-full flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-xl bg-gradient-to-r from-gold-500 to-gold-600 text-navy-950 font-bold text-sm transition-all hover:from-gold-400 hover:to-gold-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {analysing ? <><Loader2 size={16} className="animate-spin" /> Analysing…</> : <><Target size={16} /> Analyse Cost & DFMA</>}
+              {analysing ? <><ButtonSpinner size={16} /> Analysing…</> : <><Target size={16} /> Analyse Cost & DFMA</>}
             </button>
           </motion.div>
         )}

@@ -4,9 +4,10 @@ import { useDropzone } from 'react-dropzone';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   ChevronDown, Upload, X, Key, Settings, AlertCircle, Car,
-  FileText, Loader2, Zap, CheckCircle, Globe, Search,
+  FileText, Zap, CheckCircle, Globe, Search,
   Shield, Info, Factory, TrendingUp
 } from 'lucide-react';
+import ButtonSpinner from '../components/ui/ButtonSpinner';
 import { AUTOMOTIVE_SYSTEMS, getSystemById, getSubassemblyById } from '../data/automotive-catalog';
 import { generateCostReductionIdeas, saveFullResult, ProgressEvent } from '../services/claude-service';
 import { parseCadFile, CadGeometry, formatFileSize } from '../services/cad-parser';
@@ -707,7 +708,7 @@ export default function AnalyzePage() {
                     onClick={handleGenerate}
                     className="flex-1 py-3 rounded-xl bg-gold-500 hover:bg-gold-400 disabled:opacity-40 disabled:cursor-not-allowed text-navy-950 font-bold flex items-center justify-center gap-2 transition-all"
                   >
-                    {loading ? <><Loader2 size={18} className="animate-spin" /> Analysing...</> : <><Zap size={18} /> Generate 8 Ideas</>}
+                    {loading ? <><ButtonSpinner size={18} /> Analysing…</> : <><Zap size={18} /> Generate Ideas</>}
                   </button>
                 </div>
 
@@ -715,7 +716,7 @@ export default function AnalyzePage() {
                 {loading && (
                   <div className="p-4 rounded-xl bg-navy-800 border border-white/10 space-y-2">
                     <div className="flex items-center gap-2 mb-3">
-                      <Loader2 size={14} className="animate-spin text-gold-400" />
+                      <ButtonSpinner size={14} />
                       <span className="text-gold-400 font-medium text-sm">Analysis in progress…</span>
                       <span className="text-slate-600 text-xs ml-auto">{enableSearch ? '30–60s' : '15–25s'}</span>
                     </div>

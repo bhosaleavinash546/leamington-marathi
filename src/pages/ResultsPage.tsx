@@ -3,12 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence, animate } from 'framer-motion';
 import {
   FileDown, FileSpreadsheet, Presentation, ArrowLeft, Filter,
-  TrendingDown, Zap, AlertTriangle, CheckCircle, Clock, Loader2,
+  TrendingDown, Zap, AlertTriangle, CheckCircle, Clock,
   ChevronDown, ChevronUp, BarChart3, RefreshCw, Tag,
   Globe, ExternalLink, ChevronRight, Search, DollarSign, Calculator,
   ShieldCheck, BookOpen, FlaskConical, Lightbulb, Scale, Link2,
   MessageSquare, CheckSquare, XSquare, Bot, Send
 } from 'lucide-react';
+import TypingDots from '../components/ui/TypingDots';
+import ButtonSpinner from '../components/ui/ButtonSpinner';
 import { AnalysisResult, CostReductionIdea, CostSavingType, Difficulty, SearchSource, ConfidenceLevel, EvidenceSource, IdeaAnnotation, AnnotationStatus, ChatMessage } from '../types';
 import { exportToExcel, exportToPowerPoint, exportToPdf } from '../services/export-service';
 import { generateCostReductionIdeas, sendChatMessage } from '../services/claude-service';
@@ -801,7 +803,7 @@ export default function ResultsPage() {
                           : 'bg-navy-800 border border-white/10 text-slate-200 rounded-tl-sm'
                       }`}>
                         {msg.content || (chatLoading && i === chatMessages.length - 1
-                          ? <span className="flex items-center gap-1.5 text-slate-500"><Loader2 size={12} className="animate-spin" /> Thinking…</span>
+                          ? <span className="flex items-center gap-2 text-slate-500 py-0.5"><TypingDots /></span>
                           : null
                         )}
                       </div>
@@ -843,7 +845,7 @@ export default function ResultsPage() {
                   className="w-10 h-10 flex-shrink-0 rounded-xl bg-gold-500/15 hover:bg-gold-500/25 disabled:opacity-40 disabled:cursor-not-allowed border border-gold-500/25 flex items-center justify-center transition-colors"
                 >
                   {chatLoading
-                    ? <Loader2 size={15} className="text-gold-400 animate-spin" />
+                    ? <ButtonSpinner size={15} />
                     : <Send size={15} className="text-gold-400" />
                   }
                 </button>
@@ -903,7 +905,7 @@ export default function ResultsPage() {
                   onClick={handleRefine}
                   className="flex items-center gap-2 px-6 py-2 rounded-xl bg-violet-600 hover:bg-violet-500 disabled:opacity-40 disabled:cursor-not-allowed text-white font-semibold text-sm transition-all"
                 >
-                  {refining ? <><Loader2 size={14} className="animate-spin" /> Generating…</> : <><Zap size={14} /> Generate 8 More Ideas</>}
+                  {refining ? <><ButtonSpinner size={14} /> Generating…</> : <><Zap size={14} /> Generate More Ideas</>}
                 </button>
               </div>
             </div>
