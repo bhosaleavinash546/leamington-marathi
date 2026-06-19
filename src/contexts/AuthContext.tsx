@@ -42,9 +42,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   function signOut() {
+    const currentToken = token;
     setToken(null);
     setUser(null);
     localStorage.removeItem(STORAGE_KEY);
+    if (currentToken) {
+      fetch('/api/auth/signout', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${currentToken}` },
+      }).catch(() => {});
+    }
   }
 
   return (

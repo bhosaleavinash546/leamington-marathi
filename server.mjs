@@ -24,6 +24,39 @@ const ALLOWED_ORIGINS = process.env.ALLOWED_ORIGINS
 app.use(cors({ origin: ALLOWED_ORIGINS }));
 app.use(express.json({ limit: '10mb' }));
 
+// ─── Security headers ─────────────────────────────────────────────────────────
+app.use((_, res, next) => {
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'DENY');
+  res.setHeader('X-XSS-Protection', '1; mode=block');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  next();
+});
+
+// ─── In-memory rate limiter ───────────────────────────────────────────────────
+const rateLimitMap = new Map();
+function rateLimit(maxRequests, windowMs) {
+  return (req, res, next) => {
+    const key = `${req.ip}_${req.path}`;
+    const now = Date.now();
+    const entry = rateLimitMap.get(key) || { count: 0, resetAt: now + windowMs };
+    if (now > entry.resetAt) { entry.count = 0; entry.resetAt = now + windowMs; }
+    entry.count++;
+    rateLimitMap.set(key, entry);
+    if (entry.count > maxRequests) {
+      const retryAfter = Math.ceil((entry.resetAt - now) / 1000);
+      res.setHeader('Retry-After', retryAfter);
+      return res.status(429).json({ error: `Too many requests. Please try again in ${retryAfter} seconds.` });
+    }
+    next();
+  };
+}
+// Prune stale rate-limit entries every 30 minutes
+setInterval(() => {
+  const now = Date.now();
+  for (const [k, v] of rateLimitMap) { if (now > v.resetAt) rateLimitMap.delete(k); }
+}, 30 * 60 * 1000);
+
 const PORT        = process.env.PORT        || 3001;
 const JWT_SECRET  = process.env.JWT_SECRET  || 'autocost-ai-dev-secret-2025';
 const USERS_FILE  = path.join(__dirname, 'users.json');
@@ -33,16 +66,30 @@ if (JWT_SECRET === 'autocost-ai-dev-secret-2025') {
   console.warn('   ⚠️  WARNING: Using default JWT secret — set JWT_SECRET env var before deploying to production.');
 }
 
-// ─── User store (JSON file) ──────────────────────────────────────────────────
+// ─── User store (JSON file, async + atomic write) ────────────────────────────
 
-function readUsers() {
-  if (!fs.existsSync(USERS_FILE)) return [];
-  try { return JSON.parse(fs.readFileSync(USERS_FILE, 'utf8')); } catch { return []; }
+async function readUsers() {
+  try {
+    const data = await fs.promises.readFile(USERS_FILE, 'utf8');
+    return JSON.parse(data);
+  } catch { return []; }
 }
 
-function writeUsers(users) {
-  fs.writeFileSync(USERS_FILE, JSON.stringify(users, null, 2));
+async function writeUsers(users) {
+  const tmp = `${USERS_FILE}.tmp`;
+  await fs.promises.writeFile(tmp, JSON.stringify(users, null, 2));
+  await fs.promises.rename(tmp, USERS_FILE);
 }
+
+// ─── In-memory JWT revocation set ────────────────────────────────────────────
+
+const revokedTokens = new Set();
+// Prune tokens that have already expired (no need to keep them revoked)
+setInterval(() => {
+  for (const t of revokedTokens) {
+    try { jwt.verify(t, JWT_SECRET); } catch { revokedTokens.delete(t); }
+  }
+}, 60 * 60 * 1000);
 
 // ─── In-memory OTP store { email → { otp, expiry, type, attempts } } ─────────
 
@@ -135,8 +182,11 @@ async function sendOTPEmail(email, otp, type) {
 function requireAuth(req, res, next) {
   const auth = req.headers.authorization;
   if (!auth?.startsWith('Bearer ')) return res.status(401).json({ error: 'Authentication required.' });
+  const token = auth.slice(7);
+  if (revokedTokens.has(token)) return res.status(401).json({ error: 'Session has been revoked. Please sign in again.' });
   try {
-    req.user = jwt.verify(auth.slice(7), JWT_SECRET);
+    req.user = jwt.verify(token, JWT_SECRET);
+    req.token = token;
     next();
   } catch {
     res.status(401).json({ error: 'Session expired. Please sign in again.' });
@@ -156,7 +206,7 @@ app.post('/api/auth/signup', async (req, res) => {
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return res.status(400).json({ error: 'Please enter a valid email address.' });
   if (password.length < 8) return res.status(400).json({ error: 'Password must be at least 8 characters.' });
 
-  const users = readUsers();
+  const users = await readUsers();
   if (users.find(u => u.email.toLowerCase() === email.toLowerCase())) {
     return res.status(409).json({ error: 'An account with this email already exists. Please sign in.' });
   }
@@ -192,25 +242,25 @@ app.post('/api/auth/verify-signup', async (req, res) => {
   if (!pending) return res.status(400).json({ error: 'Registration session expired. Please sign up again.' });
   otpStore.delete(pendingKey);
 
-  const users = readUsers();
+  const users = await readUsers();
   if (users.find(u => u.email === email.toLowerCase())) {
     return res.status(409).json({ error: 'Account already exists.' });
   }
 
   const user = { id: crypto.randomUUID(), name: pending.name, email: pending.email, passwordHash: pending.passwordHash, createdAt: new Date().toISOString(), verified: true };
   users.push(user);
-  writeUsers(users);
+  await writeUsers(users);
 
   const token = signToken(user);
   res.json({ token, user: { id: user.id, name: user.name, email: user.email } });
 });
 
 // Sign In
-app.post('/api/auth/signin', async (req, res) => {
+app.post('/api/auth/signin', rateLimit(10, 15 * 60 * 1000), async (req, res) => {
   const { email, password } = req.body;
   if (!email || !password) return res.status(400).json({ error: 'Email and password are required.' });
 
-  const users = readUsers();
+  const users = await readUsers();
   const user = users.find(u => u.email.toLowerCase() === email.toLowerCase());
   if (!user) return res.status(401).json({ error: 'No account found with this email. Please sign up.' });
   if (!user.verified) return res.status(401).json({ error: 'Please verify your email before signing in.' });
@@ -223,11 +273,11 @@ app.post('/api/auth/signin', async (req, res) => {
 });
 
 // Forgot Password — step 1: send OTP
-app.post('/api/auth/forgot-password', async (req, res) => {
+app.post('/api/auth/forgot-password', rateLimit(5, 15 * 60 * 1000), async (req, res) => {
   const { email } = req.body;
   if (!email) return res.status(400).json({ error: 'Email address is required.' });
 
-  const users = readUsers();
+  const users = await readUsers();
   const user = users.find(u => u.email.toLowerCase() === email.toLowerCase());
 
   // Always return success to prevent email enumeration
@@ -257,19 +307,19 @@ app.post('/api/auth/reset-password', async (req, res) => {
   const result = verifyOTP(email, otp, 'reset');
   if (!result.ok) return res.status(400).json({ error: result.reason });
 
-  const users = readUsers();
+  const users = await readUsers();
   const idx = users.findIndex(u => u.email.toLowerCase() === email.toLowerCase());
   if (idx === -1) return res.status(404).json({ error: 'Account not found.' });
 
   users[idx].passwordHash = await bcrypt.hash(newPassword, 10);
-  writeUsers(users);
+  await writeUsers(users);
 
   const token = signToken(users[idx]);
   res.json({ token, user: { id: users[idx].id, name: users[idx].name, email: users[idx].email } });
 });
 
 // Resend OTP
-app.post('/api/auth/resend-otp', async (req, res) => {
+app.post('/api/auth/resend-otp', rateLimit(5, 15 * 60 * 1000), async (req, res) => {
   const { email, type } = req.body;
   if (!email || !type) return res.status(400).json({ error: 'Email and type required.' });
 
@@ -283,11 +333,17 @@ app.post('/api/auth/resend-otp', async (req, res) => {
 });
 
 // Get current user
-app.get('/api/auth/me', requireAuth, (req, res) => {
-  const users = readUsers();
+app.get('/api/auth/me', requireAuth, async (req, res) => {
+  const users = await readUsers();
   const user = users.find(u => u.id === req.user.id);
   if (!user) return res.status(404).json({ error: 'User not found.' });
   res.json({ id: user.id, name: user.name, email: user.email, createdAt: user.createdAt });
+});
+
+// Sign Out — revoke token server-side
+app.post('/api/auth/signout', requireAuth, (req, res) => {
+  revokedTokens.add(req.token);
+  res.json({ message: 'Signed out successfully.' });
 });
 
 // ─── ANALYSIS ROUTE ───────────────────────────────────────────────────────────
@@ -1040,9 +1096,21 @@ app.get('/api/prices', async (req, res) => {
   });
 });
 
+function sanitize(s, maxLen = 500) {
+  if (typeof s !== 'string') return '';
+  return s.replace(/[<>'"]/g, '').trim().slice(0, maxLen);
+}
+
+const ANALYZE_TIMEOUT_MS = 120_000;
+
 app.post('/api/analyze', requireAuth, async (req, res) => {
   const { config, systemName, subassemblyName, partName, enableSearch, searchApiKey, cadGeometry } = req.body;
   if (!config?.apiKey?.trim()) return res.status(400).json({ error: 'Anthropic API key is required.' });
+
+  const sysName = sanitize(systemName, 120);
+  const subName = sanitize(subassemblyName, 120);
+  const prtName = sanitize(partName, 120);
+  if (config.additionalContext) config.additionalContext = sanitize(config.additionalContext, 1000);
 
   const useSSE = (req.headers['accept'] || '').includes('text/event-stream');
   if (useSSE) {
@@ -1059,13 +1127,16 @@ app.post('/api/analyze', requireAuth, async (req, res) => {
   refreshPriceCache(searchApiKey).catch(() => {});
 
   const client = new Anthropic({ apiKey: config.apiKey });
-  const messages = [{ role: 'user', content: buildAnalysisPrompt(config, systemName, subassemblyName, partName, enableSearch, cadGeometry) }];
+  const messages = [{ role: 'user', content: buildAnalysisPrompt(config, sysName, subName, prtName, enableSearch, cadGeometry) }];
   const sources = [];
 
   emit({ type: 'connecting', message: 'Connecting to AI chief engineer...' });
 
+  const deadline = Date.now() + ANALYZE_TIMEOUT_MS;
+
   try {
     for (let i = 0; i < 8; i++) {
+      if (Date.now() > deadline) throw new Error('Analysis timed out after 2 minutes. Please try again with web search disabled.');
       const params = { model: 'claude-opus-4-8', max_tokens: 12000, system: CHIEF_ENGINEER_PROMPT, messages };
       if (enableSearch) { params.tools = [webSearchTool]; params.tool_choice = { type: 'auto' }; }
 
@@ -1120,7 +1191,7 @@ const ADMIN_EMAIL    = 'admin@autocost.ai';
 const ADMIN_PASSWORD = 'AutoCost@Admin2025';
 
 async function seedAdminAccount() {
-  const users = readUsers();
+  const users = await readUsers();
   const exists = users.find(u => u.email === ADMIN_EMAIL);
   if (exists) return;
   const passwordHash = await bcrypt.hash(ADMIN_PASSWORD, 10);
@@ -1133,7 +1204,7 @@ async function seedAdminAccount() {
     verified: true,
     createdAt: new Date().toISOString(),
   });
-  writeUsers(users);
+  await writeUsers(users);
   console.log('   Admin account ready: admin@autocost.ai');
 }
 
