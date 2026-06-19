@@ -40,7 +40,7 @@ import { computeAssemblyRollup, newAssembly, saveAssembly, deleteAssembly, listA
 import type { Assembly, AssemblyLine } from '../engine/assembly.js';
 import type { LearningCurveResult } from '../engine/learning-curve.js';
 import { exportToExcelBlob } from '../export/excel.js';
-import { printPDF } from '../export/pdf.js';
+import { printPDF, printCADAnalysisPDF } from '../export/pdf.js';
 import { generateInsights, totalPotentialSaving, FX_TO_GBP } from '../engine/insights.js';
 import { generateDFMDFA } from '../engine/dfm-dfa.js';
 import type { DFMIssue, CostOptimisation } from '../engine/dfm-dfa.js';
@@ -4092,6 +4092,10 @@ function renderCADResults(r: CADAnalysisResult, autoCalculate = false, annualVol
       <button class="btn btn-secondary btn-sm" id="cad-apply-calc-btn" data-commodity="${escHtml(recommendedCommodity)}">
         Apply &amp; Calculate ⚡
       </button>
+      <button class="btn btn-secondary btn-sm" id="cad-export-pdf-btn" style="margin-left:auto;display:flex;align-items:center;gap:4px">
+        <svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12H3a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1h7l3 3v6a1 1 0 0 1-1 1h-1"/><polyline points="4 9 4 16 12 16 12 9"/><line x1="8" y1="4" x2="8" y2="12"/><polyline points="5 9 8 12 11 9"/></svg>
+        Export PDF
+      </button>
     </div>
 
     <!-- Process comparison cards (top alternative processes) -->
@@ -4161,6 +4165,11 @@ function renderCADResults(r: CADAnalysisResult, autoCalculate = false, annualVol
   el('cad-apply-calc-btn')?.addEventListener('click', () => {
     const ct = (el('cad-apply-calc-btn') as HTMLElement).dataset.commodity as CommodityType;
     applyCADToForm(ct, true);
+  });
+
+  // Wire PDF export button
+  el('cad-export-pdf-btn')?.addEventListener('click', () => {
+    if (cadAnalysisResult) printCADAnalysisPDF(cadAnalysisResult);
   });
 
   // Wire alternative process cards

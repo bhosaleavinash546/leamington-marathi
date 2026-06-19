@@ -1,6 +1,7 @@
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import type { PartCostResult, UniversalStackInput, RateLibrary, CommodityType } from '../engine/types.js';
+import type { CADAnalysisResult } from '../engine/ai-analysis.js';
 import { breakdownPercentages } from '../engine/core.js';
 import { generateInsights } from '../engine/insights.js';
 
@@ -453,3 +454,493 @@ export function printPDF(
 
 // Legacy compat
 export { printPDF as openPDF };
+
+// ══════════════════════════════════════════════════════════════════════════════
+// AI CAD-to-Cost Analysis — PDF Export
+// ══════════════════════════════════════════════════════════════════════════════
+export function printCADAnalysisPDF(r: CADAnalysisResult): void {
+  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+  const W = 210;
+  const margin = 14;
+  const cW = W - margin * 2;
+
+  // ── Colour palette ──────────────────────────────────────────────────────────
+  const GREEN:    [number,number,number] = [16, 185, 129];
+  const DARK:     [number,number,number] = [20,  20,  20];
+  const GREY:     [number,number,number] = [100,100,100];
+  const LIGHT_BG: [number,number,number] = [245,250,248];
+  const HDR_BG:   [number,number,number] = [232,248,243];
+  const RED_COL:  [number,number,number] = [220, 50, 50];
+  const AMBER_COL:[number,number,number] = [200,130,  0];
+  const BLUE_COL: [number,number,number] = [ 37,100,200];
+
+  let y = 0;
+
+  const lastAutoTable = () =>
+    (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY;
+
+  function checkPage(need = 20): void {
+    if (y + need > 274) { doc.addPage(); y = 16; }
+  }
+
+  function section(title: string, sub?: string): void {
+    checkPage(14);
+    doc.setFillColor(...GREEN);
+    doc.rect(margin, y, cW, 7, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(8.5);
+    doc.setFont('helvetica', 'bold');
+    doc.text(title.toUpperCase(), margin + 3, y + 5);
+    if (sub) {
+      doc.setFontSize(7);
+      doc.setFont('helvetica', 'normal');
+      doc.text(sub, margin + cW - 3, y + 5, { align: 'right' });
+    }
+    doc.setTextColor(...DARK);
+    doc.setFont('helvetica', 'normal');
+    y += 10;
+  }
+
+  function wrap(text: string, maxW: number): string[] {
+    return doc.splitTextToSize(text, maxW) as string[];
+  }
+
+  function bodyText(text: string, indent = 0, colour: [number,number,number] = DARK): void {
+    const lines = wrap(text, cW - indent);
+    doc.setFontSize(8);
+    doc.setTextColor(...colour);
+    doc.text(lines, margin + indent, y);
+    y += lines.length * 4.2 + 1;
+  }
+
+  function kv2(label: string, value: string): void {
+    const half = cW / 2;
+    doc.setFontSize(7.5);
+    doc.setTextColor(...GREY);
+    doc.text(label, margin, y);
+    doc.setTextColor(...DARK);
+    doc.setFont('helvetica', 'bold');
+    doc.text(value, margin + half * 0.55, y);
+    doc.setFont('helvetica', 'normal');
+    y += 5;
+  }
+
+  function severityColour(s: string): [number,number,number] {
+    if (s === 'High' || s === 'Critical') return RED_COL;
+    if (s === 'Medium')                   return AMBER_COL;
+    return GREEN;
+  }
+
+  function addFooters(): void {
+    const total = (doc as unknown as { internal: { getNumberOfPages: () => number } }).internal.getNumberOfPages();
+    for (let i = 1; i <= total; i++) {
+      doc.setPage(i);
+      doc.setFontSize(6.5);
+      doc.setTextColor(...GREY);
+      doc.text('CostVision AI CAD-to-Cost Report  ·  CONFIDENTIAL', margin, 291);
+      doc.text(`Page ${i} of ${total}`, W - margin - 16, 291);
+      doc.text(`Generated: ${new Date().toLocaleString('en-GB')}`, W / 2 - 18, 291);
+      // Green bottom rule
+      doc.setDrawColor(...GREEN);
+      doc.setLineWidth(0.4);
+      doc.line(margin, 288, W - margin, 288);
+    }
+  }
+
+  // ════════════════════════════════════════════════════════════════════════════
+  // COVER HEADER
+  // ════════════════════════════════════════════════════════════════════════════
+  doc.setFillColor(...GREEN);
+  doc.rect(0, 0, W, 30, 'F');
+
+  // White logo area
+  doc.setFillColor(255, 255, 255);
+  doc.roundedRect(margin, 6, 28, 18, 2, 2, 'F');
+  doc.setTextColor(...GREEN);
+  doc.setFontSize(10);
+  doc.setFont('helvetica', 'bold');
+  doc.text('CV', margin + 8, 18);
+
+  doc.setTextColor(255, 255, 255);
+  doc.setFontSize(15);
+  doc.setFont('helvetica', 'bold');
+  doc.text('AI CAD-to-Cost Analysis', margin + 34, 13);
+  doc.setFontSize(8.5);
+  doc.setFont('helvetica', 'normal');
+  doc.text('CostVision  ·  Powered by Claude AI  ·  Manufacturing Intelligence Platform', margin + 34, 21);
+  doc.text(new Date().toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric' }), W - margin - 2, 21, { align: 'right' });
+
+  y = 38;
+
+  // Part name + score banner
+  const scoreColor: [number,number,number] = r.manufacturabilityScore >= 75 ? GREEN : r.manufacturabilityScore >= 50 ? AMBER_COL : RED_COL;
+  doc.setFillColor(...LIGHT_BG);
+  doc.roundedRect(margin, y, cW, 22, 3, 3, 'F');
+  doc.setDrawColor(...GREEN);
+  doc.setLineWidth(0.4);
+  doc.roundedRect(margin, y, cW, 22, 3, 3, 'S');
+
+  // Manufacturability score circle (text only in PDF)
+  doc.setFillColor(...scoreColor);
+  doc.circle(margin + 12, y + 11, 9, 'F');
+  doc.setTextColor(255, 255, 255);
+  doc.setFontSize(10);
+  doc.setFont('helvetica', 'bold');
+  doc.text(String(r.manufacturabilityScore), margin + 12, y + 14, { align: 'center' });
+
+  doc.setTextColor(...DARK);
+  doc.setFontSize(11);
+  doc.setFont('helvetica', 'bold');
+  doc.text(r.partName, margin + 26, y + 9);
+  doc.setFontSize(7.5);
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(...GREY);
+  const g = r.geometry;
+  doc.text(
+    `${g.boundingBoxMm.x.toFixed(0)}×${g.boundingBoxMm.y.toFixed(0)}×${g.boundingBoxMm.z.toFixed(0)} mm  ·  ${g.estimatedVolumeCm3.toFixed(1)} cm³  ·  Al ${g.estimatedWeightKg.aluminum.toFixed(3)} kg  /  Steel ${g.estimatedWeightKg.steel.toFixed(3)} kg`,
+    margin + 26, y + 15
+  );
+  doc.setTextColor(...scoreColor);
+  doc.text(`Manufacturability: ${r.manufacturabilityScore}/100  ·  AI Confidence: ${r.confidenceLevel}`, margin + 26, y + 20);
+  y += 28;
+
+  // ════════════════════════════════════════════════════════════════════════════
+  // §1 GEOMETRY SUMMARY
+  // ════════════════════════════════════════════════════════════════════════════
+  section('§1 — Geometry & Part Summary');
+
+  autoTable(doc, {
+    startY: y,
+    body: [
+      ['Bounding Box', `${g.boundingBoxMm.x.toFixed(1)} × ${g.boundingBoxMm.y.toFixed(1)} × ${g.boundingBoxMm.z.toFixed(1)} mm`, 'Surface Area', `${g.estimatedSurfaceAreaCm2.toFixed(1)} cm²`],
+      ['Volume', `${g.estimatedVolumeCm3.toFixed(2)} cm³`, 'Weight (Al)', `${g.estimatedWeightKg.aluminum.toFixed(3)} kg`],
+      ['Weight (Steel)', `${g.estimatedWeightKg.steel.toFixed(3)} kg`, 'Weight (Plastic)', `${g.estimatedWeightKg.plastic.toFixed(3)} kg`],
+    ],
+    theme: 'plain',
+    bodyStyles: { fontSize: 7.5, textColor: DARK },
+    columnStyles: { 0: { textColor: GREY, cellWidth: 38 }, 1: { cellWidth: 50, fontStyle: 'bold' }, 2: { textColor: GREY, cellWidth: 38 }, 3: { fontStyle: 'bold' } },
+    margin: { left: margin, right: margin },
+  });
+  y = lastAutoTable() + 6;
+
+  // ════════════════════════════════════════════════════════════════════════════
+  // §2 DETECTED FEATURES
+  // ════════════════════════════════════════════════════════════════════════════
+  section('§2 — Detected Features');
+
+  autoTable(doc, {
+    startY: y,
+    head: [['Feature Type', 'Count', 'Significance', 'Description']],
+    body: r.detectedFeatures.map(f => [f.type, String(f.count), f.significance, f.description]),
+    theme: 'plain',
+    headStyles: { fillColor: HDR_BG, textColor: DARK, fontStyle: 'bold', fontSize: 7.5 },
+    bodyStyles: { fontSize: 7.5, textColor: DARK },
+    columnStyles: {
+      0: { cellWidth: 38, fontStyle: 'bold' },
+      1: { cellWidth: 14, halign: 'center' },
+      2: { cellWidth: 24, halign: 'center' },
+      3: { cellWidth: cW - 80 },
+    },
+    didParseCell: (data) => {
+      if (data.column.index === 2 && data.section === 'body') {
+        const s = String(data.cell.raw);
+        data.cell.styles.textColor = s === 'High' ? RED_COL : s === 'Medium' ? AMBER_COL : GREEN;
+        data.cell.styles.fontStyle = 'bold';
+      }
+    },
+    margin: { left: margin, right: margin },
+  });
+  y = lastAutoTable() + 6;
+
+  // ════════════════════════════════════════════════════════════════════════════
+  // §3 MATERIAL ANALYSIS
+  // ════════════════════════════════════════════════════════════════════════════
+  section('§3 — Material Analysis', r.materialAnalysis.fromMetadata ? '✓ From CAD metadata' : 'AI-suggested');
+
+  const ma = r.materialAnalysis;
+  kv2('Primary Material:', `${ma.primarySuggestion.name}  (${ma.primarySuggestion.confidencePct}% confidence)`);
+  bodyText(ma.primarySuggestion.reasoning, 4, GREY);
+
+  if (ma.alternatives.length > 0) {
+    doc.setFontSize(7.5);
+    doc.setTextColor(...GREY);
+    doc.text('Alternatives:', margin, y);
+    doc.setTextColor(...DARK);
+    doc.text(ma.alternatives.map(a => `${a.name} (${a.confidencePct}%)`).join('  ·  '), margin + 22, y);
+    y += 5;
+  }
+  y += 2;
+
+  // ════════════════════════════════════════════════════════════════════════════
+  // §4 PROCESS RECOMMENDATIONS
+  // ════════════════════════════════════════════════════════════════════════════
+  section('§4 — Process Recommendations');
+
+  autoTable(doc, {
+    startY: y,
+    head: [['Process', 'Commodity', 'Confidence', 'Est. Cycle (hr)', 'Reasoning']],
+    body: r.processRecommendations.map(p => [
+      p.process,
+      p.commodityType,
+      `${p.confidencePct}%`,
+      p.estimatedCycleTimeHr.toFixed(4),
+      p.reasoning,
+    ]),
+    theme: 'plain',
+    headStyles: { fillColor: HDR_BG, textColor: DARK, fontStyle: 'bold', fontSize: 7.5 },
+    bodyStyles: { fontSize: 7, textColor: DARK },
+    columnStyles: {
+      0: { cellWidth: 42, fontStyle: 'bold' },
+      1: { cellWidth: 28 },
+      2: { cellWidth: 20, halign: 'center' },
+      3: { cellWidth: 22, halign: 'right' },
+      4: { cellWidth: cW - 115 },
+    },
+    didParseCell: (data) => {
+      if (data.column.index === 2 && data.section === 'body') {
+        const pct = parseInt(String(data.cell.raw));
+        data.cell.styles.textColor = pct >= 75 ? GREEN : pct >= 50 ? AMBER_COL : RED_COL;
+        data.cell.styles.fontStyle = 'bold';
+      }
+      if (data.row.index === 0 && data.section === 'body') {
+        data.cell.styles.fillColor = [240, 252, 247] as [number,number,number];
+      }
+    },
+    margin: { left: margin, right: margin },
+  });
+  y = lastAutoTable() + 6;
+
+  // ════════════════════════════════════════════════════════════════════════════
+  // §5 MANUFACTURABILITY RISKS
+  // ════════════════════════════════════════════════════════════════════════════
+  if (r.manufacturabilityRisks.length > 0) {
+    section(`§5 — Manufacturability Risks  (Score: ${r.manufacturabilityScore}/100)`);
+
+    autoTable(doc, {
+      startY: y,
+      head: [['Severity', 'Feature / Area', 'Description', 'Recommended Action']],
+      body: r.manufacturabilityRisks.map(risk => [
+        risk.severity, risk.feature, risk.description, risk.suggestion,
+      ]),
+      theme: 'plain',
+      headStyles: { fillColor: HDR_BG, textColor: DARK, fontStyle: 'bold', fontSize: 7.5 },
+      bodyStyles: { fontSize: 7, textColor: DARK },
+      columnStyles: {
+        0: { cellWidth: 20, halign: 'center', fontStyle: 'bold' },
+        1: { cellWidth: 38, fontStyle: 'bold' },
+        2: { cellWidth: (cW - 84) * 0.52 },
+        3: { cellWidth: (cW - 84) * 0.48 },
+      },
+      didParseCell: (data) => {
+        if (data.column.index === 0 && data.section === 'body') {
+          data.cell.styles.textColor = severityColour(String(data.cell.raw));
+        }
+      },
+      margin: { left: margin, right: margin },
+    });
+    y = lastAutoTable() + 6;
+  }
+
+  // ════════════════════════════════════════════════════════════════════════════
+  // §6 DFM ISSUES (specialist AI)
+  // ════════════════════════════════════════════════════════════════════════════
+  const dfm = r.costInputSuggestions.dfmIssues ?? [];
+  if (dfm.length > 0) {
+    section(`§6 — DFM Issues (${r.costInputSuggestions.recommendedCommodity} specialist)`);
+
+    autoTable(doc, {
+      startY: y,
+      head: [['Severity', 'Area', 'Description', 'Impact', 'Fix']],
+      body: dfm.map(d => [d.severity, d.area, d.description, d.impact, d.fix]),
+      theme: 'plain',
+      headStyles: { fillColor: HDR_BG, textColor: DARK, fontStyle: 'bold', fontSize: 7.5 },
+      bodyStyles: { fontSize: 6.8, textColor: DARK },
+      columnStyles: {
+        0: { cellWidth: 20, halign: 'center', fontStyle: 'bold' },
+        1: { cellWidth: 34, fontStyle: 'bold' },
+        2: { cellWidth: (cW - 90) / 3 },
+        3: { cellWidth: (cW - 90) / 3 },
+        4: { cellWidth: (cW - 90) / 3 },
+      },
+      didParseCell: (data) => {
+        if (data.column.index === 0 && data.section === 'body') {
+          data.cell.styles.textColor = severityColour(String(data.cell.raw));
+        }
+      },
+      margin: { left: margin, right: margin },
+    });
+    y = lastAutoTable() + 6;
+  }
+
+  // ════════════════════════════════════════════════════════════════════════════
+  // §7 COST RANGE + SUGGESTED INPUTS
+  // ════════════════════════════════════════════════════════════════════════════
+  const cr = r.costInputSuggestions.costRange;
+  const ci = r.costInputSuggestions;
+
+  section('§7 — Cost Range & Suggested Inputs');
+
+  if (cr) {
+    // Visual cost range band
+    doc.setFillColor(...LIGHT_BG);
+    doc.roundedRect(margin, y, cW, 16, 2, 2, 'F');
+    const thirds = cW / 3;
+    doc.setFontSize(7);
+    doc.setTextColor(...GREY);
+    doc.text('OPTIMISTIC', margin + thirds * 0 + 2, y + 5);
+    doc.text('MOST LIKELY', margin + thirds * 1 + 2, y + 5);
+    doc.text('CONSERVATIVE', margin + thirds * 2 + 2, y + 5);
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(...GREEN);
+    doc.text(`£${cr.low.toFixed(2)}`, margin + thirds * 0 + 6, y + 13);
+    doc.setTextColor(...BLUE_COL);
+    doc.text(`£${cr.mid.toFixed(2)}`, margin + thirds * 1 + 6, y + 13);
+    doc.setTextColor(...RED_COL);
+    doc.text(`£${cr.high.toFixed(2)}`, margin + thirds * 2 + 6, y + 13);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(...DARK);
+    y += 20;
+  }
+
+  const opsText = ci.estimatedOperations.map(o => `${o.name} (${o.machineId}, ${o.cycleTimeHr.toFixed(4)} hr)`).join('\n');
+
+  autoTable(doc, {
+    startY: y,
+    body: [
+      ['Net Weight', `${ci.netWeightKg.toFixed(3)} kg`, 'Material', ci.materialId],
+      ['Recommended Process', ci.recommendedCommodity, 'Cycle Time', `${ci.estimatedCycleTimeHr.toFixed(4)} hr/part`],
+      ['Setup Time', `${ci.estimatedSetupTimeHr.toFixed(3)} hr`, 'Operations', `${ci.estimatedOperations.length} ops`],
+      ['Operations Detail', opsText, '', ''],
+    ],
+    theme: 'plain',
+    bodyStyles: { fontSize: 7.5, textColor: DARK },
+    columnStyles: {
+      0: { textColor: GREY, cellWidth: 42 },
+      1: { fontStyle: 'bold', cellWidth: 55 },
+      2: { textColor: GREY, cellWidth: 32 },
+      3: { fontStyle: 'bold' },
+    },
+    margin: { left: margin, right: margin },
+  });
+  y = lastAutoTable() + 6;
+
+  // Process-specific parameters (casting/forging/IMM/etc.)
+  const specific: string[][] = [];
+  if (ci.casting) {
+    specific.push(
+      ['Casting Subtype', ci.casting.subtype],
+      ['Die/Mould Cost', `£${ci.casting.dieMouldCostGBP.toLocaleString('en-GB')}`],
+      ['Die Life', `${ci.casting.dieMouldLife.toLocaleString()} shots`],
+      ['Cavities', String(ci.casting.cavities)],
+      ['Yield', `${(ci.casting.yieldFraction * 100).toFixed(1)}%`],
+    );
+    if (ci.casting.cycleTimeHpdcSec) specific.push(['HPDC Cycle Time', `${ci.casting.cycleTimeHpdcSec} s`]);
+  }
+  if (ci.forging) {
+    specific.push(
+      ['Flash Weight', `${ci.forging.flashKg.toFixed(3)} kg`],
+      ['Yield', `${(ci.forging.yieldFraction * 100).toFixed(1)}%`],
+      ['Die Cost', `£${ci.forging.dieCostGBP.toLocaleString('en-GB')}`],
+      ['Strokes', String(ci.forging.strokes)],
+    );
+  }
+  if (ci.injectionMoulding) {
+    specific.push(
+      ['Cavities', String(ci.injectionMoulding.cavities)],
+      ['Wall Thickness', `${ci.injectionMoulding.wallThicknessMm} mm`],
+      ['Mould Cost', `£${ci.injectionMoulding.mouldCostGBP.toLocaleString('en-GB')}`],
+      ['Mould Life', `${ci.injectionMoulding.mouldLife.toLocaleString()} shots`],
+      ['Projected Area', `${ci.injectionMoulding.projectedAreaCm2.toFixed(1)} cm²`],
+    );
+  }
+  if (ci.blowMoulding) {
+    specific.push(
+      ['Subtype', ci.blowMoulding.subtype],
+      ['Wall Thickness', `${ci.blowMoulding.wallThicknessMm} mm`],
+      ['Mould Cost', `£${ci.blowMoulding.mouldCostGBP.toLocaleString('en-GB')}`],
+      ['Cavities', String(ci.blowMoulding.cavities)],
+      ['Blow Time', `${ci.blowMoulding.blowTimeSec} s`],
+    );
+  }
+  if (ci.composites) {
+    specific.push(
+      ['Process', ci.composites.process],
+      ['Plies', String(ci.composites.plies)],
+      ['Fibre Fraction', `${(ci.composites.fibreFraction * 100).toFixed(0)}%`],
+      ['Tool Cost', `£${ci.composites.toolCostGBP.toLocaleString('en-GB')}`],
+      ['Cure Time', `${(ci.composites.cureTimeSec / 60).toFixed(0)} min`],
+    );
+  }
+  if (ci.rubber) {
+    specific.push(
+      ['Process', ci.rubber.process],
+      ['Cavities', String(ci.rubber.cavities)],
+      ['Mould Cost', `£${ci.rubber.mouldCostGBP.toLocaleString('en-GB')}`],
+      ['Cycle Time', `${ci.rubber.cycleTimeSec} s`],
+    );
+  }
+  if (ci.rotationalMoulding) {
+    specific.push(
+      ['Arms', String(ci.rotationalMoulding.numArms)],
+      ['Heat Time', `${(ci.rotationalMoulding.heatTimeSec / 60).toFixed(0)} min`],
+      ['Cool Time', `${(ci.rotationalMoulding.coolTimeSec / 60).toFixed(0)} min`],
+      ['Mould Cost', `£${ci.rotationalMoulding.mouldCostGBP.toLocaleString('en-GB')}`],
+    );
+  }
+  if (specific.length > 0) {
+    checkPage(specific.length * 5 + 10);
+    doc.setFontSize(7.5);
+    doc.setTextColor(...GREY);
+    doc.text('Process-Specific Parameters', margin, y);
+    y += 4;
+    autoTable(doc, {
+      startY: y,
+      body: specific,
+      theme: 'plain',
+      bodyStyles: { fontSize: 7.5, textColor: DARK },
+      columnStyles: { 0: { textColor: GREY, cellWidth: 42 }, 1: { fontStyle: 'bold' } },
+      margin: { left: margin + 4, right: margin },
+    });
+    y = lastAutoTable() + 6;
+  }
+
+  // ════════════════════════════════════════════════════════════════════════════
+  // §8 AI EXPLANATION
+  // ════════════════════════════════════════════════════════════════════════════
+  checkPage(24);
+  section('§8 — AI Analysis Explanation');
+  bodyText(r.aiExplanation, 0, GREY);
+  y += 2;
+
+  // ════════════════════════════════════════════════════════════════════════════
+  // §9 ANALYSIS LIMITATIONS
+  // ════════════════════════════════════════════════════════════════════════════
+  if (r.analysisLimitations.length > 0) {
+    checkPage(12);
+    section('§9 — Analysis Limitations & Assumptions');
+    r.analysisLimitations.forEach((lim, i) => {
+      bodyText(`${i + 1}. ${lim}`, 4, GREY);
+    });
+  }
+
+  // ════════════════════════════════════════════════════════════════════════════
+  // STAGE-1 SELECTION NOTE
+  // ════════════════════════════════════════════════════════════════════════════
+  if (ci.stage1Selection) {
+    checkPage(10);
+    doc.setFontSize(7);
+    doc.setTextColor(...GREY);
+    doc.text(
+      `⚡ Stage-1 Haiku pre-selection: ${ci.stage1Selection.primary} (${Math.round((ci.stage1Selection.conf ?? 0) * 100)}%)  ·  ` +
+      (ci.stage1Selection.alt ?? []).map(a => `${a.type} (${Math.round(a.conf * 100)}%)`).join(' · '),
+      margin, y
+    );
+    y += 5;
+  }
+
+  addFooters();
+
+  const fname = `cad-analysis-${r.partName.replace(/[^a-z0-9]/gi, '-').toLowerCase()}-${new Date().toISOString().slice(0, 10)}.pdf`;
+  doc.save(fname);
+}
