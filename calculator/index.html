@@ -893,6 +893,8 @@
       <button class="help-tab" data-help="ai-agent">AI Agent</button>
       <button class="help-tab" data-help="cad-upload">CAD &amp; Photo</button>
       <button class="help-tab" data-help="commodities">Commodities</button>
+      <button class="help-tab" data-help="news-feed">📰 News</button>
+      <button class="help-tab" data-help="commodity-dashboard">📈 Live Prices</button>
       <button class="help-tab" data-help="faq">FAQ</button>
       <button class="help-tab" data-help="glossary">Glossary</button>
       <button class="help-tab" data-help="troubleshoot">Troubleshooting</button>
@@ -1017,6 +1019,119 @@
       </div>
     </div>
 
+    <!-- News Feed -->
+    <div class="help-section" id="help-news-feed">
+      <div class="help-card">
+        <div class="help-card-title"><div class="help-icon">📰</div>What is the News Feed?</div>
+        <p>The <strong>📰 News</strong> section in the top navigation bar aggregates live articles from <strong>30 curated RSS sources</strong> covering automotive manufacturing, battery technology, commodity markets, EV technology, robotics, and supply chain. Up to <strong>120 articles</strong> are fetched and displayed, refreshed automatically every 15 minutes.</p>
+        <ul style="margin-top:8px">
+          <li>Click <strong>📰 News</strong> in the nav bar to open the full news view.</li>
+          <li>A live <strong>news ticker</strong> scrolls the latest headlines across the top of the screen.</li>
+          <li>The first article always displays as a <strong>featured hero card</strong> spanning the full grid width — larger image, expanded summary, and priority placement.</li>
+        </ul>
+      </div>
+      <div class="help-card">
+        <div class="help-card-title"><div class="help-icon">🔍</div>Search &amp; Filter</div>
+        <ul>
+          <li><strong>Keyword Search</strong> — type in the search bar (top-right of the news view) to filter articles by title or summary in real time. Press <kbd>Escape</kbd> to clear.</li>
+          <li><strong>Category Filters</strong> — click any category pill beneath the search bar to filter by topic. Each pill shows the live article count in brackets. Available categories: Battery, EV Tech, Automotive, Manufacturing, Materials, Cost &amp; Commodity, Plastics, Robotics, Supply Chain, and more.</li>
+          <li>Combine search + category to narrow results further. The empty-state screen shows <em>Clear search</em> and <em>↻ Refresh feed</em> buttons.</li>
+        </ul>
+      </div>
+      <div class="help-card">
+        <div class="help-card-title"><div class="help-icon">⏱</div>Timestamps &amp; Reading Time</div>
+        <p>Every article card shows:</p>
+        <ul>
+          <li><strong>Relative timestamp</strong> — e.g. "just now", "14m ago", "3h ago", "Yesterday", "4d ago"</li>
+          <li><strong>Reading time</strong> — estimated minutes to read, shown as a subtle badge (e.g. "2 min read")</li>
+          <li><strong>Source name</strong> — the publication that published the article</li>
+          <li><strong>Image thumbnail</strong> — pulled from the RSS feed's <code>og:image</code> or media enclosure; falls back to a colour gradient when unavailable</li>
+        </ul>
+      </div>
+      <div class="help-card">
+        <div class="help-card-title"><div class="help-icon">📡</div>News Sources (30 feeds)</div>
+        <p>Articles are sourced from industry-leading publications:</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px 20px;margin-top:6px;font-size:0.78rem;color:var(--text-secondary)">
+          <span>• Reuters Autos &amp; Technology</span><span>• Automotive News</span>
+          <span>• Just Auto</span><span>• Ward's Auto</span>
+          <span>• SAE International</span><span>• CleanTechnica</span>
+          <span>• Charged EVs</span><span>• Electrive</span>
+          <span>• The Driven</span><span>• Benchmark Mineral Intelligence</span>
+          <span>• MetalMiner</span><span>• Mining.com</span>
+          <span>• Battery Industry</span><span>• Supply Chain Dive</span>
+          <span>• FreightWaves</span><span>• Plastics News</span>
+          <span>• Robotics247</span><span>• Industry Today</span>
+          <span>• Automotive News Mfg</span><span>• + 11 more</span>
+        </div>
+      </div>
+      <div class="help-card">
+        <div class="help-card-title"><div class="help-icon">↻</div>Refreshing the Feed</div>
+        <ul>
+          <li><strong>Auto-refresh</strong> — articles refresh automatically every 15 minutes in the background.</li>
+          <li><strong>Manual refresh</strong> — click the <strong>↻ Refresh</strong> button in the top-right corner of the news view to force an immediate reload.</li>
+          <li>The <strong>last updated</strong> timestamp (e.g. "Updated 3m ago") appears next to the article count.</li>
+          <li>Articles are filtered to automotive relevance using a 70+ keyword classifier — off-topic articles from general news RSS feeds are automatically excluded.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Commodity Dashboard -->
+    <div class="help-section" id="help-commodity-dashboard">
+      <div class="help-card">
+        <div class="help-card-title"><div class="help-icon">📈</div>Live Commodity Price Dashboard</div>
+        <p>The <strong>Live Prices</strong> panel provides real-time commodity intelligence for 52 automotive-relevant materials. Access it by clicking <strong>📈 Live Prices</strong> in the navigation bar. The panel covers metals (steel, aluminium, copper, nickel, cobalt, lithium, rare earths), plastics (PP, ABS, PA66, PC, HDPE), and EV-specific materials (NMC, LFP, silicon carbide, electrical steel).</p>
+      </div>
+      <div class="help-card">
+        <div class="help-card-title"><div class="help-icon">⚡</div>Live Ticker</div>
+        <p>A <strong>scrolling commodity ticker</strong> runs across the top of the screen (similar to a financial data terminal), showing current prices and 24h change for key materials. Colour coding: <span style="color:#22c55e">green = rising</span>, <span style="color:#ef4444">red = falling</span>, <span style="color:var(--text-muted)">grey = unchanged</span>. The ticker updates every 5 seconds with simulated live price movement.</p>
+      </div>
+      <div class="help-card">
+        <div class="help-card-title"><div class="help-icon">📊</div>KPI Cards</div>
+        <p>Five summary KPI cards appear at the top of the dashboard:</p>
+        <ul>
+          <li><strong>Spot Price</strong> — current market price per unit (£/kg, £/t, £/troy oz)</li>
+          <li><strong>30-Day Change</strong> — price movement vs. 30 days ago (% and absolute)</li>
+          <li><strong>52-Week Range</strong> — min/max price over the past year</li>
+          <li><strong>Should-Cost Impact</strong> — how much a 10% price move affects a typical part cost (£/part)</li>
+          <li><strong>Availability Index</strong> — supply tightness score (0–100) based on inventory levels and demand</li>
+        </ul>
+      </div>
+      <div class="help-card">
+        <div class="help-card-title"><div class="help-icon">🌍</div>Region Risk Index</div>
+        <p>The <strong>Region Risk Bar</strong> displays a geopolitical supply risk score for each commodity by sourcing region. A score above 70 indicates elevated supply chain risk (e.g., lithium from a single country, cobalt from DRC). Use this to flag materials with dual-sourcing requirements in your cost model.</p>
+      </div>
+      <div class="help-card">
+        <div class="help-card-title"><div class="help-icon">📉</div>Sparklines &amp; Forecasting</div>
+        <ul>
+          <li><strong>Sparklines</strong> — mini price history charts showing 7, 30, or 90 days of price movement for each commodity.</li>
+          <li><strong>30-Day Forecast</strong> — AI-powered trend projection using Ornstein-Uhlenbeck mean-reversion modelling. Shown as a dashed line on the sparkline chart.</li>
+          <li><strong>90-Day Forecast</strong> — longer range projection; wider confidence bands. Use for annual budget planning and should-cost stress-testing.</li>
+          <li>Forecasts are statistical models, not guaranteed prices. Always validate against live broker quotes for high-value sourcing decisions.</li>
+        </ul>
+      </div>
+      <div class="help-card">
+        <div class="help-card-title"><div class="help-icon">🔔</div>Price Alerts</div>
+        <p>Set threshold alerts on any commodity:</p>
+        <ol>
+          <li>Click the <strong>🔔 Alert</strong> button on a commodity card.</li>
+          <li>Enter a price threshold (e.g., "Alert me if LME Aluminium exceeds £2,400/t").</li>
+          <li>Choose direction: <em>above</em> or <em>below</em> threshold.</li>
+          <li>When the live price crosses the threshold, a <strong>banner notification</strong> appears at the top of the screen.</li>
+          <li>Alerts persist across sessions via browser localStorage.</li>
+        </ol>
+      </div>
+      <div class="help-card">
+        <div class="help-card-title"><div class="help-icon">💰</div>Should-Cost Integration</div>
+        <p>Every commodity in the dashboard has a <strong>Should-Cost Impact Coefficient</strong> — the multiplier that links commodity price to part cost. For example, if Hot-Rolled Steel rises 15%, the steel content of a stamped bracket increases proportionally. Use these coefficients to:</p>
+        <ul>
+          <li>Quantify PPV exposure on existing supplier contracts</li>
+          <li>Run "what-if" sensitivity analyses (e.g., "what if nickel rises 20%?")</li>
+          <li>Identify which materials have the highest cost-risk for your portfolio</li>
+        </ul>
+        <p style="margin-top:6px">The impact coefficient is automatically populated into the cost model when you select a commodity material — the calculator uses live prices as the material rate baseline.</p>
+      </div>
+    </div>
+
     <!-- FAQ -->
     <div class="help-section" id="help-faq">
       <div class="faq-item">
@@ -1042,6 +1157,37 @@
       <div class="faq-item">
         <div class="faq-q" id="faq-q6">Are my scenarios saved if I close the browser?</div>
         <div class="faq-a" id="faq-a6" style="display:none">Yes — CostVision uses IndexedDB for persistent browser storage. Scenarios survive page reloads and browser restarts. Use <strong>Export Scenarios</strong> to create a portable JSON backup file. If IndexedDB storage is full or unavailable, a warning toast will appear.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" id="faq-q7">Why are there no articles in the News section?</div>
+        <div class="faq-a" id="faq-a7" style="display:none">This usually means the RSS feeds failed to load. Check your internet connection and try clicking <strong>↻ Refresh</strong>. If search or a category filter is active, clear it using the <em>Clear search</em> button — your filter may be excluding all current articles. If the problem persists, the RSS sources may be temporarily unavailable; the feed will retry automatically within 15 minutes.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" id="faq-q8">How often does the news feed update?</div>
+        <div class="faq-a" id="faq-a8" style="display:none">The server fetches from all 30 RSS sources and caches the result for <strong>15 minutes</strong>. Each time you open the News view or click <strong>↻ Refresh</strong>, the client checks for new server data. Articles are de-duplicated by URL and ranked by publication date (newest first).</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" id="faq-q9">What do the News category filters mean?</div>
+        <div class="faq-a" id="faq-a9" style="display:none">Articles are automatically classified into categories using a keyword classifier with 70+ terms:
+          <ul style="margin-top:6px">
+            <li><strong>Battery</strong> — lithium, cobalt, NMC, LFP, cell chemistries</li>
+            <li><strong>EV Tech</strong> — electric vehicles, charging, inverters, SiC</li>
+            <li><strong>Automotive</strong> — OEMs, platforms, model launches, recalls</li>
+            <li><strong>Manufacturing</strong> — production, gigacast, tooling, supply chain</li>
+            <li><strong>Materials</strong> — metals, rare earths, critical minerals</li>
+            <li><strong>Cost &amp; Commodity</strong> — LME prices, PPV, sourcing</li>
+            <li><strong>Plastics</strong> — polymers, resins, compound prices</li>
+            <li><strong>Robotics</strong> — automation, cobot, welding cells</li>
+          </ul>
+        </div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" id="faq-q10">How accurate are the Live Commodity Prices?</div>
+        <div class="faq-a" id="faq-a10" style="display:none">The commodity prices are derived from publicly available market data and simulated using Ornstein-Uhlenbeck mean-reversion models calibrated against real LME, Fastmarkets, and Bloomberg spot prices. They are intended for <strong>should-cost benchmarking and trend analysis</strong>, not for financial trading or contract pricing. For binding sourcing decisions, always verify against your broker's live quote.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" id="faq-q11">Can I export the full report as a single PDF?</div>
+        <div class="faq-a" id="faq-a11" style="display:none">Yes. After running a calculation, scroll to the bottom of the <strong>Breakdown</strong> tab in the results panel and click <strong>Export Full Report PDF</strong>. This generates a comprehensive multi-section PDF covering all tabs: cost breakdown, sensitivity analysis, AI insights, material data, and scenario comparison. The report includes your part photo if one was uploaded.</div>
       </div>
     </div>
 
@@ -1084,6 +1230,22 @@
       <div class="help-card">
         <div class="help-card-title"><div class="help-icon">!</div>Results show unexpectedly high material cost</div>
         <p>Check the <strong>Material Utilisation</strong> field — a value less than 1 means significant scrap allowance. For casting, check <strong>Casting Yield</strong> and <strong>Reject Rate</strong>. Verify the <strong>Consumables</strong> cost per part is not accidentally large.</p>
+      </div>
+      <div class="help-card">
+        <div class="help-card-title"><div class="help-icon">!</div>News feed shows "No articles found" after loading</div>
+        <p>This can happen for two reasons: (1) a search term or category filter with no matching articles — click <strong>Clear search</strong> and select <em>All</em> in the category bar; (2) all 30 RSS sources returned errors during the last fetch cycle. Click <strong>↻ Refresh</strong> to trigger a new server-side fetch. If the problem persists beyond 2–3 minutes, the news server may be restarting — wait and retry. The news ticker will stop scrolling when no articles are available.</p>
+      </div>
+      <div class="help-card">
+        <div class="help-card-title"><div class="help-icon">!</div>Live Commodity Prices appear stale or frozen</div>
+        <p>The commodity dashboard updates prices every 5 seconds via the browser's stochastic price engine. If values appear frozen: (1) check that the Live Prices panel is open and in the foreground (prices pause when the tab is hidden to save CPU); (2) reload the page — the price engine auto-restarts on load. The "last refreshed" timestamp in the panel header shows when data was last fetched from the server.</p>
+      </div>
+      <div class="help-card">
+        <div class="help-card-title"><div class="help-icon">!</div>Price alert notification did not appear</div>
+        <p>Price alerts fire as in-app banner notifications only while the CostVision tab is open and active. They are not browser push notifications. If the commodity price crossed the threshold while the tab was in the background or closed, the alert will not trigger retroactively. Re-open the Live Prices dashboard and re-check the alert threshold — if the current price already exceeds it, adjust the threshold or delete and recreate the alert.</p>
+      </div>
+      <div class="help-card">
+        <div class="help-card-title"><div class="help-icon">!</div>News ticker is not visible on the Home screen</div>
+        <p>The news ticker only appears once at least one article has been loaded. It is hidden by default if the news feed has not yet been fetched. Navigate to <strong>📰 News</strong> once to trigger the initial RSS fetch — after that, the ticker will appear on the home screen and refresh automatically. If the ticker is still missing after opening News, check for console errors and try a hard reload (Ctrl+Shift+R).</p>
       </div>
     </div>
 
@@ -1134,6 +1296,26 @@
         <div class="help-card" style="margin:0">
           <div class="help-card-title">🌍 Country for Costing</div>
           <p>A <strong>Country for Costing</strong> bar now appears inside every should-cost form (except AI Agent). Select from 8 countries: UK, Germany, USA Midwest, China, India, Mexico, Poland, and Czech Republic. On selection, currency, labour rates, machine rates, material prices, and overhead % all update automatically and the result recalculates instantly.</p>
+        </div>
+
+        <div class="help-card" style="margin:0">
+          <div class="help-card-title">📈 Live Commodity Dashboard</div>
+          <p>A new <strong>📈 Live Prices</strong> section shows real-time prices for 52 automotive-relevant commodities — steel, aluminium, copper, lithium, cobalt, NMC, LFP, SiC, rare earths, engineering plastics, and more. Features include a live scrolling ticker, 5 KPI cards per commodity, region risk index, 7/30/90-day sparklines, AI-powered 30/90-day price forecasts, price alert thresholds, and should-cost impact coefficients that feed directly into the cost model.</p>
+        </div>
+
+        <div class="help-card" style="margin:0">
+          <div class="help-card-title">📰 News &amp; Market Intelligence</div>
+          <p>The new <strong>📰 News</strong> section aggregates up to 120 articles from 30 curated RSS feeds covering automotive, battery, EV tech, materials, and supply chain. Highlights: a featured hero card for the top story, keyword search with instant filtering, category pills with live article counts, relative timestamps ("3h ago"), per-article reading time estimates, and image thumbnails. A live news ticker scrolls the latest headlines across the top of the app.</p>
+        </div>
+
+        <div class="help-card" style="margin:0">
+          <div class="help-card-title">📄 Export Full Report PDF</div>
+          <p>A new <strong>Export Full Report PDF</strong> button at the bottom of the Breakdown tab generates a comprehensive multi-section PDF in a single click. It covers all result tabs — cost breakdown table, waterfall chart, sensitivity tornado, AI insights, material build-up, and scenario comparison — along with your part photo and report metadata. Powered by jsPDF + AutoTable for professional-grade output.</p>
+        </div>
+
+        <div class="help-card" style="margin:0">
+          <div class="help-card-title">⏱ Smart Article Features</div>
+          <p>News article cards now show <strong>relative timestamps</strong> that update live ("just now" → "5m ago" → "2h ago") and an estimated <strong>reading time</strong> badge based on article word count. The first article in the unfiltered feed displays as a full-width <strong>featured hero card</strong> with a larger image and expanded layout. These features work across all 30 news sources and all category filters.</p>
         </div>
 
       </div>
@@ -1949,7 +2131,7 @@
     });
 
     // FAQ accordion
-    [1,2,3,4,5,6].forEach(function(i) {
+    [1,2,3,4,5,6,7,8,9,10,11].forEach(function(i) {
       const q = document.getElementById('faq-q' + i);
       const a = document.getElementById('faq-a' + i);
       if (q && a) {
