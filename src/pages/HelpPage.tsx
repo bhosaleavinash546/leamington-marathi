@@ -13,7 +13,7 @@ const FAQ: FaqSection[] = [
     category: 'Getting Started',
     icon: BookOpen,
     items: [
-      { q: 'What is BrainSpark?', a: 'BrainSpark is an AI-powered VAVE (Value Analysis / Value Engineering) tool for automotive products. It uses a Chief Engineer AI persona with 30+ years of domain expertise and live internet search to generate 8 actionable DFMA and cost-engineering ideas per run, across 13 vehicle systems, 260+ parts, and 340+ curated knowledge-base levers.' },
+      { q: 'What is BrainSpark?', a: 'BrainSpark is an AI-powered VAVE (Value Analysis / Value Engineering) tool for automotive products. It uses a Chief Engineer AI persona with 30+ years of domain expertise and live internet search to generate all available DFMA and cost-engineering ideas in a single click, across 13 vehicle systems, 260+ parts, and 340+ curated knowledge-base levers.' },
       { q: 'Do I need an API key to use this?', a: 'Yes — you need an Anthropic API key (for Claude AI). You enter it on the Analyze page. It is stored only in your browser session and never saved to any server.' },
       { q: 'How do I run the tool locally?', a: 'Install Node.js v18+, run "npm install" once, then "npm run dev" to start both the backend (port 3001) and frontend (port 5173). Open http://localhost:5173 in your browser.' },
       { q: 'Is an internet connection required?', a: 'An internet connection is required to call the Claude AI API. The optional web search feature (enabled by default) also uses internet to fetch live pricing and supplier data for more accurate estimates.' },
@@ -27,14 +27,14 @@ const FAQ: FaqSection[] = [
       { q: 'What does "web search" do?', a: 'When enabled, the AI performs up to 8 targeted internet searches per analysis — looking for current material prices, supplier benchmarks, and manufacturing process costs. This grounds estimates in real market data rather than training knowledge alone.' },
       { q: 'How accurate are the savings estimates?', a: 'Estimates are directionally accurate based on automotive benchmarks and live market data. They should be treated as engineering ballpark figures and validated with detailed cost studies and supplier RFQs before business case commitment.' },
       { q: 'What is the difference between Assembly, Subassembly, and Part level analysis?', a: 'System-level gives broad DFMA opportunities across the entire subsystem. Subassembly level focuses on interface and integration savings. Part level provides surgical, component-specific ideas with the highest precision. All three levels can be analysed for the same target.' },
-      { q: 'How many ideas does the AI generate?', a: '8 ideas per run — at least 2 quick wins (Low difficulty, 3–6 months), 3 medium-term, and 2 strategic (12–24 months). A commonisation idea and an emerging-tech idea are always included. The mix is calibrated to the selected component\'s technology readiness and benchmark data available.' },
+      { q: 'How many ideas does the AI generate?', a: 'All available ideas in a single run — typically 12–20+ ideas depending on the component. There is no cap: the AI generates every viable cost reduction lever it can identify, spanning material substitution, process optimisation, design changes, commonisation, logistics, and emerging technology. Quick wins (Low difficulty), medium-term, and strategic ideas are all included, along with at least one commonisation and one emerging-tech idea.' },
     ],
   },
   {
     category: 'Export & Reporting',
     icon: Download,
     items: [
-      { q: 'What is included in the Excel export?', a: 'The Excel file has three sheets: (1) Summary — overview stats and metadata; (2) Ideas — all 8 cost reduction ideas with savings estimates, implementation steps, risks, and timelines; (3) Roadmap — a chronological view by implementation phase.' },
+      { q: 'What is included in the Excel export?', a: 'The Excel file has three sheets: (1) Summary — overview stats and metadata; (2) Ideas — all cost reduction ideas with savings estimates, implementation steps, risks, and timelines; (3) Roadmap — a chronological view by implementation phase.' },
       { q: 'What is included in the PowerPoint export?', a: 'The PowerPoint includes a title slide, a summary slide, one detailed slide per idea (title, savings, type, timeline, key steps, risks), and a closing roadmap slide. Formatted for direct management gate-review use.' },
       { q: 'What is included in the PDF export?', a: 'The PDF report is an A4 portrait document with a branded cover page showing summary metrics, one page per idea with full technical detail and DFMA principles, and a final roadmap page grouped into Quick Wins / Medium Term / Strategic phases.' },
       { q: 'Can I annotate ideas?', a: 'Yes — expand any idea card on the Results page and click "Add annotation". You can set an implementation status (Investigating / Approved / Rejected / On Hold) and add free-text engineering notes. Annotations are saved locally in your browser and restored when you re-open a past analysis.' },
@@ -66,7 +66,7 @@ const STEPS = [
   { n: 1, title: 'Sign in', desc: 'Create your account or sign in with email and password. Use "Forgot password" if needed — an OTP is sent to your email.' },
   { n: 2, title: 'Enter API key', desc: 'On the Analyze page, paste your Anthropic API key. It stays in your browser only.' },
   { n: 3, title: 'Select target', desc: 'Choose a Vehicle System → Subassembly → Part (optional). Optionally upload a CAD file (STL / STEP / DXF / PNG) — geometry is auto-extracted and injected into the AI prompt.' },
-  { n: 4, title: 'Generate & export', desc: 'Click "Generate Ideas". Watch live as the AI searches the web and synthesises 8 expert ideas. Export to Excel, PowerPoint, or PDF. Annotate ideas with implementation status and notes.' },
+  { n: 4, title: 'Generate & export', desc: 'Click "Generate Ideas". Watch live as the AI searches the web and synthesises all available expert ideas (typically 12–20+). Export to Excel, PowerPoint, or PDF. Annotate ideas with implementation status and notes.' },
 ];
 
 function FaqAccordion({ item }: { item: FaqItem }) {

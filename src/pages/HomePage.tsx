@@ -75,7 +75,7 @@ function KpiCard({
 // ─── Live Activity Feed ───────────────────────────────────────────────────────
 
 const ACTIVITY_ITEMS = [
-  { system: 'Electric Drive Unit', action: '8 ideas generated', saving: '€2.4M/yr', time: '2m ago', color: 'text-gold-400' },
+  { system: 'Electric Drive Unit', action: '16 ideas generated', saving: '€2.4M/yr', time: '2m ago', color: 'text-gold-400' },
   { system: 'BIW Stamping', action: 'Hot-stamp consolidation', saving: '€1.1M/yr', time: '7m ago', color: 'text-indigo-400' },
   { system: 'Battery Pack', action: 'CTP architecture switch', saving: '€3.8M/yr', time: '14m ago', color: 'text-emerald-400' },
   { system: 'Transmission & Driveline', action: 'ZF 8HP fleet rebate', saving: '€0.9M/yr', time: '21m ago', color: 'text-rose-400' },

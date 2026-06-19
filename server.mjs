@@ -368,7 +368,7 @@ COST ENGINEERING (Current Benchmarks):
 REAL-TIME INTELLIGENCE PROTOCOL:
 You ALWAYS search the web before generating ideas. Execute 3–5 targeted searches for: current commodity prices, recent technology innovations (2024–2025), OEM or Tier-1 benchmarks, supplier technology offers, and regulatory changes.
 
-OUTPUT FORMAT: Return ONLY valid JSON — a single array of 8 idea objects. No markdown, no preamble.`;
+OUTPUT FORMAT: Return ONLY valid JSON — a JSON array of ALL applicable ideas. Generate as many ideas as genuinely viable — do not cap at 8; typically 12–20+ ideas per component. No markdown, no preamble.`;
 
 // EDU curated knowledge — injected when an Electric Drive Unit component is selected
 const EDU_CONTEXT_MAP = {
@@ -893,7 +893,7 @@ function buildAnalysisPrompt(config, systemName, subassemblyName, partName, enab
   const livePrices = getPriceString();
   const regulatoryContext = getRegulatorContext(config);
 
-  return `Generate 8 expert-level cost reduction ideas for:
+  return `Generate ALL expert-level cost reduction ideas available for:
 Vehicle: ${config.vehicleType} | ${scope}${config.additionalContext ? ` | Context: ${config.additionalContext}` : ''}
 ${regionLine}${bodyStyleLine}${cadLine}${searchInstruction}
 
@@ -908,7 +908,7 @@ Each idea JSON object must have EXACTLY these fields:
 
 CONFIDENCE GUIDE: verified=OEM confirmed in production | benchmarked=teardown/study data confirms | estimated=cost-model based | theoretical=first-principles analysis.
 EVIDENCE SOURCES: List 1-3 real evidence sources per idea (OEM teardowns, patents, press releases, industry reports). Be specific — name the OEM/supplier and year.
-Mix: ≥2 Low difficulty, 3 Medium, 2 High. Include 1 commonisation + 1 emerging-tech idea. Return ONLY JSON array.`;
+Cover EVERY viable lever — material substitution, process optimisation, design changes, commonisation, logistics, warranty, tooling amortisation, and emerging technology. Do not stop at 8 — generate all ideas that a Chief Engineer would seriously consider. Include a spread of Low/Medium/High difficulty, at least 1 commonisation idea, and at least 1 emerging-technology idea. Return ONLY the JSON array — no markdown, no preamble.`;
 }
 
 const webSearchTool = {
@@ -1137,7 +1137,7 @@ app.post('/api/analyze', requireAuth, async (req, res) => {
   try {
     for (let i = 0; i < 8; i++) {
       if (Date.now() > deadline) throw new Error('Analysis timed out after 2 minutes. Please try again with web search disabled.');
-      const params = { model: 'claude-opus-4-8', max_tokens: 12000, system: CHIEF_ENGINEER_PROMPT, messages };
+      const params = { model: 'claude-opus-4-8', max_tokens: 20000, system: CHIEF_ENGINEER_PROMPT, messages };
       if (enableSearch) { params.tools = [webSearchTool]; params.tool_choice = { type: 'auto' }; }
 
       const response = await client.messages.create(params);
@@ -1155,7 +1155,7 @@ app.post('/api/analyze', requireAuth, async (req, res) => {
         messages.push({ role: 'assistant', content: response.content });
         messages.push({ role: 'user', content: toolResults });
       } else {
-        emit({ type: 'synthesizing', message: `Synthesising ${sources.length > 0 ? `(${sources.length} searches complete) ` : ''}8 expert cost-reduction ideas...` });
+        emit({ type: 'synthesizing', message: `Synthesising all available cost-reduction ideas${sources.length > 0 ? ` (${sources.length} searches complete)` : ''}...` });
         const textBlock = response.content.find(b => b.type === 'text');
         if (!textBlock) throw new Error('No text response from AI.');
         let raw = textBlock.text.trim();
