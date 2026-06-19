@@ -455,6 +455,7 @@ async function fetchNews(force = false): Promise<void> {
   const now = Date.now();
   if (!force && _newsArticles.length > 0 && now - _newsLastFetch < 5 * 60 * 1000) {
     renderNewsCards();
+    updateNewsTicker();
     return;
   }
   const loadEl = document.getElementById('news-loading');
@@ -482,6 +483,7 @@ async function fetchNews(force = false): Promise<void> {
     if (loadEl) loadEl.style.display = 'none';
     if (gridEl) gridEl.style.display = '';
     renderNewsCards();
+    updateNewsTicker();
   }
 }
 
@@ -512,6 +514,26 @@ function renderNewsCards(): void {
   </div>
 </a>`;
   }).join('');
+}
+
+function updateNewsTicker(): void {
+  const track = document.getElementById('news-ticker-track');
+  const wrap = document.getElementById('news-ticker-wrap');
+  if (!track || !_newsArticles.length) return;
+  const top = _newsArticles.slice(0, 20);
+  // Duplicate for seamless infinite scroll
+  const makeItems = () => top.map(a => {
+    const color = NEWS_CAT_COLORS[a.category] ?? 'var(--accent)';
+    return `<a class="news-ticker-item" href="${_newsEscHtml(a.url)}" target="_blank" rel="noopener noreferrer">` +
+      `<span class="news-ticker-cat" style="color:${color}">${_newsEscHtml(a.category)}</span>` +
+      `<span>${_newsEscHtml(a.title)}</span>` +
+      `</a><span class="news-ticker-sep" aria-hidden="true">◆</span>`;
+  }).join('');
+  track.innerHTML = makeItems() + makeItems();
+  // Scale animation duration to content (~5s per headline)
+  const dur = Math.max(40, top.length * 5);
+  track.style.animationDuration = `${dur}s`;
+  if (wrap) wrap.style.display = 'flex';
 }
 
 function initNewsCats(): void {

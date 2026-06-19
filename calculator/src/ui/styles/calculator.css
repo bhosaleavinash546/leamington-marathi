@@ -3819,3 +3819,121 @@ body.cv-new-costing.sidebar-collapsed .cpicker-tile-icon { font-size: 1.25rem; m
   }
   #news-view { padding: 0 12px 32px; }
 }
+
+/* ─── News Ticker ───────────────────────────────────────────────────────────── */
+
+.news-ticker-wrap {
+  display: flex;
+  align-items: stretch;
+  background: var(--surface-elevated);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 20px;
+  height: 42px;
+}
+
+.news-ticker-label {
+  flex-shrink: 0;
+  padding: 0 16px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: #fff;
+  background: #ef4444;
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  border-right: 2px solid rgba(0,0,0,0.15);
+}
+
+[data-theme="light"] .news-ticker-label {
+  background: #dc2626;
+}
+
+.news-ticker-clip {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+/* Fade edges */
+.news-ticker-clip::before,
+.news-ticker-clip::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 40px;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.news-ticker-clip::before {
+  left: 0;
+  background: linear-gradient(to right, var(--surface-elevated), transparent);
+}
+
+.news-ticker-clip::after {
+  right: 0;
+  background: linear-gradient(to left, var(--surface-elevated), transparent);
+}
+
+.news-ticker-track {
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  animation: news-scroll 80s linear infinite;
+  will-change: transform;
+}
+
+.news-ticker-track:hover {
+  animation-play-state: paused;
+}
+
+@keyframes news-scroll {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.news-ticker-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 20px;
+  font-size: 0.81rem;
+  color: var(--text-primary);
+  text-decoration: none;
+  cursor: pointer;
+  transition: color 0.15s;
+  white-space: nowrap;
+}
+
+.news-ticker-item:hover {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.news-ticker-cat {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 2px 6px;
+  border-radius: 3px;
+  background: rgba(255,255,255,0.08);
+  flex-shrink: 0;
+}
+
+[data-theme="light"] .news-ticker-cat {
+  background: rgba(0,0,0,0.06);
+}
+
+.news-ticker-sep {
+  color: var(--border-strong);
+  font-size: 1.1rem;
+  flex-shrink: 0;
+  user-select: none;
+}
