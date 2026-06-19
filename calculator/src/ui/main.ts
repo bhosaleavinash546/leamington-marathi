@@ -5317,7 +5317,15 @@ function buildInlineDemoSection(commodity: string): string {
   const snippets = COMMODITY_DEMO_SNIPPETS[commodity];
   if (!snippets || snippets.length === 0) return '';
   const cards = snippets.map((s, i) => `<button type="button" onclick="window.loadSUVDemo('${commodity}',${i + 1})" style="background:var(--surface-raised);border:1px solid var(--border);border-radius:8px;padding:10px 12px;cursor:pointer;text-align:left;flex:1;min-width:0;transition:border-color 0.15s"><div style="font-size:0.70rem;font-weight:700;color:var(--accent);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${escHtml(s.brand)}</div><div style="font-size:0.76rem;font-weight:600;color:var(--text-primary);margin:2px 0;line-height:1.3">${escHtml(s.name)}</div><div style="font-size:0.67rem;color:var(--text-muted)">${escHtml(s.spec)}</div></button>`).join('');
-  return `<div style="background:linear-gradient(135deg,rgba(59,130,246,0.06),rgba(99,102,241,0.06));border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:14px"><div style="display:flex;align-items:center;gap:8px;margin-bottom:10px"><span style="font-size:0.70rem;font-weight:700;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.05em">⚡ Quick Examples</span><span style="font-size:0.67rem;color:var(--text-muted)">— click any card to load instantly</span></div><div style="display:flex;gap:8px">${cards}</div></div>`;
+  const pdfBanner = `<div id="demo-pdf-banner" style="display:none;margin-top:10px;padding:9px 13px;background:linear-gradient(135deg,rgba(230,81,0,0.08),rgba(230,81,0,0.04));border:1px solid rgba(230,81,0,0.30);border-radius:8px;align-items:center;gap:10px;flex-wrap:wrap">
+    <svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="#e65100" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><circle cx="8" cy="8" r="7"/><polyline points="5 8 8 11 11 8"/><line x1="8" y1="4" x2="8" y2="11"/></svg>
+    <span id="demo-pdf-banner-label" style="font-size:0.75rem;font-weight:600;color:var(--text-primary);flex:1">Demo loaded — results ready</span>
+    <button type="button" onclick="window.__demoOpenPDF&&window.__demoOpenPDF()" style="display:flex;align-items:center;gap:5px;font-size:0.73rem;font-weight:600;padding:5px 12px;background:rgba(230,81,0,0.12);border:1px solid rgba(230,81,0,0.4);border-radius:6px;cursor:pointer;color:#e65100;transition:background 0.15s" onmouseover="this.style.background='rgba(230,81,0,0.22)'" onmouseout="this.style.background='rgba(230,81,0,0.12)'">
+      <svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12H3a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1h7l3 3v6a1 1 0 0 1-1 1h-1"/><polyline points="4 9 4 16 12 16 12 9"/><line x1="8" y1="4" x2="8" y2="12"/><polyline points="5 9 8 12 11 9"/></svg>
+      Export Full Report PDF
+    </button>
+  </div>`;
+  return `<div style="background:linear-gradient(135deg,rgba(59,130,246,0.06),rgba(99,102,241,0.06));border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:14px"><div style="display:flex;align-items:center;gap:8px;margin-bottom:10px"><span style="font-size:0.70rem;font-weight:700;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.05em">⚡ Quick Examples</span><span style="font-size:0.67rem;color:var(--text-muted)">— click any card to load instantly</span></div><div style="display:flex;gap:8px">${cards}</div>${pdfBanner}</div>`;
 }
 
 // ─── PCB Demo Mode ────────────────────────────────────────────────────────────
@@ -12237,10 +12245,19 @@ function loadSUVDemo(commodity: string, slot: number): void {
       }
     }
   }, 50);
+
+  // After the form-fill + compute settles, reveal the PDF export banner
+  setTimeout(() => {
+    const banner = document.getElementById('demo-pdf-banner');
+    const label  = document.getElementById('demo-pdf-banner-label');
+    if (banner) banner.style.display = 'flex';
+    if (label && lastResult) label.textContent = `"${lastResult.partName}" loaded — full report ready`;
+  }, 300);
 }
 
 // Expose to global scope for HTML onclick
 (window as unknown as Record<string, unknown>).loadSUVDemo = loadSUVDemo;
+(window as unknown as Record<string, unknown>).__demoOpenPDF = openPDF;
 
 // ─── AI CAD TO COST Demo Loader ───────────────────────────────────────────────
 

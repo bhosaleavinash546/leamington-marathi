@@ -4,6 +4,7 @@ import type { PartCostResult, UniversalStackInput, RateLibrary, CommodityType } 
 import type { CADAnalysisResult } from '../engine/ai-analysis.js';
 import { breakdownPercentages } from '../engine/core.js';
 import { generateInsights } from '../engine/insights.js';
+import { generateDFMDFA } from '../engine/dfm-dfa.js';
 
 export function printPDF(
   result: PartCostResult,
@@ -442,6 +443,212 @@ export function printPDF(
       margin: { left: margin, right: margin },
     });
     y = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 8;
+  }
+
+  // ══════════════════════════════════════════════════════════════════════════════
+  // DFM / DFA / COST OPTIMISATION — §8, §9, §10, §11
+  // ══════════════════════════════════════════════════════════════════════════════
+  try {
+    const dfmResult = generateDFMDFA(result, input, commodityType);
+    const lastAutoTableY = () =>
+      (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY;
+
+    // ── §8 DFM Analysis ────────────────────────────────────────────────────────
+    if (y > 200) { doc.addPage(); y = 16; }
+    newSection(
+      `§8 — DFM Analysis  (Score: ${dfmResult.dfm.score.toFixed(1)}/10  ·  Combined Saving Potential: ${dfmResult.dfm.totalSavingPct.toFixed(0)}%)`
+    );
+
+    if (dfmResult.dfm.summary) {
+      const lines = doc.splitTextToSize(dfmResult.dfm.summary, contentW) as string[];
+      doc.setFontSize(8); doc.setTextColor(...GREY);
+      doc.text(lines, margin, y);
+      y += lines.length * 4.5 + 3;
+    }
+
+    if (dfmResult.dfm.issues.length > 0) {
+      autoTable(doc, {
+        startY: y,
+        head: [['Severity', 'Category', 'Issue', 'Description', 'Save %', 'Risk', 'Recommendation']],
+        body: dfmResult.dfm.issues.map(i => [
+          i.severity.toUpperCase(),
+          i.category,
+          i.title,
+          i.description,
+          `${i.savingPct.toFixed(0)}%`,
+          i.risk,
+          i.recommendation,
+        ]),
+        styles: { fontSize: 7, cellPadding: 1.8, overflow: 'linebreak' },
+        headStyles: { fillColor: HEADER_BG, textColor: DARK, fontStyle: 'bold', fontSize: 7.5 },
+        alternateRowStyles: { fillColor: [252, 252, 252] },
+        columnStyles: {
+          0: { cellWidth: 18, fontStyle: 'bold' },
+          1: { cellWidth: 18 },
+          2: { cellWidth: 28 },
+          3: { cellWidth: 42 },
+          4: { cellWidth: 13, halign: 'right' },
+          5: { cellWidth: 12 },
+          6: { cellWidth: contentW - 134 },
+        },
+        didParseCell: (data) => {
+          if (data.section === 'body' && data.column.index === 0) {
+            const sev = dfmResult.dfm.issues[data.row.index]?.severity;
+            if (sev === 'critical')    data.cell.styles.textColor = [198, 40, 40];
+            else if (sev === 'major')  data.cell.styles.textColor = [230, 81, 0];
+            else if (sev === 'minor')  data.cell.styles.textColor = [69, 90, 100];
+            else                       data.cell.styles.textColor = [46, 125, 50];
+          }
+        },
+        margin: { left: margin, right: margin },
+      });
+      y = lastAutoTableY() + 8;
+    } else {
+      doc.setFontSize(8); doc.setTextColor(46, 125, 50);
+      doc.text('✓ No DFM issues detected for this part and process combination.', margin, y);
+      y += 8;
+    }
+
+    // ── §9 DFA Analysis ────────────────────────────────────────────────────────
+    if (y > 200) { doc.addPage(); y = 16; }
+    newSection(
+      `§9 — DFA Analysis  (Score: ${dfmResult.dfa.score.toFixed(1)}/10  ·  Saving Potential: ${dfmResult.dfa.totalSavingPct.toFixed(0)}%)`
+    );
+
+    if (dfmResult.dfa.summary) {
+      const lines = doc.splitTextToSize(dfmResult.dfa.summary, contentW) as string[];
+      doc.setFontSize(8); doc.setTextColor(...GREY);
+      doc.text(lines, margin, y);
+      y += lines.length * 4.5 + 3;
+    }
+
+    if (dfmResult.dfa.issues.length > 0) {
+      autoTable(doc, {
+        startY: y,
+        head: [['Severity', 'Category', 'Issue', 'Description', 'Save %', 'Risk', 'Recommendation']],
+        body: dfmResult.dfa.issues.map(i => [
+          i.severity.toUpperCase(),
+          i.category,
+          i.title,
+          i.description,
+          `${i.savingPct.toFixed(0)}%`,
+          i.risk,
+          i.recommendation,
+        ]),
+        styles: { fontSize: 7, cellPadding: 1.8, overflow: 'linebreak' },
+        headStyles: { fillColor: HEADER_BG, textColor: DARK, fontStyle: 'bold', fontSize: 7.5 },
+        alternateRowStyles: { fillColor: [252, 252, 252] },
+        columnStyles: {
+          0: { cellWidth: 18, fontStyle: 'bold' },
+          1: { cellWidth: 18 },
+          2: { cellWidth: 28 },
+          3: { cellWidth: 42 },
+          4: { cellWidth: 13, halign: 'right' },
+          5: { cellWidth: 12 },
+          6: { cellWidth: contentW - 134 },
+        },
+        didParseCell: (data) => {
+          if (data.section === 'body' && data.column.index === 0) {
+            const sev = dfmResult.dfa.issues[data.row.index]?.severity;
+            if (sev === 'critical')    data.cell.styles.textColor = [198, 40, 40];
+            else if (sev === 'major')  data.cell.styles.textColor = [230, 81, 0];
+            else if (sev === 'minor')  data.cell.styles.textColor = [69, 90, 100];
+            else                       data.cell.styles.textColor = [46, 125, 50];
+          }
+        },
+        margin: { left: margin, right: margin },
+      });
+      y = lastAutoTableY() + 8;
+    } else {
+      doc.setFontSize(8); doc.setTextColor(46, 125, 50);
+      doc.text('✓ No DFA issues detected for this part and process combination.', margin, y);
+      y += 8;
+    }
+
+    // ── §10 Cost Optimisation Opportunities ────────────────────────────────────
+    if (dfmResult.costOptimisations.length > 0) {
+      if (y > 200) { doc.addPage(); y = 16; }
+      newSection(
+        `§10 — Cost Optimisation Opportunities  (${dfmResult.costOptimisations.length} actions · Total Potential: ${dfmResult.totalPotentialSavingPct.toFixed(0)}%)`
+      );
+      autoTable(doc, {
+        startY: y,
+        head: [['Action', 'Description', 'Save %', 'Timeframe', 'Risk', 'Technical Justification']],
+        body: dfmResult.costOptimisations.map(o => [
+          o.title,
+          o.description,
+          `${o.expectedSavingPct.toFixed(0)}%`,
+          o.timeframe,
+          o.risk,
+          o.technicalJustification,
+        ]),
+        styles: { fontSize: 7, cellPadding: 1.8, overflow: 'linebreak' },
+        headStyles: { fillColor: HEADER_BG, textColor: DARK, fontStyle: 'bold', fontSize: 7.5 },
+        alternateRowStyles: { fillColor: [252, 252, 252] },
+        columnStyles: {
+          0: { cellWidth: 30, fontStyle: 'bold' },
+          1: { cellWidth: 36 },
+          2: { cellWidth: 14, halign: 'right' },
+          3: { cellWidth: 22 },
+          4: { cellWidth: 12 },
+          5: { cellWidth: contentW - 117 },
+        },
+        didParseCell: (data) => {
+          if (data.section === 'body') {
+            const opt = dfmResult.costOptimisations[data.row.index];
+            if (data.column.index === 3 && opt) {
+              if (opt.timeframe === 'Quick Win') data.cell.styles.textColor = [46, 125, 50];
+              else if (opt.timeframe === 'Medium Term') data.cell.styles.textColor = [230, 81, 0];
+              else data.cell.styles.textColor = [69, 90, 100];
+            }
+            if (data.column.index === 2 && opt && opt.expectedSavingPct >= 10) {
+              data.cell.styles.fontStyle = 'bold';
+              data.cell.styles.textColor = [46, 125, 50];
+            }
+          }
+        },
+        margin: { left: margin, right: margin },
+      });
+      y = lastAutoTableY() + 8;
+    }
+
+    // ── §11 Quick Wins & Long-Term Changes ──────────────────────────────────────
+    if (dfmResult.quickWins.length > 0 || dfmResult.longTermChanges.length > 0) {
+      if (y > 230) { doc.addPage(); y = 16; }
+      newSection('§11 — Implementation Roadmap');
+
+      if (dfmResult.quickWins.length > 0) {
+        doc.setFontSize(8.5); doc.setFont('helvetica', 'bold'); doc.setTextColor(46, 125, 50);
+        doc.text('Quick Wins (implement immediately):', margin, y);
+        y += 5;
+        doc.setFont('helvetica', 'normal');
+        dfmResult.quickWins.forEach(w => {
+          if (y > 270) { doc.addPage(); y = 16; }
+          doc.setFontSize(7.5); doc.setTextColor(...DARK);
+          const lines = doc.splitTextToSize(`• ${w}`, contentW - 6) as string[];
+          doc.text(lines, margin + 4, y);
+          y += lines.length * 4.5;
+        });
+        y += 4;
+      }
+
+      if (dfmResult.longTermChanges.length > 0) {
+        if (y > 250) { doc.addPage(); y = 16; }
+        doc.setFontSize(8.5); doc.setFont('helvetica', 'bold'); doc.setTextColor(69, 90, 100);
+        doc.text('Long-Term Changes (strategic):', margin, y);
+        y += 5;
+        doc.setFont('helvetica', 'normal');
+        dfmResult.longTermChanges.forEach(w => {
+          if (y > 270) { doc.addPage(); y = 16; }
+          doc.setFontSize(7.5); doc.setTextColor(...DARK);
+          const lines = doc.splitTextToSize(`• ${w}`, contentW - 6) as string[];
+          doc.text(lines, margin + 4, y);
+          y += lines.length * 4.5;
+        });
+      }
+    }
+  } catch {
+    // DFM/DFA not available for this commodity — skip silently
   }
 
   // ── Page footers ────────────────────────────────────────────────────────────
