@@ -1360,6 +1360,7 @@ function _applyAgentActionAndCompute(): void {
       renderBreakdown(result);
       el('export-excel-btn').style.display = '';
       el('export-pdf-btn').style.display = '';
+      el('export-all-pdf-btn').style.display = '';
       el('save-scenario-btn').style.display = '';
 
       // Send result to agent for interpretation (return to agent mode after brief delay)
@@ -3879,6 +3880,7 @@ async function analyzeCAD(autoCalculate = false): Promise<void> {
     const partNameEl = el<HTMLInputElement>('part-name');
     if (partNameEl && cadAnalysisResult.partName) partNameEl.value = cadAnalysisResult.partName;
 
+    el('export-all-pdf-btn').style.display = '';
     setTimeout(() => { progress.style.display = 'none'; }, 600);
     const resolvedAnnualVol = data.annualVolume ?? (parseFloat(annVol) || 100000);
     renderCADResults(cadAnalysisResult, autoCalculate, resolvedAnnualVol);
@@ -6050,6 +6052,7 @@ function injectPCBDemoCards(): void {
 (window as unknown as Record<string, unknown>).__loadPCBDemo = function(id: string): void {
   pcbImageResult = id === 'adas' ? PCB_DEMO_ADAS : id === 'bosch_radar' ? PCB_DEMO_BOSCH_RADAR : PCB_DEMO_ECU;
   injectPCBImagePanel();
+  el('export-all-pdf-btn').style.display = '';
   el('pcb-img-results')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 };
 
@@ -9159,6 +9162,7 @@ function compute(): void {
     el('export-excel-btn').style.display = '';
     el('export-pdf-btn').style.display = '';
     el('export-card-btn').style.display = '';
+    el('export-all-pdf-btn').style.display = '';
     el('save-scenario-btn').style.display = '';
   } catch (err) {
     errBox.style.display = 'block';
@@ -10822,6 +10826,515 @@ function downloadExcel(): void {
   a.href = URL.createObjectURL(blob);
   a.download = `should-cost-${lastResult.partName.replace(/\s+/g, '-')}.xlsx`;
   a.click();
+}
+
+// ─── Master Combined PDF Export ───────────────────────────────────────────────
+
+function printMasterPDF(): void {
+  const hasCost = !!(lastResult && lastInput);
+  const hasCAD  = !!cadAnalysisResult;
+  const hasPCB  = !!pcbImageResult;
+
+  if (!hasCost && !hasCAD && !hasPCB) {
+    showToast('Nothing to export — run a calculation or load a demo first.', 'warning');
+    return;
+  }
+
+  type RGB = [number, number, number];
+  const SLATE:  RGB = [30,  41,  59];
+  const ORANGE: RGB = [230, 81,  0];
+  const GREEN:  RGB = [16,  185, 129];
+  const BLUE:   RGB = [37,  99,  235];
+  const CYAN:   RGB = [8,   145, 178];
+  const GREY:   RGB = [100, 116, 139];
+  const WHITE:  RGB = [255, 255, 255];
+  const LIGHT:  RGB = [248, 250, 252];
+  const RED_R:  RGB = [220, 38,  38];
+  const AMB_R:  RGB = [180, 83,  9];
+  const GRN_R:  RGB = [22,  163, 74];
+
+  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+  const W = 210, mg = 14, cW = W - mg * 2;
+  let y = 0;
+  const dateStr = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+
+  const lastY = () => (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY;
+  const chk = (need: number) => { if (y + need > 282) { doc.addPage(); y = mg; } };
+
+  const partPage = (title: string, sub: string, color: RGB) => {
+    doc.addPage(); y = mg;
+    doc.setFillColor(...color);
+    doc.rect(0, 0, W, 26, 'F');
+    doc.setTextColor(...WHITE);
+    doc.setFontSize(13); doc.setFont('helvetica', 'bold');
+    doc.text(title, mg, 16);
+    doc.setFontSize(8); doc.setFont('helvetica', 'normal');
+    doc.text(sub, mg, 22);
+    doc.setTextColor(...SLATE);
+    y = 32;
+  };
+
+  const secBar = (title: string, color: RGB) => {
+    chk(10);
+    doc.setFillColor(...color);
+    doc.roundedRect(mg, y, cW, 7, 1.5, 1.5, 'F');
+    doc.setFontSize(8.5); doc.setFont('helvetica', 'bold'); doc.setTextColor(...WHITE);
+    doc.text(title, mg + 4, y + 5);
+    doc.setFont('helvetica', 'normal'); doc.setTextColor(...SLATE);
+    y += 10;
+  };
+
+  const hdr_bg: RGB = [240, 240, 240];
+
+  // ══ COVER PAGE ═══════════════════════════════════════════════════════════════
+  doc.setFillColor(...SLATE);
+  doc.rect(0, 0, W, 52, 'F');
+
+  // corner accent strip
+  doc.setFillColor(...ORANGE);
+  doc.rect(0, 0, 6, 52, 'F');
+
+  doc.setTextColor(...WHITE);
+  doc.setFontSize(20); doc.setFont('helvetica', 'bold');
+  doc.text('MASTER COST REPORT', mg + 4, 20);
+  doc.setFontSize(9); doc.setFont('helvetica', 'normal');
+  doc.text('Leamington Cost Engine  ·  Comprehensive Analysis Package', mg + 4, 29);
+  doc.setFontSize(8);
+  doc.text(`Generated: ${dateStr}`, mg + 4, 37);
+  doc.text(`Parts Loaded: ${[hasCost && 'Should-Cost', hasCAD && 'CAD Analysis', hasPCB && 'PCB Analysis'].filter(Boolean).join('  ·  ')}`, mg + 4, 44);
+
+  y = 62;
+
+  // Table of contents
+  doc.setFontSize(11); doc.setFont('helvetica', 'bold'); doc.setTextColor(...SLATE);
+  doc.text('Report Contents', mg, y); y += 8;
+
+  const toc: [string, string, boolean, RGB][] = [
+    ['PART A', 'Should-Cost Analysis  (§A1–§A5: breakdown, operations, DFM/DFA, optimisations)', hasCost, ORANGE],
+    ['PART B', 'AI CAD-to-Cost Analysis  (§B1–§B5: geometry, process recs, materials, risks)', hasCAD, GREEN],
+    ['PART C', 'PCB Image Analysis  (§C1–§C6: board spec, assembly, BOM, country comparison)', hasPCB, BLUE],
+  ];
+
+  toc.forEach(([part, desc, avail, col]) => {
+    doc.setFillColor(avail ? col[0] : 200, avail ? col[1] : 200, avail ? col[2] : 200);
+    doc.roundedRect(mg, y, 18, 6, 1, 1, 'F');
+    doc.setFontSize(7.5); doc.setFont('helvetica', 'bold'); doc.setTextColor(...WHITE);
+    doc.text(part, mg + 9, y + 4.2, { align: 'center' });
+    doc.setFont('helvetica', 'normal'); doc.setTextColor(avail ? SLATE[0] : 160, avail ? SLATE[1] : 160, avail ? SLATE[2] : 160);
+    doc.text(`${desc}${avail ? '' : '  [not loaded]'}`, mg + 22, y + 4.2);
+    y += 9;
+  });
+
+  y += 6;
+
+  // Summary boxes per loaded part
+  if (hasCost && lastResult) {
+    const sym = _displayCurrency === 'GBP' ? '£' : _displayCurrency === 'EUR' ? '€' : '$';
+    const fmt = (n: number) => `${sym}${(n * _displayFxRate).toFixed(2)}`;
+    const pcts = breakdownPercentages(lastResult);
+    doc.setFillColor(255, 243, 230);
+    doc.roundedRect(mg, y, cW, 26, 2, 2, 'F');
+    doc.setFillColor(...ORANGE); doc.roundedRect(mg, y, 4, 26, 1, 1, 'F');
+    doc.setFontSize(9); doc.setFont('helvetica', 'bold'); doc.setTextColor(...ORANGE);
+    doc.text('Should-Cost Summary', mg + 8, y + 7);
+    doc.setFontSize(7.5); doc.setFont('helvetica', 'normal'); doc.setTextColor(...SLATE);
+    doc.text(`Part: ${lastResult.partName}`, mg + 8, y + 13);
+    doc.text(`Total: ${fmt(lastResult.total)}  ·  Material: ${pcts.rawMaterial.toFixed(0)}%  ·  Process: ${pcts.process.toFixed(0)}%  ·  Labour: ${pcts.labour.toFixed(0)}%  ·  Tooling NRE: ${lastResult.toolingNRE ? fmt(lastResult.toolingNRE) : '—'}`, mg + 8, y + 19);
+    y += 30;
+  }
+
+  if (hasCAD && cadAnalysisResult) {
+    const cr = cadAnalysisResult.costInputSuggestions.costRange;
+    doc.setFillColor(232, 248, 243);
+    doc.roundedRect(mg, y, cW, 26, 2, 2, 'F');
+    doc.setFillColor(...GREEN); doc.roundedRect(mg, y, 4, 26, 1, 1, 'F');
+    doc.setFontSize(9); doc.setFont('helvetica', 'bold'); doc.setTextColor(...GREEN);
+    doc.text('CAD Analysis Summary', mg + 8, y + 7);
+    doc.setFontSize(7.5); doc.setFont('helvetica', 'normal'); doc.setTextColor(...SLATE);
+    doc.text(`Part: ${cadAnalysisResult.partName}`, mg + 8, y + 13);
+    doc.text(`Recommended: ${cadAnalysisResult.processRecommendations[0]?.commodityType ?? '—'}  ·  Manufacturability: ${cadAnalysisResult.manufacturabilityScore}/10  ·  Confidence: ${cadAnalysisResult.confidenceLevel}${cr ? `  ·  Cost range: £${cr.low.toFixed(2)}–£${cr.high.toFixed(2)}` : ''}`, mg + 8, y + 19);
+    y += 30;
+  }
+
+  if (hasPCB && pcbImageResult) {
+    const co = pcbImageResult.costEstimates;
+    doc.setFillColor(219, 234, 254);
+    doc.roundedRect(mg, y, cW, 26, 2, 2, 'F');
+    doc.setFillColor(...BLUE); doc.roundedRect(mg, y, 4, 26, 1, 1, 'F');
+    doc.setFontSize(9); doc.setFont('helvetica', 'bold'); doc.setTextColor(...BLUE);
+    doc.text('PCB Analysis Summary', mg + 8, y + 7);
+    doc.setFontSize(7.5); doc.setFont('helvetica', 'normal'); doc.setTextColor(...SLATE);
+    doc.text(`Board: ${pcbImageResult.partName}`, mg + 8, y + 13);
+    doc.text(`${pcbImageResult.boardSpec.estimatedLayers}-layer ${pcbImageResult.boardSpec.technologyType}  ·  BOM: £${co.totalBOMCostGBP.toFixed(2)}  ·  Fab: £${co.pcbFabGBP.mid.toFixed(2)}  ·  Confidence: ${pcbImageResult.confidenceLevel}`, mg + 8, y + 19);
+    y += 30;
+  }
+
+  // ══ PART A: SHOULD-COST ════════════════════════════════════════════════════
+  if (hasCost && lastResult && lastInput) {
+    const sym = _displayCurrency === 'GBP' ? '£' : _displayCurrency === 'EUR' ? '€' : '$';
+    const c = (n: number) => `${sym}${(n * _displayFxRate).toFixed(2)}`;
+    const pct = (n: number) => `${n.toFixed(1)}%`;
+    const pcts = breakdownPercentages(lastResult);
+
+    partPage('PART A — SHOULD-COST ANALYSIS', `${lastResult.partName}  ·  ${COMMODITY_LABELS[activeCommodity] ?? activeCommodity}  ·  ${dateStr}`, ORANGE);
+
+    // §A1 Cost Breakdown
+    secBar('§A1 — 8-Bucket Cost Breakdown', ORANGE);
+    const buckets: [string, number, number, string][] = [
+      ['1. Raw Material', lastResult.breakdown.rawMaterial, pcts.rawMaterial, ''],
+      ['2. Process (Machine)', lastResult.breakdown.process, pcts.process, ''],
+      ['3. Direct Labour', lastResult.breakdown.labour, pcts.labour, ''],
+      ['4. Tooling (amortised)', lastResult.breakdown.tooling, pcts.tooling, ''],
+      ['5. Packaging', lastResult.breakdown.packaging, pcts.packaging, ''],
+      ['6. Logistics', lastResult.breakdown.logistics, pcts.logistics, ''],
+      ['— Factory Cost', lastResult.factoryCost, (lastResult.factoryCost / lastResult.total) * 100, 'sub'],
+      ['7. Overhead (SG&A)', lastResult.breakdown.overhead, pcts.overhead, ''],
+      ['— Subtotal', lastResult.subtotal, (lastResult.subtotal / lastResult.total) * 100, 'sub'],
+      ['8. Supplier Margin', lastResult.breakdown.margin, pcts.margin, ''],
+      ['TOTAL SHOULD COST', lastResult.total, 100, 'total'],
+    ];
+    autoTable(doc, {
+      startY: y, margin: { left: mg, right: mg },
+      head: [['Cost Bucket', `Amount (${_displayCurrency})`, '% of Total', 'Cost Bar']],
+      body: buckets.map(([label, val, p]) => [label, c(val), pct(p), '█'.repeat(Math.round(Math.max(0, Math.min(p, 50)) / 2))]),
+      styles: { fontSize: 8 }, headStyles: { fillColor: hdr_bg, textColor: SLATE, fontStyle: 'bold' },
+      columnStyles: { 0: { cellWidth: 70 }, 1: { cellWidth: 30, halign: 'right' }, 2: { cellWidth: 22, halign: 'right' }, 3: { font: 'courier', fontSize: 6, textColor: ORANGE } },
+      didParseCell: (d) => {
+        const rt = buckets[d.row.index]?.[3];
+        if (rt === 'total') { d.cell.styles.fontStyle = 'bold'; d.cell.styles.fillColor = [255, 243, 230]; }
+        else if (rt === 'sub') { d.cell.styles.fontStyle = 'bold'; d.cell.styles.fillColor = hdr_bg; }
+      },
+    });
+    y = lastY() + 5;
+
+    // §A2 Operations
+    secBar('§A2 — Operations Detail', ORANGE);
+    autoTable(doc, {
+      startY: y, margin: { left: mg, right: mg },
+      head: [['Operation', 'Machine', 'Cycle min', 'OEE', 'Process £', 'Labour Grade', 'Manning', 'Labour £', 'Total']],
+      body: lastResult.operationDetails.map(op => {
+        const mObj = library.machines.find(m => m.id === op.machineId);
+        const lObj = library.labour.find(l => l.id === op.labourId);
+        return [op.operationName, mObj?.machineClass ?? op.machineId, (op.cycleTimeHr * 60).toFixed(2), pct(op.oee * 100), c(op.processCost), lObj?.skillLevel ?? op.labourId, String(op.manning), c(op.labourCost), c(op.processCost + op.labourCost)];
+      }),
+      styles: { fontSize: 7 }, headStyles: { fillColor: hdr_bg, textColor: SLATE, fontStyle: 'bold', fontSize: 7 },
+      columnStyles: { 0: { cellWidth: 38 }, 4: { halign: 'right' }, 7: { halign: 'right' }, 8: { halign: 'right', fontStyle: 'bold' } },
+    });
+    y = lastY() + 5;
+
+    // §A3–§A5 DFM/DFA
+    try {
+      const dfm = generateDFMDFA(lastResult, lastInput, activeCommodity);
+
+      secBar(`§A3 — DFM Analysis  (Score: ${dfm.dfm.score.toFixed(1)}/10  ·  Potential: ${dfm.dfm.totalSavingPct.toFixed(0)}%)`, ORANGE);
+      if (dfm.dfm.summary) {
+        doc.setFontSize(7.5); doc.setTextColor(...GREY);
+        const ls = doc.splitTextToSize(dfm.dfm.summary, cW) as string[];
+        doc.text(ls, mg, y); y += ls.length * 4 + 3;
+      }
+      if (dfm.dfm.issues.length > 0) {
+        autoTable(doc, {
+          startY: y, margin: { left: mg, right: mg },
+          head: [['Severity', 'Category', 'Issue', 'Description', 'Save %', 'Recommendation']],
+          body: dfm.dfm.issues.map(i => [i.severity.toUpperCase(), i.category, i.title, i.description, `${i.savingPct.toFixed(0)}%`, i.recommendation]),
+          styles: { fontSize: 7, overflow: 'linebreak' }, headStyles: { fillColor: hdr_bg, textColor: SLATE, fontStyle: 'bold', fontSize: 7 },
+          columnStyles: { 0: { cellWidth: 18, fontStyle: 'bold' }, 1: { cellWidth: 18 }, 2: { cellWidth: 28 }, 3: { cellWidth: 45 }, 4: { cellWidth: 13, halign: 'right' }, 5: { cellWidth: cW - 125 } },
+          didParseCell: (d) => {
+            if (d.section === 'body' && d.column.index === 0) {
+              const sev = dfm.dfm.issues[d.row.index]?.severity;
+              d.cell.styles.textColor = sev === 'critical' ? RED_R : sev === 'major' ? AMB_R : sev === 'opportunity' ? GRN_R : GREY;
+            }
+          },
+        });
+        y = lastY() + 5;
+      }
+
+      chk(10);
+      secBar(`§A4 — DFA Analysis  (Score: ${dfm.dfa.score.toFixed(1)}/10  ·  Potential: ${dfm.dfa.totalSavingPct.toFixed(0)}%)`, ORANGE);
+      if (dfm.dfa.summary) {
+        doc.setFontSize(7.5); doc.setTextColor(...GREY);
+        const ls = doc.splitTextToSize(dfm.dfa.summary, cW) as string[];
+        doc.text(ls, mg, y); y += ls.length * 4 + 3;
+      }
+      if (dfm.dfa.issues.length > 0) {
+        autoTable(doc, {
+          startY: y, margin: { left: mg, right: mg },
+          head: [['Severity', 'Category', 'Issue', 'Description', 'Save %', 'Recommendation']],
+          body: dfm.dfa.issues.map(i => [i.severity.toUpperCase(), i.category, i.title, i.description, `${i.savingPct.toFixed(0)}%`, i.recommendation]),
+          styles: { fontSize: 7, overflow: 'linebreak' }, headStyles: { fillColor: hdr_bg, textColor: SLATE, fontStyle: 'bold', fontSize: 7 },
+          columnStyles: { 0: { cellWidth: 18, fontStyle: 'bold' }, 1: { cellWidth: 18 }, 2: { cellWidth: 28 }, 3: { cellWidth: 45 }, 4: { cellWidth: 13, halign: 'right' }, 5: { cellWidth: cW - 125 } },
+          didParseCell: (d) => {
+            if (d.section === 'body' && d.column.index === 0) {
+              const sev = dfm.dfa.issues[d.row.index]?.severity;
+              d.cell.styles.textColor = sev === 'critical' ? RED_R : sev === 'major' ? AMB_R : sev === 'opportunity' ? GRN_R : GREY;
+            }
+          },
+        });
+        y = lastY() + 5;
+      }
+
+      if (dfm.costOptimisations.length > 0) {
+        chk(10);
+        secBar(`§A5 — Cost Optimisation Opportunities  (${dfm.totalPotentialSavingPct.toFixed(0)}% total potential)`, ORANGE);
+        autoTable(doc, {
+          startY: y, margin: { left: mg, right: mg },
+          head: [['Action', 'Save %', 'Timeframe', 'Risk', 'Description & Justification']],
+          body: dfm.costOptimisations.map(o => [o.title, `${o.expectedSavingPct.toFixed(0)}%`, o.timeframe, o.risk, `${o.description}  ·  ${o.technicalJustification}`]),
+          styles: { fontSize: 7, overflow: 'linebreak' }, headStyles: { fillColor: hdr_bg, textColor: SLATE, fontStyle: 'bold', fontSize: 7 },
+          columnStyles: { 0: { cellWidth: 35, fontStyle: 'bold' }, 1: { cellWidth: 14, halign: 'right' }, 2: { cellWidth: 22 }, 3: { cellWidth: 12 }, 4: { cellWidth: cW - 86 } },
+          didParseCell: (d) => {
+            if (d.section === 'body' && d.column.index === 1) {
+              const o = dfm.costOptimisations[d.row.index];
+              if (o && o.expectedSavingPct >= 10) d.cell.styles.textColor = GRN_R;
+            }
+          },
+        });
+        y = lastY() + 5;
+      }
+    } catch { /* DFM not available for this commodity */ }
+  }
+
+  // ══ PART B: CAD ANALYSIS ══════════════════════════════════════════════════
+  if (hasCAD && cadAnalysisResult) {
+    const r = cadAnalysisResult;
+    const geo = r.geometry;
+    partPage('PART B — AI CAD-TO-COST ANALYSIS', `${r.partName}  ·  Manufacturability: ${r.manufacturabilityScore}/10  ·  ${r.confidenceLevel} Confidence  ·  ${dateStr}`, GREEN);
+
+    // §B1 Geometry
+    secBar('§B1 — Geometry Summary', GREEN);
+    const bb = geo.boundingBoxMm;
+    autoTable(doc, {
+      startY: y, margin: { left: mg, right: mg },
+      head: [['Parameter', 'Value', 'Parameter', 'Value']],
+      body: [
+        ['Bounding Box', `${bb.x.toFixed(0)} × ${bb.y.toFixed(0)} × ${bb.z.toFixed(0)} mm`, 'Volume', `${geo.estimatedVolumeCm3.toFixed(1)} cm³`],
+        ['Weight (Al)', `${geo.estimatedWeightKg.aluminum.toFixed(3)} kg`, 'Weight (Steel)', `${geo.estimatedWeightKg.steel.toFixed(3)} kg`],
+        ['Weight (Plastic)', `${geo.estimatedWeightKg.plastic.toFixed(3)} kg`, 'Features Detected', String(r.detectedFeatures.length)],
+        ['Manufacturability Score', `${r.manufacturabilityScore}/10`, 'Confidence', r.confidenceLevel],
+      ],
+      styles: { fontSize: 7.5 }, headStyles: { fillColor: [232,248,243], textColor: SLATE, fontStyle: 'bold' }, theme: 'grid',
+    });
+    y = lastY() + 5;
+
+    // §B2 Process Recommendations
+    secBar('§B2 — Process Recommendations', GREEN);
+    autoTable(doc, {
+      startY: y, margin: { left: mg, right: mg },
+      head: [['Process', 'Commodity', 'Confidence', 'Cycle Time', 'Reasoning']],
+      body: r.processRecommendations.slice(0, 5).map(p => [p.process, p.commodityType, `${p.confidencePct}%`, p.estimatedCycleTimeHr ? `${(p.estimatedCycleTimeHr * 60).toFixed(0)} min` : '—', p.reasoning]),
+      styles: { fontSize: 7, overflow: 'linebreak' }, headStyles: { fillColor: [232,248,243], textColor: SLATE, fontStyle: 'bold', fontSize: 7 },
+      columnStyles: { 0: { cellWidth: 30 }, 1: { cellWidth: 25 }, 2: { cellWidth: 18, halign: 'right' }, 3: { cellWidth: 18, halign: 'right' }, 4: { cellWidth: cW - 94 } },
+    });
+    y = lastY() + 5;
+
+    // §B3 Material Analysis
+    secBar('§B3 — Material Analysis', GREEN);
+    const ma = r.materialAnalysis;
+    const matRows: string[][] = [[ma.primarySuggestion.name, ma.primarySuggestion.materialId, `${ma.primarySuggestion.confidencePct}%`, 'Primary', ma.primarySuggestion.reasoning]];
+    ma.alternatives.forEach(m => matRows.push([m.name, m.materialId, `${m.confidencePct}%`, 'Alternative', '']));
+    autoTable(doc, {
+      startY: y, margin: { left: mg, right: mg },
+      head: [['Material', 'ID', 'Confidence', 'Role', 'Reasoning']],
+      body: matRows,
+      styles: { fontSize: 7.5, overflow: 'linebreak' }, headStyles: { fillColor: [232,248,243], textColor: SLATE, fontStyle: 'bold' },
+      columnStyles: { 0: { cellWidth: 32 }, 1: { cellWidth: 22 }, 2: { cellWidth: 18, halign: 'right' }, 3: { cellWidth: 18 }, 4: { cellWidth: cW - 93 } },
+    });
+    y = lastY() + 5;
+
+    // §B4 Manufacturability Risks
+    if (r.manufacturabilityRisks.length > 0) {
+      secBar('§B4 — Manufacturability Risks', GREEN);
+      autoTable(doc, {
+        startY: y, margin: { left: mg, right: mg },
+        head: [['Severity', 'Feature', 'Description', 'Suggestion']],
+        body: r.manufacturabilityRisks.map(rk => [rk.severity, rk.feature, rk.description, rk.suggestion]),
+        styles: { fontSize: 7, overflow: 'linebreak' }, headStyles: { fillColor: [232,248,243], textColor: SLATE, fontStyle: 'bold', fontSize: 7 },
+        columnStyles: { 0: { cellWidth: 16 }, 1: { cellWidth: 26 }, 2: { cellWidth: 65 }, 3: { cellWidth: cW - 110 } },
+        didParseCell: (d) => {
+          if (d.section === 'body' && d.column.index === 0) {
+            const sev = (r.manufacturabilityRisks[d.row.index]?.severity ?? '').toLowerCase();
+            d.cell.styles.textColor = sev === 'high' ? RED_R : sev === 'medium' ? AMB_R : GRN_R;
+            d.cell.styles.fontStyle = 'bold';
+          }
+        },
+      });
+      y = lastY() + 5;
+    }
+
+    // §B5 CAD DFM Issues & Cost Range
+    const cadDFM = r.costInputSuggestions.dfmIssues ?? [];
+    const cadCR  = r.costInputSuggestions.costRange;
+    if (cadDFM.length > 0 || cadCR) {
+      secBar('§B5 — DFM Issues & Cost Estimate Range', GREEN);
+      if (cadCR) {
+        autoTable(doc, {
+          startY: y, margin: { left: mg, right: mg },
+          head: [['Scenario', 'Cost/Part', 'Notes']],
+          body: [
+            ['Optimistic', `£${cadCR.low.toFixed(2)}`, 'Best-case: high volume, efficient process'],
+            ['Mid-point',  `£${cadCR.mid.toFixed(2)}`, 'Expected should-cost at target volume'],
+            ['Conservative', `£${cadCR.high.toFixed(2)}`, 'Worst-case: complexity + low volume'],
+          ],
+          styles: { fontSize: 8 }, headStyles: { fillColor: [232,248,243], textColor: SLATE, fontStyle: 'bold' },
+          columnStyles: { 0: { cellWidth: 28, fontStyle: 'bold' }, 1: { cellWidth: 22, halign: 'right' }, 2: { cellWidth: cW - 53 } },
+        });
+        y = lastY() + 5;
+      }
+      if (cadDFM.length > 0) {
+        autoTable(doc, {
+          startY: y, margin: { left: mg, right: mg },
+          head: [['Severity', 'Area', 'Description', 'Impact', 'Fix']],
+          body: cadDFM.map(i => [i.severity, i.area, i.description, i.impact, i.fix]),
+          styles: { fontSize: 7, overflow: 'linebreak' }, headStyles: { fillColor: [232,248,243], textColor: SLATE, fontStyle: 'bold', fontSize: 7 },
+          columnStyles: { 0: { cellWidth: 18 }, 1: { cellWidth: 22 }, 2: { cellWidth: 45 }, 3: { cellWidth: 30 }, 4: { cellWidth: cW - 118 } },
+          didParseCell: (d) => {
+            if (d.section === 'body' && d.column.index === 0) {
+              const sev = (cadDFM[d.row.index]?.severity ?? '').toLowerCase();
+              d.cell.styles.textColor = sev === 'critical' || sev === 'high' ? RED_R : sev === 'medium' ? AMB_R : GRN_R;
+            }
+          },
+        });
+        y = lastY() + 5;
+      }
+    }
+
+    if (r.aiExplanation) {
+      chk(14);
+      doc.setFontSize(7.5); doc.setTextColor(...GREY);
+      const ls = doc.splitTextToSize(`AI Explanation: ${r.aiExplanation}`, cW) as string[];
+      doc.text(ls, mg, y); y += ls.length * 4.2 + 4;
+    }
+  }
+
+  // ══ PART C: PCB ANALYSIS ══════════════════════════════════════════════════
+  if (hasPCB && pcbImageResult) {
+    const r = pcbImageResult;
+    partPage('PART C — PCB IMAGE ANALYSIS', `${r.partName}  ·  ${r.confidenceLevel} Confidence  ·  ${dateStr}`, BLUE);
+
+    // §C1 Board Spec
+    secBar('§C1 — Board Specification', BLUE);
+    const b = r.boardSpec;
+    autoTable(doc, {
+      startY: y, margin: { left: mg, right: mg },
+      head: [['Parameter', 'Value', 'Parameter', 'Value']],
+      body: [
+        ['Layers', String(b.estimatedLayers), 'Technology', b.technologyType.replace(/_/g,' ')],
+        ['Dimensions', `${b.widthMm} × ${b.heightMm} mm`, 'Surface Finish', b.surfaceFinish.toUpperCase()],
+        ['Quality Grade', b.qualityGrade.replace(/_/g,' '), 'HDI Structure', b.hdiStructure === 'none' ? 'None' : b.hdiStructure],
+        ['Through Vias', String(b.throughVias), 'Blind Vias', String(b.blindVias)],
+        ['Micro Vias', String(b.microVias), 'Copper Weight', `${b.copperWeightOz} oz`],
+        ['Impedance Control', b.impedanceControlRequired ? 'Yes' : 'No', 'BGA Detected', b.bgaDetected ? 'Yes' : 'No'],
+        ['Board Domain', r.stage1Classification?.domain?.replace(/_/g,' ') ?? '—', 'OCR ICs Found', String(r.ocrExtraction?.icMarkings?.length ?? 0)],
+      ],
+      styles: { fontSize: 7.5 }, headStyles: { fillColor: [219,234,254], textColor: SLATE, fontStyle: 'bold' }, theme: 'grid',
+    });
+    y = lastY() + 5;
+
+    // §C2 Assembly
+    secBar('§C2 — Assembly Overview', BLUE);
+    const a = r.assembly;
+    autoTable(doc, {
+      startY: y, margin: { left: mg, right: mg },
+      head: [['Parameter', 'Value', 'Parameter', 'Value']],
+      body: [
+        ['SMT Placements', String(a.smtPlacements), 'Through-Hole Joints', String(a.throughHoleJoints)],
+        ['Manual Joints', String(a.manualJoints), 'BGA Count', String(a.bgaCount)],
+        ['Complexity', a.complexity, 'Reflow Sides', a.reflowSides === 2 ? 'Double-sided' : 'Single-sided'],
+        ['AOI Required', a.aoiRequired ? 'Yes' : 'No', 'ICT Time', `${a.ictTimeSec} s`],
+      ],
+      styles: { fontSize: 7.5 }, headStyles: { fillColor: [219,234,254], textColor: SLATE, fontStyle: 'bold' }, theme: 'grid',
+    });
+    y = lastY() + 5;
+
+    // §C3 Cost Overview
+    secBar('§C3 — Cost Overview', BLUE);
+    const co = r.costEstimates;
+    autoTable(doc, {
+      startY: y, margin: { left: mg, right: mg },
+      head: [['Cost Element', 'Min (£)', 'Mid (£)', 'Max (£)']],
+      body: [
+        ['PCB Fabrication', co.pcbFabGBP.min.toFixed(2), co.pcbFabGBP.mid.toFixed(2), co.pcbFabGBP.max.toFixed(2)],
+        ['BOM (components)', '—', co.totalBOMCostGBP.toFixed(2), '—'],
+        ['SMT Assembly', '—', co.smtAssemblyCostGBP.toFixed(2), '—'],
+        ['Total Estimate', (co.pcbFabGBP.min+co.totalBOMCostGBP+co.smtAssemblyCostGBP).toFixed(2), (co.pcbFabGBP.mid+co.totalBOMCostGBP+co.smtAssemblyCostGBP).toFixed(2), (co.pcbFabGBP.max+co.totalBOMCostGBP+co.smtAssemblyCostGBP).toFixed(2)],
+      ],
+      styles: { fontSize: 8 }, headStyles: { fillColor: [219,234,254], textColor: SLATE, fontStyle: 'bold' },
+      columnStyles: { 0: { fontStyle: 'bold' }, 1: { halign: 'right' }, 2: { halign: 'right' }, 3: { halign: 'right' } },
+      didParseCell: (d) => {
+        if (d.section === 'body' && d.row.index === 3) { d.cell.styles.fillColor = [219,234,254]; d.cell.styles.fontStyle = 'bold'; }
+      },
+    });
+    y = lastY() + 5;
+
+    // §C4 Global Comparison
+    const comps = r._countryComparison ?? [];
+    if (comps.length > 0) {
+      secBar('§C4 — Global Manufacturing Cost Comparison', CYAN);
+      const sorted = [...comps].sort((a2, b2) => a2.totalPerBoard - b2.totalPerBoard);
+      autoTable(doc, {
+        startY: y, margin: { left: mg, right: mg },
+        head: [['Country', 'PCB Fab', 'Assembly', 'BOM', 'Logistics', 'Total/Board', 'Lead Time']],
+        body: sorted.map(ct => [ct.countryName, `£${ct.pcbFabPerBoard.toFixed(2)}`, `£${ct.assemblyPerBoard.toFixed(2)}`, `£${ct.bomCostPerBoard.toFixed(2)}`, `£${ct.logisticsPerBoard.toFixed(2)}`, `£${ct.totalPerBoard.toFixed(2)}`, `${ct.leadTimeWeeks}w`]),
+        styles: { fontSize: 7 }, headStyles: { fillColor: [219,234,254], textColor: SLATE, fontStyle: 'bold', fontSize: 7 },
+        columnStyles: { 0: { cellWidth: 30 }, 1: { halign: 'right' }, 2: { halign: 'right' }, 3: { halign: 'right' }, 4: { halign: 'right' }, 5: { halign: 'right', fontStyle: 'bold', textColor: BLUE }, 6: { halign: 'right' } },
+        didParseCell: (d) => {
+          if (d.section === 'body' && d.row.index === 0 && d.column.index === 5) { d.cell.styles.fillColor = [220,242,220]; }
+        },
+      });
+      y = lastY() + 5;
+    }
+
+    // §C5 BOM
+    secBar(`§C5 — Bill of Materials  (${r.bom.length} lines · ${r.assembly.smtPlacements} SMT placements)`, BLUE);
+    autoTable(doc, {
+      startY: y, margin: { left: mg, right: mg },
+      head: [['#', 'RefDes', 'Description', 'Pkg', 'Value', 'Qty', 'Unit £', 'Ext £']],
+      body: r.bom.map((item, i) => [String(i+1), item.refDes, item.description, item.pkg, item.value, String(item.qty), item.unitPriceGBP.toFixed(3), (item.qty*item.unitPriceGBP).toFixed(2)]),
+      foot: [['', '', '', '', '', '', 'BOM Total', `£${co.totalBOMCostGBP.toFixed(2)}`]],
+      styles: { fontSize: 6.5 }, headStyles: { fillColor: [219,234,254], textColor: SLATE, fontStyle: 'bold', fontSize: 7 },
+      footStyles: { fillColor: LIGHT, fontStyle: 'bold' },
+      columnStyles: { 0: { cellWidth: 7, halign: 'center' }, 1: { cellWidth: 14 }, 6: { halign: 'right' }, 7: { halign: 'right', fontStyle: 'bold' } },
+      didParseCell: (d) => {
+        if (d.section === 'body' && r.bom[d.row.index]?.highCost) d.cell.styles.fillColor = [255,248,220];
+      },
+    });
+    y = lastY() + 5;
+
+    // §C6 Insights + DFM
+    const allInsights = [...r.aiInsights.map(s => ['Insight', s]), ...r.dfmIssues.map(s => ['DFM Issue', s]), ...r.optimisationSuggestions.map(s => ['Optimisation', s])];
+    if (allInsights.length > 0) {
+      secBar('§C6 — AI Insights, DFM Issues & Optimisations', BLUE);
+      autoTable(doc, {
+        startY: y, margin: { left: mg, right: mg },
+        head: [['Type', 'Finding']],
+        body: allInsights,
+        styles: { fontSize: 7.5, overflow: 'linebreak' }, headStyles: { fillColor: [219,234,254], textColor: SLATE, fontStyle: 'bold' },
+        columnStyles: { 0: { cellWidth: 22, fontStyle: 'bold' }, 1: { cellWidth: cW - 25 } },
+        didParseCell: (d) => {
+          if (d.section === 'body' && d.column.index === 0) {
+            const type = allInsights[d.row.index]?.[0] ?? '';
+            if (type === 'DFM Issue') d.cell.styles.textColor = AMB_R;
+            else if (type === 'Optimisation') d.cell.styles.textColor = GRN_R;
+          }
+        },
+      });
+      y = lastY() + 5;
+    }
+  }
+
+  // ── Global page footers ────────────────────────────────────────────────────
+  const totalPgs = (doc as unknown as { internal: { getNumberOfPages(): number } }).internal.getNumberOfPages();
+  for (let i = 1; i <= totalPgs; i++) {
+    doc.setPage(i);
+    doc.setDrawColor(...GREY); doc.setLineWidth(0.3);
+    doc.line(mg, 290, W - mg, 290);
+    doc.setFontSize(6.5); doc.setTextColor(...GREY);
+    doc.text('Leamington Cost Engine  ·  Master Cost Report  ·  CONFIDENTIAL', mg, 294);
+    doc.text(`Page ${i} of ${totalPgs}`, W - mg, 294, { align: 'right' });
+  }
+
+  const parts = [hasCost ? 'SC' : '', hasCAD ? 'CAD' : '', hasPCB ? 'PCB' : ''].filter(Boolean).join('-');
+  doc.save(`master-report-${parts}-${new Date().toISOString().slice(0, 10)}.pdf`);
 }
 
 function openPDF(): void {
@@ -12760,6 +13273,7 @@ async function init(): Promise<void> {
   el('calc-btn').onclick = compute;
   el('export-excel-btn')?.addEventListener('click', downloadExcel);
   el('export-pdf-btn')?.addEventListener('click', openPDF);
+  el('export-all-pdf-btn')?.addEventListener('click', printMasterPDF);
   el('save-scenario-btn')?.addEventListener('click', openScenarioModal);
   el('load-ref-btn')?.addEventListener('click', loadExample);
   el('rates-btn')?.addEventListener('click', openRateLibrary);
