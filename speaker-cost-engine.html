@@ -315,7 +315,7 @@ input[type=range]{flex:1;accent-color:var(--cyan);cursor:pointer;height:4px}
 
     <div class="ms-grid" id="advFeatures">
       <label class="ms-item"><input type="checkbox" value="ANC"><span>ANC</span></label>
-      <label class="ms-item"><input type="checkbox" value="DSP"><span>DSP Integration</span></label>
+      <label class="ms-item"><input type="checkbox" value="DSP Integration"><span>DSP Integration</span></label>
       <label class="ms-item"><input type="checkbox" value="Waterproofing"><span>Waterproofing</span></label>
       <label class="ms-item"><input type="checkbox" value="Dustproofing"><span>Dustproofing</span></label>
       <label class="ms-item"><input type="checkbox" value="Smart Amplifier"><span>Smart Amplifier</span></label>
@@ -690,7 +690,7 @@ function computeBOM(inp) {
 function computeProcess(inp, country) {
   const p      = PROF[inp.type];
   const cyc    = p.cyc;
-  const labUSD = country.labHr * country.usd; // effective labour rate in USD/hr
+  const labUSD = country.labHr; // already USD-equivalent per spec
   const machM  = country.machM;
 
   // Power scaling on certain steps
@@ -709,7 +709,7 @@ function computeProcess(inp, country) {
 function computeTooling(type, annualVol) {
   const t = PROF[type].tool;
   const totalInvestment = t.basket + t.vc + t.cone + t.spider + t.fixture + t.nre;
-  const lifetimeUnits   = annualVol * 4; // 4-year amortisation
+  const lifetimeUnits   = Math.max(annualVol, 1) * 4; // 4-year amortisation
   const perUnit         = totalInvestment / lifetimeUnits;
   return {
     items:[
@@ -735,7 +735,6 @@ function computeAll(inp) {
   const DM  = bom.reduce((s,r)=>s+r.cost, 0);
   const DLab= proc.reduce((s,r)=>s+r.labCost, 0);
   const DMach=proc.reduce((s,r)=>s+r.machCost+r.scrapCost, 0);
-  const DL  = DLab; // direct labour only
   const primeCost = DM + DLab + DMach;
 
   // Factory overhead — 6 sub-components adding to ~14% of prime cost
@@ -755,7 +754,7 @@ function computeAll(inp) {
   const warranty   = 0.015 * mfgCost;
 
   // Inbound freight on raw materials
-  const inboundPct = inp.country === 'China' || inp.country === 'Vietnam' || inp.country === 'India' ? 0.04 : 0.03;
+  const inboundPct = ['China','Vietnam','India','Thailand','Mexico'].includes(inp.country) ? 0.04 : 0.03;
   const inboundFrt = DM * inboundPct;
 
   const worksCost  = mfgCost + GA + toolAmort + warranty + inboundFrt;
@@ -823,7 +822,7 @@ function renderSummary(r) {
     {lbl:`Profit Margin (${(r.inp.margin*100).toFixed(0)}%)`,val:r.margin,color:'#8b949e',indent:0,bold:false},
   ];
 
-  const max = Math.max(...rows.map(rw=>rw.val));
+  const max = Math.max(...rows.filter(rw=>!rw.sub).map(rw=>rw.val));
   const localVal = r.total / r.country.usd;
   const localFmt = r.country.cur === 'VND' ? Math.round(localVal).toLocaleString() : f2(localVal);
 
@@ -885,7 +884,7 @@ function renderBOM(r) {
       h += `<tr>
         <td class="muted">${n++}</td>
         <td style="font-weight:500">${item.name}</td>
-        <td class="muted small">${item.spec}</td>
+        <td class="muted small">${esc(item.spec)}</td>
         <td class="r mono">${item.wt > 0 ? item.wt.toFixed(1) : '—'}</td>
         <td class="r mono">${item.rate > 0 ? f2(item.rate) : '—'}</td>
         <td class="r muted small">${item.scr > 0 ? (item.scr*100).toFixed(0)+'%' : '—'}</td>
@@ -956,8 +955,6 @@ function renderProcess(r) {
 }
 
 function renderOverhead(r) {
-  const pctOf = (val, base) => base > 0 ? (val/base*100).toFixed(1)+'%' : '—';
-
   let h = '';
 
   // ── Factory Overhead ──
@@ -1035,7 +1032,7 @@ function renderSensitivity(r) {
   const data = [
     base + r.DM * 0.10,    // material +10%
     base + r.DL * 0.15,    // labour +15%
-    base + r.bom.find(b=>b.name==='Permanent Magnet').cost * 0.20, // magnet +20%
+    base + (r.bom.find(b=>b.name==='Permanent Magnet')?.cost ?? 0) * 0.20, // magnet +20%
     base + r.toolAmort * 0.30, // tooling vol -30%
     base,                   // base
     base - r.DM * 0.10,    // material -10%
@@ -1050,7 +1047,7 @@ function renderSensitivity(r) {
   c.data.labels = labels;
   c.data.datasets[0].data = data;
   c.data.datasets[0].backgroundColor = colors;
-  c.data.datasets[0].borderColor = colors.map(c=>c.replace('.65','1').replace('.85','1').replace('.55','1'));
+  c.data.datasets[0].borderColor = colors.map(col=>col.replace('.65','1').replace('.85','1').replace('.55','1'));
   c.update();
 }
 
@@ -1153,6 +1150,7 @@ const f2  = n => (Math.abs(n)<0.001?'0.00':n.toFixed(2));
 const f3  = n => (Math.abs(n)<0.0001?'0.000':n.toFixed(3));
 const fmtVol = v => v >= 1000 ? (v/1000).toFixed(v%1000===0?0:1)+'k' : v.toString();
 const setEl = (id, html) => { const el=document.getElementById(id); if(el) el.innerHTML=html; };
+const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 
 // ── Init ──
 document.addEventListener('DOMContentLoaded', () => {
