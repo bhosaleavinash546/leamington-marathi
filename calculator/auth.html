@@ -1085,6 +1085,38 @@ function showOTPView(email, purpose, devOtp) {
   document.querySelector('#otp-inputs input').focus();
 }
 
+/* ── Local credential store (works without backend server) ──────────────── */
+const LOCAL_USERS = [
+  {
+    email:    'avinash.bhosale8925@gmail.com',
+    password: 'CostVision@2024',
+    fullName: 'Avinash Bhosale',
+    id:       'local-user-001',
+  },
+  {
+    email:    'demo@costvision.app',
+    password: 'Demo@1234',
+    fullName: 'Demo User',
+    id:       'local-user-002',
+  },
+];
+
+function localSignIn(email, pw) {
+  const user = LOCAL_USERS.find(
+    u => u.email.toLowerCase() === email.toLowerCase() && u.password === pw
+  );
+  if (!user) return null;
+  /* Build a minimal JWT-shaped token with 7-day expiry */
+  const header  = btoa(JSON.stringify({ alg: 'HS256', typ: 'JWT' })).replace(/=/g,'');
+  const payload = btoa(JSON.stringify({
+    sub: user.email, name: user.fullName,
+    iat: Math.floor(Date.now()/1000),
+    exp: Math.floor(Date.now()/1000) + 60*60*24*7,
+  })).replace(/=/g,'');
+  const token = `${header}.${payload}.local`;
+  return { token, user: { id: user.id, email: user.email, fullName: user.fullName } };
+}
+
 /* ── FORM: Sign In ──────────────────────────────────────────────────────── */
 document.getElementById('form-signin').addEventListener('submit', async e => {
   e.preventDefault();
@@ -1093,30 +1125,40 @@ document.getElementById('form-signin').addEventListener('submit', async e => {
   if (!email || !pw) { showBanner('signin', 'Please enter your email and password.'); return; }
   setLoading('btn-signin', true);
   clearBanners();
-  try {
-    const res  = await fetch(API + '/signin', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password: pw }),
-    });
-    const data = await res.json();
-    if (!res.ok) {
-      if (data.requiresVerification) { showOTPView(data.email, 'signup'); return; }
-      showBanner('signin', data.error ?? 'Sign-in failed.');
-      return;
-    }
-    /* "Keep me signed in" — persistent (localStorage) vs session-only (sessionStorage) */
+
+  function doLogin(data) {
     const remember = document.getElementById('signin-remember')?.checked ?? true;
     const store = remember ? localStorage : sessionStorage;
     store.setItem('auth_token', data.token);
     store.setItem('auth_user',  JSON.stringify(data.user));
     if (!remember) {
-      /* Clear any stale persistent token so the auth guard doesn't skip login next time */
       localStorage.removeItem('auth_token');
       localStorage.removeItem('auth_user');
     }
     window.location.href = '/calculator/';
+  }
+
+  try {
+    const res  = await fetch(API + '/signin', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password: pw }),
+      signal: (() => { const c = new AbortController(); setTimeout(() => c.abort(), 4000); return c.signal; })(),
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      if (data.requiresVerification) { showOTPView(data.email, 'signup'); return; }
+      /* Before showing the server error, try local credentials */
+      const local = localSignIn(email, pw);
+      if (local) { doLogin(local); return; }
+      showBanner('signin', data.error ?? 'Sign-in failed.');
+      return;
+    }
+    doLogin(data);
   } catch {
-    showBanner('signin', 'Network error. Please check your connection and try again.');
+    /* Server unreachable — try local credentials */
+    const local = localSignIn(email, pw);
+    if (local) { doLogin(local); return; }
+    showBanner('signin', 'Could not reach the server. Please check that the backend is running, or use the demo account: demo@costvision.app / Demo@1234');
   } finally {
     setLoading('btn-signin', false);
   }
@@ -1283,7 +1325,7 @@ async function resendOTP() {
 document.addEventListener('visibilitychange', () => {
   const playState = document.hidden ? 'paused' : 'running';
   document.querySelectorAll('.hero-bg, .particles span, .hud-ring, .logo-badge')
-    .forEach(el => { (el as HTMLElement).style.animationPlayState = playState; });
+    .forEach(el => { el.style.animationPlayState = playState; });
 });
 
 /* ── Init ───────────────────────────────────────────────────────────────── */

@@ -17,13 +17,20 @@
   <script>
     // Auth guard — redirect to sign-in if no valid token
     (function() {
-      const token = localStorage.getItem('auth_token');
+      const token = localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token');
       if (!token) { window.location.replace('/auth.html'); return; }
       try {
-        const payload = JSON.parse(atob(token.split('.')[1]));
+        const parts = token.split('.');
+        if (parts.length < 2) throw new Error('bad token');
+        // Pad base64 if needed
+        const b64 = parts[1].replace(/-/g,'+').replace(/_/g,'/');
+        const padded = b64 + '='.repeat((4 - b64.length % 4) % 4);
+        const payload = JSON.parse(atob(padded));
         if (payload.exp * 1000 <= Date.now()) {
           localStorage.removeItem('auth_token');
           localStorage.removeItem('auth_user');
+          sessionStorage.removeItem('auth_token');
+          sessionStorage.removeItem('auth_user');
           window.location.replace('/auth.html');
         }
       } catch { window.location.replace('/auth.html'); }
