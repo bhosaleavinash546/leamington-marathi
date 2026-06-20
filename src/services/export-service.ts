@@ -548,7 +548,106 @@ export function exportToPdf(result: AnalysisResult, systemName: string, subName:
   doc.text('BrainSpark Platform  |  Confidential — Internal Use Only', PW / 2, PH - 14, { align: 'center' });
   addPageNumber();
 
-  // ── Pages 2+: One page per idea ───────────────────────────────────────────
+  // ── Page 2: Business Case Summary (ROI waterfall) ─────────────────────────
+
+  newPage();
+
+  function parseVal(val?: string): number {
+    if (!val) return 0;
+    const c = val.toLowerCase().replace(/[€£$,\s%]/g, '');
+    const m = c.match(/([\d.]+)([mk]?)/);
+    if (!m) return 0;
+    const n = parseFloat(m[1]);
+    return n * (m[2] === 'm' ? 1_000_000 : m[2] === 'k' ? 1_000 : 1);
+  }
+
+  setFill(doc, NAVY_RGB);
+  doc.rect(0, 0, PW, 18, 'F');
+  setColor(doc, WHITE_RGB);
+  doc.setFontSize(14);
+  doc.setFont('helvetica', 'bold');
+  doc.text('Business Case Summary', ML, 12);
+  setColor(doc, GOLD_RGB);
+  doc.setFontSize(9);
+  doc.text('ROI-ranked ideas  |  Annual savings potential', PW - MR, 12, { align: 'right' });
+
+  // Phase summary boxes
+  const phaseData = [
+    { label: 'Phase 1 — Quick Wins', sub: '0–6 months', ideas: result.ideas.filter(i => i.implementationDifficulty === 'Low'), rgb: [34, 197, 94] as const },
+    { label: 'Phase 2 — Programme', sub: '6–18 months', ideas: result.ideas.filter(i => i.implementationDifficulty === 'Medium'), rgb: [245, 158, 11] as const },
+    { label: 'Phase 3 — Strategic', sub: '18+ months', ideas: result.ideas.filter(i => i.implementationDifficulty === 'High'), rgb: [139, 92, 246] as const },
+  ];
+  const bW = (CW - 6) / 3;
+  phaseData.forEach((ph, pi) => {
+    const bx = ML + pi * (bW + 3);
+    const by = 22;
+    setFill(doc, [30, 41, 59]);
+    doc.roundedRect(bx, by, bW, 28, 2, 2, 'F');
+    setFill(doc, ph.rgb);
+    doc.rect(bx, by, bW, 1.8, 'F');
+    setColor(doc, ph.rgb);
+    doc.setFontSize(18);
+    doc.setFont('helvetica', 'bold');
+    doc.text(String(ph.ideas.length), bx + bW / 2, by + 14, { align: 'center' });
+    setColor(doc, [148, 163, 184]);
+    doc.setFontSize(7.5);
+    doc.setFont('helvetica', 'normal');
+    doc.text(ph.label, bx + bW / 2, by + 20, { align: 'center' });
+    doc.text(ph.sub, bx + bW / 2, by + 25, { align: 'center' });
+  });
+
+  // Top ideas by ROI
+  setColor(doc, NAVY_RGB);
+  doc.setFontSize(11);
+  doc.setFont('helvetica', 'bold');
+  doc.text('Top Ideas by ROI (Savings ÷ Effort)', ML, 60);
+
+  const diffMult: Record<string, number> = { Low: 1, Medium: 3, High: 9 };
+  const byRoi = [...result.ideas]
+    .map(i => ({ ...i, _roi: parseVal(i.costSavingPotential.annualValue) / diffMult[i.implementationDifficulty] }))
+    .sort((a, b) => b._roi - a._roi)
+    .slice(0, 10);
+
+  const rCols = [6, 72, 22, 36, 26, 20];
+  const rColX = rCols.reduce<number[]>((acc, w, i) => [...acc, (acc[i - 1] ?? ML) + (i === 0 ? 0 : rCols[i - 1])], [ML]);
+  const rHeaders = ['#', 'Idea', 'Difficulty', 'Annual Value', 'Saving %', 'Timeline'];
+  setFill(doc, NAVY_RGB);
+  doc.rect(ML, 64, CW, 7, 'F');
+  setColor(doc, WHITE_RGB);
+  doc.setFontSize(7.5);
+  doc.setFont('helvetica', 'bold');
+  rHeaders.forEach((h, i) => doc.text(h, rColX[i] + 1, 68.5));
+
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(7);
+  byRoi.forEach((idea, idx) => {
+    const ry2 = 71 + idx * 8;
+    const bg2: readonly [number, number, number] = idx % 2 === 0 ? LIGHT_RGB : WHITE_RGB;
+    setFill(doc, bg2);
+    doc.rect(ML, ry2, CW, 8, 'F');
+    setDraw(doc, [226, 232, 240]);
+    doc.setLineWidth(0.2);
+    doc.rect(ML, ry2, CW, 8, 'S');
+    const rowD = [
+      String(idx + 1),
+      idea.title.length > 40 ? idea.title.slice(0, 38) + '…' : idea.title,
+      idea.implementationDifficulty,
+      idea.costSavingPotential.annualValue || '—',
+      idea.costSavingPotential.percentage || '—',
+      idea.timeToImplement.length > 14 ? idea.timeToImplement.slice(0, 13) + '…' : idea.timeToImplement,
+    ];
+    rowD.forEach((d, i) => {
+      if (i === 2) setColor(doc, diffRgb(idea.implementationDifficulty));
+      else setColor(doc, [55, 65, 81]);
+      doc.text(d, rColX[i] + 1, ry2 + 5);
+    });
+  });
+
+  setColor(doc, GRAY_RGB);
+  doc.setFontSize(7.5);
+  doc.text('BrainSpark Platform  |  Confidential — Internal Use Only', PW / 2, PH - 14, { align: 'center' });
+
+  // ── Pages 3+: One page per idea ───────────────────────────────────────────
 
   result.ideas.forEach((idea, idx) => {
     newPage();

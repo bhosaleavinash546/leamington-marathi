@@ -7,7 +7,7 @@ import {
   ChevronDown, ChevronUp, BarChart3, RefreshCw, Tag,
   Globe, ExternalLink, ChevronRight, Search, DollarSign, Calculator,
   ShieldCheck, BookOpen, FlaskConical, Lightbulb, Scale, Link2,
-  MessageSquare, CheckSquare, XSquare, Bot, Send
+  MessageSquare, CheckSquare, XSquare, Bot, Send, Map, Share2
 } from 'lucide-react';
 import TypingDots from '../components/ui/TypingDots';
 import ButtonSpinner from '../components/ui/ButtonSpinner';
@@ -102,6 +102,61 @@ const CHAT_FOLLOW_UPS = [
   'What are the NCAP/regulatory risks?',
   'How long will this take to implement?',
 ];
+
+function RoadmapSection({ ideas }: { ideas: CostReductionIdea[] }) {
+  const [open, setOpen] = useState(false);
+
+  function phaseFor(idea: CostReductionIdea): 0 | 1 | 2 {
+    const t = idea.timeToImplement?.toLowerCase() || '';
+    if (idea.implementationDifficulty === 'Low' || t.includes('0-3') || t.includes('1-3') || t.includes('3-6') || t.includes('immediate') || t.includes('quick')) return 0;
+    if (idea.implementationDifficulty === 'High' || t.includes('18') || t.includes('24') || t.includes('2 year') || t.includes('3 year') || t.includes('long')) return 2;
+    return 1;
+  }
+
+  const phases = [
+    { label: 'Phase 1 — Quick Wins', sublabel: '0–6 months', color: 'text-green-400', bg: 'bg-green-500/10', border: 'border-green-500/20', dot: 'bg-green-400', ideas: ideas.filter(i => phaseFor(i) === 0) },
+    { label: 'Phase 2 — Programme Plan', sublabel: '6–18 months', color: 'text-amber-400', bg: 'bg-amber-500/10', border: 'border-amber-500/20', dot: 'bg-amber-400', ideas: ideas.filter(i => phaseFor(i) === 1) },
+    { label: 'Phase 3 — Strategic', sublabel: '18+ months', color: 'text-violet-400', bg: 'bg-violet-500/10', border: 'border-violet-500/20', dot: 'bg-violet-400', ideas: ideas.filter(i => phaseFor(i) === 2) },
+  ];
+
+  return (
+    <div className="mb-8 rounded-2xl bg-navy-900 border border-white/10 overflow-hidden">
+      <button onClick={() => setOpen(v => !v)} className="w-full flex items-center justify-between p-5 hover:bg-white/3 transition-colors">
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-xl bg-emerald-500/20 border border-emerald-500/25 flex items-center justify-center flex-shrink-0">
+            <Map size={16} className="text-emerald-400" />
+          </div>
+          <div className="text-left">
+            <span className="text-white font-semibold text-sm">Implementation Roadmap</span>
+            <p className="text-slate-500 text-xs mt-0.5">Auto-phased by difficulty & timeline</p>
+          </div>
+        </div>
+        {open ? <ChevronUp size={16} className="text-slate-500" /> : <ChevronDown size={16} className="text-slate-500" />}
+      </button>
+      {open && (
+        <div className="border-t border-white/8 p-5">
+          <div className="grid md:grid-cols-3 gap-4">
+            {phases.map(phase => (
+              <div key={phase.label} className={`rounded-xl ${phase.bg} border ${phase.border} p-4`}>
+                <div className={`text-xs font-bold uppercase tracking-wider ${phase.color} mb-0.5`}>{phase.label}</div>
+                <div className="text-slate-500 text-xs mb-3">{phase.sublabel} · {phase.ideas.length} idea{phase.ideas.length !== 1 ? 's' : ''}</div>
+                <div className="space-y-2">
+                  {phase.ideas.slice(0, 6).map(idea => (
+                    <div key={idea.id} className="flex items-start gap-2">
+                      <div className={`w-1.5 h-1.5 rounded-full ${phase.dot} mt-1.5 flex-shrink-0`} />
+                      <span className="text-slate-300 text-xs leading-relaxed">{idea.title}</span>
+                    </div>
+                  ))}
+                  {phase.ideas.length > 6 && <p className={`text-xs ${phase.color} mt-1`}>+{phase.ideas.length - 6} more…</p>}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
 
 function IdeaCard({ idea, index, annotation, onAnnotate }: {
   idea: CostReductionIdea;
@@ -529,6 +584,21 @@ export default function ResultsPage() {
     }
   };
 
+  function normTitle(t: string) {
+    return t.toLowerCase().replace(/[^a-z0-9]/g, ' ').replace(/\s+/g, ' ').trim();
+  }
+
+  function isDuplicate(newTitle: string, existingTitles: string[]): boolean {
+    const nt = normTitle(newTitle);
+    const ntWords = new Set(nt.split(' ').filter(w => w.length > 4));
+    for (const et of existingTitles) {
+      const etWords = et.split(' ').filter(w => w.length > 4);
+      const overlap = etWords.filter(w => ntWords.has(w)).length;
+      if (overlap >= 2 && overlap / Math.max(etWords.length, ntWords.size) > 0.5) return true;
+    }
+    return false;
+  }
+
   const handleRefine = async () => {
     if (!refineFocus.trim() || !result) return;
     const storedKey = localStorage.getItem('brainspark_api_key') || '';
@@ -536,15 +606,18 @@ export default function ResultsPage() {
     setRefining(true);
     setRefineError('');
     try {
-      const existingTitles = result.ideas.map(i => i.title).join('; ');
+      const existingTitles = result.ideas.map(i => i.title);
       const refineConfig = {
         ...result.config,
         apiKey: storedKey,
-        additionalContext: `${result.config.additionalContext ? result.config.additionalContext + '\n\n' : ''}REFINEMENT: Generate DIFFERENT ideas from this prior set — ${existingTitles}. Focus specifically on: ${refineFocus.trim()}`,
+        additionalContext: `${result.config.additionalContext ? result.config.additionalContext + '\n\n' : ''}REFINEMENT PASS: These ideas already exist — DO NOT repeat them (check title similarity, not just exact match): ${existingTitles.join(' | ')}. Generate only NEW and DIFFERENT ideas. Focus specifically on: ${refineFocus.trim()}`,
       };
-      const { ideas, sources } = await generateCostReductionIdeas(
+      const { ideas: newIdeas, sources } = await generateCostReductionIdeas(
         refineConfig, systemName, subName, undefined, true, undefined
       );
+      const existingNorm = existingTitles.map(normTitle);
+      const deduped = newIdeas.filter(i => !isDuplicate(i.title, existingNorm));
+      const ideas = deduped;
       setResult(prev => {
         if (!prev) return prev;
         const allIdeas = [...prev.ideas, ...ideas];
@@ -618,6 +691,22 @@ export default function ResultsPage() {
   const quickWins = result.ideas.filter(i => i.implementationDifficulty === 'Low');
   const searchUsedCount = result.ideas.filter(i => i.searchDataUsed).length;
 
+  async function handleShare() {
+    if (!result?.id) return;
+    const token = (() => { try { return JSON.parse(localStorage.getItem('brainspark_auth') || '{}').token; } catch { return null; } })();
+    if (!token) return;
+    try {
+      const r = await fetch(`/api/projects/${result.id}/share`, {
+        method: 'POST', headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ expiryDays: 30 }),
+      });
+      const data = await r.json();
+      const url = `${window.location.origin}${data.shareUrl}`;
+      await navigator.clipboard.writeText(url).catch(() => {});
+      alert(`Share link copied to clipboard! Expires in 30 days.\n\n${url}`);
+    } catch {}
+  }
+
   return (
     <div className="min-h-screen bg-navy-950 pt-20 pb-16 px-4">
       <div className="max-w-6xl mx-auto">
@@ -641,7 +730,15 @@ export default function ResultsPage() {
               <h1 className="text-3xl font-black text-white">{systemName}</h1>
               <p className="text-slate-400 mt-1">{subName} — {result.generatedAt}</p>
             </div>
-            <div className="flex gap-3">
+            <div className="flex flex-wrap gap-3">
+              {result.id && (
+                <button
+                  onClick={handleShare}
+                  className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-700 hover:bg-blue-600 text-white font-semibold text-sm transition-all hover:scale-105"
+                >
+                  <Share2 size={16} /> Share
+                </button>
+              )}
               <button
                 onClick={handleExcelExport}
                 disabled={!!exporting}
@@ -790,6 +887,9 @@ export default function ResultsPage() {
             </AnimatePresence>
           </motion.div>
         )}
+
+        {/* Implementation Roadmap */}
+        <RoadmapSection ideas={result.ideas} />
 
         {/* Sources panel */}
         {result.sources?.length > 0 && (

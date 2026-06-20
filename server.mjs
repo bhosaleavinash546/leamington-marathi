@@ -432,7 +432,9 @@ COST ENGINEERING (Current Benchmarks):
 REAL-TIME INTELLIGENCE PROTOCOL:
 You ALWAYS search the web before generating ideas. Execute 3–5 targeted searches for: current commodity prices, recent technology innovations (2024–2025), OEM or Tier-1 benchmarks, supplier technology offers, and regulatory changes.
 
-OUTPUT FORMAT: Return ONLY valid JSON — a JSON array of ALL applicable ideas. Generate as many ideas as genuinely viable — do not cap at 8; typically 12–20+ ideas per component. No markdown, no preamble.`;
+OUTPUT FORMAT: Return ONLY valid JSON — a JSON array of ALL applicable ideas. Generate as many ideas as genuinely viable — do not cap at 8; typically 12–20+ ideas per component. No markdown, no preamble.
+
+COMPETITOR BENCHMARKING: For every idea, populate "benchmarkReference" with SPECIFIC OEM/Tier-1 adoption data — cite manufacturer, model/programme, year, and quantified result. E.g. "BMW Gen5 EDU (2021): hairpin winding reduced copper mass 18%", "Tesla Model Y rear underbody gigacasting: 171 parts → 2 castings, saves $300/vehicle", "Hyundai E-GMP SiC inverter vs IGBT: +54% range, −14% inverter mass". Never leave benchmarkReference blank if any industry evidence exists.`;
 
 // EDU curated knowledge — injected when an Electric Drive Unit component is selected
 const EDU_CONTEXT_MAP = {

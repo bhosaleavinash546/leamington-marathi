@@ -15,6 +15,8 @@ import ResultsPage from './pages/ResultsPage';
 import HelpPage from './pages/HelpPage';
 import TrendsPage from './pages/TrendsPage';
 import CadToCostPage from './pages/CadToCostPage';
+import BomAnalysisPage from './pages/BomAnalysisPage';
+import SharedResultPage from './pages/SharedResultPage';
 
 function AnimatedRoutes() {
   const location = useLocation();
@@ -32,6 +34,10 @@ function AnimatedRoutes() {
         <Route path="/results" element={<ProtectedRoute><PageTransition><ResultsPage /></PageTransition></ProtectedRoute>} />
         <Route path="/trends" element={<ProtectedRoute><PageTransition><TrendsPage /></PageTransition></ProtectedRoute>} />
         <Route path="/cad-to-cost" element={<ProtectedRoute><PageTransition><CadToCostPage /></PageTransition></ProtectedRoute>} />
+        <Route path="/bom-analysis" element={<ProtectedRoute><PageTransition><BomAnalysisPage /></PageTransition></ProtectedRoute>} />
+
+        {/* Public share view */}
+        <Route path="/shared/:token" element={<PageTransition><SharedResultPage /></PageTransition>} />
 
         {/* Fallback */}
         <Route path="*" element={<Navigate to="/" replace />} />

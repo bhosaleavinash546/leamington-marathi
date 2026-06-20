@@ -67,6 +67,7 @@ export default function Header() {
                 {[
                   { path: '/dashboard', label: 'Dashboard' },
                   { path: '/analyze', label: 'Analyze' },
+                  { path: '/bom-analysis', label: 'BOM Batch' },
                   { path: '/cad-to-cost', label: 'CAD to Cost' },
                   { path: '/trends', label: 'Trends' },
                   { path: '/help', label: 'Help' },
