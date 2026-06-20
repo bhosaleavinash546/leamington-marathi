@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, ChevronDown, ChevronRight, HelpCircle, BookOpen, Mail, Phone, Zap, Terminal, Download, Globe, Lock, Shield, Cpu, BarChart3 } from 'lucide-react';
+import { Search, ChevronDown, ChevronRight, HelpCircle, BookOpen, Mail, Zap, Terminal, Download, Globe, Lock, Shield, Cpu, BarChart3, Sparkles, Map, Share2, Package, Smartphone } from 'lucide-react';
 
-const APP_VERSION = '2.2.0';
+const APP_VERSION = '3.0.0';
 const BUILD_DATE = 'June 2026';
 
 interface FaqItem { q: string; a: string; }
@@ -28,6 +28,10 @@ const FAQ: FaqSection[] = [
       { q: 'How accurate are the savings estimates?', a: 'Estimates are directionally accurate based on automotive benchmarks and live market data. They should be treated as engineering ballpark figures and validated with detailed cost studies and supplier RFQs before business case commitment.' },
       { q: 'What is the difference between Assembly, Subassembly, and Part level analysis?', a: 'System-level gives broad DFMA opportunities across the entire subsystem. Subassembly level focuses on interface and integration savings. Part level provides surgical, component-specific ideas with the highest precision. All three levels can be analysed for the same target.' },
       { q: 'How many ideas does the AI generate?', a: 'All available ideas in a single run — typically 12–20+ ideas depending on the component. There is no cap: the AI generates every viable cost reduction lever it can identify, spanning material substitution, process optimisation, design changes, commonisation, logistics, and emerging technology. Quick wins (Low difficulty), medium-term, and strategic ideas are all included, along with at least one commonisation and one emerging-tech idea.' },
+      { q: 'How does competitor benchmarking work?', a: 'The AI is instructed to populate every idea\'s "Industry Benchmark" field with specific OEM or Tier-1 evidence — citing manufacturer, programme name, model year, and a quantified result (e.g. "BMW Gen5 EDU hairpin winding: −18% copper mass", "Tesla Model Y gigacasting: 171 parts → 2"). This gives engineering teams immediate evidence to support business cases.' },
+      { q: 'What is the Idea Cache?', a: 'When web search is disabled, BrainSpark stores the analysis result in a server-side cache keyed by a hash of your inputs (system, subassembly, part, vehicle type, region, context). Re-running the same analysis within 7 days returns the cached result instantly — saving API tokens and time. The cache is bypassed automatically when web search is enabled, since live results are time-sensitive.' },
+      { q: 'What is Multi-pass Deduplication?', a: 'When you use "Refine Analysis" to generate additional ideas, BrainSpark runs a token-overlap similarity check between the new ideas and the existing set. Any new idea whose title shares more than 50% of its keywords with an existing idea is automatically filtered out before being added to your list. This keeps your results clean regardless of how many refinement passes you run.' },
+      { q: 'What is BOM Batch Analysis?', a: 'Available at /bom-analysis, this feature lets you upload an Excel (.xlsx) or CSV file containing a list of parts (system, subassembly, part name columns). BrainSpark analyses each part sequentially using the same Chief Engineer AI, then aggregates the results into a single Excel export showing total ideas, quick wins, and the top saving per part. Useful for programme-level impact assessments across a full vehicle BOM. Capped at 20 parts per batch.' },
     ],
   },
   {
@@ -36,8 +40,11 @@ const FAQ: FaqSection[] = [
     items: [
       { q: 'What is included in the Excel export?', a: 'The Excel file has three sheets: (1) Summary — overview stats and metadata; (2) Ideas — all cost reduction ideas with savings estimates, implementation steps, risks, and timelines; (3) Roadmap — a chronological view by implementation phase.' },
       { q: 'What is included in the PowerPoint export?', a: 'The PowerPoint includes a title slide, a summary slide, one detailed slide per idea (title, savings, type, timeline, key steps, risks), and a closing roadmap slide. Formatted for direct management gate-review use.' },
-      { q: 'What is included in the PDF export?', a: 'The PDF report is an A4 portrait document with a branded cover page showing summary metrics, one page per idea with full technical detail and DFMA principles, and a final roadmap page grouped into Quick Wins / Medium Term / Strategic phases.' },
-      { q: 'Can I annotate ideas?', a: 'Yes — expand any idea card on the Results page and click "Add annotation". You can set an implementation status (Investigating / Approved / Rejected / On Hold) and add free-text engineering notes. Annotations are saved locally in your browser and restored when you re-open a past analysis.' },
+      { q: 'What is included in the PDF export?', a: 'The PDF is an A4 portrait document with: (1) Branded cover page with summary metrics; (2) Business Case Summary page — phase boxes (Quick Wins / Programme / Strategic) and a Top-10 ROI-ranked ideas table; (3) One detailed page per idea with technical description, manufacturing impact, DFMA principles, risk notes, and benchmark reference; (4) Final implementation roadmap page grouped by phase.' },
+      { q: 'What is the Implementation Roadmap?', a: 'The roadmap section (collapsible, inside every Results page) automatically groups all ideas into three phases based on difficulty and timeline keywords: Phase 1 — Quick Wins (0–6 months, Low difficulty), Phase 2 — Programme Plan (6–18 months, Medium difficulty), Phase 3 — Strategic (18+ months, High difficulty or long-horizon keywords). It helps prioritise where to start.' },
+      { q: 'How do I sort ideas by ROI?', a: 'On the Results page, the filter bar has a Sort row with four options: "AI Order" (default — as generated), "Best ROI" (annual savings divided by difficulty multiplier), "Highest Savings" (by annual value figure), and "Easiest First" (Low → Medium → High difficulty). ROI sort is the recommended starting point for workshop prioritisation.' },
+      { q: 'Can I annotate ideas?', a: 'Yes — expand any idea card on the Results page and click "Add annotation". You can set an implementation status (Investigating / Approved / Rejected / On Hold) and add free-text engineering notes. Annotations are saved locally in your browser. You can also filter the entire idea list by annotation status using the Status filter row.' },
+      { q: 'How do I share results with my team?', a: 'On the Results page, click the "Share" button in the header (visible once an analysis has been saved to the server). This generates a 30-day read-only link that anyone can open without needing a BrainSpark account — useful for sharing with programme managers, procurement, or suppliers. You can also generate share links from the Dashboard project list.' },
       { q: 'Can I customise the export templates?', a: 'Not at this time. The exports use a fixed professional template optimised for automotive cost reviews. Custom branding and template options are on the product roadmap.' },
     ],
   },
@@ -45,10 +52,12 @@ const FAQ: FaqSection[] = [
     category: 'Account & Security',
     icon: Lock,
     items: [
-      { q: 'How is my data secured?', a: 'All API keys are stored only in your browser (localStorage) and sent directly to the backend only during analysis — never logged or persisted. User credentials are hashed with bcrypt. Sessions use JWT tokens with 7-day expiry.' },
+      { q: 'How is my data secured?', a: 'All API keys are stored only in your browser (localStorage) and sent directly to the backend only during analysis — never logged or persisted. User credentials are hashed with bcrypt. Sessions use JWT tokens with 7-day expiry and server-side revocation on sign-out.' },
       { q: 'What happens if I forget my password?', a: 'Use the "Forgot password" option on the sign-in page. An OTP (one-time password) is sent to your registered email. The OTP expires in 10 minutes and can be used only once.' },
-      { q: 'Is my analysis data stored?', a: 'Analysis results are stored only in your browser\'s localStorage — recent history metadata, the full result (last 10 runs), and any idea annotations you add. No analysis content is ever stored on the server. You can re-open any of the last 10 analyses directly from the Dashboard.' },
+      { q: 'Where is my analysis data stored?', a: 'From v3.0, analysis results are automatically saved to a server-side SQLite database linked to your account (API key is redacted before saving). You can access all your past analyses from the Dashboard — including projects from any device. Idea annotations are still stored locally in your browser and restored when you re-open a project.' },
+      { q: 'How do share links work?', a: 'Share links are generated per project with a 30-day expiry. They are single-use read-only views — the recipient does not need a BrainSpark account. Share tokens are stored in the database and expire automatically. You cannot revoke a token before expiry, but expiry ensures they are short-lived.' },
       { q: 'Who can sign up?', a: 'Anyone with access to the running server can sign up. This tool is intended for internal engineering and cost teams. Access control via email domain restrictions can be added by your administrator.' },
+      { q: 'Can I install BrainSpark on my phone or desktop?', a: 'Yes. BrainSpark v3.0 is a Progressive Web App (PWA). In Chrome or Edge, click the install icon in the browser address bar (or use the browser menu → "Install app"). On mobile, use Safari → Share → Add to Home Screen. Once installed, it opens in standalone mode with no browser chrome, just like a native app. Core pages are cached for offline viewing.' },
     ],
   },
   {
@@ -155,6 +164,39 @@ export default function HelpPage() {
           </motion.div>
         )}
 
+        {/* What's New in v3.0 */}
+        {!search && (
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.12 }}>
+            <h2 className="text-white font-semibold mb-5 flex items-center gap-2">
+              <Sparkles size={16} className="text-gold-400" /> What's New in v3.0
+            </h2>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              {[
+                { icon: BarChart3,  color: 'text-violet-400', bg: 'bg-violet-500/10', border: 'border-violet-500/20', title: 'ROI Auto-Ranking', desc: 'Sort by Best ROI, Highest Savings, or Easiest First. Instantly surface the ideas worth presenting first.' },
+                { icon: Zap,        color: 'text-amber-400',  bg: 'bg-amber-500/10',  border: 'border-amber-500/20', title: 'Status Filter', desc: 'Filter ideas by annotation status — show only Approved, Investigating, or On Hold items.' },
+                { icon: Globe,      color: 'text-emerald-400',bg: 'bg-emerald-500/10',border: 'border-emerald-500/20',title: 'Cloud Project History', desc: 'Analyses are auto-saved to a server-side SQLite database. Open any project from any device via the Dashboard.' },
+                { icon: Cpu,        color: 'text-blue-400',   bg: 'bg-blue-500/10',   border: 'border-blue-500/20',  title: 'Idea Caching', desc: '7-day server cache for identical analyses. Re-run the same config and get results instantly with zero API cost.' },
+                { icon: Zap,        color: 'text-pink-400',   bg: 'bg-pink-500/10',   border: 'border-pink-500/20',  title: 'Multi-pass Dedup', desc: 'Refine runs now automatically remove near-duplicate ideas using token-overlap similarity detection.' },
+                { icon: Globe,      color: 'text-cyan-400',   bg: 'bg-cyan-500/10',   border: 'border-cyan-500/20',  title: 'Competitor Benchmarking', desc: 'Every idea now cites specific OEM/programme/year evidence — BMW, Tesla, Hyundai, and more — in the benchmark field.' },
+                { icon: Map,        color: 'text-green-400',  bg: 'bg-green-500/10',  border: 'border-green-500/20', title: 'Implementation Roadmap', desc: '3-phase roadmap auto-groups ideas into Quick Wins (0–6 mo), Programme (6–18 mo), and Strategic (18+ mo) inside every Results page.' },
+                { icon: Download,   color: 'text-red-400',    bg: 'bg-red-500/10',    border: 'border-red-500/20',   title: 'Business Case PDF', desc: 'PDF now includes a dedicated Business Case page: phase summary boxes and a Top-10 ROI-ranked ideas table.' },
+                { icon: Share2,     color: 'text-indigo-400', bg: 'bg-indigo-500/10', border: 'border-indigo-500/20',title: 'Team Sharing', desc: 'Generate a 30-day read-only share link for any analysis. No account needed for recipients.' },
+                { icon: Package,    color: 'text-orange-400', bg: 'bg-orange-500/10', border: 'border-orange-500/20',title: 'BOM Batch Analysis', desc: 'Upload an Excel BOM, analyse up to 20 parts at once with the Chief Engineer AI, export an aggregated savings summary.' },
+                { icon: Smartphone, color: 'text-teal-400',   bg: 'bg-teal-500/10',   border: 'border-teal-500/20',  title: 'Progressive Web App', desc: 'Install BrainSpark on mobile or desktop via the browser install prompt. Offline cache included for core pages.' },
+                { icon: Shield,     color: 'text-gold-400',   bg: 'bg-gold-500/10',   border: 'border-gold-500/20',  title: 'Security Hardening', desc: 'JWT revocation on sign-out, rate limiting on auth routes, input sanitisation, async atomic file I/O, and security headers.' },
+              ].map(({ icon: Icon, color, bg, border, title, desc }) => (
+                <div key={title} className={`rounded-xl ${bg} border ${border} p-4`}>
+                  <div className={`flex items-center gap-2 mb-2`}>
+                    <Icon size={14} className={color} />
+                    <span className={`text-sm font-semibold ${color}`}>{title}</span>
+                  </div>
+                  <p className="text-slate-400 text-xs leading-relaxed">{desc}</p>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+        )}
+
         {/* FAQ sections */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="space-y-6">
           <h2 className="text-white font-semibold flex items-center gap-2">
@@ -250,10 +292,10 @@ export default function HelpPage() {
                   {[
                     ['Application', `BrainSpark v${APP_VERSION}`],
                     ['Build', BUILD_DATE],
-                    ['AI Model', 'Anthropic Claude claude-opus-4-8'],
-                    ['Frontend', 'React 18 + TypeScript + Vite'],
-                    ['Backend', 'Node.js + Express'],
-                    ['Authentication', 'JWT + bcrypt + OTP'],
+                    ['AI Model', 'Anthropic Claude Opus 4.8'],
+                    ['Frontend', 'React 18 + TypeScript + Vite + PWA'],
+                    ['Backend', 'Node.js + Express + SQLite'],
+                    ['Authentication', 'JWT + bcrypt + OTP + revocation'],
                   ].map(([k, v]) => (
                     <div key={k} className="flex items-center justify-between text-xs">
                       <dt className="text-slate-500">{k}</dt>

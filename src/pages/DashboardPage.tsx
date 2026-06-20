@@ -32,13 +32,18 @@ const TIPS = [
 ];
 
 const WHATS_NEW = [
-  'Transmission & Driveline — 9th knowledge domain (ZF/BorgWarner benchmarks)',
-  'PDF export — full A4 report with per-idea pages and roadmap',
-  'Electric Drive Unit expanded — 20 OEM benchmarks incl. Chinese OEMs',
-  'CAD geometry parsing — STL/STEP/DXF wired into analysis prompt',
-  'Real-time SSE streaming — live progress as AI searches and synthesises',
-  'Idea annotations — add status & notes to any generated idea',
-  'Result persistence — re-open past analyses from Recent Analyses',
+  'ROI Auto-Ranking — sort ideas by Best ROI, Highest Savings, or Easiest First',
+  'Status Filter — filter ideas by annotation status (Approved / Investigating / Rejected / On Hold)',
+  'SQLite Database — cloud-synced project storage replaces localStorage-only history',
+  'Project History — open, delete, and share any saved analysis from the Dashboard',
+  'Idea Caching — identical analyses return instantly from a 7-day cache',
+  'Multi-pass Deduplication — Refine runs automatically remove near-duplicate ideas',
+  'Competitor Benchmarking — every idea now cites specific OEM/programme/year evidence',
+  'Implementation Roadmap — 3-phase auto-grouped view inside every Results page',
+  'Business Case PDF — Page 2 now shows ROI-ranked top ideas and phase summary boxes',
+  'Team Sharing — generate a 30-day read-only share link for any analysis',
+  'BOM Batch Analysis — upload an Excel BOM and analyse up to 20 parts at once',
+  'Progressive Web App — install BrainSpark on mobile or desktop for offline access',
 ];
 
 export default function DashboardPage() {
@@ -306,7 +311,7 @@ export default function DashboardPage() {
             <div className="rounded-2xl bg-navy-900 border border-white/8 p-6">
               <div className="flex items-center gap-2 mb-4">
                 <BookOpen size={16} className="text-emerald-400" />
-                <h3 className="text-white font-semibold text-sm">What's New in v2.1</h3>
+                <h3 className="text-white font-semibold text-sm">What's New in v3.0</h3>
               </div>
               <ul className="space-y-2">
                 {WHATS_NEW.map((item) => (
