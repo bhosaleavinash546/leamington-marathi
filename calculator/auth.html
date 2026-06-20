@@ -1086,26 +1086,40 @@ function showOTPView(email, purpose, devOtp) {
 }
 
 /* ── Local credential store (works without backend server) ──────────────── */
+/* Passwords stored as SHA-256 hex digests — never plaintext */
 const LOCAL_USERS = [
   {
     email:    'avinash.bhosale8925@gmail.com',
-    password: 'CostVision@2024',
+    pwHash:   '85e377692d36123bedb7fb26602b9d0e1f9004c5262c5451686cac5122422fb4',
     fullName: 'Avinash Bhosale',
     id:       'local-user-001',
   },
   {
     email:    'demo@costvision.app',
-    password: 'Demo@1234',
+    pwHash:   '2ac4757802ddfa9540f285b04d7ba282b55f206b9a4700c11010ebc410cdb4ab',
     fullName: 'Demo User',
     id:       'local-user-002',
   },
 ];
 
-function localSignIn(email, pw) {
+async function _hashPw(pw) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(pw));
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+let _localAttempts = 0, _localLockedUntil = 0;
+
+async function localSignIn(email, pw) {
+  if (Date.now() < _localLockedUntil) return null;
+  const pwHash = await _hashPw(pw);
   const user = LOCAL_USERS.find(
-    u => u.email.toLowerCase() === email.toLowerCase() && u.password === pw
+    u => u.email.toLowerCase() === email.toLowerCase() && u.pwHash === pwHash
   );
-  if (!user) return null;
+  if (!user) {
+    if (++_localAttempts >= 5) _localLockedUntil = Date.now() + 15 * 60 * 1000;
+    return null;
+  }
+  _localAttempts = 0;
   /* Build a minimal JWT-shaped token with 7-day expiry */
   const header  = btoa(JSON.stringify({ alg: 'HS256', typ: 'JWT' })).replace(/=/g,'');
   const payload = btoa(JSON.stringify({
@@ -1147,16 +1161,18 @@ document.getElementById('form-signin').addEventListener('submit', async e => {
     const data = await res.json();
     if (!res.ok) {
       if (data.requiresVerification) { showOTPView(data.email, 'signup'); return; }
-      /* Before showing the server error, try local credentials */
-      const local = localSignIn(email, pw);
-      if (local) { doLogin(local); return; }
+      /* Only fall back to local for server errors (5xx), not auth/lockout rejections (4xx) */
+      if (res.status >= 500) {
+        const local = await localSignIn(email, pw);
+        if (local) { doLogin(local); return; }
+      }
       showBanner('signin', data.error ?? 'Sign-in failed.');
       return;
     }
     doLogin(data);
   } catch {
     /* Server unreachable — try local credentials */
-    const local = localSignIn(email, pw);
+    const local = await localSignIn(email, pw);
     if (local) { doLogin(local); return; }
     showBanner('signin', 'Could not reach the server. Please check that the backend is running, or use the demo account: demo@costvision.app / Demo@1234');
   } finally {
@@ -1309,7 +1325,9 @@ async function resendOTP() {
   const token = localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token');
   if (!token) return;
   try {
-    const payload = JSON.parse(atob(token.split('.')[1]));
+    const raw = token.split('.')[1].replace(/-/g,'+').replace(/_/g,'/');
+    const padded = raw + '='.repeat((4 - raw.length % 4) % 4);
+    const payload = JSON.parse(atob(padded));
     if (payload.exp * 1000 > Date.now()) window.location.href = '/calculator/';
     else {
       localStorage.removeItem('auth_token');

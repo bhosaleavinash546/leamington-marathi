@@ -120,7 +120,7 @@
 <script>
   (function() {
     try {
-      const user = JSON.parse(localStorage.getItem('auth_user') || '{}');
+      const user = JSON.parse(localStorage.getItem('auth_user') || sessionStorage.getItem('auth_user') || '{}');
       if (user.fullName) {
         const el = document.getElementById('user-greeting');
         if (el) el.textContent = 'Hi, ' + user.fullName.split(' ')[0];
@@ -130,6 +130,8 @@
   function signOut() {
     localStorage.removeItem('auth_token');
     localStorage.removeItem('auth_user');
+    sessionStorage.removeItem('auth_token');
+    sessionStorage.removeItem('auth_user');
     window.location.replace('/auth.html');
   }
 </script>
