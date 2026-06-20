@@ -1,18 +1,20 @@
 FROM node:22-alpine
 
-# Native module build tools (better-sqlite3, bcrypt need Python + C compiler)
+# Native module build tools (better-sqlite3, bcrypt)
 RUN apk add --no-cache python3 make g++
 
 WORKDIR /app
 
-# Install dependencies first (layer-cached unless package.json changes)
 COPY package*.json ./
 RUN npm install
 
-# Copy source
 COPY . .
 
-# Frontend (Vite) + Backend (Express)
-EXPOSE 5174 3002
+# Build Vite frontend into dist/
+RUN npm run build
 
-CMD ["npm", "run", "dev:full"]
+EXPOSE 3002
+
+ENV NODE_ENV=production
+
+CMD ["npx", "tsx", "server/index.ts"]

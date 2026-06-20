@@ -2,7 +2,7 @@
   "name": "CostVision",
   "short_name": "CostVision",
   "description": "AI-Powered Should-Cost Calculator for Manufacturing",
-  "start_url": "/calculator/",
+  "start_url": "./",
   "scope": "/calculator/",
   "display": "standalone",
   "orientation": "portrait-primary",

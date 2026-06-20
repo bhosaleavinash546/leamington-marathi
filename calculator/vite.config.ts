@@ -9,7 +9,7 @@ export default defineConfig({
   base: isMobile ? '/' : '/calculator/',
   build: {
     outDir: 'dist',
-    rollupOptions: { input: 'index.html' },
+    rollupOptions: { input: { index: 'index.html', auth: 'auth.html' } },
   },
   server: {
     host: '0.0.0.0',

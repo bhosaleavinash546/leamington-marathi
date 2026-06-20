@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
+import path from 'path';
 import type { Request, Response, NextFunction } from 'express';
 import { config } from 'dotenv';
 import cadRouter from './routes/cad.js';
@@ -59,6 +60,16 @@ app.use('/api/agent', agentRouter);
 app.use('/api/dfm', dfmRouter);
 app.use('/api/news', newsRouter);
 app.use('/api/commodities', commoditiesRouter);
+
+// ── In production serve the Vite build so one URL covers everything ──────────
+if (IS_PROD) {
+  const dist = path.join(process.cwd(), 'dist');
+  app.use('/calculator', express.static(dist));
+  // SPA fallback — any /calculator/* route returns index.html
+  app.get('/calculator/*splat', (_req, res) => res.sendFile(path.join(dist, 'index.html')));
+  // Root → calculator
+  app.get('/', (_req, res) => res.redirect(301, '/calculator/'));
+}
 
 app.get('/api/health', (_req, res) => {
   res.json({
