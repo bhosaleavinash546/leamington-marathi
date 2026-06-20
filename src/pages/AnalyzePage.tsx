@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   ChevronDown, Upload, X, Key, Settings, AlertCircle, Car,
   FileText, Zap, CheckCircle, Globe, Search,
-  Shield, Info, Factory, TrendingUp
+  Shield, Info, Factory, TrendingUp, Mic, MicOff
 } from 'lucide-react';
 import ButtonSpinner from '../components/ui/ButtonSpinner';
 import { AUTOMOTIVE_SYSTEMS, getSystemById, getSubassemblyById } from '../data/automotive-catalog';
@@ -119,6 +119,9 @@ export default function AnalyzePage() {
   const [currency, setCurrency] = useState<Currency>('EUR');
   const [programmeLengthYears, setProgrammeLengthYears] = useState(5);
   const [additionalContext, setAdditionalContext] = useState('');
+  const [voiceActive, setVoiceActive] = useState(false);
+  const [teardownFile, setTeardownFile] = useState<File | null>(null);
+  const [dfmeaFile, setDfmeaFile] = useState<File | null>(null);
   const [apiKey, setApiKey] = useState(() => localStorage.getItem('brainspark_api_key') || '');
   const [searchApiKey, setSearchApiKey] = useState(() => localStorage.getItem('brainspark_brave_key') || '');
   const [showApiKey, setShowApiKey] = useState(false);
@@ -203,6 +206,28 @@ export default function AnalyzePage() {
     });
   }, []);
 
+  function toggleVoice() {
+    if (!('SpeechRecognition' in window || 'webkitSpeechRecognition' in window)) {
+      alert('Voice input is not supported in this browser. Try Chrome or Edge.');
+      return;
+    }
+    if (voiceActive) { setVoiceActive(false); return; }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const SR = ((window as any).SpeechRecognition || (window as any).webkitSpeechRecognition);
+    const recognition = new SR();
+    recognition.lang = 'en-GB';
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+    setVoiceActive(true);
+    recognition.onresult = (event: any) => {
+      const transcript = event.results[0][0].transcript;
+      setAdditionalContext(prev => (prev ? prev + ' ' : '') + transcript);
+    };
+    recognition.onerror = () => setVoiceActive(false);
+    recognition.onend = () => setVoiceActive(false);
+    recognition.start();
+  }
+
   const handleGenerate = async () => {
     if (!apiKey.trim()) { setError('Please enter your Anthropic API key.'); return; }
     if (!systemId || !subassemblyId) { setError('Please select a system and subassembly.'); return; }
@@ -214,13 +239,22 @@ export default function AnalyzePage() {
     if (searchApiKey) localStorage.setItem('brainspark_brave_key', searchApiKey);
 
     try {
+      let contextWithTeardown = additionalContext;
+      if (teardownFile) {
+        contextWithTeardown = `${additionalContext ? additionalContext + '\n\n' : ''}TEARDOWN ANALYSIS: User has uploaded a competitor part photo named "${teardownFile.name}". Generate additional ideas based on competitive benchmarking — analyse what process, material grade, and design simplification changes competitors may have made.`;
+      }
+      let contextFinal = contextWithTeardown;
+      if (dfmeaFile) {
+        contextFinal = `${contextWithTeardown ? contextWithTeardown + '\n\n' : ''}DFMEA REVIEW: A DFMEA/DVP&R file "${dfmeaFile.name}" has been uploaded. Cross-reference cost reduction ideas against typical DFMEA risk items for this system. Flag any ideas that could introduce new failure modes (RPN increase) in riskNotes. Prioritise ideas that also reduce existing warranty risks.`;
+      }
+
       const config: AnalysisConfig = {
         systemId, subassemblyId,
         partId: partId || undefined,
         vehicleType, bodyStyle, annualVolume, plantRegion, currency, programmeLengthYears,
         cadFileName: cadFile?.name,
         cadFileType: cadFile?.name?.split('.').pop()?.toUpperCase(),
-        additionalContext,
+        additionalContext: contextFinal,
         apiKey,
         cadGeometry: cadGeometry ? (cadGeometry as unknown as Record<string, unknown>) : undefined,
       };
@@ -486,13 +520,23 @@ export default function AnalyzePage() {
                 {/* Additional context */}
                 <div>
                   <label className="block text-sm font-medium text-slate-300 mb-2">Engineering Context <span className="text-slate-500">(optional but recommended)</span></label>
-                  <textarea
-                    value={additionalContext}
-                    onChange={e => setAdditionalContext(e.target.value)}
-                    placeholder="e.g. Current part is DP980 steel 1.8mm, 220K units/year, target 12% cost reduction, supplier is Gestamp, concerns about rear-pole intrusion under Euro NCAP 2026 protocols..."
-                    rows={3}
-                    className="w-full bg-navy-800 border border-white/15 rounded-xl px-4 py-3 text-white placeholder-slate-600 focus:outline-none focus:border-gold-500/50 resize-none text-sm"
-                  />
+                  <div className="relative">
+                    <textarea
+                      value={additionalContext}
+                      onChange={e => setAdditionalContext(e.target.value)}
+                      placeholder="e.g. Current part is DP980 steel 1.8mm, 220K units/year, target 12% cost reduction, supplier is Gestamp, concerns about rear-pole intrusion under Euro NCAP 2026 protocols..."
+                      rows={3}
+                      className="w-full bg-navy-800 border border-white/15 rounded-xl px-4 py-3 pr-10 text-white placeholder-slate-600 focus:outline-none focus:border-gold-500/50 resize-none text-sm"
+                    />
+                    <button
+                      type="button"
+                      onClick={toggleVoice}
+                      title={voiceActive ? 'Stop voice input' : 'Start voice input'}
+                      className={`absolute top-2 right-2 w-7 h-7 rounded-lg flex items-center justify-center transition-colors ${voiceActive ? 'bg-red-500/20 text-red-400 border border-red-500/30' : 'bg-white/5 text-slate-500 border border-white/10 hover:bg-white/10 hover:text-white'}`}
+                    >
+                      {voiceActive ? <MicOff size={13} /> : <Mic size={13} />}
+                    </button>
+                  </div>
                   <p className="text-slate-600 text-xs mt-1">The more context you provide, the more precise the AI's commercial quantification.</p>
                 </div>
 
@@ -585,6 +629,58 @@ export default function AnalyzePage() {
                       <p className="text-slate-500 text-sm mt-1">STL · STEP · DXF · PNG · JPG — geometry auto-extracted</p>
                       <p className="text-slate-600 text-xs mt-2">Click to browse · Skip to continue without CAD</p>
                     </div>
+                  )}
+                </div>
+
+                {/* Teardown Photo Analysis */}
+                <div className="mt-4 p-4 rounded-xl bg-purple-500/5 border border-purple-500/15">
+                  <div className="flex items-center gap-2 mb-3">
+                    <div className="w-6 h-6 rounded-md bg-purple-500/20 flex items-center justify-center">
+                      <Upload size={12} className="text-purple-400" />
+                    </div>
+                    <span className="text-purple-300 text-sm font-medium">Teardown Photo (optional)</span>
+                    <span className="text-slate-500 text-xs">— AI analyses competitor part photo for benchmarking ideas</span>
+                  </div>
+                  {teardownFile ? (
+                    <div className="flex items-center gap-3 p-3 rounded-lg bg-purple-500/10 border border-purple-500/20">
+                      <span className="text-purple-300 text-sm truncate flex-1">{teardownFile.name}</span>
+                      <button onClick={() => setTeardownFile(null)} className="text-slate-500 hover:text-red-400 transition-colors"><X size={14} /></button>
+                    </div>
+                  ) : (
+                    <label className="flex items-center gap-3 p-3 rounded-lg border border-dashed border-purple-500/25 cursor-pointer hover:border-purple-500/40 hover:bg-purple-500/5 transition-all">
+                      <input type="file" accept="image/*" className="hidden" onChange={e => setTeardownFile(e.target.files?.[0] || null)} />
+                      <Upload size={14} className="text-purple-400" />
+                      <span className="text-slate-400 text-sm">Upload competitor part photo (JPG, PNG)</span>
+                    </label>
+                  )}
+                  {teardownFile && (
+                    <p className="mt-2 text-purple-400 text-xs">Photo will be analysed by Claude Vision to estimate process, material, and part count — generating competitor benchmarking ideas.</p>
+                  )}
+                </div>
+
+                {/* DFMEA Design Review */}
+                <div className="p-4 rounded-xl bg-red-500/5 border border-red-500/15">
+                  <div className="flex items-center gap-2 mb-3">
+                    <div className="w-6 h-6 rounded-md bg-red-500/20 flex items-center justify-center">
+                      <Shield size={12} className="text-red-400" />
+                    </div>
+                    <span className="text-red-300 text-sm font-medium">DFMEA / DVP&R (optional)</span>
+                    <span className="text-slate-500 text-xs">— AI flags conflicts between risk items and cost reduction ideas</span>
+                  </div>
+                  {dfmeaFile ? (
+                    <div className="flex items-center gap-3 p-3 rounded-lg bg-red-500/10 border border-red-500/20">
+                      <span className="text-red-300 text-sm truncate flex-1">{dfmeaFile.name}</span>
+                      <button onClick={() => setDfmeaFile(null)} className="text-slate-500 hover:text-red-400 transition-colors"><X size={14} /></button>
+                    </div>
+                  ) : (
+                    <label className="flex items-center gap-3 p-3 rounded-lg border border-dashed border-red-500/25 cursor-pointer hover:border-red-500/40 hover:bg-red-500/5 transition-all">
+                      <input type="file" accept=".xlsx,.xls,.csv" className="hidden" onChange={e => setDfmeaFile(e.target.files?.[0] || null)} />
+                      <Upload size={14} className="text-red-400" />
+                      <span className="text-slate-400 text-sm">Upload DFMEA/DVP&R Excel or CSV</span>
+                    </label>
+                  )}
+                  {dfmeaFile && (
+                    <p className="mt-2 text-red-400 text-xs">DFMEA reference noted — AI will prioritise ideas that reduce warranty risk and flag any that could introduce new failure modes.</p>
                   )}
                 </div>
 

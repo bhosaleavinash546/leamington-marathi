@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Menu, X, ChevronDown, LayoutDashboard, HelpCircle, LogOut, User, Sun, Moon, TrendingUp, FileBox } from 'lucide-react';
+import { Menu, X, ChevronDown, LayoutDashboard, HelpCircle, LogOut, User, Sun, Moon, TrendingUp, FileBox, Calculator, Store, Link2, GitCompare } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
 
@@ -69,7 +69,10 @@ export default function Header() {
                   { path: '/analyze', label: 'Analyze' },
                   { path: '/bom-analysis', label: 'BOM Batch' },
                   { path: '/cad-to-cost', label: 'CAD to Cost' },
+                  { path: '/cad-diff', label: 'CAD Diff' },
+                  { path: '/should-cost', label: 'Should-Cost' },
                   { path: '/trends', label: 'Trends' },
+                  { path: '/marketplace', label: 'Marketplace' },
                   { path: '/help', label: 'Help' },
                 ].map(({ path, label }) => (
                   <Link
@@ -142,8 +145,12 @@ export default function Header() {
                     {[
                       { icon: LayoutDashboard, label: 'Dashboard', path: '/dashboard' },
                       { icon: User,           label: 'Analyze',    path: '/analyze' },
-                      { icon: FileBox,        label: 'CAD to Cost',path: '/cad-to-cost' },
-                      { icon: TrendingUp,     label: 'Trends',     path: '/trends' },
+                      { icon: FileBox,        label: 'CAD to Cost',  path: '/cad-to-cost' },
+                      { icon: GitCompare,     label: 'CAD Diff',     path: '/cad-diff' },
+                      { icon: Calculator,     label: 'Should-Cost',  path: '/should-cost' },
+                      { icon: TrendingUp,     label: 'Trends',       path: '/trends' },
+                      { icon: Store,          label: 'Marketplace',  path: '/marketplace' },
+                      { icon: Link2,          label: 'Integrations', path: '/integrations' },
                       { icon: HelpCircle,     label: 'Help',       path: '/help' },
                     ].map(({ icon: Icon, label, path }) => (
                       <Link
@@ -200,8 +207,12 @@ export default function Header() {
               <Link to="/dashboard"   className="block px-3 py-2 text-sm text-slate-300 hover:text-white rounded-lg hover:bg-white/5" onClick={() => setMenuOpen(false)}>Dashboard</Link>
               <Link to="/analyze"     className="block px-3 py-2 text-sm text-slate-300 hover:text-white rounded-lg hover:bg-white/5" onClick={() => setMenuOpen(false)}>Analyze</Link>
               <Link to="/cad-to-cost" className="block px-3 py-2 text-sm text-slate-300 hover:text-white rounded-lg hover:bg-white/5" onClick={() => setMenuOpen(false)}>CAD to Cost</Link>
-              <Link to="/trends"      className="block px-3 py-2 text-sm text-slate-300 hover:text-white rounded-lg hover:bg-white/5" onClick={() => setMenuOpen(false)}>Trends</Link>
-              <Link to="/help"        className="block px-3 py-2 text-sm text-slate-300 hover:text-white rounded-lg hover:bg-white/5" onClick={() => setMenuOpen(false)}>Help</Link>
+              <Link to="/cad-diff"    className="block px-3 py-2 text-sm text-slate-300 hover:text-white rounded-lg hover:bg-white/5" onClick={() => setMenuOpen(false)}>CAD Diff</Link>
+              <Link to="/should-cost" className="block px-3 py-2 text-sm text-slate-300 hover:text-white rounded-lg hover:bg-white/5" onClick={() => setMenuOpen(false)}>Should-Cost</Link>
+              <Link to="/trends"       className="block px-3 py-2 text-sm text-slate-300 hover:text-white rounded-lg hover:bg-white/5" onClick={() => setMenuOpen(false)}>Trends</Link>
+              <Link to="/marketplace"  className="block px-3 py-2 text-sm text-slate-300 hover:text-white rounded-lg hover:bg-white/5" onClick={() => setMenuOpen(false)}>Marketplace</Link>
+              <Link to="/integrations" className="block px-3 py-2 text-sm text-slate-300 hover:text-white rounded-lg hover:bg-white/5" onClick={() => setMenuOpen(false)}>Integrations</Link>
+              <Link to="/help"         className="block px-3 py-2 text-sm text-slate-300 hover:text-white rounded-lg hover:bg-white/5" onClick={() => setMenuOpen(false)}>Help</Link>
               <button onClick={() => { toggleTheme(); setMenuOpen(false); }} className="w-full text-left px-3 py-2 text-sm text-slate-300 hover:bg-white/5 rounded-lg">
                 {theme === 'dark' ? '☀️ Light Theme' : '🌙 Dark Theme'}
               </button>

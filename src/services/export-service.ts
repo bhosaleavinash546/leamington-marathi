@@ -852,3 +852,193 @@ export function exportToPdf(result: AnalysisResult, systemName: string, subName:
   const filename = `BrainSpark_${systemName}_${subName}_${today}.pdf`;
   doc.save(filename);
 }
+
+export function exportRfqPdf(
+  result: AnalysisResult,
+  systemName: string,
+  subName: string,
+  approvedIdeas: CostReductionIdea[]
+): void {
+  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+  const today = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' });
+  const PW = 210;
+  const PH = 297;
+  const ML = 18;
+  const MR = 18;
+  const CW = PW - ML - MR;
+
+  const NAVY_RGB: [number, number, number] = [13, 31, 51];
+  const GOLD_RGB: [number, number, number] = [245, 158, 11];
+  const WHITE_RGB: [number, number, number] = [255, 255, 255];
+  const GRAY_RGB: [number, number, number] = [100, 116, 139];
+  const LIGHT_RGB: [number, number, number] = [241, 245, 249];
+
+  function setColor(d: typeof doc, rgb: [number, number, number]) { d.setTextColor(rgb[0], rgb[1], rgb[2]); }
+  function setFill(d: typeof doc, rgb: [number, number, number]) { d.setFillColor(rgb[0], rgb[1], rgb[2]); }
+
+  // Page 1: Cover
+  setFill(doc, NAVY_RGB);
+  doc.rect(0, 0, PW, PH, 'F');
+  setFill(doc, GOLD_RGB);
+  doc.rect(0, PH * 0.4, PW, 1.5, 'F');
+
+  setColor(doc, GOLD_RGB);
+  doc.setFontSize(10);
+  doc.setFont('helvetica', 'bold');
+  doc.text('REQUEST FOR QUOTATION', ML, 80);
+
+  setColor(doc, WHITE_RGB);
+  doc.setFontSize(26);
+  doc.text('Supplier RFQ Package', ML, 95);
+
+  setColor(doc, [200, 210, 220]);
+  doc.setFontSize(12);
+  doc.setFont('helvetica', 'normal');
+  doc.text(`${systemName} — ${subName}`, ML, 108);
+  doc.text(result.config.vehicleType, ML, 118);
+
+  const rfqMeta = [
+    ['Programme', `${systemName}`],
+    ['Vehicle Type', result.config.vehicleType],
+    ['Plant Region', result.config.plantRegion || 'TBC'],
+    ['Annual Volume', result.config.annualVolume ? `${result.config.annualVolume.toLocaleString()} units/yr` : 'TBC'],
+    ['Date Issued', today],
+    ['RFQ Items', `${approvedIdeas.length} cost reduction opportunities`],
+  ];
+
+  let ry = 150;
+  rfqMeta.forEach(([label, value]) => {
+    setColor(doc, GRAY_RGB);
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'normal');
+    doc.text(label, ML, ry);
+    setColor(doc, WHITE_RGB);
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'bold');
+    doc.text(value, ML + 50, ry);
+    ry += 10;
+  });
+
+  setColor(doc, GRAY_RGB);
+  doc.setFontSize(8);
+  doc.setFont('helvetica', 'normal');
+  doc.text('BrainSpark AI Cost Engineering Platform  |  CONFIDENTIAL', PW / 2, PH - 15, { align: 'center' });
+
+  // Pages 2+: One RFQ item per idea
+  approvedIdeas.forEach((idea, idx) => {
+    doc.addPage();
+    // Header bar
+    setFill(doc, NAVY_RGB);
+    doc.rect(0, 0, PW, 28, 'F');
+    setFill(doc, GOLD_RGB);
+    doc.rect(0, 28, PW, 1, 'F');
+
+    setColor(doc, GOLD_RGB);
+    doc.setFontSize(8);
+    doc.setFont('helvetica', 'bold');
+    doc.text(`RFQ ITEM ${idx + 1} OF ${approvedIdeas.length}`, ML, 11);
+
+    setColor(doc, WHITE_RGB);
+    doc.setFontSize(13);
+    const titleLines = doc.splitTextToSize(idea.title, CW - 30);
+    doc.text(titleLines, ML, 21);
+
+    let cy = 40;
+
+    // Difficulty + types
+    setFill(doc, LIGHT_RGB);
+    doc.rect(ML, cy, CW, 22, 'F');
+    setColor(doc, [30, 50, 70]);
+    doc.setFontSize(8);
+    doc.setFont('helvetica', 'bold');
+    doc.text('DIFFICULTY', ML + 4, cy + 7);
+    doc.text('SAVING TYPES', ML + 40, cy + 7);
+    doc.text('TARGET TIMELINE', ML + 100, cy + 7);
+    doc.text('ANNUAL SAVING', ML + 145, cy + 7);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(10);
+    doc.text(idea.implementationDifficulty, ML + 4, cy + 16);
+    doc.text(idea.costSavingTypes.join(', '), ML + 40, cy + 16);
+    doc.text(idea.timeToImplement, ML + 100, cy + 16);
+    doc.text(idea.costSavingPotential.annualValue || 'TBC', ML + 145, cy + 16);
+    cy += 30;
+
+    // Technical specification
+    setColor(doc, NAVY_RGB);
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'bold');
+    doc.text('TECHNICAL SPECIFICATION', ML, cy);
+    cy += 5;
+    setFill(doc, LIGHT_RGB);
+    const descLines = doc.splitTextToSize(idea.technicalDescription, CW);
+    const descH = Math.max(descLines.length * 5 + 8, 25);
+    doc.rect(ML, cy, CW, descH, 'F');
+    setColor(doc, [30, 50, 70]);
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'normal');
+    doc.text(descLines, ML + 4, cy + 6);
+    cy += descH + 6;
+
+    // Manufacturing impact
+    setColor(doc, NAVY_RGB);
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'bold');
+    doc.text('MANUFACTURING & ASSEMBLY IMPACT', ML, cy);
+    cy += 5;
+    const mfgLines = doc.splitTextToSize(idea.manufacturingImpact, CW);
+    const mfgH = Math.max(mfgLines.length * 5 + 8, 20);
+    setFill(doc, LIGHT_RGB);
+    doc.rect(ML, cy, CW, mfgH, 'F');
+    setColor(doc, [30, 50, 70]);
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'normal');
+    doc.text(mfgLines, ML + 4, cy + 6);
+    cy += mfgH + 6;
+
+    // RFQ Requirements
+    setColor(doc, NAVY_RGB);
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'bold');
+    doc.text('SUPPLIER RESPONSE REQUIREMENTS', ML, cy);
+    cy += 6;
+    const reqs = [
+      `1. Confirm technical feasibility for: ${idea.title}`,
+      `2. Provide unit cost breakdown (material / process / overhead)`,
+      `3. State target cost to achieve ${idea.costSavingPotential.percentage || 'stated saving'}`,
+      `4. Detail tooling investment (NRE) required`,
+      `5. Confirm implementation timeline: ${idea.timeToImplement}`,
+      `6. State PPAP level and qualification plan`,
+      `7. Identify risk items: ${idea.riskNotes.slice(0, 100)}`,
+    ];
+    setColor(doc, [50, 70, 90]);
+    doc.setFontSize(8.5);
+    doc.setFont('helvetica', 'normal');
+    reqs.forEach(req => {
+      const reqLines = doc.splitTextToSize(req, CW - 4);
+      doc.text(reqLines, ML + 2, cy);
+      cy += reqLines.length * 5 + 2;
+    });
+
+    // Benchmark reference
+    if (idea.benchmarkReference) {
+      cy += 4;
+      setColor(doc, [100, 60, 0]);
+      doc.setFontSize(8);
+      doc.setFont('helvetica', 'bold');
+      doc.text('INDUSTRY BENCHMARK:', ML, cy);
+      setColor(doc, GRAY_RGB);
+      doc.setFont('helvetica', 'normal');
+      const bmkLines = doc.splitTextToSize(idea.benchmarkReference, CW - 35);
+      doc.text(bmkLines, ML + 38, cy);
+    }
+
+    // Footer
+    setColor(doc, GRAY_RGB);
+    doc.setFontSize(7.5);
+    doc.setFont('helvetica', 'normal');
+    doc.text(`BrainSpark RFQ  |  ${systemName} – ${subName}  |  ${today}  |  Page ${idx + 2}`, PW / 2, PH - 10, { align: 'center' });
+  });
+
+  const filename = `BrainSpark_RFQ_${systemName}_${today.replace(/ /g, '_')}.pdf`;
+  doc.save(filename);
+}

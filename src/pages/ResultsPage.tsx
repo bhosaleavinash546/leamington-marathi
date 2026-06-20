@@ -7,12 +7,12 @@ import {
   ChevronDown, ChevronUp, BarChart3, RefreshCw, Tag,
   Globe, ExternalLink, ChevronRight, Search, DollarSign, Calculator,
   ShieldCheck, BookOpen, FlaskConical, Lightbulb, Scale, Link2,
-  MessageSquare, CheckSquare, XSquare, Bot, Send, Map, Share2
+  MessageSquare, CheckSquare, XSquare, Bot, Send, Map, Share2, ClipboardList
 } from 'lucide-react';
 import TypingDots from '../components/ui/TypingDots';
 import ButtonSpinner from '../components/ui/ButtonSpinner';
 import { AnalysisResult, CostReductionIdea, CostSavingType, Difficulty, SearchSource, ConfidenceLevel, EvidenceSource, IdeaAnnotation, AnnotationStatus, ChatMessage } from '../types';
-import { exportToExcel, exportToPowerPoint, exportToPdf } from '../services/export-service';
+import { exportToExcel, exportToPowerPoint, exportToPdf, exportRfqPdf } from '../services/export-service';
 import { generateCostReductionIdeas, sendChatMessage } from '../services/claude-service';
 import IdeasDashboard from '../components/results/IdeasDashboard';
 import BusinessCaseCalculator from '../components/results/BusinessCaseCalculator';
@@ -167,7 +167,31 @@ function IdeaCard({ idea, index, annotation, onAnnotate }: {
   const [expanded, setExpanded] = useState(false);
   const [showAnnotation, setShowAnnotation] = useState(false);
   const [noteText, setNoteText] = useState(annotation?.note ?? '');
+  const [showSensitivity, setShowSensitivity] = useState(false);
+  const [volumeMul, setVolumeMul] = useState(1.0);
+  const [commodityDelta, setCommodityDelta] = useState(0);
+  const [patentLoading, setPatentLoading] = useState(false);
+  const [patentResult, setPatentResult] = useState<string | null>(null);
   const diff = DIFFICULTY_CONFIG[idea.implementationDifficulty];
+
+  function parseValLocal(val?: string): number {
+    if (!val) return 0;
+    const c = val.toLowerCase().replace(/[€£$,\s%]/g, '');
+    const m = c.match(/([\d.]+)\s*([mk]?)/);
+    if (!m) return 0;
+    const n = parseFloat(m[1]);
+    return n * (m[2] === 'm' ? 1_000_000 : m[2] === 'k' ? 1_000 : 1);
+  }
+  function fmtV(n: number, sym: string): string {
+    if (n >= 1_000_000) return `${sym}${(n / 1_000_000).toFixed(1)}M`;
+    if (n >= 1_000) return `${sym}${Math.round(n / 1_000)}k`;
+    return `${sym}${Math.round(n)}`;
+  }
+
+  const baseSav = parseValLocal(idea.costSavingPotential.annualValue);
+  const sym = idea.costSavingPotential.annualValue?.includes('£') ? '£' : idea.costSavingPotential.annualValue?.includes('$') ? '$' : '€';
+  const isMat = idea.costSavingTypes.includes('material');
+  const adjSav = baseSav * volumeMul * (isMat ? 1 + commodityDelta / 100 : 1);
   const DiffIcon = diff.icon;
 
   return (
@@ -322,6 +346,42 @@ function IdeaCard({ idea, index, annotation, onAnnotate }: {
             </div>
           )}
 
+          <div className="rounded-xl bg-violet-500/5 border border-violet-500/15 p-4">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <ShieldCheck size={13} className="text-violet-400" />
+                <span className="text-violet-300 text-xs font-semibold uppercase tracking-wider">Patent Watch</span>
+              </div>
+              <button
+                onClick={async () => {
+                  const apiKey = localStorage.getItem('brainspark_api_key') || '';
+                  if (!apiKey || patentLoading) return;
+                  setPatentLoading(true);
+                  setPatentResult(null);
+                  try {
+                    const r = await fetch('/api/patent-watch', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ title: idea.title, description: idea.technicalDescription, apiKey }),
+                    });
+                    const d = await r.json();
+                    setPatentResult(d.analysis || d.error || 'No result');
+                  } catch { setPatentResult('Patent search failed. Check server connection.'); }
+                  finally { setPatentLoading(false); }
+                }}
+                disabled={patentLoading}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-violet-500/15 border border-violet-500/25 text-violet-300 text-xs font-medium hover:bg-violet-500/25 transition-colors disabled:opacity-50"
+              >
+                {patentLoading ? <><span className="inline-block w-3 h-3 rounded-full border-2 border-violet-300/40 border-t-violet-300 animate-spin" />Searching...</> : <><Search size={12} />Search Patents</>}
+              </button>
+            </div>
+            {patentResult ? (
+              <p className="text-slate-300 text-xs leading-relaxed">{patentResult}</p>
+            ) : (
+              <p className="text-slate-500 text-xs">Click to search USPTO/EPO for patent risk on this idea. Uses your AI key.</p>
+            )}
+          </div>
+
           <div className="grid grid-cols-2 gap-3 p-3 rounded-xl bg-white/5">
             <div>
               <div className="text-slate-500 text-xs">Qualitative Potential</div>
@@ -398,6 +458,60 @@ function IdeaCard({ idea, index, annotation, onAnnotate }: {
           </div>
         )}
       </div>
+
+      {baseSav > 0 && (
+        <div className="border-t border-white/5">
+          <button onClick={() => setShowSensitivity(v => !v)}
+            className="w-full flex items-center justify-between px-5 py-2.5 hover:bg-white/3 transition-colors group">
+            <div className="flex items-center gap-2">
+              <TrendingDown size={12} className="text-slate-500 group-hover:text-amber-400" />
+              <span className="text-slate-500 text-xs group-hover:text-slate-400">Sensitivity Analysis</span>
+            </div>
+            <div className="flex items-center gap-2">
+              {showSensitivity && <span className="text-amber-400 text-xs font-bold">{fmtV(adjSav, sym)}/yr adjusted</span>}
+              {showSensitivity ? <ChevronUp size={12} className="text-slate-500" /> : <ChevronDown size={12} className="text-slate-500" />}
+            </div>
+          </button>
+          {showSensitivity && (
+            <div className="px-5 pb-5 space-y-4 border-t border-white/5 pt-4">
+              <div>
+                <div className="flex items-center justify-between text-xs mb-2">
+                  <span className="text-slate-400">Volume Multiplier</span>
+                  <span className="text-amber-400 font-semibold">{volumeMul.toFixed(1)}x ({volumeMul >= 1 ? '+' : ''}{Math.round((volumeMul - 1) * 100)}%)</span>
+                </div>
+                <input type="range" min="0.5" max="2" step="0.05" value={volumeMul}
+                  onChange={e => setVolumeMul(Number(e.target.value))}
+                  className="w-full h-1.5 accent-amber-400 cursor-pointer" />
+                <div className="flex justify-between text-slate-600 text-xs mt-1"><span>0.5×</span><span>2.0×</span></div>
+              </div>
+              {isMat && (
+                <div>
+                  <div className="flex items-center justify-between text-xs mb-2">
+                    <span className="text-slate-400">Commodity Price Change</span>
+                    <span className={`font-semibold ${commodityDelta >= 0 ? 'text-red-400' : 'text-green-400'}`}>{commodityDelta >= 0 ? '+' : ''}{commodityDelta}%</span>
+                  </div>
+                  <input type="range" min="-30" max="50" step="1" value={commodityDelta}
+                    onChange={e => setCommodityDelta(Number(e.target.value))}
+                    className="w-full h-1.5 accent-orange-400 cursor-pointer" />
+                  <div className="flex justify-between text-slate-600 text-xs mt-1"><span>-30%</span><span>+50%</span></div>
+                </div>
+              )}
+              <div className="p-3 rounded-xl bg-white/5 flex items-center justify-between">
+                <div>
+                  <div className="text-slate-500 text-xs">Base Annual Saving</div>
+                  <div className="text-slate-300 font-semibold">{fmtV(baseSav, sym)}/yr</div>
+                </div>
+                <div className="text-slate-500 text-sm">→</div>
+                <div className="text-right">
+                  <div className="text-slate-500 text-xs">Adjusted Saving</div>
+                  <div className={`font-bold text-lg ${adjSav > baseSav ? 'text-green-400' : adjSav < baseSav ? 'text-red-400' : 'text-white'}`}>{fmtV(adjSav, sym)}/yr</div>
+                </div>
+              </div>
+              {!isMat && <p className="text-slate-600 text-xs">Commodity slider is only active for material cost saving ideas.</p>}
+            </div>
+          )}
+        </div>
+      )}
     </motion.div>
   );
 }
@@ -490,7 +604,7 @@ export default function ResultsPage() {
   const [filterType, setFilterType] = useState<CostSavingType | 'All'>('All');
   const [filterStatus, setFilterStatus] = useState<AnnotationStatus | 'All'>('All');
   const [sortBy, setSortBy] = useState<'default' | 'roi' | 'savings' | 'ease'>('default');
-  const [exporting, setExporting] = useState<'excel' | 'pptx' | 'pdf' | null>(null);
+  const [exporting, setExporting] = useState<'excel' | 'pptx' | 'pdf' | 'rfq' | null>(null);
   const [annotations, setAnnotations] = useState<Record<string, IdeaAnnotation>>({});
   const [showRefine, setShowRefine] = useState(false);
   const [refineFocus, setRefineFocus] = useState('');
@@ -500,6 +614,7 @@ export default function ResultsPage() {
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
   const [chatInput, setChatInput] = useState('');
   const [chatLoading, setChatLoading] = useState(false);
+  const [crossPollinatedIdeas, setCrossPollinatedIdeas] = useState<CostReductionIdea[]>([]);
   const chatEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -518,6 +633,17 @@ export default function ResultsPage() {
           const saved = localStorage.getItem(`brainspark_annotations_${parsed.id}`);
           if (saved) setAnnotations(JSON.parse(saved));
         } catch {}
+        // Fetch cross-pollinated ideas from other projects
+        const authToken = (() => { try { return JSON.parse(localStorage.getItem('brainspark_auth') || '{}').token; } catch { return null; } })();
+        if (authToken) {
+          fetch(`/api/projects/${parsed.id}/cross-pollinate`, {
+            method: 'POST',
+            headers: { Authorization: `Bearer ${authToken}` },
+          })
+            .then(r => r.ok ? r.json() : null)
+            .then(data => { if (data?.ideas?.length > 0) setCrossPollinatedIdeas(data.ideas.slice(0, 3)); })
+            .catch(() => {});
+        }
       }
     } catch {
       navigate('/analyze');
@@ -572,6 +698,16 @@ export default function ResultsPage() {
   const handlePdfExport = async () => {
     setExporting('pdf');
     try { await Promise.resolve(exportToPdf(result, systemName, subName)); } finally { setExporting(null); }
+  };
+
+  const handleRfqExport = () => {
+    const approved = result.ideas.filter(idea => (annotations[idea.id]?.status ?? 'pending') === 'approved');
+    if (approved.length === 0) {
+      alert('No approved ideas found. Annotate at least one idea as "Approved" on the Results page to generate an RFQ package.');
+      return;
+    }
+    setExporting('rfq');
+    try { exportRfqPdf(result, systemName, subName, approved); } finally { setExporting(null); }
   };
 
   const handleAnnotate = (ideaId: string, annotation: IdeaAnnotation) => {
@@ -763,6 +899,15 @@ export default function ResultsPage() {
                 <FileDown size={16} />
                 {exporting === 'pdf' ? 'Exporting...' : 'PDF'}
               </button>
+              <button
+                onClick={handleRfqExport}
+                disabled={!!exporting}
+                className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-violet-700 hover:bg-violet-600 disabled:opacity-50 text-white font-semibold text-sm transition-all hover:scale-105"
+                title="Export RFQ package for all Approved ideas"
+              >
+                <ClipboardList size={16} />
+                {exporting === 'rfq' ? 'Generating...' : 'RFQ Pack'}
+              </button>
             </div>
           </div>
         </div>
@@ -804,6 +949,19 @@ export default function ResultsPage() {
             <span className="text-blue-300 text-sm">
               <strong>{searchUsedCount} ideas</strong> are grounded in live internet data — current material costs, OEM benchmarks, and technology trends fetched during analysis.
             </span>
+          </div>
+        )}
+
+        {/* Cross-pollination notification */}
+        {crossPollinatedIdeas.length > 0 && (
+          <div className="mb-5 p-4 rounded-2xl bg-purple-500/10 border border-purple-500/20">
+            <div className="flex items-start gap-3">
+              <Lightbulb size={18} className="text-purple-400 flex-shrink-0 mt-0.5" />
+              <div>
+                <p className="text-purple-300 font-semibold text-sm">Cross-Programme Ideas Available</p>
+                <p className="text-slate-400 text-sm mt-0.5">{crossPollinatedIdeas.length} idea{crossPollinatedIdeas.length !== 1 ? 's' : ''} from your other projects may apply here: {crossPollinatedIdeas.map(i => i.title).join(' · ')}</p>
+              </div>
+            </div>
           </div>
         )}
 

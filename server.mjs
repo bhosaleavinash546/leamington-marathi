@@ -1478,6 +1478,155 @@ async function seedAdminAccount() {
   console.log('   Admin account ready: admin@autocost.ai');
 }
 
+// ─── PATENT WATCH ─────────────────────────────────────────────────────────────
+
+app.post('/api/patent-watch', rateLimit(20, 60 * 60 * 1000), async (req, res) => {
+  const { title, description, apiKey } = req.body;
+  if (!title || !apiKey) return res.status(400).json({ error: 'title and apiKey required' });
+  try {
+    const client = new Anthropic({ apiKey });
+    const msg = await client.messages.create({
+      model: 'claude-opus-4-8',
+      max_tokens: 600,
+      messages: [{
+        role: 'user',
+        content: `You are a patent risk analyst for automotive engineering. Analyse this cost reduction idea for potential IP/patent risk:
+
+Title: ${title}
+Description: ${description}
+
+Provide a concise patent risk assessment (3-4 sentences) covering:
+1. Likelihood of existing patents covering this approach (low/medium/high risk)
+2. Key patent holders that may have IP in this space (cite 1-2 specific companies/patent families if known)
+3. Recommended freedom-to-operate action
+Keep it practical and actionable for an engineering team.`,
+      }],
+    });
+    const analysis = msg.content[0]?.type === 'text' ? msg.content[0].text : 'Analysis unavailable';
+    res.json({ analysis });
+  } catch (e) {
+    res.status(500).json({ error: e.message || 'Patent search failed' });
+  }
+});
+
+// ─── SHOULD-COST ──────────────────────────────────────────────────────────────
+
+app.post('/api/should-cost', rateLimit(30, 60 * 60 * 1000), async (req, res) => {
+  const { partName, material, process, weightKg, annualVolume, quotedCost, region, currency, apiKey } = req.body;
+  if (!partName || !material || !process || !weightKg || !annualVolume || !apiKey) {
+    return res.status(400).json({ error: 'Missing required fields' });
+  }
+  try {
+    const client = new Anthropic({ apiKey });
+    const prompt = `You are an automotive cost engineering expert specialising in should-cost modelling. Build a bottom-up should-cost estimate for this part:
+
+Part: ${partName}
+Material: ${material}
+Process: ${process}
+Part weight: ${weightKg} kg
+Annual volume: ${annualVolume.toLocaleString()} units/year
+Plant region: ${region}
+Currency: ${currency}
+${quotedCost ? `Supplier quoted cost: ${currency} ${quotedCost} per unit` : ''}
+
+Return ONLY a JSON object with these exact fields (no markdown):
+{
+  "materialCost": "${currency} X.XX",
+  "processCost": "${currency} X.XX",
+  "overheadCost": "${currency} X.XX",
+  "totalShouldCost": "${currency} X.XX",
+  ${quotedCost ? '"gapVsQuote": "±X.XX (X%)",' : ''}
+  "explanation": "2-3 sentence explanation of the breakdown",
+  "assumptions": ["assumption 1", "assumption 2", "assumption 3"],
+  "negotiationLeverage": "1-2 sentences on negotiation strategy based on the gap"
+}`;
+    const msg = await client.messages.create({
+      model: 'claude-opus-4-8',
+      max_tokens: 800,
+      messages: [{ role: 'user', content: prompt }],
+    });
+    const text = msg.content[0]?.type === 'text' ? msg.content[0].text : '{}';
+    const clean = text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+    const data = JSON.parse(clean);
+    res.json(data);
+  } catch (e) {
+    res.status(500).json({ error: e.message || 'Calculation failed' });
+  }
+});
+
+// ─── WEBHOOK TEST ─────────────────────────────────────────────────────────────
+
+app.post('/api/webhooks/test', requireAuth, async (req, res) => {
+  const { url, type } = req.body;
+  if (!url) return res.status(400).json({ error: 'url required' });
+  try {
+    const payload = type === 'teams'
+      ? { '@type': 'MessageCard', '@context': 'https://schema.org/extensions', summary: 'BrainSpark Test', text: '✅ BrainSpark webhook connected successfully!' }
+      : { text: '✅ BrainSpark webhook connected successfully!' };
+    const r = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+    res.json({ ok: r.ok, status: r.status });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+// ─── CAD Diff Analysis ───────────────────────────────────────────────────────
+app.post('/api/cad-diff', rateLimit(15, 60 * 60 * 1000), async (req, res) => {
+  const { designA, designB, apiKey } = req.body;
+  if (!designA || !designB || !apiKey) return res.status(400).json({ error: 'designA, designB, and apiKey required' });
+  try {
+    const client = new Anthropic({ apiKey });
+    const prompt = `You are an automotive DFMA expert. Two design revisions are described. Identify key geometric, process, and material differences then generate cost reduction ideas driven by those deltas.
+
+DESIGN A (Current): ${designA}
+DESIGN B (Proposed): ${designB}
+
+Return a JSON array of 4-6 ideas. Each: {"title":"...","delta":"...","saving":"...","difficulty":"Low|Medium|High","action":"..."}
+Return ONLY the JSON array with no markdown fences.`;
+    const msg = await client.messages.create({
+      model: 'claude-opus-4-8', max_tokens: 1200,
+      messages: [{ role: 'user', content: prompt }],
+    });
+    const text = msg.content[0]?.type === 'text' ? msg.content[0].text : '[]';
+    const clean = text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+    res.json({ ideas: JSON.parse(clean) });
+  } catch (e) {
+    res.status(500).json({ error: e.message || 'Analysis failed' });
+  }
+});
+
+// ─── Cross-Pollination ────────────────────────────────────────────────────────
+app.post('/api/projects/:id/cross-pollinate', requireAuth, (req, res) => {
+  const { id } = req.params;
+  const userId = req.user.userId;
+  try {
+    const target = db.prepare('SELECT * FROM projects WHERE id = ? AND userId = ?').get(id, userId);
+    if (!target) return res.status(404).json({ error: 'Project not found' });
+    const targetIdeas = JSON.parse(target.ideas);
+    const targetNorms = targetIdeas.map(i => i.title.toLowerCase().replace(/[^a-z0-9]/g, ' ').trim());
+    const others = db.prepare('SELECT * FROM projects WHERE userId = ? AND id != ? ORDER BY createdAt DESC LIMIT 10').all(userId, id);
+    const crossIdeas = [];
+    for (const other of others) {
+      const otherIdeas = JSON.parse(other.ideas);
+      for (const idea of otherIdeas) {
+        const norm = idea.title.toLowerCase().replace(/[^a-z0-9]/g, ' ').trim();
+        const normWords = norm.split(' ').filter(w => w.length > 4);
+        const already = targetNorms.some(tn => {
+          const tnWords = new Set(tn.split(' ').filter(w => w.length > 4));
+          const overlap = normWords.filter(w => tnWords.has(w)).length;
+          return overlap >= 2 && overlap / Math.max(normWords.length, tnWords.size) > 0.4;
+        });
+        if (!already) {
+          crossIdeas.push({ ...idea, sourceProject: `${other.systemName} — ${other.subassemblyName}`, crossPollinated: true });
+        }
+      }
+    }
+    res.json({ ideas: crossIdeas.slice(0, 5), sourceCount: others.length });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
 // ─── START ────────────────────────────────────────────────────────────────────
 
 app.listen(PORT, async () => {
