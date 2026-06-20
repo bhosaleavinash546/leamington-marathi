@@ -99,6 +99,45 @@ db.exec(`
   );
 `);
 
+// Migrate: add annotations column to projects
+try { db.exec(`ALTER TABLE projects ADD COLUMN annotations TEXT DEFAULT '{}'`); } catch {}
+
+// Create marketplace_ideas table
+db.exec(`
+  CREATE TABLE IF NOT EXISTS marketplace_ideas (
+    id TEXT PRIMARY KEY,
+    title TEXT NOT NULL,
+    system TEXT,
+    costSavingType TEXT,
+    annualSaving TEXT,
+    difficulty TEXT,
+    timeToImplement TEXT,
+    description TEXT,
+    submittedBy TEXT,
+    verified INTEGER DEFAULT 0,
+    stars INTEGER DEFAULT 0,
+    status TEXT DEFAULT 'approved',
+    createdAt TEXT NOT NULL
+  );
+`);
+
+// Seed marketplace with curated ideas if empty
+const mktCount = db.prepare('SELECT COUNT(*) as c FROM marketplace_ideas').get();
+if (mktCount.c === 0) {
+  const seedIdeas = [
+    { id: 'mkt1', title: 'Roll-formed B-pillar replacing stamped assemblies', system: 'Body Structure', costSavingType: 'Process', annualSaving: '€1.2M', difficulty: 'Medium', timeToImplement: '12–18 months', description: 'Replace multi-piece stamped B-pillar assembly with single roll-formed profile. Reduces part count by 4, eliminates 3 spot-weld fixtures, saves 18% on direct labour.', submittedBy: 'community', verified: 1, stars: 47 },
+    { id: 'mkt2', title: 'Aluminium 6061-T6 front crash box replacing steel', system: 'Chassis', costSavingType: 'Material + Weight', annualSaving: '€840k', difficulty: 'Low', timeToImplement: '6–12 months', description: 'Extrusion-based crash box in Al 6061-T6 delivers same NCAP crash performance at 2.1 kg weight saving per vehicle. OEM benchmark: Volvo XC60 (2022).', submittedBy: 'community', verified: 1, stars: 34 },
+    { id: 'mkt3', title: 'Integrated wiper motor bracket via die casting', system: 'Electrical', costSavingType: 'Complexity', annualSaving: '€520k', difficulty: 'Low', timeToImplement: '0–6 months', description: 'Consolidate 3 wiper linkage brackets into a single Al die casting, eliminating 6 fasteners and 2 assembly operations.', submittedBy: 'community', verified: 0, stars: 28 },
+    { id: 'mkt4', title: 'Laser-welded tailored blank door inner panel', system: 'Body Structure', costSavingType: 'Material + Process', annualSaving: '€1.6M', difficulty: 'High', timeToImplement: '18–24 months', description: 'Laser-welded tailored blank consolidates 4-piece door inner into 1 press hit. Proven at BMW 3-Series (G20), Toyota Corolla e-TNGA.', submittedBy: 'community', verified: 1, stars: 61 },
+    { id: 'mkt5', title: 'Common seat rail across SUV and sedan variants', system: 'Interior', costSavingType: 'Commonisation', annualSaving: '€700k', difficulty: 'Medium', timeToImplement: '12–18 months', description: 'Platform-shared seat rail eliminates variant-specific tooling, reduces Tier-1 piece cost by 8% through volume pooling.', submittedBy: 'community', verified: 0, stars: 19 },
+    { id: 'mkt6', title: 'Overmoulded rubber seal replacing multi-piece assembly', system: 'Body Sealing', costSavingType: 'Process', annualSaving: '€380k', difficulty: 'Low', timeToImplement: '3–9 months', description: 'Single-shot TPE overmoulded seal on door frame replaces 3-clip + adhesive assembly. Reduces leak risk and eliminates rework line.', submittedBy: 'community', verified: 1, stars: 22 },
+  ];
+  const insertIdea = db.prepare("INSERT INTO marketplace_ideas (id,title,system,costSavingType,annualSaving,difficulty,timeToImplement,description,submittedBy,verified,stars,status,createdAt) VALUES (?,?,?,?,?,?,?,?,?,?,?,'approved',?)");
+  for (const i of seedIdeas) {
+    insertIdea.run(i.id, i.title, i.system, i.costSavingType, i.annualSaving, i.difficulty, i.timeToImplement, i.description, i.submittedBy, i.verified, i.stars, new Date().toISOString());
+  }
+}
+
 const CACHE_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
 
 function analysisCache(key) {
@@ -1415,7 +1454,24 @@ app.get('/api/projects/:id', requireAuth, (req, res) => {
     ideas: JSON.parse(row.ideas),
     sources: JSON.parse(row.sources),
     summary: JSON.parse(row.summary),
+    annotations: JSON.parse(row.annotations || '{}'),
   });
+});
+
+app.patch('/api/projects/:id/annotations', requireAuth, (req, res) => {
+  const { id } = req.params;
+  const userId = req.user.userId;
+  const { annotations } = req.body;
+  if (!annotations || typeof annotations !== 'object') return res.status(400).json({ error: 'annotations object required' });
+  try {
+    const project = db.prepare('SELECT id FROM projects WHERE id = ? AND userId = ?').get(id, userId);
+    if (!project) return res.status(404).json({ error: 'Project not found' });
+    db.prepare('UPDATE projects SET annotations = ?, updatedAt = ? WHERE id = ?')
+      .run(JSON.stringify(annotations), new Date().toISOString(), id);
+    res.json({ ok: true });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
 });
 
 app.delete('/api/projects/:id', requireAuth, (req, res) => {
@@ -1625,6 +1681,51 @@ app.post('/api/projects/:id/cross-pollinate', requireAuth, (req, res) => {
   } catch (e) {
     res.status(500).json({ error: e.message });
   }
+});
+
+// ─── TEARDOWN VISION ─────────────────────────────────────────────────────────
+
+app.post('/api/teardown-vision', requireAuth, rateLimit(10, 60 * 60 * 1000), async (req, res) => {
+  const { imageBase64, mimeType, apiKey } = req.body;
+  if (!imageBase64 || !apiKey) return res.status(400).json({ error: 'imageBase64 and apiKey required' });
+  try {
+    const client = new Anthropic({ apiKey });
+    const msg = await client.messages.create({
+      model: 'claude-opus-4-8',
+      max_tokens: 700,
+      messages: [{
+        role: 'user',
+        content: [
+          { type: 'image', source: { type: 'base64', media_type: mimeType || 'image/jpeg', data: imageBase64 } },
+          { type: 'text', text: 'You are an automotive manufacturing engineer doing a competitor teardown analysis. Examine this part photo and describe: (1) Manufacturing process (stamping/casting/moulding/welding/etc.), (2) Likely material and grade, (3) Part count and assembly method visible, (4) Key design features and DFMA opportunities vs standard practice, (5) Estimated weight class. Be specific and technical — 3 concise paragraphs. This description will feed directly into AI cost reduction idea generation.' },
+        ],
+      }],
+    });
+    const description = msg.content[0]?.type === 'text' ? msg.content[0].text : '';
+    res.json({ description });
+  } catch (e) {
+    res.status(500).json({ error: e.message || 'Vision analysis failed' });
+  }
+});
+
+// ─── MARKETPLACE ──────────────────────────────────────────────────────────────
+
+app.get('/api/marketplace', (req, res) => {
+  try {
+    const ideas = db.prepare("SELECT * FROM marketplace_ideas WHERE status = 'approved' ORDER BY stars DESC, createdAt DESC").all();
+    res.json(ideas.map(i => ({ ...i, verified: !!i.verified })));
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+app.post('/api/marketplace', requireAuth, rateLimit(5, 60 * 60 * 1000), (req, res) => {
+  const { title, system, costSavingType, annualSaving, difficulty, timeToImplement, description } = req.body;
+  if (!title || !description) return res.status(400).json({ error: 'title and description required' });
+  try {
+    const id = crypto.randomUUID();
+    db.prepare('INSERT INTO marketplace_ideas (id,title,system,costSavingType,annualSaving,difficulty,timeToImplement,description,submittedBy,verified,stars,status,createdAt) VALUES (?,?,?,?,?,?,?,?,?,0,0,"pending",?)')
+      .run(id, title, system || '', costSavingType || '', annualSaving || '', difficulty || 'Medium', timeToImplement || '', description, req.user.userId, new Date().toISOString());
+    res.json({ ok: true, message: 'Idea submitted for review. Thank you!' });
+  } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
 // ─── START ────────────────────────────────────────────────────────────────────

@@ -13,7 +13,9 @@ export default function Header() {
   const { theme, toggleTheme } = useTheme();
   const [menuOpen, setMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [toolsOpen, setToolsOpen] = useState(false);
   const userMenuRef = useRef<HTMLDivElement>(null);
+  const toolsRef = useRef<HTMLDivElement>(null);
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -31,6 +33,16 @@ export default function Header() {
     function onClickOutside(e: MouseEvent) {
       if (userMenuRef.current && !userMenuRef.current.contains(e.target as Node)) {
         setUserMenuOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', onClickOutside);
+    return () => document.removeEventListener('mousedown', onClickOutside);
+  }, []);
+
+  useEffect(() => {
+    function onClickOutside(e: MouseEvent) {
+      if (toolsRef.current && !toolsRef.current.contains(e.target as Node)) {
+        setToolsOpen(false);
       }
     }
     document.addEventListener('mousedown', onClickOutside);
@@ -67,42 +79,48 @@ export default function Header() {
                 {[
                   { path: '/dashboard', label: 'Dashboard' },
                   { path: '/analyze', label: 'Analyze' },
-                  { path: '/bom-analysis', label: 'BOM Batch' },
-                  { path: '/cad-to-cost', label: 'CAD to Cost' },
-                  { path: '/cad-diff', label: 'CAD Diff' },
-                  { path: '/should-cost', label: 'Should-Cost' },
-                  { path: '/trends', label: 'Trends' },
                   { path: '/marketplace', label: 'Marketplace' },
-                  { path: '/help', label: 'Help' },
                 ].map(({ path, label }) => (
-                  <Link
-                    key={path}
-                    to={path}
-                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                      isActive(path)
-                        ? 'bg-gold-500/20 text-gold-400'
-                        : 'text-slate-300 hover:text-white hover:bg-white/5'
-                    }`}
-                  >
+                  <Link key={path} to={path}
+                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${isActive(path) ? 'bg-gold-500/20 text-gold-400' : 'text-slate-300 hover:text-white hover:bg-white/5'}`}>
                     {label}
                   </Link>
                 ))}
+
+                {/* Tools dropdown */}
+                <div className="relative" ref={toolsRef}>
+                  <button onClick={() => setToolsOpen(v => !v)}
+                    className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-all ${['/bom-analysis','/cad-to-cost','/cad-diff','/should-cost','/trends'].some(p => isActive(p)) ? 'bg-gold-500/20 text-gold-400' : 'text-slate-300 hover:text-white hover:bg-white/5'}`}>
+                    Tools <ChevronDown size={13} className={`transition-transform ${toolsOpen ? 'rotate-180' : ''}`} />
+                  </button>
+                  {toolsOpen && (
+                    <div className="absolute top-full left-0 mt-1.5 w-48 rounded-xl bg-navy-800 border border-white/10 shadow-2xl shadow-black/50 py-1 overflow-hidden z-50">
+                      {[
+                        { path: '/bom-analysis', label: 'BOM Batch' },
+                        { path: '/cad-to-cost', label: 'CAD to Cost' },
+                        { path: '/cad-diff', label: 'CAD Diff' },
+                        { path: '/should-cost', label: 'Should-Cost' },
+                        { path: '/trends', label: 'Trends' },
+                      ].map(({ path, label }) => (
+                        <Link key={path} to={path} onClick={() => setToolsOpen(false)}
+                          className={`block px-4 py-2.5 text-sm transition-colors ${isActive(path) ? 'text-gold-400 bg-gold-500/10' : 'text-slate-300 hover:text-white hover:bg-white/5'}`}>
+                          {label}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                <Link to="/help"
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${isActive('/help') ? 'bg-gold-500/20 text-gold-400' : 'text-slate-300 hover:text-white hover:bg-white/5'}`}>
+                  Help
+                </Link>
               </>
             ) : (
               <>
-                {[
-                  { path: '/', label: 'Home' },
-                  { path: '/help', label: 'Help' },
-                ].map(({ path, label }) => (
-                  <Link
-                    key={path}
-                    to={path}
-                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                      isActive(path)
-                        ? 'bg-gold-500/20 text-gold-400'
-                        : 'text-slate-300 hover:text-white hover:bg-white/5'
-                    }`}
-                  >
+                {[{ path: '/', label: 'Home' }, { path: '/help', label: 'Help' }].map(({ path, label }) => (
+                  <Link key={path} to={path}
+                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${isActive(path) ? 'bg-gold-500/20 text-gold-400' : 'text-slate-300 hover:text-white hover:bg-white/5'}`}>
                     {label}
                   </Link>
                 ))}

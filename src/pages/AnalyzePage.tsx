@@ -122,6 +122,7 @@ export default function AnalyzePage() {
   const [voiceActive, setVoiceActive] = useState(false);
   const [teardownFile, setTeardownFile] = useState<File | null>(null);
   const [dfmeaFile, setDfmeaFile] = useState<File | null>(null);
+  const [dfmeaContent, setDfmeaContent] = useState<string>('');
   const [apiKey, setApiKey] = useState(() => localStorage.getItem('brainspark_api_key') || '');
   const [searchApiKey, setSearchApiKey] = useState(() => localStorage.getItem('brainspark_brave_key') || '');
   const [showApiKey, setShowApiKey] = useState(false);
@@ -241,11 +242,39 @@ export default function AnalyzePage() {
     try {
       let contextWithTeardown = additionalContext;
       if (teardownFile) {
-        contextWithTeardown = `${additionalContext ? additionalContext + '\n\n' : ''}TEARDOWN ANALYSIS: User has uploaded a competitor part photo named "${teardownFile.name}". Generate additional ideas based on competitive benchmarking — analyse what process, material grade, and design simplification changes competitors may have made.`;
+        try {
+          const reader = new FileReader();
+          const base64: string = await new Promise((resolve, reject) => {
+            reader.onload = () => {
+              const result = reader.result as string;
+              resolve(result.split(',')[1]);
+            };
+            reader.onerror = reject;
+            reader.readAsDataURL(teardownFile);
+          });
+          const mimeType = teardownFile.type || 'image/jpeg';
+          const authToken = (() => { try { return JSON.parse(localStorage.getItem('brainspark_auth') || '{}').token; } catch { return ''; } })();
+          const visionResp = await fetch('/api/teardown-vision', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${authToken}` },
+            body: JSON.stringify({ imageBase64: base64, mimeType, apiKey }),
+          });
+          if (visionResp.ok) {
+            const { description } = await visionResp.json();
+            contextWithTeardown = `${additionalContext ? additionalContext + '\n\n' : ''}COMPETITOR TEARDOWN ANALYSIS — "${teardownFile.name}":\n${description}\n\nUse this teardown analysis to generate additional competitive benchmarking cost reduction ideas. Cite the specific observations above as evidence.`;
+          } else {
+            contextWithTeardown = `${additionalContext ? additionalContext + '\n\n' : ''}TEARDOWN ANALYSIS: Competitor part photo "${teardownFile.name}" attached — generate competitive benchmarking ideas.`;
+          }
+        } catch {
+          contextWithTeardown = `${additionalContext ? additionalContext + '\n\n' : ''}TEARDOWN ANALYSIS: Competitor part photo "${teardownFile.name}" attached — generate competitive benchmarking ideas.`;
+        }
       }
       let contextFinal = contextWithTeardown;
       if (dfmeaFile) {
-        contextFinal = `${contextWithTeardown ? contextWithTeardown + '\n\n' : ''}DFMEA REVIEW: A DFMEA/DVP&R file "${dfmeaFile.name}" has been uploaded. Cross-reference cost reduction ideas against typical DFMEA risk items for this system. Flag any ideas that could introduce new failure modes (RPN increase) in riskNotes. Prioritise ideas that also reduce existing warranty risks.`;
+        const dfmeaSection = dfmeaContent
+          ? `DFMEA REVIEW — "${dfmeaFile.name}":\n${dfmeaContent}\nCross-reference your cost reduction ideas against these specific failure modes. Flag in riskNotes any ideas that could increase RPN on the listed failure modes. Prioritise ideas that directly reduce the highest-RPN items.`
+          : `DFMEA REVIEW: A DFMEA/DVP&R file "${dfmeaFile.name}" has been uploaded. Cross-reference cost reduction ideas against typical DFMEA risk items for this system. Flag any ideas that could introduce new failure modes in riskNotes.`;
+        contextFinal = `${contextWithTeardown ? contextWithTeardown + '\n\n' : ''}${dfmeaSection}`;
       }
 
       const config: AnalysisConfig = {
@@ -674,7 +703,37 @@ export default function AnalyzePage() {
                     </div>
                   ) : (
                     <label className="flex items-center gap-3 p-3 rounded-lg border border-dashed border-red-500/25 cursor-pointer hover:border-red-500/40 hover:bg-red-500/5 transition-all">
-                      <input type="file" accept=".xlsx,.xls,.csv" className="hidden" onChange={e => setDfmeaFile(e.target.files?.[0] || null)} />
+                      <input type="file" accept=".xlsx,.xls,.csv" className="hidden" onChange={async e => {
+                      const file = e.target.files?.[0] || null;
+                      setDfmeaFile(file);
+                      setDfmeaContent('');
+                      if (!file) return;
+                      try {
+                        const arrayBuffer = await file.arrayBuffer();
+                        const { read, utils } = await import('xlsx');
+                        const wb = read(arrayBuffer);
+                        const sheet = wb.Sheets[wb.SheetNames[0]];
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        const rows: any[] = utils.sheet_to_json(sheet, { defval: '' });
+                        // Find key columns by fuzzy header matching
+                        const headers = rows.length > 0 ? Object.keys(rows[0]) : [];
+                        const findCol = (...keywords: string[]) => headers.find(h => keywords.some(k => h.toLowerCase().includes(k))) || '';
+                        const fnCol = findCol('function', 'item', 'component');
+                        const fmCol = findCol('failure mode', 'failure', 'mode');
+                        const efCol = findCol('effect', 'impact');
+                        const rpnCol = findCol('rpn', 'risk priority');
+                        const topRows = rows
+                          .filter(r => r[fmCol] || r[fnCol])
+                          .sort((a, b) => (Number(b[rpnCol]) || 0) - (Number(a[rpnCol]) || 0))
+                          .slice(0, 15);
+                        const summary = topRows.map((r, i) =>
+                          `${i + 1}. Function: ${r[fnCol] || 'N/A'} | Failure Mode: ${r[fmCol] || 'N/A'} | Effect: ${r[efCol] || 'N/A'} | RPN: ${r[rpnCol] || 'N/A'}`
+                        ).join('\n');
+                        setDfmeaContent(summary ? `Top ${topRows.length} risk items (sorted by RPN):\n${summary}` : `Loaded ${rows.length} DFMEA rows (columns: ${headers.slice(0, 6).join(', ')})`);
+                      } catch {
+                        setDfmeaContent(`DFMEA file attached: ${file.name} (parse failed — content injected as filename reference)`);
+                      }
+                    }} />
                       <Upload size={14} className="text-red-400" />
                       <span className="text-slate-400 text-sm">Upload DFMEA/DVP&R Excel or CSV</span>
                     </label>

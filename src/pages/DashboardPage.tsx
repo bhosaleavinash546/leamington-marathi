@@ -54,7 +54,7 @@ export default function DashboardPage() {
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [sharingId, setSharingId] = useState<string | null>(null);
   const [shareUrl, setShareUrl] = useState<string | null>(null);
-  const [savingsPipeline, setSavingsPipeline] = useState({ total: 0, investigating: 0, approved: 0 });
+  const [savingsPipeline, setSavingsPipeline] = useState({ total: 0, investigating: 0, approved: 0, committedSavings: 0, investigatingSavings: 0 });
   const [viewMode, setViewMode] = useState<'list' | 'rollup'>('list');
 
   useEffect(() => {
@@ -76,17 +76,33 @@ export default function DashboardPage() {
   }, []);
 
   useEffect(() => {
-    let total = 0, investigating = 0, approved = 0;
+    function parseAnnual(val?: string): number {
+      if (!val) return 0;
+      const c = (val || '').toLowerCase().replace(/[€£$,\s]/g, '');
+      const m = c.match(/([\d.]+)([mk]?)/);
+      if (!m) return 0;
+      const n = parseFloat(m[1]);
+      return n * (m[2] === 'm' ? 1_000_000 : m[2] === 'k' ? 1_000 : 1);
+    }
+
+    let total = 0, investigating = 0, approved = 0, committedSavings = 0, investigatingSavings = 0;
     serverProjects.forEach(p => {
       let annotations: Record<string, { status: string }> = {};
+      let ideas: Array<{ id: string; costSavingPotential?: { annualValue?: string } }> = [];
       try { annotations = JSON.parse(localStorage.getItem(`brainspark_annotations_${p.id}`) || '{}'); } catch {}
-      const approvedCount = Object.values(annotations).filter(a => a.status === 'approved').length;
-      const investigatingCount = Object.values(annotations).filter(a => a.status === 'investigating').length;
+      try { ideas = JSON.parse(localStorage.getItem(`brainspark_ideas_${p.id}`) || '[]'); } catch {}
+
+      const ideaValueMap: Record<string, number> = {};
+      ideas.forEach(i => { ideaValueMap[i.id] = parseAnnual(i.costSavingPotential?.annualValue); });
+
       total += p.summary?.totalIdeas || 0;
-      approved += approvedCount;
-      investigating += investigatingCount;
+      Object.entries(annotations).forEach(([ideaId, ann]) => {
+        const val = ideaValueMap[ideaId] || 0;
+        if (ann.status === 'approved') { approved++; committedSavings += val; }
+        if (ann.status === 'investigating') { investigating++; investigatingSavings += val; }
+      });
     });
-    setSavingsPipeline({ total, investigating, approved });
+    setSavingsPipeline({ total, investigating, approved, committedSavings, investigatingSavings });
   }, [serverProjects]);
 
   async function deleteProject(id: string) {
@@ -132,6 +148,9 @@ export default function DashboardPage() {
       }));
       sessionStorage.setItem('analysisSystemName', p.systemName);
       sessionStorage.setItem('analysisSubName', p.subassemblyName);
+      if (Array.isArray(project.ideas)) {
+        localStorage.setItem(`brainspark_ideas_${id}`, JSON.stringify(project.ideas));
+      }
       navigate('/results');
     } catch {}
   }
@@ -239,8 +258,34 @@ export default function DashboardPage() {
                 </div>
               ))}
             </div>
-            {savingsPipeline.approved === 0 && savingsPipeline.total > 0 && (
-              <p className="mt-3 text-slate-600 text-xs">Annotate ideas on the Results page to track your pipeline. Mark ideas as "Investigating" or "Approved" to see them appear here.</p>
+            {(savingsPipeline.committedSavings > 0 || savingsPipeline.investigatingSavings > 0) && (
+              <div className="mt-4 pt-4 border-t border-white/8 grid grid-cols-2 gap-4">
+                <div className="p-3 rounded-xl bg-emerald-500/8 border border-emerald-500/15">
+                  <div className="text-emerald-400 text-xs font-semibold uppercase tracking-wider mb-1">Committed Savings</div>
+                  <div className="text-emerald-300 text-2xl font-black">
+                    {savingsPipeline.committedSavings >= 1_000_000
+                      ? `€${(savingsPipeline.committedSavings / 1_000_000).toFixed(1)}M`
+                      : savingsPipeline.committedSavings >= 1_000
+                      ? `€${Math.round(savingsPipeline.committedSavings / 1_000)}k`
+                      : `€${Math.round(savingsPipeline.committedSavings)}`}/yr
+                  </div>
+                  <div className="text-slate-500 text-xs mt-0.5">{savingsPipeline.approved} approved idea{savingsPipeline.approved !== 1 ? 's' : ''}</div>
+                </div>
+                <div className="p-3 rounded-xl bg-amber-500/8 border border-amber-500/15">
+                  <div className="text-amber-400 text-xs font-semibold uppercase tracking-wider mb-1">Under Investigation</div>
+                  <div className="text-amber-300 text-2xl font-black">
+                    {savingsPipeline.investigatingSavings >= 1_000_000
+                      ? `€${(savingsPipeline.investigatingSavings / 1_000_000).toFixed(1)}M`
+                      : savingsPipeline.investigatingSavings >= 1_000
+                      ? `€${Math.round(savingsPipeline.investigatingSavings / 1_000)}k`
+                      : `€${Math.round(savingsPipeline.investigatingSavings)}`}/yr
+                  </div>
+                  <div className="text-slate-500 text-xs mt-0.5">{savingsPipeline.investigating} idea{savingsPipeline.investigating !== 1 ? 's' : ''}</div>
+                </div>
+              </div>
+            )}
+            {savingsPipeline.committedSavings === 0 && savingsPipeline.total > 0 && (
+              <p className="mt-3 text-slate-600 text-xs">Open any project and annotate ideas as "Approved" to see your committed savings total here.</p>
             )}
           </motion.div>
         )}

@@ -376,9 +376,17 @@ function IdeaCard({ idea, index, annotation, onAnnotate }: {
               </button>
             </div>
             {patentResult ? (
-              <p className="text-slate-300 text-xs leading-relaxed">{patentResult}</p>
+              <>
+                <p className="text-slate-300 text-xs leading-relaxed">{patentResult}</p>
+                <div className="mt-3 p-2.5 rounded-lg bg-amber-500/8 border border-amber-500/20 flex items-start gap-2">
+                  <AlertTriangle size={11} className="text-amber-400 flex-shrink-0 mt-0.5" />
+                  <p className="text-amber-300/80 text-xs leading-relaxed">
+                    <strong>Not legal advice.</strong> This is an AI-generated awareness check only — Claude does not have real-time USPTO/EPO access and may cite inaccurate patent numbers. Always commission a formal Freedom-to-Operate opinion from a qualified patent attorney before engineering commitment.
+                  </p>
+                </div>
+              </>
             ) : (
-              <p className="text-slate-500 text-xs">Click to search USPTO/EPO for patent risk on this idea. Uses your AI key.</p>
+              <p className="text-slate-500 text-xs">Click to search USPTO/EPO for patent risk on this idea. Uses your AI key. <span className="text-amber-400">AI awareness only — not legal FTO advice.</span></p>
             )}
           </div>
 
@@ -633,9 +641,19 @@ export default function ResultsPage() {
           const saved = localStorage.getItem(`brainspark_annotations_${parsed.id}`);
           if (saved) setAnnotations(JSON.parse(saved));
         } catch {}
-        // Fetch cross-pollinated ideas from other projects
         const authToken = (() => { try { return JSON.parse(localStorage.getItem('brainspark_auth') || '{}').token; } catch { return null; } })();
         if (authToken) {
+          // Hydrate annotations from server (overrides localStorage if server has data)
+          fetch(`/api/projects/${parsed.id}`, { headers: { Authorization: `Bearer ${authToken}` } })
+            .then(r => r.ok ? r.json() : null)
+            .then(proj => {
+              if (proj?.annotations && Object.keys(proj.annotations).length > 0) {
+                setAnnotations(proj.annotations);
+                try { localStorage.setItem(`brainspark_annotations_${parsed.id}`, JSON.stringify(proj.annotations)); } catch {}
+              }
+            })
+            .catch(() => {});
+          // Fetch cross-pollinated ideas from other projects
           fetch(`/api/projects/${parsed.id}/cross-pollinate`, {
             method: 'POST',
             headers: { Authorization: `Bearer ${authToken}` },
@@ -714,9 +732,15 @@ export default function ResultsPage() {
     const updated = { ...annotations, [ideaId]: annotation };
     setAnnotations(updated);
     if (result?.id) {
-      try {
-        localStorage.setItem(`brainspark_annotations_${result.id}`, JSON.stringify(updated));
-      } catch {}
+      try { localStorage.setItem(`brainspark_annotations_${result.id}`, JSON.stringify(updated)); } catch {}
+      const authToken = (() => { try { return JSON.parse(localStorage.getItem('brainspark_auth') || '{}').token; } catch { return null; } })();
+      if (authToken) {
+        fetch(`/api/projects/${result.id}/annotations`, {
+          method: 'PATCH',
+          headers: { Authorization: `Bearer ${authToken}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ annotations: updated }),
+        }).catch(() => {});
+      }
     }
   };
 
