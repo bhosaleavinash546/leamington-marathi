@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Calculator, ChevronDown, Loader2 } from 'lucide-react';
+import { Calculator, ChevronDown } from 'lucide-react';
+import ButtonSpinner from '../components/ui/ButtonSpinner';
 
 const MATERIALS = ['Steel (mild)', 'Steel (high-strength)', 'Aluminium 6061', 'Aluminium 7075', 'Magnesium AZ31', 'Polypropylene (PP)', 'PA6 (Nylon)', 'ABS', 'CFRP (Carbon Fibre)', 'Stainless Steel 304'];
 const PROCESSES = ['Stamping / Deep Drawing', 'Die Casting (Aluminium)', 'Die Casting (Zinc)', 'Injection Moulding', 'Roll Forming', 'Hydroforming', 'Laser Cutting + Bending', 'Forging (Hot)', 'Forging (Cold)', 'Machining (CNC)', 'MIG Welding Assembly', 'Resistance Spot Welding', 'Extrusion'];
@@ -136,7 +137,7 @@ export default function ShouldCostPage() {
 
             <button onClick={handleCalc} disabled={loading || !partName || !weightKg || !annualVolume}
               className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-teal-600 hover:bg-teal-500 disabled:opacity-50 text-white font-semibold text-sm transition-all hover:scale-[1.02]">
-              {loading ? <><Loader2 size={16} className="animate-spin" /> Calculating...</> : <><Calculator size={16} /> Calculate Should-Cost</>}
+              {loading ? <><ButtonSpinner size={16} /> Calculating...</> : <><Calculator size={16} /> Calculate Should-Cost</>}
             </button>
           </div>
 
@@ -150,7 +151,7 @@ export default function ShouldCostPage() {
             )}
             {loading && (
               <div className="h-full flex flex-col items-center justify-center gap-3 py-12">
-                <Loader2 size={32} className="text-teal-400 animate-spin" />
+                <ButtonSpinner size={32} />
                 <p className="text-slate-400 text-sm">AI is building your should-cost model…</p>
               </div>
             )}
