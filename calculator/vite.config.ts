@@ -1,8 +1,12 @@
 import { defineConfig } from 'vite';
 
+const isMobile = process.env.BUILD_TARGET === 'mobile';
+
 export default defineConfig({
   root: '.',
-  base: '/calculator/',
+  // Capacitor's WebView loads from the file system root, so base must be '/'
+  // Web deployment under /calculator/ keeps the original path.
+  base: isMobile ? '/' : '/calculator/',
   build: {
     outDir: 'dist',
     rollupOptions: { input: 'index.html' },

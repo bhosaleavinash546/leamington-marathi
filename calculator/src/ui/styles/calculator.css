@@ -4734,3 +4734,57 @@ input, select, textarea { font-size: 0.88rem !important; }  /* enforce legible i
 .comm-sub,
 .tile-label,
 .demo-card-process-label { color: var(--text-muted) !important; }
+
+
+/* ═══════════════════════════════════════════════════════
+   MOBILE / CAPACITOR — safe-area & touch adjustments
+   ═══════════════════════════════════════════════════════ */
+
+/* Respect iOS notch / Dynamic Island / Android cutout */
+body {
+  padding-top:    env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-left:   env(safe-area-inset-left);
+  padding-right:  env(safe-area-inset-right);
+}
+
+/* Prevent text selection on taps (buttons, tabs, tiles) */
+button, .ctab, .rtab, .cpicker-tile, .demo-card,
+.summary-card, .kpi-card, nav {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* Increase tap targets to ≥44px on mobile */
+@media (pointer: coarse) {
+  button, .ctab, .rtab, select, input[type="checkbox"] {
+    min-height: 44px;
+  }
+
+  /* Make table cells easier to tap */
+  td, th { padding: 10px 8px !important; }
+
+  /* Wider touch area on close/back icons */
+  .modal-close, .back-btn { padding: 10px !important; }
+}
+
+/* Horizontal scrolling tables on small screens */
+@media (max-width: 640px) {
+  .dyn-table, .ops-table, .trace-table,
+  .detail-table, .compare-table {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Stack KPI cards vertically on phones */
+  .kpi-row, .kpi-grid {
+    flex-wrap: wrap;
+  }
+
+  /* Collapse side-by-side form grids to single column */
+  .field-row, .form-grid-2 {
+    grid-template-columns: 1fr !important;
+    flex-direction: column;
+  }
+}

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+  <!-- Allow cleartext HTTP only to your own dev server on the local network -->
+  <domain-config cleartextTrafficPermitted="true">
+    <domain includeSubdomains="true">192.168.1.0/24</domain>
+  </domain-config>
+  <!-- All other traffic must use HTTPS -->
+  <base-config cleartextTrafficPermitted="false" />
+</network-security-config>
