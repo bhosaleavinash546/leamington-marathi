@@ -433,6 +433,8 @@ export default function ResultsPage() {
   const [subName, setSubName] = useState('');
   const [filterDifficulty, setFilterDifficulty] = useState<Difficulty | 'All'>('All');
   const [filterType, setFilterType] = useState<CostSavingType | 'All'>('All');
+  const [filterStatus, setFilterStatus] = useState<AnnotationStatus | 'All'>('All');
+  const [sortBy, setSortBy] = useState<'default' | 'roi' | 'savings' | 'ease'>('default');
   const [exporting, setExporting] = useState<'excel' | 'pptx' | 'pdf' | null>(null);
   const [annotations, setAnnotations] = useState<Record<string, IdeaAnnotation>>({});
   const [showRefine, setShowRefine] = useState(false);
@@ -473,11 +475,34 @@ export default function ResultsPage() {
 
   if (!result) return null;
 
-  const filtered = result.ideas.filter(idea => {
-    const matchDiff = filterDifficulty === 'All' || idea.implementationDifficulty === filterDifficulty;
-    const matchType = filterType === 'All' || idea.costSavingTypes.includes(filterType);
-    return matchDiff && matchType;
-  });
+  function parseAnnualValue(val?: string): number {
+    if (!val) return 0;
+    const clean = val.toLowerCase().replace(/[€£$,\s%]/g, '');
+    const m = clean.match(/([\d.]+)\s*([mk]?)/);
+    if (!m) return 0;
+    const n = parseFloat(m[1]);
+    return n * (m[2] === 'm' ? 1_000_000 : m[2] === 'k' ? 1_000 : 1);
+  }
+  const DIFF_RANK: Record<Difficulty, number> = { Low: 1, Medium: 3, High: 9 };
+
+  const filtered = result.ideas
+    .filter(idea => {
+      const matchDiff = filterDifficulty === 'All' || idea.implementationDifficulty === filterDifficulty;
+      const matchType = filterType === 'All' || idea.costSavingTypes.includes(filterType);
+      const ann = annotations[idea.id];
+      const matchStatus = filterStatus === 'All' || (ann?.status ?? 'pending') === filterStatus;
+      return matchDiff && matchType && matchStatus;
+    })
+    .sort((a, b) => {
+      if (sortBy === 'roi') {
+        const rA = parseAnnualValue(a.costSavingPotential.annualValue) / DIFF_RANK[a.implementationDifficulty];
+        const rB = parseAnnualValue(b.costSavingPotential.annualValue) / DIFF_RANK[b.implementationDifficulty];
+        return rB - rA;
+      }
+      if (sortBy === 'savings') return parseAnnualValue(b.costSavingPotential.annualValue) - parseAnnualValue(a.costSavingPotential.annualValue);
+      if (sortBy === 'ease') return DIFF_RANK[a.implementationDifficulty] - DIFF_RANK[b.implementationDifficulty];
+      return 0;
+    });
 
   const handleExcelExport = async () => {
     setExporting('excel');
@@ -685,34 +710,65 @@ export default function ResultsPage() {
           </div>
         )}
 
-        {/* Filters */}
-        <div className="flex flex-wrap items-center gap-3 mb-6 p-4 bg-navy-900 border border-white/10 rounded-2xl">
-          <div className="flex items-center gap-2 text-slate-400 text-sm font-medium flex-shrink-0">
-            <Filter size={14} /> Filter:
+        {/* Filters + Sort */}
+        <div className="flex flex-col gap-3 mb-6 p-4 bg-navy-900 border border-white/10 rounded-2xl">
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="flex items-center gap-2 text-slate-400 text-sm font-medium flex-shrink-0">
+              <Filter size={14} /> Filter:
+            </div>
+            <div className="flex flex-wrap gap-1.5">
+              {(['All', 'Low', 'Medium', 'High'] as const).map(d => (
+                <motion.button key={d} onClick={() => setFilterDifficulty(d)}
+                  whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}
+                  transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+                  className={`px-3 py-1 rounded-lg text-xs font-medium border transition-colors ${filterDifficulty === d ? 'bg-gold-500/20 text-gold-400 border-gold-500/30' : 'text-slate-400 border-white/10 hover:border-white/25 hover:text-white'}`}>
+                  {d === 'All' ? 'All Difficulty' : d}
+                </motion.button>
+              ))}
+            </div>
+            <div className="w-px h-4 bg-white/10 hidden sm:block" />
+            <div className="flex flex-wrap gap-1.5">
+              {(['All', 'material', 'process', 'tooling', 'weight', 'complexity', 'warranty', 'logistics', 'commonisation'] as const).map(t => (
+                <motion.button key={t} onClick={() => setFilterType(t)}
+                  whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}
+                  transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+                  className={`px-3 py-1 rounded-lg text-xs font-medium border capitalize transition-colors ${filterType === t ? 'bg-gold-500/20 text-gold-400 border-gold-500/30' : 'text-slate-400 border-white/10 hover:border-white/25 hover:text-white'}`}>
+                  {t === 'All' ? 'All Types' : t}
+                </motion.button>
+              ))}
+            </div>
+            <div className="ml-auto flex items-center gap-1.5 text-slate-500 text-xs">
+              <RefreshCw size={11} /> {filtered.length}/{result.ideas.length}
+            </div>
           </div>
-          <div className="flex flex-wrap gap-1.5">
-            {(['All', 'Low', 'Medium', 'High'] as const).map(d => (
-              <motion.button key={d} onClick={() => setFilterDifficulty(d)}
-                whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}
-                transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-                className={`px-3 py-1 rounded-lg text-xs font-medium border transition-colors ${filterDifficulty === d ? 'bg-gold-500/20 text-gold-400 border-gold-500/30' : 'text-slate-400 border-white/10 hover:border-white/25 hover:text-white'}`}>
-                {d === 'All' ? 'All Difficulty' : d}
-              </motion.button>
-            ))}
-          </div>
-          <div className="w-px h-4 bg-white/10 hidden sm:block" />
-          <div className="flex flex-wrap gap-1.5">
-            {(['All', 'material', 'process', 'tooling', 'weight', 'complexity', 'warranty', 'logistics', 'commonisation'] as const).map(t => (
-              <motion.button key={t} onClick={() => setFilterType(t)}
-                whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}
-                transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-                className={`px-3 py-1 rounded-lg text-xs font-medium border capitalize transition-colors ${filterType === t ? 'bg-gold-500/20 text-gold-400 border-gold-500/30' : 'text-slate-400 border-white/10 hover:border-white/25 hover:text-white'}`}>
-                {t === 'All' ? 'All Types' : t}
-              </motion.button>
-            ))}
-          </div>
-          <div className="ml-auto flex items-center gap-1.5 text-slate-500 text-xs">
-            <RefreshCw size={11} /> {filtered.length}/{result.ideas.length}
+          <div className="flex flex-wrap items-center gap-3 pt-2 border-t border-white/6">
+            <div className="flex items-center gap-2 text-slate-400 text-xs font-medium flex-shrink-0">
+              <Tag size={12} /> Status:
+            </div>
+            <div className="flex flex-wrap gap-1.5">
+              {(['All', 'pending', 'investigating', 'approved', 'rejected', 'on-hold'] as const).map(s => (
+                <motion.button key={s} onClick={() => setFilterStatus(s)}
+                  whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}
+                  transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+                  className={`px-3 py-1 rounded-lg text-xs font-medium border transition-colors ${filterStatus === s ? 'bg-gold-500/20 text-gold-400 border-gold-500/30' : 'text-slate-400 border-white/10 hover:border-white/25 hover:text-white'}`}>
+                  {s === 'All' ? 'All Status' : ANNOTATION_STATUS_CONFIG[s].label}
+                </motion.button>
+              ))}
+            </div>
+            <div className="w-px h-4 bg-white/10 hidden sm:block" />
+            <div className="flex items-center gap-2 text-slate-400 text-xs font-medium flex-shrink-0">
+              <BarChart3 size={12} /> Sort:
+            </div>
+            <div className="flex flex-wrap gap-1.5">
+              {([['default', 'AI Order'], ['roi', 'Best ROI'], ['savings', 'Highest Savings'], ['ease', 'Easiest First']] as const).map(([key, label]) => (
+                <motion.button key={key} onClick={() => setSortBy(key)}
+                  whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}
+                  transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+                  className={`px-3 py-1 rounded-lg text-xs font-medium border transition-colors ${sortBy === key ? 'bg-violet-500/20 text-violet-400 border-violet-500/30' : 'text-slate-400 border-white/10 hover:border-white/25 hover:text-white'}`}>
+                  {label}
+                </motion.button>
+              ))}
+            </div>
           </div>
         </div>
 

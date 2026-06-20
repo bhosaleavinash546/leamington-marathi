@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ChevronRight, TrendingDown, Clock, BarChart3, Lightbulb, ArrowRight, Star, BookOpen, Target, Activity, Trash2 } from 'lucide-react';
+import { ChevronRight, TrendingDown, Clock, BarChart3, Lightbulb, ArrowRight, Star, BookOpen, Target, Activity, Trash2, Share2 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { loadFullResult } from '../services/claude-service';
 
@@ -12,6 +12,16 @@ interface RecentAnalysis {
   partName?: string;
   ideasCount: number;
   date: string;
+}
+
+interface ServerProject {
+  id: string;
+  systemName: string;
+  subassemblyName: string;
+  partName?: string;
+  vehicleType?: string;
+  summary: { totalIdeas: number; quickWins: number; strategicItems: number };
+  generatedAt: string;
 }
 
 const TIPS = [
@@ -35,13 +45,75 @@ export default function DashboardPage() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [recentAnalyses, setRecentAnalyses] = useState<RecentAnalysis[]>([]);
+  const [serverProjects, setServerProjects] = useState<ServerProject[]>([]);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [sharingId, setSharingId] = useState<string | null>(null);
+  const [shareUrl, setShareUrl] = useState<string | null>(null);
 
   useEffect(() => {
+    // Load localStorage fallback
     try {
       const stored = localStorage.getItem('brainspark_recent_analyses');
       if (stored) setRecentAnalyses(JSON.parse(stored));
     } catch {}
+    // Load server projects
+    const token = (() => {
+      try { return JSON.parse(localStorage.getItem('brainspark_auth') || '{}').token; } catch { return null; }
+    })();
+    if (token) {
+      fetch('/api/projects', { headers: { Authorization: `Bearer ${token}` } })
+        .then(r => r.ok ? r.json() : [])
+        .then(data => setServerProjects(Array.isArray(data) ? data : []))
+        .catch(() => {});
+    }
   }, []);
+
+  async function deleteProject(id: string) {
+    const token = (() => {
+      try { return JSON.parse(localStorage.getItem('brainspark_auth') || '{}').token; } catch { return null; }
+    })();
+    if (!token) return;
+    setDeletingId(id);
+    try {
+      await fetch(`/api/projects/${id}`, { method: 'DELETE', headers: { Authorization: `Bearer ${token}` } });
+      setServerProjects(prev => prev.filter(p => p.id !== id));
+    } finally { setDeletingId(null); }
+  }
+
+  async function shareProject(id: string) {
+    const token = (() => {
+      try { return JSON.parse(localStorage.getItem('brainspark_auth') || '{}').token; } catch { return null; }
+    })();
+    if (!token) return;
+    setSharingId(id);
+    try {
+      const r = await fetch(`/api/projects/${id}/share`, {
+        method: 'POST', headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ expiryDays: 30 }),
+      });
+      const data = await r.json();
+      setShareUrl(`${window.location.origin}${data.shareUrl}`);
+    } finally { setSharingId(null); }
+  }
+
+  async function openServerProject(id: string, p: ServerProject) {
+    const token = (() => {
+      try { return JSON.parse(localStorage.getItem('brainspark_auth') || '{}').token; } catch { return null; }
+    })();
+    if (!token) return;
+    try {
+      const r = await fetch(`/api/projects/${id}`, { headers: { Authorization: `Bearer ${token}` } });
+      if (!r.ok) return;
+      const project = await r.json();
+      sessionStorage.setItem('analysisResult', JSON.stringify({
+        id: project.id, config: project.config, ideas: project.ideas, sources: project.sources,
+        summary: project.summary, generatedAt: project.generatedAt,
+      }));
+      sessionStorage.setItem('analysisSystemName', p.systemName);
+      sessionStorage.setItem('analysisSubName', p.subassemblyName);
+      navigate('/results');
+    } catch {}
+  }
 
   function clearHistory() {
     localStorage.removeItem('brainspark_recent_analyses');
@@ -90,8 +162,8 @@ export default function DashboardPage() {
           {[
             { icon: TrendingDown, label: 'Systems Covered', value: '13', sub: 'BIW to Next-Gen EV', color: 'text-gold-400', bg: 'bg-gold-500/10' },
             { icon: Lightbulb,   label: 'Parts Catalogued', value: '260+', sub: 'across all systems', color: 'text-blue-400', bg: 'bg-blue-500/10' },
-            { icon: BarChart3,   label: 'Analyses Run', value: String(recentAnalyses.length), sub: 'saved locally', color: 'text-emerald-400', bg: 'bg-emerald-500/10' },
-            { icon: Star,        label: 'Export Formats', value: '3', sub: 'Excel, PowerPoint & PDF', color: 'text-purple-400', bg: 'bg-purple-500/10' },
+            { icon: BarChart3,   label: 'Projects Saved', value: String(serverProjects.length || recentAnalyses.length), sub: 'cloud-synced', color: 'text-emerald-400', bg: 'bg-emerald-500/10' },
+            { icon: Star,        label: 'Total Ideas', value: String(serverProjects.reduce((s, p) => s + (p.summary?.totalIdeas || 0), 0) || '—'), sub: 'across all projects', color: 'text-purple-400', bg: 'bg-purple-500/10' },
           ].map(({ icon: Icon, label, value, sub, color, bg }) => (
             <div key={label} className="rounded-xl bg-navy-900 border border-white/8 p-5 flex items-start gap-4">
               <div className={`w-10 h-10 rounded-lg ${bg} flex items-center justify-center flex-shrink-0`}>
@@ -127,7 +199,14 @@ export default function DashboardPage() {
               )}
             </div>
 
-            {recentAnalyses.length === 0 ? (
+            {shareUrl && (
+              <div className="mb-4 p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center gap-3">
+                <span className="text-emerald-400 text-xs flex-1 truncate">{shareUrl}</span>
+                <button onClick={() => { navigator.clipboard.writeText(shareUrl); }} className="text-xs text-emerald-400 hover:text-white border border-emerald-500/30 px-2 py-1 rounded-lg transition-colors">Copy</button>
+                <button onClick={() => setShareUrl(null)} className="text-slate-500 hover:text-white transition-colors text-xs">✕</button>
+              </div>
+            )}
+            {serverProjects.length === 0 && recentAnalyses.length === 0 ? (
               <div className="text-center py-12 text-slate-500">
                 <img src="/brainspark-logo.svg" className="w-8 h-8 mx-auto mb-3 opacity-30" alt="" />
                 <p className="text-sm">No analyses yet.</p>
@@ -135,6 +214,38 @@ export default function DashboardPage() {
                 <Link to="/analyze" className="inline-flex items-center gap-1 mt-4 text-gold-400 text-sm hover:text-gold-300 transition-colors">
                   Start now <ChevronRight size={14} />
                 </Link>
+              </div>
+            ) : serverProjects.length > 0 ? (
+              <div className="space-y-3">
+                {serverProjects.slice(0, 10).map((p) => (
+                  <div key={p.id} className="flex items-center justify-between p-4 rounded-xl bg-navy-800 border border-white/5 hover:border-gold-500/30 cursor-pointer transition-all group"
+                    onClick={() => openServerProject(p.id, p)}>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-white text-sm font-medium group-hover:text-gold-300 transition-colors truncate">
+                        {p.systemName} › {p.subassemblyName}{p.partName ? ` › ${p.partName}` : ''}
+                      </p>
+                      <div className="flex items-center gap-3 mt-0.5">
+                        {p.vehicleType && <span className="text-gold-500 text-xs">{p.vehicleType}</span>}
+                        <span className="text-slate-500 text-xs">{new Date(p.generatedAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 flex-shrink-0 ml-3">
+                      <span className="text-xs text-emerald-400 font-medium">{p.summary?.totalIdeas || 0} ideas</span>
+                      {p.summary?.quickWins > 0 && <span className="text-xs text-green-400">{p.summary.quickWins} QW</span>}
+                      <button onClick={e => { e.stopPropagation(); shareProject(p.id); }}
+                        disabled={sharingId === p.id}
+                        className="p-1.5 rounded-lg hover:bg-white/8 text-slate-500 hover:text-blue-400 transition-colors">
+                        <Share2 size={13} />
+                      </button>
+                      <button onClick={e => { e.stopPropagation(); deleteProject(p.id); }}
+                        disabled={deletingId === p.id}
+                        className="p-1.5 rounded-lg hover:bg-white/8 text-slate-500 hover:text-red-400 transition-colors">
+                        <Trash2 size={13} />
+                      </button>
+                      <ChevronRight size={14} className="text-slate-600 group-hover:text-gold-400 transition-colors" />
+                    </div>
+                  </div>
+                ))}
               </div>
             ) : (
               <div className="space-y-3">
@@ -148,9 +259,7 @@ export default function DashboardPage() {
                         sessionStorage.setItem('analysisSystemName', a.systemName);
                         sessionStorage.setItem('analysisSubName', a.subassemblyName);
                         navigate('/results');
-                      } else {
-                        navigate('/analyze');
-                      }
+                      } else { navigate('/analyze'); }
                     }}
                     className="flex items-center justify-between p-4 rounded-xl bg-navy-800 border border-white/5 hover:border-gold-500/30 cursor-pointer transition-all group"
                   >

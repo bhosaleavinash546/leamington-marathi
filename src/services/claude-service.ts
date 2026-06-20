@@ -133,9 +133,11 @@ export async function generateCostReductionIdeas(
       }
 
       if (data.type === 'complete') {
-        const ideas = (data as unknown as { ideas: CostReductionIdea[] }).ideas;
-        const sources = (data as unknown as { sources: SearchSource[] }).sources;
-        const resultId = saveRecentAnalysis(systemName, subassemblyName, partName, ideas.length);
+        const ideas = (data as unknown as { ideas: CostReductionIdea[]; projectId?: string }).ideas;
+        const sources = (data as unknown as { sources: SearchSource[]; projectId?: string }).sources;
+        const serverProjectId = (data as unknown as { projectId?: string }).projectId;
+        const resultId = serverProjectId || saveRecentAnalysis(systemName, subassemblyName, partName, ideas.length);
+        saveRecentAnalysis(systemName, subassemblyName, partName, ideas.length, resultId);
         return { ideas, sources, resultId };
       }
       if (data.type === 'error') {

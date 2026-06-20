@@ -14,6 +14,7 @@ import Anthropic from '@anthropic-ai/sdk';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import nodemailer from 'nodemailer';
+import Database from 'better-sqlite3';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -60,7 +61,70 @@ setInterval(() => {
 const PORT        = process.env.PORT        || 3001;
 const JWT_SECRET  = process.env.JWT_SECRET  || 'autocost-ai-dev-secret-2025';
 const USERS_FILE  = path.join(__dirname, 'users.json');
-const APP_VERSION = '2.2.0';
+const APP_VERSION = '3.0.0';
+
+// ─── SQLite Database ──────────────────────────────────────────────────────────
+const DATA_DIR = path.join(__dirname, 'data');
+fs.mkdirSync(DATA_DIR, { recursive: true });
+const db = new Database(path.join(DATA_DIR, 'brainspark.db'));
+db.pragma('journal_mode = WAL');
+db.exec(`
+  CREATE TABLE IF NOT EXISTS projects (
+    id TEXT PRIMARY KEY,
+    userId TEXT NOT NULL,
+    systemName TEXT,
+    subassemblyName TEXT,
+    partName TEXT,
+    vehicleType TEXT,
+    config TEXT NOT NULL,
+    ideas TEXT NOT NULL,
+    sources TEXT NOT NULL,
+    summary TEXT NOT NULL,
+    generatedAt TEXT NOT NULL,
+    createdAt TEXT NOT NULL,
+    updatedAt TEXT NOT NULL
+  );
+  CREATE TABLE IF NOT EXISTS analysis_cache (
+    cacheKey TEXT PRIMARY KEY,
+    ideas TEXT NOT NULL,
+    sources TEXT NOT NULL,
+    createdAt TEXT NOT NULL
+  );
+  CREATE TABLE IF NOT EXISTS share_tokens (
+    token TEXT PRIMARY KEY,
+    projectId TEXT NOT NULL,
+    createdBy TEXT NOT NULL,
+    expiresAt TEXT,
+    createdAt TEXT NOT NULL
+  );
+`);
+
+const CACHE_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
+
+function analysisCache(key) {
+  const row = db.prepare('SELECT ideas, sources, createdAt FROM analysis_cache WHERE cacheKey = ?').get(key);
+  if (!row) return null;
+  if (Date.now() - new Date(row.createdAt).getTime() > CACHE_TTL_MS) {
+    db.prepare('DELETE FROM analysis_cache WHERE cacheKey = ?').run(key);
+    return null;
+  }
+  return { ideas: JSON.parse(row.ideas), sources: JSON.parse(row.sources) };
+}
+
+function setAnalysisCache(key, ideas, sources) {
+  db.prepare('INSERT OR REPLACE INTO analysis_cache (cacheKey, ideas, sources, createdAt) VALUES (?, ?, ?, ?)')
+    .run(key, JSON.stringify(ideas), JSON.stringify(sources), new Date().toISOString());
+}
+
+function buildCacheKey(config, systemName, subName, partName) {
+  const payload = JSON.stringify({
+    sys: systemName, sub: subName, part: partName || '',
+    vehicle: config.vehicleType || '', body: config.bodyStyle || '',
+    vol: config.annualVolume || '', region: config.plantRegion || '',
+    currency: config.currency || '', ctx: (config.additionalContext || '').slice(0, 200),
+  });
+  return crypto.createHash('sha256').update(payload).digest('hex');
+}
 
 if (JWT_SECRET === 'autocost-ai-dev-secret-2025') {
   console.warn('   ⚠️  WARNING: Using default JWT secret — set JWT_SECRET env var before deploying to production.');
@@ -1103,6 +1167,28 @@ function sanitize(s, maxLen = 500) {
 
 const ANALYZE_TIMEOUT_MS = 120_000;
 
+function autoSaveProject(userId, projectId, systemName, subassemblyName, partName, config, ideas, sources) {
+  try {
+    const now = new Date().toISOString();
+    const summary = {
+      totalIdeas: ideas.length,
+      quickWins: ideas.filter(i => i.implementationDifficulty === 'Low').length,
+      strategicItems: ideas.filter(i => i.implementationDifficulty === 'High').length,
+      searchesPerformed: sources.length,
+    };
+    const safeConfig = { ...config, apiKey: '[redacted]' };
+    db.prepare(`INSERT OR REPLACE INTO projects
+      (id, userId, systemName, subassemblyName, partName, vehicleType, config, ideas, sources, summary, generatedAt, createdAt, updatedAt)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`).run(
+      projectId, userId, systemName, subassemblyName, partName || '', config.vehicleType || '',
+      JSON.stringify(safeConfig), JSON.stringify(ideas), JSON.stringify(sources),
+      JSON.stringify(summary), now, now, now,
+    );
+  } catch (err) {
+    console.error('[autoSaveProject]', err.message);
+  }
+}
+
 app.post('/api/analyze', requireAuth, async (req, res) => {
   const { config, systemName, subassemblyName, partName, enableSearch, searchApiKey, cadGeometry } = req.body;
   if (!config?.apiKey?.trim()) return res.status(400).json({ error: 'Anthropic API key is required.' });
@@ -1125,6 +1211,21 @@ app.post('/api/analyze', requireAuth, async (req, res) => {
   }
 
   refreshPriceCache(searchApiKey).catch(() => {});
+
+  // Check cache (only when search is disabled — search results are time-sensitive)
+  if (!enableSearch && !cadGeometry) {
+    const cacheKey = buildCacheKey(config, sysName, subName, prtName);
+    const cached = analysisCache(cacheKey);
+    if (cached) {
+      emit({ type: 'connecting', message: 'Loading cached analysis…' });
+      emit({ type: 'synthesizing', message: 'Restoring from cache…' });
+      const projectId = crypto.randomUUID();
+      autoSaveProject(req.user.id, projectId, sysName, subName, prtName, config, cached.ideas, cached.sources);
+      emit({ type: 'complete', ideas: cached.ideas, sources: cached.sources, projectId, cached: true });
+      res.end();
+      return;
+    }
+  }
 
   const client = new Anthropic({ apiKey: config.apiKey });
   const messages = [{ role: 'user', content: buildAnalysisPrompt(config, sysName, subName, prtName, enableSearch, cadGeometry) }];
@@ -1164,11 +1265,22 @@ app.post('/api/analyze', requireAuth, async (req, res) => {
         const jsonEnd = raw.lastIndexOf(']');
         if (jsonStart !== -1 && jsonEnd > jsonStart) raw = raw.slice(jsonStart, jsonEnd + 1);
         const ideas = JSON.parse(raw);
+
+        // Auto-save project to DB
+        const projectId = crypto.randomUUID();
+        autoSaveProject(req.user.id, projectId, sysName, subName, prtName, config, ideas, sources);
+
+        // Cache when search was disabled (results are deterministic)
+        if (!enableSearch && !cadGeometry) {
+          const cacheKey = buildCacheKey(config, sysName, subName, prtName);
+          setAnalysisCache(cacheKey, ideas, sources);
+        }
+
         if (useSSE) {
-          emit({ type: 'complete', ideas, sources });
+          emit({ type: 'complete', ideas, sources, projectId });
           res.end();
         } else {
-          return res.json({ ideas, sources });
+          return res.json({ ideas, sources, projectId });
         }
         return;
       }
@@ -1267,6 +1379,79 @@ RULES:
 // ─── HEALTH & VERSION ─────────────────────────────────────────────────────────
 
 app.get('/api/health', (_, res) => res.json({ status: 'ok', version: APP_VERSION, timestamp: new Date().toISOString() }));
+
+// ─── PROJECT CRUD ─────────────────────────────────────────────────────────────
+
+app.post('/api/projects', requireAuth, (req, res) => {
+  const { id, systemName, subassemblyName, partName, vehicleType, config, ideas, sources, summary, generatedAt } = req.body;
+  if (!ideas || !config) return res.status(400).json({ error: 'ideas and config are required.' });
+  const projectId = id || crypto.randomUUID();
+  const now = new Date().toISOString();
+  db.prepare(`INSERT OR REPLACE INTO projects
+    (id, userId, systemName, subassemblyName, partName, vehicleType, config, ideas, sources, summary, generatedAt, createdAt, updatedAt)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`).run(
+    projectId, req.user.id, systemName || '', subassemblyName || '', partName || '', vehicleType || '',
+    JSON.stringify(config), JSON.stringify(ideas), JSON.stringify(sources || []), JSON.stringify(summary || {}),
+    generatedAt || now, now, now,
+  );
+  res.json({ id: projectId });
+});
+
+app.get('/api/projects', requireAuth, (req, res) => {
+  const rows = db.prepare(
+    'SELECT id, systemName, subassemblyName, partName, vehicleType, summary, generatedAt, createdAt FROM projects WHERE userId = ? ORDER BY createdAt DESC LIMIT 50'
+  ).all(req.user.id);
+  res.json(rows.map(r => ({ ...r, summary: JSON.parse(r.summary) })));
+});
+
+app.get('/api/projects/:id', requireAuth, (req, res) => {
+  const row = db.prepare('SELECT * FROM projects WHERE id = ? AND userId = ?').get(req.params.id, req.user.id);
+  if (!row) return res.status(404).json({ error: 'Project not found.' });
+  res.json({
+    ...row,
+    config: JSON.parse(row.config),
+    ideas: JSON.parse(row.ideas),
+    sources: JSON.parse(row.sources),
+    summary: JSON.parse(row.summary),
+  });
+});
+
+app.delete('/api/projects/:id', requireAuth, (req, res) => {
+  db.prepare('DELETE FROM projects WHERE id = ? AND userId = ?').run(req.params.id, req.user.id);
+  res.json({ ok: true });
+});
+
+// ─── TEAM SHARING ─────────────────────────────────────────────────────────────
+
+app.post('/api/projects/:id/share', requireAuth, (req, res) => {
+  const row = db.prepare('SELECT id FROM projects WHERE id = ? AND userId = ?').get(req.params.id, req.user.id);
+  if (!row) return res.status(404).json({ error: 'Project not found.' });
+  const { expiryDays = 30 } = req.body;
+  const token = crypto.randomBytes(24).toString('base64url');
+  const expiresAt = new Date(Date.now() + expiryDays * 24 * 60 * 60 * 1000).toISOString();
+  db.prepare('INSERT INTO share_tokens (token, projectId, createdBy, expiresAt, createdAt) VALUES (?, ?, ?, ?, ?)')
+    .run(token, req.params.id, req.user.id, expiresAt, new Date().toISOString());
+  res.json({ token, shareUrl: `/shared/${token}`, expiresAt });
+});
+
+app.get('/api/shared/:token', (req, res) => {
+  const shareRow = db.prepare('SELECT * FROM share_tokens WHERE token = ?').get(req.params.token);
+  if (!shareRow) return res.status(404).json({ error: 'Share link not found or expired.' });
+  if (shareRow.expiresAt && Date.now() > new Date(shareRow.expiresAt).getTime()) {
+    return res.status(410).json({ error: 'This share link has expired.' });
+  }
+  const project = db.prepare('SELECT * FROM projects WHERE id = ?').get(shareRow.projectId);
+  if (!project) return res.status(404).json({ error: 'Project no longer exists.' });
+  res.json({
+    ...project,
+    config: JSON.parse(project.config),
+    ideas: JSON.parse(project.ideas),
+    sources: JSON.parse(project.sources),
+    summary: JSON.parse(project.summary),
+    sharedBy: shareRow.createdBy,
+    expiresAt: shareRow.expiresAt,
+  });
+});
 
 // ─── ADMIN SEED ──────────────────────────────────────────────────────────────
 
