@@ -13,7 +13,8 @@ import TypingDots from '../components/ui/TypingDots';
 import ButtonSpinner from '../components/ui/ButtonSpinner';
 import { AnalysisResult, CostReductionIdea, CostSavingType, Difficulty, SearchSource, ConfidenceLevel, EvidenceSource, IdeaAnnotation, AnnotationStatus, ChatMessage } from '../types';
 import { exportToExcel, exportToPowerPoint, exportToPdf, exportRfqPdf } from '../services/export-service';
-import { generateCostReductionIdeas, sendChatMessage } from '../services/claude-service';
+import { generateCostReductionIdeas, sendChatMessage, loadFullResult } from '../services/claude-service';
+import { toast } from '../hooks/useToast';
 import IdeasDashboard from '../components/results/IdeasDashboard';
 import BusinessCaseCalculator from '../components/results/BusinessCaseCalculator';
 
@@ -105,11 +106,15 @@ const CHAT_FOLLOW_UPS = [
 
 function RoadmapSection({ ideas }: { ideas: CostReductionIdea[] }) {
   const [open, setOpen] = useState(false);
+  const [expandedPhase, setExpandedPhase] = useState<number | null>(null);
 
   function phaseFor(idea: CostReductionIdea): 0 | 1 | 2 {
+    if (idea.implementationDifficulty === 'Low') return 0;
+    if (idea.implementationDifficulty === 'High') return 2;
+    // Medium difficulty: only use time string for extreme cases
     const t = idea.timeToImplement?.toLowerCase() || '';
-    if (idea.implementationDifficulty === 'Low' || t.includes('0-3') || t.includes('1-3') || t.includes('3-6') || t.includes('immediate') || t.includes('quick')) return 0;
-    if (idea.implementationDifficulty === 'High' || t.includes('18') || t.includes('24') || t.includes('2 year') || t.includes('3 year') || t.includes('long')) return 2;
+    if (t.includes('0-3') || t.includes('1-3') || t.includes('immediate') || t.includes('quick')) return 0;
+    if (t.includes('18') || t.includes('24') || t.includes('2 year') || t.includes('3 year') || t.includes('long-term')) return 2;
     return 1;
   }
 
@@ -141,13 +146,20 @@ function RoadmapSection({ ideas }: { ideas: CostReductionIdea[] }) {
                 <div className={`text-xs font-bold uppercase tracking-wider ${phase.color} mb-0.5`}>{phase.label}</div>
                 <div className="text-slate-500 text-xs mb-3">{phase.sublabel} · {phase.ideas.length} idea{phase.ideas.length !== 1 ? 's' : ''}</div>
                 <div className="space-y-2">
-                  {phase.ideas.slice(0, 6).map(idea => (
+                  {(expandedPhase === phases.indexOf(phase) ? phase.ideas : phase.ideas.slice(0, 6)).map(idea => (
                     <div key={idea.id} className="flex items-start gap-2">
                       <div className={`w-1.5 h-1.5 rounded-full ${phase.dot} mt-1.5 flex-shrink-0`} />
                       <span className="text-slate-300 text-xs leading-relaxed">{idea.title}</span>
                     </div>
                   ))}
-                  {phase.ideas.length > 6 && <p className={`text-xs ${phase.color} mt-1`}>+{phase.ideas.length - 6} more…</p>}
+                  {phase.ideas.length > 6 && (
+                    <button
+                      onClick={() => setExpandedPhase(expandedPhase === phases.indexOf(phase) ? null : phases.indexOf(phase))}
+                      className={`text-xs ${phase.color} mt-1 hover:underline`}
+                    >
+                      {expandedPhase === phases.indexOf(phase) ? '▲ Show less' : `+${phase.ideas.length - 6} more…`}
+                    </button>
+                  )}
                 </div>
               </div>
             ))}
@@ -176,11 +188,14 @@ function IdeaCard({ idea, index, annotation, onAnnotate }: {
 
   function parseValLocal(val?: string): number {
     if (!val) return 0;
-    const c = val.toLowerCase().replace(/[€£$,\s%]/g, '');
-    const m = c.match(/([\d.]+)\s*([mk]?)/);
-    if (!m) return 0;
-    const n = parseFloat(m[1]);
-    return n * (m[2] === 'm' ? 1_000_000 : m[2] === 'k' ? 1_000 : 1);
+    const c = val.toLowerCase().replace(/[€£$¥₹,\s%]/g, '');
+    const parts = c.split(/[–—]/);
+    const parseOne = (s: string) => {
+      const m = s.match(/([\d.]+)\s*([mk]?)/);
+      if (!m) return 0;
+      return parseFloat(m[1]) * (m[2] === 'm' ? 1_000_000 : m[2] === 'k' ? 1_000 : 1);
+    };
+    return parts.length >= 2 ? (parseOne(parts[0]) + parseOne(parts[1])) / 2 : parseOne(c);
   }
   function fmtV(n: number, sym: string): string {
     if (n >= 1_000_000) return `${sym}${(n / 1_000_000).toFixed(1)}M`;
@@ -189,7 +204,10 @@ function IdeaCard({ idea, index, annotation, onAnnotate }: {
   }
 
   const baseSav = parseValLocal(idea.costSavingPotential.annualValue);
-  const sym = idea.costSavingPotential.annualValue?.includes('£') ? '£' : idea.costSavingPotential.annualValue?.includes('$') ? '$' : '€';
+  const sym = idea.costSavingPotential.annualValue?.includes('£') ? '£'
+    : idea.costSavingPotential.annualValue?.includes('$') ? '$'
+    : idea.costSavingPotential.annualValue?.includes('¥') ? '¥'
+    : '€';
   const isMat = idea.costSavingTypes.includes('material');
   const adjSav = baseSav * volumeMul * (isMat ? 1 + commodityDelta / 100 : 1);
   const DiffIcon = diff.icon;
@@ -618,6 +636,7 @@ export default function ResultsPage() {
   const [refineFocus, setRefineFocus] = useState('');
   const [refining, setRefining] = useState(false);
   const [refineError, setRefineError] = useState('');
+  const [shareLink, setShareLink] = useState<string | null>(null);
   const [chatOpen, setChatOpen] = useState(false);
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
   const [chatInput, setChatInput] = useState('');
@@ -630,7 +649,20 @@ export default function ResultsPage() {
       const stored = sessionStorage.getItem('analysisResult');
       const sys = sessionStorage.getItem('analysisSystemName');
       const sub = sessionStorage.getItem('analysisSubName');
-      if (!stored) { navigate('/analyze'); return; }
+      if (!stored) {
+        const params = new URLSearchParams(window.location.search);
+        const savedId = params.get('id');
+        if (savedId) {
+          const saved = loadFullResult(savedId);
+          if (saved) {
+            sessionStorage.setItem('analysisResult', JSON.stringify(saved));
+            navigate('/results', { replace: true });
+            return;
+          }
+        }
+        navigate('/analyze');
+        return;
+      }
       const parsed: AnalysisResult = JSON.parse(stored);
       setResult(parsed);
       setSystemName(sys || '');
@@ -677,11 +709,14 @@ export default function ResultsPage() {
 
   function parseAnnualValue(val?: string): number {
     if (!val) return 0;
-    const clean = val.toLowerCase().replace(/[€£$,\s%]/g, '');
-    const m = clean.match(/([\d.]+)\s*([mk]?)/);
-    if (!m) return 0;
-    const n = parseFloat(m[1]);
-    return n * (m[2] === 'm' ? 1_000_000 : m[2] === 'k' ? 1_000 : 1);
+    const clean = val.toLowerCase().replace(/[€£$¥₹,\s%]/g, '');
+    const parts = clean.split(/[–—]/);
+    const parseOne = (s: string) => {
+      const m = s.match(/([\d.]+)\s*([mk]?)/);
+      if (!m) return 0;
+      return parseFloat(m[1]) * (m[2] === 'm' ? 1_000_000 : m[2] === 'k' ? 1_000 : 1);
+    };
+    return parts.length >= 2 ? (parseOne(parts[0]) + parseOne(parts[1])) / 2 : parseOne(clean);
   }
   const DIFF_RANK: Record<Difficulty, number> = { Low: 1, Medium: 3, High: 9 };
 
@@ -722,7 +757,7 @@ export default function ResultsPage() {
   const handleRfqExport = () => {
     const approved = result.ideas.filter(idea => (annotations[idea.id]?.status ?? 'pending') === 'approved');
     if (approved.length === 0) {
-      alert('No approved ideas found. Annotate at least one idea as "Approved" on the Results page to generate an RFQ package.');
+      toast('No approved ideas — annotate at least one idea as "Approved" to generate an RFQ package.', 'error');
       return;
     }
     setExporting('rfq');
@@ -817,7 +852,7 @@ export default function ResultsPage() {
 
     try {
       await sendChatMessage(
-        result.ideas,
+        filtered,
         result.config,
         systemName,
         subName,
@@ -855,17 +890,18 @@ export default function ResultsPage() {
   async function handleShare() {
     if (!result?.id) return;
     const token = (() => { try { return JSON.parse(localStorage.getItem('brainspark_auth') || '{}').token; } catch { return null; } })();
-    if (!token) return;
+    if (!token) { toast('Sign in to create share links', 'error'); return; }
     try {
       const r = await fetch(`/api/projects/${result.id}/share`, {
         method: 'POST', headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
         body: JSON.stringify({ expiryDays: 30 }),
       });
+      if (!r.ok) { toast('Could not generate share link — please try again', 'error'); return; }
       const data = await r.json();
       const url = `${window.location.origin}${data.shareUrl}`;
-      await navigator.clipboard.writeText(url).catch(() => {});
-      alert(`Share link copied to clipboard! Expires in 30 days.\n\n${url}`);
-    } catch {}
+      setShareLink(url);
+      navigator.clipboard.writeText(url).then(() => toast('Share link copied to clipboard!', 'success')).catch(() => {});
+    } catch { toast('Could not generate share link — please try again', 'error'); }
   }
 
   return (
@@ -876,6 +912,14 @@ export default function ResultsPage() {
           <button onClick={() => navigate('/analyze')} className="flex items-center gap-2 text-slate-400 hover:text-white text-sm mb-6 transition-colors">
             <ArrowLeft size={16} /> New Analysis
           </button>
+
+          {shareLink && (
+            <div className="mb-4 p-3 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center gap-3">
+              <span className="text-blue-300 text-xs flex-1 truncate font-mono">{shareLink}</span>
+              <button onClick={() => { navigator.clipboard.writeText(shareLink); toast('Copied!', 'success'); }} className="text-xs text-blue-300 hover:text-white border border-blue-500/30 px-2 py-1 rounded-lg transition-colors">Copy</button>
+              <button onClick={() => setShareLink(null)} className="text-slate-500 hover:text-white transition-colors text-xs">✕</button>
+            </div>
+          )}
 
           <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
             <div>

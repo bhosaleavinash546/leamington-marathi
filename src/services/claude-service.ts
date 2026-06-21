@@ -110,7 +110,8 @@ export async function generateCostReductionIdeas(
     throw new Error(errorMsg);
   }
 
-  const reader = response.body!.getReader();
+  if (!response.body) throw new Error('Streaming not supported by this browser or proxy.');
+  const reader = response.body.getReader();
   const decoder = new TextDecoder();
   let buffer = '';
 
@@ -178,7 +179,8 @@ export async function sendChatMessage(
     throw new Error(errorMsg);
   }
 
-  const reader = response.body!.getReader();
+  if (!response.body) throw new Error('Streaming not supported by this browser or proxy.');
+  const reader = response.body.getReader();
   const decoder = new TextDecoder();
   let buffer = '';
   let fullText = '';

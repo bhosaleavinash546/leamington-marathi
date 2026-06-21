@@ -1,10 +1,10 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Menu, X, ChevronDown, LayoutDashboard, HelpCircle, LogOut, User, Sun, Moon, TrendingUp, FileBox, Calculator, Store, Link2, GitCompare } from 'lucide-react';
+import { Menu, X, ChevronDown, LayoutDashboard, HelpCircle, LogOut, User, Sun, Moon, TrendingUp, FileBox, Calculator, Store, Link2, GitCompare, Zap } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
 
-const APP_VERSION = '2.1';
+const APP_VERSION = '3.0.0';
 
 export default function Header() {
   const location = useLocation();
@@ -162,7 +162,7 @@ export default function Header() {
                     </div>
                     {[
                       { icon: LayoutDashboard, label: 'Dashboard', path: '/dashboard' },
-                      { icon: User,           label: 'Analyze',    path: '/analyze' },
+                      { icon: Zap,            label: 'Analyze',    path: '/analyze' },
                       { icon: FileBox,        label: 'CAD to Cost',  path: '/cad-to-cost' },
                       { icon: GitCompare,     label: 'CAD Diff',     path: '/cad-diff' },
                       { icon: Calculator,     label: 'Should-Cost',  path: '/should-cost' },

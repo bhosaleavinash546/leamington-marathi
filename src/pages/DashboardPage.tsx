@@ -49,7 +49,7 @@ const WHATS_NEW = [
 ];
 
 export default function DashboardPage() {
-  const { user, token } = useAuth();
+  const { user, token, loading, signOut } = useAuth();
   const navigate = useNavigate();
   const [recentAnalyses, setRecentAnalyses] = useState<RecentAnalysis[]>([]);
   const [serverProjects, setServerProjects] = useState<ServerProject[]>([]);
@@ -65,23 +65,32 @@ export default function DashboardPage() {
       const stored = localStorage.getItem('brainspark_recent_analyses');
       if (stored) setRecentAnalyses(JSON.parse(stored));
     } catch {}
-    // Load server projects
-    if (token) {
+  }, []);
+
+  useEffect(() => {
+    if (!loading && token) {
       fetch('/api/projects', { headers: { Authorization: `Bearer ${token}` } })
-        .then(r => r.ok ? r.json() : [])
+        .then(async r => {
+          if (r.status === 401) { signOut(); navigate('/auth'); return []; }
+          if (!r.ok) return [];
+          return r.json();
+        })
         .then(data => setServerProjects(Array.isArray(data) ? data : []))
         .catch(() => {});
     }
-  }, []);
+  }, [token, loading, signOut, navigate]);
 
   useEffect(() => {
     function parseAnnual(val?: string): number {
       if (!val) return 0;
-      const c = (val || '').toLowerCase().replace(/[€£$,\s]/g, '');
-      const m = c.match(/([\d.]+)([mk]?)/);
-      if (!m) return 0;
-      const n = parseFloat(m[1]);
-      return n * (m[2] === 'm' ? 1_000_000 : m[2] === 'k' ? 1_000 : 1);
+      const c = (val || '').toLowerCase().replace(/[€£$¥₹,\s%]/g, '');
+      const parts = c.split(/[–—]/);
+      const parseOne = (s: string) => {
+        const m = s.match(/([\d.]+)\s*([mk]?)/);
+        if (!m) return 0;
+        return parseFloat(m[1]) * (m[2] === 'm' ? 1_000_000 : m[2] === 'k' ? 1_000 : 1);
+      };
+      return parts.length >= 2 ? (parseOne(parts[0]) + parseOne(parts[1])) / 2 : parseOne(c);
     }
 
     let total = 0, investigating = 0, approved = 0, committedSavings = 0, investigatingSavings = 0;
@@ -89,11 +98,14 @@ export default function DashboardPage() {
       let annotations: Record<string, { status: string }> = {};
       let ideas: Array<{ id: string; costSavingPotential?: { annualValue?: string } }> = [];
       const localAnnotationsRaw = localStorage.getItem(`brainspark_annotations_${p.id}`);
+      let usedLocalAnnotations = false;
       if (localAnnotationsRaw) {
-        try { annotations = JSON.parse(localAnnotationsRaw); } catch {}
-      } else if (p.annotations) {
-        annotations = p.annotations;
+        try {
+          const parsed = JSON.parse(localAnnotationsRaw);
+          if (parsed && typeof parsed === 'object') { annotations = parsed; usedLocalAnnotations = true; }
+        } catch {}
       }
+      if (!usedLocalAnnotations && p.annotations) annotations = p.annotations;
       try { ideas = JSON.parse(localStorage.getItem(`brainspark_ideas_${p.id}`) || '[]'); } catch {}
 
       const ideaValueMap: Record<string, number> = {};
@@ -137,7 +149,7 @@ export default function DashboardPage() {
     if (!token) return;
     try {
       const r = await fetch(`/api/projects/${id}`, { headers: { Authorization: `Bearer ${token}` } });
-      if (!r.ok) return;
+      if (!r.ok) { toast('Could not load project — please try again', 'error'); return; }
       const project = await r.json();
       sessionStorage.setItem('analysisResult', JSON.stringify({
         id: project.id, config: project.config, ideas: project.ideas, sources: project.sources,
@@ -149,7 +161,7 @@ export default function DashboardPage() {
         localStorage.setItem(`brainspark_ideas_${id}`, JSON.stringify(project.ideas));
       }
       navigate('/results');
-    } catch {}
+    } catch { toast('Could not load project — please try again', 'error'); }
   }
 
   function clearHistory() {
@@ -175,7 +187,7 @@ export default function DashboardPage() {
           <div>
             <p className="text-slate-400 text-sm mb-1">{greeting},</p>
             <h1 className="text-3xl font-bold text-white">
-              {firstName} <span className="text-gold-400">👋</span>
+              {firstName} <span className="text-gold-400" aria-hidden="true">👋</span>
             </h1>
             <p className="text-slate-300 mt-2 max-w-md">
               Ready to find cost reduction opportunities? Select a vehicle system and let the Chief Engineer AI get to work.
@@ -454,7 +466,7 @@ export default function DashboardPage() {
             <div className="rounded-2xl bg-navy-900 border border-white/8 p-6">
               <div className="flex items-center gap-2 mb-4">
                 <BookOpen size={16} className="text-emerald-400" />
-                <h3 className="text-white font-semibold text-sm">What's New in v3.0</h3>
+                <h3 className="text-white font-semibold text-sm">What's New in v3.0.0</h3>
               </div>
               <ul className="space-y-2">
                 {WHATS_NEW.map((item) => (
@@ -490,7 +502,7 @@ export default function DashboardPage() {
                 state={{ preselect: { system, subassembly: sub } }}
                 className="flex items-center gap-4 p-4 rounded-xl bg-navy-900 border border-white/8 hover:border-gold-500/30 transition-all group"
               >
-                <span className="text-2xl">{icon}</span>
+                <span className="text-2xl" aria-hidden="true">{icon}</span>
                 <div className="flex-1 min-w-0">
                   <p className="text-white text-sm font-medium group-hover:text-gold-300 transition-colors truncate">{label}</p>
                   <p className="text-slate-500 text-xs truncate">{sub}</p>

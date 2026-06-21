@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Mail, HelpCircle, ExternalLink } from 'lucide-react';
 
-const APP_VERSION = '2.1.0';
+const APP_VERSION = '3.0.0';
 
 export default function Footer() {
   return (
@@ -54,10 +54,10 @@ export default function Footer() {
               </div>
             </div>
             <a
-              href="mailto:bhosale.avinash@bhosale"
+              href="mailto:avinash.bhosale8925@gmail.com"
               className="flex items-center gap-2 text-slate-500 hover:text-gold-400 text-xs transition-colors mb-1.5"
             >
-              <Mail size={11} /> bhosale.avinash bhosale
+              <Mail size={11} /> avinash.bhosale8925@gmail.com
             </a>
             <Link
               to="/help"

@@ -8,6 +8,7 @@ import {
   Shield, Info, Factory, TrendingUp, Mic, MicOff
 } from 'lucide-react';
 import ButtonSpinner from '../components/ui/ButtonSpinner';
+import { toast } from '../hooks/useToast';
 import { AUTOMOTIVE_SYSTEMS, getSystemById, getSubassemblyById } from '../data/automotive-catalog';
 import { generateCostReductionIdeas, saveFullResult, ProgressEvent } from '../services/claude-service';
 import { parseCadFile, CadGeometry, formatFileSize } from '../services/cad-parser';
@@ -209,7 +210,7 @@ export default function AnalyzePage() {
 
   function toggleVoice() {
     if (!('SpeechRecognition' in window || 'webkitSpeechRecognition' in window)) {
-      alert('Voice input is not supported in this browser. Try Chrome or Edge.');
+      toast('Voice input is not supported in this browser. Try Chrome or Edge.', 'error');
       return;
     }
     if (voiceActive) { setVoiceActive(false); return; }
