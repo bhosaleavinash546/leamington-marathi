@@ -172,3 +172,120 @@ export async function getCountries(_req: Request, res: Response): Promise<void> 
     res.status(500).json({ error: 'Failed to fetch countries' });
   }
 }
+
+// PATCH /api/rate-library/:id/validate — admin only
+export async function validateRate(req: Request, res: Response): Promise<void> {
+  try {
+    const { id } = req.params;
+    const { is_validated, validation_notes } = req.body as {
+      is_validated: boolean;
+      validation_notes?: string;
+    };
+
+    if (is_validated == null) {
+      res.status(400).json({ error: 'is_validated is required' });
+      return;
+    }
+
+    const result = await pool.query(
+      `UPDATE rate_reference
+       SET is_validated     = $2,
+           validated_by     = $3,
+           validated_at     = CASE WHEN $2 THEN NOW() ELSE NULL END,
+           validation_notes = $4
+       WHERE id = $1
+       RETURNING *`,
+      [id, is_validated, req.user?.sub ?? null, validation_notes ?? null]
+    );
+
+    if (!result.rowCount) {
+      res.status(404).json({ error: 'Rate not found' });
+      return;
+    }
+
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error('[rateLibrary] validateRate error:', err);
+    res.status(500).json({ error: 'Failed to validate rate' });
+  }
+}
+
+// POST /api/rate-library/import — admin only
+// Accepts text/plain body (CSV):
+//   process_type,country,labour_rate_hr,machine_rate_hr,overhead_pct,scrap_rate_pct,source,notes
+export async function importRatesCsv(req: Request, res: Response): Promise<void> {
+  try {
+    const raw = (req.body as Buffer).toString('utf-8');
+    const lines = raw.split('\n').map((l) => l.trim()).filter(Boolean);
+
+    let headerSkipped = false;
+    let rows_ok = 0;
+    let rows_failed = 0;
+    const errors: Array<{ line: number; error: string }> = [];
+
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+
+      // Skip header row if it starts with 'process_type'
+      if (!headerSkipped && line.toLowerCase().startsWith('process_type')) {
+        headerSkipped = true;
+        continue;
+      }
+
+      const cols = line.split(',');
+      if (cols.length < 4) {
+        rows_failed++;
+        errors.push({ line: i + 1, error: 'Not enough columns (need at least 4)' });
+        continue;
+      }
+
+      const process_type   = cols[0]?.trim();
+      const country        = cols[1]?.trim();
+      const labour_rate_hr = parseFloat(cols[2] ?? '');
+      const machine_rate_hr= parseFloat(cols[3] ?? '');
+      const overhead_pct   = cols[4] ? parseFloat(cols[4]) : 15;
+      const scrap_rate_pct = cols[5] ? parseFloat(cols[5]) : 2;
+      const source         = cols[6]?.trim() || 'CSV import';
+      const notes          = cols[7]?.trim() || null;
+
+      if (!process_type || !country || isNaN(labour_rate_hr) || isNaN(machine_rate_hr)) {
+        rows_failed++;
+        errors.push({ line: i + 1, error: 'Invalid or missing required fields (process_type, country, labour_rate_hr, machine_rate_hr)' });
+        continue;
+      }
+
+      try {
+        await pool.query(
+          `INSERT INTO rate_reference
+             (process_type, country, labour_rate_hr, machine_rate_hr, overhead_pct, scrap_rate_pct, source, notes)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+           ON CONFLICT (process_type, country) DO UPDATE
+             SET labour_rate_hr  = EXCLUDED.labour_rate_hr,
+                 machine_rate_hr = EXCLUDED.machine_rate_hr,
+                 overhead_pct    = EXCLUDED.overhead_pct,
+                 scrap_rate_pct  = EXCLUDED.scrap_rate_pct,
+                 source          = EXCLUDED.source,
+                 notes           = EXCLUDED.notes`,
+          [process_type, country, labour_rate_hr, machine_rate_hr,
+           isNaN(overhead_pct) ? 15 : overhead_pct,
+           isNaN(scrap_rate_pct) ? 2 : scrap_rate_pct,
+           source, notes]
+        );
+        rows_ok++;
+      } catch (rowErr) {
+        rows_failed++;
+        errors.push({ line: i + 1, error: String(rowErr) });
+      }
+    }
+
+    res.json({
+      rows_total: rows_ok + rows_failed,
+      rows_ok,
+      rows_failed,
+      errors,
+    });
+  } catch (err) {
+    console.error('[rateLibrary] importRatesCsv error:', err);
+    res.status(500).json({ error: 'Failed to import CSV' });
+  }
+}

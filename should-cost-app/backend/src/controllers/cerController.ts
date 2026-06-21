@@ -148,28 +148,97 @@ export async function estimateShouldCost(req: Request, res: Response): Promise<v
     },
   ];
 
-  // 5. Claude AI insights
+  // 5. Benchmark data for enhanced AI insights
+  const benchmarkRes = await pool.query(
+    `SELECT country, labour_rate_hr, machine_rate_hr, overhead_pct, scrap_rate_pct
+     FROM rate_reference WHERE process_type = $1 ORDER BY labour_rate_hr`,
+    [process_type]
+  );
+  const benchmarks = benchmarkRes.rows;
+
+  // Heuristic cycle time range for this weight class and process
+  const ctHeuristics: Array<[string, number, number, number, number]> = [
+    ['Stamping',                0,    0.5,   8,  20],
+    ['Stamping',                0.5,  2,    18,  40],
+    ['Stamping',                2,    10,   35,  90],
+    ['Die Casting (Aluminium)', 0,    0.5,  25,  45],
+    ['Die Casting (Aluminium)', 0.5,  2,    35,  70],
+    ['Die Casting (Aluminium)', 2,    10,   60, 150],
+    ['Machining (3-axis CNC)',  0,    0.5,  30,  90],
+    ['Machining (3-axis CNC)',  0.5,  2,    60, 200],
+    ['Machining (3-axis CNC)',  2,    10,  120, 480],
+    ['Machining (5-axis CNC)',  0,    0.5,  45, 120],
+    ['Machining (5-axis CNC)',  0.5,  2,    90, 300],
+    ['Machining (5-axis CNC)',  2,    10,  180, 600],
+    ['Injection Moulding',      0,    0.1,  15,  35],
+    ['Injection Moulding',      0.1,  0.5,  25,  55],
+    ['Injection Moulding',      0.5,  2,    40,  90],
+    ['Forging',                 0,    1,    30,  70],
+    ['Forging',                 1,    5,    50, 130],
+    ['Forging',                 5,    20,  100, 250],
+    ['Welding Assembly',        0,    1,    60, 180],
+    ['Welding Assembly',        1,    5,   120, 360],
+    ['Welding Assembly',        5,    20,  240, 720],
+  ];
+  const ctMatch = ctHeuristics.find(
+    ([p, wMin, wMax]) => p === process_type && part_weight_kg >= wMin && part_weight_kg < wMax
+  );
+  const ctBenchmarkMin = ctMatch ? ctMatch[3] : null;
+  const ctBenchmarkMax = ctMatch ? ctMatch[4] : null;
+
+  // 6. Claude AI insights
   let insights: string | null = null;
 
   if (process.env.ANTHROPIC_API_KEY) {
     try {
       const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
-      const prompt = `You are a cost engineering expert. Here is a parametric should-cost estimate:
-- Process: ${process_type} in ${country}
-- Part weight: ${part_weight_kg} kg, Material: ${material_name}
-- Cycle time: ${cycle_time_sec} s, Annual volume: ${annual_volume.toLocaleString()} units
-- Labour rate: $${Number(rate.labour_rate_hr)}/hr, Machine rate: $${Number(rate.machine_rate_hr)}/hr
-- Overhead: ${Number(rate.overhead_pct)}%, Scrap: ${Number(rate.scrap_rate_pct)}%
-- Total should-cost: $${total.toFixed(4)} per unit
-- Breakdown: Material $${material_cost.toFixed(4)}, Labour $${direct_labour.toFixed(4)}, Machine $${machine_cost.toFixed(4)}, Overhead $${overhead.toFixed(4)}, Scrap $${scrap_allowance.toFixed(4)}, Tooling $${tooling_per_unit.toFixed(4)}, Packaging $${packaging.toFixed(4)}
-${notes ? `- Notes: ${notes}` : ''}
+      const labourMachinePct = total > 0 ? ((direct_labour + machine_cost) / total * 100).toFixed(1) : '0';
+      const materialPct      = total > 0 ? (material_cost / total * 100).toFixed(1) : '0';
 
-Provide 2-3 concise sentences of key cost engineering observations about this estimate. Focus on the dominant cost driver, whether the country/process combination is cost-competitive, and any risk factors.`;
+      const countryComparison = benchmarks
+        .map((b) => `  ${b.country}: labour $${Number(b.labour_rate_hr).toFixed(0)}/hr, machine $${Number(b.machine_rate_hr).toFixed(0)}/hr`)
+        .join('\n');
+
+      const ctFlag = ctBenchmarkMin != null
+        ? cycle_time_sec < ctBenchmarkMin
+          ? `⚠️ Cycle time ${cycle_time_sec}s is BELOW benchmark range (${ctBenchmarkMin}–${ctBenchmarkMax}s) for ${process_type} at ${part_weight_kg}kg — verify this is achievable`
+          : cycle_time_sec > ctBenchmarkMax!
+          ? `⚠️ Cycle time ${cycle_time_sec}s is ABOVE benchmark range (${ctBenchmarkMin}–${ctBenchmarkMax}s) for ${process_type} at ${part_weight_kg}kg — challenge supplier or re-estimate`
+          : `✅ Cycle time ${cycle_time_sec}s is within benchmark range (${ctBenchmarkMin}–${ctBenchmarkMax}s)`
+        : '';
+
+      const prompt = `You are a senior cost engineering expert with 20+ years in automotive manufacturing. Analyse this parametric should-cost estimate critically:
+
+PART PARAMETERS:
+- Process: ${process_type} | Country: ${country} | Weight: ${part_weight_kg} kg | Material: ${material_name}
+- Cycle time: ${cycle_time_sec}s | Annual volume: ${annual_volume.toLocaleString()} units
+${ctFlag}
+
+COST BREAKDOWN:
+- Material: $${material_cost.toFixed(4)} (${materialPct}% of total)${!commodityPrice ? ' ⚠️ NO COMMODITY PRICE FOUND — used $0, add price in Commodity Prices module' : ` — source price: $${pricePerUnit.toFixed(4)}/${commodityPrice.unit}`}
+- Direct Labour: $${direct_labour.toFixed(4)} at $${Number(rate.labour_rate_hr)}/hr
+- Machine Cost: $${machine_cost.toFixed(4)} at $${Number(rate.machine_rate_hr)}/hr
+- Overhead: $${overhead.toFixed(4)} (${Number(rate.overhead_pct)}% of L+M)
+- Scrap: $${scrap_allowance.toFixed(4)} (${Number(rate.scrap_rate_pct)}%)
+- Tooling: $${tooling_per_unit.toFixed(4)}/unit${tooling_per_unit === 0 ? ' (not provided)' : ''}
+- Packaging: $${packaging.toFixed(4)}
+- **TOTAL: $${total.toFixed(4)}/unit** (Labour+Machine = ${labourMachinePct}% of total)
+
+COUNTRY BENCHMARKS FOR ${process_type}:
+${countryComparison}
+${notes ? `\nENGINEER NOTES: ${notes}` : ''}
+
+Provide exactly 3 bullet points (use • prefix), each a single direct sentence:
+1. The dominant cost driver and whether the split looks right for this process/weight class
+2. Whether the cycle time assumption is reasonable and what to challenge if not (reference the benchmark range if flagged above)
+3. A specific negotiation insight: which country would be cheaper, by how much, and what the risk/quality trade-off is
+
+Be specific with numbers. Do not be generic.`;
 
       const message = await client.messages.create({
         model: 'claude-sonnet-4-6',
-        max_tokens: 300,
+        max_tokens: 400,
         messages: [{ role: 'user', content: prompt }],
       });
 

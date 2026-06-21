@@ -28,6 +28,7 @@ import rateLibraryRoutes        from './routes/rateLibrary';
 import cerRoutes                from './routes/cer';
 import csvImportRoutes          from './routes/csvImport';
 import acrCommitmentRoutes      from './routes/acrCommitment';
+import openBookRoutes           from './routes/openBook';
 
 import { startWeeklyDigest, generateAndSendDigest } from './services/weeklyDigest';
 import { scheduledEmailDigest } from './controllers/emailDigestController';
@@ -69,6 +70,7 @@ app.use('/api/rate-library',        rateLibraryRoutes);
 app.use('/api/cer',                 cerRoutes);
 app.use('/api/import',              csvImportRoutes);
 app.use('/api/export/acr',          acrCommitmentRoutes);
+app.use('/api/open-book',           openBookRoutes);
 
 // Manual digest trigger for admins
 app.post(

@@ -7,8 +7,16 @@ import {
   updateShouldCostStatus,
   updateShouldCostProcessParams,
 } from '../controllers/shouldCostController';
+import { getPartFamilyNorms, getCommodityDetail } from '../controllers/partFamilyNormsController';
+import { listVersionsForPart, compareVersions } from '../controllers/versionDiffController';
 
 const router = Router();
+
+// Norms and diff routes — must come before /:id to avoid conflicts
+router.get('/norms',              requireAuth, getPartFamilyNorms);
+router.get('/norms/:commodity',   requireAuth, getCommodityDetail);
+router.get('/versions/:partId',   requireAuth, listVersionsForPart);
+router.get('/diff',               requireAuth, compareVersions);
 
 router.get('/',      requireAuth, listShouldCosts);
 router.get('/:id',   requireAuth, getShouldCost);
