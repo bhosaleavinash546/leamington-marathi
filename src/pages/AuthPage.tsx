@@ -9,7 +9,7 @@ import ButtonSpinner from '../components/ui/ButtonSpinner';
 import { useAuth } from '../contexts/AuthContext';
 import { toast } from '../hooks/useToast';
 
-type Screen = 'signin' | 'signup' | 'verify-signup' | 'forgot' | 'reset';
+type Screen = 'signin' | 'signup' | 'forgot' | 'reset';
 
 // ─── OTP Input Component ──────────────────────────────────────────────────────
 function OTPInput({ value, onChange, disabled }: { value: string; onChange: (v: string) => void; disabled?: boolean }) {
@@ -313,32 +313,11 @@ export default function AuthPage() {
     if (password.length < 8) { setError('Password must be at least 8 characters.'); return; }
     setLoading(true);
     try {
-      const data = await apiCall('/api/auth/signup', { name: name.trim(), email, password });
-      if (data.devOtp) {
-        setDevOtp(data.devOtp);
-        setOtp(data.devOtp);
-        toast.info('No email configured — your code is shown on screen.');
-      } else {
-        toast.info('OTP sent to your email. Check your inbox!');
-      }
-      setScreen('verify-signup');
+      const { token, user } = await apiCall('/api/auth/signup', { name: name.trim(), email, password });
+      signIn(token, user);
+      toast.success(`Welcome to BrainSpark, ${user.name}!`);
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Sign up failed');
-    } finally { setLoading(false); }
-  };
-
-  // ── Verify OTP (signup) ──────────────────────────────────────────────────
-  const handleVerifySignup = async (e: React.FormEvent) => {
-    e.preventDefault();
-    clearError();
-    if (otp.length < 6) { setError('Please enter the complete 6-digit code.'); return; }
-    setLoading(true);
-    try {
-      const { token, user } = await apiCall('/api/auth/verify-signup', { email, otp });
-      signIn(token, user);
-      toast.success(`Account verified! Welcome to BrainSpark, ${user.name}!`);
-    } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Verification failed');
     } finally { setLoading(false); }
   };
 
@@ -445,38 +424,6 @@ export default function AuthPage() {
                   Already have an account?{' '}
                   <button onClick={() => { setScreen('signin'); clearError(); }} className="text-gold-400 hover:text-gold-300 font-semibold transition-colors">Sign in</button>
                 </p>
-              </motion.div>
-            )}
-
-            {/* ── Verify Signup OTP ────────────────────────────────────────── */}
-            {screen === 'verify-signup' && (
-              <motion.div key="verify" {...slide}>
-                <button onClick={() => { setScreen('signup'); setOtp(''); clearError(); }} className="flex items-center gap-2 text-slate-400 hover:text-white text-sm mb-6 transition-colors">
-                  <ArrowLeft size={15} /> Back
-                </button>
-                <div className="mb-8 text-center">
-                  <div className="w-14 h-14 rounded-2xl bg-gold-500/20 border border-gold-500/30 flex items-center justify-center mx-auto mb-4">
-                    <Mail size={26} className="text-gold-400" />
-                  </div>
-                  <h1 className="text-2xl font-black text-white mb-2">Check your inbox</h1>
-                  <p className="text-slate-400 text-sm">We sent a 6-digit verification code to</p>
-                  <p className="text-white font-semibold mt-1">{email}</p>
-                </div>
-                <form onSubmit={handleVerifySignup} className="space-y-6">
-                  {devOtp && (
-                    <div className="p-4 rounded-xl bg-amber-500/15 border-2 border-amber-500/40 text-center">
-                      <p className="text-amber-400 text-xs font-semibold uppercase tracking-wider mb-2">📧 No email configured — your code is:</p>
-                      <p className="text-amber-300 font-black text-3xl tracking-[0.3em]">{devOtp}</p>
-                      <p className="text-amber-600 text-xs mt-2">It has been auto-filled below. Just click Verify.</p>
-                    </div>
-                  )}
-                  <OTPInput value={otp} onChange={v => { setOtp(v); clearError(); }} disabled={loading} />
-                  {error && <div className="flex items-center gap-2 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-300 text-sm text-center justify-center"><AlertCircle size={15} />{error}</div>}
-                  <button type="submit" disabled={loading || otp.length < 6} className="w-full py-3 rounded-xl bg-gold-500 hover:bg-gold-400 disabled:opacity-50 text-navy-950 font-bold flex items-center justify-center gap-2 transition-all hover:scale-[1.02]">
-                    {loading ? <><ButtonSpinner size={18} /> Verifying…</> : <>Verify &amp; Activate <CheckCircle size={18} /></>}
-                  </button>
-                  <ResendButton key={otpResendKey} email={email} type="signup" onResent={() => setOtpResendKey(k => k + 1)} />
-                </form>
               </motion.div>
             )}
 

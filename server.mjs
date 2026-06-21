@@ -2396,23 +2396,12 @@ app.post('/api/auth/signup', rateLimit(5, 15 * 60 * 1000), async (req, res) => {
   }
 
   const passwordHash = await bcrypt.hash(password, 10);
-  const otp = storeOTP(email, 'signup');
+  const user = { id: crypto.randomUUID(), name: name.trim(), email: email.toLowerCase(), passwordHash, createdAt: new Date().toISOString(), verified: true };
+  users.push(user);
+  await writeUsers(users);
 
-  // Store pending user (unverified)
-  const pendingKey = `pending:${email}`;
-  otpStore.set(pendingKey, { name: name.trim(), email: email.toLowerCase(), passwordHash });
-
-  try {
-    const emailResult = await sendOTPEmail(email, otp, 'signup');
-    if (emailResult?.devMode) {
-      res.json({ message: 'No email configured — your verification code is shown below.', devOtp: otp });
-    } else {
-      res.json({ message: 'OTP sent to your email. Please check your inbox.' });
-    }
-  } catch (err) {
-    console.error('Email error:', err.message);
-    res.status(500).json({ error: 'Failed to send verification email. Check your email address and try again.' });
-  }
+  const token = signToken(user);
+  res.json({ token, user: { id: user.id, name: user.name, email: user.email } });
 });
 
 // Sign Up — step 2: verify OTP, activate account
