@@ -132,6 +132,46 @@ export async function createShouldCost(req: Request, res: Response): Promise<voi
   }
 }
 
+// PATCH /api/should-cost/:id/process-params
+export async function updateShouldCostProcessParams(req: Request, res: Response): Promise<void> {
+  const { id } = req.params;
+  const {
+    part_weight_kg, material_code, manufacturing_country, machine_type,
+    cycle_time_sec, labour_rate_hr, machine_rate_hr, scrap_rate_pct,
+    tooling_cost_total, tooling_life_units,
+  } = req.body as Record<string, unknown>;
+
+  try {
+    const { rows, rowCount } = await pool.query(
+      `UPDATE should_cost_header
+       SET part_weight_kg         = $2,
+           material_code          = $3,
+           manufacturing_country  = $4,
+           machine_type           = $5,
+           cycle_time_sec         = $6,
+           labour_rate_hr         = $7,
+           machine_rate_hr        = $8,
+           scrap_rate_pct         = $9,
+           tooling_cost_total     = $10,
+           tooling_life_units     = $11,
+           updated_at             = NOW()
+       WHERE id = $1 RETURNING *`,
+      [
+        id,
+        part_weight_kg ?? null, material_code ?? null, manufacturing_country ?? null,
+        machine_type ?? null, cycle_time_sec ?? null, labour_rate_hr ?? null,
+        machine_rate_hr ?? null, scrap_rate_pct ?? null,
+        tooling_cost_total ?? null, tooling_life_units ?? null,
+      ]
+    );
+    if (rowCount === 0) { res.status(404).json({ error: 'Should-Cost not found' }); return; }
+    res.json(rows[0]);
+  } catch (err) {
+    console.error('updateShouldCostProcessParams error', err);
+    res.status(500).json({ error: 'Failed to update process parameters' });
+  }
+}
+
 // PATCH /api/should-cost/:id/status
 export async function updateShouldCostStatus(req: Request, res: Response): Promise<void> {
   const { id } = req.params;

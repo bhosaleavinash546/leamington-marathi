@@ -16,8 +16,13 @@ import programRoutes        from './routes/programs';
 import currentPriceRoutes   from './routes/currentPrice';
 import threeWayRoutes       from './routes/threeWay';
 import crossModelRoutes       from './routes/crossModel';
-import negotiationRoutes      from './routes/negotiation';
-import supplierScorecardRoutes from './routes/supplierScorecard';
+import negotiationRoutes        from './routes/negotiation';
+import supplierScorecardRoutes  from './routes/supplierScorecard';
+import commodityTemplateRoutes  from './routes/commodityTemplates';
+import commodityPriceRoutes     from './routes/commodityPrices';
+import acrRoutes                from './routes/acr';
+import assemblyRoutes           from './routes/assembly';
+import dashboardRoutes          from './routes/dashboard';
 
 import { startWeeklyDigest, generateAndSendDigest } from './services/weeklyDigest';
 import { requireAuth, requireRole } from './middleware/auth';
@@ -44,8 +49,13 @@ app.use('/api/programs',         programRoutes);
 app.use('/api/current-price',    currentPriceRoutes);
 app.use('/api/three-way',        threeWayRoutes);
 app.use('/api/cross-model',        crossModelRoutes);
-app.use('/api/negotiations',       negotiationRoutes);
-app.use('/api/supplier-scorecard', supplierScorecardRoutes);
+app.use('/api/negotiations',        negotiationRoutes);
+app.use('/api/supplier-scorecard',  supplierScorecardRoutes);
+app.use('/api/commodity-templates', commodityTemplateRoutes);
+app.use('/api/commodity-prices',    commodityPriceRoutes);
+app.use('/api/acr',                 acrRoutes);
+app.use('/api/assembly',            assemblyRoutes);
+app.use('/api/dashboard',           dashboardRoutes);
 
 // Manual digest trigger for admins
 app.post(

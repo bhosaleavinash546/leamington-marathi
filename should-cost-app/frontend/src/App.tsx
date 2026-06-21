@@ -12,6 +12,9 @@ import ShouldCostDetail from './pages/ShouldCostDetail';
 import CrossModelComparison from './pages/CrossModelComparison';
 import NegotiationTracker from './pages/NegotiationTracker';
 import SupplierScorecard from './pages/SupplierScorecard';
+import CommodityPrices from './pages/CommodityPrices';
+import ACRTracker from './pages/ACRTracker';
+import AssemblyBOM from './pages/AssemblyBOM';
 import LandingPage from './pages/LandingPage';
 import AuthPage from './pages/AuthPage';
 import ThemeToggle from './components/ThemeToggle';
@@ -102,6 +105,9 @@ function AppShell() {
             <div className="sidebar-section">Data</div>
             <NavLink to="/should-costs"    className={({ isActive }) => isActive ? 'active' : ''} onClick={() => setSidebarOpen(false)}>🏗 Should-Costs</NavLink>
             <NavLink to="/quotes"          className={({ isActive }) => isActive ? 'active' : ''} onClick={() => setSidebarOpen(false)}>📄 All Quotes</NavLink>
+            <NavLink to="/commodity-prices" className={({ isActive }) => isActive ? 'active' : ''} onClick={() => setSidebarOpen(false)}>📈 Commodity Prices</NavLink>
+            <NavLink to="/acr"             className={({ isActive }) => isActive ? 'active' : ''} onClick={() => setSidebarOpen(false)}>🎯 ACR Tracker</NavLink>
+            <NavLink to="/assembly"        className={({ isActive }) => isActive ? 'active' : ''} onClick={() => setSidebarOpen(false)}>🔩 Assembly BOM</NavLink>
           </>
         )}
 
@@ -147,6 +153,9 @@ function AppShell() {
               <Route path="/scorecard"        element={<SupplierScorecard />} />
               <Route path="/should-costs"     element={<ShouldCostDetail />} />
               <Route path="/quotes"           element={<SupplierPortal user={user} />} />
+              <Route path="/commodity-prices" element={<CommodityPrices />} />
+              <Route path="/acr"              element={<ACRTracker />} />
+              <Route path="/assembly"         element={<AssemblyBOM />} />
               <Route path="/portal/new"       element={<QuoteForm user={user} />} />
               <Route path="*"                 element={<Navigate to="/dashboard" replace />} />
             </>

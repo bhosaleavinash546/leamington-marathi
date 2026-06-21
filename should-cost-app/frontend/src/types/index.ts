@@ -156,3 +156,72 @@ export interface AuthState {
   user: AuthUser | null;
   token: string | null;
 }
+
+export interface CommodityPrice {
+  id: number;
+  material_name: string;
+  material_code?: string;
+  price_per_unit: number;
+  unit: string;
+  currency: string;
+  price_date: string;
+  source?: string;
+  notes?: string;
+  created_at: string;
+}
+
+export interface ACRTarget {
+  id: number;
+  part_id: number;
+  part_number: string;
+  supplier_id: number;
+  supplier_name: string;
+  target_year: number;
+  base_price: number;
+  target_reduction_pct: number;
+  agreed_price?: number;
+  actual_reduction_pct?: number;
+  status: 'open' | 'agreed' | 'achieved' | 'missed';
+  notes?: string;
+  created_at: string;
+}
+
+export interface CommodityTemplateElement {
+  cost_element: string;
+  category: string;
+  typical_pct_min: number;
+  typical_pct_max: number;
+  basis: string;
+}
+
+export interface CommodityTemplate {
+  id: number;
+  commodity_name: string;
+  description?: string;
+  elements: CommodityTemplateElement[];
+  created_at: string;
+}
+
+export interface AssemblyBOMLine {
+  id: number;
+  assembly_header_id: number;
+  should_cost_header_id: number;
+  part_number: string;
+  part_description?: string;
+  quantity: number;
+  unit_cost: number;
+  extended_cost: number;
+  currency: string;
+}
+
+export interface AssemblyHeader {
+  id: number;
+  assembly_number: string;
+  description?: string;
+  currency: string;
+  total_cost: number;
+  notes?: string;
+  created_by?: string;
+  created_at: string;
+  lines: AssemblyBOMLine[];
+}
