@@ -1,3 +1,5 @@
+/// <reference types="vite/client" />
+
 /**
  * Resolves the correct API base URL for the current runtime:
  *   - Web browser (dev or prod):  '' → relative paths like /api/auth
