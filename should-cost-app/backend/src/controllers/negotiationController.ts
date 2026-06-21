@@ -8,24 +8,31 @@ export async function listNegotiations(req: Request, res: Response): Promise<voi
   let where = '';
   if (status) { params.push(status); where = `WHERE nt.status = $1`; }
 
-  const { rows } = await pool.query(
-    `SELECT
-       nt.*,
-       p.part_number,
-       p.description    AS part_description,
-       s.name           AS supplier_name,
-       u.full_name      AS owner_name
-     FROM negotiation_target nt
-     JOIN part_master p ON p.id = nt.part_id
-     JOIN supplier    s ON s.id = nt.supplier_id
-     LEFT JOIN "user" u ON u.id = nt.owner_id
-     ${where}
-     ORDER BY
-       CASE nt.status WHEN 'open' THEN 0 WHEN 'stalled' THEN 1 WHEN 'agreed' THEN 2 ELSE 3 END,
-       nt.target_date NULLS LAST`,
-    params
-  );
-  res.json(rows);
+  try {
+    const { rows } = await pool.query(
+      `SELECT
+         nt.*,
+         p.part_number,
+         p.description    AS part_description,
+         s.name           AS supplier_name,
+         u.full_name      AS owner_name
+       FROM negotiation_target nt
+       JOIN part_master p ON p.id = nt.part_id
+       JOIN supplier    s ON s.id = nt.supplier_id
+       LEFT JOIN "user" u ON u.id = nt.owner_id
+       ${where}
+       ORDER BY
+         CASE nt.status WHEN 'open' THEN 0 WHEN 'stalled' THEN 1 WHEN 'agreed' THEN 2 ELSE 3 END,
+         nt.target_date NULLS LAST`,
+      params
+    );
+    res.json(rows);
+  } catch (err) {
+    const pg = err as { code?: string };
+    if (pg.code === '42P01' || pg.code === '42703') { res.json([]); return; }
+    console.error('listNegotiations error:', err);
+    res.status(500).json({ error: 'Failed to retrieve negotiations' });
+  }
 }
 
 // GET /api/negotiations/:id

@@ -56,6 +56,8 @@ export async function listSharesForHeader(req: Request, res: Response): Promise<
 
     res.json(result.rows);
   } catch (err) {
+    const pg = err as { code?: string };
+    if (pg.code === '42P01' || pg.code === '42703') { res.json([]); return; }
     console.error('[openBookController] listSharesForHeader error:', err);
     res.status(500).json({ error: 'Failed to list shares' });
   }
@@ -103,6 +105,8 @@ export async function getMyShares(req: Request, res: Response): Promise<void> {
 
     res.json(result.rows);
   } catch (err) {
+    const pg = err as { code?: string };
+    if (pg.code === '42P01' || pg.code === '42703') { res.json([]); return; }
     console.error('[openBookController] getMyShares error:', err);
     res.status(500).json({ error: 'Failed to fetch shares' });
   }
@@ -147,6 +151,8 @@ export async function getShareResponses(req: Request, res: Response): Promise<vo
 
     res.json(result.rows);
   } catch (err) {
+    const pg = err as { code?: string };
+    if (pg.code === '42P01' || pg.code === '42703') { res.json([]); return; }
     console.error('[openBookController] getShareResponses error:', err);
     res.status(500).json({ error: 'Failed to fetch responses' });
   }

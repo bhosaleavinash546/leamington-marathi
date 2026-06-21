@@ -33,6 +33,8 @@ export async function listCommodityPrices(req: Request, res: Response): Promise<
     );
     res.json(rows);
   } catch (err) {
+    const pg = err as { code?: string };
+    if (pg.code === '42P01' || pg.code === '42703') { res.json([]); return; }
     console.error('listCommodityPrices error:', err);
     res.status(500).json({ error: 'Failed to retrieve commodity prices' });
   }
@@ -57,6 +59,8 @@ export async function commodityPriceSummary(_req: Request, res: Response): Promi
     );
     res.json(rows);
   } catch (err) {
+    const pg = err as { code?: string };
+    if (pg.code === '42P01' || pg.code === '42703') { res.json([]); return; }
     console.error('commodityPriceSummary error:', err);
     res.status(500).json({ error: 'Failed to retrieve commodity price summary' });
   }
@@ -91,6 +95,8 @@ export async function commodityPriceHistory(req: Request, res: Response): Promis
     }
     res.json(rows);
   } catch (err) {
+    const pg = err as { code?: string };
+    if (pg.code === '42P01' || pg.code === '42703') { res.json([]); return; }
     console.error('commodityPriceHistory error:', err);
     res.status(500).json({ error: 'Failed to retrieve commodity price history' });
   }

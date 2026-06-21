@@ -79,6 +79,8 @@ export async function listAccuracy(req: Request, res: Response): Promise<void> {
 
     res.json(result.rows);
   } catch (err) {
+    const pg = err as { code?: string };
+    if (pg.code === '42P01' || pg.code === '42703') { res.json([]); return; }
     console.error('[cerAccuracyController] listAccuracy error:', err);
     res.status(500).json({ error: 'Failed to fetch accuracy logs' });
   }
@@ -168,6 +170,11 @@ export async function getAccuracySummary(req: Request, res: Response): Promise<v
       by_process: byProcess,
     });
   } catch (err) {
+    const pg = err as { code?: string };
+    if (pg.code === '42P01' || pg.code === '42703') {
+      res.json({ count_total: 0, count_with_actuals: 0, avg_error_pct: null, avg_abs_error_pct: null, best_process: null, worst_process: null, by_process: [] });
+      return;
+    }
     console.error('[cerAccuracyController] getAccuracySummary error:', err);
     res.status(500).json({ error: 'Failed to fetch accuracy summary' });
   }

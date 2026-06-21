@@ -26,6 +26,8 @@ export async function getPartFamilyNorms(req: Request, res: Response): Promise<v
 
     res.json(result.rows);
   } catch (err) {
+    const pg = err as { code?: string };
+    if (pg.code === '42P01' || pg.code === '42703') { res.json([]); return; }
     console.error('[partFamilyNormsController] getPartFamilyNorms error:', err);
     res.status(500).json({ error: 'Failed to fetch part family norms' });
   }
@@ -59,6 +61,8 @@ export async function getCommodityDetail(req: Request, res: Response): Promise<v
 
     res.json(result.rows);
   } catch (err) {
+    const pg = err as { code?: string };
+    if (pg.code === '42P01' || pg.code === '42703') { res.json([]); return; }
     console.error('[partFamilyNormsController] getCommodityDetail error:', err);
     res.status(500).json({ error: 'Failed to fetch commodity detail' });
   }

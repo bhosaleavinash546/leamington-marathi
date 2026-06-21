@@ -50,6 +50,8 @@ export async function listAcrTargets(req: Request, res: Response): Promise<void>
     );
     res.json(rows);
   } catch (err) {
+    const pg = err as { code?: string };
+    if (pg.code === '42P01' || pg.code === '42703') { res.json([]); return; }
     console.error('listAcrTargets error:', err);
     res.status(500).json({ error: 'Failed to retrieve ACR targets' });
   }
@@ -105,6 +107,8 @@ export async function acrSummary(_req: Request, res: Response): Promise<void> {
     );
     res.json(rows);
   } catch (err) {
+    const pg = err as { code?: string };
+    if (pg.code === '42P01' || pg.code === '42703') { res.json([]); return; }
     console.error('acrSummary error:', err);
     res.status(500).json({ error: 'Failed to retrieve ACR summary' });
   }

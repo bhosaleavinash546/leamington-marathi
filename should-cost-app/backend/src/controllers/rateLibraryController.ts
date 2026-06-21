@@ -25,6 +25,8 @@ export async function listRates(req: Request, res: Response): Promise<void> {
     );
     res.json(result.rows);
   } catch (err) {
+    const pg = err as { code?: string };
+    if (pg.code === '42P01' || pg.code === '42703') { res.json([]); return; }
     console.error('[rateLibrary] listRates error:', err);
     res.status(500).json({ error: 'Failed to fetch rates' });
   }
@@ -155,6 +157,8 @@ export async function getProcessTypes(_req: Request, res: Response): Promise<voi
     );
     res.json(result.rows.map((r: { process_type: string }) => r.process_type));
   } catch (err) {
+    const pg = err as { code?: string };
+    if (pg.code === '42P01' || pg.code === '42703') { res.json([]); return; }
     console.error('[rateLibrary] getProcessTypes error:', err);
     res.status(500).json({ error: 'Failed to fetch process types' });
   }
@@ -168,6 +172,8 @@ export async function getCountries(_req: Request, res: Response): Promise<void> 
     );
     res.json(result.rows.map((r: { country: string }) => r.country));
   } catch (err) {
+    const pg = err as { code?: string };
+    if (pg.code === '42P01' || pg.code === '42703') { res.json([]); return; }
     console.error('[rateLibrary] getCountries error:', err);
     res.status(500).json({ error: 'Failed to fetch countries' });
   }

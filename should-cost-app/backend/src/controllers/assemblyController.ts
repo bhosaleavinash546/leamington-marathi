@@ -27,6 +27,8 @@ export async function listAssemblies(req: Request, res: Response): Promise<void>
     );
     res.json(rows);
   } catch (err) {
+    const pg = err as { code?: string };
+    if (pg.code === '42P01' || pg.code === '42703') { res.json([]); return; }
     console.error('listAssemblies error:', err);
     res.status(500).json({ error: 'Failed to retrieve assemblies' });
   }
@@ -98,6 +100,8 @@ export async function getAssembly(req: Request, res: Response): Promise<void> {
       lines: linesResult.rows,
     });
   } catch (err) {
+    const pg = err as { code?: string };
+    if (pg.code === '42P01' || pg.code === '42703') { res.status(404).json({ error: 'Assembly not found' }); return; }
     console.error('getAssembly error:', err);
     res.status(500).json({ error: 'Failed to retrieve assembly' });
   }
