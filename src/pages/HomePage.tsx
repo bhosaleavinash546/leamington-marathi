@@ -4,7 +4,7 @@ import {
   ArrowRight, Zap, BarChart3, FileDown, Upload, Cpu, Shield, ChevronRight,
   TrendingDown, TrendingUp, Activity, Globe, Layers, Award, RefreshCw,
   DollarSign, Target, CheckCircle2, Lightbulb, Star, Clock, Cog,
-  Link2, Car, Plug
+  Link2, Car, Plug, SlidersHorizontal, FlaskConical, Download
 } from 'lucide-react';
 import { AUTOMOTIVE_SYSTEMS } from '../data/automotive-catalog';
 import { useEffect, useRef, useState } from 'react';
@@ -232,6 +232,32 @@ const FEATURES = [
   },
 ];
 
+// ─── How It Works ─────────────────────────────────────────────────────────────
+
+const HOW_IT_WORKS = [
+  {
+    step: '01',
+    icon: SlidersHorizontal,
+    title: 'Configure Your Programme',
+    desc: 'Select a vehicle system, set production volume, choose region and currency, and optionally specify your OEM or direct competitor. Takes under 60 seconds.',
+    color: 'from-blue-500 to-indigo-600',
+  },
+  {
+    step: '02',
+    icon: FlaskConical,
+    title: 'AI Generates Ideas',
+    desc: 'Claude AI cross-references teardown databases, patent analysis, supplier benchmarks and commodity prices to surface 15–20 targeted cost reduction opportunities.',
+    color: 'from-gold-500 to-amber-600',
+  },
+  {
+    step: '03',
+    icon: Download,
+    title: 'Review, Annotate & Export',
+    desc: 'Annotate ideas as Approved, Investigating or Rejected. Chat with the AI for deeper analysis. Export a 3-sheet Excel workbook, full PowerPoint deck or branded PDF.',
+    color: 'from-emerald-500 to-teal-600',
+  },
+];
+
 // ─── KPI DATA ─────────────────────────────────────────────────────────────────
 
 const KPI_CARDS = [
@@ -374,7 +400,7 @@ export default function HomePage() {
                   <Award size={14} className="text-gold-400" />
                   <span className="text-white font-semibold text-sm">Verified Benchmark Savings</span>
                 </div>
-                <span className="text-[10px] text-slate-500 uppercase tracking-wider">OEM confirmed</span>
+                <span className="text-[10px] text-slate-500 uppercase tracking-wider">Teardown benchmarks</span>
               </div>
               <div className="grid grid-cols-2 gap-2">
                 {BENCHMARKS.map((b, i) => (
@@ -444,6 +470,46 @@ export default function HomePage() {
                     Analyze <ChevronRight size={12} className="ml-1" />
                   </div>
                 </Link>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── How It Works ──────────────────────────────────────────────────────── */}
+      <section className="py-16 px-4">
+        <div className="max-w-7xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+            className="text-center mb-12"
+          >
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-slate-400 text-xs font-medium mb-4">
+              <Zap size={11} className="text-gold-400" />
+              Three Steps to Results
+            </div>
+            <h2 className="text-3xl font-bold text-white mb-3">How It Works</h2>
+            <p className="text-slate-400 text-sm">From blank page to executive-ready cost reduction report in minutes</p>
+          </motion.div>
+
+          <div className="grid md:grid-cols-3 gap-6 relative">
+            {/* Connector line (desktop only) */}
+            <div className="hidden md:block absolute top-14 left-1/3 right-1/3 h-px bg-gradient-to-r from-white/8 via-gold-500/30 to-white/8 pointer-events-none" />
+
+            {HOW_IT_WORKS.map((item, i) => (
+              <motion.div
+                key={item.step}
+                initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }} transition={{ duration: 0.45, delay: i * 0.12 }}
+                className="relative p-6 rounded-2xl bg-navy-900 border border-white/8 hover:border-white/15 transition-all cursor-default group"
+              >
+                <div className="flex items-start gap-4 mb-4">
+                  <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${item.color} flex items-center justify-center flex-shrink-0 shadow-lg group-hover:scale-110 transition-transform duration-300`}>
+                    <item.icon size={20} className="text-white" />
+                  </div>
+                  <span className="text-4xl font-black text-white/8 leading-none mt-1 select-none">{item.step}</span>
+                </div>
+                <h3 className="text-white font-semibold text-base mb-2">{item.title}</h3>
+                <p className="text-slate-400 text-sm leading-relaxed">{item.desc}</p>
               </motion.div>
             ))}
           </div>

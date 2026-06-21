@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { TrendingUp, Cpu, Wrench, Building2, ChevronRight, Car, Battery, Settings, Flame, Wind, Armchair, Lightbulb, Cog } from 'lucide-react';
+import { TrendingUp, TrendingDown, Cpu, Wrench, Building2, ChevronRight, Car, Battery, Settings, Flame, Wind, Armchair, Lightbulb, Cog, BarChart3 } from 'lucide-react';
 import {
   MFG_LEVERS, EDU_TRENDS, OEM_MOVES, EDU_COST_STRUCTURE, getTotalEduIdeas, EDU_COMPONENTS,
 } from '../data/edu-knowledge-base';
@@ -14,6 +14,24 @@ import { TRANSMISSION_COMPONENTS, TRANSMISSION_MFG_LEVERS, TRANSMISSION_TRENDS, 
 
 type Domain = 'edu' | 'biw' | 'chassis' | 'battery' | 'ice' | 'hvac' | 'interior' | 'exterior' | 'transmission';
 type Tab = 'trends' | 'manufacturing' | 'oem';
+
+interface CommodityRow {
+  name: string;
+  price: string;
+  unit: string;
+  yoy: number; // percentage, negative = cost reduction
+}
+
+const COMMODITY_PRICES: CommodityRow[] = [
+  { name: 'Aluminium',         price: '€2,340', unit: '/t', yoy: -3  },
+  { name: 'Steel (HRC)',       price: '€580',   unit: '/t', yoy: -8  },
+  { name: 'Copper',            price: '€9,100', unit: '/t', yoy: +5  },
+  { name: 'ABS Resin',         price: '€1,450', unit: '/t', yoy: -2  },
+  { name: 'CFRP',              price: '€25,000',unit: '/t', yoy: -12 },
+  { name: 'Nylon PA66',        price: '€2,800', unit: '/t', yoy: -1  },
+  { name: 'Glass Fibre',       price: '€1,600', unit: '/t', yoy: +2  },
+  { name: 'Lithium Carbonate', price: '€12,000',unit: '/t', yoy: -45 },
+];
 
 const CONF_COLORS: Record<string, string> = {
   verified:    'bg-green-500/10 text-green-400 border-green-500/30',
@@ -483,6 +501,84 @@ export default function TrendsPage() {
           </div>
         </div>
       )}
+
+      {/* Commodity Price Reference — always visible at bottom of page */}
+      <div className="max-w-7xl mx-auto px-4 pb-12">
+        <div className="mt-10 border-t border-white/8 pt-8">
+          {/* Section header */}
+          <div className="flex items-center gap-3 mb-2">
+            <div className="w-9 h-9 rounded-lg bg-gold-500/15 border border-gold-500/30 flex items-center justify-center flex-shrink-0">
+              <BarChart3 size={18} className="text-gold-400" />
+            </div>
+            <div>
+              <h2 className="text-lg font-bold text-white">Commodity Price Reference</h2>
+              <p className="text-slate-500 text-xs">Q2 2025 indicative basis — engineering materials relevant to automotive cost modelling</p>
+            </div>
+          </div>
+
+          {/* Disclaimer banner */}
+          <div className="mb-5 mt-4 flex items-start gap-3 bg-amber-500/8 border border-amber-500/25 rounded-xl px-4 py-3">
+            <span className="text-amber-400 text-xs font-bold uppercase tracking-widest flex-shrink-0 mt-0.5">Disclaimer</span>
+            <p className="text-amber-300/70 text-xs leading-relaxed">
+              These are indicative Q2 2025 reference values for engineering estimation only.
+              Verify current spot prices at <span className="font-semibold text-amber-300">LME.com</span>, ICIS, Platts or via supplier quotes before use in commercial negotiations or financial modelling.
+              Prices exclude freight, duty, conversion and hedging premiums.
+            </p>
+          </div>
+
+          {/* Commodity table */}
+          <div className="bg-navy-800/40 border border-white/8 rounded-xl overflow-hidden">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-white/8">
+                  <th className="text-left text-xs font-semibold text-slate-400 uppercase tracking-widest px-5 py-3">Commodity</th>
+                  <th className="text-right text-xs font-semibold text-slate-400 uppercase tracking-widest px-5 py-3">Indicative Price</th>
+                  <th className="text-center text-xs font-semibold text-slate-400 uppercase tracking-widest px-5 py-3">Unit</th>
+                  <th className="text-center text-xs font-semibold text-slate-400 uppercase tracking-widest px-5 py-3">YoY</th>
+                  <th className="text-left text-xs font-semibold text-slate-400 uppercase tracking-widest px-5 py-3 hidden sm:table-cell">Signal</th>
+                </tr>
+              </thead>
+              <tbody>
+                {COMMODITY_PRICES.map((row, i) => {
+                  const isCostReduction = row.yoy < 0;
+                  const yoyLabel = (row.yoy > 0 ? '+' : '') + row.yoy + '%';
+                  return (
+                    <tr key={row.name} className={`border-b border-white/5 hover:bg-white/3 transition-colors ${i % 2 === 0 ? '' : 'bg-white/2'}`}>
+                      <td className="px-5 py-3.5">
+                        <span className="text-white font-medium">{row.name}</span>
+                      </td>
+                      <td className="px-5 py-3.5 text-right">
+                        <span className="text-gold-400 font-semibold font-mono">{row.price}</span>
+                      </td>
+                      <td className="px-5 py-3.5 text-center">
+                        <span className="text-slate-400 text-xs">{row.unit}</span>
+                      </td>
+                      <td className="px-5 py-3.5 text-center">
+                        <span className={`inline-flex items-center gap-1 text-xs font-bold px-2 py-0.5 rounded-full border ${isCostReduction ? 'text-green-400 bg-green-500/10 border-green-500/25' : 'text-red-400 bg-red-500/10 border-red-500/25'}`}>
+                          {isCostReduction
+                            ? <TrendingDown size={11} />
+                            : <TrendingUp size={11} />}
+                          {yoyLabel}
+                        </span>
+                      </td>
+                      <td className="px-5 py-3.5 hidden sm:table-cell">
+                        <span className={`text-xs ${isCostReduction ? 'text-green-400/70' : 'text-red-400/70'}`}>
+                          {isCostReduction ? 'Cost pressure easing' : 'Cost pressure rising'}
+                        </span>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+
+          <p className="text-slate-600 text-xs mt-3 leading-relaxed">
+            Source: LME, ICIS, industry benchmarks (Q2 2025). YoY = year-on-year change versus Q2 2024.
+            Green YoY indicates falling commodity cost (favourable for BOM). Red indicates rising cost (headwind).
+          </p>
+        </div>
+      </div>
     </div>
   );
 }

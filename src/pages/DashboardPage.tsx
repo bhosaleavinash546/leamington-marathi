@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ChevronRight, TrendingDown, Clock, BarChart3, Lightbulb, ArrowRight, Star, BookOpen, Target, Activity, Trash2, Share2 } from 'lucide-react';
+import { ChevronRight, TrendingDown, Clock, BarChart3, Lightbulb, ArrowRight, Star, BookOpen, Target, Activity, Trash2, Share2, CheckCircle, AlertCircle, XCircle, ClipboardList } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { loadFullResult } from '../services/claude-service';
 import { toast } from '../hooks/useToast';
@@ -58,6 +58,50 @@ export default function DashboardPage() {
   const [shareUrl, setShareUrl] = useState<string | null>(null);
   const [savingsPipeline, setSavingsPipeline] = useState({ total: 0, investigating: 0, approved: 0, committedSavings: 0, investigatingSavings: 0 });
   const [viewMode, setViewMode] = useState<'list' | 'rollup'>('list');
+
+  // Compute annotation summary across all projects from localStorage
+  const annotationStats = useMemo(() => {
+    let approved = 0;
+    let investigating = 0;
+    let rejected = 0;
+
+    // Collect all project ids: server projects + local analyses
+    const projectIds = new Set<string>();
+    serverProjects.forEach(p => projectIds.add(p.id));
+    recentAnalyses.forEach(a => projectIds.add(a.id));
+
+    // Also scan all localStorage keys for any brainspark_annotations_ entries
+    // in case the user has projects not yet listed (edge case)
+    try {
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && key.startsWith('brainspark_annotations_')) {
+          const id = key.replace('brainspark_annotations_', '');
+          projectIds.add(id);
+        }
+      }
+    } catch {}
+
+    projectIds.forEach(id => {
+      try {
+        const raw = localStorage.getItem(`brainspark_annotations_${id}`);
+        if (!raw) return;
+        const parsed: Record<string, { status: string; note?: string }> = JSON.parse(raw);
+        Object.values(parsed).forEach(ann => {
+          const s = (ann.status || '').toLowerCase();
+          if (s === 'approved') approved++;
+          else if (s === 'investigating') investigating++;
+          else if (s === 'rejected') rejected++;
+        });
+      } catch {}
+    });
+
+    const reviewed = approved + investigating + rejected;
+    const total = serverProjects.reduce((s, p) => s + (p.summary?.totalIdeas || 0), 0)
+      || recentAnalyses.reduce((s, a) => s + (a.ideasCount || 0), 0);
+
+    return { approved, investigating, rejected, reviewed, total };
+  }, [serverProjects, recentAnalyses]);
 
   useEffect(() => {
     // Load localStorage fallback
@@ -298,6 +342,77 @@ export default function DashboardPage() {
             )}
           </motion.div>
         )}
+
+        {/* Annotation Summary */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.18 }}
+          className="rounded-2xl bg-navy-900 border border-white/8 p-6"
+        >
+          <div className="flex items-center gap-2 mb-5">
+            <ClipboardList size={16} className="text-gold-400" />
+            <h2 className="text-white font-semibold">Annotation Summary</h2>
+            <span className="text-slate-600 text-xs ml-auto">Ideas reviewed across all projects</span>
+          </div>
+
+          {annotationStats.reviewed === 0 ? (
+            <p className="text-slate-500 text-sm">
+              Start reviewing ideas — open any analysis and annotate ideas as Approved, Investigating, or Rejected.
+            </p>
+          ) : (
+            <>
+              <div className="grid grid-cols-3 gap-4 mb-5">
+                {/* Approved */}
+                <div className="flex items-center gap-3 p-3 rounded-xl bg-emerald-500/8 border border-emerald-500/15">
+                  <CheckCircle size={18} className="text-emerald-400 flex-shrink-0" />
+                  <div>
+                    <p className="text-emerald-300 text-xl font-bold leading-none">{annotationStats.approved}</p>
+                    <p className="text-emerald-600 text-xs mt-0.5">Approved</p>
+                  </div>
+                </div>
+
+                {/* Investigating */}
+                <div className="flex items-center gap-3 p-3 rounded-xl bg-amber-500/8 border border-amber-500/15">
+                  <AlertCircle size={18} className="text-amber-400 flex-shrink-0" />
+                  <div>
+                    <p className="text-amber-300 text-xl font-bold leading-none">{annotationStats.investigating}</p>
+                    <p className="text-amber-600 text-xs mt-0.5">Investigating</p>
+                  </div>
+                </div>
+
+                {/* Rejected */}
+                <div className="flex items-center gap-3 p-3 rounded-xl bg-red-500/8 border border-red-500/15">
+                  <XCircle size={18} className="text-red-400 flex-shrink-0" />
+                  <div>
+                    <p className="text-red-300 text-xl font-bold leading-none">{annotationStats.rejected}</p>
+                    <p className="text-red-600 text-xs mt-0.5">Rejected</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Progress bar */}
+              {annotationStats.total > 0 && (
+                <div>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <span className="text-slate-400 text-xs">
+                      {annotationStats.reviewed} of {annotationStats.total} total ideas reviewed
+                    </span>
+                    <span className="text-slate-500 text-xs font-medium">
+                      {Math.round((annotationStats.reviewed / annotationStats.total) * 100)}%
+                    </span>
+                  </div>
+                  <div className="h-2 rounded-full bg-navy-800 border border-white/5 overflow-hidden">
+                    <div
+                      className="h-full rounded-full bg-gradient-to-r from-gold-500 to-gold-400 transition-all duration-500"
+                      style={{ width: `${Math.min((annotationStats.reviewed / annotationStats.total) * 100, 100)}%` }}
+                    />
+                  </div>
+                </div>
+              )}
+            </>
+          )}
+        </motion.div>
 
         <div className="grid lg:grid-cols-3 gap-6">
 

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Store, Star, TrendingDown, Clock, ChevronDown, CheckCircle } from 'lucide-react';
+import { Store, Star, TrendingDown, Clock, ChevronDown, CheckCircle, Lightbulb, ThumbsUp } from 'lucide-react';
 
 interface MarketplaceIdea {
   id: string;
@@ -15,8 +15,72 @@ interface MarketplaceIdea {
   description: string;
 }
 
+interface RecentAnalysis {
+  id: string;
+  systemName: string;
+  subassemblyName: string;
+  partName: string;
+  ideasCount: number;
+  timestamp: string;
+}
+
+interface AnnotationEntry {
+  status: 'Approved' | 'Investigating' | 'Rejected';
+  note?: string;
+}
+
+interface ApprovedIdeaInsight {
+  title: string;
+  systemName: string;
+  status: 'Approved' | 'Investigating';
+}
+
 const SYSTEMS = ['All Systems', 'Body Structure', 'Chassis', 'Electrical', 'Interior', 'Body Sealing'];
 const DIFFICULTIES = ['All', 'Low', 'Medium', 'High'];
+
+function loadInsightsFromLocalStorage(): { approvedIdeas: ApprovedIdeaInsight[]; totalApproved: number; projectCount: number } {
+  try {
+    const raw = localStorage.getItem('brainspark_recent_analyses');
+    if (!raw) return { approvedIdeas: [], totalApproved: 0, projectCount: 0 };
+    const analyses: RecentAnalysis[] = JSON.parse(raw);
+    if (!Array.isArray(analyses) || analyses.length === 0) return { approvedIdeas: [], totalApproved: 0, projectCount: 0 };
+
+    const collected: ApprovedIdeaInsight[] = [];
+    let projectsWithAnnotations = 0;
+
+    for (const analysis of analyses) {
+      const annotRaw = localStorage.getItem('brainspark_annotations_' + analysis.id);
+      if (!annotRaw) continue;
+      const annotations: Record<string, AnnotationEntry> = JSON.parse(annotRaw);
+      const entries = Object.entries(annotations).filter(
+        ([, v]) => v.status === 'Approved' || v.status === 'Investigating'
+      );
+      if (entries.length > 0) {
+        projectsWithAnnotations += 1;
+        for (const [slug, v] of entries) {
+          if (v.status === 'Approved' || v.status === 'Investigating') {
+            collected.push({
+              title: slug.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()),
+              systemName: analysis.systemName,
+              status: v.status,
+            });
+          }
+        }
+      }
+    }
+
+    // Sort Approved first, then Investigating; take max 5
+    collected.sort((a, b) => (a.status === 'Approved' ? -1 : 1) - (b.status === 'Approved' ? -1 : 1));
+
+    return {
+      approvedIdeas: collected.slice(0, 5),
+      totalApproved: collected.filter(x => x.status === 'Approved').length,
+      projectCount: projectsWithAnnotations,
+    };
+  } catch {
+    return { approvedIdeas: [], totalApproved: 0, projectCount: 0 };
+  }
+}
 
 export default function MarketplacePage() {
   const [searchQ, setSearchQ] = useState('');
@@ -28,6 +92,7 @@ export default function MarketplacePage() {
   const [submitForm, setSubmitForm] = useState({ title: '', system: '', costSavingType: '', annualSaving: '', difficulty: 'Medium', timeToImplement: '', description: '' });
   const [submitting, setSubmitting] = useState(false);
   const [submitMsg, setSubmitMsg] = useState('');
+  const [insights, setInsights] = useState<{ approvedIdeas: ApprovedIdeaInsight[]; totalApproved: number; projectCount: number }>({ approvedIdeas: [], totalApproved: 0, projectCount: 0 });
 
   useEffect(() => {
     fetch('/api/marketplace')
@@ -35,6 +100,7 @@ export default function MarketplacePage() {
       .then(data => setIdeas(Array.isArray(data) ? data : []))
       .catch(() => {})
       .finally(() => setLoadingIdeas(false));
+    setInsights(loadInsightsFromLocalStorage());
   }, []);
 
   async function handleSubmit() {
@@ -63,6 +129,13 @@ export default function MarketplacePage() {
     return matchQ && matchSys && matchDiff;
   });
 
+  // Systems the user has approved ideas in — used to tag matching Marketplace cards
+  const approvedSystems = new Set(
+    insights.approvedIdeas
+      .filter(x => x.status === 'Approved')
+      .map(x => x.systemName.toLowerCase())
+  );
+
   return (
     <div className="min-h-screen bg-navy-950 pt-20 pb-16 px-4">
       <div className="max-w-5xl mx-auto">
@@ -76,6 +149,35 @@ export default function MarketplacePage() {
             <CheckCircle size={11} /> Verified ideas confirmed in production by OEM engineering teams
           </div>
         </div>
+
+        {/* Insights from Your Projects */}
+        {insights.approvedIdeas.length === 0 ? (
+          <motion.div initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }}
+            className="mb-6 flex items-start gap-3 p-4 rounded-2xl bg-navy-900 border border-white/8">
+            <Lightbulb size={18} className="text-slate-500 mt-0.5 flex-shrink-0" />
+            <p className="text-slate-500 text-sm">Annotate ideas in your analyses to see personalised insights here.</p>
+          </motion.div>
+        ) : (
+          <motion.div initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }}
+            className="mb-6 p-4 rounded-2xl bg-navy-900 border border-gold-500/20">
+            <div className="flex items-center gap-2 mb-3">
+              <ThumbsUp size={15} className="text-gold-400" />
+              <h2 className="text-white font-semibold text-sm">Insights from Your Projects</h2>
+              <span className="ml-auto flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-gold-500/15 border border-gold-500/25 text-gold-400 text-xs font-medium">
+                {insights.totalApproved} approved idea{insights.totalApproved !== 1 ? 's' : ''} across {insights.projectCount} project{insights.projectCount !== 1 ? 's' : ''}
+              </span>
+            </div>
+            <ul className="space-y-1.5">
+              {insights.approvedIdeas.map((idea, i) => (
+                <li key={i} className="flex items-center gap-2 text-xs text-slate-300">
+                  <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${idea.status === 'Approved' ? 'bg-green-400' : 'bg-amber-400'}`} />
+                  <span className="flex-1 truncate">{idea.title}</span>
+                  <span className="text-slate-500 flex-shrink-0">{idea.systemName}</span>
+                </li>
+              ))}
+            </ul>
+          </motion.div>
+        )}
 
         {/* Search + filter bar */}
         <div className="flex flex-wrap gap-3 mb-6">
@@ -143,11 +245,16 @@ export default function MarketplacePage() {
                 className="bg-navy-900 border border-white/10 rounded-2xl p-5 hover:border-gold-500/25 transition-all">
                 <div className="flex items-start justify-between gap-4 mb-3">
                   <div>
-                    <div className="flex items-center gap-2 mb-1">
+                    <div className="flex items-center gap-2 mb-1 flex-wrap">
                       <h3 className="text-white font-semibold text-base leading-tight">{idea.title}</h3>
                       {idea.verified && (
                         <span className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs flex-shrink-0">
                           <CheckCircle size={9} /> Verified
+                        </span>
+                      )}
+                      {approvedSystems.size > 0 && approvedSystems.has(idea.system.toLowerCase()) && (
+                        <span className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-green-500/10 border border-green-500/20 text-green-400 text-xs flex-shrink-0">
+                          <ThumbsUp size={9} /> Based on your approvals
                         </span>
                       )}
                     </div>
