@@ -637,17 +637,18 @@ export default function ResultsPage() {
       setSubName(sub || '');
       // Load saved annotations
       if (parsed.id) {
+        const localAnnotationsRaw = localStorage.getItem(`brainspark_annotations_${parsed.id}`);
+        const hasLocalAnnotations = Boolean(localAnnotationsRaw);
         try {
-          const saved = localStorage.getItem(`brainspark_annotations_${parsed.id}`);
-          if (saved) setAnnotations(JSON.parse(saved));
+          if (localAnnotationsRaw) setAnnotations(JSON.parse(localAnnotationsRaw));
         } catch {}
         const authToken = (() => { try { return JSON.parse(localStorage.getItem('brainspark_auth') || '{}').token; } catch { return null; } })();
         if (authToken) {
-          // Hydrate annotations from server (overrides localStorage if server has data)
+          // Only fall back to server annotations if local storage has none
           fetch(`/api/projects/${parsed.id}`, { headers: { Authorization: `Bearer ${authToken}` } })
             .then(r => r.ok ? r.json() : null)
             .then(proj => {
-              if (proj?.annotations && Object.keys(proj.annotations).length > 0) {
+              if (!hasLocalAnnotations && proj?.annotations && Object.keys(proj.annotations).length > 0) {
                 setAnnotations(proj.annotations);
                 try { localStorage.setItem(`brainspark_annotations_${parsed.id}`, JSON.stringify(proj.annotations)); } catch {}
               }

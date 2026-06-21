@@ -2384,7 +2384,7 @@ function signToken(user) {
 // ─── AUTH ROUTES ─────────────────────────────────────────────────────────────
 
 // Sign Up — step 1: create unverified account, send OTP
-app.post('/api/auth/signup', async (req, res) => {
+app.post('/api/auth/signup', rateLimit(5, 15 * 60 * 1000), async (req, res) => {
   const { name, email, password } = req.body;
   if (!name?.trim() || !email?.trim() || !password) return res.status(400).json({ error: 'Name, email and password are required.' });
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return res.status(400).json({ error: 'Please enter a valid email address.' });
@@ -2416,7 +2416,7 @@ app.post('/api/auth/signup', async (req, res) => {
 });
 
 // Sign Up — step 2: verify OTP, activate account
-app.post('/api/auth/verify-signup', async (req, res) => {
+app.post('/api/auth/verify-signup', rateLimit(5, 15 * 60 * 1000), async (req, res) => {
   const { email, otp } = req.body;
   const result = verifyOTP(email, otp, 'signup');
   if (!result.ok) return res.status(400).json({ error: result.reason });
@@ -2483,7 +2483,7 @@ app.post('/api/auth/forgot-password', rateLimit(5, 15 * 60 * 1000), async (req, 
 });
 
 // Forgot Password — step 2: verify OTP + set new password
-app.post('/api/auth/reset-password', async (req, res) => {
+app.post('/api/auth/reset-password', rateLimit(5, 15 * 60 * 1000), async (req, res) => {
   const { email, otp, newPassword } = req.body;
   if (!email || !otp || !newPassword) return res.status(400).json({ error: 'All fields are required.' });
   if (newPassword.length < 8) return res.status(400).json({ error: 'Password must be at least 8 characters.' });
@@ -3521,9 +3521,9 @@ app.post('/api/projects', requireAuth, (req, res) => {
 
 app.get('/api/projects', requireAuth, (req, res) => {
   const rows = db.prepare(
-    'SELECT id, systemName, subassemblyName, partName, vehicleType, summary, generatedAt, createdAt FROM projects WHERE userId = ? ORDER BY createdAt DESC LIMIT 50'
+    'SELECT id, systemName, subassemblyName, partName, vehicleType, summary, annotations, generatedAt, createdAt FROM projects WHERE userId = ? ORDER BY createdAt DESC LIMIT 50'
   ).all(req.user.id);
-  res.json(rows.map(r => ({ ...r, summary: JSON.parse(r.summary) })));
+  res.json(rows.map(r => ({ ...r, summary: JSON.parse(r.summary), annotations: JSON.parse(r.annotations || '{}') })));
 });
 
 app.get('/api/projects/:id', requireAuth, (req, res) => {
@@ -3541,7 +3541,7 @@ app.get('/api/projects/:id', requireAuth, (req, res) => {
 
 app.patch('/api/projects/:id/annotations', requireAuth, (req, res) => {
   const { id } = req.params;
-  const userId = req.user.userId;
+  const userId = req.user.id;
   const { annotations } = req.body;
   if (!annotations || typeof annotations !== 'object') return res.status(400).json({ error: 'annotations object required' });
   try {
@@ -3594,10 +3594,11 @@ app.get('/api/shared/:token', (req, res) => {
 
 // ─── ADMIN SEED ──────────────────────────────────────────────────────────────
 
-const ADMIN_EMAIL    = 'admin@autocost.ai';
-const ADMIN_PASSWORD = 'AutoCost@Admin2025';
+const ADMIN_EMAIL    = process.env.ADMIN_EMAIL;
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 
 async function seedAdminAccount() {
+  if (!ADMIN_EMAIL || !ADMIN_PASSWORD) return;
   const users = await readUsers();
   const exists = users.find(u => u.email === ADMIN_EMAIL);
   if (exists) return;
@@ -3612,7 +3613,7 @@ async function seedAdminAccount() {
     createdAt: new Date().toISOString(),
   });
   await writeUsers(users);
-  console.log('   Admin account ready: admin@autocost.ai');
+  console.log(`   Admin account ready: ${ADMIN_EMAIL}`);
 }
 
 // ─── PATENT WATCH ─────────────────────────────────────────────────────────────

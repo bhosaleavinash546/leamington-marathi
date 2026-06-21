@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { ChevronRight, TrendingDown, Clock, BarChart3, Lightbulb, ArrowRight, Star, BookOpen, Target, Activity, Trash2, Share2 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { loadFullResult } from '../services/claude-service';
+import { toast } from '../hooks/useToast';
 
 interface RecentAnalysis {
   id: string;
@@ -21,6 +22,7 @@ interface ServerProject {
   partName?: string;
   vehicleType?: string;
   summary: { totalIdeas: number; quickWins: number; strategicItems: number };
+  annotations?: Record<string, { status: string }>;
   generatedAt: string;
 }
 
@@ -47,7 +49,7 @@ const WHATS_NEW = [
 ];
 
 export default function DashboardPage() {
-  const { user } = useAuth();
+  const { user, token } = useAuth();
   const navigate = useNavigate();
   const [recentAnalyses, setRecentAnalyses] = useState<RecentAnalysis[]>([]);
   const [serverProjects, setServerProjects] = useState<ServerProject[]>([]);
@@ -64,9 +66,6 @@ export default function DashboardPage() {
       if (stored) setRecentAnalyses(JSON.parse(stored));
     } catch {}
     // Load server projects
-    const token = (() => {
-      try { return JSON.parse(localStorage.getItem('brainspark_auth') || '{}').token; } catch { return null; }
-    })();
     if (token) {
       fetch('/api/projects', { headers: { Authorization: `Bearer ${token}` } })
         .then(r => r.ok ? r.json() : [])
@@ -89,7 +88,12 @@ export default function DashboardPage() {
     serverProjects.forEach(p => {
       let annotations: Record<string, { status: string }> = {};
       let ideas: Array<{ id: string; costSavingPotential?: { annualValue?: string } }> = [];
-      try { annotations = JSON.parse(localStorage.getItem(`brainspark_annotations_${p.id}`) || '{}'); } catch {}
+      const localAnnotationsRaw = localStorage.getItem(`brainspark_annotations_${p.id}`);
+      if (localAnnotationsRaw) {
+        try { annotations = JSON.parse(localAnnotationsRaw); } catch {}
+      } else if (p.annotations) {
+        annotations = p.annotations;
+      }
       try { ideas = JSON.parse(localStorage.getItem(`brainspark_ideas_${p.id}`) || '[]'); } catch {}
 
       const ideaValueMap: Record<string, number> = {};
@@ -106,21 +110,16 @@ export default function DashboardPage() {
   }, [serverProjects]);
 
   async function deleteProject(id: string) {
-    const token = (() => {
-      try { return JSON.parse(localStorage.getItem('brainspark_auth') || '{}').token; } catch { return null; }
-    })();
     if (!token) return;
     setDeletingId(id);
     try {
-      await fetch(`/api/projects/${id}`, { method: 'DELETE', headers: { Authorization: `Bearer ${token}` } });
-      setServerProjects(prev => prev.filter(p => p.id !== id));
+      const r = await fetch(`/api/projects/${id}`, { method: 'DELETE', headers: { Authorization: `Bearer ${token}` } });
+      if (r.ok) setServerProjects(prev => prev.filter(p => p.id !== id));
+      else toast('Failed to delete project', 'error');
     } finally { setDeletingId(null); }
   }
 
   async function shareProject(id: string) {
-    const token = (() => {
-      try { return JSON.parse(localStorage.getItem('brainspark_auth') || '{}').token; } catch { return null; }
-    })();
     if (!token) return;
     setSharingId(id);
     try {
@@ -128,15 +127,13 @@ export default function DashboardPage() {
         method: 'POST', headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
         body: JSON.stringify({ expiryDays: 30 }),
       });
+      if (!r.ok) { toast('Failed to create share link', 'error'); return; }
       const data = await r.json();
       setShareUrl(`${window.location.origin}${data.shareUrl}`);
     } finally { setSharingId(null); }
   }
 
   async function openServerProject(id: string, p: ServerProject) {
-    const token = (() => {
-      try { return JSON.parse(localStorage.getItem('brainspark_auth') || '{}').token; } catch { return null; }
-    })();
     if (!token) return;
     try {
       const r = await fetch(`/api/projects/${id}`, { headers: { Authorization: `Bearer ${token}` } });

@@ -136,8 +136,7 @@ export async function generateCostReductionIdeas(
         const ideas = (data as unknown as { ideas: CostReductionIdea[]; projectId?: string }).ideas;
         const sources = (data as unknown as { sources: SearchSource[]; projectId?: string }).sources;
         const serverProjectId = (data as unknown as { projectId?: string }).projectId;
-        const resultId = serverProjectId || saveRecentAnalysis(systemName, subassemblyName, partName, ideas.length);
-        saveRecentAnalysis(systemName, subassemblyName, partName, ideas.length, resultId);
+        const resultId = saveRecentAnalysis(systemName, subassemblyName, partName, ideas.length, serverProjectId || undefined);
         return { ideas, sources, resultId };
       }
       if (data.type === 'error') {
