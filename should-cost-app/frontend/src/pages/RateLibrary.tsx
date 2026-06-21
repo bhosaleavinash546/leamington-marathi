@@ -2,19 +2,22 @@ import { useEffect, useRef, useState } from 'react';
 import api from '../utils/api';
 import { RateReference } from '../types';
 
+type RateReferenceExtended = RateReference & { is_validated?: boolean };
+
 interface ProcessTypesResponse { process_types: string[] }
 interface CountriesResponse    { countries: string[] }
 
 const fmt2 = (n: number) => Number(n).toFixed(2);
 
 export default function RateLibrary() {
-  const [rates, setRates]               = useState<RateReference[]>([]);
+  const [rates, setRates]               = useState<RateReferenceExtended[]>([]);
   const [processTypes, setProcessTypes] = useState<string[]>([]);
   const [countries, setCountries]       = useState<string[]>([]);
   const [loading, setLoading]           = useState(true);
   const [error, setError]               = useState<string | null>(null);
   const [showForm, setShowForm]         = useState(false);
-  const [editItem, setEditItem]         = useState<RateReference | null>(null);
+  const [editItem, setEditItem]         = useState<RateReferenceExtended | null>(null);
+  const [showVerifiedOnly, setShowVerifiedOnly] = useState(false);
   const [filterProcess, setFilterProcess] = useState('');
   const [filterCountry, setFilterCountry] = useState('');
   const [csvToast, setCsvToast]         = useState<{ ok: boolean; msg: string } | null>(null);
@@ -41,7 +44,7 @@ export default function RateLibrary() {
     setError(null);
     try {
       const [ratesRes, ptRes, cRes] = await Promise.all([
-        api.get<RateReference[]>('/rate-library'),
+        api.get<RateReferenceExtended[]>('/rate-library'),
         api.get<ProcessTypesResponse>('/rate-library/process-types'),
         api.get<CountriesResponse>('/rate-library/countries'),
       ]);
@@ -60,6 +63,7 @@ export default function RateLibrary() {
   const filtered = rates.filter((r) => {
     if (filterProcess && r.process_type !== filterProcess) return false;
     if (filterCountry && r.country !== filterCountry) return false;
+    if (showVerifiedOnly && !r.is_validated) return false;
     return true;
   });
 
@@ -69,7 +73,7 @@ export default function RateLibrary() {
     setShowForm(true);
   };
 
-  const openEdit = (r: RateReference) => {
+  const openEdit = (r: RateReferenceExtended) => {
     setEditItem(r);
     setForm({
       process_type:    r.process_type,
@@ -118,8 +122,10 @@ export default function RateLibrary() {
     if (!file) return;
     try {
       const text = await file.text();
-      await api.post('/import/parts', text, { headers: { 'Content-Type': 'text/plain' } });
-      setCsvToast({ ok: true, msg: 'CSV imported successfully.' });
+      const result = await api.post<{ imported?: number; skipped?: number }>('/rate-library/import', text, { headers: { 'Content-Type': 'text/plain' } });
+      const imp = result.data.imported ?? 0;
+      const skip = result.data.skipped ?? 0;
+      setCsvToast({ ok: true, msg: `✅ ${imp} rate${imp !== 1 ? 's' : ''} imported${skip > 0 ? `, ${skip} skipped` : ''}.` });
       fetchAll();
     } catch {
       setCsvToast({ ok: false, msg: 'CSV import failed. Check file format.' });
@@ -202,6 +208,10 @@ export default function RateLibrary() {
             Clear filters
           </button>
         )}
+        <label style={{ display: 'flex', gap: 6, alignItems: 'center', fontSize: 13, cursor: 'pointer', whiteSpace: 'nowrap' }}>
+          <input type="checkbox" checked={showVerifiedOnly} onChange={(e) => setShowVerifiedOnly(e.target.checked)} />
+          Show verified only
+        </label>
         <span style={{ marginLeft: 'auto', fontSize: 12, color: 'var(--text-3)' }}>
           Showing {filtered.length} of {rates.length} rates
         </span>
@@ -229,6 +239,11 @@ export default function RateLibrary() {
           <div className="value" style={{ fontSize: 14, fontWeight: 700 }}>{dateRange}</div>
           <div className="sub">from latest updates</div>
         </div>
+        <div className="stat-tile">
+          <div className="label">Verified Rates</div>
+          <div className="value">{rates.filter(r => r.is_validated).length}</div>
+          <div className="sub">validated</div>
+        </div>
       </div>
 
       {/* Rate table */}
@@ -249,6 +264,7 @@ export default function RateLibrary() {
                   <th style={{ padding: '11px 14px', textAlign: 'right' }}>Overhead %</th>
                   <th style={{ padding: '11px 14px', textAlign: 'right' }}>Scrap %</th>
                   <th style={{ padding: '11px 14px', textAlign: 'left' }}>Source</th>
+                  <th style={{ padding: '11px 14px', textAlign: 'center' }}>Validated</th>
                   {isAdmin && <th style={{ padding: '11px 14px' }}></th>}
                 </tr>
               </thead>
@@ -277,10 +293,28 @@ export default function RateLibrary() {
                           <div style={{ fontSize: 11 }}>{new Date(r.effective_date).toLocaleDateString('en-GB')}</div>
                         )}
                       </td>
+                      <td style={{ padding: '10px 14px', textAlign: 'center' }}>
+                        {r.is_validated ? (
+                          <span style={{ display: 'inline-block', padding: '2px 8px', borderRadius: 10, fontSize: 11, fontWeight: 600, background: '#dcfce7', color: '#047857' }}>✓ Verified</span>
+                        ) : (
+                          <span style={{ fontSize: 12, color: 'var(--text-3)' }}>—</span>
+                        )}
+                      </td>
                       {isAdmin && (
                         <td style={{ padding: '10px 14px', display: 'flex', gap: 6, justifyContent: 'flex-end' }}>
                           <button className="btn btn-sm btn-secondary" onClick={() => openEdit(r)} title="Edit">✎</button>
                           <button className="btn btn-sm btn-danger" onClick={() => remove(r.id)} title="Delete">✕</button>
+                          <button
+                            className="btn btn-sm"
+                            style={{ background: r.is_validated ? '#dcfce7' : 'var(--bg)', color: r.is_validated ? '#047857' : 'var(--text-2)', border: '1px solid var(--border)' }}
+                            title={r.is_validated ? 'Unverify' : 'Verify'}
+                            onClick={async () => {
+                              await api.patch(`/rate-library/${r.id}/validate`, { is_validated: !r.is_validated });
+                              fetchAll();
+                            }}
+                          >
+                            {r.is_validated ? 'Unverify' : '✓ Verify'}
+                          </button>
                         </td>
                       )}
                     </tr>

@@ -19,6 +19,10 @@ import RateLibrary from './pages/RateLibrary';
 import CEREstimator from './pages/CEREstimator';
 import LandingPage from './pages/LandingPage';
 import AuthPage from './pages/AuthPage';
+import ShouldCostVersionDiff from './pages/ShouldCostVersionDiff';
+import CountryCostIndex from './pages/CountryCostIndex';
+import PartFamilyNorms from './pages/PartFamilyNorms';
+import CERAccuracyTracker from './pages/CERAccuracyTracker';
 import ThemeToggle from './components/ThemeToggle';
 import CommandPalette from './components/CommandPalette';
 import Logo from './components/Logo';
@@ -99,6 +103,10 @@ function AppShell() {
             <NavLink to="/comparisons"     className={({ isActive }) => isActive ? 'active' : ''} onClick={() => setSidebarOpen(false)}>🔍 Comparisons</NavLink>
             <NavLink to="/cross-model"     className={({ isActive }) => isActive ? 'active' : ''} onClick={() => setSidebarOpen(false)}>🌐 Cross-Model</NavLink>
             <NavLink to="/multi-comparison" className={({ isActive }) => isActive ? 'active' : ''} onClick={() => setSidebarOpen(false)}>📋 Multi-Supplier</NavLink>
+            <NavLink to="/version-diff"    className={({ isActive }) => isActive ? 'active' : ''} onClick={() => setSidebarOpen(false)}>📊 Version Compare</NavLink>
+            <NavLink to="/country-cost"    className={({ isActive }) => isActive ? 'active' : ''} onClick={() => setSidebarOpen(false)}>🌍 Country Cost Index</NavLink>
+            <NavLink to="/part-norms"      className={({ isActive }) => isActive ? 'active' : ''} onClick={() => setSidebarOpen(false)}>📐 Part Norms</NavLink>
+            <NavLink to="/accuracy"        className={({ isActive }) => isActive ? 'active' : ''} onClick={() => setSidebarOpen(false)}>🎯 CER Accuracy</NavLink>
 
             <div className="sidebar-section">Procurement</div>
             <NavLink to="/negotiations"    className={({ isActive }) => isActive ? 'active' : ''} onClick={() => setSidebarOpen(false)}>🤝 Negotiations</NavLink>
@@ -162,6 +170,10 @@ function AppShell() {
               <Route path="/assembly"         element={<AssemblyBOM />} />
               <Route path="/rate-library"     element={<RateLibrary />} />
               <Route path="/cer"              element={<CEREstimator />} />
+              <Route path="/version-diff"     element={<ShouldCostVersionDiff />} />
+              <Route path="/country-cost"     element={<CountryCostIndex />} />
+              <Route path="/part-norms"       element={<PartFamilyNorms />} />
+              <Route path="/accuracy"         element={<CERAccuracyTracker />} />
               <Route path="/portal/new"       element={<QuoteForm user={user} />} />
               <Route path="*"                 element={<Navigate to="/dashboard" replace />} />
             </>

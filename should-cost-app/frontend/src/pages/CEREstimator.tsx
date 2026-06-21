@@ -91,6 +91,15 @@ export default function CEREstimator() {
 
   const resultsRef = useRef<HTMLDivElement>(null);
 
+  // Log estimate modal
+  const [showLogModal, setShowLogModal] = useState(false);
+  const [logParts, setLogParts] = useState<PartLite[]>([]);
+  const [logPartsSearch, setLogPartsSearch] = useState('');
+  const [logSelectedPartId, setLogSelectedPartId] = useState<number | null>(null);
+  const [logNotes, setLogNotes] = useState('');
+  const [logging, setLogging] = useState(false);
+  const [logSuccess, setLogSuccess] = useState(false);
+
   useEffect(() => {
     Promise.all([
       api.get<{ process_types: string[] } | string[]>('/rate-library/process-types'),
@@ -180,9 +189,50 @@ export default function CEREstimator() {
     }
   };
 
+  const openLogModal = async () => {
+    setShowLogModal(true);
+    setLogSuccess(false);
+    setLogSelectedPartId(null);
+    setLogPartsSearch('');
+    setLogNotes('');
+    try {
+      const r = await api.get<PartLite[]>('/parts');
+      setLogParts(r.data);
+    } catch {
+      setLogParts([]);
+    }
+  };
+
+  const submitLog = async () => {
+    if (!result) return;
+    setLogging(true);
+    try {
+      await api.post('/cer/accuracy', {
+        process_type: form.process_type,
+        country: form.country,
+        part_weight_kg: form.part_weight_kg ? parseFloat(form.part_weight_kg) : undefined,
+        material_name: form.material_name || undefined,
+        estimated_total: result.total,
+        part_id: logSelectedPartId || undefined,
+        notes: logNotes || undefined,
+      });
+      setLogSuccess(true);
+    } catch {
+      /* ignore */
+    } finally {
+      setLogging(false);
+    }
+  };
+
   const filteredParts = parts.filter((p) => {
     if (!partsSearch) return true;
     const q = partsSearch.toLowerCase();
+    return p.part_number.toLowerCase().includes(q) || (p.part_description ?? '').toLowerCase().includes(q);
+  });
+
+  const filteredLogParts = logParts.filter((p) => {
+    if (!logPartsSearch) return true;
+    const q = logPartsSearch.toLowerCase();
     return p.part_number.toLowerCase().includes(q) || (p.part_description ?? '').toLowerCase().includes(q);
   });
 
@@ -207,7 +257,13 @@ export default function CEREstimator() {
       <div className="page-header">
         <div>
           <h1>🧮 Parametric Cost Estimator</h1>
-          <div className="sub">Generate a should-cost estimate from first principles using the rate library</div>
+          <div className="sub">
+            Generate a should-cost estimate from first principles using the rate library
+            {' '}
+            <a href="/accuracy" style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '2px 10px', borderRadius: 999, fontSize: 12, fontWeight: 600, background: 'var(--accent-glow)', color: 'var(--accent)', textDecoration: 'none', border: '1px solid var(--accent)', marginLeft: 8 }}>
+              📊 Accuracy
+            </a>
+          </div>
         </div>
       </div>
 
@@ -325,9 +381,14 @@ export default function CEREstimator() {
                       {result.commodity_price_used?.currency ?? 'GBP'} {Number(result.total).toFixed(4)}
                     </div>
                   </div>
-                  <button className="btn btn-primary" onClick={openDraftModal}>
-                    ＋ Create Should-Cost Draft
-                  </button>
+                  <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                    <button className="btn btn-primary" onClick={openDraftModal}>
+                      ＋ Create Should-Cost Draft
+                    </button>
+                    <button className="btn btn-secondary" onClick={openLogModal}>
+                      📊 Log Estimate
+                    </button>
+                  </div>
                 </div>
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginTop: 20 }}>
@@ -516,6 +577,81 @@ export default function CEREstimator() {
                       onClick={createDraft}
                     >
                       {draftCreating ? 'Creating…' : 'Create Draft'}
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+      {/* Log Estimate Modal */}
+      {showLogModal && (
+        <div className="modal-backdrop" onClick={() => setShowLogModal(false)}>
+          <div className="modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 520 }}>
+            <div className="modal-header">
+              <h3>📊 Log Estimate for Accuracy Tracking</h3>
+              <button className="btn btn-secondary btn-sm" onClick={() => setShowLogModal(false)}>✕</button>
+            </div>
+            <div style={{ padding: 20 }}>
+              {logSuccess ? (
+                <div style={{ textAlign: 'center', padding: '24px 0' }}>
+                  <div style={{ fontSize: 32, marginBottom: 12 }}>✅</div>
+                  <div style={{ fontWeight: 700, fontSize: 16, marginBottom: 8 }}>Logged for accuracy tracking</div>
+                  <button className="btn btn-secondary" style={{ marginTop: 8 }} onClick={() => setShowLogModal(false)}>Close</button>
+                </div>
+              ) : (
+                <>
+                  {/* Read-only pre-filled fields */}
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 14, padding: '10px 14px', background: 'var(--bg)', borderRadius: 8, fontSize: 13 }}>
+                    <div><span style={{ color: 'var(--text-3)' }}>Process:</span> <strong>{form.process_type || '—'}</strong></div>
+                    <div><span style={{ color: 'var(--text-3)' }}>Country:</span> <strong>{form.country || '—'}</strong></div>
+                    <div><span style={{ color: 'var(--text-3)' }}>Weight:</span> <strong>{form.part_weight_kg ? `${form.part_weight_kg} kg` : '—'}</strong></div>
+                    <div><span style={{ color: 'var(--text-3)' }}>Material:</span> <strong>{form.material_name || '—'}</strong></div>
+                    <div style={{ gridColumn: '1 / -1' }}><span style={{ color: 'var(--text-3)' }}>Estimated Total:</span> <strong style={{ color: 'var(--accent)' }}>{result ? `${result.commodity_price_used?.currency ?? 'GBP'} ${Number(result.total).toFixed(4)}` : '—'}</strong></div>
+                  </div>
+
+                  {/* Optional Part selector */}
+                  <div style={{ marginBottom: 14 }}>
+                    <label className="form-label">Link to Part (optional)</label>
+                    <input
+                      className="form-control"
+                      value={logPartsSearch}
+                      onChange={(e) => setLogPartsSearch(e.target.value)}
+                      placeholder="Search part number…"
+                      style={{ marginBottom: 8 }}
+                    />
+                    {logPartsSearch && (
+                      <div style={{ maxHeight: 160, overflowY: 'auto', border: '1px solid var(--border)', borderRadius: 6 }}>
+                        {filteredLogParts.slice(0, 10).map((p) => (
+                          <button
+                            key={p.id}
+                            onClick={() => { setLogSelectedPartId(p.id); setLogPartsSearch(p.part_number); }}
+                            style={{
+                              width: '100%', textAlign: 'left', padding: '8px 10px', border: 'none',
+                              background: logSelectedPartId === p.id ? 'var(--accent-glow)' : 'var(--bg)',
+                              cursor: 'pointer', fontSize: 13, borderBottom: '1px solid var(--border)',
+                            }}
+                          >
+                            <strong>{p.part_number}</strong>
+                            {p.part_description && <span style={{ fontSize: 11, color: 'var(--text-3)', marginLeft: 8 }}>{p.part_description}</span>}
+                          </button>
+                        ))}
+                        {filteredLogParts.length === 0 && <div style={{ padding: 12, fontSize: 13, color: 'var(--text-3)' }}>No parts found.</div>}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Notes */}
+                  <div style={{ marginBottom: 14 }}>
+                    <label className="form-label">Notes (optional)</label>
+                    <textarea className="form-control" rows={2} value={logNotes} onChange={(e) => setLogNotes(e.target.value)} placeholder="Any notes about this estimate…" />
+                  </div>
+
+                  <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
+                    <button className="btn btn-secondary" onClick={() => setShowLogModal(false)}>Cancel</button>
+                    <button className="btn btn-primary" disabled={logging || !result} onClick={submitLog}>
+                      {logging ? 'Logging…' : 'Log Estimate'}
                     </button>
                   </div>
                 </>

@@ -57,6 +57,23 @@ interface CommodityTemplate {
   }>;
 }
 
+interface ShareRecord {
+  id: number;
+  supplier_id: number;
+  supplier_name: string;
+  shared_at: string;
+  status: string;
+  response_count: number;
+}
+
+interface LineResponse {
+  id: number;
+  breakdown_label: string;
+  counter_value?: number;
+  response_text?: string;
+  responded_at: string;
+}
+
 /* ── Category metadata (Level 1) ────────────────────────────── */
 const CAT_META: Record<string, { label: string; color: string }> = {
   RAW_MATERIAL:  { label: 'Raw Material',          color: '#1d4ed8' },
@@ -133,6 +150,17 @@ export default function ShouldCostDetail() {
   const [templatesError, setTemplatesError]               = useState<string | null>(null);
   const [loadedTemplate, setLoadedTemplate]               = useState<CommodityTemplate | null>(null);
 
+  /* ── Open-book sharing state ── */
+  const [shares, setShares] = useState<ShareRecord[]>([]);
+  const [showShareModal, setShowShareModal] = useState(false);
+  const [suppliers, setSuppliers] = useState<{ id: number; name: string }[]>([]);
+  const [shareForm, setShareForm] = useState({ supplier_id: '', message: '' });
+  const [sharing, setSharing] = useState(false);
+  const [shareSuccess, setShareSuccess] = useState<string | null>(null);
+  const [selectedShareId, setSelectedShareId] = useState<number | null>(null);
+  const [shareResponses, setShareResponses] = useState<LineResponse[]>([]);
+  const [loadingResponses, setLoadingResponses] = useState(false);
+
   // Load the list of published should-cost models
   useEffect(() => {
     api.get<Header[]>('/should-cost', { params: { status: 'published' } })
@@ -146,6 +174,7 @@ export default function ShouldCostDetail() {
   // Load the selected breakdown
   useEffect(() => {
     if (selected == null) { setDetail(null); return; }
+    setShares([]);
     setLoadingDetail(true);
     setDetailError(null);
     api.get<ScDetail>(`/should-cost/${selected}`)
@@ -162,6 +191,7 @@ export default function ShouldCostDetail() {
         setDetailError('Failed to load breakdown. Try "Reset CostLens Data" to update the database schema.');
       })
       .finally(() => setLoadingDetail(false));
+    api.get<ShareRecord[]>(`/open-book/shares/${selected}`).then(r => setShares(r.data)).catch(() => setShares([]));
   }, [selected]);
 
   const toggleCat = useCallback((c: string) => {
@@ -555,7 +585,11 @@ export default function ShouldCostDetail() {
                       <>
                         <a href={`/api/export/should-cost/${selected}.xlsx`} download className="btn btn-secondary btn-sm">⬇ Excel</a>
                         <a href={`/api/export/should-cost/${selected}/report.html`} target="_blank" rel="noreferrer" className="btn btn-secondary btn-sm">🖨 Report</a>
+                        <a href={`/api/export/rfq/${selected}.xlsx`} download className="btn btn-secondary btn-sm">📋 RFQ</a>
                       </>
+                    )}
+                    {detail?.header.status === 'published' && (
+                      <button className="btn btn-secondary btn-sm" onClick={() => setShowShareModal(true)}>🔗 Share</button>
                     )}
                   </div>
                 </div>
@@ -905,6 +939,86 @@ export default function ShouldCostDetail() {
                   )}
                 </div>
               )}
+
+              {/* Open-Book Shares Panel */}
+              {shares.length > 0 && (
+                <div className="card">
+                  <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 12 }}>🔗 Open-Book Shares</div>
+                  <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
+                    <thead>
+                      <tr style={{ background: 'var(--bg)' }}>
+                        <th style={{ padding: '8px 12px', textAlign: 'left' }}>Supplier</th>
+                        <th style={{ padding: '8px 12px', textAlign: 'left' }}>Shared</th>
+                        <th style={{ padding: '8px 12px', textAlign: 'left' }}>Status</th>
+                        <th style={{ padding: '8px 12px', textAlign: 'right' }}>Responses</th>
+                        <th style={{ padding: '8px 12px' }}></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {shares.map((s) => (
+                        <tr key={s.id} style={{ borderTop: '1px solid var(--border)' }}>
+                          <td style={{ padding: '8px 12px', fontWeight: 600 }}>{s.supplier_name}</td>
+                          <td style={{ padding: '8px 12px', fontSize: 12, color: 'var(--text-3)' }}>{new Date(s.shared_at).toLocaleDateString('en-GB')}</td>
+                          <td style={{ padding: '8px 12px' }}>
+                            <span style={{ padding: '2px 8px', borderRadius: 10, fontSize: 11, fontWeight: 600, background: 'var(--accent-glow)', color: 'var(--accent)' }}>
+                              {s.status}
+                            </span>
+                          </td>
+                          <td style={{ padding: '8px 12px', textAlign: 'right' }}>{s.response_count}</td>
+                          <td style={{ padding: '8px 12px', textAlign: 'right' }}>
+                            <button
+                              className="btn btn-sm btn-secondary"
+                              onClick={async () => {
+                                if (selectedShareId === s.id) { setSelectedShareId(null); setShareResponses([]); return; }
+                                setSelectedShareId(s.id);
+                                setLoadingResponses(true);
+                                try {
+                                  const r = await api.get<LineResponse[]>(`/open-book/shares/${s.id}/responses`);
+                                  setShareResponses(r.data);
+                                } catch { setShareResponses([]); }
+                                finally { setLoadingResponses(false); }
+                              }}
+                            >
+                              {selectedShareId === s.id ? 'Hide' : 'View Responses'}
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+
+                  {selectedShareId !== null && (
+                    <div style={{ marginTop: 12, padding: 12, background: 'var(--bg)', borderRadius: 8 }}>
+                      {loadingResponses ? (
+                        <div className="loading" style={{ padding: 16 }}>Loading responses…</div>
+                      ) : shareResponses.length === 0 ? (
+                        <div className="empty" style={{ padding: 16 }}>No responses yet.</div>
+                      ) : (
+                        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
+                          <thead>
+                            <tr style={{ background: 'var(--surface)' }}>
+                              <th style={{ padding: '6px 10px', textAlign: 'left' }}>Breakdown Row</th>
+                              <th style={{ padding: '6px 10px', textAlign: 'right' }}>Counter Value</th>
+                              <th style={{ padding: '6px 10px', textAlign: 'left' }}>Comment</th>
+                              <th style={{ padding: '6px 10px', textAlign: 'left' }}>Date</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {shareResponses.map((lr) => (
+                              <tr key={lr.id} style={{ borderTop: '1px solid var(--border)' }}>
+                                <td style={{ padding: '6px 10px', fontWeight: 600 }}>{lr.breakdown_label}</td>
+                                <td style={{ padding: '6px 10px', textAlign: 'right' }}>{lr.counter_value != null ? Number(lr.counter_value).toFixed(4) : '—'}</td>
+                                <td style={{ padding: '6px 10px', color: 'var(--text-3)' }}>{lr.response_text ?? '—'}</td>
+                                <td style={{ padding: '6px 10px', color: 'var(--text-3)' }}>{new Date(lr.responded_at).toLocaleDateString('en-GB')}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
             </>
           )}
         </div>
@@ -994,6 +1108,78 @@ export default function ShouldCostDetail() {
 
             <div style={{ padding: '14px 24px', borderTop: '1px solid var(--border)', display: 'flex', justifyContent: 'flex-end' }}>
               <button className="btn btn-secondary" onClick={() => setShowTemplateModal(false)}>Close</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Share with Supplier Modal */}
+      {showShareModal && (
+        <div
+          style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.45)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+          onClick={(e) => { if (e.target === e.currentTarget) { setShowShareModal(false); setShareSuccess(null); } }}
+        >
+          <div style={{ background: 'var(--surface)', borderRadius: 14, width: 480, maxWidth: '95vw', boxShadow: '0 20px 60px rgba(0,0,0,0.3)' }}>
+            <div style={{ padding: '20px 24px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div style={{ fontWeight: 800, fontSize: 16 }}>🔗 Share with Supplier</div>
+              <button onClick={() => { setShowShareModal(false); setShareSuccess(null); }} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 20, color: 'var(--text-3)' }}>×</button>
+            </div>
+            <div style={{ padding: 20 }}>
+              {shareSuccess ? (
+                <div style={{ textAlign: 'center', padding: '16px 0', color: 'var(--success)', fontWeight: 700 }}>{shareSuccess}</div>
+              ) : (
+                <>
+                  <div style={{ marginBottom: 14 }}>
+                    <label className="form-label">Supplier *</label>
+                    <select
+                      className="form-control"
+                      value={shareForm.supplier_id}
+                      onChange={(e) => setShareForm({ ...shareForm, supplier_id: e.target.value })}
+                      onFocus={async () => {
+                        if (suppliers.length === 0) {
+                          try {
+                            const r = await api.get<Array<{ id: number; name: string }>>('/supplier');
+                            setSuppliers(r.data);
+                          } catch { /* ignore */ }
+                        }
+                      }}
+                    >
+                      <option value="">Select supplier…</option>
+                      {suppliers.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
+                    </select>
+                  </div>
+                  <div style={{ marginBottom: 14 }}>
+                    <label className="form-label">Message (optional)</label>
+                    <textarea className="form-control" rows={3} value={shareForm.message} onChange={(e) => setShareForm({ ...shareForm, message: e.target.value })} placeholder="Add a message to the supplier…" />
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
+                    <button className="btn btn-secondary" onClick={() => setShowShareModal(false)}>Cancel</button>
+                    <button
+                      className="btn btn-primary"
+                      disabled={!shareForm.supplier_id || sharing}
+                      onClick={async () => {
+                        if (!selected || !shareForm.supplier_id) return;
+                        setSharing(true);
+                        try {
+                          await api.post('/open-book/share', {
+                            should_cost_header_id: selected,
+                            supplier_id: parseInt(shareForm.supplier_id, 10),
+                            message: shareForm.message || undefined,
+                          });
+                          const supplierName = suppliers.find(s => s.id === parseInt(shareForm.supplier_id, 10))?.name ?? 'supplier';
+                          setShareSuccess(`Shared with ${supplierName}`);
+                          // Refresh shares
+                          const r = await api.get<ShareRecord[]>(`/open-book/shares/${selected}`);
+                          setShares(r.data);
+                        } catch { /* ignore */ }
+                        finally { setSharing(false); }
+                      }}
+                    >
+                      {sharing ? 'Sharing…' : 'Share'}
+                    </button>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </div>
