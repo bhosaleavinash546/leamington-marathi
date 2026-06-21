@@ -15,6 +15,8 @@ import SupplierScorecard from './pages/SupplierScorecard';
 import CommodityPrices from './pages/CommodityPrices';
 import ACRTracker from './pages/ACRTracker';
 import AssemblyBOM from './pages/AssemblyBOM';
+import RateLibrary from './pages/RateLibrary';
+import CEREstimator from './pages/CEREstimator';
 import LandingPage from './pages/LandingPage';
 import AuthPage from './pages/AuthPage';
 import ThemeToggle from './components/ThemeToggle';
@@ -108,6 +110,8 @@ function AppShell() {
             <NavLink to="/commodity-prices" className={({ isActive }) => isActive ? 'active' : ''} onClick={() => setSidebarOpen(false)}>📈 Commodity Prices</NavLink>
             <NavLink to="/acr"             className={({ isActive }) => isActive ? 'active' : ''} onClick={() => setSidebarOpen(false)}>🎯 ACR Tracker</NavLink>
             <NavLink to="/assembly"        className={({ isActive }) => isActive ? 'active' : ''} onClick={() => setSidebarOpen(false)}>🔩 Assembly BOM</NavLink>
+            <NavLink to="/rate-library"    className={({ isActive }) => isActive ? 'active' : ''} onClick={() => setSidebarOpen(false)}>📐 Rate Library</NavLink>
+            <NavLink to="/cer"             className={({ isActive }) => isActive ? 'active' : ''} onClick={() => setSidebarOpen(false)}>🧮 Cost Estimator</NavLink>
           </>
         )}
 
@@ -156,6 +160,8 @@ function AppShell() {
               <Route path="/commodity-prices" element={<CommodityPrices />} />
               <Route path="/acr"              element={<ACRTracker />} />
               <Route path="/assembly"         element={<AssemblyBOM />} />
+              <Route path="/rate-library"     element={<RateLibrary />} />
+              <Route path="/cer"              element={<CEREstimator />} />
               <Route path="/portal/new"       element={<QuoteForm user={user} />} />
               <Route path="*"                 element={<Navigate to="/dashboard" replace />} />
             </>

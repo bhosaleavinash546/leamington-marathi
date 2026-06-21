@@ -167,6 +167,12 @@ export default function ComparisonView() {
         </button>
       </div>
 
+      {/* Export bar */}
+      <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
+        <a href={`/api/export/comparison/${snapshot.id}.xlsx`} download className="btn btn-secondary btn-sm">⬇ Excel</a>
+        <a href={`/api/export/should-cost/${snapshot.should_cost_header_id}/report.html`} target="_blank" rel="noreferrer" className="btn btn-secondary btn-sm">🖨 Print Should-Cost</a>
+      </div>
+
       {/* KPI row */}
       <div className="stats-row">
         <div className="stat-tile">

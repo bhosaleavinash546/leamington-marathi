@@ -26,6 +26,7 @@ services:
       - ./backend/src/db/seed_should_cost_detail.sql:/docker-entrypoint-initdb.d/09-seed_should_cost_detail.sql
       - ./backend/src/db/schema_v6.sql:/docker-entrypoint-initdb.d/10-schema_v6.sql
       - ./backend/src/db/schema_v7.sql:/docker-entrypoint-initdb.d/11-schema_v7.sql
+      - ./backend/src/db/schema_v8.sql:/docker-entrypoint-initdb.d/12-schema_v8.sql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres -d should_cost_db"]
       interval: 5s

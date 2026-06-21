@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState, useCallback } from 'react';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import api from '../utils/api';
 
 /* ── Types ──────────────────────────────────────────────────── */
@@ -120,6 +121,10 @@ export default function ShouldCostDetail() {
   const [savingParams, setSavingParams]           = useState(false);
   const [paramsSaveError, setParamsSaveError]     = useState<string | null>(null);
 
+  /* ── Sensitivity Analysis state ── */
+  const [showSensitivity, setShowSensitivity] = useState(false);
+  const [sensitivitySlider, setSensitivitySlider] = useState(0);
+
   /* ── Commodity template state ── */
   const [showTemplateModal, setShowTemplateModal]         = useState(false);
   const [templates, setTemplates]                         = useState<CommodityTemplate[]>([]);
@@ -197,6 +202,34 @@ export default function ShouldCostDetail() {
     () => groups.reduce((s, g) => s + g.total, 0),
     [groups]
   );
+
+  /* ── Sensitivity: revised total ── */
+  const sensitivityData = useMemo(() => {
+    if (!detail) return null;
+    const multiplier = 1 + sensitivitySlider / 100;
+    let revisedTotal = 0;
+    const catTotals: Record<string, { original: number; revised: number }> = {};
+    for (const b of detail.breakdown) {
+      const isMaterial =
+        b.category.toLowerCase().includes('material') ||
+        b.cost_element.toLowerCase().includes('material') ||
+        b.category === 'RAW_MATERIAL' ||
+        b.category === 'BOP';
+      const originalVal = Number(b.value);
+      const revisedVal  = isMaterial ? originalVal * multiplier : originalVal;
+      revisedTotal += revisedVal;
+      const cat = b.category;
+      if (!catTotals[cat]) catTotals[cat] = { original: 0, revised: 0 };
+      catTotals[cat].original += originalVal;
+      catTotals[cat].revised  += revisedVal;
+    }
+    const chartData = Object.entries(catTotals).map(([cat, vals]) => ({
+      name: cat.replace('_', ' '),
+      Original: parseFloat(vals.original.toFixed(4)),
+      Revised:  parseFloat(vals.revised.toFixed(4)),
+    }));
+    return { revisedTotal, delta: revisedTotal - grandTotal, chartData };
+  }, [detail, sensitivitySlider, grandTotal]);
 
   const cur = detail?.header.currency ?? 'GBP';
   const fmt = (n: number) => `${cur} ${Number(n).toFixed(2)}`;
@@ -515,9 +548,15 @@ export default function ShouldCostDetail() {
                     <div style={{ fontSize: 11, color: 'var(--text-3)', textTransform: 'uppercase', letterSpacing: 0.5 }}>Total Should-Cost</div>
                     <div style={{ fontSize: 24, fontWeight: 900, color: 'var(--accent)' }}>{fmt(grandTotal)}</div>
                   </div>
-                  <div style={{ display: 'flex', gap: 6 }}>
+                  <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
                     <button className="btn btn-secondary btn-sm" onClick={expandAll}>Expand all</button>
                     <button className="btn btn-secondary btn-sm" onClick={collapseAll}>Collapse</button>
+                    {!loadingDetail && (
+                      <>
+                        <a href={`/api/export/should-cost/${selected}.xlsx`} download className="btn btn-secondary btn-sm">⬇ Excel</a>
+                        <a href={`/api/export/should-cost/${selected}/report.html`} target="_blank" rel="noreferrer" className="btn btn-secondary btn-sm">🖨 Report</a>
+                      </>
+                    )}
                   </div>
                 </div>
               </div>
@@ -707,6 +746,85 @@ export default function ShouldCostDetail() {
                   </div>
                 )}
               </div>
+
+              {/* Sensitivity Analysis Panel */}
+              {detail.header.material_code && sensitivityData && (
+                <div className="card" style={{ marginBottom: 16 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <div style={{ fontWeight: 700, fontSize: 14 }}>📊 Sensitivity Analysis</div>
+                    <button className="btn btn-secondary btn-sm" onClick={() => setShowSensitivity((v) => !v)}>
+                      {showSensitivity ? 'Hide' : 'Show'}
+                    </button>
+                  </div>
+
+                  {showSensitivity && (
+                    <div style={{ marginTop: 16 }}>
+                      {/* Slider */}
+                      <div style={{ marginBottom: 16 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
+                          <label style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-2)', whiteSpace: 'nowrap' }}>
+                            Material Price Change
+                          </label>
+                          <span style={{
+                            display: 'inline-block', padding: '2px 10px', borderRadius: 999, fontSize: 12, fontWeight: 700,
+                            background: sensitivitySlider > 0 ? '#fee2e2' : sensitivitySlider < 0 ? '#dcfce7' : 'var(--bg)',
+                            color: sensitivitySlider > 0 ? 'var(--danger)' : sensitivitySlider < 0 ? 'var(--success)' : 'var(--text-3)',
+                            border: '1px solid var(--border)',
+                          }}>
+                            {sensitivitySlider > 0 ? '+' : ''}{sensitivitySlider}%
+                          </span>
+                        </div>
+                        <input
+                          type="range"
+                          min={-50}
+                          max={50}
+                          step={1}
+                          value={sensitivitySlider}
+                          onChange={(e) => setSensitivitySlider(parseInt(e.target.value, 10))}
+                          style={{ width: '100%', accentColor: 'var(--accent)' }}
+                        />
+                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: 'var(--text-3)' }}>
+                          <span>-50%</span><span>0%</span><span>+50%</span>
+                        </div>
+                      </div>
+
+                      {/* 3 stat tiles */}
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12, marginBottom: 16 }}>
+                        <div style={{ padding: '12px 16px', background: 'var(--bg)', borderRadius: 8, textAlign: 'center' }}>
+                          <div style={{ fontSize: 11, color: 'var(--text-3)', marginBottom: 4 }}>Original Total</div>
+                          <div style={{ fontWeight: 800, fontSize: 16 }}>{fmt(grandTotal)}</div>
+                        </div>
+                        <div style={{ padding: '12px 16px', background: 'var(--bg)', borderRadius: 8, textAlign: 'center' }}>
+                          <div style={{ fontSize: 11, color: 'var(--text-3)', marginBottom: 4 }}>Delta</div>
+                          <div style={{ fontWeight: 800, fontSize: 16, color: sensitivityData.delta > 0 ? 'var(--danger)' : sensitivityData.delta < 0 ? 'var(--success)' : 'var(--text-1)' }}>
+                            {sensitivityData.delta > 0 ? '+' : ''}{fmt(sensitivityData.delta)}
+                          </div>
+                        </div>
+                        <div style={{ padding: '12px 16px', background: 'var(--accent-glow)', borderRadius: 8, textAlign: 'center', border: '1px solid var(--accent)' }}>
+                          <div style={{ fontSize: 11, color: 'var(--accent)', marginBottom: 4 }}>Revised Total</div>
+                          <div style={{ fontWeight: 800, fontSize: 16, color: 'var(--accent)' }}>{fmt(sensitivityData.revisedTotal)}</div>
+                        </div>
+                      </div>
+
+                      {/* Bar chart */}
+                      <ResponsiveContainer width="100%" height={200}>
+                        <BarChart data={sensitivityData.chartData} margin={{ top: 4, right: 8, left: 0, bottom: 4 }}>
+                          <XAxis dataKey="name" tick={{ fontSize: 11 }} />
+                          <YAxis tick={{ fontSize: 11 }} />
+                          <Tooltip formatter={(val: number) => val.toFixed(4)} />
+                          <Legend wrapperStyle={{ fontSize: 12 }} />
+                          <Bar dataKey="Original" fill="var(--text-3)" radius={[2, 2, 0, 0]} />
+                          <Bar dataKey="Revised"  fill="var(--accent)" radius={[2, 2, 0, 0]} />
+                        </BarChart>
+                      </ResponsiveContainer>
+
+                      <div style={{ marginTop: 10, fontSize: 12, color: 'var(--text-3)', fontStyle: 'italic' }}>
+                        Sensitivity applies to material cost lines. Process costs (labour, machine, overhead) are held constant.
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
 
               {/* 3-level table */}
               <div className="card" style={{ padding: 0, overflow: 'hidden' }}>

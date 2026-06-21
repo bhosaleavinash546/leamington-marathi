@@ -225,3 +225,41 @@ export interface AssemblyHeader {
   created_at: string;
   lines: AssemblyBOMLine[];
 }
+
+export interface RateReference {
+  id: number;
+  process_type: string;
+  country: string;
+  labour_rate_hr: number;
+  machine_rate_hr: number;
+  overhead_pct: number;
+  scrap_rate_pct: number;
+  source?: string;
+  effective_date?: string;
+  notes?: string;
+  created_at: string;
+}
+
+export interface CEREstimate {
+  breakdown: Array<{
+    cost_element: string;
+    category: string;
+    value: number;
+    basis: string;
+  }>;
+  total: number;
+  rates_used: {
+    labour_rate_hr: number;
+    machine_rate_hr: number;
+    overhead_pct: number;
+    scrap_rate_pct: number;
+  };
+  commodity_price_used: {
+    material_name: string;
+    price_per_unit: number;
+    unit: string;
+    currency: string;
+    price_date: string;
+  } | null;
+  insights: string | null;
+}

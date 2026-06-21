@@ -598,3 +598,350 @@ export async function exportThreeWayPptx(req: Request, res: Response): Promise<v
   res.setHeader('Content-Disposition', `attachment; filename=three-way-${d.part.part_number}.pptx`);
   res.end(Buffer.from(buf));
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Should-Cost Excel Export  — GET /api/export/should-cost/:id.xlsx
+// ─────────────────────────────────────────────────────────────────────────────
+export async function exportShouldCostExcel(req: Request, res: Response): Promise<void> {
+  const { id } = req.params;
+
+  const headerRes = await pool.query(
+    `SELECT sch.*, p.part_number, p.description AS part_description
+     FROM should_cost_header sch
+     JOIN part_master p ON p.id = sch.part_id
+     WHERE sch.id = $1`,
+    [id]
+  );
+  if (!headerRes.rowCount) { res.status(404).json({ error: 'Should-cost not found' }); return; }
+
+  const header = headerRes.rows[0] as Record<string, unknown>;
+
+  const breakdownRes = await pool.query(
+    `SELECT scb.*, COALESCE(
+       json_agg(json_build_object('name', ssi.name, 'value', ssi.value, 'basis', ssi.basis, 'sort_order', ssi.sort_order)
+         ORDER BY ssi.sort_order) FILTER (WHERE ssi.id IS NOT NULL),
+       '[]'::json
+     ) AS subitems
+     FROM should_cost_breakdown scb
+     LEFT JOIN should_cost_subitem ssi ON ssi.breakdown_id = scb.id
+     WHERE scb.should_cost_header_id = $1
+     GROUP BY scb.id
+     ORDER BY scb.sort_order, scb.id`,
+    [id]
+  );
+
+  const wb = new ExcelJS.Workbook();
+  wb.creator = 'CostLens';
+  wb.created = new Date();
+
+  // ── Sheet 1: Summary ──────────────────────────────────────────────────────
+  const wsSummary = wb.addWorksheet('Summary');
+  wsSummary.columns = [
+    { width: 30 }, { width: 30 }, { width: 20 }, { width: 15 }, { width: 12 }, { width: 10 },
+  ];
+
+  const NAVY_BG = 'FF1E3A5F';
+  const WHITE_FONT = 'FFFFFFFF';
+
+  const titleRow = wsSummary.addRow(['CostLens — Should-Cost Estimate']);
+  titleRow.getCell(1).font = { bold: true, size: 14, color: { argb: NAVY_BG } };
+  wsSummary.addRow([]);
+
+  const addSummaryRow = (label: string, value: unknown) => {
+    const r = wsSummary.addRow([label, value]);
+    r.getCell(1).font = { bold: true };
+  };
+
+  addSummaryRow('Part Number',    String(header.part_number ?? ''));
+  addSummaryRow('Description',    String(header.part_description ?? ''));
+  addSummaryRow('Version',        Number(header.version ?? 1));
+  addSummaryRow('Status',         String(header.status ?? ''));
+  addSummaryRow('Total Cost',     Number(header.total_cost ?? 0));
+  addSummaryRow('Currency',       String(header.currency ?? 'USD'));
+  addSummaryRow('Annual Volume',  Number(header.annual_volume ?? 0));
+  wsSummary.addRow([]);
+
+  // Process parameters
+  const procParams: Array<[string, unknown]> = [
+    ['Part Weight (kg)',    header.part_weight_kg],
+    ['Material Code',      header.material_code],
+    ['Manufacturing Country', header.manufacturing_country],
+    ['Machine Type',       header.machine_type],
+    ['Cycle Time (sec)',   header.cycle_time_sec],
+    ['Labour Rate ($/hr)', header.labour_rate_hr],
+    ['Machine Rate ($/hr)',header.machine_rate_hr],
+    ['Scrap Rate (%)',     header.scrap_rate_pct],
+    ['Tooling Cost Total', header.tooling_cost_total],
+    ['Tooling Life Units', header.tooling_life_units],
+  ];
+
+  const procHdrRow = wsSummary.addRow(['Process Parameters', '']);
+  procHdrRow.getCell(1).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: NAVY_BG } };
+  procHdrRow.getCell(1).font = { bold: true, color: { argb: WHITE_FONT } };
+  procHdrRow.getCell(2).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: NAVY_BG } };
+
+  for (const [label, value] of procParams) {
+    if (value != null) {
+      addSummaryRow(label, value);
+    }
+  }
+
+  wsSummary.getRow(1).height = 20;
+
+  // ── Sheet 2: Breakdown ────────────────────────────────────────────────────
+  const wsBd = wb.addWorksheet('Breakdown');
+  wsBd.columns = [
+    { width: 25 }, { width: 25 }, { width: 20 }, { width: 15 }, { width: 12 }, { width: 10 },
+  ];
+
+  const bdHdrRow = wsBd.addRow(['Cost Block', 'Cost Element', 'Cost Driver', 'Basis', 'Value', '% of Total']);
+  bdHdrRow.eachCell((cell) => {
+    cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: NAVY_BG } };
+    cell.font = { color: { argb: WHITE_FONT }, bold: true };
+  });
+  wsBd.getRow(1).height = 18;
+  wsBd.views = [{ state: 'frozen', ySplit: 1 }];
+
+  const grandTotal = Number(header.total_cost ?? 0) || 1; // avoid div-by-zero
+
+  // Group by category
+  const categoryOrder = ['material', 'labor', 'labour', 'overhead', 'logistics', 'tooling', 'profit', 'other'];
+  const rows = breakdownRes.rows as Array<Record<string, unknown>>;
+
+  // Build a map of category → rows
+  const catMap = new Map<string, Array<Record<string, unknown>>>();
+  for (const row of rows) {
+    const cat = String(row.category ?? 'other').toLowerCase();
+    if (!catMap.has(cat)) catMap.set(cat, []);
+    catMap.get(cat)!.push(row);
+  }
+
+  // Output in order, then any remaining categories not in the order list
+  const orderedCats = [
+    ...categoryOrder.filter((c) => catMap.has(c)),
+    ...[...catMap.keys()].filter((c) => !categoryOrder.includes(c)),
+  ];
+
+  for (const cat of orderedCats) {
+    const catRows = catMap.get(cat) ?? [];
+    let catTotal = 0;
+
+    for (const bdRow of catRows) {
+      const value = Number(bdRow.value ?? 0);
+      catTotal += value;
+
+      const dataRow = wsBd.addRow([
+        String(bdRow.category ?? '').toUpperCase(),
+        String(bdRow.cost_element ?? ''),
+        '', // cost_driver — not in current schema
+        String(bdRow.basis ?? ''),
+        value,
+        grandTotal > 0 ? value / grandTotal : 0,
+      ]);
+      dataRow.getCell(5).numFmt = '#,##0.0000';
+      dataRow.getCell(6).numFmt = '0.00%';
+    }
+
+    // Subtotal row per category
+    const subRow = wsBd.addRow([
+      `${String(cat).toUpperCase()} SUBTOTAL`, '', '', '', catTotal, grandTotal > 0 ? catTotal / grandTotal : 0,
+    ]);
+    subRow.eachCell((cell) => { cell.font = { bold: true }; });
+    subRow.getCell(1).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFE2E8F0' } };
+    subRow.getCell(5).numFmt = '#,##0.0000';
+    subRow.getCell(6).numFmt = '0.00%';
+    wsBd.addRow([]);
+  }
+
+  // Grand total
+  const grandRow = wsBd.addRow(['GRAND TOTAL', '', '', '', grandTotal, 1]);
+  grandRow.eachCell((cell) => {
+    cell.font = { bold: true, color: { argb: NAVY_BG } };
+    cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFD1D5DB' } };
+  });
+  grandRow.getCell(5).numFmt = '#,##0.0000';
+  grandRow.getCell(6).numFmt = '0.00%';
+
+  const partNumber = String(header.part_number ?? id).replace(/[^a-zA-Z0-9_-]/g, '_');
+  const version = String(header.version ?? '1');
+
+  res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+  res.setHeader('Content-Disposition', `attachment; filename=should_cost_${partNumber}_v${version}.xlsx`);
+  await wb.xlsx.write(res);
+  res.end();
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Should-Cost HTML Report (print-to-PDF) — GET /api/export/should-cost/:id/report.html
+// ─────────────────────────────────────────────────────────────────────────────
+export async function exportShouldCostHtml(req: Request, res: Response): Promise<void> {
+  const { id } = req.params;
+
+  const headerRes = await pool.query(
+    `SELECT sch.*, p.part_number, p.description AS part_description
+     FROM should_cost_header sch
+     JOIN part_master p ON p.id = sch.part_id
+     WHERE sch.id = $1`,
+    [id]
+  );
+  if (!headerRes.rowCount) { res.status(404).json({ error: 'Should-cost not found' }); return; }
+
+  const header = headerRes.rows[0] as Record<string, unknown>;
+
+  const breakdownRes = await pool.query(
+    `SELECT scb.*
+     FROM should_cost_breakdown scb
+     WHERE scb.should_cost_header_id = $1
+     ORDER BY scb.sort_order, scb.id`,
+    [id]
+  );
+
+  const bd = breakdownRes.rows as Array<Record<string, unknown>>;
+  const grandTotal = Number(header.total_cost ?? 0) || bd.reduce((s, r) => s + Number(r.value ?? 0), 0) || 1;
+
+  // Group breakdown by category
+  const catGroups = new Map<string, Array<Record<string, unknown>>>();
+  for (const row of bd) {
+    const cat = String(row.category ?? 'Other');
+    if (!catGroups.has(cat)) catGroups.set(cat, []);
+    catGroups.get(cat)!.push(row);
+  }
+
+  const bdRowsHtml = [...catGroups.entries()].map(([cat, items]) => {
+    const catTotal = items.reduce((s, r) => s + Number(r.value ?? 0), 0);
+    const rowsHtml = items.map((r) => {
+      const val = Number(r.value ?? 0);
+      const pct = grandTotal > 0 ? ((val / grandTotal) * 100).toFixed(1) : '0.0';
+      return `<tr>
+        <td>${escapeHtml(cat)}</td>
+        <td>${escapeHtml(String(r.cost_element ?? ''))}</td>
+        <td>${escapeHtml(String(r.basis ?? ''))}</td>
+        <td style="text-align:right">${val.toFixed(4)}</td>
+        <td style="text-align:right">${pct}%</td>
+      </tr>`;
+    }).join('');
+    const catPct = grandTotal > 0 ? ((catTotal / grandTotal) * 100).toFixed(1) : '0.0';
+    const subtotalRow = `<tr class="subtotal">
+      <td colspan="3"><strong>${escapeHtml(cat)} Subtotal</strong></td>
+      <td style="text-align:right"><strong>${catTotal.toFixed(4)}</strong></td>
+      <td style="text-align:right"><strong>${catPct}%</strong></td>
+    </tr>`;
+    return rowsHtml + subtotalRow;
+  }).join('');
+
+  const procParams: Array<[string, unknown]> = [
+    ['Part Weight (kg)',    header.part_weight_kg],
+    ['Material Code',      header.material_code],
+    ['Manufacturing Country', header.manufacturing_country],
+    ['Machine Type',       header.machine_type],
+    ['Cycle Time (sec)',   header.cycle_time_sec],
+    ['Labour Rate ($/hr)', header.labour_rate_hr],
+    ['Machine Rate ($/hr)',header.machine_rate_hr],
+    ['Scrap Rate (%)',     header.scrap_rate_pct],
+    ['Tooling Cost Total', header.tooling_cost_total],
+    ['Tooling Life Units', header.tooling_life_units],
+  ].filter(([, v]) => v != null) as Array<[string, unknown]>;
+
+  const procParamsHtml = procParams.length > 0 ? `
+    <h2>Process Parameters</h2>
+    <table>
+      <thead><tr><th>Parameter</th><th>Value</th></tr></thead>
+      <tbody>
+        ${procParams.map(([label, value]) => `<tr><td>${escapeHtml(label)}</td><td>${escapeHtml(String(value))}</td></tr>`).join('')}
+      </tbody>
+    </table>` : '';
+
+  const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Should-Cost Report — ${escapeHtml(String(header.part_number ?? id))}</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; font-size: 11pt; color: #1a1a2e; background: #fff; }
+    .page { padding: 24px 32px; max-width: 960px; margin: 0 auto; }
+    header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 3px solid #1e3a5f; padding-bottom: 12px; margin-bottom: 20px; }
+    header .logo { font-size: 22pt; font-weight: bold; color: #1e3a5f; letter-spacing: 2px; }
+    header .meta { text-align: right; font-size: 9pt; color: #666; }
+    h2 { font-size: 12pt; color: #1e3a5f; margin: 20px 0 8px; border-left: 4px solid #1e3a5f; padding-left: 8px; }
+    table { width: 100%; border-collapse: collapse; margin-bottom: 16px; font-size: 10pt; }
+    th { background: #1e3a5f; color: #fff; padding: 7px 10px; text-align: left; }
+    td { padding: 5px 10px; border-bottom: 1px solid #e2e8f0; }
+    tr:nth-child(even) { background: #f8fafc; }
+    tr.subtotal { background: #e2e8f0 !important; }
+    .grand-total { background: #1e3a5f !important; color: #fff; font-weight: bold; }
+    .grand-total td { color: #fff; }
+    footer { margin-top: 40px; border-top: 1px solid #ccc; padding-top: 10px; font-size: 8pt; color: #999; text-align: center; }
+    @media print {
+      body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    }
+    @page { size: A4; margin: 20mm; }
+    @media print {
+      .page { padding: 0; max-width: 100%; }
+      footer { position: fixed; bottom: 0; width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <div class="logo">COSTLENS</div>
+      <div class="meta">
+        <div><strong>Part:</strong> ${escapeHtml(String(header.part_number ?? ''))}</div>
+        <div><strong>Version:</strong> ${escapeHtml(String(header.version ?? '1'))}</div>
+        <div><strong>Date:</strong> ${new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}</div>
+      </div>
+    </header>
+
+    <h2>Summary</h2>
+    <table>
+      <tbody>
+        <tr><td><strong>Status</strong></td><td>${escapeHtml(String(header.status ?? ''))}</td></tr>
+        <tr><td><strong>Total Cost</strong></td><td>${Number(header.total_cost ?? grandTotal).toFixed(4)} ${escapeHtml(String(header.currency ?? 'USD'))}</td></tr>
+        <tr><td><strong>Currency</strong></td><td>${escapeHtml(String(header.currency ?? 'USD'))}</td></tr>
+        <tr><td><strong>Annual Volume</strong></td><td>${Number(header.annual_volume ?? 0).toLocaleString()}</td></tr>
+        ${header.notes ? `<tr><td><strong>Notes</strong></td><td>${escapeHtml(String(header.notes))}</td></tr>` : ''}
+      </tbody>
+    </table>
+
+    ${procParamsHtml}
+
+    <h2>Cost Breakdown</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Category</th>
+          <th>Cost Element</th>
+          <th>Basis</th>
+          <th style="text-align:right">Value (${escapeHtml(String(header.currency ?? 'USD'))})</th>
+          <th style="text-align:right">% of Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${bdRowsHtml}
+        <tr class="grand-total">
+          <td colspan="3"><strong>GRAND TOTAL</strong></td>
+          <td style="text-align:right"><strong>${grandTotal.toFixed(4)}</strong></td>
+          <td style="text-align:right"><strong>100.0%</strong></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <footer>Confidential — CostLens &nbsp;|&nbsp; ${escapeHtml(String(header.part_number ?? ''))} v${escapeHtml(String(header.version ?? '1'))} &nbsp;|&nbsp; Generated ${new Date().toLocaleString('en-GB')}</footer>
+  </div>
+</body>
+</html>`;
+
+  res.setHeader('Content-Type', 'text/html; charset=utf-8');
+  res.send(html);
+}
+
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}

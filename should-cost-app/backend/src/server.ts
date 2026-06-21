@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
+import cron from 'node-cron';
 
 import authRoutes           from './routes/auth';
 import shouldCostRoutes     from './routes/shouldCost';
@@ -23,8 +24,13 @@ import commodityPriceRoutes     from './routes/commodityPrices';
 import acrRoutes                from './routes/acr';
 import assemblyRoutes           from './routes/assembly';
 import dashboardRoutes          from './routes/dashboard';
+import rateLibraryRoutes        from './routes/rateLibrary';
+import cerRoutes                from './routes/cer';
+import csvImportRoutes          from './routes/csvImport';
+import acrCommitmentRoutes      from './routes/acrCommitment';
 
 import { startWeeklyDigest, generateAndSendDigest } from './services/weeklyDigest';
+import { scheduledEmailDigest } from './controllers/emailDigestController';
 import { requireAuth, requireRole } from './middleware/auth';
 
 const app  = express();
@@ -32,6 +38,9 @@ const PORT = process.env.PORT ?? 4000;
 
 app.use(cors({ origin: process.env.FRONTEND_ORIGIN ?? 'http://localhost:5173' }));
 app.use(express.json());
+
+// Raw text/plain body parser for CSV import (must come before routes)
+app.use('/api/import', express.raw({ type: 'text/plain', limit: '5mb' }));
 
 app.get('/health', (_req, res) => res.json({ status: 'ok', ts: new Date() }));
 
@@ -56,6 +65,10 @@ app.use('/api/commodity-prices',    commodityPriceRoutes);
 app.use('/api/acr',                 acrRoutes);
 app.use('/api/assembly',            assemblyRoutes);
 app.use('/api/dashboard',           dashboardRoutes);
+app.use('/api/rate-library',        rateLibraryRoutes);
+app.use('/api/cer',                 cerRoutes);
+app.use('/api/import',              csvImportRoutes);
+app.use('/api/export/acr',          acrCommitmentRoutes);
 
 // Manual digest trigger for admins
 app.post(
@@ -77,6 +90,10 @@ app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
 app.listen(PORT, () => {
   console.log(`[server] Listening on http://localhost:${PORT}`);
   startWeeklyDigest();
+
+  // Monday 08:00 — weekly email digest (new controller)
+  cron.schedule('0 8 * * 1', scheduledEmailDigest);
+  console.log('[server] Email digest cron scheduled — Mondays 08:00.');
 });
 
 export default app;
