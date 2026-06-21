@@ -14,6 +14,11 @@ import pcbRouter from './routes/pcb.js';
 import aichatRouter from './routes/aichat.js';
 import newsRouter from './routes/news.js';
 import commoditiesRouter from './routes/commodities.js';
+import pricesRouter from './routes/prices.js';
+import quotesRouter from './routes/quotes.js';
+import bomRouter from './routes/bom.js';
+import { fetchAndCachePrices, arePricesStale } from './services/price-fetcher.js';
+import db from './db.js';
 
 config(); // load .env
 
@@ -60,6 +65,9 @@ app.use('/api/agent', agentRouter);
 app.use('/api/dfm', dfmRouter);
 app.use('/api/news', newsRouter);
 app.use('/api/commodities', commoditiesRouter);
+app.use('/api/prices', pricesRouter);
+app.use('/api/quotes', quotesRouter);
+app.use('/api/bom', bomRouter);
 
 // ── In production serve the Vite build so one URL covers everything ──────────
 if (IS_PROD) {
@@ -95,6 +103,20 @@ const server = app.listen(PORT, () => {
   console.log(`SMTP:         ${process.env.SMTP_HOST ? `✓ ${process.env.SMTP_HOST}` : 'not configured — OTPs logged to console'}`);
   console.log(`Team sync:    ${process.env.TEAM_API_KEY ? '✓ enabled' : 'disabled'}`);
   console.log(`Environment:  ${IS_PROD ? 'production' : 'development'}`);
+  console.log(`Metal prices: ${process.env.METAL_PRICE_API_KEY ? '✓ API key configured' : '⚠  METAL_PRICE_API_KEY not set — baseline prices will be used'}`);
+
+  // Auto-refresh material prices on startup if data is older than 7 days (or never fetched).
+  // Runs after the event loop yields so the server can accept health-check requests immediately.
+  setImmediate(() => {
+    if (arePricesStale(db)) {
+      console.log('[prices] Prices are stale or missing — triggering background refresh');
+      fetchAndCachePrices(db).catch((err: unknown) => {
+        console.error('[prices] Startup price refresh failed:', err instanceof Error ? err.message : String(err));
+      });
+    } else {
+      console.log('[prices] Material prices are up to date — skipping startup refresh');
+    }
+  });
 });
 
 // Graceful shutdown

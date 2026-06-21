@@ -4,6 +4,8 @@ import Anthropic from '@anthropic-ai/sdk';
 import { preprocessCADFile } from '../utils/preprocessor.js';
 import { analyzeGeometry } from '../utils/geometry-bridge.js';
 import type { OCCTGeometry } from '../utils/geometry-bridge.js';
+import { parseSTL } from '../services/stl-parser.js';
+import type { STLGeometry } from '../services/stl-parser.js';
 
 const router = Router();
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 50 * 1024 * 1024 } });
@@ -78,8 +80,8 @@ router.post('/analyze', upload.single('cadFile'), async (req, res): Promise<void
 
   const { originalname, size, buffer } = req.file;
   const ext = originalname.toLowerCase().split('.').pop() ?? '';
-  if (!['stp', 'step', 'igs', 'iges'].includes(ext)) {
-    res.status(400).json({ error: 'Unsupported format. Use STEP (.stp/.step) or IGES (.igs/.iges)' });
+  if (!['stp', 'step', 'igs', 'iges', 'stl'].includes(ext)) {
+    res.status(400).json({ error: 'Unsupported format. Use STEP (.stp/.step), IGES (.igs/.iges), or STL (.stl)' });
     return;
   }
 
@@ -89,25 +91,133 @@ router.post('/analyze', upload.single('cadFile'), async (req, res): Promise<void
     return;
   }
 
-  // --- Phase 1: Real geometry extraction (OCCT via Python/CadQuery) ---
+  // --- Phase 1: Real geometry extraction ---
   let geo: OCCTGeometry;
-  let geometrySource: 'occt' | 'text_parsing';
+  let geometrySource: 'occt' | 'text_parsing' | 'stl_parser';
+  let stlGeometry: STLGeometry | null = null;
 
-  console.log(`[CAD] Running OCCT geometry engine on ${originalname} (${(size / 1024).toFixed(0)} KB)…`);
-  geo = await analyzeGeometry(buffer, originalname, 120_000);
+  if (ext === 'stl') {
+    // ── STL fast-path: pure TypeScript parser, no external process ──────────
+    console.log(`[CAD] Parsing STL file: ${originalname} (${(size / 1024).toFixed(0)} KB)…`);
+    try {
+      stlGeometry = parseSTL(buffer);
+      geometrySource = 'stl_parser';
+      console.log(
+        `[CAD] STL parsed — ${stlGeometry.triangleCount} triangles  ` +
+        `V=${stlGeometry.volume.toFixed(2)}cm³  SA=${stlGeometry.surfaceArea.toFixed(1)}cm²  ` +
+        `wall≈${stlGeometry.estimatedWallThicknessMm.toFixed(2)}mm  ` +
+        `format=${stlGeometry.format}  ${stlGeometry.parseTimeMs}ms`,
+      );
 
-  if (geo.status === 'success') {
-    geometrySource = 'occt';
-    console.log(`[CAD] OCCT success — V=${geo.volume!.cm3.toFixed(1)}cm³  SA=${geo.surfaceArea!.cm2.toFixed(0)}cm²  faces=${geo.faces!.total}`);
+      // Build an OCCTGeometry-shaped object so the rest of the pipeline
+      // (Stage-1 Haiku selector, prompt builder, JSON schema) works unchanged.
+      const bb = stlGeometry.boundingBox;
+      const densities = { al: 2700, steel: 7850, castIron: 7150, plastic: 1050 };
+      geo = {
+        status: 'success',
+        volume: {
+          mm3: stlGeometry.volume * 1000,
+          cm3: stlGeometry.volume,
+        },
+        surfaceArea: {
+          mm2: stlGeometry.surfaceArea * 100,
+          cm2: stlGeometry.surfaceArea,
+        },
+        boundingBox: {
+          xMm: bb.xSpan,
+          yMm: bb.ySpan,
+          zMm: bb.zSpan,
+        },
+        fillRatio: bb.xSpan > 0 && bb.ySpan > 0 && bb.zSpan > 0
+          ? stlGeometry.volume / ((bb.xSpan * bb.ySpan * bb.zSpan) / 1000)
+          : 0,
+        weights: {
+          aluminiumKg:  stlGeometry.estimatedPartWeightKg(densities.al),
+          steelKg:      stlGeometry.estimatedPartWeightKg(densities.steel),
+          castIronKg:   stlGeometry.estimatedPartWeightKg(densities.castIron),
+          plasticKg:    stlGeometry.estimatedPartWeightKg(densities.plastic),
+          copperKg:     stlGeometry.estimatedPartWeightKg(8960),
+          titaniumKg:   stlGeometry.estimatedPartWeightKg(4430),
+        },
+        faces: {
+          total: stlGeometry.triangleCount,
+          byType: { Triangular: stlGeometry.triangleCount },
+        },
+        edges: {
+          total: 0,
+          byType: {},
+          sampleCircleRadiiMm: [],
+        },
+        features: {
+          cylindricalFaceCount: 0,
+          cylindricalFaceRadiiMm: [],
+          estimatedHoleCount: 0,
+          holeRadiiMm: [],
+          bossShaftRadiiMm: [],
+          threadFeaturesDetected: false,
+          planarFaceCount: 0,
+          freeFormFaceCount: 0,
+        },
+        wallThickness: {
+          minMm: stlGeometry.estimatedWallThicknessMm * 0.5,   // rough lower bound
+          meanMm: stlGeometry.estimatedWallThicknessMm,
+          maxMm: stlGeometry.estimatedWallThicknessMm * 2.0,   // rough upper bound
+          stdDevMm: stlGeometry.estimatedWallThicknessMm * 0.3,
+          method: 'stl_heuristic',
+          uniformity: 'unknown',
+          sampleCount: 0,
+        },
+        // Remaining optional fields not available from mesh-only data
+        draftAnalysis: null,
+        setupAnalysis: null,
+        cncCycleTimeEstimate: null,
+        toolingCostEstimates: null,
+        processSpecificEstimates: null,
+        manufacturabilityScore: null,
+        assemblyWarning: null,
+        unitWarning: null,
+      } as unknown as OCCTGeometry;
+    } catch (stlErr) {
+      console.error(`[CAD] STL parse failed: ${(stlErr as Error).message}`);
+      res.status(422).json({ error: `STL parse error: ${(stlErr as Error).message}` });
+      return;
+    }
   } else {
-    console.warn(`[CAD] OCCT failed (${geo.error}) — falling back to text preprocessor`);
-    geometrySource = 'text_parsing';
-    geo = { status: 'error', error: geo.error };
+    // ── STEP/IGES path: OCCT via Python/CadQuery ─────────────────────────────
+    console.log(`[CAD] Running OCCT geometry engine on ${originalname} (${(size / 1024).toFixed(0)} KB)…`);
+    geo = await analyzeGeometry(buffer, originalname, 120_000);
+
+    if (geo.status === 'success') {
+      geometrySource = 'occt';
+      console.log(`[CAD] OCCT success — V=${geo.volume!.cm3.toFixed(1)}cm³  SA=${geo.surfaceArea!.cm2.toFixed(0)}cm²  faces=${geo.faces!.total}`);
+    } else {
+      console.warn(`[CAD] OCCT failed (${geo.error}) — falling back to text preprocessor`);
+      geometrySource = 'text_parsing';
+      geo = { status: 'error', error: geo.error };
+    }
   }
 
-  // --- Phase 2: Build text-preprocessor summary for Claude (always computed as context) ---
-  const content = buffer.toString('utf-8');
-  const preprocessed = preprocessCADFile(content, originalname, size);
+  // --- Phase 2: Build text-preprocessor summary for Claude (skip for STL — binary mesh, no text tokens) ---
+  const content = ext === 'stl' ? '' : buffer.toString('utf-8');
+  const preprocessed = ext === 'stl'
+    ? {
+        format: 'Unknown' as const,
+        partName: originalname.replace(/\.stl$/i, ''),
+        fileSizeKB: size / 1024,
+        entityStats: { triangles: stlGeometry!.triangleCount },
+        boundingBoxEstMm: {
+          x: stlGeometry!.boundingBox.xSpan,
+          y: stlGeometry!.boundingBox.ySpan,
+          z: stlGeometry!.boundingBox.zSpan,
+        },
+        materialHint: '',
+        threadCount: 0,
+        totalEntities: stlGeometry!.triangleCount,
+        coordinateRangeMm: null,
+        headerInfo: `STL ${stlGeometry!.format} format, ${stlGeometry!.triangleCount} triangles`,
+        summary: `STL mesh: ${stlGeometry!.triangleCount} triangles, ${stlGeometry!.boundingBox.xSpan.toFixed(1)}×${stlGeometry!.boundingBox.ySpan.toFixed(1)}×${stlGeometry!.boundingBox.zSpan.toFixed(1)} mm`,
+      }
+    : preprocessCADFile(content, originalname, size);
 
   const anthropic = new Anthropic({ apiKey });
 
@@ -206,6 +316,17 @@ router.post('/analyze', upload.single('cadFile'), async (req, res): Promise<void
     geometrySource,
     annualVolume,
     occtGeometry: geo.status === 'success' ? geo : null,
+    stlGeometry: stlGeometry
+      ? {
+          triangleCount: stlGeometry.triangleCount,
+          volume: stlGeometry.volume,
+          surfaceArea: stlGeometry.surfaceArea,
+          boundingBox: stlGeometry.boundingBox,
+          estimatedWallThicknessMm: stlGeometry.estimatedWallThicknessMm,
+          format: stlGeometry.format,
+          parseTimeMs: stlGeometry.parseTimeMs,
+        }
+      : null,
     preprocessed: {
       format: preprocessed.format,
       partName: preprocessed.partName,
@@ -752,6 +873,57 @@ ${alwaysSubs}
   "analysisLimitations": [string]
 }`;
 }
+
+// POST /api/cad/parse-stl — return raw STL geometry without AI analysis
+// Accepts: multipart/form-data with field "cadFile" (must be .stl)
+router.post('/parse-stl', upload.single('cadFile'), async (req, res): Promise<void> => {
+  if (!req.file) { res.status(400).json({ error: 'No file uploaded' }); return; }
+
+  const { originalname, size, buffer } = req.file;
+  const ext = originalname.toLowerCase().split('.').pop() ?? '';
+  if (ext !== 'stl') {
+    res.status(400).json({ error: 'parse-stl endpoint only accepts .stl files' });
+    return;
+  }
+
+  try {
+    const maxTriangles = parseInt(req.query['maxTriangles'] as string ?? '2000000', 10);
+    const geo = parseSTL(buffer, { maxTriangles: isNaN(maxTriangles) ? 2_000_000 : maxTriangles });
+
+    console.log(
+      `[CAD/parse-stl] ${originalname} (${(size / 1024).toFixed(0)} KB) — ` +
+      `${geo.triangleCount} triangles  V=${geo.volume.toFixed(3)}cm³  ` +
+      `SA=${geo.surfaceArea.toFixed(2)}cm²  wall≈${geo.estimatedWallThicknessMm.toFixed(2)}mm  ` +
+      `${geo.format}  ${geo.parseTimeMs}ms`,
+    );
+
+    res.json({
+      success: true,
+      filename: originalname,
+      fileSizeKB: size / 1024,
+      triangleCount: geo.triangleCount,
+      volume: geo.volume,                            // cm³
+      surfaceArea: geo.surfaceArea,                  // cm²
+      boundingBox: geo.boundingBox,                  // mm
+      estimatedWallThicknessMm: geo.estimatedWallThicknessMm,
+      // Common material weights for convenience
+      estimatedWeightKg: {
+        aluminium:  geo.estimatedPartWeightKg(2700),
+        steel:      geo.estimatedPartWeightKg(7850),
+        castIron:   geo.estimatedPartWeightKg(7150),
+        plastic:    geo.estimatedPartWeightKg(1050),
+        titanium:   geo.estimatedPartWeightKg(4430),
+        copper:     geo.estimatedPartWeightKg(8960),
+      },
+      format: geo.format,
+      parseTimeMs: geo.parseTimeMs,
+    });
+  } catch (err) {
+    const msg = (err as Error).message;
+    console.error(`[CAD/parse-stl] Error: ${msg}`);
+    res.status(422).json({ error: msg });
+  }
+});
 
 // POST /api/cad/reanalyze — re-run AI analysis using pre-computed (cached) OCCT geometry; no STEP re-upload needed
 router.post('/reanalyze', async (req, res): Promise<void> => {

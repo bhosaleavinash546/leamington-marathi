@@ -2,8 +2,43 @@ import { Router } from 'express';
 import Anthropic from '@anthropic-ai/sdk';
 import { z } from 'zod';
 import { DEFAULT_RATE_LIBRARY } from '../../src/engine/rate-library.js';
+import { executeCalculateCost, type CostToolInput } from '../services/cost-executor.js';
 
 const router = Router();
+
+// ─── Anthropic tool definition: calculate_cost ───────────────────────────────
+
+const CALCULATE_COST_TOOL: Anthropic.Tool = {
+  name: 'calculate_cost',
+  description: `Run the deterministic manufacturing cost engine for a part.
+Returns an 8-bucket cost breakdown (rawMaterial, process, labour, tooling, packaging, logistics, overhead, margin), total cost, and DFM opportunities.
+Call this whenever you need actual cost numbers. You can call it multiple times to compare scenarios or test DFM improvements.
+Always call this before interpreting costs or making recommendations.`,
+  input_schema: {
+    type: 'object' as const,
+    properties: {
+      commodity: {
+        type: 'string',
+        enum: [
+          'machining', 'sheet_metal', 'sheet_metal_fab', 'injection_moulding',
+          'blow_moulding', 'extrusion', 'thermoforming', 'rotational_moulding',
+          'casting', 'forging', 'painting', 'biw_assembly', 'pcb_fab', 'pcba',
+          'cast_and_machine', 'rubber', 'composites', 'wiring_harness',
+        ],
+      },
+      params: {
+        type: 'object',
+        description: 'Commodity-specific parameters',
+      },
+      partName:         { type: 'string' },
+      overheadPct:      { type: 'number', description: 'Default 0.12' },
+      marginPct:        { type: 'number', description: 'Default 0.08' },
+      packagingPerPart: { type: 'number', description: 'Default 0.15' },
+      logisticsPerPart: { type: 'number', description: 'Default 0.25' },
+    },
+    required: ['commodity', 'params'],
+  },
+};
 
 // ─── Robust JSON extractor ───────────────────────────────────────────────────
 
@@ -895,7 +930,7 @@ function buildMessages(
   ];
 }
 
-// ─── Route: standard (full response) ─────────────────────────────────────────
+// ─── Route: standard (full response) — agentic loop with tool_use ────────────
 
 router.post('/chat', async (req, res): Promise<void> => {
   const { message, photoBase64, photoMime, history = [], costResult, region } = req.body as AgentRequest;
@@ -912,22 +947,65 @@ router.post('/chat', async (req, res): Promise<void> => {
   }
 
   const anthropic = new Anthropic({ apiKey });
-  const messages = buildMessages(message, photoBase64, photoMime, history, costResult, region);
+  const messages: Anthropic.MessageParam[] = buildMessages(
+    message, photoBase64, photoMime, history, costResult, region,
+  );
 
   try {
-    const response = await withTimeout(
-      anthropic.messages.create({
-        model: 'claude-sonnet-4-6',
-        max_tokens: 8192,
-        system: SYSTEM_PROMPT,
-        messages,
-      }),
-      30_000,
-    );
+    let finalResponse: Record<string, unknown> | null = null;
+    const MAX_ITER = 5;
 
-    const raw = response.content[0].type === 'text' ? response.content[0].text : '{}';
-    const { response: validated } = validateAgentResponse(extractJSON(raw));
-    res.json({ success: true, response: validated });
+    for (let i = 0; i < MAX_ITER; i++) {
+      const apiResp = await withTimeout(
+        anthropic.messages.create({
+          model: 'claude-sonnet-4-6',
+          max_tokens: 8192,
+          tools: [CALCULATE_COST_TOOL],
+          tool_choice: { type: 'auto' },
+          system: SYSTEM_PROMPT,
+          messages,
+        }),
+        45_000,
+      );
+
+      if (apiResp.stop_reason === 'tool_use') {
+        // Append assistant message with tool_use blocks to the conversation
+        messages.push({ role: 'assistant', content: apiResp.content });
+
+        // Execute each tool call and collect results
+        const toolResults: Anthropic.ToolResultBlockParam[] = [];
+        for (const block of apiResp.content) {
+          if (block.type === 'tool_use' && block.name === 'calculate_cost') {
+            const toolResult = executeCalculateCost(block.input as CostToolInput);
+            console.log(
+              `[agent] tool_use calculate_cost → commodity=${(block.input as CostToolInput).commodity}`,
+              `success=${toolResult.success} total=${toolResult.total}`,
+            );
+            toolResults.push({
+              type: 'tool_result',
+              tool_use_id: block.id,
+              content: JSON.stringify(toolResult),
+            });
+          }
+        }
+
+        // Feed results back so the model can continue
+        messages.push({ role: 'user', content: toolResults });
+      } else {
+        // end_turn — extract the final text response
+        const textBlock = apiResp.content.find(b => b.type === 'text') as Anthropic.TextBlock | undefined;
+        const rawText = textBlock?.text ?? '{}';
+        const { response: validated } = validateAgentResponse(extractJSON(rawText));
+        finalResponse = validated;
+        break;
+      }
+    }
+
+    if (!finalResponse) {
+      finalResponse = { chat: 'Max tool iterations reached without a final response.', action: null };
+    }
+
+    res.json({ success: true, response: finalResponse });
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : String(err);
     const isTimeout = msg.includes('timed out');
@@ -939,7 +1017,7 @@ router.post('/chat', async (req, res): Promise<void> => {
   }
 });
 
-// ─── Route: streaming (SSE) ───────────────────────────────────────────────────
+// ─── Route: streaming (SSE) — hybrid: non-streaming tool iterations, streaming final response ───
 
 router.post('/chat/stream', async (req, res): Promise<void> => {
   const { message, photoBase64, photoMime, history = [], costResult, region } = req.body as AgentRequest;
@@ -962,32 +1040,93 @@ router.post('/chat/stream', async (req, res): Promise<void> => {
   res.flushHeaders();
 
   const anthropic = new Anthropic({ apiKey });
-  const messages = buildMessages(message, photoBase64, photoMime, history, costResult, region);
+  const messages: Anthropic.MessageParam[] = buildMessages(
+    message, photoBase64, photoMime, history, costResult, region,
+  );
 
   try {
-    let fullText = '';
+    // Phase 1: Run tool iterations non-streaming until end_turn or max iterations
+    const MAX_ITER = 5;
+    let needsFinalStream = true;
 
-    const stream = anthropic.messages.stream({
-      model: 'claude-sonnet-4-6',
-      max_tokens: 8192,
-      system: SYSTEM_PROMPT,
-      messages,
-    });
+    for (let i = 0; i < MAX_ITER; i++) {
+      const apiResp = await withTimeout(
+        anthropic.messages.create({
+          model: 'claude-sonnet-4-6',
+          max_tokens: 8192,
+          tools: [CALCULATE_COST_TOOL],
+          tool_choice: { type: 'auto' },
+          system: SYSTEM_PROMPT,
+          messages,
+        }),
+        45_000,
+      );
 
-    for await (const event of stream) {
-      if (
-        event.type === 'content_block_delta' &&
-        event.delta.type === 'text_delta'
-      ) {
-        const delta = event.delta.text;
-        fullText += delta;
-        res.write(`data: ${JSON.stringify({ type: 'delta', text: delta })}\n\n`);
+      if (apiResp.stop_reason === 'tool_use') {
+        messages.push({ role: 'assistant', content: apiResp.content });
+
+        const toolResults: Anthropic.ToolResultBlockParam[] = [];
+        for (const block of apiResp.content) {
+          if (block.type === 'tool_use' && block.name === 'calculate_cost') {
+            const toolResult = executeCalculateCost(block.input as CostToolInput);
+            console.log(
+              `[agent/stream] tool_use calculate_cost → commodity=${(block.input as CostToolInput).commodity}`,
+              `success=${toolResult.success} total=${toolResult.total}`,
+            );
+            toolResults.push({
+              type: 'tool_result',
+              tool_use_id: block.id,
+              content: JSON.stringify(toolResult),
+            });
+          }
+        }
+
+        messages.push({ role: 'user', content: toolResults });
+      } else {
+        // end_turn without tool_use — we have a text response already; stream it
+        const textBlock = apiResp.content.find(b => b.type === 'text') as Anthropic.TextBlock | undefined;
+        const rawText = textBlock?.text ?? '{}';
+
+        // Emit the final text as a single delta so clients see it
+        if (rawText) {
+          res.write(`data: ${JSON.stringify({ type: 'delta', text: rawText })}\n\n`);
+        }
+
+        const { response: validated, idWarnings } = validateAgentResponse(extractJSON(rawText));
+        res.write(`data: ${JSON.stringify({ type: 'done', response: validated, idWarnings })}\n\n`);
+        res.end();
+        needsFinalStream = false;
+        break;
       }
     }
 
-    const { response: validated, idWarnings } = validateAgentResponse(extractJSON(fullText));
-    res.write(`data: ${JSON.stringify({ type: 'done', response: validated, idWarnings })}\n\n`);
-    res.end();
+    // Phase 2: If we exhausted tool iterations without end_turn, stream one final generation
+    if (needsFinalStream) {
+      // Ask the model for a final answer with no tools (force text response)
+      let fullText = '';
+
+      const stream = anthropic.messages.stream({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 8192,
+        system: SYSTEM_PROMPT,
+        messages,
+      });
+
+      for await (const event of stream) {
+        if (
+          event.type === 'content_block_delta' &&
+          event.delta.type === 'text_delta'
+        ) {
+          const delta = event.delta.text;
+          fullText += delta;
+          res.write(`data: ${JSON.stringify({ type: 'delta', text: delta })}\n\n`);
+        }
+      }
+
+      const { response: validated, idWarnings } = validateAgentResponse(extractJSON(fullText));
+      res.write(`data: ${JSON.stringify({ type: 'done', response: validated, idWarnings })}\n\n`);
+      res.end();
+    }
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : String(err);
     res.write(`data: ${JSON.stringify({ type: 'error', error: msg })}\n\n`);

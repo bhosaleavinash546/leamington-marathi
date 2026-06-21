@@ -52,6 +52,58 @@ db.exec(`
 
   CREATE INDEX IF NOT EXISTS idx_otp_email ON otp_tokens(email, purpose);
   CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
+
+  CREATE TABLE IF NOT EXISTS material_price_overrides (
+    material_id TEXT PRIMARY KEY,
+    price_per_kg REAL NOT NULL,
+    source TEXT NOT NULL DEFAULT 'manual',
+    fetched_at TEXT NOT NULL,
+    confidence TEXT NOT NULL DEFAULT 'Medium'
+  );
+
+  CREATE TABLE IF NOT EXISTS price_fetch_log (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    fetched_at TEXT NOT NULL,
+    source TEXT NOT NULL,
+    updated_count INTEGER NOT NULL DEFAULT 0,
+    error TEXT
+  );
+
+  CREATE TABLE IF NOT EXISTS supplier_quotes (
+    id TEXT PRIMARY KEY,
+    scenario_id TEXT NOT NULL,
+    supplier_name TEXT NOT NULL,
+    supplier_country TEXT NOT NULL DEFAULT '',
+    unit_price REAL NOT NULL,
+    currency TEXT NOT NULL DEFAULT 'GBP',
+    moq INTEGER NOT NULL DEFAULT 1,
+    lead_time_weeks INTEGER,
+    validity_date TEXT,
+    tooling_cost REAL NOT NULL DEFAULT 0,
+    notes TEXT NOT NULL DEFAULT '',
+    attachments TEXT NOT NULL DEFAULT '[]',
+    created_by TEXT NOT NULL DEFAULT 'system',
+    created_at TEXT NOT NULL,
+    updated_at TEXT NOT NULL
+  );
+
+  CREATE INDEX IF NOT EXISTS idx_quotes_scenario ON supplier_quotes(scenario_id);
+
+  CREATE TABLE IF NOT EXISTS bom_items (
+    id TEXT PRIMARY KEY,
+    parent_scenario_id TEXT NOT NULL,
+    child_scenario_id TEXT,
+    item_name TEXT NOT NULL,
+    quantity REAL NOT NULL DEFAULT 1,
+    unit_cost_override REAL,
+    notes TEXT NOT NULL DEFAULT '',
+    sort_order INTEGER NOT NULL DEFAULT 0,
+    created_at TEXT NOT NULL,
+    updated_at TEXT NOT NULL
+  );
+
+  CREATE INDEX IF NOT EXISTS idx_bom_parent ON bom_items(parent_scenario_id);
+  CREATE INDEX IF NOT EXISTS idx_bom_child  ON bom_items(child_scenario_id);
 `);
 
 export default db;

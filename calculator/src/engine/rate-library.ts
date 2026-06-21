@@ -597,6 +597,91 @@ export const DEFAULT_RATE_LIBRARY: RateLibrary = {
     makeMachine('harness-test-sys', 'Electrical Harness Test System (Continuity + HiPot)',
       { annualDepreciation: 18000, maintenance: 5000, energy: 3000, floorSpace: 4000, indirectSupport: 5000, financeCost: 2250, annualAvailableHours: 4000, machineUtilization: 0.80 },
       'UK', 'UK harness benchmark Jun 2026. Automated electrical test: continuity, insulation resistance, HiPot. IATF-compliant.'),
+
+    // ══════════════════════════════════════════════════════════════════════════
+    // REGIONAL MACHINE RATES — China, India, Germany, Poland, Mexico
+    // Depreciation & finance cost same as UK (capital equipment is globally traded).
+    // Energy, floor-space, maintenance & indirect support scaled to regional rates.
+    // Energy ratios vs UK £0.23/kWh: CN=0.26, IN=0.35, DE=0.87, PL=0.52, MX=0.39
+    // Floor ratios vs UK: CN=0.15, IN=0.10, DE=0.80, PL=0.35, MX=0.20
+    // Indirect/maintenance ratios vs UK: CN=0.30, IN=0.22, DE=1.40, PL=0.45, MX=0.30
+    // ══════════════════════════════════════════════════════════════════════════
+
+    // ── CNC Machining — VMC 3-axis ────────────────────────────────────────────
+    makeMachine('mach-vmc3-cn', 'VMC 3-axis CNC (China)',
+      { annualDepreciation: 22000, maintenance: 2400, energy: 1300, floorSpace: 525, indirectSupport: 2250, financeCost: 5850, annualAvailableHours: 4000, machineUtilization: 0.85 },
+      'CN', 'China CNC machining benchmark. 3-axis VMC, Jiangsu/Guangdong region. Jun 2026'),
+    makeMachine('mach-vmc3-in', 'VMC 3-axis CNC (India)',
+      { annualDepreciation: 22000, maintenance: 2000, energy: 1750, floorSpace: 350, indirectSupport: 1500, financeCost: 5850, annualAvailableHours: 4000, machineUtilization: 0.85 },
+      'IN', 'India CNC machining benchmark. Pune/Chennai corridor. Jun 2026'),
+    makeMachine('mach-vmc3-de', 'VMC 3-axis CNC (Germany)',
+      { annualDepreciation: 22000, maintenance: 11200, energy: 4350, floorSpace: 2800, indirectSupport: 10500, financeCost: 5850, annualAvailableHours: 4000, machineUtilization: 0.87 },
+      'DE', 'Germany precision machining benchmark. Baden-Württemberg. Jun 2026'),
+    makeMachine('mach-vmc3-pl', 'VMC 3-axis CNC (Poland)',
+      { annualDepreciation: 22000, maintenance: 3600, energy: 2600, floorSpace: 1225, indirectSupport: 3375, financeCost: 5850, annualAvailableHours: 4000, machineUtilization: 0.85 },
+      'PL', 'Poland CNC machining benchmark. Silesia/Lower Silesia. Jun 2026'),
+    makeMachine('mach-vmc3-mx', 'VMC 3-axis CNC (Mexico)',
+      { annualDepreciation: 22000, maintenance: 2400, energy: 1950, floorSpace: 700, indirectSupport: 2250, financeCost: 5850, annualAvailableHours: 4000, machineUtilization: 0.85 },
+      'MX', 'Mexico CNC machining benchmark. Monterrey/Guanajuato. Jun 2026'),
+
+    // ── Injection Moulding — 200T ──────────────────────────────────────────────
+    makeMachine('imm-200t-cn', 'Injection Moulding 200T (China)',
+      { annualDepreciation: 28000, maintenance: 3000, energy: 4200, floorSpace: 1200, indirectSupport: 3000, financeCost: 7000, annualAvailableHours: 5000, machineUtilization: 0.85 },
+      'CN', 'China injection moulding benchmark. Taizhou/Guangdong plastics belt. Jun 2026'),
+    makeMachine('imm-200t-in', 'Injection Moulding 200T (India)',
+      { annualDepreciation: 28000, maintenance: 2500, energy: 5600, floorSpace: 800, indirectSupport: 2200, financeCost: 7000, annualAvailableHours: 5000, machineUtilization: 0.83 },
+      'IN', 'India injection moulding benchmark. Pune/Rajkot plastics cluster. Jun 2026'),
+    makeMachine('imm-200t-de', 'Injection Moulding 200T (Germany)',
+      { annualDepreciation: 28000, maintenance: 14000, energy: 13920, floorSpace: 6400, indirectSupport: 22400, financeCost: 7000, annualAvailableHours: 5000, machineUtilization: 0.87 },
+      'DE', 'Germany injection moulding benchmark. Jun 2026'),
+    makeMachine('imm-200t-pl', 'Injection Moulding 200T (Poland)',
+      { annualDepreciation: 28000, maintenance: 4500, energy: 8320, floorSpace: 2800, indirectSupport: 7200, financeCost: 7000, annualAvailableHours: 5000, machineUtilization: 0.85 },
+      'PL', 'Poland injection moulding benchmark. Jun 2026'),
+    makeMachine('imm-200t-mx', 'Injection Moulding 200T (Mexico)',
+      { annualDepreciation: 28000, maintenance: 3000, energy: 6240, floorSpace: 1600, indirectSupport: 3000, financeCost: 7000, annualAvailableHours: 5000, machineUtilization: 0.84 },
+      'MX', 'Mexico injection moulding benchmark. Monterrey/Saltillo. Jun 2026'),
+
+    // ── HPDC Casting — 500T ──────────────────────────────────────────────────
+    makeMachine('hpdc-500t-cn', 'HPDC 500T (China)',
+      { annualDepreciation: 55000, maintenance: 6000, energy: 7800, floorSpace: 2250, indirectSupport: 7500, financeCost: 13750, annualAvailableHours: 4000, machineUtilization: 0.80 },
+      'CN', 'China HPDC foundry benchmark. ADC12 Al alloy. Guangdong/Jiangsu. Jun 2026'),
+    makeMachine('hpdc-500t-in', 'HPDC 500T (India)',
+      { annualDepreciation: 55000, maintenance: 5000, energy: 10500, floorSpace: 1500, indirectSupport: 5500, financeCost: 13750, annualAvailableHours: 4000, machineUtilization: 0.78 },
+      'IN', 'India HPDC foundry benchmark. Rajkot/Pune auto cluster. Jun 2026'),
+    makeMachine('hpdc-500t-mx', 'HPDC 500T (Mexico)',
+      { annualDepreciation: 55000, maintenance: 6000, energy: 11700, floorSpace: 3000, indirectSupport: 7500, financeCost: 13750, annualAvailableHours: 4000, machineUtilization: 0.80 },
+      'MX', 'Mexico HPDC benchmark. Monterrey auto zone. Jun 2026'),
+
+    // ── Sheet Metal Stamping — 400T ────────────────────────────────────────────
+    makeMachine('press-400t-cn', 'Stamping Press 400T (China)',
+      { annualDepreciation: 38000, maintenance: 3600, energy: 5200, floorSpace: 3000, indirectSupport: 4500, financeCost: 9500, annualAvailableHours: 4000, machineUtilization: 0.82 },
+      'CN', 'China press shop benchmark. Wuhan/Shanghai auto stamping. Jun 2026'),
+    makeMachine('press-400t-in', 'Stamping Press 400T (India)',
+      { annualDepreciation: 38000, maintenance: 3000, energy: 7000, floorSpace: 2000, indirectSupport: 3300, financeCost: 9500, annualAvailableHours: 4000, machineUtilization: 0.80 },
+      'IN', 'India press shop benchmark. Pune/NCR auto cluster. Jun 2026'),
+    makeMachine('press-400t-pl', 'Stamping Press 400T (Poland)',
+      { annualDepreciation: 38000, maintenance: 5400, energy: 10400, floorSpace: 5250, indirectSupport: 6750, financeCost: 9500, annualAvailableHours: 4000, machineUtilization: 0.82 },
+      'PL', 'Poland stamping press benchmark. Silesia auto suppliers. Jun 2026'),
+    makeMachine('press-400t-mx', 'Stamping Press 400T (Mexico)',
+      { annualDepreciation: 38000, maintenance: 3600, energy: 7800, floorSpace: 4000, indirectSupport: 4500, financeCost: 9500, annualAvailableHours: 4000, machineUtilization: 0.82 },
+      'MX', 'Mexico stamping benchmark. Saltillo auto corridor. Jun 2026'),
+
+    // ── Manual Assembly / Bench ────────────────────────────────────────────────
+    makeMachine('bench-assembly-cn', 'Manual Assembly Bench (China)',
+      { annualDepreciation: 3000, maintenance: 300, energy: 260, floorSpace: 600, indirectSupport: 1000, financeCost: 750, annualAvailableHours: 4500, machineUtilization: 0.90 },
+      'CN', 'China assembly benchmark. Shenzhen/Suzhou. Harness, PCBA, BIW subassembly. Jun 2026'),
+    makeMachine('bench-assembly-in', 'Manual Assembly Bench (India)',
+      { annualDepreciation: 3000, maintenance: 250, energy: 350, floorSpace: 400, indirectSupport: 750, financeCost: 750, annualAvailableHours: 4500, machineUtilization: 0.90 },
+      'IN', 'India assembly benchmark. Pune/Nashik auto corridor. Jun 2026'),
+    makeMachine('bench-assembly-mx', 'Manual Assembly Bench (Mexico)',
+      { annualDepreciation: 3000, maintenance: 300, energy: 390, floorSpace: 800, indirectSupport: 1000, financeCost: 750, annualAvailableHours: 4500, machineUtilization: 0.90 },
+      'MX', 'Mexico assembly benchmark. Juárez/Monterrey maquiladora. Jun 2026'),
+    makeMachine('bench-assembly-vn', 'Manual Assembly Bench (Vietnam)',
+      { annualDepreciation: 3000, maintenance: 200, energy: 312, floorSpace: 300, indirectSupport: 600, financeCost: 750, annualAvailableHours: 4800, machineUtilization: 0.92 },
+      'VN', 'Vietnam assembly benchmark. Ho Chi Minh City / Hanoi. Wiring harness. Jun 2026'),
+    makeMachine('bench-assembly-pl', 'Manual Assembly Bench (Poland)',
+      { annualDepreciation: 3000, maintenance: 450, energy: 624, floorSpace: 1050, indirectSupport: 1350, financeCost: 750, annualAvailableHours: 4500, machineUtilization: 0.90 },
+      'PL', 'Poland assembly benchmark. Łódź/Wrocław. Harness, electronics. Jun 2026'),
   ],
 
   labour: [
@@ -699,6 +784,222 @@ export const DEFAULT_RATE_LIBRARY: RateLibrary = {
       sourceNote: 'UK EMS operator wage benchmark Jun 2026, incl. NI + benefits',
       confidence: 'Medium',
     },
+    // ── Germany ──────────────────────────────────────────────────────────────
+    {
+      id: 'lab-de-semiskilled',
+      region: 'Germany',
+      skillLevel: 'Semi-skilled Operator',
+      fullyLoadedRatePerHr: 32.00,
+      effectiveDate: '2026-06-14',
+      sourceNote: 'Germany IG Metall Lohngruppe 3 Jun 2026, incl. social costs',
+      confidence: 'Medium',
+    },
+    {
+      id: 'lab-de-foundry',
+      region: 'Germany',
+      skillLevel: 'Foundry Operative',
+      fullyLoadedRatePerHr: 35.00,
+      effectiveDate: '2026-06-14',
+      sourceNote: 'Germany foundry Tarifvertrag Jun 2026, incl. social costs',
+      confidence: 'Medium',
+    },
+    {
+      id: 'lab-de-electronics',
+      region: 'Germany',
+      skillLevel: 'SMT / Electronics Operator',
+      fullyLoadedRatePerHr: 30.00,
+      effectiveDate: '2026-06-14',
+      sourceNote: 'Germany EMS operator benchmark Jun 2026, incl. social costs',
+      confidence: 'Medium',
+    },
+    {
+      id: 'lab-de-engineer',
+      region: 'Germany',
+      skillLevel: 'Process Engineer',
+      fullyLoadedRatePerHr: 65.00,
+      effectiveDate: '2026-06-14',
+      sourceNote: 'Germany engineering salary benchmark Jun 2026, incl. social costs',
+      confidence: 'Medium',
+    },
+    // ── Poland ───────────────────────────────────────────────────────────────
+    {
+      id: 'lab-pl-semiskilled',
+      region: 'Poland',
+      skillLevel: 'Semi-skilled Operator',
+      fullyLoadedRatePerHr: 9.00,
+      effectiveDate: '2026-06-14',
+      sourceNote: 'Poland manufacturing wage benchmark Jun 2026, incl. social costs',
+      confidence: 'Low',
+    },
+    {
+      id: 'lab-pl-electronics',
+      region: 'Poland',
+      skillLevel: 'SMT / Electronics Operator',
+      fullyLoadedRatePerHr: 10.50,
+      effectiveDate: '2026-06-14',
+      sourceNote: 'Poland EMS sector benchmark Jun 2026, incl. social costs',
+      confidence: 'Low',
+    },
+    {
+      id: 'lab-pl-foundry',
+      region: 'Poland',
+      skillLevel: 'Foundry Operative',
+      fullyLoadedRatePerHr: 10.00,
+      effectiveDate: '2026-06-14',
+      sourceNote: 'Poland foundry wage benchmark Jun 2026, incl. social costs',
+      confidence: 'Low',
+    },
+    // ── China ─────────────────────────────────────────────────────────────────
+    {
+      id: 'lab-cn-semiskilled',
+      region: 'China',
+      skillLevel: 'Semi-skilled Operator',
+      fullyLoadedRatePerHr: 5.50,
+      effectiveDate: '2026-06-14',
+      sourceNote: 'China Pearl/Yangtze delta manufacturing wage benchmark Jun 2026',
+      confidence: 'Low',
+    },
+    {
+      id: 'lab-cn-electronics',
+      region: 'China',
+      skillLevel: 'SMT / Electronics Operator',
+      fullyLoadedRatePerHr: 6.50,
+      effectiveDate: '2026-06-14',
+      sourceNote: 'China EMS operator benchmark Jun 2026 (Shenzhen/Suzhou)',
+      confidence: 'Low',
+    },
+    {
+      id: 'lab-cn-engineer',
+      region: 'China',
+      skillLevel: 'Process Engineer',
+      fullyLoadedRatePerHr: 18.00,
+      effectiveDate: '2026-06-14',
+      sourceNote: 'China manufacturing engineer salary benchmark Jun 2026',
+      confidence: 'Low',
+    },
+    // ── India ─────────────────────────────────────────────────────────────────
+    {
+      id: 'lab-in-semiskilled',
+      region: 'India',
+      skillLevel: 'Semi-skilled Operator',
+      fullyLoadedRatePerHr: 3.50,
+      effectiveDate: '2026-06-14',
+      sourceNote: 'India manufacturing wage benchmark Jun 2026 (Pune/Chennai)',
+      confidence: 'Low',
+    },
+    {
+      id: 'lab-in-electronics',
+      region: 'India',
+      skillLevel: 'SMT / Electronics Operator',
+      fullyLoadedRatePerHr: 4.50,
+      effectiveDate: '2026-06-14',
+      sourceNote: 'India EMS operator benchmark Jun 2026 (Bangalore/Chennai)',
+      confidence: 'Low',
+    },
+    {
+      id: 'lab-in-engineer',
+      region: 'India',
+      skillLevel: 'Process Engineer',
+      fullyLoadedRatePerHr: 12.00,
+      effectiveDate: '2026-06-14',
+      sourceNote: 'India manufacturing engineer salary benchmark Jun 2026',
+      confidence: 'Low',
+    },
+    // ── Mexico ────────────────────────────────────────────────────────────────
+    {
+      id: 'lab-mx-semiskilled',
+      region: 'Mexico',
+      skillLevel: 'Semi-skilled Operator',
+      fullyLoadedRatePerHr: 5.80,
+      effectiveDate: '2026-06-14',
+      sourceNote: 'Mexico manufacturing wage benchmark Jun 2026 (Monterrey/Juárez, IMSS included)',
+      confidence: 'Low',
+    },
+    {
+      id: 'lab-mx-electronics',
+      region: 'Mexico',
+      skillLevel: 'SMT / Electronics Operator',
+      fullyLoadedRatePerHr: 6.50,
+      effectiveDate: '2026-06-14',
+      sourceNote: 'Mexico EMS operator benchmark Jun 2026 (Juárez/Tijuana, IMSS included)',
+      confidence: 'Low',
+    },
+    // ── Turkey ────────────────────────────────────────────────────────────────
+    {
+      id: 'lab-tr-skilled',
+      region: 'Turkey',
+      skillLevel: 'Skilled Machinist',
+      fullyLoadedRatePerHr: 8.50,
+      effectiveDate: '2026-06-14',
+      sourceNote: 'Turkey manufacturing wage benchmark Jun 2026 (Bursa/İzmir, SGK included)',
+      confidence: 'Low',
+    },
+    {
+      id: 'lab-tr-semiskilled',
+      region: 'Turkey',
+      skillLevel: 'Semi-skilled Operator',
+      fullyLoadedRatePerHr: 6.00,
+      effectiveDate: '2026-06-14',
+      sourceNote: 'Turkey manufacturing wage benchmark Jun 2026 (SGK included)',
+      confidence: 'Low',
+    },
+    // ── Vietnam ───────────────────────────────────────────────────────────────
+    {
+      id: 'lab-vn-skilled',
+      region: 'Vietnam',
+      skillLevel: 'Skilled Machinist',
+      fullyLoadedRatePerHr: 4.00,
+      effectiveDate: '2026-06-14',
+      sourceNote: 'Vietnam manufacturing wage benchmark Jun 2026 (Ho Chi Minh / Hanoi)',
+      confidence: 'Low',
+    },
+    {
+      id: 'lab-vn-semiskilled',
+      region: 'Vietnam',
+      skillLevel: 'Semi-skilled Operator',
+      fullyLoadedRatePerHr: 2.80,
+      effectiveDate: '2026-06-14',
+      sourceNote: 'Vietnam manufacturing wage benchmark Jun 2026',
+      confidence: 'Low',
+    },
+    // ── South Korea ───────────────────────────────────────────────────────────
+    {
+      id: 'lab-kr-skilled',
+      region: 'South Korea',
+      skillLevel: 'Skilled Machinist',
+      fullyLoadedRatePerHr: 22.00,
+      effectiveDate: '2026-06-14',
+      sourceNote: 'Korea manufacturing wage benchmark Jun 2026 (Ulsan/Busan, incl. health + pension)',
+      confidence: 'Low',
+    },
+    {
+      id: 'lab-kr-electronics',
+      region: 'South Korea',
+      skillLevel: 'SMT / Electronics Operator',
+      fullyLoadedRatePerHr: 18.50,
+      effectiveDate: '2026-06-14',
+      sourceNote: 'Korea EMS operator benchmark Jun 2026 (Suwon/Gumi)',
+      confidence: 'Low',
+    },
+    // ── Romania ───────────────────────────────────────────────────────────────
+    {
+      id: 'lab-ro-skilled',
+      region: 'Romania',
+      skillLevel: 'Skilled Machinist',
+      fullyLoadedRatePerHr: 8.00,
+      effectiveDate: '2026-06-14',
+      sourceNote: 'Romania manufacturing wage benchmark Jun 2026 (Cluj/Timișoara, CAS included)',
+      confidence: 'Low',
+    },
+    {
+      id: 'lab-ro-semiskilled',
+      region: 'Romania',
+      skillLevel: 'Semi-skilled Operator',
+      fullyLoadedRatePerHr: 6.50,
+      effectiveDate: '2026-06-14',
+      sourceNote: 'Romania manufacturing wage benchmark Jun 2026 (CAS included)',
+      confidence: 'Low',
+    },
   ],
 
   energy: [
@@ -719,6 +1020,87 @@ export const DEFAULT_RATE_LIBRARY: RateLibrary = {
       effectiveDate: '2026-06-14',
       sourceNote: 'Eurostat industrial energy Q1 2026',
       confidence: 'Medium',
+    },
+    {
+      id: 'energy-de',
+      region: 'Germany',
+      electricityPerKwh: 0.20,
+      gasPerKwh: 0.055,
+      effectiveDate: '2026-06-14',
+      sourceNote: 'Bundesnetzagentur industrial tariff Q1 2026',
+      confidence: 'Medium',
+    },
+    {
+      id: 'energy-pl',
+      region: 'Poland',
+      electricityPerKwh: 0.12,
+      gasPerKwh: 0.040,
+      effectiveDate: '2026-06-14',
+      sourceNote: 'URE Poland industrial energy Q1 2026',
+      confidence: 'Low',
+    },
+    {
+      id: 'energy-cn',
+      region: 'China',
+      electricityPerKwh: 0.06,
+      gasPerKwh: 0.025,
+      effectiveDate: '2026-06-14',
+      sourceNote: 'NDRC China industrial electricity benchmark Jun 2026',
+      confidence: 'Low',
+    },
+    {
+      id: 'energy-in',
+      region: 'India',
+      electricityPerKwh: 0.08,
+      gasPerKwh: 0.020,
+      effectiveDate: '2026-06-14',
+      sourceNote: 'India industrial electricity benchmark Jun 2026 (MSEDCL/TNEB avg)',
+      confidence: 'Low',
+    },
+    {
+      id: 'energy-mx',
+      region: 'Mexico',
+      electricityPerKwh: 0.09,
+      gasPerKwh: 0.030,
+      effectiveDate: '2026-06-14',
+      sourceNote: 'CFE Mexico industrial tariff Jun 2026',
+      confidence: 'Low',
+    },
+    {
+      id: 'energy-tr',
+      region: 'Turkey',
+      electricityPerKwh: 0.11,
+      gasPerKwh: 0.038,
+      effectiveDate: '2026-06-14',
+      sourceNote: 'EPDK Turkey industrial tariff Jun 2026',
+      confidence: 'Low',
+    },
+    {
+      id: 'energy-kr',
+      region: 'South Korea',
+      electricityPerKwh: 0.09,
+      gasPerKwh: 0.032,
+      effectiveDate: '2026-06-14',
+      sourceNote: 'KEPCO Korea industrial tariff Jun 2026',
+      confidence: 'Low',
+    },
+    {
+      id: 'energy-vn',
+      region: 'Vietnam',
+      electricityPerKwh: 0.07,
+      gasPerKwh: 0.018,
+      effectiveDate: '2026-06-14',
+      sourceNote: 'EVN Vietnam industrial electricity benchmark Jun 2026',
+      confidence: 'Low',
+    },
+    {
+      id: 'energy-ro',
+      region: 'Romania',
+      electricityPerKwh: 0.11,
+      gasPerKwh: 0.042,
+      effectiveDate: '2026-06-14',
+      sourceNote: 'ANRE Romania industrial tariff Jun 2026',
+      confidence: 'Low',
     },
   ],
 
@@ -780,5 +1162,48 @@ export function recomputeMachineRates(lib: RateLibrary): RateLibrary {
       ...m,
       computedRatePerHr: computeMachineRateFromBuildup(m.buildup),
     })),
+  };
+}
+
+const REGION_ALIASES: Record<string, string[]> = {
+  UK:          ['uk', 'united kingdom', 'gb', 'great britain'],
+  Germany:     ['de', 'germany', 'deutschland'],
+  Poland:      ['pl', 'poland', 'polska'],
+  China:       ['cn', 'china', 'prc'],
+  India:       ['in', 'india'],
+  Mexico:      ['mx', 'mexico', 'méxico'],
+  Turkey:      ['tr', 'turkey', 'türkiye'],
+  Vietnam:     ['vn', 'vietnam', 'viet nam'],
+  'South Korea': ['kr', 'korea', 'south korea'],
+  Romania:     ['ro', 'romania'],
+  EU:          ['eu', 'europe', 'eurozone'],
+};
+
+function resolveRegion(input: string): string | null {
+  const lower = input.toLowerCase().trim();
+  for (const [canonical, aliases] of Object.entries(REGION_ALIASES)) {
+    if (aliases.includes(lower)) return canonical;
+  }
+  return null;
+}
+
+/**
+ * Returns a filtered RateLibrary containing only entries for the given region
+ * (plus UK entries as fallback where region-specific entries are absent).
+ * `region` accepts full name or ISO-2 code (case-insensitive).
+ */
+export function getRegionalLibrary(region: string): RateLibrary {
+  const canonical = resolveRegion(region) ?? region;
+  const base = getLibraryFromStorage();
+
+  const machines = base.machines.filter(m => m.region === canonical || m.region === 'UK');
+  const labour   = base.labour.filter(l => l.region === canonical || l.region === 'UK');
+  const energy   = base.energy.filter(e => e.region === canonical || e.region === 'EU' || e.region === 'UK');
+
+  return {
+    ...base,
+    machines: machines.length > 0 ? machines : base.machines.filter(m => m.region === 'UK'),
+    labour:   labour.length   > 0 ? labour   : base.labour.filter(l => l.region === 'UK'),
+    energy:   energy.length   > 0 ? energy   : base.energy.filter(e => e.region === 'UK'),
   };
 }
