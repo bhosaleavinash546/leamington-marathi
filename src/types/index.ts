@@ -130,6 +130,7 @@ export interface AnalysisResult {
   summary: {
     totalIdeas: number;
     quickWins: number;
+    programmeItems?: number;
     strategicItems: number;
     searchesPerformed: number;
   };

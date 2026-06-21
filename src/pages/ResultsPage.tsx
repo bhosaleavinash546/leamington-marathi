@@ -87,21 +87,12 @@ function CountUp({ to }: { to: number }) {
   return <span ref={countRef}>0</span>;
 }
 
-const CHAT_SUGGESTIONS = [
-  'Which ideas should we implement first?',
-  'What is the total savings potential across all ideas?',
-  'Which ideas are quick wins (Low difficulty)?',
-  'What are the biggest implementation risks?',
-  'Which ideas need supplier validation or RFQ?',
-  'Which ideas have OEM benchmark evidence?',
-];
-
 const CHAT_FOLLOW_UPS = [
-  'Tell me more about this',
   'What tooling investment is needed?',
-  'Which OEMs have proven this?',
-  'What are the NCAP/regulatory risks?',
-  'How long will this take to implement?',
+  'Which OEMs have proven this approach?',
+  'What are the DFMEA / regulatory risks?',
+  'Draft an RFQ scope for this idea.',
+  'How long to first-off-tool?',
 ];
 
 function RoadmapSection({ ideas }: { ideas: CostReductionIdea[] }) {
@@ -739,6 +730,27 @@ export default function ResultsPage() {
       return 0;
     });
 
+  function getChatSuggestions(): string[] {
+    const sugs: string[] = [];
+    const ideas = result!.ideas;
+    const pending = ideas.filter(i => !(annotations[i.id]?.status) || annotations[i.id]?.status === 'pending');
+    const investigating = ideas.filter(i => annotations[i.id]?.status === 'investigating');
+    const approved = ideas.filter(i => annotations[i.id]?.status === 'approved');
+    const quickWinsPending = pending.filter(i => i.implementationDifficulty === 'Low');
+    const highSavings = [...ideas].sort((a, b) =>
+      parseAnnualValue(b.costSavingPotential.annualValue) - parseAnnualValue(a.costSavingPotential.annualValue)
+    ).slice(0, 3);
+
+    if (pending.length > 0 && approved.length === 0) sugs.push(`You have ${pending.length} unreviewed ideas — which should we tackle first?`);
+    if (quickWinsPending.length > 0) sugs.push(`You have ${quickWinsPending.length} Quick Win ideas — summarise the implementation steps for each.`);
+    if (investigating.length > 0) sugs.push(`${investigating.length} idea${investigating.length > 1 ? 's are' : ' is'} under investigation — what supplier data do we need?`);
+    if (approved.length > 0) sugs.push(`Which of the ${approved.length} approved idea${approved.length > 1 ? 's' : ''} has the shortest payback period?`);
+    if (highSavings.length > 0) sugs.push(`Tell me more about "${highSavings[0].title}" — what are the key risks?`);
+    sugs.push('Which ideas have the strongest OEM benchmark evidence?');
+    sugs.push('What is the realistic total savings if we implement all Quick Wins in 6 months?');
+    return sugs.slice(0, 5);
+  }
+
   const handleExcelExport = async () => {
     setExporting('excel');
     try { exportToExcel(result, systemName, subName); } finally { setExporting(null); }
@@ -824,7 +836,8 @@ export default function ResultsPage() {
           summary: {
             totalIdeas: allIdeas.length,
             quickWins: allIdeas.filter(i => i.implementationDifficulty === 'Low').length,
-            strategicItems: allIdeas.filter(i => i.implementationDifficulty !== 'Low').length,
+            programmeItems: allIdeas.filter(i => i.implementationDifficulty === 'Medium').length,
+            strategicItems: allIdeas.filter(i => i.implementationDifficulty === 'High').length,
             searchesPerformed: (prev.summary.searchesPerformed || 0) + sources.length,
           },
         };
@@ -885,6 +898,8 @@ export default function ResultsPage() {
   };
 
   const quickWins = result.ideas.filter(i => i.implementationDifficulty === 'Low');
+  const programmeItems = result.ideas.filter(i => i.implementationDifficulty === 'Medium');
+  const strategicItems = result.ideas.filter(i => i.implementationDifficulty === 'High');
   const searchUsedCount = result.ideas.filter(i => i.searchDataUsed).length;
 
   async function handleShare() {
@@ -988,9 +1003,9 @@ export default function ResultsPage() {
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
           {[
             { label: 'Ideas Generated', value: result.summary.totalIdeas, icon: Zap, color: 'from-blue-500 to-indigo-600' },
-            { label: 'Quick Wins', value: result.summary.quickWins, icon: CheckCircle, color: 'from-green-500 to-emerald-600' },
-            { label: 'Strategic Items', value: result.summary.strategicItems, icon: TrendingDown, color: 'from-gold-500 to-amber-600' },
-            { label: 'Web Searches', value: result.summary.searchesPerformed, icon: Globe, color: 'from-blue-500 to-cyan-600' },
+            { label: 'Quick Wins', value: quickWins.length, icon: CheckCircle, color: 'from-green-500 to-emerald-600' },
+            { label: 'Programme Items', value: programmeItems.length, icon: Clock, color: 'from-gold-500 to-amber-600' },
+            { label: 'Strategic Items', value: strategicItems.length, icon: TrendingDown, color: 'from-red-500 to-rose-600' },
           ].map((stat) => (
             <div key={stat.label} className="bg-navy-900 border border-white/10 rounded-2xl p-5">
               <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${stat.color} flex items-center justify-center mb-3`}>
@@ -1160,7 +1175,7 @@ export default function ResultsPage() {
                 <div className="p-5">
                   <p className="text-slate-500 text-xs mb-3 uppercase tracking-wide font-medium">Suggested questions</p>
                   <div className="flex flex-wrap gap-2">
-                    {CHAT_SUGGESTIONS.map(s => (
+                    {getChatSuggestions().map(s => (
                       <button
                         key={s}
                         onClick={() => setChatInput(s)}

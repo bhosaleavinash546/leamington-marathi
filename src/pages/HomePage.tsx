@@ -3,7 +3,8 @@ import { motion, useMotionValue, useTransform, animate } from 'framer-motion';
 import {
   ArrowRight, Zap, BarChart3, FileDown, Upload, Cpu, Shield, ChevronRight,
   TrendingDown, TrendingUp, Activity, Globe, Layers, Award, RefreshCw,
-  DollarSign, Target, CheckCircle2, Lightbulb, Star, Clock, Cog
+  DollarSign, Target, CheckCircle2, Lightbulb, Star, Clock, Cog,
+  Link2, Car, Plug
 } from 'lucide-react';
 import { AUTOMOTIVE_SYSTEMS } from '../data/automotive-catalog';
 import { useEffect, useRef, useState } from 'react';
@@ -47,7 +48,7 @@ function KpiCard({
       className="relative group overflow-hidden rounded-2xl bg-navy-900 border border-white/10 p-5 cursor-default"
     >
       {/* Hover glow */}
-      <div className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-br ${color} opacity-[0.04]`} />
+      <div className={`absolute inset-0 opacity-0 group-hover:opacity-[0.06] transition-opacity duration-500 bg-gradient-to-br ${color}`} />
       <div className={`absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r ${color} opacity-60 group-hover:opacity-100 transition-opacity`} />
 
       <div className="flex items-start justify-between mb-3">
@@ -72,29 +73,23 @@ function KpiCard({
   );
 }
 
-// ─── Live Activity Feed ───────────────────────────────────────────────────────
+// ─── Example Analyses ─────────────────────────────────────────────────────────
 
 const ACTIVITY_ITEMS = [
-  { system: 'Electric Drive Unit', action: '16 ideas generated', saving: '€2.4M/yr', time: '2m ago', color: 'text-gold-400' },
-  { system: 'BIW Stamping', action: 'Hot-stamp consolidation', saving: '€1.1M/yr', time: '7m ago', color: 'text-indigo-400' },
-  { system: 'Battery Pack', action: 'CTP architecture switch', saving: '€3.8M/yr', time: '14m ago', color: 'text-emerald-400' },
-  { system: 'Transmission & Driveline', action: 'ZF 8HP fleet rebate', saving: '€0.9M/yr', time: '21m ago', color: 'text-rose-400' },
-  { system: 'Thermal & HVAC', action: 'Heat pump integration', saving: '€1.6M/yr', time: '35m ago', color: 'text-cyan-400' },
-  { system: 'Powertrain ICE', action: 'Turbo housing consolidation', saving: '€0.7M/yr', time: '42m ago', color: 'text-orange-400' },
-  { system: 'Interior Systems', action: 'IP carrier right-size', saving: '€1.3M/yr', time: '58m ago', color: 'text-amber-400' },
-  { system: 'Chassis', action: 'Al knuckle topology opt.', saving: '€0.5M/yr', time: '1h ago', color: 'text-blue-400' },
+  { system: 'Electric Drive Unit', action: '16 cost reduction ideas generated', saving: '€2.4M/yr', domain: 'Powertrain', color: 'text-gold-400' },
+  { system: 'BIW Stamping', action: 'Hot-stamp consolidation opportunity', saving: '€1.1M/yr', domain: 'Body Structure', color: 'text-indigo-400' },
+  { system: 'Battery Pack', action: 'CTP architecture benchmarking', saving: '€3.8M/yr', domain: 'Energy Storage', color: 'text-emerald-400' },
+  { system: 'Transmission & Driveline', action: 'ZF 8HP fleet rebate analysis', saving: '€0.9M/yr', domain: 'Driveline', color: 'text-rose-400' },
+  { system: 'Thermal & HVAC', action: 'Heat pump integration study', saving: '€1.6M/yr', domain: 'Thermal', color: 'text-cyan-400' },
+  { system: 'Powertrain ICE', action: 'Turbo housing consolidation', saving: '€0.7M/yr', domain: 'Powertrain', color: 'text-orange-400' },
+  { system: 'Interior Systems', action: 'IP carrier right-sizing', saving: '€1.3M/yr', domain: 'Interior', color: 'text-amber-400' },
+  { system: 'Chassis & Frame', action: 'Aluminium knuckle topology optimisation', saving: '€0.5M/yr', domain: 'Chassis', color: 'text-blue-400' },
 ];
 
-function LiveFeed() {
-  const [visible, setVisible] = useState(4);
-  useEffect(() => {
-    const id = setInterval(() => setVisible(v => (v % ACTIVITY_ITEMS.length) + 1), 3200);
-    return () => clearInterval(id);
-  }, []);
-
+function ExampleAnalyses() {
   return (
     <div className="space-y-2">
-      {ACTIVITY_ITEMS.slice(0, Math.min(visible + 3, ACTIVITY_ITEMS.length)).map((item, i) => (
+      {ACTIVITY_ITEMS.map((item, i) => (
         <motion.div
           key={i}
           initial={{ opacity: 0, x: -10 }}
@@ -104,14 +99,12 @@ function LiveFeed() {
         >
           <div className={`w-2 h-2 rounded-full flex-shrink-0 ${item.color.replace('text-', 'bg-')} group-hover:scale-125 transition-transform`} />
           <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2">
-              <span className={`text-xs font-semibold ${item.color}`}>{item.system}</span>
-            </div>
-            <span className="text-slate-400 text-xs">{item.action}</span>
+            <span className={`text-xs font-semibold ${item.color}`}>{item.system}</span>
+            <p className="text-slate-400 text-xs">{item.action}</p>
           </div>
           <div className="text-right flex-shrink-0">
             <div className="text-green-400 text-xs font-bold">{item.saving}</div>
-            <div className="text-slate-600 text-[10px]">{item.time}</div>
+            <div className="text-slate-600 text-[10px]">{item.domain}</div>
           </div>
         </motion.div>
       ))}
@@ -173,12 +166,12 @@ function CommodityTicker() {
 // ─── Benchmark Panel ──────────────────────────────────────────────────────────
 
 const BENCHMARKS = [
-  { label: 'ZF 8HP fleet rebate', value: '€320/unit', icon: '⚙️', domain: 'Transmission' },
-  { label: 'BYD 8-in-1 EDU saving', value: '−30% BOM', icon: '⚡', domain: 'EDU' },
-  { label: 'CF propshaft vs steel 2-piece', value: '−6 kg', icon: '🔩', domain: 'Driveline' },
-  { label: 'SiC die shrink (800V)', value: '−25% area', icon: '💡', domain: 'Inverter' },
-  { label: 'Al A380 diff housing', value: '−6.2 kg', icon: '🏎️', domain: 'Chassis' },
-  { label: 'Hairpin vs round-wire', value: '−15% Cu', icon: '🔌', domain: 'Motor' },
+  { label: 'ZF 8HP fleet rebate', value: '€320/unit', icon: Cog, domain: 'Transmission' },
+  { label: 'BYD 8-in-1 EDU saving', value: '−30% BOM', icon: Zap, domain: 'EDU' },
+  { label: 'CF propshaft vs steel', value: '−6 kg', icon: Link2, domain: 'Driveline' },
+  { label: 'SiC die shrink (800V)', value: '−25% area', icon: Lightbulb, domain: 'Inverter' },
+  { label: 'Al A380 diff housing', value: '−6.2 kg', icon: Car, domain: 'Chassis' },
+  { label: 'Hairpin vs round-wire', value: '−15% Cu', icon: Plug, domain: 'Motor' },
 ];
 
 // ─── Rotating Highlight Text ──────────────────────────────────────────────────
@@ -235,7 +228,7 @@ const FEATURES = [
   },
   {
     icon: Globe, title: 'Live Commodity Price Context', color: 'from-cyan-500 to-sky-600',
-    desc: 'Real-time commodity price feed (copper, NdFeB, SiC, aluminium) injected into AI prompt — saving estimates account for today\'s market rates.',
+    desc: 'Reference commodity price data (LME aluminium, copper, NdFeB, SiC) is embedded in the analysis context — helping ground saving estimates in real market conditions. Verify latest prices at LME.com before presenting to management.',
   },
 ];
 
@@ -279,9 +272,8 @@ export default function HomePage() {
               initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}
               className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gold-500/10 border border-gold-500/20 text-gold-400 text-sm font-medium mb-7"
             >
-              <Activity size={13} className="animate-pulse" />
-              <span>Live · AI Cost Reduction Intelligence Platform</span>
-              <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
+              <Activity size={13} />
+              <span>AI Cost Reduction Intelligence Platform</span>
             </motion.div>
 
             <motion.h1
@@ -345,11 +337,11 @@ export default function HomePage() {
           >
             <div className="flex items-center gap-3 mb-2">
               <div className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider text-slate-500">
-                <RefreshCw size={10} className="animate-spin" style={{ animationDuration: '4s' }} />
-                Live Commodity Prices
+                <BarChart3 size={10} />
+                Reference Commodity Prices
               </div>
               <div className="flex-1 h-px bg-white/6" />
-              <span className="text-[10px] text-slate-600">Indicative market rates</span>
+              <span className="text-[10px] text-slate-600">Indicative Q2 2025 rates — verify before use</span>
             </div>
             <CommodityTicker />
           </motion.div>
@@ -364,12 +356,12 @@ export default function HomePage() {
             >
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-                  <span className="text-white font-semibold text-sm">Live Analysis Feed</span>
+                  <Lightbulb size={14} className="text-gold-400" />
+                  <span className="text-white font-semibold text-sm">Example Analyses</span>
                 </div>
-                <span className="text-[10px] text-slate-500 uppercase tracking-wider">Real-time</span>
+                <span className="text-[10px] text-slate-500 uppercase tracking-wider">Illustrative</span>
               </div>
-              <LiveFeed />
+              <ExampleAnalyses />
             </motion.div>
 
             {/* Benchmark Savings Panel */}
@@ -393,7 +385,9 @@ export default function HomePage() {
                     whileHover={{ scale: 1.03, borderColor: 'rgba(245,158,11,0.3)', transition: { type: 'spring', stiffness: 380, damping: 28 } }}
                     className="p-3 rounded-xl bg-white/4 border border-white/8 cursor-default transition-all"
                   >
-                    <div className="text-lg mb-1">{b.icon}</div>
+                    <div className="w-8 h-8 rounded-lg bg-gold-500/15 flex items-center justify-center mb-2">
+                      <b.icon size={15} className="text-gold-400" />
+                    </div>
                     <div className="text-gold-400 font-bold text-sm">{b.value}</div>
                     <div className="text-slate-400 text-xs leading-tight mt-0.5">{b.label}</div>
                     <div className="text-slate-600 text-[10px] mt-1 uppercase tracking-wide">{b.domain}</div>

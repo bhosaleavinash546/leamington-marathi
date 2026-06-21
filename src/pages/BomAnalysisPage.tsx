@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Upload, FileText, X, Zap, AlertCircle, CheckCircle, BarChart3, Download } from 'lucide-react';
@@ -31,6 +31,12 @@ export default function BomAnalysisPage() {
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState('');
   const [currentPart, setCurrentPart] = useState('');
+  const [cancelled, setCancelled] = useState(false);
+  const abortRef = useRef<AbortController | null>(null);
+
+  useEffect(() => {
+    return () => { abortRef.current?.abort(); };
+  }, []);
 
   const onDrop = useCallback((files: File[]) => {
     const file = files[0];
@@ -74,6 +80,11 @@ export default function BomAnalysisPage() {
     onDrop, accept: { 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx'], 'text/csv': ['.csv'] }, maxFiles: 1,
   });
 
+  function cancelAnalysis() {
+    abortRef.current?.abort();
+    setCancelled(true);
+  }
+
   function downloadTemplate() {
     const wb = XLSX.utils.book_new();
     const ws = XLSX.utils.aoa_to_sheet([
@@ -96,7 +107,12 @@ export default function BomAnalysisPage() {
     const token = (() => { try { return JSON.parse(localStorage.getItem('brainspark_auth') || '{}').token; } catch { return null; } })();
     const batchResults: BomResult[] = [];
 
+    const controller = new AbortController();
+    abortRef.current = controller;
+    setCancelled(false);
+
     for (let i = 0; i < rows.length; i++) {
+      if (controller.signal.aborted) break;
       const row = rows[i];
       setCurrentPart(row.partName);
       setProgress(Math.round(((i) / rows.length) * 100));
@@ -113,6 +129,7 @@ export default function BomAnalysisPage() {
             partName: row.partName,
             enableSearch: false,
           }),
+          signal: controller.signal,
         });
         if (!response.ok) continue;
         const text = await response.text();
@@ -135,6 +152,7 @@ export default function BomAnalysisPage() {
           } catch {}
         }
       } catch (err) {
+        if (controller.signal.aborted) break;
         batchResults.push({ partName: row.partName, ideasCount: 0, quickWins: 0 });
       }
     }
@@ -228,7 +246,18 @@ export default function BomAnalysisPage() {
                 <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
                   <div className="h-full bg-gradient-to-r from-gold-500 to-amber-400 rounded-full transition-all duration-500" style={{ width: `${progress}%` }} />
                 </div>
+                <div className="mt-2 flex justify-center">
+                  <button
+                    onClick={cancelAnalysis}
+                    className="flex items-center gap-2 px-4 py-2 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20 text-sm font-medium transition-colors"
+                  >
+                    <X size={14} /> Cancel Analysis
+                  </button>
+                </div>
               </div>
+            )}
+            {cancelled && (
+              <p className="text-amber-400 text-sm text-center mt-2">Analysis cancelled — {results.length} part{results.length !== 1 ? 's' : ''} completed.</p>
             )}
           </div>
         )}

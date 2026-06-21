@@ -298,6 +298,7 @@ export default function AnalyzePage() {
       );
 
       const quickWins = ideas.filter(i => i.implementationDifficulty === 'Low').length;
+      const programmeItems = ideas.filter(i => i.implementationDifficulty === 'Medium').length;
       const result: AnalysisResult = {
         id: resultId,
         config: { ...config, apiKey: '' },  // strip API key before persistence
@@ -306,7 +307,8 @@ export default function AnalyzePage() {
         summary: {
           totalIdeas: ideas.length,
           quickWins,
-          strategicItems: ideas.length - quickWins,
+          programmeItems,
+          strategicItems: ideas.filter(i => i.implementationDifficulty === 'High').length,
           searchesPerformed: sources.length,
         },
         generatedAt: new Date().toLocaleString(),
