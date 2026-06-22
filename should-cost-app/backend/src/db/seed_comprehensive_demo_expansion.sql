@@ -775,4 +775,4 @@ BEGIN
   END IF;
 END $$;
 
-RAISE NOTICE 'Expansion seed complete — 20 parts, 20 negotiations, 20 ACR targets, 20 CER accuracy records.';
+DO $$ BEGIN RAISE NOTICE 'Expansion seed complete — 20 parts, 20 negotiations, 20 ACR targets, 20 CER accuracy records.'; END $$;

@@ -509,7 +509,7 @@ END $$;
 -- 5. ACR TARGETS — 15 Records (2024 & 2025)
 -- ============================================================
 DO $$
-DECLARE v_user UUID; v_sup101 INTEGER; v_sup102 INTEGER; v_sup103 INTEGER; v_sup104 INTEGER; v_sup105 INTEGER; v_sup107 INTEGER;
+DECLARE v_user UUID; v_sup101 INTEGER; v_sup102 INTEGER; v_sup103 INTEGER; v_sup104 INTEGER; v_sup105 INTEGER; v_sup106 INTEGER; v_sup107 INTEGER;
 BEGIN
   SELECT id INTO v_user   FROM "user"     WHERE email = 'avinash.bhosale@costlens.io';
   SELECT id INTO v_sup101 FROM supplier WHERE code = 'SUP-101';
@@ -517,6 +517,7 @@ BEGIN
   SELECT id INTO v_sup103 FROM supplier WHERE code = 'SUP-103';
   SELECT id INTO v_sup104 FROM supplier WHERE code = 'SUP-104';
   SELECT id INTO v_sup105 FROM supplier WHERE code = 'SUP-105';
+  SELECT id INTO v_sup106 FROM supplier WHERE code = 'SUP-106';
   SELECT id INTO v_sup107 FROM supplier WHERE code = 'SUP-107';
 
   -- 2024 ACR TARGETS (closed year — show mix of agreed/missed)
@@ -890,4 +891,4 @@ BEGIN
   END IF;
 END $$;
 
-RAISE NOTICE 'Comprehensive demo seed complete.';
+DO $$ BEGIN RAISE NOTICE 'Comprehensive demo seed complete.'; END $$;

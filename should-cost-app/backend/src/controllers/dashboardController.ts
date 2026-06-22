@@ -65,8 +65,8 @@ export async function getDashboard(_req: Request, res: Response): Promise<void> 
           )                                            AS negotiations_due_this_week,
           COALESCE(SUM(
             CASE WHEN status NOT IN ('agreed', 'closed', 'cancelled')
-                      AND annual_volume IS NOT NULL AND target_price IS NOT NULL AND current_price IS NOT NULL
-                 THEN (current_price - target_price) * annual_volume
+                      AND target_price IS NOT NULL AND current_price IS NOT NULL
+                 THEN (current_price - target_price)
                  ELSE 0 END
           ), 0)                                        AS potential_annual_saving,
           COALESCE(SUM(
@@ -95,7 +95,7 @@ export async function getDashboard(_req: Request, res: Response): Promise<void> 
       const acrResult = await pool.query(`
         SELECT
           COUNT(*)                                       AS acr_targets_this_year,
-          COUNT(*) FILTER (WHERE status = 'achieved')   AS acr_achieved_this_year
+          COUNT(*) FILTER (WHERE status = 'agreed')     AS acr_achieved_this_year
         FROM acr_target
         WHERE target_year = EXTRACT(YEAR FROM CURRENT_DATE)
       `);
