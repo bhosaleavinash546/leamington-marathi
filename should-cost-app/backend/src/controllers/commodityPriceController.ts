@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import pool from '../db/pool';
+import { updateTodaysPrices } from '../services/commodityPriceService';
 
 // GET /api/commodity-prices
 // List all entries, optional ?material= filter (matches material_name ILIKE).
@@ -41,21 +42,41 @@ export async function listCommodityPrices(req: Request, res: Response): Promise<
 }
 
 // GET /api/commodity-prices/summary
-// Returns the single latest price per unique material_name.
+// Returns the latest price per material with change_pct vs prior entry.
 export async function commodityPriceSummary(_req: Request, res: Response): Promise<void> {
   try {
     const { rows } = await pool.query(
-      `SELECT DISTINCT ON (cp.material_name)
-         cp.id,
-         cp.material_name,
-         cp.material_code,
-         cp.price_per_unit,
-         cp.unit,
-         cp.currency,
-         cp.price_date,
-         cp.source
-       FROM commodity_price cp
-       ORDER BY cp.material_name ASC, cp.price_date DESC`
+      `WITH latest AS (
+         SELECT DISTINCT ON (material_code)
+           id, material_name, material_code, price_per_unit, unit, currency, price_date, source
+         FROM commodity_price
+         WHERE material_code IS NOT NULL
+         ORDER BY material_code, price_date DESC, id DESC
+       ),
+       prev AS (
+         SELECT DISTINCT ON (cp.material_code)
+           cp.material_code, cp.price_per_unit AS prev_price
+         FROM commodity_price cp
+         JOIN latest l ON l.material_code = cp.material_code
+         WHERE cp.price_date < l.price_date
+         ORDER BY cp.material_code, cp.price_date DESC, cp.id DESC
+       )
+       SELECT
+         l.id,
+         l.material_name,
+         l.material_code,
+         l.price_per_unit                                           AS latest_price,
+         l.unit,
+         l.currency,
+         l.price_date                                               AS latest_date,
+         l.source,
+         p.prev_price,
+         CASE WHEN p.prev_price IS NOT NULL AND p.prev_price > 0
+              THEN ROUND((l.price_per_unit - p.prev_price) / p.prev_price * 100, 2)
+              ELSE NULL END                                         AS change_pct
+       FROM latest l
+       LEFT JOIN prev p ON p.material_code = l.material_code
+       ORDER BY l.material_name ASC`
     );
     res.json(rows);
   } catch (err) {
@@ -63,6 +84,18 @@ export async function commodityPriceSummary(_req: Request, res: Response): Promi
     if (pg.code === '42P01' || pg.code === '42703') { res.json([]); return; }
     console.error('commodityPriceSummary error:', err);
     res.status(500).json({ error: 'Failed to retrieve commodity price summary' });
+  }
+}
+
+// POST /api/commodity-prices/refresh
+// Trigger an immediate daily price update for all tracked materials.
+export async function refreshCommodityPrices(_req: Request, res: Response): Promise<void> {
+  try {
+    const result = await updateTodaysPrices();
+    res.json({ success: true, ...result, refreshed_at: new Date().toISOString() });
+  } catch (err) {
+    console.error('refreshCommodityPrices error:', err);
+    res.status(500).json({ error: 'Price refresh failed' });
   }
 }
 

@@ -5,6 +5,7 @@ import {
   commodityPriceSummary,
   commodityPriceHistory,
   createCommodityPrice,
+  refreshCommodityPrices,
 } from '../controllers/commodityPriceController';
 
 const router = Router();
@@ -15,6 +16,7 @@ router.get('/summary',               requireAuth, requireRole('internal', 'admin
 router.get('/history/:materialCode', requireAuth, requireRole('internal', 'admin'), commodityPriceHistory);
 
 // Write — internal and admin
-router.post('/', requireAuth, requireRole('internal', 'admin'), createCommodityPrice);
+router.post('/',        requireAuth, requireRole('internal', 'admin'), createCommodityPrice);
+router.post('/refresh', requireAuth, requireRole('internal', 'admin'), refreshCommodityPrices);
 
 export default router;

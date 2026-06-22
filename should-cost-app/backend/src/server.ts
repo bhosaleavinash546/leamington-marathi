@@ -32,6 +32,7 @@ import openBookRoutes           from './routes/openBook';
 
 import { startWeeklyDigest, generateAndSendDigest } from './services/weeklyDigest';
 import { scheduledEmailDigest } from './controllers/emailDigestController';
+import { startCommodityPriceScheduler } from './services/commodityPriceService';
 import { requireAuth, requireRole } from './middleware/auth';
 
 const app  = express();
@@ -96,6 +97,9 @@ app.listen(PORT, () => {
   // Monday 08:00 — weekly email digest (new controller)
   cron.schedule('0 8 * * 1', scheduledEmailDigest);
   console.log('[server] Email digest cron scheduled — Mondays 08:00.');
+
+  // Daily 07:00 UTC — commodity price update
+  startCommodityPriceScheduler();
 });
 
 export default app;
