@@ -1092,37 +1092,49 @@ function showOTPView(email, purpose, devOtp) {
 }
 
 /* ── Local credential store (works without backend server) ──────────────── */
-/* Passwords stored as SHA-256 hex digests — never plaintext */
+/* Passwords stored as SHA-256 hex digests of salted input — never plaintext */
 const LOCAL_USERS = [
   {
-    email:    'avinash.bhosale8925@gmail.com',
-    pwHash:   '85e377692d36123bedb7fb26602b9d0e1f9004c5262c5451686cac5122422fb4',
-    fullName: 'Avinash Bhosale',
-    id:       'local-user-001',
-  },
-  {
     email:    'demo@costvision.app',
-    pwHash:   '2ac4757802ddfa9540f285b04d7ba282b55f206b9a4700c11010ebc410cdb4ab',
+    pwHash:   'd526702e0b9a46f64923cc9b16f112e304243db80eeeb64d0437d2e23895f87b',
     fullName: 'Demo User',
     id:       'local-user-002',
   },
 ];
 
+const _PW_SALT = 'CostVision-Salt-2026:';
+
 async function _hashPw(pw) {
-  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(pw));
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(_PW_SALT + pw));
   return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
-let _localAttempts = 0, _localLockedUntil = 0;
+/* Lockout stored in sessionStorage — persists within session, clears on tab close */
+function _getLockedUntil() { return parseInt(sessionStorage.getItem('cv-local-locked-until') ?? '0', 10); }
+function _setLockedUntil(t) { sessionStorage.setItem('cv-local-locked-until', String(t)); }
+
+let _localAttempts = 0;
+
+/* Device key for local token signing — generated once, stored in localStorage */
+function _getDeviceKey() {
+  let k = localStorage.getItem('cv-device-key');
+  if (!k) {
+    const arr = new Uint8Array(16);
+    crypto.getRandomValues(arr);
+    k = Array.from(arr).map(b => b.toString(16).padStart(2, '0')).join('');
+    localStorage.setItem('cv-device-key', k);
+  }
+  return k;
+}
 
 async function localSignIn(email, pw) {
-  if (Date.now() < _localLockedUntil) return null;
+  if (Date.now() < _getLockedUntil()) return null;
   const pwHash = await _hashPw(pw);
   const user = LOCAL_USERS.find(
     u => u.email.toLowerCase() === email.toLowerCase() && u.pwHash === pwHash
   );
   if (!user) {
-    if (++_localAttempts >= 5) _localLockedUntil = Date.now() + 15 * 60 * 1000;
+    if (++_localAttempts >= 5) _setLockedUntil(Date.now() + 15 * 60 * 1000);
     return null;
   }
   _localAttempts = 0;
@@ -1133,7 +1145,11 @@ async function localSignIn(email, pw) {
     iat: Math.floor(Date.now()/1000),
     exp: Math.floor(Date.now()/1000) + 60*60*24*7,
   })).replace(/=/g,'');
-  const token = `${header}.${payload}.local`;
+  /* Sign with device key so the signature cannot be trivially forged */
+  const deviceKey = _getDeviceKey();
+  const sigBuf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(`${header}.${payload}:${deviceKey}`));
+  const sig = Array.from(new Uint8Array(sigBuf)).map(b => b.toString(16).padStart(2, '0')).join('');
+  const token = `${header}.${payload}.${sig}`;
   return { token, user: { id: user.id, email: user.email, fullName: user.fullName } };
 }
 

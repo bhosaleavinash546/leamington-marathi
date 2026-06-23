@@ -95,16 +95,18 @@ export function computeMachiningDrivers(inputs: MachiningInputs): CommodityDrive
   const setupPerPart = inputs.setup.setupTimeHr / inputs.setup.batchSize;
 
   const operations: OperationInput[] = [
-    // Setup amortised as a pseudo-operation on the primary machine
+    // Setup amortised as a pseudo-operation on the primary machine.
+    // toleranceFactor is NOT applied here — setup time (fixturing, datum setting, first-off
+    // inspection) is independent of part tolerance; only cutting cycle time scales with tolerance.
     {
       operationName: 'Setup (amortised)',
       machineId: inputs.setup.machineId,
       labourId: inputs.setup.labourId,
-      cycleTimeHr: setupPerPart * toleranceFactor,
+      cycleTimeHr: setupPerPart,
       partsPerCycle: 1,
       oee: 1.0,
       manning: 1,
-      labourTimeHr: setupPerPart * toleranceFactor,
+      labourTimeHr: setupPerPart,
       labourEfficiency: 1.0,
     },
     // Main machining operations (reject uplift and tolerance factor applied to cycle/labour time)

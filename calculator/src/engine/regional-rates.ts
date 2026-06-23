@@ -79,8 +79,8 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
     name: 'Germany',
     currency: 'EUR',
     fxToGBP: 1.16,
-    labour: { skilled: 38.00, semiskilled: 29.00, engineer: 58.00, foundry: 28.00, electronics: 25.00, inspector: 35.00 },
-    energy: { electricityPerKwh: 0.22, gasPerKwh: 0.08 },
+    labour: { skilled: 40.50, semiskilled: 32.00, engineer: 65.00, foundry: 28.00, electronics: 30.00, inspector: 35.00 },
+    energy: { electricityPerKwh: 0.20, gasPerKwh: 0.08 },
     materialMultiplier: 1.03,
     machineRateMultiplier: 1.05,
     overheadMultiplier: 1.10,
@@ -127,7 +127,7 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
     name: 'Poland',
     currency: 'PLN',
     fxToGBP: 5.05,
-    labour: { skilled: 11.00, semiskilled: 8.50, engineer: 20.00, foundry: 8.00, electronics: 7.50, inspector: 12.00 },
+    labour: { skilled: 12.00, semiskilled: 9.00, engineer: 20.00, foundry: 8.00, electronics: 10.50, inspector: 12.00 },
     energy: { electricityPerKwh: 0.14, gasPerKwh: 0.06 },
     materialMultiplier: 0.97,
     machineRateMultiplier: 0.72,
@@ -211,7 +211,7 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
     name: 'China',
     currency: 'CNY',
     fxToGBP: 9.05,
-    labour: { skilled: 7.50, semiskilled: 5.50, engineer: 13.00, foundry: 5.00, electronics: 5.20, inspector: 8.00 },
+    labour: { skilled: 7.90, semiskilled: 5.50, engineer: 18.00, foundry: 5.00, electronics: 6.50, inspector: 8.00 },
     energy: { electricityPerKwh: 0.07, gasPerKwh: 0.03 },
     materialMultiplier: 0.88,
     machineRateMultiplier: 0.55,
@@ -223,7 +223,7 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
     name: 'India',
     currency: 'INR',
     fxToGBP: 109.5,
-    labour: { skilled: 4.80, semiskilled: 3.20, engineer: 9.00, foundry: 3.00, electronics: 3.50, inspector: 5.50 },
+    labour: { skilled: 5.10, semiskilled: 3.50, engineer: 12.00, foundry: 3.00, electronics: 4.50, inspector: 5.50 },
     energy: { electricityPerKwh: 0.07, gasPerKwh: 0.03 },
     materialMultiplier: 0.90,
     machineRateMultiplier: 0.52,
@@ -235,7 +235,7 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
     name: 'Mexico',
     currency: 'MXN',
     fxToGBP: 25.5,
-    labour: { skilled: 7.00, semiskilled: 5.20, engineer: 12.00, foundry: 4.80, electronics: 5.00, inspector: 7.50 },
+    labour: { skilled: 7.50, semiskilled: 5.80, engineer: 12.00, foundry: 4.80, electronics: 6.50, inspector: 7.50 },
     energy: { electricityPerKwh: 0.08, gasPerKwh: 0.04 },
     materialMultiplier: 0.95,
     machineRateMultiplier: 0.60,
@@ -318,18 +318,52 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
 export function buildRegionalLibrary(baseLibrary: RateLibrary, region: ManufacturingRegion): RateLibrary {
   const rd = REGIONAL_DATA[region];
 
-  // Map UK labour IDs to regional equivalents
+  // Map labour IDs to regional equivalents — covers all IDs in rate-library.ts
   const labourMap: Record<string, number> = {
-    'lab-uk-skilled':     rd.labour.skilled,
-    'lab-uk-semiskilled': rd.labour.semiskilled,
-    'lab-uk-engineer':    rd.labour.engineer,
-    'lab-uk-foundry':     rd.labour.foundry,
-    'lab-uk-inspector':   rd.labour.inspector,
-    'lab-in-skilled':     rd.labour.skilled,
-    'lab-cn-skilled':     rd.labour.skilled,
-    'lab-de-skilled':     rd.labour.skilled,
-    'lab-pl-skilled':     rd.labour.skilled,
-    'lab-mx-skilled':     rd.labour.skilled,
+    // UK base rates
+    'lab-uk-skilled':       rd.labour.skilled,
+    'lab-uk-semiskilled':   rd.labour.semiskilled,
+    'lab-uk-engineer':      rd.labour.engineer,
+    'lab-uk-foundry':       rd.labour.foundry,
+    'lab-uk-inspector':     rd.labour.inspector,
+    'lab-uk-electronics':   rd.labour.electronics,
+    // Germany
+    'lab-de-skilled':       rd.labour.skilled,
+    'lab-de-semiskilled':   rd.labour.semiskilled,
+    'lab-de-foundry':       rd.labour.foundry,
+    'lab-de-electronics':   rd.labour.electronics,
+    'lab-de-engineer':      rd.labour.engineer,
+    // Poland
+    'lab-pl-skilled':       rd.labour.skilled,
+    'lab-pl-semiskilled':   rd.labour.semiskilled,
+    'lab-pl-electronics':   rd.labour.electronics,
+    'lab-pl-foundry':       rd.labour.foundry,
+    // China
+    'lab-cn-skilled':       rd.labour.skilled,
+    'lab-cn-semiskilled':   rd.labour.semiskilled,
+    'lab-cn-electronics':   rd.labour.electronics,
+    'lab-cn-engineer':      rd.labour.engineer,
+    // India
+    'lab-in-skilled':       rd.labour.skilled,
+    'lab-in-semiskilled':   rd.labour.semiskilled,
+    'lab-in-electronics':   rd.labour.electronics,
+    'lab-in-engineer':      rd.labour.engineer,
+    // Mexico
+    'lab-mx-skilled':       rd.labour.skilled,
+    'lab-mx-semiskilled':   rd.labour.semiskilled,
+    'lab-mx-electronics':   rd.labour.electronics,
+    // Turkey
+    'lab-tr-skilled':       rd.labour.skilled,
+    'lab-tr-semiskilled':   rd.labour.semiskilled,
+    // Vietnam
+    'lab-vn-skilled':       rd.labour.skilled,
+    'lab-vn-semiskilled':   rd.labour.semiskilled,
+    // South Korea
+    'lab-kr-skilled':       rd.labour.skilled,
+    'lab-kr-electronics':   rd.labour.electronics,
+    // Romania
+    'lab-ro-skilled':       rd.labour.skilled,
+    'lab-ro-semiskilled':   rd.labour.semiskilled,
   };
 
   return {

@@ -34,6 +34,10 @@ router.post('/', (req: Request, res: Response) => {
   if (typeof unit_price !== 'number' || unit_price < 0) {
     return res.status(400).json({ error: 'unit_price must be a non-negative number' });
   }
+  const VALID_CURRENCIES = ['GBP','EUR','USD','CNY','INR','JPY','MXN','BRL','KRW','THB','VND','PLN','CZK','RON','TRY','SEK','AUD','CAD'];
+  if (currency && !VALID_CURRENCIES.includes(currency as string)) {
+    return res.status(400).json({ error: `currency must be one of: ${VALID_CURRENCIES.join(', ')}` });
+  }
 
   const id = randomUUID();
   const now = new Date().toISOString();
@@ -70,6 +74,13 @@ router.patch('/:id', (req: Request, res: Response) => {
     }
   }
   if (updates.length === 0) return res.status(400).json({ error: 'No updatable fields provided' });
+
+  if ('unit_price' in req.body) {
+    const up = req.body['unit_price'];
+    if (typeof up !== 'number' || up < 0) {
+      return res.status(400).json({ error: 'unit_price must be a non-negative number' });
+    }
+  }
 
   updates.push('updated_at = ?');
   values.push(new Date().toISOString());

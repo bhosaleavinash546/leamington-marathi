@@ -79,7 +79,9 @@ export function validateStackInput(
   if (!Number.isFinite(input.packagingPerPart) || input.packagingPerPart < 0) errors.push({ field: 'packagingPerPart', message: 'Must be a finite non-negative number' });
   if (!Number.isFinite(input.logisticsPerPart) || input.logisticsPerPart < 0) errors.push({ field: 'logisticsPerPart', message: 'Must be a finite non-negative number' });
   if (!Number.isFinite(input.overheadPct) || input.overheadPct < 0) errors.push({ field: 'overheadPct', message: 'Must be a finite non-negative number' });
+  if (input.overheadPct > 2.0) warnings.push({ field: 'overheadPct', message: `Value ${(input.overheadPct * 100).toFixed(0)}% looks high — overheadPct is a fraction (e.g. 0.12 = 12%), not a percentage` });
   if (!Number.isFinite(input.marginPct) || input.marginPct < 0) errors.push({ field: 'marginPct', message: 'Must be a finite non-negative number' });
+  if (input.marginPct > 1.5) warnings.push({ field: 'marginPct', message: `Value ${(input.marginPct * 100).toFixed(0)}% looks high — marginPct is a fraction (e.g. 0.08 = 8%), not a percentage` });
 
   return { valid: errors.length === 0, errors, warnings };
 }
@@ -227,7 +229,9 @@ export function computeUniversalStack(
   const packaging = input.packagingPerPart;
   const logistics = input.logisticsPerPart;
 
-  // 7. Overhead — base is conversion cost only (excl. packaging/logistics which are outbound costs)
+  // 7. Overhead — base is all factory costs except outbound packaging/logistics.
+  // Note: this includes raw material and tooling (not "conversion cost only").
+  // Calibrate overheadPct accordingly — industry benchmark of 10–15% is on this broader base.
   const factoryCostBase = rawMaterialCost + processTotal + labourTotal + toolingPerPart;
   const overhead = input.overheadPct * factoryCostBase;
   const factoryCost = factoryCostBase + packaging + logistics;

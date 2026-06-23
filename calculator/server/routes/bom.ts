@@ -24,20 +24,23 @@ interface ScenarioRow {
   data: string;
 }
 
-function resolveItemCost(item: BomRow): number {
-  if (item.unit_cost_override !== null) return item.unit_cost_override;
+function resolveItemCost(item: BomRow): { cost: number; unresolved: boolean } {
+  if (item.unit_cost_override !== null) return { cost: item.unit_cost_override, unresolved: false };
   if (item.child_scenario_id) {
     const child = db.prepare('SELECT data FROM scenarios WHERE id = ?').get(item.child_scenario_id) as ScenarioRow | undefined;
     if (child) {
       try {
         const parsed = JSON.parse(child.data) as { total?: number; result?: { total?: number } };
-        return parsed.total ?? parsed.result?.total ?? 0;
+        const cost = parsed.total ?? parsed.result?.total ?? 0;
+        return { cost, unresolved: false };
       } catch {
-        return 0;
+        return { cost: 0, unresolved: true };
       }
     }
+    // child_scenario_id set but not found in SQLite (lives in IndexedDB client-side)
+    return { cost: 0, unresolved: true };
   }
-  return 0;
+  return { cost: 0, unresolved: false };
 }
 
 // GET /api/bom/:scenarioId — return BOM with rolled-up totals
@@ -47,17 +50,19 @@ router.get('/:scenarioId', (req: Request, res: Response) => {
   ).all(req.params.scenarioId) as BomRow[];
 
   const enriched = items.map(item => {
-    const unitCost = resolveItemCost(item);
+    const result = resolveItemCost(item);
     return {
       ...item,
-      resolvedUnitCost: unitCost,
-      lineTotal: unitCost * item.quantity,
+      resolvedUnitCost: result.cost,
+      lineTotal: result.cost * item.quantity,
+      unresolved: result.unresolved,
     };
   });
 
   const assemblyTotal = enriched.reduce((sum, i) => sum + i.lineTotal, 0);
+  const unresolvedCount = enriched.filter(i => i.unresolved).length;
 
-  res.json({ items: enriched, assemblyTotal });
+  res.json({ items: enriched, assemblyTotal, unresolvedCount });
 });
 
 // POST /api/bom/:scenarioId — add a BOM line
@@ -88,8 +93,8 @@ router.post('/:scenarioId', (req: Request, res: Response) => {
   );
 
   const row = db.prepare('SELECT * FROM bom_items WHERE id = ?').get(id) as BomRow;
-  const unitCost = resolveItemCost(row);
-  res.status(201).json({ ...row, resolvedUnitCost: unitCost, lineTotal: unitCost * row.quantity });
+  const rowResult = resolveItemCost(row);
+  res.status(201).json({ ...row, resolvedUnitCost: rowResult.cost, lineTotal: rowResult.cost * row.quantity, unresolved: rowResult.unresolved });
 });
 
 // PATCH /api/bom/item/:id — update a BOM line
@@ -114,8 +119,8 @@ router.patch('/item/:id', (req: Request, res: Response) => {
 
   db.prepare(`UPDATE bom_items SET ${updates.join(', ')} WHERE id = ?`).run(...values);
   const updated = db.prepare('SELECT * FROM bom_items WHERE id = ?').get(req.params.id) as BomRow;
-  const unitCost = resolveItemCost(updated);
-  res.json({ ...updated, resolvedUnitCost: unitCost, lineTotal: unitCost * updated.quantity });
+  const updatedResult = resolveItemCost(updated);
+  res.json({ ...updated, resolvedUnitCost: updatedResult.cost, lineTotal: updatedResult.cost * updated.quantity, unresolved: updatedResult.unresolved });
 });
 
 // DELETE /api/bom/item/:id
