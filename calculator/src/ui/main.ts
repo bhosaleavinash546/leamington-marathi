@@ -486,8 +486,8 @@ function renderCommCards(): void {
   if (!comms.length) { grid.innerHTML = '<div style="padding:24px;text-align:center;color:var(--text-muted)">No commodities match the current filter.</div>'; return; }
   grid.innerHTML = comms.map(c => {
     const up = c.changeDay >= 0;
-    const pct = (c.changeDay >= 0 ? '+' : '') + c.changeDay.toFixed(2) + '%';
-    const wkPct = (c.changeWeek >= 0 ? '+' : '') + c.changeWeek.toFixed(2) + '%';
+    const pct = '~' + (c.changeDay >= 0 ? '+' : '') + c.changeDay.toFixed(2) + '%';
+    const wkPct = '~' + (c.changeWeek >= 0 ? '+' : '') + c.changeWeek.toFixed(2) + '%';
     const arrow = up ? '▲' : '▼';
     const clr = up ? '#22c55e' : '#ef4444';
     const fDir = c.forecastDirection === 'up' ? '📈' : c.forecastDirection === 'down' ? '📉' : '➡️';
@@ -498,12 +498,12 @@ function renderCommCards(): void {
   </div>
   <div class="comm-card-name">${_commEsc(c.name)}</div>
   <div class="comm-card-price">${commFmt(c.currentPrice, c.unit)}<span class="comm-card-unit"> ${_commEsc(c.unit)}</span></div>
-  <div class="comm-card-chg" style="color:${clr}">${arrow} ${pct} today &nbsp;·&nbsp; <span style="font-size:0.78em;opacity:0.85">${wkPct} 7d</span></div>
+  <div class="comm-card-chg" style="color:${clr}">${arrow} ${pct} est. &nbsp;·&nbsp; <span style="font-size:0.78em;opacity:0.85">${wkPct} 7d</span></div>
   <div class="comm-card-spark-row">
     ${commSparkline(c.history)}
     <div class="comm-card-meta">
       <div style="font-size:0.68rem;color:var(--text-muted)">${_commEsc(c.region)}</div>
-      <div style="font-size:0.66rem;color:var(--text-muted)">src: ${_commEsc(c.source)}</div>
+      <div style="font-size:0.66rem;color:var(--text-muted)">ref: ${_commEsc(c.source)}</div>
       ${c.forecast30 != null ? `<div style="font-size:0.68rem;margin-top:3px">${fDir} 30d: ${commFmt(c.forecast30, c.unit)}</div>` : ''}
     </div>
   </div>
@@ -537,8 +537,8 @@ function renderCommKPI(): void {
   const pressure = wCount > 0 ? (wSum / wCount).toFixed(2) : '—';
 
   const set = (id: string, txt: string) => { const el = document.getElementById(id); if (el) el.textContent = txt; };
-  if (riser) { set('ck-riser-name', riser.name); set('ck-riser-chg', '+' + riser.changeDay.toFixed(2) + '%'); }
-  if (faller) { set('ck-faller-name', faller.name); set('ck-faller-chg', faller.changeDay.toFixed(2) + '%'); }
+  if (riser) { set('ck-riser-name', riser.name); set('ck-riser-chg', '~+' + riser.changeDay.toFixed(2) + '%'); }
+  if (faller) { set('ck-faller-name', faller.name); set('ck-faller-chg', '~' + faller.changeDay.toFixed(2) + '%'); }
   set('ck-vol', (avgVol * 100).toFixed(2) + '%');
   set('ck-vol-sub', 'Avg daily volatility');
   if (globalRisk) { set('ck-risk', globalRisk.overall + '/100'); set('ck-risk-sub', globalRisk.label); }
@@ -566,7 +566,7 @@ function renderCommTicker(): void {
     const up = c.changeDay >= 0;
     const clr = up ? '#22c55e' : '#ef4444';
     const arr = up ? '▲' : '▼';
-    return `<span class="comm-tick-item"><span class="comm-tick-name">${_commEsc(c.name)}</span> <span style="color:var(--text-muted);font-size:0.75em">${_commEsc(c.unit)}</span> <span class="comm-tick-price">${commFmt(c.currentPrice, c.unit)}</span> <span style="color:${clr};font-size:0.82em">${arr} ${Math.abs(c.changeDay).toFixed(2)}%</span></span><span class="comm-tick-sep">|</span>`;
+    return `<span class="comm-tick-item"><span class="comm-tick-name">${_commEsc(c.name)}</span> <span style="color:var(--text-muted);font-size:0.75em">${_commEsc(c.unit)}</span> <span class="comm-tick-price">${commFmt(c.currentPrice, c.unit)}</span> <span style="color:${clr};font-size:0.82em">${arr} ~${Math.abs(c.changeDay).toFixed(2)}%</span></span><span class="comm-tick-sep">|</span>`;
   }).join('');
   track.innerHTML = makeChips() + makeChips();
   const dur = Math.max(50, items.length * 4);

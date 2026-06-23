@@ -148,7 +148,7 @@
 
     <!-- Live Commodity Ticker -->
     <div class="comm-ticker-outer" id="comm-ticker-outer">
-      <span class="comm-ticker-label">📊 LIVE PRICES</span>
+      <span class="comm-ticker-label">📊 PRICES</span>
       <div class="comm-ticker-clip">
         <div class="comm-ticker-track" id="comm-ticker-track">
           <span class="comm-ticker-loading">Loading commodity prices…</span>
@@ -165,8 +165,9 @@
         <div class="comm-panel-title-wrap">
           <span class="comm-panel-icon">🏭</span>
           <span class="comm-panel-title">Commodity Intelligence</span>
-          <span class="comm-badge" id="comm-updated-badge">Live</span>
+          <span class="comm-badge" id="comm-updated-badge" style="background:var(--text-muted,#64748b)">Benchmark</span>
           <span class="comm-updated" id="comm-updated-time"></span>
+          <span style="font-size:0.62rem;color:var(--text-muted);margin-left:6px" title="Prices are modelled benchmarks calibrated to market references. Not live feed data. Verify with broker for binding decisions.">⚠ indicative only</span>
         </div>
         <div class="comm-panel-controls">
           <select class="comm-filter-sel" id="comm-filter-cat" title="Filter by category">
