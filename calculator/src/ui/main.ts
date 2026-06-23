@@ -9772,8 +9772,10 @@ function renderWaterfallChart(result: PartCostResult): void {
         x: {
           ticks: {
             color: textCol,
-            font: { size: 11, family: 'Inter, sans-serif', weight: 'bold' as const },
-            maxRotation: 0,
+            font: { size: 9.5, family: 'Inter, sans-serif', weight: 'bold' as const },
+            maxRotation: 40,
+            minRotation: 0,
+            autoSkip: false,
           },
           grid: { display: false },
           border: { color: 'transparent' },
@@ -10200,7 +10202,7 @@ function renderBreakdown(result: PartCostResult): void {
           </div>
         </div>
         <div class="chart-wrap" id="donut-wrap" style="width:100%;height:280px;${_chartMode === 'waterfall' ? 'display:none' : ''}"><canvas id="breakdown-doughnut"></canvas></div>
-        <div id="waterfall-wrap" style="width:100%;height:340px;${_chartMode === 'donut' ? 'display:none' : ''}"><canvas id="breakdown-waterfall"></canvas></div>
+        <div id="waterfall-wrap" style="width:100%;height:370px;${_chartMode === 'donut' ? 'display:none' : ''}"><canvas id="breakdown-waterfall"></canvas></div>
       </div>
     </div>
 
