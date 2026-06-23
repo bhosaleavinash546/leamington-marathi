@@ -1,148 +1,161 @@
 #!/bin/bash
 # ──────────────────────────────────────────────────────────────────────────────
-#  CostVision — One-Command Installer & Launcher  (macOS / Linux)
-#  Usage:  ./start.sh
+#  CostVision — One-click launcher  (macOS)
+#  Double-click Start.command, or run:  ./start.sh
 # ──────────────────────────────────────────────────────────────────────────────
-set -e
+cd "$(dirname "$0")" || exit 1
 
-ENV_FILE="calculator/.env"
-EXAMPLE_FILE="calculator/.env.example"
 URL="http://localhost:5174/calculator/"
+ENV_FILE="calculator/.env"
 
+clear
 echo ""
-echo "  ╔═══════════════════════════════════════════╗"
-echo "  ║   CostVision — AI Cost Intelligence        ║"
-echo "  ║   One-command setup & launch               ║"
-echo "  ╚═══════════════════════════════════════════╝"
+echo "  ┌─────────────────────────────────────────────┐"
+echo "  │   CostVision · AI Cost Intelligence          │"
+echo "  └─────────────────────────────────────────────┘"
 echo ""
 
-# ── 1. Check Docker is installed & running ────────────────────────────────────
-if ! command -v docker >/dev/null 2>&1; then
-  echo "  ❌ Docker is not installed."
-  echo "     Install Docker Desktop for Mac:  https://www.docker.com/products/docker-desktop/"
-  echo "     Then re-run:  ./start.sh"
-  exit 1
-fi
-if ! docker info >/dev/null 2>&1; then
-  echo "  ❌ Docker is installed but not running."
-  echo "     ➜ Open the Docker Desktop app, wait for it to start, then re-run ./start.sh"
-  exit 1
-fi
-echo "  ✅ Docker is ready"
-
-# ── 1b. Give the launcher a CostVision icon (macOS, once, best-effort) ─────────
-ICON="assets/CostVision-icon.png"
-LAUNCHER="CostVision.command"
-if [ -f "$ICON" ] && [ ! -f ".costvision-icon-set" ] && command -v osascript >/dev/null 2>&1; then
-  ABS_ICON="$(cd "$(dirname "$ICON")" && pwd)/$(basename "$ICON")"
-  ABS_LAUNCH="$(pwd)/$LAUNCHER"
-  osascript - "$ABS_ICON" "$ABS_LAUNCH" >/dev/null 2>&1 <<'OSA' && touch .costvision-icon-set
-use framework "Foundation"
-use framework "AppKit"
-use scripting additions
-on run argv
-  set iconPath to item 1 of argv
-  set targetPath to item 2 of argv
-  set img to current application's NSImage's alloc()'s initWithContentsOfFile:iconPath
-  current application's NSWorkspace's sharedWorkspace()'s setIcon:img forFile:targetPath options:0
-end run
-OSA
-fi
-
-# ── Helper: set or replace a KEY=value line in .env (portable) ────────────────
-set_env_var() {
-  local key="$1" val="$2"
-  if grep -q "^${key}=" "$ENV_FILE" 2>/dev/null; then
-    awk -v k="$key" -v v="$val" '
-      BEGIN{FS="="} $1==k{print k"="v; next} {print}
-    ' "$ENV_FILE" > "$ENV_FILE.tmp" && mv "$ENV_FILE.tmp" "$ENV_FILE"
-  else
-    echo "${key}=${val}" >> "$ENV_FILE"
-  fi
-}
-
-# ── 2. First-time .env setup ──────────────────────────────────────────────────
+# ── 1. Create .env if missing ─────────────────────────────────────────────────
 if [ ! -f "$ENV_FILE" ]; then
-  cp "$EXAMPLE_FILE" "$ENV_FILE"
-  echo "  ✅ Created $ENV_FILE"
-fi
+  cp calculator/.env.example "$ENV_FILE"
 
-# ── 2b. Migrate PORT to 3002 if still on old default ─────────────────────────
-set_env_var "PORT" "3002"
-
-# ── 3. Auto-generate JWT_SECRET if still placeholder ──────────────────────────
-if grep -q "^JWT_SECRET=replace-with" "$ENV_FILE" 2>/dev/null || ! grep -q "^JWT_SECRET=" "$ENV_FILE" 2>/dev/null; then
+  # Auto-generate JWT secret
   SECRET="$(openssl rand -hex 32 2>/dev/null || head -c 32 /dev/urandom | xxd -p | tr -d '\n')"
-  set_env_var "JWT_SECRET" "$SECRET"
-  echo "  ✅ Generated a secure JWT_SECRET (no action needed)"
+  sed -i '' "s|replace-with-a-strong-random-secret|$SECRET|" "$ENV_FILE" 2>/dev/null || \
+  sed -i    "s|replace-with-a-strong-random-secret|$SECRET|" "$ENV_FILE" 2>/dev/null || true
+
+  echo "  ✅ Config file created"
 fi
 
-# ── 4. Prompt for the Anthropic API key if still placeholder ──────────────────
-CURRENT_KEY="$(grep '^ANTHROPIC_API_KEY=' "$ENV_FILE" | cut -d= -f2-)"
+# ── 2. Prompt for API key only if missing ─────────────────────────────────────
+CURRENT_KEY="$(grep '^ANTHROPIC_API_KEY=' "$ENV_FILE" | cut -d= -f2- | tr -d ' ')"
 if [ -z "$CURRENT_KEY" ] || [ "$CURRENT_KEY" = "sk-ant-..." ]; then
-  echo ""
-  echo "  🔑 Paste your Anthropic API key (starts with sk-ant-...)."
-  echo "     (Find/create one at https://console.anthropic.com/settings/keys)"
-  echo "     Your existing key from any other app works fine."
+  echo "  🔑 Enter your Anthropic API key (or press Enter to skip — AI features disabled)"
+  echo "     Get one free at: https://console.anthropic.com/settings/keys"
   echo ""
   printf "  API key: "
   read -r USER_KEY
   if [ -n "$USER_KEY" ]; then
-    set_env_var "ANTHROPIC_API_KEY" "$USER_KEY"
-    echo "  ✅ Saved API key to $ENV_FILE"
-  else
-    echo "  ⚠️  No key entered — AI features will be disabled until you add one to $ENV_FILE"
+    # Replace or append
+    if grep -q "^ANTHROPIC_API_KEY=" "$ENV_FILE"; then
+      sed -i '' "s|^ANTHROPIC_API_KEY=.*|ANTHROPIC_API_KEY=$USER_KEY|" "$ENV_FILE" 2>/dev/null || \
+      sed -i    "s|^ANTHROPIC_API_KEY=.*|ANTHROPIC_API_KEY=$USER_KEY|" "$ENV_FILE" 2>/dev/null || true
+    else
+      echo "ANTHROPIC_API_KEY=$USER_KEY" >> "$ENV_FILE"
+    fi
+    echo "  ✅ API key saved"
   fi
+  echo ""
 fi
 
-# ── 5. Build & start ──────────────────────────────────────────────────────────
-
-# Helper to open the browser
+# ── Helper: open browser ──────────────────────────────────────────────────────
 open_browser() {
-  ( command -v open >/dev/null 2>&1 && open "$URL" ) || \
-  ( command -v xdg-open >/dev/null 2>&1 && xdg-open "$URL" ) || \
-  echo "     ➜ Open this in your browser:  $URL"
+  sleep 1
+  command -v open    >/dev/null 2>&1 && open    "$URL" && return
+  command -v xdg-open>/dev/null 2>&1 && xdg-open "$URL" && return
 }
 
-# If the app is already running, just open it and exit
+# ── Helper: wait for app to respond ──────────────────────────────────────────
+wait_for_app() {
+  printf "  ⏳ Starting"
+  for _ in $(seq 1 45); do
+    if curl -fsS "$URL" >/dev/null 2>&1; then
+      echo ""
+      echo "  ✅ CostVision is running!"
+      echo "  🌐 Opening $URL"
+      open_browser
+      return 0
+    fi
+    printf "."
+    sleep 2
+  done
+  echo ""
+  echo "  ⚠️  Taking longer than expected — opening browser anyway."
+  echo "     If the page is blank, wait 10 s and refresh."
+  open_browser
+  return 0
+}
+
+# ── 3. If already running, just open it ──────────────────────────────────────
 if curl -fsS "$URL" >/dev/null 2>&1; then
   echo "  ✅ CostVision is already running!"
-  echo "  🌐 Opening $URL ..."
+  echo "  🌐 Opening $URL"
   open_browser
+  echo ""
+  read -r -p "  Press Enter to close this window... " _
   exit 0
 fi
 
-# Tear down any stale containers (by compose project AND by fixed name)
-echo ""
-echo "  🔄 Stopping any previous CostVision containers..."
-docker compose down --remove-orphans 2>/dev/null || true
-docker rm -f costvision 2>/dev/null || true
+# ── 4a. Try Node.js (fastest — no Docker needed) ─────────────────────────────
+if command -v npm >/dev/null 2>&1; then
+  echo "  🟢 Starting with Node.js..."
 
+  # Kill any old instances
+  pkill -f "vite"       2>/dev/null || true
+  pkill -f "tsx server" 2>/dev/null || true
+  sleep 1
+
+  cd calculator
+
+  # Install dependencies if node_modules is missing
+  if [ ! -d node_modules ]; then
+    echo "  📦 Installing packages (first run only, ~1 min)..."
+    npm install --silent
+  fi
+
+  # Load .env and start both servers in background
+  set -a; [ -f .env ] && . .env; set +a
+  nohup npm run dev:full > /tmp/costvision.log 2>&1 &
+  echo $! > /tmp/costvision.pid
+  cd ..
+
+  wait_for_app
+  echo ""
+  echo "  ─────────────────────────────────────────────"
+  echo "  CostVision is running in the background."
+  echo "  Close this window anytime — the app stays up."
+  echo "  To stop:  kill \$(cat /tmp/costvision.pid 2>/dev/null)"
+  echo "  ─────────────────────────────────────────────"
+  echo ""
+  read -r -p "  Press Enter to close this window... " _
+  exit 0
+fi
+
+# ── 4b. Fall back to Docker ───────────────────────────────────────────────────
+echo "  🐳 Node.js not found — trying Docker..."
 echo ""
-echo "  🐳 Building & starting (first run may take 2-3 minutes)..."
-# Write a timestamp so Docker always re-copies source (busts code cache,
-# but keeps the npm install layer cached for fast rebuilds)
-date +%s > calculator/.build-ts
+
+if ! command -v docker >/dev/null 2>&1; then
+  echo "  ❌ Neither Node.js nor Docker is installed."
+  echo ""
+  echo "  Easiest fix — install Node.js (free, no account needed):"
+  echo "  → https://nodejs.org  (click the LTS download button)"
+  echo ""
+  echo "  Then double-click Start.command again."
+  open "https://nodejs.org" 2>/dev/null || true
+  read -r -p "  Press Enter to close... " _
+  exit 1
+fi
+
+if ! docker info >/dev/null 2>&1; then
+  echo "  ❌ Docker is installed but not running."
+  echo "     Open the Docker Desktop app, wait for the whale icon to appear"
+  echo "     in the menu bar, then double-click Start.command again."
+  open -a "Docker" 2>/dev/null || true
+  read -r -p "  Press Enter to close... " _
+  exit 1
+fi
+
+echo "  🐳 Building & starting (first run: 2-3 min)..."
+docker compose down --remove-orphans 2>/dev/null || true
 docker compose up -d --build
 
-# ── 6. Wait for the app to respond, then open the browser ─────────────────────
+wait_for_app
 echo ""
-printf "  ⏳ Waiting for CostVision to come online (up to 3 min on first run)"
-for _ in $(seq 1 90); do
-  if curl -fsS "$URL" >/dev/null 2>&1; then
-    echo ""
-    echo "  ✅ CostVision is running!"
-    echo "  🌐 Opening $URL ..."
-    open_browser
-    exit 0
-  fi
-  printf "."
-  sleep 2
-done
-
+echo "  ─────────────────────────────────────────────"
+echo "  CostVision is running in the background."
+echo "  Close this window anytime — the app stays up."
+echo "  To stop:  docker compose down"
+echo "  ─────────────────────────────────────────────"
 echo ""
-echo "  ⚠️  Still starting — opening browser anyway (page will load when ready)..."
-echo "     $URL"
-open_browser
-echo ""
-echo "     If nothing loads after 30 s, check logs with:  make logs"
+read -r -p "  Press Enter to close this window... " _
