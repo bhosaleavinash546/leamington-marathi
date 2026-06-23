@@ -7321,7 +7321,7 @@ function exportPCBAnalysisPrint(r: PCBImageAnalysis): void {
   doc.setFontSize(14); doc.setFont('helvetica', 'bold'); doc.setTextColor(...WHITE);
   doc.text(r.partName, margin + 6, y + 10);
   doc.setFontSize(8); doc.setFont('helvetica', 'normal');
-  doc.text('PCB Image Analysis  ·  Leamington Cost Engine', margin + 6, y + 16);
+  doc.text('PCB Image Analysis  ·  CostVision', margin + 6, y + 16);
 
   const confCol: RGB = r.confidenceLevel === 'High' ? GRN_R : r.confidenceLevel === 'Medium' ? AMB_R : RED_R;
   doc.setFillColor(...confCol);
@@ -10691,7 +10691,7 @@ function renderInsights(result: PartCostResult, input: UniversalStackInput): voi
           Savings are illustrative — not all measures are simultaneously achievable.
         </div>
         <div style="font-size:0.72rem;color:#888;text-align:right">
-          Methodology: aPriori-calibrated benchmarks<br>
+          Methodology: industry-calibrated benchmarks<br>
           Commodity: <strong>${activeCommodity.replace(/_/g, ' ')}</strong>
         </div>
       </div>
@@ -11158,7 +11158,7 @@ function printMasterPDF(): void {
   doc.setFontSize(20); doc.setFont('helvetica', 'bold');
   doc.text('MASTER COST REPORT', mg + 4, 20);
   doc.setFontSize(9); doc.setFont('helvetica', 'normal');
-  doc.text('Leamington Cost Engine  ·  Comprehensive Analysis Package', mg + 4, 29);
+  doc.text('CostVision  ·  Comprehensive Analysis Package', mg + 4, 29);
   doc.setFontSize(8);
   doc.text(`Generated: ${dateStr}`, mg + 4, 37);
   doc.text(`Parts Loaded: ${[hasCost && 'Should-Cost', hasCAD && 'CAD Analysis', hasPCB && 'PCB Analysis'].filter(Boolean).join('  ·  ')}`, mg + 4, 44);
@@ -11589,7 +11589,7 @@ function printMasterPDF(): void {
     doc.setDrawColor(...GREY); doc.setLineWidth(0.3);
     doc.line(mg, 290, W - mg, 290);
     doc.setFontSize(6.5); doc.setTextColor(...GREY);
-    doc.text('Leamington Cost Engine  ·  Master Cost Report  ·  CONFIDENTIAL', mg, 294);
+    doc.text('CostVision  ·  Master Cost Report  ·  CONFIDENTIAL', mg, 294);
     doc.text(`Page ${i} of ${totalPgs}`, W - mg, 294, { align: 'right' });
   }
 
