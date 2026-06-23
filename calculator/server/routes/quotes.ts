@@ -5,6 +5,8 @@ import db from '../db.js';
 
 const router = Router();
 
+const VALID_CURRENCIES = ['GBP','EUR','USD','CNY','INR','JPY','MXN','BRL','KRW','THB','VND','PLN','CZK','RON','TRY','SEK','AUD','CAD'];
+
 router.get('/', (req: Request, res: Response) => {
   const { scenario_id } = req.query;
   const rows = scenario_id
@@ -34,7 +36,6 @@ router.post('/', (req: Request, res: Response) => {
   if (typeof unit_price !== 'number' || unit_price < 0) {
     return res.status(400).json({ error: 'unit_price must be a non-negative number' });
   }
-  const VALID_CURRENCIES = ['GBP','EUR','USD','CNY','INR','JPY','MXN','BRL','KRW','THB','VND','PLN','CZK','RON','TRY','SEK','AUD','CAD'];
   if (currency && !VALID_CURRENCIES.includes(currency as string)) {
     return res.status(400).json({ error: `currency must be one of: ${VALID_CURRENCIES.join(', ')}` });
   }
@@ -64,6 +65,17 @@ router.patch('/:id', (req: Request, res: Response) => {
   const row = db.prepare('SELECT * FROM supplier_quotes WHERE id = ?').get(req.params.id) as Record<string, unknown> | undefined;
   if (!row) return res.status(404).json({ error: 'Quote not found' });
 
+  // Validate before building the update list
+  if ('unit_price' in req.body) {
+    const up = req.body['unit_price'];
+    if (typeof up !== 'number' || up < 0) {
+      return res.status(400).json({ error: 'unit_price must be a non-negative number' });
+    }
+  }
+  if ('currency' in req.body && !VALID_CURRENCIES.includes(req.body['currency'] as string)) {
+    return res.status(400).json({ error: `currency must be one of: ${VALID_CURRENCIES.join(', ')}` });
+  }
+
   const allowed = ['supplier_name','supplier_country','unit_price','currency','moq','lead_time_weeks','validity_date','tooling_cost','notes'];
   const updates: string[] = [];
   const values: unknown[] = [];
@@ -74,13 +86,6 @@ router.patch('/:id', (req: Request, res: Response) => {
     }
   }
   if (updates.length === 0) return res.status(400).json({ error: 'No updatable fields provided' });
-
-  if ('unit_price' in req.body) {
-    const up = req.body['unit_price'];
-    if (typeof up !== 'number' || up < 0) {
-      return res.status(400).json({ error: 'unit_price must be a non-negative number' });
-    }
-  }
 
   updates.push('updated_at = ?');
   values.push(new Date().toISOString());

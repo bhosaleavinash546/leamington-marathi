@@ -318,52 +318,16 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
 export function buildRegionalLibrary(baseLibrary: RateLibrary, region: ManufacturingRegion): RateLibrary {
   const rd = REGIONAL_DATA[region];
 
-  // Map labour IDs to regional equivalents — covers all IDs in rate-library.ts
-  const labourMap: Record<string, number> = {
-    // UK base rates
-    'lab-uk-skilled':       rd.labour.skilled,
-    'lab-uk-semiskilled':   rd.labour.semiskilled,
-    'lab-uk-engineer':      rd.labour.engineer,
-    'lab-uk-foundry':       rd.labour.foundry,
-    'lab-uk-inspector':     rd.labour.inspector,
-    'lab-uk-electronics':   rd.labour.electronics,
-    // Germany
-    'lab-de-skilled':       rd.labour.skilled,
-    'lab-de-semiskilled':   rd.labour.semiskilled,
-    'lab-de-foundry':       rd.labour.foundry,
-    'lab-de-electronics':   rd.labour.electronics,
-    'lab-de-engineer':      rd.labour.engineer,
-    // Poland
-    'lab-pl-skilled':       rd.labour.skilled,
-    'lab-pl-semiskilled':   rd.labour.semiskilled,
-    'lab-pl-electronics':   rd.labour.electronics,
-    'lab-pl-foundry':       rd.labour.foundry,
-    // China
-    'lab-cn-skilled':       rd.labour.skilled,
-    'lab-cn-semiskilled':   rd.labour.semiskilled,
-    'lab-cn-electronics':   rd.labour.electronics,
-    'lab-cn-engineer':      rd.labour.engineer,
-    // India
-    'lab-in-skilled':       rd.labour.skilled,
-    'lab-in-semiskilled':   rd.labour.semiskilled,
-    'lab-in-electronics':   rd.labour.electronics,
-    'lab-in-engineer':      rd.labour.engineer,
-    // Mexico
-    'lab-mx-skilled':       rd.labour.skilled,
-    'lab-mx-semiskilled':   rd.labour.semiskilled,
-    'lab-mx-electronics':   rd.labour.electronics,
-    // Turkey
-    'lab-tr-skilled':       rd.labour.skilled,
-    'lab-tr-semiskilled':   rd.labour.semiskilled,
-    // Vietnam
-    'lab-vn-skilled':       rd.labour.skilled,
-    'lab-vn-semiskilled':   rd.labour.semiskilled,
-    // South Korea
-    'lab-kr-skilled':       rd.labour.skilled,
-    'lab-kr-electronics':   rd.labour.electronics,
-    // Romania
-    'lab-ro-skilled':       rd.labour.skilled,
-    'lab-ro-semiskilled':   rd.labour.semiskilled,
+  // Derive labour rates from the ID suffix (lab-{region}-{category} → rd.labour[category]).
+  // Any ID whose suffix matches a known category gets the target region's rate for that category;
+  // unrecognised suffixes fall back to the proportional formula below.
+  const labourCategoryRates: Record<string, number> = {
+    skilled:     rd.labour.skilled,
+    semiskilled: rd.labour.semiskilled,
+    engineer:    rd.labour.engineer,
+    foundry:     rd.labour.foundry,
+    electronics: rd.labour.electronics,
+    inspector:   rd.labour.inspector,
   };
 
   return {
@@ -371,10 +335,11 @@ export function buildRegionalLibrary(baseLibrary: RateLibrary, region: Manufactu
     version: `${baseLibrary.version}-${region}`,
     lastModified: new Date().toISOString().slice(0, 10),
 
-    // Adjust labour rates
+    // Adjust labour rates: extract category suffix from ID (lab-{region}-{category})
+    // and map to the target region's rate for that category.
     labour: baseLibrary.labour.map(l => ({
       ...l,
-      fullyLoadedRatePerHr: labourMap[l.id] !== undefined ? labourMap[l.id] : l.fullyLoadedRatePerHr * (rd.labour.skilled / 26.00),
+      fullyLoadedRatePerHr: labourCategoryRates[l.id.split('-').at(-1) ?? ''] ?? l.fullyLoadedRatePerHr * (rd.labour.skilled / 26.00),
       region: rd.name,
       sourceNote: `Regional benchmark ${rd.name} — 2026 Q2`,
       confidence: 'Low' as const,

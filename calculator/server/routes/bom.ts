@@ -43,24 +43,23 @@ function resolveItemCost(item: BomRow): { cost: number; unresolved: boolean } {
   return { cost: 0, unresolved: false };
 }
 
+function enrichRow(row: BomRow) {
+  const { cost, unresolved } = resolveItemCost(row);
+  return { ...row, resolvedUnitCost: cost, lineTotal: cost * row.quantity, unresolved };
+}
+
 // GET /api/bom/:scenarioId — return BOM with rolled-up totals
 router.get('/:scenarioId', (req: Request, res: Response) => {
   const items = db.prepare(
     'SELECT * FROM bom_items WHERE parent_scenario_id = ? ORDER BY sort_order ASC, created_at ASC'
   ).all(req.params.scenarioId) as BomRow[];
 
-  const enriched = items.map(item => {
-    const result = resolveItemCost(item);
-    return {
-      ...item,
-      resolvedUnitCost: result.cost,
-      lineTotal: result.cost * item.quantity,
-      unresolved: result.unresolved,
-    };
-  });
+  const enriched = items.map(enrichRow);
 
-  const assemblyTotal = enriched.reduce((sum, i) => sum + i.lineTotal, 0);
-  const unresolvedCount = enriched.filter(i => i.unresolved).length;
+  const { assemblyTotal, unresolvedCount } = enriched.reduce(
+    (acc, i) => ({ assemblyTotal: acc.assemblyTotal + i.lineTotal, unresolvedCount: acc.unresolvedCount + (i.unresolved ? 1 : 0) }),
+    { assemblyTotal: 0, unresolvedCount: 0 },
+  );
 
   res.json({ items: enriched, assemblyTotal, unresolvedCount });
 });
@@ -93,8 +92,7 @@ router.post('/:scenarioId', (req: Request, res: Response) => {
   );
 
   const row = db.prepare('SELECT * FROM bom_items WHERE id = ?').get(id) as BomRow;
-  const rowResult = resolveItemCost(row);
-  res.status(201).json({ ...row, resolvedUnitCost: rowResult.cost, lineTotal: rowResult.cost * row.quantity, unresolved: rowResult.unresolved });
+  res.status(201).json(enrichRow(row));
 });
 
 // PATCH /api/bom/item/:id — update a BOM line
@@ -119,8 +117,7 @@ router.patch('/item/:id', (req: Request, res: Response) => {
 
   db.prepare(`UPDATE bom_items SET ${updates.join(', ')} WHERE id = ?`).run(...values);
   const updated = db.prepare('SELECT * FROM bom_items WHERE id = ?').get(req.params.id) as BomRow;
-  const updatedResult = resolveItemCost(updated);
-  res.json({ ...updated, resolvedUnitCost: updatedResult.cost, lineTotal: updatedResult.cost * updated.quantity, unresolved: updatedResult.unresolved });
+  res.json(enrichRow(updated));
 });
 
 // DELETE /api/bom/item/:id

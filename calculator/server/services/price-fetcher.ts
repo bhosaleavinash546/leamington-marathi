@@ -159,12 +159,12 @@ export async function fetchAndCachePrices(
     let source = 'baseline';
     let confidence = 'Low';
 
-    let apiRate: number | null = null;
+    let fromApi = false;
 
     if (liveRates) {
       const rate = liveRates[entry.symbol];
       if (typeof rate === 'number' && rate > 0) {
-        apiRate = rate;
+        fromApi = true;
         priceGbpPerKg = troyOzRateToGbpPerKg(rate) * entry.premium;
         source = 'metalpriceapi';
         confidence = 'High';
@@ -183,7 +183,6 @@ export async function fetchAndCachePrices(
       skipped++;
     }
 
-    const fromApi = !!apiRate;
     const roundedPrice = Math.round(priceGbpPerKg * 10000) / 10000;
 
     for (const materialId of entry.materialIds) {

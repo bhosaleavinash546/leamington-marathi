@@ -1104,16 +1104,20 @@ const LOCAL_USERS = [
 
 const _PW_SALT = 'CostVision-Salt-2026:';
 
-async function _hashPw(pw) {
-  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(_PW_SALT + pw));
+async function _sha256hex(data) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(data));
   return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
-/* Lockout stored in sessionStorage — persists within session, clears on tab close */
+async function _hashPw(pw) {
+  return _sha256hex(_PW_SALT + pw);
+}
+
+/* Lockout state in sessionStorage — survives page reload within the tab, clears on tab close */
 function _getLockedUntil() { return parseInt(sessionStorage.getItem('cv-local-locked-until') ?? '0', 10); }
 function _setLockedUntil(t) { sessionStorage.setItem('cv-local-locked-until', String(t)); }
-
-let _localAttempts = 0;
+function _getAttempts()    { return parseInt(sessionStorage.getItem('cv-local-attempts') ?? '0', 10); }
+function _setAttempts(n)   { sessionStorage.setItem('cv-local-attempts', String(n)); }
 
 /* Device key for local token signing — generated once, stored in localStorage */
 function _getDeviceKey() {
@@ -1134,10 +1138,12 @@ async function localSignIn(email, pw) {
     u => u.email.toLowerCase() === email.toLowerCase() && u.pwHash === pwHash
   );
   if (!user) {
-    if (++_localAttempts >= 5) _setLockedUntil(Date.now() + 15 * 60 * 1000);
+    const attempts = _getAttempts() + 1;
+    _setAttempts(attempts);
+    if (attempts >= 5) _setLockedUntil(Date.now() + 15 * 60 * 1000);
     return null;
   }
-  _localAttempts = 0;
+  _setAttempts(0);
   /* Build a minimal JWT-shaped token with 7-day expiry */
   const header  = btoa(JSON.stringify({ alg: 'HS256', typ: 'JWT' })).replace(/=/g,'');
   const payload = btoa(JSON.stringify({
@@ -1147,8 +1153,7 @@ async function localSignIn(email, pw) {
   })).replace(/=/g,'');
   /* Sign with device key so the signature cannot be trivially forged */
   const deviceKey = _getDeviceKey();
-  const sigBuf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(`${header}.${payload}:${deviceKey}`));
-  const sig = Array.from(new Uint8Array(sigBuf)).map(b => b.toString(16).padStart(2, '0')).join('');
+  const sig = await _sha256hex(`${header}.${payload}:${deviceKey}`);
   const token = `${header}.${payload}.${sig}`;
   return { token, user: { id: user.id, email: user.email, fullName: user.fullName } };
 }
