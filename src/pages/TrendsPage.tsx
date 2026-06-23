@@ -4,13 +4,13 @@ import {
   MFG_LEVERS, EDU_TRENDS, OEM_MOVES, EDU_COST_STRUCTURE, getTotalEduIdeas, EDU_COMPONENTS,
 } from '../data/edu-knowledge-base';
 import { BIW_COMPONENTS, BIW_MFG_LEVERS, BIW_TRENDS, BIW_OEM_BENCHMARKS, BIW_COST_STRUCTURE, getTotalBiwIdeas } from '../data/biw-knowledge-base';
-import { CHASSIS_COMPONENTS, CHASSIS_TRENDS, CHASSIS_COST_STRUCTURE, getTotalChassisIdeas } from '../data/chassis-knowledge-base';
-import { BATTERY_COMPONENTS, BATTERY_MFG_LEVERS, BATTERY_TRENDS, BATTERY_COST_STRUCTURE, getTotalBatteryIdeas } from '../data/battery-knowledge-base';
-import { ICE_COMPONENTS, ICE_MFG_LEVERS, ICE_TRENDS, ICE_COST_STRUCTURE, getTotalIceIdeas } from '../data/powertrain-ice-knowledge-base';
-import { HVAC_COMPONENTS, HVAC_MFG_LEVERS, HVAC_TRENDS, HVAC_COST_STRUCTURE, getTotalHvacIdeas } from '../data/hvac-knowledge-base';
-import { INTERIOR_COMPONENTS, INTERIOR_TRENDS, INTERIOR_COST_STRUCTURE, getTotalInteriorIdeas } from '../data/interior-knowledge-base';
-import { EXTERIOR_COMPONENTS, EXTERIOR_TRENDS, EXTERIOR_COST_STRUCTURE, getTotalExteriorIdeas } from '../data/exterior-knowledge-base';
-import { TRANSMISSION_COMPONENTS, TRANSMISSION_MFG_LEVERS, TRANSMISSION_TRENDS, TRANSMISSION_COST_STRUCTURE, getTotalTransmissionIdeas } from '../data/transmission-driveline-knowledge-base';
+import { CHASSIS_COMPONENTS, CHASSIS_TRENDS, CHASSIS_COST_STRUCTURE, getTotalChassisIdeas, CHASSIS_MFG_LEVERS, CHASSIS_OEM_BENCHMARKS } from '../data/chassis-knowledge-base';
+import { BATTERY_COMPONENTS, BATTERY_MFG_LEVERS, BATTERY_TRENDS, BATTERY_COST_STRUCTURE, getTotalBatteryIdeas, BATTERY_OEM_BENCHMARKS } from '../data/battery-knowledge-base';
+import { ICE_COMPONENTS, ICE_MFG_LEVERS, ICE_TRENDS, ICE_COST_STRUCTURE, getTotalIceIdeas, ICE_OEM_BENCHMARKS } from '../data/powertrain-ice-knowledge-base';
+import { HVAC_COMPONENTS, HVAC_MFG_LEVERS, HVAC_TRENDS, HVAC_COST_STRUCTURE, getTotalHvacIdeas, HVAC_OEM_BENCHMARKS } from '../data/hvac-knowledge-base';
+import { INTERIOR_COMPONENTS, INTERIOR_TRENDS, INTERIOR_COST_STRUCTURE, getTotalInteriorIdeas, INTERIOR_MFG_LEVERS, INTERIOR_OEM_BENCHMARKS } from '../data/interior-knowledge-base';
+import { EXTERIOR_COMPONENTS, EXTERIOR_TRENDS, EXTERIOR_COST_STRUCTURE, getTotalExteriorIdeas, EXTERIOR_MFG_LEVERS, EXTERIOR_OEM_BENCHMARKS } from '../data/exterior-knowledge-base';
+import { TRANSMISSION_COMPONENTS, TRANSMISSION_MFG_LEVERS, TRANSMISSION_TRENDS, TRANSMISSION_COST_STRUCTURE, getTotalTransmissionIdeas, TRANSMISSION_OEM_BENCHMARKS } from '../data/transmission-driveline-knowledge-base';
 
 type Domain = 'edu' | 'biw' | 'chassis' | 'battery' | 'ice' | 'hvac' | 'interior' | 'exterior' | 'transmission';
 type Tab = 'trends' | 'manufacturing' | 'oem';
@@ -96,12 +96,12 @@ export default function TrendsPage() {
   function getKpis() {
     if (domain === 'edu')      return [{ label: 'Components', value: EDU_COMPONENTS.length }, { label: 'VAVE ideas', value: getTotalEduIdeas() }, { label: 'Mfg levers', value: MFG_LEVERS.edu.items.length + MFG_LEVERS.sub.items.length + MFG_LEVERS.part.items.length }, { label: 'Trends', value: EDU_TRENDS.unit.length + EDU_TRENDS.sub.length + EDU_TRENDS.part.length }];
     if (domain === 'biw')      return [{ label: 'BIW components', value: BIW_COMPONENTS.length }, { label: 'VAVE ideas', value: getTotalBiwIdeas() }, { label: 'Mfg levers', value: BIW_MFG_LEVERS.length }, { label: 'Trends', value: BIW_TRENDS.length }];
-    if (domain === 'chassis')  return [{ label: 'Components', value: CHASSIS_COMPONENTS.length }, { label: 'VAVE ideas', value: getTotalChassisIdeas() }, { label: 'Mfg levers', value: 0 }, { label: 'Trends', value: CHASSIS_TRENDS.length }];
+    if (domain === 'chassis')  return [{ label: 'Components', value: CHASSIS_COMPONENTS.length }, { label: 'VAVE ideas', value: getTotalChassisIdeas() }, { label: 'Mfg levers', value: CHASSIS_MFG_LEVERS.length }, { label: 'Trends', value: CHASSIS_TRENDS.length }];
     if (domain === 'battery')  return [{ label: 'Components', value: BATTERY_COMPONENTS.length }, { label: 'VAVE ideas', value: getTotalBatteryIdeas() }, { label: 'Mfg levers', value: BATTERY_MFG_LEVERS.length }, { label: 'Trends', value: BATTERY_TRENDS.length }];
     if (domain === 'ice')      return [{ label: 'Components', value: ICE_COMPONENTS.length }, { label: 'VAVE ideas', value: getTotalIceIdeas() }, { label: 'Mfg levers', value: ICE_MFG_LEVERS.length }, { label: 'Trends', value: ICE_TRENDS.length }];
     if (domain === 'hvac')     return [{ label: 'Components', value: HVAC_COMPONENTS.length }, { label: 'VAVE ideas', value: getTotalHvacIdeas() }, { label: 'Mfg levers', value: HVAC_MFG_LEVERS.length }, { label: 'Trends', value: HVAC_TRENDS.length }];
-    if (domain === 'interior')     return [{ label: 'Components', value: INTERIOR_COMPONENTS.length }, { label: 'VAVE ideas', value: getTotalInteriorIdeas() }, { label: 'Mfg levers', value: 0 }, { label: 'Trends', value: INTERIOR_TRENDS.length }];
-    if (domain === 'exterior')     return [{ label: 'Components', value: EXTERIOR_COMPONENTS.length }, { label: 'VAVE ideas', value: getTotalExteriorIdeas() }, { label: 'Mfg levers', value: 0 }, { label: 'Trends', value: EXTERIOR_TRENDS.length }];
+    if (domain === 'interior')     return [{ label: 'Components', value: INTERIOR_COMPONENTS.length }, { label: 'VAVE ideas', value: getTotalInteriorIdeas() }, { label: 'Mfg levers', value: INTERIOR_MFG_LEVERS.length }, { label: 'Trends', value: INTERIOR_TRENDS.length }];
+    if (domain === 'exterior')     return [{ label: 'Components', value: EXTERIOR_COMPONENTS.length }, { label: 'VAVE ideas', value: getTotalExteriorIdeas() }, { label: 'Mfg levers', value: EXTERIOR_MFG_LEVERS.length }, { label: 'Trends', value: EXTERIOR_TRENDS.length }];
     if (domain === 'transmission') return [{ label: 'Components', value: TRANSMISSION_COMPONENTS.length }, { label: 'VAVE ideas', value: getTotalTransmissionIdeas() }, { label: 'Mfg levers', value: TRANSMISSION_MFG_LEVERS.length }, { label: 'Trends', value: TRANSMISSION_TRENDS.length }];
     return [];
   }
@@ -331,9 +331,31 @@ export default function TrendsPage() {
       );
     }
 
-    // Interior & Exterior don't have separate mfg levers yet
-    if (['interior', 'exterior'].includes(domain)) {
-      return <div className="text-center py-16 text-slate-500">Dedicated manufacturing levers for {domainMeta.label} coming in Phase 3.</div>;
+    // Chassis, Interior, Exterior use the new { id, name, description, saving, status } format
+    if (domain === 'chassis' || domain === 'interior' || domain === 'exterior') {
+      const levers = domain === 'chassis' ? CHASSIS_MFG_LEVERS : domain === 'interior' ? INTERIOR_MFG_LEVERS : EXTERIOR_MFG_LEVERS;
+      return (
+        <div>
+          <div className="bg-navy-800/40 border border-white/8 border-l-2 border-l-gold-500 rounded-xl p-4 mb-6">
+            <h2 className="text-lg font-semibold text-white mb-1">{domainMeta.label} — Manufacturing Levers</h2>
+            <p className="text-slate-400 text-sm">Process-driven cost reduction levers for the {domainMeta.short} domain.</p>
+          </div>
+          <div className="grid gap-3">
+            {levers.map((item) => (
+              <div key={item.id} className="bg-navy-800/50 border border-white/8 rounded-xl p-4 grid grid-cols-1 sm:grid-cols-[1fr_auto] gap-2">
+                <div>
+                  <p className="text-white text-sm font-semibold">{item.name}</p>
+                  <p className="text-slate-400 text-xs mt-1">{item.description}</p>
+                </div>
+                <div className="flex sm:flex-col items-start sm:items-end gap-2">
+                  <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border ${getTrendStatusClass(item.status)}`}>{item.status}</span>
+                  <span className="text-gold-400 text-xs font-semibold whitespace-nowrap">{item.saving}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
     }
 
     const levers = domain === 'biw' ? BIW_MFG_LEVERS : domain === 'battery' ? BATTERY_MFG_LEVERS : [];
@@ -379,12 +401,23 @@ export default function TrendsPage() {
       </div>
     );
 
-    const benchmarks = domain === 'biw' ? BIW_OEM_BENCHMARKS : [];
+    const benchmarks = domain === 'biw' ? BIW_OEM_BENCHMARKS
+      : domain === 'chassis'      ? CHASSIS_OEM_BENCHMARKS
+      : domain === 'battery'      ? BATTERY_OEM_BENCHMARKS
+      : domain === 'ice'          ? ICE_OEM_BENCHMARKS
+      : domain === 'hvac'         ? HVAC_OEM_BENCHMARKS
+      : domain === 'interior'     ? INTERIOR_OEM_BENCHMARKS
+      : domain === 'exterior'     ? EXTERIOR_OEM_BENCHMARKS
+      : domain === 'transmission' ? TRANSMISSION_OEM_BENCHMARKS
+      : [];
     if (benchmarks.length === 0) return <div className="text-center py-16 text-slate-500">OEM benchmarks for {domainMeta.label} are being compiled — coming in Phase 3.</div>;
 
     return (
       <div>
-        <div className="mb-6"><h2 className="text-lg font-semibold text-white mb-1">{domainMeta.label} — OEM Benchmarks</h2></div>
+        <div className="mb-6">
+          <h2 className="text-lg font-semibold text-white mb-1">{domainMeta.label} — OEM Benchmarks</h2>
+          <p className="text-slate-400 text-sm max-w-3xl">Brand-by-brand cost &amp; value-engineering levers from 2024–26 production programmes, benchmarked against leading OEMs.</p>
+        </div>
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
           {benchmarks.map(oem => (
             <div key={oem.oem} className="bg-navy-800/50 border border-white/8 border-l-2 border-l-indigo-500 rounded-xl p-4">
