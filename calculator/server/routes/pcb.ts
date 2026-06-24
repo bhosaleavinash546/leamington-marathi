@@ -1259,7 +1259,7 @@ ${userPromptText}`;
       const liveProvider: LivePricingProvider | null = octoKey ? 'octopart' : rsKey ? 'rs' : null;
       if (liveProvider) {
         try {
-          const livePrices = await fetchLivePrices(confirmedPartNumbers, liveProvider, liveProvider === 'octopart' ? octoKey : rsKey, orderQty);
+          const livePrices = await fetchLivePricesWithAECQ(confirmedPartNumbers, liveProvider, liveProvider === 'octopart' ? octoKey : rsKey, orderQty, domain === 'automotive_adas');
           livePriceHits = livePrices.length;
           if (livePrices.length > 0) {
             a.bom = (a.bom as Array<Record<string, unknown>>).map(line => {
@@ -1301,6 +1301,10 @@ ${userPromptText}`;
     automotiveGradeEnforcedCount,
     singleSourceWarnings,
     conformalCoatingCost,
+    automotiveAssemblyCost,
+    automotiveFabAdjustment,
+    bomCompleteness,
+    programPricing,
     fromCache: false,
   };
   setCached(cacheKey, { ...finalPayload, fromCache: true });
@@ -1485,6 +1489,10 @@ router.post('/reanalyze', upload.fields([
   let reanalAutomotiveGradeEnforcedCount = 0;
   let reanalSingleSourceWarnings: SingleSourceWarning[] = [];
   let reanalConformalCoatingCost = 0;
+  let reanalAutomotiveAssemblyCost: AutomotiveAssemblyCost | null = null;
+  let reanalAutomotiveFabAdjustment: AutomotiveFabAdjustment | null = null;
+  let reanalBomCompleteness: BOMCompletenessResult | null = null;
+  let reanalProgramPricing: ProgramPricingResult | null = null;
   const volumeMultiplier = getVolumeMultiplier(orderQty);
 
   try {
@@ -1506,6 +1514,11 @@ router.post('/reanalyze', upload.fields([
       const bomTotalForNRE = enrichedBOM.reduce((s, l) => s + Number(l.lineTotalGBP ?? 0), 0);
       reanalAutomotiveNRE = computeAutomotiveNRE('Unknown', bomTotalForNRE);
       reanalConformalCoatingCost = computeConformalCoatingCost(boardSpec, domain, 'Unknown');
+      // Automotive assembly cost model
+      const reanalCountryAssemblyPerBoard = selectedCountryBreakdown?.assemblyPerBoard ?? 0;
+      reanalAutomotiveAssemblyCost = computeAutomotiveAssemblyCost(assemblyData, 'Unknown' as ASILLevel, orderQty, reanalCountryAssemblyPerBoard);
+      // Automotive fab adjustment
+      reanalAutomotiveFabAdjustment = computeAutomotiveFabAdjustment(boardSpec, fabCostMid, domain);
     }
 
     a.bom = enrichedBOM;
@@ -1514,6 +1527,11 @@ router.post('/reanalyze', upload.fields([
     if (a.costEstimates && typeof a.costEstimates === 'object') {
       (a.costEstimates as Record<string, unknown>).totalBOMCostGBP = Math.round(correctedBOMTotal * 100) / 100;
     }
+
+    // BOM completeness (all domains)
+    reanalBomCompleteness = estimateMissingPassives(enrichedBOM, Number(assemblyData.smtPlacements) || 0);
+    // Program pricing (automotive only, or show discount potential)
+    reanalProgramPricing = computeProgramPricing(correctedBOMTotal, orderQty, domain);
 
     confidenceBand = computeConfidenceBand(
       enrichedBOM as unknown as BOMLineForBand[],
@@ -1577,6 +1595,10 @@ router.post('/reanalyze', upload.fields([
     automotiveGradeEnforcedCount: reanalAutomotiveGradeEnforcedCount,
     singleSourceWarnings: reanalSingleSourceWarnings,
     conformalCoatingCost: reanalConformalCoatingCost,
+    automotiveAssemblyCost: reanalAutomotiveAssemblyCost,
+    automotiveFabAdjustment: reanalAutomotiveFabAdjustment,
+    bomCompleteness: reanalBomCompleteness,
+    programPricing: reanalProgramPricing,
   });
 });
 
@@ -1804,6 +1826,10 @@ router.post('/analyze-image-stream', upload.fields([
   let streamAutomotiveGradeEnforcedCount = 0;
   let streamSingleSourceWarnings: SingleSourceWarning[] = [];
   let streamConformalCoatingCost = 0;
+  let streamAutomotiveAssemblyCost: AutomotiveAssemblyCost | null = null;
+  let streamAutomotiveFabAdjustment: AutomotiveFabAdjustment | null = null;
+  let streamBomCompleteness: BOMCompletenessResult | null = null;
+  let streamProgramPricing: ProgramPricingResult | null = null;
 
   try {
     const a = analysis as Record<string, unknown>;
@@ -1822,10 +1848,19 @@ router.post('/analyze-image-stream', upload.fields([
       const bomTotNRE = enrichedBOM2.reduce((s, l) => s + Number(l.lineTotalGBP ?? 0), 0);
       streamAutomotiveNRE = computeAutomotiveNRE(streamAsilClassification.asilLevel, bomTotNRE);
       streamConformalCoatingCost = computeConformalCoatingCost(boardSpec, domain, streamAsilClassification.asilLevel);
+      // Automotive assembly cost model
+      const streamCountryAssemblyPerBoard = selectedCountryBreakdown2?.assemblyPerBoard ?? 0;
+      streamAutomotiveAssemblyCost = computeAutomotiveAssemblyCost(assemblyData, streamAsilClassification.asilLevel, orderQty2, streamCountryAssemblyPerBoard);
+      // Automotive fab adjustment
+      streamAutomotiveFabAdjustment = computeAutomotiveFabAdjustment(boardSpec, fabCostMid2, domain);
     }
     a.bom = enrichedBOM2;
     const correctedBOMTotal2 = enrichedBOM2.reduce((s, l) => s + Number(l.lineTotalGBP ?? 0), 0);
     if (a.costEstimates && typeof a.costEstimates === 'object') (a.costEstimates as Record<string, unknown>).totalBOMCostGBP = Math.round(correctedBOMTotal2 * 100) / 100;
+    // BOM completeness (all domains)
+    streamBomCompleteness = estimateMissingPassives(enrichedBOM2, Number(assemblyData.smtPlacements) || 0);
+    // Program pricing (automotive only, or show discount potential)
+    streamProgramPricing = computeProgramPricing(correctedBOMTotal2, orderQty2, domain);
     confidenceBand2 = computeConfidenceBand(enrichedBOM2 as unknown as BOMLineForBand[], fabCostMid2, ocrResult.extractionQuality, volumeMultiplier2);
     sanityWarnings2 = runSanityChecks(boardSpec, assemblyData, enrichedBOM2, Number((costEst as Record<string,unknown>).totalBOMCostGBP ?? 0));
     npiBreakdown2 = computeNPIBreakdown(correctedBOMTotal2, fabCostMid2, Number(assemblyData.smtPlacements) || 0, orderQty2);
@@ -1864,6 +1899,10 @@ router.post('/analyze-image-stream', upload.fields([
     automotiveGradeEnforcedCount: streamAutomotiveGradeEnforcedCount,
     singleSourceWarnings: streamSingleSourceWarnings,
     conformalCoatingCost: streamConformalCoatingCost,
+    automotiveAssemblyCost: streamAutomotiveAssemblyCost,
+    automotiveFabAdjustment: streamAutomotiveFabAdjustment,
+    bomCompleteness: streamBomCompleteness,
+    programPricing: streamProgramPricing,
   });
   res.end();
 });

@@ -1474,6 +1474,10 @@ interface PCBImageAnalysis {
   _automotiveGradeEnforcedCount?: number;
   _singleSourceWarnings?: SingleSourceWarning[];
   _conformalCoatingCost?: number;
+  _automotiveAssemblyCost?: AutomotiveAssemblyCost;
+  _automotiveFabAdjustment?: AutomotiveFabAdjustment;
+  _bomCompleteness?: BOMCompletenessResult;
+  _programPricing?: ProgramPricingResult;
 }
 
 interface AutomotiveNRE {
@@ -1492,6 +1496,48 @@ interface SingleSourceWarning {
   premium: number;
   unitPriceGBP: number;
   premiumAmountGBP: number;
+}
+
+interface AutomotiveAssemblyCost {
+  baseAssemblyGBP: number;
+  iatfPremiumGBP: number;
+  axiCostGBP: number;
+  serialisationGBP: number;
+  ipcClass3GBP: number;
+  burnInGBP: number;
+  totalAutomotiveAssemblyGBP: number;
+  standardAssemblyGBP: number;
+  premiumPctOverStandard: number;
+}
+
+interface AutomotiveFabAdjustment {
+  standardFabGBP: number;
+  iatfFabPremiumGBP: number;
+  automotiveLaminatePremiumGBP: number;
+  ipcClass3InspectionGBP: number;
+  couponTestingGBP: number;
+  totalAutomotiveFabGBP: number;
+  premiumPctOverStandard: number;
+}
+
+interface BOMCompletenessResult {
+  identifiedLineCount: number;
+  identifiedICCount: number;
+  identifiedPassiveCount: number;
+  estimatedMissingPassiveCount: number;
+  estimatedMissingCostGBP: number;
+  missingEstimateBreakdown: { decouplingCaps: number; pullResistors: number; ferriteBeads: number; esdArrays: number };
+  completenessScore: number;
+}
+
+interface ProgramPricingResult {
+  spotBOMTotal: number;
+  programBOMTotal: number;
+  savingsGBP: number;
+  savingsPct: number;
+  annualProgramVolume: number;
+  pricingTier: 'distributor_spot' | 'blanket_order' | 'direct_contract' | 'tier1_contract';
+  multiplier: number;
 }
 
 let agentHistory: AgentMessage[] = [];
@@ -6325,7 +6371,7 @@ async function analyzePCBImages(): Promise<void> {
     const reader = streamResp.body.getReader();
     const decoder = new TextDecoder();
     let buffer = '';
-    type StreamResult = { success: boolean; analysis: PCBImageAnalysis; selectedCountry?: string; selectedCountryBreakdown?: PCBCountryBreakdown; countryComparison?: PCBCountryBreakdown[]; volumeCurves?: Record<string, VolumeCurvePoint[]>; complexityScore?: PCBComplexityScore; confidenceBand?: PCBConfidenceBand; volumeMultiplier?: number; sanityWarnings?: SanityWarning[]; npiBreakdown?: NPIBreakdown; livePriceHits?: number; asilLevel?: string; asilRationale?: string; asilSafetyFunctions?: string[]; automotiveNRE?: AutomotiveNRE; automotiveGradeEnforcedCount?: number; singleSourceWarnings?: SingleSourceWarning[]; conformalCoatingCost?: number };
+    type StreamResult = { success: boolean; analysis: PCBImageAnalysis; selectedCountry?: string; selectedCountryBreakdown?: PCBCountryBreakdown; countryComparison?: PCBCountryBreakdown[]; volumeCurves?: Record<string, VolumeCurvePoint[]>; complexityScore?: PCBComplexityScore; confidenceBand?: PCBConfidenceBand; volumeMultiplier?: number; sanityWarnings?: SanityWarning[]; npiBreakdown?: NPIBreakdown; livePriceHits?: number; asilLevel?: string; asilRationale?: string; asilSafetyFunctions?: string[]; automotiveNRE?: AutomotiveNRE; automotiveGradeEnforcedCount?: number; singleSourceWarnings?: SingleSourceWarning[]; conformalCoatingCost?: number; automotiveAssemblyCost?: AutomotiveAssemblyCost; automotiveFabAdjustment?: AutomotiveFabAdjustment; bomCompleteness?: BOMCompletenessResult; programPricing?: ProgramPricingResult };
     let data: StreamResult | null = null;
     while (true) {
       const { done, value } = await reader.read();
@@ -6372,6 +6418,10 @@ async function analyzePCBImages(): Promise<void> {
       if (data.automotiveGradeEnforcedCount !== undefined) pcbImageResult._automotiveGradeEnforcedCount = data.automotiveGradeEnforcedCount;
       if (data.singleSourceWarnings) pcbImageResult._singleSourceWarnings = data.singleSourceWarnings;
       if (data.conformalCoatingCost !== undefined) pcbImageResult._conformalCoatingCost = data.conformalCoatingCost;
+      if (data.automotiveAssemblyCost) pcbImageResult._automotiveAssemblyCost = data.automotiveAssemblyCost;
+      if (data.automotiveFabAdjustment) pcbImageResult._automotiveFabAdjustment = data.automotiveFabAdjustment;
+      if (data.bomCompleteness) pcbImageResult._bomCompleteness = data.bomCompleteness;
+      if (data.programPricing) pcbImageResult._programPricing = data.programPricing;
     }
     // Save previous result for revision comparison
     const prevJson = localStorage.getItem('pcb_last_analysis');
@@ -6667,6 +6717,10 @@ async function reanalyzePCBWithCorrections(): Promise<void> {
       automotiveGradeEnforcedCount?: number;
       singleSourceWarnings?: SingleSourceWarning[];
       conformalCoatingCost?: number;
+      automotiveAssemblyCost?: AutomotiveAssemblyCost;
+      automotiveFabAdjustment?: AutomotiveFabAdjustment;
+      bomCompleteness?: BOMCompletenessResult;
+      programPricing?: ProgramPricingResult;
     };
 
     // Compute cost deltas (new total - original total per country)
@@ -6696,6 +6750,10 @@ async function reanalyzePCBWithCorrections(): Promise<void> {
       if (data.automotiveGradeEnforcedCount !== undefined) pcbImageResult._automotiveGradeEnforcedCount = data.automotiveGradeEnforcedCount;
       if (data.singleSourceWarnings) pcbImageResult._singleSourceWarnings = data.singleSourceWarnings;
       if (data.conformalCoatingCost !== undefined) pcbImageResult._conformalCoatingCost = data.conformalCoatingCost;
+      if (data.automotiveAssemblyCost) pcbImageResult._automotiveAssemblyCost = data.automotiveAssemblyCost;
+      if (data.automotiveFabAdjustment) pcbImageResult._automotiveFabAdjustment = data.automotiveFabAdjustment;
+      if (data.bomCompleteness) pcbImageResult._bomCompleteness = data.bomCompleteness;
+      if (data.programPricing) pcbImageResult._programPricing = data.programPricing;
       pcbImageResult._originalAIValues = originalAIValues;
       pcbImageResult._isReanalyzed = true;
       pcbImageResult._costDeltas = costDeltas;
@@ -6873,7 +6931,11 @@ function buildPCBImagePanel(r: PCBImageAnalysis): string {
       ${buildConfidenceRoadmap(r)}
       ${buildSanityWarningsBanner(r)}
       ${buildAutomotiveNRESection(r)}
+      ${buildAutomotiveAssemblySection(r)}
+      ${buildAutomotiveFabSection(r)}
       ${buildSingleSourceWarnings(r)}
+      ${buildBOMCompletenessSection(r)}
+      ${buildProgramPricingSection(r)}
       ${buildBenchmarkComparison(r)}
       ${buildRevisionComparison(r)}
 
@@ -7079,6 +7141,133 @@ function buildSingleSourceWarnings(r: PCBImageAnalysis): string {
       </tr></thead>
       <tbody>${rows}</tbody>
     </table>
+  </div>`;
+}
+
+function buildAutomotiveAssemblySection(r: PCBImageAnalysis): string {
+  const ac = r._automotiveAssemblyCost;
+  if (!ac || ac.totalAutomotiveAssemblyGBP === 0) return '';
+  const fmt = (n: number) => `£${n.toFixed(2)}`;
+  const rows = [
+    { label: 'Base SMT assembly', val: ac.baseAssemblyGBP, note: 'IPC-A-610 Class 2 baseline' },
+    { label: 'IATF 16949 line premium (+20%)', val: ac.iatfPremiumGBP, note: 'Certified automotive assembly line overhead' },
+    ac.axiCostGBP > 0 ? { label: 'AXI X-ray inspection', val: ac.axiCostGBP, note: 'Mandatory for BGA solder verification' } : null,
+    { label: 'Serialisation / traceability', val: ac.serialisationGBP, note: 'Laser marking + batch database entry' },
+    ac.ipcClass3GBP > 0 ? { label: 'IPC-A-610 Class 3 re-inspect', val: ac.ipcClass3GBP, note: 'Tighter defect accept/reject criteria' } : null,
+    ac.burnInGBP > 0 ? { label: 'Burn-in / HALT test', val: ac.burnInGBP, note: 'ASIL-mandated reliability screening' } : null,
+  ].filter(Boolean) as Array<{ label: string; val: number; note: string }>;
+  const tableRows = rows.map(row => `<tr><td style="padding:3px 6px;font-size:0.68rem">${row.label}</td><td style="padding:3px 6px;text-align:right;font-size:0.68rem;font-weight:600">${fmt(row.val)}</td><td style="padding:3px 6px;font-size:0.62rem;color:var(--text-muted)">${row.note}</td></tr>`).join('');
+  return `<div style="margin-top:8px;padding:10px 12px;background:rgba(37,99,235,0.05);border:1px solid rgba(37,99,235,0.2);border-radius:8px">
+    <div style="font-size:0.72rem;font-weight:600;color:#2563eb;margin-bottom:8px">Automotive Assembly Cost Model (IATF 16949) — +${ac.premiumPctOverStandard}% vs standard</div>
+    <table style="width:100%;border-collapse:collapse">
+      <thead><tr>
+        <th style="padding:3px 6px;text-align:left;font-size:0.62rem;color:var(--text-muted)">Cost element</th>
+        <th style="padding:3px 6px;text-align:right;font-size:0.62rem;color:var(--text-muted)">Per board</th>
+        <th style="padding:3px 6px;text-align:left;font-size:0.62rem;color:var(--text-muted)">Rationale</th>
+      </tr></thead>
+      <tbody>${tableRows}
+        <tr style="border-top:1px solid var(--border)"><td style="padding:4px 6px;font-size:0.72rem;font-weight:700">Total automotive assembly</td><td style="padding:4px 6px;text-align:right;font-size:0.72rem;font-weight:700;color:#2563eb">${fmt(ac.totalAutomotiveAssemblyGBP)}</td><td></td></tr>
+      </tbody>
+    </table>
+  </div>`;
+}
+
+function buildAutomotiveFabSection(r: PCBImageAnalysis): string {
+  const fa = r._automotiveFabAdjustment;
+  if (!fa || fa.premiumPctOverStandard === 0) return '';
+  const fmt = (n: number) => `£${n.toFixed(2)}`;
+  return `<div style="margin-top:8px;padding:10px 12px;background:rgba(22,163,74,0.05);border:1px solid rgba(22,163,74,0.2);border-radius:8px">
+    <div style="font-size:0.72rem;font-weight:600;color:#16a34a;margin-bottom:8px">Automotive PCB Fabrication Adjustment (IATF 16949 + AEC-Q laminate) — +${fa.premiumPctOverStandard}% vs standard FR4</div>
+    <table style="width:100%;border-collapse:collapse">
+      <thead><tr>
+        <th style="padding:3px 6px;text-align:left;font-size:0.62rem;color:var(--text-muted)">Cost element</th>
+        <th style="padding:3px 6px;text-align:right;font-size:0.62rem;color:var(--text-muted)">Add-on</th>
+        <th style="padding:3px 6px;text-align:left;font-size:0.62rem;color:var(--text-muted)">Rationale</th>
+      </tr></thead>
+      <tbody>
+        <tr><td style="padding:3px 6px;font-size:0.68rem">Standard PCB fab (AI estimate)</td><td style="padding:3px 6px;text-align:right;font-size:0.68rem">${fmt(fa.standardFabGBP)}</td><td style="padding:3px 6px;font-size:0.62rem;color:var(--text-muted)">AI base estimate (generic FR4)</td></tr>
+        <tr><td style="padding:3px 6px;font-size:0.68rem">IATF 16949 fab premium (+18%)</td><td style="padding:3px 6px;text-align:right;font-size:0.68rem;font-weight:600">+${fmt(fa.iatfFabPremiumGBP)}</td><td style="padding:3px 6px;font-size:0.62rem;color:var(--text-muted)">Certified automotive fab overhead</td></tr>
+        <tr><td style="padding:3px 6px;font-size:0.68rem">Automotive laminate (IT-180A / Isola 370HR)</td><td style="padding:3px 6px;text-align:right;font-size:0.68rem;font-weight:600">+${fmt(fa.automotiveLaminatePremiumGBP)}</td><td style="padding:3px 6px;font-size:0.62rem;color:var(--text-muted)">35–50% material premium over standard FR4</td></tr>
+        <tr><td style="padding:3px 6px;font-size:0.68rem">IPC-6012 Class 3 inspection</td><td style="padding:3px 6px;text-align:right;font-size:0.68rem;font-weight:600">+${fmt(fa.ipcClass3InspectionGBP)}</td><td style="padding:3px 6px;font-size:0.62rem;color:var(--text-muted)">Coupons + full electrical test</td></tr>
+        <tr><td style="padding:3px 6px;font-size:0.68rem">Coupon testing + impedance verification</td><td style="padding:3px 6px;text-align:right;font-size:0.68rem;font-weight:600">+${fmt(fa.couponTestingGBP)}</td><td style="padding:3px 6px;font-size:0.62rem;color:var(--text-muted)">Per-panel impedance and coupon testing</td></tr>
+        <tr style="border-top:1px solid var(--border)"><td style="padding:4px 6px;font-size:0.72rem;font-weight:700">Total automotive fab cost</td><td style="padding:4px 6px;text-align:right;font-size:0.72rem;font-weight:700;color:#16a34a">${fmt(fa.totalAutomotiveFabGBP)}</td><td></td></tr>
+      </tbody>
+    </table>
+  </div>`;
+}
+
+function buildBOMCompletenessSection(r: PCBImageAnalysis): string {
+  const bc = r._bomCompleteness;
+  if (!bc) return '';
+  const scoreColor = bc.completenessScore >= 80 ? '#16a34a' : bc.completenessScore >= 50 ? '#d97706' : '#dc2626';
+  const scoreLabel = bc.completenessScore >= 80 ? 'Good' : bc.completenessScore >= 50 ? 'Partial' : 'Incomplete';
+  if (bc.estimatedMissingPassiveCount === 0 && bc.completenessScore >= 80) return '';
+  return `<div style="margin-top:8px;padding:10px 12px;background:rgba(0,0,0,0.03);border:1px solid var(--border);border-radius:8px">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+      <div style="font-size:0.72rem;font-weight:600">BOM Completeness Estimate</div>
+      <span style="background:${scoreColor};color:#fff;font-size:0.6rem;padding:1px 6px;border-radius:10px;font-weight:700">${bc.completenessScore}% — ${scoreLabel}</span>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:8px">
+      <div style="text-align:center;padding:6px;background:rgba(0,0,0,0.04);border-radius:4px">
+        <div style="font-size:0.8rem;font-weight:700">${bc.identifiedLineCount}</div>
+        <div style="font-size:0.62rem;color:var(--text-muted)">BOM lines identified</div>
+      </div>
+      <div style="text-align:center;padding:6px;background:rgba(0,0,0,0.04);border-radius:4px">
+        <div style="font-size:0.8rem;font-weight:700">${bc.identifiedICCount}</div>
+        <div style="font-size:0.62rem;color:var(--text-muted)">ICs / active components</div>
+      </div>
+      <div style="text-align:center;padding:6px;background:rgba(220,38,38,0.08);border-radius:4px">
+        <div style="font-size:0.8rem;font-weight:700;color:#dc2626">~${bc.estimatedMissingPassiveCount}</div>
+        <div style="font-size:0.62rem;color:var(--text-muted)">Est. missing passives</div>
+      </div>
+    </div>
+    ${bc.estimatedMissingPassiveCount > 0 ? `
+    <div style="font-size:0.68rem;color:var(--text-secondary);margin-bottom:4px">Estimated missing passive breakdown:</div>
+    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:4px">
+      <div style="font-size:0.62rem;padding:3px 6px;background:rgba(0,0,0,0.03);border-radius:3px">Decoupling caps: ~${bc.missingEstimateBreakdown.decouplingCaps}</div>
+      <div style="font-size:0.62rem;padding:3px 6px;background:rgba(0,0,0,0.03);border-radius:3px">Pull-up/down resistors: ~${bc.missingEstimateBreakdown.pullResistors}</div>
+      <div style="font-size:0.62rem;padding:3px 6px;background:rgba(0,0,0,0.03);border-radius:3px">Ferrite beads: ~${bc.missingEstimateBreakdown.ferriteBeads}</div>
+      <div style="font-size:0.62rem;padding:3px 6px;background:rgba(0,0,0,0.03);border-radius:3px">ESD arrays: ~${bc.missingEstimateBreakdown.esdArrays}</div>
+    </div>
+    <div style="margin-top:6px;font-size:0.68rem;color:var(--text-secondary)">Estimated missing passive cost: <strong>£${bc.estimatedMissingCostGBP.toFixed(2)}</strong> (at AEC-Q grade prices)</div>
+    ` : '<div style="font-size:0.68rem;color:#16a34a">Passive count looks consistent with identified IC count — BOM appears substantially complete.</div>'}
+  </div>`;
+}
+
+function buildProgramPricingSection(r: PCBImageAnalysis): string {
+  const pp = r._programPricing;
+  if (!pp || pp.pricingTier === 'distributor_spot' || pp.savingsPct === 0) return '';
+  const tierLabels: Record<string, string> = {
+    blanket_order: 'Blanket Order Pricing',
+    direct_contract: 'Direct Manufacturer Contract',
+    tier1_contract: 'Tier-1 Automotive Contract',
+    distributor_spot: 'Distributor Spot Price',
+  };
+  const tierColors: Record<string, string> = {
+    blanket_order: '#d97706', direct_contract: '#2563eb', tier1_contract: '#16a34a', distributor_spot: '#6b7280',
+  };
+  const color = tierColors[pp.pricingTier] ?? '#6b7280';
+  const label = tierLabels[pp.pricingTier] ?? pp.pricingTier;
+  return `<div style="margin-top:8px;padding:10px 12px;background:${color}0d;border:1px solid ${color}40;border-radius:8px">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+      <div style="font-size:0.72rem;font-weight:600;color:${color}">Program Pricing vs Spot — ${label}</div>
+      <span style="background:${color};color:#fff;font-size:0.6rem;padding:1px 6px;border-radius:10px;font-weight:700">−${pp.savingsPct}%</span>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px">
+      <div style="text-align:center;padding:8px;background:rgba(0,0,0,0.04);border-radius:4px">
+        <div style="font-size:0.68rem;color:var(--text-muted);margin-bottom:2px">Distributor spot BOM</div>
+        <div style="font-size:0.85rem;font-weight:700;text-decoration:line-through;color:var(--text-muted)">£${pp.spotBOMTotal.toFixed(2)}</div>
+      </div>
+      <div style="text-align:center;padding:8px;background:${color}15;border-radius:4px;border:1px solid ${color}30">
+        <div style="font-size:0.68rem;color:${color};margin-bottom:2px">Program BOM (${Math.round(pp.annualProgramVolume/1000)}K/yr)</div>
+        <div style="font-size:0.85rem;font-weight:700;color:${color}">£${pp.programBOMTotal.toFixed(2)}</div>
+      </div>
+      <div style="text-align:center;padding:8px;background:rgba(22,163,74,0.08);border-radius:4px">
+        <div style="font-size:0.68rem;color:#16a34a;margin-bottom:2px">Saving per board</div>
+        <div style="font-size:0.85rem;font-weight:700;color:#16a34a">−£${pp.savingsGBP.toFixed(2)}</div>
+      </div>
+    </div>
+    <div style="margin-top:6px;font-size:0.62rem;color:var(--text-muted)">Assumes ~${Math.round(pp.annualProgramVolume/1000)}K annual program volume (${pp.multiplier.toFixed(2)}× spot multiplier). Actual contract terms vary.</div>
   </div>`;
 }
 
