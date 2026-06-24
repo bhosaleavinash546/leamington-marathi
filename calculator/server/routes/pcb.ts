@@ -13,6 +13,104 @@ import {
 import { fetchLivePrices, type LivePricingProvider } from '../utils/pcb-live-pricing.js';
 import { parseBOMFile, type ParsedBOMLine } from '../utils/pcb-bom-parser.js';
 
+// ── Volume BOM price correction ────────────────────────────────────────────
+// Pricing table is calibrated to 100K units. Multipliers scale cost up for
+// lower order quantities (below 100K it gets more expensive, above it's cheaper).
+const VOLUME_BOM_MULTIPLIERS: [number, number][] = [
+  [50, 10.0], [100, 8.0], [250, 5.5], [500, 4.0], [1000, 3.0],
+  [2500, 2.2], [5000, 1.7], [10000, 1.35], [25000, 1.15],
+  [50000, 1.06], [100000, 1.00],
+];
+function getVolumeMultiplier(orderQty: number): number {
+  for (const [maxQty, mult] of VOLUME_BOM_MULTIPLIERS) {
+    if (orderQty <= maxQty) return mult;
+  }
+  return 0.88; // >100K benefits from super-volume pricing
+}
+
+// ── Cost confidence band ───────────────────────────────────────────────────
+interface PCBConfidenceBand {
+  bomCostLow: number; bomCostMid: number; bomCostHigh: number;
+  fabCostLow: number; fabCostMid: number; fabCostHigh: number;
+  totalLow: number; totalMid: number; totalHigh: number;
+  unconfirmedHighValueCount: number;
+  ocrConfirmedCount: number;
+  weightedBOMConfidence: number;
+  bomConfidenceLabel: 'High' | 'Medium' | 'Low';
+  fabConfidenceLabel: 'High' | 'Medium' | 'Low';
+  overallLabel: 'High' | 'Medium' | 'Low';
+  volumeMultiplier: number;
+}
+
+const HIGH_VALUE_COMP_TYPES = new Set(['ic_bga', 'ic_tqfp', 'power_module']);
+
+interface BOMLineForBand {
+  qty: number; unitPriceGBP: number; lineConf: number;
+  ocrExtracted: boolean; componentType?: string; partNumber?: string;
+}
+
+function computeConfidenceBand(
+  bom: BOMLineForBand[],
+  fabCostMid: number,
+  ocrQuality: string,
+  volumeMultiplier: number,
+): PCBConfidenceBand {
+  let bomMid = 0, ocrCount = 0, weightedConfSum = 0, totalQtySum = 0, unconfirmedHighValue = 0;
+  for (const line of bom) {
+    const lineTotal = line.qty * line.unitPriceGBP;
+    bomMid += lineTotal;
+    if (line.ocrExtracted) ocrCount++;
+    weightedConfSum += line.lineConf * line.qty;
+    totalQtySum += line.qty;
+    const isHighValue = HIGH_VALUE_COMP_TYPES.has(line.componentType ?? '');
+    const hasPN = String(line.partNumber ?? '').trim().length > 0;
+    if (isHighValue && !line.ocrExtracted && !hasPN && lineTotal > 2.0) unconfirmedHighValue++;
+  }
+  const wConf = totalQtySum > 0 ? weightedConfSum / totalQtySum : 0.5;
+  const bomLow = bomMid * 0.80;
+  const bomHighMult = wConf >= 0.85 ? 1.15 : wConf >= 0.70 ? 1.30 : 1.50;
+  const bomHigh = bomMid * bomHighMult;
+  const fabLow = fabCostMid * 0.70;
+  const fabHigh = fabCostMid * 1.40;
+  const bomCL: 'High' | 'Medium' | 'Low' = wConf >= 0.85 && unconfirmedHighValue === 0 ? 'High' : wConf >= 0.65 && unconfirmedHighValue <= 1 ? 'Medium' : 'Low';
+  const fabCL: 'High' | 'Medium' | 'Low' = ocrQuality === 'high' ? 'High' : ocrQuality === 'medium' ? 'Medium' : 'Low';
+  const overall: 'High' | 'Medium' | 'Low' = bomCL === 'High' && fabCL !== 'Low' ? 'High' : (bomCL === 'Low' || fabCL === 'Low') ? 'Low' : 'Medium';
+  const r = (n: number) => Math.round(n * 100) / 100;
+  return {
+    bomCostLow: r(bomLow), bomCostMid: r(bomMid), bomCostHigh: r(bomHigh),
+    fabCostLow: r(fabLow), fabCostMid: r(fabCostMid), fabCostHigh: r(fabHigh),
+    totalLow: r(bomLow + fabLow), totalMid: r(bomMid + fabCostMid), totalHigh: r(bomHigh + fabHigh),
+    unconfirmedHighValueCount: unconfirmedHighValue,
+    ocrConfirmedCount: ocrCount,
+    weightedBOMConfidence: Math.round(wConf * 100) / 100,
+    bomConfidenceLabel: bomCL, fabConfidenceLabel: fabCL, overallLabel: overall,
+    volumeMultiplier,
+  };
+}
+
+// Apply volume correction and flag unconfirmed high-value ICs in the BOM array
+function flagAndEnrichBOM(
+  bom: Array<Record<string, unknown>>,
+  volumeMultiplier: number,
+): Array<Record<string, unknown>> {
+  return bom.map(line => {
+    const unitPrice = Number(line.unitPriceGBP ?? 0);
+    const qty = Number(line.qty ?? 1);
+    const adj = unitPrice * volumeMultiplier;
+    const lineTotal = adj * qty;
+    const isHighValue = HIGH_VALUE_COMP_TYPES.has(String(line.componentType ?? ''));
+    const hasPN = String(line.partNumber ?? '').trim().length > 0;
+    const isOCR = Boolean(line.ocrExtracted);
+    return {
+      ...line,
+      unitPriceGBP: Math.round(adj * 10000) / 10000,
+      lineTotalGBP: Math.round(lineTotal * 100) / 100,
+      volumeAdjusted: volumeMultiplier !== 1.0,
+      unconfirmedHighValue: isHighValue && !isOCR && !hasPN && lineTotal > 2.0,
+    };
+  });
+}
+
 const router = Router();
 const upload = multer({
   storage: multer.memoryStorage(),
@@ -156,8 +254,14 @@ function buildICPriceHints(markings: string[], _domain: string): string {
 interface Stage1Result { domain: string; conf: number; hints: string[] }
 interface OCRResult { icMarkings: string[]; refDesGroups: string[]; connectors: string[]; boardText: string[]; extractionQuality: string }
 
-function buildUserPrompt(ocr: OCRResult, stage1: Stage1Result, domain: string): string {
-  return `=== STAGE 1 CLASSIFICATION ===
+function buildUserPrompt(ocr: OCRResult, stage1: Stage1Result, domain: string, orderQty?: number): string {
+  const volumeNote = orderQty && orderQty < 100000
+    ? `VOLUME CONTEXT: Target order quantity is ${orderQty} units. Pricing table below is calibrated to 100K — the server will apply a volume correction factor after your analysis. Use 100K pricing anchors as instructed. Note this correction in analysisLimitations.\n\n`
+    : '';
+  const automotiveNote = domain === 'automotive_adas'
+    ? `CRITICAL — AUTOMOTIVE GRADE PRICING MANDATORY: Every component must be priced at AEC-Q qualified automotive grade. Apply 3–8× consumer price for all ICs. Apply 3–6× for passives (MLCC, resistors). Set automotive=true for all ICs and safety-critical passives. Never use consumer pricing on this board.\n\n`
+    : '';
+  return `${volumeNote}${automotiveNote}=== STAGE 1 CLASSIFICATION ===
 Board domain: ${domain} (confidence: ${stage1.conf})
 Visual hints: ${stage1.hints.join(', ')}
 
@@ -383,7 +487,8 @@ router.post('/analyze-image', upload.fields([
   const multiImageNote = multiImage
     ? `\n\nNOTE: ${imageFiles.length} PCB photos provided (${imageLabels.slice(0, imageFiles.length).join(', ')}). Use ALL images together for maximum accuracy — top side for component placement, bottom side for assembly type and solder joints, additional photos for close-up markings or specific areas of interest.`
     : '';
-  const userPromptText = buildUserPrompt(ocrResult, stage1Result, domain) + multiImageNote +
+  const reqOrderQty = parseInt(req.body?.orderQty as string ?? '100', 10) || 100;
+  const userPromptText = buildUserPrompt(ocrResult, stage1Result, domain, reqOrderQty) + multiImageNote +
     (parsedBOM.length > 0 ? buildParsedBOMContext(parsedBOM) : '');
 
   let analysis: unknown;
@@ -468,7 +573,7 @@ ${userPromptText}`;
     return;
   }
 
-  // ── Stage 4: Country-aware cost breakdown ─────────────────────────────
+  // ── Stage 4: Volume correction + confidence band + country costs ──────────
   const selectedCountry = (req.body?.country as string | undefined) ?? 'cn';
   const orderQty = parseInt(req.body?.orderQty as string ?? '100', 10) || 100;
 
@@ -476,13 +581,35 @@ ${userPromptText}`;
   let selectedCountryBreakdown: ReturnType<typeof computePCBCountryCost> | null = null;
   let volumeCurves: Record<string, ReturnType<typeof computeVolumeCurve>> = {};
   let complexityScore: ReturnType<typeof computeComplexityScore> | null = null;
+  let confidenceBand: PCBConfidenceBand | null = null;
+  const volumeMultiplier = getVolumeMultiplier(orderQty);
 
   try {
-    const a = (analysis as Record<string, unknown>);
+    const a = analysis as Record<string, unknown>;
     const boardSpec = a?.boardSpec as Record<string, unknown> ?? {};
     const assemblyData = a?.assembly as Record<string, unknown> ?? {};
     const costEst = a?.costEstimates as Record<string, unknown> ?? {};
-    const pcbFabGBP = costEst?.pcbFabGBP as { mid?: number } | undefined;
+    const pcbFabGBP = costEst?.pcbFabGBP as { min?: number; mid?: number; max?: number } | undefined;
+    const fabCostMid = Number(pcbFabGBP?.mid) || 0;
+
+    // Apply volume correction to BOM, flag unconfirmed high-value ICs
+    const rawBOM = Array.isArray(a?.bom) ? (a.bom as Array<Record<string, unknown>>) : [];
+    const enrichedBOM = flagAndEnrichBOM(rawBOM, volumeMultiplier);
+    a.bom = enrichedBOM;
+
+    // Re-sum BOM from volume-adjusted prices
+    const correctedBOMTotal = enrichedBOM.reduce((sum, line) => sum + Number(line.lineTotalGBP ?? 0), 0);
+    if (a.costEstimates && typeof a.costEstimates === 'object') {
+      (a.costEstimates as Record<string, unknown>).totalBOMCostGBP = Math.round(correctedBOMTotal * 100) / 100;
+    }
+
+    // Compute confidence band from enriched BOM + fab cost
+    confidenceBand = computeConfidenceBand(
+      enrichedBOM as unknown as BOMLineForBand[],
+      fabCostMid,
+      ocrResult.extractionQuality,
+      volumeMultiplier,
+    );
 
     const costInput: PCBCostInput = {
       widthMm:              Number(boardSpec.widthMm)             || 100,
@@ -501,7 +628,7 @@ ${userPromptText}`;
       aoiRequired:          Boolean(assemblyData.aoiRequired),
       ictTimeSec:           Number(assemblyData.ictTimeSec)       || 0,
       conformalCoatAreaCm2: 0,
-      totalBOMCostGBP:      Number(costEst?.totalBOMCostGBP)      || pcbFabGBP?.mid || 0,
+      totalBOMCostGBP:      correctedBOMTotal || Number(costEst?.totalBOMCostGBP) || pcbFabGBP?.mid || 0,
       orderQuantity:        orderQty,
     };
 
@@ -519,12 +646,11 @@ ${userPromptText}`;
       gb: computeVolumeCurve(costInput, 'gb', volumeQtys),
     };
 
-    // PCB complexity score (Feature 11).
     complexityScore = computeComplexityScore(boardSpec, assemblyData);
 
-    console.log(`[PCB] Stage 4: Country costs computed for ${COUNTRY_DISPLAY_ORDER.length} countries`);
+    console.log(`[PCB] Stage 4: qty=${orderQty} volMult=${volumeMultiplier} BOM=${correctedBOMTotal.toFixed(2)} band=${confidenceBand.overallLabel}`);
   } catch (err) {
-    console.warn('[PCB] Stage 4 country cost computation failed:', (err as Error).message);
+    console.warn('[PCB] Stage 4 failed:', (err as Error).message);
   }
 
   res.json({
@@ -535,6 +661,8 @@ ${userPromptText}`;
     countryComparison,
     volumeCurves,
     complexityScore,
+    confidenceBand,
+    volumeMultiplier,
   });
 });
 
@@ -703,7 +831,7 @@ router.post('/reanalyze', upload.fields([
     return;
   }
 
-  // ── Stage 4: Country-aware cost breakdown ─────────────────────────────
+  // ── Stage 4: Volume correction + confidence band + country costs ──────────
   const selectedCountry = (req.body?.country as string | undefined) ?? 'cn';
   const orderQty = parseInt(req.body?.orderQty as string ?? '100', 10) || 100;
 
@@ -711,13 +839,32 @@ router.post('/reanalyze', upload.fields([
   let selectedCountryBreakdown: ReturnType<typeof computePCBCountryCost> | null = null;
   let volumeCurves: Record<string, ReturnType<typeof computeVolumeCurve>> = {};
   let complexityScore: ReturnType<typeof computeComplexityScore> | null = null;
+  let confidenceBand: PCBConfidenceBand | null = null;
+  const volumeMultiplier = getVolumeMultiplier(orderQty);
 
   try {
-    const a = (analysis as Record<string, unknown>);
+    const a = analysis as Record<string, unknown>;
     const boardSpec = a?.boardSpec as Record<string, unknown> ?? {};
     const assemblyData = a?.assembly as Record<string, unknown> ?? {};
     const costEst = a?.costEstimates as Record<string, unknown> ?? {};
-    const pcbFabGBP = costEst?.pcbFabGBP as { mid?: number } | undefined;
+    const pcbFabGBP = costEst?.pcbFabGBP as { min?: number; mid?: number; max?: number } | undefined;
+    const fabCostMid = Number(pcbFabGBP?.mid) || 0;
+
+    const rawBOM = Array.isArray(a?.bom) ? (a.bom as Array<Record<string, unknown>>) : [];
+    const enrichedBOM = flagAndEnrichBOM(rawBOM, volumeMultiplier);
+    a.bom = enrichedBOM;
+
+    const correctedBOMTotal = enrichedBOM.reduce((sum, line) => sum + Number(line.lineTotalGBP ?? 0), 0);
+    if (a.costEstimates && typeof a.costEstimates === 'object') {
+      (a.costEstimates as Record<string, unknown>).totalBOMCostGBP = Math.round(correctedBOMTotal * 100) / 100;
+    }
+
+    confidenceBand = computeConfidenceBand(
+      enrichedBOM as unknown as BOMLineForBand[],
+      fabCostMid,
+      'high', // reanalyze always uses high OCR quality (user corrections applied)
+      volumeMultiplier,
+    );
 
     const costInput: PCBCostInput = {
       widthMm:              Number(boardSpec.widthMm)             || 100,
@@ -736,7 +883,7 @@ router.post('/reanalyze', upload.fields([
       aoiRequired:          Boolean(assemblyData.aoiRequired),
       ictTimeSec:           Number(assemblyData.ictTimeSec)       || 0,
       conformalCoatAreaCm2: 0,
-      totalBOMCostGBP:      Number(costEst?.totalBOMCostGBP)      || pcbFabGBP?.mid || 0,
+      totalBOMCostGBP:      correctedBOMTotal || Number(costEst?.totalBOMCostGBP) || pcbFabGBP?.mid || 0,
       orderQuantity:        orderQty,
     };
 
@@ -755,9 +902,9 @@ router.post('/reanalyze', upload.fields([
 
     complexityScore = computeComplexityScore(boardSpec, assemblyData);
 
-    console.log(`[PCB/reanalyze] Stage 4: Country costs computed for ${COUNTRY_DISPLAY_ORDER.length} countries`);
+    console.log(`[PCB/reanalyze] Stage 4: qty=${orderQty} volMult=${volumeMultiplier} BOM=${correctedBOMTotal.toFixed(2)} band=${confidenceBand.overallLabel}`);
   } catch (err) {
-    console.warn('[PCB/reanalyze] Stage 4 country cost computation failed:', (err as Error).message);
+    console.warn('[PCB/reanalyze] Stage 4 failed:', (err as Error).message);
   }
 
   res.json({
@@ -768,6 +915,8 @@ router.post('/reanalyze', upload.fields([
     countryComparison,
     volumeCurves,
     complexityScore,
+    confidenceBand,
+    volumeMultiplier,
   });
 });
 

@@ -1322,6 +1322,19 @@ function _processPhotoFile(file: File): void {
 interface AgentMessage { role: 'user' | 'assistant'; content: string }
 interface AgentAction { type: string; commodity: string; partName: string; params: Record<string, unknown> }
 
+interface PCBConfidenceBand {
+  bomCostLow: number; bomCostMid: number; bomCostHigh: number;
+  fabCostLow: number; fabCostMid: number; fabCostHigh: number;
+  totalLow: number; totalMid: number; totalHigh: number;
+  unconfirmedHighValueCount: number;
+  ocrConfirmedCount: number;
+  weightedBOMConfidence: number;
+  bomConfidenceLabel: 'High' | 'Medium' | 'Low';
+  fabConfidenceLabel: 'High' | 'Medium' | 'Low';
+  overallLabel: 'High' | 'Medium' | 'Low';
+  volumeMultiplier: number;
+}
+
 interface PCBBOMItem {
   refDes: string;
   componentType: string;
@@ -1334,9 +1347,12 @@ interface PCBBOMItem {
   moq: number;
   automotive: boolean;
   highCost: boolean;
-  partNumber?: string;       // IC part number from OCR
-  lineConf?: number;         // 0–1 confidence for this BOM line
-  ocrExtracted?: boolean;    // true if part number came from OCR pass
+  partNumber?: string;
+  lineConf?: number;
+  ocrExtracted?: boolean;
+  unconfirmedHighValue?: boolean;
+  volumeAdjusted?: boolean;
+  lineTotalGBP?: number;
 }
 interface PCBCountryBreakdown {
   countryId: string;
@@ -1427,9 +1443,12 @@ interface PCBImageAnalysis {
   _selectedCountryBreakdown?: PCBCountryBreakdown;
   _countryComparison?: PCBCountryBreakdown[];
   _volumeCurves?: Record<string, VolumeCurvePoint[]>;
-  _originalAIValues?: PCBImageAnalysis;  // snapshot before user edits
-  _isReanalyzed?: boolean;               // true after re-analysis completes
-  _costDeltas?: Record<string, number>;  // per-country total delta vs original (positive = more expensive)
+  _originalAIValues?: PCBImageAnalysis;
+  _isReanalyzed?: boolean;
+  _costDeltas?: Record<string, number>;
+  // Accuracy improvements
+  _confidenceBand?: PCBConfidenceBand;
+  _volumeMultiplier?: number;
 }
 
 let agentHistory: AgentMessage[] = [];
@@ -6060,13 +6079,14 @@ function buildPCBImageUploadZone(): string {
           <button class="btn btn-primary btn-sm" id="pcb-img-analyze-btn" disabled>🔬 Analyze PCB</button>
         </div>
 
-        <!-- Optional BOM/netlist file upload (Priority 2) -->
-        <div style="margin-top:8px;font-size:0.70rem">
-          <label style="color:var(--text-muted)">Optional: attach BOM/netlist file</label>
-          <div style="display:flex;align-items:center;gap:6px;margin-top:4px;justify-content:center;flex-wrap:wrap">
+        <!-- BOM/netlist file upload — attaching a BOM file significantly improves cost accuracy -->
+        <div style="margin-top:10px;padding:10px 12px;background:rgba(230,81,0,0.06);border:1px dashed rgba(230,81,0,0.35);border-radius:8px">
+          <div style="font-size:0.72rem;font-weight:600;color:var(--accent);margin-bottom:4px">📋 Attach BOM File — Recommended for better cost accuracy</div>
+          <div style="font-size:0.65rem;color:var(--text-muted);margin-bottom:8px">Uploading your BOM (.csv / .xml / .txt) locks in real part numbers and quantities, removing AI guesswork on component pricing. Without a BOM, AI extracts from the image only.</div>
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
             <input type="file" id="pcb-bom-input" accept=".csv,.xml,.txt" style="display:none"/>
-            <button class="btn btn-secondary btn-sm" id="pcb-bom-pick-btn" style="font-size:0.65rem">📋 Attach BOM</button>
-            <span id="pcb-bom-filename" style="font-size:0.65rem;color:var(--text-muted)">No file — AI will extract BOM from image</span>
+            <button class="btn btn-primary btn-sm" id="pcb-bom-pick-btn" style="font-size:0.68rem;padding:4px 12px">📋 Attach BOM File</button>
+            <span id="pcb-bom-filename" style="font-size:0.65rem;color:var(--text-muted);font-style:italic">No file selected — AI will infer BOM from image</span>
           </div>
         </div>
 
@@ -6266,6 +6286,8 @@ async function analyzePCBImages(): Promise<void> {
       countryComparison?: PCBCountryBreakdown[];
       volumeCurves?: Record<string, VolumeCurvePoint[]>;
       complexityScore?: PCBComplexityScore;
+      confidenceBand?: PCBConfidenceBand;
+      volumeMultiplier?: number;
     };
     pcbImageResult = data.analysis;
     // Attach country data to analysis object for rendering
@@ -6275,6 +6297,8 @@ async function analyzePCBImages(): Promise<void> {
       pcbImageResult._countryComparison = data.countryComparison ?? [];
       pcbImageResult._volumeCurves = data.volumeCurves ?? undefined;
       if (data.complexityScore) pcbImageResult.complexityScore = data.complexityScore;
+      if (data.confidenceBand) pcbImageResult._confidenceBand = data.confidenceBand;
+      if (data.volumeMultiplier !== undefined) pcbImageResult._volumeMultiplier = data.volumeMultiplier;
     }
     injectPCBImagePanel();
   } catch (err) {
@@ -6529,6 +6553,8 @@ async function reanalyzePCBWithCorrections(): Promise<void> {
       countryComparison?: PCBCountryBreakdown[];
       volumeCurves?: Record<string, VolumeCurvePoint[]>;
       complexityScore?: PCBComplexityScore;
+      confidenceBand?: PCBConfidenceBand;
+      volumeMultiplier?: number;
     };
 
     // Compute cost deltas (new total - original total per country)
@@ -6549,6 +6575,8 @@ async function reanalyzePCBWithCorrections(): Promise<void> {
       pcbImageResult._countryComparison = data.countryComparison ?? [];
       pcbImageResult._volumeCurves = data.volumeCurves ?? undefined;
       if (data.complexityScore) pcbImageResult.complexityScore = data.complexityScore;
+      if (data.confidenceBand) pcbImageResult._confidenceBand = data.confidenceBand;
+      if (data.volumeMultiplier !== undefined) pcbImageResult._volumeMultiplier = data.volumeMultiplier;
       pcbImageResult._originalAIValues = originalAIValues;
       pcbImageResult._isReanalyzed = true;
       pcbImageResult._costDeltas = costDeltas;
@@ -6583,7 +6611,7 @@ function buildPCBImagePanel(r: PCBImageAnalysis): string {
       <td>${item.pkg}</td>
       <td>${item.value}</td>
       <td>${item.voltage}</td>
-      <td>${item.partNumber ? `<span style="font-size:0.68rem;font-family:monospace;background:var(--border);padding:1px 4px;border-radius:3px">${item.partNumber}${item.ocrExtracted ? ' <span title="OCR extracted" style="color:var(--green)">&#10003;</span>' : ''}</span>` : ''}${(item.lineConf !== undefined && item.lineConf < 0.6) ? ' <span title="Low confidence" style="color:orange;font-size:0.65rem">&#9888;</span>' : ''}</td>
+      <td>${item.partNumber ? `<span style="font-size:0.68rem;font-family:monospace;background:var(--border);padding:1px 4px;border-radius:3px">${item.partNumber}${item.ocrExtracted ? ' <span title="OCR extracted" style="color:var(--green)">&#10003;</span>' : ''}</span>` : ''}${(item.lineConf !== undefined && item.lineConf < 0.6) ? ' <span title="Low confidence" style="color:orange;font-size:0.65rem">&#9888;</span>' : ''}${item.unconfirmedHighValue ? ' <span title="High-value component: part number not confirmed by OCR — price may be inaccurate" style="background:#dc2626;color:#fff;font-size:0.58rem;padding:1px 4px;border-radius:3px;font-weight:700">UNCONFIRMED</span>' : ''}</td>
       <td>${pcbEditMode ? `<input class="pcb-edit-bom-qty" data-bom-idx="${i}" type="number" min="1" value="${item.qty}" style="width:50px"/>` : String(item.qty)}</td>
       <td>${pcbEditMode ? `<input class="pcb-edit-bom-price" data-bom-idx="${i}" type="number" min="0" step="0.001" value="${item.unitPriceGBP.toFixed(3)}" style="width:65px"/>` : `&#163;${item.unitPriceGBP.toFixed(3)}`}</td>
       <td>&#163;${(item.qty * item.unitPriceGBP).toFixed(2)}</td>
@@ -6657,11 +6685,47 @@ function buildPCBImagePanel(r: PCBImageAnalysis): string {
         <div class="occt-stat"><div class="occt-stat-value">${a.complexity}</div><div class="occt-stat-label">Assembly complexity</div></div>
         <div class="occt-stat"><div class="occt-stat-value">${a.reflowSides === 2 ? 'Double' : 'Single'}</div><div class="occt-stat-label">Reflow sides</div></div>
         <div class="occt-stat"><div class="occt-stat-value">&#163;${c.pcbFabGBP.min.toFixed(2)}–&#163;${c.pcbFabGBP.max.toFixed(2)}</div><div class="occt-stat-label">PCB fab est.</div></div>
-        <div class="occt-stat"><div class="occt-stat-value">&#163;${totalBOMCost}</div><div class="occt-stat-label">BOM total (${totalBOMLines} lines)</div></div>
+        <div class="occt-stat"><div class="occt-stat-value">&#163;${totalBOMCost}</div><div class="occt-stat-label">BOM total${r._volumeMultiplier && r._volumeMultiplier !== 1.0 ? ` <span title="Volume-adjusted from 100K baseline (×${r._volumeMultiplier.toFixed(2)})" style="font-size:0.58rem;background:var(--accent);color:#fff;padding:1px 4px;border-radius:3px">VOL ×${r._volumeMultiplier.toFixed(2)}</span>` : ''}</div></div>
         <div class="occt-stat"><div class="occt-stat-value">${r.stage1Classification?.domain?.replace(/_/g,' ') ?? 'general'}</div><div class="occt-stat-label">Board domain</div></div>
         <div class="occt-stat"><div class="occt-stat-value">${r.ocrExtraction?.icMarkings?.length ?? 0}</div><div class="occt-stat-label">ICs identified</div></div>
         ${complexityScoreHtml}
       </div>`}
+
+      ${r._confidenceBand ? (() => {
+        const cb = r._confidenceBand!;
+        const clr = (l: string) => l === 'High' ? '#16a34a' : l === 'Medium' ? '#d97706' : '#dc2626';
+        const ucBadge = cb.unconfirmedHighValueCount > 0
+          ? `<span style="background:#dc2626;color:#fff;font-size:0.6rem;padding:1px 5px;border-radius:3px;font-weight:700;margin-left:4px">⚠ ${cb.unconfirmedHighValueCount} UNCONFIRMED IC${cb.unconfirmedHighValueCount > 1 ? 's' : ''}</span>`
+          : '';
+        const volNote = cb.volumeMultiplier !== 1.0
+          ? `<span style="font-size:0.65rem;color:var(--text-muted);margin-left:6px">Volume factor ×${cb.volumeMultiplier.toFixed(2)} applied to 100K baseline</span>`
+          : '';
+        return `<div style="margin-top:8px;padding:10px 12px;background:var(--card-bg);border:1px solid var(--border);border-radius:8px;font-size:0.72rem">
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px">
+            <strong style="font-size:0.74rem">Cost Confidence Band</strong>
+            <span style="background:${clr(cb.overallLabel)};color:#fff;font-size:0.6rem;padding:1px 6px;border-radius:10px;font-weight:700">${cb.overallLabel}</span>
+            ${ucBadge}${volNote}
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px">
+            <div style="padding:8px;background:rgba(0,0,0,0.04);border-radius:6px">
+              <div style="font-size:0.65rem;color:var(--text-muted);margin-bottom:4px">BOM Components <span style="background:${clr(cb.bomConfidenceLabel)};color:#fff;font-size:0.56rem;padding:0 4px;border-radius:8px">${cb.bomConfidenceLabel}</span></div>
+              <div style="font-size:0.8rem;font-weight:700">&#163;${cb.bomCostMid.toFixed(2)}</div>
+              <div style="font-size:0.62rem;color:var(--text-muted)">&#163;${cb.bomCostLow.toFixed(2)} – &#163;${cb.bomCostHigh.toFixed(2)}</div>
+              <div style="font-size:0.6rem;color:var(--text-muted);margin-top:2px">${cb.ocrConfirmedCount} OCR confirmed · ${Math.round(cb.weightedBOMConfidence*100)}% avg conf</div>
+            </div>
+            <div style="padding:8px;background:rgba(0,0,0,0.04);border-radius:6px">
+              <div style="font-size:0.65rem;color:var(--text-muted);margin-bottom:4px">PCB Fabrication <span style="background:${clr(cb.fabConfidenceLabel)};color:#fff;font-size:0.56rem;padding:0 4px;border-radius:8px">${cb.fabConfidenceLabel}</span></div>
+              <div style="font-size:0.8rem;font-weight:700">&#163;${cb.fabCostMid.toFixed(2)}</div>
+              <div style="font-size:0.62rem;color:var(--text-muted)">&#163;${cb.fabCostLow.toFixed(2)} – &#163;${cb.fabCostHigh.toFixed(2)}</div>
+            </div>
+            <div style="padding:8px;background:rgba(0,0,0,0.04);border-radius:6px;border:1px solid var(--border)">
+              <div style="font-size:0.65rem;color:var(--text-muted);margin-bottom:4px">Total Range <span style="background:${clr(cb.overallLabel)};color:#fff;font-size:0.56rem;padding:0 4px;border-radius:8px">${cb.overallLabel}</span></div>
+              <div style="font-size:0.8rem;font-weight:700;color:var(--accent)">&#163;${cb.totalMid.toFixed(2)}</div>
+              <div style="font-size:0.62rem;color:var(--text-muted)">&#163;${cb.totalLow.toFixed(2)} – &#163;${cb.totalHigh.toFixed(2)}</div>
+            </div>
+          </div>
+        </div>`;
+      })() : ''}
 
       <div class="pcb-apply-row">
         <button class="btn btn-primary btn-sm" id="pcb-apply-fab-btn">⚡ Apply to PCB Fab Form</button>
