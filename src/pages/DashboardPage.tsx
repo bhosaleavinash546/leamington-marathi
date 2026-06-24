@@ -47,6 +47,176 @@ const TIPS = [
   { icon: Activity, tip: 'Analyse at part level for surgical precision, or subassembly for broader DFMA wins.', color: 'text-purple-400' },
 ];
 
+// ── helpers shared between PipelineKpiSection and module ──────────────────────
+const GATE_COLORS: Record<string, string> = { G0: '#94a3b8', G1: '#fbbf24', G2: '#60a5fa', G3: '#34d399' };
+const PIE_COLORS = ['#f59e0b', '#60a5fa', '#34d399', '#a78bfa', '#fb923c'];
+const GATE_DOT: Record<string, string> = { G0: 'bg-slate-400', G1: 'bg-amber-400', G2: 'bg-blue-400', G3: 'bg-green-400' };
+
+function fmtM(n: number) {
+  if (!n) return '£0';
+  if (n >= 1_000_000) return `£${(n / 1_000_000).toFixed(1)}M`;
+  if (n >= 1_000) return `£${Math.round(n / 1_000)}k`;
+  return `£${Math.round(n)}`;
+}
+
+function PipelineKpiSection({ kpi }: { kpi: PipelineKpi }) {
+  const gateData = ['G0', 'G1', 'G2', 'G3'].map((g) => ({
+    name: g,
+    saving: Math.round((kpi.gateSavings[g] || 0) / 1000),
+    count: kpi.gateCount[g] || 0,
+    fill: GATE_COLORS[g],
+  }));
+  const vehicleData = Object.entries(kpi.vehicleSavings)
+    .map(([name, value]) => ({ name, value: Math.round(value / 1000) }))
+    .sort((a, b) => b.value - a.value);
+  const commData = Object.entries(kpi.commoditySavings)
+    .map(([name, value]) => ({
+      name: name.length > 16 ? name.slice(0, 14) + '…' : name,
+      saving: Math.round(value / 1000),
+    }))
+    .sort((a, b) => b.saving - a.saving)
+    .slice(0, 8);
+  const yearData = Object.entries(kpi.yearTimeline)
+    .map(([year, value]) => ({ year, saving: Math.round(value / 1000) }))
+    .sort((a, b) => Number(a.year) - Number(b.year));
+
+  return (
+    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.08 }} className="space-y-5">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <GitMerge size={18} className="text-violet-400" />
+          <h2 className="text-white font-bold text-lg">Idea Pipeline KPIs</h2>
+          <span className="px-2 py-0.5 rounded-full bg-violet-500/15 border border-violet-500/25 text-violet-300 text-xs">{kpi.totalCases} ideas</span>
+        </div>
+        <Link to="/pipeline" className="flex items-center gap-1 text-violet-400 hover:text-violet-300 text-sm transition-colors">
+          View Pipeline <ChevronRight size={14} />
+        </Link>
+      </div>
+
+      {/* KPI cards */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        {[
+          { label: 'Total Portfolio', value: fmtM(kpi.totalPotential), color: 'text-gold-400', bg: 'bg-gold-500/8 border-gold-500/20' },
+          { label: 'In Progress (G1+G2)', value: fmtM(kpi.inProgressSaving), color: 'text-blue-400', bg: 'bg-blue-500/8 border-blue-500/20' },
+          { label: 'Confirmed (G3)', value: fmtM(kpi.confirmedSaving), color: 'text-green-400', bg: 'bg-green-500/8 border-green-500/20' },
+          { label: 'Idea Pipeline', value: `${kpi.totalCases} ideas`, color: 'text-violet-400', bg: 'bg-violet-500/8 border-violet-500/20' },
+        ].map((k) => (
+          <div key={k.label} className={`rounded-xl p-4 border ${k.bg}`}>
+            <div className="text-slate-500 text-xs mb-1">{k.label}</div>
+            <div className={`text-xl font-bold ${k.color}`}>{k.value}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* Charts row */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+        <div className="bg-navy-900 border border-white/10 rounded-2xl p-5">
+          <h3 className="text-white font-semibold text-sm mb-4">Gate-wise Savings (£k)</h3>
+          <ResponsiveContainer width="100%" height={160}>
+            <BarChart data={gateData} margin={{ top: 0, right: 8, bottom: 0, left: 0 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+              <XAxis dataKey="name" tick={{ fill: '#94a3b8', fontSize: 12 }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fill: '#64748b', fontSize: 11 }} axisLine={false} tickLine={false} />
+              <Tooltip
+                contentStyle={{ background: '#0f1629', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8 }}
+                labelStyle={{ color: '#fff' }}
+                formatter={(v: any, _: any, entry: any) => [`${fmtM((Number(v) || 0) * 1000)} (${entry?.payload?.count ?? 0} ideas)`, 'Savings']}
+              />
+              <Bar dataKey="saving" radius={[4, 4, 0, 0]}>
+                {gateData.map((entry) => <Cell key={entry.name} fill={entry.fill} />)}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+
+        <div className="bg-navy-900 border border-white/10 rounded-2xl p-5">
+          <h3 className="text-white font-semibold text-sm mb-4">Vehicle-wise Annual Saving</h3>
+          {vehicleData.length > 0 ? (
+            <div className="flex items-center gap-4">
+              <ResponsiveContainer width={140} height={140}>
+                <PieChart>
+                  <Pie data={vehicleData} cx="50%" cy="50%" innerRadius={40} outerRadius={65} dataKey="value" paddingAngle={2}>
+                    {vehicleData.map((_, i) => <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />)}
+                  </Pie>
+                  <Tooltip
+                    contentStyle={{ background: '#0f1629', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8 }}
+                    formatter={(v: any) => [`${fmtM((Number(v) || 0) * 1000)}`, 'Annual saving']}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+              <div className="flex flex-col gap-1.5">
+                {vehicleData.map((v, i) => (
+                  <div key={v.name} className="flex items-center gap-2 text-xs">
+                    <span className="w-2.5 h-2.5 rounded-sm flex-shrink-0" style={{ background: PIE_COLORS[i % PIE_COLORS.length] }} />
+                    <span className="text-slate-300">{v.name}</span>
+                    <span className="text-slate-500 ml-auto">{fmtM(v.value * 1000)}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : <p className="text-slate-600 text-sm">No vehicle data yet.</p>}
+        </div>
+      </div>
+
+      {/* Bottom row */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+        <div className="bg-navy-900 border border-white/10 rounded-2xl p-5 lg:col-span-1">
+          <h3 className="text-white font-semibold text-sm mb-4">Commodity-wise (£k)</h3>
+          {commData.length > 0 ? (
+            <ResponsiveContainer width="100%" height={180}>
+              <BarChart data={commData} layout="vertical" margin={{ top: 0, right: 8, bottom: 0, left: 0 }}>
+                <XAxis type="number" tick={{ fill: '#64748b', fontSize: 10 }} axisLine={false} tickLine={false} />
+                <YAxis type="category" dataKey="name" tick={{ fill: '#94a3b8', fontSize: 10 }} axisLine={false} tickLine={false} width={80} />
+                <Tooltip
+                  contentStyle={{ background: '#0f1629', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8 }}
+                  formatter={(v: any) => [fmtM((Number(v) || 0) * 1000), 'Saving']}
+                />
+                <Bar dataKey="saving" fill="#f59e0b" radius={[0, 4, 4, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          ) : <p className="text-slate-600 text-sm">No commodity data yet.</p>}
+        </div>
+
+        <div className="bg-navy-900 border border-white/10 rounded-2xl p-5 lg:col-span-1">
+          <h3 className="text-white font-semibold text-sm mb-4">Savings Timeline (£k)</h3>
+          {yearData.length > 0 ? (
+            <ResponsiveContainer width="100%" height={180}>
+              <BarChart data={yearData} margin={{ top: 0, right: 8, bottom: 0, left: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+                <XAxis dataKey="year" tick={{ fill: '#94a3b8', fontSize: 12 }} axisLine={false} tickLine={false} />
+                <YAxis tick={{ fill: '#64748b', fontSize: 11 }} axisLine={false} tickLine={false} />
+                <Tooltip
+                  contentStyle={{ background: '#0f1629', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8 }}
+                  formatter={(v: any) => [fmtM((Number(v) || 0) * 1000), 'Annual saving']}
+                />
+                <Bar dataKey="saving" fill="#60a5fa" radius={[4, 4, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          ) : <p className="text-slate-600 text-sm">No timeline data yet.</p>}
+        </div>
+
+        <div className="bg-navy-900 border border-white/10 rounded-2xl p-5 lg:col-span-1">
+          <h3 className="text-white font-semibold text-sm mb-4">Top Ideas by Saving</h3>
+          <div className="space-y-2">
+            {kpi.topIdeas.slice(0, 6).map((idea, i) => (
+              <div key={idea.id} className="flex items-center gap-2.5">
+                <span className="text-slate-600 text-xs w-4 flex-shrink-0">{i + 1}</span>
+                <span className={`w-2 h-2 rounded-full flex-shrink-0 ${GATE_DOT[idea.gate] || 'bg-slate-500'}`} />
+                <div className="flex-1 min-w-0">
+                  <p className="text-white text-xs font-medium truncate">{idea.ideaTitle}</p>
+                  <p className="text-slate-600 text-xs">{idea.ideaNumber}</p>
+                </div>
+                <span className="text-gold-400 text-xs font-bold flex-shrink-0">{fmtM(idea.totalAnnualSaving)}</span>
+              </div>
+            ))}
+            {kpi.topIdeas.length === 0 && <p className="text-slate-600 text-sm">No ideas yet.</p>}
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
 const WHATS_NEW = [
   'ROI Auto-Ranking — sort ideas by Best ROI, Highest Savings, or Easiest First',
   'Status Filter — filter ideas by annotation status (Approved / Investigating / Rejected / On Hold)',
@@ -266,172 +436,9 @@ export default function DashboardPage() {
         </motion.div>
 
         {/* ── Pipeline KPI Dashboard ── */}
-        {pipelineKpi && pipelineKpi.totalCases > 0 && (() => {
-          function fmtM(n: number) {
-            if (!n) return '£0';
-            if (n >= 1_000_000) return `£${(n / 1_000_000).toFixed(1)}M`;
-            if (n >= 1_000) return `£${Math.round(n / 1_000)}k`;
-            return `£${Math.round(n)}`;
-          }
-          const GATE_COLORS: Record<string, string> = { G0: '#94a3b8', G1: '#fbbf24', G2: '#60a5fa', G3: '#34d399' };
-          const gateData = ['G0','G1','G2','G3'].map(g => ({
-            name: g, saving: Math.round((pipelineKpi.gateSavings[g] || 0) / 1000),
-            count: pipelineKpi.gateCount[g] || 0, fill: GATE_COLORS[g],
-          }));
-          const vehicleData = Object.entries(pipelineKpi.vehicleSavings)
-            .map(([name, value]) => ({ name, value: Math.round(value / 1000) }))
-            .sort((a, b) => b.value - a.value);
-          const PIE_COLORS = ['#f59e0b','#60a5fa','#34d399','#a78bfa','#fb923c'];
-          const commData = Object.entries(pipelineKpi.commoditySavings)
-            .map(([name, value]) => ({ name: name.length > 16 ? name.slice(0,14)+'…' : name, saving: Math.round(value / 1000) }))
-            .sort((a, b) => b.saving - a.saving).slice(0, 8);
-          const yearData = Object.entries(pipelineKpi.yearTimeline)
-            .map(([year, value]) => ({ year, saving: Math.round(value / 1000) }))
-            .sort((a, b) => Number(a.year) - Number(b.year));
-          return (
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.08 }} className="space-y-5">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <GitMerge size={18} className="text-violet-400" />
-                  <h2 className="text-white font-bold text-lg">Idea Pipeline KPIs</h2>
-                  <span className="px-2 py-0.5 rounded-full bg-violet-500/15 border border-violet-500/25 text-violet-300 text-xs">{pipelineKpi.totalCases} ideas</span>
-                </div>
-                <Link to="/pipeline" className="flex items-center gap-1 text-violet-400 hover:text-violet-300 text-sm transition-colors">
-                  View Pipeline <ChevronRight size={14} />
-                </Link>
-              </div>
-
-              {/* KPI cards row */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                {[
-                  { label: 'Total Portfolio', value: fmtM(pipelineKpi.totalPotential), color: 'text-gold-400', bg: 'bg-gold-500/8 border-gold-500/20' },
-                  { label: 'In Progress (G1+G2)', value: fmtM(pipelineKpi.inProgressSaving), color: 'text-blue-400', bg: 'bg-blue-500/8 border-blue-500/20' },
-                  { label: 'Confirmed (G3)', value: fmtM(pipelineKpi.confirmedSaving), color: 'text-green-400', bg: 'bg-green-500/8 border-green-500/20' },
-                  { label: 'Idea Pipeline', value: `${pipelineKpi.totalCases} ideas`, color: 'text-violet-400', bg: 'bg-violet-500/8 border-violet-500/20' },
-                ].map(k => (
-                  <div key={k.label} className={`rounded-xl p-4 border ${k.bg}`}>
-                    <div className="text-slate-500 text-xs mb-1">{k.label}</div>
-                    <div className={`text-xl font-bold ${k.color}`}>{k.value}</div>
-                  </div>
-                ))}
-              </div>
-
-              {/* Charts row */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-                {/* Gate-wise savings */}
-                <div className="bg-navy-900 border border-white/10 rounded-2xl p-5">
-                  <h3 className="text-white font-semibold text-sm mb-4">Gate-wise Savings (£k)</h3>
-                  <ResponsiveContainer width="100%" height={160}>
-                    <BarChart data={gateData} margin={{ top: 0, right: 8, bottom: 0, left: 0 }}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-                      <XAxis dataKey="name" tick={{ fill: '#94a3b8', fontSize: 12 }} axisLine={false} tickLine={false} />
-                      <YAxis tick={{ fill: '#64748b', fontSize: 11 }} axisLine={false} tickLine={false} />
-                      <Tooltip
-                        contentStyle={{ background: '#0f1629', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8 }}
-                        labelStyle={{ color: '#fff' }}
-                        formatter={(v: any, _: any, entry: any) => [`${fmtM((Number(v) || 0) * 1000)} (${entry?.payload?.count ?? 0} ideas)`, 'Savings']}
-                      />
-                      <Bar dataKey="saving" radius={[4,4,0,0]}>
-                        {gateData.map(entry => <Cell key={entry.name} fill={entry.fill} />)}
-                      </Bar>
-                    </BarChart>
-                  </ResponsiveContainer>
-                </div>
-
-                {/* Vehicle-wise savings donut */}
-                <div className="bg-navy-900 border border-white/10 rounded-2xl p-5">
-                  <h3 className="text-white font-semibold text-sm mb-4">Vehicle-wise Annual Saving</h3>
-                  {vehicleData.length > 0 ? (
-                    <div className="flex items-center gap-4">
-                      <ResponsiveContainer width={140} height={140}>
-                        <PieChart>
-                          <Pie data={vehicleData} cx="50%" cy="50%" innerRadius={40} outerRadius={65} dataKey="value" paddingAngle={2}>
-                            {vehicleData.map((_, i) => <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />)}
-                          </Pie>
-                          <Tooltip
-                            contentStyle={{ background: '#0f1629', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8 }}
-                            formatter={(v: any) => [`${fmtM((Number(v) || 0) * 1000)}`, 'Annual saving']}
-                          />
-                        </PieChart>
-                      </ResponsiveContainer>
-                      <div className="flex flex-col gap-1.5">
-                        {vehicleData.map((v, i) => (
-                          <div key={v.name} className="flex items-center gap-2 text-xs">
-                            <span className="w-2.5 h-2.5 rounded-sm flex-shrink-0" style={{ background: PIE_COLORS[i % PIE_COLORS.length] }} />
-                            <span className="text-slate-300">{v.name}</span>
-                            <span className="text-slate-500 ml-auto">{fmtM(v.value * 1000)}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  ) : <p className="text-slate-600 text-sm">No vehicle data yet.</p>}
-                </div>
-              </div>
-
-              {/* Bottom row: Commodity + Year timeline + Top ideas */}
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-                {/* Commodity savings */}
-                <div className="bg-navy-900 border border-white/10 rounded-2xl p-5 lg:col-span-1">
-                  <h3 className="text-white font-semibold text-sm mb-4">Commodity-wise (£k)</h3>
-                  {commData.length > 0 ? (
-                    <ResponsiveContainer width="100%" height={180}>
-                      <BarChart data={commData} layout="vertical" margin={{ top: 0, right: 8, bottom: 0, left: 0 }}>
-                        <XAxis type="number" tick={{ fill: '#64748b', fontSize: 10 }} axisLine={false} tickLine={false} />
-                        <YAxis type="category" dataKey="name" tick={{ fill: '#94a3b8', fontSize: 10 }} axisLine={false} tickLine={false} width={80} />
-                        <Tooltip
-                          contentStyle={{ background: '#0f1629', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8 }}
-                          formatter={(v: any) => [fmtM((Number(v) || 0) * 1000), 'Saving']}
-                        />
-                        <Bar dataKey="saving" fill="#f59e0b" radius={[0,4,4,0]} />
-                      </BarChart>
-                    </ResponsiveContainer>
-                  ) : <p className="text-slate-600 text-sm">No commodity data yet.</p>}
-                </div>
-
-                {/* Year timeline */}
-                <div className="bg-navy-900 border border-white/10 rounded-2xl p-5 lg:col-span-1">
-                  <h3 className="text-white font-semibold text-sm mb-4">Savings Timeline (£k)</h3>
-                  {yearData.length > 0 ? (
-                    <ResponsiveContainer width="100%" height={180}>
-                      <BarChart data={yearData} margin={{ top: 0, right: 8, bottom: 0, left: 0 }}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-                        <XAxis dataKey="year" tick={{ fill: '#94a3b8', fontSize: 12 }} axisLine={false} tickLine={false} />
-                        <YAxis tick={{ fill: '#64748b', fontSize: 11 }} axisLine={false} tickLine={false} />
-                        <Tooltip
-                          contentStyle={{ background: '#0f1629', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8 }}
-                          formatter={(v: any) => [fmtM((Number(v) || 0) * 1000), 'Annual saving']}
-                        />
-                        <Bar dataKey="saving" fill="#60a5fa" radius={[4,4,0,0]} />
-                      </BarChart>
-                    </ResponsiveContainer>
-                  ) : <p className="text-slate-600 text-sm">No timeline data yet.</p>}
-                </div>
-
-                {/* Top ideas */}
-                <div className="bg-navy-900 border border-white/10 rounded-2xl p-5 lg:col-span-1">
-                  <h3 className="text-white font-semibold text-sm mb-4">Top Ideas by Saving</h3>
-                  <div className="space-y-2">
-                    {pipelineKpi.topIdeas.slice(0, 6).map((idea, i) => {
-                      const GATE_DOT: Record<string, string> = { G0: 'bg-slate-400', G1: 'bg-amber-400', G2: 'bg-blue-400', G3: 'bg-green-400' };
-                      return (
-                        <div key={idea.id} className="flex items-center gap-2.5">
-                          <span className="text-slate-600 text-xs w-4 flex-shrink-0">{i + 1}</span>
-                          <span className={`w-2 h-2 rounded-full flex-shrink-0 ${GATE_DOT[idea.gate] || 'bg-slate-500'}`} />
-                          <div className="flex-1 min-w-0">
-                            <p className="text-white text-xs font-medium truncate">{idea.ideaTitle}</p>
-                            <p className="text-slate-600 text-xs">{idea.ideaNumber}</p>
-                          </div>
-                          <span className="text-gold-400 text-xs font-bold flex-shrink-0">{fmtM(idea.totalAnnualSaving)}</span>
-                        </div>
-                      );
-                    })}
-                    {pipelineKpi.topIdeas.length === 0 && <p className="text-slate-600 text-sm">No ideas yet.</p>}
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          );
-        })()}
+        {pipelineKpi && pipelineKpi.totalCases > 0 && (
+          <PipelineKpiSection kpi={pipelineKpi} />
+        )}
 
         {/* Stats row */}
         <motion.div

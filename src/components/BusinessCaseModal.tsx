@@ -255,7 +255,13 @@ export default function BusinessCaseModal({
 
   // ── Navigation helpers ──
   function goNext() {
-    if (step === 1 && selectedModels.size === 0) return;
+    if (step === 1) {
+      if (selectedModels.size === 0) return;
+      const allHaveVolume = Array.from(selectedModels).every(
+        (m) => (volumeMap[m] ?? 0) > 0
+      );
+      if (!allHaveVolume) return;
+    }
     setDirection(1);
     setStep((s) => s + 1);
   }
@@ -310,7 +316,7 @@ export default function BusinessCaseModal({
     };
 
     try {
-      const method = editMode && initialData?.id ? 'PUT' : 'POST';
+      const method = editMode && initialData?.id ? 'PATCH' : 'POST';
       const url =
         editMode && initialData?.id
           ? `/api/business-cases/${initialData.id}`
@@ -356,7 +362,9 @@ export default function BusinessCaseModal({
     )
     .join(' + ');
 
-  const step1Valid = selectedModels.size > 0;
+  const step1Valid =
+    selectedModels.size > 0 &&
+    Array.from(selectedModels).every((m) => (volumeMap[m] ?? 0) > 0);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
@@ -529,6 +537,11 @@ export default function BusinessCaseModal({
                 {selectedModels.size === 0 && (
                   <p className="text-amber-400/70 text-xs mt-2">
                     Select at least one vehicle to continue.
+                  </p>
+                )}
+                {selectedModels.size > 0 && !step1Valid && (
+                  <p className="text-amber-400/70 text-xs mt-2">
+                    Enter a volume greater than 0 for each selected vehicle.
                   </p>
                 )}
               </motion.div>

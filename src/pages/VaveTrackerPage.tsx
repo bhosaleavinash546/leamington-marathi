@@ -82,6 +82,17 @@ function EditPanel({ action, onSave, onDelete, onClose }: EditPanelProps) {
   });
   const [saving, setSaving] = useState(false);
 
+  useEffect(() => {
+    setForm({
+      stage: action.stage,
+      owner: action.owner,
+      targetDate: action.targetDate,
+      targetSaving: action.targetSaving,
+      confirmedSaving: action.confirmedSaving,
+      notes: action.notes,
+    });
+  }, [action]);
+
   async function handleSave() {
     setSaving(true);
     await onSave(form);

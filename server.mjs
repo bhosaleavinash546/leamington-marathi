@@ -4398,29 +4398,29 @@ app.post('/api/vave-actions', requireAuth, (req, res) => {
   db.prepare(`INSERT INTO vave_actions
     (id,userId,projectId,ideaTitle,ideaDescription,systemName,subassemblyName,partName,targetSaving,stage,createdAt,updatedAt)
     VALUES (?,?,?,?,?,?,?,?,?,'Identified',?,?)`)
-    .run(id, req.userId, projectId || null, ideaTitle, ideaDescription || '', systemName || '', subassemblyName || '', partName || '', targetSaving || '', now, now);
+    .run(id, req.user.id, projectId || null, ideaTitle, ideaDescription || '', systemName || '', subassemblyName || '', partName || '', targetSaving || '', now, now);
   res.json({ id, stage: 'Identified', createdAt: now });
 });
 
 app.get('/api/vave-actions', requireAuth, (req, res) => {
-  const actions = db.prepare('SELECT * FROM vave_actions WHERE userId = ? ORDER BY createdAt DESC').all(req.userId);
+  const actions = db.prepare('SELECT * FROM vave_actions WHERE userId = ? ORDER BY createdAt DESC').all(req.user.id);
   res.json(actions);
 });
 
 app.patch('/api/vave-actions/:id', requireAuth, (req, res) => {
-  const action = db.prepare('SELECT id FROM vave_actions WHERE id = ? AND userId = ?').get(req.params.id, req.userId);
+  const action = db.prepare('SELECT id FROM vave_actions WHERE id = ? AND userId = ?').get(req.params.id, req.user.id);
   if (!action) return res.status(404).json({ error: 'Not found' });
   const allowed = ['stage','owner','targetDate','notes','targetSaving','confirmedSaving','ideaTitle','ideaDescription'];
   const updates = Object.fromEntries(Object.entries(req.body).filter(([k]) => allowed.includes(k)));
   if (Object.keys(updates).length === 0) return res.status(400).json({ error: 'No valid fields to update' });
   const sets = Object.keys(updates).map(k => `${k} = ?`).join(', ');
-  const vals = [...Object.values(updates), new Date().toISOString(), req.params.id, req.userId];
+  const vals = [...Object.values(updates), new Date().toISOString(), req.params.id, req.user.id];
   db.prepare(`UPDATE vave_actions SET ${sets}, updatedAt = ? WHERE id = ? AND userId = ?`).run(...vals);
   res.json({ ok: true });
 });
 
 app.delete('/api/vave-actions/:id', requireAuth, (req, res) => {
-  db.prepare('DELETE FROM vave_actions WHERE id = ? AND userId = ?').run(req.params.id, req.userId);
+  db.prepare('DELETE FROM vave_actions WHERE id = ? AND userId = ?').run(req.params.id, req.user.id);
   res.json({ ok: true });
 });
 
@@ -4431,13 +4431,13 @@ app.post('/api/feedback', requireAuth, rateLimit(50, 60 * 60 * 1000), (req, res)
   if (!ideaTitle || !reason || !category) return res.status(400).json({ error: 'ideaTitle, reason, and category are required' });
   const id = crypto.randomUUID();
   db.prepare('INSERT INTO feedback_signals (id,userId,ideaTitle,systemName,subassemblyName,reason,category,createdAt) VALUES (?,?,?,?,?,?,?,?)')
-    .run(id, req.userId, ideaTitle, systemName || '', subassemblyName || '', reason, category, new Date().toISOString());
+    .run(id, req.user.id, ideaTitle, systemName || '', subassemblyName || '', reason, category, new Date().toISOString());
   res.json({ ok: true });
 });
 
 app.get('/api/feedback/context', requireAuth, (req, res) => {
   const { systemName, subassemblyName } = req.query;
-  const params = [req.userId];
+  const params = [req.user.id];
   let where = 'userId = ?';
   if (systemName) { where += ' AND systemName = ?'; params.push(systemName); }
   if (subassemblyName) { where += ' AND subassemblyName = ?'; params.push(subassemblyName); }
@@ -4557,7 +4557,7 @@ app.get('/api/business-cases', requireAuth, (req, res) => {
 });
 
 // KPI aggregates for dashboard
-app.get('/api/business-cases/kpi', requireAuth, (req, res) => {
+app.get('/api/business-cases/kpi', requireAuth, rateLimit(120, 60 * 60 * 1000), (req, res) => {
   const rows = db.prepare('SELECT * FROM idea_business_cases').all()
     .map(r => ({ ...r, vehicleData: JSON.parse(r.vehicleData || '[]') }));
 

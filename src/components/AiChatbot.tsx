@@ -97,7 +97,7 @@ export default function AiChatbot() {
       {/* Floating toggle button */}
       <motion.button
         onClick={() => setOpen(v => !v)}
-        className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-gradient-to-br from-gold-500 to-amber-600 shadow-lg shadow-amber-500/30 flex items-center justify-center text-navy-900 hover:scale-105 transition-transform"
+        className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-gradient-to-br from-gold-500 to-amber-600 shadow-lg shadow-amber-500/30 flex items-center justify-center text-navy-950 hover:scale-105 transition-transform"
         whileTap={{ scale: 0.95 }}
         title="BrainSpark Assistant"
       >
@@ -129,7 +129,7 @@ export default function AiChatbot() {
             {/* Header */}
             <div className="flex items-center gap-2.5 px-4 py-3 bg-gradient-to-r from-navy-800 to-navy-900 border-b border-white/8 flex-shrink-0">
               <div className="w-8 h-8 rounded-full bg-gradient-to-br from-gold-500 to-amber-600 flex items-center justify-center flex-shrink-0">
-                <Bot size={16} className="text-navy-900" />
+                <Bot size={16} className="text-navy-950" />
               </div>
               <div className="flex-1 min-w-0">
                 <div className="text-white text-sm font-semibold leading-none">BrainSpark Assistant</div>
@@ -152,7 +152,7 @@ export default function AiChatbot() {
                 >
                   {msg.role === 'assistant' && (
                     <div className="w-6 h-6 rounded-full bg-gradient-to-br from-gold-500/80 to-amber-600/80 flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <Bot size={12} className="text-navy-900" />
+                      <Bot size={12} className="text-navy-950" />
                     </div>
                   )}
                   <div
@@ -170,7 +170,7 @@ export default function AiChatbot() {
               {loading && (
                 <div className="flex gap-2 items-center">
                   <div className="w-6 h-6 rounded-full bg-gradient-to-br from-gold-500/80 to-amber-600/80 flex items-center justify-center flex-shrink-0">
-                    <Bot size={12} className="text-navy-900" />
+                    <Bot size={12} className="text-navy-950" />
                   </div>
                   <div className="bg-white/5 border border-white/8 rounded-xl px-3 py-2">
                     <TypingDots className="text-slate-400" />
@@ -220,7 +220,7 @@ export default function AiChatbot() {
                 disabled={!input.trim() || loading}
                 className="w-9 h-9 rounded-xl bg-gold-500 hover:bg-gold-400 disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center flex-shrink-0 transition-colors"
               >
-                <Send size={15} className="text-navy-900" />
+                <Send size={15} className="text-navy-950" />
               </button>
             </div>
           </motion.div>

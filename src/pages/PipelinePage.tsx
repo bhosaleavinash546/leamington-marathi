@@ -382,9 +382,7 @@ export default function PipelinePage() {
         body: JSON.stringify({ gate: newGate }),
       });
       if (r.ok) {
-        setCases((prev) =>
-          prev.map((c) => (c.id === caseId ? { ...c, gate: newGate } : c))
-        );
+        await loadData();
       }
     } catch {
       /* ignore */
@@ -938,10 +936,10 @@ export default function PipelinePage() {
               setShowAddModal(false);
               setNewIdeaTitle('');
             }}
-            onSaved={(bc) => {
-              setCases((prev) => [bc, ...prev]);
+            onSaved={() => {
               setShowAddModal(false);
               setNewIdeaTitle('');
+              loadData();
             }}
           />
         )}

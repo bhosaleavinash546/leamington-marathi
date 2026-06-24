@@ -203,6 +203,8 @@ function IdeaCard({ idea, index, annotation, onAnnotate }: {
     onAnnotate({ status, note: annotation?.note ?? noteText, updatedAt: new Date().toISOString() });
     if (status === 'approved') {
       setShowVavePrompt(true);
+    } else {
+      setShowVavePrompt(false);
     }
   }
 
