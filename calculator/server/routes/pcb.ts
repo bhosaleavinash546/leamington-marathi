@@ -243,6 +243,171 @@ function computeNPIBreakdown(bomTotal: number, fabMid: number, smtPlacements: nu
   return { stencilCost, firstArticleCost, toolingTotal, unitCostNPI: Math.round(unitCostNPI*100)/100, unitCostProd: Math.round(unitCostProd*100)/100, setupPerUnit50: Math.round(setupPerUnit50*100)/100 };
 }
 
+// ── Post-analysis automotive grade enforcement ────────────────────────────────
+function enforceAutomotiveGrading(
+  bom: Array<Record<string, unknown>>,
+  domain: string,
+): { bom: Array<Record<string, unknown>>; forcedCount: number } {
+  if (domain !== 'automotive_adas') return { bom, forcedCount: 0 };
+  let forcedCount = 0;
+  const updated = bom.map(line => {
+    if (line.automotive === true) return line;
+    const ct = String(line.componentType ?? '');
+    const mult = ct.startsWith('ic_') || ct === 'power_module' ? 3.5
+      : ct.startsWith('passive_') ? 2.5
+      : ct === 'crystal_osc' ? 3.0
+      : ct === 'connector_smt' ? 2.0 : 1.0;
+    if (mult === 1.0) return line;
+    const adj = Number(line.unitPriceGBP ?? 0) * mult;
+    forcedCount++;
+    return {
+      ...line,
+      unitPriceGBP: Math.round(adj * 10000) / 10000,
+      lineTotalGBP: Math.round(adj * Number(line.qty ?? 1) * 100) / 100,
+      automotive: true,
+      automotiveGradeForced: true,
+    };
+  });
+  return { bom: updated, forcedCount };
+}
+
+// ── ASIL classification (Stage 1b) ────────────────────────────────────────────
+type ASILLevel = 'QM' | 'ASIL-A' | 'ASIL-B' | 'ASIL-C' | 'ASIL-D' | 'Unknown';
+interface Stage1bASIL {
+  asilLevel: ASILLevel;
+  asilRationale: string;
+  safetyFunctions: string[];
+}
+async function classifyASILLevel(
+  anthropic: Anthropic,
+  imageFiles: Express.Multer.File[],
+  imageLabels: string[],
+  domainSummary: string,
+): Promise<Stage1bASIL> {
+  const prompt = `You are an automotive functional safety expert (ISO 26262). Analyse this PCB and classify its ASIL level.
+
+Board domain: ${domainSummary}
+
+Look for: safety-critical MCUs (AURIX, S32K, lockstep cores), redundant power rails, safety PMICs (TLF35584, FS85), watchdog ICs, isolated CAN/Ethernet, ADAS SoCs.
+
+Return ONLY valid JSON:
+{"asilLevel":"ASIL-B","asilRationale":"Dual-core lockstep MCU with safety PMIC suggests ASIL-B/C chassis control","safetyFunctions":["Electronic power steering","Fault detection"]}
+
+ASIL levels: QM (no safety), ASIL-A (low), ASIL-B (medium), ASIL-C (high), ASIL-D (highest).`;
+  try {
+    const msg = await anthropic.messages.create({
+      model: 'claude-haiku-4-5-20251001', max_tokens: 512,
+      system: 'You are an automotive functional safety engineer. Return ONLY valid JSON.',
+      messages: [{ role: 'user', content: [
+        ...buildImageContentBlocks(imageFiles, imageLabels, imageFiles.length > 1),
+        { type: 'text', text: prompt },
+      ]}],
+    });
+    const raw = msg.content[0]?.type === 'text' ? msg.content[0].text : '{}';
+    const start = raw.indexOf('{'), end = raw.lastIndexOf('}');
+    if (start !== -1 && end > start) {
+      const parsed = JSON.parse(raw.slice(start, end + 1)) as Stage1bASIL;
+      return {
+        asilLevel: parsed.asilLevel ?? 'Unknown',
+        asilRationale: parsed.asilRationale ?? '',
+        safetyFunctions: Array.isArray(parsed.safetyFunctions) ? parsed.safetyFunctions : [],
+      };
+    }
+  } catch (err) {
+    console.warn('[PCB] Stage 1b ASIL classification failed:', (err as Error).message);
+  }
+  return { asilLevel: 'Unknown', asilRationale: '', safetyFunctions: [] };
+}
+
+// ── Automotive NRE breakdown ──────────────────────────────────────────────────
+interface AutomotiveNRE {
+  ppapCost: number;
+  fmeaCost: number;
+  dvprCost: number;
+  asilAuditCost: number;
+  totalNRE: number;
+  asilLevel: ASILLevel;
+}
+function computeAutomotiveNRE(asilLevel: ASILLevel, bomTotal: number): AutomotiveNRE {
+  const tier = asilLevel === 'ASIL-D' ? 4 : asilLevel === 'ASIL-C' ? 3 : asilLevel === 'ASIL-B' ? 2 : asilLevel === 'ASIL-A' ? 1 : 0;
+  if (tier === 0) {
+    // QM / Unknown — minimal automotive paperwork
+    const ppap = 1500; const fmea = 2500; const dvpr = 3000; const audit = 0;
+    return { ppapCost: ppap, fmeaCost: fmea, dvprCost: dvpr, asilAuditCost: audit, totalNRE: ppap + fmea + dvpr + audit, asilLevel };
+  }
+  const ppapCost  = [0, 3000,  6000, 10000, 18000][tier];
+  const fmeaCost  = [0, 5000, 10000, 18000, 32000][tier];
+  const dvprCost  = [0, 8000, 16000, 28000, 50000][tier];
+  const asilAudit = [0, 2500,  5000, 10000, 20000][tier];
+  const bomScale  = Math.max(1, bomTotal / 50);  // scale slightly for complex boards
+  const scale     = Math.min(2.0, bomScale);
+  const r = (n: number) => Math.round(n * scale / 100) * 100;
+  return {
+    ppapCost: r(ppapCost), fmeaCost: r(fmeaCost),
+    dvprCost: r(dvprCost), asilAuditCost: r(asilAudit),
+    totalNRE: r(ppapCost) + r(fmeaCost) + r(dvprCost) + r(asilAudit),
+    asilLevel,
+  };
+}
+
+// ── Single-source risk flagging ───────────────────────────────────────────────
+const SINGLE_SOURCE_RISK_ICS: Array<{ pattern: RegExp; vendor: string; premium: number }> = [
+  { pattern: /AURIX|TC39[0-9]|TC38[0-9]|TC37[0-9]|TC2[6-9][0-9]/i, vendor: 'Infineon (sole AEC-Q ASIL-D MCU family)', premium: 0.20 },
+  { pattern: /TDA4VM|TDA4AL|TDA4VH|TDA2[PEK]/i, vendor: 'TI (sole ASIL-D ADAS SoC at this class)', premium: 0.25 },
+  { pattern: /EYEQ[3-6]|MQ[2-6]0[0-9]/i, vendor: 'Mobileye (sole-source NCAP-qualified EyeQ)', premium: 0.50 },
+  { pattern: /SJA1105|SJA1110/i, vendor: 'NXP (sole automotive TSN switch this class)', premium: 0.15 },
+  { pattern: /BGT60|BGT24/i, vendor: 'Infineon (dominant 77GHz radar frontend)', premium: 0.25 },
+  { pattern: /TEF810|TEF81/i, vendor: 'NXP (radar transceiver, limited alternatives)', premium: 0.20 },
+  { pattern: /TLF35584|TLF35577/i, vendor: 'Infineon (ASIL-D safety PMIC, very limited alternatives)', premium: 0.15 },
+  { pattern: /V4H|R8A779G/i, vendor: 'Renesas (sole R-Car V4H ADAS platform)', premium: 0.30 },
+];
+interface SingleSourceWarning {
+  refDes: string;
+  partDescription: string;
+  vendor: string;
+  premium: number;
+  unitPriceGBP: number;
+  premiumAmountGBP: number;
+}
+function flagSingleSourceRisks(bom: Array<Record<string, unknown>>): SingleSourceWarning[] {
+  const warnings: SingleSourceWarning[] = [];
+  for (const line of bom) {
+    const desc = String(line.description ?? '') + ' ' + String(line.partNumber ?? '');
+    const match = SINGLE_SOURCE_RISK_ICS.find(r => r.pattern.test(desc));
+    if (match) {
+      const unitPrice = Number(line.unitPriceGBP ?? 0);
+      warnings.push({
+        refDes: String(line.refDes ?? ''),
+        partDescription: desc.trim(),
+        vendor: match.vendor,
+        premium: match.premium,
+        unitPrice,
+        unitPriceGBP: unitPrice,
+        premiumAmountGBP: Math.round(unitPrice * match.premium * 100) / 100,
+      });
+    }
+  }
+  return warnings;
+}
+
+// ── Conformal coating cost model ──────────────────────────────────────────────
+function computeConformalCoatingCost(
+  boardSpec: Record<string, unknown>,
+  domain: string,
+  asilLevel: ASILLevel,
+): number {
+  if (domain !== 'automotive_adas') return 0;
+  const widthMm = Number(boardSpec.widthMm) || 100;
+  const heightMm = Number(boardSpec.heightMm) || 80;
+  const areaCm2 = (widthMm * heightMm) / 100;
+  // Base coating cost: selective UV acrylic £0.08–0.15/cm², polyurethane £0.12–0.22/cm²
+  // ASIL-D requires conformal + edge seal; ASIL-A/B selective is fine
+  const ratePerCm2 = asilLevel === 'ASIL-D' || asilLevel === 'ASIL-C' ? 0.20 : 0.12;
+  const coatingCost = areaCm2 * ratePerCm2;
+  // Minimum batch setup £18, maximum per-board £280
+  return Math.min(280, Math.max(18, Math.round(coatingCost * 100) / 100));
+}
+
 const router = Router();
 const upload = multer({
   storage: multer.memoryStorage(),
@@ -336,7 +501,7 @@ Return JSON only:
 
 // ── Specialist system prompts ──────────────────────────────────────────────
 const SPECIALIST_SYSTEM_PROMPTS: Record<string, string> = {
-  automotive_adas: 'You are a senior automotive electronics engineer with 20+ years in Tier-1 automotive PCB design and PCBA cost engineering. You specialise in ASIL-rated systems, AEC-Q qualified components, CAN/LIN/Ethernet-AVB networks, and ADAS SoC selection. You understand automotive-grade pricing premiums (3–8× consumer price), functional safety requirements, and PPAP documentation costs. When pricing components, always apply automotive grade multipliers. You know NXP S32K/S32G, Infineon AURIX, TI TDA4VM/TDA2x, Renesas RH850/V4H pricing intimately. Return ONLY valid JSON.',
+  automotive_adas: 'You are a senior Tier-1 automotive PCB cost engineer with 20+ years in ASIL-rated PCBA design. MANDATORY PRICING RULES — NO EXCEPTIONS: (1) Price EVERY component at AEC-Q qualified automotive grade — ICs: 3–8× consumer, passives/MLCCs: 3–6×, crystals/oscillators: 3×. (2) Set automotive=true on ALL components. (3) Sealed IP67 automotive connectors (Amphenol, TE AMP, Molex MX150, Kostal): £3–35 each. FAKRA SMB £4–18, HSD £5–22, MATEnet £6–25. (4) AEC-Q200 MLCC only — X7R/C0G grade: 0402 resistors £0.003–0.012, 0402 caps £0.008–0.025, 0603 caps £0.015–0.06. (5) KNOWN AUTOMOTIVE IC PRICES (100K volume): AURIX TC2xx £18–55, TC3xx £35–90, TC39x/TC4xx £65–130; NXP S32K1xx £4.50–15, S32K3xx £12–45, S32G2/G3 £40–90; TI TDA4VM £85–220, TDA4AL £120–280; NXP SJA1105 £8–22, SJA1110 £15–40; TJA1101/1103 100BASE-T1 PHY £3–9; TJA1044/1042 CAN xcvr £0.80–2.80; NXP FS65/FS85 SBC £2.50–7; Infineon TLF35584 safety PMIC £3.50–9; Renesas RH850/V4H £18–80; NXP MPC5748G £22–65. Return ONLY valid JSON.',
   rf_microwave: 'You are an RF/microwave PCB design and cost engineer with expertise in Rogers/PTFE substrates, impedance-controlled layouts, and RF component selection. You understand PA/LNA/PLL/filter/balun component pricing, the cost premium of RF substrates (Rogers 4350B: 8–12×), controlled-impedance PCB fab, and RF module pricing from suppliers like Mini-Circuits, Würth, and Murata. Return ONLY valid JSON.',
   industrial_power: 'You are a power electronics PCB cost engineer specialising in motor drives, power converters, UPS, and industrial power supplies. You know IGBT/SiC MOSFET pricing, gate driver ICs, isolated DC-DC converter modules, high-capacitance bulk capacitors, current sensor ICs, and thermal management components. You understand that industrial-grade components cost 2–4× consumer parts. Return ONLY valid JSON.',
   industrial_control: 'You are an industrial control and automation PCB cost engineer with expertise in PLCs, motion controllers, fieldbus nodes (EtherCAT, PROFIBUS, CANopen, Modbus), and industrial Ethernet switches. You know Siemens/Beckhoff/Rockwell component choices, ruggedised connector pricing, industrial-grade MCU/DSP costs, and conformal coating requirements. Return ONLY valid JSON.',
@@ -348,38 +513,95 @@ const SPECIALIST_SYSTEM_PROMPTS: Record<string, string> = {
 // ── Pricing reference table ────────────────────────────────────────────────
 const PRICING_TABLE = `COMPONENT PRICING REFERENCE — UK 2025/2026, production volume 100K units. These are HARD ANCHORS.
 CRITICAL PRICING RULE: Default to the LOWER HALF of each range for standard/generic components at 100K volumes. Use the upper end only for premium/high-spec/automotive-grade variants. DO NOT use the upper bound as a default.
-passive_0402: resistors £0.0005–0.003, caps £0.001–0.015 (X5R/X7R); auto-grade: 3–6× above
-passive_0603: resistors £0.001–0.005, caps £0.002–0.040, inductors £0.006–0.060
-passive_0805: resistors £0.002–0.010, caps £0.005–0.180, inductors £0.018–0.600
-crystal_osc: HC-49 crystal £0.04–0.18; SMD crystal £0.06–0.35; TCXO £0.50–2.80; OCXO £6–35; auto-grade 3×
-power_module: DC-DC SIP/DIP module £1.20–7; isolated module £4–22; automotive £12–55
-transformer: SMD signal transformer £0.35–2.00; SMD power transformer £1.00–7; common-mode choke £0.12–1.20
+passive_0402: resistors £0.0005–0.003, caps £0.001–0.015 (X5R/X7R consumer); AEC-Q200 automotive: resistors £0.003–0.012, caps X7R £0.008–0.025, C0G £0.012–0.040
+passive_0603: resistors £0.001–0.005, caps £0.002–0.040, inductors £0.006–0.060; AEC-Q200 automotive: caps X7R £0.015–0.060, inductors AEC £0.025–0.15
+passive_0805: resistors £0.002–0.010, caps £0.005–0.180, inductors £0.018–0.600; AEC-Q200 automotive: 3–5× above
+crystal_osc: HC-49 crystal £0.04–0.18; SMD crystal £0.06–0.35; TCXO £0.50–2.80; automotive TCXO (SiTime, TXC AEC-Q200) £1.80–8; OCXO £6–35
+power_module: DC-DC SIP/DIP module £1.20–7; isolated module £4–22; automotive AEC-Q101 £12–55
+transformer: SMD signal transformer £0.35–2.00; SMD power transformer £1.00–7; common-mode choke £0.12–1.20; automotive CM choke £0.60–3.50
 led: SMD indicator 0603/0805 £0.010–0.06; RGB LED £0.05–0.25; high-power LED £0.20–2.00
-relay_switch: SMD relay SPDT £0.14–1.00; high-current relay £1.00–5.50; tactile switch £0.02–0.22
-fuse_tvs: SMD polyfuse £0.03–0.15; SMD fuse £0.02–0.12; TVS diode £0.03–0.22; TVS array £0.10–0.60
-ic_soic: logic gate £0.03–0.25; op-amp general £0.10–1.20; op-amp precision £0.50–4; driver IC £0.12–1.80; LDO regulator £0.08–1.20; comparator £0.06–0.70
-ic_qfn: simple MCU (8/32-bit low-end) £0.18–1.80; complex MCU £1.50–9; PMIC £0.70–7; RF IC £1.00–12; industrial MCU £1.80–15
-ic_bga: FPGA small £6–40; FPGA large £30–250; SoC/Application CPU £18–160; DDR memory £1.50–12; automotive SoC £22–200; ADAS processor £60–400
-ic_tqfp: MCU 32-bit mid-range £1.00–6; DSP £3–18; CPLD £1.80–12; automotive MCU £4.50–40
-connector_smt: 0.5mm FPC/FFC £0.06–0.40; 1.0mm FPC £0.05–0.28; USB-C £0.10–0.70; SMA/RF £0.22–1.80; DF17 board-to-board £0.60–3.50; automotive connector (Kostal/Amphenol) £1.00–9
-through_hole: electrolytic cap (small) £0.05–0.40; electrolytic cap (large) £0.22–2.80; TH connector 2-row £0.12–1.80; power connector £0.40–4.50; TO-220 transistor £0.14–2.80
+relay_switch: SMD relay SPDT £0.14–1.00; high-current relay £1.00–5.50; tactile switch £0.02–0.22; automotive relay £1.20–6
+fuse_tvs: SMD polyfuse £0.03–0.15; SMD fuse £0.02–0.12; TVS diode £0.03–0.22; TVS array £0.10–0.60; automotive TVS AEC-Q101 £0.12–0.80
+ic_soic: logic gate £0.03–0.25; op-amp general £0.10–1.20; op-amp precision £0.50–4; driver IC £0.12–1.80; LDO regulator £0.08–1.20; automotive-grade SOIC ICs: 3–6× above
+ic_qfn: simple MCU (8/32-bit low-end) £0.18–1.80; complex MCU £1.50–9; PMIC £0.70–7; RF IC £1.00–12; automotive MCU QFN £3–18; automotive PMIC QFN £2.50–12
+ic_bga: FPGA small £6–40; FPGA large £30–250; SoC/Application CPU £18–160; DDR memory £1.50–12; automotive SoC £22–200; ADAS processor £60–400; AURIX TC3xx/TC4xx £35–130; NXP S32G SoC £40–90
+ic_tqfp: MCU 32-bit mid-range £1.00–6; DSP £3–18; CPLD £1.80–12; automotive MCU TQFP £5–45; AURIX TC2xx £18–55; RH850 £18–80
+connector_smt: 0.5mm FPC/FFC £0.06–0.40; 1.0mm FPC £0.05–0.28; USB-C £0.10–0.70; SMA/RF £0.22–1.80; FAKRA SMB £4–18; HSD 4+2 £5–22; MATEnet/H-MTD £6–25; automotive sealed IP67 (Amphenol AT, TE AmpSeal, Molex MX150L, Kostal MLK): single connector body £3–18 plus £0.15–0.80 per terminal; DF17 board-to-board £0.60–3.50
+through_hole: electrolytic cap (small) £0.05–0.40; electrolytic cap (large) £0.22–2.80; TH connector 2-row £0.12–1.80; power connector £0.40–4.50; TO-220 transistor £0.14–2.80; automotive TH power connector £2–12
 manual_solder: wire/jumper £0.03–0.22; heat-shrink joint £0.02–0.14`;
 
 // ── IC price hints from OCR markings ──────────────────────────────────────
-function buildICPriceHints(markings: string[], _domain: string): string {
-  return markings.map(marking => {
+// Known automotive IC price ranges (100K volume, AEC-Q qualified)
+const IC_PRICE_HINTS: Array<{ test: (m: string) => boolean; label: string; price: string }> = [
+  // ── Automotive MCUs ────────────────────────────────────────────────────────
+  { test: m => /AURIX|TC39[0-9]|TC38[0-9]|TC37[0-9]/i.test(m), label: 'Infineon AURIX TC3xx/TC4xx (ASIL-D lockstep)', price: '£35–130' },
+  { test: m => /TC2[6-9][0-9]|TC26|TC27|TC29/i.test(m), label: 'Infineon AURIX TC2xx (ASIL-D)', price: '£18–55' },
+  { test: m => /S32K3[0-9]{2}|S32K3/i.test(m), label: 'NXP S32K3xx automotive MCU (ASIL-D)', price: '£12–45' },
+  { test: m => /S32K1[0-9]{2}|S32K14|S32K11/i.test(m), label: 'NXP S32K1xx automotive MCU (ASIL-B)', price: '£4.50–15' },
+  { test: m => /S32G[23]/i.test(m), label: 'NXP S32G2/G3 network SoC (ASIL-B)', price: '£40–90' },
+  { test: m => /MPC5748|MPC5746|MPC574/i.test(m), label: 'NXP MPC574x automotive MCU', price: '£22–65' },
+  { test: m => /SPC584|SPC582|SPC560/i.test(m), label: 'STM SPC5xxx/SPC58x automotive MCU', price: '£8–40' },
+  { test: m => /RH850|R7F70|R7F01/i.test(m), label: 'Renesas RH850 automotive MCU', price: '£18–80' },
+  { test: m => /V4H|R8A779|R8A779G/i.test(m), label: 'Renesas R-Car V4H ADAS SoC', price: '£80–200' },
+  { test: m => /STM32[A-Z]|STM32F|STM32H|STM32L/i.test(m), label: 'STM32 microcontroller', price: '£1.00–6' },
+  { test: m => /SAMC2|SAMD5|SAME5|SAME7/i.test(m), label: 'Microchip SAM automotive MCU', price: '£3–12' },
+  // ── ADAS & Vision SoCs ────────────────────────────────────────────────────
+  { test: m => /TDA4VM|TDA4AL|TDA4VH/i.test(m), label: 'TI TDA4VM/AL ADAS SoC', price: '£85–280' },
+  { test: m => /TDA2[PEK]|TDA2S/i.test(m), label: 'TI TDA2x ADAS SoC (older gen)', price: '£45–120' },
+  { test: m => /EYEQ[3-6]|MQ[2-6]0[0-9]/i.test(m), label: 'Mobileye EyeQ ADAS processor', price: '£35–180' },
+  { test: m => /IMX390|IMX623|IMX728/i.test(m), label: 'Sony automotive image sensor', price: '£8–35' },
+  { test: m => /OV9284|OV2775|OV9782/i.test(m), label: 'OmniVision automotive image sensor', price: '£3–18' },
+  // ── CAN / LIN / Ethernet Transceivers ─────────────────────────────────────
+  { test: m => /TJA110[0-9]|TJA1102|TJA1103/i.test(m), label: 'NXP TJA110x 100BASE-T1 automotive Ethernet PHY', price: '£3–9' },
+  { test: m => /TJA104[0-9]|TJA1042|TJA1044/i.test(m), label: 'NXP TJA104x CAN/CAN-FD transceiver (automotive)', price: '£0.80–2.80' },
+  { test: m => /TJA110[6-9]|TJA1107/i.test(m), label: 'NXP TJA110x automotive LIN transceiver', price: '£0.45–1.60' },
+  { test: m => /SJA1105|SJA1110/i.test(m), label: 'NXP SJA110x 5-port automotive Ethernet switch', price: '£8–40' },
+  { test: m => /DP83TC812|DP83822|DP83867/i.test(m), label: 'TI DP83 automotive Ethernet PHY', price: '£2.50–8' },
+  { test: m => /BCM8906|BCM8957|BCM89881/i.test(m), label: 'Broadcom automotive 100BASE-T1 PHY', price: '£4–15' },
+  { test: m => /TCAN|SN65HVD|ISO1042|ISOW/i.test(m), label: 'TI automotive CAN/isolated transceiver', price: '£0.80–4.50' },
+  // ── Safety PMICs & System Basis Chips ─────────────────────────────────────
+  { test: m => /TLF35584|TLF35577/i.test(m), label: 'Infineon TLF3558x automotive safety PMIC (ASIL-D)', price: '£3.50–9' },
+  { test: m => /FS65|FS85|FS6500/i.test(m), label: 'NXP FS65/FS85 System Basis Chip (safety SBC)', price: '£2.50–7' },
+  { test: m => /UJA117[0-9]|UJA1167/i.test(m), label: 'NXP UJA117x Mini SBC', price: '£1.80–5' },
+  { test: m => /BD9V100|BD9S400|ROHM/i.test(m), label: 'Rohm BD automotive PMIC', price: '£2–8' },
+  { test: m => /RAA271|RAA272|ISL78/i.test(m), label: 'Renesas RAA/ISL automotive multi-rail PMIC', price: '£4–14' },
+  { test: m => /TPS929|TPS928|TPS9264/i.test(m), label: 'TI TPS92x automotive LED driver', price: '£1.50–6' },
+  { test: m => /TLE926|TLE4471|TLE7|TLS/i.test(m), label: 'Infineon TLE/TLS automotive voltage reg / SBC', price: '£0.80–5' },
+  { test: m => /NCV7717|NCV7805|NCV8704/i.test(m), label: 'ON Semi NCV automotive LDO/power IC', price: '£0.60–3.50' },
+  // ── Gate Drivers, FETs, Power ──────────────────────────────────────────────
+  { test: m => /UCC5320|UCC5390|UCC2153/i.test(m), label: 'TI UCC isolated automotive gate driver', price: '£1.80–5' },
+  { test: m => /ISO784|ISO774|DRV840|DRV862/i.test(m), label: 'TI ISO/DRV automotive driver', price: '£2–8' },
+  { test: m => /BTS700|BTS600|BTS500/i.test(m), label: 'Infineon BTS automotive smart power switch', price: '£1.20–8' },
+  { test: m => /AUIPS|IPD|IPS200/i.test(m), label: 'Infineon AUIPS automotive power switch', price: '£1.50–6' },
+  // ── Radar & RF (Automotive) ────────────────────────────────────────────────
+  { test: m => /BGT60|BGT24|BGT12/i.test(m), label: 'Infineon BGT60/24 77GHz/24GHz radar frontend', price: '£18–80' },
+  { test: m => /TEF810|TEF81/i.test(m), label: 'NXP TEF810x 77GHz radar transceiver', price: '£25–90' },
+  { test: m => /AWR1843|AWR1642|AWR1443/i.test(m), label: 'TI AWR 77GHz ADAS radar SoC', price: '£20–75' },
+  // ── Memory (Automotive) ────────────────────────────────────────────────────
+  { test: m => /IS42S|IS43T|IS66W/i.test(m), label: 'ISSI automotive SDRAM/SRAM', price: '£1.50–8' },
+  { test: m => /K4A|K4B|K9F/i.test(m), label: 'Samsung automotive LPDDR/NAND (AEC-Q grade)', price: '£3–20' },
+  { test: m => /MT41K|MT47H|MT25Q/i.test(m), label: 'Micron automotive DDR/Flash', price: '£2.50–15' },
+  { test: m => /THGBM|THGLF/i.test(m), label: 'Kioxia automotive eMMC/NAND', price: '£3–18' },
+  // ── General (non-automotive, fallback by brand) ────────────────────────────
+  { test: m => /NRF52|NRF5340|NRF9/i.test(m), label: 'Nordic nRF MCU/SoC', price: '£0.70–4.50' },
+  { test: m => /ESP32|ESP8266|ESP32-S/i.test(m), label: 'Espressif WiFi/BT SoC', price: '£0.50–2.20' },
+  { test: m => /LAN9|LAN8|KSZ89|KSZ80/i.test(m), label: 'Microchip LAN/KSZ Ethernet IC', price: '£0.70–5' },
+  { test: m => /MAX[0-9]{4}|MAX3|MAX4/i.test(m), label: 'Maxim/Analog interface IC', price: '£0.30–4.50' },
+  { test: m => /TLV3|TLV6|TLV7/i.test(m), label: 'TI TLV comparator/op-amp', price: '£0.12–1.80' },
+  { test: m => /LM317|LM358|LM741|LM324/i.test(m), label: 'TI/Fairchild classic linear IC', price: '£0.08–0.80' },
+];
+
+function buildICPriceHints(markings: string[], domain: string): string {
+  const automotiveNote = domain === 'automotive_adas'
+    ? 'NOTE: This is an automotive board — ALL prices below are AEC-Q automotive grade. Apply automotive=true to every component.\n'
+    : '';
+  const lines = markings.map(marking => {
     const m = marking.toUpperCase();
-    if (m.includes('STM32')) return `${marking} — STM32 microcontroller — £1.00–6 depending on variant at 100K volume`;
-    if (m.includes('TJA')) return `${marking} — NXP TJA CAN/LIN transceiver — £0.45–2.20 at 100K volume`;
-    if (m.includes('AURIX') || m.includes('TC2') || m.includes('TC3')) return `${marking} — Infineon AURIX MCU — £15–80 automotive grade at 100K volume`;
-    if (m.includes('TDA4') || m.includes('TDA2')) return `${marking} — TI TDA4/2 ADAS SoC — £45–220 at 100K volume`;
-    if (m.includes('S32K') || m.includes('S32G')) return `${marking} — NXP S32 automotive MCU/SoC — £4.50–60 at 100K volume`;
-    if (m.includes('NRF') || m.includes('NRF')) return `${marking} — Nordic Semiconductor nRF MCU/SoC — £0.70–4.50 at 100K volume`;
-    if (m.includes('ESP32') || m.includes('ESP8')) return `${marking} — Espressif ESP32/ESP8266 WiFi SoC — £0.50–2.20 at 100K volume`;
-    if (m.includes('BCM') || m.includes('LAN')) return `${marking} — Broadcom/Microchip Ethernet IC — £0.70–9 at 100K volume`;
-    if (m.includes('MAX') || m.includes('LM') || m.includes('TLV')) return `${marking} — Analog/TI op-amp or PMIC — £0.12–4.50 at 100K volume`;
-    return `${marking} — price from pricing table above`;
-  }).join('\n');
+    const hit = IC_PRICE_HINTS.find(h => h.test(m));
+    if (hit) return `${marking} — ${hit.label} — ${hit.price} at 100K volume${domain === 'automotive_adas' ? ' (AEC-Q, automotive=true)' : ''}`;
+    return `${marking} — use pricing table above`;
+  });
+  return automotiveNote + lines.join('\n');
 }
 
 // ── Stage 3: Build user prompt for specialist analysis ─────────────────────
@@ -593,6 +815,14 @@ router.post('/analyze-image', upload.fields([
 
   const domain = stage1Result.domain;
 
+  // ── Stage 1b: ASIL classification (Haiku) — automotive_adas only ────────
+  let asilClassification: Stage1bASIL = { asilLevel: 'Unknown', asilRationale: '', safetyFunctions: [] };
+  if (domain === 'automotive_adas') {
+    console.log('[PCB] Stage 1b: ASIL classification...');
+    asilClassification = await classifyASILLevel(anthropic, imageFiles, imageLabels, stage1Result.hints.join(', ') || domain);
+    console.log(`[PCB] Stage 1b: ASIL=${asilClassification.asilLevel}`);
+  }
+
   // ── Stage 2: OCR text extraction (Haiku) — uses ALL images ──────────
   let ocrResult: OCRResult = { icMarkings: [], refDesGroups: [], connectors: [], boardText: [], extractionQuality: 'low' };
   try {
@@ -761,6 +991,10 @@ ${userPromptText}`;
   let sanityWarnings: SanityWarning[] = [];
   let npiBreakdown: NPIBreakdown | null = null;
   let livePriceHits = 0;
+  let automotiveNRE: AutomotiveNRE | null = null;
+  let automotiveGradeEnforcedCount = 0;
+  let singleSourceWarnings: SingleSourceWarning[] = [];
+  let conformalCoatingCost = 0;
   const volumeMultiplier = getVolumeMultiplier(orderQty);
 
   try {
@@ -773,7 +1007,25 @@ ${userPromptText}`;
 
     // Apply volume correction to BOM, flag unconfirmed high-value ICs
     const rawBOM = Array.isArray(a?.bom) ? (a.bom as Array<Record<string, unknown>>) : [];
-    const enrichedBOM = flagAndEnrichBOM(rawBOM, volumeMultiplier);
+    let enrichedBOM = flagAndEnrichBOM(rawBOM, volumeMultiplier);
+
+    // Automotive: enforce AEC-Q grading on any lines the AI priced at consumer grade
+    if (domain === 'automotive_adas') {
+      const gradeResult = enforceAutomotiveGrading(enrichedBOM, domain);
+      enrichedBOM = gradeResult.bom;
+      automotiveGradeEnforcedCount = gradeResult.forcedCount;
+      if (automotiveGradeEnforcedCount > 0) {
+        console.log(`[PCB] Automotive grade enforcement: ${automotiveGradeEnforcedCount} component(s) repriced to AEC-Q`);
+      }
+      // Single-source risk flags
+      singleSourceWarnings = flagSingleSourceRisks(enrichedBOM);
+      // Automotive NRE (PPAP/FMEA/DVP&R)
+      const bomTotalForNRE = enrichedBOM.reduce((s, l) => s + Number(l.lineTotalGBP ?? 0), 0);
+      automotiveNRE = computeAutomotiveNRE(asilClassification.asilLevel, bomTotalForNRE);
+      // Conformal coating
+      conformalCoatingCost = computeConformalCoatingCost(boardSpec, domain, asilClassification.asilLevel);
+    }
+
     a.bom = enrichedBOM;
 
     // Re-sum BOM from volume-adjusted prices
@@ -806,7 +1058,7 @@ ${userPromptText}`;
       bgaCount:             Number(assemblyData.bgaCount)         || 0,
       aoiRequired:          Boolean(assemblyData.aoiRequired),
       ictTimeSec:           Number(assemblyData.ictTimeSec)       || 0,
-      conformalCoatAreaCm2: 0,
+      conformalCoatAreaCm2: conformalCoatingCost > 0 ? (Number(boardSpec.widthMm || 100) * Number(boardSpec.heightMm || 80) / 100) : 0,
       totalBOMCostGBP:      correctedBOMTotal || Number(costEst?.totalBOMCostGBP) || pcbFabGBP?.mid || 0,
       orderQuantity:        orderQty,
     };
@@ -862,7 +1114,7 @@ ${userPromptText}`;
       }
     }
 
-    console.log(`[PCB] Stage 4: qty=${orderQty} volMult=${volumeMultiplier} BOM=${correctedBOMTotal.toFixed(2)} band=${confidenceBand.overallLabel} sanity=${sanityWarnings.length} warnings`);
+    console.log(`[PCB] Stage 4: qty=${orderQty} volMult=${volumeMultiplier} BOM=${correctedBOMTotal.toFixed(2)} band=${confidenceBand.overallLabel} sanity=${sanityWarnings.length} warnings${domain === 'automotive_adas' ? ` asil=${asilClassification.asilLevel} forced=${automotiveGradeEnforcedCount}` : ''}`);
   } catch (err) {
     console.warn('[PCB] Stage 4 failed:', (err as Error).message);
   }
@@ -880,6 +1132,13 @@ ${userPromptText}`;
     sanityWarnings,
     npiBreakdown,
     livePriceHits,
+    asilLevel: asilClassification.asilLevel,
+    asilRationale: asilClassification.asilRationale,
+    asilSafetyFunctions: asilClassification.safetyFunctions,
+    automotiveNRE,
+    automotiveGradeEnforcedCount,
+    singleSourceWarnings,
+    conformalCoatingCost,
     fromCache: false,
   };
   setCached(cacheKey, { ...finalPayload, fromCache: true });
@@ -1060,6 +1319,10 @@ router.post('/reanalyze', upload.fields([
   let volumeCurves: Record<string, ReturnType<typeof computeVolumeCurve>> = {};
   let complexityScore: ReturnType<typeof computeComplexityScore> | null = null;
   let confidenceBand: PCBConfidenceBand | null = null;
+  let reanalAutomotiveNRE: AutomotiveNRE | null = null;
+  let reanalAutomotiveGradeEnforcedCount = 0;
+  let reanalSingleSourceWarnings: SingleSourceWarning[] = [];
+  let reanalConformalCoatingCost = 0;
   const volumeMultiplier = getVolumeMultiplier(orderQty);
 
   try {
@@ -1071,7 +1334,18 @@ router.post('/reanalyze', upload.fields([
     const fabCostMid = Number(pcbFabGBP?.mid) || 0;
 
     const rawBOM = Array.isArray(a?.bom) ? (a.bom as Array<Record<string, unknown>>) : [];
-    const enrichedBOM = flagAndEnrichBOM(rawBOM, volumeMultiplier);
+    let enrichedBOM = flagAndEnrichBOM(rawBOM, volumeMultiplier);
+
+    if (domain === 'automotive_adas') {
+      const gradeResult = enforceAutomotiveGrading(enrichedBOM, domain);
+      enrichedBOM = gradeResult.bom;
+      reanalAutomotiveGradeEnforcedCount = gradeResult.forcedCount;
+      reanalSingleSourceWarnings = flagSingleSourceRisks(enrichedBOM);
+      const bomTotalForNRE = enrichedBOM.reduce((s, l) => s + Number(l.lineTotalGBP ?? 0), 0);
+      reanalAutomotiveNRE = computeAutomotiveNRE('Unknown', bomTotalForNRE);
+      reanalConformalCoatingCost = computeConformalCoatingCost(boardSpec, domain, 'Unknown');
+    }
+
     a.bom = enrichedBOM;
 
     const correctedBOMTotal = enrichedBOM.reduce((sum, line) => sum + Number(line.lineTotalGBP ?? 0), 0);
@@ -1102,7 +1376,7 @@ router.post('/reanalyze', upload.fields([
       bgaCount:             Number(assemblyData.bgaCount)         || 0,
       aoiRequired:          Boolean(assemblyData.aoiRequired),
       ictTimeSec:           Number(assemblyData.ictTimeSec)       || 0,
-      conformalCoatAreaCm2: 0,
+      conformalCoatAreaCm2: reanalConformalCoatingCost > 0 ? (Number(boardSpec.widthMm || 100) * Number(boardSpec.heightMm || 80) / 100) : 0,
       totalBOMCostGBP:      correctedBOMTotal || Number(costEst?.totalBOMCostGBP) || pcbFabGBP?.mid || 0,
       orderQuantity:        orderQty,
     };
@@ -1137,6 +1411,10 @@ router.post('/reanalyze', upload.fields([
     complexityScore,
     confidenceBand,
     volumeMultiplier,
+    automotiveNRE: reanalAutomotiveNRE,
+    automotiveGradeEnforcedCount: reanalAutomotiveGradeEnforcedCount,
+    singleSourceWarnings: reanalSingleSourceWarnings,
+    conformalCoatingCost: reanalConformalCoatingCost,
   });
 });
 
@@ -1288,6 +1566,15 @@ router.post('/analyze-image-stream', upload.fields([
     emit('stage1', { domain: stage1Result.domain, conf: stage1Result.conf, hints: stage1Result.hints });
   } catch { emit('progress', { stage: 1, label: 'Stage 1 — using defaults', pct: 20 }); }
 
+  // Stage 1b: ASIL classification for automotive_adas
+  let streamAsilClassification: Stage1bASIL = { asilLevel: 'Unknown', asilRationale: '', safetyFunctions: [] };
+  if (stage1Result.domain === 'automotive_adas') {
+    try {
+      emit('progress', { stage: 1, label: 'Stage 1b — ASIL safety classification', pct: 25 });
+      streamAsilClassification = await classifyASILLevel(anthropic, imageFiles, imageLabels, stage1Result.hints.join(', ') || stage1Result.domain);
+    } catch { /* non-fatal */ }
+  }
+
   // Stage 2
   let ocrResult: OCRResult = { icMarkings: [], refDesGroups: [], connectors: [], boardText: [], extractionQuality: 'low' };
   try {
@@ -1351,6 +1638,10 @@ router.post('/analyze-image-stream', upload.fields([
   let confidenceBand2: PCBConfidenceBand | null = null;
   let sanityWarnings2: SanityWarning[] = [];
   let npiBreakdown2: NPIBreakdown | null = null;
+  let streamAutomotiveNRE: AutomotiveNRE | null = null;
+  let streamAutomotiveGradeEnforcedCount = 0;
+  let streamSingleSourceWarnings: SingleSourceWarning[] = [];
+  let streamConformalCoatingCost = 0;
 
   try {
     const a = analysis as Record<string, unknown>;
@@ -1360,7 +1651,16 @@ router.post('/analyze-image-stream', upload.fields([
     const pcbFabGBP = costEst.pcbFabGBP as { min?: number; mid?: number; max?: number } | undefined;
     const fabCostMid2 = Number(pcbFabGBP?.mid) || 0;
     const rawBOM2 = Array.isArray(a.bom) ? (a.bom as Array<Record<string, unknown>>) : [];
-    const enrichedBOM2 = flagAndEnrichBOM(rawBOM2, volumeMultiplier2);
+    let enrichedBOM2 = flagAndEnrichBOM(rawBOM2, volumeMultiplier2);
+    if (domain === 'automotive_adas') {
+      const gr2 = enforceAutomotiveGrading(enrichedBOM2, domain);
+      enrichedBOM2 = gr2.bom;
+      streamAutomotiveGradeEnforcedCount = gr2.forcedCount;
+      streamSingleSourceWarnings = flagSingleSourceRisks(enrichedBOM2);
+      const bomTotNRE = enrichedBOM2.reduce((s, l) => s + Number(l.lineTotalGBP ?? 0), 0);
+      streamAutomotiveNRE = computeAutomotiveNRE(streamAsilClassification.asilLevel, bomTotNRE);
+      streamConformalCoatingCost = computeConformalCoatingCost(boardSpec, domain, streamAsilClassification.asilLevel);
+    }
     a.bom = enrichedBOM2;
     const correctedBOMTotal2 = enrichedBOM2.reduce((s, l) => s + Number(l.lineTotalGBP ?? 0), 0);
     if (a.costEstimates && typeof a.costEstimates === 'object') (a.costEstimates as Record<string, unknown>).totalBOMCostGBP = Math.round(correctedBOMTotal2 * 100) / 100;
@@ -1374,7 +1674,8 @@ router.post('/analyze-image-stream', upload.fields([
       impedanceControlled: Boolean(boardSpec.impedanceControlRequired), smtPlacements: Number(assemblyData.smtPlacements) || 0,
       throughHoleJoints: Number(assemblyData.throughHoleJoints) || 0, manualJoints: Number(assemblyData.manualJoints) || 0,
       bgaCount: Number(assemblyData.bgaCount) || 0, aoiRequired: Boolean(assemblyData.aoiRequired), ictTimeSec: Number(assemblyData.ictTimeSec) || 0,
-      conformalCoatAreaCm2: 0, totalBOMCostGBP: correctedBOMTotal2 || Number(costEst.totalBOMCostGBP) || fabCostMid2 || 0, orderQuantity: orderQty2,
+      conformalCoatAreaCm2: streamConformalCoatingCost > 0 ? (Number(boardSpec.widthMm || 100) * Number(boardSpec.heightMm || 80) / 100) : 0,
+      totalBOMCostGBP: correctedBOMTotal2 || Number(costEst.totalBOMCostGBP) || fabCostMid2 || 0, orderQuantity: orderQty2,
     };
     countryComparison2 = computeAllCountryCosts(costInput2);
     const resolvedCountry2 = PCB_COUNTRY_RATES[selectedCountry2] ? selectedCountry2 : 'cn';
@@ -1394,6 +1695,13 @@ router.post('/analyze-image-stream', upload.fields([
     countryComparison: countryComparison2, volumeCurves: volumeCurves2, complexityScore: complexityScore2,
     confidenceBand: confidenceBand2, volumeMultiplier: volumeMultiplier2, sanityWarnings: sanityWarnings2,
     npiBreakdown: npiBreakdown2, livePriceHits: 0, fromCache: false,
+    asilLevel: streamAsilClassification.asilLevel,
+    asilRationale: streamAsilClassification.asilRationale,
+    asilSafetyFunctions: streamAsilClassification.safetyFunctions,
+    automotiveNRE: streamAutomotiveNRE,
+    automotiveGradeEnforcedCount: streamAutomotiveGradeEnforcedCount,
+    singleSourceWarnings: streamSingleSourceWarnings,
+    conformalCoatingCost: streamConformalCoatingCost,
   });
   res.end();
 });

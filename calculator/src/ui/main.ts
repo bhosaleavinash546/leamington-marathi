@@ -1466,6 +1466,32 @@ interface PCBImageAnalysis {
   _sanityWarnings?: SanityWarning[];
   _livePriceHits?: number;
   _previousVersion?: PCBImageAnalysis;  // for revision comparison
+  // Automotive domain accuracy improvements
+  _asilLevel?: string;
+  _asilRationale?: string;
+  _asilSafetyFunctions?: string[];
+  _automotiveNRE?: AutomotiveNRE;
+  _automotiveGradeEnforcedCount?: number;
+  _singleSourceWarnings?: SingleSourceWarning[];
+  _conformalCoatingCost?: number;
+}
+
+interface AutomotiveNRE {
+  ppapCost: number;
+  fmeaCost: number;
+  dvprCost: number;
+  asilAuditCost: number;
+  totalNRE: number;
+  asilLevel: string;
+}
+
+interface SingleSourceWarning {
+  refDes: string;
+  partDescription: string;
+  vendor: string;
+  premium: number;
+  unitPriceGBP: number;
+  premiumAmountGBP: number;
 }
 
 let agentHistory: AgentMessage[] = [];
@@ -6299,7 +6325,7 @@ async function analyzePCBImages(): Promise<void> {
     const reader = streamResp.body.getReader();
     const decoder = new TextDecoder();
     let buffer = '';
-    type StreamResult = { success: boolean; analysis: PCBImageAnalysis; selectedCountry?: string; selectedCountryBreakdown?: PCBCountryBreakdown; countryComparison?: PCBCountryBreakdown[]; volumeCurves?: Record<string, VolumeCurvePoint[]>; complexityScore?: PCBComplexityScore; confidenceBand?: PCBConfidenceBand; volumeMultiplier?: number; sanityWarnings?: SanityWarning[]; npiBreakdown?: NPIBreakdown; livePriceHits?: number };
+    type StreamResult = { success: boolean; analysis: PCBImageAnalysis; selectedCountry?: string; selectedCountryBreakdown?: PCBCountryBreakdown; countryComparison?: PCBCountryBreakdown[]; volumeCurves?: Record<string, VolumeCurvePoint[]>; complexityScore?: PCBComplexityScore; confidenceBand?: PCBConfidenceBand; volumeMultiplier?: number; sanityWarnings?: SanityWarning[]; npiBreakdown?: NPIBreakdown; livePriceHits?: number; asilLevel?: string; asilRationale?: string; asilSafetyFunctions?: string[]; automotiveNRE?: AutomotiveNRE; automotiveGradeEnforcedCount?: number; singleSourceWarnings?: SingleSourceWarning[]; conformalCoatingCost?: number };
     let data: StreamResult | null = null;
     while (true) {
       const { done, value } = await reader.read();
@@ -6339,6 +6365,13 @@ async function analyzePCBImages(): Promise<void> {
       if (data.sanityWarnings) pcbImageResult._sanityWarnings = data.sanityWarnings;
       if (data.npiBreakdown) pcbImageResult._npiBreakdown = data.npiBreakdown;
       if (data.livePriceHits !== undefined) pcbImageResult._livePriceHits = data.livePriceHits;
+      if (data.asilLevel) pcbImageResult._asilLevel = data.asilLevel;
+      if (data.asilRationale) pcbImageResult._asilRationale = data.asilRationale;
+      if (data.asilSafetyFunctions) pcbImageResult._asilSafetyFunctions = data.asilSafetyFunctions;
+      if (data.automotiveNRE) pcbImageResult._automotiveNRE = data.automotiveNRE;
+      if (data.automotiveGradeEnforcedCount !== undefined) pcbImageResult._automotiveGradeEnforcedCount = data.automotiveGradeEnforcedCount;
+      if (data.singleSourceWarnings) pcbImageResult._singleSourceWarnings = data.singleSourceWarnings;
+      if (data.conformalCoatingCost !== undefined) pcbImageResult._conformalCoatingCost = data.conformalCoatingCost;
     }
     // Save previous result for revision comparison
     const prevJson = localStorage.getItem('pcb_last_analysis');
@@ -6630,6 +6663,10 @@ async function reanalyzePCBWithCorrections(): Promise<void> {
       sanityWarnings?: SanityWarning[];
       npiBreakdown?: NPIBreakdown;
       livePriceHits?: number;
+      automotiveNRE?: AutomotiveNRE;
+      automotiveGradeEnforcedCount?: number;
+      singleSourceWarnings?: SingleSourceWarning[];
+      conformalCoatingCost?: number;
     };
 
     // Compute cost deltas (new total - original total per country)
@@ -6655,6 +6692,10 @@ async function reanalyzePCBWithCorrections(): Promise<void> {
       if (data.sanityWarnings) pcbImageResult._sanityWarnings = data.sanityWarnings;
       if (data.npiBreakdown) pcbImageResult._npiBreakdown = data.npiBreakdown;
       if (data.livePriceHits !== undefined) pcbImageResult._livePriceHits = data.livePriceHits;
+      if (data.automotiveNRE) pcbImageResult._automotiveNRE = data.automotiveNRE;
+      if (data.automotiveGradeEnforcedCount !== undefined) pcbImageResult._automotiveGradeEnforcedCount = data.automotiveGradeEnforcedCount;
+      if (data.singleSourceWarnings) pcbImageResult._singleSourceWarnings = data.singleSourceWarnings;
+      if (data.conformalCoatingCost !== undefined) pcbImageResult._conformalCoatingCost = data.conformalCoatingCost;
       pcbImageResult._originalAIValues = originalAIValues;
       pcbImageResult._isReanalyzed = true;
       pcbImageResult._costDeltas = costDeltas;
@@ -6681,6 +6722,7 @@ function buildPCBImagePanel(r: PCBImageAnalysis): string {
   const totalPlacements = a.smtPlacements;
   const totalBOMCost = c.totalBOMCostGBP.toFixed(2);
 
+  const singleSourceRefDesSet = new Set((r._singleSourceWarnings ?? []).map(w => w.refDes));
   const bomRows = r.bom.map((item, i) => `
     <tr class="${item.highCost ? 'pcb-bom-row--high-cost' : ''}" data-bom-idx="${i}">
       <td>${i + 1}</td>
@@ -6689,7 +6731,7 @@ function buildPCBImagePanel(r: PCBImageAnalysis): string {
       <td>${item.pkg}</td>
       <td>${item.value}</td>
       <td>${item.voltage}</td>
-      <td>${item.partNumber ? `<span style="font-size:0.68rem;font-family:monospace;background:var(--border);padding:1px 4px;border-radius:3px">${item.partNumber}${item.ocrExtracted ? ' <span title="OCR extracted" style="color:var(--green)">&#10003;</span>' : ''}</span>` : ''}${(item.lineConf !== undefined && item.lineConf < 0.6) ? ' <span title="Low confidence" style="color:orange;font-size:0.65rem">&#9888;</span>' : ''}${item.unconfirmedHighValue ? ' <span title="High-value component: part number not confirmed by OCR — price may be inaccurate" style="background:#dc2626;color:#fff;font-size:0.58rem;padding:1px 4px;border-radius:3px;font-weight:700">UNCONFIRMED</span>' : ''}</td>
+      <td>${item.partNumber ? `<span style="font-size:0.68rem;font-family:monospace;background:var(--border);padding:1px 4px;border-radius:3px">${item.partNumber}${item.ocrExtracted ? ' <span title="OCR extracted" style="color:var(--green)">&#10003;</span>' : ''}</span>` : ''}${(item.lineConf !== undefined && item.lineConf < 0.6) ? ' <span title="Low confidence" style="color:orange;font-size:0.65rem">&#9888;</span>' : ''}${item.unconfirmedHighValue ? ' <span title="High-value component: part number not confirmed by OCR — price may be inaccurate" style="background:#dc2626;color:#fff;font-size:0.58rem;padding:1px 4px;border-radius:3px;font-weight:700">UNCONFIRMED</span>' : ''}${singleSourceRefDesSet.has(item.refDes) ? ' <span title="Single-source risk: limited qualified alternatives" style="background:#7c3aed;color:#fff;font-size:0.58rem;padding:1px 4px;border-radius:3px;font-weight:700">SSR</span>' : ''}</td>
       <td>${pcbEditMode ? `<input class="pcb-edit-bom-qty" data-bom-idx="${i}" type="number" min="1" value="${item.qty}" style="width:50px"/>` : String(item.qty)}</td>
       <td>${pcbEditMode ? `<input class="pcb-edit-bom-price" data-bom-idx="${i}" type="number" min="0" step="0.001" value="${item.unitPriceGBP.toFixed(3)}" style="width:65px"/>` : `&#163;${item.unitPriceGBP.toFixed(3)}${pcbPinnedPrices.has(i) ? ' <span title="Price pinned — won\'t change on re-analyze" style="color:#f59e0b;font-size:0.65rem">📌</span>' : ''}`}</td>
       <td>&#163;${(item.qty * item.unitPriceGBP).toFixed(2)}</td>
@@ -6766,6 +6808,8 @@ function buildPCBImagePanel(r: PCBImageAnalysis): string {
         <div class="occt-stat"><div class="occt-stat-value">&#163;${totalBOMCost}</div><div class="occt-stat-label">BOM total${r._volumeMultiplier && r._volumeMultiplier !== 1.0 ? ` <span title="Volume-adjusted from 100K baseline (×${r._volumeMultiplier.toFixed(2)})" style="font-size:0.58rem;background:var(--accent);color:#fff;padding:1px 4px;border-radius:3px">VOL ×${r._volumeMultiplier.toFixed(2)}</span>` : ''}</div></div>
         <div class="occt-stat"><div class="occt-stat-value">${r.stage1Classification?.domain?.replace(/_/g,' ') ?? 'general'}</div><div class="occt-stat-label">Board domain</div></div>
         <div class="occt-stat"><div class="occt-stat-value">${r.ocrExtraction?.icMarkings?.length ?? 0}</div><div class="occt-stat-label">ICs identified</div></div>
+        ${r._asilLevel && r._asilLevel !== 'Unknown' ? `<div class="occt-stat"><div class="occt-stat-value" style="color:${r._asilLevel==='ASIL-D'?'#dc2626':r._asilLevel==='ASIL-C'?'#ea580c':r._asilLevel==='ASIL-B'?'#d97706':'#2563eb'}">${r._asilLevel}</div><div class="occt-stat-label">ISO 26262 ASIL</div></div>` : ''}
+        ${r._conformalCoatingCost && r._conformalCoatingCost > 0 ? `<div class="occt-stat"><div class="occt-stat-value">&#163;${r._conformalCoatingCost.toFixed(0)}</div><div class="occt-stat-label">Conformal coat</div></div>` : ''}
         ${complexityScoreHtml}
       </div>`}
 
@@ -6822,11 +6866,14 @@ function buildPCBImagePanel(r: PCBImageAnalysis): string {
         </div>
       </div>
 
+      ${buildASILBadge(r)}
       ${buildCountryBreakdownSection(r)}
       ${buildCostDriverChart(r)}
       ${buildNPISection(r)}
       ${buildConfidenceRoadmap(r)}
       ${buildSanityWarningsBanner(r)}
+      ${buildAutomotiveNRESection(r)}
+      ${buildSingleSourceWarnings(r)}
       ${buildBenchmarkComparison(r)}
       ${buildRevisionComparison(r)}
 
@@ -6952,6 +6999,86 @@ function buildSanityWarningsBanner(r: PCBImageAnalysis): string {
   return `<div style="margin-top:8px;padding:10px 12px;background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.3);border-radius:8px">
     <div style="font-size:0.72rem;font-weight:600;color:#d97706;margin-bottom:6px">⚠ AI Sanity Checks</div>
     ${items}
+  </div>`;
+}
+
+function buildASILBadge(r: PCBImageAnalysis): string {
+  const level = r._asilLevel;
+  if (!level || level === 'Unknown') return '';
+  const colors: Record<string, string> = {
+    'QM': '#6b7280', 'ASIL-A': '#2563eb', 'ASIL-B': '#d97706', 'ASIL-C': '#ea580c', 'ASIL-D': '#dc2626',
+  };
+  const color = colors[level] ?? '#6b7280';
+  const functions = r._asilSafetyFunctions ?? [];
+  const fnList = functions.length > 0
+    ? `<div style="margin-top:6px;font-size:0.62rem;color:var(--text-secondary)">Safety functions: ${functions.join(', ')}</div>`
+    : '';
+  const rationale = r._asilRationale ? `<div style="margin-top:4px;font-size:0.62rem;color:var(--text-muted);font-style:italic">${r._asilRationale}</div>` : '';
+  return `<div style="margin-top:8px;padding:10px 12px;background:${color}18;border:1px solid ${color}55;border-radius:8px">
+    <div style="display:flex;align-items:center;gap:8px">
+      <span style="background:${color};color:#fff;font-size:0.72rem;font-weight:700;padding:2px 8px;border-radius:4px">${level}</span>
+      <span style="font-size:0.72rem;font-weight:600;color:${color}">ISO 26262 Safety Integrity Level</span>
+    </div>
+    ${rationale}${fnList}
+  </div>`;
+}
+
+function buildAutomotiveNRESection(r: PCBImageAnalysis): string {
+  const nre = r._automotiveNRE;
+  if (!nre || nre.totalNRE === 0) return '';
+  const fmt = (n: number) => `£${n.toLocaleString('en-GB')}`;
+  const enforced = r._automotiveGradeEnforcedCount ?? 0;
+  const enforcedBadge = enforced > 0
+    ? `<div style="margin-top:6px;padding:4px 8px;background:rgba(220,38,38,0.08);border:1px solid rgba(220,38,38,0.3);border-radius:4px;font-size:0.62rem;color:#dc2626">
+        ⚠ ${enforced} component${enforced > 1 ? 's' : ''} had pricing enforced to AEC-Q automotive grade
+      </div>`
+    : '';
+  const coating = r._conformalCoatingCost ?? 0;
+  const coatingRow = coating > 0
+    ? `<tr><td style="padding:3px 6px;font-size:0.68rem">Conformal coating</td><td style="padding:3px 6px;text-align:right;font-size:0.68rem;font-weight:600">${fmt(coating)}</td><td style="padding:3px 6px;font-size:0.62rem;color:var(--text-muted)">Selective UV acrylic / polyurethane</td></tr>`
+    : '';
+  return `<div style="margin-top:8px;padding:10px 12px;background:rgba(234,88,12,0.06);border:1px solid rgba(234,88,12,0.25);border-radius:8px">
+    <div style="font-size:0.72rem;font-weight:600;color:#ea580c;margin-bottom:8px">Automotive NRE Qualification Costs (${nre.asilLevel})</div>
+    <table style="width:100%;border-collapse:collapse">
+      <thead><tr>
+        <th style="padding:3px 6px;text-align:left;font-size:0.62rem;color:var(--text-muted)">Activity</th>
+        <th style="padding:3px 6px;text-align:right;font-size:0.62rem;color:var(--text-muted)">Estimated cost</th>
+        <th style="padding:3px 6px;text-align:left;font-size:0.62rem;color:var(--text-muted)">Scope</th>
+      </tr></thead>
+      <tbody>
+        <tr><td style="padding:3px 6px;font-size:0.68rem">PPAP (Production Part Approval)</td><td style="padding:3px 6px;text-align:right;font-size:0.68rem;font-weight:600">${fmt(nre.ppapCost)}</td><td style="padding:3px 6px;font-size:0.62rem;color:var(--text-muted)">18 PPAP elements, control plan</td></tr>
+        <tr><td style="padding:3px 6px;font-size:0.68rem">FMEA (Failure Mode Analysis)</td><td style="padding:3px 6px;text-align:right;font-size:0.68rem;font-weight:600">${fmt(nre.fmeaCost)}</td><td style="padding:3px 6px;font-size:0.62rem;color:var(--text-muted)">D-FMEA + P-FMEA per AIAG-VDA</td></tr>
+        <tr><td style="padding:3px 6px;font-size:0.68rem">DVP&R (Validation & Reporting)</td><td style="padding:3px 6px;text-align:right;font-size:0.68rem;font-weight:600">${fmt(nre.dvprCost)}</td><td style="padding:3px 6px;font-size:0.62rem;color:var(--text-muted)">Environmental, EMC, vibration tests</td></tr>
+        ${nre.asilAuditCost > 0 ? `<tr><td style="padding:3px 6px;font-size:0.68rem">ISO 26262 Safety Audit</td><td style="padding:3px 6px;text-align:right;font-size:0.68rem;font-weight:600">${fmt(nre.asilAuditCost)}</td><td style="padding:3px 6px;font-size:0.62rem;color:var(--text-muted)">ASIL classification, safety case review</td></tr>` : ''}
+        ${coatingRow}
+        <tr style="border-top:1px solid var(--border)"><td style="padding:4px 6px;font-size:0.72rem;font-weight:700">Total Automotive NRE</td><td style="padding:4px 6px;text-align:right;font-size:0.72rem;font-weight:700;color:#ea580c">${fmt(nre.totalNRE + coating)}</td><td></td></tr>
+      </tbody>
+    </table>
+    ${enforcedBadge}
+  </div>`;
+}
+
+function buildSingleSourceWarnings(r: PCBImageAnalysis): string {
+  const warns = r._singleSourceWarnings;
+  if (!warns || warns.length === 0) return '';
+  const rows = warns.map(w => `<tr>
+    <td style="padding:3px 6px;font-size:0.68rem;font-family:monospace">${w.refDes}</td>
+    <td style="padding:3px 6px;font-size:0.62rem;color:var(--text-secondary)">${w.vendor}</td>
+    <td style="padding:3px 6px;text-align:right;font-size:0.68rem">${(w.premium * 100).toFixed(0)}%</td>
+    <td style="padding:3px 6px;text-align:right;font-size:0.68rem;font-weight:600">+£${w.premiumAmountGBP.toFixed(2)}</td>
+  </tr>`).join('');
+  return `<div style="margin-top:8px;padding:10px 12px;background:rgba(220,38,38,0.06);border:1px solid rgba(220,38,38,0.3);border-radius:8px">
+    <div style="font-size:0.72rem;font-weight:600;color:#dc2626;margin-bottom:6px">⚠ Single-Source Risk Components (${warns.length})</div>
+    <div style="font-size:0.62rem;color:var(--text-muted);margin-bottom:6px">These ICs have limited qualified alternatives. Supply risk premium applied to unit prices:</div>
+    <table style="width:100%;border-collapse:collapse">
+      <thead><tr>
+        <th style="padding:3px 6px;text-align:left;font-size:0.62rem;color:var(--text-muted)">Ref</th>
+        <th style="padding:3px 6px;text-align:left;font-size:0.62rem;color:var(--text-muted)">Sole vendor / rationale</th>
+        <th style="padding:3px 6px;text-align:right;font-size:0.62rem;color:var(--text-muted)">Premium</th>
+        <th style="padding:3px 6px;text-align:right;font-size:0.62rem;color:var(--text-muted)">Cost add</th>
+      </tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
   </div>`;
 }
 
