@@ -188,20 +188,30 @@ export default function AiChatbot() {
             </div>
 
             {/* Quick questions (shown only when just greeting is visible) */}
-            {messages.length === 1 && !loading && (
-              <div className="px-4 pb-2 flex flex-col gap-1.5 flex-shrink-0">
-                <p className="text-slate-600 text-xs mb-0.5">Quick questions</p>
-                {QUICK_QUESTIONS.map(q => (
-                  <button
-                    key={q}
-                    onClick={() => sendMessage(q)}
-                    className="text-left text-xs text-slate-400 hover:text-slate-200 border border-white/8 hover:border-white/20 rounded-lg px-3 py-1.5 transition-colors bg-white/3 hover:bg-white/6"
-                  >
-                    {q}
-                  </button>
-                ))}
-              </div>
-            )}
+            <AnimatePresence>
+              {messages.length === 1 && !loading && (
+                <motion.div
+                  initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                  className="px-4 pb-2 flex flex-col gap-1.5 flex-shrink-0"
+                >
+                  <p className="text-slate-600 text-xs mb-0.5">Quick questions</p>
+                  {QUICK_QUESTIONS.map((q, i) => (
+                    <motion.button
+                      key={q}
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: i * 0.06, duration: 0.22 }}
+                      whileHover={{ x: 4, transition: { duration: 0.12 } }}
+                      whileTap={{ scale: 0.97 }}
+                      onClick={() => sendMessage(q)}
+                      className="text-left text-xs text-slate-400 hover:text-slate-200 border border-white/8 hover:border-white/20 rounded-lg px-3 py-1.5 transition-colors bg-white/3 hover:bg-white/6"
+                    >
+                      {q}
+                    </motion.button>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
 
             {/* Input */}
             <div className="flex-shrink-0 border-t border-white/8 px-3 py-2.5 flex items-end gap-2">

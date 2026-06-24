@@ -452,8 +452,15 @@ export default function DashboardPage() {
             { icon: Lightbulb,   label: 'Parts Catalogued', value: '260+', sub: 'across all systems', color: 'text-blue-400', bg: 'bg-blue-500/10' },
             { icon: BarChart3,   label: 'Projects Saved', value: String(serverProjects.length || recentAnalyses.length), sub: 'cloud-synced', color: 'text-emerald-400', bg: 'bg-emerald-500/10' },
             { icon: Star,        label: 'Total Ideas', value: String(serverProjects.reduce((s, p) => s + (p.summary?.totalIdeas || 0), 0) || '—'), sub: 'across all projects', color: 'text-purple-400', bg: 'bg-purple-500/10' },
-          ].map(({ icon: Icon, label, value, sub, color, bg }) => (
-            <div key={label} className="rounded-xl bg-navy-900 border border-white/8 p-5 flex items-start gap-4">
+          ].map(({ icon: Icon, label, value, sub, color, bg }, i) => (
+            <motion.div
+              key={label}
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 + i * 0.07, duration: 0.38 }}
+              whileHover={{ y: -3, transition: { duration: 0.15 } }}
+              className="rounded-xl bg-navy-900 border border-white/8 p-5 flex items-start gap-4"
+            >
               <div className={`w-10 h-10 rounded-lg ${bg} flex items-center justify-center flex-shrink-0`}>
                 <Icon size={18} className={color} />
               </div>
@@ -462,7 +469,7 @@ export default function DashboardPage() {
                 <p className="text-xs text-slate-400 leading-tight">{label}</p>
                 <p className="text-xs text-slate-600 leading-tight mt-0.5">{sub}</p>
               </div>
-            </div>
+            </motion.div>
           ))}
         </motion.div>
 
@@ -805,20 +812,27 @@ export default function DashboardPage() {
               { label: 'BIW Body Structure', system: 'BIW Body-in-White', sub: 'Front End Module', icon: '🏗️' },
               { label: 'Battery Pack (BEV)', system: 'Powertrain BEV/MHEV', sub: 'Battery Pack & BMS', icon: '🔋' },
               { label: 'Front Suspension',  system: 'Chassis & Frame', sub: 'Front Suspension', icon: '⚙️' },
-            ].map(({ label, system, sub, icon }) => (
-              <Link
+            ].map(({ label, system, sub, icon }, i) => (
+              <motion.div
                 key={label}
-                to="/analyze"
-                state={{ preselect: { system, subassembly: sub } }}
-                className="flex items-center gap-4 p-4 rounded-xl bg-navy-900 border border-white/8 hover:border-gold-500/30 transition-all group"
+                initial={{ opacity: 0, y: 18 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.42 + i * 0.09, duration: 0.4 }}
+                whileHover={{ y: -4, boxShadow: '0 12px 32px rgba(0,0,0,0.35)', transition: { duration: 0.18 } }}
               >
-                <span className="text-2xl" aria-hidden="true">{icon}</span>
-                <div className="flex-1 min-w-0">
-                  <p className="text-white text-sm font-medium group-hover:text-gold-300 transition-colors truncate">{label}</p>
-                  <p className="text-slate-500 text-xs truncate">{sub}</p>
-                </div>
-                <ChevronRight size={14} className="text-slate-600 group-hover:text-gold-400 transition-colors flex-shrink-0" />
-              </Link>
+                <Link
+                  to="/analyze"
+                  state={{ preselect: { system, subassembly: sub } }}
+                  className="flex items-center gap-4 p-4 rounded-xl bg-navy-900 border border-white/8 hover:border-gold-500/30 transition-colors group"
+                >
+                  <span className="text-2xl" aria-hidden="true">{icon}</span>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-white text-sm font-medium group-hover:text-gold-300 transition-colors truncate">{label}</p>
+                    <p className="text-slate-500 text-xs truncate">{sub}</p>
+                  </div>
+                  <ChevronRight size={14} className="text-slate-600 group-hover:text-gold-400 transition-colors flex-shrink-0" />
+                </Link>
+              </motion.div>
             ))}
           </div>
         </motion.div>

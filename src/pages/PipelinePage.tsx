@@ -558,7 +558,8 @@ export default function PipelinePage() {
 
         {/* ── Gate filter tabs ── */}
         <div className="flex gap-1.5 mb-4 overflow-x-auto pb-1" style={{ scrollbarWidth: 'none' }}>
-          <button
+          <motion.button
+            whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.95 }}
             onClick={() => setFilterGate('All')}
             className={`flex-shrink-0 flex items-center gap-2 px-3 py-2 rounded-lg text-xs border transition-colors ${
               filterGate === 'All'
@@ -568,13 +569,14 @@ export default function PipelinePage() {
           >
             All
             <span className="text-slate-500">{cases.length}</span>
-          </button>
+          </motion.button>
           {gateStats.map(({ gate, count, total }) => {
             const info = fmtGate(gate);
             const active = filterGate === gate;
             return (
-              <button
+              <motion.button
                 key={gate}
+                whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.95 }}
                 onClick={() => setFilterGate(gate)}
                 className={`flex-shrink-0 flex items-center gap-2 px-3 py-2 rounded-lg text-xs border transition-colors ${
                   active
@@ -591,7 +593,7 @@ export default function PipelinePage() {
                     · {fmtMoney(total)}
                   </span>
                 )}
-              </button>
+              </motion.button>
             );
           })}
         </div>
@@ -870,7 +872,8 @@ export default function PipelinePage() {
                             <div className="flex items-center gap-2 mb-4">
                               <span className="text-xs text-slate-600">Move gate:</span>
                               {prevGate && (
-                                <button
+                                <motion.button
+                                  whileTap={{ scale: 0.88 }}
                                   onClick={() => updateGate(bc.id, prevGate)}
                                   disabled={isUpdating}
                                   className={`flex items-center gap-1 px-2.5 py-1 rounded-lg border text-xs transition-colors ${fmtGate(prevGate).bg} ${fmtGate(prevGate).color} ${fmtGate(prevGate).border} hover:opacity-80 disabled:opacity-40`}
@@ -881,7 +884,7 @@ export default function PipelinePage() {
                                     <ChevronLeft size={11} />
                                   )}
                                   {prevGate}
-                                </button>
+                                </motion.button>
                               )}
                               <span
                                 className={`px-2.5 py-1 rounded-lg border text-xs font-semibold ${gateInfo.bg} ${gateInfo.color} ${gateInfo.border}`}
@@ -889,7 +892,8 @@ export default function PipelinePage() {
                                 {bc.gate}
                               </span>
                               {nextGate && (
-                                <button
+                                <motion.button
+                                  whileTap={{ scale: 0.88 }}
                                   onClick={() => updateGate(bc.id, nextGate)}
                                   disabled={isUpdating}
                                   className={`flex items-center gap-1 px-2.5 py-1 rounded-lg border text-xs transition-colors ${fmtGate(nextGate).bg} ${fmtGate(nextGate).color} ${fmtGate(nextGate).border} hover:opacity-80 disabled:opacity-40`}
@@ -900,7 +904,7 @@ export default function PipelinePage() {
                                   ) : (
                                     <ChevronRight size={11} />
                                   )}
-                                </button>
+                                </motion.button>
                               )}
                             </div>
                           )}

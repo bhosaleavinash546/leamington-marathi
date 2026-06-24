@@ -1,8 +1,15 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Menu, X, ChevronDown, LayoutDashboard, HelpCircle, LogOut, User, Sun, Moon, TrendingUp, FileBox, Calculator, Store, Link2, GitCompare, Zap, ClipboardList, GitMerge } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
+
+const dropdownVariants = {
+  hidden: { opacity: 0, y: -6, scale: 0.97 },
+  visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.15, ease: 'easeOut' } },
+  exit:    { opacity: 0, y: -6, scale: 0.97, transition: { duration: 0.1, ease: 'easeIn' } },
+};
 
 const APP_VERSION = '3.0.0';
 
@@ -95,22 +102,29 @@ export default function Header() {
                     className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-all ${['/bom-analysis','/cad-to-cost','/cad-diff','/should-cost','/trends'].some(p => isActive(p)) ? 'bg-gold-500/20 text-gold-400' : 'text-slate-300 hover:text-white hover:bg-white/5'}`}>
                     Tools <ChevronDown size={13} className={`transition-transform ${toolsOpen ? 'rotate-180' : ''}`} />
                   </button>
-                  {toolsOpen && (
-                    <div className="absolute top-full left-0 mt-1.5 w-48 rounded-xl bg-navy-800 border border-white/10 shadow-2xl shadow-black/50 py-1 overflow-hidden z-50">
-                      {[
-                        { path: '/bom-analysis', label: 'BOM Batch' },
-                        { path: '/cad-to-cost', label: 'CAD to Cost' },
-                        { path: '/cad-diff', label: 'CAD Diff' },
-                        { path: '/should-cost', label: 'Should-Cost' },
-                        { path: '/trends', label: 'Trends' },
-                      ].map(({ path, label }) => (
-                        <Link key={path} to={path} onClick={() => setToolsOpen(false)}
-                          className={`block px-4 py-2.5 text-sm transition-colors ${isActive(path) ? 'text-gold-400 bg-gold-500/10' : 'text-slate-300 hover:text-white hover:bg-white/5'}`}>
-                          {label}
-                        </Link>
-                      ))}
-                    </div>
-                  )}
+                  <AnimatePresence>
+                    {toolsOpen && (
+                      <motion.div
+                        variants={dropdownVariants} initial="hidden" animate="visible" exit="exit"
+                        className="absolute top-full left-0 mt-1.5 w-48 rounded-xl bg-navy-800 border border-white/10 shadow-2xl shadow-black/50 py-1 overflow-hidden z-50"
+                      >
+                        {[
+                          { path: '/bom-analysis', label: 'BOM Batch' },
+                          { path: '/cad-to-cost', label: 'CAD to Cost' },
+                          { path: '/cad-diff', label: 'CAD Diff' },
+                          { path: '/should-cost', label: 'Should-Cost' },
+                          { path: '/trends', label: 'Trends' },
+                        ].map(({ path, label }, i) => (
+                          <motion.div key={path} initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.04, duration: 0.15 }}>
+                            <Link to={path} onClick={() => setToolsOpen(false)}
+                              className={`block px-4 py-2.5 text-sm transition-colors ${isActive(path) ? 'text-gold-400 bg-gold-500/10' : 'text-slate-300 hover:text-white hover:bg-white/5'}`}>
+                              {label}
+                            </Link>
+                          </motion.div>
+                        ))}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
 
                 <Link to="/help"
@@ -156,46 +170,52 @@ export default function Header() {
                   <ChevronDown size={14} className={`text-slate-500 transition-transform ${userMenuOpen ? 'rotate-180' : ''}`} />
                 </button>
 
-                {userMenuOpen && (
-                  <div className="absolute right-0 mt-2 w-52 rounded-xl bg-navy-800 border border-white/10 shadow-2xl shadow-black/50 py-1 overflow-hidden">
-                    <div className="px-4 py-3 border-b border-white/8">
-                      <p className="text-white text-sm font-semibold truncate">{user?.name}</p>
-                      <p className="text-slate-500 text-xs truncate mt-0.5">{user?.email}</p>
-                    </div>
-                    {[
-                      { icon: LayoutDashboard, label: 'Dashboard', path: '/dashboard' },
-                      { icon: Zap,            label: 'Analyze',    path: '/analyze' },
-                      { icon: FileBox,        label: 'CAD to Cost',  path: '/cad-to-cost' },
-                      { icon: GitCompare,     label: 'CAD Diff',     path: '/cad-diff' },
-                      { icon: Calculator,     label: 'Should-Cost',  path: '/should-cost' },
-                      { icon: TrendingUp,     label: 'Trends',       path: '/trends' },
-                      { icon: Store,          label: 'Marketplace',  path: '/marketplace' },
-                      { icon: ClipboardList,  label: 'VAVE Tracker', path: '/vave-tracker' },
-                      { icon: GitMerge,       label: 'Pipeline',     path: '/pipeline' },
-                      { icon: Link2,          label: 'Integrations', path: '/integrations' },
-                      { icon: HelpCircle,     label: 'Help',       path: '/help' },
-                    ].map(({ icon: Icon, label, path }) => (
-                      <Link
-                        key={path}
-                        to={path}
-                        onClick={() => setUserMenuOpen(false)}
-                        className="flex items-center gap-3 px-4 py-2.5 text-slate-300 hover:text-white hover:bg-white/5 text-sm transition-colors"
-                      >
-                        <Icon size={14} className="text-slate-500" />
-                        {label}
-                      </Link>
-                    ))}
-                    <div className="border-t border-white/8 mt-1 pt-1">
-                      <button
-                        onClick={handleSignOut}
-                        className="w-full flex items-center gap-3 px-4 py-2.5 text-red-400 hover:bg-red-500/10 text-sm transition-colors"
-                      >
-                        <LogOut size={14} />
-                        Sign Out
-                      </button>
-                    </div>
-                  </div>
-                )}
+                <AnimatePresence>
+                  {userMenuOpen && (
+                    <motion.div
+                      variants={dropdownVariants} initial="hidden" animate="visible" exit="exit"
+                      className="absolute right-0 mt-2 w-52 rounded-xl bg-navy-800 border border-white/10 shadow-2xl shadow-black/50 py-1 overflow-hidden"
+                    >
+                      <div className="px-4 py-3 border-b border-white/8">
+                        <p className="text-white text-sm font-semibold truncate">{user?.name}</p>
+                        <p className="text-slate-500 text-xs truncate mt-0.5">{user?.email}</p>
+                      </div>
+                      {[
+                        { icon: LayoutDashboard, label: 'Dashboard', path: '/dashboard' },
+                        { icon: Zap,            label: 'Analyze',    path: '/analyze' },
+                        { icon: FileBox,        label: 'CAD to Cost',  path: '/cad-to-cost' },
+                        { icon: GitCompare,     label: 'CAD Diff',     path: '/cad-diff' },
+                        { icon: Calculator,     label: 'Should-Cost',  path: '/should-cost' },
+                        { icon: TrendingUp,     label: 'Trends',       path: '/trends' },
+                        { icon: Store,          label: 'Marketplace',  path: '/marketplace' },
+                        { icon: ClipboardList,  label: 'VAVE Tracker', path: '/vave-tracker' },
+                        { icon: GitMerge,       label: 'Pipeline',     path: '/pipeline' },
+                        { icon: Link2,          label: 'Integrations', path: '/integrations' },
+                        { icon: HelpCircle,     label: 'Help',       path: '/help' },
+                      ].map(({ icon: Icon, label, path }, i) => (
+                        <motion.div key={path} initial={{ opacity: 0, x: 8 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.03, duration: 0.15 }}>
+                          <Link
+                            to={path}
+                            onClick={() => setUserMenuOpen(false)}
+                            className="flex items-center gap-3 px-4 py-2.5 text-slate-300 hover:text-white hover:bg-white/5 text-sm transition-colors"
+                          >
+                            <Icon size={14} className="text-slate-500" />
+                            {label}
+                          </Link>
+                        </motion.div>
+                      ))}
+                      <div className="border-t border-white/8 mt-1 pt-1">
+                        <button
+                          onClick={handleSignOut}
+                          className="w-full flex items-center gap-3 px-4 py-2.5 text-red-400 hover:bg-red-500/10 text-sm transition-colors"
+                        >
+                          <LogOut size={14} />
+                          Sign Out
+                        </button>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
             ) : (
               <Link
@@ -215,8 +235,14 @@ export default function Header() {
       </div>
 
       {/* Mobile menu */}
+      <AnimatePresence>
       {menuOpen && (
-        <div className="md:hidden bg-navy-900 border-t border-white/10 px-4 py-3 space-y-1">
+        <motion.div
+          initial={{ opacity: 0, height: 0 }}
+          animate={{ opacity: 1, height: 'auto' }}
+          exit={{ opacity: 0, height: 0 }}
+          transition={{ duration: 0.22, ease: 'easeInOut' }}
+          className="md:hidden bg-navy-900 border-t border-white/10 px-4 py-3 space-y-1 overflow-hidden">
           {isAuthenticated ? (
             <>
               <div className="flex items-center gap-3 px-3 py-2 mb-2 border-b border-white/8 pb-3">
@@ -249,8 +275,9 @@ export default function Header() {
               <Link to="/auth" className="block px-3 py-2 text-sm text-gold-400 font-medium rounded-lg hover:bg-gold-500/10" onClick={() => setMenuOpen(false)}>Sign In</Link>
             </>
           )}
-        </div>
+        </motion.div>
       )}
+      </AnimatePresence>
     </header>
   );
 }

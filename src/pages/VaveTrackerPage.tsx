@@ -297,35 +297,33 @@ export default function VaveTrackerPage() {
 
         {/* Funnel summary */}
         <div className="grid grid-cols-3 gap-3 mb-6">
-          <div className="bg-navy-900 border border-white/10 rounded-2xl p-4">
-            <div className="flex items-center gap-2 mb-1">
-              <BarChart3 size={14} className="text-slate-400" />
-              <span className="text-slate-400 text-xs">Total Pipeline</span>
-            </div>
-            <div className="text-white text-xl font-bold">{fmtSaving(totalPipeline)}</div>
-            <div className="text-slate-500 text-xs mt-0.5">{actions.length} ideas across all stages</div>
-          </div>
-          <div className="bg-navy-900 border border-teal-500/20 rounded-2xl p-4">
-            <div className="flex items-center gap-2 mb-1">
-              <TrendingUp size={14} className="text-teal-400" />
-              <span className="text-teal-400 text-xs">Validated +</span>
-            </div>
-            <div className="text-white text-xl font-bold">{fmtSaving(totalValidated)}</div>
-            <div className="text-slate-500 text-xs mt-0.5">Validated & Confirmed stages</div>
-          </div>
-          <div className="bg-navy-900 border border-green-500/25 rounded-2xl p-4">
-            <div className="flex items-center gap-2 mb-1">
-              <Award size={14} className="text-green-400" />
-              <span className="text-green-400 text-xs">Confirmed Saving</span>
-            </div>
-            <div className="text-white text-xl font-bold">{fmtSaving(totalConfirmed)}</div>
-            <div className="text-slate-500 text-xs mt-0.5">In production</div>
-          </div>
+          {[
+            { icon: BarChart3, iconClass: 'text-slate-400', label: 'Total Pipeline', labelClass: 'text-slate-400', value: fmtSaving(totalPipeline), sub: `${actions.length} ideas across all stages`, border: 'border-white/10' },
+            { icon: TrendingUp, iconClass: 'text-teal-400', label: 'Validated +', labelClass: 'text-teal-400', value: fmtSaving(totalValidated), sub: 'Validated & Confirmed stages', border: 'border-teal-500/20' },
+            { icon: Award, iconClass: 'text-green-400', label: 'Confirmed Saving', labelClass: 'text-green-400', value: fmtSaving(totalConfirmed), sub: 'In production', border: 'border-green-500/25' },
+          ].map(({ icon: Icon, iconClass, label, labelClass, value, sub, border }, i) => (
+            <motion.div
+              key={label}
+              initial={{ opacity: 0, y: 14 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.08, duration: 0.38, ease: 'easeOut' }}
+              whileHover={{ y: -2, transition: { duration: 0.15 } }}
+              className={`bg-navy-900 border ${border} rounded-2xl p-4`}
+            >
+              <div className="flex items-center gap-2 mb-1">
+                <Icon size={14} className={iconClass} />
+                <span className={`${labelClass} text-xs`}>{label}</span>
+              </div>
+              <div className="text-white text-xl font-bold">{value}</div>
+              <div className="text-slate-500 text-xs mt-0.5">{sub}</div>
+            </motion.div>
+          ))}
         </div>
 
         {/* Stage pipeline bar */}
         <div className="flex gap-1 mb-6 overflow-x-auto pb-1" style={{ scrollbarWidth: 'none' }}>
-          <button
+          <motion.button
+            whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.94 }}
             onClick={() => setFilterStage('All')}
             className={`flex-shrink-0 flex items-center gap-2 px-3 py-2 rounded-lg text-xs border transition-colors ${
               filterStage === 'All'
@@ -335,10 +333,11 @@ export default function VaveTrackerPage() {
           >
             All stages
             <span className="text-slate-500">{actions.length}</span>
-          </button>
+          </motion.button>
           {funnelStats.map(s => (
-            <button
+            <motion.button
               key={s.key}
+              whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.94 }}
               onClick={() => setFilterStage(s.key)}
               className={`flex-shrink-0 flex items-center gap-2 px-3 py-2 rounded-lg text-xs border transition-colors ${
                 filterStage === s.key
@@ -349,7 +348,7 @@ export default function VaveTrackerPage() {
               <div className={`w-1.5 h-1.5 rounded-full ${filterStage === s.key ? s.dot : 'bg-slate-600'}`} />
               {s.label}
               <span className={filterStage === s.key ? 'opacity-70' : 'text-slate-600'}>{s.count}</span>
-            </button>
+            </motion.button>
           ))}
         </div>
 

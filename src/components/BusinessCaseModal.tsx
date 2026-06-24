@@ -446,8 +446,10 @@ export default function BusinessCaseModal({
                   {SUV_MODELS.map((model) => {
                     const active = selectedModels.has(model);
                     return (
-                      <button
+                      <motion.button
                         key={model}
+                        whileHover={{ scale: 1.06 }}
+                        whileTap={{ scale: 0.92 }}
                         onClick={() => toggleModel(model)}
                         className={`relative flex flex-col items-center justify-center p-3 rounded-xl border text-sm font-medium transition-all ${
                           active
@@ -455,14 +457,22 @@ export default function BusinessCaseModal({
                             : 'bg-navy-800 border-white/10 text-slate-400 hover:border-white/20 hover:text-white'
                         }`}
                       >
-                        {active && (
-                          <div className="absolute top-1.5 right-1.5 w-4 h-4 rounded-full bg-gold-500 flex items-center justify-center">
-                            <Check size={9} className="text-navy-950" />
-                          </div>
-                        )}
+                        <AnimatePresence>
+                          {active && (
+                            <motion.div
+                              initial={{ scale: 0, opacity: 0 }}
+                              animate={{ scale: 1, opacity: 1 }}
+                              exit={{ scale: 0, opacity: 0 }}
+                              transition={{ type: 'spring', stiffness: 400, damping: 20 }}
+                              className="absolute top-1.5 right-1.5 w-4 h-4 rounded-full bg-gold-500 flex items-center justify-center"
+                            >
+                              <Check size={9} className="text-navy-950" />
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
                         <span className="text-xs text-slate-500 mb-0.5">Model</span>
                         <span>{model}</span>
-                      </button>
+                      </motion.button>
                     );
                   })}
                 </div>
@@ -754,8 +764,10 @@ export default function BusinessCaseModal({
                       const info = GATE_INFO[g];
                       const active = gate === g;
                       return (
-                        <button
+                        <motion.button
                           key={g}
+                          whileHover={{ scale: 1.03 }}
+                          whileTap={{ scale: 0.96 }}
                           onClick={() => setGate(g)}
                           className={`text-left px-3 py-2.5 rounded-xl border transition-all ${
                             active
@@ -769,7 +781,7 @@ export default function BusinessCaseModal({
                           <div className="text-xs opacity-80 leading-snug">
                             {info.desc}
                           </div>
-                        </button>
+                        </motion.button>
                       );
                     })}
                   </div>
