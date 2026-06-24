@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Menu, X, ChevronDown, LayoutDashboard, HelpCircle, LogOut, User, Sun, Moon, TrendingUp, FileBox, Calculator, Store, Link2, GitCompare, Zap } from 'lucide-react';
+import { Menu, X, ChevronDown, LayoutDashboard, HelpCircle, LogOut, User, Sun, Moon, TrendingUp, FileBox, Calculator, Store, Link2, GitCompare, Zap, ClipboardList } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
 
@@ -80,6 +80,7 @@ export default function Header() {
                   { path: '/dashboard', label: 'Dashboard' },
                   { path: '/analyze', label: 'Analyze' },
                   { path: '/marketplace', label: 'Marketplace' },
+                  { path: '/vave-tracker', label: 'VAVE Tracker' },
                 ].map(({ path, label }) => (
                   <Link key={path} to={path}
                     className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${isActive(path) ? 'bg-gold-500/20 text-gold-400' : 'text-slate-300 hover:text-white hover:bg-white/5'}`}>
@@ -168,6 +169,7 @@ export default function Header() {
                       { icon: Calculator,     label: 'Should-Cost',  path: '/should-cost' },
                       { icon: TrendingUp,     label: 'Trends',       path: '/trends' },
                       { icon: Store,          label: 'Marketplace',  path: '/marketplace' },
+                      { icon: ClipboardList,  label: 'VAVE Tracker', path: '/vave-tracker' },
                       { icon: Link2,          label: 'Integrations', path: '/integrations' },
                       { icon: HelpCircle,     label: 'Help',       path: '/help' },
                     ].map(({ icon: Icon, label, path }) => (
@@ -228,8 +230,9 @@ export default function Header() {
               <Link to="/cad-diff"    className="block px-3 py-2 text-sm text-slate-300 hover:text-white rounded-lg hover:bg-white/5" onClick={() => setMenuOpen(false)}>CAD Diff</Link>
               <Link to="/should-cost" className="block px-3 py-2 text-sm text-slate-300 hover:text-white rounded-lg hover:bg-white/5" onClick={() => setMenuOpen(false)}>Should-Cost</Link>
               <Link to="/trends"       className="block px-3 py-2 text-sm text-slate-300 hover:text-white rounded-lg hover:bg-white/5" onClick={() => setMenuOpen(false)}>Trends</Link>
-              <Link to="/marketplace"  className="block px-3 py-2 text-sm text-slate-300 hover:text-white rounded-lg hover:bg-white/5" onClick={() => setMenuOpen(false)}>Marketplace</Link>
-              <Link to="/integrations" className="block px-3 py-2 text-sm text-slate-300 hover:text-white rounded-lg hover:bg-white/5" onClick={() => setMenuOpen(false)}>Integrations</Link>
+              <Link to="/marketplace"   className="block px-3 py-2 text-sm text-slate-300 hover:text-white rounded-lg hover:bg-white/5" onClick={() => setMenuOpen(false)}>Marketplace</Link>
+              <Link to="/vave-tracker"  className="block px-3 py-2 text-sm text-slate-300 hover:text-white rounded-lg hover:bg-white/5" onClick={() => setMenuOpen(false)}>VAVE Tracker</Link>
+              <Link to="/integrations"  className="block px-3 py-2 text-sm text-slate-300 hover:text-white rounded-lg hover:bg-white/5" onClick={() => setMenuOpen(false)}>Integrations</Link>
               <Link to="/help"         className="block px-3 py-2 text-sm text-slate-300 hover:text-white rounded-lg hover:bg-white/5" onClick={() => setMenuOpen(false)}>Help</Link>
               <button onClick={() => { toggleTheme(); setMenuOpen(false); }} className="w-full text-left px-3 py-2 text-sm text-slate-300 hover:bg-white/5 rounded-lg">
                 {theme === 'dark' ? '☀️ Light Theme' : '🌙 Dark Theme'}

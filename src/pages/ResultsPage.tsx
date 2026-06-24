@@ -7,12 +7,13 @@ import {
   ChevronDown, ChevronUp, BarChart3, RefreshCw, Tag,
   Globe, ExternalLink, ChevronRight, Search, DollarSign, Calculator,
   ShieldCheck, BookOpen, FlaskConical, Lightbulb, Scale, Link2,
-  MessageSquare, CheckSquare, XSquare, Bot, Send, Map, Share2, ClipboardList
+  MessageSquare, CheckSquare, XSquare, Bot, Send, Map, Share2, ClipboardList, X
 } from 'lucide-react';
 import TypingDots from '../components/ui/TypingDots';
 import ButtonSpinner from '../components/ui/ButtonSpinner';
 import { AnalysisResult, CostReductionIdea, CostSavingType, Difficulty, SearchSource, ConfidenceLevel, EvidenceSource, IdeaAnnotation, AnnotationStatus, ChatMessage } from '../types';
 import { exportToExcel, exportToPowerPoint, exportToPdf, exportRfqPdf } from '../services/export-service';
+import { useAuth } from '../contexts/AuthContext';
 import { generateCostReductionIdeas, sendChatMessage, loadFullResult } from '../services/claude-service';
 import { toast } from '../hooks/useToast';
 import IdeasDashboard from '../components/results/IdeasDashboard';
@@ -161,12 +162,23 @@ function RoadmapSection({ ideas }: { ideas: CostReductionIdea[] }) {
   );
 }
 
+const REJECTION_REASONS: { key: string; label: string }[] = [
+  { key: 'already_tried',       label: 'Already tried / tested' },
+  { key: 'not_applicable',      label: 'Not applicable to our platform' },
+  { key: 'too_risky',           label: 'Risk too high' },
+  { key: 'supplier_constraint', label: 'Supplier / tooling constraint' },
+  { key: 'regulatory',          label: 'Regulatory / homologation blocker' },
+  { key: 'cost_too_low',        label: 'Saving too small to pursue' },
+  { key: 'other',               label: 'Other reason' },
+];
+
 function IdeaCard({ idea, index, annotation, onAnnotate }: {
   idea: CostReductionIdea;
   index: number;
   annotation?: IdeaAnnotation;
   onAnnotate: (a: IdeaAnnotation) => void;
 }) {
+  const { token } = useAuth();
   const [expanded, setExpanded] = useState(false);
   const [showAnnotation, setShowAnnotation] = useState(false);
   const [noteText, setNoteText] = useState(annotation?.note ?? '');
@@ -175,7 +187,73 @@ function IdeaCard({ idea, index, annotation, onAnnotate }: {
   const [commodityDelta, setCommodityDelta] = useState(0);
   const [patentLoading, setPatentLoading] = useState(false);
   const [patentResult, setPatentResult] = useState<string | null>(null);
+  const [showRejectModal, setShowRejectModal] = useState(false);
+  const [rejectReason, setRejectReason] = useState('');
+  const [showVavePrompt, setShowVavePrompt] = useState(false);
+  const [vaveCreating, setVaveCreating] = useState(false);
   const diff = DIFFICULTY_CONFIG[idea.implementationDifficulty];
+
+  async function handleStatusClick(status: AnnotationStatus) {
+    if (status === 'rejected') {
+      setShowRejectModal(true);
+      return;
+    }
+    onAnnotate({ status, note: annotation?.note ?? noteText, updatedAt: new Date().toISOString() });
+    if (status === 'approved') {
+      setShowVavePrompt(true);
+    }
+  }
+
+  async function submitRejection() {
+    const reason = rejectReason || 'other';
+    onAnnotate({ status: 'rejected', note: annotation?.note ?? noteText, updatedAt: new Date().toISOString() });
+    setShowRejectModal(false);
+    setRejectReason('');
+    try {
+      await fetch('/api/feedback', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({
+          ideaTitle: idea.title,
+          systemName: '',
+          subassemblyName: '',
+          reason,
+          category: idea.costSavingTypes?.[0] || 'other',
+        }),
+      });
+    } catch { /* non-critical */ }
+  }
+
+  async function createVaveAction() {
+    setVaveCreating(true);
+    try {
+      await fetch('/api/vave-actions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({
+          ideaTitle: idea.title,
+          ideaDescription: idea.technicalDescription || '',
+          systemName: '',
+          subassemblyName: '',
+          partName: '',
+          targetSaving: idea.costSavingPotential?.annualValue || '',
+          stage: 'Identified',
+        }),
+      });
+      toast('Added to VAVE Tracker', 'success');
+    } catch {
+      toast('Could not create VAVE action', 'error');
+    } finally {
+      setVaveCreating(false);
+      setShowVavePrompt(false);
+    }
+  }
 
   function parseValLocal(val?: string): number {
     if (!val) return 0;
@@ -442,7 +520,7 @@ function IdeaCard({ idea, index, annotation, onAnnotate }: {
                 {(Object.keys(ANNOTATION_STATUS_CONFIG) as AnnotationStatus[]).map(status => (
                   <button
                     key={status}
-                    onClick={() => onAnnotate({ status, note: annotation?.note ?? noteText, updatedAt: new Date().toISOString() })}
+                    onClick={() => handleStatusClick(status)}
                     className={`px-2.5 py-1 rounded-lg text-xs border transition-colors ${
                       annotation?.status === status
                         ? `${ANNOTATION_STATUS_CONFIG[status].bg} ${ANNOTATION_STATUS_CONFIG[status].color} ${ANNOTATION_STATUS_CONFIG[status].border}`
@@ -453,6 +531,60 @@ function IdeaCard({ idea, index, annotation, onAnnotate }: {
                   </button>
                 ))}
               </div>
+
+              {/* VAVE tracking prompt */}
+              {showVavePrompt && (
+                <div className="mt-2 flex items-center gap-2 p-2.5 rounded-xl bg-green-500/8 border border-green-500/20">
+                  <ClipboardList size={14} className="text-green-400 flex-shrink-0" />
+                  <span className="text-green-300 text-xs flex-1">Track this idea in the VAVE pipeline?</span>
+                  <button
+                    onClick={createVaveAction}
+                    disabled={vaveCreating}
+                    className="px-2.5 py-1 rounded-lg text-xs bg-green-500/20 text-green-300 border border-green-500/30 hover:bg-green-500/30 transition-colors disabled:opacity-50"
+                  >
+                    {vaveCreating ? 'Adding…' : 'Add to VAVE'}
+                  </button>
+                  <button onClick={() => setShowVavePrompt(false)} className="text-slate-500 hover:text-slate-300 transition-colors">
+                    <X size={13} />
+                  </button>
+                </div>
+              )}
+
+              {/* Rejection reason modal */}
+              {showRejectModal && (
+                <div className="mt-2 p-3 rounded-xl bg-red-500/5 border border-red-500/20 space-y-2">
+                  <p className="text-red-300 text-xs font-medium">Why is this idea rejected? (helps personalise future AI output)</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {REJECTION_REASONS.map(r => (
+                      <button
+                        key={r.key}
+                        onClick={() => setRejectReason(r.key)}
+                        className={`px-2.5 py-1 rounded-lg text-xs border transition-colors ${
+                          rejectReason === r.key
+                            ? 'bg-red-500/20 text-red-300 border-red-500/40'
+                            : 'text-slate-500 border-white/10 hover:border-white/25'
+                        }`}
+                      >
+                        {r.label}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="flex gap-2 pt-1">
+                    <button
+                      onClick={submitRejection}
+                      className="px-3 py-1.5 rounded-lg text-xs bg-red-500/20 text-red-300 border border-red-500/30 hover:bg-red-500/30 transition-colors"
+                    >
+                      Confirm Rejection
+                    </button>
+                    <button
+                      onClick={() => { setShowRejectModal(false); setRejectReason(''); }}
+                      className="px-3 py-1.5 rounded-lg text-xs text-slate-500 border border-white/10 hover:border-white/25 transition-colors"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
             <div>
               <label className="block text-xs text-slate-500 mb-1.5">Engineering Notes</label>

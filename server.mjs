@@ -121,6 +121,38 @@ db.exec(`
   );
 `);
 
+// ─── VAVE action tracking table ──────────────────────────────────────────────
+db.exec(`
+  CREATE TABLE IF NOT EXISTS vave_actions (
+    id TEXT PRIMARY KEY,
+    userId TEXT NOT NULL,
+    projectId TEXT,
+    ideaTitle TEXT NOT NULL,
+    ideaDescription TEXT DEFAULT '',
+    systemName TEXT DEFAULT '',
+    subassemblyName TEXT DEFAULT '',
+    partName TEXT DEFAULT '',
+    targetSaving TEXT DEFAULT '',
+    confirmedSaving TEXT DEFAULT '',
+    stage TEXT DEFAULT 'Identified',
+    owner TEXT DEFAULT '',
+    targetDate TEXT DEFAULT '',
+    notes TEXT DEFAULT '',
+    createdAt TEXT NOT NULL,
+    updatedAt TEXT NOT NULL
+  );
+  CREATE TABLE IF NOT EXISTS feedback_signals (
+    id TEXT PRIMARY KEY,
+    userId TEXT NOT NULL,
+    ideaTitle TEXT NOT NULL,
+    systemName TEXT DEFAULT '',
+    subassemblyName TEXT DEFAULT '',
+    reason TEXT NOT NULL,
+    category TEXT NOT NULL,
+    createdAt TEXT NOT NULL
+  );
+`);
+
 // Seed marketplace with curated ideas if empty
 const mktCount = db.prepare('SELECT COUNT(*) as c FROM marketplace_ideas').get();
 if (mktCount.c === 0) {
@@ -4280,6 +4312,125 @@ app.post('/api/marketplace', requireAuth, rateLimit(5, 60 * 60 * 1000), (req, re
 });
 
 // ─── START ────────────────────────────────────────────────────────────────────
+
+// ─── VAVE Action Tracking ─────────────────────────────────────────────────────
+
+app.post('/api/vave-actions', requireAuth, (req, res) => {
+  const { ideaTitle, ideaDescription, systemName, subassemblyName, partName, targetSaving, projectId } = req.body;
+  if (!ideaTitle) return res.status(400).json({ error: 'ideaTitle is required' });
+  const id = crypto.randomUUID();
+  const now = new Date().toISOString();
+  db.prepare(`INSERT INTO vave_actions
+    (id,userId,projectId,ideaTitle,ideaDescription,systemName,subassemblyName,partName,targetSaving,stage,createdAt,updatedAt)
+    VALUES (?,?,?,?,?,?,?,?,?,'Identified',?,?)`)
+    .run(id, req.userId, projectId || null, ideaTitle, ideaDescription || '', systemName || '', subassemblyName || '', partName || '', targetSaving || '', now, now);
+  res.json({ id, stage: 'Identified', createdAt: now });
+});
+
+app.get('/api/vave-actions', requireAuth, (req, res) => {
+  const actions = db.prepare('SELECT * FROM vave_actions WHERE userId = ? ORDER BY createdAt DESC').all(req.userId);
+  res.json(actions);
+});
+
+app.patch('/api/vave-actions/:id', requireAuth, (req, res) => {
+  const action = db.prepare('SELECT id FROM vave_actions WHERE id = ? AND userId = ?').get(req.params.id, req.userId);
+  if (!action) return res.status(404).json({ error: 'Not found' });
+  const allowed = ['stage','owner','targetDate','notes','targetSaving','confirmedSaving','ideaTitle','ideaDescription'];
+  const updates = Object.fromEntries(Object.entries(req.body).filter(([k]) => allowed.includes(k)));
+  if (Object.keys(updates).length === 0) return res.status(400).json({ error: 'No valid fields to update' });
+  const sets = Object.keys(updates).map(k => `${k} = ?`).join(', ');
+  const vals = [...Object.values(updates), new Date().toISOString(), req.params.id, req.userId];
+  db.prepare(`UPDATE vave_actions SET ${sets}, updatedAt = ? WHERE id = ? AND userId = ?`).run(...vals);
+  res.json({ ok: true });
+});
+
+app.delete('/api/vave-actions/:id', requireAuth, (req, res) => {
+  db.prepare('DELETE FROM vave_actions WHERE id = ? AND userId = ?').run(req.params.id, req.userId);
+  res.json({ ok: true });
+});
+
+// ─── Feedback Signals (Prompt Personalisation) ────────────────────────────────
+
+app.post('/api/feedback', requireAuth, rateLimit(50, 60 * 60 * 1000), (req, res) => {
+  const { ideaTitle, systemName, subassemblyName, reason, category } = req.body;
+  if (!ideaTitle || !reason || !category) return res.status(400).json({ error: 'ideaTitle, reason, and category are required' });
+  const id = crypto.randomUUID();
+  db.prepare('INSERT INTO feedback_signals (id,userId,ideaTitle,systemName,subassemblyName,reason,category,createdAt) VALUES (?,?,?,?,?,?,?,?)')
+    .run(id, req.userId, ideaTitle, systemName || '', subassemblyName || '', reason, category, new Date().toISOString());
+  res.json({ ok: true });
+});
+
+app.get('/api/feedback/context', requireAuth, (req, res) => {
+  const { systemName, subassemblyName } = req.query;
+  const params = [req.userId];
+  let where = 'userId = ?';
+  if (systemName) { where += ' AND systemName = ?'; params.push(systemName); }
+  if (subassemblyName) { where += ' AND subassemblyName = ?'; params.push(subassemblyName); }
+  const signals = db.prepare(
+    `SELECT category, reason, COUNT(*) as count FROM feedback_signals WHERE ${where} GROUP BY category ORDER BY count DESC LIMIT 20`
+  ).all(...params);
+  const totalRejections = signals.reduce((s, r) => s + r.count, 0);
+  res.json({ signals, totalRejections });
+});
+
+// ─── AI Assistant Chat (BrainSpark-Specific) ──────────────────────────────────
+
+const BRAINSPARK_ASSISTANT_PROMPT = `You are the BrainSpark AI Assistant — an intelligent co-pilot embedded within the BrainSpark Cost Engineering Intelligence Platform. You help automotive engineers, procurement managers, and programme directors get the most value from BrainSpark.
+
+ABOUT BRAINSPARK:
+BrainSpark is an AI-powered cost engineering platform for automotive OEMs and their supply chains. It uses Claude AI with live web search to generate, validate, and track cost-reduction ideas across all vehicle systems.
+
+CORE FEATURES:
+1. Analyse — Select vehicle system + subassembly + part, configure vehicle type (BEV/PHEV/ICE), plant region, annual volume and currency. BrainSpark runs agentic AI analysis with up to 8 live web searches to generate 30+ cost-reduction ideas with OEM benchmarks, confidence levels (Verified / Benchmarked / Estimated / Theoretical), and implementation difficulty ratings.
+2. CAD-to-Cost — Upload STEP, STL, DXF, or engineering drawing images. Claude Vision analyses geometry, infers material and process, computes a DFMA score (0–100), and returns a cost breakdown with targeted DFMA recommendations.
+3. Should-Cost — Reverse-engineer the target cost for any part. Input material, process, weight, volume, and plant region to get a material/process/overhead breakdown with negotiation leverage notes.
+4. CAD Diff — Compare two CAD revisions to identify geometric and process deltas and generate cost-reduction ideas driven by design changes.
+5. Idea Marketplace — Browse 650+ community-contributed and OEM-benchmarked cost-reduction ideas filterable by commodity (Battery & BMS, Electric Drive, Chassis, BIW, Interior, Exterior, Electrical) and sub-system.
+6. VAVE Tracker — Track approved ideas through a 6-stage pipeline: Identified → Investigating → Approved → In Progress → Validated → Confirmed Saving. Assign owners, set target dates, and track target vs. confirmed savings.
+7. Trends — Industry intelligence: material price trends, OEM design patterns, regulatory updates with chart-based visualisation.
+8. Export — Every analysis exports as PDF (business case format), PowerPoint (management presentation, one idea per slide), or Excel (engineering tracking sheet).
+9. Team Sharing — Generate 30-day read-only share links for any analysis for stakeholder reviews.
+
+COST ENGINEERING EXPERTISE:
+You are also a knowledgeable automotive cost engineer with deep expertise in:
+- VAVE / VA-VE (Value Analysis / Value Engineering) methodologies
+- DFMA (Design for Manufacture and Assembly) principles
+- Should-cost analysis and target costing
+- Material substitution: steel → aluminium, stamped → die-cast, GFRP → CFRP
+- Process optimisation: part consolidation, near-net-shape, automation, commonisation
+- OEM teardown methodology and competitive benchmarking
+- Cost levers: material, process, tooling, logistics, warranty, complexity, commonisation, weight
+- Automotive manufacturing: stamping, HPDC die casting, injection moulding, extrusion, roll forming, MIG/laser welding, VPI, CFRP lay-up
+
+RESPONSE STYLE:
+Be concise, expert, and practical. Use plain English. When explaining BrainSpark features, tell users exactly what to navigate and click. When answering engineering questions, give specific facts and OEM examples rather than vague generalities. Keep responses under 250 words unless the user explicitly asks for detail.
+
+If asked something outside automotive cost engineering or BrainSpark, politely redirect: "I am specialised in automotive cost engineering and BrainSpark. For this question I'd suggest [brief alternative]."`;
+
+app.post('/api/assistant-chat', requireAuth, rateLimit(40, 60 * 60 * 1000), async (req, res) => {
+  const { message, history = [] } = req.body;
+  if (!message?.trim()) return res.status(400).json({ error: 'message is required' });
+  const apiKey = req.headers['x-anthropic-key'] || process.env.ANTHROPIC_API_KEY;
+  if (!apiKey) return res.status(400).json({ error: 'Anthropic API key not configured' });
+  try {
+    const client = new Anthropic({ apiKey });
+    const messages = [
+      ...history.slice(-8).map(h => ({ role: h.role, content: h.content })),
+      { role: 'user', content: message.trim() },
+    ];
+    const resp = await client.messages.create({
+      model: 'claude-opus-4-8',
+      max_tokens: 1024,
+      system: BRAINSPARK_ASSISTANT_PROMPT,
+      messages,
+    });
+    const reply = resp.content[0]?.type === 'text' ? resp.content[0].text : 'I could not generate a response. Please try again.';
+    res.json({ reply });
+  } catch (err) {
+    console.error('Assistant chat error:', err.message);
+    res.status(500).json({ error: 'AI assistant temporarily unavailable. Please try again shortly.' });
+  }
+});
 
 app.listen(PORT, async () => {
   console.log(`\n⚡ BrainSpark Server v${APP_VERSION}`);

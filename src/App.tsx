@@ -25,6 +25,8 @@ import MarketplacePage from './pages/MarketplacePage';
 import CadDiffPage from './pages/CadDiffPage';
 import ServerSettingsPage from './pages/ServerSettingsPage';
 import MobileSettingsPage from './pages/MobileSettingsPage';
+import VaveTrackerPage from './pages/VaveTrackerPage';
+import AiChatbot from './components/AiChatbot';
 
 function AnimatedRoutes() {
   const location = useLocation();
@@ -47,6 +49,7 @@ function AnimatedRoutes() {
         <Route path="/integrations" element={<ProtectedRoute><PageTransition><IntegrationsPage /></PageTransition></ProtectedRoute>} />
         <Route path="/marketplace" element={<ProtectedRoute><PageTransition><MarketplacePage /></PageTransition></ProtectedRoute>} />
         <Route path="/cad-diff" element={<ProtectedRoute><PageTransition><CadDiffPage /></PageTransition></ProtectedRoute>} />
+        <Route path="/vave-tracker" element={<ProtectedRoute><PageTransition><VaveTrackerPage /></PageTransition></ProtectedRoute>} />
         <Route path="/server-settings" element={<PageTransition><ServerSettingsPage /></PageTransition>} />
         <Route path="/mobile-settings" element={<ProtectedRoute><PageTransition><MobileSettingsPage /></PageTransition></ProtectedRoute>} />
 
@@ -70,6 +73,7 @@ function AppShell() {
       </main>
       {!native && <Footer />}
       {native && <MobileNav />}
+      <AiChatbot />
     </div>
   );
 }
