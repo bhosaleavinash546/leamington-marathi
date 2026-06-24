@@ -1,3 +1,4 @@
+import { createHash } from 'crypto';
 import { Router } from 'express';
 import multer from 'multer';
 import Anthropic from '@anthropic-ai/sdk';
@@ -109,6 +110,137 @@ function flagAndEnrichBOM(
       unconfirmedHighValue: isHighValue && !isOCR && !hasPN && lineTotal > 2.0,
     };
   });
+}
+
+// ── Image analysis cache (SHA-256 of image buffers, 4h TTL) ──────────────────
+const _analysisCache = new Map<string, { ts: number; payload: unknown }>();
+const CACHE_TTL_MS = 4 * 60 * 60 * 1000;
+function buildCacheKey(buffers: Buffer[]): string {
+  const h = createHash('sha256');
+  for (const b of buffers) h.update(b);
+  return h.digest('hex');
+}
+function getCached(key: string): unknown | null {
+  const e = _analysisCache.get(key);
+  if (!e) return null;
+  if (Date.now() - e.ts > CACHE_TTL_MS) { _analysisCache.delete(key); return null; }
+  return e.payload;
+}
+function setCached(key: string, payload: unknown): void {
+  if (_analysisCache.size > 200) {
+    const oldest = [..._analysisCache.entries()].sort((a, b) => a[1].ts - b[1].ts)[0];
+    if (oldest) _analysisCache.delete(oldest[0]);
+  }
+  _analysisCache.set(key, { ts: Date.now(), payload });
+}
+
+// ── Board sanity checks ────────────────────────────────────────────────────────
+interface SanityWarning { code: string; message: string; severity: 'warn' | 'error' }
+function runSanityChecks(
+  boardSpec: Record<string, unknown>,
+  assembly: Record<string, unknown>,
+  bom: Array<Record<string, unknown>>,
+  aiTotalBOM: number,
+): SanityWarning[] {
+  const warnings: SanityWarning[] = [];
+  const widthMm = Number(boardSpec.widthMm) || 100;
+  const heightMm = Number(boardSpec.heightMm) || 80;
+  const areaCm2 = (widthMm * heightMm) / 100;
+  const smtPlacements = Number(assembly.smtPlacements) || 0;
+  // >30 placements/cm² is physically impossible for standard SMD
+  if (areaCm2 > 0 && smtPlacements / areaCm2 > 30 && smtPlacements > 50) {
+    warnings.push({ code: 'DENSITY_TOO_HIGH', severity: 'warn',
+      message: `SMT density ${(smtPlacements/areaCm2).toFixed(1)}/cm² exceeds physical limit for ${widthMm}×${heightMm}mm — AI may have over-counted` });
+  }
+  // BOM line-item sum vs AI-stated total
+  const lineSum = bom.reduce((s, l) => s + Number(l.qty ?? 0) * Number(l.unitPriceGBP ?? 0), 0);
+  if (lineSum > 0 && aiTotalBOM > 0) {
+    const disc = Math.abs(lineSum - aiTotalBOM) / Math.max(aiTotalBOM, lineSum);
+    if (disc > 0.20) {
+      warnings.push({ code: 'BOM_TOTAL_MISMATCH', severity: 'warn',
+        message: `AI BOM total £${aiTotalBOM.toFixed(2)} differs from line-item sum £${lineSum.toFixed(2)} by ${(disc*100).toFixed(0)}% — line-item sum used` });
+    }
+  }
+  // Implausibly small board with many layers
+  const layers = Number(boardSpec.estimatedLayers) || 2;
+  if (areaCm2 < 4 && layers >= 8) {
+    warnings.push({ code: 'LAYERS_SUSPECT', severity: 'warn',
+      message: `${layers}-layer board on ${(areaCm2).toFixed(1)}cm² seems unlikely — verify layer count` });
+  }
+  return warnings;
+}
+
+// ── Stage 3b: Focused refinement of UNCONFIRMED high-value ICs ───────────────
+async function refineUnconfirmedICs(
+  anthropic: Anthropic,
+  imageFiles: Express.Multer.File[],
+  imageLabels: string[],
+  domain: string,
+  unconfirmedLines: Array<Record<string, unknown>>,
+): Promise<Map<string, { partNumber: string; unitPriceGBP: number; lineConf: number }>> {
+  if (unconfirmedLines.length === 0) return new Map();
+  const specialistSystem = SPECIALIST_SYSTEM_PROMPTS[domain] ?? SPECIALIST_SYSTEM_PROMPTS['general'];
+  const lineDesc = unconfirmedLines.map((l, i) =>
+    `Line ${i+1}: ${l.refDes ?? '?'} — ${l.description ?? ''} (${l.pkg ?? ''}) — current AI price £${Number(l.unitPriceGBP).toFixed(2)}`
+  ).join('\n');
+  const prompt = `SECOND-PASS IC IDENTIFICATION — ${unconfirmedLines.length} unconfirmed high-value component(s)
+
+The initial analysis could not confirm part numbers for these components. Please inspect the PCB image(s) very carefully for markings on or near each component:
+
+${lineDesc}
+
+Look for chip top markings, silk screen labels, and any visible logos. Price each using the domain-appropriate pricing.
+Return ONLY a JSON array (same order as the list above):
+[{"refDes":"U1","identifiedPartNumber":"STM32F407","unitPriceGBP":3.20,"lineConf":0.85}]
+If still unreadable, set identifiedPartNumber to "" and adjust lineConf downward.`;
+  try {
+    const msg = await anthropic.messages.create({
+      model: 'claude-sonnet-4-6', max_tokens: 2048, system: specialistSystem,
+      messages: [{ role: 'user', content: [
+        ...buildImageContentBlocks(imageFiles, imageLabels, imageFiles.length > 1),
+        { type: 'text', text: prompt },
+      ]}],
+    });
+    const raw = msg.content[0]?.type === 'text' ? msg.content[0].text : '[]';
+    let arr: Array<{ refDes: string; identifiedPartNumber: string; unitPriceGBP: number; lineConf: number }> = [];
+    try {
+      const start = raw.indexOf('['), end = raw.lastIndexOf(']');
+      if (start !== -1 && end > start) arr = JSON.parse(raw.slice(start, end + 1)) as typeof arr;
+    } catch { /* ignore */ }
+    const out = new Map<string, { partNumber: string; unitPriceGBP: number; lineConf: number }>();
+    for (const r of arr) {
+      if (r.refDes) out.set(String(r.refDes), {
+        partNumber: r.identifiedPartNumber ?? '',
+        unitPriceGBP: Number(r.unitPriceGBP) || 0,
+        lineConf: Math.min(1, Math.max(0, Number(r.lineConf) || 0.6)),
+      });
+    }
+    return out;
+  } catch (err) {
+    console.warn('[PCB] Stage 3b failed:', (err as Error).message);
+    return new Map();
+  }
+}
+
+// ── NPI vs production cost split ─────────────────────────────────────────────
+interface NPIBreakdown {
+  stencilCost: number;
+  firstArticleCost: number;
+  toolingTotal: number;
+  unitCostNPI: number;    // cost at 50 units (NPI run)
+  unitCostProd: number;   // cost at orderQty
+  setupPerUnit50: number; // NRE amortised over 50 units
+}
+function computeNPIBreakdown(bomTotal: number, fabMid: number, smtPlacements: number, orderQty: number): NPIBreakdown {
+  const stencilCost = smtPlacements > 300 ? 220 : smtPlacements > 100 ? 160 : 120;
+  const firstArticleCost = 280; // first-article inspection
+  const toolingTotal = stencilCost + firstArticleCost;
+  const prototypeSurcharge = 0.38; // fab and assembly premium for small runs
+  const unitCostBase = bomTotal + fabMid;
+  const unitCostProd = unitCostBase;
+  const unitCostNPI = unitCostBase * (1 + prototypeSurcharge) + toolingTotal / 50;
+  const setupPerUnit50 = toolingTotal / 50;
+  return { stencilCost, firstArticleCost, toolingTotal, unitCostNPI: Math.round(unitCostNPI*100)/100, unitCostProd: Math.round(unitCostProd*100)/100, setupPerUnit50: Math.round(setupPerUnit50*100)/100 };
 }
 
 const router = Router();
@@ -398,6 +530,18 @@ router.post('/analyze-image', upload.fields([
 
   const multiImage = imageFiles.length > 1;
 
+  // Check cache — keyed by SHA-256 of all uploaded images + body params
+  const cacheKey = buildCacheKey([
+    ...imageFiles.map(f => f.buffer),
+    Buffer.from(JSON.stringify({ country: req.body?.country, orderQty: req.body?.orderQty })),
+  ]);
+  const cached = getCached(cacheKey);
+  if (cached) {
+    console.log(`[PCB] Cache HIT: ${cacheKey.slice(0,12)}`);
+    res.json(cached);
+    return;
+  }
+
   // Optional user-provided BOM file — parsed and injected as ground truth.
   let parsedBOM: ParsedBOMLine[] = [];
   if (bomFileUpload) {
@@ -573,6 +717,38 @@ ${userPromptText}`;
     return;
   }
 
+  // ── Stage 3b: Focused refinement of unconfirmed high-value ICs ────────────
+  {
+    const a3 = analysis as Record<string, unknown>;
+    const bom3 = Array.isArray(a3?.bom) ? (a3.bom as Array<Record<string, unknown>>) : [];
+    const unconfirmedLines = bom3.filter(l =>
+      HIGH_VALUE_COMP_TYPES.has(String(l.componentType ?? '')) &&
+      !Boolean(l.ocrExtracted) &&
+      !String(l.partNumber ?? '').trim() &&
+      Number(l.qty ?? 1) * Number(l.unitPriceGBP ?? 0) > 2.0
+    );
+    if (unconfirmedLines.length > 0 && unconfirmedLines.length <= 8) {
+      console.log(`[PCB] Stage 3b: refining ${unconfirmedLines.length} unconfirmed high-value IC(s)...`);
+      const refinements = await refineUnconfirmedICs(anthropic, imageFiles, imageLabels, domain, unconfirmedLines);
+      if (refinements.size > 0) {
+        a3.bom = bom3.map(line => {
+          const ref = String(line.refDes ?? '');
+          const r = refinements.get(ref);
+          if (!r) return line;
+          return {
+            ...line,
+            partNumber: r.partNumber || line.partNumber,
+            unitPriceGBP: r.unitPriceGBP > 0 ? r.unitPriceGBP : line.unitPriceGBP,
+            lineConf: r.lineConf,
+            ocrExtracted: r.partNumber.length > 0 ? true : line.ocrExtracted,
+            unconfirmedHighValue: r.partNumber.length === 0,
+          };
+        });
+        console.log(`[PCB] Stage 3b: applied ${refinements.size} refinement(s)`);
+      }
+    }
+  }
+
   // ── Stage 4: Volume correction + confidence band + country costs ──────────
   const selectedCountry = (req.body?.country as string | undefined) ?? 'cn';
   const orderQty = parseInt(req.body?.orderQty as string ?? '100', 10) || 100;
@@ -582,6 +758,9 @@ ${userPromptText}`;
   let volumeCurves: Record<string, ReturnType<typeof computeVolumeCurve>> = {};
   let complexityScore: ReturnType<typeof computeComplexityScore> | null = null;
   let confidenceBand: PCBConfidenceBand | null = null;
+  let sanityWarnings: SanityWarning[] = [];
+  let npiBreakdown: NPIBreakdown | null = null;
+  let livePriceHits = 0;
   const volumeMultiplier = getVolumeMultiplier(orderQty);
 
   try {
@@ -648,12 +827,47 @@ ${userPromptText}`;
 
     complexityScore = computeComplexityScore(boardSpec, assemblyData);
 
-    console.log(`[PCB] Stage 4: qty=${orderQty} volMult=${volumeMultiplier} BOM=${correctedBOMTotal.toFixed(2)} band=${confidenceBand.overallLabel}`);
+    // Sanity checks on AI output
+    const aiStatedBOMTotal = Number((costEst as Record<string, unknown>).totalBOMCostGBP ?? 0);
+    sanityWarnings = runSanityChecks(boardSpec, assemblyData, enrichedBOM, aiStatedBOMTotal);
+
+    // NPI vs production breakdown
+    npiBreakdown = computeNPIBreakdown(correctedBOMTotal, fabCostMid, Number(assemblyData.smtPlacements) || 0, orderQty);
+
+    // Live pricing: auto-fetch for OCR-confirmed parts (no-auth fallback to skip)
+    const confirmedPartNumbers = enrichedBOM
+      .filter(l => Boolean(l.ocrExtracted) && String(l.partNumber ?? '').trim().length > 3)
+      .map(l => String(l.partNumber))
+      .slice(0, 10);
+    if (confirmedPartNumbers.length > 0) {
+      const octoKey = process.env.OCTOPART_API_KEY ?? '';
+      const rsKey = process.env.RS_API_KEY ?? '';
+      const liveProvider: LivePricingProvider | null = octoKey ? 'octopart' : rsKey ? 'rs' : null;
+      if (liveProvider) {
+        try {
+          const livePrices = await fetchLivePrices(confirmedPartNumbers, liveProvider, liveProvider === 'octopart' ? octoKey : rsKey, orderQty);
+          livePriceHits = livePrices.length;
+          if (livePrices.length > 0) {
+            a.bom = (a.bom as Array<Record<string, unknown>>).map(line => {
+              const pn = String(line.partNumber ?? '').trim().toUpperCase();
+              const hit = livePrices.find(lp => lp.mpn.toUpperCase() === pn);
+              if (!hit) return line;
+              return { ...line, unitPriceGBP: hit.unitPriceGBP, lineTotalGBP: Math.round(hit.unitPriceGBP * Number(line.qty) * 100) / 100, livePriced: true, liveProvider: hit.provider, stockQty: hit.stockQty };
+            });
+          }
+          console.log(`[PCB] Live pricing: ${livePrices.length}/${confirmedPartNumbers.length} parts priced via ${liveProvider}`);
+        } catch (lpErr) {
+          console.warn('[PCB] Live pricing fetch failed (non-fatal):', (lpErr as Error).message);
+        }
+      }
+    }
+
+    console.log(`[PCB] Stage 4: qty=${orderQty} volMult=${volumeMultiplier} BOM=${correctedBOMTotal.toFixed(2)} band=${confidenceBand.overallLabel} sanity=${sanityWarnings.length} warnings`);
   } catch (err) {
     console.warn('[PCB] Stage 4 failed:', (err as Error).message);
   }
 
-  res.json({
+  const finalPayload = {
     success: true,
     analysis,
     selectedCountry,
@@ -663,7 +877,13 @@ ${userPromptText}`;
     complexityScore,
     confidenceBand,
     volumeMultiplier,
-  });
+    sanityWarnings,
+    npiBreakdown,
+    livePriceHits,
+    fromCache: false,
+  };
+  setCached(cacheKey, { ...finalPayload, fromCache: true });
+  res.json(finalPayload);
 });
 
 // ── Helper: build correction context for Stage 3 user prompt ──────────────
@@ -1015,6 +1235,167 @@ router.post('/scenario', (req, res): void => {
   } catch (err) {
     res.status(400).json({ error: `Scenario compute failed: ${(err as Error).message}` });
   }
+});
+
+// POST /api/pcb/analyze-image-stream — SSE streaming variant of analyze-image
+// Emits progress events after each stage so the UI can show live stage updates.
+router.post('/analyze-image-stream', upload.fields([
+  { name: 'pcbImages', maxCount: 5 },
+  { name: 'bomFile', maxCount: 1 },
+]), async (req, res): Promise<void> => {
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('Connection', 'keep-alive');
+  res.setHeader('X-Accel-Buffering', 'no');
+  res.flushHeaders();
+
+  const emit = (type: string, data: unknown) => {
+    res.write(`data: ${JSON.stringify({ type, ...( typeof data === 'object' ? data : { value: data }) })}\n\n`);
+  };
+
+  const files = req.files as Record<string, Express.Multer.File[]> | undefined;
+  const imageFiles = files?.pcbImages ?? [];
+  const primaryImage = imageFiles[0];
+  if (!primaryImage) { emit('error', { message: 'No image uploaded' }); res.end(); return; }
+
+  const apiKey = process.env.ANTHROPIC_API_KEY ?? (req.headers['x-api-key'] as string);
+  if (!apiKey) { emit('error', { message: 'ANTHROPIC_API_KEY not configured' }); res.end(); return; }
+
+  let imageLabels: string[] = DEFAULT_IMAGE_LABELS;
+  try { const raw = req.body?.pcbImageLabels as string; if (raw) imageLabels = JSON.parse(raw) as string[]; } catch { /* use defaults */ }
+  const multiImage = imageFiles.length > 1;
+  const mediaType = primaryImage.mimetype as 'image/jpeg' | 'image/png' | 'image/webp';
+  const base64Data = primaryImage.buffer.toString('base64');
+  const anthropic = new Anthropic({ apiKey });
+
+  emit('progress', { stage: 0, label: 'Starting analysis…', pct: 5 });
+
+  // Stage 1
+  let stage1Result: Stage1Result = { domain: 'general', conf: 0.5, hints: [] };
+  try {
+    emit('progress', { stage: 1, label: 'Stage 1 — Board domain classification', pct: 15 });
+    const s1Msg = await anthropic.messages.create({
+      model: 'claude-haiku-4-5', max_tokens: 512,
+      system: 'You are a PCB classification expert. Return ONLY JSON.',
+      messages: [{ role: 'user', content: [
+        { type: 'image', source: { type: 'base64', media_type: mediaType, data: base64Data } },
+        { type: 'text', text: stage1Prompt() },
+      ]}],
+    });
+    const s1Raw = s1Msg.content[0]?.type === 'text' ? s1Msg.content[0].text : '';
+    const s1P = JSON.parse(extractJSON(s1Raw)) as Stage1Result;
+    stage1Result = { domain: s1P.domain ?? 'general', conf: s1P.conf ?? 0.5, hints: s1P.hints ?? [] };
+    emit('stage1', { domain: stage1Result.domain, conf: stage1Result.conf, hints: stage1Result.hints });
+  } catch { emit('progress', { stage: 1, label: 'Stage 1 — using defaults', pct: 20 }); }
+
+  // Stage 2
+  let ocrResult: OCRResult = { icMarkings: [], refDesGroups: [], connectors: [], boardText: [], extractionQuality: 'low' };
+  try {
+    emit('progress', { stage: 2, label: 'Stage 2 — OCR text extraction', pct: 35 });
+    const s2Note = multiImage ? `\n\nNOTE: ${imageFiles.length} photos provided (${imageLabels.slice(0, imageFiles.length).join(', ')}). Extract from ALL images.` : '';
+    const s2Msg = await anthropic.messages.create({
+      model: 'claude-haiku-4-5', max_tokens: 1024,
+      system: 'You are an expert at reading PCB text. Return ONLY JSON.',
+      messages: [{ role: 'user', content: [
+        ...buildImageContentBlocks(imageFiles, imageLabels, multiImage),
+        { type: 'text', text: stage2Prompt + s2Note },
+      ]}],
+    });
+    const s2Raw = s2Msg.content[0]?.type === 'text' ? s2Msg.content[0].text : '';
+    const s2P = JSON.parse(extractJSON(s2Raw)) as OCRResult;
+    ocrResult = { icMarkings: s2P.icMarkings ?? [], refDesGroups: s2P.refDesGroups ?? [], connectors: s2P.connectors ?? [], boardText: s2P.boardText ?? [], extractionQuality: s2P.extractionQuality ?? 'low' };
+    emit('stage2', { icMarkings: ocrResult.icMarkings, extractionQuality: ocrResult.extractionQuality });
+  } catch { emit('progress', { stage: 2, label: 'Stage 2 — OCR skipped', pct: 40 }); }
+
+  // Stage 3
+  emit('progress', { stage: 3, label: 'Stage 3 — Full BOM analysis (this takes ~20s)', pct: 50 });
+  const reqOrderQty2 = parseInt(req.body?.orderQty as string ?? '100', 10) || 100;
+  const domain = stage1Result.domain;
+  const specSystem = SPECIALIST_SYSTEM_PROMPTS[domain] ?? SPECIALIST_SYSTEM_PROMPTS['general'];
+  const multiNote = multiImage ? `\n\nNOTE: ${imageFiles.length} photos (${imageLabels.slice(0, imageFiles.length).join(', ')}). Use ALL images together.` : '';
+  let parsedBOM2: ParsedBOMLine[] = [];
+  const bomFileUpload2 = files?.bomFile?.[0];
+  if (bomFileUpload2) {
+    try { parsedBOM2 = parseBOMFile(bomFileUpload2.buffer.toString('utf-8'), bomFileUpload2.originalname); } catch { /* ignore */ }
+  }
+  const userPromptText2 = buildUserPrompt(ocrResult, stage1Result, domain, reqOrderQty2) + multiNote + (parsedBOM2.length > 0 ? buildParsedBOMContext(parsedBOM2) : '');
+
+  let analysis: unknown;
+  try {
+    const msg = await anthropic.messages.create({
+      model: 'claude-sonnet-4-6', max_tokens: 8192, system: specSystem,
+      messages: [{ role: 'user', content: [
+        ...buildImageContentBlocks(imageFiles, imageLabels, multiImage),
+        { type: 'text', text: userPromptText2 },
+      ]}],
+    });
+    const raw = msg.content[0]?.type === 'text' ? msg.content[0].text : '';
+    analysis = JSON.parse(extractJSON(raw));
+    emit('stage3', { partName: (analysis as Record<string, unknown>).partName, confidence: (analysis as Record<string, unknown>).confidenceLevel });
+  } catch (err) {
+    emit('error', { message: `Stage 3 failed: ${(err as Error).message}` });
+    res.end();
+    return;
+  }
+
+  emit('progress', { stage: 4, label: 'Stage 4 — Cost breakdown & country comparison', pct: 85 });
+
+  // Stage 4
+  const selectedCountry2 = (req.body?.country as string | undefined) ?? 'cn';
+  const orderQty2 = parseInt(req.body?.orderQty as string ?? '100', 10) || 100;
+  const volumeMultiplier2 = getVolumeMultiplier(orderQty2);
+  let countryComparison2: ReturnType<typeof computeAllCountryCosts> = [];
+  let selectedCountryBreakdown2: ReturnType<typeof computePCBCountryCost> | null = null;
+  let volumeCurves2: Record<string, ReturnType<typeof computeVolumeCurve>> = {};
+  let complexityScore2: ReturnType<typeof computeComplexityScore> | null = null;
+  let confidenceBand2: PCBConfidenceBand | null = null;
+  let sanityWarnings2: SanityWarning[] = [];
+  let npiBreakdown2: NPIBreakdown | null = null;
+
+  try {
+    const a = analysis as Record<string, unknown>;
+    const boardSpec = a.boardSpec as Record<string, unknown> ?? {};
+    const assemblyData = a.assembly as Record<string, unknown> ?? {};
+    const costEst = a.costEstimates as Record<string, unknown> ?? {};
+    const pcbFabGBP = costEst.pcbFabGBP as { min?: number; mid?: number; max?: number } | undefined;
+    const fabCostMid2 = Number(pcbFabGBP?.mid) || 0;
+    const rawBOM2 = Array.isArray(a.bom) ? (a.bom as Array<Record<string, unknown>>) : [];
+    const enrichedBOM2 = flagAndEnrichBOM(rawBOM2, volumeMultiplier2);
+    a.bom = enrichedBOM2;
+    const correctedBOMTotal2 = enrichedBOM2.reduce((s, l) => s + Number(l.lineTotalGBP ?? 0), 0);
+    if (a.costEstimates && typeof a.costEstimates === 'object') (a.costEstimates as Record<string, unknown>).totalBOMCostGBP = Math.round(correctedBOMTotal2 * 100) / 100;
+    confidenceBand2 = computeConfidenceBand(enrichedBOM2 as unknown as BOMLineForBand[], fabCostMid2, ocrResult.extractionQuality, volumeMultiplier2);
+    sanityWarnings2 = runSanityChecks(boardSpec, assemblyData, enrichedBOM2, Number((costEst as Record<string,unknown>).totalBOMCostGBP ?? 0));
+    npiBreakdown2 = computeNPIBreakdown(correctedBOMTotal2, fabCostMid2, Number(assemblyData.smtPlacements) || 0, orderQty2);
+    const costInput2: PCBCostInput = {
+      widthMm: Number(boardSpec.widthMm) || 100, heightMm: Number(boardSpec.heightMm) || 80, layers: Number(boardSpec.estimatedLayers) || 2,
+      surfaceFinish: String(boardSpec.surfaceFinish || 'enig'), throughVias: Number(boardSpec.throughVias) || 50,
+      blindVias: Number(boardSpec.blindVias) || 0, microVias: Number(boardSpec.microVias) || 0, hdiStructure: String(boardSpec.hdiStructure || 'none'),
+      impedanceControlled: Boolean(boardSpec.impedanceControlRequired), smtPlacements: Number(assemblyData.smtPlacements) || 0,
+      throughHoleJoints: Number(assemblyData.throughHoleJoints) || 0, manualJoints: Number(assemblyData.manualJoints) || 0,
+      bgaCount: Number(assemblyData.bgaCount) || 0, aoiRequired: Boolean(assemblyData.aoiRequired), ictTimeSec: Number(assemblyData.ictTimeSec) || 0,
+      conformalCoatAreaCm2: 0, totalBOMCostGBP: correctedBOMTotal2 || Number(costEst.totalBOMCostGBP) || fabCostMid2 || 0, orderQuantity: orderQty2,
+    };
+    countryComparison2 = computeAllCountryCosts(costInput2);
+    const resolvedCountry2 = PCB_COUNTRY_RATES[selectedCountry2] ? selectedCountry2 : 'cn';
+    selectedCountryBreakdown2 = computePCBCountryCost(costInput2, resolvedCountry2);
+    const sorted2 = [...countryComparison2].sort((x, y) => x.totalPerBoard - y.totalPerBoard);
+    const cheapestId2 = sorted2[0]?.countryId ?? 'cn';
+    const volQtys2 = [100, 250, 500, 1000, 2500, 5000, 10000, 25000];
+    volumeCurves2 = { [cheapestId2]: computeVolumeCurve(costInput2, cheapestId2, volQtys2), [resolvedCountry2]: computeVolumeCurve(costInput2, resolvedCountry2, volQtys2), gb: computeVolumeCurve(costInput2, 'gb', volQtys2) };
+    complexityScore2 = computeComplexityScore(boardSpec, assemblyData);
+  } catch (err) {
+    console.warn('[PCB/stream] Stage 4 failed:', (err as Error).message);
+  }
+
+  emit('progress', { stage: 5, label: 'Complete', pct: 100 });
+  emit('complete', {
+    analysis, selectedCountry: selectedCountry2, selectedCountryBreakdown: selectedCountryBreakdown2,
+    countryComparison: countryComparison2, volumeCurves: volumeCurves2, complexityScore: complexityScore2,
+    confidenceBand: confidenceBand2, volumeMultiplier: volumeMultiplier2, sanityWarnings: sanityWarnings2,
+    npiBreakdown: npiBreakdown2, livePriceHits: 0, fromCache: false,
+  });
+  res.end();
 });
 
 export default router;

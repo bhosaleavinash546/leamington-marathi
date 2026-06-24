@@ -90,6 +90,7 @@ let pcbNREEnabled = false;
 // Slot 0=Top (primary), 1=Bottom, 2-4=Additional 1-3
 let pcbImageFiles: (File | null)[] = [null, null, null, null, null];
 let pcbEditMode = false;
+const pcbPinnedPrices = new Map<number, number>(); // BOM row index → pinned unitPriceGBP
 let _pcbVolumeChart: Chart | null = null;
 let supplierQuotes: SupplierQuote[] = [];
 let _activeScenarioId: string | null = null; // set when a scenario is saved; used to link backend quotes
@@ -1335,6 +1336,17 @@ interface PCBConfidenceBand {
   volumeMultiplier: number;
 }
 
+interface NPIBreakdown {
+  stencilCost: number;
+  firstArticleCost: number;
+  toolingTotal: number;
+  unitCostNPI: number;
+  unitCostProd: number;
+  setupPerUnit50: number;
+}
+
+interface SanityWarning { code: string; message: string; severity: 'warn' | 'error' }
+
 interface PCBBOMItem {
   refDes: string;
   componentType: string;
@@ -1353,6 +1365,7 @@ interface PCBBOMItem {
   unconfirmedHighValue?: boolean;
   volumeAdjusted?: boolean;
   lineTotalGBP?: number;
+  livePriced?: boolean;
 }
 interface PCBCountryBreakdown {
   countryId: string;
@@ -1449,6 +1462,10 @@ interface PCBImageAnalysis {
   // Accuracy improvements
   _confidenceBand?: PCBConfidenceBand;
   _volumeMultiplier?: number;
+  _npiBreakdown?: NPIBreakdown;
+  _sanityWarnings?: SanityWarning[];
+  _livePriceHits?: number;
+  _previousVersion?: PCBImageAnalysis;  // for revision comparison
 }
 
 let agentHistory: AgentMessage[] = [];
@@ -6269,26 +6286,46 @@ async function analyzePCBImages(): Promise<void> {
   } catch { pcbImageDataURL = null; }
 
   try {
-    const resp = await fetch('/api/pcb/analyze-image', {
+    // Use SSE streaming endpoint to show stage progress
+    const streamResp = await fetch('/api/pcb/analyze-image-stream', {
       method: 'POST',
       headers: apiKey ? { 'x-api-key': apiKey } : {},
       body: formData,
     });
-    if (!resp.ok) {
-      const err = await resp.json().catch(() => ({ error: resp.statusText })) as { error: string };
-      throw new Error(err.error ?? resp.statusText);
+    if (!streamResp.ok || !streamResp.body) {
+      const err = await streamResp.json().catch(() => ({ error: streamResp.statusText })) as { error: string };
+      throw new Error(err.error ?? streamResp.statusText);
     }
-    const data = await resp.json() as {
-      success: boolean;
-      analysis: PCBImageAnalysis;
-      selectedCountry?: string;
-      selectedCountryBreakdown?: PCBCountryBreakdown;
-      countryComparison?: PCBCountryBreakdown[];
-      volumeCurves?: Record<string, VolumeCurvePoint[]>;
-      complexityScore?: PCBComplexityScore;
-      confidenceBand?: PCBConfidenceBand;
-      volumeMultiplier?: number;
-    };
+    const reader = streamResp.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = '';
+    type StreamResult = { success: boolean; analysis: PCBImageAnalysis; selectedCountry?: string; selectedCountryBreakdown?: PCBCountryBreakdown; countryComparison?: PCBCountryBreakdown[]; volumeCurves?: Record<string, VolumeCurvePoint[]>; complexityScore?: PCBComplexityScore; confidenceBand?: PCBConfidenceBand; volumeMultiplier?: number; sanityWarnings?: SanityWarning[]; npiBreakdown?: NPIBreakdown; livePriceHits?: number };
+    let data: StreamResult | null = null;
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split('\n\n');
+      buffer = lines.pop() ?? '';
+      for (const chunk of lines) {
+        const line = chunk.replace(/^data: /, '').trim();
+        if (!line) continue;
+        try {
+          const evt = JSON.parse(line) as Record<string, unknown>;
+          if (evt.type === 'progress') {
+            const pct = Number(evt.pct ?? 0);
+            const label = String(evt.label ?? '');
+            if (analyzeBtn) analyzeBtn.textContent = `⏳ ${label}`;
+            if (zone) zone.title = `${pct}% — ${label}`;
+          } else if (evt.type === 'error') {
+            throw new Error(String(evt.message ?? 'Stream error'));
+          } else if (evt.type === 'complete') {
+            data = evt as unknown as StreamResult;
+          }
+        } catch (_parseErr) { /* ignore parse errors on individual SSE chunks */ }
+      }
+    }
+    if (!data || !data.analysis) throw new Error('Analysis result empty');
     pcbImageResult = data.analysis;
     // Attach country data to analysis object for rendering
     if (pcbImageResult) {
@@ -6299,6 +6336,20 @@ async function analyzePCBImages(): Promise<void> {
       if (data.complexityScore) pcbImageResult.complexityScore = data.complexityScore;
       if (data.confidenceBand) pcbImageResult._confidenceBand = data.confidenceBand;
       if (data.volumeMultiplier !== undefined) pcbImageResult._volumeMultiplier = data.volumeMultiplier;
+      if (data.sanityWarnings) pcbImageResult._sanityWarnings = data.sanityWarnings;
+      if (data.npiBreakdown) pcbImageResult._npiBreakdown = data.npiBreakdown;
+      if (data.livePriceHits !== undefined) pcbImageResult._livePriceHits = data.livePriceHits;
+    }
+    // Save previous result for revision comparison
+    const prevJson = localStorage.getItem('pcb_last_analysis');
+    if (prevJson && pcbImageResult) {
+      try {
+        const prev = JSON.parse(prevJson) as PCBImageAnalysis;
+        pcbImageResult._previousVersion = prev;
+      } catch { /* ignore */ }
+    }
+    if (pcbImageResult) {
+      try { localStorage.setItem('pcb_last_analysis', JSON.stringify({ partName: pcbImageResult.partName, bom: pcbImageResult.bom, costEstimates: pcbImageResult.costEstimates, boardSpec: pcbImageResult.boardSpec })); } catch { /* ignore */ }
     }
     injectPCBImagePanel();
   } catch (err) {
@@ -6389,6 +6440,27 @@ function injectPCBImagePanel(): void {
   });
 
   // Add BOM row
+  el('pcb-clear-revision-btn')?.addEventListener('click', () => {
+    if (pcbImageResult) { pcbImageResult._previousVersion = undefined; injectPCBImagePanel(); }
+  });
+
+  document.querySelectorAll<HTMLButtonElement>('.pcb-bom-pin-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const idx = parseInt(btn.dataset.bomIdx ?? '-1', 10);
+      if (idx < 0 || !pcbImageResult) return;
+      const item = pcbImageResult.bom[idx];
+      if (!item) return;
+      if (pcbPinnedPrices.has(idx)) {
+        pcbPinnedPrices.delete(idx);
+        showToast(`Price unpinned for ${item.refDes}`, 'info');
+      } else {
+        pcbPinnedPrices.set(idx, item.unitPriceGBP);
+        showToast(`£${item.unitPriceGBP.toFixed(3)} pinned for ${item.refDes} — survives re-analyze`, 'info');
+      }
+      injectPCBImagePanel();
+    });
+  });
+
   el('pcb-bom-add-row-btn')?.addEventListener('click', () => {
     if (!pcbImageResult) return;
     pcbImageResult.bom.push({ refDes: '', componentType: 'passive_0402', description: 'New component', pkg: '', value: '', voltage: '', qty: 1, unitPriceGBP: 0.01, moq: 1, automotive: false, highCost: false });
@@ -6555,6 +6627,9 @@ async function reanalyzePCBWithCorrections(): Promise<void> {
       complexityScore?: PCBComplexityScore;
       confidenceBand?: PCBConfidenceBand;
       volumeMultiplier?: number;
+      sanityWarnings?: SanityWarning[];
+      npiBreakdown?: NPIBreakdown;
+      livePriceHits?: number;
     };
 
     // Compute cost deltas (new total - original total per country)
@@ -6577,6 +6652,9 @@ async function reanalyzePCBWithCorrections(): Promise<void> {
       if (data.complexityScore) pcbImageResult.complexityScore = data.complexityScore;
       if (data.confidenceBand) pcbImageResult._confidenceBand = data.confidenceBand;
       if (data.volumeMultiplier !== undefined) pcbImageResult._volumeMultiplier = data.volumeMultiplier;
+      if (data.sanityWarnings) pcbImageResult._sanityWarnings = data.sanityWarnings;
+      if (data.npiBreakdown) pcbImageResult._npiBreakdown = data.npiBreakdown;
+      if (data.livePriceHits !== undefined) pcbImageResult._livePriceHits = data.livePriceHits;
       pcbImageResult._originalAIValues = originalAIValues;
       pcbImageResult._isReanalyzed = true;
       pcbImageResult._costDeltas = costDeltas;
@@ -6613,9 +6691,9 @@ function buildPCBImagePanel(r: PCBImageAnalysis): string {
       <td>${item.voltage}</td>
       <td>${item.partNumber ? `<span style="font-size:0.68rem;font-family:monospace;background:var(--border);padding:1px 4px;border-radius:3px">${item.partNumber}${item.ocrExtracted ? ' <span title="OCR extracted" style="color:var(--green)">&#10003;</span>' : ''}</span>` : ''}${(item.lineConf !== undefined && item.lineConf < 0.6) ? ' <span title="Low confidence" style="color:orange;font-size:0.65rem">&#9888;</span>' : ''}${item.unconfirmedHighValue ? ' <span title="High-value component: part number not confirmed by OCR — price may be inaccurate" style="background:#dc2626;color:#fff;font-size:0.58rem;padding:1px 4px;border-radius:3px;font-weight:700">UNCONFIRMED</span>' : ''}</td>
       <td>${pcbEditMode ? `<input class="pcb-edit-bom-qty" data-bom-idx="${i}" type="number" min="1" value="${item.qty}" style="width:50px"/>` : String(item.qty)}</td>
-      <td>${pcbEditMode ? `<input class="pcb-edit-bom-price" data-bom-idx="${i}" type="number" min="0" step="0.001" value="${item.unitPriceGBP.toFixed(3)}" style="width:65px"/>` : `&#163;${item.unitPriceGBP.toFixed(3)}`}</td>
+      <td>${pcbEditMode ? `<input class="pcb-edit-bom-price" data-bom-idx="${i}" type="number" min="0" step="0.001" value="${item.unitPriceGBP.toFixed(3)}" style="width:65px"/>` : `&#163;${item.unitPriceGBP.toFixed(3)}${pcbPinnedPrices.has(i) ? ' <span title="Price pinned — won\'t change on re-analyze" style="color:#f59e0b;font-size:0.65rem">📌</span>' : ''}`}</td>
       <td>&#163;${(item.qty * item.unitPriceGBP).toFixed(2)}</td>
-      <td>${item.automotive ? '<span class="pcb-badge pcb-badge--auto">AEC</span>' : ''}${item.highCost ? '<span class="pcb-badge pcb-badge--cost">$$</span>' : ''}${pcbEditMode ? `<button class="pcb-bom-delete-row btn btn-secondary btn-sm" data-bom-idx="${i}" style="font-size:0.6rem;padding:1px 4px;margin-left:2px">&#128465;</button>` : ''}</td>
+      <td>${item.automotive ? '<span class="pcb-badge pcb-badge--auto">AEC</span>' : ''}${item.highCost ? '<span class="pcb-badge pcb-badge--cost">$$</span>' : ''}${item.livePriced ? `<span class="pcb-badge" style="background:#16a34a;color:#fff" title="Live-priced from distributor">LIVE</span>` : ''}${!pcbEditMode ? `<button class="pcb-bom-pin-btn btn btn-secondary btn-sm" data-bom-idx="${i}" title="${pcbPinnedPrices.has(i) ? 'Unpin price' : 'Pin price (survives re-analyze)'}" style="font-size:0.6rem;padding:1px 4px;margin-left:2px;${pcbPinnedPrices.has(i) ? 'background:#f59e0b;color:#fff;border-color:#f59e0b' : ''}">${pcbPinnedPrices.has(i) ? '📌' : '📍'}</button>` : `<button class="pcb-bom-delete-row btn btn-secondary btn-sm" data-bom-idx="${i}" style="font-size:0.6rem;padding:1px 4px;margin-left:2px">&#128465;</button>`}</td>
     </tr>`).join('');
 
   const insights = r.aiInsights.map(s => `<li>${s}</li>`).join('');
@@ -6745,6 +6823,12 @@ function buildPCBImagePanel(r: PCBImageAnalysis): string {
       </div>
 
       ${buildCountryBreakdownSection(r)}
+      ${buildCostDriverChart(r)}
+      ${buildNPISection(r)}
+      ${buildConfidenceRoadmap(r)}
+      ${buildSanityWarningsBanner(r)}
+      ${buildBenchmarkComparison(r)}
+      ${buildRevisionComparison(r)}
 
       ${buildVolumeCurveSection(r)}
 
@@ -6780,6 +6864,176 @@ function buildPCBImagePanel(r: PCBImageAnalysis): string {
         <ul class="pcb-insight-list" style="color:var(--text-muted)">${limits}</ul>
       </div>
     </div>`;
+}
+
+function buildCostDriverChart(r: PCBImageAnalysis): string {
+  if (!r.bom || r.bom.length === 0) return '';
+  const groups = new Map<string, number>();
+  for (const item of r.bom) {
+    const key = item.componentType.replace(/_/g, ' ');
+    groups.set(key, (groups.get(key) ?? 0) + item.qty * item.unitPriceGBP);
+  }
+  const sorted = [...groups.entries()].sort((a, b) => b[1] - a[1]).slice(0, 8);
+  const total = sorted.reduce((s, [, v]) => s + v, 0);
+  if (total === 0) return '';
+  const bars = sorted.map(([label, val]) => {
+    const pct = Math.max((val / total) * 100, 1);
+    const colorMap: Record<string, string> = { 'ic bga': '#dc2626', 'ic tqfp': '#ea580c', 'ic qfn': '#d97706', 'ic soic': '#ca8a04', 'power module': '#7c3aed', 'connector smt': '#2563eb', 'through hole': '#0891b2', 'passive 0402': '#16a34a', 'passive 0603': '#15803d', 'passive 0805': '#166534' };
+    const color = colorMap[label] ?? '#6b7280';
+    return `<div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">
+      <div style="width:90px;font-size:0.62rem;text-align:right;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${label}</div>
+      <div style="flex:1;background:var(--border);border-radius:3px;height:12px;overflow:hidden">
+        <div style="width:${pct.toFixed(1)}%;background:${color};height:100%;border-radius:3px;transition:width 0.3s"></div>
+      </div>
+      <div style="width:50px;font-size:0.62rem;font-weight:600;color:var(--text)">£${val.toFixed(2)}</div>
+      <div style="width:34px;font-size:0.60rem;color:var(--text-muted)">${pct.toFixed(0)}%</div>
+    </div>`;
+  }).join('');
+  return `<div class="pcb-analysis-section">
+    <div class="pcb-analysis-section-title">📊 Cost Driver Breakdown</div>
+    <div style="padding:8px 4px">${bars}</div>
+  </div>`;
+}
+
+function buildNPISection(r: PCBImageAnalysis): string {
+  if (!r._npiBreakdown) return '';
+  const n = r._npiBreakdown;
+  return `<div class="pcb-analysis-section">
+    <div class="pcb-analysis-section-title">🏭 NPI vs Production Cost</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;padding:8px 4px">
+      <div style="padding:8px;background:rgba(220,38,38,0.07);border-radius:6px;border:1px solid rgba(220,38,38,0.2)">
+        <div style="font-size:0.62rem;color:var(--text-muted);margin-bottom:4px">NPI / Prototype Run (50 units)</div>
+        <div style="font-size:1rem;font-weight:700;color:#dc2626">£${n.unitCostNPI.toFixed(2)}</div>
+        <div style="font-size:0.6rem;color:var(--text-muted)">per unit</div>
+        <div style="font-size:0.6rem;color:var(--text-muted);margin-top:4px">includes £${n.setupPerUnit50.toFixed(2)}/unit NRE amortisation</div>
+      </div>
+      <div style="padding:8px;background:rgba(22,163,74,0.07);border-radius:6px;border:1px solid rgba(22,163,74,0.2)">
+        <div style="font-size:0.62rem;color:var(--text-muted);margin-bottom:4px">Production (this volume)</div>
+        <div style="font-size:1rem;font-weight:700;color:#16a34a">£${n.unitCostProd.toFixed(2)}</div>
+        <div style="font-size:0.6rem;color:var(--text-muted)">per unit</div>
+        <div style="font-size:0.6rem;color:var(--text-muted);margin-top:4px">${((n.unitCostNPI/n.unitCostProd-1)*100).toFixed(0)}% saving vs NPI rate</div>
+      </div>
+      <div style="padding:8px;background:var(--card-bg);border-radius:6px;border:1px solid var(--border)">
+        <div style="font-size:0.62rem;color:var(--text-muted);margin-bottom:4px">One-time NRE Costs</div>
+        <div style="font-size:1rem;font-weight:700">£${n.toolingTotal.toFixed(0)}</div>
+        <div style="font-size:0.6rem;color:var(--text-muted)">Stencil £${n.stencilCost} + First article £${n.firstArticleCost}</div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function buildConfidenceRoadmap(r: PCBImageAnalysis): string {
+  const cb = r._confidenceBand;
+  if (!cb || cb.overallLabel === 'High') return '';
+  const steps: string[] = [];
+  if (!r._livePriceHits || r._livePriceHits === 0) steps.push('Attach a BOM file (.csv/.xml) — eliminates all AI guesswork on part numbers and pricing');
+  if (cb.unconfirmedHighValueCount > 0) steps.push(`${cb.unconfirmedHighValueCount} high-value IC${cb.unconfirmedHighValueCount > 1 ? 's are' : ' is'} unconfirmed — upload a close-up image of those chips or edit their prices manually`);
+  if (cb.fabConfidenceLabel === 'Low') steps.push('OCR quality was low — upload a higher-resolution image or a top-side close-up to improve fab spec extraction');
+  if (cb.weightedBOMConfidence < 0.70) steps.push('Many BOM lines have low AI confidence — enter the Re-analyze flow and correct any misidentified components');
+  if (r._volumeMultiplier && r._volumeMultiplier > 3) steps.push(`Volume is very low (${r._volumeMultiplier.toFixed(1)}× cost uplift vs 100K) — prices at this volume are distributor-dependent; request actual supplier quotes`);
+  if (steps.length === 0) return '';
+  return `<div class="pcb-analysis-section">
+    <div class="pcb-analysis-section-title">🎯 How to Improve Confidence</div>
+    <div style="padding:8px 4px">
+      <ol style="margin:0;padding-left:18px;font-size:0.72rem;color:var(--text-secondary)">
+        ${steps.map(s => `<li style="margin-bottom:6px">${s}</li>`).join('')}
+      </ol>
+    </div>
+  </div>`;
+}
+
+function buildSanityWarningsBanner(r: PCBImageAnalysis): string {
+  const warns = r._sanityWarnings;
+  if (!warns || warns.length === 0) return '';
+  const items = warns.map(w => `<div style="display:flex;gap:6px;align-items:flex-start;margin-bottom:4px">
+    <span style="font-size:0.75rem">${w.severity === 'error' ? '🔴' : '🟡'}</span>
+    <span style="font-size:0.68rem;color:var(--text-secondary)">${w.message}</span>
+  </div>`).join('');
+  return `<div style="margin-top:8px;padding:10px 12px;background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.3);border-radius:8px">
+    <div style="font-size:0.72rem;font-weight:600;color:#d97706;margin-bottom:6px">⚠ AI Sanity Checks</div>
+    ${items}
+  </div>`;
+}
+
+function buildBenchmarkComparison(r: PCBImageAnalysis): string {
+  const total = r.costEstimates.totalBOMCostGBP + r.costEstimates.pcbFabGBP.mid + r.costEstimates.smtAssemblyCostGBP;
+  const areaCm2 = (r.boardSpec.widthMm * r.boardSpec.heightMm) / 100;
+  const costPerCm2 = areaCm2 > 0 ? total / areaCm2 : 0;
+  const costPerPlacement = r.assembly.smtPlacements > 0 ? total / r.assembly.smtPlacements : 0;
+  // Reference benchmarks (from the 3 demo boards)
+  const benchmarks = [
+    { name: 'Automotive ECU', costPerCm2: 3.80, costPerPlacement: 0.78, domain: 'automotive_adas' },
+    { name: 'ADAS Sensor', costPerCm2: 4.20, costPerPlacement: 0.92, domain: 'automotive_adas' },
+    { name: 'RF/Radar Module', costPerCm2: 8.50, costPerPlacement: 1.85, domain: 'rf_microwave' },
+    { name: 'Consumer IoT', costPerCm2: 1.20, costPerPlacement: 0.28, domain: 'consumer_iot' },
+    { name: 'Industrial Control', costPerCm2: 2.80, costPerPlacement: 0.65, domain: 'industrial_control' },
+  ];
+  const domain = r.stage1Classification?.domain ?? 'general';
+  const relevant = benchmarks.filter(b => b.domain === domain || domain === 'general').slice(0, 2);
+  if (relevant.length === 0) return '';
+  const rows = relevant.map(b => {
+    const cm2Diff = costPerCm2 > 0 ? ((costPerCm2 / b.costPerCm2 - 1) * 100) : null;
+    const placeDiff = costPerPlacement > 0 ? ((costPerPlacement / b.costPerPlacement - 1) * 100) : null;
+    const sign = (v: number | null) => v == null ? '—' : (v > 0 ? `+${v.toFixed(0)}%` : `${v.toFixed(0)}%`);
+    const color = (v: number | null) => v == null ? '' : v > 15 ? 'color:#dc2626' : v < -15 ? 'color:#16a34a' : 'color:#d97706';
+    return `<tr>
+      <td style="font-size:0.68rem;padding:3px 6px">${b.name}</td>
+      <td style="font-size:0.68rem;padding:3px 6px;text-align:right">£${b.costPerCm2.toFixed(2)}/cm²</td>
+      <td style="font-size:0.68rem;padding:3px 6px;text-align:right;${color(cm2Diff)}">${sign(cm2Diff)}</td>
+      <td style="font-size:0.68rem;padding:3px 6px;text-align:right">£${b.costPerPlacement.toFixed(2)}/place</td>
+      <td style="font-size:0.68rem;padding:3px 6px;text-align:right;${color(placeDiff)}">${sign(placeDiff)}</td>
+    </tr>`;
+  }).join('');
+  return `<div class="pcb-analysis-section">
+    <div class="pcb-analysis-section-title">📐 Benchmark Comparison</div>
+    <div style="font-size:0.65rem;color:var(--text-muted);margin:4px 4px 6px">This board: £${costPerCm2.toFixed(2)}/cm² · £${costPerPlacement.toFixed(2)}/placement · vs industry benchmarks for ${domain.replace(/_/g,' ')}</div>
+    <table style="width:100%;border-collapse:collapse;font-size:0.68rem">
+      <thead><tr style="border-bottom:1px solid var(--border)">
+        <th style="padding:3px 6px;text-align:left;font-size:0.62rem;color:var(--text-muted)">Benchmark</th>
+        <th style="padding:3px 6px;text-align:right;font-size:0.62rem;color:var(--text-muted)">Ref/cm²</th>
+        <th style="padding:3px 6px;text-align:right;font-size:0.62rem;color:var(--text-muted)">vs this</th>
+        <th style="padding:3px 6px;text-align:right;font-size:0.62rem;color:var(--text-muted)">Ref/place</th>
+        <th style="padding:3px 6px;text-align:right;font-size:0.62rem;color:var(--text-muted)">vs this</th>
+      </tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+  </div>`;
+}
+
+function buildRevisionComparison(r: PCBImageAnalysis): string {
+  const prev = r._previousVersion;
+  if (!prev) return '';
+  const bomDelta = r.costEstimates.totalBOMCostGBP - prev.costEstimates.totalBOMCostGBP;
+  const fabDelta = r.costEstimates.pcbFabGBP.mid - prev.costEstimates.pcbFabGBP.mid;
+  const totalDelta = bomDelta + fabDelta;
+  const sign = (v: number) => (v >= 0 ? `+£${v.toFixed(2)}` : `-£${Math.abs(v).toFixed(2)}`);
+  const color = (v: number) => v > 0.5 ? '#dc2626' : v < -0.5 ? '#16a34a' : '#6b7280';
+  // Compare BOM lines
+  const prevBOMMap = new Map(prev.bom.map(l => [l.refDes, l]));
+  const changes: string[] = [];
+  for (const line of r.bom) {
+    const p = prevBOMMap.get(line.refDes);
+    if (!p) { changes.push(`<li style="color:#2563eb">+ ${line.refDes}: new (£${(line.qty*line.unitPriceGBP).toFixed(2)})</li>`); }
+    else {
+      const delta = line.qty * line.unitPriceGBP - p.qty * p.unitPriceGBP;
+      if (Math.abs(delta) > 0.10) changes.push(`<li style="color:${delta>0?'#dc2626':'#16a34a'}">${line.refDes}: ${sign(delta)} (${delta>0?'more':'less'} expensive)</li>`);
+    }
+  }
+  for (const p of prev.bom) {
+    if (!r.bom.find(l => l.refDes === p.refDes)) changes.push(`<li style="color:#6b7280">- ${p.refDes}: removed</li>`);
+  }
+  return `<div class="pcb-analysis-section">
+    <div class="pcb-analysis-section-title" style="display:flex;align-items:center;justify-content:space-between">
+      <span>🔄 vs Previous Analysis</span>
+      <button class="btn btn-secondary btn-sm" id="pcb-clear-revision-btn" style="font-size:0.60rem;padding:1px 6px">Clear</button>
+    </div>
+    <div style="display:flex;gap:12px;padding:8px 4px;font-size:0.70rem">
+      <span>BOM: <strong style="color:${color(bomDelta)}">${sign(bomDelta)}</strong></span>
+      <span>Fab: <strong style="color:${color(fabDelta)}">${sign(fabDelta)}</strong></span>
+      <span>Total: <strong style="color:${color(totalDelta)}">${sign(totalDelta)}</strong></span>
+    </div>
+    ${changes.length > 0 ? `<ul style="margin:0;padding-left:18px;font-size:0.67rem;max-height:120px;overflow-y:auto">${changes.slice(0,20).join('')}</ul>` : '<div style="font-size:0.67rem;color:var(--text-muted);padding:0 4px">No significant BOM line changes</div>'}
+  </div>`;
 }
 
 function buildCountryBreakdownSection(r: PCBImageAnalysis): string {
