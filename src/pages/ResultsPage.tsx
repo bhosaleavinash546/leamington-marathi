@@ -14,6 +14,7 @@ import ButtonSpinner from '../components/ui/ButtonSpinner';
 import { AnalysisResult, CostReductionIdea, CostSavingType, Difficulty, SearchSource, ConfidenceLevel, EvidenceSource, IdeaAnnotation, AnnotationStatus, ChatMessage } from '../types';
 import { exportToExcel, exportToPowerPoint, exportToPdf, exportRfqPdf } from '../services/export-service';
 import { useAuth } from '../contexts/AuthContext';
+import BusinessCaseModal from '../components/BusinessCaseModal';
 import { generateCostReductionIdeas, sendChatMessage, loadFullResult } from '../services/claude-service';
 import { toast } from '../hooks/useToast';
 import IdeasDashboard from '../components/results/IdeasDashboard';
@@ -191,6 +192,7 @@ function IdeaCard({ idea, index, annotation, onAnnotate }: {
   const [rejectReason, setRejectReason] = useState('');
   const [showVavePrompt, setShowVavePrompt] = useState(false);
   const [vaveCreating, setVaveCreating] = useState(false);
+  const [showPipelineModal, setShowPipelineModal] = useState(false);
   const diff = DIFFICULTY_CONFIG[idea.implementationDifficulty];
 
   async function handleStatusClick(status: AnnotationStatus) {
@@ -604,7 +606,23 @@ function IdeaCard({ idea, index, annotation, onAnnotate }: {
             {annotation?.updatedAt && (
               <p className="text-slate-600 text-xs">Last updated: {new Date(annotation.updatedAt).toLocaleString('en-GB', { dateStyle: 'short', timeStyle: 'short' })}</p>
             )}
+            <div className="pt-1">
+              <button
+                onClick={() => setShowPipelineModal(true)}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs border border-violet-500/30 bg-violet-500/10 text-violet-300 hover:bg-violet-500/20 transition-colors"
+              >
+                <ClipboardList size={12} /> Add to Pipeline
+              </button>
+            </div>
           </div>
+        )}
+        {showPipelineModal && (
+          <BusinessCaseModal
+            ideaTitle={idea.title}
+            ideaSource="results"
+            onClose={() => setShowPipelineModal(false)}
+            onSaved={() => { setShowPipelineModal(false); toast('Added to Pipeline', 'success'); }}
+          />
         )}
       </div>
 

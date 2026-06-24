@@ -153,6 +153,81 @@ db.exec(`
   );
 `);
 
+// ─── Business case tables ─────────────────────────────────────────────────────
+db.exec(`
+  CREATE TABLE IF NOT EXISTS idea_business_cases (
+    id TEXT PRIMARY KEY,
+    userId TEXT NOT NULL,
+    userName TEXT NOT NULL,
+    ideaTitle TEXT NOT NULL,
+    ideaSource TEXT DEFAULT 'manual',
+    commodityName TEXT DEFAULT '',
+    systemName TEXT DEFAULT '',
+    vehicleData TEXT NOT NULL DEFAULT '[]',
+    savingPerPart REAL DEFAULT 0,
+    totalAnnualSaving REAL DEFAULT 0,
+    toolingCost REAL DEFAULT 0,
+    tvCost REAL DEFAULT 0,
+    roi REAL DEFAULT 0,
+    irr REAL DEFAULT 0,
+    paybackMonths REAL DEFAULT 0,
+    implementationYear INTEGER DEFAULT 0,
+    implementationMonths INTEGER DEFAULT 0,
+    gate TEXT DEFAULT 'G0',
+    ideaNumber TEXT DEFAULT '',
+    notes TEXT DEFAULT '',
+    createdAt TEXT NOT NULL,
+    updatedAt TEXT NOT NULL
+  );
+  CREATE TABLE IF NOT EXISTS business_case_comments (
+    id TEXT PRIMARY KEY,
+    businessCaseId TEXT NOT NULL,
+    userId TEXT NOT NULL,
+    userName TEXT NOT NULL,
+    comment TEXT NOT NULL,
+    createdAt TEXT NOT NULL
+  );
+`);
+
+// ─── Business case helper functions ──────────────────────────────────────────
+function calcIRR(investment, annualSaving, years = 5) {
+  if (annualSaving <= 0 || investment <= 0) return 0;
+  const cf = [-investment, ...Array(years).fill(annualSaving)];
+  let r = 0.1;
+  for (let i = 0; i < 200; i++) {
+    let npv = 0, dnpv = 0;
+    for (let t = 0; t < cf.length; t++) {
+      const d = Math.pow(1 + r, t);
+      npv += cf[t] / d;
+      if (t > 0) dnpv -= (t * cf[t]) / (d * (1 + r));
+    }
+    if (Math.abs(npv) < 0.01) break;
+    if (Math.abs(dnpv) < 0.0001) break;
+    r = r - npv / dnpv;
+    if (r < -0.999) r = -0.999;
+    if (r > 100) r = 100;
+  }
+  return Math.round(r * 10000) / 100;
+}
+
+function generateIdeaNumber() {
+  const year = new Date().getFullYear();
+  const row = db.prepare(`SELECT COUNT(*) as cnt FROM idea_business_cases WHERE ideaNumber LIKE 'BS-${year}-%'`).get();
+  const seq = ((row?.cnt || 0) + 1).toString().padStart(4, '0');
+  return `BS-${year}-${seq}`;
+}
+
+function calcBusinessMetrics(savingPerPart, vehicleDataArr, toolingCost, tvCost) {
+  const totalAnnualSaving = vehicleDataArr.reduce(
+    (sum, v) => sum + (savingPerPart * (v.volume || 0) * ((v.applicablePct ?? 100) / 100)), 0
+  );
+  const totalInvestment = (toolingCost || 0) + (tvCost || 0);
+  const roi = totalInvestment > 0 ? (totalAnnualSaving / totalInvestment) * 100 : 0;
+  const paybackMonths = totalAnnualSaving > 0 ? (totalInvestment / totalAnnualSaving) * 12 : 0;
+  const irr = calcIRR(totalInvestment, totalAnnualSaving, 5);
+  return { totalAnnualSaving, roi, paybackMonths, irr };
+}
+
 // Seed marketplace with curated ideas if empty
 const mktCount = db.prepare('SELECT COUNT(*) as c FROM marketplace_ideas').get();
 if (mktCount.c === 0) {
@@ -4430,6 +4505,171 @@ app.post('/api/assistant-chat', requireAuth, rateLimit(40, 60 * 60 * 1000), asyn
     console.error('Assistant chat error:', err.message);
     res.status(500).json({ error: 'AI assistant temporarily unavailable. Please try again shortly.' });
   }
+});
+
+// ══════════════════════════════════════════════════════════════════════════════
+// BUSINESS CASE PIPELINE API
+// ══════════════════════════════════════════════════════════════════════════════
+
+// Create business case
+app.post('/api/business-cases', requireAuth, rateLimit(30, 60 * 60 * 1000), (req, res) => {
+  const {
+    ideaTitle, ideaSource = 'manual', commodityName = '', systemName = '',
+    vehicleData = [], savingPerPart = 0, toolingCost = 0, tvCost = 0,
+    implementationYear = new Date().getFullYear() + 1, implementationMonths = 12,
+    gate = 'G0', notes = '',
+  } = req.body;
+
+  if (!ideaTitle?.trim()) return res.status(400).json({ error: 'ideaTitle is required' });
+  if (!Array.isArray(vehicleData) || vehicleData.length === 0)
+    return res.status(400).json({ error: 'At least one vehicle must be selected' });
+
+  const userId = req.user.id;
+  const userName = req.user.name || req.user.email || 'Unknown';
+  const id = `bc_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
+  const now = new Date().toISOString();
+  const ideaNumber = generateIdeaNumber();
+  const metrics = calcBusinessMetrics(savingPerPart, vehicleData, toolingCost, tvCost);
+
+  db.prepare(`
+    INSERT INTO idea_business_cases
+      (id, userId, userName, ideaTitle, ideaSource, commodityName, systemName,
+       vehicleData, savingPerPart, totalAnnualSaving, toolingCost, tvCost,
+       roi, irr, paybackMonths, implementationYear, implementationMonths,
+       gate, ideaNumber, notes, createdAt, updatedAt)
+    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+  `).run(
+    id, userId, userName, ideaTitle.trim(), ideaSource, commodityName, systemName,
+    JSON.stringify(vehicleData), savingPerPart, metrics.totalAnnualSaving,
+    toolingCost, tvCost, metrics.roi, metrics.irr, metrics.paybackMonths,
+    implementationYear, implementationMonths, gate, ideaNumber, notes, now, now,
+  );
+
+  const row = db.prepare('SELECT * FROM idea_business_cases WHERE id = ?').get(id);
+  row.vehicleData = JSON.parse(row.vehicleData || '[]');
+  res.status(201).json(row);
+});
+
+// List all business cases (full team visibility — read-only for non-owners)
+app.get('/api/business-cases', requireAuth, (req, res) => {
+  const rows = db.prepare('SELECT * FROM idea_business_cases ORDER BY createdAt DESC').all();
+  res.json(rows.map(r => ({ ...r, vehicleData: JSON.parse(r.vehicleData || '[]') })));
+});
+
+// KPI aggregates for dashboard
+app.get('/api/business-cases/kpi', requireAuth, (req, res) => {
+  const rows = db.prepare('SELECT * FROM idea_business_cases').all()
+    .map(r => ({ ...r, vehicleData: JSON.parse(r.vehicleData || '[]') }));
+
+  const gates = ['G0', 'G1', 'G2', 'G3'];
+  const gateSavings = Object.fromEntries(gates.map(g => [g, 0]));
+  const gateCount   = Object.fromEntries(gates.map(g => [g, 0]));
+  const vehicleSavings = {};
+  const commoditySavings = {};
+  const yearTimeline = {};
+  let totalPotential = 0;
+
+  rows.forEach(r => {
+    const g = r.gate || 'G0';
+    if (gateSavings[g] !== undefined) { gateSavings[g] += r.totalAnnualSaving || 0; gateCount[g]++; }
+    r.vehicleData.forEach(v => {
+      const s = (r.savingPerPart || 0) * (v.volume || 0) * ((v.applicablePct ?? 100) / 100);
+      vehicleSavings[v.model] = (vehicleSavings[v.model] || 0) + s;
+    });
+    const comm = r.commodityName || 'Other';
+    commoditySavings[comm] = (commoditySavings[comm] || 0) + (r.totalAnnualSaving || 0);
+    const yr = String(r.implementationYear || new Date().getFullYear() + 1);
+    yearTimeline[yr] = (yearTimeline[yr] || 0) + (r.totalAnnualSaving || 0);
+    totalPotential += r.totalAnnualSaving || 0;
+  });
+
+  const topIdeas = [...rows]
+    .sort((a, b) => b.totalAnnualSaving - a.totalAnnualSaving)
+    .slice(0, 10)
+    .map(({ id, ideaNumber, ideaTitle, totalAnnualSaving, gate, userName, commodityName }) =>
+      ({ id, ideaNumber, ideaTitle, totalAnnualSaving, gate, userName, commodityName }));
+
+  res.json({
+    totalPotential,
+    confirmedSaving: gateSavings.G3,
+    inProgressSaving: (gateSavings.G1 || 0) + (gateSavings.G2 || 0),
+    gateSavings, gateCount, vehicleSavings, commoditySavings, yearTimeline,
+    topIdeas, totalCases: rows.length,
+  });
+});
+
+// Update business case (owner only — gate, notes, or full recalc)
+app.patch('/api/business-cases/:id', requireAuth, (req, res) => {
+  const row = db.prepare('SELECT * FROM idea_business_cases WHERE id = ?').get(req.params.id);
+  if (!row) return res.status(404).json({ error: 'Not found' });
+  if (row.userId !== req.user.id) return res.status(403).json({ error: 'You can only edit your own business cases' });
+
+  const {
+    gate, notes, vehicleData, savingPerPart, toolingCost, tvCost,
+    implementationYear, implementationMonths,
+  } = req.body;
+
+  const newVehicleData = vehicleData ? vehicleData : JSON.parse(row.vehicleData || '[]');
+  const newSavingPerPart = savingPerPart !== undefined ? savingPerPart : row.savingPerPart;
+  const newToolingCost   = toolingCost !== undefined ? toolingCost : row.toolingCost;
+  const newTvCost        = tvCost !== undefined ? tvCost : row.tvCost;
+  const metrics = calcBusinessMetrics(newSavingPerPart, newVehicleData, newToolingCost, newTvCost);
+
+  db.prepare(`
+    UPDATE idea_business_cases SET
+      gate=COALESCE(?,gate), notes=COALESCE(?,notes),
+      vehicleData=?, savingPerPart=?, totalAnnualSaving=?,
+      toolingCost=?, tvCost=?, roi=?, irr=?, paybackMonths=?,
+      implementationYear=COALESCE(?,implementationYear),
+      implementationMonths=COALESCE(?,implementationMonths),
+      updatedAt=?
+    WHERE id=?
+  `).run(
+    gate || null, notes !== undefined ? notes : null,
+    JSON.stringify(newVehicleData), newSavingPerPart, metrics.totalAnnualSaving,
+    newToolingCost, newTvCost, metrics.roi, metrics.irr, metrics.paybackMonths,
+    implementationYear || null, implementationMonths || null,
+    new Date().toISOString(), req.params.id,
+  );
+
+  const updated = db.prepare('SELECT * FROM idea_business_cases WHERE id = ?').get(req.params.id);
+  updated.vehicleData = JSON.parse(updated.vehicleData || '[]');
+  res.json(updated);
+});
+
+// Delete business case (owner only)
+app.delete('/api/business-cases/:id', requireAuth, (req, res) => {
+  const row = db.prepare('SELECT * FROM idea_business_cases WHERE id = ?').get(req.params.id);
+  if (!row) return res.status(404).json({ error: 'Not found' });
+  if (row.userId !== req.user.id) return res.status(403).json({ error: 'You can only delete your own business cases' });
+  db.prepare('DELETE FROM idea_business_cases WHERE id = ?').run(req.params.id);
+  db.prepare('DELETE FROM business_case_comments WHERE businessCaseId = ?').run(req.params.id);
+  res.json({ ok: true });
+});
+
+// Add comment to business case (any authenticated user)
+app.post('/api/business-cases/:id/comments', requireAuth, rateLimit(60, 60 * 60 * 1000), (req, res) => {
+  const row = db.prepare('SELECT id FROM idea_business_cases WHERE id = ?').get(req.params.id);
+  if (!row) return res.status(404).json({ error: 'Business case not found' });
+  const { comment } = req.body;
+  if (!comment?.trim()) return res.status(400).json({ error: 'comment is required' });
+
+  const id  = `cmt_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
+  const now = new Date().toISOString();
+  db.prepare(`
+    INSERT INTO business_case_comments (id, businessCaseId, userId, userName, comment, createdAt)
+    VALUES (?,?,?,?,?,?)
+  `).run(id, req.params.id, req.user.id, req.user.name || req.user.email || 'Unknown', comment.trim(), now);
+
+  res.status(201).json(db.prepare('SELECT * FROM business_case_comments WHERE id = ?').get(id));
+});
+
+// Get comments for a business case
+app.get('/api/business-cases/:id/comments', requireAuth, (req, res) => {
+  const comments = db.prepare(
+    'SELECT * FROM business_case_comments WHERE businessCaseId = ? ORDER BY createdAt ASC'
+  ).all(req.params.id);
+  res.json(comments);
 });
 
 app.listen(PORT, async () => {

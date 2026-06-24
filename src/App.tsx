@@ -26,6 +26,7 @@ import CadDiffPage from './pages/CadDiffPage';
 import ServerSettingsPage from './pages/ServerSettingsPage';
 import MobileSettingsPage from './pages/MobileSettingsPage';
 import VaveTrackerPage from './pages/VaveTrackerPage';
+import PipelinePage from './pages/PipelinePage';
 import AiChatbot from './components/AiChatbot';
 
 function AnimatedRoutes() {
@@ -50,6 +51,7 @@ function AnimatedRoutes() {
         <Route path="/marketplace" element={<ProtectedRoute><PageTransition><MarketplacePage /></PageTransition></ProtectedRoute>} />
         <Route path="/cad-diff" element={<ProtectedRoute><PageTransition><CadDiffPage /></PageTransition></ProtectedRoute>} />
         <Route path="/vave-tracker" element={<ProtectedRoute><PageTransition><VaveTrackerPage /></PageTransition></ProtectedRoute>} />
+        <Route path="/pipeline" element={<ProtectedRoute><PageTransition><PipelinePage /></PageTransition></ProtectedRoute>} />
         <Route path="/server-settings" element={<PageTransition><ServerSettingsPage /></PageTransition>} />
         <Route path="/mobile-settings" element={<ProtectedRoute><PageTransition><MobileSettingsPage /></PageTransition></ProtectedRoute>} />
 

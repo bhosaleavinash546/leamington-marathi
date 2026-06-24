@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   Store, Star, TrendingDown, Clock, ChevronDown, CheckCircle,
-  Lightbulb, ThumbsUp, ChevronRight,
+  Lightbulb, ThumbsUp, ChevronRight, GitMerge,
 } from 'lucide-react';
+import BusinessCaseModal from '../components/BusinessCaseModal';
+import { toast } from '../hooks/useToast';
 
 interface MarketplaceIdea {
   id: string;
@@ -218,6 +220,7 @@ export default function MarketplacePage() {
   });
   const [submitting, setSubmitting] = useState(false);
   const [submitMsg, setSubmitMsg] = useState('');
+  const [pipelineIdea, setPipelineIdea] = useState<MarketplaceIdea | null>(null);
   const [insights, setInsights] = useState<{
     approvedIdeas: ApprovedIdeaInsight[];
     totalApproved: number;
@@ -576,6 +579,12 @@ export default function MarketplacePage() {
                     </span>
                     <span className="flex items-center gap-1"><Clock size={10} />{idea.timeToImplement}</span>
                     <span className="flex items-center gap-1"><TrendingDown size={10} />{idea.costSavingType}</span>
+                    <button
+                      onClick={e => { e.stopPropagation(); setPipelineIdea(idea); }}
+                      className="ml-auto flex items-center gap-1 px-2.5 py-1 rounded-lg border border-violet-500/30 bg-violet-500/10 text-violet-300 hover:bg-violet-500/20 transition-colors text-xs"
+                    >
+                      <GitMerge size={11} /> Add to Pipeline
+                    </button>
                   </div>
                 </motion.div>
               );
@@ -602,6 +611,18 @@ export default function MarketplacePage() {
           Ideas are anonymised community contributions. Always validate applicability for your specific programme.
         </p>
       </div>
+
+      <AnimatePresence>
+        {pipelineIdea && (
+          <BusinessCaseModal
+            ideaTitle={pipelineIdea.title}
+            ideaSource="marketplace"
+            systemName={pipelineIdea.system}
+            onClose={() => setPipelineIdea(null)}
+            onSaved={() => { setPipelineIdea(null); toast('Added to Pipeline', 'success'); }}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }
