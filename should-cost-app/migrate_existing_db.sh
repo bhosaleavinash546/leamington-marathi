@@ -22,6 +22,7 @@ FILES=(
   "backend/src/db/seed_comprehensive_demo.sql"
   "backend/src/db/seed_comprehensive_demo_expansion.sql"
   "backend/src/db/seed_commodity_2025_2026.sql"
+  "backend/src/db/schema_v10.sql"
 )
 
 for f in "${FILES[@]}"; do

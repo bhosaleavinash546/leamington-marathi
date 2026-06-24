@@ -945,3 +945,155 @@ function escapeHtml(str: string): string {
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;');
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Generic CSV helper
+// ─────────────────────────────────────────────────────────────────────────────
+function toCsv(headers: string[], rows: (string | number | null | undefined)[][]): string {
+  const escape = (v: string | number | null | undefined): string => {
+    if (v == null) return '';
+    const s = String(v);
+    return s.includes(',') || s.includes('"') || s.includes('\n')
+      ? `"${s.replace(/"/g, '""')}"` : s;
+  };
+  return [headers, ...rows].map((row) => row.map(escape).join(',')).join('\r\n');
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// CSV — Negotiations  GET /api/export/negotiations.csv
+// ─────────────────────────────────────────────────────────────────────────────
+export async function exportNegotiationsCsv(req: Request, res: Response): Promise<void> {
+  const { rows } = await pool.query(
+    `SELECT nt.id, p.part_number, p.description AS part_description,
+            s.name AS supplier_name, nt.status, nt.currency,
+            nt.should_cost, nt.current_price, nt.target_price, nt.agreed_price,
+            ROUND((nt.current_price - nt.target_price)::numeric, 4) AS gap,
+            nt.target_date, nt.agreed_at, nt.notes
+     FROM negotiation_target nt
+     JOIN part_master p ON p.id = nt.part_id
+     JOIN supplier    s ON s.id = nt.supplier_id
+     ORDER BY nt.status, nt.target_date NULLS LAST`
+  );
+  const headers = [
+    'ID','Part Number','Description','Supplier','Status','Currency',
+    'Should Cost','Current Price','Target Price','Agreed Price','Gap',
+    'Target Date','Agreed Date','Notes',
+  ];
+  const data = rows.map((r) => [
+    r.id, r.part_number, r.part_description, r.supplier_name, r.status, r.currency,
+    r.should_cost, r.current_price, r.target_price, r.agreed_price, r.gap,
+    r.target_date, r.agreed_at, r.notes,
+  ]);
+  res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+  res.setHeader('Content-Disposition', `attachment; filename=negotiations-${new Date().toISOString().slice(0,10)}.csv`);
+  res.send(toCsv(headers, data));
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// CSV — ACR Targets  GET /api/export/acr.csv
+// ─────────────────────────────────────────────────────────────────────────────
+export async function exportAcrCsv(req: Request, res: Response): Promise<void> {
+  const { rows } = await pool.query(
+    `SELECT at.id, p.part_number, p.description AS part_description,
+            s.name AS supplier_name, at.target_year, at.currency,
+            at.base_price, at.base_year, at.target_reduction_pct, at.target_price,
+            at.agreed_price, at.actual_reduction_pct, at.status, at.notes
+     FROM acr_target at
+     LEFT JOIN part_master p ON p.id = at.part_id
+     LEFT JOIN supplier    s ON s.id = at.supplier_id
+     ORDER BY at.target_year DESC, p.part_number`
+  );
+  const headers = [
+    'ID','Part Number','Description','Supplier','Target Year','Currency',
+    'Base Price','Base Year','Target Reduction %','Target Price',
+    'Agreed Price','Actual Reduction %','Status','Notes',
+  ];
+  const data = rows.map((r) => [
+    r.id, r.part_number, r.part_description, r.supplier_name, r.target_year, r.currency,
+    r.base_price, r.base_year, r.target_reduction_pct, r.target_price,
+    r.agreed_price, r.actual_reduction_pct, r.status, r.notes,
+  ]);
+  res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+  res.setHeader('Content-Disposition', `attachment; filename=acr-targets-${new Date().toISOString().slice(0,10)}.csv`);
+  res.send(toCsv(headers, data));
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// CSV — Commodity Prices  GET /api/export/commodity-prices.csv
+// ─────────────────────────────────────────────────────────────────────────────
+export async function exportCommodityPricesCsv(req: Request, res: Response): Promise<void> {
+  const { rows } = await pool.query(
+    `SELECT id, material_name, material_code, price_per_unit, unit, currency,
+            price_date, source, notes, created_at
+     FROM commodity_price
+     ORDER BY material_code, price_date DESC`
+  );
+  const headers = [
+    'ID','Material Name','Material Code','Price Per Unit','Unit','Currency',
+    'Price Date','Source','Notes','Created At',
+  ];
+  const data = rows.map((r) => [
+    r.id, r.material_name, r.material_code, r.price_per_unit, r.unit, r.currency,
+    r.price_date, r.source, r.notes, r.created_at,
+  ]);
+  res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+  res.setHeader('Content-Disposition', `attachment; filename=commodity-prices-${new Date().toISOString().slice(0,10)}.csv`);
+  res.send(toCsv(headers, data));
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// CSV — Should-Cost List  GET /api/export/should-costs.csv
+// ─────────────────────────────────────────────────────────────────────────────
+export async function exportShouldCostListCsv(req: Request, res: Response): Promise<void> {
+  const { rows } = await pool.query(
+    `SELECT sch.id, p.part_number, p.description AS part_description,
+            sch.version, sch.status, sch.total_cost, sch.currency,
+            sch.annual_volume, sch.valid_until, sch.created_at
+     FROM should_cost_header sch
+     JOIN part_master p ON p.id = sch.part_id
+     ORDER BY p.part_number, sch.version DESC`
+  );
+  const headers = [
+    'ID','Part Number','Description','Version','Status',
+    'Total Cost','Currency','Annual Volume','Valid Until','Created At',
+  ];
+  const data = rows.map((r) => [
+    r.id, r.part_number, r.part_description, r.version, r.status,
+    r.total_cost, r.currency, r.annual_volume, r.valid_until, r.created_at,
+  ]);
+  res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+  res.setHeader('Content-Disposition', `attachment; filename=should-costs-${new Date().toISOString().slice(0,10)}.csv`);
+  res.send(toCsv(headers, data));
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// CSV — Quotes List  GET /api/export/quotes.csv
+// ─────────────────────────────────────────────────────────────────────────────
+export async function exportQuotesCsv(req: Request, res: Response): Promise<void> {
+  try {
+    const { rows } = await pool.query(
+      `SELECT sqh.id, p.part_number, p.description AS part_description,
+              s.name AS supplier_name, sqh.status, sqh.currency,
+              sqh.total_price, sqh.notes, sqh.created_at
+       FROM supplier_quote_header sqh
+       JOIN part_master p ON p.id = sqh.part_id
+       JOIN supplier    s ON s.id = sqh.supplier_id
+       ORDER BY sqh.created_at DESC`
+    );
+    const headers = [
+      'ID','Part Number','Description','Supplier','Status','Currency',
+      'Total Price','Notes','Created At',
+    ];
+    const data = rows.map((r) => [
+      r.id, r.part_number, r.part_description, r.supplier_name, r.status,
+      r.currency, r.total_price, r.notes, r.created_at,
+    ]);
+    res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+    res.setHeader('Content-Disposition', `attachment; filename=quotes-${new Date().toISOString().slice(0,10)}.csv`);
+    res.send(toCsv(headers, data));
+  } catch (err) {
+    const pg = err as { code?: string };
+    if (pg.code === '42P01') { res.send(toCsv(['ID'], [])); return; }
+    throw err;
+  }
+}

@@ -56,6 +56,10 @@ interface DashboardData {
   alerts: DashboardAlert[];
   recent_comparisons: RecentComparison[];
   recent_quotes: RecentQuote[];
+  delta_open_negotiations: number;
+  delta_potential_saving: number;
+  delta_high_variance: number;
+  delta_quotes_pending: number;
 }
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
@@ -94,20 +98,36 @@ const ALERT_BG: Record<string, string> = {
 
 // ── Sub-components ─────────────────────────────────────────────────────────────
 
+function DeltaBadge({ delta, higherIsBetter = true }: { delta: number; higherIsBetter?: boolean }) {
+  if (delta === 0) return <span style={{ fontSize: 11, color: 'var(--text-3)' }}>= vs last month</span>;
+  const isPositive = delta > 0;
+  const isGood = higherIsBetter ? isPositive : !isPositive;
+  const color = isGood ? 'var(--success)' : 'var(--danger)';
+  const arrow = isPositive ? '▲' : '▼';
+  return (
+    <span style={{ fontSize: 11, color, fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: 2 }}>
+      {arrow} {Math.abs(delta)} vs last month
+    </span>
+  );
+}
+
 function KpiTile({
-  icon, label, value, sub, valueStyle,
+  icon, label, value, sub, valueStyle, delta, higherIsBetter,
 }: {
   icon: string;
   label: string;
   value: string | number;
   sub?: string;
   valueStyle?: React.CSSProperties;
+  delta?: number;
+  higherIsBetter?: boolean;
 }) {
   return (
-    <div className="stat-tile">
+    <div className="stat-tile kpi-card">
       <div className="st-icon">{icon}</div>
       <div className="st-label">{label}</div>
-      <div className="st-value" style={valueStyle}>{value}</div>
+      <div className="st-value tabular-nums" style={valueStyle}>{value}</div>
+      {delta !== undefined && <DeltaBadge delta={delta} higherIsBetter={higherIsBetter} />}
       {sub && <div className="st-sub">{sub}</div>}
     </div>
   );
@@ -246,6 +266,8 @@ export default function Dashboard({ user }: Props) {
           value={data.open_negotiations}
           sub={data.stalled_negotiations > 0 ? `${data.stalled_negotiations} stalled` : 'All on track'}
           valueStyle={data.open_negotiations > 0 ? { color: 'var(--primary)' } : undefined}
+          delta={data.delta_open_negotiations}
+          higherIsBetter={true}
         />
         <KpiTile
           icon="💰"
@@ -263,6 +285,8 @@ export default function Dashboard({ user }: Props) {
           value={data.quotes_pending_review}
           sub={`${data.total_quotes} quotes total`}
           valueStyle={data.quotes_pending_review > 0 ? { color: 'var(--warning, #f59e0b)' } : undefined}
+          delta={data.delta_quotes_pending}
+          higherIsBetter={false}
         />
         <KpiTile
           icon="🔺"
@@ -270,6 +294,8 @@ export default function Dashboard({ user }: Props) {
           value={data.high_variance_comparisons}
           sub=">15% variance vs should-cost"
           valueStyle={data.high_variance_comparisons > 0 ? { color: 'var(--danger)' } : { color: 'var(--success, #16a34a)' }}
+          delta={data.delta_high_variance}
+          higherIsBetter={false}
         />
         <KpiTile
           icon="🎯"

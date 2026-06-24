@@ -26,8 +26,10 @@ import CERAccuracyTracker from './pages/CERAccuracyTracker';
 import ThemeToggle from './components/ThemeToggle';
 import CommandPalette from './components/CommandPalette';
 import Logo from './components/Logo';
+import ErrorBoundary from './components/ErrorBoundary';
 import { AuthUser } from './types';
 import { ThemeProvider } from './context/ThemeContext';
+import { FeatureFlagProvider } from './context/FeatureFlags';
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { staleTime: 60_000, retry: 1 } },
@@ -52,13 +54,15 @@ function AppShell() {
 
   if (!user) {
     return (
-      <Routes>
-        <Route path="/"        element={<LandingPage />} />
-        <Route path="/login"   element={<AuthPage initialView="login"   onLogin={setUser} />} />
-        <Route path="/signup"  element={<AuthPage initialView="signup-details" onLogin={setUser} />} />
-        <Route path="/forgot"  element={<AuthPage initialView="forgot-email" />} />
-        <Route path="*"        element={<Navigate to="/" replace />} />
-      </Routes>
+      <ErrorBoundary>
+        <Routes>
+          <Route path="/"        element={<LandingPage />} />
+          <Route path="/login"   element={<AuthPage initialView="login"   onLogin={setUser} />} />
+          <Route path="/signup"  element={<AuthPage initialView="signup-details" onLogin={setUser} />} />
+          <Route path="/forgot"  element={<AuthPage initialView="forgot-email" />} />
+          <Route path="*"        element={<Navigate to="/" replace />} />
+        </Routes>
+      </ErrorBoundary>
     );
   }
 
@@ -67,6 +71,8 @@ function AppShell() {
 
   return (
     <div className="app-shell">
+      <a href="#main-content" className="skip-link">Skip to main content</a>
+
       {/* ── Persistent theme toggle (always top-right) ── */}
       <div className="app-theme-toggle" title="Toggle light / dark theme">
         <ThemeToggle />
@@ -150,7 +156,8 @@ function AppShell() {
       </nav>
 
       {/* ── Main ── */}
-      <main className="main-content" onClick={() => sidebarOpen && setSidebarOpen(false)}>
+      <main id="main-content" className="main-content" onClick={() => sidebarOpen && setSidebarOpen(false)}>
+        <ErrorBoundary>
         <Routes>
           {!isSupplier && (
             <>
@@ -186,6 +193,7 @@ function AppShell() {
             </>
           )}
         </Routes>
+        </ErrorBoundary>
       </main>
 
       {/* ── Command Palette (Cmd+K / Ctrl+K) — internal users only (P9) ── */}
@@ -196,10 +204,12 @@ function AppShell() {
 
 export default function App() {
   return (
-    <ThemeProvider>
-      <QueryClientProvider client={queryClient}>
-        <AppShell />
-      </QueryClientProvider>
-    </ThemeProvider>
+    <FeatureFlagProvider>
+      <ThemeProvider>
+        <QueryClientProvider client={queryClient}>
+          <AppShell />
+        </QueryClientProvider>
+      </ThemeProvider>
+    </FeatureFlagProvider>
   );
 }

@@ -1,6 +1,15 @@
 import { useEffect, useRef, useState } from 'react';
 import api from '../utils/api';
 
+async function downloadCsv(endpoint: string, filename: string) {
+  const res = await api.get(endpoint, { responseType: 'blob' });
+  const url = window.URL.createObjectURL(new Blob([res.data as BlobPart]));
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click();
+  window.URL.revokeObjectURL(url); document.body.removeChild(a);
+}
+
 interface CommoditySummary {
   id: number;
   material_name: string;
@@ -244,6 +253,13 @@ export default function CommodityPrices() {
               animation: refreshing ? 'spin 0.8s linear infinite' : 'none',
             }}>⟳</span>
             {refreshing ? 'Updating…' : 'Refresh Now'}
+          </button>
+          <button
+            className="btn btn-secondary"
+            onClick={() => downloadCsv('/export/commodity-prices.csv', `commodity-prices-${new Date().toISOString().slice(0,10)}.csv`)}
+            title="Export all commodity prices as CSV"
+          >
+            ⬇ Export CSV
           </button>
           <button className="btn btn-primary" onClick={openForm}>＋ Add Price Entry</button>
         </div>

@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import pool from '../db/pool';
+import { writeAudit } from '../middleware/auditLog';
 
 // GET /api/acr
 // List all ACR targets. Optional query params: ?year=&supplierId=&partId=
@@ -171,7 +172,9 @@ export async function createAcrTarget(req: Request, res: Response): Promise<void
         req.user?.sub ?? null,
       ]
     );
-    res.status(201).json(rows[0]);
+    const created = rows[0];
+    writeAudit(req.user?.sub, 'CREATE', 'acr_target', created.id, req.body, req.ip).catch(() => {});
+    res.status(201).json(created);
   } catch (err) {
     console.error('createAcrTarget error:', err);
     res.status(500).json({ error: 'Failed to create ACR target' });
@@ -227,7 +230,9 @@ export async function updateAcrTarget(req: Request, res: Response): Promise<void
       res.status(404).json({ error: 'ACR target not found' });
       return;
     }
-    res.json(rows[0]);
+    const updated = rows[0];
+    writeAudit(req.user?.sub, 'UPDATE', 'acr_target', updated.id, req.body, req.ip).catch(() => {});
+    res.json(updated);
   } catch (err) {
     console.error('updateAcrTarget error:', err);
     res.status(500).json({ error: 'Failed to update ACR target' });
@@ -243,6 +248,7 @@ export async function deleteAcrTarget(req: Request, res: Response): Promise<void
       res.status(404).json({ error: 'ACR target not found' });
       return;
     }
+    writeAudit(req.user?.sub, 'DELETE', 'acr_target', id, {}, req.ip).catch(() => {});
     res.status(204).end();
   } catch (err) {
     console.error('deleteAcrTarget error:', err);

@@ -1,6 +1,15 @@
 import { useEffect, useState } from 'react';
 import api from '../utils/api';
 
+async function downloadCsv(endpoint: string, filename: string) {
+  const res = await api.get(endpoint, { responseType: 'blob' });
+  const url = window.URL.createObjectURL(new Blob([res.data as BlobPart]));
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click();
+  window.URL.revokeObjectURL(url); document.body.removeChild(a);
+}
+
 interface ACRTarget {
   id: number;
   part_number: string;
@@ -189,7 +198,16 @@ export default function ACRTracker() {
           <h1>ACR Tracker</h1>
           <div className="sub">Annual cost reduction targets — track commitments vs actuals</div>
         </div>
-        <button className="btn btn-primary" onClick={openCreateModal}>＋ New ACR Target</button>
+        <div style={{ display: 'flex', gap: 8 }}>
+          <button
+            className="btn btn-secondary"
+            onClick={() => downloadCsv('/export/acr.csv', `acr-targets-${new Date().toISOString().slice(0,10)}.csv`)}
+            title="Export all ACR targets as CSV"
+          >
+            ⬇ Export CSV
+          </button>
+          <button className="btn btn-primary" onClick={openCreateModal}>＋ New ACR Target</button>
+        </div>
       </div>
 
       {/* Year selector tabs */}

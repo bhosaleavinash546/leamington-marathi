@@ -143,6 +143,59 @@ export async function getDashboard(_req: Request, res: Response): Promise<void> 
     `);
     const recent_quotes = recentQuoteResult.rows;
 
+    // ── Period-over-period comparison (this month vs last month) ─────────────
+    let delta_open_negotiations    = 0;
+    let delta_potential_saving     = 0;
+    let delta_high_variance        = 0;
+    let delta_quotes_pending       = 0;
+
+    try {
+      const deltaResult = await pool.query(`
+        SELECT
+          -- Negotiations opened this month vs last month
+          COUNT(*) FILTER (WHERE status = 'open'
+            AND created_at >= date_trunc('month', CURRENT_DATE))        AS neg_open_this_month,
+          COUNT(*) FILTER (WHERE status = 'open'
+            AND created_at >= date_trunc('month', CURRENT_DATE) - INTERVAL '1 month'
+            AND created_at <  date_trunc('month', CURRENT_DATE))        AS neg_open_last_month
+        FROM negotiation_target
+      `);
+      const dn = deltaResult.rows[0];
+      const negThisMonth  = Number(dn.neg_open_this_month)  ?? 0;
+      const negLastMonth  = Number(dn.neg_open_last_month)  ?? 0;
+      delta_open_negotiations = negThisMonth - negLastMonth;
+    } catch { /* table may not exist */ }
+
+    try {
+      const deltaQuoteResult = await pool.query(`
+        SELECT
+          COUNT(*) FILTER (WHERE status = 'submitted'
+            AND COALESCE(submitted_at, created_at) >= date_trunc('month', CURRENT_DATE))
+                                                                        AS quotes_this_month,
+          COUNT(*) FILTER (WHERE status = 'submitted'
+            AND COALESCE(submitted_at, created_at) >= date_trunc('month', CURRENT_DATE) - INTERVAL '1 month'
+            AND COALESCE(submitted_at, created_at) <  date_trunc('month', CURRENT_DATE))
+                                                                        AS quotes_last_month
+        FROM supplier_quote_header
+      `);
+      const dq = deltaQuoteResult.rows[0];
+      delta_quotes_pending = Number(dq.quotes_this_month ?? 0) - Number(dq.quotes_last_month ?? 0);
+    } catch { /* ok */ }
+
+    try {
+      const deltaCompResult = await pool.query(`
+        SELECT
+          COUNT(*) FILTER (WHERE ABS(COALESCE(variance_pct,0)) > 15
+            AND created_at >= date_trunc('month', CURRENT_DATE))        AS hv_this_month,
+          COUNT(*) FILTER (WHERE ABS(COALESCE(variance_pct,0)) > 15
+            AND created_at >= date_trunc('month', CURRENT_DATE) - INTERVAL '1 month'
+            AND created_at <  date_trunc('month', CURRENT_DATE))        AS hv_last_month
+        FROM comparison_snapshot
+      `);
+      const dc = deltaCompResult.rows[0];
+      delta_high_variance = Number(dc.hv_this_month ?? 0) - Number(dc.hv_last_month ?? 0);
+    } catch { /* ok */ }
+
     // ── Build alerts ──────────────────────────────────────────────────────────
     const alerts: Array<{
       type: 'warning' | 'info' | 'danger';
@@ -214,6 +267,10 @@ export async function getDashboard(_req: Request, res: Response): Promise<void> 
       alerts,
       recent_comparisons,
       recent_quotes,
+      delta_open_negotiations,
+      delta_potential_saving,
+      delta_high_variance,
+      delta_quotes_pending,
     });
   } catch (err) {
     console.error('[dashboardController] getDashboard error:', err);

@@ -1,5 +1,15 @@
 import { useEffect, useState } from 'react';
 import api from '../utils/api';
+import EmptyState from '../components/EmptyState';
+
+async function downloadCsv(endpoint: string, filename: string) {
+  const res = await api.get(endpoint, { responseType: 'blob' });
+  const url = window.URL.createObjectURL(new Blob([res.data as BlobPart]));
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click();
+  window.URL.revokeObjectURL(url); document.body.removeChild(a);
+}
 
 interface Negotiation {
   id: number;
@@ -148,7 +158,16 @@ export default function NegotiationTracker() {
           <h1>Negotiation Tracker</h1>
           <div className="sub">Track price targets, deadlines, and agreed outcomes per part/supplier.</div>
         </div>
-        <button className="btn btn-primary" onClick={openNew}>＋ New Target</button>
+        <div style={{ display: 'flex', gap: 8 }}>
+          <button
+            className="btn btn-secondary"
+            onClick={() => downloadCsv('/export/negotiations.csv', `negotiations-${new Date().toISOString().slice(0,10)}.csv`)}
+            title="Export all negotiations as CSV"
+          >
+            ⬇ Export CSV
+          </button>
+          <button className="btn btn-primary" onClick={openNew}>＋ New Target</button>
+        </div>
       </div>
 
       {/* KPI tiles */}
@@ -196,9 +215,13 @@ export default function NegotiationTracker() {
       {/* Table */}
       <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
         {list.length === 0 ? (
-          <div className="empty" style={{ padding: 32, textAlign: 'center' }}>
-            No negotiations found. Click <strong>＋ New Target</strong> to start tracking.
-          </div>
+          <EmptyState
+            icon="🤝"
+            title="No negotiations found"
+            description={filterStatus ? `No ${filterStatus} negotiations match your filter.` : 'Start tracking supplier price negotiations to unlock cost saving opportunities.'}
+            action={{ label: '＋ New Target', onClick: openNew }}
+            secondaryAction={filterStatus ? { label: 'Clear filter', onClick: () => setFilter('') } : undefined}
+          />
         ) : (
           <div style={{ overflowX: 'auto' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>

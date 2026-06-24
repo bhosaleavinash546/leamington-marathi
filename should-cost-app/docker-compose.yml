@@ -31,6 +31,7 @@ services:
       - ./backend/src/db/seed_comprehensive_demo.sql:/docker-entrypoint-initdb.d/14-seed_demo_comprehensive.sql
       - ./backend/src/db/seed_comprehensive_demo_expansion.sql:/docker-entrypoint-initdb.d/15-seed_demo_expansion.sql
       - ./backend/src/db/seed_commodity_2025_2026.sql:/docker-entrypoint-initdb.d/16-seed_commodity_2026.sql
+      - ./backend/src/db/schema_v10.sql:/docker-entrypoint-initdb.d/17-schema_v10.sql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres -d should_cost_db"]
       interval: 5s

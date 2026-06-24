@@ -2,6 +2,9 @@ import 'dotenv/config';
 import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import cron from 'node-cron';
+import rateLimit from 'express-rate-limit';
+import swaggerJsdoc from 'swagger-jsdoc';
+import swaggerUi from 'swagger-ui-express';
 
 import authRoutes           from './routes/auth';
 import shouldCostRoutes     from './routes/shouldCost';
@@ -38,6 +41,60 @@ import { requireAuth, requireRole } from './middleware/auth';
 const app  = express();
 const PORT = process.env.PORT ?? 4000;
 
+// Tiered rate limits
+const globalLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,  // 15 minutes
+  max: 500,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many requests, please try again later.' },
+});
+
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 20,  // Strict limit for auth endpoints
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many authentication attempts, please try again later.' },
+});
+
+const apiLimiter = rateLimit({
+  windowMs: 1 * 60 * 1000,  // 1 minute
+  max: 120,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'API rate limit exceeded.' },
+});
+
+const swaggerSpec = swaggerJsdoc({
+  definition: {
+    openapi: '3.0.0',
+    info: {
+      title: 'CostLens API',
+      version: '2.0.0',
+      description: 'Should-Cost vs Supplier Quotes — Engineering Cost Intelligence Platform',
+    },
+    servers: [{ url: '/api', description: 'CostLens API' }],
+    components: {
+      securitySchemes: {
+        bearerAuth: { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' },
+      },
+    },
+    security: [{ bearerAuth: [] }],
+    tags: [
+      { name: 'Auth', description: 'Authentication & user management' },
+      { name: 'Should-Cost', description: 'Should-cost model management' },
+      { name: 'Quotes', description: 'Supplier quote management' },
+      { name: 'Negotiations', description: 'Negotiation pipeline' },
+      { name: 'ACR', description: 'Annual Cost Reduction targets' },
+      { name: 'Commodity', description: 'Commodity price tracking' },
+      { name: 'Dashboard', description: 'KPI dashboard data' },
+      { name: 'Export', description: 'Data export (Excel, PowerPoint, CSV)' },
+    ],
+  },
+  apis: ['./src/routes/*.ts', './src/controllers/*.ts'],
+});
+
 app.use(cors({ origin: process.env.FRONTEND_ORIGIN ?? 'http://localhost:5173' }));
 app.use(express.json());
 
@@ -46,6 +103,18 @@ app.use('/api/import', express.raw({ type: 'text/plain', limit: '5mb' }));
 
 app.get('/health', (_req, res) => res.json({ status: 'ok', ts: new Date() }));
 
+// Apply global rate limit to all requests
+app.use(globalLimiter);
+
+// Swagger API documentation
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
+  customCss: '.swagger-ui .topbar { background: #1d4ed8; }',
+  customSiteTitle: 'CostLens API Docs',
+}));
+app.get('/api-docs.json', (_req, res) => res.json(swaggerSpec));
+
+// Strict rate limit for auth endpoints
+app.use('/api/auth', authLimiter);
 app.use('/api/auth',             authRoutes);
 app.use('/api/should-cost',      shouldCostRoutes);
 app.use('/api/quotes',           quotesRoutes);

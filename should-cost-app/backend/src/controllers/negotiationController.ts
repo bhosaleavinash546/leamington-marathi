@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import pool from '../db/pool';
+import { writeAudit } from '../middleware/auditLog';
 
 // GET /api/negotiations
 export async function listNegotiations(req: Request, res: Response): Promise<void> {
@@ -85,7 +86,9 @@ export async function createNegotiation(req: Request, res: Response): Promise<vo
       notes ?? null, owner_id ?? null, req.user?.sub ?? null,
     ]
   );
-  res.status(201).json(rows[0]);
+  const created = rows[0];
+  writeAudit(req.user?.sub, 'CREATE', 'negotiation_target', created.id, req.body, req.ip).catch(() => {});
+  res.status(201).json(created);
 }
 
 // PATCH /api/negotiations/:id
@@ -131,7 +134,9 @@ export async function updateNegotiation(req: Request, res: Response): Promise<vo
     params
   );
   if (rows.length === 0) { res.status(404).json({ error: 'Not found' }); return; }
-  res.json(rows[0]);
+  const updated = rows[0];
+  writeAudit(req.user?.sub, 'UPDATE', 'negotiation_target', updated.id, req.body, req.ip).catch(() => {});
+  res.json(updated);
 }
 
 // DELETE /api/negotiations/:id
@@ -139,20 +144,39 @@ export async function deleteNegotiation(req: Request, res: Response): Promise<vo
   const { id } = req.params;
   const { rowCount } = await pool.query(`DELETE FROM negotiation_target WHERE id = $1`, [id]);
   if (rowCount === 0) { res.status(404).json({ error: 'Not found' }); return; }
+  writeAudit(req.user?.sub, 'DELETE', 'negotiation_target', id, {}, req.ip).catch(() => {});
   res.status(204).end();
 }
 
 // GET /api/negotiations/summary — pipeline KPIs
 export async function negotiationSummary(req: Request, res: Response): Promise<void> {
-  const { rows } = await pool.query(
-    `SELECT
-       COUNT(*)                                           AS total,
-       COUNT(*) FILTER (WHERE status = 'open')           AS open,
-       COUNT(*) FILTER (WHERE status = 'agreed')         AS agreed,
-       COUNT(*) FILTER (WHERE status = 'stalled')        AS stalled,
-       COUNT(*) FILTER (WHERE target_date <= NOW() + INTERVAL '7 days' AND status = 'open') AS due_this_week,
-       COALESCE(SUM((current_price - target_price) * 12000), 0) AS potential_annual_saving
-     FROM negotiation_target`
-  );
-  res.json(rows[0]);
+  try {
+    const { rows } = await pool.query(
+      `SELECT
+         COUNT(*)                                                    AS total,
+         COUNT(*) FILTER (WHERE nt.status = 'open')                 AS open,
+         COUNT(*) FILTER (WHERE nt.status = 'agreed')               AS agreed,
+         COUNT(*) FILTER (WHERE nt.status = 'stalled')              AS stalled,
+         COUNT(*) FILTER (WHERE nt.target_date <= NOW() + INTERVAL '7 days'
+                          AND nt.status = 'open')                   AS due_this_week,
+         COALESCE(SUM(
+           CASE WHEN nt.current_price IS NOT NULL AND nt.target_price IS NOT NULL
+                THEN (nt.current_price - nt.target_price) *
+                     COALESCE(
+                       (SELECT sch.annual_volume FROM should_cost_header sch
+                        WHERE sch.part_id = nt.part_id
+                        ORDER BY sch.version DESC LIMIT 1),
+                       1000
+                     )
+                ELSE 0 END
+         ), 0)                                                       AS potential_annual_saving
+       FROM negotiation_target nt`
+    );
+    res.json(rows[0]);
+  } catch (err) {
+    const pg = err as { code?: string };
+    if (pg.code === '42P01' || pg.code === '42703') { res.json({ total: 0, open: 0, agreed: 0, stalled: 0, due_this_week: 0, potential_annual_saving: 0 }); return; }
+    console.error('negotiationSummary error:', err);
+    res.status(500).json({ error: 'Failed to retrieve negotiation summary' });
+  }
 }

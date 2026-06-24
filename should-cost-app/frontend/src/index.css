@@ -66,6 +66,78 @@
   --shadow-lg:   0 12px 44px rgba(0,0,0,.55);
 }
 
+/* ── Motion / Animation System ────────────────────────────── */
+:root {
+  --motion-fast:   120ms ease-out;
+  --motion-base:   200ms ease-out;
+  --motion-slow:   350ms cubic-bezier(0.16, 1, 0.3, 1);
+  --motion-spring: 500ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* ── Accessible Number Formatting ─────────────────────────── */
+.tabular-nums,
+td.num,
+.kpi-value,
+.currency-value {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+
+/* ── Status Badge Token Standardization ───────────────────── */
+:root {
+  --status-active:  #16a34a;
+  --status-pending: #d97706;
+  --status-blocked: #dc2626;
+  --status-neutral: #6b7280;
+  --status-closed:  #0891b2;
+}
+
+/* ── Improved Button Hover States ─────────────────────────── */
+.btn { transition: transform var(--motion-fast), box-shadow var(--motion-fast), background var(--motion-fast), color var(--motion-fast); }
+.btn:hover:not(:disabled) { transform: translateY(-1px); }
+.btn-primary:hover:not(:disabled) { box-shadow: 0 4px 14px rgba(29, 78, 216, 0.30); }
+.btn:active:not(:disabled) { transform: translateY(0); }
+
+/* ── Page Entrance Animation ──────────────────────────────── */
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.main-content > * { animation: fadeSlideUp var(--motion-slow) both; }
+
+/* ── Table Row Hover Enhancement ──────────────────────────── */
+tbody tr {
+  transition: background var(--motion-fast);
+}
+tbody tr:hover {
+  box-shadow: inset 3px 0 0 var(--accent);
+}
+
+/* ── KPI Card Hover ───────────────────────────────────────── */
+.kpi-card, .stat-card {
+  transition: transform var(--motion-fast), box-shadow var(--motion-fast);
+}
+.kpi-card:hover, .stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+/* ── Skip-to-content link (WCAG) ──────────────────────────── */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 6px;
+  background: var(--accent);
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 0 0 var(--radius) var(--radius);
+  font-weight: 600;
+  font-size: 14px;
+  z-index: 9999;
+  transition: top var(--motion-fast);
+}
+.skip-link:focus { top: 0; }
+
 /* ── Reset ─────────────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
