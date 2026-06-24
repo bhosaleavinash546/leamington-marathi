@@ -59,6 +59,24 @@ const VEHICLE_TYPES = [
   'Pickup Truck — ICE / MHEV',
 ];
 
+// Systems that restrict which propulsion families are valid.
+// 'ice'  = ICE + PHEV/MHEV vehicles allowed; BEV disabled
+// 'bev'  = BEV + PHEV/MHEV vehicles allowed; ICE disabled
+// absent = all vehicles allowed
+const SYSTEM_PROPULSION_RESTRICTION: Record<string, 'ice' | 'bev'> = {
+  'powertrain-ice': 'ice',
+  'powertrain-bev': 'bev',
+  'fuel-emission':  'ice',
+};
+
+function isVehicleDisabled(vehicleStr: string, restriction: 'ice' | 'bev' | null): boolean {
+  if (!restriction) return false;
+  const isBev = vehicleStr.includes('BEV');
+  if (restriction === 'ice') return isBev;           // disable BEV vehicles
+  if (restriction === 'bev') return !isBev && !vehicleStr.includes('PHEV'); // disable ICE-only
+  return false;
+}
+
 const BODY_STYLES: { value: BodyStyle; label: string }[] = [
   { value: 'hatchback', label: 'Hatchback (3/5-door)' },
   { value: 'sedan',     label: 'Saloon / Sedan' },
@@ -114,6 +132,7 @@ export default function AnalyzePage() {
   const [subassemblyId, setSubassemblyId] = useState('');
   const [partId, setPartId] = useState('');
   const [vehicleType, setVehicleType] = useState(VEHICLE_TYPES[0]);
+  const propulsionRestriction = SYSTEM_PROPULSION_RESTRICTION[systemId] ?? null;
   const [bodyStyle, setBodyStyle] = useState<BodyStyle>('suv');
   const [annualVolume, setAnnualVolume] = useState(80000);
   const [plantRegion, setPlantRegion] = useState<PlantRegion>('germany');
@@ -152,6 +171,15 @@ export default function AnalyzePage() {
     setStep(0);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // When system changes, auto-reset vehicle type if the current selection is now incompatible
+  useEffect(() => {
+    if (isVehicleDisabled(vehicleType, propulsionRestriction)) {
+      const firstAllowed = VEHICLE_TYPES.find(v => !isVehicleDisabled(v, propulsionRestriction));
+      if (firstAllowed) setVehicleType(firstAllowed);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [systemId]);
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     const file = acceptedFiles[0];
@@ -468,14 +496,31 @@ export default function AnalyzePage() {
 
                 {/* Vehicle Type */}
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-2">Vehicle Type & Drivetrain</label>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">
+                    Vehicle Type & Drivetrain
+                    {propulsionRestriction && (
+                      <span className="ml-2 text-xs font-normal text-amber-400/80">
+                        {propulsionRestriction === 'ice'
+                          ? '— BEV options unavailable for this system'
+                          : '— ICE options unavailable for this system'}
+                      </span>
+                    )}
+                  </label>
                   <div className="relative">
                     <select
                       value={vehicleType}
                       onChange={e => setVehicleType(e.target.value)}
                       className="w-full bg-navy-800 border border-white/15 rounded-xl px-4 py-3 text-white appearance-none focus:outline-none focus:border-gold-500/50"
                     >
-                      {VEHICLE_TYPES.map(v => <option key={v} value={v}>{v}</option>)}
+                      {VEHICLE_TYPES.map(v => {
+                        const disabled = isVehicleDisabled(v, propulsionRestriction);
+                        return (
+                          <option key={v} value={v} disabled={disabled}
+                            style={disabled ? { color: '#475569' } : undefined}>
+                            {disabled ? `${v}  [not applicable]` : v}
+                          </option>
+                        );
+                      })}
                     </select>
                     <ChevronDown size={16} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
                   </div>
