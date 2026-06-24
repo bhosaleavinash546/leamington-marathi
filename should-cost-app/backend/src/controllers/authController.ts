@@ -63,7 +63,11 @@ export async function signupRequest(req: Request, res: Response): Promise<void> 
   await saveOtp(email.toLowerCase(), otp, 'signup');
   await sendOtpEmail({ to: email, otp, purpose: 'signup', name: fullName });
 
-  res.json({ message: 'OTP sent to email. Verify to complete signup.' });
+  const devMode = !process.env.SMTP_HOST && process.env.NODE_ENV !== 'production';
+  res.json({
+    message: 'OTP sent to email. Verify to complete signup.',
+    ...(devMode ? { devOtp: otp, devNote: 'SMTP not configured — OTP shown for development only' } : {}),
+  });
 }
 
 // ── POST /api/auth/signup/verify ─────────────────────────────
@@ -106,13 +110,19 @@ export async function forgotPasswordRequest(req: Request, res: Response): Promis
   );
 
   // Always return 200 to prevent email enumeration
+  let devOtpHint: string | undefined;
   if ((result.rowCount ?? 0) > 0) {
     const otp = generateOtp();
     await saveOtp(email.toLowerCase(), otp, 'reset_password');
     await sendOtpEmail({ to: email, otp, purpose: 'reset_password', name: result.rows[0].full_name });
+    if (!process.env.SMTP_HOST && process.env.NODE_ENV !== 'production') devOtpHint = otp;
   }
 
-  res.json({ message: 'If that email is registered, an OTP has been sent.' });
+  const devMode = !process.env.SMTP_HOST && process.env.NODE_ENV !== 'production';
+  res.json({
+    message: 'If that email is registered, an OTP has been sent.',
+    ...(devMode && devOtpHint ? { devOtp: devOtpHint, devNote: 'SMTP not configured — OTP shown for development only' } : {}),
+  });
 }
 
 // ── POST /api/auth/forgot-password/verify ────────────────────
