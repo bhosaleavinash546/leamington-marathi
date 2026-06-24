@@ -11,7 +11,7 @@ import {
   COUNTRY_DISPLAY_ORDER,
   type PCBCostInput,
 } from '../data/pcb-country-rates.js';
-import { fetchLivePrices, type LivePricingProvider } from '../utils/pcb-live-pricing.js';
+import { fetchLivePrices, fetchLivePricesWithAECQ, type LivePricingProvider } from '../utils/pcb-live-pricing.js';
 import { parseBOMFile, type ParsedBOMLine } from '../utils/pcb-bom-parser.js';
 
 // ── Volume BOM price correction ────────────────────────────────────────────
@@ -406,6 +406,154 @@ function computeConformalCoatingCost(
   const coatingCost = areaCm2 * ratePerCm2;
   // Minimum batch setup £18, maximum per-board £280
   return Math.min(280, Math.max(18, Math.round(coatingCost * 100) / 100));
+}
+
+// ── Automotive Assembly Cost Model (IATF 16949) ───────────────────────────────
+interface AutomotiveAssemblyCost {
+  baseAssemblyGBP: number;
+  iatfPremiumGBP: number;
+  axiCostGBP: number;
+  serialisationGBP: number;
+  ipcClass3GBP: number;
+  burnInGBP: number;
+  totalAutomotiveAssemblyGBP: number;
+  standardAssemblyGBP: number;
+  premiumPctOverStandard: number;
+}
+function computeAutomotiveAssemblyCost(
+  assemblyData: Record<string, unknown>,
+  asilLevel: ASILLevel,
+  orderQty: number,
+  countryAssemblyPerBoard: number,
+): AutomotiveAssemblyCost {
+  const smtPlacements = Number(assemblyData.smtPlacements) || 0;
+  const bgaCount = Number(assemblyData.bgaCount) || 0;
+  const thJoints = Number(assemblyData.throughHoleJoints) || 0;
+  const manualJoints = Number(assemblyData.manualJoints) || 0;
+  const baseAssemblyGBP = countryAssemblyPerBoard > 0
+    ? countryAssemblyPerBoard
+    : smtPlacements * 0.018 + thJoints * 0.025 + manualJoints * 0.045;
+  const standardAssemblyGBP = baseAssemblyGBP;
+  const iatfPremiumGBP = standardAssemblyGBP * 0.20;
+  const axiCostGBP = bgaCount > 0 ? Math.min(15, 8 + bgaCount * 1.2) : 0;
+  const serialisationGBP = 0.80;
+  const aoiBase = Boolean(assemblyData.aoiRequired) ? 2.5 : 0;
+  const ipcClass3GBP = aoiBase * 0.15;
+  const boardsPerShift = Math.max(1, Math.min(200, orderQty));
+  const burnInShifts = asilLevel === 'ASIL-D' ? 6 : asilLevel === 'ASIL-C' ? 4 : asilLevel === 'ASIL-B' ? 2 : 0;
+  const burnInGBP = burnInShifts > 0 ? Math.round((180 * burnInShifts / boardsPerShift) * 100) / 100 : 0;
+  const totalAutomotiveAssemblyGBP = standardAssemblyGBP + iatfPremiumGBP + axiCostGBP + serialisationGBP + ipcClass3GBP + burnInGBP;
+  const premiumPctOverStandard = standardAssemblyGBP > 0 ? Math.round((totalAutomotiveAssemblyGBP / standardAssemblyGBP - 1) * 100) : 0;
+  const r = (n: number) => Math.round(n * 100) / 100;
+  return {
+    baseAssemblyGBP: r(baseAssemblyGBP), iatfPremiumGBP: r(iatfPremiumGBP),
+    axiCostGBP: r(axiCostGBP), serialisationGBP: r(serialisationGBP),
+    ipcClass3GBP: r(ipcClass3GBP), burnInGBP: r(burnInGBP),
+    totalAutomotiveAssemblyGBP: r(totalAutomotiveAssemblyGBP),
+    standardAssemblyGBP: r(standardAssemblyGBP), premiumPctOverStandard,
+  };
+}
+
+// ── Automotive PCB Fabrication Cost Adjustment (IATF 16949 + automotive laminate) ──
+interface AutomotiveFabAdjustment {
+  standardFabGBP: number;
+  iatfFabPremiumGBP: number;
+  automotiveLaminatePremiumGBP: number;
+  ipcClass3InspectionGBP: number;
+  couponTestingGBP: number;
+  totalAutomotiveFabGBP: number;
+  premiumPctOverStandard: number;
+}
+function computeAutomotiveFabAdjustment(
+  boardSpec: Record<string, unknown>,
+  fabCostMid: number,
+  domain: string,
+): AutomotiveFabAdjustment {
+  if (domain !== 'automotive_adas' || fabCostMid <= 0) {
+    return { standardFabGBP: fabCostMid, iatfFabPremiumGBP: 0, automotiveLaminatePremiumGBP: 0, ipcClass3InspectionGBP: 0, couponTestingGBP: 0, totalAutomotiveFabGBP: fabCostMid, premiumPctOverStandard: 0 };
+  }
+  const layers = Number(boardSpec.estimatedLayers) || 2;
+  const widthMm = Number(boardSpec.widthMm) || 100;
+  const heightMm = Number(boardSpec.heightMm) || 80;
+  const areaCm2 = (widthMm * heightMm) / 100;
+  const iatfFabPremiumGBP = fabCostMid * 0.18;
+  const laminatePct = layers >= 8 ? 0.50 : 0.35;
+  const automotiveLaminatePremiumGBP = fabCostMid * 0.40 * laminatePct;
+  const ipcClass3InspectionGBP = Math.min(45, Math.max(8, areaCm2 * 0.08));
+  const couponTestingGBP = Math.min(35, Math.max(5, layers * 2.5));
+  const totalAutomotiveFabGBP = fabCostMid + iatfFabPremiumGBP + automotiveLaminatePremiumGBP + ipcClass3InspectionGBP + couponTestingGBP;
+  const premiumPctOverStandard = Math.round((totalAutomotiveFabGBP / fabCostMid - 1) * 100);
+  const r = (n: number) => Math.round(n * 100) / 100;
+  return {
+    standardFabGBP: r(fabCostMid), iatfFabPremiumGBP: r(iatfFabPremiumGBP),
+    automotiveLaminatePremiumGBP: r(automotiveLaminatePremiumGBP),
+    ipcClass3InspectionGBP: r(ipcClass3InspectionGBP), couponTestingGBP: r(couponTestingGBP),
+    totalAutomotiveFabGBP: r(totalAutomotiveFabGBP), premiumPctOverStandard,
+  };
+}
+
+// ── BOM Completeness Estimator ────────────────────────────────────────────────
+interface BOMCompletenessResult {
+  identifiedLineCount: number;
+  identifiedICCount: number;
+  identifiedPassiveCount: number;
+  estimatedMissingPassiveCount: number;
+  estimatedMissingCostGBP: number;
+  missingEstimateBreakdown: { decouplingCaps: number; pullResistors: number; ferriteBeads: number; esdArrays: number };
+  completenessScore: number;
+}
+function estimateMissingPassives(bom: Array<Record<string, unknown>>, smtPlacements: number): BOMCompletenessResult {
+  const icTypes = new Set(['ic_bga', 'ic_tqfp', 'ic_qfp', 'ic_soic', 'ic_sot', 'power_module', 'ic_other']);
+  const passiveTypes = new Set(['passive_0402', 'passive_0603', 'passive_0805', 'passive_other']);
+  let icCount = 0; let passiveCount = 0; let identifiedTotal = 0;
+  for (const line of bom) {
+    const ct = String(line.componentType ?? '');
+    const qty = Number(line.qty ?? 1);
+    identifiedTotal += qty;
+    if (icTypes.has(ct)) icCount += qty;
+    if (passiveTypes.has(ct)) passiveCount += qty;
+  }
+  const expectedDecoupling = Math.round(icCount * 3.2);
+  const expectedPullResistors = Math.round(icCount * 0.8);
+  const expectedFerrites = Math.round(icCount * 0.4);
+  const expectedESD = Math.round(icCount * 0.3);
+  const totalExpectedPassives = expectedDecoupling + expectedPullResistors + expectedFerrites + expectedESD;
+  const missingPassives = Math.max(0, totalExpectedPassives - passiveCount);
+  const estimatedMissingCostGBP = Math.round(missingPassives * 0.012 * 100) / 100;
+  const completenessScore = smtPlacements > 0 ? Math.min(100, Math.round((identifiedTotal / smtPlacements) * 100)) : identifiedTotal > 0 ? 75 : 0;
+  const decouplingMissing = Math.max(0, expectedDecoupling - passiveCount);
+  const remaining = Math.max(0, missingPassives - decouplingMissing);
+  return {
+    identifiedLineCount: bom.length, identifiedICCount: icCount, identifiedPassiveCount: passiveCount,
+    estimatedMissingPassiveCount: missingPassives, estimatedMissingCostGBP,
+    missingEstimateBreakdown: { decouplingCaps: decouplingMissing, pullResistors: Math.round(remaining * 0.5), ferriteBeads: Math.round(remaining * 0.3), esdArrays: Math.round(remaining * 0.2) },
+    completenessScore,
+  };
+}
+
+// ── Program Pricing (volume-committed) vs Spot Correction ─────────────────────
+interface ProgramPricingResult {
+  spotBOMTotal: number;
+  programBOMTotal: number;
+  savingsGBP: number;
+  savingsPct: number;
+  annualProgramVolume: number;
+  pricingTier: 'distributor_spot' | 'blanket_order' | 'direct_contract' | 'tier1_contract';
+  multiplier: number;
+}
+function computeProgramPricing(bomTotal: number, orderQty: number, domain: string): ProgramPricingResult {
+  const annualProgramVolume = orderQty * 4;
+  let multiplier: number; let pricingTier: ProgramPricingResult['pricingTier'];
+  if (domain !== 'automotive_adas') { multiplier = 1.0; pricingTier = 'distributor_spot'; }
+  else if (annualProgramVolume >= 500_000) { multiplier = 0.50; pricingTier = 'tier1_contract'; }
+  else if (annualProgramVolume >= 200_000) { multiplier = 0.60; pricingTier = 'direct_contract'; }
+  else if (annualProgramVolume >= 50_000) { multiplier = 0.72; pricingTier = 'blanket_order'; }
+  else if (annualProgramVolume >= 10_000) { multiplier = 0.85; pricingTier = 'blanket_order'; }
+  else { multiplier = 1.0; pricingTier = 'distributor_spot'; }
+  const programBOMTotal = Math.round(bomTotal * multiplier * 100) / 100;
+  const savingsGBP = Math.round((bomTotal - programBOMTotal) * 100) / 100;
+  const savingsPct = bomTotal > 0 ? Math.round((1 - multiplier) * 100) : 0;
+  return { spotBOMTotal: Math.round(bomTotal * 100) / 100, programBOMTotal, savingsGBP, savingsPct, annualProgramVolume, pricingTier, multiplier };
 }
 
 const router = Router();
@@ -995,6 +1143,10 @@ ${userPromptText}`;
   let automotiveGradeEnforcedCount = 0;
   let singleSourceWarnings: SingleSourceWarning[] = [];
   let conformalCoatingCost = 0;
+  let automotiveAssemblyCost: AutomotiveAssemblyCost | null = null;
+  let automotiveFabAdjustment: AutomotiveFabAdjustment | null = null;
+  let bomCompleteness: BOMCompletenessResult | null = null;
+  let programPricing: ProgramPricingResult | null = null;
   const volumeMultiplier = getVolumeMultiplier(orderQty);
 
   try {
@@ -1024,6 +1176,11 @@ ${userPromptText}`;
       automotiveNRE = computeAutomotiveNRE(asilClassification.asilLevel, bomTotalForNRE);
       // Conformal coating
       conformalCoatingCost = computeConformalCoatingCost(boardSpec, domain, asilClassification.asilLevel);
+      // Automotive assembly cost model
+      const countryAssemblyPerBoard = selectedCountryBreakdown?.assemblyPerBoard ?? 0;
+      automotiveAssemblyCost = computeAutomotiveAssemblyCost(assemblyData, asilClassification.asilLevel, orderQty, countryAssemblyPerBoard);
+      // Automotive fab adjustment
+      automotiveFabAdjustment = computeAutomotiveFabAdjustment(boardSpec, fabCostMid, domain);
     }
 
     a.bom = enrichedBOM;
@@ -1033,6 +1190,11 @@ ${userPromptText}`;
     if (a.costEstimates && typeof a.costEstimates === 'object') {
       (a.costEstimates as Record<string, unknown>).totalBOMCostGBP = Math.round(correctedBOMTotal * 100) / 100;
     }
+
+    // BOM completeness (all domains)
+    bomCompleteness = estimateMissingPassives(enrichedBOM, Number(assemblyData.smtPlacements) || 0);
+    // Program pricing (automotive only, or show discount potential)
+    programPricing = computeProgramPricing(correctedBOMTotal, orderQty, domain);
 
     // Compute confidence band from enriched BOM + fab cost
     confidenceBand = computeConfidenceBand(

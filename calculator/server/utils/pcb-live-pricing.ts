@@ -328,3 +328,49 @@ export async function fetchLivePrices(
     default:         return [];
   }
 }
+
+// ─── AEC-Q automotive variant search ─────────────────────────────────────────
+/** Build automotive grade variant MPN list: adds common AEC-Q suffixes like -Q1, /Q, etc. */
+export function buildAutomotiveSearchVariants(partNumbers: string[]): string[] {
+  const suffixes = ['-Q1', 'Q', 'TR', '/Q', '-T1', 'CT'];
+  const variants: Set<string> = new Set();
+  for (const pn of partNumbers) {
+    variants.add(pn);
+    const upper = pn.toUpperCase();
+    for (const s of suffixes) {
+      if (!upper.endsWith(s.toUpperCase())) variants.add(pn + s);
+    }
+  }
+  return [...variants].slice(0, 20);
+}
+
+/** Fetch live prices, for automotive domains also tries AEC-Q variant MPNs.
+ *  Prefers automotiveGrade=true results when both standard and AEC-Q are returned. */
+export async function fetchLivePricesWithAECQ(
+  partNumbers: string[],
+  provider: LivePricingProvider,
+  apiKey: string,
+  qty: number,
+  preferAutomotive: boolean,
+): Promise<LivePriceResult[]> {
+  if (!preferAutomotive) return fetchLivePrices(partNumbers, provider, apiKey, qty);
+  const variants = buildAutomotiveSearchVariants(partNumbers);
+  const results = await fetchLivePrices(variants, provider, apiKey, qty);
+  // For each original MPN, if we have both an automotive and non-automotive hit prefer automotive
+  const bestPerMPN = new Map<string, LivePriceResult>();
+  for (const r of results) {
+    const key = r.mpn.toUpperCase().replace(/[-\/](Q1|Q|T1|TR|CT)$/i, '');
+    const existing = bestPerMPN.get(key);
+    if (!existing || (r.automotiveGrade && !existing.automotiveGrade)) {
+      bestPerMPN.set(key, r);
+    }
+  }
+  // Map back to original MPNs
+  const out: LivePriceResult[] = [];
+  for (const orig of partNumbers) {
+    const key = orig.toUpperCase().replace(/[-\/](Q1|Q|T1|TR|CT)$/i, '');
+    const hit = bestPerMPN.get(key);
+    if (hit) out.push({ ...hit, mpn: orig });
+  }
+  return out;
+}
