@@ -3863,6 +3863,25 @@ function sanitize(s, maxLen = 500) {
   return s.replace(/[<>'"]/g, '').trim().slice(0, maxLen);
 }
 
+// Recover ideas from a response truncated at max_tokens.
+// Walks the JSON character-by-character to find the last COMPLETE object in the array.
+function repairTruncatedJsonArray(raw) {
+  const start = raw.indexOf('[');
+  if (start === -1) throw new Error('No JSON array found in response.');
+  let depth = 0, inString = false, escape = false, lastEnd = -1;
+  for (let i = start + 1; i < raw.length; i++) {
+    const c = raw[i];
+    if (escape) { escape = false; continue; }
+    if (c === '\\' && inString) { escape = true; continue; }
+    if (c === '"') { inString = !inString; continue; }
+    if (inString) continue;
+    if (c === '{') depth++;
+    if (c === '}') { depth--; if (depth === 0) lastEnd = i; }
+  }
+  if (lastEnd === -1) throw new Error('No complete ideas found in truncated response — try with web search disabled to reduce response size.');
+  return raw.slice(start, lastEnd + 1) + ']';
+}
+
 const ANALYZE_TIMEOUT_MS = 120_000;
 
 function autoSaveProject(userId, projectId, systemName, subassemblyName, partName, config, ideas, sources) {
@@ -3936,7 +3955,7 @@ app.post('/api/analyze', requireAuth, async (req, res) => {
   try {
     for (let i = 0; i < 8; i++) {
       if (Date.now() > deadline) throw new Error('Analysis timed out after 2 minutes. Please try again with web search disabled.');
-      const params = { model: 'claude-opus-4-8', max_tokens: 20000, system: CHIEF_ENGINEER_PROMPT, messages };
+      const params = { model: 'claude-opus-4-8', max_tokens: 32000, system: CHIEF_ENGINEER_PROMPT, messages };
       if (enableSearch) { params.tools = [webSearchTool]; params.tool_choice = { type: 'auto' }; }
 
       const response = await client.messages.create(params);
@@ -3961,8 +3980,18 @@ app.post('/api/analyze', requireAuth, async (req, res) => {
         if (raw.startsWith('```')) raw = raw.replace(/^```[a-z]*\n?/, '').replace(/\n?```$/, '').trim();
         const jsonStart = raw.indexOf('[');
         const jsonEnd = raw.lastIndexOf(']');
-        if (jsonStart !== -1 && jsonEnd > jsonStart) raw = raw.slice(jsonStart, jsonEnd + 1);
-        const ideas = JSON.parse(raw);
+        let ideasJson;
+        if (jsonStart !== -1 && jsonEnd > jsonStart) {
+          ideasJson = raw.slice(jsonStart, jsonEnd + 1);
+        } else if (jsonStart !== -1 && response.stop_reason === 'max_tokens') {
+          // Response was cut off — recover all complete idea objects
+          console.warn('[Analysis] Response truncated at max_tokens — attempting JSON repair');
+          ideasJson = repairTruncatedJsonArray(raw);
+          emit({ type: 'progress', message: 'Response was very long — recovered all complete ideas.' });
+        } else {
+          throw new Error('Invalid JSON response from AI. Try with web search disabled to reduce response size.');
+        }
+        const ideas = JSON.parse(ideasJson);
 
         // Auto-save project to DB
         const projectId = crypto.randomUUID();
