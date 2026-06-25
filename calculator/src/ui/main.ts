@@ -65,6 +65,7 @@ import {
   initCVAnimations, onViewShown, onDashboardRendered, onTableRendered,
   onResultsReady, onChatToggled, onChatMessageAdded, onToastShown, dismissToast,
 } from './animations.js';
+import { initMotionFX, motionInViewReveal, motionRevealRows } from './motion-fx.js';
 
 // ─── State ────────────────────────────────────────────────────────────────────
 
@@ -739,8 +740,11 @@ function renderDashboard(): void {
     if (bannerText) bannerText.textContent = `Filtered by: ${activeFilters.map(([k, v]) => `${k} = ${v}`).join(' · ')} — showing ${records.length} of ${all.length} records`;
   }
 
-  // Trigger GSAP entrance animations now that all DOM is ready
-  requestAnimationFrame(onDashboardRendered);
+  // Trigger GSAP + Framer Motion entrance animations now that all DOM is ready
+  requestAnimationFrame(() => {
+    onDashboardRendered();
+    motionInViewReveal('#dashboard-view, .dash-main, .dash-content');
+  });
 }
 
 const COMM_COLOURS = [
@@ -1103,8 +1107,11 @@ function renderRecentTable(records: CostingRecord[]): void {
     });
   });
 
-  // Animate rows after paint
-  requestAnimationFrame(onTableRendered);
+  // Animate rows after paint (GSAP + motion)
+  requestAnimationFrame(() => {
+    onTableRendered();
+    motionRevealRows('#dash-recent-tbody');
+  });
 }
 
 function updateCompareBar(): void {
@@ -10074,10 +10081,14 @@ function compute(): void {
 // ─── Results area ─────────────────────────────────────────────────────────────
 
 function showResultsArea(): void {
-  el('results-tabs').style.display = '';
+  const resultsEl = el('results-tabs');
+  resultsEl.style.display = '';
   switchResultTab('breakdown');
   // Animate results panel after Chart.js renders (needs one frame)
-  setTimeout(onResultsReady, 80);
+  setTimeout(() => {
+    onResultsReady();
+    motionRevealRows('#results-tabs .breakdown-row, #results-tabs tr');
+  }, 80);
 }
 
 // ─── Upload / Parts Library Tab ───────────────────────────────────────────────
@@ -14493,6 +14504,9 @@ async function init(): Promise<void> {
 
   // Initialise GSAP animation layer
   initCVAnimations();
+
+  // Initialise Framer Motion (motion) hover/press/parallax layer
+  initMotionFX();
 
   // Initial view: show home on load
   showHome();
