@@ -179,7 +179,7 @@ function Field({ label, icon: Icon, type = 'text', value, onChange, placeholder,
 // ─── Left branding panel ──────────────────────────────────────────────────────
 function BrandPanel() {
   return (
-    <div className="hidden lg:flex flex-col justify-between p-10 bg-hero-gradient relative overflow-hidden">
+    <div className="hidden lg:flex lg:w-[60%] flex-col justify-between p-10 bg-hero-gradient relative overflow-hidden">
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-1/4 -left-20 w-80 h-80 bg-gold-500/5 rounded-full blur-3xl" />
         <div className="absolute bottom-1/4 right-0 w-60 h-60 bg-blue-500/5 rounded-full blur-3xl" />
@@ -336,7 +336,7 @@ export default function AuthPage() {
       <BrandPanel />
 
       {/* Right — forms */}
-      <div className="flex-1 flex flex-col justify-center items-center px-6 py-12 min-h-screen">
+      <div className="flex-1 lg:w-[40%] lg:flex-none flex flex-col justify-center items-center px-6 py-12 min-h-screen">
         {/* Mobile logo */}
         <div className="lg:hidden flex items-center gap-2.5 mb-8">
           <img src="/brainspark-logo.svg" alt="BrainSpark" className="w-9 h-9" />
