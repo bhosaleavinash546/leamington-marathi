@@ -59,6 +59,7 @@ import { Chart, ArcElement, BarElement, LineElement, PointElement, CategoryScale
 Chart.register(ArcElement, BarElement, LineElement, PointElement, CategoryScale, LinearScale, Tooltip, Legend, DoughnutController, BarController, LineController);
 
 import { showNews, refreshNews } from './panels/news.js';
+import { initSWPanel } from './panels/sw-should-cost-ui.js';
 import { showToast as _showToastImpl, escHtml as _escHtmlImpl } from './toast.js';
 import { apiBase } from '../api-base.js';
 import {
@@ -163,6 +164,7 @@ const COMMODITY_LABELS: Record<string, string> = {
   pcb_fab: 'PCB Fab', pcba: 'PCBA', cast_and_machine: 'Cast+Machine',
   rubber: 'Rubber', composites: 'Composites', wiring_harness: 'Harness',
   assembly: 'Assembly', ai_agent: 'AI Agent', cad_analysis: 'CAD Analysis',
+  automotive_software: 'Auto SW Cost',
 };
 
 // Unique hue per commodity — used for coloured badges throughout the dashboard
@@ -188,6 +190,7 @@ const COMMODITY_BADGE_COLOURS: Record<string, { bg: string; color: string; borde
   assembly:            { bg: 'rgba(244,63,94,0.13)',   color: '#f43f5e', border: 'rgba(244,63,94,0.28)' },
   ai_agent:            { bg: 'rgba(168,85,247,0.13)',  color: '#a855f7', border: 'rgba(168,85,247,0.28)' },
   cad_analysis:        { bg: 'rgba(34,211,238,0.13)',  color: '#0891b2', border: 'rgba(34,211,238,0.28)' },
+  automotive_software: { bg: 'rgba(37,99,235,0.13)',   color: '#2563eb', border: 'rgba(37,99,235,0.28)' },
 };
 
 function commodityBadgeHtml(commodity: string): string {
@@ -225,8 +228,9 @@ const CPICKER_META: Record<string, { icon: string; name: string }> = {
   wiring_harness:     { icon: '🔋', name: 'Wiring Harness' },
   cast_and_machine:   { icon: '🏭', name: 'Cast + Machine' },
   assembly:           { icon: '🔧', name: 'Assemblies' },
-  ai_agent:           { icon: '✦',  name: 'AI Agent' },
-  cad_analysis:       { icon: '📐', name: 'CAD-to-Cost' },
+  ai_agent:            { icon: '✦',  name: 'AI Agent' },
+  cad_analysis:        { icon: '📐', name: 'CAD-to-Cost' },
+  automotive_software: { icon: '🚗', name: 'Auto SW Cost' },
 };
 
 function getCostingHistory(): CostingRecord[] {
@@ -9307,6 +9311,12 @@ function switchCommodity(type: CommodityType): void {
       area.innerHTML = renderCADAnalysisForm();
       wireCADEvents();
       break;
+
+    case 'automotive_software':
+      el('universal-costs').style.display = 'none';
+      el('calc-btn').style.display = 'none';
+      initSWPanel(area);
+      break;
   }
 
   // Inject inline demo cards for applicable commodities (after form renders)
@@ -9975,6 +9985,8 @@ function collectInput(): UniversalStackInput {
     case 'rubber':               return collectRubberInput();
     case 'composites':           return collectCompositesInput();
     case 'wiring_harness':       return collectWiringHarnessInput();
+    case 'automotive_software':
+      throw new Error('Use the Calculate button inside the Automotive Software Should-Cost panel.');
     case 'cad_analysis':
       throw new Error('Apply CAD analysis results to a commodity form first using the "Apply to cost engine" button, then calculate.');
     case 'ai_agent' as CommodityType:
@@ -14446,6 +14458,7 @@ async function init(): Promise<void> {
   document.getElementById('tile-cad')?.addEventListener('click', () => showCosting('cad_analysis'));
   document.getElementById('tile-pcb-image')?.addEventListener('click', () => showCosting('pcb_fab'));
   document.getElementById('tile-ai-agent')?.addEventListener('click', () => showCosting('ai_agent'));
+  document.getElementById('tile-sw-should-cost')?.addEventListener('click', () => showCosting('automotive_software' as CommodityType));
   // legacy ids from Phase 1 (kept for safety)
   document.getElementById('tile-new-costing')?.addEventListener('click', () => showCosting('machining'));
   document.getElementById('tile-assembly')?.addEventListener('click', () => showCosting('assembly'));

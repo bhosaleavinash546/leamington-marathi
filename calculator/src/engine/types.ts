@@ -21,7 +21,8 @@ export type CommodityType =
   | 'composites'
   | 'wiring_harness'
   | 'cad_analysis'
-  | 'assembly';
+  | 'assembly'
+  | 'automotive_software';
 export type ToolingMode = 'amortized' | 'one_time_nre';
 
 export interface MaterialRate {
