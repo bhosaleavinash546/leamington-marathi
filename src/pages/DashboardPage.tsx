@@ -110,7 +110,7 @@ function PipelineKpiSection({ kpi }: { kpi: PipelineKpi }) {
 
       {/* Charts row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-        <div className="bg-navy-900 border border-white/10 rounded-2xl p-5">
+        <div className="bg-navy-900 border border-white/10 rounded-2xl p-5 shadow-card">
           <h3 className="text-white font-semibold text-sm mb-4">Gate-wise Savings (£k)</h3>
           <ResponsiveContainer width="100%" height={160}>
             <BarChart data={gateData} margin={{ top: 0, right: 8, bottom: 0, left: 0 }}>
@@ -129,7 +129,7 @@ function PipelineKpiSection({ kpi }: { kpi: PipelineKpi }) {
           </ResponsiveContainer>
         </div>
 
-        <div className="bg-navy-900 border border-white/10 rounded-2xl p-5">
+        <div className="bg-navy-900 border border-white/10 rounded-2xl p-5 shadow-card">
           <h3 className="text-white font-semibold text-sm mb-4">Vehicle-wise Annual Saving</h3>
           {vehicleData.length > 0 ? (
             <div className="flex items-center gap-4">
@@ -160,7 +160,7 @@ function PipelineKpiSection({ kpi }: { kpi: PipelineKpi }) {
 
       {/* Bottom row */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-        <div className="bg-navy-900 border border-white/10 rounded-2xl p-5 lg:col-span-1">
+        <div className="bg-navy-900 border border-white/10 rounded-2xl p-5 lg:col-span-1 shadow-card">
           <h3 className="text-white font-semibold text-sm mb-4">Commodity-wise (£k)</h3>
           {commData.length > 0 ? (
             <ResponsiveContainer width="100%" height={180}>
@@ -177,7 +177,7 @@ function PipelineKpiSection({ kpi }: { kpi: PipelineKpi }) {
           ) : <p className="text-slate-600 text-sm">No commodity data yet.</p>}
         </div>
 
-        <div className="bg-navy-900 border border-white/10 rounded-2xl p-5 lg:col-span-1">
+        <div className="bg-navy-900 border border-white/10 rounded-2xl p-5 lg:col-span-1 shadow-card">
           <h3 className="text-white font-semibold text-sm mb-4">Savings Timeline (£k)</h3>
           {yearData.length > 0 ? (
             <ResponsiveContainer width="100%" height={180}>
@@ -195,7 +195,7 @@ function PipelineKpiSection({ kpi }: { kpi: PipelineKpi }) {
           ) : <p className="text-slate-600 text-sm">No timeline data yet.</p>}
         </div>
 
-        <div className="bg-navy-900 border border-white/10 rounded-2xl p-5 lg:col-span-1">
+        <div className="bg-navy-900 border border-white/10 rounded-2xl p-5 lg:col-span-1 shadow-card">
           <h3 className="text-white font-semibold text-sm mb-4">Top Ideas by Saving</h3>
           <div className="space-y-2">
             {kpi.topIdeas.slice(0, 6).map((idea, i) => (
@@ -459,7 +459,7 @@ export default function DashboardPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 + i * 0.07, duration: 0.38 }}
               whileHover={{ y: -3, transition: { duration: 0.15 } }}
-              className="rounded-xl bg-navy-900 border border-white/8 p-5 flex items-start gap-4"
+              className="rounded-xl bg-navy-900 border border-white/8 p-5 flex items-start gap-4 shadow-card"
             >
               <div className={`w-10 h-10 rounded-lg ${bg} flex items-center justify-center flex-shrink-0`}>
                 <Icon size={18} className={color} />
@@ -478,7 +478,7 @@ export default function DashboardPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.15 }}
-            className="rounded-2xl bg-navy-900 border border-white/8 p-6"
+            className="rounded-2xl bg-navy-900 border border-white/8 p-6 shadow-card"
           >
             <div className="flex items-center gap-2 mb-5">
               <TrendingDown size={16} className="text-emerald-400" />
@@ -550,7 +550,7 @@ export default function DashboardPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.18 }}
-          className="rounded-2xl bg-navy-900 border border-white/8 p-6"
+          className="rounded-2xl bg-navy-900 border border-white/8 p-6 shadow-card"
         >
           <div className="flex items-center gap-2 mb-5">
             <ClipboardList size={16} className="text-gold-400" />
@@ -623,7 +623,7 @@ export default function DashboardPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="lg:col-span-2 rounded-2xl bg-navy-900 border border-white/8 p-6"
+            className="lg:col-span-2 rounded-2xl bg-navy-900 border border-white/8 p-6 shadow-card"
           >
             <div className="flex items-center justify-between mb-5">
               <div className="flex items-center gap-2">
@@ -764,7 +764,7 @@ export default function DashboardPage() {
             className="space-y-6"
           >
             {/* Pro tips */}
-            <div className="rounded-2xl bg-navy-900 border border-white/8 p-6">
+            <div className="rounded-2xl bg-navy-900 border border-white/8 p-6 shadow-card">
               <div className="flex items-center gap-2 mb-4">
                 <Lightbulb size={16} className="text-gold-400" />
                 <h3 className="text-white font-semibold text-sm">Pro Tips</h3>
@@ -780,7 +780,7 @@ export default function DashboardPage() {
             </div>
 
             {/* What's new */}
-            <div className="rounded-2xl bg-navy-900 border border-white/8 p-6">
+            <div className="rounded-2xl bg-navy-900 border border-white/8 p-6 shadow-card">
               <div className="flex items-center gap-2 mb-4">
                 <BookOpen size={16} className="text-emerald-400" />
                 <h3 className="text-white font-semibold text-sm">What's New in v3.0.0</h3>
@@ -823,7 +823,7 @@ export default function DashboardPage() {
                 <Link
                   to="/analyze"
                   state={{ preselect: { system, subassembly: sub } }}
-                  className="flex items-center gap-4 p-4 rounded-xl bg-navy-900 border border-white/8 hover:border-gold-500/30 transition-colors group"
+                  className="flex items-center gap-4 p-4 rounded-xl bg-navy-900 border border-white/8 hover:border-gold-500/30 transition-colors group shadow-card"
                 >
                   <span className="text-2xl" aria-hidden="true">{icon}</span>
                   <div className="flex-1 min-w-0">

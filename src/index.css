@@ -2,6 +2,82 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   DESIGN TOKENS — Dark theme (default)
+   Navy/gold hold space-separated RGB channels so Tailwind's opacity modifier
+   syntax (bg-navy-900/50) keeps working via rgb(var(--navy-900) / 0.5).
+   ═══════════════════════════════════════════════════════════════════════════ */
+:root {
+  /* Navy: cool-dark with a blue-violet undertone for personality */
+  --navy-50:   240 245 255;
+  --navy-100:  224 231 255;
+  --navy-200:  199 210 254;
+  --navy-300:  165 180 252;
+  --navy-400:  129 140 248;
+  --navy-500:   99 102 241;
+  --navy-600:   79  86 112;
+  --navy-700:   36  47  69;  /* inputs, hover tint, dividers          */
+  --navy-800:   26  34  53;  /* elevated surfaces: modals, dropdowns  */
+  --navy-900:   17  24  39;  /* card / panel surface                  */
+  --navy-950:   10  15  30;  /* base page background                  */
+
+  /* Gold: champagne gold — cooler and more refined than amber */
+  --gold-300:  245 217 138;
+  --gold-400:  232 197  71;  /* primary brand accent                  */
+  --gold-500:  212 168  58;  /* CTA buttons, interactive elements     */
+  --gold-600:  184 140  34;  /* hover / pressed state                 */
+
+  /* Gradients */
+  --gradient-hero: linear-gradient(135deg, #0a0f1e 0%, #1a2235 50%, #0c1629 100%);
+
+  /* Surface shadows: dark uses glow-ring + deep drop */
+  --shadow-card:    0 0 0 1px rgba(255,255,255,0.06), 0 4px 16px rgba(0,0,0,0.32);
+  --shadow-card-lg: 0 0 0 1px rgba(255,255,255,0.07), 0 8px 32px rgba(0,0,0,0.42);
+  --shadow-modal:   0 0 0 1px rgba(255,255,255,0.08), 0 24px 64px rgba(0,0,0,0.62);
+  --shadow-popover: 0 0 0 1px rgba(255,255,255,0.06), 0 8px 24px rgba(0,0,0,0.46);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   DESIGN TOKENS — Light theme
+   Navy channels remap to a warm off-white palette. Gold deepens for WCAG
+   contrast on light backgrounds. The hero gradient stays dark so the auth
+   brand panel always reads as a premium dark panel regardless of theme.
+   ═══════════════════════════════════════════════════════════════════════════ */
+[data-theme="light"] {
+  color-scheme: light;
+
+  /* Navy → warm light palette */
+  --navy-50:    6   4   0;
+  --navy-100:  14   9   3;
+  --navy-200:  22  16   8;
+  --navy-300:  37  29  18;  /* body copy / primary text (warm near-black) */
+  --navy-400:  78  66  50;
+  --navy-500:  99  91  77;
+  --navy-600: 156 148 138;  /* placeholder / disabled text               */
+  --navy-700: 230 226 220;  /* dividers, subtle hover tint               */
+  --navy-800: 242 240 237;  /* input background, subtle panels           */
+  --navy-900: 255 255 255;  /* card / panel surface (pure white)         */
+  --navy-950: 247 246 243;  /* page background (warm off-white)          */
+
+  /* Gold → deeper champagne for contrast on light backgrounds */
+  --gold-300: 252 220 100;
+  --gold-400: 184 137  14;  /* readable on white — ~4.6:1 contrast ratio */
+  --gold-500: 154 114   9;  /* CTA button backgrounds on light           */
+  --gold-600: 125  91   6;  /* hover state                               */
+
+  /* Hero gradient stays dark — auth brand panel keeps its premium dark look */
+  --gradient-hero: linear-gradient(135deg, #0a0f1e 0%, #1a2235 60%, #0c1629 100%);
+
+  /* Surface shadows: light uses classic drop shadows, no glow ring */
+  --shadow-card:    0 1px 3px rgba(0,0,0,0.07), 0 2px 8px rgba(0,0,0,0.05);
+  --shadow-card-lg: 0 2px 8px rgba(0,0,0,0.08), 0 8px 24px rgba(0,0,0,0.08);
+  --shadow-modal:   0 4px 24px rgba(0,0,0,0.13), 0 16px 56px rgba(0,0,0,0.14);
+  --shadow-popover: 0 2px 8px rgba(0,0,0,0.09), 0 8px 20px rgba(0,0,0,0.10);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   BASE LAYER
+   ═══════════════════════════════════════════════════════════════════════════ */
 @layer base {
   * { box-sizing: border-box; }
 
@@ -12,28 +88,102 @@
   }
 
   body {
-    background-color: #07111e;
-    color: #f8fafc;
+    background-color: rgb(var(--navy-950));
+    color: #f1f5f9;
     margin: 0;
-    transition: background-color 0.25s ease, color 0.25s ease;
+    transition: background-color 0.3s ease, color 0.3s ease;
   }
 
-  ::-webkit-scrollbar { width: 6px; height: 6px; }
-  ::-webkit-scrollbar-track { background: #0d1f33; }
-  ::-webkit-scrollbar-thumb { background: #1e3a5f; border-radius: 3px; }
-  ::-webkit-scrollbar-thumb:hover { background: #f59e0b; }
+  [data-theme="light"] body {
+    color: rgb(var(--navy-300));
+  }
+
+  /* Scrollbar — uses CSS variables so it updates with the theme */
+  ::-webkit-scrollbar              { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track        { background: rgb(var(--navy-900)); }
+  ::-webkit-scrollbar-thumb        { background: rgb(var(--navy-700)); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover  { background: rgb(var(--gold-500)); }
 }
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   LIGHT THEME — targeted overrides for Tailwind's fixed-value utilities
+   Only classes Tailwind generates as literal values need manual overrides.
+   Navy/gold/gradient/shadow classes update automatically via CSS variables.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Primary text */
+[data-theme="light"] .text-white              { color: rgb(var(--navy-300)) !important; }
+[data-theme="light"] .hover\:text-white:hover { color: rgb(var(--navy-300)) !important; }
+
+/* Secondary text: slate scale mapped dark→readable on warm-white
+   (Fixes the previous inverted mapping where slate-600 became #b0bec5) */
+[data-theme="light"] .text-slate-100 { color: #0f172a !important; }
+[data-theme="light"] .text-slate-200 { color: #1e293b !important; }
+[data-theme="light"] .text-slate-300 { color: #334155 !important; }
+[data-theme="light"] .text-slate-400 { color: #475569 !important; }
+[data-theme="light"] .text-slate-500 { color: #64748b !important; }
+[data-theme="light"] .text-slate-600 { color: #6b7280 !important; }
+[data-theme="light"] .text-slate-700 { color: #9ca3af !important; }
+
+/* White opacity backgrounds → dark-ink at matching opacity */
+[data-theme="light"] .bg-white\/2 { background-color: rgb(var(--navy-300) / 0.02) !important; }
+[data-theme="light"] .bg-white\/3 { background-color: rgb(var(--navy-300) / 0.03) !important; }
+[data-theme="light"] .bg-white\/5 { background-color: rgb(var(--navy-300) / 0.04) !important; }
+[data-theme="light"] .bg-white\/8 { background-color: rgb(var(--navy-300) / 0.06) !important; }
+
+[data-theme="light"] .hover\:bg-white\/3:hover { background-color: rgb(var(--navy-300) / 0.03) !important; }
+[data-theme="light"] .hover\:bg-white\/5:hover { background-color: rgb(var(--navy-300) / 0.04) !important; }
+[data-theme="light"] .hover\:bg-white\/6:hover { background-color: rgb(var(--navy-300) / 0.05) !important; }
+
+/* White opacity borders → dark-ink borders */
+[data-theme="light"] .border-white\/5  { border-color: rgb(var(--navy-300) / 0.06) !important; }
+[data-theme="light"] .border-white\/8  { border-color: rgb(var(--navy-300) / 0.09) !important; }
+[data-theme="light"] .border-white\/10 { border-color: rgb(var(--navy-300) / 0.11) !important; }
+[data-theme="light"] .border-white\/15 { border-color: rgb(var(--navy-300) / 0.15) !important; }
+[data-theme="light"] .border-white\/20 { border-color: rgb(var(--navy-300) / 0.20) !important; }
+[data-theme="light"] .border-white\/25 { border-color: rgb(var(--navy-300) / 0.25) !important; }
+[data-theme="light"] .border-white\/40 { border-color: rgb(var(--navy-300) / 0.40) !important; }
+
+[data-theme="light"] .hover\:border-white\/20:hover { border-color: rgb(var(--navy-300) / 0.22) !important; }
+[data-theme="light"] .hover\:border-white\/25:hover { border-color: rgb(var(--navy-300) / 0.28) !important; }
+[data-theme="light"] .hover\:border-white\/40:hover { border-color: rgb(var(--navy-300) / 0.45) !important; }
+
+/* Divide utility */
+[data-theme="light"] .divide-white\/10 > * + * { border-color: rgb(var(--navy-300) / 0.10) !important; }
+
+/* Form inputs */
+[data-theme="light"] select,
+[data-theme="light"] input:not([type="range"]):not([type="checkbox"]),
+[data-theme="light"] textarea {
+  background-color: rgb(var(--navy-900)) !important;
+  color: rgb(var(--navy-300)) !important;
+  border-color: rgb(var(--navy-300) / 0.15) !important;
+}
+[data-theme="light"] input::placeholder,
+[data-theme="light"] textarea::placeholder { color: rgb(var(--navy-600)) !important; }
+[data-theme="light"] select option {
+  background-color: rgb(var(--navy-900));
+  color: rgb(var(--navy-300));
+}
+
+/* Code blocks */
+[data-theme="light"] code {
+  background-color: rgb(var(--navy-800)) !important;
+  color: rgb(var(--navy-300)) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   UTILITIES
+   ═══════════════════════════════════════════════════════════════════════════ */
 @layer utilities {
   .text-balance { text-wrap: balance; }
 
-  /* Safe area insets for iOS notch / Android status bar */
-  .pt-safe  { padding-top: env(safe-area-inset-top); }
+  .pt-safe  { padding-top:    env(safe-area-inset-top); }
   .pb-safe  { padding-bottom: env(safe-area-inset-bottom); }
-  .pl-safe  { padding-left: env(safe-area-inset-left); }
-  .pr-safe  { padding-right: env(safe-area-inset-right); }
-  .mt-safe  { margin-top: env(safe-area-inset-top); }
-  .mb-safe  { margin-bottom: env(safe-area-inset-bottom); }
+  .pl-safe  { padding-left:   env(safe-area-inset-left); }
+  .pr-safe  { padding-right:  env(safe-area-inset-right); }
+  .mt-safe  { margin-top:     env(safe-area-inset-top); }
+  .mb-safe  { margin-bottom:  env(safe-area-inset-bottom); }
 
   .line-clamp-3 {
     overflow: hidden;
@@ -42,125 +192,8 @@
     -webkit-line-clamp: 3;
   }
 
-  .bg-white\/2  { background-color: rgba(255, 255, 255, 0.02); }
-  .bg-white\/3  { background-color: rgba(255, 255, 255, 0.03); }
-  .bg-white\/8  { background-color: rgba(255, 255, 255, 0.08); }
+  /* Dark-mode defaults for explicit white-opacity helpers */
+  .bg-white\/2 { background-color: rgba(255,255,255,0.02); }
+  .bg-white\/3 { background-color: rgba(255,255,255,0.03); }
+  .bg-white\/8 { background-color: rgba(255,255,255,0.08); }
 }
-
-/* =========================================================
-   LIGHT THEME OVERRIDES
-   Applied when <html data-theme="light">
-   ========================================================= */
-
-[data-theme="light"] {
-  color-scheme: light;
-}
-
-[data-theme="light"] body {
-  background-color: #f1f5f9;
-  color: #0f172a;
-}
-
-/* Scrollbar */
-[data-theme="light"] ::-webkit-scrollbar-track { background: #e2e8f0; }
-[data-theme="light"] ::-webkit-scrollbar-thumb { background: #94a3b8; }
-[data-theme="light"] ::-webkit-scrollbar-thumb:hover { background: #f59e0b; }
-
-/* === Navy backgrounds → slate backgrounds === */
-[data-theme="light"] .bg-navy-950  { background-color: #f1f5f9 !important; }
-[data-theme="light"] .bg-navy-900  { background-color: #ffffff !important; }
-[data-theme="light"] .bg-navy-800  { background-color: #f1f5f9 !important; }
-[data-theme="light"] .bg-navy-700  { background-color: #e2e8f0 !important; }
-
-/* Opacity variants */
-[data-theme="light"] .bg-navy-950\/95 { background-color: rgba(241,245,249,0.97) !important; }
-[data-theme="light"] .bg-navy-950\/90 { background-color: rgba(241,245,249,0.93) !important; }
-
-/* === Gradient from/to stops === */
-[data-theme="light"] .from-navy-950 {
-  --tw-gradient-from: #f1f5f9 !important;
-  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to, rgb(241 245 249 / 0)) !important;
-}
-[data-theme="light"] .from-navy-900 {
-  --tw-gradient-from: #ffffff !important;
-  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to, rgb(255 255 255 / 0)) !important;
-}
-[data-theme="light"] .from-navy-800 {
-  --tw-gradient-from: #f1f5f9 !important;
-  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to, rgb(241 245 249 / 0)) !important;
-}
-[data-theme="light"] .to-navy-950 { --tw-gradient-to: #f1f5f9 !important; }
-[data-theme="light"] .to-navy-900 { --tw-gradient-to: #ffffff !important; }
-[data-theme="light"] .to-navy-800 { --tw-gradient-to: #f1f5f9 !important; }
-[data-theme="light"] .via-navy-900 {
-  --tw-gradient-stops: var(--tw-gradient-from), #ffffff, var(--tw-gradient-to, rgb(255 255 255 / 0)) !important;
-}
-
-/* Hero gradient */
-[data-theme="light"] .bg-hero-gradient {
-  background: linear-gradient(135deg, #e8eef6 0%, #f0f5fb 50%, #e4ecf5 100%) !important;
-}
-
-/* === Text colours → dark equivalents === */
-[data-theme="light"] .text-white   { color: #0f172a !important; }
-[data-theme="light"] .text-slate-100 { color: #1e293b !important; }
-[data-theme="light"] .text-slate-200 { color: #334155 !important; }
-[data-theme="light"] .text-slate-300 { color: #475569 !important; }
-[data-theme="light"] .text-slate-400 { color: #64748b !important; }
-[data-theme="light"] .text-slate-500 { color: #94a3b8 !important; }
-[data-theme="light"] .text-slate-600 { color: #b0bec5 !important; }
-[data-theme="light"] .text-slate-700 { color: #cfd8dc !important; }
-
-/* === Border colours === */
-[data-theme="light"] .border-white\/5  { border-color: rgba(15,23,42,0.06) !important; }
-[data-theme="light"] .border-white\/8  { border-color: rgba(15,23,42,0.09) !important; }
-[data-theme="light"] .border-white\/10 { border-color: rgba(15,23,42,0.11) !important; }
-[data-theme="light"] .border-white\/15 { border-color: rgba(15,23,42,0.15) !important; }
-[data-theme="light"] .border-white\/20 { border-color: rgba(15,23,42,0.20) !important; }
-[data-theme="light"] .border-white\/25 { border-color: rgba(15,23,42,0.25) !important; }
-[data-theme="light"] .border-white\/40 { border-color: rgba(15,23,42,0.40) !important; }
-
-/* === Background white opacity classes === */
-[data-theme="light"] .bg-white\/2  { background-color: rgba(15,23,42,0.02) !important; }
-[data-theme="light"] .bg-white\/3  { background-color: rgba(15,23,42,0.02) !important; }
-[data-theme="light"] .bg-white\/5  { background-color: rgba(15,23,42,0.04) !important; }
-[data-theme="light"] .bg-white\/8  { background-color: rgba(15,23,42,0.06) !important; }
-
-/* === Hover variants === */
-[data-theme="light"] .hover\:bg-white\/3:hover  { background-color: rgba(15,23,42,0.03) !important; }
-[data-theme="light"] .hover\:bg-white\/5:hover  { background-color: rgba(15,23,42,0.04) !important; }
-[data-theme="light"] .hover\:border-white\/20:hover { border-color: rgba(15,23,42,0.22) !important; }
-[data-theme="light"] .hover\:border-white\/25:hover { border-color: rgba(15,23,42,0.28) !important; }
-[data-theme="light"] .hover\:border-white\/40:hover { border-color: rgba(15,23,42,0.45) !important; }
-[data-theme="light"] .hover\:text-white:hover { color: #0f172a !important; }
-
-/* === Form inputs === */
-[data-theme="light"] select,
-[data-theme="light"] input:not([type="range"]):not([type="checkbox"]),
-[data-theme="light"] textarea {
-  background-color: #ffffff !important;
-  color: #0f172a !important;
-  border-color: rgba(15,23,42,0.15) !important;
-}
-[data-theme="light"] input::placeholder,
-[data-theme="light"] textarea::placeholder { color: #94a3b8 !important; }
-[data-theme="light"] select option { background-color: #ffffff; color: #0f172a; }
-
-/* Code / monospace blocks */
-[data-theme="light"] code {
-  background-color: #e2e8f0 !important;
-  color: #0f172a !important;
-}
-
-/* Backdrop blur header in light mode */
-[data-theme="light"] .backdrop-blur-md {
-  backdrop-filter: blur(12px) !important;
-}
-
-/* Auth page brand panel — keep dark intentionally for brand consistency */
-[data-theme="light"] .auth-brand-panel {
-  background: linear-gradient(135deg, #0d1f33 0%, #1e3a5f 60%, #0d2744 100%);
-}
-
-/* Dividers */
-[data-theme="light"] .divide-white\/10 > * + * { border-color: rgba(15,23,42,0.10) !important; }

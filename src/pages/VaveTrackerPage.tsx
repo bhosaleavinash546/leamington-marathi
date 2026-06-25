@@ -308,7 +308,7 @@ export default function VaveTrackerPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.08, duration: 0.38, ease: 'easeOut' }}
               whileHover={{ y: -2, transition: { duration: 0.15 } }}
-              className={`bg-navy-900 border ${border} rounded-2xl p-4`}
+              className={`bg-navy-900 border ${border} rounded-2xl p-4 shadow-card`}
             >
               <div className="flex items-center gap-2 mb-1">
                 <Icon size={14} className={iconClass} />
@@ -381,7 +381,7 @@ export default function VaveTrackerPage() {
                   layout
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className={`bg-navy-900 border rounded-2xl p-4 cursor-pointer transition-all ${
+                  className={`bg-navy-900 border rounded-2xl p-4 cursor-pointer transition-all shadow-card ${
                     isSelected ? 'border-gold-500/40 shadow-lg shadow-gold-500/5' : 'border-white/10 hover:border-white/20'
                   }`}
                   onClick={() => setSelected(isSelected ? null : action)}

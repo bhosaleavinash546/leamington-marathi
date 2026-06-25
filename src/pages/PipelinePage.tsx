@@ -121,7 +121,7 @@ function timeAgo(isoDate: string): string {
 
 function SkeletonCard() {
   return (
-    <div className="bg-navy-900 border border-white/10 rounded-2xl p-4 animate-pulse">
+    <div className="bg-navy-900 border border-white/10 rounded-2xl p-4 animate-pulse shadow-card">
       <div className="flex items-start gap-3">
         <div className="w-20 h-5 bg-white/8 rounded-full" />
         <div className="flex-1 space-y-2">
@@ -176,7 +176,7 @@ function KpiCard({
 }) {
   return (
     <div
-      className={`bg-navy-900 border rounded-2xl p-4 ${accent ? `border-${accent}/25` : 'border-white/10'}`}
+      className={`bg-navy-900 border rounded-2xl p-4 shadow-card ${accent ? `border-${accent}/25` : 'border-white/10'}`}
     >
       <div className="text-slate-500 text-xs mb-1">{label}</div>
       <div
@@ -677,7 +677,7 @@ export default function PipelinePage() {
                   layout
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className={`bg-navy-900 border rounded-2xl overflow-hidden transition-all ${
+                  className={`bg-navy-900 border rounded-2xl overflow-hidden transition-all shadow-card ${
                     isExpanded
                       ? 'border-gold-500/30 shadow-lg shadow-gold-500/5'
                       : 'border-white/10 hover:border-white/20'

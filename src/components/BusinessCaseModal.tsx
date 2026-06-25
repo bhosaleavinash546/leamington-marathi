@@ -373,7 +373,7 @@ export default function BusinessCaseModal({
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.96, y: 12 }}
         transition={{ duration: 0.2 }}
-        className="w-full max-w-2xl max-h-[90vh] overflow-y-auto bg-navy-900 border border-white/10 rounded-2xl shadow-2xl flex flex-col"
+        className="w-full max-w-2xl max-h-[90vh] overflow-y-auto bg-navy-900 border border-white/10 rounded-2xl shadow-modal flex flex-col"
         style={{ scrollbarWidth: 'none' }}
       >
         {/* Header */}
