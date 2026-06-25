@@ -1207,83 +1207,357 @@
 
     <!-- Automotive SW Should-Cost -->
     <div class="help-section" id="help-sw-should-cost">
-      <div class="help-card" style="border-top:3px solid #2563eb">
-        <div class="help-card-title" style="color:#1d4ed8">🚗 What is the Automotive Software Should-Cost Calculator?</div>
-        <p>A first-principles, engineering-grade cost model for all software systems in a premium luxury EV programme (2024–2026). Built to the standard expected by a Senior Chief Automotive Software Should-Cost Engineer — covering <strong>43 modules</strong> across <strong>7 functional categories</strong>, with <strong>9 cost dimensions</strong>, ISO 26262 ASIL multipliers, global regional rates, and real OEM benchmark comparisons.</p>
-        <p style="margin-top:8px">Access it via <strong>⊕ New Costing → 🚗 Auto SW Cost</strong> tile.</p>
-      </div>
-      <div class="help-card">
-        <div class="help-card-title">📂 The 7 Software Categories</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:0.8rem">
-          <div style="padding:8px;background:#f8fafc;border-radius:6px;border-left:3px solid #22c55e"><strong>A · EV Powertrain &amp; Battery</strong> — BMS Core, Cell Balancing, SOC/SOH/SOE, Thermal Mgmt, Fast Charge, EDU Control, Inverter, Motor Control, Regen Braking (9 modules)</div>
-          <div style="padding:8px;background:#f8fafc;border-radius:6px;border-left:3px solid #3b82f6"><strong>B · ADAS L2/L2+</strong> — Camera Perception, Radar, Ultrasonic, Sensor Fusion, Path Planning, ACC/LKA/AEB, Driver Monitor, Highway Assist (8 modules)</div>
-          <div style="padding:8px;background:#f8fafc;border-radius:6px;border-left:3px solid #8b5cf6"><strong>C · Infotainment &amp; UX</strong> — IVI OS, Navigation, Voice Assistant, TCU Software, Connectivity Stack, HMI Framework (6 modules)</div>
-          <div style="padding:8px;background:#f8fafc;border-radius:6px;border-left:3px solid #f59e0b"><strong>D · Vehicle Domain Controllers</strong> — Body Control, Chassis Control, Gateway ECU, Zonal Architecture, VMM (5 modules)</div>
-          <div style="padding:8px;background:#f8fafc;border-radius:6px;border-left:3px solid #06b6d4"><strong>E · Middleware &amp; Platform</strong> — AUTOSAR Classic, AUTOSAR Adaptive, RTOS, Diagnostics, Comm Stacks, Time Sync/NM (6 modules)</div>
-          <div style="padding:8px;background:#f8fafc;border-radius:6px;border-left:3px solid #ef4444"><strong>F · Cybersecurity (ISO 21434)</strong> — Secure Boot, Encryption, IDS, Secure OTA, Key Management (5 modules)</div>
-          <div style="padding:8px;background:#f8fafc;border-radius:6px;border-left:3px solid #a78bfa"><strong>G · OTA &amp; Cloud Backend</strong> — OTA Manager, Cloud Backend, Data Pipeline, Fleet Management (4 modules)</div>
+
+      <!-- INTRO BANNER -->
+      <div class="help-card" style="border-top:3px solid #2563eb;background:linear-gradient(135deg,#eff6ff 0%,#f8fafc 100%)">
+        <div class="help-card-title" style="color:#1d4ed8;font-size:1.05rem">🚗 Automotive Software Should-Cost — Complete Beginner's Guide</div>
+        <p style="margin-bottom:8px">This tool helps you estimate <strong>how much it costs to develop all the software inside a modern electric vehicle</strong>. Think of it as a detailed price calculator — but instead of shopping items, you are pricing out engineering teams, safety certifications, tools, and licences for 43 separate software systems.</p>
+        <p style="margin-bottom:8px">You do <em>not</em> need to be a software engineer to use this. Just follow the steps below one at a time.</p>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
+          <span style="background:#2563eb;color:#fff;border-radius:20px;padding:3px 12px;font-size:0.75rem;font-weight:600">43 Software Modules</span>
+          <span style="background:#7c3aed;color:#fff;border-radius:20px;padding:3px 12px;font-size:0.75rem;font-weight:600">7 Categories</span>
+          <span style="background:#059669;color:#fff;border-radius:20px;padding:3px 12px;font-size:0.75rem;font-weight:600">9 Cost Dimensions</span>
+          <span style="background:#dc2626;color:#fff;border-radius:20px;padding:3px 12px;font-size:0.75rem;font-weight:600">ISO 26262 ASIL Safety</span>
+          <span style="background:#d97706;color:#fff;border-radius:20px;padding:3px 12px;font-size:0.75rem;font-weight:600">7 OEM Benchmarks</span>
         </div>
       </div>
+
+      <!-- BACKGROUND: WHY DOES SW COST SO MUCH? -->
       <div class="help-card">
-        <div class="help-card-title">🔢 Cost Multipliers &amp; Factors</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-          <div>
-            <p><strong>ASIL Development Multipliers (ISO 26262)</strong></p>
-            <ul>
-              <li>QM → 1.00× (no safety requirement)</li>
-              <li>ASIL-A → 1.35×</li>
-              <li>ASIL-B → 1.80×</li>
-              <li>ASIL-C → 2.30×</li>
-              <li>ASIL-D → 3.20× (most stringent)</li>
-            </ul>
-            <p style="margin-top:8px"><strong>Complexity Multipliers</strong></p>
-            <ul>
-              <li>Low → 0.60×</li>
-              <li>Medium → 1.00× (baseline)</li>
-              <li>High → 1.70×</li>
-              <li>Very High → 2.80×</li>
-            </ul>
+        <div class="help-card-title"><div class="help-icon">💡</div>Background: Why Does Car Software Cost So Much?</div>
+        <p>A modern electric vehicle contains <strong>100–150 million lines of code</strong> — more than a commercial aircraft. Unlike a physical part that you can stamp out in a factory, software costs come almost entirely from <strong>human engineering time</strong>. Here is where the money goes:</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px;font-size:0.82rem">
+          <div style="padding:10px;background:#f0fdf4;border-radius:8px;border-left:3px solid #22c55e">
+            <strong>👨‍💻 Development (biggest chunk)</strong><br>
+            Software engineers writing, reviewing, and integrating code. A senior embedded engineer costs £80–120k/year. A full EV software team can be 500–2,000 people over 5–7 years.
           </div>
-          <div>
-            <p><strong>Reuse Factors</strong></p>
-            <ul>
-              <li>Fresh (greenfield) → 1.00×</li>
-              <li>Light reuse → 0.82×</li>
-              <li>Medium reuse → 0.60×</li>
-              <li>Heavy reuse → 0.35×</li>
-              <li>Platform reuse → 0.14×</li>
-            </ul>
-            <p style="margin-top:8px"><strong>Regional Labour Rates (vs UK base £28k/PM)</strong></p>
-            <ul>
-              <li>UK 1.00× · EU 0.95× · USA SV 1.85×</li>
-              <li>China 0.35× · India 0.20× · Mexico 0.28×</li>
-              <li>Eastern Europe 0.45× · Japan 0.90×</li>
-            </ul>
+          <div style="padding:10px;background:#eff6ff;border-radius:8px;border-left:3px solid #3b82f6">
+            <strong>🧪 Testing &amp; Validation</strong><br>
+            Safety-critical software must be tested exhaustively. Hardware-in-the-loop (HIL) rigs, test automation, and formal verification can cost as much as development itself.
+          </div>
+          <div style="padding:10px;background:#fdf4ff;border-radius:8px;border-left:3px solid #a855f7">
+            <strong>🛠 Tools &amp; Licences</strong><br>
+            Development tools (MATLAB/Simulink, Vector CANalyzer, LDRA) cost £50k–£200k per year per team. Third-party IP licences (maps, voice AI, RTOS royalties) add further cost.
+          </div>
+          <div style="padding:10px;background:#fff7ed;border-radius:8px;border-left:3px solid #f59e0b">
+            <strong>🔒 Safety Certification (ASIL)</strong><br>
+            ISO 26262 mandates rigorous processes for safety-critical software. Achieving ASIL-D (highest safety) requires 3× more documentation, reviews, and independent audits than non-safety software.
           </div>
         </div>
+        <p style="margin-top:10px;padding:8px;background:#fefce8;border-radius:6px;border-left:3px solid #ca8a04;font-size:0.82rem"><strong>Real-world scale:</strong> BMW spent ~£620M developing software for the iX. Tesla spent ~£850M on HW4. This tool lets you build your own estimate from first principles and compare it to those benchmarks.</p>
       </div>
-      <div class="help-card">
-        <div class="help-card-title">⚡ Quick-Set Presets</div>
-        <ul>
-          <li><strong>🚀 Aggressive</strong> — ASIL-A everywhere, High reuse, China labour rates. Minimum achievable cost.</li>
-          <li><strong>📊 Industry Baseline</strong> — Module defaults, Medium reuse, UK rates. Typical Tier 1 programme.</li>
-          <li><strong>👑 Premium OEM</strong> — High complexity, Fresh development, USA SV rates. Maximum-investment programme.</li>
-          <li><strong>🌏 Offshored</strong> — India labour rates with default ASIL and complexity. Offshore-first strategy.</li>
-        </ul>
+
+      <!-- STEP 1: OPEN THE TOOL -->
+      <div class="help-card" style="border-left:4px solid #2563eb">
+        <div class="help-card-title"><div class="help-icon" style="background:#2563eb">1</div>How to Open the Auto SW Cost Tool</div>
+        <ol style="margin-top:6px">
+          <li>Click the <strong>⊕ New Costing</strong> button in the top navigation bar.</li>
+          <li>The <strong>Start New Should Costing</strong> screen appears, showing tiles for all available commodity types.</li>
+          <li>Scroll down to the <strong>Software</strong> section.</li>
+          <li>Click the <strong>💻 Auto SW Cost</strong> tile.</li>
+          <li>The Automotive Software Should-Cost panel opens on the right side of the screen.</li>
+        </ol>
+        <p style="margin-top:8px;padding:8px;background:#eff6ff;border-radius:6px;font-size:0.82rem"><strong>Tip:</strong> You can also click <strong>🚗 Auto SW Cost</strong> directly from the Home dashboard if you see that shortcut tile there.</p>
       </div>
-      <div class="help-card">
-        <div class="help-card-title">🏆 OEM Benchmark Comparisons</div>
-        <p>Results are benchmarked against 7 real premium EV programmes based on analyst reports and teardown studies:</p>
-        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:8px;font-size:0.78rem">
-          <div style="padding:7px;background:#f8fafc;border-radius:6px"><strong>BMW iX</strong><br>£620M total · £4,800/veh</div>
-          <div style="padding:7px;background:#f8fafc;border-radius:6px"><strong>Porsche Taycan</strong><br>£480M total · £5,200/veh</div>
-          <div style="padding:7px;background:#f8fafc;border-radius:6px"><strong>Mercedes EQS</strong><br>£710M total · £5,500/veh</div>
-          <div style="padding:7px;background:#f8fafc;border-radius:6px"><strong>Range Rover L460</strong><br>£390M total · £3,800/veh</div>
-          <div style="padding:7px;background:#f8fafc;border-radius:6px"><strong>Tesla Model S HW4</strong><br>£850M total · £3,200/veh</div>
-          <div style="padding:7px;background:#f8fafc;border-radius:6px"><strong>Audi Q8 e-tron</strong><br>£520M total · £4,600/veh</div>
-          <div style="padding:7px;background:#f8fafc;border-radius:6px"><strong>Lucid Air</strong><br>£380M total · £7,800/veh</div>
+
+      <!-- STEP 2: PROGRAMME PARAMETERS -->
+      <div class="help-card" style="border-left:4px solid #7c3aed">
+        <div class="help-card-title"><div class="help-icon" style="background:#7c3aed">2</div>Step 2 — Fill In Programme Parameters</div>
+        <p>The first section is called <strong>Programme Parameters</strong>. These are the top-level settings that describe the overall vehicle programme. They affect every module's cost.</p>
+        <div style="margin-top:10px;display:flex;flex-direction:column;gap:8px;font-size:0.82rem">
+          <div style="padding:10px;background:#f8fafc;border-radius:8px">
+            <strong>Programme Name</strong> — Give your project a name (e.g. "Project Alpine EV"). This is just a label for your reference and appears on exports.
+          </div>
+          <div style="padding:10px;background:#f8fafc;border-radius:8px">
+            <strong>Programme Life (years)</strong> — How many years will this software be developed and maintained? Typical EV programmes last 5–8 years from first concept to end-of-production. <em>Why it matters:</em> tool licences, cloud costs, and maintenance are all charged per year, so a longer programme means higher totals.
+          </div>
+          <div style="padding:10px;background:#f8fafc;border-radius:8px">
+            <strong>Annual Production Volume</strong> — How many vehicles per year will this software go into? (e.g. 50,000 vehicles/year). <em>Why it matters:</em> per-vehicle costs like royalties (paying a licence fee every time a car is sold) are divided across this number. Higher volume = lower cost per vehicle.
+          </div>
+          <div style="padding:10px;background:#f8fafc;border-radius:8px">
+            <strong>Global Labour Region</strong> — Where are your engineers located? This sets the base salary rate for the entire programme. Options include UK, EU, USA Silicon Valley, China, India, Eastern Europe, Japan, and Mexico. <em>Why it matters:</em> an engineer in Silicon Valley costs ~9× more than an engineer in India for the same work.
+          </div>
+          <div style="padding:10px;background:#f8fafc;border-radius:8px">
+            <strong>Global Overhead % and Margin %</strong> — Overhead covers office space, HR, IT infrastructure, and management. Margin is the profit the supplier adds on top. Typical values: Overhead 25–35%, Margin 8–15%. Leave these at defaults if unsure.
+          </div>
         </div>
       </div>
+
+      <!-- STEP 3: PRESETS -->
+      <div class="help-card" style="border-left:4px solid #059669">
+        <div class="help-card-title"><div class="help-icon" style="background:#059669">3</div>Step 3 — Use a Preset (Quickest Way to Start)</div>
+        <p>If you are new to this tool, the easiest way to begin is to click one of the <strong>Quick-Set Presets</strong>. A preset automatically fills in all 43 modules with sensible values, so you can see results immediately and then adjust individual modules afterwards.</p>
+        <div style="display:flex;flex-direction:column;gap:8px;margin-top:10px;font-size:0.82rem">
+          <div style="padding:10px;background:#fef2f2;border-radius:8px;border-left:3px solid #ef4444">
+            <strong>🚀 Aggressive</strong> — Sets the lowest possible costs: minimal safety requirements (ASIL-A), maximum reuse of existing code, and cheap offshore labour (China rates). Use this to see the <em>floor</em> — the absolute minimum spend if everything goes perfectly.
+          </div>
+          <div style="padding:10px;background:#f0fdf4;border-radius:8px;border-left:3px solid #22c55e">
+            <strong>📊 Industry Baseline</strong> — Sets typical real-world values used by a Tier-1 supplier. Module-default ASIL levels, medium code reuse, UK labour rates. <strong>Start here if unsure</strong> — this is the most realistic starting point.
+          </div>
+          <div style="padding:10px;background:#fdf4ff;border-radius:8px;border-left:3px solid #a855f7">
+            <strong>👑 Premium OEM</strong> — Sets the highest costs: maximum complexity, all-new (greenfield) development, Silicon Valley labour rates. Use this to see the <em>ceiling</em> — what a top-tier programme like Tesla or BMW actually spends.
+          </div>
+          <div style="padding:10px;background:#eff6ff;border-radius:8px;border-left:3px solid #3b82f6">
+            <strong>🌏 Offshored</strong> — Default ASIL and complexity but with India labour rates. Represents an offshore-first development strategy common in cost-reduction programmes.
+          </div>
+        </div>
+        <p style="margin-top:8px;padding:8px;background:#fefce8;border-radius:6px;border-left:3px solid #ca8a04;font-size:0.82rem"><strong>Recommended first-time flow:</strong> Click <em>📊 Industry Baseline</em> → scroll down → click <strong>Calculate</strong> → review results → come back and tweak individual modules.</p>
+      </div>
+
+      <!-- STEP 4: MODULE TABLE -->
+      <div class="help-card" style="border-left:4px solid #f59e0b">
+        <div class="help-card-title"><div class="help-icon" style="background:#f59e0b">4</div>Step 4 — Configure Individual Modules (The Module Table)</div>
+        <p>Below the presets, you will see a table of all <strong>43 software modules</strong> grouped into 7 categories. Each row is one software system in the vehicle. You can adjust three settings per module:</p>
+
+        <div style="margin-top:10px;display:flex;flex-direction:column;gap:10px;font-size:0.82rem">
+
+          <div style="padding:12px;background:#f8fafc;border-radius:8px">
+            <strong>🔴 ASIL Level — "How safe does this software need to be?"</strong>
+            <p style="margin-top:4px">ASIL stands for Automotive Safety Integrity Level. It comes from the global standard ISO 26262 for road vehicle safety. The higher the ASIL, the more rigorous (and expensive) the development process must be.</p>
+            <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin-top:8px;text-align:center;font-size:0.75rem">
+              <div style="padding:6px;background:#e2e8f0;border-radius:6px"><strong>QM</strong><br>No safety req.<br>1.00×</div>
+              <div style="padding:6px;background:#fef9c3;border-radius:6px"><strong>ASIL-A</strong><br>Low hazard<br>1.35×</div>
+              <div style="padding:6px;background:#fed7aa;border-radius:6px"><strong>ASIL-B</strong><br>Medium hazard<br>1.80×</div>
+              <div style="padding:6px;background:#fecaca;border-radius:6px"><strong>ASIL-C</strong><br>High hazard<br>2.30×</div>
+              <div style="padding:6px;background:#dc2626;color:#fff;border-radius:6px"><strong>ASIL-D</strong><br>Max hazard<br>3.20×</div>
+            </div>
+            <p style="margin-top:8px"><strong>Examples:</strong> The infotainment screen (IVI) is QM — if it crashes, nobody gets hurt. The AEB braking system is ASIL-D — a failure could kill someone, so it costs 3.2× more to develop. The tool pre-fills each module with its typical real-world ASIL level. <em>Only change these if you have a specific engineering reason to.</em></p>
+            <p style="margin-top:6px;color:#dc2626"><strong>⚠ Warning badges:</strong> If you assign a lower ASIL than the module's engineering default (e.g. setting ASIL-A on a braking system that should be ASIL-D), the tool shows an orange warning badge. This is not blocked — you can still calculate — but it flags an unsafe assumption.</p>
+          </div>
+
+          <div style="padding:12px;background:#f8fafc;border-radius:8px">
+            <strong>🟡 Complexity — "How hard is this software to build?"</strong>
+            <p style="margin-top:4px">Complexity reflects how algorithmically difficult, novel, or large the software is. It multiplies the base development cost for that module.</p>
+            <ul style="margin-top:6px">
+              <li><strong>Low (0.60×)</strong> — Simple, well-understood software. Example: a basic gateway ECU with fixed routing rules.</li>
+              <li><strong>Medium (1.00×)</strong> — Standard complexity. Most infotainment, body control, and diagnostics modules.</li>
+              <li><strong>High (1.70×)</strong> — Complex algorithms or large-scale integration. Example: ADAS sensor fusion combining camera + radar + lidar.</li>
+              <li><strong>Very High (2.80×)</strong> — Frontier engineering. Example: real-time AI perception for autonomous driving.</li>
+            </ul>
+          </div>
+
+          <div style="padding:12px;background:#f8fafc;border-radius:8px">
+            <strong>🟢 Reuse — "Are you building from scratch or copying from a previous car?"</strong>
+            <p style="margin-top:4px">Reuse is the biggest single cost lever in automotive software. If your company already has working software from a previous vehicle, you do not need to rewrite it — you just adapt it. This dramatically reduces development cost.</p>
+            <ul style="margin-top:6px">
+              <li><strong>Fresh / Greenfield (1.00×)</strong> — Written from scratch. No prior code to build on. Maximum cost.</li>
+              <li><strong>Light reuse (0.82×)</strong> — A previous version exists but needs significant rework (e.g. porting to a new microprocessor).</li>
+              <li><strong>Medium reuse (0.60×)</strong> — Core algorithms reused, new platform integration required. Common on facelift programmes.</li>
+              <li><strong>Heavy reuse (0.35×)</strong> — Mostly copy-paste with minor changes. Very low development effort.</li>
+              <li><strong>Platform reuse (0.14×)</strong> — Shared across multiple vehicle lines with almost no changes. Example: AUTOSAR stack shared across 10 models.</li>
+            </ul>
+          </div>
+
+        </div>
+
+        <p style="margin-top:10px;padding:8px;background:#eff6ff;border-radius:6px;font-size:0.82rem"><strong>Which modules should I change?</strong> Focus on the modules that are different in your programme. If your company is reusing its BMS from a previous EV, set BMS Core to "Heavy reuse". If you are building a brand-new ADAS system, keep Camera Perception at "Fresh". Leave everything else at the preset defaults.</p>
+      </div>
+
+      <!-- STEP 5: THE 7 CATEGORIES -->
+      <div class="help-card" style="border-left:4px solid #06b6d4">
+        <div class="help-card-title"><div class="help-icon" style="background:#06b6d4">5</div>Understanding the 7 Software Categories</div>
+        <p>The 43 modules are grouped into 7 functional categories. Here is what each one means in plain English:</p>
+        <div style="display:flex;flex-direction:column;gap:6px;margin-top:10px;font-size:0.82rem">
+          <div style="padding:10px;background:#f0fdf4;border-radius:8px;border-left:3px solid #22c55e">
+            <strong>A · EV Powertrain &amp; Battery (9 modules)</strong><br>
+            All the software that manages the battery pack, electric motors, and energy flow. Includes the Battery Management System (BMS) which monitors each cell's voltage and temperature, charging control, regenerative braking, and inverter control. This is usually the <em>most safety-critical</em> category because battery failures can cause fires.
+          </div>
+          <div style="padding:10px;background:#eff6ff;border-radius:8px;border-left:3px solid #3b82f6">
+            <strong>B · ADAS L2/L2+ (8 modules)</strong><br>
+            Advanced Driver Assistance Systems. Software that uses cameras, radar, and ultrasonic sensors to help the driver — lane keeping, automatic emergency braking (AEB), adaptive cruise control, and highway assist. This is usually the <em>most expensive</em> category due to AI complexity and ASIL-D requirements.
+          </div>
+          <div style="padding:10px;background:#fdf4ff;border-radius:8px;border-left:3px solid #8b5cf6">
+            <strong>C · Infotainment &amp; UX (6 modules)</strong><br>
+            The touchscreen, navigation, voice assistant (like Hey BMW or Hey Mercedes), Bluetooth, and the visual interface the driver sees. Usually QM or ASIL-A — not safety critical, but very expensive because it needs to be polished and user-friendly.
+          </div>
+          <div style="padding:10px;background:#fff7ed;border-radius:8px;border-left:3px solid #f59e0b">
+            <strong>D · Vehicle Domain Controllers (5 modules)</strong><br>
+            The "brains" that coordinate different systems. The Body Control Module (BCM) manages lights, windows, wipers. The Gateway ECU routes messages between different parts of the car. Modern "Zonal Architecture" replaces many small ECUs with a few powerful computers.
+          </div>
+          <div style="padding:10px;background:#f0fdfa;border-radius:8px;border-left:3px solid #06b6d4">
+            <strong>E · Middleware &amp; Platform (6 modules)</strong><br>
+            The "operating system layer" underneath everything else. AUTOSAR is an industry-standard software framework that ensures all suppliers can connect their code together. Without AUTOSAR, every OEM would need to write bespoke interfaces for every ECU — massively expensive. This category is often heavily reused across programmes.
+          </div>
+          <div style="padding:10px;background:#fef2f2;border-radius:8px;border-left:3px solid #ef4444">
+            <strong>F · Cybersecurity — ISO 21434 (5 modules)</strong><br>
+            Software that protects the vehicle from hacking. Secure boot ensures only authorised software can run. Encryption protects data. The Intrusion Detection System (IDS) monitors for attacks in real time. This category has grown massively since connected cars became hackable via 4G/5G.
+          </div>
+          <div style="padding:10px;background:#faf5ff;border-radius:8px;border-left:3px solid #a78bfa">
+            <strong>G · OTA &amp; Cloud Backend (4 modules)</strong><br>
+            Over-the-Air (OTA) update software allows the manufacturer to push new features and bug fixes to the car remotely — just like your phone updates apps. The Cloud Backend manages this at scale across a million+ vehicles. Also includes the Data Pipeline that collects anonymised driving data to improve AI models.
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 6: CALCULATE -->
+      <div class="help-card" style="border-left:4px solid #059669">
+        <div class="help-card-title"><div class="help-icon" style="background:#059669">6</div>Step 6 — Click Calculate and Read the Results</div>
+        <p>Once you have set your programme parameters and adjusted any modules, scroll down and click the <strong>Calculate Programme Cost</strong> button. Results appear immediately below in several sections:</p>
+
+        <div style="display:flex;flex-direction:column;gap:8px;margin-top:10px;font-size:0.82rem">
+          <div style="padding:10px;background:#f0fdf4;border-radius:8px">
+            <strong>📊 Summary Cards (top)</strong><br>
+            Four headline numbers: <em>Total NRE</em> (the full programme investment to develop the software), <em>Per-Vehicle SW Cost</em> (what this adds to the price of each car), <em>Annual Maintenance</em> (ongoing yearly cost after launch), and <em>Team Size</em> (estimated number of engineers needed).
+          </div>
+          <div style="padding:10px;background:#eff6ff;border-radius:8px">
+            <strong>🎲 Monte Carlo — P10 / P50 / P90</strong><br>
+            Software projects are notoriously hard to estimate. The Monte Carlo analysis runs 1,000 random simulations to give you a <em>range</em> instead of a single number:
+            <ul style="margin-top:6px">
+              <li><strong>P10</strong> — Best case. Only 1-in-10 programmes come in this cheap. Use for optimistic board presentations.</li>
+              <li><strong>P50</strong> — Most likely. Half of programmes cost more, half cost less. Use this as your central estimate.</li>
+              <li><strong>P90</strong> — Worst case. 9-in-10 programmes will cost less than this. Use for risk/contingency planning.</li>
+            </ul>
+          </div>
+          <div style="padding:10px;background:#fdf4ff;border-radius:8px">
+            <strong>📅 Programme Phases</strong><br>
+            Shows how the NRE budget is distributed across the development timeline. The 5 phases are: Feasibility (5%), Concept/Architecture (15%), Series Development (50%), Validation &amp; V&amp;V (20%), Ramp/SOP (10%). Use this to plan annual budget allocations.
+          </div>
+          <div style="padding:10px;background:#fff7ed;border-radius:8px">
+            <strong>🏷 Cost Composition</strong><br>
+            Breaks down the total NRE into 9 buckets: Development, Testing, Integration, Toolchain Licences, IP Licences, Cybersecurity, Calibration, Maintenance, and Cloud. Shows where the money actually goes — usually Development is 50–60% of total.
+          </div>
+          <div style="padding:10px;background:#fef2f2;border-radius:8px">
+            <strong>📉 Sensitivity Analysis</strong><br>
+            Shows which inputs have the biggest impact on cost. If a bar is very long, that variable (e.g. labour region or ASIL level) is a key cost driver. Useful for negotiation: "If we move development to Eastern Europe, cost drops by £X."
+          </div>
+          <div style="padding:10px;background:#f0fdfa;border-radius:8px">
+            <strong>🏆 OEM Benchmarks</strong><br>
+            Compares your estimate to 7 real EV programmes (BMW iX, Tesla Model S, Porsche Taycan, Mercedes EQS, Range Rover, Audi Q8, Lucid Air). A green bar means your estimate is below market. A red bar means you are estimating more than those OEMs spent — worth investigating why.
+          </div>
+          <div style="padding:10px;background:#fafafa;border-radius:8px">
+            <strong>🏭 OEM vs Tier-1 vs Startup Decomposition</strong><br>
+            Different types of companies have very different cost structures. This panel shows how your total would split if it were developed by a large OEM (most expensive, most rigorous), a Tier-1 supplier (mid-range), or a software startup (cheapest but least automotive-grade). Useful for make-vs-buy decisions.
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 7: SAVED CONFIGS -->
+      <div class="help-card" style="border-left:4px solid #8b5cf6">
+        <div class="help-card-title"><div class="help-icon" style="background:#8b5cf6">7</div>Step 7 — Save Your Configuration</div>
+        <p>You can save your current set of inputs and come back to it later — useful for comparing "what if" scenarios side by side (e.g. "UK development" vs "India development").</p>
+        <ol style="margin-top:8px">
+          <li>After setting your inputs (you do not need to calculate first), click the <strong>💾 Save Config</strong> button at the top of the panel.</li>
+          <li>Enter a name for this scenario (e.g. "Baseline UK", "Aggressive Offshore").</li>
+          <li>The saved scenario appears in the <strong>Saved Configurations</strong> list above the presets.</li>
+          <li>To restore it later, click <strong>Load</strong> next to its name — all inputs snap back to exactly what you saved.</li>
+          <li>To delete it, click the <strong>✕</strong> button next to its name.</li>
+        </ol>
+        <p style="margin-top:8px;padding:8px;background:#fdf4ff;border-radius:6px;font-size:0.82rem"><strong>Note:</strong> Saved configurations are stored in your browser's local storage. They persist between sessions on the same device but will not transfer to another computer. You can save up to 10 configurations.</p>
+      </div>
+
+      <!-- STEP 8: EXPORT -->
+      <div class="help-card" style="border-left:4px solid #0891b2">
+        <div class="help-card-title"><div class="help-icon" style="background:#0891b2">8</div>Step 8 — Export Your Results</div>
+        <p>After calculating, scroll to the bottom of the results panel to find the export buttons:</p>
+        <div style="display:flex;flex-direction:column;gap:8px;margin-top:8px;font-size:0.82rem">
+          <div style="padding:10px;background:#f0fdfa;border-radius:8px">
+            <strong>📥 Export Excel</strong> — Downloads a 6-sheet XLSX workbook:
+            <ul style="margin-top:4px">
+              <li><em>Summary</em> — headline numbers and programme parameters</li>
+              <li><em>Category Breakdown</em> — cost by the 7 software categories</li>
+              <li><em>Module Detail</em> — line-by-line cost for all 43 modules with ASIL, complexity, reuse settings</li>
+              <li><em>Sensitivity &amp; Monte Carlo</em> — P10/P50/P90 and sensitivity tornado</li>
+              <li><em>Benchmarks</em> — your estimate vs 7 OEM comparators</li>
+              <li><em>Configuration</em> — full record of every input you used</li>
+            </ul>
+          </div>
+          <div style="padding:10px;background:#eff6ff;border-radius:8px">
+            <strong>🤖 Get AI Analysis</strong> — Sends your results to an AI and returns a written narrative explaining the key cost drivers, risks, and recommendations in plain English. Useful for presenting to non-technical stakeholders.
+          </div>
+        </div>
+      </div>
+
+      <!-- MULTIPLIERS REFERENCE -->
+      <div class="help-card">
+        <div class="help-card-title">📋 Quick Reference — All Multipliers &amp; Rates</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:0.8rem">
+          <div>
+            <p style="font-weight:700;margin-bottom:6px">ASIL Development Multipliers</p>
+            <table style="width:100%;border-collapse:collapse">
+              <tr style="background:#f1f5f9"><td style="padding:4px 8px;border-radius:4px 0 0 0"><strong>QM</strong></td><td style="padding:4px 8px">1.00× — No safety req.</td></tr>
+              <tr><td style="padding:4px 8px"><strong>ASIL-A</strong></td><td style="padding:4px 8px">1.35× — Low hazard</td></tr>
+              <tr style="background:#f1f5f9"><td style="padding:4px 8px"><strong>ASIL-B</strong></td><td style="padding:4px 8px">1.80× — Medium hazard</td></tr>
+              <tr><td style="padding:4px 8px"><strong>ASIL-C</strong></td><td style="padding:4px 8px">2.30× — High hazard</td></tr>
+              <tr style="background:#fef2f2"><td style="padding:4px 8px"><strong>ASIL-D</strong></td><td style="padding:4px 8px">3.20× — Max hazard</td></tr>
+            </table>
+            <p style="font-weight:700;margin:10px 0 6px">Complexity Multipliers</p>
+            <table style="width:100%;border-collapse:collapse">
+              <tr style="background:#f1f5f9"><td style="padding:4px 8px"><strong>Low</strong></td><td style="padding:4px 8px">0.60×</td></tr>
+              <tr><td style="padding:4px 8px"><strong>Medium</strong></td><td style="padding:4px 8px">1.00× (baseline)</td></tr>
+              <tr style="background:#f1f5f9"><td style="padding:4px 8px"><strong>High</strong></td><td style="padding:4px 8px">1.70×</td></tr>
+              <tr><td style="padding:4px 8px"><strong>Very High</strong></td><td style="padding:4px 8px">2.80×</td></tr>
+            </table>
+          </div>
+          <div>
+            <p style="font-weight:700;margin-bottom:6px">Reuse Factors</p>
+            <table style="width:100%;border-collapse:collapse">
+              <tr style="background:#f1f5f9"><td style="padding:4px 8px"><strong>Fresh</strong></td><td style="padding:4px 8px">1.00× — all new</td></tr>
+              <tr><td style="padding:4px 8px"><strong>Light</strong></td><td style="padding:4px 8px">0.82×</td></tr>
+              <tr style="background:#f1f5f9"><td style="padding:4px 8px"><strong>Medium</strong></td><td style="padding:4px 8px">0.60×</td></tr>
+              <tr><td style="padding:4px 8px"><strong>Heavy</strong></td><td style="padding:4px 8px">0.35×</td></tr>
+              <tr style="background:#f0fdf4"><td style="padding:4px 8px"><strong>Platform</strong></td><td style="padding:4px 8px">0.14×</td></tr>
+            </table>
+            <p style="font-weight:700;margin:10px 0 6px">Regional Labour Rates (vs UK £28k/PM)</p>
+            <table style="width:100%;border-collapse:collapse">
+              <tr style="background:#f1f5f9"><td style="padding:4px 8px">UK</td><td style="padding:4px 8px">1.00× — £28k/PM</td></tr>
+              <tr><td style="padding:4px 8px">EU</td><td style="padding:4px 8px">0.95× — £26.6k/PM</td></tr>
+              <tr style="background:#f1f5f9"><td style="padding:4px 8px">USA SV</td><td style="padding:4px 8px">1.85× — £51.8k/PM</td></tr>
+              <tr><td style="padding:4px 8px">Japan</td><td style="padding:4px 8px">0.90× — £25.2k/PM</td></tr>
+              <tr style="background:#f1f5f9"><td style="padding:4px 8px">E. Europe</td><td style="padding:4px 8px">0.45× — £12.6k/PM</td></tr>
+              <tr><td style="padding:4px 8px">China</td><td style="padding:4px 8px">0.35× — £9.8k/PM</td></tr>
+              <tr style="background:#f1f5f9"><td style="padding:4px 8px">Mexico</td><td style="padding:4px 8px">0.28× — £7.8k/PM</td></tr>
+              <tr><td style="padding:4px 8px">India</td><td style="padding:4px 8px">0.20× — £5.6k/PM</td></tr>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- OEM BENCHMARKS -->
+      <div class="help-card">
+        <div class="help-card-title">🏆 OEM Benchmark Reference</div>
+        <p>Your estimate is automatically compared against these 7 real EV programmes (based on analyst reports, teardown studies, and published financial disclosures):</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:10px;font-size:0.79rem">
+          <div style="padding:9px;background:#f8fafc;border-radius:8px;border-top:3px solid #1d4ed8"><strong>BMW iX</strong><br><span style="color:#64748b">Total NRE: £620M</span><br><span style="color:#64748b">Per vehicle: £4,800</span><br><span style="font-size:0.72rem;color:#94a3b8">Flagship EV with full in-house SW</span></div>
+          <div style="padding:9px;background:#f8fafc;border-radius:8px;border-top:3px solid #dc2626"><strong>Porsche Taycan</strong><br><span style="color:#64748b">Total NRE: £480M</span><br><span style="color:#64748b">Per vehicle: £5,200</span><br><span style="font-size:0.72rem;color:#94a3b8">High per-vehicle, lower volume</span></div>
+          <div style="padding:9px;background:#f8fafc;border-radius:8px;border-top:3px solid #374151"><strong>Mercedes EQS</strong><br><span style="color:#64748b">Total NRE: £710M</span><br><span style="color:#64748b">Per vehicle: £5,500</span><br><span style="font-size:0.72rem;color:#94a3b8">MBUX Hyperscreen flagship</span></div>
+          <div style="padding:9px;background:#f8fafc;border-radius:8px;border-top:3px solid #16a34a"><strong>Range Rover L460</strong><br><span style="color:#64748b">Total NRE: £390M</span><br><span style="color:#64748b">Per vehicle: £3,800</span><br><span style="font-size:0.72rem;color:#94a3b8">JLR — heavy Tier-1 outsourcing</span></div>
+          <div style="padding:9px;background:#f8fafc;border-radius:8px;border-top:3px solid #dc2626"><strong>Tesla Model S HW4</strong><br><span style="color:#64748b">Total NRE: £850M</span><br><span style="color:#64748b">Per vehicle: £3,200</span><br><span style="font-size:0.72rem;color:#94a3b8">Highest NRE; lowest per-veh (volume)</span></div>
+          <div style="padding:9px;background:#f8fafc;border-radius:8px;border-top:3px solid #7c3aed"><strong>Audi Q8 e-tron</strong><br><span style="color:#64748b">Total NRE: £520M</span><br><span style="color:#64748b">Per vehicle: £4,600</span><br><span style="font-size:0.72rem;color:#94a3b8">VW Group platform reuse benefits</span></div>
+          <div style="padding:9px;background:#f8fafc;border-radius:8px;border-top:3px solid #0891b2"><strong>Lucid Air</strong><br><span style="color:#64748b">Total NRE: £380M</span><br><span style="color:#64748b">Per vehicle: £7,800</span><br><span style="font-size:0.72rem;color:#94a3b8">Startup — ultra-low volume, high cost/car</span></div>
+        </div>
+      </div>
+
+      <!-- FAQ -->
+      <div class="help-card">
+        <div class="help-card-title">❓ Frequently Asked Questions</div>
+        <div style="display:flex;flex-direction:column;gap:8px;font-size:0.82rem">
+          <div style="padding:10px;background:#f8fafc;border-radius:8px">
+            <strong>Q: I changed a setting but the number did not change — what happened?</strong><br>
+            A: You need to click <strong>Calculate Programme Cost</strong> again after any change. The results do not update automatically.
+          </div>
+          <div style="padding:10px;background:#f8fafc;border-radius:8px">
+            <strong>Q: What is the difference between NRE and Per-Vehicle Cost?</strong><br>
+            A: NRE (Non-Recurring Engineering) is the one-time total cost to develop the software — paid once. Per-Vehicle Cost is what that development investment adds to the price of each car when divided by total volume. A £500M NRE across 100,000 vehicles = £5,000 per vehicle.
+          </div>
+          <div style="padding:10px;background:#f8fafc;border-radius:8px">
+            <strong>Q: My estimate is much higher than the BMW benchmark. Is that wrong?</strong><br>
+            A: Not necessarily. BMW has decades of reusable code and global teams. If your programme is greenfield with a small team, higher costs are expected. Check the Sensitivity Analysis to see which inputs are driving the difference.
+          </div>
+          <div style="padding:10px;background:#f8fafc;border-radius:8px">
+            <strong>Q: Can I include only some modules and exclude others?</strong><br>
+            A: All 43 modules are included by default. To effectively "exclude" a module, set its Reuse to <em>Platform reuse (0.14×)</em> and Complexity to <em>Low</em> — this reduces its cost to near-zero, representing a module that is fully reused with no development effort.
+          </div>
+          <div style="padding:10px;background:#f8fafc;border-radius:8px">
+            <strong>Q: What does the orange ASIL warning badge mean?</strong><br>
+            A: It means you have selected a lower ASIL level than the engineering default for that module. For example, setting ASIL-A on an AEB braking system (which should be ASIL-D). The calculation still runs — it is a warning, not a block — but you should review whether that assumption is intentional.
+          </div>
+          <div style="padding:10px;background:#f8fafc;border-radius:8px">
+            <strong>Q: What currency is used?</strong><br>
+            A: All costs are in British Pounds (£ GBP) by default. Use the Currency dropdown in the top navigation bar to convert display values to EUR, USD, or other currencies.
+          </div>
+        </div>
+      </div>
+
       <div class="cv-video-card" title="Watch: Run a full automotive SW should-cost in 3 minutes">
         <div class="cv-video-thumb"><div class="cv-video-play">▶</div><div class="cv-video-duration">3:05</div></div>
         <div class="cv-video-meta"><div class="cv-video-label">Video Tutorial</div><div class="cv-video-title">Automotive SW Should-Cost — Full Walkthrough</div><div class="cv-video-desc">Configure 43 modules, set ASIL/complexity/reuse, compare against BMW iX and Tesla benchmarks</div></div>
