@@ -7,7 +7,8 @@ import {
   ChevronDown, ChevronUp, BarChart3, RefreshCw, Tag,
   Globe, ExternalLink, ChevronRight, Search, DollarSign, Calculator,
   ShieldCheck, BookOpen, FlaskConical, Lightbulb, Scale, Link2,
-  MessageSquare, CheckSquare, XSquare, Bot, Send, Map, Share2, ClipboardList, X
+  MessageSquare, CheckSquare, XSquare, Bot, Send, Map, Share2, ClipboardList, X,
+  Square, Store, Layers
 } from 'lucide-react';
 import TypingDots from '../components/ui/TypingDots';
 import ButtonSpinner from '../components/ui/ButtonSpinner';
@@ -173,11 +174,13 @@ const REJECTION_REASONS: { key: string; label: string }[] = [
   { key: 'other',               label: 'Other reason' },
 ];
 
-function IdeaCard({ idea, index, annotation, onAnnotate }: {
+function IdeaCard({ idea, index, annotation, onAnnotate, isSelected, onToggleSelect }: {
   idea: CostReductionIdea;
   index: number;
   annotation?: IdeaAnnotation;
   onAnnotate: (a: IdeaAnnotation) => void;
+  isSelected?: boolean;
+  onToggleSelect?: (id: string) => void;
 }) {
   const { token } = useAuth();
   const [expanded, setExpanded] = useState(false);
@@ -292,12 +295,21 @@ function IdeaCard({ idea, index, annotation, onAnnotate }: {
       animate={{ opacity: 1, y: 0, transition: { duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94], delay: Math.min(index * 0.04, 0.4) } }}
       exit={{ opacity: 0, scale: 0.97, transition: { duration: 0.18 } }}
       whileHover={{ y: -2, boxShadow: '0 8px 32px rgba(245,158,11,0.12)', transition: { type: 'spring', stiffness: 400, damping: 25 } }}
-      className="bg-navy-900 border border-white/10 rounded-2xl overflow-hidden hover:border-gold-500/25 transition-all cursor-default shadow-card"
+      className={`bg-navy-900 border rounded-2xl overflow-hidden transition-all cursor-default shadow-card ${isSelected ? 'border-gold-500/50 shadow-glow-gold' : 'border-white/10 hover:border-gold-500/25'}`}
     >
       <div className="p-5 pb-4">
         {/* Title row */}
         <div className="flex items-start justify-between gap-4 mb-3">
           <div className="flex items-start gap-3">
+            {onToggleSelect && (
+              <button
+                onClick={e => { e.stopPropagation(); onToggleSelect(idea.id); }}
+                className={`flex-shrink-0 self-center transition-colors ${isSelected ? 'text-gold-400' : 'text-slate-600 hover:text-slate-400'}`}
+                aria-label={isSelected ? 'Deselect idea' : 'Select idea'}
+              >
+                {isSelected ? <CheckSquare size={17} /> : <Square size={17} />}
+              </button>
+            )}
             <div className="w-8 h-8 rounded-lg bg-gold-500/15 border border-gold-500/25 flex items-center justify-center flex-shrink-0 mt-0.5">
               <span className="text-gold-400 font-bold text-sm">{index + 1}</span>
             </div>
@@ -785,6 +797,8 @@ export default function ResultsPage() {
   const [chatInput, setChatInput] = useState('');
   const [chatLoading, setChatLoading] = useState(false);
   const [crossPollinatedIdeas, setCrossPollinatedIdeas] = useState<CostReductionIdea[]>([]);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [bulkAdding, setBulkAdding] = useState<'marketplace' | 'pipeline' | null>(null);
   const chatEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -1054,6 +1068,80 @@ export default function ResultsPage() {
   const strategicItems = result.ideas.filter(i => i.implementationDifficulty === 'High');
   const searchUsedCount = result.ideas.filter(i => i.searchDataUsed).length;
 
+  function toggleSelect(id: string) {
+    setSelectedIds(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
+  }
+
+  async function handleBulkAddToMarketplace() {
+    const authToken = (() => { try { return JSON.parse(localStorage.getItem('brainspark_auth') || '{}').token; } catch { return null; } })();
+    if (!authToken) { toast('Sign in to add to Marketplace', 'error'); return; }
+    const ideas = result!.ideas.filter(i => selectedIds.has(i.id));
+    setBulkAdding('marketplace');
+    let count = 0;
+    for (const idea of ideas) {
+      try {
+        const r = await fetch('/api/marketplace', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${authToken}` },
+          body: JSON.stringify({
+            title: idea.title,
+            description: idea.technicalDescription,
+            system: systemName || '',
+            costSavingType: idea.costSavingTypes[0] || '',
+            annualSaving: idea.costSavingPotential.annualValue || '',
+            difficulty: idea.implementationDifficulty,
+            timeToImplement: idea.timeToImplement || '',
+          }),
+        });
+        if (r.ok) count++;
+      } catch { /* continue on individual failure */ }
+    }
+    setBulkAdding(null);
+    setSelectedIds(new Set());
+    toast(`${count} idea${count !== 1 ? 's' : ''} added to Marketplace`, count > 0 ? 'success' : 'error');
+  }
+
+  async function handleBulkAddToPipeline() {
+    const authToken = (() => { try { return JSON.parse(localStorage.getItem('brainspark_auth') || '{}').token; } catch { return null; } })();
+    if (!authToken) { toast('Sign in to add to Pipeline', 'error'); return; }
+    const ideas = result!.ideas.filter(i => selectedIds.has(i.id));
+    setBulkAdding('pipeline');
+    let count = 0;
+    for (const idea of ideas) {
+      try {
+        const notesParts = [
+          `Auto-added from BrainSpark analysis (${result!.config.vehicleType || 'unknown vehicle'}).`,
+          idea.costSavingPotential.annualValue ? `Estimated saving: ${idea.costSavingPotential.annualValue}.` : '',
+          idea.timeToImplement ? `Timeline: ${idea.timeToImplement}.` : '',
+        ].filter(Boolean);
+        const r = await fetch('/api/business-cases', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${authToken}` },
+          body: JSON.stringify({
+            ideaTitle: idea.title,
+            ideaSource: 'analyze',
+            commodityName: result!.config.vehicleType || '',
+            systemName: systemName || '',
+            vehicleData: [{ model: 'TBD', volume: 0, applicablePct: 100 }],
+            savingPerPart: 0,
+            toolingCost: 0,
+            tvCost: 0,
+            gate: 'G0',
+            notes: notesParts.join(' '),
+          }),
+        });
+        if (r.ok) count++;
+      } catch { /* continue on individual failure */ }
+    }
+    setBulkAdding(null);
+    setSelectedIds(new Set());
+    toast(`${count} idea${count !== 1 ? 's' : ''} added to Pipeline as G0 cases`, count > 0 ? 'success' : 'error');
+  }
+
   async function handleShare() {
     if (!result?.id) return;
     const token = (() => { try { return JSON.parse(localStorage.getItem('brainspark_auth') || '{}').token; } catch { return null; } })();
@@ -1263,6 +1351,54 @@ export default function ResultsPage() {
           </div>
         </div>
 
+        {/* Bulk selection action bar */}
+        <AnimatePresence>
+          {selectedIds.size > 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.18 }}
+              className="sticky top-20 z-20 mb-4 flex flex-wrap items-center gap-3 p-3 rounded-2xl bg-navy-800 border border-gold-500/30 shadow-modal"
+            >
+              <div className="flex items-center gap-2 text-gold-400 font-semibold text-sm">
+                <CheckSquare size={15} />
+                {selectedIds.size} idea{selectedIds.size !== 1 ? 's' : ''} selected
+              </div>
+              <button
+                onClick={() => setSelectedIds(new Set(filtered.map(i => i.id)))}
+                className="text-xs text-slate-400 hover:text-white border border-white/15 px-2.5 py-1 rounded-lg transition-colors"
+              >
+                Select all {filtered.length}
+              </button>
+              <button
+                onClick={() => setSelectedIds(new Set())}
+                className="text-xs text-slate-500 hover:text-slate-300 transition-colors"
+              >
+                Clear
+              </button>
+              <div className="ml-auto flex gap-2">
+                <button
+                  onClick={handleBulkAddToMarketplace}
+                  disabled={!!bulkAdding}
+                  className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-violet-500/15 border border-violet-500/30 text-violet-300 text-xs font-medium hover:bg-violet-500/25 disabled:opacity-50 transition-colors"
+                >
+                  {bulkAdding === 'marketplace' ? <ButtonSpinner size={12} /> : <Store size={13} />}
+                  Add to Marketplace
+                </button>
+                <button
+                  onClick={handleBulkAddToPipeline}
+                  disabled={!!bulkAdding}
+                  className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-gold-500/15 border border-gold-500/30 text-gold-300 text-xs font-medium hover:bg-gold-500/25 disabled:opacity-50 transition-colors shadow-glow-gold"
+                >
+                  {bulkAdding === 'pipeline' ? <ButtonSpinner size={12} /> : <Layers size={13} />}
+                  Add to Pipeline
+                </button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         {/* Ideas */}
         {filtered.length === 0 ? (
           <motion.div layout className="text-center py-12 text-slate-500">No ideas match the current filters.</motion.div>
@@ -1276,6 +1412,8 @@ export default function ResultsPage() {
                   index={i}
                   annotation={annotations[idea.id]}
                   onAnnotate={(a) => handleAnnotate(idea.id, a)}
+                  isSelected={selectedIds.has(idea.id)}
+                  onToggleSelect={toggleSelect}
                 />
               ))}
             </AnimatePresence>
