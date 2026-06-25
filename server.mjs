@@ -3331,6 +3331,102 @@ const EXTERIOR_KEYWORDS = {
   'wipers-washers':['wiper','washer','rain sensor','wiper blade','wiper mechanism','washer pump','jet nozzle'],
 };
 
+// ─── E/E, ADAS, Fuel/Emission, Exterior Trim context maps ────────────────────
+
+const EE_CONTEXT_MAP = {
+  'wiring-harness': { levers: ['Flat wire FFC/FPC replacing round-wire harness trunk: 40% space + 25% weight (Toyota bZ4X, Rivian flat harness)', 'Zone-based E/E topology: delete long signal runs, 15-20% copper saving (BMW Neue Klasse 2025)', 'Al conductor on LV circuits <10A: 50% weight vs Cu, proven on body control (Leoni Al harness VW MQB)', 'Wireless sensor integration (wBMS, TPMS direct): delete 15-30% harness branches (GM Ultium wBMS 90m deleted)', 'Connector family consolidation (3→1 supplier): 8-12% connector cost via volume (Aptiv/TE Automotive)', 'Automated harness assembly: 30-40% labour cost (Aptiv robotic crimp cell, Yazaki automatic tape)', 'Splice delete via PCB junction box integration: −45 splices/vehicle, 0.8kg (BMW i7 zone controller)'], trends: 'Zonal E/E mainstream from 2025 (BMW Neue Klasse, VW SSP). Flat wire growing for BEV trunk runs. Wireless BMS proven at volume. OTA software delivery deleting dealer-only cable updates.' },
+  'ecu-architecture': { levers: ['Domain controller consolidation (4-6 ECUs → 1): 25-35% ECU cost saving (Bosch VP ECU, Continental ICAS3)', 'Central compute + thin zonal nodes: delete 8-14 legacy ECUs (BMW CAS → Neue Klasse central compute)', 'OTA update platform delete dealer reflash visits: €35-80/vehicle lifetime saving (Tesla OTA proven, GM VSS4)', 'AUTOSAR Adaptive delete Classic toolchain re-implementation: 12-18% SW dev cost (CARIAD, Stellantis STLA Brain)', '48V LV architecture delete 12V-to-48V DC-DC step-up: €18-35 saving (Mercedes Vision EQXX 48V LV network)', 'Smart junction box replacing glass fuse panel: delete 40 fuses + relay matrix, €22-38 saving (Leoni SJB, Aptiv SDV)'], trends: 'Software-defined vehicle (SDV) consolidating compute (VW CARIAD, BMW ICAS3, GM VSS4). AUTOSAR Adaptive replacing Classic. OTA mandatory on BEV from 2024 (UNECE R156). Central computer with satellite zonal nodes is the architectural consensus by 2027.' },
+  'infotainment': { levers: ['Shared SoC platform across trim levels (delete separate cluster + centre HU SoCs): 15-25% IVI cost', 'Android Automotive OS delete proprietary middleware re-development: €8-18M NRE saving (Volvo AAOS, Polestar 2)', 'Single curved OLED display (cluster + centre) delete separate units: €120-200 net saving (BMW iX Curved Display, Mercedes Hyperscreen)', 'Camera DMS on shared forward-cam SoC: delete standalone DMS camera €28-55 (Seeing Machines SoC integration)', 'Delete standalone NAV hardware → cloud + ADAS map sharing: €45-75 saving (Tesla Vision maps, HERE cloud)', 'Speaker count right-size on base audio: 8-speaker array → 4-channel: €35-60 saving (Harman/Bose tier logic)'], trends: 'AAOS and Linux in-vehicle platform displacing QNX on cost-sensitive specs. Curved single-pane display mainstream C-segment 2025. Cloud-native maps replacing embedded NAV disk. HU SoC shared with cluster (Qualcomm SA8xxx platform).' },
+  '12v-power': { levers: ['Smart PDU replacing conventional fuse box + relay matrix: €28-45 unit saving (Aptiv SJB, Hella SPD)', 'AGM→LFP 12V auxiliary battery: 40% weight saving + 2× cycle life, +€15 ROI via warranty (CATL 12V LFP, Bosch)', 'Delete separate DC-DC converter via integration into OBC output stage: €55-85 saving (Hyundai E-GMP integrated DC-DC)', 'Solid-state circuit breaker replacing main relay + fuse: faster, no contact wear, €8-12 net (Eaton SSPCB)', '48V LV architecture for BEV: delete 12V network entirely → 10-15% BEV wire harness weight (Mercedes EQG 48V LV)', 'Delete dedicated 12V battery on pure BEV → supercapacitor buffer + DC-DC: €28-45 saving (NIO 800V architecture)'], trends: '48V LV mainstream BEV 2026. Smart PDU software-defined fuse replacing glass fuses. LFP 12V battery growing. DC-DC integration into OBC standard on cost-optimised BEV. Solid-state switches replacing relays.' },
+};
+
+const ADAS_CONTEXT_MAP = {
+  'camera-suite': { levers: ['Forward mono→stereo camera: delete separate depth sensor, adds L3 capability (Waymo L4, Mobileye EyeQ integration)', 'Surround cameras on shared ISP SoC: 4 cameras on 1 processor, −€35-55 hardware (Mobileye SuperVision shared SoC)', 'Camera-based rain/light sensor: delete 2 standalone sensors, −€18-32 (Tesla Vision rain-detection, proven 2020)', 'DMS eye-tracking on shared HU SoC: delete standalone €45-80 DMS camera (Seeing Machines platform integration)', 'Camera-first strategy delete radar on L2 base: −€65-95/vehicle (Tesla Full Vision Strategy, validated 2021)', 'Wide-FoV fish-eye surround cameras standardise bracket: common mount across 4 corners, −€35-60K tooling'], trends: 'Camera-first mainstream L2+ (Tesla, Rivian, Waymo). ADAS camera sensor count growing 4→8 on L3. Shared ISP SoC for all cameras standard from 2025. UNECE R157 mandatory L3 by 2024 on new homologations.' },
+  'radar-lidar': { levers: ['77GHz corner radar multi-function (BSD + CTA + L2 ADAS on 1 unit): delete 2 separate sensors, −€45-80 (Bosch LRR4, Continental ARS6)', '4D imaging radar delete LiDAR on L2+: one sensor replaces two, −€120-280 net (Arbe Phoenix 4D, Aptiv ESR6)', 'LiDAR right-size scan rate + FOV for highway only: −30-40% LiDAR cost (Luminar Iris highway variant, 20Hz vs 50Hz)', 'Solid-state LiDAR vs scanning: no moving parts, 80% lower BOM (Innoviz One, Valeo SCALA 3)', 'Radar bracket + waveguide integration in bumper: delete separate bracket −€8-16 (Tier-1 bumper sensor module)', 'Common front-radar platform across 3 SUV derivatives: €280-450K tooling NRE saving'], trends: 'L2+ radar proliferation. 4D imaging radar approaching LiDAR capability at radar cost (2025). Solid-state LiDAR production volumes building. L3 ODD-specific LiDAR FOV optimisation reducing unit cost.' },
+  'airbag-system': { levers: ['Airbag count right-size by NCAP requirement (delete centre airbag on non-performance): −€35-65/vehicle (Euro NCAP 2026 matrix reviewed)', 'Centralised ACU replacing 5-6 distributed satellite sensors: −€22-40 (TRW/ZF centralised ACU, Autoliv confirmed)', 'Far-side airbag delete via seat-mounted design: shared bag between front seats, −€45-80 (Mercedes W213 side airbag)', 'Knee airbag delete on high BEV sill floor: structural intrusion path changed, −€38-55 (Tesla Model S/X no knee bag)', 'Curtain airbag L/R symmetric tool: one die for both sides, −€120-200K tooling NRE (Autoliv standard practice)', 'Airbag propellant right-size to cabin volume by variant: −8-14% propellant cost (Autoliv volume-matched charge)'], trends: 'Euro NCAP 2026 adding far-side and centre airbag requirements. Centralised ACU replacing distributed. BEV floor architecture eliminating knee bag justification. Textile airbag folding automation reducing assembly cost 18%.' },
+  'seatbelt-system': { levers: ['Pretensioner right-size 1-stage vs 2-stage (delete dual pyro on base trim): −€12-22/seat (Autoliv 1-stage SRP)', 'Load limiter integration in retractor spool: delete separate force-limiting guide, −€6-10 (TRW integrated LL)', 'Common retractor mechanism across all seat positions: 1 P/N replacing 3, volume pricing −18-25% (Autoliv SRP platform)', 'Delete belt-in-seat on non-sports (add body-anchor mount): −€45-80/seat (Recaro belt-in-seat cost premium)', 'Buckle sensor hall-effect standardise across all positions: 1 P/N for 5 positions, −€3-6/buckle (Autoliv BES)', 'Webbing colour standardise black across derivatives: delete colour-matched variants, −€2-4/vehicle (Tier-1 MOQ saving)'], trends: 'UNECE R16 update 2024 adding rear seat pretensioner requirement. Pre-crash pyrotechnic tightening via ADAS integration. Webbing textile automation reducing cost 12%. Belt-reminder mandate expanding to all rows from 2026.' },
+};
+
+const FUEL_EMISSION_CONTEXT_MAP = {
+  'fuel-storage': { levers: ['Multi-layer HDPE tank platform sharing across 2 variants: −€280-550K tooling NRE (Toyota TNGA single tank platform)', 'In-tank pump module right-size to flow demand: −€12-22/unit (Kautex/Plastic Omnium MFUD optimisation)', 'Al fuel rail (Ni-plated) vs SS: 15-20% cost at same 350-bar rating (Bosch DF rail, Delphi Al-Ni rail)', 'Delete port injectors on GDI-only spec: −€35-55/vehicle (VW EA888 Gen3B, Ford 2.3L EcoBoost)', 'HPFP right-size cam lobe to flow: common lobe across 1.5/2.0L on same block family, −15-25% HPFP dev cost', 'Filler neck simplify from 2-piece to 1-piece blow mould: −€4-8 + 1 less assembly operation'], trends: 'GDI-only displacing CPDI on cost-sensitive specs (EU7 port injection emissions workaround). PHEV sealed fuel tanks eliminating EVAP canister. Al fuel rail standard on high-pressure GDI. HDPE tank family platform growing.' },
+  'evap-system': { levers: ['Canister right-size vapour volume (delete oversize legacy spec): −€8-18/vehicle (Delphi DVSCV optimisation)', 'PHEV sealed fuel system delete EVAP canister (sealed tank): −€35-60/vehicle (Toyota PHEV THS-II sealed tank)', 'Common canister bracket across 2 platforms: −€85-150K tooling NRE (VW MQB platform canister bracket)', 'OBD-III monitor simplify to single-path EVAP: −€4-8 sensor/valve delete (Ingevity optimised NVLD)', 'Delete bleed restrictor on improved high-capacity canister: −€2-4 (Mahle improved canister design)', 'Purge valve standardise across engine family: 1 P/N across 1.0/1.5/2.0L, −12-18% valve cost'], trends: 'EU7 tightening EVAP bleed requirements. PHEV sealed fuel systems eliminating EVAP on plug-in variants. Canister capacity increase for EU7 compliance replacing active carbon valve. CARB Tier 3 EVAP 2027.' },
+  'nox-aftertreatment': { levers: ['SCR substrate right-size cell density (400 vs 600 cpsi): −8-14% SCR cost, confirmed diesel SUV applications', 'AdBlue tank right-size to service interval (smaller tank, 10k km refill vs 20k km oversize): −€18-35/vehicle', 'SCR + DPF combined SCRF substrate: delete separate DPF unit, −€45-80/vehicle (Umicore SCRF, BASF SCRi)', 'Common SCR washcoat formulation across engine power variants: single Tier-2 qualification, −€180K NRE (Continental SCR)', 'EGR cooler right-size recirculation rate: delete large bore cooler on EGR-reduced Euro 7 spec (BorgWarner EGR optimised)', 'Delete AdBlue on MHEV (emission strategy via advanced combustion): −€95-145/vehicle (Toyota Gazoo Corolla MHEV)'], trends: 'Euro 7 SCR efficiency requirement increased to 97.5% NOx conversion. SCRF replacing 2-brick DPF+SCR arrangement. AdBlue tank size reduction via improved SCR efficiency. E-EGR (electric EGR) for precise Euro 7 control emerging.' },
+  'exhaust-aftertreatment': { levers: ['GPF thin-wall substrate (100 cpsi, 6 mil wall) EU7-compliant: 8-12% GPF cost saving (NGK/NTK UltraThin, Corning DuraTrap)', 'PGM loading optimisation via advanced washcoat: 15-30% catalyst PGM cost (BASF PremAir, Umicore PMC Gen5)', 'TWC + GPF combined brick: delete separate canister + endcone: −€25-45/vehicle (BASF 2-in-1 TWC-GPF)', 'Common manifold casting across power variants: shared tooling −€180-350K (Ford 2.0/2.3L common manifold casting)', 'Heat shield material right-size: Al-coated steel vs SS on short-trip thermal profiles: −€4-9 (Tenneco heat shield optimisation)', 'Flex-pipe delete via slip-joint design: −€8-14/system (Faurecia slip-joint eliminating flex element)'], trends: 'EU7 GPF mandatory all petrol 2026. Brake dust BDPF mandatory 2027. PGM (Rh €150-250/g, Pd €30-60/g) volatility driving washcoat optimisation. Thin-wall GPF simultaneously reducing back-pressure and cost.' },
+};
+
+const EXTERIOR_TRIM_CONTEXT_MAP = {
+  'grille-shutters': { levers: ['AGS actuator right-size from 3-zone to 1-zone on non-performance: −€35-65/vehicle (Magna AGS, HBPO active grille)', 'Passive closed-face grille on BEV (delete mesh + AGS entirely on full-aero spec): −€45-75 (Tesla Model 3 Highland, BMW i4)', 'Grille integration with front radar bracket: single moulding, −€8-16 + assembly time (Continental radar-integrated grille module)', 'AGS linkage simplify from 2 motors to 1 single-zone motor: −€22-38 (Valeo single-actuator AGS)', 'Structural PP-GF30 grille frame replacing steel crossmember: −0.4 kg, cost-neutral at volume (HBPO PP-GF carrier)', 'Delete chrome surround grille trim → painted surface (delete electroplating step): −€12-25 (VW Group eco-design programme)'], trends: 'AGS mandatory for Cd targets on C-segment+ BEV. Closed-face BEV grille deleting AGS on drag-optimised variants. Grille integration with ADAS sensor brackets growing (reduces stand-alone brackets). Chrome delete programme under EU hazardous substances legislation (Cr6+).' },
+  'badges-emblems': { levers: ['Illuminated backlit badge delete on non-flagship: −€18-35/vehicle (Kia EV6 non-GT illuminated badge delete)', 'Badge adhesive direct-bond replacing clip-on: delete 4-6 clips + pre-drilled holes: −€2-5/badge (3M VHB automotive badge bond)', 'Common badge family P/N across models (same badge size/style): volume pricing −15-22% (BMW roundel unified platform)', 'Front/rear badge same P/N symmetric design: halve badge inventory + mould count: −€80-150K (Toyota symmetric badge TNGA)', 'EV/PHEV/MHEV powertrain badge standardise common carrier: 1 insert + variable decal: −€3-8/vehicle', 'Delete rear model designation badge on entry trim: −€4-9 incl. adhesive pad (VW base grade delete emblem)'], trends: 'Chrome badge phase-out under EU REACH legislation (Cr6+ ban 2024). Illuminated badges growing on EV flagship for dark signature. Brand badge standardisation across global platforms. Aerodynamic flush-fit badges (3M bond) replacing clip-on raised profile.' },
+  'wheel-arch-cladding': { levers: ['PP-EPDM in-mould colour cladding: delete paint line process: −€8-16 incl. primer step (Toyota RAV4 PP-EPDM standard)', 'Common L/R symmetrical arch liner: shared tool for both sides: −€80-150K tooling NRE (VW Q family symmetric liner)', 'Underbody aerodynamic shield PP-LGF vs HDPE: same rigidity, −12-18% cost (Röchling PP-LGF underbody)', 'Integrated tow bar bracket boss in rear bumper beam casting: delete separate bracket: −€6-12 + 1 assembly op (BMW X5 G05 tow prep)', 'Side step delete on non-4x4 spec: −€55-120/vehicle (Land Rover base trim delete)', 'Common fender flare across narrow/wide track variants (add-on clip rather than unique P/N): −€120-250K tooling NRE (Toyota Hilux fender strategy)'], trends: 'PP-EPDM in-mould colour standard on fleet/commercial variants. Aerodynamic underbody fairings growing for BEV range efficiency (EU regulatory cycle). Wheel arch cladding integration with LIDAR sensor mount on L3 programmes. Active wheel deflectors emerging for aerodynamics.' },
+  'exterior-sealing': { levers: ['Window surround seal geometry standardise across door widths: −€45-80K tooling NRE (Hutchinson common profile)', 'Belt-line seal common across 3 derivatives: volume pricing −12-18% (Henniges platform seal)', 'Door seam sealer delete on adhesive-bonded Al door: eliminate 1.2m application: −€2-5 (BMW 7-Series Al door bond)', 'Weather-strip end-caps injection-moulded in seal: delete 4 bonded caps: −€1.50-3/door (Schlegel integrated end-cap)', 'Glass channel seal: common front/rear door on same-width aperture variants: −€35-70K tooling saving', 'EPDM to TPE seal on interior-facing positions: 15-20% seal cost, same sealing performance (Freudenberg TPE body seal)'], trends: 'EPDM seal volume declining, TPE growing (easier recyclability for EU ELV). Seal integration with door module (pre-hung door supply) reducing body-shop application time. Acoustic seal cross-section growing for NVH on BEV (no ICE mask). Frameless glass door seals growing with coupé design influence.' },
+};
+
+// System-level keywords for domain detection
+const EE_SYSTEM_KEYWORDS    = ['electrical','wiring harness','ecu','e/e architecture','infotainment','12v','fuse','junction box','bcm','gateway','telematics','domain controller','smart junction','hmi','head unit','navigation','amplifier','speaker','antenna'];
+const ADAS_SYSTEM_KEYWORDS  = ['adas','camera','radar','lidar','sensor suite','airbag','seatbelt','passive safety','pretensioner','ace','acу','acu','blind spot','lane keep','adaptive cruise','collision','perception','dms','occupancy'];
+const FUEL_EMISSION_SYSTEM_KEYWORDS = ['fuel tank','evap','adblue','scr','egr','gpf','dpf','aftertreatment','exhaust catalyst','nox','emission','fuel system','injector','hpfp','evaporative'];
+const EXTERIOR_TRIM_SYSTEM_KEYWORDS = ['grille','active grille','badge','emblem','wheel arch','cladding','underbody shield','tow bar','exterior trim','ornamentation','weather strip','door seal','window surround'];
+
+const EE_KEYWORDS = {
+  'wiring-harness': ['wiring harness','wire harness','flat wire','ffc','fpc','connector','splice','harness topology','cable','loom','conductor','pigtail'],
+  'ecu-architecture': ['ecu','domain controller','e/e architecture','gateway ecu','bcm','body control','zone controller','central compute','ota','autosar','software defined','vcu'],
+  'infotainment': ['head unit','infotainment','hmi','cluster','centre display','navigation','android automotive','aaos','speaker','amplifier','screen','touchscreen'],
+  '12v-power': ['12v battery','fuse box','junction box','smart pdu','relay','12v system','auxiliary battery','12v network','power distribution'],
+};
+
+const ADAS_KEYWORDS = {
+  'camera-suite': ['camera','forward camera','surround camera','mono camera','stereo camera','vision','isp','image sensor','camera module','dms','forward vision'],
+  'radar-lidar': ['radar','lidar','ultrasonic','4d radar','corner radar','front radar','long range radar','solid state lidar','laser scanner','perception sensor'],
+  'airbag-system': ['airbag','air bag','acu','inflatable','curtain airbag','side airbag','knee airbag','driver airbag','passenger airbag','airbag module'],
+  'seatbelt-system': ['seatbelt','seat belt','pretensioner','retractor','load limiter','buckle','belt anchor','belt reminder','webbing'],
+};
+
+const FUEL_EMISSION_KEYWORDS = {
+  'fuel-storage': ['fuel tank','fuel pump','fuel rail','injector','hpfp','filler neck','fuel line','fuel system','fuel pressure','gdi','port injector','fuel delivery'],
+  'evap-system': ['evap','evaporative','charcoal canister','carbon canister','purge valve','nvld','fuel vapour','evap monitor','evap canister','bleed restrictor'],
+  'nox-aftertreatment': ['scr','adblue','urea','egr','nox','selective catalytic','diesel aftertreatment','scrf','egr cooler','ammonia slip'],
+  'exhaust-aftertreatment': ['gpf','dpf','twc','catalytic converter','three-way catalyst','catalyst substrate','pgm','palladium','rhodium','cordierite','flex pipe','manifold catalyst'],
+};
+
+const EXTERIOR_TRIM_KEYWORDS = {
+  'grille-shutters': ['grille','active grille','ags','active shutter','grill','front grille','grille shutter','aero shutter'],
+  'badges-emblems': ['badge','emblem','logo','nameplate','model badge','brand badge','illuminated badge'],
+  'wheel-arch-cladding': ['wheel arch','arch liner','underbody shield','cladding','fender flare','side step','underbody fairing','underbody tray'],
+  'exterior-sealing': ['weather strip','door seal','window surround seal','belt seal','glass channel','body seal','seam sealer exterior'],
+};
+
+function detectEeComponent(systemName, subassemblyName, partName) {
+  const haystack = [systemName, subassemblyName, partName].filter(Boolean).join(' ').toLowerCase();
+  for (const [compId, keywords] of Object.entries(EE_KEYWORDS)) {
+    if (keywords.some(k => haystack.includes(k))) return compId;
+  }
+  return 'ecu-architecture';
+}
+
+function detectAdasComponent(systemName, subassemblyName, partName) {
+  const haystack = [systemName, subassemblyName, partName].filter(Boolean).join(' ').toLowerCase();
+  for (const [compId, keywords] of Object.entries(ADAS_KEYWORDS)) {
+    if (keywords.some(k => haystack.includes(k))) return compId;
+  }
+  return 'camera-suite';
+}
+
+function detectFuelEmissionComponent(systemName, subassemblyName, partName) {
+  const haystack = [systemName, subassemblyName, partName].filter(Boolean).join(' ').toLowerCase();
+  for (const [compId, keywords] of Object.entries(FUEL_EMISSION_KEYWORDS)) {
+    if (keywords.some(k => haystack.includes(k))) return compId;
+  }
+  return 'exhaust-aftertreatment';
+}
+
+function detectExteriorTrimComponent(systemName, subassemblyName, partName) {
+  const haystack = [systemName, subassemblyName, partName].filter(Boolean).join(' ').toLowerCase();
+  for (const [compId, keywords] of Object.entries(EXTERIOR_TRIM_KEYWORDS)) {
+    if (keywords.some(k => haystack.includes(k))) return compId;
+  }
+  return 'wheel-arch-cladding';
+}
+
 const EDU_SYSTEM_KEYWORDS   = ['edu','electric drive unit','e-drive','e-axle','bev','mhev','powertrain bev','electric machine','inverter','e-motor'];
 const BIW_SYSTEM_KEYWORDS   = ['biw','body-in-white','body in white','biy','door','pillar','sill','floor pan','bonnet','liftgate','roof bow'];
 const CHASSIS_SYSTEM_KEYWORDS = ['chassis','suspension','steering','braking system','subframe','anti-roll bar','hub bearing'];
@@ -3369,14 +3465,18 @@ function detectEduComponent(systemName, subassemblyName, partName) {
 function detectContextDomain(config, systemName, subassemblyName, partName) {
   const systemId = (config?.systemId || '').toLowerCase();
   const haystack = [systemName, subassemblyName, partName].filter(Boolean).join(' ').toLowerCase();
-  if (systemId === 'battery-pack' || BATTERY_SYSTEM_KEYWORDS.some(k => haystack.includes(k))) return 'battery';
-  if (systemId === 'biw'          || BIW_SYSTEM_KEYWORDS.some(k => haystack.includes(k)))     return 'biw';
-  if (systemId === 'chassis'      || CHASSIS_SYSTEM_KEYWORDS.some(k => haystack.includes(k))) return 'chassis';
-  if (systemId === 'transmission' || TRANSMISSION_SYSTEM_KEYWORDS.some(k => haystack.includes(k))) return 'transmission';
-  if (systemId === 'powertrain-ice' || ICE_SYSTEM_KEYWORDS.some(k => haystack.includes(k)))   return 'ice';
-  if (systemId === 'hvac'         || HVAC_SYSTEM_KEYWORDS.some(k => haystack.includes(k)))    return 'hvac';
-  if (systemId === 'interior'     || INTERIOR_SYSTEM_KEYWORDS.some(k => haystack.includes(k))) return 'interior';
-  if (systemId === 'exterior'     || EXTERIOR_SYSTEM_KEYWORDS.some(k => haystack.includes(k))) return 'exterior';
+  if (systemId === 'battery-pack'    || BATTERY_SYSTEM_KEYWORDS.some(k => haystack.includes(k)))      return 'battery';
+  if (systemId === 'biw'             || BIW_SYSTEM_KEYWORDS.some(k => haystack.includes(k)))           return 'biw';
+  if (systemId === 'chassis'         || CHASSIS_SYSTEM_KEYWORDS.some(k => haystack.includes(k)))       return 'chassis';
+  if (systemId === 'transmission'    || TRANSMISSION_SYSTEM_KEYWORDS.some(k => haystack.includes(k)))  return 'transmission';
+  if (systemId === 'powertrain-ice'  || ICE_SYSTEM_KEYWORDS.some(k => haystack.includes(k)))           return 'ice';
+  if (systemId === 'hvac'            || HVAC_SYSTEM_KEYWORDS.some(k => haystack.includes(k)))          return 'hvac';
+  if (systemId === 'interior'        || INTERIOR_SYSTEM_KEYWORDS.some(k => haystack.includes(k)))      return 'interior';
+  if (systemId === 'exterior'        || EXTERIOR_SYSTEM_KEYWORDS.some(k => haystack.includes(k)))      return 'exterior';
+  if (systemId === 'ee'              || EE_SYSTEM_KEYWORDS.some(k => haystack.includes(k)))            return 'ee';
+  if (systemId === 'adas'            || ADAS_SYSTEM_KEYWORDS.some(k => haystack.includes(k)))          return 'adas';
+  if (systemId === 'fuel-emission'   || FUEL_EMISSION_SYSTEM_KEYWORDS.some(k => haystack.includes(k))) return 'fuel-emission';
+  if (systemId === 'exterior-trim'   || EXTERIOR_TRIM_SYSTEM_KEYWORDS.some(k => haystack.includes(k))) return 'exterior-trim';
   if (EDU_SYSTEM_KEYWORDS.some(k => haystack.includes(k))) return 'edu';
   return null;
 }
@@ -3671,21 +3771,22 @@ function scheduleDailyPriceRefresh(apiKey) {
 function getPriceString() {
   const p = priceCache.data;
   const ts = priceCache.lastRefresh ? new Date(priceCache.lastRefresh).toLocaleDateString() : 'baseline';
-  return `LIVE COMMODITY PRICES (refreshed ${ts}): `
-    + `Cu ${p.copper_lme?.value} ${p.copper_lme?.unit} | `
-    + `Al LME ${p.aluminium_lme?.value} ${p.aluminium_lme?.unit} | `
-    + `Steel HRC ${p.steel_hrc_eu?.value} ${p.steel_hrc_eu?.unit} | `
-    + `PHS Steel ${p.phs_22mnb5?.value} ${p.phs_22mnb5?.unit} | `
-    + `NdFeB ${p.ndfeb_magnets?.value} ${p.ndfeb_magnets?.unit} | `
-    + `Li₂CO₃ ${p.li_carbonate?.value} ${p.li_carbonate?.unit} | `
-    + `LiOH ${p.li_hydroxide?.value} ${p.li_hydroxide?.unit} | `
-    + `NMC cell ${p.nmc_cell?.value} ${p.nmc_cell?.unit} | `
-    + `LFP cell ${p.lfp_cell?.value} ${p.lfp_cell?.unit} | `
-    + `SiC module ${p.sic_module?.value} ${p.sic_module?.unit} | `
-    + `Al HPDC ${p.al_hpdc_a380?.value} ${p.al_hpdc_a380?.unit} | `
-    + `Si Steel ${p.silicon_steel_m270?.value} ${p.silicon_steel_m270?.unit} | `
-    + `PA6-GF30 ${p.pa6_gf30?.value} ${p.pa6_gf30?.unit} | `
-    + `Nickel ${p.nickel_lme?.value} ${p.nickel_lme?.unit}`;
+  const fmt = (key) => p[key] ? `${p[key].value.toLocaleString('en-US', { maximumFractionDigits: 2 })} ${p[key].unit}` : 'n/a';
+  return `LIVE AUTOMOTIVE COMMODITY PRICES (refreshed ${ts}) — use these in all BOM and saving calculations:
+
+FERROUS METALS: Steel HRC ${fmt('steel_hrc_eu')} | Steel CRC ${fmt('steel_crc_eu')} | PHS 22MnB5 ${fmt('phs_22mnb5')} | DP980 AHSS ${fmt('dp980_ahss')} | DP780 AHSS ${fmt('dp780_ahss')} | Si Steel M270 ${fmt('silicon_steel_m270')} | SS304 ${fmt('stainless_304')} | HSLA S420 ${fmt('hsla_s420')}
+
+NON-FERROUS METALS: Copper LME ${fmt('copper_lme')} | Aluminium LME ${fmt('aluminium_lme')} | Zinc LME ${fmt('zinc_lme')} | Nickel LME ${fmt('nickel_lme')} | Lead LME ${fmt('lead_lme')} | Al HPDC A380 ${fmt('al_hpdc_a380')} | Magnesium Ingot ${fmt('magnesium_ingot')}
+
+EV BATTERY MATERIALS: Li₂CO₃ ${fmt('li_carbonate')} | LiOH ${fmt('li_hydroxide')} | Cobalt Sulfate ${fmt('cobalt_sulfate')} | Nickel Sulfate ${fmt('nickel_sulfate')} | Mn Sulfate ${fmt('manganese_sulfate')} | Natural Graphite ${fmt('natural_graphite')} | Synthetic Graphite ${fmt('synthetic_graphite')} | NMC Cell ${fmt('nmc_cell')} | LFP Cell ${fmt('lfp_cell')}
+
+RARE EARTHS & MAGNETS: NdFeB N42 ${fmt('ndfeb_magnets')} | NdPr Oxide ${fmt('ndpr_oxide')} | Dy₂O₃ ${fmt('dysprosium_oxide')} | Tb₄O₇ ${fmt('terbium_oxide')} | SmCo Magnet ${fmt('smco_magnet')}
+
+EDU / MOTOR: Enamelled Cu Wire ${fmt('copper_wire_enamel')} | Hairpin Cu Profile ${fmt('hairpin_copper')} | Si Steel Lam ${fmt('si_steel_lam')} | Al Rotor Cast ${fmt('al_rotor_cast')}
+
+INVERTER / POWER ELECTRONICS: SiC Module 1200V ${fmt('sic_module')} | SiC Die 650V ${fmt('sic_die_650v')} | IGBT Module ${fmt('igbt_module')} | GaN 650V ${fmt('gan_650v')} | DC Link Cap ${fmt('dc_link_cap')}
+
+PLASTICS & COMPOSITES: PA6-GF30 ${fmt('pa6_gf30')} | PA66-GF30 ${fmt('pa66_gf30')} | PP-TD20 ${fmt('pp_td20')} | ABS Auto ${fmt('abs_auto')} | POM Acetal ${fmt('pom_acetal')} | CFRP Prepreg ${fmt('cfrp_prepreg')} | GFRP SMC ${fmt('gfrp_smc')} | PU Foam Seat ${fmt('pu_foam_seat')}`;
 }
 
 const BODY_STYLE_CONTEXT = {
@@ -3837,6 +3938,30 @@ function buildAnalysisPrompt(config, systemName, subassemblyName, partName, enab
     if (compId && TRANSMISSION_CONTEXT_MAP[compId]) {
       const ctx = TRANSMISSION_CONTEXT_MAP[compId];
       curatedContext = `\nCURATED TRANSMISSION & DRIVELINE KNOWLEDGE BASE — Luxury Off-Road SUV segment (Defender, Range Rover, Range Rover Sport vs G-Class W464, BMW X5/X7 G-series, Porsche Cayenne 9Y0, Toyota LC300, Lexus LX600, Bentayga W12, Cullinan RR):\n${ctx.levers.map((l, i) => `  ${i+1}. ${l}`).join('\n')}\nTrend context: ${ctx.trends}\nKey benchmarks: ZF 8HP70/95 fleet rate ${currencySymbol}680-980/unit | GKN CarboFlex CF propshaft ${currencySymbol}120-140 | Al A380 HPDC diff housing ${currencySymbol}85-120 | eDTC BorgWarner ${currencySymbol}220-280 | BorgWarner 4480 TC ${currencySymbol}380-450`;
+    }
+  } else if (domain === 'ee') {
+    const compId = detectEeComponent(systemName, subassemblyName, partName);
+    if (compId && EE_CONTEXT_MAP[compId]) {
+      const ctx = EE_CONTEXT_MAP[compId];
+      curatedContext = `\nCURATED E/E ARCHITECTURE KNOWLEDGE BASE — use these validated levers as grounding:\n${ctx.levers.map((l, i) => `  ${i+1}. ${l}`).join('\n')}\nTrend context: ${ctx.trends}\nE/E benchmarks: Zonal domain controller (Bosch VP) ${currencySymbol}85-140/unit | Aptiv smart PDU ${currencySymbol}45-75 | wBMS (GM Ultium/Analog Devices) ${currencySymbol}28-45 harness saving | OTA platform NRE ${currencySymbol}8-15M amortised 200K+ fleet | Flat wire harness ${currencySymbol}2.80-3.50/m vs round-wire ${currencySymbol}4.20-5.00/m`;
+    }
+  } else if (domain === 'adas') {
+    const compId = detectAdasComponent(systemName, subassemblyName, partName);
+    if (compId && ADAS_CONTEXT_MAP[compId]) {
+      const ctx = ADAS_CONTEXT_MAP[compId];
+      curatedContext = `\nCURATED ADAS & SAFETY KNOWLEDGE BASE — use these validated levers as grounding:\n${ctx.levers.map((l, i) => `  ${i+1}. ${l}`).join('\n')}\nTrend context: ${ctx.trends}\nADAS benchmarks: Forward mono camera (Mobileye EyeQ6) ${currencySymbol}28-45 | Corner radar (Bosch LRR4) ${currencySymbol}55-90 | Solid-state LiDAR (Innoviz One) ${currencySymbol}180-320 | 4D imaging radar (Arbe Phoenix) ${currencySymbol}95-150 | Curtain airbag (Autoliv) ${currencySymbol}45-75/side | ACU centralised ${currencySymbol}35-60`;
+    }
+  } else if (domain === 'fuel-emission') {
+    const compId = detectFuelEmissionComponent(systemName, subassemblyName, partName);
+    if (compId && FUEL_EMISSION_CONTEXT_MAP[compId]) {
+      const ctx = FUEL_EMISSION_CONTEXT_MAP[compId];
+      curatedContext = `\nCURATED FUEL & EMISSION KNOWLEDGE BASE — use these validated levers as grounding:\n${ctx.levers.map((l, i) => `  ${i+1}. ${l}`).join('\n')}\nTrend context: ${ctx.trends}\nFuel/Emission benchmarks: HDPE multilayer fuel tank ${currencySymbol}85-140/unit | SCR substrate (NGK) ${currencySymbol}55-90 | TWC+GPF combined brick ${currencySymbol}180-280 | PGM Pd ${currencySymbol}30-60/g, Rh ${currencySymbol}150-250/g | HPFP (Bosch) ${currencySymbol}180-280/unit | AdBlue tank ${currencySymbol}45-80/unit`;
+    }
+  } else if (domain === 'exterior-trim') {
+    const compId = detectExteriorTrimComponent(systemName, subassemblyName, partName);
+    if (compId && EXTERIOR_TRIM_CONTEXT_MAP[compId]) {
+      const ctx = EXTERIOR_TRIM_CONTEXT_MAP[compId];
+      curatedContext = `\nCURATED EXTERIOR TRIM KNOWLEDGE BASE — use these validated levers as grounding:\n${ctx.levers.map((l, i) => `  ${i+1}. ${l}`).join('\n')}\nTrend context: ${ctx.trends}\nExterior trim benchmarks: AGS system (Magna) ${currencySymbol}45-90/vehicle | Illuminated badge ${currencySymbol}18-45 premium | PP-EPDM arch cladding ${currencySymbol}12-28/piece | Weather strip per metre ${currencySymbol}3.50-6.00 | Active air curtain ${currencySymbol}22-38/pair | Underbody aero shield ${currencySymbol}18-35/vehicle`;
     }
   }
 

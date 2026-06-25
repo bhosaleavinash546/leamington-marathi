@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { TrendingUp, TrendingDown, Cpu, Wrench, Building2, ChevronRight, Car, Battery, Settings, Flame, Wind, Armchair, Lightbulb, Cog, BarChart3 } from 'lucide-react';
+import { TrendingUp, TrendingDown, Cpu, Wrench, Building2, ChevronRight, Car, Battery, Settings, Flame, Wind, Armchair, Lightbulb, Cog, BarChart3, Zap, Shield, Droplets, Layers } from 'lucide-react';
 import {
   MFG_LEVERS, EDU_TRENDS, OEM_MOVES, EDU_COST_STRUCTURE, getTotalEduIdeas, EDU_COMPONENTS,
 } from '../data/edu-knowledge-base';
@@ -11,8 +11,12 @@ import { HVAC_COMPONENTS, HVAC_MFG_LEVERS, HVAC_TRENDS, HVAC_COST_STRUCTURE, get
 import { INTERIOR_COMPONENTS, INTERIOR_TRENDS, INTERIOR_COST_STRUCTURE, getTotalInteriorIdeas, INTERIOR_MFG_LEVERS, INTERIOR_OEM_BENCHMARKS } from '../data/interior-knowledge-base';
 import { EXTERIOR_COMPONENTS, EXTERIOR_TRENDS, EXTERIOR_COST_STRUCTURE, getTotalExteriorIdeas, EXTERIOR_MFG_LEVERS, EXTERIOR_OEM_BENCHMARKS } from '../data/exterior-knowledge-base';
 import { TRANSMISSION_COMPONENTS, TRANSMISSION_MFG_LEVERS, TRANSMISSION_TRENDS, TRANSMISSION_COST_STRUCTURE, getTotalTransmissionIdeas, TRANSMISSION_OEM_BENCHMARKS } from '../data/transmission-driveline-knowledge-base';
+import { EE_COMPONENTS, EE_MFG_LEVERS, EE_TRENDS, EE_COST_STRUCTURE, getTotalEeIdeas, EE_OEM_BENCHMARKS } from '../data/ee-knowledge-base';
+import { ADAS_COMPONENTS, ADAS_MFG_LEVERS, ADAS_TRENDS, ADAS_COST_STRUCTURE, getTotalAdasIdeas, ADAS_OEM_BENCHMARKS } from '../data/adas-knowledge-base';
+import { FUEL_EMISSION_COMPONENTS, FUEL_EMISSION_MFG_LEVERS, FUEL_EMISSION_TRENDS, FUEL_EMISSION_COST_STRUCTURE, getTotalFuelEmissionIdeas, FUEL_EMISSION_OEM_BENCHMARKS } from '../data/fuel-emission-knowledge-base';
+import { EXTERIOR_TRIM_COMPONENTS, EXTERIOR_TRIM_MFG_LEVERS, EXTERIOR_TRIM_TRENDS, EXTERIOR_TRIM_COST_STRUCTURE, getTotalExteriorTrimIdeas, EXTERIOR_TRIM_OEM_BENCHMARKS } from '../data/exterior-trim-knowledge-base';
 
-type Domain = 'edu' | 'biw' | 'chassis' | 'battery' | 'ice' | 'hvac' | 'interior' | 'exterior' | 'transmission';
+type Domain = 'edu' | 'biw' | 'chassis' | 'battery' | 'ice' | 'hvac' | 'interior' | 'exterior' | 'transmission' | 'ee' | 'adas' | 'fuel-emission' | 'exterior-trim';
 type Tab = 'trends' | 'manufacturing' | 'oem' | 'commodities';
 
 interface LiveCommodityItem {
@@ -81,6 +85,10 @@ const DOMAINS: { id: Domain; label: string; icon: typeof TrendingUp; color: stri
   { id: 'interior',      label: 'Interior Systems',         icon: Armchair, color: 'text-amber-400',   short: 'Interior' },
   { id: 'exterior',      label: 'Exterior Systems',         icon: Lightbulb,color: 'text-yellow-400',  short: 'Exterior' },
   { id: 'transmission',  label: 'Transmission & Driveline', icon: Cog,      color: 'text-rose-400',    short: 'Driveline' },
+  { id: 'ee',            label: 'Electrical & Electronics', icon: Zap,       color: 'text-violet-400',  short: 'E/E' },
+  { id: 'adas',          label: 'ADAS & Safety',            icon: Shield,    color: 'text-sky-400',     short: 'ADAS' },
+  { id: 'fuel-emission', label: 'Fuel & Emission',          icon: Droplets,  color: 'text-teal-400',    short: 'Fuel/Emis' },
+  { id: 'exterior-trim', label: 'Exterior Trim & Aero',     icon: Layers,    color: 'text-fuchsia-400', short: 'Ext.Trim' },
 ];
 
 const TABS: { id: Tab; label: string; icon: typeof TrendingUp }[] = [
@@ -125,6 +133,10 @@ export default function TrendsPage() {
     if (domain === 'interior')     return [{ label: 'Components', value: INTERIOR_COMPONENTS.length }, { label: 'VAVE ideas', value: getTotalInteriorIdeas() }, { label: 'Mfg levers', value: INTERIOR_MFG_LEVERS.length }, { label: 'Trends', value: INTERIOR_TRENDS.length }];
     if (domain === 'exterior')     return [{ label: 'Components', value: EXTERIOR_COMPONENTS.length }, { label: 'VAVE ideas', value: getTotalExteriorIdeas() }, { label: 'Mfg levers', value: EXTERIOR_MFG_LEVERS.length }, { label: 'Trends', value: EXTERIOR_TRENDS.length }];
     if (domain === 'transmission') return [{ label: 'Components', value: TRANSMISSION_COMPONENTS.length }, { label: 'VAVE ideas', value: getTotalTransmissionIdeas() }, { label: 'Mfg levers', value: TRANSMISSION_MFG_LEVERS.length }, { label: 'Trends', value: TRANSMISSION_TRENDS.length }];
+    if (domain === 'ee')           return [{ label: 'Components', value: EE_COMPONENTS.length }, { label: 'VAVE ideas', value: getTotalEeIdeas() }, { label: 'Mfg levers', value: EE_MFG_LEVERS.length }, { label: 'Trends', value: EE_TRENDS.length }];
+    if (domain === 'adas')         return [{ label: 'Components', value: ADAS_COMPONENTS.length }, { label: 'VAVE ideas', value: getTotalAdasIdeas() }, { label: 'Mfg levers', value: ADAS_MFG_LEVERS.length }, { label: 'Trends', value: ADAS_TRENDS.length }];
+    if (domain === 'fuel-emission') return [{ label: 'Components', value: FUEL_EMISSION_COMPONENTS.length }, { label: 'VAVE ideas', value: getTotalFuelEmissionIdeas() }, { label: 'Mfg levers', value: FUEL_EMISSION_MFG_LEVERS.length }, { label: 'Trends', value: FUEL_EMISSION_TRENDS.length }];
+    if (domain === 'exterior-trim') return [{ label: 'Components', value: EXTERIOR_TRIM_COMPONENTS.length }, { label: 'VAVE ideas', value: getTotalExteriorTrimIdeas() }, { label: 'Mfg levers', value: EXTERIOR_TRIM_MFG_LEVERS.length }, { label: 'Trends', value: EXTERIOR_TRIM_TRENDS.length }];
     return [];
   }
 
@@ -138,6 +150,10 @@ export default function TrendsPage() {
     if (domain === 'interior') return INTERIOR_COST_STRUCTURE;
     if (domain === 'exterior')     return EXTERIOR_COST_STRUCTURE;
     if (domain === 'transmission') return TRANSMISSION_COST_STRUCTURE;
+    if (domain === 'ee')           return EE_COST_STRUCTURE as unknown as typeof BIW_COST_STRUCTURE;
+    if (domain === 'adas')         return ADAS_COST_STRUCTURE as unknown as typeof BIW_COST_STRUCTURE;
+    if (domain === 'fuel-emission') return FUEL_EMISSION_COST_STRUCTURE;
+    if (domain === 'exterior-trim') return EXTERIOR_TRIM_COST_STRUCTURE;
     return [];
   }
 
@@ -169,6 +185,75 @@ export default function TrendsPage() {
         ))}
       </div>
     );
+
+    // Rich-idea format domains (EE, ADAS, Fuel/Emission, Exterior Trim) use { t, status, save, dir } trends + ideas[]
+    const isRichFormat = ['ee', 'adas', 'fuel-emission', 'exterior-trim'].includes(domain);
+
+    if (isRichFormat) {
+      const trends = domain === 'ee' ? EE_TRENDS : domain === 'adas' ? ADAS_TRENDS : domain === 'fuel-emission' ? FUEL_EMISSION_TRENDS : EXTERIOR_TRIM_TRENDS;
+      const components = domain === 'ee' ? EE_COMPONENTS : domain === 'adas' ? ADAS_COMPONENTS : domain === 'fuel-emission' ? FUEL_EMISSION_COMPONENTS : EXTERIOR_TRIM_COMPONENTS;
+      return (
+        <div className="space-y-10">
+          <section>
+            <div className="flex items-baseline gap-3 mb-4 pb-3 border-b border-white/8">
+              <h2 className="text-lg font-semibold text-white">Industry Trends</h2>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+              {(trends as { t: string; status: string; save: string; dir: string }[]).map((trend) => (
+                <div key={trend.t} className={`bg-navy-800/50 border border-white/8 border-l-2 rounded-xl p-4 ${trend.status === 'Next-Gen' ? 'border-l-violet-500' : trend.status.startsWith('Mainstream') ? 'border-l-blue-500' : trend.status.startsWith('Emerging') ? 'border-l-amber-500' : 'border-l-red-500'}`}>
+                  <div className="flex items-start justify-between gap-2 mb-2">
+                    <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border ${getTrendStatusClass(trend.status)}`}>{trend.status}</span>
+                    <span className="text-xs font-semibold text-success-400 bg-success-500/10 border border-success-500/20 rounded-full px-2 py-0.5 whitespace-nowrap">{trend.save}</span>
+                  </div>
+                  <p className="text-white text-sm font-semibold mb-2">{trend.t}</p>
+                  <p className="text-slate-400 text-xs leading-relaxed">{trend.dir}</p>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          <section>
+            <div className="flex items-baseline gap-3 mb-4 pb-3 border-b border-white/8">
+              <h2 className="text-lg font-semibold text-white">Component VAVE Ideas</h2>
+              <span className="text-slate-500 text-xs font-mono">Detailed cost-reduction levers by component</span>
+            </div>
+            <div className="space-y-5">
+              {(components as { id: string; sub: string; name: string; baseline: string; ideas: { t: string; lev: string; save: string; bench: string; tech: string; why: string; tr: string; new?: number }[] }[]).map((comp) => (
+                <div key={comp.id} className="bg-navy-800/40 border border-white/8 rounded-xl p-5">
+                  <div className="mb-3">
+                    <span className="text-xs text-slate-500 font-mono uppercase tracking-widest">{comp.sub}</span>
+                    <p className="text-white font-semibold mt-0.5">{comp.name}</p>
+                    <p className="text-slate-600 text-xs mt-0.5 leading-relaxed">Baseline: {comp.baseline}</p>
+                  </div>
+                  <div className="space-y-3">
+                    {comp.ideas.map((idea, i) => (
+                      <div key={i} className="border-t border-white/5 pt-3 first:border-t-0 first:pt-0">
+                        <div className="flex items-start gap-3">
+                          <span className="text-gold-500 text-xs font-bold flex-shrink-0 mt-0.5">{i+1}.</span>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex flex-wrap items-center gap-2 mb-1">
+                              <span className="text-white font-medium text-sm">{idea.t}</span>
+                              {idea.new ? <span className="text-[9px] font-bold text-violet-400 bg-violet-500/15 border border-violet-500/30 px-1.5 py-0.5 rounded-full">NEW</span> : null}
+                            </div>
+                            <div className="flex flex-wrap gap-2 mb-1.5">
+                              <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border ${getLevClass(idea.lev)}`}>{idea.lev}</span>
+                              <span className="text-xs font-semibold text-success-400 bg-success-500/10 border border-success-500/20 rounded-full px-2 py-0.5">{idea.save}</span>
+                            </div>
+                            <p className="text-slate-400 text-xs leading-relaxed mb-1">{idea.why}</p>
+                            {idea.bench && <p className="text-slate-600 text-xs">Benchmark: {idea.bench}</p>}
+                            {idea.tr && <p className="text-amber-500/70 text-xs mt-0.5">Validation: {idea.tr}</p>}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        </div>
+      );
+    }
 
     // New-format domains (ICE, HVAC, Interior, Exterior, Transmission) use { id, title, description, status, impact }
     const isNewFormat = ['ice', 'hvac', 'interior', 'exterior', 'transmission'].includes(domain);
@@ -380,6 +465,34 @@ export default function TrendsPage() {
       );
     }
 
+    // Rich-idea format domains use { t, lev, save, note } — same as EDU item format
+    const isRichMfgFormat = ['ee', 'adas', 'fuel-emission', 'exterior-trim'].includes(domain);
+    if (isRichMfgFormat) {
+      const richLevers = domain === 'ee' ? EE_MFG_LEVERS : domain === 'adas' ? ADAS_MFG_LEVERS : domain === 'fuel-emission' ? FUEL_EMISSION_MFG_LEVERS : EXTERIOR_TRIM_MFG_LEVERS;
+      return (
+        <div>
+          <div className="bg-navy-800/40 border border-white/8 border-l-2 border-l-gold-500 rounded-xl p-4 mb-6">
+            <h2 className="text-lg font-semibold text-white mb-1">{domainMeta.label} — Manufacturing Levers</h2>
+            <p className="text-slate-400 text-sm">Process-driven cost reduction levers for the {domainMeta.short} domain. Savings are directional indicators.</p>
+          </div>
+          <div className="grid gap-3">
+            {(richLevers as { t: string; lev: string; save: string; note: string }[]).map((item, i) => (
+              <div key={i} className="bg-navy-800/50 border border-white/8 rounded-xl p-4 grid grid-cols-1 sm:grid-cols-[1fr_auto] gap-2">
+                <div>
+                  <p className="text-white text-sm font-semibold">{item.t}</p>
+                  <p className="text-slate-400 text-xs mt-1">{item.note}</p>
+                </div>
+                <div className="flex sm:flex-col items-start sm:items-end gap-2">
+                  <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border ${getLevClass(item.lev)}`}>{item.lev}</span>
+                  <span className="text-gold-400 text-xs font-semibold whitespace-nowrap">{item.save}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
     const levers = domain === 'biw' ? BIW_MFG_LEVERS : domain === 'battery' ? BATTERY_MFG_LEVERS : [];
     if (levers.length === 0) return <div className="text-center py-16 text-slate-500">Manufacturing levers coming soon for this domain.</div>;
 
@@ -431,6 +544,10 @@ export default function TrendsPage() {
       : domain === 'interior'     ? INTERIOR_OEM_BENCHMARKS
       : domain === 'exterior'     ? EXTERIOR_OEM_BENCHMARKS
       : domain === 'transmission' ? TRANSMISSION_OEM_BENCHMARKS
+      : domain === 'ee'           ? EE_OEM_BENCHMARKS
+      : domain === 'adas'         ? ADAS_OEM_BENCHMARKS
+      : domain === 'fuel-emission' ? FUEL_EMISSION_OEM_BENCHMARKS
+      : domain === 'exterior-trim' ? EXTERIOR_TRIM_OEM_BENCHMARKS
       : [];
     if (benchmarks.length === 0) return <div className="text-center py-16 text-slate-500">OEM benchmarks for {domainMeta.label} are being compiled — coming in Phase 3.</div>;
 
@@ -507,22 +624,27 @@ export default function TrendsPage() {
               </p>
               <div className="flex rounded-lg overflow-hidden h-8">
                 {costStructure.map((item) => {
-                  const itemData = item as unknown as { share?: number; value?: number };
-                  const pct = itemData.share ?? itemData.value ?? 0;
+                  const itemData = item as unknown as { share?: number; value?: number; pct?: number; name?: string; label?: string };
+                  const pct = itemData.share ?? itemData.pct ?? itemData.value ?? 0;
+                  const displayName = itemData.name ?? itemData.label ?? '';
                   return (
-                    <div key={item.name} style={{ width: `${pct}%`, backgroundColor: item.color }} className="flex items-center justify-center text-white text-xs font-bold" title={`${item.name}: ~${pct}%`}>
+                    <div key={displayName} style={{ width: `${pct}%`, backgroundColor: item.color }} className="flex items-center justify-center text-white text-xs font-bold" title={`${displayName}: ~${pct}%`}>
                       {pct >= 8 ? `${pct}%` : ''}
                     </div>
                   );
                 })}
               </div>
               <div className="flex flex-wrap gap-x-4 gap-y-1 mt-2">
-                {costStructure.map((item) => (
-                  <span key={item.name} className="flex items-center gap-1.5 text-xs text-slate-400">
+                {costStructure.map((item) => {
+                  const itemData = item as unknown as { name?: string; label?: string };
+                  const displayName = itemData.name ?? itemData.label ?? '';
+                  return (
+                  <span key={displayName} className="flex items-center gap-1.5 text-xs text-slate-400">
                     <span className="w-2.5 h-2.5 rounded-sm" style={{ backgroundColor: item.color }} />
-                    {item.name}
+                    {displayName}
                   </span>
-                ))}
+                  );
+                })}
               </div>
             </div>
           )}
