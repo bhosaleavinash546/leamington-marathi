@@ -8,30 +8,12 @@ const T_MOTOR = 0.72;
 const T_SHAFT = 1.1;
 const T_FLOW  = 1.6;
 const T_PULSE = 2.4;
-const STAGGER = 0.14;
 
 // ── Color constants ──────────────────────────────────────────────────────────
 const CYAN   = '#22d3ee';
 const VIOLET = '#a78bfa';
 const GOLD   = '#fbbf24';
 const GREEN  = '#4ade80';
-
-// ── Callout label definitions ────────────────────────────────────────────────
-interface Callout {
-  id: string;
-  label: string;
-  color: string;
-  style: React.CSSProperties;
-}
-
-const CALLOUTS: Callout[] = [
-  { id: 'body',       label: 'Body Structure',    color: CYAN,   style: { top: '4%',  left: '2%' } },
-  { id: 'motor',      label: 'E-Motor',           color: VIOLET, style: { top: '4%',  right: '3%' } },
-  { id: 'driveshaft', label: 'Drive Shafts',      color: GREEN,  style: { top: '44%', right: '2%' } },
-  { id: 'inverter',   label: 'Inverter',          color: GOLD,   style: { bottom: '10%', right: '3%' } },
-  { id: 'battery',    label: 'Battery Pack',      color: CYAN,   style: { bottom: '10%', left: '2%' } },
-  { id: 'suspension', label: 'Suspension System', color: VIOLET, style: { bottom: '3%', left: '50%', transform: 'translateX(-50%)' } },
-];
 
 const SPOKE_ANGLES = [0, 60, 120, 180, 240, 300];
 
@@ -60,10 +42,9 @@ function Spokes({ color, r }: { color: string; r: number }) {
 
 // ── Main component ────────────────────────────────────────────────────────────
 export default function EVDiagram() {
-  const [playing, setPlaying]   = useState(true);
-  const [hovered, setHovered]   = useState<string | null>(null);
-  const prefersReduced          = useReducedMotion();
-  const on                      = playing && !prefersReduced;
+  const [playing, setPlaying] = useState(true);
+  const prefersReduced        = useReducedMotion();
+  const on                    = playing && !prefersReduced;
 
   // Shared transition builders
   const wheelTrans = on
@@ -202,15 +183,6 @@ export default function EVDiagram() {
           >
             <Spokes color={CYAN} r={7} />
           </motion.g>
-          {/* hover pulse when motor/driveshaft is highlighted */}
-          {(hovered === 'motor' || hovered === 'driveshaft') && (
-            <motion.circle
-              r="13" fill="none" stroke={CYAN} strokeWidth="0.4"
-              initial={{ opacity: 0.7, scale: 0.85 }}
-              animate={{ opacity: 0, scale: 1.55 }}
-              transition={{ duration: 1.1, repeat: Infinity, ease: 'easeOut' }}
-            />
-          )}
         </g>
 
         {/* ── Rear wheel (left side of car, ~25% from left) ── */}
@@ -224,14 +196,6 @@ export default function EVDiagram() {
           >
             <Spokes color={CYAN} r={7} />
           </motion.g>
-          {hovered === 'suspension' && (
-            <motion.circle
-              r="13" fill="none" stroke={VIOLET} strokeWidth="0.4"
-              initial={{ opacity: 0.7, scale: 0.85 }}
-              animate={{ opacity: 0, scale: 1.55 }}
-              transition={{ duration: 1.1, repeat: Infinity }}
-            />
-          )}
         </g>
 
         {/* ── Tech scan lines ── */}
@@ -246,53 +210,6 @@ export default function EVDiagram() {
         ))}
       </svg>
 
-      {/* ── HTML callout labels ── */}
-      <div className="absolute inset-0 pointer-events-none">
-        {CALLOUTS.map((c, i) => (
-          <motion.div
-            key={c.id}
-            className="absolute pointer-events-auto"
-            style={c.style}
-            initial={{ opacity: 0, y: 5 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.25 + i * STAGGER, duration: 0.3, ease: 'easeOut' }}
-            onHoverStart={() => setHovered(c.id)}
-            onHoverEnd={() => setHovered(null)}
-          >
-            <motion.div
-              className="px-2 py-1 rounded-md text-xs font-semibold border flex items-center gap-1.5 cursor-default whitespace-nowrap"
-              style={{
-                color: c.color,
-                borderColor: `${c.color}33`,
-                backgroundColor: 'rgba(2,6,23,0.72)',
-                backdropFilter: 'blur(8px)',
-                WebkitBackdropFilter: 'blur(8px)',
-              }}
-              whileHover={{
-                borderColor: `${c.color}80`,
-                backgroundColor: 'rgba(2,6,23,0.88)',
-                scale: 1.07,
-                transition: { duration: 0.12 },
-              }}
-            >
-              <motion.span
-                className="w-1.5 h-1.5 rounded-full flex-shrink-0"
-                style={{ backgroundColor: c.color }}
-                animate={
-                  hovered === c.id
-                    ? { boxShadow: [`0 0 0px ${c.color}`, `0 0 8px ${c.color}`, `0 0 0px ${c.color}`] }
-                    : { boxShadow: 'none' }
-                }
-                transition={{
-                  duration: 1.0,
-                  repeat: hovered === c.id ? Infinity : 0,
-                }}
-              />
-              {c.label}
-            </motion.div>
-          </motion.div>
-        ))}
-      </div>
 
       {/* ── Play / Pause toggle ── */}
       <motion.button
