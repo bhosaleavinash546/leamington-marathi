@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { TrendingUp, TrendingDown, Cpu, Wrench, Building2, ChevronRight, Car, Battery, Settings, Flame, Wind, Armchair, Lightbulb, Cog, BarChart3 } from 'lucide-react';
 import {
   MFG_LEVERS, EDU_TRENDS, OEM_MOVES, EDU_COST_STRUCTURE, getTotalEduIdeas, EDU_COMPONENTS,
@@ -13,25 +13,29 @@ import { EXTERIOR_COMPONENTS, EXTERIOR_TRENDS, EXTERIOR_COST_STRUCTURE, getTotal
 import { TRANSMISSION_COMPONENTS, TRANSMISSION_MFG_LEVERS, TRANSMISSION_TRENDS, TRANSMISSION_COST_STRUCTURE, getTotalTransmissionIdeas, TRANSMISSION_OEM_BENCHMARKS } from '../data/transmission-driveline-knowledge-base';
 
 type Domain = 'edu' | 'biw' | 'chassis' | 'battery' | 'ice' | 'hvac' | 'interior' | 'exterior' | 'transmission';
-type Tab = 'trends' | 'manufacturing' | 'oem';
+type Tab = 'trends' | 'manufacturing' | 'oem' | 'commodities';
 
-interface CommodityRow {
-  name: string;
-  price: string;
+interface LiveCommodityItem {
+  key: string;
+  label: string;
+  value: number;
   unit: string;
-  yoy: number; // percentage, negative = cost reduction
+  category: string;
+  tier: string;
+  context: string;
 }
 
-const COMMODITY_PRICES: CommodityRow[] = [
-  { name: 'Aluminium',         price: '€2,340', unit: '/t', yoy: -3  },
-  { name: 'Steel (HRC)',       price: '€580',   unit: '/t', yoy: -8  },
-  { name: 'Copper',            price: '€9,100', unit: '/t', yoy: +5  },
-  { name: 'ABS Resin',         price: '€1,450', unit: '/t', yoy: -2  },
-  { name: 'CFRP',              price: '€25,000',unit: '/t', yoy: -12 },
-  { name: 'Nylon PA66',        price: '€2,800', unit: '/t', yoy: -1  },
-  { name: 'Glass Fibre',       price: '€1,600', unit: '/t', yoy: +2  },
-  { name: 'Lithium Carbonate', price: '€12,000',unit: '/t', yoy: -45 },
-];
+interface LiveCategoryGroup {
+  label: string;
+  order: number;
+  items: LiveCommodityItem[];
+}
+
+const TIER_BADGE: Record<string, { label: string; cls: string }> = {
+  exchange:   { label: 'LME Exchange', cls: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30' },
+  spot:       { label: 'Spot Market',  cls: 'bg-gold-500/15 text-gold-400 border-gold-500/30' },
+  indicative: { label: 'Indicative',   cls: 'bg-slate-500/15 text-slate-400 border-slate-500/30' },
+};
 
 const CONF_COLORS: Record<string, string> = {
   verified:    'bg-success-500/10 text-success-400 border-success-500/30',
@@ -83,12 +87,30 @@ const TABS: { id: Tab; label: string; icon: typeof TrendingUp }[] = [
   { id: 'trends',        label: 'Industry Trends',       icon: TrendingUp },
   { id: 'manufacturing', label: 'Manufacturing Levers',  icon: Wrench },
   { id: 'oem',           label: 'OEM Benchmarks',        icon: Building2 },
+  { id: 'commodities',   label: 'Commodity Prices',      icon: BarChart3 },
 ];
 
 export default function TrendsPage() {
   const [domain, setDomain] = useState<Domain>('edu');
   const [tab, setTab] = useState<Tab>('trends');
   const [mfgLevel, setMfgLevel] = useState<'edu' | 'sub' | 'part'>('edu');
+  const [liveCategories, setLiveCategories] = useState<Record<string, LiveCategoryGroup>>({});
+  const [priceLastRefresh, setPriceLastRefresh] = useState<string | null>(null);
+  const [priceLoading, setPriceLoading] = useState(false);
+
+  useEffect(() => {
+    if (tab !== 'commodities') return;
+    if (Object.keys(liveCategories).length > 0) return;
+    setPriceLoading(true);
+    fetch('/api/prices')
+      .then(r => r.json())
+      .then(data => {
+        if (data.categories) setLiveCategories(data.categories);
+        if (data.lastRefresh) setPriceLastRefresh(data.lastRefresh);
+      })
+      .catch(() => {})
+      .finally(() => setPriceLoading(false));
+  }, [tab]);
 
   const domainMeta = DOMAINS.find(d => d.id === domain)!;
   const DomainIcon = domainMeta.icon;
@@ -524,6 +546,7 @@ export default function TrendsPage() {
         {tab === 'trends'        && renderTrends()}
         {tab === 'manufacturing' && renderManufacturing()}
         {tab === 'oem'           && renderOem()}
+        {tab === 'commodities'   && renderCommodities()}
       </div>
 
       {domain === 'edu' && tab === 'oem' && (
@@ -535,83 +558,106 @@ export default function TrendsPage() {
         </div>
       )}
 
-      {/* Commodity Price Reference — always visible at bottom of page */}
-      <div className="max-w-7xl mx-auto px-4 pb-12">
-        <div className="mt-10 border-t border-white/8 pt-8">
-          {/* Section header */}
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-9 h-9 rounded-lg bg-gold-500/15 border border-gold-500/30 flex items-center justify-center flex-shrink-0">
-              <BarChart3 size={18} className="text-gold-400" />
-            </div>
-            <div>
-              <h2 className="text-lg font-bold text-white">Commodity Price Reference</h2>
-              <p className="text-slate-500 text-xs">Q2 2025 indicative basis — engineering materials relevant to automotive cost modelling</p>
-            </div>
-          </div>
-
-          {/* Disclaimer banner */}
-          <div className="mb-5 mt-4 flex items-start gap-3 bg-amber-500/8 border border-amber-500/25 rounded-xl px-4 py-3">
-            <span className="text-amber-400 text-xs font-bold uppercase tracking-widest flex-shrink-0 mt-0.5">Disclaimer</span>
-            <p className="text-amber-300/70 text-xs leading-relaxed">
-              These are indicative Q2 2025 reference values for engineering estimation only.
-              Verify current spot prices at <span className="font-semibold text-amber-300">LME.com</span>, ICIS, Platts or via supplier quotes before use in commercial negotiations or financial modelling.
-              Prices exclude freight, duty, conversion and hedging premiums.
-            </p>
-          </div>
-
-          {/* Commodity table */}
-          <div className="bg-navy-800/40 border border-white/8 rounded-xl overflow-hidden">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-white/8">
-                  <th className="text-left text-xs font-semibold text-slate-400 uppercase tracking-widest px-5 py-3">Commodity</th>
-                  <th className="text-right text-xs font-semibold text-slate-400 uppercase tracking-widest px-5 py-3">Indicative Price</th>
-                  <th className="text-center text-xs font-semibold text-slate-400 uppercase tracking-widest px-5 py-3">Unit</th>
-                  <th className="text-center text-xs font-semibold text-slate-400 uppercase tracking-widest px-5 py-3">YoY</th>
-                  <th className="text-left text-xs font-semibold text-slate-400 uppercase tracking-widest px-5 py-3 hidden sm:table-cell">Signal</th>
-                </tr>
-              </thead>
-              <tbody>
-                {COMMODITY_PRICES.map((row, i) => {
-                  const isCostReduction = row.yoy < 0;
-                  const yoyLabel = (row.yoy > 0 ? '+' : '') + row.yoy + '%';
-                  return (
-                    <tr key={row.name} className={`border-b border-white/5 hover:bg-white/3 transition-colors ${i % 2 === 0 ? '' : 'bg-white/2'}`}>
-                      <td className="px-5 py-3.5">
-                        <span className="text-white font-medium">{row.name}</span>
-                      </td>
-                      <td className="px-5 py-3.5 text-right">
-                        <span className="text-gold-400 font-semibold font-mono">{row.price}</span>
-                      </td>
-                      <td className="px-5 py-3.5 text-center">
-                        <span className="text-slate-400 text-xs">{row.unit}</span>
-                      </td>
-                      <td className="px-5 py-3.5 text-center">
-                        <span className={`inline-flex items-center gap-1 text-xs font-bold px-2 py-0.5 rounded-full border ${isCostReduction ? 'text-success-400 bg-success-500/10 border-success-500/25' : 'text-danger-400 bg-danger-500/10 border-danger-500/25'}`}>
-                          {isCostReduction
-                            ? <TrendingDown size={11} />
-                            : <TrendingUp size={11} />}
-                          {yoyLabel}
-                        </span>
-                      </td>
-                      <td className="px-5 py-3.5 hidden sm:table-cell">
-                        <span className={`text-xs ${isCostReduction ? 'text-success-400/70' : 'text-danger-400/70'}`}>
-                          {isCostReduction ? 'Cost pressure easing' : 'Cost pressure rising'}
-                        </span>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-
-          <p className="text-slate-600 text-xs mt-3 leading-relaxed">
-            Source: LME, ICIS, industry benchmarks (Q2 2025). YoY = year-on-year change versus Q2 2024.
-            Green YoY indicates falling commodity cost (favourable for BOM). Red indicates rising cost (headwind).
-          </p>
-        </div>
-      </div>
     </div>
   );
+
+  function renderCommodities() {
+    const sortedCats = Object.entries(liveCategories).sort(([,a], [,b]) => (a.order ?? 99) - (b.order ?? 99));
+
+    return (
+      <div>
+        {/* Header */}
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h2 className="text-xl font-bold text-white">Live Commodity Prices</h2>
+            <p className="text-slate-500 text-xs mt-0.5">
+              {priceLastRefresh
+                ? `Refreshed ${new Date(priceLastRefresh).toLocaleString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}`
+                : 'Auto-refreshed daily from market data sources'}
+              {' '}&mdash; {Object.values(liveCategories).reduce((s, c) => s + c.items.length, 0)} commodities across {sortedCats.length} categories
+            </p>
+          </div>
+          <div className="flex items-center gap-4 text-xs text-slate-500">
+            <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-emerald-400" />LME Exchange</span>
+            <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-gold-400" />Spot Market</span>
+            <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-slate-500" />Indicative</span>
+          </div>
+        </div>
+
+        {/* Disclaimer */}
+        <div className="mb-5 flex items-start gap-3 bg-amber-500/8 border border-amber-500/25 rounded-xl px-4 py-3">
+          <span className="text-amber-400 text-xs font-bold uppercase tracking-widest flex-shrink-0 mt-0.5">Note</span>
+          <p className="text-amber-300/70 text-xs leading-relaxed">
+            Prices are fetched daily from public market data sources via web search and may vary from exchange-traded values.
+            Verify spot prices at LME.com, Fastmarkets, ICIS or via supplier quotes before use in commercial negotiations.
+            Prices exclude freight, duty, conversion and hedging premiums.
+          </p>
+        </div>
+
+        {priceLoading && (
+          <div className="flex items-center justify-center py-16 text-slate-500 text-sm">
+            <div className="w-4 h-4 border-2 border-gold-500/30 border-t-gold-400 rounded-full animate-spin mr-3" />
+            Fetching live commodity data…
+          </div>
+        )}
+
+        {!priceLoading && sortedCats.length === 0 && (
+          <div className="text-center py-16 text-slate-500 text-sm">No commodity data available. Start the server and try again.</div>
+        )}
+
+        {/* Category groups */}
+        <div className="space-y-6">
+          {sortedCats.map(([catKey, cat]) => (
+            <div key={catKey} className="bg-navy-800/40 border border-white/8 rounded-xl overflow-hidden">
+              <div className="px-5 py-3 border-b border-white/8 bg-white/2 flex items-center gap-2">
+                <span className="text-white font-semibold text-sm">{cat.label}</span>
+                <span className="text-slate-600 text-xs">({cat.items.length})</span>
+              </div>
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-white/6">
+                    <th className="text-left text-xs font-semibold text-slate-500 uppercase tracking-widest px-5 py-2.5">Commodity</th>
+                    <th className="text-right text-xs font-semibold text-slate-500 uppercase tracking-widest px-5 py-2.5">Price</th>
+                    <th className="text-center text-xs font-semibold text-slate-500 uppercase tracking-widest px-4 py-2.5 hidden md:table-cell">Tier</th>
+                    <th className="text-left text-xs font-semibold text-slate-500 uppercase tracking-widest px-5 py-2.5 hidden lg:table-cell">Application</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {cat.items.map((item, i) => {
+                    const tierMeta = TIER_BADGE[item.tier] ?? { label: item.tier, cls: 'bg-slate-500/15 text-slate-400 border-slate-500/30' };
+                    return (
+                      <tr key={item.key} className={`border-b border-white/5 hover:bg-white/3 transition-colors ${i % 2 === 0 ? '' : 'bg-white/2'}`}>
+                        <td className="px-5 py-3">
+                          <span className="text-white font-medium text-sm">{item.label}</span>
+                        </td>
+                        <td className="px-5 py-3 text-right">
+                          <span className="text-gold-400 font-bold font-mono text-sm">
+                            {item.value.toLocaleString('en-US', { maximumFractionDigits: 2 })}
+                          </span>
+                          <span className="text-slate-500 text-xs ml-1">{item.unit}</span>
+                        </td>
+                        <td className="px-4 py-3 text-center hidden md:table-cell">
+                          <span className={`inline-flex items-center text-[10px] font-semibold px-2 py-0.5 rounded-full border ${tierMeta.cls}`}>
+                            {tierMeta.label}
+                          </span>
+                        </td>
+                        <td className="px-5 py-3 hidden lg:table-cell">
+                          <span className="text-slate-500 text-xs">{item.context}</span>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          ))}
+        </div>
+
+        <p className="text-slate-600 text-xs mt-4 leading-relaxed">
+          Source: LME, Fastmarkets, ICIS, Argus Media, industry estimates — fetched daily via web search.
+          Exchange-grade prices (LME) are most reliable; indicative prices are engineering estimates for BOM modelling.
+        </p>
+      </div>
+    );
+  }
 }

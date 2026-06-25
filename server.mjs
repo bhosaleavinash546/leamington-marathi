@@ -193,6 +193,34 @@ db.exec(`
 try { db.exec("ALTER TABLE marketplace_ideas ADD COLUMN ideaData TEXT"); } catch {}
 try { db.exec("ALTER TABLE idea_business_cases ADD COLUMN ideaData TEXT"); } catch {}
 
+// ─── Commodity price persistence table ────────────────────────────────────────
+db.exec(`CREATE TABLE IF NOT EXISTS commodity_prices (
+  key TEXT PRIMARY KEY,
+  value REAL NOT NULL,
+  updatedAt TEXT NOT NULL
+)`);
+function initCommodityPriceDb() {
+  try {
+    const rows = db.prepare('SELECT key, value, updatedAt FROM commodity_prices').all();
+    let loaded = 0;
+    let latestTs = 0;
+    for (const row of rows) {
+      if (priceCache.data[row.key]) {
+        priceCache.data[row.key].value = row.value;
+        loaded++;
+        const ts = new Date(row.updatedAt).getTime();
+        if (ts > latestTs) latestTs = ts;
+      }
+    }
+    if (loaded > 0 && latestTs > 0) {
+      priceCache.lastRefresh = latestTs;
+      console.log(`[Prices] Loaded ${loaded} commodity prices from DB (${new Date(latestTs).toLocaleString()})`);
+    }
+  } catch (e) {
+    console.log('[Prices] DB init warning:', e.message);
+  }
+}
+
 // ─── Business case helper functions ──────────────────────────────────────────
 function calcIRR(investment, annualSaving, years = 5) {
   if (annualSaving <= 0 || investment <= 0) return 0;
@@ -3412,34 +3440,117 @@ function detectBatteryComponent(systemName, subassemblyName, partName) {
 // ─── LIVE COMMODITY PRICE CACHE (24hr TTL) ──────────────────────────────────
 
 const PRICE_CACHE_TTL = 24 * 60 * 60 * 1000;
+
+const COMMODITY_BASELINE = {
+  // ── Ferrous Metals ──────────────────────────────────────────────────────────
+  steel_hrc_eu:       { label: 'Steel HRC (EU)',            value: 580,   unit: '€/t',   category: 'ferrous',     tier: 'exchange',   context: 'BIW structure, chassis, body stampings' },
+  steel_crc_eu:       { label: 'Steel CRC (EU)',            value: 680,   unit: '€/t',   category: 'ferrous',     tier: 'spot',       context: 'Exposed panels, door outers, roof' },
+  phs_22mnb5:         { label: 'PHS Steel (22MnB5)',        value: 1250,  unit: '€/t',   category: 'ferrous',     tier: 'spot',       context: 'Hot-stamped pillars, rails, sills' },
+  dp980_ahss:         { label: 'DP980 AHSS',                value: 1100,  unit: '€/t',   category: 'ferrous',     tier: 'spot',       context: 'Advanced high-strength stampings' },
+  dp780_ahss:         { label: 'DP780 AHSS',                value: 950,   unit: '€/t',   category: 'ferrous',     tier: 'spot',       context: 'Structural reinforcements, sills' },
+  silicon_steel_m270: { label: 'Silicon Steel (M270-35A)',  value: 2200,  unit: '€/t',   category: 'ferrous',     tier: 'spot',       context: 'Motor laminations, stator/rotor core' },
+  stainless_304:      { label: 'Stainless Steel 304',       value: 2850,  unit: '€/t',   category: 'ferrous',     tier: 'spot',       context: 'Exhaust systems, heat shields' },
+  hsla_s420:          { label: 'HSLA S420',                 value: 780,   unit: '€/t',   category: 'ferrous',     tier: 'indicative', context: 'Suspension arms, structural nodes' },
+
+  // ── Non-Ferrous Metals ─────────────────────────────────────────────────────
+  copper_lme:         { label: 'Copper (LME)',              value: 9200,  unit: '€/t',   category: 'non-ferrous', tier: 'exchange',   context: 'Winding wire, busbars, connectors' },
+  aluminium_lme:      { label: 'Aluminium (LME)',           value: 2450,  unit: '€/t',   category: 'non-ferrous', tier: 'exchange',   context: 'HPDC casting, extrusions, closures' },
+  zinc_lme:           { label: 'Zinc (LME)',                value: 2800,  unit: '€/t',   category: 'non-ferrous', tier: 'exchange',   context: 'Galvanising coating, die-cast parts' },
+  nickel_lme:         { label: 'Nickel (LME)',              value: 16000, unit: '€/t',   category: 'non-ferrous', tier: 'exchange',   context: 'Battery cathode, stainless alloy' },
+  lead_lme:           { label: 'Lead (LME)',                value: 1900,  unit: '€/t',   category: 'non-ferrous', tier: 'exchange',   context: '12V lead-acid battery, ballast' },
+  al_hpdc_a380:       { label: 'Al HPDC Alloy (A380)',      value: 2600,  unit: '€/t',   category: 'non-ferrous', tier: 'spot',       context: 'Die-cast housings, knuckles, subframes' },
+  magnesium_ingot:    { label: 'Magnesium Ingot',           value: 2100,  unit: '€/t',   category: 'non-ferrous', tier: 'spot',       context: 'Ultra-light HPDC instrument panels, seats' },
+
+  // ── EV Battery Materials ───────────────────────────────────────────────────
+  li_carbonate:       { label: 'Lithium Carbonate (99.5%)', value: 12,    unit: '€/kg',  category: 'battery',     tier: 'spot',       context: 'LFP / NMC cathode active material' },
+  li_hydroxide:       { label: 'Lithium Hydroxide (LiOH)',  value: 14,    unit: '€/kg',  category: 'battery',     tier: 'spot',       context: 'High-Ni cathode (NMC811, NCA)' },
+  cobalt_sulfate:     { label: 'Cobalt Sulfate (EV grade)', value: 7.5,   unit: '€/kg',  category: 'battery',     tier: 'spot',       context: 'NMC cathode stabiliser' },
+  nickel_sulfate:     { label: 'Nickel Sulfate (EV grade)', value: 4.2,   unit: '€/kg',  category: 'battery',     tier: 'spot',       context: 'NMC high-Ni cathode precursor' },
+  manganese_sulfate:  { label: 'Manganese Sulfate',         value: 0.42,  unit: '€/kg',  category: 'battery',     tier: 'spot',       context: 'LMFP / NMN cathode additive' },
+  natural_graphite:   { label: 'Natural Graphite (anode)',  value: 0.85,  unit: '€/kg',  category: 'battery',     tier: 'spot',       context: 'Cell anode — flake graphite (SC/GX)' },
+  synthetic_graphite: { label: 'Synthetic Graphite (anode)',value: 2.4,   unit: '€/kg',  category: 'battery',     tier: 'indicative', context: 'High-performance anode, fast-charge' },
+  nmc_cell:           { label: 'NMC Cell (pack level)',     value: 78,    unit: '€/kWh', category: 'battery',     tier: 'indicative', context: 'BEV battery — NMC811/622 chemistry' },
+  lfp_cell:           { label: 'LFP Cell (pack level)',     value: 58,    unit: '€/kWh', category: 'battery',     tier: 'indicative', context: 'BEV/PHEV — LFP/M3P chemistry' },
+
+  // ── Rare Earths / Magnets ──────────────────────────────────────────────────
+  ndfeb_magnets:      { label: 'NdFeB Magnet (N42)',        value: 75,    unit: '€/kg',  category: 'rare-earth',  tier: 'spot',       context: 'IPM/SPM traction motor, power steering' },
+  ndpr_oxide:         { label: 'NdPr Oxide',                value: 55,    unit: '€/kg',  category: 'rare-earth',  tier: 'spot',       context: 'NdFeB magnet precursor — key price driver' },
+  dysprosium_oxide:   { label: 'Dysprosium Oxide',          value: 280,   unit: '€/kg',  category: 'rare-earth',  tier: 'spot',       context: 'Magnet coercivity booster (high-temp)' },
+  terbium_oxide:      { label: 'Terbium Oxide',             value: 1200,  unit: '€/kg',  category: 'rare-earth',  tier: 'spot',       context: 'Grain boundary diffusion in NdFeB' },
+  smco_magnet:        { label: 'SmCo Magnet (Grade 28)',    value: 95,    unit: '€/kg',  category: 'rare-earth',  tier: 'indicative', context: 'High-temp motor: turbo, exhaust actuator' },
+
+  // ── EDU / Motor Components ─────────────────────────────────────────────────
+  copper_wire_enamel: { label: 'Enamelled Copper Wire',     value: 10.2,  unit: '€/kg',  category: 'edu',         tier: 'spot',       context: 'Stator winding — round wire' },
+  hairpin_copper:     { label: 'Hairpin Copper Profile',    value: 11.8,  unit: '€/kg',  category: 'edu',         tier: 'indicative', context: 'Hairpin stator winding (I-pin, U-pin)' },
+  si_steel_lam:       { label: 'Si Steel Lamination (stamped)', value: 3.2, unit: '€/kg', category: 'edu',        tier: 'indicative', context: 'Punched & stacked rotor/stator lamination' },
+  al_rotor_cast:      { label: 'Al Rotor Cast (IM)',        value: 4.8,   unit: '€/kg',  category: 'edu',         tier: 'indicative', context: 'Induction motor squirrel-cage rotor' },
+
+  // ── Inverter / Power Electronics ───────────────────────────────────────────
+  sic_module:         { label: 'SiC Power Module (1200V)',  value: 2.2,   unit: '€/kW',  category: 'inverter',    tier: 'spot',       context: 'Main traction inverter — full-bridge' },
+  sic_die_650v:       { label: 'SiC Bare Die (650V)',       value: 0.95,  unit: '€/A',   category: 'inverter',    tier: 'indicative', context: 'OBC / DC-DC converter switches' },
+  igbt_module:        { label: 'IGBT Module (automotive)',  value: 1.4,   unit: '€/kVA', category: 'inverter',    tier: 'indicative', context: '400V inverter — being displaced by SiC' },
+  gan_650v:           { label: 'GaN Transistor (650V)',     value: 0.18,  unit: '€/W',   category: 'inverter',    tier: 'indicative', context: 'OBC, DC-DC — high-frequency switching' },
+  dc_link_cap:        { label: 'DC Link Film Capacitor',    value: 0.35,  unit: '€/µF',  category: 'inverter',    tier: 'indicative', context: 'Inverter DC bus ripple filter' },
+
+  // ── Plastics / Composites ──────────────────────────────────────────────────
+  pa6_gf30:           { label: 'PA6-GF30 (Nylon)',          value: 3.2,   unit: '€/kg',  category: 'plastics',    tier: 'spot',       context: 'Engine covers, brackets, structural' },
+  pa66_gf30:          { label: 'PA66-GF30 (Nylon)',         value: 3.8,   unit: '€/kg',  category: 'plastics',    tier: 'spot',       context: 'Air intake manifolds, coolant housings' },
+  pp_td20:            { label: 'PP-TD20 (talc-filled)',     value: 1.65,  unit: '€/kg',  category: 'plastics',    tier: 'spot',       context: 'Interior trim, bumper carriers' },
+  abs_auto:           { label: 'ABS (automotive grade)',    value: 2.1,   unit: '€/kg',  category: 'plastics',    tier: 'spot',       context: 'Interior trim, grille, trim panels' },
+  pom_acetal:         { label: 'POM (Acetal/Delrin)',       value: 2.9,   unit: '€/kg',  category: 'plastics',    tier: 'spot',       context: 'Gear components, fuel system, clips' },
+  cfrp_prepreg:       { label: 'CFRP Prepreg',             value: 28,    unit: '€/kg',  category: 'plastics',    tier: 'indicative', context: 'BEV battery enclosure, lightweight structures' },
+  gfrp_smc:           { label: 'GFRP SMC',                 value: 2.8,   unit: '€/kg',  category: 'plastics',    tier: 'spot',       context: 'Body panels, battery trays (cost-optimised)' },
+  pu_foam_seat:       { label: 'PU Foam (seat grade)',      value: 2.4,   unit: '€/kg',  category: 'plastics',    tier: 'indicative', context: 'Seat cushion, safety foam' },
+};
+
 const priceCache = {
   lastRefresh: null,
-  data: {
-    copper_lme:    { label: 'Copper (LME)',        value: 9200,  unit: '€/t',   context: 'Conductors, busbars, winding wire' },
-    aluminium_lme: { label: 'Aluminium (LME)',     value: 2450,  unit: '€/t',   context: 'HPDC casting, extrusions, closures' },
-    steel_hrc:     { label: 'Steel HRC (EU)',       value: 580,   unit: '€/t',   context: 'BIW structure, chassis arms' },
-    phs_steel:     { label: 'PHS Steel (22MnB5)',   value: 1250,  unit: '€/t',   context: 'Hot-stamped pillars, rails, sills' },
-    dp980_steel:   { label: 'DP980 AHSS',           value: 1100,  unit: '€/t',   context: 'Advanced high-strength stampings' },
-    ndfeb_magnets: { label: 'NdFeB Magnets',        value: 75,    unit: '€/kg',  context: 'Permanent magnet motors (IPM/SPM)' },
-    li_carbonate:  { label: 'Lithium Carbonate',    value: 12,    unit: '€/kg',  context: 'Battery cell cathode active material' },
-    nmc_cell:      { label: 'NMC Cell (pack level)',value: 78,    unit: '€/kWh', context: 'BEV battery — NMC811/622 chemistry' },
-    lfp_cell:      { label: 'LFP Cell (pack level)',value: 58,    unit: '€/kWh', context: 'BEV battery — LFP/M3P chemistry' },
-    sic_module:    { label: 'SiC Power Module',     value: 2.2,   unit: '€/kW',  context: 'Inverter — 1200V class SiC MOSFET' },
-    al_hpdc:       { label: 'Al HPDC Alloy (A380)', value: 2600,  unit: '€/t',   context: 'Die-cast housings, knuckles, subframes' },
-    pa6_gf30:      { label: 'PA6-GF30',             value: 3.2,   unit: '€/kg',  context: 'Structural nylon brackets, covers' },
-  },
+  data: Object.fromEntries(
+    Object.entries(COMMODITY_BASELINE).map(([k, v]) => [k, { ...v }])
+  ),
 };
 
 function extractCommodityPrice(text, commodity) {
-  // Remove thousands separators for easier matching
   const t = text.replace(/(\d),(\d{3})/g, '$1$2');
   const patterns = {
-    copper_lme:    [/copper[^.]{0,80}([\d.]{4,7})\s*(?:USD|EUR|€|\$)?\s*(?:per\s*)?(?:tonne|ton|\/t\b)/i, /LME copper\D{0,30}([\d.]{4,7})/i],
-    aluminium_lme: [/alumini[uo]m[^.]{0,80}([\d.]{3,6})\s*(?:USD|EUR|€|\$)?\s*(?:per\s*)?(?:tonne|ton|\/t\b)/i],
-    steel_hrc:     [/hot.?roll[^.]{0,80}([\d.]{3,6})\s*(?:USD|EUR|€|\$)?\s*(?:per\s*)?(?:tonne|ton|\/t\b)/i, /HRC[^.]{0,50}([\d.]{3,6})\s*(?:USD|EUR)?\s*(?:per\s*)?(?:tonne|\/t\b)/i],
-    ndfeb_magnets: [/(?:NdFeB|neodymium)[^.]{0,80}([\d.]{2,5})\s*(?:USD|EUR|€|\$)?\s*(?:per\s*)?kg/i],
-    li_carbonate:  [/lithium carbonate[^.]{0,80}([\d.]{1,6})\s*(?:USD|EUR|€|\$)?\s*(?:per\s*)?kg/i],
-    sic_module:    [/SiC[^.]{0,60}([\d.]{1,4})\s*(?:USD|EUR|€|\$)?\s*(?:per\s*)?(?:W|watt|kW)/i],
+    // Ferrous
+    steel_hrc_eu:       [/(?:EU|European|Europe)[^.]{0,60}HRC[^.]{0,60}([\d.]{3,6})\s*(?:EUR|€|USD|\$)?\s*(?:per\s*)?(?:tonne|ton|\/t\b)/i, /HRC[^.]{0,40}([\d.]{3,6})\s*EUR/i, /hot.?roll[^.]{0,80}([\d.]{3,6})\s*(?:EUR|€)\s*(?:per\s*)?(?:tonne|\/t\b)/i],
+    steel_crc_eu:       [/(?:CRC|cold.?roll)[^.]{0,60}([\d.]{3,6})\s*(?:EUR|€)?\s*(?:per\s*)?(?:tonne|ton|\/t\b)/i],
+    phs_22mnb5:         [/(?:PHS|boron|22MnB5|hot.?stamp)[^.]{0,80}([\d.]{3,6})\s*(?:EUR|€|USD|\$)?\s*(?:per\s*)?(?:tonne|ton|\/t\b)/i],
+    dp980_ahss:         [/DP.?980[^.]{0,60}([\d.]{3,6})\s*(?:EUR|€|USD|\$)?\s*(?:per\s*)?(?:tonne|ton|\/t\b)/i],
+    dp780_ahss:         [/DP.?780[^.]{0,60}([\d.]{3,6})\s*(?:EUR|€|USD|\$)?\s*(?:per\s*)?(?:tonne|ton|\/t\b)/i],
+    silicon_steel_m270: [/(?:electrical|silicon)[^.]{0,30}steel[^.]{0,80}([\d.]{3,6})\s*(?:EUR|€|USD|\$)?\s*(?:per\s*)?(?:tonne|ton|\/t\b)/i, /M270[^.]{0,60}([\d.]{3,6})\s*(?:EUR|€|USD|\$)/i],
+    stainless_304:      [/(?:304|stainless)[^.]{0,60}([\d.]{3,6})\s*(?:EUR|€|USD|\$)?\s*(?:per\s*)?(?:tonne|ton|\/t\b)/i],
+    // Non-ferrous
+    copper_lme:         [/(?:LME\s+)?copper[^.]{0,80}([\d.]{4,7})\s*(?:USD|EUR|€|\$)?\s*(?:per\s*)?(?:tonne|ton|\/t\b)/i, /copper.*?([\d.]{4,7})\s*(?:USD|EUR)\/t/i],
+    aluminium_lme:      [/alumini[uo]m[^.]{0,80}([\d.]{3,6})\s*(?:USD|EUR|€|\$)?\s*(?:per\s*)?(?:tonne|ton|\/t\b)/i],
+    zinc_lme:           [/(?:LME\s+)?zinc[^.]{0,80}([\d.]{3,6})\s*(?:USD|EUR|€|\$)?\s*(?:per\s*)?(?:tonne|ton|\/t\b)/i],
+    nickel_lme:         [/(?:LME\s+)?nickel[^.]{0,80}([\d.]{4,7})\s*(?:USD|EUR|€|\$)?\s*(?:per\s*)?(?:tonne|ton|\/t\b)/i],
+    lead_lme:           [/(?:LME\s+)?lead[^.]{0,80}([\d.]{3,6})\s*(?:USD|EUR|€|\$)?\s*(?:per\s*)?(?:tonne|ton|\/t\b)/i],
+    magnesium_ingot:    [/magnesium[^.]{0,80}([\d.]{3,6})\s*(?:USD|EUR|€|\$)?\s*(?:per\s*)?(?:tonne|ton|\/t\b)/i],
+    al_hpdc_a380:       [/(?:HPDC|A380|die.?cast)[^.]{0,60}alumini[uo]m[^.]{0,60}([\d.]{3,6})\s*(?:USD|EUR|€|\$)?\s*(?:per\s*)?(?:tonne|ton|\/t\b)/i],
+    // Battery materials
+    li_carbonate:       [/lithium carbonate[^.]{0,80}([\d.]{1,6})\s*(?:USD|EUR|€|\$)?\s*(?:per\s*)?(?:tonne|ton|kg|\/t\b|\/kg)/i],
+    li_hydroxide:       [/lithium hydroxide[^.]{0,80}([\d.]{1,6})\s*(?:USD|EUR|€|\$)?\s*(?:per\s*)?(?:tonne|ton|kg|\/t\b|\/kg)/i],
+    cobalt_sulfate:     [/cobalt[^.]{0,80}([\d.]{1,5})\s*(?:USD|EUR|€|\$)?\s*(?:per\s*)?(?:kg|lb|pound)/i],
+    nickel_sulfate:     [/nickel\s+sulfate[^.]{0,80}([\d.]{1,5})\s*(?:USD|EUR|€|\$)?\s*(?:per\s*)?(?:tonne|ton|kg|\/t\b)/i],
+    manganese_sulfate:  [/manganese[^.]{0,80}([\d.]{1,4})\s*(?:USD|EUR|€|\$)?\s*(?:per\s*)?(?:tonne|ton|kg)/i],
+    natural_graphite:   [/(?:natural|flake)\s+graphite[^.]{0,80}([\d.]{1,5})\s*(?:USD|EUR|€|\$)?\s*(?:per\s*)?(?:tonne|ton|kg)/i],
+    nmc_cell:           [/NMC[^.]{0,60}([\d.]{2,4})\s*(?:USD|EUR|€|\$)?\s*(?:per\s*)?(?:kWh|kwh)/i, /battery[^.]{0,40}NMC[^.]{0,40}([\d.]{2,4})\s*(?:USD|EUR)?\s*\/\s*kWh/i],
+    lfp_cell:           [/LFP[^.]{0,60}([\d.]{2,4})\s*(?:USD|EUR|€|\$)?\s*(?:per\s*)?(?:kWh|kwh)/i, /lithium.?iron[^.]{0,60}([\d.]{2,4})\s*(?:USD|EUR)?\s*\/\s*kWh/i],
+    // Rare earths
+    ndfeb_magnets:      [/(?:NdFeB|neodymium)[^.]{0,80}([\d.]{2,5})\s*(?:USD|EUR|€|\$)?\s*(?:per\s*)?(?:kg|kilogram)/i],
+    ndpr_oxide:         [/(?:NdPr|neodymium.{0,5}praseodymium)[^.]{0,80}([\d.]{2,5})\s*(?:USD|EUR|€|\$)?\s*(?:per\s*)?(?:kg|kilogram)/i, /NdPr[^.]{0,60}([\d.]{2,5})\s*(?:USD|EUR|\$)/i],
+    dysprosium_oxide:   [/dysprosium[^.]{0,80}([\d.]{2,5})\s*(?:USD|EUR|€|\$)?\s*(?:per\s*)?(?:kg|kilogram)/i],
+    terbium_oxide:      [/terbium[^.]{0,80}([\d.]{3,6})\s*(?:USD|EUR|€|\$)?\s*(?:per\s*)?(?:kg|kilogram)/i],
+    // Inverter
+    sic_module:         [/SiC[^.]{0,60}([\d.]{1,4})\s*(?:USD|EUR|€|\$)?\s*(?:per\s*)?(?:W|watt|kW|kilowatt)/i],
+    // Plastics
+    pa6_gf30:           [/PA6[^.]{0,15}GF30[^.]{0,60}([\d.]{1,5})\s*(?:USD|EUR|€|\$)?\s*(?:per\s*)?(?:kg|kilogram)/i, /nylon\s+PA6[^.]{0,40}([\d.]{1,5})\s*(?:EUR|€)\s*\/kg/i],
+    pa66_gf30:          [/PA66[^.]{0,15}GF30[^.]{0,60}([\d.]{1,5})\s*(?:USD|EUR|€|\$)?\s*(?:per\s*)?(?:kg|kilogram)/i],
+    pp_td20:            [/(?:polypropylene|PP)[^.]{0,60}([\d.]{1,4})\s*(?:EUR|€|USD|\$)\s*(?:per\s*)?(?:tonne|ton|kg)/i],
+    abs_auto:           [/ABS[^.]{0,40}resin[^.]{0,60}([\d.]{1,4})\s*(?:EUR|€|USD|\$)\s*(?:per\s*)?(?:tonne|ton|kg)/i],
+    pom_acetal:         [/(?:POM|acetal|Delrin)[^.]{0,60}([\d.]{1,4})\s*(?:EUR|€|USD|\$)\s*(?:per\s*)?(?:kg|tonne)/i],
   };
   for (const pat of (patterns[commodity] || [])) {
     const m = t.match(pat);
@@ -3452,31 +3563,79 @@ function extractCommodityPrice(text, commodity) {
 }
 
 const PRICE_SANITY = {
-  copper_lme:    [4000, 18000],
-  aluminium_lme: [1200, 6000],
-  steel_hrc:     [250,  1500],
-  ndfeb_magnets: [30,   200],
-  li_carbonate:  [4,    60],
-  sic_module:    [0.5,  8],
+  steel_hrc_eu:       [200,  1200],
+  steel_crc_eu:       [300,  1500],
+  phs_22mnb5:         [600,  2500],
+  dp980_ahss:         [500,  2200],
+  dp780_ahss:         [400,  2000],
+  silicon_steel_m270: [1000, 5000],
+  stainless_304:      [1500, 6000],
+  hsla_s420:          [400,  1500],
+  copper_lme:         [4000, 18000],
+  aluminium_lme:      [1200, 6000],
+  zinc_lme:           [1500, 5000],
+  nickel_lme:         [8000, 40000],
+  lead_lme:           [800,  3500],
+  al_hpdc_a380:       [1800, 5000],
+  magnesium_ingot:    [1200, 5000],
+  li_carbonate:       [4,    70],
+  li_hydroxide:       [5,    80],
+  cobalt_sulfate:     [2,    40],
+  nickel_sulfate:     [1.5,  25],
+  manganese_sulfate:  [0.1,  2],
+  natural_graphite:   [0.3,  5],
+  synthetic_graphite: [1,    8],
+  nmc_cell:           [40,   200],
+  lfp_cell:           [30,   150],
+  ndfeb_magnets:      [30,   200],
+  ndpr_oxide:         [25,   180],
+  dysprosium_oxide:   [100,  1500],
+  terbium_oxide:      [500,  5000],
+  sic_module:         [0.5,  8],
+  pa6_gf30:           [1.5,  7],
+  pa66_gf30:          [2,    8],
+  pp_td20:            [0.8,  4],
+  abs_auto:           [1,    5],
+  pom_acetal:         [1.5,  6],
 };
+
+async function savePricesToDb() {
+  try {
+    const stmt = db.prepare('INSERT OR REPLACE INTO commodity_prices (key, value, updatedAt) VALUES (?, ?, ?)');
+    const now = new Date().toISOString();
+    const insertMany = db.transaction((entries) => {
+      for (const [key, val] of entries) stmt.run(key, val.value, now);
+    });
+    insertMany(Object.entries(priceCache.data));
+  } catch (e) {
+    console.log('[Prices] DB save warning:', e.message);
+  }
+}
 
 async function refreshPriceCache(braveApiKey) {
   const now = Date.now();
   if (priceCache.lastRefresh && (now - priceCache.lastRefresh) < PRICE_CACHE_TTL) return priceCache.data;
 
-  const searches = [
-    'LME copper aluminium price per tonne USD EUR 2025',
-    'steel hot rolled coil HRC price per tonne Europe 2025',
-    'neodymium NdFeB magnet price per kg 2025',
+  const searchGroups = [
+    { query: 'LME copper aluminium zinc nickel lead price USD per tonne 2025', keys: ['copper_lme', 'aluminium_lme', 'zinc_lme', 'nickel_lme', 'lead_lme'] },
+    { query: 'European steel HRC CRC price EUR per tonne hot rolled coil 2025', keys: ['steel_hrc_eu', 'steel_crc_eu', 'phs_22mnb5', 'dp980_ahss'] },
+    { query: 'lithium carbonate lithium hydroxide battery price USD per kg tonne 2025', keys: ['li_carbonate', 'li_hydroxide'] },
+    { query: 'cobalt nickel sulfate cathode material price per tonne 2025 battery', keys: ['cobalt_sulfate', 'nickel_sulfate', 'manganese_sulfate'] },
+    { query: 'natural graphite flake anode NMC LFP battery cell pack price per kWh 2025', keys: ['natural_graphite', 'nmc_cell', 'lfp_cell'] },
+    { query: 'neodymium praseodymium NdPr oxide rare earth price per kg 2025', keys: ['ndfeb_magnets', 'ndpr_oxide'] },
+    { query: 'dysprosium terbium oxide rare earth price USD per kg 2025', keys: ['dysprosium_oxide', 'terbium_oxide'] },
+    { query: 'SiC silicon carbide power module automotive price per kW 2025', keys: ['sic_module'] },
+    { query: 'PA6 PA66 GF30 nylon polypropylene ABS resin price per tonne kg 2025', keys: ['pa6_gf30', 'pa66_gf30', 'pp_td20', 'abs_auto', 'pom_acetal'] },
+    { query: 'magnesium ingot silicon electrical steel M270 price per tonne automotive 2025', keys: ['magnesium_ingot', 'silicon_steel_m270', 'stainless_304'] },
   ];
 
   let updatedCount = 0;
   try {
-    for (const query of searches) {
+    for (const { query, keys } of searchGroups) {
       const results = await performSearch(query, braveApiKey).catch(() => []);
       if (!results?.length) continue;
       const text = results.map(r => `${r.title} ${r.snippet}`).join(' ');
-      for (const key of Object.keys(priceCache.data)) {
+      for (const key of keys) {
         const extracted = extractCommodityPrice(text, key);
         if (extracted !== null) {
           const [min, max] = PRICE_SANITY[key] || [0, Infinity];
@@ -3488,18 +3647,45 @@ async function refreshPriceCache(braveApiKey) {
         }
       }
     }
-    console.log(`[Prices] Refresh complete — ${updatedCount} prices updated`);
+    console.log(`[Prices] Refresh complete — ${updatedCount}/${Object.keys(priceCache.data).length} prices updated from web`);
   } catch (e) {
-    console.log('[Prices] Web refresh failed, using baseline:', e.message);
+    console.log('[Prices] Web refresh failed, using persisted/baseline:', e.message);
   }
 
   priceCache.lastRefresh = now;
+  await savePricesToDb();
   return priceCache.data;
+}
+
+function scheduleDailyPriceRefresh(apiKey) {
+  // Run immediately (non-blocking, uses DB-persisted if fresh)
+  refreshPriceCache(apiKey).catch(e => console.log('[Prices] Startup refresh error:', e.message));
+  // Re-run every 24h, forcing cache expiry
+  setInterval(() => {
+    priceCache.lastRefresh = null;
+    refreshPriceCache(apiKey).catch(e => console.log('[Prices] Scheduled refresh error:', e.message));
+  }, PRICE_CACHE_TTL);
+  console.log('[Prices] Daily refresh scheduled (every 24h)');
 }
 
 function getPriceString() {
   const p = priceCache.data;
-  return `LIVE COMMODITY PRICES (cached ${priceCache.lastRefresh ? new Date(priceCache.lastRefresh).toLocaleDateString() : 'baseline'}): Cu ${p.copper_lme.value} ${p.copper_lme.unit} | Al LME ${p.aluminium_lme.value} ${p.aluminium_lme.unit} | Steel HRC ${p.steel_hrc.value} ${p.steel_hrc.unit} | PHS Steel ${p.phs_steel.value} ${p.phs_steel.unit} | NdFeB ${p.ndfeb_magnets.value} ${p.ndfeb_magnets.unit} | Li Carbonate ${p.li_carbonate.value} ${p.li_carbonate.unit} | NMC cell ${p.nmc_cell.value} ${p.nmc_cell.unit} | LFP cell ${p.lfp_cell.value} ${p.lfp_cell.unit} | SiC module ${p.sic_module.value} ${p.sic_module.unit} | Al HPDC ${p.al_hpdc.value} ${p.al_hpdc.unit}`;
+  const ts = priceCache.lastRefresh ? new Date(priceCache.lastRefresh).toLocaleDateString() : 'baseline';
+  return `LIVE COMMODITY PRICES (refreshed ${ts}): `
+    + `Cu ${p.copper_lme?.value} ${p.copper_lme?.unit} | `
+    + `Al LME ${p.aluminium_lme?.value} ${p.aluminium_lme?.unit} | `
+    + `Steel HRC ${p.steel_hrc_eu?.value} ${p.steel_hrc_eu?.unit} | `
+    + `PHS Steel ${p.phs_22mnb5?.value} ${p.phs_22mnb5?.unit} | `
+    + `NdFeB ${p.ndfeb_magnets?.value} ${p.ndfeb_magnets?.unit} | `
+    + `Li₂CO₃ ${p.li_carbonate?.value} ${p.li_carbonate?.unit} | `
+    + `LiOH ${p.li_hydroxide?.value} ${p.li_hydroxide?.unit} | `
+    + `NMC cell ${p.nmc_cell?.value} ${p.nmc_cell?.unit} | `
+    + `LFP cell ${p.lfp_cell?.value} ${p.lfp_cell?.unit} | `
+    + `SiC module ${p.sic_module?.value} ${p.sic_module?.unit} | `
+    + `Al HPDC ${p.al_hpdc_a380?.value} ${p.al_hpdc_a380?.unit} | `
+    + `Si Steel ${p.silicon_steel_m270?.value} ${p.silicon_steel_m270?.unit} | `
+    + `PA6-GF30 ${p.pa6_gf30?.value} ${p.pa6_gf30?.unit} | `
+    + `Nickel ${p.nickel_lme?.value} ${p.nickel_lme?.unit}`;
 }
 
 const BODY_STYLE_CONTEXT = {
@@ -3853,12 +4039,30 @@ app.post('/api/cad-analyze', requireAuth, async (req, res) => {
 
 // Commodity prices endpoint
 app.get('/api/prices', async (req, res) => {
-  const prices = await refreshPriceCache(null);
+  // Use cached data (do not force refresh on every page load)
+  if (!priceCache.lastRefresh) await refreshPriceCache(null).catch(() => {});
+  const categories = {};
+  const CATEGORY_META = {
+    'ferrous':     { label: 'Ferrous Metals',             order: 1 },
+    'non-ferrous': { label: 'Non-Ferrous Metals',         order: 2 },
+    'battery':     { label: 'EV Battery Materials',       order: 3 },
+    'rare-earth':  { label: 'Rare Earths & Magnets',      order: 4 },
+    'edu':         { label: 'EDU / Motor Components',     order: 5 },
+    'inverter':    { label: 'Inverter & Power Electronics', order: 6 },
+    'plastics':    { label: 'Plastics & Composites',      order: 7 },
+  };
+  for (const [key, item] of Object.entries(priceCache.data)) {
+    const cat = item.category || 'other';
+    if (!categories[cat]) categories[cat] = { ...CATEGORY_META[cat], items: [] };
+    categories[cat].items.push({ key, ...item });
+  }
   res.json({
-    prices,
+    prices: priceCache.data,
+    categories,
     lastRefresh: priceCache.lastRefresh ? new Date(priceCache.lastRefresh).toISOString() : null,
     nextRefresh: priceCache.lastRefresh ? new Date(priceCache.lastRefresh + PRICE_CACHE_TTL).toISOString() : null,
     cacheAgeMinutes: priceCache.lastRefresh ? Math.round((Date.now() - priceCache.lastRefresh) / 60000) : null,
+    totalCommodities: Object.keys(priceCache.data).length,
   });
 });
 
@@ -4704,6 +4908,10 @@ app.get('/api/business-cases/:id/comments', requireAuth, (req, res) => {
   ).all(req.params.id);
   res.json(comments);
 });
+
+// Load persisted commodity prices and schedule daily refresh
+initCommodityPriceDb();
+scheduleDailyPriceRefresh(null);
 
 app.listen(PORT, async () => {
   console.log(`\n⚡ BrainSpark Server v${APP_VERSION}`);

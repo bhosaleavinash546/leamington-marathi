@@ -114,24 +114,39 @@ function ExampleAnalyses() {
 
 // ─── Commodity Ticker ─────────────────────────────────────────────────────────
 
-const COMMODITIES = [
-  { name: 'NdFeB Magnet', price: '$102/kg', trend: 'up', delta: '+3.2%' },
-  { name: 'Copper LME', price: '$9,842/t', trend: 'up', delta: '+1.1%' },
-  { name: 'SiC Wafer 6"', price: '$890/ea', trend: 'down', delta: '-2.4%' },
-  { name: 'Aluminium LME', price: '$2,611/t', trend: 'down', delta: '-0.8%' },
-  { name: 'Silicon Steel', price: '$1,840/t', trend: 'up', delta: '+0.5%' },
-  { name: 'Dysprosium', price: '$304/kg', trend: 'down', delta: '-1.7%' },
-  { name: 'Steel HRC', price: '$780/t', trend: 'up', delta: '+2.1%' },
-  { name: 'LiOH Battery', price: '$12.8/kg', trend: 'down', delta: '-4.3%' },
-];
+interface LiveCommodity { key: string; label: string; value: number; unit: string; category: string; tier: string; }
 
-function CommodityTicker() {
+const TIER_DOT: Record<string, string> = {
+  exchange:   'bg-emerald-400',
+  spot:       'bg-gold-400',
+  indicative: 'bg-slate-500',
+};
+
+function useLivePrices() {
+  const [items, setItems] = useState<LiveCommodity[]>([]);
+  const [lastRefresh, setLastRefresh] = useState<string | null>(null);
+  useEffect(() => {
+    fetch('/api/prices')
+      .then(r => r.json())
+      .then(data => {
+        if (data.prices) {
+          setItems(Object.entries(data.prices).map(([key, v]: [string, any]) => ({ key, ...v })));
+          setLastRefresh(data.lastRefresh ?? null);
+        }
+      })
+      .catch(() => {});
+  }, []);
+  return { items, lastRefresh };
+}
+
+function CommodityTicker({ items }: { items: LiveCommodity[] }) {
   const ref = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     const el = ref.current;
-    if (!el) return;
+    if (!el || items.length === 0) return;
     let offset = 0;
-    const speed = 0.4;
+    const speed = 0.35;
     let raf: number;
     const tick = () => {
       offset -= speed;
@@ -141,27 +156,28 @@ function CommodityTicker() {
     };
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-  }, []);
+  }, [items]);
 
-  const items = [...COMMODITIES, ...COMMODITIES];
+  const displayItems = [...items, ...items];
+
   return (
     <div className="overflow-hidden relative">
       <div className="absolute left-0 top-0 bottom-0 w-12 bg-gradient-to-r from-navy-950 to-transparent z-10 pointer-events-none" />
       <div className="absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-navy-950 to-transparent z-10 pointer-events-none" />
-      <div ref={ref} className="flex gap-6 whitespace-nowrap will-change-transform">
-        {items.map((c, i) => (
-          <div key={i} className="flex items-center gap-2 text-xs">
-            <span className="text-slate-500 font-medium">{c.name}</span>
-            <span className="text-white font-bold">{c.price}</span>
-            <span className={`font-semibold ${c.trend === 'up' ? 'text-green-400' : 'text-red-400'}`}>
-              {c.trend === 'up' ? '↑' : '↓'} {c.delta}
-            </span>
+      <div ref={ref} className="flex gap-8 whitespace-nowrap will-change-transform">
+        {displayItems.map((c, i) => (
+          <div key={i} className="flex items-center gap-1.5 text-xs">
+            <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${TIER_DOT[c.tier] ?? 'bg-slate-500'}`} />
+            <span className="text-slate-400 font-medium">{c.label}</span>
+            <span className="text-white font-bold font-mono">{c.value.toLocaleString('en-US', { maximumFractionDigits: 2 })}</span>
+            <span className="text-slate-500">{c.unit}</span>
           </div>
         ))}
       </div>
     </div>
   );
 }
+
 
 // ─── Benchmark Panel ──────────────────────────────────────────────────────────
 
@@ -271,6 +287,7 @@ const KPI_CARDS = [
 
 export default function HomePage() {
   const [activeSystem, setActiveSystem] = useState<string | null>(null);
+  const { items: livePriceItems, lastRefresh: priceLastRefresh } = useLivePrices();
 
   return (
     <div className="min-h-screen bg-navy-950 overflow-hidden">
@@ -364,12 +381,23 @@ export default function HomePage() {
             <div className="flex items-center gap-3 mb-2">
               <div className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider text-slate-500">
                 <BarChart3 size={10} />
-                Reference Commodity Prices
+                Live Commodity Prices
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                <span className="text-[9px] text-slate-600">Exchange</span>
+                <span className="w-1.5 h-1.5 rounded-full bg-gold-400 ml-2" />
+                <span className="text-[9px] text-slate-600">Spot</span>
+                <span className="w-1.5 h-1.5 rounded-full bg-slate-500 ml-2" />
+                <span className="text-[9px] text-slate-600">Indicative</span>
               </div>
               <div className="flex-1 h-px bg-white/6" />
-              <span className="text-[10px] text-slate-600">Indicative Q2 2025 rates — verify before use</span>
+              {priceLastRefresh
+                ? <span className="text-[10px] text-slate-600">Refreshed {new Date(priceLastRefresh).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: '2-digit' })}</span>
+                : <span className="text-[10px] text-slate-600">Daily auto-refresh</span>
+              }
             </div>
-            <CommodityTicker />
+            <CommodityTicker items={livePriceItems} />
           </motion.div>
 
           {/* ── Two-column: Live Feed + Benchmark Panel ────────────────── */}
