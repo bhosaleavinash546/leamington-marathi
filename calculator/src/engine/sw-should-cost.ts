@@ -640,52 +640,74 @@ function computeModuleCost(
   input:  SWModuleInput,
   prog:   SWProgramInputs
 ): SWModuleCostResult {
-  const regionRate  = UK_PM_RATE_GBP * REGION_MULT[prog.region] * DEV_SOURCE_MULT[prog.devSource];
-  const asilDev     = ASIL_DEV_MULT[input.asil];
-  const complexity  = COMPLEXITY_MULT[input.complexity];
-  const reuse       = REUSE_FACTOR[input.reuse];
-  const testFrac    = ASIL_TEST_MULT[input.asil];
+  // Blended rate: senior engineers cost 20% more, junior 25% less.
+  // overheadMultiplier covers corporate burden (facilities, management, tools overhead).
+  const seniorMult  = prog.teamSeniorFraction * 1.20 + (1 - prog.teamSeniorFraction) * 0.75;
+  const regionRate  = UK_PM_RATE_GBP * REGION_MULT[prog.region] * DEV_SOURCE_MULT[prog.devSource]
+                      * seniorMult * prog.overheadMultiplier;
+
+  const asilDev    = ASIL_DEV_MULT[input.asil];
+  const complexity = COMPLEXITY_MULT[input.complexity];
+  const reuse      = REUSE_FACTOR[input.reuse];
+  const testFrac   = ASIL_TEST_MULT[input.asil];
 
   const effectivePM = (input.customPersonMonths ?? def.basePersonMonths) * reuse;
 
-  // Development sub-buckets (fractions of total dev effort)
-  const devPM = effectivePM * asilDev;
-  const reqsPM  = devPM * 0.12;
-  const archPM  = devPM * 0.14;
-  const algoPM  = devPM * 0.22 * complexity; // complexity multiplied here
-  const implPM  = devPM * 0.37;
-  const safetyPM= devPM * 0.15;             // pure safety compliance work
+  // Development sub-buckets. Complexity applied to algorithm bucket only.
+  // Base fractions: Reqs 12%, Arch 14%, Algo 22% (×complexity), Impl 37%, Safety 15% = 100% base.
+  const devPM    = effectivePM * asilDev;
+  const reqsPM   = devPM * 0.12;
+  const archPM   = devPM * 0.14;
+  const algoPM   = devPM * 0.22 * complexity;
+  const implPM   = devPM * 0.37;
+  const safetyPM = devPM * 0.15;
 
-  const reqs   = reqsPM  * regionRate;
-  const arch   = archPM  * regionRate;
-  const algo   = algoPM  * regionRate;
-  const impl   = implPM  * regionRate;
+  const reqs   = reqsPM   * regionRate;
+  const arch   = archPM   * regionRate;
+  const algo   = algoPM   * regionRate;
+  const impl   = implPM   * regionRate;
   const safety = safetyPM * regionRate;
   const devTotal = reqs + arch + algo + impl + safety;
 
-  // Testing breakdown (fractions of dev cost at ASIL)
+  // Testing breakdown. Fractions must sum exactly to testTotal.
+  // Allocate proportionally by type, ensuring HIL absorbs any residual.
   const testTotal = devTotal * testFrac;
-  const silCost   = testTotal * 0.30;
-  const milCost   = def.hasMLContent ? testTotal * 0.18 : testTotal * 0.08;
-  const hilCost   = testTotal * 0.35;
-  const regCost   = testTotal * 0.10;
-  const penCost   = def.hasCybersecRequirement ? testTotal * 0.08 : 0;
-  const scenCost  = def.category === 'B' ? testTotal * 0.09 : 0;
+  const silFrac   = 0.30;
+  const milFrac   = def.hasMLContent ? 0.18 : 0.08;
+  const regFrac   = 0.10;
+  const penFrac   = def.hasCybersecRequirement ? 0.08 : 0;
+  const scenFrac  = def.category === 'B' ? 0.09 : 0;
+  const hilFrac   = Math.max(0, 1 - silFrac - milFrac - regFrac - penFrac - scenFrac);
 
-  const integration    = devTotal * def.integrationFractionBase;
-  const cybersec       = def.hasCybersecRequirement ? devTotal * 0.08 : 0;
-  const toolchain      = def.annualToolLicenceGBP * prog.programLifeYears;
-  const licensing      = def.annualToolLicenceGBP * 0.4 * prog.programLifeYears; // IP/SW licences
-  const cloudCost      = prog.includeCloudCost
+  const silCost   = testTotal * silFrac;
+  const milCost   = testTotal * milFrac;
+  const regCost   = testTotal * regFrac;
+  const penCost   = testTotal * penFrac;
+  const scenCost  = testTotal * scenFrac;
+  const hilCost   = testTotal * hilFrac;   // residual — always sums to testTotal
+
+  const integration = devTotal * def.integrationFractionBase;
+  // Cybersecurity compliance work: 8% base, uplifted for high-ASIL safety-critical modules
+  const cybersecPct = def.hasCybersecRequirement
+    ? (input.asil === 'D' ? 0.14 : input.asil === 'C' ? 0.10 : 0.08) : 0;
+  const cybersec    = devTotal * cybersecPct;
+
+  // Toolchain and IP licensing split from annualToolLicenceGBP (no double-count).
+  // 60% = development toolchain; 40% = IP/SW licensing (map data, ASR engines, RTOS royalties, etc.)
+  const licenceBase = def.annualToolLicenceGBP * prog.programLifeYears;
+  const toolchain   = licenceBase * 0.60;
+  const licensing   = licenceBase * 0.40;
+
+  const cloudCost   = prog.includeCloudCost
     ? def.annualCloudCostGBP * prog.programLifeYears : 0;
-  const maintenance    = prog.includeMaintenanceCost
+  const maintenance = prog.includeMaintenanceCost
     ? devTotal * (def.maintenancePctPerYear / 100) * prog.programLifeYears : 0;
 
-  const totalNRE    = devTotal + testTotal + integration + toolchain + cybersec;
+  const totalNRE      = devTotal + testTotal + integration + toolchain + cybersec;
   const totalLifecycle = maintenance + cloudCost + licensing;
-  const grandTotal  = totalNRE + totalLifecycle;
-  const vehicles    = prog.annualProductionVolume * prog.programLifeYears;
-  const perVehicle  = vehicles > 0 ? grandTotal / vehicles : 0;
+  const grandTotal     = totalNRE + totalLifecycle;
+  const vehicles       = prog.annualProductionVolume * prog.programLifeYears;
+  const perVehicle     = vehicles > 0 ? grandTotal / vehicles : 0;
 
   return {
     moduleId:       def.id,
@@ -779,10 +801,11 @@ export function computeSWProgram(prog: SWProgramInputs): SWProgramResult {
       unit: '£M',
     },
     {
-      parameter: 'Production Volume (50k vs 150k units/yr)',
-      low:  summary.grandTotal / Math.max(1, 50_000 * prog.programLifeYears),
+      // Low = high volume = low per-vehicle cost (favourable). High = low volume = high per-vehicle (unfavourable).
+      parameter: 'Production Volume (150k vs 50k units/yr, per-vehicle)',
+      low:  summary.grandTotal / Math.max(1, 150_000 * prog.programLifeYears),
       base: summary.perVehicle,
-      high: summary.grandTotal / Math.max(1, 150_000 * prog.programLifeYears),
+      high: summary.grandTotal / Math.max(1, 50_000 * prog.programLifeYears),
       unit: '£/vehicle',
     },
   ];

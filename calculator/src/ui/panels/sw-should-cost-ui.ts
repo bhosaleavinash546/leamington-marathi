@@ -92,7 +92,7 @@ function renderSWPanelHTML(): string {
       <div class="sw-cat-header" style="border-left:3px solid ${meta.color}" onclick="this.closest('.sw-cat-group').classList.toggle('sw-collapsed')">
         <span class="sw-cat-icon">${meta.icon}</span>
         <span class="sw-cat-label">${esc(meta.label)}</span>
-        <span class="sw-cat-count">${mods.length} modules</span>
+        <span class="sw-cat-count">${mods.length}/${mods.length} modules</span>
         <span class="sw-cat-chevron">▾</span>
       </div>
       <div class="sw-cat-body">
@@ -176,6 +176,10 @@ function renderSWPanelHTML(): string {
         <label class="sw-label">Overhead Multiplier</label>
         <input id="sw-overhead" type="number" class="sw-config-inp" min="1.0" max="3.0" step="0.05" value="${inputs.overheadMultiplier}">
       </div>
+      <div class="sw-field-group">
+        <label class="sw-label">Senior Engineer Fraction</label>
+        <input id="sw-senior-frac" type="number" class="sw-config-inp" min="0" max="1" step="0.05" value="${inputs.teamSeniorFraction}" title="Fraction of team that are senior engineers (0.0–1.0). Senior = 1.20× base rate; junior = 0.75× base rate.">
+      </div>
       <div class="sw-field-group" style="display:flex;flex-direction:column;gap:8px;justify-content:flex-end">
         <label style="display:flex;align-items:center;gap:8px;font-size:0.8rem;color:#374151;cursor:pointer">
           <input type="checkbox" id="sw-inc-maint" ${inputs.includeMaintenanceCost ? 'checked' : ''} style="width:14px;height:14px;cursor:pointer">
@@ -236,6 +240,9 @@ function renderSWPanelHTML(): string {
 
     <!-- Benchmark comparison -->
     <div class="sw-results-section" id="sw-benchmarks"></div>
+
+    <!-- Engineering Insights -->
+    <div class="sw-results-section" id="sw-insights"></div>
 
     <!-- Export -->
     <div style="text-align:center;margin:20px 0">
@@ -357,6 +364,7 @@ function renderSWPanelHTML(): string {
   transition: all 0.15s;
 }
 .sw-preset-btn:hover { background: #f1f5f9; border-color: #94a3b8; }
+.sw-preset-active { background: #eff6ff !important; border-color: #2563eb !important; color: #2563eb !important; font-weight: 700; }
 
 .sw-results-section {
   background: #fff;
@@ -425,19 +433,21 @@ function renderSWPanelHTML(): string {
 function readConfig(): void {
   const get = (id: string) => document.getElementById(id) as HTMLElement | null;
 
-  const region   = (get('sw-region') as HTMLSelectElement)?.value as SWRegion || 'UK';
-  const devSrc   = (get('sw-dev-source') as HTMLSelectElement)?.value as DevSource || 'OEM_Internal';
-  const life     = parseInt((get('sw-prog-life') as HTMLInputElement)?.value) || 10;
-  const vol      = parseInt((get('sw-vol') as HTMLInputElement)?.value) || 80_000;
-  const overhead = parseFloat((get('sw-overhead') as HTMLInputElement)?.value) || 1.60;
-  const maint    = (get('sw-inc-maint') as HTMLInputElement)?.checked ?? true;
-  const cloud    = (get('sw-inc-cloud') as HTMLInputElement)?.checked ?? true;
+  const region     = (get('sw-region') as HTMLSelectElement)?.value as SWRegion || 'UK';
+  const devSrc     = (get('sw-dev-source') as HTMLSelectElement)?.value as DevSource || 'OEM_Internal';
+  const life       = parseInt((get('sw-prog-life') as HTMLInputElement)?.value) || 10;
+  const vol        = parseInt((get('sw-vol') as HTMLInputElement)?.value) || 80_000;
+  const overhead   = parseFloat((get('sw-overhead') as HTMLInputElement)?.value) || 1.60;
+  const seniorFrac = parseFloat((get('sw-senior-frac') as HTMLInputElement)?.value) ?? 0.50;
+  const maint      = (get('sw-inc-maint') as HTMLInputElement)?.checked ?? true;
+  const cloud      = (get('sw-inc-cloud') as HTMLInputElement)?.checked ?? true;
 
   _swInputs.region                = region;
   _swInputs.devSource             = devSrc;
   _swInputs.programLifeYears      = Math.max(1, life);
   _swInputs.annualProductionVolume = Math.max(1, vol);
   _swInputs.overheadMultiplier    = Math.max(1, overhead);
+  _swInputs.teamSeniorFraction    = Math.min(1, Math.max(0, isNaN(seniorFrac) ? 0.50 : seniorFrac));
   _swInputs.includeMaintenanceCost = maint;
   _swInputs.includeCloudCost      = cloud;
 
@@ -499,13 +509,15 @@ function renderResults(result: SWProgramResult): void {
   const s = result.summary;
 
   // Summary cards
+  const avgFTE = s.totalPersonMonths > 0 ? s.totalPersonMonths / (result.inputs.programLifeYears * 12) : 0;
+  const nreTotal = s.totalDevelopment + s.totalTesting + s.totalIntegration + s.totalToolchain + s.totalCybersecurity;
   const cards: { label: string; value: string; sub: string; color: string }[] = [
-    { label: 'Total Programme Cost',    value: fmtM(s.grandTotal),       sub: 'NRE + Lifecycle',                        color: '#2563eb' },
-    { label: 'Per Vehicle (SW)',        value: `£${fmt(s.perVehicle, 0)}`, sub: `${fmt(result.inputs.annualProductionVolume/1000,0)}k units/yr × ${result.inputs.programLifeYears}yr`, color: '#059669' },
-    { label: 'Total NRE',              value: fmtM(s.totalDevelopment + s.totalTesting + s.totalIntegration + s.totalToolchain + s.totalCybersecurity), sub: 'Dev + Test + Integration + Tools', color: '#7c3aed' },
-    { label: 'Total Person-Months',    value: `${fmt(s.totalPersonMonths, 0)} PM`, sub: `≈ ${fmt(s.totalPersonMonths/12, 0)} FTE-years`,   color: '#d97706' },
-    { label: 'Maintenance + Cloud',    value: fmtM(s.totalMaintenance + s.totalCloud), sub: `Over ${result.inputs.programLifeYears}-year programme`,   color: '#0891b2' },
-    { label: 'Active Modules',         value: `${result.modules.length}`, sub: 'of 43 configured modules',              color: '#64748b' },
+    { label: 'Total Programme Cost',    value: fmtM(s.grandTotal),             sub: 'NRE + Lifecycle (all modules)',                color: '#2563eb' },
+    { label: 'Per Vehicle (SW Cost)',   value: `£${fmt(s.perVehicle, 0)}`,     sub: `${fmt(result.inputs.annualProductionVolume/1000,0)}k units/yr × ${result.inputs.programLifeYears}yr`, color: '#059669' },
+    { label: 'Total NRE',              value: fmtM(nreTotal),                  sub: 'Dev + Test + Integration + Tools + Cyber',    color: '#7c3aed' },
+    { label: 'Total Person-Months',    value: `${fmt(s.totalPersonMonths, 0)} PM`, sub: `Avg team: ${fmt(avgFTE,0)} FTE over ${result.inputs.programLifeYears}yr`, color: '#d97706' },
+    { label: 'Lifecycle (Maint+Cloud)',value: fmtM(s.totalMaintenance + s.totalCloud), sub: `${fmt((s.totalMaintenance+s.totalCloud)/s.grandTotal*100,0)}% of total programme`, color: '#0891b2' },
+    { label: 'Active Modules',         value: `${result.modules.length}`,      sub: `of 43 modules · ${result.inputs.region} / ${result.inputs.devSource.replace('_',' ')}`, color: '#64748b' },
   ];
 
   const cardsHTML = cards.map(c => `
@@ -589,7 +601,7 @@ function renderResults(result: SWProgramResult): void {
     return `<tr class="${i < 5 ? 'sw-highlight' : ''}">
       <td>${i + 1}</td>
       <td style="font-weight:600">${esc(m.moduleName)}</td>
-      <td><span style="color:${meta?.color ?? '#64748b'}">${meta?.icon ?? ''}</span> ${esc(m.categoryLabel)}</td>
+      <td><span style="color:${meta?.color ?? '#64748b'}">${meta?.icon ?? ''}</span> ${esc(meta?.label ?? m.categoryLabel)}</td>
       <td>${asilBadge(m.asilUsed)}</td>
       <td style="font-size:0.75rem;color:#64748b">${esc(m.complexityUsed)}</td>
       <td style="font-size:0.75rem;color:#64748b">${esc(m.reuseUsed)}</td>
@@ -639,14 +651,15 @@ function renderResults(result: SWProgramResult): void {
       <thead><tr><th>Parameter</th><th class="sw-num">Low Scenario</th><th class="sw-num">Base Case</th><th class="sw-num">High Scenario</th><th class="sw-num">Range</th></tr></thead>
       <tbody>${sensRows}</tbody>
     </table>
-    <p style="font-size:0.72rem;color:#94a3b8;margin-top:10px">* Low = favourable (lower cost). High = unfavourable (higher cost). Base = this calculation.</p>`;
+    <p style="font-size:0.72rem;color:#94a3b8;margin-top:10px">* Low = favourable scenario (lower cost). High = unfavourable (higher cost). Exception: Production Volume row — Low = high volume (150k/yr, cheaper per-vehicle). Base = this calculation configuration.</p>`;
 
-  // Benchmark comparison
+  // Benchmark comparison — diff shows "this model vs benchmark" (positive = this model costs more)
   const bmRows = result.benchmarks.map(b => {
     const isThis = b.vehicle.includes('This Model');
-    const diff   = b.totalM > 0 ? ((b.totalM - s.grandTotal / 1_000_000) / (s.grandTotal / 1_000_000) * 100) : 0;
-    const diffFmt = isThis ? 'Base' : `${diff >= 0 ? '+' : ''}${fmt(diff, 0)}%`;
-    const diffColor = isThis ? '#2563eb' : diff > 0 ? '#ef4444' : '#059669';
+    const thisM  = s.grandTotal / 1_000_000;
+    const diff   = (!isThis && b.totalM > 0) ? ((thisM - b.totalM) / b.totalM * 100) : 0;
+    const diffFmt = isThis ? '⭐ Base' : `${diff >= 0 ? '+' : ''}${fmt(diff, 0)}%`;
+    const diffColor = isThis ? '#2563eb' : diff > 20 ? '#ef4444' : diff < -20 ? '#059669' : '#d97706';
     return `<tr ${isThis ? 'style="background:#eff6ff;font-weight:700"' : ''}>
       <td>${isThis ? '⭐ ' : ''}${esc(b.vehicle)}</td>
       <td class="sw-num">${b.totalM > 0 ? fmtM(b.totalM * 1_000_000) : fmtM(s.grandTotal)}</td>
@@ -660,10 +673,109 @@ function renderResults(result: SWProgramResult): void {
   if (bmEl) bmEl.innerHTML = `
     <div class="sw-section-title"><span>🏆</span> Benchmark Comparison — Premium EV Programme SW Investment</div>
     <table class="sw-data-table">
-      <thead><tr><th>Vehicle / Programme</th><th class="sw-num">Total SW Cost</th><th class="sw-num">£/Vehicle</th><th class="sw-num">vs This Model</th><th>Source</th></tr></thead>
+      <thead><tr><th>Vehicle / Programme</th><th class="sw-num">Total SW Cost</th><th class="sw-num">£/Vehicle</th><th class="sw-num">This Model vs Benchmark</th><th>Source</th></tr></thead>
       <tbody>${bmRows}</tbody>
     </table>
-    <p style="font-size:0.72rem;color:#94a3b8;margin-top:10px">* Benchmark figures are industry estimates and analyst reports. OEM-specific programmes vary by architecture strategy, insourcing vs outsourcing mix, and capitalisation policy.</p>`;
+    <p style="font-size:0.72rem;color:#94a3b8;margin-top:10px">* "This Model vs Benchmark" shows how this model compares relative to each benchmark (positive = more expensive, negative = cheaper). Benchmark figures are industry estimates and analyst reports; OEM-specific programmes vary by architecture strategy, insourcing mix, and capitalisation policy.</p>`;
+
+  // Engineering Insights (rule-based, domain-expert observations)
+  const insightsEl = document.getElementById('sw-insights');
+  if (insightsEl) {
+    const insights: { icon: string; level: 'info' | 'warn' | 'ok'; title: string; body: string }[] = [];
+
+    // 1. Top cost driver
+    const sorted = [...result.modules].sort((a,b) => b.grandTotal - a.grandTotal);
+    if (sorted.length > 0) {
+      const top = sorted[0];
+      insights.push({ icon: '📊', level: 'info',
+        title: `Top cost driver: ${top.moduleName}`,
+        body: `At ${fmtM(top.grandTotal)} (${fmt(top.grandTotal/s.grandTotal*100,1)}% of total), ${top.moduleName} dominates programme cost. This is typical for ${CAT_META[top.category]?.label ?? top.categoryLabel} — ensure build-vs-buy is evaluated.`,
+      });
+    }
+
+    // 2. ASIL-D modules with Heavy/Platform reuse — technically questionable
+    const asilDReuseHeavy = result.modules.filter(m => m.asilUsed === 'D' && (m.reuseUsed === 'Heavy' || m.reuseUsed === 'Platform'));
+    if (asilDReuseHeavy.length > 0) {
+      insights.push({ icon: '⚠️', level: 'warn',
+        title: `ASIL-D with Heavy/Platform reuse — verify safety case`,
+        body: `${asilDReuseHeavy.map(m => m.moduleName).join(', ')} are ASIL-D with ${asilDReuseHeavy[0].reuseUsed} reuse. ISO 26262 requires a formal safety case for reused elements (SEooC claim). Factor in safety analysis cost not captured here.`,
+      });
+    }
+
+    // 3. NRE vs lifecycle split insight
+    const nreTotal = s.totalDevelopment + s.totalTesting + s.totalIntegration + s.totalToolchain + s.totalCybersecurity;
+    const lifecycleTotal = s.totalMaintenance + s.totalCloud + s.totalLicensing;
+    const lifecyclePct = s.grandTotal > 0 ? lifecycleTotal / s.grandTotal * 100 : 0;
+    if (lifecyclePct > 45) {
+      insights.push({ icon: '☁️', level: 'warn',
+        title: `High lifecycle cost (${fmt(lifecyclePct,0)}% of total)`,
+        body: `Maintenance + cloud + licensing is ${fmtM(lifecycleTotal)} — ${fmt(lifecyclePct,0)}% of programme cost. This is driven by cloud infrastructure (camera AI retraining, connectivity backends). Consider hybrid cloud / on-premise architecture to reduce long-term costs.`,
+      });
+    } else {
+      insights.push({ icon: '✅', level: 'ok',
+        title: `NRE/lifecycle split is healthy (${fmt(100-lifecyclePct,0)}% NRE)`,
+        body: `Development NRE (${fmtM(nreTotal)}) accounts for ${fmt(100-lifecyclePct,0)}% of total programme cost. This ratio is typical for an OEM insourcing most development.`,
+      });
+    }
+
+    // 4. Benchmark positioning
+    const nonThis = result.benchmarks.filter(b => !b.vehicle.includes('This Model'));
+    const medianBm = [...nonThis].sort((a,b)=>a.totalM-b.totalM)[Math.floor(nonThis.length/2)]?.totalM ?? 0;
+    const thisM = s.grandTotal / 1_000_000;
+    if (medianBm > 0) {
+      const diffPct = (thisM - medianBm) / medianBm * 100;
+      insights.push({ icon: diffPct > 30 ? '🔴' : diffPct > 10 ? '🟡' : '🟢', level: diffPct > 30 ? 'warn' : 'ok',
+        title: `Programme cost is ${fmt(Math.abs(diffPct),0)}% ${diffPct >= 0 ? 'above' : 'below'} peer median (${fmtM(medianBm * 1_000_000)})`,
+        body: diffPct > 20 ? `Cost exceeds peer median by ${fmt(diffPct,0)}%. Review ASIL assignments — are all modules justified at current safety levels? Increasing reuse or offshoring ADAS teams could reduce cost materially.`
+              : `Programme cost is within normal range vs peer benchmarks. Monitor cloud costs closely as fleet scales.`,
+      });
+    }
+
+    // 5. No cybersecurity modules warning
+    const hasCyberMod = result.modules.some(m => m.category === 'F');
+    if (!hasCyberMod) {
+      insights.push({ icon: '🔴', level: 'warn',
+        title: 'No Cybersecurity (ISO 21434) modules enabled',
+        body: 'UN-ECE R155 regulation mandates Cybersecurity Management System for all connected vehicles from July 2024. Enabling Category F modules is required for regulatory compliance — omitting them underestimates programme cost significantly.',
+      });
+    }
+
+    // 6. Region opportunity
+    if (result.inputs.region === 'UK' || result.inputs.region === 'USA_SV') {
+      const indiaTotal = result.sensitivity.find(r => r.parameter.includes('Region'))?.low;
+      if (indiaTotal && indiaTotal > 0) {
+        const saving = s.grandTotal - indiaTotal;
+        insights.push({ icon: '💡', level: 'info',
+          title: `Offshoring to India could save ${fmtM(saving)}`,
+          body: `Shifting to an India-based development team (Bangalore / Pune rate) reduces labour cost to ${fmtM(indiaTotal)} — a potential saving of ${fmtM(saving)}. Factor in coordination overhead (+15%), knowledge transfer, and time zone risk before applying full saving.`,
+        });
+      }
+    }
+
+    // 7. Person-months team size
+    const avgTeamFTE = s.totalPersonMonths > 0 ? s.totalPersonMonths / (result.inputs.programLifeYears * 12) : 0;
+    insights.push({ icon: '👥', level: 'info',
+      title: `Average team size: ${fmt(avgTeamFTE, 0)} FTE across ${result.inputs.programLifeYears}-year programme`,
+      body: `${fmt(s.totalPersonMonths, 0)} total person-months across ${result.modules.length} modules implies an average sustained team of ~${fmt(avgTeamFTE,0)} FTE engineers. Peak headcount during integration phases is typically 1.4–1.7× this average.`,
+    });
+
+    const levelColor: Record<string, string> = { info: '#2563eb', warn: '#d97706', ok: '#059669' };
+    const levelBg:    Record<string, string> = { info: '#eff6ff', warn: '#fff7ed', ok: '#f0fdf4' };
+    const levelBorder:Record<string, string> = { info: '#bfdbfe', warn: '#fed7aa', ok: '#bbf7d0' };
+
+    insightsEl.innerHTML = `
+      <div class="sw-section-title"><span>🧠</span> Engineering Insights</div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        ${insights.map(ins => `
+        <div style="background:${levelBg[ins.level]};border:1px solid ${levelBorder[ins.level]};border-radius:8px;padding:12px 16px;display:flex;gap:12px;align-items:flex-start">
+          <span style="font-size:1.2rem;flex-shrink:0">${ins.icon}</span>
+          <div>
+            <div style="font-weight:700;font-size:0.82rem;color:${levelColor[ins.level]};margin-bottom:4px">${esc(ins.title)}</div>
+            <div style="font-size:0.78rem;color:#374151;line-height:1.5">${esc(ins.body)}</div>
+          </div>
+        </div>`).join('')}
+      </div>`;
+  }
 
   // Show results section
   const resultsEl = document.getElementById('sw-results');
@@ -850,12 +962,33 @@ function exportSWPDF(result: SWProgramResult): void {
 
 // ─── Wire events ──────────────────────────────────────────────────────────────
 
+function showSWError(msg: string): void {
+  let errEl = document.getElementById('sw-calc-error');
+  if (!errEl) {
+    errEl = document.createElement('div');
+    errEl.id = 'sw-calc-error';
+    errEl.style.cssText = 'background:#fef2f2;border:1px solid #fca5a5;border-radius:8px;padding:10px 16px;margin:8px 0;font-size:0.82rem;color:#dc2626;display:flex;align-items:center;gap:8px';
+    const calcBtn = document.getElementById('sw-calc-btn');
+    calcBtn?.parentElement?.insertBefore(errEl, calcBtn);
+  }
+  errEl.innerHTML = `<span>⚠️</span> ${esc(msg)}`;
+  errEl.style.display = 'flex';
+  setTimeout(() => { if (errEl) errEl.style.display = 'none'; }, 6000);
+}
+
 export function wireSWPanel(): void {
   // Calculate button
   const calcBtn = document.getElementById('sw-calc-btn');
   if (calcBtn) {
     calcBtn.addEventListener('click', () => {
       readConfig();
+
+      const enabledCount = _swInputs.modules.filter(m => m.enabled).length;
+      if (enabledCount === 0) {
+        showSWError('No modules selected. Enable at least one module to run the calculation.');
+        return;
+      }
+
       const origText = calcBtn.textContent ?? '';
       calcBtn.textContent = '⏳ Calculating…';
       (calcBtn as HTMLButtonElement).disabled = true;
@@ -864,6 +997,11 @@ export function wireSWPanel(): void {
         try {
           _swResult = computeSWProgram(_swInputs);
           renderResults(_swResult);
+          // Clear any previous error
+          const errEl = document.getElementById('sw-calc-error');
+          if (errEl) errEl.style.display = 'none';
+        } catch (err) {
+          showSWError(`Calculation error: ${(err as Error).message}`);
         } finally {
           calcBtn.textContent = origText;
           (calcBtn as HTMLButtonElement).disabled = false;
@@ -875,22 +1013,43 @@ export function wireSWPanel(): void {
   // Preset buttons
   document.querySelectorAll<HTMLButtonElement>('.sw-preset-btn').forEach(btn => {
     btn.addEventListener('click', () => {
-      const preset = btn.dataset.preset ?? '';
-      applyPreset(preset);
+      // Highlight active preset
+      document.querySelectorAll<HTMLButtonElement>('.sw-preset-btn').forEach(b => b.classList.remove('sw-preset-active'));
+      btn.classList.add('sw-preset-active');
+      applyPreset(btn.dataset.preset ?? '');
     });
   });
 
-  // Select/deselect all
+  // Select/deselect all — also updates category active counts
   document.getElementById('sw-select-all')?.addEventListener('click', () => {
     document.querySelectorAll<HTMLInputElement>('.sw-mod-enable').forEach(cb => { cb.checked = true; });
+    updateCatCounts();
   });
   document.getElementById('sw-deselect-all')?.addEventListener('click', () => {
     document.querySelectorAll<HTMLInputElement>('.sw-mod-enable').forEach(cb => { cb.checked = false; });
+    updateCatCounts();
+  });
+
+  // Module checkboxes — update per-category count on change
+  document.querySelectorAll<HTMLInputElement>('.sw-mod-enable').forEach(cb => {
+    cb.addEventListener('change', updateCatCounts);
   });
 
   // PDF export
   document.getElementById('sw-pdf-btn')?.addEventListener('click', () => {
     if (_swResult) exportSWPDF(_swResult);
+    else showSWError('Run the calculation first before exporting the PDF report.');
+  });
+}
+
+function updateCatCounts(): void {
+  document.querySelectorAll<HTMLElement>('.sw-cat-group').forEach(group => {
+    const cat = group.dataset.cat;
+    if (!cat) return;
+    const total   = group.querySelectorAll('.sw-mod-enable').length;
+    const enabled = group.querySelectorAll<HTMLInputElement>('.sw-mod-enable:checked').length;
+    const countEl = group.querySelector('.sw-cat-count');
+    if (countEl) countEl.textContent = `${enabled}/${total} modules`;
   });
 }
 
