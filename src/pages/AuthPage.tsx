@@ -6,6 +6,7 @@ import {
   ArrowLeft, CheckCircle, AlertCircle, RefreshCw
 } from 'lucide-react';
 import ButtonSpinner from '../components/ui/ButtonSpinner';
+import EVDiagram from '../components/EVDiagram';
 import { useAuth } from '../contexts/AuthContext';
 import { toast } from '../hooks/useToast';
 
@@ -195,42 +196,9 @@ function BrandPanel() {
       </div>
 
       <div className="relative">
-        {/* Car SVG illustration */}
-        <svg viewBox="0 0 380 220" className="w-full opacity-70 mb-8">
-          <defs>
-            <linearGradient id="cg1" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#f59e0b" stopOpacity="0.9" />
-              <stop offset="100%" stopColor="#d97706" stopOpacity="0.4" />
-            </linearGradient>
-            <linearGradient id="glow" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stopColor="#f59e0b" stopOpacity="0.25" />
-              <stop offset="100%" stopColor="#f59e0b" stopOpacity="0" />
-            </linearGradient>
-            <filter id="blur"><feGaussianBlur stdDeviation="4" /></filter>
-          </defs>
-          {/* SUV body */}
-          <path d="M35 160 L35 130 L80 92 L115 72 L260 68 L310 82 L345 120 L350 160 Z" fill="none" stroke="url(#cg1)" strokeWidth="2.5" strokeLinejoin="round" />
-          {/* Roof line */}
-          <path d="M80 92 L115 72 L260 68 L300 85" fill="none" stroke="#f59e0b" strokeWidth="1" opacity="0.4" />
-          {/* Windows */}
-          <path d="M120 90 L120 120 L208 120 L208 90 Z" fill="none" stroke="#93c5fd" strokeWidth="1.5" opacity="0.6" />
-          <path d="M214 90 L214 120 L288 120 L284 90 Z" fill="none" stroke="#93c5fd" strokeWidth="1.5" opacity="0.6" />
-          {/* Wheels */}
-          <circle cx="105" cy="162" r="28" fill="none" stroke="url(#cg1)" strokeWidth="2.5" />
-          <circle cx="105" cy="162" r="16" fill="none" stroke="#f59e0b" strokeWidth="1.5" opacity="0.5" />
-          <circle cx="105" cy="162" r="6" fill="#f59e0b" opacity="0.4" />
-          <circle cx="270" cy="162" r="28" fill="none" stroke="url(#cg1)" strokeWidth="2.5" />
-          <circle cx="270" cy="162" r="16" fill="none" stroke="#f59e0b" strokeWidth="1.5" opacity="0.5" />
-          <circle cx="270" cy="162" r="6" fill="#f59e0b" opacity="0.4" />
-          {/* Headlight */}
-          <path d="M345 120 L355 118 L360 128 L348 132 Z" fill="none" stroke="#fbbf24" strokeWidth="1.5" opacity="0.8" />
-          {/* Ground reflection */}
-          <ellipse cx="192" cy="192" rx="155" ry="14" fill="url(#glow)" />
-          {/* Scan lines */}
-          {[0, 1, 2].map(i => (
-            <line key={i} x1="0" y1={160 - i * 25} x2="380" y2={160 - i * 25} stroke="#f59e0b" strokeWidth="0.4" strokeDasharray="5,8" opacity={0.15 - i * 0.04} />
-          ))}
-        </svg>
+        <div className="mb-5 rounded-xl overflow-hidden">
+          <EVDiagram />
+        </div>
 
         <div className="space-y-4">
           <h2 className="text-3xl font-black text-white leading-tight">
