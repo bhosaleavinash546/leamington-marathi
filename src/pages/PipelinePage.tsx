@@ -16,6 +16,8 @@ import BusinessCaseModal, {
   type BusinessCase,
   SUV_MODELS,
 } from '../components/BusinessCaseModal';
+import IdeaDetailPanel from '../components/IdeaDetailPanel';
+import type { CostReductionIdea } from '../types';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -810,6 +812,24 @@ export default function PipelinePage() {
                               {bc.notes}
                             </div>
                           )}
+
+                          {/* Source idea full details */}
+                          {bc.ideaData && (() => {
+                            const parsedIdea: CostReductionIdea | null = (() => {
+                              try { return JSON.parse(bc.ideaData!); } catch { return null; }
+                            })();
+                            return parsedIdea ? (
+                              <div className="mb-4 rounded-xl border border-white/10 bg-navy-800/60 overflow-hidden">
+                                <div className="flex items-center gap-2 px-3 py-2 border-b border-white/8">
+                                  <ClipboardList size={12} className="text-gold-400" />
+                                  <span className="text-gold-400 text-xs font-semibold uppercase tracking-wider">Source Idea Details</span>
+                                </div>
+                                <div className="p-3">
+                                  <IdeaDetailPanel idea={parsedIdea} />
+                                </div>
+                              </div>
+                            ) : null;
+                          })()}
 
                           {/* Per-vehicle breakdown */}
                           {bc.vehicleData.length > 0 && (

@@ -1095,6 +1095,7 @@ export default function ResultsPage() {
             annualSaving: idea.costSavingPotential.annualValue || '',
             difficulty: idea.implementationDifficulty,
             timeToImplement: idea.timeToImplement || '',
+            ideaData: JSON.stringify(idea),
           }),
         });
         if (r.ok) count++;
@@ -1132,6 +1133,7 @@ export default function ResultsPage() {
             tvCost: 0,
             gate: 'G0',
             notes: notesParts.join(' '),
+            ideaData: JSON.stringify(idea),
           }),
         });
         if (r.ok) count++;

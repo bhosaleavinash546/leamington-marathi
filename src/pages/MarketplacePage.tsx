@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  Store, Star, TrendingDown, Clock, ChevronDown, CheckCircle,
-  Lightbulb, ThumbsUp, ChevronRight, GitMerge,
+  Store, Star, TrendingDown, Clock, ChevronDown, ChevronUp, CheckCircle,
+  Lightbulb, ThumbsUp, ChevronRight, GitMerge, Layers,
 } from 'lucide-react';
 import BusinessCaseModal from '../components/BusinessCaseModal';
+import IdeaDetailPanel from '../components/IdeaDetailPanel';
 import { toast } from '../hooks/useToast';
+import type { CostReductionIdea } from '../types';
 
 interface MarketplaceIdea {
   id: string;
@@ -18,6 +20,7 @@ interface MarketplaceIdea {
   stars: number;
   verified: boolean;
   description: string;
+  ideaData?: string | null;
 }
 
 interface RecentAnalysis {
@@ -221,6 +224,7 @@ export default function MarketplacePage() {
   const [submitting, setSubmitting] = useState(false);
   const [submitMsg, setSubmitMsg] = useState('');
   const [pipelineIdea, setPipelineIdea] = useState<MarketplaceIdea | null>(null);
+  const [expandedIdeaId, setExpandedIdeaId] = useState<string | null>(null);
   const [insights, setInsights] = useState<{
     approvedIdeas: ApprovedIdeaInsight[];
     totalApproved: number;
@@ -564,16 +568,55 @@ export default function MarketplacePage() {
                     </div>
                   </div>
 
-                  <p className="text-slate-400 text-sm leading-relaxed mb-4">{idea.description}</p>
+                  {/* Parsed idea data available — show rich expand section */}
+                  {(() => {
+                    const parsedIdea: CostReductionIdea | null = (() => {
+                      try { return idea.ideaData ? JSON.parse(idea.ideaData) : null; } catch { return null; }
+                    })();
+                    const isExpanded = expandedIdeaId === idea.id;
+
+                    return parsedIdea ? (
+                      <>
+                        {/* Collapsed: show short description only */}
+                        <p className="text-slate-400 text-sm leading-relaxed mb-3 line-clamp-3">{parsedIdea.technicalDescription}</p>
+
+                        {/* Expanded: full IdeaDetailPanel */}
+                        <AnimatePresence initial={false}>
+                          {isExpanded && (
+                            <motion.div
+                              initial={{ height: 0, opacity: 0 }}
+                              animate={{ height: 'auto', opacity: 1 }}
+                              exit={{ height: 0, opacity: 0 }}
+                              transition={{ duration: 0.22, ease: 'easeInOut' }}
+                              className="overflow-hidden mb-3"
+                            >
+                              <div className="pt-1 border-t border-white/8 mt-2">
+                                <IdeaDetailPanel idea={parsedIdea} />
+                              </div>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+
+                        <button
+                          onClick={e => { e.stopPropagation(); setExpandedIdeaId(isExpanded ? null : idea.id); }}
+                          className="flex items-center gap-1 text-gold-400 hover:text-gold-300 text-xs font-medium transition-colors mb-3"
+                        >
+                          {isExpanded ? <><ChevronUp size={12} /> Collapse</> : <><ChevronDown size={12} /> Full Technical Detail</>}
+                        </button>
+                      </>
+                    ) : (
+                      <p className="text-slate-400 text-sm leading-relaxed mb-4">{idea.description}</p>
+                    );
+                  })()}
 
                   <div className="flex flex-wrap items-center gap-4 text-xs text-slate-500">
-                    <span className="text-green-400 font-semibold">{idea.annualSaving}/yr</span>
+                    <span className="text-success-400 font-semibold">{idea.annualSaving}/yr</span>
                     <span className={`px-2 py-0.5 rounded-full border ${
                       idea.difficulty === 'Low'
-                        ? 'bg-green-500/10 text-green-400 border-green-500/30'
+                        ? 'bg-success-500/10 text-success-400 border-success-500/30'
                         : idea.difficulty === 'Medium'
                         ? 'bg-amber-500/10 text-amber-400 border-amber-500/30'
-                        : 'bg-red-500/10 text-red-400 border-red-500/30'
+                        : 'bg-danger-500/10 text-danger-400 border-danger-500/30'
                     }`}>
                       {idea.difficulty}
                     </span>
@@ -583,7 +626,7 @@ export default function MarketplacePage() {
                       onClick={e => { e.stopPropagation(); setPipelineIdea(idea); }}
                       className="ml-auto flex items-center gap-1 px-2.5 py-1 rounded-lg border border-violet-500/30 bg-violet-500/10 text-violet-300 hover:bg-violet-500/20 transition-colors text-xs"
                     >
-                      <GitMerge size={11} /> Add to Pipeline
+                      <Layers size={11} /> Add to Pipeline
                     </button>
                   </div>
                 </motion.div>

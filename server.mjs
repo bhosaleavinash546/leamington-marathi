@@ -189,6 +189,10 @@ db.exec(`
   );
 `);
 
+// ─── Migrate: add ideaData column if not already present ─────────────────────
+try { db.exec("ALTER TABLE marketplace_ideas ADD COLUMN ideaData TEXT"); } catch {}
+try { db.exec("ALTER TABLE idea_business_cases ADD COLUMN ideaData TEXT"); } catch {}
+
 // ─── Business case helper functions ──────────────────────────────────────────
 function calcIRR(investment, annualSaving, years = 5) {
   if (annualSaving <= 0 || investment <= 0) return 0;
@@ -4405,12 +4409,12 @@ app.get('/api/marketplace', (req, res) => {
 });
 
 app.post('/api/marketplace', requireAuth, rateLimit(5, 60 * 60 * 1000), (req, res) => {
-  const { title, system, costSavingType, annualSaving, difficulty, timeToImplement, description } = req.body;
+  const { title, system, costSavingType, annualSaving, difficulty, timeToImplement, description, ideaData } = req.body;
   if (!title || !description) return res.status(400).json({ error: 'title and description required' });
   try {
     const id = crypto.randomUUID();
-    db.prepare('INSERT INTO marketplace_ideas (id,title,system,costSavingType,annualSaving,difficulty,timeToImplement,description,submittedBy,verified,stars,status,createdAt) VALUES (?,?,?,?,?,?,?,?,?,0,0,"pending",?)')
-      .run(id, title, system || '', costSavingType || '', annualSaving || '', difficulty || 'Medium', timeToImplement || '', description, req.user.userId, new Date().toISOString());
+    db.prepare('INSERT INTO marketplace_ideas (id,title,system,costSavingType,annualSaving,difficulty,timeToImplement,description,ideaData,submittedBy,verified,stars,status,createdAt) VALUES (?,?,?,?,?,?,?,?,?,?,0,0,"pending",?)')
+      .run(id, title, system || '', costSavingType || '', annualSaving || '', difficulty || 'Medium', timeToImplement || '', description, ideaData || null, req.user.userId, new Date().toISOString());
     res.json({ ok: true, message: 'Idea submitted for review. Thank you!' });
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
@@ -4546,7 +4550,7 @@ app.post('/api/business-cases', requireAuth, rateLimit(30, 60 * 60 * 1000), (req
     ideaTitle, ideaSource = 'manual', commodityName = '', systemName = '',
     vehicleData = [], savingPerPart = 0, toolingCost = 0, tvCost = 0,
     implementationYear = new Date().getFullYear() + 1, implementationMonths = 12,
-    gate = 'G0', notes = '',
+    gate = 'G0', notes = '', ideaData,
   } = req.body;
 
   if (!ideaTitle?.trim()) return res.status(400).json({ error: 'ideaTitle is required' });
@@ -4565,13 +4569,13 @@ app.post('/api/business-cases', requireAuth, rateLimit(30, 60 * 60 * 1000), (req
       (id, userId, userName, ideaTitle, ideaSource, commodityName, systemName,
        vehicleData, savingPerPart, totalAnnualSaving, toolingCost, tvCost,
        roi, irr, paybackMonths, implementationYear, implementationMonths,
-       gate, ideaNumber, notes, createdAt, updatedAt)
-    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+       gate, ideaNumber, notes, ideaData, createdAt, updatedAt)
+    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
   `).run(
     id, userId, userName, ideaTitle.trim(), ideaSource, commodityName, systemName,
     JSON.stringify(vehicleData), savingPerPart, metrics.totalAnnualSaving,
     toolingCost, tvCost, metrics.roi, metrics.irr, metrics.paybackMonths,
-    implementationYear, implementationMonths, gate, ideaNumber, notes, now, now,
+    implementationYear, implementationMonths, gate, ideaNumber, notes, ideaData || null, now, now,
   );
 
   const row = db.prepare('SELECT * FROM idea_business_cases WHERE id = ?').get(id);
@@ -4582,7 +4586,7 @@ app.post('/api/business-cases', requireAuth, rateLimit(30, 60 * 60 * 1000), (req
 // List all business cases (full team visibility — read-only for non-owners)
 app.get('/api/business-cases', requireAuth, (req, res) => {
   const rows = db.prepare('SELECT * FROM idea_business_cases ORDER BY createdAt DESC').all();
-  res.json(rows.map(r => ({ ...r, vehicleData: JSON.parse(r.vehicleData || '[]') })));
+  res.json(rows.map(r => ({ ...r, vehicleData: JSON.parse(r.vehicleData || '[]'), ideaData: r.ideaData || null })));
 });
 
 // KPI aggregates for dashboard

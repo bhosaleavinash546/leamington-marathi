@@ -35,6 +35,7 @@ export interface BusinessCase {
   gate: 'G0' | 'G1' | 'G2' | 'G3';
   ideaNumber: string;
   notes: string;
+  ideaData?: string | null;
   createdAt: string;
   updatedAt: string;
 }
