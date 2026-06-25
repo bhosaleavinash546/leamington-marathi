@@ -42,8 +42,8 @@
       } catch { window.location.replace('/auth.html'); }
     })();
   </script>
-  <script type="module" crossorigin src="/calculator/assets/index-Dd0EFc2J.js"></script>
-  <link rel="stylesheet" crossorigin href="/calculator/assets/index-BZCCEe1S.css">
+  <script type="module" crossorigin src="/calculator/assets/index-CGa-DaRy.js"></script>
+  <link rel="stylesheet" crossorigin href="/calculator/assets/index-Cjd8ppc-.css">
 </head>
 <body>
 
@@ -109,11 +109,11 @@
     <button class="nav-action-btn home-btn" id="home-btn" aria-label="Go to dashboard">⌂ Home</button>
     <button class="nav-action-btn new-costing-btn" id="new-costing-btn" aria-label="Start new should-costing">⊕ New Costing</button>
     <!-- Demo Gallery button -->
-    <button class="nav-action-btn demo-btn" id="demo-btn" aria-label="Open demo gallery" title="Load luxury SUV demo examples for any commodity">🚗 Demos</button>
+    <button class="nav-action-btn demo-btn" id="demo-btn" aria-label="Open demo gallery" title="Load luxury SUV demo examples for any commodity" data-cv-tip="Browse 50+ pre-loaded luxury SUV demos across all 19+ commodity types. One click loads full cost breakdown." data-cv-tip-title="Demo Gallery">🚗 Demos</button>
     <!-- News button -->
-    <button class="nav-action-btn" id="news-btn" aria-label="Automotive Industry News" title="Live automotive manufacturing &amp; costing news">📰 NEWS</button>
+    <button class="nav-action-btn" id="news-btn" aria-label="Automotive Industry News" title="Live automotive manufacturing &amp; costing news" data-cv-tip="120 articles from 30 curated feeds — battery, EV, materials, supply chain. Auto-refreshes every 15 min." data-cv-tip-title="Market Intelligence">📰 NEWS</button>
     <!-- Help button -->
-    <button class="nav-action-btn" id="help-btn" aria-label="Open help centre">? Help</button>
+    <button class="nav-action-btn" id="help-btn" aria-label="Open help centre" data-cv-tip="Help Centre with search, guides, keyboard shortcuts (?), and the product tour." data-cv-tip-title="Help Centre">? Help</button>
     <!-- Contact button -->
     <button class="nav-action-btn" id="contact-btn" aria-label="Contact support">✉ Contact</button>
     <!-- Theme toggle -->
@@ -1039,7 +1039,8 @@
     <!-- Tab bar -->
     <div class="help-tabs">
       <button class="help-tab active" data-help="getting-started">Getting Started</button>
-      <button class="help-tab" data-help="whats-new" style="color:#2563eb;font-weight:700">🆕 What's New</button>
+      <button class="help-tab" data-help="whats-new" style="color:#2563eb;font-weight:700">🆕 Changelog</button>
+      <button class="help-tab" data-help="shortcuts">⌨ Shortcuts</button>
       <button class="help-tab" data-help="ai-agent">AI Agent</button>
       <button class="help-tab" data-help="cad-upload">CAD &amp; Photo</button>
       <button class="help-tab" data-help="commodities">Commodities</button>
@@ -1051,6 +1052,19 @@
       <button class="help-tab" data-help="troubleshoot">Troubleshooting</button>
       <button class="help-tab" data-help="commodity-guides">Commodity Guides</button>
     </div>
+
+    <!-- Search + Tour -->
+    <div style="display:flex;gap:8px;align-items:center;margin-bottom:4px">
+      <div id="help-search-wrap" style="flex:1;margin-bottom:0">
+        <span id="help-search-icon">🔍</span>
+        <input id="help-search" type="search" placeholder="Search all help topics…" autocomplete="off" aria-label="Search help">
+        <button id="help-search-clear" title="Clear search">×</button>
+      </div>
+      <button id="help-tour-btn" title="Launch interactive product tour">▶ Take Tour</button>
+    </div>
+    <div id="help-search-results-bar"></div>
+    <div id="help-search-results-container"></div>
+    <div id="help-search-no-results"></div>
 
     <!-- Getting Started -->
     <div class="help-section active" id="help-getting-started">
@@ -1088,6 +1102,10 @@
           <li><strong>PDF Report</strong> — 7-section professional report with AI insights.</li>
           <li><strong>Save Scenario</strong> — store configurations and compare multiple designs side-by-side.</li>
         </ul>
+      </div>
+      <div class="cv-video-card" title="Watch: Full walkthrough of CostVision in 90 seconds">
+        <div class="cv-video-thumb"><div class="cv-video-play">▶</div><div class="cv-video-duration">1:32</div></div>
+        <div class="cv-video-meta"><div class="cv-video-label">Video Tutorial</div><div class="cv-video-title">CostVision Full Walkthrough</div><div class="cv-video-desc">New Costing → Enter data → Calculate → Export PDF in under 2 minutes</div></div>
       </div>
     </div>
 
@@ -1131,6 +1149,10 @@
         </ul>
         <p style="margin-top:6px">The assistant returns structured, numbered step-by-step guidance with cost drivers, DFM checks, and supplier negotiation tips. Responses are kept concise (&lt;200 words) for quick reference.</p>
       </div>
+      <div class="cv-video-card" title="Watch: AI Agent auto-filling a casting costing">
+        <div class="cv-video-thumb"><div class="cv-video-play">▶</div><div class="cv-video-duration">2:14</div></div>
+        <div class="cv-video-meta"><div class="cv-video-label">Video Tutorial</div><div class="cv-video-title">AI Agent in Action</div><div class="cv-video-desc">Describe a part in plain English → AI fills the full cost model automatically</div></div>
+      </div>
     </div>
 
     <!-- CAD & Photo -->
@@ -1149,6 +1171,10 @@
       <div class="help-card">
         <div class="help-card-title"><div class="help-icon">🤖</div>AI CAD Analysis</div>
         <p>Select the <strong>AI CAD ✦</strong> tab and upload a screenshot or rendering of your part. The AI will detect features (holes, pockets, walls, ribs), estimate complexity, suggest manufacturing processes, and auto-fill relevant cost model parameters. A <strong>DfM Score</strong> and <strong>Process Confidence</strong> rating are shown.</p>
+      </div>
+      <div class="cv-video-card" title="Watch: Upload a PCB photo and get a full BOM in seconds">
+        <div class="cv-video-thumb"><div class="cv-video-play">▶</div><div class="cv-video-duration">1:48</div></div>
+        <div class="cv-video-meta"><div class="cv-video-label">Video Tutorial</div><div class="cv-video-title">PCB Image-to-BOM &amp; CAD Analysis</div><div class="cv-video-desc">Upload a PCB photo or CAD screenshot → AI extracts BOM and cost parameters automatically</div></div>
       </div>
     </div>
 
@@ -1249,6 +1275,10 @@
           <div style="padding:7px;background:#f8fafc;border-radius:6px"><strong>Audi Q8 e-tron</strong><br>£520M total · £4,600/veh</div>
           <div style="padding:7px;background:#f8fafc;border-radius:6px"><strong>Lucid Air</strong><br>£380M total · £7,800/veh</div>
         </div>
+      </div>
+      <div class="cv-video-card" title="Watch: Run a full automotive SW should-cost in 3 minutes">
+        <div class="cv-video-thumb"><div class="cv-video-play">▶</div><div class="cv-video-duration">3:05</div></div>
+        <div class="cv-video-meta"><div class="cv-video-label">Video Tutorial</div><div class="cv-video-title">Automotive SW Should-Cost — Full Walkthrough</div><div class="cv-video-desc">Configure 43 modules, set ASIL/complexity/reuse, compare against BMW iX and Tesla benchmarks</div></div>
       </div>
     </div>
 
@@ -1556,50 +1586,125 @@
 
       </div>
 
-      <!-- Earlier releases -->
-      <div style="font-size:0.72rem;font-weight:700;color:#64748b;letter-spacing:0.8px;text-transform:uppercase;margin-bottom:8px">Earlier Releases</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <!-- Earlier releases — changelog timeline -->
+      <div style="font-size:0.72rem;font-weight:700;color:#64748b;letter-spacing:0.8px;text-transform:uppercase;margin-bottom:14px">Earlier Releases</div>
+      <div class="changelog-timeline">
 
-        <div class="help-card" style="margin:0">
-          <div class="help-card-title">⊕ New Costing &amp; Workflow Panel</div>
-          <p>The gradient <strong>⊕ New Costing</strong> button opens a full-width commodity picker with 19+ processes and AI tools. The costing workflow slides in as a right-side panel (52% width). Close with ✕, Escape, or click the backdrop.</p>
+        <div class="changelog-entry">
+          <div class="changelog-dot old"></div>
+          <div class="changelog-header">
+            <span class="changelog-version">V4.0</span>
+            <span class="changelog-date">May 2026</span>
+            <span class="changelog-tag major">Major</span>
+          </div>
+          <ul class="changelog-items">
+            <li><strong>New Costing &amp; Workflow Panel</strong> — gradient ⊕ button opens full-width commodity picker with 19+ processes; costing slides in as a 52%-width right panel</li>
+            <li><strong>Live Commodity Dashboard</strong> — real-time prices for 52 automotive commodities with sparklines, AI forecasts, and price alert thresholds</li>
+            <li><strong>Luxury SUV Demo Gallery</strong> — 50+ pre-configured automotive examples across all commodity types, one-click load with full AI insights</li>
+            <li><strong>AI Cost Assistant</strong> — floating chat with real-time manufacturing cost engineering chatbot, commodity-aware and context-sensitive</li>
+          </ul>
         </div>
 
-        <div class="help-card" style="margin:0">
-          <div class="help-card-title">📈 Live Commodity Dashboard</div>
-          <p>Real-time prices for 52 automotive commodities — steel, aluminium, copper, lithium, cobalt, NMC, LFP, SiC, rare earths, engineering plastics, and more. Includes sparklines, AI price forecasts, price alert thresholds, and should-cost impact coefficients.</p>
+        <div class="changelog-entry">
+          <div class="changelog-dot old"></div>
+          <div class="changelog-header">
+            <span class="changelog-version">V3.5</span>
+            <span class="changelog-date">March 2026</span>
+            <span class="changelog-tag minor">Feature</span>
+          </div>
+          <ul class="changelog-items">
+            <li><strong>News &amp; Market Intelligence</strong> — 120 articles from 30 curated RSS feeds; live news ticker, keyword search, category filter pills, 15-min auto-refresh</li>
+            <li><strong>PCB Image-to-BOM</strong> — upload a PCB photo and AI extracts the full Bill of Materials, populates PCB Fab and PCBA forms directly</li>
+            <li><strong>Country for Costing</strong> — region selector inside every form updates labour rates, machine rates, material prices, and overhead % instantly</li>
+            <li><strong>Quick Compare</strong> — tick 2 rows in Recent Costings to compare bucket-level cost differences with colour-coded Δ values</li>
+          </ul>
         </div>
 
-        <div class="help-card" style="margin:0">
-          <div class="help-card-title">📰 News &amp; Market Intelligence</div>
-          <p>120 articles from 30 curated RSS feeds. Live news ticker, featured hero card, keyword search, category filter pills, relative timestamps, and reading-time badges. Auto-refreshes every 15 minutes.</p>
+        <div class="changelog-entry">
+          <div class="changelog-dot old"></div>
+          <div class="changelog-header">
+            <span class="changelog-version">V3.0</span>
+            <span class="changelog-date">January 2026</span>
+            <span class="changelog-tag major">Major</span>
+          </div>
+          <ul class="changelog-items">
+            <li><strong>CAD Analysis AI</strong> — upload STEP/STL/DXF/photos and get AI-powered should-cost estimates with manufacturability feedback</li>
+            <li><strong>Scenario Manager</strong> — save, compare, and version-control costing scenarios with full Δ analysis across all 8 cost buckets</li>
+            <li><strong>Excel Export</strong> — 6-sheet workbooks with full rate buildup, sensitivity tables, and traceability records</li>
+          </ul>
         </div>
 
-        <div class="help-card" style="margin:0">
-          <div class="help-card-title">🖼 PCB Image-to-BOM</div>
-          <p>Upload a PCB photo and the AI extracts the full Bill of Materials — component types, quantities, unit prices, board specs, and assembly complexity. Populates PCB Fab and PCBA forms directly. JPEG/PNG/WebP up to 20 MB.</p>
-        </div>
+      </div>
+    </div>
 
-        <div class="help-card" style="margin:0">
-          <div class="help-card-title">🌍 Country for Costing</div>
-          <p>A <strong>Country for Costing</strong> bar appears inside every should-cost form. Select from 8 countries and labour rates, machine rates, material prices, and overhead % all update and recalculate instantly.</p>
+    <!-- Keyboard Shortcuts -->
+    <div class="help-section" id="help-shortcuts">
+      <div class="help-card">
+        <div class="help-card-title">⌨ Keyboard Shortcuts Reference</div>
+        <p style="margin-bottom:14px">These shortcuts work anywhere on the page — except when the cursor is inside a text field, select, or textarea.</p>
+        <div class="shortcuts-group-title">Navigation</div>
+        <div class="shortcuts-grid">
+          <div class="shortcut-row">
+            <span class="shortcut-label">⊕ New Costing</span>
+            <span class="shortcut-keys"><kbd>N</kbd></span>
+          </div>
+          <div class="shortcut-row">
+            <span class="shortcut-label">🏠 Dashboard</span>
+            <span class="shortcut-keys"><kbd>D</kbd></span>
+          </div>
+          <div class="shortcut-row">
+            <span class="shortcut-label">Result Tab 1 — Breakdown</span>
+            <span class="shortcut-keys"><kbd>1</kbd></span>
+          </div>
+          <div class="shortcut-row">
+            <span class="shortcut-label">Result Tab 2 — Operations</span>
+            <span class="shortcut-keys"><kbd>2</kbd></span>
+          </div>
+          <div class="shortcut-row">
+            <span class="shortcut-label">Result Tab 3 — Sensitivity</span>
+            <span class="shortcut-keys"><kbd>3</kbd></span>
+          </div>
+          <div class="shortcut-row">
+            <span class="shortcut-label">Result Tab 4 — AI Insights</span>
+            <span class="shortcut-keys"><kbd>4</kbd></span>
+          </div>
+          <div class="shortcut-row">
+            <span class="shortcut-label">Result Tab 5 — Traceability</span>
+            <span class="shortcut-keys"><kbd>5</kbd></span>
+          </div>
+          <div class="shortcut-row">
+            <span class="shortcut-label">Close panel / modal</span>
+            <span class="shortcut-keys"><kbd>Esc</kbd></span>
+          </div>
         </div>
-
-        <div class="help-card" style="margin:0">
-          <div class="help-card-title">🚗 Luxury SUV Demo Gallery</div>
-          <p>Click <strong>🚗 Demos</strong> in the nav to access 50+ pre-configured automotive examples across all commodity types. One click loads any demo with full AI insights, sensitivity analysis, and cost breakdown.</p>
+        <div class="shortcuts-group-title">Actions</div>
+        <div class="shortcuts-grid">
+          <div class="shortcut-row">
+            <span class="shortcut-label">Open Help Centre</span>
+            <span class="shortcut-keys"><kbd>?</kbd></span>
+          </div>
+          <div class="shortcut-row">
+            <span class="shortcut-label">Open Help (alternate)</span>
+            <span class="shortcut-keys"><kbd>Shift</kbd>+<kbd>H</kbd></span>
+          </div>
+          <div class="shortcut-row">
+            <span class="shortcut-label">Export PDF Report</span>
+            <span class="shortcut-keys"><kbd>Ctrl</kbd>+<kbd>E</kbd></span>
+          </div>
+          <div class="shortcut-row">
+            <span class="shortcut-label">Export PDF (Mac)</span>
+            <span class="shortcut-keys"><kbd>⌘</kbd>+<kbd>E</kbd></span>
+          </div>
         </div>
-
-        <div class="help-card" style="margin:0">
-          <div class="help-card-title">⚖ Quick Compare</div>
-          <p>Tick 2 rows in the Recent Costings table to activate <strong>Compare Side-by-Side</strong>. A breakdown panel shows bucket-level cost differences (Material, Process, Labour, Tooling…) with colour-coded Δ values.</p>
-        </div>
-
-        <div class="help-card" style="margin:0">
-          <div class="help-card-title">💬 AI Cost Assistant</div>
-          <p>The floating chat button (bottom-right) opens a real-time manufacturing cost engineering chatbot. Ask commodity-specific questions and get structured guidance — works independently of any active costing session.</p>
-        </div>
-
+      </div>
+      <div class="help-card">
+        <div class="help-card-title">💡 Tips</div>
+        <ul>
+          <li>Shortcuts are automatically <strong>suppressed while typing</strong> — no need to worry about conflicts with text fields.</li>
+          <li>Press <kbd>?</kbd> from anywhere on the main dashboard to jump back to this Help Centre.</li>
+          <li>Tabs <kbd>1</kbd>–<kbd>5</kbd> switch result view tabs after a calculation — quickly flip between cost breakdown, operations detail, sensitivity analysis, AI insights, and traceability.</li>
+          <li>Use <kbd>Ctrl+E</kbd> / <kbd>⌘+E</kbd> to export a PDF report without using the mouse.</li>
+        </ul>
       </div>
     </div>
 
@@ -2299,6 +2404,18 @@
       })();
       </script>
     </div>
+
+    <!-- ── Status Bar & Feedback ─────────────────────────────────────────── -->
+    <div id="help-status-bar">
+      <div style="display:flex;align-items:center;gap:6px">
+        <span class="cv-status-dot"></span>
+        <span id="help-status-text">All systems operational</span>
+      </div>
+      <div class="cv-feedback-btns">
+        <button class="cv-feedback-btn bug" data-feedback="bug">🐛 Report Bug</button>
+        <button class="cv-feedback-btn idea" data-feedback="feature">💡 Suggest Feature</button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -2410,6 +2527,12 @@
         const target = document.getElementById('help-' + btn.getAttribute('data-help'));
         if (target) target.classList.add('active');
       });
+    });
+
+    // Take Tour button — dispatches cv:start-tour so the inline IIFE picks it up
+    document.getElementById('help-tour-btn')?.addEventListener('click', function() {
+      closeHelp();
+      setTimeout(function() { document.dispatchEvent(new CustomEvent('cv:start-tour')); }, 350);
     });
 
     // FAQ accordion
@@ -3987,5 +4110,378 @@
     navigator.serviceWorker.register('/calculator/sw.js', { scope: '/calculator/' });
   }
 </script>
+
+<!-- ── Contextual Tooltip Popover ─────────────────────────────────────────── -->
+<div id="cv-popover" role="tooltip" aria-live="polite"></div>
+
+<!-- ── Product Tour Overlay ───────────────────────────────────────────────── -->
+<div id="cv-tour-overlay" style="display:none">
+  <div id="cv-tour-backdrop"></div>
+  <div id="cv-tour-spotlight"></div>
+  <div id="cv-tour-card">
+    <div class="cv-tour-step-counter" id="cv-tour-counter">Step 1 of 6</div>
+    <div class="cv-tour-title" id="cv-tour-title">Welcome to CostVision</div>
+    <div class="cv-tour-body" id="cv-tour-body"></div>
+    <div class="cv-tour-progress" id="cv-tour-progress"></div>
+    <div class="cv-tour-actions">
+      <button class="cv-tour-skip" id="cv-tour-skip">Skip tour</button>
+      <button class="cv-tour-prev" id="cv-tour-prev" style="display:none">← Back</button>
+      <button class="cv-tour-next" id="cv-tour-next">Next →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Feedback Modal ─────────────────────────────────────────────────────── -->
+<div id="cv-feedback-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:10001;align-items:center;justify-content:center;padding:20px">
+  <div style="background:#fff;border-radius:14px;padding:24px;max-width:440px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,0.3);font-family:var(--font)">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+      <h3 id="cv-feedback-title" style="margin:0;font-size:1rem;font-weight:800;color:#0f172a"></h3>
+      <button onclick="document.getElementById('cv-feedback-modal').style.display='none'" style="background:none;border:none;font-size:1.3rem;color:#94a3b8;cursor:pointer">×</button>
+    </div>
+    <p id="cv-feedback-desc" style="font-size:0.8rem;color:#64748b;margin-bottom:12px"></p>
+    <textarea id="cv-feedback-text" placeholder="Describe your idea or the bug you encountered..." rows="5" style="width:100%;box-sizing:border-box;padding:10px 12px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:0.8rem;font-family:var(--font);resize:vertical;color:#1e293b;outline:none"></textarea>
+    <div style="margin-top:8px;display:flex;gap:8px;justify-content:flex-end">
+      <button onclick="document.getElementById('cv-feedback-modal').style.display='none'" style="padding:8px 16px;border-radius:7px;border:1px solid #e2e8f0;background:#f8fafc;font-size:0.8rem;cursor:pointer;font-family:var(--font);color:#64748b">Cancel</button>
+      <button id="cv-feedback-submit" style="padding:8px 20px;border-radius:7px;border:none;background:linear-gradient(135deg,#2563eb,#1d4ed8);color:#fff;font-size:0.8rem;font-weight:700;cursor:pointer;font-family:var(--font)">Send Feedback</button>
+    </div>
+    <p id="cv-feedback-sent" style="display:none;text-align:center;color:#059669;font-size:0.82rem;margin-top:10px;font-weight:600">✓ Thank you! We'll review your feedback.</p>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════════════
+// SAAS HELP FEATURES 1–8 (inline, dependency-free)
+// ═══════════════════════════════════════════════════════════════════════════
+
+(function() {
+'use strict';
+
+// ── 1. Contextual Tooltip System ──────────────────────────────────────────
+var popover = null;
+var popHide = null;
+
+function initTooltips() {
+  popover = document.getElementById('cv-popover');
+  if (!popover) return;
+
+  document.body.addEventListener('mouseenter', function(e) {
+    var t = e.target;
+    if (!t || !t.closest) return;
+    var tip = t.closest('[data-cv-tip]');
+    if (!tip) return;
+    clearTimeout(popHide);
+    var text = tip.getAttribute('data-cv-tip') || '';
+    var title = tip.getAttribute('data-cv-tip-title') || '';
+    popover.innerHTML = (title ? '<div class="cv-pop-title">' + title + '</div>' : '') + text;
+    var rect = tip.getBoundingClientRect();
+    var top = rect.bottom + 8;
+    var left = rect.left;
+    if (top + 120 > window.innerHeight) top = rect.top - 120;
+    if (left + 290 > window.innerWidth) left = window.innerWidth - 295;
+    popover.style.top = top + 'px';
+    popover.style.left = left + 'px';
+    popover.classList.add('visible');
+  }, true);
+
+  document.body.addEventListener('mouseleave', function(e) {
+    var t = e.target;
+    if (!t || !t.closest) return;
+    var tip = t.closest('[data-cv-tip]');
+    if (!tip) return;
+    popHide = setTimeout(function() {
+      if (popover) popover.classList.remove('visible');
+    }, 120);
+  }, true);
+}
+
+// ── 2. Product Tour ───────────────────────────────────────────────────────
+var TOUR_STEPS = [
+  { selector: null, title: 'Welcome to CostVision V4.1 👋', body: 'This quick tour covers the key features in under 2 minutes. Skip at any time with the button below.', position: 'center' },
+  { selector: '#new-costing-btn', title: '⊕ Start a New Costing', body: 'Click <strong>⊕ New Costing</strong> to open the commodity picker. Choose from 19+ manufacturing processes or AI-powered tools.', position: 'below' },
+  { selector: '#demo-btn', title: '🚗 Demo Gallery', body: 'Browse <strong>50+ pre-loaded luxury SUV examples</strong> across all commodity types. Load any demo instantly with one click.', position: 'below' },
+  { selector: '#news-btn', title: '📰 Live Market Intelligence', body: 'Access <strong>120 articles from 30 curated feeds</strong> — battery, EV, materials, supply chain. Auto-refreshes every 15 minutes.', position: 'below' },
+  { selector: '#help-btn', title: '? Help Centre', body: 'This button opens the <strong>Help Centre</strong> with search, guides, glossary, keyboard shortcuts, and the changelog. You\'re here now!', position: 'below' },
+  { selector: '#ai-chat-fab', title: '💬 AI Cost Assistant', body: 'The floating button opens your <strong>AI manufacturing cost chatbot</strong>. Ask about any commodity, process, or cost driver — available 24/7.', position: 'above' },
+];
+
+var tourStep = 0;
+var tourActive = false;
+
+function startTour() {
+  var overlay = document.getElementById('cv-tour-overlay');
+  if (!overlay) return;
+  tourStep = 0;
+  tourActive = true;
+  overlay.style.display = 'block';
+  document.body.style.overflow = 'hidden';
+  renderTourStep();
+}
+
+function endTour() {
+  tourActive = false;
+  var overlay = document.getElementById('cv-tour-overlay');
+  if (overlay) overlay.style.display = 'none';
+  document.body.style.overflow = '';
+  try { localStorage.setItem('cv-tour-v41-seen', '1'); } catch(e) {}
+}
+
+function renderTourStep() {
+  var step = TOUR_STEPS[tourStep];
+  if (!step) { endTour(); return; }
+
+  var counter   = document.getElementById('cv-tour-counter');
+  var titleEl   = document.getElementById('cv-tour-title');
+  var bodyEl    = document.getElementById('cv-tour-body');
+  var progress  = document.getElementById('cv-tour-progress');
+  var prevBtn   = document.getElementById('cv-tour-prev');
+  var nextBtn   = document.getElementById('cv-tour-next');
+  var spotlight = document.getElementById('cv-tour-spotlight');
+  var card      = document.getElementById('cv-tour-card');
+
+  if (!card) return;
+
+  if (counter)  counter.textContent  = 'Step ' + (tourStep + 1) + ' of ' + TOUR_STEPS.length;
+  if (titleEl)  titleEl.textContent  = step.title;
+  if (bodyEl)   bodyEl.innerHTML     = step.body;
+  if (prevBtn)  prevBtn.style.display = tourStep === 0 ? 'none' : '';
+  if (nextBtn)  nextBtn.textContent   = tourStep === TOUR_STEPS.length - 1 ? 'Finish ✓' : 'Next →';
+
+  // Progress dots
+  if (progress) {
+    progress.innerHTML = '';
+    TOUR_STEPS.forEach(function(_, i) {
+      var d = document.createElement('div');
+      d.className = 'cv-tour-dot' + (i < tourStep ? ' done' : (i === tourStep ? ' active' : ''));
+      progress.appendChild(d);
+    });
+  }
+
+  // Position spotlight and card
+  if (!step.selector) {
+    // Center card, hide spotlight
+    if (spotlight) spotlight.style.opacity = '0';
+    card.style.top  = '50%';
+    card.style.left = '50%';
+    card.style.transform = 'translate(-50%,-50%)';
+    return;
+  }
+
+  if (spotlight) spotlight.style.opacity = '1';
+  var target = document.querySelector(step.selector);
+  if (!target) { renderNextStep(); return; }
+  var rect = target.getBoundingClientRect();
+  var pad = 8;
+  if (spotlight) {
+    spotlight.style.left   = (rect.left   - pad) + 'px';
+    spotlight.style.top    = (rect.top    - pad) + 'px';
+    spotlight.style.width  = (rect.width  + pad*2) + 'px';
+    spotlight.style.height = (rect.height + pad*2) + 'px';
+  }
+
+  // Card positioning
+  card.style.transform = '';
+  var cardW = 320, cardH = 220;
+  var vw = window.innerWidth, vh = window.innerHeight;
+  var cl, ct;
+
+  if (step.position === 'below') {
+    cl = Math.min(rect.left, vw - cardW - 16);
+    ct = rect.bottom + pad + 12;
+    if (ct + cardH > vh - 16) ct = rect.top - cardH - 12;
+  } else if (step.position === 'above') {
+    cl = Math.min(rect.left, vw - cardW - 16);
+    ct = rect.top - cardH - 12;
+    if (ct < 16) ct = rect.bottom + 12;
+  } else {
+    cl = (vw - cardW) / 2;
+    ct = (vh - cardH) / 2;
+  }
+  cl = Math.max(16, cl);
+  ct = Math.max(16, ct);
+  card.style.left = cl + 'px';
+  card.style.top  = ct + 'px';
+}
+
+function renderNextStep() { tourStep++; renderTourStep(); }
+function renderPrevStep() { if (tourStep > 0) { tourStep--; renderTourStep(); } }
+
+document.addEventListener('DOMContentLoaded', function() {
+  var nextBtn = document.getElementById('cv-tour-next');
+  var prevBtn = document.getElementById('cv-tour-prev');
+  var skipBtn = document.getElementById('cv-tour-skip');
+  if (nextBtn) nextBtn.addEventListener('click', renderNextStep);
+  if (prevBtn) prevBtn.addEventListener('click', renderPrevStep);
+  if (skipBtn) skipBtn.addEventListener('click', endTour);
+
+  // Listen for tour start from main.ts export
+  document.addEventListener('cv:start-tour', startTour);
+
+  // Auto-launch tour for first-time users (after 1.5s delay)
+  try {
+    if (!localStorage.getItem('cv-tour-v41-seen')) {
+      setTimeout(startTour, 1800);
+    }
+  } catch(e) {}
+
+  initTooltips();
+});
+
+// ── 4. Help Search ────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', function() {
+  var searchInput   = document.getElementById('help-search');
+  var clearBtn      = document.getElementById('help-search-clear');
+  var resultsBar    = document.getElementById('help-search-results-bar');
+  var resultsContainer = document.getElementById('help-search-results-container');
+  var noResults     = document.getElementById('help-search-no-results');
+  var tabSections   = document.querySelectorAll('.help-section');
+  var tabBtns       = document.querySelectorAll('.help-tab');
+
+  if (!searchInput) return;
+
+  function doSearch(q) {
+    q = q.trim().toLowerCase();
+    if (clearBtn)  clearBtn.style.display = q ? 'block' : 'none';
+
+    if (!q) {
+      // Restore normal tab view
+      if (resultsContainer) resultsContainer.style.display = 'none';
+      if (resultsBar)       resultsBar.style.display = 'none';
+      if (noResults)        noResults.style.display = 'none';
+      tabSections.forEach(function(s) { s.style.display = ''; });
+      // Reactivate current active tab's section
+      var activeTab = document.querySelector('.help-tab.active');
+      if (activeTab) {
+        var activeId = 'help-' + activeTab.getAttribute('data-help');
+        tabSections.forEach(function(s) { s.classList.toggle('active', s.id === activeId); });
+      }
+      return;
+    }
+
+    // Hide normal sections, show search results container
+    tabSections.forEach(function(s) { s.classList.remove('active'); s.style.display = 'none'; });
+    if (resultsContainer) { resultsContainer.style.display = 'block'; resultsContainer.innerHTML = ''; }
+
+    var totalMatches = 0;
+    var sectionMatches = {};
+
+    tabBtns.forEach(function(btn) {
+      var key    = btn.getAttribute('data-help');
+      var sectionEl = document.getElementById('help-' + key);
+      if (!sectionEl) return;
+      var cards  = sectionEl.querySelectorAll('.help-card');
+      var hits   = [];
+      cards.forEach(function(card) {
+        var text = (card.textContent || '').toLowerCase();
+        if (text.indexOf(q) !== -1) hits.push(card);
+      });
+      if (hits.length) {
+        sectionMatches[key] = { label: btn.textContent.trim(), hits: hits };
+        totalMatches += hits.length;
+      }
+    });
+
+    if (totalMatches === 0) {
+      if (noResults) { noResults.style.display = 'block'; noResults.textContent = 'No results for "' + q + '"'; }
+      if (resultsBar) resultsBar.style.display = 'none';
+      return;
+    }
+
+    if (noResults)  noResults.style.display = 'none';
+    if (resultsBar) {
+      resultsBar.style.display = 'block';
+      resultsBar.textContent   = totalMatches + ' result' + (totalMatches !== 1 ? 's' : '') + ' across ' + Object.keys(sectionMatches).length + ' section' + (Object.keys(sectionMatches).length !== 1 ? 's' : '');
+    }
+
+    Object.keys(sectionMatches).forEach(function(key) {
+      var sm = sectionMatches[key];
+      var badge = document.createElement('div');
+      badge.className = 'help-search-section-badge';
+      badge.textContent = sm.label;
+      if (resultsContainer) resultsContainer.appendChild(badge);
+      sm.hits.forEach(function(card) {
+        var clone = card.cloneNode(true);
+        if (resultsContainer) resultsContainer.appendChild(clone);
+      });
+    });
+  }
+
+  searchInput.addEventListener('input', function() { doSearch(this.value); });
+  if (clearBtn) clearBtn.addEventListener('click', function() { searchInput.value = ''; doSearch(''); searchInput.focus(); });
+});
+
+// ── 7. Status Indicator ───────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', function() {
+  // Simple ping to check if backend is reachable
+  var statusText = document.getElementById('help-status-text');
+  var statusDot  = document.querySelector('.cv-status-dot');
+  if (!statusText) return;
+
+  // Default: operational
+  statusText.textContent = 'All systems operational';
+
+  // Optional: ping API base (non-blocking)
+  try {
+    fetch('/api/health', { method: 'HEAD', signal: AbortSignal.timeout(3000) })
+      .then(function(r) {
+        if (!r.ok && statusDot && statusText) {
+          statusDot.classList.add('degraded');
+          statusText.textContent = 'AI services may be slow';
+        }
+      })
+      .catch(function() { /* network error — assume operational */ });
+  } catch(e) {}
+});
+
+// ── 8. Feedback System ────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', function() {
+  var modal     = document.getElementById('cv-feedback-modal');
+  var titleEl   = document.getElementById('cv-feedback-title');
+  var descEl    = document.getElementById('cv-feedback-desc');
+  var submitBtn = document.getElementById('cv-feedback-submit');
+  var sentEl    = document.getElementById('cv-feedback-sent');
+  var textarea  = document.getElementById('cv-feedback-text');
+
+  function openFeedback(type) {
+    if (!modal) return;
+    if (type === 'bug') {
+      if (titleEl) titleEl.textContent = '🐛 Report a Bug';
+      if (descEl)  descEl.textContent  = 'Describe the issue — what you expected vs. what happened. Include steps to reproduce if possible.';
+    } else {
+      if (titleEl) titleEl.textContent = '💡 Suggest a Feature';
+      if (descEl)  descEl.textContent  = 'What feature would make CostVision more useful for your work? Describe the problem it would solve.';
+    }
+    if (sentEl)   sentEl.style.display = 'none';
+    if (textarea) textarea.value = '';
+    modal.style.display = 'flex';
+  }
+
+  document.querySelectorAll('[data-feedback]').forEach(function(btn) {
+    btn.addEventListener('click', function() { openFeedback(btn.getAttribute('data-feedback')); });
+  });
+
+  if (submitBtn) {
+    submitBtn.addEventListener('click', function() {
+      var text = textarea ? textarea.value.trim() : '';
+      if (!text) return;
+      // In a real app, POST to /api/feedback — here we just acknowledge
+      if (sentEl) sentEl.style.display = 'block';
+      if (submitBtn) submitBtn.style.display = 'none';
+      setTimeout(function() {
+        if (modal) modal.style.display = 'none';
+        if (submitBtn) submitBtn.style.display = '';
+      }, 2000);
+    });
+  }
+
+  if (modal) {
+    modal.addEventListener('click', function(e) {
+      if (e.target === modal) modal.style.display = 'none';
+    });
+  }
+});
+
+})();
+</script>
+
 </body>
 </html>

@@ -14521,8 +14521,66 @@ async function init(): Promise<void> {
   // Initialise Framer Motion (motion) hover/press/parallax layer
   initMotionFX();
 
+  // Global keyboard shortcuts
+  document.addEventListener('keydown', (e: KeyboardEvent) => {
+    if (
+      e.target instanceof HTMLInputElement ||
+      e.target instanceof HTMLTextAreaElement ||
+      e.target instanceof HTMLSelectElement
+    ) return;
+
+    // Ctrl+E / Cmd+E — export PDF
+    if ((e.ctrlKey || e.metaKey) && e.key === 'e') {
+      e.preventDefault();
+      if (typeof (window as any).exportPDF === 'function') {
+        (window as any).exportPDF();
+      } else {
+        (document.getElementById('export-pdf-btn') as HTMLElement | null)?.click();
+      }
+      return;
+    }
+
+    // ? or Shift+H — open help
+    if (e.key === '?' || (e.shiftKey && e.key === 'H')) {
+      e.preventDefault();
+      (document.getElementById('help-btn') as HTMLElement | null)?.click();
+      return;
+    }
+
+    if (e.ctrlKey || e.metaKey || e.altKey || e.shiftKey) return;
+
+    // n — new costing
+    if (e.key === 'n') {
+      e.preventDefault();
+      (document.getElementById('new-costing-btn') as HTMLElement | null)?.click();
+      return;
+    }
+
+    // d — go home
+    if (e.key === 'd') {
+      e.preventDefault();
+      (document.getElementById('home-btn') as HTMLElement | null)?.click();
+      return;
+    }
+
+    // 1–5 — click nth result tab
+    const tabIndex = parseInt(e.key, 10);
+    if (tabIndex >= 1 && tabIndex <= 5) {
+      const tabs = document.querySelectorAll<HTMLElement>('.rtab');
+      if (tabs.length > 0) {
+        e.preventDefault();
+        tabs[tabIndex - 1]?.click();
+      }
+      return;
+    }
+  });
+
   // Initial view: show home on load
   showHome();
 }
 
 document.addEventListener('DOMContentLoaded', () => { void init(); });
+
+export function startCVTour(): void {
+  document.dispatchEvent(new CustomEvent('cv:start-tour'));
+}
