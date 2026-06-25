@@ -1026,7 +1026,10 @@
       <div style="display:flex;align-items:center;gap:10px">
         <div style="width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-size:0.85rem;font-weight:800;color:#fff">CV</div>
         <div>
-          <h2 id="help-modal-title" style="font-size:1rem;font-weight:800;color:var(--text-primary);margin:0">CostVision — Help Centre</h2>
+          <div style="display:flex;align-items:center;gap:8px">
+            <h2 id="help-modal-title" style="font-size:1rem;font-weight:800;color:var(--text-primary);margin:0">CostVision — Help Centre</h2>
+            <span style="background:linear-gradient(135deg,#2563eb,#7c3aed);color:#fff;border-radius:5px;padding:2px 8px;font-size:0.65rem;font-weight:800;letter-spacing:0.5px">V4.1</span>
+          </div>
           <p style="font-size:0.7rem;color:var(--text-muted);margin:0">Everything you need to master AI-powered should-costing</p>
         </div>
       </div>
@@ -1036,15 +1039,16 @@
     <!-- Tab bar -->
     <div class="help-tabs">
       <button class="help-tab active" data-help="getting-started">Getting Started</button>
+      <button class="help-tab" data-help="whats-new" style="color:#2563eb;font-weight:700">🆕 What's New</button>
       <button class="help-tab" data-help="ai-agent">AI Agent</button>
       <button class="help-tab" data-help="cad-upload">CAD &amp; Photo</button>
       <button class="help-tab" data-help="commodities">Commodities</button>
+      <button class="help-tab" data-help="sw-should-cost">🚗 Auto SW Cost</button>
       <button class="help-tab" data-help="news-feed">📰 News</button>
       <button class="help-tab" data-help="commodity-dashboard">📈 Live Prices</button>
       <button class="help-tab" data-help="faq">FAQ</button>
       <button class="help-tab" data-help="glossary">Glossary</button>
       <button class="help-tab" data-help="troubleshoot">Troubleshooting</button>
-      <button class="help-tab" data-help="whats-new">What's New</button>
       <button class="help-tab" data-help="commodity-guides">Commodity Guides</button>
     </div>
 
@@ -1054,8 +1058,9 @@
         <div class="help-card-title"><div class="help-icon">1</div>Navigate to a Commodity</div>
         <p>There are two ways to start a costing:</p>
         <ul>
-          <li><strong>⊕ New Costing</strong> (top nav button) → opens the full commodity picker screen with all 12+ manufacturing processes as tiles → click a tile to open the right-side workflow panel.</li>
+          <li><strong>⊕ New Costing</strong> (top nav button) → opens the full commodity picker screen with all 19+ manufacturing processes and specialist tools as tiles → click a tile to open the right-side workflow panel.</li>
           <li><strong>One-Click Shortcuts</strong> on the Home Dashboard → jump directly to a specific commodity in full-screen mode.</li>
+          <li><strong>🚗 Automotive Software Should-Cost</strong> — new in V4.1 — select from the picker to open the dedicated 43-module software cost model for premium EV programmes.</li>
         </ul>
         <p style="margin-top:6px">Use the <strong>Home</strong> button or click the <strong>CostVision logo</strong> to return to the dashboard at any time.</p>
       </div>
@@ -1162,6 +1167,88 @@
         <div class="help-card" style="margin:0"><div class="help-card-title">Wiring Harness</div><p>Wire gauges, connectors, splices, conduit, tape, crimping assembly, electrical test included.</p></div>
         <div class="help-card" style="margin:0"><div class="help-card-title">Rubber</div><p>Compression, transfer, LSR injection moulding, extrusion+vulcanise. EPDM, NBR, Silicone, FKM.</p></div>
         <div class="help-card" style="margin:0"><div class="help-card-title">Assembly BOM</div><p>Full BOM costing: upload or enter component list with costs, then add assembly operations on top.</p></div>
+        <div class="help-card" style="margin:0;border:1px solid #2563eb33;background:#eff6ff"><div class="help-card-title" style="color:#1d4ed8">🚗 Automotive SW Should-Cost <span style="font-size:0.65rem;background:#2563eb;color:#fff;border-radius:3px;padding:1px 6px;margin-left:4px;font-weight:700">V4.1 NEW</span></div><p>Parameter-driven software cost model for premium luxury EV programmes. 43 modules × 7 categories, ASIL QM–D multipliers, 9 regional rates, complexity/reuse factors, sensitivity analysis, and OEM benchmark comparisons.</p></div>
+      </div>
+    </div>
+
+    <!-- Automotive SW Should-Cost -->
+    <div class="help-section" id="help-sw-should-cost">
+      <div class="help-card" style="border-top:3px solid #2563eb">
+        <div class="help-card-title" style="color:#1d4ed8">🚗 What is the Automotive Software Should-Cost Calculator?</div>
+        <p>A first-principles, engineering-grade cost model for all software systems in a premium luxury EV programme (2024–2026). Built to the standard expected by a Senior Chief Automotive Software Should-Cost Engineer — covering <strong>43 modules</strong> across <strong>7 functional categories</strong>, with <strong>9 cost dimensions</strong>, ISO 26262 ASIL multipliers, global regional rates, and real OEM benchmark comparisons.</p>
+        <p style="margin-top:8px">Access it via <strong>⊕ New Costing → 🚗 Auto SW Cost</strong> tile.</p>
+      </div>
+      <div class="help-card">
+        <div class="help-card-title">📂 The 7 Software Categories</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:0.8rem">
+          <div style="padding:8px;background:#f8fafc;border-radius:6px;border-left:3px solid #22c55e"><strong>A · EV Powertrain &amp; Battery</strong> — BMS Core, Cell Balancing, SOC/SOH/SOE, Thermal Mgmt, Fast Charge, EDU Control, Inverter, Motor Control, Regen Braking (9 modules)</div>
+          <div style="padding:8px;background:#f8fafc;border-radius:6px;border-left:3px solid #3b82f6"><strong>B · ADAS L2/L2+</strong> — Camera Perception, Radar, Ultrasonic, Sensor Fusion, Path Planning, ACC/LKA/AEB, Driver Monitor, Highway Assist (8 modules)</div>
+          <div style="padding:8px;background:#f8fafc;border-radius:6px;border-left:3px solid #8b5cf6"><strong>C · Infotainment &amp; UX</strong> — IVI OS, Navigation, Voice Assistant, TCU Software, Connectivity Stack, HMI Framework (6 modules)</div>
+          <div style="padding:8px;background:#f8fafc;border-radius:6px;border-left:3px solid #f59e0b"><strong>D · Vehicle Domain Controllers</strong> — Body Control, Chassis Control, Gateway ECU, Zonal Architecture, VMM (5 modules)</div>
+          <div style="padding:8px;background:#f8fafc;border-radius:6px;border-left:3px solid #06b6d4"><strong>E · Middleware &amp; Platform</strong> — AUTOSAR Classic, AUTOSAR Adaptive, RTOS, Diagnostics, Comm Stacks, Time Sync/NM (6 modules)</div>
+          <div style="padding:8px;background:#f8fafc;border-radius:6px;border-left:3px solid #ef4444"><strong>F · Cybersecurity (ISO 21434)</strong> — Secure Boot, Encryption, IDS, Secure OTA, Key Management (5 modules)</div>
+          <div style="padding:8px;background:#f8fafc;border-radius:6px;border-left:3px solid #a78bfa"><strong>G · OTA &amp; Cloud Backend</strong> — OTA Manager, Cloud Backend, Data Pipeline, Fleet Management (4 modules)</div>
+        </div>
+      </div>
+      <div class="help-card">
+        <div class="help-card-title">🔢 Cost Multipliers &amp; Factors</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <div>
+            <p><strong>ASIL Development Multipliers (ISO 26262)</strong></p>
+            <ul>
+              <li>QM → 1.00× (no safety requirement)</li>
+              <li>ASIL-A → 1.35×</li>
+              <li>ASIL-B → 1.80×</li>
+              <li>ASIL-C → 2.30×</li>
+              <li>ASIL-D → 3.20× (most stringent)</li>
+            </ul>
+            <p style="margin-top:8px"><strong>Complexity Multipliers</strong></p>
+            <ul>
+              <li>Low → 0.60×</li>
+              <li>Medium → 1.00× (baseline)</li>
+              <li>High → 1.70×</li>
+              <li>Very High → 2.80×</li>
+            </ul>
+          </div>
+          <div>
+            <p><strong>Reuse Factors</strong></p>
+            <ul>
+              <li>Fresh (greenfield) → 1.00×</li>
+              <li>Light reuse → 0.82×</li>
+              <li>Medium reuse → 0.60×</li>
+              <li>Heavy reuse → 0.35×</li>
+              <li>Platform reuse → 0.14×</li>
+            </ul>
+            <p style="margin-top:8px"><strong>Regional Labour Rates (vs UK base £28k/PM)</strong></p>
+            <ul>
+              <li>UK 1.00× · EU 0.95× · USA SV 1.85×</li>
+              <li>China 0.35× · India 0.20× · Mexico 0.28×</li>
+              <li>Eastern Europe 0.45× · Japan 0.90×</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="help-card">
+        <div class="help-card-title">⚡ Quick-Set Presets</div>
+        <ul>
+          <li><strong>🚀 Aggressive</strong> — ASIL-A everywhere, High reuse, China labour rates. Minimum achievable cost.</li>
+          <li><strong>📊 Industry Baseline</strong> — Module defaults, Medium reuse, UK rates. Typical Tier 1 programme.</li>
+          <li><strong>👑 Premium OEM</strong> — High complexity, Fresh development, USA SV rates. Maximum-investment programme.</li>
+          <li><strong>🌏 Offshored</strong> — India labour rates with default ASIL and complexity. Offshore-first strategy.</li>
+        </ul>
+      </div>
+      <div class="help-card">
+        <div class="help-card-title">🏆 OEM Benchmark Comparisons</div>
+        <p>Results are benchmarked against 7 real premium EV programmes based on analyst reports and teardown studies:</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:8px;font-size:0.78rem">
+          <div style="padding:7px;background:#f8fafc;border-radius:6px"><strong>BMW iX</strong><br>£620M total · £4,800/veh</div>
+          <div style="padding:7px;background:#f8fafc;border-radius:6px"><strong>Porsche Taycan</strong><br>£480M total · £5,200/veh</div>
+          <div style="padding:7px;background:#f8fafc;border-radius:6px"><strong>Mercedes EQS</strong><br>£710M total · £5,500/veh</div>
+          <div style="padding:7px;background:#f8fafc;border-radius:6px"><strong>Range Rover L460</strong><br>£390M total · £3,800/veh</div>
+          <div style="padding:7px;background:#f8fafc;border-radius:6px"><strong>Tesla Model S HW4</strong><br>£850M total · £3,200/veh</div>
+          <div style="padding:7px;background:#f8fafc;border-radius:6px"><strong>Audi Q8 e-tron</strong><br>£520M total · £4,600/veh</div>
+          <div style="padding:7px;background:#f8fafc;border-radius:6px"><strong>Lucid Air</strong><br>£380M total · £7,800/veh</div>
+        </div>
       </div>
     </div>
 
@@ -1397,71 +1484,120 @@
 
     <!-- What's New -->
     <div class="help-section" id="help-whats-new">
+
+      <!-- V4.1 release header -->
+      <div style="background:linear-gradient(135deg,#0f172a 0%,#1e3a5f 60%,#1e4a8a 100%);border-radius:10px;padding:18px 22px;margin-bottom:18px;display:flex;align-items:center;gap:16px">
+        <div style="background:linear-gradient(135deg,#2563eb,#7c3aed);border-radius:8px;padding:10px 16px;font-size:1.2rem;font-weight:900;color:#fff;letter-spacing:-0.5px;white-space:nowrap">V4.1</div>
+        <div>
+          <div style="font-size:1rem;font-weight:800;color:#fff;margin-bottom:3px">CostVision V4.1 — Automotive Software Should-Cost + Animation Layer</div>
+          <div style="font-size:0.75rem;color:#94a3b8">June 2026 · 4 major features · 19+ calculators · 43-module EV software cost model</div>
+        </div>
+      </div>
+
+      <!-- V4.1 NEW features -->
+      <div style="font-size:0.72rem;font-weight:700;color:#2563eb;letter-spacing:0.8px;text-transform:uppercase;margin-bottom:8px">New in V4.1</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px">
+
+        <div class="help-card" style="margin:0;border:1px solid #2563eb33;background:#eff6ff">
+          <div class="help-card-title" style="color:#1d4ed8">🚗 Automotive Software Should-Cost <span style="font-size:0.62rem;background:#2563eb;color:#fff;border-radius:3px;padding:1px 6px;margin-left:4px;font-weight:700">NEW</span></div>
+          <p>A complete parameter-driven software cost model for premium luxury EV programmes (2024–2026). <strong>43 modules</strong> across 7 categories: EV Powertrain &amp; Battery, ADAS L2+, Infotainment/UX, Domain Controllers, Middleware/Platform, Cybersecurity (ISO 21434), and OTA/Cloud Backend.</p>
+          <ul>
+            <li><strong>ASIL multipliers</strong> (QM → D) for both development and testing phases</li>
+            <li><strong>9 regional labour rates</strong> from India (0.20×) to USA Silicon Valley (1.85×)</li>
+            <li><strong>Complexity &amp; Reuse factors</strong> — Low to Very High, Fresh to Platform</li>
+            <li><strong>9 cost dimensions</strong>: Dev, Test, Integration, Toolchain, Cybersec, Maintenance, Cloud, IP Licensing, per-vehicle amortisation</li>
+            <li><strong>Sensitivity analysis</strong> across 6 parameters (ASIL, complexity, reuse, region, programme life, volume)</li>
+            <li><strong>Benchmark comparison</strong> against BMW iX, Porsche Taycan, Mercedes EQS, Range Rover L460, Tesla HW4, Audi Q8 e-tron, Lucid Air</li>
+            <li>4 quick-set presets: Aggressive, Industry Baseline, Premium OEM, Offshored</li>
+            <li>PDF export with professional navy/blue report</li>
+          </ul>
+        </div>
+
+        <div class="help-card" style="margin:0;border:1px solid #7c3aed33;background:#faf5ff">
+          <div class="help-card-title" style="color:#6d28d9">✨ Framer Motion Animation Layer <span style="font-size:0.62rem;background:#7c3aed;color:#fff;border-radius:3px;padding:1px 6px;margin-left:4px;font-weight:700">NEW</span></div>
+          <p>A complete spring-physics animation layer built with the <strong>motion</strong> package (Framer Motion's vanilla DOM library). Adds dynamic, hardware-accelerated motion to every interaction without requiring React.</p>
+          <ul>
+            <li><strong>Hover lift &amp; scale</strong> — dashboard cards, KPI tiles, commodity tiles, result cards all spring-lift on hover with drop shadow</li>
+            <li><strong>Press haptic</strong> — buttons compress slightly on press using snappy spring physics</li>
+            <li><strong>InView reveal</strong> — sections and rows fade+slide in as they enter the viewport</li>
+            <li><strong>Staggered row reveals</strong> — table rows enter in cascade sequence on result render</li>
+            <li><strong>Hero parallax</strong> — login page hero image scrolls at 55% speed for depth</li>
+            <li><strong>Cursor glow</strong> — a soft radial gradient follows the mouse on the hero section</li>
+            <li><strong>Panel open/close spring</strong> — costing panels animate open and close with bounce easing</li>
+          </ul>
+        </div>
+
+        <div class="help-card" style="margin:0;border:1px solid #059669aa;background:#f0fdf4">
+          <div class="help-card-title" style="color:#065f46">🎬 GSAP Animation Layer <span style="font-size:0.62rem;background:#059669;color:#fff;border-radius:3px;padding:1px 6px;margin-left:4px;font-weight:700">NEW</span></div>
+          <p>Professional animation orchestration using <strong>GSAP</strong> (GreenSock Animation Platform) and ScrollTrigger for view lifecycle transitions and UI micro-interactions.</p>
+          <ul>
+            <li><strong>View transitions</strong> — dashboard, costing, and results views animate in/out on navigation</li>
+            <li><strong>Card tilt</strong> — dashboard cards follow the mouse pointer with a subtle 3D perspective tilt</li>
+            <li><strong>Button ripple</strong> — primary action buttons emit a CSS ripple on click</li>
+            <li><strong>ScrollTrigger counters</strong> — KPI numbers count up from zero when they scroll into view</li>
+            <li><strong>Toast spring</strong> — notification toasts slide in from top with spring easing and auto-dismiss</li>
+            <li><strong>Chat spring</strong> — AI chat messages drop in with a bouncy spring for each new message</li>
+            <li><strong>Dashboard stagger</strong> — stat cards and chart sections stagger into view on dashboard render</li>
+          </ul>
+        </div>
+
+        <div class="help-card" style="margin:0;border:1px solid #d9770644;background:#fff7ed">
+          <div class="help-card-title" style="color:#92400e">📄 Professional PDF Report Redesign <span style="font-size:0.62rem;background:#d97706;color:#fff;border-radius:3px;padding:1px 6px;margin-left:4px;font-weight:700">IMPROVED</span></div>
+          <p>Every PDF report has been completely redesigned with a professional deep-navy + orange brand theme, fixing all text overlap and column overflow issues from the previous version.</p>
+          <ul>
+            <li><strong>Cover page</strong> — deep navy banner (68mm) with orange accent stripe, CV logo box, and part summary card with confidence band</li>
+            <li><strong>Column widths fixed</strong> — all 10 table sections recalculated to sum exactly to 182mm (no more text spilling outside cells)</li>
+            <li><strong>§4 Operations split</strong> — the 13-column operations table split into two focused tables (Machine Ops 6 cols, Labour Detail 8 cols) to prevent overflow</li>
+            <li><strong>CAD Analysis PDF redesigned</strong> — teal/navy professional theme with fixed column widths</li>
+            <li><strong>Confidence band computed</strong> — overall report confidence (High/Medium/Low) derived from traceability record mix rather than a missing field</li>
+            <li>Cleaner section headers, consistent font sizing, alternating row shading throughout</li>
+          </ul>
+        </div>
+
+      </div>
+
+      <!-- Earlier releases -->
+      <div style="font-size:0.72rem;font-weight:700;color:#64748b;letter-spacing:0.8px;text-transform:uppercase;margin-bottom:8px">Earlier Releases</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
 
         <div class="help-card" style="margin:0">
-          <div class="help-card-title">⊕ New Costing Button</div>
-          <p>The gradient <strong>⊕ New Costing</strong> button in the top navigation bar opens a full-width commodity picker. Select from 12 manufacturing commodities plus 3 AI-powered options. The costing workflow slides in from the right side as a panel.</p>
-        </div>
-
-        <div class="help-card" style="margin:0">
-          <div class="help-card-title">Right-Side Workflow Panel</div>
-          <p>When you select a commodity from the picker, the full costing form slides in from the right (52% width). The left side dims. Close the panel with the <strong>✕ Close</strong> button, click the backdrop, or press <strong>Escape</strong>.</p>
-        </div>
-
-        <div class="help-card" style="margin:0">
-          <div class="help-card-title">Dynamic Dashboard</div>
-          <p>The Home dashboard shows live KPI cards (Total Costings, Savings Identified, Top Commodity, Avg Part Cost, High-Cost Parts). Charts update in real time as you complete costings. Filter by Vehicle, Commodity, System, Cost Range, Region, and Confidence.</p>
-        </div>
-
-        <div class="help-card" style="margin:0">
-          <div class="help-card-title">Quick Compare</div>
-          <p>In the <strong>Recent Costings</strong> table, tick the checkbox on exactly 2 rows to activate the <strong>Compare Side-by-Side</strong> bar. A detailed breakdown panel appears below showing cost differences by bucket (Material, Process, Labour, Tooling, etc.) with colour-coded Δ values.</p>
-        </div>
-
-        <div class="help-card" style="margin:0">
-          <div class="help-card-title">AI Confidence Badges</div>
-          <p>Every completed costing is tagged with an AI confidence badge: <strong>● High</strong> (green), <strong>● Medium</strong> (amber), or <strong>● Low</strong> (red). These reflect how certain the AI is about the returned parameter values and are visible in the Recent Costings table.</p>
-        </div>
-
-        <div class="help-card" style="margin:0">
-          <div class="help-card-title">PCB Image-to-BOM</div>
-          <p>Upload a PCB photo and the AI automatically extracts the full Bill of Materials — component types, quantities, unit prices, board specifications, and assembly complexity. The results populate the PCB Fab and PCBA forms directly. Supports JPEG, PNG, and WebP up to 20 MB.</p>
-        </div>
-
-        <div class="help-card" style="margin:0">
-          <div class="help-card-title">Demo Gallery</div>
-          <p>Click <strong>🚗 Demos</strong> in the top nav to open the Luxury SUV Demo Gallery — 50+ pre-configured automotive examples across all commodity types. Click any card to load it instantly with AI insights, sensitivity analysis, and full cost breakdown.</p>
-        </div>
-
-        <div class="help-card" style="margin:0">
-          <div class="help-card-title">AI Cost Assistant</div>
-          <p>The floating chat button (bottom-right) opens the AI Cost Assistant — a real-time manufacturing cost engineering chatbot. Ask commodity-specific questions and get structured, numbered step-by-step guidance. Works independently of any active costing session.</p>
-        </div>
-
-        <div class="help-card" style="margin:0">
-          <div class="help-card-title">🌍 Country for Costing</div>
-          <p>A <strong>Country for Costing</strong> bar now appears inside every should-cost form (except AI Agent). Select from 8 countries: UK, Germany, USA Midwest, China, India, Mexico, Poland, and Czech Republic. On selection, currency, labour rates, machine rates, material prices, and overhead % all update automatically and the result recalculates instantly.</p>
+          <div class="help-card-title">⊕ New Costing &amp; Workflow Panel</div>
+          <p>The gradient <strong>⊕ New Costing</strong> button opens a full-width commodity picker with 19+ processes and AI tools. The costing workflow slides in as a right-side panel (52% width). Close with ✕, Escape, or click the backdrop.</p>
         </div>
 
         <div class="help-card" style="margin:0">
           <div class="help-card-title">📈 Live Commodity Dashboard</div>
-          <p>A new <strong>📈 Live Prices</strong> section shows real-time prices for 52 automotive-relevant commodities — steel, aluminium, copper, lithium, cobalt, NMC, LFP, SiC, rare earths, engineering plastics, and more. Features include a live scrolling ticker, 5 KPI cards per commodity, region risk index, 7/30/90-day sparklines, AI-powered 30/90-day price forecasts, price alert thresholds, and should-cost impact coefficients that feed directly into the cost model.</p>
+          <p>Real-time prices for 52 automotive commodities — steel, aluminium, copper, lithium, cobalt, NMC, LFP, SiC, rare earths, engineering plastics, and more. Includes sparklines, AI price forecasts, price alert thresholds, and should-cost impact coefficients.</p>
         </div>
 
         <div class="help-card" style="margin:0">
           <div class="help-card-title">📰 News &amp; Market Intelligence</div>
-          <p>The new <strong>📰 News</strong> section aggregates up to 120 articles from 30 curated RSS feeds covering automotive, battery, EV tech, materials, and supply chain. Highlights: a featured hero card for the top story, keyword search with instant filtering, category pills with live article counts, relative timestamps ("3h ago"), per-article reading time estimates, and image thumbnails. A live news ticker scrolls the latest headlines across the top of the app.</p>
+          <p>120 articles from 30 curated RSS feeds. Live news ticker, featured hero card, keyword search, category filter pills, relative timestamps, and reading-time badges. Auto-refreshes every 15 minutes.</p>
         </div>
 
         <div class="help-card" style="margin:0">
-          <div class="help-card-title">📄 Export Full Report PDF</div>
-          <p>A new <strong>Export Full Report PDF</strong> button at the bottom of the Breakdown tab generates a comprehensive multi-section PDF in a single click. It covers all result tabs — cost breakdown table, waterfall chart, sensitivity tornado, AI insights, material build-up, and scenario comparison — along with your part photo and report metadata. Powered by jsPDF + AutoTable for professional-grade output.</p>
+          <div class="help-card-title">🖼 PCB Image-to-BOM</div>
+          <p>Upload a PCB photo and the AI extracts the full Bill of Materials — component types, quantities, unit prices, board specs, and assembly complexity. Populates PCB Fab and PCBA forms directly. JPEG/PNG/WebP up to 20 MB.</p>
         </div>
 
         <div class="help-card" style="margin:0">
-          <div class="help-card-title">⏱ Smart Article Features</div>
-          <p>News article cards now show <strong>relative timestamps</strong> that update live ("just now" → "5m ago" → "2h ago") and an estimated <strong>reading time</strong> badge based on article word count. The first article in the unfiltered feed displays as a full-width <strong>featured hero card</strong> with a larger image and expanded layout. These features work across all 30 news sources and all category filters.</p>
+          <div class="help-card-title">🌍 Country for Costing</div>
+          <p>A <strong>Country for Costing</strong> bar appears inside every should-cost form. Select from 8 countries and labour rates, machine rates, material prices, and overhead % all update and recalculate instantly.</p>
+        </div>
+
+        <div class="help-card" style="margin:0">
+          <div class="help-card-title">🚗 Luxury SUV Demo Gallery</div>
+          <p>Click <strong>🚗 Demos</strong> in the nav to access 50+ pre-configured automotive examples across all commodity types. One click loads any demo with full AI insights, sensitivity analysis, and cost breakdown.</p>
+        </div>
+
+        <div class="help-card" style="margin:0">
+          <div class="help-card-title">⚖ Quick Compare</div>
+          <p>Tick 2 rows in the Recent Costings table to activate <strong>Compare Side-by-Side</strong>. A breakdown panel shows bucket-level cost differences (Material, Process, Labour, Tooling…) with colour-coded Δ values.</p>
+        </div>
+
+        <div class="help-card" style="margin:0">
+          <div class="help-card-title">💬 AI Cost Assistant</div>
+          <p>The floating chat button (bottom-right) opens a real-time manufacturing cost engineering chatbot. Ask commodity-specific questions and get structured guidance — works independently of any active costing session.</p>
         </div>
 
       </div>
