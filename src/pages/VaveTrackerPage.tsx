@@ -39,7 +39,7 @@ const STAGES: { key: VaveStage; label: string; sublabel: string; color: string; 
   { key: 'Approved',   label: 'Approved',    sublabel: 'Approved to implement', color: 'text-blue-400',   bg: 'bg-blue-500/10',   border: 'border-blue-500/20',   dot: 'bg-blue-400',    icon: CheckCircle },
   { key: 'In Progress', label: 'In Progress', sublabel: 'Implementation active', color: 'text-violet-400', bg: 'bg-violet-500/10', border: 'border-violet-500/20', dot: 'bg-violet-400',  icon: ArrowRight },
   { key: 'Validated',  label: 'Validated',   sublabel: 'Saving confirmed pilot', color: 'text-teal-400',   bg: 'bg-teal-500/10',   border: 'border-teal-500/20',   dot: 'bg-teal-400',    icon: TrendingUp },
-  { key: 'Confirmed',  label: 'Confirmed',   sublabel: 'In production saving',   color: 'text-green-400',  bg: 'bg-green-500/10',  border: 'border-green-500/20',  dot: 'bg-green-400',   icon: Award },
+  { key: 'Confirmed',  label: 'Confirmed',   sublabel: 'In production saving',   color: 'text-success-400',  bg: 'bg-success-500/10',  border: 'border-success-500/20',  dot: 'bg-success-400',   icon: Award },
 ];
 
 function parseSaving(v?: string): number {
@@ -204,7 +204,7 @@ function EditPanel({ action, onSave, onDelete, onClose }: EditPanelProps) {
         </button>
         <button
           onClick={onDelete}
-          className="p-2.5 rounded-xl border border-red-500/20 text-red-400 hover:bg-red-500/10 transition-colors"
+          className="p-2.5 rounded-xl border border-danger-500/20 text-danger-400 hover:bg-danger-500/10 transition-colors"
           title="Remove from tracker"
         >
           <Trash2 size={16} />
@@ -300,7 +300,7 @@ export default function VaveTrackerPage() {
           {[
             { icon: BarChart3, iconClass: 'text-slate-400', label: 'Total Pipeline', labelClass: 'text-slate-400', value: fmtSaving(totalPipeline), sub: `${actions.length} ideas across all stages`, border: 'border-white/10' },
             { icon: TrendingUp, iconClass: 'text-teal-400', label: 'Validated +', labelClass: 'text-teal-400', value: fmtSaving(totalValidated), sub: 'Validated & Confirmed stages', border: 'border-teal-500/20' },
-            { icon: Award, iconClass: 'text-green-400', label: 'Confirmed Saving', labelClass: 'text-green-400', value: fmtSaving(totalConfirmed), sub: 'In production', border: 'border-green-500/25' },
+            { icon: Award, iconClass: 'text-success-400', label: 'Confirmed Saving', labelClass: 'text-success-400', value: fmtSaving(totalConfirmed), sub: 'In production', border: 'border-success-500/25' },
           ].map(({ icon: Icon, iconClass, label, labelClass, value, sub, border }, i) => (
             <motion.div
               key={label}
@@ -412,7 +412,7 @@ export default function VaveTrackerPage() {
                         <div className="flex items-center gap-2 flex-shrink-0">
                           {action.confirmedSaving ? (
                             <div className="text-right">
-                              <div className="text-green-400 font-semibold text-sm">{action.confirmedSaving}</div>
+                              <div className="text-success-400 font-semibold text-sm">{action.confirmedSaving}</div>
                               <div className="text-slate-600 text-xs">confirmed</div>
                             </div>
                           ) : action.targetSaving ? (

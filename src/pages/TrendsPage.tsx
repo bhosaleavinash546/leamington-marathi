@@ -60,9 +60,9 @@ function getLevClass(lev: string) {
 
 function getTrendStatusClass(status: string) {
   if (status === 'Next-Gen') return 'bg-violet-500/10 text-violet-400 border-violet-500/30';
-  if (status.startsWith('Mainstream') || status === 'Mainstream') return 'bg-blue-500/10 text-blue-400 border-blue-500/30';
+  if (status.startsWith('Mainstream') || status === 'Mainstream') return 'bg-info-500/10 text-info-400 border-info-500/30';
   if (status.startsWith('Emerging') || status === 'Emerging') return 'bg-amber-500/10 text-amber-400 border-amber-500/30';
-  if (status === 'Declining') return 'bg-red-500/10 text-red-400 border-red-500/30';
+  if (status === 'Declining') return 'bg-danger-500/10 text-danger-400 border-danger-500/30';
   if (status.includes('>800V')) return 'bg-violet-500/10 text-violet-400 border-violet-500/30';
   return 'bg-teal-500/10 text-teal-400 border-teal-500/30';
 }
@@ -136,7 +136,7 @@ export default function TrendsPage() {
                 <div key={trend.t} className={`bg-navy-800/50 border border-white/8 border-l-2 rounded-xl p-4 ${trend.status.includes('>800V') ? 'border-l-violet-500' : trend.status.startsWith('Mainstream') ? 'border-l-blue-500' : 'border-l-amber-500'}`}>
                   <div className="flex items-start justify-between gap-2 mb-2">
                     <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border ${getTrendStatusClass(trend.status)}`}>{trend.status}</span>
-                    <span className="text-xs font-semibold text-green-400 bg-green-500/10 border border-green-500/20 rounded-full px-2 py-0.5 whitespace-nowrap">{trend.save}</span>
+                    <span className="text-xs font-semibold text-success-400 bg-success-500/10 border border-success-500/20 rounded-full px-2 py-0.5 whitespace-nowrap">{trend.save}</span>
                   </div>
                   <p className="text-white text-sm font-semibold mb-2">{trend.t}</p>
                   <p className="text-slate-400 text-xs leading-relaxed">{trend.dir}</p>
@@ -168,7 +168,7 @@ export default function TrendsPage() {
                   </div>
                   <p className="text-white text-sm font-semibold mb-1.5">{trend.title}</p>
                   <p className="text-slate-400 text-xs leading-relaxed mb-2">{trend.description}</p>
-                  {trend.impact && <p className="text-green-400 text-xs leading-relaxed italic">{trend.impact}</p>}
+                  {trend.impact && <p className="text-success-400 text-xs leading-relaxed italic">{trend.impact}</p>}
                 </div>
               ))}
             </div>
@@ -191,7 +191,7 @@ export default function TrendsPage() {
                         <span className="text-gold-500 text-xs font-bold flex-shrink-0 mt-0.5">{i+1}.</span>
                         <div className="flex-1 min-w-0">
                           <span className="text-white font-medium">{lever.action}</span>
-                          <span className="text-green-400 font-semibold ml-2 text-xs">{lever.saving}</span>
+                          <span className="text-success-400 font-semibold ml-2 text-xs">{lever.saving}</span>
                           {lever.conf && (
                             <span className={`ml-2 text-[10px] px-1.5 py-0.5 rounded border font-medium ${CONF_COLORS[lever.conf] || ''}`}>{lever.conf}</span>
                           )}
@@ -224,7 +224,7 @@ export default function TrendsPage() {
               <div key={trend.t} className={`bg-navy-800/50 border border-white/8 border-l-2 rounded-xl p-4 ${trend.status === 'Next-Gen' ? 'border-l-violet-500' : trend.status === 'Mainstream' ? 'border-l-blue-500' : trend.status === 'Emerging' ? 'border-l-amber-500' : 'border-l-red-500'}`}>
                 <div className="flex items-start justify-between gap-2 mb-2">
                   <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border ${getTrendStatusClass(trend.status)}`}>{trend.status}</span>
-                  <span className="text-xs font-semibold text-green-400 bg-green-500/10 border border-green-500/20 rounded-full px-2 py-0.5 whitespace-nowrap">{trend.save}</span>
+                  <span className="text-xs font-semibold text-success-400 bg-success-500/10 border border-success-500/20 rounded-full px-2 py-0.5 whitespace-nowrap">{trend.save}</span>
                 </div>
                 <p className="text-white text-sm font-semibold mb-2">{trend.t}</p>
                 <p className="text-slate-400 text-xs leading-relaxed">{trend.dir}</p>
@@ -251,7 +251,7 @@ export default function TrendsPage() {
                       <span className="text-gold-500 text-xs font-bold flex-shrink-0 mt-0.5">{i+1}.</span>
                       <div className="flex-1 min-w-0">
                         <span className="text-white font-medium">{lever.t}</span>
-                        <span className="text-green-400 font-semibold ml-2 text-xs">{lever.save}</span>
+                        <span className="text-success-400 font-semibold ml-2 text-xs">{lever.save}</span>
                         {lever.conf && (
                           <span className={`ml-2 text-[10px] px-1.5 py-0.5 rounded border font-medium ${CONF_COLORS[lever.conf] || ''}`}>{lever.conf}</span>
                         )}

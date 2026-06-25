@@ -667,14 +667,14 @@ export default function DashboardPage() {
                           {p.vehicleType && <div className="text-gold-500 text-xs truncate max-w-[200px]">{p.vehicleType}</div>}
                         </td>
                         <td className="text-right py-2.5 pr-2 text-blue-400 font-bold">{p.summary?.totalIdeas || 0}</td>
-                        <td className="text-right py-2.5 pr-2 text-green-400">{p.summary?.quickWins || 0}</td>
+                        <td className="text-right py-2.5 pr-2 text-success-400">{p.summary?.quickWins || 0}</td>
                         <td className="text-right py-2.5 text-amber-400">{p.summary?.strategicItems || 0}</td>
                       </tr>
                     ))}
                     <tr className="font-bold text-slate-300">
                       <td className="py-2.5 pr-4 text-xs uppercase tracking-wider">Total</td>
                       <td className="text-right py-2.5 pr-2 text-blue-400">{serverProjects.reduce((s, p) => s + (p.summary?.totalIdeas || 0), 0)}</td>
-                      <td className="text-right py-2.5 pr-2 text-green-400">{serverProjects.reduce((s, p) => s + (p.summary?.quickWins || 0), 0)}</td>
+                      <td className="text-right py-2.5 pr-2 text-success-400">{serverProjects.reduce((s, p) => s + (p.summary?.quickWins || 0), 0)}</td>
                       <td className="text-right py-2.5 text-amber-400">{serverProjects.reduce((s, p) => s + (p.summary?.strategicItems || 0), 0)}</td>
                     </tr>
                   </tbody>
@@ -706,8 +706,8 @@ export default function DashboardPage() {
                         </div>
                       </div>
                       <div className="flex items-center gap-2 flex-shrink-0 ml-3">
-                        <span className="text-xs text-emerald-400 font-medium">{p.summary?.totalIdeas || 0} ideas</span>
-                        {p.summary?.quickWins > 0 && <span className="text-xs text-green-400">{p.summary.quickWins} QW</span>}
+                        <span className="text-xs text-success-400 font-medium">{p.summary?.totalIdeas || 0} ideas</span>
+                        {p.summary?.quickWins > 0 && <span className="text-xs text-success-400">{p.summary.quickWins} QW</span>}
                         <button onClick={e => { e.stopPropagation(); shareProject(p.id); }}
                           disabled={sharingId === p.id}
                           className="p-1.5 rounded-lg hover:bg-white/8 text-slate-500 hover:text-blue-400 transition-colors">
@@ -746,7 +746,7 @@ export default function DashboardPage() {
                         <p className="text-slate-500 text-xs mt-0.5">{a.date}</p>
                       </div>
                       <div className="flex items-center gap-3">
-                        <span className="text-xs text-emerald-400 font-medium">{a.ideasCount} ideas</span>
+                        <span className="text-xs text-success-400 font-medium">{a.ideasCount} ideas</span>
                         <ChevronRight size={14} className="text-slate-600 group-hover:text-gold-400 transition-colors" />
                       </div>
                     </div>

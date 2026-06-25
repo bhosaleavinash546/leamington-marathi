@@ -1439,7 +1439,7 @@ export default function ResultsPage() {
                 />
               </div>
               {refineError && (
-                <div className="flex items-center gap-2 text-red-400 text-sm">
+                <div className="flex items-center gap-2 text-danger-400 text-sm">
                   <AlertTriangle size={14} /> {refineError}
                 </div>
               )}
