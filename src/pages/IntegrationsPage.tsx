@@ -158,7 +158,7 @@ export default function IntegrationsPage() {
             </button>
           </motion.div>
 
-          <button onClick={save} className={`w-full py-3 rounded-xl font-semibold text-sm transition-all ${saved ? 'bg-green-600 text-white' : 'bg-gold-500 hover:bg-gold-400 text-navy-950 hover:scale-[1.02]'}`}>
+          <button onClick={save} className={`w-full py-3 rounded-xl font-semibold text-sm transition-all shadow-glow-gold ${saved ? 'bg-green-600 text-white' : 'bg-gold-500 hover:bg-gold-400 text-navy-950 hover:scale-[1.02]'}`}>
             {saved ? '✓ Settings Saved' : 'Save Integration Settings'}
           </button>
         </div>

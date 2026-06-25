@@ -373,14 +373,14 @@ export default function AnalyzePage() {
                 onClick={() => i < step && setStep(i)}
                 className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
                   i === step ? 'bg-gold-500 text-navy-950'
-                  : i < step ? 'bg-green-500/20 text-green-400 cursor-pointer hover:bg-green-500/30'
+                  : i < step ? 'bg-success-500/20 text-success-400 cursor-pointer hover:bg-success-500/30'
                   : 'bg-white/5 text-slate-500'
                 }`}
               >
                 {i < step ? <CheckCircle size={13} /> : <s.icon size={13} />}
                 {s.label}
               </button>
-              {i < STEPS.length - 1 && <div className={`w-6 h-0.5 ${i < step ? 'bg-green-500/40' : 'bg-white/10'}`} />}
+              {i < STEPS.length - 1 && <div className={`w-6 h-0.5 ${i < step ? 'bg-success-500/40' : 'bg-white/10'}`} />}
             </div>
           ))}
         </div>
@@ -389,7 +389,7 @@ export default function AnalyzePage() {
           {/* STEP 0: System Selection */}
           {step === 0 && (
             <motion.div key="s0" initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }}>
-              <div className="bg-navy-900 rounded-2xl border border-white/10 p-8">
+              <div className="bg-navy-900 rounded-2xl border border-white/10 p-8 shadow-card">
                 <div className="flex items-center gap-3 mb-6">
                   <div className="w-10 h-10 rounded-xl bg-gold-500/20 flex items-center justify-center">
                     <Car size={20} className="text-gold-400" />
@@ -432,7 +432,7 @@ export default function AnalyzePage() {
                 <button
                   disabled={!systemId}
                   onClick={() => setStep(1)}
-                  className="w-full py-3 rounded-xl bg-gold-500 hover:bg-gold-400 disabled:opacity-40 disabled:cursor-not-allowed text-navy-950 font-bold transition-all"
+                  className="w-full py-3 rounded-xl bg-gold-500 hover:bg-gold-400 disabled:opacity-40 disabled:cursor-not-allowed text-navy-950 font-bold transition-all shadow-glow-gold"
                 >
                   Continue →
                 </button>
@@ -443,7 +443,7 @@ export default function AnalyzePage() {
           {/* STEP 1: Configure */}
           {step === 1 && (
             <motion.div key="s1" initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }}>
-              <div className="bg-navy-900 rounded-2xl border border-white/10 p-8 space-y-6">
+              <div className="bg-navy-900 rounded-2xl border border-white/10 p-8 space-y-6 shadow-card">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-xl bg-blue-500/20 flex items-center justify-center">
                     <Settings size={20} className="text-blue-400" />
@@ -609,7 +609,7 @@ export default function AnalyzePage() {
                       type="button"
                       onClick={toggleVoice}
                       title={voiceActive ? 'Stop voice input' : 'Start voice input'}
-                      className={`absolute top-2 right-2 w-7 h-7 rounded-lg flex items-center justify-center transition-colors ${voiceActive ? 'bg-red-500/20 text-red-400 border border-red-500/30' : 'bg-white/5 text-slate-500 border border-white/10 hover:bg-white/10 hover:text-white'}`}
+                      className={`absolute top-2 right-2 w-7 h-7 rounded-lg flex items-center justify-center transition-colors ${voiceActive ? 'bg-danger-500/20 text-danger-400 border border-danger-500/30' : 'bg-white/5 text-slate-500 border border-white/10 hover:bg-white/10 hover:text-white'}`}
                     >
                       {voiceActive ? <MicOff size={13} /> : <Mic size={13} />}
                     </button>
@@ -622,7 +622,7 @@ export default function AnalyzePage() {
                   <button
                     disabled={!subassemblyId}
                     onClick={() => setStep(2)}
-                    className="flex-1 py-3 rounded-xl bg-gold-500 hover:bg-gold-400 disabled:opacity-40 text-navy-950 font-bold transition-all"
+                    className="flex-1 py-3 rounded-xl bg-gold-500 hover:bg-gold-400 disabled:opacity-40 text-navy-950 font-bold transition-all shadow-glow-gold"
                   >Continue →</button>
                 </div>
               </div>
@@ -632,7 +632,7 @@ export default function AnalyzePage() {
           {/* STEP 2: CAD Upload */}
           {step === 2 && (
             <motion.div key="s2" initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }}>
-              <div className="bg-navy-900 rounded-2xl border border-white/10 p-8 space-y-6">
+              <div className="bg-navy-900 rounded-2xl border border-white/10 p-8 space-y-6 shadow-card">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-xl bg-emerald-500/20 flex items-center justify-center">
                     <Upload size={20} className="text-emerald-400" />
@@ -647,7 +647,7 @@ export default function AnalyzePage() {
                   {...getRootProps()}
                   className={`border-2 border-dashed rounded-xl p-10 text-center cursor-pointer transition-all ${
                     isDragActive ? 'border-gold-400 bg-gold-500/5'
-                    : cadFile ? 'border-green-500 bg-green-500/5'
+                    : cadFile ? 'border-success-500 bg-success-500/5'
                     : 'border-white/20 hover:border-white/40 bg-white/3'
                   }`}
                 >
@@ -655,7 +655,7 @@ export default function AnalyzePage() {
                   {cadFile ? (
                     <div className="space-y-3">
                       <div className="flex items-center justify-center gap-3">
-                        <FileText size={28} className={cadGeometry ? 'text-green-400' : isParsing ? 'text-amber-400' : 'text-slate-400'} />
+                        <FileText size={28} className={cadGeometry ? 'text-success-400' : isParsing ? 'text-amber-400' : 'text-slate-400'} />
                         <div className="text-left">
                           <div className="text-white font-medium">{cadFile.name}</div>
                           <div className="text-slate-400 text-sm">
@@ -663,7 +663,7 @@ export default function AnalyzePage() {
                             {isParsing ? ' Parsing geometry…' : cadGeometry ? ' Geometry extracted ✓' : ' File attached'}
                           </div>
                         </div>
-                        <button onClick={e => { e.stopPropagation(); setCadFile(null); setCadGeometry(null); }} className="ml-4 p-1.5 rounded-lg bg-red-500/20 text-red-400 hover:bg-red-500/30">
+                        <button onClick={e => { e.stopPropagation(); setCadFile(null); setCadGeometry(null); }} className="ml-4 p-1.5 rounded-lg bg-danger-500/20 text-danger-400 hover:bg-danger-500/30">
                           <X size={14} />
                         </button>
                       </div>
@@ -736,21 +736,21 @@ export default function AnalyzePage() {
                 </div>
 
                 {/* DFMEA Design Review */}
-                <div className="p-4 rounded-xl bg-red-500/5 border border-red-500/15">
+                <div className="p-4 rounded-xl bg-danger-500/5 border border-danger-500/15">
                   <div className="flex items-center gap-2 mb-3">
-                    <div className="w-6 h-6 rounded-md bg-red-500/20 flex items-center justify-center">
-                      <Shield size={12} className="text-red-400" />
+                    <div className="w-6 h-6 rounded-md bg-danger-500/20 flex items-center justify-center">
+                      <Shield size={12} className="text-danger-400" />
                     </div>
-                    <span className="text-red-300 text-sm font-medium">DFMEA / DVP&R (optional)</span>
+                    <span className="text-danger-300 text-sm font-medium">DFMEA / DVP&R (optional)</span>
                     <span className="text-slate-500 text-xs">— AI flags conflicts between risk items and cost reduction ideas</span>
                   </div>
                   {dfmeaFile ? (
-                    <div className="flex items-center gap-3 p-3 rounded-lg bg-red-500/10 border border-red-500/20">
-                      <span className="text-red-300 text-sm truncate flex-1">{dfmeaFile.name}</span>
-                      <button onClick={() => setDfmeaFile(null)} className="text-slate-500 hover:text-red-400 transition-colors"><X size={14} /></button>
+                    <div className="flex items-center gap-3 p-3 rounded-lg bg-danger-500/10 border border-danger-500/20">
+                      <span className="text-danger-300 text-sm truncate flex-1">{dfmeaFile.name}</span>
+                      <button onClick={() => setDfmeaFile(null)} className="text-slate-500 hover:text-danger-400 transition-colors"><X size={14} /></button>
                     </div>
                   ) : (
-                    <label className="flex items-center gap-3 p-3 rounded-lg border border-dashed border-red-500/25 cursor-pointer hover:border-red-500/40 hover:bg-red-500/5 transition-all">
+                    <label className="flex items-center gap-3 p-3 rounded-lg border border-dashed border-danger-500/25 cursor-pointer hover:border-danger-500/40 hover:bg-danger-500/5 transition-all">
                       <input type="file" accept=".xlsx,.xls,.csv" className="hidden" onChange={async e => {
                       const file = e.target.files?.[0] || null;
                       setDfmeaFile(file);
@@ -782,18 +782,18 @@ export default function AnalyzePage() {
                         setDfmeaContent(`DFMEA file attached: ${file.name} (parse failed — content injected as filename reference)`);
                       }
                     }} />
-                      <Upload size={14} className="text-red-400" />
+                      <Upload size={14} className="text-danger-400" />
                       <span className="text-slate-400 text-sm">Upload DFMEA/DVP&R Excel or CSV</span>
                     </label>
                   )}
                   {dfmeaFile && (
-                    <p className="mt-2 text-red-400 text-xs">DFMEA reference noted — AI will prioritise ideas that reduce warranty risk and flag any that could introduce new failure modes.</p>
+                    <p className="mt-2 text-danger-400 text-xs">DFMEA reference noted — AI will prioritise ideas that reduce warranty risk and flag any that could introduce new failure modes.</p>
                   )}
                 </div>
 
                 <div className="flex gap-3">
                   <button onClick={() => setStep(1)} className="flex-1 py-3 rounded-xl border border-white/15 text-slate-300 hover:text-white font-medium transition-colors">← Back</button>
-                  <button onClick={() => setStep(3)} className="flex-1 py-3 rounded-xl bg-gold-500 hover:bg-gold-400 text-navy-950 font-bold transition-all">Continue →</button>
+                  <button onClick={() => setStep(3)} className="flex-1 py-3 rounded-xl bg-gold-500 hover:bg-gold-400 text-navy-950 font-bold transition-all shadow-glow-gold">Continue →</button>
                 </div>
               </div>
             </motion.div>
@@ -802,7 +802,7 @@ export default function AnalyzePage() {
           {/* STEP 3: Generate */}
           {step === 3 && (
             <motion.div key="s3" initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }}>
-              <div className="bg-navy-900 rounded-2xl border border-white/10 p-8 space-y-6">
+              <div className="bg-navy-900 rounded-2xl border border-white/10 p-8 space-y-6 shadow-card">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-xl bg-gold-500/20 flex items-center justify-center">
                     <Zap size={20} className="text-gold-400" />
@@ -898,7 +898,7 @@ export default function AnalyzePage() {
                 </div>
 
                 {error && (
-                  <div className="flex items-start gap-3 p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-300 text-sm">
+                  <div className="flex items-start gap-3 p-4 rounded-xl bg-danger-500/10 border border-danger-500/20 text-danger-300 text-sm">
                     <AlertCircle size={16} className="flex-shrink-0 mt-0.5" />
                     <span>{error}</span>
                   </div>
@@ -909,7 +909,7 @@ export default function AnalyzePage() {
                   <button
                     disabled={!apiKey.trim() || loading}
                     onClick={handleGenerate}
-                    className="flex-1 py-3 rounded-xl bg-gold-500 hover:bg-gold-400 disabled:opacity-40 disabled:cursor-not-allowed text-navy-950 font-bold flex items-center justify-center gap-2 transition-all"
+                    className="flex-1 py-3 rounded-xl bg-gold-500 hover:bg-gold-400 disabled:opacity-40 disabled:cursor-not-allowed text-navy-950 font-bold flex items-center justify-center gap-2 transition-all shadow-glow-gold"
                   >
                     {loading ? <><ButtonSpinner size={18} /> Analysing…</> : <><Zap size={18} /> Generate Ideas</>}
                   </button>
@@ -932,9 +932,9 @@ export default function AnalyzePage() {
                         {progressSteps.map(step => (
                           <div key={step.id} className="flex items-start gap-2 text-xs">
                             <span className={`flex-shrink-0 mt-0.5 ${
-                              step.status === 'done'  ? 'text-green-400' :
+                              step.status === 'done'  ? 'text-success-400' :
                               step.status === 'active' ? 'text-gold-400' :
-                              step.status === 'error'  ? 'text-red-400' : 'text-slate-600'
+                              step.status === 'error'  ? 'text-danger-400' : 'text-slate-600'
                             }`}>
                               {step.status === 'done' ? '✓' : step.status === 'active' ? '⟳' : step.status === 'error' ? '✕' : '○'}
                             </span>

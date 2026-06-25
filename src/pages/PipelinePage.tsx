@@ -479,7 +479,7 @@ export default function PipelinePage() {
             </button>
             <button
               onClick={() => setShowTitlePrompt(true)}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gold-500 hover:bg-gold-400 text-navy-950 font-semibold text-sm transition-all"
+              className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gold-500 hover:bg-gold-400 text-navy-950 font-semibold text-sm transition-all shadow-glow-gold"
             >
               <Plus size={15} />
               Add Business Case
@@ -525,7 +525,7 @@ export default function PipelinePage() {
                       setShowTitlePrompt(false);
                       setShowAddModal(true);
                     }}
-                    className="px-4 py-2 rounded-xl bg-gold-500 hover:bg-gold-400 disabled:opacity-40 text-navy-950 font-semibold text-sm transition-all"
+                    className="px-4 py-2 rounded-xl bg-gold-500 hover:bg-gold-400 disabled:opacity-40 text-navy-950 font-semibold text-sm transition-all shadow-glow-gold"
                   >
                     Continue
                   </button>

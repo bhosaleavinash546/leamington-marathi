@@ -106,6 +106,18 @@
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
+   DARK THEME — refined text hierarchy
+   Tailwind's built-in slate scale has compressed mid-range steps in dark mode.
+   These overrides create clear perceptual separation between hierarchy levels:
+   primary (#f1f5f9 body) → secondary (#c6d0de) → tertiary (#8898ae) → muted (#5d6e84)
+   Light mode !important rules below override these back to their correct values.
+   ═══════════════════════════════════════════════════════════════════════════ */
+.text-slate-200 { color: #dde4ee; }
+.text-slate-300 { color: #b8c6d8; }
+.text-slate-400 { color: #8898ae; }
+.text-slate-500 { color: #5d6e84; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
    LIGHT THEME — targeted overrides for Tailwind's fixed-value utilities
    Only classes Tailwind generates as literal values need manual overrides.
    Navy/gold/gradient/shadow classes update automatically via CSS variables.

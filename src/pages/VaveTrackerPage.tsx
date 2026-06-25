@@ -197,7 +197,7 @@ function EditPanel({ action, onSave, onDelete, onClose }: EditPanelProps) {
         <button
           onClick={handleSave}
           disabled={saving}
-          className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-gold-500 hover:bg-gold-400 disabled:opacity-50 text-navy-950 font-semibold text-sm transition-all"
+          className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-gold-500 hover:bg-gold-400 disabled:opacity-50 text-navy-950 font-semibold text-sm transition-all shadow-glow-gold"
         >
           <Save size={14} />
           {saving ? 'Saving…' : 'Save Changes'}

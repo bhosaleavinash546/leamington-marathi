@@ -34,8 +34,8 @@ const COMMODITY_PRICES: CommodityRow[] = [
 ];
 
 const CONF_COLORS: Record<string, string> = {
-  verified:    'bg-green-500/10 text-green-400 border-green-500/30',
-  benchmarked: 'bg-blue-500/10 text-blue-400 border-blue-500/30',
+  verified:    'bg-success-500/10 text-success-400 border-success-500/30',
+  benchmarked: 'bg-info-500/10 text-info-400 border-info-500/30',
   estimated:   'bg-amber-500/10 text-amber-400 border-amber-500/30',
   theoretical: 'bg-purple-500/10 text-purple-400 border-purple-500/30',
 };
@@ -587,7 +587,7 @@ export default function TrendsPage() {
                         <span className="text-slate-400 text-xs">{row.unit}</span>
                       </td>
                       <td className="px-5 py-3.5 text-center">
-                        <span className={`inline-flex items-center gap-1 text-xs font-bold px-2 py-0.5 rounded-full border ${isCostReduction ? 'text-green-400 bg-green-500/10 border-green-500/25' : 'text-red-400 bg-red-500/10 border-red-500/25'}`}>
+                        <span className={`inline-flex items-center gap-1 text-xs font-bold px-2 py-0.5 rounded-full border ${isCostReduction ? 'text-success-400 bg-success-500/10 border-success-500/25' : 'text-danger-400 bg-danger-500/10 border-danger-500/25'}`}>
                           {isCostReduction
                             ? <TrendingDown size={11} />
                             : <TrendingUp size={11} />}
@@ -595,7 +595,7 @@ export default function TrendsPage() {
                         </span>
                       </td>
                       <td className="px-5 py-3.5 hidden sm:table-cell">
-                        <span className={`text-xs ${isCostReduction ? 'text-green-400/70' : 'text-red-400/70'}`}>
+                        <span className={`text-xs ${isCostReduction ? 'text-success-400/70' : 'text-danger-400/70'}`}>
                           {isCostReduction ? 'Cost pressure easing' : 'Cost pressure rising'}
                         </span>
                       </td>

@@ -359,7 +359,7 @@ export default function AuthPage() {
                     <button type="button" onClick={() => { setScreen('forgot'); clearError(); setDevOtp(''); setOtp(''); }} className="text-gold-400 hover:text-gold-300 text-sm transition-colors">Forgot password?</button>
                   </div>
                   {error && <div className="flex items-center gap-2 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-300 text-sm"><AlertCircle size={15} />{error}</div>}
-                  <button type="submit" disabled={loading} className="w-full py-3 rounded-xl bg-gold-500 hover:bg-gold-400 disabled:opacity-50 text-navy-950 font-bold flex items-center justify-center gap-2 transition-all hover:scale-[1.02]">
+                  <button type="submit" disabled={loading} className="w-full py-3 rounded-xl bg-gold-500 hover:bg-gold-400 disabled:opacity-50 text-navy-950 font-bold flex items-center justify-center gap-2 transition-all hover:scale-[1.02] shadow-glow-gold">
                     {loading ? <><ButtonSpinner size={18} /> Signing in…</> : <>Sign In <ArrowRight size={18} /></>}
                   </button>
                 </form>
@@ -386,7 +386,7 @@ export default function AuthPage() {
                   </div>
                   <Field label="Confirm password" icon={Lock} type="password" value={confirmPassword} onChange={setConfirmPassword} placeholder="Repeat your password" autoComplete="new-password" disabled={loading} />
                   {error && <div className="flex items-center gap-2 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-300 text-sm"><AlertCircle size={15} />{error}</div>}
-                  <button type="submit" disabled={loading} className="w-full py-3 rounded-xl bg-gold-500 hover:bg-gold-400 disabled:opacity-50 text-navy-950 font-bold flex items-center justify-center gap-2 transition-all hover:scale-[1.02]">
+                  <button type="submit" disabled={loading} className="w-full py-3 rounded-xl bg-gold-500 hover:bg-gold-400 disabled:opacity-50 text-navy-950 font-bold flex items-center justify-center gap-2 transition-all hover:scale-[1.02] shadow-glow-gold">
                     {loading ? <><ButtonSpinner size={18} /> Creating account…</> : <>Create Account <ArrowRight size={18} /></>}
                   </button>
                 </form>
@@ -410,7 +410,7 @@ export default function AuthPage() {
                 <form onSubmit={handleForgotPassword} className="space-y-4">
                   <Field label="Email address" icon={Mail} type="email" value={email} onChange={setEmail} placeholder="you@company.com" autoComplete="email" disabled={loading} />
                   {error && <div className="flex items-center gap-2 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-300 text-sm"><AlertCircle size={15} />{error}</div>}
-                  <button type="submit" disabled={loading} className="w-full py-3 rounded-xl bg-gold-500 hover:bg-gold-400 disabled:opacity-50 text-navy-950 font-bold flex items-center justify-center gap-2 transition-all hover:scale-[1.02]">
+                  <button type="submit" disabled={loading} className="w-full py-3 rounded-xl bg-gold-500 hover:bg-gold-400 disabled:opacity-50 text-navy-950 font-bold flex items-center justify-center gap-2 transition-all hover:scale-[1.02] shadow-glow-gold">
                     {loading ? <><ButtonSpinner size={18} /> Sending code…</> : <>Send Reset Code <ArrowRight size={18} /></>}
                   </button>
                 </form>
@@ -442,7 +442,7 @@ export default function AuthPage() {
                   </div>
                   <Field label="Confirm new password" icon={Lock} type="password" value={confirmNewPassword} onChange={setConfirmNewPassword} placeholder="Repeat new password" autoComplete="new-password" disabled={loading} />
                   {error && <div className="flex items-center gap-2 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-300 text-sm"><AlertCircle size={15} />{error}</div>}
-                  <button type="submit" disabled={loading || otp.length < 6} className="w-full py-3 rounded-xl bg-gold-500 hover:bg-gold-400 disabled:opacity-50 text-navy-950 font-bold flex items-center justify-center gap-2 transition-all hover:scale-[1.02]">
+                  <button type="submit" disabled={loading || otp.length < 6} className="w-full py-3 rounded-xl bg-gold-500 hover:bg-gold-400 disabled:opacity-50 text-navy-950 font-bold flex items-center justify-center gap-2 transition-all hover:scale-[1.02] shadow-glow-gold">
                     {loading ? <><ButtonSpinner size={18} /> Resetting…</> : <>Reset Password <CheckCircle size={18} /></>}
                   </button>
                   <ResendButton key={otpResendKey} email={email} type="reset" onResent={() => { setOtp(''); setOtpResendKey(k => k + 1); }} />

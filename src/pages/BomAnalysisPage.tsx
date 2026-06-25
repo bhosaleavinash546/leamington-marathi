@@ -183,7 +183,7 @@ export default function BomAnalysisPage() {
 
         <div className="grid lg:grid-cols-2 gap-6 mb-8">
           {/* Upload */}
-          <div className="rounded-2xl bg-navy-900 border border-white/10 p-6">
+          <div className="rounded-2xl bg-navy-900 border border-white/10 p-6 shadow-card">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-white font-semibold">Upload BOM</h2>
               <button onClick={downloadTemplate} className="flex items-center gap-1.5 text-xs text-gold-400 hover:text-gold-300 transition-colors">
@@ -200,7 +200,7 @@ export default function BomAnalysisPage() {
           </div>
 
           {/* Settings */}
-          <div className="rounded-2xl bg-navy-900 border border-white/10 p-6 space-y-4">
+          <div className="rounded-2xl bg-navy-900 border border-white/10 p-6 space-y-4 shadow-card">
             <h2 className="text-white font-semibold">Settings</h2>
             <div>
               <label className="text-slate-400 text-sm mb-1.5 block">Anthropic API Key</label>
@@ -217,7 +217,7 @@ export default function BomAnalysisPage() {
 
         {/* Parsed rows preview */}
         {rows.length > 0 && (
-          <div className="mb-6 rounded-2xl bg-navy-900 border border-white/10 p-6">
+          <div className="mb-6 rounded-2xl bg-navy-900 border border-white/10 p-6 shadow-card">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-white font-semibold">{rows.length} Parts Detected</h2>
               <button onClick={() => setRows([])} className="text-slate-500 hover:text-white transition-colors"><X size={16} /></button>
@@ -234,7 +234,7 @@ export default function BomAnalysisPage() {
             <button
               onClick={runBomAnalysis}
               disabled={running || !apiKey.trim()}
-              className="mt-4 w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-gold-500 hover:bg-gold-400 disabled:opacity-40 text-navy-950 font-bold transition-all"
+              className="mt-4 w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-gold-500 hover:bg-gold-400 disabled:opacity-40 text-navy-950 font-bold transition-all shadow-glow-gold"
             >
               {running ? <><ButtonSpinner size={18} /> Analysing {rows.length} parts…</> : <><Zap size={18} /> Run BOM Analysis</>}
             </button>

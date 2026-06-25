@@ -97,8 +97,8 @@ function PipelineKpiSection({ kpi }: { kpi: PipelineKpi }) {
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {[
           { label: 'Total Portfolio', value: fmtM(kpi.totalPotential), color: 'text-gold-400', bg: 'bg-gold-500/8 border-gold-500/20' },
-          { label: 'In Progress (G1+G2)', value: fmtM(kpi.inProgressSaving), color: 'text-blue-400', bg: 'bg-blue-500/8 border-blue-500/20' },
-          { label: 'Confirmed (G3)', value: fmtM(kpi.confirmedSaving), color: 'text-green-400', bg: 'bg-green-500/8 border-green-500/20' },
+          { label: 'In Progress (G1+G2)', value: fmtM(kpi.inProgressSaving), color: 'text-info-400', bg: 'bg-info-500/8 border-info-500/20' },
+          { label: 'Confirmed (G3)', value: fmtM(kpi.confirmedSaving), color: 'text-success-400', bg: 'bg-success-500/8 border-success-500/20' },
           { label: 'Idea Pipeline', value: `${kpi.totalCases} ideas`, color: 'text-violet-400', bg: 'bg-violet-500/8 border-violet-500/20' },
         ].map((k) => (
           <div key={k.label} className={`rounded-xl p-4 border ${k.bg}`}>
@@ -515,9 +515,9 @@ export default function DashboardPage() {
             </div>
             {(savingsPipeline.committedSavings > 0 || savingsPipeline.investigatingSavings > 0) && (
               <div className="mt-4 pt-4 border-t border-white/8 grid grid-cols-2 gap-4">
-                <div className="p-3 rounded-xl bg-emerald-500/8 border border-emerald-500/15">
-                  <div className="text-emerald-400 text-xs font-semibold uppercase tracking-wider mb-1">Committed Savings</div>
-                  <div className="text-emerald-300 text-2xl font-black">
+                <div className="p-3 rounded-xl bg-success-500/8 border border-success-500/15">
+                  <div className="text-success-400 text-xs font-semibold uppercase tracking-wider mb-1">Committed Savings</div>
+                  <div className="text-success-300 text-2xl font-black">
                     {savingsPipeline.committedSavings >= 1_000_000
                       ? `€${(savingsPipeline.committedSavings / 1_000_000).toFixed(1)}M`
                       : savingsPipeline.committedSavings >= 1_000
@@ -566,11 +566,11 @@ export default function DashboardPage() {
             <>
               <div className="grid grid-cols-3 gap-4 mb-5">
                 {/* Approved */}
-                <div className="flex items-center gap-3 p-3 rounded-xl bg-emerald-500/8 border border-emerald-500/15">
-                  <CheckCircle size={18} className="text-emerald-400 flex-shrink-0" />
+                <div className="flex items-center gap-3 p-3 rounded-xl bg-success-500/8 border border-success-500/15">
+                  <CheckCircle size={18} className="text-success-400 flex-shrink-0" />
                   <div>
-                    <p className="text-emerald-300 text-xl font-bold leading-none">{annotationStats.approved}</p>
-                    <p className="text-emerald-600 text-xs mt-0.5">Approved</p>
+                    <p className="text-success-300 text-xl font-bold leading-none">{annotationStats.approved}</p>
+                    <p className="text-success-600 text-xs mt-0.5">Approved</p>
                   </div>
                 </div>
 
@@ -584,11 +584,11 @@ export default function DashboardPage() {
                 </div>
 
                 {/* Rejected */}
-                <div className="flex items-center gap-3 p-3 rounded-xl bg-red-500/8 border border-red-500/15">
-                  <XCircle size={18} className="text-red-400 flex-shrink-0" />
+                <div className="flex items-center gap-3 p-3 rounded-xl bg-danger-500/8 border border-danger-500/15">
+                  <XCircle size={18} className="text-danger-400 flex-shrink-0" />
                   <div>
-                    <p className="text-red-300 text-xl font-bold leading-none">{annotationStats.rejected}</p>
-                    <p className="text-red-600 text-xs mt-0.5">Rejected</p>
+                    <p className="text-danger-300 text-xl font-bold leading-none">{annotationStats.rejected}</p>
+                    <p className="text-danger-600 text-xs mt-0.5">Rejected</p>
                   </div>
                 </div>
               </div>
@@ -642,9 +642,9 @@ export default function DashboardPage() {
             </div>
 
             {shareUrl && (
-              <div className="mb-4 p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center gap-3">
-                <span className="text-emerald-400 text-xs flex-1 truncate">{shareUrl}</span>
-                <button onClick={() => { navigator.clipboard.writeText(shareUrl); }} className="text-xs text-emerald-400 hover:text-white border border-emerald-500/30 px-2 py-1 rounded-lg transition-colors">Copy</button>
+              <div className="mb-4 p-3 rounded-xl bg-success-500/10 border border-success-500/20 flex items-center gap-3">
+                <span className="text-success-400 text-xs flex-1 truncate">{shareUrl}</span>
+                <button onClick={() => { navigator.clipboard.writeText(shareUrl); }} className="text-xs text-success-400 hover:text-white border border-success-500/30 px-2 py-1 rounded-lg transition-colors">Copy</button>
                 <button onClick={() => setShareUrl(null)} className="text-slate-500 hover:text-white transition-colors text-xs">✕</button>
               </div>
             )}

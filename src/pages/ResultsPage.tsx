@@ -21,9 +21,9 @@ import IdeasDashboard from '../components/results/IdeasDashboard';
 import BusinessCaseCalculator from '../components/results/BusinessCaseCalculator';
 
 const DIFFICULTY_CONFIG: Record<Difficulty, { color: string; bg: string; border: string; icon: typeof CheckCircle }> = {
-  Low:    { color: 'text-green-400', bg: 'bg-green-500/10',  border: 'border-green-500/30',  icon: CheckCircle },
-  Medium: { color: 'text-amber-400', bg: 'bg-amber-500/10',  border: 'border-amber-500/30',  icon: Clock },
-  High:   { color: 'text-red-400',   bg: 'bg-red-500/10',    border: 'border-red-500/30',    icon: AlertTriangle },
+  Low:    { color: 'text-success-400', bg: 'bg-success-500/10',  border: 'border-success-500/30',  icon: CheckCircle },
+  Medium: { color: 'text-amber-400',   bg: 'bg-amber-500/10',    border: 'border-amber-500/30',    icon: Clock },
+  High:   { color: 'text-danger-400',  bg: 'bg-danger-500/10',   border: 'border-danger-500/30',   icon: AlertTriangle },
 };
 
 const TYPE_COLORS: Record<CostSavingType, string> = {
@@ -54,24 +54,24 @@ const EVIDENCE_TYPE_CONFIG: Record<EvidenceSource['type'], { label: string; colo
 };
 
 const EVIDENCE_CONFIDENCE_DOT: Record<EvidenceSource['confidence'], string> = {
-  high:   'bg-green-400',
+  high:   'bg-success-400',
   medium: 'bg-amber-400',
-  low:    'bg-red-400',
+  low:    'bg-danger-400',
 };
 
 const CONFIDENCE_CONFIG: Record<ConfidenceLevel, { label: string; color: string; bg: string; border: string; icon: typeof ShieldCheck; title: string }> = {
-  verified:     { label: 'Verified',     color: 'text-green-400',   bg: 'bg-green-500/10',   border: 'border-green-500/30',   icon: ShieldCheck,   title: 'OEM confirmed in production' },
-  benchmarked:  { label: 'Benchmarked',  color: 'text-blue-400',    bg: 'bg-blue-500/10',    border: 'border-blue-500/30',    icon: BookOpen,      title: 'Teardown / industry study data' },
-  estimated:    { label: 'Estimated',    color: 'text-amber-400',   bg: 'bg-amber-500/10',   border: 'border-amber-500/30',   icon: Calculator,    title: 'Cost-model / engineering estimate' },
-  theoretical:  { label: 'Theoretical', color: 'text-purple-400',  bg: 'bg-purple-500/10',  border: 'border-purple-500/30',  icon: FlaskConical,  title: 'First-principles / analytical' },
+  verified:     { label: 'Verified',     color: 'text-success-400',  bg: 'bg-success-500/10',  border: 'border-success-500/30',  icon: ShieldCheck,   title: 'OEM confirmed in production' },
+  benchmarked:  { label: 'Benchmarked',  color: 'text-info-400',     bg: 'bg-info-500/10',     border: 'border-info-500/30',     icon: BookOpen,      title: 'Teardown / industry study data' },
+  estimated:    { label: 'Estimated',    color: 'text-amber-400',    bg: 'bg-amber-500/10',    border: 'border-amber-500/30',    icon: Calculator,    title: 'Cost-model / engineering estimate' },
+  theoretical:  { label: 'Theoretical', color: 'text-purple-400',   bg: 'bg-purple-500/10',   border: 'border-purple-500/30',   icon: FlaskConical,  title: 'First-principles / analytical' },
 };
 
 const ANNOTATION_STATUS_CONFIG: Record<AnnotationStatus, { label: string; color: string; bg: string; border: string }> = {
-  'pending':       { label: 'Not Reviewed', color: 'text-slate-400',   bg: 'bg-slate-500/10',  border: 'border-slate-500/20' },
-  'investigating': { label: 'Investigating', color: 'text-amber-400',   bg: 'bg-amber-500/10',  border: 'border-amber-500/20' },
-  'approved':      { label: 'Approved',      color: 'text-green-400',   bg: 'bg-green-500/10',  border: 'border-green-500/20' },
-  'rejected':      { label: 'Rejected',      color: 'text-red-400',     bg: 'bg-red-500/10',    border: 'border-red-500/20' },
-  'on-hold':       { label: 'On Hold',       color: 'text-purple-400',  bg: 'bg-purple-500/10', border: 'border-purple-500/20' },
+  'pending':       { label: 'Not Reviewed', color: 'text-slate-400',    bg: 'bg-slate-500/10',   border: 'border-slate-500/20' },
+  'investigating': { label: 'Investigating', color: 'text-amber-400',    bg: 'bg-amber-500/10',   border: 'border-amber-500/20' },
+  'approved':      { label: 'Approved',      color: 'text-success-400',  bg: 'bg-success-500/10', border: 'border-success-500/20' },
+  'rejected':      { label: 'Rejected',      color: 'text-danger-400',   bg: 'bg-danger-500/10',  border: 'border-danger-500/20' },
+  'on-hold':       { label: 'On Hold',       color: 'text-purple-400',   bg: 'bg-purple-500/10',  border: 'border-purple-500/20' },
 };
 
 function CountUp({ to }: { to: number }) {
@@ -112,13 +112,13 @@ function RoadmapSection({ ideas }: { ideas: CostReductionIdea[] }) {
   }
 
   const phases = [
-    { label: 'Phase 1 — Quick Wins', sublabel: '0–6 months', color: 'text-green-400', bg: 'bg-green-500/10', border: 'border-green-500/20', dot: 'bg-green-400', ideas: ideas.filter(i => phaseFor(i) === 0) },
+    { label: 'Phase 1 — Quick Wins', sublabel: '0–6 months', color: 'text-success-400', bg: 'bg-success-500/10', border: 'border-success-500/20', dot: 'bg-success-400', ideas: ideas.filter(i => phaseFor(i) === 0) },
     { label: 'Phase 2 — Programme Plan', sublabel: '6–18 months', color: 'text-amber-400', bg: 'bg-amber-500/10', border: 'border-amber-500/20', dot: 'bg-amber-400', ideas: ideas.filter(i => phaseFor(i) === 1) },
     { label: 'Phase 3 — Strategic', sublabel: '18+ months', color: 'text-violet-400', bg: 'bg-violet-500/10', border: 'border-violet-500/20', dot: 'bg-violet-400', ideas: ideas.filter(i => phaseFor(i) === 2) },
   ];
 
   return (
-    <div className="mb-8 rounded-2xl bg-navy-900 border border-white/10 overflow-hidden">
+    <div className="mb-8 rounded-2xl bg-navy-900 border border-white/10 overflow-hidden shadow-card">
       <button onClick={() => setOpen(v => !v)} className="w-full flex items-center justify-between p-5 hover:bg-white/3 transition-colors">
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 rounded-xl bg-emerald-500/20 border border-emerald-500/25 flex items-center justify-center flex-shrink-0">
@@ -292,7 +292,7 @@ function IdeaCard({ idea, index, annotation, onAnnotate }: {
       animate={{ opacity: 1, y: 0, transition: { duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94], delay: Math.min(index * 0.04, 0.4) } }}
       exit={{ opacity: 0, scale: 0.97, transition: { duration: 0.18 } }}
       whileHover={{ y: -2, boxShadow: '0 8px 32px rgba(245,158,11,0.12)', transition: { type: 'spring', stiffness: 400, damping: 25 } }}
-      className="bg-navy-900 border border-white/10 rounded-2xl overflow-hidden hover:border-gold-500/25 transition-all cursor-default"
+      className="bg-navy-900 border border-white/10 rounded-2xl overflow-hidden hover:border-gold-500/25 transition-all cursor-default shadow-card"
     >
       <div className="p-5 pb-4">
         {/* Title row */}
@@ -340,7 +340,7 @@ function IdeaCard({ idea, index, annotation, onAnnotate }: {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-2 p-3 rounded-xl bg-white/5 mb-3">
           <div>
             <div className="flex items-center gap-1 text-slate-500 text-xs mb-0.5"><TrendingDown size={10} /> Saving Range</div>
-            <div className="text-green-400 font-bold text-sm">{idea.costSavingPotential.percentage || '—'}</div>
+            <div className="text-success-400 font-bold text-sm">{idea.costSavingPotential.percentage || '—'}</div>
           </div>
           <div>
             <div className="flex items-center gap-1 text-slate-500 text-xs mb-0.5"><DollarSign size={10} /> Annual Value</div>
@@ -406,10 +406,10 @@ function IdeaCard({ idea, index, annotation, onAnnotate }: {
           )}
 
           {idea.regulatoryContext && idea.regulatoryContext !== 'null' && (
-            <div className="p-3 rounded-xl bg-red-500/5 border border-red-500/15 flex items-start gap-2">
-              <Scale size={14} className="text-red-400 flex-shrink-0 mt-0.5" />
+            <div className="p-3 rounded-xl bg-danger-500/5 border border-danger-500/15 flex items-start gap-2">
+              <Scale size={14} className="text-danger-400 flex-shrink-0 mt-0.5" />
               <div>
-                <span className="text-red-400 text-xs font-semibold uppercase tracking-wide block mb-0.5">Regulatory Driver</span>
+                <span className="text-danger-400 text-xs font-semibold uppercase tracking-wide block mb-0.5">Regulatory Driver</span>
                 <span className="text-slate-300 text-sm">{idea.regulatoryContext}</span>
               </div>
             </div>
@@ -538,13 +538,13 @@ function IdeaCard({ idea, index, annotation, onAnnotate }: {
 
               {/* VAVE tracking prompt */}
               {showVavePrompt && (
-                <div className="mt-2 flex items-center gap-2 p-2.5 rounded-xl bg-green-500/8 border border-green-500/20">
-                  <ClipboardList size={14} className="text-green-400 flex-shrink-0" />
-                  <span className="text-green-300 text-xs flex-1">Track this idea in the VAVE pipeline?</span>
+                <div className="mt-2 flex items-center gap-2 p-2.5 rounded-xl bg-success-500/8 border border-success-500/20">
+                  <ClipboardList size={14} className="text-success-400 flex-shrink-0" />
+                  <span className="text-success-300 text-xs flex-1">Track this idea in the VAVE pipeline?</span>
                   <button
                     onClick={createVaveAction}
                     disabled={vaveCreating}
-                    className="px-2.5 py-1 rounded-lg text-xs bg-green-500/20 text-green-300 border border-green-500/30 hover:bg-green-500/30 transition-colors disabled:opacity-50"
+                    className="px-2.5 py-1 rounded-lg text-xs bg-success-500/20 text-success-300 border border-success-500/30 hover:bg-success-500/30 transition-colors disabled:opacity-50"
                   >
                     {vaveCreating ? 'Adding…' : 'Add to VAVE'}
                   </button>
@@ -556,8 +556,8 @@ function IdeaCard({ idea, index, annotation, onAnnotate }: {
 
               {/* Rejection reason modal */}
               {showRejectModal && (
-                <div className="mt-2 p-3 rounded-xl bg-red-500/5 border border-red-500/20 space-y-2">
-                  <p className="text-red-300 text-xs font-medium">Why is this idea rejected? (helps personalise future AI output)</p>
+                <div className="mt-2 p-3 rounded-xl bg-danger-500/5 border border-danger-500/20 space-y-2">
+                  <p className="text-danger-300 text-xs font-medium">Why is this idea rejected? (helps personalise future AI output)</p>
                   <div className="flex flex-wrap gap-1.5">
                     {REJECTION_REASONS.map(r => (
                       <button
@@ -565,7 +565,7 @@ function IdeaCard({ idea, index, annotation, onAnnotate }: {
                         onClick={() => setRejectReason(r.key)}
                         className={`px-2.5 py-1 rounded-lg text-xs border transition-colors ${
                           rejectReason === r.key
-                            ? 'bg-red-500/20 text-red-300 border-red-500/40'
+                            ? 'bg-danger-500/20 text-danger-300 border-danger-500/40'
                             : 'text-slate-500 border-white/10 hover:border-white/25'
                         }`}
                       >
@@ -576,7 +576,7 @@ function IdeaCard({ idea, index, annotation, onAnnotate }: {
                   <div className="flex gap-2 pt-1">
                     <button
                       onClick={submitRejection}
-                      className="px-3 py-1.5 rounded-lg text-xs bg-red-500/20 text-red-300 border border-red-500/30 hover:bg-red-500/30 transition-colors"
+                      className="px-3 py-1.5 rounded-lg text-xs bg-danger-500/20 text-danger-300 border border-danger-500/30 hover:bg-danger-500/30 transition-colors"
                     >
                       Confirm Rejection
                     </button>
@@ -657,7 +657,7 @@ function IdeaCard({ idea, index, annotation, onAnnotate }: {
                 <div>
                   <div className="flex items-center justify-between text-xs mb-2">
                     <span className="text-slate-400">Commodity Price Change</span>
-                    <span className={`font-semibold ${commodityDelta >= 0 ? 'text-red-400' : 'text-green-400'}`}>{commodityDelta >= 0 ? '+' : ''}{commodityDelta}%</span>
+                    <span className={`font-semibold ${commodityDelta >= 0 ? 'text-danger-400' : 'text-success-400'}`}>{commodityDelta >= 0 ? '+' : ''}{commodityDelta}%</span>
                   </div>
                   <input type="range" min="-30" max="50" step="1" value={commodityDelta}
                     onChange={e => setCommodityDelta(Number(e.target.value))}
@@ -673,7 +673,7 @@ function IdeaCard({ idea, index, annotation, onAnnotate }: {
                 <div className="text-slate-500 text-sm">→</div>
                 <div className="text-right">
                   <div className="text-slate-500 text-xs">Adjusted Saving</div>
-                  <div className={`font-bold text-lg ${adjSav > baseSav ? 'text-green-400' : adjSav < baseSav ? 'text-red-400' : 'text-white'}`}>{fmtV(adjSav, sym)}/yr</div>
+                  <div className={`font-bold text-lg ${adjSav > baseSav ? 'text-success-400' : adjSav < baseSav ? 'text-danger-400' : 'text-white'}`}>{fmtV(adjSav, sym)}/yr</div>
                 </div>
               </div>
               {!isMat && <p className="text-slate-600 text-xs">Commodity slider is only active for material cost saving ideas.</p>}
@@ -1081,9 +1081,9 @@ export default function ResultsPage() {
           </button>
 
           {shareLink && (
-            <div className="mb-4 p-3 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center gap-3">
-              <span className="text-blue-300 text-xs flex-1 truncate font-mono">{shareLink}</span>
-              <button onClick={() => { navigator.clipboard.writeText(shareLink); toast('Copied!', 'success'); }} className="text-xs text-blue-300 hover:text-white border border-blue-500/30 px-2 py-1 rounded-lg transition-colors">Copy</button>
+            <div className="mb-4 p-3 rounded-xl bg-info-500/10 border border-info-500/20 flex items-center gap-3">
+              <span className="text-info-300 text-xs flex-1 truncate font-mono">{shareLink}</span>
+              <button onClick={() => { navigator.clipboard.writeText(shareLink); toast('Copied!', 'success'); }} className="text-xs text-info-300 hover:text-white border border-info-500/30 px-2 py-1 rounded-lg transition-colors">Copy</button>
               <button onClick={() => setShareLink(null)} className="text-slate-500 hover:text-white transition-colors text-xs">✕</button>
             </div>
           )}
@@ -1159,7 +1159,7 @@ export default function ResultsPage() {
             { label: 'Programme Items', value: programmeItems.length, icon: Clock, color: 'from-gold-500 to-amber-600' },
             { label: 'Strategic Items', value: strategicItems.length, icon: TrendingDown, color: 'from-red-500 to-rose-600' },
           ].map((stat) => (
-            <div key={stat.label} className="bg-navy-900 border border-white/10 rounded-2xl p-5">
+            <div key={stat.label} className="bg-navy-900 border border-white/10 rounded-2xl p-5 shadow-card">
               <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${stat.color} flex items-center justify-center mb-3`}>
                 <stat.icon size={20} className="text-white" />
               </div>
@@ -1171,18 +1171,18 @@ export default function ResultsPage() {
 
         {/* Quick wins highlight */}
         {quickWins.length > 0 && (
-          <div className="mb-5 p-4 rounded-2xl bg-green-500/10 border border-green-500/20 flex items-center gap-3">
-            <CheckCircle size={18} className="text-green-400 flex-shrink-0" />
-            <span className="text-green-400 font-semibold">{quickWins.length} Quick Win{quickWins.length > 1 ? 's' : ''}</span>
+          <div className="mb-5 p-4 rounded-2xl bg-success-500/10 border border-success-500/20 flex items-center gap-3">
+            <CheckCircle size={18} className="text-success-400 flex-shrink-0" />
+            <span className="text-success-400 font-semibold">{quickWins.length} Quick Win{quickWins.length > 1 ? 's' : ''}</span>
             <span className="text-slate-400 text-sm">— Low implementation difficulty, fast-track for engineering review and supplier RFQ.</span>
           </div>
         )}
 
         {/* Web search notification */}
         {searchUsedCount > 0 && (
-          <div className="mb-5 p-4 rounded-2xl bg-blue-500/10 border border-blue-500/20 flex items-center gap-3">
-            <Globe size={18} className="text-blue-400 flex-shrink-0" />
-            <span className="text-blue-300 text-sm">
+          <div className="mb-5 p-4 rounded-2xl bg-info-500/10 border border-info-500/20 flex items-center gap-3">
+            <Globe size={18} className="text-info-400 flex-shrink-0" />
+            <span className="text-info-300 text-sm">
               <strong>{searchUsedCount} ideas</strong> are grounded in live internet data — current material costs, OEM benchmarks, and technology trends fetched during analysis.
             </span>
           </div>

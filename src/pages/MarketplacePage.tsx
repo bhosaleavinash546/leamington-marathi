@@ -498,7 +498,7 @@ export default function MarketplacePage() {
               <button
                 onClick={handleSubmit}
                 disabled={submitting || !submitForm.title || !submitForm.description}
-                className="flex-1 py-2.5 rounded-xl bg-gold-500 hover:bg-gold-400 disabled:opacity-50 text-navy-950 font-semibold text-sm transition-all"
+                className="flex-1 py-2.5 rounded-xl bg-gold-500 hover:bg-gold-400 disabled:opacity-50 text-navy-950 font-semibold text-sm transition-all shadow-glow-gold"
               >
                 {submitting ? 'Submitting…' : 'Submit for Review'}
               </button>
