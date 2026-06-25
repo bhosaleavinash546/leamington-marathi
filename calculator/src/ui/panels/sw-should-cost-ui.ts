@@ -1,6 +1,17 @@
 /**
  * Automotive Software Should-Cost — UI Panel
  * Self-contained panel: renders HTML, wires events, shows results.
+ * Implements all 10 audit recommendations:
+ *  Rec1: Separate annualIPLicenceGBP (engine)
+ *  Rec2: Monte Carlo P10/P50/P90
+ *  Rec3: Programme milestone phases
+ *  Rec4: OEM/Tier1/Startup decomposition
+ *  Rec5: AI LLM narrative insights
+ *  Rec6: Excel export (6-sheet)
+ *  Rec7: Calibration cost bucket (engine)
+ *  Rec8: ASIL assignment validation warnings
+ *  Rec9: Dark mode CSS variables
+ *  Rec10: Saved configurations (localStorage)
  */
 
 import type {
@@ -10,11 +21,37 @@ import type {
 import {
   computeSWProgram, defaultSWProgramInputs, SW_MODULES,
 } from '../../engine/sw-should-cost.js';
+import * as XLSX from 'xlsx';
+
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+interface SavedConfig {
+  id:        string;
+  name:      string;
+  createdAt: string;
+  inputs:    SWProgramInputs;
+}
 
 // ─── Module-level state ───────────────────────────────────────────────────────
 
 let _swResult: SWProgramResult | null = null;
 let _swInputs: SWProgramInputs = defaultSWProgramInputs();
+let _savedConfigs: SavedConfig[] = [];
+
+const STORAGE_KEY = 'cv-sw-saved-configs';
+
+function loadSavedConfigs(): void {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    _savedConfigs = raw ? JSON.parse(raw) : [];
+  } catch {
+    _savedConfigs = [];
+  }
+}
+
+function persistSavedConfigs(): void {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(_savedConfigs)); } catch { /* quota */ }
+}
 
 // ─── HTML helpers ─────────────────────────────────────────────────────────────
 
@@ -30,7 +67,9 @@ function fmtM(n: number): string {
   return `£${fmt(n / 1_000_000, 1)}M`;
 }
 
-// ─── ASIL badge ───────────────────────────────────────────────────────────────
+// ─── ASIL helpers ─────────────────────────────────────────────────────────────
+
+const ASIL_RANK: Record<ASILLevel, number> = { QM: 0, A: 1, B: 2, C: 3, D: 4 };
 
 function asilColor(asil: ASILLevel): string {
   return { QM: '#64748b', A: '#10b981', B: '#f59e0b', C: '#f97316', D: '#ef4444' }[asil];
@@ -55,6 +94,29 @@ const CAT_META: Record<string, { label: string; icon: string; color: string }> =
 
 // ─── Render panel HTML ────────────────────────────────────────────────────────
 
+function renderSavedConfigsHTML(): string {
+  const configItems = _savedConfigs.map(c => `
+    <div class="sw-saved-item" data-id="${esc(c.id)}">
+      <span class="sw-saved-name">${esc(c.name)}</span>
+      <span class="sw-saved-date">${esc(c.createdAt)}</span>
+      <button class="sw-saved-load" data-id="${esc(c.id)}">Load</button>
+      <button class="sw-saved-del" data-id="${esc(c.id)}">✕</button>
+    </div>`).join('');
+
+  return `
+  <div class="sw-config-card" style="background:var(--sw-surface-alt);border:1px solid var(--sw-border);border-radius:10px;padding:14px 18px;margin-bottom:14px">
+    <div style="font-weight:700;font-size:0.82rem;color:var(--sw-text-primary);margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;gap:8px">
+      <span>💾 Saved Configurations</span>
+      <button id="sw-save-config-btn" style="font-size:0.72rem;padding:4px 12px;border-radius:5px;border:1px solid var(--sw-border);background:var(--sw-surface);color:var(--sw-text-body);cursor:pointer">+ Save Current</button>
+    </div>
+    <div id="sw-saved-list">
+      ${_savedConfigs.length === 0
+        ? '<div style="font-size:0.75rem;color:var(--sw-text-muted);font-style:italic">No saved configurations yet.</div>'
+        : configItems}
+    </div>
+  </div>`;
+}
+
 function renderSWPanelHTML(): string {
   const inputs = _swInputs;
 
@@ -72,15 +134,20 @@ function renderSWPanelHTML(): string {
       if (def.hasMLContent) tags.push('<span class="sw-tag sw-tag-ml">ML</span>');
       if (def.hasCloudDependency) tags.push('<span class="sw-tag sw-tag-cloud">Cloud</span>');
       if (def.hasCybersecRequirement) tags.push('<span class="sw-tag sw-tag-sec">SecOps</span>');
+      // Rec 8: ASIL downgrade warning
+      const isDowngrade = ASIL_RANK[inp.asil] < ASIL_RANK[def.defaultAsil];
+      const asilWarn = isDowngrade
+        ? `<span class="sw-asil-warn" title="⚠️ ASIL set below module default (${def.defaultAsil}). Verify safety case.">⚠️</span>`
+        : '';
       return `
       <tr class="sw-module-row" data-module-id="${def.id}">
         <td class="sw-mod-check"><input type="checkbox" class="sw-mod-enable" data-id="${def.id}" ${inp.enabled ? 'checked' : ''}></td>
         <td class="sw-mod-name">
-          <div style="font-weight:600;font-size:0.82rem;color:#1e293b">${esc(def.shortName)}</div>
-          <div style="font-size:0.7rem;color:#64748b;margin-top:1px">${esc(def.basePersonMonths)} PM base · ${tags.join(' ')}</div>
+          <div style="font-weight:600;font-size:0.82rem;color:var(--sw-text-primary)">${esc(def.shortName)}</div>
+          <div style="font-size:0.7rem;color:var(--sw-text-muted);margin-top:1px">${esc(def.basePersonMonths)} PM base · ${tags.join(' ')}</div>
         </td>
-        <td class="sw-mod-desc" title="${esc(def.description)}" style="font-size:0.72rem;color:#475569;max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(def.description)}</td>
-        <td><select class="sw-sel sw-asil-sel" data-id="${def.id}">${asilOpts}</select></td>
+        <td class="sw-mod-desc" title="${esc(def.description)}" style="font-size:0.72rem;color:var(--sw-text-secondary);max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(def.description)}</td>
+        <td><select class="sw-sel sw-asil-sel" data-id="${def.id}">${asilOpts}</select>${asilWarn}</td>
         <td><select class="sw-sel sw-comp-sel" data-id="${def.id}">${compOpts}</select></td>
         <td><select class="sw-sel sw-reuse-sel" data-id="${def.id}">${reuseOpts}</select></td>
         <td><input type="number" class="sw-pm-input" data-id="${def.id}" placeholder="auto" value="${inp.customPersonMonths ?? ''}" min="0" step="1" style="width:60px"></td>
@@ -102,7 +169,7 @@ function renderSWPanelHTML(): string {
               <th style="width:24px"></th>
               <th>Module</th>
               <th>Description</th>
-              <th style="width:70px">ASIL</th>
+              <th style="width:80px">ASIL</th>
               <th style="width:100px">Complexity</th>
               <th style="width:90px">Reuse</th>
               <th style="width:70px">Custom PM</th>
@@ -143,16 +210,19 @@ function renderSWPanelHTML(): string {
       </div>
       <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:12px">
         <span style="background:rgba(59,130,246,0.25);color:#93c5fd;border:1px solid rgba(59,130,246,0.4);border-radius:6px;padding:3px 10px;font-size:0.72rem;font-weight:600">ASIL QM→D</span>
-        <span style="background:rgba(34,197,94,0.2);color:#86efac;border:1px solid rgba(34,197,94,0.35);border-radius:6px;padding:3px 10px;font-size:0.72rem;font-weight:600">9 Cost Dimensions</span>
-        <span style="background:rgba(168,85,247,0.2);color:#d8b4fe;border:1px solid rgba(168,85,247,0.35);border-radius:6px;padding:3px 10px;font-size:0.72rem;font-weight:600">Global Benchmarks</span>
-        <span style="background:rgba(245,158,11,0.2);color:#fcd34d;border:1px solid rgba(245,158,11,0.35);border-radius:6px;padding:3px 10px;font-size:0.72rem;font-weight:600">Sensitivity Analysis</span>
+        <span style="background:rgba(34,197,94,0.2);color:#86efac;border:1px solid rgba(34,197,94,0.35);border-radius:6px;padding:3px 10px;font-size:0.72rem;font-weight:600">10 Cost Dimensions</span>
+        <span style="background:rgba(168,85,247,0.2);color:#d8b4fe;border:1px solid rgba(168,85,247,0.35);border-radius:6px;padding:3px 10px;font-size:0.72rem;font-weight:600">Monte Carlo P10/P50/P90</span>
+        <span style="background:rgba(245,158,11,0.2);color:#fcd34d;border:1px solid rgba(245,158,11,0.35);border-radius:6px;padding:3px 10px;font-size:0.72rem;font-weight:600">Phase Timeline</span>
       </div>
     </div>
   </div>
 
+  <!-- ── Saved Configurations (Rec 10) ────────────────────────── -->
+  ${renderSavedConfigsHTML()}
+
   <!-- ── Global Programme Config ──────────────────────────────── -->
-  <div class="sw-config-card" style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:18px 20px;margin-bottom:18px">
-    <div style="font-weight:700;font-size:0.88rem;color:#0f172a;margin-bottom:14px;display:flex;align-items:center;gap:6px">
+  <div class="sw-config-card" style="background:var(--sw-surface-alt);border:1px solid var(--sw-border);border-radius:10px;padding:18px 20px;margin-bottom:18px">
+    <div style="font-weight:700;font-size:0.88rem;color:var(--sw-text-primary);margin-bottom:14px;display:flex;align-items:center;gap:6px">
       <span>⚙️</span> Programme Configuration
     </div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px">
@@ -178,14 +248,14 @@ function renderSWPanelHTML(): string {
       </div>
       <div class="sw-field-group">
         <label class="sw-label">Senior Engineer Fraction</label>
-        <input id="sw-senior-frac" type="number" class="sw-config-inp" min="0" max="1" step="0.05" value="${inputs.teamSeniorFraction}" title="Fraction of team that are senior engineers (0.0–1.0). Senior = 1.20× base rate; junior = 0.75× base rate.">
+        <input id="sw-senior-frac" type="number" class="sw-config-inp" min="0" max="1" step="0.05" value="${inputs.teamSeniorFraction}" title="Fraction of team that are senior engineers (0.0–1.0).">
       </div>
       <div class="sw-field-group" style="display:flex;flex-direction:column;gap:8px;justify-content:flex-end">
-        <label style="display:flex;align-items:center;gap:8px;font-size:0.8rem;color:#374151;cursor:pointer">
+        <label style="display:flex;align-items:center;gap:8px;font-size:0.8rem;color:var(--sw-text-body);cursor:pointer">
           <input type="checkbox" id="sw-inc-maint" ${inputs.includeMaintenanceCost ? 'checked' : ''} style="width:14px;height:14px;cursor:pointer">
           Include Maintenance Cost
         </label>
-        <label style="display:flex;align-items:center;gap:8px;font-size:0.8rem;color:#374151;cursor:pointer">
+        <label style="display:flex;align-items:center;gap:8px;font-size:0.8rem;color:var(--sw-text-body);cursor:pointer">
           <input type="checkbox" id="sw-inc-cloud" ${inputs.includeCloudCost ? 'checked' : ''} style="width:14px;height:14px;cursor:pointer">
           Include Cloud/Infra Cost
         </label>
@@ -195,7 +265,7 @@ function renderSWPanelHTML(): string {
 
   <!-- ── Quick-set presets ─────────────────────────────────────── -->
   <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;align-items:center">
-    <span style="font-size:0.78rem;color:#64748b;font-weight:600">Quick Set:</span>
+    <span style="font-size:0.78rem;color:var(--sw-text-muted);font-weight:600">Quick Set:</span>
     <button class="sw-preset-btn" data-preset="aggressive">🚀 Aggressive (Low ASIL, High Reuse)</button>
     <button class="sw-preset-btn" data-preset="baseline">📊 Industry Baseline</button>
     <button class="sw-preset-btn" data-preset="premium">👑 Premium OEM (High ASIL, Fresh)</button>
@@ -203,11 +273,11 @@ function renderSWPanelHTML(): string {
   </div>
 
   <!-- ── Module Configuration ─────────────────────────────────── -->
-  <div style="font-weight:700;font-size:0.88rem;color:#0f172a;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between">
+  <div style="font-weight:700;font-size:0.88rem;color:var(--sw-text-primary);margin-bottom:10px;display:flex;align-items:center;justify-content:space-between">
     <span style="display:flex;align-items:center;gap:6px"><span>📋</span> Module Configuration (43 modules)</span>
     <div style="display:flex;gap:8px">
-      <button id="sw-select-all" style="font-size:0.72rem;padding:3px 10px;border-radius:4px;border:1px solid #e2e8f0;background:#fff;color:#374151;cursor:pointer">Select All</button>
-      <button id="sw-deselect-all" style="font-size:0.72rem;padding:3px 10px;border-radius:4px;border:1px solid #e2e8f0;background:#fff;color:#374151;cursor:pointer">Deselect All</button>
+      <button id="sw-select-all" style="font-size:0.72rem;padding:3px 10px;border-radius:4px;border:1px solid var(--sw-border);background:var(--sw-surface);color:var(--sw-text-body);cursor:pointer">Select All</button>
+      <button id="sw-deselect-all" style="font-size:0.72rem;padding:3px 10px;border-radius:4px;border:1px solid var(--sw-border);background:var(--sw-surface);color:var(--sw-text-body);cursor:pointer">Deselect All</button>
     </div>
   </div>
 
@@ -226,13 +296,19 @@ function renderSWPanelHTML(): string {
     <!-- Summary cards -->
     <div id="sw-summary-cards" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:20px"></div>
 
+    <!-- Monte Carlo distribution (Rec 2) -->
+    <div class="sw-results-section" id="sw-monte-carlo"></div>
+
+    <!-- Programme phases (Rec 3) -->
+    <div class="sw-results-section" id="sw-phases"></div>
+
     <!-- Category breakdown -->
     <div class="sw-results-section" id="sw-cat-breakdown"></div>
 
-    <!-- Cost composition -->
+    <!-- Cost composition (inc. Calibration — Rec 7) -->
     <div class="sw-results-section" id="sw-cost-composition"></div>
 
-    <!-- Module detail table (top 15 by cost) -->
+    <!-- Module detail table (Rec 8: ASIL validation) -->
     <div class="sw-results-section" id="sw-module-table"></div>
 
     <!-- Sensitivity analysis -->
@@ -241,12 +317,30 @@ function renderSWPanelHTML(): string {
     <!-- Benchmark comparison -->
     <div class="sw-results-section" id="sw-benchmarks"></div>
 
+    <!-- OEM / Tier1 / Startup decomposition (Rec 4) -->
+    <div class="sw-results-section" id="sw-source-decomp"></div>
+
+    <!-- AI Analysis (Rec 5) -->
+    <div class="sw-results-section" id="sw-ai-analysis">
+      <div class="sw-section-title"><span>🤖</span> AI Analysis</div>
+      <div style="text-align:center;padding:12px 0">
+        <button id="sw-ai-btn" style="background:linear-gradient(135deg,#7c3aed,#6d28d9);color:#fff;border:none;border-radius:8px;padding:10px 24px;font-size:0.85rem;font-weight:600;cursor:pointer">
+          ✨ Generate AI Narrative Insights
+        </button>
+        <div style="font-size:0.72rem;color:var(--sw-text-muted);margin-top:6px">Uses AI to provide executive summary and cost reduction opportunities</div>
+      </div>
+      <div id="sw-ai-content" style="display:none"></div>
+    </div>
+
     <!-- Engineering Insights -->
     <div class="sw-results-section" id="sw-insights"></div>
 
     <!-- Export -->
-    <div style="text-align:center;margin:20px 0">
-      <button id="sw-pdf-btn" style="background:#0f172a;color:#fff;border:none;border-radius:8px;padding:11px 32px;font-size:0.88rem;font-weight:600;cursor:pointer;margin-right:8px">
+    <div style="text-align:center;margin:20px 0;display:flex;justify-content:center;gap:10px;flex-wrap:wrap">
+      <button id="sw-excel-btn" style="background:#059669;color:#fff;border:none;border-radius:8px;padding:11px 28px;font-size:0.88rem;font-weight:600;cursor:pointer">
+        📊 Export Excel (6 sheets)
+      </button>
+      <button id="sw-pdf-btn" style="background:#0f172a;color:#fff;border:none;border-radius:8px;padding:11px 28px;font-size:0.88rem;font-weight:600;cursor:pointer">
         📄 Export PDF Report
       </button>
     </div>
@@ -255,47 +349,77 @@ function renderSWPanelHTML(): string {
 </div>
 
 <style>
+/* Rec 9: Dark mode CSS variables */
+:root {
+  --sw-surface:      #ffffff;
+  --sw-surface-alt:  #f8fafc;
+  --sw-border:       #e2e8f0;
+  --sw-border-light: #f1f5f9;
+  --sw-text-primary: #0f172a;
+  --sw-text-body:    #374151;
+  --sw-text-secondary: #475569;
+  --sw-text-muted:   #64748b;
+  --sw-accent:       #2563eb;
+  --sw-accent-bg:    #eff6ff;
+  --sw-accent-border:#bfdbfe;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --sw-surface:      #1e293b;
+    --sw-surface-alt:  #0f172a;
+    --sw-border:       #334155;
+    --sw-border-light: #1e293b;
+    --sw-text-primary: #f1f5f9;
+    --sw-text-body:    #cbd5e1;
+    --sw-text-secondary: #94a3b8;
+    --sw-text-muted:   #64748b;
+    --sw-accent:       #3b82f6;
+    --sw-accent-bg:    #1e3a5f;
+    --sw-accent-border:#1d4ed8;
+  }
+}
+
 .sw-config-sel, .sw-config-inp {
   width: 100%;
   padding: 7px 10px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--sw-border);
   border-radius: 6px;
   font-size: 0.8rem;
-  background: #fff;
-  color: #1e293b;
+  background: var(--sw-surface);
+  color: var(--sw-text-primary);
 }
 .sw-config-sel:focus, .sw-config-inp:focus {
   outline: none;
-  border-color: #2563eb;
+  border-color: var(--sw-accent);
   box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
 }
 .sw-label {
   display: block;
   font-size: 0.75rem;
   font-weight: 600;
-  color: #374151;
+  color: var(--sw-text-body);
   margin-bottom: 5px;
 }
 .sw-field-group { display: flex; flex-direction: column; }
 
-.sw-cat-group { margin-bottom: 10px; border-radius: 8px; border: 1px solid #e2e8f0; overflow: hidden; }
+.sw-cat-group { margin-bottom: 10px; border-radius: 8px; border: 1px solid var(--sw-border); overflow: hidden; }
 .sw-cat-header {
   display: flex;
   align-items: center;
   gap: 10px;
   padding: 11px 14px;
-  background: #f8fafc;
+  background: var(--sw-surface-alt);
   cursor: pointer;
   user-select: none;
   font-size: 0.84rem;
   font-weight: 700;
-  color: #1e293b;
+  color: var(--sw-text-primary);
 }
-.sw-cat-header:hover { background: #f1f5f9; }
+.sw-cat-header:hover { background: var(--sw-border-light); }
 .sw-cat-icon { font-size: 1rem; }
 .sw-cat-label { flex: 1; }
-.sw-cat-count { font-size: 0.72rem; font-weight: 500; color: #64748b; }
-.sw-cat-chevron { font-size: 0.75rem; color: #64748b; transition: transform 0.2s; }
+.sw-cat-count { font-size: 0.72rem; font-weight: 500; color: var(--sw-text-muted); }
+.sw-cat-chevron { font-size: 0.75rem; color: var(--sw-text-muted); transition: transform 0.2s; }
 .sw-collapsed .sw-cat-chevron { transform: rotate(-90deg); }
 .sw-collapsed .sw-cat-body { display: none; }
 
@@ -309,37 +433,43 @@ function renderSWPanelHTML(): string {
   text-align: left;
   font-size: 0.7rem;
   font-weight: 700;
-  color: #64748b;
-  background: #f8fafc;
-  border-bottom: 1px solid #e2e8f0;
+  color: var(--sw-text-muted);
+  background: var(--sw-surface-alt);
+  border-bottom: 1px solid var(--sw-border);
   text-transform: uppercase;
   letter-spacing: 0.3px;
 }
-.sw-module-table tbody tr:hover { background: #f8fafc; }
-.sw-module-row td { padding: 7px 8px; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
+.sw-module-table tbody tr:hover { background: var(--sw-surface-alt); }
+.sw-module-row td { padding: 7px 8px; border-bottom: 1px solid var(--sw-border-light); vertical-align: middle; }
 .sw-mod-check { width: 24px; }
 .sw-mod-name { min-width: 110px; }
 
 .sw-sel {
   padding: 4px 6px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--sw-border);
   border-radius: 5px;
   font-size: 0.75rem;
-  background: #fff;
-  color: #1e293b;
+  background: var(--sw-surface);
+  color: var(--sw-text-primary);
   width: 100%;
 }
-.sw-sel:focus { outline: none; border-color: #2563eb; }
+.sw-sel:focus { outline: none; border-color: var(--sw-accent); }
 .sw-pm-input {
   padding: 4px 6px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--sw-border);
   border-radius: 5px;
   font-size: 0.75rem;
-  background: #fff;
-  color: #1e293b;
+  background: var(--sw-surface);
+  color: var(--sw-text-primary);
   width: 60px;
 }
-.sw-pm-input:focus { outline: none; border-color: #2563eb; }
+.sw-pm-input:focus { outline: none; border-color: var(--sw-accent); }
+
+.sw-asil-warn {
+  margin-left: 4px;
+  cursor: help;
+  font-size: 0.8rem;
+}
 
 .sw-tag {
   display: inline-block;
@@ -356,19 +486,19 @@ function renderSWPanelHTML(): string {
 .sw-preset-btn {
   padding: 5px 12px;
   border-radius: 6px;
-  border: 1px solid #e2e8f0;
-  background: #fff;
-  color: #374151;
+  border: 1px solid var(--sw-border);
+  background: var(--sw-surface);
+  color: var(--sw-text-body);
   font-size: 0.75rem;
   cursor: pointer;
   transition: all 0.15s;
 }
-.sw-preset-btn:hover { background: #f1f5f9; border-color: #94a3b8; }
-.sw-preset-active { background: #eff6ff !important; border-color: #2563eb !important; color: #2563eb !important; font-weight: 700; }
+.sw-preset-btn:hover { background: var(--sw-border-light); border-color: var(--sw-text-muted); }
+.sw-preset-active { background: var(--sw-accent-bg) !important; border-color: var(--sw-accent) !important; color: var(--sw-accent) !important; font-weight: 700; }
 
 .sw-results-section {
-  background: #fff;
-  border: 1px solid #e2e8f0;
+  background: var(--sw-surface);
+  border: 1px solid var(--sw-border);
   border-radius: 10px;
   padding: 18px 20px;
   margin-bottom: 14px;
@@ -376,7 +506,7 @@ function renderSWPanelHTML(): string {
 .sw-section-title {
   font-weight: 700;
   font-size: 0.9rem;
-  color: #0f172a;
+  color: var(--sw-text-primary);
   margin-bottom: 14px;
   display: flex;
   align-items: center;
@@ -393,38 +523,81 @@ function renderSWPanelHTML(): string {
   text-align: left;
   font-size: 0.7rem;
   font-weight: 700;
-  color: #64748b;
-  background: #f8fafc;
-  border-bottom: 1px solid #e2e8f0;
+  color: var(--sw-text-muted);
+  background: var(--sw-surface-alt);
+  border-bottom: 1px solid var(--sw-border);
   text-transform: uppercase;
   letter-spacing: 0.3px;
 }
-.sw-data-table td { padding: 8px 10px; border-bottom: 1px solid #f1f5f9; color: #374151; }
+.sw-data-table td { padding: 8px 10px; border-bottom: 1px solid var(--sw-border-light); color: var(--sw-text-body); }
 .sw-data-table tr:last-child td { border-bottom: none; }
-.sw-data-table tbody tr:hover { background: #f8fafc; }
+.sw-data-table tbody tr:hover { background: var(--sw-surface-alt); }
 .sw-num { text-align: right; font-variant-numeric: tabular-nums; font-family: monospace; }
-.sw-highlight { background: #eff6ff !important; font-weight: 700; color: #1d4ed8 !important; }
+.sw-highlight { background: var(--sw-accent-bg) !important; font-weight: 700; color: var(--sw-accent) !important; }
 
 .sw-summary-card {
-  background: #fff;
-  border: 1px solid #e2e8f0;
+  background: var(--sw-surface);
+  border: 1px solid var(--sw-border);
   border-radius: 10px;
   padding: 16px 18px;
   position: relative;
   overflow: hidden;
 }
-.sw-summary-card::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 3px;
-}
-.sw-card-label { font-size: 0.73rem; font-weight: 600; color: #64748b; margin-bottom: 6px; }
-.sw-card-value { font-size: 1.4rem; font-weight: 800; color: #0f172a; line-height: 1; }
-.sw-card-sub { font-size: 0.72rem; color: #94a3b8; margin-top: 4px; }
+.sw-card-label { font-size: 0.73rem; font-weight: 600; color: var(--sw-text-muted); margin-bottom: 6px; }
+.sw-card-value { font-size: 1.4rem; font-weight: 800; color: var(--sw-text-primary); line-height: 1; }
+.sw-card-sub { font-size: 0.72rem; color: var(--sw-text-muted); margin-top: 4px; }
 
-.sw-bar-track { background: #f1f5f9; border-radius: 4px; height: 8px; overflow: hidden; margin-top: 4px; }
+.sw-bar-track { background: var(--sw-border-light); border-radius: 4px; height: 8px; overflow: hidden; margin-top: 4px; }
 .sw-bar-fill { height: 100%; border-radius: 4px; transition: width 0.4s ease; }
+
+/* Saved configs */
+.sw-saved-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  background: var(--sw-surface);
+  border: 1px solid var(--sw-border);
+  margin-bottom: 5px;
+  font-size: 0.78rem;
+}
+.sw-saved-name { flex: 1; font-weight: 600; color: var(--sw-text-primary); }
+.sw-saved-date { font-size: 0.7rem; color: var(--sw-text-muted); }
+.sw-saved-load {
+  font-size: 0.7rem; padding: 2px 8px; border-radius: 4px;
+  border: 1px solid var(--sw-accent); background: var(--sw-accent-bg);
+  color: var(--sw-accent); cursor: pointer;
+}
+.sw-saved-del {
+  font-size: 0.7rem; padding: 2px 6px; border-radius: 4px;
+  border: 1px solid var(--sw-border); background: var(--sw-surface);
+  color: var(--sw-text-muted); cursor: pointer;
+}
+.sw-saved-del:hover { background: #fef2f2; border-color: #fca5a5; color: #dc2626; }
+
+/* Phase timeline */
+.sw-phase-bar {
+  display: flex;
+  border-radius: 6px;
+  overflow: hidden;
+  height: 28px;
+  margin: 12px 0 8px;
+}
+.sw-phase-seg {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #fff;
+  min-width: 0;
+  transition: opacity 0.2s;
+  cursor: default;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.sw-phase-seg:hover { opacity: 0.85; }
 </style>`;
 }
 
@@ -442,21 +615,18 @@ function readConfig(): void {
   const maint      = (get('sw-inc-maint') as HTMLInputElement)?.checked ?? true;
   const cloud      = (get('sw-inc-cloud') as HTMLInputElement)?.checked ?? true;
 
-  _swInputs.region                = region;
-  _swInputs.devSource             = devSrc;
-  _swInputs.programLifeYears      = Math.max(1, life);
+  _swInputs.region                 = region;
+  _swInputs.devSource              = devSrc;
+  _swInputs.programLifeYears       = Math.max(1, life);
   _swInputs.annualProductionVolume = Math.max(1, vol);
-  _swInputs.overheadMultiplier    = Math.max(1, overhead);
-  _swInputs.teamSeniorFraction    = Math.min(1, Math.max(0, isNaN(seniorFrac) ? 0.50 : seniorFrac));
+  _swInputs.overheadMultiplier     = Math.max(1, overhead);
+  _swInputs.teamSeniorFraction     = Math.min(1, Math.max(0, isNaN(seniorFrac) ? 0.50 : seniorFrac));
   _swInputs.includeMaintenanceCost = maint;
-  _swInputs.includeCloudCost      = cloud;
+  _swInputs.includeCloudCost       = cloud;
 
-  // Read per-module overrides
   document.querySelectorAll<HTMLInputElement>('.sw-mod-enable').forEach(cb => {
-    const id = cb.dataset.id!;
-    const m  = _swInputs.modules.find(x => x.moduleId === id);
-    if (!m) return;
-    m.enabled = cb.checked;
+    const m = _swInputs.modules.find(x => x.moduleId === cb.dataset.id);
+    if (m) m.enabled = cb.checked;
   });
   document.querySelectorAll<HTMLSelectElement>('.sw-asil-sel').forEach(sel => {
     const m = _swInputs.modules.find(x => x.moduleId === sel.dataset.id);
@@ -510,11 +680,11 @@ function renderResults(result: SWProgramResult): void {
 
   // Summary cards
   const avgFTE = s.totalPersonMonths > 0 ? s.totalPersonMonths / (result.inputs.programLifeYears * 12) : 0;
-  const nreTotal = s.totalDevelopment + s.totalTesting + s.totalIntegration + s.totalToolchain + s.totalCybersecurity;
+  const nreTotal = s.totalDevelopment + s.totalTesting + s.totalIntegration + s.totalToolchain + s.totalCybersecurity + s.totalCalibration;
   const cards: { label: string; value: string; sub: string; color: string }[] = [
     { label: 'Total Programme Cost',    value: fmtM(s.grandTotal),             sub: 'NRE + Lifecycle (all modules)',                color: '#2563eb' },
     { label: 'Per Vehicle (SW Cost)',   value: `£${fmt(s.perVehicle, 0)}`,     sub: `${fmt(result.inputs.annualProductionVolume/1000,0)}k units/yr × ${result.inputs.programLifeYears}yr`, color: '#059669' },
-    { label: 'Total NRE',              value: fmtM(nreTotal),                  sub: 'Dev + Test + Integration + Tools + Cyber',    color: '#7c3aed' },
+    { label: 'Total NRE',              value: fmtM(nreTotal),                  sub: 'Dev + Test + Integ + Tools + Cyber + Calib',  color: '#7c3aed' },
     { label: 'Total Person-Months',    value: `${fmt(s.totalPersonMonths, 0)} PM`, sub: `Avg team: ${fmt(avgFTE,0)} FTE over ${result.inputs.programLifeYears}yr`, color: '#d97706' },
     { label: 'Lifecycle (Maint+Cloud)',value: fmtM(s.totalMaintenance + s.totalCloud), sub: `${fmt((s.totalMaintenance+s.totalCloud)/s.grandTotal*100,0)}% of total programme`, color: '#0891b2' },
     { label: 'Active Modules',         value: `${result.modules.length}`,      sub: `of 43 modules · ${result.inputs.region} / ${result.inputs.devSource.replace('_',' ')}`, color: '#64748b' },
@@ -531,6 +701,61 @@ function renderResults(result: SWProgramResult): void {
   const cardsEl = document.getElementById('sw-summary-cards');
   if (cardsEl) cardsEl.innerHTML = cardsHTML;
 
+  // Rec 2: Monte Carlo
+  const mc = result.monteCarlo;
+  const mcEl = document.getElementById('sw-monte-carlo');
+  if (mcEl) {
+    const span = mc.p90 - mc.p10;
+    const pct90vs10 = mc.p10 > 0 ? (mc.p90 / mc.p10 - 1) * 100 : 0;
+    mcEl.innerHTML = `
+      <div class="sw-section-title"><span>🎲</span> Monte Carlo Cost Distribution (${mc.iterations.toLocaleString()} iterations)</div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px">
+        ${[
+          { label: 'P10 (Optimistic)',  val: fmtM(mc.p10),  pv: `£${fmt(mc.p10PerVehicle,0)}/veh`, color: '#059669' },
+          { label: 'P50 (Median)',      val: fmtM(mc.p50),  pv: `£${fmt(mc.p50PerVehicle,0)}/veh`, color: '#2563eb' },
+          { label: 'P90 (Pessimistic)', val: fmtM(mc.p90),  pv: `£${fmt(mc.p90PerVehicle,0)}/veh`, color: '#ef4444' },
+          { label: 'Mean',              val: fmtM(mc.mean), pv: `P90/P10 spread: +${fmt(pct90vs10,0)}%`, color: '#7c3aed' },
+        ].map(c => `
+        <div style="background:var(--sw-surface-alt);border:1px solid var(--sw-border);border-radius:8px;padding:12px 14px">
+          <div style="font-size:0.7rem;font-weight:600;color:var(--sw-text-muted);margin-bottom:4px">${c.label}</div>
+          <div style="font-size:1.15rem;font-weight:800;color:${c.color}">${c.val}</div>
+          <div style="font-size:0.7rem;color:var(--sw-text-muted);margin-top:2px">${c.pv}</div>
+        </div>`).join('')}
+      </div>
+      <div style="font-size:0.75rem;color:var(--sw-text-secondary);background:var(--sw-surface-alt);border:1px solid var(--sw-border);border-radius:6px;padding:10px 14px">
+        <strong>Uncertainty model:</strong> Triangular distributions on 9 cost buckets —
+        labour ±35%, testing ±30%, integration ±35%, toolchain ±25%, cybersec ±50%,
+        calibration ±50%, maintenance ±35%, cloud ±60%, IP licensing ±30%.
+        Range P10→P90: <strong>${fmtM(span)}</strong> — reflects real-world programme uncertainty.
+      </div>`;
+  }
+
+  // Rec 3: Programme Phases
+  const phaseColors = ['#6366f1','#3b82f6','#0891b2','#059669','#d97706'];
+  const phaseEl = document.getElementById('sw-phases');
+  if (phaseEl) {
+    const barSegs = result.phases.map((p, i) => `
+      <div class="sw-phase-seg" style="width:${(p.fraction*100).toFixed(0)}%;background:${phaseColors[i]}" title="${p.name}: ${fmtM(p.nreCost)} (${p.months})">
+        ${p.fraction >= 0.12 ? p.name.split('/')[0] : ''}
+      </div>`).join('');
+
+    const phaseRows = result.phases.map((p, i) => `<tr>
+      <td><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${phaseColors[i]};margin-right:6px"></span>${esc(p.name)}</td>
+      <td style="font-size:0.75rem;color:var(--sw-text-muted)">${esc(p.months)}</td>
+      <td class="sw-num">${fmt(p.fraction*100,0)}%</td>
+      <td class="sw-num" style="font-weight:700;color:${phaseColors[i]}">${fmtM(p.nreCost)}</td>
+    </tr>`).join('');
+
+    phaseEl.innerHTML = `
+      <div class="sw-section-title"><span>📅</span> Programme Milestone Phases (NRE: ${fmtM(nreTotal)})</div>
+      <div class="sw-phase-bar">${barSegs}</div>
+      <table class="sw-data-table" style="margin-top:10px">
+        <thead><tr><th>Phase</th><th>Timeline</th><th class="sw-num">NRE Share</th><th class="sw-num">Budget</th></tr></thead>
+        <tbody>${phaseRows}</tbody>
+      </table>
+      <p style="font-size:0.72rem;color:var(--sw-text-muted);margin-top:8px">* Phase fractions apply to NRE only. Lifecycle costs (maintenance, cloud, IP licensing) are incurred post-SOP and shown separately in Cost Composition.</p>`;
+  }
+
   // Category breakdown
   const catRows = Object.entries(CAT_META).map(([cat, meta]) => {
     const total = s.byCategory[cat as keyof typeof s.byCategory] ?? 0;
@@ -546,7 +771,7 @@ function renderResults(result: SWProgramResult): void {
       <td>
         <div class="sw-bar-track"><div class="sw-bar-fill" style="width:${pct.toFixed(1)}%;background:${meta.color}"></div></div>
       </td>
-      <td style="font-size:0.72rem;color:#64748b">${topMod ? esc(topMod.moduleName) : '—'}</td>
+      <td style="font-size:0.72rem;color:var(--sw-text-muted)">${topMod ? esc(topMod.moduleName) : '—'}</td>
     </tr>`;
   }).join('');
 
@@ -558,16 +783,17 @@ function renderResults(result: SWProgramResult): void {
       <tbody>${catRows}</tbody>
     </table>`;
 
-  // Cost composition
+  // Cost composition (Rec 7: includes Calibration)
   const comp: [string, string, number][] = [
     ['💻', 'Development (Engineering)', s.totalDevelopment],
     ['🧪', 'Testing & Validation',      s.totalTesting],
     ['🔗', 'Integration & V&V',         s.totalIntegration],
-    ['🛠️', 'Toolchain & Licences',       s.totalToolchain],
+    ['🛠️', 'Toolchain (dev tools)',      s.totalToolchain],
+    ['📐', 'Calibration & Tuning',       s.totalCalibration],
     ['🔒', 'Cybersecurity (pentest/TARA)', s.totalCybersecurity],
     ['🔧', 'Maintenance (lifecycle)',    s.totalMaintenance],
     ['☁️', 'Cloud & Infra (lifecycle)',   s.totalCloud],
-    ['📜', 'IP Licensing',               s.totalLicensing],
+    ['📜', 'IP Licensing (lifecycle)',    s.totalLicensing],
   ];
   const compRows = comp.map(([icon, label, val]) => {
     const pct = s.grandTotal > 0 ? val / s.grandTotal * 100 : 0;
@@ -575,53 +801,71 @@ function renderResults(result: SWProgramResult): void {
       <td>${icon} ${esc(label)}</td>
       <td class="sw-num">${fmtM(val)}</td>
       <td class="sw-num">${fmt(pct, 1)}%</td>
-      <td><div class="sw-bar-track"><div class="sw-bar-fill" style="width:${pct.toFixed(1)}%;background:#2563eb"></div></div></td>
+      <td><div class="sw-bar-track"><div class="sw-bar-fill" style="width:${pct.toFixed(1)}%;background:var(--sw-accent)"></div></div></td>
     </tr>`;
   }).join('');
 
   const compEl = document.getElementById('sw-cost-composition');
   if (compEl) compEl.innerHTML = `
-    <div class="sw-section-title"><span>💰</span> Cost Composition (9 Dimensions)</div>
+    <div class="sw-section-title"><span>💰</span> Cost Composition (10 Dimensions)</div>
     <table class="sw-data-table">
       <thead><tr><th>Cost Bucket</th><th class="sw-num">Value</th><th class="sw-num">Share</th><th>Distribution</th></tr></thead>
       <tbody>${compRows}
-      <tr style="background:#f8fafc;font-weight:700">
+      <tr style="background:var(--sw-surface-alt);font-weight:700">
         <td>TOTAL PROGRAMME COST</td>
-        <td class="sw-num" style="color:#2563eb">${fmtM(s.grandTotal)}</td>
+        <td class="sw-num" style="color:var(--sw-accent)">${fmtM(s.grandTotal)}</td>
         <td class="sw-num">100%</td>
         <td></td>
       </tr>
       </tbody>
     </table>`;
 
-  // Module detail table (sorted by cost, all modules)
+  // Module detail table with Rec 8 ASIL validation
+  const asilRankMap: Record<ASILLevel, number> = { QM: 0, A: 1, B: 2, C: 3, D: 4 };
   const sortedMods = [...result.modules].sort((a,b) => b.grandTotal - a.grandTotal);
   const modRows = sortedMods.map((m, i) => {
     const meta = CAT_META[m.category];
+    const def  = SW_MODULES.find(d => d.id === m.moduleId);
+    const isDowngrade = def && asilRankMap[m.asilUsed] < asilRankMap[def.defaultAsil];
+    const asilCell = isDowngrade
+      ? `${asilBadge(m.asilUsed)} <span style="color:#d97706;font-size:0.7rem" title="Below default ${def?.defaultAsil ?? ''}">⚠️ −${asilRankMap[def!.defaultAsil] - asilRankMap[m.asilUsed]} lvl</span>`
+      : asilBadge(m.asilUsed);
     return `<tr class="${i < 5 ? 'sw-highlight' : ''}">
       <td>${i + 1}</td>
       <td style="font-weight:600">${esc(m.moduleName)}</td>
       <td><span style="color:${meta?.color ?? '#64748b'}">${meta?.icon ?? ''}</span> ${esc(meta?.label ?? m.categoryLabel)}</td>
-      <td>${asilBadge(m.asilUsed)}</td>
-      <td style="font-size:0.75rem;color:#64748b">${esc(m.complexityUsed)}</td>
-      <td style="font-size:0.75rem;color:#64748b">${esc(m.reuseUsed)}</td>
+      <td>${asilCell}</td>
+      <td style="font-size:0.75rem;color:var(--sw-text-muted)">${esc(m.complexityUsed)}</td>
+      <td style="font-size:0.75rem;color:var(--sw-text-muted)">${esc(m.reuseUsed)}</td>
       <td class="sw-num">${fmt(m.personMonths, 0)}</td>
       <td class="sw-num">${fmtM(m.development.total)}</td>
+      <td class="sw-num">${fmtM(m.calibrationCost)}</td>
       <td class="sw-num">${fmtM(m.testing.total)}</td>
       <td class="sw-num">${fmtM(m.grandTotal)}</td>
       <td class="sw-num" style="color:#059669;font-weight:600">£${fmt(m.perVehicle, 0)}</td>
     </tr>`;
   }).join('');
 
+  // Count ASIL downgrades for header warning
+  const downgradeCount = sortedMods.filter(m => {
+    const def = SW_MODULES.find(d => d.id === m.moduleId);
+    return def && asilRankMap[m.asilUsed] < asilRankMap[def.defaultAsil];
+  }).length;
+  const downgradeWarning = downgradeCount > 0
+    ? `<div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:6px;padding:8px 12px;margin-bottom:10px;font-size:0.78rem;color:#92400e">⚠️ <strong>${downgradeCount} module(s)</strong> have ASIL set below their default. Review safety case documentation (ISO 26262 §6.4.5) before sign-off.</div>`
+    : '';
+
   const modTableEl = document.getElementById('sw-module-table');
   if (modTableEl) modTableEl.innerHTML = `
     <div class="sw-section-title"><span>📋</span> Module Cost Detail — All ${result.modules.length} Active Modules</div>
+    ${downgradeWarning}
     <div style="overflow-x:auto">
     <table class="sw-data-table">
       <thead><tr>
         <th>#</th><th>Module</th><th>Category</th><th>ASIL</th>
         <th>Complexity</th><th>Reuse</th><th class="sw-num">PM</th>
-        <th class="sw-num">Dev Cost</th><th class="sw-num">Test Cost</th>
+        <th class="sw-num">Dev Cost</th><th class="sw-num">Calibration</th>
+        <th class="sw-num">Test Cost</th>
         <th class="sw-num">Grand Total</th><th class="sw-num">£/Vehicle</th>
       </tr></thead>
       <tbody>${modRows}</tbody>
@@ -638,7 +882,7 @@ function renderResults(result: SWProgramResult): void {
     return `<tr>
       <td style="font-weight:600">${esc(row.parameter)}</td>
       <td class="sw-num" style="color:#059669">${low}</td>
-      <td class="sw-num sw-highlight" style="background:#eff6ff !important">${base}</td>
+      <td class="sw-num sw-highlight" style="background:var(--sw-accent-bg) !important">${base}</td>
       <td class="sw-num" style="color:#ef4444">${high}</td>
       <td class="sw-num">${spanFmt}</td>
     </tr>`;
@@ -651,21 +895,21 @@ function renderResults(result: SWProgramResult): void {
       <thead><tr><th>Parameter</th><th class="sw-num">Low Scenario</th><th class="sw-num">Base Case</th><th class="sw-num">High Scenario</th><th class="sw-num">Range</th></tr></thead>
       <tbody>${sensRows}</tbody>
     </table>
-    <p style="font-size:0.72rem;color:#94a3b8;margin-top:10px">* Low = favourable scenario (lower cost). High = unfavourable (higher cost). Exception: Production Volume row — Low = high volume (150k/yr, cheaper per-vehicle). Base = this calculation configuration.</p>`;
+    <p style="font-size:0.72rem;color:var(--sw-text-muted);margin-top:10px">* Low = favourable scenario. High = unfavourable. Production Volume: Low = 150k/yr (cheaper per-vehicle), High = 50k/yr (expensive). Base = this configuration.</p>`;
 
-  // Benchmark comparison — diff shows "this model vs benchmark" (positive = this model costs more)
+  // Benchmark comparison
   const bmRows = result.benchmarks.map(b => {
     const isThis = b.vehicle.includes('This Model');
     const thisM  = s.grandTotal / 1_000_000;
     const diff   = (!isThis && b.totalM > 0) ? ((thisM - b.totalM) / b.totalM * 100) : 0;
     const diffFmt = isThis ? '⭐ Base' : `${diff >= 0 ? '+' : ''}${fmt(diff, 0)}%`;
     const diffColor = isThis ? '#2563eb' : diff > 20 ? '#ef4444' : diff < -20 ? '#059669' : '#d97706';
-    return `<tr ${isThis ? 'style="background:#eff6ff;font-weight:700"' : ''}>
+    return `<tr ${isThis ? 'style="background:var(--sw-accent-bg);font-weight:700"' : ''}>
       <td>${isThis ? '⭐ ' : ''}${esc(b.vehicle)}</td>
       <td class="sw-num">${b.totalM > 0 ? fmtM(b.totalM * 1_000_000) : fmtM(s.grandTotal)}</td>
       <td class="sw-num">£${b.perVehicle > 0 ? fmt(b.perVehicle, 0) : fmt(s.perVehicle, 0)}</td>
       <td class="sw-num" style="color:${diffColor};font-weight:600">${diffFmt}</td>
-      <td style="font-size:0.72rem;color:#94a3b8">${esc(b.source)}</td>
+      <td style="font-size:0.72rem;color:var(--sw-text-muted)">${esc(b.source)}</td>
     </tr>`;
   }).join('');
 
@@ -673,52 +917,76 @@ function renderResults(result: SWProgramResult): void {
   if (bmEl) bmEl.innerHTML = `
     <div class="sw-section-title"><span>🏆</span> Benchmark Comparison — Premium EV Programme SW Investment</div>
     <table class="sw-data-table">
-      <thead><tr><th>Vehicle / Programme</th><th class="sw-num">Total SW Cost</th><th class="sw-num">£/Vehicle</th><th class="sw-num">This Model vs Benchmark</th><th>Source</th></tr></thead>
+      <thead><tr><th>Vehicle / Programme</th><th class="sw-num">Total SW Cost</th><th class="sw-num">£/Vehicle</th><th class="sw-num">vs This Model</th><th>Source</th></tr></thead>
       <tbody>${bmRows}</tbody>
     </table>
-    <p style="font-size:0.72rem;color:#94a3b8;margin-top:10px">* "This Model vs Benchmark" shows how this model compares relative to each benchmark (positive = more expensive, negative = cheaper). Benchmark figures are industry estimates and analyst reports; OEM-specific programmes vary by architecture strategy, insourcing mix, and capitalisation policy.</p>`;
+    <p style="font-size:0.72rem;color:var(--sw-text-muted);margin-top:10px">* Positive = benchmark cheaper than this model. Figures are industry estimates ±20%.</p>`;
 
-  // Engineering Insights (rule-based, domain-expert observations)
+  // Rec 4: OEM / Tier-1 / Startup decomposition
+  const sourceDecomp: { src: string; label: string; srcMult: number; riskNote: string; ipNote: string; warrantyNote: string }[] = [
+    { src: 'OEM_Internal',   label: 'OEM Internal',    srcMult: 1.00, riskNote: 'Full visibility & control', ipNote: 'IP owned outright', warrantyNote: 'Full in-house warranty liability' },
+    { src: 'Tier1_Supplier', label: 'Tier 1 Supplier', srcMult: 0.88, riskNote: 'Contractual milestone risk', ipNote: 'IP shared / licensed-back', warrantyNote: 'Supplier warranty share ~40%' },
+    { src: 'Startup_OSS',   label: 'Startup / OSS',   srcMult: 0.72, riskNote: 'High execution risk, talent risk', ipNote: 'OSS licence risk; limited assignment', warrantyNote: 'Warranty indemnity limited; OEM absorbs tail' },
+  ];
+  const currentSrc = result.inputs.devSource;
+  const decompRows = sourceDecomp.map(d => {
+    const estCost = s.grandTotal * (d.srcMult / (currentSrc === 'OEM_Internal' ? 1.00 : currentSrc === 'Tier1_Supplier' ? 0.88 : 0.72));
+    const isCurrent = d.src === currentSrc;
+    return `<tr ${isCurrent ? 'style="background:var(--sw-accent-bg);font-weight:700"' : ''}>
+      <td>${isCurrent ? '⭐ ' : ''}${esc(d.label)}</td>
+      <td class="sw-num" style="color:var(--sw-accent)">${fmtM(estCost)}</td>
+      <td class="sw-num">×${d.srcMult.toFixed(2)}</td>
+      <td style="font-size:0.75rem;color:var(--sw-text-secondary)">${esc(d.riskNote)}</td>
+      <td style="font-size:0.75rem;color:var(--sw-text-secondary)">${esc(d.ipNote)}</td>
+      <td style="font-size:0.75rem;color:var(--sw-text-secondary)">${esc(d.warrantyNote)}</td>
+    </tr>`;
+  }).join('');
+
+  const decompEl = document.getElementById('sw-source-decomp');
+  if (decompEl) decompEl.innerHTML = `
+    <div class="sw-section-title"><span>🏢</span> Development Source Decomposition (OEM / Tier-1 / Startup)</div>
+    <table class="sw-data-table">
+      <thead><tr><th>Dev Source</th><th class="sw-num">Estimated Cost</th><th class="sw-num">Rate Mult.</th><th>Risk Profile</th><th>IP Ownership</th><th>Warranty Exposure</th></tr></thead>
+      <tbody>${decompRows}</tbody>
+    </table>
+    <p style="font-size:0.72rem;color:var(--sw-text-muted);margin-top:8px">* Rate multipliers relative to OEM Internal baseline. Actual costs also depend on management overhead, ramp-up time, and programme governance.</p>`;
+
+  // Engineering Insights
   const insightsEl = document.getElementById('sw-insights');
   if (insightsEl) {
     const insights: { icon: string; level: 'info' | 'warn' | 'ok'; title: string; body: string }[] = [];
 
-    // 1. Top cost driver
     const sorted = [...result.modules].sort((a,b) => b.grandTotal - a.grandTotal);
     if (sorted.length > 0) {
       const top = sorted[0];
       insights.push({ icon: '📊', level: 'info',
         title: `Top cost driver: ${top.moduleName}`,
-        body: `At ${fmtM(top.grandTotal)} (${fmt(top.grandTotal/s.grandTotal*100,1)}% of total), ${top.moduleName} dominates programme cost. This is typical for ${CAT_META[top.category]?.label ?? top.categoryLabel} — ensure build-vs-buy is evaluated.`,
+        body: `At ${fmtM(top.grandTotal)} (${fmt(top.grandTotal/s.grandTotal*100,1)}% of total), ${top.moduleName} dominates programme cost. Evaluate build-vs-buy: licensed platform IP could reduce this by 30–50%.`,
       });
     }
 
-    // 2. ASIL-D modules with Heavy/Platform reuse — technically questionable
     const asilDReuseHeavy = result.modules.filter(m => m.asilUsed === 'D' && (m.reuseUsed === 'Heavy' || m.reuseUsed === 'Platform'));
     if (asilDReuseHeavy.length > 0) {
       insights.push({ icon: '⚠️', level: 'warn',
         title: `ASIL-D with Heavy/Platform reuse — verify safety case`,
-        body: `${asilDReuseHeavy.map(m => m.moduleName).join(', ')} are ASIL-D with ${asilDReuseHeavy[0].reuseUsed} reuse. ISO 26262 requires a formal safety case for reused elements (SEooC claim). Factor in safety analysis cost not captured here.`,
+        body: `${asilDReuseHeavy.map(m => m.moduleName).join(', ')} are ASIL-D with ${asilDReuseHeavy[0].reuseUsed} reuse. ISO 26262 requires formal safety case for SEooC elements. Factor in additional safety analysis cost.`,
       });
     }
 
-    // 3. NRE vs lifecycle split insight
-    const nreTotal = s.totalDevelopment + s.totalTesting + s.totalIntegration + s.totalToolchain + s.totalCybersecurity;
     const lifecycleTotal = s.totalMaintenance + s.totalCloud + s.totalLicensing;
     const lifecyclePct = s.grandTotal > 0 ? lifecycleTotal / s.grandTotal * 100 : 0;
     if (lifecyclePct > 45) {
       insights.push({ icon: '☁️', level: 'warn',
         title: `High lifecycle cost (${fmt(lifecyclePct,0)}% of total)`,
-        body: `Maintenance + cloud + licensing is ${fmtM(lifecycleTotal)} — ${fmt(lifecyclePct,0)}% of programme cost. This is driven by cloud infrastructure (camera AI retraining, connectivity backends). Consider hybrid cloud / on-premise architecture to reduce long-term costs.`,
+        body: `Lifecycle costs total ${fmtM(lifecycleTotal)} (${fmt(lifecyclePct,0)}%). Cloud infrastructure for AI retraining is the main driver. Hybrid cloud/on-premise architecture could reduce by 25–35%.`,
       });
     } else {
       insights.push({ icon: '✅', level: 'ok',
         title: `NRE/lifecycle split is healthy (${fmt(100-lifecyclePct,0)}% NRE)`,
-        body: `Development NRE (${fmtM(nreTotal)}) accounts for ${fmt(100-lifecyclePct,0)}% of total programme cost. This ratio is typical for an OEM insourcing most development.`,
+        body: `Development NRE accounts for ${fmt(100-lifecyclePct,0)}% of total. Typical for an OEM insourcing most development.`,
       });
     }
 
-    // 4. Benchmark positioning
     const nonThis = result.benchmarks.filter(b => !b.vehicle.includes('This Model'));
     const medianBm = [...nonThis].sort((a,b)=>a.totalM-b.totalM)[Math.floor(nonThis.length/2)]?.totalM ?? 0;
     const thisM = s.grandTotal / 1_000_000;
@@ -726,37 +994,34 @@ function renderResults(result: SWProgramResult): void {
       const diffPct = (thisM - medianBm) / medianBm * 100;
       insights.push({ icon: diffPct > 30 ? '🔴' : diffPct > 10 ? '🟡' : '🟢', level: diffPct > 30 ? 'warn' : 'ok',
         title: `Programme cost is ${fmt(Math.abs(diffPct),0)}% ${diffPct >= 0 ? 'above' : 'below'} peer median (${fmtM(medianBm * 1_000_000)})`,
-        body: diffPct > 20 ? `Cost exceeds peer median by ${fmt(diffPct,0)}%. Review ASIL assignments — are all modules justified at current safety levels? Increasing reuse or offshoring ADAS teams could reduce cost materially.`
-              : `Programme cost is within normal range vs peer benchmarks. Monitor cloud costs closely as fleet scales.`,
+        body: diffPct > 20 ? `Cost exceeds peer median. Review ASIL assignments and reuse opportunities. India offshoring could reduce by ${fmt(Math.abs(s.grandTotal - _recomputeTotalForInsight(result)) / 1e6, 0)}% vs current region.`
+              : `Programme cost is within normal range vs peers. Monitor cloud costs as fleet scales.`,
       });
     }
 
-    // 5. No cybersecurity modules warning
     const hasCyberMod = result.modules.some(m => m.category === 'F');
     if (!hasCyberMod) {
       insights.push({ icon: '🔴', level: 'warn',
         title: 'No Cybersecurity (ISO 21434) modules enabled',
-        body: 'UN-ECE R155 regulation mandates Cybersecurity Management System for all connected vehicles from July 2024. Enabling Category F modules is required for regulatory compliance — omitting them underestimates programme cost significantly.',
+        body: 'UN-ECE R155 mandates CSMS for all connected vehicles from July 2024. Category F modules are required for regulatory compliance.',
       });
     }
 
-    // 6. Region opportunity
     if (result.inputs.region === 'UK' || result.inputs.region === 'USA_SV') {
       const indiaTotal = result.sensitivity.find(r => r.parameter.includes('Region'))?.low;
       if (indiaTotal && indiaTotal > 0) {
         const saving = s.grandTotal - indiaTotal;
         insights.push({ icon: '💡', level: 'info',
           title: `Offshoring to India could save ${fmtM(saving)}`,
-          body: `Shifting to an India-based development team (Bangalore / Pune rate) reduces labour cost to ${fmtM(indiaTotal)} — a potential saving of ${fmtM(saving)}. Factor in coordination overhead (+15%), knowledge transfer, and time zone risk before applying full saving.`,
+          body: `India-based team (Bangalore/Pune rate) reduces labour cost to ${fmtM(indiaTotal)} — saving ${fmtM(saving)}. Factor in coordination overhead (+15%), knowledge transfer, and time zone risk.`,
         });
       }
     }
 
-    // 7. Person-months team size
     const avgTeamFTE = s.totalPersonMonths > 0 ? s.totalPersonMonths / (result.inputs.programLifeYears * 12) : 0;
     insights.push({ icon: '👥', level: 'info',
-      title: `Average team size: ${fmt(avgTeamFTE, 0)} FTE across ${result.inputs.programLifeYears}-year programme`,
-      body: `${fmt(s.totalPersonMonths, 0)} total person-months across ${result.modules.length} modules implies an average sustained team of ~${fmt(avgTeamFTE,0)} FTE engineers. Peak headcount during integration phases is typically 1.4–1.7× this average.`,
+      title: `Average team: ${fmt(avgTeamFTE, 0)} FTE across ${result.inputs.programLifeYears}-year programme`,
+      body: `${fmt(s.totalPersonMonths, 0)} total person-months implies ~${fmt(avgTeamFTE,0)} FTE sustained. Peak headcount during integration phases is typically 1.4–1.7× this average.`,
     });
 
     const levelColor: Record<string, string> = { info: '#2563eb', warn: '#d97706', ok: '#059669' };
@@ -785,17 +1050,211 @@ function renderResults(result: SWProgramResult): void {
   }
 }
 
+function _recomputeTotalForInsight(result: SWProgramResult): number {
+  // Quick India recompute for insights without full sensitivity
+  return result.sensitivity.find(r => r.parameter.includes('Region'))?.low ?? result.summary.grandTotal;
+}
+
+// ─── Rec 5: AI Analysis ───────────────────────────────────────────────────────
+
+function generateAIInsights(result: SWProgramResult): void {
+  const contentEl = document.getElementById('sw-ai-content');
+  const btnEl = document.getElementById('sw-ai-btn') as HTMLButtonElement | null;
+  if (!contentEl || !btnEl) return;
+
+  btnEl.disabled = true;
+  btnEl.textContent = '⏳ Generating analysis…';
+  contentEl.style.display = '';
+  contentEl.innerHTML = `<div style="text-align:center;padding:16px;color:var(--sw-text-muted)">🤖 Analysing programme cost data with AI…</div>`;
+
+  const s = result.summary;
+  const top3 = [...result.modules].sort((a,b) => b.grandTotal - a.grandTotal).slice(0,3);
+  const nreTotal = s.totalDevelopment + s.totalTesting + s.totalIntegration + s.totalToolchain + s.totalCybersecurity + s.totalCalibration;
+  const lifecyclePct = s.grandTotal > 0 ? (s.totalMaintenance + s.totalCloud + s.totalLicensing) / s.grandTotal * 100 : 0;
+
+  const prompt = `You are a senior automotive software engineering cost analyst. Provide a concise executive summary and actionable recommendations for this programme:
+
+PROGRAMME: Premium Luxury SUV Full Software Stack (2024-2026)
+Total Programme Cost: ${(s.grandTotal/1e6).toFixed(1)}M GBP
+Per Vehicle: £${Math.round(s.perVehicle)}
+Total Person-Months: ${Math.round(s.totalPersonMonths)} PM (avg ${Math.round(s.totalPersonMonths/(result.inputs.programLifeYears*12))} FTE)
+Region: ${result.inputs.region} | Source: ${result.inputs.devSource} | Life: ${result.inputs.programLifeYears}yr | Volume: ${(result.inputs.annualProductionVolume/1000).toFixed(0)}k/yr
+Active Modules: ${result.modules.length}/43
+
+COST BREAKDOWN:
+- Development: £${(s.totalDevelopment/1e6).toFixed(1)}M (${(s.totalDevelopment/s.grandTotal*100).toFixed(0)}%)
+- Testing & Validation: £${(s.totalTesting/1e6).toFixed(1)}M
+- Calibration: £${(s.totalCalibration/1e6).toFixed(1)}M
+- Toolchain: £${(s.totalToolchain/1e6).toFixed(1)}M
+- Cybersecurity: £${(s.totalCybersecurity/1e6).toFixed(1)}M
+- NRE Total: £${(nreTotal/1e6).toFixed(1)}M
+- Lifecycle (Maint+Cloud+IP): ${lifecyclePct.toFixed(0)}% of total
+
+TOP 3 COST DRIVERS:
+${top3.map((m,i) => `${i+1}. ${m.moduleName}: £${(m.grandTotal/1e6).toFixed(1)}M (${(m.grandTotal/s.grandTotal*100).toFixed(1)}%)`).join('\n')}
+
+Provide:
+1. A 2-sentence executive summary
+2. Top 3 cost reduction opportunities with estimated savings
+3. Key risk factors requiring management attention
+Keep response concise and actionable (under 250 words).`;
+
+  fetch('/api/aichat', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ messages: [{ role: 'user', content: prompt }] }),
+  })
+  .then(r => r.ok ? r.json() : Promise.reject(r.statusText))
+  .then(data => {
+    const text: string = data.content || data.message || data.text || JSON.stringify(data);
+    // Format as HTML (convert newlines, bold **text**)
+    const formatted = text
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\n\n/g, '</p><p style="margin:0 0 8px">')
+      .replace(/\n/g, '<br>');
+    contentEl.innerHTML = `
+      <div style="background:var(--sw-surface-alt);border:1px solid var(--sw-border);border-radius:8px;padding:14px 18px;font-size:0.82rem;color:var(--sw-text-body);line-height:1.6">
+        <p style="margin:0 0 8px">${formatted}</p>
+      </div>
+      <div style="font-size:0.7rem;color:var(--sw-text-muted);margin-top:6px;text-align:right">Generated by AI · CostVision</div>`;
+    btnEl.style.display = 'none';
+  })
+  .catch(err => {
+    contentEl.innerHTML = `<div style="background:#fef2f2;border:1px solid #fca5a5;border-radius:6px;padding:10px 14px;font-size:0.8rem;color:#dc2626">⚠️ AI analysis unavailable: ${String(err)}. Engineering Insights above are still available.</div>`;
+    btnEl.disabled = false;
+    btnEl.textContent = '✨ Retry AI Analysis';
+  });
+}
+
+// ─── Rec 6: Excel Export ──────────────────────────────────────────────────────
+
+function exportSWExcel(result: SWProgramResult): void {
+  const wb = XLSX.utils.book_new();
+  const s  = result.summary;
+  const inp = result.inputs;
+
+  const fM = (n: number) => parseFloat((n/1_000_000).toFixed(3));
+  const f2 = (n: number) => parseFloat(n.toFixed(2));
+
+  // Sheet 1: Summary
+  const summaryData = [
+    ['CostVision — Automotive SW Should-Cost Report'],
+    ['Programme', 'Premium Luxury SUV Full SW Stack 2024–2026'],
+    ['Generated', new Date().toLocaleDateString('en-GB')],
+    [],
+    ['Cost Bucket', 'Value (£M)', 'Share (%)'],
+    ['Development Engineering', fM(s.totalDevelopment), f2(s.totalDevelopment/s.grandTotal*100)],
+    ['Testing & Validation',    fM(s.totalTesting),     f2(s.totalTesting/s.grandTotal*100)],
+    ['Integration & V&V',       fM(s.totalIntegration), f2(s.totalIntegration/s.grandTotal*100)],
+    ['Toolchain (dev tools)',   fM(s.totalToolchain),   f2(s.totalToolchain/s.grandTotal*100)],
+    ['Calibration & Tuning',    fM(s.totalCalibration), f2(s.totalCalibration/s.grandTotal*100)],
+    ['Cybersecurity',           fM(s.totalCybersecurity), f2(s.totalCybersecurity/s.grandTotal*100)],
+    ['Maintenance (lifecycle)', fM(s.totalMaintenance), f2(s.totalMaintenance/s.grandTotal*100)],
+    ['Cloud & Infra (lifecycle)',fM(s.totalCloud),       f2(s.totalCloud/s.grandTotal*100)],
+    ['IP Licensing (lifecycle)', fM(s.totalLicensing),  f2(s.totalLicensing/s.grandTotal*100)],
+    ['TOTAL PROGRAMME COST',    fM(s.grandTotal),        100],
+    [],
+    ['Per Vehicle (SW)', f2(s.perVehicle), '£'],
+    ['Total Person-Months', f2(s.totalPersonMonths), 'PM'],
+    ['Active Modules', result.modules.length, ''],
+  ];
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(summaryData), 'Summary');
+
+  // Sheet 2: Category Breakdown
+  const catData = [
+    ['Category', 'Category Label', 'Modules', 'Total Cost (£M)', 'Share (%)'],
+    ...Object.entries(CAT_META).map(([cat, meta]) => {
+      const t = s.byCategory[cat as keyof typeof s.byCategory] ?? 0;
+      const mods = result.modules.filter(m => m.category === cat);
+      return [cat, meta.label, mods.length, fM(t), f2(t/s.grandTotal*100)];
+    }),
+  ];
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(catData), 'Category Breakdown');
+
+  // Sheet 3: Module Detail
+  const modData = [
+    ['#', 'Module', 'Category', 'ASIL', 'Complexity', 'Reuse', 'Person-Months',
+     'Dev Cost (£M)', 'Test Cost (£M)', 'Calibration (£M)', 'Integration (£M)',
+     'Toolchain (£M)', 'IP Licence (£M)', 'Cybersec (£M)', 'Cloud (£M)', 'Maintenance (£M)',
+     'Grand Total (£M)', '£/Vehicle'],
+    ...[...result.modules].sort((a,b) => b.grandTotal - a.grandTotal).map((m, i) => [
+      i+1, m.moduleName, m.category, m.asilUsed, m.complexityUsed, m.reuseUsed,
+      f2(m.personMonths), fM(m.development.total), fM(m.testing.total),
+      fM(m.calibrationCost), fM(m.integrationCost), fM(m.toolchainCost),
+      fM(m.licensingCost), fM(m.cybersecCost), fM(m.cloudCost), fM(m.maintenanceCost),
+      fM(m.grandTotal), f2(m.perVehicle),
+    ]),
+  ];
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(modData), 'Module Detail');
+
+  // Sheet 4: Sensitivity + Monte Carlo
+  const mc = result.monteCarlo;
+  const sensData: unknown[][] = [
+    ['SENSITIVITY ANALYSIS'],
+    ['Parameter', 'Low Scenario', 'Base Case', 'High Scenario', 'Range'],
+    ...result.sensitivity.map(r => [r.parameter, f2(r.low), f2(r.base), f2(r.high), f2(r.high-r.low)]),
+    [],
+    ['MONTE CARLO DISTRIBUTION', `${mc.iterations} iterations`],
+    ['Percentile', 'Total Cost (£M)', '£/Vehicle'],
+    ['P10 (Optimistic)', fM(mc.p10), f2(mc.p10PerVehicle)],
+    ['P50 (Median)',     fM(mc.p50), f2(mc.p50PerVehicle)],
+    ['P90 (Pessimistic)',fM(mc.p90), f2(mc.p90PerVehicle)],
+    ['Mean',             fM(mc.mean), ''],
+    ['P90-P10 Spread',   fM(mc.p90 - mc.p10), ''],
+    [],
+    ['PROGRAMME PHASES (NRE)'],
+    ['Phase', 'Timeline', 'NRE Share (%)', 'NRE Budget (£M)'],
+    ...result.phases.map(p => [p.name, p.months, f2(p.fraction*100), fM(p.nreCost)]),
+  ];
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(sensData), 'Sensitivity & MC');
+
+  // Sheet 5: Benchmarks
+  const bmData = [
+    ['Vehicle / Programme', 'Total SW Cost (£M)', '£/Vehicle', 'vs This Model (%)', 'Source'],
+    ...result.benchmarks.map(b => {
+      const isThis = b.vehicle.includes('This Model');
+      const thisM = s.grandTotal / 1_000_000;
+      const diff = (!isThis && b.totalM > 0) ? f2((thisM - b.totalM) / b.totalM * 100) : 'Base';
+      return [b.vehicle, b.totalM > 0 ? b.totalM : fM(s.grandTotal), b.perVehicle > 0 ? b.perVehicle : f2(s.perVehicle), diff, b.source];
+    }),
+  ];
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(bmData), 'Benchmarks');
+
+  // Sheet 6: Configuration
+  const cfgData = [
+    ['PROGRAMME CONFIGURATION'],
+    ['Parameter', 'Value'],
+    ['Region', inp.region],
+    ['Dev Source', inp.devSource],
+    ['Programme Life (years)', inp.programLifeYears],
+    ['Annual Production Volume', inp.annualProductionVolume],
+    ['Team Senior Fraction', inp.teamSeniorFraction],
+    ['Overhead Multiplier', inp.overheadMultiplier],
+    ['Include Maintenance', inp.includeMaintenanceCost ? 'Yes' : 'No'],
+    ['Include Cloud', inp.includeCloudCost ? 'Yes' : 'No'],
+    [],
+    ['MODULE CONFIGURATION'],
+    ['Module ID', 'Module Name', 'Enabled', 'ASIL', 'Complexity', 'Reuse', 'Custom PM'],
+    ...inp.modules.map(m => {
+      const def = SW_MODULES.find(d => d.id === m.moduleId);
+      return [m.moduleId, def?.name ?? m.moduleId, m.enabled ? 'Yes' : 'No', m.asil, m.complexity, m.reuse, m.customPersonMonths ?? 'auto'];
+    }),
+  ];
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(cfgData), 'Configuration');
+
+  XLSX.writeFile(wb, 'SW_Should_Cost_CostVision.xlsx');
+}
+
 // ─── PDF Export ───────────────────────────────────────────────────────────────
 
 function exportSWPDF(result: SWProgramResult): void {
-  // Dynamic import to avoid bundling jsPDF unconditionally here
   import('jspdf').then(({ jsPDF }) => {
     import('jspdf-autotable').then(({ default: autoTable }) => {
       const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
       const s = result.summary;
       const W = 210, MG = 14;
+      const nreTotal = s.totalDevelopment + s.totalTesting + s.totalIntegration + s.totalToolchain + s.totalCybersecurity + s.totalCalibration;
 
-      // Cover
       doc.setFillColor(15, 23, 42);
       doc.rect(0, 0, W, 68, 'F');
       doc.setFillColor(37, 99, 235);
@@ -822,8 +1281,6 @@ function exportSWPDF(result: SWProgramResult): void {
       doc.text(`£${fmt(s.perVehicle, 0)} / vehicle`, W - MG, 45, { align: 'right' });
 
       let y = 76;
-
-      // Helper
       const chk = (need: number) => { if (y + need > 270) { doc.addPage(); y = 18; } };
       const th = { fillColor: [15, 23, 42] as [number, number, number], textColor: [255,255,255] as [number,number,number], fontStyle: 'bold' as const, fontSize: 7 };
 
@@ -835,14 +1292,16 @@ function exportSWPDF(result: SWProgramResult): void {
         startY: y,
         head: [['Cost Bucket', 'Value (£M)', 'Share (%)']],
         body: [
-          ['Development Engineering', fmtM(s.totalDevelopment), fmt(s.totalDevelopment/s.grandTotal*100, 1)+'%'],
-          ['Testing & Validation',    fmtM(s.totalTesting),     fmt(s.totalTesting/s.grandTotal*100, 1)+'%'],
-          ['Integration & V&V',       fmtM(s.totalIntegration), fmt(s.totalIntegration/s.grandTotal*100, 1)+'%'],
-          ['Toolchain & Licences',    fmtM(s.totalToolchain),   fmt(s.totalToolchain/s.grandTotal*100, 1)+'%'],
-          ['Cybersecurity',           fmtM(s.totalCybersecurity), fmt(s.totalCybersecurity/s.grandTotal*100, 1)+'%'],
-          ['Maintenance (lifecycle)', fmtM(s.totalMaintenance), fmt(s.totalMaintenance/s.grandTotal*100, 1)+'%'],
-          ['Cloud & Infra (lifecycle)',fmtM(s.totalCloud),       fmt(s.totalCloud/s.grandTotal*100, 1)+'%'],
-          ['IP Licensing',            fmtM(s.totalLicensing),   fmt(s.totalLicensing/s.grandTotal*100, 1)+'%'],
+          ['Development Engineering', fmtM(s.totalDevelopment), fmt(s.totalDevelopment/s.grandTotal*100,1)+'%'],
+          ['Testing & Validation',    fmtM(s.totalTesting),     fmt(s.totalTesting/s.grandTotal*100,1)+'%'],
+          ['Integration & V&V',       fmtM(s.totalIntegration), fmt(s.totalIntegration/s.grandTotal*100,1)+'%'],
+          ['Toolchain (dev tools)',   fmtM(s.totalToolchain),   fmt(s.totalToolchain/s.grandTotal*100,1)+'%'],
+          ['Calibration & Tuning',    fmtM(s.totalCalibration), fmt(s.totalCalibration/s.grandTotal*100,1)+'%'],
+          ['Cybersecurity',           fmtM(s.totalCybersecurity), fmt(s.totalCybersecurity/s.grandTotal*100,1)+'%'],
+          ['Maintenance (lifecycle)', fmtM(s.totalMaintenance), fmt(s.totalMaintenance/s.grandTotal*100,1)+'%'],
+          ['Cloud & Infra',           fmtM(s.totalCloud),       fmt(s.totalCloud/s.grandTotal*100,1)+'%'],
+          ['IP Licensing',            fmtM(s.totalLicensing),   fmt(s.totalLicensing/s.grandTotal*100,1)+'%'],
+          ['NRE Subtotal',            fmtM(nreTotal),           fmt(nreTotal/s.grandTotal*100,1)+'%'],
           ['TOTAL', fmtM(s.grandTotal), '100%'],
         ],
         headStyles: th,
@@ -853,10 +1312,32 @@ function exportSWPDF(result: SWProgramResult): void {
       });
       y = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 8;
 
-      // §2 Category breakdown
+      // §2 Monte Carlo
       chk(8);
       doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(15, 23, 42);
-      doc.text('2. Cost by Software Category', MG, y); y += 6;
+      doc.text('2. Monte Carlo Cost Distribution', MG, y); y += 6;
+      const mc = result.monteCarlo;
+      autoTable(doc, {
+        startY: y,
+        head: [['Percentile', 'Total Cost (£M)', '£/Vehicle']],
+        body: [
+          ['P10 (Optimistic)', fmtM(mc.p10), `£${fmt(mc.p10PerVehicle,0)}`],
+          ['P50 (Median)',     fmtM(mc.p50), `£${fmt(mc.p50PerVehicle,0)}`],
+          ['P90 (Pessimistic)',fmtM(mc.p90), `£${fmt(mc.p90PerVehicle,0)}`],
+          ['Mean',             fmtM(mc.mean), ''],
+        ],
+        headStyles: th,
+        columnStyles: { 0: { cellWidth: 60 }, 1: { cellWidth: 62, halign: 'right' }, 2: { cellWidth: 60, halign: 'right' } },
+        bodyStyles: { fontSize: 7, cellPadding: 2.5 },
+        alternateRowStyles: { fillColor: [248, 250, 252] },
+        margin: { left: MG, right: MG },
+      });
+      y = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 8;
+
+      // §3 Category breakdown
+      chk(8);
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(15, 23, 42);
+      doc.text('3. Cost by Software Category', MG, y); y += 6;
       autoTable(doc, {
         startY: y,
         head: [['Category', 'Modules', 'Grand Total (£M)', 'Share (%)']],
@@ -872,30 +1353,26 @@ function exportSWPDF(result: SWProgramResult): void {
       });
       y = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 8;
 
-      // §3 Module detail
+      // §4 Module detail
       chk(8);
       doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(15, 23, 42);
-      doc.text('3. Module Cost Detail (Top 20 by Cost)', MG, y); y += 6;
+      doc.text('4. Module Cost Detail (Top 20 by Cost)', MG, y); y += 6;
       const topMods = [...result.modules].sort((a,b) => b.grandTotal - a.grandTotal).slice(0, 20);
       autoTable(doc, {
         startY: y,
-        head: [['Module', 'Cat', 'ASIL', 'PM', 'Dev (£M)', 'Test (£M)', 'Total (£M)', '£/Veh']],
+        head: [['Module', 'Cat', 'ASIL', 'PM', 'Dev (£M)', 'Calib (£M)', 'Test (£M)', 'Total (£M)', '£/Veh']],
         body: topMods.map(m => [
-          m.moduleName.length > 28 ? m.moduleName.slice(0, 26)+'…' : m.moduleName,
-          m.category,
-          m.asilUsed,
-          fmt(m.personMonths, 0),
-          fmtM(m.development.total),
-          fmtM(m.testing.total),
-          fmtM(m.grandTotal),
-          `£${fmt(m.perVehicle, 0)}`,
+          m.moduleName.length > 26 ? m.moduleName.slice(0, 24)+'…' : m.moduleName,
+          m.category, m.asilUsed, fmt(m.personMonths, 0),
+          fmtM(m.development.total), fmtM(m.calibrationCost),
+          fmtM(m.testing.total), fmtM(m.grandTotal), `£${fmt(m.perVehicle, 0)}`,
         ]),
         headStyles: th,
         columnStyles: {
-          0: { cellWidth: 64 }, 1: { cellWidth: 10, halign: 'center' }, 2: { cellWidth: 12, halign: 'center' },
-          3: { cellWidth: 14, halign: 'right' }, 4: { cellWidth: 22, halign: 'right' },
-          5: { cellWidth: 22, halign: 'right' }, 6: { cellWidth: 22, halign: 'right' },
-          7: { cellWidth: 16, halign: 'right' },
+          0: { cellWidth: 56 }, 1: { cellWidth: 8, halign: 'center' }, 2: { cellWidth: 10, halign: 'center' },
+          3: { cellWidth: 12, halign: 'right' }, 4: { cellWidth: 18, halign: 'right' },
+          5: { cellWidth: 18, halign: 'right' }, 6: { cellWidth: 18, halign: 'right' },
+          7: { cellWidth: 20, halign: 'right' }, 8: { cellWidth: 22, halign: 'right' },
         },
         bodyStyles: { fontSize: 6.5, cellPadding: 2 },
         alternateRowStyles: { fillColor: [248, 250, 252] },
@@ -903,21 +1380,21 @@ function exportSWPDF(result: SWProgramResult): void {
       });
       y = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 8;
 
-      // §4 Sensitivity
+      // §5 Sensitivity
       chk(8);
       doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(15, 23, 42);
-      doc.text('4. Sensitivity Analysis', MG, y); y += 6;
+      doc.text('5. Sensitivity Analysis', MG, y); y += 6;
       autoTable(doc, {
         startY: y,
-        head: [['Parameter', 'Low Scenario', 'Base Case', 'High Scenario', 'Range']],
+        head: [['Parameter', 'Low', 'Base', 'High', 'Range']],
         body: result.sensitivity.map(r => {
           const f = (n: number) => r.unit === '£M' ? fmtM(n) : `£${fmt(n, 0)}`;
           return [r.parameter, f(r.low), f(r.base), f(r.high), f(r.high - r.low)];
         }),
         headStyles: th,
         columnStyles: {
-          0: { cellWidth: 76 }, 1: { cellWidth: 26, halign: 'right' }, 2: { cellWidth: 26, halign: 'right' },
-          3: { cellWidth: 28, halign: 'right' }, 4: { cellWidth: 26, halign: 'right' },
+          0: { cellWidth: 76 }, 1: { cellWidth: 24, halign: 'right' }, 2: { cellWidth: 24, halign: 'right' },
+          3: { cellWidth: 26, halign: 'right' }, 4: { cellWidth: 32, halign: 'right' },
         },
         bodyStyles: { fontSize: 7, cellPadding: 2.5 },
         alternateRowStyles: { fillColor: [248, 250, 252] },
@@ -925,29 +1402,24 @@ function exportSWPDF(result: SWProgramResult): void {
       });
       y = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 8;
 
-      // §5 Benchmarks
+      // §6 Benchmarks
       chk(8);
       doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(15, 23, 42);
-      doc.text('5. Benchmark Comparison', MG, y); y += 6;
+      doc.text('6. Benchmark Comparison', MG, y); y += 6;
       autoTable(doc, {
         startY: y,
         head: [['Vehicle / Programme', 'Total SW Cost', '£/Vehicle', 'Source']],
         body: result.benchmarks.map(b => [
-          b.vehicle,
-          b.totalM > 0 ? fmtM(b.totalM * 1_000_000) : fmtM(s.grandTotal),
-          `£${b.perVehicle > 0 ? fmt(b.perVehicle, 0) : fmt(s.perVehicle, 0)}`,
-          b.source,
+          b.vehicle, b.totalM > 0 ? fmtM(b.totalM * 1_000_000) : fmtM(s.grandTotal),
+          `£${b.perVehicle > 0 ? fmt(b.perVehicle, 0) : fmt(s.perVehicle, 0)}`, b.source,
         ]),
         headStyles: th,
-        columnStyles: {
-          0: { cellWidth: 58 }, 1: { cellWidth: 30, halign: 'right' }, 2: { cellWidth: 24, halign: 'right' }, 3: { cellWidth: 70 },
-        },
+        columnStyles: { 0: { cellWidth: 56 }, 1: { cellWidth: 30, halign: 'right' }, 2: { cellWidth: 22, halign: 'right' }, 3: { cellWidth: 74 } },
         bodyStyles: { fontSize: 6.5, cellPadding: 2.5 },
         alternateRowStyles: { fillColor: [248, 250, 252] },
         margin: { left: MG, right: MG },
       });
 
-      // Footer on all pages
       const totalPages = (doc as unknown as { internal: { pages: unknown[] } }).internal.pages.length - 1;
       for (let p = 1; p <= totalPages; p++) {
         doc.setPage(p);
@@ -960,7 +1432,59 @@ function exportSWPDF(result: SWProgramResult): void {
   });
 }
 
-// ─── Wire events ──────────────────────────────────────────────────────────────
+// ─── Saved Configs ────────────────────────────────────────────────────────────
+
+function saveConfig(name: string): void {
+  const id = `cfg-${Date.now()}`;
+  const createdAt = new Date().toLocaleDateString('en-GB');
+  _savedConfigs.unshift({ id, name, createdAt, inputs: JSON.parse(JSON.stringify(_swInputs)) });
+  if (_savedConfigs.length > 10) _savedConfigs.pop(); // keep max 10
+  persistSavedConfigs();
+  updateSavedConfigsUI();
+}
+
+function loadConfig(id: string): void {
+  const cfg = _savedConfigs.find(c => c.id === id);
+  if (!cfg) return;
+  _swInputs = JSON.parse(JSON.stringify(cfg.inputs));
+  // Re-render entire panel to reflect loaded inputs
+  const panel = document.getElementById('sw-panel');
+  if (panel?.parentElement) {
+    panel.parentElement.innerHTML = renderSWPanelHTML();
+    wireSWPanel();
+  }
+}
+
+function deleteConfig(id: string): void {
+  _savedConfigs = _savedConfigs.filter(c => c.id !== id);
+  persistSavedConfigs();
+  updateSavedConfigsUI();
+}
+
+function updateSavedConfigsUI(): void {
+  const listEl = document.getElementById('sw-saved-list');
+  if (!listEl) return;
+  if (_savedConfigs.length === 0) {
+    listEl.innerHTML = '<div style="font-size:0.75rem;color:var(--sw-text-muted);font-style:italic">No saved configurations yet.</div>';
+    return;
+  }
+  listEl.innerHTML = _savedConfigs.map(c => `
+    <div class="sw-saved-item" data-id="${esc(c.id)}">
+      <span class="sw-saved-name">${esc(c.name)}</span>
+      <span class="sw-saved-date">${esc(c.createdAt)}</span>
+      <button class="sw-saved-load" data-id="${esc(c.id)}">Load</button>
+      <button class="sw-saved-del" data-id="${esc(c.id)}">✕</button>
+    </div>`).join('');
+  // Re-wire the buttons
+  listEl.querySelectorAll<HTMLButtonElement>('.sw-saved-load').forEach(btn => {
+    btn.addEventListener('click', () => loadConfig(btn.dataset.id!));
+  });
+  listEl.querySelectorAll<HTMLButtonElement>('.sw-saved-del').forEach(btn => {
+    btn.addEventListener('click', () => deleteConfig(btn.dataset.id!));
+  });
+}
+
+// ─── Error display ────────────────────────────────────────────────────────────
 
 function showSWError(msg: string): void {
   let errEl = document.getElementById('sw-calc-error');
@@ -975,6 +1499,8 @@ function showSWError(msg: string): void {
   errEl.style.display = 'flex';
   setTimeout(() => { if (errEl) errEl.style.display = 'none'; }, 6000);
 }
+
+// ─── Wire events ──────────────────────────────────────────────────────────────
 
 export function wireSWPanel(): void {
   // Calculate button
@@ -997,7 +1523,6 @@ export function wireSWPanel(): void {
         try {
           _swResult = computeSWProgram(_swInputs);
           renderResults(_swResult);
-          // Clear any previous error
           const errEl = document.getElementById('sw-calc-error');
           if (errEl) errEl.style.display = 'none';
         } catch (err) {
@@ -1013,14 +1538,13 @@ export function wireSWPanel(): void {
   // Preset buttons
   document.querySelectorAll<HTMLButtonElement>('.sw-preset-btn').forEach(btn => {
     btn.addEventListener('click', () => {
-      // Highlight active preset
       document.querySelectorAll<HTMLButtonElement>('.sw-preset-btn').forEach(b => b.classList.remove('sw-preset-active'));
       btn.classList.add('sw-preset-active');
       applyPreset(btn.dataset.preset ?? '');
     });
   });
 
-  // Select/deselect all — also updates category active counts
+  // Select/deselect all
   document.getElementById('sw-select-all')?.addEventListener('click', () => {
     document.querySelectorAll<HTMLInputElement>('.sw-mod-enable').forEach(cb => { cb.checked = true; });
     updateCatCounts();
@@ -1030,9 +1554,34 @@ export function wireSWPanel(): void {
     updateCatCounts();
   });
 
-  // Module checkboxes — update per-category count on change
+  // Module checkboxes
   document.querySelectorAll<HTMLInputElement>('.sw-mod-enable').forEach(cb => {
     cb.addEventListener('change', updateCatCounts);
+  });
+
+  // Rec 8: ASIL dropdowns — live validation warning
+  document.querySelectorAll<HTMLSelectElement>('.sw-asil-sel').forEach(sel => {
+    sel.addEventListener('change', () => {
+      const id  = sel.dataset.id!;
+      const def = SW_MODULES.find(d => d.id === id);
+      if (!def) return;
+      const warnEl = sel.parentElement?.querySelector('.sw-asil-warn');
+      if (!warnEl) return;
+      const isDown = ASIL_RANK[sel.value as ASILLevel] < ASIL_RANK[def.defaultAsil];
+      (warnEl as HTMLElement).style.display = isDown ? '' : 'none';
+    });
+  });
+
+  // Rec 5: AI analysis button
+  document.getElementById('sw-ai-btn')?.addEventListener('click', () => {
+    if (_swResult) generateAIInsights(_swResult);
+    else showSWError('Run the calculation first before generating AI analysis.');
+  });
+
+  // Rec 6: Excel export
+  document.getElementById('sw-excel-btn')?.addEventListener('click', () => {
+    if (_swResult) exportSWExcel(_swResult);
+    else showSWError('Run the calculation first before exporting.');
   });
 
   // PDF export
@@ -1040,12 +1589,27 @@ export function wireSWPanel(): void {
     if (_swResult) exportSWPDF(_swResult);
     else showSWError('Run the calculation first before exporting the PDF report.');
   });
+
+  // Rec 10: Save config button
+  document.getElementById('sw-save-config-btn')?.addEventListener('click', () => {
+    readConfig();
+    const name = prompt('Enter a name for this configuration:');
+    if (name && name.trim()) {
+      saveConfig(name.trim());
+    }
+  });
+
+  // Rec 10: Load/delete saved config buttons
+  document.querySelectorAll<HTMLButtonElement>('.sw-saved-load').forEach(btn => {
+    btn.addEventListener('click', () => loadConfig(btn.dataset.id!));
+  });
+  document.querySelectorAll<HTMLButtonElement>('.sw-saved-del').forEach(btn => {
+    btn.addEventListener('click', () => deleteConfig(btn.dataset.id!));
+  });
 }
 
 function updateCatCounts(): void {
   document.querySelectorAll<HTMLElement>('.sw-cat-group').forEach(group => {
-    const cat = group.dataset.cat;
-    if (!cat) return;
     const total   = group.querySelectorAll('.sw-mod-enable').length;
     const enabled = group.querySelectorAll<HTMLInputElement>('.sw-mod-enable:checked').length;
     const countEl = group.querySelector('.sw-cat-count');
@@ -1060,7 +1624,7 @@ function updateCatCounts(): void {
  * Call this from switchCommodity('automotive_software').
  */
 export function initSWPanel(containerEl: HTMLElement): void {
-  // Reset inputs to defaults on every entry so the form is clean
+  loadSavedConfigs();
   _swInputs = defaultSWProgramInputs();
   _swResult = null;
   containerEl.innerHTML = renderSWPanelHTML();

@@ -35,8 +35,10 @@ export interface SWModuleDef {
   testingFractionBase:       number;   // testing cost ÷ dev cost at QM baseline
   integrationFractionBase:   number;   // integration cost ÷ dev cost
   maintenancePctPerYear:     number;   // % of dev cost per year (lifecycle)
-  annualToolLicenceGBP:      number;   // toolchain & IP licences, per year per program
+  annualToolLicenceGBP:      number;   // development toolchain only (Vector, MATLAB, LDRA, etc.) per year
+  annualIPLicenceGBP:        number;   // embedded IP/SW licences (RTOS royalty, map data, ASR engine, etc.) per year
   annualCloudCostGBP:        number;   // cloud infra, per year operational
+  calibrationFractionBase:   number;   // physical/model calibration effort ÷ dev cost
   notes:                     string;
 }
 
@@ -97,8 +99,9 @@ export interface SWModuleCostResult {
   cybersecCost:       number;
   maintenanceCost:    number;
   toolchainCost:      number;
-  totalNonRecurring:  number;  // NRE (development + testing + integration + tool + cyber)
-  totalLifecycle:     number;  // maintenance + cloud over program life
+  calibrationCost:    number;
+  totalNonRecurring:  number;  // NRE (dev + test + integration + tool + cyber + calibration)
+  totalLifecycle:     number;  // maintenance + cloud + IP licensing over program life
   grandTotal:         number;
   perVehicle:         number;
 }
@@ -112,6 +115,7 @@ export interface SWSummary {
   totalCybersecurity: number;
   totalMaintenance:   number;
   totalToolchain:     number;
+  totalCalibration:   number;
   grandTotal:         number;
   totalPersonMonths:  number;
   perVehicle:         number;
@@ -126,6 +130,24 @@ export interface SWSensitivityRow {
   unit:        string;
 }
 
+export interface SWPhase {
+  name:       string;
+  months:     string;
+  fraction:   number;   // of NRE total
+  nreCost:    number;   // £ from NRE budget
+}
+
+export interface SWMonteCarlo {
+  p10:            number;   // £ total programme cost
+  p50:            number;
+  p90:            number;
+  mean:           number;
+  p10PerVehicle:  number;
+  p50PerVehicle:  number;
+  p90PerVehicle:  number;
+  iterations:     number;
+}
+
 export interface SWBenchmark {
   vehicle:     string;
   totalM:      number;   // £M
@@ -138,6 +160,8 @@ export interface SWProgramResult {
   summary:     SWSummary;
   sensitivity: SWSensitivityRow[];
   benchmarks:  SWBenchmark[];
+  phases:      SWPhase[];
+  monteCarlo:  SWMonteCarlo;
   inputs:      SWProgramInputs;
 }
 
@@ -196,7 +220,8 @@ export const SW_MODULES: SWModuleDef[] = [
     defaultAsil: 'D', defaultComplexity: 'Very High', basePersonMonths: 90,
     hasMLContent: false, hasCloudDependency: false, hasCybersecRequirement: true,
     testingFractionBase: 0.40, integrationFractionBase: 0.18, maintenancePctPerYear: 12,
-    annualToolLicenceGBP: 85_000, annualCloudCostGBP: 0,
+    annualToolLicenceGBP: 52_000, annualIPLicenceGBP: 18_000, annualCloudCostGBP: 0,
+    calibrationFractionBase: 0.08,
     notes: 'ASIL-D per ISO 26262. Vector DaVinci, MATLAB/Simulink TargetLink. Safety-critical gateway. 2–3 yr development cycle.',
   },
   {
@@ -206,7 +231,8 @@ export const SW_MODULES: SWModuleDef[] = [
     defaultAsil: 'C', defaultComplexity: 'High', basePersonMonths: 20,
     hasMLContent: false, hasCloudDependency: false, hasCybersecRequirement: false,
     testingFractionBase: 0.38, integrationFractionBase: 0.12, maintenancePctPerYear: 10,
-    annualToolLicenceGBP: 22_000, annualCloudCostGBP: 0,
+    annualToolLicenceGBP: 13_000, annualIPLicenceGBP: 6_000, annualCloudCostGBP: 0,
+    calibrationFractionBase: 0.10,
     notes: 'ASIL-C. Tightly coupled to cell chemistry model. Requires HIL bench with actual cells.',
   },
   {
@@ -216,7 +242,8 @@ export const SW_MODULES: SWModuleDef[] = [
     defaultAsil: 'C', defaultComplexity: 'Very High', basePersonMonths: 42,
     hasMLContent: true, hasCloudDependency: true, hasCybersecRequirement: false,
     testingFractionBase: 0.42, integrationFractionBase: 0.14, maintenancePctPerYear: 14,
-    annualToolLicenceGBP: 45_000, annualCloudCostGBP: 120_000,
+    annualToolLicenceGBP: 27_000, annualIPLicenceGBP: 22_000, annualCloudCostGBP: 120_000,
+    calibrationFractionBase: 0.12,
     notes: 'Proprietary ML models. Cloud training infrastructure. Critical for range display accuracy. Ongoing cloud retraining.',
   },
   {
@@ -226,7 +253,8 @@ export const SW_MODULES: SWModuleDef[] = [
     defaultAsil: 'B', defaultComplexity: 'High', basePersonMonths: 30,
     hasMLContent: false, hasCloudDependency: false, hasCybersecRequirement: false,
     testingFractionBase: 0.35, integrationFractionBase: 0.15, maintenancePctPerYear: 10,
-    annualToolLicenceGBP: 30_000, annualCloudCostGBP: 0,
+    annualToolLicenceGBP: 18_000, annualIPLicenceGBP: 6_000, annualCloudCostGBP: 0,
+    calibrationFractionBase: 0.10,
     notes: 'ASIL-B. Coupled to HVAC system. Climate chamber HIL essential.',
   },
   {
@@ -236,7 +264,8 @@ export const SW_MODULES: SWModuleDef[] = [
     defaultAsil: 'C', defaultComplexity: 'High', basePersonMonths: 25,
     hasMLContent: false, hasCloudDependency: true, hasCybersecRequirement: true,
     testingFractionBase: 0.38, integrationFractionBase: 0.14, maintenancePctPerYear: 12,
-    annualToolLicenceGBP: 18_000, annualCloudCostGBP: 30_000,
+    annualToolLicenceGBP: 11_000, annualIPLicenceGBP: 14_000, annualCloudCostGBP: 30_000,
+    calibrationFractionBase: 0.08,
     notes: 'ASIL-C. ISO 15118 protocol licensing. OCPP backend integration. Charging network API security.',
   },
   {
@@ -246,7 +275,8 @@ export const SW_MODULES: SWModuleDef[] = [
     defaultAsil: 'D', defaultComplexity: 'Very High', basePersonMonths: 65,
     hasMLContent: false, hasCloudDependency: false, hasCybersecRequirement: true,
     testingFractionBase: 0.42, integrationFractionBase: 0.20, maintenancePctPerYear: 12,
-    annualToolLicenceGBP: 95_000, annualCloudCostGBP: 0,
+    annualToolLicenceGBP: 57_000, annualIPLicenceGBP: 22_000, annualCloudCostGBP: 0,
+    calibrationFractionBase: 0.12,
     notes: 'ASIL-D. Tightly coupled to VCU. Real-time control at <250µs cycle. TargetLink/ASCET required.',
   },
   {
@@ -256,7 +286,8 @@ export const SW_MODULES: SWModuleDef[] = [
     defaultAsil: 'D', defaultComplexity: 'Very High', basePersonMonths: 45,
     hasMLContent: false, hasCloudDependency: false, hasCybersecRequirement: false,
     testingFractionBase: 0.42, integrationFractionBase: 0.18, maintenancePctPerYear: 10,
-    annualToolLicenceGBP: 75_000, annualCloudCostGBP: 0,
+    annualToolLicenceGBP: 45_000, annualIPLicenceGBP: 14_000, annualCloudCostGBP: 0,
+    calibrationFractionBase: 0.10,
     notes: 'ASIL-D. FPGA-accelerated control loop. Simulation-first (PLECS/MATLAB Power Systems).',
   },
   {
@@ -266,7 +297,8 @@ export const SW_MODULES: SWModuleDef[] = [
     defaultAsil: 'D', defaultComplexity: 'Very High', basePersonMonths: 42,
     hasMLContent: false, hasCloudDependency: false, hasCybersecRequirement: false,
     testingFractionBase: 0.42, integrationFractionBase: 0.18, maintenancePctPerYear: 10,
-    annualToolLicenceGBP: 70_000, annualCloudCostGBP: 0,
+    annualToolLicenceGBP: 42_000, annualIPLicenceGBP: 12_000, annualCloudCostGBP: 0,
+    calibrationFractionBase: 0.12,
     notes: 'ASIL-D. Motor characterisation dyno testing mandatory. Coupled to inverter firmware.',
   },
   {
@@ -276,7 +308,8 @@ export const SW_MODULES: SWModuleDef[] = [
     defaultAsil: 'C', defaultComplexity: 'High', basePersonMonths: 20,
     hasMLContent: false, hasCloudDependency: false, hasCybersecRequirement: false,
     testingFractionBase: 0.38, integrationFractionBase: 0.16, maintenancePctPerYear: 10,
-    annualToolLicenceGBP: 25_000, annualCloudCostGBP: 0,
+    annualToolLicenceGBP: 15_000, annualIPLicenceGBP: 6_000, annualCloudCostGBP: 0,
+    calibrationFractionBase: 0.10,
     notes: 'ASIL-C. Brake blending complexity is high. Requires cold-weather/low-mu testing.',
   },
 
@@ -288,8 +321,9 @@ export const SW_MODULES: SWModuleDef[] = [
     defaultAsil: 'B', defaultComplexity: 'Very High', basePersonMonths: 130,
     hasMLContent: true, hasCloudDependency: true, hasCybersecRequirement: true,
     testingFractionBase: 0.50, integrationFractionBase: 0.20, maintenancePctPerYear: 16,
-    annualToolLicenceGBP: 180_000, annualCloudCostGBP: 850_000,
-    notes: 'Largest ADAS component. DNN training on GPU clusters. ASIL-B decomposition. NCAP/Euro NCAP scenario coverage critical. Ongoing cloud retraining.',
+    annualToolLicenceGBP: 108_000, annualIPLicenceGBP: 160_000, annualCloudCostGBP: 850_000,
+    calibrationFractionBase: 0.06,
+    notes: 'Largest ADAS component. DNN training on GPU clusters. ASIL-B decomposition. NCAP scenario coverage critical.',
   },
   {
     id: 'radar_processing', name: 'Radar Processing Stack', shortName: 'Radar Proc.',
@@ -298,8 +332,9 @@ export const SW_MODULES: SWModuleDef[] = [
     defaultAsil: 'B', defaultComplexity: 'Very High', basePersonMonths: 60,
     hasMLContent: true, hasCloudDependency: false, hasCybersecRequirement: false,
     testingFractionBase: 0.45, integrationFractionBase: 0.16, maintenancePctPerYear: 12,
-    annualToolLicenceGBP: 90_000, annualCloudCostGBP: 80_000,
-    notes: 'ASIL-B. Requires anechoic chamber + track testing. Multi-target tracking Kalman filter. Cross-range resolution improvement critical.',
+    annualToolLicenceGBP: 54_000, annualIPLicenceGBP: 40_000, annualCloudCostGBP: 80_000,
+    calibrationFractionBase: 0.08,
+    notes: 'ASIL-B. Requires anechoic chamber + track testing. Multi-target tracking Kalman filter.',
   },
   {
     id: 'ultrasonic', name: 'Ultrasonic Processing Software', shortName: 'Ultrasonic',
@@ -308,7 +343,8 @@ export const SW_MODULES: SWModuleDef[] = [
     defaultAsil: 'B', defaultComplexity: 'Medium', basePersonMonths: 15,
     hasMLContent: false, hasCloudDependency: false, hasCybersecRequirement: false,
     testingFractionBase: 0.35, integrationFractionBase: 0.12, maintenancePctPerYear: 8,
-    annualToolLicenceGBP: 12_000, annualCloudCostGBP: 0,
+    annualToolLicenceGBP: 7_000, annualIPLicenceGBP: 8_000, annualCloudCostGBP: 0,
+    calibrationFractionBase: 0.06,
     notes: 'ASIL-B for AEB trigger path. Relatively mature technology — significant IP available.',
   },
   {
@@ -318,8 +354,9 @@ export const SW_MODULES: SWModuleDef[] = [
     defaultAsil: 'C', defaultComplexity: 'Very High', basePersonMonths: 95,
     hasMLContent: true, hasCloudDependency: true, hasCybersecRequirement: false,
     testingFractionBase: 0.50, integrationFractionBase: 0.22, maintenancePctPerYear: 16,
-    annualToolLicenceGBP: 120_000, annualCloudCostGBP: 200_000,
-    notes: 'ASIL-C. The architectural heart of ADAS. Extended Kalman Filter + deep learning hybrid. Cross-sensor timing alignment critical.',
+    annualToolLicenceGBP: 72_000, annualIPLicenceGBP: 55_000, annualCloudCostGBP: 200_000,
+    calibrationFractionBase: 0.08,
+    notes: 'ASIL-C. The architectural heart of ADAS. EKF + deep learning hybrid.',
   },
   {
     id: 'path_planning', name: 'Path Planning Algorithms', shortName: 'Path Planning',
@@ -328,8 +365,9 @@ export const SW_MODULES: SWModuleDef[] = [
     defaultAsil: 'C', defaultComplexity: 'Very High', basePersonMonths: 80,
     hasMLContent: true, hasCloudDependency: true, hasCybersecRequirement: false,
     testingFractionBase: 0.50, integrationFractionBase: 0.20, maintenancePctPerYear: 16,
-    annualToolLicenceGBP: 95_000, annualCloudCostGBP: 150_000,
-    notes: 'ASIL-C. Novel research area — simulation-first (CARLA/LGSVL). Scenario coverage requires >500M virtual km.',
+    annualToolLicenceGBP: 57_000, annualIPLicenceGBP: 50_000, annualCloudCostGBP: 150_000,
+    calibrationFractionBase: 0.06,
+    notes: 'ASIL-C. Novel research area — simulation-first (CARLA/LGSVL). Scenario coverage >500M virtual km.',
   },
   {
     id: 'control_algos', name: 'Control Algorithms (ACC / LKA / AEB)', shortName: 'ACC/LKA/AEB',
@@ -338,8 +376,9 @@ export const SW_MODULES: SWModuleDef[] = [
     defaultAsil: 'D', defaultComplexity: 'High', basePersonMonths: 65,
     hasMLContent: false, hasCloudDependency: false, hasCybersecRequirement: false,
     testingFractionBase: 0.48, integrationFractionBase: 0.18, maintenancePctPerYear: 14,
-    annualToolLicenceGBP: 80_000, annualCloudCostGBP: 0,
-    notes: 'AEB is ASIL-D (brake actuation). LKA/ACC typically ASIL-C. Regulation: UN-ECE R152/R151/R130. MIL→SIL→HIL→vehicle mandatory.',
+    annualToolLicenceGBP: 48_000, annualIPLicenceGBP: 22_000, annualCloudCostGBP: 0,
+    calibrationFractionBase: 0.14,
+    notes: 'AEB is ASIL-D (brake actuation). LKA/ACC ASIL-C. Regulation: UN-ECE R152/R151/R130.',
   },
   {
     id: 'driver_monitor', name: 'Driver Monitoring Software (DMS)', shortName: 'Driver Monitor',
@@ -348,8 +387,9 @@ export const SW_MODULES: SWModuleDef[] = [
     defaultAsil: 'B', defaultComplexity: 'Very High', basePersonMonths: 55,
     hasMLContent: true, hasCloudDependency: true, hasCybersecRequirement: true,
     testingFractionBase: 0.45, integrationFractionBase: 0.16, maintenancePctPerYear: 14,
-    annualToolLicenceGBP: 85_000, annualCloudCostGBP: 180_000,
-    notes: 'ASIL-B (alert pathway). GDPR/biometric data handling critical. Regulatory mandate (UN-ECE R79 amendment). Cloud retraining on diverse demographics.',
+    annualToolLicenceGBP: 51_000, annualIPLicenceGBP: 90_000, annualCloudCostGBP: 180_000,
+    calibrationFractionBase: 0.06,
+    notes: 'ASIL-B (alert pathway). GDPR/biometric data handling critical. SmartEye/Seeing Machines IP.',
   },
   {
     id: 'highway_assist', name: 'Highway Assist / Traffic Jam Assist', shortName: 'Highway Assist',
@@ -358,8 +398,9 @@ export const SW_MODULES: SWModuleDef[] = [
     defaultAsil: 'C', defaultComplexity: 'Very High', basePersonMonths: 75,
     hasMLContent: true, hasCloudDependency: true, hasCybersecRequirement: false,
     testingFractionBase: 0.50, integrationFractionBase: 0.22, maintenancePctPerYear: 16,
-    annualToolLicenceGBP: 100_000, annualCloudCostGBP: 220_000,
-    notes: 'ASIL-C. Integrates all ADAS features into L2+ use case. OTA updates critical for consumer perception. Euro NCAP 2026 mandatory.',
+    annualToolLicenceGBP: 60_000, annualIPLicenceGBP: 65_000, annualCloudCostGBP: 220_000,
+    calibrationFractionBase: 0.10,
+    notes: 'ASIL-C. Integrates all ADAS features into L2+ use case. Euro NCAP 2026 mandatory.',
   },
 
   // ── CATEGORY C: Infotainment, Connectivity & UX ──────────────────────────
@@ -370,8 +411,9 @@ export const SW_MODULES: SWModuleDef[] = [
     defaultAsil: 'QM', defaultComplexity: 'Very High', basePersonMonths: 160,
     hasMLContent: false, hasCloudDependency: true, hasCybersecRequirement: true,
     testingFractionBase: 0.35, integrationFractionBase: 0.22, maintenancePctPerYear: 18,
-    annualToolLicenceGBP: 280_000, annualCloudCostGBP: 120_000,
-    notes: 'Google AAOS licence fee (~$25/vehicle) or QNX royalty. Largest team. Continuous OS updates mandatory (security). Boot < 4s target.',
+    annualToolLicenceGBP: 168_000, annualIPLicenceGBP: 220_000, annualCloudCostGBP: 120_000,
+    calibrationFractionBase: 0.02,
+    notes: 'Google AAOS licence fee (~$25/vehicle) or QNX royalty. Boot < 4s target.',
   },
   {
     id: 'navigation', name: 'Navigation Stack', shortName: 'Navigation',
@@ -380,8 +422,9 @@ export const SW_MODULES: SWModuleDef[] = [
     defaultAsil: 'QM', defaultComplexity: 'High', basePersonMonths: 42,
     hasMLContent: false, hasCloudDependency: true, hasCybersecRequirement: false,
     testingFractionBase: 0.30, integrationFractionBase: 0.14, maintenancePctPerYear: 12,
-    annualToolLicenceGBP: 55_000, annualCloudCostGBP: 380_000,
-    notes: 'Map data licence: HERE ~£8-15/vehicle/yr OR TomTom similar. Real-time traffic API cloud cost significant at scale.',
+    annualToolLicenceGBP: 33_000, annualIPLicenceGBP: 200_000, annualCloudCostGBP: 380_000,
+    calibrationFractionBase: 0.02,
+    notes: 'Map data licence: HERE ~£8-15/vehicle/yr OR TomTom similar. Real-time traffic API cloud cost significant.',
   },
   {
     id: 'voice_assistant', name: 'Vehicle Voice Assistant', shortName: 'Voice Assistant',
@@ -390,8 +433,9 @@ export const SW_MODULES: SWModuleDef[] = [
     defaultAsil: 'QM', defaultComplexity: 'Very High', basePersonMonths: 65,
     hasMLContent: true, hasCloudDependency: true, hasCybersecRequirement: true,
     testingFractionBase: 0.35, integrationFractionBase: 0.18, maintenancePctPerYear: 16,
-    annualToolLicenceGBP: 95_000, annualCloudCostGBP: 450_000,
-    notes: 'On-device ASR engines (Cerence, SoundHound) licence ~£15/vehicle. Cloud NLU significant. Multi-language adds 40% cost.',
+    annualToolLicenceGBP: 57_000, annualIPLicenceGBP: 220_000, annualCloudCostGBP: 450_000,
+    calibrationFractionBase: 0.04,
+    notes: 'On-device ASR engines (Cerence, SoundHound) licence ~£15/vehicle. Cloud NLU significant.',
   },
   {
     id: 'tcu_software', name: 'Telematics Control Unit (TCU) Software', shortName: 'TCU Software',
@@ -400,8 +444,9 @@ export const SW_MODULES: SWModuleDef[] = [
     defaultAsil: 'B', defaultComplexity: 'High', basePersonMonths: 30,
     hasMLContent: false, hasCloudDependency: true, hasCybersecRequirement: true,
     testingFractionBase: 0.38, integrationFractionBase: 0.15, maintenancePctPerYear: 12,
-    annualToolLicenceGBP: 35_000, annualCloudCostGBP: 90_000,
-    notes: 'eCall path ASIL-B per EU regulation. 3GPP modem certification adds cost. Cloud backend for remote commands mandatory.',
+    annualToolLicenceGBP: 21_000, annualIPLicenceGBP: 18_000, annualCloudCostGBP: 90_000,
+    calibrationFractionBase: 0.04,
+    notes: 'eCall path ASIL-B per EU regulation. 3GPP modem certification adds cost.',
   },
   {
     id: 'connectivity_stack', name: 'Bluetooth / WiFi / 5G Connectivity Stack', shortName: 'Connectivity',
@@ -410,8 +455,9 @@ export const SW_MODULES: SWModuleDef[] = [
     defaultAsil: 'QM', defaultComplexity: 'High', basePersonMonths: 30,
     hasMLContent: false, hasCloudDependency: false, hasCybersecRequirement: true,
     testingFractionBase: 0.30, integrationFractionBase: 0.12, maintenancePctPerYear: 10,
-    annualToolLicenceGBP: 40_000, annualCloudCostGBP: 20_000,
-    notes: 'Qualcomm/NXP modem IP licensing. PTCRB/GCF certification. BT SIG licence fees. Regulatory testing (FCC/CE) significant.',
+    annualToolLicenceGBP: 24_000, annualIPLicenceGBP: 35_000, annualCloudCostGBP: 20_000,
+    calibrationFractionBase: 0.03,
+    notes: 'Qualcomm/NXP modem IP licensing. PTCRB/GCF certification. BT SIG licence fees.',
   },
   {
     id: 'hmi_framework', name: 'App Framework & HMI Layer', shortName: 'HMI Framework',
@@ -420,8 +466,9 @@ export const SW_MODULES: SWModuleDef[] = [
     defaultAsil: 'QM', defaultComplexity: 'Very High', basePersonMonths: 85,
     hasMLContent: false, hasCloudDependency: false, hasCybersecRequirement: false,
     testingFractionBase: 0.30, integrationFractionBase: 0.15, maintenancePctPerYear: 14,
-    annualToolLicenceGBP: 65_000, annualCloudCostGBP: 0,
-    notes: 'Qt licence ~£180k/yr for automotive. UI/UX design iteration is costly. 60fps rendering on large displays. Dark mode, accessibility compliance.',
+    annualToolLicenceGBP: 39_000, annualIPLicenceGBP: 90_000, annualCloudCostGBP: 0,
+    calibrationFractionBase: 0.02,
+    notes: 'Qt licence ~£90k/yr for automotive. 60fps rendering on large displays.',
   },
 
   // ── CATEGORY D: Vehicle Domain Controllers ────────────────────────────────
@@ -432,8 +479,9 @@ export const SW_MODULES: SWModuleDef[] = [
     defaultAsil: 'B', defaultComplexity: 'Medium', basePersonMonths: 45,
     hasMLContent: false, hasCloudDependency: false, hasCybersecRequirement: false,
     testingFractionBase: 0.32, integrationFractionBase: 0.14, maintenancePctPerYear: 8,
-    annualToolLicenceGBP: 28_000, annualCloudCostGBP: 0,
-    notes: 'Partially ASIL-B (exterior lighting). High breadth of features. AUTOSAR Classic. HIL test bench for all actuators.',
+    annualToolLicenceGBP: 17_000, annualIPLicenceGBP: 10_000, annualCloudCostGBP: 0,
+    calibrationFractionBase: 0.06,
+    notes: 'Partially ASIL-B (exterior lighting). High breadth of features. AUTOSAR Classic.',
   },
   {
     id: 'chassis_control', name: 'Chassis Control Software', shortName: 'Chassis Control',
@@ -442,8 +490,9 @@ export const SW_MODULES: SWModuleDef[] = [
     defaultAsil: 'C', defaultComplexity: 'High', basePersonMonths: 60,
     hasMLContent: false, hasCloudDependency: false, hasCybersecRequirement: false,
     testingFractionBase: 0.40, integrationFractionBase: 0.18, maintenancePctPerYear: 10,
-    annualToolLicenceGBP: 55_000, annualCloudCostGBP: 0,
-    notes: 'ASIL-C (active suspension failure modes). 4WS requires ASIL-D for full-authority steering. Extensive proving ground calibration.',
+    annualToolLicenceGBP: 33_000, annualIPLicenceGBP: 18_000, annualCloudCostGBP: 0,
+    calibrationFractionBase: 0.14,
+    notes: 'ASIL-C (active suspension failure modes). Extensive proving ground calibration.',
   },
   {
     id: 'gateway_ecu', name: 'Gateway ECU Software', shortName: 'Gateway ECU',
@@ -452,7 +501,8 @@ export const SW_MODULES: SWModuleDef[] = [
     defaultAsil: 'B', defaultComplexity: 'High', basePersonMonths: 28,
     hasMLContent: false, hasCloudDependency: false, hasCybersecRequirement: true,
     testingFractionBase: 0.35, integrationFractionBase: 0.16, maintenancePctPerYear: 10,
-    annualToolLicenceGBP: 35_000, annualCloudCostGBP: 0,
+    annualToolLicenceGBP: 21_000, annualIPLicenceGBP: 12_000, annualCloudCostGBP: 0,
+    calibrationFractionBase: 0.04,
     notes: 'ASIL-B. Security gateway per UN-ECE R155. Vector CANdb++ and autosar tool suite required.',
   },
   {
@@ -462,8 +512,9 @@ export const SW_MODULES: SWModuleDef[] = [
     defaultAsil: 'B', defaultComplexity: 'Very High', basePersonMonths: 65,
     hasMLContent: false, hasCloudDependency: false, hasCybersecRequirement: true,
     testingFractionBase: 0.38, integrationFractionBase: 0.20, maintenancePctPerYear: 12,
-    annualToolLicenceGBP: 75_000, annualCloudCostGBP: 0,
-    notes: 'Cutting-edge architecture (BMW NCA, Mercedes MBOSx). AUTOSAR Adaptive. Consolidates 70+ ECUs to ~5 zone controllers.',
+    annualToolLicenceGBP: 45_000, annualIPLicenceGBP: 22_000, annualCloudCostGBP: 0,
+    calibrationFractionBase: 0.05,
+    notes: 'Cutting-edge architecture (BMW NCA, Mercedes MBOSx). AUTOSAR Adaptive.',
   },
   {
     id: 'vehicle_motion', name: 'Vehicle Motion Management (VMM)', shortName: 'VMM',
@@ -472,8 +523,9 @@ export const SW_MODULES: SWModuleDef[] = [
     defaultAsil: 'C', defaultComplexity: 'Very High', basePersonMonths: 80,
     hasMLContent: false, hasCloudDependency: false, hasCybersecRequirement: false,
     testingFractionBase: 0.45, integrationFractionBase: 0.22, maintenancePctPerYear: 12,
-    annualToolLicenceGBP: 90_000, annualCloudCostGBP: 0,
-    notes: 'ASIL-C. The "software chassis". MBD mandatory. Extensive proving ground programme. CarSim/VI-CRT simulation toolchain.',
+    annualToolLicenceGBP: 54_000, annualIPLicenceGBP: 28_000, annualCloudCostGBP: 0,
+    calibrationFractionBase: 0.16,
+    notes: 'ASIL-C. The "software chassis". MBD mandatory. Pacejka/MF-Tyre model IP.',
   },
 
   // ── CATEGORY E: Middleware & Platform ────────────────────────────────────
@@ -484,8 +536,9 @@ export const SW_MODULES: SWModuleDef[] = [
     defaultAsil: 'C', defaultComplexity: 'High', basePersonMonths: 45,
     hasMLContent: false, hasCloudDependency: false, hasCybersecRequirement: false,
     testingFractionBase: 0.35, integrationFractionBase: 0.20, maintenancePctPerYear: 8,
-    annualToolLicenceGBP: 220_000, annualCloudCostGBP: 0,
-    notes: 'Vector DaVinci + EB tresos licences ~£200-300k/yr. Mainly integration work. High toolchain cost dominates.',
+    annualToolLicenceGBP: 132_000, annualIPLicenceGBP: 130_000, annualCloudCostGBP: 0,
+    calibrationFractionBase: 0.04,
+    notes: 'Vector DaVinci + EB tresos stack royalty. Mainly integration work. High toolchain cost dominates.',
   },
   {
     id: 'autosar_adaptive', name: 'AUTOSAR Adaptive Platform', shortName: 'AUTOSAR Adaptive',
@@ -494,8 +547,9 @@ export const SW_MODULES: SWModuleDef[] = [
     defaultAsil: 'B', defaultComplexity: 'High', basePersonMonths: 60,
     hasMLContent: false, hasCloudDependency: true, hasCybersecRequirement: true,
     testingFractionBase: 0.38, integrationFractionBase: 0.22, maintenancePctPerYear: 12,
-    annualToolLicenceGBP: 180_000, annualCloudCostGBP: 30_000,
-    notes: 'Vector MICROSAR Adaptive or EB corbos. Growing importance with zonal E/E. Security hardening of POSIX/Linux base required.',
+    annualToolLicenceGBP: 108_000, annualIPLicenceGBP: 110_000, annualCloudCostGBP: 30_000,
+    calibrationFractionBase: 0.04,
+    notes: 'Vector MICROSAR Adaptive or EB corbos. Growing importance with zonal E/E.',
   },
   {
     id: 'rtos', name: 'RTOS & OS Porting', shortName: 'RTOS',
@@ -504,7 +558,8 @@ export const SW_MODULES: SWModuleDef[] = [
     defaultAsil: 'C', defaultComplexity: 'Medium', basePersonMonths: 12,
     hasMLContent: false, hasCloudDependency: false, hasCybersecRequirement: false,
     testingFractionBase: 0.35, integrationFractionBase: 0.14, maintenancePctPerYear: 6,
-    annualToolLicenceGBP: 45_000, annualCloudCostGBP: 0,
+    annualToolLicenceGBP: 27_000, annualIPLicenceGBP: 35_000, annualCloudCostGBP: 0,
+    calibrationFractionBase: 0.03,
     notes: 'Mostly licensed (ETAS, QNX, Green Hills). Internal effort mainly BSP porting and configuration.',
   },
   {
@@ -514,8 +569,9 @@ export const SW_MODULES: SWModuleDef[] = [
     defaultAsil: 'A', defaultComplexity: 'Medium', basePersonMonths: 25,
     hasMLContent: false, hasCloudDependency: true, hasCybersecRequirement: false,
     testingFractionBase: 0.30, integrationFractionBase: 0.14, maintenancePctPerYear: 8,
-    annualToolLicenceGBP: 30_000, annualCloudCostGBP: 25_000,
-    notes: 'ISO 14229 mandatory. CANoe (Vector) for all diagnostic testing. ODX/PDXF toolchain. Cloud DTC telemetry growing.',
+    annualToolLicenceGBP: 18_000, annualIPLicenceGBP: 16_000, annualCloudCostGBP: 25_000,
+    calibrationFractionBase: 0.05,
+    notes: 'ISO 14229 mandatory. CANoe (Vector) for all diagnostic testing. ODX/PDXF toolchain.',
   },
   {
     id: 'comm_stacks', name: 'CAN / LIN / FlexRay / Ethernet Communication Stacks', shortName: 'Comm. Stacks',
@@ -524,8 +580,9 @@ export const SW_MODULES: SWModuleDef[] = [
     defaultAsil: 'B', defaultComplexity: 'Medium', basePersonMonths: 20,
     hasMLContent: false, hasCloudDependency: false, hasCybersecRequirement: false,
     testingFractionBase: 0.30, integrationFractionBase: 0.14, maintenancePctPerYear: 8,
-    annualToolLicenceGBP: 50_000, annualCloudCostGBP: 0,
-    notes: 'Mainly AUTOSAR configuration (Vector DaVinci NetworkDesigner). CANdb++ management. SOME/IP middleware growing.',
+    annualToolLicenceGBP: 30_000, annualIPLicenceGBP: 22_000, annualCloudCostGBP: 0,
+    calibrationFractionBase: 0.03,
+    notes: 'Mainly AUTOSAR configuration (Vector DaVinci NetworkDesigner). SOME/IP middleware growing.',
   },
   {
     id: 'time_sync', name: 'Time Synchronisation & Network Management', shortName: 'Time Sync / NM',
@@ -534,8 +591,9 @@ export const SW_MODULES: SWModuleDef[] = [
     defaultAsil: 'A', defaultComplexity: 'Low', basePersonMonths: 14,
     hasMLContent: false, hasCloudDependency: false, hasCybersecRequirement: false,
     testingFractionBase: 0.28, integrationFractionBase: 0.12, maintenancePctPerYear: 6,
-    annualToolLicenceGBP: 18_000, annualCloudCostGBP: 0,
-    notes: 'Critical for sensor fusion temporal alignment. AUTOSAR NM fully handled by BSW. Mainly validation effort.',
+    annualToolLicenceGBP: 11_000, annualIPLicenceGBP: 6_000, annualCloudCostGBP: 0,
+    calibrationFractionBase: 0.03,
+    notes: 'Critical for sensor fusion temporal alignment. AUTOSAR NM fully handled by BSW.',
   },
 
   // ── CATEGORY F: Cybersecurity ─────────────────────────────────────────────
@@ -546,8 +604,9 @@ export const SW_MODULES: SWModuleDef[] = [
     defaultAsil: 'B', defaultComplexity: 'High', basePersonMonths: 20,
     hasMLContent: false, hasCloudDependency: true, hasCybersecRequirement: true,
     testingFractionBase: 0.45, integrationFractionBase: 0.20, maintenancePctPerYear: 12,
-    annualToolLicenceGBP: 40_000, annualCloudCostGBP: 45_000,
-    notes: 'UN-ECE R155 mandatory. NXP/Infineon HSM IP. Key injection in production (takt-time impact). Penetration testing annual.',
+    annualToolLicenceGBP: 24_000, annualIPLicenceGBP: 22_000, annualCloudCostGBP: 45_000,
+    calibrationFractionBase: 0.04,
+    notes: 'UN-ECE R155 mandatory. NXP/Infineon HSM IP. Key injection in production.',
   },
   {
     id: 'encryption', name: 'Encryption Modules & Crypto Stack', shortName: 'Encryption',
@@ -556,8 +615,9 @@ export const SW_MODULES: SWModuleDef[] = [
     defaultAsil: 'B', defaultComplexity: 'Medium', basePersonMonths: 15,
     hasMLContent: false, hasCloudDependency: false, hasCybersecRequirement: true,
     testingFractionBase: 0.40, integrationFractionBase: 0.14, maintenancePctPerYear: 10,
-    annualToolLicenceGBP: 25_000, annualCloudCostGBP: 0,
-    notes: 'Wolfssl/mbedTLS licence. AUTOSAR CSM configuration. Quantum-safe migration roadmap starting 2026.',
+    annualToolLicenceGBP: 15_000, annualIPLicenceGBP: 16_000, annualCloudCostGBP: 0,
+    calibrationFractionBase: 0.03,
+    notes: 'Wolfssl/mbedTLS licence. AUTOSAR CSM configuration. Quantum-safe migration roadmap.',
   },
   {
     id: 'ids', name: 'Intrusion Detection System (IDS)', shortName: 'IDS / IDPS',
@@ -566,8 +626,9 @@ export const SW_MODULES: SWModuleDef[] = [
     defaultAsil: 'QM', defaultComplexity: 'High', basePersonMonths: 28,
     hasMLContent: true, hasCloudDependency: true, hasCybersecRequirement: true,
     testingFractionBase: 0.42, integrationFractionBase: 0.18, maintenancePctPerYear: 16,
-    annualToolLicenceGBP: 55_000, annualCloudCostGBP: 90_000,
-    notes: 'UN-ECE R155 triage requirement. ARGUS/Upstream/GuardKnox IP options. VSOC cloud monitoring significant ongoing cost.',
+    annualToolLicenceGBP: 33_000, annualIPLicenceGBP: 45_000, annualCloudCostGBP: 90_000,
+    calibrationFractionBase: 0.05,
+    notes: 'UN-ECE R155 triage requirement. ARGUS/Upstream/GuardKnox IP options.',
   },
   {
     id: 'secure_ota', name: 'Secure OTA Software Update Framework', shortName: 'Secure OTA',
@@ -576,8 +637,9 @@ export const SW_MODULES: SWModuleDef[] = [
     defaultAsil: 'B', defaultComplexity: 'High', basePersonMonths: 20,
     hasMLContent: false, hasCloudDependency: true, hasCybersecRequirement: true,
     testingFractionBase: 0.40, integrationFractionBase: 0.18, maintenancePctPerYear: 14,
-    annualToolLicenceGBP: 50_000, annualCloudCostGBP: 120_000,
-    notes: 'Integrated with AUTOSAR UCM. Excelfore / Airbiquity OTA platform licence option. Delta compression reduces data cost.',
+    annualToolLicenceGBP: 30_000, annualIPLicenceGBP: 35_000, annualCloudCostGBP: 120_000,
+    calibrationFractionBase: 0.04,
+    notes: 'Integrated with AUTOSAR UCM. Excelfore/Airbiquity delta compression IP.',
   },
   {
     id: 'key_mgmt', name: 'Key Management System', shortName: 'Key Management',
@@ -586,8 +648,9 @@ export const SW_MODULES: SWModuleDef[] = [
     defaultAsil: 'B', defaultComplexity: 'High', basePersonMonths: 15,
     hasMLContent: false, hasCloudDependency: true, hasCybersecRequirement: true,
     testingFractionBase: 0.40, integrationFractionBase: 0.14, maintenancePctPerYear: 12,
-    annualToolLicenceGBP: 35_000, annualCloudCostGBP: 80_000,
-    notes: 'PKI infrastructure cloud-hosted. Certificate provisioning at end-of-line (EoL). Annual re-keying capability needed.',
+    annualToolLicenceGBP: 21_000, annualIPLicenceGBP: 28_000, annualCloudCostGBP: 80_000,
+    calibrationFractionBase: 0.04,
+    notes: 'PKI infrastructure cloud-hosted. Certificate provisioning at end-of-line (EoL).',
   },
 
   // ── CATEGORY G: OTA & Cloud Backend ──────────────────────────────────────
@@ -598,8 +661,9 @@ export const SW_MODULES: SWModuleDef[] = [
     defaultAsil: 'B', defaultComplexity: 'High', basePersonMonths: 30,
     hasMLContent: false, hasCloudDependency: true, hasCybersecRequirement: true,
     testingFractionBase: 0.38, integrationFractionBase: 0.18, maintenancePctPerYear: 12,
-    annualToolLicenceGBP: 40_000, annualCloudCostGBP: 180_000,
-    notes: 'AUTOSAR UCM Adapter. Must handle fleet-wide rollout with A/B validation. Backend campaign management is major cloud cost.',
+    annualToolLicenceGBP: 24_000, annualIPLicenceGBP: 55_000, annualCloudCostGBP: 180_000,
+    calibrationFractionBase: 0.04,
+    notes: 'AUTOSAR UCM Adapter. Must handle fleet-wide rollout with A/B validation.',
   },
   {
     id: 'cloud_backend', name: 'Cloud Backend Services', shortName: 'Cloud Backend',
@@ -608,8 +672,9 @@ export const SW_MODULES: SWModuleDef[] = [
     defaultAsil: 'QM', defaultComplexity: 'Very High', basePersonMonths: 65,
     hasMLContent: true, hasCloudDependency: true, hasCybersecRequirement: true,
     testingFractionBase: 0.32, integrationFractionBase: 0.16, maintenancePctPerYear: 20,
-    annualToolLicenceGBP: 80_000, annualCloudCostGBP: 1_200_000,
-    notes: 'Largest cloud cost. Scales with fleet size. AWS IoT Core / Azure IoT Hub. SLA-driven infrastructure. DevOps-heavy.',
+    annualToolLicenceGBP: 48_000, annualIPLicenceGBP: 130_000, annualCloudCostGBP: 1_200_000,
+    calibrationFractionBase: 0.03,
+    notes: 'Largest cloud cost. Scales with fleet size. AWS IoT Core / Azure IoT Hub.',
   },
   {
     id: 'data_pipeline', name: 'Data Pipeline & Telemetry', shortName: 'Data Pipeline',
@@ -618,8 +683,9 @@ export const SW_MODULES: SWModuleDef[] = [
     defaultAsil: 'QM', defaultComplexity: 'High', basePersonMonths: 30,
     hasMLContent: true, hasCloudDependency: true, hasCybersecRequirement: true,
     testingFractionBase: 0.30, integrationFractionBase: 0.14, maintenancePctPerYear: 14,
-    annualToolLicenceGBP: 45_000, annualCloudCostGBP: 320_000,
-    notes: 'GDPR consent management. Apache Kafka / Kinesis streaming. Data used for ML model improvement and warranty analytics.',
+    annualToolLicenceGBP: 27_000, annualIPLicenceGBP: 65_000, annualCloudCostGBP: 320_000,
+    calibrationFractionBase: 0.04,
+    notes: 'GDPR consent management. Apache Kafka / Kinesis streaming.',
   },
   {
     id: 'fleet_mgmt', name: 'Fleet Management & Analytics Software', shortName: 'Fleet Mgmt',
@@ -628,8 +694,9 @@ export const SW_MODULES: SWModuleDef[] = [
     defaultAsil: 'QM', defaultComplexity: 'Medium', basePersonMonths: 20,
     hasMLContent: true, hasCloudDependency: true, hasCybersecRequirement: false,
     testingFractionBase: 0.28, integrationFractionBase: 0.12, maintenancePctPerYear: 16,
-    annualToolLicenceGBP: 30_000, annualCloudCostGBP: 200_000,
-    notes: 'SaaS platform option (Bright Box, Verizon Connect) vs in-house. Dealer portal requires API licensing. Predictive ML adds value.',
+    annualToolLicenceGBP: 18_000, annualIPLicenceGBP: 45_000, annualCloudCostGBP: 200_000,
+    calibrationFractionBase: 0.03,
+    notes: 'SaaS platform option (Bright Box, Verizon Connect) vs in-house. Dealer portal API licensing.',
   },
 ];
 
@@ -640,8 +707,6 @@ function computeModuleCost(
   input:  SWModuleInput,
   prog:   SWProgramInputs
 ): SWModuleCostResult {
-  // Blended rate: senior engineers cost 20% more, junior 25% less.
-  // overheadMultiplier covers corporate burden (facilities, management, tools overhead).
   const seniorMult  = prog.teamSeniorFraction * 1.20 + (1 - prog.teamSeniorFraction) * 0.75;
   const regionRate  = UK_PM_RATE_GBP * REGION_MULT[prog.region] * DEV_SOURCE_MULT[prog.devSource]
                       * seniorMult * prog.overheadMultiplier;
@@ -654,7 +719,6 @@ function computeModuleCost(
   const effectivePM = (input.customPersonMonths ?? def.basePersonMonths) * reuse;
 
   // Development sub-buckets. Complexity applied to algorithm bucket only.
-  // Base fractions: Reqs 12%, Arch 14%, Algo 22% (×complexity), Impl 37%, Safety 15% = 100% base.
   const devPM    = effectivePM * asilDev;
   const reqsPM   = devPM * 0.12;
   const archPM   = devPM * 0.14;
@@ -669,8 +733,7 @@ function computeModuleCost(
   const safety = safetyPM * regionRate;
   const devTotal = reqs + arch + algo + impl + safety;
 
-  // Testing breakdown. Fractions must sum exactly to testTotal.
-  // Allocate proportionally by type, ensuring HIL absorbs any residual.
+  // Testing breakdown — HIL absorbs residual to ensure fractions sum exactly.
   const testTotal = devTotal * testFrac;
   const silFrac   = 0.30;
   const milFrac   = def.hasMLContent ? 0.18 : 0.08;
@@ -679,31 +742,32 @@ function computeModuleCost(
   const scenFrac  = def.category === 'B' ? 0.09 : 0;
   const hilFrac   = Math.max(0, 1 - silFrac - milFrac - regFrac - penFrac - scenFrac);
 
-  const silCost   = testTotal * silFrac;
-  const milCost   = testTotal * milFrac;
-  const regCost   = testTotal * regFrac;
-  const penCost   = testTotal * penFrac;
-  const scenCost  = testTotal * scenFrac;
-  const hilCost   = testTotal * hilFrac;   // residual — always sums to testTotal
+  const silCost  = testTotal * silFrac;
+  const milCost  = testTotal * milFrac;
+  const regCost  = testTotal * regFrac;
+  const penCost  = testTotal * penFrac;
+  const scenCost = testTotal * scenFrac;
+  const hilCost  = testTotal * hilFrac;
 
   const integration = devTotal * def.integrationFractionBase;
-  // Cybersecurity compliance work: 8% base, uplifted for high-ASIL safety-critical modules
+
   const cybersecPct = def.hasCybersecRequirement
     ? (input.asil === 'D' ? 0.14 : input.asil === 'C' ? 0.10 : 0.08) : 0;
   const cybersec    = devTotal * cybersecPct;
 
-  // Toolchain and IP licensing split from annualToolLicenceGBP (no double-count).
-  // 60% = development toolchain; 40% = IP/SW licensing (map data, ASR engines, RTOS royalties, etc.)
-  const licenceBase = def.annualToolLicenceGBP * prog.programLifeYears;
-  const toolchain   = licenceBase * 0.60;
-  const licensing   = licenceBase * 0.40;
+  // Toolchain and IP licensing are now fully separate cost pools.
+  const toolchain = def.annualToolLicenceGBP * prog.programLifeYears;
+  const licensing = def.annualIPLicenceGBP   * prog.programLifeYears;
+
+  // Physical/model calibration effort (dyno runs, proving ground, model fitting)
+  const calibration = devTotal * def.calibrationFractionBase;
 
   const cloudCost   = prog.includeCloudCost
     ? def.annualCloudCostGBP * prog.programLifeYears : 0;
   const maintenance = prog.includeMaintenanceCost
     ? devTotal * (def.maintenancePctPerYear / 100) * prog.programLifeYears : 0;
 
-  const totalNRE      = devTotal + testTotal + integration + toolchain + cybersec;
+  const totalNRE      = devTotal + testTotal + integration + toolchain + cybersec + calibration;
   const totalLifecycle = maintenance + cloudCost + licensing;
   const grandTotal     = totalNRE + totalLifecycle;
   const vehicles       = prog.annualProductionVolume * prog.programLifeYears;
@@ -726,12 +790,70 @@ function computeModuleCost(
     cybersecCost:     cybersec,
     maintenanceCost:  maintenance,
     toolchainCost:    toolchain,
+    calibrationCost:  calibration,
     totalNonRecurring: totalNRE,
     totalLifecycle,
     grandTotal,
     perVehicle,
   };
 }
+
+// ─── Monte Carlo simulation ───────────────────────────────────────────────────
+
+function runMonteCarlo(prog: SWProgramInputs, s: SWSummary, iterations = 1000): SWMonteCarlo {
+  // Triangular distribution sampler
+  function tri(a: number, m: number, b: number): number {
+    const u = Math.random();
+    const Fc = (m - a) / (b - a);
+    if (u < Fc) return a + Math.sqrt(u * (b - a) * (m - a));
+    return b - Math.sqrt((1 - u) * (b - a) * (b - m));
+  }
+
+  const totals: number[] = [];
+  for (let i = 0; i < iterations; i++) {
+    const total =
+      s.totalDevelopment   * tri(0.70, 1.00, 1.40) +
+      s.totalTesting       * tri(0.75, 1.00, 1.35) +
+      s.totalIntegration   * tri(0.70, 1.00, 1.40) +
+      s.totalToolchain     * tri(0.85, 1.00, 1.25) +
+      s.totalCybersecurity * tri(0.65, 1.00, 1.50) +
+      s.totalCalibration   * tri(0.70, 1.00, 1.50) +
+      s.totalMaintenance   * tri(0.75, 1.00, 1.35) +
+      s.totalCloud         * tri(0.50, 1.00, 1.60) +
+      s.totalLicensing     * tri(0.80, 1.00, 1.30);
+    totals.push(total);
+  }
+  totals.sort((a, b) => a - b);
+
+  const n = totals.length;
+  const vehicles = prog.annualProductionVolume * prog.programLifeYears;
+  const pv = (t: number) => vehicles > 0 ? t / vehicles : 0;
+
+  return {
+    p10:           totals[Math.floor(n * 0.10)],
+    p50:           totals[Math.floor(n * 0.50)],
+    p90:           totals[Math.floor(n * 0.90)],
+    mean:          totals.reduce((a, b) => a + b, 0) / n,
+    p10PerVehicle: pv(totals[Math.floor(n * 0.10)]),
+    p50PerVehicle: pv(totals[Math.floor(n * 0.50)]),
+    p90PerVehicle: pv(totals[Math.floor(n * 0.90)]),
+    iterations:    n,
+  };
+}
+
+// ─── Programme Phases ─────────────────────────────────────────────────────────
+
+function buildPhases(nreTotal: number): SWPhase[] {
+  return [
+    { name: 'Feasibility',            months: 'M1–M6',    fraction: 0.05, nreCost: nreTotal * 0.05 },
+    { name: 'Concept / Architecture', months: 'M7–M18',   fraction: 0.15, nreCost: nreTotal * 0.15 },
+    { name: 'Series Development',     months: 'M19–M54',  fraction: 0.50, nreCost: nreTotal * 0.50 },
+    { name: 'Validation & V&V',       months: 'M55–M78',  fraction: 0.20, nreCost: nreTotal * 0.20 },
+    { name: 'Ramp / SOP',             months: 'M79–M90',  fraction: 0.10, nreCost: nreTotal * 0.10 },
+  ];
+}
+
+// ─── Main Programme Calculator ────────────────────────────────────────────────
 
 export function computeSWProgram(prog: SWProgramInputs): SWProgramResult {
   const enabledModules = prog.modules.filter(m => m.enabled);
@@ -751,6 +873,7 @@ export function computeSWProgram(prog: SWProgramInputs): SWProgramResult {
     totalCybersecurity: sum(modules.map(m => m.cybersecCost)),
     totalMaintenance:   sum(modules.map(m => m.maintenanceCost)),
     totalToolchain:     sum(modules.map(m => m.toolchainCost)),
+    totalCalibration:   sum(modules.map(m => m.calibrationCost)),
     grandTotal:         sum(modules.map(m => m.grandTotal)),
     totalPersonMonths:  sum(modules.map(m => m.personMonths)),
     perVehicle:         0,
@@ -801,7 +924,6 @@ export function computeSWProgram(prog: SWProgramInputs): SWProgramResult {
       unit: '£M',
     },
     {
-      // Low = high volume = low per-vehicle cost (favourable). High = low volume = high per-vehicle (unfavourable).
       parameter: 'Production Volume (150k vs 50k units/yr, per-vehicle)',
       low:  summary.grandTotal / Math.max(1, 150_000 * prog.programLifeYears),
       base: summary.perVehicle,
@@ -811,17 +933,25 @@ export function computeSWProgram(prog: SWProgramInputs): SWProgramResult {
   ];
 
   const benchmarks: SWBenchmark[] = [
-    { vehicle: 'BMW iX (2021–2026)', totalM: 620, perVehicle: 4_800, source: 'Berylls Strategy Advisors estimate, 2023' },
-    { vehicle: 'Porsche Taycan (2019–2024)', totalM: 480, perVehicle: 5_200, source: 'SBD Automotive teardown + SW analysis' },
-    { vehicle: 'Mercedes EQS (2021–2026)', totalM: 710, perVehicle: 5_500, source: 'McKinsey Future of Software in Automotive, 2022' },
-    { vehicle: 'Range Rover (L460, 2022–2027)', totalM: 390, perVehicle: 3_800, source: 'JLR investor reports + industry est.' },
-    { vehicle: 'Tesla Model S (Gen 3 HW4)', totalM: 850, perVehicle: 3_200, source: 'Morgan Stanley Research, annualised amortised' },
-    { vehicle: 'Audi Q8 e-tron (2023–2028)', totalM: 520, perVehicle: 4_600, source: 'VW Group Annual Report + EY SW cost model' },
-    { vehicle: 'Lucid Air (2022–2027)', totalM: 380, perVehicle: 7_800, source: 'Low-volume amortisation — Lucid investor notes' },
-    { vehicle: 'Premium SUV This Model', totalM: summary.grandTotal / 1_000_000, perVehicle: summary.perVehicle, source: 'CostVision model — this calculation' },
+    { vehicle: 'BMW iX (2021–2026)',            totalM: 620,  perVehicle: 4_800, source: 'Berylls Strategy Advisors estimate, 2023' },
+    { vehicle: 'Porsche Taycan (2019–2024)',    totalM: 480,  perVehicle: 5_200, source: 'SBD Automotive teardown + SW analysis' },
+    { vehicle: 'Mercedes EQS (2021–2026)',      totalM: 710,  perVehicle: 5_500, source: 'McKinsey Future of Software in Automotive, 2022' },
+    { vehicle: 'Range Rover (L460, 2022–2027)', totalM: 390,  perVehicle: 3_800, source: 'JLR investor reports + industry est.' },
+    { vehicle: 'Tesla Model S (Gen 3 HW4)',     totalM: 850,  perVehicle: 3_200, source: 'Morgan Stanley Research, annualised amortised' },
+    { vehicle: 'Audi Q8 e-tron (2023–2028)',   totalM: 520,  perVehicle: 4_600, source: 'VW Group Annual Report + EY SW cost model' },
+    { vehicle: 'Lucid Air (2022–2027)',         totalM: 380,  perVehicle: 7_800, source: 'Low-volume amortisation — Lucid investor notes' },
+    { vehicle: 'Premium SUV This Model',        totalM: summary.grandTotal / 1_000_000, perVehicle: summary.perVehicle, source: 'CostVision model — this calculation' },
   ];
 
-  return { modules, summary, sensitivity, benchmarks, inputs: prog };
+  // NRE total for phase timeline
+  const nreTotal = summary.totalDevelopment + summary.totalTesting + summary.totalIntegration
+                 + summary.totalToolchain + summary.totalCybersecurity + summary.totalCalibration;
+  const phases = buildPhases(nreTotal);
+
+  // Monte Carlo cost distribution
+  const monteCarlo = runMonteCarlo(prog, summary);
+
+  return { modules, summary, sensitivity, benchmarks, phases, monteCarlo, inputs: prog };
 }
 
 function _recomputeTotal(
@@ -836,8 +966,8 @@ function _recomputeTotal(
 ): number {
   const p2: SWProgramInputs = {
     ...prog,
-    region:            overrides.regionOverride ?? prog.region,
-    programLifeYears:  overrides.lifeOverride   ?? prog.programLifeYears,
+    region:           overrides.regionOverride ?? prog.region,
+    programLifeYears: overrides.lifeOverride   ?? prog.programLifeYears,
     modules: prog.modules.map(m => ({
       ...m,
       asil:       overrides.asilOverride       ?? m.asil,
