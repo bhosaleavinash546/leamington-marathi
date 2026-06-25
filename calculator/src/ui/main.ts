@@ -61,6 +61,10 @@ Chart.register(ArcElement, BarElement, LineElement, PointElement, CategoryScale,
 import { showNews, refreshNews } from './panels/news.js';
 import { showToast as _showToastImpl, escHtml as _escHtmlImpl } from './toast.js';
 import { apiBase } from '../api-base.js';
+import {
+  initCVAnimations, onViewShown, onDashboardRendered, onTableRendered,
+  onResultsReady, onChatToggled, onChatMessageAdded, onToastShown, dismissToast,
+} from './animations.js';
 
 // ─── State ────────────────────────────────────────────────────────────────────
 
@@ -301,6 +305,7 @@ function showHome(): void {
   setTimeout(renderDashboard, 340);
 }
 
+
 function showCosting(commodity?: string): void {
   const homeEl = document.getElementById('home-view');
   const pickerEl = document.getElementById('commodity-picker-view');
@@ -318,6 +323,8 @@ function showCosting(commodity?: string): void {
   }
   document.getElementById('wf-panel-header')?.style?.setProperty('display','none');
   if (commodity) switchCommodity(commodity as CommodityType);
+  // Animate panels into view after form renders
+  setTimeout(() => onViewShown('costing'), 60);
 }
 
 function showCommodityPicker(): void {
@@ -339,6 +346,8 @@ function showCommodityPicker(): void {
   document.getElementById('wf-panel-header')?.style?.setProperty('display','none');
   if (errEl) errEl.style.display = 'none';
   if (warnEl) warnEl.style.display = 'none';
+  // Animate picker tiles in after DOM is visible
+  requestAnimationFrame(() => onViewShown('picker'));
 }
 
 function showWorkflowPanel(commodity: string): void {
@@ -729,6 +738,9 @@ function renderDashboard(): void {
     banner.style.display = activeFilters.length ? 'flex' : 'none';
     if (bannerText) bannerText.textContent = `Filtered by: ${activeFilters.map(([k, v]) => `${k} = ${v}`).join(' · ')} — showing ${records.length} of ${all.length} records`;
   }
+
+  // Trigger GSAP entrance animations now that all DOM is ready
+  requestAnimationFrame(onDashboardRendered);
 }
 
 const COMM_COLOURS = [
@@ -1090,6 +1102,9 @@ function renderRecentTable(records: CostingRecord[]): void {
       if (rec) showDashRecordDetail(rec);
     });
   });
+
+  // Animate rows after paint
+  requestAnimationFrame(onTableRendered);
 }
 
 function updateCompareBar(): void {
@@ -1186,15 +1201,15 @@ function renderComparePanel(): void {
 
 function toggleChat(): void {
   _chatOpen = !_chatOpen;
-  const drawer = document.getElementById('ai-chat-drawer');
   const fab = document.getElementById('ai-chat-fab');
-  if (drawer) drawer.style.display = _chatOpen ? 'flex' : 'none';
   if (fab) fab.setAttribute('aria-expanded', String(_chatOpen));
   if (_chatOpen && _chatMessages.length === 0) {
     _chatMessages.push({ role: 'ai', text: 'Hi! I\'m your CostVision AI assistant. Ask me anything about should-cost analysis, commodity pricing, DFM, or manufacturing processes.' });
     renderChatMessages();
   }
-  if (_chatOpen) document.getElementById('ai-chat-input')?.focus();
+  // GSAP-powered drawer animation (replaces direct display toggle)
+  onChatToggled(_chatOpen);
+  if (_chatOpen) setTimeout(() => document.getElementById('ai-chat-input')?.focus(), 300);
 }
 
 function renderChatMessages(): void {
@@ -1206,6 +1221,8 @@ function renderChatMessages(): void {
       <div class="chat-bubble">${escHtml(m.text)}</div>
     </div>`).join('');
   list.scrollTop = list.scrollHeight;
+  // Animate the latest message
+  requestAnimationFrame(onChatMessageAdded);
 }
 
 async function sendChatMessage(): Promise<void> {
@@ -1249,10 +1266,11 @@ function showToast(message: string, type: 'error' | 'warning' | 'info' = 'info')
   const bg = type === 'error' ? '#c62828' : type === 'warning' ? '#e65100' : '#1565c0';
   const icon = type === 'error' ? '✕' : type === 'warning' ? '⚠' : 'ℹ';
   const toast = document.createElement('div');
-  toast.style.cssText = `background:${bg};color:#fff;border-radius:6px;padding:10px 14px;font-size:0.78rem;box-shadow:0 4px 12px rgba(0,0,0,0.25);display:flex;gap:8px;align-items:flex-start;animation:toastIn .2s ease`;
+  toast.style.cssText = `background:${bg};color:#fff;border-radius:6px;padding:10px 14px;font-size:0.78rem;box-shadow:0 4px 12px rgba(0,0,0,0.25);display:flex;gap:8px;align-items:flex-start`;
   toast.innerHTML = `<span style="font-weight:700;flex-shrink:0">${icon}</span><span>${escHtml(message)}</span>`;
   container.appendChild(toast);
-  setTimeout(() => { toast.style.opacity = '0'; toast.style.transition = 'opacity .3s'; setTimeout(() => toast.remove(), 300); }, 6000);
+  onToastShown(toast);
+  setTimeout(() => dismissToast(toast, () => toast.remove()), 6000);
 }
 
 // ─── DOM helpers ──────────────────────────────────────────────────────────────
@@ -10058,6 +10076,8 @@ function compute(): void {
 function showResultsArea(): void {
   el('results-tabs').style.display = '';
   switchResultTab('breakdown');
+  // Animate results panel after Chart.js renders (needs one frame)
+  setTimeout(onResultsReady, 80);
 }
 
 // ─── Upload / Parts Library Tab ───────────────────────────────────────────────
@@ -14470,6 +14490,9 @@ async function init(): Promise<void> {
 
   // Input confidence indicators
   initConfidenceIndicators();
+
+  // Initialise GSAP animation layer
+  initCVAnimations();
 
   // Initial view: show home on load
   showHome();
