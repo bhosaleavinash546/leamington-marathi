@@ -6,7 +6,6 @@ import {
   ArrowLeft, CheckCircle, AlertCircle, RefreshCw
 } from 'lucide-react';
 import ButtonSpinner from '../components/ui/ButtonSpinner';
-import EVDiagram from '../components/EVDiagram';
 import { useAuth } from '../contexts/AuthContext';
 import { toast } from '../hooks/useToast';
 
@@ -196,9 +195,12 @@ function BrandPanel() {
       </div>
 
       <div className="relative">
-        <div className="mb-5 rounded-xl overflow-hidden">
-          <EVDiagram />
-        </div>
+        <img
+          src="/ev-diagram.png"
+          alt="BrainSpark EV cutaway diagram"
+          className="w-full rounded-xl mb-5 opacity-90"
+          draggable={false}
+        />
 
         <div className="space-y-4">
           <h2 className="text-3xl font-black text-white leading-tight">
