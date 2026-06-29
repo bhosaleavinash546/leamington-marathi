@@ -116,6 +116,7 @@ export interface SWSummary {
   totalMaintenance:   number;
   totalToolchain:     number;
   totalCalibration:   number;
+  nreTotal:           number;  // dev + test + integration + toolchain + cybersec + calibration
   grandTotal:         number;
   totalPersonMonths:  number;
   perVehicle:         number;
@@ -734,13 +735,20 @@ function computeModuleCost(
   const devTotal = reqs + arch + algo + impl + safety;
 
   // Testing breakdown — HIL absorbs residual to ensure fractions sum exactly.
-  const testTotal = devTotal * testFrac;
-  const silFrac   = 0.30;
-  const milFrac   = def.hasMLContent ? 0.18 : 0.08;
-  const regFrac   = 0.10;
-  const penFrac   = def.hasCybersecRequirement ? 0.08 : 0;
-  const scenFrac  = def.category === 'B' ? 0.09 : 0;
-  const hilFrac   = Math.max(0, 1 - silFrac - milFrac - regFrac - penFrac - scenFrac);
+  const testTotal  = devTotal * testFrac;
+  let   silFrac    = 0.30;
+  let   milFrac    = def.hasMLContent ? 0.18 : 0.08;
+  let   regFrac    = 0.10;
+  let   penFrac    = def.hasCybersecRequirement ? 0.08 : 0;
+  let   scenFrac   = def.category === 'B' ? 0.09 : 0;
+  const fixedSum   = silFrac + milFrac + regFrac + penFrac + scenFrac;
+  // If the fixed sub-buckets ever exceed the whole, normalise them down so the
+  // breakdown still sums to testTotal (HIL = 0) instead of silently overshooting.
+  if (fixedSum > 1) {
+    silFrac /= fixedSum; milFrac /= fixedSum; regFrac /= fixedSum;
+    penFrac /= fixedSum; scenFrac /= fixedSum;
+  }
+  const hilFrac = Math.max(0, 1 - silFrac - milFrac - regFrac - penFrac - scenFrac);
 
   const silCost  = testTotal * silFrac;
   const milCost  = testTotal * milFrac;
@@ -855,7 +863,15 @@ function buildPhases(nreTotal: number): SWPhase[] {
 
 // ─── Main Programme Calculator ────────────────────────────────────────────────
 
-export function computeSWProgram(prog: SWProgramInputs): SWProgramResult {
+const EMPTY_MC: SWMonteCarlo = {
+  p10: 0, p50: 0, p90: 0, mean: 0,
+  p10PerVehicle: 0, p50PerVehicle: 0, p90PerVehicle: 0, iterations: 0,
+};
+
+export function computeSWProgram(
+  prog: SWProgramInputs,
+  opts: { summaryOnly?: boolean } = {},
+): SWProgramResult {
   const enabledModules = prog.modules.filter(m => m.enabled);
   const modules: SWModuleCostResult[] = enabledModules.map(m => {
     const def = SW_MODULES.find(d => d.id === m.moduleId)!;
@@ -874,16 +890,26 @@ export function computeSWProgram(prog: SWProgramInputs): SWProgramResult {
     totalMaintenance:   sum(modules.map(m => m.maintenanceCost)),
     totalToolchain:     sum(modules.map(m => m.toolchainCost)),
     totalCalibration:   sum(modules.map(m => m.calibrationCost)),
+    nreTotal:           0,
     grandTotal:         sum(modules.map(m => m.grandTotal)),
     totalPersonMonths:  sum(modules.map(m => m.personMonths)),
     perVehicle:         0,
     byCategory:         {} as Record<SWCategory, number>,
   };
+  summary.nreTotal = summary.totalDevelopment + summary.totalTesting + summary.totalIntegration
+                   + summary.totalToolchain + summary.totalCybersecurity + summary.totalCalibration;
   const vehicles = prog.annualProductionVolume * prog.programLifeYears;
   summary.perVehicle = vehicles > 0 ? summary.grandTotal / vehicles : 0;
 
   for (const cat of ['A','B','C','D','E','F','G'] as SWCategory[]) {
     summary.byCategory[cat] = sum(modules.filter(m => m.category === cat).map(m => m.grandTotal));
+  }
+
+  // When invoked for a sensitivity recompute we only need the summary totals.
+  // Skip the (expensive, and otherwise infinitely-recursive) sensitivity /
+  // Monte Carlo / phase / benchmark build-out.
+  if (opts.summaryOnly) {
+    return { modules, summary, sensitivity: [], benchmarks: [], phases: [], monteCarlo: EMPTY_MC, inputs: prog };
   }
 
   // Sensitivity analysis
@@ -944,9 +970,7 @@ export function computeSWProgram(prog: SWProgramInputs): SWProgramResult {
   ];
 
   // NRE total for phase timeline
-  const nreTotal = summary.totalDevelopment + summary.totalTesting + summary.totalIntegration
-                 + summary.totalToolchain + summary.totalCybersecurity + summary.totalCalibration;
-  const phases = buildPhases(nreTotal);
+  const phases = buildPhases(summary.nreTotal);
 
   // Monte Carlo cost distribution
   const monteCarlo = runMonteCarlo(prog, summary);
@@ -975,7 +999,7 @@ function _recomputeTotal(
       reuse:      overrides.reuseOverride      ?? m.reuse,
     })),
   };
-  return computeSWProgram(p2).summary.grandTotal;
+  return computeSWProgram(p2, { summaryOnly: true }).summary.grandTotal;
 }
 
 // ─── Default program inputs ───────────────────────────────────────────────────

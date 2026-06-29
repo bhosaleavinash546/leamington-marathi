@@ -134,11 +134,10 @@ function renderSWPanelHTML(): string {
       if (def.hasMLContent) tags.push('<span class="sw-tag sw-tag-ml">ML</span>');
       if (def.hasCloudDependency) tags.push('<span class="sw-tag sw-tag-cloud">Cloud</span>');
       if (def.hasCybersecRequirement) tags.push('<span class="sw-tag sw-tag-sec">SecOps</span>');
-      // Rec 8: ASIL downgrade warning
+      // Rec 8: ASIL downgrade warning — always render the span so the live
+      // change handler can toggle it; hide it when not currently downgraded.
       const isDowngrade = ASIL_RANK[inp.asil] < ASIL_RANK[def.defaultAsil];
-      const asilWarn = isDowngrade
-        ? `<span class="sw-asil-warn" title="⚠️ ASIL set below module default (${def.defaultAsil}). Verify safety case.">⚠️</span>`
-        : '';
+      const asilWarn = `<span class="sw-asil-warn" style="${isDowngrade ? '' : 'display:none'}" title="⚠️ ASIL set below module default (${def.defaultAsil}). Verify safety case.">⚠️</span>`;
       return `
       <tr class="sw-module-row" data-module-id="${def.id}">
         <td class="sw-mod-check"><input type="checkbox" class="sw-mod-enable" data-id="${def.id}" ${inp.enabled ? 'checked' : ''}></td>
@@ -680,7 +679,7 @@ function renderResults(result: SWProgramResult): void {
 
   // Summary cards
   const avgFTE = s.totalPersonMonths > 0 ? s.totalPersonMonths / (result.inputs.programLifeYears * 12) : 0;
-  const nreTotal = s.totalDevelopment + s.totalTesting + s.totalIntegration + s.totalToolchain + s.totalCybersecurity + s.totalCalibration;
+  const nreTotal = s.nreTotal;
   const cards: { label: string; value: string; sub: string; color: string }[] = [
     { label: 'Total Programme Cost',    value: fmtM(s.grandTotal),             sub: 'NRE + Lifecycle (all modules)',                color: '#2563eb' },
     { label: 'Per Vehicle (SW Cost)',   value: `£${fmt(s.perVehicle, 0)}`,     sub: `${fmt(result.inputs.annualProductionVolume/1000,0)}k units/yr × ${result.inputs.programLifeYears}yr`, color: '#059669' },
@@ -821,14 +820,13 @@ function renderResults(result: SWProgramResult): void {
     </table>`;
 
   // Module detail table with Rec 8 ASIL validation
-  const asilRankMap: Record<ASILLevel, number> = { QM: 0, A: 1, B: 2, C: 3, D: 4 };
   const sortedMods = [...result.modules].sort((a,b) => b.grandTotal - a.grandTotal);
   const modRows = sortedMods.map((m, i) => {
     const meta = CAT_META[m.category];
     const def  = SW_MODULES.find(d => d.id === m.moduleId);
-    const isDowngrade = def && asilRankMap[m.asilUsed] < asilRankMap[def.defaultAsil];
+    const isDowngrade = def && ASIL_RANK[m.asilUsed] < ASIL_RANK[def.defaultAsil];
     const asilCell = isDowngrade
-      ? `${asilBadge(m.asilUsed)} <span style="color:#d97706;font-size:0.7rem" title="Below default ${def?.defaultAsil ?? ''}">⚠️ −${asilRankMap[def!.defaultAsil] - asilRankMap[m.asilUsed]} lvl</span>`
+      ? `${asilBadge(m.asilUsed)} <span style="color:#d97706;font-size:0.7rem" title="Below default ${def?.defaultAsil ?? ''}">⚠️ −${ASIL_RANK[def!.defaultAsil] - ASIL_RANK[m.asilUsed]} lvl</span>`
       : asilBadge(m.asilUsed);
     return `<tr class="${i < 5 ? 'sw-highlight' : ''}">
       <td>${i + 1}</td>
@@ -849,7 +847,7 @@ function renderResults(result: SWProgramResult): void {
   // Count ASIL downgrades for header warning
   const downgradeCount = sortedMods.filter(m => {
     const def = SW_MODULES.find(d => d.id === m.moduleId);
-    return def && asilRankMap[m.asilUsed] < asilRankMap[def.defaultAsil];
+    return def && ASIL_RANK[m.asilUsed] < ASIL_RANK[def.defaultAsil];
   }).length;
   const downgradeWarning = downgradeCount > 0
     ? `<div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:6px;padding:8px 12px;margin-bottom:10px;font-size:0.78rem;color:#92400e">⚠️ <strong>${downgradeCount} module(s)</strong> have ASIL set below their default. Review safety case documentation (ISO 26262 §6.4.5) before sign-off.</div>`
@@ -929,8 +927,13 @@ function renderResults(result: SWProgramResult): void {
     { src: 'Startup_OSS',   label: 'Startup / OSS',   srcMult: 0.72, riskNote: 'High execution risk, talent risk', ipNote: 'OSS licence risk; limited assignment', warrantyNote: 'Warranty indemnity limited; OEM absorbs tail' },
   ];
   const currentSrc = result.inputs.devSource;
+  const currentMult = currentSrc === 'OEM_Internal' ? 1.00 : currentSrc === 'Tier1_Supplier' ? 0.88 : 0.72;
+  // Only labour-driven NRE/maintenance scales with the dev source. Fixed pools
+  // (toolchain, IP licensing, cloud) are contractual and do not move.
+  const fixedPart  = s.totalToolchain + s.totalLicensing + s.totalCloud;
+  const labourPart = s.grandTotal - fixedPart;
   const decompRows = sourceDecomp.map(d => {
-    const estCost = s.grandTotal * (d.srcMult / (currentSrc === 'OEM_Internal' ? 1.00 : currentSrc === 'Tier1_Supplier' ? 0.88 : 0.72));
+    const estCost = fixedPart + labourPart * (d.srcMult / currentMult);
     const isCurrent = d.src === currentSrc;
     return `<tr ${isCurrent ? 'style="background:var(--sw-accent-bg);font-weight:700"' : ''}>
       <td>${isCurrent ? '⭐ ' : ''}${esc(d.label)}</td>
@@ -994,7 +997,7 @@ function renderResults(result: SWProgramResult): void {
       const diffPct = (thisM - medianBm) / medianBm * 100;
       insights.push({ icon: diffPct > 30 ? '🔴' : diffPct > 10 ? '🟡' : '🟢', level: diffPct > 30 ? 'warn' : 'ok',
         title: `Programme cost is ${fmt(Math.abs(diffPct),0)}% ${diffPct >= 0 ? 'above' : 'below'} peer median (${fmtM(medianBm * 1_000_000)})`,
-        body: diffPct > 20 ? `Cost exceeds peer median. Review ASIL assignments and reuse opportunities. India offshoring could reduce by ${fmt(Math.abs(s.grandTotal - _recomputeTotalForInsight(result)) / 1e6, 0)}% vs current region.`
+        body: diffPct > 20 ? `Cost exceeds peer median. Review ASIL assignments and reuse opportunities. India offshoring could reduce by ${fmt(s.grandTotal > 0 ? Math.abs(s.grandTotal - _recomputeTotalForInsight(result)) / s.grandTotal * 100 : 0, 0)}% vs current region.`
               : `Programme cost is within normal range vs peers. Monitor cloud costs as fleet scales.`,
       });
     }
@@ -1069,7 +1072,7 @@ function generateAIInsights(result: SWProgramResult): void {
 
   const s = result.summary;
   const top3 = [...result.modules].sort((a,b) => b.grandTotal - a.grandTotal).slice(0,3);
-  const nreTotal = s.totalDevelopment + s.totalTesting + s.totalIntegration + s.totalToolchain + s.totalCybersecurity + s.totalCalibration;
+  const nreTotal = s.nreTotal;
   const lifecyclePct = s.grandTotal > 0 ? (s.totalMaintenance + s.totalCloud + s.totalLicensing) / s.grandTotal * 100 : 0;
 
   const prompt = `You are a senior automotive software engineering cost analyst. Provide a concise executive summary and actionable recommendations for this programme:
@@ -1191,8 +1194,12 @@ function exportSWExcel(result: SWProgramResult): void {
   const mc = result.monteCarlo;
   const sensData: unknown[][] = [
     ['SENSITIVITY ANALYSIS'],
-    ['Parameter', 'Low Scenario', 'Base Case', 'High Scenario', 'Range'],
-    ...result.sensitivity.map(r => [r.parameter, f2(r.low), f2(r.base), f2(r.high), f2(r.high-r.low)]),
+    ['Parameter', 'Unit', 'Low Scenario', 'Base Case', 'High Scenario', 'Range'],
+    ...result.sensitivity.map(r => {
+      // £M rows store absolute pounds; convert to £M. Per-vehicle rows stay raw.
+      const v = (n: number) => r.unit === '£M' ? fM(n) : f2(n);
+      return [r.parameter, r.unit, v(r.low), v(r.base), v(r.high), v(r.high - r.low)];
+    }),
     [],
     ['MONTE CARLO DISTRIBUTION', `${mc.iterations} iterations`],
     ['Percentile', 'Total Cost (£M)', '£/Vehicle'],
@@ -1253,7 +1260,7 @@ function exportSWPDF(result: SWProgramResult): void {
       const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
       const s = result.summary;
       const W = 210, MG = 14;
-      const nreTotal = s.totalDevelopment + s.totalTesting + s.totalIntegration + s.totalToolchain + s.totalCybersecurity + s.totalCalibration;
+      const nreTotal = s.nreTotal;
 
       doc.setFillColor(15, 23, 42);
       doc.rect(0, 0, W, 68, 'F');
@@ -1447,6 +1454,9 @@ function loadConfig(id: string): void {
   const cfg = _savedConfigs.find(c => c.id === id);
   if (!cfg) return;
   _swInputs = JSON.parse(JSON.stringify(cfg.inputs));
+  // Stale result from a prior calculation no longer matches the loaded inputs;
+  // clear it so exports/AI can't run against the wrong configuration.
+  _swResult = null;
   // Re-render entire panel to reflect loaded inputs
   const panel = document.getElementById('sw-panel');
   if (panel?.parentElement) {
