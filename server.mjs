@@ -2847,14 +2847,22 @@ if (mktCount.c === 0) {
     const extraPath = path.join(__dirname, 'marketplace-extra-ideas.json');
     if (fs.existsSync(extraPath)) {
       const extraIdeas = JSON.parse(fs.readFileSync(extraPath, 'utf-8'));
-      const ins = db.prepare("INSERT OR IGNORE INTO marketplace_ideas (id,title,system,costSavingType,annualSaving,difficulty,timeToImplement,description,submittedBy,verified,stars,level,status,createdAt) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,'approved',?)");
+      // Upsert: insert on fresh DBs, and backfill ideaData / enriched fields on existing DBs.
+      const ins = db.prepare(`INSERT INTO marketplace_ideas (id,title,system,costSavingType,annualSaving,difficulty,timeToImplement,description,submittedBy,verified,stars,level,ideaData,status,createdAt)
+        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,'approved',?)
+        ON CONFLICT(id) DO UPDATE SET
+          ideaData=excluded.ideaData,
+          description=excluded.description,
+          level=excluded.level,
+          annualSaving=excluded.annualSaving`);
       const ts = new Date().toISOString();
       let n = 0;
       for (const i of extraIdeas) {
-        ins.run(i.id, i.title, i.system, i.costSavingType, i.annualSaving, i.difficulty, i.timeToImplement, i.description, i.submittedBy, i.verified ? 1 : 0, i.stars || 0, i.level || null, ts);
+        const ideaDataStr = i.ideaData ? JSON.stringify(i.ideaData) : null;
+        ins.run(i.id, i.title, i.system, i.costSavingType, i.annualSaving, i.difficulty, i.timeToImplement, i.description, i.submittedBy, i.verified ? 1 : 0, i.stars || 0, i.level || null, ideaDataStr, ts);
         n++;
       }
-      console.log(`[Marketplace] Seeded ${n} extra OEM-benchmarked ideas`);
+      console.log(`[Marketplace] Seeded/updated ${n} extra OEM-benchmarked ideas (with detailed ideaData)`);
     }
   } catch (e) {
     console.log('[Marketplace] Extra ideas seed warning:', e.message);

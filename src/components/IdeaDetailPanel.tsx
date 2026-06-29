@@ -104,6 +104,15 @@ export default function IdeaDetailPanel({ idea, compact = false }: Props) {
         </div>
       </div>
 
+      {/* Material grade */}
+      {idea.materialGrade && (
+        <div className="flex items-center gap-2 p-2.5 rounded-xl bg-teal-500/5 border border-teal-500/15">
+          <FlaskConical size={14} className="text-teal-400 flex-shrink-0" />
+          <span className="text-teal-400 text-xs font-semibold uppercase tracking-wide">Material Grade:</span>
+          <span className="text-slate-200 text-sm font-medium">{idea.materialGrade}</span>
+        </div>
+      )}
+
       {/* Technical description */}
       <div>
         <p className="text-slate-300 text-sm leading-relaxed">{idea.technicalDescription}</p>

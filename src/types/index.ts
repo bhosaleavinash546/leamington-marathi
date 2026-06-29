@@ -89,6 +89,7 @@ export interface CostReductionIdea {
   confidenceLevel?: ConfidenceLevel;
   evidenceSources?: EvidenceSource[];
   regulatoryContext?: string;
+  materialGrade?: string;
 }
 
 export interface SearchResult {
