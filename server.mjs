@@ -192,6 +192,8 @@ db.exec(`
 // ─── Migrate: add ideaData column if not already present ─────────────────────
 try { db.exec("ALTER TABLE marketplace_ideas ADD COLUMN ideaData TEXT"); } catch {}
 try { db.exec("ALTER TABLE idea_business_cases ADD COLUMN ideaData TEXT"); } catch {}
+// level: 'part' | 'system' — granularity tag for marketplace ideas
+try { db.exec("ALTER TABLE marketplace_ideas ADD COLUMN level TEXT"); } catch {}
 
 // ─── Commodity price persistence table ────────────────────────────────────────
 db.exec(`CREATE TABLE IF NOT EXISTS commodity_prices (
@@ -2833,6 +2835,29 @@ if (mktCount.c === 0) {
   ];
   for (const i of bev151Ideas) {
     ins.run(i.id, i.title, i.system, i.costSavingType, i.annualSaving, i.difficulty, i.timeToImplement, i.description, i.submittedBy, i.verified ? 1 : 0, i.stars, ts);
+  }
+}
+
+// ─── Extra OEM-benchmarked VAVE ideas (add001–add300) — loaded from data file ──
+// 300 detailed cost-reduction ideas (150 part-level + 150 sub-assembly/system-level)
+// across all commodities, benchmarked to BMW, Mercedes, Porsche, Audi, Volvo, BYD,
+// Hongqi, Yangwang, Maextro, Luxeed, Nio, Zeekr, Li Auto, AITO, AVATR, Denza, Xpeng.
+{
+  try {
+    const extraPath = path.join(__dirname, 'marketplace-extra-ideas.json');
+    if (fs.existsSync(extraPath)) {
+      const extraIdeas = JSON.parse(fs.readFileSync(extraPath, 'utf-8'));
+      const ins = db.prepare("INSERT OR IGNORE INTO marketplace_ideas (id,title,system,costSavingType,annualSaving,difficulty,timeToImplement,description,submittedBy,verified,stars,level,status,createdAt) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,'approved',?)");
+      const ts = new Date().toISOString();
+      let n = 0;
+      for (const i of extraIdeas) {
+        ins.run(i.id, i.title, i.system, i.costSavingType, i.annualSaving, i.difficulty, i.timeToImplement, i.description, i.submittedBy, i.verified ? 1 : 0, i.stars || 0, i.level || null, ts);
+        n++;
+      }
+      console.log(`[Marketplace] Seeded ${n} extra OEM-benchmarked ideas`);
+    }
+  } catch (e) {
+    console.log('[Marketplace] Extra ideas seed warning:', e.message);
   }
 }
 

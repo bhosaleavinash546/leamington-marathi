@@ -21,6 +21,7 @@ interface MarketplaceIdea {
   verified: boolean;
   description: string;
   ideaData?: string | null;
+  level?: string | null;
 }
 
 interface RecentAnalysis {
@@ -214,6 +215,7 @@ export default function MarketplacePage() {
   const [filterCommodity, setFilterCommodity] = useState('All');
   const [filterSystem, setFilterSystem] = useState('All Systems');
   const [filterDiff, setFilterDiff] = useState('All');
+  const [filterLevel, setFilterLevel] = useState('All');
   const [ideas, setIdeas] = useState<MarketplaceIdea[]>([]);
   const [loadingIdeas, setLoadingIdeas] = useState(true);
   const [showSubmit, setShowSubmit] = useState(false);
@@ -275,7 +277,11 @@ export default function MarketplacePage() {
       filterCommodity === 'All' || selectedCommodity.systems.includes(idea.system);
     const matchSys = filterSystem === 'All Systems' || idea.system === filterSystem;
     const matchDiff = filterDiff === 'All' || idea.difficulty === filterDiff;
-    return matchQ && matchCommodity && matchSys && matchDiff;
+    const matchLevel =
+      filterLevel === 'All' ||
+      (filterLevel === 'Part' && idea.level === 'part') ||
+      (filterLevel === 'System' && idea.level !== 'part');
+    return matchQ && matchCommodity && matchSys && matchDiff && matchLevel;
   });
 
   const approvedSystems = new Set(
@@ -441,6 +447,24 @@ export default function MarketplacePage() {
               </button>
             ))}
           </div>
+
+          {/* Level buttons (part vs sub-assembly/system) */}
+          <div className="flex gap-1.5">
+            {['All', 'Part', 'System'].map(l => (
+              <button
+                key={l}
+                onClick={() => setFilterLevel(l)}
+                className={`px-3 py-2 rounded-lg text-xs font-medium border transition-colors ${
+                  filterLevel === l
+                    ? 'bg-purple-500/20 text-purple-300 border-purple-500/30'
+                    : 'text-slate-400 border-white/10 hover:border-white/25 hover:text-white'
+                }`}
+                title={l === 'Part' ? 'Part-level ideas (single discrete component)' : l === 'System' ? 'Sub-assembly / system-level ideas' : 'All levels'}
+              >
+                {l === 'All' ? 'All Levels' : l}
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Results header */}
@@ -560,6 +584,9 @@ export default function MarketplacePage() {
                           </>
                         )}
                         <span className="text-gold-500 text-xs">{idea.system}</span>
+                        {idea.level === 'part' && (
+                          <span className="px-1.5 py-0.5 rounded text-xs border bg-purple-500/10 text-purple-300 border-purple-500/25">Part-level</span>
+                        )}
                       </div>
                     </div>
 
