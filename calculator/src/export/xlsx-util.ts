@@ -1,4 +1,8 @@
-import * as XLSX from 'xlsx';
+// xlsx is large (~430 KB) and only needed when a user exports. We load it
+// dynamically so it stays out of the initial bundle as a lazy chunk; these
+// helpers are therefore async. Types come from a type-only import (erased at
+// build time, no runtime cost).
+import type * as XLSXType from 'xlsx';
 
 /** One worksheet: a name, its array-of-arrays rows, and optional column widths (chars). */
 export interface SheetSpec {
@@ -9,7 +13,8 @@ export interface SheetSpec {
 
 /** Build a workbook from AOA sheet specs — shared by every Excel exporter so the
  *  book_new / aoa_to_sheet / !cols / book_append_sheet boilerplate lives in one place. */
-export function buildWorkbook(sheets: SheetSpec[]): XLSX.WorkBook {
+export async function buildWorkbook(sheets: SheetSpec[]): Promise<XLSXType.WorkBook> {
+  const XLSX = await import('xlsx');
   const wb = XLSX.utils.book_new();
   for (const sh of sheets) {
     const ws = XLSX.utils.aoa_to_sheet(sh.rows);
@@ -20,12 +25,14 @@ export function buildWorkbook(sheets: SheetSpec[]): XLSX.WorkBook {
 }
 
 /** Trigger a browser download of the workbook. */
-export function downloadWorkbook(wb: XLSX.WorkBook, filename: string): void {
+export async function downloadWorkbook(wb: XLSXType.WorkBook, filename: string): Promise<void> {
+  const XLSX = await import('xlsx');
   XLSX.writeFile(wb, filename);
 }
 
 /** Serialise the workbook to an xlsx Blob (for callers that return a Blob rather than download). */
-export function workbookBlob(wb: XLSX.WorkBook): Blob {
+export async function workbookBlob(wb: XLSXType.WorkBook): Promise<Blob> {
+  const XLSX = await import('xlsx');
   const buffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' }) as ArrayBuffer;
   return new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
 }

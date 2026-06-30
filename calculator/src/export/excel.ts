@@ -5,13 +5,13 @@ import { buildWorkbook, workbookBlob, type SheetSpec } from './xlsx-util.js';
 const pct = (n: number) => `${n.toFixed(1)}%`;
 const num4 = (n: number) => +n.toFixed(4);
 
-export function exportToExcelBlob(
+export async function exportToExcelBlob(
   result: PartCostResult,
   input: UniversalStackInput,
   library: RateLibrary,
   currency = 'GBP',
   fxRate = 1
-): Blob {
+): Promise<Blob> {
   const sym = currency === 'GBP' ? '£' : currency === 'EUR' ? '€' : currency === 'USD' ? '$' : currency;
   const c = (n: number) => `${sym}${(n * fxRate).toFixed(2)}`;
   const sheets: SheetSpec[] = [];
@@ -194,7 +194,7 @@ export function exportToExcelBlob(
 
   sheets.push({ name: '6-Traceability', rows: trRows, cols: [36, 12, 10, 55, 22, 12] });
 
-  return workbookBlob(buildWorkbook(sheets));
+  return workbookBlob(await buildWorkbook(sheets));
 }
 
 // Legacy compat wrapper (called by old main.ts path)

@@ -1620,7 +1620,7 @@ Keep response concise and actionable (under 250 words).`;
 
 // ─── Rec 6: Excel Export ──────────────────────────────────────────────────────
 
-function exportSWExcel(result: SWProgramResult): void {
+async function exportSWExcel(result: SWProgramResult): Promise<void> {
   const s  = result.summary;
   const inp = result.inputs;
 
@@ -1731,7 +1731,7 @@ function exportSWExcel(result: SWProgramResult): void {
     }),
   ];
 
-  const wb = buildWorkbook([
+  const wb = await buildWorkbook([
     { name: 'Summary',            rows: summaryData, cols: [30, 16, 12] },
     { name: 'Category Breakdown', rows: catData,     cols: [10, 30, 10, 16, 12] },
     { name: 'Module Detail',      rows: modData,     cols: [4, 30, 9, 7, 12, 10, 14, ...Array(11).fill(14)] },
@@ -1739,7 +1739,7 @@ function exportSWExcel(result: SWProgramResult): void {
     { name: 'Benchmarks',         rows: bmData,      cols: [28, 18, 12, 18, 44] },
     { name: 'Configuration',      rows: cfgData,     cols: [28, 40, 10, 8, 12, 10, 12] },
   ]);
-  downloadWorkbook(wb, 'SW_Should_Cost_CostVision.xlsx');
+  await downloadWorkbook(wb, 'SW_Should_Cost_CostVision.xlsx');
 }
 
 // ─── PDF Export ───────────────────────────────────────────────────────────────

@@ -11756,9 +11756,9 @@ function renderCompareResult(comp: { baseline: { name: string; result: PartCostR
 
 // ─── Export ───────────────────────────────────────────────────────────────────
 
-function downloadExcel(): void {
+async function downloadExcel(): Promise<void> {
   if (!lastResult || !lastInput) return;
-  const blob = exportToExcelBlob(lastResult, lastInput, library, _displayCurrency, _displayFxRate);
+  const blob = await exportToExcelBlob(lastResult, lastInput, library, _displayCurrency, _displayFxRate);
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
   a.download = `should-cost-${lastResult.partName.replace(/\s+/g, '-')}.xlsx`;
