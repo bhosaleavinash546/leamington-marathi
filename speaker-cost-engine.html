@@ -305,30 +305,30 @@ const setEl  = (id,html)=>{const el=document.getElementById(id);if(el)el.innerHT
 const esc    = s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 
 const MRATE={
-  neo:         {usd:97.5, co2:22.5,rcl_pct:5, bio_pct:0, rohs:true, reach:true},
-  ferrite:     {usd:1.50, co2:3.8, rcl_pct:15,bio_pct:0, rohs:true, reach:true},
-  crgo:        {usd:0.85, co2:2.1, rcl_pct:30,bio_pct:0, rohs:true, reach:true},
-  cu_wire:     {usd:9.35, co2:4.0, rcl_pct:35,bio_pct:0, rohs:true, reach:true},
-  al_wire:     {usd:2.50, co2:8.2, rcl_pct:50,bio_pct:0, rohs:true, reach:true},
-  kapton:      {usd:21.0, co2:6.5, rcl_pct:0, bio_pct:0, rohs:true, reach:false},
-  al_former:   {usd:2.50, co2:8.2, rcl_pct:50,bio_pct:0, rohs:true, reach:true},
-  paper_former:{usd:1.20, co2:1.2, rcl_pct:40,bio_pct:80,rohs:true, reach:true},
-  varnish:     {usd:8.0,  co2:4.5, rcl_pct:0, bio_pct:0, rohs:false,reach:false},
-  spider_fabric:{usd:6.50,co2:3.2, rcl_pct:10,bio_pct:60,rohs:true, reach:true},
-  pp:          {usd:1.65, co2:2.4, rcl_pct:20,bio_pct:0, rohs:true, reach:true},
-  paper_cone:  {usd:0.95, co2:1.1, rcl_pct:50,bio_pct:90,rohs:true, reach:true},
-  composite:   {usd:4.20, co2:5.8, rcl_pct:5, bio_pct:10,rohs:true, reach:true},
-  pp_dustcap:  {usd:1.65, co2:2.4, rcl_pct:20,bio_pct:0, rohs:true, reach:true},
-  rubber:      {usd:2.85, co2:3.5, rcl_pct:10,bio_pct:30,rohs:true, reach:true},
-  foam:        {usd:1.25, co2:5.2, rcl_pct:5, bio_pct:0, rohs:true, reach:true},
-  cloth:       {usd:4.0,  co2:2.8, rcl_pct:20,bio_pct:70,rohs:true, reach:true},
-  diecast_al:  {usd:2.75, co2:8.2, rcl_pct:60,bio_pct:0, rohs:true, reach:true},
-  stamp_steel: {usd:0.90, co2:2.0, rcl_pct:70,bio_pct:0, rohs:true, reach:true},
-  inj_pp:      {usd:1.80, co2:2.4, rcl_pct:20,bio_pct:0, rohs:true, reach:true},
-  cu_braid:    {usd:9.35, co2:4.0, rcl_pct:35,bio_pct:0, rohs:true, reach:true},
-  epoxy:       {usd:12.0, co2:7.2, rcl_pct:0, bio_pct:0, rohs:false,reach:false},
-  uv_adhesive: {usd:28.0, co2:8.5, rcl_pct:0, bio_pct:0, rohs:false,reach:false},
-  pe_foam:     {usd:3.50, co2:4.8, rcl_pct:10,bio_pct:0, rohs:true, reach:true}
+  neo:         {usd:97.5, co2:22.5,rcl_pct:5, bio_pct:0, rohs:true, reach:true, voc:false},
+  ferrite:     {usd:1.50, co2:3.8, rcl_pct:15,bio_pct:0, rohs:true, reach:true, voc:false},
+  crgo:        {usd:0.85, co2:2.1, rcl_pct:30,bio_pct:0, rohs:true, reach:true, voc:false},
+  cu_wire:     {usd:9.35, co2:4.0, rcl_pct:35,bio_pct:0, rohs:true, reach:true, voc:false},
+  al_wire:     {usd:2.50, co2:8.2, rcl_pct:50,bio_pct:0, rohs:true, reach:true, voc:false},
+  kapton:      {usd:21.0, co2:6.5, rcl_pct:0, bio_pct:0, rohs:true, reach:false,voc:false},
+  al_former:   {usd:2.50, co2:8.2, rcl_pct:50,bio_pct:0, rohs:true, reach:true, voc:false},
+  paper_former:{usd:1.20, co2:1.2, rcl_pct:40,bio_pct:80,rohs:true, reach:true, voc:false},
+  varnish:     {usd:8.0,  co2:4.5, rcl_pct:0, bio_pct:0, rohs:false,reach:false,voc:true},
+  spider_fabric:{usd:6.50,co2:3.2, rcl_pct:10,bio_pct:60,rohs:true, reach:true, voc:false},
+  pp:          {usd:1.65, co2:2.4, rcl_pct:20,bio_pct:0, rohs:true, reach:true, voc:false},
+  paper_cone:  {usd:0.95, co2:1.1, rcl_pct:50,bio_pct:90,rohs:true, reach:true, voc:false},
+  composite:   {usd:4.20, co2:5.8, rcl_pct:5, bio_pct:10,rohs:true, reach:true, voc:false},
+  pp_dustcap:  {usd:1.65, co2:2.4, rcl_pct:20,bio_pct:0, rohs:true, reach:true, voc:false},
+  rubber:      {usd:2.85, co2:3.5, rcl_pct:10,bio_pct:30,rohs:true, reach:true, voc:true},
+  foam:        {usd:1.25, co2:5.2, rcl_pct:5, bio_pct:0, rohs:true, reach:true, voc:true},
+  cloth:       {usd:4.0,  co2:2.8, rcl_pct:20,bio_pct:70,rohs:true, reach:true, voc:false},
+  diecast_al:  {usd:2.75, co2:8.2, rcl_pct:60,bio_pct:0, rohs:true, reach:true, voc:false},
+  stamp_steel: {usd:0.90, co2:2.0, rcl_pct:70,bio_pct:0, rohs:true, reach:true, voc:false},
+  inj_pp:      {usd:1.80, co2:2.4, rcl_pct:20,bio_pct:0, rohs:true, reach:true, voc:false},
+  cu_braid:    {usd:9.35, co2:4.0, rcl_pct:35,bio_pct:0, rohs:true, reach:true, voc:false},
+  epoxy:       {usd:12.0, co2:7.2, rcl_pct:0, bio_pct:0, rohs:false,reach:false,voc:true},
+  uv_adhesive: {usd:28.0, co2:8.5, rcl_pct:0, bio_pct:0, rohs:false,reach:false,voc:true},
+  pe_foam:     {usd:3.50, co2:4.8, rcl_pct:10,bio_pct:0, rohs:true, reach:true, voc:false}
 };
 
 const PROF={
@@ -739,41 +739,6 @@ function computeSystemCost(inp){
   };
 }
 
-function computeAll(inp){
-  const country=COUNTRIES[inp.country];
-  const bom    =computeBOM(inp);
-  const proc   =computeProcess(inp,country);
-  const tool   =computeTooling(inp.type,inp.annualVol);
-  const DM  =bom.reduce(function(s,r){return s+r.cost;},0);
-  const DLab=proc.reduce(function(s,r){return s+r.labCost;},0);
-  const DMach=proc.reduce(function(s,r){return s+r.machCost+r.scrapCost;},0);
-  const primeCost=DM+DLab+DMach;
-  const foh_rent=0.025*primeCost*country.machM;
-  const foh_util=0.020*primeCost*(inp.country==='Germany'||inp.country==='UK'?1.2:1.0);
-  const foh_equip=0.020*primeCost;
-  const foh_indir=0.030*(DLab*1.5)*country.machM;
-  const foh_qc=0.015*primeCost;
-  const foh_consumables=0.010*primeCost;
-  const FO=foh_rent+foh_util+foh_equip+foh_indir+foh_qc+foh_consumables;
-  const mfgCost=primeCost+FO;
-  const GA=0.07*mfgCost;
-  const toolAmort=tool.perUnit;
-  const warranty=0.015*mfgCost;
-  const inboundPct=['China','Vietnam','India','Thailand','Mexico'].indexOf(inp.country)>=0?0.04:0.03;
-  const inboundFrt=DM*inboundPct;
-  const worksCost=mfgCost+GA+toolAmort+warranty+inboundFrt;
-  const featCost=inp.features.reduce(function(s,f){return s+((TECH_FEATURES[f]&&TECH_FEATURES[f].cost)||0);},0);
-  const outFrtMap={dom:0.28,reg:0.80,int:2.50};
-  const outFrt=(outFrtMap[inp.freightMode]||0.80)*country.logI;
-  const dutyRate=parseFloat(inp.dutyRate)||0;
-  const dutyBase=worksCost+featCost+outFrt;
-  const duty=dutyBase*dutyRate;
-  const landedCost=worksCost+featCost+outFrt+duty;
-  const margin=landedCost*inp.margin;
-  const total=landedCost+margin;
-  return {bom,proc,tool,DM,DL:DLab,DMach,primeCost,FO,foh:{rent:foh_rent,util:foh_util,equip:foh_equip,indir:foh_indir,qc:foh_qc,cons:foh_consumables},mfgCost,GA,toolAmort,warranty,inboundFrt,worksCost,featCost,outFrt,duty,dutyRate,landedCost,margin,total,country,inp};
-}
-
 // ── STATE ─────────────────────────────────────────────────────────────────
 var _lastResult=null;
 var _senChart=null;
@@ -856,6 +821,7 @@ function renderSustainability(r){
   var avgRcl=Object.values(MRATE).reduce(function(s,v){return s+v.rcl_pct;},0)/Object.keys(MRATE).length;
   var avgBio=Object.values(MRATE).reduce(function(s,v){return s+v.bio_pct;},0)/Object.keys(MRATE).length;
   var rohsPct=Object.values(MRATE).filter(function(v){return v.rohs;}).length/Object.keys(MRATE).length*100;
+  var vocPct=Object.values(MRATE).filter(function(v){return v.voc;}).length/Object.keys(MRATE).length*100;
   var catCO2={Motor:0,'Voice Coil':0,Suspension:0,Frame:0,Electrical:0,Bonding:0,Misc:0};
   r.spkResults.forEach(function(res){
     var qty=res.driver.qty;
@@ -866,9 +832,9 @@ function renderSustainability(r){
   var alts={neo:'Ferrite or recycled NdFeB',varnish:'Water-based resin',epoxy:'Bio-epoxy formulation',uv_adhesive:'UV-LED cure bio-acrylate',kapton:'Recycled PET film',foam:'PLA-based foam'};
   var matRows=Object.entries(MRATE).map(function(entry){
     var k=entry[0];var v=entry[1];
-    return '<tr><td>'+k.replace(/_/g,' ')+'</td><td class="num">'+v.rcl_pct+'%</td><td class="num">'+v.bio_pct+'%</td><td class="num">'+v.co2+'</td><td>'+(v.rohs?'<span class="badge badge-green">Yes</span>':'<span class="badge badge-red">No</span>')+'</td><td>'+(v.reach?'<span class="badge badge-green">Yes</span>':'<span class="badge badge-amber">Review</span>')+'</td><td style="color:var(--t2);font-size:11px">'+(alts[k]||'–')+'</td></tr>';
+    return '<tr><td>'+k.replace(/_/g,' ')+'</td><td class="num">'+v.rcl_pct+'%</td><td class="num">'+v.bio_pct+'%</td><td class="num">'+v.co2+'</td><td>'+(v.rohs?'<span class="badge badge-green">Yes</span>':'<span class="badge badge-red">No</span>')+'</td><td>'+(v.reach?'<span class="badge badge-green">Yes</span>':'<span class="badge badge-amber">Review</span>')+'</td><td>'+(v.voc?'<span class="badge badge-red">Yes</span>':'<span class="badge badge-green">No</span>')+'</td><td style="color:var(--t2);font-size:11px">'+(alts[k]||'–')+'</td></tr>';
   }).join('');
-  setEl('sustainContent','<div class="scards"><div class="scard"><div class="sv">'+f2(r.totalSpkCO2)+'</div><div class="sl">Total CO2 (kg/system)</div></div><div class="scard"><div class="sv">'+avgRcl.toFixed(1)+'%</div><div class="sl">Avg Recycled Content</div></div><div class="scard"><div class="sv">'+avgBio.toFixed(1)+'%</div><div class="sl">Avg Bio-based Content</div></div><div class="scard"><div class="sv">'+rohsPct.toFixed(0)+'%</div><div class="sl">RoHS Compliant</div></div></div><div class="section-hdr">CO2 by Assembly Category</div><canvas id="co2Chart" height="200"></canvas><div class="section-hdr" style="margin-top:16px">Material Sustainability Matrix</div><table><thead><tr><th>Material</th><th class="num">Recycled%</th><th class="num">Bio%</th><th class="num">CO2 kg/kg</th><th>RoHS</th><th>REACH</th><th>Sustainable Alt</th></tr></thead><tbody>'+matRows+'</tbody></table>');
+  setEl('sustainContent','<div class="scards" style="grid-template-columns:repeat(5,1fr)"><div class="scard"><div class="sv">'+f2(r.totalSpkCO2)+'</div><div class="sl">Total CO2 (kg/system)</div></div><div class="scard"><div class="sv">'+avgRcl.toFixed(1)+'%</div><div class="sl">Avg Recycled Content</div></div><div class="scard"><div class="sv">'+avgBio.toFixed(1)+'%</div><div class="sl">Avg Bio-based Content</div></div><div class="scard"><div class="sv">'+rohsPct.toFixed(0)+'%</div><div class="sl">RoHS Compliant</div></div><div class="scard"><div class="sv">'+(100-vocPct).toFixed(0)+'%</div><div class="sl">VOC-Free Materials</div></div></div><div class="section-hdr">CO2 by Assembly Category</div><canvas id="co2Chart" height="200"></canvas><div class="section-hdr" style="margin-top:16px">Material Sustainability Matrix</div><table><thead><tr><th>Material</th><th class="num">Recycled%</th><th class="num">Bio%</th><th class="num">CO2 kg/kg</th><th>RoHS</th><th>REACH</th><th>VOC</th><th>Sustainable Alt</th></tr></thead><tbody>'+matRows+'</tbody></table>');
   if(_co2Chart){_co2Chart.destroy();_co2Chart=null;}
   var ctx=document.getElementById('co2Chart');
   if(ctx){
@@ -1012,8 +978,9 @@ function renderRecommendations(r){
   }
   var tips=DFMA_TIPS[r.inp.system]||[];
   if(tips.length>0){
+    var parseSaving=function(s){return parseFloat(String(s).replace(/[^0-9.]/g,''))||0;};
     var best=tips[0];
-    tips.forEach(function(t){if(parseFloat(t.saving)>parseFloat(best.saving))best=t;});
+    tips.forEach(function(t){if(parseSaving(t.saving)>parseSaving(best.saving))best=t;});
     recs.push('Top DFMA for '+r.inp.system+': ['+best.area+'] '+best.tip+' — '+best.saving+' ('+best.effort+' effort).');
   }
   if(r.inp.annualVol<20000){
@@ -1026,6 +993,7 @@ function renderRecommendations(r){
 
 // ── MAIN ──────────────────────────────────────────────────────────────────
 function calculate(){
+  var sustainMode=document.getElementById('sustainMode').value;
   var inp={
     system:     document.getElementById('systemType').value,
     country:    document.getElementById('country').value,
@@ -1041,8 +1009,15 @@ function calculate(){
     freightMode:document.getElementById('freightMode').value,
     dutyRate:   document.getElementById('dutyRegime').value,
     margin:     parseInt(document.getElementById('marginPct').value)/100||0.12,
-    features:   Array.prototype.slice.call(document.querySelectorAll('#advFeatures input:checked')).map(function(c){return c.value;})
+    features:   Array.prototype.slice.call(document.querySelectorAll('#advFeatures input:checked')).map(function(c){return c.value;}),
+    sustainMode:sustainMode
   };
+  if(sustainMode==='Green Premium'){
+    inp.cone='Paper'; inp.surround='Cloth'; inp.frame='Stamped Steel';
+  } else if(sustainMode==='Full Sustainable'){
+    inp.cone='Paper'; inp.surround='Cloth'; inp.frame='Stamped Steel';
+    inp.magnet='Ferrite'; inp.vcWire='Aluminium'; inp.vcFormer='Paper';
+  }
   var r=computeSystemCost(inp);
   _lastResult=r;
   renderMetrics(r);
