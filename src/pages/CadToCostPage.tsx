@@ -453,6 +453,42 @@ export default function CadToCostPage() {
                 )}
               </div>
             )}
+
+            {/* Deterministic mesh feature analysis (STL) */}
+            {geometry && !parsing && geometry.featureMap && (
+              <div className="mt-3 space-y-3">
+                <div className="bg-white/4 rounded-xl p-3">
+                  <p className="text-slate-500 text-xs mb-2 font-semibold uppercase tracking-wider">Mesh Feature Analysis</p>
+                  <div className="flex flex-wrap gap-2 text-xs">
+                    <span className="px-2 py-1 rounded-lg bg-white/5 text-slate-300">Solidity <span className="text-white font-mono">{geometry.featureMap.solidity}</span></span>
+                    <span className="px-2 py-1 rounded-lg bg-white/5 text-slate-300">Char. wall <span className="text-white font-mono">{geometry.featureMap.charThicknessMm} mm</span></span>
+                    <span className="px-2 py-1 rounded-lg bg-white/5 text-slate-300">Aspect <span className="text-white font-mono">{geometry.featureMap.aspectRatio}</span></span>
+                    <span className="px-2 py-1 rounded-lg bg-white/5 text-slate-300">Planar <span className="text-white font-mono">{Math.round(geometry.featureMap.flatAreaFraction * 100)}%</span> / Curved <span className="text-white font-mono">{Math.round(geometry.featureMap.curvedAreaFraction * 100)}%</span></span>
+                  </div>
+                  {geometry.processGuesses && geometry.processGuesses.length > 0 && (
+                    <p className="text-slate-400 text-xs mt-2">
+                      <span className="text-slate-500">Likely process:</span>{' '}
+                      {geometry.processGuesses.map((p, i) => (
+                        <span key={i} className="text-teal-300">{p.process}<span className="text-slate-600"> [{p.confidence}]</span>{i < geometry.processGuesses!.length - 1 ? ' › ' : ''}</span>
+                      ))}
+                    </p>
+                  )}
+                </div>
+                {geometry.dfmaFindings && geometry.dfmaFindings.length > 0 && (
+                  <div className="bg-blue-500/5 border border-blue-500/15 rounded-xl p-3">
+                    <p className="text-blue-300 text-xs mb-2 font-semibold uppercase tracking-wider">DFMA Findings</p>
+                    <ul className="space-y-1.5">
+                      {geometry.dfmaFindings.map((f, i) => (
+                        <li key={i} className="flex items-start gap-2 text-xs">
+                          <span className={`mt-0.5 px-1.5 py-0.5 rounded text-[10px] font-bold flex-shrink-0 ${f.severity === 'high' ? 'bg-red-500/15 text-red-300' : f.severity === 'medium' ? 'bg-amber-500/15 text-amber-300' : 'bg-slate-500/15 text-slate-400'}`}>{f.severity}</span>
+                          <span className="text-slate-300 leading-snug">{f.finding} <span className="text-slate-600">({f.metric})</span></span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         )}
 

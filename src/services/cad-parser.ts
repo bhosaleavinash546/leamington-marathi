@@ -3,6 +3,7 @@
  * Extracts geometry metadata from STL, DXF, STEP files.
  * Images are passed through as base64 for Claude Vision.
  */
+import { analyzeFeatures, type FeatureMap, type ProcessGuess, type DfmaFinding } from './cad-features.mjs';
 
 export interface CadGeometry {
   fileName: string;
@@ -35,6 +36,11 @@ export interface CadGeometry {
   extractedText?: string[];
   extractedMaterial?: string;
   productName?: string;
+
+  // Kernel-free mesh feature analysis (STL)
+  featureMap?: FeatureMap;
+  processGuesses?: ProcessGuess[];
+  dfmaFindings?: DfmaFinding[];
 
   // Parsing warnings
   warnings?: string[];
@@ -81,6 +87,8 @@ function parseBinaryStl(buffer: ArrayBuffer): Partial<CadGeometry> {
   let maxX = -Infinity, maxY = -Infinity, maxZ = -Infinity;
   let surfaceArea = 0;
   let volume = 0;
+  // Surface-normal histogram: area accumulated per quantised normal direction.
+  const orientationBuckets = new Map<string, number>();
 
   for (let i = 0; i < triangleCount; i++) {
     const base = 84 + i * 50;
@@ -97,11 +105,20 @@ function parseBinaryStl(buffer: ArrayBuffer): Partial<CadGeometry> {
       minZ = Math.min(minZ, z); maxZ = Math.max(maxZ, z);
     }
 
-    // Cross product for area
+    // Cross product → face normal; its magnitude is twice the triangle area.
     const ax = v[1].x - v[0].x, ay = v[1].y - v[0].y, az = v[1].z - v[0].z;
     const bx = v[2].x - v[0].x, by = v[2].y - v[0].y, bz = v[2].z - v[0].z;
     const cx = ay * bz - az * by, cy = az * bx - ax * bz, cz = ax * by - ay * bx;
-    surfaceArea += Math.sqrt(cx * cx + cy * cy + cz * cz) / 2;
+    const mag = Math.sqrt(cx * cx + cy * cy + cz * cz);
+    const area = mag / 2;
+    surfaceArea += area;
+
+    // Quantise the unit normal to 0.15 steps and bin its area (planar faces pile
+    // into a few buckets; curved surfaces spread across many).
+    if (mag > 1e-9) {
+      const q = (n: number) => Math.round(n / mag / 0.15);
+      orientationBuckets.set(`${q(cx)},${q(cy)},${q(cz)}`, (orientationBuckets.get(`${q(cx)},${q(cy)},${q(cz)}`) || 0) + area);
+    }
 
     // Signed volume contribution (divergence theorem)
     volume += (v[0].x * (v[1].y * v[2].z - v[2].y * v[1].z)
@@ -109,18 +126,31 @@ function parseBinaryStl(buffer: ArrayBuffer): Partial<CadGeometry> {
              + v[2].x * (v[0].y * v[1].z - v[1].y * v[0].z)) / 6;
   }
 
+  const boundingBox = {
+    x: Math.round((maxX - minX) * 10) / 10,
+    y: Math.round((maxY - minY) * 10) / 10,
+    z: Math.round((maxZ - minZ) * 10) / 10,
+  };
+  const estimatedVolume = Math.abs(volume) / 1000;     // mm³ → cm³
+  const estimatedSurfaceArea = surfaceArea / 100;       // mm² → cm²
+
+  // Derive a kernel-free feature map + process inference + DFMA findings.
+  const { featureMap, processes, dfma } = analyzeFeatures({
+    volumeCm3: estimatedVolume,
+    surfaceAreaCm2: estimatedSurfaceArea,
+    bbox: boundingBox,
+    bucketAreas: Array.from(orientationBuckets.values()),
+    totalArea: surfaceArea,
+  });
+
   return {
     triangleCount,
-    estimatedVolume: Math.abs(volume) / 1000, // mm³ → cm³
-    estimatedSurfaceArea: surfaceArea / 100,   // mm² → cm²
-    boundingBox: {
-      x: Math.round((maxX - minX) * 10) / 10,
-      y: Math.round((maxY - minY) * 10) / 10,
-      z: Math.round((maxZ - minZ) * 10) / 10,
-    },
-    // NOTE: STL is a triangulated mesh — it has no B-rep faces/holes. We report the
-    // triangle count above; we deliberately do NOT fabricate DFMA feature counts here.
-    warnings: ['STL mesh: dimensions/volume/mass extracted; DFMA feature counts (holes/ribs/pockets) require a STEP B-rep and are not available from mesh data.'],
+    estimatedVolume,
+    estimatedSurfaceArea,
+    boundingBox,
+    featureMap,
+    processGuesses: processes,
+    dfmaFindings: dfma,
   };
 }
 
@@ -135,6 +165,7 @@ function parseAsciiStl(text: string): Partial<CadGeometry> {
   let volume = 0;
   // Vertices stream in order; every 3 form one triangle.
   const tri: { x: number; y: number; z: number }[] = [];
+  const orientationBuckets = new Map<string, number>();
 
   while ((m = vertexRegex.exec(text)) !== null) {
     const x = parseFloat(m[1]), y = parseFloat(m[2]), z = parseFloat(m[3]);
@@ -147,7 +178,13 @@ function parseAsciiStl(text: string): Partial<CadGeometry> {
       const ax = v1.x - v0.x, ay = v1.y - v0.y, az = v1.z - v0.z;
       const bx = v2.x - v0.x, by = v2.y - v0.y, bz = v2.z - v0.z;
       const cx = ay * bz - az * by, cy = az * bx - ax * bz, cz = ax * by - ay * bx;
-      surfaceArea += Math.sqrt(cx * cx + cy * cy + cz * cz) / 2;
+      const mag = Math.sqrt(cx * cx + cy * cy + cz * cz);
+      surfaceArea += mag / 2;
+      if (mag > 1e-9) {
+        const q = (n: number) => Math.round(n / mag / 0.15);
+        const key = `${q(cx)},${q(cy)},${q(cz)}`;
+        orientationBuckets.set(key, (orientationBuckets.get(key) || 0) + mag / 2);
+      }
       volume += (v0.x * (v1.y * v2.z - v2.y * v1.z)
                + v1.x * (v2.y * v0.z - v0.y * v2.z)
                + v2.x * (v0.y * v1.z - v1.y * v0.z)) / 6;
@@ -155,17 +192,24 @@ function parseAsciiStl(text: string): Partial<CadGeometry> {
     }
   }
 
-  return {
-    triangleCount,
-    estimatedVolume: surfaceArea > 0 ? Math.abs(volume) / 1000 : undefined, // mm³ → cm³
-    estimatedSurfaceArea: surfaceArea > 0 ? surfaceArea / 100 : undefined,   // mm² → cm²
-    boundingBox: isFinite(maxX) ? {
-      x: Math.round((maxX - minX) * 10) / 10,
-      y: Math.round((maxY - minY) * 10) / 10,
-      z: Math.round((maxZ - minZ) * 10) / 10,
-    } : undefined,
-    warnings: ['STL mesh: dimensions/volume/mass extracted; DFMA feature counts (holes/ribs/pockets) require a STEP B-rep and are not available from mesh data.'],
-  };
+  const estimatedVolume = surfaceArea > 0 ? Math.abs(volume) / 1000 : undefined;
+  const estimatedSurfaceArea = surfaceArea > 0 ? surfaceArea / 100 : undefined;
+  const boundingBox = isFinite(maxX) ? {
+    x: Math.round((maxX - minX) * 10) / 10,
+    y: Math.round((maxY - minY) * 10) / 10,
+    z: Math.round((maxZ - minZ) * 10) / 10,
+  } : undefined;
+
+  let featureMap, processGuesses, dfmaFindings;
+  if (estimatedVolume && estimatedSurfaceArea && boundingBox) {
+    const r = analyzeFeatures({
+      volumeCm3: estimatedVolume, surfaceAreaCm2: estimatedSurfaceArea, bbox: boundingBox,
+      bucketAreas: Array.from(orientationBuckets.values()), totalArea: surfaceArea,
+    });
+    featureMap = r.featureMap; processGuesses = r.processes; dfmaFindings = r.dfma;
+  }
+
+  return { triangleCount, estimatedVolume, estimatedSurfaceArea, boundingBox, featureMap, processGuesses, dfmaFindings };
 }
 
 // ─── DXF parser ───────────────────────────────────────────────────────────────

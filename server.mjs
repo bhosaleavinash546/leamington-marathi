@@ -3958,7 +3958,14 @@ function buildAnalysisPrompt(config, systemName, subassemblyName, partName, enab
     if (feats) parts.push(`features: ${feats}`);
     if (cadGeometry.extractedMaterial) parts.push(`material callout: ${cadGeometry.extractedMaterial}`);
     if (cadGeometry.productName) parts.push(`part name: ${cadGeometry.productName}`);
-    cadLine = `\nCAD GEOMETRY (parsed client-side): ${parts.join(' | ')} — use to contextualise material mass, process type, tooling complexity, and feature reduction opportunities.`;
+    const fmInfo = cadGeometry.featureMap
+      ? ` | solidity ${cadGeometry.featureMap.solidity}, char.wall ≈${cadGeometry.featureMap.charThicknessMm}mm${cadGeometry.featureMap.thinWalled ? ' (THIN)' : ''}, planar ${Math.round(cadGeometry.featureMap.flatAreaFraction * 100)}%/curved ${Math.round(cadGeometry.featureMap.curvedAreaFraction * 100)}%`
+      : '';
+    const procInfo = Array.isArray(cadGeometry.processGuesses) && cadGeometry.processGuesses.length
+      ? ` | likely process: ${cadGeometry.processGuesses.map(p => p.process).slice(0, 2).join(' / ')}` : '';
+    const dfmaInfo = Array.isArray(cadGeometry.dfmaFindings) && cadGeometry.dfmaFindings.length
+      ? `\nDFMA FINDINGS (deterministic — address these specifically): ${cadGeometry.dfmaFindings.map(f => `[${f.severity}] ${f.finding}`).join(' ')}` : '';
+    cadLine = `\nCAD GEOMETRY (parsed client-side): ${parts.join(' | ')}${fmInfo}${procInfo} — ground ideas in these metrics; reference specific values, not generic suggestions.${dfmaInfo}`;
   }
   const searchInstruction = enableSearch ? `\nIMPORTANT: Use web_search NOW for: (1) current material costs, (2) recent 2024–2025 innovations, (3) OEM/Tier-1 benchmarks. Do 3–5 searches before generating ideas.` : '';
 
@@ -4117,6 +4124,29 @@ async function performSearch(query, braveApiKey) {
 
 const CAD_COST_SYSTEM_PROMPT = `You are a Senior Cost Engineer and DFMA specialist with 20+ years experience in automotive Tier-1 manufacturing. You analyse CAD geometry data and engineering drawings to produce expert-level component cost estimates and DFM recommendations. You quote specific OEM/Tier-1 benchmarks and real material prices. You return ONLY valid JSON — no preamble.`;
 
+// Format the kernel-free mesh feature analysis (featureMap + process inference +
+// DFMA findings) for injection into the prompt. Returns '' when no mesh analysis
+// is available (e.g. STEP/DXF/image).
+function buildMeshFeatureSection(geometry) {
+  const fm = geometry?.featureMap;
+  if (!fm) return '';
+  const lines = [
+    '• MESH FEATURE ANALYSIS (deterministic, from the part mesh):',
+    `   – Solidity (volume/bbox): ${fm.solidity} ${fm.chunky ? '(bulky near-net)' : fm.hollow ? '(lots of removed material)' : ''}`,
+    `   – Characteristic wall thickness ≈ ${fm.charThicknessMm} mm${fm.thinWalled ? ' (THIN)' : ''}`,
+    `   – Aspect ratio ${fm.aspectRatio}${fm.slender ? ' (slender)' : ''} | planar area ${Math.round(fm.flatAreaFraction * 100)}% / curved ${Math.round(fm.curvedAreaFraction * 100)}% | ${fm.dominantOrientations} dominant flat orientations`,
+  ];
+  if (Array.isArray(geometry.processGuesses) && geometry.processGuesses.length) {
+    lines.push(`   – Inferred process (ranked): ${geometry.processGuesses.map(p => `${p.process} [${p.confidence}]`).join(' › ')}`);
+  }
+  if (Array.isArray(geometry.dfmaFindings) && geometry.dfmaFindings.length) {
+    lines.push('   – DFMA findings (deterministic):');
+    for (const f of geometry.dfmaFindings) lines.push(`       · [${f.severity}] ${f.finding} (${f.metric})`);
+  }
+  lines.push('IMPORTANT: ground every idea in the metrics above — reference specific values (solidity, wall thickness, a named DFMA finding, or the inferred process). Do NOT produce generic ideas that ignore this geometry.');
+  return lines.join('\n');
+}
+
 function buildCadCostPrompt(geometry, config, livePrices) {
   const currency = config.currency || 'EUR';
   const currencySymbol = { EUR: '€', GBP: '£', USD: '$', CNY: '¥' }[currency] || '€';
@@ -4144,6 +4174,7 @@ function buildCadCostPrompt(geometry, config, livePrices) {
 • Estimated volume: ${vol ? `${vol.toFixed(2)} cm³` : 'not extracted'}
 • Estimated surface area: ${sa ? `${sa.toFixed(1)} cm²` : 'not extracted'}
 • Feature counts: ${Object.entries(fc).map(([k, v]) => `${k}: ${v}`).join(' | ') || 'none extracted'}
+${buildMeshFeatureSection(geometry)}
 ${geometry.extractedDimensions?.length ? `• Extracted dimensions: ${geometry.extractedDimensions.slice(0, 10).join(', ')}` : ''}
 ${geometry.extractedMaterial ? `• Material from drawing: ${geometry.extractedMaterial}` : ''}
 ${geometry.productName ? `• Product name: ${geometry.productName}` : ''}
