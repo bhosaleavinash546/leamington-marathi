@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Store, Star, TrendingDown, Clock, ChevronDown, ChevronUp, CheckCircle,
@@ -12,6 +12,7 @@ import {
   COMMODITY_GROUPS, COLOR_TAB_ACTIVE, COLOR_BADGE, getCommodityForSystem,
   type CommodityColor, type CommodityGroup,
 } from '../data/commodity-taxonomy';
+import { classifyIdea, POWERTRAINS, VOLTAGES, type Powertrain, type Voltage } from '../data/idea-classify';
 
 interface MarketplaceIdea {
   id: string;
@@ -113,6 +114,8 @@ export default function MarketplacePage() {
   const [filterSystem, setFilterSystem] = useState('All Systems');
   const [filterDiff, setFilterDiff] = useState('All');
   const [filterLevel, setFilterLevel] = useState('All');
+  const [filterPowertrain, setFilterPowertrain] = useState<'All' | Powertrain>('All');
+  const [filterVoltage, setFilterVoltage] = useState<'All' | Voltage>('All');
   const [ideas, setIdeas] = useState<MarketplaceIdea[]>([]);
   const [loadingIdeas, setLoadingIdeas] = useState(true);
   const [showSubmit, setShowSubmit] = useState(false);
@@ -165,6 +168,14 @@ export default function MarketplacePage() {
         : ideas.filter(i => grp.systems.includes(i.system)).length;
   }
 
+  // Classify every idea once (powertrain + voltage) — memoised so it only re-runs
+  // when the loaded idea set changes, not on every keystroke/filter toggle.
+  const classification = useMemo(() => {
+    const map = new Map<string, { powertrains: Powertrain[]; voltages: Voltage[] }>();
+    for (const idea of ideas) map.set(idea.id, classifyIdea(idea));
+    return map;
+  }, [ideas]);
+
   const filtered = ideas.filter(idea => {
     const matchQ =
       !searchQ ||
@@ -178,8 +189,22 @@ export default function MarketplacePage() {
       filterLevel === 'All' ||
       (filterLevel === 'Part' && idea.level === 'part') ||
       (filterLevel === 'System' && idea.level !== 'part');
-    return matchQ && matchCommodity && matchSys && matchDiff && matchLevel;
+    const cls = classification.get(idea.id);
+    const matchPowertrain =
+      filterPowertrain === 'All' || !!cls?.powertrains.includes(filterPowertrain);
+    const matchVoltage =
+      filterVoltage === 'All' || !!cls?.voltages.includes(filterVoltage);
+    return matchQ && matchCommodity && matchSys && matchDiff && matchLevel && matchPowertrain && matchVoltage;
   });
+
+  // Counts for the powertrain / voltage chips (respecting the active commodity tab)
+  const facetScope = ideas.filter(
+    i => filterCommodity === 'All' || selectedCommodity.systems.includes(i.system)
+  );
+  const powertrainCounts: Record<string, number> = { All: facetScope.length };
+  const voltageCounts: Record<string, number> = { All: facetScope.length };
+  for (const p of POWERTRAINS) powertrainCounts[p] = facetScope.filter(i => classification.get(i.id)?.powertrains.includes(p)).length;
+  for (const v of VOLTAGES) voltageCounts[v] = facetScope.filter(i => classification.get(i.id)?.voltages.includes(v)).length;
 
   const approvedSystems = new Set(
     insights.approvedIdeas
@@ -192,6 +217,8 @@ export default function MarketplacePage() {
   function handleCommodityChange(key: string) {
     setFilterCommodity(key);
     setFilterSystem('All Systems');
+    setFilterPowertrain('All');
+    setFilterVoltage('All');
   }
 
   async function handleSubmit() {
@@ -359,6 +386,48 @@ export default function MarketplacePage() {
                 title={l === 'Part' ? 'Part-level ideas (single discrete component)' : l === 'System' ? 'Sub-assembly / system-level ideas' : 'All levels'}
               >
                 {l === 'All' ? 'All Levels' : l}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Powertrain + Voltage facets */}
+        <div className="flex flex-wrap items-center gap-x-6 gap-y-2 mb-4">
+          <div className="flex items-center gap-1.5 flex-wrap">
+            <span className="text-slate-500 text-xs font-semibold uppercase tracking-wider mr-1">Powertrain</span>
+            {(['All', ...POWERTRAINS] as const).map(p => (
+              <button
+                key={p}
+                onClick={() => setFilterPowertrain(p)}
+                disabled={p !== 'All' && powertrainCounts[p] === 0}
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors disabled:opacity-30 disabled:cursor-not-allowed ${
+                  filterPowertrain === p
+                    ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30'
+                    : 'text-slate-400 border-white/10 hover:border-white/25 hover:text-white'
+                }`}
+                title={p === 'All' ? 'All powertrains' : `${p}-specific ideas`}
+              >
+                {p === 'All' ? 'All' : p}
+                <span className="ml-1 opacity-50">{p === 'All' ? powertrainCounts.All : powertrainCounts[p]}</span>
+              </button>
+            ))}
+          </div>
+          <div className="flex items-center gap-1.5 flex-wrap">
+            <span className="text-slate-500 text-xs font-semibold uppercase tracking-wider mr-1">Architecture</span>
+            {(['All', ...VOLTAGES] as const).map(v => (
+              <button
+                key={v}
+                onClick={() => setFilterVoltage(v)}
+                disabled={v !== 'All' && voltageCounts[v] === 0}
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors disabled:opacity-30 disabled:cursor-not-allowed ${
+                  filterVoltage === v
+                    ? 'bg-sky-500/20 text-sky-300 border-sky-500/30'
+                    : 'text-slate-400 border-white/10 hover:border-white/25 hover:text-white'
+                }`}
+                title={v === 'All' ? 'All architectures' : `${v} architecture ideas`}
+              >
+                {v === 'All' ? 'All' : v}
+                <span className="ml-1 opacity-50">{v === 'All' ? voltageCounts.All : voltageCounts[v]}</span>
               </button>
             ))}
           </div>
