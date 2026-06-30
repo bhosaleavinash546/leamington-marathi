@@ -16,6 +16,7 @@ import jwt from 'jsonwebtoken';
 import nodemailer from 'nodemailer';
 import Database from 'better-sqlite3';
 import { computeShouldCost, simulateShouldCost, listMaterials, listProcesses, listRegions, MATERIALS, PROCESSES } from './costing-engine.mjs';
+import { validateIdeas } from './idea-validation.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -4073,7 +4074,9 @@ async function performSearch(query, braveApiKey) {
     }
     return results.filter(r => r.snippet).slice(0, 5);
   } catch {
-    return [{ title: query, url: '', snippet: 'Search unavailable — using trained knowledge.', source: 'fallback' }];
+    // Honest degradation: return NO results rather than a fake "result".
+    // The caller surfaces resultCount:0 and instructs the model not to fabricate citations.
+    return [];
   }
 }
 
@@ -4355,7 +4358,10 @@ app.post('/api/analyze', requireAuth, rateLimit(40, 60 * 60 * 1000), async (req,
           const results = await performSearch(block.input.query, searchApiKey);
           sources.push({ query: block.input.query, purpose: block.input.purpose, results, timestamp: new Date().toISOString() });
           emit({ type: 'search_done', searchNumber: sources.length, resultCount: results.length, query: block.input.query });
-          toolResults.push({ type: 'tool_result', tool_use_id: block.id, content: JSON.stringify({ query: block.input.query, results }) });
+          const toolContent = results.length > 0
+            ? { query: block.input.query, results }
+            : { query: block.input.query, results: [], note: 'No external search results were retrieved (search unavailable or empty). Rely on validated engineering knowledge and DO NOT fabricate a citation or claim a source was found for this query.' };
+          toolResults.push({ type: 'tool_result', tool_use_id: block.id, content: JSON.stringify(toolContent) });
           console.log(`[Search] ${block.input.purpose}: "${block.input.query}"`);
         }
         messages.push({ role: 'assistant', content: response.content });
@@ -4379,7 +4385,13 @@ app.post('/api/analyze', requireAuth, rateLimit(40, 60 * 60 * 1000), async (req,
         } else {
           throw new Error('Invalid JSON response from AI. Try with web search disabled to reduce response size.');
         }
-        const ideas = JSON.parse(ideasJson);
+        const parsedIdeas = JSON.parse(ideasJson);
+        // Critic pass: schema-validate, coerce enums, sanity-band numbers, drop broken ideas.
+        const { ideas, summary: validationSummary } = validateIdeas(parsedIdeas);
+        if (ideas.length === 0) throw new Error('No valid ideas could be generated. Please retry.');
+        if (validationSummary.dropped > 0 || validationSummary.flagged > 0) {
+          console.warn(`[Validation] kept ${validationSummary.kept}/${validationSummary.total}, dropped ${validationSummary.dropped}, flagged ${validationSummary.flagged}, avgQuality ${validationSummary.avgQuality}`);
+        }
 
         // Auto-save project to DB
         const projectId = crypto.randomUUID();
@@ -4392,10 +4404,10 @@ app.post('/api/analyze', requireAuth, rateLimit(40, 60 * 60 * 1000), async (req,
         }
 
         if (useSSE) {
-          emit({ type: 'complete', ideas, sources, projectId });
+          emit({ type: 'complete', ideas, sources, projectId, validation: validationSummary });
           res.end();
         } else {
-          return res.json({ ideas, sources, projectId });
+          return res.json({ ideas, sources, projectId, validation: validationSummary });
         }
         return;
       }

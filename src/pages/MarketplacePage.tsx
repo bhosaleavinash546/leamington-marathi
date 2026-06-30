@@ -33,15 +33,16 @@ interface RecentAnalysis {
   timestamp: string;
 }
 
+// Status values are the canonical lowercase AnnotationStatus written by ResultsPage.
 interface AnnotationEntry {
-  status: 'Approved' | 'Investigating' | 'Rejected';
+  status: 'approved' | 'investigating' | 'rejected' | 'pending' | 'on-hold';
   note?: string;
 }
 
 interface ApprovedIdeaInsight {
   title: string;
   systemName: string;
-  status: 'Approved' | 'Investigating';
+  status: 'approved' | 'investigating';
 }
 
 // ─── Commodity taxonomy ────────────────────────────────────────────────────────
@@ -177,12 +178,12 @@ function loadInsightsFromLocalStorage(): {
       if (!annotRaw) continue;
       const annotations: Record<string, AnnotationEntry> = JSON.parse(annotRaw);
       const entries = Object.entries(annotations).filter(
-        ([, v]) => v.status === 'Approved' || v.status === 'Investigating'
+        ([, v]) => v.status === 'approved' || v.status === 'investigating'
       );
       if (entries.length > 0) {
         projectsWithAnnotations += 1;
         for (const [slug, v] of entries) {
-          if (v.status === 'Approved' || v.status === 'Investigating') {
+          if (v.status === 'approved' || v.status === 'investigating') {
             collected.push({
               title: slug.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()),
               systemName: analysis.systemName,
@@ -195,12 +196,12 @@ function loadInsightsFromLocalStorage(): {
 
     collected.sort(
       (a, b) =>
-        (a.status === 'Approved' ? -1 : 1) - (b.status === 'Approved' ? -1 : 1)
+        (a.status === 'approved' ? -1 : 1) - (b.status === 'approved' ? -1 : 1)
     );
 
     return {
       approvedIdeas: collected.slice(0, 5),
-      totalApproved: collected.filter(x => x.status === 'Approved').length,
+      totalApproved: collected.filter(x => x.status === 'approved').length,
       projectCount: projectsWithAnnotations,
     };
   } catch {
@@ -286,7 +287,7 @@ export default function MarketplacePage() {
 
   const approvedSystems = new Set(
     insights.approvedIdeas
-      .filter(x => x.status === 'Approved')
+      .filter(x => x.status === 'approved')
       .map(x => x.systemName.toLowerCase())
   );
 
@@ -370,7 +371,7 @@ export default function MarketplacePage() {
             <ul className="space-y-1.5">
               {insights.approvedIdeas.map((idea, i) => (
                 <li key={i} className="flex items-center gap-2 text-xs text-slate-300">
-                  <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${idea.status === 'Approved' ? 'bg-green-400' : 'bg-amber-400'}`} />
+                  <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${idea.status === 'approved' ? 'bg-green-400' : 'bg-amber-400'}`} />
                   <span className="flex-1 truncate">{idea.title}</span>
                   <span className="text-slate-500 flex-shrink-0">{idea.systemName}</span>
                 </li>
