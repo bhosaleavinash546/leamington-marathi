@@ -8,6 +8,7 @@
     "server": "node server.mjs",
     "build": "tsc && vite build",
     "test": "node --test",
+    "benchmark": "node benchmark/run.mjs",
     "preview": "vite preview",
     "mobile:build": "tsc && vite build && npx cap sync",
     "mobile:android": "npx cap open android",

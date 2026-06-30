@@ -1,0 +1,38 @@
+{
+  "overall": 100,
+  "categories": {
+    "volume": {
+      "accuracy": 100,
+      "pass": 6,
+      "total": 6
+    },
+    "bbox": {
+      "accuracy": 100,
+      "pass": 6,
+      "total": 6
+    },
+    "faceCount": {
+      "accuracy": 100,
+      "pass": 7,
+      "total": 7
+    },
+    "holeCount": {
+      "accuracy": 100,
+      "pass": 7,
+      "total": 7
+    },
+    "process": {
+      "accuracy": 100,
+      "pass": 3,
+      "total": 3
+    },
+    "dfma": {
+      "accuracy": 100,
+      "pass": 3,
+      "total": 3
+    }
+  },
+  "checks": 32,
+  "total": 32,
+  "fixtures": 7
+}

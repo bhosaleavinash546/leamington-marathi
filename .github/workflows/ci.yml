@@ -24,8 +24,11 @@ jobs:
       - name: Type-check
         run: npx tsc --noEmit
 
-      - name: Unit tests (costing engine + idea validation)
+      - name: Unit tests (costing engine, validation, classifiers, CAD features)
         run: npm test
+
+      - name: CAD accuracy benchmark (must stay ≥ 90%)
+        run: node benchmark/run.mjs --min 0.9
 
       - name: Production build
         run: npx vite build
