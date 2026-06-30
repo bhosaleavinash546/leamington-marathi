@@ -87,10 +87,11 @@ export function motionClosePanel(el: HTMLElement, onDone?: () => void): void {
 
 /** Event-delegation wrapper: return matched ancestor or null */
 function _closest(e: PointerEvent, selector: string): HTMLElement | null {
-  const t = e.target as HTMLElement | null;
-  if (!t) return null;
-  const found = t.closest<HTMLElement>(selector);
-  return found ?? null;
+  // e.target may be the Document, Window or a text node (e.g. pointer events that
+  // bubble to document) — none of which implement Element.closest. Guard for it.
+  const t = e.target;
+  if (!(t instanceof Element)) return null;
+  return t.closest<HTMLElement>(selector) ?? null;
 }
 
 function _applyButtonHoverPress(): void {
