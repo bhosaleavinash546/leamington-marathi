@@ -40,6 +40,10 @@ let _savedConfigs: SavedConfig[] = [];
 
 const STORAGE_KEY = 'cv-sw-saved-configs';
 
+// Rec 9: cache AI narratives by prompt so re-running an identical configuration
+// is instant and does not re-bill the API. Cleared on page reload.
+const _aiCache = new Map<string, string>();
+
 function loadSavedConfigs(): void {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
@@ -107,13 +111,17 @@ function renderSavedConfigsHTML(): string {
   <div class="sw-config-card" style="background:var(--sw-surface-alt);border:1px solid var(--sw-border);border-radius:10px;padding:14px 18px;margin-bottom:14px">
     <div style="font-weight:700;font-size:0.82rem;color:var(--sw-text-primary);margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;gap:8px">
       <span>💾 Saved Configurations</span>
-      <button id="sw-save-config-btn" style="font-size:0.72rem;padding:4px 12px;border-radius:5px;border:1px solid var(--sw-border);background:var(--sw-surface);color:var(--sw-text-body);cursor:pointer">+ Save Current</button>
+      <div style="display:flex;gap:6px">
+        <button id="sw-compare-btn" style="font-size:0.72rem;padding:4px 12px;border-radius:5px;border:1px solid var(--sw-border);background:var(--sw-surface);color:var(--sw-text-body);cursor:pointer" title="Compute and compare all saved configurations side by side">⚖ Compare All</button>
+        <button id="sw-save-config-btn" style="font-size:0.72rem;padding:4px 12px;border-radius:5px;border:1px solid var(--sw-border);background:var(--sw-surface);color:var(--sw-text-body);cursor:pointer">+ Save Current</button>
+      </div>
     </div>
     <div id="sw-saved-list">
       ${_savedConfigs.length === 0
         ? '<div style="font-size:0.75rem;color:var(--sw-text-muted);font-style:italic">No saved configurations yet.</div>'
         : configItems}
     </div>
+    <div id="sw-compare-out" style="margin-top:12px"></div>
   </div>`;
 }
 
@@ -248,6 +256,10 @@ function renderSWPanelHTML(): string {
       <div class="sw-field-group">
         <label class="sw-label">Senior Engineer Fraction</label>
         <input id="sw-senior-frac" type="number" class="sw-config-inp" min="0" max="1" step="0.05" value="${inputs.teamSeniorFraction}" title="Fraction of team that are senior engineers (0.0–1.0).">
+      </div>
+      <div class="sw-field-group">
+        <label class="sw-label">UK Base Rate (£/PM)</label>
+        <input id="sw-base-rate" type="number" class="sw-config-inp" min="5000" max="120000" step="500" value="${inputs.baseRateGBP ?? 28000}" title="UK senior-blended bare rate per person-month, before overhead. All regional rates are relative to this. Override to match your engagement's rate library.">
       </div>
       <div class="sw-field-group" style="display:flex;flex-direction:column;gap:8px;justify-content:flex-end">
         <label style="display:flex;align-items:center;gap:8px;font-size:0.8rem;color:var(--sw-text-body);cursor:pointer">
@@ -611,6 +623,7 @@ function readConfig(): void {
   const vol        = parseInt((get('sw-vol') as HTMLInputElement)?.value) || 80_000;
   const overhead   = parseFloat((get('sw-overhead') as HTMLInputElement)?.value) || 1.60;
   const seniorFrac = parseFloat((get('sw-senior-frac') as HTMLInputElement)?.value) ?? 0.50;
+  const baseRate   = parseFloat((get('sw-base-rate') as HTMLInputElement)?.value);
   const maint      = (get('sw-inc-maint') as HTMLInputElement)?.checked ?? true;
   const cloud      = (get('sw-inc-cloud') as HTMLInputElement)?.checked ?? true;
 
@@ -620,6 +633,7 @@ function readConfig(): void {
   _swInputs.annualProductionVolume = Math.max(1, vol);
   _swInputs.overheadMultiplier     = Math.max(1, overhead);
   _swInputs.teamSeniorFraction     = Math.min(1, Math.max(0, isNaN(seniorFrac) ? 0.50 : seniorFrac));
+  _swInputs.baseRateGBP            = isNaN(baseRate) || baseRate <= 0 ? 28_000 : baseRate;
   _swInputs.includeMaintenanceCost = maint;
   _swInputs.includeCloudCost       = cloud;
 
@@ -680,9 +694,12 @@ function renderResults(result: SWProgramResult): void {
   // Summary cards
   const avgFTE = s.totalPersonMonths > 0 ? s.totalPersonMonths / (result.inputs.programLifeYears * 12) : 0;
   const nreTotal = s.nreTotal;
+  const vehicles = result.inputs.annualProductionVolume * result.inputs.programLifeYears;
+  const nrePerVeh       = vehicles > 0 ? nreTotal / vehicles : 0;                    // one-time dev, amortised
+  const lifecyclePerVeh = vehicles > 0 ? (s.grandTotal - nreTotal) / vehicles : 0;   // recurring over life
   const cards: { label: string; value: string; sub: string; color: string }[] = [
     { label: 'Total Programme Cost',    value: fmtM(s.grandTotal),             sub: 'NRE + Lifecycle (all modules)',                color: '#2563eb' },
-    { label: 'Per Vehicle (SW Cost)',   value: `£${fmt(s.perVehicle, 0)}`,     sub: `${fmt(result.inputs.annualProductionVolume/1000,0)}k units/yr × ${result.inputs.programLifeYears}yr`, color: '#059669' },
+    { label: 'Per Vehicle (SW Cost)',   value: `£${fmt(s.perVehicle, 0)}`,     sub: `NRE £${fmt(nrePerVeh,0)} + Lifecycle £${fmt(lifecyclePerVeh,0)} · ${fmt(result.inputs.annualProductionVolume/1000,0)}k/yr × ${result.inputs.programLifeYears}yr`, color: '#059669' },
     { label: 'Total NRE',              value: fmtM(nreTotal),                  sub: 'Dev + Test + Integ + Tools + Cyber + Calib',  color: '#7c3aed' },
     { label: 'Total Person-Months',    value: `${fmt(s.totalPersonMonths, 0)} PM`, sub: `Avg team: ${fmt(avgFTE,0)} FTE over ${result.inputs.programLifeYears}yr`, color: '#d97706' },
     { label: 'Lifecycle (Maint+Cloud)',value: fmtM(s.totalMaintenance + s.totalCloud), sub: `${fmt((s.totalMaintenance+s.totalCloud)/s.grandTotal*100,0)}% of total programme`, color: '#0891b2' },
@@ -722,10 +739,11 @@ function renderResults(result: SWProgramResult): void {
         </div>`).join('')}
       </div>
       <div style="font-size:0.75rem;color:var(--sw-text-secondary);background:var(--sw-surface-alt);border:1px solid var(--sw-border);border-radius:6px;padding:10px 14px">
-        <strong>Uncertainty model:</strong> Triangular distributions on 9 cost buckets —
-        labour ±35%, testing ±30%, integration ±35%, toolchain ±25%, cybersec ±50%,
-        calibration ±50%, maintenance ±35%, cloud ±60%, IP licensing ±30%.
-        Range P10→P90: <strong>${fmtM(span)}</strong> — reflects real-world programme uncertainty.
+        <strong>Uncertainty model:</strong> Triangular distributions on 9 cost buckets
+        (labour ±35%, testing ±30%, cybersec ±50%, cloud ±60%, etc.) combined with a
+        <strong>55% programme-wide correlation</strong> — schedule slips inflate dev, test and
+        integration together, so the tail reflects real correlated overrun rather than a
+        cancelling independent sum. Range P10→P90: <strong>${fmtM(span)}</strong>.
       </div>`;
   }
 
@@ -902,8 +920,9 @@ function renderResults(result: SWProgramResult): void {
     const diff   = (!isThis && b.totalM > 0) ? ((thisM - b.totalM) / b.totalM * 100) : 0;
     const diffFmt = isThis ? '⭐ Base' : `${diff >= 0 ? '+' : ''}${fmt(diff, 0)}%`;
     const diffColor = isThis ? '#2563eb' : diff > 20 ? '#ef4444' : diff < -20 ? '#059669' : '#d97706';
+    const cite = isThis ? '' : ` <span style="cursor:help;color:var(--sw-text-muted);font-size:0.7rem" title="Source: ${esc(b.source)}">ⓘ</span>`;
     return `<tr ${isThis ? 'style="background:var(--sw-accent-bg);font-weight:700"' : ''}>
-      <td>${isThis ? '⭐ ' : ''}${esc(b.vehicle)}</td>
+      <td>${isThis ? '⭐ ' : ''}${esc(b.vehicle)}${cite}</td>
       <td class="sw-num">${b.totalM > 0 ? fmtM(b.totalM * 1_000_000) : fmtM(s.grandTotal)}</td>
       <td class="sw-num">£${b.perVehicle > 0 ? fmt(b.perVehicle, 0) : fmt(s.perVehicle, 0)}</td>
       <td class="sw-num" style="color:${diffColor};font-weight:600">${diffFmt}</td>
@@ -1102,19 +1121,7 @@ Provide:
 3. Key risk factors requiring management attention
 Keep response concise and actionable (under 250 words).`;
 
-  // Abort the request if the endpoint hangs so the button can't stick on "Generating…".
-  const ctrl = new AbortController();
-  const timeout = setTimeout(() => ctrl.abort(), 30_000);
-
-  fetch('/api/aichat', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ messages: [{ role: 'user', content: prompt }] }),
-    signal: ctrl.signal,
-  })
-  .then(r => r.ok ? r.json() : Promise.reject(r.statusText))
-  .then(data => {
-    const text: string = data.content || data.message || data.text || JSON.stringify(data);
+  const render = (text: string, cached: boolean) => {
     // The response is external content: HTML-escape it first, THEN apply the
     // limited markdown (bold, paragraphs) so a malicious payload can't inject markup.
     const formatted = esc(text)
@@ -1125,8 +1132,30 @@ Keep response concise and actionable (under 250 words).`;
       <div style="background:var(--sw-surface-alt);border:1px solid var(--sw-border);border-radius:8px;padding:14px 18px;font-size:0.82rem;color:var(--sw-text-body);line-height:1.6">
         <p style="margin:0 0 8px">${formatted}</p>
       </div>
-      <div style="font-size:0.7rem;color:var(--sw-text-muted);margin-top:6px;text-align:right">Generated by AI · CostVision</div>`;
+      <div style="font-size:0.7rem;color:var(--sw-text-muted);margin-top:6px;text-align:right">Generated by AI · CostVision${cached ? ' · cached' : ''}</div>`;
     btnEl.style.display = 'none';
+  };
+
+  // Rec 9: serve identical configurations from cache — instant, no API re-bill.
+  const cachedReply = _aiCache.get(prompt);
+  if (cachedReply) { render(cachedReply, true); btnEl.disabled = false; btnEl.textContent = '✨ AI Analysis'; return; }
+
+  // Abort the request if the endpoint hangs so the button can't stick on "Generating…".
+  const ctrl = new AbortController();
+  const timeout = setTimeout(() => ctrl.abort(), 30_000);
+  const apiKey = localStorage.getItem('sc-api-key') ?? '';
+
+  fetch('/api/aichat', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...(apiKey ? { 'x-api-key': apiKey } : {}) },
+    body: JSON.stringify({ message: prompt }),
+    signal: ctrl.signal,
+  })
+  .then(r => r.ok ? r.json() : Promise.reject(r.statusText))
+  .then((data: { reply?: string; error?: string }) => {
+    const text = data.reply ?? data.error ?? 'No response from AI service.';
+    if (data.reply) _aiCache.set(prompt, data.reply);
+    render(text, false);
   })
   .catch(err => {
     const msg = ctrl.signal.aborted ? 'request timed out after 30s' : String(err);
@@ -1479,6 +1508,62 @@ function deleteConfig(id: string): void {
   updateSavedConfigsUI();
 }
 
+// Rec 7: side-by-side comparison of saved scenarios (plus the current inputs).
+function compareConfigs(): void {
+  const out = document.getElementById('sw-compare-out');
+  if (!out) return;
+  readConfig();
+
+  const scenarios: { name: string; inputs: SWProgramInputs }[] = [
+    { name: '● Current', inputs: _swInputs },
+    ...(_savedConfigs.map(c => ({ name: c.name, inputs: c.inputs }))),
+  ];
+  if (scenarios.length < 2) {
+    out.innerHTML = `<div style="font-size:0.75rem;color:var(--sw-text-muted);font-style:italic">Save at least one configuration to compare it against the current inputs.</div>`;
+    return;
+  }
+
+  const computed = scenarios.map(sc => {
+    try { return { name: sc.name, r: computeSWProgram(sc.inputs) }; }
+    catch { return null; }
+  }).filter((x): x is { name: string; r: SWProgramResult } => x != null);
+
+  // Best (lowest grandTotal) highlighted per the Total row.
+  const minTotal = Math.min(...computed.map(c => c.r.summary.grandTotal));
+
+  const head = `<th style="text-align:left">Metric</th>` +
+    computed.map(c => `<th class="sw-num">${esc(c.name)}</th>`).join('');
+
+  const rows: Array<[string, (c: { r: SWProgramResult }) => string, ((c: { r: SWProgramResult }) => boolean)?]> = [
+    ['Total Programme', c => fmtM(c.r.summary.grandTotal), c => c.r.summary.grandTotal === minTotal],
+    ['Per Vehicle',     c => `£${fmt(c.r.summary.perVehicle, 0)}`],
+    ['Total NRE',       c => fmtM(c.r.summary.nreTotal)],
+    ['Lifecycle',       c => fmtM(c.r.summary.totalMaintenance + c.r.summary.totalCloud + c.r.summary.totalLicensing)],
+    ['MC P50',          c => fmtM(c.r.monteCarlo.p50)],
+    ['MC P90',          c => fmtM(c.r.monteCarlo.p90)],
+    ['Region',          c => c.r.inputs.region],
+    ['Dev Source',      c => c.r.inputs.devSource.replace('_', ' ')],
+    ['Active Modules',  c => `${c.r.modules.length}/43`],
+  ];
+
+  const bodyRows = rows.map(([label, fn, isBest]) => {
+    const cells = computed.map(c => {
+      const best = isBest?.(c) ?? false;
+      return `<td class="sw-num"${best ? ' style="color:#059669;font-weight:700"' : ''}>${esc(fn(c))}${best ? ' ✓' : ''}</td>`;
+    }).join('');
+    return `<tr><td style="font-weight:600">${esc(label)}</td>${cells}</tr>`;
+  }).join('');
+
+  out.innerHTML = `
+    <div style="font-size:0.78rem;font-weight:700;color:var(--sw-text-primary);margin-bottom:8px">⚖ Scenario Comparison <span style="font-weight:400;color:var(--sw-text-muted)">(✓ = lowest total)</span></div>
+    <div style="overflow-x:auto">
+      <table class="sw-data-table" style="font-size:0.78rem">
+        <thead><tr>${head}</tr></thead>
+        <tbody>${bodyRows}</tbody>
+      </table>
+    </div>`;
+}
+
 function updateSavedConfigsUI(): void {
   const listEl = document.getElementById('sw-saved-list');
   if (!listEl) return;
@@ -1616,6 +1701,9 @@ export function wireSWPanel(): void {
       saveConfig(name.trim());
     }
   });
+
+  // Rec 7: Compare all saved scenarios side by side
+  document.getElementById('sw-compare-btn')?.addEventListener('click', compareConfigs);
 
   // Rec 10: Load/delete saved config buttons
   document.querySelectorAll<HTMLButtonElement>('.sw-saved-load').forEach(btn => {

@@ -61,6 +61,9 @@ export interface SWProgramInputs {
   overheadMultiplier:       number;   // fully loaded: 1.5 typical (benefits 35%, facilities 15%)
   includeMaintenanceCost:   boolean;
   includeCloudCost:         boolean;
+  /** UK senior-blended bare rate (£/PM) before overhead. Defaults to UK_PM_RATE_GBP
+   *  when unset — lets a costing engineer override the rate library per engagement. */
+  baseRateGBP?:             number;
 }
 
 export interface SWDevBreakdown {
@@ -714,7 +717,8 @@ function computeModuleCost(
   prog:   SWProgramInputs
 ): SWModuleCostResult {
   const seniorMult  = prog.teamSeniorFraction * 1.20 + (1 - prog.teamSeniorFraction) * 0.75;
-  const regionRate  = UK_PM_RATE_GBP * REGION_MULT[prog.region] * DEV_SOURCE_MULT[prog.devSource]
+  const baseRate    = prog.baseRateGBP && prog.baseRateGBP > 0 ? prog.baseRateGBP : UK_PM_RATE_GBP;
+  const regionRate  = baseRate * REGION_MULT[prog.region] * DEV_SOURCE_MULT[prog.devSource]
                       * seniorMult * prog.overheadMultiplier;
 
   const asilDev    = ASIL_DEV_MULT[input.asil];
@@ -813,6 +817,15 @@ function computeModuleCost(
 
 // ─── Monte Carlo simulation ───────────────────────────────────────────────────
 
+/**
+ * Fraction of each bucket's uncertainty that is systemic (programme-wide) rather
+ * than idiosyncratic. Real overruns are correlated — a programme that slips
+ * schedule inflates development, testing AND integration together — so a pure
+ * independent-sum model understates the tail. We blend a single shared draw
+ * across all buckets with per-bucket draws at this weight.
+ */
+const MC_CORRELATION = 0.55;
+
 function runMonteCarlo(prog: SWProgramInputs, s: SWSummary, iterations = 1000): SWMonteCarlo {
   // Triangular distribution sampler
   function tri(a: number, m: number, b: number): number {
@@ -822,18 +835,39 @@ function runMonteCarlo(prog: SWProgramInputs, s: SWSummary, iterations = 1000): 
     return b - Math.sqrt((1 - u) * (b - a) * (b - m));
   }
 
+  const rho = MC_CORRELATION;
+  // Each bucket's effective multiplier = rho·(shared programme swing) +
+  // (1-rho)·(bucket-specific swing). The shared draw is mapped onto each
+  // bucket's own min/max so correlation widens the tail without distorting
+  // any single bucket's range.
+  const lerp = (lo: number, hi: number, t: number) => lo + (hi - lo) * t;
+  const buckets: Array<[number, number, number, number]> = [
+    // [value, low, mode, high]
+    [s.totalDevelopment,   0.70, 1.00, 1.40],
+    [s.totalTesting,       0.75, 1.00, 1.35],
+    [s.totalIntegration,   0.70, 1.00, 1.40],
+    [s.totalToolchain,     0.85, 1.00, 1.25],
+    [s.totalCybersecurity, 0.65, 1.00, 1.50],
+    [s.totalCalibration,   0.70, 1.00, 1.50],
+    [s.totalMaintenance,   0.75, 1.00, 1.35],
+    [s.totalCloud,         0.50, 1.00, 1.60],
+    [s.totalLicensing,     0.80, 1.00, 1.30],
+  ];
+
   const totals: number[] = [];
   for (let i = 0; i < iterations; i++) {
-    const total =
-      s.totalDevelopment   * tri(0.70, 1.00, 1.40) +
-      s.totalTesting       * tri(0.75, 1.00, 1.35) +
-      s.totalIntegration   * tri(0.70, 1.00, 1.40) +
-      s.totalToolchain     * tri(0.85, 1.00, 1.25) +
-      s.totalCybersecurity * tri(0.65, 1.00, 1.50) +
-      s.totalCalibration   * tri(0.70, 1.00, 1.50) +
-      s.totalMaintenance   * tri(0.75, 1.00, 1.35) +
-      s.totalCloud         * tri(0.50, 1.00, 1.60) +
-      s.totalLicensing     * tri(0.80, 1.00, 1.30);
+    // One shared programme-wide percentile draw (0..1) reused across buckets.
+    const sharedQ = Math.random();
+    let total = 0;
+    for (const [val, lo, mode, hi] of buckets) {
+      // Map the shared quantile onto this bucket's triangular range.
+      const Fc = (mode - lo) / (hi - lo);
+      const shared = sharedQ < Fc
+        ? lo + Math.sqrt(sharedQ * (hi - lo) * (mode - lo))
+        : hi - Math.sqrt((1 - sharedQ) * (hi - lo) * (hi - mode));
+      const idio = tri(lo, mode, hi);
+      total += val * lerp(idio, shared, rho);
+    }
     totals.push(total);
   }
   totals.sort((a, b) => a - b);
@@ -1019,6 +1053,7 @@ export function defaultSWProgramInputs(): SWProgramInputs {
     overheadMultiplier:      1.60,
     includeMaintenanceCost:  true,
     includeCloudCost:        true,
+    baseRateGBP:             UK_PM_RATE_GBP,
     modules: SW_MODULES.map(m => ({
       moduleId:           m.id,
       enabled:            true,
