@@ -87,6 +87,8 @@ async function main(): Promise<void> {
       const token = `eyJhbGciOiJIUzI1NiJ9.${payload}.smoke`;
       localStorage.setItem('auth_token', token);
       localStorage.setItem('auth_user', JSON.stringify({ name: 'Smoke' }));
+      // Suppress the first-run product tour, whose overlay intercepts clicks.
+      localStorage.setItem('cv-tour-v41-seen', '1');
     });
 
     await page.goto(BASE, { waitUntil: 'domcontentloaded' });
