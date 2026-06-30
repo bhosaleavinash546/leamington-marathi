@@ -1,12 +1,13 @@
 {
   "name": "auto-cost-reduction-ai",
   "private": true,
-  "version": "2.1.0",
+  "version": "3.0.0",
   "type": "module",
   "scripts": {
     "dev": "concurrently -n SERVER,VITE -c cyan,yellow \"node server.mjs\" \"vite --port 5173\"",
     "server": "node server.mjs",
     "build": "tsc && vite build",
+    "test": "node --test",
     "preview": "vite preview",
     "mobile:build": "tsc && vite build && npx cap sync",
     "mobile:android": "npx cap open android",

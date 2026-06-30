@@ -15,6 +15,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import nodemailer from 'nodemailer';
 import Database from 'better-sqlite3';
+import { computeShouldCost, simulateShouldCost, listMaterials, listProcesses, listRegions, MATERIALS, PROCESSES } from './costing-engine.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -62,6 +63,27 @@ const PORT        = process.env.PORT        || 3001;
 const JWT_SECRET  = process.env.JWT_SECRET  || 'autocost-ai-dev-secret-2025';
 const USERS_FILE  = path.join(__dirname, 'users.json');
 const APP_VERSION = '3.0.0';
+
+// ─── LLM client factory: built-in retry/backoff + per-request timeout ─────────
+// The Anthropic SDK retries transient errors (408/409/429/5xx + connection drops)
+// with exponential backoff when maxRetries > 0, and aborts a hung call at timeout.
+const LLM_MAX_RETRIES = 3;
+const LLM_TIMEOUT_MS  = 90_000;
+function makeAnthropic(apiKey) {
+  return new Anthropic({ apiKey: (apiKey || '').trim(), maxRetries: LLM_MAX_RETRIES, timeout: LLM_TIMEOUT_MS });
+}
+// Map raw SDK/API errors to safe, non-leaking client messages.
+function safeLlmError(err) {
+  const status = err?.status || err?.response?.status;
+  const msg = err?.message || '';
+  if (status === 401) return 'Invalid or missing API key.';
+  if (status === 400) return 'The AI request was rejected — please adjust inputs and retry.';
+  if (status === 429) return 'AI provider rate limit reached. Please retry in a moment.';
+  if (status === 529 || status === 503) return 'The AI service is temporarily overloaded. Please retry shortly.';
+  if (typeof status === 'number' && status >= 500) return 'The AI service returned an error. Please retry shortly.';
+  if (/timeout|ETIMEDOUT|ECONNRESET|APIConnection/i.test(msg)) return 'The AI request timed out. Please retry.';
+  return 'AI request failed. Please try again.';
+}
 
 // ─── SQLite Database ──────────────────────────────────────────────────────────
 const DATA_DIR = path.join(__dirname, 'data');
@@ -4148,7 +4170,7 @@ app.post('/api/cad-analyze', requireAuth, async (req, res) => {
   await refreshPriceCache(null).catch(() => {});
   const livePrices = getPriceString();
 
-  const client = new Anthropic({ apiKey: apiKey.trim() });
+  const client = makeAnthropic(apiKey);
   const prompt = buildCadCostPrompt(geometry, config || {}, livePrices);
 
   try {
@@ -4191,7 +4213,7 @@ app.post('/api/cad-analyze', requireAuth, async (req, res) => {
     return res.json(result);
   } catch (err) {
     console.error('[CAD Analyze Error]', err.message);
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: safeLlmError(err) });
   }
 });
 
@@ -4272,7 +4294,7 @@ function autoSaveProject(userId, projectId, systemName, subassemblyName, partNam
   }
 }
 
-app.post('/api/analyze', requireAuth, async (req, res) => {
+app.post('/api/analyze', requireAuth, rateLimit(40, 60 * 60 * 1000), async (req, res) => {
   const { config, systemName, subassemblyName, partName, enableSearch, searchApiKey, cadGeometry } = req.body;
   if (!config?.apiKey?.trim()) return res.status(400).json({ error: 'Anthropic API key is required.' });
 
@@ -4310,7 +4332,7 @@ app.post('/api/analyze', requireAuth, async (req, res) => {
     }
   }
 
-  const client = new Anthropic({ apiKey: config.apiKey });
+  const client = makeAnthropic(config.apiKey);
   const messages = [{ role: 'user', content: buildAnalysisPrompt(config, sysName, subName, prtName, enableSearch, cadGeometry) }];
   const sources = [];
 
@@ -4381,14 +4403,15 @@ app.post('/api/analyze', requireAuth, async (req, res) => {
     throw new Error('Max search iterations reached — try disabling web search.');
   } catch (err) {
     console.error('[Analysis Error]', err.message);
-    if (useSSE) { emit({ type: 'error', message: err.message }); res.end(); }
-    else res.status(500).json({ error: err.message });
+    const safe = safeLlmError(err);
+    if (useSSE) { emit({ type: 'error', message: safe }); res.end(); }
+    else res.status(500).json({ error: safe });
   }
 });
 
 // ─── AI CHAT ROUTE ────────────────────────────────────────────────────────────
 
-app.post('/api/chat', requireAuth, async (req, res) => {
+app.post('/api/chat', requireAuth, rateLimit(120, 60 * 60 * 1000), async (req, res) => {
   const { apiKey, ideas, config, systemName, subassemblyName, history, message } = req.body;
   if (!apiKey?.trim()) return res.status(400).json({ error: 'API key required.' });
   if (!message?.trim()) return res.status(400).json({ error: 'Message required.' });
@@ -4436,7 +4459,7 @@ RULES:
   }
 
   try {
-    const client = new Anthropic({ apiKey: apiKey.trim() });
+    const client = makeAnthropic(apiKey);
     const stream = await client.messages.create({
       model: 'claude-opus-4-8',
       max_tokens: 1500,
@@ -4464,8 +4487,9 @@ RULES:
     }
   } catch (err) {
     console.error('[Chat Error]', err.message);
-    if (useSSE) { res.write(`data: ${JSON.stringify({ type: 'error', message: err.message })}\n\n`); res.end(); }
-    else res.status(500).json({ error: err.message });
+    const safe = safeLlmError(err);
+    if (useSSE) { res.write(`data: ${JSON.stringify({ type: 'error', message: safe })}\n\n`); res.end(); }
+    else res.status(500).json({ error: safe });
   }
 });
 
@@ -4589,11 +4613,11 @@ async function seedAdminAccount() {
 
 // ─── PATENT WATCH ─────────────────────────────────────────────────────────────
 
-app.post('/api/patent-watch', rateLimit(20, 60 * 60 * 1000), async (req, res) => {
+app.post('/api/patent-watch', requireAuth, rateLimit(20, 60 * 60 * 1000), async (req, res) => {
   const { title, description, apiKey } = req.body;
   if (!title || !apiKey) return res.status(400).json({ error: 'title and apiKey required' });
   try {
-    const client = new Anthropic({ apiKey });
+    const client = makeAnthropic(apiKey);
     const msg = await client.messages.create({
       model: 'claude-opus-4-8',
       max_tokens: 600,
@@ -4614,53 +4638,103 @@ Keep it practical and actionable for an engineering team.`,
     const analysis = msg.content[0]?.type === 'text' ? msg.content[0].text : 'Analysis unavailable';
     res.json({ analysis });
   } catch (e) {
-    res.status(500).json({ error: e.message || 'Patent search failed' });
+    res.status(500).json({ error: safeLlmError(e) });
   }
 });
 
 // ─── SHOULD-COST ──────────────────────────────────────────────────────────────
 
-app.post('/api/should-cost', rateLimit(30, 60 * 60 * 1000), async (req, res) => {
-  const { partName, material, process, weightKg, annualVolume, quotedCost, region, currency, apiKey } = req.body;
-  if (!partName || !material || !process || !weightKg || !annualVolume || !apiKey) {
-    return res.status(400).json({ error: 'Missing required fields' });
+// Catalogue endpoint so the UI populates dropdowns from the engine (single source of truth)
+app.get('/api/should-cost/catalogue', (_req, res) => {
+  res.json({
+    materials: listMaterials(),
+    processes: listProcesses(),
+    regions: listRegions(),
+    // compatibility map: process -> allowed material families, and material -> family
+    materialFamilies: Object.fromEntries(Object.entries(MATERIALS).map(([k, v]) => [k, v.family])),
+    processFamilies: Object.fromEntries(Object.entries(PROCESSES).map(([k, v]) => [k, v.families])),
+  });
+});
+
+app.post('/api/should-cost', requireAuth, rateLimit(60, 60 * 60 * 1000), async (req, res) => {
+  const { partName, material, process, weightKg, annualVolume, quotedCost, region, currency = 'EUR', apiKey } = req.body;
+  if (!partName || !material || !process || !weightKg || !annualVolume) {
+    return res.status(400).json({ error: 'Missing required fields: partName, material, process, weightKg, annualVolume.' });
   }
+
+  // ── 1. Deterministic bottom-up cost (NO LLM — real rate × time / mass × price) ─
+  let calc, sim;
   try {
-    const client = new Anthropic({ apiKey });
-    const prompt = `You are an automotive cost engineering expert specialising in should-cost modelling. Build a bottom-up should-cost estimate for this part:
-
-Part: ${partName}
-Material: ${material}
-Process: ${process}
-Part weight: ${weightKg} kg
-Annual volume: ${annualVolume.toLocaleString()} units/year
-Plant region: ${region}
-Currency: ${currency}
-${quotedCost ? `Supplier quoted cost: ${currency} ${quotedCost} per unit` : ''}
-
-Return ONLY a JSON object with these exact fields (no markdown):
-{
-  "materialCost": "${currency} X.XX",
-  "processCost": "${currency} X.XX",
-  "overheadCost": "${currency} X.XX",
-  "totalShouldCost": "${currency} X.XX",
-  ${quotedCost ? '"gapVsQuote": "±X.XX (X%)",' : ''}
-  "explanation": "2-3 sentence explanation of the breakdown",
-  "assumptions": ["assumption 1", "assumption 2", "assumption 3"],
-  "negotiationLeverage": "1-2 sentences on negotiation strategy based on the gap"
-}`;
-    const msg = await client.messages.create({
-      model: 'claude-opus-4-8',
-      max_tokens: 800,
-      messages: [{ role: 'user', content: prompt }],
-    });
-    const text = msg.content[0]?.type === 'text' ? msg.content[0].text : '{}';
-    const clean = text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
-    const data = JSON.parse(clean);
-    res.json(data);
+    calc = computeShouldCost({ material, process, weightKg: Number(weightKg), annualVolume: Number(annualVolume), region: region || 'Germany' });
+    sim  = simulateShouldCost({ material, process, weightKg: Number(weightKg), annualVolume: Number(annualVolume), region: region || 'Germany' });
   } catch (e) {
-    res.status(500).json({ error: e.message || 'Calculation failed' });
+    return res.status(400).json({ error: e.message || 'Invalid costing parameters.' });
   }
+
+  const b = calc.breakdown;
+  const fmt = (n) => `${currency} ${Number(n).toFixed(2)}`;
+  const total = calc.totalShouldCost;
+  const processCost = b.machine.value + b.labour.value + b.setup.value + b.tooling.value;
+
+  // Gap vs supplier quote (deterministic)
+  let gapVsQuote;
+  if (quotedCost && Number(quotedCost) > 0) {
+    const q = Number(quotedCost);
+    const delta = q - total;
+    const pct = total > 0 ? (delta / total) * 100 : 0;
+    gapVsQuote = `${delta >= 0 ? '+' : ''}${currency} ${delta.toFixed(2)} (${pct >= 0 ? '+' : ''}${pct.toFixed(1)}% vs should-cost)`;
+  }
+
+  const result = {
+    engine: 'deterministic',
+    currency,
+    materialCost: fmt(b.material.value),
+    processCost: fmt(processCost),
+    overheadCost: fmt(b.overhead.value + b.sgaProfit.value),
+    totalShouldCost: fmt(total),
+    totalValue: total,
+    gapVsQuote,
+    breakdown: b,
+    drivers: calc.drivers,
+    simulation: { p10: fmt(sim.p10), p50: fmt(sim.p50), p90: fmt(sim.p90), p10Value: sim.p10, p50Value: sim.p50, p90Value: sim.p90, stdev: sim.stdev },
+    assumptions: [
+      `Material ${material} @ ${currency} ${calc.drivers.pricePerKg}/kg, buy-to-fly input mass ${calc.drivers.inputMassKg} kg (process utilisation ${(calc.drivers.utilisation * 100).toFixed(0)}%).`,
+      `${process}: cycle ${calc.drivers.cycleSecPerPart}s/part, machine rate ${currency} ${calc.drivers.machineRate}/hr, ${calc.drivers.operators} operator(s) @ ${currency} ${calc.drivers.labourRate}/hr (${region}).`,
+      `Tooling ${currency} ${calc.drivers.toolingTotal.toLocaleString()} amortised over ${calc.drivers.amortVolume.toLocaleString()} parts; scrap ${calc.drivers.scrapPct}%.`,
+      `Overhead and SG&A/profit applied per ${region} factory norms.`,
+    ],
+    explanation: `Bottom-up should-cost for ${partName} is ${fmt(total)} per unit at ${Number(annualVolume).toLocaleString()}/yr. Material is ${b.material.pct}% of cost, conversion (machine+labour+setup) ${(b.machine.pct + b.labour.pct + b.setup.pct).toFixed(1)}%, tooling ${b.tooling.pct}%, overhead+SG&A ${(b.overhead.pct + b.sgaProfit.pct).toFixed(1)}%. Monte-Carlo P10–P90 range: ${fmt(sim.p10)}–${fmt(sim.p90)}.`,
+    negotiationLeverage: quotedCost && Number(quotedCost) > 0
+      ? (Number(quotedCost) > total
+          ? `Quote sits ${fmt(Number(quotedCost) - total)} above should-cost (above the P90 of ${fmt(sim.p90)}${Number(quotedCost) > sim.p90 ? ' — outside the modelled range' : ''}). Challenge conversion and overhead; target ${fmt(sim.p50)}.`
+          : `Quote is at or below should-cost (${fmt(total)}) — competitive; protect it with a long-term agreement and verify margin sustainability.`)
+      : `Benchmark target ${fmt(sim.p50)} (P50). Material at ${b.material.pct}% is the largest lever — focus resourcing and design-to-cost there first.`,
+  };
+
+  // ── 2. Optional LLM enrichment (qualitative only — numbers stay deterministic) ─
+  if (apiKey) {
+    try {
+      const client = makeAnthropic(apiKey);
+      const prompt = `You are a 20-year automotive cost engineer. A DETERMINISTIC should-cost model has produced these figures for "${partName}" (${material}, ${process}, ${weightKg}kg, ${Number(annualVolume).toLocaleString()}/yr, ${region}):
+- Total should-cost: ${fmt(total)} (Monte-Carlo P10–P90 ${fmt(sim.p10)}–${fmt(sim.p90)})
+- Material ${fmt(b.material.value)} | Machine ${fmt(b.machine.value)} | Labour ${fmt(b.labour.value)} | Tooling ${fmt(b.tooling.value)} | Overhead+SG&A ${fmt(b.overhead.value + b.sgaProfit.value)}
+${quotedCost ? `- Supplier quote: ${currency} ${quotedCost} (gap ${gapVsQuote})` : ''}
+
+Do NOT change any number. Return ONLY JSON: {"explanation":"2-3 sentences interpreting these figures","negotiationLeverage":"1-2 sentence negotiation strategy","assumptions":["3-5 short engineering caveats specific to this part/process"]}`;
+      const msg = await client.messages.create({ model: 'claude-opus-4-8', max_tokens: 700, messages: [{ role: 'user', content: prompt }] });
+      const text = msg.content[0]?.type === 'text' ? msg.content[0].text : '{}';
+      const clean = text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+      const llm = JSON.parse(clean);
+      if (typeof llm.explanation === 'string' && llm.explanation.trim()) result.explanation = llm.explanation.trim();
+      if (typeof llm.negotiationLeverage === 'string' && llm.negotiationLeverage.trim()) result.negotiationLeverage = llm.negotiationLeverage.trim();
+      if (Array.isArray(llm.assumptions) && llm.assumptions.length) result.assumptions = llm.assumptions.filter(a => typeof a === 'string').slice(0, 6);
+      result.engine = 'deterministic+ai-narrative';
+    } catch {
+      // LLM enrichment is best-effort; deterministic numbers already populated.
+    }
+  }
+
+  res.json(result);
 });
 
 // ─── WEBHOOK TEST ─────────────────────────────────────────────────────────────
@@ -4680,11 +4754,11 @@ app.post('/api/webhooks/test', requireAuth, async (req, res) => {
 });
 
 // ─── CAD Diff Analysis ───────────────────────────────────────────────────────
-app.post('/api/cad-diff', rateLimit(15, 60 * 60 * 1000), async (req, res) => {
+app.post('/api/cad-diff', requireAuth, rateLimit(15, 60 * 60 * 1000), async (req, res) => {
   const { designA, designB, apiKey } = req.body;
   if (!designA || !designB || !apiKey) return res.status(400).json({ error: 'designA, designB, and apiKey required' });
   try {
-    const client = new Anthropic({ apiKey });
+    const client = makeAnthropic(apiKey);
     const prompt = `You are an automotive DFMA expert. Two design revisions are described. Identify key geometric, process, and material differences then generate cost reduction ideas driven by those deltas.
 
 DESIGN A (Current): ${designA}
@@ -4700,7 +4774,7 @@ Return ONLY the JSON array with no markdown fences.`;
     const clean = text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
     res.json({ ideas: JSON.parse(clean) });
   } catch (e) {
-    res.status(500).json({ error: e.message || 'Analysis failed' });
+    res.status(500).json({ error: safeLlmError(e) });
   }
 });
 
@@ -4742,7 +4816,7 @@ app.post('/api/teardown-vision', requireAuth, rateLimit(10, 60 * 60 * 1000), asy
   const { imageBase64, mimeType, apiKey } = req.body;
   if (!imageBase64 || !apiKey) return res.status(400).json({ error: 'imageBase64 and apiKey required' });
   try {
-    const client = new Anthropic({ apiKey });
+    const client = makeAnthropic(apiKey);
     const msg = await client.messages.create({
       model: 'claude-opus-4-8',
       max_tokens: 700,
@@ -4757,7 +4831,7 @@ app.post('/api/teardown-vision', requireAuth, rateLimit(10, 60 * 60 * 1000), asy
     const description = msg.content[0]?.type === 'text' ? msg.content[0].text : '';
     res.json({ description });
   } catch (e) {
-    res.status(500).json({ error: e.message || 'Vision analysis failed' });
+    res.status(500).json({ error: safeLlmError(e) });
   }
 });
 
@@ -4883,7 +4957,7 @@ app.post('/api/assistant-chat', requireAuth, rateLimit(40, 60 * 60 * 1000), asyn
   const apiKey = req.headers['x-anthropic-key'] || process.env.ANTHROPIC_API_KEY;
   if (!apiKey) return res.status(400).json({ error: 'Anthropic API key not configured' });
   try {
-    const client = new Anthropic({ apiKey });
+    const client = makeAnthropic(apiKey);
     const messages = [
       ...history.slice(-8).map(h => ({ role: h.role, content: h.content })),
       { role: 'user', content: message.trim() },
