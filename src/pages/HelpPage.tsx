@@ -346,11 +346,11 @@ export default function HelpPage() {
                 </p>
                 <div className="flex flex-wrap gap-3">
                   <a
-                    href="mailto:bhosale.avinash@bhosale"
+                    href="mailto:avinash.bhosale8925@gmail.com"
                     className="flex items-center gap-2 px-4 py-2 rounded-lg bg-navy-700 border border-white/10 hover:border-gold-500/40 text-slate-300 hover:text-white text-sm transition-all"
                   >
                     <Mail size={14} className="text-gold-400" />
-                    bhosale.avinash bhosale
+                    avinash.bhosale8925@gmail.com
                   </a>
                   <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-navy-700 border border-white/10 text-slate-400 text-sm">
                     <Shield size={14} className="text-gold-400" />

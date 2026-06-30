@@ -69,8 +69,14 @@ export default function BomAnalysisPage() {
             partName: partName || subName || systemName,
           });
         }
-        setRows(parsed.slice(0, 20)); // cap at 20 for cost
-        setError('');
+        const MAX_BOM_ROWS = 100; // batch cap to bound API cost/time
+        if (parsed.length > MAX_BOM_ROWS) {
+          setRows(parsed.slice(0, MAX_BOM_ROWS));
+          setError(`Loaded the first ${MAX_BOM_ROWS} of ${parsed.length} parts (batch cap). Split larger BOMs across runs.`);
+        } else {
+          setRows(parsed);
+          setError('');
+        }
       } catch { setError('Failed to parse file. Please use the template format.'); }
     };
     reader.readAsBinaryString(file);
@@ -178,7 +184,7 @@ export default function BomAnalysisPage() {
       <div className="max-w-4xl mx-auto">
         <div className="mb-8">
           <h1 className="text-3xl font-black text-white mb-2">BOM Batch Analysis</h1>
-          <p className="text-slate-400">Upload a Bill of Materials to analyse multiple parts in one run. Capped at 20 parts per batch.</p>
+          <p className="text-slate-400">Upload a Bill of Materials to analyse multiple parts in one run. Up to 100 parts per batch.</p>
         </div>
 
         <div className="grid lg:grid-cols-2 gap-6 mb-8">

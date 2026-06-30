@@ -8,6 +8,7 @@ import Footer from './components/layout/Footer';
 import MobileNav from './components/mobile/MobileNav';
 import PageTransition from './components/layout/PageTransition';
 import ProtectedRoute from './components/auth/ProtectedRoute';
+import RouteErrorBoundary from './components/layout/RouteErrorBoundary';
 import { useIsNative } from './hooks/useMobile';
 import HomePage from './pages/HomePage';
 import AuthPage from './pages/AuthPage';
@@ -32,6 +33,7 @@ import AiChatbot from './components/AiChatbot';
 function AnimatedRoutes() {
   const location = useLocation();
   return (
+    <RouteErrorBoundary resetKey={location.pathname}>
     <AnimatePresence mode="wait" initial={false}>
       <Routes location={location} key={location.pathname}>
         {/* Public */}
@@ -62,6 +64,7 @@ function AnimatedRoutes() {
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </AnimatePresence>
+    </RouteErrorBoundary>
   );
 }
 
