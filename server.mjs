@@ -2894,6 +2894,8 @@ function seedMarketplaceIdeasFromFile(fileName, label) {
 seedMarketplaceIdeasFromFile('marketplace-extra-ideas.json', 'extra OEM-benchmarked ideas');
 // 200 premium luxury SUV Chassis & BIW ideas (ICE/MHEV/PHEV/BEV specific).
 seedMarketplaceIdeasFromFile('marketplace-suv-ideas.json', 'premium-SUV Chassis & BIW ideas');
+// 50 BEV 800-V battery & EDU cooling ideas.
+seedMarketplaceIdeasFromFile('marketplace-bev-cooling-ideas.json', 'BEV 800V cooling ideas');
 
 const CACHE_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
 
