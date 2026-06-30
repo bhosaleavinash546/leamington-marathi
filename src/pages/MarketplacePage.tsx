@@ -144,19 +144,20 @@ export default function MarketplacePage() {
 
   // ── Derived state ──────────────────────────────────────────────────────────
 
-  const selectedCommodity =
-    COMMODITY_GROUPS.find(g => g.key === filterCommodity) ?? COMMODITY_GROUPS[0];
+  // Resolve each idea's commodity key once (exact + keyword classifier) so no idea
+  // is orphaned. Memoised over the loaded set.
+  const commodityKeyOf = useMemo(() => {
+    const map = new Map<string, string | null>();
+    for (const idea of ideas) map.set(idea.id, getCommodityForSystem(idea.system)?.key ?? null);
+    return map;
+  }, [ideas]);
+  const inCommodity = (idea: MarketplaceIdea) =>
+    filterCommodity === 'All' || commodityKeyOf.get(idea.id) === filterCommodity;
 
-  // System dropdown: only show systems that exist in loaded data, scoped to commodity
+  // System dropdown: systems present in the data, scoped to the active commodity
   const availableSystems = (() => {
-    const inData = new Set(ideas.map(i => i.system));
-    if (filterCommodity === 'All') {
-      return ['All Systems', ...Array.from(inData).sort()];
-    }
-    return [
-      'All Systems',
-      ...selectedCommodity.systems.filter(s => inData.has(s)),
-    ];
+    const inScope = ideas.filter(inCommodity).map(i => i.system).filter(Boolean);
+    return ['All Systems', ...Array.from(new Set(inScope)).sort()];
   })();
 
   // Per-commodity idea counts for tab badges
@@ -165,7 +166,7 @@ export default function MarketplacePage() {
     commodityCounts[grp.key] =
       grp.key === 'All'
         ? ideas.length
-        : ideas.filter(i => grp.systems.includes(i.system)).length;
+        : ideas.filter(i => commodityKeyOf.get(i.id) === grp.key).length;
   }
 
   // Classify every idea once (powertrain + voltage) — memoised so it only re-runs
@@ -181,8 +182,7 @@ export default function MarketplacePage() {
       !searchQ ||
       idea.title.toLowerCase().includes(searchQ.toLowerCase()) ||
       idea.description.toLowerCase().includes(searchQ.toLowerCase());
-    const matchCommodity =
-      filterCommodity === 'All' || selectedCommodity.systems.includes(idea.system);
+    const matchCommodity = inCommodity(idea);
     const matchSys = filterSystem === 'All Systems' || idea.system === filterSystem;
     const matchDiff = filterDiff === 'All' || idea.difficulty === filterDiff;
     const matchLevel =
@@ -198,9 +198,7 @@ export default function MarketplacePage() {
   });
 
   // Counts for the powertrain / voltage chips (respecting the active commodity tab)
-  const facetScope = ideas.filter(
-    i => filterCommodity === 'All' || selectedCommodity.systems.includes(i.system)
-  );
+  const facetScope = ideas.filter(inCommodity);
   const powertrainCounts: Record<string, number> = { All: facetScope.length };
   const voltageCounts: Record<string, number> = { All: facetScope.length };
   for (const p of POWERTRAINS) powertrainCounts[p] = facetScope.filter(i => classification.get(i.id)?.powertrains.includes(p)).length;
