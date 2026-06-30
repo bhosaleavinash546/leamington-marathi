@@ -2861,36 +2861,39 @@ if (mktCount.c === 0) {
   }
 }
 
-// ─── Extra OEM-benchmarked VAVE ideas (add001–add300) — loaded from data file ──
-// 300 detailed cost-reduction ideas (150 part-level + 150 sub-assembly/system-level)
-// across all commodities, benchmarked to BMW, Mercedes, Porsche, Audi, Volvo, BYD,
-// Hongqi, Yangwang, Maextro, Luxeed, Nio, Zeekr, Li Auto, AITO, AVATR, Denza, Xpeng.
-{
+// ─── Curated marketplace idea packs — loaded from data files (upsert) ──────────
+// Each file is a JSON array of ideas carrying flat fields + a detailed `ideaData`
+// object. Upsert inserts on fresh DBs and backfills ideaData on existing DBs.
+function seedMarketplaceIdeasFromFile(fileName, label) {
   try {
-    const extraPath = path.join(__dirname, 'marketplace-extra-ideas.json');
-    if (fs.existsSync(extraPath)) {
-      const extraIdeas = JSON.parse(fs.readFileSync(extraPath, 'utf-8'));
-      // Upsert: insert on fresh DBs, and backfill ideaData / enriched fields on existing DBs.
-      const ins = db.prepare(`INSERT INTO marketplace_ideas (id,title,system,costSavingType,annualSaving,difficulty,timeToImplement,description,submittedBy,verified,stars,level,ideaData,status,createdAt)
-        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,'approved',?)
-        ON CONFLICT(id) DO UPDATE SET
-          ideaData=excluded.ideaData,
-          description=excluded.description,
-          level=excluded.level,
-          annualSaving=excluded.annualSaving`);
-      const ts = new Date().toISOString();
-      let n = 0;
-      for (const i of extraIdeas) {
-        const ideaDataStr = i.ideaData ? JSON.stringify(i.ideaData) : null;
-        ins.run(i.id, i.title, i.system, i.costSavingType, i.annualSaving, i.difficulty, i.timeToImplement, i.description, i.submittedBy, i.verified ? 1 : 0, i.stars || 0, i.level || null, ideaDataStr, ts);
-        n++;
-      }
-      console.log(`[Marketplace] Seeded/updated ${n} extra OEM-benchmarked ideas (with detailed ideaData)`);
+    const p = path.join(__dirname, fileName);
+    if (!fs.existsSync(p)) return;
+    const list = JSON.parse(fs.readFileSync(p, 'utf-8'));
+    const ins = db.prepare(`INSERT INTO marketplace_ideas (id,title,system,costSavingType,annualSaving,difficulty,timeToImplement,description,submittedBy,verified,stars,level,ideaData,status,createdAt)
+      VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,'approved',?)
+      ON CONFLICT(id) DO UPDATE SET
+        ideaData=excluded.ideaData,
+        description=excluded.description,
+        level=excluded.level,
+        annualSaving=excluded.annualSaving`);
+    const ts = new Date().toISOString();
+    let n = 0;
+    for (const i of list) {
+      const ideaDataStr = i.ideaData ? JSON.stringify(i.ideaData) : null;
+      ins.run(i.id, i.title, i.system, i.costSavingType, i.annualSaving, i.difficulty, i.timeToImplement, i.description, i.submittedBy, i.verified ? 1 : 0, i.stars || 0, i.level || null, ideaDataStr, ts);
+      n++;
     }
+    console.log(`[Marketplace] Seeded/updated ${n} ${label} (with detailed ideaData)`);
   } catch (e) {
-    console.log('[Marketplace] Extra ideas seed warning:', e.message);
+    console.log(`[Marketplace] ${label} seed warning:`, e.message);
   }
 }
+
+// 300 cross-commodity OEM-benchmarked ideas (BMW, Mercedes, Porsche, Audi, Volvo,
+// BYD, Hongqi, Yangwang, Maextro, Luxeed, Nio, Zeekr, Li Auto, AITO, AVATR, Denza, Xpeng).
+seedMarketplaceIdeasFromFile('marketplace-extra-ideas.json', 'extra OEM-benchmarked ideas');
+// 200 premium luxury SUV Chassis & BIW ideas (ICE/MHEV/PHEV/BEV specific).
+seedMarketplaceIdeasFromFile('marketplace-suv-ideas.json', 'premium-SUV Chassis & BIW ideas');
 
 const CACHE_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
 
