@@ -78,6 +78,17 @@ async function main(): Promise<void> {
     const pageErrors: string[] = [];
     page.on('pageerror', err => pageErrors.push(err.message));
 
+    // The app's inline auth guard redirects to /auth.html without a valid token.
+    // Seed a structurally-valid, non-expired JWT BEFORE any page script runs so
+    // the guard passes and we land on the dashboard. (The guard only checks token
+    // shape + exp, not signature; the SW panel is fully client-side.)
+    await page.addInitScript(() => {
+      const payload = btoa(JSON.stringify({ sub: 'smoke', exp: Math.floor(Date.now() / 1000) + 86_400 }));
+      const token = `eyJhbGciOiJIUzI1NiJ9.${payload}.smoke`;
+      localStorage.setItem('auth_token', token);
+      localStorage.setItem('auth_user', JSON.stringify({ name: 'Smoke' }));
+    });
+
     await page.goto(BASE, { waitUntil: 'domcontentloaded' });
     log('page loaded');
 
