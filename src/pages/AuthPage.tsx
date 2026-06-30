@@ -179,7 +179,7 @@ function Field({ label, icon: Icon, type = 'text', value, onChange, placeholder,
 // ─── Left branding panel ──────────────────────────────────────────────────────
 function BrandPanel() {
   return (
-    <div className="hidden lg:flex lg:w-[60%] flex-col justify-between p-10 bg-hero-gradient relative overflow-hidden">
+    <div data-theme="dark" className="hidden lg:flex lg:w-[60%] flex-col justify-between p-10 bg-hero-gradient relative overflow-hidden">
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-1/4 -left-20 w-80 h-80 bg-gold-500/5 rounded-full blur-3xl" />
         <div className="absolute bottom-1/4 right-0 w-60 h-60 bg-blue-500/5 rounded-full blur-3xl" />

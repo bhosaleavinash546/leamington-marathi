@@ -46,33 +46,33 @@
 [data-theme="light"] {
   color-scheme: light;
 
-  /* Navy → warm light palette */
-  --navy-50:    6   4   0;
-  --navy-100:  14   9   3;
-  --navy-200:  22  16   8;
-  --navy-300:  37  29  18;  /* body copy / primary text (warm near-black) */
-  --navy-400:  78  66  50;
-  --navy-500:  99  91  77;
-  --navy-600: 156 148 138;  /* placeholder / disabled text               */
-  --navy-700: 230 226 220;  /* dividers, subtle hover tint               */
-  --navy-800: 242 240 237;  /* input background, subtle panels           */
-  --navy-900: 255 255 255;  /* card / panel surface (pure white)         */
-  --navy-950: 247 246 243;  /* page background (warm off-white)          */
+  /* Navy → cool-neutral light palette (single temperature, crisp & professional) */
+  --navy-50:   15  23  42;  /* deepest ink (rare)                         */
+  --navy-100:  17  24  39;
+  --navy-200:  31  41  55;
+  --navy-300:  17  24  39;  /* primary text — #111827 crisp cool near-black */
+  --navy-400:  55  65  81;  /* #374151 secondary heading                  */
+  --navy-500:  75  85  99;  /* #4B5563 body-secondary                     */
+  --navy-600: 148 157 173;  /* #949DAD placeholder / disabled text        */
+  --navy-700: 226 230 236;  /* #E2E6EC dividers, borders                  */
+  --navy-800: 241 243 247;  /* #F1F3F7 input fill, subtle panels          */
+  --navy-900: 255 255 255;  /* #FFFFFF card / panel surface               */
+  --navy-950: 247 249 251;  /* #F7F9FB page background (cool off-white)    */
 
-  /* Gold → deeper champagne for contrast on light backgrounds */
-  --gold-300: 252 220 100;
-  --gold-400: 184 137  14;  /* readable on white — ~4.6:1 contrast ratio */
-  --gold-500: 154 114   9;  /* CTA button backgrounds on light           */
-  --gold-600: 125  91   6;  /* hover state                               */
+  /* Gold → deeper champagne for AA contrast on light backgrounds */
+  --gold-300: 161 121  20;  /* #A17914 — readable gold for small text/icons */
+  --gold-400: 176 130  16;  /* #B0820E — ~4.7:1 on white                    */
+  --gold-500: 150 111   9;  /* #966F09 — CTA bg, white text passes AA       */
+  --gold-600: 122  89   6;  /* hover / pressed                             */
 
   /* Hero gradient stays dark — auth brand panel keeps its premium dark look */
   --gradient-hero: linear-gradient(135deg, #0a0f1e 0%, #1a2235 60%, #0c1629 100%);
 
-  /* Surface shadows: light uses classic drop shadows, no glow ring */
-  --shadow-card:    0 1px 3px rgba(0,0,0,0.07), 0 2px 8px rgba(0,0,0,0.05);
-  --shadow-card-lg: 0 2px 8px rgba(0,0,0,0.08), 0 8px 24px rgba(0,0,0,0.08);
-  --shadow-modal:   0 4px 24px rgba(0,0,0,0.13), 0 16px 56px rgba(0,0,0,0.14);
-  --shadow-popover: 0 2px 8px rgba(0,0,0,0.09), 0 8px 20px rgba(0,0,0,0.10);
+  /* Surface shadows: crisp two-layer drop for clear card lift (no glow ring) */
+  --shadow-card:    0 1px 2px 0 rgba(17,24,39,0.04), 0 2px 5px -1px rgba(17,24,39,0.09);
+  --shadow-card-lg: 0 2px 6px -1px rgba(17,24,39,0.06), 0 10px 24px -4px rgba(17,24,39,0.12);
+  --shadow-modal:   0 8px 28px -6px rgba(17,24,39,0.16), 0 24px 56px -12px rgba(17,24,39,0.22);
+  --shadow-popover: 0 4px 12px -2px rgba(17,24,39,0.10), 0 8px 24px -6px rgba(17,24,39,0.14);
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -137,6 +137,31 @@
 [data-theme="light"] .text-slate-600 { color: #6b7280 !important; }
 [data-theme="light"] .text-slate-700 { color: #9ca3af !important; }
 
+/* Accent TEXT colours — the dark theme's pale -300/-400 tints are unreadable on
+   light tinted chips/badges. Remap to AA-contrast ~700 shades (the chip BACKGROUNDS
+   stay light, so these read cleanly). Scoped to light only; dark is untouched. */
+[data-theme="light"] .text-emerald-300, [data-theme="light"] .text-emerald-400,
+[data-theme="light"] .text-green-300,   [data-theme="light"] .text-green-400,
+[data-theme="light"] .text-success-300, [data-theme="light"] .text-success-400 { color: #047857 !important; }
+[data-theme="light"] .text-teal-300,    [data-theme="light"] .text-teal-400    { color: #0f766e !important; }
+[data-theme="light"] .text-lime-300,    [data-theme="light"] .text-lime-400    { color: #4d7c0f !important; }
+[data-theme="light"] .text-sky-300,     [data-theme="light"] .text-sky-400     { color: #0369a1 !important; }
+[data-theme="light"] .text-cyan-300,    [data-theme="light"] .text-cyan-400    { color: #0e7490 !important; }
+[data-theme="light"] .text-blue-300,    [data-theme="light"] .text-blue-400,
+[data-theme="light"] .text-info-300,    [data-theme="light"] .text-info-400    { color: #1d4ed8 !important; }
+[data-theme="light"] .text-indigo-300,  [data-theme="light"] .text-indigo-400  { color: #4338ca !important; }
+[data-theme="light"] .text-violet-300,  [data-theme="light"] .text-violet-400  { color: #6d28d9 !important; }
+[data-theme="light"] .text-purple-300,  [data-theme="light"] .text-purple-400  { color: #7e22ce !important; }
+[data-theme="light"] .text-fuchsia-300, [data-theme="light"] .text-fuchsia-400 { color: #a21caf !important; }
+[data-theme="light"] .text-amber-300,   [data-theme="light"] .text-amber-400,
+[data-theme="light"] .text-yellow-300,  [data-theme="light"] .text-yellow-400,
+[data-theme="light"] .text-warning-300, [data-theme="light"] .text-warning-400 { color: #b45309 !important; }
+[data-theme="light"] .text-orange-300,  [data-theme="light"] .text-orange-400  { color: #c2410c !important; }
+[data-theme="light"] .text-red-300,     [data-theme="light"] .text-red-400,
+[data-theme="light"] .text-danger-300,  [data-theme="light"] .text-danger-400  { color: #b91c1c !important; }
+[data-theme="light"] .text-rose-300,    [data-theme="light"] .text-rose-400    { color: #be123c !important; }
+[data-theme="light"] .text-pink-300,    [data-theme="light"] .text-pink-400    { color: #be185d !important; }
+
 /* White opacity backgrounds → dark-ink at matching opacity */
 [data-theme="light"] .bg-white\/2 { background-color: rgb(var(--navy-300) / 0.02) !important; }
 [data-theme="light"] .bg-white\/3 { background-color: rgb(var(--navy-300) / 0.03) !important; }
@@ -148,9 +173,9 @@
 [data-theme="light"] .hover\:bg-white\/6:hover { background-color: rgb(var(--navy-300) / 0.05) !important; }
 
 /* White opacity borders → dark-ink borders */
-[data-theme="light"] .border-white\/5  { border-color: rgb(var(--navy-300) / 0.06) !important; }
-[data-theme="light"] .border-white\/8  { border-color: rgb(var(--navy-300) / 0.09) !important; }
-[data-theme="light"] .border-white\/10 { border-color: rgb(var(--navy-300) / 0.11) !important; }
+[data-theme="light"] .border-white\/5  { border-color: rgb(var(--navy-300) / 0.07) !important; }
+[data-theme="light"] .border-white\/8  { border-color: rgb(var(--navy-300) / 0.11) !important; }
+[data-theme="light"] .border-white\/10 { border-color: rgb(var(--navy-300) / 0.13) !important; }
 [data-theme="light"] .border-white\/15 { border-color: rgb(var(--navy-300) / 0.15) !important; }
 [data-theme="light"] .border-white\/20 { border-color: rgb(var(--navy-300) / 0.20) !important; }
 [data-theme="light"] .border-white\/25 { border-color: rgb(var(--navy-300) / 0.25) !important; }
@@ -163,13 +188,19 @@
 /* Divide utility */
 [data-theme="light"] .divide-white\/10 > * + * { border-color: rgb(var(--navy-300) / 0.10) !important; }
 
-/* Form inputs */
+/* Form inputs — subtle inset fill so fields are visible at rest on white cards */
 [data-theme="light"] select,
 [data-theme="light"] input:not([type="range"]):not([type="checkbox"]),
 [data-theme="light"] textarea {
-  background-color: rgb(var(--navy-900)) !important;
+  background-color: rgb(var(--navy-800)) !important;
   color: rgb(var(--navy-300)) !important;
-  border-color: rgb(var(--navy-300) / 0.15) !important;
+  border-color: rgb(var(--navy-300) / 0.16) !important;
+}
+[data-theme="light"] select:focus,
+[data-theme="light"] input:not([type="range"]):not([type="checkbox"]):focus,
+[data-theme="light"] textarea:focus {
+  background-color: rgb(var(--navy-900)) !important;
+  border-color: rgb(var(--gold-500) / 0.55) !important;
 }
 [data-theme="light"] input::placeholder,
 [data-theme="light"] textarea::placeholder { color: rgb(var(--navy-600)) !important; }
@@ -183,6 +214,43 @@
   background-color: rgb(var(--navy-800)) !important;
   color: rgb(var(--navy-300)) !important;
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ALWAYS-DARK SURFACES — opt-out for panels that must stay dark in light mode
+   (e.g. the auth brand panel). Add data-theme="dark" to the panel root; this
+   restores the dark tokens locally and re-asserts the fixed-value utilities so
+   their light/colored text stays light. Higher specificity wins over the
+   light-mode remaps above.
+   ═══════════════════════════════════════════════════════════════════════════ */
+[data-theme="light"] [data-theme="dark"] {
+  --navy-50: 240 245 255; --navy-100: 224 231 255; --navy-200: 199 210 254;
+  --navy-300: 165 180 252; --navy-400: 129 140 248; --navy-500: 99 102 241;
+  --navy-600: 79 86 112; --navy-700: 36 47 69; --navy-800: 26 34 53;
+  --navy-900: 17 24 39; --navy-950: 10 15 30;
+  --gold-300: 245 217 138; --gold-400: 232 197 71; --gold-500: 212 168 58; --gold-600: 184 140 34;
+  color: #f1f5f9;
+}
+[data-theme="light"] [data-theme="dark"] .text-white,
+[data-theme="light"] [data-theme="dark"] .hover\:text-white:hover { color: #fff !important; }
+[data-theme="light"] [data-theme="dark"] .text-slate-100 { color: #f8fafc !important; }
+[data-theme="light"] [data-theme="dark"] .text-slate-200 { color: #dde4ee !important; }
+[data-theme="light"] [data-theme="dark"] .text-slate-300 { color: #b8c6d8 !important; }
+[data-theme="light"] [data-theme="dark"] .text-slate-400 { color: #8898ae !important; }
+[data-theme="light"] [data-theme="dark"] .text-slate-500 { color: #5d6e84 !important; }
+[data-theme="light"] [data-theme="dark"] .text-slate-600 { color: #51607a !important; }
+/* accent text back to the dark-theme tints inside dark panels */
+[data-theme="light"] [data-theme="dark"] .text-emerald-400, [data-theme="light"] [data-theme="dark"] .text-green-400, [data-theme="light"] [data-theme="dark"] .text-success-400 { color: #34d399 !important; }
+[data-theme="light"] [data-theme="dark"] .text-blue-400, [data-theme="light"] [data-theme="dark"] .text-info-400 { color: #60a5fa !important; }
+[data-theme="light"] [data-theme="dark"] .text-amber-400, [data-theme="light"] [data-theme="dark"] .text-warning-400 { color: #fbbf24 !important; }
+[data-theme="light"] [data-theme="dark"] .text-red-400, [data-theme="light"] [data-theme="dark"] .text-danger-400 { color: #f87171 !important; }
+/* white-opacity fills/borders re-derive from white (not dark ink) inside dark panels */
+[data-theme="light"] [data-theme="dark"] .bg-white\/2 { background-color: rgba(255,255,255,0.02) !important; }
+[data-theme="light"] [data-theme="dark"] .bg-white\/3 { background-color: rgba(255,255,255,0.03) !important; }
+[data-theme="light"] [data-theme="dark"] .bg-white\/5 { background-color: rgba(255,255,255,0.05) !important; }
+[data-theme="light"] [data-theme="dark"] .bg-white\/8 { background-color: rgba(255,255,255,0.08) !important; }
+[data-theme="light"] [data-theme="dark"] .border-white\/8  { border-color: rgba(255,255,255,0.08) !important; }
+[data-theme="light"] [data-theme="dark"] .border-white\/10 { border-color: rgba(255,255,255,0.10) !important; }
+[data-theme="light"] [data-theme="dark"] .border-white\/15 { border-color: rgba(255,255,255,0.15) !important; }
 
 /* ═══════════════════════════════════════════════════════════════════════════
    UTILITIES
