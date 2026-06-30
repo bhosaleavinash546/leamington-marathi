@@ -10,6 +10,16 @@
  *  G. OTA & Cloud Backend
  */
 
+import {
+  DEFAULT_SW_RATE_LIBRARY,
+  resolveRateLibrary,
+  rateValues,
+} from './sw-rate-library.js';
+import type { SWRateLibrary } from './sw-rate-library.js';
+
+export type { SWRateLibrary, SWRateEntry, RateConfidence } from './sw-rate-library.js';
+export { DEFAULT_SW_RATE_LIBRARY } from './sw-rate-library.js';
+
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 export type ASILLevel       = 'QM' | 'A' | 'B' | 'C' | 'D';
@@ -64,6 +74,9 @@ export interface SWProgramInputs {
   /** UK senior-blended bare rate (£/PM) before overhead. Defaults to UK_PM_RATE_GBP
    *  when unset — lets a costing engineer override the rate library per engagement. */
   baseRateGBP?:             number;
+  /** Optional rate-library override (partial). Any group omitted falls back to
+   *  DEFAULT_SW_RATE_LIBRARY. Lets an engagement supply its own sourced rates. */
+  rateLibrary?:             Partial<SWRateLibrary>;
 }
 
 export interface SWDevBreakdown {
@@ -170,53 +183,55 @@ export interface SWProgramResult {
 }
 
 // ─── Multiplier Tables ────────────────────────────────────────────────────────
+//
+// These are derived from the versioned, sourced rate library (sw-rate-library.ts)
+// — the single source of truth. They remain exported as plain numeric maps for
+// display and back-compat; a programme can override any of them per engagement
+// via SWProgramInputs.rateLibrary (see resolveRates / computeModuleCost).
 
 /** ASIL development overhead multiplier (applied to dev cost) */
-export const ASIL_DEV_MULT: Record<ASILLevel, number> = {
-  QM: 1.00, A: 1.35, B: 1.80, C: 2.30, D: 3.20,
-};
+export const ASIL_DEV_MULT: Record<ASILLevel, number> = rateValues(DEFAULT_SW_RATE_LIBRARY.asilDevMultipliers);
 
 /** ASIL testing multiplier (testing cost as fraction of adjusted dev cost) */
-export const ASIL_TEST_MULT: Record<ASILLevel, number> = {
-  QM: 0.35, A: 0.55, B: 0.85, C: 1.20, D: 1.80,
-};
+export const ASIL_TEST_MULT: Record<ASILLevel, number> = rateValues(DEFAULT_SW_RATE_LIBRARY.asilTestMultipliers);
 
 /** Complexity multiplier for algorithm & implementation buckets */
-export const COMPLEXITY_MULT: Record<SWComplexity, number> = {
-  'Low': 0.60, 'Medium': 1.00, 'High': 1.70, 'Very High': 2.80,
-};
+export const COMPLEXITY_MULT: Record<SWComplexity, number> = rateValues(DEFAULT_SW_RATE_LIBRARY.complexityMultipliers);
 
 /** Reuse factor (1.0 = fresh, 0.0 = zero effort) */
-export const REUSE_FACTOR: Record<SWReuse, number> = {
-  Fresh: 1.00, Light: 0.82, Medium: 0.60, Heavy: 0.35, Platform: 0.14,
-};
+export const REUSE_FACTOR: Record<SWReuse, number> = rateValues(DEFAULT_SW_RATE_LIBRARY.reuseFactors);
 
-/** Regional labour rate relative to the UK senior blended base (£28k/PM, before
- *  the programme overhead multiplier — see UK_PM_RATE_GBP). */
-export const REGION_MULT: Record<SWRegion, number> = {
-  UK:             1.00,
-  EU:             0.95,
-  USA_Detroit:    1.35,
-  USA_SV:         1.85,
-  China:          0.35,
-  India:          0.20,
-  Mexico:         0.28,
-  Eastern_Europe: 0.45,
-  Japan:          0.90,
-};
+/** Regional labour rate relative to the UK senior blended base, before overhead. */
+export const REGION_MULT: Record<SWRegion, number> = rateValues(DEFAULT_SW_RATE_LIBRARY.regionMultipliers);
 
 /** DevSource quality/overhead multiplier */
-export const DEV_SOURCE_MULT: Record<DevSource, number> = {
-  OEM_Internal:   1.00,
-  Tier1_Supplier: 0.88,
-  Startup_OSS:    0.72,
-};
+export const DEV_SOURCE_MULT: Record<DevSource, number> = rateValues(DEFAULT_SW_RATE_LIBRARY.devSourceMultipliers);
 
-// UK senior-blended bare rate (salary + benefits) per person-month. Programme
-// overhead (facilities, IT, management, non-productive time) is applied on top
-// via prog.overheadMultiplier — do NOT treat this as a fully-loaded rate, or
-// overhead is double-counted.
-const UK_PM_RATE_GBP = 28_000;
+/** Numeric rate bundle resolved once per programme (default library + any override). */
+interface ResolvedRates {
+  baseRate:       number;
+  region:         Record<SWRegion, number>;
+  devSource:      Record<DevSource, number>;
+  asilDev:        Record<ASILLevel, number>;
+  asilTest:       Record<ASILLevel, number>;
+  complexity:     Record<SWComplexity, number>;
+  reuse:          Record<SWReuse, number>;
+}
+
+function resolveRates(prog: SWProgramInputs): ResolvedRates {
+  const lib = resolveRateLibrary(prog.rateLibrary);
+  // Explicit baseRateGBP (the quick UI override) wins over the library's base.
+  const baseRate = prog.baseRateGBP && prog.baseRateGBP > 0 ? prog.baseRateGBP : lib.ukBaseRatePerPM.value;
+  return {
+    baseRate,
+    region:     rateValues(lib.regionMultipliers),
+    devSource:  rateValues(lib.devSourceMultipliers),
+    asilDev:    rateValues(lib.asilDevMultipliers),
+    asilTest:   rateValues(lib.asilTestMultipliers),
+    complexity: rateValues(lib.complexityMultipliers),
+    reuse:      rateValues(lib.reuseFactors),
+  };
+}
 
 // ─── Module Database (43 modules) ────────────────────────────────────────────
 
@@ -714,17 +729,17 @@ export const SW_MODULES: SWModuleDef[] = [
 function computeModuleCost(
   def:    SWModuleDef,
   input:  SWModuleInput,
-  prog:   SWProgramInputs
+  prog:   SWProgramInputs,
+  rates:  ResolvedRates
 ): SWModuleCostResult {
   const seniorMult  = prog.teamSeniorFraction * 1.20 + (1 - prog.teamSeniorFraction) * 0.75;
-  const baseRate    = prog.baseRateGBP && prog.baseRateGBP > 0 ? prog.baseRateGBP : UK_PM_RATE_GBP;
-  const regionRate  = baseRate * REGION_MULT[prog.region] * DEV_SOURCE_MULT[prog.devSource]
+  const regionRate  = rates.baseRate * rates.region[prog.region] * rates.devSource[prog.devSource]
                       * seniorMult * prog.overheadMultiplier;
 
-  const asilDev    = ASIL_DEV_MULT[input.asil];
-  const complexity = COMPLEXITY_MULT[input.complexity];
-  const reuse      = REUSE_FACTOR[input.reuse];
-  const testFrac   = ASIL_TEST_MULT[input.asil];
+  const asilDev    = rates.asilDev[input.asil];
+  const complexity = rates.complexity[input.complexity];
+  const reuse      = rates.reuse[input.reuse];
+  const testFrac   = rates.asilTest[input.asil];
 
   const effectivePM = (input.customPersonMonths ?? def.basePersonMonths) * reuse;
 
@@ -911,10 +926,11 @@ export function computeSWProgram(
   prog: SWProgramInputs,
   opts: { summaryOnly?: boolean } = {},
 ): SWProgramResult {
+  const rates = resolveRates(prog);
   const enabledModules = prog.modules.filter(m => m.enabled);
   const modules: SWModuleCostResult[] = enabledModules.map(m => {
     const def = SW_MODULES.find(d => d.id === m.moduleId)!;
-    return computeModuleCost(def, m, prog);
+    return computeModuleCost(def, m, prog, rates);
   });
 
   const sum = (arr: number[]) => arr.reduce((a, b) => a + b, 0);
@@ -1053,7 +1069,8 @@ export function defaultSWProgramInputs(): SWProgramInputs {
     overheadMultiplier:      1.60,
     includeMaintenanceCost:  true,
     includeCloudCost:        true,
-    baseRateGBP:             UK_PM_RATE_GBP,
+    // baseRateGBP intentionally unset → driven by the rate library's ukBaseRatePerPM
+    // unless the user explicitly overrides it in the UI.
     modules: SW_MODULES.map(m => ({
       moduleId:           m.id,
       enabled:            true,

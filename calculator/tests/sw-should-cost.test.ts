@@ -13,6 +13,11 @@ import type {
   SWReuse,
   SWRegion,
 } from '../src/engine/sw-should-cost.js';
+import {
+  DEFAULT_SW_RATE_LIBRARY,
+  resolveRateLibrary,
+  rateValues,
+} from '../src/engine/sw-rate-library.js';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -213,5 +218,55 @@ describe('sensitivity analysis', () => {
     const region = r.sensitivity.find(x => x.parameter.includes('Region'));
     expect(region).toBeDefined();
     expect(region!.low).toBeLessThan(region!.base);
+  });
+});
+
+// ─── Rate library (Rec #1) ─────────────────────────────────────────────────────
+
+describe('rate library', () => {
+  const lib = DEFAULT_SW_RATE_LIBRARY;
+
+  it('is versioned', () => {
+    expect(lib.version).toMatch(/^\d+\.\d+\.\d+$/);
+  });
+
+  it('every rate entry carries full provenance (source, date, confidence)', () => {
+    const groups = [
+      lib.regionMultipliers, lib.devSourceMultipliers, lib.asilDevMultipliers,
+      lib.asilTestMultipliers, lib.complexityMultipliers, lib.reuseFactors,
+    ];
+    for (const e of [lib.ukBaseRatePerPM, ...groups.flatMap(g => Object.values(g))]) {
+      expect(e.source.length).toBeGreaterThan(8);
+      expect(e.asOf).toMatch(/^\d{4}-\d{2}$/);
+      expect(['High', 'Medium', 'Low']).toContain(e.confidence);
+      expect(e.value).toBeGreaterThan(0);
+    }
+  });
+
+  it('engine constants are derived from the library (single source of truth)', () => {
+    expect(ASIL_DEV_MULT).toEqual(rateValues(lib.asilDevMultipliers));
+    expect(REGION_MULT).toEqual(rateValues(lib.regionMultipliers));
+    expect(REUSE_FACTOR).toEqual(rateValues(lib.reuseFactors));
+  });
+
+  it('a partial override changes only the overridden rates', () => {
+    const merged = resolveRateLibrary({
+      regionMultipliers: { ...DEFAULT_SW_RATE_LIBRARY.regionMultipliers,
+        UK: { value: 2.0, source: 'test', asOf: '2026-06', confidence: 'Low' } },
+    });
+    expect(merged.regionMultipliers.UK.value).toBe(2.0);
+    expect(merged.regionMultipliers.India.value).toBe(lib.regionMultipliers.India.value);
+    expect(merged.reuseFactors.Fresh.value).toBe(lib.reuseFactors.Fresh.value);
+  });
+
+  it('an engagement override library flows through the cost engine', () => {
+    const base = computeSWProgram(defaultSWProgramInputs()).summary.grandTotal;
+    const over = computeSWProgram({
+      ...defaultSWProgramInputs(),
+      rateLibrary: {
+        ukBaseRatePerPM: { value: 56_000, source: 'engagement', asOf: '2026-06', confidence: 'High' },
+      },
+    }).summary.grandTotal;
+    expect(over).toBeGreaterThan(base); // doubled base rate raises labour-driven cost
   });
 });

@@ -21,6 +21,8 @@ import type {
 import {
   computeSWProgram, defaultSWProgramInputs, SW_MODULES,
 } from '../../engine/sw-should-cost.js';
+import { DEFAULT_SW_RATE_LIBRARY } from '../../engine/sw-rate-library.js';
+import type { SWRateEntry, RateConfidence } from '../../engine/sw-rate-library.js';
 import { buildWorkbook, downloadWorkbook } from '../../export/xlsx-util.js';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -97,6 +99,50 @@ const CAT_META: Record<string, { label: string; icon: string; color: string }> =
 };
 
 // ─── Render panel HTML ────────────────────────────────────────────────────────
+
+// Rec #1: Rate library provenance — every rate shown with its source, date and
+// confidence so the model is defensible, not a black box of constants.
+function renderRateLibraryHTML(): string {
+  const lib = DEFAULT_SW_RATE_LIBRARY;
+  const confColor = (c: RateConfidence) => c === 'High' ? '#059669' : c === 'Medium' ? '#d97706' : '#dc2626';
+  const confBadge = (c: RateConfidence) =>
+    `<span style="font-size:0.62rem;font-weight:700;color:#fff;background:${confColor(c)};border-radius:3px;padding:1px 5px">${c}</span>`;
+
+  const rows = (title: string, entries: [string, SWRateEntry][]) =>
+    `<tr><td colspan="4" style="font-weight:700;color:var(--sw-text-primary);padding-top:8px">${esc(title)}</td></tr>` +
+    entries.map(([k, e]) => `<tr>
+      <td style="white-space:nowrap">${esc(k)}</td>
+      <td class="sw-num">${e.value}</td>
+      <td>${confBadge(e.confidence)} <span style="font-size:0.7rem;color:var(--sw-text-muted)">${esc(e.asOf)}</span></td>
+      <td style="font-size:0.7rem;color:var(--sw-text-secondary)">${esc(e.source)}${e.note ? ` <em>(${esc(e.note)})</em>` : ''}</td>
+    </tr>`).join('');
+
+  const ent = <T extends string>(rec: Record<T, SWRateEntry>) => Object.entries(rec) as [string, SWRateEntry][];
+
+  return `
+  <details class="sw-config-card" style="background:var(--sw-surface-alt);border:1px solid var(--sw-border);border-radius:10px;padding:0;margin-bottom:14px">
+    <summary style="cursor:pointer;padding:12px 18px;font-weight:700;font-size:0.82rem;color:var(--sw-text-primary);display:flex;align-items:center;gap:8px;list-style:none">
+      <span>📚 Rate Library &amp; Provenance</span>
+      <span style="font-size:0.68rem;font-weight:600;color:#fff;background:#2563eb;border-radius:4px;padding:1px 7px">v${esc(lib.version)}</span>
+      <span style="font-size:0.7rem;font-weight:400;color:var(--sw-text-muted)">reviewed ${esc(lib.lastReviewed)} · every rate sourced &amp; overridable</span>
+    </summary>
+    <div style="padding:0 18px 16px;overflow-x:auto">
+      <table class="sw-data-table" style="font-size:0.76rem">
+        <thead><tr><th>Rate</th><th class="sw-num">Value</th><th>Confidence / As-of</th><th>Source</th></tr></thead>
+        <tbody>
+          ${rows('Labour base (£/person-month, pre-overhead)', [['UK senior-blended base', lib.ukBaseRatePerPM]])}
+          ${rows('Regional multipliers', ent(lib.regionMultipliers))}
+          ${rows('Development source multipliers', ent(lib.devSourceMultipliers))}
+          ${rows('ASIL development multipliers (ISO 26262)', ent(lib.asilDevMultipliers))}
+          ${rows('ASIL test/verification multipliers', ent(lib.asilTestMultipliers))}
+          ${rows('Complexity multipliers', ent(lib.complexityMultipliers))}
+          ${rows('Reuse factors', ent(lib.reuseFactors))}
+        </tbody>
+      </table>
+      <p style="font-size:0.7rem;color:var(--sw-text-muted);margin-top:8px">Override the UK base rate in Programme Configuration above. Confidence reflects how well-anchored each figure is to a published or surveyed source — not all rates are equal; treat <span style="color:#dc2626;font-weight:600">Low</span> figures as directional.</p>
+    </div>
+  </details>`;
+}
 
 function renderSavedConfigsHTML(): string {
   const configItems = _savedConfigs.map(c => `
@@ -259,7 +305,7 @@ function renderSWPanelHTML(): string {
       </div>
       <div class="sw-field-group">
         <label class="sw-label">UK Base Rate (£/PM)</label>
-        <input id="sw-base-rate" type="number" class="sw-config-inp" min="5000" max="120000" step="500" value="${inputs.baseRateGBP ?? 28000}" title="UK senior-blended bare rate per person-month, before overhead. All regional rates are relative to this. Override to match your engagement's rate library.">
+        <input id="sw-base-rate" type="number" class="sw-config-inp" min="5000" max="120000" step="500" value="${inputs.baseRateGBP ?? DEFAULT_SW_RATE_LIBRARY.ukBaseRatePerPM.value}" title="UK senior-blended bare rate per person-month, before overhead. All regional rates are relative to this. Override to match your engagement's rate library.">
       </div>
       <div class="sw-field-group" style="display:flex;flex-direction:column;gap:8px;justify-content:flex-end">
         <label style="display:flex;align-items:center;gap:8px;font-size:0.8rem;color:var(--sw-text-body);cursor:pointer">
@@ -273,6 +319,9 @@ function renderSWPanelHTML(): string {
       </div>
     </div>
   </div>
+
+  <!-- ── Rate Library & Provenance (Rec #1) ────────────────────── -->
+  ${renderRateLibraryHTML()}
 
   <!-- ── Quick-set presets ─────────────────────────────────────── -->
   <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;align-items:center">
@@ -633,7 +682,7 @@ function readConfig(): void {
   _swInputs.annualProductionVolume = Math.max(1, vol);
   _swInputs.overheadMultiplier     = Math.max(1, overhead);
   _swInputs.teamSeniorFraction     = Math.min(1, Math.max(0, isNaN(seniorFrac) ? 0.50 : seniorFrac));
-  _swInputs.baseRateGBP            = isNaN(baseRate) || baseRate <= 0 ? 28_000 : baseRate;
+  _swInputs.baseRateGBP            = isNaN(baseRate) || baseRate <= 0 ? DEFAULT_SW_RATE_LIBRARY.ukBaseRatePerPM.value : baseRate;
   _swInputs.includeMaintenanceCost = maint;
   _swInputs.includeCloudCost       = cloud;
 
