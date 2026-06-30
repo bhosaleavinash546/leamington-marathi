@@ -565,9 +565,9 @@ html[data-theme="light"] .chip{color:var(--blue2)}
         <div class="form-section-title">Sustainability Mode</div>
         <div class="form-row">
           <select id="sustainMode">
-            <option value="Standard">Standard</option>
-            <option value="Green Premium">Green Premium</option>
-            <option value="Full Sustainable">Full Sustainable</option>
+            <option value="standard">Standard</option>
+            <option value="green_premium">Green Premium</option>
+            <option value="full_sustainable">Full Sustainable</option>
           </select>
         </div>
       </div>
@@ -575,27 +575,72 @@ html[data-theme="light"] .chip{color:var(--blue2)}
         <div class="form-section-title">Material Choices</div>
         <div class="form-row">
           <label>Magnet</label>
-          <select id="magnetType"><option value="Neodymium">Neodymium (NdFeB)</option><option value="Ferrite">Ferrite (Ceramic)</option></select>
+          <select id="magnetType">
+            <option value="Neodymium">Neodymium (NdFeB N42)</option>
+            <option value="Ferrite">Ferrite (Ceramic Y30)</option>
+            <option value="Alnico">Alnico (Al-Ni-Co)</option>
+            <option value="SmCo">Samarium Cobalt (SmCo)</option>
+            <option value="Bonded NdFeB">Bonded NdFeB</option>
+            <option value="Recycled NdFeB">Recycled NdFeB ♻</option>
+          </select>
         </div>
         <div class="form-row">
           <label>Cone</label>
-          <select id="coneMat"><option value="Polypropylene">Polypropylene (PP)</option><option value="Paper">Paper (Pulp)</option><option value="Composite">Composite (Woven)</option></select>
+          <select id="coneMat">
+            <option value="Polypropylene">Polypropylene (PP)</option>
+            <option value="Paper">Paper (Pulp)</option>
+            <option value="Composite">Composite (Woven CF/GF)</option>
+            <option value="Aluminium Foil">Aluminium Foil</option>
+            <option value="Kevlar">Kevlar / Aramid</option>
+            <option value="Carbon Fibre">Carbon Fibre</option>
+            <option value="Treated Paper">Treated Paper (Doped) ♻</option>
+            <option value="Titanium">Titanium</option>
+          </select>
         </div>
         <div class="form-row">
           <label>Surround</label>
-          <select id="surroundMat"><option value="Rubber">Rubber (EPDM)</option><option value="Foam">Foam (PU)</option><option value="Cloth">Cloth (Coated)</option></select>
+          <select id="surroundMat">
+            <option value="Rubber">Rubber (EPDM)</option>
+            <option value="Foam">Foam (PU)</option>
+            <option value="Cloth">Cloth (Coated)</option>
+            <option value="Butyl Rubber">Butyl Rubber (IIR)</option>
+            <option value="Santoprene">Santoprene (TPV)</option>
+            <option value="Silicone">Silicone</option>
+            <option value="Impregnated Cloth">Impregnated Cloth ♻</option>
+          </select>
         </div>
         <div class="form-row">
           <label>Frame / Basket</label>
-          <select id="frameMat"><option value="Die-Cast Al">Die-Cast Aluminium</option><option value="Stamped Steel">Stamped Steel</option><option value="Injected PP">Injected PP</option></select>
+          <select id="frameMat">
+            <option value="Die-Cast Al">Die-Cast Aluminium</option>
+            <option value="Stamped Steel">Stamped Steel</option>
+            <option value="Injected PP">Injected PP</option>
+            <option value="Die-Cast Zinc">Die-Cast Zinc</option>
+            <option value="PA66 Nylon">PA66 Nylon (Glass-Filled)</option>
+            <option value="CF Composite">Carbon Fibre Composite</option>
+            <option value="Magnesium Die-Cast">Magnesium Die-Cast</option>
+          </select>
         </div>
         <div class="form-row">
           <label>VC Wire</label>
-          <select id="vcWire"><option value="Copper">Copper</option><option value="Aluminium">Aluminium (CCA)</option></select>
+          <select id="vcWire">
+            <option value="Copper">Copper (OFC)</option>
+            <option value="Aluminium">Aluminium (CCA)</option>
+            <option value="CCAW">CCAW (Cu-Clad Al)</option>
+            <option value="Flat Copper">Flat Copper (Edgewise)</option>
+            <option value="Silver-Plated Cu">Silver-Plated Copper</option>
+          </select>
         </div>
         <div class="form-row">
           <label>Coil Former</label>
-          <select id="vcFormer"><option value="Kapton">Kapton (Polyimide)</option><option value="Aluminium">Aluminium</option><option value="Paper">Paper</option></select>
+          <select id="vcFormer">
+            <option value="Kapton">Kapton (Polyimide)</option>
+            <option value="Aluminium">Aluminium</option>
+            <option value="Paper">Paper</option>
+            <option value="Nomex">Nomex (Aramid)</option>
+            <option value="Titanium">Titanium</option>
+            <option value="Glass Fibre">Glass Fibre (GRP)</option>
+          </select>
         </div>
       </div>
       <div class="form-section">
@@ -717,7 +762,36 @@ var MRATE={
   cu_braid:    {usd:9.35, co2:4.0, rcl_pct:35,bio_pct:0, rohs:true, reach:true, voc:false},
   epoxy:       {usd:12.0, co2:7.2, rcl_pct:0, bio_pct:0, rohs:false,reach:false,voc:true},
   uv_adhesive: {usd:28.0, co2:8.5, rcl_pct:0, bio_pct:0, rohs:false,reach:false,voc:true},
-  pe_foam:     {usd:3.50, co2:4.8, rcl_pct:10,bio_pct:0, rohs:true, reach:true, voc:false}
+  pe_foam:     {usd:3.50, co2:4.8, rcl_pct:10,bio_pct:0, rohs:true, reach:true, voc:false},
+  // ── Extended Magnet Materials ─────────────────────────────────────
+  alnico:      {usd:65.0, co2:8.5, rcl_pct:5, bio_pct:0, rohs:true, reach:true, voc:false},
+  smco:        {usd:185.0,co2:52.0,rcl_pct:2, bio_pct:0, rohs:true, reach:false,voc:false},
+  bonded_neo:  {usd:58.0, co2:32.0,rcl_pct:8, bio_pct:0, rohs:true, reach:true, voc:false},
+  recycled_neo:{usd:72.0, co2:18.0,rcl_pct:80,bio_pct:0, rohs:true, reach:true, voc:false},
+  // ── Extended Cone Materials ───────────────────────────────────────
+  al_cone:     {usd:2.50, co2:8.2, rcl_pct:50,bio_pct:0, rohs:true, reach:true, voc:false},
+  kevlar:      {usd:35.0, co2:9.5, rcl_pct:0, bio_pct:0, rohs:true, reach:false,voc:false},
+  cf_cone:     {usd:65.0, co2:24.0,rcl_pct:5, bio_pct:0, rohs:true, reach:false,voc:false},
+  doped_paper: {usd:1.80, co2:1.4, rcl_pct:35,bio_pct:65,rohs:true, reach:true, voc:false},
+  ti_cone:     {usd:28.0, co2:35.0,rcl_pct:10,bio_pct:0, rohs:true, reach:true, voc:false},
+  // ── Extended Surround Materials ───────────────────────────────────
+  butyl:       {usd:3.80, co2:4.2, rcl_pct:5, bio_pct:0, rohs:true, reach:true, voc:true},
+  santoprene:  {usd:5.20, co2:3.8, rcl_pct:15,bio_pct:0, rohs:true, reach:true, voc:false},
+  silicone:    {usd:12.0, co2:5.5, rcl_pct:0, bio_pct:0, rohs:true, reach:true, voc:false},
+  imp_cloth:   {usd:4.50, co2:2.8, rcl_pct:10,bio_pct:70,rohs:true, reach:true, voc:false},
+  // ── Extended Frame/Basket Materials ──────────────────────────────
+  diecast_zn:  {usd:1.85, co2:4.6, rcl_pct:30,bio_pct:0, rohs:true, reach:true, voc:false},
+  pa66:        {usd:3.20, co2:5.8, rcl_pct:10,bio_pct:0, rohs:true, reach:true, voc:false},
+  cf_frame:    {usd:48.0, co2:22.0,rcl_pct:5, bio_pct:0, rohs:true, reach:false,voc:false},
+  mg_diecast:  {usd:3.85, co2:10.5,rcl_pct:25,bio_pct:0, rohs:true, reach:true, voc:false},
+  // ── Extended VC Wire Materials ────────────────────────────────────
+  ccaw:        {usd:6.20, co2:5.8, rcl_pct:40,bio_pct:0, rohs:true, reach:true, voc:false},
+  flat_cu:     {usd:14.0, co2:4.2, rcl_pct:35,bio_pct:0, rohs:true, reach:true, voc:false},
+  ag_cu:       {usd:38.0, co2:6.8, rcl_pct:30,bio_pct:0, rohs:true, reach:true, voc:false},
+  // ── Extended Coil Former Materials ───────────────────────────────
+  nomex:       {usd:32.0, co2:7.8, rcl_pct:0, bio_pct:0, rohs:true, reach:false,voc:false},
+  ti_former:   {usd:24.0, co2:32.0,rcl_pct:10,bio_pct:0, rohs:true, reach:true, voc:false},
+  glass_former:{usd:4.50, co2:3.8, rcl_pct:20,bio_pct:0, rohs:true, reach:true, voc:false}
 };
 
 var PROF={
@@ -977,23 +1051,83 @@ function computeBOM(inp,sizeScale){
   var vcScale=Math.pow(Math.max(inp.vcDia,8)/25,0.55);
   var g2kg=function(g){return(g*sizeScale)/1000;};
 
-  var magG=(inp.magnet==='Neodymium'?p.magG_neo:p.magG_fer)*pwrScale;
-  var magRate=inp.magnet==='Neodymium'?MRATE.neo.usd:MRATE.ferrite.usd;
-  var magCO2=inp.magnet==='Neodymium'?MRATE.neo.co2:MRATE.ferrite.co2;
-  var vcG=p.vc_g*vcScale*(1+Math.max(0,inp.power-50)*0.0012);
-  var fmrG=inp.vcFormer==='Kapton'?p.former_kap:inp.vcFormer==='Aluminium'?p.former_al:p.former_pap;
-  var fmrRate=inp.vcFormer==='Kapton'?MRATE.kapton.usd:inp.vcFormer==='Aluminium'?MRATE.al_former.usd:MRATE.paper_former.usd;
-  var fmrCO2=inp.vcFormer==='Kapton'?MRATE.kapton.co2:inp.vcFormer==='Aluminium'?MRATE.al_former.co2:MRATE.paper_former.co2;
-  var coneRate=inp.cone==='Polypropylene'?MRATE.pp.usd:inp.cone==='Paper'?MRATE.paper_cone.usd:MRATE.composite.usd;
-  var coneCO2=inp.cone==='Polypropylene'?MRATE.pp.co2:inp.cone==='Paper'?MRATE.paper_cone.co2:MRATE.composite.co2;
-  var surrG=inp.surround==='Rubber'?p.surr_rub:inp.surround==='Foam'?p.surr_foam:p.surr_cloth;
-  var surrRate=inp.surround==='Rubber'?MRATE.rubber.usd:inp.surround==='Foam'?MRATE.foam.usd:MRATE.cloth.usd;
-  var surrCO2=inp.surround==='Rubber'?MRATE.rubber.co2:inp.surround==='Foam'?MRATE.foam.co2:MRATE.cloth.co2;
-  var baskG=inp.frame==='Die-Cast Al'?p.bask_dc:inp.frame==='Stamped Steel'?p.bask_st:p.bask_pp;
-  var baskRate=inp.frame==='Die-Cast Al'?MRATE.diecast_al.usd:inp.frame==='Stamped Steel'?MRATE.stamp_steel.usd:MRATE.inj_pp.usd;
-  var baskCO2=inp.frame==='Die-Cast Al'?MRATE.diecast_al.co2:inp.frame==='Stamped Steel'?MRATE.stamp_steel.co2:MRATE.inj_pp.co2;
-  var wireRate=inp.vcWire==='Copper'?MRATE.cu_wire.usd:MRATE.al_wire.usd;
-  var wireCO2=inp.vcWire==='Copper'?MRATE.cu_wire.co2:MRATE.al_wire.co2;
+  // ── Material lookup maps — gScale multiplies PROF gram baseline ──
+  var MAG_MAT={
+    'Neodymium':     {m:MRATE.neo,          gFn:function(p){return p.magG_neo;},     spec:'Nd-Fe-B N42'},
+    'Ferrite':       {m:MRATE.ferrite,      gFn:function(p){return p.magG_fer;},     spec:'Ferrite Y30'},
+    'Alnico':        {m:MRATE.alnico,       gFn:function(p){return p.magG_fer*0.60;},spec:'Al-Ni-Co 5'},
+    'SmCo':          {m:MRATE.smco,         gFn:function(p){return p.magG_neo*1.05;},spec:'SmCo 26'},
+    'Bonded NdFeB':  {m:MRATE.bonded_neo,   gFn:function(p){return p.magG_neo*1.35;},spec:'Bonded NdFeB 12'},
+    'Recycled NdFeB':{m:MRATE.recycled_neo, gFn:function(p){return p.magG_neo*1.02;},spec:'Recycled NdFeB ♻'}
+  };
+  var CONE_MAT={
+    'Polypropylene': {m:MRATE.pp,           spec:'PP homopolymer'},
+    'Paper':         {m:MRATE.paper_cone,   spec:'Kraft pulp'},
+    'Composite':     {m:MRATE.composite,    spec:'Woven CF/GF hybrid'},
+    'Aluminium Foil':{m:MRATE.al_cone,      spec:'3003-H14 Al foil'},
+    'Kevlar':        {m:MRATE.kevlar,       spec:'Aramid K29 woven'},
+    'Carbon Fibre':  {m:MRATE.cf_cone,      spec:'UD CF prepreg'},
+    'Treated Paper': {m:MRATE.doped_paper,  spec:'Doped cellulose ♻'},
+    'Titanium':      {m:MRATE.ti_cone,      spec:'Grade 1 Ti foil'}
+  };
+  var SURR_MAT={
+    'Rubber':           {m:MRATE.rubber,    gFn:function(p){return p.surr_rub;}},
+    'Foam':             {m:MRATE.foam,      gFn:function(p){return p.surr_foam;}},
+    'Cloth':            {m:MRATE.cloth,     gFn:function(p){return p.surr_cloth;}},
+    'Butyl Rubber':     {m:MRATE.butyl,     gFn:function(p){return p.surr_rub;}},
+    'Santoprene':       {m:MRATE.santoprene,gFn:function(p){return p.surr_rub;}},
+    'Silicone':         {m:MRATE.silicone,  gFn:function(p){return p.surr_rub*1.05;}},
+    'Impregnated Cloth':{m:MRATE.imp_cloth, gFn:function(p){return p.surr_cloth;}}
+  };
+  var FRAME_MAT={
+    'Die-Cast Al':      {m:MRATE.diecast_al, gFn:function(p){return p.bask_dc;}},
+    'Stamped Steel':    {m:MRATE.stamp_steel,gFn:function(p){return p.bask_st;}},
+    'Injected PP':      {m:MRATE.inj_pp,     gFn:function(p){return p.bask_pp;}},
+    'Die-Cast Zinc':    {m:MRATE.diecast_zn, gFn:function(p){return p.bask_dc*1.15;}},
+    'PA66 Nylon':       {m:MRATE.pa66,       gFn:function(p){return p.bask_pp*1.05;}},
+    'CF Composite':     {m:MRATE.cf_frame,   gFn:function(p){return p.bask_dc*0.65;}},
+    'Magnesium Die-Cast':{m:MRATE.mg_diecast,gFn:function(p){return p.bask_dc*0.85;}}
+  };
+  var WIRE_MAT={
+    'Copper':          {m:MRATE.cu_wire,  spec:'OFC round wire'},
+    'Aluminium':       {m:MRATE.al_wire,  spec:'CCA round wire'},
+    'CCAW':            {m:MRATE.ccaw,     spec:'Cu-clad Al wire'},
+    'Flat Copper':     {m:MRATE.flat_cu,  spec:'Edgewise flat Cu'},
+    'Silver-Plated Cu':{m:MRATE.ag_cu,   spec:'Ag-plated OFC'}
+  };
+  var FRMR_MAT={
+    'Kapton':     {m:MRATE.kapton,       gFn:function(p){return p.former_kap;}},
+    'Aluminium':  {m:MRATE.al_former,    gFn:function(p){return p.former_al;}},
+    'Paper':      {m:MRATE.paper_former, gFn:function(p){return p.former_pap;}},
+    'Nomex':      {m:MRATE.nomex,        gFn:function(p){return p.former_kap*1.05;}},
+    'Titanium':   {m:MRATE.ti_former,    gFn:function(p){return p.former_kap*1.40;}},
+    'Glass Fibre':{m:MRATE.glass_former, gFn:function(p){return p.former_pap*1.15;}}
+  };
+
+  var magSpec  = MAG_MAT[inp.magnet]   || MAG_MAT['Neodymium'];
+  var coneSpec = CONE_MAT[inp.cone]    || CONE_MAT['Polypropylene'];
+  var surrSpec = SURR_MAT[inp.surround]|| SURR_MAT['Rubber'];
+  var baskSpec = FRAME_MAT[inp.frame]  || FRAME_MAT['Die-Cast Al'];
+  var wireSpec = WIRE_MAT[inp.vcWire]  || WIRE_MAT['Copper'];
+  var fmrSpec  = FRMR_MAT[inp.vcFormer]|| FRMR_MAT['Kapton'];
+
+  var magG     = magSpec.gFn(p) * pwrScale;
+  var magRate  = magSpec.m.usd;
+  var magCO2   = magSpec.m.co2;
+  var vcG      = p.vc_g*vcScale*(1+Math.max(0,inp.power-50)*0.0012);
+  var fmrG     = fmrSpec.gFn(p);
+  var fmrRate  = fmrSpec.m.usd;
+  var fmrCO2   = fmrSpec.m.co2;
+  var coneRate = coneSpec.m.usd;
+  var coneCO2  = coneSpec.m.co2;
+  var surrG    = surrSpec.gFn(p);
+  var surrRate = surrSpec.m.usd;
+  var surrCO2  = surrSpec.m.co2;
+  var baskG    = baskSpec.gFn(p);
+  var baskRate = baskSpec.m.usd;
+  var baskCO2  = baskSpec.m.co2;
+  var wireRate = wireSpec.m.usd;
+  var wireCO2  = wireSpec.m.co2;
 
   var row=function(name,spec,cat,wt,rate,co2Rate,scr,flat){
     if(flat===undefined)flat=0;
@@ -1002,18 +1136,18 @@ function computeBOM(inp,sizeScale){
     return {name:name,spec:spec,cat:cat,wt:wt*sizeScale,rate:rate,scr:scr,cost:matCost+flat,flatAdd:flat,co2:co2};
   };
   var items=[
-    row('Permanent Magnet',inp.magnet==='Neodymium'?'Nd-Fe-B N42':'Ferrite Y30','Motor',magG,magRate,magCO2,0.03),
+    row('Permanent Magnet',magSpec.spec,'Motor',magG,magRate,magCO2,0.03),
     row('Top Plate (T-Yoke)','CRGO Steel 0.5mm','Motor',p.top_g,MRATE.crgo.usd,MRATE.crgo.co2,0.02),
     row('Back Plate / Yoke','CRGO Steel 2mm','Motor',p.back_g,MRATE.crgo.usd,MRATE.crgo.co2,0.02),
     row('Pole Piece','CRGO Steel','Motor',p.pole_g,MRATE.crgo.usd,MRATE.crgo.co2,0.02),
-    row('VC Wire',(inp.vcWire==='Copper'?'Copper':'Aluminium')+' wire','Voice Coil',vcG,wireRate,wireCO2,0.03),
+    row('VC Wire',wireSpec.spec,'Voice Coil',vcG,wireRate,wireCO2,0.03),
     row('Coil Former (Bobbin)',inp.vcFormer+' film/tube','Voice Coil',fmrG*vcScale,fmrRate,fmrCO2,0.03),
     row('Impregnation Varnish','Polyester resin','Voice Coil',p.varnish_g,MRATE.varnish.usd,MRATE.varnish.co2,0.00),
     row('Spider / Damper','Treated cotton fabric','Suspension',p.spider_g,MRATE.spider_fabric.usd,MRATE.spider_fabric.co2,0.04),
-    row('Cone / Diaphragm',inp.cone,'Suspension',p.cone_g,coneRate,coneCO2,0.05),
+    row('Cone / Diaphragm',coneSpec.spec,'Suspension',p.cone_g,coneRate,coneCO2,0.05),
     row('Dust Cap','Polypropylene','Suspension',p.dcap_g,MRATE.pp_dustcap.usd,MRATE.pp_dustcap.co2,0.04),
     row('Surround',inp.surround,'Suspension',surrG,surrRate,surrCO2,0.04),
-    row('Basket / Frame',inp.frame,'Frame',baskG,baskRate,baskCO2,0.03),
+    row('Basket / Frame',inp.frame+' basket','Frame',baskG,baskRate,baskCO2,0.03),
     row('Tinsel Leads','Cu braid + cloth','Electrical',p.tinsel_g,MRATE.cu_braid.usd,MRATE.cu_braid.co2,0.02),
     row('Terminal Cups','Brass / ABS moulded','Electrical',0,0,0,0.00,p.terminal_usd),
     row('2K Epoxy Adhesive','Room-temp cure','Bonding',p.adhesive_g,MRATE.epoxy.usd,MRATE.epoxy.co2,0.02),
