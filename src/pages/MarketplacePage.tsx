@@ -553,6 +553,12 @@ export default function MarketplacePage() {
                         {idea.level === 'part' && (
                           <span className="px-1.5 py-0.5 rounded text-xs border bg-purple-500/10 text-purple-300 border-purple-500/25">Part-level</span>
                         )}
+                        {classification.get(idea.id)?.powertrains.map(p => (
+                          <span key={p} className="px-1.5 py-0.5 rounded text-xs border bg-emerald-500/10 text-emerald-300 border-emerald-500/25">{p}</span>
+                        ))}
+                        {classification.get(idea.id)?.voltages.map(v => (
+                          <span key={v} className="px-1.5 py-0.5 rounded text-xs border bg-sky-500/10 text-sky-300 border-sky-500/25">{v}</span>
+                        ))}
                       </div>
                     </div>
 
