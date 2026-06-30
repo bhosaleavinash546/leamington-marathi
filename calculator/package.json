@@ -15,7 +15,8 @@
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
     "server": "tsx server/index.ts",
-    "dev:full": "concurrently \"npm run dev\" \"npm run server\""
+    "dev:full": "concurrently \"npm run dev\" \"npm run server\"",
+    "test:e2e": "tsx e2e/smoke.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.27.0",

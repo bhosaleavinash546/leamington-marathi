@@ -34,3 +34,12 @@ jobs:
 
       - name: Production build
         run: npm run build
+
+      # Headless smoke-launch: boot the BUILT app in a real browser, drive it into
+      # the SW Should-Cost panel, run a calculation, fail on any uncaught page error.
+      # Catches crash-on-load bugs that unit tests cannot see.
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Headless smoke-launch
+        run: npm run test:e2e
