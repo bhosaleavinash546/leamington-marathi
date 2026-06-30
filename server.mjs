@@ -35,18 +35,20 @@ app.use((req, res, next) => {
   if (!/\bgzip\b/.test(req.headers['accept-encoding'] || '')) return next();
   const originalJson = res.json.bind(res);
   res.json = (body) => {
-    try {
-      const buf = Buffer.from(JSON.stringify(body));
-      if (buf.length < 1024) return originalJson(body);
-      const zipped = zlib.gzipSync(buf);
+    let buf;
+    try { buf = Buffer.from(JSON.stringify(body)); }
+    catch { return originalJson(body); }
+    if (buf.length < 1024) return originalJson(body);
+    // Async gzip — does not block the event loop while compressing.
+    zlib.gzip(buf, (err, zipped) => {
+      if (err) return originalJson(body);
       res.setHeader('Content-Encoding', 'gzip');
       res.setHeader('Content-Type', 'application/json; charset=utf-8');
       res.setHeader('Vary', 'Accept-Encoding');
       res.removeHeader('Content-Length');
-      return res.end(zipped);
-    } catch {
-      return originalJson(body);
-    }
+      res.end(zipped);
+    });
+    return res;
   };
   next();
 });

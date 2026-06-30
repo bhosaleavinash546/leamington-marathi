@@ -48,7 +48,9 @@ interface CadResult {
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const ACCEPTED_FORMATS = '.step,.stp,.stl,.dxf,.dwg,.png,.jpg,.jpeg,.webp,.pdf';
+// Only formats the parser actually supports. (.dwg is binary→garbage; .pdf hits a
+// broken vision mime path — both removed so the picker can't offer them.)
+const ACCEPTED_FORMATS = '.step,.stp,.stl,.dxf,.png,.jpg,.jpeg,.webp';
 
 const PLANT_REGIONS = [
   { value: 'germany', label: 'Germany (€45-55/hr)' },

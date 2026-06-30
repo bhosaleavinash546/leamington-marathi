@@ -26,13 +26,13 @@ export default function CadDiffPage() {
   const onDropB = useCallback((files: File[]) => setFileB(files[0] || null), []);
 
   const dropA = useDropzone({
-    accept: { 'application/octet-stream': ['.step', '.stp', '.iges', '.igs', '.stl', '.obj'] },
+    accept: { 'application/octet-stream': ['.step', '.stp', '.stl', '.dxf'] },
     maxFiles: 1,
     onDrop: onDropA,
   });
 
   const dropB = useDropzone({
-    accept: { 'application/octet-stream': ['.step', '.stp', '.iges', '.igs', '.stl', '.obj'] },
+    accept: { 'application/octet-stream': ['.step', '.stp', '.stl', '.dxf'] },
     maxFiles: 1,
     onDrop: onDropB,
   });
@@ -108,7 +108,7 @@ export default function CadDiffPage() {
                     <input {...drop.getInputProps()} />
                     <Upload size={20} className="text-slate-500" />
                     <div className="text-center">
-                      <p className="text-slate-400 text-sm">Drop STEP, IGES, STL, or OBJ</p>
+                      <p className="text-slate-400 text-sm">Drop STEP, STL or DXF</p>
                       <p className="text-slate-600 text-xs mt-1">or click to browse</p>
                     </div>
                   </div>

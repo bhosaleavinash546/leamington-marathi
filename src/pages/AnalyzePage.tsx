@@ -207,8 +207,7 @@ export default function AnalyzePage() {
     onDrop,
     accept: {
       'model/stl': ['.stl'],
-      'model/iges': ['.igs', '.iges'],
-      'application/octet-stream': ['.stl', '.igs', '.step', '.stp', '.dxf'],
+      'application/octet-stream': ['.stl', '.step', '.stp', '.dxf'],
       'application/step': ['.step', '.stp'],
       'image/png': ['.png'],
       'image/jpeg': ['.jpg', '.jpeg'],
@@ -645,7 +644,7 @@ export default function AnalyzePage() {
                   </div>
                   <div>
                     <h2 className="text-xl font-bold text-white">Upload CAD Geometry</h2>
-                    <p className="text-slate-400 text-sm">Optional — .STL or .IGS enables geometry-contextualised analysis</p>
+                    <p className="text-slate-400 text-sm">Optional — a binary .STL enables geometry-contextualised analysis (dimensions, volume, mass)</p>
                   </div>
                 </div>
 

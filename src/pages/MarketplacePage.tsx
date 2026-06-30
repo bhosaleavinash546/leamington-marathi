@@ -139,7 +139,42 @@ export default function MarketplacePage() {
       .then(data => setIdeas(Array.isArray(data) ? data : []))
       .catch(() => {})
       .finally(() => setLoadingIdeas(false));
-    setInsights(loadInsightsFromLocalStorage());
+
+    // Prefer server-side annotations (cross-device); fall back to localStorage.
+    const token = (() => { try { return JSON.parse(localStorage.getItem('brainspark_auth') || '{}').token; } catch { return null; } })();
+    const local = loadInsightsFromLocalStorage();
+    setInsights(local);
+    if (token) {
+      fetch('/api/projects', { headers: { Authorization: `Bearer ${token}` } })
+        .then(r => (r.ok ? r.json() : null))
+        .then((projects) => {
+          if (!Array.isArray(projects)) return;
+          const collected: ApprovedIdeaInsight[] = [];
+          let projectsWithAnnotations = 0;
+          for (const p of projects) {
+            const ann = (p.annotations && typeof p.annotations === 'object') ? p.annotations : {};
+            const entries = Object.entries(ann).filter(([, v]: [string, any]) => v?.status === 'approved' || v?.status === 'investigating');
+            if (entries.length > 0) projectsWithAnnotations += 1;
+            for (const [slug, v] of entries as [string, any][]) {
+              collected.push({
+                title: slug.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()),
+                systemName: p.systemName || '',
+                status: v.status,
+              });
+            }
+          }
+          collected.sort((a, b) => (a.status === 'approved' ? -1 : 1) - (b.status === 'approved' ? -1 : 1));
+          // Use server data if it found anything; otherwise keep the local fallback.
+          if (collected.length > 0 || projectsWithAnnotations > 0) {
+            setInsights({
+              approvedIdeas: collected.slice(0, 5),
+              totalApproved: collected.filter(x => x.status === 'approved').length,
+              projectCount: projectsWithAnnotations,
+            });
+          }
+        })
+        .catch(() => {});
+    }
   }, []);
 
   // ── Derived state ──────────────────────────────────────────────────────────
