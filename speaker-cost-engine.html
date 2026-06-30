@@ -693,11 +693,11 @@ html[data-theme="light"] .chip{color:var(--blue2)}
 </div>
 <div class="right-panel">
   <div class="metrics-row" id="metricsRow" style="display:none">
-    <div class="metric-cell" id="m-total"><div class="val" id="mv-total">--</div><div class="lbl">System Total (USD)</div></div>
+    <div class="metric-cell" id="m-total"><div class="val" id="mv-total">--</div><div class="lbl">System Total (GBP)</div></div>
     <div class="metric-cell" id="m-spkcount"><div class="val" id="mv-spkcount">--</div><div class="lbl">Speaker Count</div></div>
     <div class="metric-cell" id="m-dm"><div class="val" id="mv-dm">--</div><div class="lbl">DM %</div></div>
     <div class="metric-cell" id="m-co2"><div class="val" id="mv-co2">--</div><div class="lbl">CO₂ (kg)</div></div>
-    <div class="metric-cell" id="m-margin"><div class="val" id="mv-margin">--</div><div class="lbl">Margin ($)</div></div>
+    <div class="metric-cell" id="m-margin"><div class="val" id="mv-margin">--</div><div class="lbl">Margin (£)</div></div>
   </div>
   <div>
     <div class="tabs-wrapper">
@@ -731,10 +731,17 @@ html[data-theme="light"] .chip{color:var(--blue2)}
   </div>
 </div>
 </div>
+<footer style="text-align:center;padding:18px 24px 14px;border-top:1px solid var(--bd);background:var(--surface3);margin-top:8px;transition:background var(--tx) ease,border-color var(--tx) ease">
+  <span style="font-size:13px;font-weight:700;color:var(--t1);letter-spacing:.3px">Avinash Bhosale</span>
+  <span style="font-size:11px;color:var(--t3);margin-left:10px;font-style:italic">Tool Author &amp; Designer</span>
+</footer>
 <script>
 var f2=function(n){return(Math.abs(n)<0.001?'0.00':n.toFixed(2));};
 var f3=function(n){return(Math.abs(n)<0.0001?'0.000':n.toFixed(3));};
 var fmtVol=function(v){return v>=1000?(v/1000).toFixed(v%1000===0?0:1)+'k':v.toString();};
+var FX_GBP=1/1.27; // 1 USD → GBP (COUNTRIES.UK rate)
+var fGBP=function(v){return'£'+(v*FX_GBP).toFixed(2);};
+var f3GBP=function(v){return'£'+(v*FX_GBP).toFixed(3);};
 var setEl=function(id,html){var el=document.getElementById(id);if(el)el.innerHTML=html;};
 var esc=function(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');};
 
@@ -1310,7 +1317,7 @@ function renderMetrics(r) {
 
   var dmPct = r.total > 0 ? (r.totalDM / r.total * 100) : 0;
 
-  countUp(document.querySelector('#m-total .val'),    r.total,           '$', '', 2, 900);
+  countUp(document.querySelector('#m-total .val'),    r.total*FX_GBP,    '£', '', 2, 900);
   countUp(document.querySelector('#m-spkcount .val'), r.totalSpkCount,   '',  ' spk', 0, 700);
   countUp(document.querySelector('#m-dm .val'),       dmPct,             '',  '%', 1, 750);
   countUp(document.querySelector('#m-co2 .val'),      r.totalSpkCO2,     '',  ' kg', 2, 850);
@@ -1341,8 +1348,8 @@ function renderOverview(r) {
     html += '<td><span class="badge" style="background:rgba(59,130,246,0.18);color:var(--blue2)">' + esc(d.type) + '</span></td>';
     html += '<td>' + d.sizeMM + ' mm</td>';
     html += '<td>' + d.qty + '</td>';
-    html += '<td>$' + f2(sr.totalPerUnit) + '</td>';
-    html += '<td><strong>$' + f2(sr.totalPerUnit * d.qty) + '</strong></td>';
+    html += '<td>' + fGBP(sr.totalPerUnit) + '</td>';
+    html += '<td><strong>' + fGBP(sr.totalPerUnit * d.qty) + '</strong></td>';
     html += '<td>' + f2(sr.co2PerUnit * d.qty) + ' kg</td>';
     html += '</tr>';
   });
@@ -1354,12 +1361,12 @@ function renderOverview(r) {
   if (r.sysConnCost > 0) extraRows.push({label:'Connectors',          val: r.sysConnCost});
   extraRows.forEach(function(row) {
     html += '<tr style="opacity:0.75"><td colspan="4" style="color:var(--t2)">' + esc(row.label) + '</td>';
-    html += '<td>$' + f2(row.val) + '</td><td>$' + f2(row.val) + '</td><td>—</td></tr>';
+    html += '<td>' + fGBP(row.val) + '</td><td>' + fGBP(row.val) + '</td><td>—</td></tr>';
   });
 
   html += '</tbody><tfoot><tr>';
   html += '<td colspan="4"><strong>System Total</strong></td>';
-  html += '<td></td><td><strong style="color:var(--blue2)">$' + f2(r.total) + '</strong></td>';
+  html += '<td></td><td><strong style="color:var(--blue2)">' + fGBP(r.total) + '</strong></td>';
   html += '<td><strong style="color:var(--green2)">' + f2(r.totalSpkCO2) + ' kg</strong></td>';
   html += '</tr></tfoot></table></div>';
 
@@ -1383,7 +1390,7 @@ function renderOverview(r) {
     html += '<div class="stack-row">';
     html += '<span class="stack-lbl">' + c.label + '</span>';
     html += '<div class="stack-bar-wrap"><div class="stack-bar" data-w="' + pct.toFixed(1) + '" style="width:0;background:' + c.color + '"></div></div>';
-    html += '<span class="stack-val">$' + f2(c.val) + ' (' + pct.toFixed(1) + '%)</span>';
+    html += '<span class="stack-val">' + fGBP(c.val) + ' (' + pct.toFixed(1) + '%)</span>';
     html += '</div>';
   });
   html += '</div>';
@@ -1405,14 +1412,14 @@ function renderOverview(r) {
 function renderFullBOM(r) {
   var html = '<div class="section-title">Material Rate Library</div>';
   html += '<div class="bom-table"><table><thead><tr>';
-  html += '<th>Material</th><th>$/kg</th><th>CO₂ kg/kg</th><th>Recycled%</th><th>Bio%</th><th>RoHS</th><th>REACH</th><th>VOC</th>';
+  html += '<th>Material</th><th>£/kg</th><th>CO₂ kg/kg</th><th>Recycled%</th><th>Bio%</th><th>RoHS</th><th>REACH</th><th>VOC</th>';
   html += '</tr></thead><tbody>';
 
   Object.keys(MRATE).forEach(function(k) {
     var m = MRATE[k];
     html += '<tr>';
     html += '<td>' + k.replace(/_/g,' ') + '</td>';
-    html += '<td>$' + f2(m.usd) + '</td>';
+    html += '<td>' + fGBP(m.usd) + '</td>';
     html += '<td>' + m.co2 + '</td>';
     html += '<td>' + m.rcl_pct + '%</td>';
     html += '<td>' + m.bio_pct + '%</td>';
@@ -1430,7 +1437,7 @@ function renderFullBOM(r) {
     r.spkResults[0].bom.forEach(function(b) {
       html += '<tr><td>' + esc(b.name) + '</td><td style="color:var(--t2);font-size:0.8rem">' + esc(b.spec) + '</td>';
       html += '<td><span class="badge" style="background:rgba(139,92,246,0.15);color:var(--purple2)">' + esc(b.cat) + '</span></td>';
-      html += '<td>' + f2(b.wt) + '</td><td>$' + f3(b.cost) + '</td><td>' + f3(b.co2) + ' kg</td></tr>';
+      html += '<td>' + f2(b.wt) + '</td><td>' + f3GBP(b.cost) + '</td><td>' + f3(b.co2) + ' kg</td></tr>';
     });
     html += '</tbody></table></div>';
   }
@@ -1524,15 +1531,15 @@ function renderBenchmarking(r) {
   BENCHMARKS.forEach(function(b) {
     var marg = ((b.oem_cost - b.est_cost) / b.oem_cost * 100);
     var delta = r.total - b.est_cost;
-    var deltaStr = (delta > 0 ? '+' : '') + '$' + f2(Math.abs(delta));
+    var deltaStr = (delta > 0 ? '+' : '') + fGBP(Math.abs(delta));
     var deltaColor = delta <= 0 ? 'var(--green2)' : delta < 20 ? 'var(--amber)' : 'var(--red)';
     var tierColor = {Budget:'var(--t3)',Standard:'var(--cyan)',Premium:'var(--blue2)',Luxury:'var(--gold)'}[b.tier] || 'var(--t2)';
     html += '<tr>';
     html += '<td><strong>' + esc(b.name) + '</strong></td>';
     html += '<td>' + esc(b.brand) + '</td>';
     html += '<td>' + b.spkCnt + '</td>';
-    html += '<td>$' + f2(b.oem_cost) + '</td>';
-    html += '<td>$' + f2(b.est_cost) + '</td>';
+    html += '<td>' + fGBP(b.oem_cost) + '</td>';
+    html += '<td>' + fGBP(b.est_cost) + '</td>';
     html += '<td>' + marg.toFixed(1) + '%</td>';
     html += '<td><span class="badge" style="color:' + tierColor + ';background:rgba(0,0,0,0.3)">' + b.tier + '</span></td>';
     html += '<td><span style="color:' + deltaColor + '">' + deltaStr + '</span></td>';
@@ -1544,7 +1551,7 @@ function renderBenchmarking(r) {
   var cheaper = BENCHMARKS.filter(function(b) { return r.total < b.est_cost; }).length;
   var pct = (cheaper / BENCHMARKS.length * 100).toFixed(0);
   html += '<div class="card" style="padding:1rem;margin-top:1rem;border-color:var(--blue)">';
-  html += '<p>Your system cost <strong style="color:var(--blue2)">$' + f2(r.total) + '</strong> ';
+  html += '<p>Your system cost <strong style="color:var(--blue2)">' + fGBP(r.total) + '</strong> ';
   html += 'beats <strong style="color:var(--green2)">' + cheaper + ' of ' + BENCHMARKS.length + '</strong> benchmarks (' + pct + '% cost advantage).</p>';
   html += '</div>';
 
@@ -1557,7 +1564,7 @@ function renderProcess(r) {
   var country = r.country;
   var html = '<div class="section-title">Manufacturing Process Routing</div>';
   html += '<div class="bom-table"><table><thead><tr>';
-  html += '<th>Step</th><th>Process</th><th>Base (min)</th><th>Lab$/hr</th><th>Lab Cost</th><th>Mach Cost</th>';
+  html += '<th>Step</th><th>Process</th><th>Base (min)</th><th>Lab£/hr</th><th>Lab Cost</th><th>Mach Cost</th>';
   html += '</tr></thead><tbody>';
 
   if (r.spkResults && r.spkResults[0] && r.spkResults[0].proc) {
@@ -1566,9 +1573,9 @@ function renderProcess(r) {
       html += '<td><span class="badge" style="background:rgba(139,92,246,0.18);color:var(--purple2)">' + esc(s.id || s.step || '') + '</span></td>';
       html += '<td>' + esc(s.name) + '</td>';
       html += '<td>' + f2(s.cycMin) + '</td>';
-      html += '<td>$' + f2(country.labHr) + '</td>';
-      html += '<td>$' + f3(s.labCost) + '</td>';
-      html += '<td>$' + f3(s.machCost) + '</td>';
+      html += '<td>' + fGBP(country.labHr) + '</td>';
+      html += '<td>' + f3GBP(s.labCost) + '</td>';
+      html += '<td>' + f3GBP(s.machCost) + '</td>';
       html += '</tr>';
     });
   }
@@ -1581,7 +1588,7 @@ function renderProcess(r) {
     var cc = COUNTRIES[c];
     var selected = c === r.inp.country;
     html += '<div class="scard" style="' + (selected ? 'border-color:var(--blue);box-shadow:0 0 12px rgba(59,130,246,0.3)' : '') + '">';
-    html += '<div class="scard-val" style="color:var(--cyan)">$' + cc.labHr + '/hr</div>';
+    html += '<div class="scard-val" style="color:var(--cyan)">' + fGBP(cc.labHr) + '/hr</div>';
     html += '<div class="scard-lbl">' + esc(c) + (selected ? ' ✓' : '') + '</div>';
     html += '</div>';
   });
@@ -1606,8 +1613,8 @@ function renderSensitivity(r) {
   var costs = vols.map(function(v) {
     try {
       var inp2 = Object.assign({}, r.inp, {annualVol: Math.round(v)});
-      return computeSystemCost(inp2).total;
-    } catch(e) { return baseCost; }
+      return computeSystemCost(inp2).total * FX_GBP;
+    } catch(e) { return baseCost * FX_GBP; }
   });
 
   var ctx = document.getElementById('senChart');
@@ -1618,7 +1625,7 @@ function renderSensitivity(r) {
     data: {
       labels: ['50% Vol', '75% Vol', 'Base', '125% Vol', '150% Vol'],
       datasets: [{
-        label: 'System Cost ($)',
+        label: 'System Cost (£)',
         data: costs,
         backgroundColor: ['rgba(239,68,68,0.7)','rgba(245,158,11,0.7)','rgba(59,130,246,0.85)','rgba(34,211,238,0.7)','rgba(16,185,129,0.7)'],
         borderColor: ['#ef4444','#f59e0b','#3b82f6','#22d3ee','#10b981'],
@@ -1630,7 +1637,7 @@ function renderSensitivity(r) {
       plugins: {legend:{labels:{color:_chartTickColor()}}},
       scales: {
         x:{ticks:{color:_chartTickColor()},grid:{color:_chartGridColor()}},
-        y:{ticks:{color:_chartTickColor(),callback:function(v){return '$'+v.toFixed(2);}},grid:{color:_chartGridColor()}}
+        y:{ticks:{color:_chartTickColor(),callback:function(v){return '£'+v.toFixed(2);}},grid:{color:_chartGridColor()}}
       }
     }
   });
@@ -1653,7 +1660,7 @@ function renderRecommendations(r) {
     html += '<li style="margin-bottom:0.6rem">';
     html += '<strong style="color:var(--t1)">' + esc(tip.area || '') + ':</strong> ';
     html += '<span style="color:var(--t2)">' + esc(tip.tip || '') + '</span> ';
-    html += '<span style="color:var(--green2);font-weight:600">(-$' + f2(saving) + ')</span>';
+    html += '<span style="color:var(--green2);font-weight:600">(-£' + f2(saving * FX_GBP) + ')</span>';
     html += '</li>';
   });
   cont.innerHTML = html;
@@ -1699,7 +1706,7 @@ function renderAIInsights(r) {
   // 1 — Cost Position
   html += '<div class="card ai-card"><div class="ai-card-hdr"><span class="ai-icon">📊</span><span>Cost Position</span></div>';
   html += '<div class="ai-big" style="color:' + posColor + '">' + posLabel + '</div>';
-  html += '<p class="ai-txt">Beats <strong>' + cheaper + '</strong>/' + BENCHMARKS.length + ' benchmarks at $' + f2(cost) + '</p></div>';
+  html += '<p class="ai-txt">Beats <strong>' + cheaper + '</strong>/' + BENCHMARKS.length + ' benchmarks at ' + fGBP(cost) + '</p></div>';
 
   // 2 — Sustainability
   html += '<div class="card ai-card"><div class="ai-card-hdr"><span class="ai-icon">🌿</span><span>ESG Grade</span></div>';
@@ -1719,7 +1726,7 @@ function renderAIInsights(r) {
   html += '<div class="card ai-card"><div class="ai-card-hdr"><span class="ai-icon">💡</span><span>Top Savings</span></div>';
   html += '<ol style="padding-left:1.2rem;margin:0.5rem 0">';
   levers.forEach(function(l) {
-    html += '<li style="color:var(--t2);font-size:0.85rem;margin-bottom:0.4rem">' + esc(l.label) + ' <span style="color:var(--green2)">(-$' + f2(l.saving) + ')</span></li>';
+    html += '<li style="color:var(--t2);font-size:0.85rem;margin-bottom:0.4rem">' + esc(l.label) + ' <span style="color:var(--green2)">(-' + fGBP(l.saving) + ')</span></li>';
   });
   html += '</ol></div>';
 
