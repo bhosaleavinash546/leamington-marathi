@@ -188,7 +188,8 @@ export const REUSE_FACTOR: Record<SWReuse, number> = {
   Fresh: 1.00, Light: 0.82, Medium: 0.60, Heavy: 0.35, Platform: 0.14,
 };
 
-/** Regional labour rate relative to UK senior blended (fully loaded £28k/PM) */
+/** Regional labour rate relative to the UK senior blended base (£28k/PM, before
+ *  the programme overhead multiplier — see UK_PM_RATE_GBP). */
 export const REGION_MULT: Record<SWRegion, number> = {
   UK:             1.00,
   EU:             0.95,
@@ -208,7 +209,11 @@ export const DEV_SOURCE_MULT: Record<DevSource, number> = {
   Startup_OSS:    0.72,
 };
 
-const UK_PM_RATE_GBP = 28_000; // fully-loaded £/person-month baseline
+// UK senior-blended bare rate (salary + benefits) per person-month. Programme
+// overhead (facilities, IT, management, non-productive time) is applied on top
+// via prog.overheadMultiplier — do NOT treat this as a fully-loaded rate, or
+// overhead is double-counted.
+const UK_PM_RATE_GBP = 28_000;
 
 // ─── Module Database (43 modules) ────────────────────────────────────────────
 

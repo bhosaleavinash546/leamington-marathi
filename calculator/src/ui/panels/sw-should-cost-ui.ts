@@ -1077,7 +1077,7 @@ function generateAIInsights(result: SWProgramResult): void {
 
   const prompt = `You are a senior automotive software engineering cost analyst. Provide a concise executive summary and actionable recommendations for this programme:
 
-PROGRAMME: Premium Luxury SUV Full Software Stack (2024-2026)
+PROGRAMME: Premium Luxury SUV Full Software Stack (${result.inputs.programLifeYears}-year programme)
 Total Programme Cost: ${(s.grandTotal/1e6).toFixed(1)}M GBP
 Per Vehicle: £${Math.round(s.perVehicle)}
 Total Person-Months: ${Math.round(s.totalPersonMonths)} PM (avg ${Math.round(s.totalPersonMonths/(result.inputs.programLifeYears*12))} FTE)
@@ -1102,16 +1102,22 @@ Provide:
 3. Key risk factors requiring management attention
 Keep response concise and actionable (under 250 words).`;
 
+  // Abort the request if the endpoint hangs so the button can't stick on "Generating…".
+  const ctrl = new AbortController();
+  const timeout = setTimeout(() => ctrl.abort(), 30_000);
+
   fetch('/api/aichat', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ messages: [{ role: 'user', content: prompt }] }),
+    signal: ctrl.signal,
   })
   .then(r => r.ok ? r.json() : Promise.reject(r.statusText))
   .then(data => {
     const text: string = data.content || data.message || data.text || JSON.stringify(data);
-    // Format as HTML (convert newlines, bold **text**)
-    const formatted = text
+    // The response is external content: HTML-escape it first, THEN apply the
+    // limited markdown (bold, paragraphs) so a malicious payload can't inject markup.
+    const formatted = esc(text)
       .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
       .replace(/\n\n/g, '</p><p style="margin:0 0 8px">')
       .replace(/\n/g, '<br>');
@@ -1123,10 +1129,12 @@ Keep response concise and actionable (under 250 words).`;
     btnEl.style.display = 'none';
   })
   .catch(err => {
-    contentEl.innerHTML = `<div style="background:#fef2f2;border:1px solid #fca5a5;border-radius:6px;padding:10px 14px;font-size:0.8rem;color:#dc2626">⚠️ AI analysis unavailable: ${String(err)}. Engineering Insights above are still available.</div>`;
+    const msg = ctrl.signal.aborted ? 'request timed out after 30s' : String(err);
+    contentEl.innerHTML = `<div style="background:#fef2f2;border:1px solid #fca5a5;border-radius:6px;padding:10px 14px;font-size:0.8rem;color:#dc2626">⚠️ AI analysis unavailable: ${esc(msg)}. Engineering Insights above are still available.</div>`;
     btnEl.disabled = false;
     btnEl.textContent = '✨ Retry AI Analysis';
-  });
+  })
+  .finally(() => clearTimeout(timeout));
 }
 
 // ─── Rec 6: Excel Export ──────────────────────────────────────────────────────
