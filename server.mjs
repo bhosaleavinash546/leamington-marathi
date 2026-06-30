@@ -18,6 +18,15 @@ import nodemailer from 'nodemailer';
 import Database from 'better-sqlite3';
 import { computeShouldCost, simulateShouldCost, volumeSensitivity, listMaterials, listProcesses, listRegions, MATERIALS, PROCESSES } from './costing-engine.mjs';
 import { validateIdeas } from './idea-validation.mjs';
+import { analyzeFeatures } from './src/services/cad-features.mjs';
+import { aggregateOcctMeshes, analyzeBrep } from './src/services/cad-brep.mjs';
+
+// Lazy OpenCascade (WASM) loader — only initialised on first STEP upload.
+let _occtPromise = null;
+function getOcct() {
+  if (!_occtPromise) _occtPromise = import('occt-import-js').then(m => m.default());
+  return _occtPromise;
+}
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -4119,6 +4128,39 @@ async function performSearch(query, braveApiKey) {
     return [];
   }
 }
+
+// ─── STEP B-REP PARSE (OpenCascade WASM) ─────────────────────────────────────
+// Parses a STEP/STP file server-side into real geometry + feature map + B-rep
+// face analysis (true face/hole counts), so STEP gets the same grounding as STL.
+app.post('/api/cad-step', requireAuth, rateLimit(30, 60 * 60 * 1000), async (req, res) => {
+  const { fileBase64, fileName, fileSize } = req.body;
+  if (!fileBase64 || typeof fileBase64 !== 'string') return res.status(400).json({ error: 'fileBase64 required' });
+  try {
+    const occt = await getOcct();
+    const buf = Buffer.from(fileBase64, 'base64');
+    const result = occt.ReadStepFile(new Uint8Array(buf), null);
+    if (!result || !result.success || !Array.isArray(result.meshes) || result.meshes.length === 0) {
+      return res.status(422).json({ error: 'Could not read solid geometry from this STEP file.' });
+    }
+    const agg = aggregateOcctMeshes(result.meshes);
+    if (!agg) return res.status(422).json({ error: 'STEP file contained no tessellable solid.' });
+    const { featureMap, processes, dfma } = analyzeFeatures(agg);
+    const brep = analyzeBrep(result.meshes);
+    res.json({
+      fileName: fileName || 'model.step', fileSize: fileSize || buf.length, fileType: 'step', isImage: false,
+      triangleCount: agg.triangleCount,
+      estimatedVolume: agg.volumeCm3,
+      estimatedSurfaceArea: agg.surfaceAreaCm2,
+      boundingBox: agg.bbox,
+      featureMap, processGuesses: processes, dfmaFindings: dfma,
+      featureCounts: { faces: brep.totalFaces, holes: brep.holes, bosses: brep.bosses },
+      brep,
+    });
+  } catch (e) {
+    console.error('[CAD STEP] parse error:', e.message);
+    res.status(500).json({ error: 'STEP parsing failed — the file may be unsupported or corrupt.' });
+  }
+});
 
 // ─── CAD-TO-COST ENDPOINT ────────────────────────────────────────────────────
 

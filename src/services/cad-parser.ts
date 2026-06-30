@@ -353,11 +353,28 @@ export async function parseCadFile(file: File): Promise<CadGeometry> {
     return { fileName, fileType: 'dxf', fileSize, isImage: false, ...geo };
   }
 
-  // STEP / STP
+  // STEP / STP — server-side OpenCascade kernel (real geometry + B-rep features);
+  // falls back to lightweight tag parsing if the kernel is unreachable (offline).
   if (['step', 'stp'].includes(extension)) {
+    try {
+      const buffer = await file.arrayBuffer();
+      const token = (() => { try { return JSON.parse(localStorage.getItem('brainspark_auth') || '{}').token; } catch { return ''; } })();
+      const resp = await fetch('/api/cad-step', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+        body: JSON.stringify({ fileBase64: toBase64(buffer), fileName, fileSize }),
+      });
+      if (resp.ok) {
+        const geo = await resp.json();
+        return { fileName, fileType: 'step', fileSize, isImage: false, ...geo };
+      }
+    } catch { /* fall through to tag parser */ }
     const text = await file.text();
     const geo = parseStep(text);
-    return { fileName, fileType: 'step', fileSize, isImage: false, ...geo };
+    return {
+      fileName, fileType: 'step', fileSize, isImage: false, ...geo,
+      warnings: [...(geo.warnings || []), 'Full STEP geometry unavailable (kernel offline) — using entity tags only.'],
+    };
   }
 
   return { fileName, fileType: 'unknown', fileSize, isImage: false,

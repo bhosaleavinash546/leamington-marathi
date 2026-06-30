@@ -305,7 +305,7 @@ export default function CadToCostPage() {
               <p className="text-gold-400 text-xs font-semibold uppercase tracking-widest mb-1">CAD to Cost</p>
               <h1 className="text-3xl font-bold text-white mb-2">CAD → Cost Estimation</h1>
               <p className="text-slate-400 text-sm max-w-2xl">
-                Best results from a <span className="text-white font-medium">binary STL</span> — it extracts true dimensions, volume and mass. STEP/DXF read entity tags only (no volume); drawings/screenshots are read by AI vision. The estimate combines parsed geometry with an expert cost model and DFMA score.
+                <span className="text-white font-medium">STEP and STL</span> extract true geometry — dimensions, volume, mass, plus a feature map (solidity, wall thickness, planar/curved split) and, for STEP, real B-rep face & hole counts. DXF reads 2D entities; drawings/screenshots are read by AI vision. The estimate combines parsed geometry with an expert cost model and DFMA score.
               </p>
             </div>
           </div>
@@ -313,10 +313,10 @@ export default function CadToCostPage() {
           {/* Format chips — honest about what each format actually yields */}
           <div className="flex flex-wrap gap-2 mt-5">
             {[
-              { label: 'STL',        sub: 'Full geometry ✓', icon: Package },
-              { label: 'STEP / STP', sub: 'Tags only',       icon: Layers },
-              { label: 'DXF',        sub: '2D entities',     icon: BarChart3 },
-              { label: 'PNG / JPG',  sub: 'AI vision',       icon: Zap },
+              { label: 'STEP / STP', sub: 'B-rep geometry ✓', icon: Layers },
+              { label: 'STL',        sub: 'Mesh geometry ✓',  icon: Package },
+              { label: 'DXF',        sub: '2D entities',      icon: BarChart3 },
+              { label: 'PNG / JPG',  sub: 'AI vision',        icon: Zap },
             ].map(({ label, sub, icon: Icon }) => (
               <div key={label} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-xs">
                 <Icon size={11} className="text-gold-400" />
