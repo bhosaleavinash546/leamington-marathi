@@ -2896,6 +2896,8 @@ seedMarketplaceIdeasFromFile('marketplace-extra-ideas.json', 'extra OEM-benchmar
 seedMarketplaceIdeasFromFile('marketplace-suv-ideas.json', 'premium-SUV Chassis & BIW ideas');
 // 50 BEV 800-V battery & EDU cooling ideas.
 seedMarketplaceIdeasFromFile('marketplace-bev-cooling-ideas.json', 'BEV 800V cooling ideas');
+// 50 premium-SUV driveline ideas (gearbox, transfer case, diffs, half/prop shafts).
+seedMarketplaceIdeasFromFile('marketplace-driveline-ideas.json', 'premium-SUV driveline ideas');
 
 const CACHE_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
 
