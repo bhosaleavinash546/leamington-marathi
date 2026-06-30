@@ -209,6 +209,271 @@ function renderSavedConfigsHTML(): string {
   </div>`;
 }
 
+// ─── Guided wizard (Part 4: step-by-step mode, default for new users) ──────────
+
+type SWCat = 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G';
+const ALL_CATS: SWCat[] = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
+const WIZARD_STEPS = ['Context', 'Domains', 'Complexity & Safety', 'Cost', 'Review', 'Report'];
+
+interface GuidedDomainCfg { complexity: SWComplexity | 'default'; reuse: SWReuse; asil: ASILLevel | 'default'; }
+
+const DOMAIN_INFO: Record<SWCat, { plain: string; typicalAsil: string }> = {
+  A: { plain: 'Battery management (BMS), charging, thermal, motor & inverter control', typicalAsil: 'mostly ASIL-C/D' },
+  B: { plain: 'Driver assistance: cameras, radar, sensor fusion, lane-keep, AEB', typicalAsil: 'up to ASIL-D' },
+  C: { plain: 'Touchscreen, navigation, voice assistant, connectivity, HMI', typicalAsil: 'QM / ASIL-A' },
+  D: { plain: 'Body, chassis & gateway controllers that coordinate the vehicle', typicalAsil: 'ASIL-B/C' },
+  E: { plain: 'AUTOSAR, RTOS, diagnostics, comms — the software platform layer', typicalAsil: 'ASIL-B' },
+  F: { plain: 'Secure boot, encryption, intrusion detection (ISO 21434)', typicalAsil: 'ASIL-B/C' },
+  G: { plain: 'Over-the-air (OTA) updates, cloud backend, fleet analytics', typicalAsil: 'QM' },
+};
+
+let _swMode: 'guided' | 'advanced' = 'guided';
+let _wizStep = 1;
+let _wizDomains: Record<SWCat, boolean> = { A: true, B: true, C: true, D: true, E: true, F: true, G: true };
+let _wizCfg: Record<SWCat, GuidedDomainCfg> =
+  Object.fromEntries(ALL_CATS.map(c => [c, { complexity: 'default', reuse: 'Medium', asil: 'default' }])) as Record<SWCat, GuidedDomainCfg>;
+let _programPhase: 'Concept' | 'Development' | 'SOP' | 'Facelift' = 'Development';
+
+/** Map the guided selections onto the full 43-module _swInputs. */
+function applyGuidedToInputs(): void {
+  for (const m of _swInputs.modules) {
+    const def = SW_MODULES.find(d => d.id === m.moduleId)!;
+    const cat = def.category as SWCat;
+    m.enabled = _wizDomains[cat];
+    const g = _wizCfg[cat];
+    m.complexity = g.complexity === 'default' ? def.defaultComplexity : g.complexity;
+    m.asil       = g.asil === 'default' ? def.defaultAsil : g.asil;
+    m.reuse      = g.reuse;
+  }
+}
+
+function selectedCats(): SWCat[] { return ALL_CATS.filter(c => _wizDomains[c]); }
+
+function renderGuidedWizardHTML(): string {
+  const dots = WIZARD_STEPS.map((label, i) => {
+    const n = i + 1;
+    const state = n < _wizStep ? 'done' : n === _wizStep ? 'active' : 'todo';
+    return `<div class="sw-wiz-dot sw-wiz-${state}">
+      <span class="sw-wiz-num">${n < _wizStep ? '✓' : n}</span>
+      <span class="sw-wiz-dot-label">${esc(label)}</span>
+    </div>`;
+  }).join('<div class="sw-wiz-connector"></div>');
+
+  return `
+  <div class="sw-wiz-progress">${dots}</div>
+  <div class="sw-wiz-card">
+    <div id="sw-wiz-body">${renderWizStepBody(_wizStep)}</div>
+    <div class="sw-wiz-footer">
+      <button id="sw-wiz-back" class="sw-wiz-btn-ghost" ${_wizStep === 1 ? 'disabled' : ''}>← Back</button>
+      <span class="sw-wiz-stepcount">Step ${_wizStep} of ${WIZARD_STEPS.length}</span>
+      <button id="sw-wiz-next" class="sw-wiz-btn-primary">${_wizStep >= WIZARD_STEPS.length ? '↻ Start over' : 'Next →'}</button>
+    </div>
+  </div>`;
+}
+
+const tip = (t: string) => `<span class="sw-tip" title="${esc(t)}">ⓘ</span>`;
+
+function renderWizStepBody(step: number): string {
+  const inp = _swInputs;
+  if (step === 1) {
+    const regionOpts = (['UK','EU','USA_Detroit','USA_SV','China','India','Mexico','Eastern_Europe','Japan'] as const)
+      .map(r => `<option value="${r}" ${inp.region === r ? 'selected' : ''}>${r.replace('_',' ')}</option>`).join('');
+    const phaseOpts = (['Concept','Development','SOP','Facelift'] as const)
+      .map(p => `<option value="${p}" ${_programPhase === p ? 'selected' : ''}>${p}</option>`).join('');
+    return `
+      <div class="sw-wiz-h">Step 1 — Vehicle &amp; Programme Context</div>
+      <p class="sw-wiz-help">Tell us about the programme. These set the baseline rates and how the one-time engineering cost is spread across vehicles.</p>
+      <div class="sw-grid sw-grid-2" style="gap:16px">
+        <div class="sw-field-group"><label class="sw-label">Development region ${tip('Where your engineers are based — sets the labour rate. Silicon Valley is ~9× India.')}</label>
+          <select id="wiz-region" class="sw-config-sel">${regionOpts}</select></div>
+        <div class="sw-field-group"><label class="sw-label">Programme phase ${tip('Concept/Development/SOP/Facelift — informational; facelift programmes usually reuse more software.')}</label>
+          <select id="wiz-phase" class="sw-config-sel">${phaseOpts}</select></div>
+        <div class="sw-field-group"><label class="sw-label">Annual production volume ${tip('Vehicles per year. Higher volume spreads the software investment over more cars.')}</label>
+          <input id="wiz-vol" type="number" class="sw-config-inp" min="1000" max="500000" step="1000" value="${inp.annualProductionVolume}"></div>
+        <div class="sw-field-group"><label class="sw-label">Programme life (years) ${tip('How long the software is developed and maintained — typically 5–10 years.')}</label>
+          <input id="wiz-life" type="number" class="sw-config-inp" min="3" max="20" step="1" value="${inp.programLifeYears}"></div>
+      </div>`;
+  }
+
+  if (step === 2) {
+    const cards = ALL_CATS.map(c => {
+      const meta = CAT_META[c]; const info = DOMAIN_INFO[c];
+      const count = SW_MODULES.filter(m => m.category === c).length;
+      const on = _wizDomains[c];
+      return `<label class="sw-domain-card ${on ? 'sw-domain-on' : ''}" style="border-left:3px solid ${meta.color}">
+        <input type="checkbox" class="wiz-domain" data-cat="${c}" ${on ? 'checked' : ''}>
+        <div>
+          <div class="sw-domain-title">${meta.icon} ${esc(meta.label)} <span class="sw-domain-count">${count} modules · ${esc(info.typicalAsil)}</span></div>
+          <div class="sw-domain-desc">${esc(info.plain)}</div>
+        </div>
+      </label>`;
+    }).join('');
+    return `
+      <div class="sw-wiz-h">Step 2 — Which software domains are in scope?</div>
+      <p class="sw-wiz-help">Select the software areas your programme includes. Unselected domains are excluded from the cost. Most full premium EV programmes include all seven.</p>
+      <div class="sw-domain-grid">${cards}</div>`;
+  }
+
+  if (step === 3) {
+    const cats = selectedCats();
+    if (!cats.length) return `<div class="sw-wiz-h">Step 3 — Complexity &amp; Safety</div><p class="sw-wiz-help">No domains selected. Go back to Step 2 and choose at least one.</p>`;
+    const compOpts = (cfg: GuidedDomainCfg) => (['default','Low','Medium','High','Very High'] as const)
+      .map(v => `<option value="${v}" ${cfg.complexity === v ? 'selected' : ''}>${v === 'default' ? 'Module default' : v}</option>`).join('');
+    const reuseOpts = (cfg: GuidedDomainCfg) => (['Fresh','Light','Medium','Heavy','Platform'] as const)
+      .map(v => `<option value="${v}" ${cfg.reuse === v ? 'selected' : ''}>${v}</option>`).join('');
+    const asilOpts = (cfg: GuidedDomainCfg) => (['default','QM','A','B','C','D'] as const)
+      .map(v => `<option value="${v}" ${cfg.asil === v ? 'selected' : ''}>${v === 'default' ? 'Per-module ISO 26262' : v}</option>`).join('');
+    const rows = cats.map(c => {
+      const meta = CAT_META[c]; const cfg = _wizCfg[c];
+      return `<tr data-cat="${c}">
+        <td style="font-weight:600">${meta.icon} ${esc(meta.label)}</td>
+        <td><select class="wiz-comp sw-sel" data-cat="${c}">${compOpts(cfg)}</select></td>
+        <td><select class="wiz-reuse sw-sel" data-cat="${c}">${reuseOpts(cfg)}</select></td>
+        <td><select class="wiz-asil sw-sel" data-cat="${c}">${asilOpts(cfg)}</select></td>
+      </tr>`;
+    }).join('');
+    return `
+      <div class="sw-wiz-h">Step 3 — Complexity, Safety &amp; Reuse</div>
+      <p class="sw-wiz-help">For each domain set how hard it is to build (complexity), how safety-critical it is (ASIL ${tip('Automotive Safety Integrity Level, ISO 26262. Higher = costlier. Leave on “Per-module” to use realistic per-module defaults.')}), and how much you reuse from previous vehicles ${tip('Reuse is the biggest cost lever — platform reuse can cut a domain’s cost by ~85%.')}. Leave defaults if unsure.</p>
+      <div class="sw-table-wrap"><table class="sw-data-table">
+        <thead><tr><th>Domain</th><th>Complexity</th><th>Reuse</th><th>Safety (ASIL)</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table></div>`;
+  }
+
+  if (step === 4) {
+    // computed on entry by wireWizStep
+    return `
+      <div class="sw-wiz-h">Step 4 — Effort &amp; Cost by Domain</div>
+      <p class="sw-wiz-help">Based on your selections, here is the estimated engineering effort and cost per domain.</p>
+      <div id="wiz-cost-summary" class="sw-grid sw-grid-3" style="margin-bottom:14px"></div>
+      <div id="wiz-cost-table" class="sw-table-wrap"></div>`;
+  }
+
+  if (step === 5) {
+    return `
+      <div class="sw-wiz-h">Step 5 — Review &amp; Fine-Tune</div>
+      <p class="sw-wiz-help">Adjust the commercial assumptions, then recalculate. Most users can leave these at defaults.</p>
+      <div class="sw-grid sw-grid-3" style="gap:16px">
+        <div class="sw-field-group"><label class="sw-label">Overhead multiplier ${tip('Office, IT, management on top of bare salary. 1.6 is typical.')}</label>
+          <input id="wiz-overhead" type="number" class="sw-config-inp" min="1" max="3" step="0.05" value="${inp.overheadMultiplier}"></div>
+        <div class="sw-field-group"><label class="sw-label">Senior engineer fraction ${tip('Share of the team that are senior (more expensive, more productive).')}</label>
+          <input id="wiz-senior" type="number" class="sw-config-inp" min="0" max="1" step="0.05" value="${inp.teamSeniorFraction}"></div>
+        <div class="sw-field-group"><label class="sw-label">UK base rate £/PM ${tip('UK senior-blended rate per person-month before overhead. All regions scale from this.')}</label>
+          <input id="wiz-baserate" type="number" class="sw-config-inp" min="5000" max="120000" step="500" value="${inp.baseRateGBP ?? DEFAULT_SW_RATE_LIBRARY.ukBaseRatePerPM.value}"></div>
+      </div>
+      <div style="text-align:center;margin-top:16px"><button id="wiz-recalc" class="sw-wiz-btn-primary">↻ Recalculate</button></div>
+      <div id="wiz-sensitivity" style="margin-top:14px"></div>`;
+  }
+
+  // step 6 — report rendered into shared #sw-results by wireWizStep
+  return `
+    <div class="sw-wiz-h">Step 6 — Final Report</div>
+    <p class="sw-wiz-help">Your full software should-cost estimate is below. Use the AI summary for an executive narrative, or export to Excel/PDF.</p>
+    <div id="wiz-report-note"></div>`;
+}
+
+function readWizStep(step: number): void {
+  const g = (id: string) => document.getElementById(id) as HTMLInputElement | HTMLSelectElement | null;
+  if (step === 1) {
+    const region = (g('wiz-region') as HTMLSelectElement)?.value; if (region) _swInputs.region = region as SWRegion;
+    const phase = (g('wiz-phase') as HTMLSelectElement)?.value as typeof _programPhase; if (phase) _programPhase = phase;
+    const vol = parseInt((g('wiz-vol') as HTMLInputElement)?.value); if (!isNaN(vol)) _swInputs.annualProductionVolume = Math.max(1, vol);
+    const life = parseInt((g('wiz-life') as HTMLInputElement)?.value); if (!isNaN(life)) _swInputs.programLifeYears = Math.max(1, life);
+  } else if (step === 2) {
+    document.querySelectorAll<HTMLInputElement>('.wiz-domain').forEach(cb => { _wizDomains[cb.dataset.cat as SWCat] = cb.checked; });
+  } else if (step === 3) {
+    document.querySelectorAll<HTMLSelectElement>('.wiz-comp').forEach(s => { _wizCfg[s.dataset.cat as SWCat].complexity = s.value as SWComplexity | 'default'; });
+    document.querySelectorAll<HTMLSelectElement>('.wiz-reuse').forEach(s => { _wizCfg[s.dataset.cat as SWCat].reuse = s.value as SWReuse; });
+    document.querySelectorAll<HTMLSelectElement>('.wiz-asil').forEach(s => { _wizCfg[s.dataset.cat as SWCat].asil = s.value as ASILLevel | 'default'; });
+  } else if (step === 5) {
+    const ov = parseFloat((g('wiz-overhead') as HTMLInputElement)?.value); if (!isNaN(ov)) _swInputs.overheadMultiplier = Math.max(1, ov);
+    const sf = parseFloat((g('wiz-senior') as HTMLInputElement)?.value); if (!isNaN(sf)) _swInputs.teamSeniorFraction = Math.min(1, Math.max(0, sf));
+    const br = parseFloat((g('wiz-baserate') as HTMLInputElement)?.value); if (!isNaN(br) && br > 0) _swInputs.baseRateGBP = br;
+  }
+}
+
+function wizCompute(): void {
+  applyGuidedToInputs();
+  _swResult = computeSWProgram(_swInputs);
+}
+
+function renderWizCost(): void {
+  wizCompute();
+  const s = _swResult!.summary;
+  const sumEl = document.getElementById('wiz-cost-summary');
+  if (sumEl) sumEl.innerHTML = [
+    { l: 'Total Programme', v: fmtM(s.grandTotal), c: '#2563eb' },
+    { l: 'Per Vehicle',     v: `£${fmt(s.perVehicle, 0)}`, c: '#059669' },
+    { l: 'Total NRE',       v: fmtM(s.nreTotal), c: '#7c3aed' },
+  ].map(x => `<div class="sw-summary-card"><div style="position:absolute;top:0;left:0;right:0;height:3px;background:${x.c}"></div><div class="sw-card-label">${x.l}</div><div class="sw-card-value" style="color:${x.c}">${x.v}</div></div>`).join('');
+  const tEl = document.getElementById('wiz-cost-table');
+  if (tEl) {
+    const rows = selectedCats().map(c => {
+      const meta = CAT_META[c];
+      const mods = _swResult!.modules.filter(m => m.category === c);
+      const pm = mods.reduce((a, m) => a + m.personMonths, 0);
+      const cost = s.byCategory[c] ?? 0;
+      return `<tr><td>${meta.icon} ${esc(meta.label)}</td><td class="sw-num">${mods.length}</td><td class="sw-num">${fmt(pm, 0)}</td><td class="sw-num">${fmtM(cost)}</td><td class="sw-num">${fmt(s.grandTotal > 0 ? cost / s.grandTotal * 100 : 0, 0)}%</td></tr>`;
+    }).join('');
+    tEl.innerHTML = `<table class="sw-data-table"><thead><tr><th>Domain</th><th class="sw-num">Modules</th><th class="sw-num">Person-Months</th><th class="sw-num">Cost</th><th class="sw-num">Share</th></tr></thead><tbody>${rows}</tbody></table>`;
+  }
+}
+
+function renderWizSensitivity(): void {
+  const el = document.getElementById('wiz-sensitivity');
+  if (!el || !_swResult) return;
+  const reg  = _swResult.sensitivity.find(x => x.parameter.includes('Region'));
+  const asil = _swResult.sensitivity.find(x => x.parameter.includes('ASIL'));
+  const row = (label: string, r?: { low: number; high: number }) =>
+    r ? `<div class="sw-box" style="font-size:0.78rem"><strong>${esc(label)}:</strong> ${fmtM(r.low)} → ${fmtM(r.high)}</div>` : '';
+  el.innerHTML = `<div class="sw-grid sw-grid-2" style="gap:10px">${row('Region swing (India ↔ USA SV)', reg)}${row('ASIL swing (B ↔ D)', asil)}</div>`;
+}
+
+function renderWizReport(): void {
+  wizCompute();
+  renderResults(_swResult!);
+  const res = document.getElementById('sw-results');
+  if (res) res.style.display = '';
+  const note = document.getElementById('wiz-report-note');
+  if (note) note.innerHTML = `<div class="sw-box" style="font-size:0.78rem;line-height:1.6"><strong>Key assumptions:</strong> ${selectedCats().length}/7 domains · ${esc(_swInputs.region.replace('_', ' '))} · ${_programPhase} phase · ${_swInputs.programLifeYears} yr · ${fmt(_swInputs.annualProductionVolume / 1000, 0)}k vehicles/yr · overhead ×${_swInputs.overheadMultiplier}. Rates from library v${esc(DEFAULT_SW_RATE_LIBRARY.version)}. Per-vehicle is amortised over full lifetime volume — see the Model Validation panel for the recovery-window caveat.</div>`;
+}
+
+function goToWizStep(n: number): void {
+  _wizStep = Math.min(WIZARD_STEPS.length, Math.max(1, n));
+  const body = document.getElementById('sw-guided-body');
+  if (body) { body.innerHTML = renderGuidedWizardHTML(); wireGuided(); }
+  if (_wizStep === 4) renderWizCost();
+  if (_wizStep === 5) renderWizSensitivity();
+  if (_wizStep === 6) renderWizReport();
+  body?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function wireGuided(): void {
+  document.getElementById('sw-wiz-back')?.addEventListener('click', () => { readWizStep(_wizStep); goToWizStep(_wizStep - 1); });
+  document.getElementById('sw-wiz-next')?.addEventListener('click', () => {
+    if (_wizStep >= WIZARD_STEPS.length) {           // "Start over"
+      const res = document.getElementById('sw-results'); if (res) res.style.display = 'none';
+      goToWizStep(1); return;
+    }
+    readWizStep(_wizStep);
+    goToWizStep(_wizStep + 1);
+  });
+  document.querySelectorAll<HTMLInputElement>('.wiz-domain').forEach(cb =>
+    cb.addEventListener('change', () => cb.closest('.sw-domain-card')?.classList.toggle('sw-domain-on', cb.checked)));
+  document.getElementById('wiz-recalc')?.addEventListener('click', () => { readWizStep(5); wizCompute(); renderWizSensitivity(); });
+}
+
+function setSWMode(mode: 'guided' | 'advanced'): void {
+  _swMode = mode;
+  const g = document.getElementById('sw-guided-body');
+  const a = document.getElementById('sw-advanced-body');
+  if (g) g.style.display = mode === 'guided' ? '' : 'none';
+  if (a) a.style.display = mode === 'advanced' ? '' : 'none';
+  document.querySelectorAll<HTMLButtonElement>('.sw-mode-btn').forEach(b =>
+    b.classList.toggle('sw-mode-active', b.dataset.mode === mode));
+}
+
 function renderSWPanelHTML(): string {
   const inputs = _swInputs;
 
@@ -308,6 +573,20 @@ function renderSWPanelHTML(): string {
     </div>
   </div>
 
+  <!-- ── Mode toggle: Guided wizard (default) vs Advanced panel ── -->
+  <div class="sw-mode-toggle">
+    <button class="sw-mode-btn ${_swMode === 'guided' ? 'sw-mode-active' : ''}" data-mode="guided">🧭 Guided</button>
+    <button class="sw-mode-btn ${_swMode === 'advanced' ? 'sw-mode-active' : ''}" data-mode="advanced">⚙️ Advanced</button>
+  </div>
+
+  <!-- ── Guided wizard body ───────────────────────────────────── -->
+  <div id="sw-guided-body" style="${_swMode === 'guided' ? '' : 'display:none'}">
+    ${renderGuidedWizardHTML()}
+  </div>
+
+  <!-- ── Advanced expert body ─────────────────────────────────── -->
+  <div id="sw-advanced-body" style="${_swMode === 'advanced' ? '' : 'display:none'}">
+
   <!-- ── Saved Configurations (Rec 10) ────────────────────────── -->
   ${renderSavedConfigsHTML()}
 
@@ -391,7 +670,9 @@ function renderSWPanelHTML(): string {
     </button>
   </div>
 
-  <!-- ── Results (hidden until calculated) ────────────────────── -->
+  </div><!-- /sw-advanced-body -->
+
+  <!-- ── Results (shared by both modes; hidden until calculated) ─ -->
   <div id="sw-results" style="display:none">
 
     <!-- Summary cards -->
@@ -741,6 +1022,45 @@ function renderSWPanelHTML(): string {
   .sw-data-table th, .sw-data-table td { padding: 6px 7px; }
   .sw-section-title   { font-size: 0.84rem; }
 }
+
+/* ── Guided wizard (Part 4) ────────────────────────────────────────────────── */
+.sw-mode-toggle { display: inline-flex; gap: 2px; background: var(--sw-surface-alt); border: 1px solid var(--sw-border); border-radius: 8px; padding: 3px; margin-bottom: 16px; }
+.sw-mode-btn { border: none; background: transparent; color: var(--sw-text-muted); font-size: 0.8rem; font-weight: 600; padding: 6px 16px; border-radius: 6px; cursor: pointer; transition: all 0.15s; }
+.sw-mode-btn:hover { color: var(--sw-text-body); }
+.sw-mode-active { background: var(--sw-surface); color: var(--sw-accent) !important; box-shadow: var(--sw-shadow-sm); }
+
+.sw-wiz-progress { display: flex; align-items: center; margin-bottom: 16px; overflow-x: auto; padding-bottom: 4px; }
+.sw-wiz-dot { display: flex; align-items: center; gap: 7px; flex-shrink: 0; }
+.sw-wiz-num { width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.72rem; font-weight: 700; border: 2px solid var(--sw-border); color: var(--sw-text-muted); background: var(--sw-surface); transition: all 0.25s; }
+.sw-wiz-dot-label { font-size: 0.72rem; font-weight: 600; color: var(--sw-text-muted); white-space: nowrap; }
+.sw-wiz-connector { flex: 1; min-width: 14px; height: 2px; background: var(--sw-border); margin: 0 8px; }
+.sw-wiz-active .sw-wiz-num { border-color: var(--sw-accent); color: var(--sw-accent); box-shadow: 0 0 0 3px rgba(37,99,235,0.12); }
+.sw-wiz-active .sw-wiz-dot-label { color: var(--sw-accent); }
+.sw-wiz-done .sw-wiz-num { border-color: #059669; background: #059669; color: #fff; }
+.sw-wiz-done .sw-wiz-dot-label { color: var(--sw-text-body); }
+
+.sw-wiz-card { background: var(--sw-surface); border: 1px solid var(--sw-border); border-radius: var(--sw-radius-lg); padding: 22px 24px; box-shadow: var(--sw-shadow-sm); }
+#sw-wiz-body { animation: swWizIn 0.28s ease; }
+@keyframes swWizIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+.sw-wiz-h { font-size: 1.05rem; font-weight: 800; color: var(--sw-text-primary); margin-bottom: 6px; }
+.sw-wiz-help { font-size: 0.82rem; color: var(--sw-text-secondary); margin-bottom: 16px; line-height: 1.55; }
+.sw-wiz-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 22px; padding-top: 16px; border-top: 1px solid var(--sw-border-light); }
+.sw-wiz-stepcount { font-size: 0.74rem; color: var(--sw-text-muted); }
+.sw-wiz-btn-primary { background: linear-gradient(135deg,#1d4ed8,#2563eb); color: #fff; border: none; border-radius: 8px; padding: 9px 26px; font-size: 0.85rem; font-weight: 700; cursor: pointer; box-shadow: var(--sw-shadow-sm); transition: transform 0.15s, box-shadow 0.15s; }
+.sw-wiz-btn-primary:hover { transform: translateY(-1px); box-shadow: var(--sw-shadow); }
+.sw-wiz-btn-ghost { background: transparent; color: var(--sw-text-body); border: 1px solid var(--sw-border); border-radius: 8px; padding: 9px 20px; font-size: 0.85rem; font-weight: 600; cursor: pointer; }
+.sw-wiz-btn-ghost:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.sw-domain-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 10px; }
+.sw-domain-card { display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; border: 1px solid var(--sw-border); border-radius: var(--sw-radius); background: var(--sw-surface); cursor: pointer; transition: all 0.15s; }
+.sw-domain-card:hover { border-color: var(--sw-text-muted); }
+.sw-domain-on { background: var(--sw-accent-bg); border-color: var(--sw-accent-border); }
+.sw-domain-card input { margin-top: 3px; width: 15px; height: 15px; cursor: pointer; flex-shrink: 0; }
+.sw-domain-title { font-size: 0.82rem; font-weight: 700; color: var(--sw-text-primary); margin-bottom: 3px; }
+.sw-domain-count { font-size: 0.68rem; font-weight: 500; color: var(--sw-text-muted); }
+.sw-domain-desc { font-size: 0.74rem; color: var(--sw-text-secondary); line-height: 1.4; }
+
+.sw-tip { display: inline-block; width: 14px; height: 14px; line-height: 14px; text-align: center; border-radius: 50%; background: var(--sw-border); color: var(--sw-text-muted); font-size: 0.62rem; cursor: help; font-style: normal; }
 </style>`;
 }
 
@@ -1739,6 +2059,11 @@ function showSWError(msg: string): void {
 // ─── Wire events ──────────────────────────────────────────────────────────────
 
 export function wireSWPanel(): void {
+  // Mode toggle (Guided wizard ↔ Advanced expert panel) + wizard wiring
+  document.querySelectorAll<HTMLButtonElement>('.sw-mode-btn').forEach(btn =>
+    btn.addEventListener('click', () => setSWMode(btn.dataset.mode as 'guided' | 'advanced')));
+  wireGuided();
+
   // Calculate button
   const calcBtn = document.getElementById('sw-calc-btn');
   if (calcBtn) {

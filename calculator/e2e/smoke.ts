@@ -99,14 +99,19 @@ async function main(): Promise<void> {
     await page.click('.cpicker-tile[data-commodity="automotive_software"]', { timeout: 15_000 });
     log('opened SW Should-Cost panel');
 
-    // 3. Run a calculation and assert results render.
+    // 3. The panel defaults to the Guided wizard — assert it rendered.
+    await page.waitForSelector('.sw-wiz-card', { timeout: 15_000 });
+    log('guided wizard rendered');
+
+    // 4. Switch to Advanced mode and run the full calculation.
+    await page.click('.sw-mode-btn[data-mode="advanced"]', { timeout: 15_000 });
     await page.click('#sw-calc-btn', { timeout: 15_000 });
     await page.waitForSelector('#sw-summary-cards .sw-summary-card', { timeout: 15_000 });
     const cardCount = await page.locator('#sw-summary-cards .sw-summary-card').count();
     if (cardCount < 1) throw new Error('No summary cards rendered after Calculate');
     log(`results rendered (${cardCount} summary cards)`);
 
-    // 4. The provenance panel (Rec #1) must be present.
+    // 5. The provenance panel (Rec #1) must be present.
     const hasRateLib = await page.locator('details:has-text("Rate Library")').count();
     if (hasRateLib < 1) throw new Error('Rate Library provenance panel missing');
 
