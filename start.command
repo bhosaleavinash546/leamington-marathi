@@ -12,9 +12,22 @@ if ! command -v node &> /dev/null; then
   exit 1
 fi
 
-# Install packages if node_modules doesn't exist yet
+# Pull the latest code for the current branch (skips quietly if offline / has local edits)
+if command -v git &> /dev/null && [ -d ".git" ]; then
+  echo "Checking for updates..."
+  LOCK_BEFORE="$(shasum package-lock.json 2>/dev/null | awk '{print $1}')"
+  git pull --ff-only 2>/dev/null && echo "Up to date with latest." || echo "Skipped pull (offline or local changes) — using current code."
+  LOCK_AFTER="$(shasum package-lock.json 2>/dev/null | awk '{print $1}')"
+else
+  LOCK_BEFORE=""; LOCK_AFTER=""
+fi
+
+# Install packages on first run, OR when the pull changed dependencies
 if [ ! -d "node_modules" ]; then
   osascript -e 'display notification "Installing packages for the first time — this takes about 2 minutes. Do not close this window." with title "AutoCost AI — Setting Up..."'
+  npm install
+elif [ -n "$LOCK_BEFORE" ] && [ "$LOCK_BEFORE" != "$LOCK_AFTER" ]; then
+  osascript -e 'display notification "New dependencies detected — updating packages..." with title "AutoCost AI — Updating..."'
   npm install
 fi
 
