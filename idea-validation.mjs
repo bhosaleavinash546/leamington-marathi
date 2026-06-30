@@ -34,11 +34,17 @@ function slugify(s) {
   return str(s).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60) || 'idea';
 }
 
-/** Parse the first numeric value out of a percentage-ish string. Returns number|null. */
+/**
+ * Parse a percentage-ish string to a number. Skips currency-prefixed amounts so a
+ * value like "£65/veh (-30% part cost)" reads as -30, not 65. Returns number|null.
+ */
 export function parsePercent(v) {
   if (typeof v === 'number') return isFinite(v) ? v : null;
-  const m = str(v).match(/-?\d+(?:\.\d+)?/);
-  return m ? parseFloat(m[0]) : null;
+  const s = str(v);
+  // First number NOT immediately preceded by a currency symbol (£/$/€) or digit/dot.
+  const re = /(?:^|[^£$€\d.])(-?\d+(?:\.\d+)?)/g;
+  const m = re.exec(s);
+  return m ? parseFloat(m[1]) : null;
 }
 
 /**
@@ -91,10 +97,9 @@ export function validateIdea(raw, index = 0) {
   csp.calculationBasis = str(csp.calculationBasis).trim();
 
   const pct = parsePercent(csp.percentage);
-  if (pct != null) {
-    if (pct > MAX_SAVING_PCT) flags.push(`implausible-saving-pct(${pct}%)`);
-    if (pct < MIN_SAVING_PCT) flags.push(`negative-saving-pct(${pct}%)`);
-  }
+  // Band on magnitude: a "-22%" reduction is a legitimate saving, so only the
+  // absolute size matters for plausibility.
+  if (pct != null && Math.abs(pct) > MAX_SAVING_PCT) flags.push(`implausible-saving-pct(${pct}%)`);
   if (!csp.annualValue) flags.push('missing-annual-value');
 
   // paybackMonths: integer 0..120 or null
