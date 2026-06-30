@@ -11,7 +11,8 @@ import {
   COUNTRY_DISPLAY_ORDER,
   type PCBCostInput,
 } from '../data/pcb-country-rates.js';
-import { fetchLivePrices, fetchLivePricesWithAECQ, type LivePricingProvider } from '../utils/pcb-live-pricing.js';
+import { fetchLivePrices, fetchLivePricesWithAECQ, type LivePricingProvider, type LivePriceResult } from '../utils/pcb-live-pricing.js';
+import { reconcileBomWithCatalogue, groundingCandidates } from '../utils/pcb-bom-grounding.js';
 import { parseBOMFile, type ParsedBOMLine } from '../utils/pcb-bom-parser.js';
 
 // ── Volume BOM price correction ────────────────────────────────────────────
@@ -1248,33 +1249,31 @@ ${userPromptText}`;
     // NPI vs production breakdown
     npiBreakdown = computeNPIBreakdown(correctedBOMTotal, fabCostMid, Number(assemblyData.smtPlacements) || 0, orderQty);
 
-    // Live pricing: auto-fetch for OCR-confirmed parts (no-auth fallback to skip)
-    const confirmedPartNumbers = enrichedBOM
-      .filter(l => Boolean(l.ocrExtracted) && String(l.partNumber ?? '').trim().length > 3)
-      .map(l => String(l.partNumber))
-      .slice(0, 10);
-    if (confirmedPartNumbers.length > 0) {
+    // Rec #1: catalogue grounding — replace AI-guessed prices with real
+    // distributor prices for any part with a plausible MPN (not just OCR-confirmed),
+    // and flag every line's verification state for human review (Rec #3).
+    const candidatePNs = groundingCandidates(enrichedBOM, 20);
+    let livePrices: LivePriceResult[] = [];
+    if (candidatePNs.length > 0) {
       const octoKey = process.env.OCTOPART_API_KEY ?? '';
       const rsKey = process.env.RS_API_KEY ?? '';
       const liveProvider: LivePricingProvider | null = octoKey ? 'octopart' : rsKey ? 'rs' : null;
       if (liveProvider) {
         try {
-          const livePrices = await fetchLivePricesWithAECQ(confirmedPartNumbers, liveProvider, liveProvider === 'octopart' ? octoKey : rsKey, orderQty, domain === 'automotive_adas');
-          livePriceHits = livePrices.length;
-          if (livePrices.length > 0) {
-            a.bom = (a.bom as Array<Record<string, unknown>>).map(line => {
-              const pn = String(line.partNumber ?? '').trim().toUpperCase();
-              const hit = livePrices.find(lp => lp.mpn.toUpperCase() === pn);
-              if (!hit) return line;
-              return { ...line, unitPriceGBP: hit.unitPriceGBP, lineTotalGBP: Math.round(hit.unitPriceGBP * Number(line.qty) * 100) / 100, livePriced: true, liveProvider: hit.provider, stockQty: hit.stockQty };
-            });
-          }
-          console.log(`[PCB] Live pricing: ${livePrices.length}/${confirmedPartNumbers.length} parts priced via ${liveProvider}`);
+          livePrices = await fetchLivePricesWithAECQ(candidatePNs, liveProvider, liveProvider === 'octopart' ? octoKey : rsKey, orderQty, domain === 'automotive_adas');
+          console.log(`[PCB] Catalogue grounding: ${livePrices.length}/${candidatePNs.length} parts priced via ${liveProvider}`);
         } catch (lpErr) {
           console.warn('[PCB] Live pricing fetch failed (non-fatal):', (lpErr as Error).message);
         }
       }
     }
+    // Always reconcile — with catalogue hits when available, else confidence-only.
+    // Works offline (no key) so the human-in-the-loop review is always populated.
+    const reconciled = reconcileBomWithCatalogue(a.bom as Array<Record<string, unknown>>, livePrices);
+    a.bom = reconciled.bom;
+    livePriceHits = reconciled.matched;
+    (a as Record<string, unknown>).needsVerificationCount = reconciled.needsVerification;
+    (a as Record<string, unknown>).catalogueVerifiedCount = reconciled.matched;
 
     console.log(`[PCB] Stage 4: qty=${orderQty} volMult=${volumeMultiplier} BOM=${correctedBOMTotal.toFixed(2)} band=${confidenceBand.overallLabel} sanity=${sanityWarnings.length} warnings${domain === 'automotive_adas' ? ` asil=${asilClassification.asilLevel} forced=${automotiveGradeEnforcedCount}` : ''}`);
   } catch (err) {
@@ -1294,6 +1293,8 @@ ${userPromptText}`;
     sanityWarnings,
     npiBreakdown,
     livePriceHits,
+    catalogueVerifiedCount: (analysis as Record<string, unknown>).catalogueVerifiedCount ?? 0,
+    needsVerificationCount: (analysis as Record<string, unknown>).needsVerificationCount ?? 0,
     asilLevel: asilClassification.asilLevel,
     asilRationale: asilClassification.asilRationale,
     asilSafetyFunctions: asilClassification.safetyFunctions,
