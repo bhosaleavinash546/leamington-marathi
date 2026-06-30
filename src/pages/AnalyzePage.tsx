@@ -296,12 +296,12 @@ export default function AnalyzePage() {
           });
           if (visionResp.ok) {
             const { description } = await visionResp.json();
-            contextWithTeardown = `${additionalContext ? additionalContext + '\n\n' : ''}COMPETITOR TEARDOWN ANALYSIS — "${teardownFile.name}":\n${description}\n\nUse this teardown analysis to generate additional competitive benchmarking cost reduction ideas. Cite the specific observations above as evidence.`;
+            contextWithTeardown = `${additionalContext ? additionalContext + '\n\n' : ''}COMPETITOR TEARDOWN ANALYSIS — "${teardownFile.name}":\n${description}\n\nCAVEAT: the above is an AI reading of a SINGLE external photo — no measurements, scale, material certs, or internal access. Treat material/weight/part-count as visual estimates. Ideas derived primarily from this photo must carry confidenceLevel "estimated" or "theoretical" (never "verified") and must NOT cite the photo as hard quantitative evidence.`;
           } else {
-            contextWithTeardown = `${additionalContext ? additionalContext + '\n\n' : ''}TEARDOWN ANALYSIS: Competitor part photo "${teardownFile.name}" attached — generate competitive benchmarking ideas.`;
+            contextWithTeardown = `${additionalContext ? additionalContext + '\n\n' : ''}TEARDOWN ANALYSIS: A competitor part photo "${teardownFile.name}" was attached but could not be read. Do NOT invent observations about it; generate ideas from the part/system context only.`;
           }
         } catch {
-          contextWithTeardown = `${additionalContext ? additionalContext + '\n\n' : ''}TEARDOWN ANALYSIS: Competitor part photo "${teardownFile.name}" attached — generate competitive benchmarking ideas.`;
+          contextWithTeardown = `${additionalContext ? additionalContext + '\n\n' : ''}TEARDOWN ANALYSIS: A competitor part photo "${teardownFile.name}" was attached but could not be processed. Do NOT invent observations about it; generate ideas from the part/system context only.`;
         }
       }
       let contextFinal = contextWithTeardown;

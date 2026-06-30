@@ -87,7 +87,7 @@ setInterval(() => {
 const PORT        = process.env.PORT        || 3001;
 const JWT_SECRET  = process.env.JWT_SECRET  || 'autocost-ai-dev-secret-2025';
 const USERS_FILE  = path.join(__dirname, 'users.json');
-const APP_VERSION = '3.0.0';
+const APP_VERSION = '3.1.0';
 
 // ─── LLM client factory: built-in retry/backoff + per-request timeout ─────────
 // The Anthropic SDK retries transient errors (408/409/429/5xx + connection drops)

@@ -6,6 +6,7 @@ import { PieChart, Pie, Cell, Tooltip, BarChart, Bar, XAxis, YAxis, ResponsiveCo
 import { useAuth } from '../contexts/AuthContext';
 import { loadFullResult } from '../services/claude-service';
 import { toast } from '../hooks/useToast';
+import OnboardingBanner from '../components/OnboardingBanner';
 
 interface PipelineKpi {
   totalPotential: number;
@@ -410,6 +411,9 @@ export default function DashboardPage() {
   return (
     <div className="min-h-screen bg-navy-950 pt-24 pb-16 px-4 sm:px-6 lg:px-8">
       <div className="max-w-6xl mx-auto space-y-10">
+
+        {/* First-run feature tour (dismissible) */}
+        <div className="!mt-0"><OnboardingBanner /></div>
 
         {/* Welcome banner */}
         <motion.div

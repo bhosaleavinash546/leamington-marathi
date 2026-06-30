@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, ChevronDown, ChevronRight, HelpCircle, BookOpen, Mail, Zap, Terminal, Download, Globe, Lock, Shield, Cpu, BarChart3, Sparkles, Map, Share2, Package, Smartphone } from 'lucide-react';
 
-const APP_VERSION = '3.0.0';
+const APP_VERSION = '3.1.0';
 const BUILD_DATE = 'June 2026';
 
 interface FaqItem { q: string; a: string; }
@@ -31,7 +31,7 @@ const FAQ: FaqSection[] = [
       { q: 'How does competitor benchmarking work?', a: 'The AI is instructed to populate every idea\'s "Industry Benchmark" field with specific OEM or Tier-1 evidence — citing manufacturer, programme name, model year, and a quantified result (e.g. "BMW Gen5 EDU hairpin winding: −18% copper mass", "Tesla Model Y gigacasting: 171 parts → 2"). This gives engineering teams immediate evidence to support business cases.' },
       { q: 'What is the Idea Cache?', a: 'When web search is disabled, BrainSpark stores the analysis result in a server-side cache keyed by a hash of your inputs (system, subassembly, part, vehicle type, region, context). Re-running the same analysis within 7 days returns the cached result instantly — saving API tokens and time. The cache is bypassed automatically when web search is enabled, since live results are time-sensitive.' },
       { q: 'What is Multi-pass Deduplication?', a: 'When you use "Refine Analysis" to generate additional ideas, BrainSpark runs a token-overlap similarity check between the new ideas and the existing set. Any new idea whose title shares more than 50% of its keywords with an existing idea is automatically filtered out before being added to your list. This keeps your results clean regardless of how many refinement passes you run.' },
-      { q: 'What is BOM Batch Analysis?', a: 'Available at /bom-analysis, this feature lets you upload an Excel (.xlsx) or CSV file containing a list of parts (system, subassembly, part name columns). BrainSpark analyses each part sequentially using the same Chief Engineer AI, then aggregates the results into a single Excel export showing total ideas, quick wins, and the top saving per part. Useful for programme-level impact assessments across a full vehicle BOM. Capped at 20 parts per batch.' },
+      { q: 'What is BOM Batch Analysis?', a: 'Available at /bom-analysis, this feature lets you upload an Excel (.xlsx) or CSV file containing a list of parts (system, subassembly, part name columns). BrainSpark analyses each part sequentially using the same Chief Engineer AI, then aggregates the results into a single Excel export showing total ideas, quick wins, and the top saving per part. Useful for programme-level impact assessments across a full vehicle BOM. Up to 100 parts per batch.' },
     ],
   },
   {
@@ -168,10 +168,16 @@ export default function HelpPage() {
         {!search && (
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.12 }}>
             <h2 className="text-white font-semibold mb-5 flex items-center gap-2">
-              <Sparkles size={16} className="text-gold-400" /> What's New in v3.0
+              <Sparkles size={16} className="text-gold-400" /> What's New
             </h2>
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
               {[
+                { icon: BarChart3,  color: 'text-teal-400',   bg: 'bg-teal-500/10',   border: 'border-teal-500/20',  title: 'Deterministic Should-Cost Engine', desc: 'Bottom-up part cost from real rate × time / mass × price (13 processes, 10 materials, 9 regions) — with a Monte-Carlo P10/P50/P90 band and a unit-cost-vs-volume curve. Numbers are computed, not guessed. See /should-cost.' },
+                { icon: Package,    color: 'text-gold-400',   bg: 'bg-gold-500/10',   border: 'border-gold-500/20',  title: 'Cost-Idea Marketplace', desc: '1,250+ curated, OEM-benchmarked cost-reduction ideas across every commodity, each with a full technical business case. Browse at /marketplace.' },
+                { icon: Zap,        color: 'text-emerald-400',bg: 'bg-emerald-500/10',border: 'border-emerald-500/20',title: 'Powertrain & Voltage Facets', desc: 'Filter the Marketplace by commodity, powertrain (ICE/MHEV/PHEV/BEV) and architecture (400V/800V); every card shows its tags at a glance.' },
+                { icon: Shield,     color: 'text-blue-400',   bg: 'bg-blue-500/10',   border: 'border-blue-500/20',  title: 'AI Output Validation', desc: 'Every generated idea is schema-validated and sanity-banded (saving %, payback) before you ever see it — hallucinated figures are caught and flagged.' },
+                { icon: Map,        color: 'text-violet-400', bg: 'bg-violet-500/10', border: 'border-violet-500/20',title: 'VAVE Tracker & Pipeline', desc: 'Push ideas into a VAVE action tracker (6 stages) and a G0–G3 business-case pipeline with ROI/IRR/payback at /vave-tracker and /pipeline.' },
+                { icon: Globe,      color: 'text-cyan-400',   bg: 'bg-cyan-500/10',   border: 'border-cyan-500/20',  title: 'Commodity Trends & Live Prices', desc: '13-domain knowledge base plus daily-refreshed automotive commodity prices, injected into every analysis. See /trends.' },
                 { icon: BarChart3,  color: 'text-violet-400', bg: 'bg-violet-500/10', border: 'border-violet-500/20', title: 'ROI Auto-Ranking', desc: 'Sort by Best ROI, Highest Savings, or Easiest First. Instantly surface the ideas worth presenting first.' },
                 { icon: Zap,        color: 'text-amber-400',  bg: 'bg-amber-500/10',  border: 'border-amber-500/20', title: 'Status Filter', desc: 'Filter ideas by annotation status — show only Approved, Investigating, or On Hold items.' },
                 { icon: Globe,      color: 'text-emerald-400',bg: 'bg-emerald-500/10',border: 'border-emerald-500/20',title: 'Cloud Project History', desc: 'Analyses are auto-saved to a server-side SQLite database. Open any project from any device via the Dashboard.' },
@@ -181,7 +187,7 @@ export default function HelpPage() {
                 { icon: Map,        color: 'text-green-400',  bg: 'bg-green-500/10',  border: 'border-green-500/20', title: 'Implementation Roadmap', desc: '3-phase roadmap auto-groups ideas into Quick Wins (0–6 mo), Programme (6–18 mo), and Strategic (18+ mo) inside every Results page.' },
                 { icon: Download,   color: 'text-red-400',    bg: 'bg-red-500/10',    border: 'border-red-500/20',   title: 'Business Case PDF', desc: 'PDF now includes a dedicated Business Case page: phase summary boxes and a Top-10 ROI-ranked ideas table.' },
                 { icon: Share2,     color: 'text-indigo-400', bg: 'bg-indigo-500/10', border: 'border-indigo-500/20',title: 'Team Sharing', desc: 'Generate a 30-day read-only share link for any analysis. No account needed for recipients.' },
-                { icon: Package,    color: 'text-orange-400', bg: 'bg-orange-500/10', border: 'border-orange-500/20',title: 'BOM Batch Analysis', desc: 'Upload an Excel BOM, analyse up to 20 parts at once with the Chief Engineer AI, export an aggregated savings summary.' },
+                { icon: Package,    color: 'text-orange-400', bg: 'bg-orange-500/10', border: 'border-orange-500/20',title: 'BOM Batch Analysis', desc: 'Upload an Excel BOM, analyse up to 100 parts at once with the Chief Engineer AI, export an aggregated savings summary.' },
                 { icon: Smartphone, color: 'text-teal-400',   bg: 'bg-teal-500/10',   border: 'border-teal-500/20',  title: 'Progressive Web App', desc: 'Install BrainSpark on mobile or desktop via the browser install prompt. Offline cache included for core pages.' },
                 { icon: Shield,     color: 'text-gold-400',   bg: 'bg-gold-500/10',   border: 'border-gold-500/20',  title: 'Security Hardening', desc: 'JWT revocation on sign-out, rate limiting on auth routes, input sanitisation, async atomic file I/O, and security headers.' },
               ].map(({ icon: Icon, color, bg, border, title, desc }) => (
