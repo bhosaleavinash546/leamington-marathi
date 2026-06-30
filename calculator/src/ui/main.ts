@@ -60,6 +60,7 @@ Chart.register(ArcElement, BarElement, LineElement, PointElement, CategoryScale,
 
 import { showNews, refreshNews } from './panels/news.js';
 import { initSWPanel } from './panels/sw-should-cost-ui.js';
+import { initObservability, breadcrumb } from './observability.js';
 import { showToast as _showToastImpl, escHtml as _escHtmlImpl } from './toast.js';
 import { apiBase } from '../api-base.js';
 import {
@@ -8963,6 +8964,7 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
 // ─── Commodity switching ──────────────────────────────────────────────────────
 
 function switchCommodity(type: CommodityType): void {
+  breadcrumb(`commodity:${type}`);
   activeCommodity = type;
   document.querySelectorAll<HTMLElement>('.ctab').forEach(t => {
     t.classList.toggle('active', t.dataset.commodity === type);
@@ -14024,6 +14026,10 @@ function resetRateLibrary(): void {
 // ─── Init ─────────────────────────────────────────────────────────────────────
 
 async function init(): Promise<void> {
+  // Install runtime error observability before anything else can throw.
+  initObservability();
+  breadcrumb('app:init');
+
   // M11: Surface IndexedDB failures to the user
   setScenarioErrorHandler(msg => showToast(msg, 'warning'));
 

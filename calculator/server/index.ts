@@ -11,6 +11,7 @@ import agentRouter from './routes/agent.js';
 import authRouter from './routes/auth.js';
 import dfmRouter from './routes/dfm.js';
 import pcbRouter from './routes/pcb.js';
+import telemetryRouter from './routes/telemetry.js';
 import aichatRouter from './routes/aichat.js';
 import newsRouter from './routes/news.js';
 import commoditiesRouter from './routes/commodities.js';
@@ -59,6 +60,7 @@ app.use(express.json({ limit: '10mb' })); // increased for base64 photo payloads
 app.use('/api/auth', authRouter);
 app.use('/api/cad', cadRouter);
 app.use('/api/pcb', pcbRouter);
+app.use('/api/telemetry', telemetryRouter);
 app.use('/api/aichat', aichatRouter);
 app.use('/api/sync', syncRouter);
 app.use('/api/agent', agentRouter);
