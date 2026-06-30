@@ -76,7 +76,7 @@ export default function CadDiffPage() {
             <GitCompare size={28} className="text-cyan-400" />
           </div>
           <h1 className="text-4xl font-black text-white mb-3">CAD Diff Analysis</h1>
-          <p className="text-slate-400">Compare two design revisions. AI identifies geometric deltas and generates cost reduction ideas specific to the changes.</p>
+          <p className="text-slate-400"><span className="text-slate-300">Describe each revision in text for best results</span> — the AI reasons over the differences you describe and generates targeted cost-reduction ideas. (File uploads compare metadata only, not geometry.)</p>
         </div>
 
         {/* Input mode toggle */}
@@ -166,7 +166,7 @@ export default function CadDiffPage() {
         )}
 
         {!loading && ideas.length === 0 && (
-          <p className="text-center text-slate-600 text-xs mt-8">Enter both designs and click Compare — the AI will identify geometric deltas and generate targeted cost reduction ideas.</p>
+          <p className="text-center text-slate-600 text-xs mt-8">Enter both designs and click Compare — the AI reasons over your described differences and generates targeted cost-reduction ideas.</p>
         )}
       </div>
     </div>

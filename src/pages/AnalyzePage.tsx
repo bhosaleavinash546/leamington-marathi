@@ -190,8 +190,14 @@ export default function AnalyzePage() {
     try {
       const geo = await parseCadFile(file);
       setCadGeometry(geo);
-    } catch {
+      // Surface parser notes/warnings instead of swallowing them silently.
+      if (geo.warnings && geo.warnings.length > 0) {
+        const isError = !geo.boundingBox && geo.estimatedVolume === undefined;
+        toast(geo.warnings[0], isError ? 'error' : 'info');
+      }
+    } catch (e) {
       setCadGeometry(null);
+      toast(`Could not parse ${file.name}. Try a binary STL for full geometry.`, 'error');
     } finally {
       setIsParsing(false);
     }

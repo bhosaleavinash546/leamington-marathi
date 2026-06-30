@@ -63,13 +63,18 @@ function parseStl(buffer: ArrayBuffer): Partial<CadGeometry> {
   return parseBinaryStl(buffer);
 }
 
+const MAX_STL_TRIANGLES = 2_000_000; // guard: avoid hanging/OOM on pathological meshes
+
 function parseBinaryStl(buffer: ArrayBuffer): Partial<CadGeometry> {
   const view = new DataView(buffer);
   if (buffer.byteLength < 84) return { warnings: ['STL binary too small'] };
 
   const triangleCount = view.getUint32(80, true);
   if (buffer.byteLength < 84 + triangleCount * 50) {
-    return { triangleCount, warnings: ['STL binary truncated'] };
+    return { triangleCount, warnings: ['STL binary truncated — geometry not extracted'] };
+  }
+  if (triangleCount > MAX_STL_TRIANGLES) {
+    return { triangleCount, warnings: [`Mesh too large (${triangleCount.toLocaleString()} triangles, cap ${MAX_STL_TRIANGLES.toLocaleString()}) — volume/area skipped. Decimate the mesh and retry.`] };
   }
 
   let minX = Infinity, minY = Infinity, minZ = Infinity;
@@ -113,7 +118,9 @@ function parseBinaryStl(buffer: ArrayBuffer): Partial<CadGeometry> {
       y: Math.round((maxY - minY) * 10) / 10,
       z: Math.round((maxZ - minZ) * 10) / 10,
     },
-    featureCounts: { faces: triangleCount },
+    // NOTE: STL is a triangulated mesh — it has no B-rep faces/holes. We report the
+    // triangle count above; we deliberately do NOT fabricate DFMA feature counts here.
+    warnings: ['STL mesh: dimensions/volume/mass extracted; DFMA feature counts (holes/ribs/pockets) require a STEP B-rep and are not available from mesh data.'],
   };
 }
 

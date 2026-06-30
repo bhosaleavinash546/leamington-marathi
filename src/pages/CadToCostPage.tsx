@@ -303,19 +303,18 @@ export default function CadToCostPage() {
               <p className="text-gold-400 text-xs font-semibold uppercase tracking-widest mb-1">CAD to Cost</p>
               <h1 className="text-3xl font-bold text-white mb-2">CAD → Cost Estimation</h1>
               <p className="text-slate-400 text-sm max-w-2xl">
-                Upload a STEP, STL, DXF or engineering drawing. BrainSpark extracts geometry, counts features and generates an expert cost estimate + DFMA score with actionable recommendations.
+                Best results from a <span className="text-white font-medium">binary STL</span> — it extracts true dimensions, volume and mass. STEP/DXF read entity tags only (no volume); drawings/screenshots are read by AI vision. The estimate combines parsed geometry with an expert cost model and DFMA score.
               </p>
             </div>
           </div>
 
-          {/* Format chips */}
+          {/* Format chips — honest about what each format actually yields */}
           <div className="flex flex-wrap gap-2 mt-5">
             {[
-              { label: 'STEP / STP', sub: '3D B-rep', icon: Layers },
-              { label: 'STL',        sub: 'Mesh',     icon: Package },
-              { label: 'DXF / DWG',  sub: '2D drawing', icon: BarChart3 },
-              { label: 'PNG / JPG',  sub: 'CAD screenshot', icon: Zap },
-              { label: 'PDF',        sub: 'Drawing sheet', icon: Shield },
+              { label: 'STL',        sub: 'Full geometry ✓', icon: Package },
+              { label: 'STEP / STP', sub: 'Tags only',       icon: Layers },
+              { label: 'DXF',        sub: '2D entities',     icon: BarChart3 },
+              { label: 'PNG / JPG',  sub: 'AI vision',       icon: Zap },
             ].map(({ label, sub, icon: Icon }) => (
               <div key={label} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-xs">
                 <Icon size={11} className="text-gold-400" />
@@ -365,7 +364,7 @@ export default function CadToCostPage() {
               </div>
               <div>
                 <p className="text-white font-semibold text-lg">Drop your CAD file here</p>
-                <p className="text-slate-500 text-sm mt-1">or click to browse · STEP · STL · DXF · PNG · JPG · PDF</p>
+                <p className="text-slate-500 text-sm mt-1">or click to browse · STL · STEP · DXF · PNG · JPG</p>
               </div>
             </div>
           </div>
@@ -440,6 +439,14 @@ export default function CadToCostPage() {
                   <div className="col-span-2 sm:col-span-4 bg-white/4 rounded-xl p-3">
                     <p className="text-slate-500 text-xs mb-1">Extracted Dimensions</p>
                     <p className="text-slate-300 text-xs font-mono">{geometry.extractedDimensions.slice(0, 12).join(', ')}</p>
+                  </div>
+                )}
+                {geometry.warnings && geometry.warnings.length > 0 && (
+                  <div className="col-span-2 sm:col-span-4 bg-amber-500/8 border border-amber-500/20 rounded-xl p-3 flex items-start gap-2">
+                    <Info size={14} className="text-amber-400 flex-shrink-0 mt-0.5" />
+                    <div className="text-amber-300/90 text-xs space-y-0.5">
+                      {geometry.warnings.map((w, i) => <p key={i}>{w}</p>)}
+                    </div>
                   </div>
                 )}
               </div>
