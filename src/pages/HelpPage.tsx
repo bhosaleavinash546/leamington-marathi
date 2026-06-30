@@ -13,7 +13,7 @@ const FAQ: FaqSection[] = [
     category: 'Getting Started',
     icon: BookOpen,
     items: [
-      { q: 'What is BrainSpark?', a: 'BrainSpark is an AI-powered VAVE (Value Analysis / Value Engineering) tool for automotive products. It uses a Chief Engineer AI persona with 30+ years of domain expertise and live internet search to generate all available DFMA and cost-engineering ideas in a single click, across 13 vehicle systems, 260+ parts, and 340+ curated knowledge-base levers.' },
+      { q: 'What is BrainSpark?', a: 'BrainSpark is an AI-powered VAVE (Value Analysis / Value Engineering) tool for automotive products. It uses a Chief Engineer AI persona with 30+ years of domain expertise and live internet search to generate all available DFMA and cost-engineering ideas in a single click, across 13 vehicle systems and 250+ parts, plus a Marketplace of 1,250+ curated, benchmarked cost-reduction ideas.' },
       { q: 'Do I need an API key to use this?', a: 'Yes — you need an Anthropic API key (for Claude AI). You enter it on the Analyze page. It is stored only in your browser session and never saved to any server.' },
       { q: 'How do I run the tool locally?', a: 'Install Node.js v18+, run "npm install" once, then "npm run dev" to start both the backend (port 3001) and frontend (port 5173). Open http://localhost:5173 in your browser.' },
       { q: 'Is an internet connection required?', a: 'An internet connection is required to call the Claude AI API. The optional web search feature (enabled by default) also uses internet to fetch live pricing and supplier data for more accurate estimates.' },

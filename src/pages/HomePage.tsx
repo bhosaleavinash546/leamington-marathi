@@ -277,10 +277,10 @@ const HOW_IT_WORKS = [
 // ─── KPI DATA ─────────────────────────────────────────────────────────────────
 
 const KPI_CARDS = [
-  { icon: Layers, label: 'Vehicle Systems', value: 9, suffix: '', prefix: '', trend: 'up' as const, trendLabel: '+3 new', color: 'from-blue-500 to-indigo-600', delay: 0 },
-  { icon: Lightbulb, label: 'VAVE Ideas in Knowledge Base', value: 340, suffix: '+', prefix: '', trend: 'up' as const, trendLabel: 'Growing', color: 'from-gold-500 to-amber-600', delay: 0.1 },
+  { icon: Layers, label: 'Vehicle Systems', value: 13, suffix: '', prefix: '', trend: 'up' as const, trendLabel: 'All commodities', color: 'from-blue-500 to-indigo-600', delay: 0 },
+  { icon: Lightbulb, label: 'Marketplace Cost Ideas', value: 1250, suffix: '+', prefix: '', trend: 'up' as const, trendLabel: 'Curated & benchmarked', color: 'from-gold-500 to-amber-600', delay: 0.1 },
   { icon: DollarSign, label: 'Avg Annual Value Found', value: 2.3, suffix: 'M', prefix: '€', trend: 'up' as const, trendLabel: 'Per analysis', color: 'from-emerald-500 to-teal-600', delay: 0.2 },
-  { icon: Target, label: 'Cost Reduction Ideas Per Run', value: 7, suffix: '', prefix: '', trend: undefined, trendLabel: undefined, color: 'from-purple-500 to-pink-600', delay: 0.3 },
+  { icon: Target, label: 'Cost Reduction Ideas Per Run', value: 15, suffix: '+', prefix: '', trend: undefined, trendLabel: 'Typically 12–20+', color: 'from-purple-500 to-pink-600', delay: 0.3 },
 ];
 
 // ─── HomePage ─────────────────────────────────────────────────────────────────
@@ -288,6 +288,21 @@ const KPI_CARDS = [
 export default function HomePage() {
   const [activeSystem, setActiveSystem] = useState<string | null>(null);
   const { items: livePriceItems, lastRefresh: priceLastRefresh } = useLivePrices();
+  const [ideaCount, setIdeaCount] = useState<number | null>(null);
+
+  useEffect(() => {
+    fetch('/api/marketplace/count')
+      .then(r => (r.ok ? r.json() : null))
+      .then(d => { if (d && typeof d.count === 'number') setIdeaCount(d.count); })
+      .catch(() => {});
+  }, []);
+
+  // Live marketplace count overrides the static KPI estimate when available.
+  const kpiCards = KPI_CARDS.map(c =>
+    c.label === 'Marketplace Cost Ideas' && ideaCount
+      ? { ...c, value: ideaCount, suffix: '' }
+      : c
+  );
 
   return (
     <div className="min-h-screen bg-navy-950 overflow-hidden">
@@ -368,7 +383,7 @@ export default function HomePage() {
 
           {/* ── Live KPI Dashboard ─────────────────────────────────────── */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-            {KPI_CARDS.map((card) => (
+            {kpiCards.map((card) => (
               <KpiCard key={card.label} {...card} />
             ))}
           </div>
@@ -620,9 +635,9 @@ export default function HomePage() {
               {/* Stats grid */}
               <div className="grid grid-cols-2 gap-3">
                 {[
-                  { value: '14+', label: 'OEM Brands', color: 'text-gold-400' },
-                  { value: '9', label: 'Vehicle Domains', color: 'text-blue-400' },
-                  { value: '340+', label: 'VAVE Ideas', color: 'text-emerald-400' },
+                  { value: '17+', label: 'OEM Brands', color: 'text-gold-400' },
+                  { value: '13', label: 'Vehicle Domains', color: 'text-blue-400' },
+                  { value: ideaCount ? `${ideaCount.toLocaleString()}` : '1,250+', label: 'Marketplace Ideas', color: 'text-emerald-400' },
                   { value: '3', label: 'Export Formats', color: 'text-purple-400' },
                 ].map((s) => (
                   <motion.div

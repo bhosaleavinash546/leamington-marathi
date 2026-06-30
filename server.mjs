@@ -9,6 +9,7 @@ import cors from 'cors';
 import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
+import zlib from 'zlib';
 import { fileURLToPath } from 'url';
 import Anthropic from '@anthropic-ai/sdk';
 import bcrypt from 'bcryptjs';
@@ -26,6 +27,29 @@ const ALLOWED_ORIGINS = process.env.ALLOWED_ORIGINS
   : ['http://localhost:5173', 'http://127.0.0.1:5173'];
 app.use(cors({ origin: ALLOWED_ORIGINS }));
 app.use(express.json({ limit: '10mb' }));
+
+// ─── Gzip JSON responses (zero-dependency) ────────────────────────────────────
+// Large list payloads (e.g. /api/marketplace ~2.5 MB) compress to a few hundred KB.
+// Only gzips when the client accepts it and the body is worth compressing (>1 KB).
+app.use((req, res, next) => {
+  if (!/\bgzip\b/.test(req.headers['accept-encoding'] || '')) return next();
+  const originalJson = res.json.bind(res);
+  res.json = (body) => {
+    try {
+      const buf = Buffer.from(JSON.stringify(body));
+      if (buf.length < 1024) return originalJson(body);
+      const zipped = zlib.gzipSync(buf);
+      res.setHeader('Content-Encoding', 'gzip');
+      res.setHeader('Content-Type', 'application/json; charset=utf-8');
+      res.setHeader('Vary', 'Accept-Encoding');
+      res.removeHeader('Content-Length');
+      return res.end(zipped);
+    } catch {
+      return originalJson(body);
+    }
+  };
+  next();
+});
 
 // ─── Security headers ─────────────────────────────────────────────────────────
 app.use((_, res, next) => {
@@ -4858,6 +4882,14 @@ app.post('/api/teardown-vision', requireAuth, rateLimit(10, 60 * 60 * 1000), asy
 });
 
 // ─── MARKETPLACE ──────────────────────────────────────────────────────────────
+
+// Cheap count for landing-page stats — avoids shipping the full table just to count.
+app.get('/api/marketplace/count', (_req, res) => {
+  try {
+    const row = db.prepare("SELECT COUNT(*) AS c FROM marketplace_ideas WHERE status = 'approved'").get();
+    res.json({ count: row.c });
+  } catch { res.json({ count: 0 }); }
+});
 
 app.get('/api/marketplace', (req, res) => {
   try {

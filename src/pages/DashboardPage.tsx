@@ -449,7 +449,7 @@ export default function DashboardPage() {
         >
           {[
             { icon: TrendingDown, label: 'Systems Covered', value: '13', sub: 'BIW to Next-Gen EV', color: 'text-gold-400', bg: 'bg-gold-500/10' },
-            { icon: Lightbulb,   label: 'Parts Catalogued', value: '260+', sub: 'across all systems', color: 'text-blue-400', bg: 'bg-blue-500/10' },
+            { icon: Lightbulb,   label: 'Parts Catalogued', value: '250+', sub: 'across all systems', color: 'text-blue-400', bg: 'bg-blue-500/10' },
             { icon: BarChart3,   label: 'Projects Saved', value: String(serverProjects.length || recentAnalyses.length), sub: 'cloud-synced', color: 'text-emerald-400', bg: 'bg-emerald-500/10' },
             { icon: Star,        label: 'Total Ideas', value: String(serverProjects.reduce((s, p) => s + (p.summary?.totalIdeas || 0), 0) || '—'), sub: 'across all projects', color: 'text-purple-400', bg: 'bg-purple-500/10' },
           ].map(({ icon: Icon, label, value, sub, color, bg }, i) => (
