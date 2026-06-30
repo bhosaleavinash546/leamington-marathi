@@ -23,6 +23,7 @@ import {
 } from '../../engine/sw-should-cost.js';
 import { DEFAULT_SW_RATE_LIBRARY } from '../../engine/sw-rate-library.js';
 import type { SWRateEntry, RateConfidence } from '../../engine/sw-rate-library.js';
+import { runValidation } from '../../engine/sw-validation.js';
 import { buildWorkbook, downloadWorkbook } from '../../export/xlsx-util.js';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -140,6 +141,43 @@ function renderRateLibraryHTML(): string {
         </tbody>
       </table>
       <p style="font-size:0.7rem;color:var(--sw-text-muted);margin-top:8px">Override the UK base rate in Programme Configuration above. Confidence reflects how well-anchored each figure is to a published or surveyed source — not all rates are equal; treat <span style="color:#dc2626;font-weight:600">Low</span> figures as directional.</p>
+    </div>
+  </details>`;
+}
+
+// Rec #2: model validation — publish the back-test variance vs published
+// programmes so the model states its own error instead of presenting a number
+// as truth. See docs/sw-cost-validation.md.
+function renderValidationHTML(): string {
+  const rep = runValidation();
+  const vColor = (v: number) => Math.abs(v) <= 15 ? '#059669' : Math.abs(v) <= rep.band ? '#d97706' : '#dc2626';
+  const sign = (v: number) => `${v >= 0 ? '+' : ''}${v.toFixed(0)}%`;
+
+  const rows = rep.cases.map(c => `<tr>
+    <td>${esc(c.programme)}</td>
+    <td class="sw-num">${fmtM(c.publishedTotalGBP)}</td>
+    <td class="sw-num">${fmtM(c.modelledTotalGBP)}</td>
+    <td class="sw-num" style="color:${vColor(c.totalVariancePct)};font-weight:700">${sign(c.totalVariancePct)} ${c.withinBand ? '✓' : '✗'}</td>
+    <td style="font-size:0.7rem;color:var(--sw-text-muted)" title="Source: ${esc(c.source)}">${esc(c.source)}</td>
+  </tr>`).join('');
+
+  return `
+  <details class="sw-config-card" style="background:var(--sw-surface-alt);border:1px solid var(--sw-border);border-radius:10px;padding:0;margin-bottom:14px">
+    <summary style="cursor:pointer;padding:12px 18px;font-weight:700;font-size:0.82rem;color:var(--sw-text-primary);display:flex;align-items:center;gap:8px;flex-wrap:wrap;list-style:none">
+      <span>🔬 Model Validation</span>
+      <span style="font-size:0.68rem;font-weight:700;color:#fff;background:${rep.mapeTotal < 25 ? '#059669' : '#d97706'};border-radius:4px;padding:1px 7px">Total MAPE ${rep.mapeTotal.toFixed(0)}%</span>
+      <span style="font-size:0.7rem;font-weight:400;color:var(--sw-text-muted)">${rep.withinBandCount}/${rep.caseCount} within ±${rep.band}% vs published programmes</span>
+    </summary>
+    <div style="padding:0 18px 16px;overflow-x:auto">
+      <table class="sw-data-table" style="font-size:0.76rem">
+        <thead><tr><th>Programme</th><th class="sw-num">Published</th><th class="sw-num">Modelled</th><th class="sw-num">Variance</th><th>Source</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+      <p style="font-size:0.7rem;color:var(--sw-text-muted);margin-top:8px">
+        Back-test of total SW investment against 7 premium-EV programmes (each run with that programme's region, dev source, volume and life).
+        Published figures are third-party <strong>estimates</strong>, not audited actuals — this is envelope validation, not point-accuracy proof.
+        <strong style="color:#dc2626">Known gap:</strong> per-vehicle figures validate poorly (model amortises NRE over full lifetime vs the industry's ~2-year recovery window) — see docs/sw-cost-validation.md.
+      </p>
     </div>
   </details>`;
 }
@@ -322,6 +360,9 @@ function renderSWPanelHTML(): string {
 
   <!-- ── Rate Library & Provenance (Rec #1) ────────────────────── -->
   ${renderRateLibraryHTML()}
+
+  <!-- ── Model Validation (Rec #2) ─────────────────────────────── -->
+  ${renderValidationHTML()}
 
   <!-- ── Quick-set presets ─────────────────────────────────────── -->
   <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;align-items:center">
