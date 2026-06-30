@@ -1,38 +1,55 @@
 {
-  "overall": 100,
+  "core": {
+    "accuracy": 100,
+    "pass": 39,
+    "total": 39
+  },
+  "semantic": {
+    "accuracy": 0,
+    "pass": 0,
+    "total": 2
+  },
   "categories": {
-    "volume": {
-      "accuracy": 100,
-      "pass": 6,
-      "total": 6
-    },
-    "bbox": {
-      "accuracy": 100,
-      "pass": 6,
-      "total": 6
-    },
-    "faceCount": {
+    "core.volume": {
       "accuracy": 100,
       "pass": 7,
       "total": 7
     },
-    "holeCount": {
+    "core.bbox": {
       "accuracy": 100,
-      "pass": 7,
-      "total": 7
+      "pass": 8,
+      "total": 8
     },
-    "process": {
+    "core.faceCount": {
+      "accuracy": 100,
+      "pass": 9,
+      "total": 9
+    },
+    "core.holeCount": {
+      "accuracy": 100,
+      "pass": 9,
+      "total": 9
+    },
+    "core.process": {
       "accuracy": 100,
       "pass": 3,
       "total": 3
     },
-    "dfma": {
+    "core.dfma": {
       "accuracy": 100,
       "pass": 3,
       "total": 3
+    },
+    "semantic.throughHoles": {
+      "accuracy": 0,
+      "pass": 0,
+      "total": 1
+    },
+    "semantic.blindHoles": {
+      "accuracy": 0,
+      "pass": 0,
+      "total": 1
     }
   },
-  "checks": 32,
-  "total": 32,
-  "fixtures": 7
+  "fixtures": 9
 }

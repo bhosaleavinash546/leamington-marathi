@@ -24,7 +24,7 @@ export function scoreFixture(name, meshes, truth) {
   const brep = analyzeBrep(meshes);
   const feat = agg ? analyzeFeatures(agg) : { processes: [], dfma: [] };
   const checks = [];
-  const add = (cat, ok, detail) => checks.push({ cat, ok, detail });
+  const add = (cat, ok, detail, tier = 'core') => checks.push({ cat, ok, detail, tier });
 
   if (truth.volumeCm3 != null && agg) {
     const err = Math.abs(agg.volumeCm3 - truth.volumeCm3) / truth.volumeCm3;
@@ -44,7 +44,22 @@ export function scoreFixture(name, meshes, truth) {
     const ids = new Set(feat.dfma.map(f => f.id));
     add('dfma', truth.dfma.every(id => ids.has(id)), [...ids].join(','));
   }
+  // SEMANTIC tier — features the geometric pipeline cannot yet produce (blind-vs-
+  // through holes, threads, pockets, slots, draft, GD&T). These are EXPECTED to
+  // fail today; they measure the gap to best-in-class and are NOT gated.
+  if (truth.semantic) {
+    for (const [key, want] of Object.entries(truth.semantic)) {
+      const got = brep[key];
+      add(key, got === want, got === undefined ? 'not detected' : `${got} vs ${want}`, 'semantic');
+    }
+  }
   return { name, checks };
+}
+
+function tally(results, tier) {
+  let pass = 0, total = 0;
+  for (const r of results) for (const c of r.checks) if (c.tier === tier) { total++; if (c.ok) pass++; }
+  return { pass, total };
 }
 
 export async function loadStepMeshes(file) {
@@ -67,38 +82,46 @@ async function main() {
 
   // Aggregate
   const byCat = {};
-  let pass = 0, total = 0;
-  console.log('\n  CAD PIPELINE ACCURACY BENCHMARK\n  ' + '─'.repeat(60));
+  console.log('\n  CAD PIPELINE ACCURACY BENCHMARK\n  ' + '─'.repeat(62));
   for (const r of results) {
     if (r.skipped) { console.log(`  ⊘ ${r.name} (skipped — fixture file missing)`); continue; }
     const p = r.checks.filter(c => c.ok).length, t = r.checks.length;
-    console.log(`\n  ${p === t ? '✓' : '✗'} ${r.name}  (${p}/${t})`);
+    console.log(`\n  ${p === t ? '✓' : '◐'} ${r.name}  (${p}/${t})`);
     for (const c of r.checks) {
-      (byCat[c.cat] ??= { pass: 0, total: 0 }); byCat[c.cat].total++; if (c.ok) byCat[c.cat].pass++;
-      pass += c.ok ? 1 : 0; total++;
-      console.log(`      ${c.ok ? '✓' : '✗'} ${c.cat.padEnd(10)} ${c.detail}`);
+      const key = `${c.tier}:${c.cat}`;
+      (byCat[key] ??= { tier: c.tier, cat: c.cat, pass: 0, total: 0 }); byCat[key].total++; if (c.ok) byCat[key].pass++;
+      const mark = c.ok ? '✓' : (c.tier === 'semantic' ? '·' : '✗');
+      console.log(`      ${mark} ${(c.tier === 'semantic' ? '[sem] ' : '').padEnd(6)}${c.cat.padEnd(12)} ${c.detail}`);
     }
   }
-  const overall = total ? pass / total : 0;
-  console.log('\n  ' + '─'.repeat(60) + '\n  PER-CATEGORY ACCURACY');
-  const catReport = {};
-  for (const [cat, v] of Object.entries(byCat)) {
-    const acc = v.pass / v.total;
-    catReport[cat] = { accuracy: +(acc * 100).toFixed(1), pass: v.pass, total: v.total };
-    console.log(`      ${cat.padEnd(10)} ${(acc * 100).toFixed(1)}%  (${v.pass}/${v.total})`);
-  }
-  console.log('  ' + '─'.repeat(60));
-  console.log(`  OVERALL: ${(overall * 100).toFixed(1)}%  (${pass}/${total} checks)\n`);
+  const core = tally(results, 'core');
+  const sem = tally(results, 'semantic');
+  const coreAcc = core.total ? core.pass / core.total : 0;
+  const semAcc = sem.total ? sem.pass / sem.total : 0;
 
-  writeFileSync(join(root, 'benchmark', 'results.json'),
-    JSON.stringify({ overall: +(overall * 100).toFixed(1), categories: catReport, checks: pass, total, fixtures: results.length }, null, 2));
+  const line = (label, v) => console.log(`      ${label.padEnd(26)} ${(100 * v.pass / Math.max(1, v.total)).toFixed(1)}%  (${v.pass}/${v.total})`);
+  console.log('\n  ' + '─'.repeat(62) + '\n  PER-CATEGORY');
+  const catReport = {};
+  for (const v of Object.values(byCat)) {
+    catReport[`${v.tier}.${v.cat}`] = { accuracy: +(100 * v.pass / v.total).toFixed(1), pass: v.pass, total: v.total };
+    line(`${v.tier === 'semantic' ? '[sem] ' : ''}${v.cat}`, v);
+  }
+  console.log('  ' + '─'.repeat(62));
+  console.log(`  CORE geometry accuracy (gated):     ${(coreAcc * 100).toFixed(1)}%  (${core.pass}/${core.total})`);
+  console.log(`  SEMANTIC features (gap to close):   ${(semAcc * 100).toFixed(1)}%  (${sem.pass}/${sem.total})  ← roadmap target\n`);
+
+  writeFileSync(join(root, 'benchmark', 'results.json'), JSON.stringify({
+    core: { accuracy: +(coreAcc * 100).toFixed(1), pass: core.pass, total: core.total },
+    semantic: { accuracy: +(semAcc * 100).toFixed(1), pass: sem.pass, total: sem.total },
+    categories: catReport, fixtures: results.length,
+  }, null, 2));
 
   const minArg = process.argv.indexOf('--min');
   if (minArg !== -1) {
     const min = parseFloat(process.argv[minArg + 1]);
-    if (overall < min) { console.error(`  ✗ FAIL: overall ${(overall * 100).toFixed(1)}% < required ${(min * 100).toFixed(0)}%\n`); process.exit(1); }
+    if (coreAcc < min) { console.error(`  ✗ FAIL: core ${(coreAcc * 100).toFixed(1)}% < required ${(min * 100).toFixed(0)}%\n`); process.exit(1); }
   }
-  return overall;
+  return coreAcc;
 }
 
 // Compute overall accuracy without printing (used by the regression test).
@@ -109,8 +132,9 @@ export async function computeOverall() {
     const meshes = await loadStepMeshes(fx.file);
     if (meshes) results.push(scoreFixture(fx.name, meshes, fx.truth));
   }
+  // Gate/regression is on the CORE tier only (semantic is the aspirational target).
   let pass = 0, total = 0;
-  for (const r of results) for (const c of r.checks) { total++; if (c.ok) pass++; }
+  for (const r of results) for (const c of r.checks) if (c.tier === 'core') { total++; if (c.ok) pass++; }
   return { overall: total ? pass / total : 0, pass, total };
 }
 
