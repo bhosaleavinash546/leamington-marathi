@@ -12,7 +12,7 @@ import {
   COMMODITY_GROUPS, COLOR_TAB_ACTIVE, COLOR_BADGE, getCommodityForSystem,
   type CommodityColor, type CommodityGroup,
 } from '../data/commodity-taxonomy';
-import { classifyIdea, POWERTRAINS, VOLTAGES, type Powertrain, type Voltage } from '../data/idea-classify';
+import { classifyIdea, POWERTRAINS, VOLTAGES, type Powertrain, type Voltage } from '../data/idea-classify.mjs';
 
 interface MarketplaceIdea {
   id: string;
