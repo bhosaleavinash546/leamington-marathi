@@ -73,11 +73,12 @@ function AppShell() {
   return (
     <div className="flex flex-col min-h-screen">
       {!native && <Header />}
-      <main className={`flex-1${native ? ' pb-14' : ''}`}>
+      <main className={`flex-1 ${native ? 'pb-14' : 'pb-14 lg:pb-0'}`}>
         <AnimatedRoutes />
       </main>
       {!native && <Footer />}
-      {native && <MobileNav />}
+      {/* Bottom tab bar: always on native; on mobile-web only (hidden ≥lg). */}
+      {native ? <MobileNav /> : <div className="lg:hidden"><MobileNav /></div>}
       <AiChatbot />
     </div>
   );

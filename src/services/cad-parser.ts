@@ -127,26 +127,44 @@ function parseBinaryStl(buffer: ArrayBuffer): Partial<CadGeometry> {
 function parseAsciiStl(text: string): Partial<CadGeometry> {
   const facetMatches = text.match(/\bfacet\b/g);
   const triangleCount = facetMatches ? facetMatches.length : 0;
-  const vertexRegex = /vertex\s+([\d.e+-]+)\s+([\d.e+-]+)\s+([\d.e+-]+)/gi;
+  const vertexRegex = /vertex\s+([\d.eE+-]+)\s+([\d.eE+-]+)\s+([\d.eE+-]+)/g;
   let m;
   let minX = Infinity, minY = Infinity, minZ = Infinity;
   let maxX = -Infinity, maxY = -Infinity, maxZ = -Infinity;
+  let surfaceArea = 0;
+  let volume = 0;
+  // Vertices stream in order; every 3 form one triangle.
+  const tri: { x: number; y: number; z: number }[] = [];
 
   while ((m = vertexRegex.exec(text)) !== null) {
     const x = parseFloat(m[1]), y = parseFloat(m[2]), z = parseFloat(m[3]);
     minX = Math.min(minX, x); maxX = Math.max(maxX, x);
     minY = Math.min(minY, y); maxY = Math.max(maxY, y);
     minZ = Math.min(minZ, z); maxZ = Math.max(maxZ, z);
+    tri.push({ x, y, z });
+    if (tri.length === 3) {
+      const [v0, v1, v2] = tri;
+      const ax = v1.x - v0.x, ay = v1.y - v0.y, az = v1.z - v0.z;
+      const bx = v2.x - v0.x, by = v2.y - v0.y, bz = v2.z - v0.z;
+      const cx = ay * bz - az * by, cy = az * bx - ax * bz, cz = ax * by - ay * bx;
+      surfaceArea += Math.sqrt(cx * cx + cy * cy + cz * cz) / 2;
+      volume += (v0.x * (v1.y * v2.z - v2.y * v1.z)
+               + v1.x * (v2.y * v0.z - v0.y * v2.z)
+               + v2.x * (v0.y * v1.z - v1.y * v0.z)) / 6;
+      tri.length = 0;
+    }
   }
 
   return {
     triangleCount,
+    estimatedVolume: surfaceArea > 0 ? Math.abs(volume) / 1000 : undefined, // mm³ → cm³
+    estimatedSurfaceArea: surfaceArea > 0 ? surfaceArea / 100 : undefined,   // mm² → cm²
     boundingBox: isFinite(maxX) ? {
       x: Math.round((maxX - minX) * 10) / 10,
       y: Math.round((maxY - minY) * 10) / 10,
       z: Math.round((maxZ - minZ) * 10) / 10,
     } : undefined,
-    featureCounts: { faces: triangleCount },
+    warnings: ['STL mesh: dimensions/volume/mass extracted; DFMA feature counts (holes/ribs/pockets) require a STEP B-rep and are not available from mesh data.'],
   };
 }
 
