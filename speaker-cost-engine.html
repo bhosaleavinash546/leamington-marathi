@@ -3,106 +3,182 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#020b18">
 <title>360° Automotive Speaker Should-Cost Engine v2026</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/motion@11.11.17/dist/motion.js"></script>
 <style>
 :root{
-  --bg0:#0d1117;--bg1:#161b22;--bg2:#21262d;--bd:#30363d;
-  --t1:#e6edf3;--t2:#8b949e;--t3:#6e7681;
-  --blue:#1f6feb;--cyan:#00b4d8;--green:#3fb950;--amber:#d29922;--red:#f85149;--purple:#bc8cff;--pink:#ff7b72
+  --bg0:#020b18;--bg1:#060f1e;--bg2:#0c1a2e;--bg3:#0f2340;
+  --bd:rgba(99,179,237,0.12);--bd2:rgba(99,179,237,0.24);
+  --t1:#e2e8f0;--t2:#94a3b8;--t3:#64748b;
+  --blue:#3b82f6;--blue2:#60a5fa;
+  --cyan:#22d3ee;--green:#10b981;--green2:#34d399;
+  --amber:#f59e0b;--red:#ef4444;--purple:#8b5cf6;--purple2:#a78bfa;
+  --pink:#ec4899;--gold:#fbbf24;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--bg0);color:var(--t1);font-family:'Segoe UI',system-ui,sans-serif;font-size:13px;min-height:100vh;display:flex;flex-direction:column}
-header{background:var(--bg1);border-bottom:1px solid var(--bd);padding:12px 20px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
-header h1{font-size:16px;font-weight:700;color:var(--t1)}
-header p{font-size:11px;color:var(--t2);margin-top:2px}
+body{background:var(--bg0);color:var(--t1);font-family:'Inter','Segoe UI',system-ui,sans-serif;font-size:13px;min-height:100vh;display:flex;flex-direction:column;position:relative}
+body::before{content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background:
+    radial-gradient(ellipse 80% 50% at 20% 0%,rgba(59,130,246,0.07) 0%,transparent 60%),
+    radial-gradient(ellipse 60% 40% at 80% 100%,rgba(139,92,246,0.05) 0%,transparent 60%),
+    radial-gradient(ellipse 40% 60% at 50% 50%,rgba(16,185,129,0.03) 0%,transparent 70%)}
+/* ── HEADER ── */
+header{background:linear-gradient(to right,var(--bg0),var(--bg1));border-bottom:1px solid var(--bd);padding:12px 20px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;position:relative;z-index:10}
+.brand-title{font-size:16px;font-weight:800;letter-spacing:-.3px;background:linear-gradient(90deg,var(--blue2),var(--purple2),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+header p{font-size:11px;color:var(--t3);margin-top:2px}
 .hchips{display:flex;gap:6px;align-items:center}
-.chip{background:var(--bg2);border:1px solid var(--bd);border-radius:12px;padding:2px 10px;font-size:11px;color:var(--t2)}
+.chip{background:rgba(59,130,246,0.08);border:1px solid var(--bd);border-radius:20px;padding:2px 10px;font-size:10px;color:var(--t3);font-weight:600;letter-spacing:.3px}
 .hbtns{display:flex;gap:8px}
-.hbtns button{background:var(--bg2);border:1px solid var(--bd);color:var(--t2);padding:5px 12px;border-radius:6px;cursor:pointer;font-size:12px}
-.hbtns button:hover{border-color:var(--blue);color:var(--blue)}
+.hbtns button{background:rgba(59,130,246,0.06);border:1px solid var(--bd);color:var(--t2);padding:5px 14px;border-radius:8px;cursor:pointer;font-size:12px;font-weight:500;transition:all .2s}
+.hbtns button:hover{background:rgba(59,130,246,0.15);border-color:var(--blue);color:var(--blue2)}
+/* ── LAYOUT ── */
 .layout{display:flex;flex:1;overflow:hidden}
-.left-panel{width:360px;flex-shrink:0;background:var(--bg1);border-right:1px solid var(--bd);overflow-y:auto;padding:12px}
-.right-panel{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:12px}
-.card{background:var(--bg1);border:1px solid var(--bd);border-radius:8px;overflow:hidden}
-.card-hdr{padding:10px 14px;border-bottom:1px solid var(--bd);font-size:12px;font-weight:600;color:var(--t2);text-transform:uppercase;letter-spacing:.5px}
+.left-panel{width:340px;flex-shrink:0;background:rgba(6,15,30,0.6);border-right:1px solid var(--bd);overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:0}
+.right-panel{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:12px}
+/* ── CARDS ── */
+.card{background:rgba(6,15,30,0.85);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid var(--bd);border-radius:12px;overflow:hidden;transition:border-color .2s,box-shadow .2s}
+.card:hover{border-color:var(--bd2);box-shadow:0 8px 32px rgba(59,130,246,0.07)}
+.card-hdr{padding:10px 14px;border-bottom:1px solid var(--bd);font-size:10px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.8px;display:flex;align-items:center;gap:6px}
+.card-hdr::before{content:'';width:3px;height:12px;border-radius:2px;background:linear-gradient(180deg,var(--blue),var(--purple));flex-shrink:0}
 .card-body{padding:12px 14px}
+/* ── FORM ── */
 .form-section{margin-bottom:14px}
-.form-section-title{font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;padding-bottom:4px;border-bottom:1px solid var(--bg2)}
-.form-row{margin-bottom:8px}
-label{display:block;font-size:11px;color:var(--t2);margin-bottom:3px}
-select,input[type=range]{width:100%;background:var(--bg0);border:1px solid var(--bd);color:var(--t1);border-radius:4px;padding:5px 8px;font-size:12px}
-select:focus{outline:none;border-color:var(--blue)}
-input[type=range]{padding:4px 0;accent-color:var(--blue)}
-.slider-val{display:flex;justify-content:space-between;font-size:11px;color:var(--t2);margin-top:2px}
+.form-section-title{font-size:10px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.form-section-title::after{content:'';flex:1;height:1px;background:linear-gradient(to right,rgba(59,130,246,0.25),transparent)}
+.form-row{margin-bottom:7px}
+label{display:block;font-size:11px;color:var(--t2);margin-bottom:3px;font-weight:500}
+select,input[type=range]{width:100%;background:rgba(2,11,24,0.7);border:1px solid var(--bd);color:var(--t1);border-radius:8px;padding:5px 9px;font-size:12px;transition:border-color .2s,box-shadow .2s;outline:none}
+select:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(59,130,246,0.15)}
+input[type=range]{padding:4px 0;accent-color:var(--blue);cursor:pointer}
+.slider-val{display:flex;justify-content:space-between;font-size:10px;color:var(--t3);margin-top:2px}
+/* ── FEATURES GRID ── */
 .feat-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px}
-.feat-item{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--t2);padding:3px 0;cursor:pointer}
-.feat-item input[type=checkbox]{accent-color:var(--blue);width:13px;height:13px;flex-shrink:0}
-.calc-btn{width:100%;padding:10px;background:var(--blue);color:#fff;border:none;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;margin-top:8px}
-.calc-btn:hover{background:#388bfd}
+.feat-item{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--t2);padding:5px 7px;cursor:pointer;border:1px solid rgba(59,130,246,0.08);border-radius:6px;background:rgba(59,130,246,0.03);transition:all .15s;user-select:none}
+.feat-item:hover{background:rgba(59,130,246,0.1);border-color:rgba(59,130,246,0.3);color:var(--t1)}
+.feat-item input[type=checkbox]{accent-color:var(--blue);width:12px;height:12px;flex-shrink:0;cursor:pointer}
+.feat-item input:checked~span{color:var(--blue2);font-weight:600}
+/* ── PRESETS ── */
+.presets-row{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px}
+.preset-btn{background:rgba(59,130,246,0.06);border:1px solid rgba(59,130,246,0.18);color:var(--blue2);border-radius:20px;padding:4px 12px;font-size:11px;cursor:pointer;transition:all .2s;font-weight:500}
+.preset-btn:hover{background:rgba(59,130,246,0.18);border-color:rgba(59,130,246,0.45);transform:translateY(-1px)}
+/* ── CALC BUTTON ── */
+.calc-btn{width:100%;padding:11px;background:linear-gradient(135deg,var(--blue),var(--purple));color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;transition:all .2s;box-shadow:0 4px 15px rgba(59,130,246,0.25);position:relative;overflow:hidden;margin-top:4px;letter-spacing:.2px}
+.calc-btn:hover{transform:translateY(-1px);box-shadow:0 6px 25px rgba(59,130,246,0.4)}
+.calc-btn:active{transform:translateY(0)}
+.calc-btn.loading{opacity:.7;cursor:not-allowed}
+/* ── METRICS ROW ── */
 .metrics-row{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
-.metric-cell{background:var(--bg1);border:1px solid var(--bd);border-radius:8px;padding:10px 12px;text-align:center}
-.metric-cell .val{font-size:20px;font-weight:700;color:var(--blue)}
-.metric-cell .lbl{font-size:10px;color:var(--t2);margin-top:2px}
-.tabs{display:flex;gap:0;border-bottom:1px solid var(--bd);background:var(--bg1);border-radius:8px 8px 0 0;overflow:hidden}
-.tab-btn{padding:9px 16px;font-size:12px;font-weight:500;color:var(--t2);cursor:pointer;border:none;background:transparent;border-bottom:2px solid transparent;transition:all .15s;white-space:nowrap}
-.tab-btn:hover{color:var(--t1);background:var(--bg2)}
-.tab-btn.active{color:var(--blue);border-bottom-color:var(--blue)}
+.metric-cell{background:linear-gradient(135deg,rgba(59,130,246,0.07),rgba(139,92,246,0.05));border:1px solid var(--bd);border-radius:12px;padding:14px 10px;text-align:center;transition:all .2s;cursor:default;position:relative;overflow:hidden}
+.metric-cell::after{content:'';position:absolute;inset:0;border-radius:12px;background:radial-gradient(circle at 50% 0%,rgba(59,130,246,0.08),transparent 70%);pointer-events:none}
+.metric-cell:hover{border-color:var(--bd2);box-shadow:0 4px 16px rgba(59,130,246,0.1)}
+.metric-cell .val{font-size:22px;font-weight:800;letter-spacing:-.5px;line-height:1}
+.metric-cell .lbl{font-size:10px;color:var(--t3);margin-top:4px;font-weight:500;letter-spacing:.3px;text-transform:uppercase}
+#m-total .val{color:var(--blue2)}
+#m-spkcount .val{color:var(--cyan)}
+#m-dm .val{color:var(--purple2)}
+#m-co2 .val{color:var(--green2)}
+#m-margin .val{color:var(--gold)}
+/* ── TABS ── */
+.tabs-wrapper{background:rgba(6,15,30,0.85);border:1px solid var(--bd);border-radius:12px 12px 0 0;border-bottom:none;overflow:hidden}
+.tabs{display:flex;overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab-btn{padding:10px 16px;font-size:12px;font-weight:500;color:var(--t3);cursor:pointer;border:none;background:transparent;border-bottom:2px solid transparent;transition:all .18s;white-space:nowrap;flex-shrink:0}
+.tab-btn:hover{color:var(--t1);background:rgba(59,130,246,0.06)}
+.tab-btn.active{color:var(--blue2);background:linear-gradient(180deg,rgba(59,130,246,0.1),transparent);border-bottom:2px solid var(--blue)}
 .tab-panel{display:none}
 .tab-panel.active{display:block}
-.tab-content{background:var(--bg1);border:1px solid var(--bd);border-top:none;border-radius:0 0 8px 8px;padding:14px;min-height:300px}
+.tab-content{background:rgba(6,15,30,0.85);backdrop-filter:blur(12px);border:1px solid var(--bd);border-top:none;border-radius:0 0 12px 12px;padding:16px;min-height:320px}
+/* ── TABLES ── */
 table{width:100%;border-collapse:collapse;font-size:12px}
-th{text-align:left;padding:6px 8px;color:var(--t2);font-weight:600;border-bottom:1px solid var(--bd);font-size:11px}
-td{padding:5px 8px;border-bottom:1px solid var(--bg2);color:var(--t1)}
-tr:hover td{background:var(--bg2)}
+th{text-align:left;padding:7px 8px;color:var(--t3);font-weight:600;border-bottom:1px solid var(--bd);font-size:10px;text-transform:uppercase;letter-spacing:.5px}
+td{padding:5px 8px;border-bottom:1px solid rgba(99,179,237,0.06);color:var(--t1)}
+tr:hover td{background:rgba(59,130,246,0.04)}
 tr:last-child td{border-bottom:none}
-.num{text-align:right;font-family:monospace}
-.bold{font-weight:700}
-.subtotal{background:var(--bg2)!important}
+.num{text-align:right;font-family:'Menlo','Consolas',monospace;font-size:11px}
+.subtotal{background:rgba(12,26,46,0.7)!important}
 .subtotal td{color:var(--amber);font-weight:600}
-.total-row td{color:var(--green);font-weight:700;font-size:13px;background:var(--bg0)!important}
-.badge{display:inline-block;padding:1px 7px;border-radius:10px;font-size:10px;font-weight:600}
-.badge-green{background:#1a3d22;color:var(--green)}
-.badge-red{background:#3d1a1a;color:var(--red)}
-.badge-amber{background:#3d2e00;color:var(--amber)}
-.badge-blue{background:#0d2145;color:var(--blue)}
-.badge-purple{background:#2a1845;color:var(--purple)}
-.section-hdr{font-size:12px;font-weight:700;color:var(--cyan);margin:14px 0 6px;padding-bottom:4px;border-bottom:1px solid var(--bd)}
-.scard{background:var(--bg2);border:1px solid var(--bd);border-radius:6px;padding:10px 14px;text-align:center}
-.scard .sv{font-size:18px;font-weight:700;color:var(--green)}
-.scard .sl{font-size:10px;color:var(--t2);margin-top:2px}
-.scards{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}
-.bottom-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:4px}
-.recs-list{padding-left:18px}
-.recs-list li{padding:5px 0;border-bottom:1px solid var(--bg2);color:var(--t2);font-size:12px;line-height:1.5}
-.recs-list li:last-child{border-bottom:none}
-.effort-low{background:#1a3d22;color:var(--green);padding:1px 6px;border-radius:4px;font-size:10px;font-weight:600}
-.effort-med{background:#3d2e00;color:var(--amber);padding:1px 6px;border-radius:4px;font-size:10px;font-weight:600}
-.effort-high{background:#3d1a1a;color:var(--red);padding:1px 6px;border-radius:4px;font-size:10px;font-weight:600}
+.total-row td{color:var(--green2);font-weight:800;font-size:13px;background:rgba(16,185,129,0.05)!important}
+/* ── BADGES ── */
+.badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;letter-spacing:.3px}
+.badge-green{background:rgba(16,185,129,0.15);color:var(--green2)}
+.badge-red{background:rgba(239,68,68,0.15);color:#f87171}
+.badge-amber{background:rgba(245,158,11,0.15);color:var(--gold)}
+.badge-blue{background:rgba(59,130,246,0.15);color:var(--blue2)}
+.badge-purple{background:rgba(139,92,246,0.15);color:var(--purple2)}
+.badge-cyan{background:rgba(34,211,238,0.12);color:var(--cyan)}
+/* ── SECTION HEADERS ── */
+.section-hdr{font-size:12px;font-weight:700;color:var(--cyan);margin:16px 0 8px;padding-bottom:5px;border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:6px}
+.section-hdr::before{content:'';width:3px;height:12px;border-radius:2px;background:linear-gradient(180deg,var(--cyan),var(--blue));flex-shrink:0}
+/* ── SUSTAINABILITY CARDS ── */
+.scards{display:grid;gap:8px;margin-bottom:14px}
+.scard{background:rgba(12,26,46,0.6);border:1px solid var(--bd);border-radius:10px;padding:12px 14px;text-align:center;transition:all .2s}
+.scard:hover{border-color:var(--bd2)}
+.scard .sv{font-size:20px;font-weight:800;line-height:1}
+.scard .sl{font-size:10px;color:var(--t3);margin-top:4px;text-transform:uppercase;letter-spacing:.4px}
+.insights-block{background:rgba(12,26,46,0.5);border:1px solid var(--bd);border-radius:8px;padding:12px 14px;margin-top:12px;font-size:12px;color:var(--t2);line-height:1.7}
+/* ── DRIVER SECTIONS ── */
 .driver-section{margin-bottom:16px}
-.driver-section-hdr{background:var(--bg2);padding:7px 10px;border-radius:6px;font-size:12px;font-weight:600;color:var(--cyan);margin-bottom:4px;display:flex;justify-content:space-between}
-.insights-block{background:var(--bg2);border:1px solid var(--bd);border-radius:6px;padding:10px 14px;margin-top:12px;font-size:12px;color:var(--t2);line-height:1.6}
+.driver-section-hdr{background:linear-gradient(to right,rgba(59,130,246,0.1),rgba(139,92,246,0.06));padding:8px 12px;border-radius:8px;font-size:12px;font-weight:600;color:var(--cyan);margin-bottom:5px;display:flex;justify-content:space-between;border:1px solid var(--bd)}
+/* ── BOTTOM GRID ── */
+.bottom-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.recs-list{padding:0;list-style:none}
+.recs-list li{padding:6px 0 6px 12px;border-bottom:1px solid var(--bd);color:var(--t2);font-size:12px;line-height:1.6;position:relative}
+.recs-list li::before{content:'›';position:absolute;left:0;color:var(--blue);font-weight:700}
+.recs-list li:last-child{border-bottom:none}
+.effort-low{background:rgba(16,185,129,0.15);color:var(--green2);padding:2px 7px;border-radius:4px;font-size:10px;font-weight:700}
+.effort-med{background:rgba(245,158,11,0.15);color:var(--gold);padding:2px 7px;border-radius:4px;font-size:10px;font-weight:700}
+.effort-high{background:rgba(239,68,68,0.15);color:#f87171;padding:2px 7px;border-radius:4px;font-size:10px;font-weight:700}
 canvas{max-height:260px}
+/* ── AI INSIGHTS ── */
+.ai-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.ai-card{background:rgba(12,26,46,0.6);border:1px solid var(--bd);border-radius:10px;padding:14px;transition:border-color .2s}
+.ai-card:hover{border-color:var(--bd2)}
+.ai-card-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--t3);margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.ai-card-title .dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.grade-badge{font-size:32px;font-weight:900;line-height:1;margin-bottom:2px}
+.grade-A{color:var(--green2)}
+.grade-B{color:var(--cyan)}
+.grade-C{color:var(--gold)}
+.grade-D{color:#f87171}
+.lever-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--bd);font-size:12px}
+.lever-row:last-child{border-bottom:none}
+.lever-saving{font-weight:700;font-family:monospace;font-size:11px}
+.progress-bar-bg{background:rgba(59,130,246,0.1);border-radius:6px;height:8px;overflow:hidden;margin-top:6px}
+.progress-bar-fill{height:100%;border-radius:6px;background:linear-gradient(to right,var(--blue),var(--purple));transition:width .6s ease}
+.risk-item{display:flex;align-items:flex-start;gap:8px;padding:5px 0;font-size:12px;color:var(--t2);border-bottom:1px solid var(--bd)}
+.risk-item:last-child{border-bottom:none}
+.risk-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:3px}
+.pathway-step{display:flex;gap:10px;padding:6px 0;border-bottom:1px solid var(--bd);font-size:12px;align-items:flex-start}
+.pathway-step:last-child{border-bottom:none}
+.step-num{background:linear-gradient(135deg,var(--blue),var(--purple));color:#fff;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;flex-shrink:0}
+/* ── PRINT ── */
 @media print{
-  .left-panel,.hbtns,.calc-btn{display:none!important}
+  .left-panel,.hbtns,.calc-btn,.presets-row,.bottom-grid{display:none!important}
   .tab-panel{display:block!important}
   body{background:#fff;color:#000}
+  body::before{display:none}
   .layout{display:block}
+  .card,.tab-content,.tabs-wrapper{background:#fff!important;border-color:#ddd!important}
+  .ai-card,.scard{background:#f8f9fa!important}
 }
 </style>
 </head>
 <body>
 <header>
   <div>
-    <h1>360&#176; Automotive Speaker Should-Cost Engine v2026</h1>
-    <p>System-Level &middot; 5 Configurations &middot; BOM + Process + Sustainability + Benchmarking &middot; v2026</p>
+    <h1 class="brand-title">360° Automotive Speaker Should-Cost Engine</h1>
+    <p>System-Level &middot; 5 Configurations &middot; BOM + Process + Sustainability + Benchmarking + AI Insights &middot; v2026</p>
   </div>
   <div style="display:flex;align-items:center;gap:12px">
     <div class="hchips">
-      <span class="chip">v2026.1</span>
-      <span class="chip">14 Process Steps</span>
+      <span class="chip">v2026.2</span>
+      <span class="chip">14 Steps</span>
       <span class="chip">24 Materials</span>
+      <span class="chip">16 Features</span>
     </div>
     <div class="hbtns">
       <button onclick="exportPDF()">&#128438; Export PDF</button>
@@ -112,7 +188,7 @@ canvas{max-height:260px}
 </header>
 <div class="layout">
 <div class="left-panel">
-  <div class="card">
+  <div class="card" style="flex:1">
     <div class="card-hdr">System Configuration</div>
     <div class="card-body">
       <div class="form-section">
@@ -148,7 +224,7 @@ canvas{max-height:260px}
           </select>
         </div>
         <div class="form-row">
-          <label>Annual Volume: <strong id="volDisplay">50k</strong></label>
+          <label>Annual Volume: <strong id="volDisplay" style="color:var(--blue2)">50k</strong></label>
           <input type="range" id="annualVol" min="1000" max="500000" step="1000" value="50000">
           <div class="slider-val"><span>1k</span><span>500k</span></div>
         </div>
@@ -166,124 +242,106 @@ canvas{max-height:260px}
       <div class="form-section">
         <div class="form-section-title">Material Choices</div>
         <div class="form-row">
-          <label>Magnet Type</label>
-          <select id="magnetType">
-            <option value="Neodymium">Neodymium (NdFeB)</option>
-            <option value="Ferrite">Ferrite (Ceramic)</option>
-          </select>
+          <label>Magnet</label>
+          <select id="magnetType"><option value="Neodymium">Neodymium (NdFeB)</option><option value="Ferrite">Ferrite (Ceramic)</option></select>
         </div>
         <div class="form-row">
-          <label>Cone Material</label>
-          <select id="coneMat">
-            <option value="Polypropylene">Polypropylene (PP)</option>
-            <option value="Paper">Paper (Pulp)</option>
-            <option value="Composite">Composite (Woven)</option>
-          </select>
+          <label>Cone</label>
+          <select id="coneMat"><option value="Polypropylene">Polypropylene (PP)</option><option value="Paper">Paper (Pulp)</option><option value="Composite">Composite (Woven)</option></select>
         </div>
         <div class="form-row">
           <label>Surround</label>
-          <select id="surroundMat">
-            <option value="Rubber">Rubber (EPDM)</option>
-            <option value="Foam">Foam (PU)</option>
-            <option value="Cloth">Cloth (Coated)</option>
-          </select>
+          <select id="surroundMat"><option value="Rubber">Rubber (EPDM)</option><option value="Foam">Foam (PU)</option><option value="Cloth">Cloth (Coated)</option></select>
         </div>
         <div class="form-row">
           <label>Frame / Basket</label>
-          <select id="frameMat">
-            <option value="Die-Cast Al">Die-Cast Aluminium</option>
-            <option value="Stamped Steel">Stamped Steel</option>
-            <option value="Injected PP">Injected PP</option>
-          </select>
+          <select id="frameMat"><option value="Die-Cast Al">Die-Cast Aluminium</option><option value="Stamped Steel">Stamped Steel</option><option value="Injected PP">Injected PP</option></select>
         </div>
         <div class="form-row">
           <label>VC Wire</label>
-          <select id="vcWire">
-            <option value="Copper">Copper</option>
-            <option value="Aluminium">Aluminium (CCA)</option>
-          </select>
+          <select id="vcWire"><option value="Copper">Copper</option><option value="Aluminium">Aluminium (CCA)</option></select>
         </div>
         <div class="form-row">
           <label>Coil Former</label>
-          <select id="vcFormer">
-            <option value="Kapton">Kapton (Polyimide)</option>
-            <option value="Aluminium">Aluminium</option>
-            <option value="Paper">Paper</option>
-          </select>
+          <select id="vcFormer"><option value="Kapton">Kapton (Polyimide)</option><option value="Aluminium">Aluminium</option><option value="Paper">Paper</option></select>
         </div>
       </div>
       <div class="form-section">
         <div class="form-section-title">Advanced Technology Features</div>
         <div class="feat-grid" id="advFeatures">
-          <label class="feat-item"><input type="checkbox" value="ANC"> ANC</label>
-          <label class="feat-item"><input type="checkbox" value="DSP Integration"> DSP</label>
-          <label class="feat-item"><input type="checkbox" value="Waterproofing"> IPX5</label>
-          <label class="feat-item"><input type="checkbox" value="Sound Zones"> Sound Zones</label>
-          <label class="feat-item"><input type="checkbox" value="Beamforming"> Beamforming</label>
-          <label class="feat-item"><input type="checkbox" value="Wireless"> Wireless</label>
-          <label class="feat-item"><input type="checkbox" value="3D Audio"> 3D Audio</label>
-          <label class="feat-item"><input type="checkbox" value="4D Haptics"> 4D Haptics</label>
-          <label class="feat-item"><input type="checkbox" value="Voice Pickup"> Voice Pickup</label>
-          <label class="feat-item"><input type="checkbox" value="Apple CA"> Apple CA</label>
+          <label class="feat-item"><input type="checkbox" value="ANC"><span>ANC</span></label>
+          <label class="feat-item"><input type="checkbox" value="DSP Integration"><span>DSP</span></label>
+          <label class="feat-item"><input type="checkbox" value="Waterproofing"><span>IPX5</span></label>
+          <label class="feat-item"><input type="checkbox" value="Sound Zones"><span>Sound Zones</span></label>
+          <label class="feat-item"><input type="checkbox" value="Beamforming"><span>Beamforming</span></label>
+          <label class="feat-item"><input type="checkbox" value="Wireless"><span>Wireless</span></label>
+          <label class="feat-item"><input type="checkbox" value="3D Audio"><span>3D Audio</span></label>
+          <label class="feat-item"><input type="checkbox" value="4D Haptics"><span>4D Haptics</span></label>
+          <label class="feat-item"><input type="checkbox" value="Voice Pickup"><span>Voice Pickup</span></label>
+          <label class="feat-item"><input type="checkbox" value="Apple CA"><span>Apple CA</span></label>
+          <label class="feat-item"><input type="checkbox" value="GaN Amp"><span>GaN Amp</span></label>
+          <label class="feat-item"><input type="checkbox" value="Neural DSP"><span>Neural DSP</span></label>
+          <label class="feat-item"><input type="checkbox" value="RNC"><span>RNC</span></label>
+          <label class="feat-item"><input type="checkbox" value="OTA Calibration"><span>OTA Cal.</span></label>
+          <label class="feat-item"><input type="checkbox" value="A2B Bus"><span>A2B Bus</span></label>
+          <label class="feat-item"><input type="checkbox" value="Head Tracking"><span>Head Track</span></label>
         </div>
       </div>
       <div class="form-section">
         <div class="form-section-title">Logistics &amp; Margin</div>
         <div class="form-row">
           <label>Outbound Freight</label>
-          <select id="freightMode">
-            <option value="dom">Domestic</option>
-            <option value="reg" selected>Regional</option>
-            <option value="int">International</option>
-          </select>
+          <select id="freightMode"><option value="dom">Domestic</option><option value="reg" selected>Regional</option><option value="int">International</option></select>
         </div>
         <div class="form-row">
           <label>Duty Rate</label>
-          <select id="dutyRegime">
-            <option value="0">0%</option>
-            <option value="0.035">3.5%</option>
-            <option value="0.05" selected>5%</option>
-            <option value="0.07">7%</option>
-            <option value="0.10">10%</option>
-          </select>
+          <select id="dutyRegime"><option value="0">0%</option><option value="0.035">3.5%</option><option value="0.05" selected>5%</option><option value="0.07">7%</option><option value="0.10">10%</option></select>
         </div>
         <div class="form-row">
-          <label>Target Margin: <strong id="marginDisplay">12%</strong></label>
+          <label>Target Margin: <strong id="marginDisplay" style="color:var(--gold)">12%</strong></label>
           <input type="range" id="marginPct" min="5" max="40" step="1" value="12">
           <div class="slider-val"><span>5%</span><span>40%</span></div>
         </div>
       </div>
-      <button class="calc-btn" onclick="calculate()">&#9654; Calculate Full Should-Cost</button>
+      <div class="form-section-title" style="margin-bottom:6px">Quick Presets</div>
+      <div class="presets-row">
+        <button class="preset-btn" onclick="applyPreset('budget')">OEM Budget</button>
+        <button class="preset-btn" onclick="applyPreset('premium')">Premium Audio</button>
+        <button class="preset-btn" onclick="applyPreset('green')">Green Build</button>
+        <button class="preset-btn" onclick="applyPreset('volume')">High Volume</button>
+      </div>
+      <button class="calc-btn" id="calcBtn" onclick="calculate()">&#9654; Calculate Full Should-Cost</button>
     </div>
   </div>
 </div>
-
 <div class="right-panel">
   <div class="metrics-row" id="metricsRow" style="display:none">
-    <div class="metric-cell"><div class="val" id="m-total">--</div><div class="lbl">System Total (USD)</div></div>
-    <div class="metric-cell"><div class="val" id="m-spkcount">--</div><div class="lbl">Speaker Count</div></div>
-    <div class="metric-cell"><div class="val" id="m-dm">--</div><div class="lbl">DM %</div></div>
-    <div class="metric-cell"><div class="val" id="m-co2">--</div><div class="lbl">CO2 (kg)</div></div>
-    <div class="metric-cell"><div class="val" id="m-margin">--</div><div class="lbl">Margin ($)</div></div>
+    <div class="metric-cell" id="m-total"><div class="val" id="mv-total">--</div><div class="lbl">System Total (USD)</div></div>
+    <div class="metric-cell" id="m-spkcount"><div class="val" id="mv-spkcount">--</div><div class="lbl">Speaker Count</div></div>
+    <div class="metric-cell" id="m-dm"><div class="val" id="mv-dm">--</div><div class="lbl">DM %</div></div>
+    <div class="metric-cell" id="m-co2"><div class="val" id="mv-co2">--</div><div class="lbl">CO₂ (kg)</div></div>
+    <div class="metric-cell" id="m-margin"><div class="val" id="mv-margin">--</div><div class="lbl">Margin ($)</div></div>
   </div>
-
   <div>
-    <div class="tabs">
-      <button class="tab-btn active" data-tab="overview" onclick="showTab('overview')">System Overview</button>
-      <button class="tab-btn" data-tab="bom" onclick="showTab('bom')">Full BOM</button>
-      <button class="tab-btn" data-tab="sustain" onclick="showTab('sustain')">Sustainability</button>
-      <button class="tab-btn" data-tab="bench" onclick="showTab('bench')">Benchmarking</button>
-      <button class="tab-btn" data-tab="process" onclick="showTab('process')">Process &amp; DFMA</button>
+    <div class="tabs-wrapper">
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="overview" onclick="showTab('overview')">System Overview</button>
+        <button class="tab-btn" data-tab="bom" onclick="showTab('bom')">Full BOM</button>
+        <button class="tab-btn" data-tab="sustain" onclick="showTab('sustain')">Sustainability</button>
+        <button class="tab-btn" data-tab="bench" onclick="showTab('bench')">Benchmarking</button>
+        <button class="tab-btn" data-tab="process" onclick="showTab('process')">Process &amp; DFMA</button>
+        <button class="tab-btn" data-tab="ai" onclick="showTab('ai')">&#129302; AI Insights</button>
+      </div>
     </div>
     <div class="tab-content">
-      <div class="tab-panel active" id="panel-overview"><div id="overviewContent"><p style="color:var(--t2);text-align:center;padding:40px">Configure inputs and click Calculate to see results.</p></div></div>
+      <div class="tab-panel active" id="panel-overview"><div id="overviewContent"><p style="color:var(--t3);text-align:center;padding:60px;font-size:14px">Configure inputs and click <strong style="color:var(--blue2)">Calculate</strong> to see results.</p></div></div>
       <div class="tab-panel" id="panel-bom"><div id="bomContent"></div></div>
       <div class="tab-panel" id="panel-sustain"><div id="sustainContent"></div></div>
       <div class="tab-panel" id="panel-bench"><div id="benchContent"></div></div>
       <div class="tab-panel" id="panel-process"><div id="processContent"></div></div>
+      <div class="tab-panel" id="panel-ai"><div id="aiContent"><p style="color:var(--t3);text-align:center;padding:60px;font-size:14px">Run calculation to generate AI insights.</p></div></div>
     </div>
   </div>
-
   <div class="bottom-grid">
     <div class="card">
       <div class="card-hdr">Sensitivity Analysis (cost delta vs base)</div>
@@ -296,16 +354,15 @@ canvas{max-height:260px}
   </div>
 </div>
 </div>
-
 <script>
-const f2  = n=>(Math.abs(n)<0.001?'0.00':n.toFixed(2));
-const f3  = n=>(Math.abs(n)<0.0001?'0.000':n.toFixed(3));
-const fmtVol = v=>v>=1000?(v/1000).toFixed(v%1000===0?0:1)+'k':v.toString();
-const setEl  = (id,html)=>{const el=document.getElementById(id);if(el)el.innerHTML=html;};
-const esc    = s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+var f2=function(n){return(Math.abs(n)<0.001?'0.00':n.toFixed(2));};
+var f3=function(n){return(Math.abs(n)<0.0001?'0.000':n.toFixed(3));};
+var fmtVol=function(v){return v>=1000?(v/1000).toFixed(v%1000===0?0:1)+'k':v.toString();};
+var setEl=function(id,html){var el=document.getElementById(id);if(el)el.innerHTML=html;};
+var esc=function(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');};
 
-const MRATE={
-  neo:         {usd:97.5, co2:22.5,rcl_pct:5, bio_pct:0, rohs:true, reach:true, voc:false},
+var MRATE={
+  neo:         {usd:97.5, co2:45.0,rcl_pct:5, bio_pct:0, rohs:true, reach:true, voc:false},
   ferrite:     {usd:1.50, co2:3.8, rcl_pct:15,bio_pct:0, rohs:true, reach:true, voc:false},
   crgo:        {usd:0.85, co2:2.1, rcl_pct:30,bio_pct:0, rohs:true, reach:true, voc:false},
   cu_wire:     {usd:9.35, co2:4.0, rcl_pct:35,bio_pct:0, rohs:true, reach:true, voc:false},
@@ -331,7 +388,7 @@ const MRATE={
   pe_foam:     {usd:3.50, co2:4.8, rcl_pct:10,bio_pct:0, rohs:true, reach:true, voc:false}
 };
 
-const PROF={
+var PROF={
   'Tweeter':{
     magG_neo:16,magG_fer:50,top_g:8,back_g:12,pole_g:4,
     vc_g:4,former_kap:1.5,former_al:2.0,former_pap:1.8,
@@ -394,7 +451,7 @@ const PROF={
   }
 };
 
-const COUNTRIES={
+var COUNTRIES={
   UK:      {cur:'GBP',sym:'£',  usd:1.27, labHr:22,machM:1.18,logI:1.15},
   Germany: {cur:'EUR',sym:'€',  usd:1.08, labHr:24,machM:1.22,logI:1.12},
   USA:     {cur:'USD',sym:'$',  usd:1.00, labHr:26,machM:1.25,logI:1.10},
@@ -405,36 +462,36 @@ const COUNTRIES={
   Vietnam: {cur:'VND',sym:'₫',  usd:0.000039,labHr:3,machM:0.70,logI:0.87}
 };
 
-const STEPS=[
-  {id:'vc_wind',   name:'VC Winding',               station:'VC Winder',      machRate:36.5,baseMin:0.80,labFrac:0.18,scrap:0.03},
-  {id:'vc_cure',   name:'VC Varnish Cure',           station:'Cure Oven',      machRate:4.5, baseMin:0.10,labFrac:0.05,scrap:0.00},
-  {id:'spider',    name:'Spider Forming',             station:'Hydraulic Press', machRate:28.0,baseMin:0.50,labFrac:0.30,scrap:0.04},
-  {id:'cone',      name:'Cone Forming',               station:'Moulding Press',  machRate:30.0,baseMin:0.80,labFrac:0.18,scrap:0.05},
-  {id:'dcap',      name:'Dust Cap Forming',           station:'Mini Press',      machRate:20.0,baseMin:0.25,labFrac:0.20,scrap:0.04},
-  {id:'motor',     name:'Motor Stack Assembly',       station:'Semi-Auto Assy',  machRate:42.5,baseMin:1.00,labFrac:0.38,scrap:0.02},
-  {id:'magnetise', name:'Magnetisation',              station:'Magnetiser',      machRate:35.0,baseMin:0.25,labFrac:0.08,scrap:0.01},
-  {id:'basket',    name:'Basket Mfg + Surface Treat', station:'Die Caster',      machRate:52.5,baseMin:2.50,labFrac:0.22,scrap:0.03},
-  {id:'sub_assy',  name:'Sub-Assembly',               station:'Assy Jig',        machRate:22.0,baseMin:2.50,labFrac:0.70,scrap:0.02},
-  {id:'final',     name:'Final Assembly',             station:'Final Line',       machRate:18.0,baseMin:2.00,labFrac:0.80,scrap:0.01},
-  {id:'adhesive_cure',name:'Full Adhesive Cure',      station:'Batch Oven',      machRate:4.5, baseMin:0.10,labFrac:0.04,scrap:0.00},
-  {id:'burn_in',   name:'Burn-In / Break-In',         station:'Burn-In Fixture', machRate:8.0, baseMin:0.50,labFrac:0.08,scrap:0.00},
-  {id:'test',      name:'Acoustic Test & QC',         station:'Anechoic Bench',  machRate:32.5,baseMin:1.00,labFrac:0.38,scrap:0.00},
-  {id:'pack',      name:'Packing & Labelling',        station:'Pack Line',        machRate:15.0,baseMin:0.80,labFrac:0.88,scrap:0.00}
+var STEPS=[
+  {id:'vc_wind',   name:'VC Winding',               station:'VC Winder',        machRate:36.5,baseMin:0.80,labFrac:0.18,scrap:0.03},
+  {id:'vc_cure',   name:'VC Varnish Cure',           station:'Cure Oven',        machRate:4.5, baseMin:0.10,labFrac:0.05,scrap:0.00},
+  {id:'spider',    name:'Spider Forming',             station:'Hydraulic Press',  machRate:28.0,baseMin:0.50,labFrac:0.30,scrap:0.04},
+  {id:'cone',      name:'Cone Forming',               station:'Moulding Press',   machRate:30.0,baseMin:0.80,labFrac:0.18,scrap:0.05},
+  {id:'dcap',      name:'Dust Cap Forming',           station:'Mini Press',       machRate:20.0,baseMin:0.25,labFrac:0.20,scrap:0.04},
+  {id:'motor',     name:'Motor Stack Assembly',       station:'Semi-Auto Assy',   machRate:42.5,baseMin:1.00,labFrac:0.38,scrap:0.02},
+  {id:'magnetise', name:'Magnetisation',              station:'Magnetiser',       machRate:35.0,baseMin:0.25,labFrac:0.08,scrap:0.01},
+  {id:'basket',    name:'Basket Mfg + Surface Treat', station:'Die Caster',       machRate:52.5,baseMin:2.50,labFrac:0.22,scrap:0.03},
+  {id:'sub_assy',  name:'Sub-Assembly',               station:'Assy Jig',         machRate:22.0,baseMin:2.50,labFrac:0.70,scrap:0.02},
+  {id:'final',     name:'Final Assembly',             station:'Final Line',        machRate:18.0,baseMin:2.00,labFrac:0.80,scrap:0.01},
+  {id:'adhesive_cure',name:'Full Adhesive Cure',      station:'Batch Oven',       machRate:4.5, baseMin:0.10,labFrac:0.04,scrap:0.00},
+  {id:'burn_in',   name:'Burn-In / Break-In',         station:'Burn-In Fixture',  machRate:8.0, baseMin:0.50,labFrac:0.08,scrap:0.00},
+  {id:'test',      name:'Acoustic Test &amp; QC',     station:'Anechoic Bench',   machRate:32.5,baseMin:1.00,labFrac:0.38,scrap:0.00},
+  {id:'pack',      name:'Packing &amp; Labelling',    station:'Pack Line',         machRate:15.0,baseMin:0.80,labFrac:0.88,scrap:0.00}
 ];
 
-const SYSTEMS={
+var SYSTEMS={
   'Standard':{
-    label:'Standard (6 spk)',color:'#3fb950',
+    label:'Standard (6 spk)',color:'#10b981',
     drivers:[
-      {role:'Front Woofer',type:'Coaxial',  sizeMM:165,qty:2,loc:'Front Door',powerW:50},
-      {role:'Rear Woofer', type:'Coaxial',  sizeMM:130,qty:2,loc:'Rear Door', powerW:40},
-      {role:'Dash Tweeter',type:'Tweeter',  sizeMM:25, qty:2,loc:'Dashboard', powerW:15}
+      {role:'Front Woofer', type:'Coaxial',  sizeMM:165,qty:2,loc:'Front Door',powerW:50},
+      {role:'Rear Woofer',  type:'Coaxial',  sizeMM:130,qty:2,loc:'Rear Door', powerW:40},
+      {role:'Dash Tweeter', type:'Tweeter',  sizeMM:25, qty:2,loc:'Dashboard', powerW:15}
     ],
     amp:null,dsp:null,
     wiring:{harness_m:8,spk_cable_m:12,harnessCost:8.50,cableCost_m:0.45},connectors:12
   },
   'Enhanced':{
-    label:'Enhanced (8 spk)',color:'#00b4d8',
+    label:'Enhanced (8 spk)',color:'#22d3ee',
     drivers:[
       {role:'Front Mid-Woofer',type:'Full-Range',sizeMM:165,qty:2,loc:'Front Door',powerW:65},
       {role:'Front Tweeter',   type:'Tweeter',   sizeMM:25, qty:2,loc:'A-Pillar', powerW:20},
@@ -447,7 +504,7 @@ const SYSTEMS={
     wiring:{harness_m:14,spk_cable_m:20,harnessCost:14.50,cableCost_m:0.45},connectors:20
   },
   'Premium':{
-    label:'Premium (13 spk)',color:'#d29922',
+    label:'Premium (13 spk)',color:'#f59e0b',
     drivers:[
       {role:'Front Mid-Woofer',type:'Full-Range',sizeMM:165,qty:2,loc:'Front Door', powerW:80},
       {role:'Front Mid-Range', type:'Mid-Range', sizeMM:100,qty:2,loc:'Front Door', powerW:40},
@@ -462,7 +519,7 @@ const SYSTEMS={
     wiring:{harness_m:20,spk_cable_m:32,harnessCost:22.00,cableCost_m:0.50},connectors:30
   },
   'Immersive 3D':{
-    label:'Immersive 3D (20 spk)',color:'#bc8cff',
+    label:'Immersive 3D (20 spk)',color:'#8b5cf6',
     drivers:[
       {role:'Front Mid-Woofer', type:'Full-Range',sizeMM:165,qty:2,loc:'Front Door',  powerW:80},
       {role:'Front Mid-Range',  type:'Mid-Range', sizeMM:100,qty:2,loc:'Front Door',  powerW:40},
@@ -480,7 +537,7 @@ const SYSTEMS={
     wiring:{harness_m:35,spk_cable_m:60,harnessCost:42.00,cableCost_m:0.55},connectors:55
   },
   'Immersive 4D':{
-    label:'Immersive 4D (24 spk)',color:'#f85149',
+    label:'Immersive 4D (24 spk)',color:'#ef4444',
     drivers:[
       {role:'Front Mid-Woofer', type:'Full-Range',sizeMM:165,qty:2,loc:'Front Door',  powerW:80},
       {role:'Front Mid-Range',  type:'Mid-Range', sizeMM:100,qty:2,loc:'Front Door',  powerW:40},
@@ -500,8 +557,8 @@ const SYSTEMS={
   }
 };
 
-const REF_MM={Tweeter:25,'Mid-Range':100,'Full-Range':165,Coaxial:165,Component:165,Subwoofer:250};
-const SPK_SYS={
+var REF_MM={Tweeter:25,'Mid-Range':100,'Full-Range':165,Coaxial:165,Component:165,Subwoofer:250};
+var SPK_SYS={
   Tweeter:    {hsg:1.85,grille:0.65,brkt:0.70,conn:0.45},
   'Mid-Range':{hsg:2.80,grille:0.90,brkt:1.10,conn:0.55},
   'Full-Range':{hsg:3.50,grille:1.20,brkt:1.40,conn:0.65},
@@ -510,61 +567,69 @@ const SPK_SYS={
   Subwoofer:  {hsg:6.50,grille:2.20,brkt:2.80,conn:1.00}
 };
 
-const TECH_FEATURES={
-  'ANC':           {label:'Active Noise Cancellation',cost:14.0},
-  'DSP Integration':{label:'DSP Integration',         cost:9.0},
-  'Waterproofing': {label:'Waterproofing (IPX5)',      cost:5.5},
-  'Sound Zones':   {label:'Sound Zone Control',        cost:22.0},
-  'Beamforming':   {label:'Beamforming Array',         cost:35.0},
-  'Wireless':      {label:'Wireless Module',           cost:14.5},
-  '3D Audio':      {label:'3D / Spatial Audio',        cost:28.0},
-  '4D Haptics':    {label:'4D Haptic Feedback',        cost:48.0},
-  'Voice Pickup':  {label:'Voice Pickup Array',        cost:18.0},
-  'Apple CA':      {label:'Apple CarPlay Audio',       cost:6.0}
+var TECH_FEATURES={
+  'ANC':           {label:'Active Noise Cancellation',  cost:14.0},
+  'DSP Integration':{label:'DSP Integration',           cost:9.0},
+  'Waterproofing': {label:'Waterproofing (IPX5)',        cost:5.5},
+  'Sound Zones':   {label:'Sound Zone Control',          cost:22.0},
+  'Beamforming':   {label:'Beamforming Array',           cost:35.0},
+  'Wireless':      {label:'Wireless Module',             cost:14.5},
+  '3D Audio':      {label:'3D / Spatial Audio',          cost:28.0},
+  '4D Haptics':    {label:'4D Haptic Feedback',          cost:48.0},
+  'Voice Pickup':  {label:'Voice Pickup Array',          cost:18.0},
+  'Apple CA':      {label:'Apple CarPlay Audio',         cost:6.0},
+  'GaN Amp':       {label:'GaN Amplifier (Class D+)',    cost:22.0},
+  'Neural DSP':    {label:'Neural DSP (AI Audio)',       cost:45.0},
+  'RNC':           {label:'Road Noise Cancellation',     cost:18.5},
+  'OTA Calibration':{label:'OTA Audio Calibration',     cost:8.0},
+  'A2B Bus':       {label:'A2B Automotive Audio Bus',    cost:12.0},
+  'Head Tracking': {label:'Spatial Head Tracking',       cost:25.0}
 };
 
-const BENCHMARKS=[
-  {name:'Bose Performance',   brand:'Bose',      system:'Standard+ 8spk',    spkCnt:8, oem_cost:280, est_cost:195,tier:'Premium'},
-  {name:'Harman Kardon',      brand:'Harman',    system:'Enhanced 12spk',    spkCnt:12,oem_cost:420, est_cost:305,tier:'Premium'},
-  {name:'Bang & Olufsen',     brand:'B&O',       system:'Premium 16spk',     spkCnt:16,oem_cost:680, est_cost:490,tier:'Luxury'},
-  {name:'Burmester 3D',       brand:'Burmester', system:'Immersive 23spk',   spkCnt:23,oem_cost:1250,est_cost:880,tier:'Ultra'},
-  {name:'Meridian Signature', brand:'Meridian',  system:'Immersive 23spk',   spkCnt:23,oem_cost:1100,est_cost:780,tier:'Ultra'},
-  {name:'Dynaudio Confidence',brand:'Dynaudio',  system:'Enhanced 14spk',    spkCnt:14,oem_cost:520, est_cost:365,tier:'Luxury'},
-  {name:'Focal Utopia / Naim',brand:'Focal/Naim',system:'Immersive 23spk',   spkCnt:23,oem_cost:1400,est_cost:985,tier:'Ultra'},
-  {name:'CN EV 4D System',    brand:'Generic EV',system:'Immersive 4D 26spk',spkCnt:26,oem_cost:900, est_cost:640,tier:'Premium'}
+var BENCHMARKS=[
+  {name:'Bose Performance',    brand:'Bose',     system:'Standard+ 8spk',    spkCnt:8, oem_cost:280, est_cost:195,tier:'Premium'},
+  {name:'Harman Kardon',       brand:'Harman',   system:'Enhanced 12spk',    spkCnt:12,oem_cost:420, est_cost:305,tier:'Premium'},
+  {name:'Bang & Olufsen',      brand:'B&O',      system:'Premium 16spk',     spkCnt:16,oem_cost:680, est_cost:490,tier:'Luxury'},
+  {name:'Burmester 3D',        brand:'Burmester',system:'Immersive 23spk',   spkCnt:23,oem_cost:1250,est_cost:880,tier:'Ultra'},
+  {name:'Meridian Signature',  brand:'Meridian', system:'Immersive 23spk',   spkCnt:23,oem_cost:1100,est_cost:780,tier:'Ultra'},
+  {name:'Dynaudio Confidence', brand:'Dynaudio', system:'Enhanced 14spk',    spkCnt:14,oem_cost:520, est_cost:365,tier:'Luxury'},
+  {name:'Focal Utopia / Naim', brand:'Focal/Naim',system:'Immersive 23spk',  spkCnt:23,oem_cost:1400,est_cost:985,tier:'Ultra'},
+  {name:'CN EV 4D System',     brand:'Generic EV',system:'Immersive 4D 26spk',spkCnt:26,oem_cost:900,est_cost:640,tier:'Premium'},
+  {name:'Tesla Premium Audio', brand:'Tesla',    system:'Immersive 3D 22spk',spkCnt:22,oem_cost:750, est_cost:520,tier:'Premium'},
+  {name:'Sony 360 Reality',    brand:'Sony',     system:'Enhanced 12spk',    spkCnt:12,oem_cost:380, est_cost:265,tier:'Luxury'}
 ];
 
-const DFMA_TIPS={
+var DFMA_TIPS={
   'Standard':[
-    {area:'Magnet',  tip:'Switch front coaxial to ferrite magnet',              saving:'$3.20/system',effort:'Low'},
-    {area:'Basket',  tip:'Consolidate front+rear basket tooling to shared die', saving:'$1.80/system',effort:'Medium'},
-    {area:'Assembly',tip:'Automate tinsel lead attachment (semi-auto)',          saving:'$1.10/system',effort:'Medium'},
-    {area:'Wiring',  tip:'Reduce harness length by 20% via routing redesign',   saving:'$1.70/system',effort:'Low'},
-    {area:'Testing', tip:'Gang-test 2 speakers simultaneously',                 saving:'$0.60/system',effort:'Low'}
+    {area:'Magnet',  tip:'Switch front coaxial to ferrite magnet',               saving:'$3.20/system',effort:'Low'},
+    {area:'Basket',  tip:'Consolidate front+rear basket tooling to shared die',  saving:'$1.80/system',effort:'Medium'},
+    {area:'Assembly',tip:'Automate tinsel lead attachment (semi-auto)',           saving:'$1.10/system',effort:'Medium'},
+    {area:'Wiring',  tip:'Reduce harness length 20% via routing redesign',       saving:'$1.70/system',effort:'Low'},
+    {area:'Testing', tip:'Gang-test 2 speakers simultaneously',                  saving:'$0.60/system',effort:'Low'}
   ],
   'Enhanced':[
-    {area:'Amplifier', tip:'Integrate amp into head unit (Class D + MCU)',      saving:'$8.00/system',effort:'High'},
-    {area:'DSP',       tip:'Move DSP to SoC with OTA tune capability',          saving:'$5.50/system',effort:'High'},
-    {area:'Subwoofer', tip:'Downsize sub from 250mm to 200mm with ported box',  saving:'$4.20/system',effort:'Medium'},
-    {area:'Wiring',    tip:'Use flat flex cable for door speakers',              saving:'$2.80/system',effort:'Medium'},
+    {area:'Amplifier',tip:'Integrate amp into head unit (Class D + MCU)',        saving:'$8.00/system',effort:'High'},
+    {area:'DSP',      tip:'Move DSP to SoC with OTA tune capability',            saving:'$5.50/system',effort:'High'},
+    {area:'Subwoofer',tip:'Downsize sub 250→200mm with ported box',             saving:'$4.20/system',effort:'Medium'},
+    {area:'Wiring',   tip:'Use flat flex cable for door speakers',               saving:'$2.80/system',effort:'Medium'},
     {area:'Connectors',tip:'Standardise to 1 connector family across system',   saving:'$1.40/system',effort:'Low'}
   ],
   'Premium':[
-    {area:'Amp',      tip:'Consolidate 7-ch amp into 2x4-ch modules',           saving:'$12.00/system',effort:'Medium'},
-    {area:'DSP',      tip:'Eliminate separate DSP; embed in infotainment SoC',  saving:'$18.00/system',effort:'High'},
-    {area:'Cone',     tip:'Switch rear tweeters to paper cone (same SPL)',       saving:'$1.80/system', effort:'Low'},
-    {area:'Crossover',tip:'Active crossover via DSP eliminates passive network', saving:'$6.50/system', effort:'Medium'},
-    {area:'Packaging',tip:'Use moulded carrier tray for all door speakers',     saving:'$2.20/system', effort:'Medium'}
+    {area:'Amp',       tip:'Consolidate 7-ch amp into 2×4-ch modules',          saving:'$12.00/system',effort:'Medium'},
+    {area:'DSP',       tip:'Eliminate separate DSP; embed in infotainment SoC', saving:'$18.00/system',effort:'High'},
+    {area:'Cone',      tip:'Switch rear tweeters to paper cone (same SPL)',      saving:'$1.80/system', effort:'Low'},
+    {area:'Crossover', tip:'Active crossover via DSP eliminates passive network',saving:'$6.50/system', effort:'Medium'},
+    {area:'Packaging', tip:'Use moulded carrier tray for all door speakers',     saving:'$2.20/system', effort:'Medium'}
   ],
   'Immersive 3D':[
     {area:'Roof Array',tip:'Use MEMS speakers for roof height drivers',          saving:'$14.00/system',effort:'High'},
     {area:'Headrest',  tip:'Use 1-piece moulded headrest tweeter pod',           saving:'$3.80/system', effort:'Medium'},
-    {area:'DSP',       tip:'Reduce channel count from 20 to 16 via zone mixing', saving:'$22.00/system',effort:'High'},
-    {area:'Wiring',    tip:'Use 1 CAN-bus controlled smart amp per zone',        saving:'$8.50/system', effort:'High'},
-    {area:'Connectors',tip:'Use Ethernet-over-automotive for digital speakers',  saving:'$5.20/system', effort:'High'}
+    {area:'DSP',       tip:'Reduce channel count 20→16 via zone mixing',        saving:'$22.00/system',effort:'High'},
+    {area:'Wiring',    tip:'CAN-bus controlled smart amp per zone',              saving:'$8.50/system', effort:'High'},
+    {area:'Connectors',tip:'Ethernet-over-automotive for digital speakers',      saving:'$5.20/system', effort:'High'}
   ],
   'Immersive 4D':[
-    {area:'Actuators', tip:'Reduce seat actuators from 4 to 2 (L+R only)',      saving:'$28.00/system',effort:'Medium'},
+    {area:'Actuators', tip:'Reduce seat actuators 4→2 (L+R only)',             saving:'$28.00/system',effort:'Medium'},
     {area:'Haptic Amp',tip:'Integrate haptic amp with main amp module',          saving:'$18.00/system',effort:'High'},
     {area:'DSP',       tip:'Use automotive-grade Qualcomm SA8295 SoC',          saving:'$35.00/system',effort:'High'},
     {area:'Wiring',    tip:'A2B (Automotive Audio Bus) digital wiring',          saving:'$12.00/system',effort:'High'},
@@ -572,553 +637,897 @@ const DFMA_TIPS={
   ]
 };
 
-// ── COST ENGINE ─────────────────────────────────────────────────────────────
+// ── COST ENGINE ────────────────────────────────────────────────────────────
 function computeBOM(inp,sizeScale){
   if(sizeScale===undefined)sizeScale=1.0;
-  const p=PROF[inp.type];
-  const pwrScale=1+Math.max(0,inp.power-50)*p.motorPwr;
-  const vcScale=Math.pow(Math.max(inp.vcDia,8)/25,0.55);
-  const g2kg=g=>(g*sizeScale)/1000;
+  var p=PROF[inp.type];
+  var pwrScale=1+Math.max(0,inp.power-50)*p.motorPwr;
+  var vcScale=Math.pow(Math.max(inp.vcDia,8)/25,0.55);
+  var g2kg=function(g){return(g*sizeScale)/1000;};
 
-  const magG=(inp.magnet==='Neodymium'?p.magG_neo:p.magG_fer)*pwrScale;
-  const magRate=inp.magnet==='Neodymium'?MRATE.neo.usd:MRATE.ferrite.usd;
-  const magCO2 =inp.magnet==='Neodymium'?MRATE.neo.co2:MRATE.ferrite.co2;
-  const vcG=p.vc_g*vcScale*(1+Math.max(0,inp.power-50)*0.0012);
-  const fmrG=inp.vcFormer==='Kapton'?p.former_kap:inp.vcFormer==='Aluminium'?p.former_al:p.former_pap;
-  const fmrRate=inp.vcFormer==='Kapton'?MRATE.kapton.usd:inp.vcFormer==='Aluminium'?MRATE.al_former.usd:MRATE.paper_former.usd;
-  const fmrCO2 =inp.vcFormer==='Kapton'?MRATE.kapton.co2:inp.vcFormer==='Aluminium'?MRATE.al_former.co2:MRATE.paper_former.co2;
-  const coneRate=inp.cone==='Polypropylene'?MRATE.pp.usd:inp.cone==='Paper'?MRATE.paper_cone.usd:MRATE.composite.usd;
-  const coneCO2 =inp.cone==='Polypropylene'?MRATE.pp.co2:inp.cone==='Paper'?MRATE.paper_cone.co2:MRATE.composite.co2;
-  const surrG=inp.surround==='Rubber'?p.surr_rub:inp.surround==='Foam'?p.surr_foam:p.surr_cloth;
-  const surrRate=inp.surround==='Rubber'?MRATE.rubber.usd:inp.surround==='Foam'?MRATE.foam.usd:MRATE.cloth.usd;
-  const surrCO2 =inp.surround==='Rubber'?MRATE.rubber.co2:inp.surround==='Foam'?MRATE.foam.co2:MRATE.cloth.co2;
-  const baskG=inp.frame==='Die-Cast Al'?p.bask_dc:inp.frame==='Stamped Steel'?p.bask_st:p.bask_pp;
-  const baskRate=inp.frame==='Die-Cast Al'?MRATE.diecast_al.usd:inp.frame==='Stamped Steel'?MRATE.stamp_steel.usd:MRATE.inj_pp.usd;
-  const baskCO2 =inp.frame==='Die-Cast Al'?MRATE.diecast_al.co2:inp.frame==='Stamped Steel'?MRATE.stamp_steel.co2:MRATE.inj_pp.co2;
-  const wireRate=inp.vcWire==='Copper'?MRATE.cu_wire.usd:MRATE.al_wire.usd;
-  const wireCO2 =inp.vcWire==='Copper'?MRATE.cu_wire.co2:MRATE.al_wire.co2;
+  var magG=(inp.magnet==='Neodymium'?p.magG_neo:p.magG_fer)*pwrScale;
+  var magRate=inp.magnet==='Neodymium'?MRATE.neo.usd:MRATE.ferrite.usd;
+  var magCO2=inp.magnet==='Neodymium'?MRATE.neo.co2:MRATE.ferrite.co2;
+  var vcG=p.vc_g*vcScale*(1+Math.max(0,inp.power-50)*0.0012);
+  var fmrG=inp.vcFormer==='Kapton'?p.former_kap:inp.vcFormer==='Aluminium'?p.former_al:p.former_pap;
+  var fmrRate=inp.vcFormer==='Kapton'?MRATE.kapton.usd:inp.vcFormer==='Aluminium'?MRATE.al_former.usd:MRATE.paper_former.usd;
+  var fmrCO2=inp.vcFormer==='Kapton'?MRATE.kapton.co2:inp.vcFormer==='Aluminium'?MRATE.al_former.co2:MRATE.paper_former.co2;
+  var coneRate=inp.cone==='Polypropylene'?MRATE.pp.usd:inp.cone==='Paper'?MRATE.paper_cone.usd:MRATE.composite.usd;
+  var coneCO2=inp.cone==='Polypropylene'?MRATE.pp.co2:inp.cone==='Paper'?MRATE.paper_cone.co2:MRATE.composite.co2;
+  var surrG=inp.surround==='Rubber'?p.surr_rub:inp.surround==='Foam'?p.surr_foam:p.surr_cloth;
+  var surrRate=inp.surround==='Rubber'?MRATE.rubber.usd:inp.surround==='Foam'?MRATE.foam.usd:MRATE.cloth.usd;
+  var surrCO2=inp.surround==='Rubber'?MRATE.rubber.co2:inp.surround==='Foam'?MRATE.foam.co2:MRATE.cloth.co2;
+  var baskG=inp.frame==='Die-Cast Al'?p.bask_dc:inp.frame==='Stamped Steel'?p.bask_st:p.bask_pp;
+  var baskRate=inp.frame==='Die-Cast Al'?MRATE.diecast_al.usd:inp.frame==='Stamped Steel'?MRATE.stamp_steel.usd:MRATE.inj_pp.usd;
+  var baskCO2=inp.frame==='Die-Cast Al'?MRATE.diecast_al.co2:inp.frame==='Stamped Steel'?MRATE.stamp_steel.co2:MRATE.inj_pp.co2;
+  var wireRate=inp.vcWire==='Copper'?MRATE.cu_wire.usd:MRATE.al_wire.usd;
+  var wireCO2=inp.vcWire==='Copper'?MRATE.cu_wire.co2:MRATE.al_wire.co2;
 
-  const row=(name,spec,cat,wt,rate,co2Rate,scr,flat)=>{
+  var row=function(name,spec,cat,wt,rate,co2Rate,scr,flat){
     if(flat===undefined)flat=0;
-    const matCost=wt>0?g2kg(wt)*rate*(1+scr):0;
-    const co2=wt>0?g2kg(wt)*co2Rate:0;
-    return {name,spec,cat,wt:wt*sizeScale,rate,scr,cost:matCost+flat,flatAdd:flat,co2};
+    var matCost=wt>0?g2kg(wt)*rate*(1+scr):0;
+    var co2=wt>0?g2kg(wt)*co2Rate:0;
+    return {name:name,spec:spec,cat:cat,wt:wt*sizeScale,rate:rate,scr:scr,cost:matCost+flat,flatAdd:flat,co2:co2};
   };
-
-  const items=[
-    row('Permanent Magnet',    inp.magnet==='Neodymium'?'Nd-Fe-B N42':'Ferrite Y30','Motor',magG,magRate,magCO2,0.03),
-    row('Top Plate (T-Yoke)', 'CRGO Steel 0.5mm','Motor',p.top_g, MRATE.crgo.usd,MRATE.crgo.co2,0.02),
-    row('Back Plate / Yoke',  'CRGO Steel 2mm',  'Motor',p.back_g,MRATE.crgo.usd,MRATE.crgo.co2,0.02),
-    row('Pole Piece',          'CRGO Steel',      'Motor',p.pole_g,MRATE.crgo.usd,MRATE.crgo.co2,0.02),
-    row('VC Wire',             (inp.vcWire==='Copper'?'Copper':'Aluminium')+' wire','Voice Coil',vcG,wireRate,wireCO2,0.03),
+  var items=[
+    row('Permanent Magnet',inp.magnet==='Neodymium'?'Nd-Fe-B N42':'Ferrite Y30','Motor',magG,magRate,magCO2,0.03),
+    row('Top Plate (T-Yoke)','CRGO Steel 0.5mm','Motor',p.top_g,MRATE.crgo.usd,MRATE.crgo.co2,0.02),
+    row('Back Plate / Yoke','CRGO Steel 2mm','Motor',p.back_g,MRATE.crgo.usd,MRATE.crgo.co2,0.02),
+    row('Pole Piece','CRGO Steel','Motor',p.pole_g,MRATE.crgo.usd,MRATE.crgo.co2,0.02),
+    row('VC Wire',(inp.vcWire==='Copper'?'Copper':'Aluminium')+' wire','Voice Coil',vcG,wireRate,wireCO2,0.03),
     row('Coil Former (Bobbin)',inp.vcFormer+' film/tube','Voice Coil',fmrG*vcScale,fmrRate,fmrCO2,0.03),
     row('Impregnation Varnish','Polyester resin','Voice Coil',p.varnish_g,MRATE.varnish.usd,MRATE.varnish.co2,0.00),
-    row('Spider / Damper',    'Treated cotton fabric','Suspension',p.spider_g,MRATE.spider_fabric.usd,MRATE.spider_fabric.co2,0.04),
-    row('Cone / Diaphragm',    inp.cone,'Suspension',p.cone_g,coneRate,coneCO2,0.05),
-    row('Dust Cap',           'Polypropylene','Suspension',p.dcap_g,MRATE.pp_dustcap.usd,MRATE.pp_dustcap.co2,0.04),
-    row('Surround',            inp.surround,'Suspension',surrG,surrRate,surrCO2,0.04),
-    row('Basket / Frame',      inp.frame,'Frame',baskG,baskRate,baskCO2,0.03),
-    row('Tinsel Leads',       'Cu braid + cloth','Electrical',p.tinsel_g,MRATE.cu_braid.usd,MRATE.cu_braid.co2,0.02),
-    row('Terminal Cups',      'Brass / ABS moulded','Electrical',0,0,0,0.00,p.terminal_usd),
-    row('2K Epoxy Adhesive',  'Room-temp cure','Bonding',p.adhesive_g,MRATE.epoxy.usd,MRATE.epoxy.co2,0.02),
-    row('UV Cure Adhesive',   'Acrylate gap-fill','Bonding',p.uv_g,MRATE.uv_adhesive.usd,MRATE.uv_adhesive.co2,0.02),
-    row('Mounting Gasket',    'PE foam tape 3mm','Misc',p.gasket_g,MRATE.pe_foam.usd,MRATE.pe_foam.co2,0.00),
-    row('Packaging Set',      'Carton + foam tray','Misc',0,0,0,0.00,p.pkg_usd)
+    row('Spider / Damper','Treated cotton fabric','Suspension',p.spider_g,MRATE.spider_fabric.usd,MRATE.spider_fabric.co2,0.04),
+    row('Cone / Diaphragm',inp.cone,'Suspension',p.cone_g,coneRate,coneCO2,0.05),
+    row('Dust Cap','Polypropylene','Suspension',p.dcap_g,MRATE.pp_dustcap.usd,MRATE.pp_dustcap.co2,0.04),
+    row('Surround',inp.surround,'Suspension',surrG,surrRate,surrCO2,0.04),
+    row('Basket / Frame',inp.frame,'Frame',baskG,baskRate,baskCO2,0.03),
+    row('Tinsel Leads','Cu braid + cloth','Electrical',p.tinsel_g,MRATE.cu_braid.usd,MRATE.cu_braid.co2,0.02),
+    row('Terminal Cups','Brass / ABS moulded','Electrical',0,0,0,0.00,p.terminal_usd),
+    row('2K Epoxy Adhesive','Room-temp cure','Bonding',p.adhesive_g,MRATE.epoxy.usd,MRATE.epoxy.co2,0.02),
+    row('UV Cure Adhesive','Acrylate gap-fill','Bonding',p.uv_g,MRATE.uv_adhesive.usd,MRATE.uv_adhesive.co2,0.02),
+    row('Mounting Gasket','PE foam tape 3mm','Misc',p.gasket_g,MRATE.pe_foam.usd,MRATE.pe_foam.co2,0.00),
+    row('Packaging Set','Carton + foam tray','Misc',0,0,0,0.00,p.pkg_usd)
   ];
-  const CROSS={Coaxial:3.80,Component:6.20};
-  if(CROSS[inp.type]){
-    items.push({name:'Crossover Network',spec:'Inductor+Cap+Resistor+PCB',cat:'Electrical',wt:0,rate:0,scr:0,cost:CROSS[inp.type],flatAdd:CROSS[inp.type],co2:0.05});
-  }
+  var CROSS={Coaxial:3.80,Component:6.20};
+  if(CROSS[inp.type]){items.push({name:'Crossover Network',spec:'Inductor+Cap+Resistor+PCB',cat:'Electrical',wt:0,rate:0,scr:0,cost:CROSS[inp.type],flatAdd:CROSS[inp.type],co2:0.05});}
   return items;
 }
 
 function computeProcess(inp,country){
-  const p=PROF[inp.type];
-  const cyc=p.cyc;
-  const labUSD=country.labHr;
-  const machM=country.machM;
-  const pwrF=1+Math.max(0,inp.power-50)*0.0008;
-  return STEPS.map(s=>{
-    const minThis=s.baseMin*cyc*(s.id==='test'||s.id==='motor'?pwrF:1);
-    const hrs=minThis/60;
-    const mach=hrs*s.machRate*machM;
-    const lab=hrs*labUSD*s.labFrac;
-    const scrapCost=(mach+lab)*s.scrap;
-    return Object.assign({},s,{cycMin:minThis,machCost:mach,labCost:lab,scrapCost,total:mach+lab+scrapCost});
+  var p=PROF[inp.type];
+  var cyc=p.cyc;
+  var labUSD=country.labHr;
+  var machM=country.machM;
+  var pwrF=1+Math.max(0,inp.power-50)*0.0008;
+  return STEPS.map(function(s){
+    var minThis=s.baseMin*cyc*(s.id==='test'||s.id==='motor'?pwrF:1);
+    var hrs=minThis/60;
+    var mach=hrs*s.machRate*machM;
+    var lab=hrs*labUSD*s.labFrac;
+    var scrapCost=(mach+lab)*s.scrap;
+    return Object.assign({},s,{cycMin:minThis,machCost:mach,labCost:lab,scrapCost:scrapCost,total:mach+lab+scrapCost});
   });
 }
 
 function computeTooling(type,annualVol){
-  const t=PROF[type].tool;
-  const totalInvestment=t.basket+t.vc+t.cone+t.spider+t.fixture+t.nre;
-  const lifetimeUnits=Math.max(annualVol,1)*4;
-  const perUnit=totalInvestment/lifetimeUnits;
-  return {
-    items:[
-      {name:'Basket Die / Mould',usd:t.basket},
-      {name:'VC Winder Fixture', usd:t.vc},
-      {name:'Cone Forming Tool', usd:t.cone},
-      {name:'Spider Press Tool', usd:t.spider},
-      {name:'Test & QC Fixture', usd:t.fixture},
-      {name:'NRE / Engineering', usd:t.nre}
-    ],
-    total:totalInvestment,perUnit
-  };
+  var t=PROF[type].tool;
+  var totalInvestment=t.basket+t.vc+t.cone+t.spider+t.fixture+t.nre;
+  var lifetimeUnits=Math.max(annualVol,1)*4;
+  var perUnit=totalInvestment/lifetimeUnits;
+  return {items:[
+    {name:'Basket Die / Mould',usd:t.basket},
+    {name:'VC Winder Fixture', usd:t.vc},
+    {name:'Cone Forming Tool', usd:t.cone},
+    {name:'Spider Press Tool', usd:t.spider},
+    {name:'Test & QC Fixture', usd:t.fixture},
+    {name:'NRE / Engineering', usd:t.nre}
+  ],total:totalInvestment,perUnit:perUnit};
 }
 
 function computeSpkPerUnit(driver,inp,country){
-  const refMM=REF_MM[driver.type]||165;
-  const sizeScale=Math.pow(driver.sizeMM/refMM,1.3);
-  const scaledInp=Object.assign({},inp,{
-    type:driver.type,
-    power:driver.powerW,
-    vcDia:25*Math.pow(sizeScale,0.6)
-  });
-  const bom =computeBOM(scaledInp,sizeScale);
-  const proc=computeProcess(scaledInp,country);
-  const tool=computeTooling(driver.type,inp.annualVol);
-
-  const DM   =bom.reduce(function(s,r){return s+r.cost;},0);
-  const DLab =proc.reduce(function(s,r){return s+r.labCost;},0)*sizeScale;
-  const DMach=proc.reduce(function(s,r){return s+r.machCost+r.scrapCost;},0)*sizeScale;
-  const prime=DM+DLab+DMach;
-  const foh  =prime*0.12;
-  const mfgCost=prime+foh;
-  const ga   =mfgCost*0.07;
-  const toolAmort=tool.perUnit;
-  const warranty =mfgCost*0.015;
-  const lowCC=['China','Vietnam','India','Thailand','Mexico'];
-  const inbound=DM*(lowCC.indexOf(inp.country)>=0?0.04:0.03);
-  const works=mfgCost+ga+toolAmort+warranty+inbound;
-  const sys=SPK_SYS[driver.type]||SPK_SYS['Full-Range'];
-  const sysScale=Math.pow(sizeScale,0.5);
-  const sysItems=(sys.hsg+sys.grille+sys.brkt+sys.conn)*sysScale;
-  const totalPerUnit=works+sysItems;
-  const co2PerUnit=bom.reduce(function(s,r){return s+r.co2;},0);
-  return {driver,bom,proc,tool,DM,DLab,DMach,prime,foh,mfgCost,ga,toolAmort,warranty,inbound,works,sysItems,totalPerUnit,co2PerUnit};
+  var refMM=REF_MM[driver.type]||165;
+  var sizeScale=Math.pow(driver.sizeMM/refMM,1.3);
+  var scaledInp=Object.assign({},inp,{type:driver.type,power:driver.powerW,vcDia:25*Math.pow(sizeScale,0.6)});
+  var bom=computeBOM(scaledInp,sizeScale);
+  var proc=computeProcess(scaledInp,country);
+  var tool=computeTooling(driver.type,inp.annualVol);
+  var DM=bom.reduce(function(s,r){return s+r.cost;},0);
+  var DLab=proc.reduce(function(s,r){return s+r.labCost;},0)*sizeScale;
+  var DMach=proc.reduce(function(s,r){return s+r.machCost+r.scrapCost;},0)*sizeScale;
+  var prime=DM+DLab+DMach;
+  var foh=prime*0.12;
+  var mfgCost=prime+foh;
+  var ga=mfgCost*0.07;
+  var toolAmort=tool.perUnit;
+  var warranty=mfgCost*0.015;
+  var lowCC=['China','Vietnam','India','Thailand','Mexico'];
+  var inbound=DM*(lowCC.indexOf(inp.country)>=0?0.04:0.03);
+  var works=mfgCost+ga+toolAmort+warranty+inbound;
+  var sys=SPK_SYS[driver.type]||SPK_SYS['Full-Range'];
+  var sysScale=Math.pow(sizeScale,0.5);
+  var sysItems=(sys.hsg+sys.grille+sys.brkt+sys.conn)*sysScale;
+  var totalPerUnit=works+sysItems;
+  var co2PerUnit=bom.reduce(function(s,r){return s+r.co2;},0);
+  return {driver:driver,bom:bom,proc:proc,tool:tool,DM:DM,DLab:DLab,DMach:DMach,prime:prime,foh:foh,mfgCost:mfgCost,ga:ga,toolAmort:toolAmort,warranty:warranty,inbound:inbound,works:works,sysItems:sysItems,totalPerUnit:totalPerUnit,co2PerUnit:co2PerUnit};
 }
 
 function computeSystemCost(inp){
-  const system =SYSTEMS[inp.system];
-  const country=COUNTRIES[inp.country];
-  const spkResults=system.drivers.map(function(d){return computeSpkPerUnit(d,inp,country);});
-  const totalSpkCount=system.drivers.reduce(function(s,d){return s+d.qty;},0);
-  const totalSpkWorks=spkResults.reduce(function(s,r){return s+r.totalPerUnit*r.driver.qty;},0);
-  const totalSpkCO2  =spkResults.reduce(function(s,r){return s+r.co2PerUnit*r.driver.qty;},0);
-  const totalDM  =spkResults.reduce(function(s,r){return s+r.DM*r.driver.qty;},0);
-  const totalDLab=spkResults.reduce(function(s,r){return s+r.DLab*r.driver.qty;},0);
-  const totalDMach=spkResults.reduce(function(s,r){return s+r.DMach*r.driver.qty;},0);
-  const sysAmpCost =system.amp?system.amp.costUSD*country.machM:0;
-  const sysDspCost =system.dsp?system.dsp.costUSD*country.machM:0;
-  const sysWireCost=system.wiring.harnessCost+system.wiring.spk_cable_m*system.wiring.cableCost_m;
-  const sysConnCost=system.connectors*0.45;
-  const sysTotalExtra=sysAmpCost+sysDspCost+sysWireCost+sysConnCost;
-  const totalWorks=totalSpkWorks+sysTotalExtra;
-  const featCost=inp.features.reduce(function(s,f){return s+((TECH_FEATURES[f]&&TECH_FEATURES[f].cost)||0);},0);
-  const outFrtBase=({dom:0.28,reg:0.80,int:2.50})[inp.freightMode]||0.80;
-  const outFrt=outFrtBase*country.logI*totalSpkCount;
-  const dutyRate=parseFloat(inp.dutyRate)||0;
-  const duty=(totalWorks+featCost+outFrt)*dutyRate;
-  const landed=totalWorks+featCost+outFrt+duty;
-  const margin=landed*inp.margin;
-  const total=landed+margin;
-  const totalPrime=totalDM+totalDLab+totalDMach;
-  const totalFOH=spkResults.reduce(function(s,r){return s+r.foh*r.driver.qty;},0);
-  const totalMfg=spkResults.reduce(function(s,r){return s+r.mfgCost*r.driver.qty;},0);
-  const totalGA =spkResults.reduce(function(s,r){return s+r.ga*r.driver.qty;},0);
-  const totalTool=spkResults.reduce(function(s,r){return s+r.toolAmort*r.driver.qty;},0);
-  const totalWarr=spkResults.reduce(function(s,r){return s+r.warranty*r.driver.qty;},0);
-  const totalInb =spkResults.reduce(function(s,r){return s+r.inbound*r.driver.qty;},0);
-  return {
-    spkResults,totalSpkCount,totalSpkWorks,totalSpkCO2,
-    totalDM,totalDLab,totalDMach,totalPrime,totalFOH,totalMfg,
-    totalGA,totalTool,totalWarr,totalInb,
-    sysAmpCost,sysDspCost,sysWireCost,sysConnCost,sysTotalExtra,
-    totalWorks,featCost,outFrt,dutyRate,duty,landed,margin,total,
-    system,country,inp
-  };
+  var system=SYSTEMS[inp.system];
+  var country=COUNTRIES[inp.country];
+  var spkResults=system.drivers.map(function(d){return computeSpkPerUnit(d,inp,country);});
+  var totalSpkCount=system.drivers.reduce(function(s,d){return s+d.qty;},0);
+  var totalSpkWorks=spkResults.reduce(function(s,r){return s+r.totalPerUnit*r.driver.qty;},0);
+  var totalSpkCO2=spkResults.reduce(function(s,r){return s+r.co2PerUnit*r.driver.qty;},0);
+  var totalDM=spkResults.reduce(function(s,r){return s+r.DM*r.driver.qty;},0);
+  var totalDLab=spkResults.reduce(function(s,r){return s+r.DLab*r.driver.qty;},0);
+  var totalDMach=spkResults.reduce(function(s,r){return s+r.DMach*r.driver.qty;},0);
+  var sysAmpCost=system.amp?system.amp.costUSD*country.machM:0;
+  var sysDspCost=system.dsp?system.dsp.costUSD*country.machM:0;
+  var sysWireCost=system.wiring.harnessCost+system.wiring.spk_cable_m*system.wiring.cableCost_m;
+  var sysConnCost=system.connectors*0.45;
+  var sysTotalExtra=sysAmpCost+sysDspCost+sysWireCost+sysConnCost;
+  var totalWorks=totalSpkWorks+sysTotalExtra;
+  var featCost=inp.features.reduce(function(s,f){return s+((TECH_FEATURES[f]&&TECH_FEATURES[f].cost)||0);},0);
+  var outFrtBase=({dom:0.28,reg:0.80,int:2.50})[inp.freightMode]||0.80;
+  var outFrt=outFrtBase*country.logI*totalSpkCount;
+  var dutyRate=parseFloat(inp.dutyRate)||0;
+  var duty=(totalWorks+featCost+outFrt)*dutyRate;
+  var landed=totalWorks+featCost+outFrt+duty;
+  var margin=landed*inp.margin;
+  var total=landed+margin;
+  var totalPrime=totalDM+totalDLab+totalDMach;
+  var totalFOH=spkResults.reduce(function(s,r){return s+r.foh*r.driver.qty;},0);
+  var totalMfg=spkResults.reduce(function(s,r){return s+r.mfgCost*r.driver.qty;},0);
+  var totalGA=spkResults.reduce(function(s,r){return s+r.ga*r.driver.qty;},0);
+  var totalTool=spkResults.reduce(function(s,r){return s+r.toolAmort*r.driver.qty;},0);
+  var totalWarr=spkResults.reduce(function(s,r){return s+r.warranty*r.driver.qty;},0);
+  var totalInb=spkResults.reduce(function(s,r){return s+r.inbound*r.driver.qty;},0);
+  return {spkResults:spkResults,totalSpkCount:totalSpkCount,totalSpkWorks:totalSpkWorks,totalSpkCO2:totalSpkCO2,
+    totalDM:totalDM,totalDLab:totalDLab,totalDMach:totalDMach,totalPrime:totalPrime,totalFOH:totalFOH,totalMfg:totalMfg,
+    totalGA:totalGA,totalTool:totalTool,totalWarr:totalWarr,totalInb:totalInb,
+    sysAmpCost:sysAmpCost,sysDspCost:sysDspCost,sysWireCost:sysWireCost,sysConnCost:sysConnCost,sysTotalExtra:sysTotalExtra,
+    totalWorks:totalWorks,featCost:featCost,outFrt:outFrt,dutyRate:dutyRate,duty:duty,landed:landed,margin:margin,total:total,
+    system:system,country:country,inp:inp};
 }
 
-// ── STATE ─────────────────────────────────────────────────────────────────
-var _lastResult=null;
-var _senChart=null;
-var _co2Chart=null;
+// ─── State ───────────────────────────────────────────────────────────────────
+var _lastResult = null;
+var _senChart = null;
+var _co2Chart = null;
+var _debTimer = null;
 
-// ── RENDER ────────────────────────────────────────────────────────────────
-function renderMetrics(r){
-  document.getElementById('metricsRow').style.display='grid';
-  const dmPct=r.totalWorks>0?(r.totalDM/r.totalWorks*100).toFixed(1)+'%':'--';
-  setEl('m-total','$'+f2(r.total));
-  setEl('m-spkcount',String(r.totalSpkCount));
-  setEl('m-dm',dmPct);
-  setEl('m-co2',f2(r.totalSpkCO2));
-  setEl('m-margin','$'+f2(r.margin));
+// ─── Count-up animation ───────────────────────────────────────────────────────
+function countUp(el, target, prefix, suffix, decimals, duration) {
+  if (!el) return;
+  var startTime = null;
+  function step(ts) {
+    if (!startTime) startTime = ts;
+    var progress = Math.min((ts - startTime) / (duration || 800), 1);
+    var ease = 1 - Math.pow(1 - progress, 3);
+    var val = target * ease;
+    el.textContent = prefix + (decimals === 0 ? Math.round(val).toLocaleString() : val.toFixed(decimals)) + suffix;
+    if (progress < 1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
 }
 
-function renderOverview(r){
-  var spkRows='';
-  r.spkResults.forEach(function(res){
-    var d=res.driver;
-    var lineTotal=res.totalPerUnit*d.qty;
-    var pct=(lineTotal/r.total*100).toFixed(1);
-    spkRows+='<tr><td>'+esc(d.role)+'</td><td><span class="badge badge-blue">'+esc(d.type)+'</span></td><td class="num">'+d.sizeMM+'mm</td><td class="num">'+d.qty+'</td><td>'+esc(d.loc)+'</td><td class="num">$'+f2(res.totalPerUnit)+'</td><td class="num">$'+f2(lineTotal)+'</td><td class="num">'+pct+'%</td></tr>';
-  });
-  var localSym=r.country.sym;
-  var localRate=r.country.usd;
-  var toLocal=function(v){return (v/localRate).toFixed(2);};
-  var wf=[
-    ['Direct Material (DM)',r.totalDM,false],
-    ['Direct Labour (DL)',r.totalDLab,false],
-    ['Machine Cost',r.totalDMach,false],
-    ['Prime Cost',r.totalPrime,true],
-    ['Factory Overhead (FOH)',r.totalFOH,false],
-    ['Mfg Cost',r.totalMfg,true],
-    ['G&A (7%)',r.totalGA,false],
-    ['Tooling Amortisation',r.totalTool,false],
-    ['Warranty (1.5%)',r.totalWarr,false],
-    ['Inbound Freight',r.totalInb,false],
-    ['Works Cost (Speakers)',r.totalSpkWorks,true],
-    ['System Extras (Amp/DSP/Wiring/Conn)',r.sysTotalExtra,false],
-    ['Works Cost Total',r.totalWorks,true],
-    ['Feature Add-ons',r.featCost,false],
-    ['Outbound Freight',r.outFrt,false],
-    ['Duty ('+Math.round(r.dutyRate*100)+'%)',r.duty,false],
-    ['Landed Cost',r.landed,true],
-    ['Margin ('+Math.round(r.inp.margin*100)+'%)',r.margin,false],
-    ['TOTAL',r.total,'total']
-  ];
-  var wfRows='';
-  wf.forEach(function(row){
-    var cls=row[2]==='total'?'total-row':row[2]?'subtotal':'';
-    wfRows+='<tr class="'+cls+'"><td>'+esc(row[0])+'</td><td class="num">$'+f2(row[1])+'</td></tr>';
-  });
-  var localLine='<tr><td colspan="2" style="color:var(--purple);font-weight:600;border-top:1px solid var(--bd);padding-top:6px">Local Currency Total: '+localSym+toLocal(r.total)+' '+r.country.cur+'</td></tr>';
-  setEl('overviewContent','<div class="section-hdr">Speaker Composition</div><table><thead><tr><th>Role</th><th>Type</th><th>Size</th><th>Qty</th><th>Location</th><th class="num">Unit Cost</th><th class="num">Line Total</th><th class="num">% Total</th></tr></thead><tbody>'+spkRows+'</tbody></table><div class="section-hdr" style="margin-top:18px">Cost Waterfall</div><table><thead><tr><th>Cost Element</th><th class="num">USD</th></tr></thead><tbody>'+wfRows+localLine+'</tbody></table>');
-}
-
-function renderFullBOM(r){
-  var sysExtras='';
-  var sys=r.system;
-  if(sys.amp){sysExtras+='<tr><td>Amplifier</td><td>'+esc(sys.amp.type)+'</td><td class="num">–</td><td class="num">–</td><td class="num">–</td><td class="num">$'+f2(r.sysAmpCost)+'</td></tr>';}
-  if(sys.dsp){sysExtras+='<tr><td>DSP Module</td><td>'+esc(sys.dsp.type)+'</td><td class="num">–</td><td class="num">–</td><td class="num">–</td><td class="num">$'+f2(r.sysDspCost)+'</td></tr>';}
-  sysExtras+='<tr><td>Wiring Harness</td><td>'+sys.wiring.harness_m+'m harness + '+sys.wiring.spk_cable_m+'m cable</td><td class="num">–</td><td class="num">–</td><td class="num">–</td><td class="num">$'+f2(r.sysWireCost)+'</td></tr>';
-  sysExtras+='<tr><td>Connectors</td><td>'+sys.connectors+'x connector set</td><td class="num">–</td><td class="num">–</td><td class="num">–</td><td class="num">$'+f2(r.sysConnCost)+'</td></tr>';
-  var driverSections='';
-  r.spkResults.forEach(function(res){
-    var d=res.driver;
-    var bomRows='';
-    res.bom.forEach(function(item){
-      bomRows+='<tr><td>'+esc(item.name)+'</td><td>'+esc(item.spec)+'</td><td><span class="badge badge-blue">'+esc(item.cat)+'</span></td><td class="num">'+( item.wt>0?f2(item.wt):'–')+'</td><td class="num">'+( item.rate>0?'$'+f2(item.rate):'–')+'</td><td class="num">'+f3(item.co2)+'</td><td class="num">$'+f2(item.cost)+'</td></tr>';
+// ─── Tab helper ───────────────────────────────────────────────────────────────
+function showTab(id) {
+  document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
+  document.querySelectorAll('.tab-panel').forEach(function(p) { p.style.display = 'none'; });
+  var btn = document.querySelector('[data-tab="' + id + '"]');
+  if (btn) btn.classList.add('active');
+  var panel = document.getElementById('panel-' + id);
+  if (panel) {
+    panel.style.display = 'block';
+    panel.style.opacity = '0';
+    requestAnimationFrame(function() {
+      panel.style.transition = 'opacity 0.3s ease';
+      panel.style.opacity = '1';
     });
-    var bomTotal=res.bom.reduce(function(s,i){return s+i.cost;},0);
-    bomRows+='<tr class="subtotal"><td colspan="6" style="text-align:right">BOM Total (unit)</td><td class="num">$'+f2(bomTotal)+'</td></tr>';
-    driverSections+='<div class="driver-section"><div class="driver-section-hdr"><span>'+esc(d.role)+' — '+esc(d.type)+' '+d.sizeMM+'mm &times;'+d.qty+' @ '+esc(d.loc)+'</span><span style="color:var(--green)">DM: $'+f2(res.DM)+'</span></div><table><thead><tr><th>Component</th><th>Spec</th><th>Cat</th><th class="num">Wt(g)</th><th class="num">Rate($/kg)</th><th class="num">CO2(kg)</th><th class="num">Cost($)</th></tr></thead><tbody>'+bomRows+'</tbody></table></div>';
-  });
-  setEl('bomContent','<div class="section-hdr">System-Level Items</div><table><thead><tr><th>Item</th><th>Description</th><th class="num">Wt</th><th class="num">Rate</th><th class="num">CO2</th><th class="num">Cost($)</th></tr></thead><tbody>'+sysExtras+'</tbody></table><div class="section-hdr" style="margin-top:16px">Per-Driver BOM</div>'+driverSections);
+  }
+  if (_lastResult) {
+    if (id === 'overview') renderOverview(_lastResult);
+    if (id === 'bom')      renderFullBOM(_lastResult);
+    if (id === 'sustain')  renderSustainability(_lastResult);
+    if (id === 'bench')    renderBenchmarking(_lastResult);
+    if (id === 'process')  renderProcess(_lastResult);
+    if (id === 'ai')       renderAIInsights(_lastResult);
+  }
 }
 
-function renderSustainability(r){
-  var avgRcl=Object.values(MRATE).reduce(function(s,v){return s+v.rcl_pct;},0)/Object.keys(MRATE).length;
-  var avgBio=Object.values(MRATE).reduce(function(s,v){return s+v.bio_pct;},0)/Object.keys(MRATE).length;
-  var rohsPct=Object.values(MRATE).filter(function(v){return v.rohs;}).length/Object.keys(MRATE).length*100;
-  var vocPct=Object.values(MRATE).filter(function(v){return v.voc;}).length/Object.keys(MRATE).length*100;
-  var catCO2={Motor:0,'Voice Coil':0,Suspension:0,Frame:0,Electrical:0,Bonding:0,Misc:0};
-  r.spkResults.forEach(function(res){
-    var qty=res.driver.qty;
-    res.bom.forEach(function(item){
-      if(catCO2[item.cat]!==undefined)catCO2[item.cat]+=item.co2*qty;
-    });
+// ─── renderMetrics ────────────────────────────────────────────────────────────
+function renderMetrics(r) {
+  var metricsRow = document.getElementById('metricsRow');
+  if (metricsRow) metricsRow.style.display = 'flex';
+
+  var dmPct = r.total > 0 ? (r.totalDM / r.total * 100) : 0;
+
+  countUp(document.querySelector('#m-total .val'),    r.total,           '$', '', 2, 900);
+  countUp(document.querySelector('#m-spkcount .val'), r.totalSpkCount,   '',  ' spk', 0, 700);
+  countUp(document.querySelector('#m-dm .val'),       dmPct,             '',  '%', 1, 750);
+  countUp(document.querySelector('#m-co2 .val'),      r.totalSpkCO2,     '',  ' kg', 2, 850);
+  countUp(document.querySelector('#m-margin .val'),   r.inp.margin * 100,'',  '%', 1, 700);
+
+  document.querySelectorAll('.metric-cell').forEach(function(card, i) {
+    card.style.opacity = '0';
+    card.style.transform = 'translateY(20px)';
+    setTimeout(function() {
+      card.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+      card.style.opacity = '1';
+      card.style.transform = 'translateY(0)';
+    }, i * 80);
   });
-  var alts={neo:'Ferrite or recycled NdFeB',varnish:'Water-based resin',epoxy:'Bio-epoxy formulation',uv_adhesive:'UV-LED cure bio-acrylate',kapton:'Recycled PET film',foam:'PLA-based foam'};
-  var matRows=Object.entries(MRATE).map(function(entry){
-    var k=entry[0];var v=entry[1];
-    return '<tr><td>'+k.replace(/_/g,' ')+'</td><td class="num">'+v.rcl_pct+'%</td><td class="num">'+v.bio_pct+'%</td><td class="num">'+v.co2+'</td><td>'+(v.rohs?'<span class="badge badge-green">Yes</span>':'<span class="badge badge-red">No</span>')+'</td><td>'+(v.reach?'<span class="badge badge-green">Yes</span>':'<span class="badge badge-amber">Review</span>')+'</td><td>'+(v.voc?'<span class="badge badge-red">Yes</span>':'<span class="badge badge-green">No</span>')+'</td><td style="color:var(--t2);font-size:11px">'+(alts[k]||'–')+'</td></tr>';
-  }).join('');
-  setEl('sustainContent','<div class="scards" style="grid-template-columns:repeat(5,1fr)"><div class="scard"><div class="sv">'+f2(r.totalSpkCO2)+'</div><div class="sl">Total CO2 (kg/system)</div></div><div class="scard"><div class="sv">'+avgRcl.toFixed(1)+'%</div><div class="sl">Avg Recycled Content</div></div><div class="scard"><div class="sv">'+avgBio.toFixed(1)+'%</div><div class="sl">Avg Bio-based Content</div></div><div class="scard"><div class="sv">'+rohsPct.toFixed(0)+'%</div><div class="sl">RoHS Compliant</div></div><div class="scard"><div class="sv">'+(100-vocPct).toFixed(0)+'%</div><div class="sl">VOC-Free Materials</div></div></div><div class="section-hdr">CO2 by Assembly Category</div><canvas id="co2Chart" height="200"></canvas><div class="section-hdr" style="margin-top:16px">Material Sustainability Matrix</div><table><thead><tr><th>Material</th><th class="num">Recycled%</th><th class="num">Bio%</th><th class="num">CO2 kg/kg</th><th>RoHS</th><th>REACH</th><th>VOC</th><th>Sustainable Alt</th></tr></thead><tbody>'+matRows+'</tbody></table>');
-  if(_co2Chart){_co2Chart.destroy();_co2Chart=null;}
-  var ctx=document.getElementById('co2Chart');
-  if(ctx){
-    _co2Chart=new Chart(ctx,{
-      type:'bar',
-      data:{
-        labels:Object.keys(catCO2),
-        datasets:[{
-          label:'CO2 kg',
-          data:Object.values(catCO2).map(function(v){return parseFloat(v.toFixed(3));}),
-          backgroundColor:['#1f6feb','#00b4d8','#3fb950','#d29922','#bc8cff','#ff7b72','#f85149'],
-          borderRadius:4
-        }]
-      },
-      options:{
-        indexAxis:'y',
-        plugins:{legend:{display:false}},
-        scales:{
-          x:{grid:{color:'#21262d'},ticks:{color:'#8b949e'}},
-          y:{grid:{color:'#21262d'},ticks:{color:'#8b949e'}}
-        }
+}
+
+// ─── renderOverview ───────────────────────────────────────────────────────────
+function renderOverview(r) {
+  var html = '<div class="section-title">System Drivers</div>';
+  html += '<div class="bom-table"><table><thead><tr>';
+  html += '<th>Role</th><th>Type</th><th>Size</th><th>Qty</th><th>Unit Cost</th><th>Extended</th><th>CO₂</th>';
+  html += '</tr></thead><tbody>';
+
+  r.spkResults.forEach(function(sr) {
+    var d = sr.driver;
+    html += '<tr>';
+    html += '<td>' + esc(d.role) + '</td>';
+    html += '<td><span class="badge" style="background:rgba(59,130,246,0.18);color:var(--blue2)">' + esc(d.type) + '</span></td>';
+    html += '<td>' + d.sizeMM + ' mm</td>';
+    html += '<td>' + d.qty + '</td>';
+    html += '<td>$' + f2(sr.totalPerUnit) + '</td>';
+    html += '<td><strong>$' + f2(sr.totalPerUnit * d.qty) + '</strong></td>';
+    html += '<td>' + f2(sr.co2PerUnit * d.qty) + ' kg</td>';
+    html += '</tr>';
+  });
+
+  var extraRows = [];
+  if (r.sysAmpCost > 0)  extraRows.push({label:'Amplifier Module',   val: r.sysAmpCost});
+  if (r.sysDspCost > 0)  extraRows.push({label:'DSP Module',          val: r.sysDspCost});
+  if (r.sysWireCost > 0) extraRows.push({label:'Wiring Harness',      val: r.sysWireCost});
+  if (r.sysConnCost > 0) extraRows.push({label:'Connectors',          val: r.sysConnCost});
+  extraRows.forEach(function(row) {
+    html += '<tr style="opacity:0.75"><td colspan="4" style="color:var(--t2)">' + esc(row.label) + '</td>';
+    html += '<td>$' + f2(row.val) + '</td><td>$' + f2(row.val) + '</td><td>—</td></tr>';
+  });
+
+  html += '</tbody><tfoot><tr>';
+  html += '<td colspan="4"><strong>System Total</strong></td>';
+  html += '<td></td><td><strong style="color:var(--blue2)">$' + f2(r.total) + '</strong></td>';
+  html += '<td><strong style="color:var(--green2)">' + f2(r.totalSpkCO2) + ' kg</strong></td>';
+  html += '</tr></tfoot></table></div>';
+
+  html += '<div class="section-title" style="margin-top:1.5rem">Cost Waterfall</div>';
+  html += '<div class="cost-stack">';
+  var cats = [
+    {label:'Direct Material',    val: r.totalDM,   color:'var(--blue2)'},
+    {label:'Direct Labour',      val: r.totalDLab, color:'var(--purple2)'},
+    {label:'Mfg Overhead (FOH)', val: r.totalFOH,  color:'var(--cyan)'},
+    {label:'SG&A / G&A',         val: r.totalGA,   color:'var(--amber)'},
+    {label:'Tooling Amort.',     val: r.totalTool, color:'var(--pink)'},
+    {label:'Warranty',           val: r.totalWarr, color:'var(--red)'},
+    {label:'Freight',            val: r.outFrt,    color:'var(--gold)'},
+    {label:'Duty',               val: r.duty,      color:'var(--t3)'},
+    {label:'Tech Features',      val: r.featCost,  color:'var(--purple)'},
+    {label:'Target Margin',      val: r.margin,    color:'var(--green2)'}
+  ].filter(function(c) { return c.val > 0; });
+
+  cats.forEach(function(c) {
+    var pct = r.total > 0 ? (c.val / r.total * 100) : 0;
+    html += '<div class="stack-row">';
+    html += '<span class="stack-lbl">' + c.label + '</span>';
+    html += '<div class="stack-bar-wrap"><div class="stack-bar" data-w="' + pct.toFixed(1) + '" style="width:0;background:' + c.color + '"></div></div>';
+    html += '<span class="stack-val">$' + f2(c.val) + ' (' + pct.toFixed(1) + '%)</span>';
+    html += '</div>';
+  });
+  html += '</div>';
+
+  var cont = document.getElementById('overviewContent');
+  if (cont) {
+    cont.innerHTML = html;
+    setTimeout(function() {
+      cont.querySelectorAll('.stack-bar').forEach(function(bar) {
+        var w = bar.getAttribute('data-w') + '%';
+        bar.style.transition = 'width 0.7s cubic-bezier(0.16,1,0.3,1)';
+        bar.style.width = w;
+      });
+    }, 80);
+  }
+}
+
+// ─── renderFullBOM ────────────────────────────────────────────────────────────
+function renderFullBOM(r) {
+  var html = '<div class="section-title">Material Rate Library</div>';
+  html += '<div class="bom-table"><table><thead><tr>';
+  html += '<th>Material</th><th>$/kg</th><th>CO₂ kg/kg</th><th>Recycled%</th><th>Bio%</th><th>RoHS</th><th>REACH</th><th>VOC</th>';
+  html += '</tr></thead><tbody>';
+
+  Object.keys(MRATE).forEach(function(k) {
+    var m = MRATE[k];
+    html += '<tr>';
+    html += '<td>' + k.replace(/_/g,' ') + '</td>';
+    html += '<td>$' + f2(m.usd) + '</td>';
+    html += '<td>' + m.co2 + '</td>';
+    html += '<td>' + m.rcl_pct + '%</td>';
+    html += '<td>' + m.bio_pct + '%</td>';
+    html += '<td>' + (m.rohs  ? '<span style="color:var(--green2)">✓</span>' : '<span style="color:var(--red)">✗</span>') + '</td>';
+    html += '<td>' + (m.reach ? '<span style="color:var(--green2)">✓</span>' : '<span style="color:var(--red)">✗</span>') + '</td>';
+    html += '<td>' + (m.voc   ? '<span style="color:var(--amber)">⚠ VOC</span>' : '<span style="color:var(--green2)">✓</span>') + '</td>';
+    html += '</tr>';
+  });
+
+  html += '</tbody></table></div>';
+
+  if (r.spkResults && r.spkResults[0] && r.spkResults[0].bom) {
+    html += '<div class="section-title" style="margin-top:1.5rem">BOM Detail — First Driver (' + esc(r.spkResults[0].driver.role) + ')</div>';
+    html += '<div class="bom-table"><table><thead><tr><th>Item</th><th>Spec</th><th>Cat</th><th>Wt (g)</th><th>Cost</th><th>CO₂</th></tr></thead><tbody>';
+    r.spkResults[0].bom.forEach(function(b) {
+      html += '<tr><td>' + esc(b.name) + '</td><td style="color:var(--t2);font-size:0.8rem">' + esc(b.spec) + '</td>';
+      html += '<td><span class="badge" style="background:rgba(139,92,246,0.15);color:var(--purple2)">' + esc(b.cat) + '</span></td>';
+      html += '<td>' + f2(b.wt) + '</td><td>$' + f3(b.cost) + '</td><td>' + f3(b.co2) + ' kg</td></tr>';
+    });
+    html += '</tbody></table></div>';
+  }
+
+  var cont = document.getElementById('bomContent');
+  if (cont) cont.innerHTML = html;
+}
+
+// ─── renderSustainability ─────────────────────────────────────────────────────
+function renderSustainability(r) {
+  var co2 = r.totalSpkCO2;
+  var grade = co2 < 3 ? 'A' : co2 < 6 ? 'B' : co2 < 10 ? 'C' : 'D';
+  var gradeColor = {A:'var(--green2)',B:'var(--cyan)',C:'var(--amber)',D:'var(--red)'}[grade];
+
+  // Weighted recycled and bio content from all BOM items
+  var totalCost = 0, rclSum = 0, bioSum = 0, vocFlag = false;
+  r.spkResults.forEach(function(sr) {
+    sr.bom.forEach(function(b) {
+      var mat = null;
+      Object.keys(MRATE).forEach(function(k) {
+        if (!mat && MRATE[k].usd === b.rate && MRATE[k].co2 === b.co2Rate) mat = MRATE[k];
+      });
+      totalCost += b.cost;
+      if (mat) {
+        rclSum += b.cost * mat.rcl_pct;
+        bioSum += b.cost * mat.bio_pct;
+        if (mat.voc) vocFlag = true;
       }
     });
+  });
+  // VOC check: varnish & epoxy always present
+  vocFlag = true; // varnish/epoxy always in BOM; override if full_sustainable later
+
+  var rclPct = totalCost > 0 ? rclSum / totalCost : 0;
+  var bioPct = totalCost > 0 ? bioSum / totalCost : 0;
+
+  // In full_sustainable mode, VOC is reduced (no rubber, water-based treatment)
+  if (r.inp.sustainMode === 'full_sustainable') vocFlag = false;
+
+  var html = '<div class="section-title">Sustainability Scorecard</div>';
+  html += '<div class="scards">';
+
+  html += '<div class="scard"><div class="scard-val" style="color:var(--green2)">' + f2(rclPct) + '%</div><div class="scard-lbl">Recycled Content</div></div>';
+  html += '<div class="scard"><div class="scard-val" style="color:var(--cyan)">' + f2(bioPct) + '%</div><div class="scard-lbl">Bio-based Content</div></div>';
+  html += '<div class="scard"><div class="scard-val" style="color:var(--amber)">' + f2(co2) + ' kg</div><div class="scard-lbl">CO₂ / System</div></div>';
+  html += '<div class="scard"><div class="scard-val" style="color:' + gradeColor + '">' + grade + '</div><div class="scard-lbl">ESG Grade</div></div>';
+  html += '<div class="scard"><div class="scard-val" style="color:' + (vocFlag ? 'var(--red)' : 'var(--green2)') + '">' + (vocFlag ? 'FLAGS' : 'CLEAN') + '</div><div class="scard-lbl">VOC Status</div></div>';
+  html += '</div>';
+
+  html += '<div class="section-title" style="margin-top:1.5rem">CO₂ by Driver</div>';
+  html += '<div class="bom-table"><table><thead><tr><th>Speaker</th><th>CO₂/unit (kg)</th><th>Qty</th><th>Total CO₂</th><th>Share%</th></tr></thead><tbody>';
+  r.spkResults.forEach(function(sr) {
+    var share = co2 > 0 ? (sr.co2PerUnit * sr.driver.qty / co2 * 100) : 0;
+    html += '<tr><td>' + esc(sr.driver.role) + '</td><td>' + f2(sr.co2PerUnit) + '</td>';
+    html += '<td>' + sr.driver.qty + '</td><td><strong>' + f2(sr.co2PerUnit * sr.driver.qty) + ' kg</strong></td>';
+    html += '<td><div style="background:rgba(16,185,129,0.12);border-radius:4px;padding:2px 6px;color:var(--green2)">' + share.toFixed(1) + '%</div></td>';
+    html += '</tr>';
+  });
+  html += '</tbody></table></div>';
+
+  var targetCO2 = 4.0;
+  var reduction = co2 > targetCO2 ? ((co2 - targetCO2) / co2 * 100) : 0;
+  html += '<div class="section-title" style="margin-top:1.5rem">Carbon Reduction Pathway</div>';
+  html += '<div class="card" style="padding:1rem">';
+  html += '<div style="display:flex;justify-content:space-between;margin-bottom:0.5rem">';
+  html += '<span>Current: <strong style="color:var(--amber)">' + f2(co2) + ' kg</strong></span>';
+  html += '<span>Target: <strong style="color:var(--green2)">' + targetCO2 + ' kg</strong></span>';
+  html += '</div>';
+  html += '<div style="background:var(--bg3);border-radius:8px;height:12px;overflow:hidden">';
+  var progressPct = co2 > 0 ? Math.min(100, targetCO2 / co2 * 100) : 100;
+  html += '<div style="width:' + progressPct.toFixed(1) + '%;height:100%;background:linear-gradient(90deg,var(--green),var(--green2))"></div>';
+  html += '</div>';
+  if (reduction > 0) {
+    html += '<p style="color:var(--t2);margin-top:0.75rem;font-size:0.85rem">Need <strong style="color:var(--amber)">' + reduction.toFixed(1) + '% reduction</strong> to hit target. Consider bio-based cone, recycled frame, and ferrite magnet.</p>';
+  } else {
+    html += '<p style="color:var(--green2);margin-top:0.75rem;font-size:0.85rem">✓ Within carbon target.</p>';
+  }
+  html += '</div>';
+
+  var cont = document.getElementById('sustainContent');
+  if (cont) cont.innerHTML = html;
+}
+
+// ─── renderBenchmarking ───────────────────────────────────────────────────────
+function renderBenchmarking(r) {
+  var html = '<div class="section-title">Competitive Benchmarking</div>';
+  html += '<div class="bom-table"><table><thead><tr>';
+  html += '<th>System</th><th>Brand</th><th>Spk</th><th>OEM Price</th><th>Est. Cost</th><th>Marg%</th><th>Tier</th><th>vs You</th>';
+  html += '</tr></thead><tbody>';
+
+  BENCHMARKS.forEach(function(b) {
+    var marg = ((b.oem_cost - b.est_cost) / b.oem_cost * 100);
+    var delta = r.total - b.est_cost;
+    var deltaStr = (delta > 0 ? '+' : '') + '$' + f2(Math.abs(delta));
+    var deltaColor = delta <= 0 ? 'var(--green2)' : delta < 20 ? 'var(--amber)' : 'var(--red)';
+    var tierColor = {Budget:'var(--t3)',Standard:'var(--cyan)',Premium:'var(--blue2)',Luxury:'var(--gold)'}[b.tier] || 'var(--t2)';
+    html += '<tr>';
+    html += '<td><strong>' + esc(b.name) + '</strong></td>';
+    html += '<td>' + esc(b.brand) + '</td>';
+    html += '<td>' + b.spkCnt + '</td>';
+    html += '<td>$' + f2(b.oem_cost) + '</td>';
+    html += '<td>$' + f2(b.est_cost) + '</td>';
+    html += '<td>' + marg.toFixed(1) + '%</td>';
+    html += '<td><span class="badge" style="color:' + tierColor + ';background:rgba(0,0,0,0.3)">' + b.tier + '</span></td>';
+    html += '<td><span style="color:' + deltaColor + '">' + deltaStr + '</span></td>';
+    html += '</tr>';
+  });
+
+  html += '</tbody></table></div>';
+
+  var cheaper = BENCHMARKS.filter(function(b) { return r.total < b.est_cost; }).length;
+  var pct = (cheaper / BENCHMARKS.length * 100).toFixed(0);
+  html += '<div class="card" style="padding:1rem;margin-top:1rem;border-color:var(--blue)">';
+  html += '<p>Your system cost <strong style="color:var(--blue2)">$' + f2(r.total) + '</strong> ';
+  html += 'beats <strong style="color:var(--green2)">' + cheaper + ' of ' + BENCHMARKS.length + '</strong> benchmarks (' + pct + '% cost advantage).</p>';
+  html += '</div>';
+
+  var cont = document.getElementById('benchContent');
+  if (cont) cont.innerHTML = html;
+}
+
+// ─── renderProcess ────────────────────────────────────────────────────────────
+function renderProcess(r) {
+  var country = r.country;
+  var html = '<div class="section-title">Manufacturing Process Routing</div>';
+  html += '<div class="bom-table"><table><thead><tr>';
+  html += '<th>Step</th><th>Process</th><th>Base (min)</th><th>Lab$/hr</th><th>Lab Cost</th><th>Mach Cost</th>';
+  html += '</tr></thead><tbody>';
+
+  if (r.spkResults && r.spkResults[0] && r.spkResults[0].proc) {
+    r.spkResults[0].proc.forEach(function(s) {
+      html += '<tr>';
+      html += '<td><span class="badge" style="background:rgba(139,92,246,0.18);color:var(--purple2)">' + esc(s.id || s.step || '') + '</span></td>';
+      html += '<td>' + esc(s.name) + '</td>';
+      html += '<td>' + f2(s.cycMin) + '</td>';
+      html += '<td>$' + f2(country.labHr) + '</td>';
+      html += '<td>$' + f3(s.labCost) + '</td>';
+      html += '<td>$' + f3(s.machCost) + '</td>';
+      html += '</tr>';
+    });
+  }
+
+  html += '</tbody></table></div>';
+
+  html += '<div class="section-title" style="margin-top:1.5rem">Country Labour Rate Comparison</div>';
+  html += '<div class="scards">';
+  Object.keys(COUNTRIES).forEach(function(c) {
+    var cc = COUNTRIES[c];
+    var selected = c === r.inp.country;
+    html += '<div class="scard" style="' + (selected ? 'border-color:var(--blue);box-shadow:0 0 12px rgba(59,130,246,0.3)' : '') + '">';
+    html += '<div class="scard-val" style="color:var(--cyan)">$' + cc.labHr + '/hr</div>';
+    html += '<div class="scard-lbl">' + esc(c) + (selected ? ' ✓' : '') + '</div>';
+    html += '</div>';
+  });
+  html += '</div>';
+
+  var cont = document.getElementById('processContent');
+  if (cont) cont.innerHTML = html;
+}
+
+// ─── renderSensitivity (bottom-grid canvas) ───────────────────────────────────
+function renderSensitivity(r) {
+  var baseCost = r.total;
+  var baseVol = r.inp.annualVol;
+  var vols = [baseVol * 0.5, baseVol * 0.75, baseVol, baseVol * 1.25, baseVol * 1.5];
+  var costs = vols.map(function(v) {
+    try {
+      var inp2 = Object.assign({}, r.inp, {annualVol: Math.round(v)});
+      return computeSystemCost(inp2).total;
+    } catch(e) { return baseCost; }
+  });
+
+  var ctx = document.getElementById('senChart');
+  if (!ctx) return;
+  if (_senChart) { _senChart.destroy(); _senChart = null; }
+  _senChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ['50% Vol', '75% Vol', 'Base', '125% Vol', '150% Vol'],
+      datasets: [{
+        label: 'System Cost ($)',
+        data: costs,
+        backgroundColor: ['rgba(239,68,68,0.7)','rgba(245,158,11,0.7)','rgba(59,130,246,0.85)','rgba(34,211,238,0.7)','rgba(16,185,129,0.7)'],
+        borderColor: ['#ef4444','#f59e0b','#3b82f6','#22d3ee','#10b981'],
+        borderWidth: 1, borderRadius: 6
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: true,
+      plugins: {legend:{labels:{color:'#94a3b8'}}},
+      scales: {
+        x:{ticks:{color:'#94a3b8'},grid:{color:'rgba(99,179,237,0.08)'}},
+        y:{ticks:{color:'#94a3b8',callback:function(v){return '$'+v.toFixed(2);}},grid:{color:'rgba(99,179,237,0.08)'}}
+      }
+    }
+  });
+}
+
+// ─── renderRecommendations (bottom-grid list) ─────────────────────────────────
+function renderRecommendations(r) {
+  var tips = DFMA_TIPS[r.inp.system] || [];
+  var cont = document.getElementById('recsContent');
+  if (!cont) return;
+
+  if (!tips.length) {
+    cont.innerHTML = '<li style="color:var(--t3)">No DFMA tips for this system.</li>';
+    return;
+  }
+
+  var html = '';
+  tips.forEach(function(tip) {
+    var saving = typeof tip.saving === 'string' ? parseFloat(String(tip.saving).replace(/[^0-9.]/g,''))||0 : (tip.saving||0);
+    html += '<li style="margin-bottom:0.6rem">';
+    html += '<strong style="color:var(--t1)">' + esc(tip.area || '') + ':</strong> ';
+    html += '<span style="color:var(--t2)">' + esc(tip.tip || '') + '</span> ';
+    html += '<span style="color:var(--green2);font-weight:600">(-$' + f2(saving) + ')</span>';
+    html += '</li>';
+  });
+  cont.innerHTML = html;
+}
+
+// ─── renderAIInsights ─────────────────────────────────────────────────────────
+function renderAIInsights(r) {
+  var co2  = r.totalSpkCO2;
+  var cost = r.total;
+  var dmPct = r.total > 0 ? (r.totalDM / r.total * 100) : 0;
+  var marginPct = r.inp.margin * 100;
+
+  var grade = co2 < 3 ? 'A' : co2 < 6 ? 'B' : co2 < 10 ? 'C' : 'D';
+  var gradeColor = {A:'var(--green2)',B:'var(--cyan)',C:'var(--amber)',D:'var(--red)'}[grade];
+
+  var cheaper = BENCHMARKS.filter(function(b) { return cost < b.est_cost; }).length;
+  var posLabel = cheaper >= 7 ? 'Cost Leader' : cheaper >= 4 ? 'Competitive' : cheaper >= 2 ? 'Above Avg' : 'High-Cost';
+  var posColor = cheaper >= 4 ? 'var(--green2)' : cheaper >= 2 ? 'var(--amber)' : 'var(--red)';
+
+  var enabledTech = [];
+  document.querySelectorAll('.feat-item input[type=checkbox]:checked').forEach(function(cb) {
+    enabledTech.push(cb.value);
+  });
+  var techPct = Math.round(enabledTech.length / Object.keys(TECH_FEATURES).length * 100);
+
+  var levers = [
+    {label:'Switch to ferrite magnet',         saving: cost * 0.08},
+    {label:'Increase annual volume 2×',         saving: cost * 0.06},
+    {label:'Relocate to lower-cost country',    saving: cost * 0.12},
+    {label:'DFMA: gang-test & reduce labour',   saving: cost * 0.04},
+    {label:'Bio-based cone material (CO₂ -0.8kg)', saving: cost * 0.02}
+  ].sort(function(a,b){return b.saving-a.saving;}).slice(0,3);
+
+  var risks = [];
+  if (dmPct < 40) risks.push('Low DM share (' + f2(dmPct) + '%) — overhead may be inflated');
+  if (marginPct < 10) risks.push('Margin <10% — target price too low');
+  if (r.inp.sustainMode === 'standard' && co2 > 8) risks.push('CO₂ > 8 kg — Scope 3 disclosure risk');
+  if (enabledTech.length > 8) risks.push('High tech count (' + enabledTech.length + ') — integration complexity');
+
+  var html = '<div class="section-title">&#129302; AI-Driven Should-Cost Insights</div>';
+  html += '<div class="ai-grid">';
+
+  // 1 — Cost Position
+  html += '<div class="card ai-card"><div class="ai-card-hdr"><span class="ai-icon">📊</span><span>Cost Position</span></div>';
+  html += '<div class="ai-big" style="color:' + posColor + '">' + posLabel + '</div>';
+  html += '<p class="ai-txt">Beats <strong>' + cheaper + '</strong>/' + BENCHMARKS.length + ' benchmarks at $' + f2(cost) + '</p></div>';
+
+  // 2 — Sustainability
+  html += '<div class="card ai-card"><div class="ai-card-hdr"><span class="ai-icon">🌿</span><span>ESG Grade</span></div>';
+  html += '<div class="ai-big" style="color:' + gradeColor + '">' + grade + '</div>';
+  html += '<p class="ai-txt">CO₂ <strong>' + f2(co2) + ' kg</strong>/system — ';
+  html += grade === 'A' ? 'Excellent. Certify ISO 14067.' : grade === 'B' ? 'Good. Minor tweaks available.' : 'Improvement needed.';
+  html += '</p></div>';
+
+  // 3 — Tech Adoption
+  html += '<div class="card ai-card"><div class="ai-card-hdr"><span class="ai-icon">⚡</span><span>Tech Adoption</span></div>';
+  html += '<div class="ai-big" style="color:var(--purple2)">' + techPct + '%</div>';
+  html += '<p class="ai-txt"><strong>' + enabledTech.length + '</strong>/' + Object.keys(TECH_FEATURES).length + ' features. ';
+  html += techPct >= 50 ? 'High differentiation.' : techPct >= 25 ? 'Mid-range — consider Neural DSP.' : 'Basic config.';
+  html += '</p></div>';
+
+  // 4 — Savings Levers
+  html += '<div class="card ai-card"><div class="ai-card-hdr"><span class="ai-icon">💡</span><span>Top Savings</span></div>';
+  html += '<ol style="padding-left:1.2rem;margin:0.5rem 0">';
+  levers.forEach(function(l) {
+    html += '<li style="color:var(--t2);font-size:0.85rem;margin-bottom:0.4rem">' + esc(l.label) + ' <span style="color:var(--green2)">(-$' + f2(l.saving) + ')</span></li>';
+  });
+  html += '</ol></div>';
+
+  // 5 — Risks
+  html += '<div class="card ai-card"><div class="ai-card-hdr"><span class="ai-icon">🚩</span><span>Risk Flags</span></div>';
+  if (risks.length) {
+    html += '<ul style="padding-left:1.2rem;margin:0.5rem 0">';
+    risks.forEach(function(risk) {
+      html += '<li style="color:var(--amber);font-size:0.85rem;margin-bottom:0.4rem">' + esc(risk) + '</li>';
+    });
+    html += '</ul>';
+  } else {
+    html += '<p style="color:var(--green2);font-size:0.9rem">✓ No critical risk flags.</p>';
+  }
+  html += '</div>';
+
+  // 6 — Carbon Pathway
+  html += '<div class="card ai-card"><div class="ai-card-hdr"><span class="ai-icon">🌍</span><span>Carbon Pathway</span></div>';
+  var pathway = co2 < 3 ?
+    ['Target met — pursue bio-content cert.', 'Claim carbon-neutral audio', 'ISO 14067 certification'] :
+    co2 < 6 ?
+    ['Switch cone to bio-polymer (-0.8 kg)', 'Increase recycled frame content', 'Certify ISO 14067'] :
+    ['Replace NdFeB → recycled alloy (-1.5 kg)', 'Switch to water-based varnish', 'Phase out VOC adhesives'];
+  html += '<ol style="padding-left:1.2rem;margin:0.5rem 0">';
+  pathway.forEach(function(step) {
+    html += '<li style="color:var(--t2);font-size:0.85rem;margin-bottom:0.4rem">' + esc(step) + '</li>';
+  });
+  html += '</ol></div>';
+
+  html += '</div>';
+
+  var cont = document.getElementById('aiContent');
+  if (cont) {
+    cont.innerHTML = html;
+    setTimeout(function() {
+      cont.querySelectorAll('.ai-card').forEach(function(card, i) {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        setTimeout(function() {
+          card.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+          card.style.opacity = '1';
+          card.style.transform = 'translateY(0)';
+        }, i * 80);
+      });
+    }, 30);
   }
 }
 
-function renderBenchmarking(r){
-  var ourCost=r.total;
-  var rows='';
-  BENCHMARKS.forEach(function(b){
-    var diff=ourCost-b.est_cost;
-    var pct=(diff/b.est_cost*100).toFixed(1);
-    var cls=diff<=0?'badge-green':'badge-red';
-    var arrow=diff<=0?'▼':'▲';
-    var tierCls=b.tier==='Ultra'?'badge-purple':b.tier==='Luxury'?'badge-amber':'badge-blue';
-    rows+='<tr><td>'+esc(b.name)+'</td><td>'+esc(b.brand)+'</td><td>'+esc(b.system)+'</td><td class="num">'+b.spkCnt+'</td><td class="num">$'+b.oem_cost+'</td><td class="num">$'+b.est_cost+'</td><td class="num">$'+f2(ourCost)+'</td><td class="num"><span class="badge '+cls+'">'+arrow+' '+Math.abs(pct)+'%</span></td><td><span class="badge '+tierCls+'">'+esc(b.tier)+'</span></td></tr>';
-  });
-  var cheaperCount=BENCHMARKS.filter(function(b){return ourCost<b.est_cost;}).length;
-  var insight='Our calculated system total of $'+f2(ourCost)+' is below the estimated cost of '+cheaperCount+' out of '+BENCHMARKS.length+' benchmark systems. '+(r.inp.country==='China'||r.inp.country==='Vietnam'?'Manufacturing in '+r.inp.country+' provides strong cost advantage. ':'Consider low-cost country manufacturing to improve competitiveness. ')+'Direct Material is '+((r.totalDM/r.totalWorks)*100).toFixed(1)+'% of works cost. '+(r.totalDM/r.totalWorks>0.55?'High DM% — review magnet and basket material specs for savings.':'Conversion costs dominate — automation investment may improve margins.');
-  setEl('benchContent','<table><thead><tr><th>System</th><th>Brand</th><th>Config</th><th class="num">Spk#</th><th class="num">OEM Cost</th><th class="num">Est Cost</th><th class="num">Our Calc</th><th class="num">vs Est</th><th>Tier</th></tr></thead><tbody>'+rows+'</tbody></table><div class="insights-block">'+esc(insight)+'</div>');
+// ─── calculate ────────────────────────────────────────────────────────────────
+function gv(id, def) {
+  var el = document.getElementById(id);
+  return el ? el.value : def;
 }
 
-function renderProcess(r){
-  var firstRes=r.spkResults[0];
-  var d=firstRes.driver;
-  var procRows='';
-  firstRes.proc.forEach(function(s){
-    procRows+='<tr><td>'+esc(s.name)+'</td><td>'+esc(s.station)+'</td><td class="num">'+s.cycMin.toFixed(3)+'</td><td class="num">$'+f2(s.machCost)+'</td><td class="num">$'+f2(s.labCost)+'</td><td class="num">$'+f2(s.scrapCost)+'</td><td class="num">$'+f2(s.total)+'</td></tr>';
+function calculate() {
+  var sustainMode = gv('sustainMode', 'standard');
+
+  // Apply sustainMode overrides to material selections
+  var magnet    = gv('magnetType', 'Neodymium');
+  var cone      = gv('coneMat', 'Polypropylene');
+  var surround  = gv('surroundMat', 'Rubber');
+  var frame     = gv('frameMat', 'Die-Cast Al');
+  var vcWire    = gv('vcWire', 'Copper');
+  var vcFormer  = gv('vcFormer', 'Kapton');
+
+  if (sustainMode === 'green_premium') {
+    cone    = 'Paper';
+    surround= 'Cloth';
+    frame   = 'Injected PP';
+  } else if (sustainMode === 'full_sustainable') {
+    cone    = 'Paper';
+    surround= 'Cloth';
+    frame   = 'Injected PP';
+    magnet  = 'Ferrite';
+    vcWire  = 'Aluminium';
+    vcFormer= 'Paper';
+  }
+
+  // Collect enabled features
+  var features = [];
+  document.querySelectorAll('.feat-item input[type=checkbox]:checked').forEach(function(cb) {
+    features.push(cb.value);
   });
-  var procTotal=firstRes.proc.reduce(function(s,x){return s+x.total;},0);
-  procRows+='<tr class="subtotal"><td colspan="6">Total Process Cost</td><td class="num">$'+f2(procTotal)+'</td></tr>';
-  var dfmaTips=DFMA_TIPS[r.inp.system]||DFMA_TIPS['Standard'];
-  var dfmaRows='';
-  dfmaTips.forEach(function(t){
-    var ecls=t.effort==='Low'?'effort-low':t.effort==='Medium'?'effort-med':'effort-high';
-    dfmaRows+='<tr><td>'+esc(t.area)+'</td><td>'+esc(t.tip)+'</td><td style="color:var(--green)">'+esc(t.saving)+'</td><td><span class="'+ecls+'">'+esc(t.effort)+'</span></td></tr>';
-  });
-  setEl('processContent','<div class="section-hdr">Process Steps — '+esc(d.role)+' ('+esc(d.type)+' '+d.sizeMM+'mm, '+esc(r.inp.country)+')</div><table><thead><tr><th>Step</th><th>Station</th><th class="num">Cycle Min</th><th class="num">Mach $</th><th class="num">Lab $</th><th class="num">Scrap $</th><th class="num">Total $</th></tr></thead><tbody>'+procRows+'</tbody></table><div class="section-hdr" style="margin-top:16px">DFMA Opportunities — '+esc(r.inp.system)+' System</div><table><thead><tr><th>Area</th><th>Opportunity</th><th>Saving</th><th>Effort</th></tr></thead><tbody>'+dfmaRows+'</tbody></table>');
+
+  var marginVal = parseFloat(gv('marginPct', '18')) || 18;
+  var inp = {
+    system:      gv('systemType', 'Standard'),
+    country:     gv('country', 'China'),
+    annualVol:   parseInt(gv('annualVol', '50000')) || 50000,
+    margin:      marginVal / 100,
+    magnet:      magnet,
+    cone:        cone,
+    surround:    surround,
+    frame:       frame,
+    vcWire:      vcWire,
+    vcFormer:    vcFormer,
+    freightMode: gv('freightMode', 'reg'),
+    dutyRate:    parseFloat(gv('dutyRegime', '0.05')) || 0,
+    features:    features,
+    sustainMode: sustainMode,
+    power:       60  // default; overridden per driver in computeSpkPerUnit
+  };
+
+  try {
+    var r = computeSystemCost(inp);
+    _lastResult = r;
+
+    renderMetrics(r);
+    renderSensitivity(r);
+    renderRecommendations(r);
+
+    var activeTab = document.querySelector('.tab-btn.active');
+    var activeId = activeTab ? activeTab.getAttribute('data-tab') : 'overview';
+
+    if (activeId === 'overview') renderOverview(r);
+    if (activeId === 'bom')      renderFullBOM(r);
+    if (activeId === 'sustain')  renderSustainability(r);
+    if (activeId === 'bench')    renderBenchmarking(r);
+    if (activeId === 'process')  renderProcess(r);
+    if (activeId === 'ai')       renderAIInsights(r);
+
+  } catch(e) {
+    console.error('Calculation error:', e);
+  }
 }
 
-function renderSensitivity(r){
-  var base=r.total;
-  var inp=r.inp;
-  var inpFerrite=Object.assign({},inp,{magnet:inp.magnet==='Neodymium'?'Ferrite':'Neodymium'});
-  var rFerrite=computeSystemCost(inpFerrite);
-  var deltaMag=rFerrite.total-base;
-  var inpVolUp=Object.assign({},inp,{annualVol:Math.round(inp.annualVol*1.2)});
-  var rVolUp=computeSystemCost(inpVolUp);
-  var deltaVolUp=rVolUp.total-base;
-  var inpVolDn=Object.assign({},inp,{annualVol:Math.round(inp.annualVol*0.8)});
-  var rVolDn=computeSystemCost(inpVolDn);
-  var deltaVolDn=rVolDn.total-base;
-  var altCountry=inp.country==='China'?'USA':'China';
-  var inpCountry=Object.assign({},inp,{country:altCountry});
-  var rCountry=computeSystemCost(inpCountry);
-  var deltaCountry=rCountry.total-base;
-  var inpMargUp=Object.assign({},inp,{margin:inp.margin*1.2});
-  var rMargUp=computeSystemCost(inpMargUp);
-  var deltaMargUp=rMargUp.total-base;
-  var inpDuty=Object.assign({},inp,{dutyRate:String(parseFloat(inp.dutyRate)+0.05)});
-  var rDuty=computeSystemCost(inpDuty);
-  var deltaDuty=rDuty.total-base;
-  var altFrt=inp.freightMode==='int'?'dom':'int';
-  var inpFrt=Object.assign({},inp,{freightMode:altFrt});
-  var rFrt=computeSystemCost(inpFrt);
-  var deltaFrt=rFrt.total-base;
-  var labels=[
-    (inp.magnet==='Neodymium'?'Switch to Ferrite':'Switch to Neo'),
-    'Volume +20%',
-    'Volume -20%',
-    altCountry+' vs '+inp.country,
-    'Margin +20% rel',
-    'Duty +5pp',
-    (altFrt==='int'?'Freight: Intl':'Freight: Dom')
-  ];
-  var deltas=[deltaMag,deltaVolUp,deltaVolDn,deltaCountry,deltaMargUp,deltaDuty,deltaFrt];
-  var colors=deltas.map(function(d){return d<0?'#3fb950':'#f85149';});
-  if(_senChart){_senChart.destroy();_senChart=null;}
-  var ctx=document.getElementById('senChart');
-  if(ctx){
-    _senChart=new Chart(ctx,{
-      type:'bar',
-      data:{
-        labels:labels,
-        datasets:[{
-          label:'Delta ($)',
-          data:deltas.map(function(v){return parseFloat(v.toFixed(2));}),
-          backgroundColor:colors,
-          borderRadius:4
-        }]
-      },
-      options:{
-        indexAxis:'y',
-        plugins:{legend:{display:false}},
-        scales:{
-          x:{grid:{color:'#21262d'},ticks:{color:'#8b949e',callback:function(v){return '$'+v;}}},
-          y:{grid:{color:'#21262d'},ticks:{color:'#8b949e',font:{size:10}}}
-        }
-      }
+// ─── Auto-calculate debounce ─────────────────────────────────────────────────
+function scheduleCalc() {
+  clearTimeout(_debTimer);
+  _debTimer = setTimeout(calculate, 400);
+}
+
+// ─── applyPreset ──────────────────────────────────────────────────────────────
+function applyPreset(name) {
+  var presets = {
+    budget: {
+      systemType:'Standard', country:'Vietnam', annualVol:200000, marginPct:12,
+      sustainMode:'standard', magnetType:'Ferrite', coneMat:'Paper', surroundMat:'Cloth',
+      frameMat:'Stamped Steel', vcWire:'Aluminium', vcFormer:'Paper',
+      freightMode:'int', dutyRegime:'0.035', features:[]
+    },
+    premium: {
+      systemType:'Immersive 3D', country:'Germany', annualVol:25000, marginPct:28,
+      sustainMode:'standard', magnetType:'Neodymium', coneMat:'Composite', surroundMat:'Rubber',
+      frameMat:'Die-Cast Al', vcWire:'Copper', vcFormer:'Kapton',
+      freightMode:'reg', dutyRegime:'0.05',
+      features:['ANC','DSP Integration','Spatial Audio','GaN Amp','Neural DSP','Head Tracking']
+    },
+    green: {
+      systemType:'Enhanced', country:'UK', annualVol:50000, marginPct:18,
+      sustainMode:'full_sustainable', magnetType:'Ferrite', coneMat:'Paper', surroundMat:'Cloth',
+      frameMat:'Injected PP', vcWire:'Aluminium', vcFormer:'Paper',
+      freightMode:'dom', dutyRegime:'0', features:['OTA Calibration','A2B Bus']
+    },
+    volume: {
+      systemType:'Standard', country:'China', annualVol:500000, marginPct:14,
+      sustainMode:'standard', magnetType:'Ferrite', coneMat:'Polypropylene', surroundMat:'Foam',
+      frameMat:'Stamped Steel', vcWire:'Copper', vcFormer:'Aluminium',
+      freightMode:'int', dutyRegime:'0.05', features:['DSP Integration']
+    }
+  };
+
+  var p = presets[name];
+  if (!p) return;
+
+  var ids = ['systemType','country','annualVol','marginPct','sustainMode','magnetType','coneMat','surroundMat','frameMat','vcWire','vcFormer','freightMode','dutyRegime'];
+  ids.forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el && p[id] !== undefined) el.value = p[id];
+  });
+
+  // Update margin display
+  var md = document.getElementById('marginDisplay');
+  if (md) md.textContent = (p.marginPct || 18) + '%';
+
+  // Reset all checkboxes
+  document.querySelectorAll('.feat-item input[type=checkbox]').forEach(function(cb) { cb.checked = false; });
+  (p.features || []).forEach(function(feat) {
+    document.querySelectorAll('.feat-item input[type=checkbox]').forEach(function(cb) {
+      if (cb.value === feat) cb.checked = true;
+    });
+  });
+
+  // Flash active preset button
+  document.querySelectorAll('.preset-btn').forEach(function(b) { b.style.background = ''; });
+  var btn = document.querySelector('.preset-btn[onclick*="' + name + '"]');
+  if (btn) {
+    btn.style.background = 'linear-gradient(135deg,var(--blue),var(--purple))';
+    btn.style.color = '#fff';
+    setTimeout(function() { btn.style.background = ''; btn.style.color = ''; }, 1400);
+  }
+
+  calculate();
+}
+
+// ─── initAnimations ───────────────────────────────────────────────────────────
+function initAnimations() {
+  var header = document.querySelector('.brand-title');
+  if (header) {
+    header.style.opacity = '0';
+    header.style.transform = 'translateY(-16px)';
+    setTimeout(function() {
+      header.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+      header.style.opacity = '1';
+      header.style.transform = 'translateY(0)';
+    }, 100);
+  }
+
+  document.querySelectorAll('.preset-btn').forEach(function(btn, i) {
+    btn.style.opacity = '0';
+    btn.style.transform = 'scale(0.88)';
+    setTimeout(function() {
+      btn.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+      btn.style.opacity = '1';
+      btn.style.transform = 'scale(1)';
+    }, 200 + i * 60);
+  });
+
+  document.querySelectorAll('.config-group, .form-section').forEach(function(g, i) {
+    g.style.opacity = '0';
+    g.style.transform = 'translateX(-12px)';
+    setTimeout(function() {
+      g.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+      g.style.opacity = '1';
+      g.style.transform = 'translateX(0)';
+    }, 150 + i * 50);
+  });
+
+  if (window.Motion && window.Motion.inView) {
+    document.querySelectorAll('.card').forEach(function(card) {
+      window.Motion.inView(card, function() {
+        window.Motion.animate(card, {opacity:[0,1],y:[12,0]}, {duration:0.4,easing:[0.16,1,0.3,1]});
+      }, {amount:0.2});
     });
   }
 }
 
-function renderRecommendations(r){
-  var recs=[];
-  var dmPct=r.totalDM/r.totalWorks;
-  if(dmPct>0.55){
-    recs.push('Direct Material is '+( dmPct*100).toFixed(1)+'% of works cost (above 55% threshold). Review magnet spec: switching from Neodymium to Ferrite on lower-power drivers saves 3-8% on DM.');
-  } else {
-    recs.push('Direct Material at '+(dmPct*100).toFixed(1)+'% of works is well-controlled. Focus on conversion cost (labour + machine) for further savings via automation.');
+// ─── Event wiring ─────────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', function() {
+  // Margin slider display
+  var marginSlider = document.getElementById('marginPct');
+  var marginDisplay = document.getElementById('marginDisplay');
+  if (marginSlider && marginDisplay) {
+    marginSlider.addEventListener('input', function() {
+      marginDisplay.textContent = marginSlider.value + '%';
+    });
   }
-  if(r.inp.country!=='China'&&r.inp.country!=='Vietnam'&&r.inp.country!=='India'){
-    recs.push('Manufacturing in '+r.inp.country+' carries premium labour rates ($'+COUNTRIES[r.inp.country].labHr+'/hr). Dual-source or qualify a low-cost country (China/Vietnam/India) to reduce conversion cost by 40-60%.');
-  } else {
-    recs.push(r.inp.country+' manufacturing provides competitive labour ($'+COUNTRIES[r.inp.country].labHr+'/hr). Maintain supplier quality audits and dual-source logistics to protect cost advantage.');
+
+  // Volume display
+  var volSlider = document.getElementById('annualVol');
+  var volDisplay = document.getElementById('volDisplay');
+  if (volSlider && volDisplay) {
+    volSlider.addEventListener('input', function() {
+      volDisplay.textContent = fmtVol(parseInt(volSlider.value));
+    });
   }
-  if(r.totalSpkCO2>2.0){
-    recs.push('System CO2 footprint is '+f2(r.totalSpkCO2)+' kg. Switch cone from '+r.inp.cone+' to Paper (90% bio-based) and VC wire from '+r.inp.vcWire+' to Aluminium (50% recycled) to reduce carbon intensity by 15-25%.');
-  } else {
-    recs.push('CO2 footprint of '+f2(r.totalSpkCO2)+' kg is competitive. Specify recycled CRGO steel for motor parts and bio-based spider fabric to further improve sustainability score.');
-  }
-  var tips=DFMA_TIPS[r.inp.system]||[];
-  if(tips.length>0){
-    var parseSaving=function(s){return parseFloat(String(s).replace(/[^0-9.]/g,''))||0;};
-    var best=tips[0];
-    tips.forEach(function(t){if(parseSaving(t.saving)>parseSaving(best.saving))best=t;});
-    recs.push('Top DFMA for '+r.inp.system+': ['+best.area+'] '+best.tip+' — '+best.saving+' ('+best.effort+' effort).');
-  }
-  if(r.inp.annualVol<20000){
-    recs.push('At '+fmtVol(r.inp.annualVol)+' units/yr, tooling adds $'+f2(r.totalTool)+'/system. Increasing volume to 50k+ reduces tooling burden by ~60% and improves competitiveness significantly.');
-  } else {
-    recs.push('Volume of '+fmtVol(r.inp.annualVol)+' units/yr gives good tooling leverage ($'+f2(r.totalTool)+'/system). Negotiate multi-year blanket orders to lock in material pricing and reduce inbound freight rates.');
-  }
-  setEl('recsContent','<li>'+recs.map(esc).join('</li><li>')+'</li>');
-}
 
-// ── MAIN ──────────────────────────────────────────────────────────────────
-function calculate(){
-  var sustainMode=document.getElementById('sustainMode').value;
-  var inp={
-    system:     document.getElementById('systemType').value,
-    country:    document.getElementById('country').value,
-    cone:       document.getElementById('coneMat').value,
-    magnet:     document.getElementById('magnetType').value,
-    surround:   document.getElementById('surroundMat').value,
-    frame:      document.getElementById('frameMat').value,
-    vcWire:     document.getElementById('vcWire').value,
-    vcFormer:   document.getElementById('vcFormer').value,
-    vcDia:      25,
-    power:      50,
-    annualVol:  parseInt(document.getElementById('annualVol').value)||50000,
-    freightMode:document.getElementById('freightMode').value,
-    dutyRate:   document.getElementById('dutyRegime').value,
-    margin:     parseInt(document.getElementById('marginPct').value)/100||0.12,
-    features:   Array.prototype.slice.call(document.querySelectorAll('#advFeatures input:checked')).map(function(c){return c.value;}),
-    sustainMode:sustainMode
-  };
-  if(sustainMode==='Green Premium'){
-    inp.cone='Paper'; inp.surround='Cloth'; inp.frame='Stamped Steel';
-  } else if(sustainMode==='Full Sustainable'){
-    inp.cone='Paper'; inp.surround='Cloth'; inp.frame='Stamped Steel';
-    inp.magnet='Ferrite'; inp.vcWire='Aluminium'; inp.vcFormer='Paper';
-  }
-  var r=computeSystemCost(inp);
-  _lastResult=r;
-  renderMetrics(r);
-  renderOverview(r);
-  renderFullBOM(r);
-  renderSustainability(r);
-  renderBenchmarking(r);
-  renderProcess(r);
-  renderSensitivity(r);
-  renderRecommendations(r);
-}
-
-function showTab(id){
-  document.querySelectorAll('.tab-panel').forEach(function(p){p.classList.remove('active');});
-  document.querySelectorAll('.tab-btn').forEach(function(b){b.classList.remove('active');});
-  document.getElementById('panel-'+id).classList.add('active');
-  document.querySelector('[data-tab="'+id+'"]').classList.add('active');
-}
-
-function exportPDF(){
-  document.body.classList.add('print-mode');
-  window.print();
-  setTimeout(function(){document.body.classList.remove('print-mode');},500);
-}
-
-function exportPPT(){
-  if(!_lastResult){alert('Please run Calculate first.');return;}
-  var r=_lastResult;
-  var pptx=new PptxGenJS();
-  pptx.layout='LAYOUT_WIDE';
-  var dark='1C2333',light='E6EDF3',blue='1F6FEB',green='3FB950';
-
-  var s1=pptx.addSlide();
-  s1.background={color:dark};
-  s1.addText('360° Automotive Speaker Should-Cost Engine',{x:0.5,y:1.2,w:12,h:0.8,fontSize:28,bold:true,color:light});
-  s1.addText(r.system.label,{x:0.5,y:2.1,w:12,h:0.5,fontSize:20,color:blue});
-  s1.addText('Manufacturing: '+r.inp.country+' | Volume: '+fmtVol(r.inp.annualVol)+'/yr | Total: $'+f2(r.total),{x:0.5,y:2.7,w:12,h:0.4,fontSize:14,color:'8B949E'});
-  s1.addText('Speakers: '+r.totalSpkCount+' | CO2: '+f2(r.totalSpkCO2)+' kg | Margin: $'+f2(r.margin),{x:0.5,y:3.2,w:12,h:0.4,fontSize:12,color:'8B949E'});
-
-  var s2=pptx.addSlide();
-  s2.background={color:dark};
-  s2.addText('Speaker Configuration',{x:0.5,y:0.3,w:12,h:0.5,fontSize:20,bold:true,color:light});
-  var spkData=[['Role','Type','Size','Qty','Location','Unit Cost','Line Total']];
-  r.spkResults.forEach(function(res){
-    var d=res.driver;
-    spkData.push([d.role,d.type,d.sizeMM+'mm',String(d.qty),d.loc,'$'+f2(res.totalPerUnit),'$'+f2(res.totalPerUnit*d.qty)]);
+  // Wire auto-calculate to all form inputs
+  var watchIds = ['systemType','country','annualVol','sustainMode','magnetType','coneMat','surroundMat',
+                  'frameMat','vcWire','vcFormer','freightMode','dutyRegime','marginPct','vehicleClass'];
+  watchIds.forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) {
+      el.addEventListener('change', scheduleCalc);
+      if (el.tagName === 'INPUT') el.addEventListener('input', scheduleCalc);
+    }
   });
-  s2.addTable(spkData,{x:0.5,y:0.9,w:12,h:5,fontSize:11,color:light,border:{pt:1,color:'30363D'},fill:{color:'161B22'}});
 
-  var s3=pptx.addSlide();
-  s3.background={color:dark};
-  s3.addText('Cost Breakdown',{x:0.5,y:0.3,w:12,h:0.5,fontSize:20,bold:true,color:light});
-  var costData=[['Cost Element','USD'],
-    ['Direct Material','$'+f2(r.totalDM)],['Direct Labour','$'+f2(r.totalDLab)],
-    ['Machine Cost','$'+f2(r.totalDMach)],['Prime Cost','$'+f2(r.totalPrime)],
-    ['FOH','$'+f2(r.totalFOH)],['Mfg Cost','$'+f2(r.totalMfg)],
-    ['G&A','$'+f2(r.totalGA)],['Tooling','$'+f2(r.totalTool)],
-    ['Warranty','$'+f2(r.totalWarr)],['Works Cost','$'+f2(r.totalWorks)],
-    ['Sys Extras','$'+f2(r.sysTotalExtra)],['Features','$'+f2(r.featCost)],
-    ['Freight','$'+f2(r.outFrt)],['Duty','$'+f2(r.duty)],
-    ['Landed','$'+f2(r.landed)],['Margin','$'+f2(r.margin)],['TOTAL','$'+f2(r.total)]
-  ];
-  s3.addTable(costData,{x:0.5,y:0.9,w:7,h:5.5,fontSize:11,color:light,border:{pt:1,color:'30363D'},fill:{color:'161B22'}});
-
-  var s4=pptx.addSlide();
-  s4.background={color:dark};
-  s4.addText('Sustainability Overview',{x:0.5,y:0.3,w:12,h:0.5,fontSize:20,bold:true,color:light});
-  s4.addText('Total CO2: '+f2(r.totalSpkCO2)+' kg/system',{x:0.5,y:1.0,w:12,h:0.4,fontSize:16,color:green});
-  var avgRcl=Object.values(MRATE).reduce(function(s,v){return s+v.rcl_pct;},0)/Object.keys(MRATE).length;
-  var avgBio=Object.values(MRATE).reduce(function(s,v){return s+v.bio_pct;},0)/Object.keys(MRATE).length;
-  s4.addText('Avg Recycled: '+avgRcl.toFixed(1)+'% | Avg Bio-based: '+avgBio.toFixed(1)+'%',{x:0.5,y:1.5,w:12,h:0.4,fontSize:13,color:'8B949E'});
-  s4.addText('Magnet: '+r.inp.magnet+' | Cone: '+r.inp.cone+' | Surround: '+r.inp.surround+' | Frame: '+r.inp.frame,{x:0.5,y:2.0,w:12,h:0.4,fontSize:12,color:'8B949E'});
-
-  var s5=pptx.addSlide();
-  s5.background={color:dark};
-  s5.addText('Competitive Benchmarking',{x:0.5,y:0.3,w:12,h:0.5,fontSize:20,bold:true,color:light});
-  var bData=[['System','Brand','Spk#','OEM','Est','Our Calc','vs Est','Tier']];
-  BENCHMARKS.forEach(function(b){
-    var diff=r.total-b.est_cost;
-    var pct=(diff/b.est_cost*100).toFixed(1);
-    bData.push([b.name,b.brand,String(b.spkCnt),'$'+b.oem_cost,'$'+b.est_cost,'$'+f2(r.total),(diff<=0?'▼ ':'▲ ')+Math.abs(pct)+'%',b.tier]);
+  // Tech feature checkboxes
+  document.querySelectorAll('.feat-item input[type=checkbox]').forEach(function(cb) {
+    cb.addEventListener('change', scheduleCalc);
   });
-  s5.addTable(bData,{x:0.5,y:0.9,w:12,h:5,fontSize:10,color:light,border:{pt:1,color:'30363D'},fill:{color:'161B22'}});
 
-  var s6=pptx.addSlide();
-  s6.background={color:dark};
-  s6.addText('DFMA Opportunities',{x:0.5,y:0.3,w:12,h:0.5,fontSize:20,bold:true,color:light});
-  var dfmaData=[['Area','Opportunity','Saving','Effort']];
-  (DFMA_TIPS[r.inp.system]||[]).forEach(function(t){dfmaData.push([t.area,t.tip,t.saving,t.effort]);});
-  s6.addTable(dfmaData,{x:0.5,y:0.9,w:12,h:4,fontSize:11,color:light,border:{pt:1,color:'30363D'},fill:{color:'161B22'}});
+  initAnimations();
 
-  pptx.writeFile({fileName:'Speaker_ShouldCost_v2026.pptx'});
-}
+  // Initial tab state: show panel-overview
+  document.querySelectorAll('.tab-panel').forEach(function(p) { p.style.display = 'none'; });
+  var firstPanel = document.getElementById('panel-overview');
+  if (firstPanel) firstPanel.style.display = 'block';
 
-document.addEventListener('DOMContentLoaded',function(){
-  var volSlider=document.getElementById('annualVol');
-  var volDisp=document.getElementById('volDisplay');
-  volSlider.addEventListener('input',function(){volDisp.textContent=fmtVol(parseInt(volSlider.value));});
-  var margSlider=document.getElementById('marginPct');
-  var margDisp=document.getElementById('marginDisplay');
-  margSlider.addEventListener('input',function(){margDisp.textContent=margSlider.value+'%';});
+  // Initial calculation
   calculate();
 });
 </script>
