@@ -688,6 +688,11 @@ html[data-theme="light"] .chip{color:var(--blue2)}
         <button class="preset-btn" onclick="applyPreset('volume')">High Volume</button>
       </div>
       <button class="calc-btn" id="calcBtn" onclick="calculate()">&#9654; Calculate Full Should-Cost</button>
+      <div style="display:flex;gap:6px;margin-top:6px">
+        <button class="preset-btn" onclick="saveScenario('A')" style="flex:1;background:rgba(59,130,246,0.15);border-color:var(--blue)" title="Save current result as Scenario A">💾 Save as A</button>
+        <button class="preset-btn" onclick="saveScenario('B')" style="flex:1;background:rgba(16,185,129,0.12);border-color:var(--green)" title="Save current result as Scenario B">💾 Save as B</button>
+        <button class="preset-btn" onclick="showTab('compare')" style="flex:1" title="Go to comparison tab">⚖ Compare</button>
+      </div>
     </div>
   </div>
 </div>
@@ -708,6 +713,7 @@ html[data-theme="light"] .chip{color:var(--blue2)}
         <button class="tab-btn" data-tab="bench" onclick="showTab('bench')">Benchmarking</button>
         <button class="tab-btn" data-tab="process" onclick="showTab('process')">Process &amp; DFMA</button>
         <button class="tab-btn" data-tab="ai" onclick="showTab('ai')">&#129302; AI Insights</button>
+        <button class="tab-btn" data-tab="compare" onclick="showTab('compare')">⚖ Compare</button>
       </div>
     </div>
     <div class="tab-content">
@@ -717,6 +723,7 @@ html[data-theme="light"] .chip{color:var(--blue2)}
       <div class="tab-panel" id="panel-bench"><div id="benchContent"></div></div>
       <div class="tab-panel" id="panel-process"><div id="processContent"></div></div>
       <div class="tab-panel" id="panel-ai"><div id="aiContent"><p style="color:var(--t3);text-align:center;padding:60px;font-size:14px">Run calculation to generate AI insights.</p></div></div>
+      <div class="tab-panel" id="panel-compare"><div id="compareContent"><p style="color:var(--t3);text-align:center;padding:60px;font-size:14px">Run calculation, then save as Scenario A or B to compare configurations.</p></div></div>
     </div>
   </div>
   <div class="bottom-grid">
@@ -1140,10 +1147,11 @@ function computeBOM(inp,sizeScale){
     if(flat===undefined)flat=0;
     var matCost=wt>0?g2kg(wt)*rate*(1+scr):0;
     var co2=wt>0?g2kg(wt)*co2Rate:0;
-    return {name:name,spec:spec,cat:cat,wt:wt*sizeScale,rate:rate,scr:scr,cost:matCost+flat,flatAdd:flat,co2:co2};
+    return {name:name,spec:spec,cat:cat,wt:wt*sizeScale,rate:rate,co2Rate:co2Rate,scr:scr,cost:matCost+flat,flatAdd:flat,co2:co2};
   };
+  var magScrap = (['Neodymium','SmCo','Bonded NdFeB','Recycled NdFeB'].indexOf(inp.magnet) >= 0) ? 0.20 : 0.04;
   var items=[
-    row('Permanent Magnet',magSpec.spec,'Motor',magG,magRate,magCO2,0.03),
+    row('Permanent Magnet',magSpec.spec,'Motor',magG,magRate,magCO2,magScrap),
     row('Top Plate (T-Yoke)','CRGO Steel 0.5mm','Motor',p.top_g,MRATE.crgo.usd,MRATE.crgo.co2,0.02),
     row('Back Plate / Yoke','CRGO Steel 2mm','Motor',p.back_g,MRATE.crgo.usd,MRATE.crgo.co2,0.02),
     row('Pole Piece','CRGO Steel','Motor',p.pole_g,MRATE.crgo.usd,MRATE.crgo.co2,0.02),
@@ -1163,7 +1171,7 @@ function computeBOM(inp,sizeScale){
     row('Packaging Set','Carton + foam tray','Misc',0,0,0,0.00,p.pkg_usd)
   ];
   var CROSS={Coaxial:3.80,Component:6.20};
-  if(CROSS[inp.type]){items.push({name:'Crossover Network',spec:'Inductor+Cap+Resistor+PCB',cat:'Electrical',wt:0,rate:0,scr:0,cost:CROSS[inp.type],flatAdd:CROSS[inp.type],co2:0.05});}
+  if(CROSS[inp.type]){items.push({name:'Crossover Network',spec:'Inductor+Cap+Resistor+PCB',cat:'Electrical',wt:0,rate:0,co2Rate:0,scr:0,cost:CROSS[inp.type],flatAdd:CROSS[inp.type],co2:0.05});}
   return items;
 }
 
@@ -1307,6 +1315,7 @@ function showTab(id) {
     if (id === 'bench')    renderBenchmarking(_lastResult);
     if (id === 'process')  renderProcess(_lastResult);
     if (id === 'ai')       renderAIInsights(_lastResult);
+    if (id === 'compare') renderScenarioCompare();
   }
 }
 
@@ -1321,7 +1330,7 @@ function renderMetrics(r) {
   countUp(document.querySelector('#m-spkcount .val'), r.totalSpkCount,   '',  ' spk', 0, 700);
   countUp(document.querySelector('#m-dm .val'),       dmPct,             '',  '%', 1, 750);
   countUp(document.querySelector('#m-co2 .val'),      r.totalSpkCO2,     '',  ' kg', 2, 850);
-  countUp(document.querySelector('#m-margin .val'),   r.inp.margin * 100,'',  '%', 1, 700);
+  countUp(document.querySelector('#m-margin .val'),   r.margin * FX_GBP, '£', '', 2, 700);
 
   document.querySelectorAll('.metric-cell').forEach(function(card, i) {
     card.style.opacity = '0';
@@ -1410,11 +1419,68 @@ function renderOverview(r) {
 
 // ─── renderFullBOM ────────────────────────────────────────────────────────────
 function renderFullBOM(r) {
-  var html = '<div class="section-title">Material Rate Library</div>';
+  var html = '';
+
+  // ── Active BOM for every driver ──────────────────────────────────────────────
+  if (r.spkResults && r.spkResults.length) {
+    r.spkResults.forEach(function(sr) {
+      var d = sr.driver;
+      var dmTotal = sr.bom.reduce(function(s,b){return s+b.cost;},0);
+      html += '<div class="section-title">' + esc(d.role) + ' (' + d.sizeMM + ' mm ' + d.type + ') — BOM Detail</div>';
+      html += '<div class="bom-table"><table><thead><tr>';
+      html += '<th>Item</th><th>Spec</th><th>Cat</th><th>Wt (g)</th><th>Rate (£/kg)</th><th>Scrap%</th><th>Cost (£)</th><th>CO₂ (kg)</th><th>%Cost</th>';
+      html += '</tr></thead><tbody>';
+      sr.bom.forEach(function(b) {
+        var pct = dmTotal > 0 ? (b.cost / dmTotal * 100) : 0;
+        var barW = Math.min(pct * 2.5, 100).toFixed(0);
+        html += '<tr>';
+        html += '<td><strong style="color:var(--t1)">' + esc(b.name) + '</strong></td>';
+        html += '<td style="color:var(--t2);font-size:0.78rem">' + esc(b.spec) + '</td>';
+        html += '<td><span class="badge" style="background:rgba(139,92,246,0.15);color:var(--purple2)">' + esc(b.cat) + '</span></td>';
+        html += '<td>' + f2(b.wt) + '</td>';
+        html += '<td>' + fGBP(b.rate) + '</td>';
+        html += '<td>' + (b.scr > 0 ? (b.scr*100).toFixed(0)+'%' : '—') + '</td>';
+        html += '<td><strong style="color:var(--blue2)">' + f3GBP(b.cost) + '</strong></td>';
+        html += '<td>' + f3(b.co2) + '</td>';
+        html += '<td><div style="display:flex;align-items:center;gap:4px"><div style="width:' + barW + 'px;height:6px;background:var(--blue);border-radius:3px;min-width:2px"></div>' + pct.toFixed(1) + '%</div></td>';
+        html += '</tr>';
+      });
+      html += '<tr style="background:var(--total-row-bg)">';
+      html += '<td colspan="6"><strong>Direct Material Total</strong></td>';
+      html += '<td><strong style="color:var(--green2)">' + fGBP(dmTotal) + '</strong></td>';
+      html += '<td><strong>' + f3(sr.co2PerUnit) + ' kg</strong></td><td></td>';
+      html += '</tr>';
+      html += '</tbody></table></div>';
+    });
+  }
+
+  // ── System BOM cost summary ──────────────────────────────────────────────────
+  html += '<div class="section-title" style="margin-top:1.5rem">System-Level BOM Cost Summary</div>';
   html += '<div class="bom-table"><table><thead><tr>';
+  html += '<th>Driver</th><th>Type</th><th>Qty</th><th>DM / unit (£)</th><th>Proc / unit (£)</th><th>Unit Works (£)</th><th>Ext. Works (£)</th>';
+  html += '</tr></thead><tbody>';
+  r.spkResults.forEach(function(sr) {
+    var d = sr.driver;
+    var dm = sr.bom.reduce(function(s,b){return s+b.cost;},0);
+    html += '<tr>';
+    html += '<td>' + esc(d.role) + '</td>';
+    html += '<td>' + esc(d.type) + '</td>';
+    html += '<td>' + d.qty + '</td>';
+    html += '<td>' + fGBP(dm) + '</td>';
+    html += '<td>' + fGBP(sr.DLab + sr.DMach) + '</td>';
+    html += '<td>' + fGBP(sr.totalPerUnit) + '</td>';
+    html += '<td><strong>' + fGBP(sr.totalPerUnit * d.qty) + '</strong></td>';
+    html += '</tr>';
+  });
+  html += '</tbody></table></div>';
+
+  // ── Material Rate Library (collapsed) ────────────────────────────────────────
+  html += '<details style="margin-top:1.5rem">';
+  html += '<summary class="section-title" style="cursor:pointer;user-select:none;list-style:none;display:flex;align-items:center;gap:8px">';
+  html += '<span style="font-size:10px;color:var(--t3)">▶</span> Full Material Rate Library (' + Object.keys(MRATE).length + ' materials)</summary>';
+  html += '<div class="bom-table" style="margin-top:8px"><table><thead><tr>';
   html += '<th>Material</th><th>£/kg</th><th>CO₂ kg/kg</th><th>Recycled%</th><th>Bio%</th><th>RoHS</th><th>REACH</th><th>VOC</th>';
   html += '</tr></thead><tbody>';
-
   Object.keys(MRATE).forEach(function(k) {
     var m = MRATE[k];
     html += '<tr>';
@@ -1428,19 +1494,8 @@ function renderFullBOM(r) {
     html += '<td>' + (m.voc   ? '<span style="color:var(--amber)">⚠ VOC</span>' : '<span style="color:var(--green2)">✓</span>') + '</td>';
     html += '</tr>';
   });
-
   html += '</tbody></table></div>';
-
-  if (r.spkResults && r.spkResults[0] && r.spkResults[0].bom) {
-    html += '<div class="section-title" style="margin-top:1.5rem">BOM Detail — First Driver (' + esc(r.spkResults[0].driver.role) + ')</div>';
-    html += '<div class="bom-table"><table><thead><tr><th>Item</th><th>Spec</th><th>Cat</th><th>Wt (g)</th><th>Cost</th><th>CO₂</th></tr></thead><tbody>';
-    r.spkResults[0].bom.forEach(function(b) {
-      html += '<tr><td>' + esc(b.name) + '</td><td style="color:var(--t2);font-size:0.8rem">' + esc(b.spec) + '</td>';
-      html += '<td><span class="badge" style="background:rgba(139,92,246,0.15);color:var(--purple2)">' + esc(b.cat) + '</span></td>';
-      html += '<td>' + f2(b.wt) + '</td><td>' + f3GBP(b.cost) + '</td><td>' + f3(b.co2) + ' kg</td></tr>';
-    });
-    html += '</tbody></table></div>';
-  }
+  html += '</details>';
 
   var cont = document.getElementById('bomContent');
   if (cont) cont.innerHTML = html;
@@ -1553,6 +1608,7 @@ function renderBenchmarking(r) {
   html += '<div class="card" style="padding:1rem;margin-top:1rem;border-color:var(--blue)">';
   html += '<p>Your system cost <strong style="color:var(--blue2)">' + fGBP(r.total) + '</strong> ';
   html += 'beats <strong style="color:var(--green2)">' + cheaper + ' of ' + BENCHMARKS.length + '</strong> benchmarks (' + pct + '% cost advantage).</p>';
+  html += '<p style="font-size:10px;color:var(--t3);margin-top:6px;font-style:italic">⚠ Benchmark figures are illustrative industry estimates derived from public teardown reports and analyst data. Not supplier-verified. Use for directional reference only.</p>';
   html += '</div>';
 
   var cont = document.getElementById('benchContent');
@@ -1686,33 +1742,101 @@ function renderAIInsights(r) {
   });
   var techPct = Math.round(enabledTech.length / Object.keys(TECH_FEATURES).length * 100);
 
-  var levers = [
-    {label:'Switch to ferrite magnet',         saving: cost * 0.08},
-    {label:'Increase annual volume 2×',         saving: cost * 0.06},
-    {label:'Relocate to lower-cost country',    saving: cost * 0.12},
-    {label:'DFMA: gang-test & reduce labour',   saving: cost * 0.04},
-    {label:'Bio-based cone material (CO₂ -0.8kg)', saving: cost * 0.02}
-  ].sort(function(a,b){return b.saving-a.saving;}).slice(0,3);
+  // ── Real savings levers — compute actual cost delta via engine ────────────────
+  var levers = [];
+  function tryLever(label, altInp) {
+    try {
+      var alt = computeSystemCost(Object.assign({}, r.inp, altInp));
+      var saving = cost - alt.total;
+      if (saving > 0.01) levers.push({label:label, saving:saving, altCost:alt.total});
+    } catch(e) {}
+  }
 
+  // Lever 1: Switch to ferrite (only meaningful if currently using neo/SmCo/Alnico)
+  if (r.inp.magnet !== 'Ferrite' && r.inp.magnet !== 'Bonded NdFeB') {
+    tryLever('Switch magnet to Ferrite (BOM delta)', {magnet:'Ferrite'});
+  }
+  // Lever 2: Switch to Recycled NdFeB
+  if (r.inp.magnet === 'Neodymium') {
+    tryLever('Switch to Recycled NdFeB (same perf, lower CO₂)', {magnet:'Recycled NdFeB'});
+  }
+  // Lever 3: Relocate to lowest-cost country
+  if (r.inp.country !== 'Vietnam') {
+    tryLever('Relocate manufacturing to Vietnam', {country:'Vietnam'});
+  }
+  // Lever 4: Increase volume 2×
+  tryLever('Scale annual volume 2× (tooling amort.)', {annualVol: r.inp.annualVol * 2});
+  // Lever 5: Switch cone to treated paper (bio)
+  if (r.inp.cone !== 'Treated Paper' && r.inp.cone !== 'Paper') {
+    tryLever('Switch cone to Treated Paper (bio-based, CO₂ -1.2 kg)', {cone:'Treated Paper'});
+  }
+  // Lever 6: Switch to stamped steel frame
+  if (r.inp.frame === 'Die-Cast Al' || r.inp.frame === 'Magnesium Die-Cast') {
+    tryLever('Switch frame to Stamped Steel (volume saving)', {frame:'Stamped Steel'});
+  }
+  // Lever 7: Switch VC wire to CCAW
+  if (r.inp.vcWire === 'Copper' || r.inp.vcWire === 'Flat Copper') {
+    tryLever('Switch VC wire to CCAW (40% cost reduction)', {vcWire:'CCAW'});
+  }
+  // Lever 8: Switch to domestic freight
+  if (r.inp.freightMode !== 'dom') {
+    tryLever('Switch to domestic freight mode', {freightMode:'dom'});
+  }
+
+  levers.sort(function(a,b){return b.saving-a.saving;});
+  var topLevers = levers.slice(0, 4);
+
+  // ── Risk flags ───────────────────────────────────────────────────────────────
   var risks = [];
-  if (dmPct < 40) risks.push('Low DM share (' + f2(dmPct) + '%) — overhead may be inflated');
-  if (marginPct < 10) risks.push('Margin <10% — target price too low');
-  if (r.inp.sustainMode === 'standard' && co2 > 8) risks.push('CO₂ > 8 kg — Scope 3 disclosure risk');
-  if (enabledTech.length > 8) risks.push('High tech count (' + enabledTech.length + ') — integration complexity');
+  if (dmPct < 38) risks.push('DM share ' + f2(dmPct) + '% — overhead loading is high (>62% non-material)');
+  if (dmPct > 75) risks.push('DM share ' + f2(dmPct) + '% — very high; check OH absorption adequacy');
+  if (marginPct < 10) risks.push('Margin ' + f2(marginPct) + '% — below typical 12% automotive floor');
+  if (r.inp.sustainMode === 'standard' && co2 > 8) risks.push('CO₂ ' + f2(co2) + ' kg — above 8 kg Scope 3 disclosure threshold');
+  if (enabledTech.length > 8) risks.push(enabledTech.length + ' tech features enabled — integration & validation cost risk');
+  if (r.inp.dutyRate > 0.07) risks.push('Duty rate ' + (r.inp.dutyRate*100).toFixed(0) + '% — tariff exposure significant');
+  if (r.inp.magnet === 'Neodymium' || r.inp.magnet === 'SmCo') {
+    risks.push('NdFeB/SmCo magnet — rare-earth supply concentration risk (China >85% global supply)');
+  }
+  var reachFail = r.spkResults && r.spkResults[0] && r.spkResults[0].bom.some(function(b){
+    return Object.keys(MRATE).some(function(k){ return MRATE[k].usd===b.rate && !MRATE[k].reach; });
+  });
+  if (reachFail) risks.push('One or more materials may not be REACH-compliant — verify with supplier');
 
-  var html = '<div class="section-title">&#129302; AI-Driven Should-Cost Insights</div>';
+  // ── Commodity sensitivity ────────────────────────────────────────────────────
+  var commodities = [];
+  function commSensitivity(label, key, shockPct) {
+    try {
+      var orig = MRATE[key].usd;
+      MRATE[key].usd = orig * (1 + shockPct/100);
+      var alt = computeSystemCost(r.inp);
+      var delta = alt.total - cost;
+      MRATE[key].usd = orig;
+      commodities.push({label:label, shock:shockPct, delta:delta});
+    } catch(e) { if (MRATE[key]) MRATE[key].usd = MRATE[key].usd; }
+  }
+  commSensitivity('NdFeB +40%',     'neo',      +40);
+  commSensitivity('NdFeB -40%',     'neo',      -40);
+  commSensitivity('Copper +30%',    'cu_wire',  +30);
+  commSensitivity('Copper -30%',    'cu_wire',  -30);
+  commSensitivity('Aluminium +25%', 'diecast_al',+25);
+  commSensitivity('Aluminium -25%', 'diecast_al',-25);
+  commSensitivity('PP +20%',        'pp',       +20);
+
+  var html = '<div class="section-title">&#129302; Should-Cost Intelligence</div>';
   html += '<div class="ai-grid">';
 
   // 1 — Cost Position
   html += '<div class="card ai-card"><div class="ai-card-hdr"><span class="ai-icon">📊</span><span>Cost Position</span></div>';
   html += '<div class="ai-big" style="color:' + posColor + '">' + posLabel + '</div>';
-  html += '<p class="ai-txt">Beats <strong>' + cheaper + '</strong>/' + BENCHMARKS.length + ' benchmarks at ' + fGBP(cost) + '</p></div>';
+  html += '<p class="ai-txt">Beats <strong>' + cheaper + '</strong>/' + BENCHMARKS.length + ' benchmarks at ' + fGBP(cost) + '</p>';
+  html += '<p class="ai-txt" style="margin-top:4px">DM share: <strong style="color:var(--blue2)">' + f2(dmPct) + '%</strong> &nbsp;|&nbsp; Margin: <strong style="color:var(--green2)">' + fGBP(r.margin) + '</strong></p>';
+  html += '</div>';
 
   // 2 — Sustainability
   html += '<div class="card ai-card"><div class="ai-card-hdr"><span class="ai-icon">🌿</span><span>ESG Grade</span></div>';
   html += '<div class="ai-big" style="color:' + gradeColor + '">' + grade + '</div>';
   html += '<p class="ai-txt">CO₂ <strong>' + f2(co2) + ' kg</strong>/system — ';
-  html += grade === 'A' ? 'Excellent. Certify ISO 14067.' : grade === 'B' ? 'Good. Minor tweaks available.' : 'Improvement needed.';
+  html += grade === 'A' ? 'Excellent. Pursue ISO 14067 certification.' : grade === 'B' ? 'Good. Minor adjustments available.' : 'Improvement needed — see pathway.';
   html += '</p></div>';
 
   // 3 — Tech Adoption
@@ -1722,20 +1846,30 @@ function renderAIInsights(r) {
   html += techPct >= 50 ? 'High differentiation.' : techPct >= 25 ? 'Mid-range — consider Neural DSP.' : 'Basic config.';
   html += '</p></div>';
 
-  // 4 — Savings Levers
-  html += '<div class="card ai-card"><div class="ai-card-hdr"><span class="ai-icon">💡</span><span>Top Savings</span></div>';
-  html += '<ol style="padding-left:1.2rem;margin:0.5rem 0">';
-  levers.forEach(function(l) {
-    html += '<li style="color:var(--t2);font-size:0.85rem;margin-bottom:0.4rem">' + esc(l.label) + ' <span style="color:var(--green2)">(-' + fGBP(l.saving) + ')</span></li>';
-  });
-  html += '</ol></div>';
+  // 4 — Real Savings Levers (engine-computed)
+  html += '<div class="card ai-card"><div class="ai-card-hdr"><span class="ai-icon">💡</span><span>Savings Levers <small style="color:var(--t3);font-size:9px">(engine-computed)</small></span></div>';
+  if (topLevers.length) {
+    html += '<table style="width:100%;font-size:11px;border-collapse:collapse;margin-top:4px">';
+    html += '<thead><tr><th style="text-align:left;color:var(--t3);padding:2px 0">Action</th><th style="text-align:right;color:var(--t3)">Saving</th><th style="text-align:right;color:var(--t3)">New Cost</th></tr></thead><tbody>';
+    topLevers.forEach(function(l) {
+      html += '<tr style="border-bottom:1px solid var(--td-border)">';
+      html += '<td style="padding:4px 0;color:var(--t2)">' + esc(l.label) + '</td>';
+      html += '<td style="text-align:right;color:var(--green2);font-weight:700">' + fGBP(l.saving) + '</td>';
+      html += '<td style="text-align:right;color:var(--blue2)">' + fGBP(l.altCost) + '</td>';
+      html += '</tr>';
+    });
+    html += '</tbody></table>';
+  } else {
+    html += '<p style="color:var(--green2);font-size:0.9rem">✓ Already at near-optimal configuration.</p>';
+  }
+  html += '</div>';
 
   // 5 — Risks
-  html += '<div class="card ai-card"><div class="ai-card-hdr"><span class="ai-icon">🚩</span><span>Risk Flags</span></div>';
+  html += '<div class="card ai-card"><div class="ai-card-hdr"><span class="ai-icon">🚩</span><span>Risk Flags (' + risks.length + ')</span></div>';
   if (risks.length) {
     html += '<ul style="padding-left:1.2rem;margin:0.5rem 0">';
     risks.forEach(function(risk) {
-      html += '<li style="color:var(--amber);font-size:0.85rem;margin-bottom:0.4rem">' + esc(risk) + '</li>';
+      html += '<li style="color:var(--amber);font-size:0.82rem;margin-bottom:0.4rem">' + esc(risk) + '</li>';
     });
     html += '</ul>';
   } else {
@@ -1743,13 +1877,28 @@ function renderAIInsights(r) {
   }
   html += '</div>';
 
-  // 6 — Carbon Pathway
+  // 6 — Commodity Sensitivity
+  html += '<div class="card ai-card"><div class="ai-card-hdr"><span class="ai-icon">📈</span><span>Commodity Sensitivity <small style="color:var(--t3);font-size:9px">(live)</small></span></div>';
+  html += '<table style="width:100%;font-size:11px;border-collapse:collapse;margin-top:4px">';
+  html += '<thead><tr><th style="text-align:left;color:var(--t3)">Scenario</th><th style="text-align:right;color:var(--t3)">Cost Impact</th></tr></thead><tbody>';
+  commodities.forEach(function(c) {
+    var sign = c.delta >= 0 ? '+' : '';
+    var col = c.delta >= 0 ? 'var(--red)' : 'var(--green2)';
+    html += '<tr style="border-bottom:1px solid var(--td-border)">';
+    html += '<td style="padding:3px 0;color:var(--t2)">' + esc(c.label) + '</td>';
+    html += '<td style="text-align:right;color:' + col + ';font-weight:600">' + sign + fGBP(c.delta) + '</td>';
+    html += '</tr>';
+  });
+  html += '</tbody></table>';
+  html += '</div>';
+
+  // 7 — Carbon Pathway
   html += '<div class="card ai-card"><div class="ai-card-hdr"><span class="ai-icon">🌍</span><span>Carbon Pathway</span></div>';
   var pathway = co2 < 3 ?
     ['Target met — pursue bio-content cert.', 'Claim carbon-neutral audio', 'ISO 14067 certification'] :
     co2 < 6 ?
-    ['Switch cone to bio-polymer (-0.8 kg)', 'Increase recycled frame content', 'Certify ISO 14067'] :
-    ['Replace NdFeB → recycled alloy (-1.5 kg)', 'Switch to water-based varnish', 'Phase out VOC adhesives'];
+    ['Switch cone to bio-polymer (Treated Paper): -0.8 kg', 'Increase recycled frame content', 'Certify ISO 14067'] :
+    ['Replace NdFeB → Recycled NdFeB: -1.5 kg est.', 'Switch to water-based impregnation varnish', 'Phase out VOC adhesives (UV cure only)'];
   html += '<ol style="padding-left:1.2rem;margin:0.5rem 0">';
   pathway.forEach(function(step) {
     html += '<li style="color:var(--t2);font-size:0.85rem;margin-bottom:0.4rem">' + esc(step) + '</li>';
@@ -1773,6 +1922,123 @@ function renderAIInsights(r) {
       });
     }, 30);
   }
+}
+
+// ─── Scenario Comparison ──────────────────────────────────────────────────────
+var _scenarioA = null;
+var _scenarioB = null;
+
+function saveScenario(slot) {
+  if (!_lastResult) { alert('Run a calculation first.'); return; }
+  if (slot === 'A') { _scenarioA = _lastResult; }
+  else              { _scenarioB = _lastResult; }
+  renderScenarioCompare();
+  showTab('compare');
+}
+
+function renderScenarioCompare() {
+  var cont = document.getElementById('compareContent');
+  if (!cont) return;
+
+  if (!_scenarioA && !_scenarioB) {
+    cont.innerHTML = '<p style="color:var(--t3);text-align:center;padding:60px">Save two scenarios to compare.</p>';
+    return;
+  }
+
+  function scenLabel(r) {
+    if (!r) return '—';
+    return r.inp.system + ' / ' + r.inp.country + ' / ' + r.inp.magnet + ' magnet';
+  }
+
+  var html = '<div class="section-title">⚖ Scenario Comparison</div>';
+
+  // Status chips
+  html += '<div style="display:flex;gap:8px;margin-bottom:12px">';
+  html += '<div style="flex:1;padding:8px 12px;border-radius:8px;background:rgba(59,130,246,0.10);border:1px solid rgba(59,130,246,0.25)">';
+  html += '<div style="font-size:10px;color:var(--blue2);font-weight:700;text-transform:uppercase;letter-spacing:.6px">Scenario A</div>';
+  html += '<div style="font-size:12px;color:var(--t2);margin-top:2px">' + esc(scenLabel(_scenarioA)) + '</div>';
+  html += '</div>';
+  html += '<div style="flex:1;padding:8px 12px;border-radius:8px;background:rgba(16,185,129,0.10);border:1px solid rgba(16,185,129,0.25)">';
+  html += '<div style="font-size:10px;color:var(--green2);font-weight:700;text-transform:uppercase;letter-spacing:.6px">Scenario B</div>';
+  html += '<div style="font-size:12px;color:var(--t2);margin-top:2px">' + esc(scenLabel(_scenarioB)) + '</div>';
+  html += '</div>';
+  html += '</div>';
+
+  if (!_scenarioA || !_scenarioB) {
+    html += '<p style="color:var(--t3);font-size:12px">Save the ' + (!_scenarioA ? 'Scenario A' : 'Scenario B') + ' to see comparison.</p>';
+    cont.innerHTML = html;
+    return;
+  }
+
+  var a = _scenarioA, b = _scenarioB;
+
+  // Key metrics side-by-side
+  var metrics = [
+    {label:'System Total',     aVal: fGBP(a.total),              bVal: fGBP(b.total),          delta: b.total - a.total,          isGBP:true},
+    {label:'Direct Material',  aVal: fGBP(a.totalDM),            bVal: fGBP(b.totalDM),         delta: b.totalDM - a.totalDM,      isGBP:true},
+    {label:'Direct Labour',    aVal: fGBP(a.totalDLab),          bVal: fGBP(b.totalDLab),        delta: b.totalDLab - a.totalDLab,  isGBP:true},
+    {label:'Overhead (FOH)',   aVal: fGBP(a.totalFOH),           bVal: fGBP(b.totalFOH),         delta: b.totalFOH - a.totalFOH,    isGBP:true},
+    {label:'Tooling Amort.',   aVal: fGBP(a.totalTool),          bVal: fGBP(b.totalTool),        delta: b.totalTool - a.totalTool,  isGBP:true},
+    {label:'Target Margin',    aVal: fGBP(a.margin),             bVal: fGBP(b.margin),           delta: b.margin - a.margin,        isGBP:true},
+    {label:'DM %',             aVal: (a.total>0?(a.totalDM/a.total*100):0).toFixed(1)+'%', bVal:(b.total>0?(b.totalDM/b.total*100):0).toFixed(1)+'%', delta:0, isGBP:false},
+    {label:'CO₂ / System',    aVal: f2(a.totalSpkCO2)+' kg',    bVal: f2(b.totalSpkCO2)+' kg',  delta: b.totalSpkCO2 - a.totalSpkCO2, isGBP:false},
+    {label:'Speaker Count',    aVal: a.totalSpkCount,            bVal: b.totalSpkCount,          delta: 0,                          isGBP:false}
+  ];
+
+  html += '<div class="bom-table"><table><thead><tr>';
+  html += '<th>Metric</th><th style="color:var(--blue2)">Scenario A</th><th style="color:var(--green2)">Scenario B</th><th>B vs A</th>';
+  html += '</tr></thead><tbody>';
+
+  metrics.forEach(function(m) {
+    var deltaStr = '', deltaColor = 'var(--t3)';
+    if (m.delta !== 0) {
+      var sign = m.delta > 0 ? '+' : '';
+      if (m.isGBP) {
+        deltaStr = sign + fGBP(m.delta);
+        deltaColor = m.delta < 0 ? 'var(--green2)' : 'var(--red)';
+      } else if (typeof m.delta === 'number') {
+        deltaStr = (m.delta > 0 ? '+' : '') + m.delta.toFixed(2);
+        deltaColor = m.delta < 0 ? 'var(--green2)' : 'var(--amber)';
+      }
+    }
+    html += '<tr>';
+    html += '<td style="color:var(--t2)">' + m.label + '</td>';
+    html += '<td><strong style="color:var(--blue2)">' + m.aVal + '</strong></td>';
+    html += '<td><strong style="color:var(--green2)">' + m.bVal + '</strong></td>';
+    html += '<td><span style="color:' + deltaColor + ';font-weight:600">' + (deltaStr || '—') + '</span></td>';
+    html += '</tr>';
+  });
+  html += '</tbody></table></div>';
+
+  // Config diff
+  html += '<div class="section-title" style="margin-top:1.5rem">Configuration Differences</div>';
+  html += '<div class="bom-table"><table><thead><tr><th>Parameter</th><th style="color:var(--blue2)">Scenario A</th><th style="color:var(--green2)">Scenario B</th></tr></thead><tbody>';
+  var params = [
+    {k:'system',  l:'System Type'},
+    {k:'country', l:'Country'},
+    {k:'annualVol',l:'Annual Volume'},
+    {k:'magnet',  l:'Magnet'},
+    {k:'cone',    l:'Cone'},
+    {k:'surround',l:'Surround'},
+    {k:'frame',   l:'Frame'},
+    {k:'vcWire',  l:'VC Wire'},
+    {k:'vcFormer',l:'Coil Former'},
+    {k:'sustainMode',l:'Sustainability'},
+    {k:'freightMode',l:'Freight'}
+  ];
+  params.forEach(function(p) {
+    var av = String(a.inp[p.k] || '');
+    var bv = String(b.inp[p.k] || '');
+    var diff = av !== bv;
+    html += '<tr' + (diff ? ' style="background:rgba(245,158,11,0.05)"' : '') + '>';
+    html += '<td style="color:var(--t2)">' + p.l + (diff ? ' <span style="color:var(--amber)">●</span>' : '') + '</td>';
+    html += '<td style="color:' + (diff?'var(--blue2)':'var(--t1)') + '">' + esc(av) + '</td>';
+    html += '<td style="color:' + (diff?'var(--green2)':'var(--t1)') + '">' + esc(bv) + '</td>';
+    html += '</tr>';
+  });
+  html += '</tbody></table></div>';
+
+  cont.innerHTML = html;
 }
 
 // ─── calculate ────────────────────────────────────────────────────────────────
