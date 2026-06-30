@@ -582,14 +582,27 @@ function buildImageContentBlocks(
   labels: string[],
   includeLabels: boolean,
 ): Array<{ type: 'image'; source: { type: 'base64'; media_type: string; data: string } } | { type: 'text'; text: string }> {
-  return files.flatMap((f, i) => {
+  type Block = { type: 'image'; source: { type: 'base64'; media_type: string; data: string } } | { type: 'text'; text: string };
+  const out: Block[] = [];
+  // Rec #2: when multiple views are supplied, tell the model how to exploit them —
+  // this resolves components hidden on one side and lets it measure board size
+  // from a scale reference instead of guessing.
+  if (files.length > 1) {
+    out.push({ type: 'text', text:
+      `You are given ${files.length} views of the SAME board (e.g. top, bottom, angled, or a close-up). ` +
+      `Combine them: a component visible in ANY view counts once — do not double-count a part seen in two views, ` +
+      `and do not miss parts that appear only on one side. If a ruler, coin or known connector provides scale, ` +
+      `use it to measure board dimensions rather than estimating. Note each component's side (top/bottom) where discernible.`,
+    });
+  }
+  for (let i = 0; i < files.length; i++) {
+    const f = files[i];
     const base64 = f.buffer.toString('base64');
     const mtype = f.mimetype as 'image/jpeg' | 'image/png' | 'image/webp';
-    const blocks: Array<{ type: 'image'; source: { type: 'base64'; media_type: string; data: string } } | { type: 'text'; text: string }> = [];
-    if (includeLabels) blocks.push({ type: 'text', text: `**${labels[i] ?? `Image ${i + 1}`}:**` });
-    blocks.push({ type: 'image', source: { type: 'base64', media_type: mtype, data: base64 } });
-    return blocks;
-  });
+    if (includeLabels) out.push({ type: 'text', text: `**${labels[i] ?? `Image ${i + 1}`}:**` });
+    out.push({ type: 'image', source: { type: 'base64', media_type: mtype, data: base64 } });
+  }
+  return out;
 }
 
 // Build the user-provided BOM context block injected into the Stage 3 prompt.
