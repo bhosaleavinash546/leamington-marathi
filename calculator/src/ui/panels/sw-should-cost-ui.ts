@@ -21,7 +21,7 @@ import type {
 import {
   computeSWProgram, defaultSWProgramInputs, SW_MODULES,
 } from '../../engine/sw-should-cost.js';
-import * as XLSX from 'xlsx';
+import { buildWorkbook, downloadWorkbook } from '../../export/xlsx-util.js';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -1169,7 +1169,6 @@ Keep response concise and actionable (under 250 words).`;
 // ─── Rec 6: Excel Export ──────────────────────────────────────────────────────
 
 function exportSWExcel(result: SWProgramResult): void {
-  const wb = XLSX.utils.book_new();
   const s  = result.summary;
   const inp = result.inputs;
 
@@ -1198,7 +1197,6 @@ function exportSWExcel(result: SWProgramResult): void {
     ['Total Person-Months', f2(s.totalPersonMonths), 'PM'],
     ['Active Modules', result.modules.length, ''],
   ];
-  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(summaryData), 'Summary');
 
   // Sheet 2: Category Breakdown
   const catData = [
@@ -1209,7 +1207,6 @@ function exportSWExcel(result: SWProgramResult): void {
       return [cat, meta.label, mods.length, fM(t), f2(t/s.grandTotal*100)];
     }),
   ];
-  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(catData), 'Category Breakdown');
 
   // Sheet 3: Module Detail
   const modData = [
@@ -1225,7 +1222,6 @@ function exportSWExcel(result: SWProgramResult): void {
       fM(m.grandTotal), f2(m.perVehicle),
     ]),
   ];
-  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(modData), 'Module Detail');
 
   // Sheet 4: Sensitivity + Monte Carlo
   const mc = result.monteCarlo;
@@ -1250,7 +1246,6 @@ function exportSWExcel(result: SWProgramResult): void {
     ['Phase', 'Timeline', 'NRE Share (%)', 'NRE Budget (£M)'],
     ...result.phases.map(p => [p.name, p.months, f2(p.fraction*100), fM(p.nreCost)]),
   ];
-  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(sensData), 'Sensitivity & MC');
 
   // Sheet 5: Benchmarks
   const bmData = [
@@ -1262,7 +1257,6 @@ function exportSWExcel(result: SWProgramResult): void {
       return [b.vehicle, b.totalM > 0 ? b.totalM : fM(s.grandTotal), b.perVehicle > 0 ? b.perVehicle : f2(s.perVehicle), diff, b.source];
     }),
   ];
-  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(bmData), 'Benchmarks');
 
   // Sheet 6: Configuration
   const cfgData = [
@@ -1284,9 +1278,16 @@ function exportSWExcel(result: SWProgramResult): void {
       return [m.moduleId, def?.name ?? m.moduleId, m.enabled ? 'Yes' : 'No', m.asil, m.complexity, m.reuse, m.customPersonMonths ?? 'auto'];
     }),
   ];
-  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(cfgData), 'Configuration');
 
-  XLSX.writeFile(wb, 'SW_Should_Cost_CostVision.xlsx');
+  const wb = buildWorkbook([
+    { name: 'Summary',            rows: summaryData, cols: [30, 16, 12] },
+    { name: 'Category Breakdown', rows: catData,     cols: [10, 30, 10, 16, 12] },
+    { name: 'Module Detail',      rows: modData,     cols: [4, 30, 9, 7, 12, 10, 14, ...Array(11).fill(14)] },
+    { name: 'Sensitivity & MC',   rows: sensData,    cols: [40, 12, 16, 16, 16, 14] },
+    { name: 'Benchmarks',         rows: bmData,      cols: [28, 18, 12, 18, 44] },
+    { name: 'Configuration',      rows: cfgData,     cols: [28, 40, 10, 8, 12, 10, 12] },
+  ]);
+  downloadWorkbook(wb, 'SW_Should_Cost_CostVision.xlsx');
 }
 
 // ─── PDF Export ───────────────────────────────────────────────────────────────

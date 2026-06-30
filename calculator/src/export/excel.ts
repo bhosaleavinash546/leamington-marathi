@@ -1,6 +1,6 @@
-import * as XLSX from 'xlsx';
 import type { PartCostResult, UniversalStackInput, RateLibrary } from '../engine/types.js';
 import { breakdownPercentages } from '../engine/core.js';
+import { buildWorkbook, workbookBlob, type SheetSpec } from './xlsx-util.js';
 
 const pct = (n: number) => `${n.toFixed(1)}%`;
 const num4 = (n: number) => +n.toFixed(4);
@@ -14,7 +14,7 @@ export function exportToExcelBlob(
 ): Blob {
   const sym = currency === 'GBP' ? '£' : currency === 'EUR' ? '€' : currency === 'USD' ? '$' : currency;
   const c = (n: number) => `${sym}${(n * fxRate).toFixed(2)}`;
-  const wb = XLSX.utils.book_new();
+  const sheets: SheetSpec[] = [];
   const pcts = breakdownPercentages(result);
 
   // ── Sheet 1: Summary ────────────────────────────────────────────────────────
@@ -57,9 +57,7 @@ export function exportToExcelBlob(
     sum.push(['Amortisation Volume', `${input.tooling.amortizationVolume.toLocaleString()} parts`]);
   }
 
-  const wsSummary = XLSX.utils.aoa_to_sheet(sum);
-  wsSummary['!cols'] = [{ wch: 34 }, { wch: 18 }, { wch: 14 }, { wch: 30 }];
-  XLSX.utils.book_append_sheet(wb, wsSummary, '1-Summary');
+  sheets.push({ name: '1-Summary', rows: sum, cols: [34, 18, 14, 30] });
 
   // ── Sheet 2: Material Detail ────────────────────────────────────────────────
   const matDetail: unknown[][] = [
@@ -92,9 +90,7 @@ export function exportToExcelBlob(
     ['Effective date', mat?.effectiveDate ?? '—', '', ''],
   );
 
-  const wsMatl = XLSX.utils.aoa_to_sheet(matDetail);
-  wsMatl['!cols'] = [{ wch: 32 }, { wch: 20 }, { wch: 10 }, { wch: 50 }];
-  XLSX.utils.book_append_sheet(wb, wsMatl, '2-Material');
+  sheets.push({ name: '2-Material', rows: matDetail, cols: [32, 20, 10, 50] });
 
   // ── Sheet 3: Operations Detail ──────────────────────────────────────────────
   const opHdr: string[] = [
@@ -139,13 +135,9 @@ export function exportToExcelBlob(
     pct(((result.breakdown.process + result.breakdown.labour) / result.total) * 100),
   ]);
 
-  const wsOps = XLSX.utils.aoa_to_sheet(opRows);
-  wsOps['!cols'] = [
-    { wch: 26 }, { wch: 18 }, { wch: 22 }, { wch: 16 }, { wch: 16 }, { wch: 16 },
-    { wch: 12 }, { wch: 10 }, { wch: 18 }, { wch: 16 }, { wch: 18 }, { wch: 18 },
-    { wch: 16 }, { wch: 10 }, { wch: 16 }, { wch: 18 }, { wch: 16 }, { wch: 14 }, { wch: 12 },
-  ];
-  XLSX.utils.book_append_sheet(wb, wsOps, '3-Operations');
+  sheets.push({ name: '3-Operations', rows: opRows, cols: [
+    26, 18, 22, 16, 16, 16, 12, 10, 18, 16, 18, 18, 16, 10, 16, 18, 16, 14, 12,
+  ] });
 
   // ── Sheet 4: Machine Rate Buildup ───────────────────────────────────────────
   const machHdr: string[] = [
@@ -176,9 +168,7 @@ export function exportToExcelBlob(
     ]);
   }
 
-  const wsMach = XLSX.utils.aoa_to_sheet(machRows);
-  wsMach['!cols'] = Array(14).fill({ wch: 18 });
-  XLSX.utils.book_append_sheet(wb, wsMach, '4-MachineRates');
+  sheets.push({ name: '4-MachineRates', rows: machRows, cols: Array(14).fill(18) });
 
   // ── Sheet 5: Labour Rates ───────────────────────────────────────────────────
   const labHdr: string[] = ['Labour ID', 'Region', 'Skill Level', 'Fully Loaded Rate', 'Effective Date', 'Source', 'Confidence'];
@@ -193,9 +183,7 @@ export function exportToExcelBlob(
     labRows.push([lab.id, lab.region, lab.skillLevel, c(lab.fullyLoadedRatePerHr), lab.effectiveDate, lab.sourceNote, lab.confidence]);
   }
 
-  const wsLab = XLSX.utils.aoa_to_sheet(labRows);
-  wsLab['!cols'] = [{ wch: 22 }, { wch: 14 }, { wch: 20 }, { wch: 20 }, { wch: 14 }, { wch: 50 }, { wch: 12 }];
-  XLSX.utils.book_append_sheet(wb, wsLab, '5-LabourRates');
+  sheets.push({ name: '5-LabourRates', rows: labRows, cols: [22, 14, 20, 20, 14, 50, 12] });
 
   // ── Sheet 6: Rate Traceability ──────────────────────────────────────────────
   const trHdr: string[] = ['Field', 'Value', 'Unit', 'Rate Source / Reference', 'Rate ID', 'Confidence'];
@@ -204,12 +192,9 @@ export function exportToExcelBlob(
     trRows.push([t.field, num4(t.value), t.unit, t.rateSource, t.rateId, t.confidence]);
   }
 
-  const wsTrace = XLSX.utils.aoa_to_sheet(trRows);
-  wsTrace['!cols'] = [{ wch: 36 }, { wch: 12 }, { wch: 10 }, { wch: 55 }, { wch: 22 }, { wch: 12 }];
-  XLSX.utils.book_append_sheet(wb, wsTrace, '6-Traceability');
+  sheets.push({ name: '6-Traceability', rows: trRows, cols: [36, 12, 10, 55, 22, 12] });
 
-  const buffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' }) as ArrayBuffer;
-  return new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+  return workbookBlob(buildWorkbook(sheets));
 }
 
 // Legacy compat wrapper (called by old main.ts path)
