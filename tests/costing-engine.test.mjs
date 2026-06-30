@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  computeShouldCost, simulateShouldCost,
+  computeShouldCost, simulateShouldCost, volumeSensitivity,
   MATERIALS, PROCESSES, REGIONS, listMaterials, listProcesses, listRegions,
 } from '../costing-engine.mjs';
 
@@ -76,6 +76,15 @@ test('every process references valid material families', () => {
     assert.ok(Array.isArray(p.families) && p.families.length > 0, `${name} missing families`);
     for (const f of p.families) assert.ok(fams.has(f), `${name} references unknown family ${f}`);
   }
+});
+
+test('volumeSensitivity: unit cost falls monotonically as volume rises', () => {
+  const curve = volumeSensitivity(base, [10000, 50000, 250000, 500000]);
+  assert.equal(curve.length, 4);
+  for (let i = 1; i < curve.length; i++) {
+    assert.ok(curve[i].unitCost <= curve[i - 1].unitCost, `cost should not rise from ${curve[i-1].volume} to ${curve[i].volume}`);
+  }
+  assert.equal(curve[0].volume, 10000);
 });
 
 test('all regions have sane rate fields', () => {

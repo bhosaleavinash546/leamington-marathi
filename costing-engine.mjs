@@ -244,6 +244,21 @@ export function computeShouldCost(input, overrides = {}) {
   };
 }
 
+/**
+ * Predictive volume-sensitivity curve: unit cost at a set of annual volumes.
+ * Shows the tooling-amortisation breakpoints — a real design-to-cost /
+ * negotiation artifact (cost falls as fixed tooling spreads over more parts).
+ * @returns {{volume:number, unitCost:number, delta:number}[]}  delta vs base volume
+ */
+export function volumeSensitivity(input, volumes) {
+  const points = (volumes && volumes.length ? volumes : [10000, 25000, 50000, 100000, 250000, 500000]);
+  const baseCost = computeShouldCost(input).totalShouldCost;
+  return points.map(v => {
+    const unitCost = computeShouldCost({ ...input, annualVolume: v }).totalShouldCost;
+    return { volume: v, unitCost, delta: round(unitCost - baseCost) };
+  });
+}
+
 // ─── Deterministic PRNG (mulberry32) for reproducible simulation ──────────────
 function mulberry32(seed) {
   let a = seed >>> 0;

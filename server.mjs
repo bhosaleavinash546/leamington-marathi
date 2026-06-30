@@ -15,7 +15,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import nodemailer from 'nodemailer';
 import Database from 'better-sqlite3';
-import { computeShouldCost, simulateShouldCost, listMaterials, listProcesses, listRegions, MATERIALS, PROCESSES } from './costing-engine.mjs';
+import { computeShouldCost, simulateShouldCost, volumeSensitivity, listMaterials, listProcesses, listRegions, MATERIALS, PROCESSES } from './costing-engine.mjs';
 import { validateIdeas } from './idea-validation.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -4675,10 +4675,12 @@ app.post('/api/should-cost', requireAuth, rateLimit(60, 60 * 60 * 1000), async (
   }
 
   // ── 1. Deterministic bottom-up cost (NO LLM — real rate × time / mass × price) ─
-  let calc, sim;
+  let calc, sim, volumeCurve;
   try {
-    calc = computeShouldCost({ material, process, weightKg: Number(weightKg), annualVolume: Number(annualVolume), region: region || 'Germany' });
-    sim  = simulateShouldCost({ material, process, weightKg: Number(weightKg), annualVolume: Number(annualVolume), region: region || 'Germany' });
+    const engineInput = { material, process, weightKg: Number(weightKg), annualVolume: Number(annualVolume), region: region || 'Germany' };
+    calc = computeShouldCost(engineInput);
+    sim  = simulateShouldCost(engineInput);
+    volumeCurve = volumeSensitivity(engineInput);
   } catch (e) {
     return res.status(400).json({ error: e.message || 'Invalid costing parameters.' });
   }
@@ -4709,6 +4711,7 @@ app.post('/api/should-cost', requireAuth, rateLimit(60, 60 * 60 * 1000), async (
     breakdown: b,
     drivers: calc.drivers,
     simulation: { p10: fmt(sim.p10), p50: fmt(sim.p50), p90: fmt(sim.p90), p10Value: sim.p10, p50Value: sim.p50, p90Value: sim.p90, stdev: sim.stdev },
+    volumeCurve: volumeCurve.map(p => ({ volume: p.volume, unitCost: p.unitCost, unitCostLabel: fmt(p.unitCost) })),
     assumptions: [
       `Material ${material} @ ${currency} ${calc.drivers.pricePerKg}/kg, buy-to-fly input mass ${calc.drivers.inputMassKg} kg (process utilisation ${(calc.drivers.utilisation * 100).toFixed(0)}%).`,
       `${process}: cycle ${calc.drivers.cycleSecPerPart}s/part, machine rate ${currency} ${calc.drivers.machineRate}/hr, ${calc.drivers.operators} operator(s) @ ${currency} ${calc.drivers.labourRate}/hr (${region}).`,

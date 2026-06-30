@@ -24,6 +24,7 @@ interface ShouldCostResult {
   breakdown: Record<string, CostComponent>;
   drivers: Record<string, number>;
   simulation: { p10: string; p50: string; p90: string; p10Value: number; p50Value: number; p90Value: number; stdev: number };
+  volumeCurve?: { volume: number; unitCost: number; unitCostLabel: string }[];
   assumptions: string[];
   explanation: string;
   negotiationLeverage: string;
@@ -245,6 +246,28 @@ export default function ShouldCostPage() {
                 {result.gapVsQuote && (
                   <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
                     <div className="text-emerald-400 text-sm font-semibold">Gap vs Supplier Quote: {result.gapVsQuote}</div>
+                  </div>
+                )}
+
+                {/* Predictive volume-cost curve */}
+                {result.volumeCurve && result.volumeCurve.length > 0 && (
+                  <div>
+                    <div className="text-slate-400 text-xs font-semibold uppercase tracking-wider mb-2">Unit Cost vs Annual Volume</div>
+                    <div className="space-y-1">
+                      {(() => {
+                        const max = Math.max(...result.volumeCurve!.map(p => p.unitCost));
+                        return result.volumeCurve!.map(p => (
+                          <div key={p.volume} className="flex items-center gap-3">
+                            <span className="text-[11px] text-slate-500 w-16 text-right tabular-nums">{p.volume.toLocaleString()}</span>
+                            <div className="flex-1 h-3.5 rounded bg-navy-800 overflow-hidden">
+                              <div className="h-full bg-teal-500/70" style={{ width: `${max > 0 ? (p.unitCost / max) * 100 : 0}%` }} />
+                            </div>
+                            <span className="text-[11px] text-teal-300 font-semibold w-20 text-right tabular-nums">{p.unitCostLabel}</span>
+                          </div>
+                        ));
+                      })()}
+                    </div>
+                    <p className="text-slate-600 text-[10px] mt-1">Tooling amortisation breakpoints — unit cost falls as fixed tooling spreads over volume.</p>
                   </div>
                 )}
                 <div>
