@@ -71,6 +71,16 @@ function parseStl(buffer: ArrayBuffer): Partial<CadGeometry> {
 
 const MAX_STL_TRIANGLES = 2_000_000; // guard: avoid hanging/OOM on pathological meshes
 
+// STL carries no units; we assume mm. Flag implausible envelopes so a user can
+// catch an inch/metre/micron file before trusting volume & mass (off by 25.4³ etc.).
+function unitSanityWarning(bbox?: { x: number; y: number; z: number }): string | null {
+  if (!bbox) return null;
+  const maxDim = Math.max(bbox.x, bbox.y, bbox.z);
+  if (maxDim > 0 && maxDim < 1) return `Largest dimension is ${maxDim} mm — the file may be in metres or inches. Volume/mass assume millimetres; verify units.`;
+  if (maxDim > 50000) return `Largest dimension is ${maxDim} mm (>50 m) — the file may be in microns or the wrong unit. Volume/mass assume millimetres; verify units.`;
+  return null;
+}
+
 function parseBinaryStl(buffer: ArrayBuffer): Partial<CadGeometry> {
   const view = new DataView(buffer);
   if (buffer.byteLength < 84) return { warnings: ['STL binary too small'] };
@@ -143,6 +153,7 @@ function parseBinaryStl(buffer: ArrayBuffer): Partial<CadGeometry> {
     totalArea: surfaceArea,
   });
 
+  const unitWarn = unitSanityWarning(boundingBox);
   return {
     triangleCount,
     estimatedVolume,
@@ -151,6 +162,7 @@ function parseBinaryStl(buffer: ArrayBuffer): Partial<CadGeometry> {
     featureMap,
     processGuesses: processes,
     dfmaFindings: dfma,
+    ...(unitWarn ? { warnings: [unitWarn] } : {}),
   };
 }
 
@@ -209,7 +221,8 @@ function parseAsciiStl(text: string): Partial<CadGeometry> {
     featureMap = r.featureMap; processGuesses = r.processes; dfmaFindings = r.dfma;
   }
 
-  return { triangleCount, estimatedVolume, estimatedSurfaceArea, boundingBox, featureMap, processGuesses, dfmaFindings };
+  const unitWarn = unitSanityWarning(boundingBox);
+  return { triangleCount, estimatedVolume, estimatedSurfaceArea, boundingBox, featureMap, processGuesses, dfmaFindings, ...(unitWarn ? { warnings: [unitWarn] } : {}) };
 }
 
 // ─── DXF parser ───────────────────────────────────────────────────────────────
