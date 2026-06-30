@@ -253,7 +253,7 @@ function renderSWPanelHTML(): string {
         <span class="sw-cat-count">${mods.length}/${mods.length} modules</span>
         <span class="sw-cat-chevron">▾</span>
       </div>
-      <div class="sw-cat-body">
+      <div class="sw-cat-body sw-table-wrap">
         <table class="sw-module-table">
           <thead>
             <tr>
@@ -699,6 +699,48 @@ function renderSWPanelHTML(): string {
   white-space: nowrap;
 }
 .sw-phase-seg:hover { opacity: 0.85; }
+
+/* ── Design tokens (Rec #5: design system) ─────────────────────────────────── */
+:root {
+  --sw-space-1: 4px;  --sw-space-2: 8px;  --sw-space-3: 12px;
+  --sw-space-4: 16px; --sw-space-5: 20px; --sw-space-6: 28px;
+  --sw-radius-sm: 6px; --sw-radius: 10px; --sw-radius-lg: 14px;
+  --sw-shadow-sm: 0 1px 2px rgba(15,23,42,0.06);
+  --sw-shadow:    0 4px 14px rgba(15,23,42,0.10);
+}
+
+/* ── Reusable components / utilities ───────────────────────────────────────── */
+.sw-box {
+  background: var(--sw-surface-alt);
+  border: 1px solid var(--sw-border);
+  border-radius: var(--sw-radius);
+  padding: var(--sw-space-3) var(--sw-space-4);
+}
+.sw-badge { display: inline-block; font-size: 0.68rem; font-weight: 700; border-radius: 4px; padding: 1px 7px; }
+.sw-grid { display: grid; gap: var(--sw-space-3); }
+.sw-grid-4 { grid-template-columns: repeat(4, 1fr); }
+.sw-grid-3 { grid-template-columns: repeat(3, 1fr); }
+.sw-grid-2 { grid-template-columns: repeat(2, 1fr); }
+.sw-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+/* Tactile lift on summary cards */
+.sw-summary-card { box-shadow: var(--sw-shadow-sm); transition: box-shadow 0.18s ease, transform 0.18s ease; }
+.sw-summary-card:hover { box-shadow: var(--sw-shadow); transform: translateY(-1px); }
+
+/* ── Responsive pass (Rec #5) ──────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .sw-grid-4 { grid-template-columns: repeat(2, 1fr); }
+  .sw-grid-3 { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 560px) {
+  .sw-grid-4, .sw-grid-3, .sw-grid-2 { grid-template-columns: 1fr; }
+  .sw-results-section { padding: var(--sw-space-4) var(--sw-space-3); }
+  .sw-config-card     { padding: var(--sw-space-4) var(--sw-space-3); }
+  .sw-card-value      { font-size: 1.15rem; }
+  .sw-data-table      { font-size: 0.72rem; }
+  .sw-data-table th, .sw-data-table td { padding: 6px 7px; }
+  .sw-section-title   { font-size: 0.84rem; }
+}
 </style>`;
 }
 
@@ -815,7 +857,7 @@ function renderResults(result: SWProgramResult): void {
     const pct90vs10 = mc.p10 > 0 ? (mc.p90 / mc.p10 - 1) * 100 : 0;
     mcEl.innerHTML = `
       <div class="sw-section-title"><span>🎲</span> Monte Carlo Cost Distribution (${mc.iterations.toLocaleString()} iterations)</div>
-      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px">
+      <div class="sw-grid sw-grid-4" style="margin-bottom:16px">
         ${[
           { label: 'P10 (Optimistic)',  val: fmtM(mc.p10),  pv: `£${fmt(mc.p10PerVehicle,0)}/veh`, color: '#059669' },
           { label: 'P50 (Median)',      val: fmtM(mc.p50),  pv: `£${fmt(mc.p50PerVehicle,0)}/veh`, color: '#2563eb' },
