@@ -534,6 +534,216 @@ html[data-theme="light"] .chip{color:var(--blue2)}
 .trends-loading .spinner{width:24px;height:24px;border:3px solid var(--bd);border-top-color:var(--blue2);border-radius:50%;animation:spin 0.8s linear infinite;display:inline-block;margin-bottom:10px;vertical-align:middle;margin-right:8px}
 .setup-key-btn{background:var(--blue2);color:#fff;border:none;border-radius:8px;padding:7px 16px;font-size:12px;cursor:pointer;font-weight:700}
 .setup-key-btn:hover{filter:brightness(1.1)}
+
+/* ════════════════════════════════════════════════════════════════
+   ABOUT PANEL
+════════════════════════════════════════════════════════════════ */
+.about-nav{display:flex;gap:0;border-bottom:1px solid var(--bd);margin-bottom:20px;flex-wrap:wrap}
+.about-nav-btn{
+  padding:9px 20px;font-size:12px;font-weight:600;color:var(--t3);
+  border:none;background:transparent;cursor:pointer;border-bottom:2px solid transparent;
+  transition:all .18s ease;letter-spacing:.2px;white-space:nowrap;
+}
+.about-nav-btn:hover{color:var(--t1);background:var(--feat-hover)}
+.about-nav-btn.aact{color:var(--blue2);border-bottom:2px solid var(--blue);background:linear-gradient(180deg,var(--feat-hover),transparent)}
+.about-section{display:none}
+.about-section.avis{display:block}
+.about-hero{
+  background:linear-gradient(135deg,rgba(59,130,246,0.08),rgba(124,58,237,0.05));
+  border:1px solid rgba(59,130,246,0.18);border-radius:14px;
+  padding:24px 28px;margin-bottom:24px;position:relative;overflow:hidden;
+}
+.about-hero::before{
+  content:'';position:absolute;top:-40px;right:-40px;width:180px;height:180px;
+  border-radius:50%;background:radial-gradient(circle,rgba(59,130,246,0.12),transparent 70%);
+  pointer-events:none;
+}
+.about-hero h2{font-size:18px;font-weight:800;color:var(--t1);margin-bottom:6px;letter-spacing:-.3px}
+.about-hero p{font-size:12.5px;color:var(--t2);line-height:1.6;max-width:720px}
+.about-badges{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.about-badge{
+  display:inline-flex;align-items:center;gap:5px;padding:4px 12px;
+  border-radius:20px;font-size:10px;font-weight:700;letter-spacing:.4px;
+}
+.badge-blue{background:rgba(59,130,246,0.13);color:var(--blue2);border:1px solid rgba(59,130,246,0.25)}
+.badge-green{background:rgba(16,185,129,0.12);color:var(--green2);border:1px solid rgba(16,185,129,0.22)}
+.badge-amber{background:rgba(245,158,11,0.12);color:var(--amber);border:1px solid rgba(245,158,11,0.22)}
+.badge-purple{background:rgba(124,58,237,0.12);color:var(--purple2);border:1px solid rgba(124,58,237,0.22)}
+.badge-cyan{background:rgba(34,211,238,0.10);color:var(--cyan);border:1px solid rgba(34,211,238,0.20)}
+/* Step cards */
+.steps-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:14px;margin-bottom:24px}
+.step-card{
+  background:var(--surface2);border:1px solid var(--bd);border-radius:12px;
+  padding:16px 18px;display:flex;gap:14px;align-items:flex-start;
+  transition:border-color .18s,box-shadow .18s;
+}
+.step-card:hover{border-color:var(--blue);box-shadow:0 0 0 1px rgba(59,130,246,0.1),var(--shadow-sm)}
+.step-num{
+  width:32px;height:32px;flex-shrink:0;border-radius:50%;
+  background:linear-gradient(135deg,var(--blue),var(--purple));
+  color:#fff;font-size:13px;font-weight:800;
+  display:flex;align-items:center;justify-content:center;
+}
+.step-body h4{font-size:12.5px;font-weight:700;color:var(--t1);margin-bottom:5px}
+.step-body p{font-size:11.5px;color:var(--t2);line-height:1.55}
+.step-body .step-tip{
+  margin-top:7px;padding:6px 10px;border-radius:6px;
+  background:rgba(59,130,246,0.07);border-left:2px solid var(--blue);
+  font-size:11px;color:var(--t3);line-height:1.45;
+}
+.step-body .step-warn{
+  margin-top:7px;padding:6px 10px;border-radius:6px;
+  background:rgba(245,158,11,0.07);border-left:2px solid var(--amber);
+  font-size:11px;color:var(--amber);line-height:1.45;
+}
+/* Video guide */
+.video-guide{
+  background:var(--surface2);border:1px solid var(--bd);border-radius:14px;
+  overflow:hidden;margin-bottom:24px;
+}
+.video-guide-hdr{
+  padding:14px 20px;border-bottom:1px solid var(--bd);
+  display:flex;align-items:center;gap:10px;
+}
+.video-guide-hdr h3{font-size:13px;font-weight:700;color:var(--t1)}
+.video-guide-hdr span{font-size:11px;color:var(--t3)}
+.video-thumb{
+  background:linear-gradient(135deg,#0d1526,#162749);
+  min-height:220px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:10px;padding:40px;text-align:center;position:relative;overflow:hidden;
+}
+.video-thumb::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse 60% 60% at 50% 50%,rgba(59,130,246,0.12),transparent 70%);
+}
+.play-btn{
+  width:64px;height:64px;border-radius:50%;
+  background:linear-gradient(135deg,var(--blue),var(--purple));
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;box-shadow:0 8px 32px rgba(59,130,246,0.4);
+  transition:transform .2s,box-shadow .2s;position:relative;z-index:1;
+}
+.play-btn:hover{transform:scale(1.08);box-shadow:0 12px 40px rgba(59,130,246,0.55)}
+.play-btn svg{width:24px;height:24px;fill:#fff;margin-left:3px}
+.video-thumb p{font-size:12px;color:var(--t2);position:relative;z-index:1}
+.video-thumb h4{font-size:15px;font-weight:700;color:var(--t1);position:relative;z-index:1}
+.video-chapters{padding:16px 20px;display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.vc-item{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;background:var(--feat-bg);border:1px solid var(--bd);cursor:pointer;transition:border-color .15s,background .15s}
+.vc-item:hover{border-color:var(--blue);background:var(--feat-hover)}
+.vc-time{font-size:10px;color:var(--blue2);font-weight:700;font-variant-numeric:tabular-nums;min-width:38px}
+.vc-label{font-size:11.5px;color:var(--t2)}
+/* Tech ref */
+.ref-section{margin-bottom:28px}
+.ref-section h3{font-size:13px;font-weight:700;color:var(--cyan);text-transform:uppercase;letter-spacing:.6px;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.ref-section h3::after{content:'';flex:1;height:1px;background:linear-gradient(to right,rgba(34,211,238,0.3),transparent)}
+.ref-card{background:var(--surface2);border:1px solid var(--bd);border-radius:10px;padding:14px 16px;margin-bottom:10px}
+.ref-card h4{font-size:12px;font-weight:700;color:var(--t1);margin-bottom:8px}
+.ref-card p,.ref-card li{font-size:11.5px;color:var(--t2);line-height:1.6}
+.ref-card ul{padding-left:16px;margin-top:4px}
+.ref-card li{margin-bottom:3px}
+.ref-card code{
+  font-family:'JetBrains Mono','Fira Mono',monospace;font-size:10.5px;
+  background:rgba(59,130,246,0.1);color:var(--blue2);
+  padding:1px 5px;border-radius:4px;
+}
+.formula-box{
+  background:rgba(0,0,0,0.28);border:1px solid rgba(59,130,246,0.2);
+  border-radius:8px;padding:12px 16px;margin:10px 0;
+  font-family:'JetBrains Mono','Fira Mono',monospace;
+  font-size:11px;color:var(--cyan);line-height:1.8;
+}
+.ref-table-wrap{overflow-x:auto;margin-top:10px}
+.ref-table{width:100%;border-collapse:collapse;font-size:11px}
+.ref-table th{background:rgba(59,130,246,0.08);color:var(--blue2);font-weight:700;padding:7px 10px;text-align:left;border-bottom:1px solid var(--bd2);letter-spacing:.3px;font-size:10px;text-transform:uppercase;white-space:nowrap}
+.ref-table td{padding:6px 10px;border-bottom:1px solid var(--td-border);color:var(--t2);vertical-align:top}
+.ref-table tr:hover td{background:var(--row-hover);color:var(--t1)}
+.ref-table td:first-child{color:var(--t1);font-weight:600;white-space:nowrap}
+/* Grade cards */
+.grades-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px;margin-bottom:24px}
+.grade-card{background:var(--surface2);border:1px solid var(--bd);border-radius:12px;overflow:hidden;transition:border-color .18s,box-shadow .18s}
+.grade-card:hover{border-color:var(--blue);box-shadow:var(--shadow-glow)}
+.grade-card-hdr{padding:12px 16px;border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:10px}
+.grade-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.grade-card-hdr h4{font-size:12.5px;font-weight:700;color:var(--t1);margin:0}
+.grade-card-hdr span{font-size:10px;color:var(--t3)}
+.grade-card-body{padding:12px 16px}
+.grade-row{display:flex;justify-content:space-between;align-items:flex-start;padding:5px 0;border-bottom:1px solid var(--td-border)}
+.grade-row:last-child{border-bottom:none}
+.grade-name{font-size:11.5px;font-weight:700;color:var(--t1);min-width:90px}
+.grade-desc{font-size:11px;color:var(--t2);line-height:1.45;flex:1;padding:0 8px}
+.grade-tag{font-size:9.5px;font-weight:700;padding:2px 7px;border-radius:10px;white-space:nowrap;flex-shrink:0}
+.tag-prem{background:rgba(245,158,11,0.13);color:var(--amber)}
+.tag-std{background:rgba(148,163,184,0.1);color:var(--t3)}
+.tag-ultra{background:rgba(124,58,237,0.13);color:var(--purple2)}
+.tag-eco{background:rgba(16,185,129,0.12);color:var(--green2)}
+
+/* ════════════════════════════════════════════════════════════════
+   SAAS FOOTER
+════════════════════════════════════════════════════════════════ */
+.site-footer{
+  flex-shrink:0;
+  background:linear-gradient(180deg,var(--bg1),var(--bg0));
+  border-top:1px solid var(--bd);
+  margin-top:12px;
+}
+.footer-body{
+  max-width:1400px;margin:0 auto;
+  padding:36px 28px 24px;
+  display:grid;
+  grid-template-columns:260px 1fr 1fr 1fr 1fr;
+  gap:32px;
+}
+@media(max-width:900px){.footer-body{grid-template-columns:1fr 1fr;gap:24px;padding:24px 18px 16px}}
+@media(max-width:560px){.footer-body{grid-template-columns:1fr;gap:18px;padding:20px 16px 12px}}
+.footer-brand{}
+.footer-brand-name{
+  font-size:15px;font-weight:800;letter-spacing:-.3px;
+  background:linear-gradient(90deg,var(--blue2),var(--purple2),var(--cyan));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  margin-bottom:6px;
+}
+.footer-brand-tagline{font-size:11px;color:var(--t3);line-height:1.55;margin-bottom:14px}
+.footer-brand-badges{display:flex;flex-wrap:wrap;gap:6px}
+.footer-pill{
+  display:inline-flex;align-items:center;gap:4px;
+  padding:3px 9px;border-radius:20px;font-size:9.5px;font-weight:700;
+  letter-spacing:.3px;border:1px solid var(--bd);background:var(--surface2);
+  color:var(--t3);transition:border-color .15s,color .15s;
+}
+.footer-pill:hover{border-color:var(--blue);color:var(--blue2)}
+.footer-col{}
+.footer-col-title{
+  font-size:10px;font-weight:700;color:var(--t2);text-transform:uppercase;
+  letter-spacing:.8px;margin-bottom:12px;display:flex;align-items:center;gap:6px;
+}
+.footer-col-title::before{content:'';width:3px;height:10px;border-radius:2px;background:var(--blue);flex-shrink:0}
+.footer-links{list-style:none;display:flex;flex-direction:column;gap:7px}
+.footer-links li a,.footer-links li button{
+  font-size:11.5px;color:var(--t3);text-decoration:none;background:none;border:none;
+  cursor:pointer;padding:0;text-align:left;transition:color .15s;display:flex;align-items:center;gap:6px;
+}
+.footer-links li a:hover,.footer-links li button:hover{color:var(--blue2)}
+.footer-links .fl-icon{font-size:12px;width:14px;flex-shrink:0}
+.footer-links .fl-badge{
+  font-size:8.5px;font-weight:700;padding:1px 5px;border-radius:10px;
+  background:rgba(16,185,129,0.15);color:var(--green2);letter-spacing:.3px;
+}
+.footer-divider{border:none;border-top:1px solid var(--bd);margin:0}
+.footer-bottom{
+  max-width:1400px;margin:0 auto;
+  padding:14px 28px;
+  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;
+}
+@media(max-width:700px){.footer-bottom{padding:12px 16px;flex-direction:column;align-items:flex-start;gap:8px}}
+.footer-copy{font-size:11px;color:var(--t3)}
+.footer-copy strong{color:var(--t2)}
+.footer-copy a{color:var(--t3);text-decoration:none}
+.footer-copy a:hover{color:var(--blue2)}
+.footer-meta{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.footer-meta-item{font-size:10px;color:var(--t3);display:flex;align-items:center;gap:4px}
+.footer-meta-item .dot{width:4px;height:4px;border-radius:50%;background:var(--t3);opacity:.5}
+.footer-status{display:flex;align-items:center;gap:5px;font-size:10px;color:var(--green2);font-weight:600}
+.footer-status::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--green2);animation:pulse 2s infinite}
 </style>
 </head>
 <body>
@@ -783,6 +993,7 @@ html[data-theme="light"] .chip{color:var(--blue2)}
         <button class="tab-btn" data-tab="ai" onclick="showTab('ai')">&#129302; AI Insights</button>
         <button class="tab-btn" data-tab="trends" onclick="showTab('trends')">&#128225; Trends</button>
         <button class="tab-btn" data-tab="compare" onclick="showTab('compare')">⚖ Compare</button>
+        <button class="tab-btn" data-tab="about" onclick="showTab('about')" style="color:var(--cyan)">📘 About</button>
       </div>
     </div>
     <div class="tab-content">
@@ -795,6 +1006,663 @@ html[data-theme="light"] .chip{color:var(--blue2)}
       <div class="tab-panel" id="panel-ai"><div id="aiContent"><p style="color:var(--t3);text-align:center;padding:60px;font-size:14px">Run calculation to generate AI insights.</p></div></div>
       <div class="tab-panel" id="panel-trends"><div id="trendsContent"><p style="color:var(--t3);text-align:center;padding:60px;font-size:14px">Click the tab to load live premium automotive audio trends.</p></div></div>
       <div class="tab-panel" id="panel-compare"><div id="compareContent"><p style="color:var(--t3);text-align:center;padding:60px;font-size:14px">Run calculation, then save as Scenario A or B to compare configurations.</p></div></div>
+      <div class="tab-panel" id="panel-about">
+        <!-- ── About sub-navigation ── -->
+        <div class="about-nav">
+          <button class="about-nav-btn aact" onclick="showAbout('howto',this)">▶ How to Use</button>
+          <button class="about-nav-btn" onclick="showAbout('techref',this)">⚙ Technical Reference</button>
+          <button class="about-nav-btn" onclick="showAbout('grades',this)">🔬 Material Grades</button>
+        </div>
+
+        <!-- ══════════════════════════════════════════════════════
+             SECTION 1 — HOW TO USE
+        ══════════════════════════════════════════════════════ -->
+        <div class="about-section avis" id="about-howto">
+          <div class="about-hero">
+            <h2>360° Automotive Speaker Should-Cost Engine — User Guide</h2>
+            <p>This tool models the complete factory-gate cost of an automotive speaker system manufactured in China (Ex-Works). It covers direct materials, direct labour, machine overhead, tooling amortisation, G&amp;A, warranty, and system integration costs — calibrated to June 2026 SHFE/SMM commodity prices. Use it to benchmark supplier quotes, build business cases, and explore cost-reduction trade-offs.</p>
+            <div class="about-badges">
+              <span class="about-badge badge-blue">EXW China Pricing</span>
+              <span class="about-badge badge-green">SHFE / SMM Jun 2026</span>
+              <span class="about-badge badge-amber">Automotive Tier-1/2</span>
+              <span class="about-badge badge-purple">AI-Augmented Insights</span>
+              <span class="about-badge badge-cyan">14-Step Process Model</span>
+            </div>
+          </div>
+
+          <!-- Video guide -->
+          <div class="video-guide">
+            <div class="video-guide-hdr">
+              <div style="width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--blue),var(--purple));display:flex;align-items:center;justify-content:center;font-size:16px">▶</div>
+              <div>
+                <h3>Full Walkthrough — Video Guide</h3>
+                <span>12 chapters · 18 minutes · Professional onboarding</span>
+              </div>
+            </div>
+            <div class="video-thumb">
+              <h4>360° Speaker Should-Cost Engine</h4>
+              <p style="font-size:11px;margin-bottom:16px">Complete tool walkthrough — from configuration to AI insights and PPT export</p>
+              <div class="play-btn" title="Play demo">
+                <svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg>
+              </div>
+              <p style="margin-top:14px;font-size:11px;color:var(--t3)">Hosted internally — contact <strong style="color:var(--blue2)">Avinash Bhosale</strong> for access link</p>
+            </div>
+            <div class="video-chapters">
+              <div class="vc-item"><span class="vc-time">00:00</span><span class="vc-label">Tool overview &amp; purpose</span></div>
+              <div class="vc-item"><span class="vc-time">01:20</span><span class="vc-label">Selecting country &amp; volume</span></div>
+              <div class="vc-item"><span class="vc-time">02:45</span><span class="vc-label">System tier selection</span></div>
+              <div class="vc-item"><span class="vc-time">04:10</span><span class="vc-label">Material configuration</span></div>
+              <div class="vc-item"><span class="vc-time">06:00</span><span class="vc-label">Technology features</span></div>
+              <div class="vc-item"><span class="vc-time">07:30</span><span class="vc-label">Running the calculation</span></div>
+              <div class="vc-item"><span class="vc-time">08:45</span><span class="vc-label">Reading the BOM &amp; cost waterfall</span></div>
+              <div class="vc-item"><span class="vc-time">10:15</span><span class="vc-label">Benchmarking &amp; competitor analysis</span></div>
+              <div class="vc-item"><span class="vc-time">11:40</span><span class="vc-label">AI Insights tab</span></div>
+              <div class="vc-item"><span class="vc-time">13:00</span><span class="vc-label">Scenario Compare</span></div>
+              <div class="vc-item"><span class="vc-time">15:20</span><span class="vc-label">Live market trends</span></div>
+              <div class="vc-item"><span class="vc-time">16:45</span><span class="vc-label">PPT export</span></div>
+            </div>
+          </div>
+
+          <!-- Step-by-step -->
+          <div style="font-size:13px;font-weight:700;color:var(--cyan);text-transform:uppercase;letter-spacing:.6px;margin-bottom:14px;display:flex;align-items:center;gap:8px">Step-by-Step Instructions<span style="flex:1;height:1px;background:linear-gradient(to right,rgba(34,211,238,0.3),transparent);display:block"></span></div>
+          <div class="steps-grid">
+            <div class="step-card">
+              <div class="step-num">1</div>
+              <div class="step-body">
+                <h4>Select Manufacturing Country</h4>
+                <p>Choose where the system will be manufactured. <strong>China</strong> (default) applies EXW China factory-gate economics — Guangdong labour rates (¥2,500/month minimum wage basis), domestic SHFE/SMM commodity pricing, and Chinese machine hour costs at 11% of Western European reference rates.</p>
+                <div class="step-tip">💡 China Coastal (Shanghai/Guangzhou) carries a 12% machine multiplier and ¥6.5/hr effective labour vs China Inland's 9% and ¥4.5/hr. Choose based on your actual supplier location.</div>
+              </div>
+            </div>
+            <div class="step-card">
+              <div class="step-num">2</div>
+              <div class="step-body">
+                <h4>Set Annual Production Volume</h4>
+                <p>Volume directly affects <strong>tooling amortisation per unit</strong>. A Full-Range basket tool costing $50,000 amortises to $0.23/unit at 213,000 annual pieces, but $5.00/unit at 10,000. Set volume to your platform programme's target annual build rate.</p>
+                <div class="step-tip">💡 Presets (50k, 100k, 213k, 500k, 1M) cover typical automotive tiers. Premium platforms typically run 100k–250k/year. Volume above 500k triggers shared-die economics not currently modelled.</div>
+              </div>
+            </div>
+            <div class="step-card">
+              <div class="step-num">3</div>
+              <div class="step-body">
+                <h4>Select System Tier</h4>
+                <p>Choose the OEM system architecture: <strong>Standard</strong> (6 spk passive), <strong>Enhanced</strong> (8 spk + amp + DSP), <strong>Premium</strong> (13 spk flagship), <strong>Immersive 3D</strong> (20 spk spatial audio), or <strong>Immersive 4D</strong> (24 spk + haptic seat actuators). Each pre-configures the driver count, placement, amplifier, DSP, and wiring harness.</p>
+                <div class="step-warn">⚠ The system architecture determines which driver types are included. You can customise individual driver materials but not add/remove driver positions in this version.</div>
+              </div>
+            </div>
+            <div class="step-card">
+              <div class="step-num">4</div>
+              <div class="step-body">
+                <h4>Configure Magnet Type</h4>
+                <p>The magnet is typically the <strong>single largest cost item</strong> (30–45% of BOM). Options: <strong>NdFeB Sintered</strong> ($62/kg — highest performance, largest cost), <strong>Ferrite</strong> ($1.30/kg — lowest cost, heavier, lower flux), <strong>SmCo</strong> ($95/kg — ultra high-temp, aerospace), <strong>Bonded NdFeB</strong> ($30/kg — complex shapes), <strong>Recycled NdFeB</strong> ($55/kg — sustainability use case).</p>
+                <div class="step-tip">💡 NdFeB is standard for all premium automotive. Ferrite is acceptable only for rear-fill speakers where packaging weight and cost matter more than performance.</div>
+              </div>
+            </div>
+            <div class="step-card">
+              <div class="step-num">5</div>
+              <div class="step-body">
+                <h4>Select Basket / Frame Material</h4>
+                <p><strong>Die-cast aluminium</strong> ($3.50/kg) is the premium choice — light, rigid, excellent heat dissipation from voice coil via the basket structure. <strong>Stamped steel</strong> ($0.62/kg) is cost-optimised for non-critical positions. <strong>Injection PP</strong> ($1.45/kg) suits door-mounted speakers with vibration isolation requirements.</p>
+                <div class="step-tip">💡 For flagship (Premium / Immersive) systems, die-cast Al is expected by most OEMs. Using stamped steel in a premium quotation will be challenged in design review.</div>
+              </div>
+            </div>
+            <div class="step-card">
+              <div class="step-num">6</div>
+              <div class="step-body">
+                <h4>Select Voice Coil Wire Material</h4>
+                <p>Wire material sets resistance, weight, and thermal budget. <strong>OFC Copper</strong> ($16/kg) — lowest DCR, best power handling, premium. <strong>CCA (Copper-Clad Aluminium)</strong> ($8/kg) — 10% Cu shell on 90% Al core; lighter and cheaper at marginal conductivity penalty. <strong>CCAW</strong> ($7/kg) — self-bonding CCA used in fine-gauge coils. <strong>Flat Copper</strong> ($17/kg) — edge-wound coils for maximum fill factor in high-power subwoofers.</p>
+              </div>
+            </div>
+            <div class="step-card">
+              <div class="step-num">7</div>
+              <div class="step-body">
+                <h4>Choose Cone Material</h4>
+                <p>Cone material determines frequency response character, mass, and stiffness. <strong>Paper</strong> ($0.75/kg) — best internal damping, lightest, OEM standard. <strong>PP</strong> ($1.38/kg) — moisture-resistant, consistent, suitable for door locations. <strong>Composite CF/GF</strong> ($3.20/kg) — high stiffness for extended HF. <strong>Carbon Fibre</strong> ($34/kg) — ultra-premium, used in flagship tweets. <strong>Kevlar</strong> ($22/kg) — unique damping character, Dynaudio/Focal signature.</p>
+              </div>
+            </div>
+            <div class="step-card">
+              <div class="step-num">8</div>
+              <div class="step-body">
+                <h4>Choose Surround Material</h4>
+                <p>The surround sets Xmax, Qms, and long-term reliability. <strong>Rubber (NBR)</strong> ($1.85/kg) — durable, UV-stable, used in door woofers. <strong>PU Foam</strong> ($0.90/kg) — low mass, good Qts control; ageing is the key risk in high-humidity environments. <strong>Cloth</strong> ($2.50/kg) — used in tweeters and some mid-ranges. <strong>Santoprene</strong> ($4.00/kg) — thermoplastic elastomer, consistent moulding, excellent -40°C performance.</p>
+              </div>
+            </div>
+            <div class="step-card">
+              <div class="step-num">9</div>
+              <div class="step-body">
+                <h4>Select Voice Coil Former</h4>
+                <p>The former sets thermal management and HF extension. <strong>Aluminium former</strong> ($3.70/kg) — conducts heat from coil to gap; preferred for power-handling. <strong>Kapton (Polyimide)</strong> ($9.50/kg) — ultra-thin wall, light, extends HF. <strong>Nomex</strong> ($18/kg) — Aramid paper, high-temp subwoofer use. <strong>Paper former</strong> ($0.90/kg) — lowest mass, suitable for low-power applications.</p>
+              </div>
+            </div>
+            <div class="step-card">
+              <div class="step-num">10</div>
+              <div class="step-body">
+                <h4>Add Technology Features</h4>
+                <p>Optional system-level features add cost as fixed amounts to the system total. Each feature has been costed at China EXW: <strong>ANC</strong> (+$14) adds microphone array and DSP algorithm licence cost. <strong>4D Haptics</strong> (+$48) adds seat actuator controllers. <strong>Neural DSP</strong> (+$45) adds AI-audio processor cost. Multiple features can be combined.</p>
+                <div class="step-tip">💡 Technology features are modelled as add-on system costs. They do not currently affect individual speaker-level BOM — future versions will integrate microphone cost into the per-speaker BOM.</div>
+              </div>
+            </div>
+            <div class="step-card">
+              <div class="step-num">11</div>
+              <div class="step-body">
+                <h4>Set Commercial Parameters</h4>
+                <p><strong>Target Margin %</strong> — applied to total landed cost. Set to 0% for pure EXW should-cost (no margin). Set to 15–25% for Tier-1 supplier sell price estimate. <strong>Freight Mode</strong> — Domestic (within China, $0.28/unit base), Regional (Asia, $0.80), International ($2.50). <strong>Import Duty</strong> — enter duty rate for destination country. UK: 3.5–6.5% on speakers; EU: 4.2–6.5%. Set 0% for EXW baseline.</p>
+                <div class="step-warn">⚠ Setting margin &gt; 0% converts EXW cost to Tier-1 sell price. Keep at 0% when benchmarking pure factory-gate should-cost against supplier quotes.</div>
+              </div>
+            </div>
+            <div class="step-card">
+              <div class="step-num">12</div>
+              <div class="step-body">
+                <h4>Click Calculate</h4>
+                <p>The engine runs all 14 manufacturing process steps across each driver type, scales by size, applies country multipliers, amortises tooling, adds system-level costs, then sums to a total. Calculation is instantaneous (all in-browser, no server call). Results populate across 9 tabs simultaneously.</p>
+                <div class="step-tip">💡 You can use Quick Preset buttons (Standard / Enhanced / Premium) to load pre-configured scenarios instantly, then tweak individual parameters.</div>
+              </div>
+            </div>
+            <div class="step-card">
+              <div class="step-num">13</div>
+              <div class="step-body">
+                <h4>Reading the System Overview Tab</h4>
+                <p>The overview shows: <strong>top 5 metric KPIs</strong> (EXW total, speaker count, DM%, CO₂, margin), a <strong>per-driver breakdown table</strong> (DM, Labour, Mach, Unit works, Total), a <strong>cost waterfall bar chart</strong>, and <strong>system-level add-ons</strong> (amp, DSP, wiring, connectors). The waterfall shows how each cost layer builds to the total.</p>
+              </div>
+            </div>
+            <div class="step-card">
+              <div class="step-num">14</div>
+              <div class="step-body">
+                <h4>Analysing the Full BOM</h4>
+                <p>The BOM tab shows every material line item per driver type: material key, mass in grams, cost per driver, cost per system (qty × unit). RoHS / REACH / VOC compliance flags are shown per material. Useful for: confirming commodity exposure, identifying highest-cost materials, flagging compliance risks early.</p>
+              </div>
+            </div>
+            <div class="step-card">
+              <div class="step-num">15</div>
+              <div class="step-body">
+                <h4>Benchmarking Tab</h4>
+                <p>Compares your system's EXW China cost against 10 reference systems (Bose, Harman Kardon, B&amp;O, Burmester, etc.). Reference <code>est_cost</code> values are EXW China factory-gate estimates derived from public teardown data and analyst sources — calibrated Jun 2026. The delta column shows your cost advantage or premium vs each benchmark.</p>
+              </div>
+            </div>
+            <div class="step-card">
+              <div class="step-num">16</div>
+              <div class="step-body">
+                <h4>Scenario Compare</h4>
+                <p>Save current result as Scenario A, reconfigure inputs, run again, then save as Scenario B. The Compare tab produces a side-by-side delta table across all cost lines (DM, Labour, Machine, FOH, G&amp;A, Tooling, Warranty, Amp, DSP, Wiring) plus a visual bar chart. Ideal for presenting NdFeB-vs-Ferrite trade-offs or Premium-vs-Enhanced system business cases.</p>
+              </div>
+            </div>
+            <div class="step-card">
+              <div class="step-num">17</div>
+              <div class="step-body">
+                <h4>AI Insights Tab</h4>
+                <p>Triggers a call to the Claude AI model. The AI receives your full cost result and generates: executive summary, top 3 cost drivers, material substitution opportunities, process efficiency recommendations, and market context from current automotive audio trends. Requires an Anthropic API key (configured via the API Key button in the header).</p>
+                <div class="step-tip">💡 AI insights are regenerated each time you run a new calculation with different inputs. The stream is abortable — clicking Calculate again cancels any in-progress generation.</div>
+              </div>
+            </div>
+            <div class="step-card">
+              <div class="step-num">18</div>
+              <div class="step-body">
+                <h4>Export to PowerPoint</h4>
+                <p>The Export PPT button (header) generates a boardroom-quality slide deck: cover slide, executive summary KPIs, per-driver BOM table, cost waterfall, benchmarking table, sustainability score, and process routing. Uses PptxGenJS — all in-browser, no server dependency. Download is automatic on click.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tips box -->
+          <div style="background:rgba(16,185,129,0.07);border:1px solid rgba(16,185,129,0.2);border-radius:12px;padding:18px 22px;margin-top:4px">
+            <div style="font-size:12px;font-weight:700;color:var(--green2);margin-bottom:10px;letter-spacing:.3px">PRO TIPS FOR ACCURATE SHOULD-COSTING</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+              <div style="font-size:11.5px;color:var(--t2)">✦ Always set <strong>Margin = 0%</strong> and <strong>Duty = 0%</strong> when comparing to a pure factory-gate supplier quote</div>
+              <div style="font-size:11.5px;color:var(--t2)">✦ Use <strong>China (Coastal)</strong> for Guangzhou/Shenzhen suppliers — slightly higher labour rate than generic China</div>
+              <div style="font-size:11.5px;color:var(--t2)">✦ NdFeB price is highly volatile — check SHFE NdPr price weekly and recalibrate if &gt;5% movement</div>
+              <div style="font-size:11.5px;color:var(--t2)">✦ <strong>Tooling amortisation</strong> is the largest variable at low volume — always validate annual build rate with programme team</div>
+              <div style="font-size:11.5px;color:var(--t2)">✦ <strong>Save Scenario A</strong> before changing any input so you can always compare back to your baseline</div>
+              <div style="font-size:11.5px;color:var(--t2)">✦ The Physics tab validates your material selections are acoustically coherent — check it before sending to suppliers</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ══════════════════════════════════════════════════════
+             SECTION 2 — TECHNICAL REFERENCE
+        ══════════════════════════════════════════════════════ -->
+        <div class="about-section" id="about-techref">
+
+          <!-- Cost equation -->
+          <div class="ref-section">
+            <h3>Master Cost Equation</h3>
+            <div class="ref-card">
+              <h4>How Total Cost is Computed</h4>
+              <p>The engine computes cost bottom-up for each driver type, then sums with system-level additions and commercial adjustments:</p>
+              <div class="formula-box">
+DM          = Σ (material_mass_kg × material_rate_USD/kg)   [per driver]
+DLab        = Σ (step.baseMin × step.labFrac × labHr/60)    [per step]
+DMach       = Σ (step.baseMin × (1−step.labFrac) × step.machRate × machM / 60)
+prime       = DM + DLab + DMach
+FOH (12%)   = prime × 0.12
+mfgCost     = prime + FOH
+G&amp;A (5%)    = mfgCost × 0.05     [China rate; Western = 7%]
+toolAmort   = PROF.tool_total / annualVolume
+warranty    = mfgCost × 0.015
+inbound     = DM × 0.02            [China domestic sourcing]
+works       = mfgCost + G&amp;A + toolAmort + warranty + inbound
+sysItems    = SPK_SYS costs (housing + grille + bracket + connector)
+totalPerUnit = works + sysItems
+
+systemTotal = Σ(totalPerUnit × qty) + amp + DSP + wiring + connectors
+              + features + outboundFreight + importDuty + margin</div>
+              <p style="margin-top:8px">All computation is in <strong>USD</strong>. Final display converts to <strong>GBP</strong> at rate £1 = $1.27 (FX_GBP = 1/1.27).</p>
+            </div>
+          </div>
+
+          <!-- Material rates -->
+          <div class="ref-section">
+            <h3>Material Rate Derivation (MRATE)</h3>
+            <div class="ref-card">
+              <h4>How Commodity Prices Are Converted to Factory-Gate Material Rates</h4>
+              <p>MRATE values represent the <em>factory-gate finished material cost</em> at a Chinese speaker manufacturer, not raw commodity spot prices. Each rate is derived as:</p>
+              <ul style="margin-top:8px">
+                <li><strong>Raw spot price</strong> — from SHFE (copper, aluminium, steel), SMM/Asian Metal (rare earths), or domestic petrochemical indices (PP/PA66)</li>
+                <li><strong>Processing premium</strong> — wire drawing, enamelling, forming, alloying, injection, die-casting — typically 10–25% above ingot</li>
+                <li><strong>Exchange rate</strong> — ¥7.25/USD applied to all CNY prices (Jun 2026 mid-rate)</li>
+                <li><strong>Supplier margin</strong> — included in finished material price from distributor to speaker factory</li>
+              </ul>
+            </div>
+            <div class="ref-table-wrap">
+              <table class="ref-table">
+                <thead><tr><th>Material Key</th><th>Finished Rate (USD/kg)</th><th>Source</th><th>Derivation</th></tr></thead>
+                <tbody>
+                  <tr><td>neo (NdFeB sintered)</td><td>$62.00</td><td>SMM Jun 2026</td><td>NdPr metal ¥992,500/T → finished sintered magnet ¥450/kg at 7.25</td></tr>
+                  <tr><td>recycled_neo</td><td>$55.00</td><td>SMM Jun 2026</td><td>Recycled NdPr stock ¥400/kg — secondary market SMM</td></tr>
+                  <tr><td>ferrite (Y30)</td><td>$1.30</td><td>China domestic</td><td>Strontium ferrite barium China domestic; Y30 grade sintered block</td></tr>
+                  <tr><td>smco (SmCo-26)</td><td>$95.00</td><td>Asian Metal Jun 2026</td><td>Sm metal ¥690/kg + Co content; SmCo-26 BHmax 26 MGOe grade</td></tr>
+                  <tr><td>cu_wire (OFC)</td><td>$16.00</td><td>SHFE Jun 2026</td><td>SHFE Cu ¥100,880/MT = $13.92/kg + 15% wire drawing + enamel</td></tr>
+                  <tr><td>al_wire (CCA)</td><td>$8.00</td><td>Derived</td><td>10%Cu + 90%Al weight blend = 10%×$16 + 90%×$3.31 ≈ $4.6 + processing to $8</td></tr>
+                  <tr><td>al_former</td><td>$3.70</td><td>SHFE Jun 2026</td><td>SHFE Al ¥24,020/MT = $3.31/kg + 12% tube forming = $3.70</td></tr>
+                  <tr><td>diecast_al</td><td>$3.50</td><td>SHFE Jun 2026</td><td>SHFE Al ingot $3.31/kg + die-casting premium + surface treatment</td></tr>
+                  <tr><td>stamp_steel</td><td>$0.62</td><td>SHFE Jun 2026</td><td>SHFE SPCC domestic ¥4,200/MT = $0.58/kg + stamping conversion</td></tr>
+                  <tr><td>pp / pp_dustcap</td><td>$1.38</td><td>China petrochem Jun 2026</td><td>PP homopolymer ¥9,880/MT China domestic petrochemical index</td></tr>
+                  <tr><td>epoxy (2K adhesive)</td><td>$4.80</td><td>China adhesive market</td><td>2K epoxy adhesive system; ¥35/kg base resin + hardener system</td></tr>
+                  <tr><td>kapton</td><td>$9.50</td><td>Kanghui/China domestic</td><td>Polyimide film China; DuPont-equivalent domestic grade</td></tr>
+                  <tr><td>flat_cu</td><td>$17.00</td><td>SHFE derived</td><td>SHFE Cu $13.92/kg + cold-rolling premium for edgewise strip winding</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Manufacturing process -->
+          <div class="ref-section">
+            <h3>14-Step Manufacturing Process Model (STEPS)</h3>
+            <div class="ref-card">
+              <h4>How Process Costs Are Computed</h4>
+              <p>Each of 14 process steps is defined by a <strong>machine rate</strong> (USD/hr, Western European reference), a <strong>base cycle time</strong> (minutes), and a <strong>labour fraction</strong> (what percentage of the step time is direct labour vs machine-paced). The country's <code>machM</code> multiplier scales the machine rate to local capital cost basis.</p>
+              <div class="formula-box">
+labCost  per step = baseMin × labFrac × (country.labHr / 60)
+machCost per step = baseMin × (1 − labFrac) × (step.machRate × country.machM / 60)
+scrapCost per step = (labCost + machCost) × step.scrap_rate</div>
+              <p style="margin-top:8px">A <strong>size scale factor</strong> <code>Math.pow(sizeMM / refMM, 1.3)</code> scales all process costs proportionally to driver diameter. A 300mm subwoofer takes ~3.5× the process time of a 165mm full-range.</p>
+            </div>
+            <div class="ref-table-wrap">
+              <table class="ref-table">
+                <thead><tr><th>Step</th><th>Station</th><th>Machine Rate (W.Eur $)</th><th>Cycle Base (min)</th><th>Lab Fraction</th><th>Significance</th></tr></thead>
+                <tbody>
+                  <tr><td>VC Winding</td><td>CNC VC Winder</td><td>$36.5/hr</td><td>0.80 min</td><td>18%</td><td>Most precision-critical step; winding tension sets DCR tolerance. Scrap 3%.</td></tr>
+                  <tr><td>VC Varnish Cure</td><td>Cure Oven</td><td>$4.5/hr</td><td>0.10 min</td><td>5%</td><td>Batch process; very low cost. Impregnates coil winding for rigidity.</td></tr>
+                  <tr><td>Spider Forming</td><td>Hydraulic Press</td><td>$28.0/hr</td><td>0.50 min</td><td>30%</td><td>Thermoform spider fabric under heat and pressure to corrugation profile. Scrap 4%.</td></tr>
+                  <tr><td>Cone Forming</td><td>Moulding Press</td><td>$30.0/hr</td><td>0.80 min</td><td>18%</td><td>Paper wet-lay or PP injection/stamping. Longest single-step cycle for large drivers. Scrap 5%.</td></tr>
+                  <tr><td>Dust Cap Forming</td><td>Mini Press</td><td>$20.0/hr</td><td>0.25 min</td><td>20%</td><td>Small-press operation. Cap material matches or complements cone for acoustic continuity.</td></tr>
+                  <tr><td>Motor Stack Assembly</td><td>Semi-Auto Assy Jig</td><td>$42.5/hr</td><td>1.00 min</td><td>38%</td><td>Magnet-to-backplate bonding, pole piece assembly, top plate fitting. Labour-intensive.</td></tr>
+                  <tr><td>Magnetisation</td><td>Magnetiser</td><td>$35.0/hr</td><td>0.25 min</td><td>8%</td><td>Impulse magnetisation. Fast cycle, machine-dominated. Handles strong magnets post-assembly.</td></tr>
+                  <tr><td>Basket Mfg + Surface</td><td>Die Caster / Press</td><td>$52.5/hr</td><td>2.50 min</td><td>22%</td><td>Highest machine rate step. Die-casting is capital-intensive. Surface treatment (powder coat / phosphating) adds cycle time.</td></tr>
+                  <tr><td>Sub-Assembly</td><td>Assembly Jig</td><td>$22.0/hr</td><td>2.50 min</td><td>70%</td><td>Cementing VC former into spider, spider into basket. High labour fraction — skilled manual work to achieve centring accuracy.</td></tr>
+                  <tr><td>Final Assembly</td><td>Final Line</td><td>$18.0/hr</td><td>2.00 min</td><td>80%</td><td>Surround bonding, cone-to-VC cementing, dust cap fitting, tinsel lead routing. Most labour-intensive step in the process.</td></tr>
+                  <tr><td>Full Adhesive Cure</td><td>Batch Oven</td><td>$4.5/hr</td><td>0.10 min</td><td>4%</td><td>Batch thermal cure for all adhesive joints. Very low active labour fraction.</td></tr>
+                  <tr><td>Burn-In / Break-In</td><td>Burn-In Fixture</td><td>$8.0/hr</td><td>0.50 min</td><td>8%</td><td>Electrical excitation at rated power to stress-relieve surround and spider. Reduces post-delivery failures.</td></tr>
+                  <tr><td>Acoustic Test &amp; QC</td><td>Anechoic Bench</td><td>$32.5/hr</td><td>1.00 min</td><td>38%</td><td>Impedance sweep + SPL check vs golden limit. Every unit tested. Machine-automated reading but operator oversight.</td></tr>
+                  <tr><td>Packing &amp; Labelling</td><td>Pack Line</td><td>$15.0/hr</td><td>0.80 min</td><td>88%</td><td>Highest labour fraction — almost entirely manual. Foam-in-box, label, barcode scan, carton seal.</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Country multipliers -->
+          <div class="ref-section">
+            <h3>Country Labour &amp; Machine Rate Multipliers</h3>
+            <div class="ref-card">
+              <h4>Why China machM = 0.11 (Not 0.78)</h4>
+              <p>A common error in speaker cost modelling is applying a machine rate that reflects the same Western capital cost basis. In reality, Chinese speaker factories achieve machine hour costs of <strong>10–12% of Western European reference rates</strong> due to:</p>
+              <ul style="margin-top:8px">
+                <li><strong>Lower capex amortisation</strong> — plant investment amortised at Chinese land/construction cost (¥3,000–5,000/m²) vs Western (€15,000–25,000/m²)</li>
+                <li><strong>Lower energy cost</strong> — industrial electricity ¥0.65–0.85/kWh China vs €0.18–0.28/kWh Germany</li>
+                <li><strong>Lower maintenance labour</strong> — maintenance technicians at ¥8,000–12,000/month vs €3,500–5,500/month Western Europe</li>
+                <li><strong>Equipment procurement advantage</strong> — Chinese-made tooling/presses at 30–50% of European equivalent cost</li>
+              </ul>
+              <div class="step-warn" style="margin-top:10px">⚠ Using machM = 0.78 (as many tools default to) inflates machine cost by 7× vs reality, causing total system cost to be estimated 2.5–3.5× too high for China manufacturing.</div>
+            </div>
+            <div class="ref-table-wrap">
+              <table class="ref-table">
+                <thead><tr><th>Country</th><th>Effective Lab Rate</th><th>Machine Multiplier</th><th>Logic Basis</th></tr></thead>
+                <tbody>
+                  <tr><td>UK</td><td>$22.0/hr</td><td>1.18×</td><td>UK NLW £11.44/hr base; total employer cost incl. NI, pension, benefits ≈ $22</td></tr>
+                  <tr><td>Germany</td><td>$24.0/hr</td><td>1.22×</td><td>IG Metall Tier-1 automotive wage agreement; Bavarian plants</td></tr>
+                  <tr><td>USA</td><td>$26.0/hr</td><td>1.25×</td><td>UAW-adjacent Tier-1 rates; Michigan / Ohio assembly regions</td></tr>
+                  <tr><td>Eastern Europe</td><td>$9.5/hr</td><td>0.90×</td><td>Poland / Czechia / Romania; EU energy, lower land cost</td></tr>
+                  <tr><td>China (Standard)</td><td>$5.8/hr</td><td>0.11×</td><td>Guangdong ¥2,500/mo min wage; total cost ~¥42/hr = $5.8; machine at 11% of W.Eur</td></tr>
+                  <tr><td>China (Coastal)</td><td>$6.5/hr</td><td>0.12×</td><td>Shanghai / Shenzhen premium; ¥3,000+/mo minimum</td></tr>
+                  <tr><td>China (Inland)</td><td>$4.5/hr</td><td>0.09×</td><td>Henan / Sichuan; ¥2,200/mo minimum; lower land cost</td></tr>
+                  <tr><td>India</td><td>$4.0/hr</td><td>0.72×</td><td>Maharashtra / Tamil Nadu Tier-2 automotive; higher machine cost relative to labour</td></tr>
+                  <tr><td>Vietnam</td><td>$3.0/hr</td><td>0.70×</td><td>Ho Chi Minh / Hanoi; rapid FDI-driven electronics manufacturing base</td></tr>
+                  <tr><td>Mexico</td><td>$7.0/hr</td><td>0.80×</td><td>Monterrey / Juárez maquiladora region; USD-denominated supplier contracts</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Overhead -->
+          <div class="ref-section">
+            <h3>Overhead Structure &amp; Cost Additions</h3>
+            <div class="ref-card">
+              <h4>Factory Overhead (FOH) — 12% of Prime Cost</h4>
+              <p>Applied to <code>prime = DM + DLab + DMach</code>. Covers: facility depreciation, indirect labour (supervisors, quality engineers, maintenance), utilities, production consumables (cutting oils, cleaning agents, packaging materials for WIP), and quality system costs (ISO/IATF 16949 audit overhead). The 12% rate is typical for Chinese Tier-1/2 automotive speaker factories at volume.</p>
+            </div>
+            <div class="ref-card">
+              <h4>G&amp;A (General &amp; Administrative) — 5% of mfgCost (China)</h4>
+              <p>Covers head office, finance, HR, legal, IT, and sales overhead allocated to the manufacturing cost. Chinese speaker manufacturers operating at Tier-2 level typically run 4–6% G&amp;A on manufactured goods. Western equivalents run 6–9%. The tool uses 5% for all China variants and 7% for Western countries.</p>
+            </div>
+            <div class="ref-card">
+              <h4>Tooling Amortisation</h4>
+              <p>Each driver type carries a set of dedicated hard tooling (basket die, VC winding fixture, cone mould, spider press, assembly jig, NRE/DFM engineering). Tooling cost is divided by annual volume to give a <code>$/unit</code> charge:</p>
+              <div class="formula-box">toolAmort = (basket + vc + cone + spider + fixture + nre) / annualVolume</div>
+              <p>Example — Full-Range at 213,000/year: $50,000+$9,000+$15,000+$9,000+$5,000+$28,000 = $116,000 ÷ 213,000 = <strong>$0.545/unit</strong>. At 10,000/year the same tooling costs <strong>$11.60/unit</strong> — a 21× difference that makes low-volume programmes uneconomical without amortisation negotiation.</p>
+            </div>
+            <div class="ref-card">
+              <h4>Warranty — 1.5% of mfgCost</h4>
+              <p>Automotive Tier-1/2 standard warranty provision. Covers: field returns, rework cost, replacement logistics, and goodwill. 1.5% is industry-standard for passive speaker assemblies with no electronics. Active systems (with DSP/amp) carry higher warranty provisions (2.5–4%) which are embedded in the purchased component cost.</p>
+            </div>
+            <div class="ref-card">
+              <h4>Inbound Logistics — 2% of DM (China)</h4>
+              <p>Cost of moving raw materials from Chinese domestic suppliers to the speaker factory. China domestic freight is very efficient: magnets from Baotou/Ganzhou, copper wire from Guangdong wire mills, PP from Daqing/Guangzhou petrochemical plants. 2% of DM is appropriate for domestic China sourcing. Western countries use 3% (longer supply chains, higher freight rates).</p>
+            </div>
+          </div>
+
+          <!-- System additions -->
+          <div class="ref-section">
+            <h3>System-Level Cost Additions</h3>
+            <div class="ref-card">
+              <p>After per-driver costs are summed, the following system-level costs are added:</p>
+              <ul style="margin-top:8px">
+                <li><strong>Amplifier</strong> — direct China EXW price (no machM multiplier). A 7-channel Class D automotive amp with integrated protection = $38 at volume from Chinese OEM amp manufacturers (e.g. Hypex-equivalent domestic brands).</li>
+                <li><strong>DSP</strong> — similarly direct EXW. 12-channel automotive DSP with EQ/crossover processing = $22 from domestic suppliers. Premium neural-DSP with AI audio = add $45 separately via Technology Features.</li>
+                <li><strong>Wiring harness</strong> — total harness (speaker cables + main harness) at $10 for 20m + $0.22/m cable × 32m = $17.04 for Premium system.</li>
+                <li><strong>Connectors</strong> — $0.22/connector China EXW for automotive-grade (USCAR-2 / ISO 20696 equivalent) multi-pin speaker connectors at volume.</li>
+                <li><strong>Housing / Bracket / Grille per driver</strong> — SPK_SYS lookup scaled by driver size. Full-Range: housing $1.65, grille $0.55, bracket $0.65, connector $0.28 = $3.13 total per driver position.</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Data sources -->
+          <div class="ref-section">
+            <h3>Data Sources &amp; Update Cadence</h3>
+            <div class="ref-table-wrap">
+              <table class="ref-table">
+                <thead><tr><th>Data Type</th><th>Source</th><th>Update Frequency</th><th>Last Calibration</th></tr></thead>
+                <tbody>
+                  <tr><td>Copper spot price</td><td>SHFE (Shanghai Futures Exchange) — front-month contract</td><td>Daily</td><td>Jun 2026</td></tr>
+                  <tr><td>Aluminium spot price</td><td>SHFE — front-month Al contract</td><td>Daily</td><td>Jun 2026</td></tr>
+                  <tr><td>Steel (SPCC/HRC)</td><td>SHFE domestic HRC + Mysteel SPCC domestic survey</td><td>Weekly</td><td>Jun 2026</td></tr>
+                  <tr><td>NdPr / NdFeB price</td><td>SMM (Shanghai Metals Market) — NdPr metal; Asian Metal — sintered magnet</td><td>Weekly</td><td>Jun 2026</td></tr>
+                  <tr><td>SmCo price</td><td>Asian Metal — SmCo-26 grade China domestic</td><td>Monthly</td><td>Jun 2026</td></tr>
+                  <tr><td>PP / PA66 / PE</td><td>China Petroleum &amp; Chemical Industry Association (CPCIA) domestic index</td><td>Monthly</td><td>Jun 2026</td></tr>
+                  <tr><td>Labour rates</td><td>China Ministry of Human Resources — regional minimum wage schedule; Guangdong Provincial Government</td><td>Annual (Jan)</td><td>Jan 2026</td></tr>
+                  <tr><td>Machine rates</td><td>Internal Leamington Marathi benchmarking database; cross-validated vs Deloitte / PwC automotive supply chain reports</td><td>Bi-annual</td><td>H1 2026</td></tr>
+                  <tr><td>Benchmark system costs</td><td>Public teardown reports (Munro &amp; Associates, TechInsights), analyst reports, IHS Markit automotive audio market data</td><td>Annual</td><td>2026</td></tr>
+                  <tr><td>Exchange rates</td><td>CNY/USD mid-rate</td><td>Weekly</td><td>Jun 2026 (7.25 CNY/USD)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div style="margin-top:12px;padding:12px 16px;background:rgba(245,158,11,0.07);border:1px solid rgba(245,158,11,0.2);border-radius:8px;font-size:11.5px;color:var(--t2)">
+              ⚠ <strong style="color:var(--amber)">Important:</strong> NdPr/NdFeB prices are the most volatile input in this model. NdPr metal can move ±15% in a quarter. SHFE copper moves ±8% in a month. For formal business case submission, always verify current commodity prices against the listed sources before presenting to management.
+            </div>
+          </div>
+        </div>
+
+        <!-- ══════════════════════════════════════════════════════
+             SECTION 3 — MATERIAL GRADES
+        ══════════════════════════════════════════════════════ -->
+        <div class="about-section" id="about-grades">
+          <div class="about-hero">
+            <h2>Material Grades Technical Guide</h2>
+            <p>This section documents every material category used in the cost model, including the specific grades modelled, their performance properties, where they are used in an automotive speaker, and why that grade is appropriate for that application. Use this when evaluating alternative material proposals from suppliers or when specifying materials on a new programme.</p>
+            <div class="about-badges">
+              <span class="about-badge badge-blue">Magnets</span>
+              <span class="about-badge badge-green">Cone Materials</span>
+              <span class="about-badge badge-amber">Wire &amp; VC</span>
+              <span class="about-badge badge-purple">Frame &amp; Basket</span>
+              <span class="about-badge badge-cyan">Adhesives &amp; Misc</span>
+            </div>
+          </div>
+
+          <!-- MAGNETS -->
+          <div class="ref-section">
+            <h3>Magnet Materials</h3>
+            <div class="grades-grid">
+              <div class="grade-card">
+                <div class="grade-card-hdr">
+                  <div class="grade-icon" style="background:rgba(245,158,11,0.15)">🧲</div>
+                  <div><h4>Sintered NdFeB</h4><span>N35–N52 + H/SH/UH/EH temp variants</span></div>
+                </div>
+                <div class="grade-card-body">
+                  <div class="grade-row"><div class="grade-name">N38H</div><div class="grade-desc">BHmax 38 MGOe, Hcj 17 kOe. Standard premium automotive tweeter magnet. Good balance of flux density and high-temp coercivity.</div><span class="grade-tag tag-prem">Premium</span></div>
+                  <div class="grade-row"><div class="grade-name">N40H</div><div class="grade-desc">BHmax 40 MGOe. Most common grade for mid-range and full-range automotive speakers. Specified for -40°C to +85°C operating range.</div><span class="grade-tag tag-prem">Premium</span></div>
+                  <div class="grade-row"><div class="grade-name">N42SH</div><div class="grade-desc">BHmax 42 MGOe, Hcj 25 kOe (Super High coercivity). For door-mounted speakers exposed to high thermal cycling. Resists demagnetisation from stray fields.</div><span class="grade-tag tag-ultra">Ultra</span></div>
+                  <div class="grade-row"><div class="grade-name">N48H</div><div class="grade-desc">BHmax 48 MGOe. Flagship subwoofer and premium Tier-1 woofer applications. Highest flux in H-rated grades. Cost ~18% premium over N40H.</div><span class="grade-tag tag-ultra">Ultra</span></div>
+                  <div class="grade-row"><div class="grade-name">N35</div><div class="grade-desc">BHmax 35 MGOe, no H rating. Only for applications with Tmax &lt;60°C. Avoided in automotive — max operating temp too low for door speakers.</div><span class="grade-tag tag-std">Avoid Automotive</span></div>
+                  <p style="font-size:11px;color:var(--t3);margin-top:10px">Price modelled at N40 grade. N42SH/N48H cost +12–18% premium. The H-suffix (Hcj ≥17 kOe) is mandatory for all automotive applications per most OEM material specifications.</p>
+                </div>
+              </div>
+              <div class="grade-card">
+                <div class="grade-card-hdr">
+                  <div class="grade-icon" style="background:rgba(148,163,184,0.15)">⬛</div>
+                  <div><h4>Ferrite (Ceramic)</h4><span>Y25 / Y30 / Y35 grades</span></div>
+                </div>
+                <div class="grade-card-body">
+                  <div class="grade-row"><div class="grade-name">Y30</div><div class="grade-desc">BHmax 7.2 MGOe, Br 3,900 G. Most common automotive ferrite grade. Strontium ferrite sintered. Used in budget rear-fill and OEM passive systems.</div><span class="grade-tag tag-std">Standard</span></div>
+                  <div class="grade-row"><div class="grade-name">Y35</div><div class="grade-desc">BHmax 8.6 MGOe, Br 4,200 G. Enhanced ferrite. Approximately 19% more flux than Y30 at 8% cost premium. Used in cost-optimised mid-range drivers.</div><span class="grade-tag tag-std">Standard</span></div>
+                  <div class="grade-row"><div class="grade-name">Y25</div><div class="grade-desc">BHmax 6.0 MGOe. Entry-grade. Heavy (density 4.9 g/cm³) — significantly heavier magnet assembly than equivalent NdFeB. Restricted to weight-insensitive applications.</div><span class="grade-tag tag-eco">Budget</span></div>
+                  <p style="font-size:11px;color:var(--t3);margin-top:10px">Ferrite magnets are 3–7× heavier than NdFeB for equivalent flux. This adds chassis weight and limits use in pillar/headrest tweeters. Temperature performance is actually better than NdFeB (improves with temperature).</p>
+                </div>
+              </div>
+              <div class="grade-card">
+                <div class="grade-card-hdr">
+                  <div class="grade-icon" style="background:rgba(124,58,237,0.15)">💠</div>
+                  <div><h4>SmCo (Samarium Cobalt)</h4><span>SmCo-18 / SmCo-26 / SmCo-28</span></div>
+                </div>
+                <div class="grade-card-body">
+                  <div class="grade-row"><div class="grade-name">SmCo-26</div><div class="grade-desc">BHmax 26 MGOe, Tmax 350°C. Primary automotive grade. Used where Tmax &gt;150°C or extreme demagnetisation resistance is required (engine bay, very high power density).</div><span class="grade-tag tag-ultra">Ultra</span></div>
+                  <div class="grade-row"><div class="grade-name">SmCo-28</div><div class="grade-desc">BHmax 28 MGOe. Highest commercially available SmCo grade. Extremely rare in speaker applications — primarily aerospace/defence. Cost 3× SmCo-26.</div><span class="grade-tag tag-ultra">Speciality</span></div>
+                  <div class="grade-row"><div class="grade-name">SmCo-18</div><div class="grade-desc">Lower energy density. The original SmCo grade. Almost entirely superseded by NdFeB for cost performance. Retained in some heritage designs.</div><span class="grade-tag tag-std">Legacy</span></div>
+                  <p style="font-size:11px;color:var(--t3);margin-top:10px">SmCo is used in &lt;1% of automotive speaker programmes. Its primary value is Tmax &gt;150°C. For normal automotive speaker positions (door, pillar, headrest), NdFeB with H/SH rating is always preferred.</p>
+                </div>
+              </div>
+              <div class="grade-card">
+                <div class="grade-card-hdr">
+                  <div class="grade-icon" style="background:rgba(16,185,129,0.15)">♻</div>
+                  <div><h4>Bonded &amp; Recycled NdFeB</h4><span>Alternative magnet forms</span></div>
+                </div>
+                <div class="grade-card-body">
+                  <div class="grade-row"><div class="grade-name">Bonded NdFeB</div><div class="grade-desc">NdFeB powder in epoxy binder. Complex shapes achievable (ring, arc, multi-pole). BHmax 6–12 MGOe — well below sintered. Used in headrest/satellite micro-speakers. Modelled at $30/kg.</div><span class="grade-tag tag-prem">Niche</span></div>
+                  <div class="grade-row"><div class="grade-name">Recycled NdFeB</div><div class="grade-desc">Re-sintered from post-consumer or manufacturing scrap. BHmax typically 85–92% of virgin equivalent. SMM Jun 2026: ¥400/kg ($55/kg). Primary driver is OEM sustainability mandates. Modelled identically to virgin NdFeB in performance.</div><span class="grade-tag tag-eco">Sustainable</span></div>
+                  <p style="font-size:11px;color:var(--t3);margin-top:10px">Recycled NdFeB receives CO₂ credit of ~18 kg CO₂e/kg vs ~45 kg CO₂e/kg for virgin sintered. This is reflected in the Sustainability tab CO₂ calculation.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- CONE MATERIALS -->
+          <div class="ref-section">
+            <h3>Cone &amp; Diaphragm Materials</h3>
+            <div class="grades-grid">
+              <div class="grade-card">
+                <div class="grade-card-hdr">
+                  <div class="grade-icon" style="background:rgba(245,158,11,0.12)">📄</div>
+                  <div><h4>Paper Cones</h4><span>Standard &amp; doped variants</span></div>
+                </div>
+                <div class="grade-card-body">
+                  <div class="grade-row"><div class="grade-name">Natural Cellulose</div><div class="grade-desc">Kraft pulp with cotton linter blend. Self-damped, excellent Qms. Low mass (0.5–1.5 g/cm²). Used across budget to mid-premium segments. Dominant global cone material.</div><span class="grade-tag tag-std">Standard</span></div>
+                  <div class="grade-row"><div class="grade-name">Doped Paper</div><div class="grade-desc">Cellulose + bitumen/polymer damping treatment. Controlled internal loss factor (tan δ). Reduces cone breakup modes at HF. Preferred in full-range and mid-range drivers.</div><span class="grade-tag tag-prem">Premium</span></div>
+                  <div class="grade-row"><div class="grade-name">Aramid-treated</div><div class="grade-desc">Cellulose base with Kevlar fibre blended in during wet-lay process. Stiffness/mass ratio improved significantly. Dynaudio and Focal use aramid-infused paper in some ranges.</div><span class="grade-tag tag-ultra">Ultra</span></div>
+                  <p style="font-size:11px;color:var(--t3);margin-top:10px">Paper is moisture-sensitive — avoid unprotected paper cones in door speaker positions without adequate sealing. Use doped or PP for door woofers in markets with high humidity exposure.</p>
+                </div>
+              </div>
+              <div class="grade-card">
+                <div class="grade-card-hdr">
+                  <div class="grade-icon" style="background:rgba(59,130,246,0.12)">🔷</div>
+                  <div><h4>Polypropylene (PP)</h4><span>Homopolymer &amp; copolymer</span></div>
+                </div>
+                <div class="grade-card-body">
+                  <div class="grade-row"><div class="grade-name">PP Homopolymer</div><div class="grade-desc">Higher stiffness, lower damping. Standard automotive door woofer material. Moisture-proof. Injection or press-formed. Models as standard PP at $1.38/kg.</div><span class="grade-tag tag-std">Standard</span></div>
+                  <div class="grade-row"><div class="grade-name">PP Copolymer</div><div class="grade-desc">Higher damping (impact-modified). Better controlled cone resonance. Used in subwoofers where extended LF excursion and damping control matter more than stiffness.</div><span class="grade-tag tag-prem">Premium</span></div>
+                  <div class="grade-row"><div class="grade-name">PP + mineral filler</div><div class="grade-desc">PP with 20–40% talc or barium sulphate. Mass-loaded for extended LF — effectively shifts cone resonance lower without changing diameter. Niche use.</div><span class="grade-tag tag-std">Niche</span></div>
+                </div>
+              </div>
+              <div class="grade-card">
+                <div class="grade-card-hdr">
+                  <div class="grade-icon" style="background:rgba(124,58,237,0.12)">⚫</div>
+                  <div><h4>Carbon Fibre &amp; Composites</h4><span>High-performance cones</span></div>
+                </div>
+                <div class="grade-card-body">
+                  <div class="grade-row"><div class="grade-name">CF/GF Hybrid</div><div class="grade-desc">Carbon fibre + glass fibre woven hybrid. Best stiffness/mass ratio. Used in premium tweeters and mid-range. Composite modelled at $3.20/kg for CF/GF blend.</div><span class="grade-tag tag-prem">Premium</span></div>
+                  <div class="grade-row"><div class="grade-name">CF Prepreg (T300)</div><div class="grade-desc">Pure carbon fibre prepreg. BHmax extension beyond 10kHz. Dynaudio Esotar, Focal Beryllium tweeter housings use CF. Modelled at $34/kg (China domestic prepreg).</div><span class="grade-tag tag-ultra">Ultra</span></div>
+                  <div class="grade-row"><div class="grade-name">Kevlar / Aramid</div><div class="grade-desc">Para-aramid fibre cone. High internal damping + high stiffness — unusual combination. Dynaudio, Focal signature material. Synthetic fibre yellow colour signature.</div><span class="grade-tag tag-ultra">Ultra</span></div>
+                  <div class="grade-row"><div class="grade-name">Titanium</div><div class="grade-desc">Ti dome tweeters. Very stiff, low mass. Used in AMG/Mercedes, Bowers &amp; Wilkins automotive. Hard dome — excellent off-axis if well-damped. Modelled $24/kg (Ti sheet).</div><span class="grade-tag tag-ultra">Ultra</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- WIRE MATERIALS -->
+          <div class="ref-section">
+            <h3>Voice Coil Wire Materials</h3>
+            <div class="grades-grid">
+              <div class="grade-card">
+                <div class="grade-card-hdr">
+                  <div class="grade-icon" style="background:rgba(245,158,11,0.12)">🔌</div>
+                  <div><h4>Copper Wire Variants</h4><span>OFC, CCA, CCAW, Flat Cu</span></div>
+                </div>
+                <div class="grade-card-body">
+                  <div class="grade-row"><div class="grade-name">OFC (Cu enamelled)</div><div class="grade-desc">Oxygen-Free Copper, enamelled. Lowest DCR per unit mass. Standard for all premium automotive voice coils. Conductivity 101% IACS. Temperature class 155°C (F-grade enamel).</div><span class="grade-tag tag-prem">Premium</span></div>
+                  <div class="grade-row"><div class="grade-name">CCA wire</div><div class="grade-desc">Copper-Clad Aluminium: Al core, Cu outer shell. 10% lighter than pure Cu at 95% conductivity. Used in cost-optimised mid-range and rear-fill woofers. CCA: $8/kg vs $16/kg Cu.</div><span class="grade-tag tag-std">Cost-Opt</span></div>
+                  <div class="grade-row"><div class="grade-name">CCAW</div><div class="grade-desc">Copper-Clad Aluminium Wire — fine-gauge self-bonding variant. Used in 4-layer and 2-layer thin coils. Self-bonding insulation eliminates varnish step. Modelled at $7/kg.</div><span class="grade-tag tag-std">Standard</span></div>
+                  <div class="grade-row"><div class="grade-name">Flat / Edgewise Cu</div><div class="grade-desc">Rectangular-section copper strip, edge-wound into coil. Maximum fill factor (98% vs 75% round wire). Used in high-power subwoofers (500W+). Requires precision edgewise winding machine. $17/kg.</div><span class="grade-tag tag-ultra">Ultra</span></div>
+                  <div class="grade-row"><div class="grade-name">Ag-Cu (Silver-Cu)</div><div class="grade-desc">Silver-alloyed copper wire. Marginal conductivity improvement; primary value is marketing differentiation. Very rare in production automotive. Modelled at $32/kg.</div><span class="grade-tag tag-ultra">Niche</span></div>
+                </div>
+              </div>
+              <div class="grade-card">
+                <div class="grade-card-hdr">
+                  <div class="grade-icon" style="background:rgba(34,211,238,0.12)">🌀</div>
+                  <div><h4>Coil Former Materials</h4><span>Al, Kapton, Nomex, Ti</span></div>
+                </div>
+                <div class="grade-card-body">
+                  <div class="grade-row"><div class="grade-name">Aluminium</div><div class="grade-desc">Highly conductive — transfers heat from coil winding to magnetic gap air. Also provides eddy current damping that reduces HF peaks. Best for power handling. $3.70/kg.</div><span class="grade-tag tag-prem">Standard Premium</span></div>
+                  <div class="grade-row"><div class="grade-name">Kapton (Polyimide)</div><div class="grade-desc">Ultra-thin (25–50μm) cylindrical film. Lowest mass of all formers — extends HF bandwidth by reducing moving mass. Tmax 300°C. Used in tweeters and lightweight mid-range. $9.50/kg.</div><span class="grade-tag tag-ultra">Ultra</span></div>
+                  <div class="grade-row"><div class="grade-name">Nomex</div><div class="grade-desc">Aramid paper (DuPont). Rigid, high-temp (Tmax 220°C), low mass. Subwoofer high-power application. Less thermally conductive than Al but excellent structural integrity at high excursion. $18/kg.</div><span class="grade-tag tag-prem">Premium</span></div>
+                  <div class="grade-row"><div class="grade-name">Paper former</div><div class="grade-desc">Phenolic resin-treated kraft paper. Lowest cost, adequate stiffness for low-power applications. Risk of deformation at high moisture + temperature. $0.90/kg.</div><span class="grade-tag tag-eco">Budget</span></div>
+                  <div class="grade-row"><div class="grade-name">Titanium</div><div class="grade-desc">For ultra-high-power subwoofers (1kW+). Titanium alloy tube. Extreme stiffness prevents gap collision. Very rare — only in competition audio and flagship automotive. $20/kg.</div><span class="grade-tag tag-ultra">Speciality</span></div>
+                  <div class="grade-row"><div class="grade-name">Glass Fibre (GF)</div><div class="grade-desc">Woven GF tube. Moderate stiffness, low thermal conductivity vs Al. Cost-effective upgrade from paper. Used in mid-tier full-range and some mid-range designs. $2.20/kg.</div><span class="grade-tag tag-std">Mid-tier</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- FRAME MATERIALS -->
+          <div class="ref-section">
+            <h3>Frame &amp; Basket Materials</h3>
+            <div class="grades-grid">
+              <div class="grade-card">
+                <div class="grade-card-hdr">
+                  <div class="grade-icon" style="background:rgba(59,130,246,0.12)">🏗</div>
+                  <div><h4>Die-Cast Aluminium</h4><span>ADC12 / A380 alloy</span></div>
+                </div>
+                <div class="grade-card-body">
+                  <div class="grade-row"><div class="grade-name">ADC12 (A383)</div><div class="grade-desc">Most common automotive speaker basket alloy. Si 9–12%, good fluidity for complex die geometries. Excellent thermal conductivity (96 W/m·K) — draws heat from magnet/VC assembly. Surface treated: powder coat or anodise.</div><span class="grade-tag tag-prem">Standard Premium</span></div>
+                  <div class="grade-row"><div class="grade-name">A380</div><div class="grade-desc">Higher strength (324 MPa UTS), better corrosion resistance vs ADC12. Used where basket must also serve as structural bracket in the door cavity. Common in Tier-1 premium programmes.</div><span class="grade-tag tag-prem">Premium</span></div>
+                  <p style="font-size:11px;color:var(--t3);margin-top:8px">Die-cast Al modelled at $3.50/kg. The die casting process (step: Basket Mfg) carries the highest machine rate in the model at $52.5/hr W.Eur reference — reflecting expensive high-pressure die casting equipment.</p>
+                </div>
+              </div>
+              <div class="grade-card">
+                <div class="grade-card-hdr">
+                  <div class="grade-icon" style="background:rgba(148,163,184,0.12)">🔩</div>
+                  <div><h4>Stamped Steel</h4><span>SPCC / SECC grades</span></div>
+                </div>
+                <div class="grade-card-body">
+                  <div class="grade-row"><div class="grade-name">SPCC (Cold-rolled)</div><div class="grade-desc">Standard cold-rolled steel. SHFE domestic ¥4,200/MT. Cost-optimised basket for budget and mid-tier applications. Phosphated + electro-coated for corrosion protection. Heavier than Al (7.87 vs 2.7 g/cm³).</div><span class="grade-tag tag-eco">Budget</span></div>
+                  <div class="grade-row"><div class="grade-name">SECC (Electro-galv.)</div><div class="grade-desc">SPCC with zinc electroplate. Improved corrosion resistance for door speaker positions. Used where sealing is incomplete. Zinc coating adds ~$0.04/kg to SPCC base price.</div><span class="grade-tag tag-std">Standard</span></div>
+                  <p style="font-size:11px;color:var(--t3);margin-top:8px">Steel basket is a common Tier-2 specification reduction. Most OEM premium programmes specify die-cast Al as a minimum. Switching from Al to SECC can save ~$1.40/driver but will be challenged on thermal management grounds in design reviews.</p>
+                </div>
+              </div>
+              <div class="grade-card">
+                <div class="grade-card-hdr">
+                  <div class="grade-icon" style="background:rgba(16,185,129,0.12)">🟢</div>
+                  <div><h4>Injection Moulded PP &amp; PA66</h4><span>Plastic frames</span></div>
+                </div>
+                <div class="grade-card-body">
+                  <div class="grade-row"><div class="grade-name">PP + 30% GF</div><div class="grade-desc">Glass-fibre reinforced PP. Lightweight, cost-effective. Excellent vibration isolation from door panel. Injection tooling cost is similar to stamped steel die. Used in non-structural mounting positions. $1.45/kg base + tooling.</div><span class="grade-tag tag-std">Standard</span></div>
+                  <div class="grade-row"><div class="grade-name">PA66 + 30% GF</div><div class="grade-desc">Nylon 66 glass-fibre reinforced. Higher Tmax than PP (240°C vs 165°C). Used in dash-mounted speakers with solar load exposure. $2.40/kg. Moisture absorption can cause dimensional creep — design must allow.</div><span class="grade-tag tag-prem">Premium Plastic</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- SURROUND MATERIALS -->
+          <div class="ref-section">
+            <h3>Surround &amp; Suspension Materials</h3>
+            <div class="grades-grid">
+              <div class="grade-card">
+                <div class="grade-card-hdr">
+                  <div class="grade-icon" style="background:rgba(239,68,68,0.12)">⭕</div>
+                  <div><h4>Surround Materials</h4><span>Rubber, Foam, Cloth &amp; Elastomers</span></div>
+                </div>
+                <div class="grade-card-body">
+                  <div class="grade-row"><div class="grade-name">NBR Rubber</div><div class="grade-desc">Nitrile Butadiene Rubber. Primary surround material for door woofers. Excellent UV and ozone resistance. Good -40°C flexibility (critical for automotive). Modelled at $1.85/kg.</div><span class="grade-tag tag-prem">Automotive Standard</span></div>
+                  <div class="grade-row"><div class="grade-name">PU Foam</div><div class="grade-desc">Polyurethane foam roll surround. Lowest mass, excellent LF compliance. Main risk: long-term ageing and hydrolysis in high humidity. Acceptable for headrest/dash positions. $0.90/kg.</div><span class="grade-tag tag-std">Standard</span></div>
+                  <div class="grade-row"><div class="grade-name">Cloth/Fabric</div><div class="grade-desc">Woven textile surround. Used almost exclusively in tweeters. Excellent compliance uniformity. Cotton or polyester weave. $2.50/kg.</div><span class="grade-tag tag-std">Tweeter Standard</span></div>
+                  <div class="grade-row"><div class="grade-name">Santoprene TPE</div><div class="grade-desc">Thermoplastic elastomer (EPDM+PP blend). Injection-mouldable — consistent geometry, no hand-cementing variability. Excellent -50°C to +150°C range. Preferred for large volume Tier-1 programmes. $4.00/kg.</div><span class="grade-tag tag-prem">Premium Tier-1</span></div>
+                  <div class="grade-row"><div class="grade-name">Silicone Rubber</div><div class="grade-desc">Extremely wide temperature range (-60°C to +200°C). UV/ozone inert. Used in engine bay and roof-mounted speakers exposed to extreme thermal cycles. 3× cost of NBR. $6.00/kg.</div><span class="grade-tag tag-ultra">Extreme Environment</span></div>
+                  <div class="grade-row"><div class="grade-name">Butyl Rubber</div><div class="grade-desc">Very high internal loss (damping). Used for targeted mode control in specific speaker designs. Gas-impermeable — sometimes used as acoustic seal in sealed cabinets. $2.20/kg.</div><span class="grade-tag tag-prem">Niche</span></div>
+                </div>
+              </div>
+              <div class="grade-card">
+                <div class="grade-card-hdr">
+                  <div class="grade-icon" style="background:rgba(245,158,11,0.12)">🕸</div>
+                  <div><h4>Spider (Damper) Material</h4><span>Woven fabric + phenolic resin</span></div>
+                </div>
+                <div class="grade-card-body">
+                  <div class="grade-row"><div class="grade-name">Standard Spider Fabric</div><div class="grade-desc">Cotton/polyester woven fabric, phenolic resin-impregnated and thermoformed. Sets Qms, mechanical compliance (Cms), and Xmax range. All drivers use this material class. $3.00/kg.</div><span class="grade-tag tag-std">Universal</span></div>
+                  <div class="grade-row"><div class="grade-name">Impregnated Cloth</div><div class="grade-desc">Heavier phenolic impregnation for subwoofers requiring high linearity at large excursion. Also used in dual-spider subwoofer configurations. Modelled as imp_cloth at $2.80/kg.</div><span class="grade-tag tag-prem">Subwoofer</span></div>
+                  <p style="font-size:11px;color:var(--t3);margin-top:8px">Spider selection is critical for achieving target Qts. A stiffer spider increases fs and decreases Qms. Automotive programmes typically specify spider compliance target (Cms in mm/N) rather than material, leaving material selection to the speaker supplier.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ADHESIVES -->
+          <div class="ref-section">
+            <h3>Adhesives, Coatings &amp; Miscellaneous</h3>
+            <div class="ref-card">
+              <div class="ref-table-wrap">
+                <table class="ref-table">
+                  <thead><tr><th>Material</th><th>Application</th><th>Grade / Type</th><th>Key Properties</th><th>China Rate</th></tr></thead>
+                  <tbody>
+                    <tr><td>Epoxy (2K)</td><td>Magnet-to-backplate; top plate bonding</td><td>Two-component structural epoxy; 24hr cure or heat-accelerated</td><td>Shear strength &gt;25 MPa; Tmax 150°C; gap-filling</td><td>$4.80/kg</td></tr>
+                    <tr><td>UV Adhesive</td><td>Dust cap bonding; lead wire tacking</td><td>UV-cure acrylate (365 nm); 3–5 sec cure at UV station</td><td>Optically clear; Tmax 130°C; low viscosity for wicking under cap edge</td><td>$9.50/kg</td></tr>
+                    <tr><td>Spider adhesive (contact)</td><td>Spider-to-former; spider-to-basket</td><td>Contact adhesive or hot-melt</td><td>Flexible after cure; no delamination at -40°C</td><td>incl. in epoxy</td></tr>
+                    <tr><td>Cone cement</td><td>Cone-to-VC former joint</td><td>PVA or acrylate; must flex with excursion</td><td>Peel strength; no creep at sustained excursion</td><td>incl. in epoxy</td></tr>
+                    <tr><td>VC varnish</td><td>Coil impregnation for rigidity</td><td>Polyester impregnation varnish; oven-cured</td><td>UL 94V-0; IEC 60317 compliance; F-class thermal</td><td>$3.50/kg</td></tr>
+                    <tr><td>Gasket foam (PE)</td><td>Speaker-to-baffle seal</td><td>PE foam tape; self-adhesive; compresses 50% under mounting pressure</td><td>IPX3 acoustic seal; isolates structural vibration</td><td>$1.40/kg</td></tr>
+                    <tr><td>Cu braid (tinsel)</td><td>VC-to-terminal lead wire</td><td>Flexible stranded copper braid; silicone insulated</td><td>Must survive 10M+ excursion cycles without fatigue</td><td>$16.0/kg</td></tr>
+                    <tr><td>CRGO steel</td><td>Magnetic circuit backplate / top plate</td><td>Cold-Rolled Grain-Oriented electrical steel; 0.5mm thickness</td><td>High permeability; low hysteresis loss in the flux path</td><td>$0.72/kg</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
     </div>
   </div>
   <div class="bottom-grid">
@@ -809,9 +1677,84 @@ html[data-theme="light"] .chip{color:var(--blue2)}
   </div>
 </div>
 </div>
-<footer style="text-align:center;padding:18px 24px 14px;border-top:1px solid var(--bd);background:var(--surface3);margin-top:8px;transition:background var(--tx) ease,border-color var(--tx) ease">
-  <span style="font-size:13px;font-weight:700;color:var(--t1);letter-spacing:.3px">Avinash Bhosale</span>
-  <span style="font-size:11px;color:var(--t3);margin-left:10px;font-style:italic">Tool Author &amp; Designer</span>
+<footer class="site-footer">
+  <div class="footer-body">
+    <!-- Brand column -->
+    <div class="footer-brand">
+      <div class="footer-brand-name">360° Speaker Should-Cost Engine</div>
+      <div class="footer-brand-tagline">Factory-gate cost intelligence for automotive audio systems. Calibrated to live SHFE/SMM commodity data, authentic Chinese manufacturing economics, and 14-step process engineering.</div>
+      <div class="footer-brand-badges">
+        <span class="footer-pill">v2026.1</span>
+        <span class="footer-pill">EXW China</span>
+        <span class="footer-pill">SHFE Jun 2026</span>
+        <span class="footer-pill">Tier-1/2 Model</span>
+      </div>
+    </div>
+    <!-- Product column -->
+    <div class="footer-col">
+      <div class="footer-col-title">Features</div>
+      <ul class="footer-links">
+        <li><button onclick="showTab('overview')"><span class="fl-icon">📊</span>System Overview</button></li>
+        <li><button onclick="showTab('bom')"><span class="fl-icon">📋</span>Full BOM Analysis</button></li>
+        <li><button onclick="showTab('bench')"><span class="fl-icon">🏆</span>Benchmarking</button></li>
+        <li><button onclick="showTab('physics')"><span class="fl-icon">⚡</span>Acoustic Physics</button></li>
+        <li><button onclick="showTab('ai')"><span class="fl-icon">🤖</span>AI Insights <span class="fl-badge">LIVE</span></button></li>
+        <li><button onclick="showTab('trends')"><span class="fl-icon">📡</span>Market Trends</button></li>
+        <li><button onclick="showTab('compare')"><span class="fl-icon">⚖</span>Scenario Compare</button></li>
+      </ul>
+    </div>
+    <!-- Reference column -->
+    <div class="footer-col">
+      <div class="footer-col-title">Reference</div>
+      <ul class="footer-links">
+        <li><button onclick="showTab('about');setTimeout(function(){showAbout('howto',document.querySelectorAll('.about-nav-btn')[0])},50)"><span class="fl-icon">▶</span>How to Use</button></li>
+        <li><button onclick="showTab('about');setTimeout(function(){showAbout('techref',document.querySelectorAll('.about-nav-btn')[1])},50)"><span class="fl-icon">⚙</span>Technical Reference</button></li>
+        <li><button onclick="showTab('about');setTimeout(function(){showAbout('grades',document.querySelectorAll('.about-nav-btn')[2])},50)"><span class="fl-icon">🔬</span>Material Grades Guide</button></li>
+        <li><button onclick="showTab('process')"><span class="fl-icon">🏭</span>14-Step Process Model</button></li>
+        <li><button onclick="showTab('sustain')"><span class="fl-icon">🌱</span>Sustainability &amp; CO₂</button></li>
+      </ul>
+    </div>
+    <!-- Data sources column -->
+    <div class="footer-col">
+      <div class="footer-col-title">Data Sources</div>
+      <ul class="footer-links">
+        <li><a href="#" onclick="return false"><span class="fl-icon">📈</span>SHFE — Cu/Al/Steel spot</a></li>
+        <li><a href="#" onclick="return false"><span class="fl-icon">⛏</span>SMM — NdFeB/NdPr prices</a></li>
+        <li><a href="#" onclick="return false"><span class="fl-icon">🏔</span>Asian Metal — Rare earths</a></li>
+        <li><a href="#" onclick="return false"><span class="fl-icon">🏭</span>CPCIA — PP/PA66 index</a></li>
+        <li><a href="#" onclick="return false"><span class="fl-icon">👷</span>China MOHRSS — Labour rates</a></li>
+        <li><a href="#" onclick="return false"><span class="fl-icon">📊</span>TechInsights — Teardowns</a></li>
+      </ul>
+    </div>
+    <!-- Author column -->
+    <div class="footer-col">
+      <div class="footer-col-title">About</div>
+      <ul class="footer-links">
+        <li><a href="#" onclick="return false" style="color:var(--blue2);font-weight:700"><span class="fl-icon">👤</span>Avinash Bhosale</a></li>
+        <li><a href="#" onclick="return false"><span class="fl-icon">🏢</span>Leamington Marathi</a></li>
+        <li><a href="#" onclick="return false"><span class="fl-icon">📧</span>avinash.bhosale8925<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@gmail.com</a></li>
+      </ul>
+      <div style="margin-top:16px">
+        <div class="footer-status">System Online</div>
+        <div style="font-size:10px;color:var(--t3);margin-top:5px">All calculations run in-browser.<br>No data leaves your device.</div>
+      </div>
+    </div>
+  </div>
+  <hr class="footer-divider">
+  <div class="footer-bottom">
+    <div class="footer-copy">
+      &copy; 2026 <strong>Avinash Bhosale</strong> · <strong>Leamington Marathi</strong>.
+      Internal use only — not for external distribution.
+      Cost figures are directional estimates; validate against live supplier quotes before formal business case submission.
+    </div>
+    <div class="footer-meta">
+      <span class="footer-meta-item"><span class="dot"></span>Engine v2026.1</span>
+      <span class="footer-meta-item"><span class="dot"></span>Data: Jun 2026</span>
+      <span class="footer-meta-item"><span class="dot"></span>FX: ¥7.25/USD · £0.787/USD</span>
+      <span class="footer-meta-item"><span class="dot"></span>14 process steps · 42 materials</span>
+      <span class="footer-meta-item"><span class="dot"></span>IATF 16949 aligned</span>
+    </div>
+  </div>
 </footer>
 <script>
 var f2=function(n){return(Math.abs(n)<0.001?'0.00':n.toFixed(2));};
@@ -1513,6 +2456,15 @@ function showTab(id) {
     if (id === 'compare') renderScenarioCompare();
   }
   if (id === 'trends') renderTrendsTab();
+}
+
+// ─── About sub-tab helper ─────────────────────────────────────────────────────
+function showAbout(id, btn) {
+  document.querySelectorAll('.about-section').forEach(function(s){ s.classList.remove('avis'); });
+  document.querySelectorAll('.about-nav-btn').forEach(function(b){ b.classList.remove('aact'); });
+  var sec = document.getElementById('about-' + id);
+  if (sec) sec.classList.add('avis');
+  if (btn) btn.classList.add('aact');
 }
 
 // ─── renderMetrics ────────────────────────────────────────────────────────────
