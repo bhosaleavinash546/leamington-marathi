@@ -3,100 +3,332 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Leamington Marathi</title>
+  <title>Leamington Marathi | लेमिंगटन मराठी – वारसा मराठी संस्कृतीचा</title>
+  <meta name="description" content="Leamington Marathi is a non-profit community group of 400+ Marathi families in Leamington Spa & Warwick, UK — celebrating Maharashtrian culture through festivals, Dhol Tasha and community events.">
+  <link rel="icon" type="image/png" href="images/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Mukta:wght@300;400;500;600;700;800&family=Yatra+One&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
   <script src="script.js" defer></script>
 </head>
 <body>
-  <!-- Header -->
-  <header>
-    <img src="images/logo.png" alt="Leamington Marathi Logo" class="logo">
-    <nav>
-      <ul class="nav-links">
-        <li><a href="#home">Home</a></li>
-        <li><a href="#about">About Us</a></li>
-        <li><a href="#events">Events</a></li>
-        <li><a href="#gallery">Gallery</a></li>
-        <li><a href="#join">Join Us</a></li>
-        <li><a href="#contact">Contact</a></li>
-      </ul>
-    </nav>
+
+  <!-- ===== Header / Navigation ===== -->
+  <header id="site-header">
+    <div class="header-inner">
+      <a href="#home" class="brand">
+        <img src="images/logo.png" alt="Leamington Marathi logo" class="logo">
+      </a>
+      <nav id="main-nav" aria-label="Main navigation">
+        <ul class="nav-links">
+          <li><a href="#home" class="active">Home</a></li>
+          <li><a href="#about">About&nbsp;Us</a></li>
+          <li><a href="#events">Events</a></li>
+          <li><a href="#dhol">Dhol&nbsp;Tasha</a></li>
+          <li><a href="#gallery">Gallery</a></li>
+          <li><a href="#sponsor">Sponsor&nbsp;Us</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+      </nav>
+      <button id="nav-toggle" aria-label="Toggle menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
   </header>
 
-  <!-- Hero Section -->
+  <!-- ===== Hero ===== -->
   <section id="home" class="hero">
-    <h1>Leamington Marathi</h1>
-    <p>“वारसा मराठी संस्कृतीचा”</p>
-  </section>
-
-  <!-- About Section -->
-  <section id="about" class="about">
-    <h2>About Us</h2>
-    <p>Leamington Marathi is a vibrant social and cultural group based in Leamington Spa/Warwick, West Midlands. Established to bring together Marathi families, our mission is to celebrate and preserve our rich cultural heritage while creating a home away from home.</p>
-    <p>Through festivals, musical performances, cultural programs, and community gatherings, we recreate the spirit of Maharashtra in the UK and strengthen the social bonds among Indian families.</p>
-  </section>
-
-  <!-- Events Section -->
-  <section id="events" class="events">
-    <h2>Our Events</h2>
-    <div class="event-cards">
-      <div class="card">
-        <img src="images/event1.jpg" alt="Ganesh Utsav">
-        <h3>Ganesh Utsav</h3>
-        <p>Traditional celebrations with aarti, dhol-tasha, and cultural performances.</p>
+    <div class="hero-content reveal">
+      <p class="hero-welcome">🙏 नमस्कार मंडळी, सुस्वागतम्&nbsp;!</p>
+      <h1 class="hero-title marathi">लेमिंगटन मराठी</h1>
+      <p class="hero-tagline marathi">“वारसा मराठी संस्कृतीचा”</p>
+      <p class="hero-sub">
+        A vibrant non-profit community of Marathi families from Maharashtra,
+        now at home in Leamington Spa &amp; Warwick, United Kingdom.
+      </p>
+      <div class="hero-actions">
+        <a href="#contact" class="btn btn-primary">Join Our Community</a>
+        <a href="#sponsor" class="btn btn-outline">Become a Sponsor</a>
       </div>
-      <div class="card">
-        <img src="images/event2.jpg" alt="Gudhi Padwa">
-        <h3>Gudhi Padwa</h3>
-        <p>Maharashtrian New Year celebrations with authentic rituals.</p>
+    </div>
+    <div class="hero-stats reveal">
+      <div class="stat">
+        <span class="stat-number" data-count="400">0</span><span class="stat-plus">+</span>
+        <span class="stat-label">Marathi Families<br><span class="marathi">मराठी कुटुंबे</span></span>
       </div>
-      <div class="card">
-        <img src="images/event3.jpg" alt="Diwali Festivities">
-        <h3>Diwali Festivities</h3>
-        <p>Lights, music, and togetherness to celebrate the festival of lights.</p>
+      <div class="stat">
+        <span class="stat-number" data-count="6">0</span><span class="stat-plus">+</span>
+        <span class="stat-label">Events Every Year<br><span class="marathi">वार्षिक कार्यक्रम</span></span>
+      </div>
+      <div class="stat">
+        <span class="stat-number" data-count="700">0</span><span class="stat-plus">+</span>
+        <span class="stat-label">Festival Participants<br><span class="marathi">उत्सव सहभागी</span></span>
       </div>
     </div>
   </section>
 
-  <!-- Gallery Section -->
-  <section id="gallery" class="gallery">
-    <h2>Gallery</h2>
-    <div class="gallery-images">
-      <img src="images/event1.jpg" alt="Community Event">
-      <img src="images/event2.jpg" alt="Community Event">
-      <img src="images/event3.jpg" alt="Community Event">
-      <img src="images/culture1.jpg" alt="Maharashtra Culture">
-      <img src="images/culture2.jpg" alt="Maharashtra Culture">
+  <!-- ===== About ===== -->
+  <section id="about" class="section about">
+    <div class="section-head reveal">
+      <p class="section-kicker marathi">आमच्याविषयी</p>
+      <h2>About Us</h2>
+    </div>
+    <div class="about-grid">
+      <div class="about-text reveal">
+        <p>
+          <strong>Leamington Marathi</strong> is a social and cultural group based in
+          Leamington Spa / Warwick, West Midlands. We are families from
+          <strong>Maharashtra, India</strong> who have made the UK our home — and together
+          we have built a true <em>“home away from home”</em>.
+        </p>
+        <p class="marathi about-marathi">
+          महाराष्ट्रातून इंग्लंडमध्ये आलेल्या आम्ही सर्व मराठी कुटुंबांनी मिळून हा परिवार उभा केला आहे.
+          सण-उत्सव, संगीत, कला आणि एकमेकांची साथ — यातून आम्ही आपल्या मातीशी असलेलं नातं जपतो.
+        </p>
+        <p>
+          The group comprises <strong>over 400+ families</strong> and continues to grow steadily,
+          serving as a hub for Marathi families in the Midlands region. Our mission is to
+          preserve and celebrate the rich cultural heritage of Maharashtra while fostering a
+          sense of community and belonging among our members.
+        </p>
+        <p>
+          We are a <strong>non-profit community organisation</strong>, run entirely by volunteers,
+          and we are working towards becoming a registered <strong>CIO (Charitable Incorporated
+          Organisation)</strong>.
+        </p>
+      </div>
+      <div class="about-cards reveal">
+        <div class="value-card">
+          <span class="value-icon">🏵️</span>
+          <h3>Culture <span class="marathi">| संस्कृती</span></h3>
+          <p>Preserving Maharashtrian traditions, festivals, language and arts in the UK.</p>
+        </div>
+        <div class="value-card">
+          <span class="value-icon">🤝</span>
+          <h3>Community <span class="marathi">| समाज</span></h3>
+          <p>Supporting each other like one big family — from new arrivals to old friends.</p>
+        </div>
+        <div class="value-card">
+          <span class="value-icon">👧</span>
+          <h3>Next Generation <span class="marathi">| पुढची पिढी</span></h3>
+          <p>Passing on our values, language and heritage to our children.</p>
+        </div>
+      </div>
     </div>
   </section>
 
-  <!-- Join Us Section -->
-  <section id="join" class="join">
-    <h2>Join Us</h2>
-    <p>Are you a Marathi family in Leamington or nearby areas? Join our community and be part of our cultural celebrations. Whether you want to perform, volunteer, or simply connect, we welcome you!</p>
-    
-    <!-- Embedded Google Form -->
-    <iframe src="https://docs.google.com/forms/d/e/FORM_ID/viewform?embedded=true" 
-            width="100%" height="800" frameborder="0" marginheight="0" marginwidth="0">
-      Loading…
-    </iframe>
+  <!-- ===== Events / Annual Calendar ===== -->
+  <section id="events" class="section events">
+    <div class="section-head reveal">
+      <p class="section-kicker marathi">आमचे कार्यक्रम</p>
+      <h2>Our Annual Events</h2>
+      <p class="section-sub">Marathi families unite throughout the year to celebrate our culture.</p>
+    </div>
+    <div class="timeline">
+      <div class="timeline-item reveal">
+        <div class="timeline-month">January <span class="marathi">| जानेवारी</span></div>
+        <div class="timeline-card">
+          <h3>Haldi Kunku <span class="marathi">– हळदी-कुंकू</span></h3>
+          <p>A traditional gathering for Marathi ladies to celebrate <strong>Makar Sankranti</strong> — tilgul, saris and sisterhood. <em>तिळगूळ घ्या, गोड गोड बोला!</em></p>
+          <span class="timeline-badge">70+ participants</span>
+        </div>
+      </div>
+      <div class="timeline-item reveal">
+        <div class="timeline-month">April <span class="marathi">| एप्रिल</span></div>
+        <div class="timeline-card">
+          <h3>Gudhi Padwa <span class="marathi">– गुढीपाडवा शुभेच्छा समारोह</span></h3>
+          <p>Welcoming the <strong>Maharashtrian New Year</strong> with the traditional gudhi, music and festivities.</p>
+          <span class="timeline-badge">200+ participants</span>
+        </div>
+      </div>
+      <div class="timeline-item reveal">
+        <div class="timeline-month">May <span class="marathi">| मे</span></div>
+        <div class="timeline-card">
+          <h3>Shivrajyotsav <span class="marathi">– शिवराज्योत्सव</span></h3>
+          <p>Celebrating <strong>Chhatrapati Shivaji Maharaj Jayanti</strong> and <strong>Maharashtra Din</strong> with skits, music, dance and art performances. <em>जय भवानी, जय शिवाजी!</em></p>
+          <span class="timeline-badge">280+ participants</span>
+        </div>
+      </div>
+      <div class="timeline-item reveal">
+        <div class="timeline-month">September <span class="marathi">| सप्टेंबर</span></div>
+        <div class="timeline-card">
+          <h3>Ganeshotsav <span class="marathi">– गणेशोत्सव</span></h3>
+          <p>At the <strong>Shree Krishna Mandir Ganesh Festival</strong> we prepare and serve authentic Maharashtrian food, and our Dhol Tasha Pathak leads the Ganesh procession. <em>गणपती बाप्पा मोरया!</em></p>
+          <span class="timeline-badge">700+ participants</span>
+        </div>
+      </div>
+      <div class="timeline-item reveal">
+        <div class="timeline-month">Oct / Nov <span class="marathi">| दिवाळी</span></div>
+        <div class="timeline-card">
+          <h3>Diwali Celebration <span class="marathi">– दिवाळी भेट</span></h3>
+          <p>The festival of lights with cultural performances and faraal, plus our Dhol group performing at the town's <strong>Diwali Lights Switch-On</strong>. <em>दिवाळीच्या हार्दिक शुभेच्छा!</em></p>
+          <span class="timeline-badge">280+ &amp; 700+ participants</span>
+        </div>
+      </div>
+    </div>
   </section>
 
-  <!-- Contact Section -->
-  <section id="contact" class="contact">
-    <h2>Contact Us</h2>
-    <form>
-      <input type="text" placeholder="Your Name" required>
-      <input type="email" placeholder="Your Email" required>
-      <textarea placeholder="Your Message"></textarea>
-      <button type="submit">Send</button>
-    </form>
-    <p>Email: leamingtonmarathi@gmail.com</p>
+  <!-- ===== Dhol Tasha Pathak ===== -->
+  <section id="dhol" class="section dhol">
+    <div class="dhol-inner reveal">
+      <div class="dhol-text">
+        <p class="section-kicker light marathi">आमचा अभिमान</p>
+        <h2>Leamington Marathi<br>Dhol Tasha Pathak <span class="marathi">🥁 ढोल-ताशा पथक</span></h2>
+        <p>
+          Our proudest initiative — a traditional Maharashtrian <strong>Dhol Tasha</strong> troupe
+          that brings the thunder of Pune's streets to the heart of England. The Pathak performs
+          at the Ganesh procession, the town's Diwali Lights Switch-On and community events across
+          the region.
+        </p>
+        <p class="marathi dhol-marathi">
+          ढोल-ताशाचा गजर झाला की लेमिंगटनच्या रस्त्यांवरही महाराष्ट्र अवतरतो!
+        </p>
+        <a href="#contact" class="btn btn-light">Want us to perform at your event?</a>
+      </div>
+    </div>
   </section>
 
-  <!-- Footer -->
+  <!-- ===== Gallery ===== -->
+  <section id="gallery" class="section gallery">
+    <div class="section-head reveal">
+      <p class="section-kicker marathi">क्षणचित्रे</p>
+      <h2>Gallery</h2>
+      <p class="section-sub">Moments from our celebrations over the years.</p>
+    </div>
+    <div class="gallery-images reveal">
+      <figure>
+        <img src="images/haldi-kunku.jpg" alt="Haldi Kunku 2024 celebration collage" loading="lazy">
+        <figcaption>Haldi Kunku <span class="marathi">| हळदी-कुंकू</span></figcaption>
+      </figure>
+      <figure>
+        <img src="images/ganeshotsav.jpg" alt="Ganeshotsav 2023 celebration collage" loading="lazy">
+        <figcaption>Ganeshotsav <span class="marathi">| गणेशोत्सव</span></figcaption>
+      </figure>
+      <figure>
+        <img src="images/diwali-bhet.jpg" alt="Diwali Bhet 2023 celebration collage" loading="lazy">
+        <figcaption>Diwali Bhet <span class="marathi">| दिवाळी भेट</span></figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ===== Sponsorship ===== -->
+  <section id="sponsor" class="section sponsor">
+    <div class="section-head reveal">
+      <p class="section-kicker marathi">प्रायोजक व्हा</p>
+      <h2>Sponsor Us</h2>
+      <p class="section-sub">
+        Partner with a growing community of 400+ Marathi families in Leamington Spa &amp; Warwick.
+        Your sponsorship helps us promote cultural exchange, foster community cohesion and pass on
+        our values to the next generation.
+      </p>
+    </div>
+    <div class="package-cards">
+      <div class="package reveal">
+        <h3 class="package-name">Bronze</h3>
+        <p class="package-price">£300<span> / event</span></p>
+        <ul>
+          <li>✔ Panel / table at the event</li>
+          <li>✔ Leaflet distribution to attendees</li>
+          <li>✔ Lucky draw for event attendees</li>
+        </ul>
+        <a href="mailto:leamingtonmarathi@gmail.com?subject=Bronze%20Sponsorship%20Enquiry" class="btn btn-outline">Enquire</a>
+      </div>
+      <div class="package featured reveal">
+        <span class="package-ribbon">Popular</span>
+        <h3 class="package-name">Silver</h3>
+        <p class="package-price">£500<span> / event</span></p>
+        <ul>
+          <li>✔ Everything in Bronze</li>
+          <li>✔ Logo &amp; promotional messages in events and communication emails</li>
+        </ul>
+        <a href="mailto:leamingtonmarathi@gmail.com?subject=Silver%20Sponsorship%20Enquiry" class="btn btn-primary">Enquire</a>
+      </div>
+      <div class="package reveal">
+        <h3 class="package-name">Gold</h3>
+        <p class="package-price">£1000<span> / year (6 events)</span></p>
+        <ul>
+          <li>✔ Everything in Silver</li>
+          <li>✔ Logo display on stage</li>
+          <li>✔ VIP access &amp; dedicated place</li>
+          <li>✔ Social media marketing — WhatsApp, Instagram, Facebook</li>
+        </ul>
+        <a href="mailto:leamingtonmarathi@gmail.com?subject=Gold%20Sponsorship%20Enquiry" class="btn btn-outline">Enquire</a>
+      </div>
+    </div>
+    <div class="sponsor-benefits reveal">
+      <h3>Why sponsor us?</h3>
+      <div class="benefits-grid">
+        <div class="benefit"><strong>Brand visibility</strong> — reach a targeted audience and increase awareness</div>
+        <div class="benefit"><strong>Cultural association</strong> — align your brand with Indian values and traditions</div>
+        <div class="benefit"><strong>Networking</strong> — connect with community members and leaders</div>
+        <div class="benefit"><strong>Social responsibility</strong> — demonstrate commitment to diversity and inclusivity</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Join Us ===== -->
+  <section id="join" class="section join">
+    <div class="join-inner reveal">
+      <h2 class="marathi">चला, आपण एकत्र येऊ या!</h2>
+      <p>
+        Are you a Marathi family in Leamington Spa, Warwick or nearby areas?
+        Join our community and be part of our cultural celebrations — perform,
+        volunteer, play dhol, or simply connect. We welcome you!
+      </p>
+      <p class="marathi join-marathi">आपल्या माणसांत या — इथे प्रत्येक सण घरचाच वाटतो.</p>
+      <a href="#contact" class="btn btn-light">Get in Touch</a>
+    </div>
+  </section>
+
+  <!-- ===== Contact ===== -->
+  <section id="contact" class="section contact">
+    <div class="section-head reveal">
+      <p class="section-kicker marathi">संपर्क</p>
+      <h2>Contact Us</h2>
+    </div>
+    <div class="contact-grid">
+      <div class="contact-info reveal">
+        <h3>Leamington Marathi</h3>
+        <p class="marathi">“वारसा मराठी संस्कृतीचा”</p>
+        <ul class="contact-list">
+          <li>📍 Leamington Spa / Warwick, West Midlands, UK</li>
+          <li>✉️ <a href="mailto:leamingtonmarathi@gmail.com">leamingtonmarathi@gmail.com</a></li>
+          <li>📱 <a href="tel:+447405282055">+44&nbsp;740&nbsp;528&nbsp;2055</a> (Phone / WhatsApp)</li>
+        </ul>
+        <div class="socials">
+          <!-- TODO: replace # with your actual social media page URLs -->
+          <a href="#" aria-label="Facebook" title="Facebook">Facebook</a>
+          <a href="#" aria-label="Instagram" title="Instagram">Instagram</a>
+          <a href="#" aria-label="YouTube" title="YouTube">YouTube</a>
+        </div>
+      </div>
+      <form id="contact-form" class="contact-form reveal">
+        <label>
+          Your Name <span class="marathi">/ नाव</span>
+          <input type="text" name="name" placeholder="Your name" required>
+        </label>
+        <label>
+          Your Email <span class="marathi">/ ई-मेल</span>
+          <input type="email" name="email" placeholder="you@example.com" required>
+        </label>
+        <label>
+          Message <span class="marathi">/ संदेश</span>
+          <textarea name="message" rows="5" placeholder="How would you like to get involved?" required></textarea>
+        </label>
+        <button type="submit" class="btn btn-primary">Send Message</button>
+        <p class="form-note">This opens your email app with the message pre-filled.</p>
+      </form>
+    </div>
+  </section>
+
+  <!-- ===== Footer ===== -->
   <footer>
-    <p>Leamington Marathi | “वारसा मराठी संस्कृतीचा”</p>
+    <img src="images/logo.png" alt="Leamington Marathi" class="footer-logo">
+    <p class="marathi footer-tagline">“वारसा मराठी संस्कृतीचा”</p>
+    <p>Leamington Marathi — a volunteer-run, non-profit community group in Leamington Spa &amp; Warwick, UK.</p>
+    <p class="footer-copy">© <span id="year"></span> Leamington Marathi. All rights reserved. | <span class="marathi">जय महाराष्ट्र 🚩</span></p>
   </footer>
+
 </body>
 </html>
