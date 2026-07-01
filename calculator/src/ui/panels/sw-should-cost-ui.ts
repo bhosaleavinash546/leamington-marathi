@@ -25,6 +25,11 @@ import { DEFAULT_SW_RATE_LIBRARY } from '../../engine/sw-rate-library.js';
 import type { SWRateEntry, RateConfidence } from '../../engine/sw-rate-library.js';
 import { runValidation } from '../../engine/sw-validation.js';
 import { buildWorkbook, downloadWorkbook } from '../../export/xlsx-util.js';
+import { projectStore } from '../project-store.js';
+
+// Saved configs are stored as projects of this kind — server-backed when the
+// user is logged in, localStorage when not.
+const SW_PROJECT_KIND = 'sw_should_cost';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -47,18 +52,32 @@ const STORAGE_KEY = 'cv-sw-saved-configs';
 // is instant and does not re-bill the API. Cleared on page reload.
 const _aiCache = new Map<string, string>();
 
-function loadSavedConfigs(): void {
+async function loadSavedConfigs(): Promise<void> {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    _savedConfigs = raw ? JSON.parse(raw) : [];
+    // One-time migration: move any legacy localStorage configs into the store
+    // (logged-out only — logged-in migration would need an explicit upload UX).
+    if (projectStore.mode() === 'local') {
+      const legacy = localStorage.getItem(STORAGE_KEY);
+      if (legacy) {
+        try {
+          for (const c of JSON.parse(legacy) as SavedConfig[]) {
+            await projectStore.save({ id: c.id, kind: SW_PROJECT_KIND, name: c.name, data: c.inputs });
+          }
+        } catch { /* ignore malformed legacy data */ }
+        localStorage.removeItem(STORAGE_KEY);
+      }
+    }
+    const list = await projectStore.list(SW_PROJECT_KIND);
+    _savedConfigs = list.map(p => ({
+      id: p.id, name: p.name,
+      createdAt: p.createdAt ? new Date(p.createdAt).toLocaleDateString('en-GB') : '',
+      inputs: p.data as SWProgramInputs,
+    }));
   } catch {
     _savedConfigs = [];
   }
 }
 
-function persistSavedConfigs(): void {
-  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(_savedConfigs)); } catch { /* quota */ }
-}
 
 // ─── HTML helpers ─────────────────────────────────────────────────────────────
 
@@ -1931,13 +1950,15 @@ function exportSWPDF(result: SWProgramResult): void {
 
 // ─── Saved Configs ────────────────────────────────────────────────────────────
 
-function saveConfig(name: string): void {
+async function saveConfig(name: string): Promise<void> {
   const id = `cfg-${Date.now()}`;
   const createdAt = new Date().toLocaleDateString('en-GB');
-  _savedConfigs.unshift({ id, name, createdAt, inputs: JSON.parse(JSON.stringify(_swInputs)) });
-  if (_savedConfigs.length > 10) _savedConfigs.pop(); // keep max 10
-  persistSavedConfigs();
-  updateSavedConfigsUI();
+  const inputs = JSON.parse(JSON.stringify(_swInputs)) as SWProgramInputs;
+  _savedConfigs.unshift({ id, name, createdAt, inputs });
+  if (_savedConfigs.length > 10) _savedConfigs.pop(); // keep max 10 in view
+  updateSavedConfigsUI();                             // optimistic — show immediately
+  try { await projectStore.save({ id, kind: SW_PROJECT_KIND, name, data: inputs }); }
+  catch { /* offline — kept in view; will persist next time online */ }
 }
 
 function loadConfig(id: string): void {
@@ -1957,8 +1978,8 @@ function loadConfig(id: string): void {
 
 function deleteConfig(id: string): void {
   _savedConfigs = _savedConfigs.filter(c => c.id !== id);
-  persistSavedConfigs();
   updateSavedConfigsUI();
+  void projectStore.remove(SW_PROJECT_KIND, id).catch(() => { /* offline */ });
 }
 
 // Rec 7: side-by-side comparison of saved scenarios (plus the current inputs).
@@ -2156,7 +2177,7 @@ export function wireSWPanel(): void {
     readConfig();
     const name = prompt('Enter a name for this configuration:');
     if (name && name.trim()) {
-      saveConfig(name.trim());
+      void saveConfig(name.trim());
     }
   });
 
@@ -2188,9 +2209,11 @@ function updateCatCounts(): void {
  * Call this from switchCommodity('automotive_software').
  */
 export function initSWPanel(containerEl: HTMLElement): void {
-  loadSavedConfigs();
   _swInputs = defaultSWProgramInputs();
   _swResult = null;
   containerEl.innerHTML = renderSWPanelHTML();
   wireSWPanel();
+  // Load saved configs asynchronously (server or localStorage), then refresh the
+  // list in place — the panel renders immediately without waiting on the network.
+  void loadSavedConfigs().then(updateSavedConfigsUI).catch(() => { /* non-fatal */ });
 }
