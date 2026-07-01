@@ -28,6 +28,18 @@ db.exec(`
     created_by TEXT NOT NULL DEFAULT 'system'
   );
 
+  -- Per-user saved projects (SW configs, universal scenarios, PCB analyses, …)
+  CREATE TABLE IF NOT EXISTS projects (
+    id         TEXT PRIMARY KEY,
+    user_id    TEXT NOT NULL,
+    kind       TEXT NOT NULL,
+    name       TEXT NOT NULL,
+    data       TEXT NOT NULL DEFAULT '{}',
+    created_at TEXT NOT NULL,
+    updated_at TEXT NOT NULL
+  );
+  CREATE INDEX IF NOT EXISTS idx_projects_user_kind ON projects(user_id, kind);
+
   CREATE TABLE IF NOT EXISTS users (
     id TEXT PRIMARY KEY,
     email TEXT UNIQUE NOT NULL,
