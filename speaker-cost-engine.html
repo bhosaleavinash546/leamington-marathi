@@ -927,6 +927,15 @@ html[data-theme="light"] .brand-version{
     </div>
   </div>
 </header>
+<!-- ── Full-page overlay for Trends & About ── -->
+<div id="sonoOverlay" style="display:none;position:fixed;inset:0;z-index:400;background:var(--bg0);flex-direction:column;overflow:hidden;">
+  <div style="display:flex;align-items:center;gap:14px;padding:11px 20px;background:var(--bg1);border-bottom:1px solid var(--bd);flex-shrink:0;">
+    <button onclick="closeSonoOverlay()" style="display:flex;align-items:center;gap:6px;padding:6px 13px;font-size:12px;font-weight:600;color:var(--t2);background:transparent;border:1px solid var(--bd);border-radius:8px;cursor:pointer;transition:color .2s,border-color .2s" onmouseover="this.style.color='var(--blue2)';this.style.borderColor='rgba(0,230,118,0.5)'" onmouseout="this.style.color='var(--t2)';this.style.borderColor='var(--bd)'">← Back</button>
+    <span id="sonoOverlayTitle" style="font-size:15px;font-weight:700;color:var(--t1)"></span>
+  </div>
+  <div id="sonoOverlayBody" style="flex:1;overflow-y:auto;padding:24px 28px;"></div>
+</div>
+
 <div class="layout">
 <div class="left-panel">
   <div class="card" style="flex:1">
@@ -2573,8 +2582,54 @@ function countUp(el, target, prefix, suffix, decimals, duration) {
 }
 
 // ─── Tab helper ───────────────────────────────────────────────────────────────
+function openSonoOverlay(id) {
+  var overlay = document.getElementById('sonoOverlay');
+  var body    = document.getElementById('sonoOverlayBody');
+  var panel   = document.getElementById('panel-' + id);
+  if (!overlay || !panel) return;
+  // Move panel into overlay body
+  body.innerHTML = '';
+  body.appendChild(panel);
+  panel.style.display = 'block';
+  // Title
+  document.getElementById('sonoOverlayTitle').textContent = id === 'trends' ? '📡 Trends' : '📘 About';
+  // Show overlay
+  overlay.style.display = 'flex';
+  // Active button highlight
+  document.querySelectorAll('.corner-tab-btn').forEach(function(b){ b.classList.remove('active'); });
+  var btn = document.querySelector('.corner-tab-btn[data-tab="'+id+'"]');
+  if (btn) btn.classList.add('active');
+  // Animate in
+  var M = window.Motion;
+  if (M) M.animate(body, {opacity:[0,1], y:[18,0]}, {duration:0.38, easing:[0.16,1,0.3,1]});
+  // Trigger content rendering
+  if (id === 'trends') renderTrendsTab();
+  if (id === 'about')  { initVideoPlayer(); }
+}
+
+function closeSonoOverlay() {
+  var overlay = document.getElementById('sonoOverlay');
+  var body    = document.getElementById('sonoOverlayBody');
+  if (!overlay || overlay.style.display === 'none') return;
+  // Move any panels back to .tab-content
+  var tabContent = document.querySelector('.tab-content');
+  Array.from(body.querySelectorAll('.tab-panel')).forEach(function(p) {
+    p.style.display = 'none';
+    if (tabContent) tabContent.appendChild(p);
+  });
+  overlay.style.display = 'none';
+  document.querySelectorAll('.corner-tab-btn').forEach(function(b){ b.classList.remove('active'); });
+}
+
 function showTab(id) {
   var M = window.Motion;
+  // Trends and About open as full-page overlays, not inline tabs
+  if (id === 'trends' || id === 'about') {
+    openSonoOverlay(id);
+    return;
+  }
+  // Close overlay if open (user may be jumping directly to a main tab)
+  closeSonoOverlay();
   document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
   document.querySelectorAll('.corner-tab-btn').forEach(function(b) { b.classList.remove('active'); });
   document.querySelectorAll('.tab-panel').forEach(function(p) { p.style.display = 'none'; });
@@ -2606,8 +2661,6 @@ function showTab(id) {
     if (id === 'ai')       { renderAIInsights(_lastResult); }
     if (id === 'compare')  { renderScenarioCompare();       animateTabContent('panel-compare'); }
   }
-  if (id === 'trends') renderTrendsTab();
-  if (id === 'about')  { initVideoPlayer(); animateTabContent('panel-about'); }
 }
 
 // ─── About sub-tab helper ─────────────────────────────────────────────────────
@@ -3920,30 +3973,28 @@ var _trendsCache = null;
 var _commodityCache = null;
 var _commodityCacheTime = 0;
 
-// Reliable RSS feeds from dedicated audio + automotive tech publications
-// Fetched directly via CORS proxy + DOMParser — no rss2json dependency
+// Audio + automotive tech RSS feeds — all verified to work with rss2json
 var TREND_FEEDS = [
-  {name:'What Hi-Fi',     url:'https://www.whathifi.com/rss',                        region:'Global'},
-  {name:'The Verge',      url:'https://www.theverge.com/rss/index.xml',              region:'Global'},
-  {name:'Electrek',       url:'https://electrek.co/feed/',                            region:'Global'},
-  {name:'InsideEVs',      url:'https://insideevs.com/feed/latest/',                   region:'Global'},
-  {name:'Car News China', url:'https://carnewschina.com/feed/',                       region:'China'},
-  {name:'CNEVPost',       url:'https://cnevpost.com/feed/',                           region:'China'}
+  {name:'What Hi-Fi',     url:'https://www.whathifi.com/rss',              region:'Global'},
+  {name:'Electrek',       url:'https://electrek.co/feed/',                  region:'Global'},
+  {name:'InsideEVs',      url:'https://insideevs.com/feed/latest/',         region:'Global'},
+  {name:'Car News China', url:'https://carnewschina.com/feed/',             region:'China'},
+  {name:'CNEVPost',       url:'https://cnevpost.com/feed/',                 region:'China'}
 ];
 
-// Audio-specific keywords — single words kept broad so 'audio', 'speaker' catch all variants;
-// no standalone car brand names that match delivery/sales articles
+// Broad audio keywords — single words catch 'car audio', 'audio system' etc.
+// No standalone car brand names (zeekr, li auto) that would match delivery articles
 var AUDIO_KEYWORDS = [
-  'audio','speaker','acoustic','stereo','hi-fi','hifi',
-  'harman','bose','meridian','burmester','dolby',
+  'audio','speaker','acoustic','stereo','hi-fi','hifi','subwoofer','tweeter','woofer','amplifier',
+  'harman','bose','meridian','burmester','dolby','sennheiser',
   'bang olufsen','bowers wilkins','spatial audio','surround sound',
-  'amplifier','subwoofer','tweeter','woofer',
-  'noise cancell','sennheiser','premium sound','sound system','infotainment'
+  'sound system','noise cancell','premium sound','infotainment'
 ];
 
-// Score: title keyword match = 10 pts, body match = 1 pt
+var _SIX_MONTHS_MS = 180 * 24 * 3600 * 1000;
+
 function audioScore(title, body) {
-  var t = title.toLowerCase(), b = body.toLowerCase(), s = 0;
+  var t = (title||'').toLowerCase(), b = (body||'').toLowerCase(), s = 0;
   AUDIO_KEYWORDS.forEach(function(kw) {
     if (t.indexOf(kw) >= 0) s += 10;
     else if (b.indexOf(kw) >= 0) s += 1;
@@ -3955,60 +4006,72 @@ function isAudioRelevant(title, body) {
   return audioScore(title, body) > 0;
 }
 
-function fetchRSSFeed(feed) {
-  var SIX_MONTHS_AGO = new Date();
-  SIX_MONTHS_AGO.setMonth(SIX_MONTHS_AGO.getMonth() - 6);
-
-  function parseRSS(xml) {
-    var doc = new DOMParser().parseFromString(xml, 'text/xml');
-    // Support both RSS 2.0 <item> and Atom <entry>
-    var items = Array.from(doc.querySelectorAll('item, entry'));
-    var results = [];
-    items.forEach(function(el) {
-      var title = (el.querySelector('title') || {textContent:''}).textContent.replace(/<!\[CDATA\[|\]\]>/g,'').trim();
-      // Link: Atom uses <link href=""> attribute; RSS 2.0 uses <link>text</link>
-      var linkEl = el.querySelector('link');
-      var link = linkEl ? (linkEl.getAttribute('href') || linkEl.textContent || '').trim() : '';
-      if (!link) { var g = el.querySelector('guid'); if (g) link = g.textContent.trim(); }
-      // Date: try pubDate (RSS) then published/updated (Atom)
-      var dateStr = ['pubDate','published','updated'].reduce(function(acc, tag) {
-        if (acc) return acc;
-        var n = el.querySelector(tag); return n ? n.textContent.trim() : '';
-      }, '');
-      var dateObj = dateStr ? new Date(dateStr) : new Date(0);
-      if (isNaN(dateObj.getTime())) dateObj = new Date(0);
-      // Summary: try description → summary → content
-      var bodyEl = el.querySelector('description') || el.querySelector('summary') || el.querySelector('content');
-      var body = bodyEl ? bodyEl.textContent.replace(/<!\[CDATA\[|\]\]>/g,'').replace(/<[^>]+>/g,'').trim() : '';
-      // Apply filters: must be within 6 months and audio-relevant
-      if (dateObj < SIX_MONTHS_AGO) return;
-      if (!isAudioRelevant(title, body)) return;
-      results.push({
-        title:   title,
-        link:    link,
-        date:    dateObj.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}),
-        dateObj: dateObj,
-        summary: body.slice(0, 220),
-        source:  feed.name,
-        region:  feed.region,
-        score:   audioScore(title, body)
-      });
+function parseRSSXML(xml, feed) {
+  var doc = new DOMParser().parseFromString(xml, 'text/xml');
+  var els = Array.from(doc.querySelectorAll('item, entry'));
+  var cutoff = Date.now() - _SIX_MONTHS_MS;
+  var results = [];
+  els.forEach(function(el) {
+    var title = (el.querySelector('title')||{textContent:''}).textContent.replace(/<!\[CDATA\[|\]\]>/g,'').trim();
+    var linkEl = el.querySelector('link');
+    var link = linkEl ? (linkEl.getAttribute('href')||linkEl.textContent||'').trim() : '';
+    if (!link) { var g = el.querySelector('guid'); if (g) link = g.textContent.trim(); }
+    var dateStr = '';
+    ['pubDate','published','updated'].forEach(function(t){ if (!dateStr){ var n=el.querySelector(t); if(n) dateStr=n.textContent.trim(); }});
+    var dateObj = dateStr ? new Date(dateStr) : new Date(0);
+    if (isNaN(dateObj.getTime()) || dateObj.getTime() < cutoff) return;
+    var bodyEl = el.querySelector('description')||el.querySelector('summary')||el.querySelector('content');
+    var body = bodyEl ? bodyEl.textContent.replace(/<!\[CDATA\[|\]\]>/g,'').replace(/<[^>]+>/g,'').trim() : '';
+    if (!isAudioRelevant(title, body)) return;
+    results.push({
+      title: title, link: link.trim(),
+      date: dateObj.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}),
+      dateObj: dateObj, summary: body.slice(0,220),
+      source: feed.name, region: feed.region, score: audioScore(title, body)
     });
-    return results;
-  }
+  });
+  return results;
+}
 
-  function tryFetch(proxyUrl) {
-    return fetch(proxyUrl).then(function(r) {
-      if (!r.ok) throw new Error(r.status);
-      return r.text();
-    }).then(parseRSS);
-  }
+function fetchRSSFeed(feed) {
+  // Primary: rss2json (fast, no XML parsing, works well with these feeds)
+  var rss2jsonUrl = 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(feed.url) + '&count=30';
+  var cutoff = Date.now() - _SIX_MONTHS_MS;
 
-  return tryFetch('https://corsproxy.io/?' + encodeURIComponent(feed.url))
-    .catch(function() {
-      return tryFetch('https://api.allorigins.win/raw?url=' + encodeURIComponent(feed.url));
+  return fetch(rss2jsonUrl)
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+      if (!data.items || data.status === 'error') throw new Error('rss2json failed');
+      var items = data.items.filter(function(item){
+        var dateObj = item.pubDate ? new Date(item.pubDate) : new Date(0);
+        var title = item.title||'';
+        var body  = (item.description||item.content||'').replace(/<[^>]+>/g,'');
+        return dateObj.getTime() >= cutoff && isAudioRelevant(title, body);
+      });
+      return items.slice(0,8).map(function(item){
+        var title = item.title||'';
+        var body  = (item.description||item.content||'').replace(/<[^>]+>/g,'').trim();
+        var dateObj = new Date(item.pubDate||0);
+        return {
+          title: title, link: item.link||'',
+          date: dateObj.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}),
+          dateObj: dateObj, summary: body.slice(0,220),
+          source: item.author||feed.name, region: feed.region, score: audioScore(title, body)
+        };
+      });
     })
-    .catch(function() { return []; });
+    .catch(function(){
+      // Fallback: fetch raw XML via corsproxy and parse with DOMParser
+      return fetch('https://corsproxy.io/?' + encodeURIComponent(feed.url))
+        .then(function(r){ if(!r.ok) throw new Error(r.status); return r.text(); })
+        .then(function(xml){ return parseRSSXML(xml, feed); })
+        .catch(function(){
+          return fetch('https://api.allorigins.win/get?url=' + encodeURIComponent(feed.url))
+            .then(function(r){ return r.json(); })
+            .then(function(d){ return parseRSSXML(d.contents||'', feed); })
+            .catch(function(){ return []; });
+        });
+    });
 }
 
 function fetchCommodityPrices() {
