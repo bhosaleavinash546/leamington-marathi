@@ -1163,6 +1163,97 @@
 
     <!-- CAD & Photo -->
     <div class="help-section" id="help-cad-upload">
+
+      <!-- ▶ INTERACTIVE NARRATED DEMO — PCB Image-to-Cost ─────────────────── -->
+      <div class="help-card" style="border-top:3px solid #0891b2">
+        <div class="help-card-title" style="color:#0e7490">🎬 Interactive Demo — PCB Image-to-Cost</div>
+        <p style="margin-bottom:12px">A self-running, narrated walkthrough of turning a <strong>PCB photo into a full costed Bill of Materials</strong> — built for new team members. Press <strong>▶ Play</strong> for the auto-narrated tour, or step through with <strong>Next / Prev</strong>. Each scene explains what to do and why it matters.</p>
+        <div class="swdemo" id="pcbdemo" role="group" aria-label="PCB Image-to-Cost interactive demo">
+          <div class="swdemo-stage">
+            <div class="swdemo-chapter" id="pcbdemo-chapter">Intro</div>
+            <div class="swdemo-logo">CostVision · Product Demo</div>
+            <div class="swdemo-scene on" id="pcbdemo-scene"></div>
+          </div>
+          <div class="swdemo-caption" id="pcbdemo-caption"></div>
+          <div class="swdemo-track"><div class="swdemo-fill" id="pcbdemo-fill"></div></div>
+          <div class="swdemo-ctrls">
+            <button class="swdemo-btn play" id="pcbdemo-play" aria-label="Play or pause the demo">▶ Play</button>
+            <button class="swdemo-btn" id="pcbdemo-prev">‹ Prev</button>
+            <button class="swdemo-btn" id="pcbdemo-next">Next ›</button>
+            <button class="swdemo-btn" id="pcbdemo-replay">↻ Replay</button>
+            <span class="swdemo-count" id="pcbdemo-count">1 / 11</span>
+            <div class="swdemo-dots" id="pcbdemo-dots"></div>
+          </div>
+        </div>
+      </div>
+      <script>
+      (function(){
+        var scene = document.getElementById('pcbdemo-scene');
+        if (!scene) return;
+        var cap = document.getElementById('pcbdemo-caption'),
+            fill = document.getElementById('pcbdemo-fill'),
+            chapterEl = document.getElementById('pcbdemo-chapter'),
+            countEl = document.getElementById('pcbdemo-count'),
+            dotsEl = document.getElementById('pcbdemo-dots'),
+            playBtn = document.getElementById('pcbdemo-play');
+        var SCENE_MS = 7000, TICK = 50;
+        var tile = function(b,t,hot){ return '<div class="swdemo-tile'+(hot?' hot':'')+'"><b>'+b+'</b>'+t+'</div>'; };
+        var kpi = function(v,l,c){ return '<div class="swdemo-kpi"><div class="v" style="color:'+c+'">'+v+'</div><div class="l">'+l+'</div></div>'; };
+        var scenes = [
+          { ch:'Intro',
+            body:'<div class="swdemo-h">PCB Image-to-Cost</div><div class="swdemo-sub">From a photo to a full costed BOM — in seconds</div><div class="swdemo-mock">'+
+                 '<span class="swdemo-pill" style="background:#0891b2">AI Vision</span><span class="swdemo-pill" style="background:#2563eb">Auto BOM</span><span class="swdemo-pill" style="background:#059669">Live Catalogue Pricing</span><span class="swdemo-pill" style="background:#7c3aed">Fab + Assembly Cost</span></div>',
+            cap:'Welcome. This shows how to turn a photo of a circuit board into a complete, priced Bill of Materials and a full PCB should-cost — no manual data entry.' },
+          { ch:'What it does',
+            body:'<div class="swdemo-h">What it does</div><div class="swdemo-mock">'+tile('📷 Detects','every component from the image')+tile('🔎 Reads','part-number markings (OCR)')+tile('💷 Prices','each part + the bare board + assembly')+'</div>',
+            cap:'The AI looks at your board photo, detects each component, reads the printed part numbers where legible, and prices the whole thing — bare-board fabrication plus SMT/through-hole assembly.' },
+          { ch:'Open',
+            body:'<div class="swdemo-h">Open it in one click</div><div class="swdemo-mock">'+tile('PCB Fab 🔬','for the bare board',true)+tile('PCBA 🔬','for the assembled board',true)+tile('Image-to-BOM','the 🔬 upload zone')+'</div>',
+            cap:'Open the <b>PCB Fab 🔬</b> or <b>PCBA 🔬</b> commodity — both include the <b>🔬 Image-to-BOM</b> upload zone. Fab prices the bare board; PCBA adds component placement and assembly.' },
+          { ch:'Upload',
+            body:'<div class="swdemo-h">Upload your photo(s)</div><div class="swdemo-mock">'+tile('Drag &amp; drop','JPG / PNG / WebP')+tile('💡 Best results','top + bottom + an angled view',true)+tile('📏 Add scale','a ruler or coin sizes the board')+'</div>',
+            cap:'Drag a clear, well-lit photo onto the zone. <b>Add multiple views</b> — top, bottom, and an angle — so parts hidden on one side aren\'t missed, and include a ruler or coin so the board can be measured, not guessed.' },
+          { ch:'AI analysis',
+            body:'<div class="swdemo-h">Multi-stage AI analysis</div><div class="swdemo-mock">'+tile('① Classify','what kind of board')+tile('② Read markings','OCR silkscreen &amp; ICs')+tile('③ Extract BOM','every component')+tile('④ Price','fab + assembly',true)+'</div>',
+            cap:'The board runs through four stages: classify the board type, read the text and IC markings, extract the full component list, then price it. A progress bar shows each stage — it takes a few seconds.' },
+          { ch:'Board spec',
+            body:'<div class="swdemo-h">Board specification detected</div><div class="swdemo-mock">'+kpi('80 × 60 mm','Board Size','#38bdf8')+kpi('4-layer','Stack-up','#a78bfa')+kpi('ENIG','Surface Finish','#34d399')+'</div>',
+            cap:'First it reports the board itself — dimensions, layer count and surface finish. These drive the bare-board fabrication cost. If a spec looks implausible, a sanity check flags it.' },
+          { ch:'BOM',
+            body:'<div class="swdemo-h">Auto-generated BOM</div><div class="swdemo-mock" style="font-size:0.72rem">'+tile('U1 · MCU','STM32F407 · LQFP100 · ×1')+tile('U2 · CAN PHY','TJA1051 · SO8 · ×1')+tile('C1 · MLCC','GRM188 100nF · ×8')+tile('R1 · Resistor','0402 10k · ×12')+'</div>',
+            cap:'Then the Bill of Materials: every component with its reference designator, identified part number, package and quantity — the list you\'d normally build by hand from a schematic.' },
+          { ch:'Trust it',
+            body:'<div class="swdemo-h">Know what to trust</div><div class="swdemo-mock">'+tile('✅ Catalogue-verified','real distributor price',true)+tile('⚠️ Needs verification','low confidence — check it')+tile('🔵 AI estimate','no live match')+'</div>',
+            cap:'Every line is tagged. With a distributor key set, part numbers are <b>grounded against a real catalogue</b> — guessed prices become actual prices with stock and lead time. Low-confidence lines are flagged <b>⚠️ verify</b> so you know exactly what to double-check.' },
+          { ch:'Repeatable',
+            body:'<div class="swdemo-h">Same photo → same answer</div><div class="swdemo-mock">'+tile('🔒 Deterministic','vision runs at temperature 0')+tile('🧮 Sanity checks','impossible density is flagged')+tile('♻️ Cached','identical image reuses the result')+'</div>',
+            cap:'The analysis is now <b>repeatable</b> — the same image gives the same BOM every time, not a different number on each run. Physically impossible results (e.g. too many parts for the board area) are caught automatically.' },
+          { ch:'Cost',
+            body:'<div class="swdemo-h">Full should-cost</div><div class="swdemo-mock">'+kpi('£4.80','Bare Board','#38bdf8')+kpi('£3.15','Assembly','#a78bfa')+kpi('£12.40','Per Board','#34d399')+'</div><div class="swdemo-sub" style="margin-top:10px">Compare countries · volume curve · Excel / PDF export</div>',
+            cap:'Finally the full cost: bare-board fab, assembly, and the total per board — with a country comparison, a volume price curve, and one-click Excel/PDF export for your review pack.' },
+          { ch:'You\'re ready',
+            body:'<div class="swdemo-h">You\'re ready 🎉</div><div class="swdemo-mock">'+tile('Clear photos','sharp, lit, in focus')+tile('Multiple views','top + bottom + angle')+tile('Edit the BOM','fix any flagged line')+tile('Export','share the costed BOM')+'</div>',
+            cap:'That\'s the whole flow. Feed it clear multi-view photos, review any ⚠️ flagged lines, and export. You\'re ready to cost your first board from a photo.' }
+        ];
+        var i = 0, elapsed = 0, timer = null;
+        scenes.forEach(function(_,idx){ var d=document.createElement('button'); d.className='swdemo-dot'+(idx===0?' on':''); d.title='Scene '+(idx+1); d.onclick=function(){ go(idx,false); }; dotsEl.appendChild(d); });
+        function render(){
+          scene.classList.remove('on'); void scene.offsetWidth; scene.innerHTML = scenes[i].body; scene.classList.add('on');
+          cap.innerHTML = scenes[i].cap; chapterEl.textContent = scenes[i].ch; countEl.textContent = (i+1)+' / '+scenes.length;
+          Array.prototype.forEach.call(dotsEl.children,function(d,idx){ d.classList.toggle('on',idx===i); });
+        }
+        function go(n,keepPlaying){ i=(n+scenes.length)%scenes.length; elapsed=0; fill.style.width='0%'; render(); if(!keepPlaying){ pause(); } }
+        function tick(){ elapsed+=TICK; fill.style.width=Math.min(100,elapsed/SCENE_MS*100)+'%'; if(elapsed>=SCENE_MS){ if(i>=scenes.length-1){ pause(); return; } i++; elapsed=0; render(); } }
+        function play(){ if(timer) return; if(i>=scenes.length-1){ i=0; render(); } playBtn.textContent='⏸ Pause'; timer=setInterval(tick,TICK); }
+        function pause(){ if(timer){ clearInterval(timer); timer=null; } playBtn.textContent='▶ Play'; }
+        playBtn.onclick=function(){ timer?pause():play(); };
+        document.getElementById('pcbdemo-next').onclick=function(){ go(i+1,!!timer); };
+        document.getElementById('pcbdemo-prev').onclick=function(){ go(i-1,!!timer); };
+        document.getElementById('pcbdemo-replay').onclick=function(){ i=0; elapsed=0; render(); play(); };
+        render();
+      })();
+      </script>
+
       <div class="help-card">
         <div class="help-card-title"><div class="help-icon">📁</div>Supported File Types</div>
         <ul>
@@ -1178,9 +1269,24 @@
         <div class="help-card-title"><div class="help-icon">🤖</div>AI CAD Analysis</div>
         <p>Select the <strong>AI CAD ✦</strong> tab and upload a screenshot or rendering of your part. The AI will detect features (holes, pockets, walls, ribs), estimate complexity, suggest manufacturing processes, and auto-fill relevant cost model parameters. A <strong>DfM Score</strong> and <strong>Process Confidence</strong> rating are shown.</p>
       </div>
-      <div class="cv-video-card" title="Watch: Upload a PCB photo and get a full BOM in seconds">
-        <div class="cv-video-thumb"><div class="cv-video-play">▶</div><div class="cv-video-duration">1:48</div></div>
-        <div class="cv-video-meta"><div class="cv-video-label">Video Tutorial</div><div class="cv-video-title">PCB Image-to-BOM &amp; CAD Analysis</div><div class="cv-video-desc">Upload a PCB photo or CAD screenshot → AI extracts BOM and cost parameters automatically</div></div>
+      <!-- DEMO SCRIPT — narration/timeline for recording a real screen-capture -->
+      <div class="help-card" style="border-left:4px solid #0e7490">
+        <div class="help-card-title" style="color:#0e7490">🎬 Demo Script &amp; Timeline (for a screen-recorded walkthrough)</div>
+        <p style="margin-bottom:10px">Use the interactive player above to learn the feature. To record a polished <strong>screen-capture video</strong> for the team, here is the ready-to-read narration script with on-screen actions and timings — a ~2-minute runtime.</p>
+        <table class="help-table" style="width:100%;border-collapse:collapse;font-size:0.8rem">
+          <thead><tr style="background:#f1f5f9;text-align:left">
+            <th style="padding:7px 9px">Time</th><th style="padding:7px 9px">On screen — what to do</th><th style="padding:7px 9px">Say this (narration)</th></tr></thead>
+          <tbody>
+            <tr style="border-top:1px solid #e2e8f0"><td style="padding:7px 9px;white-space:nowrap"><strong>0:00–0:12</strong></td><td style="padding:7px 9px">Dashboard. Have a clear PCB photo ready.</td><td style="padding:7px 9px">"This is PCB Image-to-Cost. I'll turn a single photo of a circuit board into a full, priced Bill of Materials — no manual entry."</td></tr>
+            <tr style="border-top:1px solid #e2e8f0"><td style="padding:7px 9px;white-space:nowrap"><strong>0:12–0:25</strong></td><td style="padding:7px 9px">Open the <em>PCB Fab 🔬</em> (or <em>PCBA 🔬</em>) tab.</td><td style="padding:7px 9px">"Open PCB Fab for the bare board, or PCBA for the assembled board. Both have the Image-to-BOM upload zone."</td></tr>
+            <tr style="border-top:1px solid #e2e8f0"><td style="padding:7px 9px;white-space:nowrap"><strong>0:25–0:45</strong></td><td style="padding:7px 9px">Drag the photo onto the 🔬 zone. Mention adding top/bottom/angle + a ruler.</td><td style="padding:7px 9px">"Drag the photo in. For best accuracy, add top, bottom and an angled view, plus a ruler or coin so the board can be measured."</td></tr>
+            <tr style="border-top:1px solid #e2e8f0"><td style="padding:7px 9px;white-space:nowrap"><strong>0:45–1:05</strong></td><td style="padding:7px 9px">Watch the progress bar through the four stages.</td><td style="padding:7px 9px">"The AI classifies the board, reads the markings, extracts every component, then prices it — a few seconds."</td></tr>
+            <tr style="border-top:1px solid #e2e8f0"><td style="padding:7px 9px;white-space:nowrap"><strong>1:05–1:25</strong></td><td style="padding:7px 9px">Point at the board spec (size/layers/finish) and the BOM table.</td><td style="padding:7px 9px">"Here's the board — 80 by 60 mil, four layers, ENIG — and the full BOM: every part with its number, package and quantity."</td></tr>
+            <tr style="border-top:1px solid #e2e8f0"><td style="padding:7px 9px;white-space:nowrap"><strong>1:25–1:45</strong></td><td style="padding:7px 9px">Hover a ⚠️ flagged line and a ✅ catalogue-verified line.</td><td style="padding:7px 9px">"Every line is tagged: catalogue-verified prices are real distributor data; low-confidence lines are flagged so you know exactly what to check. Same photo always gives the same result."</td></tr>
+            <tr style="border-top:1px solid #e2e8f0"><td style="padding:7px 9px;white-space:nowrap"><strong>1:45–2:05</strong></td><td style="padding:7px 9px">Show fab + assembly cost, country compare, click <em>Export</em>.</td><td style="padding:7px 9px">"And the full should-cost — bare board, assembly, per-board total — with a country comparison and one-click export. A costed BOM from a photo, in about two minutes."</td></tr>
+          </tbody>
+        </table>
+        <p style="margin-top:10px;font-size:0.76rem;color:#64748b"><strong>Recording tips:</strong> 1080p, capture just the browser window. Use a sharp, evenly-lit board photo (glare hides markings). Record narration separately for clean audio. Pause ~1s on the BOM table and on a flagged line so viewers can read them.</p>
       </div>
     </div>
 
