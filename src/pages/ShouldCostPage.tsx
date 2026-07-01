@@ -15,6 +15,7 @@ interface CostComponent { value: number; pct: number; }
 interface ShouldCostResult {
   engine: string;
   currency: string;
+  symbol?: string;
   materialCost: string;
   processCost: string;
   overheadCost: string;
@@ -221,7 +222,7 @@ export default function ShouldCostPage() {
                         <div className="absolute inset-y-0 bg-teal-500/30" style={{ left: '10%', right: '10%' }} />
                         <div className="absolute inset-y-0 w-0.5 bg-teal-300" style={{ left: `${pctPos(result.simulation.p50Value, result.simulation.p10Value, result.simulation.p90Value)}%` }} />
                       </div>
-                      <p className="text-slate-500 text-[10px] mt-1">Monte-Carlo (2,000 runs): commodity ±15%, machine ±10%, cycle ±12%, scrap ±2pp · σ {result.currency} {result.simulation.stdev}</p>
+                      <p className="text-slate-500 text-[10px] mt-1">Monte-Carlo (2,000 runs): commodity ±15%, machine ±10%, cycle ±12%, scrap ±2pp · σ {result.symbol || result.currency}{result.simulation.stdev}</p>
                     </div>
                   )}
                 </div>
@@ -236,7 +237,7 @@ export default function ShouldCostPage() {
                         <div className="flex-1 h-4 rounded bg-navy-800 overflow-hidden">
                           <div className={`h-full ${m.bar}`} style={{ width: `${Math.max(1, c.pct)}%` }} />
                         </div>
-                        <span className={`text-xs font-semibold w-20 text-right ${m.color}`}>{result.currency} {c.value.toFixed(2)}</span>
+                        <span className={`text-xs font-semibold w-20 text-right ${m.color}`}>{result.symbol || result.currency}{c.value.toFixed(2)}</span>
                         <span className="text-[10px] text-slate-500 w-10 text-right">{c.pct}%</span>
                       </div>
                     );

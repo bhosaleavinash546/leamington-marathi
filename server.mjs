@@ -4797,42 +4797,67 @@ app.post('/api/should-cost', requireAuth, rateLimit(60, 60 * 60 * 1000), async (
   }
 
   const b = calc.breakdown;
-  const fmt = (n) => `${currency} ${Number(n).toFixed(2)}`;
+
+  // ── FX: the deterministic engine is EUR-denominated. Convert every monetary
+  //    figure to the requested currency and label it with the proper symbol so
+  //    the UI never shows a EUR value under a GBP/USD/CNY heading. ────────────
+  const FX  = { EUR: 1, GBP: 0.85, USD: 1.08, CNY: 7.85 };
+  const SYM = { EUR: '€', GBP: '£', USD: '$', CNY: '¥' };
+  const rate = FX[currency] ?? 1;
+  const sym  = SYM[currency] || `${currency} `;
+  const cv   = (n) => Number(n) * rate;                       // EUR → target currency
+  const fmt  = (n) => `${sym}${cv(n).toFixed(2)}`;            // EUR value → labelled string
   const total = calc.totalShouldCost;
   const processCost = b.machine.value + b.labour.value + b.setup.value + b.tooling.value;
 
-  // Gap vs supplier quote (deterministic)
+  // Converted copies of the raw figures the frontend renders directly, so those
+  // numbers stay consistent with the labelled strings above.
+  const breakdownCv = {};
+  for (const [k, v] of Object.entries(b)) breakdownCv[k] = { ...v, value: Number(cv(v.value).toFixed(4)) };
+  const d = calc.drivers;
+  const driversCv = {
+    ...d,
+    pricePerKg:   Number(cv(d.pricePerKg).toFixed(2)),
+    machineRate:  Number(cv(d.machineRate).toFixed(2)),
+    labourRate:   Number(cv(d.labourRate).toFixed(2)),
+    toolingTotal: Number(cv(d.toolingTotal).toFixed(0)),
+  };
+
+  // Gap vs supplier quote — the quote is entered by the user already in the
+  // selected currency, so compare it against the converted should-cost.
   let gapVsQuote;
   if (quotedCost && Number(quotedCost) > 0) {
     const q = Number(quotedCost);
-    const delta = q - total;
-    const pct = total > 0 ? (delta / total) * 100 : 0;
-    gapVsQuote = `${delta >= 0 ? '+' : ''}${currency} ${delta.toFixed(2)} (${pct >= 0 ? '+' : ''}${pct.toFixed(1)}% vs should-cost)`;
+    const totalCv = cv(total);
+    const delta = q - totalCv;
+    const pct = totalCv > 0 ? (delta / totalCv) * 100 : 0;
+    gapVsQuote = `${delta >= 0 ? '+' : ''}${sym}${delta.toFixed(2)} (${pct >= 0 ? '+' : ''}${pct.toFixed(1)}% vs should-cost)`;
   }
 
   const result = {
     engine: 'deterministic',
     currency,
+    symbol: SYM[currency] || currency,
     materialCost: fmt(b.material.value),
     processCost: fmt(processCost),
     overheadCost: fmt(b.overhead.value + b.sgaProfit.value),
     totalShouldCost: fmt(total),
-    totalValue: total,
+    totalValue: Number(cv(total).toFixed(2)),
     gapVsQuote,
-    breakdown: b,
-    drivers: calc.drivers,
-    simulation: { p10: fmt(sim.p10), p50: fmt(sim.p50), p90: fmt(sim.p90), p10Value: sim.p10, p50Value: sim.p50, p90Value: sim.p90, stdev: sim.stdev },
-    volumeCurve: volumeCurve.map(p => ({ volume: p.volume, unitCost: p.unitCost, unitCostLabel: fmt(p.unitCost) })),
+    breakdown: breakdownCv,
+    drivers: driversCv,
+    simulation: { p10: fmt(sim.p10), p50: fmt(sim.p50), p90: fmt(sim.p90), p10Value: Number(cv(sim.p10).toFixed(2)), p50Value: Number(cv(sim.p50).toFixed(2)), p90Value: Number(cv(sim.p90).toFixed(2)), stdev: Number(cv(sim.stdev).toFixed(2)) },
+    volumeCurve: volumeCurve.map(p => ({ volume: p.volume, unitCost: Number(cv(p.unitCost).toFixed(4)), unitCostLabel: fmt(p.unitCost) })),
     assumptions: [
-      `Material ${material} @ ${currency} ${calc.drivers.pricePerKg}/kg, buy-to-fly input mass ${calc.drivers.inputMassKg} kg (process utilisation ${(calc.drivers.utilisation * 100).toFixed(0)}%).`,
-      `${process}: cycle ${calc.drivers.cycleSecPerPart}s/part, machine rate ${currency} ${calc.drivers.machineRate}/hr, ${calc.drivers.operators} operator(s) @ ${currency} ${calc.drivers.labourRate}/hr (${region}).`,
-      `Tooling ${currency} ${calc.drivers.toolingTotal.toLocaleString()} amortised over ${calc.drivers.amortVolume.toLocaleString()} parts; scrap ${calc.drivers.scrapPct}%.`,
+      `Material ${material} @ ${sym}${driversCv.pricePerKg}/kg, buy-to-fly input mass ${d.inputMassKg} kg (process utilisation ${(d.utilisation * 100).toFixed(0)}%).`,
+      `${process}: cycle ${d.cycleSecPerPart}s/part, machine rate ${sym}${driversCv.machineRate}/hr, ${d.operators} operator(s) @ ${sym}${driversCv.labourRate}/hr (${region}).`,
+      `Tooling ${sym}${driversCv.toolingTotal.toLocaleString()} amortised over ${d.amortVolume.toLocaleString()} parts; scrap ${d.scrapPct}%.`,
       `Overhead and SG&A/profit applied per ${region} factory norms.`,
     ],
     explanation: `Bottom-up should-cost for ${partName} is ${fmt(total)} per unit at ${Number(annualVolume).toLocaleString()}/yr. Material is ${b.material.pct}% of cost, conversion (machine+labour+setup) ${(b.machine.pct + b.labour.pct + b.setup.pct).toFixed(1)}%, tooling ${b.tooling.pct}%, overhead+SG&A ${(b.overhead.pct + b.sgaProfit.pct).toFixed(1)}%. Monte-Carlo P10–P90 range: ${fmt(sim.p10)}–${fmt(sim.p90)}.`,
     negotiationLeverage: quotedCost && Number(quotedCost) > 0
-      ? (Number(quotedCost) > total
-          ? `Quote sits ${fmt(Number(quotedCost) - total)} above should-cost (above the P90 of ${fmt(sim.p90)}${Number(quotedCost) > sim.p90 ? ' — outside the modelled range' : ''}). Challenge conversion and overhead; target ${fmt(sim.p50)}.`
+      ? (Number(quotedCost) > cv(total)
+          ? `Quote sits ${sym}${(Number(quotedCost) - cv(total)).toFixed(2)} above should-cost (above the P90 of ${fmt(sim.p90)}${Number(quotedCost) > cv(sim.p90) ? ' — outside the modelled range' : ''}). Challenge conversion and overhead; target ${fmt(sim.p50)}.`
           : `Quote is at or below should-cost (${fmt(total)}) — competitive; protect it with a long-term agreement and verify margin sustainability.`)
       : `Benchmark target ${fmt(sim.p50)} (P50). Material at ${b.material.pct}% is the largest lever — focus resourcing and design-to-cost there first.`,
   };
@@ -4844,7 +4869,7 @@ app.post('/api/should-cost', requireAuth, rateLimit(60, 60 * 60 * 1000), async (
       const prompt = `You are a 20-year automotive cost engineer. A DETERMINISTIC should-cost model has produced these figures for "${partName}" (${material}, ${process}, ${weightKg}kg, ${Number(annualVolume).toLocaleString()}/yr, ${region}):
 - Total should-cost: ${fmt(total)} (Monte-Carlo P10–P90 ${fmt(sim.p10)}–${fmt(sim.p90)})
 - Material ${fmt(b.material.value)} | Machine ${fmt(b.machine.value)} | Labour ${fmt(b.labour.value)} | Tooling ${fmt(b.tooling.value)} | Overhead+SG&A ${fmt(b.overhead.value + b.sgaProfit.value)}
-${quotedCost ? `- Supplier quote: ${currency} ${quotedCost} (gap ${gapVsQuote})` : ''}
+${quotedCost ? `- Supplier quote: ${sym}${quotedCost} (gap ${gapVsQuote})` : ''}
 
 Do NOT change any number. Return ONLY JSON: {"explanation":"2-3 sentences interpreting these figures","negotiationLeverage":"1-2 sentence negotiation strategy","assumptions":["3-5 short engineering caveats specific to this part/process"]}`;
       const msg = await client.messages.create({ model: 'claude-opus-4-8', max_tokens: 700, messages: [{ role: 'user', content: prompt }] });

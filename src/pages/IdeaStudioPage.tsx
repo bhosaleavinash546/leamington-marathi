@@ -338,7 +338,7 @@ export default function IdeaStudioPage() {
             </div>
             <div className="grid grid-cols-3 gap-3">
               <Field label="Plant region"><select value={region} onChange={e => setRegion(e.target.value)} className={inp}>{(regions.length ? regions : ['Germany']).map(r => <option key={r}>{r}</option>)}</select></Field>
-              <Field label="Currency"><select value={currency} onChange={e => setCurrency(e.target.value)} className={inp}>{CURRENCIES.map(c => <option key={c}>{c}</option>)}</select></Field>
+              <Field label="Currency"><select value={currency} onChange={e => { setCurrency(e.target.value); setBaseline(null); setBaselineNote(''); }} className={inp}>{CURRENCIES.map(c => <option key={c}>{c}</option>)}</select></Field>
               <Field label="Target cost"><input type="number" value={targetCost} onChange={e => setTargetCost(e.target.value)} placeholder="opt." className={inp} /></Field>
             </div>
             <div className="grid grid-cols-2 gap-3">
