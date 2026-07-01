@@ -2079,11 +2079,22 @@ function renderAIInsights(r) {
   var cont = document.getElementById('aiContent');
   if (cont) cont.innerHTML = html;
 
-  // Trigger Claude streaming if key available
-  if (hasKey) { setTimeout(function(){ triggerClaudeInsights(r); }, 100); }
+  // Trigger Claude streaming only when key present and inputs have changed
+  if (hasKey) {
+    var cacheKey = JSON.stringify(r.inp);
+    if (_aiInsightsRendered !== cacheKey) {
+      _aiInsightsRendered = cacheKey;
+      setTimeout(function(){ triggerClaudeInsights(r); }, 100);
+    }
+  }
 }
 
 function triggerClaudeInsights(r) {
+  // Cancel any in-flight stream before starting a new one
+  if (_claudeAbortController) { try { _claudeAbortController.abort(); } catch(e){} }
+  _claudeAbortController = new AbortController();
+  var signal = _claudeAbortController.signal;
+
   var ph = r.spkResults && r.spkResults[0] && r.spkResults[0].physics;
   var features = r.inp.features && r.inp.features.length ? r.inp.features.join(', ') : 'none';
   var overrides = Object.keys(_rateOverrides||{}).length > 0
@@ -2104,7 +2115,7 @@ function triggerClaudeInsights(r) {
     '- ' + overrides + '\n\n' +
     '## COST BREAKDOWN\n' +
     '- Total system cost: £' + (r.total*FX_GBP).toFixed(2) + '\n' +
-    '- Direct materials (DM): £' + (r.totalDM*FX_GBP).toFixed(2) + ' (' + (r.totalDM/r.total*100).toFixed(1) + '% of total)\n' +
+    '- Direct materials (DM): £' + (r.totalDM*FX_GBP).toFixed(2) + ' (' + (r.total > 0 ? (r.totalDM/r.total*100) : 0).toFixed(1) + '% of total)\n' +
     '- Direct labour: £' + (r.totalDLab*FX_GBP).toFixed(2) + '\n' +
     '- Machine costs: £' + (r.totalDMach*FX_GBP).toFixed(2) + '\n' +
     '- Factory OH (12%): £' + (r.totalFOH*FX_GBP).toFixed(2) + '\n' +
@@ -2130,16 +2141,26 @@ function triggerClaudeInsights(r) {
   var out = document.getElementById('claudeInsightsContent');
   if (!out) return;
   var accumulated = '';
+  var rafPending = false;
   callClaudeStream(
     prompt,
+    signal,
     function onChunk(text) {
       accumulated += text;
-      out.innerHTML = renderMD(accumulated) + '<span style="color:var(--blue2);animation:blink 1s step-end infinite">▌</span>';
+      // Throttle DOM updates to one per animation frame to avoid O(N²) re-renders
+      if (!rafPending) {
+        rafPending = true;
+        requestAnimationFrame(function() {
+          rafPending = false;
+          out.innerHTML = renderMD(accumulated) + '<span style="color:var(--blue2);animation:blink 1s step-end infinite">▌</span>';
+        });
+      }
     },
     function onDone() {
       out.innerHTML = renderMD(accumulated);
     },
     function onError(err) {
+      if (err && err.name === 'AbortError') return; // silently ignore cancelled streams
       if (err === 'no_key') {
         out.innerHTML = '<p style="color:var(--t3)">No API key configured. Click ⚙ to add your Claude key.</p>';
       } else {
@@ -2512,8 +2533,9 @@ document.addEventListener('DOMContentLoaded', function() {
   calculate();
 });
 
-// ─── AI Insights cache key ────────────────────────────────────────────────────
+// ─── AI Insights dedup key + stream abort handle ─────────────────────────────
 var _aiInsightsRendered = null;
+var _claudeAbortController = null;
 
 // ─── Trends Tab ──────────────────────────────────────────────────────────────
 var _trendsCacheTime = 0;
@@ -2614,10 +2636,27 @@ function renderTrendsTab() {
   var cont = document.getElementById('trendsContent');
   if (!cont) return;
 
-  // Use cache if fresh (<24h)
   var now = Date.now();
+
+  // Restore article cache from sessionStorage on first access (survives tab switches but not page reload)
+  if (!_trendsCache) {
+    try {
+      var ss = sessionStorage.getItem('sce_trends');
+      if (ss) {
+        var parsed = JSON.parse(ss);
+        _trendsCache = parsed.articles;
+        _trendsCacheTime = parsed.time;
+      }
+    } catch(e) {}
+  }
+
+  // Articles cached (<24h) — still check whether commodity prices need refreshing (<1h)
   if (_trendsCache && now - _trendsCacheTime < 86400000) {
-    buildTrendsHTML(_trendsCache, _commodityCache);
+    if (_commodityCache && now - _commodityCacheTime < 3600000) {
+      buildTrendsHTML(_trendsCache, _commodityCache);
+    } else {
+      fetchCommodityPrices().then(function(comms) { buildTrendsHTML(_trendsCache, comms); });
+    }
     return;
   }
 
@@ -2629,10 +2668,11 @@ function renderTrendsTab() {
   ]).then(function(results) {
     var commodities = results[0];
     var allArticles = [].concat.apply([], results[1]);
-    // Sort by date descending
     allArticles.sort(function(a,b){ return new Date(b.date)-new Date(a.date); });
     _trendsCache = allArticles;
     _trendsCacheTime = now;
+    // Persist articles to sessionStorage to protect rss2json rate limit within the session
+    try { sessionStorage.setItem('sce_trends', JSON.stringify({articles: allArticles, time: now})); } catch(e) {}
     buildTrendsHTML(allArticles, commodities);
   }).catch(function(e){
     cont.innerHTML = '<p style="color:var(--red);padding:20px">Failed to load trends: ' + esc(String(e)) + '</p>';
@@ -2747,21 +2787,22 @@ function renderMD(text) {
     .replace(/^[-•] (.+)$/gm,'<li style="margin:4px 0;color:var(--t2);font-size:12px">$1</li>')
     // Numbered lists
     .replace(/^\d+\. (.+)$/gm,'<li style="margin:4px 0;color:var(--t2);font-size:12px">$1</li>')
-    // Paragraphs
-    .replace(/\n\n+/g,'</p><p style="color:var(--t2);font-size:12px;line-height:1.6;margin:8px 0">')
+    // Paragraphs — use div so block children (h2/h3/ul) remain valid HTML
+    .replace(/\n\n+/g,'</div><div style="color:var(--t2);font-size:12px;line-height:1.6;margin:8px 0">')
     .replace(/\n/g,' ');
   // Wrap bullet groups in ul
   h = h.replace(/(<li[^>]*>.*?<\/li>\s*)+/g, function(m){return '<ul style="margin:6px 0 10px 16px;padding:0;list-style:disc">'+m+'</ul>';});
-  return '<p style="color:var(--t2);font-size:12px;line-height:1.6;margin:0">' + h + '</p>';
+  return '<div style="color:var(--t2);font-size:12px;line-height:1.6;margin:0">' + h + '</div>';
 }
 
 // ─── Claude API streaming call ────────────────────────────────────────────────
-function callClaudeStream(prompt, onChunk, onDone, onError) {
+function callClaudeStream(prompt, signal, onChunk, onDone, onError) {
   var key   = localStorage.getItem('sce_claude_key');
   var model = localStorage.getItem('sce_claude_model') || 'claude-haiku-4-5-20251001';
   if (!key) { onError('no_key'); return; }
   fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
+    signal: signal,
     headers: {
       'Content-Type': 'application/json',
       'x-api-key': key,
@@ -2780,23 +2821,32 @@ function callClaudeStream(prompt, onChunk, onDone, onError) {
     var reader = res.body.getReader();
     var decoder = new TextDecoder();
     var buf = '';
+    function processLines(chunk) {
+      buf += chunk;
+      var lines = buf.split('\n');
+      buf = lines.pop();
+      lines.forEach(function(line) {
+        if (!line.startsWith('data: ')) return;
+        var data = line.slice(6).trim();
+        if (data === '[DONE]') return;
+        try {
+          var ev = JSON.parse(data);
+          if (ev.type === 'content_block_delta' && ev.delta && ev.delta.text) {
+            onChunk(ev.delta.text);
+          }
+        } catch(e) {}
+      });
+    }
     function pump() {
       reader.read().then(function(ref) {
-        if (ref.done) { onDone(); return; }
-        buf += decoder.decode(ref.value, {stream:true});
-        var lines = buf.split('\n');
-        buf = lines.pop();
-        lines.forEach(function(line) {
-          if (!line.startsWith('data: ')) return;
-          var data = line.slice(6).trim();
-          if (data === '[DONE]') return;
-          try {
-            var ev = JSON.parse(data);
-            if (ev.type === 'content_block_delta' && ev.delta && ev.delta.text) {
-              onChunk(ev.delta.text);
-            }
-          } catch(e) {}
-        });
+        if (ref.done) {
+          // Flush any bytes held by the TextDecoder for partial UTF-8 sequences
+          var tail = decoder.decode();
+          if (tail) processLines(tail);
+          onDone();
+          return;
+        }
+        processLines(decoder.decode(ref.value, {stream:true}));
         pump();
       }).catch(onError);
     }
