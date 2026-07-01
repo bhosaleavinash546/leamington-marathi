@@ -17,6 +17,13 @@ export interface CostComponentMeta {
   bar: string;
 }
 
+// Fallback catalogues used only until /api/should-cost/catalogue loads (which is
+// derived from the engine). Kept here as the single client-side copy — mirror the
+// engine's MATERIALS/PROCESSES/REGIONS when those change.
+export const FALLBACK_MATERIALS = ['Steel (mild)', 'Steel (high-strength)', 'Stainless Steel 304', 'Cast Iron (Grey)', 'Cast Iron (Ductile/GJS)', 'Aluminium 6061', 'Aluminium 7075', 'Aluminium A356 (cast)', 'Magnesium AZ31', 'Titanium Ti-6Al-4V', 'Brass (CuZn39)', 'Zinc (ZAMAK 5)', 'Polypropylene (PP)', 'PA6 (Nylon)', 'PA66-GF30 (glass-filled)', 'ABS', 'POM (Acetal)', 'Polycarbonate (PC)', 'CFRP (Carbon Fibre)'];
+export const FALLBACK_PROCESSES = ['Stamping / Deep Drawing', 'Roll Forming', 'Hydroforming', 'Laser Cutting + Bending', 'Die Casting (Aluminium)', 'Die Casting (Zinc)', 'Sand Casting', 'Investment Casting', 'Gravity Die Casting', 'Injection Moulding', 'Composite Layup (RTM)', 'Forging (Hot)', 'Forging (Cold)', 'Machining (CNC)', 'Extrusion', 'MIG Welding Assembly', 'Resistance Spot Welding'];
+export const FALLBACK_REGIONS = ['Germany', 'UK', 'Czech Republic', 'Spain', 'Mexico', 'USA', 'China', 'India', 'Korea'];
+
 export const COST_COMPONENTS: CostComponentMeta[] = [
   { key: 'material',  label: 'Material',         hex: '#3b82f6', text: 'text-blue-400',    bar: 'bg-blue-500' },
   { key: 'machine',   label: 'Machine',          hex: '#a855f7', text: 'text-purple-400',  bar: 'bg-purple-500' },

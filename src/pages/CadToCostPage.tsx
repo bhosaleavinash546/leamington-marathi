@@ -9,6 +9,7 @@ import ButtonSpinner from '../components/ui/ButtonSpinner';
 import { parseCadFile, formatFileSize, estimateMass, type CadGeometry } from '../services/cad-parser';
 import { useAuth } from '../contexts/AuthContext';
 import { ConfidenceLevel } from '../types';
+import { CURRENCIES as SUPPORTED_CURRENCIES, CURRENCY_SYMBOLS } from '../constants/costing';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -64,12 +65,9 @@ const PLANT_REGIONS = [
   { value: 'korea',   label: 'Korea (€25-32/hr)' },
 ];
 
-const CURRENCIES = [
-  { value: 'EUR', label: 'EUR (€)' },
-  { value: 'GBP', label: 'GBP (£)' },
-  { value: 'USD', label: 'USD ($)' },
-  { value: 'CNY', label: 'CNY (¥)' },
-];
+// Derived from the shared supported-currency list so it can't drift from the
+// server's FX table / other pages.
+const CURRENCIES = SUPPORTED_CURRENCIES.map(c => ({ value: c, label: `${c} (${CURRENCY_SYMBOLS[c] || c})` }));
 
 const MATERIAL_PRESETS = [
   'Auto-detect from drawing',

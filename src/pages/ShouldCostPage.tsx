@@ -3,19 +3,14 @@ import { motion } from 'framer-motion';
 import { Calculator, ChevronDown, Cpu, ShieldCheck } from 'lucide-react';
 import ButtonSpinner from '../components/ui/ButtonSpinner';
 import { useAuth } from '../contexts/AuthContext';
-import { CURRENCIES, COST_COMPONENTS } from '../constants/costing';
-
-// Fallback catalogues (overridden by /api/should-cost/catalogue on mount)
-const FALLBACK_MATERIALS = ['Steel (mild)', 'Steel (high-strength)', 'Stainless Steel 304', 'Cast Iron (Grey)', 'Cast Iron (Ductile/GJS)', 'Aluminium 6061', 'Aluminium 7075', 'Aluminium A356 (cast)', 'Magnesium AZ31', 'Titanium Ti-6Al-4V', 'Brass (CuZn39)', 'Zinc (ZAMAK 5)', 'Polypropylene (PP)', 'PA6 (Nylon)', 'PA66-GF30 (glass-filled)', 'ABS', 'POM (Acetal)', 'Polycarbonate (PC)', 'CFRP (Carbon Fibre)'];
-const FALLBACK_PROCESSES = ['Stamping / Deep Drawing', 'Roll Forming', 'Hydroforming', 'Laser Cutting + Bending', 'Die Casting (Aluminium)', 'Die Casting (Zinc)', 'Sand Casting', 'Investment Casting', 'Gravity Die Casting', 'Injection Moulding', 'Composite Layup (RTM)', 'Forging (Hot)', 'Forging (Cold)', 'Machining (CNC)', 'Extrusion', 'MIG Welding Assembly', 'Resistance Spot Welding'];
-const FALLBACK_REGIONS = ['Germany', 'UK', 'Czech Republic', 'Spain', 'Mexico', 'USA', 'China', 'India', 'Korea'];
+import { CURRENCIES, COST_COMPONENTS, FALLBACK_MATERIALS, FALLBACK_PROCESSES, FALLBACK_REGIONS } from '../constants/costing';
 
 interface CostComponent { value: number; pct: number; }
 interface ShouldCostResult {
   engine: string;
   currency: string;
   symbol?: string;
-  fx?: { base: string; rate: number; asOf: string | null; source: string } | null;
+  fx?: { base: string; rate: number; asOf: string | null; source: string; stale?: boolean } | null;
   materialCost: string;
   processCost: string;
   overheadCost: string;
@@ -204,9 +199,10 @@ export default function ShouldCostPage() {
                     <span className="text-teal-300 font-black text-2xl">{result.totalShouldCost}</span>
                   </div>
                   {result.fx && (
-                    <p className="text-slate-500 text-[10px] mt-1">
+                    <p className={`text-[10px] mt-1 ${result.fx.stale ? 'text-amber-400/80' : 'text-slate-500'}`}>
                       Converted at 1 {result.fx.base} = {result.fx.rate} {result.currency}
                       {result.fx.asOf ? ` · ${result.fx.source}, ${result.fx.asOf}` : ` · ${result.fx.source}`}
+                      {result.fx.stale && ' · rates may be outdated (live feed unreachable)'}
                     </p>
                   )}
                   {result.simulation && (
