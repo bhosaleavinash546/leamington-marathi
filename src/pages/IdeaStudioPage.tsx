@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Box, Image as ImageIcon, Upload, X, Sparkles, Calculator, Wand2, Info } from 'lucide-react';
+import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
 import { useAuth } from '../contexts/AuthContext';
 import { parseCadFile, estimateMass, formatFileSize, type CadGeometry } from '../services/cad-parser';
 import { generateCostReductionIdeas } from '../services/claude-service';
@@ -12,6 +13,19 @@ type Mode = 'cad' | 'image';
 
 const CURRENCIES = ['EUR', 'GBP', 'USD', 'CNY'];
 const TOLERANCE = ['Standard', 'Tight (precision)', 'Loose (non-critical)'];
+
+// Cost-component palette for the baseline breakdown pie (matches ShouldCostPage).
+const COST_META: { key: string; label: string; color: string }[] = [
+  { key: 'material',  label: 'Material',       color: '#3b82f6' },
+  { key: 'machine',   label: 'Machine',        color: '#a855f7' },
+  { key: 'labour',    label: 'Labour',         color: '#ec4899' },
+  { key: 'setup',     label: 'Setup',          color: '#06b6d4' },
+  { key: 'tooling',   label: 'Tooling',        color: '#6366f1' },
+  { key: 'overhead',  label: 'Overhead',       color: '#f59e0b' },
+  { key: 'sgaProfit', label: 'SG&A / Profit',  color: '#10b981' },
+];
+
+type CostSlice = { name: string; value: number; pct: number; color: string };
 
 // Map a mesh process guess (feature engine) to a should-cost catalogue process name.
 function mapProcess(guess: string, catalogue: string[]): string {
@@ -98,7 +112,7 @@ export default function IdeaStudioPage() {
   const [notes, setNotes] = useState('');
 
   // Baseline (deterministic should-cost)
-  const [baseline, setBaseline] = useState<{ total: string; matPct: number; p10: string; p90: string } | null>(null);
+  const [baseline, setBaseline] = useState<{ total: string; matPct: number; p10: string; p90: string; symbol: string; breakdown: CostSlice[] } | null>(null);
   const [baselineLoading, setBaselineLoading] = useState(false);
   const [baselineNote, setBaselineNote] = useState('');
 
@@ -172,7 +186,10 @@ export default function IdeaStudioPage() {
       });
       if (r.ok) {
         const d = await r.json();
-        setBaseline({ total: d.totalShouldCost, matPct: d.breakdown?.material?.pct ?? 0, p10: d.simulation?.p10, p90: d.simulation?.p90 });
+        const slices: CostSlice[] = COST_META
+          .map(m => { const c = d.breakdown?.[m.key]; return c ? { name: m.label, value: Number(c.value) || 0, pct: Number(c.pct) || 0, color: m.color } : null; })
+          .filter((s): s is CostSlice => !!s && s.value > 0);
+        setBaseline({ total: d.totalShouldCost, matPct: d.breakdown?.material?.pct ?? 0, p10: d.simulation?.p10, p90: d.simulation?.p90, symbol: d.symbol || '', breakdown: slices });
       } else { setBaselineNote('Could not compute a baseline for these inputs.'); }
     } catch { setBaselineNote('Could not compute a baseline right now.'); } finally { setBaselineLoading(false); }
   }
@@ -337,6 +354,44 @@ export default function IdeaStudioPage() {
                 <p className="text-amber-300/80 text-xs">{baselineNote}</p>
               ) : <p className="text-slate-500 text-xs">Fill weight, material, process &amp; volume, then Estimate to anchor savings in a real number (optional).</p>}
             </div>
+
+            {/* Should-cost breakdown pie */}
+            {baseline && baseline.breakdown.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25 }}
+                className="bg-navy-900 border border-white/10 rounded-2xl p-4">
+                <p className="text-slate-500 text-xs uppercase tracking-wider mb-3 font-semibold">Cost breakdown</p>
+                <div className="flex items-center gap-4">
+                  <div className="relative w-[148px] h-[148px] flex-shrink-0">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <PieChart>
+                        <Pie data={baseline.breakdown} dataKey="value" nameKey="name" cx="50%" cy="50%" innerRadius={44} outerRadius={68} paddingAngle={2} stroke="none">
+                          {baseline.breakdown.map((e, i) => <Cell key={i} fill={e.color} />)}
+                        </Pie>
+                        <Tooltip
+                          contentStyle={{ background: '#0f172a', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 8, fontSize: 12 }}
+                          itemStyle={{ color: '#e2e8f0' }} labelStyle={{ color: '#e2e8f0' }}
+                          formatter={(v, n) => [`${baseline.symbol}${Number(v).toFixed(2)}`, n as string]} />
+                      </PieChart>
+                    </ResponsiveContainer>
+                    <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                      <span className="text-white font-black text-sm leading-none">{baseline.total}</span>
+                      <span className="text-slate-500 text-[9px] mt-0.5 uppercase tracking-wide">/ unit</span>
+                    </div>
+                  </div>
+                  <div className="flex-1 space-y-1.5">
+                    {baseline.breakdown.map((e, i) => (
+                      <div key={i} className="flex items-center gap-2 text-xs">
+                        <span className="w-2.5 h-2.5 rounded-sm flex-shrink-0" style={{ background: e.color }} />
+                        <span className="text-slate-300 flex-1 truncate">{e.name}</span>
+                        <span className="text-slate-400 tabular-nums w-9 text-right">{e.pct}%</span>
+                        <span className="text-slate-500 tabular-nums w-[68px] text-right">{baseline.symbol}{e.value.toFixed(2)}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </motion.div>
+            )}
           </div>
 
           {/* Right: Current Condition form */}
