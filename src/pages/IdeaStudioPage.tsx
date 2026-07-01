@@ -21,7 +21,7 @@ function mapProcess(guess: string, catalogue: string[]): string {
   const g = (guess || '').toLowerCase();
   const find = (kw: string) => catalogue.find(p => p.toLowerCase().includes(kw));
   if (/sheet|stamp/.test(g)) return find('stamp') || catalogue[0] || 'Stamping / Deep Drawing';
-  if (/cast/.test(g)) return find('die casting (alumin') || find('casting') || 'Die Casting (Aluminium)';
+  if (/cast/.test(g)) return find('sand casting') || find('casting') || 'Sand Casting';
   if (/forg/.test(g)) return find('forging (hot') || find('forging') || 'Forging (Hot)';
   if (/machin|billet/.test(g)) return find('machining') || 'Machining (CNC)';
   if (/extru/.test(g)) return find('extrusion') || 'Extrusion';
@@ -34,14 +34,23 @@ function matchMaterial(typed: string, catalogue: string[]): string | null {
   const t = (typed || '').toLowerCase();
   if (!t.trim() || !catalogue.length) return null;
   const has = (kw: string) => catalogue.find(m => m.toLowerCase().includes(kw));
-  // Cast/ductile/nodular/grey iron — nearest cost proxy in the library is mild steel.
-  if (/iron|gjs|ggg|nodular|ductile|grey cast|gray cast/.test(t)) return has('steel') || catalogue[0];
+  // Cast/ductile/nodular/grey iron — now a first-class family in the cost library.
+  if (/grey iron|gray iron|grey cast|gray cast|\bgg\d|gg-?\d|gjl/.test(t)) return has('cast iron (grey') || has('cast iron') || has('steel') || catalogue[0];
+  if (/iron|gjs|ggg|nodular|ductile|sg iron|spheroidal/.test(t)) return has('ductile') || has('cast iron') || has('steel') || catalogue[0];
+  if (/titan|ti-?6al|ti6al|tc4|grade ?5 ti/.test(t)) return has('titanium') || null;
+  if (/zamak|zamac|\bzdc\b|\bzp\d|zinc alloy/.test(t)) return has('zinc') || null;
+  if (/brass|bronze|copper|cuzn|cusn|\bc\d{5}/.test(t)) return has('brass') || has('copper') || null;
   if (/steel|dp\d|hsla|22mnb5|boron|ss30|stainless|c45|s355|crmo|mncr|nicr|nimo|42cr/.test(t)) return has('stainless') && /stainless|304|316/.test(t) ? has('stainless')! : (has('high-strength') && /hsla|dp|boron|22mnb5|advanced|crmo|nicr|nimo|42cr|high.?strength/.test(t) ? has('high-strength')! : (has('steel') || catalogue[0]));
   if (/7075/.test(t)) return has('7075') || has('alumin') || null;
-  if (/alumin|aluminum|\bal\b|60\d\d|a3\d\d|ac4|adc\d|alsi|silumin|\bal-?si/.test(t)) return has('6061') || has('alumin') || null;
+  // Cast-aluminium alloys (A356 / AlSi / ADC / AC) map to the cast grade when present.
+  if (/a3\d\d|ac4|adc\d|alsi|silumin|\bal-?si|cast alumin/.test(t)) return has('a356') || has('6061') || has('alumin') || null;
+  if (/alumin|aluminum|\bal\b|60\d\d/.test(t)) return has('6061') || has('alumin') || null;
   if (/magnes|\bmg\b|az\d\d|am\d\d|ae44/.test(t)) return has('magnes') || null;
-  if (/cfrp|carbon|composite|gfrp|frp/.test(t)) return has('cfrp') || has('carbon') || null;
-  if (/pa6|pa66|nylon|polyamide/.test(t)) return has('pa6') || has('nylon') || null;
+  if (/cfrp|carbon fib|carbon-fib|composite|gfrp|\bfrp\b|prepreg/.test(t)) return has('cfrp') || has('carbon') || null;
+  if (/glass.?fill|gf\d\d|\bgf\b|pa66/.test(t)) return has('gf30') || has('pa66') || has('pa6') || has('nylon') || null;
+  if (/pa6|nylon|polyamide/.test(t)) return has('pa6') || has('nylon') || null;
+  if (/pom|acetal|delrin/.test(t)) return has('pom') || has('acetal') || null;
+  if (/polycarb|\bpc\b|lexan|makrolon/.test(t)) return has('polycarb') || has('(pc)') || null;
   if (/\babs\b/.test(t)) return has('abs') || null;
   if (/\bpp\b|polyprop/.test(t)) return has('polyprop') || has('pp') || null;
   return null;
@@ -56,13 +65,17 @@ function matchProcess(typed: string, catalogue: string[]): string | null {
   if (/roll form/.test(t)) return has('roll form') || has('stamp') || null;
   if (/hydroform/.test(t)) return has('hydroform') || null;
   if (/laser/.test(t)) return has('laser') || null;
-  if (/zinc|zamak|\bzdc\b/.test(t)) return has('die casting (zinc') || has('casting') || null;
-  if (/hpdc|gdc|ldc|die.?cast|pressure cast|gravity cast|sand cast|invest|squeeze cast|permanent mould|permanent mold/.test(t)) return has('die casting (alumin') || has('casting') || null;
-  if (/cast/.test(t)) return has('die casting (alumin') || has('casting') || null;
+  if (/rtm|prepreg|autoclave|layup|lay-up|hand lai|composite mould|composite mold/.test(t)) return has('composite') || null;
+  if (/sand cast|green sand|sand mould|sand mold/.test(t)) return has('sand casting') || has('casting') || null;
+  if (/invest|lost wax|precision cast|shell mould|shell mold/.test(t)) return has('investment') || has('casting') || null;
+  if (/gravity|permanent mould|permanent mold|gdc\b|tilt pour/.test(t)) return has('gravity die') || has('die casting (alumin') || has('casting') || null;
+  if (/zinc die|zamak|\bzdc\b|zinc cast/.test(t)) return has('die casting (zinc') || has('casting') || null;
+  if (/hpdc|ldc|die.?cast|pressure die|pressure cast|squeeze cast/.test(t)) return has('die casting (alumin') || has('casting') || null;
+  if (/cast/.test(t)) return has('sand casting') || has('die casting (alumin') || has('casting') || null;
   if (/cold forg/.test(t)) return has('forging (cold') || has('forging') || null;
   if (/forg/.test(t)) return has('forging (hot') || has('forging') || null;
   if (/machin|cnc|mill|turn|billet|vmc|hmc|lathe/.test(t)) return has('machining') || null;
-  if (/mould|mold|inject/.test(t)) return has('moulding') || has('injection') || null;
+  if (/mould|mold|inject/.test(t)) return has('injection') || has('moulding') || null;
   if (/extru/.test(t)) return has('extrusion') || null;
   if (/spot weld|resistance weld/.test(t)) return has('spot weld') || has('welding') || null;
   if (/weld|mig|tig|braze/.test(t)) return has('mig') || has('welding') || null;

@@ -93,6 +93,22 @@ test('every process references valid material families', () => {
   }
 });
 
+test('every material has at least one compatible process (no orphans)', () => {
+  const procFamilies = Object.values(PROCESSES).flatMap(p => p.families);
+  for (const [name, m] of Object.entries(MATERIALS)) {
+    assert.ok(procFamilies.includes(m.family), `${name} (${m.family}) has no compatible process`);
+    // and it actually costs without throwing on some compatible process
+    const proc = Object.keys(PROCESSES).find(p => PROCESSES[p].families.includes(m.family));
+    assert.ok(computeShouldCost({ material: name, process: proc, weightKg: 2, annualVolume: 80000, region: 'Germany' }).totalShouldCost > 0);
+  }
+});
+
+test('cast iron is castable and cannot be stamped/forged', () => {
+  const knuckle = computeShouldCost({ material: 'Cast Iron (Ductile/GJS)', process: 'Sand Casting', weightKg: 6.7, annualVolume: 200000, region: 'China' });
+  assert.ok(knuckle.totalShouldCost > 0);
+  assert.throws(() => computeShouldCost({ material: 'Cast Iron (Grey)', process: 'Stamping / Deep Drawing', weightKg: 2, annualVolume: 80000, region: 'Germany' }), /not compatible/);
+});
+
 test('volumeSensitivity: unit cost falls monotonically as volume rises', () => {
   const curve = volumeSensitivity(base, [10000, 50000, 250000, 500000]);
   assert.equal(curve.length, 4);
