@@ -1972,271 +1972,181 @@ function renderPhysicsTab(r) {
   if (cont) cont.innerHTML = html;
 }
 
-// ─── renderAIInsights ─────────────────────────────────────────────────────────
+// ─── renderAIInsights (Claude-powered) ────────────────────────────────────────
 function renderAIInsights(r) {
-  var co2  = r.totalSpkCO2;
-  var cost = r.total;
-  var dmPct = r.total > 0 ? (r.totalDM / r.total * 100) : 0;
+  var cost   = r.total;
+  var co2    = r.totalSpkCO2;
+  var dmPct  = r.total > 0 ? (r.totalDM / r.total * 100) : 0;
   var marginPct = r.inp.margin * 100;
 
+  // ── Rule-based cards (always shown, no API needed) ────────────────────────
   var grade = co2 < 3 ? 'A' : co2 < 6 ? 'B' : co2 < 10 ? 'C' : 'D';
   var gradeColor = {A:'var(--green2)',B:'var(--cyan)',C:'var(--amber)',D:'var(--red)'}[grade];
 
-  var cheaper = BENCHMARKS.filter(function(b) { return cost < b.est_cost; }).length;
+  var cheaper = BENCHMARKS.filter(function(b){return cost < b.est_cost;}).length;
   var posLabel = cheaper >= 7 ? 'Cost Leader' : cheaper >= 4 ? 'Competitive' : cheaper >= 2 ? 'Above Avg' : 'High-Cost';
   var posColor = cheaper >= 4 ? 'var(--green2)' : cheaper >= 2 ? 'var(--amber)' : 'var(--red)';
 
   var enabledTech = [];
-  document.querySelectorAll('.feat-item input[type=checkbox]:checked').forEach(function(cb) {
-    enabledTech.push(cb.value);
-  });
-  var techPct = Math.round(enabledTech.length / Object.keys(TECH_FEATURES).length * 100);
+  document.querySelectorAll('.feat-item input[type=checkbox]:checked').forEach(function(cb){enabledTech.push(cb.value);});
 
-  // ── Real savings levers — compute actual cost delta via engine ────────────────
+  // Engine-computed savings levers
   var levers = [];
   function tryLever(label, altInp) {
     try {
-      var alt = computeSystemCost(Object.assign({}, r.inp, altInp));
+      var alt = computeSystemCost(Object.assign({},r.inp,altInp));
       var saving = cost - alt.total;
-      if (saving > 0.01) levers.push({label:label, saving:saving, altCost:alt.total});
-    } catch(e) {}
+      if (saving > 0.01) levers.push({label:label,saving:saving,altCost:alt.total});
+    } catch(e){}
   }
-
-  // Lever 1: Switch to ferrite (only meaningful if currently using neo/SmCo/Alnico)
-  if (r.inp.magnet !== 'Ferrite' && r.inp.magnet !== 'Bonded NdFeB') {
-    tryLever('Switch magnet to Ferrite (BOM delta)', {magnet:'Ferrite'});
-  }
-  // Lever 2: Switch to Recycled NdFeB
-  if (r.inp.magnet === 'Neodymium') {
-    tryLever('Switch to Recycled NdFeB (same perf, lower CO₂)', {magnet:'Recycled NdFeB'});
-  }
-  // Lever 3: Relocate to lowest-cost country
-  if (r.inp.country !== 'Vietnam') {
-    tryLever('Relocate manufacturing to Vietnam', {country:'Vietnam'});
-  }
-  // Lever 4: Increase volume 2×
-  tryLever('Scale annual volume 2× (tooling amort.)', {annualVol: r.inp.annualVol * 2});
-  // Lever 5: Switch cone to treated paper (bio)
-  if (r.inp.cone !== 'Treated Paper' && r.inp.cone !== 'Paper') {
-    tryLever('Switch cone to Treated Paper (bio-based, CO₂ -1.2 kg)', {cone:'Treated Paper'});
-  }
-  // Lever 6: Switch to stamped steel frame
-  if (r.inp.frame === 'Die-Cast Al' || r.inp.frame === 'Magnesium Die-Cast') {
-    tryLever('Switch frame to Stamped Steel (volume saving)', {frame:'Stamped Steel'});
-  }
-  // Lever 7: Switch VC wire to CCAW
-  if (r.inp.vcWire === 'Copper' || r.inp.vcWire === 'Flat Copper') {
-    tryLever('Switch VC wire to CCAW (40% cost reduction)', {vcWire:'CCAW'});
-  }
-  // Lever 8: Switch to domestic freight
-  if (r.inp.freightMode !== 'dom') {
-    tryLever('Switch to domestic freight mode', {freightMode:'dom'});
-  }
-
+  if (r.inp.magnet !== 'Ferrite' && r.inp.magnet !== 'Bonded NdFeB') tryLever('Switch magnet → Ferrite',{magnet:'Ferrite'});
+  if (r.inp.magnet === 'Neodymium') tryLever('Switch → Recycled NdFeB (same performance)',{magnet:'Recycled NdFeB'});
+  if (r.inp.country !== 'Vietnam') tryLever('Relocate manufacturing → Vietnam',{country:'Vietnam'});
+  tryLever('Scale volume 2×',{annualVol:r.inp.annualVol*2});
+  if (r.inp.cone !== 'Treated Paper' && r.inp.cone !== 'Paper') tryLever('Switch cone → Treated Paper (bio)',{cone:'Treated Paper'});
+  if (r.inp.frame === 'Die-Cast Al'||r.inp.frame==='Magnesium Die-Cast') tryLever('Switch frame → Stamped Steel',{frame:'Stamped Steel'});
+  if (r.inp.vcWire === 'Copper'||r.inp.vcWire==='Flat Copper') tryLever('Switch VC wire → CCAW',{vcWire:'CCAW'});
+  if (r.inp.freightMode !== 'dom') tryLever('Switch → domestic freight',{freightMode:'dom'});
   levers.sort(function(a,b){return b.saving-a.saving;});
-  var topLevers = levers.slice(0, 4);
+  var topLevers = levers.slice(0,4);
 
-  // ── Risk flags ───────────────────────────────────────────────────────────────
+  // Risks
   var risks = [];
-  if (dmPct < 38) risks.push('DM share ' + f2(dmPct) + '% — overhead loading is high (>62% non-material)');
-  if (dmPct > 75) risks.push('DM share ' + f2(dmPct) + '% — very high; check OH absorption adequacy');
-  if (marginPct < 10) risks.push('Margin ' + f2(marginPct) + '% — below typical 12% automotive floor');
-  if (r.inp.sustainMode === 'standard' && co2 > 8) risks.push('CO₂ ' + f2(co2) + ' kg — above 8 kg Scope 3 disclosure threshold');
-  if (enabledTech.length > 8) risks.push(enabledTech.length + ' tech features enabled — integration & validation cost risk');
-  if (r.inp.dutyRate > 0.07) risks.push('Duty rate ' + (r.inp.dutyRate*100).toFixed(0) + '% — tariff exposure significant');
-  if (r.inp.magnet === 'Neodymium' || r.inp.magnet === 'SmCo') {
-    risks.push('NdFeB/SmCo magnet — rare-earth supply concentration risk (China >85% global supply)');
-  }
-  var reachFail = r.spkResults && r.spkResults[0] && r.spkResults[0].bom.some(function(b){
-    return Object.keys(MRATE).some(function(k){ return MRATE[k].usd===b.rate && !MRATE[k].reach; });
-  });
-  if (reachFail) risks.push('One or more materials may not be REACH-compliant — verify with supplier');
-
-  // ── Commodity sensitivity ────────────────────────────────────────────────────
-  var commodities = [];
-  function commSensitivity(label, key, shockPct) {
-    try {
-      var orig = MRATE[key].usd;
-      MRATE[key].usd = orig * (1 + shockPct/100);
-      var alt = computeSystemCost(r.inp);
-      var delta = alt.total - cost;
-      MRATE[key].usd = orig;
-      commodities.push({label:label, shock:shockPct, delta:delta});
-    } catch(e) { if (MRATE[key]) MRATE[key].usd = MRATE[key].usd; }
-  }
-  commSensitivity('NdFeB +40%',     'neo',      +40);
-  commSensitivity('NdFeB -40%',     'neo',      -40);
-  commSensitivity('Copper +30%',    'cu_wire',  +30);
-  commSensitivity('Copper -30%',    'cu_wire',  -30);
-  commSensitivity('Aluminium +25%', 'diecast_al',+25);
-  commSensitivity('Aluminium -25%', 'diecast_al',-25);
-  commSensitivity('PP +20%',        'pp',       +20);
+  if (dmPct < 38) risks.push('DM share '+f2(dmPct)+'% — overhead loading is high (>62% non-material)');
+  if (marginPct < 10) risks.push('Margin '+f2(marginPct)+'% — below typical 12% automotive floor');
+  if (r.inp.sustainMode==='standard'&&co2>8) risks.push('CO₂ '+f2(co2)+' kg — above 8 kg Scope 3 disclosure threshold');
+  if (enabledTech.length>8) risks.push(enabledTech.length+' tech features — integration & validation cost risk');
+  if (r.inp.dutyRate>0.07) risks.push('Duty '+((r.inp.dutyRate*100).toFixed(0))+'% — significant tariff exposure');
+  if (r.inp.magnet==='Neodymium'||r.inp.magnet==='SmCo') risks.push('NdFeB/SmCo — rare-earth supply concentration (China >85% global supply)');
 
   var html = '<div class="section-title">&#129302; Should-Cost Intelligence</div>';
   html += '<div class="ai-grid">';
 
-  // 1 — Cost Position
+  // Card 1 — Cost position
   html += '<div class="card ai-card"><div class="ai-card-hdr"><span class="ai-icon">📊</span><span>Cost Position</span></div>';
-  html += '<div class="ai-big" style="color:' + posColor + '">' + posLabel + '</div>';
-  html += '<p class="ai-txt">Beats <strong>' + cheaper + '</strong>/' + BENCHMARKS.length + ' benchmarks at ' + fGBP(cost) + '</p>';
-  html += '<p class="ai-txt" style="margin-top:4px">DM share: <strong style="color:var(--blue2)">' + f2(dmPct) + '%</strong> &nbsp;|&nbsp; Margin: <strong style="color:var(--green2)">' + fGBP(r.margin) + '</strong></p>';
+  html += '<div class="ai-big" style="color:'+posColor+'">'+posLabel+'</div>';
+  html += '<p class="ai-txt">Beats <strong>'+cheaper+'</strong>/'+BENCHMARKS.length+' benchmarks at '+fGBP(cost)+'</p>';
+  html += '<p class="ai-txt" style="margin-top:4px">DM: <strong>'+f2(dmPct)+'%</strong> | Margin: <strong>'+fGBP(r.margin)+'</strong></p>';
   html += '</div>';
 
-  // 2 — Sustainability
+  // Card 2 — ESG
   html += '<div class="card ai-card"><div class="ai-card-hdr"><span class="ai-icon">🌿</span><span>ESG Grade</span></div>';
-  html += '<div class="ai-big" style="color:' + gradeColor + '">' + grade + '</div>';
-  html += '<p class="ai-txt">CO₂ <strong>' + f2(co2) + ' kg</strong>/system — ';
-  html += grade === 'A' ? 'Excellent. Pursue ISO 14067 certification.' : grade === 'B' ? 'Good. Minor adjustments available.' : 'Improvement needed — see pathway.';
-  html += '</p></div>';
+  html += '<div class="ai-big" style="color:'+gradeColor+'">'+grade+'</div>';
+  html += '<p class="ai-txt">CO₂ <strong>'+f2(co2)+' kg</strong>/system</p></div>';
 
-  // 3 — Tech Adoption
-  html += '<div class="card ai-card"><div class="ai-card-hdr"><span class="ai-icon">⚡</span><span>Tech Adoption</span></div>';
-  html += '<div class="ai-big" style="color:var(--purple2)">' + techPct + '%</div>';
-  html += '<p class="ai-txt"><strong>' + enabledTech.length + '</strong>/' + Object.keys(TECH_FEATURES).length + ' features. ';
-  html += techPct >= 50 ? 'High differentiation.' : techPct >= 25 ? 'Mid-range — consider Neural DSP.' : 'Basic config.';
-  html += '</p></div>';
-
-  // 4 — Real Savings Levers (engine-computed)
-  html += '<div class="card ai-card"><div class="ai-card-hdr"><span class="ai-icon">💡</span><span>Savings Levers <small style="color:var(--t3);font-size:9px">(engine-computed)</small></span></div>';
+  // Card 3 — Engine-computed levers
+  html += '<div class="card ai-card"><div class="ai-card-hdr"><span class="ai-icon">💡</span><span>Savings Levers</span></div>';
   if (topLevers.length) {
-    html += '<table style="width:100%;font-size:11px;border-collapse:collapse;margin-top:4px">';
-    html += '<thead><tr><th style="text-align:left;color:var(--t3);padding:2px 0">Action</th><th style="text-align:right;color:var(--t3)">Saving</th><th style="text-align:right;color:var(--t3)">New Cost</th></tr></thead><tbody>';
-    topLevers.forEach(function(l) {
-      html += '<tr style="border-bottom:1px solid var(--td-border)">';
-      html += '<td style="padding:4px 0;color:var(--t2)">' + esc(l.label) + '</td>';
-      html += '<td style="text-align:right;color:var(--green2);font-weight:700">' + fGBP(l.saving) + '</td>';
-      html += '<td style="text-align:right;color:var(--blue2)">' + fGBP(l.altCost) + '</td>';
-      html += '</tr>';
+    topLevers.forEach(function(l){
+      html += '<div style="display:flex;justify-content:space-between;align-items:baseline;padding:3px 0;border-bottom:1px solid var(--bd)">';
+      html += '<span style="font-size:10px;color:var(--t2)">'+esc(l.label)+'</span>';
+      html += '<strong style="font-size:11px;color:var(--green2);flex-shrink:0;margin-left:8px">-'+fGBP(l.saving)+'</strong></div>';
     });
-    html += '</tbody></table>';
   } else {
-    html += '<p style="color:var(--green2);font-size:0.9rem">✓ Already at near-optimal configuration.</p>';
+    html += '<p class="ai-txt" style="color:var(--t3)">No savings levers found for this configuration.</p>';
   }
   html += '</div>';
 
-  // 5 — Risks
-  html += '<div class="card ai-card"><div class="ai-card-hdr"><span class="ai-icon">🚩</span><span>Risk Flags (' + risks.length + ')</span></div>';
+  // Card 4 — Risks
+  html += '<div class="card ai-card"><div class="ai-card-hdr"><span class="ai-icon">⚠</span><span>Risk Flags</span></div>';
   if (risks.length) {
-    html += '<ul style="padding-left:1.2rem;margin:0.5rem 0">';
-    risks.forEach(function(risk) {
-      html += '<li style="color:var(--amber);font-size:0.82rem;margin-bottom:0.4rem">' + esc(risk) + '</li>';
-    });
-    html += '</ul>';
+    risks.forEach(function(r2){html+='<p class="ai-txt" style="color:var(--amber);margin-top:4px">• '+esc(r2)+'</p>';});
   } else {
-    html += '<p style="color:var(--green2);font-size:0.9rem">✓ No critical risk flags.</p>';
+    html += '<p class="ai-txt" style="color:var(--green2)">✓ No significant risk flags</p>';
   }
   html += '</div>';
 
-  // 6 — Commodity Sensitivity
-  html += '<div class="card ai-card"><div class="ai-card-hdr"><span class="ai-icon">📈</span><span>Commodity Sensitivity <small style="color:var(--t3);font-size:9px">(live)</small></span></div>';
-  html += '<table style="width:100%;font-size:11px;border-collapse:collapse;margin-top:4px">';
-  html += '<thead><tr><th style="text-align:left;color:var(--t3)">Scenario</th><th style="text-align:right;color:var(--t3)">Cost Impact</th></tr></thead><tbody>';
-  commodities.forEach(function(c) {
-    var sign = c.delta >= 0 ? '+' : '';
-    var col = c.delta >= 0 ? 'var(--red)' : 'var(--green2)';
-    html += '<tr style="border-bottom:1px solid var(--td-border)">';
-    html += '<td style="padding:3px 0;color:var(--t2)">' + esc(c.label) + '</td>';
-    html += '<td style="text-align:right;color:' + col + ';font-weight:600">' + sign + fGBP(c.delta) + '</td>';
-    html += '</tr>';
-  });
-  html += '</tbody></table>';
-  html += '</div>';
+  html += '</div>'; // end ai-grid
 
-  // 7 — Carbon Pathway
-  html += '<div class="card ai-card"><div class="ai-card-hdr"><span class="ai-icon">🌍</span><span>Carbon Pathway</span></div>';
-  var pathway = co2 < 3 ?
-    ['Target met — pursue bio-content cert.', 'Claim carbon-neutral audio', 'ISO 14067 certification'] :
-    co2 < 6 ?
-    ['Switch cone to bio-polymer (Treated Paper): -0.8 kg', 'Increase recycled frame content', 'Certify ISO 14067'] :
-    ['Replace NdFeB → Recycled NdFeB: -1.5 kg est.', 'Switch to water-based impregnation varnish', 'Phase out VOC adhesives (UV cure only)'];
-  html += '<ol style="padding-left:1.2rem;margin:0.5rem 0">';
-  pathway.forEach(function(step) {
-    html += '<li style="color:var(--t2);font-size:0.85rem;margin-bottom:0.4rem">' + esc(step) + '</li>';
-  });
-  html += '</ol></div>';
+  // ── Claude AI section ─────────────────────────────────────────────────────
+  html += '<div class="section-title" style="margin-top:1.5rem">🤖 Claude AI Analysis</div>';
 
-  // ── Claude AI section ────────────────────────────────────────────────────────
   var hasKey = !!localStorage.getItem('sce_claude_key');
-  html += '<div class="card ai-card" style="grid-column:1/-1">';
-  html += '<div class="ai-card-hdr"><span class="ai-icon">&#129302;</span><span>Claude AI Deep Analysis</span>';
-  if (hasKey) html += '<button onclick="triggerClaudeInsights(_lastResult)" style="margin-left:auto;font-size:10px;padding:3px 10px;border-radius:6px;border:1px solid var(--blue2);background:none;color:var(--blue2);cursor:pointer">&#8635; Refresh</button>';
-  html += '</div>';
   if (!hasKey) {
-    html += '<div class="ai-setup-note">&#128273; Add your Claude API key via <a href="#" onclick="openSettings();return false">Settings &#9881;</a> to unlock real AI cost-saving ideas, OEM benchmarks, technology alternatives &amp; supply chain risk assessment based on your exact configuration.</div>';
+    html += '<div class="card" style="padding:20px;text-align:center;border-color:var(--purple)">';
+    html += '<p style="color:var(--t2);font-size:13px;margin-bottom:12px">Add your Claude API key to unlock real AI-powered cost analysis, industry benchmarks, and OEM technology trends for this exact configuration.</p>';
+    html += '<button onclick="openSettings()" style="padding:10px 24px;background:linear-gradient(135deg,var(--blue),var(--purple));border:none;border-radius:8px;color:#fff;font-weight:700;cursor:pointer;font-size:13px">⚙ Add API Key</button>';
+    html += '</div>';
   } else {
-    html += '<div class="claude-stream-box" id="claudeBox" style="color:var(--t3);font-style:italic;min-height:60px">Generating analysis...</div>';
-    html += '<div class="ai-status-bar" id="claudeStatus"><div class="spinner"></div><span id="claudeStatusTxt">Streaming from Claude...</span></div>';
+    html += '<div class="card" id="claudeInsightsCard" style="padding:16px;border-color:var(--purple);min-height:120px">';
+    html += '<div id="claudeInsightsContent" style="color:var(--t2);font-size:12px;line-height:1.7">';
+    html += '<div style="display:flex;align-items:center;gap:10px;color:var(--t3)"><span style="animation:spin 1s linear infinite;display:inline-block">⏳</span> Generating AI analysis…</div>';
+    html += '</div>';
+    html += '<div style="font-size:10px;color:var(--t3);margin-top:10px;border-top:1px solid var(--bd);padding-top:6px">Powered by Claude AI · analysis is specific to this configuration · not financial advice</div>';
+    html += '</div>';
   }
-  html += '</div>';
-
-  html += '</div>'; // close ai-grid
 
   var cont = document.getElementById('aiContent');
-  if (cont) {
-    cont.innerHTML = html;
-    setTimeout(function() {
-      cont.querySelectorAll('.ai-card').forEach(function(card, i) {
-        card.style.opacity = '0';
-        card.style.transform = 'translateY(20px)';
-        setTimeout(function() {
-          card.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
-          card.style.opacity = '1';
-          card.style.transform = 'translateY(0)';
-        }, i * 80);
-      });
-    }, 30);
-    if (hasKey && _aiInsightsRendered !== JSON.stringify(r.inp)) {
-      _aiInsightsRendered = JSON.stringify(r.inp);
-      setTimeout(function() { triggerClaudeInsights(r); }, 700);
-    }
-  }
+  if (cont) cont.innerHTML = html;
+
+  // Trigger Claude streaming if key available
+  if (hasKey) { setTimeout(function(){ triggerClaudeInsights(r); }, 100); }
 }
 
-// ─── triggerClaudeInsights ────────────────────────────────────────────────────
 function triggerClaudeInsights(r) {
-  var box = document.getElementById('claudeBox');
-  var statusBar = document.getElementById('claudeStatus');
-  var statusTxt = document.getElementById('claudeStatusTxt');
-  if (!box) return;
-  var inp = r.inp;
-  var phy = r.spkResults && r.spkResults[0] && r.spkResults[0].physics;
-  var phyStr = phy ? 'fs=' + (phy.fs||0).toFixed(1) + 'Hz, Qts=' + (phy.Qts||0).toFixed(2) + ', Sensitivity=' + (phy.sensitivity||0).toFixed(1) + 'dB/W/m, BL²/Re=' + (phy.BL2Re||0).toFixed(1) + ' T²·m²/Ω' : 'not computed';
-  var roKeys = Object.keys(_rateOverrides || {});
-  var roStr = roKeys.length ? roKeys.map(function(k){ return k + ': £' + (_rateOverrides[k] * FX_GBP).toFixed(2) + '/kg'; }).join(', ') : 'none';
+  var ph = r.spkResults && r.spkResults[0] && r.spkResults[0].physics;
+  var features = r.inp.features && r.inp.features.length ? r.inp.features.join(', ') : 'none';
+  var overrides = Object.keys(_rateOverrides||{}).length > 0
+    ? 'Contracted rate overrides active for: ' + Object.keys(_rateOverrides).join(', ')
+    : 'No rate overrides (using library rates)';
 
-  var prompt = 'You are a senior automotive audio cost engineering consultant. Analyse this speaker system and provide expert insights.\n\n' +
-    '## Configuration\n- System: ' + inp.system + '\n- Country: ' + inp.country + '\n- Volume: ' + inp.annualVol.toLocaleString() + ' units/yr\n' +
-    '- Magnet: ' + inp.magnet + ' | Cone: ' + inp.cone + ' | Surround: ' + inp.surround + '\n' +
-    '- Frame: ' + inp.basket + ' | VC wire: ' + inp.vcWire + ' | Former: ' + inp.former + '\n' +
-    '- Sustainability: ' + inp.sustainMode + '\n\n' +
-    '## Cost Breakdown (GBP)\n- Total: £' + (r.total * FX_GBP).toFixed(2) + ' | DM: £' + (r.totalDM * FX_GBP).toFixed(2) + ' (' + (r.total > 0 ? (r.totalDM / r.total * 100).toFixed(1) : 0) + '%)\n' +
-    '- Labour: £' + (r.totalLabour * FX_GBP).toFixed(2) + ' | OH: £' + (r.totalOH * FX_GBP).toFixed(2) + ' | Tooling: £' + (r.totalTooling * FX_GBP).toFixed(2) + ' | Margin: £' + (r.margin * FX_GBP).toFixed(2) + '\n' +
-    '- CO₂: ' + r.totalSpkCO2.toFixed(2) + ' kg/system | Overrides: ' + roStr + '\n\n' +
-    '## Acoustic (Thiele-Small approx.)\n' + phyStr + '\n\n' +
-    '## Required Sections\n\n' +
-    '#### Cost-Saving Opportunities\nList 3-5 specific actions with estimated % savings, referencing the actual materials and country above.\n\n' +
-    '#### Industry Benchmarks & Trends\nCompare to current OEM practices (Harman, Continental, Panasonic Automotive, Bose Automotive). Dominant material/process trends for premium automotive audio in 2025-2026 at this volume.\n\n' +
-    '#### Technology Alternatives\nSuggest 2-3 alternatives that improve cost/performance for a ' + inp.system + '. Consider DSP, acoustic design, and NVH innovations.\n\n' +
-    '#### Supply Chain Risk\nTop 2-3 risks for this BOM (' + inp.magnet + ' magnet, ' + inp.vcWire + ' wire) and mitigation strategies.\n\n' +
-    '#### Verdict\nOne executive paragraph: is this competitive at ' + inp.annualVol.toLocaleString() + ' units from ' + inp.country + '? Single highest-priority action?\n\nBe specific and data-driven.';
+  var prompt = 'You are a senior automotive speaker cost engineer and supply chain analyst with deep expertise in OEM audio systems, speaker manufacturing, and acoustic engineering.\n\n' +
+    'Analyse this speaker system cost build and provide specific, actionable intelligence:\n\n' +
+    '## SYSTEM CONFIGURATION\n' +
+    '- System type: ' + esc(r.inp.system) + '\n' +
+    '- Manufacturing country: ' + esc(r.inp.country) + '\n' +
+    '- Annual volume: ' + (r.inp.annualVol||0).toLocaleString() + ' units\n' +
+    '- Magnet: ' + esc(r.inp.magnet) + ' | Cone: ' + esc(r.inp.cone) + ' | Surround: ' + esc(r.inp.surround) + '\n' +
+    '- Frame: ' + esc(r.inp.frame) + ' | VC Wire: ' + esc(r.inp.vcWire) + ' | Former: ' + esc(r.inp.vcFormer) + '\n' +
+    '- Sustainability mode: ' + esc(r.inp.sustainMode) + '\n' +
+    '- Enabled features: ' + features + '\n' +
+    '- Freight mode: ' + esc(r.inp.freightMode) + ' | Duty rate: ' + ((r.inp.dutyRate||0)*100).toFixed(1) + '%\n' +
+    '- ' + overrides + '\n\n' +
+    '## COST BREAKDOWN\n' +
+    '- Total system cost: £' + (r.total*FX_GBP).toFixed(2) + '\n' +
+    '- Direct materials (DM): £' + (r.totalDM*FX_GBP).toFixed(2) + ' (' + (r.totalDM/r.total*100).toFixed(1) + '% of total)\n' +
+    '- Direct labour: £' + (r.totalDLab*FX_GBP).toFixed(2) + '\n' +
+    '- Machine costs: £' + (r.totalDMach*FX_GBP).toFixed(2) + '\n' +
+    '- Factory OH (12%): £' + (r.totalFOH*FX_GBP).toFixed(2) + '\n' +
+    '- G&A (7%): £' + (r.totalGA*FX_GBP).toFixed(2) + '\n' +
+    '- Tooling amortisation: £' + (r.totalTool*FX_GBP).toFixed(2) + '\n' +
+    '- Warranty provision: £' + (r.totalWarr*FX_GBP).toFixed(2) + '\n' +
+    '- Inbound freight: £' + (r.totalInb*FX_GBP).toFixed(2) + '\n' +
+    '- Target margin: £' + (r.margin*FX_GBP).toFixed(2) + ' (' + (r.inp.margin*100).toFixed(0) + '%)\n\n' +
+    (ph ? ('## ACOUSTIC ESTIMATES (first driver)\n' +
+    '- Resonance fs ≈ ' + ph.fs.toFixed(0) + ' Hz | Qts ≈ ' + ph.Qts.toFixed(2) + ' | Sensitivity ≈ ' + ph.sensitiv.toFixed(1) + ' dB\n' +
+    '- BL ≈ ' + ph.BL.toFixed(1) + ' T·m | Motor factor BL²/Re ≈ ' + ph.BL2Re.toFixed(1) + '\n' +
+    '- Enclosure recommendation: ' + ph.encl + '\n\n') : '') +
+    '## CO₂ FOOTPRINT\n' +
+    '- Total: ' + r.totalSpkCO2.toFixed(2) + ' kg CO₂e per system\n\n' +
+    'Provide a structured analysis covering:\n' +
+    '1. **Top 3 Cost Reduction Opportunities** — specific to this configuration, with realistic £ saving estimates\n' +
+    '2. **Material / Process Alternatives** — what leading OEMs use at this volume tier for similar systems\n' +
+    '3. **Industry Benchmark Context** — how this cost profile compares to tier-1 automotive audio (Harman, Continental, Bosch) for this system type\n' +
+    '4. **Supply Chain & Risk Intelligence** — specific risks for this country/material combination, and mitigation strategies\n' +
+    '5. **Technology Upgrade Path** — one high-value technology investment that would improve the cost/performance ratio for this exact system\n\n' +
+    'Be specific and quantitative where possible. Reference real OEM practices. Keep each section concise (2-4 sentences). Use markdown formatting.';
 
-  box.innerHTML = '<em style="color:var(--t3)">Connecting to Claude API...</em>';
-  if (statusBar) statusBar.style.display = 'flex';
-  if (statusTxt) statusTxt.textContent = 'Streaming analysis...';
-
-  var accum = '';
-  callClaudeStream(prompt, function(chunk) {
-    accum += chunk;
-    box.innerHTML = renderMD(accum) + '<span style="animation:blink 1s infinite;display:inline-block;color:var(--blue2)">&#9646;</span>';
-  }, function() {
-    box.innerHTML = renderMD(accum);
-    if (statusBar) statusBar.style.display = 'none';
-  }, function(err) {
-    box.innerHTML = err === 'no_key'
-      ? '<div class="ai-setup-note">&#128273; Add your Claude API key in <a href="#" onclick="openSettings();return false">Settings &#9881;</a>.</div>'
-      : '<span style="color:var(--red)">&#9888; Error: ' + esc(String(err)) + '</span>';
-    if (statusBar) statusBar.style.display = 'none';
-  });
+  var out = document.getElementById('claudeInsightsContent');
+  if (!out) return;
+  var accumulated = '';
+  callClaudeStream(
+    prompt,
+    function onChunk(text) {
+      accumulated += text;
+      out.innerHTML = renderMD(accumulated) + '<span style="color:var(--blue2);animation:blink 1s step-end infinite">▌</span>';
+    },
+    function onDone() {
+      out.innerHTML = renderMD(accumulated);
+    },
+    function onError(err) {
+      if (err === 'no_key') {
+        out.innerHTML = '<p style="color:var(--t3)">No API key configured. Click ⚙ to add your Claude key.</p>';
+      } else {
+        out.innerHTML = '<p style="color:var(--red);font-size:11px">Claude API error: ' + esc(String(err).slice(0,200)) + '</p><p style="color:var(--t3);font-size:11px;margin-top:6px">Check your API key in ⚙ Settings, or check browser console for details.</p>';
+      }
+    }
+  );
 }
 
 // ─── Scenario Comparison ──────────────────────────────────────────────────────
@@ -2605,171 +2515,196 @@ document.addEventListener('DOMContentLoaded', function() {
 // ─── AI Insights cache key ────────────────────────────────────────────────────
 var _aiInsightsRendered = null;
 
-// ─── Trends tab globals ───────────────────────────────────────────────────────
-var _trendsCache = null;
+// ─── Trends Tab ──────────────────────────────────────────────────────────────
 var _trendsCacheTime = 0;
+var _trendsCache = null;
 var _commodityCache = null;
 var _commodityCacheTime = 0;
 
 var TREND_FEEDS = [
-  { url: 'https://carnewschina.com/feed/', label: 'Car News China', region: 'CN' },
-  { url: 'https://cnevpost.com/feed/',     label: 'CNEVPost',       region: 'CN' },
-  { url: 'https://gasgoo.com/rss.xml',    label: 'Gasgoo',         region: 'CN' },
-  { url: 'https://electrek.co/feed/',     label: 'Electrek',       region: 'GL' },
-  { url: 'https://insideevs.com/feed/rss/', label: 'InsideEVs',   region: 'GL' }
+  {name:'Car News China',     url:'https://carnewschina.com/feed/',          region:'China'},
+  {name:'CNEVPost',           url:'https://cnevpost.com/feed/',               region:'China'},
+  {name:'Gasgoo',             url:'https://www.gasgoo.com/News/rss/auto.xml', region:'China'},
+  {name:'Electrek',           url:'https://electrek.co/feed/',                region:'Global'},
+  {name:'InsideEVs',          url:'https://insideevs.com/feed/latest/',        region:'Global'}
 ];
 
-var AUDIO_KEYWORDS = [
-  'audio','sound','speaker','acoustics','bose','harman','meridian',
-  'burmester','b&o','bang & olufsen','bang and olufsen','dolby','hi-fi',
-  'premium audio','music system','sound system','infotainment audio',
-  'nio audio','aito','huawei sound','zeekr audio','li auto audio',
-  'byd premium','yangwang','xpeng audio','lixiang audio',
-  'surround sound','active noise','anc','dsp audio','spatial audio'
-];
+var AUDIO_KEYWORDS = ['audio','sound system','speaker','harman','bang','olufsen','meridian',
+  'burmester','bowers','wilkins','dolby','spatial audio','atmos','nio audio','aito',
+  'zeekr','li auto','premium audio','acoustic','infotainment audio','bose','continental audio',
+  'panasonic audio','sennheiser','sony audio','immersive','surround sound','hi-fi'];
 
 function isAudioRelevant(item) {
-  var txt = ((item.title || '') + ' ' + (item.description || '') + ' ' + (item.content || '')).toLowerCase();
-  // Exclude cheap/budget terms
-  var noiseTerms = ['budget speaker','cheap audio','entry-level audio','basic stereo'];
-  for (var i = 0; i < noiseTerms.length; i++) { if (txt.indexOf(noiseTerms[i]) >= 0) return false; }
-  for (var j = 0; j < AUDIO_KEYWORDS.length; j++) { if (txt.indexOf(AUDIO_KEYWORDS[j]) >= 0) return true; }
-  return false;
+  var text = ((item.title||'')+(item.description||'')+(item.content||'')).toLowerCase();
+  return AUDIO_KEYWORDS.some(function(kw){return text.indexOf(kw)>=0;});
 }
 
 function fetchRSSFeed(feed) {
-  var apiUrl = 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(feed.url) + '&api_key=public&count=20';
+  var apiUrl = 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(feed.url) + '&count=10&api_key=';
   return fetch(apiUrl)
-    .then(function(r) { return r.json(); })
-    .then(function(data) {
+    .then(function(r){return r.json();})
+    .then(function(data){
       if (!data.items) return [];
-      return data.items.filter(isAudioRelevant).slice(0, 6).map(function(item) {
+      return data.items.filter(isAudioRelevant).slice(0,5).map(function(item){
         return {
-          title: item.title || '',
-          link:  item.link  || item.guid || '#',
-          date:  item.pubDate ? item.pubDate.slice(0, 10) : '',
-          region: feed.region,
-          source: feed.label
+          title:   item.title || '',
+          link:    item.link  || '',
+          date:    item.pubDate ? new Date(item.pubDate).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}) : '',
+          summary: (item.description||item.content||'').replace(/<[^>]+>/g,'').slice(0,180).trim(),
+          source:  feed.name,
+          region:  feed.region
         };
       });
     })
-    .catch(function() { return []; });
+    .catch(function(){return [];});
 }
 
 function fetchCommodityPrices() {
-  if (_commodityCache && (Date.now() - _commodityCacheTime) < 3600000) {
+  var now = Date.now();
+  if (_commodityCache && now - _commodityCacheTime < 3600000) {
     return Promise.resolve(_commodityCache);
   }
-  var proxyBase = 'https://api.allorigins.win/get?url=';
-
-  function yahooFetch(symbol) {
-    var url = 'https://query1.finance.yahoo.com/v8/finance/chart/' + symbol + '?interval=1d&range=2d';
-    return fetch(proxyBase + encodeURIComponent(url))
-      .then(function(r) { return r.json(); })
-      .then(function(w) {
-        var d = JSON.parse(w.contents);
-        var meta = d && d.chart && d.chart.result && d.chart.result[0] && d.chart.result[0].meta;
-        if (!meta) return null;
-        return { price: meta.regularMarketPrice, prev: meta.previousClose, currency: meta.currency };
-      })
-      .catch(function() { return null; });
+  // Fetch copper (HG=F) and aluminium (ALI=F) from Yahoo Finance via allorigins proxy
+  function yahooFetch(ticker) {
+    var yUrl = 'https://query1.finance.yahoo.com/v8/finance/chart/' + ticker + '?interval=1d&range=5d';
+    return fetch('https://api.allorigins.win/get?url=' + encodeURIComponent(yUrl))
+      .then(function(r){return r.json();})
+      .then(function(d){
+        var raw = JSON.parse(d.contents);
+        var meta = raw.chart.result[0].meta;
+        var prev = raw.chart.result[0].indicators.quote[0].close;
+        var prevClose = prev.filter(Boolean);
+        var latest = meta.regularMarketPrice;
+        var prevDay = prevClose.length > 1 ? prevClose[prevClose.length-2] : prevClose[0];
+        var chg = prevDay ? ((latest-prevDay)/prevDay*100) : 0;
+        return {price:latest, change:chg, currency:meta.currency||'USD', updated: new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})};
+      });
   }
-
   return Promise.all([yahooFetch('HG=F'), yahooFetch('ALI=F')])
-    .then(function(results) {
-      var out = {
-        copper: results[0],
-        aluminium: results[1],
-        neodymium: { price: 80000, unit: 'CNY/MT', source: 'SMM indicative', disclaimer: true }
+    .then(function(results){
+      var data = {
+        copper:    Object.assign({label:'Copper (COMEX HG)', unit:'$/lb',  source:'Yahoo Finance / COMEX'}, results[0]),
+        aluminium: Object.assign({label:'Aluminium (LME)',   unit:'$/lb',  source:'Yahoo Finance / LME'},   results[1]),
+        neodymium: {
+          label:'Neodymium Oxide (NdO₃)',
+          price:130000,
+          unit:'CNY/MT',
+          change:null,
+          source:'SMM / Asian Metal (spot estimate)',
+          sourceUrl:'https://www.asianmetal.com/NdPrMetal/NdPr.html',
+          note:'No free real-time API — indicative SMM spot. Verify via asianmetal.com or smm.cn',
+          updated:'2026-06'
+        }
       };
-      _commodityCache = out;
+      _commodityCache = data;
       _commodityCacheTime = Date.now();
-      return out;
+      return data;
+    })
+    .catch(function(){
+      // Fallback static data clearly marked
+      return {
+        copper:    {label:'Copper (COMEX HG)',  price:null, change:null, unit:'$/lb',  source:'Fetch failed — check network', updated:'—'},
+        aluminium: {label:'Aluminium (LME)',     price:null, change:null, unit:'$/lb',  source:'Fetch failed — check network', updated:'—'},
+        neodymium: {label:'Neodymium Oxide',     price:130000, change:null, unit:'CNY/MT', source:'SMM indicative (offline estimate)', sourceUrl:'https://www.asianmetal.com/NdPrMetal/NdPr.html', note:'No free real-time API — verify via asianmetal.com', updated:'2026-06'}
+      };
     });
-}
-
-function buildTrendsHTML(articles, comms) {
-  var html = '<div class="section-title">&#128225; Live Premium Automotive Audio Trends</div>';
-
-  // Commodity strip
-  html += '<div class="commodity-strip">';
-  if (comms.copper) {
-    var cuDelta = comms.copper.price - comms.copper.prev;
-    var cuDir = cuDelta >= 0 ? 'up' : 'down';
-    html += '<div class="comm-chip ' + cuDir + '">';
-    html += '<div class="cc-label">Copper (COMEX)</div>';
-    html += '<div class="cc-val">$' + comms.copper.price.toFixed(3) + '</div>';
-    html += '<div class="cc-sub">$/lb &nbsp;' + (cuDelta >= 0 ? '&#9650;' : '&#9660;') + ' ' + Math.abs(cuDelta).toFixed(3) + ' today</div>';
-    html += '</div>';
-  }
-  if (comms.aluminium) {
-    var alDelta = comms.aluminium.price - comms.aluminium.prev;
-    var alDir = alDelta >= 0 ? 'up' : 'down';
-    html += '<div class="comm-chip ' + alDir + '">';
-    html += '<div class="cc-label">Aluminium (LME)</div>';
-    html += '<div class="cc-val">$' + comms.aluminium.price.toFixed(2) + '</div>';
-    html += '<div class="cc-sub">$/MT &nbsp;' + (alDelta >= 0 ? '&#9650;' : '&#9660;') + ' ' + Math.abs(alDelta).toFixed(2) + ' today</div>';
-    html += '</div>';
-  }
-  html += '<div class="comm-chip">';
-  html += '<div class="cc-label">Neodymium (SMM ind.)</div>';
-  html += '<div class="cc-val">¥80,000</div>';
-  html += '<div class="cc-sub">CNY/MT &mdash; <a href="https://www.asianmetal.com" target="_blank" style="color:var(--blue2);font-size:9px">asianmetal.com &#8599;</a></div>';
-  html += '</div>';
-  html += '</div>';
-
-  if (!articles.length) {
-    html += '<div style="text-align:center;padding:30px;color:var(--t3);font-size:13px">No premium audio news found. RSS feeds may be temporarily unavailable.</div>';
-  } else {
-    html += '<div class="section-title" style="font-size:11px;margin:4px 0 8px;color:var(--t3)">PREMIUM AUTOMOTIVE AUDIO NEWS — CHINESE OEMS &amp; GLOBAL TIER 1</div>';
-    html += '<div class="trends-grid">';
-    articles.forEach(function(a) {
-      html += '<div class="trends-article">';
-      html += '<a href="' + esc(a.link) + '" target="_blank" rel="noopener">' + esc(a.title) + ' &#8599;</a>';
-      html += '<div class="ta-meta">';
-      html += '<span class="' + (a.region === 'CN' ? 'tag-cn' : 'tag-gl') + '">' + (a.region === 'CN' ? 'CHINA' : 'GLOBAL') + '</span>';
-      html += '<span>' + esc(a.source) + '</span>';
-      if (a.date) html += '<span>' + esc(a.date) + '</span>';
-      html += '</div></div>';
-    });
-    html += '</div>';
-  }
-
-  html += '<div style="font-size:10px;color:var(--t3);margin-top:16px;border-top:1px solid var(--bd);padding-top:8px">';
-  html += 'Commodity data: Yahoo Finance (COMEX copper HG=F, LME aluminium ALI=F) via AllOrigins proxy &mdash; 1h cache. ';
-  html += 'Neodymium: SMM indicative price, not real-time. Verify at <a href="https://www.asianmetal.com" target="_blank" style="color:var(--blue2)">asianmetal.com</a>. ';
-  html += 'News: carnewschina.com, cnevpost.com, gasgoo.com, electrek.co, insideevs.com filtered for premium audio. 24h cache.';
-  html += '</div>';
-
-  return html;
 }
 
 function renderTrendsTab() {
   var cont = document.getElementById('trendsContent');
   if (!cont) return;
+
+  // Use cache if fresh (<24h)
   var now = Date.now();
-  // Use cache if < 24h old
-  if (_trendsCache && (now - _trendsCacheTime) < 86400000) {
-    fetchCommodityPrices().then(function(comms) {
-      cont.innerHTML = buildTrendsHTML(_trendsCache, comms);
-    });
+  if (_trendsCache && now - _trendsCacheTime < 86400000) {
+    buildTrendsHTML(_trendsCache, _commodityCache);
     return;
   }
-  cont.innerHTML = '<div class="trends-loading"><span class="spinner"></span>Fetching live premium automotive audio news&hellip;</div>';
-  var feedPromises = TREND_FEEDS.map(fetchRSSFeed);
-  Promise.all(feedPromises).then(function(results) {
-    var all = [];
-    results.forEach(function(r) { all = all.concat(r); });
+
+  cont.innerHTML = '<div style="text-align:center;padding:50px;color:var(--t3)"><span style="font-size:28px;display:block;margin-bottom:12px">⏳</span>Fetching live commodity prices and automotive audio news…</div>';
+
+  Promise.all([
+    fetchCommodityPrices(),
+    Promise.all(TREND_FEEDS.map(fetchRSSFeed))
+  ]).then(function(results) {
+    var commodities = results[0];
+    var allArticles = [].concat.apply([], results[1]);
     // Sort by date descending
-    all.sort(function(a, b) { return (b.date || '') < (a.date || '') ? -1 : 1; });
-    _trendsCache = all;
+    allArticles.sort(function(a,b){ return new Date(b.date)-new Date(a.date); });
+    _trendsCache = allArticles;
     _trendsCacheTime = now;
-    return fetchCommodityPrices();
-  }).then(function(comms) {
-    cont.innerHTML = buildTrendsHTML(_trendsCache, comms);
-  }).catch(function(err) {
-    cont.innerHTML = '<div style="color:var(--red);padding:20px;text-align:center">Failed to load trends: ' + esc(String(err)) + '</div>';
+    buildTrendsHTML(allArticles, commodities);
+  }).catch(function(e){
+    cont.innerHTML = '<p style="color:var(--red);padding:20px">Failed to load trends: ' + esc(String(e)) + '</p>';
   });
+}
+
+function buildTrendsHTML(articles, commodities) {
+  var cont = document.getElementById('trendsContent');
+  if (!cont) return;
+
+  var html = '';
+
+  // ── Commodity Prices ─────────────────────────────────────────────────────
+  html += '<div class="section-title">💹 Commodity Spot Prices</div>';
+  html += '<p style="font-size:10px;color:var(--t3);margin-bottom:10px">Live COMEX/LME prices affect your BOM directly. Copper and aluminium are fetched from Yahoo Finance in real time.</p>';
+  html += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-bottom:20px">';
+
+  var comms = commodities ? [commodities.copper, commodities.aluminium, commodities.neodymium] : [];
+  comms.forEach(function(c) {
+    if (!c) return;
+    var chgColor = (c.change === null) ? 'var(--t3)' : c.change >= 0 ? 'var(--red)' : 'var(--green2)';
+    var chgTxt = (c.change === null) ? '' : (c.change >= 0 ? '▲' : '▼') + Math.abs(c.change).toFixed(2) + '% 24h';
+    html += '<div class="card" style="padding:14px">';
+    html += '<div style="font-size:10px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px">' + esc(c.label) + '</div>';
+    if (c.price !== null) {
+      html += '<div style="font-size:22px;font-weight:700;color:var(--blue2)">' + (typeof c.price === 'number' ? c.price.toLocaleString(undefined,{maximumFractionDigits:4}) : '—') + ' <span style="font-size:12px;color:var(--t3)">' + esc(c.unit||'') + '</span></div>';
+    } else {
+      html += '<div style="font-size:14px;color:var(--t3);padding:8px 0">Data unavailable</div>';
+    }
+    if (chgTxt) html += '<div style="font-size:11px;color:'+chgColor+';margin-top:3px;font-weight:600">'+chgTxt+'</div>';
+    html += '<div style="font-size:9px;color:var(--t3);margin-top:6px">' + esc(c.source||'') + (c.updated ? ' · ' + c.updated : '') + '</div>';
+    if (c.note) html += '<div style="font-size:9px;color:var(--amber);margin-top:4px;line-height:1.4">⚠ ' + esc(c.note) + '</div>';
+    if (c.sourceUrl) html += '<a href="' + c.sourceUrl + '" target="_blank" style="font-size:9px;color:var(--blue2);margin-top:4px;display:block">→ Verify at source</a>';
+    html += '</div>';
+  });
+
+  html += '</div>';
+  html += '<button onclick="_commodityCache=null;_commodityCacheTime=0;renderTrendsTab()" style="font-size:10px;padding:5px 12px;background:transparent;border:1px solid var(--bd);border-radius:6px;color:var(--t3);cursor:pointer;margin-bottom:20px">↺ Refresh commodity prices</button>';
+
+  // ── News Feed ────────────────────────────────────────────────────────────
+  html += '<div class="section-title">📰 Premium Automotive Audio — Latest News</div>';
+  html += '<p style="font-size:10px;color:var(--t3);margin-bottom:10px">Filtered for premium audio, spatial sound, and relevant OEM/brand news. Sources: Car News China, CNEVPost, Gasgoo, Electrek, InsideEVs. Cached 24h. <button onclick="_trendsCache=null;_trendsCacheTime=0;renderTrendsTab()" style="font-size:10px;background:none;border:none;color:var(--blue2);cursor:pointer;padding:0 4px;text-decoration:underline">Refresh</button></p>';
+
+  if (!articles || articles.length === 0) {
+    html += '<div class="card" style="padding:20px;text-align:center"><p style="color:var(--t3)">No relevant audio/speaker news found in today\'s feeds. Try refreshing or check back later.</p></div>';
+  } else {
+    articles.forEach(function(item) {
+      var regionColor = item.region === 'China' ? 'var(--red)' : 'var(--blue2)';
+      html += '<div class="card" style="padding:14px;margin-bottom:10px;border-left:3px solid '+regionColor+'">';
+      html += '<div style="display:flex;align-items:flex-start;gap:10px">';
+      html += '<div style="flex:1">';
+      html += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">';
+      html += '<span style="font-size:9px;font-weight:700;color:'+regionColor+';text-transform:uppercase;background:rgba(0,0,0,0.15);padding:2px 7px;border-radius:99px">'+esc(item.region)+'</span>';
+      html += '<span style="font-size:9px;color:var(--t3)">'+esc(item.source)+'</span>';
+      html += '<span style="font-size:9px;color:var(--t3)">·</span>';
+      html += '<span style="font-size:9px;color:var(--t3)">'+esc(item.date)+'</span>';
+      html += '</div>';
+      if (item.link) {
+        html += '<a href="'+item.link+'" target="_blank" rel="noopener" style="font-size:13px;font-weight:600;color:var(--t1);text-decoration:none;line-height:1.4;display:block;margin-bottom:6px">'+esc(item.title)+'</a>';
+      } else {
+        html += '<p style="font-size:13px;font-weight:600;color:var(--t1);margin-bottom:6px">'+esc(item.title)+'</p>';
+      }
+      if (item.summary) {
+        html += '<p style="font-size:11px;color:var(--t2);line-height:1.5;margin:0">'+esc(item.summary.slice(0,200))+(item.summary.length>200?'…':'')+'</p>';
+      }
+      html += '</div></div></div>';
+    });
+  }
+
+  html += '<p style="font-size:9px;color:var(--t3);margin-top:12px;text-align:center">⚠ News is sourced from third-party RSS feeds. Verify all information before use in procurement or business decisions.</p>';
+
+  cont.innerHTML = html;
 }
 
 // ─── Settings ─────────────────────────────────────────────────────────────────
