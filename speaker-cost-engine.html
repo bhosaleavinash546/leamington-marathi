@@ -3920,62 +3920,95 @@ var _trendsCache = null;
 var _commodityCache = null;
 var _commodityCacheTime = 0;
 
-// Google News RSS search — pre-filtered by query so results are audio-relevant by design
+// Reliable RSS feeds from dedicated audio + automotive tech publications
+// Fetched directly via CORS proxy + DOMParser — no rss2json dependency
 var TREND_FEEDS = [
-  {name:'Google News', region:'Global',
-   url:'https://news.google.com/rss/search?q=automotive+audio+speaker+sound+system+car&hl=en&gl=US&ceid=US:en'},
-  {name:'Google News', region:'Global',
-   url:'https://news.google.com/rss/search?q=Harman+Bose+Meridian+Burmester+Bang+Olufsen+car+audio&hl=en&gl=US&ceid=US:en'},
-  {name:'Google News', region:'Global',
-   url:'https://news.google.com/rss/search?q=spatial+audio+dolby+atmos+automotive+vehicle+music&hl=en&gl=US&ceid=US:en'},
-  {name:'Google News', region:'Global',
-   url:'https://news.google.com/rss/search?q=car+audio+technology+speaker+acoustic+engineering+OEM&hl=en&gl=US&ceid=US:en'},
-  {name:'Google News', region:'China',
-   url:'https://news.google.com/rss/search?q=China+automotive+audio+speaker+EV+sound+system&hl=en&gl=US&ceid=US:en'}
+  {name:'What Hi-Fi',     url:'https://www.whathifi.com/rss',                        region:'Global'},
+  {name:'The Verge',      url:'https://www.theverge.com/rss/index.xml',              region:'Global'},
+  {name:'Electrek',       url:'https://electrek.co/feed/',                            region:'Global'},
+  {name:'InsideEVs',      url:'https://insideevs.com/feed/latest/',                   region:'Global'},
+  {name:'Car News China', url:'https://carnewschina.com/feed/',                       region:'China'},
+  {name:'CNEVPost',       url:'https://cnevpost.com/feed/',                           region:'China'}
 ];
 
-// Strict audio-only keywords — no standalone car brand names that match delivery news
+// Audio-specific keywords — single words kept broad so 'audio', 'speaker' catch all variants;
+// no standalone car brand names that match delivery/sales articles
 var AUDIO_KEYWORDS = [
-  'audio system','sound system','speaker system','car speaker','car audio',
-  'in-car audio','vehicle audio','automotive audio','automotive sound',
-  'harman','bang & olufsen','bang and olufsen','meridian audio','burmester',
-  'bowers & wilkins','bowers wilkins','dolby atmos','spatial audio',
-  'surround sound','immersive audio','hi-fi','hifi',
-  'bose automotive','bose car','sennheiser automotive','acoustic engineering',
-  'amplifier','subwoofer','tweeter','woofer','infotainment audio',
-  'active noise cancellation','anc vehicle','premium sound system'
+  'audio','speaker','acoustic','stereo','hi-fi','hifi',
+  'harman','bose','meridian','burmester','dolby',
+  'bang olufsen','bowers wilkins','spatial audio','surround sound',
+  'amplifier','subwoofer','tweeter','woofer',
+  'noise cancell','sennheiser','premium sound','sound system','infotainment'
 ];
 
-function isAudioRelevant(item) {
-  var text = ((item.title||'')+(item.description||'')+(item.content||'')).toLowerCase();
-  return AUDIO_KEYWORDS.some(function(kw){ return text.indexOf(kw) >= 0; });
+// Score: title keyword match = 10 pts, body match = 1 pt
+function audioScore(title, body) {
+  var t = title.toLowerCase(), b = body.toLowerCase(), s = 0;
+  AUDIO_KEYWORDS.forEach(function(kw) {
+    if (t.indexOf(kw) >= 0) s += 10;
+    else if (b.indexOf(kw) >= 0) s += 1;
+  });
+  return s;
+}
+
+function isAudioRelevant(title, body) {
+  return audioScore(title, body) > 0;
 }
 
 function fetchRSSFeed(feed) {
-  var apiUrl = 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(feed.url) + '&count=20';
-  return fetch(apiUrl)
-    .then(function(r){ return r.json(); })
-    .then(function(data){
-      if (!data.items) return [];
-      // Google News search feeds are pre-filtered; still run keyword guard as safety net
-      var items = data.items.filter(isAudioRelevant);
-      // If pre-filtered feed returns 0 after strict guard, keep top 5 anyway (query already audio-specific)
-      if (items.length === 0) items = data.items.slice(0, 5);
-      return items.slice(0, 6).map(function(item){
-        // Google News: author field = publication name; title often ends with " - Publication"
-        var pub = item.author || feed.name;
-        var title = (item.title || '').replace(/\s+[-–]\s+[^-–]+$/, '').trim(); // strip trailing " - Source"
-        return {
-          title:   title || item.title || '',
-          link:    item.link || '',
-          date:    item.pubDate ? new Date(item.pubDate).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}) : '',
-          summary: (item.description || item.content || '').replace(/<[^>]+>/g,'').trim().slice(0, 220),
-          source:  pub,
-          region:  feed.region
-        };
+  var SIX_MONTHS_AGO = new Date();
+  SIX_MONTHS_AGO.setMonth(SIX_MONTHS_AGO.getMonth() - 6);
+
+  function parseRSS(xml) {
+    var doc = new DOMParser().parseFromString(xml, 'text/xml');
+    // Support both RSS 2.0 <item> and Atom <entry>
+    var items = Array.from(doc.querySelectorAll('item, entry'));
+    var results = [];
+    items.forEach(function(el) {
+      var title = (el.querySelector('title') || {textContent:''}).textContent.replace(/<!\[CDATA\[|\]\]>/g,'').trim();
+      // Link: Atom uses <link href=""> attribute; RSS 2.0 uses <link>text</link>
+      var linkEl = el.querySelector('link');
+      var link = linkEl ? (linkEl.getAttribute('href') || linkEl.textContent || '').trim() : '';
+      if (!link) { var g = el.querySelector('guid'); if (g) link = g.textContent.trim(); }
+      // Date: try pubDate (RSS) then published/updated (Atom)
+      var dateStr = ['pubDate','published','updated'].reduce(function(acc, tag) {
+        if (acc) return acc;
+        var n = el.querySelector(tag); return n ? n.textContent.trim() : '';
+      }, '');
+      var dateObj = dateStr ? new Date(dateStr) : new Date(0);
+      if (isNaN(dateObj.getTime())) dateObj = new Date(0);
+      // Summary: try description → summary → content
+      var bodyEl = el.querySelector('description') || el.querySelector('summary') || el.querySelector('content');
+      var body = bodyEl ? bodyEl.textContent.replace(/<!\[CDATA\[|\]\]>/g,'').replace(/<[^>]+>/g,'').trim() : '';
+      // Apply filters: must be within 6 months and audio-relevant
+      if (dateObj < SIX_MONTHS_AGO) return;
+      if (!isAudioRelevant(title, body)) return;
+      results.push({
+        title:   title,
+        link:    link,
+        date:    dateObj.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}),
+        dateObj: dateObj,
+        summary: body.slice(0, 220),
+        source:  feed.name,
+        region:  feed.region,
+        score:   audioScore(title, body)
       });
+    });
+    return results;
+  }
+
+  function tryFetch(proxyUrl) {
+    return fetch(proxyUrl).then(function(r) {
+      if (!r.ok) throw new Error(r.status);
+      return r.text();
+    }).then(parseRSS);
+  }
+
+  return tryFetch('https://corsproxy.io/?' + encodeURIComponent(feed.url))
+    .catch(function() {
+      return tryFetch('https://api.allorigins.win/raw?url=' + encodeURIComponent(feed.url));
     })
-    .catch(function(){ return []; });
+    .catch(function() { return []; });
 }
 
 function fetchCommodityPrices() {
@@ -4087,7 +4120,7 @@ function renderTrendsTab() {
   ]).then(function(results) {
     var commodities = results[0];
     var merged = [].concat.apply([], results[1]);
-    // Deduplicate by normalised title (Google News can return same story from multiple feeds)
+    // Deduplicate by normalised title
     var seen = {};
     var allArticles = merged.filter(function(a){
       var key = a.title.toLowerCase().replace(/[^a-z0-9]/g,'').slice(0,60);
@@ -4095,7 +4128,11 @@ function renderTrendsTab() {
       seen[key] = true;
       return true;
     });
-    allArticles.sort(function(a,b){ return new Date(b.date)-new Date(a.date); });
+    // Sort: highest relevance score first, then newest first within same score tier
+    allArticles.sort(function(a,b){
+      if (b.score !== a.score) return b.score - a.score;
+      return (b.dateObj||new Date(0)) - (a.dateObj||new Date(0));
+    });
     _trendsCache = allArticles;
     _trendsCacheTime = now;
     // Persist articles to sessionStorage to protect rss2json rate limit within the session
@@ -4145,10 +4182,10 @@ function buildTrendsHTML(articles, commodities) {
 
   // ── News Feed ────────────────────────────────────────────────────────────
   html += '<div class="section-title">📰 Premium Automotive Audio — Latest News</div>';
-  html += '<p style="font-size:10px;color:var(--t3);margin-bottom:10px">Audio-specific news: car speakers, Harman · Bose · Meridian · Burmester · B&W, spatial audio, Dolby Atmos, acoustic engineering &amp; OEM sound systems. Sourced via Google News search — click any headline to open the original article. Cached 24h. <button onclick="_trendsCache=null;_trendsCacheTime=0;renderTrendsTab()" style="font-size:10px;background:none;border:none;color:var(--blue2);cursor:pointer;padding:0 4px;text-decoration:underline">Refresh</button></p>';
+  html += '<p style="font-size:10px;color:var(--t3);margin-bottom:10px">Last 6 months · automotive audio, music systems, acoustic technology, OEM sound. Sources: What Hi-Fi · The Verge · Electrek · InsideEVs · Car News China · CNEVPost. Sorted by relevance, then date. Click any card to open the original article. Cached 24h. <button onclick="_trendsCache=null;_trendsCacheTime=0;renderTrendsTab()" style="font-size:10px;background:none;border:none;color:var(--blue2);cursor:pointer;padding:0 4px;text-decoration:underline">Refresh</button></p>';
 
   if (!articles || articles.length === 0) {
-    html += '<div class="card" style="padding:20px;text-align:center"><p style="color:var(--t3)">No relevant audio/speaker news found in today\'s feeds. Try refreshing or check back later.</p></div>';
+    html += '<div class="card" style="padding:20px;text-align:center"><p style="color:var(--t3)">No audio articles found from the last 6 months in these feeds.<br><span style="font-size:10px">Try clicking Refresh — feeds may have been rate-limited on first load.</span></p></div>';
   } else {
     articles.forEach(function(item) {
       var regionColor = item.region === 'China' ? 'var(--red)' : 'var(--blue2)';
