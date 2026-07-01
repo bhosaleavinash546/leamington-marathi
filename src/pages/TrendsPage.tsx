@@ -776,8 +776,10 @@ export default function TrendsPage() {
         </div>
 
         <p className="text-slate-600 text-xs mt-4 leading-relaxed">
-          Source: LME, Fastmarkets, ICIS, Argus Media, industry estimates — fetched daily via web search.
-          Exchange-grade prices (LME) are most reliable; indicative prices are engineering estimates for BOM modelling.
+          Sources: LME 3-month (base metals), Argus/MEPS NW-Europe (HRC &amp; stainless), SMM/Fastmarkets
+          (rare earths &amp; battery materials). USD quotes converted at EUR/USD 1.14 (ECB). Baseline as of 1 Jul 2026;
+          the live feed auto-refreshes daily when a market-data key is configured. Exchange-grade prices (LME) are most
+          reliable; indicative prices are engineering estimates for BOM modelling.
         </p>
       </div>
     );

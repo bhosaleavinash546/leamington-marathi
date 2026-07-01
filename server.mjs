@@ -275,8 +275,19 @@ db.exec(`CREATE TABLE IF NOT EXISTS commodity_prices (
   value REAL NOT NULL,
   updatedAt TEXT NOT NULL
 )`);
+db.exec(`CREATE TABLE IF NOT EXISTS app_meta (key TEXT PRIMARY KEY, value TEXT NOT NULL)`);
+// Bump when the COMMODITY_BASELINE seed is refreshed. On mismatch we drop any
+// persisted prices so the new authentic seed wins over stale cached values.
+const PRICE_BASELINE_VERSION = '2026-07-01';
 function initCommodityPriceDb() {
   try {
+    const storedVer = db.prepare("SELECT value FROM app_meta WHERE key = 'price_baseline_version'").get();
+    if (!storedVer || storedVer.value !== PRICE_BASELINE_VERSION) {
+      db.prepare('DELETE FROM commodity_prices').run();
+      db.prepare("INSERT INTO app_meta (key, value) VALUES ('price_baseline_version', ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value").run(PRICE_BASELINE_VERSION);
+      console.log(`[Prices] Baseline updated to ${PRICE_BASELINE_VERSION} — cleared stale persisted prices.`);
+      return;   // use the fresh in-memory baseline (already seeded)
+    }
     const rows = db.prepare('SELECT key, value, updatedAt FROM commodity_prices').all();
     let loaded = 0;
     let latestTs = 0;
@@ -3655,49 +3666,55 @@ function detectBatteryComponent(systemName, subassemblyName, partName) {
 
 const PRICE_CACHE_TTL = 24 * 60 * 60 * 1000;
 
+// Baseline seed values refreshed 1 Jul 2026 from authentic sources: LME 3-month
+// (copper/aluminium/nickel/zinc/lead), Argus/MEPS NW-Europe HRC & stainless,
+// SMM/Fastmarkets rare earths, SMM/Fastmarkets battery materials. USD quotes
+// converted at EUR/USD 1.1407 (ECB, 1 Jul 2026). Exchange/spot tiers are directly
+// sourced; indicative tiers are engineering estimates for BOM modelling. The live
+// refresh (refreshPriceCache) overrides these when a search API key is configured.
 const COMMODITY_BASELINE = {
   // ── Ferrous Metals ──────────────────────────────────────────────────────────
-  steel_hrc_eu:       { label: 'Steel HRC (EU)',            value: 580,   unit: '€/t',   category: 'ferrous',     tier: 'exchange',   context: 'BIW structure, chassis, body stampings' },
-  steel_crc_eu:       { label: 'Steel CRC (EU)',            value: 680,   unit: '€/t',   category: 'ferrous',     tier: 'spot',       context: 'Exposed panels, door outers, roof' },
-  phs_22mnb5:         { label: 'PHS Steel (22MnB5)',        value: 1250,  unit: '€/t',   category: 'ferrous',     tier: 'spot',       context: 'Hot-stamped pillars, rails, sills' },
-  dp980_ahss:         { label: 'DP980 AHSS',                value: 1100,  unit: '€/t',   category: 'ferrous',     tier: 'spot',       context: 'Advanced high-strength stampings' },
-  dp780_ahss:         { label: 'DP780 AHSS',                value: 950,   unit: '€/t',   category: 'ferrous',     tier: 'spot',       context: 'Structural reinforcements, sills' },
-  silicon_steel_m270: { label: 'Silicon Steel (M270-35A)',  value: 2200,  unit: '€/t',   category: 'ferrous',     tier: 'spot',       context: 'Motor laminations, stator/rotor core' },
+  steel_hrc_eu:       { label: 'Steel HRC (EU)',            value: 700,   unit: '€/t',   category: 'ferrous',     tier: 'exchange',   context: 'BIW structure, chassis, body stampings' },
+  steel_crc_eu:       { label: 'Steel CRC (EU)',            value: 800,   unit: '€/t',   category: 'ferrous',     tier: 'spot',       context: 'Exposed panels, door outers, roof' },
+  phs_22mnb5:         { label: 'PHS Steel (22MnB5)',        value: 1300,  unit: '€/t',   category: 'ferrous',     tier: 'spot',       context: 'Hot-stamped pillars, rails, sills' },
+  dp980_ahss:         { label: 'DP980 AHSS',                value: 1150,  unit: '€/t',   category: 'ferrous',     tier: 'spot',       context: 'Advanced high-strength stampings' },
+  dp780_ahss:         { label: 'DP780 AHSS',                value: 1000,  unit: '€/t',   category: 'ferrous',     tier: 'spot',       context: 'Structural reinforcements, sills' },
+  silicon_steel_m270: { label: 'Silicon Steel (M270-35A)',  value: 2400,  unit: '€/t',   category: 'ferrous',     tier: 'spot',       context: 'Motor laminations, stator/rotor core' },
   stainless_304:      { label: 'Stainless Steel 304',       value: 2850,  unit: '€/t',   category: 'ferrous',     tier: 'spot',       context: 'Exhaust systems, heat shields' },
-  hsla_s420:          { label: 'HSLA S420',                 value: 780,   unit: '€/t',   category: 'ferrous',     tier: 'indicative', context: 'Suspension arms, structural nodes' },
+  hsla_s420:          { label: 'HSLA S420',                 value: 830,   unit: '€/t',   category: 'ferrous',     tier: 'indicative', context: 'Suspension arms, structural nodes' },
 
   // ── Non-Ferrous Metals ─────────────────────────────────────────────────────
-  copper_lme:         { label: 'Copper (LME)',              value: 9200,  unit: '€/t',   category: 'non-ferrous', tier: 'exchange',   context: 'Winding wire, busbars, connectors' },
-  aluminium_lme:      { label: 'Aluminium (LME)',           value: 2450,  unit: '€/t',   category: 'non-ferrous', tier: 'exchange',   context: 'HPDC casting, extrusions, closures' },
-  zinc_lme:           { label: 'Zinc (LME)',                value: 2800,  unit: '€/t',   category: 'non-ferrous', tier: 'exchange',   context: 'Galvanising coating, die-cast parts' },
-  nickel_lme:         { label: 'Nickel (LME)',              value: 16000, unit: '€/t',   category: 'non-ferrous', tier: 'exchange',   context: 'Battery cathode, stainless alloy' },
-  lead_lme:           { label: 'Lead (LME)',                value: 1900,  unit: '€/t',   category: 'non-ferrous', tier: 'exchange',   context: '12V lead-acid battery, ballast' },
-  al_hpdc_a380:       { label: 'Al HPDC Alloy (A380)',      value: 2600,  unit: '€/t',   category: 'non-ferrous', tier: 'spot',       context: 'Die-cast housings, knuckles, subframes' },
-  magnesium_ingot:    { label: 'Magnesium Ingot',           value: 2100,  unit: '€/t',   category: 'non-ferrous', tier: 'spot',       context: 'Ultra-light HPDC instrument panels, seats' },
+  copper_lme:         { label: 'Copper (LME)',              value: 11700, unit: '€/t',   category: 'non-ferrous', tier: 'exchange',   context: 'Winding wire, busbars, connectors' },
+  aluminium_lme:      { label: 'Aluminium (LME)',           value: 2700,  unit: '€/t',   category: 'non-ferrous', tier: 'exchange',   context: 'HPDC casting, extrusions, closures' },
+  zinc_lme:           { label: 'Zinc (LME)',                value: 3100,  unit: '€/t',   category: 'non-ferrous', tier: 'exchange',   context: 'Galvanising coating, die-cast parts' },
+  nickel_lme:         { label: 'Nickel (LME)',              value: 14300, unit: '€/t',   category: 'non-ferrous', tier: 'exchange',   context: 'Battery cathode, stainless alloy' },
+  lead_lme:           { label: 'Lead (LME)',                value: 1660,  unit: '€/t',   category: 'non-ferrous', tier: 'exchange',   context: '12V lead-acid battery, ballast' },
+  al_hpdc_a380:       { label: 'Al HPDC Alloy (A380)',      value: 2850,  unit: '€/t',   category: 'non-ferrous', tier: 'spot',       context: 'Die-cast housings, knuckles, subframes' },
+  magnesium_ingot:    { label: 'Magnesium Ingot',           value: 2200,  unit: '€/t',   category: 'non-ferrous', tier: 'spot',       context: 'Ultra-light HPDC instrument panels, seats' },
 
   // ── EV Battery Materials ───────────────────────────────────────────────────
-  li_carbonate:       { label: 'Lithium Carbonate (99.5%)', value: 12,    unit: '€/kg',  category: 'battery',     tier: 'spot',       context: 'LFP / NMC cathode active material' },
-  li_hydroxide:       { label: 'Lithium Hydroxide (LiOH)',  value: 14,    unit: '€/kg',  category: 'battery',     tier: 'spot',       context: 'High-Ni cathode (NMC811, NCA)' },
-  cobalt_sulfate:     { label: 'Cobalt Sulfate (EV grade)', value: 7.5,   unit: '€/kg',  category: 'battery',     tier: 'spot',       context: 'NMC cathode stabiliser' },
-  nickel_sulfate:     { label: 'Nickel Sulfate (EV grade)', value: 4.2,   unit: '€/kg',  category: 'battery',     tier: 'spot',       context: 'NMC high-Ni cathode precursor' },
+  li_carbonate:       { label: 'Lithium Carbonate (99.5%)', value: 17,    unit: '€/kg',  category: 'battery',     tier: 'spot',       context: 'LFP / NMC cathode active material' },
+  li_hydroxide:       { label: 'Lithium Hydroxide (LiOH)',  value: 17,    unit: '€/kg',  category: 'battery',     tier: 'spot',       context: 'High-Ni cathode (NMC811, NCA)' },
+  cobalt_sulfate:     { label: 'Cobalt Sulfate (EV grade)', value: 8.5,   unit: '€/kg',  category: 'battery',     tier: 'spot',       context: 'NMC cathode stabiliser' },
+  nickel_sulfate:     { label: 'Nickel Sulfate (EV grade)', value: 3.9,   unit: '€/kg',  category: 'battery',     tier: 'spot',       context: 'NMC high-Ni cathode precursor' },
   manganese_sulfate:  { label: 'Manganese Sulfate',         value: 0.42,  unit: '€/kg',  category: 'battery',     tier: 'spot',       context: 'LMFP / NMN cathode additive' },
   natural_graphite:   { label: 'Natural Graphite (anode)',  value: 0.85,  unit: '€/kg',  category: 'battery',     tier: 'spot',       context: 'Cell anode — flake graphite (SC/GX)' },
   synthetic_graphite: { label: 'Synthetic Graphite (anode)',value: 2.4,   unit: '€/kg',  category: 'battery',     tier: 'indicative', context: 'High-performance anode, fast-charge' },
-  nmc_cell:           { label: 'NMC Cell (pack level)',     value: 78,    unit: '€/kWh', category: 'battery',     tier: 'indicative', context: 'BEV battery — NMC811/622 chemistry' },
-  lfp_cell:           { label: 'LFP Cell (pack level)',     value: 58,    unit: '€/kWh', category: 'battery',     tier: 'indicative', context: 'BEV/PHEV — LFP/M3P chemistry' },
+  nmc_cell:           { label: 'NMC Cell (pack level)',     value: 82,    unit: '€/kWh', category: 'battery',     tier: 'indicative', context: 'BEV battery — NMC811/622 chemistry' },
+  lfp_cell:           { label: 'LFP Cell (pack level)',     value: 60,    unit: '€/kWh', category: 'battery',     tier: 'indicative', context: 'BEV/PHEV — LFP/M3P chemistry' },
 
   // ── Rare Earths / Magnets ──────────────────────────────────────────────────
-  ndfeb_magnets:      { label: 'NdFeB Magnet (N42)',        value: 75,    unit: '€/kg',  category: 'rare-earth',  tier: 'spot',       context: 'IPM/SPM traction motor, power steering' },
-  ndpr_oxide:         { label: 'NdPr Oxide',                value: 55,    unit: '€/kg',  category: 'rare-earth',  tier: 'spot',       context: 'NdFeB magnet precursor — key price driver' },
-  dysprosium_oxide:   { label: 'Dysprosium Oxide',          value: 280,   unit: '€/kg',  category: 'rare-earth',  tier: 'spot',       context: 'Magnet coercivity booster (high-temp)' },
-  terbium_oxide:      { label: 'Terbium Oxide',             value: 1200,  unit: '€/kg',  category: 'rare-earth',  tier: 'spot',       context: 'Grain boundary diffusion in NdFeB' },
-  smco_magnet:        { label: 'SmCo Magnet (Grade 28)',    value: 95,    unit: '€/kg',  category: 'rare-earth',  tier: 'indicative', context: 'High-temp motor: turbo, exhaust actuator' },
+  ndfeb_magnets:      { label: 'NdFeB Magnet (N42)',        value: 92,    unit: '€/kg',  category: 'rare-earth',  tier: 'spot',       context: 'IPM/SPM traction motor, power steering' },
+  ndpr_oxide:         { label: 'NdPr Oxide',                value: 79,    unit: '€/kg',  category: 'rare-earth',  tier: 'spot',       context: 'NdFeB magnet precursor — key price driver' },
+  dysprosium_oxide:   { label: 'Dysprosium Oxide',          value: 275,   unit: '€/kg',  category: 'rare-earth',  tier: 'spot',       context: 'Magnet coercivity booster (high-temp)' },
+  terbium_oxide:      { label: 'Terbium Oxide',             value: 1250,  unit: '€/kg',  category: 'rare-earth',  tier: 'spot',       context: 'Grain boundary diffusion in NdFeB' },
+  smco_magnet:        { label: 'SmCo Magnet (Grade 28)',    value: 98,    unit: '€/kg',  category: 'rare-earth',  tier: 'indicative', context: 'High-temp motor: turbo, exhaust actuator' },
 
   // ── EDU / Motor Components ─────────────────────────────────────────────────
-  copper_wire_enamel: { label: 'Enamelled Copper Wire',     value: 10.2,  unit: '€/kg',  category: 'edu',         tier: 'spot',       context: 'Stator winding — round wire' },
-  hairpin_copper:     { label: 'Hairpin Copper Profile',    value: 11.8,  unit: '€/kg',  category: 'edu',         tier: 'indicative', context: 'Hairpin stator winding (I-pin, U-pin)' },
-  si_steel_lam:       { label: 'Si Steel Lamination (stamped)', value: 3.2, unit: '€/kg', category: 'edu',        tier: 'indicative', context: 'Punched & stacked rotor/stator lamination' },
-  al_rotor_cast:      { label: 'Al Rotor Cast (IM)',        value: 4.8,   unit: '€/kg',  category: 'edu',         tier: 'indicative', context: 'Induction motor squirrel-cage rotor' },
+  copper_wire_enamel: { label: 'Enamelled Copper Wire',     value: 13.2,  unit: '€/kg',  category: 'edu',         tier: 'spot',       context: 'Stator winding — round wire' },
+  hairpin_copper:     { label: 'Hairpin Copper Profile',    value: 14.5,  unit: '€/kg',  category: 'edu',         tier: 'indicative', context: 'Hairpin stator winding (I-pin, U-pin)' },
+  si_steel_lam:       { label: 'Si Steel Lamination (stamped)', value: 3.4, unit: '€/kg', category: 'edu',        tier: 'indicative', context: 'Punched & stacked rotor/stator lamination' },
+  al_rotor_cast:      { label: 'Al Rotor Cast (IM)',        value: 5.1,   unit: '€/kg',  category: 'edu',         tier: 'indicative', context: 'Induction motor squirrel-cage rotor' },
 
   // ── Inverter / Power Electronics ───────────────────────────────────────────
   sic_module:         { label: 'SiC Power Module (1200V)',  value: 2.2,   unit: '€/kW',  category: 'inverter',    tier: 'spot',       context: 'Main traction inverter — full-bridge' },
@@ -3718,7 +3735,9 @@ const COMMODITY_BASELINE = {
 };
 
 const priceCache = {
-  lastRefresh: null,
+  // Vintage of the seed values above. A successful live refresh overrides this
+  // with the real fetch time; loading newer DB-persisted prices does too.
+  lastRefresh: Date.parse('2026-07-01T12:00:00Z'),
   data: Object.fromEntries(
     Object.entries(COMMODITY_BASELINE).map(([k, v]) => [k, { ...v }])
   ),
