@@ -627,6 +627,38 @@ html[data-theme="light"] .chip{color:var(--blue2)}
 .play-btn svg{width:24px;height:24px;fill:#fff;margin-left:3px}
 .video-thumb p{font-size:12px;color:var(--t2);position:relative;z-index:1}
 .video-thumb h4{font-size:15px;font-weight:700;color:var(--t1);position:relative;z-index:1}
+/* Embedded video player */
+.video-embed-wrap{position:relative;width:100%;padding-bottom:56.25%;background:#000;overflow:hidden}
+.video-embed-wrap iframe,.video-embed-wrap video{position:absolute;top:0;left:0;width:100%;height:100%;border:none}
+/* URL modal */
+.vurl-overlay{
+  display:none;position:fixed;inset:0;z-index:9999;
+  background:rgba(0,0,0,0.72);backdrop-filter:blur(4px);
+  align-items:center;justify-content:center;
+}
+.vurl-overlay.open{display:flex}
+.vurl-modal{
+  background:var(--bg1);border:1px solid var(--bd2);border-radius:16px;
+  padding:28px 28px 24px;width:100%;max-width:520px;box-shadow:0 24px 80px rgba(0,0,0,0.6);
+}
+.vurl-modal h3{font-size:15px;font-weight:800;color:var(--t1);margin-bottom:6px}
+.vurl-modal p{font-size:12px;color:var(--t3);margin-bottom:18px;line-height:1.5}
+.vurl-input{
+  width:100%;background:var(--input-bg);border:1px solid var(--bd2);
+  color:var(--t1);border-radius:10px;padding:10px 14px;font-size:13px;
+  outline:none;margin-bottom:8px;
+  transition:border-color .18s,box-shadow .18s;
+}
+.vurl-input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(59,130,246,0.15)}
+.vurl-hints{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:18px}
+.vurl-hint{font-size:10px;padding:3px 9px;border-radius:12px;background:var(--feat-bg);border:1px solid var(--bd);color:var(--t3);cursor:default}
+.vurl-actions{display:flex;gap:10px;justify-content:flex-end}
+.vurl-btn-cancel{background:var(--feat-bg);border:1px solid var(--bd);color:var(--t2);padding:8px 18px;border-radius:8px;cursor:pointer;font-size:12px;font-weight:600;transition:all .15s}
+.vurl-btn-cancel:hover{border-color:var(--bd2);color:var(--t1)}
+.vurl-btn-save{background:linear-gradient(135deg,var(--blue),var(--purple));border:none;color:#fff;padding:8px 22px;border-radius:8px;cursor:pointer;font-size:12px;font-weight:700;box-shadow:var(--shadow-btn);transition:all .15s}
+.vurl-btn-save:hover{box-shadow:var(--shadow-btn-h);transform:translateY(-1px)}
+.vset-btn{background:var(--feat-bg);border:1px solid var(--feat-hover-border);color:var(--blue2);padding:4px 12px;border-radius:20px;font-size:10px;font-weight:700;cursor:pointer;transition:all .15s;letter-spacing:.2px}
+.vset-btn:hover{background:var(--feat-hover)}
 .video-chapters{padding:16px 20px;display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .vc-item{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;background:var(--feat-bg);border:1px solid var(--bd);cursor:pointer;transition:border-color .15s,background .15s}
 .vc-item:hover{border-color:var(--blue);background:var(--feat-hover)}
@@ -1034,19 +1066,13 @@ html[data-theme="light"] .chip{color:var(--blue2)}
           <div class="video-guide">
             <div class="video-guide-hdr">
               <div style="width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--blue),var(--purple));display:flex;align-items:center;justify-content:center;font-size:16px">▶</div>
-              <div>
+              <div style="flex:1">
                 <h3>Full Walkthrough — Video Guide</h3>
                 <span>12 chapters · 18 minutes · Professional onboarding</span>
               </div>
+              <button class="vset-btn" id="vguideSetBtn" onclick="openVideoModal()">⚙ Set Video URL</button>
             </div>
-            <div class="video-thumb">
-              <h4>360° Speaker Should-Cost Engine</h4>
-              <p style="font-size:11px;margin-bottom:16px">Complete tool walkthrough — from configuration to AI insights and PPT export</p>
-              <div class="play-btn" title="Play demo">
-                <svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg>
-              </div>
-              <p style="margin-top:14px;font-size:11px;color:var(--t3)">Hosted internally — contact <strong style="color:var(--blue2)">Avinash Bhosale</strong> for access link</p>
-            </div>
+            <div id="vguidePlayer"><!-- rendered by initVideoPlayer() --></div>
             <div class="video-chapters">
               <div class="vc-item"><span class="vc-time">00:00</span><span class="vc-label">Tool overview &amp; purpose</span></div>
               <div class="vc-item"><span class="vc-time">01:20</span><span class="vc-label">Selecting country &amp; volume</span></div>
@@ -2454,6 +2480,7 @@ function showTab(id) {
     if (id === 'compare') renderScenarioCompare();
   }
   if (id === 'trends') renderTrendsTab();
+  if (id === 'about')  initVideoPlayer();
 }
 
 // ─── About sub-tab helper ─────────────────────────────────────────────────────
@@ -3889,5 +3916,112 @@ function toggleTheme() {
     <p id="settingsSavedMsg" style="display:none;text-align:center;margin-top:12px;font-size:12px;color:var(--green2);font-weight:600">✓ Settings saved — AI Insights now powered by Claude</p>
   </div>
 </div>
+
+<!-- ── Video URL modal ─────────────────────────────────────────────────────── -->
+<div class="vurl-overlay" id="vurlOverlay" onclick="if(event.target===this)closeVideoModal()">
+  <div class="vurl-modal">
+    <h3>Set Video Guide URL</h3>
+    <p>Paste a YouTube link, Vimeo link, or direct video file URL (.mp4, .webm). The URL is saved locally in your browser and never sent anywhere.</p>
+    <input class="vurl-input" id="vurlInput" type="url" placeholder="https://www.youtube.com/watch?v=… or https://vimeo.com/… or https://…/video.mp4" autocomplete="off" spellcheck="false">
+    <div class="vurl-hints">
+      <span class="vurl-hint">✓ YouTube</span>
+      <span class="vurl-hint">✓ YouTube Shorts</span>
+      <span class="vurl-hint">✓ Vimeo</span>
+      <span class="vurl-hint">✓ MP4 / WebM direct URL</span>
+      <span class="vurl-hint">✓ Google Drive (embed link)</span>
+      <span class="vurl-hint">✓ SharePoint / Teams</span>
+    </div>
+    <div class="vurl-actions">
+      <button class="vurl-btn-cancel" onclick="closeVideoModal()">Cancel</button>
+      <button class="vurl-btn-cancel" onclick="clearVideoUrl()" style="color:var(--red);border-color:rgba(239,68,68,0.3)">Remove video</button>
+      <button class="vurl-btn-save" onclick="saveVideoUrl()">Save &amp; Play</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── Video Guide Player ───────────────────────────────────────────────────────
+var VIDEO_KEY = 'sce_video_url';
+
+function _parseVideoUrl(url) {
+  // YouTube full: watch?v=ID or youtu.be/ID or youtube.com/shorts/ID or /embed/ID
+  var yt = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([A-Za-z0-9_-]{11})/);
+  if (yt) return { type: 'iframe', src: 'https://www.youtube.com/embed/' + yt[1] + '?autoplay=1&rel=0' };
+  // Vimeo
+  var vi = url.match(/vimeo\.com\/(?:video\/)?(\d+)/);
+  if (vi) return { type: 'iframe', src: 'https://player.vimeo.com/video/' + vi[1] + '?autoplay=1' };
+  // Direct video file
+  if (/\.(mp4|webm|ogg|mov)(\?|$)/i.test(url)) return { type: 'video', src: url };
+  // Anything else (Google Drive embed, SharePoint, Teams, etc.) — try as iframe
+  if (url.startsWith('http')) return { type: 'iframe', src: url };
+  return null;
+}
+
+function initVideoPlayer() {
+  var wrap = document.getElementById('vguidePlayer');
+  var btn  = document.getElementById('vguideSetBtn');
+  if (!wrap) return;
+  var url = localStorage.getItem(VIDEO_KEY) || '';
+  if (!url) {
+    wrap.innerHTML =
+      '<div class="video-thumb">' +
+        '<h4 style="position:relative;z-index:1">360° Speaker Should-Cost Engine</h4>' +
+        '<p style="font-size:11px;margin-bottom:16px;position:relative;z-index:1">Complete tool walkthrough — from configuration to AI insights and PPT export</p>' +
+        '<div class="play-btn" onclick="openVideoModal()" title="Set video URL to play">' +
+          '<svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21" fill="#fff"/></svg>' +
+        '</div>' +
+        '<p style="margin-top:14px;font-size:11px;color:var(--t3);position:relative;z-index:1">Click ▶ or <button class="vset-btn" onclick="openVideoModal()" style="margin-left:4px">Set Video URL</button> to add your walkthrough video</p>' +
+      '</div>';
+    if (btn) btn.textContent = '⚙ Set Video URL';
+    return;
+  }
+  var parsed = _parseVideoUrl(url);
+  if (!parsed) {
+    wrap.innerHTML = '<div style="padding:20px;text-align:center;color:var(--red);font-size:12px">Could not parse video URL. <button class="vset-btn" onclick="openVideoModal()">Try a different URL</button></div>';
+    return;
+  }
+  if (btn) btn.textContent = '✎ Change Video';
+  if (parsed.type === 'iframe') {
+    wrap.innerHTML = '<div class="video-embed-wrap"><iframe src="' + parsed.src + '" allowfullscreen allow="autoplay; encrypted-media; picture-in-picture"></iframe></div>';
+  } else {
+    wrap.innerHTML = '<div class="video-embed-wrap"><video src="' + parsed.src + '" controls autoplay style="background:#000"></video></div>';
+  }
+}
+
+function openVideoModal() {
+  var inp = document.getElementById('vurlInput');
+  if (inp) inp.value = localStorage.getItem(VIDEO_KEY) || '';
+  document.getElementById('vurlOverlay').classList.add('open');
+  setTimeout(function(){ if(inp) inp.focus(); }, 80);
+}
+
+function closeVideoModal() {
+  document.getElementById('vurlOverlay').classList.remove('open');
+}
+
+function saveVideoUrl() {
+  var url = (document.getElementById('vurlInput').value || '').trim();
+  if (!url) { clearVideoUrl(); return; }
+  localStorage.setItem(VIDEO_KEY, url);
+  closeVideoModal();
+  initVideoPlayer();
+}
+
+function clearVideoUrl() {
+  localStorage.removeItem(VIDEO_KEY);
+  closeVideoModal();
+  initVideoPlayer();
+}
+
+// Keyboard: Escape closes modal, Enter saves
+document.addEventListener('keydown', function(e) {
+  if (!document.getElementById('vurlOverlay').classList.contains('open')) return;
+  if (e.key === 'Escape') closeVideoModal();
+  if (e.key === 'Enter') saveVideoUrl();
+});
+
+// Init on first load (in case About tab is already visible)
+initVideoPlayer();
+</script>
 </body>
 </html>
