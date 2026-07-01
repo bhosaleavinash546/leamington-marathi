@@ -108,6 +108,43 @@ html[data-theme="light"]{
 }
 
 /* ════════════════════════════════════════════════════════════════
+   MOTION KEYFRAMES & ANIMATION UTILITIES
+════════════════════════════════════════════════════════════════ */
+@keyframes neon-pop{
+  0%{box-shadow:var(--shadow-btn)}
+  35%{box-shadow:0 0 0 4px rgba(0,230,118,0.22),0 0 48px rgba(0,230,118,0.78)}
+  100%{box-shadow:var(--shadow-btn)}
+}
+@keyframes neon-scan{
+  0%{background-position:-200% center}
+  100%{background-position:200% center}
+}
+@keyframes float-chip{
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(-3px)}
+}
+@keyframes tab-indicator-slide{
+  from{transform:scaleX(0)}to{transform:scaleX(1)}
+}
+@keyframes result-flash{
+  0%{background:rgba(0,230,118,0.14)}
+  100%{background:transparent}
+}
+.metric-cell,.card,.tab-panel,.tab-btn,.preset-btn{will-change:transform,opacity}
+.calc-btn.neon-pop{animation:neon-pop 0.75s cubic-bezier(0.16,1,0.3,1) forwards}
+.brand-sub .chip{animation:float-chip 3.5s ease-in-out infinite}
+.brand-sub .chip:nth-child(2){animation-delay:.4s}
+.brand-sub .chip:nth-child(3){animation-delay:.8s}
+/* Shimmer on calc button when idle */
+.calc-btn::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(105deg,transparent 40%,rgba(255,255,255,0.10) 50%,transparent 60%);
+  background-size:200% 100%;
+  animation:neon-scan 3.5s linear infinite;
+  border-radius:inherit;pointer-events:none;
+}
+
+/* ════════════════════════════════════════════════════════════════
    RESET & BASE
 ════════════════════════════════════════════════════════════════ */
 *{box-sizing:border-box;margin:0;padding:0}
@@ -2457,44 +2494,68 @@ function countUp(el, target, prefix, suffix, decimals, duration) {
 
 // ─── Tab helper ───────────────────────────────────────────────────────────────
 function showTab(id) {
+  var M = window.Motion;
   document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
   document.querySelectorAll('.tab-panel').forEach(function(p) { p.style.display = 'none'; });
   var btn = document.querySelector('[data-tab="' + id + '"]');
-  if (btn) btn.classList.add('active');
+  if (btn) {
+    btn.classList.add('active');
+    if (M) M.animate(btn, {scale:[0.92,1]}, {duration:0.28, easing:[0.34,1.56,0.64,1]});
+  }
   var panel = document.getElementById('panel-' + id);
   if (panel) {
     panel.style.display = 'block';
-    panel.style.opacity = '0';
-    requestAnimationFrame(function() {
-      panel.style.transition = 'opacity 0.3s ease';
-      panel.style.opacity = '1';
-    });
+    if (M) {
+      M.animate(panel, {opacity:[0,1], y:[10,0]}, {duration:0.38, easing:[0.16,1,0.3,1]});
+    } else {
+      panel.style.opacity = '0';
+      requestAnimationFrame(function() {
+        panel.style.transition = 'opacity 0.3s ease';
+        panel.style.opacity = '1';
+      });
+    }
   }
   if (_lastResult) {
-    if (id === 'overview') renderOverview(_lastResult);
-    if (id === 'bom')      renderFullBOM(_lastResult);
-    if (id === 'sustain')  renderSustainability(_lastResult);
-    if (id === 'bench')    renderBenchmarking(_lastResult);
-    if (id === 'process')  renderProcess(_lastResult);
-    if (id === 'physics')  renderPhysicsTab(_lastResult);
-    if (id === 'ai')       renderAIInsights(_lastResult);
-    if (id === 'compare') renderScenarioCompare();
+    if (id === 'overview') { renderOverview(_lastResult);  animateTabContent('panel-overview'); }
+    if (id === 'bom')      { renderFullBOM(_lastResult);   animateTabContent('panel-bom'); }
+    if (id === 'sustain')  { renderSustainability(_lastResult); animateTabContent('panel-sustain'); }
+    if (id === 'bench')    { renderBenchmarking(_lastResult);   animateTabContent('panel-bench'); }
+    if (id === 'process')  { renderProcess(_lastResult);   animateTabContent('panel-process'); }
+    if (id === 'physics')  { renderPhysicsTab(_lastResult); animateTabContent('panel-physics'); }
+    if (id === 'ai')       { renderAIInsights(_lastResult); }
+    if (id === 'compare')  { renderScenarioCompare();       animateTabContent('panel-compare'); }
   }
   if (id === 'trends') renderTrendsTab();
-  if (id === 'about')  initVideoPlayer();
+  if (id === 'about')  { initVideoPlayer(); animateTabContent('panel-about'); }
 }
 
 // ─── About sub-tab helper ─────────────────────────────────────────────────────
 function showAbout(id, btn) {
+  var M = window.Motion;
   document.querySelectorAll('.about-section').forEach(function(s){ s.classList.remove('avis'); });
   document.querySelectorAll('.about-nav-btn').forEach(function(b){ b.classList.remove('aact'); });
   var sec = document.getElementById('about-' + id);
-  if (sec) sec.classList.add('avis');
-  if (btn) btn.classList.add('aact');
+  if (sec) {
+    sec.classList.add('avis');
+    if (M) {
+      var children = sec.querySelectorAll('.step-card, .grade-card, .card, table tr');
+      var targets = children.length ? children : [sec];
+      M.animate(targets, {opacity:[0,1], y:[14,0]}, {
+        delay: M.stagger(0.04, {start:0.04}),
+        duration: 0.36,
+        easing: [0.16,1,0.3,1]
+      });
+    }
+  }
+  if (btn) {
+    btn.classList.add('aact');
+    if (M) M.animate(btn, {scale:[0.93,1]}, {duration:0.22, easing:[0.34,1.56,0.64,1]});
+  }
 }
 
 // ─── renderMetrics ────────────────────────────────────────────────────────────
 function renderMetrics(r) {
+  var M = window.Motion;
   var metricsRow = document.getElementById('metricsRow');
   if (metricsRow) metricsRow.style.display = 'flex';
 
@@ -2506,15 +2567,24 @@ function renderMetrics(r) {
   countUp(document.querySelector('#m-co2 .val'),      r.totalSpkCO2,     '',  ' kg', 2, 850);
   countUp(document.querySelector('#m-margin .val'),   r.margin * FX_GBP, '£', '', 2, 700);
 
-  document.querySelectorAll('.metric-cell').forEach(function(card, i) {
-    card.style.opacity = '0';
-    card.style.transform = 'translateY(20px)';
-    setTimeout(function() {
-      card.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
-      card.style.opacity = '1';
-      card.style.transform = 'translateY(0)';
-    }, i * 80);
-  });
+  var cells = document.querySelectorAll('.metric-cell');
+  if (M) {
+    M.animate(cells, {opacity:[0,1], y:[24,0], scale:[0.88,1]}, {
+      delay: M.stagger(0.09),
+      duration: 0.55,
+      easing: [0.34,1.56,0.64,1]
+    });
+  } else {
+    cells.forEach(function(card, i) {
+      card.style.opacity = '0';
+      card.style.transform = 'translateY(24px) scale(0.88)';
+      setTimeout(function() {
+        card.style.transition = 'opacity 0.45s ease, transform 0.45s ease';
+        card.style.opacity = '1';
+        card.style.transform = 'translateY(0) scale(1)';
+      }, i * 90);
+    });
+  }
 }
 
 // ─── renderOverview ───────────────────────────────────────────────────────────
@@ -3288,6 +3358,7 @@ function gv(id, def) {
 }
 
 function calculate() {
+  animateCalcBtn();
   var sustainMode = gv('sustainMode', 'standard');
 
   // Apply sustainMode overrides to material selections
@@ -3348,13 +3419,14 @@ function calculate() {
     var activeTab = document.querySelector('.tab-btn.active');
     var activeId = activeTab ? activeTab.getAttribute('data-tab') : 'overview';
 
-    if (activeId === 'overview') renderOverview(r);
-    if (activeId === 'bom')      renderFullBOM(r);
-    if (activeId === 'sustain')  renderSustainability(r);
-    if (activeId === 'bench')    renderBenchmarking(r);
-    if (activeId === 'process')  renderProcess(r);
-    if (activeId === 'physics')  renderPhysicsTab(r);
-    if (activeId === 'ai')       renderAIInsights(r);
+    if (activeId === 'overview') { renderOverview(r);       animateTabContent('panel-overview'); }
+    if (activeId === 'bom')      { renderFullBOM(r);        animateTabContent('panel-bom'); }
+    if (activeId === 'sustain')  { renderSustainability(r); animateTabContent('panel-sustain'); }
+    if (activeId === 'bench')    { renderBenchmarking(r);   animateTabContent('panel-bench'); }
+    if (activeId === 'process')  { renderProcess(r);        animateTabContent('panel-process'); }
+    if (activeId === 'physics')  { renderPhysicsTab(r);     animateTabContent('panel-physics'); }
+    if (activeId === 'ai')       { renderAIInsights(r); }
+    animateCalcComplete();
 
   } catch(e) {
     console.error('Calculation error:', e);
@@ -3418,56 +3490,129 @@ function applyPreset(name) {
     });
   });
 
-  // Flash active preset button
-  document.querySelectorAll('.preset-btn').forEach(function(b) { b.style.background = ''; });
+  // Flash active preset button with Motion spring
+  var M = window.Motion;
+  document.querySelectorAll('.preset-btn').forEach(function(b) { b.style.background = ''; b.style.color = ''; });
   var btn = document.querySelector('.preset-btn[onclick*="' + name + '"]');
   if (btn) {
+    if (M) M.animate(btn, {scale:[1,0.90,1.07,1]}, {duration:0.48, easing:[0.34,1.56,0.64,1]});
     btn.style.background = 'linear-gradient(135deg,var(--blue),var(--purple))';
-    btn.style.color = '#fff';
+    btn.style.color = '#000';
     setTimeout(function() { btn.style.background = ''; btn.style.color = ''; }, 1400);
   }
 
   calculate();
 }
 
+// ─── Animation helpers ────────────────────────────────────────────────────────
+function animateCalcBtn() {
+  var M = window.Motion, btn = document.getElementById('calcBtn');
+  if (btn && M) M.animate(btn, {scale:[1,0.93,1.04,1]}, {duration:0.42, easing:[0.16,1,0.3,1]});
+}
+
+function animateCalcComplete() {
+  var M = window.Motion, btn = document.getElementById('calcBtn');
+  if (!btn) return;
+  if (M) {
+    M.animate(btn, {
+      boxShadow:['0 4px 16px rgba(0,230,118,0.38)','0 0 48px rgba(0,230,118,0.82)','0 4px 16px rgba(0,230,118,0.38)']
+    }, {duration:0.80, easing:[0.16,1,0.3,1]});
+  } else {
+    btn.classList.add('neon-pop');
+    setTimeout(function(){ btn.classList.remove('neon-pop'); }, 750);
+  }
+}
+
+function animateTabContent(panelId) {
+  var M = window.Motion;
+  if (!M) return;
+  var panel = document.getElementById(panelId);
+  if (!panel) return;
+  setTimeout(function() {
+    var els = panel.querySelectorAll('.card, .scard, .step-card, .grade-card, .bom-table tbody tr, .chart-card');
+    if (els.length) {
+      M.animate(els, {opacity:[0,1], y:[10,0]}, {
+        delay: M.stagger(0.025, {start:0.05}),
+        duration: 0.34,
+        easing: [0.16,1,0.3,1]
+      });
+    }
+  }, 55);
+}
+
 // ─── initAnimations ───────────────────────────────────────────────────────────
 function initAnimations() {
-  var header = document.querySelector('.brand-title');
-  if (header) {
-    header.style.opacity = '0';
-    header.style.transform = 'translateY(-16px)';
-    setTimeout(function() {
-      header.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
-      header.style.opacity = '1';
-      header.style.transform = 'translateY(0)';
-    }, 100);
+  var M = window.Motion;
+
+  // ── Header entrance (title → chips → action buttons) ──
+  var hdrEls = [
+    document.querySelector('.brand-title'),
+    document.querySelector('.brand-sub'),
+    document.querySelector('.hbtns')
+  ].filter(Boolean);
+
+  if (M && hdrEls.length) {
+    M.animate(hdrEls, {opacity:[0,1], y:[-18,0]}, {
+      delay: M.stagger(0.12, {start:0.05}),
+      duration: 0.65,
+      easing: [0.16,1,0.3,1]
+    });
+  } else {
+    hdrEls.forEach(function(el,i){
+      el.style.opacity='0'; el.style.transform='translateY(-18px)';
+      setTimeout(function(){ el.style.transition='opacity 0.6s ease,transform 0.6s ease'; el.style.opacity='1'; el.style.transform='translateY(0)'; }, 50+i*120);
+    });
   }
 
-  document.querySelectorAll('.preset-btn').forEach(function(btn, i) {
-    btn.style.opacity = '0';
-    btn.style.transform = 'scale(0.88)';
-    setTimeout(function() {
-      btn.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
-      btn.style.opacity = '1';
-      btn.style.transform = 'scale(1)';
-    }, 200 + i * 60);
-  });
+  // ── Config groups slide in from left ──
+  var groups = document.querySelectorAll('.config-group, .form-section');
+  if (M && groups.length) {
+    M.animate(groups, {opacity:[0,1], x:[-16,0]}, {
+      delay: M.stagger(0.045, {start:0.20}),
+      duration: 0.45,
+      easing: [0.16,1,0.3,1]
+    });
+  } else {
+    groups.forEach(function(g,i){
+      g.style.opacity='0'; g.style.transform='translateX(-16px)';
+      setTimeout(function(){ g.style.transition='opacity 0.4s ease,transform 0.4s ease'; g.style.opacity='1'; g.style.transform='translateX(0)'; }, 200+i*45);
+    });
+  }
 
-  document.querySelectorAll('.config-group, .form-section').forEach(function(g, i) {
-    g.style.opacity = '0';
-    g.style.transform = 'translateX(-12px)';
-    setTimeout(function() {
-      g.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
-      g.style.opacity = '1';
-      g.style.transform = 'translateX(0)';
-    }, 150 + i * 50);
-  });
+  // ── Preset buttons spring in with overshoot ──
+  var presets = document.querySelectorAll('.preset-btn');
+  if (M && presets.length) {
+    M.animate(presets, {opacity:[0,1], scale:[0.80,1], y:[6,0]}, {
+      delay: M.stagger(0.065, {start:0.32}),
+      duration: 0.45,
+      easing: [0.34,1.56,0.64,1]
+    });
+  } else {
+    presets.forEach(function(b,i){
+      b.style.opacity='0'; b.style.transform='scale(0.80)';
+      setTimeout(function(){ b.style.transition='opacity 0.35s ease,transform 0.35s ease'; b.style.opacity='1'; b.style.transform='scale(1)'; }, 320+i*65);
+    });
+  }
 
-  if (window.Motion && window.Motion.inView) {
+  // ── Calc button springs in last ──
+  var calcBtn = document.getElementById('calcBtn');
+  if (calcBtn) {
+    if (M) {
+      M.animate(calcBtn, {opacity:[0,1], scale:[0.86,1]}, {
+        delay: 0.56, duration: 0.52, easing: [0.34,1.56,0.64,1]
+      });
+    } else {
+      calcBtn.style.opacity='0'; calcBtn.style.transform='scale(0.86)';
+      setTimeout(function(){ calcBtn.style.transition='opacity 0.45s ease,transform 0.45s ease'; calcBtn.style.opacity='1'; calcBtn.style.transform='scale(1)'; }, 560);
+    }
+  }
+
+  // ── inView scroll reveal for static cards ──
+  if (M && M.inView) {
     document.querySelectorAll('.card').forEach(function(card) {
-      window.Motion.inView(card, function() {
-        window.Motion.animate(card, {opacity:[0,1],y:[12,0]}, {duration:0.4,easing:[0.16,1,0.3,1]});
-      }, {amount:0.2});
+      M.inView(card, function() {
+        M.animate(card, {opacity:[0,1], y:[14,0]}, {duration:0.4, easing:[0.16,1,0.3,1]});
+      }, {amount:0.15});
     });
   }
 }
