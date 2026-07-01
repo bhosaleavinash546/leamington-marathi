@@ -3973,25 +3973,21 @@ var _trendsCache = null;
 var _commodityCache = null;
 var _commodityCacheTime = 0;
 
-// Audio + automotive tech RSS feeds — all verified to work with rss2json
 var TREND_FEEDS = [
-  {name:'What Hi-Fi',     url:'https://www.whathifi.com/rss',              region:'Global'},
   {name:'Electrek',       url:'https://electrek.co/feed/',                  region:'Global'},
   {name:'InsideEVs',      url:'https://insideevs.com/feed/latest/',         region:'Global'},
+  {name:'The Verge',      url:'https://www.theverge.com/rss/index.xml',    region:'Global'},
   {name:'Car News China', url:'https://carnewschina.com/feed/',             region:'China'},
   {name:'CNEVPost',       url:'https://cnevpost.com/feed/',                 region:'China'}
 ];
 
-// Broad audio keywords — single words catch 'car audio', 'audio system' etc.
-// No standalone car brand names (zeekr, li auto) that would match delivery articles
 var AUDIO_KEYWORDS = [
   'audio','speaker','acoustic','stereo','hi-fi','hifi','subwoofer','tweeter','woofer','amplifier',
   'harman','bose','meridian','burmester','dolby','sennheiser',
-  'bang olufsen','bowers wilkins','spatial audio','surround sound',
-  'sound system','noise cancell','premium sound','infotainment'
+  'spatial audio','surround sound','sound system','noise cancell','premium sound','infotainment'
 ];
 
-var _SIX_MONTHS_MS = 180 * 24 * 3600 * 1000;
+var _TWELVE_MONTHS_MS = 365 * 24 * 3600 * 1000;
 
 function audioScore(title, body) {
   var t = (title||'').toLowerCase(), b = (body||'').toLowerCase(), s = 0;
@@ -4007,71 +4003,93 @@ function isAudioRelevant(title, body) {
 }
 
 function parseRSSXML(xml, feed) {
-  var doc = new DOMParser().parseFromString(xml, 'text/xml');
-  var els = Array.from(doc.querySelectorAll('item, entry'));
-  var cutoff = Date.now() - _SIX_MONTHS_MS;
-  var results = [];
-  els.forEach(function(el) {
-    var title = (el.querySelector('title')||{textContent:''}).textContent.replace(/<!\[CDATA\[|\]\]>/g,'').trim();
-    var linkEl = el.querySelector('link');
-    var link = linkEl ? (linkEl.getAttribute('href')||linkEl.textContent||'').trim() : '';
-    if (!link) { var g = el.querySelector('guid'); if (g) link = g.textContent.trim(); }
-    var dateStr = '';
-    ['pubDate','published','updated'].forEach(function(t){ if (!dateStr){ var n=el.querySelector(t); if(n) dateStr=n.textContent.trim(); }});
-    var dateObj = dateStr ? new Date(dateStr) : new Date(0);
-    if (isNaN(dateObj.getTime()) || dateObj.getTime() < cutoff) return;
-    var bodyEl = el.querySelector('description')||el.querySelector('summary')||el.querySelector('content');
-    var body = bodyEl ? bodyEl.textContent.replace(/<!\[CDATA\[|\]\]>/g,'').replace(/<[^>]+>/g,'').trim() : '';
-    if (!isAudioRelevant(title, body)) return;
-    results.push({
-      title: title, link: link.trim(),
-      date: dateObj.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}),
-      dateObj: dateObj, summary: body.slice(0,220),
-      source: feed.name, region: feed.region, score: audioScore(title, body)
+  try {
+    var doc = new DOMParser().parseFromString(xml, 'text/xml');
+    var els = Array.from(doc.querySelectorAll('item, entry'));
+    var cutoff = Date.now() - _TWELVE_MONTHS_MS;
+    var results = [];
+    els.forEach(function(el) {
+      var title = (el.querySelector('title')||{textContent:''}).textContent.replace(/<!\[CDATA\[|\]\]>/g,'').trim();
+      var linkEl = el.querySelector('link');
+      var link = linkEl ? (linkEl.getAttribute('href')||linkEl.textContent||'').trim() : '';
+      if (!link) { var g = el.querySelector('guid'); if (g) link = g.textContent.trim(); }
+      var dateStr = '';
+      ['pubDate','published','updated'].forEach(function(tag){ if (!dateStr){ var n=el.querySelector(tag); if(n) dateStr=n.textContent.trim(); }});
+      var dateObj = dateStr ? new Date(dateStr) : new Date(0);
+      if (isNaN(dateObj.getTime()) || dateObj.getTime() < cutoff) return;
+      var bodyEl = el.querySelector('description')||el.querySelector('summary')||el.querySelector('content');
+      var body = bodyEl ? bodyEl.textContent.replace(/<!\[CDATA\[|\]\]>/g,'').replace(/<[^>]+>/g,'').trim() : '';
+      if (!isAudioRelevant(title, body)) return;
+      results.push({
+        title: title, link: link.trim(),
+        date: dateObj.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}),
+        dateObj: dateObj, summary: body.slice(0,220),
+        source: feed.name, region: feed.region, score: audioScore(title, body)
+      });
     });
-  });
-  return results;
+    return results;
+  } catch(e) { return []; }
 }
 
+// Fetch one feed: try rss2json → corsproxy+DOMParser → allorigins+DOMParser
 function fetchRSSFeed(feed) {
-  // Primary: rss2json (fast, no XML parsing, works well with these feeds)
-  var rss2jsonUrl = 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(feed.url) + '&count=30';
-  var cutoff = Date.now() - _SIX_MONTHS_MS;
+  var cutoff = Date.now() - _TWELVE_MONTHS_MS;
 
-  return fetch(rss2jsonUrl)
-    .then(function(r){ return r.json(); })
-    .then(function(data){
-      if (!data.items || data.status === 'error') throw new Error('rss2json failed');
-      var items = data.items.filter(function(item){
-        var dateObj = item.pubDate ? new Date(item.pubDate) : new Date(0);
-        var title = item.title||'';
-        var body  = (item.description||item.content||'').replace(/<[^>]+>/g,'');
-        return dateObj.getTime() >= cutoff && isAudioRelevant(title, body);
+  function fromRss2json() {
+    return fetch('https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(feed.url) + '&count=30')
+      .then(function(r){ return r.json(); })
+      .then(function(d){
+        if (!d.items || d.items.length === 0 || d.status === 'error') throw new Error('empty');
+        return d.items
+          .filter(function(item){
+            var dObj = new Date(item.pubDate||0);
+            var body = (item.description||item.content||'').replace(/<[^>]+>/g,'');
+            return dObj.getTime() >= cutoff && isAudioRelevant(item.title||'', body);
+          })
+          .slice(0,8)
+          .map(function(item){
+            var body = (item.description||item.content||'').replace(/<[^>]+>/g,'').trim();
+            var dObj = new Date(item.pubDate||0);
+            return {
+              title: item.title||'', link: item.link||'',
+              date: dObj.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}),
+              dateObj: dObj, summary: body.slice(0,220),
+              source: item.author||feed.name, region: feed.region,
+              score: audioScore(item.title||'', body)
+            };
+          });
       });
-      return items.slice(0,8).map(function(item){
-        var title = item.title||'';
-        var body  = (item.description||item.content||'').replace(/<[^>]+>/g,'').trim();
-        var dateObj = new Date(item.pubDate||0);
-        return {
-          title: title, link: item.link||'',
-          date: dateObj.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}),
-          dateObj: dateObj, summary: body.slice(0,220),
-          source: item.author||feed.name, region: feed.region, score: audioScore(title, body)
-        };
-      });
-    })
-    .catch(function(){
-      // Fallback: fetch raw XML via corsproxy and parse with DOMParser
-      return fetch('https://corsproxy.io/?' + encodeURIComponent(feed.url))
-        .then(function(r){ if(!r.ok) throw new Error(r.status); return r.text(); })
-        .then(function(xml){ return parseRSSXML(xml, feed); })
-        .catch(function(){
-          return fetch('https://api.allorigins.win/get?url=' + encodeURIComponent(feed.url))
-            .then(function(r){ return r.json(); })
-            .then(function(d){ return parseRSSXML(d.contents||'', feed); })
-            .catch(function(){ return []; });
-        });
+  }
+
+  function fromProxy(proxyBase) {
+    var url = proxyBase + encodeURIComponent(feed.url);
+    return fetch(url).then(function(r){
+      if (!r.ok) throw new Error(r.status);
+      return r.text();
+    }).then(function(xml){ return parseRSSXML(xml, feed); });
+  }
+
+  function fromAllOrigins() {
+    return fetch('https://api.allorigins.win/get?url=' + encodeURIComponent(feed.url))
+      .then(function(r){ return r.json(); })
+      .then(function(d){ return parseRSSXML(d.contents||'', feed); });
+  }
+
+  return fromRss2json()
+    .catch(function(){ return fromProxy('https://corsproxy.io/?'); })
+    .catch(function(){ return fromAllOrigins(); })
+    .catch(function(){ return []; });
+}
+
+// Fetch feeds ONE BY ONE to avoid rss2json rate-limiting concurrent requests
+function fetchAllFeeds() {
+  return TREND_FEEDS.reduce(function(chain, feed) {
+    return chain.then(function(all) {
+      return fetchRSSFeed(feed).then(function(articles) {
+        return all.concat(articles);
+      }).catch(function(){ return all; });
     });
+  }, Promise.resolve([]));
 }
 
 function fetchCommodityPrices() {
@@ -4175,14 +4193,14 @@ function renderTrendsTab() {
     return;
   }
 
-  cont.innerHTML = '<div style="text-align:center;padding:50px;color:var(--t3)"><span style="font-size:28px;display:block;margin-bottom:12px">⏳</span>Fetching live commodity prices and automotive audio news…</div>';
+  cont.innerHTML = '<div style="text-align:center;padding:50px;color:var(--t3)"><span style="font-size:28px;display:block;margin-bottom:12px">⏳</span>Fetching live commodity prices and automotive audio news…<br><span style="font-size:10px;margin-top:8px;display:block">Loading feeds one by one — may take ~10 seconds</span></div>';
 
   Promise.all([
     fetchCommodityPrices(),
-    Promise.all(TREND_FEEDS.map(fetchRSSFeed))
+    fetchAllFeeds()
   ]).then(function(results) {
     var commodities = results[0];
-    var merged = [].concat.apply([], results[1]);
+    var merged = results[1];
     // Deduplicate by normalised title
     var seen = {};
     var allArticles = merged.filter(function(a){
@@ -4245,10 +4263,27 @@ function buildTrendsHTML(articles, commodities) {
 
   // ── News Feed ────────────────────────────────────────────────────────────
   html += '<div class="section-title">📰 Premium Automotive Audio — Latest News</div>';
-  html += '<p style="font-size:10px;color:var(--t3);margin-bottom:10px">Last 6 months · automotive audio, music systems, acoustic technology, OEM sound. Sources: What Hi-Fi · The Verge · Electrek · InsideEVs · Car News China · CNEVPost. Sorted by relevance, then date. Click any card to open the original article. Cached 24h. <button onclick="_trendsCache=null;_trendsCacheTime=0;renderTrendsTab()" style="font-size:10px;background:none;border:none;color:var(--blue2);cursor:pointer;padding:0 4px;text-decoration:underline">Refresh</button></p>';
+  html += '<p style="font-size:10px;color:var(--t3);margin-bottom:10px">Last 12 months · automotive audio, music systems, acoustic technology, OEM sound. Sources: Electrek · InsideEVs · The Verge · Car News China · CNEVPost. Sorted by relevance. Click any card to open the article. Cached 24h. <button onclick="_trendsCache=null;_trendsCacheTime=0;renderTrendsTab()" style="font-size:10px;background:none;border:none;color:var(--blue2);cursor:pointer;padding:0 4px;text-decoration:underline">Refresh</button></p>';
 
   if (!articles || articles.length === 0) {
-    html += '<div class="card" style="padding:20px;text-align:center"><p style="color:var(--t3)">No audio articles found from the last 6 months in these feeds.<br><span style="font-size:10px">Try clicking Refresh — feeds may have been rate-limited on first load.</span></p></div>';
+    html += '<div class="card" style="padding:20px">';
+    html += '<p style="color:var(--t3);margin-bottom:12px">No audio articles loaded — network or rate-limit issue. Visit these sources directly:</p>';
+    html += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px">';
+    [
+      {name:'Electrek',        url:'https://electrek.co/tag/audio/',               desc:'EV audio tech'},
+      {name:'InsideEVs',       url:'https://insideevs.com/',                        desc:'EV news & features'},
+      {name:'The Verge',       url:'https://www.theverge.com/tech',                desc:'Tech & car audio'},
+      {name:'Car News China',  url:'https://carnewschina.com/',                     desc:'China automotive'},
+      {name:'What Hi-Fi',      url:'https://www.whathifi.com/news',                desc:'Premium audio news'}
+    ].forEach(function(s){
+      html += '<a href="'+s.url+'" target="_blank" rel="noopener" style="display:block;padding:10px 12px;background:var(--feat-bg);border:1px solid var(--bd);border-radius:8px;text-decoration:none;transition:border-color .2s" onmouseover="this.style.borderColor=\'rgba(0,230,118,0.5)\'" onmouseout="this.style.borderColor=\'var(--bd)\'">';
+      html += '<div style="font-size:12px;font-weight:700;color:var(--blue2)">'+s.name+'</div>';
+      html += '<div style="font-size:10px;color:var(--t3);margin-top:2px">'+s.desc+'</div>';
+      html += '</a>';
+    });
+    html += '</div>';
+    html += '<p style="font-size:9px;color:var(--t3);margin-top:10px">Try clicking <strong>Refresh</strong> above — feeds load sequentially and may succeed on retry.</p>';
+    html += '</div>';
   } else {
     articles.forEach(function(item) {
       var regionColor = item.region === 'China' ? 'var(--red)' : 'var(--blue2)';
