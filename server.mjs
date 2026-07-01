@@ -4492,8 +4492,11 @@ app.post('/api/analyze', requireAuth, rateLimit(40, 60 * 60 * 1000), async (req,
           throw new Error('Invalid JSON response from AI. Try with web search disabled to reduce response size.');
         }
         const parsedIdeas = JSON.parse(ideasJson);
+        // Evidence is only "verified" if live retrieval actually returned data.
+        // Otherwise every citation is model-asserted and must be labelled unverified.
+        const searchExecuted = enableSearch && sources.some(s => Array.isArray(s.results) && s.results.length > 0);
         // Critic pass: schema-validate, coerce enums, sanity-band numbers, drop broken ideas.
-        const { ideas, summary: validationSummary } = validateIdeas(parsedIdeas);
+        const { ideas, summary: validationSummary } = validateIdeas(parsedIdeas, { searchExecuted });
         if (ideas.length === 0) throw new Error('No valid ideas could be generated. Please retry.');
         if (validationSummary.dropped > 0 || validationSummary.flagged > 0) {
           console.warn(`[Validation] kept ${validationSummary.kept}/${validationSummary.total}, dropped ${validationSummary.dropped}, flagged ${validationSummary.flagged}, avgQuality ${validationSummary.avgQuality}`);

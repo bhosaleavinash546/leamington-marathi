@@ -88,6 +88,9 @@ export interface CostReductionIdea {
   searchDataUsed?: boolean;
   confidenceLevel?: ConfidenceLevel;
   evidenceSources?: EvidenceSource[];
+  /** false = generated with live retrieval; true/undefined = sources are model-asserted, not independently verified. */
+  evidenceUnverified?: boolean;
+  validationFlags?: string[];
   regulatoryContext?: string;
   materialGrade?: string;
 }

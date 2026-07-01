@@ -427,27 +427,40 @@ function IdeaCard({ idea, index, annotation, onAnnotate, isSelected, onToggleSel
             </div>
           )}
 
-          {idea.evidenceSources && idea.evidenceSources.length > 0 && (
-            <div>
-              <h4 className="text-slate-300 text-xs font-semibold uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                <Link2 size={12} /> Evidence Sources
-              </h4>
-              <div className="flex flex-wrap gap-2">
-                {idea.evidenceSources.map((src, i) => {
-                  const cfg = EVIDENCE_TYPE_CONFIG[src.type] || EVIDENCE_TYPE_CONFIG.web_search;
-                  return (
-                    <div key={i} className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border text-xs ${cfg.bg}`}>
-                      <div className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${EVIDENCE_CONFIDENCE_DOT[src.confidence]}`} title={`${src.confidence} confidence`} />
-                      <div>
-                        <div className={`font-medium ${cfg.color}`}>{src.title}{src.year ? ` (${src.year})` : ''}</div>
-                        <div className="text-slate-500 text-xs">{cfg.label}</div>
+          {idea.evidenceSources && idea.evidenceSources.length > 0 && (() => {
+            // Sources are only "found" evidence if generated with live retrieval;
+            // otherwise they are the model's own recollection and must say so.
+            const unverified = idea.evidenceUnverified !== false;
+            return (
+              <div>
+                <h4 className="text-slate-300 text-xs font-semibold uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                  <Link2 size={12} /> Evidence Sources
+                  {unverified && (
+                    <span className="ml-1 inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-amber-500/10 border border-amber-500/30 text-amber-300 text-[10px] font-medium normal-case tracking-normal" title="These sources are suggested by the AI from its training data, not retrieved or independently verified. Enable web search to corroborate.">
+                      <AlertTriangle size={10} /> AI-suggested · unverified
+                    </span>
+                  )}
+                </h4>
+                <div className="flex flex-wrap gap-2">
+                  {idea.evidenceSources.map((src, i) => {
+                    const cfg = EVIDENCE_TYPE_CONFIG[src.type] || EVIDENCE_TYPE_CONFIG.web_search;
+                    return (
+                      <div key={i} className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border text-xs ${cfg.bg} ${unverified ? 'opacity-80' : ''}`}>
+                        <div className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${EVIDENCE_CONFIDENCE_DOT[src.confidence]}`} title={`${src.confidence} confidence`} />
+                        <div>
+                          <div className={`font-medium ${cfg.color}`}>{src.title}{src.year ? ` (${src.year})` : ''}</div>
+                          <div className="text-slate-500 text-xs">{unverified ? `${cfg.label} · claimed` : cfg.label}</div>
+                        </div>
                       </div>
-                    </div>
-                  );
-                })}
+                    );
+                  })}
+                </div>
+                {unverified && (
+                  <p className="text-slate-500 text-[11px] mt-2">Citations are AI-proposed from training data. Turn on web search when generating to retrieve and corroborate sources.</p>
+                )}
               </div>
-            </div>
-          )}
+            );
+          })()}
 
           <div className="rounded-xl bg-violet-500/5 border border-violet-500/15 p-4">
             <div className="flex items-center justify-between mb-3">

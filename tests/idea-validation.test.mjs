@@ -74,6 +74,26 @@ test('sanitises bad evidence sources and out-of-range years', () => {
   assert.equal(v.evidenceSources[0].year, undefined);
 });
 
+test('caps confidence and marks evidence unverified when search did not run', () => {
+  const v = validateIdea(goodIdea, 0, { searchExecuted: false });
+  assert.equal(v.confidenceLevel, 'estimated');            // benchmarked → estimated
+  assert.equal(v.evidenceUnverified, true);
+  assert.ok(v.evidenceSources.every(s => s.confidence === 'low'));
+  assert.ok(v.validationFlags.includes('confidence-capped-no-search'));
+});
+
+test('preserves confidence and marks verified when live search ran', () => {
+  const v = validateIdea(goodIdea, 0, { searchExecuted: true });
+  assert.equal(v.confidenceLevel, 'benchmarked');
+  assert.equal(v.evidenceUnverified, false);
+});
+
+test('no context leaves confidence untouched (unknown provenance)', () => {
+  const v = validateIdea(goodIdea);
+  assert.equal(v.confidenceLevel, 'benchmarked');
+  assert.equal(v.evidenceUnverified, undefined);
+});
+
 test('normalises the literal string "null" regulatoryContext to null', () => {
   const v = validateIdea({ ...goodIdea, regulatoryContext: 'null' });
   assert.equal(v.regulatoryContext, null);

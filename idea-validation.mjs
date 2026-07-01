@@ -51,7 +51,7 @@ export function parsePercent(v) {
  * Validate & normalise a single idea. Returns the cleaned idea (with
  * `validationFlags` + `qualityScore`) or null if it is too broken to keep.
  */
-export function validateIdea(raw, index = 0) {
+export function validateIdea(raw, index = 0, ctx = {}) {
   if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return null;
   const flags = [];
 
@@ -146,6 +146,23 @@ export function validateIdea(raw, index = 0) {
   idea.qualityScore = Math.max(0, Math.min(100, score));
   idea.validationFlags = flags;
 
+  // ── Evidence trust ───────────────────────────────────────────────────────
+  // Without live retrieval, the model's "verified"/"benchmarked" claims and the
+  // sources it cites are self-asserted from training data and cannot be treated
+  // as corroborated. Cap confidence and mark the evidence unverified so the UI
+  // never dresses an un-retrieved claim as confirmed fact. Only applied when the
+  // caller explicitly reports search did not run (unknown context = unchanged).
+  if (ctx.searchExecuted === false) {
+    idea.evidenceUnverified = true;
+    if (idea.confidenceLevel === 'verified' || idea.confidenceLevel === 'benchmarked') {
+      idea.confidenceLevel = 'estimated';
+      flags.push('confidence-capped-no-search');
+    }
+    idea.evidenceSources = idea.evidenceSources.map(s => ({ ...s, confidence: 'low' }));
+  } else if (ctx.searchExecuted === true) {
+    idea.evidenceUnverified = false;
+  }
+
   return idea;
 }
 
@@ -153,12 +170,12 @@ export function validateIdea(raw, index = 0) {
  * Validate a batch of raw ideas.
  * @returns {{ ideas: object[], summary: { total:number, kept:number, dropped:number, flagged:number, avgQuality:number } }}
  */
-export function validateIdeas(rawIdeas) {
+export function validateIdeas(rawIdeas, ctx = {}) {
   const arr = Array.isArray(rawIdeas) ? rawIdeas : [];
   const ideas = [];
   let dropped = 0;
   for (let i = 0; i < arr.length; i++) {
-    const v = validateIdea(arr[i], i);
+    const v = validateIdea(arr[i], i, ctx);
     if (v) ideas.push(v); else dropped++;
   }
   const flagged = ideas.filter(i => i.validationFlags.length > 0).length;
