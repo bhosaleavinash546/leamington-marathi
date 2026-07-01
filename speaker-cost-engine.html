@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#080e14" id="metaThemeColor">
-<title>360° Automotive Speaker Should-Cost Engine v2026</title>
+<title>SonoCost — Automotive Speaker Should-Cost Intelligence</title>
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
@@ -173,11 +173,33 @@ header{
   flex-shrink:0;position:relative;z-index:10;
   transition:background var(--tx) ease,border-color var(--tx) ease;
 }
-.brand-title{
-  font-size:16px;font-weight:800;letter-spacing:-.3px;
-  background:linear-gradient(90deg,var(--blue2),var(--purple2),var(--cyan));
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+/* ── Brand logo area ── */
+.brand-logo-area{display:flex;align-items:center;gap:13px}
+.brand-logo-icon{
+  flex-shrink:0;width:48px;height:48px;border-radius:13px;
+  background:linear-gradient(145deg,rgba(0,230,118,0.13),rgba(0,188,212,0.07));
+  border:1px solid rgba(0,230,118,0.30);
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 0 22px rgba(0,230,118,0.16),inset 0 1px 0 rgba(0,230,118,0.14);
+  transition:box-shadow var(--tx) ease,border-color var(--tx) ease;
+  cursor:default;
 }
+.brand-logo-icon:hover{
+  box-shadow:0 0 36px rgba(0,230,118,0.32),inset 0 1px 0 rgba(0,230,118,0.20);
+  border-color:rgba(0,230,118,0.55);
+}
+.brand-wordmark{
+  font-size:22px;font-weight:900;letter-spacing:-0.7px;line-height:1;
+  display:flex;align-items:baseline;gap:0;
+}
+.brand-sono{color:#00E676}
+.brand-cost{color:var(--t1)}
+.brand-tagline{
+  font-size:10.5px;color:var(--t3);margin-top:4px;
+  letter-spacing:0.015em;line-height:1.4;
+}
+/* Legacy class kept for animation targeting */
+.brand-title{display:contents}
 header p{font-size:11px;color:var(--t3);margin-top:2px}
 .hchips{display:flex;gap:6px;align-items:center}
 .chip{
@@ -515,6 +537,16 @@ html[data-theme="light"] select{background:var(--input-bg)}
 html[data-theme="light"] .tab-btn.active{background:linear-gradient(180deg,rgba(37,99,235,0.08),transparent)}
 html[data-theme="light"] .calc-btn{background:linear-gradient(135deg,#2563eb,#7c3aed)}
 html[data-theme="light"] .chip{color:var(--blue2)}
+html[data-theme="light"] .brand-logo-icon{
+  background:linear-gradient(145deg,rgba(37,99,235,0.09),rgba(8,145,178,0.05));
+  border-color:rgba(37,99,235,0.24);
+  box-shadow:0 0 18px rgba(37,99,235,0.09),inset 0 1px 0 rgba(37,99,235,0.10);
+}
+html[data-theme="light"] .brand-logo-icon:hover{
+  box-shadow:0 0 28px rgba(37,99,235,0.20);border-color:rgba(37,99,235,0.44);
+}
+html[data-theme="light"] .brand-sono{color:var(--blue)}
+html[data-theme="light"] .brand-cost{color:var(--t1)}
 
 /* ════════════════════════════════════════════════════════════════
    PRINT
@@ -817,9 +849,32 @@ html[data-theme="light"] .chip{color:var(--blue2)}
 </head>
 <body>
 <header>
-  <div>
-    <h1 class="brand-title">360° Automotive Speaker Should-Cost Engine</h1>
-    <p>System-Level &middot; 5 Configurations &middot; BOM + Process + Sustainability + Benchmarking + AI Insights &middot; v2026</p>
+  <div class="brand-logo-area brand-title">
+    <div class="brand-logo-icon" aria-hidden="true">
+      <!-- SonoCost logo: speaker cone + sound waves + cost trend line -->
+      <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Motor block -->
+        <rect x="2" y="11" width="5.5" height="8" rx="1.4" fill="#00E676"/>
+        <!-- Speaker cone (trapezoid) -->
+        <path d="M7.5 11.5 L19.5 3.5 L19.5 26.5 L7.5 18.5 Z" fill="#00E676" opacity="0.70"/>
+        <!-- Inner cone highlight -->
+        <path d="M7.5 13 L16 7.5 L16 22.5 L7.5 17 Z" fill="#00E676" opacity="0.18"/>
+        <!-- Sound wave 1 (near) -->
+        <path d="M21.5 11 Q26.5 15 21.5 19" stroke="#00E676" stroke-width="2.1" fill="none" stroke-linecap="round"/>
+        <!-- Sound wave 2 (far) -->
+        <path d="M24 8 Q31 15 24 22" stroke="#00E676" stroke-width="1.4" fill="none" stroke-linecap="round" opacity="0.48"/>
+        <!-- Cost trend line (bottom, subtle) -->
+        <path d="M3 26.5 L7.5 23.5 L13 25 L19.5 18" stroke="#00E676" stroke-width="1.3" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="0.42"/>
+        <!-- Trend dot -->
+        <circle cx="13" cy="25" r="1.3" fill="#00E676" opacity="0.55"/>
+      </svg>
+    </div>
+    <div>
+      <div class="brand-wordmark">
+        <span class="brand-sono">Sono</span><span class="brand-cost">Cost</span>
+      </div>
+      <div class="brand-tagline">Automotive Speaker Should-Cost Intelligence &middot; EXW China &middot; v2026</div>
+    </div>
   </div>
   <div style="display:flex;align-items:center;gap:12px">
     <div class="hchips">
@@ -3544,10 +3599,11 @@ function animateTabContent(panelId) {
 function initAnimations() {
   var M = window.Motion;
 
-  // ── Header entrance (title → chips → action buttons) ──
+  // ── Header entrance (logo → wordmark → chips → action buttons) ──
   var hdrEls = [
-    document.querySelector('.brand-title'),
-    document.querySelector('.brand-sub'),
+    document.querySelector('.brand-logo-icon'),
+    document.querySelector('.brand-wordmark'),
+    document.querySelector('.brand-tagline'),
     document.querySelector('.hbtns')
   ].filter(Boolean);
 
