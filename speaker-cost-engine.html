@@ -368,27 +368,21 @@ input[type=range]{
 .tabs-wrapper{
   background:var(--surface);border:1px solid var(--bd);
   border-radius:12px 12px 0 0;border-bottom:none;
-  display:flex;align-items:stretch;
   transition:background var(--tx) ease,border-color var(--tx) ease;
 }
 .tabs{display:flex;overflow-x:auto;scrollbar-width:none;flex:1}
 .tabs::-webkit-scrollbar{display:none}
-/* Corner utility buttons (Trends & About) */
-.corner-tabs{
-  display:flex;align-items:center;gap:4px;
-  padding:0 8px;flex-shrink:0;
-  border-left:1px solid var(--bd);
-}
+/* Header nav buttons — Trends & About */
 .corner-tab-btn{
-  padding:5px 10px;font-size:11px;font-weight:600;
-  color:var(--t3);background:transparent;
+  padding:5px 11px;font-size:11px;font-weight:600;
+  color:var(--t2);background:transparent;
   border:1px solid var(--bd);border-radius:7px;
-  cursor:pointer;display:flex;align-items:center;gap:5px;
+  cursor:pointer;display:inline-flex;align-items:center;gap:5px;
   transition:color var(--tx) ease,border-color var(--tx) ease,background var(--tx) ease;
-  white-space:nowrap;
+  white-space:nowrap;line-height:1;
 }
 .corner-tab-btn:hover{color:var(--blue2);border-color:rgba(0,230,118,0.4);background:var(--feat-bg)}
-.corner-tab-btn.active{color:var(--blue2);border-color:var(--blue);background:var(--chip-bg)}
+.corner-tab-btn.active{color:var(--blue);border-color:var(--blue);background:var(--chip-bg)}
 .tab-btn{
   padding:10px 16px;font-size:12px;font-weight:500;color:var(--t3);
   cursor:pointer;border:none;background:transparent;
@@ -914,6 +908,9 @@ html[data-theme="light"] .brand-version{
       <span class="chip">16 Features</span>
     </div>
     <div class="hbtns">
+      <button class="corner-tab-btn" data-tab="trends" onclick="showTab('trends')" title="Live commodity prices &amp; automotive audio news">📡 Trends</button>
+      <button class="corner-tab-btn" data-tab="about" onclick="showTab('about')" title="User guide, technical reference &amp; material grades">📘 About</button>
+      <div style="width:1px;height:20px;background:var(--bd);margin:0 2px"></div>
       <button onclick="exportPDF()">&#128438; Export PDF</button>
       <button onclick="exportPPT()">&#128202; Export PPT</button>
       <button class="theme-toggle" id="settingsBtn" onclick="openSettings()" title="API Settings — add Claude key for real AI insights" aria-label="Settings">
@@ -1146,10 +1143,6 @@ html[data-theme="light"] .brand-version{
         <button class="tab-btn" data-tab="physics" onclick="showTab('physics')">⚡ Physics</button>
         <button class="tab-btn" data-tab="ai" onclick="showTab('ai')">&#129302; AI Insights</button>
         <button class="tab-btn" data-tab="compare" onclick="showTab('compare')">⚖ Compare</button>
-      </div>
-      <div class="corner-tabs">
-        <button class="corner-tab-btn" data-tab="trends" onclick="showTab('trends')" title="Live commodity prices &amp; automotive audio news">📡 Trends</button>
-        <button class="corner-tab-btn" data-tab="about" onclick="showTab('about')" title="User guide, technical reference &amp; material grades">📘 About</button>
       </div>
     </div>
     <div class="tab-content">
