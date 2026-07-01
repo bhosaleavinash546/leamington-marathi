@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Calculator, ChevronDown, Cpu, ShieldCheck } from 'lucide-react';
+import { Calculator, ChevronDown, Cpu, ShieldCheck, Sparkles } from 'lucide-react';
 import ButtonSpinner from '../components/ui/ButtonSpinner';
 import { useAuth } from '../contexts/AuthContext';
 import { CURRENCIES, COST_COMPONENTS, FALLBACK_MATERIALS, FALLBACK_PROCESSES, FALLBACK_REGIONS } from '../constants/costing';
@@ -11,6 +11,7 @@ interface ShouldCostResult {
   currency: string;
   symbol?: string;
   fx?: { base: string; rate: number; asOf: string | null; source: string; stale?: boolean } | null;
+  calibration?: { applied: boolean; factor: number; quotes: number };
   materialCost: string;
   processCost: string;
   overheadCost: string;
@@ -45,6 +46,9 @@ export default function ShouldCostPage() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<ShouldCostResult | null>(null);
   const [error, setError] = useState('');
+  const [teachPrice, setTeachPrice] = useState('');
+  const [teachMsg, setTeachMsg] = useState('');
+  const [teaching, setTeaching] = useState(false);
 
   useEffect(() => {
     fetch('/api/should-cost/catalogue')
@@ -80,6 +84,28 @@ export default function ShouldCostPage() {
     } finally {
       setLoading(false);
     }
+  }
+
+  // Feed a real supplier quote back so the engine learns this user's price
+  // reality (the proprietary-data moat), then re-estimate with the new calibration.
+  async function teachQuote() {
+    const price = Number(teachPrice);
+    if (!token || !(price > 0)) { setTeachMsg('Enter the real quoted price first.'); return; }
+    setTeaching(true); setTeachMsg('');
+    try {
+      const r = await fetch('/api/should-cost/quotes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ partName, material, process, weightKg: Number(weightKg), annualVolume: Number(annualVolume), region, currency, actualPrice: price }),
+      });
+      const d = await r.json().catch(() => ({}));
+      if (!r.ok) throw new Error(d.error || 'Could not save the quote');
+      setTeachMsg(`Learned — the engine is now calibrated from ${d.quotes} of your quote${d.quotes === 1 ? '' : 's'}.`);
+      setTeachPrice('');
+      await handleCalc();   // re-estimate with the updated calibration
+    } catch (e) {
+      setTeachMsg(e instanceof Error ? e.message : 'Could not save the quote');
+    } finally { setTeaching(false); }
   }
 
   return (
@@ -205,6 +231,11 @@ export default function ShouldCostPage() {
                       {result.fx.stale && ' · rates may be outdated (live feed unreachable)'}
                     </p>
                   )}
+                  {result.calibration?.applied && (
+                    <p className="text-[10px] mt-1 text-teal-300/90 flex items-center gap-1">
+                      <Sparkles size={10} /> Calibrated from {result.calibration.quotes} of your quote{result.calibration.quotes === 1 ? '' : 's'} (×{result.calibration.factor})
+                    </p>
+                  )}
                   {result.simulation && (
                     <div className="mt-3">
                       <div className="flex justify-between text-[11px] text-slate-400 mb-1">
@@ -219,6 +250,20 @@ export default function ShouldCostPage() {
                       <p className="text-slate-500 text-[10px] mt-1">Monte-Carlo (2,000 runs): commodity ±15%, machine ±10%, cycle ±12%, scrap ±2pp · σ {result.symbol || result.currency}{result.simulation.stdev}</p>
                     </div>
                   )}
+                </div>
+
+                {/* Teach: feed a real quote so the engine learns this user's prices */}
+                <div className="p-3 rounded-xl bg-navy-800/60 border border-white/10">
+                  <p className="text-[11px] text-slate-400 mb-2">Know the real quoted price? Teach the engine — it learns your supplier reality and calibrates future estimates.</p>
+                  <div className="flex items-center gap-2">
+                    <input type="number" value={teachPrice} onChange={e => setTeachPrice(e.target.value)} placeholder={`Actual ${currency}/unit`}
+                      className="flex-1 bg-navy-900 border border-white/10 rounded-lg px-3 py-1.5 text-white text-sm placeholder-slate-600 focus:outline-none focus:border-teal-500/40" />
+                    <button onClick={teachQuote} disabled={teaching || !teachPrice}
+                      className="text-xs px-3 py-1.5 rounded-lg bg-teal-600/80 hover:bg-teal-500 disabled:opacity-40 text-white font-medium transition-colors whitespace-nowrap">
+                      {teaching ? 'Learning…' : 'Teach'}
+                    </button>
+                  </div>
+                  {teachMsg && <p className="text-[10px] mt-1.5 text-teal-300/90">{teachMsg}</p>}
                 </div>
 
                 {/* Component breakdown */}

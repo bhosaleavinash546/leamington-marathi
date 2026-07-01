@@ -20,6 +20,7 @@ import { computeShouldCost, simulateShouldCost, volumeSensitivity, listMaterials
 import { validateIdeas } from './idea-validation.mjs';
 import { resolveMaterial, resolveProcess } from './material-process-resolve.mjs';
 import { getFxRates, FX_FALLBACK, FX_SYMBOLS, FX_CURRENCIES } from './fx-rates.mjs';
+import { fitCalibration } from './calibration.mjs';
 import { analyzeFeatures } from './src/services/cad-features.mjs';
 import { aggregateOcctMeshes, analyzeBrep } from './src/services/cad-brep.mjs';
 
@@ -157,6 +158,22 @@ db.exec(`
     expiresAt TEXT,
     createdAt TEXT NOT NULL
   );
+  -- Proprietary supplier-quote corpus: the data moat. The engine learns each
+  -- user's per-process price offsets from these to calibrate future estimates.
+  CREATE TABLE IF NOT EXISTS cost_quotes (
+    id TEXT PRIMARY KEY,
+    userId TEXT NOT NULL,
+    partName TEXT,
+    material TEXT NOT NULL,
+    process TEXT NOT NULL,
+    weightKg REAL NOT NULL,
+    annualVolume INTEGER NOT NULL,
+    region TEXT NOT NULL,
+    actualPriceEur REAL NOT NULL,
+    modelledEur REAL NOT NULL,
+    createdAt TEXT NOT NULL
+  );
+  CREATE INDEX IF NOT EXISTS idx_cost_quotes_user ON cost_quotes(userId);
 `);
 
 // Migrate: add annotations column to projects
@@ -4784,6 +4801,57 @@ app.get('/api/should-cost/catalogue', (_req, res) => {
   });
 });
 
+// Per-user learned calibration, fitted from their proprietary quote corpus and
+// cached in-process. Invalidated when the user adds a quote.
+const calCache = new Map();
+function getUserCalibration(userId) {
+  if (calCache.has(userId)) return calCache.get(userId);
+  const rows = db.prepare('SELECT process, modelledEur, actualPriceEur FROM cost_quotes WHERE userId = ?').all(userId);
+  const cal = fitCalibration(rows.map(r => ({ process: r.process, modelled: r.modelledEur, actual: r.actualPriceEur })));
+  calCache.set(userId, cal);
+  return cal;
+}
+
+// Add a real supplier quote to the user's corpus; the engine learns from it.
+app.post('/api/should-cost/quotes', requireAuth, rateLimit(120, 60 * 60 * 1000), async (req, res) => {
+  const { partName, material, process, weightKg, annualVolume, region, actualPrice } = req.body;
+  if (!material || !process || !weightKg || !annualVolume || !actualPrice) {
+    return res.status(400).json({ error: 'Missing required fields: material, process, weightKg, annualVolume, actualPrice.' });
+  }
+  const currency = String(req.body.currency || 'EUR').toUpperCase();
+  if (!FX_CURRENCIES.includes(currency)) return res.status(400).json({ error: `Unsupported currency "${currency}".` });
+  const matRes = resolveMaterial(material);
+  const procRes = resolveProcess(process);
+  if (!matRes || !procRes) return res.status(400).json({ error: 'Material or process not recognised.' });
+
+  let modelledEur;
+  try {
+    modelledEur = computeShouldCost({ material: matRes.key, process: procRes.key, weightKg: Number(weightKg), annualVolume: Number(annualVolume), region: region || 'Germany' }).totalShouldCost;
+  } catch (e) { return res.status(400).json({ error: e.message || 'Invalid parameters.' }); }
+
+  // Convert the user's quoted price to EUR (rates are EUR-based: units per 1 EUR).
+  const fx = currency === 'EUR' ? { rates: FX_FALLBACK } : await getFxRates();
+  const rate = fx.rates[currency] ?? 1;
+  const actualPriceEur = Number(actualPrice) / rate;
+  if (!(actualPriceEur > 0)) return res.status(400).json({ error: 'actualPrice must be > 0.' });
+
+  db.prepare(`INSERT INTO cost_quotes (id, userId, partName, material, process, weightKg, annualVolume, region, actualPriceEur, modelledEur, createdAt)
+              VALUES (?,?,?,?,?,?,?,?,?,?,?)`).run(
+    crypto.randomUUID(), req.user.id, String(partName || '').slice(0, 200), matRes.key, procRes.key,
+    Number(weightKg), Number(annualVolume), region || 'Germany', actualPriceEur, modelledEur, new Date().toISOString());
+  calCache.delete(req.user.id);   // refit on next estimate
+
+  const cal = getUserCalibration(req.user.id);
+  res.json({ ok: true, quotes: cal.n, calibration: { global: cal.global, process: cal.process } });
+});
+
+// List the user's quotes + current learned calibration.
+app.get('/api/should-cost/quotes', requireAuth, (req, res) => {
+  const rows = db.prepare('SELECT id, partName, material, process, weightKg, annualVolume, region, actualPriceEur, modelledEur, createdAt FROM cost_quotes WHERE userId = ? ORDER BY createdAt DESC').all(req.user.id);
+  const cal = getUserCalibration(req.user.id);
+  res.json({ quotes: rows, count: rows.length, calibration: { global: cal.global, process: cal.process, n: cal.n } });
+});
+
 app.post('/api/should-cost', requireAuth, rateLimit(60, 60 * 60 * 1000), async (req, res) => {
   const { partName, material, process, weightKg, annualVolume, quotedCost, region, apiKey } = req.body;
   if (!partName || !material || !process || !weightKg || !annualVolume) {
@@ -4809,12 +4877,14 @@ app.post('/api/should-cost', requireAuth, rateLimit(60, 60 * 60 * 1000), async (
   }
 
   // ── 1. Deterministic bottom-up cost (NO LLM — real rate × time / mass × price) ─
+  // Applies the user's learned calibration (fitted from their own supplier quotes).
+  const userCal = getUserCalibration(req.user.id);
   let calc, sim, volumeCurve;
   try {
     const engineInput = { material: matRes.key, process: procRes.key, weightKg: Number(weightKg), annualVolume: Number(annualVolume), region: region || 'Germany' };
-    calc = computeShouldCost(engineInput);
-    sim  = simulateShouldCost(engineInput);
-    volumeCurve = volumeSensitivity(engineInput);
+    calc = computeShouldCost(engineInput, {}, userCal);
+    sim  = simulateShouldCost(engineInput, 2000, 12345, userCal);
+    volumeCurve = volumeSensitivity(engineInput, undefined, userCal);
   } catch (e) {
     return res.status(400).json({ error: e.message || 'Invalid costing parameters.' });
   }
@@ -4866,6 +4936,8 @@ app.post('/api/should-cost', requireAuth, rateLimit(60, 60 * 60 * 1000), async (
     // true when we fuzzy-matched free text rather than an exact catalogue pick.
     materialApprox: matRes.approx,
     processApprox: procRes.approx,
+    // Learned-calibration status: whether the user's own quotes adjusted this estimate.
+    calibration: { applied: calc.calibration.applied, factor: calc.calibration.factor, quotes: userCal.n },
     fx: currency === 'EUR' ? null : { base: 'EUR', rate: Number(rate.toFixed(4)), asOf: fx.live ? fx.date : null, source: fx.source, stale: !!fx.stale },
     materialCost: fmt(b.material.value),
     processCost: fmt(processCost),

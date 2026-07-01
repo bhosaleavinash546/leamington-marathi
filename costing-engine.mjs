@@ -17,6 +17,8 @@
  *   listMaterials(), listProcesses(), listRegions()
  */
 
+import { calibrationFactor } from './calibration.mjs';
+
 // ─── Material database ────────────────────────────────────────────────────────
 // price = €/kg (derived from COMMODITY_BASELINE), density = g/cm³,
 // scrapRecovery = fraction of material price recovered on offcuts/runners.
@@ -217,7 +219,7 @@ function round(n, dp = 2) {
  * @param {object} [overrides]  optional {priceMult, machineMult, cycleMult, scrapAdd} for simulation
  * @returns {object} full breakdown
  */
-export function computeShouldCost(input, overrides = {}) {
+export function computeShouldCost(input, overrides = {}, calibration = null) {
   const { material, process, weightKg, annualVolume, region, programYears = 5 } = input;
 
   const mat = MATERIALS[material];
@@ -290,12 +292,20 @@ export function computeShouldCost(input, overrides = {}) {
   const commercialCost = (materialCost + conversion + toolingCost + overheadCost) * COMMERCIAL_PCT;
   const worksCost = materialCost + conversion + toolingCost + overheadCost + commercialCost;
   const sgaCost = worksCost * reg.sgaPct;
-  const total = worksCost + sgaCost;
+  const baseTotal = worksCost + sgaCost;
 
-  const pct = x => (total > 0 ? round((x / total) * 100, 1) : 0);
+  // Learned calibration: multiply the deterministic estimate by the correction
+  // factor fitted from the user's real quotes for this process. Scales every
+  // breakdown line equally, so composition (pct) is unchanged — only the level
+  // moves toward the user's actual price history. cf = 1 when uncalibrated.
+  const cf = calibration ? calibrationFactor(calibration, process) : 1;
+  const total = baseTotal * cf;
+  const sv = x => round(x * cf);                                   // scaled value
+  const pct = x => (baseTotal > 0 ? round((x / baseTotal) * 100, 1) : 0);
 
   return {
     inputs: { material, process, weightKg: w, annualVolume: vol, region, programYears },
+    calibration: cf !== 1 ? { factor: round(cf, 3), applied: true } : { factor: 1, applied: false },
     drivers: {
       pricePerKg: round(pricePerKg, 3),
       inputMassKg: round(inputMass, 3),
@@ -309,15 +319,15 @@ export function computeShouldCost(input, overrides = {}) {
       amortVolume: amortVol,
     },
     breakdown: {
-      material:   { value: round(materialCost),   pct: pct(materialCost) },
-      machine:    { value: round(machineCost),    pct: pct(machineCost) },
-      labour:     { value: round(labourCost),     pct: pct(labourCost) },
-      setup:      { value: round(setupCost),      pct: pct(setupCost) },
-      finishing:  { value: round(finishingCost),  pct: pct(finishingCost) },
-      tooling:    { value: round(toolingCost),    pct: pct(toolingCost) },
-      overhead:   { value: round(overheadCost),   pct: pct(overheadCost) },
-      commercial: { value: round(commercialCost), pct: pct(commercialCost) },
-      sgaProfit:  { value: round(sgaCost),        pct: pct(sgaCost) },
+      material:   { value: sv(materialCost),   pct: pct(materialCost) },
+      machine:    { value: sv(machineCost),    pct: pct(machineCost) },
+      labour:     { value: sv(labourCost),     pct: pct(labourCost) },
+      setup:      { value: sv(setupCost),      pct: pct(setupCost) },
+      finishing:  { value: sv(finishingCost),  pct: pct(finishingCost) },
+      tooling:    { value: sv(toolingCost),    pct: pct(toolingCost) },
+      overhead:   { value: sv(overheadCost),   pct: pct(overheadCost) },
+      commercial: { value: sv(commercialCost), pct: pct(commercialCost) },
+      sgaProfit:  { value: sv(sgaCost),        pct: pct(sgaCost) },
     },
     totalShouldCost: round(total),
   };
@@ -329,11 +339,11 @@ export function computeShouldCost(input, overrides = {}) {
  * negotiation artifact (cost falls as fixed tooling spreads over more parts).
  * @returns {{volume:number, unitCost:number, delta:number}[]}  delta vs base volume
  */
-export function volumeSensitivity(input, volumes) {
+export function volumeSensitivity(input, volumes, calibration = null) {
   const points = (volumes && volumes.length ? volumes : [10000, 25000, 50000, 100000, 250000, 500000]);
-  const baseCost = computeShouldCost(input).totalShouldCost;
+  const baseCost = computeShouldCost(input, {}, calibration).totalShouldCost;
   return points.map(v => {
-    const unitCost = computeShouldCost({ ...input, annualVolume: v }).totalShouldCost;
+    const unitCost = computeShouldCost({ ...input, annualVolume: v }, {}, calibration).totalShouldCost;
     return { volume: v, unitCost, delta: round(unitCost - baseCost) };
   });
 }
@@ -358,7 +368,7 @@ function noise(rng, spread) {
  * Varies commodity price (±15%), machine rate (±10%), cycle time (±12%),
  * scrap (±2pp). Returns percentile band on total unit cost.
  */
-export function simulateShouldCost(input, samples = 2000, seed = 12345) {
+export function simulateShouldCost(input, samples = 2000, seed = 12345, calibration = null) {
   const rng = mulberry32(seed);
   const totals = [];
   for (let i = 0; i < samples; i++) {
@@ -368,7 +378,7 @@ export function simulateShouldCost(input, samples = 2000, seed = 12345) {
       cycleMult: 1 + noise(rng, 0.12),
       scrapAdd: noise(rng, 0.02),
     };
-    totals.push(computeShouldCost(input, o).totalShouldCost);
+    totals.push(computeShouldCost(input, o, calibration).totalShouldCost);
   }
   totals.sort((a, b) => a - b);
   const at = q => totals[Math.min(totals.length - 1, Math.max(0, Math.floor(q * totals.length)))];
