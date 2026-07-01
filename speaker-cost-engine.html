@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#0a0f1e" id="metaThemeColor">
+<meta name="theme-color" content="#080e14" id="metaThemeColor">
 <title>360° Automotive Speaker Should-Cost Engine v2026</title>
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -12,56 +12,56 @@
 <style>
 /* ════════════════════════════════════════════════════════════════
    DESIGN TOKENS — DARK THEME (DEFAULT)
-   Professional deep-space palette with WCAG AA contrast
+   Neon Green (#00E676) accent on deep near-black canvas
 ════════════════════════════════════════════════════════════════ */
 :root{
-  /* Canvas layers — deep slate-blue, not pure black */
-  --bg0:#0e1628; --bg1:#121e35; --bg2:#172440; --bg3:#1d2e50;
-  /* Surfaces — clearly lifted above canvas for card hierarchy */
-  --surface:rgba(26,38,65,0.98);
-  --surface2:rgba(32,47,78,0.95);
-  --surface3:rgba(22,33,56,0.82);
-  --input-bg:rgba(14,20,40,0.96);
-  /* Borders — visible but not harsh */
-  --bd:rgba(148,163,184,0.20);
-  --bd2:rgba(148,163,184,0.38);
-  --bd-focus:rgba(59,130,246,0.65);
-  /* Typography — proper contrast on dark surfaces */
-  --t1:#eef2f8; --t2:#a8bdd4; --t3:#6d8faa;
-  /* Brand accents */
-  --blue:#3b82f6; --blue2:#60a5fa;
-  --cyan:#22d3ee; --green:#10b981; --green2:#34d399;
-  --amber:#f59e0b; --red:#ef4444;
-  --purple:#7c3aed; --purple2:#a78bfa;
-  --pink:#ec4899; --gold:#fbbf24;
+  /* Canvas layers — near-black, engineering terminal aesthetic */
+  --bg0:#080e14; --bg1:#0d1520; --bg2:#111c2b; --bg3:#162036;
+  /* Surfaces — dark charcoal, clearly lifted above canvas */
+  --surface:rgba(17,28,43,0.98);
+  --surface2:rgba(22,36,54,0.95);
+  --surface3:rgba(13,21,34,0.85);
+  --input-bg:rgba(8,14,20,0.97);
+  /* Borders — crisp white-alpha, neon on focus */
+  --bd:rgba(255,255,255,0.10);
+  --bd2:rgba(255,255,255,0.20);
+  --bd-focus:rgba(0,230,118,0.60);
+  /* Typography — soft white primary, cool grey secondary */
+  --t1:#e8f0f8; --t2:#8aa0b8; --t3:#546880;
+  /* Brand accents — neon green as primary, cyan as complement */
+  --blue:#00E676; --blue2:#33ec91;
+  --cyan:#00bcd4; --green:#00E676; --green2:#33ec91;
+  --amber:#ffb300; --red:#ff5252;
+  --purple:#ce93d8; --purple2:#ab47bc;
+  --pink:#f48fb1; --gold:#ffd54f;
   /* Semantic */
-  --row-hover:rgba(59,130,246,0.08);
-  --td-border:rgba(148,163,184,0.12);
-  /* Shadows — more pronounced so cards float above bg */
-  --shadow-sm:0 2px 10px rgba(0,0,0,0.55),0 1px 3px rgba(0,0,0,0.35);
-  --shadow-md:0 6px 28px rgba(0,0,0,0.50),0 2px 6px rgba(0,0,0,0.30);
-  --shadow-glow:0 8px 32px rgba(59,130,246,0.16);
-  --shadow-btn:0 4px 16px rgba(59,130,246,0.35);
-  --shadow-btn-h:0 6px 28px rgba(59,130,246,0.52);
-  /* Body gradients — slightly more visible */
-  --grad1:rgba(59,130,246,0.10);
-  --grad2:rgba(124,58,237,0.07);
-  --grad3:rgba(16,185,129,0.05);
-  /* Feature item */
-  --feat-bg:rgba(59,130,246,0.07);
-  --feat-border:rgba(59,130,246,0.18);
-  --feat-hover:rgba(59,130,246,0.16);
-  --feat-hover-border:rgba(59,130,246,0.42);
+  --row-hover:rgba(0,230,118,0.07);
+  --td-border:rgba(255,255,255,0.08);
+  /* Shadows — deep blacks for maximum card depth */
+  --shadow-sm:0 2px 10px rgba(0,0,0,0.70),0 1px 3px rgba(0,0,0,0.50);
+  --shadow-md:0 6px 28px rgba(0,0,0,0.65),0 2px 6px rgba(0,0,0,0.45);
+  --shadow-glow:0 8px 32px rgba(0,230,118,0.18);
+  --shadow-btn:0 4px 16px rgba(0,230,118,0.38);
+  --shadow-btn-h:0 6px 28px rgba(0,230,118,0.55);
+  /* Body gradients — subtle neon wash */
+  --grad1:rgba(0,230,118,0.08);
+  --grad2:rgba(0,188,212,0.05);
+  --grad3:rgba(0,230,118,0.03);
+  /* Feature item — neon tint on hover */
+  --feat-bg:rgba(0,230,118,0.06);
+  --feat-border:rgba(0,230,118,0.18);
+  --feat-hover:rgba(0,230,118,0.12);
+  --feat-hover-border:rgba(0,230,118,0.48);
   /* Chip */
-  --chip-bg:rgba(59,130,246,0.12);
-  /* Metric cell */
-  --metric-bg:linear-gradient(135deg,rgba(59,130,246,0.13),rgba(124,58,237,0.08));
-  --metric-glow:rgba(59,130,246,0.14);
+  --chip-bg:rgba(0,230,118,0.12);
+  /* Metric cell — neon-to-cyan gradient */
+  --metric-bg:linear-gradient(135deg,rgba(0,230,118,0.13),rgba(0,188,212,0.07));
+  --metric-glow:rgba(0,230,118,0.16);
   /* Section title */
-  --section-title:var(--cyan);
+  --section-title:#00E676;
   /* Subtable */
-  --subtable-bg:rgba(14,20,40,0.80);
-  --total-row-bg:rgba(16,185,129,0.09);
+  --subtable-bg:rgba(8,14,20,0.85);
+  --total-row-bg:rgba(0,230,118,0.10);
   /* Transition speed */
   --tx:.22s;
 }
@@ -522,7 +522,7 @@ html[data-theme="light"] .chip{color:var(--blue2)}
 .trends-article a:hover{color:var(--blue2)}
 .trends-article .ta-meta{font-size:10px;color:var(--t3);margin-top:5px;display:flex;gap:6px;align-items:center;flex-wrap:wrap}
 .tag-cn{background:#ef444433;color:#f87171;padding:1px 6px;border-radius:4px;font-weight:700;font-size:9px}
-.tag-gl{background:#3b82f633;color:#60a5fa;padding:1px 6px;border-radius:4px;font-weight:700;font-size:9px}
+.tag-gl{background:rgba(0,230,118,0.18);color:#00E676;padding:1px 6px;border-radius:4px;font-weight:700;font-size:9px}
 .commodity-strip{display:flex;gap:10px;flex-wrap:wrap;margin:10px 0 14px}
 .comm-chip{display:flex;flex-direction:column;align-items:center;padding:8px 14px;border-radius:10px;background:var(--surface2);border:1px solid var(--bd);min-width:110px;flex:1}
 .comm-chip .cc-label{font-size:10px;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;font-weight:700}
@@ -577,7 +577,7 @@ html[data-theme="light"] .chip{color:var(--blue2)}
   padding:16px 18px;display:flex;gap:14px;align-items:flex-start;
   transition:border-color .18s,box-shadow .18s;
 }
-.step-card:hover{border-color:var(--blue);box-shadow:0 0 0 1px rgba(59,130,246,0.1),var(--shadow-sm)}
+.step-card:hover{border-color:var(--blue);box-shadow:0 0 0 1px rgba(0,230,118,0.12),var(--shadow-sm)}
 .step-num{
   width:32px;height:32px;flex-shrink:0;border-radius:50%;
   background:linear-gradient(135deg,var(--blue),var(--purple));
@@ -588,7 +588,7 @@ html[data-theme="light"] .chip{color:var(--blue2)}
 .step-body p{font-size:11.5px;color:var(--t2);line-height:1.55}
 .step-body .step-tip{
   margin-top:7px;padding:6px 10px;border-radius:6px;
-  background:rgba(59,130,246,0.07);border-left:2px solid var(--blue);
+  background:rgba(0,230,118,0.07);border-left:2px solid var(--blue);
   font-size:11px;color:var(--t3);line-height:1.45;
 }
 .step-body .step-warn{
@@ -649,7 +649,7 @@ html[data-theme="light"] .chip{color:var(--blue2)}
   outline:none;margin-bottom:8px;
   transition:border-color .18s,box-shadow .18s;
 }
-.vurl-input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(59,130,246,0.15)}
+.vurl-input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(0,230,118,0.15)}
 .vurl-hints{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:18px}
 .vurl-hint{font-size:10px;padding:3px 9px;border-radius:12px;background:var(--feat-bg);border:1px solid var(--bd);color:var(--t3);cursor:default}
 .vurl-actions{display:flex;gap:10px;justify-content:flex-end}
@@ -998,7 +998,7 @@ html[data-theme="light"] .chip{color:var(--blue2)}
       </details>
       <button class="calc-btn" id="calcBtn" onclick="calculate()">&#9654; Calculate Full Should-Cost</button>
       <div style="display:flex;gap:6px;margin-top:6px">
-        <button class="preset-btn" onclick="saveScenario('A')" style="flex:1;background:rgba(59,130,246,0.15);border-color:var(--blue)" title="Save current result as Scenario A">💾 Save as A</button>
+        <button class="preset-btn" onclick="saveScenario('A')" style="flex:1;background:rgba(0,230,118,0.12);border-color:var(--blue)" title="Save current result as Scenario A">💾 Save as A</button>
         <button class="preset-btn" onclick="saveScenario('B')" style="flex:1;background:rgba(16,185,129,0.12);border-color:var(--green)" title="Save current result as Scenario B">💾 Save as B</button>
         <button class="preset-btn" onclick="showTab('compare')" style="flex:1" title="Go to comparison tab">⚖ Compare</button>
       </div>
@@ -2817,7 +2817,7 @@ function renderProcess(r) {
   Object.keys(COUNTRIES).forEach(function(c) {
     var cc = COUNTRIES[c];
     var selected = c === r.inp.country;
-    html += '<div class="scard" style="' + (selected ? 'border-color:var(--blue);box-shadow:0 0 12px rgba(59,130,246,0.3)' : '') + '">';
+    html += '<div class="scard" style="' + (selected ? 'border-color:var(--blue);box-shadow:0 0 12px rgba(0,230,118,0.28)' : '') + '">';
     html += '<div class="scard-val" style="color:var(--cyan)">' + fGBP(cc.labHr) + '/hr</div>';
     html += '<div class="scard-lbl">' + esc(c) + (selected ? ' ✓' : '') + '</div>';
     html += '</div>';
@@ -2904,7 +2904,7 @@ function renderPhysicsTab(r) {
     var overrideList = Object.keys(_rateOverrides).map(function(k){
       return k + ': £' + (_rateOverrides[k] * FX_GBP).toFixed(2) + '/kg';
     }).join(' | ');
-    html += '<div class="card" style="padding:10px 14px;margin-bottom:16px;background:rgba(59,130,246,0.08);border-color:var(--blue)">';
+    html += '<div class="card" style="padding:10px 14px;margin-bottom:16px;background:rgba(0,230,118,0.07);border-color:var(--blue)">';
     html += '<strong style="font-size:11px;color:var(--blue2)">⚙ Contracted Rate Overrides Active:</strong> ';
     html += '<span style="font-size:11px;color:var(--t2)">' + esc(overrideList) + '</span>';
     html += '<span style="font-size:10px;color:var(--t3);display:block;margin-top:2px">These rates are used in cost calculations above instead of the library defaults.</span>';
