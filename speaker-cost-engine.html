@@ -548,11 +548,15 @@ html[data-theme="light"] .chip{color:var(--blue2)}
             <option value="UK">UK (GBP)</option>
             <option value="Germany">Germany (EUR)</option>
             <option value="USA">USA (USD)</option>
+            <option value="Eastern Europe">Eastern Europe (EUR)</option>
             <option value="China" selected>China (CNY)</option>
+            <option value="China (Coastal)">China — Coastal (CNY)</option>
+            <option value="China (Inland)">China — Inland (CNY)</option>
             <option value="India">India (INR)</option>
             <option value="Mexico">Mexico (MXN)</option>
             <option value="Thailand">Thailand (THB)</option>
             <option value="Vietnam">Vietnam (VND)</option>
+            <option value="SE Asia (other)">SE Asia — Other</option>
           </select>
         </div>
         <div class="form-row">
@@ -687,6 +691,21 @@ html[data-theme="light"] .chip{color:var(--blue2)}
         <button class="preset-btn" onclick="applyPreset('green')">Green Build</button>
         <button class="preset-btn" onclick="applyPreset('volume')">High Volume</button>
       </div>
+      <details style="margin-bottom:8px;border:1px solid var(--bd);border-radius:8px;overflow:hidden">
+        <summary style="padding:8px 12px;font-size:11px;font-weight:700;letter-spacing:0.05em;color:var(--t2);text-transform:uppercase;cursor:pointer;list-style:none;user-select:none;display:flex;align-items:center;gap:6px;background:rgba(99,102,241,0.06)">
+          ⚙ Contracted Rates Override <span style="font-weight:400;color:var(--t3);font-size:10px;text-transform:none;margin-left:4px">(optional — overrides library defaults)</span>
+        </summary>
+        <div style="padding:10px 12px">
+          <p style="font-size:10px;color:var(--t3);margin-bottom:10px">Enter your negotiated £/kg rates. Leave blank to use built-in estimates.</p>
+          <div class="form-row"><label style="font-size:11px">Magnet (£/kg)</label><input type="number" id="ro_mag" placeholder="library default" min="0" step="0.5" style="width:120px;font-size:11px" onchange="scheduleCalc()"></div>
+          <div class="form-row"><label style="font-size:11px">Cone (£/kg)</label><input type="number" id="ro_cone" placeholder="library default" min="0" step="0.1" style="width:120px;font-size:11px" onchange="scheduleCalc()"></div>
+          <div class="form-row"><label style="font-size:11px">Surround (£/kg)</label><input type="number" id="ro_surr" placeholder="library default" min="0" step="0.1" style="width:120px;font-size:11px" onchange="scheduleCalc()"></div>
+          <div class="form-row"><label style="font-size:11px">Frame/Basket (£/kg)</label><input type="number" id="ro_bask" placeholder="library default" min="0" step="0.5" style="width:120px;font-size:11px" onchange="scheduleCalc()"></div>
+          <div class="form-row"><label style="font-size:11px">VC Wire (£/kg)</label><input type="number" id="ro_wire" placeholder="library default" min="0" step="0.5" style="width:120px;font-size:11px" onchange="scheduleCalc()"></div>
+          <div class="form-row"><label style="font-size:11px">VC Former (£/kg)</label><input type="number" id="ro_fmr" placeholder="library default" min="0" step="0.5" style="width:120px;font-size:11px" onchange="scheduleCalc()"></div>
+          <button class="preset-btn" onclick="_rateOverrides={};['ro_mag','ro_cone','ro_surr','ro_bask','ro_wire','ro_fmr'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});scheduleCalc()" style="margin-top:4px;font-size:10px">✕ Clear All Overrides</button>
+        </div>
+      </details>
       <button class="calc-btn" id="calcBtn" onclick="calculate()">&#9654; Calculate Full Should-Cost</button>
       <div style="display:flex;gap:6px;margin-top:6px">
         <button class="preset-btn" onclick="saveScenario('A')" style="flex:1;background:rgba(59,130,246,0.15);border-color:var(--blue)" title="Save current result as Scenario A">💾 Save as A</button>
@@ -712,6 +731,7 @@ html[data-theme="light"] .chip{color:var(--blue2)}
         <button class="tab-btn" data-tab="sustain" onclick="showTab('sustain')">Sustainability</button>
         <button class="tab-btn" data-tab="bench" onclick="showTab('bench')">Benchmarking</button>
         <button class="tab-btn" data-tab="process" onclick="showTab('process')">Process &amp; DFMA</button>
+        <button class="tab-btn" data-tab="physics" onclick="showTab('physics')">⚡ Physics</button>
         <button class="tab-btn" data-tab="ai" onclick="showTab('ai')">&#129302; AI Insights</button>
         <button class="tab-btn" data-tab="compare" onclick="showTab('compare')">⚖ Compare</button>
       </div>
@@ -722,6 +742,7 @@ html[data-theme="light"] .chip{color:var(--blue2)}
       <div class="tab-panel" id="panel-sustain"><div id="sustainContent"></div></div>
       <div class="tab-panel" id="panel-bench"><div id="benchContent"></div></div>
       <div class="tab-panel" id="panel-process"><div id="processContent"></div></div>
+      <div class="tab-panel" id="panel-physics"><div id="physicsContent"><p style="color:var(--t3);text-align:center;padding:60px;font-size:14px">Run calculation to estimate acoustic parameters.</p></div></div>
       <div class="tab-panel" id="panel-ai"><div id="aiContent"><p style="color:var(--t3);text-align:center;padding:60px;font-size:14px">Run calculation to generate AI insights.</p></div></div>
       <div class="tab-panel" id="panel-compare"><div id="compareContent"><p style="color:var(--t3);text-align:center;padding:60px;font-size:14px">Run calculation, then save as Scenario A or B to compare configurations.</p></div></div>
     </div>
@@ -872,14 +893,18 @@ var PROF={
 };
 
 var COUNTRIES={
-  UK:      {cur:'GBP',sym:'£',  usd:1.27, labHr:22,machM:1.18,logI:1.15},
-  Germany: {cur:'EUR',sym:'€',  usd:1.08, labHr:24,machM:1.22,logI:1.12},
-  USA:     {cur:'USD',sym:'$',  usd:1.00, labHr:26,machM:1.25,logI:1.10},
-  China:   {cur:'CNY',sym:'¥',  usd:0.138,labHr:6, machM:0.78,logI:0.85},
-  India:   {cur:'INR',sym:'₹',  usd:0.012,labHr:4, machM:0.72,logI:0.88},
-  Mexico:  {cur:'MXN',sym:'MX$',usd:0.052,labHr:7, machM:0.80,logI:0.92},
-  Thailand:{cur:'THB',sym:'฿',  usd:0.028,labHr:5, machM:0.76,logI:0.89},
-  Vietnam: {cur:'VND',sym:'₫',  usd:0.000039,labHr:3,machM:0.70,logI:0.87}
+  UK:              {cur:'GBP',sym:'£',  usd:1.27,    labHr:22.0, machM:1.18, logI:1.15},
+  Germany:         {cur:'EUR',sym:'€',  usd:1.08,    labHr:24.0, machM:1.22, logI:1.12},
+  USA:             {cur:'USD',sym:'$',  usd:1.00,    labHr:26.0, machM:1.25, logI:1.10},
+  'Eastern Europe':{cur:'EUR',sym:'€',  usd:1.08,    labHr:9.5,  machM:0.90, logI:1.05},
+  China:           {cur:'CNY',sym:'¥',  usd:0.138,   labHr:6.0,  machM:0.78, logI:0.85},
+  'China (Coastal)':{cur:'CNY',sym:'¥', usd:0.138,   labHr:7.2,  machM:0.82, logI:0.83},
+  'China (Inland)': {cur:'CNY',sym:'¥', usd:0.138,   labHr:4.8,  machM:0.74, logI:0.88},
+  India:           {cur:'INR',sym:'₹',  usd:0.012,   labHr:4.0,  machM:0.72, logI:0.88},
+  Mexico:          {cur:'MXN',sym:'MX$',usd:0.052,   labHr:7.0,  machM:0.80, logI:0.92},
+  Thailand:        {cur:'THB',sym:'฿',  usd:0.028,   labHr:5.0,  machM:0.76, logI:0.89},
+  Vietnam:         {cur:'VND',sym:'₫',  usd:0.000039,labHr:3.0,  machM:0.70, logI:0.87},
+  'SE Asia (other)':{cur:'USD',sym:'$', usd:1.00,    labHr:3.5,  machM:0.72, logI:0.88}
 };
 
 var STEPS=[
@@ -1126,21 +1151,22 @@ function computeBOM(inp,sizeScale){
   var fmrSpec  = FRMR_MAT[inp.vcFormer]|| FRMR_MAT['Kapton'];
 
   var magG     = magSpec.gFn(p) * pwrScale;
-  var magRate  = magSpec.m.usd;
+  var _ro      = _rateOverrides || {};
+  var magRate  = (_ro.mag  !== undefined) ? _ro.mag  : magSpec.m.usd;
   var magCO2   = magSpec.m.co2;
   var vcG      = p.vc_g*vcScale*(1+Math.max(0,inp.power-50)*0.0012);
   var fmrG     = fmrSpec.gFn(p);
-  var fmrRate  = fmrSpec.m.usd;
+  var fmrRate  = (_ro.fmr  !== undefined) ? _ro.fmr  : fmrSpec.m.usd;
   var fmrCO2   = fmrSpec.m.co2;
-  var coneRate = coneSpec.m.usd;
+  var coneRate = (_ro.cone !== undefined) ? _ro.cone : coneSpec.m.usd;
   var coneCO2  = coneSpec.m.co2;
   var surrG    = surrSpec.gFn(p);
-  var surrRate = surrSpec.m.usd;
+  var surrRate = (_ro.surr !== undefined) ? _ro.surr : surrSpec.m.usd;
   var surrCO2  = surrSpec.m.co2;
   var baskG    = baskSpec.gFn(p);
-  var baskRate = baskSpec.m.usd;
+  var baskRate = (_ro.bask !== undefined) ? _ro.bask : baskSpec.m.usd;
   var baskCO2  = baskSpec.m.co2;
-  var wireRate = wireSpec.m.usd;
+  var wireRate = (_ro.wire !== undefined) ? _ro.wire : wireSpec.m.usd;
   var wireCO2  = wireSpec.m.co2;
 
   var row=function(name,spec,cat,wt,rate,co2Rate,scr,flat){
@@ -1206,6 +1232,92 @@ function computeTooling(type,annualVol){
   ],total:totalInvestment,perUnit:perUnit};
 }
 
+// ─── computePhysics — topology-derived Thiele-Small estimates ─────────────────
+function computePhysics(driver, inp, sr) {
+  var sizeMM = driver.sizeMM;
+  var aEff = sizeMM * 0.85 / 2000;           // effective piston radius (m)
+  var Sd   = Math.PI * aEff * aEff;           // effective piston area (m²)
+
+  // Pull moving-part masses from BOM weights (already size-scaled)
+  var findBOM = function(nm) { return (sr.bom||[]).find(function(b){return b.name===nm;}); };
+  var coneItem = findBOM('Cone / Diaphragm');
+  var vcItem   = findBOM('VC Wire');
+  var fmrItem  = findBOM('Coil Former (Bobbin)');
+  var surrItem = findBOM('Surround');
+  var magItem  = findBOM('Permanent Magnet');
+
+  var coneG = coneItem ? coneItem.wt : 12 * Math.pow(sizeMM/165, 1.8);
+  var vcG   = vcItem   ? vcItem.wt   :  6 * Math.pow(sizeMM/165, 1.4);
+  var fmrG  = fmrItem  ? fmrItem.wt  :  3 * Math.pow(sizeMM/165, 1.0);
+  var surrG = surrItem ? surrItem.wt * 0.5 : 3 * Math.pow(sizeMM/165, 1.5);
+  var magG  = magItem  ? magItem.wt  : 50;
+
+  var Mmd  = (coneG + vcG + fmrG + surrG) * 1e-3;    // kg — mechanical moving mass
+  var Mair = 2.67 * 1.21 * Math.pow(aEff, 3);          // kg — radiation air load
+  var Mms  = Mmd + Mair;
+
+  // BL product (T·m) — estimated from magnet grade and driver size
+  var BL_K = {'Neodymium':9.2,'SmCo':11.0,'Bonded NdFeB':7.8,'Recycled NdFeB':8.5,'Alnico':6.8,'Ferrite':4.5};
+  var blK  = BL_K[inp.magnet] || 5.0;
+  var BL   = blK * Math.sqrt(magG * 1e-3) * Math.pow(sizeMM / 165, 0.35);
+
+  // Nominal DC resistance Re (Ω) — typical for 8Ω nominal by wire type
+  var RE_NOM = {'Copper':6.4,'Aluminium':5.8,'CCAW':6.1,'Flat Copper':6.3,'Silver-Plated Cu':6.5};
+  var Re = RE_NOM[inp.vcWire] || 6.4;
+
+  // Compliance Cms (m/N) — estimated from surround material, scaled by cone area
+  var CMS_REF = {'Rubber':8e-4,'Foam':1.3e-3,'Cloth':5e-4,'Butyl Rubber':1.0e-3,
+                 'Santoprene':9e-4,'Silicone':8e-4,'Impregnated Cloth':4.5e-4};
+  var cmsRef = CMS_REF[inp.surround] || 8e-4;
+  var Cms = cmsRef * Math.pow(sizeMM / 165, 2.0);
+
+  // Thiele-Small parameters
+  var fs    = 1 / (2 * Math.PI * Math.sqrt(Mms * Cms));
+  var Qms   = 4.5; // assumed — typical mechanical damping
+  var BL2Re = BL * BL / Re;
+  var Qes   = 2 * Math.PI * fs * Mms * Re / (BL * BL);
+  var Qts   = (Qes * Qms) / (Qes + Qms);
+
+  // Equivalent volume Vas (litres)
+  var c = 343, rho = 1.21;
+  var Vas = rho * c * c * Sd * Sd * Cms * 1000;
+
+  // Reference efficiency η₀ and sensitivity (1W@1m dB SPL)
+  var eta0    = (rho * BL * BL * Sd * Sd) / (2 * Math.PI * c * Mms * Mms * Re);
+  var sensitiv = 112.1 + 10 * Math.log10(eta0);
+
+  // Enclosure recommendation from Qts
+  var encl = Qts < 0.40 ? 'Bass Reflex (vented)' :
+             Qts < 0.70 ? 'Sealed or Vented (either suits this Qts)' :
+             Qts < 1.00 ? 'Sealed (closed box)' : 'Bandpass or Open Baffle';
+
+  // Validation flags against type-specific targets
+  var TARGETS = {
+    'Full-Range':{fs:[60,200], qts:[0.35,1.1], sens:[83,95]},
+    'Woofer':    {fs:[25,90],  qts:[0.2,0.9],  sens:[85,96]},
+    'Midrange':  {fs:[80,400], qts:[0.3,1.2],  sens:[87,98]},
+    'Subwoofer': {fs:[15,55],  qts:[0.18,0.75],sens:[82,93]},
+    'Tweeter':   {fs:[500,3000],qts:[0.4,1.6], sens:[89,100]}
+  };
+  var tgt = TARGETS[driver.type] || TARGETS['Full-Range'];
+  var flags = [];
+
+  if (fs < tgt.fs[0]) flags.push({lvl:'warn',  msg:'fs ≈ ' + fs.toFixed(0) + ' Hz — unusually low for ' + driver.type + ' (typical ' + tgt.fs[0] + '–' + tgt.fs[1] + ' Hz). Review cone mass or surround compliance.'});
+  if (fs > tgt.fs[1]) flags.push({lvl:'warn',  msg:'fs ≈ ' + fs.toFixed(0) + ' Hz — higher than expected. May limit low-frequency extension. Softer surround or lighter cone would reduce fs.'});
+  if (Qts > tgt.qts[1]) flags.push({lvl:'warn',msg:'Qts ≈ ' + Qts.toFixed(2) + ' — high mechanical Q. Well suited to sealed enclosures. Avoid vented designs.'});
+  if (Qts < tgt.qts[0]) flags.push({lvl:'info',msg:'Qts ≈ ' + Qts.toFixed(2) + ' — well-damped motor. Ideal for bass-reflex or bandpass systems.'});
+  if (BL2Re < 4)  flags.push({lvl:'error',msg:'Motor factor BL²/Re = ' + BL2Re.toFixed(1) + ' T²m²/Ω — weak motor. Consider higher-flux magnet or lower-resistance coil.'});
+  if (BL2Re > 80) flags.push({lvl:'warn', msg:'BL²/Re = ' + BL2Re.toFixed(1) + ' — very high. Ensure adequate gap clearance to avoid coil rub at rated Xmax.'});
+  if (sensitiv < tgt.sens[0]) flags.push({lvl:'warn',msg:'Estimated sensitivity ' + sensitiv.toFixed(1) + ' dB/1W — below expected range for ' + driver.type + '. Motor may be under-specified for cone area.'});
+  if (!flags.find(function(f){return f.lvl==='error'||f.lvl==='warn';})) {
+    flags.push({lvl:'ok', msg:'Topology is acoustically consistent with expected performance for ' + driver.type + '.'});
+  }
+
+  return {sizeMM:sizeMM, Sd:Sd, Mms:Mms, Mmd:Mmd, Mair:Mair, BL:BL, Re:Re, Cms:Cms,
+          fs:fs, Qms:Qms, Qes:Qes, Qts:Qts, Vas:Vas, sensitiv:sensitiv, BL2Re:BL2Re,
+          encl:encl, flags:flags};
+}
+
 function computeSpkPerUnit(driver,inp,country){
   var refMM=REF_MM[driver.type]||165;
   var sizeScale=Math.pow(driver.sizeMM/refMM,1.3);
@@ -1222,7 +1334,7 @@ function computeSpkPerUnit(driver,inp,country){
   var ga=mfgCost*0.07;
   var toolAmort=tool.perUnit;
   var warranty=mfgCost*0.015;
-  var lowCC=['China','Vietnam','India','Thailand','Mexico'];
+  var lowCC=['China','China (Coastal)','China (Inland)','Vietnam','India','Thailand','Mexico','SE Asia (other)'];
   var inbound=DM*(lowCC.indexOf(inp.country)>=0?0.04:0.03);
   var works=mfgCost+ga+toolAmort+warranty+inbound;
   var sys=SPK_SYS[driver.type]||SPK_SYS['Full-Range'];
@@ -1230,7 +1342,8 @@ function computeSpkPerUnit(driver,inp,country){
   var sysItems=(sys.hsg+sys.grille+sys.brkt+sys.conn)*sysScale;
   var totalPerUnit=works+sysItems;
   var co2PerUnit=bom.reduce(function(s,r){return s+r.co2;},0);
-  return {driver:driver,bom:bom,proc:proc,tool:tool,DM:DM,DLab:DLab,DMach:DMach,prime:prime,foh:foh,mfgCost:mfgCost,ga:ga,toolAmort:toolAmort,warranty:warranty,inbound:inbound,works:works,sysItems:sysItems,totalPerUnit:totalPerUnit,co2PerUnit:co2PerUnit};
+  var physics=computePhysics(driver,scaledInp,{bom:bom});
+  return {driver:driver,bom:bom,proc:proc,tool:tool,DM:DM,DLab:DLab,DMach:DMach,prime:prime,foh:foh,mfgCost:mfgCost,ga:ga,toolAmort:toolAmort,warranty:warranty,inbound:inbound,works:works,sysItems:sysItems,totalPerUnit:totalPerUnit,co2PerUnit:co2PerUnit,physics:physics};
 }
 
 function computeSystemCost(inp){
@@ -1277,6 +1390,21 @@ var _lastResult = null;
 var _senChart = null;
 var _co2Chart = null;
 var _debTimer = null;
+var _rateOverrides = {};
+
+function readContractedRates() {
+  var ro = {};
+  var fields = [{id:'ro_mag',key:'mag'},{id:'ro_cone',key:'cone'},{id:'ro_surr',key:'surr'},
+                {id:'ro_bask',key:'bask'},{id:'ro_wire',key:'wire'},{id:'ro_fmr',key:'fmr'}];
+  fields.forEach(function(f) {
+    var el = document.getElementById(f.id);
+    if (el && el.value.trim() !== '') {
+      var v = parseFloat(el.value);
+      if (!isNaN(v) && v > 0) ro[f.key] = v / FX_GBP; // convert £ input → internal USD
+    }
+  });
+  return ro;
+}
 
 // ─── Count-up animation ───────────────────────────────────────────────────────
 function countUp(el, target, prefix, suffix, decimals, duration) {
@@ -1314,6 +1442,7 @@ function showTab(id) {
     if (id === 'sustain')  renderSustainability(_lastResult);
     if (id === 'bench')    renderBenchmarking(_lastResult);
     if (id === 'process')  renderProcess(_lastResult);
+    if (id === 'physics')  renderPhysicsTab(_lastResult);
     if (id === 'ai')       renderAIInsights(_lastResult);
     if (id === 'compare') renderScenarioCompare();
   }
@@ -1722,6 +1851,76 @@ function renderRecommendations(r) {
   cont.innerHTML = html;
 }
 
+// ─── renderPhysicsTab ─────────────────────────────────────────────────────────
+function renderPhysicsTab(r) {
+  var html = '<p style="font-size:11px;color:var(--t3);font-style:italic;margin-bottom:16px">⚠ Engineering approximations derived from material topology and geometry — not substitutes for measured Thiele-Small parameters. Use for directional design validation only.</p>';
+
+  if (Object.keys(_rateOverrides).length > 0) {
+    var overrideList = Object.keys(_rateOverrides).map(function(k){
+      return k + ': £' + (_rateOverrides[k] * FX_GBP).toFixed(2) + '/kg';
+    }).join(' | ');
+    html += '<div class="card" style="padding:10px 14px;margin-bottom:16px;background:rgba(59,130,246,0.08);border-color:var(--blue)">';
+    html += '<strong style="font-size:11px;color:var(--blue2)">⚙ Contracted Rate Overrides Active:</strong> ';
+    html += '<span style="font-size:11px;color:var(--t2)">' + esc(overrideList) + '</span>';
+    html += '<span style="font-size:10px;color:var(--t3);display:block;margin-top:2px">These rates are used in cost calculations above instead of the library defaults.</span>';
+    html += '</div>';
+  }
+
+  (r.spkResults || []).forEach(function(sr) {
+    var d = sr.driver;
+    var ph = sr.physics;
+    if (!ph) { html += '<p style="color:var(--t3)">Physics not available for ' + esc(d.role) + '.</p>'; return; }
+
+    html += '<div class="section-title">' + esc(d.role) + ' (' + d.sizeMM + ' mm ' + d.type + ') — Acoustic Parameter Estimates</div>';
+
+    // Parameter grid
+    html += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:8px;margin-bottom:14px">';
+    [
+      {lbl:'Resonance fs',    val: ph.fs.toFixed(0) + ' Hz',              hint:'Free-air resonant frequency'},
+      {lbl:'Moving Mass Mms', val: (ph.Mms*1000).toFixed(2) + ' g',       hint:'Mmd (cone+VC+former+½surround) + air load'},
+      {lbl:'BL Product',      val: ph.BL.toFixed(2) + ' T·m',             hint:'Motor force factor — estimated from magnet grade & size'},
+      {lbl:'Motor Factor',    val: ph.BL2Re.toFixed(1) + ' T²m²/Ω',      hint:'BL²/Re — higher = stronger motor relative to coil resistance'},
+      {lbl:'DC Resistance Re',val: ph.Re.toFixed(1) + ' Ω',               hint:'Estimated nominal DC coil resistance'},
+      {lbl:'Qes (electrical)',val: ph.Qes.toFixed(2),                      hint:'Electrical damping Q factor'},
+      {lbl:'Qts (total)',     val: ph.Qts.toFixed(2),                      hint:'Total system Q — key enclosure design parameter'},
+      {lbl:'Qms (mechanical)',val: ph.Qms.toFixed(1),                      hint:'Mechanical Q factor (assumed typical)'},
+      {lbl:'Vas',             val: ph.Vas.toFixed(2) + ' L',               hint:'Equivalent air volume — dictates enclosure size'},
+      {lbl:'Sensitivity',     val: ph.sensitiv.toFixed(1) + ' dB',         hint:'Estimated 1W/1m SPL sensitivity'},
+      {lbl:'Effective Sd',    val: (ph.Sd*1e4).toFixed(1) + ' cm²',        hint:'Effective piston area (85% of nominal radius)'},
+      {lbl:'Air Load Mair',   val: (ph.Mair*1000).toFixed(2) + ' g',       hint:'Radiation mass added by air coupling'}
+    ].forEach(function(pm) {
+      html += '<div class="card" style="padding:10px 8px;text-align:center" title="' + esc(pm.hint) + '">';
+      html += '<div style="font-size:17px;font-weight:700;color:var(--blue2);letter-spacing:-0.5px">' + esc(pm.val) + '</div>';
+      html += '<div style="font-size:10px;color:var(--t3);margin-top:3px;line-height:1.3">' + esc(pm.lbl) + '</div>';
+      html += '</div>';
+    });
+    html += '</div>';
+
+    // Enclosure recommendation
+    html += '<div class="card" style="padding:12px 14px;margin-bottom:14px;background:rgba(99,102,241,0.08);border-color:var(--purple)">';
+    html += '<strong style="color:var(--purple2)">Recommended Enclosure Topology:</strong> ';
+    html += '<span style="color:var(--t1);font-weight:600">' + esc(ph.encl) + '</span>';
+    html += '<span style="color:var(--t3);font-size:11px;margin-left:8px">(Qts = ' + ph.Qts.toFixed(2) + ')</span>';
+    html += '</div>';
+
+    // Validation flags
+    html += '<div class="section-title" style="margin-bottom:8px">Design Validation Flags</div>';
+    ph.flags.forEach(function(flag) {
+      var col  = {error:'var(--red)', warn:'var(--amber)', info:'var(--blue2)', ok:'var(--green2)'}[flag.lvl] || 'var(--t2)';
+      var icon = {error:'✗', warn:'⚠', info:'ℹ', ok:'✓'}[flag.lvl] || '•';
+      html += '<div style="display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid var(--bd)">';
+      html += '<span style="color:' + col + ';font-weight:700;font-size:14px;flex-shrink:0;width:16px;text-align:center">' + icon + '</span>';
+      html += '<span style="color:var(--t2);font-size:12px;line-height:1.5">' + esc(flag.msg) + '</span>';
+      html += '</div>';
+    });
+
+    html += '<div style="height:28px"></div>';
+  });
+
+  var cont = document.getElementById('physicsContent');
+  if (cont) cont.innerHTML = html;
+}
+
 // ─── renderAIInsights ─────────────────────────────────────────────────────────
 function renderAIInsights(r) {
   var co2  = r.totalSpkCO2;
@@ -2097,6 +2296,7 @@ function calculate() {
   };
 
   try {
+    _rateOverrides = readContractedRates();
     var r = computeSystemCost(inp);
     _lastResult = r;
 
@@ -2112,6 +2312,7 @@ function calculate() {
     if (activeId === 'sustain')  renderSustainability(r);
     if (activeId === 'bench')    renderBenchmarking(r);
     if (activeId === 'process')  renderProcess(r);
+    if (activeId === 'physics')  renderPhysicsTab(r);
     if (activeId === 'ai')       renderAIInsights(r);
 
   } catch(e) {
