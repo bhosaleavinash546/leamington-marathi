@@ -3,8 +3,7 @@ import { motion } from 'framer-motion';
 import { Calculator, ChevronDown, Cpu, ShieldCheck } from 'lucide-react';
 import ButtonSpinner from '../components/ui/ButtonSpinner';
 import { useAuth } from '../contexts/AuthContext';
-
-const CURRENCIES = ['EUR', 'GBP', 'USD', 'CNY'];
+import { CURRENCIES, COST_COMPONENTS } from '../constants/costing';
 
 // Fallback catalogues (overridden by /api/should-cost/catalogue on mount)
 const FALLBACK_MATERIALS = ['Steel (mild)', 'Steel (high-strength)', 'Stainless Steel 304', 'Aluminium 6061', 'Aluminium 7075', 'Magnesium AZ31', 'Polypropylene (PP)', 'PA6 (Nylon)', 'ABS', 'CFRP (Carbon Fibre)'];
@@ -32,15 +31,7 @@ interface ShouldCostResult {
   negotiationLeverage: string;
 }
 
-const BREAKDOWN_META: { key: string; label: string; color: string; bar: string }[] = [
-  { key: 'material',  label: 'Material',          color: 'text-blue-400',   bar: 'bg-blue-500' },
-  { key: 'machine',   label: 'Machine',           color: 'text-purple-400', bar: 'bg-purple-500' },
-  { key: 'labour',    label: 'Labour',            color: 'text-pink-400',   bar: 'bg-pink-500' },
-  { key: 'setup',     label: 'Setup',             color: 'text-cyan-400',   bar: 'bg-cyan-500' },
-  { key: 'tooling',   label: 'Tooling (amort.)',  color: 'text-indigo-400', bar: 'bg-indigo-500' },
-  { key: 'overhead',  label: 'Overhead',          color: 'text-amber-400',  bar: 'bg-amber-500' },
-  { key: 'sgaProfit', label: 'SG&A / Profit',     color: 'text-emerald-400',bar: 'bg-emerald-500' },
-];
+const BREAKDOWN_META = COST_COMPONENTS.map(c => ({ key: c.key, label: c.label, color: c.text, bar: c.bar }));
 
 export default function ShouldCostPage() {
   const { token } = useAuth();
@@ -55,7 +46,7 @@ export default function ShouldCostPage() {
   const [annualVolume, setAnnualVolume] = useState('');
   const [quotedCost, setQuotedCost] = useState('');
   const [region, setRegion] = useState(FALLBACK_REGIONS[0]);
-  const [currency, setCurrency] = useState(CURRENCIES[0]);
+  const [currency, setCurrency] = useState<string>(CURRENCIES[0]);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<ShouldCostResult | null>(null);
   const [error, setError] = useState('');
@@ -162,7 +153,7 @@ export default function ShouldCostPage() {
               <div>
                 <label htmlFor="sc-currency" className="block text-xs text-slate-400 mb-1.5">Currency</label>
                 <div className="relative">
-                  <select id="sc-currency" value={currency} onChange={e => setCurrency(e.target.value)} className="w-full bg-navy-800 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm appearance-none focus:outline-none focus:border-teal-500/40">
+                  <select id="sc-currency" value={currency} onChange={e => { setCurrency(e.target.value); setResult(null); }} className="w-full bg-navy-800 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm appearance-none focus:outline-none focus:border-teal-500/40">
                     {CURRENCIES.map(c => <option key={c} value={c}>{c}</option>)}
                   </select>
                   <ChevronDown size={14} className="absolute right-3 top-3 text-slate-500 pointer-events-none" />

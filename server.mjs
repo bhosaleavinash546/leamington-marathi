@@ -4784,41 +4784,60 @@ app.get('/api/should-cost/catalogue', (_req, res) => {
 // process and refreshed lazily; on any failure we keep the last good rates and
 // ultimately fall back to a static table so costing never breaks offline.
 const FX_FALLBACK = { EUR: 1, GBP: 0.85, USD: 1.08, CNY: 7.85 };
+const FX_SYMBOLS = { EUR: '€', GBP: '£', USD: '$', CNY: '¥' };
+const FX_CURRENCIES = Object.keys(FX_FALLBACK);   // the single supported-currency list
+const FX_TARGETS = FX_CURRENCIES.filter(c => c !== 'EUR');
 const FX_TTL_MS = 6 * 60 * 60 * 1000;   // serve cached live rates for 6 h
 const FX_RETRY_MS = 5 * 60 * 1000;      // after a failed fetch, wait 5 min before retrying
 // Feed must return { rates: { GBP, USD, CNY, ... } } with an EUR base. Override
 // via FX_API_URL if frankfurter.app is unreachable from the deployment network.
-const FX_API_URL = process.env.FX_API_URL || 'https://api.frankfurter.app/latest?from=EUR&to=GBP,USD,CNY';
+const FX_API_URL = process.env.FX_API_URL || `https://api.frankfurter.app/latest?from=EUR&to=${FX_TARGETS.join(',')}`;
 let fxCache = { rates: { ...FX_FALLBACK }, fetchedAt: 0, lastAttempt: 0, live: false, date: null };
+let fxInflight = null;   // single shared refresh promise — dedups concurrent callers
 
 async function getFxRates() {
   const now = Date.now();
   if (fxCache.live && now - fxCache.fetchedAt < FX_TTL_MS) return fxCache; // fresh live data
   if (now - fxCache.lastAttempt < FX_RETRY_MS) return fxCache;            // recent attempt — back off
+  if (fxInflight) return fxInflight;   // a refresh is already running — join it, don't start another
   fxCache = { ...fxCache, lastAttempt: now };
-  try {
-    const ctrl = new AbortController();
-    const timer = setTimeout(() => ctrl.abort(), 4000);
-    let j;
+  fxInflight = (async () => {
     try {
-      const r = await fetch(FX_API_URL, { signal: ctrl.signal });
-      if (!r.ok) throw new Error(`FX HTTP ${r.status}`);
-      j = await r.json();
-    } finally { clearTimeout(timer); }
-    const rates = { EUR: 1, GBP: Number(j?.rates?.GBP), USD: Number(j?.rates?.USD), CNY: Number(j?.rates?.CNY) };
-    if (['GBP', 'USD', 'CNY'].every(k => Number.isFinite(rates[k]) && rates[k] > 0)) {
-      fxCache = { rates, fetchedAt: now, lastAttempt: now, live: true, date: j.date || null };
+      const ctrl = new AbortController();
+      const timer = setTimeout(() => ctrl.abort(), 4000);
+      let j;
+      try {
+        const r = await fetch(FX_API_URL, { signal: ctrl.signal });
+        if (!r.ok) throw new Error(`FX HTTP ${r.status}`);
+        j = await r.json();
+      } finally { clearTimeout(timer); }
+      // Accept whatever valid rates came back; fall back per-currency for any missing
+      // one rather than discarding the whole (good) response.
+      const rates = { ...FX_FALLBACK };
+      let any = false;
+      for (const k of FX_TARGETS) {
+        const v = Number(j?.rates?.[k]);
+        if (Number.isFinite(v) && v > 0) { rates[k] = v; any = true; }
+      }
+      if (any) fxCache = { rates, fetchedAt: now, lastAttempt: now, live: true, date: j.date || null };
+    } catch {
+      // network/parse failure — keep the last good (or fallback) rates.
     }
-  } catch {
-    // network/parse failure — keep the last good (or fallback) rates.
-  }
-  return fxCache;
+    return fxCache;
+  })();
+  try { return await fxInflight; } finally { fxInflight = null; }
 }
 
 app.post('/api/should-cost', requireAuth, rateLimit(60, 60 * 60 * 1000), async (req, res) => {
-  const { partName, material, process, weightKg, annualVolume, quotedCost, region, currency = 'EUR', apiKey } = req.body;
+  const { partName, material, process, weightKg, annualVolume, quotedCost, region, apiKey } = req.body;
   if (!partName || !material || !process || !weightKg || !annualVolume) {
     return res.status(400).json({ error: 'Missing required fields: partName, material, process, weightKg, annualVolume.' });
+  }
+  // Currency must be one we can actually convert — otherwise we'd emit raw EUR
+  // numbers under a foreign label (rate would silently fall back to 1).
+  const currency = String(req.body.currency || 'EUR').toUpperCase();
+  if (!FX_CURRENCIES.includes(currency)) {
+    return res.status(400).json({ error: `Unsupported currency "${currency}". Supported: ${FX_CURRENCIES.join(', ')}.` });
   }
 
   // ── 1. Deterministic bottom-up cost (NO LLM — real rate × time / mass × price) ─
@@ -4837,11 +4856,10 @@ app.post('/api/should-cost', requireAuth, rateLimit(60, 60 * 60 * 1000), async (
   // ── FX: the deterministic engine is EUR-denominated. Convert every monetary
   //    figure to the requested currency and label it with the proper symbol so
   //    the UI never shows a EUR value under a GBP/USD/CNY heading. ────────────
-  const fx = await getFxRates();
-  const FX = fx.rates;
-  const SYM = { EUR: '€', GBP: '£', USD: '$', CNY: '¥' };
-  const rate = FX[currency] ?? 1;
-  const sym  = SYM[currency] || `${currency} `;
+  // EUR is the base — no conversion and no network dependency needed for it.
+  const fx = currency === 'EUR' ? { rates: FX_FALLBACK, live: false, date: null } : await getFxRates();
+  const rate = fx.rates[currency] ?? 1;
+  const sym  = FX_SYMBOLS[currency] || `${currency} `;
   const cv   = (n) => Number(n) * rate;                       // EUR → target currency
   const fmt  = (n) => `${sym}${cv(n).toFixed(2)}`;            // EUR value → labelled string
   const total = calc.totalShouldCost;
@@ -4874,7 +4892,7 @@ app.post('/api/should-cost', requireAuth, rateLimit(60, 60 * 60 * 1000), async (
   const result = {
     engine: 'deterministic',
     currency,
-    symbol: SYM[currency] || currency,
+    symbol: sym,
     fx: currency === 'EUR' ? null : { base: 'EUR', rate: Number(rate.toFixed(4)), asOf: fx.live ? fx.date : null, source: fx.live ? 'ECB (frankfurter.app)' : 'static reference' },
     materialCost: fmt(b.material.value),
     processCost: fmt(processCost),

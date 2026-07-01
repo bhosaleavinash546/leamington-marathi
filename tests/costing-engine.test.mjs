@@ -58,6 +58,21 @@ test('invalid inputs throw clearly', () => {
   assert.throws(() => computeShouldCost({ ...base, annualVolume: -5 }), /annualVolume/);
 });
 
+test('incompatible material/process family throws instead of silently mis-costing', () => {
+  // A ferrous part cannot be costed on the aluminium-die-casting model.
+  assert.throws(
+    () => computeShouldCost({ ...base, material: 'Steel (mild)', process: 'Die Casting (Aluminium)' }),
+    /not compatible/,
+  );
+  // Injection moulding is plastic-only.
+  assert.throws(
+    () => computeShouldCost({ ...base, material: 'Steel (mild)', process: 'Injection Moulding' }),
+    /not compatible/,
+  );
+  // A compatible pair still works.
+  assert.ok(computeShouldCost({ ...base, material: 'Aluminium 6061', process: 'Die Casting (Aluminium)' }).totalShouldCost > 0);
+});
+
 test('simulation is deterministic and well-ordered (p10 <= p50 <= p90)', () => {
   const a = simulateShouldCost(base);
   const b = simulateShouldCost(base);

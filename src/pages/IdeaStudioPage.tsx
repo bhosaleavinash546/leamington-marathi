@@ -8,22 +8,11 @@ import { parseCadFile, estimateMass, formatFileSize, type CadGeometry } from '..
 import { generateCostReductionIdeas } from '../services/claude-service';
 import { toast } from '../hooks/useToast';
 import ButtonSpinner from '../components/ui/ButtonSpinner';
+import { CURRENCIES, COST_COMPONENTS } from '../constants/costing';
 
 type Mode = 'cad' | 'image';
 
-const CURRENCIES = ['EUR', 'GBP', 'USD', 'CNY'];
 const TOLERANCE = ['Standard', 'Tight (precision)', 'Loose (non-critical)'];
-
-// Cost-component palette for the baseline breakdown pie (matches ShouldCostPage).
-const COST_META: { key: string; label: string; color: string }[] = [
-  { key: 'material',  label: 'Material',       color: '#3b82f6' },
-  { key: 'machine',   label: 'Machine',        color: '#a855f7' },
-  { key: 'labour',    label: 'Labour',         color: '#ec4899' },
-  { key: 'setup',     label: 'Setup',          color: '#06b6d4' },
-  { key: 'tooling',   label: 'Tooling',        color: '#6366f1' },
-  { key: 'overhead',  label: 'Overhead',       color: '#f59e0b' },
-  { key: 'sgaProfit', label: 'SG&A / Profit',  color: '#10b981' },
-];
 
 type CostSlice = { name: string; value: number; pct: number; color: string };
 
@@ -186,11 +175,15 @@ export default function IdeaStudioPage() {
       });
       if (r.ok) {
         const d = await r.json();
-        const slices: CostSlice[] = COST_META
-          .map(m => { const c = d.breakdown?.[m.key]; return c ? { name: m.label, value: Number(c.value) || 0, pct: Number(c.pct) || 0, color: m.color } : null; })
-          .filter((s): s is CostSlice => !!s && s.value > 0);
+        const slices: CostSlice[] = COST_COMPONENTS
+          .flatMap(m => { const c = d.breakdown?.[m.key]; const v = Number(c?.value) || 0; return c && v > 0 ? [{ name: m.label, value: v, pct: Number(c.pct) || 0, color: m.hex }] : []; });
         setBaseline({ total: d.totalShouldCost, matPct: d.breakdown?.material?.pct ?? 0, p10: d.simulation?.p10, p90: d.simulation?.p90, symbol: d.symbol || '', breakdown: slices });
-      } else { setBaselineNote('Could not compute a baseline for these inputs.'); }
+      } else {
+        // Surface the engine's own message (e.g. material/process family mismatch)
+        // instead of a generic note, so the user knows exactly why.
+        const msg = await r.json().then(d => d?.error).catch(() => null);
+        setBaselineNote(msg || 'Could not compute a baseline for these inputs.');
+      }
     } catch { setBaselineNote('Could not compute a baseline right now.'); } finally { setBaselineLoading(false); }
   }
 
@@ -408,7 +401,7 @@ export default function IdeaStudioPage() {
             </div>
             <div className="grid grid-cols-3 gap-3">
               <Field label="Plant region"><select value={region} onChange={e => setRegion(e.target.value)} className={inp}>{(regions.length ? regions : ['Germany']).map(r => <option key={r}>{r}</option>)}</select></Field>
-              <Field label="Currency"><select value={currency} onChange={e => { setCurrency(e.target.value); setBaseline(null); setBaselineNote(''); }} className={inp}>{CURRENCIES.map(c => <option key={c}>{c}</option>)}</select></Field>
+              <Field label="Currency"><select value={currency} onChange={e => { setCurrency(e.target.value); setBaseline(null); setBaselineNote(''); setTargetCost(''); }} className={inp}>{CURRENCIES.map(c => <option key={c}>{c}</option>)}</select></Field>
               <Field label="Target cost"><input type="number" value={targetCost} onChange={e => setTargetCost(e.target.value)} placeholder="opt." className={inp} /></Field>
             </div>
             <div className="grid grid-cols-2 gap-3">

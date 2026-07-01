@@ -170,6 +170,11 @@ export function computeShouldCost(input, overrides = {}) {
   if (!mat) throw new Error(`Unknown material: ${material}`);
   if (!proc) throw new Error(`Unknown process: ${process}`);
   if (!reg) throw new Error(`Unknown region: ${region}`);
+  // Family compatibility: costing a ferrous part on an aluminium-die-casting model
+  // (or similar) yields a physically meaningless number. Refuse rather than mislead.
+  if (Array.isArray(proc.families) && !proc.families.includes(mat.family)) {
+    throw new Error(`${material} (${mat.family}) is not compatible with ${process}, which is modelled for ${proc.families.join(' / ')} only.`);
+  }
 
   const w = Number(weightKg);
   const vol = Number(annualVolume);
