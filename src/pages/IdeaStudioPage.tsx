@@ -28,60 +28,6 @@ function mapProcess(guess: string, catalogue: string[]): string {
   return find('machining') || catalogue[0] || 'Machining (CNC)';
 }
 
-// Fuzzy-match a FREE-TEXT material to a should-cost catalogue entry (for the baseline).
-// Returns null if nothing sensible matches — the baseline is then simply unavailable.
-function matchMaterial(typed: string, catalogue: string[]): string | null {
-  const t = (typed || '').toLowerCase();
-  if (!t.trim() || !catalogue.length) return null;
-  const has = (kw: string) => catalogue.find(m => m.toLowerCase().includes(kw));
-  // Cast/ductile/nodular/grey iron — now a first-class family in the cost library.
-  if (/grey iron|gray iron|grey cast|gray cast|\bgg\d|gg-?\d|gjl/.test(t)) return has('cast iron (grey') || has('cast iron') || has('steel') || catalogue[0];
-  if (/iron|gjs|ggg|nodular|ductile|sg iron|spheroidal/.test(t)) return has('ductile') || has('cast iron') || has('steel') || catalogue[0];
-  if (/titan|ti-?6al|ti6al|tc4|grade ?5 ti/.test(t)) return has('titanium') || null;
-  if (/zamak|zamac|\bzdc\b|\bzp\d|zinc alloy/.test(t)) return has('zinc') || null;
-  if (/brass|bronze|copper|cuzn|cusn|\bc\d{5}/.test(t)) return has('brass') || has('copper') || null;
-  if (/steel|dp\d|hsla|22mnb5|boron|ss30|stainless|c45|s355|crmo|mncr|nicr|nimo|42cr/.test(t)) return has('stainless') && /stainless|304|316/.test(t) ? has('stainless')! : (has('high-strength') && /hsla|dp|boron|22mnb5|advanced|crmo|nicr|nimo|42cr|high.?strength/.test(t) ? has('high-strength')! : (has('steel') || catalogue[0]));
-  if (/7075/.test(t)) return has('7075') || has('alumin') || null;
-  // Cast-aluminium alloys (A356 / AlSi / ADC / AC) map to the cast grade when present.
-  if (/a3\d\d|ac4|adc\d|alsi|silumin|\bal-?si|cast alumin/.test(t)) return has('a356') || has('6061') || has('alumin') || null;
-  if (/alumin|aluminum|\bal\b|60\d\d/.test(t)) return has('6061') || has('alumin') || null;
-  if (/magnes|\bmg\b|az\d\d|am\d\d|ae44/.test(t)) return has('magnes') || null;
-  if (/cfrp|carbon fib|carbon-fib|composite|gfrp|\bfrp\b|prepreg/.test(t)) return has('cfrp') || has('carbon') || null;
-  if (/glass.?fill|gf\d\d|\bgf\b|pa66/.test(t)) return has('gf30') || has('pa66') || has('pa6') || has('nylon') || null;
-  if (/pa6|nylon|polyamide/.test(t)) return has('pa6') || has('nylon') || null;
-  if (/pom|acetal|delrin/.test(t)) return has('pom') || has('acetal') || null;
-  if (/polycarb|\bpc\b|lexan|makrolon/.test(t)) return has('polycarb') || has('(pc)') || null;
-  if (/\babs\b/.test(t)) return has('abs') || null;
-  if (/\bpp\b|polyprop/.test(t)) return has('polyprop') || has('pp') || null;
-  return null;
-}
-
-// Fuzzy-match a FREE-TEXT process to a should-cost catalogue entry.
-function matchProcess(typed: string, catalogue: string[]): string | null {
-  const t = (typed || '').toLowerCase();
-  if (!t.trim() || !catalogue.length) return null;
-  const has = (kw: string) => catalogue.find(p => p.toLowerCase().includes(kw));
-  if (/stamp|sheet metal|press|deep draw|blank/.test(t)) return has('stamp') || null;
-  if (/roll form/.test(t)) return has('roll form') || has('stamp') || null;
-  if (/hydroform/.test(t)) return has('hydroform') || null;
-  if (/laser/.test(t)) return has('laser') || null;
-  if (/rtm|prepreg|autoclave|layup|lay-up|hand lai|composite mould|composite mold/.test(t)) return has('composite') || null;
-  if (/sand cast|green sand|sand mould|sand mold/.test(t)) return has('sand casting') || has('casting') || null;
-  if (/invest|lost wax|precision cast|shell mould|shell mold/.test(t)) return has('investment') || has('casting') || null;
-  if (/gravity|permanent mould|permanent mold|gdc\b|tilt pour/.test(t)) return has('gravity die') || has('die casting (alumin') || has('casting') || null;
-  if (/zinc die|zamak|\bzdc\b|zinc cast/.test(t)) return has('die casting (zinc') || has('casting') || null;
-  if (/hpdc|ldc|die.?cast|pressure die|pressure cast|squeeze cast/.test(t)) return has('die casting (alumin') || has('casting') || null;
-  if (/cast/.test(t)) return has('sand casting') || has('die casting (alumin') || has('casting') || null;
-  if (/cold forg/.test(t)) return has('forging (cold') || has('forging') || null;
-  if (/forg/.test(t)) return has('forging (hot') || has('forging') || null;
-  if (/machin|cnc|mill|turn|billet|vmc|hmc|lathe/.test(t)) return has('machining') || null;
-  if (/mould|mold|inject/.test(t)) return has('injection') || has('moulding') || null;
-  if (/extru/.test(t)) return has('extrusion') || null;
-  if (/spot weld|resistance weld/.test(t)) return has('spot weld') || has('welding') || null;
-  if (/weld|mig|tig|braze/.test(t)) return has('mig') || has('welding') || null;
-  return null;
-}
-
 export default function IdeaStudioPage() {
   const { token } = useAuth();
   const navigate = useNavigate();
@@ -164,19 +110,11 @@ export default function IdeaStudioPage() {
   async function computeBaseline() {
     if (!token || !weightKg || !annualVolume) return;
     setBaseline(null); setBaselineNote('');
-    // The deterministic engine needs a recognised material + process; fuzzy-match
-    // the free text. If it can't be mapped, the baseline is simply unavailable.
-    const engMat = matchMaterial(material, materials);
-    const engProc = matchProcess(process, processes);
-    if (!engMat || !engProc) {
-      const missing: string[] = [];
-      if (!engMat) missing.push(!material.trim()
-        ? 'a material (e.g. "Aluminium 6061", "Cast iron", "DP780 steel")'
-        : `a material the cost library recognises — “${material}” isn’t in it (try "Aluminium 6061", "Cast iron", "DP780 steel", "Magnesium")`);
-      if (!engProc) missing.push(!process.trim()
-        ? 'a process (e.g. "HPDC", "CNC machining", "Forging")'
-        : `a process the cost library recognises — “${process}” isn’t in it (try "HPDC", "CNC machining", "Forging", "Stamping")`);
-      setBaselineNote(`Baseline needs ${missing.join(' and ')}. This only affects the reference figure — your typed values still fully drive the AI ideas.`);
+    // The server resolves free-text material/process against the engine catalogue
+    // (single source of truth) and validates family compatibility. We only guard the
+    // trivially-empty case here to save a round-trip.
+    if (!material.trim() || !process.trim()) {
+      setBaselineNote('Baseline needs a material and process (e.g. "Cast iron" + "Sand casting"). This only affects the reference figure — your typed values still fully drive the AI ideas.');
       return;
     }
     setBaselineLoading(true);
@@ -184,18 +122,25 @@ export default function IdeaStudioPage() {
       const r = await fetch('/api/should-cost', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ partName: partName || 'Component', material: engMat, process: engProc, weightKg: Number(weightKg), annualVolume: Number(annualVolume), region, currency }),
+        body: JSON.stringify({ partName: partName || 'Component', material, process, weightKg: Number(weightKg), annualVolume: Number(annualVolume), region, currency }),
       });
       if (r.ok) {
         const d = await r.json();
         const slices: CostSlice[] = COST_COMPONENTS
           .flatMap(m => { const c = d.breakdown?.[m.key]; const v = Number(c?.value) || 0; return c && v > 0 ? [{ name: m.label, value: v, pct: Number(c.pct) || 0, color: m.hex }] : []; });
         setBaseline({ total: d.totalShouldCost, matPct: d.breakdown?.material?.pct ?? 0, p10: d.simulation?.p10, p90: d.simulation?.p90, symbol: d.symbol || '', breakdown: slices });
+        // Let the user know if we interpreted their free text as a nearest catalogue match.
+        if ((d.materialApprox && d.resolvedMaterial) || (d.processApprox && d.resolvedProcess)) {
+          const parts: string[] = [];
+          if (d.materialApprox) parts.push(`material as “${d.resolvedMaterial}”`);
+          if (d.processApprox) parts.push(`process as “${d.resolvedProcess}”`);
+          setBaselineNote(`Interpreted ${parts.join(' and ')} for the baseline.`);
+        }
       } else {
-        // Surface the engine's own message (e.g. material/process family mismatch)
-        // instead of a generic note, so the user knows exactly why.
+        // Surface the server's own message (unrecognised input, or family mismatch)
+        // so the user knows exactly why, and that ideas are unaffected.
         const msg = await r.json().then(d => d?.error).catch(() => null);
-        setBaselineNote(msg || 'Could not compute a baseline for these inputs.');
+        setBaselineNote(`${msg || 'Could not compute a baseline for these inputs.'} This only affects the reference figure — your typed values still fully drive the AI ideas.`);
       }
     } catch { setBaselineNote('Could not compute a baseline right now.'); } finally { setBaselineLoading(false); }
   }
@@ -352,10 +297,13 @@ export default function IdeaStudioPage() {
                 </button>
               </div>
               {baseline ? (
-                <div className="flex items-baseline gap-4">
-                  <span className="text-teal-300 font-black text-2xl">{baseline.total}</span>
-                  <span className="text-slate-500 text-xs">P10–P90 {baseline.p10}–{baseline.p90} · material {baseline.matPct}%</span>
-                </div>
+                <>
+                  <div className="flex items-baseline gap-4">
+                    <span className="text-teal-300 font-black text-2xl">{baseline.total}</span>
+                    <span className="text-slate-500 text-xs">P10–P90 {baseline.p10}–{baseline.p90} · material {baseline.matPct}%</span>
+                  </div>
+                  {baselineNote && <p className="text-slate-500 text-[11px] mt-1.5">{baselineNote}</p>}
+                </>
               ) : baselineNote ? (
                 <p className="text-amber-300/80 text-xs">{baselineNote}</p>
               ) : <p className="text-slate-500 text-xs">Fill weight, material, process &amp; volume, then Estimate to anchor savings in a real number (optional).</p>}

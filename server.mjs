@@ -18,6 +18,7 @@ import nodemailer from 'nodemailer';
 import Database from 'better-sqlite3';
 import { computeShouldCost, simulateShouldCost, volumeSensitivity, listMaterials, listProcesses, listRegions, MATERIALS, PROCESSES } from './costing-engine.mjs';
 import { validateIdeas } from './idea-validation.mjs';
+import { resolveMaterial, resolveProcess } from './material-process-resolve.mjs';
 import { analyzeFeatures } from './src/services/cad-features.mjs';
 import { aggregateOcctMeshes, analyzeBrep } from './src/services/cad-brep.mjs';
 
@@ -4843,10 +4844,22 @@ app.post('/api/should-cost', requireAuth, rateLimit(60, 60 * 60 * 1000), async (
     return res.status(400).json({ error: `Unsupported currency "${currency}". Supported: ${FX_CURRENCIES.join(', ')}.` });
   }
 
+  // Resolve free-text material/process to catalogue keys server-side (exact keys
+  // from the dropdown pass straight through). One resolver next to the engine —
+  // no client-side matcher to drift out of sync.
+  const matRes = resolveMaterial(material);
+  const procRes = resolveProcess(process);
+  if (!matRes || !procRes) {
+    const missing = [];
+    if (!matRes) missing.push(`a material the cost library recognises — “${material}” isn’t in it (try "Aluminium 6061", "Cast iron", "DP780 steel")`);
+    if (!procRes) missing.push(`a process the cost library recognises — “${process}” isn’t in it (try "HPDC", "CNC machining", "Sand casting", "Forging")`);
+    return res.status(400).json({ error: `Needs ${missing.join(' and ')}.` });
+  }
+
   // ── 1. Deterministic bottom-up cost (NO LLM — real rate × time / mass × price) ─
   let calc, sim, volumeCurve;
   try {
-    const engineInput = { material, process, weightKg: Number(weightKg), annualVolume: Number(annualVolume), region: region || 'Germany' };
+    const engineInput = { material: matRes.key, process: procRes.key, weightKg: Number(weightKg), annualVolume: Number(annualVolume), region: region || 'Germany' };
     calc = computeShouldCost(engineInput);
     sim  = simulateShouldCost(engineInput);
     volumeCurve = volumeSensitivity(engineInput);
@@ -4896,6 +4909,11 @@ app.post('/api/should-cost', requireAuth, rateLimit(60, 60 * 60 * 1000), async (
     engine: 'deterministic',
     currency,
     symbol: sym,
+    resolvedMaterial: matRes.key,
+    resolvedProcess: procRes.key,
+    // true when we fuzzy-matched free text rather than an exact catalogue pick.
+    materialApprox: matRes.approx,
+    processApprox: procRes.approx,
     fx: currency === 'EUR' ? null : { base: 'EUR', rate: Number(rate.toFixed(4)), asOf: fx.live ? fx.date : null, source: fx.live ? 'ECB (frankfurter.app)' : 'static reference' },
     materialCost: fmt(b.material.value),
     processCost: fmt(processCost),
@@ -4908,8 +4926,8 @@ app.post('/api/should-cost', requireAuth, rateLimit(60, 60 * 60 * 1000), async (
     simulation: { p10: fmt(sim.p10), p50: fmt(sim.p50), p90: fmt(sim.p90), p10Value: Number(cv(sim.p10).toFixed(2)), p50Value: Number(cv(sim.p50).toFixed(2)), p90Value: Number(cv(sim.p90).toFixed(2)), stdev: Number(cv(sim.stdev).toFixed(2)) },
     volumeCurve: volumeCurve.map(p => ({ volume: p.volume, unitCost: Number(cv(p.unitCost).toFixed(4)), unitCostLabel: fmt(p.unitCost) })),
     assumptions: [
-      `Material ${material} @ ${sym}${driversCv.pricePerKg}/kg, buy-to-fly input mass ${d.inputMassKg} kg (process utilisation ${(d.utilisation * 100).toFixed(0)}%).`,
-      `${process}: cycle ${d.cycleSecPerPart}s/part, machine rate ${sym}${driversCv.machineRate}/hr, ${d.operators} operator(s) @ ${sym}${driversCv.labourRate}/hr (${region}).`,
+      `Material ${matRes.key} @ ${sym}${driversCv.pricePerKg}/kg, buy-to-fly input mass ${d.inputMassKg} kg (process utilisation ${(d.utilisation * 100).toFixed(0)}%).`,
+      `${procRes.key}: cycle ${d.cycleSecPerPart}s/part, machine rate ${sym}${driversCv.machineRate}/hr, ${d.operators} operator(s) @ ${sym}${driversCv.labourRate}/hr (${region}).`,
       `Tooling ${sym}${driversCv.toolingTotal.toLocaleString()} amortised over ${d.amortVolume.toLocaleString()} parts; scrap ${d.scrapPct}%.`,
       `Overhead and SG&A/profit applied per ${region} factory norms.`,
     ],
@@ -4925,7 +4943,7 @@ app.post('/api/should-cost', requireAuth, rateLimit(60, 60 * 60 * 1000), async (
   if (apiKey) {
     try {
       const client = makeAnthropic(apiKey);
-      const prompt = `You are a 20-year automotive cost engineer. A DETERMINISTIC should-cost model has produced these figures for "${partName}" (${material}, ${process}, ${weightKg}kg, ${Number(annualVolume).toLocaleString()}/yr, ${region}):
+      const prompt = `You are a 20-year automotive cost engineer. A DETERMINISTIC should-cost model has produced these figures for "${partName}" (${matRes.key}, ${procRes.key}, ${weightKg}kg, ${Number(annualVolume).toLocaleString()}/yr, ${region}):
 - Total should-cost: ${fmt(total)} (Monte-Carlo P10–P90 ${fmt(sim.p10)}–${fmt(sim.p90)})
 - Material ${fmt(b.material.value)} | Machine ${fmt(b.machine.value)} | Labour ${fmt(b.labour.value)} | Tooling ${fmt(b.tooling.value)} | Overhead+SG&A ${fmt(b.overhead.value + b.sgaProfit.value)}
 ${quotedCost ? `- Supplier quote: ${sym}${quotedCost} (gap ${gapVsQuote})` : ''}
