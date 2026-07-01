@@ -16,6 +16,7 @@ interface ShouldCostResult {
   engine: string;
   currency: string;
   symbol?: string;
+  fx?: { base: string; rate: number; asOf: string | null; source: string } | null;
   materialCost: string;
   processCost: string;
   overheadCost: string;
@@ -211,6 +212,12 @@ export default function ShouldCostPage() {
                     <span className="text-slate-400 text-xs uppercase tracking-wider">Total Should-Cost / unit</span>
                     <span className="text-teal-300 font-black text-2xl">{result.totalShouldCost}</span>
                   </div>
+                  {result.fx && (
+                    <p className="text-slate-500 text-[10px] mt-1">
+                      Converted at 1 {result.fx.base} = {result.fx.rate} {result.currency}
+                      {result.fx.asOf ? ` · ${result.fx.source}, ${result.fx.asOf}` : ` · ${result.fx.source}`}
+                    </p>
+                  )}
                   {result.simulation && (
                     <div className="mt-3">
                       <div className="flex justify-between text-[11px] text-slate-400 mb-1">
