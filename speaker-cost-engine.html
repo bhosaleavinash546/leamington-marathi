@@ -367,11 +367,28 @@ input[type=range]{
 ════════════════════════════════════════════════════════════════ */
 .tabs-wrapper{
   background:var(--surface);border:1px solid var(--bd);
-  border-radius:12px 12px 0 0;border-bottom:none;overflow:hidden;
+  border-radius:12px 12px 0 0;border-bottom:none;
+  display:flex;align-items:stretch;
   transition:background var(--tx) ease,border-color var(--tx) ease;
 }
-.tabs{display:flex;overflow-x:auto;scrollbar-width:none}
+.tabs{display:flex;overflow-x:auto;scrollbar-width:none;flex:1}
 .tabs::-webkit-scrollbar{display:none}
+/* Corner utility buttons (Trends & About) */
+.corner-tabs{
+  display:flex;align-items:center;gap:4px;
+  padding:0 8px;flex-shrink:0;
+  border-left:1px solid var(--bd);
+}
+.corner-tab-btn{
+  padding:5px 10px;font-size:11px;font-weight:600;
+  color:var(--t3);background:transparent;
+  border:1px solid var(--bd);border-radius:7px;
+  cursor:pointer;display:flex;align-items:center;gap:5px;
+  transition:color var(--tx) ease,border-color var(--tx) ease,background var(--tx) ease;
+  white-space:nowrap;
+}
+.corner-tab-btn:hover{color:var(--blue2);border-color:rgba(0,230,118,0.4);background:var(--feat-bg)}
+.corner-tab-btn.active{color:var(--blue2);border-color:var(--blue);background:var(--chip-bg)}
 .tab-btn{
   padding:10px 16px;font-size:12px;font-weight:500;color:var(--t3);
   cursor:pointer;border:none;background:transparent;
@@ -1128,9 +1145,11 @@ html[data-theme="light"] .brand-version{
         <button class="tab-btn" data-tab="process" onclick="showTab('process')">Process &amp; DFMA</button>
         <button class="tab-btn" data-tab="physics" onclick="showTab('physics')">⚡ Physics</button>
         <button class="tab-btn" data-tab="ai" onclick="showTab('ai')">&#129302; AI Insights</button>
-        <button class="tab-btn" data-tab="trends" onclick="showTab('trends')">&#128225; Trends</button>
         <button class="tab-btn" data-tab="compare" onclick="showTab('compare')">⚖ Compare</button>
-        <button class="tab-btn" data-tab="about" onclick="showTab('about')" style="color:var(--cyan)">📘 About</button>
+      </div>
+      <div class="corner-tabs">
+        <button class="corner-tab-btn" data-tab="trends" onclick="showTab('trends')" title="Live commodity prices &amp; automotive audio news">📡 Trends</button>
+        <button class="corner-tab-btn" data-tab="about" onclick="showTab('about')" title="User guide, technical reference &amp; material grades">📘 About</button>
       </div>
     </div>
     <div class="tab-content">
@@ -2564,6 +2583,7 @@ function countUp(el, target, prefix, suffix, decimals, duration) {
 function showTab(id) {
   var M = window.Motion;
   document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
+  document.querySelectorAll('.corner-tab-btn').forEach(function(b) { b.classList.remove('active'); });
   document.querySelectorAll('.tab-panel').forEach(function(p) { p.style.display = 'none'; });
   var btn = document.querySelector('[data-tab="' + id + '"]');
   if (btn) {
@@ -3501,6 +3521,161 @@ function calculate() {
   }
 }
 
+// ─── Export PDF ──────────────────────────────────────────────────────────────
+function exportPDF() {
+  if (!_lastResult) { alert('Please run a calculation first, then export.'); return; }
+  showTab('overview');
+  setTimeout(function() { window.print(); }, 450);
+}
+
+// ─── Export PPT ──────────────────────────────────────────────────────────────
+function exportPPT() {
+  if (!_lastResult) { alert('Please run a calculation first, then export.'); return; }
+  var r = _lastResult;
+  var inp = r.inp || {};
+  var system  = inp.system  || 'System';
+  var country = inp.country || 'China';
+  var vol     = inp.annualVol ? inp.annualVol.toLocaleString() : '—';
+  var dmPct   = r.total > 0 ? (r.totalDM / r.total * 100).toFixed(1) : '0.0';
+  var dateStr = new Date().toLocaleDateString('en-GB', {day:'2-digit',month:'short',year:'numeric'});
+
+  try {
+    var pptx = new PptxGenJS();
+    pptx.layout  = 'LAYOUT_WIDE';
+    pptx.author  = 'SonoCost v2.1';
+    pptx.subject = 'Automotive Speaker Should-Cost Report';
+    pptx.title   = 'SonoCost — ' + system + ' Should-Cost Report';
+
+    var C = { neon:'00E676', dark:'080e14', surf:'111c2b', surf2:'162036',
+              t1:'e8f0f8', t2:'8aa0b8', t3:'546880', amber:'ffb300', cyan:'00bcd4' };
+
+    function accentBar(slide) {
+      slide.addShape(pptx.ShapeType.rect, {x:0,y:0,w:0.10,h:7.5, fill:{color:C.neon}, line:{color:C.neon}});
+    }
+
+    // ── Slide 1: Cover ──────────────────────────────────────────────────────
+    var s1 = pptx.addSlide();
+    s1.background = {color:C.dark};
+    accentBar(s1);
+    s1.addText([{text:'Sono',options:{color:C.neon}},{text:'Cost',options:{color:C.t1}}], {
+      x:0.4,y:1.6,w:12,h:1.1, fontSize:56, bold:true, fontFace:'Segoe UI'
+    });
+    s1.addText('Automotive Speaker Should-Cost Report', {
+      x:0.4,y:2.85,w:12,h:0.5, fontSize:18, color:C.t2, fontFace:'Segoe UI'
+    });
+    s1.addText(system + ' System  ·  ' + country + ' Manufacturing  ·  ' + vol + ' units/yr', {
+      x:0.4,y:3.45,w:12,h:0.4, fontSize:13, color:C.t3, fontFace:'Segoe UI'
+    });
+    s1.addShape(pptx.ShapeType.line, {x:0.4,y:4.1,w:12.5,h:0, line:{color:'1d2e50',width:1}});
+    s1.addText('Generated: ' + dateStr + '  ·  SonoCost v2.1', {
+      x:0.4,y:6.6,w:12,h:0.35, fontSize:10, color:C.t3, fontFace:'Segoe UI'
+    });
+
+    // ── Slide 2: KPI Summary ────────────────────────────────────────────────
+    var s2 = pptx.addSlide();
+    s2.background = {color:C.dark};
+    accentBar(s2);
+    s2.addText('System Cost Summary', {x:0.3,y:0.22,w:12,h:0.55, fontSize:24, bold:true, color:C.t1, fontFace:'Segoe UI'});
+    s2.addText(system + '  ·  ' + country + '  ·  ' + vol + ' units/yr', {
+      x:0.3,y:0.8,w:12,h:0.35, fontSize:11, color:C.t3, fontFace:'Segoe UI'
+    });
+    s2.addShape(pptx.ShapeType.line, {x:0.3,y:1.22,w:12.7,h:0, line:{color:'1d2e50',width:1}});
+
+    var kpis = [
+      {lbl:'EXW Total (GBP)', val:'£'+(r.total*FX_GBP).toFixed(2), color:C.neon},
+      {lbl:'Speaker Count',   val:r.totalSpkCount+' spk',           color:C.t1},
+      {lbl:'Direct Material', val:dmPct+'%',                         color:C.t1},
+      {lbl:'CO₂ Footprint',   val:r.totalSpkCO2.toFixed(2)+' kg',   color:C.t1},
+      {lbl:'Margin',          val:'£'+(r.margin*FX_GBP).toFixed(2), color:C.t1}
+    ];
+    kpis.forEach(function(k,i){
+      var x = 0.3 + i*2.6;
+      s2.addShape(pptx.ShapeType.rect, {x:x,y:1.45,w:2.42,h:1.7, fill:{color:C.surf}, line:{color:'1d2e50',width:1}});
+      s2.addText(k.val, {x:x+0.08,y:1.6,w:2.26,h:0.85, fontSize:22, bold:true, color:k.color, align:'center', fontFace:'Segoe UI'});
+      s2.addText(k.lbl, {x:x+0.08,y:2.47,w:2.26,h:0.4, fontSize:9, color:C.t3, align:'center', fontFace:'Segoe UI'});
+    });
+
+    // ── Slide 3: BOM per Driver ─────────────────────────────────────────────
+    var s3 = pptx.addSlide();
+    s3.background = {color:C.dark};
+    accentBar(s3);
+    s3.addText('Bill of Materials — Per Driver', {x:0.3,y:0.22,w:12,h:0.55, fontSize:24, bold:true, color:C.t1, fontFace:'Segoe UI'});
+    s3.addShape(pptx.ShapeType.line, {x:0.3,y:0.9,w:12.7,h:0, line:{color:'1d2e50',width:1}});
+
+    if (r.spkResults && r.spkResults.length) {
+      var hdr = [
+        {text:'Driver Role',  options:{bold:true,color:C.t2,fill:{color:'0d1520'},fontFace:'Segoe UI'}},
+        {text:'Type',         options:{bold:true,color:C.t2,fill:{color:'0d1520'},fontFace:'Segoe UI'}},
+        {text:'Qty',          options:{bold:true,color:C.t2,fill:{color:'0d1520'},align:'center',fontFace:'Segoe UI'}},
+        {text:'Unit Cost',    options:{bold:true,color:C.t2,fill:{color:'0d1520'},align:'right',fontFace:'Segoe UI'}},
+        {text:'Extended (£)', options:{bold:true,color:C.t2,fill:{color:'0d1520'},align:'right',fontFace:'Segoe UI'}},
+        {text:'CO₂ (kg)',     options:{bold:true,color:C.t2,fill:{color:'0d1520'},align:'right',fontFace:'Segoe UI'}}
+      ];
+      var rows = [hdr];
+      r.spkResults.forEach(function(sr){
+        var d = sr.driver;
+        rows.push([
+          {text:d.role,options:{color:C.t1,fontFace:'Segoe UI'}},
+          {text:d.type,options:{color:C.t1,fontFace:'Segoe UI'}},
+          {text:String(d.qty),options:{color:C.t1,align:'center',fontFace:'Segoe UI'}},
+          {text:'£'+(sr.totalPerUnit*FX_GBP).toFixed(2),options:{color:C.t1,align:'right',fontFace:'Segoe UI'}},
+          {text:'£'+(sr.totalPerUnit*d.qty*FX_GBP).toFixed(2),options:{color:C.neon,bold:true,align:'right',fontFace:'Segoe UI'}},
+          {text:(sr.co2PerUnit*d.qty).toFixed(2),options:{color:C.t1,align:'right',fontFace:'Segoe UI'}}
+        ]);
+      });
+      rows.push([
+        {text:'TOTAL',options:{bold:true,color:C.neon,fill:{color:'0a1a0f'},fontFace:'Segoe UI'}},
+        {text:'',options:{fill:{color:'0a1a0f'}}},
+        {text:String(r.totalSpkCount),options:{bold:true,color:C.neon,align:'center',fill:{color:'0a1a0f'},fontFace:'Segoe UI'}},
+        {text:'',options:{fill:{color:'0a1a0f'}}},
+        {text:'£'+(r.total*FX_GBP).toFixed(2),options:{bold:true,color:C.neon,align:'right',fill:{color:'0a1a0f'},fontFace:'Segoe UI'}},
+        {text:r.totalSpkCO2.toFixed(2),options:{bold:true,color:C.neon,align:'right',fill:{color:'0a1a0f'},fontFace:'Segoe UI'}}
+      ]);
+      s3.addTable(rows, {
+        x:0.3,y:1.05,w:12.7,
+        rowH:0.44, fontSize:11, fontFace:'Segoe UI',
+        colW:[3.0,2.6,0.8,2.0,2.2,2.1],
+        fill:{color:C.surf},
+        color:C.t1,
+        border:[{type:'solid',pt:1,color:'1d2e50'}]
+      });
+    }
+
+    // ── Slide 4: Cost Driver Breakdown ──────────────────────────────────────
+    var s4 = pptx.addSlide();
+    s4.background = {color:C.dark};
+    accentBar(s4);
+    s4.addText('Cost Driver Breakdown', {x:0.3,y:0.22,w:12,h:0.55, fontSize:24, bold:true, color:C.t1, fontFace:'Segoe UI'});
+    s4.addShape(pptx.ShapeType.line, {x:0.3,y:0.9,w:12.7,h:0, line:{color:'1d2e50',width:1}});
+
+    var totGBP = r.total * FX_GBP;
+    var dmGBP  = r.totalDM * FX_GBP;
+    var mfgGBP = r.totalMfg * FX_GBP;
+    var sysGBP = r.systemCost * FX_GBP;
+    var mrgGBP = r.margin * FX_GBP;
+    var breakdown = [
+      {lbl:'Direct Material',   val:dmGBP,  pct:totGBP>0?dmGBP/totGBP*100:0, color:'3b82f6'},
+      {lbl:'Mfg / Overhead',    val:mfgGBP, pct:totGBP>0?mfgGBP/totGBP*100:0, color:C.cyan},
+      {lbl:'System Integration',val:sysGBP, pct:totGBP>0?sysGBP/totGBP*100:0, color:C.amber},
+      {lbl:'Margin',            val:mrgGBP, pct:totGBP>0?mrgGBP/totGBP*100:0, color:C.neon}
+    ];
+    breakdown.forEach(function(b,i){
+      var y = 1.15 + i*1.35;
+      var barW = Math.max(0.1, b.pct/100*10.5);
+      s4.addShape(pptx.ShapeType.rect, {x:2.2,y:y+0.35,w:10.5,h:0.38, fill:{color:'0d1520'}, line:{color:'1d2e50',width:1}});
+      if (barW > 0.1) s4.addShape(pptx.ShapeType.rect, {x:2.2,y:y+0.35,w:barW,h:0.38, fill:{color:b.color}, line:{color:b.color}});
+      s4.addText(b.lbl, {x:0.3,y:y+0.3,w:1.8,h:0.45, fontSize:10.5, color:C.t2, bold:true, fontFace:'Segoe UI'});
+      s4.addText('£'+b.val.toFixed(2)+' ('+b.pct.toFixed(1)+'%)', {x:2.3,y:y+0.07,w:5,h:0.35, fontSize:10, color:'#'+b.color, bold:true, fontFace:'Segoe UI'});
+    });
+
+    pptx.writeFile({fileName:'SonoCost-'+system.replace(/\s/g,'-')+'-'+country.replace(/\s/g,'')+'.pptx'});
+
+  } catch(e) {
+    console.error('PPT export error:', e);
+    alert('PPT export failed: ' + (e.message||e));
+  }
+}
+
 // ─── Auto-calculate debounce ─────────────────────────────────────────────────
 function scheduleCalc() {
   clearTimeout(_debTimer);
@@ -3795,49 +3970,71 @@ function fetchCommodityPrices() {
   if (_commodityCache && now - _commodityCacheTime < 3600000) {
     return Promise.resolve(_commodityCache);
   }
-  // Fetch copper (HG=F) and aluminium (ALI=F) from Yahoo Finance via allorigins proxy
+  var yBase = 'https://query1.finance.yahoo.com/v8/finance/chart/';
+  var yParams = '?interval=1d&range=5d';
+
+  function parseYahoo(raw) {
+    var meta = raw.chart.result[0].meta;
+    var closes = raw.chart.result[0].indicators.quote[0].close.filter(Boolean);
+    var latest = meta.regularMarketPrice;
+    var prevDay = closes.length > 1 ? closes[closes.length - 2] : closes[0];
+    var chg = prevDay ? ((latest - prevDay) / prevDay * 100) : 0;
+    return {price: latest, change: chg, currency: meta.currency || 'USD',
+            updated: new Date().toLocaleTimeString('en-GB', {hour:'2-digit', minute:'2-digit'})};
+  }
+
+  // Try corsproxy.io (returns raw JSON) then allorigins.win (wraps in {contents})
   function yahooFetch(ticker) {
-    var yUrl = 'https://query1.finance.yahoo.com/v8/finance/chart/' + ticker + '?interval=1d&range=5d';
-    return fetch('https://api.allorigins.win/get?url=' + encodeURIComponent(yUrl))
-      .then(function(r){return r.json();})
-      .then(function(d){
-        var raw = JSON.parse(d.contents);
-        var meta = raw.chart.result[0].meta;
-        var prev = raw.chart.result[0].indicators.quote[0].close;
-        var prevClose = prev.filter(Boolean);
-        var latest = meta.regularMarketPrice;
-        var prevDay = prevClose.length > 1 ? prevClose[prevClose.length-2] : prevClose[0];
-        var chg = prevDay ? ((latest-prevDay)/prevDay*100) : 0;
-        return {price:latest, change:chg, currency:meta.currency||'USD', updated: new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})};
+    var yUrl = yBase + ticker + yParams;
+    return fetch('https://corsproxy.io/?' + encodeURIComponent(yUrl))
+      .then(function(r) {
+        if (!r.ok) throw new Error('corsproxy status ' + r.status);
+        return r.json();
+      })
+      .then(function(d) { return parseYahoo(d); })
+      .catch(function() {
+        return fetch('https://api.allorigins.win/get?url=' + encodeURIComponent(yUrl))
+          .then(function(r) {
+            if (!r.ok) throw new Error('allorigins status ' + r.status);
+            return r.json();
+          })
+          .then(function(d) { return parseYahoo(JSON.parse(d.contents)); });
       });
   }
-  return Promise.all([yahooFetch('HG=F'), yahooFetch('ALI=F')])
-    .then(function(results){
+
+  // Offline estimates used when both proxies fail
+  var OFFLINE = {
+    'HG=F':  {price: 4.62,  change: null, currency: 'USD', updated: 'Jun 2026', offline: true,
+               source: 'COMEX offline estimate (Jun 2026) — live fetch unavailable'},
+    'ALI=F': {price: 0.98,  change: null, currency: 'USD', updated: 'Jun 2026', offline: true,
+               source: 'LME offline estimate (Jun 2026) — live fetch unavailable'}
+  };
+
+  function yahooFetchWithOffline(ticker) {
+    return yahooFetch(ticker).catch(function() { return OFFLINE[ticker]; });
+  }
+
+  return Promise.all([yahooFetchWithOffline('HG=F'), yahooFetchWithOffline('ALI=F')])
+    .then(function(results) {
       var data = {
-        copper:    Object.assign({label:'Copper (COMEX HG)', unit:'$/lb',  source:'Yahoo Finance / COMEX'}, results[0]),
-        aluminium: Object.assign({label:'Aluminium (LME)',   unit:'$/lb',  source:'Yahoo Finance / LME'},   results[1]),
+        copper:    Object.assign({label:'Copper (COMEX HG)', unit:'$/lb',
+                                  source: results[0].offline ? results[0].source : 'Yahoo Finance / COMEX'}, results[0]),
+        aluminium: Object.assign({label:'Aluminium (LME)',   unit:'$/lb',
+                                  source: results[1].offline ? results[1].source : 'Yahoo Finance / LME'},   results[1]),
         neodymium: {
-          label:'Neodymium Oxide (NdO₃)',
-          price:130000,
-          unit:'CNY/MT',
-          change:null,
-          source:'SMM / Asian Metal (spot estimate)',
-          sourceUrl:'https://www.asianmetal.com/NdPrMetal/NdPr.html',
-          note:'No free real-time API — indicative SMM spot. Verify via asianmetal.com or smm.cn',
-          updated:'2026-06'
+          label: 'Neodymium Oxide (NdO₃)',
+          price: 130000,
+          unit: 'CNY/MT',
+          change: null,
+          source: 'SMM / Asian Metal (spot estimate)',
+          sourceUrl: 'https://www.asianmetal.com/NdPrMetal/NdPr.html',
+          note: 'No free real-time API — indicative SMM spot. Verify via asianmetal.com or smm.cn',
+          updated: '2026-06'
         }
       };
       _commodityCache = data;
       _commodityCacheTime = Date.now();
       return data;
-    })
-    .catch(function(){
-      // Fallback static data clearly marked
-      return {
-        copper:    {label:'Copper (COMEX HG)',  price:null, change:null, unit:'$/lb',  source:'Fetch failed — check network', updated:'—'},
-        aluminium: {label:'Aluminium (LME)',     price:null, change:null, unit:'$/lb',  source:'Fetch failed — check network', updated:'—'},
-        neodymium: {label:'Neodymium Oxide',     price:130000, change:null, unit:'CNY/MT', source:'SMM indicative (offline estimate)', sourceUrl:'https://www.asianmetal.com/NdPrMetal/NdPr.html', note:'No free real-time API — verify via asianmetal.com', updated:'2026-06'}
-      };
     });
 }
 
@@ -3905,14 +4102,18 @@ function buildTrendsHTML(articles, commodities) {
     var chgColor = (c.change === null) ? 'var(--t3)' : c.change >= 0 ? 'var(--red)' : 'var(--green2)';
     var chgTxt = (c.change === null) ? '' : (c.change >= 0 ? '▲' : '▼') + Math.abs(c.change).toFixed(2) + '% 24h';
     html += '<div class="card" style="padding:14px">';
-    html += '<div style="font-size:10px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px">' + esc(c.label) + '</div>';
-    if (c.price !== null) {
-      html += '<div style="font-size:22px;font-weight:700;color:var(--blue2)">' + (typeof c.price === 'number' ? c.price.toLocaleString(undefined,{maximumFractionDigits:4}) : '—') + ' <span style="font-size:12px;color:var(--t3)">' + esc(c.unit||'') + '</span></div>';
+    html += '<div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">';
+    html += '<span style="font-size:10px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:0.05em">' + esc(c.label) + '</span>';
+    if (c.offline) html += '<span style="font-size:8px;font-weight:700;color:#ff9800;background:rgba(255,152,0,0.13);border:1px solid rgba(255,152,0,0.30);border-radius:4px;padding:1px 5px;letter-spacing:0.04em">OFFLINE</span>';
+    html += '</div>';
+    if (c.price !== null && c.price !== undefined) {
+      html += '<div style="font-size:22px;font-weight:700;color:' + (c.offline ? '#ff9800' : 'var(--blue2)') + '">' + (typeof c.price === 'number' ? c.price.toLocaleString(undefined,{maximumFractionDigits:4}) : '—') + ' <span style="font-size:12px;color:var(--t3)">' + esc(c.unit||'') + '</span></div>';
     } else {
       html += '<div style="font-size:14px;color:var(--t3);padding:8px 0">Data unavailable</div>';
     }
     if (chgTxt) html += '<div style="font-size:11px;color:'+chgColor+';margin-top:3px;font-weight:600">'+chgTxt+'</div>';
     html += '<div style="font-size:9px;color:var(--t3);margin-top:6px">' + esc(c.source||'') + (c.updated ? ' · ' + c.updated : '') + '</div>';
+    if (c.offline) html += '<div style="font-size:9px;color:#ff9800;margin-top:4px;line-height:1.4">⚠ Live fetch failed — showing indicative estimate. Click ↺ to retry.</div>';
     if (c.note) html += '<div style="font-size:9px;color:var(--amber);margin-top:4px;line-height:1.4">⚠ ' + esc(c.note) + '</div>';
     if (c.sourceUrl) html += '<a href="' + c.sourceUrl + '" target="_blank" style="font-size:9px;color:var(--blue2);margin-top:4px;display:block">→ Verify at source</a>';
     html += '</div>';
