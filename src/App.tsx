@@ -21,6 +21,7 @@ import CadToCostPage from './pages/CadToCostPage';
 import BomAnalysisPage from './pages/BomAnalysisPage';
 import SharedResultPage from './pages/SharedResultPage';
 import ShouldCostPage from './pages/ShouldCostPage';
+import IdeaStudioPage from './pages/IdeaStudioPage';
 import IntegrationsPage from './pages/IntegrationsPage';
 import MarketplacePage from './pages/MarketplacePage';
 import CadDiffPage from './pages/CadDiffPage';
@@ -49,6 +50,7 @@ function AnimatedRoutes() {
         <Route path="/cad-to-cost" element={<ProtectedRoute><PageTransition><CadToCostPage /></PageTransition></ProtectedRoute>} />
         <Route path="/bom-analysis" element={<ProtectedRoute><PageTransition><BomAnalysisPage /></PageTransition></ProtectedRoute>} />
         <Route path="/should-cost" element={<ProtectedRoute><PageTransition><ShouldCostPage /></PageTransition></ProtectedRoute>} />
+        <Route path="/idea-studio" element={<ProtectedRoute><PageTransition><IdeaStudioPage /></PageTransition></ProtectedRoute>} />
         <Route path="/integrations" element={<ProtectedRoute><PageTransition><IntegrationsPage /></PageTransition></ProtectedRoute>} />
         <Route path="/marketplace" element={<ProtectedRoute><PageTransition><MarketplacePage /></PageTransition></ProtectedRoute>} />
         <Route path="/cad-diff" element={<ProtectedRoute><PageTransition><CadDiffPage /></PageTransition></ProtectedRoute>} />

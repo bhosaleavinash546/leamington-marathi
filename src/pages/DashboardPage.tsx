@@ -1,7 +1,7 @@
 import { useEffect, useState, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ChevronRight, TrendingDown, Clock, BarChart3, Lightbulb, ArrowRight, Star, BookOpen, Target, Activity, Trash2, Share2, CheckCircle, AlertCircle, XCircle, ClipboardList, GitMerge } from 'lucide-react';
+import { ChevronRight, TrendingDown, Clock, BarChart3, Lightbulb, ArrowRight, Star, BookOpen, Target, Activity, Trash2, Share2, CheckCircle, AlertCircle, XCircle, ClipboardList, GitMerge, Box, Image as ImageIcon, Sparkles } from 'lucide-react';
 import { PieChart, Pie, Cell, Tooltip, BarChart, Bar, XAxis, YAxis, ResponsiveContainer, CartesianGrid } from 'recharts';
 import { useAuth } from '../contexts/AuthContext';
 import { loadFullResult } from '../services/claude-service';
@@ -475,6 +475,34 @@ export default function DashboardPage() {
               </div>
             </motion.div>
           ))}
+        </motion.div>
+
+        {/* Generate ideas from your own part — CAD → Idea / Image → Idea */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.12 }}
+        >
+          <div className="flex items-baseline gap-2 mb-3">
+            <h2 className="text-white font-semibold">Generate ideas from your part</h2>
+            <span className="text-slate-500 text-xs">Upload a part + its current condition → grounded cost-reduction ideas</span>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {([
+              { to: '/idea-studio?mode=cad', icon: Box, title: 'CAD → Idea', desc: 'Upload STL / STEP / DXF — geometry, features & DFMA feed the AI', accent: 'from-gold-500/15 to-amber-500/5', ring: 'border-gold-500/25', ic: 'text-gold-400' },
+              { to: '/idea-studio?mode=image', icon: ImageIcon, title: 'Image → Idea', desc: 'Upload a photo or drawing — AI vision reads it, you add the specs', accent: 'from-teal-500/15 to-cyan-500/5', ring: 'border-teal-500/25', ic: 'text-teal-400' },
+            ] as const).map(({ to, icon: Icon, title, desc, accent, ring, ic }) => (
+              <button key={to} onClick={() => navigate(to)}
+                className={`text-left rounded-2xl bg-gradient-to-br ${accent} border ${ring} p-5 hover:scale-[1.01] transition-transform shadow-card`}>
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="w-11 h-11 rounded-xl bg-navy-900/60 flex items-center justify-center flex-shrink-0"><Icon size={22} className={ic} /></div>
+                  <span className="text-white font-bold text-lg">{title}</span>
+                  <Sparkles size={15} className="text-gold-400 ml-auto" />
+                </div>
+                <p className="text-slate-400 text-sm leading-snug">{desc}</p>
+              </button>
+            ))}
+          </div>
         </motion.div>
 
         {serverProjects.length > 0 && (
