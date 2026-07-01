@@ -4410,7 +4410,7 @@ app.post('/api/analyze', requireAuth, rateLimit(40, 60 * 60 * 1000), async (req,
   const sysName = sanitize(systemName, 120);
   const subName = sanitize(subassemblyName, 120);
   const prtName = sanitize(partName, 120);
-  if (config.additionalContext) config.additionalContext = sanitize(config.additionalContext, 1000);
+  if (config.additionalContext) config.additionalContext = sanitize(config.additionalContext, 6000);
 
   const useSSE = (req.headers['accept'] || '').includes('text/event-stream');
   if (useSSE) {
@@ -4520,8 +4520,13 @@ app.post('/api/analyze', requireAuth, rateLimit(40, 60 * 60 * 1000), async (req,
     }
     throw new Error('Max search iterations reached — try disabling web search.');
   } catch (err) {
-    console.error('[Analysis Error]', err.message);
-    const safe = safeLlmError(err);
+    console.error('[Analysis Error]', err?.message, err?.status || '');
+    // Sanitise genuine SDK/provider errors, but surface our own app-level messages
+    // (timeout, max-iterations, no-valid-ideas, JSON parse) so users can act on them.
+    const status = err?.status || err?.response?.status;
+    const isProviderError = typeof status === 'number'
+      || /api key|rate limit|overloaded|ETIMEDOUT|ECONNRESET|APIConnection|fetch failed/i.test(err?.message || '');
+    const safe = isProviderError ? safeLlmError(err) : (err?.message || 'Analysis failed. Please try again.');
     if (useSSE) { emit({ type: 'error', message: safe }); res.end(); }
     else res.status(500).json({ error: safe });
   }

@@ -17,12 +17,45 @@ const TOLERANCE = ['Standard', 'Tight (precision)', 'Loose (non-critical)'];
 function mapProcess(guess: string, catalogue: string[]): string {
   const g = (guess || '').toLowerCase();
   const find = (kw: string) => catalogue.find(p => p.toLowerCase().includes(kw));
-  if (/sheet|stamp/.test(g)) return find('stamp') || catalogue[0];
-  if (/cast/.test(g)) return find('die casting (alumin') || find('casting') || catalogue[0];
-  if (/forg/.test(g)) return find('forging (hot') || find('forging') || catalogue[0];
-  if (/machin|billet/.test(g)) return find('machining') || catalogue[0];
-  if (/extru/.test(g)) return find('extrusion') || catalogue[0];
-  return catalogue[0];
+  if (/sheet|stamp/.test(g)) return find('stamp') || catalogue[0] || 'Stamping / Deep Drawing';
+  if (/cast/.test(g)) return find('die casting (alumin') || find('casting') || 'Die Casting (Aluminium)';
+  if (/forg/.test(g)) return find('forging (hot') || find('forging') || 'Forging (Hot)';
+  if (/machin|billet/.test(g)) return find('machining') || 'Machining (CNC)';
+  if (/extru/.test(g)) return find('extrusion') || 'Extrusion';
+  return find('machining') || catalogue[0] || 'Machining (CNC)';
+}
+
+// Fuzzy-match a FREE-TEXT material to a should-cost catalogue entry (for the baseline).
+// Returns null if nothing sensible matches — the baseline is then simply unavailable.
+function matchMaterial(typed: string, catalogue: string[]): string | null {
+  const t = (typed || '').toLowerCase();
+  if (!t.trim() || !catalogue.length) return null;
+  const has = (kw: string) => catalogue.find(m => m.toLowerCase().includes(kw));
+  if (/steel|dp\d|hsla|22mnb5|boron|iron|gjs|ss30|stainless/.test(t)) return has('stainless') && /stainless|304|316/.test(t) ? has('stainless')! : (has('high-strength') && /hsla|dp|boron|22mnb5|advanced/.test(t) ? has('high-strength')! : (has('steel') || catalogue[0]));
+  if (/7075/.test(t)) return has('7075') || has('alumin') || null;
+  if (/alumin|\bal\b|6061|6082|a380|adc12|alsi/.test(t)) return has('6061') || has('alumin') || null;
+  if (/magnes|az91|am60|ae44/.test(t)) return has('magnes') || null;
+  if (/cfrp|carbon|composite/.test(t)) return has('cfrp') || has('carbon') || null;
+  if (/pa6|nylon|pa66/.test(t)) return has('pa6') || has('nylon') || null;
+  if (/\babs\b/.test(t)) return has('abs') || null;
+  if (/\bpp\b|polyprop/.test(t)) return has('polyprop') || has('pp') || null;
+  return null;
+}
+
+// Fuzzy-match a FREE-TEXT process to a should-cost catalogue entry.
+function matchProcess(typed: string, catalogue: string[]): string | null {
+  const t = (typed || '').toLowerCase();
+  if (!t.trim() || !catalogue.length) return null;
+  const has = (kw: string) => catalogue.find(p => p.toLowerCase().includes(kw));
+  if (/stamp|sheet|press|deep draw/.test(t)) return has('stamp') || null;
+  if (/hpdc|die.?cast|pressure cast/.test(t)) return has('die casting (alumin') || has('casting') || null;
+  if (/cast/.test(t)) return has('casting') || null;
+  if (/forg/.test(t)) return has('forging (hot') || has('forging') || null;
+  if (/machin|cnc|mill|turn|billet/.test(t)) return has('machining') || null;
+  if (/mould|mold|inject/.test(t)) return has('moulding') || has('injection') || null;
+  if (/extru/.test(t)) return has('extrusion') || null;
+  if (/weld/.test(t)) return has('welding') || null;
+  return null;
 }
 
 export default function IdeaStudioPage() {
@@ -59,6 +92,7 @@ export default function IdeaStudioPage() {
   // Baseline (deterministic should-cost)
   const [baseline, setBaseline] = useState<{ total: string; matPct: number; p10: string; p90: string } | null>(null);
   const [baselineLoading, setBaselineLoading] = useState(false);
+  const [baselineNote, setBaselineNote] = useState('');
 
   // Generation
   const [generating, setGenerating] = useState(false);
@@ -66,10 +100,12 @@ export default function IdeaStudioPage() {
   const [error, setError] = useState('');
 
   useEffect(() => {
+    // Catalogue is used only to fuzzy-match the free-text material/process for the
+    // should-cost baseline — the fields themselves are typed freely by the user.
     fetch('/api/should-cost/catalogue').then(r => r.ok ? r.json() : null).then(d => {
       if (!d) return;
-      if (d.materials?.length) { setMaterials(d.materials); setMaterial(m => m || d.materials[0]); }
-      if (d.processes?.length) { setProcesses(d.processes); setProcess(p => p || d.processes[0]); }
+      if (d.materials?.length) setMaterials(d.materials);
+      if (d.processes?.length) setProcesses(d.processes);
       if (d.regions?.length) setRegions(d.regions);
     }).catch(() => {});
   }, []);
@@ -102,19 +138,28 @@ export default function IdeaStudioPage() {
   }
 
   async function computeBaseline() {
-    if (!token || !material || !process || !weightKg || !annualVolume) return;
+    if (!token || !weightKg || !annualVolume) return;
+    setBaseline(null); setBaselineNote('');
+    // The deterministic engine needs a recognised material + process; fuzzy-match
+    // the free text. If it can't be mapped, the baseline is simply unavailable.
+    const engMat = matchMaterial(material, materials);
+    const engProc = matchProcess(process, processes);
+    if (!engMat || !engProc) {
+      setBaselineNote(`Baseline needs a recognised material & process (e.g. "Aluminium 6061" + "Die Casting"). Your typed values still fully drive the AI ideas.`);
+      return;
+    }
     setBaselineLoading(true);
     try {
       const r = await fetch('/api/should-cost', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ partName: partName || 'Component', material, process, weightKg: Number(weightKg), annualVolume: Number(annualVolume), region, currency }),
+        body: JSON.stringify({ partName: partName || 'Component', material: engMat, process: engProc, weightKg: Number(weightKg), annualVolume: Number(annualVolume), region, currency }),
       });
       if (r.ok) {
         const d = await r.json();
         setBaseline({ total: d.totalShouldCost, matPct: d.breakdown?.material?.pct ?? 0, p10: d.simulation?.p10, p90: d.simulation?.p90 });
-      }
-    } catch { /* baseline is best-effort */ } finally { setBaselineLoading(false); }
+      } else { setBaselineNote('Could not compute a baseline for these inputs.'); }
+    } catch { setBaselineNote('Could not compute a baseline right now.'); } finally { setBaselineLoading(false); }
   }
 
   function buildConditionContext(): string {
@@ -186,9 +231,11 @@ export default function IdeaStudioPage() {
       };
 
       setProgressMsg('Generating grounded ideas…');
+      // Search defaults OFF here — the grounding comes from the user's own part data
+      // (+ curated knowledge base & live prices), which is faster and more reliable.
       const result = await generateCostReductionIdeas(
         config, partName || 'Component', process || 'Component', partName || undefined,
-        true, localStorage.getItem('brainspark_brave_key') || undefined,
+        false, localStorage.getItem('brainspark_brave_key') || undefined,
         (ev) => { if (ev.message) setProgressMsg(ev.message); },
       );
       // Hand off to the Results page (reuses all idea/pipeline UI)
@@ -261,7 +308,7 @@ export default function IdeaStudioPage() {
             <div className="bg-navy-900 border border-white/10 rounded-2xl p-4">
               <div className="flex items-center justify-between mb-2">
                 <p className="text-white text-sm font-semibold flex items-center gap-2"><Calculator size={15} className="text-teal-400" /> Should-cost baseline</p>
-                <button onClick={computeBaseline} disabled={baselineLoading || !material || !process || !weightKg}
+                <button onClick={computeBaseline} disabled={baselineLoading || !material.trim() || !process.trim() || !weightKg}
                   className="text-xs px-3 py-1.5 rounded-lg bg-teal-600/80 hover:bg-teal-500 disabled:opacity-40 text-white font-medium transition-colors">
                   {baselineLoading ? 'Computing…' : 'Estimate'}
                 </button>
@@ -271,7 +318,9 @@ export default function IdeaStudioPage() {
                   <span className="text-teal-300 font-black text-2xl">{baseline.total}</span>
                   <span className="text-slate-500 text-xs">P10–P90 {baseline.p10}–{baseline.p90} · material {baseline.matPct}%</span>
                 </div>
-              ) : <p className="text-slate-500 text-xs">Fill weight, material, process & volume, then Estimate to anchor savings in a real number.</p>}
+              ) : baselineNote ? (
+                <p className="text-amber-300/80 text-xs">{baselineNote}</p>
+              ) : <p className="text-slate-500 text-xs">Fill weight, material, process &amp; volume, then Estimate to anchor savings in a real number (optional).</p>}
             </div>
           </div>
 
@@ -284,8 +333,8 @@ export default function IdeaStudioPage() {
               <Field label="Annual volume"><input type="number" value={annualVolume} onChange={e => setAnnualVolume(e.target.value)} className={inp} /></Field>
             </div>
             <div className="grid grid-cols-2 gap-3">
-              <Field label="Material"><select value={material} onChange={e => setMaterial(e.target.value)} className={inp}>{materials.map(m => <option key={m}>{m}</option>)}</select></Field>
-              <Field label="Manufacturing process"><select value={process} onChange={e => setProcess(e.target.value)} className={inp}>{processes.map(p => <option key={p}>{p}</option>)}</select></Field>
+              <Field label="Material (type freely)"><input value={material} onChange={e => setMaterial(e.target.value)} placeholder="e.g. AlSi10MnMg / DP780 / ADC12" className={inp} /></Field>
+              <Field label="Manufacturing process (type freely)"><input value={process} onChange={e => setProcess(e.target.value)} placeholder="e.g. HPDC / CNC machining / forging" className={inp} /></Field>
             </div>
             <div className="grid grid-cols-3 gap-3">
               <Field label="Plant region"><select value={region} onChange={e => setRegion(e.target.value)} className={inp}>{(regions.length ? regions : ['Germany']).map(r => <option key={r}>{r}</option>)}</select></Field>
