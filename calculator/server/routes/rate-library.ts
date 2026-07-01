@@ -44,11 +44,13 @@ router.get('/active', (_req, res: Response) => {
   res.json({ library, source: effectiveSource });
 });
 
-router.get('/status', (_req, res: Response) => {
+router.get('/status', (req: AuthenticatedRequest, res: Response) => {
+  const role = (db.prepare('SELECT role FROM users WHERE id = ?').get(req.user!.userId) as { role?: string } | undefined)?.role;
   res.json({
     source: getRateSource(db),
     hasCompany: getCompanyLibrary(db) != null,
     overrideCount: getOverrides(db).length,
+    isAdmin: role === 'admin',
   });
 });
 

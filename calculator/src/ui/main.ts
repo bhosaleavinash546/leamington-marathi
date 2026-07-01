@@ -74,6 +74,24 @@ import { initMotionFX, motionInViewReveal, motionRevealRows } from './motion-fx.
 let library: RateLibrary = recomputeMachineRates(getLibraryFromStorage());
 let lastResult: PartCostResult | null = null;
 let lastInput: UniversalStackInput | null = null;
+
+/**
+ * Load the organisation's ACTIVE rate library from the server (built-in defaults,
+ * or the admin-uploaded company library + overrides). When present it drives all
+ * calculations; if offline / not signed in, we keep the local library.
+ */
+async function syncActiveRateLibrary(): Promise<void> {
+  try {
+    const token = localStorage.getItem('auth_token') ?? sessionStorage.getItem('auth_token');
+    if (!token) return;
+    const res = await fetch('/api/rate-library/active', { headers: { Authorization: `Bearer ${token}` } });
+    if (!res.ok) return;
+    const data = await res.json() as { library?: RateLibrary; source?: 'builtin' | 'company' };
+    if (data.library && Array.isArray(data.library.materials) && data.library.materials.length) {
+      library = recomputeMachineRates(data.library);
+    }
+  } catch { /* offline / not authed — keep the local library */ }
+}
 let lastLCResult: LearningCurveResult | null = null;
 let activeCommodity: CommodityType = 'machining';
 let machOpCount = 0;
@@ -13959,6 +13977,7 @@ function openRateLibrary(): void {
 function renderRateLibraryTable(): void {
   const c = el('rate-library-content');
   c.innerHTML = `
+    <div id="company-rate-admin" style="margin-bottom:16px"></div>
     <div class="panel-title" style="margin-bottom:8px">Materials</div>
     <table class="breakdown-table" style="margin-bottom:16px;font-size:0.76rem">
       <thead><tr><th>ID</th><th>Grade</th><th>${_displayCurrency}/kg</th><th>Scrap ${_displayCurrency}/kg</th><th>Region</th><th>Conf.</th></tr></thead>
@@ -13991,6 +14010,88 @@ function renderRateLibraryTable(): void {
         <td><span class="badge ${l.confidence}">${l.confidence}</span></td>
       </tr>`).join('')}</tbody>
     </table>`;
+  void renderCompanyRateAdmin();
+}
+
+function authHeader(): Record<string, string> {
+  const t = localStorage.getItem('auth_token') ?? sessionStorage.getItem('auth_token');
+  return t ? { Authorization: `Bearer ${t}` } : {};
+}
+
+/** Company rate-library controls: status for everyone, upload/switch/reset for admins. */
+async function renderCompanyRateAdmin(): Promise<void> {
+  const host = document.getElementById('company-rate-admin');
+  if (!host) return;
+  let status: { source?: string; hasCompany?: boolean; overrideCount?: number; isAdmin?: boolean } = {};
+  try {
+    const res = await fetch('/api/rate-library/status', { headers: authHeader() });
+    if (res.ok) status = await res.json();
+  } catch { host.innerHTML = ''; return; }   // not signed in / offline — hide the panel
+
+  const src = status.source === 'company' ? 'Company rates' : 'Built-in defaults';
+  const badge = status.source === 'company'
+    ? '<span style="background:#1FA96B;color:#fff;border-radius:10px;padding:2px 10px;font-size:0.72rem;font-weight:700">Company rates active</span>'
+    : '<span style="background:#636B7A;color:#fff;border-radius:10px;padding:2px 10px;font-size:0.72rem;font-weight:700">Built-in defaults</span>';
+
+  const admin = status.isAdmin ? `
+      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px">
+        <button id="cra-template" class="btn btn-sm">⬇ Download Excel template</button>
+        <label class="btn btn-sm" style="cursor:pointer">⬆ Upload company rates
+          <input id="cra-file" type="file" accept=".xlsx" style="display:none">
+        </label>
+        <button id="cra-toggle" class="btn btn-sm">${status.source === 'company' ? 'Use built-in defaults' : 'Use company rates'}</button>
+        <button id="cra-reset" class="btn btn-sm" style="color:#D14B4B">↺ Reset to built-in</button>
+      </div>
+      <div id="cra-msg" style="font-size:0.75rem;color:#636B7A;margin-top:8px"></div>`
+    : `<div style="font-size:0.75rem;color:#636B7A;margin-top:8px">Rates are set by an administrator. You are calculating on: <strong>${src}</strong>.</div>`;
+
+  host.innerHTML = `
+    <div style="border:1px solid #D9E2F1;border-radius:10px;padding:14px 16px;background:#F7FAFF">
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+        <span style="font-weight:700;color:#1F2A44">🏭 Company Rate Library</span>${badge}
+        ${status.hasCompany ? '<span style="font-size:0.72rem;color:#636B7A">company file uploaded</span>' : '<span style="font-size:0.72rem;color:#636B7A">no company file yet</span>'}
+        ${status.overrideCount ? `<span style="font-size:0.72rem;color:#636B7A">· ${status.overrideCount} cell override(s)</span>` : ''}
+      </div>
+      ${admin}
+    </div>`;
+
+  if (!status.isAdmin) return;
+  const msg = (t: string, ok = true) => { const m = document.getElementById('cra-msg'); if (m) { m.textContent = t; m.style.color = ok ? '#1FA96B' : '#D14B4B'; } };
+
+  document.getElementById('cra-template')?.addEventListener('click', async () => {
+    const res = await fetch('/api/rate-library/template', { headers: authHeader() });
+    if (!res.ok) { msg('Download failed (admin only).', false); return; }
+    const blob = await res.blob(); const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob); a.download = 'CostVision-Rate-Library-Template.xlsx'; a.click();
+  });
+
+  document.getElementById('cra-file')?.addEventListener('change', async (e) => {
+    const f = (e.target as HTMLInputElement).files?.[0]; if (!f) return;
+    msg('Uploading & validating…');
+    const fd = new FormData(); fd.append('file', f);
+    try {
+      const res = await fetch('/api/rate-library/upload', { method: 'POST', headers: authHeader(), body: fd });
+      const data = await res.json();
+      if (!res.ok) { msg('Rejected: ' + ((data.errors ?? [data.error]).slice(0, 3).join('; ')), false); return; }
+      msg(`Uploaded and activated (${Object.values(data.counts ?? {}).reduce((a: number, b) => a + Number(b), 0)} rows).`);
+      await syncActiveRateLibrary(); renderRateLibraryTable();
+    } catch { msg('Upload failed.', false); }
+  });
+
+  document.getElementById('cra-toggle')?.addEventListener('click', async () => {
+    const next = status.source === 'company' ? 'builtin' : 'company';
+    const res = await fetch('/api/rate-library/source', { method: 'PUT', headers: { 'Content-Type': 'application/json', ...authHeader() }, body: JSON.stringify({ source: next }) });
+    const data = await res.json();
+    if (!res.ok) { msg(data.error ?? 'Switch failed.', false); return; }
+    await syncActiveRateLibrary(); renderRateLibraryTable();
+  });
+
+  document.getElementById('cra-reset')?.addEventListener('click', async () => {
+    if (!confirm('Remove the company library and all overrides, reverting to built-in defaults?')) return;
+    const res = await fetch('/api/rate-library/reset', { method: 'POST', headers: authHeader() });
+    if (!res.ok) { msg('Reset failed.', false); return; }
+    await syncActiveRateLibrary(); renderRateLibraryTable();
+  });
 }
 
 function applyRateLibraryEdits(): void {
@@ -14029,6 +14130,10 @@ async function init(): Promise<void> {
   // Install runtime error observability before anything else can throw.
   initObservability();
   breadcrumb('app:init');
+
+  // Load the organisation's active rate library (company rates when an admin has
+  // uploaded them) so calculations use approved numbers, not just local defaults.
+  await syncActiveRateLibrary();
 
   // M11: Surface IndexedDB failures to the user
   setScenarioErrorHandler(msg => showToast(msg, 'warning'));
