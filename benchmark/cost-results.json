@@ -1,0 +1,66 @@
+{
+  "hitRate": 87.5,
+  "mape": 17.3,
+  "bias": -17.3,
+  "bandCoverage": 12.5,
+  "hits": 7,
+  "total": 8,
+  "rows": [
+    {
+      "name": "Steering knuckle (ductile iron, sand cast)",
+      "ref": 12.5,
+      "modelled": 11.94,
+      "errPct": -4.5,
+      "withinTol": true
+    },
+    {
+      "name": "Suspension bracket (Al, high-pressure die cast)",
+      "ref": 8.5,
+      "modelled": 7.58,
+      "errPct": -10.8,
+      "withinTol": true
+    },
+    {
+      "name": "Stamped steel bracket",
+      "ref": 1.8,
+      "modelled": 1.33,
+      "errPct": -26.1,
+      "withinTol": true
+    },
+    {
+      "name": "PP clip housing (injection moulded)",
+      "ref": 0.7,
+      "modelled": 0.66,
+      "errPct": -5.7,
+      "withinTol": true
+    },
+    {
+      "name": "Forged control arm (high-strength steel)",
+      "ref": 10,
+      "modelled": 8.89,
+      "errPct": -11.1,
+      "withinTol": true
+    },
+    {
+      "name": "CNC-machined aluminium fitting (low volume)",
+      "ref": 13,
+      "modelled": 7.33,
+      "errPct": -43.6,
+      "withinTol": false
+    },
+    {
+      "name": "Zinc die-cast lock cam",
+      "ref": 1.1,
+      "modelled": 0.86,
+      "errPct": -21.8,
+      "withinTol": true
+    },
+    {
+      "name": "Roll-formed steel rail",
+      "ref": 3.2,
+      "modelled": 2.73,
+      "errPct": -14.7,
+      "withinTol": true
+    }
+  ]
+}
