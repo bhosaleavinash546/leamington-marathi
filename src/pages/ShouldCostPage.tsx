@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Calculator, ChevronDown, Cpu, ShieldCheck, Sparkles } from 'lucide-react';
+import { Calculator, ChevronDown, Cpu, ShieldCheck, Sparkles, Database } from 'lucide-react';
 import ButtonSpinner from '../components/ui/ButtonSpinner';
 import { useAuth } from '../contexts/AuthContext';
 import { CURRENCIES, COST_COMPONENTS, FALLBACK_MATERIALS, FALLBACK_PROCESSES, FALLBACK_REGIONS } from '../constants/costing';
@@ -49,6 +50,8 @@ export default function ShouldCostPage() {
   const [teachPrice, setTeachPrice] = useState('');
   const [teachMsg, setTeachMsg] = useState('');
   const [teaching, setTeaching] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [libraryCustom, setLibraryCustom] = useState(false);
 
   useEffect(() => {
     fetch('/api/should-cost/catalogue')
@@ -58,9 +61,16 @@ export default function ShouldCostPage() {
         if (Array.isArray(d.materials) && d.materials.length) { setMaterials(d.materials); setMaterial(d.materials[0]); }
         if (Array.isArray(d.processes) && d.processes.length) { setProcesses(d.processes); setProcess(d.processes[0]); }
         if (Array.isArray(d.regions) && d.regions.length) { setRegions(d.regions); setRegion(d.regions[0]); }
+        if (d.library?.custom) setLibraryCustom(true);
       })
       .catch(() => {});
   }, []);
+
+  useEffect(() => {
+    if (!token) return;
+    fetch('/api/admin/rate-library/status', { headers: { Authorization: `Bearer ${token}` } })
+      .then(r => r.ok ? r.json() : null).then(d => { if (d?.isAdmin) setIsAdmin(true); }).catch(() => {});
+  }, [token]);
 
   async function handleCalc() {
     if (!partName || !weightKg || !annualVolume) { setError('Please fill in part name, weight, and annual volume.'); return; }
@@ -117,6 +127,10 @@ export default function ShouldCostPage() {
           </div>
           <h1 className="text-4xl font-black text-white mb-3">Should-Cost Engine</h1>
           <p className="text-slate-400">Deterministic bottom-up cost modelling — <span className="text-teal-300">rate × time + mass × price</span>, computed in-engine, not guessed.</p>
+          <div className="flex items-center justify-center gap-3 mt-3">
+            {libraryCustom && <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-1 rounded-full bg-teal-500/10 text-teal-300 border border-teal-500/25"><Database size={11} /> Using your company rate library</span>}
+            {isAdmin && <Link to="/admin/rate-library" className="inline-flex items-center gap-1.5 text-[11px] font-medium px-2.5 py-1 rounded-full border border-white/10 text-slate-300 hover:bg-white/5"><Database size={11} /> Manage rate library</Link>}
+          </div>
         </div>
 
         <div className="grid lg:grid-cols-2 gap-6 mb-6">
