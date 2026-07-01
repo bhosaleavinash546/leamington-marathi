@@ -3920,42 +3920,62 @@ var _trendsCache = null;
 var _commodityCache = null;
 var _commodityCacheTime = 0;
 
+// Google News RSS search — pre-filtered by query so results are audio-relevant by design
 var TREND_FEEDS = [
-  {name:'Car News China',     url:'https://carnewschina.com/feed/',          region:'China'},
-  {name:'CNEVPost',           url:'https://cnevpost.com/feed/',               region:'China'},
-  {name:'Gasgoo',             url:'https://www.gasgoo.com/News/rss/auto.xml', region:'China'},
-  {name:'Electrek',           url:'https://electrek.co/feed/',                region:'Global'},
-  {name:'InsideEVs',          url:'https://insideevs.com/feed/latest/',        region:'Global'}
+  {name:'Google News', region:'Global',
+   url:'https://news.google.com/rss/search?q=automotive+audio+speaker+sound+system+car&hl=en&gl=US&ceid=US:en'},
+  {name:'Google News', region:'Global',
+   url:'https://news.google.com/rss/search?q=Harman+Bose+Meridian+Burmester+Bang+Olufsen+car+audio&hl=en&gl=US&ceid=US:en'},
+  {name:'Google News', region:'Global',
+   url:'https://news.google.com/rss/search?q=spatial+audio+dolby+atmos+automotive+vehicle+music&hl=en&gl=US&ceid=US:en'},
+  {name:'Google News', region:'Global',
+   url:'https://news.google.com/rss/search?q=car+audio+technology+speaker+acoustic+engineering+OEM&hl=en&gl=US&ceid=US:en'},
+  {name:'Google News', region:'China',
+   url:'https://news.google.com/rss/search?q=China+automotive+audio+speaker+EV+sound+system&hl=en&gl=US&ceid=US:en'}
 ];
 
-var AUDIO_KEYWORDS = ['audio','sound system','speaker','harman','bang','olufsen','meridian',
-  'burmester','bowers','wilkins','dolby','spatial audio','atmos','nio audio','aito',
-  'zeekr','li auto','premium audio','acoustic','infotainment audio','bose','continental audio',
-  'panasonic audio','sennheiser','sony audio','immersive','surround sound','hi-fi'];
+// Strict audio-only keywords — no standalone car brand names that match delivery news
+var AUDIO_KEYWORDS = [
+  'audio system','sound system','speaker system','car speaker','car audio',
+  'in-car audio','vehicle audio','automotive audio','automotive sound',
+  'harman','bang & olufsen','bang and olufsen','meridian audio','burmester',
+  'bowers & wilkins','bowers wilkins','dolby atmos','spatial audio',
+  'surround sound','immersive audio','hi-fi','hifi',
+  'bose automotive','bose car','sennheiser automotive','acoustic engineering',
+  'amplifier','subwoofer','tweeter','woofer','infotainment audio',
+  'active noise cancellation','anc vehicle','premium sound system'
+];
 
 function isAudioRelevant(item) {
   var text = ((item.title||'')+(item.description||'')+(item.content||'')).toLowerCase();
-  return AUDIO_KEYWORDS.some(function(kw){return text.indexOf(kw)>=0;});
+  return AUDIO_KEYWORDS.some(function(kw){ return text.indexOf(kw) >= 0; });
 }
 
 function fetchRSSFeed(feed) {
-  var apiUrl = 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(feed.url) + '&count=10&api_key=';
+  var apiUrl = 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(feed.url) + '&count=20';
   return fetch(apiUrl)
-    .then(function(r){return r.json();})
+    .then(function(r){ return r.json(); })
     .then(function(data){
       if (!data.items) return [];
-      return data.items.filter(isAudioRelevant).slice(0,5).map(function(item){
+      // Google News search feeds are pre-filtered; still run keyword guard as safety net
+      var items = data.items.filter(isAudioRelevant);
+      // If pre-filtered feed returns 0 after strict guard, keep top 5 anyway (query already audio-specific)
+      if (items.length === 0) items = data.items.slice(0, 5);
+      return items.slice(0, 6).map(function(item){
+        // Google News: author field = publication name; title often ends with " - Publication"
+        var pub = item.author || feed.name;
+        var title = (item.title || '').replace(/\s+[-–]\s+[^-–]+$/, '').trim(); // strip trailing " - Source"
         return {
-          title:   item.title || '',
-          link:    item.link  || '',
+          title:   title || item.title || '',
+          link:    item.link || '',
           date:    item.pubDate ? new Date(item.pubDate).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}) : '',
-          summary: (item.description||item.content||'').replace(/<[^>]+>/g,'').slice(0,180).trim(),
-          source:  feed.name,
+          summary: (item.description || item.content || '').replace(/<[^>]+>/g,'').trim().slice(0, 220),
+          source:  pub,
           region:  feed.region
         };
       });
     })
-    .catch(function(){return [];});
+    .catch(function(){ return []; });
 }
 
 function fetchCommodityPrices() {
@@ -4066,7 +4086,15 @@ function renderTrendsTab() {
     Promise.all(TREND_FEEDS.map(fetchRSSFeed))
   ]).then(function(results) {
     var commodities = results[0];
-    var allArticles = [].concat.apply([], results[1]);
+    var merged = [].concat.apply([], results[1]);
+    // Deduplicate by normalised title (Google News can return same story from multiple feeds)
+    var seen = {};
+    var allArticles = merged.filter(function(a){
+      var key = a.title.toLowerCase().replace(/[^a-z0-9]/g,'').slice(0,60);
+      if (seen[key]) return false;
+      seen[key] = true;
+      return true;
+    });
     allArticles.sort(function(a,b){ return new Date(b.date)-new Date(a.date); });
     _trendsCache = allArticles;
     _trendsCacheTime = now;
@@ -4117,31 +4145,29 @@ function buildTrendsHTML(articles, commodities) {
 
   // ── News Feed ────────────────────────────────────────────────────────────
   html += '<div class="section-title">📰 Premium Automotive Audio — Latest News</div>';
-  html += '<p style="font-size:10px;color:var(--t3);margin-bottom:10px">Filtered for premium audio, spatial sound, and relevant OEM/brand news. Sources: Car News China, CNEVPost, Gasgoo, Electrek, InsideEVs. Cached 24h. <button onclick="_trendsCache=null;_trendsCacheTime=0;renderTrendsTab()" style="font-size:10px;background:none;border:none;color:var(--blue2);cursor:pointer;padding:0 4px;text-decoration:underline">Refresh</button></p>';
+  html += '<p style="font-size:10px;color:var(--t3);margin-bottom:10px">Audio-specific news: car speakers, Harman · Bose · Meridian · Burmester · B&W, spatial audio, Dolby Atmos, acoustic engineering &amp; OEM sound systems. Sourced via Google News search — click any headline to open the original article. Cached 24h. <button onclick="_trendsCache=null;_trendsCacheTime=0;renderTrendsTab()" style="font-size:10px;background:none;border:none;color:var(--blue2);cursor:pointer;padding:0 4px;text-decoration:underline">Refresh</button></p>';
 
   if (!articles || articles.length === 0) {
     html += '<div class="card" style="padding:20px;text-align:center"><p style="color:var(--t3)">No relevant audio/speaker news found in today\'s feeds. Try refreshing or check back later.</p></div>';
   } else {
     articles.forEach(function(item) {
       var regionColor = item.region === 'China' ? 'var(--red)' : 'var(--blue2)';
-      html += '<div class="card" style="padding:14px;margin-bottom:10px;border-left:3px solid '+regionColor+'">';
-      html += '<div style="display:flex;align-items:flex-start;gap:10px">';
-      html += '<div style="flex:1">';
-      html += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">';
+      var cardTag   = item.link ? 'a href="'+item.link+'" target="_blank" rel="noopener"' : 'div';
+      var cardClose = item.link ? 'a' : 'div';
+      // Entire card is clickable when a link exists
+      html += '<'+cardTag+' class="card" style="display:block;padding:14px;margin-bottom:10px;border-left:3px solid '+regionColor+';text-decoration:none;cursor:'+(item.link?'pointer':'default')+';transition:border-color 0.2s,background 0.2s" onmouseover="if(this.tagName===\'A\')this.style.background=\'var(--feat-bg)\'" onmouseout="this.style.background=\'\'">';
+      html += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">';
       html += '<span style="font-size:9px;font-weight:700;color:'+regionColor+';text-transform:uppercase;background:rgba(0,0,0,0.15);padding:2px 7px;border-radius:99px">'+esc(item.region)+'</span>';
       html += '<span style="font-size:9px;color:var(--t3)">'+esc(item.source)+'</span>';
       html += '<span style="font-size:9px;color:var(--t3)">·</span>';
       html += '<span style="font-size:9px;color:var(--t3)">'+esc(item.date)+'</span>';
+      if (item.link) html += '<span style="margin-left:auto;font-size:9px;color:var(--blue2)">↗ Read article</span>';
       html += '</div>';
-      if (item.link) {
-        html += '<a href="'+item.link+'" target="_blank" rel="noopener" style="font-size:13px;font-weight:600;color:var(--t1);text-decoration:none;line-height:1.4;display:block;margin-bottom:6px">'+esc(item.title)+'</a>';
-      } else {
-        html += '<p style="font-size:13px;font-weight:600;color:var(--t1);margin-bottom:6px">'+esc(item.title)+'</p>';
-      }
+      html += '<div style="font-size:13px;font-weight:600;color:var(--t1);line-height:1.4;margin-bottom:6px">'+esc(item.title)+'</div>';
       if (item.summary) {
-        html += '<p style="font-size:11px;color:var(--t2);line-height:1.5;margin:0">'+esc(item.summary.slice(0,200))+(item.summary.length>200?'…':'')+'</p>';
+        html += '<p style="font-size:11px;color:var(--t2);line-height:1.5;margin:0">'+esc(item.summary.slice(0,220))+(item.summary.length>220?'…':'')+'</p>';
       }
-      html += '</div></div></div>';
+      html += '</'+cardClose+'>';
     });
   }
 
