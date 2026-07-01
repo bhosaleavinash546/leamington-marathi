@@ -491,6 +491,49 @@ html[data-theme="light"] .chip{color:var(--blue2)}
   .card,.tab-content,.tabs-wrapper{background:#fff!important;border-color:#ddd!important;box-shadow:none!important}
   .ai-card,.scard{background:#f8f9fa!important}
 }
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
+.settings-btn{background:none;border:1px solid var(--bd);border-radius:8px;padding:6px 10px;cursor:pointer;color:var(--t2);font-size:16px;line-height:1;transition:background .2s,color .2s}
+.settings-btn:hover{background:var(--surface2);color:var(--blue2)}
+.settings-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:900;display:flex;align-items:center;justify-content:center}
+.settings-modal{background:var(--surface1);border:1px solid var(--bd);border-radius:16px;padding:28px 32px;width:420px;max-width:94vw;box-shadow:0 20px 60px rgba(0,0,0,.4)}
+.settings-modal h3{margin:0 0 18px;font-size:16px;color:var(--t1);display:flex;align-items:center;gap:8px}
+.settings-modal label{display:block;font-size:11px;color:var(--t3);text-transform:uppercase;letter-spacing:.6px;margin:12px 0 4px}
+.settings-modal input,.settings-modal select{width:100%;box-sizing:border-box;padding:8px 12px;border-radius:8px;border:1px solid var(--bd);background:var(--surface2);color:var(--t1);font-size:13px}
+.settings-modal .sbtn-row{display:flex;gap:10px;margin-top:20px;justify-content:flex-end}
+.settings-modal .sbtn{padding:8px 20px;border-radius:8px;border:1px solid var(--bd);background:var(--surface2);color:var(--t2);cursor:pointer;font-size:13px}
+.settings-modal .sbtn.primary{background:var(--blue2);border-color:var(--blue2);color:#fff;font-weight:700}
+.claude-stream-box{background:var(--surface2);border:1px solid var(--bd);border-radius:12px;padding:16px;margin-top:8px;font-size:12.5px;line-height:1.65;color:var(--t2);min-height:80px;white-space:pre-wrap}
+.claude-stream-box h4{font-size:12px;color:var(--blue2);margin:12px 0 4px;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+.claude-stream-box h4:first-child{margin-top:0}
+.claude-stream-box strong{color:var(--t1)}
+.claude-stream-box code{background:var(--surface3);padding:1px 5px;border-radius:4px;font-family:monospace;font-size:11px}
+.claude-stream-box ul{padding-left:1.2rem;margin:4px 0}
+.claude-stream-box li{margin-bottom:3px}
+.ai-status-bar{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--t3);margin-top:8px;padding:6px 10px;border-radius:8px;background:var(--surface2)}
+.ai-status-bar .spinner{width:12px;height:12px;border:2px solid var(--bd);border-top-color:var(--blue2);border-radius:50%;animation:spin 0.8s linear infinite;flex-shrink:0}
+.ai-setup-note{background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.2);border-radius:10px;padding:12px 16px;font-size:12px;color:var(--t2);margin-top:10px;line-height:1.5}
+.ai-setup-note a{color:var(--blue2)}
+.trends-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:4px}
+@media(max-width:700px){.trends-grid{grid-template-columns:1fr}}
+.trends-article{padding:10px 12px;border-radius:10px;background:var(--surface2);border:1px solid var(--bd);transition:border-color .2s}
+.trends-article:hover{border-color:var(--blue2)}
+.trends-article a{color:var(--t1);text-decoration:none;font-size:12.5px;font-weight:600;line-height:1.4}
+.trends-article a:hover{color:var(--blue2)}
+.trends-article .ta-meta{font-size:10px;color:var(--t3);margin-top:5px;display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.tag-cn{background:#ef444433;color:#f87171;padding:1px 6px;border-radius:4px;font-weight:700;font-size:9px}
+.tag-gl{background:#3b82f633;color:#60a5fa;padding:1px 6px;border-radius:4px;font-weight:700;font-size:9px}
+.commodity-strip{display:flex;gap:10px;flex-wrap:wrap;margin:10px 0 14px}
+.comm-chip{display:flex;flex-direction:column;align-items:center;padding:8px 14px;border-radius:10px;background:var(--surface2);border:1px solid var(--bd);min-width:110px;flex:1}
+.comm-chip .cc-label{font-size:10px;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;font-weight:700}
+.comm-chip .cc-val{font-size:18px;font-weight:800;color:var(--t1);line-height:1.2;margin-top:2px}
+.comm-chip .cc-sub{font-size:9.5px;color:var(--t3);margin-top:1px}
+.comm-chip.up .cc-val{color:var(--red)}
+.comm-chip.down .cc-val{color:var(--green2)}
+.trends-loading{text-align:center;padding:40px;color:var(--t3);font-size:13px}
+.trends-loading .spinner{width:24px;height:24px;border:3px solid var(--bd);border-top-color:var(--blue2);border-radius:50%;animation:spin 0.8s linear infinite;display:inline-block;margin-bottom:10px;vertical-align:middle;margin-right:8px}
+.setup-key-btn{background:var(--blue2);color:#fff;border:none;border-radius:8px;padding:7px 16px;font-size:12px;cursor:pointer;font-weight:700}
+.setup-key-btn:hover{filter:brightness(1.1)}
 </style>
 </head>
 <body>
@@ -509,6 +552,11 @@ html[data-theme="light"] .chip{color:var(--blue2)}
     <div class="hbtns">
       <button onclick="exportPDF()">&#128438; Export PDF</button>
       <button onclick="exportPPT()">&#128202; Export PPT</button>
+      <button class="theme-toggle" id="settingsBtn" onclick="openSettings()" title="API Settings — add Claude key for real AI insights" aria-label="Settings">
+        <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+        </svg>
+      </button>
       <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Toggle light / dark theme" aria-label="Toggle theme">
         <!-- Moon icon — shown in dark mode -->
         <svg class="icon-moon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
@@ -733,6 +781,7 @@ html[data-theme="light"] .chip{color:var(--blue2)}
         <button class="tab-btn" data-tab="process" onclick="showTab('process')">Process &amp; DFMA</button>
         <button class="tab-btn" data-tab="physics" onclick="showTab('physics')">⚡ Physics</button>
         <button class="tab-btn" data-tab="ai" onclick="showTab('ai')">&#129302; AI Insights</button>
+        <button class="tab-btn" data-tab="trends" onclick="showTab('trends')">&#128225; Trends</button>
         <button class="tab-btn" data-tab="compare" onclick="showTab('compare')">⚖ Compare</button>
       </div>
     </div>
@@ -744,6 +793,7 @@ html[data-theme="light"] .chip{color:var(--blue2)}
       <div class="tab-panel" id="panel-process"><div id="processContent"></div></div>
       <div class="tab-panel" id="panel-physics"><div id="physicsContent"><p style="color:var(--t3);text-align:center;padding:60px;font-size:14px">Run calculation to estimate acoustic parameters.</p></div></div>
       <div class="tab-panel" id="panel-ai"><div id="aiContent"><p style="color:var(--t3);text-align:center;padding:60px;font-size:14px">Run calculation to generate AI insights.</p></div></div>
+      <div class="tab-panel" id="panel-trends"><div id="trendsContent"><p style="color:var(--t3);text-align:center;padding:60px;font-size:14px">Click the tab to load live premium automotive audio trends.</p></div></div>
       <div class="tab-panel" id="panel-compare"><div id="compareContent"><p style="color:var(--t3);text-align:center;padding:60px;font-size:14px">Run calculation, then save as Scenario A or B to compare configurations.</p></div></div>
     </div>
   </div>
@@ -1446,6 +1496,7 @@ function showTab(id) {
     if (id === 'ai')       renderAIInsights(_lastResult);
     if (id === 'compare') renderScenarioCompare();
   }
+  if (id === 'trends') renderTrendsTab();
 }
 
 // ─── renderMetrics ────────────────────────────────────────────────────────────
@@ -2104,7 +2155,21 @@ function renderAIInsights(r) {
   });
   html += '</ol></div>';
 
+  // ── Claude AI section ────────────────────────────────────────────────────────
+  var hasKey = !!localStorage.getItem('sce_claude_key');
+  html += '<div class="card ai-card" style="grid-column:1/-1">';
+  html += '<div class="ai-card-hdr"><span class="ai-icon">&#129302;</span><span>Claude AI Deep Analysis</span>';
+  if (hasKey) html += '<button onclick="triggerClaudeInsights(_lastResult)" style="margin-left:auto;font-size:10px;padding:3px 10px;border-radius:6px;border:1px solid var(--blue2);background:none;color:var(--blue2);cursor:pointer">&#8635; Refresh</button>';
   html += '</div>';
+  if (!hasKey) {
+    html += '<div class="ai-setup-note">&#128273; Add your Claude API key via <a href="#" onclick="openSettings();return false">Settings &#9881;</a> to unlock real AI cost-saving ideas, OEM benchmarks, technology alternatives &amp; supply chain risk assessment based on your exact configuration.</div>';
+  } else {
+    html += '<div class="claude-stream-box" id="claudeBox" style="color:var(--t3);font-style:italic;min-height:60px">Generating analysis...</div>';
+    html += '<div class="ai-status-bar" id="claudeStatus"><div class="spinner"></div><span id="claudeStatusTxt">Streaming from Claude...</span></div>';
+  }
+  html += '</div>';
+
+  html += '</div>'; // close ai-grid
 
   var cont = document.getElementById('aiContent');
   if (cont) {
@@ -2120,7 +2185,58 @@ function renderAIInsights(r) {
         }, i * 80);
       });
     }, 30);
+    if (hasKey && _aiInsightsRendered !== JSON.stringify(r.inp)) {
+      _aiInsightsRendered = JSON.stringify(r.inp);
+      setTimeout(function() { triggerClaudeInsights(r); }, 700);
+    }
   }
+}
+
+// ─── triggerClaudeInsights ────────────────────────────────────────────────────
+function triggerClaudeInsights(r) {
+  var box = document.getElementById('claudeBox');
+  var statusBar = document.getElementById('claudeStatus');
+  var statusTxt = document.getElementById('claudeStatusTxt');
+  if (!box) return;
+  var inp = r.inp;
+  var phy = r.spkResults && r.spkResults[0] && r.spkResults[0].physics;
+  var phyStr = phy ? 'fs=' + (phy.fs||0).toFixed(1) + 'Hz, Qts=' + (phy.Qts||0).toFixed(2) + ', Sensitivity=' + (phy.sensitivity||0).toFixed(1) + 'dB/W/m, BL²/Re=' + (phy.BL2Re||0).toFixed(1) + ' T²·m²/Ω' : 'not computed';
+  var roKeys = Object.keys(_rateOverrides || {});
+  var roStr = roKeys.length ? roKeys.map(function(k){ return k + ': £' + (_rateOverrides[k] * FX_GBP).toFixed(2) + '/kg'; }).join(', ') : 'none';
+
+  var prompt = 'You are a senior automotive audio cost engineering consultant. Analyse this speaker system and provide expert insights.\n\n' +
+    '## Configuration\n- System: ' + inp.system + '\n- Country: ' + inp.country + '\n- Volume: ' + inp.annualVol.toLocaleString() + ' units/yr\n' +
+    '- Magnet: ' + inp.magnet + ' | Cone: ' + inp.cone + ' | Surround: ' + inp.surround + '\n' +
+    '- Frame: ' + inp.basket + ' | VC wire: ' + inp.vcWire + ' | Former: ' + inp.former + '\n' +
+    '- Sustainability: ' + inp.sustainMode + '\n\n' +
+    '## Cost Breakdown (GBP)\n- Total: £' + (r.total * FX_GBP).toFixed(2) + ' | DM: £' + (r.totalDM * FX_GBP).toFixed(2) + ' (' + (r.total > 0 ? (r.totalDM / r.total * 100).toFixed(1) : 0) + '%)\n' +
+    '- Labour: £' + (r.totalLabour * FX_GBP).toFixed(2) + ' | OH: £' + (r.totalOH * FX_GBP).toFixed(2) + ' | Tooling: £' + (r.totalTooling * FX_GBP).toFixed(2) + ' | Margin: £' + (r.margin * FX_GBP).toFixed(2) + '\n' +
+    '- CO₂: ' + r.totalSpkCO2.toFixed(2) + ' kg/system | Overrides: ' + roStr + '\n\n' +
+    '## Acoustic (Thiele-Small approx.)\n' + phyStr + '\n\n' +
+    '## Required Sections\n\n' +
+    '#### Cost-Saving Opportunities\nList 3-5 specific actions with estimated % savings, referencing the actual materials and country above.\n\n' +
+    '#### Industry Benchmarks & Trends\nCompare to current OEM practices (Harman, Continental, Panasonic Automotive, Bose Automotive). Dominant material/process trends for premium automotive audio in 2025-2026 at this volume.\n\n' +
+    '#### Technology Alternatives\nSuggest 2-3 alternatives that improve cost/performance for a ' + inp.system + '. Consider DSP, acoustic design, and NVH innovations.\n\n' +
+    '#### Supply Chain Risk\nTop 2-3 risks for this BOM (' + inp.magnet + ' magnet, ' + inp.vcWire + ' wire) and mitigation strategies.\n\n' +
+    '#### Verdict\nOne executive paragraph: is this competitive at ' + inp.annualVol.toLocaleString() + ' units from ' + inp.country + '? Single highest-priority action?\n\nBe specific and data-driven.';
+
+  box.innerHTML = '<em style="color:var(--t3)">Connecting to Claude API...</em>';
+  if (statusBar) statusBar.style.display = 'flex';
+  if (statusTxt) statusTxt.textContent = 'Streaming analysis...';
+
+  var accum = '';
+  callClaudeStream(prompt, function(chunk) {
+    accum += chunk;
+    box.innerHTML = renderMD(accum) + '<span style="animation:blink 1s infinite;display:inline-block;color:var(--blue2)">&#9646;</span>';
+  }, function() {
+    box.innerHTML = renderMD(accum);
+    if (statusBar) statusBar.style.display = 'none';
+  }, function(err) {
+    box.innerHTML = err === 'no_key'
+      ? '<div class="ai-setup-note">&#128273; Add your Claude API key in <a href="#" onclick="openSettings();return false">Settings &#9881;</a>.</div>'
+      : '<span style="color:var(--red)">&#9888; Error: ' + esc(String(err)) + '</span>';
+    if (statusBar) statusBar.style.display = 'none';
+  });
 }
 
 // ─── Scenario Comparison ──────────────────────────────────────────────────────
@@ -2486,6 +2602,274 @@ document.addEventListener('DOMContentLoaded', function() {
   calculate();
 });
 
+// ─── AI Insights cache key ────────────────────────────────────────────────────
+var _aiInsightsRendered = null;
+
+// ─── Trends tab globals ───────────────────────────────────────────────────────
+var _trendsCache = null;
+var _trendsCacheTime = 0;
+var _commodityCache = null;
+var _commodityCacheTime = 0;
+
+var TREND_FEEDS = [
+  { url: 'https://carnewschina.com/feed/', label: 'Car News China', region: 'CN' },
+  { url: 'https://cnevpost.com/feed/',     label: 'CNEVPost',       region: 'CN' },
+  { url: 'https://gasgoo.com/rss.xml',    label: 'Gasgoo',         region: 'CN' },
+  { url: 'https://electrek.co/feed/',     label: 'Electrek',       region: 'GL' },
+  { url: 'https://insideevs.com/feed/rss/', label: 'InsideEVs',   region: 'GL' }
+];
+
+var AUDIO_KEYWORDS = [
+  'audio','sound','speaker','acoustics','bose','harman','meridian',
+  'burmester','b&o','bang & olufsen','bang and olufsen','dolby','hi-fi',
+  'premium audio','music system','sound system','infotainment audio',
+  'nio audio','aito','huawei sound','zeekr audio','li auto audio',
+  'byd premium','yangwang','xpeng audio','lixiang audio',
+  'surround sound','active noise','anc','dsp audio','spatial audio'
+];
+
+function isAudioRelevant(item) {
+  var txt = ((item.title || '') + ' ' + (item.description || '') + ' ' + (item.content || '')).toLowerCase();
+  // Exclude cheap/budget terms
+  var noiseTerms = ['budget speaker','cheap audio','entry-level audio','basic stereo'];
+  for (var i = 0; i < noiseTerms.length; i++) { if (txt.indexOf(noiseTerms[i]) >= 0) return false; }
+  for (var j = 0; j < AUDIO_KEYWORDS.length; j++) { if (txt.indexOf(AUDIO_KEYWORDS[j]) >= 0) return true; }
+  return false;
+}
+
+function fetchRSSFeed(feed) {
+  var apiUrl = 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(feed.url) + '&api_key=public&count=20';
+  return fetch(apiUrl)
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (!data.items) return [];
+      return data.items.filter(isAudioRelevant).slice(0, 6).map(function(item) {
+        return {
+          title: item.title || '',
+          link:  item.link  || item.guid || '#',
+          date:  item.pubDate ? item.pubDate.slice(0, 10) : '',
+          region: feed.region,
+          source: feed.label
+        };
+      });
+    })
+    .catch(function() { return []; });
+}
+
+function fetchCommodityPrices() {
+  if (_commodityCache && (Date.now() - _commodityCacheTime) < 3600000) {
+    return Promise.resolve(_commodityCache);
+  }
+  var proxyBase = 'https://api.allorigins.win/get?url=';
+
+  function yahooFetch(symbol) {
+    var url = 'https://query1.finance.yahoo.com/v8/finance/chart/' + symbol + '?interval=1d&range=2d';
+    return fetch(proxyBase + encodeURIComponent(url))
+      .then(function(r) { return r.json(); })
+      .then(function(w) {
+        var d = JSON.parse(w.contents);
+        var meta = d && d.chart && d.chart.result && d.chart.result[0] && d.chart.result[0].meta;
+        if (!meta) return null;
+        return { price: meta.regularMarketPrice, prev: meta.previousClose, currency: meta.currency };
+      })
+      .catch(function() { return null; });
+  }
+
+  return Promise.all([yahooFetch('HG=F'), yahooFetch('ALI=F')])
+    .then(function(results) {
+      var out = {
+        copper: results[0],
+        aluminium: results[1],
+        neodymium: { price: 80000, unit: 'CNY/MT', source: 'SMM indicative', disclaimer: true }
+      };
+      _commodityCache = out;
+      _commodityCacheTime = Date.now();
+      return out;
+    });
+}
+
+function buildTrendsHTML(articles, comms) {
+  var html = '<div class="section-title">&#128225; Live Premium Automotive Audio Trends</div>';
+
+  // Commodity strip
+  html += '<div class="commodity-strip">';
+  if (comms.copper) {
+    var cuDelta = comms.copper.price - comms.copper.prev;
+    var cuDir = cuDelta >= 0 ? 'up' : 'down';
+    html += '<div class="comm-chip ' + cuDir + '">';
+    html += '<div class="cc-label">Copper (COMEX)</div>';
+    html += '<div class="cc-val">$' + comms.copper.price.toFixed(3) + '</div>';
+    html += '<div class="cc-sub">$/lb &nbsp;' + (cuDelta >= 0 ? '&#9650;' : '&#9660;') + ' ' + Math.abs(cuDelta).toFixed(3) + ' today</div>';
+    html += '</div>';
+  }
+  if (comms.aluminium) {
+    var alDelta = comms.aluminium.price - comms.aluminium.prev;
+    var alDir = alDelta >= 0 ? 'up' : 'down';
+    html += '<div class="comm-chip ' + alDir + '">';
+    html += '<div class="cc-label">Aluminium (LME)</div>';
+    html += '<div class="cc-val">$' + comms.aluminium.price.toFixed(2) + '</div>';
+    html += '<div class="cc-sub">$/MT &nbsp;' + (alDelta >= 0 ? '&#9650;' : '&#9660;') + ' ' + Math.abs(alDelta).toFixed(2) + ' today</div>';
+    html += '</div>';
+  }
+  html += '<div class="comm-chip">';
+  html += '<div class="cc-label">Neodymium (SMM ind.)</div>';
+  html += '<div class="cc-val">¥80,000</div>';
+  html += '<div class="cc-sub">CNY/MT &mdash; <a href="https://www.asianmetal.com" target="_blank" style="color:var(--blue2);font-size:9px">asianmetal.com &#8599;</a></div>';
+  html += '</div>';
+  html += '</div>';
+
+  if (!articles.length) {
+    html += '<div style="text-align:center;padding:30px;color:var(--t3);font-size:13px">No premium audio news found. RSS feeds may be temporarily unavailable.</div>';
+  } else {
+    html += '<div class="section-title" style="font-size:11px;margin:4px 0 8px;color:var(--t3)">PREMIUM AUTOMOTIVE AUDIO NEWS — CHINESE OEMS &amp; GLOBAL TIER 1</div>';
+    html += '<div class="trends-grid">';
+    articles.forEach(function(a) {
+      html += '<div class="trends-article">';
+      html += '<a href="' + esc(a.link) + '" target="_blank" rel="noopener">' + esc(a.title) + ' &#8599;</a>';
+      html += '<div class="ta-meta">';
+      html += '<span class="' + (a.region === 'CN' ? 'tag-cn' : 'tag-gl') + '">' + (a.region === 'CN' ? 'CHINA' : 'GLOBAL') + '</span>';
+      html += '<span>' + esc(a.source) + '</span>';
+      if (a.date) html += '<span>' + esc(a.date) + '</span>';
+      html += '</div></div>';
+    });
+    html += '</div>';
+  }
+
+  html += '<div style="font-size:10px;color:var(--t3);margin-top:16px;border-top:1px solid var(--bd);padding-top:8px">';
+  html += 'Commodity data: Yahoo Finance (COMEX copper HG=F, LME aluminium ALI=F) via AllOrigins proxy &mdash; 1h cache. ';
+  html += 'Neodymium: SMM indicative price, not real-time. Verify at <a href="https://www.asianmetal.com" target="_blank" style="color:var(--blue2)">asianmetal.com</a>. ';
+  html += 'News: carnewschina.com, cnevpost.com, gasgoo.com, electrek.co, insideevs.com filtered for premium audio. 24h cache.';
+  html += '</div>';
+
+  return html;
+}
+
+function renderTrendsTab() {
+  var cont = document.getElementById('trendsContent');
+  if (!cont) return;
+  var now = Date.now();
+  // Use cache if < 24h old
+  if (_trendsCache && (now - _trendsCacheTime) < 86400000) {
+    fetchCommodityPrices().then(function(comms) {
+      cont.innerHTML = buildTrendsHTML(_trendsCache, comms);
+    });
+    return;
+  }
+  cont.innerHTML = '<div class="trends-loading"><span class="spinner"></span>Fetching live premium automotive audio news&hellip;</div>';
+  var feedPromises = TREND_FEEDS.map(fetchRSSFeed);
+  Promise.all(feedPromises).then(function(results) {
+    var all = [];
+    results.forEach(function(r) { all = all.concat(r); });
+    // Sort by date descending
+    all.sort(function(a, b) { return (b.date || '') < (a.date || '') ? -1 : 1; });
+    _trendsCache = all;
+    _trendsCacheTime = now;
+    return fetchCommodityPrices();
+  }).then(function(comms) {
+    cont.innerHTML = buildTrendsHTML(_trendsCache, comms);
+  }).catch(function(err) {
+    cont.innerHTML = '<div style="color:var(--red);padding:20px;text-align:center">Failed to load trends: ' + esc(String(err)) + '</div>';
+  });
+}
+
+// ─── Settings ─────────────────────────────────────────────────────────────────
+function openSettings() {
+  var modal = document.getElementById('settingsModal');
+  if (!modal) return;
+  document.getElementById('claudeApiKey').value = localStorage.getItem('sce_claude_key') || '';
+  document.getElementById('claudeModel').value  = localStorage.getItem('sce_claude_model') || 'claude-haiku-4-5-20251001';
+  document.getElementById('settingsSavedMsg').style.display = 'none';
+  modal.style.display = 'flex';
+}
+function closeSettings() {
+  var modal = document.getElementById('settingsModal');
+  if (modal) modal.style.display = 'none';
+}
+function saveSettings() {
+  var key   = document.getElementById('claudeApiKey').value.trim();
+  var model = document.getElementById('claudeModel').value;
+  if (key) localStorage.setItem('sce_claude_key', key);
+  else localStorage.removeItem('sce_claude_key');
+  localStorage.setItem('sce_claude_model', model);
+  document.getElementById('settingsSavedMsg').style.display = 'block';
+  setTimeout(closeSettings, 1400);
+}
+
+// ─── Markdown renderer (minimal — bold, italic, h3, bullet, code) ─────────────
+function renderMD(text) {
+  if (!text) return '';
+  var h = text
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    // Headers
+    .replace(/^### (.+)$/gm,'<h4 style="font-size:13px;font-weight:700;color:var(--t1);margin:14px 0 5px">$1</h4>')
+    .replace(/^## (.+)$/gm, '<h3 style="font-size:14px;font-weight:700;color:var(--blue2);margin:16px 0 6px">$1</h3>')
+    .replace(/^# (.+)$/gm,  '<h2 style="font-size:15px;font-weight:700;color:var(--t1);margin:18px 0 8px">$1</h2>')
+    // Bold / italic / code
+    .replace(/\*\*(.+?)\*\*/g,'<strong style="color:var(--t1)">$1</strong>')
+    .replace(/\*(.+?)\*/g,   '<em style="color:var(--t2)">$1</em>')
+    .replace(/`(.+?)`/g,     '<code style="background:rgba(99,102,241,0.12);padding:1px 5px;border-radius:4px;font-size:11px;color:var(--purple2)">$1</code>')
+    // Bullet lists
+    .replace(/^[-•] (.+)$/gm,'<li style="margin:4px 0;color:var(--t2);font-size:12px">$1</li>')
+    // Numbered lists
+    .replace(/^\d+\. (.+)$/gm,'<li style="margin:4px 0;color:var(--t2);font-size:12px">$1</li>')
+    // Paragraphs
+    .replace(/\n\n+/g,'</p><p style="color:var(--t2);font-size:12px;line-height:1.6;margin:8px 0">')
+    .replace(/\n/g,' ');
+  // Wrap bullet groups in ul
+  h = h.replace(/(<li[^>]*>.*?<\/li>\s*)+/g, function(m){return '<ul style="margin:6px 0 10px 16px;padding:0;list-style:disc">'+m+'</ul>';});
+  return '<p style="color:var(--t2);font-size:12px;line-height:1.6;margin:0">' + h + '</p>';
+}
+
+// ─── Claude API streaming call ────────────────────────────────────────────────
+function callClaudeStream(prompt, onChunk, onDone, onError) {
+  var key   = localStorage.getItem('sce_claude_key');
+  var model = localStorage.getItem('sce_claude_model') || 'claude-haiku-4-5-20251001';
+  if (!key) { onError('no_key'); return; }
+  fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': key,
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true'
+    },
+    body: JSON.stringify({
+      model: model,
+      max_tokens: 1800,
+      stream: true,
+      messages: [{ role: 'user', content: prompt }]
+    })
+  })
+  .then(function(res) {
+    if (!res.ok) { return res.text().then(function(t){ onError(t); }); }
+    var reader = res.body.getReader();
+    var decoder = new TextDecoder();
+    var buf = '';
+    function pump() {
+      reader.read().then(function(ref) {
+        if (ref.done) { onDone(); return; }
+        buf += decoder.decode(ref.value, {stream:true});
+        var lines = buf.split('\n');
+        buf = lines.pop();
+        lines.forEach(function(line) {
+          if (!line.startsWith('data: ')) return;
+          var data = line.slice(6).trim();
+          if (data === '[DONE]') return;
+          try {
+            var ev = JSON.parse(data);
+            if (ev.type === 'content_block_delta' && ev.delta && ev.delta.text) {
+              onChunk(ev.delta.text);
+            }
+          } catch(e) {}
+        });
+        pump();
+      }).catch(onError);
+    }
+    pump();
+  })
+  .catch(onError);
+}
+
 // ─── Theme toggle ─────────────────────────────────────────────────────────────
 function toggleTheme() {
   var isLight = document.documentElement.getAttribute('data-theme') === 'light';
@@ -2528,5 +2912,31 @@ function toggleTheme() {
   });
 }
 </script>
+<!-- ── Settings Modal ── -->
+<div id="settingsModal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.72);backdrop-filter:blur(5px);align-items:center;justify-content:center" onclick="if(event.target===this)closeSettings()">
+  <div style="background:var(--surface);border:1px solid var(--bd2);border-radius:16px;padding:28px;width:480px;max-width:92vw;box-shadow:0 24px 80px rgba(0,0,0,0.55)">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+      <h3 style="font-size:15px;font-weight:700;color:var(--t1);margin:0">⚙ API Settings</h3>
+      <button onclick="closeSettings()" style="background:none;border:none;color:var(--t3);font-size:20px;cursor:pointer;line-height:1;padding:2px 6px">✕</button>
+    </div>
+    <div style="margin-bottom:16px">
+      <label style="display:block;font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px">Claude API Key <span style="color:var(--red)">*</span></label>
+      <input type="password" id="claudeApiKey" placeholder="sk-ant-api03-…" autocomplete="off" style="width:100%;box-sizing:border-box;padding:10px 12px;background:var(--input-bg,var(--glass));border:1px solid var(--bd);border-radius:8px;color:var(--t1);font-family:monospace;font-size:12px;outline:none">
+      <p style="font-size:10px;color:var(--t3);margin-top:5px;line-height:1.5">Stored in browser <code>localStorage</code> only — never sent anywhere except <strong>api.anthropic.com</strong>. Get a key at <strong>console.anthropic.com</strong>.</p>
+    </div>
+    <div style="margin-bottom:20px">
+      <label style="display:block;font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px">Claude Model</label>
+      <select id="claudeModel" style="width:100%;padding:9px 10px;background:var(--input-bg,var(--glass));border:1px solid var(--bd);border-radius:8px;color:var(--t1);font-size:12px">
+        <option value="claude-haiku-4-5-20251001">Claude Haiku 4.5 — Fast &amp; economical (recommended)</option>
+        <option value="claude-sonnet-4-6">Claude Sonnet 4.6 — Richer, more detailed analysis</option>
+      </select>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:4px">
+      <button onclick="saveSettings()" style="flex:1;padding:11px;background:linear-gradient(135deg,var(--blue),var(--purple));border:none;border-radius:8px;color:#fff;font-weight:700;cursor:pointer;font-size:13px">💾 Save</button>
+      <button onclick="closeSettings()" style="padding:11px 18px;background:transparent;border:1px solid var(--bd);border-radius:8px;color:var(--t2);cursor:pointer;font-size:13px">Cancel</button>
+    </div>
+    <p id="settingsSavedMsg" style="display:none;text-align:center;margin-top:12px;font-size:12px;color:var(--green2);font-weight:600">✓ Settings saved — AI Insights now powered by Claude</p>
+  </div>
+</div>
 </body>
 </html>
