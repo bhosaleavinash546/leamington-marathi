@@ -4,7 +4,8 @@
  * Pure, dependency-free, bottom-up parametric costing.
  * Every number is computed from rate × time / mass × price — NO LLM.
  *
- *   total = material + machine + labour + setup + tooling + overhead + SG&A/profit
+ *   total = material + machine + labour + setup + finishing + tooling
+ *           + overhead + commercial(packaging/freight) + SG&A/profit
  *
  * Also provides a Monte-Carlo simulation (P10/P50/P90) over the
  * uncertainty in commodity price, machine rate, cycle time and scrap.
@@ -98,30 +99,35 @@ export const PROCESSES = {
     setupHr: 3.0, batch: 1500, toolLife: 150_000,
     cycleSec: w => 35 + 6 * w, tooling: w => 90_000 + 60_000 * w,
     families: ['aluminium', 'magnesium'],
+    finishPct: 0.1,
   },
   'Die Casting (Zinc)': {
     machineRate: 75, operators: 0.5, cavities: 2, utilisation: 0.90, scrapPct: 0.04,
     setupHr: 2.0, batch: 2000, toolLife: 500_000,
     cycleSec: w => 12 + 5 * w, tooling: w => 60_000 + 40_000 * w,
     families: ['zinc'],
+    finishPct: 0.1,
   },
   'Sand Casting': {
     machineRate: 55, operators: 1.2, cavities: 1, utilisation: 0.70, scrapPct: 0.06,
     setupHr: 2.0, batch: 400, toolLife: 50_000,
     cycleSec: w => 45 + 12 * w, tooling: w => 18_000 + 12_000 * w,
     families: ['castiron', 'ferrous', 'aluminium', 'copper'],
+    finishPct: 0.2,
   },
   'Investment Casting': {
     machineRate: 70, operators: 1.4, cavities: 1, utilisation: 0.85, scrapPct: 0.05,
     setupHr: 3.0, batch: 800, toolLife: 100_000,
     cycleSec: w => 90 + 20 * w, tooling: w => 40_000 + 30_000 * w,
     families: ['ferrous', 'castiron', 'aluminium', 'titanium', 'copper'],
+    finishPct: 0.15,
   },
   'Gravity Die Casting': {
     machineRate: 80, operators: 0.7, cavities: 1, utilisation: 0.82, scrapPct: 0.05,
     setupHr: 2.5, batch: 1500, toolLife: 120_000,
     cycleSec: w => 40 + 8 * w, tooling: w => 70_000 + 45_000 * w,
     families: ['aluminium', 'copper'],
+    finishPct: 0.12,
   },
   'Injection Moulding': {
     machineRate: 65, operators: 0.4, cavities: 2, utilisation: 0.95, scrapPct: 0.02,
@@ -140,18 +146,21 @@ export const PROCESSES = {
     setupHr: 2.5, batch: 2000, toolLife: 60_000,
     cycleSec: w => 8 + 2.5 * w, tooling: w => 70_000 + 50_000 * w,
     families: ['ferrous', 'aluminium', 'titanium', 'copper'],
+    finishPct: 0.12,
   },
   'Forging (Cold)': {
     machineRate: 100, operators: 0.6, cavities: 1, utilisation: 0.88, scrapPct: 0.03,
     setupHr: 1.5, batch: 4000, toolLife: 400_000,
     cycleSec: w => 4 + 1.5 * w, tooling: w => 50_000 + 35_000 * w,
     families: ['ferrous', 'aluminium', 'copper'],
+    finishPct: 0.1,
   },
   'Machining (CNC)': {
     machineRate: 60, operators: 0.5, cavities: 1, utilisation: 0.45, scrapPct: 0.02,
     setupHr: 1.0, batch: 200, toolLife: 10_000_000,
     cycleSec: w => 90 + 120 * w, tooling: () => 4_000,
     families: ['ferrous', 'castiron', 'aluminium', 'magnesium', 'titanium', 'copper', 'zinc', 'plastic'],
+    finishPct: 0.35,
   },
   'Extrusion': {
     machineRate: 90, operators: 0.5, cavities: 1, utilisation: 0.85, scrapPct: 0.03,
@@ -176,6 +185,16 @@ export const PROCESSES = {
 export const listMaterials = () => Object.keys(MATERIALS);
 export const listProcesses = () => Object.keys(PROCESSES);
 export const listRegions   = () => Object.keys(REGIONS);
+
+// ─── Calibration constants ────────────────────────────────────────────────────
+// Tuned against the should-cost benchmark (benchmark/cost-run.mjs) to remove the
+// systematic under-read of a pure works-cost buildup vs real piece prices.
+//   DEFAULT_FINISH_PCT — secondary/finishing ops as a fraction of primary
+//     conversion when a process does not specify its own `finishPct`.
+//   COMMERCIAL_PCT — packaging + inbound/outbound freight + receiving & quality,
+//     applied to works cost (before SG&A/profit).
+const DEFAULT_FINISH_PCT = 0.06;
+const COMMERCIAL_PCT = 0.05;
 
 function round(n, dp = 2) {
   const f = Math.pow(10, dp);
@@ -241,15 +260,25 @@ export function computeShouldCost(input, overrides = {}) {
   // ── Setup (amortised over batch) ────────────────────────────────────────────
   const setupCost = (proc.setupHr * (machineRate + reg.labour)) / proc.batch;
 
+  // ── Secondary / finishing operations ────────────────────────────────────────
+  // Deburr, fettling, heat-treat, surface finish, gauging/inspection — real
+  // routings always carry these; the bottom-up above omits them. Modelled as a
+  // fraction of primary conversion, higher for machining/casting/forging.
+  const finishPct = proc.finishPct ?? DEFAULT_FINISH_PCT;
+  const finishingCost = (machineCost + labourCost) * finishPct;
+
   // ── Tooling (amortised over min(toolLife, lifetime volume)) ─────────────────
   const lifetimeVol = vol * programYears;
   const amortVol = Math.max(1, Math.min(proc.toolLife, lifetimeVol));
   const toolingCost = proc.tooling(w) / amortVol;
 
-  // ── Overhead + SG&A/profit ──────────────────────────────────────────────────
-  const conversion = machineCost + labourCost + setupCost;
+  // ── Overhead + commercial + SG&A/profit ─────────────────────────────────────
+  const conversion = machineCost + labourCost + setupCost + finishingCost;
   const overheadCost = conversion * reg.overheadPct;
-  const worksCost = materialCost + conversion + toolingCost + overheadCost;
+  // Packaging, inbound/outbound freight, receiving & quality — a real line on
+  // every piece price that a pure works-cost buildup misses.
+  const commercialCost = (materialCost + conversion + toolingCost + overheadCost) * COMMERCIAL_PCT;
+  const worksCost = materialCost + conversion + toolingCost + overheadCost + commercialCost;
   const sgaCost = worksCost * reg.sgaPct;
   const total = worksCost + sgaCost;
 
@@ -270,13 +299,15 @@ export function computeShouldCost(input, overrides = {}) {
       amortVolume: amortVol,
     },
     breakdown: {
-      material:  { value: round(materialCost), pct: pct(materialCost) },
-      machine:   { value: round(machineCost),  pct: pct(machineCost) },
-      labour:    { value: round(labourCost),   pct: pct(labourCost) },
-      setup:     { value: round(setupCost),    pct: pct(setupCost) },
-      tooling:   { value: round(toolingCost),  pct: pct(toolingCost) },
-      overhead:  { value: round(overheadCost), pct: pct(overheadCost) },
-      sgaProfit: { value: round(sgaCost),      pct: pct(sgaCost) },
+      material:   { value: round(materialCost),   pct: pct(materialCost) },
+      machine:    { value: round(machineCost),    pct: pct(machineCost) },
+      labour:     { value: round(labourCost),     pct: pct(labourCost) },
+      setup:      { value: round(setupCost),      pct: pct(setupCost) },
+      finishing:  { value: round(finishingCost),  pct: pct(finishingCost) },
+      tooling:    { value: round(toolingCost),    pct: pct(toolingCost) },
+      overhead:   { value: round(overheadCost),   pct: pct(overheadCost) },
+      commercial: { value: round(commercialCost), pct: pct(commercialCost) },
+      sgaProfit:  { value: round(sgaCost),        pct: pct(sgaCost) },
     },
     totalShouldCost: round(total),
   };

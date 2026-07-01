@@ -9,7 +9,7 @@
     "build": "tsc && vite build",
     "test": "node --test",
     "benchmark": "node benchmark/run.mjs",
-    "benchmark:cost": "node benchmark/cost-run.mjs --min-hit 0.70 --max-mape 0.25",
+    "benchmark:cost": "node benchmark/cost-run.mjs --min-hit 0.85 --max-mape 0.16",
     "preview": "vite preview",
     "mobile:build": "tsc && vite build && npx cap sync",
     "mobile:android": "npx cap open android",

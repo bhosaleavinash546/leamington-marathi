@@ -25,11 +25,13 @@ export const FALLBACK_PROCESSES = ['Stamping / Deep Drawing', 'Roll Forming', 'H
 export const FALLBACK_REGIONS = ['Germany', 'UK', 'Czech Republic', 'Spain', 'Mexico', 'USA', 'China', 'India', 'Korea'];
 
 export const COST_COMPONENTS: CostComponentMeta[] = [
-  { key: 'material',  label: 'Material',         hex: '#3b82f6', text: 'text-blue-400',    bar: 'bg-blue-500' },
-  { key: 'machine',   label: 'Machine',          hex: '#a855f7', text: 'text-purple-400',  bar: 'bg-purple-500' },
-  { key: 'labour',    label: 'Labour',           hex: '#ec4899', text: 'text-pink-400',    bar: 'bg-pink-500' },
-  { key: 'setup',     label: 'Setup',            hex: '#06b6d4', text: 'text-cyan-400',    bar: 'bg-cyan-500' },
-  { key: 'tooling',   label: 'Tooling (amort.)', hex: '#6366f1', text: 'text-indigo-400',  bar: 'bg-indigo-500' },
-  { key: 'overhead',  label: 'Overhead',         hex: '#f59e0b', text: 'text-amber-400',   bar: 'bg-amber-500' },
-  { key: 'sgaProfit', label: 'SG&A / Profit',    hex: '#10b981', text: 'text-emerald-400', bar: 'bg-emerald-500' },
+  { key: 'material',   label: 'Material',         hex: '#3b82f6', text: 'text-blue-400',    bar: 'bg-blue-500' },
+  { key: 'machine',    label: 'Machine',          hex: '#a855f7', text: 'text-purple-400',  bar: 'bg-purple-500' },
+  { key: 'labour',     label: 'Labour',           hex: '#ec4899', text: 'text-pink-400',    bar: 'bg-pink-500' },
+  { key: 'setup',      label: 'Setup',            hex: '#06b6d4', text: 'text-cyan-400',    bar: 'bg-cyan-500' },
+  { key: 'finishing',  label: 'Finishing / 2nd ops', hex: '#14b8a6', text: 'text-teal-400', bar: 'bg-teal-500' },
+  { key: 'tooling',    label: 'Tooling (amort.)', hex: '#6366f1', text: 'text-indigo-400',  bar: 'bg-indigo-500' },
+  { key: 'overhead',   label: 'Overhead',         hex: '#f59e0b', text: 'text-amber-400',   bar: 'bg-amber-500' },
+  { key: 'commercial', label: 'Packaging / freight', hex: '#f97316', text: 'text-orange-400', bar: 'bg-orange-500' },
+  { key: 'sgaProfit',  label: 'SG&A / Profit',    hex: '#10b981', text: 'text-emerald-400', bar: 'bg-emerald-500' },
 ];
