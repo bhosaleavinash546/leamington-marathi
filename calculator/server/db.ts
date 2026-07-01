@@ -49,7 +49,25 @@ db.exec(`
     email_verified INTEGER NOT NULL DEFAULT 0,
     failed_attempts INTEGER NOT NULL DEFAULT 0,
     locked_until TEXT,
+    role TEXT NOT NULL DEFAULT 'user',
     created_at TEXT NOT NULL
+  );
+
+  -- Admin edits to individual rate cells (layered over the active library).
+  CREATE TABLE IF NOT EXISTS rate_overrides (
+    id         TEXT PRIMARY KEY,   -- table|rowId|field
+    tbl        TEXT NOT NULL,
+    row_id     TEXT NOT NULL,
+    field      TEXT NOT NULL,
+    value      REAL NOT NULL,
+    updated_at TEXT NOT NULL,
+    updated_by TEXT NOT NULL DEFAULT ''
+  );
+
+  -- Simple key/value app settings (e.g. which rate source is active).
+  CREATE TABLE IF NOT EXISTS app_settings (
+    key   TEXT PRIMARY KEY,
+    value TEXT NOT NULL
   );
 
   CREATE TABLE IF NOT EXISTS otp_tokens (
@@ -117,5 +135,20 @@ db.exec(`
   CREATE INDEX IF NOT EXISTS idx_bom_parent ON bom_items(parent_scenario_id);
   CREATE INDEX IF NOT EXISTS idx_bom_child  ON bom_items(child_scenario_id);
 `);
+
+// ── Migrations for existing databases (CREATE IF NOT EXISTS won't add columns) ──
+function ensureColumn(table: string, column: string, ddl: string): void {
+  const cols = db.prepare(`PRAGMA table_info(${table})`).all() as Array<{ name: string }>;
+  if (!cols.some(c => c.name === column)) db.exec(`ALTER TABLE ${table} ADD COLUMN ${ddl}`);
+}
+ensureColumn('users', 'role', "role TEXT NOT NULL DEFAULT 'user'");
+
+// ── Bootstrap admins from env (comma-separated emails) at startup ──────────────
+const adminEmails = (process.env.ADMIN_EMAILS ?? '')
+  .split(',').map(e => e.trim().toLowerCase()).filter(Boolean);
+if (adminEmails.length) {
+  const stmt = db.prepare('UPDATE users SET role = ? WHERE lower(email) = ?');
+  for (const e of adminEmails) stmt.run('admin', e);
+}
 
 export default db;
