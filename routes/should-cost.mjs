@@ -3,23 +3,26 @@
 // quote corpus + learned calibration. Extracted from server.mjs (de-monolith).
 // ─────────────────────────────────────────────────────────────────────────────
 import crypto from 'crypto';
-import { computeShouldCost, simulateShouldCost, volumeSensitivity, listMaterials, listProcesses, listRegions, MATERIALS, PROCESSES } from '../costing-engine.mjs';
+import { computeShouldCost, simulateShouldCost, volumeSensitivity } from '../costing-engine.mjs';
 import { resolveMaterial, resolveProcess } from '../material-process-resolve.mjs';
 import { getFxRates, FX_FALLBACK, FX_SYMBOLS, FX_CURRENCIES } from '../fx-rates.mjs';
 import { fitCalibration } from '../calibration.mjs';
+import { getActiveLibrary, getActiveMeta } from '../active-library.mjs';
 
 export function registerShouldCostRoutes(app, { db, requireAuth, rateLimit, makeAnthropic }) {
 // ─── SHOULD-COST ──────────────────────────────────────────────────────────────
 
 // Catalogue endpoint so the UI populates dropdowns from the engine (single source of truth)
 app.get('/api/should-cost/catalogue', (_req, res) => {
+  const lib = getActiveLibrary();   // built-in defaults merged with any admin custom library
   res.json({
-    materials: listMaterials(),
-    processes: listProcesses(),
-    regions: listRegions(),
+    materials: Object.keys(lib.MATERIALS),
+    processes: Object.keys(lib.PROCESSES),
+    regions: Object.keys(lib.REGIONS),
     // compatibility map: process -> allowed material families, and material -> family
-    materialFamilies: Object.fromEntries(Object.entries(MATERIALS).map(([k, v]) => [k, v.family])),
-    processFamilies: Object.fromEntries(Object.entries(PROCESSES).map(([k, v]) => [k, v.families])),
+    materialFamilies: Object.fromEntries(Object.entries(lib.MATERIALS).map(([k, v]) => [k, v.family])),
+    processFamilies: Object.fromEntries(Object.entries(lib.PROCESSES).map(([k, v]) => [k, v.families])),
+    library: getActiveMeta(),
   });
 });
 
@@ -42,13 +45,14 @@ app.post('/api/should-cost/quotes', requireAuth, rateLimit(120, 60 * 60 * 1000),
   }
   const currency = String(req.body.currency || 'EUR').toUpperCase();
   if (!FX_CURRENCIES.includes(currency)) return res.status(400).json({ error: `Unsupported currency "${currency}".` });
-  const matRes = resolveMaterial(material);
-  const procRes = resolveProcess(process);
+  const lib = getActiveLibrary();
+  const matRes = resolveMaterial(material, lib.MATERIALS);
+  const procRes = resolveProcess(process, lib.PROCESSES);
   if (!matRes || !procRes) return res.status(400).json({ error: 'Material or process not recognised.' });
 
   let modelledEur;
   try {
-    modelledEur = computeShouldCost({ material: matRes.key, process: procRes.key, weightKg: Number(weightKg), annualVolume: Number(annualVolume), region: region || 'Germany' }).totalShouldCost;
+    modelledEur = computeShouldCost({ material: matRes.key, process: procRes.key, weightKg: Number(weightKg), annualVolume: Number(annualVolume), region: region || 'Germany' }, {}, null, lib).totalShouldCost;
   } catch (e) { return res.status(400).json({ error: e.message || 'Invalid parameters.' }); }
 
   // Convert the user's quoted price to EUR (rates are EUR-based: units per 1 EUR).
@@ -86,11 +90,12 @@ app.post('/api/should-cost', requireAuth, rateLimit(60, 60 * 60 * 1000), async (
     return res.status(400).json({ error: `Unsupported currency "${currency}". Supported: ${FX_CURRENCIES.join(', ')}.` });
   }
 
-  // Resolve free-text material/process to catalogue keys server-side (exact keys
-  // from the dropdown pass straight through). One resolver next to the engine —
-  // no client-side matcher to drift out of sync.
-  const matRes = resolveMaterial(material);
-  const procRes = resolveProcess(process);
+  // Resolve free-text material/process against the ACTIVE library (built-in
+  // defaults merged with the admin's custom rates). Exact dropdown keys pass
+  // straight through; free text is fuzzy-matched — no client matcher to drift.
+  const lib = getActiveLibrary();
+  const matRes = resolveMaterial(material, lib.MATERIALS);
+  const procRes = resolveProcess(process, lib.PROCESSES);
   if (!matRes || !procRes) {
     const missing = [];
     if (!matRes) missing.push(`a material the cost library recognises — “${material}” isn’t in it (try "Aluminium 6061", "Cast iron", "DP780 steel")`);
@@ -99,14 +104,14 @@ app.post('/api/should-cost', requireAuth, rateLimit(60, 60 * 60 * 1000), async (
   }
 
   // ── 1. Deterministic bottom-up cost (NO LLM — real rate × time / mass × price) ─
-  // Applies the user's learned calibration (fitted from their own supplier quotes).
+  // Uses the active rate library and the user's learned calibration (from quotes).
   const userCal = getUserCalibration(req.user.id);
   let calc, sim, volumeCurve;
   try {
     const engineInput = { material: matRes.key, process: procRes.key, weightKg: Number(weightKg), annualVolume: Number(annualVolume), region: region || 'Germany' };
-    calc = computeShouldCost(engineInput, {}, userCal);
-    sim  = simulateShouldCost(engineInput, 2000, 12345, userCal);
-    volumeCurve = volumeSensitivity(engineInput, undefined, userCal);
+    calc = computeShouldCost(engineInput, {}, userCal, lib);
+    sim  = simulateShouldCost(engineInput, 2000, 12345, userCal, lib);
+    volumeCurve = volumeSensitivity(engineInput, undefined, userCal, lib);
   } catch (e) {
     return res.status(400).json({ error: e.message || 'Invalid costing parameters.' });
   }
@@ -160,6 +165,8 @@ app.post('/api/should-cost', requireAuth, rateLimit(60, 60 * 60 * 1000), async (
     processApprox: procRes.approx,
     // Learned-calibration status: whether the user's own quotes adjusted this estimate.
     calibration: { applied: calc.calibration.applied, factor: calc.calibration.factor, quotes: userCal.n },
+    // Which rate library produced this estimate (built-in vs the admin's custom data).
+    library: getActiveMeta(),
     fx: currency === 'EUR' ? null : { base: 'EUR', rate: Number(rate.toFixed(4)), asOf: fx.live ? fx.date : null, source: fx.source, stale: !!fx.stale },
     materialCost: fmt(b.material.value),
     processCost: fmt(processCost),

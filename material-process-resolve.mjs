@@ -24,8 +24,8 @@ function exact(typed, keys) {
   return keys.find(k => k.toLowerCase() === t) || null;
 }
 
-export function resolveMaterial(typed) {
-  const keys = Object.keys(MATERIALS);
+export function resolveMaterial(typed, materials = MATERIALS) {
+  const keys = Object.keys(materials);
   const t = norm(typed);
   if (!t) return null;
   const ex = exact(typed, keys);
@@ -56,8 +56,8 @@ export function resolveMaterial(typed) {
   return key ? { key, approx: true } : null;
 }
 
-export function resolveProcess(typed) {
-  const keys = Object.keys(PROCESSES);
+export function resolveProcess(typed, processes = PROCESSES) {
+  const keys = Object.keys(processes);
   const t = norm(typed);
   if (!t) return null;
   const ex = exact(typed, keys);

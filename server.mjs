@@ -18,6 +18,7 @@ import nodemailer from 'nodemailer';
 import Database from 'better-sqlite3';
 import { validateIdeas } from './idea-validation.mjs';
 import { registerShouldCostRoutes } from './routes/should-cost.mjs';
+import { registerRateLibraryRoutes } from './routes/rate-library.mjs';
 import { analyzeFeatures } from './src/services/cad-features.mjs';
 import { aggregateOcctMeshes, analyzeBrep } from './src/services/cad-brep.mjs';
 
@@ -4805,6 +4806,7 @@ Keep it practical and actionable for an engineering team.`,
 
 // ─── SHOULD-COST ──────────────────────────────────────────────────────────────
 registerShouldCostRoutes(app, { db, requireAuth, rateLimit, makeAnthropic });
+registerRateLibraryRoutes(app, { db, requireAuth });
 
 // ─── WEBHOOK TEST ─────────────────────────────────────────────────────────────
 
