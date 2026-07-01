@@ -1226,6 +1226,127 @@
         </div>
       </div>
 
+      <!-- ▶ INTERACTIVE NARRATED DEMO ─────────────────────────────────────── -->
+      <style>
+        .swdemo{background:#0f172a;border-radius:14px;overflow:hidden;border:1px solid #1e293b;box-shadow:0 10px 30px rgba(2,6,23,0.35)}
+        .swdemo-stage{position:relative;aspect-ratio:16/9;background:radial-gradient(ellipse at 70% 20%,rgba(37,99,235,0.18),transparent 60%),#0b1220;overflow:hidden}
+        .swdemo-scene{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;padding:26px 30px;opacity:0;transform:translateY(10px);transition:opacity .45s ease,transform .45s ease}
+        .swdemo-scene.on{opacity:1;transform:translateY(0)}
+        .swdemo-chapter{position:absolute;top:12px;left:14px;font-size:0.66rem;font-weight:700;letter-spacing:.4px;color:#93c5fd;background:rgba(37,99,235,0.16);border:1px solid rgba(59,130,246,0.4);padding:3px 10px;border-radius:20px}
+        .swdemo-logo{position:absolute;top:12px;right:14px;font-size:0.66rem;font-weight:700;color:#64748b}
+        .swdemo-h{font-size:1.35rem;font-weight:800;color:#f8fafc;margin:0 0 6px;letter-spacing:-0.3px}
+        .swdemo-sub{font-size:0.82rem;color:#93c5fd;font-weight:600;margin-bottom:14px}
+        .swdemo-mock{display:flex;flex-wrap:wrap;gap:8px}
+        .swdemo-tile{background:#111c31;border:1px solid #24344d;border-radius:9px;padding:9px 12px;color:#cbd5e1;font-size:0.74rem;min-width:120px}
+        .swdemo-tile b{color:#f1f5f9;display:block;font-size:0.78rem;margin-bottom:2px}
+        .swdemo-tile.hot{border-color:#3b82f6;background:#16233c;box-shadow:0 0 0 3px rgba(59,130,246,0.18)}
+        .swdemo-kpi{background:#0e1a30;border:1px solid #24344d;border-radius:9px;padding:10px 14px;min-width:120px}
+        .swdemo-kpi .v{font-size:1.15rem;font-weight:800}
+        .swdemo-kpi .l{font-size:0.66rem;color:#94a3b8;text-transform:uppercase;letter-spacing:.4px}
+        .swdemo-pill{display:inline-block;font-size:0.7rem;font-weight:700;color:#fff;border-radius:20px;padding:2px 10px;margin:2px 4px 2px 0}
+        .swdemo-cursor{position:absolute;width:16px;height:16px;pointer-events:none;font-size:16px;filter:drop-shadow(0 1px 2px rgba(0,0,0,.5));transition:all .5s ease}
+        .swdemo-caption{background:#111c31;color:#e2e8f0;font-size:0.86rem;line-height:1.55;padding:14px 18px;min-height:64px;border-top:1px solid #1e293b}
+        .swdemo-caption b{color:#93c5fd}
+        .swdemo-track{height:4px;background:#1e293b}
+        .swdemo-fill{height:100%;width:0;background:linear-gradient(90deg,#2563eb,#60a5fa);transition:width .2s linear}
+        .swdemo-ctrls{display:flex;align-items:center;gap:8px;padding:10px 14px;background:#0b1220;flex-wrap:wrap}
+        .swdemo-btn{background:#1e293b;color:#e2e8f0;border:1px solid #334155;border-radius:7px;padding:6px 12px;font-size:0.76rem;font-weight:600;cursor:pointer}
+        .swdemo-btn.play{background:linear-gradient(135deg,#1d4ed8,#2563eb);border:none;color:#fff}
+        .swdemo-btn:hover{filter:brightness(1.12)}
+        .swdemo-count{font-size:0.72rem;color:#94a3b8;margin-left:2px}
+        .swdemo-dots{display:flex;gap:5px;margin-left:auto}
+        .swdemo-dot{width:9px;height:9px;border-radius:50%;background:#334155;border:none;cursor:pointer;padding:0}
+        .swdemo-dot.on{background:#3b82f6;transform:scale(1.25)}
+      </style>
+      <div class="help-card" style="border-top:3px solid #7c3aed">
+        <div class="help-card-title" style="color:#6d28d9">🎬 Interactive Demo — Watch How It Works</div>
+        <p style="margin-bottom:12px">A self-running, narrated walkthrough of the whole feature — built for new team members. Press <strong>▶ Play</strong> and it advances automatically with narration, or step through it yourself with <strong>Next / Prev</strong>. Every scene explains not just <em>what</em> to click but <em>why it matters</em>.</p>
+        <div class="swdemo" id="swdemo" role="group" aria-label="Automotive SW Should-Cost interactive demo">
+          <div class="swdemo-stage">
+            <div class="swdemo-chapter" id="swdemo-chapter">Intro</div>
+            <div class="swdemo-logo">CostVision · Product Demo</div>
+            <div class="swdemo-scene on" id="swdemo-scene"></div>
+          </div>
+          <div class="swdemo-caption" id="swdemo-caption"></div>
+          <div class="swdemo-track"><div class="swdemo-fill" id="swdemo-fill"></div></div>
+          <div class="swdemo-ctrls">
+            <button class="swdemo-btn play" id="swdemo-play" aria-label="Play or pause the demo">▶ Play</button>
+            <button class="swdemo-btn" id="swdemo-prev">‹ Prev</button>
+            <button class="swdemo-btn" id="swdemo-next">Next ›</button>
+            <button class="swdemo-btn" id="swdemo-replay">↻ Replay</button>
+            <span class="swdemo-count" id="swdemo-count">1 / 11</span>
+            <div class="swdemo-dots" id="swdemo-dots"></div>
+          </div>
+        </div>
+      </div>
+      <script>
+      (function(){
+        var scene = document.getElementById('swdemo-scene');
+        if (!scene) return;
+        var cap = document.getElementById('swdemo-caption'),
+            fill = document.getElementById('swdemo-fill'),
+            chapterEl = document.getElementById('swdemo-chapter'),
+            countEl = document.getElementById('swdemo-count'),
+            dotsEl = document.getElementById('swdemo-dots'),
+            playBtn = document.getElementById('swdemo-play');
+        var SCENE_MS = 7000, TICK = 50;
+        var tile = function(b,t,hot){ return '<div class="swdemo-tile'+(hot?' hot':'')+'"><b>'+b+'</b>'+t+'</div>'; };
+        var kpi = function(v,l,c){ return '<div class="swdemo-kpi"><div class="v" style="color:'+c+'">'+v+'</div><div class="l">'+l+'</div></div>'; };
+        var scenes = [
+          { ch:'Intro', title:'Automotive Software Should-Cost',
+            body:'<div class="swdemo-h">Automotive Software Should-Cost</div><div class="swdemo-sub">A 6-step guided walkthrough for new team members</div><div class="swdemo-mock">'+
+                 '<span class="swdemo-pill" style="background:#2563eb">43 Modules</span><span class="swdemo-pill" style="background:#7c3aed">7 Categories</span><span class="swdemo-pill" style="background:#059669">Monte Carlo</span><span class="swdemo-pill" style="background:#dc2626">ISO 26262 ASIL</span><span class="swdemo-pill" style="background:#d97706">7 OEM Benchmarks</span></div>',
+            cap:'Welcome. In under two minutes you\'ll learn to produce a defensible software should-cost for a premium EV programme — from picking domains to a full benchmarked report. No software-engineering background needed.' },
+          { ch:'Why it matters', title:'Why software cost matters',
+            body:'<div class="swdemo-h">Why this matters</div><div class="swdemo-mock">'+tile('100M+ lines','of code in a modern EV — more than an airliner')+tile('£380M–£850M','typical premium-EV software NRE')+tile('Human effort','SW cost is engineering time, not materials')+'</div>',
+            cap:'A modern EV runs on <b>100+ million lines of code</b>. Unlike a stamped part, that cost is almost all engineering time — which makes it hard to estimate and easy to get wrong. This tool prices it from first principles.' },
+          { ch:'Open', title:'Open the tool',
+            body:'<div class="swdemo-h">Open it in two clicks</div><div class="swdemo-mock">'+tile('① ⊕ New Costing','top navigation bar')+tile('② Software section','scroll to it')+tile('③ 💻 Auto SW Cost','click the tile',true)+'</div><div class="swdemo-cursor" style="left:auto;right:120px;bottom:70px">🖱️</div>',
+            cap:'Start from <b>⊕ New Costing</b> in the top bar, scroll to the <b>Software</b> section, and click the <b>💻 Auto SW Cost</b> tile. The panel opens on the right.' },
+          { ch:'Two modes', title:'Guided vs Advanced',
+            body:'<div class="swdemo-h">Pick your mode</div><div class="swdemo-mock">'+tile('🧭 Guided','6 simple steps — the default for new users',true)+tile('⚙️ Advanced','all 43 modules at once — for experts')+'</div><div class="swdemo-sub" style="margin-top:12px">Both produce the same result — switch anytime; your choices carry over.</div>',
+            cap:'The panel opens in <b>Guided</b> mode — a 6-step wizard, ideal when you\'re new. Power users can flip to <b>Advanced</b> for the full 43-module grid. Both drive the same engine, so nothing is lost switching.' },
+          { ch:'Step 1', title:'Context',
+            body:'<div class="swdemo-h">Step 1 · Programme context</div><div class="swdemo-mock">'+tile('Region','UK',true)+tile('Phase','Development')+tile('Volume','80,000 /yr')+tile('Life','10 years')+'</div>',
+            cap:'<b>Step 1 — Context.</b> Region sets the labour rate (Silicon Valley is ~9× India). Volume and programme life decide how the one-time engineering cost is spread across vehicles. These four inputs anchor everything downstream.' },
+          { ch:'Step 2', title:'Domains',
+            body:'<div class="swdemo-h">Step 2 · Choose software domains</div><div class="swdemo-mock">'+tile('⚡ EV Powertrain','BMS, charging, motor control',true)+tile('🎯 ADAS L2/L2+','cameras, radar, AEB',true)+tile('🎨 Infotainment','screen, nav, voice')+tile('🔒 Cybersecurity','ISO 21434')+'</div><div class="swdemo-sub" style="margin-top:10px">7 categories · pick what\'s in scope</div>',
+            cap:'<b>Step 2 — Domains.</b> Tick the software areas your programme includes — powertrain, ADAS, infotainment, domain controllers, middleware, cybersecurity, cloud. Unticked domains are excluded from the cost entirely.' },
+          { ch:'Step 3', title:'Complexity & Safety',
+            body:'<div class="swdemo-h">Step 3 · Complexity, Safety &amp; Reuse</div><div class="swdemo-mock">'+tile('Complexity','how hard to build')+tile('ASIL','ISO 26262 safety level')+tile('Reuse','fresh → platform',true)+'</div><div class="swdemo-sub" style="margin-top:10px">Reuse is the single biggest cost lever — platform reuse cuts a domain ~85%</div>',
+            cap:'<b>Step 3 — Complexity, Safety &amp; Reuse.</b> Set each per domain. ASIL defaults to safe per-module ISO 26262 values, so you can leave it. <b>Reuse is the biggest lever</b> — reusing a proven platform can cut a domain\'s cost by ~85%.' },
+          { ch:'Step 4', title:'Cost',
+            body:'<div class="swdemo-h">Step 4 · Effort &amp; cost by domain</div><div class="swdemo-mock">'+kpi('£601M','Total Programme','#60a5fa')+kpi('£752','Per Vehicle','#34d399')+kpi('£349M','Total NRE','#a78bfa')+'</div>',
+            cap:'<b>Step 4 — Cost.</b> The tool instantly shows engineering effort (person-months) and cost per domain, plus the headline totals. Here a full stack lands near <b>£601M</b> — right in the premium-EV band between Audi and BMW.' },
+          { ch:'Step 5', title:'Review',
+            body:'<div class="swdemo-h">Step 5 · Review &amp; fine-tune</div><div class="swdemo-mock">'+tile('Overhead ×','1.60')+tile('Senior fraction','0.50')+tile('UK base £/PM','28,000',true)+'</div><div class="swdemo-sub" style="margin-top:10px">Region swing: £120M → £430M · ASIL swing: £520M → £690M</div>',
+            cap:'<b>Step 5 — Review.</b> Fine-tune commercial assumptions and see the sensitivity — how much cost moves if you change region or safety level. Most users leave the defaults; the sensitivity shows what really drives the number.' },
+          { ch:'Step 6', title:'Report',
+            body:'<div class="swdemo-h">Step 6 · Final report</div><div class="swdemo-mock">'+kpi('£576M','P10','#34d399')+kpi('£624M','P50','#60a5fa')+kpi('£673M','P90','#f87171')+'</div><div class="swdemo-sub" style="margin-top:10px">Monte Carlo range · benchmarked vs 7 real OEM programmes</div>',
+            cap:'<b>Step 6 — Report.</b> The full picture: a Monte Carlo <b>P10/P50/P90</b> range (not a false single number), phase timeline, OEM benchmarks, an AI executive summary, and one-click Excel/PDF export. This is what you take to a review.' },
+          { ch:'You\'re ready', title:'Wrap',
+            body:'<div class="swdemo-h">You\'re ready 🎉</div><div class="swdemo-mock">'+tile('Guided','when you\'re new')+tile('Advanced','for deep tuning')+tile('Save &amp; Compare','scenarios side by side')+tile('Rate Library','every number is sourced')+'</div>',
+            cap:'That\'s the whole flow. Start in <b>Guided</b>, tweak in <b>Advanced</b>, save and compare scenarios, and check the <b>Rate Library</b> tab to see the source behind every figure. You\'re ready to run your first should-cost.' }
+        ];
+        var i = 0, elapsed = 0, timer = null;
+        scenes.forEach(function(_,idx){ var d=document.createElement('button'); d.className='swdemo-dot'+(idx===0?' on':''); d.title='Scene '+(idx+1); d.onclick=function(){ go(idx,false); }; dotsEl.appendChild(d); });
+        function render(){
+          scene.classList.remove('on'); void scene.offsetWidth; scene.innerHTML = scenes[i].body; scene.classList.add('on');
+          cap.innerHTML = scenes[i].cap; chapterEl.textContent = scenes[i].ch; countEl.textContent = (i+1)+' / '+scenes.length;
+          Array.prototype.forEach.call(dotsEl.children,function(d,idx){ d.classList.toggle('on',idx===i); });
+        }
+        function go(n,keepPlaying){ i=(n+scenes.length)%scenes.length; elapsed=0; fill.style.width='0%'; render(); if(!keepPlaying){ pause(); } }
+        function tick(){ elapsed+=TICK; fill.style.width=Math.min(100,elapsed/SCENE_MS*100)+'%'; if(elapsed>=SCENE_MS){ if(i>=scenes.length-1){ pause(); return; } i++; elapsed=0; render(); } }
+        function play(){ if(timer) return; if(i>=scenes.length-1){ i=0; render(); } playBtn.textContent='⏸ Pause'; timer=setInterval(tick,TICK); }
+        function pause(){ if(timer){ clearInterval(timer); timer=null; } playBtn.textContent='▶ Play'; }
+        playBtn.onclick=function(){ timer?pause():play(); };
+        document.getElementById('swdemo-next').onclick=function(){ go(i+1,!!timer); };
+        document.getElementById('swdemo-prev').onclick=function(){ go(i-1,!!timer); };
+        document.getElementById('swdemo-replay').onclick=function(){ i=0; elapsed=0; render(); play(); };
+        render();
+      })();
+      </script>
+
       <!-- BACKGROUND: WHY DOES SW COST SO MUCH? -->
       <div class="help-card">
         <div class="help-card-title"><div class="help-icon">💡</div>Background: Why Does Car Software Cost So Much?</div>
@@ -1562,9 +1683,26 @@
         </div>
       </div>
 
-      <div class="cv-video-card" title="Watch: Run a full automotive SW should-cost in 3 minutes">
-        <div class="cv-video-thumb"><div class="cv-video-play">▶</div><div class="cv-video-duration">3:05</div></div>
-        <div class="cv-video-meta"><div class="cv-video-label">Video Tutorial</div><div class="cv-video-title">Automotive SW Should-Cost — Full Walkthrough</div><div class="cv-video-desc">Configure 43 modules, set ASIL/complexity/reuse, compare against BMW iX and Tesla benchmarks</div></div>
+      <!-- DEMO SCRIPT — narration/timeline for recording a real screen-capture -->
+      <div class="help-card" style="border-left:4px solid #6d28d9">
+        <div class="help-card-title" style="color:#6d28d9">🎬 Demo Script &amp; Timeline (for a screen-recorded walkthrough)</div>
+        <p style="margin-bottom:10px">Use the interactive player above to learn the feature. If you want to record a polished <strong>screen-capture video</strong> for the team, this is the ready-to-read narration script with on-screen actions and timings — a ~3-minute runtime.</p>
+        <table class="help-table" style="width:100%;border-collapse:collapse;font-size:0.8rem">
+          <thead><tr style="background:#f1f5f9;text-align:left">
+            <th style="padding:7px 9px">Time</th><th style="padding:7px 9px">On screen — what to do</th><th style="padding:7px 9px">Say this (narration)</th></tr></thead>
+          <tbody>
+            <tr style="border-top:1px solid #e2e8f0"><td style="padding:7px 9px;white-space:nowrap"><strong>0:00–0:15</strong></td><td style="padding:7px 9px">Dashboard. Hover the top nav.</td><td style="padding:7px 9px">"This is CostVision. Today I'll price the entire software stack of a premium EV — from scratch — in about three minutes."</td></tr>
+            <tr style="border-top:1px solid #e2e8f0"><td style="padding:7px 9px;white-space:nowrap"><strong>0:15–0:30</strong></td><td style="padding:7px 9px">Click <em>⊕ New Costing</em> → <em>Software</em> → <em>💻 Auto SW Cost</em>.</td><td style="padding:7px 9px">"New Costing, scroll to Software, and open Auto SW Cost. It opens in Guided mode — the six-step wizard, perfect if you're new."</td></tr>
+            <tr style="border-top:1px solid #e2e8f0"><td style="padding:7px 9px;white-space:nowrap"><strong>0:30–0:55</strong></td><td style="padding:7px 9px"><strong>Step 1.</strong> Set Region = UK, Volume = 80k, Life = 10.</td><td style="padding:7px 9px">"Step one, context. Region sets our labour rate. Volume and programme life decide how the one-time engineering cost spreads across each car."</td></tr>
+            <tr style="border-top:1px solid #e2e8f0"><td style="padding:7px 9px;white-space:nowrap"><strong>0:55–1:15</strong></td><td style="padding:7px 9px"><strong>Step 2.</strong> Leave all 7 domains ticked; point at ADAS &amp; Powertrain.</td><td style="padding:7px 9px">"Step two, domains. A full programme includes all seven areas — powertrain, ADAS, infotainment, and so on. Untick any you don't ship."</td></tr>
+            <tr style="border-top:1px solid #e2e8f0"><td style="padding:7px 9px;white-space:nowrap"><strong>1:15–1:40</strong></td><td style="padding:7px 9px"><strong>Step 3.</strong> Change ADAS reuse to <em>Fresh</em>, Powertrain to <em>Medium</em>.</td><td style="padding:7px 9px">"Step three — complexity, safety, reuse. Reuse is the biggest lever: building ADAS fresh is expensive; reusing a proven battery platform is cheap. ASIL is auto-set to safe ISO 26262 defaults."</td></tr>
+            <tr style="border-top:1px solid #e2e8f0"><td style="padding:7px 9px;white-space:nowrap"><strong>1:40–2:05</strong></td><td style="padding:7px 9px"><strong>Step 4.</strong> Point at the per-domain cost table and the three KPI cards.</td><td style="padding:7px 9px">"Step four, and instantly we get effort and cost per domain — about £600 million total, right in the premium-EV band between Audi and BMW."</td></tr>
+            <tr style="border-top:1px solid #e2e8f0"><td style="padding:7px 9px;white-space:nowrap"><strong>2:05–2:25</strong></td><td style="padding:7px 9px"><strong>Step 5.</strong> Nudge Overhead; show the sensitivity lines.</td><td style="padding:7px 9px">"Step five lets us fine-tune and see sensitivity — how much moving region or safety level swings the cost. Great for negotiation."</td></tr>
+            <tr style="border-top:1px solid #e2e8f0"><td style="padding:7px 9px;white-space:nowrap"><strong>2:25–2:50</strong></td><td style="padding:7px 9px"><strong>Step 6.</strong> Show P10/P50/P90, benchmarks, click <em>Generate AI</em>.</td><td style="padding:7px 9px">"Step six is the report: a Monte Carlo range instead of a false single number, benchmarks against seven real programmes, and a one-click AI executive summary."</td></tr>
+            <tr style="border-top:1px solid #e2e8f0"><td style="padding:7px 9px;white-space:nowrap"><strong>2:50–3:05</strong></td><td style="padding:7px 9px">Click <em>Export Excel</em>; open the <em>Rate Library</em> tab.</td><td style="padding:7px 9px">"Export to Excel or PDF for the review — and every rate is sourced in the Rate Library, so the number is defensible. That's a full should-cost in three minutes."</td></tr>
+          </tbody>
+        </table>
+        <p style="margin-top:10px;font-size:0.76rem;color:#64748b"><strong>Recording tips:</strong> 1080p, capture just the browser window, 100% zoom. Record narration separately for clean audio. Pause ~1s after each click so viewers can follow. The <em>👑 Premium OEM</em> preset (Advanced mode) is a good "what a real flagship costs" bonus clip.</p>
       </div>
     </div>
 
