@@ -31,12 +31,14 @@ function matchMaterial(typed: string, catalogue: string[]): string | null {
   const t = (typed || '').toLowerCase();
   if (!t.trim() || !catalogue.length) return null;
   const has = (kw: string) => catalogue.find(m => m.toLowerCase().includes(kw));
-  if (/steel|dp\d|hsla|22mnb5|boron|iron|gjs|ss30|stainless/.test(t)) return has('stainless') && /stainless|304|316/.test(t) ? has('stainless')! : (has('high-strength') && /hsla|dp|boron|22mnb5|advanced/.test(t) ? has('high-strength')! : (has('steel') || catalogue[0]));
+  // Cast/ductile/nodular/grey iron — nearest cost proxy in the library is mild steel.
+  if (/iron|gjs|ggg|nodular|ductile|grey cast|gray cast/.test(t)) return has('steel') || catalogue[0];
+  if (/steel|dp\d|hsla|22mnb5|boron|ss30|stainless|c45|s355|crmo|mncr|nicr|nimo|42cr/.test(t)) return has('stainless') && /stainless|304|316/.test(t) ? has('stainless')! : (has('high-strength') && /hsla|dp|boron|22mnb5|advanced|crmo|nicr|nimo|42cr|high.?strength/.test(t) ? has('high-strength')! : (has('steel') || catalogue[0]));
   if (/7075/.test(t)) return has('7075') || has('alumin') || null;
-  if (/alumin|\bal\b|6061|6082|a380|adc12|alsi/.test(t)) return has('6061') || has('alumin') || null;
-  if (/magnes|az91|am60|ae44/.test(t)) return has('magnes') || null;
-  if (/cfrp|carbon|composite/.test(t)) return has('cfrp') || has('carbon') || null;
-  if (/pa6|nylon|pa66/.test(t)) return has('pa6') || has('nylon') || null;
+  if (/alumin|aluminum|\bal\b|60\d\d|a3\d\d|ac4|adc\d|alsi|silumin|\bal-?si/.test(t)) return has('6061') || has('alumin') || null;
+  if (/magnes|\bmg\b|az\d\d|am\d\d|ae44/.test(t)) return has('magnes') || null;
+  if (/cfrp|carbon|composite|gfrp|frp/.test(t)) return has('cfrp') || has('carbon') || null;
+  if (/pa6|pa66|nylon|polyamide/.test(t)) return has('pa6') || has('nylon') || null;
   if (/\babs\b/.test(t)) return has('abs') || null;
   if (/\bpp\b|polyprop/.test(t)) return has('polyprop') || has('pp') || null;
   return null;
@@ -47,14 +49,20 @@ function matchProcess(typed: string, catalogue: string[]): string | null {
   const t = (typed || '').toLowerCase();
   if (!t.trim() || !catalogue.length) return null;
   const has = (kw: string) => catalogue.find(p => p.toLowerCase().includes(kw));
-  if (/stamp|sheet|press|deep draw/.test(t)) return has('stamp') || null;
-  if (/hpdc|die.?cast|pressure cast/.test(t)) return has('die casting (alumin') || has('casting') || null;
-  if (/cast/.test(t)) return has('casting') || null;
+  if (/stamp|sheet metal|press|deep draw|blank/.test(t)) return has('stamp') || null;
+  if (/roll form/.test(t)) return has('roll form') || has('stamp') || null;
+  if (/hydroform/.test(t)) return has('hydroform') || null;
+  if (/laser/.test(t)) return has('laser') || null;
+  if (/zinc|zamak|\bzdc\b/.test(t)) return has('die casting (zinc') || has('casting') || null;
+  if (/hpdc|gdc|ldc|die.?cast|pressure cast|gravity cast|sand cast|invest|squeeze cast|permanent mould|permanent mold/.test(t)) return has('die casting (alumin') || has('casting') || null;
+  if (/cast/.test(t)) return has('die casting (alumin') || has('casting') || null;
+  if (/cold forg/.test(t)) return has('forging (cold') || has('forging') || null;
   if (/forg/.test(t)) return has('forging (hot') || has('forging') || null;
-  if (/machin|cnc|mill|turn|billet/.test(t)) return has('machining') || null;
+  if (/machin|cnc|mill|turn|billet|vmc|hmc|lathe/.test(t)) return has('machining') || null;
   if (/mould|mold|inject/.test(t)) return has('moulding') || has('injection') || null;
   if (/extru/.test(t)) return has('extrusion') || null;
-  if (/weld/.test(t)) return has('welding') || null;
+  if (/spot weld|resistance weld/.test(t)) return has('spot weld') || has('welding') || null;
+  if (/weld|mig|tig|braze/.test(t)) return has('mig') || has('welding') || null;
   return null;
 }
 
@@ -145,7 +153,14 @@ export default function IdeaStudioPage() {
     const engMat = matchMaterial(material, materials);
     const engProc = matchProcess(process, processes);
     if (!engMat || !engProc) {
-      setBaselineNote(`Baseline needs a recognised material & process (e.g. "Aluminium 6061" + "Die Casting"). Your typed values still fully drive the AI ideas.`);
+      const missing: string[] = [];
+      if (!engMat) missing.push(!material.trim()
+        ? 'a material (e.g. "Aluminium 6061", "Cast iron", "DP780 steel")'
+        : `a material the cost library recognises — “${material}” isn’t in it (try "Aluminium 6061", "Cast iron", "DP780 steel", "Magnesium")`);
+      if (!engProc) missing.push(!process.trim()
+        ? 'a process (e.g. "HPDC", "CNC machining", "Forging")'
+        : `a process the cost library recognises — “${process}” isn’t in it (try "HPDC", "CNC machining", "Forging", "Stamping")`);
+      setBaselineNote(`Baseline needs ${missing.join(' and ')}. This only affects the reference figure — your typed values still fully drive the AI ideas.`);
       return;
     }
     setBaselineLoading(true);
