@@ -11,10 +11,10 @@ test('every calibration fixture is costable (compatible material/process)', () =
 
 test('should-cost accuracy stays within the committed gate', () => {
   const r = scoreCost();
-  // Gate tightened after finishing/commercial calibration (was 0.70 / 0.25).
+  // Gate tightened after machining rework (multi-op setups + perishables).
   // Tighten further as real supplier quotes replace the illustrative references.
-  assert.ok(r.hitRate >= 0.85, `hit-rate regressed to ${(r.hitRate * 100).toFixed(1)}%`);
-  assert.ok(r.mape <= 0.16, `MAPE regressed to ${(r.mape * 100).toFixed(1)}%`);
+  assert.ok(r.hitRate >= 0.90, `hit-rate regressed to ${(r.hitRate * 100).toFixed(1)}%`);
+  assert.ok(r.mape <= 0.12, `MAPE regressed to ${(r.mape * 100).toFixed(1)}%`);
 });
 
 test('scoreCost reports signed bias (systematic over/under)', () => {

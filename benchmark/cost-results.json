@@ -1,10 +1,10 @@
 {
   "hitRate": 100,
-  "mape": 11.5,
-  "bias": -9.7,
-  "bandCoverage": 25,
-  "hits": 8,
-  "total": 8,
+  "mape": 8.6,
+  "bias": -3.3,
+  "bandCoverage": 40,
+  "hits": 10,
+  "total": 10,
   "rows": [
     {
       "name": "Steering knuckle (ductile iron, sand cast)",
@@ -44,8 +44,22 @@
     {
       "name": "CNC-machined aluminium fitting (low volume)",
       "ref": 13,
-      "modelled": 9.33,
-      "errPct": -28.2,
+      "modelled": 14.66,
+      "errPct": 12.8,
+      "withinTol": true
+    },
+    {
+      "name": "CNC-machined steel bracket (mid volume)",
+      "ref": 24,
+      "modelled": 25.55,
+      "errPct": 6.5,
+      "withinTol": true
+    },
+    {
+      "name": "CNC-machined aluminium housing (larger, low volume)",
+      "ref": 46,
+      "modelled": 44.8,
+      "errPct": -2.6,
       "withinTol": true
     },
     {

@@ -156,11 +156,15 @@ export const PROCESSES = {
     finishPct: 0.1,
   },
   'Machining (CNC)': {
-    machineRate: 60, operators: 0.5, cavities: 1, utilisation: 0.45, scrapPct: 0.02,
+    machineRate: 65, operators: 0.5, cavities: 1, utilisation: 0.45, scrapPct: 0.02,
     setupHr: 1.0, batch: 200, toolLife: 10_000_000,
-    cycleSec: w => 90 + 120 * w, tooling: () => 4_000,
+    // Real featured parts run multiple operations (roughing + finishing + non-cut
+    // tool-change/rapids/probing), so cycle is far longer than a single pass.
+    cycleSec: w => 30 + 500 * w, tooling: () => 4_000,
+    setups: 2,                   // op10/op20 fixturing
+    perishablePerHr: 8,          // inserts, drills, coolant
     families: ['ferrous', 'castiron', 'aluminium', 'magnesium', 'titanium', 'copper', 'zinc', 'plastic'],
-    finishPct: 0.35,
+    finishPct: 0.20,
   },
   'Extrusion': {
     machineRate: 90, operators: 0.5, cavities: 1, utilisation: 0.85, scrapPct: 0.03,
@@ -254,11 +258,17 @@ export function computeShouldCost(input, overrides = {}) {
   const secPerPart = cycleSec / proc.cavities;
   const hrPerPart = secPerPart / 3600;
   const machineRate = proc.machineRate * machineMult;
-  const machineCost = hrPerPart * machineRate * (1 + scrapPct);
+  // Perishable tooling: cutting inserts/drills, coolant, abrasives, wheels —
+  // consumed per machine-hour. Material for machining (billet removal) and
+  // significant for grinding/casting fettling; 0 for net-shape moulding.
+  const perishablePerHr = proc.perishablePerHr ?? 0;
+  const machineCost = hrPerPart * (machineRate + perishablePerHr) * (1 + scrapPct);
   const labourCost  = hrPerPart * reg.labour * proc.operators * (1 + scrapPct);
 
   // ── Setup (amortised over batch) ────────────────────────────────────────────
-  const setupCost = (proc.setupHr * (machineRate + reg.labour)) / proc.batch;
+  // Machining needs multiple fixturing setups (op10/op20/…); `setups` (default 1)
+  // multiplies the per-batch setup so multi-op parts carry realistic non-cut cost.
+  const setupCost = ((proc.setups ?? 1) * proc.setupHr * (machineRate + reg.labour)) / proc.batch;
 
   // ── Secondary / finishing operations ────────────────────────────────────────
   // Deburr, fettling, heat-treat, surface finish, gauging/inspection — real

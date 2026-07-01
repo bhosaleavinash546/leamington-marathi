@@ -49,8 +49,20 @@ export const COST_FIXTURES = [
   {
     name: 'CNC-machined aluminium fitting (low volume)',
     input: { material: 'Aluminium 6061', process: 'Machining (CNC)', weightKg: 0.4, annualVolume: 40000, region: 'Germany' },
-    refPriceEur: 13.0, tol: 0.35,
-    source: 'Billet-machined Al fitting ~€11–16 at 40k/yr, EU. KNOWN model gap: machining is under-costed (setup/tool-change/secondary ops not fully modelled).',
+    refPriceEur: 13.0, tol: 0.30,
+    source: 'Billet-machined Al fitting ~€11–16 at 40k/yr, EU.',
+  },
+  {
+    name: 'CNC-machined steel bracket (mid volume)',
+    input: { material: 'Steel (mild)', process: 'Machining (CNC)', weightKg: 0.9, annualVolume: 25000, region: 'Germany' },
+    refPriceEur: 24.0, tol: 0.30,
+    source: 'Billet-machined steel bracket ~€19–29 at 25k/yr, EU (slower MRR than Al).',
+  },
+  {
+    name: 'CNC-machined aluminium housing (larger, low volume)',
+    input: { material: 'Aluminium 6061', process: 'Machining (CNC)', weightKg: 1.5, annualVolume: 15000, region: 'USA' },
+    refPriceEur: 46.0, tol: 0.30,
+    source: 'Billet-machined Al housing ~€38–55 at 15k/yr, US.',
   },
   {
     name: 'Zinc die-cast lock cam',
