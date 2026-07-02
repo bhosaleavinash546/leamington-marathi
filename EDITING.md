@@ -54,7 +54,6 @@ falling decorations (diyas at Diwali, flowers at Ganeshotsav, kites at Sankranti
 Fixed-date festivals (Sankranti, Shiv Jayanti, Maharashtra Din) repeat every year by
 themselves. **Lunar festivals move**: each January, open `script.js`, find `FESTIVALS`,
 and update the Ganeshotsav and Diwali date ranges for the new year.
-To preview any theme, add `?festival=diwali` (or `ganesh`, `sankranti`…) to the site URL.
 
 ## If something breaks
 
