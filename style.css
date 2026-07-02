@@ -641,6 +641,7 @@ img { max-width: 100%; display: block; }
   font-size: 0.95rem;
 }
 .involved-form input,
+.involved-form textarea,
 .involved-form select {
   font-family: var(--font-body);
   font-size: 1rem;
@@ -651,7 +652,9 @@ img { max-width: 100%; display: block; }
   color: var(--ink);
 }
 .involved-form select { cursor: pointer; }
+.involved-form textarea { resize: vertical; font-family: var(--font-body); }
 .involved-form input:focus,
+.involved-form textarea:focus,
 .involved-form select:focus { outline: none; border-color: var(--saffron); }
 .involved-row {
   display: grid;

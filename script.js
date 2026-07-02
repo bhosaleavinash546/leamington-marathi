@@ -152,6 +152,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const name = involvedForm.elements.name.value.trim();
     const email = involvedForm.elements.email.value.trim();
     const phone = involvedForm.elements.phone.value.trim();
+    const comment = involvedForm.elements.comment.value.trim();
     const btn = involvedForm.querySelector('button[type="submit"]');
     btn.disabled = true;
     btn.textContent = 'Sending…';
@@ -160,7 +161,7 @@ document.addEventListener('DOMContentLoaded', () => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
         body: JSON.stringify({
-          interest, name, email, phone,
+          interest, name, email, phone, comment,
           _subject: `Get Involved — ${interest}`,
         }),
       });
@@ -169,7 +170,7 @@ document.addEventListener('DOMContentLoaded', () => {
       involvedNote.textContent = 'धन्यवाद! We’ve got it — we’ll be in touch soon 🎉';
       btn.textContent = 'Sent ✓';
     } catch {
-      const body = encodeURIComponent(`Interest: ${interest}\nName: ${name}\nEmail: ${email}\nPhone: ${phone}`);
+      const body = encodeURIComponent(`Interest: ${interest}\nName: ${name}\nEmail: ${email}\nPhone: ${phone}\nComment: ${comment}`);
       window.location.href = `mailto:leamingtonmarathi@gmail.com?subject=${encodeURIComponent(`Get Involved — ${interest}`)}&body=${body}`;
       involvedNote.textContent = 'Opening your email app instead — just hit send.';
       btn.disabled = false;
