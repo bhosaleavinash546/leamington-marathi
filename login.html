@@ -1,0 +1,1090 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SonoCost — Sign In</title>
+  <script src="https://cdn.jsdelivr.net/npm/motion@11.11.17/dist/motion.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg0:   #060810;
+      --bg1:   #0d1017;
+      --bg2:   #131720;
+      --bg3:   #1a2030;
+      --green: #00E676;
+      --green2:#00c853;
+      --gdim:  rgba(0,230,118,0.10);
+      --gdim2: rgba(0,230,118,0.18);
+      --purple:#7c3aed;
+      --cyan:  #00bcd4;
+      --red:   #ef4444;
+      --t1:    #f1f5f9;
+      --t2:    #94a3b8;
+      --t3:    #475569;
+      --bd:    rgba(255,255,255,0.06);
+      --bd2:   rgba(255,255,255,0.10);
+    }
+
+    html, body {
+      height: 100%;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+      background: var(--bg0);
+      color: var(--t1);
+      overflow: hidden;
+    }
+
+    /* ═══════════════════════════════════════════════
+       LAYOUT
+    ═══════════════════════════════════════════════ */
+    .page {
+      display: flex;
+      height: 100vh;
+    }
+
+    /* ═══════════════════════════════════════════════
+       LEFT HERO
+    ═══════════════════════════════════════════════ */
+    .hero {
+      flex: 1.15;
+      position: relative;
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+      background: linear-gradient(145deg, #06080f 0%, #090d18 55%, #0c1220 100%);
+    }
+
+    /* Animated gradient orbs */
+    .orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(90px);
+      pointer-events: none;
+    }
+    .orb-1 {
+      width: 520px; height: 520px;
+      background: radial-gradient(circle, rgba(0,230,118,0.18), transparent 70%);
+      top: -160px; left: -140px;
+      animation: orb-drift-1 11s ease-in-out infinite alternate;
+    }
+    .orb-2 {
+      width: 420px; height: 420px;
+      background: radial-gradient(circle, rgba(124,58,237,0.16), transparent 70%);
+      bottom: -120px; right: -100px;
+      animation: orb-drift-2 14s ease-in-out infinite alternate;
+    }
+    .orb-3 {
+      width: 280px; height: 280px;
+      background: radial-gradient(circle, rgba(0,188,212,0.12), transparent 70%);
+      top: 42%; left: 45%;
+      animation: orb-drift-3 9s ease-in-out infinite alternate;
+    }
+    @keyframes orb-drift-1 { to { transform: translate(50px, 40px) scale(1.08); } }
+    @keyframes orb-drift-2 { to { transform: translate(-40px, -30px) scale(1.12); } }
+    @keyframes orb-drift-3 { to { transform: translate(-30px, 25px) scale(1.06); } }
+
+    /* Subtle grid */
+    .hero-grid {
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.018) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.018) 1px, transparent 1px);
+      background-size: 56px 56px;
+      pointer-events: none;
+    }
+
+    /* Vignette over grid */
+    .hero-vignette {
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 80% 80% at 30% 50%, transparent 40%, rgba(6,8,16,0.65) 100%);
+      pointer-events: none;
+    }
+
+    .hero-inner {
+      position: relative;
+      z-index: 1;
+      padding: 52px 56px;
+      max-width: 600px;
+      width: 100%;
+    }
+
+    /* Brand */
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      margin-bottom: 44px;
+    }
+    .brand-icon-wrap {
+      width: 44px; height: 44px;
+      background: linear-gradient(135deg, rgba(0,230,118,0.15), rgba(0,188,212,0.08));
+      border: 1px solid rgba(0,230,118,0.25);
+      border-radius: 11px;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 0 24px rgba(0,230,118,0.2);
+    }
+    .brand-wordmark {
+      font-size: 22px; font-weight: 800; letter-spacing: -0.5px;
+    }
+    .brand-sono { color: var(--t1); }
+    .brand-cost {
+      background: linear-gradient(90deg, var(--green), var(--cyan));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .brand-badge {
+      font-size: 9px; font-weight: 700; letter-spacing: 0.5px;
+      color: var(--green); background: var(--gdim);
+      border: 1px solid rgba(0,230,118,0.22);
+      padding: 2px 8px; border-radius: 20px;
+    }
+
+    .hero-title {
+      font-size: 36px; font-weight: 800; line-height: 1.17;
+      letter-spacing: -0.8px; margin-bottom: 14px;
+    }
+    .hero-title em {
+      font-style: normal;
+      background: linear-gradient(90deg, var(--green) 0%, var(--cyan) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .hero-sub {
+      font-size: 13.5px; color: var(--t2); line-height: 1.65;
+      margin-bottom: 32px; max-width: 430px;
+    }
+
+    /* Social proof */
+    .proof-row {
+      display: flex; align-items: center; gap: 12px;
+      margin-bottom: 30px;
+    }
+    .avatars { display: flex; }
+    .avatar {
+      width: 30px; height: 30px; border-radius: 50%;
+      border: 2px solid var(--bg1);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 700;
+      margin-left: -8px;
+      transition: transform 0.2s;
+    }
+    .avatar:first-child { margin-left: 0; }
+    .avatars:hover .avatar { transform: translateX(3px); }
+    .avatars:hover .avatar:first-child { transform: none; }
+    .proof-text { font-size: 12px; color: var(--t3); }
+    .proof-text strong { color: var(--t1); }
+
+    /* BOM demo card */
+    .demo-card {
+      position: relative;
+      background: rgba(255,255,255,0.026);
+      border: 1px solid rgba(255,255,255,0.09);
+      border-radius: 16px;
+      padding: 18px 20px 16px;
+      margin-bottom: 26px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 8px 40px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.04);
+      overflow: hidden;
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+    .demo-card:hover {
+      border-color: rgba(0,230,118,0.18);
+      box-shadow: 0 12px 50px rgba(0,0,0,0.4), 0 0 0 1px rgba(0,230,118,0.06);
+    }
+    .demo-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, var(--green), var(--cyan), var(--purple));
+    }
+
+    .demo-hdr {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 4px;
+    }
+    .demo-label {
+      font-size: 10px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.7px; color: var(--t3);
+    }
+    .live-badge {
+      display: flex; align-items: center; gap: 5px;
+      font-size: 9px; font-weight: 700; color: var(--green);
+      background: var(--gdim); border: 1px solid rgba(0,230,118,0.22);
+      padding: 2px 8px; border-radius: 20px;
+    }
+    .live-dot {
+      width: 5px; height: 5px; border-radius: 50%;
+      background: var(--green);
+      animation: blink 1.4s ease-in-out infinite;
+    }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.25} }
+
+    .demo-sub {
+      font-size: 12px; font-weight: 600; color: var(--t2);
+      margin-bottom: 12px;
+    }
+
+    .bom-row {
+      display: flex; align-items: center; gap: 10px;
+      padding: 7px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      font-size: 12px;
+      opacity: 0;
+      transform: translateY(6px);
+    }
+    .bom-row:last-of-type { border-bottom: none; }
+    .bom-icon {
+      width: 26px; height: 26px; border-radius: 6px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center; font-size: 12px;
+    }
+    .bom-name { flex: 1; color: var(--t2); font-size: 11.5px; }
+    .bom-cost {
+      font-family: 'Menlo','Consolas',monospace;
+      font-size: 12px; font-weight: 600; color: var(--t1);
+      min-width: 52px; text-align: right;
+    }
+    .bom-trend { font-size: 9px; font-weight: 700; min-width: 44px; text-align: right; }
+    .up   { color: #ef4444; }
+    .down { color: var(--green); }
+    .flat { color: var(--t3); }
+
+    .bom-total-row {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-top: 10px; padding-top: 10px;
+      border-top: 1px solid rgba(0,230,118,0.22);
+    }
+    .bom-total-label {
+      font-size: 10px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.5px; color: var(--t3);
+    }
+    .bom-total-val {
+      font-size: 20px; font-weight: 800; color: var(--green);
+      font-family: 'Menlo','Consolas',monospace;
+    }
+
+    /* Feature pills */
+    .pills { display: flex; flex-wrap: wrap; gap: 7px; }
+    .pill {
+      display: flex; align-items: center; gap: 6px;
+      padding: 5px 11px;
+      background: rgba(255,255,255,0.035);
+      border: 1px solid var(--bd2);
+      border-radius: 20px;
+      font-size: 11px; color: var(--t2);
+      cursor: default;
+      transition: background 0.2s, border-color 0.2s, color 0.2s, transform 0.2s;
+      opacity: 0;
+    }
+    .pill:hover {
+      background: var(--gdim);
+      border-color: rgba(0,230,118,0.28);
+      color: var(--t1);
+      transform: translateY(-1px);
+    }
+
+    /* ═══════════════════════════════════════════════
+       RIGHT AUTH PANEL
+    ═══════════════════════════════════════════════ */
+    .auth-panel {
+      width: 440px;
+      flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      padding: 36px 32px;
+      background: var(--bg1);
+      border-left: 1px solid var(--bd);
+      overflow-y: auto;
+      position: relative;
+    }
+    .auth-panel::before {
+      content: '';
+      position: absolute; top: 0; left: 0; bottom: 0; width: 1px;
+      background: linear-gradient(180deg, transparent, rgba(0,230,118,0.2) 40%, rgba(124,58,237,0.15) 70%, transparent);
+      pointer-events: none;
+    }
+
+    .auth-inner {
+      width: 100%;
+      max-width: 360px;
+    }
+
+    .auth-logo-sm {
+      display: flex; align-items: center; gap: 8px;
+      margin-bottom: 28px;
+    }
+    .auth-logo-sm-icon {
+      width: 32px; height: 32px; border-radius: 8px;
+      background: linear-gradient(135deg, rgba(0,230,118,0.15), rgba(0,188,212,0.08));
+      border: 1px solid rgba(0,230,118,0.22);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .auth-logo-sm-name {
+      font-size: 17px; font-weight: 800; letter-spacing: -0.3px;
+    }
+    .auth-logo-sm-name .c { color: var(--green); }
+
+    .auth-heading { font-size: 24px; font-weight: 800; letter-spacing: -0.4px; margin-bottom: 5px; }
+    .auth-sub {
+      font-size: 13px; color: var(--t3); margin-bottom: 24px; line-height: 1.5;
+    }
+    .auth-sub a {
+      color: var(--green); font-weight: 600; cursor: pointer; text-decoration: none;
+      transition: text-decoration 0.15s;
+    }
+    .auth-sub a:hover { text-decoration: underline; }
+
+    /* Tab toggle */
+    .tab-rail {
+      display: flex; background: var(--bg2);
+      border: 1px solid var(--bd); border-radius: 10px;
+      padding: 3px; margin-bottom: 24px;
+    }
+    .tab-pill {
+      flex: 1; padding: 9px 0; font-size: 13px; font-weight: 600;
+      background: transparent; border: none; border-radius: 8px;
+      color: var(--t3); cursor: pointer; font-family: inherit;
+      transition: all 0.22s;
+    }
+    .tab-pill.on {
+      background: var(--bg0); color: var(--t1);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.45);
+    }
+    .tab-pill:not(.on):hover { color: var(--t2); }
+
+    /* Fields */
+    .field {
+      position: relative; margin-bottom: 14px;
+      transition: transform 0.15s;
+    }
+    .field.shake { animation: shake 0.38s ease; }
+    @keyframes shake { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-6px)} 40%{transform:translateX(6px)} 60%{transform:translateX(-4px)} 80%{transform:translateX(3px)} }
+
+    .flabel {
+      display: block; font-size: 10.5px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.5px;
+      color: var(--t3); margin-bottom: 5px;
+      transition: color 0.18s;
+    }
+    .field:focus-within .flabel { color: var(--green); }
+
+    .finput-wrap { position: relative; }
+    .ficon {
+      position: absolute; left: 13px; top: 50%; transform: translateY(-50%);
+      font-size: 14px; pointer-events: none; opacity: 0.45;
+      transition: opacity 0.18s;
+    }
+    .field:focus-within .ficon { opacity: 0.9; }
+
+    .finput {
+      width: 100%; padding: 11px 42px;
+      background: var(--bg2); border: 1px solid var(--bd);
+      border-radius: 9px; font-size: 14px; color: var(--t1);
+      font-family: inherit; outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+    }
+    .finput::placeholder { color: var(--t3); }
+    .finput:focus {
+      border-color: rgba(0,230,118,0.5);
+      background: rgba(0,230,118,0.025);
+      box-shadow: 0 0 0 3px rgba(0,230,118,0.07);
+    }
+    .finput.bad {
+      border-color: rgba(239,68,68,0.55);
+      box-shadow: 0 0 0 3px rgba(239,68,68,0.07);
+    }
+    .finput.good {
+      border-color: rgba(0,230,118,0.4);
+    }
+
+    .eye-btn {
+      position: absolute; right: 11px; top: 50%; transform: translateY(-50%);
+      background: none; border: none; cursor: pointer;
+      font-size: 14px; color: var(--t3); padding: 2px 4px;
+      transition: color 0.18s; line-height: 1;
+    }
+    .eye-btn:hover { color: var(--t1); }
+
+    .ferr {
+      font-size: 11px; color: var(--red);
+      margin-top: 4px; display: none; padding-left: 2px;
+    }
+    .ferr.on { display: block; }
+
+    /* Strength bar (signup) */
+    .pw-strength { margin-top: 6px; display: none; }
+    .pw-strength.on { display: block; }
+    .pw-bar-track {
+      height: 3px; background: var(--bg3);
+      border-radius: 2px; overflow: hidden; margin-bottom: 3px;
+    }
+    .pw-bar-fill {
+      height: 100%; border-radius: 2px;
+      transition: width 0.3s ease, background 0.3s;
+    }
+    .pw-strength-label { font-size: 10px; color: var(--t3); }
+
+    /* Options row */
+    .opts-row {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 20px; font-size: 12px;
+    }
+    .check-label {
+      display: flex; align-items: center; gap: 7px;
+      cursor: pointer; color: var(--t2); user-select: none;
+    }
+    .check-label input { accent-color: var(--green); width: 14px; height: 14px; cursor: pointer; }
+    .link-sm {
+      color: var(--green); font-weight: 600; cursor: pointer; font-size: 12px;
+      text-decoration: none; transition: opacity 0.15s;
+    }
+    .link-sm:hover { opacity: 0.75; }
+
+    /* Submit button */
+    .btn-go {
+      width: 100%; padding: 13px;
+      background: var(--green); border: none; border-radius: 9px;
+      font-size: 14.5px; font-weight: 700; color: #000;
+      cursor: pointer; font-family: inherit;
+      position: relative; overflow: hidden;
+      transition: transform 0.18s, box-shadow 0.18s, filter 0.18s;
+      letter-spacing: 0.15px;
+    }
+    .btn-go::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: rgba(255,255,255,0);
+      transition: background 0.18s;
+    }
+    .btn-go:hover::after { background: rgba(255,255,255,0.1); }
+    .btn-go:hover { transform: translateY(-1px); box-shadow: 0 10px 28px rgba(0,230,118,0.32); }
+    .btn-go:active { transform: translateY(0); box-shadow: none; }
+    .btn-go:disabled { filter: brightness(0.5); cursor: not-allowed; transform: none; box-shadow: none; }
+    .btn-go-inner {
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      position: relative; z-index: 1;
+    }
+
+    /* Ripple */
+    .ripple {
+      position: absolute; border-radius: 50%;
+      background: rgba(255,255,255,0.25);
+      transform: scale(0);
+      animation: ripple-anim 0.55s ease-out forwards;
+      pointer-events: none;
+    }
+    @keyframes ripple-anim { to { transform: scale(4); opacity: 0; } }
+
+    /* Divider */
+    .divider {
+      display: flex; align-items: center; gap: 10px;
+      margin: 20px 0; color: var(--t3); font-size: 11px;
+    }
+    .divider::before,.divider::after {
+      content: ''; flex: 1; height: 1px; background: var(--bd2);
+    }
+
+    /* Social */
+    .social-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+    .btn-social {
+      display: flex; align-items: center; justify-content: center; gap: 7px;
+      padding: 10px; background: var(--bg2); border: 1px solid var(--bd2);
+      border-radius: 9px; font-size: 12px; font-weight: 600; color: var(--t2);
+      cursor: pointer; font-family: inherit;
+      transition: background 0.18s, border-color 0.18s, color 0.18s, transform 0.18s;
+    }
+    .btn-social:hover {
+      background: var(--bg3); border-color: rgba(255,255,255,0.14);
+      color: var(--t1); transform: translateY(-1px);
+    }
+    .btn-social:active { transform: none; }
+
+    .auth-footer {
+      text-align: center; margin-top: 18px;
+      font-size: 10.5px; color: var(--t3); line-height: 1.55;
+    }
+    .auth-footer a { color: var(--t3); text-decoration: underline; }
+
+    /* Spinner */
+    .spin {
+      width: 17px; height: 17px;
+      border: 2px solid rgba(0,0,0,0.2);
+      border-top-color: rgba(0,0,0,0.75);
+      border-radius: 50%;
+      animation: spin 0.65s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Success overlay */
+    .success-veil {
+      position: fixed; inset: 0; z-index: 300;
+      background: var(--bg0);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 14px;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.3s;
+    }
+    .success-veil.on { opacity: 1; pointer-events: all; }
+    .success-check {
+      width: 76px; height: 76px; border-radius: 50%;
+      background: var(--gdim); border: 2px solid var(--green);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 32px; transform: scale(0);
+      transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    .success-veil.on .success-check { transform: scale(1); }
+    .success-name { font-size: 20px; font-weight: 800; color: var(--t1); }
+    .success-hint { font-size: 13px; color: var(--t3); }
+
+    /* Toast */
+    .toast {
+      position: fixed; bottom: 22px; left: 50%;
+      transform: translateX(-50%) translateY(70px);
+      background: var(--bg2); border: 1px solid var(--bd2);
+      border-radius: 10px; padding: 11px 20px;
+      font-size: 13px; color: var(--t1);
+      z-index: 400; opacity: 0;
+      transition: transform 0.28s ease, opacity 0.28s;
+      white-space: nowrap;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+    }
+    .toast.err { border-color: rgba(239,68,68,0.35); }
+    .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+    /* Hidden */
+    .gone { display: none !important; }
+
+    /* Scrollbar */
+    .auth-panel::-webkit-scrollbar { width: 3px; }
+    .auth-panel::-webkit-scrollbar-track { background: transparent; }
+    .auth-panel::-webkit-scrollbar-thumb { background: var(--bd2); border-radius: 2px; }
+
+    /* Responsive */
+    @media (max-width: 860px) {
+      .hero { display: none; }
+      .auth-panel { width: 100%; border-left: none; }
+    }
+    @media (max-width: 460px) {
+      .auth-panel { padding: 24px 18px; }
+      .auth-inner { max-width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="page">
+
+  <!-- ═══════════════════════════════════════════════════════
+       LEFT HERO
+  ═══════════════════════════════════════════════════════ -->
+  <div class="hero">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+    <div class="hero-grid"></div>
+    <div class="hero-vignette"></div>
+
+    <div class="hero-inner">
+
+      <!-- Brand -->
+      <div class="brand" id="hBrand">
+        <div class="brand-icon-wrap">
+          <svg width="24" height="24" viewBox="0 0 30 30" fill="none">
+            <rect x="2" y="11" width="5.5" height="8" rx="1.4" fill="#00E676"/>
+            <path d="M7.5 11.5L19.5 3.5L19.5 26.5L7.5 18.5Z" fill="#00E676" opacity="0.72"/>
+            <path d="M7.5 13L16 7.5L16 22.5L7.5 17Z" fill="#00E676" opacity="0.18"/>
+            <path d="M21.5 11Q26.5 15 21.5 19" stroke="#00E676" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+            <path d="M24 8Q31 15 24 22" stroke="#00E676" stroke-width="1.4" fill="none" stroke-linecap="round" opacity="0.45"/>
+          </svg>
+        </div>
+        <div class="brand-wordmark">
+          <span class="brand-sono">Sono</span><span class="brand-cost">Cost</span>
+        </div>
+        <span class="brand-badge">v2.0</span>
+      </div>
+
+      <!-- Title -->
+      <h1 class="hero-title" id="hTitle">
+        Precision should-costing<br>for <em>automotive audio</em><br>engineers
+      </h1>
+      <p class="hero-sub" id="hSub">
+        Build accurate BOMs for speakers, tweeters, woofers and complete sound systems.
+        Live commodity prices, AI-powered insights, OEM-grade export — all in your browser.
+      </p>
+
+      <!-- Social proof -->
+      <div class="proof-row" id="hProof">
+        <div class="avatars">
+          <div class="avatar" style="background:linear-gradient(135deg,#7c3aed,#a78bfa)">A</div>
+          <div class="avatar" style="background:linear-gradient(135deg,#0ea5e9,#38bdf8)">M</div>
+          <div class="avatar" style="background:linear-gradient(135deg,#f59e0b,#fbbf24)">K</div>
+          <div class="avatar" style="background:linear-gradient(135deg,#ef4444,#f87171)">R</div>
+          <div class="avatar" style="background:linear-gradient(135deg,#10b981,#34d399);font-size:9px">+8</div>
+        </div>
+        <div class="proof-text"><strong>1,200+ engineers</strong> across BMW, Harman &amp; Bosch use SonoCost</div>
+      </div>
+
+      <!-- Live BOM demo card -->
+      <div class="demo-card" id="hCard">
+        <div class="demo-hdr">
+          <span class="demo-label">Live BOM Analysis</span>
+          <span class="live-badge"><span class="live-dot"></span>LIVE</span>
+        </div>
+        <div class="demo-sub">BMW 7 Series · B&amp;W Diamond Surround (per driver)</div>
+        <div id="bomRows"></div>
+        <div class="bom-total-row">
+          <span class="bom-total-label">Total per Speaker</span>
+          <span class="bom-total-val" id="bomTotal">$32.40</span>
+        </div>
+      </div>
+
+      <!-- Feature pills -->
+      <div class="pills" id="hPills">
+        <div class="pill">💹 Live Commodity Prices</div>
+        <div class="pill">🤖 AI Cost Analysis</div>
+        <div class="pill">📊 PDF &amp; PPT Export</div>
+        <div class="pill">🎵 Audio Trends Intel</div>
+        <div class="pill">🔩 50+ Component Types</div>
+        <div class="pill">🌐 Multi-Region Pricing</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════
+       RIGHT AUTH PANEL
+  ═══════════════════════════════════════════════════════ -->
+  <div class="auth-panel">
+    <div class="auth-inner" id="authInner">
+
+      <!-- Small logo for mobile / when hero hidden -->
+      <div class="auth-logo-sm" id="authLogo">
+        <div class="auth-logo-sm-icon">
+          <svg width="18" height="18" viewBox="0 0 30 30" fill="none">
+            <rect x="2" y="11" width="5.5" height="8" rx="1.4" fill="#00E676"/>
+            <path d="M7.5 11.5L19.5 3.5L19.5 26.5L7.5 18.5Z" fill="#00E676" opacity="0.72"/>
+            <path d="M21.5 11Q26.5 15 21.5 19" stroke="#00E676" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="auth-logo-sm-name">Sono<span class="c">Cost</span></div>
+      </div>
+
+      <div class="auth-heading" id="authHeading">Welcome back</div>
+      <div class="auth-sub" id="authSub">
+        Don't have an account? <a id="switchLink" onclick="switchMode('signup')">Sign up free</a>
+      </div>
+
+      <!-- Tab rail -->
+      <div class="tab-rail">
+        <button class="tab-pill on" id="tabLogin"  onclick="switchMode('login')">Sign In</button>
+        <button class="tab-pill"    id="tabSignup" onclick="switchMode('signup')">Sign Up</button>
+      </div>
+
+      <!-- Form -->
+      <form id="authForm" onsubmit="handleSubmit(event)" novalidate>
+
+        <!-- Name (signup only) -->
+        <div class="field gone" id="fieldName">
+          <label class="flabel" for="inName">Full Name</label>
+          <div class="finput-wrap">
+            <span class="ficon">👤</span>
+            <input class="finput" type="text" id="inName" placeholder="Your name" autocomplete="name">
+          </div>
+          <div class="ferr" id="errName">Please enter your name</div>
+        </div>
+
+        <!-- Email -->
+        <div class="field" id="fieldEmail">
+          <label class="flabel" for="inEmail">Email Address</label>
+          <div class="finput-wrap">
+            <span class="ficon">✉️</span>
+            <input class="finput" type="email" id="inEmail" placeholder="you@company.com" autocomplete="email">
+          </div>
+          <div class="ferr" id="errEmail">Please enter a valid email</div>
+        </div>
+
+        <!-- Password -->
+        <div class="field" id="fieldPw">
+          <label class="flabel" for="inPw">Password</label>
+          <div class="finput-wrap">
+            <span class="ficon">🔒</span>
+            <input class="finput" type="password" id="inPw" placeholder="••••••••"
+                   autocomplete="current-password" oninput="onPwInput(this.value)">
+            <button type="button" class="eye-btn" onclick="toggleEye('inPw',this)">👁</button>
+          </div>
+          <div class="pw-strength" id="pwStrength">
+            <div class="pw-bar-track"><div class="pw-bar-fill" id="pwBar"></div></div>
+            <div class="pw-strength-label" id="pwLabel"></div>
+          </div>
+          <div class="ferr" id="errPw">Minimum 6 characters</div>
+        </div>
+
+        <!-- Confirm password (signup only) -->
+        <div class="field gone" id="fieldConfirm">
+          <label class="flabel" for="inConfirm">Confirm Password</label>
+          <div class="finput-wrap">
+            <span class="ficon">🔒</span>
+            <input class="finput" type="password" id="inConfirm" placeholder="••••••••" autocomplete="new-password">
+            <button type="button" class="eye-btn" onclick="toggleEye('inConfirm',this)">👁</button>
+          </div>
+          <div class="ferr" id="errConfirm">Passwords do not match</div>
+        </div>
+
+        <!-- Options -->
+        <div class="opts-row">
+          <label class="check-label">
+            <input type="checkbox" id="chkRemember" checked>
+            Remember me
+          </label>
+          <a class="link-sm" onclick="handleForgot()">Forgot password?</a>
+        </div>
+
+        <!-- Submit -->
+        <button type="submit" class="btn-go" id="btnGo">
+          <div class="btn-go-inner" id="btnInner">
+            <span id="btnLabel">Sign In</span>
+          </div>
+        </button>
+
+      </form>
+
+      <div class="divider">or continue with</div>
+
+      <div class="social-grid">
+        <button class="btn-social" onclick="socialLogin('Google')">
+          <svg width="15" height="15" viewBox="0 0 24 24">
+            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+          </svg>
+          Google
+        </button>
+        <button class="btn-social" onclick="socialLogin('Microsoft')">
+          <svg width="15" height="15" viewBox="0 0 21 21">
+            <rect x="1" y="1" width="9" height="9" fill="#f25022"/>
+            <rect x="11" y="1" width="9" height="9" fill="#7fba00"/>
+            <rect x="1" y="11" width="9" height="9" fill="#00a4ef"/>
+            <rect x="11" y="11" width="9" height="9" fill="#ffb900"/>
+          </svg>
+          Microsoft
+        </button>
+      </div>
+
+      <div class="auth-footer">
+        By continuing you agree to our <a href="#">Terms</a> and <a href="#">Privacy Policy</a>.<br>
+        Credentials are stored locally in your browser only.
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<!-- Success overlay -->
+<div class="success-veil" id="successVeil">
+  <div class="success-check">✓</div>
+  <div class="success-name" id="successName">Welcome!</div>
+  <div class="success-hint">Redirecting to SonoCost…</div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+/* ── Auth storage ──────────────────────────────────────────── */
+var USERS_KEY   = 'sce_users';
+var SESSION_KEY = 'sce_session';
+
+function getUsers()  { try { return JSON.parse(localStorage.getItem(USERS_KEY)   || '[]'); } catch(e) { return []; } }
+function saveUsers(u){ localStorage.setItem(USERS_KEY, JSON.stringify(u)); }
+function getSession(){ try { return JSON.parse(localStorage.getItem(SESSION_KEY)); } catch(e) { return null; } }
+function saveSession(s){ localStorage.setItem(SESSION_KEY, JSON.stringify(s)); }
+function clearSession(){ localStorage.removeItem(SESSION_KEY); }
+
+/* Redirect immediately if a valid session exists */
+(function checkAuth() {
+  var s = getSession();
+  if (!s) return;
+  var maxAge = s.rememberMe ? 30 * 86400000 : 8 * 3600000;
+  if (Date.now() - s.loginTime < maxAge) {
+    window.location.replace('speaker-cost-engine.html');
+  } else {
+    clearSession();
+  }
+}());
+
+/* ── State ─────────────────────────────────────────────────── */
+var mode = 'login'; // 'login' | 'signup'
+
+/* ── BOM demo ──────────────────────────────────────────────── */
+var BOM = [
+  {ico:'🧲', name:'Neodymium Magnet (NdFeB N42)',     cost:14.20, trend:'▲ 2.1%', dir:'up'},
+  {ico:'🔌', name:'Voice Coil — Copper 25 mm',        cost:8.40,  trend:'▼ 0.8%', dir:'down'},
+  {ico:'⭕', name:'Polypropylene Cone 165 mm',         cost:3.80,  trend:'—',       dir:'flat'},
+  {ico:'🔩', name:'Die-cast Aluminium Basket',         cost:5.60,  trend:'—',       dir:'flat'},
+  {ico:'🔊', name:'Rubber Surround + Spider',          cost:0.40,  trend:'—',       dir:'flat'},
+];
+
+function renderBOM() {
+  var html = '';
+  BOM.forEach(function(r, i) {
+    var bg = r.dir==='up' ? 'rgba(239,68,68,0.1)' : r.dir==='down' ? 'rgba(0,230,118,0.1)' : 'rgba(255,255,255,0.04)';
+    html += '<div class="bom-row" id="br'+i+'" style="animation-delay:'+( i*0.09)+'s">'
+          + '<div class="bom-icon" style="background:'+bg+'">'+r.ico+'</div>'
+          + '<div class="bom-name">'+r.name+'</div>'
+          + '<div class="bom-cost">$'+r.cost.toFixed(2)+'</div>'
+          + '<div class="bom-trend '+r.dir+'">'+r.trend+'</div>'
+          + '</div>';
+  });
+  document.getElementById('bomRows').innerHTML = html;
+}
+renderBOM();
+
+/* Animate total counter */
+(function countUp() {
+  var el = document.getElementById('bomTotal');
+  var target = 32.40, t0 = null;
+  function step(ts) {
+    if (!t0) t0 = ts;
+    var p = Math.min((ts - t0) / 1100, 1);
+    var e = 1 - Math.pow(1-p, 3);
+    el.textContent = '$' + (target * e).toFixed(2);
+    if (p < 1) requestAnimationFrame(step);
+  }
+  setTimeout(function(){ requestAnimationFrame(step); }, 700);
+}());
+
+/* ── Mode switching ────────────────────────────────────────── */
+function switchMode(m) {
+  if (mode === m) return;
+  mode = m;
+  var isUp = m === 'signup';
+
+  document.getElementById('tabLogin').classList.toggle('on', !isUp);
+  document.getElementById('tabSignup').classList.toggle('on', isUp);
+
+  document.getElementById('fieldName').classList.toggle('gone', !isUp);
+  document.getElementById('fieldConfirm').classList.toggle('gone', !isUp);
+  document.getElementById('pwStrength').classList.toggle('on', isUp);
+
+  document.getElementById('authHeading').textContent = isUp ? 'Create your account' : 'Welcome back';
+  document.getElementById('btnLabel').textContent    = isUp ? 'Create Account'       : 'Sign In';
+  document.getElementById('authSub').innerHTML = isUp
+    ? 'Already have an account? <a onclick="switchMode(\'login\')">Sign in</a>'
+    : 'Don\'t have an account? <a onclick="switchMode(\'signup\')">Sign up free</a>';
+
+  document.getElementById('inPw').setAttribute('autocomplete', isUp ? 'new-password' : 'current-password');
+  clearErrs();
+
+  var M = window.Motion;
+  if (M) M.animate(document.getElementById('authForm'), {opacity:[0.55,1], y:[8,0]}, {duration:0.28, easing:'ease-out'});
+}
+
+/* ── Password strength ─────────────────────────────────────── */
+function onPwInput(val) {
+  if (mode !== 'signup') return;
+  var score = 0;
+  if (val.length >= 6)  score++;
+  if (val.length >= 10) score++;
+  if (/[A-Z]/.test(val) && /[a-z]/.test(val)) score++;
+  if (/\d/.test(val)) score++;
+  if (/[^a-zA-Z0-9]/.test(val)) score++;
+  var labels = ['','Weak','Fair','Good','Strong','Very strong'];
+  var colors = ['','#ef4444','#f59e0b','#3b82f6','#00c853','#00E676'];
+  var widths = ['0%','20%','40%','60%','80%','100%'];
+  document.getElementById('pwBar').style.width      = widths[score] || '0%';
+  document.getElementById('pwBar').style.background = colors[score] || 'transparent';
+  document.getElementById('pwLabel').textContent    = labels[score] || '';
+  document.getElementById('pwLabel').style.color    = colors[score] || 'var(--t3)';
+}
+
+/* ── Validation ────────────────────────────────────────────── */
+function clearErrs() {
+  ['inName','inEmail','inPw','inConfirm'].forEach(function(id) {
+    var el = document.getElementById(id); if (el) el.classList.remove('bad','good');
+  });
+  ['errName','errEmail','errPw','errConfirm'].forEach(function(id) {
+    var el = document.getElementById(id); if (el) el.classList.remove('on');
+  });
+}
+
+function fieldErr(inputId, errId, msg) {
+  var inp = document.getElementById(inputId);
+  var err = document.getElementById(errId);
+  if (msg) err.textContent = msg;
+  inp.classList.add('bad');
+  err.classList.add('on');
+  var field = inp.closest('.field');
+  field.classList.remove('shake');
+  void field.offsetWidth;
+  field.classList.add('shake');
+}
+
+function validate() {
+  clearErrs();
+  var ok = true;
+  var email = document.getElementById('inEmail').value.trim();
+  var pw    = document.getElementById('inPw').value;
+
+  if (mode === 'signup') {
+    var name = document.getElementById('inName').value.trim();
+    if (!name) { fieldErr('inName','errName'); ok = false; }
+  }
+
+  if (!email || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+    fieldErr('inEmail','errEmail'); ok = false;
+  }
+
+  if (!pw || pw.length < 6) {
+    fieldErr('inPw','errPw'); ok = false;
+  }
+
+  if (mode === 'signup' && pw.length >= 6) {
+    var conf = document.getElementById('inConfirm').value;
+    if (conf !== pw) { fieldErr('inConfirm','errConfirm'); ok = false; }
+  }
+
+  return ok;
+}
+
+/* ── Submit ────────────────────────────────────────────────── */
+function handleSubmit(e) {
+  e.preventDefault();
+  if (!validate()) return;
+  setLoading(true);
+  setTimeout(function() {
+    if (mode === 'login') doLogin(); else doSignup();
+  }, 700);
+}
+
+function doLogin() {
+  var email = document.getElementById('inEmail').value.trim().toLowerCase();
+  var pw    = document.getElementById('inPw').value;
+  var rem   = document.getElementById('chkRemember').checked;
+
+  var users = getUsers();
+  var user  = users.filter(function(u){ return u.email === email && u.pw === pw; })[0];
+
+  if (!user) {
+    setLoading(false);
+    fieldErr('inEmail','errEmail','Incorrect email or password');
+    fieldErr('inPw','errPw','Incorrect email or password');
+    toast('Invalid email or password', 'err');
+    return;
+  }
+  saveSession({email:user.email, name:user.name, loginTime:Date.now(), rememberMe:rem});
+  showSuccess(user.name || 'Welcome');
+}
+
+function doSignup() {
+  var name  = document.getElementById('inName').value.trim();
+  var email = document.getElementById('inEmail').value.trim().toLowerCase();
+  var pw    = document.getElementById('inPw').value;
+  var rem   = document.getElementById('chkRemember').checked;
+
+  var users = getUsers();
+  if (users.some(function(u){ return u.email === email; })) {
+    setLoading(false);
+    fieldErr('inEmail','errEmail','An account with this email already exists');
+    return;
+  }
+  users.push({name:name, email:email, pw:pw, created:Date.now()});
+  saveUsers(users);
+  saveSession({email:email, name:name, loginTime:Date.now(), rememberMe:rem});
+  showSuccess(name);
+}
+
+function showSuccess(name) {
+  document.getElementById('successName').textContent = 'Welcome, ' + name.split(' ')[0] + '! 👋';
+  var veil = document.getElementById('successVeil');
+  veil.classList.add('on');
+  var M = window.Motion;
+  if (M) M.animate(veil, {opacity:[0,1]}, {duration:0.3});
+  setTimeout(function(){ window.location.replace('speaker-cost-engine.html'); }, 1700);
+}
+
+/* ── UI helpers ────────────────────────────────────────────── */
+function setLoading(on) {
+  var btn = document.getElementById('btnGo');
+  btn.disabled = on;
+  document.getElementById('btnInner').innerHTML = on
+    ? '<div class="spin"></div>'
+    : '<span id="btnLabel">' + (mode === 'signup' ? 'Create Account' : 'Sign In') + '</span>';
+}
+
+function toggleEye(id, btn) {
+  var inp = document.getElementById(id);
+  var show = inp.type === 'password';
+  inp.type = show ? 'text' : 'password';
+  btn.textContent = show ? '🙈' : '👁';
+}
+
+function handleForgot() {
+  toast('To reset: clear stored data or sign up with a new account.', '');
+}
+
+function socialLogin(provider) {
+  toast(provider + ' SSO is available in the enterprise plan.', '');
+}
+
+function toast(msg, type) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast' + (type ? ' ' + type : '');
+  t.classList.add('show');
+  clearTimeout(toast._tid);
+  toast._tid = setTimeout(function(){ t.classList.remove('show'); }, 3200);
+}
+
+/* Ripple on submit button */
+document.getElementById('btnGo').addEventListener('click', function(e) {
+  var btn = this;
+  var r = document.createElement('span');
+  var d = Math.max(btn.clientWidth, btn.clientHeight);
+  var rect = btn.getBoundingClientRect();
+  r.className = 'ripple';
+  r.style.cssText = 'width:'+d+'px;height:'+d+'px;left:'+(e.clientX-rect.left-d/2)+'px;top:'+(e.clientY-rect.top-d/2)+'px';
+  btn.appendChild(r);
+  setTimeout(function(){ r.remove(); }, 600);
+});
+
+/* ── Entry animations ──────────────────────────────────────── */
+window.addEventListener('load', function() {
+  var M = window.Motion;
+  if (!M) {
+    /* Fallback: just show BOM rows */
+    document.querySelectorAll('.bom-row').forEach(function(el){ el.style.opacity=1; el.style.transform='none'; });
+    return;
+  }
+
+  /* Hero stagger */
+  var heroItems = [
+    {id:'hBrand', delay:0.04},
+    {id:'hTitle', delay:0.14},
+    {id:'hSub',   delay:0.22},
+    {id:'hProof', delay:0.30},
+    {id:'hCard',  delay:0.38},
+    {id:'hPills', delay:0.50},
+  ];
+  heroItems.forEach(function(item) {
+    var el = document.getElementById(item.id);
+    if (!el) return;
+    M.animate(el, {opacity:[0,1], y:[22,0]}, {duration:0.54, delay:item.delay, easing:[0.16,1,0.3,1]});
+  });
+
+  /* BOM rows stagger */
+  document.querySelectorAll('.bom-row').forEach(function(el, i) {
+    M.animate(el, {opacity:[0,1], y:[8,0]}, {duration:0.36, delay:0.48 + i*0.08, easing:'ease-out'});
+  });
+
+  /* Feature pills stagger */
+  document.querySelectorAll('.pill').forEach(function(el, i) {
+    M.animate(el, {opacity:[0,1], scale:[0.88,1]}, {duration:0.3, delay:0.55 + i*0.055, easing:'ease-out'});
+  });
+
+  /* Auth panel slide in */
+  M.animate(document.getElementById('authInner'),
+    {opacity:[0,1], x:[28,0]},
+    {duration:0.52, delay:0.08, easing:[0.16,1,0.3,1]});
+});
+</script>
+</body>
+</html>

@@ -908,6 +908,19 @@ html[data-theme="light"] .brand-version{
 </style>
 </head>
 <body>
+<script>
+(function(){
+  try {
+    var s = JSON.parse(localStorage.getItem('sce_session'));
+    if (!s) { window.location.replace('login.html'); return; }
+    var maxAge = s.rememberMe ? 30*86400000 : 8*3600000;
+    if (Date.now() - s.loginTime >= maxAge) {
+      localStorage.removeItem('sce_session');
+      window.location.replace('login.html');
+    }
+  } catch(e) { window.location.replace('login.html'); }
+})();
+</script>
 <header>
   <div class="brand-logo-area brand-title">
     <div class="brand-logo-icon" aria-hidden="true">
@@ -960,6 +973,15 @@ html[data-theme="light"] .brand-version{
         <!-- Sun icon — shown in light mode -->
         <svg class="icon-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
       </button>
+      <div style="width:1px;height:20px;background:var(--bd);margin:0 2px"></div>
+      <div id="headerUserArea" style="display:flex;align-items:center;gap:8px">
+        <div id="headerUserAvatar" style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#00E676,#00B0FF);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#060810;flex-shrink:0;cursor:default;user-select:none;" title="Signed in"></div>
+        <span id="headerUserName" style="font-size:11px;font-weight:600;color:var(--t2);max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></span>
+        <button id="headerLogoutBtn" onclick="sceLogout()" title="Sign out" style="display:flex;align-items:center;gap:4px;padding:4px 9px;font-size:11px;font-weight:600;color:var(--t3);background:transparent;border:1px solid var(--bd);border-radius:7px;cursor:pointer;transition:color .18s,border-color .18s" onmouseover="this.style.color='#ff5c5c';this.style.borderColor='rgba(255,92,92,0.5)'" onmouseout="this.style.color='var(--t3)';this.style.borderColor='var(--bd)'">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          Sign Out
+        </button>
+      </div>
     </div>
   </div>
 </header>
@@ -4600,6 +4622,24 @@ function callClaudeStream(prompt, signal, onChunk, onDone, onError) {
   })
   .catch(onError);
 }
+
+// ─── Auth helpers ─────────────────────────────────────────────────────────────
+function sceLogout() {
+  localStorage.removeItem('sce_session');
+  window.location.replace('login.html');
+}
+
+(function initHeaderUser() {
+  try {
+    var s = JSON.parse(localStorage.getItem('sce_session'));
+    if (!s || !s.name) return;
+    var nameEl   = document.getElementById('headerUserName');
+    var avatarEl = document.getElementById('headerUserAvatar');
+    if (nameEl)   nameEl.textContent   = s.name.split(' ')[0];
+    if (avatarEl) avatarEl.textContent = s.name.charAt(0).toUpperCase();
+    if (avatarEl) avatarEl.title       = s.name + ' — ' + (s.email || '');
+  } catch(e) {}
+})();
 
 // ─── Theme toggle ─────────────────────────────────────────────────────────────
 function toggleTheme() {
