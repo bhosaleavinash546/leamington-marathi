@@ -40,6 +40,13 @@ folder. You almost never need to touch `style.css` or `script.js`.
 4. Edit `index.html` and change the relevant `<img src="images/...">` to your new filename.
    Keep the `width`/`height` numbers roughly matching the photo's real proportions.
 
+## The Diwali Ank (दिवाळी अंक)
+
+The magazine lives in **`ank.html`** — a separate page. As members send contributions,
+paste each one into the matching section (लेख आणि कविता / पाककृती / बालविभाग), replacing
+the dashed "waiting for your words" boxes. The editorial and the submission deadline
+are marked with TODO comments for the committee to confirm.
+
 ## The animated photo stack (Dhol section)
 
 Search `dhol-stack` — it's just a list of `<img>` lines; add, remove, or reorder them.

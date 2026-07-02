@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>दिवाळी अंक २०२६ | Leamington Marathi</title>
+  <meta name="description" content="लेमिंगटन मराठीचा पहिला दिवाळी अंक — लेख, कविता, पाककृती आणि बालविभाग. Contribute to the first Leamington Marathi Diwali Ank!">
+  <link rel="icon" type="image/png" href="images/logo-emblem.png">
+  <link rel="canonical" href="https://bhosaleavinash546.github.io/leamington-marathi/ank.html">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="दिवाळी अंक २०२६ — Leamington Marathi">
+  <meta property="og:description" content="Our first-ever Diwali Ank — send us your articles, poems, recipes and kids' art! साहित्य पाठवा!">
+  <meta property="og:image" content="https://bhosaleavinash546.github.io/leamington-marathi/images/share-banner.jpg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Mukta:wght@400;600;700;800&family=Yatra+One&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* ---- Diwali Ank page styles ---- */
+    body { background: #2b0a06; }
+    .ank-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 24px;
+      background: rgba(43, 10, 6, 0.9);
+    }
+    .ank-header .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+    .ank-back {
+      color: #ffe9b3;
+      font-weight: 700;
+      text-decoration: none;
+      font-size: 0.95rem;
+      border: 1.5px solid rgba(255, 233, 179, 0.5);
+      border-radius: 30px;
+      padding: 7px 18px;
+    }
+    .ank-back:hover { background: rgba(255, 233, 179, 0.15); }
+
+    .ank-cover {
+      text-align: center;
+      padding: 70px 20px 60px;
+      background:
+        radial-gradient(circle at 20% 15%, rgba(244, 164, 18, 0.22), transparent 40%),
+        radial-gradient(circle at 80% 80%, rgba(217, 42, 28, 0.25), transparent 45%),
+        linear-gradient(180deg, #3d0f08, #2b0a06);
+      color: var(--cream);
+    }
+    .ank-diyas { font-size: 1.7rem; letter-spacing: 14px; margin-bottom: 18px; }
+    .ank-cover img.ank-emblem { width: 120px; margin: 0 auto 18px; }
+    .ank-masthead {
+      font-family: var(--font-display);
+      font-weight: 400;
+      font-size: clamp(2.4rem, 7vw, 4.2rem);
+      color: var(--gold);
+      margin: 0;
+      line-height: 1.3;
+      text-shadow: 0 0 34px rgba(244, 164, 18, 0.35);
+    }
+    .ank-year {
+      font-size: clamp(1.2rem, 3vw, 1.6rem);
+      color: #ffb0a3;
+      font-weight: 700;
+      margin: 10px 0 4px;
+    }
+    .ank-tagline { color: #f6dfc8; margin: 0; font-size: 1.05rem; }
+
+    .ank-page {
+      max-width: 860px;
+      margin: -26px auto 40px;
+      background: var(--cream);
+      border-radius: var(--radius);
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+      padding: 46px clamp(22px, 5vw, 60px);
+    }
+    .ank-section { margin-bottom: 52px; }
+    .ank-section:last-child { margin-bottom: 0; }
+    .ank-section h2 {
+      font-family: var(--font-display);
+      font-weight: 400;
+      color: var(--red-dark);
+      font-size: 1.7rem;
+      margin: 0 0 6px;
+    }
+    .ank-section .ank-sub { color: var(--saffron-text); font-weight: 600; margin: 0 0 18px; font-size: 0.98rem; }
+    .ank-rule { border: none; border-top: 3px double var(--gold); margin: 0 0 20px; }
+
+    .ank-toc { display: flex; flex-wrap: wrap; gap: 10px; }
+    .ank-toc a {
+      background: var(--cream-deep);
+      color: var(--red-dark);
+      font-weight: 700;
+      text-decoration: none;
+      padding: 8px 18px;
+      border-radius: 30px;
+      font-size: 0.95rem;
+    }
+    .ank-toc a:hover { background: var(--gold); color: var(--maroon); }
+
+    .ank-review { list-style: none; padding: 0; margin: 0; }
+    .ank-review li {
+      padding: 12px 0 12px 38px;
+      position: relative;
+      border-bottom: 1px dashed #e8d3b8;
+      font-size: 1.02rem;
+    }
+    .ank-review li::before { content: "🪔"; position: absolute; left: 0; }
+    .ank-review li:last-child { border-bottom: none; }
+
+    .ank-empty {
+      border: 2px dashed var(--saffron);
+      border-radius: var(--radius);
+      background: var(--white);
+      padding: 26px;
+      text-align: center;
+      color: var(--saffron-text);
+      font-weight: 600;
+      font-size: 1.02rem;
+    }
+    .ank-empty .en { display: block; color: #8a6f63; font-weight: 400; font-size: 0.9rem; margin-top: 6px; }
+
+    .ank-photos { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; }
+    .ank-photos img { width: 100%; height: 160px; object-fit: cover; border-radius: 10px; }
+
+    .ank-contribute {
+      background: linear-gradient(135deg, var(--red-dark), var(--red));
+      border-radius: var(--radius);
+      color: var(--white);
+      text-align: center;
+      padding: 36px 28px;
+    }
+    .ank-contribute h2 { color: var(--gold) !important; }
+    .ank-contribute p { margin: 0 0 10px; }
+    .ank-deadline { color: #ffe9b3; font-weight: 700; }
+
+    .ank-footer { text-align: center; color: #d8a88f; padding: 10px 20px 44px; font-size: 0.9rem; }
+    .ank-footer a { color: var(--gold); }
+  </style>
+</head>
+<body>
+
+  <header class="ank-header">
+    <a href="index.html" class="brand">
+      <img src="images/logo-emblem.png" alt="Leamington Marathi" width="46" height="46" style="width:46px;height:46px;">
+    </a>
+    <a href="index.html" class="ank-back">← मुख्य पान / Home</a>
+  </header>
+
+  <!-- ===== Cover ===== -->
+  <section class="ank-cover">
+    <div class="ank-diyas" aria-hidden="true">🪔 ✨ 🪔 ✨ 🪔</div>
+    <img class="ank-emblem" src="images/logo-emblem.png" alt="" width="216" height="216">
+    <h1 class="ank-masthead">लेमिंगटन मराठी<br>दिवाळी अंक</h1>
+    <p class="ank-year">॥ २०२६ । पहिला अंक ॥</p>
+    <p class="ank-tagline">वारसा मराठी संस्कृतीचा — आता छापील शब्दांतही!</p>
+  </section>
+
+  <main class="ank-page">
+
+    <!-- ===== Editorial ===== -->
+    <!-- TODO: committee to review/replace this draft editorial before Diwali -->
+    <section class="ank-section" id="sampadakiya">
+      <h2>संपादकीय</h2>
+      <p class="ank-sub">Editorial</p>
+      <hr class="ank-rule">
+      <p lang="mr">
+        नमस्कार मंडळी! लेमिंगटन मराठीचा हा पहिलावहिला दिवाळी अंक आपल्या हाती देताना
+        आम्हाला अत्यंत आनंद होत आहे. महाराष्ट्रापासून हजारो मैल दूर असलो, तरी दिवाळी
+        अंकाची शंभर वर्षांची गोड परंपरा इथे इंग्लंडमध्येही रुजावी, हीच या अंकामागची भावना.
+      </p>
+      <p lang="mr">
+        या अंकात आपल्याच मंडळींचे लेख, कविता, पाककृती आणि चिमुकल्यांची चित्रं प्रसिद्ध होतील.
+        वाचा, लिहा, आणि ही परंपरा पुढे न्या! तुमच्या साहित्याची आम्ही आतुरतेने वाट पाहत आहोत.
+      </p>
+      <p lang="mr"><strong>— संपादक मंडळ, लेमिंगटन मराठी</strong></p>
+    </section>
+
+    <!-- ===== Contents ===== -->
+    <section class="ank-section">
+      <h2>अनुक्रमणिका</h2>
+      <p class="ank-sub">Contents</p>
+      <hr class="ank-rule">
+      <nav class="ank-toc" aria-label="Ank contents">
+        <a href="#aadhava">वर्षाचा आढावा</a>
+        <a href="#lekh">लेख आणि कविता</a>
+        <a href="#pakkruti">पाककृती</a>
+        <a href="#balvibhag">बालविभाग</a>
+        <a href="#aathvani">आठवणी</a>
+        <a href="#sahitya">साहित्य पाठवा</a>
+      </nav>
+    </section>
+
+    <!-- ===== Year in review (real milestones) ===== -->
+    <section class="ank-section" id="aadhava">
+      <h2>वर्षाचा आढावा</h2>
+      <p class="ank-sub">Our year in review</p>
+      <hr class="ank-rule">
+      <ul class="ank-review">
+        <li lang="mr"><strong>हळदी-कुंकू</strong> — मकर संक्रांतीनिमित्त ७०+ महिलांचा उत्साही सहभाग.</li>
+        <li lang="mr"><strong>गुढीपाडवा शुभेच्छा समारोह</strong> — २००+ मंडळींसह नववर्षाचं जल्लोषात स्वागत.</li>
+        <li lang="mr"><strong>शिवराज्योत्सव</strong> — शिवजयंती आणि महाराष्ट्र दिनाचा दिमाखदार सोहळा.</li>
+        <li lang="mr"><strong>६ जून — विश्वविक्रम!</strong> लंडनमध्ये १३ ढोल-ताशा पथकं, २७० वादक — World Book of Records मध्ये सुवर्णाक्षरांनी नोंद. आपल्या पथकाचा त्यात अभिमानास्पद सहभाग! 🏆</li>
+        <li lang="mr"><strong>आपली वेबसाईट</strong> — लेमिंगटन मराठीचं अधिकृत संकेतस्थळ सुरू झालं.</li>
+        <li lang="mr"><strong>४००+ कुटुंबं</strong> — आपला परिवार वाढतोच आहे. जय महाराष्ट्र! 🚩</li>
+      </ul>
+    </section>
+
+    <!-- ===== Articles & poems (awaiting contributions) ===== -->
+    <section class="ank-section" id="lekh">
+      <h2>लेख आणि कविता</h2>
+      <p class="ank-sub">Articles &amp; poems</p>
+      <hr class="ank-rule">
+      <div class="ank-empty" lang="mr">
+        हे पान तुमच्या शब्दांची वाट पाहतंय! ✍️<br>
+        आठवणी, अनुभव, विनोदी किस्से, कविता — काहीही चालेल.
+        <span class="en">This page is waiting for your words — memories, experiences, humour, poetry. See "साहित्य पाठवा" below.</span>
+      </div>
+    </section>
+
+    <!-- ===== Recipes (awaiting contributions) ===== -->
+    <section class="ank-section" id="pakkruti">
+      <h2>पाककृती</h2>
+      <p class="ank-sub">Recipes</p>
+      <hr class="ank-rule">
+      <div class="ank-empty" lang="mr">
+        आजीच्या हातची चकली, तुमचा खास लाडू, की UK मधल्या जिन्नसांतून जमवलेला फराळ? 🍛<br>
+        तुमची पाककृती इथे प्रसिद्ध करा!
+        <span class="en">Share your recipe — grandma's chakli, your signature ladoo, or faraal improvised from UK supermarket finds.</span>
+      </div>
+    </section>
+
+    <!-- ===== Kids' corner (awaiting contributions) ===== -->
+    <section class="ank-section" id="balvibhag">
+      <h2>बालविभाग</h2>
+      <p class="ank-sub">Kids' corner</p>
+      <hr class="ank-rule">
+      <div class="ank-empty" lang="mr">
+        चिमुकल्यांची चित्रं, गोष्टी आणि कविता इथे झळकतील! 🎨<br>
+        मुलांना कागद-रंग द्या आणि त्यांची कलाकृती आम्हाला पाठवा.
+        <span class="en">Children's drawings, stories and rhymes will shine here — send us a photo or scan of their artwork.</span>
+      </div>
+    </section>
+
+    <!-- ===== Memories ===== -->
+    <section class="ank-section" id="aathvani">
+      <h2>आठवणी</h2>
+      <p class="ank-sub">Memories from the year</p>
+      <hr class="ank-rule">
+      <div class="ank-photos">
+        <img src="images/dhol-pathak.jpg" alt="ढोल-ताशा पथक" loading="lazy" width="1000" height="563">
+        <img src="images/haldi-kunku.jpg" alt="हळदी-कुंकू" loading="lazy" width="900" height="500">
+        <img src="images/diwali-lights.jpg" alt="दिवाळी" loading="lazy" width="533" height="400">
+        <img src="images/ganeshotsav.jpg" alt="गणेशोत्सव" loading="lazy" width="919" height="500">
+      </div>
+    </section>
+
+    <!-- ===== Contribute ===== -->
+    <section class="ank-section ank-contribute" id="sahitya">
+      <h2>साहित्य पाठवा!</h2>
+      <p lang="mr">लेख, कविता, पाककृती, चित्रं — मराठीत किंवा इंग्रजीत पाठवा.</p>
+      <p>Email your article, poem, recipe or kids' artwork (photo/scan is fine) with your name.</p>
+      <!-- TODO: confirm the submission deadline with the committee -->
+      <p class="ank-deadline" lang="mr">शेवटची तारीख: १५ ऑक्टोबर २०२६</p>
+      <a class="btn btn-light" href="mailto:leamingtonmarathi@gmail.com?subject=Diwali%20Ank%202026%20%E2%80%94%20contribution">
+        ✉️ leamingtonmarathi@gmail.com
+      </a>
+    </section>
+
+  </main>
+
+  <footer class="ank-footer">
+    <p lang="mr">दिवाळी अंक २०२६ । <a href="index.html">लेमिंगटन मराठी</a> — वारसा मराठी संस्कृतीचा 🪔</p>
+  </footer>
+
+</body>
+</html>
