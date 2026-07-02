@@ -1,7 +1,8 @@
 /* ============================================================================
- * methodology.js — Full documentation rendered into the Methodology tab:
- * conceptual model, parameter list, routing, cost drivers, yield model,
- * cost breakdown, 3 worked examples (computed live), and a manager summary.
+ * methodology.js — Full documentation (2026 edition) rendered into the
+ * Methodology tab: conceptual model, parameters, routing, cost drivers, yield,
+ * 2026 market data & sources, worked examples (computed live), AI advisor, and
+ * a manager summary.
  * ==========================================================================*/
 
 function buildMethodology() {
@@ -9,7 +10,6 @@ function buildMethodology() {
   const f3 = (v) => "$" + (isFinite(v) ? v.toFixed(3) : "—");
   const pct = (v) => (v * 100).toFixed(0) + "%";
 
-  // ---- live worked examples ----
   const exHtml = EXAMPLES.map((ex) => {
     const r = computePcb(ex.input);
     const i = ex.input;
@@ -22,9 +22,9 @@ function buildMethodology() {
       <h3>${ex.name}</h3>
       <p class="src">${ex.note}</p>
       <p><b>Inputs:</b> ${i.boardW}×${i.boardH} mm · ${i.layerCount} layer · ${byId(MATERIALS,i.material).label} ·
-        ${byId(COPPER_WEIGHTS,i.copperOuter).label}/${byId(COPPER_WEIGHTS,i.copperInner).label} Cu ·
-        ${byId(VIA_TYPES,i.via).label} · ${byId(TRACE_CLASSES,i.trace).label} · ${byId(FINISHES,i.finish).label} ·
-        ${i.impedance ? "impedance-controlled · " : ""}${byId(QUALITY_LEVELS,i.quality).label} · ${byId(REGIONS,i.region).label} · qty ${i.orderQty.toLocaleString()}</p>
+        ${byId(COPPER_WEIGHTS,i.copperOuter).label}/${byId(COPPER_WEIGHTS,i.copperInner).label} Cu · ${byId(COPPER_FOILS,i.copperFoil).label} foil ·
+        ${byId(FAB_PROCESSES,i.fabProcess).label} · ${byId(VIA_TYPES,i.via).label} · ${byId(TRACE_CLASSES,i.trace).label} · ${byId(FINISHES,i.finish).label} ·
+        ${i.impedance ? "impedance · " : ""}${i.backdrill ? "back-drill · " : ""}${i.viafill ? "via-fill · " : ""}${byId(QUALITY_LEVELS,i.quality).label} · ${byId(REGIONS,i.region).label} · qty ${i.orderQty.toLocaleString()}</p>
       <p><b>Derived:</b> ${r.area.toFixed(2)} dm² · ${r.bpp} boards/panel · ${r.lamCycles} lamination cycle(s) ·
         aspect ${r.aspect.toFixed(1)}:1 · yield ${pct(r.yld)}</p>
       <table>
@@ -34,137 +34,143 @@ function buildMethodology() {
         <tr><th>Quoted price</th><th>${f2(r.price)}</th><th>—</th></tr></tfoot>
       </table>
       <p><b>Top cost drivers:</b> ${drivers}.</p>
-      <p><b>Benchmark:</b> price ${f2(r.price)} vs market band ${f2(r.benchmark.lo)}–${f2(r.benchmark.hi)} —
-        ${(r.price>=r.benchmark.lo&&r.price<=r.benchmark.hi)?"<b style='color:#0e9f6e'>in band ✓</b>":"outside band"}.</p>
+      <p><b>Benchmark:</b> price ${f2(r.price)} vs 2026 market band ${f2(r.benchmark.lo)}–${f2(r.benchmark.hi)} —
+        ${(r.price>=r.benchmark.lo&&r.price<=r.benchmark.hi)?"<b style='color:#6cff3f'>in band ✓</b>":"outside band"}.</p>
       <p><b>DfC recommendations:</b></p><ul>${dfc}</ul>`;
   }).join("");
 
   $("methodologyProse").innerHTML = `
     <h2>1 · Conceptual model</h2>
     <p>A bottom-up, process-routed <b>should-cost model for ALL PCB types</b> — rigid (1–12+ layer),
-    HDI, flex, rigid-flex, high-speed/RF and power/heavy-copper — built the way a Tier-1 automotive
-    PCB supplier's cost engineer would. It walks the real fab process flow, costs every step from raw
-    laminate to final inspection, applies yield/scrap and tooling amortisation, and adds overhead and
-    margin. <b>Number of layers and stack-up are the primary drivers</b>: layer count compounds
-    imaging, etch, AOI, lamination, drilling and yield, while via technology (buried/blind/microvia)
-    sets the number of <b>sequential lamination cycles</b> — the single biggest stack-up cost lever
-    the previous model was missing.</p>
-    <div class="formula">material → +processing(imaging·etch·AOI·lamination·drill·plating·mask·finish)
-       → ÷ yield → +test/inspection → +tooling/NRE ÷ qty → +overhead → fab cost
+    HDI, any-layer/SLP, flex, rigid-flex, high-speed/RF and power/heavy-copper — built the way a Tier-1
+    automotive PCB supplier's cost engineer would. It walks the real fab process flow, costs every step
+    from raw laminate to final inspection, applies yield/scrap and tooling amortisation, and adds
+    overhead and margin. <b>Number of layers and stack-up are the primary drivers</b>: layer count
+    compounds imaging, etch, AOI, lamination, drilling and yield; via technology sets the number of
+    <b>sequential lamination cycles</b> — the biggest stack-up cost lever.</p>
+    <div class="formula">material → +processing(imaging·etch·AOI·lamination·drill·µvia·back-drill·plate·mask·finish)
+       → ÷ yield → +test/inspection(AOI·AXI·e-test) → +tooling/NRE ÷ qty → +overhead → fab cost
        ÷ (1 − margin) → quoted price</div>
 
-    <h2>2 · Parameter list</h2>
-    <h3>Inputs</h3>
+    <h2>2 · What's new in the 2026 edition</h2>
+    <ul>
+      <li><b>Expanded materials:</b> FR-4 std/mid-Tg/High-Tg/halogen-free, low-loss (Megtron 6 / I-Tera),
+      ultra-low-loss (Megtron 7/8), Rogers RO4350B/RO4003C/RO3003 (77 GHz), PTFE/Taconic, polyimide, LCP, IMS.</li>
+      <li><b>Latest processes/technologies:</b> mSAP & SAP fine-line, any-layer HDI / SLP, back-drilling
+      (per-via), via-fill / via-in-pad, copper-foil profile (HTE/RTF/VLP/HVLP), VCP plating, laser depanel,
+      plasma desmear for PTFE, 3D AXI, IST/CAF reliability coupons, extreme copper.</li>
+      <li><b>2026 market data:</b> gold-price finish sensitivity (~70% of ENIG cost is gold; +10% gold ≈
+      +6.8% ENIG), CCL/copper inflation surcharge, and updated labour/region indices (China baseline; raw
+      wage spread US ~7×, Germany ~9×, compressed to blended fab multipliers).</li>
+      <li><b>AI advisor:</b> a built-in insight/idea engine plus optional live Claude generation.</li>
+    </ul>
+
+    <h2>3 · Parameter list</h2>
     <table>
       <thead><tr><th>Group</th><th>Parameters</th></tr></thead>
       <tbody>
         <tr><td>Board &amp; type</td><td>PCB type, board W×H, order quantity</td></tr>
-        <tr><td>Stack-up</td><td><b>Layer count</b>, base material, board thickness, inner/outer copper weight, via technology</td></tr>
-        <tr><td>Design rules</td><td>min trace/space, controlled impedance, surface finish, solder-mask colour, silkscreen</td></tr>
+        <tr><td>Stack-up</td><td><b>Layer count</b>, base material, board thickness, inner/outer copper weight, copper-foil profile, via technology</td></tr>
+        <tr><td>Design rules &amp; process</td><td>fine-line process (subtractive/mSAP/SAP), min trace/space, controlled impedance, back-drill, via-fill, surface finish, mask colour, silkscreen</td></tr>
         <tr><td>Panelisation</td><td>panel W×H, utilisation %, hole density</td></tr>
-        <tr><td>Commercial</td><td>quality/IPC class, region, overhead %, margin %</td></tr>
-      </tbody>
-    </table>
-    <h3>Derived technical parameters</h3>
-    <table><tbody>
-      <tr><td>Board area (dm²)</td><td><code>W·H / 10000</code></td></tr>
-      <tr><td>Boards per panel</td><td><code>floor(panelArea/boardArea · utilisation)</code></td></tr>
-      <tr><td>Lamination cycles</td><td>base 1 + buried/HDI build-ups + rigid-flex bonding (sequential lamination)</td></tr>
-      <tr><td>Blended copper factor</td><td>weighted outer/inner copper-weight multiplier</td></tr>
-      <tr><td>Aspect ratio</td><td><code>thickness / min-hole</code> → plating-reliability &amp; yield derate</td></tr>
-      <tr><td>Hole / microvia counts</td><td>density × area (× build-up layers for microvia)</td></tr>
-    </tbody></table>
-
-    <h2>3 · Process routing per PCB type</h2>
-    <p>The engine emits the actual ordered step list (see the <b>Process Routing</b> tab). Steps switch
-    on/off by configuration:</p>
-    <table>
-      <thead><tr><th>PCB type</th><th>Distinguishing process steps</th></tr></thead>
-      <tbody>
-        <tr><td>Rigid 1–2 layer</td><td>No inner imaging/lamination; drill → PTH → plate → outer image → mask → finish → route → e-test</td></tr>
-        <tr><td>Rigid 4–12+ layer</td><td>Inner image/etch/AOI/oxide → lamination → drill → PTH/plate → outer → mask → finish → e-test → microsection (Class 3)</td></tr>
-        <tr><td>HDI</td><td>+ laser microvia drilling + <b>sequential build-up lamination</b> (1+N+1 … any-layer)</td></tr>
-        <tr><td>Flex</td><td>Polyimide core + coverlay lamination + special handling/profiling (laser cut)</td></tr>
-        <tr><td>Rigid-flex</td><td>Rigid + flex sub-stacks + coverlay + bonding + stiffener; extra lamination cycles</td></tr>
-        <tr><td>High-speed/RF</td><td>RF/hybrid laminate handling premium + mandatory impedance/TDR coupon test</td></tr>
-        <tr><td>Power/heavy-copper</td><td>Heavy-copper etch compensation, thicker plating, (metal-core thermal substrate)</td></tr>
+        <tr><td>Commercial / 2026 market</td><td>quality/IPC class, region, gold price $/oz, market surcharge %, overhead %, margin %</td></tr>
       </tbody>
     </table>
 
-    <h2>4 · Cost-driver list</h2>
+    <h2>4 · Key formulae</h2>
+    <div class="formula">Boards/panel = floor(panelArea/boardArea × utilisation)
+Lamination cycles = 1 + buried/HDI build-ups + rigid-flex bonding
+Yield = Y_class × Y_trace × Y_process × 0.992^(layers−2) × Y_type
+Finish$/dm² = base × [(1−goldFrac) + goldFrac × (gold$ / $4,100)]   (gold sensitivity)
+Cost carried by GOOD boards only → cost ÷ yield</div>
+
+    <h2>5 · Cost-driver list</h2>
     <ol>
-      <li><b>Layer count &amp; stack-up</b> — compounds nearly every process step + lamination cycles.</li>
-      <li><b>Via technology</b> — buried/blind/microvia → sequential laminations + laser drilling.</li>
+      <li><b>Layer count &amp; stack-up</b> — compounds nearly every step + lamination cycles.</li>
+      <li><b>Via technology</b> — buried/blind/microvia → sequential laminations + laser drilling; back-drill vs blind/buried trade-off.</li>
+      <li><b>Material</b> — FR-4 → High-Tg → low-loss → RF (PTFE 10–20× FR-4). Use hybrid stacks for RF.</li>
+      <li><b>Finish &amp; gold price</b> — 2026 gold (~$4,100/oz) makes ENIG/ENEPIG/hard-gold a major, volatile line item.</li>
       <li><b>Board area &amp; panel utilisation</b> — everything scales with area; poor nesting wastes panel.</li>
-      <li><b>Material</b> — FR-4 vs High-Tg vs RF (Rogers) vs polyimide; RF and flex carry large premiums.</li>
-      <li><b>Copper weight</b> — heavy copper needs etch compensation, wider spacing, thicker plating.</li>
-      <li><b>Trace/space &amp; impedance</b> — fine lines force LDI and depress yield; impedance adds TDR test.</li>
-      <li><b>Surface finish</b> — OSP &lt; immersion Ag/Sn &lt; ENIG &lt; ENEPIG &lt; hard gold.</li>
-      <li><b>Quality/IPC class</b> — yield, test depth, microsection, scrap, NRE multipliers.</li>
-      <li><b>Volume</b> — amortises tooling/NRE; selects flying-probe vs fixtured e-test.</li>
-      <li><b>Region</b> — labour &amp; overhead multipliers (China baseline → India → NA/EU).</li>
+      <li><b>Fine-line process</b> — mSAP/SAP (~40–50% premium) needed below ~2 mil; subtractive elsewhere.</li>
+      <li><b>Copper weight &amp; foil</b> — heavy copper 40–70%; HVLP foil for high-speed (supply-constrained 2026).</li>
+      <li><b>Quality/IPC class</b> — yield, test depth, AXI, microsection, IST/CAF, scrap, NRE.</li>
+      <li><b>Volume</b> — amortises tooling/NRE; flying-probe vs fixtured ICT (~500–1000 unit break-even).</li>
+      <li><b>Region &amp; market surcharge</b> — labour/overhead index + 2026 metal/energy inflation.</li>
     </ol>
 
-    <h2>5 · Yield &amp; quality model</h2>
-    <div class="formula">Yield = Y_class × Y_trace × 0.992^(layers−2) × Y_type</div>
-    <p>Each added layer pair compounds a small yield loss; finer trace classes and complex types
-    (HDI, rigid-flex) derate further. The quality/IPC class sets the baseline yield, scrap allowance,
-    test multiplier, mandatory microsection (Class 3 automotive/aero), and NRE multiplier. Cost is
-    carried by <b>good boards only</b> (cost ÷ yield), so yield is a first-class cost driver.</p>
+    <h2>6 · 2026 market benchmarks &amp; sources</h2>
+    <p>Independent $/dm² price band (China-volume, standard FR-4 ladder, 2026-inflated), adjusted for
+    type, quality, finish, material, heavy-copper and region. Reference $/dm² midpoints (China volume):</p>
     <table>
-      <thead><tr><th>Class</th><th>Base yield</th><th>Scrap</th><th>Test ×</th><th>Microsection</th><th>NRE ×</th></tr></thead>
-      <tbody>${QUALITY_LEVELS.map((q)=>`<tr><td>${q.label}</td><td>${pct(q.yld)}</td><td>${pct(q.scrap)}</td><td>${q.testMult}</td><td>${q.microsection?"yes":"no"}</td><td>${q.nreMult}</td></tr>`).join("")}</tbody>
+      <thead><tr><th>Layers</th><th>2 L</th><th>4 L</th><th>6 L</th><th>8 L</th><th>10 L</th><th>12 L</th><th>16 L</th></tr></thead>
+      <tbody><tr><td>$/dm²</td><td>1.6</td><td>2.9</td><td>4.4</td><td>6.5</td><td>9.5</td><td>13</td><td>20</td></tr></tbody>
     </table>
-
-    <h2>6 · Cost-breakdown structure</h2>
-    <p>Nine reconciling categories that sum to fab cost: <b>Material</b>, <b>Imaging+etch+AOI</b>,
-    <b>Lamination</b>, <b>Drilling+laser microvia</b>, <b>Desmear/PTH/plating</b>,
-    <b>Mask/finish/silk/profile</b>, <b>Test+inspection</b>, <b>Tooling/NRE (amortised)</b>,
-    <b>Overhead</b>; then margin → price. Material and processing typically dominate; NRE dominates at
-    low volume; lamination + drilling dominate the incremental cost of added layers/HDI.</p>
+    <table>
+      <thead><tr><th>2026 driver</th><th>Figure used</th></tr></thead>
+      <tbody>
+        <tr><td>Gold price</td><td>~$4,100/oz (2024 ~$2,400); ENIG ~70% gold-variable; +10% gold ≈ +6.8% ENIG</td></tr>
+        <tr><td>Copper / CCL</td><td>copper +~40% in 2025; CCL/copper-foil +up to 40%; captured by market-surcharge input</td></tr>
+        <tr><td>Region index (China=1.0, raw wages)</td><td>India ~0.3 · Vietnam ~0.65 · Taiwan ~1.7 · Korea ~3.5 · USA ~7.2 · Germany ~8.8 → blended to fab-processing multipliers (labour is 15–30% of cost)</td></tr>
+        <tr><td>Advanced-process adders</td><td>back-drill +10–20% · via-in-pad +up to 20% · mSAP/SLP +40–50% vs HDI · heavy Cu 4 oz +40–60% · 77 GHz radar 3–10× · IMS 2–3× · stacked vs staggered µvia +30–50%</td></tr>
+        <tr><td>Cost structure</td><td>material 30–40% · processing 40–50% · test+overhead 10–20% (shifts to process-dominated for HDI)</td></tr>
+      </tbody>
+    </table>
+    <p class="src"><b>Sources (2025–2026):</b> DigiTimes (Nan Ya / Kingboard / ITEQ CCL &amp; copper-foil price
+    hikes), AtlasPCB &amp; TrendForce (CCL cost breakdown, Korea import +74.5% YoY, gold/metals), NCAB PCB
+    price index (108→~125), Prismark (PCB +15.8% to ~$85B in 2025), Rogers Corp / RayPCB (RF laminate),
+    Isola / PCBSync (Isola/Shengyi/Panasonic tiers), Hil Electronic / King Sun / TOPFAST / JLCPCB
+    ($/in² ladders, cost-structure splits), IPC-4552B/4556 (ENIG/ENEPIG), Sierra/AllPCB/Epec (HDI,
+    back-drill, via-fill, test economics), BLS/Destatis/vendor wage data (labour). All figures are
+    engineering ranges, not supplier quotes; laminate makers publish sheet prices only under NDA.</p>
 
     <h2>7 · Worked examples (luxury SUV)</h2>
     ${exHtml}
 
-    <h2>8 · Benchmark ranges &amp; sources</h2>
-    <p>The independent benchmark band is built from public PCB fab $/dm² price ranges by layer count
-    and type, adjusted for quality, finish and material. Reference $/dm² midpoints (China, volume):
-    2-layer ≈ $1.6, 4-layer ≈ $2.9, 6-layer ≈ $4.4, 8-layer ≈ $6.5, 10-layer ≈ $9.5, 12-layer ≈ $13/dm²,
-    scaled ×1.3–3.2 for power/HDI/flex/rigid-flex. These are <b>engineering ranges</b> aligned with
-    typical fab process economics and IPC build classes (<b>IPC-2221</b> design, <b>IPC-6012</b>
-    rigid qualification &amp; Class 1/2/3, <b>IPC-6013</b> flex/rigid-flex, <b>IPC-2226</b> HDI,
-    <b>IPC-A-600</b> acceptability, <b>IPC-7351</b> land patterns), not supplier quotes.</p>
+    <h2>8 · AI advisor — insights &amp; idea generation</h2>
+    <p>The <b>AI Advisor</b> tab has two engines:</p>
+    <ul>
+      <li><b>Built-in advisor</b> (offline, no key): analyses the current design and generates a ranked,
+      quantified list of cost-reduction ideas (layer reduction, HDI vs through, finish downgrade, panel
+      utilisation, hybrid RF stack-up, trace relaxation, volume consolidation, regional trade-offs) plus a
+      cost narrative — computed deterministically from the model.</li>
+      <li><b>Claude generation</b> (your own Anthropic API key): sends the design + computed cost stack
+      directly from your browser to the Claude API and returns a generative should-cost review (drivers,
+      DfC ideas, risks/missing processes, alternative concepts). The key is used only for that direct call
+      and, if you opt in, stored only in your browser's localStorage. Model is selectable
+      (Opus 4.8 default, Sonnet 5, Haiku 4.5).</li>
+    </ul>
 
-    <h2>9 · Manager summary — how this fixes the gaps</h2>
-    <div class="callout">
-      <p><b>Previous feedback:</b> “small aspects covered, but critical processes &amp; parameters
-      missing — especially number of layers and stack-up logic.”</p>
-    </div>
+    <h2>9 · Yield &amp; quality model</h2>
+    <table>
+      <thead><tr><th>Class</th><th>Base yield</th><th>Scrap</th><th>Test ×</th><th>AXI</th><th>Microsection/IST</th><th>NRE ×</th></tr></thead>
+      <tbody>${QUALITY_LEVELS.map((q)=>`<tr><td>${q.label}</td><td>${pct(q.yld)}</td><td>${pct(q.scrap)}</td><td>${q.testMult}</td><td>${q.axi?"yes":"no"}</td><td>${q.microsection?"yes":"no"}</td><td>${q.nreMult}</td></tr>`).join("")}</tbody>
+    </table>
+
+    <h2>10 · Manager summary — how this fixes the gaps</h2>
+    <div class="callout"><p><b>Previous feedback:</b> missing materials, manufacturing processes, latest
+    technologies; old labour rates; low accuracy. Wanted 2026 data, neon+black UI, and AI tools.</p></div>
     <table>
       <thead><tr><th>Gap</th><th>Now addressed</th></tr></thead>
       <tbody>
-        <tr><td>Layer count not central</td><td><b>Layer count is the primary driver</b> — compounds imaging/etch/AOI/lamination/drill/plating and yield.</td></tr>
-        <tr><td>No stack-up logic</td><td>Explicit <b>lamination-cycle model</b>: buried/blind &amp; HDI build-ups add sequential presses; rigid-flex adds bonding cycles.</td></tr>
-        <tr><td>Via technology ignored</td><td>Through / buried-blind / HDI 1+N+1…any-layer with laser microvia drilling + build-up costs.</td></tr>
-        <tr><td>Limited PCB types</td><td>Rigid, HDI, flex, rigid-flex, high-speed/RF, power — each with its own routing &amp; multipliers.</td></tr>
-        <tr><td>Material/copper/finish coarse</td><td>FR-4/High-Tg/RF/polyimide/IMS, 0.5–4 oz copper, 8 finishes, mask colours.</td></tr>
-        <tr><td>Impedance &amp; design rules</td><td>Trace/space classes (imaging tech + yield) and controlled-impedance TDR test.</td></tr>
-        <tr><td>Panelisation</td><td>Boards-per-panel &amp; utilisation directly scale $/board.</td></tr>
-        <tr><td>Test/inspection thin</td><td>Flying-probe vs fixtured e-test by volume, AOI, microsection for Class 3.</td></tr>
-        <tr><td>Reliability/automotive</td><td>IPC Class 2/3, IATF flow, qualification NRE, conservative yield/scrap.</td></tr>
-        <tr><td>No DfC / insights</td><td>Engineering-grade <b>DfC recommendations</b> + AI cost-driver sensitivity, every run.</td></tr>
+        <tr><td>Missing materials</td><td>13 materials incl. low-loss (Megtron 6/7/8), RF (Rogers RO4350B/RO4003C/RO3003, PTFE), LCP, IMS — with 2026 relative pricing.</td></tr>
+        <tr><td>Missing processes / latest tech</td><td>mSAP/SAP, any-layer HDI/SLP, back-drilling, via-fill/via-in-pad, copper-foil profile, VCP, laser depanel, plasma desmear, 3D AXI, IST/CAF.</td></tr>
+        <tr><td>Old labour rates</td><td>2026 blended region multipliers (China/Vietnam/India/Taiwan/Korea/NA/EU) from current wage + burden data; energy in the overhead term.</td></tr>
+        <tr><td>Low accuracy</td><td>Recalibrated to 2026 $/dm² ladders + CCL inflation + gold-price finish driver; flagship examples land inside the independent market band; cost-structure split matches published 30–40% material / 40–50% process.</td></tr>
+        <tr><td>Gold / metal volatility</td><td>Explicit gold-price input scales the gold-variable part of ENIG/ENEPIG/hard-gold; market-surcharge input for CCL/copper escalation.</td></tr>
+        <tr><td>Neon + black UI</td><td>Full high-contrast neon-on-black redesign.</td></tr>
+        <tr><td>AI tools</td><td>Built-in AI advisor + optional live Claude generation for insights and idea generation.</td></tr>
       </tbody>
     </table>
 
-    <h2>Missing processes a fab would still expect to confirm</h2>
-    <p>Called out explicitly for completeness — add as needed for a specific RFQ: back-drilling of
-    stub vias (high-speed), via-fill (resin/copper) &amp; capping for HDI/via-in-pad, edge plating /
-    castellation, peelable mask &amp; carbon ink, press-fit / heavy-gold connector tabs, blue-glue
-    &amp; depanel routing strategy, IST/CAF reliability coupons, first-article &amp; PPAP
-    documentation (automotive), and assembly-side stencil/AOI (out of bare-board fab scope).</p>
+    <h2>Missing processes a fab would still confirm</h2>
+    <p>Called out for completeness — add per RFQ: resin/copper via-fill chemistry choice &amp; capping,
+    edge plating / castellation, peelable mask &amp; carbon ink, press-fit / heavy-gold connector tabs,
+    copper coin / inlay for thermal, embedded components/die, glass-core substrate (emerging AI packaging,
+    2027+), blue-glue &amp; depanel strategy, first-article &amp; PPAP (automotive), and assembly-side
+    stencil/AOI/AXI (out of bare-board fab scope).</p>
 
     <p class="src">All figures are industry-aligned engineering estimates for model calibration, not
-    confidential supplier pricing. Override coefficients in <code>data.js</code> with negotiated
-    numbers when implementing in CostVision.</p>
+    confidential supplier pricing. Override coefficients in <code>data.js</code> with negotiated numbers
+    when implementing in a costing engine.</p>
   `;
 }

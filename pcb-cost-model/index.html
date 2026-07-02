@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>360° PCB Should-Cost Model — All PCB Types</title>
-  <meta name="description" content="World-class, parameterized should-cost model for ALL PCB types — rigid, HDI, flex, rigid-flex, high-speed/RF, power. Layer count and stack-up as primary cost drivers. Ready for CostVision." />
+  <title>360° PCB Should-Cost Model — 2026 · Neon</title>
+  <meta name="description" content="World-class, parameterized should-cost model for ALL PCB types — rigid, HDI, any-layer/SLP, flex, rigid-flex, high-speed/RF, power. 2026 materials, processes, labour & gold-price data. Layer count and stack-up first. Built-in + Claude-powered AI advisor." />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -13,20 +13,21 @@
       <div class="brand-mark">PCB</div>
       <div class="brand-text">
         <h1>360° PCB Should-Cost Model</h1>
-        <p class="subtitle">All PCB types · layer-count &amp; stack-up driven · DfC + AI insights · CostVision-ready</p>
+        <p class="subtitle">2026 edition · all PCB types · stack-up-driven · gold-price aware · AI advisor</p>
       </div>
     </div>
     <div class="header-actions">
-      <button id="btnReset" class="btn btn-ghost" type="button">Reset defaults</button>
+      <button id="btnReset" class="btn btn-ghost" type="button">Reset</button>
       <button id="btnSaveScenario" class="btn btn-primary" type="button">＋ Save scenario</button>
     </div>
   </header>
 
   <nav class="tabbar" aria-label="Sections">
     <button class="tab active" data-tab="model" type="button">Cost Model</button>
+    <button class="tab" data-tab="ai" type="button">✦ AI Advisor</button>
     <button class="tab" data-tab="routing" type="button">Process Routing</button>
     <button class="tab" data-tab="scenarios" type="button">Scenario Compare</button>
-    <button class="tab" data-tab="methodology" type="button">Methodology &amp; Examples</button>
+    <button class="tab" data-tab="methodology" type="button">Methodology &amp; Data</button>
   </nav>
 
   <main>
@@ -62,18 +63,21 @@
               <div><label for="copperInner">Inner copper</label><select id="copperInner"></select></div>
               <div><label for="copperOuter">Outer copper</label><select id="copperOuter"></select></div>
             </div>
-            <div class="field"><label for="via">Via technology <span class="info" data-tip="Buried/blind vias and HDI microvias require sequential lamination — each build-up adds a press cycle and cost.">ⓘ</span></label><select id="via"></select></div>
+            <div class="field"><label for="copperFoil">Copper foil profile <span class="info" data-tip="HTE standard; RTF/VLP/HVLP low-profile foils cut insertion loss for ≥28 Gbps high-speed — a premium, supply-constrained line item in 2026.">ⓘ</span></label><select id="copperFoil"></select></div>
+            <div class="field"><label for="via">Via technology <span class="info" data-tip="Buried/blind vias and HDI microvias require sequential lamination — each build-up adds a press cycle and cost. Stacked microvias cost ~30–50% more than staggered.">ⓘ</span></label><select id="via"></select></div>
           </fieldset>
 
           <fieldset class="group">
-            <legend>3 · Design rules &amp; finish</legend>
-            <div class="field"><label for="trace">Min trace / space <span class="info" data-tip="Finer lines need advanced LDI imaging and depress yield. Relax where signal integrity allows.">ⓘ</span></label><select id="trace"></select></div>
-            <div class="field check"><label><input type="checkbox" id="impedance" checked /> Controlled impedance (adds TDR test)</label></div>
+            <legend>3 · Design rules &amp; process</legend>
+            <div class="field"><label for="fabProcess">Fine-line process <span class="info" data-tip="Subtractive etch floor ≈2 mil. mSAP enables ~1.4 mil, SAP/ultra-HDI <1 mil — each ~40–50% premium over conventional imaging.">ⓘ</span></label><select id="fabProcess"></select></div>
+            <div class="field"><label for="trace">Min trace / space</label><select id="trace"></select></div>
+            <div class="field check"><label><input type="checkbox" id="impedance" checked /> Controlled impedance (TDR coupon)</label></div>
+            <div class="field check"><label><input type="checkbox" id="backdrill" /> Back-drill (stub removal, high-speed) <span class="info" data-tip="Controlled-depth drilling removes via stubs for >10–25 Gbps. ~$0.10/via, ~+10–20% of board cost; cheaper than blind/buried (+30–60%).">ⓘ</span></label></div>
+            <div class="field check"><label><input type="checkbox" id="viafill" /> Via-fill + cap (via-in-pad) <span class="info" data-tip="Resin/copper fill + planarise for via-in-pad under fine-pitch BGA. Adds up to ~20% to board cost.">ⓘ</span></label></div>
             <div class="field"><label for="finish">Surface finish</label><select id="finish"></select></div>
             <div class="field row2">
               <div><label for="maskColor">Solder mask</label><select id="maskColor"></select></div>
-              <div><label for="silkWrap" style="display:block">Silkscreen</label>
-                <label class="check" style="margin-top:7px"><input type="checkbox" id="silkscreen" checked /> Legend</label></div>
+              <div><label style="display:block">Silkscreen</label><label class="check" style="margin-top:7px"><input type="checkbox" id="silkscreen" checked /> Legend</label></div>
             </div>
           </fieldset>
 
@@ -83,15 +87,19 @@
               <div><label for="panelW">Panel W (mm)</label><input type="number" id="panelW" value="457" min="50" step="1" /></div>
               <div><label for="panelH">Panel H (mm)</label><input type="number" id="panelH" value="305" min="50" step="1" /></div>
             </div>
-            <div class="field"><label for="utilization">Panel utilisation (%) <span class="info" data-tip="Share of panel area used by good boards after array spacing, tooling rails and break-out. Higher utilisation lowers $/board.">ⓘ</span></label>
+            <div class="field"><label for="utilization">Panel utilisation (%) <span class="info" data-tip="Share of panel used by good boards after array spacing, rails and break-out. Higher utilisation lowers $/board.">ⓘ</span></label>
               <input type="number" id="utilization" value="80" min="20" max="95" step="1" /></div>
             <div class="field"><label for="holeDensity">Hole density (holes/dm²)</label><input type="number" id="holeDensity" value="160" min="10" step="10" /></div>
           </fieldset>
 
           <fieldset class="group">
-            <legend>5 · Quality, region &amp; commercials</legend>
-            <div class="field"><label for="quality">Quality / IPC class <span class="info" data-tip="Sets yield, test depth, inspection (microsection), scrap and NRE multipliers. Automotive = IPC Class 3 / IATF flow.">ⓘ</span></label><select id="quality"></select></div>
-            <div class="field"><label for="region">Region</label><select id="region"></select></div>
+            <legend>5 · Quality, region &amp; 2026 market</legend>
+            <div class="field"><label for="quality">Quality / IPC class <span class="info" data-tip="Sets yield, test depth, AXI/microsection, IST/CAF coupons, scrap and NRE. Automotive = IPC Class 3 / IATF flow.">ⓘ</span></label><select id="quality"></select></div>
+            <div class="field"><label for="region">Region <span class="info" data-tip="2026 blended fab-processing multiplier (China=1.0). Raw wage index is wider (US ~7×, DE ~9×) but labour is only 15–30% of PCB cost.">ⓘ</span></label><select id="region"></select></div>
+            <div class="field row2">
+              <div><label for="goldPrice">Gold $/oz <span class="info" data-tip="2026 gold ~$4,100/oz (was ~$2,400 in 2024). Scales the gold-variable part of ENIG/ENEPIG/hard-gold finishes (~70% of ENIG cost is gold).">ⓘ</span></label><input type="number" id="goldPrice" value="4100" min="800" step="50" /></div>
+              <div><label for="marketSurcharge">Market surcharge % <span class="info" data-tip="2026 metal/energy volatility on material+processing (copper +40%, CCL +up to 40%). Raise for escalation clauses.">ⓘ</span></label><input type="number" id="marketSurcharge" value="6" min="0" step="1" /></div>
+            </div>
             <div class="field row2">
               <div><label for="overheadPct">Overhead (%)</label><input type="number" id="overheadPct" value="18" min="0" step="1" /></div>
               <div><label for="marginPct">Margin (%)</label><input type="number" id="marginPct" value="25" min="0" max="80" step="1" /></div>
@@ -136,14 +144,14 @@
           </div>
 
           <div class="panel">
-            <h3>Benchmark sanity check <span class="sub">independent market price band</span></h3>
+            <h3>Benchmark sanity check <span class="sub">independent 2026 market price band</span></h3>
             <div class="bandbar" id="bandBar"><div class="zone" id="bandZone"></div><div class="mark" id="bandMark"></div></div>
             <div class="band-labels" id="bandLabels"></div>
             <div class="band-verdict" id="bandVerdict"></div>
           </div>
 
           <div class="panel">
-            <h3>AI insights — cost drivers <span class="sub">±15% one-at-a-time</span></h3>
+            <h3>AI cost-driver sensitivity <span class="sub">±15% one-at-a-time</span></h3>
             <div class="tornado" id="tornado"></div>
           </div>
 
@@ -157,11 +165,36 @@
       </div>
     </section>
 
+    <!-- ============ AI ADVISOR TAB ============ -->
+    <section id="tab-ai" class="tab-panel">
+      <div class="panel ai-hero">
+        <h3><span class="ai-badge">AI</span> AI Cost Advisor &amp; Idea Generation</h3>
+        <p class="hint">Two engines. The <b>built-in advisor</b> analyses the current design instantly (no key). <b>Claude</b> generates a deeper, generative should-cost review using your own Anthropic API key — nothing is sent anywhere except directly to Anthropic from your browser.</p>
+        <div class="ai-actions">
+          <button id="btnLocalAI" class="btn btn-primary" type="button">⚡ Generate built-in insights</button>
+          <button id="btnClaudeAI" class="btn btn-magenta" type="button">✦ Generate with Claude</button>
+        </div>
+        <div class="ai-config">
+          <div class="field"><label for="aiKey">Anthropic API key (optional — for Claude generation) <span class="info" data-tip="Used only for a direct browser call to api.anthropic.com. Stored in this browser (localStorage) if you tick save; never sent anywhere else. Get a key at console.anthropic.com.">ⓘ</span></label>
+            <input type="password" id="aiKey" placeholder="sk-ant-..." autocomplete="off" /></div>
+          <div class="field"><label for="aiModel">Model</label><select id="aiModel">
+            <option value="claude-opus-4-8">Claude Opus 4.8 (default)</option>
+            <option value="claude-sonnet-5">Claude Sonnet 5</option>
+            <option value="claude-haiku-4-5">Claude Haiku 4.5 (cheapest)</option>
+          </select></div>
+        </div>
+        <label class="check" style="margin-top:8px; font-size:.76rem; color:var(--ink-soft)"><input type="checkbox" id="aiSaveKey" /> Remember key in this browser</label>
+        <p class="ai-key-note">Direct browser calls require the Anthropic API to allow them; the model returns a full Markdown should-cost review. Your key never leaves your machine except to Anthropic.</p>
+        <div class="ai-status" id="aiStatus"></div>
+        <div class="ai-output" id="aiOutput">Load a design on the Cost Model tab, then click a button above. The built-in advisor works offline; Claude generation needs your API key.</div>
+      </div>
+    </section>
+
     <!-- ============ ROUTING TAB ============ -->
     <section id="tab-routing" class="tab-panel">
       <div class="panel">
         <h3 id="routingTitle">Process routing</h3>
-        <p class="hint">Ordered fab process steps for the current configuration, with the machine/process at each step. Steps appear/disappear with layer count, via technology, material and PCB type.</p>
+        <p class="hint">Ordered fab process steps for the current configuration, with the machine/process at each step. Steps appear/disappear with layer count, via technology, fine-line process, material and PCB type.</p>
         <div class="routing" id="routingList"></div>
       </div>
     </section>
@@ -170,7 +203,7 @@
     <section id="tab-scenarios" class="tab-panel">
       <div class="panel">
         <div class="scenario-head"><h3>Saved scenarios</h3><button id="btnClearScenarios" class="btn btn-ghost" type="button">Clear all</button></div>
-        <p class="hint">Use “＋ Save scenario” to snapshot inputs &amp; results, then compare PCB types / layer counts side-by-side.</p>
+        <p class="hint">Use “＋ Save scenario” to snapshot inputs &amp; results, then compare PCB types / layer counts / regions side-by-side.</p>
         <div class="scenario-table-wrap"><table class="scenario-table" id="scenarioTable"><tbody></tbody></table></div>
       </div>
     </section>
@@ -182,10 +215,11 @@
   </main>
 
   <div class="tooltip" id="tooltip" role="tooltip"></div>
-  <footer class="app-footer"><span>360° PCB should-cost model · industry-aligned engineering ranges, not supplier quotes · layer count &amp; stack-up central.</span></footer>
+  <footer class="app-footer"><span>360° PCB should-cost model · 2026 edition · industry-aligned engineering ranges, not supplier quotes · layer count &amp; stack-up central.</span></footer>
 
   <script src="data.js"></script>
   <script src="model.js"></script>
+  <script src="ai.js"></script>
   <script src="methodology.js"></script>
   <script src="app.js"></script>
 </body>

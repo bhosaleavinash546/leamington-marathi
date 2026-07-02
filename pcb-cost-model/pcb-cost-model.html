@@ -3,172 +3,262 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>360° PCB Should-Cost Model — All PCB Types</title>
-  <meta name="description" content="World-class, parameterized should-cost model for ALL PCB types — rigid, HDI, flex, rigid-flex, high-speed/RF, power. Layer count and stack-up as primary cost drivers. Ready for CostVision." />
+  <title>360° PCB Should-Cost Model — 2026 · Neon</title>
+  <meta name="description" content="World-class, parameterized should-cost model for ALL PCB types — rigid, HDI, any-layer/SLP, flex, rigid-flex, high-speed/RF, power. 2026 materials, processes, labour & gold-price data. Layer count and stack-up first. Built-in + Claude-powered AI advisor." />
   <style>
+/* ============================================================================
+ * style.css — NEON + BLACK theme for the 360° PCB Should-Cost Model (2026)
+ * High-contrast neon-on-black. Cyan / magenta / lime accent system.
+ * ==========================================================================*/
+
 :root {
-  --bg: #07140f;
-  --panel: #ffffff;
-  --ink: #15211b;
-  --ink-soft: #5a6b62;
-  --line: #dde7e1;
-  --accent: #0e9f6e;       /* PCB green */
-  --accent-2: #0891b2;
-  --gold: #c79a2e;         /* ENIG gold */
-  --warn: #ca8a04;
-  --bad: #dc2626;
-  --shadow: 0 1px 3px rgba(16, 24, 40, .08), 0 1px 2px rgba(16, 24, 40, .06);
+  --bg: #05060a;
+  --bg-2: #0a0c14;
+  --panel: #0e111c;
+  --panel-2: #121627;
+  --line: #1f2740;
+  --line-2: #2b3556;
+  --ink: #e8ecff;
+  --ink-soft: #8b95bf;
+  --ink-dim: #5a648f;
+
+  --neon-cyan: #00e5ff;
+  --neon-magenta: #ff2bd6;
+  --neon-lime: #6cff3f;
+  --neon-amber: #ffcf33;
+  --neon-red: #ff3b6b;
+  --neon-violet: #a06bff;
+  --neon-blue: #3a8bff;
+
+  --glow-cyan: 0 0 12px rgba(0, 229, 255, .55);
+  --glow-magenta: 0 0 12px rgba(255, 43, 214, .55);
+  --glow-lime: 0 0 12px rgba(108, 255, 63, .5);
+  --shadow: 0 8px 30px rgba(0, 0, 0, .55);
 }
+
 * { box-sizing: border-box; }
 html, body { margin: 0; }
 body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  background: #eef3f0; color: var(--ink); font-size: 14px; line-height: 1.5;
+  font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+  background:
+    radial-gradient(1200px 600px at 15% -10%, rgba(0, 229, 255, .08), transparent 60%),
+    radial-gradient(1000px 500px at 100% 0%, rgba(255, 43, 214, .07), transparent 55%),
+    var(--bg);
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.5;
+  min-height: 100vh;
 }
 
+/* ---------- Header ---------- */
 .app-header {
   display: flex; align-items: center; justify-content: space-between; gap: 16px;
-  padding: 14px 22px; background: linear-gradient(120deg, #07140f, #0d3326); color: #fff;
+  padding: 14px 22px;
+  background: linear-gradient(90deg, rgba(0,229,255,.06), rgba(255,43,214,.06));
+  border-bottom: 1px solid var(--line);
+  backdrop-filter: blur(6px);
 }
 .brand { display: flex; align-items: center; gap: 14px; }
 .brand-mark {
-  width: 46px; height: 46px; border-radius: 10px;
-  background: linear-gradient(135deg, var(--accent), var(--accent-2));
-  display: grid; place-items: center; font-weight: 800; box-shadow: var(--shadow); font-size: .8rem;
+  width: 46px; height: 46px; border-radius: 12px;
+  background: linear-gradient(135deg, var(--neon-cyan), var(--neon-magenta));
+  display: grid; place-items: center; font-weight: 900; font-size: .8rem; color: #05060a;
+  box-shadow: var(--glow-cyan);
 }
-.brand-text h1 { font-size: 1.05rem; margin: 0; font-weight: 700; }
-.subtitle { margin: 2px 0 0; font-size: .78rem; color: #9fd2bf; }
+.brand-text h1 {
+  font-size: 1.05rem; margin: 0; font-weight: 800; letter-spacing: .3px;
+  background: linear-gradient(90deg, var(--neon-cyan), #fff 60%, var(--neon-magenta));
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.subtitle { margin: 2px 0 0; font-size: .76rem; color: var(--neon-cyan); text-shadow: 0 0 8px rgba(0,229,255,.4); }
 .header-actions { display: flex; gap: 10px; flex-wrap: wrap; }
 
-.btn { border: 0; border-radius: 8px; padding: 9px 14px; font-size: .82rem; font-weight: 600; cursor: pointer; transition: transform .05s, background .15s; }
+.btn {
+  border: 1px solid transparent; border-radius: 9px; padding: 9px 15px; font-size: .82rem;
+  font-weight: 700; cursor: pointer; transition: transform .05s, box-shadow .18s, background .18s;
+  letter-spacing: .3px;
+}
 .btn:active { transform: translateY(1px); }
-.btn-primary { background: var(--accent); color: #fff; }
-.btn-primary:hover { background: #0b8a5f; }
-.btn-ghost { background: rgba(255,255,255,.12); color: #fff; }
-.btn-ghost:hover { background: rgba(255,255,255,.22); }
+.btn-primary { background: var(--neon-cyan); color: #04121a; box-shadow: var(--glow-cyan); }
+.btn-primary:hover { box-shadow: 0 0 20px rgba(0,229,255,.8); }
+.btn-ghost { background: rgba(255,255,255,.04); color: var(--ink); border-color: var(--line-2); }
+.btn-ghost:hover { border-color: var(--neon-cyan); color: var(--neon-cyan); }
+.btn-magenta { background: var(--neon-magenta); color: #1a0416; box-shadow: var(--glow-magenta); }
+.btn-magenta:hover { box-shadow: 0 0 20px rgba(255,43,214,.8); }
 
-.tabbar { display: flex; gap: 4px; padding: 0 22px; background: #07140f; border-bottom: 1px solid #11402f; flex-wrap: wrap; }
-.tab { background: transparent; border: 0; color: #84b3a3; cursor: pointer; padding: 11px 16px; font-size: .85rem; font-weight: 600; border-bottom: 2px solid transparent; }
-.tab:hover { color: #d3ece2; }
-.tab.active { color: #fff; border-bottom-color: var(--accent); }
+/* ---------- Tabs ---------- */
+.tabbar { display: flex; gap: 4px; padding: 0 22px; background: var(--bg-2); border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+.tab {
+  background: transparent; border: 0; color: var(--ink-soft); cursor: pointer;
+  padding: 12px 16px; font-size: .85rem; font-weight: 700; border-bottom: 2px solid transparent;
+}
+.tab:hover { color: var(--ink); }
+.tab.active { color: var(--neon-cyan); border-bottom-color: var(--neon-cyan); text-shadow: 0 0 8px rgba(0,229,255,.5); }
 
-main { padding: 18px 22px 60px; max-width: 1440px; margin: 0 auto; }
+main { padding: 18px 22px 70px; max-width: 1480px; margin: 0 auto; }
 .tab-panel { display: none; }
 .tab-panel.active { display: block; }
 
-.layout { display: grid; grid-template-columns: 400px 1fr; gap: 20px; align-items: start; }
-@media (max-width: 1020px) { .layout { grid-template-columns: 1fr; } }
+.layout { display: grid; grid-template-columns: 410px 1fr; gap: 20px; align-items: start; }
+@media (max-width: 1040px) { .layout { grid-template-columns: 1fr; } }
 
+/* ---------- Inputs ---------- */
 .inputs { display: flex; flex-direction: column; gap: 14px; }
-.preset-bar { background: var(--panel); border-radius: 12px; padding: 14px; box-shadow: var(--shadow); }
-.preset-label { font-weight: 700; font-size: .8rem; display: block; margin-bottom: 8px; }
+.preset-bar, .group, .panel, .result-card, .metric {
+  background: linear-gradient(180deg, var(--panel), var(--panel-2));
+  border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--shadow);
+}
+.preset-bar { padding: 14px; }
+.preset-label { font-weight: 800; font-size: .78rem; display: block; margin-bottom: 8px; color: var(--neon-cyan); text-transform: uppercase; letter-spacing: .6px; }
 .example-presets { display: flex; flex-direction: column; gap: 6px; }
-.ex-chip { text-align: left; border: 1px solid var(--line); background: #fff; border-radius: 9px; padding: 9px 11px; font-size: .78rem; font-weight: 600; cursor: pointer; color: var(--ink); }
-.ex-chip:hover { border-color: var(--accent); }
+.ex-chip {
+  text-align: left; border: 1px solid var(--line-2); background: rgba(0,229,255,.03); border-radius: 10px;
+  padding: 9px 11px; font-size: .78rem; font-weight: 700; cursor: pointer; color: var(--ink);
+}
+.ex-chip:hover { border-color: var(--neon-cyan); box-shadow: var(--glow-cyan); }
 .ex-chip span { display: block; font-weight: 400; color: var(--ink-soft); font-size: .72rem; margin-top: 2px; }
-.hint { font-size: .72rem; color: var(--ink-soft); margin: 8px 0 0; }
+.hint { font-size: .72rem; color: var(--ink-dim); margin: 8px 0 0; }
 
-.group { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px 14px; box-shadow: var(--shadow); margin: 0; }
-.group legend { font-weight: 700; font-size: .78rem; color: var(--accent); padding: 0 6px; text-transform: uppercase; letter-spacing: .4px; }
+.group { padding: 12px 14px 14px; }
+.group legend {
+  font-weight: 800; font-size: .74rem; color: var(--neon-magenta); padding: 0 8px;
+  text-transform: uppercase; letter-spacing: .6px; text-shadow: 0 0 8px rgba(255,43,214,.4);
+}
 .field { display: flex; flex-direction: column; gap: 4px; margin-top: 9px; }
 .field.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.field label { font-size: .76rem; color: var(--ink-soft); font-weight: 600; }
+.field label { font-size: .75rem; color: var(--ink-soft); font-weight: 600; }
 .field.check { flex-direction: row; align-items: center; }
 .field.check label { display: flex; align-items: center; gap: 7px; color: var(--ink); }
-.field input[type="number"], .field select { border: 1px solid var(--line); border-radius: 8px; padding: 7px 9px; font-size: .85rem; background: #fbfdfc; color: var(--ink); font-variant-numeric: tabular-nums; width: 100%; }
-.field input:focus, .field select:focus { outline: 2px solid #b6e6d3; border-color: var(--accent); }
-.info { display: inline-grid; place-items: center; width: 14px; height: 14px; border-radius: 50%; background: #e0f2ea; color: var(--accent); font-size: .62rem; cursor: help; font-weight: 700; vertical-align: middle; }
+.field input[type="number"], .field select, .field input[type="text"], .field input[type="password"] {
+  border: 1px solid var(--line-2); border-radius: 9px; padding: 8px 10px; font-size: .85rem;
+  background: #070912; color: var(--ink); font-variant-numeric: tabular-nums; width: 100%;
+}
+.field input:focus, .field select:focus { outline: none; border-color: var(--neon-cyan); box-shadow: var(--glow-cyan); }
+.field input[type="checkbox"] { accent-color: var(--neon-cyan); width: 16px; height: 16px; }
+.field select option { background: #070912; }
+.info {
+  display: inline-grid; place-items: center; width: 15px; height: 15px; border-radius: 50%;
+  background: rgba(0,229,255,.12); color: var(--neon-cyan); font-size: .62rem; cursor: help; font-weight: 800;
+  vertical-align: middle;
+}
 
+/* ---------- Results ---------- */
 .results { display: flex; flex-direction: column; gap: 16px; }
 .result-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
-@media (max-width: 640px) { .result-cards { grid-template-columns: 1fr; } }
-.result-card { background: var(--panel); border-radius: 14px; padding: 16px 18px; box-shadow: var(--shadow); border: 1px solid var(--line); }
-.result-card.primary { background: linear-gradient(135deg, #07140f, #114a36); color: #fff; border: 0; }
-.rc-label { font-size: .74rem; text-transform: uppercase; letter-spacing: .5px; opacity: .85; }
-.rc-value { font-size: 1.9rem; font-weight: 800; margin: 6px 0 2px; font-variant-numeric: tabular-nums; }
-.rc-value.alt { color: var(--accent); }
-.rc-sub { font-size: .72rem; opacity: .8; }
+@media (max-width: 660px) { .result-cards { grid-template-columns: 1fr; } }
+.result-card { padding: 16px 18px; }
+.result-card.primary {
+  background: linear-gradient(135deg, rgba(0,229,255,.12), rgba(255,43,214,.10));
+  border-color: var(--neon-cyan);
+}
+.rc-label { font-size: .72rem; text-transform: uppercase; letter-spacing: .6px; color: var(--ink-soft); }
+.rc-value { font-size: 1.9rem; font-weight: 900; margin: 6px 0 2px; font-variant-numeric: tabular-nums; color: #fff; }
+.result-card.primary .rc-value { color: var(--neon-cyan); text-shadow: var(--glow-cyan); }
+.rc-value.alt { color: var(--neon-lime); text-shadow: var(--glow-lime); }
+.rc-sub { font-size: .72rem; color: var(--ink-soft); }
 
 .metrics-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
-@media (max-width: 780px) { .metrics-strip { grid-template-columns: repeat(2, 1fr); } }
-.metric { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 11px 13px; box-shadow: var(--shadow); }
-.metric .m-label { font-size: .7rem; color: var(--ink-soft); font-weight: 600; }
-.metric .m-value { font-size: 1.12rem; font-weight: 800; margin-top: 3px; font-variant-numeric: tabular-nums; }
+@media (max-width: 820px) { .metrics-strip { grid-template-columns: repeat(2, 1fr); } }
+.metric { padding: 11px 13px; }
+.metric .m-label { font-size: .68rem; color: var(--ink-soft); font-weight: 600; text-transform: uppercase; letter-spacing: .4px; }
+.metric .m-value { font-size: 1.12rem; font-weight: 800; margin-top: 3px; font-variant-numeric: tabular-nums; color: var(--neon-cyan); }
 
-.panel { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 16px 18px; box-shadow: var(--shadow); }
-.panel h3 { margin: 0 0 12px; font-size: .95rem; }
+.panel { padding: 16px 18px; }
+.panel h3 { margin: 0 0 12px; font-size: .95rem; color: #fff; }
 .panel h3 .sub { font-weight: 400; color: var(--ink-soft); font-size: .8rem; }
 
-.stackbar { display: flex; height: 34px; border-radius: 8px; overflow: hidden; border: 1px solid var(--line); }
-.stackbar .seg { height: 100%; min-width: 1px; }
+.stackbar { display: flex; height: 34px; border-radius: 9px; overflow: hidden; border: 1px solid var(--line-2); }
+.stackbar .seg { height: 100%; min-width: 1px; box-shadow: inset 0 0 10px rgba(255,255,255,.15); }
 .legend { display: flex; flex-wrap: wrap; gap: 10px 18px; margin-top: 12px; }
-.legend .li { display: flex; align-items: center; gap: 7px; font-size: .76rem; }
-.legend .sw { width: 12px; height: 12px; border-radius: 3px; }
-.legend .li b { font-variant-numeric: tabular-nums; }
+.legend .li { display: flex; align-items: center; gap: 7px; font-size: .76rem; color: var(--ink-soft); }
+.legend .sw { width: 12px; height: 12px; border-radius: 3px; box-shadow: 0 0 8px currentColor; }
+.legend .li b { font-variant-numeric: tabular-nums; color: var(--ink); }
 
 table.breakdown, table.scenario-table { width: 100%; border-collapse: collapse; font-size: .82rem; }
-.breakdown th, .breakdown td { padding: 8px 6px; border-bottom: 1px solid var(--line); text-align: left; }
+.breakdown th, .breakdown td { padding: 8px 6px; border-bottom: 1px solid var(--line); text-align: left; color: var(--ink); }
+.breakdown th { color: var(--ink-soft); font-weight: 600; }
 .breakdown th.num, .breakdown td.num { text-align: right; font-variant-numeric: tabular-nums; }
-.breakdown tfoot td { font-weight: 800; border-top: 2px solid var(--ink); border-bottom: 0; }
-.breakdown .swatch { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 7px; }
+.breakdown tfoot td { font-weight: 900; border-top: 2px solid var(--neon-cyan); border-bottom: 0; color: #fff; }
+.breakdown .swatch { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 7px; box-shadow: 0 0 6px currentColor; }
 
 .routing { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 16px; }
-@media (max-width: 640px) { .routing { grid-template-columns: 1fr; } }
-.routing .step { display: flex; gap: 9px; align-items: baseline; font-size: .78rem; padding: 4px 0; border-bottom: 1px dashed #eef2ef; }
-.routing .step .n { color: var(--accent); font-weight: 700; min-width: 20px; }
-.routing .step .mc { color: var(--ink-soft); font-size: .72rem; margin-left: auto; text-align: right; }
+@media (max-width: 660px) { .routing { grid-template-columns: 1fr; } }
+.routing .step { display: flex; gap: 9px; align-items: baseline; font-size: .78rem; padding: 5px 0; border-bottom: 1px dashed var(--line); }
+.routing .step .n { color: var(--neon-magenta); font-weight: 800; min-width: 22px; }
+.routing .step .nm { color: var(--ink); }
+.routing .step .mc { color: var(--ink-dim); font-size: .72rem; margin-left: auto; text-align: right; }
 
-.bandbar { position: relative; height: 30px; background: linear-gradient(90deg,#e7f5ee,#d6efe2); border-radius: 8px; margin: 10px 0 4px; }
-.bandbar .zone { position: absolute; top: 0; height: 100%; background: rgba(14,159,110,.25); border-left: 2px solid var(--accent); border-right: 2px solid var(--accent); }
-.bandbar .mark { position: absolute; top: -4px; width: 3px; height: 38px; background: var(--bad); border-radius: 2px; }
+.bandbar { position: relative; height: 30px; background: #070912; border: 1px solid var(--line-2); border-radius: 9px; margin: 10px 0 4px; overflow: hidden; }
+.bandbar .zone { position: absolute; top: 0; height: 100%; background: rgba(108,255,63,.18); border-left: 2px solid var(--neon-lime); border-right: 2px solid var(--neon-lime); }
+.bandbar .mark { position: absolute; top: -3px; width: 3px; height: 36px; background: var(--neon-red); border-radius: 2px; box-shadow: 0 0 10px var(--neon-red); }
 .band-labels { display: flex; justify-content: space-between; font-size: .72rem; color: var(--ink-soft); font-variant-numeric: tabular-nums; }
-.band-verdict { font-size: .8rem; font-weight: 700; margin-top: 6px; }
-.band-verdict.in { color: var(--accent); }
-.band-verdict.out { color: var(--warn); }
+.band-verdict { font-size: .8rem; font-weight: 800; margin-top: 6px; }
+.band-verdict.in { color: var(--neon-lime); text-shadow: var(--glow-lime); }
+.band-verdict.out { color: var(--neon-amber); }
 
 .tornado { display: flex; flex-direction: column; gap: 5px; margin-top: 6px; }
-.tornado .row { display: grid; grid-template-columns: 150px 1fr 64px; gap: 10px; align-items: center; font-size: .76rem; }
-.tornado .bar-wrap { height: 16px; background: #eef3f0; border-radius: 5px; }
-.tornado .bar { height: 100%; background: var(--accent); opacity: .85; border-radius: 5px; }
-.tornado .pct { font-variant-numeric: tabular-nums; color: var(--ink-soft); text-align: right; }
+.tornado .row { display: grid; grid-template-columns: 160px 1fr 62px; gap: 10px; align-items: center; font-size: .76rem; color: var(--ink-soft); }
+.tornado .bar-wrap { height: 16px; background: #070912; border-radius: 5px; overflow: hidden; border: 1px solid var(--line); }
+.tornado .bar { height: 100%; background: linear-gradient(90deg, var(--neon-cyan), var(--neon-magenta)); }
+.tornado .pct { font-variant-numeric: tabular-nums; color: var(--ink); text-align: right; }
 
 .dfc { display: flex; flex-direction: column; gap: 8px; }
-.dfc .rec { display: flex; gap: 10px; padding: 9px 11px; border-radius: 9px; font-size: .8rem; border: 1px solid var(--line); }
-.dfc .rec .tag { font-weight: 800; font-size: .66rem; padding: 2px 7px; border-radius: 999px; height: fit-content; white-space: nowrap; }
-.dfc .rec.high { background: #fef2f2; border-color: #fecaca; } .dfc .rec.high .tag { background: #dc2626; color: #fff; }
-.dfc .rec.med { background: #fffbeb; border-color: #fde68a; } .dfc .rec.med .tag { background: #d97706; color: #fff; }
-.dfc .rec.low { background: #eff6ff; border-color: #bfdbfe; } .dfc .rec.low .tag { background: #2563eb; color: #fff; }
-.dfc .rec.ok  { background: #ecfdf5; border-color: #a7f3d0; } .dfc .rec.ok .tag { background: var(--accent); color: #fff; }
+.dfc .rec { display: flex; gap: 10px; padding: 10px 12px; border-radius: 10px; font-size: .8rem; border: 1px solid var(--line-2); background: #070912; color: var(--ink); }
+.dfc .rec .tag { font-weight: 900; font-size: .64rem; padding: 2px 8px; border-radius: 999px; height: fit-content; white-space: nowrap; }
+.dfc .rec.high { border-color: var(--neon-red); } .dfc .rec.high .tag { background: var(--neon-red); color: #1a0410; }
+.dfc .rec.med { border-color: var(--neon-amber); } .dfc .rec.med .tag { background: var(--neon-amber); color: #1a1400; }
+.dfc .rec.low { border-color: var(--neon-blue); } .dfc .rec.low .tag { background: var(--neon-blue); color: #02101f; }
+.dfc .rec.ok  { border-color: var(--neon-lime); } .dfc .rec.ok .tag { background: var(--neon-lime); color: #04140a; }
 
-.accuracy-note { font-size: .76rem; color: var(--ink-soft); background: #f0fbf6; border: 1px solid #b6e6d3; border-radius: 10px; padding: 12px 14px; }
-.accuracy-note b { color: var(--ink); }
+.accuracy-note { font-size: .76rem; color: var(--ink-soft); background: rgba(0,229,255,.05); border: 1px solid var(--line-2); border-radius: 12px; padding: 12px 14px; }
+.accuracy-note b { color: var(--neon-cyan); }
 
+/* ---------- AI panel ---------- */
+.ai-hero { border: 1px solid var(--neon-magenta); box-shadow: 0 0 24px rgba(255,43,214,.18); }
+.ai-hero h3 { display: flex; align-items: center; gap: 8px; }
+.ai-badge { font-size: .62rem; font-weight: 900; padding: 2px 8px; border-radius: 999px; background: linear-gradient(90deg, var(--neon-cyan), var(--neon-magenta)); color: #05060a; }
+.ai-actions { display: flex; gap: 10px; flex-wrap: wrap; margin: 12px 0; }
+.ai-config { display: grid; grid-template-columns: 1fr 180px; gap: 10px; margin-top: 8px; }
+@media (max-width: 620px) { .ai-config { grid-template-columns: 1fr; } }
+.ai-output { margin-top: 14px; background: #070912; border: 1px solid var(--line-2); border-radius: 12px; padding: 14px 16px; min-height: 60px; font-size: .84rem; line-height: 1.6; white-space: pre-wrap; }
+.ai-output h4 { color: var(--neon-cyan); margin: 12px 0 6px; font-size: .9rem; }
+.ai-output ul { margin: 6px 0; padding-left: 20px; }
+.ai-output li { margin: 4px 0; }
+.ai-output strong { color: var(--neon-lime); }
+.ai-status { font-size: .74rem; color: var(--ink-soft); margin-top: 8px; }
+.ai-status.err { color: var(--neon-red); }
+.ai-spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid var(--line-2); border-top-color: var(--neon-cyan); border-radius: 50%; animation: spin .7s linear infinite; vertical-align: middle; margin-right: 6px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.ai-key-note { font-size: .7rem; color: var(--ink-dim); margin-top: 6px; }
+
+/* ---------- Scenarios ---------- */
 .scenario-head { display: flex; align-items: center; justify-content: space-between; }
-.scenario-head .btn-ghost { background: #e7efeb; color: var(--ink); }
 .scenario-table-wrap { overflow-x: auto; margin-top: 10px; }
-.scenario-table th, .scenario-table td { padding: 8px 12px; border-bottom: 1px solid var(--line); text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
-.scenario-table tr td:first-child, .scenario-table tr th:first-child { text-align: left; font-weight: 600; position: sticky; left: 0; background: #fff; }
-.scenario-table thead th { background: #f1f7f4; }
-.scenario-table .row-head td:first-child { color: var(--accent); }
-.scenario-table .del { color: var(--bad); cursor: pointer; font-weight: 700; }
-.scenario-empty { padding: 24px; text-align: center; color: var(--ink-soft); }
+.scenario-table th, .scenario-table td { padding: 8px 12px; border-bottom: 1px solid var(--line); text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; color: var(--ink); }
+.scenario-table tr td:first-child, .scenario-table tr th:first-child { text-align: left; font-weight: 600; position: sticky; left: 0; background: var(--panel); }
+.scenario-table thead th { background: var(--panel-2); color: var(--ink-soft); }
+.scenario-table .row-head td:first-child { color: var(--neon-cyan); }
+.scenario-table .del { color: var(--neon-red); cursor: pointer; font-weight: 800; }
+.scenario-empty { padding: 24px; text-align: center; color: var(--ink-dim); }
 
+/* ---------- Prose / methodology ---------- */
 .prose { line-height: 1.65; }
-.prose h2 { font-size: 1.05rem; margin: 22px 0 8px; color: #0d3326; }
+.prose h2 { font-size: 1.05rem; margin: 22px 0 8px; color: var(--neon-cyan); text-shadow: 0 0 8px rgba(0,229,255,.3); }
 .prose h2:first-child { margin-top: 4px; }
-.prose h3 { font-size: .92rem; margin: 16px 0 6px; }
-.prose p, .prose li { font-size: .86rem; color: #28352e; }
-.prose code { background: #e7efeb; padding: 1px 6px; border-radius: 5px; font-size: .82rem; }
+.prose h3 { font-size: .92rem; margin: 16px 0 6px; color: var(--neon-magenta); }
+.prose p, .prose li { font-size: .86rem; color: var(--ink); }
+.prose code { background: #070912; padding: 1px 6px; border-radius: 5px; font-size: .82rem; color: var(--neon-lime); border: 1px solid var(--line); }
 .prose table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: .8rem; }
-.prose th, .prose td { border: 1px solid var(--line); padding: 7px 9px; text-align: left; vertical-align: top; }
-.prose th { background: #f1f7f4; }
-.prose .src { font-size: .78rem; color: var(--ink-soft); }
-.formula { background: #07140f; color: #c9f0e0; padding: 10px 14px; border-radius: 8px; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: .82rem; overflow-x: auto; white-space: pre-wrap; }
-.callout { background: #f0fbf6; border-left: 3px solid var(--accent); padding: 10px 14px; border-radius: 6px; margin: 10px 0; font-size: .84rem; }
+.prose th, .prose td { border: 1px solid var(--line); padding: 7px 9px; text-align: left; vertical-align: top; color: var(--ink); }
+.prose th { background: var(--panel-2); color: var(--neon-cyan); }
+.prose .src { font-size: .78rem; color: var(--ink-dim); }
+.formula { background: #04060c; color: var(--neon-lime); padding: 10px 14px; border-radius: 10px; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: .82rem; overflow-x: auto; white-space: pre-wrap; border: 1px solid var(--line-2); }
+.callout { background: rgba(255,43,214,.06); border-left: 3px solid var(--neon-magenta); padding: 10px 14px; border-radius: 8px; margin: 10px 0; font-size: .84rem; color: var(--ink); }
 
-.tooltip { position: fixed; z-index: 50; max-width: 290px; background: #07140f; color: #e7f6ef; padding: 9px 11px; border-radius: 8px; font-size: .76rem; line-height: 1.45; box-shadow: 0 6px 24px rgba(0,0,0,.3); pointer-events: none; opacity: 0; transition: opacity .12s; display: none; }
+/* ---------- Tooltip ---------- */
+.tooltip { position: fixed; z-index: 50; max-width: 300px; background: #04060c; color: var(--ink); padding: 9px 11px; border-radius: 9px; font-size: .76rem; line-height: 1.45; box-shadow: 0 6px 28px rgba(0,0,0,.7); border: 1px solid var(--neon-cyan); pointer-events: none; opacity: 0; transition: opacity .12s; display: none; }
 .tooltip.show { opacity: 1; display: block; }
-.app-footer { text-align: center; padding: 16px; color: var(--ink-soft); font-size: .74rem; }
+.app-footer { text-align: center; padding: 18px; color: var(--ink-dim); font-size: .74rem; border-top: 1px solid var(--line); }
 
   </style>
 </head>
@@ -178,20 +268,21 @@ table.breakdown, table.scenario-table { width: 100%; border-collapse: collapse; 
       <div class="brand-mark">PCB</div>
       <div class="brand-text">
         <h1>360° PCB Should-Cost Model</h1>
-        <p class="subtitle">All PCB types · layer-count &amp; stack-up driven · DfC + AI insights · CostVision-ready</p>
+        <p class="subtitle">2026 edition · all PCB types · stack-up-driven · gold-price aware · AI advisor</p>
       </div>
     </div>
     <div class="header-actions">
-      <button id="btnReset" class="btn btn-ghost" type="button">Reset defaults</button>
+      <button id="btnReset" class="btn btn-ghost" type="button">Reset</button>
       <button id="btnSaveScenario" class="btn btn-primary" type="button">＋ Save scenario</button>
     </div>
   </header>
 
   <nav class="tabbar" aria-label="Sections">
     <button class="tab active" data-tab="model" type="button">Cost Model</button>
+    <button class="tab" data-tab="ai" type="button">✦ AI Advisor</button>
     <button class="tab" data-tab="routing" type="button">Process Routing</button>
     <button class="tab" data-tab="scenarios" type="button">Scenario Compare</button>
-    <button class="tab" data-tab="methodology" type="button">Methodology &amp; Examples</button>
+    <button class="tab" data-tab="methodology" type="button">Methodology &amp; Data</button>
   </nav>
 
   <main>
@@ -227,18 +318,21 @@ table.breakdown, table.scenario-table { width: 100%; border-collapse: collapse; 
               <div><label for="copperInner">Inner copper</label><select id="copperInner"></select></div>
               <div><label for="copperOuter">Outer copper</label><select id="copperOuter"></select></div>
             </div>
-            <div class="field"><label for="via">Via technology <span class="info" data-tip="Buried/blind vias and HDI microvias require sequential lamination — each build-up adds a press cycle and cost.">ⓘ</span></label><select id="via"></select></div>
+            <div class="field"><label for="copperFoil">Copper foil profile <span class="info" data-tip="HTE standard; RTF/VLP/HVLP low-profile foils cut insertion loss for ≥28 Gbps high-speed — a premium, supply-constrained line item in 2026.">ⓘ</span></label><select id="copperFoil"></select></div>
+            <div class="field"><label for="via">Via technology <span class="info" data-tip="Buried/blind vias and HDI microvias require sequential lamination — each build-up adds a press cycle and cost. Stacked microvias cost ~30–50% more than staggered.">ⓘ</span></label><select id="via"></select></div>
           </fieldset>
 
           <fieldset class="group">
-            <legend>3 · Design rules &amp; finish</legend>
-            <div class="field"><label for="trace">Min trace / space <span class="info" data-tip="Finer lines need advanced LDI imaging and depress yield. Relax where signal integrity allows.">ⓘ</span></label><select id="trace"></select></div>
-            <div class="field check"><label><input type="checkbox" id="impedance" checked /> Controlled impedance (adds TDR test)</label></div>
+            <legend>3 · Design rules &amp; process</legend>
+            <div class="field"><label for="fabProcess">Fine-line process <span class="info" data-tip="Subtractive etch floor ≈2 mil. mSAP enables ~1.4 mil, SAP/ultra-HDI <1 mil — each ~40–50% premium over conventional imaging.">ⓘ</span></label><select id="fabProcess"></select></div>
+            <div class="field"><label for="trace">Min trace / space</label><select id="trace"></select></div>
+            <div class="field check"><label><input type="checkbox" id="impedance" checked /> Controlled impedance (TDR coupon)</label></div>
+            <div class="field check"><label><input type="checkbox" id="backdrill" /> Back-drill (stub removal, high-speed) <span class="info" data-tip="Controlled-depth drilling removes via stubs for >10–25 Gbps. ~$0.10/via, ~+10–20% of board cost; cheaper than blind/buried (+30–60%).">ⓘ</span></label></div>
+            <div class="field check"><label><input type="checkbox" id="viafill" /> Via-fill + cap (via-in-pad) <span class="info" data-tip="Resin/copper fill + planarise for via-in-pad under fine-pitch BGA. Adds up to ~20% to board cost.">ⓘ</span></label></div>
             <div class="field"><label for="finish">Surface finish</label><select id="finish"></select></div>
             <div class="field row2">
               <div><label for="maskColor">Solder mask</label><select id="maskColor"></select></div>
-              <div><label for="silkWrap" style="display:block">Silkscreen</label>
-                <label class="check" style="margin-top:7px"><input type="checkbox" id="silkscreen" checked /> Legend</label></div>
+              <div><label style="display:block">Silkscreen</label><label class="check" style="margin-top:7px"><input type="checkbox" id="silkscreen" checked /> Legend</label></div>
             </div>
           </fieldset>
 
@@ -248,15 +342,19 @@ table.breakdown, table.scenario-table { width: 100%; border-collapse: collapse; 
               <div><label for="panelW">Panel W (mm)</label><input type="number" id="panelW" value="457" min="50" step="1" /></div>
               <div><label for="panelH">Panel H (mm)</label><input type="number" id="panelH" value="305" min="50" step="1" /></div>
             </div>
-            <div class="field"><label for="utilization">Panel utilisation (%) <span class="info" data-tip="Share of panel area used by good boards after array spacing, tooling rails and break-out. Higher utilisation lowers $/board.">ⓘ</span></label>
+            <div class="field"><label for="utilization">Panel utilisation (%) <span class="info" data-tip="Share of panel used by good boards after array spacing, rails and break-out. Higher utilisation lowers $/board.">ⓘ</span></label>
               <input type="number" id="utilization" value="80" min="20" max="95" step="1" /></div>
             <div class="field"><label for="holeDensity">Hole density (holes/dm²)</label><input type="number" id="holeDensity" value="160" min="10" step="10" /></div>
           </fieldset>
 
           <fieldset class="group">
-            <legend>5 · Quality, region &amp; commercials</legend>
-            <div class="field"><label for="quality">Quality / IPC class <span class="info" data-tip="Sets yield, test depth, inspection (microsection), scrap and NRE multipliers. Automotive = IPC Class 3 / IATF flow.">ⓘ</span></label><select id="quality"></select></div>
-            <div class="field"><label for="region">Region</label><select id="region"></select></div>
+            <legend>5 · Quality, region &amp; 2026 market</legend>
+            <div class="field"><label for="quality">Quality / IPC class <span class="info" data-tip="Sets yield, test depth, AXI/microsection, IST/CAF coupons, scrap and NRE. Automotive = IPC Class 3 / IATF flow.">ⓘ</span></label><select id="quality"></select></div>
+            <div class="field"><label for="region">Region <span class="info" data-tip="2026 blended fab-processing multiplier (China=1.0). Raw wage index is wider (US ~7×, DE ~9×) but labour is only 15–30% of PCB cost.">ⓘ</span></label><select id="region"></select></div>
+            <div class="field row2">
+              <div><label for="goldPrice">Gold $/oz <span class="info" data-tip="2026 gold ~$4,100/oz (was ~$2,400 in 2024). Scales the gold-variable part of ENIG/ENEPIG/hard-gold finishes (~70% of ENIG cost is gold).">ⓘ</span></label><input type="number" id="goldPrice" value="4100" min="800" step="50" /></div>
+              <div><label for="marketSurcharge">Market surcharge % <span class="info" data-tip="2026 metal/energy volatility on material+processing (copper +40%, CCL +up to 40%). Raise for escalation clauses.">ⓘ</span></label><input type="number" id="marketSurcharge" value="6" min="0" step="1" /></div>
+            </div>
             <div class="field row2">
               <div><label for="overheadPct">Overhead (%)</label><input type="number" id="overheadPct" value="18" min="0" step="1" /></div>
               <div><label for="marginPct">Margin (%)</label><input type="number" id="marginPct" value="25" min="0" max="80" step="1" /></div>
@@ -301,14 +399,14 @@ table.breakdown, table.scenario-table { width: 100%; border-collapse: collapse; 
           </div>
 
           <div class="panel">
-            <h3>Benchmark sanity check <span class="sub">independent market price band</span></h3>
+            <h3>Benchmark sanity check <span class="sub">independent 2026 market price band</span></h3>
             <div class="bandbar" id="bandBar"><div class="zone" id="bandZone"></div><div class="mark" id="bandMark"></div></div>
             <div class="band-labels" id="bandLabels"></div>
             <div class="band-verdict" id="bandVerdict"></div>
           </div>
 
           <div class="panel">
-            <h3>AI insights — cost drivers <span class="sub">±15% one-at-a-time</span></h3>
+            <h3>AI cost-driver sensitivity <span class="sub">±15% one-at-a-time</span></h3>
             <div class="tornado" id="tornado"></div>
           </div>
 
@@ -322,11 +420,36 @@ table.breakdown, table.scenario-table { width: 100%; border-collapse: collapse; 
       </div>
     </section>
 
+    <!-- ============ AI ADVISOR TAB ============ -->
+    <section id="tab-ai" class="tab-panel">
+      <div class="panel ai-hero">
+        <h3><span class="ai-badge">AI</span> AI Cost Advisor &amp; Idea Generation</h3>
+        <p class="hint">Two engines. The <b>built-in advisor</b> analyses the current design instantly (no key). <b>Claude</b> generates a deeper, generative should-cost review using your own Anthropic API key — nothing is sent anywhere except directly to Anthropic from your browser.</p>
+        <div class="ai-actions">
+          <button id="btnLocalAI" class="btn btn-primary" type="button">⚡ Generate built-in insights</button>
+          <button id="btnClaudeAI" class="btn btn-magenta" type="button">✦ Generate with Claude</button>
+        </div>
+        <div class="ai-config">
+          <div class="field"><label for="aiKey">Anthropic API key (optional — for Claude generation) <span class="info" data-tip="Used only for a direct browser call to api.anthropic.com. Stored in this browser (localStorage) if you tick save; never sent anywhere else. Get a key at console.anthropic.com.">ⓘ</span></label>
+            <input type="password" id="aiKey" placeholder="sk-ant-..." autocomplete="off" /></div>
+          <div class="field"><label for="aiModel">Model</label><select id="aiModel">
+            <option value="claude-opus-4-8">Claude Opus 4.8 (default)</option>
+            <option value="claude-sonnet-5">Claude Sonnet 5</option>
+            <option value="claude-haiku-4-5">Claude Haiku 4.5 (cheapest)</option>
+          </select></div>
+        </div>
+        <label class="check" style="margin-top:8px; font-size:.76rem; color:var(--ink-soft)"><input type="checkbox" id="aiSaveKey" /> Remember key in this browser</label>
+        <p class="ai-key-note">Direct browser calls require the Anthropic API to allow them; the model returns a full Markdown should-cost review. Your key never leaves your machine except to Anthropic.</p>
+        <div class="ai-status" id="aiStatus"></div>
+        <div class="ai-output" id="aiOutput">Load a design on the Cost Model tab, then click a button above. The built-in advisor works offline; Claude generation needs your API key.</div>
+      </div>
+    </section>
+
     <!-- ============ ROUTING TAB ============ -->
     <section id="tab-routing" class="tab-panel">
       <div class="panel">
         <h3 id="routingTitle">Process routing</h3>
-        <p class="hint">Ordered fab process steps for the current configuration, with the machine/process at each step. Steps appear/disappear with layer count, via technology, material and PCB type.</p>
+        <p class="hint">Ordered fab process steps for the current configuration, with the machine/process at each step. Steps appear/disappear with layer count, via technology, fine-line process, material and PCB type.</p>
         <div class="routing" id="routingList"></div>
       </div>
     </section>
@@ -335,7 +458,7 @@ table.breakdown, table.scenario-table { width: 100%; border-collapse: collapse; 
     <section id="tab-scenarios" class="tab-panel">
       <div class="panel">
         <div class="scenario-head"><h3>Saved scenarios</h3><button id="btnClearScenarios" class="btn btn-ghost" type="button">Clear all</button></div>
-        <p class="hint">Use “＋ Save scenario” to snapshot inputs &amp; results, then compare PCB types / layer counts side-by-side.</p>
+        <p class="hint">Use “＋ Save scenario” to snapshot inputs &amp; results, then compare PCB types / layer counts / regions side-by-side.</p>
         <div class="scenario-table-wrap"><table class="scenario-table" id="scenarioTable"><tbody></tbody></table></div>
       </div>
     </section>
@@ -347,42 +470,51 @@ table.breakdown, table.scenario-table { width: 100%; border-collapse: collapse; 
   </main>
 
   <div class="tooltip" id="tooltip" role="tooltip"></div>
-  <footer class="app-footer"><span>360° PCB should-cost model · industry-aligned engineering ranges, not supplier quotes · layer count &amp; stack-up central.</span></footer>
+  <footer class="app-footer"><span>360° PCB should-cost model · 2026 edition · industry-aligned engineering ranges, not supplier quotes · layer count &amp; stack-up central.</span></footer>
 
   <script>
 /* ============================================================================
  * data.js — Calibration data & coefficients for the 360° PCB Should-Cost Model
+ * 2026 EDITION — expanded materials, processes, latest technologies, updated
+ * labour/region rates, and market (metal/energy) surcharges.
  *
- * Covers ALL PCB types (rigid 1–12+ layer, HDI, flex, rigid-flex, high-speed/RF,
- * power/heavy-copper) for consumer → aerospace quality, multiple regions.
+ * All figures are industry-aligned ENGINEERING RANGES (not supplier quotes).
+ * Number of layers and stack-up remain the PRIMARY cost drivers.
+ * Cost coefficients are per square-decimetre (dm²): 1 dm² = 10,000 mm².
  *
- * All figures are industry-aligned ENGINEERING RANGES (not supplier quotes),
- * consistent with typical PCB fab process economics and IPC build classes.
- * Number of layers and stack-up are treated as PRIMARY cost drivers throughout.
- *
- * Cost coefficients are expressed per square-decimetre (dm²) of panel/board area
- * because PCB fabs quote and cost in $/m² and $/panel. 1 dm² = 10,000 mm².
+ * 2026 market context baked into defaults:
+ *  - Gold at historic highs → ENIG/ENEPIG/hard-gold finishes carry a premium.
+ *  - Copper foil & resin elevated vs 2023–24; energy costs high (esp. EU).
+ *  - Captured via the editable "market surcharge %" input (default 6%).
  * ==========================================================================*/
 
-/* ---- PCB technology types: each selects routing + complexity multipliers ---- */
+/* ---- PCB technology types: select routing + complexity multipliers ---- */
 const PCB_TYPES = [
-  { id: "rigid",      label: "Rigid (1–12+ layer)",      complexity: 1.00, defLayers: 4 },
-  { id: "hdi",        label: "HDI (microvia build-up)",  complexity: 1.55, defLayers: 8 },
-  { id: "flex",       label: "Flex",                     complexity: 1.40, defLayers: 2 },
-  { id: "rigidflex",  label: "Rigid-Flex",               complexity: 2.20, defLayers: 8 },
-  { id: "highspeed",  label: "High-speed / High-freq (RF)", complexity: 1.30, defLayers: 8 },
-  { id: "power",      label: "Power / Heavy-copper",     complexity: 1.20, defLayers: 4 },
+  { id: "rigid",     label: "Rigid (1–12+ layer)",         complexity: 1.00, defLayers: 4 },
+  { id: "hdi",       label: "HDI (microvia build-up)",     complexity: 1.55, defLayers: 8 },
+  { id: "anylayer",  label: "Any-layer HDI / SLP",         complexity: 1.95, defLayers: 10 },
+  { id: "flex",      label: "Flex",                        complexity: 1.40, defLayers: 2 },
+  { id: "rigidflex", label: "Rigid-Flex",                  complexity: 2.20, defLayers: 8 },
+  { id: "highspeed", label: "High-speed / High-freq (RF)", complexity: 1.30, defLayers: 8 },
+  { id: "power",     label: "Power / Heavy-copper",        complexity: 1.20, defLayers: 4 },
 ];
 
-/* ---- Laminate / base materials. costDm2PerLayer = $/dm² per copper layer ---- */
+/* ---- Laminate / base materials. costDm2PerLayer = $/dm² per copper layer.
+ *      2026 relative pricing; low-loss and RF grades are the big premiums. ---- */
 const MATERIALS = [
-  { id: "fr4_std",     label: "FR-4 standard (Tg 130–140)",     costDm2PerLayer: 0.42, tg: 140,  family: "fr4" },
-  { id: "fr4_hightg",  label: "FR-4 High-Tg (Tg 170–180)",      costDm2PerLayer: 0.55, tg: 175,  family: "fr4" },
-  { id: "fr4_halfree", label: "Halogen-free FR-4",              costDm2PerLayer: 0.60, tg: 150,  family: "fr4" },
-  { id: "rogers",      label: "Rogers / PTFE (RF)",             costDm2PerLayer: 2.40, tg: 280,  family: "rf"  },
-  { id: "hydrocarbon", label: "Hydrocarbon-ceramic (mid-loss)", costDm2PerLayer: 1.50, tg: 280,  family: "rf"  },
-  { id: "polyimide",   label: "Polyimide (flex)",               costDm2PerLayer: 1.10, tg: 250,  family: "flex"},
-  { id: "metalcore",   label: "Metal-core / IMS (aluminium)",   costDm2PerLayer: 0.70, tg: 140,  family: "mc"  },
+  { id: "fr4_std",     label: "FR-4 standard (Tg 130–140)",       costDm2PerLayer: 0.44, tg: 140, family: "fr4",  note: "Dk~4.5, lossy" },
+  { id: "fr4_midtg",   label: "FR-4 mid-Tg (150–160)",            costDm2PerLayer: 0.50, tg: 155, family: "fr4",  note: "" },
+  { id: "fr4_hightg",  label: "FR-4 High-Tg (170–180, 370HR/S1000-2)", costDm2PerLayer: 0.58, tg: 175, family: "fr4", note: "auto default" },
+  { id: "fr4_halfree", label: "Halogen-free FR-4",                costDm2PerLayer: 0.62, tg: 150, family: "fr4",  note: "" },
+  { id: "lowloss_mid", label: "Low-loss (Megtron 6 / I-Tera)",    costDm2PerLayer: 1.15, tg: 200, family: "ll",   note: "Df~0.002, 28G" },
+  { id: "lowloss_ult", label: "Ultra-low-loss (Megtron 7/8)",     costDm2PerLayer: 1.80, tg: 200, family: "ll",   note: "112G+ SerDes" },
+  { id: "rogers_4350", label: "Rogers RO4350B (hydrocarbon)",     costDm2PerLayer: 2.60, tg: 280, family: "rf",   note: "Dk 3.48" },
+  { id: "rogers_4003", label: "Rogers RO4003C",                   costDm2PerLayer: 2.50, tg: 280, family: "rf",   note: "Dk 3.38" },
+  { id: "rogers_3003", label: "Rogers RO3003 (77 GHz radar)",     costDm2PerLayer: 4.20, tg: 280, family: "rf",   note: "PTFE, radar" },
+  { id: "ptfe",        label: "PTFE / Taconic (microwave)",       costDm2PerLayer: 4.40, tg: 280, family: "rf",   note: "" },
+  { id: "polyimide",   label: "Polyimide (flex)",                 costDm2PerLayer: 1.10, tg: 250, family: "flex", note: "" },
+  { id: "lcp",         label: "LCP (mmWave flex)",                costDm2PerLayer: 2.60, tg: 300, family: "flex", note: "low-loss flex" },
+  { id: "metalcore",   label: "Metal-core / IMS (aluminium)",     costDm2PerLayer: 0.72, tg: 140, family: "mc",   note: "thermal" },
 ];
 
 /* ---- Copper weight multiplier on copper-related process & material ---- */
@@ -391,38 +523,62 @@ const COPPER_WEIGHTS = [
   { id: "1",   label: "1 oz",   oz: 1.0, mult: 1.00 },
   { id: "2",   label: "2 oz",   oz: 2.0, mult: 1.28 },
   { id: "3",   label: "3 oz",   oz: 3.0, mult: 1.65 },
-  { id: "4",   label: "4 oz (heavy)", oz: 4.0, mult: 2.10 },
+  { id: "4",   label: "4 oz",   oz: 4.0, mult: 2.10 },
+  { id: "6",   label: "6 oz (heavy)",  oz: 6.0, mult: 3.10 },
+  { id: "10",  label: "10 oz (extreme)", oz: 10.0, mult: 5.20 },
+];
+
+/* ---- Copper foil profile — matters for high-speed insertion loss + cost ---- */
+const COPPER_FOILS = [
+  { id: "hte",  label: "HTE (standard)",        addDm2: 0.00 },
+  { id: "rtf",  label: "RTF (reverse-treat)",   addDm2: 0.03 },
+  { id: "vlp",  label: "VLP (very-low-profile)", addDm2: 0.06 },
+  { id: "hvlp", label: "HVLP / HVLP2 (28G+)",   addDm2: 0.10 },
+];
+
+/* ---- Fine-line / patterning process. Enables finer geometry, changes cost+yield. */
+const FAB_PROCESSES = [
+  { id: "subtractive", label: "Subtractive etch (standard)", imageMult: 1.00, yld: 1.00, minMil: 3 },
+  { id: "msap",        label: "mSAP (modified semi-additive)", imageMult: 1.60, yld: 0.99, minMil: 1.4 },
+  { id: "sap",         label: "SAP / ultra-HDI (<25 µm)",      imageMult: 2.30, yld: 0.96, minMil: 0.8 },
 ];
 
 /* ---- Via technology: drives drilling, lamination cycles, plating, yield ---- */
 const VIA_TYPES = [
-  { id: "through", label: "Through-hole only",            lamExtra: 0, microvia: false },
-  { id: "buried",  label: "Through + buried/blind",       lamExtra: 1, microvia: false },
+  { id: "through", label: "Through-hole only",             lamExtra: 0, microvia: false },
+  { id: "buried",  label: "Through + buried/blind",        lamExtra: 1, microvia: false },
   { id: "micro1",  label: "HDI 1+N+1 (microvia, 1 build)", lamExtra: 1, microvia: true, buildup: 1 },
   { id: "micro2",  label: "HDI 2+N+2 (microvia, 2 build)", lamExtra: 2, microvia: true, buildup: 2 },
   { id: "micro3",  label: "HDI 3+N+3 (any-layer)",         lamExtra: 3, microvia: true, buildup: 3 },
 ];
 
-/* ---- Minimum trace/space classes → imaging tech + yield derating ---- */
+/* ---- Minimum trace/space classes → yield derating (imaging tech via FAB_PROCESSES) */
 const TRACE_CLASSES = [
-  { id: "8mil", label: "≥ 8 mil (standard)",     mil: 8,  fineMult: 1.00, yld: 1.00 },
-  { id: "5mil", label: "5 mil",                  mil: 5,  fineMult: 1.10, yld: 0.98 },
-  { id: "4mil", label: "4 mil",                  mil: 4,  fineMult: 1.20, yld: 0.96 },
-  { id: "3mil", label: "3 mil (LDI)",            mil: 3,  fineMult: 1.40, yld: 0.93 },
-  { id: "2mil", label: "≤ 2 mil (HDI fine-line)",mil: 2,  fineMult: 1.75, yld: 0.88 },
+  { id: "8mil", label: "≥ 8 mil (standard)",      mil: 8,   fineMult: 1.00, yld: 1.00 },
+  { id: "5mil", label: "5 mil",                   mil: 5,   fineMult: 1.08, yld: 0.98 },
+  { id: "4mil", label: "4 mil",                   mil: 4,   fineMult: 1.16, yld: 0.96 },
+  { id: "3mil", label: "3 mil (LDI)",             mil: 3,   fineMult: 1.32, yld: 0.93 },
+  { id: "2mil", label: "2 mil (fine-line)",       mil: 2,   fineMult: 1.60, yld: 0.89 },
+  { id: "1mil", label: "≤ 1.5 mil (mSAP/SAP)",    mil: 1.5, fineMult: 1.95, yld: 0.84 },
 ];
 
-/* ---- Surface finishes: cost per dm² + flat setup ---- */
+/* ---- Surface finishes: cost/dm² at reference gold ($4,100/oz, 2026) + flat
+ *      setup. goldFrac = fraction of the finish cost that is spot-gold-variable
+ *      (research: ENIG ~70%, a 10% gold rise ≈ +6.8% ENIG). The variable part is
+ *      re-scaled by the user's gold-price input; the fixed part (process/labour)
+ *      stays put. Silver-based finishes are exposed to silver, not gold. ---- */
 const FINISHES = [
-  { id: "hasl",    label: "HASL (leaded)",        costDm2: 0.10, setup: 8 },
-  { id: "lfhasl",  label: "Lead-free HASL",       costDm2: 0.13, setup: 10 },
-  { id: "osp",     label: "OSP",                  costDm2: 0.07, setup: 6 },
-  { id: "imag",    label: "Immersion silver",     costDm2: 0.22, setup: 14 },
-  { id: "isn",     label: "Immersion tin",        costDm2: 0.20, setup: 14 },
-  { id: "enig",    label: "ENIG",                 costDm2: 0.45, setup: 22 },
-  { id: "enepig",  label: "ENEPIG",               costDm2: 0.70, setup: 30 },
-  { id: "hardgold",label: "Hard gold (edge/tab)", costDm2: 1.20, setup: 35 },
+  { id: "hasl",    label: "HASL (leaded)",         costDm2: 0.10, setup: 8,  goldFrac: 0.00 },
+  { id: "lfhasl",  label: "Lead-free HASL",        costDm2: 0.13, setup: 10, goldFrac: 0.00 },
+  { id: "osp",     label: "OSP",                   costDm2: 0.07, setup: 6,  goldFrac: 0.00 },
+  { id: "imag",    label: "Immersion silver",      costDm2: 0.26, setup: 14, goldFrac: 0.00 },
+  { id: "isn",     label: "Immersion tin",         costDm2: 0.22, setup: 14, goldFrac: 0.00 },
+  { id: "enig",    label: "ENIG (Ni/Au)",          costDm2: 0.85, setup: 24, goldFrac: 0.70 },
+  { id: "enepig",  label: "ENEPIG (Ni/Pd/Au)",     costDm2: 1.25, setup: 32, goldFrac: 0.55 },
+  { id: "epig",    label: "EPIG (Pd/Au, Ni-free)", costDm2: 1.15, setup: 30, goldFrac: 0.50 },
+  { id: "hardgold",label: "Hard gold (edge/tab)",  costDm2: 2.20, setup: 38, goldFrac: 0.85 },
 ];
+const GOLD_REF = 4100; // reference gold price ($/oz) at which FINISHES costs are set
 
 /* ---- Solder-mask colour adders (green is baseline) ---- */
 const MASK_COLORS = [
@@ -436,56 +592,70 @@ const MASK_COLORS = [
 
 /* ---- Quality / IPC build class: yield, test, inspection, NRE, margin ---- */
 const QUALITY_LEVELS = [
-  { id: "consumer",   label: "Consumer (IPC Class 2)",        yld: 0.97, scrap: 0.02, testMult: 1.0, inspect: 0.00, nreMult: 1.0, microsection: false, margin: 0.15 },
-  { id: "industrial", label: "Industrial (Class 2+)",         yld: 0.95, scrap: 0.03, testMult: 1.1, inspect: 0.04, nreMult: 1.2, microsection: false, margin: 0.20 },
-  { id: "automotive", label: "Automotive (Class 3 / IATF)",   yld: 0.92, scrap: 0.05, testMult: 1.3, inspect: 0.10, nreMult: 1.8, microsection: true,  margin: 0.25 },
-  { id: "aerospace",  label: "Aerospace/Mil (Class 3/A)",     yld: 0.88, scrap: 0.08, testMult: 1.6, inspect: 0.20, nreMult: 2.6, microsection: true,  margin: 0.35 },
+  { id: "consumer",   label: "Consumer (IPC Class 2)",      yld: 0.97, scrap: 0.02, testMult: 1.0, inspect: 0.00, nreMult: 1.0, microsection: false, axi: false, margin: 0.15 },
+  { id: "industrial", label: "Industrial (Class 2+)",       yld: 0.95, scrap: 0.03, testMult: 1.1, inspect: 0.04, nreMult: 1.2, microsection: false, axi: false, margin: 0.20 },
+  { id: "automotive", label: "Automotive (Class 3 / IATF)", yld: 0.92, scrap: 0.05, testMult: 1.3, inspect: 0.10, nreMult: 1.8, microsection: true,  axi: true,  margin: 0.25 },
+  { id: "aerospace",  label: "Aerospace/Mil (Class 3/A)",   yld: 0.88, scrap: 0.08, testMult: 1.6, inspect: 0.20, nreMult: 2.6, microsection: true,  axi: true,  margin: 0.35 },
 ];
 
-/* ---- Region: labour & overhead multipliers (China = 1.0 baseline) ---- */
+/* ---- Region: 2026 processing-cost multipliers (China = 1.0). These are
+ *      BLENDED fab-processing multipliers, NOT raw wage ratios — labour is only
+ *      ~15–30% of PCB cost and low-wage regions have lower productivity, so the
+ *      total-cost spread is compressed vs the raw wage index (China=1.0):
+ *      India ~0.3, Vietnam ~0.65, Taiwan ~1.7, Korea ~3.5, USA ~7.2, DE ~8.8.
+ *      Energy costs (EU highest, China/US ~$0.08/kWh) sit in the overhead term. */
 const REGIONS = [
-  { id: "china", label: "China",        labor: 1.00, overhead: 1.00 },
-  { id: "india", label: "India",        labor: 1.10, overhead: 1.05 },
-  { id: "na",    label: "North America", labor: 2.10, overhead: 1.75 },
-  { id: "eu",    label: "Europe",       labor: 2.25, overhead: 1.85 },
+  { id: "china",   label: "China",             labor: 1.00, overhead: 1.00 },
+  { id: "vietnam", label: "Vietnam / SE-Asia", labor: 0.85, overhead: 0.94 },
+  { id: "india",   label: "India",             labor: 0.90, overhead: 1.00 },
+  { id: "taiwan",  label: "Taiwan",            labor: 1.40, overhead: 1.20 },
+  { id: "skorea",  label: "South Korea",       labor: 1.60, overhead: 1.25 },
+  { id: "na",      label: "North America",     labor: 2.60, overhead: 1.90 },
+  { id: "eu",      label: "Europe",            labor: 2.85, overhead: 2.10 },
 ];
 
-/* ---- Global cost coefficients ($/dm² unless noted). Calibrated so worked
- *      examples land in published fab price ranges. Tune here, transparently. */
+/* ---- Global cost coefficients ($/dm² unless noted). Calibrated to 2026 fab
+ *      economics. Tune here, transparently. */
 const COEFF = {
-  materialCal:     1.00,   // global scaler on material
-  imagePerLayerDm2: 0.13,  // inner/outer imaging per copper layer
-  etchPerLayerDm2:  0.11,  // develop-etch-strip per layer
-  aoiPerLayerDm2:   0.05,  // AOI per layer
-  lamPerCycleDm2:   0.55,  // lay-up + press per lamination cycle
-  costPerHole:      0.0009,// mechanical drilled hole
-  holeDensity:      160,   // holes per dm² (derived default)
-  costPerMicrovia:  0.0011,// laser microvia
-  microviaDensity:  900,   // microvias per dm² per build-up layer
-  desmearPthDm2:    0.18,  // desmear + electroless copper
-  platingDm2:       0.26,  // electroplate per (layer-normalised) area
-  maskDm2:          0.10,  // solder mask per side
-  silkDm2:          0.04,  // legend per side
-  profilingDm2:     0.10,  // route/profile depanel
-  impedanceDm2:     0.06,  // impedance control process premium
-  impedanceCoupon:  18,    // TDR test coupon NRE-ish, amortized via volume
+  materialCal:     1.00,
+  imagePerLayerDm2: 0.13,   // inner/outer imaging per copper layer
+  etchPerLayerDm2:  0.11,   // develop-etch-strip per layer
+  aoiPerLayerDm2:   0.05,   // AOI per layer
+  lamPerCycleDm2:   0.55,   // lay-up + press per lamination cycle
+  costPerHole:      0.0009, // mechanical drilled hole
+  holeDensity:      160,    // holes/dm² default
+  costPerMicrovia:  0.0011, // laser microvia
+  microviaDensity:  900,    // microvias/dm² per build-up layer
+  desmearPthDm2:    0.18,   // desmear + electroless copper
+  platingDm2:       0.26,   // electroplate (layer-normalised)
+  maskDm2:          0.10,   // solder mask per side
+  silkDm2:          0.04,   // legend per side
+  profilingDm2:     0.10,   // route/profile depanel
+  impedanceDm2:     0.06,   // impedance control process premium
+  impedanceCoupon:  18,     // TDR coupon NRE-ish
+  // advanced processes (2026)
+  backdrillFrac:    0.30,   // fraction of holes back-drilled (high-speed nets)
+  costPerBackdrill: 0.10,   // $/back-drilled hole (controlled-depth stub removal)
+  nreBackdrill:     260,    // back-drill program NRE
+  viafillDm2:       0.28,   // resin/copper via-fill + planarise, per build-up
+  msapAdderDm2:     0.05,   // extra chemistry/handling for semi-additive
+  axiDm2:           0.04,   // automated X-ray (Class 3 buried-via inspection)
+  istCoupon:        0.03,   // IST/CAF reliability coupon per board (amortised set)
   // back-end test
-  flyingProbeRate:  0.9,   // $/board-equivalent low volume e-test
-  fixtureTestDm2:   0.03,  // fixture/ICT marginal per board
-  // NRE (one-time, $ — amortized over order quantity)
+  flyingProbeRate:  0.9,    // $/board low-volume e-test
+  fixtureTestDm2:   0.03,   // fixtured/ICT marginal per board
+  // NRE (one-time, $)
   nrePhotoTools:    120,
   nreDrillProgram:  90,
-  nreTestFixture:   350,   // bed-of-nails / e-test fixture
-  nreLaserProgram:  180,   // HDI laser drill program
-  nreStencil:       0,     // PCB fab (bare board) — stencil belongs to assembly
+  nreTestFixture:   350,
+  nreLaserProgram:  180,
   // flex / rigid-flex extras (per dm²)
   coverlayDm2:      0.45,
   stiffenerDm2:     0.35,
-  // power / heavy copper extra etch comp per dm² per extra oz
-  heavyCopperDm2:   0.22,
+  heavyCopperDm2:   0.22,   // etch comp per dm² per extra oz
 };
 
-/* ---- Default model state (4-layer FR-4 automotive baseline) ---- */
+/* ---- Default model state (4-layer FR-4 High-Tg automotive baseline) ---- */
 const DEFAULTS = {
   pcbType: "rigid",
   boardW: 100, boardH: 80,
@@ -494,13 +664,17 @@ const DEFAULTS = {
   boardThickness: 1.6,
   copperInner: "1",
   copperOuter: "1",
+  copperFoil: "hte",
+  fabProcess: "subtractive",
   trace: "5mil",
   via: "through",
   impedance: true,
+  backdrill: false,
+  viafill: false,
   finish: "enig",
   maskColor: "green",
   silkscreen: true,
-  panelW: 457, panelH: 305,        // standard 18"×12" working panel
+  panelW: 457, panelH: 305,        // 18"×12" working panel
   utilization: 80,
   quality: "automotive",
   region: "china",
@@ -508,6 +682,8 @@ const DEFAULTS = {
   holeDensity: 160,
   overheadPct: 18,
   marginPct: 25,
+  marketSurcharge: 6,              // 2026 metal/energy surcharge on material+processing
+  goldPrice: 4100,                 // spot gold $/oz — scales gold-finish variable cost
 };
 
 /* ---- Pre-loaded worked examples (luxury SUV context) ---- */
@@ -524,8 +700,9 @@ const EXAMPLES = [
     name: "8-layer high-speed domain controller PCB",
     note: "Central compute / ADAS domain controller, luxury SUV",
     input: { ...DEFAULTS, pcbType: "highspeed", boardW: 160, boardH: 120, layerCount: 8,
-      material: "fr4_hightg", boardThickness: 1.6, copperInner: "1", copperOuter: "1",
-      trace: "4mil", via: "buried", impedance: true, finish: "enig",
+      material: "lowloss_mid", boardThickness: 1.6, copperInner: "1", copperOuter: "1",
+      copperFoil: "vlp", fabProcess: "subtractive", trace: "4mil", via: "buried",
+      impedance: true, backdrill: true, finish: "enig",
       quality: "automotive", region: "china", orderQty: 20000 },
   },
   {
@@ -533,43 +710,49 @@ const EXAMPLES = [
     note: "Cockpit / IVI display + main board, luxury SUV",
     input: { ...DEFAULTS, pcbType: "rigidflex", boardW: 140, boardH: 90, layerCount: 10,
       material: "polyimide", boardThickness: 1.2, copperInner: "0p5", copperOuter: "1",
-      trace: "3mil", via: "micro2", impedance: true, finish: "enepig",
+      copperFoil: "hte", fabProcess: "msap", trace: "3mil", via: "micro2",
+      impedance: true, viafill: true, finish: "enepig",
       quality: "automotive", region: "china", orderQty: 8000 },
   },
 ];
 
 /* ============================================================================
- * model.js — 360° PCB should-cost engine (all PCB types).
+ * model.js — 360° PCB should-cost engine (all PCB types) — 2026 edition.
  *
  * Pure functions. Bottom-up, process-routed cost build with layer count and
- * stack-up as primary drivers. Returns a rich result object with per-process
- * costs, a category cost breakdown, yield, routing, benchmark check, and DfC
- * (design-for-cost) recommendations.
+ * stack-up as primary drivers. Now models fine-line process (mSAP/SAP),
+ * copper-foil profile, back-drilling (per-hole), via-fill, AXI, 2026 gold-price
+ * finish sensitivity, market metal/energy surcharge, and expanded regions.
  * ==========================================================================*/
 
 const byId = (arr, id) => arr.find((x) => x.id === id) || arr[0];
 const clampN = (x, lo, hi) => Math.min(hi, Math.max(lo, x));
 
-/* Lamination cycles — central stack-up driver.
- * Standard multilayer presses all cores at once = 1 cycle. Buried vias and HDI
- * build-up require SEQUENTIAL lamination, each adding a press cycle. Rigid-flex
- * adds bonding cycles. More layers beyond ~12 add an extra sub-lamination. */
+/* Lamination cycles — central stack-up driver. Sequential lamination for
+ * buried/blind vias and HDI build-ups; rigid-flex adds bonding cycles. */
 function laminationCycles(p, type, via) {
-  if (p.layerCount <= 2) return type.id === "flex" ? 1 : 0; // 2-layer: no inner lam (flex: 1 bond)
-  let cycles = 1;                                  // base multilayer press
-  cycles += via.lamExtra;                          // buried/blind + HDI build-up
-  if (type.id === "rigidflex") cycles += 2;        // flex bonding + coverlay press
+  if (p.layerCount <= 2) return type.id === "flex" ? 1 : 0;
+  let cycles = 1;
+  cycles += via.lamExtra;
+  if (type.id === "anylayer") cycles += 1;        // any-layer build adds a press
+  if (type.id === "rigidflex") cycles += 2;       // flex bonding + coverlay press
   if (type.id === "flex" && p.layerCount > 2) cycles += 1;
-  if (p.layerCount >= 14) cycles += 1;             // very high layer sub-lam
+  if (p.layerCount >= 14) cycles += 1;
   return cycles;
 }
 
-/* Boards per working panel from panel size, board size and utilisation. */
 function boardsPerPanel(p) {
-  const panelArea = (p.panelW * p.panelH) / 10000; // dm²
-  const boardArea = (p.boardW * p.boardH) / 10000; // dm²
+  const panelArea = (p.panelW * p.panelH) / 10000;
+  const boardArea = (p.boardW * p.boardH) / 10000;
   if (boardArea <= 0) return 1;
   return Math.max(1, Math.floor((panelArea / boardArea) * (p.utilization / 100)));
+}
+
+/* Gold-price-adjusted surface-finish cost per dm². Splits the finish into a
+ * fixed process part and a spot-gold-variable part (goldFrac). */
+function finishCostDm2(finish, goldPrice) {
+  const g = clampN((goldPrice || GOLD_REF) / GOLD_REF, 0.3, 4);
+  return finish.costDm2 * ((1 - finish.goldFrac) + finish.goldFrac * g);
 }
 
 function computePcb(input) {
@@ -578,87 +761,91 @@ function computePcb(input) {
   const mat = byId(MATERIALS, p.material);
   const cuIn = byId(COPPER_WEIGHTS, p.copperInner);
   const cuOut = byId(COPPER_WEIGHTS, p.copperOuter);
+  const foil = byId(COPPER_FOILS, p.copperFoil || "hte");
+  const proc = byId(FAB_PROCESSES, p.fabProcess || "subtractive");
   const trace = byId(TRACE_CLASSES, p.trace);
   const via = byId(VIA_TYPES, p.via);
   const finish = byId(FINISHES, p.finish);
   const maskColor = byId(MASK_COLORS, p.maskColor);
   const quality = byId(QUALITY_LEVELS, p.quality);
   const region = byId(REGIONS, p.region);
+  const surcharge = 1 + (p.marketSurcharge || 0) / 100;
 
   const area = (p.boardW * p.boardH) / 10000;            // dm² per board
   const L = Math.max(1, p.layerCount);
   const innerLayers = Math.max(0, L - 2);
   const bpp = boardsPerPanel(p);
   const lamCycles = laminationCycles(p, type, via);
-
-  // Blended copper multiplier (outer 2 layers + inner layers)
   const cuMult = (2 * cuOut.mult + innerLayers * cuIn.mult) / L;
 
   // ---------------- MATERIAL ----------------
   let material = area * mat.costDm2PerLayer * L * cuMult * COEFF.materialCal;
-  // flex / rigid-flex coverlay + stiffener
+  material += area * L * foil.addDm2;                    // copper-foil profile premium
   if (type.id === "flex" || type.id === "rigidflex") material += area * COEFF.coverlayDm2;
   if (type.id === "rigidflex") material += area * COEFF.stiffenerDm2;
-  // heavy copper material/etch compensation
   const heavyOz = Math.max(0, Math.max(cuIn.oz, cuOut.oz) - 1);
   if (heavyOz > 0) material += area * COEFF.heavyCopperDm2 * heavyOz;
 
   // ---------------- PROCESSING (per board, pre-region) ----------------
-  const fine = trace.fineMult;
+  const fine = trace.fineMult * proc.imageMult;          // fine-line imaging tech
   const imaging   = area * L * COEFF.imagePerLayerDm2 * fine;
   const etch      = area * L * COEFF.etchPerLayerDm2 * (1 + 0.15 * heavyOz);
   const aoi       = area * L * COEFF.aoiPerLayerDm2;
   const lamination = area * lamCycles * COEFF.lamPerCycleDm2;
 
-  // Drilling — aspect-ratio sensitive (thickness / min hole). Higher AR => slower, lower yield.
   const aspect = clampN(p.boardThickness / 0.2, 1, 20);
   const aspectMult = 1 + 0.05 * Math.max(0, aspect - 6);
   const holeCount = (p.holeDensity || COEFF.holeDensity) * area;
   const drilling  = holeCount * COEFF.costPerHole * aspectMult * (L > 2 ? 1.1 : 1.0);
 
-  // Laser microvias (HDI)
   let laserDrill = 0;
   if (via.microvia) laserDrill = COEFF.microviaDensity * area * via.buildup * COEFF.costPerMicrovia;
 
-  const desmearPth = area * COEFF.desmearPthDm2 * (L > 2 ? 1.0 : 0.6);
+  const backdrill = p.backdrill ? holeCount * COEFF.backdrillFrac * COEFF.costPerBackdrill : 0;
+  const viafill   = (p.viafill && via.microvia) ? area * COEFF.viafillDm2 * via.buildup : 0;
+  const msapAdder = proc.id !== "subtractive" ? area * L * COEFF.msapAdderDm2 : 0;
+
+  const desmearPth = area * COEFF.desmearPthDm2 * (L > 2 ? 1.0 : 0.6) * (mat.family === "rf" ? 1.5 : 1.0);
   const plating    = area * COEFF.platingDm2 * (0.6 + 0.4 * L / 4) * aspectMult * cuMult;
   const solderMask = area * COEFF.maskDm2 * 2 + area * maskColor.add;
-  const surfaceFin = area * finish.costDm2;
+  const surfaceFin = area * finishCostDm2(finish, p.goldPrice);
   const silkscreen = p.silkscreen ? area * COEFF.silkDm2 * 2 : 0;
   const profiling  = area * COEFF.profilingDm2 * (type.id === "rigidflex" ? 1.6 : 1.0);
   const impedance  = p.impedance ? area * COEFF.impedanceDm2 : 0;
 
-  const rfMult = mat.family === "rf" ? 1.25 : 1.0; // RF lamination/handling premium
-  let processing = (imaging + etch + aoi + lamination + drilling + laserDrill +
-                    desmearPth + plating + solderMask + silkscreen + profiling + impedance)
-                    * type.complexity * rfMult;
-  processing *= region.labor;                       // regional labour
+  const rfMult = mat.family === "rf" ? 1.35 : mat.family === "ll" ? 1.10 : 1.0;
+  let processing = (imaging + etch + aoi + lamination + drilling + laserDrill + backdrill +
+                    viafill + msapAdder + desmearPth + plating + solderMask + silkscreen +
+                    profiling + impedance) * type.complexity * rfMult;
+  processing *= region.labor;
+  processing *= surcharge;
+  material *= surcharge;
 
   // ---------------- TEST & INSPECTION ----------------
-  // Low volume → flying probe per board; high volume → fixtured e-test (cheap/board, fixture NRE separate)
-  const eTest = p.orderQty < 5000
-    ? COEFF.flyingProbeRate * (1 + 0.04 * L)
+  // ICT/fixtured break-even ~500–1000 units (research); use ≥2000 for fixtured.
+  const eTest = p.orderQty < 2000
+    ? COEFF.flyingProbeRate * (1 + 0.05 * L)
     : area * COEFF.fixtureTestDm2 * (1 + 0.04 * L);
-  const inspection = area * quality.inspect + (quality.microsection ? 0.05 * area : 0);
+  let inspection = area * quality.inspect + (quality.microsection ? 0.05 * area : 0);
+  if (quality.axi && (via.microvia || L >= 8)) inspection += area * COEFF.axiDm2;   // AXI for buried/HDI
+  if (quality.microsection) inspection += COEFF.istCoupon * area;                   // IST/CAF coupon share
   let testInspect = (eTest + inspection) * quality.testMult * region.labor;
 
-  // ---------------- TOOLING / NRE (one-time, amortised over orderQty) ----------------
+  // ---------------- TOOLING / NRE (amortised over orderQty) ----------------
   let nre = COEFF.nrePhotoTools + COEFF.nreDrillProgram;
-  if (p.orderQty >= 5000) nre += COEFF.nreTestFixture;          // fixtured test
+  if (p.orderQty >= 2000) nre += COEFF.nreTestFixture;
   if (via.microvia) nre += COEFF.nreLaserProgram;
+  if (p.backdrill) nre += COEFF.nreBackdrill;
   if (p.impedance) nre += COEFF.impedanceCoupon;
   nre *= quality.nreMult;
   const nrePerBoard = nre / Math.max(1, p.orderQty);
 
   // ---------------- YIELD ----------------
-  // Layer derate (each layer pair compounds), fine-line, type, quality class.
   const layerYld = Math.pow(0.992, Math.max(0, L - 2));
-  const yld = clampN(quality.yld * trace.yld * layerYld *
-              (type.id === "rigidflex" ? 0.95 : type.id === "hdi" ? 0.96 : 1.0), 0.5, 0.999);
+  const yld = clampN(quality.yld * trace.yld * proc.yld * layerYld *
+              (type.id === "rigidflex" ? 0.95 : type.id === "anylayer" ? 0.94 : type.id === "hdi" ? 0.96 : 1.0),
+              0.5, 0.999);
 
-  // Manufacturing cost carried by good boards (material + processing + finish material + test)
-  const directCost = material + processing + surfaceFin * 0 + testInspect; // surfaceFin already in processing
-  // NOTE: surfaceFin folded into processing above; keep separate var for breakdown only.
   const mfgGood = (material + processing + testInspect) / yld;
 
   // ---------------- OVERHEAD & MARGIN ----------------
@@ -668,55 +855,52 @@ function computePcb(input) {
   const price = totalCost / (1 - clampN(margin, 0, 0.9));
 
   // ---------------- CATEGORY BREAKDOWN (sums to totalCost) ----------------
-  // Scale the per-process figures by the yield uplift so categories reconcile.
   const yScale = mfgGood / Math.max(1e-9, material + processing + testInspect);
+  const pMult = type.complexity * rfMult * region.labor * surcharge;
   const components = [
-    { key: "material",  label: "Material (laminate, copper, prepreg)", value: material * yScale,   color: "#2563eb" },
-    { key: "imaging",   label: "Imaging + etch + AOI",                 value: (imaging + etch + aoi) * type.complexity * region.labor * yScale, color: "#0891b2" },
-    { key: "lamination",label: "Lamination (" + lamCycles + " cycle" + (lamCycles===1?"":"s") + ")", value: lamination * type.complexity * region.labor * yScale, color: "#7c3aed" },
-    { key: "drilling",  label: "Drilling + laser microvia",           value: (drilling + laserDrill) * type.complexity * region.labor * yScale, color: "#0d9488" },
-    { key: "plating",   label: "Desmear / PTH / plating",             value: (desmearPth + plating) * type.complexity * region.labor * yScale, color: "#059669" },
-    { key: "finish",    label: "Solder mask / finish / silk",         value: (solderMask + surfaceFin + silkscreen + profiling + impedance) * type.complexity * region.labor * yScale, color: "#65a30d" },
-    { key: "test",      label: "Test + inspection",                   value: testInspect * yScale,  color: "#ca8a04" },
-    { key: "nre",       label: "Tooling / NRE (amortised)",           value: nrePerBoard,           color: "#dc2626" },
-    { key: "overhead",  label: "Overhead",                            value: overhead,              color: "#9333ea" },
+    { key: "material",  label: "Material (laminate, copper, prepreg)", value: material * yScale,   color: "#00e5ff" },
+    { key: "imaging",   label: "Imaging + etch + AOI",                 value: (imaging + etch + aoi) * pMult * yScale, color: "#3a8bff" },
+    { key: "lamination",label: "Lamination (" + lamCycles + " cycle" + (lamCycles===1?"":"s") + ")", value: lamination * pMult * yScale, color: "#a06bff" },
+    { key: "drilling",  label: "Drilling + laser µvia + back-drill",   value: (drilling + laserDrill + backdrill) * pMult * yScale, color: "#ff2bd6" },
+    { key: "plating",   label: "Desmear / PTH / plating / via-fill",   value: (desmearPth + plating + viafill + msapAdder) * pMult * yScale, color: "#6cff3f" },
+    { key: "finish",    label: "Solder mask / finish / silk",          value: (solderMask + surfaceFin + silkscreen + profiling + impedance) * pMult * yScale, color: "#ffcf33" },
+    { key: "test",      label: "Test + inspection (AOI/AXI/e-test)",   value: testInspect * yScale,  color: "#ff7a3d" },
+    { key: "nre",       label: "Tooling / NRE (amortised)",            value: nrePerBoard,           color: "#ff3b6b" },
+    { key: "overhead",  label: "Overhead",                             value: overhead,              color: "#8b95bf" },
   ];
 
-  // ---------------- ROUTING (process steps actually used) ----------------
-  const routing = buildRouting(p, type, via, L);
-
-  // ---------------- BENCHMARK CHECK ----------------
-  const benchmark = benchmarkBand(p, type, L, area, quality, finish, mat, p.impedance);
-
-  // ---------------- DfC RECOMMENDATIONS + AI INSIGHTS ----------------
-  const dfc = dfcRecommendations(p, { type, mat, via, trace, finish, quality, L, area, bpp, aspect, yld, lamCycles, cuIn, cuOut });
+  const routing = buildRouting(p, type, via, L, proc);
+  const benchmark = benchmarkBand(p, type, L, area, quality, finish, mat, p.impedance, region, Math.max(cuIn.oz, cuOut.oz));
+  const dfc = dfcRecommendations(p, { type, mat, via, trace, finish, quality, proc, L, area, bpp, aspect, yld, lamCycles, cuIn, cuOut });
 
   return {
-    p, type, mat, via, trace, finish, quality, region,
+    p, type, mat, via, trace, finish, quality, region, proc, foil,
     area, L, innerLayers, bpp, lamCycles, aspect, cuMult, holeCount,
     material, processing, testInspect, surfaceFin,
     nre, nrePerBoard, yld, mfgGood, overhead, totalCost, price, margin,
     components, routing, benchmark, dfc,
-    process: { imaging, etch, aoi, lamination, drilling, laserDrill, desmearPth, plating, solderMask, surfaceFin, silkscreen, profiling, impedance },
+    process: { imaging, etch, aoi, lamination, drilling, laserDrill, backdrill, viafill, msapAdder, desmearPth, plating, solderMask, surfaceFin, silkscreen, profiling, impedance },
   };
 }
 
-/* Process routing per board type. Returns ordered steps with machine + flag. */
-function buildRouting(p, type, via, L) {
+/* Process routing per board type. */
+function buildRouting(p, type, via, L, proc) {
   const ml = L > 2;
   const steps = [];
   const add = (name, machine, on = true) => { if (on) steps.push({ name, machine }); };
   add("Material cut / core prep", "Shearing / CNC");
-  add("Inner-layer imaging", "LDI / DI exposure", ml);
-  add("Inner-layer develop-etch-strip (DES)", "Wet etch line", ml);
+  add("Inner-layer imaging", proc.id === "subtractive" ? "LDI / DI exposure" : "mSAP/SAP patterning", ml);
+  add("Inner-layer develop-etch-strip (DES)", "Wet etch line", ml && proc.id === "subtractive");
+  add("Inner-layer pattern plate (semi-additive)", "VCP plating line", ml && proc.id !== "subtractive");
   add("Inner-layer AOI", "Automated optical inspection", ml);
   add("Oxide / bonding treatment", "Brown/black oxide", ml);
   add("Lay-up & lamination", "Vacuum press", ml || type.id === "flex" || type.id === "rigidflex");
   add("Mechanical drilling", "CNC drill");
   add("Laser microvia drilling", "UV/CO₂ laser", via.microvia);
-  add("Desmear + electroless copper (PTH)", "Desmear + e-less line");
-  add("Electroplating (panel/pattern)", "Cu plating line");
-  add("Outer-layer imaging", "LDI / DI exposure");
+  add("Desmear + electroless copper (PTH)", mp_rf(p) ? "Plasma desmear + e-less" : "Desmear + e-less line");
+  add("Electroplating (VCP / pulse)", "Cu plating line");
+  add("Via fill + planarise", "Resin/Cu fill + grind", p.viafill && via.microvia);
+  add("Outer-layer imaging", proc.id === "subtractive" ? "LDI / DI exposure" : "mSAP/SAP patterning");
   add("Outer DES / pattern plate / strip-etch", "Wet process line");
   add("Outer AOI", "Automated optical inspection");
   add("Coverlay lamination", "Vacuum press", type.id === "flex" || type.id === "rigidflex");
@@ -724,24 +908,26 @@ function buildRouting(p, type, via, L) {
   add("Surface finish", finishMachine(p.finish));
   add("Silkscreen / legend", "Inkjet / screen legend", p.silkscreen);
   add("Stiffener bonding", "Lamination / bonding", type.id === "rigidflex");
-  add("Profiling / routing / depanel", "CNC route / laser cut");
-  add("Electrical test", p.orderQty < 5000 ? "Flying probe" : "Fixture / ICT e-test");
+  add("Back-drill (controlled depth)", "CDD back-drill", p.backdrill);
+  add("Profiling / routing / depanel", type.id === "rigidflex" || type.id === "flex" ? "Laser depanel" : "CNC route");
+  add("Electrical test", p.orderQty < 2000 ? "Flying probe" : "Fixture / ICT e-test");
   add("Impedance / TDR test", "TDR + coupon", p.impedance);
-  add("Microsection / reliability", "Cross-section + lab", byId(QUALITY_LEVELS, p.quality).microsection);
+  add("AXI (X-ray) buried-joint inspection", "3D AXI", byId(QUALITY_LEVELS, p.quality).axi && (via.microvia || L >= 8));
+  add("Microsection / IST / CAF reliability", "Cross-section + lab", byId(QUALITY_LEVELS, p.quality).microsection);
   add("Final inspection + packaging", "FQC / vacuum pack");
   return steps;
 }
+function mp_rf(p) { return byId(MATERIALS, p.material).family === "rf"; }
 function finishMachine(id) {
   if (id === "hasl" || id === "lfhasl") return "HASL line";
   if (id === "osp") return "OSP line";
-  return "Chemical plating line (Ni/Au)";
+  if (id === "imag" || id === "isn") return "Immersion line";
+  return "Chemical plating line (Ni/Pd/Au)";
 }
 
-/* Benchmark band ($/board) by layer/type, adjusted for quality, finish and
- * material — an independent "does this look sane" reference built from public
- * $/dm² fab-price ranges, NOT from the cost engine itself. */
-function benchmarkBand(p, type, L, area, quality, finish, mat, impedance) {
-  // base $/dm² midpoints by layer count (China, class 2, std FR-4, volume)
+/* Benchmark market-PRICE band ($/board) — independent of the cost engine.
+ * Base $/dm² midpoints are the 2026-inflated China-volume FR-4 ladder. */
+function benchmarkBand(p, type, L, area, quality, finish, mat, impedance, region, maxOz) {
   let perDm2;
   if (L <= 2) perDm2 = 1.6;
   else if (L <= 4) perDm2 = 2.9;
@@ -749,59 +935,51 @@ function benchmarkBand(p, type, L, area, quality, finish, mat, impedance) {
   else if (L <= 8) perDm2 = 6.5;
   else if (L <= 10) perDm2 = 9.5;
   else if (L <= 12) perDm2 = 13;
-  else perDm2 = 18;
-  const typeMult = { rigid: 1, highspeed: 1.5, power: 1.3, hdi: 2.0, flex: 2.2, rigidflex: 3.2 }[type.id] || 1;
+  else if (L <= 16) perDm2 = 20;
+  else perDm2 = 30;
+  const typeMult = { rigid: 1, highspeed: 1.5, power: 1.3, hdi: 2.0, anylayer: 3.0, flex: 2.2, rigidflex: 3.2 }[type.id] || 1;
   const qualMult = { consumer: 1.0, industrial: 1.15, automotive: 1.5, aerospace: 2.2 }[quality.id] || 1;
-  const finishMult = 1 + (finish.costDm2 - 0.10) * 0.6;          // ENIG/ENEPIG premium
-  const matMult = mat.family === "rf" ? 1.5 : mat.family === "flex" ? 1.4 : (mat.id === "fr4_hightg" ? 1.1 : 1.0);
+  const finishMult = 1 + (finish.costDm2 - 0.10) * 0.5;
+  const matMult = mat.family === "rf" ? 2.6 : mat.family === "ll" ? 1.4 : mat.family === "flex" ? 1.4
+                : mat.family === "mc" ? 1.8 : (mat.id === "fr4_hightg" ? 1.1 : 1.0);
+  const cuMult = maxOz >= 3 ? (1 + 0.15 * (maxOz - 1)) : 1.0;                 // heavy-copper premium
+  const regionMult = 1 + ((region ? region.labor : 1) - 1) * 0.45;           // blended region premium
   const impMult = impedance ? 1.1 : 1.0;
-  // Market PRICE band ($/board) — compare against the model's PRICE, not cost.
-  const mid = perDm2 * typeMult * qualMult * finishMult * matMult * impMult * area;
+  const mid = perDm2 * typeMult * qualMult * finishMult * matMult * cuMult * regionMult * impMult * area;
   return { lo: mid * 0.65, mid, hi: mid * 1.6 };
 }
 
-/* DfC (Design-for-Cost) recommendations + AI insight narrative. */
+/* DfC (Design-for-Cost) recommendations. */
 function dfcRecommendations(p, c) {
   const recs = [];
   const push = (sev, text) => recs.push({ sev, text });
 
   if (p.layerCount % 2 !== 0 && p.layerCount > 1)
     push("high", `Layer count ${p.layerCount} is odd — multilayer stack-ups are built in balanced pairs. Move to ${p.layerCount + 1} layers for a symmetric, warp-free stack-up at little extra cost.`);
-
   if (c.L >= 8 && p.via === "through")
-    push("med", `An ${c.L}-layer board with only through-vias forces large drilled holes through the full stack and wastes routing channels. Evaluate buried/blind vias or HDI to reduce layer count.`);
-
-  if (c.via.microvia && c.via.buildup >= 2 && p.trace !== "2mil")
-    push("low", "Stacked microvia (2+ build-up) is justified only by routing density — confirm escape routing genuinely needs it; staggered microvias yield better and cost less.");
-
+    push("med", `An ${c.L}-layer through-via board wastes routing channels and forces large drilled holes. Evaluate buried/blind vias, back-drilling, or HDI to reduce layer count.`);
+  if (c.via.microvia && c.via.buildup >= 2 && p.trace !== "1mil" && p.trace !== "2mil")
+    push("low", "Stacked microvia (2+ build-up) costs ~30–50% more than staggered. Confirm escape routing genuinely needs it; staggered microvias yield better and cost less.");
   if (c.mat.family === "rf" && p.layerCount > 2)
-    push("high", `Full-board ${c.mat.label} is expensive. Use a HYBRID stack-up: RF material only on the layers carrying high-frequency nets, FR-4 high-Tg elsewhere. Can cut material 40–60%.`);
-
-  if (c.finish.id === "enepig" && p.quality === "consumer")
-    push("med", "ENEPIG is over-specified for consumer; ENIG or immersion silver gives wire-bond/solder reliability at lower cost.");
-  if (c.finish.id === "enig" && p.quality === "consumer")
-    push("low", "For consumer-grade assembly, OSP or immersion silver can replace ENIG and save finish cost.");
-
+    push("high", `Full-board ${c.mat.label} is expensive (PTFE laminate is 10–20× FR-4). Use a HYBRID stack-up: RF material only on the layers carrying high-frequency nets, FR-4 High-Tg elsewhere — typically 40–60% material saving.`);
+  if (c.mat.family === "ll" && p.copperFoil === "hte")
+    push("med", "Low-loss laminate with standard HTE foil undermines the loss budget at ≥28 Gbps. Pair low-loss dielectric with VLP/HVLP foil (or you're paying for dielectric you can't use).");
+  if (c.finish.goldFrac >= 0.5 && p.quality !== "aerospace")
+    push("med", `Gold finish (${c.finish.label}) is heavily exposed to 2026 gold prices (~70% of ENIG cost is gold). Where assembly allows, OSP/immersion silver eliminate gold exposure; ENEPIG's thinner gold partly hedges vs ENIG.`);
   if (c.aspect > 10)
     push("high", `Aspect ratio ≈ ${c.aspect.toFixed(1)}:1 stresses through-hole plating reliability and yield. Reduce board thickness or increase minimum drill, or split into sub-laminations.`);
-
-  if (p.trace === "2mil" && p.quality !== "consumer")
-    push("med", "≤2 mil lines drive imaging to advanced LDI and depress yield. Relax to 3–4 mil where signal integrity allows.");
-
+  if ((p.trace === "2mil" || p.trace === "1mil") && p.fabProcess === "subtractive")
+    push("high", "Sub-2-mil lines are below the subtractive-etch floor (~2 mil, undercut-limited). This needs mSAP/SAP — the model's yield/cost won't be realistic on subtractive. Switch process or relax the geometry.");
+  if (p.fabProcess !== "subtractive" && !["1mil", "2mil"].includes(p.trace))
+    push("low", "mSAP/SAP carries a ~40–50% premium over conventional imaging. It's only justified below ~3 mil — for wider geometry, subtractive etch is cheaper.");
   if (c.bpp <= 1)
-    push("high", `Only ${c.bpp} board fits the working panel — panel utilisation is poor. Re-pitch the array or choose a panel size that fits more up; material and per-board processing scale with utilisation.`);
+    push("high", `Only ${c.bpp} board fits the working panel — utilisation is poor. Re-pitch the array or pick a panel size that fits more up.`);
   else if (p.utilization < 70)
-    push("med", `Panel utilisation ${p.utilization}% is low. Improving array nesting toward 80–85% directly lowers $/board.`);
-
+    push("med", `Panel utilisation ${p.utilization}% is low. Improving nesting toward 80–85% directly lowers $/board.`);
   if (Math.max(c.cuIn.oz, c.cuOut.oz) >= 3 && p.pcbType !== "power")
-    push("low", "Heavy copper (≥3 oz) needs etch compensation and wider spacing. If only a few high-current nets need it, consider selective/stepped copper instead of full-build heavy copper.");
-
-  if (p.quality === "automotive" && !p.impedance && p.pcbType === "highspeed")
-    push("med", "High-speed automotive board without impedance control flagged — confirm controlled-impedance is truly not required for the high-speed interfaces.");
-
-  if (p.orderQty < 5000)
-    push("low", `Order qty ${p.orderQty} is low; tooling/NRE per board is significant. Consolidating volume or panel-sharing reduces NRE amortisation per board.`);
-
+    push("low", "Heavy copper (≥3 oz) adds 40–70% and needs etch compensation. If only a few nets carry high current, use stepped/mixed copper (saves 20–30% vs full-build heavy copper).");
+  if (p.orderQty < 2000)
+    push("low", `Order qty ${p.orderQty} is below the ~500–1000 ICT break-even; flying-probe test and un-amortised tooling dominate. Consolidating volume or panel-sharing cuts NRE per board.`);
   if (recs.length === 0) push("ok", "No major cost red-flags. Design is broadly cost-balanced for its class.");
   return recs;
 }
@@ -810,13 +988,14 @@ function dfcRecommendations(p, c) {
 function pcbSensitivity(input, pct = 15) {
   const base = computePcb(input).totalCost;
   const drivers = [
-    { key: "layerCount", label: "Layer count" },
-    { key: "boardW",     label: "Board size (W)" },
-    { key: "orderQty",   label: "Order quantity", invert: true },
-    { key: "utilization",label: "Panel utilisation", invert: true },
-    { key: "holeDensity",label: "Hole density" },
-    { key: "overheadPct",label: "Overhead %" },
-    { key: "boardThickness", label: "Board thickness (AR)" },
+    { key: "layerCount",  label: "Layer count" },
+    { key: "boardW",      label: "Board size (W)" },
+    { key: "orderQty",    label: "Order quantity" },
+    { key: "utilization", label: "Panel utilisation" },
+    { key: "holeDensity", label: "Hole density" },
+    { key: "goldPrice",   label: "Gold price" },
+    { key: "overheadPct", label: "Overhead %" },
+    { key: "marketSurcharge", label: "Market surcharge" },
   ];
   return drivers.map((d) => {
     const up = computePcb({ ...input, [d.key]: input[d.key] * (1 + pct / 100) }).totalCost;
@@ -827,9 +1006,217 @@ function pcbSensitivity(input, pct = 15) {
 }
 
 /* ============================================================================
- * methodology.js — Full documentation rendered into the Methodology tab:
- * conceptual model, parameter list, routing, cost drivers, yield model,
- * cost breakdown, 3 worked examples (computed live), and a manager summary.
+ * ai.js — AI insights & idea generation for the PCB should-cost model.
+ *
+ * Two engines:
+ *  1. localInsights()  — deterministic, always-on "AI advisor". Generates
+ *     cost-reduction ideas, alternative-design ideas, quantified savings and a
+ *     narrative from the computed result. No network, no key.
+ *  2. claudeGenerate()  — optional live generation via the Claude API, called
+ *     directly from the browser with the user's own API key
+ *     (anthropic-dangerous-direct-browser-access). Model is user-selectable
+ *     (defaults to claude-opus-4-8).
+ * ==========================================================================*/
+
+/* ---------- 1. Deterministic insight / idea engine ---------- */
+function localInsights(input, r) {
+  const ideas = [];
+  const add = (title, body, saving) => ideas.push({ title, body, saving });
+  const money = (v) => "$" + v.toFixed(2);
+
+  const total = r.totalCost;
+  // Rank cost categories to target the biggest levers first.
+  const cats = [...r.components].sort((a, b) => b.value - a.value);
+  const top = cats[0];
+
+  // Idea: layer reduction (biggest structural lever)
+  if (r.L >= 6) {
+    const test = computePcb({ ...input, layerCount: r.L - 2 });
+    const save = total - test.totalCost;
+    if (save > 0.05) add(
+      `Cut ${r.L}→${r.L - 2} layers if routing allows`,
+      `Each layer pair removes imaging, etch, AOI, a share of lamination/drilling and compounds yield. Consider higher-density routing (finer lines or HDI) to collapse two signal layers into one.`,
+      save);
+  }
+  // Idea: HDI vs through for high layer counts
+  if (r.L >= 8 && input.via === "through") {
+    add(`Evaluate blind/buried or HDI vias`,
+      `An ${r.L}-layer through-via stack wastes routing channels and forces large drills. Blind/buried vias or a 1+N+1 HDI build can reduce layer count — trading extra lamination cost for fewer layers overall.`, null);
+  }
+  // Idea: finish downgrade
+  const finish = byId(FINISHES, input.finish);
+  if (finish.costDm2 >= 0.4 && input.quality !== "aerospace") {
+    const cheaper = input.quality === "automotive" ? "isn" : "osp";
+    const test = computePcb({ ...input, finish: cheaper });
+    const save = total - test.totalCost;
+    if (save > 0.02) add(
+      `Finish: ${finish.label} → ${byId(FINISHES, cheaper).label}`,
+      `Surface finish is a pure adder. If the assembly and reliability requirements permit, a lower-cost finish keeps solderability at less cost. Verify fine-pitch, wire-bond and shelf-life needs first.`,
+      save);
+  }
+  // Idea: panel utilisation
+  if (input.utilization < 82) {
+    const test = computePcb({ ...input, utilization: Math.min(85, input.utilization + 10) });
+    const save = total - test.totalCost;
+    if (save > 0.02) add(
+      `Improve panel utilisation ${input.utilization}%→${Math.min(85, input.utilization + 10)}%`,
+      `Re-pitch the array, rotate the board, or pick a panel size that nests more up. Material and per-board processing scale directly with utilisation — one of the cheapest wins available.`,
+      save);
+  }
+  // Idea: material hybrid for RF
+  if (byId(MATERIALS, input.material).family === "rf" && r.L > 2) {
+    add(`Hybrid RF stack-up`,
+      `Full-board ${byId(MATERIALS, input.material).label} is expensive. Place RF laminate only on the layers carrying high-frequency nets and FR-4 High-Tg elsewhere — typically 40–60% material saving with equal electrical performance.`, null);
+  }
+  // Idea: trace relaxation
+  if (["3mil", "2mil"].includes(input.trace) && input.quality !== "consumer") {
+    const test = computePcb({ ...input, trace: "4mil" });
+    const save = total - test.totalCost;
+    if (save > 0.02) add(
+      `Relax min trace to 4 mil where signal integrity allows`,
+      `Sub-4-mil lines push imaging to advanced LDI/mSAP and depress yield. Keep fine lines only on the layers/nets that truly need them.`,
+      save);
+  }
+  // Idea: volume consolidation
+  if (input.orderQty < 10000) {
+    const test = computePcb({ ...input, orderQty: input.orderQty * 3 });
+    const save = total - test.totalCost;
+    if (save > 0.02) add(
+      `Consolidate volume (${input.orderQty.toLocaleString()} → ${(input.orderQty * 3).toLocaleString()})`,
+      `Tooling/NRE (photo tools, drill program, test fixture, any HDI laser program) amortise over the order. Combining releases or panel-sharing across products lowers NRE per board.`,
+      save);
+  }
+  // Idea: region
+  if (input.region !== "china" && input.region !== "vietnam") {
+    const test = computePcb({ ...input, region: "china" });
+    const save = total - test.totalCost;
+    if (save > 0.05) add(
+      `Regional sourcing trade-off`,
+      `Moving fabrication to a lower-labour region cuts processing and overhead, but weigh logistics, lead time, IP, tariffs and automotive-qualification of the fab before switching.`,
+      save);
+  }
+
+  ideas.sort((a, b) => (b.saving || 0) - (a.saving || 0));
+
+  // Narrative
+  const drivers = cats.slice(0, 3).map((c) => `${c.label} (${((c.value / total) * 100).toFixed(0)}%)`).join(", ");
+  const narrative =
+    `This ${r.L}-layer ${r.type.label.split(" (")[0]} board costs ~${money(total)} to fabricate ` +
+    `(quoted ~${money(r.price)}). Cost is led by ${drivers}. ` +
+    (r.yld < 0.8 ? `Yield is low (${(r.yld * 100).toFixed(0)}%) — the biggest hidden lever is design-for-yield. ` : "") +
+    (r.nrePerBoard > total * 0.15 ? `NRE dominates at this volume (${money(r.nrePerBoard)}/board) — amortising over more units is the fastest reduction. ` : "") +
+    `Total realistic saving from the ideas below: up to ${money(ideas.reduce((s, i) => s + (i.saving || 0), 0))}/board.`;
+
+  return { ideas, narrative, topDriver: top };
+}
+
+/* Render local insights to HTML. */
+function renderLocalInsights(input, r) {
+  const { ideas, narrative } = localInsights(input, r);
+  let html = `<h4>Cost narrative</h4><p>${narrative}</p><h4>Cost-reduction ideas (ranked)</h4><ul>`;
+  ideas.forEach((i) => {
+    const s = i.saving ? ` <strong>save ~$${i.saving.toFixed(2)}/bd</strong>` : "";
+    html += `<li><strong>${i.title}.</strong>${s} ${i.body}</li>`;
+  });
+  html += "</ul>";
+  return html;
+}
+
+/* ---------- 2. Live Claude generation (bring-your-own-key) ---------- */
+function buildClaudePrompt(input, r) {
+  const b = r.components.map((c) => `- ${c.label}: $${c.value.toFixed(3)}/bd (${((c.value / r.totalCost) * 100).toFixed(0)}%)`).join("\n");
+  return `You are a Tier-1 automotive PCB cost engineer performing a should-cost review.
+
+DESIGN:
+- Type: ${r.type.label}
+- Layers: ${r.L}
+- Board: ${input.boardW}×${input.boardH} mm (${r.area.toFixed(2)} dm²)
+- Material: ${byId(MATERIALS, input.material).label}
+- Copper: ${byId(COPPER_WEIGHTS, input.copperOuter).label} outer / ${byId(COPPER_WEIGHTS, input.copperInner).label} inner
+- Vias: ${byId(VIA_TYPES, input.via).label}
+- Min trace/space: ${byId(TRACE_CLASSES, input.trace).label}
+- Fine-line process: ${byId(FAB_PROCESSES, input.fabProcess).label}
+- Impedance controlled: ${input.impedance ? "yes" : "no"}${input.backdrill ? ", back-drilled" : ""}${input.viafill ? ", via-fill/cap" : ""}
+- Surface finish: ${byId(FINISHES, input.finish).label}
+- Quality class: ${byId(QUALITY_LEVELS, input.quality).label}
+- Region: ${byId(REGIONS, input.region).label}
+- Order qty: ${input.orderQty}
+- Panel utilisation: ${input.utilization}%
+- Computed yield: ${(r.yld * 100).toFixed(0)}%
+
+COMPUTED COST STACK (fab cost ~$${r.totalCost.toFixed(2)}/bd, quoted ~$${r.price.toFixed(2)}/bd):
+${b}
+
+TASK: Give an engineering-grade should-cost review. Respond in Markdown with exactly these sections:
+## Cost drivers — the 3 biggest levers and why.
+## Design-for-cost ideas — 4-6 concrete, quantified-where-possible changes (call out stack-up / layer-count / via technology first).
+## Risks & missing processes — anything a fab would flag or that's under-specified (back-drill, via-fill, IST/CAF coupons, PPAP, etc.).
+## Alternative concepts — 1-2 different stack-up or technology approaches worth quoting.
+Be specific and numeric. Assume 2025-2026 pricing. Do not invent exact supplier prices; use realistic ranges.`;
+}
+
+async function claudeGenerate({ apiKey, model, input, r, onChunk }) {
+  const body = {
+    model: model || "claude-opus-4-8",
+    max_tokens: 1800,
+    system: "You are a senior Tier-1 automotive PCB should-cost engineer. Be concise, numeric, and practical. Output clean Markdown.",
+    messages: [{ role: "user", content: buildClaudePrompt(input, r) }],
+  };
+  const resp = await fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+      "x-api-key": apiKey,
+      "anthropic-version": "2023-06-01",
+      "anthropic-dangerous-direct-browser-access": "true",
+    },
+    body: JSON.stringify(body),
+  });
+  if (!resp.ok) {
+    let msg = `HTTP ${resp.status}`;
+    try { const j = await resp.json(); msg = j.error?.message || msg; } catch (e) {}
+    throw new Error(msg);
+  }
+  const data = await resp.json();
+  const text = (data.content || []).filter((b) => b.type === "text").map((b) => b.text).join("\n");
+  return text || "(no text returned)";
+}
+
+/* Minimal, safe Markdown → HTML for the AI output panel. */
+function mdToHtml(md) {
+  const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  const lines = md.split("\n");
+  let html = "", inList = false;
+  const inline = (s) => esc(s)
+    .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+    .replace(/`(.+?)`/g, "<code>$1</code>");
+  for (let raw of lines) {
+    const line = raw.trimEnd();
+    if (/^#{1,6}\s/.test(line)) {
+      if (inList) { html += "</ul>"; inList = false; }
+      html += `<h4>${inline(line.replace(/^#{1,6}\s/, ""))}</h4>`;
+    } else if (/^\s*[-*]\s+/.test(line)) {
+      if (!inList) { html += "<ul>"; inList = true; }
+      html += `<li>${inline(line.replace(/^\s*[-*]\s+/, ""))}</li>`;
+    } else if (/^\s*\d+\.\s+/.test(line)) {
+      if (!inList) { html += "<ul>"; inList = true; }
+      html += `<li>${inline(line.replace(/^\s*\d+\.\s+/, ""))}</li>`;
+    } else if (line === "") {
+      if (inList) { html += "</ul>"; inList = false; }
+    } else {
+      if (inList) { html += "</ul>"; inList = false; }
+      html += `<p>${inline(line)}</p>`;
+    }
+  }
+  if (inList) html += "</ul>";
+  return html;
+}
+
+/* ============================================================================
+ * methodology.js — Full documentation (2026 edition) rendered into the
+ * Methodology tab: conceptual model, parameters, routing, cost drivers, yield,
+ * 2026 market data & sources, worked examples (computed live), AI advisor, and
+ * a manager summary.
  * ==========================================================================*/
 
 function buildMethodology() {
@@ -837,7 +1224,6 @@ function buildMethodology() {
   const f3 = (v) => "$" + (isFinite(v) ? v.toFixed(3) : "—");
   const pct = (v) => (v * 100).toFixed(0) + "%";
 
-  // ---- live worked examples ----
   const exHtml = EXAMPLES.map((ex) => {
     const r = computePcb(ex.input);
     const i = ex.input;
@@ -850,9 +1236,9 @@ function buildMethodology() {
       <h3>${ex.name}</h3>
       <p class="src">${ex.note}</p>
       <p><b>Inputs:</b> ${i.boardW}×${i.boardH} mm · ${i.layerCount} layer · ${byId(MATERIALS,i.material).label} ·
-        ${byId(COPPER_WEIGHTS,i.copperOuter).label}/${byId(COPPER_WEIGHTS,i.copperInner).label} Cu ·
-        ${byId(VIA_TYPES,i.via).label} · ${byId(TRACE_CLASSES,i.trace).label} · ${byId(FINISHES,i.finish).label} ·
-        ${i.impedance ? "impedance-controlled · " : ""}${byId(QUALITY_LEVELS,i.quality).label} · ${byId(REGIONS,i.region).label} · qty ${i.orderQty.toLocaleString()}</p>
+        ${byId(COPPER_WEIGHTS,i.copperOuter).label}/${byId(COPPER_WEIGHTS,i.copperInner).label} Cu · ${byId(COPPER_FOILS,i.copperFoil).label} foil ·
+        ${byId(FAB_PROCESSES,i.fabProcess).label} · ${byId(VIA_TYPES,i.via).label} · ${byId(TRACE_CLASSES,i.trace).label} · ${byId(FINISHES,i.finish).label} ·
+        ${i.impedance ? "impedance · " : ""}${i.backdrill ? "back-drill · " : ""}${i.viafill ? "via-fill · " : ""}${byId(QUALITY_LEVELS,i.quality).label} · ${byId(REGIONS,i.region).label} · qty ${i.orderQty.toLocaleString()}</p>
       <p><b>Derived:</b> ${r.area.toFixed(2)} dm² · ${r.bpp} boards/panel · ${r.lamCycles} lamination cycle(s) ·
         aspect ${r.aspect.toFixed(1)}:1 · yield ${pct(r.yld)}</p>
       <table>
@@ -862,138 +1248,144 @@ function buildMethodology() {
         <tr><th>Quoted price</th><th>${f2(r.price)}</th><th>—</th></tr></tfoot>
       </table>
       <p><b>Top cost drivers:</b> ${drivers}.</p>
-      <p><b>Benchmark:</b> price ${f2(r.price)} vs market band ${f2(r.benchmark.lo)}–${f2(r.benchmark.hi)} —
-        ${(r.price>=r.benchmark.lo&&r.price<=r.benchmark.hi)?"<b style='color:#0e9f6e'>in band ✓</b>":"outside band"}.</p>
+      <p><b>Benchmark:</b> price ${f2(r.price)} vs 2026 market band ${f2(r.benchmark.lo)}–${f2(r.benchmark.hi)} —
+        ${(r.price>=r.benchmark.lo&&r.price<=r.benchmark.hi)?"<b style='color:#6cff3f'>in band ✓</b>":"outside band"}.</p>
       <p><b>DfC recommendations:</b></p><ul>${dfc}</ul>`;
   }).join("");
 
   $("methodologyProse").innerHTML = `
     <h2>1 · Conceptual model</h2>
     <p>A bottom-up, process-routed <b>should-cost model for ALL PCB types</b> — rigid (1–12+ layer),
-    HDI, flex, rigid-flex, high-speed/RF and power/heavy-copper — built the way a Tier-1 automotive
-    PCB supplier's cost engineer would. It walks the real fab process flow, costs every step from raw
-    laminate to final inspection, applies yield/scrap and tooling amortisation, and adds overhead and
-    margin. <b>Number of layers and stack-up are the primary drivers</b>: layer count compounds
-    imaging, etch, AOI, lamination, drilling and yield, while via technology (buried/blind/microvia)
-    sets the number of <b>sequential lamination cycles</b> — the single biggest stack-up cost lever
-    the previous model was missing.</p>
-    <div class="formula">material → +processing(imaging·etch·AOI·lamination·drill·plating·mask·finish)
-       → ÷ yield → +test/inspection → +tooling/NRE ÷ qty → +overhead → fab cost
+    HDI, any-layer/SLP, flex, rigid-flex, high-speed/RF and power/heavy-copper — built the way a Tier-1
+    automotive PCB supplier's cost engineer would. It walks the real fab process flow, costs every step
+    from raw laminate to final inspection, applies yield/scrap and tooling amortisation, and adds
+    overhead and margin. <b>Number of layers and stack-up are the primary drivers</b>: layer count
+    compounds imaging, etch, AOI, lamination, drilling and yield; via technology sets the number of
+    <b>sequential lamination cycles</b> — the biggest stack-up cost lever.</p>
+    <div class="formula">material → +processing(imaging·etch·AOI·lamination·drill·µvia·back-drill·plate·mask·finish)
+       → ÷ yield → +test/inspection(AOI·AXI·e-test) → +tooling/NRE ÷ qty → +overhead → fab cost
        ÷ (1 − margin) → quoted price</div>
 
-    <h2>2 · Parameter list</h2>
-    <h3>Inputs</h3>
+    <h2>2 · What's new in the 2026 edition</h2>
+    <ul>
+      <li><b>Expanded materials:</b> FR-4 std/mid-Tg/High-Tg/halogen-free, low-loss (Megtron 6 / I-Tera),
+      ultra-low-loss (Megtron 7/8), Rogers RO4350B/RO4003C/RO3003 (77 GHz), PTFE/Taconic, polyimide, LCP, IMS.</li>
+      <li><b>Latest processes/technologies:</b> mSAP & SAP fine-line, any-layer HDI / SLP, back-drilling
+      (per-via), via-fill / via-in-pad, copper-foil profile (HTE/RTF/VLP/HVLP), VCP plating, laser depanel,
+      plasma desmear for PTFE, 3D AXI, IST/CAF reliability coupons, extreme copper.</li>
+      <li><b>2026 market data:</b> gold-price finish sensitivity (~70% of ENIG cost is gold; +10% gold ≈
+      +6.8% ENIG), CCL/copper inflation surcharge, and updated labour/region indices (China baseline; raw
+      wage spread US ~7×, Germany ~9×, compressed to blended fab multipliers).</li>
+      <li><b>AI advisor:</b> a built-in insight/idea engine plus optional live Claude generation.</li>
+    </ul>
+
+    <h2>3 · Parameter list</h2>
     <table>
       <thead><tr><th>Group</th><th>Parameters</th></tr></thead>
       <tbody>
         <tr><td>Board &amp; type</td><td>PCB type, board W×H, order quantity</td></tr>
-        <tr><td>Stack-up</td><td><b>Layer count</b>, base material, board thickness, inner/outer copper weight, via technology</td></tr>
-        <tr><td>Design rules</td><td>min trace/space, controlled impedance, surface finish, solder-mask colour, silkscreen</td></tr>
+        <tr><td>Stack-up</td><td><b>Layer count</b>, base material, board thickness, inner/outer copper weight, copper-foil profile, via technology</td></tr>
+        <tr><td>Design rules &amp; process</td><td>fine-line process (subtractive/mSAP/SAP), min trace/space, controlled impedance, back-drill, via-fill, surface finish, mask colour, silkscreen</td></tr>
         <tr><td>Panelisation</td><td>panel W×H, utilisation %, hole density</td></tr>
-        <tr><td>Commercial</td><td>quality/IPC class, region, overhead %, margin %</td></tr>
-      </tbody>
-    </table>
-    <h3>Derived technical parameters</h3>
-    <table><tbody>
-      <tr><td>Board area (dm²)</td><td><code>W·H / 10000</code></td></tr>
-      <tr><td>Boards per panel</td><td><code>floor(panelArea/boardArea · utilisation)</code></td></tr>
-      <tr><td>Lamination cycles</td><td>base 1 + buried/HDI build-ups + rigid-flex bonding (sequential lamination)</td></tr>
-      <tr><td>Blended copper factor</td><td>weighted outer/inner copper-weight multiplier</td></tr>
-      <tr><td>Aspect ratio</td><td><code>thickness / min-hole</code> → plating-reliability &amp; yield derate</td></tr>
-      <tr><td>Hole / microvia counts</td><td>density × area (× build-up layers for microvia)</td></tr>
-    </tbody></table>
-
-    <h2>3 · Process routing per PCB type</h2>
-    <p>The engine emits the actual ordered step list (see the <b>Process Routing</b> tab). Steps switch
-    on/off by configuration:</p>
-    <table>
-      <thead><tr><th>PCB type</th><th>Distinguishing process steps</th></tr></thead>
-      <tbody>
-        <tr><td>Rigid 1–2 layer</td><td>No inner imaging/lamination; drill → PTH → plate → outer image → mask → finish → route → e-test</td></tr>
-        <tr><td>Rigid 4–12+ layer</td><td>Inner image/etch/AOI/oxide → lamination → drill → PTH/plate → outer → mask → finish → e-test → microsection (Class 3)</td></tr>
-        <tr><td>HDI</td><td>+ laser microvia drilling + <b>sequential build-up lamination</b> (1+N+1 … any-layer)</td></tr>
-        <tr><td>Flex</td><td>Polyimide core + coverlay lamination + special handling/profiling (laser cut)</td></tr>
-        <tr><td>Rigid-flex</td><td>Rigid + flex sub-stacks + coverlay + bonding + stiffener; extra lamination cycles</td></tr>
-        <tr><td>High-speed/RF</td><td>RF/hybrid laminate handling premium + mandatory impedance/TDR coupon test</td></tr>
-        <tr><td>Power/heavy-copper</td><td>Heavy-copper etch compensation, thicker plating, (metal-core thermal substrate)</td></tr>
+        <tr><td>Commercial / 2026 market</td><td>quality/IPC class, region, gold price $/oz, market surcharge %, overhead %, margin %</td></tr>
       </tbody>
     </table>
 
-    <h2>4 · Cost-driver list</h2>
+    <h2>4 · Key formulae</h2>
+    <div class="formula">Boards/panel = floor(panelArea/boardArea × utilisation)
+Lamination cycles = 1 + buried/HDI build-ups + rigid-flex bonding
+Yield = Y_class × Y_trace × Y_process × 0.992^(layers−2) × Y_type
+Finish$/dm² = base × [(1−goldFrac) + goldFrac × (gold$ / $4,100)]   (gold sensitivity)
+Cost carried by GOOD boards only → cost ÷ yield</div>
+
+    <h2>5 · Cost-driver list</h2>
     <ol>
-      <li><b>Layer count &amp; stack-up</b> — compounds nearly every process step + lamination cycles.</li>
-      <li><b>Via technology</b> — buried/blind/microvia → sequential laminations + laser drilling.</li>
+      <li><b>Layer count &amp; stack-up</b> — compounds nearly every step + lamination cycles.</li>
+      <li><b>Via technology</b> — buried/blind/microvia → sequential laminations + laser drilling; back-drill vs blind/buried trade-off.</li>
+      <li><b>Material</b> — FR-4 → High-Tg → low-loss → RF (PTFE 10–20× FR-4). Use hybrid stacks for RF.</li>
+      <li><b>Finish &amp; gold price</b> — 2026 gold (~$4,100/oz) makes ENIG/ENEPIG/hard-gold a major, volatile line item.</li>
       <li><b>Board area &amp; panel utilisation</b> — everything scales with area; poor nesting wastes panel.</li>
-      <li><b>Material</b> — FR-4 vs High-Tg vs RF (Rogers) vs polyimide; RF and flex carry large premiums.</li>
-      <li><b>Copper weight</b> — heavy copper needs etch compensation, wider spacing, thicker plating.</li>
-      <li><b>Trace/space &amp; impedance</b> — fine lines force LDI and depress yield; impedance adds TDR test.</li>
-      <li><b>Surface finish</b> — OSP &lt; immersion Ag/Sn &lt; ENIG &lt; ENEPIG &lt; hard gold.</li>
-      <li><b>Quality/IPC class</b> — yield, test depth, microsection, scrap, NRE multipliers.</li>
-      <li><b>Volume</b> — amortises tooling/NRE; selects flying-probe vs fixtured e-test.</li>
-      <li><b>Region</b> — labour &amp; overhead multipliers (China baseline → India → NA/EU).</li>
+      <li><b>Fine-line process</b> — mSAP/SAP (~40–50% premium) needed below ~2 mil; subtractive elsewhere.</li>
+      <li><b>Copper weight &amp; foil</b> — heavy copper 40–70%; HVLP foil for high-speed (supply-constrained 2026).</li>
+      <li><b>Quality/IPC class</b> — yield, test depth, AXI, microsection, IST/CAF, scrap, NRE.</li>
+      <li><b>Volume</b> — amortises tooling/NRE; flying-probe vs fixtured ICT (~500–1000 unit break-even).</li>
+      <li><b>Region &amp; market surcharge</b> — labour/overhead index + 2026 metal/energy inflation.</li>
     </ol>
 
-    <h2>5 · Yield &amp; quality model</h2>
-    <div class="formula">Yield = Y_class × Y_trace × 0.992^(layers−2) × Y_type</div>
-    <p>Each added layer pair compounds a small yield loss; finer trace classes and complex types
-    (HDI, rigid-flex) derate further. The quality/IPC class sets the baseline yield, scrap allowance,
-    test multiplier, mandatory microsection (Class 3 automotive/aero), and NRE multiplier. Cost is
-    carried by <b>good boards only</b> (cost ÷ yield), so yield is a first-class cost driver.</p>
+    <h2>6 · 2026 market benchmarks &amp; sources</h2>
+    <p>Independent $/dm² price band (China-volume, standard FR-4 ladder, 2026-inflated), adjusted for
+    type, quality, finish, material, heavy-copper and region. Reference $/dm² midpoints (China volume):</p>
     <table>
-      <thead><tr><th>Class</th><th>Base yield</th><th>Scrap</th><th>Test ×</th><th>Microsection</th><th>NRE ×</th></tr></thead>
-      <tbody>${QUALITY_LEVELS.map((q)=>`<tr><td>${q.label}</td><td>${pct(q.yld)}</td><td>${pct(q.scrap)}</td><td>${q.testMult}</td><td>${q.microsection?"yes":"no"}</td><td>${q.nreMult}</td></tr>`).join("")}</tbody>
+      <thead><tr><th>Layers</th><th>2 L</th><th>4 L</th><th>6 L</th><th>8 L</th><th>10 L</th><th>12 L</th><th>16 L</th></tr></thead>
+      <tbody><tr><td>$/dm²</td><td>1.6</td><td>2.9</td><td>4.4</td><td>6.5</td><td>9.5</td><td>13</td><td>20</td></tr></tbody>
     </table>
-
-    <h2>6 · Cost-breakdown structure</h2>
-    <p>Nine reconciling categories that sum to fab cost: <b>Material</b>, <b>Imaging+etch+AOI</b>,
-    <b>Lamination</b>, <b>Drilling+laser microvia</b>, <b>Desmear/PTH/plating</b>,
-    <b>Mask/finish/silk/profile</b>, <b>Test+inspection</b>, <b>Tooling/NRE (amortised)</b>,
-    <b>Overhead</b>; then margin → price. Material and processing typically dominate; NRE dominates at
-    low volume; lamination + drilling dominate the incremental cost of added layers/HDI.</p>
+    <table>
+      <thead><tr><th>2026 driver</th><th>Figure used</th></tr></thead>
+      <tbody>
+        <tr><td>Gold price</td><td>~$4,100/oz (2024 ~$2,400); ENIG ~70% gold-variable; +10% gold ≈ +6.8% ENIG</td></tr>
+        <tr><td>Copper / CCL</td><td>copper +~40% in 2025; CCL/copper-foil +up to 40%; captured by market-surcharge input</td></tr>
+        <tr><td>Region index (China=1.0, raw wages)</td><td>India ~0.3 · Vietnam ~0.65 · Taiwan ~1.7 · Korea ~3.5 · USA ~7.2 · Germany ~8.8 → blended to fab-processing multipliers (labour is 15–30% of cost)</td></tr>
+        <tr><td>Advanced-process adders</td><td>back-drill +10–20% · via-in-pad +up to 20% · mSAP/SLP +40–50% vs HDI · heavy Cu 4 oz +40–60% · 77 GHz radar 3–10× · IMS 2–3× · stacked vs staggered µvia +30–50%</td></tr>
+        <tr><td>Cost structure</td><td>material 30–40% · processing 40–50% · test+overhead 10–20% (shifts to process-dominated for HDI)</td></tr>
+      </tbody>
+    </table>
+    <p class="src"><b>Sources (2025–2026):</b> DigiTimes (Nan Ya / Kingboard / ITEQ CCL &amp; copper-foil price
+    hikes), AtlasPCB &amp; TrendForce (CCL cost breakdown, Korea import +74.5% YoY, gold/metals), NCAB PCB
+    price index (108→~125), Prismark (PCB +15.8% to ~$85B in 2025), Rogers Corp / RayPCB (RF laminate),
+    Isola / PCBSync (Isola/Shengyi/Panasonic tiers), Hil Electronic / King Sun / TOPFAST / JLCPCB
+    ($/in² ladders, cost-structure splits), IPC-4552B/4556 (ENIG/ENEPIG), Sierra/AllPCB/Epec (HDI,
+    back-drill, via-fill, test economics), BLS/Destatis/vendor wage data (labour). All figures are
+    engineering ranges, not supplier quotes; laminate makers publish sheet prices only under NDA.</p>
 
     <h2>7 · Worked examples (luxury SUV)</h2>
     ${exHtml}
 
-    <h2>8 · Benchmark ranges &amp; sources</h2>
-    <p>The independent benchmark band is built from public PCB fab $/dm² price ranges by layer count
-    and type, adjusted for quality, finish and material. Reference $/dm² midpoints (China, volume):
-    2-layer ≈ $1.6, 4-layer ≈ $2.9, 6-layer ≈ $4.4, 8-layer ≈ $6.5, 10-layer ≈ $9.5, 12-layer ≈ $13/dm²,
-    scaled ×1.3–3.2 for power/HDI/flex/rigid-flex. These are <b>engineering ranges</b> aligned with
-    typical fab process economics and IPC build classes (<b>IPC-2221</b> design, <b>IPC-6012</b>
-    rigid qualification &amp; Class 1/2/3, <b>IPC-6013</b> flex/rigid-flex, <b>IPC-2226</b> HDI,
-    <b>IPC-A-600</b> acceptability, <b>IPC-7351</b> land patterns), not supplier quotes.</p>
+    <h2>8 · AI advisor — insights &amp; idea generation</h2>
+    <p>The <b>AI Advisor</b> tab has two engines:</p>
+    <ul>
+      <li><b>Built-in advisor</b> (offline, no key): analyses the current design and generates a ranked,
+      quantified list of cost-reduction ideas (layer reduction, HDI vs through, finish downgrade, panel
+      utilisation, hybrid RF stack-up, trace relaxation, volume consolidation, regional trade-offs) plus a
+      cost narrative — computed deterministically from the model.</li>
+      <li><b>Claude generation</b> (your own Anthropic API key): sends the design + computed cost stack
+      directly from your browser to the Claude API and returns a generative should-cost review (drivers,
+      DfC ideas, risks/missing processes, alternative concepts). The key is used only for that direct call
+      and, if you opt in, stored only in your browser's localStorage. Model is selectable
+      (Opus 4.8 default, Sonnet 5, Haiku 4.5).</li>
+    </ul>
 
-    <h2>9 · Manager summary — how this fixes the gaps</h2>
-    <div class="callout">
-      <p><b>Previous feedback:</b> “small aspects covered, but critical processes &amp; parameters
-      missing — especially number of layers and stack-up logic.”</p>
-    </div>
+    <h2>9 · Yield &amp; quality model</h2>
+    <table>
+      <thead><tr><th>Class</th><th>Base yield</th><th>Scrap</th><th>Test ×</th><th>AXI</th><th>Microsection/IST</th><th>NRE ×</th></tr></thead>
+      <tbody>${QUALITY_LEVELS.map((q)=>`<tr><td>${q.label}</td><td>${pct(q.yld)}</td><td>${pct(q.scrap)}</td><td>${q.testMult}</td><td>${q.axi?"yes":"no"}</td><td>${q.microsection?"yes":"no"}</td><td>${q.nreMult}</td></tr>`).join("")}</tbody>
+    </table>
+
+    <h2>10 · Manager summary — how this fixes the gaps</h2>
+    <div class="callout"><p><b>Previous feedback:</b> missing materials, manufacturing processes, latest
+    technologies; old labour rates; low accuracy. Wanted 2026 data, neon+black UI, and AI tools.</p></div>
     <table>
       <thead><tr><th>Gap</th><th>Now addressed</th></tr></thead>
       <tbody>
-        <tr><td>Layer count not central</td><td><b>Layer count is the primary driver</b> — compounds imaging/etch/AOI/lamination/drill/plating and yield.</td></tr>
-        <tr><td>No stack-up logic</td><td>Explicit <b>lamination-cycle model</b>: buried/blind &amp; HDI build-ups add sequential presses; rigid-flex adds bonding cycles.</td></tr>
-        <tr><td>Via technology ignored</td><td>Through / buried-blind / HDI 1+N+1…any-layer with laser microvia drilling + build-up costs.</td></tr>
-        <tr><td>Limited PCB types</td><td>Rigid, HDI, flex, rigid-flex, high-speed/RF, power — each with its own routing &amp; multipliers.</td></tr>
-        <tr><td>Material/copper/finish coarse</td><td>FR-4/High-Tg/RF/polyimide/IMS, 0.5–4 oz copper, 8 finishes, mask colours.</td></tr>
-        <tr><td>Impedance &amp; design rules</td><td>Trace/space classes (imaging tech + yield) and controlled-impedance TDR test.</td></tr>
-        <tr><td>Panelisation</td><td>Boards-per-panel &amp; utilisation directly scale $/board.</td></tr>
-        <tr><td>Test/inspection thin</td><td>Flying-probe vs fixtured e-test by volume, AOI, microsection for Class 3.</td></tr>
-        <tr><td>Reliability/automotive</td><td>IPC Class 2/3, IATF flow, qualification NRE, conservative yield/scrap.</td></tr>
-        <tr><td>No DfC / insights</td><td>Engineering-grade <b>DfC recommendations</b> + AI cost-driver sensitivity, every run.</td></tr>
+        <tr><td>Missing materials</td><td>13 materials incl. low-loss (Megtron 6/7/8), RF (Rogers RO4350B/RO4003C/RO3003, PTFE), LCP, IMS — with 2026 relative pricing.</td></tr>
+        <tr><td>Missing processes / latest tech</td><td>mSAP/SAP, any-layer HDI/SLP, back-drilling, via-fill/via-in-pad, copper-foil profile, VCP, laser depanel, plasma desmear, 3D AXI, IST/CAF.</td></tr>
+        <tr><td>Old labour rates</td><td>2026 blended region multipliers (China/Vietnam/India/Taiwan/Korea/NA/EU) from current wage + burden data; energy in the overhead term.</td></tr>
+        <tr><td>Low accuracy</td><td>Recalibrated to 2026 $/dm² ladders + CCL inflation + gold-price finish driver; flagship examples land inside the independent market band; cost-structure split matches published 30–40% material / 40–50% process.</td></tr>
+        <tr><td>Gold / metal volatility</td><td>Explicit gold-price input scales the gold-variable part of ENIG/ENEPIG/hard-gold; market-surcharge input for CCL/copper escalation.</td></tr>
+        <tr><td>Neon + black UI</td><td>Full high-contrast neon-on-black redesign.</td></tr>
+        <tr><td>AI tools</td><td>Built-in AI advisor + optional live Claude generation for insights and idea generation.</td></tr>
       </tbody>
     </table>
 
-    <h2>Missing processes a fab would still expect to confirm</h2>
-    <p>Called out explicitly for completeness — add as needed for a specific RFQ: back-drilling of
-    stub vias (high-speed), via-fill (resin/copper) &amp; capping for HDI/via-in-pad, edge plating /
-    castellation, peelable mask &amp; carbon ink, press-fit / heavy-gold connector tabs, blue-glue
-    &amp; depanel routing strategy, IST/CAF reliability coupons, first-article &amp; PPAP
-    documentation (automotive), and assembly-side stencil/AOI (out of bare-board fab scope).</p>
+    <h2>Missing processes a fab would still confirm</h2>
+    <p>Called out for completeness — add per RFQ: resin/copper via-fill chemistry choice &amp; capping,
+    edge plating / castellation, peelable mask &amp; carbon ink, press-fit / heavy-gold connector tabs,
+    copper coin / inlay for thermal, embedded components/die, glass-core substrate (emerging AI packaging,
+    2027+), blue-glue &amp; depanel strategy, first-article &amp; PPAP (automotive), and assembly-side
+    stencil/AOI/AXI (out of bare-board fab scope).</p>
 
     <p class="src">All figures are industry-aligned engineering estimates for model calibration, not
-    confidential supplier pricing. Override coefficients in <code>data.js</code> with negotiated
-    numbers when implementing in CostVision.</p>
+    confidential supplier pricing. Override coefficients in <code>data.js</code> with negotiated numbers
+    when implementing in a costing engine.</p>
   `;
 }
 
@@ -1003,9 +1395,9 @@ function buildMethodology() {
 
 const $ = (id) => document.getElementById(id);
 const NUM_FIELDS = ["boardW","boardH","orderQty","layerCount","boardThickness",
-  "panelW","panelH","utilization","holeDensity","overheadPct","marginPct"];
-const SEL_FIELDS = ["pcbType","material","copperInner","copperOuter","via","trace","finish","maskColor","quality","region"];
-const CHK_FIELDS = ["impedance","silkscreen"];
+  "panelW","panelH","utilization","holeDensity","overheadPct","marginPct","goldPrice","marketSurcharge"];
+const SEL_FIELDS = ["pcbType","material","copperInner","copperOuter","copperFoil","fabProcess","via","trace","finish","maskColor","quality","region"];
+const CHK_FIELDS = ["impedance","backdrill","viafill","silkscreen"];
 
 let scenarios = [];
 
@@ -1030,6 +1422,8 @@ function buildSelects() {
   fillSelect("material", MATERIALS);
   fillSelect("copperInner", COPPER_WEIGHTS);
   fillSelect("copperOuter", COPPER_WEIGHTS);
+  fillSelect("copperFoil", COPPER_FOILS);
+  fillSelect("fabProcess", FAB_PROCESSES);
   fillSelect("via", VIA_TYPES);
   fillSelect("trace", TRACE_CLASSES);
   fillSelect("finish", FINISHES);
@@ -1121,9 +1515,44 @@ function render() {
     `<div class="step"><span class="n">${i+1}</span><span>${s.name}</span><span class="mc">${s.machine}</span></div>`).join("");
 
   $("accuracyNote").innerHTML =
-    `<b>Accuracy:</b> calibrated to industry $/dm² fab-price ranges; flagship examples land inside the
-     independent market band. Treat outputs as a should-cost <b>envelope</b> (±15–20%), not a quote.
-     The model is intentionally slightly conservative on the very simplest boards.`;
+    `<b>Accuracy:</b> calibrated to <b>2026</b> $/dm² fab-price ladders, labour/region indices, gold-price
+     finish sensitivity and CCL inflation. Gold at ${input.goldPrice ? "$" + Number(input.goldPrice).toLocaleString() : "$4,100"}/oz;
+     market surcharge ${input.marketSurcharge}%. Treat outputs as a should-cost <b>envelope</b> (±15–20%), not a quote.
+     The model runs slightly conservative on the very simplest boards.`;
+  // keep AI output fresh if already generated
+  if (window._aiDirty) { $("aiOutput").dataset.stale = "1"; }
+}
+
+/* ---------- AI advisor ---------- */
+function runLocalAI() {
+  const input = readInputs();
+  const r = computePcb(input);
+  $("aiStatus").className = "ai-status";
+  $("aiStatus").textContent = "Built-in advisor · generated locally, no data left your browser.";
+  $("aiOutput").innerHTML = renderLocalInsights(input, r);
+  switchTab("ai");
+}
+async function runClaudeAI() {
+  const apiKey = $("aiKey").value.trim();
+  const model = $("aiModel").value;
+  const status = $("aiStatus"), out = $("aiOutput");
+  if (!apiKey) { status.className = "ai-status err"; status.textContent = "Enter your Anthropic API key to use Claude generation (or use the built-in advisor)."; switchTab("ai"); return; }
+  if ($("aiSaveKey").checked) { try { localStorage.setItem("pcb_ai_key", apiKey); } catch (e) {} }
+  const input = readInputs();
+  const r = computePcb(input);
+  status.className = "ai-status"; status.innerHTML = `<span class="ai-spinner"></span>Asking ${model} for a should-cost review…`;
+  out.innerHTML = renderLocalInsights(input, r) + `<p class="hint">↑ built-in insights shown while Claude responds…</p>`;
+  switchTab("ai");
+  try {
+    const text = await claudeGenerate({ apiKey, model, input, r });
+    out.innerHTML = mdToHtml(text);
+    status.className = "ai-status"; status.textContent = `Generated by ${model}.`;
+  } catch (e) {
+    status.className = "ai-status err";
+    let hint = e.message || String(e);
+    if (/Failed to fetch|NetworkError|CORS/i.test(hint)) hint += " — the browser may be blocking the direct call (CORS/network). The built-in advisor above still works offline.";
+    status.textContent = "Claude call failed: " + hint;
+  }
 }
 
 /* ---------- scenarios ---------- */
@@ -1200,6 +1629,9 @@ function init() {
   $("btnReset").addEventListener("click", resetDefaults);
   $("btnSaveScenario").addEventListener("click", saveScenario);
   $("btnClearScenarios").addEventListener("click", () => { scenarios = []; persist(); renderScenarios(); });
+  $("btnLocalAI").addEventListener("click", runLocalAI);
+  $("btnClaudeAI").addEventListener("click", runClaudeAI);
+  try { const k = localStorage.getItem("pcb_ai_key"); if (k) { $("aiKey").value = k; $("aiSaveKey").checked = true; } } catch (e) {}
   document.querySelectorAll(".tab").forEach((t) => t.addEventListener("click", () => switchTab(t.dataset.tab)));
   initTooltips();
   render();
