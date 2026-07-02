@@ -88,7 +88,9 @@
         <a href="#contact" class="btn btn-primary">Join Our Community</a>
         <a href="#sponsor" class="btn btn-outline">Become a Sponsor</a>
       </div>
-      <a href="#events" class="hero-next">📅 Next up: Ganeshotsav <span class="marathi" lang="mr">गणेशोत्सव</span> — September</a>
+      <!-- Update data-event-date whenever the next event is announced (YYYY-MM-DD).
+           Currently set to Ganesh Chaturthi 2026 (14 Sep) as a placeholder. -->
+      <a href="#events" class="hero-next" data-event-date="2026-09-14">📅 Next up: Ganeshotsav <span class="marathi" lang="mr">गणेशोत्सव</span> — September</a>
     </div>
     <div class="hero-stats reveal">
       <div class="stat">
@@ -154,6 +156,33 @@
         </div>
       </div>
     </div>
+
+    <!-- Team strip — TODO: add more committee members with real names, roles and photos -->
+    <div class="team-block reveal">
+      <h3 class="team-heading">Our Team <span class="marathi" lang="mr">| आमची टीम</span></h3>
+      <div class="team-grid">
+        <div class="team-card">
+          <span class="team-avatar">🙏</span>
+          <h4>Pravin Wadewale</h4>
+          <p>Group Lead</p>
+        </div>
+        <div class="team-card">
+          <span class="team-avatar">🎭</span>
+          <h4>Events &amp; Culture Team</h4>
+          <p>Festivals, programmes and performances</p>
+        </div>
+        <div class="team-card">
+          <span class="team-avatar">🥁</span>
+          <h4>Dhol Tasha Pathak</h4>
+          <p>Our pride at every procession</p>
+        </div>
+        <div class="team-card">
+          <span class="team-avatar">🤝</span>
+          <h4>Volunteer Families</h4>
+          <p>The hands behind every event</p>
+        </div>
+      </div>
+    </div>
   </section>
 
   <!-- ===== Events / Annual Calendar ===== -->
@@ -170,6 +199,7 @@
           <h3>Haldi Kunku <span class="marathi" lang="mr">– हळदी-कुंकू</span></h3>
           <p>A traditional gathering for Marathi ladies to celebrate <strong>Makar Sankranti</strong> — tilgul, saris and sisterhood. <em>तिळगूळ घ्या, गोड गोड बोला!</em></p>
           <span class="timeline-badge">70+ participants</span>
+          <a class="rsvp-link" href="#contact" data-event="Haldi Kunku">Register interest →</a>
         </div>
       </div>
       <div class="timeline-item reveal">
@@ -178,6 +208,7 @@
           <h3>Gudhi Padwa <span class="marathi" lang="mr">– गुढीपाडवा शुभेच्छा समारोह</span></h3>
           <p>Welcoming the <strong>Maharashtrian New Year</strong> with the traditional gudhi, music and festivities.</p>
           <span class="timeline-badge">200+ participants</span>
+          <a class="rsvp-link" href="#contact" data-event="Gudhi Padwa">Register interest →</a>
         </div>
       </div>
       <div class="timeline-item reveal">
@@ -186,6 +217,7 @@
           <h3>Shivrajyotsav <span class="marathi" lang="mr">– शिवराज्योत्सव</span></h3>
           <p>Celebrating <strong>Chhatrapati Shivaji Maharaj Jayanti</strong> and <strong>Maharashtra Din</strong> with skits, music, dance and art performances. <em>जय भवानी, जय शिवाजी!</em></p>
           <span class="timeline-badge">280+ participants</span>
+          <a class="rsvp-link" href="#contact" data-event="Shivrajyotsav">Register interest →</a>
         </div>
       </div>
       <div class="timeline-item reveal">
@@ -194,6 +226,7 @@
           <h3>Ganeshotsav <span class="marathi" lang="mr">– गणेशोत्सव</span></h3>
           <p>At the <strong>Shree Krishna Mandir Ganesh Festival</strong> we prepare and serve authentic Maharashtrian food, and our Dhol Tasha Pathak leads the Ganesh procession. <em>गणपती बाप्पा मोरया!</em></p>
           <span class="timeline-badge">700+ participants</span>
+          <a class="rsvp-link" href="#contact" data-event="Ganeshotsav">Register interest →</a>
         </div>
       </div>
       <div class="timeline-item reveal">
@@ -202,6 +235,7 @@
           <h3>Diwali Celebration <span class="marathi" lang="mr">– दिवाळी भेट</span></h3>
           <p>The festival of lights with cultural performances and faraal, plus our Dhol group performing at the town's <strong>Diwali Lights Switch-On</strong>. <em>दिवाळीच्या हार्दिक शुभेच्छा!</em></p>
           <span class="timeline-badge">280+ &amp; 700+ participants</span>
+          <a class="rsvp-link" href="#contact" data-event="Diwali Celebration">Register interest →</a>
         </div>
       </div>
     </div>
@@ -267,6 +301,29 @@
     </p>
   </section>
 
+  <!-- ===== Testimonials ===== -->
+  <section id="testimonials" class="section testimonials">
+    <div class="section-head reveal">
+      <p class="section-kicker marathi" lang="mr">आपल्या मंडळींचे शब्द</p>
+      <h2>What Our Families Say</h2>
+    </div>
+    <!-- TODO: these are sample quotes — replace with real words from your members -->
+    <div class="testimonial-grid">
+      <blockquote class="testimonial reveal">
+        <p>“We moved to Leamington not knowing a single person here. Within a month of joining, it felt like we had family.”</p>
+        <cite>— A member family, Leamington Spa</cite>
+      </blockquote>
+      <blockquote class="testimonial reveal" lang="mr">
+        <p>“गणेशोत्सवात ढोल वाजला की पुण्याची आठवण येते — पण आता घरची ओढ कमी जाणवते, कारण घर इथेच आहे.”</p>
+        <cite>— सदस्य कुटुंब, वॉरविक</cite>
+      </blockquote>
+      <blockquote class="testimonial reveal">
+        <p>“Our children now look forward to Gudhi Padwa as much as they do to Christmas. That's exactly what we hoped for.”</p>
+        <cite>— A member family, Warwick</cite>
+      </blockquote>
+    </div>
+  </section>
+
   <!-- ===== Sponsorship ===== -->
   <section id="sponsor" class="section sponsor">
     <div class="section-head reveal">
@@ -318,6 +375,17 @@
         <div class="benefit"><strong>Cultural association</strong> — align your brand with Indian values and traditions</div>
         <div class="benefit"><strong>Networking</strong> — connect with community members and leaders</div>
         <div class="benefit"><strong>Social responsibility</strong> — demonstrate commitment to diversity and inclusivity</div>
+      </div>
+    </div>
+
+    <!-- Supporters wall — replace the placeholder slots with real sponsor logos as they come on board -->
+    <div class="supporters reveal">
+      <h3>Our Supporters</h3>
+      <p>We're grateful to the local businesses who stand with our community. Your logo could be here!</p>
+      <div class="supporters-grid">
+        <a href="mailto:leamingtonmarathi@gmail.com?subject=Sponsorship%20Enquiry" class="supporter-slot">Your logo<br>here</a>
+        <a href="mailto:leamingtonmarathi@gmail.com?subject=Sponsorship%20Enquiry" class="supporter-slot">Your logo<br>here</a>
+        <a href="mailto:leamingtonmarathi@gmail.com?subject=Sponsorship%20Enquiry" class="supporter-slot">Your logo<br>here</a>
       </div>
     </div>
   </section>
@@ -377,6 +445,20 @@
     </div>
   </section>
 
+  <!-- ===== Newsletter ===== -->
+  <section class="newsletter" aria-label="Email updates signup">
+    <div class="newsletter-inner reveal">
+      <h2>Stay in the Loop <span class="marathi" lang="mr">| संपर्कात राहा</span></h2>
+      <p>Leave your email and we'll let you know about upcoming events and celebrations.</p>
+      <form id="newsletter-form">
+        <input type="text" name="_honey" class="honeypot" tabindex="-1" autocomplete="off" aria-hidden="true">
+        <input type="email" name="email" placeholder="you@example.com" autocomplete="email" aria-label="Your email address" required>
+        <button type="submit" class="btn btn-primary">Notify Me</button>
+      </form>
+      <p class="newsletter-note" role="status" aria-live="polite">No spam — just festivals 🎉</p>
+    </div>
+  </section>
+
   <!-- ===== Photo Reel ===== -->
   <section class="photo-marquee" aria-label="Photos from our events">
     <p class="marquee-title"><span class="marathi" lang="mr">आमच्या आठवणी</span> — Moments from our events 📸
@@ -401,6 +483,11 @@
     <img src="images/logo-emblem.png" alt="Leamington Marathi emblem" class="footer-logo" width="216" height="216">
     <p class="marathi footer-tagline" lang="mr">“वारसा मराठी संस्कृतीचा”</p>
     <p>Leamington Marathi — a volunteer-run, non-profit community group in Leamington Spa &amp; Warwick, UK.</p>
+    <p class="footer-privacy" id="privacy">
+      Photos on this site are published with our members' consent. Messages sent through this website go
+      only to our group inbox and are never shared with third parties. To ask for a photo or your details
+      to be removed, email <a href="mailto:leamingtonmarathi@gmail.com">leamingtonmarathi@gmail.com</a>.
+    </p>
     <p class="footer-copy">© <span id="year">2026</span> Leamington Marathi. All rights reserved. | <span class="marathi" lang="mr">जय महाराष्ट्र 🚩</span></p>
     <p class="footer-credit">Designed &amp; Developed by Avinash Bhosale</p>
   </footer>

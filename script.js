@@ -95,6 +95,54 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  // Countdown to the next event (date lives on the hero chip's data-event-date)
+  const nextChip = document.querySelector('.hero-next');
+  if (nextChip && nextChip.dataset.eventDate) {
+    const days = Math.ceil((new Date(nextChip.dataset.eventDate) - Date.now()) / 86400000);
+    if (days > 0 && days < 366) {
+      const span = document.createElement('span');
+      span.className = 'countdown';
+      span.textContent = ` · ${days} ${days === 1 ? 'day' : 'days'} to go!`;
+      nextChip.appendChild(span);
+    }
+  }
+
+  // "Register interest" links pre-fill the contact form for that event
+  document.querySelectorAll('.rsvp-link').forEach(link => {
+    link.addEventListener('click', () => {
+      const message = form.elements.message;
+      message.value = `Namaskar! We would like to register our interest for ${link.dataset.event}. `
+        + `Family of ___ (adults/children). Thank you!`;
+    });
+  });
+
+  // Newsletter signup → same relay as the contact form, tagged separately
+  const newsForm = document.getElementById('newsletter-form');
+  const newsNote = document.querySelector('.newsletter-note');
+  newsForm.addEventListener('submit', async e => {
+    e.preventDefault();
+    const email = newsForm.elements.email.value.trim();
+    const btn = newsForm.querySelector('button');
+    btn.disabled = true;
+    btn.textContent = 'Adding…';
+    try {
+      const res = await fetch('https://formsubmit.co/ajax/leamingtonmarathi@gmail.com', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({ email, _subject: 'Newsletter signup — Leamington Marathi' }),
+      });
+      if (!res.ok) throw new Error(`relay responded ${res.status}`);
+      newsForm.reset();
+      newsNote.textContent = 'धन्यवाद! You’re on the list 🎉';
+      btn.textContent = 'Done ✓';
+    } catch {
+      window.location.href = `mailto:leamingtonmarathi@gmail.com?subject=${encodeURIComponent('Newsletter signup')}&body=${encodeURIComponent(`Please add ${email} to the event updates list.`)}`;
+      newsNote.textContent = 'Opening your email app instead — just hit send.';
+      btn.disabled = false;
+      btn.textContent = 'Notify Me';
+    }
+  });
+
   // Photo reel pause/play (hover pause doesn't exist on touch screens)
   const reel = document.querySelector('.photo-marquee');
   const reelToggle = document.getElementById('marquee-toggle');

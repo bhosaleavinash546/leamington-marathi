@@ -264,6 +264,7 @@ img { max-width: 100%; display: block; }
   transition: transform 0.2s ease;
 }
 .hero-next:hover { transform: translateY(-2px); }
+.hero-next .countdown { color: var(--saffron-text); }
 
 .hero-stats {
   display: flex;
@@ -354,6 +355,35 @@ img { max-width: 100%; display: block; }
 .value-card p { margin: 0; font-size: 0.98rem; }
 .value-icon { font-size: 1.7rem; }
 
+/* ---------- Team strip ---------- */
+.team-block { margin-top: 60px; }
+.team-heading {
+  text-align: center;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 1.5rem;
+  color: var(--red-dark);
+  margin: 0 0 26px;
+}
+.team-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 18px;
+}
+.team-card {
+  background: var(--white);
+  border-radius: var(--radius);
+  padding: 22px 18px;
+  box-shadow: var(--shadow);
+  text-align: center;
+  border-bottom: 4px solid var(--gold);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.team-card:hover { transform: translateY(-5px); box-shadow: 0 14px 32px rgba(74, 19, 11, 0.16); }
+.team-avatar { font-size: 2.2rem; display: block; margin-bottom: 8px; }
+.team-card h4 { margin: 0 0 4px; color: var(--red-dark); font-size: 1.05rem; }
+.team-card p { margin: 0; font-size: 0.9rem; color: #6b544b; }
+
 /* ---------- Events timeline ---------- */
 .timeline {
   position: relative;
@@ -418,6 +448,16 @@ img { max-width: 100%; display: block; }
   padding: 4px 14px;
   border-radius: 20px;
 }
+.rsvp-link {
+  display: inline-block;
+  margin-left: 12px;
+  color: var(--saffron-text);
+  font-weight: 700;
+  font-size: 0.9rem;
+  text-decoration: none;
+  border-bottom: 2px solid transparent;
+}
+.rsvp-link:hover { border-bottom-color: var(--saffron-text); }
 
 /* ---------- Dhol Tasha ---------- */
 .dhol {
@@ -561,6 +601,32 @@ img { max-width: 100%; display: block; }
 }
 .gallery-more a:hover { color: var(--red); border-bottom-color: var(--red); }
 
+/* ---------- Testimonials ---------- */
+.testimonial-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+  gap: 22px;
+}
+.testimonial {
+  margin: 0;
+  background: var(--white);
+  border-radius: var(--radius);
+  padding: 26px 26px 20px;
+  box-shadow: var(--shadow);
+  border-left: 4px solid var(--gold);
+  position: relative;
+}
+.testimonial::before {
+  content: "❝";
+  position: absolute;
+  top: 10px;
+  right: 18px;
+  font-size: 2rem;
+  color: var(--cream-deep);
+}
+.testimonial p { margin: 0 0 14px; font-size: 1.02rem; font-style: italic; }
+.testimonial cite { font-style: normal; font-weight: 700; color: var(--saffron-text); font-size: 0.9rem; }
+
 /* ---------- Sponsorship ---------- */
 .package-cards {
   display: grid;
@@ -640,6 +706,32 @@ img { max-width: 100%; display: block; }
 }
 .benefit { font-size: 0.98rem; }
 .benefit strong { color: var(--red-dark); }
+
+/* ---------- Supporters wall ---------- */
+.supporters { text-align: center; margin-top: 46px; }
+.supporters h3 { color: var(--red-dark); font-size: 1.3rem; margin: 0 0 6px; }
+.supporters > p { margin: 0 0 22px; color: #6b544b; }
+.supporters-grid {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+.supporter-slot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 170px;
+  height: 100px;
+  border: 2px dashed var(--saffron);
+  border-radius: var(--radius);
+  color: var(--saffron-text);
+  font-weight: 700;
+  text-decoration: none;
+  background: var(--white);
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+.supporter-slot:hover { background: var(--cream-deep); transform: translateY(-3px); }
 
 /* ---------- Join ---------- */
 .join {
@@ -743,6 +835,40 @@ img { max-width: 100%; display: block; }
   box-shadow: 0 10px 26px rgba(0, 0, 0, 0.32);
 }
 
+/* ---------- Newsletter ---------- */
+.newsletter {
+  background: var(--cream-deep);
+  padding: 56px 24px;
+  text-align: center;
+}
+.newsletter-inner { max-width: 560px; margin: auto; }
+.newsletter h2 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  color: var(--red-dark);
+  font-size: 1.7rem;
+  margin: 0 0 8px;
+}
+.newsletter p { margin: 0 0 20px; }
+#newsletter-form {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+#newsletter-form input[type="email"] {
+  flex: 1 1 260px;
+  max-width: 340px;
+  font-family: var(--font-body);
+  font-size: 1rem;
+  padding: 12px 16px;
+  border: 1.5px solid #e8d3b8;
+  border-radius: 40px;
+  background: var(--white);
+}
+#newsletter-form input[type="email"]:focus { outline: none; border-color: var(--saffron); }
+.newsletter-note { margin-top: 12px !important; font-size: 0.85rem; color: #8a6f63; }
+
 /* ---------- Photo marquee reel ---------- */
 .photo-marquee {
   overflow: hidden;
@@ -829,6 +955,13 @@ footer {
 }
 .footer-tagline { font-size: 1.15rem; font-weight: 600; color: var(--gold); margin: 0 0 10px; }
 footer p { margin: 6px 0; font-size: 0.95rem; }
+.footer-privacy {
+  max-width: 640px;
+  margin: 14px auto 0 !important;
+  font-size: 0.85rem !important;
+  opacity: 0.8;
+}
+.footer-privacy a { color: var(--gold); }
 .footer-copy { opacity: 0.75; margin-top: 16px; font-size: 0.87rem; }
 .footer-credit { opacity: 0.6; font-size: 0.8rem; margin-top: 6px; }
 
