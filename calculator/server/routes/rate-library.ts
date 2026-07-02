@@ -19,9 +19,12 @@ import { requireAdmin } from '../middleware/require-admin.js';
 import { DEFAULT_RATE_LIBRARY } from '../../src/engine/rate-library.js';
 import { resolveActiveLibrary, type RateSource, type RateTable } from '../../src/engine/rate-library-merge.js';
 import { buildRateLibraryWorkbook, parseRateLibraryWorkbook } from '../utils/rate-library-xlsx.js';
+import { buildSWRateWorkbook, parseSWRateWorkbook } from '../utils/sw-rate-library-xlsx.js';
+import { DEFAULT_SW_RATE_LIBRARY } from '../../src/engine/sw-rate-library.js';
 import {
   getCompanyLibrary, setCompanyLibrary, clearCompanyLibrary,
   getRateSource, setRateSource, getOverrides, setOverride, deleteOverride, clearOverrides,
+  getSWCompanyLibrary, setSWCompanyLibrary, clearSWCompanyLibrary, getSWRateSource, setSWRateSource,
 } from '../data/rate-library-store.js';
 
 const router = Router();
@@ -54,8 +57,51 @@ router.get('/status', (req: AuthenticatedRequest, res: Response) => {
   });
 });
 
+// SW Should-Cost rates — the effective override the SW engine should apply
+// (company partial library when active, else null → engine uses its defaults).
+router.get('/sw/active', (_req, res: Response) => {
+  const company = getSWCompanyLibrary(db);
+  const active = getSWRateSource(db) === 'company' && company ? company : null;
+  res.json({ rateLibrary: active, source: active ? 'company' : 'builtin' });
+});
+
+router.get('/sw/status', (req: AuthenticatedRequest, res: Response) => {
+  const role = (db.prepare('SELECT role FROM users WHERE id = ?').get(req.user!.userId) as { role?: string } | undefined)?.role;
+  res.json({ source: getSWRateSource(db), hasCompany: getSWCompanyLibrary(db) != null, isAdmin: role === 'admin' });
+});
+
 // ── Admin only below ──────────────────────────────────────────────────────────
 router.use(requireAdmin);
+
+router.get('/sw/template', (_req, res: Response) => {
+  const buf = buildSWRateWorkbook(DEFAULT_SW_RATE_LIBRARY);
+  res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+  res.setHeader('Content-Disposition', 'attachment; filename="CostVision-SW-Rate-Template.xlsx"');
+  res.send(buf);
+});
+
+router.post('/sw/upload', upload.single('file'), (req: AuthenticatedRequest, res: Response): void => {
+  if (!req.file) { res.status(400).json({ error: 'No file uploaded' }); return; }
+  const { library, errors, counts } = parseSWRateWorkbook(req.file.buffer);
+  if (!library) { res.status(400).json({ error: 'Validation failed', errors, counts }); return; }
+  setSWCompanyLibrary(db, library, new Date().toISOString(), req.user!.email);
+  setSWRateSource(db, 'company');
+  res.json({ ok: true, counts, activated: true });
+});
+
+router.put('/sw/source', (req: AuthenticatedRequest, res: Response): void => {
+  const source = req.body?.source as RateSource;
+  if (source !== 'builtin' && source !== 'company') { res.status(400).json({ error: 'source must be builtin or company' }); return; }
+  if (source === 'company' && getSWCompanyLibrary(db) == null) { res.status(400).json({ error: 'No company SW library uploaded yet' }); return; }
+  setSWRateSource(db, source);
+  res.json({ ok: true, source });
+});
+
+router.post('/sw/reset', (_req, res: Response): void => {
+  clearSWCompanyLibrary(db);
+  setSWRateSource(db, 'builtin');
+  res.json({ ok: true, source: 'builtin' });
+});
 
 router.get('/template', (_req, res: Response) => {
   const buf = buildRateLibraryWorkbook(DEFAULT_RATE_LIBRARY);

@@ -5,10 +5,13 @@
  */
 import type { Database } from 'better-sqlite3';
 import type { RateLibrary } from '../../src/engine/types.js';
+import type { SWRateLibrary } from '../../src/engine/sw-rate-library.js';
 import type { RateOverride, RateSource, RateTable } from '../../src/engine/rate-library-merge.js';
 
 const COMPANY_ID = 'company';
 const SOURCE_KEY = 'rate_source';
+const SW_COMPANY_ID = 'sw_company';
+const SW_SOURCE_KEY = 'sw_rate_source';
 
 export function getCompanyLibrary(db: Database): RateLibrary | null {
   const row = db.prepare('SELECT data FROM rate_library WHERE id = ?').get(COMPANY_ID) as { data: string } | undefined;
@@ -62,4 +65,36 @@ export function deleteOverride(db: Database, table: string, id: string, field: s
 
 export function clearOverrides(db: Database): void {
   db.prepare('DELETE FROM rate_overrides').run();
+}
+
+// ─── SW Should-Cost rate library (Slice 2) ─────────────────────────────────────
+
+export function getSWCompanyLibrary(db: Database): Partial<SWRateLibrary> | null {
+  const row = db.prepare('SELECT data FROM rate_library WHERE id = ?').get(SW_COMPANY_ID) as { data: string } | undefined;
+  if (!row) return null;
+  try { return JSON.parse(row.data) as Partial<SWRateLibrary>; } catch { return null; }
+}
+
+export function setSWCompanyLibrary(db: Database, lib: Partial<SWRateLibrary>, now: string, by: string): void {
+  db.prepare(`
+    INSERT INTO rate_library (id, data, updated_at, updated_by)
+    VALUES (?, ?, ?, ?)
+    ON CONFLICT(id) DO UPDATE SET data = excluded.data, updated_at = excluded.updated_at, updated_by = excluded.updated_by
+  `).run(SW_COMPANY_ID, JSON.stringify(lib), now, by);
+}
+
+export function clearSWCompanyLibrary(db: Database): void {
+  db.prepare('DELETE FROM rate_library WHERE id = ?').run(SW_COMPANY_ID);
+}
+
+export function getSWRateSource(db: Database): RateSource {
+  const row = db.prepare('SELECT value FROM app_settings WHERE key = ?').get(SW_SOURCE_KEY) as { value: string } | undefined;
+  return row?.value === 'company' ? 'company' : 'builtin';
+}
+
+export function setSWRateSource(db: Database, source: RateSource): void {
+  db.prepare(`
+    INSERT INTO app_settings (key, value) VALUES (?, ?)
+    ON CONFLICT(key) DO UPDATE SET value = excluded.value
+  `).run(SW_SOURCE_KEY, source === 'company' ? 'company' : 'builtin');
 }

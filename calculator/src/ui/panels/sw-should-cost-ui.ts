@@ -31,6 +31,87 @@ import { projectStore } from '../project-store.js';
 // user is logged in, localStorage when not.
 const SW_PROJECT_KIND = 'sw_should_cost';
 
+/**
+ * Load the organisation's active SW rate library (admin-uploaded company rates)
+ * and apply it to the inputs so calculations use approved numbers. Falls back to
+ * the engine's built-in rate library when offline / not signed in / no company set.
+ */
+async function syncSWRateLibrary(): Promise<void> {
+  try {
+    const token = localStorage.getItem('auth_token') ?? sessionStorage.getItem('auth_token');
+    if (!token) return;
+    const res = await fetch('/api/rate-library/sw/active', { headers: { Authorization: `Bearer ${token}` } });
+    if (!res.ok) return;
+    const data = await res.json() as { rateLibrary?: unknown; source?: string };
+    _swInputs.rateLibrary = (data.rateLibrary && typeof data.rateLibrary === 'object')
+      ? data.rateLibrary as typeof _swInputs.rateLibrary
+      : undefined;
+  } catch { /* offline / not authed — keep engine defaults */ }
+}
+
+function swAuthHeader(): Record<string, string> {
+  const t = localStorage.getItem('auth_token') ?? sessionStorage.getItem('auth_token');
+  return t ? { Authorization: `Bearer ${t}` } : {};
+}
+
+/** Company SW rate controls in the provenance panel: status for all, admin tools for admins. */
+async function renderSWRateAdmin(): Promise<void> {
+  const host = document.getElementById('sw-rate-admin');
+  if (!host) return;
+  let st: { source?: string; hasCompany?: boolean; isAdmin?: boolean } = {};
+  try {
+    const res = await fetch('/api/rate-library/sw/status', { headers: swAuthHeader() });
+    if (res.ok) st = await res.json(); else { host.innerHTML = ''; return; }
+  } catch { host.innerHTML = ''; return; }
+
+  const badge = st.source === 'company'
+    ? '<span style="background:#059669;color:#fff;border-radius:10px;padding:2px 9px;font-size:0.68rem;font-weight:700">Company rates active</span>'
+    : '<span style="background:#64748b;color:#fff;border-radius:10px;padding:2px 9px;font-size:0.68rem;font-weight:700">Built-in defaults</span>';
+  const admin = st.isAdmin ? `
+    <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px">
+      <button id="swra-template" class="sw-mode-btn">⬇ Template</button>
+      <label class="sw-mode-btn" style="cursor:pointer">⬆ Upload<input id="swra-file" type="file" accept=".xlsx" style="display:none"></label>
+      <button id="swra-toggle" class="sw-mode-btn">${st.source === 'company' ? 'Use built-in' : 'Use company'}</button>
+      <button id="swra-reset" class="sw-mode-btn" style="color:#dc2626">↺ Reset</button>
+    </div><div id="swra-msg" style="font-size:0.72rem;color:var(--sw-text-muted);margin-top:6px"></div>`
+    : `<div style="font-size:0.72rem;color:var(--sw-text-muted);margin-top:6px">SW rates are set by an administrator.</div>`;
+  host.innerHTML = `<div style="border:1px solid var(--sw-border);border-radius:8px;padding:10px 12px;background:var(--sw-surface)">
+      <span style="font-weight:700;font-size:0.78rem;color:var(--sw-text-primary)">🏭 Company SW Rates</span> ${badge}
+      ${st.hasCompany ? '' : '<span style="font-size:0.68rem;color:var(--sw-text-muted)"> · none uploaded</span>'}${admin}</div>`;
+
+  if (!st.isAdmin) return;
+  const msg = (t: string, ok = true) => { const m = document.getElementById('swra-msg'); if (m) { m.textContent = t; m.style.color = ok ? '#059669' : '#dc2626'; } };
+  const refresh = async () => { await syncSWRateLibrary(); await renderSWRateAdmin(); };
+
+  document.getElementById('swra-template')?.addEventListener('click', async () => {
+    const res = await fetch('/api/rate-library/sw/template', { headers: swAuthHeader() });
+    if (!res.ok) { msg('Admin only.', false); return; }
+    const a = document.createElement('a'); a.href = URL.createObjectURL(await res.blob());
+    a.download = 'CostVision-SW-Rate-Template.xlsx'; a.click();
+  });
+  document.getElementById('swra-file')?.addEventListener('change', async (e) => {
+    const f = (e.target as HTMLInputElement).files?.[0]; if (!f) return;
+    msg('Uploading & validating…');
+    const fd = new FormData(); fd.append('file', f);
+    try {
+      const res = await fetch('/api/rate-library/sw/upload', { method: 'POST', headers: swAuthHeader(), body: fd });
+      const d = await res.json();
+      if (!res.ok) { msg('Rejected: ' + ((d.errors ?? [d.error]).slice(0, 2).join('; ')), false); return; }
+      msg('Uploaded and activated.'); await refresh();
+    } catch { msg('Upload failed.', false); }
+  });
+  document.getElementById('swra-toggle')?.addEventListener('click', async () => {
+    const next = st.source === 'company' ? 'builtin' : 'company';
+    const res = await fetch('/api/rate-library/sw/source', { method: 'PUT', headers: { 'Content-Type': 'application/json', ...swAuthHeader() }, body: JSON.stringify({ source: next }) });
+    if (!res.ok) { msg((await res.json()).error ?? 'Switch failed.', false); return; }
+    await refresh();
+  });
+  document.getElementById('swra-reset')?.addEventListener('click', async () => {
+    const res = await fetch('/api/rate-library/sw/reset', { method: 'POST', headers: swAuthHeader() });
+    if (res.ok) await refresh(); else msg('Reset failed.', false);
+  });
+}
+
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 interface SavedConfig {
@@ -147,6 +228,7 @@ function renderRateLibraryHTML(): string {
       <span style="font-size:0.7rem;font-weight:400;color:var(--sw-text-muted)">reviewed ${esc(lib.lastReviewed)} · every rate sourced &amp; overridable</span>
     </summary>
     <div style="padding:0 18px 16px;overflow-x:auto">
+      <div id="sw-rate-admin" style="margin-bottom:12px"></div>
       <table class="sw-data-table" style="font-size:0.76rem">
         <thead><tr><th>Rate</th><th class="sw-num">Value</th><th>Confidence / As-of</th><th>Source</th></tr></thead>
         <tbody>
@@ -2084,6 +2166,7 @@ export function wireSWPanel(): void {
   document.querySelectorAll<HTMLButtonElement>('.sw-mode-btn').forEach(btn =>
     btn.addEventListener('click', () => setSWMode(btn.dataset.mode as 'guided' | 'advanced')));
   wireGuided();
+  void renderSWRateAdmin();
 
   // Calculate button
   const calcBtn = document.getElementById('sw-calc-btn');
@@ -2216,4 +2299,6 @@ export function initSWPanel(containerEl: HTMLElement): void {
   // Load saved configs asynchronously (server or localStorage), then refresh the
   // list in place — the panel renders immediately without waiting on the network.
   void loadSavedConfigs().then(updateSavedConfigsUI).catch(() => { /* non-fatal */ });
+  // Apply the organisation's active SW rates (if an admin has uploaded them).
+  void syncSWRateLibrary();
 }
