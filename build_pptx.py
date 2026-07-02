@@ -1,0 +1,1126 @@
+"""
+CostVision — 15-Slide Executive Presentation Generator
+Produces a professional .pptx file with dark theme, data tables,
+two-column layouts and branded colour scheme.
+"""
+
+from pptx import Presentation
+from pptx.util import Inches, Pt, Emu
+from pptx.dml.color import RGBColor
+from pptx.enum.text import PP_ALIGN
+from pptx.util import Inches, Pt
+from pptx.oxml.ns import qn
+from pptx.oxml import parse_xml
+from lxml import etree
+import copy
+
+# ─── Brand colours ────────────────────────────────────────────────────────────
+BG          = RGBColor(0x0D, 0x0F, 0x14)   # near-black background
+SURFACE     = RGBColor(0x16, 0x19, 0x23)   # card surface
+SURFACE2    = RGBColor(0x1E, 0x23, 0x30)   # elevated surface
+BORDER      = RGBColor(0x2A, 0x30, 0x45)   # border
+ACCENT_B    = RGBColor(0x4F, 0x8E, 0xF7)   # blue accent
+ACCENT_G    = RGBColor(0x10, 0xB9, 0x81)   # green accent
+ACCENT_P    = RGBColor(0x7C, 0x3A, 0xED)   # purple accent
+ORANGE      = RGBColor(0xF5, 0x9E, 0x0B)   # orange
+RED         = RGBColor(0xEF, 0x44, 0x44)   # red
+TEXT_W      = RGBColor(0xF0, 0xF2, 0xF8)   # white text
+TEXT_G      = RGBColor(0x9A, 0xA3, 0xB8)   # grey text
+TEXT_D      = RGBColor(0x5A, 0x63, 0x80)   # dark grey text
+WHITE       = RGBColor(0xFF, 0xFF, 0xFF)
+
+# Slide dimensions: 16:9 widescreen
+W = Inches(13.333)
+H = Inches(7.5)
+
+prs = Presentation()
+prs.slide_width  = W
+prs.slide_height = H
+
+blank_layout = prs.slide_layouts[6]  # blank layout
+
+# ─── Helper functions ─────────────────────────────────────────────────────────
+
+def add_slide():
+    slide = prs.slides.add_slide(blank_layout)
+    # Fill background
+    bg = slide.background
+    fill = bg.fill
+    fill.solid()
+    fill.fore_color.rgb = BG
+    return slide
+
+def txb(slide, text, x, y, w, h,
+        size=18, bold=False, color=TEXT_W, align=PP_ALIGN.LEFT,
+        wrap=True, italic=False):
+    """Add a text box."""
+    tf_box = slide.shapes.add_textbox(x, y, w, h)
+    tf = tf_box.text_frame
+    tf.word_wrap = wrap
+    p = tf.paragraphs[0]
+    p.alignment = align
+    run = p.add_run()
+    run.text = text
+    run.font.size = Pt(size)
+    run.font.bold = bold
+    run.font.italic = italic
+    run.font.color.rgb = color
+    return tf_box
+
+def rect(slide, x, y, w, h, fill_color, line_color=None, line_width=Pt(0)):
+    """Add a filled rectangle."""
+    shape = slide.shapes.add_shape(1, x, y, w, h)   # 1 = MSO_SHAPE_TYPE.RECTANGLE
+    shape.fill.solid()
+    shape.fill.fore_color.rgb = fill_color
+    if line_color:
+        shape.line.color.rgb = line_color
+        shape.line.width = line_width
+    else:
+        shape.line.fill.background()
+    return shape
+
+def accent_bar(slide, x, y, w=Inches(0.5), h=Inches(0.04), color=ACCENT_B):
+    """Thin horizontal accent bar."""
+    r = rect(slide, x, y, w, h, color)
+    return r
+
+def slide_header(slide, slide_num, section_label, title_text, subtitle_text=""):
+    """Standard slide header with top bar, slide number, section label, title."""
+    # Top accent strip
+    rect(slide, 0, 0, W, Inches(0.06), ACCENT_B)
+
+    # Slide number (top-left)
+    txb(slide, f"SLIDE {slide_num:02d} / 15", Inches(0.35), Inches(0.12), Inches(2), Inches(0.35),
+        size=7, color=TEXT_D, bold=True)
+
+    # CostVision logo (top-right)
+    txb(slide, "CostVision", W - Inches(1.9), Inches(0.10), Inches(1.6), Inches(0.35),
+        size=11, bold=True, color=ACCENT_B, align=PP_ALIGN.RIGHT)
+
+    # Horizontal rule under top bar
+    rect(slide, 0, Inches(0.52), W, Inches(0.008), BORDER)
+
+    # Section label
+    txb(slide, section_label.upper(), Inches(0.5), Inches(0.68), Inches(8), Inches(0.28),
+        size=8, bold=True, color=ACCENT_B)
+
+    # Main title
+    txb(slide, title_text, Inches(0.5), Inches(0.9), Inches(12), Inches(0.6),
+        size=26, bold=True, color=TEXT_W)
+
+    # Subtitle
+    if subtitle_text:
+        txb(slide, subtitle_text, Inches(0.5), Inches(1.45), Inches(12), Inches(0.38),
+            size=12, color=TEXT_G)
+
+    # Footer rule
+    rect(slide, 0, H - Inches(0.45), W, Inches(0.008), BORDER)
+    txb(slide, "CostVision — AI-Powered Should-Cost Intelligence  |  Avinash Bhosale  |  Confidential",
+        Inches(0.4), H - Inches(0.4), W - Inches(0.8), Inches(0.35),
+        size=7.5, color=TEXT_D, align=PP_ALIGN.CENTER)
+
+def card(slide, x, y, w, h, title, body, accent=ACCENT_B, icon=""):
+    """Card with coloured left border, title, body."""
+    # Card background
+    r = rect(slide, x, y, w, h, SURFACE2, BORDER, Pt(0.5))
+    # Accent left border
+    rect(slide, x, y, Inches(0.06), h, accent)
+    # Icon + Title
+    title_text = f"{icon}  {title}" if icon else title
+    txb(slide, title_text, x + Inches(0.14), y + Inches(0.1), w - Inches(0.2), Inches(0.32),
+        size=9.5, bold=True, color=TEXT_W)
+    # Body
+    txb(slide, body, x + Inches(0.14), y + Inches(0.38), w - Inches(0.2), h - Inches(0.5),
+        size=8.5, color=TEXT_G, wrap=True)
+
+def stat_card(slide, x, y, w, h, number, label, color=ACCENT_B):
+    """Stat card with big number."""
+    rect(slide, x, y, w, h, SURFACE2, BORDER, Pt(0.5))
+    txb(slide, number, x, y + Inches(0.1), w, Inches(0.55),
+        size=28, bold=True, color=color, align=PP_ALIGN.CENTER)
+    txb(slide, label, x, y + Inches(0.62), w, Inches(0.38),
+        size=8, color=TEXT_G, align=PP_ALIGN.CENTER, wrap=True)
+
+def pill(slide, x, y, text, color=ACCENT_B):
+    """Small pill badge."""
+    w = Inches(2.2)
+    h = Inches(0.28)
+    rect(slide, x, y, w, h, SURFACE2, color, Pt(0.8))
+    txb(slide, text, x + Inches(0.1), y + Inches(0.02), w - Inches(0.15), h,
+        size=7.5, color=color, bold=True)
+
+def bullet_block(slide, x, y, w, h, items, title=None, title_color=ACCENT_B):
+    """Block of bullet points."""
+    yy = y
+    if title:
+        txb(slide, title, x, yy, w, Inches(0.3),
+            size=9.5, bold=True, color=title_color)
+        yy += Inches(0.3)
+    for item in items:
+        # Bullet dot
+        rect(slide, x + Inches(0.05), yy + Inches(0.13), Inches(0.06), Inches(0.06), ACCENT_B)
+        txb(slide, item, x + Inches(0.22), yy, w - Inches(0.25), Inches(0.36),
+            size=8.5, color=TEXT_G, wrap=True)
+        yy += Inches(0.33)
+
+def flow_box(slide, x, y, w, h, num, icon, title, body, color=ACCENT_B):
+    """Step box for workflow."""
+    rect(slide, x, y, w, h, SURFACE2, BORDER, Pt(0.5))
+    # Step number circle area
+    rect(slide, x, y, w, Inches(0.04), color)
+    # Number
+    txb(slide, str(num), x, y + Inches(0.06), w, Inches(0.3),
+        size=10, bold=True, color=color, align=PP_ALIGN.CENTER)
+    # Icon
+    txb(slide, icon, x, y + Inches(0.33), w, Inches(0.3),
+        size=14, color=TEXT_W, align=PP_ALIGN.CENTER)
+    # Title
+    txb(slide, title, x + Inches(0.06), y + Inches(0.62), w - Inches(0.12), Inches(0.32),
+        size=7.5, bold=True, color=TEXT_W, align=PP_ALIGN.CENTER)
+    # Body
+    txb(slide, body, x + Inches(0.06), y + Inches(0.92), w - Inches(0.12), h - Inches(1.0),
+        size=7, color=TEXT_G, align=PP_ALIGN.CENTER, wrap=True)
+
+def comm_card(slide, x, y, w, h, icon, name, sub, color=BORDER):
+    """Small commodity card."""
+    rect(slide, x, y, w, h, SURFACE2, color, Pt(0.8))
+    txb(slide, icon, x, y + Inches(0.06), w, Inches(0.32),
+        size=13, color=TEXT_W, align=PP_ALIGN.CENTER)
+    txb(slide, name, x, y + Inches(0.38), w, Inches(0.22),
+        size=7.5, bold=True, color=TEXT_W, align=PP_ALIGN.CENTER)
+    txb(slide, sub, x, y + Inches(0.58), w, Inches(0.22),
+        size=6.5, color=TEXT_D, align=PP_ALIGN.CENTER)
+
+# ─── TABLE HELPER ─────────────────────────────────────────────────────────────
+
+def add_table(slide, rows, cols, x, y, w, h, header_row, data_rows,
+              col_widths=None, header_colors=None):
+    """Add a styled table."""
+    table = slide.shapes.add_table(rows, cols, x, y, w, h).table
+    if col_widths:
+        for i, cw in enumerate(col_widths):
+            table.columns[i].width = cw
+
+    # Header row
+    for c, text in enumerate(header_row):
+        cell = table.cell(0, c)
+        cell.fill.solid()
+        cell.fill.fore_color.rgb = SURFACE
+        p = cell.text_frame.paragraphs[0]
+        p.alignment = PP_ALIGN.LEFT
+        run = p.add_run()
+        run.text = text
+        run.font.size = Pt(7.5)
+        run.font.bold = True
+        run.font.color.rgb = TEXT_G
+
+    # Data rows
+    for r, row_data in enumerate(data_rows):
+        bg = SURFACE2 if r % 2 == 0 else SURFACE
+        for c, text in enumerate(row_data):
+            cell = table.cell(r + 1, c)
+            cell.fill.solid()
+            cell.fill.fore_color.rgb = bg
+            p = cell.text_frame.paragraphs[0]
+            p.alignment = PP_ALIGN.LEFT
+            run = p.add_run()
+            run.text = str(text)
+            run.font.size = Pt(7.5)
+            # Colour cost column green
+            if c == 3:
+                run.font.color.rgb = ACCENT_G
+                run.font.bold = True
+            elif c == 0:
+                run.font.color.rgb = ACCENT_B
+                run.font.bold = True
+            else:
+                run.font.color.rgb = TEXT_G
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# SLIDE 1 — Title Slide
+# ══════════════════════════════════════════════════════════════════════════════
+slide = add_slide()
+
+# Top accent strip
+rect(slide, 0, 0, W, Inches(0.08), ACCENT_B)
+
+# Gradient-like background strip (simulated with layered rects)
+rect(slide, 0, 0, W, H, RGBColor(0x0D, 0x0F, 0x14))
+rect(slide, Inches(2), Inches(1.5), Inches(9.5), Inches(5),
+     RGBColor(0x14, 0x18, 0x28))  # subtle centre glow
+
+# Main logo / wordmark
+txb(slide, "CostVision", Inches(0.6), Inches(1.0), Inches(12), Inches(1.4),
+    size=72, bold=True, color=ACCENT_B, align=PP_ALIGN.CENTER)
+
+# Accent tagline bar
+rect(slide, Inches(4.5), Inches(2.45), Inches(4.4), Inches(0.06), ACCENT_P)
+
+txb(slide, "AI-Powered Should-Cost Intelligence for Modern Engineering",
+    Inches(0.6), Inches(2.55), Inches(12), Inches(0.6),
+    size=17, color=TEXT_G, align=PP_ALIGN.CENTER)
+
+txb(slide, "Designed & Developed by  Avinash Bhosale",
+    Inches(0.6), Inches(3.2), Inches(12), Inches(0.45),
+    size=13, bold=True, color=TEXT_W, align=PP_ALIGN.CENTER)
+
+txb(slide, "Cost Engineering & Digital Innovation",
+    Inches(0.6), Inches(3.65), Inches(12), Inches(0.35),
+    size=10, color=TEXT_D, align=PP_ALIGN.CENTER)
+
+# Capability pills row
+pill_data = [
+    ("21 Commodity Models",  ACCENT_G, Inches(1.0)),
+    ("AI Agent (NLP)",       ACCENT_B, Inches(3.4)),
+    ("CAD-to-Cost AI",       ACCENT_P, Inches(5.8)),
+    ("DFM / DFA Layer",      ORANGE,   Inches(8.2)),
+    ("20 Regions · 10 FX",  ACCENT_B, Inches(10.6)),
+]
+for label, col, px in pill_data:
+    rect(slide, px, Inches(4.55), Inches(2.1), Inches(0.36), SURFACE2, col, Pt(0.8))
+    txb(slide, label, px + Inches(0.08), Inches(4.57), Inches(1.95), Inches(0.32),
+        size=8, bold=True, color=col, align=PP_ALIGN.CENTER)
+
+# Second row pills
+pill2_data = [
+    ("Assembly BOM Rollup",    ACCENT_G, Inches(1.8)),
+    ("Wright's Law Learning Curve", ACCENT_P, Inches(4.2)),
+    ("Supplier Quote Comparison",   ORANGE,   Inches(6.9)),
+    ("Cloud Team Sync",             ACCENT_B, Inches(9.5)),
+]
+for label, col, px in pill2_data:
+    rect(slide, px, Inches(5.05), Inches(2.5), Inches(0.33), SURFACE2, col, Pt(0.8))
+    txb(slide, label, px + Inches(0.08), Inches(5.07), Inches(2.35), Inches(0.29),
+        size=7.5, bold=True, color=col, align=PP_ALIGN.CENTER)
+
+# Footer
+rect(slide, 0, H - Inches(0.45), W, Inches(0.008), BORDER)
+txb(slide, "CONFIDENTIAL — Management Review  |  June 2026",
+    Inches(0.4), H - Inches(0.4), W - Inches(0.8), Inches(0.35),
+    size=7.5, color=TEXT_D, align=PP_ALIGN.CENTER)
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# SLIDE 2 — Problem Statement
+# ══════════════════════════════════════════════════════════════════════════════
+slide = add_slide()
+slide_header(slide, 2, "The Challenge", "Why CostVision? Traditional Costing is Broken",
+             "Manual effort, weeks of delay, and supplier dependency cost organisations millions annually.")
+
+# 6 problem cards in 3×2 grid
+problems = [
+    (RED,    "⏱", "Weeks, Not Minutes",
+     "Manual should-cost takes 2–4 weeks per part. Sourcing decisions stall. Programme timelines slip."),
+    (ORANGE, "🔒", "Supplier Dependency",
+     "Without independent cost intelligence, engineers accept quotes at face value — no leverage, no transparency."),
+    (RED,    "📊", "Inconsistent Methodology",
+     "Every engineer calculates cost differently. No standard model. No auditable assumptions. No cross-team comparability."),
+    (ORANGE, "🌍", "No Regional Visibility",
+     "Labour, machine, material and energy rates vary dramatically by country. Manual adjustment is error-prone."),
+    (RED,    "🎯", "Late-Stage Cost Surprises",
+     "Cost issues discovered at SOP — not at concept. DFM problems missed. Expensive redesigns. Margin erosion at launch."),
+    (ORANGE, "💸", "No Supplier Quote Benchmark",
+     "Buyers lack a defensible floor price for negotiation. Supplier margins are opaque and unchallenged."),
+]
+
+cols = 3
+cw = Inches(4.1)
+ch = Inches(1.6)
+sx, sy = Inches(0.45), Inches(2.0)
+gap = Inches(0.12)
+
+for i, (col, ico, title, body) in enumerate(problems):
+    r, c = divmod(i, cols)
+    cx = sx + c * (cw + gap)
+    cy = sy + r * (ch + gap)
+    card(slide, cx, cy, cw, ch, f"{ico}  {title}", body, accent=col)
+
+# Industry stat bar
+rect(slide, Inches(0.45), Inches(5.42), Inches(12.45), Inches(0.82), SURFACE2, BORDER, Pt(0.5))
+txb(slide, "80%", Inches(0.6), Inches(5.46), Inches(1.1), Inches(0.72),
+    size=36, bold=True, color=ORANGE, align=PP_ALIGN.CENTER)
+txb(slide, "of part cost is locked in at the design stage — yet most cost analysis happens after design freeze."
+    "  CostVision shifts cost intelligence to where it matters: concept phase.",
+    Inches(1.8), Inches(5.52), Inches(10.8), Inches(0.62),
+    size=9.5, color=TEXT_G)
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# SLIDE 3 — Solution Overview
+# ══════════════════════════════════════════════════════════════════════════════
+slide = add_slide()
+slide_header(slide, 3, "The Solution", "What is CostVision?",
+             "A world-class should-cost engine with AI at every layer — from natural language input to DFM/DFA output.")
+
+cards_data = [
+    (ACCENT_B, "🤖", "AI Agent (Natural Language)",
+     "Describe a part in plain English. AI auto-builds the complete cost model: material, routing, machines, operations."),
+    (ACCENT_P, "📐", "CAD-to-Cost Automation",
+     "Upload STEP / IGES / photo. AI extracts geometry, infers material, selects process model — full cost in minutes."),
+    (ACCENT_G, "🧠", "21 Engineering-Grade Cost Models",
+     "Physics-based models for every major commodity. Routing logic, yield curves, tooling amortisation — all encoded."),
+    (ORANGE,   "🔗", "Assembly BOM Rollup",
+     "Cost entire assemblies — not just single parts. Multi-level BOM with per-component commodity models."),
+    (ACCENT_B, "📉", "Learning Curve / Wright's Law",
+     "Project cost at any volume milestone. Configure learning curve %. Essential for LTA negotiations."),
+    (ACCENT_P, "💰", "Supplier Quote Comparison",
+     "Log supplier quotes. Compare vs should-cost instantly. Identify margin gaps. Generate negotiation talking points."),
+    (ACCENT_G, "🔬", "DFM / DFA Intelligence",
+     "Bolt-on AI scores manufacturability 1–10. Critical issues, saving potential, actionable recommendations."),
+    (ORANGE,   "🌍", "20 Regions · 10 Currencies",
+     "Real-time labour, machine, material and energy rates. Currency auto-switches when region is selected."),
+    (ACCENT_B, "📈", "Export, Scenarios & Team Sync",
+     "6-sheet Excel, PDF report, A/B/C scenario comparison, tornado sensitivity chart, cloud team sync."),
+]
+
+cw = Inches(4.1)
+ch = Inches(1.45)
+sx, sy = Inches(0.45), Inches(1.98)
+gap = Inches(0.1)
+
+for i, (col, ico, title, body) in enumerate(cards_data):
+    r, c = divmod(i, 3)
+    cx = sx + c * (cw + gap)
+    cy = sy + r * (ch + gap)
+    card(slide, cx, cy, cw, ch, f"{ico}  {title}", body, accent=col)
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# SLIDE 4 — AI Agent: Natural Language Costing
+# ══════════════════════════════════════════════════════════════════════════════
+slide = add_slide()
+slide_header(slide, 4, "Game-Changing Capability", "AI Agent — Natural Language Should-Costing",
+             "The fastest path from part concept to full cost breakdown: just describe the part in plain English.")
+
+# Left column — how it works
+lx, ly, lw = Inches(0.45), Inches(2.0), Inches(5.8)
+txb(slide, "How It Works", lx, ly, lw, Inches(0.3), size=10, bold=True, color=ACCENT_B)
+
+steps = [
+    ("1. Describe", "Type a part description: 'Aluminium bracket, 6082-T6, approximately 200×100×50mm, 3 machined holes, anodised finish, 5,000/year UK production'"),
+    ("2. AI Analyses", "Claude AI interprets the description, infers geometry, selects the most cost-effective manufacturing route, and chooses appropriate machines and labour grades"),
+    ("3. Auto-Populate", "The cost model is automatically populated: material weight, 3 machining operations, cycle times, OEE, tooling NRE — all filled without manual input"),
+    ("4. Full Result", "Click Calculate. Full 8-bucket cost breakdown, AI insights, DFM/DFA score, sensitivity analysis, and export — all ready in under 60 seconds"),
+]
+
+yy = Inches(2.35)
+for title, body in steps:
+    rect(slide, lx, yy, lw, Inches(1.02), SURFACE2, BORDER, Pt(0.5))
+    rect(slide, lx, yy, Inches(0.06), Inches(1.02), ACCENT_B)
+    txb(slide, title, lx + Inches(0.14), yy + Inches(0.08), lw - Inches(0.2), Inches(0.28),
+        size=9, bold=True, color=TEXT_W)
+    txb(slide, body, lx + Inches(0.14), yy + Inches(0.34), lw - Inches(0.2), Inches(0.62),
+        size=8, color=TEXT_G, wrap=True)
+    yy += Inches(1.08)
+
+# Right column — chat mockup
+rx = Inches(6.6)
+ry = Inches(2.0)
+rw = Inches(6.3)
+rh = Inches(4.92)
+rect(slide, rx, ry, rw, rh, SURFACE, BORDER, Pt(0.5))
+
+# Mockup title bar
+rect(slide, rx, ry, rw, Inches(0.36), SURFACE2)
+txb(slide, "●  CostVision AI Agent", rx + Inches(0.14), ry + Inches(0.07),
+    rw - Inches(0.2), Inches(0.25), size=8.5, bold=True, color=ACCENT_B)
+
+# Chat bubbles
+chats = [
+    ("USER",  "Describe a 4-layer FR4 PCB, 100×80mm, ENIG finish, flying probe test, 10,000/yr, UK manufacture"),
+    ("AI",    "Got it. Analysing your PCB specification...\n• 4-layer FR4 standard, 100×80 mm board\n• ENIG surface finish (+22% vs HASL)\n• Flying probe electrical test\n• UK pricing region applied\n• NRE amortised over 10,000 boards"),
+    ("USER",  "What is the should-cost?"),
+    ("AI",    "Should-Cost Result: £ 4.18 per board\n• PCB Fab (material + process): £ 3.24\n• Test (flying probe): £ 0.71\n• NRE amortised: £ 0.23\nDFM Score: 8.5/10 — Good manufacturability"),
+]
+
+cy2 = ry + Inches(0.44)
+for role, msg in chats:
+    is_user = role == "USER"
+    bg_col = SURFACE2 if is_user else RGBColor(0x1A, 0x24, 0x3E)
+    border_col = BORDER if is_user else ACCENT_B
+    lines = msg.count('\n') + 1
+    bh = Inches(0.28 + lines * 0.22)
+    if is_user:
+        rect(slide, rx + Inches(0.14), cy2, rw - Inches(0.28), bh, bg_col, border_col, Pt(0.5))
+        txb(slide, f"You: {msg}", rx + Inches(0.24), cy2 + Inches(0.06),
+            rw - Inches(0.5), bh - Inches(0.1), size=7.5, color=TEXT_G)
+    else:
+        rect(slide, rx + Inches(0.14), cy2, rw - Inches(0.28), bh, bg_col, border_col, Pt(0.5))
+        txb(slide, f"AI: {msg}", rx + Inches(0.24), cy2 + Inches(0.06),
+            rw - Inches(0.5), bh - Inches(0.1), size=7.5, color=TEXT_W)
+    cy2 += bh + Inches(0.08)
+
+# Key benefits pills
+txb(slide, "Key Benefits", rx, cy2 + Inches(0.05), rw, Inches(0.25),
+    size=8.5, bold=True, color=ACCENT_G)
+benefits = ["⚡ Zero manual form-filling", "🎯 Works for any commodity", "✓ Validates all AI assumptions", "📊 Full audit trail"]
+for i, b in enumerate(benefits):
+    bx = rx + Inches(0.1) + (i % 2) * Inches(3.0)
+    by = cy2 + Inches(0.34) + (i // 2) * Inches(0.3)
+    txb(slide, b, bx, by, Inches(2.9), Inches(0.25), size=7.5, color=TEXT_G)
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# SLIDE 5 — CAD-to-Cost Automation
+# ══════════════════════════════════════════════════════════════════════════════
+slide = add_slide()
+slide_header(slide, 5, "Automation", "CAD-to-Cost: Geometry to Should-Cost Automatically",
+             "Upload a STEP file or part photo — AI extracts features, infers material, and generates a full cost model.")
+
+# 3 stat boxes
+stats = [("10×", "Faster than manual costing", ACCENT_B),
+         ("±8%", "Typical model accuracy", ACCENT_G),
+         ("0", "Manual routing steps required", ORANGE)]
+for i, (num, lbl, col) in enumerate(stats):
+    stat_card(slide, Inches(0.45 + i*2.2), Inches(1.98), Inches(2.0), Inches(1.0), num, lbl, col)
+
+# What AI extracts
+ex_items = [
+    "Part geometry: envelope dimensions, volume, wall thickness, surface area",
+    "Feature recognition: holes, pockets, ribs, undercuts, threads, datum features",
+    "Material inference: visual texture & density → grade selection (e.g. Al 6082-T6)",
+    "Process selection: geometry → most cost-effective manufacturing route",
+    "Cycle time: material removal rate, tool path length, fixture & setup strategy",
+    "Complexity: Simple / Moderate / Complex → machine type & OEE selection",
+    "DFM pre-check: thin walls, tight radii, undercuts flagged before costing begins",
+]
+rect(slide, Inches(0.45), Inches(3.12), Inches(6.0), Inches(3.8), SURFACE2, BORDER, Pt(0.5))
+rect(slide, Inches(0.45), Inches(3.12), Inches(6.0), Inches(0.04), ACCENT_B)
+txb(slide, "What AI Extracts from CAD / Photo", Inches(0.6), Inches(3.16),
+    Inches(5.7), Inches(0.3), size=9.5, bold=True, color=TEXT_W)
+yy = Inches(3.5)
+for item in ex_items:
+    rect(slide, Inches(0.65), yy + Inches(0.13), Inches(0.06), Inches(0.06), ACCENT_B)
+    txb(slide, item, Inches(0.84), yy, Inches(5.4), Inches(0.36),
+        size=8, color=TEXT_G, wrap=True)
+    yy += Inches(0.34)
+
+# Result breakdown mockup (right side)
+rx = Inches(6.85)
+ry = Inches(3.12)
+rw = Inches(6.0)
+rh = Inches(3.8)
+rect(slide, rx, ry, rw, rh, SURFACE, BORDER, Pt(0.5))
+rect(slide, rx, ry, rw, Inches(0.04), ACCENT_P)
+txb(slide, "AI Analysis Result — Aluminium Bracket", rx + Inches(0.15), ry + Inches(0.08),
+    rw - Inches(0.25), Inches(0.3), size=9.5, bold=True, color=TEXT_W)
+
+# Detection results grid
+det = [("AI Detected Material", "Al 6082-T6", ACCENT_B),
+       ("Suggested Process", "3-Axis CNC Milling + Drilling", ACCENT_G),
+       ("Envelope (L×W×H)", "220 × 140 × 85 mm", TEXT_W),
+       ("Est. Net Weight", "0.82 kg", TEXT_W),
+       ("Complexity", "Moderate — 3 setups", ORANGE),
+       ("DFM Pre-check", "1 flag: 3 setups → consolidate", ORANGE)]
+for i, (lbl, val, col) in enumerate(det):
+    dx = rx + Inches(0.15) + (i % 2) * Inches(2.9)
+    dy = ry + Inches(0.5) + (i // 2) * Inches(0.52)
+    rect(slide, dx, dy, Inches(2.7), Inches(0.46), SURFACE2, BORDER, Pt(0.3))
+    txb(slide, lbl, dx + Inches(0.08), dy + Inches(0.03), Inches(2.54), Inches(0.18),
+        size=7, color=TEXT_D)
+    txb(slide, val, dx + Inches(0.08), dy + Inches(0.22), Inches(2.54), Inches(0.2),
+        size=8.5, bold=True, color=col)
+
+# Cost bar
+rect(slide, rx + Inches(0.15), ry + Inches(2.08), rw - Inches(0.3), Inches(0.52), SURFACE2, BORDER, Pt(0.3))
+txb(slide, "Should-Cost Preview", rx + Inches(0.3), ry + Inches(2.12), Inches(3), Inches(0.22),
+    size=8, color=TEXT_G)
+txb(slide, "£ 28.40", rx + Inches(3.8), ry + Inches(2.1), Inches(1.9), Inches(0.3),
+    size=14, bold=True, color=ACCENT_G, align=PP_ALIGN.RIGHT)
+
+# mini bar chart (5 segments)
+bar_data = [(0.38, ACCENT_B, "Mat 38%"), (0.32, ACCENT_P, "Proc 32%"),
+            (0.12, ACCENT_G, "Lab 12%"), (0.08, ORANGE, "Tool 8%"),
+            (0.10, TEXT_D, "OH 10%")]
+bx_start = rx + Inches(0.15)
+for pct, col, lbl in bar_data:
+    bw_seg = (rw - Inches(0.3)) * pct
+    rect(slide, bx_start, ry + Inches(2.66), bw_seg, Inches(0.16), col)
+    bx_start += bw_seg
+
+txb(slide, "  ".join(f"■ {l}" for _, _, l in bar_data),
+    rx + Inches(0.15), ry + Inches(2.86), rw - Inches(0.3), Inches(0.22),
+    size=7, color=TEXT_D)
+
+# File types supported
+rect(slide, Inches(0.45), Inches(2.12), Inches(6.7), Inches(0.88), SURFACE2, BORDER, Pt(0.5))
+txb(slide, "Supported formats:", Inches(0.6), Inches(2.16), Inches(1.5), Inches(0.25), size=8, color=TEXT_D, bold=True)
+txb(slide, ".STEP   .IGES   .STP   .IGS   .JPG   .PNG   .HEIC   (drag-drop or file picker)",
+    Inches(2.1), Inches(2.18), Inches(5.0), Inches(0.25), size=8, color=ACCENT_B)
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# SLIDE 6 — End-to-End Workflow
+# ══════════════════════════════════════════════════════════════════════════════
+slide = add_slide()
+slide_header(slide, 6, "Workflow", "AI Agent — 8-Step End-to-End Flow",
+             "Three entry points. One intelligent engine. Full cost intelligence in under 5 minutes.")
+
+# Entry point banner
+rect(slide, Inches(0.45), Inches(1.98), Inches(12.45), Inches(0.5), SURFACE2, BORDER, Pt(0.5))
+txb(slide, "Entry Point A: 🤖 AI Agent (plain English description)   |   "
+    "Entry Point B: 📐 CAD / Photo Upload   |   Entry Point C: ✏️ Manual Form Entry",
+    Inches(0.6), Inches(2.04), Inches(12.1), Inches(0.36),
+    size=9, color=TEXT_G, align=PP_ALIGN.CENTER)
+
+# 8 flow boxes
+flow_items = [
+    ("1", "🏭", "Select\nCommodity",      "Choose from 21 manufacturing commodities or let AI Agent auto-detect"),
+    ("2", "🤖", "AI Agent /\nCAD / Manual", "Describe part, upload file, or enter parameters directly"),
+    ("3", "🔍", "AI Feature\nExtraction",  "AI reads geometry, identifies features, infers material & complexity"),
+    ("4", "🛤️", "AI Routing &\nModel Select", "AI sequences operations, selects machines, labour grades & cycle times"),
+    ("5", "⚙️", "Should-Cost\nCalculation",  "8-bucket model: Material+Process+Labour+Tooling+OH+Margin"),
+    ("6", "💡", "AI Insights\nGenerated",  "Benchmark comparisons, regional cost index, supplier margin analysis"),
+    ("7", "🔬", "DFM / DFA\nAnalysis",    "Manufacturability + assembly scores, critical issues, saving potential"),
+    ("8", "📤", "Export &\nShare",         "6-sheet Excel, PDF report, scenario save, cloud team sync"),
+]
+
+n = len(flow_items)
+fw = (W - Inches(0.9)) / n
+fh = Inches(3.8)
+fx = Inches(0.45)
+fy = Inches(2.6)
+colors = [ACCENT_B, ACCENT_B, ACCENT_P, ACCENT_P, ORANGE, ACCENT_G, ACCENT_G, ACCENT_B]
+
+for i, (num, ico, title, body) in enumerate(flow_items):
+    flow_box(slide, fx + i*fw, fy, fw - Inches(0.04), fh,
+             num, ico, title, body, colors[i])
+    # Arrow between boxes
+    if i < n - 1:
+        txb(slide, "→", fx + (i+1)*fw - Inches(0.2), fy + Inches(1.7),
+            Inches(0.25), Inches(0.3), size=9, bold=True, color=ACCENT_B)
+
+# Tags row
+tags = ["⚡ Minutes, not weeks", "✓ Auditable assumptions", "🤖 Claude AI powered",
+        "🌍 20 regions", "📊 A/B/C scenarios", "📐 Assembly BOM", "📉 Learning curve"]
+tx = Inches(0.45)
+for tag in tags:
+    rect(slide, tx, Inches(6.55), Inches(1.72), Inches(0.3), SURFACE2, ACCENT_B, Pt(0.5))
+    txb(slide, tag, tx + Inches(0.08), Inches(6.58), Inches(1.58), Inches(0.24),
+        size=7.5, color=ACCENT_B)
+    tx += Inches(1.78)
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# SLIDE 7 — 21 Commodities
+# ══════════════════════════════════════════════════════════════════════════════
+slide = add_slide()
+slide_header(slide, 7, "Full Coverage", "21 Manufacturing Commodities — One Platform",
+             "Every major manufacturing process — all modelled to engineering depth with full routing, yield, and tooling logic.")
+
+# 21 commodity cards in 7×3 grid
+commodities = [
+    ("⚙️",  "CNC Machining",       "3/4/5-axis, turning, grinding"),
+    ("🪨",  "Casting",              "HPDC, gravity, investment, sand"),
+    ("🏗️", "Cast + Machine",       "Casting + post-ops + HT"),
+    ("🔨",  "Forging",              "Hot, warm, cold die forging"),
+    ("🪗",  "Sheet Metal",          "Progressive/transfer die"),
+    ("🔩",  "Sheet Metal Fab",      "Laser · punch · press brake · MIG"),
+    ("🏺",  "Injection Moulding",   "Thermoplastics, multi-cavity"),
+    ("🫧",  "Blow Moulding",        "HDPE, PET, extrusion blow"),
+    ("🔩",  "Extrusion",            "Profile, pipe, sheet, rod"),
+    ("♨️",  "Thermoforming",        "Vacuum, pressure, twin-sheet"),
+    ("🔄",  "Rotational Moulding",  "Large hollow shapes, LLDPE"),
+    ("🧱",  "Rubber Moulding",      "Compression, injection, LSR"),
+    ("🪢",  "Composites",           "CFRP/GFRP, autoclave, RTM, AFP"),
+    ("🎨",  "Painting / Coating",   "E-coat, powder, wet, anodise"),
+    ("🚗",  "BIW Assembly",         "Spot weld, MIG, hem, bond"),
+    ("🖥️", "PCB Fabrication",      "2–16L, HDI, rigid-flex, RF/μwave"),
+    ("🔌",  "PCBA / SMD",           "SMT, TH, reflow, conformal coat"),
+    ("🔗",  "Wiring Harness",       "Cut-strip-crimp, test, sub-asm"),
+    ("🔗",  "Assembly BOM Rollup",  "Multi-part BOM, full cost rollup"),
+    ("📉",  "Extrusion (Profile)",  "Continuous linear profiles"),
+    ("🤖",  "AI Agent",             "Natural language → any commodity"),
+]
+
+cols_c = 7
+cw_c = (W - Inches(0.9)) / cols_c - Inches(0.05)
+ch_c = Inches(1.32)
+sx_c = Inches(0.45)
+sy_c = Inches(1.98)
+
+for i, (ico, name, sub) in enumerate(commodities):
+    r, c = divmod(i, cols_c)
+    cx2 = sx_c + c * (cw_c + Inches(0.055))
+    cy2 = sy_c + r * (ch_c + Inches(0.065))
+    col = ACCENT_B if i < 18 else ACCENT_G
+    comm_card(slide, cx2, cy2, cw_c, ch_c, ico, name, sub, color=col)
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# SLIDE 8 — Should-Cost Model Depth
+# ══════════════════════════════════════════════════════════════════════════════
+slide = add_slide()
+slide_header(slide, 8, "Engineering Depth", "Should-Cost Model Architecture",
+             "Built on aPriori-calibrated benchmarks, IPC standards, and first-principles manufacturing engineering.")
+
+depth_cards = [
+    (ACCENT_B, "📦 Material Database",
+     "30+ materials: alloy steels, aluminium grades, engineering plastics, elastomers, composites, PCB laminates, copper alloys. FX-adjusted per region."),
+    (ACCENT_G, "⚙️ Machine & Rate Library",
+     "50+ machine types: CNC centres, presses, moulding machines, SMT lines, reflow ovens, test equipment. Hourly rates editable per project and region."),
+    (ORANGE,   "🛤️ Routing & Process Logic",
+     "AI-driven operation sequencing. Each operation: machine ID, cycle time (hr), OEE, setup time, labour grade, overhead allocation."),
+    (ACCENT_P, "🔩 Tooling & NRE Amortisation",
+     "Dies, moulds, fixtures, PCB NRE — amortised over annual volume with tool life curves for press tools and EDM electrodes."),
+    (ACCENT_G, "📉 Yield & Scrap Models",
+     "First-pass yield from 10 penalty factors: layer count, trace width, via type, HDI structure, impedance control, BGA pitch, alloy grade, section thickness."),
+    (ACCENT_B, "🌍 Regional Cost Multipliers",
+     "20 regions — each with calibrated labour tiers (skilled/semi-skilled/engineer/inspector), energy costs, and machine hour rates."),
+    (ORANGE,   "📊 Benchmarks & Sensitivity",
+     "Every cost element benchmarked vs aPriori/Cleansheet ranges. Tornado chart shows top 10 cost drivers at ±10%. Scenario A/B/C comparison."),
+    (ACCENT_P, "📉 Learning Curve (Wright's Law)",
+     "Configure 85% (or custom) learning curve to project volume-driven cost reduction. Essential for programme pricing and LTA negotiations."),
+    (ACCENT_G, "💰 Supplier Quote Comparison",
+     "Log supplier quotes (name, date, price, currency). Compare vs should-cost instantly — identify margin gaps and overhead inflation."),
+    (ACCENT_B, "🤖 AI-Driven Assumptions",
+     "Where geometry is unknown, Claude AI fills assumptions transparently — material, complexity, process, geometry — with explanation of every decision."),
+]
+
+cw_d = Inches(3.88)
+ch_d = Inches(1.28)
+sx_d = Inches(0.45)
+sy_d = Inches(1.98)
+gap_d = Inches(0.1)
+
+for i, (col, title, body) in enumerate(depth_cards):
+    r, c = divmod(i, 4) if i < 8 else (2, i - 8)
+    if i < 8:
+        r, c = divmod(i, 4)
+    else:
+        r, c = 2, i - 8
+    cx_d = sx_d + c * (cw_d + gap_d)
+    cy_d = sy_d + r * (ch_d + gap_d)
+    card(slide, cx_d, cy_d, cw_d, ch_d, title, body, accent=col)
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# SLIDE 9 — Advanced Features
+# ══════════════════════════════════════════════════════════════════════════════
+slide = add_slide()
+slide_header(slide, 9, "Advanced Capabilities", "Advanced Cost Modelling & Intelligence Features",
+             "CostVision goes beyond basic costing — it models commercial reality with precision.")
+
+# Left col
+lx9 = Inches(0.45)
+lw9 = Inches(6.0)
+
+adv_left = [
+    (ACCENT_P, "📉 Wright's Law Learning Curve",
+     "Configure any learning curve % (default 85%). As volume doubles, cost reduces by the curve %.\n\n"
+     "• Model programme cost at any volume milestone\n"
+     "• Critical for LTA negotiations and make-vs-buy decisions\n"
+     "• Visualise break-even volume vs manual costing cost"),
+    (ACCENT_G, "🔗 Assembly BOM Rollup",
+     "Build multi-level assemblies from any combination of 21 commodities:\n\n"
+     "• Add components one-by-one with commodity type, weight, volume\n"
+     "• Each component costed using its own should-cost model\n"
+     "• Roll up to a total assembly cost with full per-component breakdown\n"
+     "• Example: BIW + Painting + Harness + PCBA = full module should-cost"),
+]
+
+yy9 = Inches(2.0)
+for col, title, body in adv_left:
+    rect(slide, lx9, yy9, lw9, Inches(2.3), SURFACE2, BORDER, Pt(0.5))
+    rect(slide, lx9, yy9, Inches(0.06), Inches(2.3), col)
+    txb(slide, title, lx9 + Inches(0.14), yy9 + Inches(0.1), lw9 - Inches(0.2), Inches(0.3),
+        size=10, bold=True, color=TEXT_W)
+    txb(slide, body, lx9 + Inches(0.14), yy9 + Inches(0.42), lw9 - Inches(0.2), Inches(1.8),
+        size=8.5, color=TEXT_G, wrap=True)
+    yy9 += Inches(2.42)
+
+# Right col
+rx9 = Inches(6.85)
+rw9 = Inches(6.0)
+
+adv_right = [
+    (ORANGE, "💰 Supplier Quote Comparison",
+     "• Enter supplier name, quote date, price, currency, and FX rate\n"
+     "• CostVision converts to GBP and compares vs should-cost\n"
+     "• Calculates margin gap: 'Supplier is 18% above should-cost'\n"
+     "• Generates data-driven negotiation talking points\n"
+     "• Track multiple suppliers per part for competitive benchmarking"),
+    (ACCENT_B, "📊 Sensitivity Analysis (Tornado Chart)",
+     "• ±10% variation applied to each cost driver independently\n"
+     "• Top 10 drivers ranked by impact (tornado chart)\n"
+     "• Identify which inputs most need validation before negotiation\n"
+     "• Export the chart to include in supplier presentations"),
+    (ACCENT_G, "🧪 Scenario A/B/C Comparison",
+     "• Save any configuration as a named scenario\n"
+     "• Compare baseline vs target vs stretch cost side-by-side\n"
+     "• Delta view shows where costs increased or decreased\n"
+     "• Export all scenarios to JSON for team sharing"),
+]
+
+yy9r = Inches(2.0)
+for col, title, body in adv_right:
+    h = Inches(1.52)
+    rect(slide, rx9, yy9r, rw9, h, SURFACE2, BORDER, Pt(0.5))
+    rect(slide, rx9, yy9r, Inches(0.06), h, col)
+    txb(slide, title, rx9 + Inches(0.14), yy9r + Inches(0.08), rw9 - Inches(0.2), Inches(0.28),
+        size=9.5, bold=True, color=TEXT_W)
+    txb(slide, body, rx9 + Inches(0.14), yy9r + Inches(0.34), rw9 - Inches(0.2), h - Inches(0.45),
+        size=8, color=TEXT_G, wrap=True)
+    yy9r += Inches(1.62)
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# SLIDE 10 — DFM / DFA Intelligence
+# ══════════════════════════════════════════════════════════════════════════════
+slide = add_slide()
+slide_header(slide, 10, "AI Intelligence Layer", "DFM / DFA — Design for Manufacture & Assembly",
+             "A bolt-on AI intelligence layer that runs AFTER the should-cost, without modifying any calculation logic.")
+
+# Score banner
+rect(slide, Inches(0.45), Inches(2.0), Inches(12.45), Inches(0.78), SURFACE2, BORDER, Pt(0.5))
+txb(slide, "Manufacturability Score (DFM)", Inches(0.65), Inches(2.06),
+    Inches(3.5), Inches(0.28), size=8.5, bold=True, color=TEXT_W)
+txb(slide, "8.5 / 10", Inches(0.65), Inches(2.34), Inches(2), Inches(0.36),
+    size=20, bold=True, color=ACCENT_G)
+txb(slide, "Assembly Efficiency (DFA)", Inches(4.5), Inches(2.06),
+    Inches(3.5), Inches(0.28), size=8.5, bold=True, color=TEXT_W)
+txb(slide, "7.0 / 10", Inches(4.5), Inches(2.34), Inches(2), Inches(0.36),
+    size=20, bold=True, color=ORANGE)
+txb(slide, "Total Potential Saving", Inches(8.4), Inches(2.06),
+    Inches(2.5), Inches(0.28), size=8.5, bold=True, color=TEXT_W)
+txb(slide, "~19.3%", Inches(8.4), Inches(2.34), Inches(2.5), Inches(0.36),
+    size=20, bold=True, color=ACCENT_G)
+txb(slide, "All scores are 1–10 (10 = perfect)  |  Savings are RSS-combined from top 3 issues",
+    Inches(10.8), Inches(2.2), Inches(2.0), Inches(0.54),
+    size=7, color=TEXT_D, wrap=True)
+
+# Four quadrant cards
+dfm_dfa = [
+    (ACCENT_B, "DFM Issues — What It Finds",
+     "Critical: Low material utilisation (<60%), OEE <70%, die cost >18%\n"
+     "Major: Below-benchmark OEE (70–80%), high operation count, process cost dominant\n"
+     "Minor: Elevated tooling %, overhead burden >18%, supplier margin >18%\n"
+     "Opportunity: Near-net-shape conversion, volume increase, multi-cavity tooling"),
+    (ACCENT_G, "DFA Issues — Assembly Intelligence",
+     "Automation feasibility: labour-dominated assemblies flagged for robot/cobot study\n"
+     "Operation count: multiple setups imply fixturing cost and dimensional variation risk\n"
+     "OEE pacing: low OEE in assembly indicates manual pacing or changeover inefficiency\n"
+     "Fastener standardisation: variety in fastener drives assembly time and tool changes"),
+    (ORANGE,   "Cost Optimisation Levers (6–8 per part)",
+     "Automate High-Labour Operations — typically 5–20% saving\n"
+     "Near-Net-Shape Material Improvement — 5–15% material cost saving\n"
+     "OEE Improvement (TPM programme) — 5–12% machine cost reduction\n"
+     "Volume Increase to Dilute Tooling NRE — Quick Win, Low Risk\n"
+     "Overhead Rate Negotiation via Open-Book Costing — Quick Win\n"
+     "Competitive RFQ to Reduce Supplier Margin — Quick Win"),
+    (ACCENT_P, "AI Deep Analysis (Claude AI)",
+     "Click 'Run AI Deep Analysis' after rule-based results are shown\n"
+     "Claude provides: Root cause commentary, Priority top-3 actions\n"
+     "Supplier negotiation strategy with specific talking points\n"
+     "Alternative process recommendations (e.g. casting → HPDC)\n"
+     "Risk assessment: red flags in cost structure needing investigation"),
+]
+
+cw_d2 = Inches(6.0)
+ch_d2 = Inches(2.0)
+for i, (col, title, body) in enumerate(dfm_dfa):
+    r, c = divmod(i, 2)
+    dx = Inches(0.45) + c * (cw_d2 + Inches(0.12))
+    dy = Inches(3.0) + r * (ch_d2 + Inches(0.1))
+    card(slide, dx, dy, cw_d2, ch_d2, title, body, accent=col)
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# SLIDE 11 — Regional & Currency Intelligence
+# ══════════════════════════════════════════════════════════════════════════════
+slide = add_slide()
+slide_header(slide, 11, "Global Coverage", "20 Manufacturing Regions — 10 Currencies",
+             "Select a region and every rate adjusts automatically — labour, machines, energy, material and currency.")
+
+# Regions table
+regions = [
+    ("🇬🇧 UK",         "GBP £", "Skilled £26/hr",   "Industry / Aerospace baseline"),
+    ("🇩🇪 Germany",    "EUR €", "Skilled €32/hr",   "Premium, high automation"),
+    ("🇵🇱 Poland",     "EUR €", "Skilled €11/hr",   "Low-cost EU option"),
+    ("🇷🇴 Romania",    "EUR €", "Skilled €7/hr",    "Ultra-low EU labour"),
+    ("🇨🇳 China",      "CNY ¥", "Skilled ¥28/hr",   "Global volume manufacturing"),
+    ("🇮🇳 India",      "INR ₹", "Skilled ₹320/hr",  "Engineering & electronics hub"),
+    ("🇲🇽 Mexico",     "MXN $", "Skilled MXN82/hr", "Near-shore for North America"),
+    ("🇺🇸 USA",        "USD $", "Skilled $32/hr",   "Premium North American rates"),
+    ("🇹🇭 Thailand",   "THB ฿", "Skilled ฿180/hr",  "Electronics & automotive"),
+    ("🇻🇳 Vietnam",    "VND ₫", "Skilled ₫52k/hr",  "Lowest-cost electronics hub"),
+    ("🇧🇷 Brazil",     "BRL R$","Skilled R$22/hr",  "South America manufacturing"),
+    ("🇰🇷 S. Korea",   "KRW ₩", "Skilled ₩22k/hr",  "Electronics & automotive"),
+]
+
+rect(slide, Inches(0.45), Inches(1.98), Inches(7.5), Inches(4.98), SURFACE, BORDER, Pt(0.5))
+txb(slide, "Key Manufacturing Regions (sample)", Inches(0.6), Inches(2.04),
+    Inches(5), Inches(0.28), size=9, bold=True, color=TEXT_W)
+
+headers = ["Region", "Currency", "Sample Labour Rate", "Position"]
+col_ws = [Inches(1.5), Inches(0.9), Inches(1.9), Inches(2.7)]
+add_table(slide, len(regions)+1, 4,
+          Inches(0.48), Inches(2.36), Inches(7.44), Inches(4.5),
+          headers, regions, col_widths=col_ws)
+
+# Right side — key points
+rx11 = Inches(8.2)
+ry11 = Inches(1.98)
+rw11 = Inches(4.7)
+
+key_points = [
+    (ACCENT_B, "Auto-Currency Switch",
+     "When you select a manufacturing region (e.g. China), the display currency automatically switches to CNY. No manual FX conversion needed."),
+    (ACCENT_G, "Full Rate Adjustment",
+     "Every rate adjusts: skilled/semi-skilled/engineer/inspector labour, electricity, gas, machine rates, material prices — all recalculated for the selected region."),
+    (ACCENT_P, "Editable Rate Library",
+     "All rates are editable. Override any rate with project-specific data, supplier quotes, or latest market prices. Resets to calibrated baseline at any time."),
+    (ORANGE,   "Regional Comparison",
+     "AI Insights tab shows estimated cost in all 20 regions simultaneously — instant make-vs-buy regional arbitrage analysis for any part."),
+]
+
+yy11 = ry11
+for col, title, body in key_points:
+    rect(slide, rx11, yy11, rw11, Inches(1.1), SURFACE2, BORDER, Pt(0.5))
+    rect(slide, rx11, yy11, Inches(0.06), Inches(1.1), col)
+    txb(slide, title, rx11 + Inches(0.14), yy11 + Inches(0.08), rw11 - Inches(0.2), Inches(0.28),
+        size=9, bold=True, color=TEXT_W)
+    txb(slide, body, rx11 + Inches(0.14), yy11 + Inches(0.34), rw11 - Inches(0.2), Inches(0.72),
+        size=8, color=TEXT_G, wrap=True)
+    yy11 += Inches(1.18)
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# SLIDE 12 — Demo: Real-World Cost Benchmarks
+# ══════════════════════════════════════════════════════════════════════════════
+slide = add_slide()
+slide_header(slide, 12, "Live Demo Data", "Real-World Cost Benchmarks — Luxury SUV Programme",
+             "All figures generated by CostVision's should-cost engine. UK manufacturing region, GBP.")
+
+headers12 = ["Commodity", "Demo Part", "Key Inputs", "Should-Cost", "AI Top Insight", "DFM Flag"]
+data12 = [
+    ("⚙️ Machining",     "Al Gearbox Bracket",    "Al 6082-T6 · 0.85 kg · 3 setups",       "£ 28.40", "Process 44% → near-net-shape saves £8",    "Major: 3 setups → 5-axis"),
+    ("🪨 HPDC Casting",  "Transmission Housing",  "Al A380 · 3.2 kg · 50k/yr",             "£ 18.70", "Die 9% OK. Margin 21% → negotiate",        "Good — no critical issues"),
+    ("🪗 Sheet Metal",   "Rear Door Inner",       "DC04 1.2mm · 4.1 kg · 60k/yr",          "£ 22.10", "Blank nesting 64% → improve saves £2.80",  "Critical: nesting <65%"),
+    ("🏺 Injection",     "PP Bumper Bracket",     "PP-TD20 · 0.42 kg · 100k/yr",           "£  3.85", "Mould 8% — good at this volume",           "Good — runner waste 15%"),
+    ("🧱 Rubber",        "EPDM Door Seal",        "Extrusion · 2.8m · 85 Shore A",         "£  4.10", "Process 42% — cure cycle dominant",        "Major: cure time optimise"),
+    ("🖥️ PCB Fab",      "4-Layer FR4 ECU Board", "100×80mm · ENIG · Flying probe",        "£  4.18", "NRE 6% per board — increase batch",        "Good — standard technology"),
+    ("🔌 PCBA",          "ECU PCBA 85 comp.",     "SMT + TH · 4 TH joints",               "£ 32.60", "Labour 38% — convert TH to SMT saves £4",  "Major: high TH labour"),
+    ("🔗 Wiring Harness","Door Module Harness",   "24 circuits · 2.1m avg",               "£ 11.80", "Labour 58% — automation saves 20%",        "Critical: labour >50%"),
+    ("🪢 Composites",    "CFRP Floor Pan",        "Prepreg CFRP · 1.8 kg · autoclave",    "£ 185.00","Labour 44% — evaluate ATL/AFP",            "Major: manual layup cost"),
+    ("🔨 Forging",       "Steel Control Arm",     "42CrMo4 · 2.1 kg · 80k/yr",           "£  9.20", "Die 11% — acceptable at volume",           "Good — closed-die efficient"),
+]
+
+col_ws12 = [Inches(1.4), Inches(1.55), Inches(1.95), Inches(0.9), Inches(2.95), Inches(1.9)]
+add_table(slide, 11, 6,
+          Inches(0.45), Inches(1.98), Inches(12.45), Inches(4.78),
+          headers12, data12, col_widths=col_ws12)
+
+# Notes row
+rect(slide, Inches(0.45), Inches(6.92), Inches(12.45), Inches(0.36), SURFACE2, BORDER, Pt(0.3))
+txb(slide, "All costs in GBP  |  AI insights generated per part  |  DFM/DFA score per part  |  Export to 6-sheet Excel or PDF  |  Supplier quote comparison available for each",
+    Inches(0.6), Inches(6.96), Inches(12.1), Inches(0.28),
+    size=7.5, color=TEXT_D, align=PP_ALIGN.CENTER)
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# SLIDE 13 — Export, Reporting & Team Collaboration
+# ══════════════════════════════════════════════════════════════════════════════
+slide = add_slide()
+slide_header(slide, 13, "Reporting & Collaboration", "Export, Share & Collaborate — Enterprise Ready",
+             "From individual engineer to global team — CostVision scales to any organisation size.")
+
+export_cards = [
+    (ACCENT_G, "📊 6-Sheet Excel Export",
+     "Sheet 1: Summary (total cost, breakdown %, region, commodity)\n"
+     "Sheet 2: Material (alloy, weight, utilisation, price)\n"
+     "Sheet 3: Operations (machine, labour, cycle time, OEE per step)\n"
+     "Sheet 4: Machine Rates (rate library snapshot)\n"
+     "Sheet 5: Labour Rates (regional labour tiers)\n"
+     "Sheet 6: Traceability (assumptions, AI notes, version, date)"),
+    (ACCENT_B, "📄 Professional PDF Report",
+     "Section 1: Cover page with part photo & programme details\n"
+     "Section 2: Cost summary and 8-bucket breakdown chart\n"
+     "Section 3: Detailed operation-by-operation cost build\n"
+     "Section 4: Machine and labour rate build-up table\n"
+     "Section 5: AI insights and saving opportunities\n"
+     "Section 6: DFM/DFA scores, issues and recommendations"),
+    (ACCENT_P, "☁️ Cloud Team Sync",
+     "Scenarios saved to cloud database (SQLite / PostgreSQL)\n"
+     "All team members see the same cost baseline\n"
+     "Secure JWT authentication + OTP email verification\n"
+     "Full multi-user access — no spreadsheet version conflicts\n"
+     "Import/export scenarios as JSON for offline sharing"),
+    (ORANGE,   "📸 Part Photo & Visual Docs",
+     "Upload part photo (JPG / PNG / HEIC) with any calculation\n"
+     "Photo appears on the PDF report cover page\n"
+     "AI Agent accepts photos as input for visual cost estimation\n"
+     "Drag-and-drop or file picker supported"),
+    (ACCENT_G, "🔑 Enterprise Authentication",
+     "JWT token-based authentication with 24hr expiry\n"
+     "OTP email verification for account security\n"
+     "Password reset flow with secure email delivery\n"
+     "Rate limiting: 10 sign-in attempts / 15 min window"),
+    (ACCENT_B, "❓ Help Centre & Support",
+     "7-tab Help Centre: Getting Started, AI Agent, CAD & Photo,\n"
+     "Commodities, FAQ (6 items), Glossary (12 terms),\n"
+     "Troubleshooting (5 common issues)\n"
+     "Contact support form built-in to the application"),
+]
+
+cw_e = Inches(4.1)
+ch_e = Inches(2.15)
+sx_e = Inches(0.45)
+sy_e = Inches(1.98)
+gap_e = Inches(0.12)
+
+for i, (col, title, body) in enumerate(export_cards):
+    r, c = divmod(i, 3)
+    cx_e = sx_e + c * (cw_e + gap_e)
+    cy_e = sy_e + r * (ch_e + gap_e)
+    card(slide, cx_e, cy_e, cw_e, ch_e, title, body, accent=col)
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# SLIDE 14 — Business Benefits & ROI
+# ══════════════════════════════════════════════════════════════════════════════
+slide = add_slide()
+slide_header(slide, 14, "Value Delivered", "Business Impact & Measurable ROI",
+             "Quantified improvements across speed, accuracy, and cost reduction that directly impact the bottom line.")
+
+# Stat row
+stats14 = [
+    ("70–90%", "Reduction in costing time",                     ACCENT_B),
+    ("±8%",    "Typical cost model accuracy",                   ACCENT_G),
+    ("15–25%", "Supplier price reduction via should-cost intel",ORANGE),
+    ("3×",     "Faster sourcing decisions",                     ACCENT_P),
+    ("£15M",   "Saving on £500M spend at 3% improvement",       ACCENT_G),
+]
+sw = Inches(2.4)
+sh = Inches(1.1)
+for i, (num, lbl, col) in enumerate(stats14):
+    stat_card(slide, Inches(0.45) + i * (sw + Inches(0.1)), Inches(1.98), sw, sh, num, lbl, col)
+
+# Benefits detail cards
+benefits14 = [
+    (ACCENT_B, "⚡ Speed — 10× Faster",
+     "What took 2–4 weeks now takes 5–10 minutes. Engineers spend time on decisions, not spreadsheets. Faster RFQ responses, faster programme decisions."),
+    (ACCENT_G, "🎯 Accuracy — Not Estimates",
+     "Physics-based models calibrated to actual shop floor data. ±8% typical accuracy vs actual. Dramatically better than rule-of-thumb or parametric estimates."),
+    (ORANGE,   "💰 Negotiation Power",
+     "Should-cost models give buyers a defensible floor price for every part. Supplier margins become visible and challengeable with engineering data, not opinion."),
+    (ACCENT_P, "📐 DFM at Concept Stage",
+     "80% of cost is locked at design. DFM/DFA analysis at concept prevents expensive late-stage redesigns. Engineering issues caught when change is free."),
+    (ACCENT_G, "🌍 Regional Arbitrage",
+     "Instantly compare cost across 20 regions. Identify LCC sourcing opportunities. Quantify make-vs-buy with real data — not assumptions."),
+    (ACCENT_B, "📊 Standardised Methodology",
+     "One consistent cost model across all teams, programmes, and regions. Full audit trail for every assumption. Leadership gets a single source of truth."),
+    (ORANGE,   "📉 Volume Optimisation",
+     "Learning curve modelling shows cost reduction with volume. Identify the volume at which a new process becomes cost-competitive."),
+    (ACCENT_P, "☁️ Team Collaboration",
+     "Cloud sync means all engineers share the same cost baseline. No more conflicting spreadsheets. Cost knowledge is captured, not locked in individuals."),
+]
+
+cw_b = Inches(3.0)
+ch_b = Inches(1.3)
+sx_b = Inches(0.45)
+sy_b = Inches(3.25)
+gap_b = Inches(0.1)
+
+for i, (col, title, body) in enumerate(benefits14):
+    r, c = divmod(i, 4)
+    cx_b = sx_b + c * (cw_b + gap_b)
+    cy_b = sy_b + r * (ch_b + gap_b)
+    card(slide, cx_b, cy_b, cw_b, ch_b, title, body, accent=col)
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# SLIDE 15 — Roadmap & Next Steps
+# ══════════════════════════════════════════════════════════════════════════════
+slide = add_slide()
+slide_header(slide, 15, "Vision & Next Steps", "The Future of Cost Engineering is Intelligent, Instant & Integrated",
+             "CostVision is live today. Here is what comes next — and how to get started.")
+
+# Current capabilities
+rect(slide, Inches(0.45), Inches(2.0), Inches(5.9), Inches(4.92), SURFACE2, BORDER, Pt(0.5))
+rect(slide, Inches(0.45), Inches(2.0), Inches(5.9), Inches(0.04), ACCENT_G)
+txb(slide, "📍 Current Capabilities — Live Today", Inches(0.6), Inches(2.08),
+    Inches(5.6), Inches(0.3), size=9.5, bold=True, color=ACCENT_G)
+
+live_items = [
+    "21 commodity should-cost models — fully parametric, engineering-grade",
+    "AI Agent — describe a part in plain English, AI builds the cost model",
+    "AI CAD Analysis — STEP / photo → geometry → cost in minutes",
+    "Assembly BOM Rollup — multi-part, multi-commodity assemblies",
+    "Learning Curve (Wright's Law) — volume-cost projection",
+    "Supplier Quote Comparison — log quotes, identify margin gaps instantly",
+    "DFM / DFA Intelligence — bolt-on AI layer, 1–10 scores",
+    "20 global regions · 10 currencies with live auto-switching",
+    "6-sheet Excel export + professional PDF report with part photo",
+    "Scenario A/B/C comparison + tornado sensitivity analysis",
+    "Cloud sync, team sharing & secure JWT authentication",
+    "7-tab Help Centre, Glossary, FAQ and Troubleshooting guide",
+]
+
+yy15 = Inches(2.44)
+for item in live_items:
+    rect(slide, Inches(0.65), yy15 + Inches(0.13), Inches(0.06), Inches(0.06), ACCENT_G)
+    txb(slide, item, Inches(0.84), yy15, Inches(5.3), Inches(0.3),
+        size=8, color=TEXT_G, wrap=True)
+    yy15 += Inches(0.33)
+
+# Roadmap
+rx15 = Inches(6.6)
+ry15 = Inches(2.0)
+rw15 = Inches(6.3)
+
+phases = [
+    (ORANGE,   "Phase 2 — Q3 2026",
+     "PLM/ERP integration connectors (Teamcenter, SAP)\n"
+     "Mass-import BOM costing from CSV/Excel\n"
+     "Supplier quotation comparison matrix (multi-supplier)\n"
+     "Cost target waterfall dashboard for programme teams"),
+    (ACCENT_P, "Phase 3 — Q1 2027",
+     "Market price learning engine (auto-update material prices)\n"
+     "Should-cost vs actual variance tracker\n"
+     "Autonomous sourcing RFQ generation from should-cost output\n"
+     "Executive analytics dashboard (portfolio cost view)"),
+    (ACCENT_B, "Phase 4 — 2027+",
+     "Digital Twin cost model (live cost update as design changes)\n"
+     "Generative AI component redesign suggestions\n"
+     "Supplier risk scoring and supply chain resilience index\n"
+     "Mobile app for shop-floor and supplier visits"),
+]
+
+yy15r = ry15
+for col, title, body in phases:
+    rect(slide, rx15, yy15r, rw15, Inches(1.42), SURFACE2, BORDER, Pt(0.5))
+    rect(slide, rx15, yy15r, Inches(0.06), Inches(1.42), col)
+    txb(slide, title, rx15 + Inches(0.14), yy15r + Inches(0.08), rw15 - Inches(0.2), Inches(0.28),
+        size=9, bold=True, color=col)
+    txb(slide, body, rx15 + Inches(0.14), yy15r + Inches(0.34), rw15 - Inches(0.2), Inches(1.0),
+        size=8, color=TEXT_G, wrap=True)
+    yy15r += Inches(1.52)
+
+# Pilot invite + contact
+rect(slide, rx15, yy15r, rw15, Inches(1.36), SURFACE2, BORDER, Pt(0.5))
+rect(slide, rx15, yy15r, Inches(0.06), Inches(1.36), ACCENT_G)
+txb(slide, "🚀  Pilot Rollout — Next Steps", rx15 + Inches(0.14), yy15r + Inches(0.08),
+    rw15 - Inches(0.2), Inches(0.28), size=9, bold=True, color=ACCENT_G)
+pilot_text = (
+    "• Pilot scope: 2–3 commodity families, one programme team\n"
+    "• Duration: 4–6 weeks with real parts vs supplier quotes\n"
+    "• Success metric: ≥15% supplier price reduction identified per part\n"
+    "• Contact: Avinash Bhosale — Cost Engineering & Digital Innovation"
+)
+txb(slide, pilot_text, rx15 + Inches(0.14), yy15r + Inches(0.38), rw15 - Inches(0.2), Inches(0.92),
+    size=8, color=TEXT_G, wrap=True)
+
+# Vision quote at bottom
+rect(slide, Inches(0.45), Inches(7.08), W - Inches(0.9), Inches(0.36), SURFACE2, BORDER, Pt(0.3))
+txb(slide, '"Every engineer should have instant access to accurate, defensible should-cost intelligence — at concept stage, across every commodity, in every region."  — Avinash Bhosale',
+    Inches(0.65), Inches(7.11), W - Inches(1.3), Inches(0.28),
+    size=8, color=TEXT_D, italic=True, align=PP_ALIGN.CENTER)
+
+
+# ─── Save ─────────────────────────────────────────────────────────────────────
+output_path = "/home/user/leamington-marathi/CostVision-Executive-Presentation.pptx"
+prs.save(output_path)
+print(f"Saved: {output_path}")
+print(f"Slides: {len(prs.slides)}")

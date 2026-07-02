@@ -1,0 +1,45 @@
+name: CI
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: calculator
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: calculator/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck
+        run: npx tsc -p tsconfig.build.json --noEmit
+
+      # Includes the SW engine smoke test (computeSWProgram must construct a
+      # result without throwing) — guards the infinite-recursion class of bug
+      # that once shipped the feature completely broken.
+      - name: Unit tests
+        run: npm test
+
+      - name: Production build
+        run: npm run build
+
+      # Headless smoke-launch: boot the BUILT app in a real browser, drive it into
+      # the SW Should-Cost panel, run a calculation, fail on any uncaught page error.
+      # Catches crash-on-load bugs that unit tests cannot see.
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Headless smoke-launch
+        run: npm run test:e2e

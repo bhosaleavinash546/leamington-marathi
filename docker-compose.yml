@@ -1,0 +1,20 @@
+services:
+  costvision:
+    build:
+      context: ./calculator
+      dockerfile: Dockerfile
+    container_name: costvision
+    ports:
+      # Express serves the built frontend + API — map to :5174 so the URL stays the same
+      - "5174:3002"
+    volumes:
+      # Persist the SQLite database across container restarts
+      - costvision-data:/app/data
+    env_file:
+      - ./calculator/.env
+    environment:
+      - NODE_ENV=production
+    restart: unless-stopped
+
+volumes:
+  costvision-data:

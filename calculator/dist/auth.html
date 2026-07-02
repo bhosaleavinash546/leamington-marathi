@@ -1,0 +1,1383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="theme-color" content="#0e1525" />
+  <link rel="manifest" href="/calculator/manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="/calculator/icons/icon-192x192.png" />
+  <title>CostVision — AI Automotive Cost Intelligence · Sign In</title>
+  <meta name="description" content="CostVision: AI-Powered Automotive Cost Intelligence Platform" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --cyan:        #00d4ff;
+      --blue:        #2563eb;
+      --blue-light:  #3b82f6;
+      --purple:      #7c3aed;
+      --green:       #22c55e;
+      --panel-dark:  #050d1a;
+      --form-bg:     #0b1426;
+      --card-bg:     #111e36;
+      --border:      rgba(255,255,255,0.08);
+      --border-blue: rgba(0,212,255,0.25);
+      --text-1:      #f0f6ff;
+      --text-2:      #94a3b8;
+      --text-3:      #8fa3bb;   /* was #64748b — raised for WCAG AA */
+      --input-bg:    rgba(255,255,255,0.05);
+      --input-focus: rgba(37,99,235,0.12);
+      --error:       #ef4444;
+      --error-bg:    rgba(239,68,68,0.08);
+      --success:     #22c55e;
+      --success-bg:  rgba(34,197,94,0.08);
+      --warning:     #f59e0b;
+      --warning-bg:  rgba(245,158,11,0.08);
+      --radius:      12px;
+      --radius-sm:   8px;
+      --trans:       .18s ease;
+      --font:        -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    html, body { height: 100%; }
+
+    body {
+      font-family: var(--font);
+      background: var(--panel-dark);
+      color: var(--text-1);
+      min-height: 100vh;
+      display: flex;
+      font-size: 16px;   /* was 15px */
+      line-height: 1.5;
+      overflow-x: hidden;
+    }
+
+    /* ── Layout ── */
+    .auth-wrapper { display: flex; width: 100%; min-height: 100vh; }
+
+    /* ════════════════════════════════════════════════════════════════
+       HERO PANEL
+    ════════════════════════════════════════════════════════════════ */
+    .hero-panel {
+      flex: 0 0 58%;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      /* Isolate hero compositing from form panel */
+      isolation: isolate;
+      contain: layout style;
+    }
+
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background: url('/calculator/assets/hero-car-DlaFDrzH.png') center 30% / cover no-repeat;
+      transform: scale(1.06) translateZ(0);
+      animation: kenburns 30s ease-in-out infinite alternate;
+      will-change: transform;
+    }
+    @keyframes kenburns {
+      from { transform: scale(1.06) translateX(0); }
+      to   { transform: scale(1.14) translateX(-2%); }
+    }
+
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(to top,
+          rgba(5,13,26,0.98) 0%,
+          rgba(5,13,26,0.88) 28%,
+          rgba(5,13,26,0.55) 55%,
+          rgba(5,13,26,0.20) 80%,
+          rgba(5,13,26,0.10) 100%),
+        linear-gradient(to right,
+          transparent 0%,
+          transparent 65%,
+          rgba(5,13,26,0.60) 85%,
+          rgba(11,20,38,0.95) 100%),
+        radial-gradient(ellipse 70% 50% at 10% 100%, rgba(37,99,235,0.28) 0%, transparent 70%),
+        radial-gradient(ellipse 55% 45% at 90% 5%,  rgba(0,212,255,0.12) 0%, transparent 70%);
+    }
+
+    /* HUD rings — responsive with min() */
+    .hud-rings { position: absolute; inset: 0; pointer-events: none; }
+    .hud-ring {
+      position: absolute;
+      border-radius: 50%;
+      border: 1px dashed rgba(0,212,255,0.12);
+      will-change: transform;
+    }
+    .hud-ring-1 {
+      width: min(520px, 85%); height: min(520px, 85%);
+      top: 50%; left: 44%;
+      transform: translate(-50%, -50%);
+      animation: ring-spin 40s linear infinite;
+    }
+    .hud-ring-2 {
+      width: min(360px, 60%); height: min(360px, 60%);
+      top: 50%; left: 44%;
+      transform: translate(-50%, -50%);
+      border-color: rgba(124,58,237,0.10);
+      animation: ring-spin 25s linear infinite reverse;
+    }
+    @keyframes ring-spin { to { transform: translate(-50%, -50%) rotate(360deg); } }
+
+    /* Corner brackets */
+    .corner-tl, .corner-br { position: absolute; width: 28px; height: 28px; pointer-events: none; opacity: 0.5; }
+    .corner-tl { top: 22px; left: 22px; border-top: 2px solid var(--cyan); border-left: 2px solid var(--cyan); }
+    .corner-br { bottom: 22px; right: 22px; border-bottom: 2px solid var(--cyan); border-right: 2px solid var(--cyan); }
+
+    /* Particles — 5 kept for performance */
+    .particles { position: absolute; inset: 0; pointer-events: none; }
+    .particles span {
+      position: absolute;
+      bottom: var(--y);
+      left: var(--x);
+      width: var(--sz, 3px);
+      height: var(--sz, 3px);
+      border-radius: 50%;
+      background: var(--c, var(--cyan));
+      opacity: 0;
+      transform: translateZ(0);
+      will-change: transform, opacity;
+      animation: ptcl-rise var(--dur, 9s) var(--d, 0s) ease-in infinite;
+    }
+    @keyframes ptcl-rise {
+      0%   { transform: translateY(0) scale(0); opacity: 0; }
+      8%   { opacity: 0.9; transform: scale(1); }
+      90%  { opacity: 0.3; }
+      100% { transform: translateY(-160px) translateX(var(--dx,0px)) scale(0); opacity: 0; }
+    }
+
+    /* Circuit SVG */
+    .circuit-svg {
+      position: absolute;
+      bottom: 0; left: 0;
+      width: 60%; height: 50%;
+      pointer-events: none;
+      opacity: 0.35;
+    }
+    .circuit-svg path { stroke-dasharray: 600; stroke-dashoffset: 600; animation: circuit-draw 4s ease forwards; }
+    @keyframes circuit-draw { to { stroke-dashoffset: 0; } }
+
+    /* Right-edge seam glow */
+    .hero-panel::after {
+      content: '';
+      position: absolute;
+      right: 0; top: 10%; bottom: 10%;
+      width: 1px;
+      background: linear-gradient(to bottom, transparent, rgba(0,212,255,0.4), transparent);
+    }
+
+    /* ── Hero content ── */
+    .hero-content {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      min-height: 100vh;
+      padding: 36px 44px;
+    }
+
+    .hero-logo { display: flex; align-items: center; gap: 14px; animation: hero-fade-in 0.9s ease both; }
+    .logo-badge {
+      width: 50px; height: 50px;
+      background: linear-gradient(135deg, var(--blue) 0%, var(--cyan) 100%);
+      border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem; font-weight: 900; color: #fff;
+      letter-spacing: -1px;
+      will-change: box-shadow;
+      animation: logo-pulse 3s ease-in-out 1s infinite;
+    }
+    @keyframes logo-pulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(37,99,235,0.5), 0 4px 20px rgba(0,212,255,0.2); }
+      50%       { box-shadow: 0 0 0 10px rgba(37,99,235,0), 0 4px 30px rgba(0,212,255,0.4); }
+    }
+    .logo-name { font-size: 1.55rem; font-weight: 800; color: #fff; letter-spacing: -0.5px; line-height: 1; }
+    .logo-tag  { font-size: 0.72rem; font-weight: 500; color: var(--cyan); letter-spacing: 0.1em; text-transform: uppercase; margin-top: 3px; }
+
+    .hero-body { margin-top: auto; margin-bottom: 24px; animation: hero-fade-in 0.9s 0.2s ease both; }
+
+    .hero-heading {
+      font-size: 2.6rem; font-weight: 800; color: #fff;
+      line-height: 1.15; letter-spacing: -1px;
+      margin-bottom: 16px;
+      text-shadow: 0 2px 20px rgba(0,0,0,0.5);
+    }
+    .hero-heading .accent {
+      background: linear-gradient(90deg, var(--cyan), var(--blue-light));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+
+    .hero-sub {
+      font-size: 0.95rem; color: #ffffff;
+      line-height: 1.65; margin-bottom: 24px; max-width: 440px;
+    }
+
+    /* Feature chips — single line, shorter text */
+    .feature-grid { display: flex; flex-direction: column; gap: 9px; }
+    .feature-chip {
+      display: flex; align-items: center; gap: 10px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.09);
+      border-radius: 10px;
+      padding: 8px 14px;
+      font-size: 0.82rem;
+      color: #ffffff;
+      backdrop-filter: blur(8px);
+      transition: background var(--trans), border-color var(--trans), transform var(--trans);
+      opacity: 0;
+      animation: chip-slide-in 0.6s ease forwards;
+      white-space: nowrap; overflow: hidden;
+    }
+    .feature-chip:nth-child(1) { animation-delay: 0.40s; }
+    .feature-chip:nth-child(2) { animation-delay: 0.55s; }
+    .feature-chip:nth-child(3) { animation-delay: 0.70s; }
+    .feature-chip:nth-child(4) { animation-delay: 0.85s; }
+    @keyframes chip-slide-in {
+      from { opacity: 0; transform: translateX(-18px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+    .feature-chip:hover { background: rgba(37,99,235,0.14); border-color: rgba(0,212,255,0.22); transform: translateX(4px); }
+    .chip-icon {
+      flex-shrink: 0; width: 28px; height: 28px;
+      background: linear-gradient(135deg, rgba(37,99,235,0.3), rgba(0,212,255,0.15));
+      border-radius: 7px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.88rem;
+      border: 1px solid rgba(0,212,255,0.15);
+    }
+
+    /* Stats row */
+    .hero-stats { display: flex; gap: 4px; margin-bottom: 20px; animation: hero-fade-in 0.9s 0.9s ease both; }
+    .stat-pill {
+      flex: 1;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 8px; padding: 10px;
+      text-align: center; backdrop-filter: blur(8px);
+      transition: background var(--trans), border-color var(--trans);
+    }
+    .stat-pill:hover { background: rgba(37,99,235,0.1); border-color: rgba(0,212,255,0.2); }
+    .stat-val   { font-size: 1.05rem; font-weight: 800; color: var(--cyan); letter-spacing: -0.5px; display: block; line-height: 1; }
+    .stat-label { font-size: 0.60rem; font-weight: 500; color: var(--text-2); text-transform: uppercase; letter-spacing: 0.06em; margin-top: 4px; display: block; }
+
+    /* Hero footer — improved contrast */
+    .hero-footer { font-size: 0.68rem; color: rgba(148,163,184,0.80); animation: hero-fade-in 1s 1.2s ease both; }
+
+    @keyframes hero-fade-in {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ════════════════════════════════════════════════════════════════
+       FORM PANEL
+    ════════════════════════════════════════════════════════════════ */
+    .form-panel {
+      flex: 1;
+      background: linear-gradient(160deg, #0b1426 0%, #0f1e38 60%, #0a1120 100%);
+      display: flex; align-items: center; justify-content: center;
+      padding: 40px 24px;
+      overflow-y: auto;
+      position: relative;
+    }
+
+    /* Mobile mini-logo */
+    .form-mini-logo { display: none; align-items: center; gap: 10px; margin-bottom: 28px; }
+    .fml-badge {
+      width: 38px; height: 38px;
+      background: linear-gradient(135deg, var(--blue), var(--cyan));
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem; font-weight: 900; color: #fff;
+    }
+    .fml-name { font-size: 1.1rem; font-weight: 800; color: #fff; }
+
+    .auth-card {
+      width: 100%; max-width: 420px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 16px;   /* was 18px — harmonised with inputs */
+      padding: 36px;
+      backdrop-filter: blur(20px);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(0,212,255,0.05);
+      position: relative;
+      animation: card-appear 0.8s 0.15s ease both;
+    }
+    @keyframes card-appear {
+      from { opacity: 0; transform: translateY(24px) scale(0.98); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .auth-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 10%; right: 10%;
+      height: 1px;
+      background: linear-gradient(to right, transparent, rgba(0,212,255,0.5), transparent);
+    }
+
+    /* Terms / privacy below card */
+    .card-legal {
+      text-align: center; font-size: 0.71rem;
+      color: var(--text-3); margin-top: 20px; line-height: 1.6;
+    }
+    .card-legal a { color: var(--text-2); text-decoration: none; }
+    .card-legal a:hover { color: var(--cyan); text-decoration: underline; }
+
+    /* ── Views ── */
+    .view { display: none; }
+    .view.active { display: block; animation: view-in 0.3s ease; }
+    @keyframes view-in {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── Typography ── */
+    .view-heading { font-size: 1.55rem; font-weight: 800; color: var(--text-1); margin-bottom: 6px; letter-spacing: -0.5px; }
+    .view-sub     { font-size: 0.85rem; color: var(--text-2); margin-bottom: 26px; }
+    .view-sub a   { color: var(--cyan); text-decoration: none; font-weight: 500; }
+    .view-sub a:hover { text-decoration: underline; }
+
+    /* ── Form elements ── */
+    .form-group { margin-bottom: 16px; }
+
+    label {
+      display: block; font-size: 0.78rem; font-weight: 600;
+      color: var(--text-2); margin-bottom: 6px;
+      letter-spacing: 0.03em; text-transform: uppercase;
+    }
+
+    .input-wrap { position: relative; }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="password"] {
+      width: 100%; height: 46px;
+      padding: 0 42px 0 14px;
+      background: var(--input-bg);
+      border: 1.5px solid rgba(255,255,255,0.1);
+      border-radius: var(--radius-sm);
+      color: var(--text-1); font-size: 0.92rem; font-family: var(--font);
+      transition: border-color var(--trans), box-shadow var(--trans), background var(--trans);
+      outline: none;
+    }
+    input[type="text"]::placeholder,
+    input[type="email"]::placeholder,
+    input[type="password"]::placeholder { color: var(--text-3); }
+    input[type="text"]:focus,
+    input[type="email"]:focus,
+    input[type="password"]:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(37,99,235,0.18);
+      background: rgba(37,99,235,0.07);
+    }
+    input.error { border-color: var(--error); box-shadow: 0 0 0 3px rgba(239,68,68,0.12); }
+
+    .toggle-pw {
+      position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+      background: none; border: none; cursor: pointer; color: var(--text-3);
+      padding: 4px; display: flex; align-items: center;
+      transition: color var(--trans);
+    }
+    .toggle-pw:hover { color: var(--text-2); }
+
+    /* ── Remember me ── */
+    .remember-row { display: flex; align-items: center; gap: 8px; margin-bottom: 18px; }
+    .remember-row input[type="checkbox"] { width: 15px; height: 15px; accent-color: var(--blue); cursor: pointer; flex-shrink: 0; }
+    .remember-row label {
+      font-size: 0.8rem; font-weight: 400; color: var(--text-2);
+      text-transform: none; letter-spacing: 0; margin: 0; cursor: pointer; user-select: none;
+    }
+
+    /* ── Password strength ── */
+    .pw-strength { margin-top: 8px; display: none; }
+    .pw-strength.visible { display: block; }
+    .pw-bar-track { height: 3px; background: rgba(255,255,255,0.08); border-radius: 2px; overflow: hidden; margin-bottom: 4px; }
+    .pw-bar-fill  { height: 100%; border-radius: 2px; width: 0%; transition: width .3s ease, background .3s ease; }
+    .pw-bar-fill.weak   { width: 33%; background: var(--error); }
+    .pw-bar-fill.fair   { width: 66%; background: var(--warning); }
+    .pw-bar-fill.strong { width: 100%; background: var(--success); }
+    .pw-label           { font-size: 0.72rem; color: var(--text-3); }
+    .pw-label.weak      { color: var(--error); }
+    .pw-label.fair      { color: var(--warning); }
+    .pw-label.strong    { color: var(--success); }
+
+    /* ── Banners ── */
+    .banner {
+      display: none; border-radius: var(--radius-sm); padding: 10px 13px;
+      font-size: 0.83rem; margin-bottom: 16px; align-items: flex-start; gap: 9px;
+      animation: banner-in 0.25s ease;
+    }
+    @keyframes banner-in {
+      from { opacity: 0; transform: translateY(-6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .banner.visible { display: flex; }
+    .banner-icon  { flex-shrink: 0; font-size: 0.95rem; }
+    .banner-text  { flex: 1; line-height: 1.4; }
+    .banner.error   { background: var(--error-bg);           border: 1px solid rgba(239,68,68,0.25);   color: #fca5a5; }
+    .banner.success { background: var(--success-bg);         border: 1px solid rgba(34,197,94,0.25);   color: #86efac; }
+    .banner.info    { background: rgba(37,99,235,0.08);      border: 1px solid rgba(37,99,235,0.25);   color: #93c5fd; }
+
+    /* ── Buttons ── */
+    .btn {
+      display: flex; align-items: center; justify-content: center; gap: 7px;
+      width: 100%; height: 46px; border: none;
+      border-radius: var(--radius-sm);
+      font-size: 0.9rem; font-weight: 700; font-family: var(--font);
+      cursor: pointer; transition: all var(--trans);
+      position: relative; overflow: hidden; letter-spacing: 0.01em;
+    }
+    .btn-icon { flex-shrink: 0; display: flex; align-items: center; }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--blue) 0%, #1d4ed8 100%);
+      color: #fff;
+      box-shadow: 0 4px 14px rgba(37,99,235,0.3);
+    }
+    .btn-primary::after {
+      content: '';
+      position: absolute; top: 0; left: -100%; width: 60%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.18), transparent);
+      transition: none;
+    }
+    .btn-primary:hover:not(:disabled)::after { left: 200%; transition: left 0.55s ease; }
+    .btn-primary:hover:not(:disabled) {
+      background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+      box-shadow: 0 6px 22px rgba(37,99,235,0.45);
+      transform: translateY(-1px);
+    }
+    .btn-primary:active:not(:disabled) { transform: translateY(0); }
+    .btn-primary:disabled { background: #1e3a6e; color: #4a6fa5; cursor: not-allowed; box-shadow: none; }
+
+    /* Ghost button — improved visibility */
+    .btn-ghost {
+      background: rgba(255,255,255,0.05);
+      color: var(--text-1);                          /* was text-2 */
+      border: 1.5px solid rgba(255,255,255,0.18);    /* was 0.1 */
+      margin-top: 10px;
+    }
+    .btn-ghost:hover {
+      background: rgba(255,255,255,0.09);
+      border-color: rgba(255,255,255,0.28);
+      color: var(--text-1);
+    }
+
+    .btn-link {
+      background: none; border: none; color: var(--cyan);
+      font-size: 0.82rem; font-weight: 500; cursor: pointer;
+      font-family: var(--font); padding: 0;
+    }
+    .btn-link:hover { text-decoration: underline; }
+    .btn-link:disabled { color: var(--text-3); cursor: default; }
+
+    .spinner {
+      width: 17px; height: 17px;
+      border: 2.5px solid rgba(255,255,255,0.25);
+      border-top-color: #fff; border-radius: 50%;
+      animation: spin .7s linear infinite; display: none;
+    }
+    .btn.loading .spinner  { display: block; }
+    .btn.loading .btn-text { opacity: 0; position: absolute; }
+    .btn.loading .btn-icon { opacity: 0; position: absolute; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Helpers ── */
+    .row-between { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+    .row-between label { margin: 0; }
+
+    /* ── OTP Grid — type="text" inputmode="numeric" (no spinners, correct mobile keyboard) ── */
+    .otp-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin-bottom: 8px; }
+    .otp-grid input {
+      height: 56px; padding: 0; text-align: center;
+      font-size: 1.4rem; font-weight: 700; letter-spacing: 0;
+      border-radius: var(--radius-sm);
+      border: 1.5px solid rgba(255,255,255,0.1);
+      background: var(--input-bg); color: var(--text-1); outline: none;
+      transition: border-color var(--trans), box-shadow var(--trans), background var(--trans);
+    }
+    .otp-grid input:focus  { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(37,99,235,0.18); background: rgba(37,99,235,0.07); }
+    .otp-grid input.filled { border-color: rgba(0,212,255,0.4); background: rgba(0,212,255,0.06); }
+    .otp-grid input.error  { border-color: var(--error); animation: shake .3s ease; }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25%       { transform: translateX(-5px); }
+      75%       { transform: translateX(5px); }
+    }
+
+    .otp-meta { display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; color: var(--text-2); margin-bottom: 20px; }
+    .otp-timer         { font-weight: 700; color: var(--cyan); }
+    .otp-timer.expired { color: var(--error); }
+
+    .otp-email-label { text-align: center; font-size: 0.85rem; color: var(--text-2); margin-bottom: 24px; line-height: 1.5; }
+    .otp-email-label strong { color: var(--text-1); }
+
+    /* ── Success ── */
+    .success-view { text-align: center; padding: 20px 0; }
+    .success-icon {
+      width: 68px; height: 68px;
+      background: rgba(34,197,94,0.1);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 22px;
+      border: 1.5px solid rgba(34,197,94,0.3);
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 1000px) {
+      .hero-panel   { flex: 0 0 50%; }
+      .hero-heading { font-size: 2.1rem; }
+      .hero-content { padding: 30px 32px; }
+    }
+    @media (max-width: 720px) {
+      .auth-wrapper  { flex-direction: column; }
+      .hero-panel    { flex: none; min-height: 260px; max-height: 310px; }
+      .hero-content  { padding: 24px 24px 16px; }
+      .hero-heading  { font-size: 1.5rem; }
+      .hero-sub, .feature-grid { display: none; }
+      .hero-body     { margin-top: 0; margin-bottom: 12px; }
+      .form-panel    { padding: 28px 20px; }
+      .form-mini-logo { display: flex; }
+      .auth-card     { border-radius: 14px; padding: 28px 24px; }
+    }
+    @media (max-width: 400px) {
+      .otp-grid input { height: 48px; font-size: 1.2rem; }
+      .otp-grid { gap: 6px; }
+    }
+
+    /* ── Accessibility: honour reduced-motion preference ── */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="auth-wrapper">
+
+  <!-- ══════════════════════════════════════════════════════════════
+       HERO PANEL
+  ══════════════════════════════════════════════════════════════ -->
+  <aside class="hero-panel">
+    <div class="hero-bg"></div>
+    <div class="hero-overlay"></div>
+
+    <!-- HUD rings -->
+    <div class="hud-rings">
+      <div class="hud-ring hud-ring-1"></div>
+      <div class="hud-ring hud-ring-2"></div>
+    </div>
+
+    <!-- Corner brackets -->
+    <div class="corner-tl"></div>
+    <div class="corner-br"></div>
+
+    <!-- Particles — 3 (infinite animations consolidated for performance) -->
+    <div class="particles" aria-hidden="true">
+      <span style="--x:8%;--y:25%;--d:0s;--dur:9s;--sz:3px"></span>
+      <span style="--x:55%;--y:40%;--d:0.8s;--dur:12s;--sz:3px;--c:#34d399"></span>
+      <span style="--x:14%;--y:55%;--d:4s;--dur:7s;--sz:2px;--c:#a78bfa"></span>
+    </div>
+
+    <!-- Circuit lines -->
+    <svg class="circuit-svg" viewBox="0 0 400 300" fill="none" aria-hidden="true">
+      <path d="M0 240 H60 V200 H120 V220 H200" stroke="#00d4ff" stroke-width="0.8" style="animation-delay:0.5s"/>
+      <path d="M0 180 H40 V150 H100"           stroke="#3b82f6" stroke-width="0.8" style="animation-delay:1.2s"/>
+      <path d="M0 260 H30 L80 210 H160 V240 H250" stroke="#7c3aed" stroke-width="0.8" stroke-dasharray="600" stroke-dashoffset="600" style="animation:circuit-draw 5s 0.8s ease forwards"/>
+      <circle cx="120" cy="220" r="3" fill="none" stroke="#00d4ff" stroke-width="0.8" opacity="0.5"/>
+      <circle cx="100" cy="150" r="3" fill="none" stroke="#3b82f6" stroke-width="0.8" opacity="0.5"/>
+      <circle cx="160" cy="240" r="3" fill="none" stroke="#7c3aed" stroke-width="0.8" opacity="0.5"/>
+    </svg>
+
+    <!-- Content -->
+    <div class="hero-content">
+      <div class="hero-logo">
+        <div class="logo-badge">CV</div>
+        <div>
+          <div class="logo-name">CostVision</div>
+          <div class="logo-tag">AI Cost Intelligence</div>
+        </div>
+      </div>
+
+      <div class="hero-body">
+        <h1 class="hero-heading">
+          Precision Cost<br>
+          Intelligence for<br>
+          <span class="accent">Automotive OEMs</span>
+        </h1>
+        <p class="hero-sub">
+          Model should-cost for any manufactured component — from AHSS stampings to battery packs — with live commodity prices, AI DFM analysis, and 20-region benchmarks.
+        </p>
+
+        <!-- Chips — shortened to single lines -->
+        <div class="feature-grid">
+          <div class="feature-chip">
+            <span class="chip-icon">🏭</span>
+            52+ commodities — machining, casting, composites &amp; PCBA
+          </div>
+          <div class="feature-chip">
+            <span class="chip-icon">⚡</span>
+            EV / EDU cost models — NMC, LFP, SiC, electrical steel
+          </div>
+          <div class="feature-chip">
+            <span class="chip-icon">🤖</span>
+            AI agent — describe a part, get 8-bucket cost breakdown
+          </div>
+          <div class="feature-chip">
+            <span class="chip-icon">📊</span>
+            Live commodity prices · DFM insights · PPV analysis
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats — meaningful values replacing "AI" / "Live" -->
+      <div class="hero-stats">
+        <div class="stat-pill">
+          <span class="stat-val">52+</span>
+          <span class="stat-label">Commodities</span>
+        </div>
+        <div class="stat-pill">
+          <span class="stat-val">20</span>
+          <span class="stat-label">Regions</span>
+        </div>
+        <div class="stat-pill">
+          <span class="stat-val">GPT-4o</span>
+          <span class="stat-label">AI Engine</span>
+        </div>
+        <div class="stat-pill">
+          <span class="stat-val">&lt;5s</span>
+          <span class="stat-label">Price Refresh</span>
+        </div>
+      </div>
+
+      <div class="hero-footer">
+        &copy; 2026 CostVision &nbsp;·&nbsp; AI-Powered Automotive Cost Intelligence
+      </div>
+    </div>
+  </aside>
+
+  <!-- ══════════════════════════════════════════════════════════════
+       FORM PANEL
+  ══════════════════════════════════════════════════════════════ -->
+  <main class="form-panel">
+    <div class="form-mini-logo">
+      <div class="fml-badge">CV</div>
+      <div class="fml-name">CostVision</div>
+    </div>
+
+    <div class="auth-card">
+
+      <!-- ── SIGN IN ── -->
+      <div id="view-signin" class="view active">
+        <h2 class="view-heading">Welcome back</h2>
+        <p class="view-sub">Sign in to your CostVision account</p>
+
+        <div id="signin-banner" class="banner error" role="alert" aria-atomic="true">
+          <span class="banner-icon" aria-hidden="true">⚠</span>
+          <span class="banner-text" id="signin-banner-text"></span>
+        </div>
+
+        <form id="form-signin" novalidate>
+          <div class="form-group">
+            <label for="signin-email">Email address</label>
+            <div class="input-wrap">
+              <input type="email" id="signin-email" placeholder="you@company.com" autocomplete="email" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="row-between">
+              <label for="signin-pw">Password</label>
+              <button type="button" class="btn-link" onclick="gotoView('forgot')">Forgot password?</button>
+            </div>
+            <div class="input-wrap">
+              <input type="password" id="signin-pw" placeholder="Enter your password" autocomplete="current-password" />
+              <button type="button" class="toggle-pw" onclick="togglePw('signin-pw', this)" tabindex="-1">
+                <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Remember me -->
+          <div class="remember-row">
+            <input type="checkbox" id="signin-remember" />
+            <label for="signin-remember">Keep me signed in</label>
+          </div>
+
+          <button type="submit" class="btn btn-primary" id="btn-signin">
+            <div class="spinner"></div>
+            <span class="btn-text">Sign In</span>
+            <span class="btn-icon"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg></span>
+          </button>
+        </form>
+
+        <!-- Ghost button — no divider, visually separated by margin -->
+        <button type="button" class="btn btn-ghost" onclick="gotoView('signup')">
+          Create a free account
+        </button>
+      </div>
+
+      <!-- ── SIGN UP ── -->
+      <div id="view-signup" class="view">
+        <h2 class="view-heading">Create account</h2>
+        <p class="view-sub">Already have one? <a href="#" onclick="gotoView('signin');return false">Sign in</a></p>
+
+        <div id="signup-banner" class="banner error" role="alert" aria-atomic="true">
+          <span class="banner-icon" aria-hidden="true">⚠</span>
+          <span class="banner-text" id="signup-banner-text"></span>
+        </div>
+
+        <form id="form-signup" novalidate>
+          <div class="form-group">
+            <label for="signup-name">Full Name</label>
+            <div class="input-wrap">
+              <input type="text" id="signup-name" placeholder="Jane Smith" autocomplete="name" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="signup-company">Company <span style="color:var(--text-3);font-weight:400;text-transform:none">(optional)</span></label>
+            <div class="input-wrap">
+              <input type="text" id="signup-company" placeholder="Acme Engineering Ltd" autocomplete="organization" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="signup-email">Email address</label>
+            <div class="input-wrap">
+              <input type="email" id="signup-email" placeholder="you@company.com" autocomplete="email" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="signup-pw">Password</label>
+            <div class="input-wrap">
+              <input type="password" id="signup-pw" placeholder="Min. 8 characters" autocomplete="new-password"
+                     oninput="checkPwStrength(this.value, 'signup-pw-strength')" />
+              <button type="button" class="toggle-pw" onclick="togglePw('signup-pw', this)" tabindex="-1">
+                <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
+            <div class="pw-strength" id="signup-pw-strength">
+              <div class="pw-bar-track"><div class="pw-bar-fill" id="signup-pw-bar"></div></div>
+              <p class="pw-label" id="signup-pw-label"></p>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="signup-pw2">Confirm Password</label>
+            <div class="input-wrap">
+              <input type="password" id="signup-pw2" placeholder="Re-enter your password" autocomplete="new-password" />
+              <button type="button" class="toggle-pw" onclick="togglePw('signup-pw2', this)" tabindex="-1">
+                <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary" id="btn-signup">
+            <div class="spinner"></div>
+            <span class="btn-text">Create Account</span>
+            <span class="btn-icon"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg></span>
+          </button>
+        </form>
+      </div>
+
+      <!-- ── OTP VERIFY ── -->
+      <div id="view-otp" class="view">
+        <h2 class="view-heading">Verify your email</h2>
+        <p class="otp-email-label">We sent a 6-digit code to<br><strong id="otp-email-display"></strong></p>
+
+        <div id="dev-otp-banner" style="display:none;background:rgba(245,158,11,0.1);border:1.5px solid rgba(245,158,11,0.3);border-radius:10px;padding:14px 18px;margin-bottom:16px;text-align:center">
+          <p style="margin:0 0 6px;font-size:0.7rem;color:#fbbf24;font-weight:700;text-transform:uppercase;letter-spacing:.5px">📧 Dev mode — your code is</p>
+          <p id="dev-otp-code" style="margin:0;font-size:2rem;font-weight:800;letter-spacing:10px;color:#fde68a;font-variant-numeric:tabular-nums"></p>
+        </div>
+
+        <div id="otp-banner" class="banner error" role="alert" aria-atomic="true">
+          <span class="banner-icon" aria-hidden="true">⚠</span>
+          <span class="banner-text" id="otp-banner-text"></span>
+        </div>
+
+        <!-- type="text" inputmode="numeric" — no spinners, correct mobile keyboard -->
+        <div class="otp-grid" id="otp-inputs" role="group" aria-label="6-digit verification code">
+          <input type="text" inputmode="numeric" pattern="[0-9]" maxlength="1" autocomplete="one-time-code" />
+          <input type="text" inputmode="numeric" pattern="[0-9]" maxlength="1" />
+          <input type="text" inputmode="numeric" pattern="[0-9]" maxlength="1" />
+          <input type="text" inputmode="numeric" pattern="[0-9]" maxlength="1" />
+          <input type="text" inputmode="numeric" pattern="[0-9]" maxlength="1" />
+          <input type="text" inputmode="numeric" pattern="[0-9]" maxlength="1" />
+        </div>
+
+        <div class="otp-meta">
+          <span id="otp-expires-label">Code expires in</span>
+          <span class="otp-timer" id="otp-timer"
+                role="timer" aria-live="off"
+                aria-labelledby="otp-expires-label">5:00</span>
+        </div>
+
+        <button type="button" class="btn btn-primary" id="btn-verify" onclick="submitOTP()">
+          <div class="spinner"></div>
+          <span class="btn-text">Verify Code</span>
+          <span class="btn-icon"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg></span>
+        </button>
+
+        <div style="text-align:center;margin-top:16px">
+          <button type="button" class="btn-link" id="btn-resend" onclick="resendOTP()" disabled>Resend code</button>
+          <span id="resend-hint" style="font-size:0.78rem;color:var(--text-3)"> · available when timer expires</span>
+        </div>
+      </div>
+
+      <!-- ── FORGOT PASSWORD ── -->
+      <div id="view-forgot" class="view">
+        <h2 class="view-heading">Reset password</h2>
+        <p class="view-sub">Enter your email to receive a reset code. <a href="#" onclick="gotoView('signin');return false">Back to sign in</a></p>
+
+        <div id="forgot-banner" class="banner error" role="alert" aria-atomic="true">
+          <span class="banner-icon" aria-hidden="true">⚠</span>
+          <span class="banner-text" id="forgot-banner-text"></span>
+        </div>
+
+        <form id="form-forgot" novalidate>
+          <div class="form-group">
+            <label for="forgot-email">Email address</label>
+            <div class="input-wrap">
+              <input type="email" id="forgot-email" placeholder="you@company.com" autocomplete="email" />
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary" id="btn-forgot">
+            <div class="spinner"></div>
+            <span class="btn-text">Send Reset Code</span>
+            <span class="btn-icon"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg></span>
+          </button>
+          <button type="button" class="btn btn-ghost" onclick="gotoView('signin')">Back to Sign In</button>
+        </form>
+      </div>
+
+      <!-- ── RESET PASSWORD ── -->
+      <div id="view-reset" class="view">
+        <h2 class="view-heading">Set new password</h2>
+        <p class="view-sub">Choose a strong password for your account</p>
+
+        <div id="reset-banner" class="banner error" role="alert" aria-atomic="true">
+          <span class="banner-icon" aria-hidden="true">⚠</span>
+          <span class="banner-text" id="reset-banner-text"></span>
+        </div>
+
+        <form id="form-reset" novalidate>
+          <div class="form-group">
+            <label for="reset-pw">New Password</label>
+            <div class="input-wrap">
+              <input type="password" id="reset-pw" placeholder="Min. 8 characters"
+                     oninput="checkPwStrength(this.value, 'reset-pw-strength')" />
+              <button type="button" class="toggle-pw" onclick="togglePw('reset-pw', this)" tabindex="-1">
+                <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
+            <div class="pw-strength" id="reset-pw-strength">
+              <div class="pw-bar-track"><div class="pw-bar-fill" id="reset-pw-bar"></div></div>
+              <p class="pw-label" id="reset-pw-label"></p>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="reset-pw2">Confirm New Password</label>
+            <div class="input-wrap">
+              <input type="password" id="reset-pw2" placeholder="Re-enter your new password" />
+              <button type="button" class="toggle-pw" onclick="togglePw('reset-pw2', this)" tabindex="-1">
+                <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary" id="btn-reset">
+            <div class="spinner"></div>
+            <span class="btn-text">Set New Password</span>
+            <span class="btn-icon"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg></span>
+          </button>
+        </form>
+      </div>
+
+      <!-- ── SUCCESS ── -->
+      <div id="view-success" class="view">
+        <div class="success-view">
+          <!-- SVG checkmark replaces ✅ emoji (cross-platform consistent) -->
+          <div class="success-icon">
+            <svg width="36" height="36" fill="none" stroke="#22c55e" stroke-width="2.5"
+                 stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M20 6L9 17l-5-5"/>
+            </svg>
+          </div>
+          <h2 class="view-heading" id="success-heading" style="text-align:center">Done!</h2>
+          <p class="view-sub" id="success-msg" style="text-align:center;margin-bottom:0">Redirecting…</p>
+        </div>
+      </div>
+
+      <!-- Terms / privacy -->
+      <p class="card-legal">By continuing you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></p>
+
+    </div><!-- /.auth-card -->
+  </main>
+</div>
+
+<!-- Visually hidden live region — announces async status to screen readers -->
+<div id="a11y-announcer" role="status" aria-live="polite" aria-atomic="true"
+     style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;pointer-events:none"></div>
+
+<script>
+/* ── State ──────────────────────────────────────────────────────────────── */
+const state = {
+  otpPurpose:    'signup',
+  otpEmail:      '',
+  resetToken:    '',
+  timerInterval: null,
+};
+
+const API = '/api/auth';
+
+/* ── View routing ───────────────────────────────────────────────────────── */
+function gotoView(name) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById('view-' + name).classList.add('active');
+  clearBanners();
+}
+function clearBanners() {
+  document.querySelectorAll('.banner').forEach(b => b.classList.remove('visible'));
+}
+
+/* ── Banner helpers ─────────────────────────────────────────────────────── */
+function showBanner(prefix, msg, type = 'error') {
+  const b = document.getElementById(prefix + '-banner');
+  const t = document.getElementById(prefix + '-banner-text');
+  b.className = 'banner ' + type + ' visible';
+  t.textContent = msg;
+}
+
+/* ── Button loading state ───────────────────────────────────────────────── */
+function setLoading(btnId, on) {
+  const btn = document.getElementById(btnId);
+  if (on) btn.classList.add('loading');
+  else    btn.classList.remove('loading');
+  btn.disabled = on;
+}
+
+/* ── Password toggle ────────────────────────────────────────────────────── */
+const EYE_ON  = `<svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;
+const EYE_OFF = `<svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`;
+function togglePw(inputId, btn) {
+  const inp = document.getElementById(inputId);
+  if (inp.type === 'password') { inp.type = 'text';     btn.innerHTML = EYE_OFF; }
+  else                         { inp.type = 'password'; btn.innerHTML = EYE_ON;  }
+}
+
+/* ── Password strength ──────────────────────────────────────────────────── */
+function checkPwStrength(pw, wrapperId) {
+  const wrap   = document.getElementById(wrapperId);
+  const viewId = wrapperId.replace('-pw-strength', '');
+  const bar    = document.getElementById(viewId + '-pw-bar');
+  const label  = document.getElementById(viewId + '-pw-label');
+  if (!pw) { wrap.classList.remove('visible'); return; }
+  wrap.classList.add('visible');
+  let score = 0;
+  if (pw.length >= 8)                                                   score++;
+  if (/[A-Z]/.test(pw) && /[a-z]/.test(pw))                            score++;
+  if (/\d/.test(pw))                                                    score++;
+  if (/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(pw))                 score++;
+  const levels = ['','weak','weak','fair','strong'];
+  const labels = ['','Weak','Weak','Fair — add symbols','Strong ✓'];
+  bar.className   = 'pw-bar-fill ' + levels[score];
+  label.className = 'pw-label '    + levels[score];
+  label.textContent = labels[score];
+}
+
+/* ── OTP input wiring ───────────────────────────────────────────────────── */
+function setupOTPInputs() {
+  const inputs = [...document.querySelectorAll('#otp-inputs input')];
+  inputs.forEach((inp, i) => {
+    inp.addEventListener('input', () => {
+      const val = inp.value.replace(/\D/g, '').slice(-1);
+      inp.value = val;
+      inp.classList.toggle('filled', val !== '');
+      inp.classList.remove('error');
+      if (val && i < 5) inputs[i + 1].focus();
+      if (getOTPValue().length === 6) submitOTP();
+    });
+    inp.addEventListener('keydown', e => {
+      if (e.key === 'Backspace' && !inp.value && i > 0) {
+        inputs[i - 1].value = '';
+        inputs[i - 1].classList.remove('filled');
+        inputs[i - 1].focus();
+      }
+      if (e.key === 'ArrowLeft'  && i > 0) inputs[i - 1].focus();
+      if (e.key === 'ArrowRight' && i < 5) inputs[i + 1].focus();
+    });
+    inp.addEventListener('paste', e => {
+      e.preventDefault();
+      const text = (e.clipboardData || window.clipboardData).getData('text').replace(/\D/g, '').slice(0, 6);
+      [...text].forEach((ch, j) => {
+        if (inputs[j]) { inputs[j].value = ch; inputs[j].classList.add('filled'); }
+      });
+      if (text.length === 6) submitOTP();
+      else if (inputs[text.length]) inputs[text.length].focus();
+    });
+  });
+}
+function getOTPValue() {
+  return [...document.querySelectorAll('#otp-inputs input')].map(i => i.value).join('');
+}
+function clearOTPInputs() {
+  document.querySelectorAll('#otp-inputs input').forEach(i => {
+    i.value = '';
+    i.classList.remove('filled', 'error');
+  });
+  document.querySelector('#otp-inputs input').focus();
+}
+function shakeOTPInputs() {
+  document.querySelectorAll('#otp-inputs input').forEach(i => i.classList.add('error'));
+  setTimeout(() => document.querySelectorAll('#otp-inputs input').forEach(i => i.classList.remove('error')), 600);
+}
+
+/* ── OTP timer — shows "Expired" when countdown reaches 0 ──────────────── */
+function startOTPTimer(seconds = 300) {
+  clearInterval(state.timerInterval);
+  const timerEl    = document.getElementById('otp-timer');
+  const resendBtn  = document.getElementById('btn-resend');
+  const resendHint = document.getElementById('resend-hint');
+  resendBtn.disabled = true;
+  resendHint.style.display = 'inline';
+  let remaining = seconds;
+  function tick() {
+    if (remaining <= 0) {
+      clearInterval(state.timerInterval);
+      timerEl.textContent = 'Expired';
+      timerEl.className   = 'otp-timer expired';
+      resendBtn.disabled  = false;
+      resendHint.style.display = 'none';
+      /* Announce to screen readers via polite live region */
+      document.getElementById('a11y-announcer').textContent =
+        'Verification code has expired. Click Resend code to receive a new one.';
+      return;
+    }
+    const m = Math.floor(remaining / 60);
+    const s = remaining % 60;
+    timerEl.textContent = `${m}:${s.toString().padStart(2, '0')}`;
+    timerEl.className   = 'otp-timer' + (remaining <= 30 ? ' expired' : '');
+    remaining--;
+  }
+  tick();
+  state.timerInterval = setInterval(tick, 1000);
+}
+
+/* ── Enter OTP view ─────────────────────────────────────────────────────── */
+function showOTPView(email, purpose, devOtp) {
+  state.otpEmail   = email;
+  state.otpPurpose = purpose;
+  document.getElementById('otp-email-display').textContent = email;
+  clearOTPInputs();
+  const devBanner = document.getElementById('dev-otp-banner');
+  if (devOtp) {
+    document.getElementById('dev-otp-code').textContent = devOtp;
+    devBanner.style.display = 'block';
+    devOtp.split('').forEach((d, i) => {
+      const inputs = document.querySelectorAll('#otp-inputs input');
+      if (inputs[i]) inputs[i].value = d;
+    });
+  } else {
+    devBanner.style.display = 'none';
+  }
+  gotoView('otp');
+  startOTPTimer();
+  document.querySelector('#otp-inputs input').focus();
+}
+
+/* ── Local credential store (works without backend server) ──────────────── */
+/* Passwords stored as SHA-256 hex digests of salted input — never plaintext */
+const LOCAL_USERS = [
+  {
+    email:    'demo@costvision.app',
+    pwHash:   'd526702e0b9a46f64923cc9b16f112e304243db80eeeb64d0437d2e23895f87b',
+    fullName: 'Demo User',
+    id:       'local-user-002',
+  },
+];
+
+const _PW_SALT = 'CostVision-Salt-2026:';
+
+async function _sha256hex(data) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(data));
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+async function _hashPw(pw) {
+  return _sha256hex(_PW_SALT + pw);
+}
+
+/* Lockout state in sessionStorage — survives page reload within the tab, clears on tab close */
+function _getLockedUntil() { return parseInt(sessionStorage.getItem('cv-local-locked-until') ?? '0', 10); }
+function _setLockedUntil(t) { sessionStorage.setItem('cv-local-locked-until', String(t)); }
+function _getAttempts()    { return parseInt(sessionStorage.getItem('cv-local-attempts') ?? '0', 10); }
+function _setAttempts(n)   { sessionStorage.setItem('cv-local-attempts', String(n)); }
+
+/* Device key for local token signing — generated once, stored in localStorage */
+function _getDeviceKey() {
+  let k = localStorage.getItem('cv-device-key');
+  if (!k) {
+    const arr = new Uint8Array(16);
+    crypto.getRandomValues(arr);
+    k = Array.from(arr).map(b => b.toString(16).padStart(2, '0')).join('');
+    localStorage.setItem('cv-device-key', k);
+  }
+  return k;
+}
+
+async function localSignIn(email, pw) {
+  if (Date.now() < _getLockedUntil()) return null;
+  const pwHash = await _hashPw(pw);
+  const user = LOCAL_USERS.find(
+    u => u.email.toLowerCase() === email.toLowerCase() && u.pwHash === pwHash
+  );
+  if (!user) {
+    const attempts = _getAttempts() + 1;
+    _setAttempts(attempts);
+    if (attempts >= 5) _setLockedUntil(Date.now() + 15 * 60 * 1000);
+    return null;
+  }
+  _setAttempts(0);
+  /* Build a minimal JWT-shaped token with 7-day expiry */
+  const header  = btoa(JSON.stringify({ alg: 'HS256', typ: 'JWT' })).replace(/=/g,'');
+  const payload = btoa(JSON.stringify({
+    sub: user.email, name: user.fullName,
+    iat: Math.floor(Date.now()/1000),
+    exp: Math.floor(Date.now()/1000) + 60*60*24*7,
+  })).replace(/=/g,'');
+  /* Sign with device key so the signature cannot be trivially forged */
+  const deviceKey = _getDeviceKey();
+  const sig = await _sha256hex(`${header}.${payload}:${deviceKey}`);
+  const token = `${header}.${payload}.${sig}`;
+  return { token, user: { id: user.id, email: user.email, fullName: user.fullName } };
+}
+
+/* ── FORM: Sign In ──────────────────────────────────────────────────────── */
+document.getElementById('form-signin').addEventListener('submit', async e => {
+  e.preventDefault();
+  const email = document.getElementById('signin-email').value.trim();
+  const pw    = document.getElementById('signin-pw').value;
+  if (!email || !pw) { showBanner('signin', 'Please enter your email and password.'); return; }
+  setLoading('btn-signin', true);
+  clearBanners();
+
+  function doLogin(data) {
+    const remember = document.getElementById('signin-remember')?.checked ?? true;
+    const store = remember ? localStorage : sessionStorage;
+    store.setItem('auth_token', data.token);
+    store.setItem('auth_user',  JSON.stringify(data.user));
+    if (!remember) {
+      localStorage.removeItem('auth_token');
+      localStorage.removeItem('auth_user');
+    }
+    window.location.href = '/calculator/';
+  }
+
+  try {
+    const res  = await fetch(API + '/signin', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password: pw }),
+      signal: (() => { const c = new AbortController(); setTimeout(() => c.abort(), 4000); return c.signal; })(),
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      if (data.requiresVerification) { showOTPView(data.email, 'signup'); return; }
+      /* Only fall back to local for server errors (5xx), not auth/lockout rejections (4xx) */
+      if (res.status >= 500) {
+        const local = await localSignIn(email, pw);
+        if (local) { doLogin(local); return; }
+      }
+      showBanner('signin', data.error ?? 'Sign-in failed.');
+      return;
+    }
+    doLogin(data);
+  } catch {
+    /* Server unreachable — try local credentials */
+    const local = await localSignIn(email, pw);
+    if (local) { doLogin(local); return; }
+    showBanner('signin', 'Could not reach the server. Please check that the backend is running, or use the demo account: demo@costvision.app / Demo@1234');
+  } finally {
+    setLoading('btn-signin', false);
+  }
+});
+
+/* ── FORM: Sign Up ──────────────────────────────────────────────────────── */
+document.getElementById('form-signup').addEventListener('submit', async e => {
+  e.preventDefault();
+  const fullName    = document.getElementById('signup-name').value.trim();
+  const companyName = document.getElementById('signup-company').value.trim();
+  const email       = document.getElementById('signup-email').value.trim();
+  const pw          = document.getElementById('signup-pw').value;
+  const pw2         = document.getElementById('signup-pw2').value;
+  if (!fullName || !email || !pw || !pw2) { showBanner('signup', 'Please fill in all required fields.'); return; }
+  if (pw !== pw2)                          { showBanner('signup', 'Passwords do not match.'); return; }
+  setLoading('btn-signup', true);
+  clearBanners();
+  try {
+    const res  = await fetch(API + '/signup', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password: pw, fullName, companyName }),
+    });
+    const data = await res.json();
+    if (!res.ok) { showBanner('signup', data.error ?? 'Sign-up failed.'); return; }
+    showOTPView(email, 'signup', data.devOtp);
+  } catch {
+    showBanner('signup', 'Network error. Please try again.');
+  } finally {
+    setLoading('btn-signup', false);
+  }
+});
+
+/* ── FORM: Forgot Password ──────────────────────────────────────────────── */
+document.getElementById('form-forgot').addEventListener('submit', async e => {
+  e.preventDefault();
+  const email = document.getElementById('forgot-email').value.trim();
+  if (!email) { showBanner('forgot', 'Please enter your email address.'); return; }
+  setLoading('btn-forgot', true);
+  clearBanners();
+  try {
+    const res  = await fetch(API + '/forgot-password', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email }),
+    });
+    const data = await res.json();
+    if (!res.ok) { showBanner('forgot', data.error ?? 'Request failed.'); return; }
+    showOTPView(email, 'reset');
+    showBanner('otp', data.message, 'info');
+  } catch {
+    showBanner('forgot', 'Network error. Please try again.');
+  } finally {
+    setLoading('btn-forgot', false);
+  }
+});
+
+/* ── FORM: Reset Password ───────────────────────────────────────────────── */
+document.getElementById('form-reset').addEventListener('submit', async e => {
+  e.preventDefault();
+  const pw  = document.getElementById('reset-pw').value;
+  const pw2 = document.getElementById('reset-pw2').value;
+  if (!pw || !pw2) { showBanner('reset', 'Please fill in both password fields.'); return; }
+  if (pw !== pw2)  { showBanner('reset', 'Passwords do not match.'); return; }
+  setLoading('btn-reset', true);
+  clearBanners();
+  try {
+    const res  = await fetch(API + '/reset-password', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: state.otpEmail, resetToken: state.resetToken, newPassword: pw }),
+    });
+    const data = await res.json();
+    if (!res.ok) { showBanner('reset', data.error ?? 'Reset failed.'); return; }
+    gotoView('success');
+    document.getElementById('success-heading').textContent = 'Password updated!';
+    document.getElementById('success-msg').textContent     = 'Your password has been reset. Redirecting to sign in…';
+    setTimeout(() => gotoView('signin'), 2800);
+  } catch {
+    showBanner('reset', 'Network error. Please try again.');
+  } finally {
+    setLoading('btn-reset', false);
+  }
+});
+
+/* ── Submit OTP ─────────────────────────────────────────────────────────── */
+async function submitOTP() {
+  const otp = getOTPValue();
+  if (otp.length < 6) return;
+  setLoading('btn-verify', true);
+  clearBanners();
+  try {
+    const res  = await fetch(API + '/verify-otp', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: state.otpEmail, otp, purpose: state.otpPurpose }),
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      shakeOTPInputs();
+      clearOTPInputs();
+      showBanner('otp', data.error ?? 'Invalid code. Please try again.');
+      return;
+    }
+    clearInterval(state.timerInterval);
+    if (state.otpPurpose === 'signup') {
+      localStorage.setItem('auth_token', data.token);
+      localStorage.setItem('auth_user',  JSON.stringify(data.user));
+      gotoView('success');
+      document.getElementById('success-heading').textContent = 'Account verified!';
+      document.getElementById('success-msg').textContent     = 'Welcome to CostVision. Redirecting…';
+      setTimeout(() => window.location.href = '/calculator/', 2000);
+    } else {
+      state.resetToken = data.resetToken;
+      gotoView('reset');
+    }
+  } catch {
+    showBanner('otp', 'Network error. Please try again.');
+  } finally {
+    setLoading('btn-verify', false);
+  }
+}
+
+/* ── Resend OTP ─────────────────────────────────────────────────────────── */
+async function resendOTP() {
+  document.getElementById('btn-resend').disabled = true;
+  try {
+    const res  = await fetch(API + '/resend-otp', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: state.otpEmail, purpose: state.otpPurpose }),
+    });
+    const data = await res.json();
+    clearOTPInputs();
+    startOTPTimer();
+    if (data.devOtp) {
+      document.getElementById('dev-otp-code').textContent    = data.devOtp;
+      document.getElementById('dev-otp-banner').style.display = 'block';
+      data.devOtp.split('').forEach((d, i) => {
+        const inputs = document.querySelectorAll('#otp-inputs input');
+        if (inputs[i]) inputs[i].value = d;
+      });
+    }
+    showBanner('otp', 'New code sent — please check your email.', 'info');
+  } catch {
+    showBanner('otp', 'Could not resend code. Please try again.');
+    document.getElementById('btn-resend').disabled = false;
+  }
+}
+
+/* ── Auth guard: redirect if already logged in (checks both storages) ───── */
+(function () {
+  const token = localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token');
+  if (!token) return;
+  try {
+    const raw = token.split('.')[1].replace(/-/g,'+').replace(/_/g,'/');
+    const padded = raw + '='.repeat((4 - raw.length % 4) % 4);
+    const payload = JSON.parse(atob(padded));
+    if (payload.exp * 1000 > Date.now()) window.location.href = '/calculator/';
+    else {
+      localStorage.removeItem('auth_token');
+      sessionStorage.removeItem('auth_token');
+    }
+  } catch {
+    localStorage.removeItem('auth_token');
+    sessionStorage.removeItem('auth_token');
+  }
+})();
+
+/* ── Pause hero animations when tab is hidden (performance) ─────────────── */
+document.addEventListener('visibilitychange', () => {
+  const playState = document.hidden ? 'paused' : 'running';
+  document.querySelectorAll('.hero-bg, .particles span, .hud-ring, .logo-badge')
+    .forEach(el => { el.style.animationPlayState = playState; });
+});
+
+/* ── Init ───────────────────────────────────────────────────────────────── */
+setupOTPInputs();
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/calculator/sw.js', { scope: '/calculator/' });
+}
+</script>
+</body>
+</html>

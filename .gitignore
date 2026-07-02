@@ -1,0 +1,11 @@
+# Runtime marker — set once after applying the macOS launcher icon
+.costvision-icon-set
+
+# Claude Code internal working directories
+.claude/
+
+# Dependencies
+node_modules/
+
+# SQLite database (runtime data, not source)
+calculator/data/

@@ -1,0 +1,1286 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>CostVision — Executive Presentation</title>
+<style>
+/* ─── Reset & Variables ─────────────────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --font:'Inter',system-ui,sans-serif;
+  --slide-w:1280px;--slide-h:720px;
+  --radius:12px;--radius-sm:6px;
+}
+[data-theme="dark"]{
+  --bg:#0d0f14;--surface:#161923;--surface-2:#1e2330;--surface-3:#252c3d;
+  --border:#2a3045;--accent:#4f8ef7;--accent-2:#7c3aed;--accent-3:#10b981;
+  --orange:#f59e0b;--red:#ef4444;
+  --text:#f0f2f8;--text-2:#9aa3b8;--text-3:#5a6380;
+  --grad-hero:linear-gradient(135deg,#0d0f14 0%,#1a1f35 50%,#0d0f14 100%);
+  --grad-accent:linear-gradient(135deg,#4f8ef7,#7c3aed);
+  --grad-green:linear-gradient(135deg,#10b981,#059669);
+  --card-shadow:0 4px 24px rgba(0,0,0,0.5);
+}
+[data-theme="light"]{
+  --bg:#f4f6fb;--surface:#ffffff;--surface-2:#eef1f8;--surface-3:#e2e8f4;
+  --border:#d1d9ee;--accent:#2563eb;--accent-2:#7c3aed;--accent-3:#059669;
+  --orange:#d97706;--red:#dc2626;
+  --text:#0f172a;--text-2:#475569;--text-3:#94a3b8;
+  --grad-hero:linear-gradient(135deg,#e8edf8 0%,#f4f6fb 50%,#eef0fa 100%);
+  --grad-accent:linear-gradient(135deg,#2563eb,#7c3aed);
+  --grad-green:linear-gradient(135deg,#059669,#047857);
+  --card-shadow:0 4px 24px rgba(0,0,0,0.10);
+}
+
+body{
+  font-family:var(--font);background:var(--bg);color:var(--text);
+  min-height:100vh;overflow-x:hidden;
+  transition:background .3s,color .3s;
+}
+
+/* ─── Slide Wrapper ─────────────────────────────────────────────────────── */
+.deck{max-width:var(--slide-w);margin:0 auto;padding:0}
+.slide{
+  width:100%;min-height:var(--slide-h);
+  border-bottom:1px solid var(--border);
+  position:relative;overflow:hidden;
+  display:flex;flex-direction:column;
+  page-break-after:always;
+}
+
+/* ─── Nav Bar ───────────────────────────────────────────────────────────── */
+.topbar{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  background:rgba(13,15,20,.92);backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:12px;padding:8px 20px;
+  transition:background .3s;
+}
+[data-theme="light"] .topbar{background:rgba(244,246,251,.92)}
+.topbar-logo{font-weight:800;font-size:1rem;color:var(--accent);letter-spacing:-.02em}
+.topbar-title{font-size:.78rem;color:var(--text-2);flex:1}
+.slide-dots{display:flex;gap:5px}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--border);cursor:pointer;transition:all .2s}
+.dot.active,.dot:hover{background:var(--accent)}
+.nav-btn{
+  background:var(--surface-2);border:1px solid var(--border);color:var(--text);
+  border-radius:6px;padding:4px 12px;font-size:.75rem;cursor:pointer;
+  transition:all .2s;font-family:var(--font);
+}
+.nav-btn:hover{background:var(--accent);color:#fff;border-color:var(--accent)}
+.theme-btn{
+  background:none;border:1px solid var(--border);color:var(--text-2);
+  border-radius:6px;padding:4px 10px;cursor:pointer;font-size:.75rem;
+  transition:all .2s;font-family:var(--font);
+}
+.theme-btn:hover{color:var(--text);border-color:var(--text-2)}
+.print-btn{
+  background:var(--accent);color:#fff;border:none;
+  border-radius:6px;padding:4px 12px;font-size:.75rem;cursor:pointer;
+  font-family:var(--font);transition:opacity .2s;
+}
+.print-btn:hover{opacity:.85}
+
+/* ─── Slide Header / Footer ─────────────────────────────────────────────── */
+.slide-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:18px 48px 0;border-bottom:1px solid var(--border);
+  padding-bottom:12px;
+}
+.slide-num{font-size:.72rem;color:var(--text-3);font-weight:600;letter-spacing:.06em;text-transform:uppercase}
+.slide-logo{font-size:.82rem;font-weight:800;color:var(--accent);letter-spacing:-.02em}
+.slide-footer{
+  margin-top:auto;padding:10px 48px;
+  border-top:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  font-size:.68rem;color:var(--text-3);
+}
+
+/* ─── Slide 1 — Hero ────────────────────────────────────────────────────── */
+.s1-body{
+  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;padding:60px 48px;background:var(--grad-hero);
+  position:relative;
+}
+.s1-orb{
+  position:absolute;width:500px;height:500px;border-radius:50%;
+  background:radial-gradient(circle,rgba(79,142,247,.18) 0%,transparent 70%);
+  top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none;
+}
+.s1-tag{
+  display:inline-block;background:var(--surface-2);border:1px solid var(--border);
+  color:var(--accent);border-radius:20px;padding:4px 14px;font-size:.75rem;
+  font-weight:600;letter-spacing:.05em;text-transform:uppercase;margin-bottom:20px;
+}
+.s1-title{
+  font-size:4rem;font-weight:900;letter-spacing:-.04em;line-height:1;
+  background:var(--grad-accent);-webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;margin-bottom:14px;
+}
+.s1-sub{
+  font-size:1.25rem;color:var(--text-2);font-weight:400;margin-bottom:36px;max-width:620px;line-height:1.5;
+}
+.s1-divider{width:60px;height:3px;background:var(--grad-accent);border-radius:2px;margin:0 auto 28px}
+.s1-author{font-size:1rem;color:var(--text-2);font-weight:500}
+.s1-author strong{color:var(--text);font-weight:700}
+.s1-meta{
+  display:flex;gap:24px;margin-top:36px;flex-wrap:wrap;justify-content:center;
+}
+.s1-pill{
+  background:var(--surface-2);border:1px solid var(--border);
+  border-radius:8px;padding:8px 18px;font-size:.78rem;color:var(--text-2);
+  display:flex;align-items:center;gap:6px;
+}
+.s1-pill-dot{width:7px;height:7px;border-radius:50%}
+
+/* ─── Section Label ─────────────────────────────────────────────────────── */
+.section-label{
+  font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:6px;
+}
+.slide-title{font-size:1.9rem;font-weight:800;letter-spacing:-.03em;line-height:1.2;margin-bottom:4px}
+.slide-subtitle{font-size:.9rem;color:var(--text-2);margin-bottom:24px}
+
+/* ─── Generic Slide Body ────────────────────────────────────────────────── */
+.slide-body{flex:1;padding:28px 48px 20px;display:flex;flex-direction:column;gap:20px}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:20px;flex:1}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;flex:1}
+.four-col{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px;flex:1}
+
+/* ─── Cards ─────────────────────────────────────────────────────────────── */
+.card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);padding:18px 20px;
+  box-shadow:var(--card-shadow);
+}
+.card-accent{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 6%,var(--surface))}
+.card-green{border-color:var(--accent-3);background:color-mix(in srgb,var(--accent-3) 6%,var(--surface))}
+.card-orange{border-color:var(--orange);background:color-mix(in srgb,var(--orange) 6%,var(--surface))}
+.card-red{border-color:var(--red);background:color-mix(in srgb,var(--red) 6%,var(--surface))}
+.card-purple{border-color:var(--accent-2);background:color-mix(in srgb,var(--accent-2) 6%,var(--surface))}
+
+.card-icon{font-size:1.6rem;margin-bottom:8px;line-height:1}
+.card-title{font-weight:700;font-size:.9rem;margin-bottom:5px}
+.card-body{font-size:.78rem;color:var(--text-2);line-height:1.55}
+
+/* ─── Bullet Lists ──────────────────────────────────────────────────────── */
+.bullet-list{list-style:none;display:flex;flex-direction:column;gap:8px}
+.bullet-list li{
+  display:flex;align-items:flex-start;gap:10px;
+  font-size:.82rem;color:var(--text-2);line-height:1.5;
+}
+.bullet-list li::before{
+  content:'';width:6px;height:6px;border-radius:50%;
+  background:var(--accent);margin-top:7px;flex-shrink:0;
+}
+.bullet-list li strong{color:var(--text)}
+
+/* ─── Stat Boxes ────────────────────────────────────────────────────────── */
+.stat-box{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);padding:16px 18px;text-align:center;
+}
+.stat-num{
+  font-size:2rem;font-weight:900;letter-spacing:-.04em;
+  background:var(--grad-accent);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.stat-num.green{background:var(--grad-green);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.stat-label{font-size:.72rem;color:var(--text-2);margin-top:3px;font-weight:500}
+
+/* ─── Flow Steps ────────────────────────────────────────────────────────── */
+.flow-row{display:flex;align-items:stretch;gap:0;flex:1}
+.flow-step{
+  flex:1;background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);padding:14px 12px;text-align:center;
+  display:flex;flex-direction:column;align-items:center;gap:6px;
+  position:relative;
+}
+.flow-step+.flow-step{border-left:none;border-top-left-radius:0;border-bottom-left-radius:0}
+.flow-step:not(:last-child)::after{
+  content:'→';position:absolute;right:-12px;top:50%;transform:translateY(-50%);
+  color:var(--accent);font-size:.85rem;font-weight:700;z-index:2;
+  background:var(--surface);padding:0 2px;
+}
+.flow-num{
+  width:24px;height:24px;border-radius:50%;
+  background:var(--grad-accent);
+  color:#fff;font-size:.7rem;font-weight:800;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.flow-icon{font-size:1.2rem}
+.flow-title{font-size:.73rem;font-weight:700;color:var(--text)}
+.flow-body{font-size:.67rem;color:var(--text-3);line-height:1.4}
+
+/* ─── Tag Pills ─────────────────────────────────────────────────────────── */
+.tag-grid{display:flex;flex-wrap:wrap;gap:8px}
+.tag{
+  background:var(--surface-2);border:1px solid var(--border);
+  border-radius:20px;padding:5px 14px;font-size:.76rem;
+  color:var(--text-2);font-weight:500;display:flex;align-items:center;gap:5px;
+}
+.tag.blue{border-color:var(--accent);color:var(--accent);background:color-mix(in srgb,var(--accent) 10%,var(--surface))}
+.tag.green{border-color:var(--accent-3);color:var(--accent-3);background:color-mix(in srgb,var(--accent-3) 10%,var(--surface))}
+.tag.purple{border-color:var(--accent-2);color:var(--accent-2);background:color-mix(in srgb,var(--accent-2) 10%,var(--surface))}
+.tag.orange{border-color:var(--orange);color:var(--orange);background:color-mix(in srgb,var(--orange) 10%,var(--surface))}
+
+/* ─── Screen Mockup ─────────────────────────────────────────────────────── */
+.mockup-frame{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);overflow:hidden;box-shadow:var(--card-shadow);
+}
+.mockup-bar{
+  background:var(--surface-2);border-bottom:1px solid var(--border);
+  padding:6px 12px;display:flex;align-items:center;gap:6px;
+}
+.mockup-dot{width:8px;height:8px;border-radius:50%}
+.mockup-body{padding:12px}
+
+/* ─── Accent bar ────────────────────────────────────────────────────────── */
+.accent-bar{height:3px;background:var(--grad-accent);border-radius:2px;margin-bottom:12px}
+
+/* ─── Commodity Grid ────────────────────────────────────────────────────── */
+.comm-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;flex:1}
+.comm-card{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);
+  padding:12px;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;
+  transition:border-color .2s,transform .2s;
+}
+.comm-card:hover{border-color:var(--accent);transform:translateY(-1px)}
+.comm-icon{font-size:1.5rem}
+.comm-name{font-size:.72rem;font-weight:600;color:var(--text)}
+.comm-sub{font-size:.64rem;color:var(--text-3)}
+
+/* ─── Benefit Row ───────────────────────────────────────────────────────── */
+.benefit-row{display:flex;gap:12px;flex:1;align-items:stretch}
+.benefit-card{
+  flex:1;background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);padding:16px 14px;
+  display:flex;flex-direction:column;gap:8px;
+  border-top:3px solid transparent;
+}
+.benefit-card.b1{border-top-color:var(--accent)}
+.benefit-card.b2{border-top-color:var(--accent-3)}
+.benefit-card.b3{border-top-color:var(--orange)}
+.benefit-card.b4{border-top-color:var(--accent-2)}
+.benefit-card.b5{border-top-color:var(--red)}
+.benefit-card.b6{border-top-color:#f472b6}
+.benefit-card.b7{border-top-color:#22d3ee}
+.benefit-num{font-size:1.6rem;font-weight:900;letter-spacing:-.04em}
+.benefit-label{font-size:.75rem;font-weight:700;color:var(--text);margin-bottom:2px}
+.benefit-desc{font-size:.7rem;color:var(--text-2);line-height:1.4}
+
+/* ─── Roadmap ───────────────────────────────────────────────────────────── */
+.roadmap-track{display:flex;gap:0;flex:1;position:relative}
+.roadmap-track::before{
+  content:'';position:absolute;top:36px;left:40px;right:40px;height:2px;
+  background:linear-gradient(90deg,var(--accent),var(--accent-2),var(--accent-3));
+  border-radius:2px;z-index:0;
+}
+.rm-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;padding:0 8px;position:relative;z-index:1}
+.rm-circle{
+  width:32px;height:32px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:.75rem;font-weight:800;color:#fff;flex-shrink:0;
+  box-shadow:0 0 0 4px var(--surface);
+}
+.rm-phase{font-size:.65rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text-3)}
+.rm-title{font-size:.8rem;font-weight:700;color:var(--text)}
+.rm-list{list-style:none;font-size:.68rem;color:var(--text-2);text-align:left;display:flex;flex-direction:column;gap:3px}
+.rm-list li::before{content:'• ';color:var(--accent)}
+
+/* ─── Print ─────────────────────────────────────────────────────────────── */
+@media print{
+  .topbar{display:none}
+  .slide{page-break-after:always;min-height:var(--slide-h);border:none}
+  body{background:#fff}
+}
+
+/* ─── Responsive ────────────────────────────────────────────────────────── */
+@media(max-width:900px){
+  .slide-title{font-size:1.4rem}
+  .slide-body{padding:16px 20px 12px}
+  .slide-header{padding:12px 20px 10px}
+  .slide-footer{padding:8px 20px}
+  .s1-title{font-size:2.6rem}
+  .two-col,.three-col,.four-col{grid-template-columns:1fr}
+  .flow-row{flex-direction:column}
+  .flow-step+.flow-step{border-left:1px solid var(--border);border-top:none;border-top-left-radius:0;border-top-right-radius:0}
+  .flow-step:not(:last-child)::after{content:'↓';right:50%;top:auto;bottom:-10px;transform:translateX(50%)}
+  .comm-grid{grid-template-columns:repeat(3,1fr)}
+  .benefit-row{flex-wrap:wrap}
+  .roadmap-track{flex-direction:column}
+  .roadmap-track::before{display:none}
+}
+</style>
+</head>
+<body>
+
+<!-- ─── Top Navigation Bar ─────────────────────────────────────────────── -->
+<div class="topbar" id="topbar">
+  <span class="topbar-logo">CV</span>
+  <span class="topbar-title">CostVision — Executive Presentation &nbsp;|&nbsp; Avinash Bhosale</span>
+  <div class="slide-dots" id="dots"></div>
+  <button class="nav-btn" onclick="scrollSlide(-1)">← Prev</button>
+  <button class="nav-btn" onclick="scrollSlide(1)">Next →</button>
+  <button class="theme-btn" onclick="toggleTheme()">☀ / 🌙</button>
+  <button class="print-btn" onclick="window.print()">⬇ Export PDF</button>
+</div>
+
+<div style="height:48px"></div><!-- spacer for fixed topbar -->
+
+<div class="deck" id="deck">
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- SLIDE 1 — Title Slide                                                  -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<div class="slide" id="slide-1">
+  <div class="s1-body">
+    <div class="s1-orb"></div>
+    <div class="s1-tag">Confidential — Management Review</div>
+    <div class="s1-title">CostVision</div>
+    <div class="s1-sub">AI-Powered Should-Cost Intelligence<br>for Modern Engineering Organisations</div>
+    <div class="s1-divider"></div>
+    <div class="s1-author">Designed &amp; Developed by <strong>Avinash Bhosale</strong><br>
+      <span style="font-size:.82rem;color:var(--text-3);margin-top:4px;display:block">Cost Engineering &amp; Digital Innovation</span>
+    </div>
+    <div class="s1-meta">
+      <div class="s1-pill"><div class="s1-pill-dot" style="background:var(--accent-3)"></div>21 Commodity Models</div>
+      <div class="s1-pill"><div class="s1-pill-dot" style="background:var(--accent)"></div>AI Agent + CAD Analysis</div>
+      <div class="s1-pill"><div class="s1-pill-dot" style="background:var(--accent-2)"></div>DFM / DFA Intelligence</div>
+      <div class="s1-pill"><div class="s1-pill-dot" style="background:var(--orange)"></div>20 Regions · 10 Currencies</div>
+      <div class="s1-pill"><div class="s1-pill-dot" style="background:#10b981"></div>Assembly BOM Rollup</div>
+      <div class="s1-pill"><div class="s1-pill-dot" style="background:#f472b6"></div>Wright's Law Learning Curve</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- SLIDE 2 — Problem Statement                                             -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<div class="slide" id="slide-2">
+  <div class="slide-header">
+    <div>
+      <div class="slide-num">Slide 02 / 10</div>
+      <div class="slide-logo">CostVision</div>
+    </div>
+    <div style="text-align:right">
+      <div class="section-label">The Challenge</div>
+      <div style="font-size:1.1rem;font-weight:700">Why CostVision?</div>
+    </div>
+  </div>
+
+  <div class="slide-body">
+    <div>
+      <div class="section-label">Problem Statement</div>
+      <div class="slide-title">Traditional Costing Is Broken</div>
+      <div class="slide-subtitle">Manual effort, slow turnaround, and supplier dependency cost organisations millions annually.</div>
+    </div>
+
+    <div class="two-col" style="flex:1">
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div class="card card-red">
+          <div class="card-icon">⏱</div>
+          <div class="card-title">Weeks, Not Minutes</div>
+          <div class="card-body">Manual should-cost analysis takes 2–4 weeks per part. Sourcing decisions stall. Programme timelines slip.</div>
+        </div>
+        <div class="card card-orange">
+          <div class="card-icon">🔒</div>
+          <div class="card-title">Supplier Dependency</div>
+          <div class="card-body">Without independent cost intelligence, engineers accept supplier quotes at face value — no leverage, no transparency.</div>
+        </div>
+        <div class="card card-red">
+          <div class="card-icon">📊</div>
+          <div class="card-title">Inconsistent Methodology</div>
+          <div class="card-body">Every engineer calculates cost differently. No standard model. No auditable assumptions. No cross-team comparability.</div>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div class="card card-orange">
+          <div class="card-icon">🌍</div>
+          <div class="card-title">No Regional Visibility</div>
+          <div class="card-body">Labour, machine, material and energy rates vary dramatically by country. Manual adjustment is error-prone and subjective.</div>
+        </div>
+        <div class="card card-red">
+          <div class="card-icon">🎯</div>
+          <div class="card-title">Late-Stage Cost Surprises</div>
+          <div class="card-body">Cost issues discovered at SOP — not at concept. DFM problems missed. Expensive redesigns. Margin erosion at launch.</div>
+        </div>
+        <div style="background:var(--surface-2);border-radius:var(--radius);padding:16px 18px;border:1px solid var(--border)">
+          <div style="font-size:.72rem;font-weight:700;color:var(--orange);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px">Industry Data Point</div>
+          <div style="font-size:1.3rem;font-weight:900;color:var(--text)">80% of part cost</div>
+          <div style="font-size:.78rem;color:var(--text-2);margin-top:4px;line-height:1.5">is locked in at the design stage — yet most cost analysis happens after design freeze.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer"><span>CostVision — AI-Powered Should-Cost Intelligence</span><span>Avinash Bhosale</span></div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- SLIDE 3 — Solution Overview                                             -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<div class="slide" id="slide-3">
+  <div class="slide-header">
+    <div>
+      <div class="slide-num">Slide 03 / 10</div>
+      <div class="slide-logo">CostVision</div>
+    </div>
+    <div style="text-align:right">
+      <div class="section-label">The Solution</div>
+      <div style="font-size:1.1rem;font-weight:700">What is CostVision?</div>
+    </div>
+  </div>
+
+  <div class="slide-body">
+    <div>
+      <div class="section-label">Solution Overview</div>
+      <div class="slide-title">A World-Class Should-Cost Engine Powered by AI</div>
+      <div class="slide-subtitle">From CAD geometry to full cost breakdown — in minutes, not weeks.</div>
+    </div>
+
+    <div class="three-col" style="flex:1">
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div class="card card-accent">
+          <div class="card-icon">🤖</div>
+          <div class="card-title">AI Agent — Natural Language Costing</div>
+          <div class="card-body">Describe a part in plain English. AI Agent auto-builds the complete cost model: material, process route, machines, operations, and cycle times — no manual form filling.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">📐</div>
+          <div class="card-title">CAD-to-Cost Automation</div>
+          <div class="card-body">Upload STEP / IGES / photo. AI extracts geometry, infers material, selects the correct process model, and generates a full cost breakdown — automatically.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">🌍</div>
+          <div class="card-title">20 Global Regions · 10 Currencies</div>
+          <div class="card-body">Labour, machine, material and energy rates for UK, EU, China, India, USA, Korea, Vietnam, Brazil and more. Currency auto-switches when region is selected.</div>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div class="card card-purple">
+          <div class="card-icon">🧠</div>
+          <div class="card-title">21 Engineering-Grade Cost Models</div>
+          <div class="card-body">Physics-based models for every major commodity — machining, casting, plastics, sheet metal, PCB, PCBA, composites, harness and more. Each encodes routing logic, yield curves, and tooling amortisation.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">🔗</div>
+          <div class="card-title">Assembly BOM Rollup</div>
+          <div class="card-body">Cost entire assemblies, not just single parts. Build a multi-level BOM, assign commodity models per component, and roll up to a total assembly should-cost with full breakdown.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">📉</div>
+          <div class="card-title">Learning Curve / Wright's Law</div>
+          <div class="card-body">Model volume-driven cost reduction. Configure the learning curve % (default 85%). CostVision projects cost at any volume — critical for programme pricing and LTA negotiations.</div>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div class="card card-green">
+          <div class="card-icon">🔬</div>
+          <div class="card-title">DFM / DFA Intelligence</div>
+          <div class="card-body">Bolt-on AI layer scores manufacturability and assembly efficiency 1–10. Identifies critical issues, estimates saving potential, and provides actionable engineering recommendations.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">💰</div>
+          <div class="card-title">Supplier Quote Comparison</div>
+          <div class="card-body">Enter supplier quotes directly into CostVision. Compare vs should-cost side-by-side, identify margin gaps, and generate data-driven negotiation talking points.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">📈</div>
+          <div class="card-title">Scenarios, Sensitivity &amp; Export</div>
+          <div class="card-body">Save and compare A/B/C scenarios. Tornado sensitivity charts (±10%). Export 6-sheet Excel workbook or professional PDF report. Cloud sync for team sharing.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer"><span>CostVision — AI-Powered Should-Cost Intelligence</span><span>Avinash Bhosale</span></div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- SLIDE 4 — AI Agent Workflow                                             -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<div class="slide" id="slide-4">
+  <div class="slide-header">
+    <div>
+      <div class="slide-num">Slide 04 / 10</div>
+      <div class="slide-logo">CostVision</div>
+    </div>
+    <div style="text-align:right">
+      <div class="section-label">Workflow</div>
+      <div style="font-size:1.1rem;font-weight:700">AI Agent — End-to-End Flow</div>
+    </div>
+  </div>
+
+  <div class="slide-body">
+    <div>
+      <div class="section-label">8-Step Intelligent Workflow</div>
+      <div class="slide-title">From Part Selection to Actionable Cost Intelligence</div>
+    </div>
+
+    <div class="flow-row" style="flex:1">
+      <div class="flow-step">
+        <div class="flow-num">1</div>
+        <div class="flow-icon">🏭</div>
+        <div class="flow-title">Select Commodity</div>
+        <div class="flow-body">Choose from 17 manufacturing commodities — machining, casting, plastics, PCB, PCBA, harness and more</div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">2</div>
+        <div class="flow-icon">📁</div>
+        <div class="flow-title">Upload CAD / Photo</div>
+        <div class="flow-body">Upload STEP, DXF, or a part photo. Or enter parameters manually for any commodity</div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">3</div>
+        <div class="flow-icon">🔍</div>
+        <div class="flow-title">AI Feature Extraction</div>
+        <div class="flow-body">AI reads geometry, identifies features, infers material grade and manufacturing intent</div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">4</div>
+        <div class="flow-icon">🧠</div>
+        <div class="flow-title">AI Routing &amp; Model Selection</div>
+        <div class="flow-body">AI selects the optimal process route, machine IDs, cycle times, and tooling strategy</div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">5</div>
+        <div class="flow-icon">📐</div>
+        <div class="flow-title">Should-Cost Calculation</div>
+        <div class="flow-body">Physics-based engine computes material + process + labour + tooling + overhead + margin</div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">6</div>
+        <div class="flow-icon">💡</div>
+        <div class="flow-title">AI Insights Generated</div>
+        <div class="flow-body">Benchmark comparisons, regional cost index, supplier margin analysis, saving opportunities</div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">7</div>
+        <div class="flow-icon">🔬</div>
+        <div class="flow-title">DFM / DFA Analysis</div>
+        <div class="flow-body">Manufacturability and assembly scores, critical issues, cost optimisation levers, AI deep analysis</div>
+      </div>
+      <div class="flow-step" style="border-right:1px solid var(--border);border-top-right-radius:var(--radius);border-bottom-right-radius:var(--radius)">
+        <div class="flow-num" style="background:var(--grad-green)">8</div>
+        <div class="flow-icon">📤</div>
+        <div class="flow-title">Export &amp; Compare</div>
+        <div class="flow-body">Export Excel / PDF. Save scenarios. Compare multiple parts. Share with team. Full audit trail</div>
+      </div>
+    </div>
+
+    <div style="background:var(--surface-2);border-radius:var(--radius);padding:10px 16px;border:1px solid var(--border);font-size:.75rem;color:var(--text-2)">
+      <strong style="color:var(--accent)">Two entry points — same outcome:</strong> &nbsp;
+      <span style="color:var(--accent-3)">🤖 AI Agent</span> — type a description in plain English and AI auto-fills the cost model &nbsp;|&nbsp;
+      <span style="color:var(--accent-2)">📐 CAD Upload</span> — upload STEP/photo and AI extracts geometry automatically &nbsp;|&nbsp;
+      <span style="color:var(--text)">✏️ Manual Entry</span> — directly enter parameters for full control
+    </div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <div class="tag blue">⚡ Minutes, not weeks</div>
+      <div class="tag green">✓ Auditable assumptions</div>
+      <div class="tag purple">🤖 Claude AI powered</div>
+      <div class="tag orange">🌍 20 regions · 10 currencies</div>
+      <div class="tag blue">📊 Scenario A/B/C comparison</div>
+      <div class="tag green">📐 Assembly BOM rollup</div>
+      <div class="tag purple">📉 Wright's Law learning curve</div>
+    </div>
+  </div>
+  <div class="slide-footer"><span>CostVision — AI-Powered Should-Cost Intelligence</span><span>Avinash Bhosale</span></div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- SLIDE 5 — CAD-to-Cost Automation                                        -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<div class="slide" id="slide-5">
+  <div class="slide-header">
+    <div>
+      <div class="slide-num">Slide 05 / 10</div>
+      <div class="slide-logo">CostVision</div>
+    </div>
+    <div style="text-align:right">
+      <div class="section-label">Automation</div>
+      <div style="font-size:1.1rem;font-weight:700">CAD-to-Cost Intelligence</div>
+    </div>
+  </div>
+
+  <div class="slide-body">
+    <div>
+      <div class="section-label">Capability Highlight</div>
+      <div class="slide-title">From CAD File to Full Should-Cost — Automatically</div>
+      <div class="slide-subtitle">AI reads your geometry and generates a fully routed, benchmarked cost model without manual input.</div>
+    </div>
+
+    <div class="two-col" style="flex:1">
+      <!-- Left: capability list -->
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div class="card" style="flex:1">
+          <div class="accent-bar"></div>
+          <div style="font-weight:700;font-size:.9rem;margin-bottom:12px">What AI Extracts from CAD</div>
+          <ul class="bullet-list">
+            <li><strong>Part geometry:</strong> envelope dimensions, volume, surface area, wall thickness</li>
+            <li><strong>Feature recognition:</strong> holes, pockets, ribs, undercuts, threads, datum features</li>
+            <li><strong>Material inference:</strong> visual texture, density estimation, typical grade selection</li>
+            <li><strong>Process selection:</strong> AI matches geometry to most cost-effective manufacturing route</li>
+            <li><strong>Cycle time estimation:</strong> material removal rate, tool path length, fixture strategy</li>
+            <li><strong>Complexity classification:</strong> simple / moderate / complex — drives machine selection and OEE</li>
+            <li><strong>DFM flags:</strong> thin walls, tight radii, undercuts, critical tolerances — flagged before costing</li>
+          </ul>
+        </div>
+        <div style="display:flex;gap:10px">
+          <div class="stat-box" style="flex:1">
+            <div class="stat-num">10×</div>
+            <div class="stat-label">Faster than manual costing</div>
+          </div>
+          <div class="stat-box" style="flex:1">
+            <div class="stat-num green">±8%</div>
+            <div class="stat-label">Typical accuracy vs actual</div>
+          </div>
+          <div class="stat-box" style="flex:1">
+            <div class="stat-num">0</div>
+            <div class="stat-label">Manual routing steps</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: mockup -->
+      <div class="mockup-frame" style="flex:1;display:flex;flex-direction:column">
+        <div class="mockup-bar">
+          <div class="mockup-dot" style="background:#ef4444"></div>
+          <div class="mockup-dot" style="background:#f59e0b"></div>
+          <div class="mockup-dot" style="background:#10b981"></div>
+          <span style="font-size:.7rem;color:var(--text-3);margin-left:8px">CostVision — CAD Analysis</span>
+        </div>
+        <div class="mockup-body" style="flex:1;display:flex;flex-direction:column;gap:10px">
+          <!-- Upload zone placeholder -->
+          <div style="background:var(--surface-2);border:2px dashed var(--border);border-radius:8px;padding:18px;text-align:center">
+            <div style="font-size:1.5rem;margin-bottom:6px">📁</div>
+            <div style="font-size:.75rem;color:var(--text-2);font-weight:600">Aluminium Bracket — STEP File Uploaded</div>
+            <div style="font-size:.68rem;color:var(--text-3);margin-top:2px">gearbox_bracket_v4.step · 847 KB · Analysing…</div>
+          </div>
+          <!-- AI result rows -->
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+            <div style="background:var(--surface-2);border-radius:6px;padding:8px 10px">
+              <div style="font-size:.65rem;color:var(--text-3)">AI Detected</div>
+              <div style="font-size:.78rem;font-weight:700;color:var(--accent)">Machined Aluminium 6082-T6</div>
+            </div>
+            <div style="background:var(--surface-2);border-radius:6px;padding:8px 10px">
+              <div style="font-size:.65rem;color:var(--text-3)">Suggested Process</div>
+              <div style="font-size:.78rem;font-weight:700;color:var(--accent-3)">3-Axis CNC Milling + Drilling</div>
+            </div>
+            <div style="background:var(--surface-2);border-radius:6px;padding:8px 10px">
+              <div style="font-size:.65rem;color:var(--text-3)">Envelope (L×W×H)</div>
+              <div style="font-size:.78rem;font-weight:700">220 × 140 × 85 mm</div>
+            </div>
+            <div style="background:var(--surface-2);border-radius:6px;padding:8px 10px">
+              <div style="font-size:.65rem;color:var(--text-3)">Complexity</div>
+              <div style="font-size:.78rem;font-weight:700;color:var(--orange)">Moderate — 3 setups</div>
+            </div>
+          </div>
+          <!-- Cost preview bar -->
+          <div style="background:var(--surface-2);border-radius:6px;padding:10px 12px">
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+              <span style="font-size:.72rem;color:var(--text-2);font-weight:600">AI Should-Cost Preview</span>
+              <span style="font-size:.9rem;font-weight:900;color:var(--accent-3)">£ 28.40</span>
+            </div>
+            <div style="display:flex;gap:2px;height:8px;border-radius:4px;overflow:hidden">
+              <div style="width:38%;background:var(--accent)" title="Material 38%"></div>
+              <div style="width:32%;background:var(--accent-2)" title="Process 32%"></div>
+              <div style="width:12%;background:var(--accent-3)" title="Labour 12%"></div>
+              <div style="width:8%;background:var(--orange)" title="Tooling 8%"></div>
+              <div style="width:10%;background:var(--text-3)" title="OH+Margin 10%"></div>
+            </div>
+            <div style="display:flex;gap:10px;margin-top:5px;flex-wrap:wrap">
+              <span style="font-size:.62rem;color:var(--text-3)">■ Material 38%</span>
+              <span style="font-size:.62rem;color:var(--text-3)">■ Process 32%</span>
+              <span style="font-size:.62rem;color:var(--text-3)">■ Labour 12%</span>
+              <span style="font-size:.62rem;color:var(--text-3)">■ Tooling 8%</span>
+              <span style="font-size:.62rem;color:var(--text-3)">■ O/H+Margin 10%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer"><span>CostVision — AI-Powered Should-Cost Intelligence</span><span>Avinash Bhosale</span></div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- SLIDE 6 — Commodities Covered                                           -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<div class="slide" id="slide-6">
+  <div class="slide-header">
+    <div>
+      <div class="slide-num">Slide 06 / 10</div>
+      <div class="slide-logo">CostVision</div>
+    </div>
+    <div style="text-align:right">
+      <div class="section-label">Coverage</div>
+      <div style="font-size:1.1rem;font-weight:700">17 Manufacturing Commodities</div>
+    </div>
+  </div>
+
+  <div class="slide-body">
+    <div>
+      <div class="section-label">Full Commodity Coverage</div>
+      <div class="slide-title">Every Major Manufacturing Process — One Platform</div>
+      <div class="slide-subtitle">From stamped sheet metal to 16-layer HDI PCBs — all 21 commodities modelled to engineering depth.</div>
+    </div>
+
+    <div class="comm-grid" style="flex:1">
+      <div class="comm-card">
+        <div class="comm-icon">⚙️</div>
+        <div class="comm-name">CNC Machining</div>
+        <div class="comm-sub">3/4/5-axis, turning, grinding</div>
+      </div>
+      <div class="comm-card">
+        <div class="comm-icon">🪨</div>
+        <div class="comm-name">Casting</div>
+        <div class="comm-sub">HPDC, gravity, investment, sand</div>
+      </div>
+      <div class="comm-card">
+        <div class="comm-icon">🔨</div>
+        <div class="comm-name">Forging</div>
+        <div class="comm-sub">Hot, warm, cold die forging</div>
+      </div>
+      <div class="comm-card">
+        <div class="comm-icon">🪗</div>
+        <div class="comm-name">Sheet Metal</div>
+        <div class="comm-sub">Blanking, forming, welding</div>
+      </div>
+      <div class="comm-card">
+        <div class="comm-icon">🔩</div>
+        <div class="comm-name">Sheet Metal Fab</div>
+        <div class="comm-sub">Laser, punch, press brake, MIG/TIG</div>
+      </div>
+      <div class="comm-card">
+        <div class="comm-icon">🏺</div>
+        <div class="comm-name">Injection Moulding</div>
+        <div class="comm-sub">Thermoplastics, multi-cavity</div>
+      </div>
+      <div class="comm-card">
+        <div class="comm-icon">🫧</div>
+        <div class="comm-name">Blow Moulding</div>
+        <div class="comm-sub">HDPE, PET, extrusion blow</div>
+      </div>
+      <div class="comm-card">
+        <div class="comm-icon">♨️</div>
+        <div class="comm-name">Thermoforming</div>
+        <div class="comm-sub">Vacuum, pressure, twin-sheet</div>
+      </div>
+      <div class="comm-card">
+        <div class="comm-icon">🔄</div>
+        <div class="comm-name">Rotational Moulding</div>
+        <div class="comm-sub">Hollow complex shapes</div>
+      </div>
+      <div class="comm-card">
+        <div class="comm-icon">🧱</div>
+        <div class="comm-name">Rubber Moulding</div>
+        <div class="comm-sub">Compression, injection, LSR</div>
+      </div>
+      <div class="comm-card">
+        <div class="comm-icon">🪢</div>
+        <div class="comm-name">Composites</div>
+        <div class="comm-sub">CFRP, GFRP, autoclave, RTM, AFP</div>
+      </div>
+      <div class="comm-card">
+        <div class="comm-icon">🖥️</div>
+        <div class="comm-name">PCB Fabrication</div>
+        <div class="comm-sub">2–16L, HDI, rigid-flex, RF/μwave</div>
+      </div>
+      <div class="comm-card">
+        <div class="comm-icon">🔌</div>
+        <div class="comm-name">PCBA / SMD</div>
+        <div class="comm-sub">SMT placement, TH, BOM-driven</div>
+      </div>
+      <div class="comm-card">
+        <div class="comm-icon">🔗</div>
+        <div class="comm-name">Wiring Harness</div>
+        <div class="comm-sub">Cut-strip-crimp, sub-assembly</div>
+      </div>
+      <div class="comm-card">
+        <div class="comm-icon">🚗</div>
+        <div class="comm-name">BIW Assembly</div>
+        <div class="comm-sub">Spot weld, hem, MIG, structural bond</div>
+      </div>
+      <div class="comm-card">
+        <div class="comm-icon">🎨</div>
+        <div class="comm-name">Painting / Coating</div>
+        <div class="comm-sub">Electro-coat, powder, wet paint</div>
+      </div>
+      <div class="comm-card">
+        <div class="comm-icon">🔩</div>
+        <div class="comm-name">Extrusion</div>
+        <div class="comm-sub">Profile, pipe, sheet, rod, continuous</div>
+      </div>
+      <div class="comm-card">
+        <div class="comm-icon">🏗️</div>
+        <div class="comm-name">Cast + Machine</div>
+        <div class="comm-sub">Casting + post-machining + HT</div>
+      </div>
+      <div class="comm-card">
+        <div class="comm-icon">🤖</div>
+        <div class="comm-name">AI Agent</div>
+        <div class="comm-sub">Natural language → any commodity</div>
+      </div>
+      <div class="comm-card" style="border-color:var(--accent-3);background:color-mix(in srgb,var(--accent-3) 8%,var(--surface))">
+        <div class="comm-icon">🔗</div>
+        <div class="comm-name">Assembly BOM Rollup</div>
+        <div class="comm-sub">Multi-part BOM, full cost rollup</div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer"><span>CostVision — AI-Powered Should-Cost Intelligence</span><span>Avinash Bhosale</span></div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- SLIDE 7 — Should-Cost Model Depth                                       -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<div class="slide" id="slide-7">
+  <div class="slide-header">
+    <div>
+      <div class="slide-num">Slide 07 / 10</div>
+      <div class="slide-logo">CostVision</div>
+    </div>
+    <div style="text-align:right">
+      <div class="section-label">Engineering Depth</div>
+      <div style="font-size:1.1rem;font-weight:700">Should-Cost Model Architecture</div>
+    </div>
+  </div>
+
+  <div class="slide-body">
+    <div>
+      <div class="section-label">Technical Depth</div>
+      <div class="slide-title">Industry-Grade Cost Models — Not Spreadsheet Estimates</div>
+      <div class="slide-subtitle">Built on aPriori-calibrated benchmarks, IPC standards, and first-principles engineering.</div>
+    </div>
+
+    <div class="two-col" style="flex:1">
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div class="card">
+          <div class="accent-bar"></div>
+          <div class="card-title">📦 Material Database</div>
+          <div class="card-body">Alloy steels, aluminium grades, engineering plastics, elastomers, composites, PCB laminates, copper — all with live density, price and grade logic. FX-adjusted per region.</div>
+        </div>
+        <div class="card">
+          <div class="accent-bar" style="background:var(--grad-green)"></div>
+          <div class="card-title">⚙️ Machine &amp; Rate Library</div>
+          <div class="card-body">Rate library with 50+ machine types — CNC centres, presses, moulding machines, SMT lines, reflow ovens, test equipment. Rates editable per project/region.</div>
+        </div>
+        <div class="card">
+          <div class="accent-bar" style="background:linear-gradient(135deg,var(--orange),var(--red))"></div>
+          <div class="card-title">🛤️ Routing &amp; Process Logic</div>
+          <div class="card-body">AI-driven operation sequencing. Each operation has: machine ID, cycle time (hr), OEE, setup time, labour grade, and overhead allocation.</div>
+        </div>
+        <div class="card">
+          <div class="accent-bar" style="background:linear-gradient(135deg,var(--accent-2),#ec4899)"></div>
+          <div class="card-title">🔩 Tooling &amp; NRE Amortisation</div>
+          <div class="card-body">Dies, moulds, fixtures, PCB NRE — all properly amortised over annual volume. Tooling life curves for press tools and EDM electrodes.</div>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div class="card">
+          <div class="accent-bar" style="background:var(--grad-green)"></div>
+          <div class="card-title">📉 Yield &amp; Scrap Models</div>
+          <div class="card-body">First-pass yield computed from 10 penalty factors per commodity: layer count, trace width, via type, HDI structure, impedance control, BGA pitch, alloy grade, section thickness and more.</div>
+        </div>
+        <div class="card">
+          <div class="accent-bar"></div>
+          <div class="card-title">🌍 Regional Cost Multipliers</div>
+          <div class="card-body">20 manufacturing regions — each with calibrated labour tiers (skilled / semi-skilled / engineer / inspector), energy costs, and machine hour rates. Currency FX auto-corrects.</div>
+        </div>
+        <div class="card">
+          <div class="accent-bar" style="background:linear-gradient(135deg,var(--orange),var(--accent))"></div>
+          <div class="card-title">📊 Benchmarks &amp; Sensitivity</div>
+          <div class="card-body">Every cost element benchmarked against aPriori/Cleansheet industry ranges. Tornado chart shows top 10 cost drivers at ±10%. Scenario A/B/C comparison.</div>
+        </div>
+        <div class="card card-purple">
+          <div class="card-title">🤖 AI-Driven Assumptions</div>
+          <div class="card-body">Where geometry is unknown, Claude AI fills assumptions using engineering judgement — material, complexity, process, geometry — with transparent explanation of every assumption made.</div>
+        </div>
+        <div class="card card-green">
+          <div class="card-title">📉 Learning Curve (Wright's Law)</div>
+          <div class="card-body">Configure an 85% (or custom) learning curve to model volume-driven cost reduction. Project programme cost at any volume milestone — essential for LTA negotiations and make-vs-buy decisions.</div>
+        </div>
+        <div class="card card-orange">
+          <div class="card-title">💰 Supplier Quote Comparison</div>
+          <div class="card-body">Log supplier quotes (name, date, currency, price) directly into CostVision. Compare vs should-cost instantly. Identify margin gaps and generate data-driven negotiation talking points.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer"><span>CostVision — AI-Powered Should-Cost Intelligence</span><span>Avinash Bhosale</span></div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- SLIDE 8 — Demo Screen Mockups                                           -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<div class="slide" id="slide-8">
+  <div class="slide-header">
+    <div>
+      <div class="slide-num">Slide 08 / 10</div>
+      <div class="slide-logo">CostVision</div>
+    </div>
+    <div style="text-align:right">
+      <div class="section-label">Demo</div>
+      <div style="font-size:1.1rem;font-weight:700">Representative Cost Outputs</div>
+    </div>
+  </div>
+
+  <div class="slide-body" style="gap:10px">
+    <div>
+      <div class="section-label">Sample Outputs — Luxury SUV Programme</div>
+      <div class="slide-title">Real-World Cost Benchmarks Across Commodities</div>
+    </div>
+
+    <!-- Demo table -->
+    <div style="flex:1;overflow:auto">
+      <table style="width:100%;border-collapse:collapse;font-size:.76rem">
+        <thead>
+          <tr style="background:var(--surface-2);border-bottom:2px solid var(--border)">
+            <th style="text-align:left;padding:8px 10px;color:var(--text-3);font-weight:700;text-transform:uppercase;font-size:.65rem;letter-spacing:.05em">Commodity</th>
+            <th style="text-align:left;padding:8px 10px;color:var(--text-3);font-weight:700;text-transform:uppercase;font-size:.65rem;letter-spacing:.05em">Demo Part</th>
+            <th style="text-align:left;padding:8px 10px;color:var(--text-3);font-weight:700;text-transform:uppercase;font-size:.65rem;letter-spacing:.05em">Key Inputs</th>
+            <th style="text-align:right;padding:8px 10px;color:var(--text-3);font-weight:700;text-transform:uppercase;font-size:.65rem;letter-spacing:.05em">Should-Cost</th>
+            <th style="text-align:left;padding:8px 10px;color:var(--text-3);font-weight:700;text-transform:uppercase;font-size:.65rem;letter-spacing:.05em">Top AI Insight</th>
+            <th style="text-align:left;padding:8px 10px;color:var(--text-3);font-weight:700;text-transform:uppercase;font-size:.65rem;letter-spacing:.05em">DFM Flag</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="border-bottom:1px solid var(--border)">
+            <td style="padding:7px 10px;font-weight:700;color:var(--accent)">⚙️ Machining</td>
+            <td style="padding:7px 10px">Aluminium Gearbox Bracket</td>
+            <td style="padding:7px 10px;color:var(--text-2)">Al 6082-T6 · 0.85 kg · 3 setups</td>
+            <td style="padding:7px 10px;text-align:right;font-weight:800;color:var(--accent-3)">£ 28.40</td>
+            <td style="padding:7px 10px;color:var(--text-2)">Process 44% of cost — near-net-shape casting saves £8</td>
+            <td style="padding:7px 10px"><span style="color:var(--orange);font-weight:600">3 setups → 5-axis consolidation</span></td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--border);background:var(--surface-2)">
+            <td style="padding:7px 10px;font-weight:700;color:var(--accent)">🪨 HPDC Casting</td>
+            <td style="padding:7px 10px">Alloy Transmission Housing</td>
+            <td style="padding:7px 10px;color:var(--text-2)">Al A380 · 3.2 kg · 50k/yr</td>
+            <td style="padding:7px 10px;text-align:right;font-weight:800;color:var(--accent-3)">£ 18.70</td>
+            <td style="padding:7px 10px;color:var(--text-2)">Die cost 9% — acceptable. Margin 21% — negotiate</td>
+            <td style="padding:7px 10px"><span style="color:var(--accent-3);font-weight:600">Good — no critical issues</span></td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--border)">
+            <td style="padding:7px 10px;font-weight:700;color:var(--accent)">🪗 Sheet Metal</td>
+            <td style="padding:7px 10px">Rear Door Inner Panel</td>
+            <td style="padding:7px 10px;color:var(--text-2)">DC04 1.2mm · 4.1 kg · 60k/yr</td>
+            <td style="padding:7px 10px;text-align:right;font-weight:800;color:var(--accent-3)">£ 22.10</td>
+            <td style="padding:7px 10px;color:var(--text-2)">Blank nesting 64% — improve to save £2.80/part</td>
+            <td style="padding:7px 10px"><span style="color:var(--red);font-weight:600">Critical: blank nesting &lt;65%</span></td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--border);background:var(--surface-2)">
+            <td style="padding:7px 10px;font-weight:700;color:var(--accent)">🏺 Injection</td>
+            <td style="padding:7px 10px">PP Bumper Bracket</td>
+            <td style="padding:7px 10px;color:var(--text-2)">PP-TD20 · 0.42 kg · 100k/yr</td>
+            <td style="padding:7px 10px;text-align:right;font-weight:800;color:var(--accent-3)">£ 3.85</td>
+            <td style="padding:7px 10px;color:var(--text-2)">Mould cost 8% — good amortisation at this volume</td>
+            <td style="padding:7px 10px"><span style="color:var(--accent-3);font-weight:600">Good — runner waste 15%</span></td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--border)">
+            <td style="padding:7px 10px;font-weight:700;color:var(--accent)">🖥️ PCB Fab</td>
+            <td style="padding:7px 10px">4-Layer FR4 ECU Board</td>
+            <td style="padding:7px 10px;color:var(--text-2)">100×80mm · ENIG · Flying probe</td>
+            <td style="padding:7px 10px;text-align:right;font-weight:800;color:var(--accent-3)">£ 4.20</td>
+            <td style="padding:7px 10px;color:var(--text-2)">NRE 6% per board — increase batch for better rate</td>
+            <td style="padding:7px 10px"><span style="color:var(--accent-3);font-weight:600">Good — standard technology</span></td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--border);background:var(--surface-2)">
+            <td style="padding:7px 10px;font-weight:700;color:var(--accent)">🔌 PCBA</td>
+            <td style="padding:7px 10px">ECU PCBA — 85 components</td>
+            <td style="padding:7px 10px;color:var(--text-2)">SMT + TH · 4 TH joints</td>
+            <td style="padding:7px 10px;text-align:right;font-weight:800;color:var(--accent-3)">£ 32.60</td>
+            <td style="padding:7px 10px;color:var(--text-2)">Labour 38% — convert TH to SMT to save £4</td>
+            <td style="padding:7px 10px"><span style="color:var(--orange);font-weight:600">Major: high TH labour content</span></td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--border)">
+            <td style="padding:7px 10px;font-weight:700;color:var(--accent)">🔗 Wiring Harness</td>
+            <td style="padding:7px 10px">Door Module Harness</td>
+            <td style="padding:7px 10px;color:var(--text-2)">24 circuits · 2.1 m avg length</td>
+            <td style="padding:7px 10px;text-align:right;font-weight:800;color:var(--accent-3)">£ 11.80</td>
+            <td style="padding:7px 10px;color:var(--text-2)">Labour 58% — automation saves 20% at scale</td>
+            <td style="padding:7px 10px"><span style="color:var(--red);font-weight:600">Critical: labour &gt;50%</span></td>
+          </tr>
+          <tr>
+            <td style="padding:7px 10px;font-weight:700;color:var(--accent)">🧱 Rubber</td>
+            <td style="padding:7px 10px">EPDM Door Seal</td>
+            <td style="padding:7px 10px;color:var(--text-2)">Extrusion · 2.8 m · 85 Shore A</td>
+            <td style="padding:7px 10px;text-align:right;font-weight:800;color:var(--accent-3)">£ 4.10</td>
+            <td style="padding:7px 10px;color:var(--text-2)">Process 42% — cure cycle dominant cost driver</td>
+            <td style="padding:7px 10px"><span style="color:var(--orange);font-weight:600">Major: cure time optimise</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div style="background:var(--surface-2);border-radius:8px;padding:10px 14px;border:1px solid var(--border);display:flex;gap:24px;flex-wrap:wrap;align-items:center;font-size:.75rem">
+      <span><strong style="color:var(--accent)">AI Agent:</strong> <span style="color:var(--text-2)">Describe "4-layer PCB for automotive ECU, ENIG finish, 10k/yr" — AI generates the full cost model automatically</span></span>
+      <span><strong style="color:var(--accent-3)">Assembly Rollup:</strong> <span style="color:var(--text-2)">BIW + Painting + Harness + Electronics = full vehicle-level should-cost in one session</span></span>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <div class="tag blue">All costs in GBP · auto-converts per region</div>
+      <div class="tag green">AI insights + DFM/DFA per part</div>
+      <div class="tag orange">6-sheet Excel · PDF report per part</div>
+      <div class="tag purple">Supplier quote comparison built-in</div>
+      <div class="tag blue">Wright's Law learning curve per part</div>
+    </div>
+  </div>
+  <div class="slide-footer"><span>CostVision — AI-Powered Should-Cost Intelligence</span><span>Avinash Bhosale</span></div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- SLIDE 9 — Business Benefits                                             -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<div class="slide" id="slide-9">
+  <div class="slide-header">
+    <div>
+      <div class="slide-num">Slide 09 / 10</div>
+      <div class="slide-logo">CostVision</div>
+    </div>
+    <div style="text-align:right">
+      <div class="section-label">Value Delivered</div>
+      <div style="font-size:1.1rem;font-weight:700">Business Impact &amp; Benefits</div>
+    </div>
+  </div>
+
+  <div class="slide-body">
+    <div>
+      <div class="section-label">Why This Matters for the Business</div>
+      <div class="slide-title">Measurable Impact Across Cost, Speed, and Quality</div>
+    </div>
+
+    <div class="benefit-row" style="flex:1">
+      <div class="benefit-card b1">
+        <div class="benefit-num" style="color:var(--accent)">70–90%</div>
+        <div class="benefit-label">Reduction in Costing Time</div>
+        <div class="benefit-desc">From 2–4 weeks per part to minutes. Engineers spend time on decisions, not spreadsheets.</div>
+      </div>
+      <div class="benefit-card b2">
+        <div class="benefit-num" style="color:var(--accent-3)">±8%</div>
+        <div class="benefit-label">Cost Model Accuracy</div>
+        <div class="benefit-desc">Physics-based models calibrated to actual shop floor data. Dramatically better than rule-of-thumb estimates.</div>
+      </div>
+      <div class="benefit-card b3">
+        <div class="benefit-num" style="color:var(--orange)">15–25%</div>
+        <div class="benefit-label">Supplier Negotiation Saving</div>
+        <div class="benefit-desc">Should-cost models give buyers a defensible floor price. Supplier margins become visible and challengeable.</div>
+      </div>
+      <div class="benefit-card b4">
+        <div class="benefit-num" style="color:var(--accent-2)">3×</div>
+        <div class="benefit-label">Faster Sourcing Decisions</div>
+        <div class="benefit-desc">Cost intelligence available at concept — not just after SOP. Faster programme decisions with full cost visibility.</div>
+      </div>
+      <div class="benefit-card b5">
+        <div class="benefit-num" style="color:var(--red)">100%</div>
+        <div class="benefit-label">Standardised Methodology</div>
+        <div class="benefit-desc">One consistent cost model across all teams, programmes, and regions. Full audit trail for every assumption.</div>
+      </div>
+      <div class="benefit-card b6">
+        <div class="benefit-num" style="color:#f472b6">10/10</div>
+        <div class="benefit-label">DFM Score Target</div>
+        <div class="benefit-desc">DFM/DFA analysis at concept stage prevents expensive late-stage redesigns. Engineering issues caught early.</div>
+      </div>
+      <div class="benefit-card b7">
+        <div class="benefit-num" style="color:#22d3ee">20</div>
+        <div class="benefit-label">Global Regions + 10 Currencies</div>
+        <div class="benefit-desc">Instantly compare UK, China, India, Mexico, Korea — true regional cost transparency. Currency auto-switches per region selection.</div>
+      </div>
+    </div>
+
+    <div style="background:var(--surface-2);border-radius:var(--radius);padding:14px 18px;border:1px solid var(--border);display:flex;align-items:stretch;gap:16px">
+      <div style="display:flex;align-items:flex-start;gap:12px;flex:1">
+        <div style="font-size:1.4rem">💼</div>
+        <div>
+          <div style="font-weight:700;font-size:.85rem;margin-bottom:3px">Strategic Business Case</div>
+          <div style="font-size:.76rem;color:var(--text-2);line-height:1.5">
+            On a £500M commodity spend, a <strong style="color:var(--accent-3)">3% improvement in supplier pricing</strong> through should-cost intelligence delivers
+            <strong style="color:var(--accent-3)">£15M annual saving</strong>. CostVision makes that achievable through data, not negotiation luck.
+          </div>
+        </div>
+      </div>
+      <div style="width:1px;background:var(--border)"></div>
+      <div style="display:flex;align-items:flex-start;gap:12px;flex:1">
+        <div style="font-size:1.4rem">☁️</div>
+        <div>
+          <div style="font-weight:700;font-size:.85rem;margin-bottom:3px">Team &amp; Cloud Collaboration</div>
+          <div style="font-size:.76rem;color:var(--text-2);line-height:1.5">
+            Scenarios sync to the cloud — engineers across sites share a consistent cost baseline. Secure JWT authentication, multi-user access, and full audit trail per calculation.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer"><span>CostVision — AI-Powered Should-Cost Intelligence</span><span>Avinash Bhosale</span></div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- SLIDE 10 — Closing & Next Steps                                         -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<div class="slide" id="slide-10">
+  <div class="slide-header">
+    <div>
+      <div class="slide-num">Slide 10 / 10</div>
+      <div class="slide-logo">CostVision</div>
+    </div>
+    <div style="text-align:right">
+      <div class="section-label">Next Steps</div>
+      <div style="font-size:1.1rem;font-weight:700">Vision, Roadmap &amp; Pilot</div>
+    </div>
+  </div>
+
+  <div class="slide-body">
+    <div>
+      <div class="section-label">Closing</div>
+      <div class="slide-title">The Future of Cost Engineering is Intelligent, Instant, and Integrated</div>
+    </div>
+
+    <div class="two-col" style="flex:1">
+      <!-- Roadmap -->
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div class="card">
+          <div style="font-weight:700;font-size:.88rem;margin-bottom:10px;color:var(--accent)">📍 Current Capabilities (Live Today)</div>
+          <ul class="bullet-list">
+            <li><strong>21 commodity should-cost models</strong> — fully parametric, engineering-grade</li>
+            <li><strong>AI Agent</strong> — describe a part in plain English, AI builds the cost model</li>
+            <li><strong>AI CAD analysis</strong> — STEP / photo → geometry → cost in minutes</li>
+            <li><strong>Assembly BOM Rollup</strong> — multi-part, multi-commodity assemblies</li>
+            <li><strong>Learning Curve (Wright's Law)</strong> — volume-cost projection at any milestone</li>
+            <li><strong>Supplier Quote Comparison</strong> — log quotes, identify margin gaps instantly</li>
+            <li><strong>DFM / DFA intelligence</strong> — bolt-on AI optimisation layer, 1–10 scores</li>
+            <li><strong>20 global regions · 10 currencies</strong> with live auto-switching</li>
+            <li><strong>6-sheet Excel export + PDF report</strong> with part photo and full traceability</li>
+            <li><strong>Cloud sync, team sharing &amp; secure authentication</strong> — multi-user ready</li>
+          </ul>
+        </div>
+        <div style="display:flex;gap:10px">
+          <div class="card" style="flex:1">
+            <div style="font-size:.7rem;font-weight:700;color:var(--orange);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">Phase 2 — Q3 2026</div>
+            <ul class="bullet-list" style="font-size:.74rem">
+              <li>PLM / ERP integration connectors</li>
+              <li>Mass-import BOM costing</li>
+              <li>Supplier quotation comparison matrix</li>
+              <li>Cost target waterfall dashboards</li>
+            </ul>
+          </div>
+          <div class="card" style="flex:1">
+            <div style="font-size:.7rem;font-weight:700;color:var(--accent-2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">Phase 3 — Q1 2027</div>
+            <ul class="bullet-list" style="font-size:.74rem">
+              <li>Market price learning engine</li>
+              <li>Should-cost vs actual variance tracker</li>
+              <li>Autonomous sourcing RFQ generation</li>
+              <li>Executive analytics dashboard</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: CTA + contact -->
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div class="card card-accent" style="flex:1">
+          <div style="font-size:1.3rem;margin-bottom:8px">🚀</div>
+          <div style="font-weight:700;font-size:1rem;margin-bottom:10px">Invitation: Pilot Rollout</div>
+          <ul class="bullet-list">
+            <li><strong>Pilot scope:</strong> 2–3 commodity families, one programme team</li>
+            <li><strong>Duration:</strong> 4–6 weeks structured pilot with real parts</li>
+            <li><strong>Deliverable:</strong> Validated should-cost models vs actual supplier quotes</li>
+            <li><strong>Success metric:</strong> ≥15% supplier price reduction identified per part</li>
+            <li><strong>Team training:</strong> Half-day onboarding, full user documentation</li>
+            <li><strong>Support:</strong> Direct access to developer throughout pilot</li>
+          </ul>
+        </div>
+
+        <!-- Contact Card -->
+        <div style="background:var(--surface-2);border-radius:var(--radius);padding:18px 20px;border:1px solid var(--border);text-align:center">
+          <div style="font-size:1.4rem;margin-bottom:8px">👤</div>
+          <div style="font-weight:800;font-size:1.05rem;color:var(--text);margin-bottom:3px">Avinash Bhosale</div>
+          <div style="font-size:.78rem;color:var(--text-2);margin-bottom:10px">Cost Engineering &amp; Digital Innovation</div>
+          <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
+            <div class="tag blue">📧 Direct Message</div>
+            <div class="tag green">💬 Teams / Slack</div>
+            <div class="tag purple">📋 POC Available</div>
+          </div>
+        </div>
+
+        <!-- Vision statement -->
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;border-left:3px solid var(--accent-3)">
+          <div style="font-size:.72rem;color:var(--accent-3);font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px">Vision</div>
+          <div style="font-size:.82rem;color:var(--text);line-height:1.55;font-style:italic">
+            "Every engineer should have instant access to accurate, defensible should-cost intelligence — at concept stage, across every commodity, in every region. CostVision makes that a reality today."
+          </div>
+          <div style="font-size:.72rem;color:var(--text-3);margin-top:8px">— Avinash Bhosale, CostVision</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span>CostVision — AI-Powered Should-Cost Intelligence</span>
+    <span style="color:var(--accent-3);font-weight:600">Thank you — Questions welcome</span>
+    <span>Avinash Bhosale</span>
+  </div>
+</div>
+
+</div><!-- /deck -->
+
+<!-- ─── JavaScript ──────────────────────────────────────────────────────── -->
+<script>
+const SLIDES = 10;
+let currentSlide = 1;
+
+// Build dots
+const dotsEl = document.getElementById('dots');
+for (let i = 1; i <= SLIDES; i++) {
+  const d = document.createElement('div');
+  d.className = 'dot' + (i === 1 ? ' active' : '');
+  d.title = 'Slide ' + i;
+  d.addEventListener('click', () => goToSlide(i));
+  dotsEl.appendChild(d);
+}
+
+function goToSlide(n) {
+  n = Math.max(1, Math.min(SLIDES, n));
+  currentSlide = n;
+  const el = document.getElementById('slide-' + n);
+  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  document.querySelectorAll('.dot').forEach((d, i) => {
+    d.classList.toggle('active', i + 1 === n);
+  });
+}
+
+function scrollSlide(dir) { goToSlide(currentSlide + dir); }
+
+function toggleTheme() {
+  const html = document.documentElement;
+  html.setAttribute('data-theme', html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+}
+
+// Keyboard navigation
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === 'PageDown') scrollSlide(1);
+  if (e.key === 'ArrowLeft'  || e.key === 'PageUp')   scrollSlide(-1);
+  if (e.key === 'Home') goToSlide(1);
+  if (e.key === 'End')  goToSlide(SLIDES);
+});
+
+// IntersectionObserver to update dots as user scrolls
+const io = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting && e.intersectionRatio > 0.5) {
+      const id = parseInt(e.target.id.replace('slide-', ''), 10);
+      if (!isNaN(id)) {
+        currentSlide = id;
+        document.querySelectorAll('.dot').forEach((d, i) => {
+          d.classList.toggle('active', i + 1 === id);
+        });
+      }
+    }
+  });
+}, { threshold: 0.5 });
+
+for (let i = 1; i <= SLIDES; i++) {
+  const el = document.getElementById('slide-' + i);
+  if (el) io.observe(el);
+}
+</script>
+
+</body>
+</html>
