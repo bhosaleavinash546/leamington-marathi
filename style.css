@@ -1044,6 +1044,38 @@ html:not(.js) #ticker-items li:first-child { display: block; opacity: 1; }
   box-shadow: 0 10px 26px rgba(0, 0, 0, 0.32);
 }
 
+/* Back to top arrow — sits above the Contact Us button */
+#back-to-top {
+  position: fixed;
+  bottom: 84px;
+  right: 20px;
+  z-index: 90;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: var(--white);
+  border: 2px solid var(--red);
+  color: var(--red);
+  font-size: 1.5rem;
+  font-weight: 800;
+  line-height: 1;
+  text-decoration: none;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.22);
+  opacity: 0;
+  transform: translateY(12px);
+  pointer-events: none;
+  transition: opacity 0.3s ease, transform 0.3s ease, background 0.2s ease, color 0.2s ease;
+}
+#back-to-top.visible {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+#back-to-top:hover { background: var(--red); color: var(--white); }
+
 /* ---------- Newsletter ---------- */
 .newsletter {
   background: var(--cream-deep);

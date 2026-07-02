@@ -8,8 +8,12 @@ document.addEventListener('DOMContentLoaded', () => {
     navCheck.checked = false;
   }));
 
-  // Header shadow on scroll
-  const onScroll = () => header.classList.toggle('scrolled', window.scrollY > 10);
+  // Header shadow + back-to-top visibility on scroll
+  const backToTop = document.getElementById('back-to-top');
+  const onScroll = () => {
+    header.classList.toggle('scrolled', window.scrollY > 10);
+    backToTop.classList.toggle('visible', window.scrollY > 600);
+  };
   window.addEventListener('scroll', onScroll, { passive: true });
   onScroll();
 
