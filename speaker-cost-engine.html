@@ -4476,8 +4476,9 @@ function buildTrendsHTML(liveArticles, commodities) {
   all.forEach(function(item) {
     var catCfg = CATEGORY_CONFIG[item.category] || CATEGORY_CONFIG.tech;
     var leftColor = catCfg.color;
-    var tag = item.link ? 'a href="'+esc(item.link)+'" target="_blank" rel="noopener"' : 'div';
-    var closeTag = item.link ? 'a' : 'div';
+    var itemUrl = item.link || item.sourceUrl || '';
+    var tag = itemUrl ? 'a href="'+esc(itemUrl)+'" target="_blank" rel="noopener noreferrer"' : 'div';
+    var closeTag = itemUrl ? 'a' : 'div';
     html += '<'+tag+' class="trends-card trends-article-card" data-category="'+esc(item.category||'tech')+'" style="border-left:3px solid '+leftColor+'">';
     html += '<div class="trends-card-meta">';
     if (item.oem) html += '<span class="trends-badge trends-oem-badge">'+esc(item.oem)+'</span>';
@@ -4491,7 +4492,7 @@ function buildTrendsHTML(liveArticles, commodities) {
     if (item.techNote) html += '<div class="trends-tech">⚙ '+esc(item.techNote)+'</div>';
     html += '<div class="trends-footer">';
     html += '<span>'+esc(item.source||'')+'</span>';
-    if (item.link) html += '<span class="trends-read-link">↗ Read official source</span>';
+    if (itemUrl) html += '<span class="trends-read-link">↗ Read official source</span>';
     html += '</div>';
     html += '</'+closeTag+'>';
   });
