@@ -457,16 +457,57 @@ img { max-width: 100%; display: block; }
 
 .drum { display: inline-block; animation: drum-beat 1.1s ease-in-out infinite; }
 
-/* Sliding Pathak photo strip (right to left, like the footer reel) */
+/* Auto-advancing Pathak photo carousel: one photo at a time, sliding right to left */
 .dhol-slider {
-  overflow: hidden;
   margin: 54px -24px -80px;  /* bleed to the section's full width and bottom edge */
-  padding: 26px 0 34px;
+  padding: 30px 0 26px;
   background: rgba(0, 0, 0, 0.14);
 }
-.dhol-slider .marquee-group { animation-duration: 42s; }
-.dhol-slider:hover .marquee-group { animation-play-state: paused; }
-.dhol-slider .marquee-group img { height: 160px; }
+.dhol-carousel {
+  display: flex;
+  gap: 24px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+  /* side padding lets the first/last slide sit centred */
+  padding: 0 max(24px, calc(50vw - 320px));
+}
+.dhol-carousel::-webkit-scrollbar { display: none; }
+.dhol-carousel img {
+  flex-shrink: 0;
+  height: 380px;
+  width: auto;
+  scroll-snap-align: center;
+  border-radius: var(--radius);
+  border: 4px solid var(--white);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.3);
+}
+.dhol-dots {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 20px;
+}
+.dhol-dots button {
+  width: 12px;
+  height: 12px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.45);
+  cursor: pointer;
+  transition: background 0.25s ease, transform 0.25s ease;
+}
+.dhol-dots button.active {
+  background: var(--gold);
+  transform: scale(1.25);
+}
+
+@media (max-width: 600px) {
+  .dhol-carousel img { height: 240px; }
+  .dhol-carousel { padding: 0 24px; }
+}
 
 @keyframes drum-beat {
   0%, 100% { transform: scale(1) rotate(0deg); }
