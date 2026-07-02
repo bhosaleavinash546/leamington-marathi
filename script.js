@@ -102,7 +102,6 @@ document.addEventListener('DOMContentLoaded', () => {
   // ---- Festival-aware theming ----
   // Fixed-date festivals recur every year (recurring: true, MM-DD ranges).
   // Lunar festivals move: update their YYYY-MM-DD ranges each January.
-  // Preview any theme with ?festival=<name>, e.g. ?festival=diwali
   const FESTIVALS = [
     { name: 'Makar Sankranti', recurring: true, ranges: [['01-12', '01-16']],
       emojis: ['🪁', '✨'], greeting: '🪁 मकर संक्रांतीच्या हार्दिक शुभेच्छा! तिळगूळ घ्या, गोड गोड बोला!' },
@@ -115,13 +114,11 @@ document.addEventListener('DOMContentLoaded', () => {
     { name: 'Diwali', ranges: [['2026-11-06', '2026-11-11']],
       emojis: ['🪔', '✨'], greeting: '🪔 दिवाळीच्या हार्दिक शुभेच्छा! शुभ दीपावली!' },
   ];
-  const previewFestival = new URLSearchParams(location.search).get('festival');
   const now = new Date();
   const mmdd = `${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
   const isoDate = `${now.getFullYear()}-${mmdd}`;
-  const festival = FESTIVALS.find(f => previewFestival
-    ? f.name.toLowerCase().includes(previewFestival.toLowerCase())
-    : f.ranges.some(([s, e]) => f.recurring ? (mmdd >= s && mmdd <= e) : (isoDate >= s && isoDate <= e)));
+  const festival = FESTIVALS.find(f =>
+    f.ranges.some(([s, e]) => f.recurring ? (mmdd >= s && mmdd <= e) : (isoDate >= s && isoDate <= e)));
 
   if (festival) {
     // greeting takes the first slot in the What's New ticker
