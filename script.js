@@ -35,14 +35,15 @@ document.addEventListener('DOMContentLoaded', () => {
   }, { rootMargin: '-40% 0px -55% 0px' });
   sections.forEach(section => sectionObserver.observe(section));
 
-  // Reveal-on-scroll animation
+  // Reveal-on-scroll animation, staggered for siblings revealed together
   const revealObserver = new IntersectionObserver(entries => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
+    entries
+      .filter(entry => entry.isIntersecting)
+      .forEach((entry, i) => {
+        entry.target.style.transitionDelay = `${Math.min(i, 5) * 110}ms`;
         entry.target.classList.add('visible');
         revealObserver.unobserve(entry.target);
-      }
-    });
+      });
   }, { threshold: 0.12 });
   document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
 
