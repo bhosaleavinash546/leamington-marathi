@@ -830,6 +830,7 @@ footer {
 .footer-tagline { font-size: 1.15rem; font-weight: 600; color: var(--gold); margin: 0 0 10px; }
 footer p { margin: 6px 0; font-size: 0.95rem; }
 .footer-copy { opacity: 0.75; margin-top: 16px; font-size: 0.87rem; }
+.footer-credit { opacity: 0.6; font-size: 0.8rem; margin-top: 6px; }
 
 /* ---------- Reveal animation (hidden state only when JS is running) ---------- */
 .js .reveal {
