@@ -301,21 +301,23 @@
         </p>
         <a href="#contact" class="btn btn-light">Want us to perform at your event?</a>
       </div>
-      <div class="dhol-photo">
-        <img src="images/dhol-pathak.jpg" alt="Leamington Marathi Dhol Tasha Pathak performing in full costume" loading="lazy" width="1000" height="563">
+      <!-- Animated photo stack: each card pops in, holds, then rises away (cycled by script.js) -->
+      <div class="dhol-stack" id="dhol-stack" aria-label="Photos of the Dhol Tasha Pathak">
+        <img class="stack-card" src="images/dhol-pathak.jpg" alt="Pathak performing in full costume at the racecourse" width="1000" height="563">
+        <img class="stack-card" src="images/dhol-park.jpg" alt="Pathak with dhols and flag at the Ganesh festival in the park" loading="lazy" width="580" height="400">
+        <img class="stack-card" src="images/diwali-lights.jpg" alt="Pathak at the Diwali Lights Switch-On in Leamington" loading="lazy" width="533" height="400">
+        <img class="stack-card" src="images/dhol-ganeshotsav.jpg" alt="Pathak in saffron kurtas at Ganeshotsav" loading="lazy" width="621" height="400">
+        <img class="stack-card" src="images/dhol-banner.jpg" alt="Pathak members with the Leamington Marathi banner and drums" loading="lazy" width="518" height="400">
+        <img class="stack-card" src="images/dhol-flag.jpg" alt="Pathak posing with the saffron flag and dhols" loading="lazy" width="533" height="400">
       </div>
     </div>
     <div class="dhol-achievement reveal">
       <span class="achievement-icon">🏆</span>
-      <div class="achievement-text">
-        <h3>World Book of Records — London, 6 June 2026</h3>
-        <p>
-          Our Pathak was part of a historic gathering in the heart of London —
-          <strong>13 dhol-tasha pathaks, 270 players</strong> thundering as one —
-          a moment etched in golden letters in the <strong>World Book of Records</strong>.
-        </p>
-        <p class="marathi achievement-marathi" lang="mr">लंडनच्या हृदयात मराठी अभिमानाचा नाद दुमदुमला — ऐतिहासिक क्षण! 🚩</p>
-      </div>
+      <p class="achievement-text">
+        <strong>World Book of Records — London, 6 June 2026.</strong>
+        Our Pathak among <strong>13 pathaks, 270 players</strong> thundering as one.
+        <span class="marathi achievement-marathi" lang="mr">ऐतिहासिक क्षण! 🚩</span>
+      </p>
     </div>
 
     <!-- Pathak in action: video loads only when played (preload="none") -->
@@ -327,17 +329,6 @@
       <p class="dhol-video-caption">🎥 Feel the thunder — वाद्यमहोत्सव, the historic gathering. <span class="marathi" lang="mr">आवाज वाढवा!</span> 🔊</p>
     </div>
 
-    <!-- Auto-advancing Pathak photo carousel (one photo at a time, right to left) -->
-    <div class="dhol-slider" aria-label="More photos of the Dhol Tasha Pathak">
-      <div class="dhol-carousel" id="dhol-carousel">
-        <img src="images/dhol-park.jpg" alt="Pathak with dhols and flag at the Ganesh festival in the park" width="580" height="400">
-        <img src="images/dhol-banner.jpg" alt="Pathak members with the Leamington Marathi banner and drums" width="518" height="400">
-        <img src="images/diwali-lights.jpg" alt="Pathak at the Diwali Lights Switch-On in Leamington" width="533" height="400">
-        <img src="images/dhol-ganeshotsav.jpg" alt="Pathak in saffron kurtas at Ganeshotsav" width="621" height="400">
-        <img src="images/dhol-flag.jpg" alt="Pathak posing with the saffron flag and dhols" width="533" height="400">
-      </div>
-      <div class="dhol-dots" id="dhol-dots"></div>
-    </div>
   </section>
 
   <!-- ===== Gallery ===== -->

@@ -160,6 +160,36 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 5000);
   }
 
+  // Dhol photo stack: each card pops in with a spring, holds, then rises away
+  const stack = document.getElementById('dhol-stack');
+  if (stack) {
+    const cards = [...stack.children];
+    let stackIdx = 0;
+    const applyStack = () => cards.forEach((card, j) => {
+      const rel = (j - stackIdx + cards.length) % cards.length;
+      card.classList.toggle('is-active', rel === 0);
+      card.classList.toggle('is-next', rel === 1);
+      card.classList.toggle('is-third', rel === 2);
+    });
+    applyStack();
+    const advance = () => {
+      const leaving = cards[stackIdx];
+      leaving.classList.add('is-leaving');
+      setTimeout(() => leaving.classList.remove('is-leaving'), 650);
+      stackIdx = (stackIdx + 1) % cards.length;
+      applyStack();
+    };
+    let stackTimer = null;
+    const stackReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const stackStop = () => { clearInterval(stackTimer); stackTimer = null; };
+    const stackStart = () => { if (!stackReduced && !stackTimer) stackTimer = setInterval(advance, 3200); };
+    stack.addEventListener('pointerenter', stackStop);
+    stack.addEventListener('pointerleave', stackStart);
+    new IntersectionObserver(entries => {
+      entries.forEach(entry => entry.isIntersecting ? stackStart() : stackStop());
+    }, { threshold: 0.3 }).observe(stack);
+  }
+
   // Countdown to the next event (date lives on the hero chip's data-event-date)
   const nextChip = document.querySelector('.hero-next');
   if (nextChip && nextChip.dataset.eventDate) {
@@ -218,69 +248,6 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
 
-  // Dhol carousel: auto-advance one photo at a time, right to left
-  const carousel = document.getElementById('dhol-carousel');
-  if (carousel) {
-    const slides = [...carousel.children];
-    const dotsWrap = document.getElementById('dhol-dots');
-    const dots = slides.map((_, i) => {
-      const dot = document.createElement('button');
-      dot.setAttribute('aria-label', `Go to photo ${i + 1} of ${slides.length}`);
-      dot.addEventListener('click', () => { goTo(i); restart(); });
-      dotsWrap.appendChild(dot);
-      return dot;
-    });
-
-    let index = 0;
-    let timer = null;
-
-    const goTo = i => {
-      index = (i + slides.length) % slides.length;
-      const slide = slides[index];
-      carousel.scrollTo({
-        left: slide.offsetLeft - (carousel.clientWidth - slide.clientWidth) / 2,
-        behavior: 'smooth',
-      });
-      dots.forEach((d, j) => d.classList.toggle('active', j === index));
-    };
-
-    // keep the active dot in sync when the visitor swipes manually
-    let scrollDebounce;
-    carousel.addEventListener('scroll', () => {
-      clearTimeout(scrollDebounce);
-      scrollDebounce = setTimeout(() => {
-        const centre = carousel.scrollLeft + carousel.clientWidth / 2;
-        let nearest = 0, best = Infinity;
-        slides.forEach((s, j) => {
-          const dist = Math.abs(s.offsetLeft + s.clientWidth / 2 - centre);
-          if (dist < best) { best = dist; nearest = j; }
-        });
-        index = nearest;
-        dots.forEach((d, j) => d.classList.toggle('active', j === index));
-      }, 120);
-    }, { passive: true });
-
-    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const stop = () => { clearInterval(timer); timer = null; };
-    const start = () => {
-      if (reducedMotion || timer) return;
-      timer = setInterval(() => goTo(index + 1), 3500);
-    };
-    const restart = () => { stop(); start(); };
-
-    // pause while the visitor is looking closely or touching, resume after
-    carousel.addEventListener('pointerenter', stop);
-    carousel.addEventListener('pointerleave', start);
-    carousel.addEventListener('touchstart', stop, { passive: true });
-    carousel.addEventListener('touchend', () => setTimeout(start, 4000), { passive: true });
-
-    // only auto-play while the carousel is on screen
-    new IntersectionObserver(entries => {
-      entries.forEach(entry => entry.isIntersecting ? start() : stop());
-    }, { threshold: 0.3 }).observe(carousel);
-
-    dots[0].classList.add('active');
-  }
 
   // Footer year
   document.getElementById('year').textContent = new Date().getFullYear();
