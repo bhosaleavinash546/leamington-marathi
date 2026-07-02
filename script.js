@@ -190,6 +190,85 @@ document.addEventListener('DOMContentLoaded', () => {
     }, { threshold: 0.3 }).observe(stack);
   }
 
+  // Journey procession path: road drawn through the milestones, dhol marker
+  // travels along it with scroll, lighting each milestone as it passes
+  const procession = document.getElementById('procession');
+  if (procession) {
+    const roadBase = procession.querySelector('.road-base');
+    const roadLine = procession.querySelector('.road-line');
+    const marker = document.getElementById('procession-marker');
+    const stones = [...procession.querySelectorAll('.p-stone')];
+    const processionReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let roadLength = 0;
+    let waypointLengths = [];
+
+    const buildRoad = () => {
+      const width = procession.offsetWidth;
+      // waypoint beside each stone, on the side facing the road
+      const pts = stones.map((stone, i) => ({
+        x: i % 2 === 0 ? stone.offsetLeft + stone.offsetWidth + 28 : stone.offsetLeft - 28,
+        y: stone.offsetTop + stone.offsetHeight / 2,
+      }));
+      const start = { x: width / 2, y: -10 };
+      const end = { x: width / 2, y: procession.offsetHeight + 10 };
+      const all = [start, ...pts, end];
+      let d = `M ${all[0].x} ${all[0].y}`;
+      for (let i = 1; i < all.length; i++) {
+        const prev = all[i - 1];
+        const curr = all[i];
+        const midY = (prev.y + curr.y) / 2;
+        d += ` C ${prev.x} ${midY}, ${curr.x} ${midY}, ${curr.x} ${curr.y}`;
+      }
+      roadBase.setAttribute('d', d);
+      roadLine.setAttribute('d', d);
+      roadLength = roadBase.getTotalLength();
+      // map each waypoint to its distance along the road
+      waypointLengths = pts.map(pt => {
+        let best = 0, bestDist = Infinity;
+        for (let s = 0; s <= 300; s++) {
+          const len = (roadLength * s) / 300;
+          const p = roadBase.getPointAtLength(len);
+          const dist = (p.x - pt.x) ** 2 + (p.y - pt.y) ** 2;
+          if (dist < bestDist) { bestDist = dist; best = len; }
+        }
+        return best;
+      });
+      roadBase.style.strokeDasharray = roadLength;
+      roadLine.style.strokeDasharray = roadLength;
+      paint();
+    };
+
+    const paint = () => {
+      const rect = procession.getBoundingClientRect();
+      const vh = window.innerHeight;
+      // 0 when the section top reaches 80% of the viewport, 1 near its end
+      let progress = (vh * 0.8 - rect.top) / (rect.height + vh * 0.3);
+      progress = Math.max(0, Math.min(1, progress));
+      if (processionReduced) progress = 1;
+      const travelled = roadLength * progress;
+      roadBase.style.strokeDashoffset = roadLength - travelled;
+      roadLine.style.strokeDashoffset = roadLength - travelled;
+      const pos = roadBase.getPointAtLength(travelled);
+      marker.style.transform = `translate(${pos.x - 23}px, ${pos.y - 23}px)`;
+      stones.forEach((stone, i) => stone.classList.toggle('passed', travelled >= waypointLengths[i] - 12));
+    };
+
+    let ticking = false;
+    window.addEventListener('scroll', () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => { paint(); ticking = false; });
+    }, { passive: true });
+    let resizeDebounce;
+    window.addEventListener('resize', () => {
+      clearTimeout(resizeDebounce);
+      resizeDebounce = setTimeout(buildRoad, 200);
+    });
+    buildRoad();
+    // rebuild once fonts/images have settled the layout
+    window.addEventListener('load', buildRoad, { once: true });
+  }
+
   // Countdown to the next event (date lives on the hero chip's data-event-date)
   const nextChip = document.querySelector('.hero-next');
   if (nextChip && nextChip.dataset.eventDate) {
