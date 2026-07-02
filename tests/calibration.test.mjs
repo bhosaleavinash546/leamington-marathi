@@ -2,6 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { fitCalibration, calibrationFactor, crossValidateCalibration } from '../calibration.mjs';
 import { computeShouldCost } from '../costing-engine.mjs';
+import { mergeLibrary } from '../cost-library.mjs';
 import { COST_FIXTURES } from '../benchmark/cost-fixtures.mjs';
 
 test('fitCalibration returns a neutral factor with no data', () => {
@@ -33,6 +34,20 @@ test('applying the fitted factor moves the estimate toward the quote', () => {
   // composition (pct) must be unchanged — only the level moves
   const uncal = computeShouldCost(input);
   assert.equal(calibrated.breakdown.material.pct, uncal.breakdown.material.pct);
+});
+
+test('calibration refits against the CURRENT library, not a frozen baseline', () => {
+  // The baseline modelled cost must be recomputed from the quote's inputs against
+  // the active library. When a rate-library change raises the baseline, the fitted
+  // correction factor for a fixed actual price must DROP — otherwise a stale
+  // baseline would over-correct after any library edit.
+  const input = { material: 'Aluminium 6061', process: 'Machining (CNC)', weightKg: 0.4, annualVolume: 40000, region: 'Germany' };
+  const cheap = mergeLibrary({});
+  const dear = mergeLibrary({ processes: { 'Machining (CNC)': { machineRate: 130 } } });
+  const actual = 30;
+  const fCheap = calibrationFactor(fitCalibration([{ process: 'Machining (CNC)', modelled: computeShouldCost(input, {}, null, cheap).totalShouldCost, actual }]), 'Machining (CNC)');
+  const fDear = calibrationFactor(fitCalibration([{ process: 'Machining (CNC)', modelled: computeShouldCost(input, {}, null, dear).totalShouldCost, actual }]), 'Machining (CNC)');
+  assert.ok(fDear < fCheap, `factor should drop when the baseline rises: ${fDear} vs ${fCheap}`);
 });
 
 test('leave-one-out: calibration GENERALISES to held-out quotes (learns, not memorises)', () => {

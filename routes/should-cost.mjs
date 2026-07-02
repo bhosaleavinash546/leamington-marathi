@@ -26,14 +26,30 @@ app.get('/api/should-cost/catalogue', (_req, res) => {
   });
 });
 
-// Per-user learned calibration, fitted from their proprietary quote corpus and
-// cached in-process. Invalidated when the user adds a quote.
+// Per-user learned calibration, fitted from their proprietary quote corpus.
+// The modelled baseline is RECOMPUTED from each quote's stored inputs against
+// the CURRENT active library — never the frozen modelledEur — so the calibration
+// ratio always compares like-with-like even after a rate-library change. Cached
+// per (user, library version); invalidated when the user adds a quote.
 const calCache = new Map();
+function invalidateUserCal(userId) {
+  for (const k of calCache.keys()) if (k.startsWith(`${userId}:`)) calCache.delete(k);
+}
 function getUserCalibration(userId) {
-  if (calCache.has(userId)) return calCache.get(userId);
-  const rows = db.prepare('SELECT process, modelledEur, actualPriceEur FROM cost_quotes WHERE userId = ?').all(userId);
-  const cal = fitCalibration(rows.map(r => ({ process: r.process, modelled: r.modelledEur, actual: r.actualPriceEur })));
-  calCache.set(userId, cal);
+  const lib = getActiveLibrary();
+  const key = `${userId}:${getActiveMeta().version ?? 'builtin'}`;
+  if (calCache.has(key)) return calCache.get(key);
+  const rows = db.prepare('SELECT material, process, weightKg, annualVolume, region, actualPriceEur FROM cost_quotes WHERE userId = ?').all(userId);
+  const pairs = [];
+  for (const r of rows) {
+    let modelled;
+    try {
+      modelled = computeShouldCost({ material: r.material, process: r.process, weightKg: r.weightKg, annualVolume: r.annualVolume, region: r.region }, {}, null, lib).totalShouldCost;
+    } catch { continue; }   // input no longer costable under the current library — skip
+    pairs.push({ process: r.process, modelled, actual: r.actualPriceEur });
+  }
+  const cal = fitCalibration(pairs);
+  calCache.set(key, cal);
   return cal;
 }
 
@@ -65,7 +81,7 @@ app.post('/api/should-cost/quotes', requireAuth, rateLimit(120, 60 * 60 * 1000),
               VALUES (?,?,?,?,?,?,?,?,?,?,?)`).run(
     crypto.randomUUID(), req.user.id, String(partName || '').slice(0, 200), matRes.key, procRes.key,
     Number(weightKg), Number(annualVolume), region || 'Germany', actualPriceEur, modelledEur, new Date().toISOString());
-  calCache.delete(req.user.id);   // refit on next estimate
+  invalidateUserCal(req.user.id);   // refit on next estimate
 
   const cal = getUserCalibration(req.user.id);
   res.json({ ok: true, quotes: cal.n, calibration: { global: cal.global, process: cal.process } });
