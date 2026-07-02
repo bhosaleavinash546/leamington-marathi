@@ -40,9 +40,10 @@ folder. You almost never need to touch `style.css` or `script.js`.
 4. Edit `index.html` and change the relevant `<img src="images/...">` to your new filename.
    Keep the `width`/`height` numbers roughly matching the photo's real proportions.
 
-## The photo carousel (Dhol section)
+## The animated photo stack (Dhol section)
 
-Search `dhol-carousel` — it's just a list of `<img>` lines; add, remove, or reorder them.
+Search `dhol-stack` — it's just a list of `<img>` lines; add, remove, or reorder them.
+The first one in the list shows first.
 
 ## Festival decorations (once a year job)
 
