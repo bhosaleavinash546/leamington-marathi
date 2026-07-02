@@ -83,7 +83,14 @@ img { max-width: 100%; display: block; }
   justify-content: space-between;
   padding: 10px 24px;
 }
-.logo { height: 48px; width: auto; }
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+}
+.logo-emblem { height: 54px; width: auto; }
+.logo { height: 40px; width: auto; }
 
 .nav-links {
   list-style: none;
@@ -508,11 +515,14 @@ footer {
   padding: 44px 20px 30px;
 }
 .footer-logo {
-  height: 44px;
-  width: auto;
-  margin: 0 auto 12px;
-  filter: brightness(0) invert(1);
-  opacity: 0.9;
+  height: 96px;
+  width: 96px;
+  object-fit: contain;
+  margin: 0 auto 14px;
+  background: var(--cream);
+  border-radius: 50%;
+  padding: 10px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
 }
 .footer-tagline { font-size: 1.15rem; font-weight: 600; color: var(--gold); margin: 0 0 10px; }
 footer p { margin: 6px 0; font-size: 0.95rem; }
@@ -558,4 +568,8 @@ body.js .reveal.visible { opacity: 1; transform: none; }
   }
   .nav-links a { display: block; padding: 12px 4px; }
   .section { padding: 60px 20px; }
+}
+
+@media (max-width: 440px) {
+  .logo { display: none; } /* emblem only on narrow phones */
 }
