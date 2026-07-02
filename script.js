@@ -70,16 +70,46 @@ document.addEventListener('DOMContentLoaded', () => {
   }, { threshold: 0.6 });
   document.querySelectorAll('.stat-number').forEach(el => statObserver.observe(el));
 
-  // Contact form → pre-filled email (no backend needed)
+  // Contact form → FormSubmit relay (works on static hosting);
+  // falls back to a pre-filled mailto: if the relay is unreachable.
   const form = document.getElementById('contact-form');
-  form.addEventListener('submit', e => {
+  const formNote = form.querySelector('.form-note');
+  form.addEventListener('submit', async e => {
     e.preventDefault();
     const name = form.elements.name.value.trim();
     const email = form.elements.email.value.trim();
     const message = form.elements.message.value.trim();
-    const subject = encodeURIComponent(`Website enquiry from ${name}`);
-    const body = encodeURIComponent(`Name: ${name}\nEmail: ${email}\n\n${message}`);
-    window.location.href = `mailto:leamingtonmarathi@gmail.com?subject=${subject}&body=${body}`;
+    const submitBtn = form.querySelector('button[type="submit"]');
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Sending…';
+    try {
+      const res = await fetch('https://formsubmit.co/ajax/leamingtonmarathi@gmail.com', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({ name, email, message, _subject: 'Website enquiry — Leamington Marathi' }),
+      });
+      if (!res.ok) throw new Error(`relay responded ${res.status}`);
+      form.reset();
+      formNote.textContent = 'धन्यवाद! Message sent — we usually reply within a couple of days.';
+      submitBtn.textContent = 'Sent ✓';
+    } catch {
+      // Relay unreachable: open the visitor's mail app with everything pre-filled
+      const subject = encodeURIComponent(`Website enquiry from ${name}`);
+      const body = encodeURIComponent(`Name: ${name}\nEmail: ${email}\n\n${message}`);
+      window.location.href = `mailto:leamingtonmarathi@gmail.com?subject=${subject}&body=${body}`;
+      formNote.textContent = 'Opening your email app instead — or write to us at leamingtonmarathi@gmail.com.';
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Send Message';
+    }
+  });
+
+  // Photo reel pause/play (hover pause doesn't exist on touch screens)
+  const reel = document.querySelector('.photo-marquee');
+  const reelToggle = document.getElementById('marquee-toggle');
+  reelToggle.addEventListener('click', () => {
+    const paused = reel.classList.toggle('paused');
+    reelToggle.setAttribute('aria-pressed', String(paused));
+    reelToggle.textContent = paused ? '▶ Play' : '⏸ Pause';
   });
 
   // Clone the marquee group once for the seamless loop (single source list in HTML)

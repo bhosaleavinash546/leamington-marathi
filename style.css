@@ -7,8 +7,10 @@
 :root {
   --red: #d92a1c;          /* logo vermillion */
   --red-dark: #a81607;
-  --saffron: #f26b1d;
-  --gold: #f4a412;
+  --saffron: #f26b1d;      /* graphics/backgrounds only — fails AA as text on cream */
+  --saffron-text: #c2470a; /* 4.6:1 on cream — text-safe saffron */
+  --gold: #f4a412;         /* graphics/backgrounds only */
+  --gold-text: #a86a00;    /* 4.5:1 on cream — text-safe gold */
   --maroon: #4a130b;
   --cream: #fff8ee;
   --cream-deep: #fdeeda;
@@ -16,8 +18,9 @@
   --white: #ffffff;
   --shadow: 0 10px 30px rgba(74, 19, 11, 0.10);
   --radius: 14px;
-  --font-body: 'Mukta', 'Segoe UI', sans-serif;
-  --font-display: 'Yatra One', 'Mukta', serif;
+  --font-devanagari-fallback: 'Noto Sans Devanagari', 'Nirmala UI', 'Mangal';
+  --font-body: 'Mukta', var(--font-devanagari-fallback), 'Segoe UI', sans-serif;
+  --font-display: 'Yatra One', var(--font-devanagari-fallback), 'Mukta', serif;
 }
 
 * { box-sizing: border-box; }
@@ -37,7 +40,22 @@ body {
 
 img { max-width: 100%; display: block; }
 
-.marathi { font-family: 'Mukta', sans-serif; }
+.marathi, :lang(mr) { font-family: 'Mukta', var(--font-devanagari-fallback), sans-serif; }
+
+/* Skip link for keyboard users */
+.skip-link {
+  position: absolute;
+  left: -999px;
+  top: 12px;
+  z-index: 200;
+  background: var(--white);
+  color: var(--red-dark);
+  font-weight: 700;
+  padding: 10px 18px;
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+}
+.skip-link:focus { left: 12px; }
 
 /* ---------- Buttons ---------- */
 .btn {
@@ -161,7 +179,7 @@ img { max-width: 100%; display: block; }
 }
 .hero::before,
 .hero::after {
-  content: "🚩";
+  content: "🚩" / "";  /* alt-text syntax: decorative, not announced */
   position: absolute;
   font-size: 2rem;
   opacity: 0.35;
@@ -184,6 +202,7 @@ img { max-width: 100%; display: block; }
 .js .hero-content > *:nth-child(3) { animation-delay: 0.32s; }
 .js .hero-content > *:nth-child(4) { animation-delay: 0.46s; }
 .js .hero-content > *:nth-child(5) { animation-delay: 0.60s; }
+.js .hero-content > *:nth-child(6) { animation-delay: 0.74s; }
 
 @keyframes fade-up {
   from { opacity: 0; transform: translateY(24px); }
@@ -192,7 +211,7 @@ img { max-width: 100%; display: block; }
 
 .hero-welcome {
   font-size: 1.15rem;
-  color: var(--saffron);
+  color: var(--saffron-text);
   font-weight: 600;
   margin-bottom: 4px;
 }
@@ -201,7 +220,7 @@ img { max-width: 100%; display: block; }
   font-size: clamp(2.8rem, 8vw, 5rem);
   color: var(--red);
   margin: 0;
-  line-height: 1.15;
+  line-height: 1.25; /* room for Devanagari matras */
   text-shadow: 2px 3px 0 rgba(244, 164, 18, 0.35);
 }
 /* Same specificity as the nth-child delay rules above and later in the
@@ -229,6 +248,22 @@ img { max-width: 100%; display: block; }
 }
 .hero-actions { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
 
+.hero-next {
+  display: inline-block;
+  margin-top: 22px;
+  padding: 8px 20px;
+  border-radius: 30px;
+  background: var(--white);
+  border: 1.5px dashed var(--saffron);
+  color: var(--red-dark);
+  font-weight: 700;
+  font-size: 0.95rem;
+  text-decoration: none;
+  box-shadow: var(--shadow);
+  transition: transform 0.2s ease;
+}
+.hero-next:hover { transform: translateY(-2px); }
+
 .hero-stats {
   display: flex;
   justify-content: center;
@@ -241,7 +276,7 @@ img { max-width: 100%; display: block; }
 .stat-plus {
   font-family: var(--font-display);
   font-size: clamp(2rem, 5vw, 2.8rem);
-  color: var(--saffron);
+  color: var(--saffron-text);
 }
 .stat-label {
   display: block;
@@ -259,7 +294,7 @@ img { max-width: 100%; display: block; }
 }
 .section-head { text-align: center; margin-bottom: 46px; }
 .section-kicker {
-  color: var(--saffron);
+  color: var(--saffron-text);
   font-weight: 700;
   font-size: 1.15rem;
   letter-spacing: 0.5px;
@@ -356,7 +391,7 @@ img { max-width: 100%; display: block; }
 }
 .timeline-month {
   font-weight: 800;
-  color: var(--saffron);
+  color: var(--saffron-text);
   font-size: 1.05rem;
   margin-bottom: 8px;
 }
@@ -463,6 +498,15 @@ img { max-width: 100%; display: block; }
   color: var(--red-dark);
   text-align: center;
 }
+.gallery-more { text-align: center; margin: 28px 0 0; }
+.gallery-more a {
+  color: var(--red-dark);
+  font-weight: 700;
+  text-decoration: none;
+  border-bottom: 2px solid var(--gold);
+  padding-bottom: 2px;
+}
+.gallery-more a:hover { color: var(--red); border-bottom-color: var(--red); }
 
 /* ---------- Sponsorship ---------- */
 .package-cards {
@@ -620,6 +664,26 @@ img { max-width: 100%; display: block; }
 .contact-form input:focus,
 .contact-form textarea:focus { outline: none; border-color: var(--saffron); }
 .form-note { margin: 0; font-size: 0.85rem; color: #8a6f63; font-weight: 400; text-align: center; }
+.honeypot { position: absolute; left: -9999px; height: 0; width: 0; border: 0; padding: 0; }
+
+/* Floating WhatsApp button */
+.whatsapp-fab {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 90;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #1faa53; /* WhatsApp green, darkened for 3:1+ on white icon */
+  color: var(--white);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.28);
+  transition: transform 0.2s ease;
+}
+.whatsapp-fab:hover { transform: scale(1.08); }
 
 /* ---------- Photo marquee reel ---------- */
 .photo-marquee {
@@ -635,7 +699,22 @@ img { max-width: 100%; display: block; }
   font-size: 1.15rem;
   margin: 0 20px 26px;
 }
-.marquee-title .marathi { color: var(--saffron); font-size: 1.3rem; }
+.marquee-title .marathi { color: var(--saffron-text); font-size: 1.3rem; }
+.marquee-toggle {
+  margin-left: 14px;
+  padding: 4px 14px;
+  border: 1.5px solid var(--red);
+  border-radius: 20px;
+  background: var(--white);
+  color: var(--red-dark);
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 0.85rem;
+  cursor: pointer;
+  vertical-align: middle;
+}
+.marquee-toggle:hover { background: var(--red); color: var(--white); }
+.photo-marquee.paused .marquee-group { animation-play-state: paused; }
 .marquee-track {
   display: flex;
   width: max-content;
