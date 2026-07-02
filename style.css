@@ -902,18 +902,23 @@ html:not(.js) .stack-card:first-child { opacity: 1; transform: none; }
 .contact-list a { color: var(--red-dark); font-weight: 600; text-decoration: none; }
 .contact-list a:hover { text-decoration: underline; }
 
-.socials { display: flex; gap: 12px; flex-wrap: wrap; }
+.socials { display: flex; gap: 14px; flex-wrap: wrap; }
 .socials a {
-  padding: 8px 18px;
-  border: 2px solid var(--red);
-  border-radius: 30px;
-  color: var(--red);
-  font-weight: 700;
-  font-size: 0.9rem;
-  text-decoration: none;
-  transition: background 0.2s ease, color 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--white);
+  box-shadow: var(--shadow);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
-.socials a:hover { background: var(--red); color: var(--white); }
+.socials a svg { width: 26px; height: 26px; }
+.socials a:hover {
+  transform: translateY(-4px) scale(1.06);
+  box-shadow: 0 12px 26px rgba(74, 19, 11, 0.22);
+}
 
 .contact-form {
   display: flex;
