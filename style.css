@@ -425,20 +425,82 @@ html:not(.js) #ticker-items li:first-child { display: block; opacity: 1; }
 .value-card p { margin: 0; font-size: 0.98rem; }
 .value-icon { font-size: 1.7rem; }
 
-/* ---------- Journey: two side-by-side timeline columns ---------- */
-.journey-columns {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0 48px;
-  max-width: 1150px;
+/* ---------- Journey: procession path ---------- */
+.procession {
+  position: relative;
+  max-width: 980px;
   margin: auto;
 }
-.journey-columns .timeline {
-  max-width: none;
-  margin: 0;
+.procession-road {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  overflow: visible;
 }
-@media (max-width: 900px) {
-  .journey-columns { grid-template-columns: 1fr; gap: 0; }
+.road-base {
+  stroke: rgba(74, 19, 11, 0.13);   /* the road itself */
+  stroke-width: 16;
+  stroke-linecap: round;
+}
+.road-line {
+  stroke: var(--gold);               /* centre line */
+  stroke-width: 3.5;
+  stroke-linecap: round;
+}
+.procession-marker {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: var(--white);
+  border: 2.5px solid var(--red);
+  box-shadow: 0 8px 20px rgba(74, 19, 11, 0.25);
+  font-size: 1.35rem;
+  will-change: transform;
+}
+.p-stones {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  position: relative;
+  z-index: 1;
+}
+.p-stone {
+  width: min(430px, 44%);
+  margin: 0 0 60px;
+}
+.p-stone:nth-child(even) { margin-left: auto; }
+.p-stone:last-child { margin-bottom: 0; }
+.p-stone .timeline-card {
+  border: 2px solid transparent;
+  transition: border-color 0.4s ease, box-shadow 0.4s ease, transform 0.4s ease, opacity 0.4s ease;
+  opacity: 0.65;
+}
+.p-stone.passed .timeline-card {
+  opacity: 1;
+  border-color: var(--gold);
+  box-shadow: 0 16px 36px rgba(74, 19, 11, 0.16);
+  transform: translateY(-4px);
+}
+/* Without JS there's no road or marker — plain readable cards */
+html:not(.js) .p-stone .timeline-card { opacity: 1; }
+html:not(.js) .procession-marker { display: none; }
+
+@media (max-width: 700px) {
+  .p-stone { width: calc(100% - 52px); }
+  .p-stone:nth-child(odd) { margin-right: auto; margin-left: 0; }
+  .p-stone:nth-child(even) { margin-left: 52px; }
+  .procession-marker { width: 38px; height: 38px; font-size: 1.1rem; }
+  .road-base { stroke-width: 12; }
 }
 
 /* ---------- Events timeline ---------- */
