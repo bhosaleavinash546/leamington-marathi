@@ -99,6 +99,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  // SMIL (the flags' cloth ripple) ignores the CSS reduced-motion kill switch
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    document.querySelectorAll('.hero-flag').forEach(svg => svg.pauseAnimations());
+  }
+
   // ---- Festival-aware theming ----
   // Fixed-date festivals recur every year (recurring: true, MM-DD ranges).
   // Lunar festivals move: update their YYYY-MM-DD ranges each January.
