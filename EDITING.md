@@ -23,6 +23,7 @@ folder. You almost never need to touch `style.css` or `script.js`.
 
 | What | Search for this in `index.html` |
 |------|--------------------------------|
+| "What's New" ticker announcements | `ticker-items` — each `<li>` is one rotating headline; add/remove/reorder freely |
 | Next-event chip in the hero | `hero-next` — update the text AND `data-event-date="YYYY-MM-DD"` (drives the countdown) |
 | Event details / participant counts | `timeline-card` |
 | Stats (400+ families etc.) | `data-count` — change both the attribute and the visible number |
@@ -45,6 +46,15 @@ folder. You almost never need to touch `style.css` or `script.js`.
 Search `dhol-carousel` (the one-by-one slideshow) or `marquee-group` (the moving strip
 at the bottom). Each is just a list of `<img>` lines — add, remove, or reorder them.
 The duplicate strip for the bottom reel is created automatically; only edit the first list.
+
+## Festival decorations (once a year job)
+
+During festival weeks the homepage automatically shows a greeting in the ticker and
+falling decorations (diyas at Diwali, flowers at Ganeshotsav, kites at Sankranti).
+Fixed-date festivals (Sankranti, Shiv Jayanti, Maharashtra Din) repeat every year by
+themselves. **Lunar festivals move**: each January, open `script.js`, find `FESTIVALS`,
+and update the Ganeshotsav and Diwali date ranges for the new year.
+To preview any theme, add `?festival=diwali` (or `ganesh`, `sankranti`…) to the site URL.
 
 ## If something breaks
 

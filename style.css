@@ -167,6 +167,69 @@ img { max-width: 100%; display: block; }
 #nav-check:checked ~ #nav-toggle span:nth-child(2) { opacity: 0; }
 #nav-check:checked ~ #nav-toggle span:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
 
+/* ---------- What's New ticker ---------- */
+.news-ticker {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: var(--maroon);
+  color: var(--cream);
+  padding: 9px 24px;
+  font-size: 0.95rem;
+}
+.ticker-label {
+  flex-shrink: 0;
+  background: var(--gold);
+  color: var(--maroon);
+  font-weight: 800;
+  font-size: 0.8rem;
+  padding: 2px 12px;
+  border-radius: 20px;
+}
+#ticker-items {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  position: relative;
+  flex: 1;
+  min-height: 1.55em;
+}
+#ticker-items li {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+#ticker-items li.active { opacity: 1; }
+#ticker-items a { color: var(--cream); text-decoration: none; font-weight: 600; }
+#ticker-items a:hover { color: var(--gold); }
+/* Without JS, show the first announcement statically */
+html:not(.js) #ticker-items li { position: static; display: none; }
+html:not(.js) #ticker-items li:first-child { display: block; opacity: 1; }
+
+/* ---------- Festival-aware floating decorations (injected by script.js) ---------- */
+.festival-float {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.festival-float span {
+  position: absolute;
+  top: -12%;
+  animation: festival-fall 10s linear infinite;
+  opacity: 0.85;
+  filter: drop-shadow(0 2px 4px rgba(74, 19, 11, 0.15));
+}
+
+@keyframes festival-fall {
+  from { top: -12%; transform: rotate(-12deg); }
+  to { top: 106%; transform: rotate(16deg); }
+}
+
 /* ---------- Hero ---------- */
 .hero {
   position: relative;
