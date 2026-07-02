@@ -497,6 +497,29 @@ img { max-width: 100%; display: block; }
 
 .drum { display: inline-block; animation: drum-beat 1.1s ease-in-out infinite; }
 
+/* World Book of Records achievement callout */
+.dhol-achievement {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  max-width: 860px;
+  margin: 48px auto 0;
+  padding: 26px 30px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 2px solid var(--gold);
+  border-radius: var(--radius);
+  box-shadow: 0 12px 34px rgba(0, 0, 0, 0.25);
+  text-align: left;
+}
+.achievement-icon { font-size: 3.2rem; flex-shrink: 0; filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.35)); }
+.achievement-text h3 { margin: 0 0 8px; color: #ffe9b3; font-size: 1.3rem; }
+.achievement-text p { margin: 0 0 8px; font-size: 1.02rem; }
+.achievement-marathi { color: #ffe9b3; font-weight: 600; }
+
+@media (max-width: 560px) {
+  .dhol-achievement { flex-direction: column; text-align: center; }
+}
+
 /* Auto-advancing Pathak photo carousel: one photo at a time, sliding right to left */
 .dhol-slider {
   margin: 54px -24px -80px;  /* bleed to the section's full width and bottom edge */
