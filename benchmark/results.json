@@ -1,0 +1,55 @@
+{
+  "core": {
+    "accuracy": 100,
+    "pass": 39,
+    "total": 39
+  },
+  "semantic": {
+    "accuracy": 0,
+    "pass": 0,
+    "total": 2
+  },
+  "categories": {
+    "core.volume": {
+      "accuracy": 100,
+      "pass": 7,
+      "total": 7
+    },
+    "core.bbox": {
+      "accuracy": 100,
+      "pass": 8,
+      "total": 8
+    },
+    "core.faceCount": {
+      "accuracy": 100,
+      "pass": 9,
+      "total": 9
+    },
+    "core.holeCount": {
+      "accuracy": 100,
+      "pass": 9,
+      "total": 9
+    },
+    "core.process": {
+      "accuracy": 100,
+      "pass": 3,
+      "total": 3
+    },
+    "core.dfma": {
+      "accuracy": 100,
+      "pass": 3,
+      "total": 3
+    },
+    "semantic.throughHoles": {
+      "accuracy": 0,
+      "pass": 0,
+      "total": 1
+    },
+    "semantic.blindHoles": {
+      "accuracy": 0,
+      "pass": 0,
+      "total": 1
+    }
+  },
+  "fixtures": 9
+}

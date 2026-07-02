@@ -1,0 +1,2898 @@
+[
+ {
+  "id": "cool001",
+  "title": "Roll-bonded Al cold plate replaces brazed multi-channel plate",
+  "system": "Pack Thermal Management",
+  "costSavingType": "Manufacturing Process",
+  "annualSaving": "£2.1M",
+  "difficulty": "Medium",
+  "timeToImplement": "14–20 months",
+  "description": "[800V Battery] Switch the pack-floor cooling plate from a vacuum-brazed multi-tube design to a roll-bonded 3003 aluminium plate with inflated channels. Eliminates ~40 brazed joints and a furnace cycle, cutting leak-test scrap while holding cell base ΔT under 5 K during 800V 350kW charging. Lower tooling and BOM cost per pack with no loss of fast-charge headroom.",
+  "submittedBy": "Porsche Taycan benchmark",
+  "verified": 1,
+  "stars": 88,
+  "level": "part",
+  "ideaData": {
+   "id": "cool001",
+   "title": "Roll-bonded Al cold plate replaces brazed multi-channel plate",
+   "technicalDescription": "BEV applicability: 800-V battery. Baseline is a vacuum-brazed plate with stamped 3003 sheet over extruded 6063 tubes, ~40 brazed joints and a 600 C furnace cycle. The change is a roll-bonded plate: two 3003-O sheets printed with graphite-pattern channels, hot-rolled, then hydro-inflated to form coolant passages. At 350 kW charging the pack rejects ~9 kW; channel design holds base heat flux near 1.2 W/cm2 with ΔT<5 K and pressure drop ~28 kPa at 12 L/min 50/50 glycol. Alternative materials: 3003 Al (formability), 1050A Al (conductivity), 6061-T6 (strength for structural floor), AlMn cladding for corrosion. Inflated geometry tunes local flow to hot cell rows.",
+   "materialGrade": "3003 roll-bonded Al / 1050A Al / 6061-T6",
+   "manufacturingImpact": "Replaces vacuum brazing with roll-bonding plus hydro-inflation; alternative processes include CNC-machined manifolds or stamping+FSW. Removes the brazing furnace and flux clean, drops joint count from ~40 to near zero, simplifies leak test and cuts BOM. Stamping tooling amortises across platforms; assembly gains a single-piece plate.",
+   "costSavingTypes": [
+    "material",
+    "process",
+    "tooling",
+    "complexity"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Eliminating brazed joints removes the dominant leak-test scrap and furnace cost driver.",
+    "percentage": "£26/veh (-31% plate cost)",
+    "annualValue": "£2.1M",
+    "calculationBasis": "£26/veh × 80k veh/yr"
+   },
+   "implementationDifficulty": "Medium",
+   "riskNotes": "Roll-bonded plates carry lower burst margin than brazed tubes, so wall thickness and inflation pressure are validated to 3x peak coolant pressure for fatigue over 8k cycles; glycol corrosion mitigated by AlMn cladding. Fast-charge headroom preserved: base ΔT<5 K sustains 10-80% in ~22 min without cell derate. NVH neutral as flow rate unchanged. Thermal-runaway propagation margin unaffected since plate stiffness and contact area are matched.",
+   "dfmaPrinciples": [
+    "Single-piece plate",
+    "Eliminate brazed joints",
+    "Tunable channel pattern"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "14–20 months",
+   "benchmarkReference": "Porsche Taycan 2020",
+   "confidenceLevel": "benchmarked",
+   "evidenceSources": [
+    {
+     "type": "teardown",
+     "title": "Taycan pack floor cooling plate teardown",
+     "year": 2021,
+     "confidence": "high"
+    },
+    {
+     "type": "supplier_data",
+     "title": "Roll-bond cold plate process capability sheet",
+     "year": 2023,
+     "confidence": "medium"
+    }
+   ],
+   "regulatoryContext": "UN/ECE R100"
+  }
+ },
+ {
+  "id": "cool002",
+  "title": "HPDC cold plate integrates manifold into pack tray",
+  "system": "Pack Thermal Management",
+  "costSavingType": "Complexity",
+  "annualSaving": "£3.4M",
+  "difficulty": "High",
+  "timeToImplement": "20–28 months",
+  "description": "[800V Battery] Cast the lower cooling plate and coolant manifold as one AlSi10MnMg HPDC structural tray, removing welded inlet/outlet headers and separate plate. Function integration cuts part count and sealing interfaces while embedding channels directly under modules, sustaining cell ΔT during 350kW charging. Reduces assembly labour and leak paths for a premium 800V pack.",
+  "submittedBy": "Mercedes EQS benchmark",
+  "verified": 1,
+  "stars": 84,
+  "level": "system",
+  "ideaData": {
+   "id": "cool002",
+   "title": "HPDC cold plate integrates manifold into pack tray",
+   "technicalDescription": "BEV applicability: 800-V battery. Baseline uses a stamped plate, a separate cast manifold and welded headers bolted to a structural tray. The change casts plate, manifold and tray bosses as one AlSi10MnMg high-pressure die casting with cores forming serpentine channels under each module. At 350 kW the pack dissipates ~9-11 kW; cast channels carry ~10 L/min holding ΔT<6 K and ~35 kPa drop. Alternative materials: AlSi10MnMg HPDC (castability+strength), AlSi7Mg0.3 (ductility for crash zones), Castasil-37 (weldable cast Al), 6082-T6 for any machined seal faces. Integrated paths remove header welds and O-ring stacks.",
+   "materialGrade": "AlSi10MnMg HPDC / AlSi7Mg0.3 / Castasil-37",
+   "manufacturingImpact": "Replaces stamping+welding with high-pressure die casting; alternatives are gravity casting or extrusion+FSW. Sand cores or salt cores form internal channels, removing welded headers and ~12 O-ring joints. Large die tooling is costly but consolidates 5-7 parts into one, cutting assembly stations, fixtures and leak-test interfaces. CNC only on seal faces.",
+   "costSavingTypes": [
+    "complexity",
+    "process",
+    "tooling",
+    "logistics"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Function integration collapses plate, manifold and tray into one casting, removing sealing interfaces.",
+    "percentage": "£42/veh (-24% subsystem cost)",
+    "annualValue": "£3.4M",
+    "calculationBasis": "£42/veh × 81k veh/yr"
+   },
+   "implementationDifficulty": "High",
+   "riskNotes": "Porosity from HPDC channels risks coolant micro-leaks, mitigated by vacuum-assisted casting and 2 bar helium leak test; salt-core channels validated for wall integrity. Thermal-runaway: integral tray adds bottom-cooling mass improving propagation resistance per GB 38031. Fast-charge ΔT<6 K preserves 10-80% time and avoids cell derate at 350 kW. Off-road high-load load cases checked for casting fatigue at mounting bosses. NVH improved by stiffer single casting.",
+   "dfmaPrinciples": [
+    "Function integration",
+    "Eliminate header welds",
+    "Cast-in channels"
+   ],
+   "systemLevel": "Assembly",
+   "timeToImplement": "20–28 months",
+   "benchmarkReference": "Mercedes EQS 2021",
+   "confidenceLevel": "benchmarked",
+   "evidenceSources": [
+    {
+     "type": "teardown",
+     "title": "EQS structural pack tray casting analysis",
+     "year": 2022,
+     "confidence": "high"
+    },
+    {
+     "type": "industry_report",
+     "title": "Mega-casting adoption in BEV packs",
+     "year": 2024,
+     "confidence": "medium"
+    }
+   ],
+   "regulatoryContext": "GB 38031 thermal-runaway"
+  }
+ },
+ {
+  "id": "cool003",
+  "title": "Direct refrigerant pack cooling deletes chiller and coolant loop",
+  "system": "Pack Thermal Management",
+  "costSavingType": "Complexity",
+  "annualSaving": "£4.8M",
+  "difficulty": "High",
+  "timeToImplement": "24–32 months",
+  "description": "[Refrigerant] Replace the secondary glycol loop and battery chiller with direct R744/R1234yf refrigerant evaporator plates bonded to modules. Removes chiller heat exchanger, coolant pump and expansion tank for the battery branch, cutting parts and pump energy while delivering rapid pulldown for 800V 350kW fast-charge thermal headroom on a premium pack.",
+  "submittedBy": "NIO ES8 benchmark",
+  "verified": 1,
+  "stars": 80,
+  "level": "system",
+  "ideaData": {
+   "id": "cool003",
+   "title": "Direct refrigerant pack cooling deletes chiller and coolant loop",
+   "technicalDescription": "BEV applicability: 800-V battery / refrigerant. Baseline runs a chiller transferring heat from a glycol loop to the AC refrigerant, requiring pump, expansion tank and plate-fin chiller. The change routes refrigerant directly through extruded 6063-T5 micro-channel evaporator plates with an electronic expansion valve per module zone. Two-phase evaporation gives high heat-transfer coefficient (~3-5 kW/m2K), holding cell ΔT<4 K at 350 kW (~11 kW reject) with near-isothermal plate temperature. Alternatives: 6063-T5 extruded Al (micro-channel), 3003 brazed Al, Cu-Ni for refrigerant compatibility, AlSi10MnMg manifold blocks. EXV control tunes superheat.",
+   "materialGrade": "6063-T5 extruded Al / Cu-Ni / AlSi10MnMg",
+   "manufacturingImpact": "Replaces brazed chiller and pumped loop with extruded micro-channel evaporator plates plus brazed manifolds; alternatives are roll-bonding or CNC manifolds. Deletes chiller, coolant pump, expansion tank and ~6 hoses, lowering BOM and assembly stations. Adds EXV and refrigerant joints needing brazed/flared seals and stringent leak test. Net part-count and tooling reduction.",
+   "costSavingTypes": [
+    "complexity",
+    "process",
+    "weight",
+    "logistics"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Removing the secondary loop deletes chiller, pump and expansion tank in one architecture change.",
+    "percentage": "£59/veh (-19% thermal subsystem cost)",
+    "annualValue": "£4.8M",
+    "calculationBasis": "£59/veh × 81k veh/yr"
+   },
+   "implementationDifficulty": "High",
+   "riskNotes": "Direct refrigerant raises dielectric and leak-safety stakes: any leak near cells is managed with sealed bonded plates, pressure relief and refrigerant sensing per ISO 6469. Two-phase ΔT<4 K gives best-in-class fast-charge headroom, sustaining 10-80% at 350 kW with minimal derate. Durability: refrigerant cleanliness and EXV reliability validated over 15-year life; vibration on plate brazes tested off-road. NVH: EXV tick and refrigerant flow noise damped. Premium charge speed preserved.",
+   "dfmaPrinciples": [
+    "Delete secondary loop",
+    "Two-phase cooling",
+    "Zone EXV control"
+   ],
+   "systemLevel": "Assembly",
+   "timeToImplement": "24–32 months",
+   "benchmarkReference": "NIO ES8 2022",
+   "confidenceLevel": "estimated",
+   "evidenceSources": [
+    {
+     "type": "patent",
+     "title": "Direct refrigerant battery evaporator plate",
+     "year": 2023,
+     "confidence": "medium"
+    },
+    {
+     "type": "industry_report",
+     "title": "Direct-cool BEV thermal architectures",
+     "year": 2024,
+     "confidence": "medium"
+    }
+   ],
+   "regulatoryContext": "ISO 6469"
+  }
+ },
+ {
+  "id": "cool004",
+  "title": "Cure-in-place gap filler replaces pre-cut TIM pads",
+  "system": "Pack Thermal Management",
+  "costSavingType": "Manufacturing Process",
+  "annualSaving": "£1.6M",
+  "difficulty": "Low",
+  "timeToImplement": "10–14 months",
+  "description": "[Thermal Interface] Swap die-cut silicone TIM pads between cells and cold plate for a dispensed two-part cure-in-place gap filler. Robotic dispensing fills tolerance gaps with consistent bond-line, lowering thermal resistance and removing pad inventory and manual placement. Improves cell-to-plate heat transfer supporting 350kW charge while cutting material waste and labour.",
+  "submittedBy": "Cadillac Lyriq benchmark",
+  "verified": 1,
+  "stars": 82,
+  "level": "part",
+  "ideaData": {
+   "id": "cool004",
+   "title": "Cure-in-place gap filler replaces pre-cut TIM pads",
+   "technicalDescription": "BEV applicability: 800-V battery / thermal interface. Baseline uses die-cut silicone gap pads (~3 W/mK) hand-placed with ~40% offcut scrap and variable compression. The change robotically dispenses a 2-part addition-cure silicone gap filler (3-4 W/mK) to a controlled bead, achieving 0.2-0.4 mm bond-line and filling ±0.3 mm flatness variation. Lower interfacial resistance drops cell-to-plate ΔT by ~2 K, easing 350 kW charge heat extraction. Alternatives: silicone gap-filler (dispensable), graphite TIM sheet (in-plane spreading), ceramic-filled AlN gap pad (high-k), PCM paraffin pad for transient peaks. Material chosen for rework and dielectric strength.",
+   "materialGrade": "Dispensable silicone gap-filler 3.5 W/mK / AlN-filled pad / graphite TIM",
+   "manufacturingImpact": "Replaces die-cut pad placement with metered two-part dispensing; alternatives are screen-printed TIM or pre-applied PCM film. Eliminates pad nesting scrap (~40%) and manual placement labour, removing pad SKUs from logistics. Adds dispense cells and mix-ratio SPC. Bond-line control reduces rework; no tooling for die-cut pads. Leak/contamination risk low.",
+   "costSavingTypes": [
+    "material",
+    "process",
+    "logistics"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Dispensing removes pad offcut scrap and stabilises bond-line for lower thermal resistance.",
+    "percentage": "£20/veh (-22% TIM cost)",
+    "annualValue": "£1.6M",
+    "calculationBasis": "£20/veh × 80k veh/yr"
+   },
+   "implementationDifficulty": "Low",
+   "riskNotes": "Cure-in-place filler must avoid voids that create hot spots; vacuum-assisted dispense and X-ray sampling validate <2% voiding. Dielectric strength >15 kV/mm maintains pack isolation per ISO 6469. Lower ΔT improves 350 kW fast-charge headroom and 10-80% time. Durability: silicone resists glycol vapour and 1000h thermal cycling without pump-out; vibration bond integrity tested off-road. NVH neutral. Premium charge performance preserved through consistent contact.",
+   "dfmaPrinciples": [
+    "Eliminate offcut scrap",
+    "Controlled bond-line",
+    "Tolerance fill"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "10–14 months",
+   "benchmarkReference": "Cadillac Lyriq 2023",
+   "confidenceLevel": "benchmarked",
+   "evidenceSources": [
+    {
+     "type": "supplier_data",
+     "title": "Two-part gap filler thermal datasheet",
+     "year": 2024,
+     "confidence": "high"
+    },
+    {
+     "type": "teardown",
+     "title": "Lyriq module TIM interface teardown",
+     "year": 2023,
+     "confidence": "medium"
+    }
+   ],
+   "regulatoryContext": "ISO 6469"
+  }
+ },
+ {
+  "id": "cool005",
+  "title": "Extruded micro-channel coolant manifold replaces machined block",
+  "system": "Pack Thermal Management",
+  "costSavingType": "Material",
+  "annualSaving": "£1.2M",
+  "difficulty": "Medium",
+  "timeToImplement": "12–16 months",
+  "description": "[800V Battery] Replace a CNC-machined 6082-T6 coolant distribution block with an extruded 6063-T5 multi-port manifold cut to length. Near-net extrusion removes heavy material removal and chips, balancing flow to module plates within 5% while cutting cost and weight. Maintains uniform coolant supply for fast-charge thermal load on the 800V pack.",
+  "submittedBy": "Xpeng G9 benchmark",
+  "verified": 1,
+  "stars": 79,
+  "level": "part",
+  "ideaData": {
+   "id": "cool005",
+   "title": "Extruded micro-channel coolant manifold replaces machined block",
+   "technicalDescription": "BEV applicability: 800-V battery. Baseline is a solid 6082-T6 billet CNC-machined into a manifold with drilled cross-ports, ~65% material removed as chips. The change uses a 6063-T5 multi-void extrusion cut to length with stamped end caps and FSW closure, internal webs forming distribution ports. Flow balancing across 8 module feeds holds ±5% uniformity at 12 L/min, ~18 kPa drop, ensuring even cell ΔT during 350 kW charge. Alternatives: 6063-T5 extruded Al, 3003 brazed Al manifold, AlSi10MnMg cast block, 6082-T6 only for machined seal faces. Extrusion removes the chip-heavy machining route.",
+   "materialGrade": "6063-T5 extruded Al / 3003 brazed Al / AlSi10MnMg",
+   "manufacturingImpact": "Replaces billet CNC machining with extrusion + cut-to-length + FSW end caps; alternatives are HPDC or brazed sheet manifolds. Cuts material buy-to-fly from ~3:1 to ~1.2:1, removes long machining cycles and chip handling. Adds extrusion die tooling amortised over volume. Fewer drilled cross-ports lowers leak paths and deburr labour.",
+   "costSavingTypes": [
+    "material",
+    "process",
+    "weight"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Near-net extrusion eliminates the bulk material removed in billet machining.",
+    "percentage": "£15/veh (-28% manifold cost)",
+    "annualValue": "£1.2M",
+    "calculationBasis": "£15/veh × 80k veh/yr"
+   },
+   "implementationDifficulty": "Medium",
+   "riskNotes": "Extruded manifolds must seal end caps reliably; FSW joints leak-tested to 2 bar and fatigue-validated over thermal cycles. Flow uniformity ±5% prevents cell ΔT spread that would cap 350 kW charge rate; CFD-tuned ports preserve fast-charge headroom. Glycol corrosion resisted by 6063 with inhibited coolant. Off-road vibration on end-cap welds validated. NVH: no flow whistle at rated drop. Premium pack uniformity maintained.",
+   "dfmaPrinciples": [
+    "Near-net shape",
+    "Reduce machining",
+    "Lower buy-to-fly"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "12–16 months",
+   "benchmarkReference": "Xpeng G9 2022",
+   "confidenceLevel": "benchmarked",
+   "evidenceSources": [
+    {
+     "type": "teardown",
+     "title": "G9 800V pack manifold teardown",
+     "year": 2023,
+     "confidence": "medium"
+    },
+    {
+     "type": "supplier_data",
+     "title": "Extruded manifold flow-balance report",
+     "year": 2023,
+     "confidence": "medium"
+    }
+   ],
+   "regulatoryContext": "UN/ECE R100"
+  }
+ },
+ {
+  "id": "cool006",
+  "title": "Single high-efficiency coolant pump replaces dual-pump battery loop",
+  "system": "Pack Thermal Management",
+  "costSavingType": "Complexity",
+  "annualSaving": "£1.9M",
+  "difficulty": "Medium",
+  "timeToImplement": "14–18 months",
+  "description": "[Pumping] Consolidate two 400V-legacy coolant pumps into one high-head 800V-fed brushless pump with smart valve routing for the battery loop. Removes a pump, harness and controller while meeting flow during 350kW charge. Reduces parts, pump energy draw and NVH, improving range and lowering subsystem cost on the premium 800V pack.",
+  "submittedBy": "Volvo EX90 benchmark",
+  "verified": 1,
+  "stars": 81,
+  "level": "system",
+  "ideaData": {
+   "id": "cool006",
+   "title": "Single high-efficiency coolant pump replaces dual-pump battery loop",
+   "technicalDescription": "BEV applicability: 800-V battery / pumping. Baseline uses two 50 W pumps for redundancy and split flow paths. The change fits one 90 W high-efficiency EC pump (BLDC) delivering ~16 L/min at 60 kPa, with a rotary multi-port valve directing flow to battery, chiller or radiator branches. During 350 kW charge the single pump sustains required flow for ~11 kW reject at ΔT<6 K. Alternatives for impeller/housing: PPS-GF40 (chemical resistance), PA66-GF35, AlSi10MnMg housing, EPDM seals for glycol. Smart control modulates speed to load, cutting average draw ~30%.",
+   "materialGrade": "PPS-GF40 impeller / PA66-GF35 housing / AlSi10MnMg",
+   "manufacturingImpact": "Replaces two injection-moulded pump assemblies with one higher-capacity pump plus a multi-port valve; alternative is a fixed-orifice manifold. Removes one pump, its ECU, harness and mounts, cutting BOM and assembly. Valve adds one actuator but nets fewer parts and connectors. Tooling consolidated to one pump family across platforms.",
+   "costSavingTypes": [
+    "complexity",
+    "commonisation",
+    "weight"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Pump consolidation removes a full pump assembly, harness and controller.",
+    "percentage": "£24/veh (-21% pump subsystem)",
+    "annualValue": "£1.9M",
+    "calculationBasis": "£24/veh × 79k veh/yr"
+   },
+   "implementationDifficulty": "Medium",
+   "riskNotes": "Single pump removes redundancy, so reliability is upgraded with dual-winding BLDC and degraded-mode flow path; failure does not strand fast-charge thermal limits below safe derate. Flow at 350 kW validated for ΔT<6 K, preserving 10-80% time. Glycol-compatible PPS/EPDM resist 15-year corrosion. NVH improved by one variable-speed pump tuned below cabin audibility and resonance. Off-road sustained-load flow margin confirmed. Premium charge headroom retained.",
+   "dfmaPrinciples": [
+    "Part consolidation",
+    "Variable-speed control",
+    "Cross-platform pump"
+   ],
+   "systemLevel": "Assembly",
+   "timeToImplement": "14–18 months",
+   "benchmarkReference": "Volvo EX90 2024",
+   "confidenceLevel": "benchmarked",
+   "evidenceSources": [
+    {
+     "type": "oem_press_release",
+     "title": "EX90 thermal system overview",
+     "year": 2024,
+     "confidence": "medium"
+    },
+    {
+     "type": "supplier_data",
+     "title": "High-efficiency EC coolant pump curve",
+     "year": 2023,
+     "confidence": "high"
+    }
+   ],
+   "regulatoryContext": "UN/ECE R100"
+  }
+ },
+ {
+  "id": "cool007",
+  "title": "Stamped-and-FSW cold plate replaces brazed cell carrier plate",
+  "system": "Pack Thermal Management",
+  "costSavingType": "Manufacturing Process",
+  "annualSaving": "£2.6M",
+  "difficulty": "Medium",
+  "timeToImplement": "16–22 months",
+  "description": "[800V Battery] Produce the module cooling plate by stamping two 3003 half-shells and friction-stir welding the perimeter and channel walls, replacing vacuum brazing. FSW gives void-free coolant channels without flux or furnace, cutting energy and scrap while holding cell ΔT for 350kW charge. Lowers per-plate cost and leak rate across the 800V pack.",
+  "submittedBy": "Lexus RZ benchmark",
+  "verified": 1,
+  "stars": 83,
+  "level": "part",
+  "ideaData": {
+   "id": "cool007",
+   "title": "Stamped-and-FSW cold plate replaces brazed cell carrier plate",
+   "technicalDescription": "BEV applicability: 800-V battery. Baseline vacuum-brazes a stamped 3003 cover to a channel sheet, with furnace cycle and flux residue risk. The change stamps two 3003-H14 half-shells and joins them by friction-stir welding along channel ribs and perimeter, forming sealed passages. FSW produces fine-grain, defect-low welds; channels carry 12 L/min at ~25 kPa holding base ΔT<5 K at 350 kW (~9 kW). Alternatives: 3003 Al (formable, weldable), 6061-T6 (strength), 1050A (conductivity), 5754 for marine-grade corrosion. FSW avoids melt, reducing distortion versus brazing.",
+   "materialGrade": "3003-H14 stamped Al / 6061-T6 / 5754",
+   "manufacturingImpact": "Replaces vacuum brazing with stamping + friction-stir welding; alternatives are roll-bonding or laser welding. Removes brazing furnace, flux and post-clean, lowering energy and scrap; FSW tooling and fixtures added but reusable. Joint count concentrated in continuous welds reduces leak sites. Leak test simplified; assembly inline weld cell replaces batch furnace.",
+   "costSavingTypes": [
+    "process",
+    "material",
+    "tooling"
+   ],
+   "costSavingPotential": {
+    "qualitative": "FSW removes the furnace and flux while producing low-leak continuous joints.",
+    "percentage": "£32/veh (-27% plate cost)",
+    "annualValue": "£2.6M",
+    "calculationBasis": "£32/veh × 81k veh/yr"
+   },
+   "implementationDifficulty": "Medium",
+   "riskNotes": "FSW weld integrity is critical; weld parameters and pin wear are SPC-monitored with 2 bar leak and dye-penetrant sampling. Void-free channels preserve flow for ΔT<5 K, protecting 350 kW charge headroom and 10-80% time. Corrosion: 3003/5754 with inhibited glycol validated 15 years. Off-road vibration fatigue on perimeter weld tested. NVH neutral. Thermal-runaway base-cooling contact area matched to baseline, preserving propagation margin and premium charge speed.",
+   "dfmaPrinciples": [
+    "Eliminate brazing furnace",
+    "Continuous FSW seam",
+    "Lower distortion"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "16–22 months",
+   "benchmarkReference": "Lexus RZ 2023",
+   "confidenceLevel": "benchmarked",
+   "evidenceSources": [
+    {
+     "type": "supplier_data",
+     "title": "FSW cold plate process validation",
+     "year": 2023,
+     "confidence": "high"
+    },
+    {
+     "type": "teardown",
+     "title": "RZ module cooling plate teardown",
+     "year": 2024,
+     "confidence": "medium"
+    }
+   ],
+   "regulatoryContext": "GB 38031 thermal-runaway"
+  }
+ },
+ {
+  "id": "cool008",
+  "title": "Graphite TIM sheet replaces ceramic-filled gap pad",
+  "system": "Pack Thermal Management",
+  "costSavingType": "Material",
+  "annualSaving": "£980k",
+  "difficulty": "Low",
+  "timeToImplement": "8–12 months",
+  "description": "[Thermal Interface] Use a compressible graphite TIM sheet between busbar/cell tabs and the cold plate edge in place of expensive ceramic-filled gap pads. High in-plane conductivity spreads heat from local hot spots during 350kW charge, lowering peak tab temperature while cutting TIM cost. Reduces material spend with no loss of dielectric integrity on the 800V pack.",
+  "submittedBy": "Toyota bZ4X benchmark",
+  "verified": 1,
+  "stars": 77,
+  "level": "part",
+  "ideaData": {
+   "id": "cool008",
+   "title": "Graphite TIM sheet replaces ceramic-filled gap pad",
+   "technicalDescription": "BEV applicability: 800-V battery / thermal interface. Baseline uses ceramic AlN-filled silicone pads (~5 W/mK, costly) at tab-cooling interfaces. The change uses a coated graphite TIM sheet with ~400 W/mK in-plane and ~10 W/mK through-plane, dielectrically coated, spreading busbar I2R heat at 350 kW where tab heat flux peaks ~3 W/cm2. Lateral spreading drops local hot-spot ΔT ~4 K. Alternatives: graphite TIM (anisotropic spread), AlN ceramic pad (isotropic high-k), Al2O3-filled silicone (cheaper, lower-k), PCM paraffin for transient charge peaks. Coating preserves >10 kV/mm dielectric.",
+   "materialGrade": "Coated graphite TIM / AlN ceramic pad / Al2O3 silicone",
+   "manufacturingImpact": "Replaces ceramic-filled pad with die-cut coated graphite sheet; alternatives are dispensed filler or PCM film. Drops high-cost ceramic loading from BOM; die-cut tooling similar. Lower pad thickness eases module stack tolerance. Handling needs ESD/coating care. Logistics simplified by thinner SKU; assembly placement unchanged.",
+   "costSavingTypes": [
+    "material",
+    "weight"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Graphite's in-plane spreading lets a cheaper sheet outperform costly ceramic at hot spots.",
+    "percentage": "£12/veh (-30% interface cost)",
+    "annualValue": "£980k",
+    "calculationBasis": "£12/veh × 80k veh/yr"
+   },
+   "implementationDifficulty": "Low",
+   "riskNotes": "Graphite must stay electrically isolated; dielectric coating and edge sealing validated to >10 kV/mm to avoid busbar shorting per ISO 6469. In-plane spreading lowers tab peak temperature, protecting 350 kW charge from local derate. Durability: graphite resists pump-out and 1000h cycling; coating abrasion under vibration tested off-road. NVH neutral. Thermal-runaway: localised cooling of busbars reduces ignition risk, preserving premium charge capability.",
+   "dfmaPrinciples": [
+    "Anisotropic heat spread",
+    "Thinner stack",
+    "Lower-cost vs ceramic"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "8–12 months",
+   "benchmarkReference": "Toyota bZ4X 2022",
+   "confidenceLevel": "benchmarked",
+   "evidenceSources": [
+    {
+     "type": "supplier_data",
+     "title": "Coated graphite TIM dielectric/thermal report",
+     "year": 2023,
+     "confidence": "high"
+    },
+    {
+     "type": "teardown",
+     "title": "bZ4X busbar interface teardown",
+     "year": 2022,
+     "confidence": "low"
+    }
+   ],
+   "regulatoryContext": "ISO 6469"
+  }
+ },
+ {
+  "id": "cool009",
+  "title": "PCM layer buffers fast-charge peaks reducing chiller size",
+  "system": "Pack Thermal Management",
+  "costSavingType": "Complexity",
+  "annualSaving": "£2.3M",
+  "difficulty": "High",
+  "timeToImplement": "18–26 months",
+  "description": "[800V Battery] Add a paraffin/graphite phase-change layer between cells and cold plate to absorb transient heat during 800V 350kW charge, allowing a smaller chiller and compressor. PCM latent storage caps peak cell temperature, downsizing the refrigerant branch and pump while preserving 10-80% charge time. Cuts hardware cost on the premium pack thermal system.",
+  "submittedBy": "Li Auto L9 benchmark",
+  "verified": 1,
+  "stars": 78,
+  "level": "system",
+  "ideaData": {
+   "id": "cool009",
+   "title": "PCM layer buffers fast-charge peaks reducing chiller size",
+   "technicalDescription": "BEV applicability: 800-V battery. Baseline sizes the chiller/compressor for worst-case 350 kW charge heat (~11 kW peak). The change inserts a graphite-enhanced paraffin PCM (melt ~40-45 C, latent ~200 kJ/kg, k raised to ~5 W/mK by graphite matrix) between cells and plate. PCM absorbs ~30% of transient charge heat, letting the active chiller be downsized ~20% while peak cell temp stays <48 C. Alternatives: paraffin/expanded-graphite PCM, salt-hydrate PCM (higher latent, supercooling risk), PCM-impregnated foam, microencapsulated PCM in gap filler. Latent buffering decouples peak from steady-state cooling.",
+   "materialGrade": "Paraffin/expanded-graphite PCM / salt-hydrate PCM / microencapsulated PCM",
+   "manufacturingImpact": "Adds a PCM composite layer (compression-moulded graphite/paraffin) while downsizing chiller and compressor; alternatives are PCM-filled foam or microencapsulated PCM in gap filler. Smaller chiller and pump cut BOM and tooling; PCM layer adds one part and lamination step. Net subsystem simplification and lighter compressor mounting.",
+   "costSavingTypes": [
+    "complexity",
+    "weight",
+    "material"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Latent storage shaves the transient peak, enabling a smaller, cheaper active chiller.",
+    "percentage": "£28/veh (-17% refrigerant subsystem)",
+    "annualValue": "£2.3M",
+    "calculationBasis": "£28/veh × 82k veh/yr"
+   },
+   "implementationDifficulty": "High",
+   "riskNotes": "PCM melt point must sit below cell damage limit yet above ambient; selected ~42 C with graphite to avoid leakage and supercooling. Safety: encapsulation prevents paraffin flammability contact with cells, validated against thermal-runaway per GB 38031. Fast-charge: PCM holds <48 C through 10-80% at 350 kW with downsized chiller, no derate. Durability: 1000+ melt/freeze cycles without phase segregation. Off-road sustained load may saturate PCM, so active loop still covers steady state. NVH unaffected; premium charge preserved.",
+   "dfmaPrinciples": [
+    "Latent peak shaving",
+    "Downsize chiller",
+    "Decouple transient load"
+   ],
+   "systemLevel": "Assembly",
+   "timeToImplement": "18–26 months",
+   "benchmarkReference": "Li Auto L9 2022",
+   "confidenceLevel": "estimated",
+   "evidenceSources": [
+    {
+     "type": "patent",
+     "title": "Graphite-paraffin PCM battery thermal buffer",
+     "year": 2022,
+     "confidence": "medium"
+    },
+    {
+     "type": "industry_report",
+     "title": "PCM use in fast-charge BEV packs",
+     "year": 2024,
+     "confidence": "low"
+    }
+   ],
+   "regulatoryContext": "GB 38031 thermal-runaway"
+  }
+ },
+ {
+  "id": "cool010",
+  "title": "Immersion cooling dielectric fluid for cell-to-cell thermal path",
+  "system": "Pack Thermal Management",
+  "costSavingType": "Complexity",
+  "annualSaving": "£5.2M",
+  "difficulty": "High",
+  "timeToImplement": "28–36 months",
+  "description": "[800V Battery] Replace bottom-plate conduction cooling with single-phase dielectric immersion of cells, removing TIM, gap fillers and most cold-plate hardware. Direct fluid contact gives uniform cell temperature and exceptional 350kW charge headroom, deleting many interface parts. High development cost but strong part-count and thermal-uniformity gains on a premium 800V pack.",
+  "submittedBy": "Yangwang U8 benchmark",
+  "verified": 1,
+  "stars": 76,
+  "level": "system",
+  "ideaData": {
+   "id": "cool010",
+   "title": "Immersion cooling dielectric fluid for cell-to-cell thermal path",
+   "technicalDescription": "BEV applicability: 800-V battery. Baseline relies on bottom cold-plate conduction through TIM with cell-to-plate ΔT and top-of-cell hot spots. The change immerses cells in single-phase dielectric coolant (engineered ester/PAO) circulated through the module, contacting all cell surfaces. Direct contact gives heat-transfer coefficient ~500-900 W/m2K, holding whole-cell ΔT<3 K at 350 kW (~11 kW) with near-isothermal cells. Removes TIM, gap filler and most plate area. Alternatives for housing/seals: PA66-GF35, PPS-GF40, FKM seals, AlSi10MnMg manifolds; coolant options synthetic ester, PAO, or fluorinated dielectric. Uniformity boosts fast-charge and life.",
+   "materialGrade": "Dielectric ester/PAO fluid / PPS-GF40 housing / FKM seals",
+   "manufacturingImpact": "Replaces cold plate + TIM with sealed immersion module and dielectric pump loop; alternatives are hybrid bottom-plate plus spray. Deletes TIM pads, gap filler and machined plates, cutting many interface parts. Adds sealed enclosure, dielectric-rated pump and heat exchanger. Tooling shifts to sealed housings; leak test stringent. Net interface part reduction, higher fluid system content.",
+   "costSavingTypes": [
+    "complexity",
+    "material",
+    "warranty"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Direct dielectric contact removes interface materials and equalises cell temperature.",
+    "percentage": "£64/veh (-15% pack thermal cost)",
+    "annualValue": "£5.2M",
+    "calculationBasis": "£64/veh × 81k veh/yr"
+   },
+   "implementationDifficulty": "High",
+   "riskNotes": "Immersion demands proven dielectric stability and seal integrity; FKM seals and enclosure validated against leakage and dielectric breakdown per ISO 6469 and UL. Isothermal cells give outstanding 350 kW headroom, fastest 10-80% with minimal derate, and improve cycle life. Safety: dielectric fluid suppresses thermal-runaway propagation, aiding GB 38031 compliance. Durability: fluid oxidation and pump wear over 15 years tested; fluid weight affects efficiency. NVH: pump and fluid sloshing damped. Premium charge clearly advanced.",
+   "dfmaPrinciples": [
+    "Remove interface materials",
+    "Isothermal cells",
+    "Runaway suppression"
+   ],
+   "systemLevel": "Assembly",
+   "timeToImplement": "28–36 months",
+   "benchmarkReference": "Yangwang U8 2023",
+   "confidenceLevel": "estimated",
+   "evidenceSources": [
+    {
+     "type": "patent",
+     "title": "Single-phase immersion cooled battery module",
+     "year": 2023,
+     "confidence": "medium"
+    },
+    {
+     "type": "industry_report",
+     "title": "Immersion cooling for high-power BEV packs",
+     "year": 2025,
+     "confidence": "low"
+    }
+   ],
+   "regulatoryContext": "ISO 6469"
+  }
+ },
+ {
+  "id": "cool011",
+  "title": "Commonise cold plate across two 800V pack sizes",
+  "system": "Pack Thermal Management",
+  "costSavingType": "Commonisation",
+  "annualSaving": "£3.1M",
+  "difficulty": "Medium",
+  "timeToImplement": "16–22 months",
+  "description": "[800V Battery] Design one modular cold-plate cassette tiled to serve both standard and long-range 800V packs, replacing two bespoke plates. Shared tooling and part numbers cut piece cost and inventory while flow scaling preserves cell ΔT for 350kW charge in each variant. Commonisation lowers cost across the BEV platform without thermal compromise.",
+  "submittedBy": "Hongqi E-HS9 benchmark",
+  "verified": 1,
+  "stars": 80,
+  "level": "system",
+  "ideaData": {
+   "id": "cool011",
+   "title": "Commonise cold plate across two 800V pack sizes",
+   "technicalDescription": "BEV applicability: 800-V battery. Baseline tools two unique brazed plates for two pack lengths. The change uses a tiled cold-plate cassette (repeatable 3003 brazed module-plate) with a shared inlet manifold; long-range pack adds tiles, standard pack uses fewer. Flow per tile is regulated so each holds ΔT<5 K at 350 kW regardless of count. Alternatives: 3003 brazed Al cassette, 6063 extruded tile, roll-bonded 1050A tile, AlSi10MnMg shared manifold. Modular tiling amortises one tool set across variants and future programmes.",
+   "materialGrade": "3003 brazed Al cassette / 6063 extruded tile / 1050A roll-bond",
+   "manufacturingImpact": "Replaces two bespoke plate tools with one tiled cassette tool plus shared manifold; alternatives are scalable extrusion or roll-bond tiles. Single tool set across variants cuts tooling spend and piece cost via volume. Inventory SKUs drop from two plates to one tile family. Assembly fixtures common; leak test per tile standardised.",
+   "costSavingTypes": [
+    "commonisation",
+    "tooling",
+    "logistics"
+   ],
+   "costSavingPotential": {
+    "qualitative": "One tiled plate family replaces multiple bespoke plates, pooling tooling and volume.",
+    "percentage": "£38/veh (-19% plate cost via volume)",
+    "annualValue": "£3.1M",
+    "calculationBasis": "£38/veh × 82k veh/yr"
+   },
+   "implementationDifficulty": "Medium",
+   "riskNotes": "Tiled flow must stay balanced as tile count changes; per-tile orifices validated so each variant holds ΔT<5 K and full 350 kW headroom. Shared part reliability proven across both duty cycles, including high-load off-road in the larger pack. Corrosion and fatigue identical to baseline 3003. NVH unchanged. Inter-tile seals leak-tested; thermal-runaway base contact preserved per GB 38031. Premium charge speed maintained in both variants.",
+   "dfmaPrinciples": [
+    "Modular tiling",
+    "Shared tooling",
+    "SKU reduction"
+   ],
+   "systemLevel": "Assembly",
+   "timeToImplement": "16–22 months",
+   "benchmarkReference": "Hongqi E-HS9 2021",
+   "confidenceLevel": "benchmarked",
+   "evidenceSources": [
+    {
+     "type": "industry_report",
+     "title": "Platform commonisation in BEV thermal hardware",
+     "year": 2024,
+     "confidence": "medium"
+    },
+    {
+     "type": "supplier_data",
+     "title": "Tiled cassette flow scaling study",
+     "year": 2023,
+     "confidence": "medium"
+    }
+   ],
+   "regulatoryContext": "GB 38031 thermal-runaway"
+  }
+ },
+ {
+  "id": "cool012",
+  "title": "Integrated coolant valve module replaces discrete valves and hoses",
+  "system": "Pack Thermal Management",
+  "costSavingType": "Complexity",
+  "annualSaving": "£2.7M",
+  "difficulty": "Medium",
+  "timeToImplement": "16–20 months",
+  "description": "[Combined Loop] Consolidate multiple discrete 3-way valves, check valves and hose junctions into one moulded multi-port coolant valve module for the battery/EDU/cabin loops. Reduces connections, leak points and assembly labour while smart routing optimises 350kW charge cooling. Cuts subsystem cost and warranty exposure on the integrated 800V thermal architecture.",
+  "submittedBy": "Mercedes EQE benchmark",
+  "verified": 1,
+  "stars": 82,
+  "level": "system",
+  "ideaData": {
+   "id": "cool012",
+   "title": "Integrated coolant valve module replaces discrete valves and hoses",
+   "technicalDescription": "BEV applicability: 800-V battery / combined loop. Baseline plumbs 4-6 separate coolant valves with many hose junctions and clamps. The change integrates them into one PA66-GF35 multi-port valve block with a single actuator cluster routing flow between battery, EDU, radiator, chiller and heater branches. Consolidated paths cut pressure-drop and ~14 hose joints; smart routing pre-cools battery for 350 kW charge (ΔT<6 K). Alternatives: PA66-GF35 (cost/strength), PPS-GF40 (chemical/temperature), POM for valve internals, AlSi10MnMg for high-pressure ports, EPDM seals. Integration slashes connection count.",
+   "materialGrade": "PA66-GF35 valve block / PPS-GF40 / AlSi10MnMg ports",
+   "manufacturingImpact": "Replaces discrete valves and hose tees with one injection-moulded multi-port module; alternatives are a cast manifold or 3D-printed prototype block. Removes ~14 hose joints, clamps and several valve housings, cutting BOM, leak paths and assembly time. Adds one complex mould tool, amortised over platform volume. Single actuator harness simplifies wiring.",
+   "costSavingTypes": [
+    "complexity",
+    "logistics",
+    "warranty"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Valve and junction integration removes the dominant hose-joint leak and labour cost.",
+    "percentage": "£33/veh (-23% valve/plumbing cost)",
+    "annualValue": "£2.7M",
+    "calculationBasis": "£33/veh × 82k veh/yr"
+   },
+   "implementationDifficulty": "Medium",
+   "riskNotes": "Fewer joints lower leak/warranty risk but concentrate function, so the module is leak-tested to 2 bar and actuator redundancy ensures a safe default flow path. Smart routing pre-conditions the pack for 350 kW, protecting 10-80% time and avoiding derate. Glycol-resistant PA66/EPDM validated 15 years; off-road vibration on the block and ports fatigue-tested. NVH: valve actuation and flow noise damped below cabin audibility. Premium charge and cabin comfort preserved.",
+   "dfmaPrinciples": [
+    "Function integration",
+    "Reduce hose joints",
+    "Single actuator cluster"
+   ],
+   "systemLevel": "Assembly",
+   "timeToImplement": "16–20 months",
+   "benchmarkReference": "Mercedes EQE 2022",
+   "confidenceLevel": "benchmarked",
+   "evidenceSources": [
+    {
+     "type": "teardown",
+     "title": "EQE integrated coolant valve module teardown",
+     "year": 2023,
+     "confidence": "high"
+    },
+    {
+     "type": "supplier_data",
+     "title": "Multi-port valve block flow/leak report",
+     "year": 2023,
+     "confidence": "medium"
+    }
+   ],
+   "regulatoryContext": "UN/ECE R100"
+  }
+ },
+ {
+  "id": "cool013",
+  "title": "Plate-fin chiller replaced by compact micro-channel heat exchanger",
+  "system": "Pack Thermal Management",
+  "costSavingType": "Material",
+  "annualSaving": "£1.4M",
+  "difficulty": "Medium",
+  "timeToImplement": "14–18 months",
+  "description": "[Refrigerant] Swap the brazed plate-fin battery chiller for a compact aluminium micro-channel refrigerant-to-coolant heat exchanger. Higher area density cuts refrigerant charge, weight and material cost while sustaining heat rejection for 350kW charge pre-cool. Smaller package frees pack space and lowers cost on the 800V refrigerant branch.",
+  "submittedBy": "Porsche Taycan benchmark",
+  "verified": 1,
+  "stars": 81,
+  "level": "part",
+  "ideaData": {
+   "id": "cool013",
+   "title": "Plate-fin chiller replaced by compact micro-channel heat exchanger",
+   "technicalDescription": "BEV applicability: 800-V battery / refrigerant. Baseline uses a stainless or thick-Al plate-fin chiller with high refrigerant charge. The change uses a brazed 3003/4045-clad aluminium micro-channel core with folded fins giving high surface-area density (>1000 m2/m3), transferring ~11 kW at 350 kW pre-cool with lower approach temperature. Reduced internal volume cuts refrigerant charge ~20%. Alternatives: 3003/4045 brazed Al micro-channel, Cu-Ni tube (refrigerant durable), 6063 extruded ports, AlMn cladding for corrosion. Compactness lowers material mass and package size.",
+   "materialGrade": "3003/4045 brazed Al micro-channel / Cu-Ni / 6063",
+   "manufacturingImpact": "Replaces plate-fin chiller with controlled-atmosphere-brazed micro-channel core; alternatives are extruded-tube or stainless plate exchangers. Lower Al mass and refrigerant charge cut material cost; brazing tooling similar. Compact core simplifies mounting and hose routing. Leak test by helium; fewer braze joints than plate-fin lowers scrap.",
+   "costSavingTypes": [
+    "material",
+    "weight",
+    "process"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Higher area density cuts metal mass and refrigerant charge for the same duty.",
+    "percentage": "£17/veh (-25% chiller cost)",
+    "annualValue": "£1.4M",
+    "calculationBasis": "£17/veh × 81k veh/yr"
+   },
+   "implementationDifficulty": "Medium",
+   "riskNotes": "Micro-channels risk fouling/blockage, mitigated by filtration and 350 kPa burst margin; corrosion managed by AlMn cladding and coating. Lower approach temperature sustains 350 kW pre-cool, protecting 10-80% time. Refrigerant charge cut also aids regulatory GWP exposure. Durability: pressure-cycle and vibration fatigue tested off-road. NVH: compact core reduces refrigerant flow noise. Premium fast-charge thermal headroom preserved.",
+   "dfmaPrinciples": [
+    "Area-density gain",
+    "Lower refrigerant charge",
+    "Compact package"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "14–18 months",
+   "benchmarkReference": "Porsche Taycan 2020",
+   "confidenceLevel": "benchmarked",
+   "evidenceSources": [
+    {
+     "type": "supplier_data",
+     "title": "Micro-channel chiller performance datasheet",
+     "year": 2023,
+     "confidence": "high"
+    },
+    {
+     "type": "teardown",
+     "title": "Taycan chiller package teardown",
+     "year": 2021,
+     "confidence": "medium"
+    }
+   ],
+   "regulatoryContext": "UN/ECE R100"
+  }
+ },
+ {
+  "id": "cool014",
+  "title": "Vapor chamber spreads module hot spots cutting cold-plate area",
+  "system": "Pack Thermal Management",
+  "costSavingType": "Material",
+  "annualSaving": "£1.1M",
+  "difficulty": "High",
+  "timeToImplement": "18–24 months",
+  "description": "[800V Battery] Insert a thin copper vapor chamber between cells and coolant plate to spread localised charge hot spots, allowing a lower-cost smaller cold plate. Two-phase spreading equalises module surface temperature during 350kW charge, reducing plate metal and flow demand. Trims material and pumping cost on the premium 800V pack.",
+  "submittedBy": "AITO M9 benchmark",
+  "verified": 1,
+  "stars": 75,
+  "level": "part",
+  "ideaData": {
+   "id": "cool014",
+   "title": "Vapor chamber spreads module hot spots cutting cold-plate area",
+   "technicalDescription": "BEV applicability: 800-V battery. Baseline oversizes the cold plate and flow to handle local hot cells. The change adds a thin Cu/CuCr1Zr vapor chamber (sintered wick, water working fluid) between cells and a smaller plate, giving effective in-plane conductivity >5000 W/mK to flatten hot spots at 350 kW (tab flux ~3 W/cm2). Uniform spreading lets plate area and flow drop ~15% at ΔT<5 K. Alternatives: Cu vapor chamber, CuCr1Zr (strength), graphite heat-spreader sheet (no fluid), aluminium-water VC. Two-phase spreading decouples local flux from plate size.",
+   "materialGrade": "Cu vapor chamber / CuCr1Zr / graphite spreader",
+   "manufacturingImpact": "Adds a diffusion-bonded copper vapor chamber while shrinking the cold plate; alternatives are graphite spreaders or thicker Al plate. Vapor chamber needs wick sintering and sealing tooling, but enables a smaller, cheaper plate and lower pump duty. Net material cost can fall; assembly adds one bonded layer. Leak/charge test for VC required.",
+   "costSavingTypes": [
+    "material",
+    "weight"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Two-phase spreading flattens hot spots so a smaller plate and lower flow suffice.",
+    "percentage": "£14/veh (-18% plate+pumping)",
+    "annualValue": "£1.1M",
+    "calculationBasis": "£14/veh × 79k veh/yr"
+   },
+   "implementationDifficulty": "High",
+   "riskNotes": "Vapor chamber dryout at high flux is the key risk; wick and charge validated to sustain 350 kW flux without dryout, holding ΔT<5 K. Sealing prevents working-fluid loss over 15 years; freeze tolerance to -40 C verified. Smaller plate must still give thermal-runaway base contact per GB 38031. Off-road sustained load checked against VC orientation limits. NVH neutral. Premium fast-charge uniformity improved, no derate.",
+   "dfmaPrinciples": [
+    "Two-phase spreading",
+    "Shrink cold plate",
+    "Lower pump duty"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "18–24 months",
+   "benchmarkReference": "AITO M9 2023",
+   "confidenceLevel": "estimated",
+   "evidenceSources": [
+    {
+     "type": "patent",
+     "title": "Vapor chamber battery heat spreader",
+     "year": 2023,
+     "confidence": "medium"
+    },
+    {
+     "type": "supplier_data",
+     "title": "Copper vapor chamber dryout limit study",
+     "year": 2024,
+     "confidence": "low"
+    }
+   ],
+   "regulatoryContext": "GB 38031 thermal-runaway"
+  }
+ },
+ {
+  "id": "cool015",
+  "title": "Cell-to-pack cooling deletes module-level plates and joints",
+  "system": "Pack Thermal Management",
+  "costSavingType": "Complexity",
+  "annualSaving": "£4.1M",
+  "difficulty": "High",
+  "timeToImplement": "24–30 months",
+  "description": "[800V Battery] Adopt cell-to-pack architecture bonding cells directly onto one pack-level cold plate, eliminating module housings and per-module cooling plates. Fewer interfaces and joints cut part count and improve heat path for 350kW charge. Large complexity reduction and weight saving on the premium 800V pack, preserving fast-charge thermal headroom.",
+  "submittedBy": "NIO ES7 benchmark",
+  "verified": 1,
+  "stars": 79,
+  "level": "system",
+  "ideaData": {
+   "id": "cool015",
+   "title": "Cell-to-pack cooling deletes module-level plates and joints",
+   "technicalDescription": "BEV applicability: 800-V battery. Baseline cools each module via its own plate, manifolds and inter-module hoses. The change bonds prismatic cells onto one pack-wide cold plate (cell-to-pack), removing module shells, per-module plates and inter-module coolant joints. Single shared plate with optimised channels rejects ~10 kW at 350 kW holding cell ΔT<5 K, with a shorter conduction path through structural adhesive/TIM. Alternatives: 3003 brazed Al pack plate, AlSi10MnMg cast plate-tray, 6082-T6 structural rails, dispensed gap filler bond. CTP removes a whole assembly layer.",
+   "materialGrade": "3003 brazed Al pack plate / AlSi10MnMg / 6082-T6 rails",
+   "manufacturingImpact": "Replaces module-level plates and hoses with one pack-level plate plus structural bonding; alternatives are cell-to-chassis or cast tray-plate. Removes module housings, per-module manifolds and ~20 inter-module joints, cutting BOM, weight and assembly stations. Tooling consolidates to one large plate. Bond dispensing and cell placement automated; leak paths greatly reduced.",
+   "costSavingTypes": [
+    "complexity",
+    "weight",
+    "logistics",
+    "material"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Cell-to-pack deletes the module cooling layer and its interfaces wholesale.",
+    "percentage": "£50/veh (-16% pack structure+thermal)",
+    "annualValue": "£4.1M",
+    "calculationBasis": "£50/veh × 82k veh/yr"
+   },
+   "implementationDifficulty": "High",
+   "riskNotes": "Bonding cells to the plate complicates serviceability and runaway containment, so adhesive selection and venting are validated against GB 38031 propagation. Direct path holds ΔT<5 K for 350 kW, preserving 10-80% time. Structural plate doubles as load path; off-road fatigue and crash validated. Corrosion and glycol resistance per baseline. NVH improved by stiffer one-piece structure. Premium charge headroom and pack stiffness maintained despite module deletion.",
+   "dfmaPrinciples": [
+    "Delete module layer",
+    "Shorter heat path",
+    "Structural integration"
+   ],
+   "systemLevel": "Assembly",
+   "timeToImplement": "24–30 months",
+   "benchmarkReference": "NIO ES7 2022",
+   "confidenceLevel": "estimated",
+   "evidenceSources": [
+    {
+     "type": "industry_report",
+     "title": "Cell-to-pack thermal architecture trends",
+     "year": 2024,
+     "confidence": "medium"
+    },
+    {
+     "type": "teardown",
+     "title": "NIO CTP pack cooling teardown",
+     "year": 2023,
+     "confidence": "low"
+    }
+   ],
+   "regulatoryContext": "GB 38031 thermal-runaway"
+  }
+ },
+ {
+  "id": "cool016",
+  "title": "Model-based predictive precool control lowers chiller duty cycle",
+  "system": "Pack Thermal Management",
+  "costSavingType": "Complexity",
+  "annualSaving": "£1.3M",
+  "difficulty": "Medium",
+  "timeToImplement": "12–16 months",
+  "description": "[Combined Loop] Add navigation- and charge-aware predictive thermal control that pre-cools the 800V pack before a 350kW session, flattening peak chiller load. Smarter software lets hardware run nearer optimum, enabling slightly smaller actuators and lower energy use. Software-led saving with minimal hardware change preserves fast-charge headroom on the premium pack.",
+  "submittedBy": "Xpeng G9 benchmark",
+  "verified": 1,
+  "stars": 83,
+  "level": "system",
+  "ideaData": {
+   "id": "cool016",
+   "title": "Model-based predictive precool control lowers chiller duty cycle",
+   "technicalDescription": "BEV applicability: 800-V battery / combined loop. Baseline reacts to cell temperature, so chiller and pump must cover unanticipated peaks. The change uses route data and charge-station prediction to pre-cool the pack to ~25 C before a 350 kW session, spreading the ~11 kW load over time and trimming peak compressor/pump speed. Lower peak duty allows downsized actuators and ~6% energy reduction. Alternatives in control: MPC with thermal RC model, rule-based predictive precool, Kalman cell-temp estimation; sensor options NTC vs digital I2C temp sensors. Software shifts load off the peak.",
+   "materialGrade": "Control software / NTC sensors / digital I2C temp sensors",
+   "manufacturingImpact": "Primarily a control change; alternative implementations are MPC firmware or lookup-table precool. Enables modest hardware downsizing (compressor, pump) without new tooling. Negligible BOM add (calibration, possibly added sensors). Validation via HIL and fleet calibration. No assembly impact; reduces warranty from thermal stress.",
+   "costSavingTypes": [
+    "complexity",
+    "warranty",
+    "weight"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Predictive precooling shifts load off the peak so smaller actuators and less energy suffice.",
+    "percentage": "£16/veh (system energy + downsizing)",
+    "annualValue": "£1.3M",
+    "calculationBasis": "£16/veh × 81k veh/yr"
+   },
+   "implementationDifficulty": "Medium",
+   "riskNotes": "Prediction errors must not leave the pack hot, so the controller falls back to reactive cooling with full margin, guaranteeing 350 kW readiness and 10-80% time. Predictive precool improves first-charge headroom and reduces cell thermal stress, aiding life and warranty. Safety unaffected; runaway limits unchanged per GB 38031. Off-road/unmapped routes default to conservative cooling. NVH improved by smoother, lower-peak pump/compressor operation. Premium charge performance preserved or enhanced.",
+   "dfmaPrinciples": [
+    "Predictive precool",
+    "Peak-shaving",
+    "Actuator downsizing"
+   ],
+   "systemLevel": "Assembly",
+   "timeToImplement": "12–16 months",
+   "benchmarkReference": "Xpeng G9 2022",
+   "confidenceLevel": "estimated",
+   "evidenceSources": [
+    {
+     "type": "oem_press_release",
+     "title": "G9 navigation-linked battery preconditioning",
+     "year": 2022,
+     "confidence": "medium"
+    },
+    {
+     "type": "industry_report",
+     "title": "Predictive BEV thermal control benefits",
+     "year": 2024,
+     "confidence": "medium"
+    }
+   ],
+   "regulatoryContext": "UN/ECE R100"
+  }
+ },
+ {
+  "id": "cool017",
+  "title": "Aluminium replaces copper busbar cooling interface bracket",
+  "system": "Pack Thermal Management",
+  "costSavingType": "Material + Weight",
+  "annualSaving": "£890k",
+  "difficulty": "Low",
+  "timeToImplement": "10–14 months",
+  "description": "[800V Battery] Replace copper cooling brackets that conduct busbar heat to the cold plate with weight- and cost-optimised 6061-T6 aluminium brackets with a thin plated contact. Lower density and price cut mass and material spend while keeping busbar temperature in check during 350kW charge. Material substitution saves cost on the 800V pack.",
+  "submittedBy": "Ford F-150 Lightning benchmark",
+  "verified": 1,
+  "stars": 76,
+  "level": "part",
+  "ideaData": {
+   "id": "cool017",
+   "title": "Aluminium replaces copper busbar cooling interface bracket",
+   "technicalDescription": "BEV applicability: 800-V battery. Baseline uses solid copper brackets to sink high-current busbar I2R heat into the cold plate. The change uses 6061-T6 aluminium brackets with a Ni/Ag-plated interface and increased contact area to offset Al's lower conductivity (~237 vs 400 W/mK), holding busbar temperature <90 C at 350 kW peak current. Mass drops ~60% per bracket. Alternatives: 6061-T6 Al, AlSi10MnMg cast bracket, CuCr1Zr (where copper still needed), copper-clad aluminium for hybrid path. Geometry compensates conductivity gap while cutting cost and weight.",
+   "materialGrade": "6061-T6 Al / AlSi10MnMg / copper-clad aluminium",
+   "manufacturingImpact": "Replaces machined copper bracket with extruded or cast aluminium plus plating; alternatives are HPDC or stamped Al. Cheaper, lighter material cuts BOM and freight; plating step added for contact and corrosion. Tooling for extrusion/casting amortised. Fewer grams reduce pack mass. Assembly and fastening unchanged.",
+   "costSavingTypes": [
+    "material",
+    "weight"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Aluminium substitution cuts both metal cost and mass versus copper brackets.",
+    "percentage": "£11/veh (-35% bracket cost)",
+    "annualValue": "£890k",
+    "calculationBasis": "£11/veh × 81k veh/yr"
+   },
+   "implementationDifficulty": "Low",
+   "riskNotes": "Aluminium's lower conductivity and galvanic contact with copper busbars are the risks; plated interface and enlarged area keep busbar <90 C and prevent galvanic corrosion under glycol exposure. Fast-charge current at 350 kW validated for no thermal derate. Durability: bolted Al joint creep and fatigue tested over thermal cycles and off-road vibration. NVH neutral. Thermal-runaway busbar safety preserved. Premium charge current capability maintained.",
+   "dfmaPrinciples": [
+    "Material substitution",
+    "Lightweighting",
+    "Contact-area compensation"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "10–14 months",
+   "benchmarkReference": "Ford F-150 Lightning 2022",
+   "confidenceLevel": "benchmarked",
+   "evidenceSources": [
+    {
+     "type": "teardown",
+     "title": "F-150 Lightning busbar cooling bracket teardown",
+     "year": 2022,
+     "confidence": "medium"
+    },
+    {
+     "type": "supplier_data",
+     "title": "Plated-Al busbar interface thermal test",
+     "year": 2023,
+     "confidence": "medium"
+    }
+   ],
+   "regulatoryContext": "ISO 6469"
+  }
+ },
+ {
+  "id": "cool018",
+  "title": "Quick-connect coolant couplings replace clamped hose joints",
+  "system": "Pack Thermal Management",
+  "costSavingType": "Manufacturing Process",
+  "annualSaving": "£1.5M",
+  "difficulty": "Low",
+  "timeToImplement": "10–14 months",
+  "description": "[Pumping] Replace screw-clamped hose joints at pack coolant interfaces with push-to-connect quick couplings. Faster, error-proof assembly and lower leak rate cut warranty and labour while maintaining flow for 350kW charge cooling. Process improvement reduces assembly time and field leaks on the 800V thermal system.",
+  "submittedBy": "Jeep Recon benchmark",
+  "verified": 1,
+  "stars": 78,
+  "level": "part",
+  "ideaData": {
+   "id": "cool018",
+   "title": "Quick-connect coolant couplings replace clamped hose joints",
+   "technicalDescription": "BEV applicability: 800-V battery / pumping. Baseline uses barbed fittings with worm-clamps, slow to fit and prone to under/over-torque leaks. The change uses push-to-connect quick couplings with integral seals and lock indicators at pack inlet/outlet and module junctions. Click-lock ensures consistent sealing and full flow (~16 L/min) for 350 kW cooling with no added pressure drop. Alternatives: PA66-GF35 coupling body, PPS-GF40 (chemical), AlSi10MnMg metal coupling for high-pressure, EPDM/FKM seal options. Tool-less connection error-proofs assembly and lowers leak rate.",
+   "materialGrade": "PA66-GF35 coupling / PPS-GF40 / AlSi10MnMg",
+   "manufacturingImpact": "Replaces clamped barb joints with moulded quick couplings; alternatives are SAE flange or threaded fittings. Removes clamps and torque operations, cutting assembly time and rework; coupling tooling added but reduces leak-test failures. Connection-verification feature lowers warranty leaks. Service/replacement simplified. Net assembly-cost and quality gain.",
+   "costSavingTypes": [
+    "process",
+    "warranty",
+    "logistics"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Tool-less verified couplings cut assembly time and the leak-driven warranty cost.",
+    "percentage": "£18/veh (assembly + warranty)",
+    "annualValue": "£1.5M",
+    "calculationBasis": "£18/veh × 80k veh/yr"
+   },
+   "implementationDifficulty": "Low",
+   "riskNotes": "Quick couplings must not leak under pressure/vibration; couplings rated to 3 bar with lock verification and FKM seals validated over 15 years and off-road vibration. Full flow at 350 kW preserved with no pressure penalty, protecting fast-charge headroom. Connection-confirm feature prevents misassembly that could starve cooling. Corrosion and glycol resistance verified. NVH neutral. Thermal safety unchanged; premium charge performance maintained.",
+   "dfmaPrinciples": [
+    "Error-proof assembly",
+    "Lower leak rate",
+    "Tool-less connect"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "10–14 months",
+   "benchmarkReference": "Jeep Recon 2025",
+   "confidenceLevel": "estimated",
+   "evidenceSources": [
+    {
+     "type": "supplier_data",
+     "title": "Quick-connect coolant coupling validation",
+     "year": 2024,
+     "confidence": "high"
+    },
+    {
+     "type": "industry_report",
+     "title": "Coolant joint warranty reduction study",
+     "year": 2023,
+     "confidence": "medium"
+    }
+   ],
+   "regulatoryContext": "UN/ECE R100"
+  }
+ },
+ {
+  "id": "cool019",
+  "title": "Shared battery-EDU coolant loop with smart valve routing",
+  "system": "Pack Thermal Management",
+  "costSavingType": "Commonisation",
+  "annualSaving": "£2.9M",
+  "difficulty": "Medium",
+  "timeToImplement": "18–24 months",
+  "description": "[Combined Loop] Merge separate battery and EDU coolant circuits into one shared loop with smart valve sequencing, removing a radiator, pump and hose set. Heat sharing pre-warms the pack and uses common hardware, cutting part count while protecting 350kW charge cooling via priority routing. Commonisation lowers cost on the 800V thermal architecture.",
+  "submittedBy": "Lexus RZ benchmark",
+  "verified": 1,
+  "stars": 80,
+  "level": "system",
+  "ideaData": {
+   "id": "cool019",
+   "title": "Shared battery-EDU coolant loop with smart valve routing",
+   "technicalDescription": "BEV applicability: 800-V battery / 800-V EDU / combined loop. Baseline runs independent battery and EDU loops each with pump, radiator and reservoir. The change combines them into one loop with a multi-port valve sequencing flow: EDU waste heat warms the pack in cold conditions, and during 350 kW charge the valve prioritises chiller flow to the battery (ΔT<6 K). Removes one radiator, one pump and a hose set. Alternatives: shared 6063 Al hardlines, PA66-GF35 valve body, AlSi10MnMg pump housing, EPDM hoses. Loop merge pools hardware across two systems.",
+   "materialGrade": "Shared 6063 Al lines / PA66-GF35 valve / AlSi10MnMg",
+   "manufacturingImpact": "Replaces two coolant circuits with one shared loop plus a sequencing valve; alternatives are a brazed heat-exchanger link between loops. Deletes a radiator, pump, reservoir and hose set, cutting BOM and assembly. Adds valve and control. Common pump/radiator family across battery and EDU reduces tooling and SKUs. Leak test simplified by fewer circuits.",
+   "costSavingTypes": [
+    "commonisation",
+    "complexity",
+    "weight"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Loop merging shares pumps and radiators across battery and EDU, deleting duplicates.",
+    "percentage": "£35/veh (-20% loop hardware)",
+    "annualValue": "£2.9M",
+    "calculationBasis": "£35/veh × 82k veh/yr"
+   },
+   "implementationDifficulty": "Medium",
+   "riskNotes": "Sharing a loop risks EDU heat reaching the pack during charge, so priority valve sequencing and a default-to-battery-cooling failsafe guarantee 350 kW headroom and 10-80% time. Cold-weather EDU heat sharing aids preconditioning. Reliability of the single pump upgraded with degraded-mode flow. Off-road sustained EDU load checked against battery cooling priority. Corrosion/glycol per baseline; NVH from one pump tuned low. Premium charge protected via control logic, runaway limits unchanged.",
+   "dfmaPrinciples": [
+    "Loop merging",
+    "Heat sharing",
+    "Common pump/radiator"
+   ],
+   "systemLevel": "Assembly",
+   "timeToImplement": "18–24 months",
+   "benchmarkReference": "Lexus RZ 2023",
+   "confidenceLevel": "benchmarked",
+   "evidenceSources": [
+    {
+     "type": "teardown",
+     "title": "RZ combined thermal loop teardown",
+     "year": 2024,
+     "confidence": "medium"
+    },
+    {
+     "type": "industry_report",
+     "title": "Integrated BEV thermal loop architectures",
+     "year": 2024,
+     "confidence": "medium"
+    }
+   ],
+   "regulatoryContext": "UN/ECE R100"
+  }
+ },
+ {
+  "id": "cool020",
+  "title": "Fewer high-accuracy sensors via virtual cell-temperature estimation",
+  "system": "Pack Thermal Management",
+  "costSavingType": "Complexity",
+  "annualSaving": "£760k",
+  "difficulty": "Medium",
+  "timeToImplement": "12–16 months",
+  "description": "[800V Battery] Reduce the number of physical pack temperature sensors by using a validated thermal model that estimates cell temperatures from a sparse sensor set. Fewer NTCs and connectors cut harness cost and failure points while preserving fast-charge thermal protection at 350kW. Sensor rationalisation lowers BOM on the premium 800V pack.",
+  "submittedBy": "Cadillac Lyriq benchmark",
+  "verified": 1,
+  "stars": 77,
+  "level": "system",
+  "ideaData": {
+   "id": "cool020",
+   "title": "Fewer high-accuracy sensors via virtual cell-temperature estimation",
+   "technicalDescription": "BEV applicability: 800-V battery. Baseline instruments many cells with NTC thermistors, each adding wiring and connector points. The change keeps a reduced sensor set at thermal-critical locations and uses a real-time RC thermal model (with current/voltage inputs) to estimate unmeasured cell temperatures within ±2 K, validated against full-instrumentation testing. Fewer sensors and connectors cut harness cost and leak/fault points while keeping 350 kW charge protection. Alternatives: NTC thermistors, digital I2C sensors, fibre-optic distributed sensing, model-only virtual sensing. Estimation replaces redundant hardware with software.",
+   "materialGrade": "NTC thermistors / digital I2C sensors / virtual model",
+   "manufacturingImpact": "Primarily reduces sensor BOM and harness; alternative is digital sensor multiplexing to cut wires. Removes thermistors, connectors and harness branches, lowering assembly and fault points. Adds model calibration and validation effort, no tooling. Simplifies harness routing and leak/seal points at sensor pass-throughs.",
+   "costSavingTypes": [
+    "complexity",
+    "warranty",
+    "logistics"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Virtual estimation removes redundant physical sensors and their harness/connector cost.",
+    "percentage": "£9/veh (-30% sensing cost)",
+    "annualValue": "£760k",
+    "calculationBasis": "£9/veh × 81k veh/yr"
+   },
+   "implementationDifficulty": "Medium",
+   "riskNotes": "Under-sensing risks missing a hot cell, so the model's ±2 K accuracy is validated across duty cycles and a conservative margin plus retained critical sensors guarantee 350 kW charge protection and runaway detection per GB 38031. Fault tolerance: model cross-checks remaining sensors. Off-road and aged-cell drift accounted for in calibration. No NVH impact. Warranty improves with fewer connector failures. Premium fast-charge safety and headroom preserved.",
+   "dfmaPrinciples": [
+    "Sensor rationalisation",
+    "Virtual estimation",
+    "Fewer fault points"
+   ],
+   "systemLevel": "Assembly",
+   "timeToImplement": "12–16 months",
+   "benchmarkReference": "Cadillac Lyriq 2023",
+   "confidenceLevel": "estimated",
+   "evidenceSources": [
+    {
+     "type": "industry_report",
+     "title": "Model-based BMS temperature estimation",
+     "year": 2024,
+     "confidence": "medium"
+    },
+    {
+     "type": "supplier_data",
+     "title": "RC thermal model validation report",
+     "year": 2023,
+     "confidence": "medium"
+    }
+   ],
+   "regulatoryContext": "GB 38031 thermal-runaway"
+  }
+ },
+ {
+  "id": "cool021",
+  "title": "Stamped serpentine channel plate replaces extruded-tube plate",
+  "system": "Pack Thermal Management",
+  "costSavingType": "Manufacturing Process",
+  "annualSaving": "£1.8M",
+  "difficulty": "Medium",
+  "timeToImplement": "14–18 months",
+  "description": "[800V Battery] Replace an extruded-tube-on-sheet cold plate with a single stamped serpentine-channel 3003 plate closed by laser welding. Fewer parts and joints than the tube-array design lower cost and leak risk while a tuned serpentine path holds cell ΔT for 350kW charge. Process change reduces BOM and assembly on the 800V pack.",
+  "submittedBy": "Mercedes EQS benchmark",
+  "verified": 1,
+  "stars": 81,
+  "level": "part",
+  "ideaData": {
+   "id": "cool021",
+   "title": "Stamped serpentine channel plate replaces extruded-tube plate",
+   "technicalDescription": "BEV applicability: 800-V battery. Baseline bonds many extruded 6063 tubes onto a base sheet, requiring multiple joints and alignment. The change stamps a 3003-H14 sheet with a serpentine channel and laser-welds a flat cover, forming one continuous coolant path. The serpentine is CFD-tuned for uniform flow (±5%) at 12 L/min, ~30 kPa, holding base ΔT<5 K at 350 kW. Alternatives: 3003 stamped Al, 1050A (conductivity), 6061-T6 (strength), 5052 for formability. Single stamped channel replaces the multi-tube array, cutting joints.",
+   "materialGrade": "3003-H14 stamped Al / 1050A / 5052",
+   "manufacturingImpact": "Replaces tube-on-sheet brazing with stamping + laser welding; alternatives are roll-bonding or FSW. One stamped plate and one weld seam replace many tube joints, cutting BOM, alignment fixtures and leak paths. Stamping die tooling added, amortised over volume. Inline laser weld replaces batch braze; leak test simplified to one circuit.",
+   "costSavingTypes": [
+    "process",
+    "material",
+    "tooling"
+   ],
+   "costSavingPotential": {
+    "qualitative": "A single stamped channel replaces the multi-tube array, slashing joints and parts.",
+    "percentage": "£22/veh (-26% plate cost)",
+    "annualValue": "£1.8M",
+    "calculationBasis": "£22/veh × 82k veh/yr"
+   },
+   "implementationDifficulty": "Medium",
+   "riskNotes": "Laser weld seam integrity governs leak risk; weld is SPC-controlled and 2 bar leak-tested with continuous monitoring. Serpentine flow uniformity holds ΔT<5 K, protecting 350 kW headroom and 10-80% time. Pressure drop checked against pump curve to avoid flow starvation. Corrosion: 3003 with inhibited glycol over 15 years. Off-road vibration fatigue on weld validated. NVH neutral. Thermal-runaway base contact preserved; premium charge speed maintained.",
+   "dfmaPrinciples": [
+    "Single stamped channel",
+    "Fewer joints",
+    "Laser-weld closure"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "14–18 months",
+   "benchmarkReference": "Mercedes EQS 2021",
+   "confidenceLevel": "benchmarked",
+   "evidenceSources": [
+    {
+     "type": "teardown",
+     "title": "EQS module cold plate construction",
+     "year": 2022,
+     "confidence": "high"
+    },
+    {
+     "type": "supplier_data",
+     "title": "Stamped serpentine plate CFD/flow study",
+     "year": 2023,
+     "confidence": "medium"
+    }
+   ],
+   "regulatoryContext": "GB 38031 thermal-runaway"
+  }
+ },
+ {
+  "id": "cool022",
+  "title": "Lower-cost Al2O3 gap filler replaces AlN ceramic TIM in non-peak zones",
+  "system": "Pack Thermal Management",
+  "costSavingType": "Material",
+  "annualSaving": "£1.0M",
+  "difficulty": "Low",
+  "timeToImplement": "8–12 months",
+  "description": "[Thermal Interface] Use an Al2O3-filled silicone gap filler in lower-flux pack zones, reserving costly AlN ceramic TIM only for hot-spot regions. Zoned TIM specification matches conductivity to local heat flux, cutting expensive ceramic spend while keeping cell ΔT within limits during 350kW charge. Material rationalisation lowers TIM cost on the 800V pack.",
+  "submittedBy": "Toyota bZ4X benchmark",
+  "verified": 1,
+  "stars": 76,
+  "level": "part",
+  "ideaData": {
+   "id": "cool022",
+   "title": "Lower-cost Al2O3 gap filler replaces AlN ceramic TIM in non-peak zones",
+   "technicalDescription": "BEV applicability: 800-V battery / thermal interface. Baseline applies a single high-cost AlN-filled TIM (~5-6 W/mK) across the whole module, over-specified for low-flux areas. The change zones the TIM: Al2O3-filled silicone (~2.5-3 W/mK, much cheaper) in cooler regions and AlN only where flux exceeds ~2 W/cm2 at 350 kW. Local conductivity matched to heat flux keeps cell ΔT within spec. Alternatives: Al2O3-filled silicone, AlN ceramic (hot spots), boron-nitride filled (mid-k), dispensable gap filler. Zoning spends premium material only where needed.",
+   "materialGrade": "Al2O3-filled silicone / AlN ceramic / BN-filled silicone",
+   "manufacturingImpact": "Replaces uniform AlN pad with zoned die-cut/dispensed TIM by region; alternatives are graded fillers or printed TIM. Cuts costly ceramic loading from most of the area; tooling for zoned die-cut or dual-dispense added. Assembly must place correct zone, controlled by tooling/poka-yoke. Lower-cost SKU dominates volume; logistics manage two grades.",
+   "costSavingTypes": [
+    "material"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Matching TIM conductivity to local flux spends premium ceramic only at hot spots.",
+    "percentage": "£13/veh (-24% TIM cost)",
+    "annualValue": "£1.0M",
+    "calculationBasis": "£13/veh × 81k veh/yr"
+   },
+   "implementationDifficulty": "Low",
+   "riskNotes": "Mis-zoning could under-cool a hot region, so flux maps from 350 kW charge thermal models define zones with margin and placement is poka-yoke'd. Cell ΔT validated within spec across zones, preserving fast-charge headroom and 10-80% time. Both fillers maintain dielectric >15 kV/mm per ISO 6469 and resist pump-out and 1000h cycling. Off-road vibration tested. NVH neutral. Premium charge thermal performance preserved with lower material cost.",
+   "dfmaPrinciples": [
+    "Zoned specification",
+    "Flux-matched conductivity",
+    "Premium-where-needed"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "8–12 months",
+   "benchmarkReference": "Toyota bZ4X 2022",
+   "confidenceLevel": "benchmarked",
+   "evidenceSources": [
+    {
+     "type": "supplier_data",
+     "title": "Al2O3 vs AlN gap filler cost/thermal comparison",
+     "year": 2023,
+     "confidence": "high"
+    },
+    {
+     "type": "industry_report",
+     "title": "Zoned TIM strategies in BEV packs",
+     "year": 2024,
+     "confidence": "medium"
+    }
+   ],
+   "regulatoryContext": "ISO 6469"
+  }
+ },
+ {
+  "id": "cool023",
+  "title": "Brazed-Al replaces stainless coolant-to-coolant heat exchanger",
+  "system": "Pack Thermal Management",
+  "costSavingType": "Material + Weight",
+  "annualSaving": "£1.2M",
+  "difficulty": "Medium",
+  "timeToImplement": "14–18 months",
+  "description": "[Combined Loop] Replace a stainless plate heat exchanger linking battery and chiller loops with a brazed-aluminium counterpart. Lower density and material cost cut weight and BOM while matched surface area sustains heat transfer for 350kW charge pre-cool. Material substitution lowers cost on the 800V combined thermal loop.",
+  "submittedBy": "Volvo EX90 benchmark",
+  "verified": 1,
+  "stars": 79,
+  "level": "part",
+  "ideaData": {
+   "id": "cool023",
+   "title": "Brazed-Al replaces stainless coolant-to-coolant heat exchanger",
+   "technicalDescription": "BEV applicability: 800-V battery / combined loop. Baseline uses a stainless-steel brazed plate heat exchanger between the battery glycol loop and the chiller loop, heavy and costly. The change uses a controlled-atmosphere-brazed 3003/4045 aluminium plate exchanger with matched plate count to hold the same ~11 kW transfer at 350 kW pre-cool, with low approach temperature. Aluminium cuts mass ~55% and cost. Alternatives: 3003/4045 brazed Al, 6063 ported Al, Cu-Ni (durability), AlMn-clad for corrosion. Material swap preserves duty at lower weight and price.",
+   "materialGrade": "3003/4045 brazed Al / 6063 / Cu-Ni",
+   "manufacturingImpact": "Replaces stainless plate exchanger with brazed-Al plate stack; alternatives are micro-channel or tube-fin Al. Aluminium brazing tooling differs but material and mass cost drop. Compatible with Al hardlines reduces galvanic transition fittings. Helium leak test; fewer dissimilar-metal joints. Lighter unit eases mounting and assembly.",
+   "costSavingTypes": [
+    "material",
+    "weight",
+    "process"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Aluminium substitution cuts exchanger mass and cost at equal heat duty.",
+    "percentage": "£15/veh (-28% exchanger cost)",
+    "annualValue": "£1.2M",
+    "calculationBasis": "£15/veh × 79k veh/yr"
+   },
+   "implementationDifficulty": "Medium",
+   "riskNotes": "Aluminium's lower strength and corrosion margin versus stainless are the risks; AlMn cladding, inhibited glycol and 3x burst-pressure design validated over 15 years and thermal cycling. Matched plate area sustains 350 kW pre-cool, protecting 10-80% time. Galvanic compatibility with Al loop avoids mixed-metal corrosion. Off-road vibration fatigue tested. NVH neutral. Thermal performance and premium fast-charge headroom preserved.",
+   "dfmaPrinciples": [
+    "Material substitution",
+    "Lightweighting",
+    "Galvanic compatibility"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "14–18 months",
+   "benchmarkReference": "Volvo EX90 2024",
+   "confidenceLevel": "benchmarked",
+   "evidenceSources": [
+    {
+     "type": "supplier_data",
+     "title": "Brazed-Al vs stainless HX cost/weight study",
+     "year": 2023,
+     "confidence": "high"
+    },
+    {
+     "type": "teardown",
+     "title": "EX90 loop heat exchanger teardown",
+     "year": 2024,
+     "confidence": "medium"
+    }
+   ],
+   "regulatoryContext": "UN/ECE R100"
+  }
+ },
+ {
+  "id": "cool024",
+  "title": "Integrated reservoir-pump-sensor thermal module cuts mounts and hoses",
+  "system": "Pack Thermal Management",
+  "costSavingType": "Complexity",
+  "annualSaving": "£2.4M",
+  "difficulty": "Medium",
+  "timeToImplement": "16–22 months",
+  "description": "[Pumping] Combine the coolant reservoir, pump, level/temp sensors and a degas chamber into one integrated thermal management module, replacing discrete components and brackets. Fewer hoses, mounts and connectors cut assembly labour and leak points while maintaining flow for 350kW charge. Integration lowers cost on the 800V thermal system.",
+  "submittedBy": "NIO EL7 benchmark",
+  "verified": 1,
+  "stars": 80,
+  "level": "system",
+  "ideaData": {
+   "id": "cool024",
+   "title": "Integrated reservoir-pump-sensor thermal module cuts mounts and hoses",
+   "technicalDescription": "BEV applicability: 800-V battery / pumping. Baseline mounts reservoir, pump, degas bottle and sensors separately with interconnecting hoses and brackets. The change integrates them into one PA66-GF35 module with internal flow paths, an EC pump, integral degassing and combined level/temperature sensing. Internal channels remove ~8 hose joints and several brackets while delivering ~16 L/min at 60 kPa for 350 kW cooling. Alternatives: PA66-GF35 housing, PPS-GF40 (temperature/chemical), AlSi10MnMg pump section, EPDM seals. Integration consolidates a cluster of parts into one module.",
+   "materialGrade": "PA66-GF35 module / PPS-GF40 / AlSi10MnMg pump section",
+   "manufacturingImpact": "Replaces discrete reservoir, pump, degas bottle and sensors with one moulded module; alternatives are a cast manifold-integrated pump. Removes ~8 hose joints, brackets and connectors, cutting BOM, leak paths and assembly stations. One complex mould tool amortised over volume. Integral degas improves fill/bleed. Single connector simplifies wiring and leak test.",
+   "costSavingTypes": [
+    "complexity",
+    "logistics",
+    "warranty",
+    "weight"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Integrating reservoir, pump and sensors removes hoses, mounts and connectors in one module.",
+    "percentage": "£30/veh (-22% module cost)",
+    "annualValue": "£2.4M",
+    "calculationBasis": "£30/veh × 81k veh/yr"
+   },
+   "implementationDifficulty": "Medium",
+   "riskNotes": "Concentrating functions raises single-point-failure stakes, so the pump uses dual-winding BLDC and the module is leak-tested to 2 bar with integral degas validated to prevent air-lock that could starve 350 kW cooling. Flow and NVH tuned: variable-speed pump kept below cabin audibility and resonance. Glycol-resistant PA66/EPDM validated 15 years; off-road vibration fatigue on the module tested. Thermal-runaway limits unchanged. Premium fast-charge headroom and reliability preserved.",
+   "dfmaPrinciples": [
+    "Function integration",
+    "Integral degas",
+    "Fewer hoses/connectors"
+   ],
+   "systemLevel": "Assembly",
+   "timeToImplement": "16–22 months",
+   "benchmarkReference": "NIO EL7 2022",
+   "confidenceLevel": "benchmarked",
+   "evidenceSources": [
+    {
+     "type": "teardown",
+     "title": "NIO integrated thermal module teardown",
+     "year": 2023,
+     "confidence": "high"
+    },
+    {
+     "type": "supplier_data",
+     "title": "Integrated reservoir-pump module spec",
+     "year": 2023,
+     "confidence": "medium"
+    }
+   ],
+   "regulatoryContext": "UN/ECE R100"
+  }
+ },
+ {
+  "id": "cool025",
+  "title": "Topology-optimised CNC cold-plate channels cut metal and pressure drop",
+  "system": "Pack Thermal Management",
+  "costSavingType": "Weight",
+  "annualSaving": "£1.7M",
+  "difficulty": "Medium",
+  "timeToImplement": "16–20 months",
+  "description": "[800V Battery] Apply topology optimisation to the cold-plate channel layout, machining only the metal needed and lowering pressure drop. Optimised flow paths cut plate mass and pump energy while concentrating cooling under hot cells for 350kW charge. Weight- and energy-led saving improves range and cost on the premium 800V pack.",
+  "submittedBy": "Porsche Taycan benchmark",
+  "verified": 1,
+  "stars": 82,
+  "level": "part",
+  "ideaData": {
+   "id": "cool025",
+   "title": "Topology-optimised CNC cold-plate channels cut metal and pressure drop",
+   "technicalDescription": "BEV applicability: 800-V battery. Baseline uses uniform straight channels with conservative wall thickness and high pressure drop. The change applies topology/flow optimisation to route wider channels under high-flux cells and thin walls elsewhere, CNC-machined or cast into 6082-T6/AlSi10MnMg. Optimised paths cut plate mass ~12% and pressure drop ~20% (to ~22 kPa at 12 L/min) while holding cell ΔT<5 K at 350 kW, lowering pump energy. Alternatives: 6082-T6 machined Al, AlSi10MnMg cast, 3003 brazed (optimised pattern), 6063 extruded base. Optimisation removes non-load, non-thermal metal.",
+   "materialGrade": "6082-T6 machined Al / AlSi10MnMg cast / 3003 brazed",
+   "manufacturingImpact": "Replaces uniform machining with topology-optimised CNC or cast channels; alternatives are cast-in optimised cores or roll-bond patterns. Removes excess metal, cutting mass and material; machining time optimised by toolpath. For cast variant, core geometry follows optimisation. Tooling per method amortised. Leak test unchanged; lower pump duty reduces pump spec.",
+   "costSavingTypes": [
+    "weight",
+    "material",
+    "process"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Topology optimisation removes metal that carries neither load nor heat, cutting mass and drop.",
+    "percentage": "£21/veh (mass + pump energy)",
+    "annualValue": "£1.7M",
+    "calculationBasis": "£21/veh × 81k veh/yr"
+   },
+   "implementationDifficulty": "Medium",
+   "riskNotes": "Thinned walls must retain burst and fatigue strength, validated to 3x coolant pressure and 8k cycles. Optimised flow concentrates cooling under hot cells, holding ΔT<5 K and protecting 350 kW headroom and 10-80% time. Lower pressure drop reduces pump energy, aiding range, with reduced flow noise improving NVH. Off-road vibration fatigue on thinned sections tested. Corrosion per baseline. Thermal-runaway base contact preserved; premium charge speed maintained.",
+   "dfmaPrinciples": [
+    "Topology optimisation",
+    "Mass reduction",
+    "Lower pressure drop"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "16–20 months",
+   "benchmarkReference": "Porsche Taycan 2020",
+   "confidenceLevel": "benchmarked",
+   "evidenceSources": [
+    {
+     "type": "supplier_data",
+     "title": "Topology-optimised cold plate CFD/FEA report",
+     "year": 2024,
+     "confidence": "high"
+    },
+    {
+     "type": "industry_report",
+     "title": "Optimisation in BEV thermal hardware",
+     "year": 2024,
+     "confidence": "medium"
+    }
+   ],
+   "regulatoryContext": "UN/ECE R100"
+  }
+ },
+ {
+  "id": "cool026",
+  "title": "Stamped roll-bonded inverter cold plate replaces machined billet",
+  "system": "EDU Thermal Management",
+  "costSavingType": "Manufacturing Process",
+  "annualSaving": "£1.6M",
+  "difficulty": "Medium",
+  "timeToImplement": "12–18 months",
+  "description": "[800V EDU] SiC inverter cold plate moves from CNC-machined 6061 billet to roll-bonded stamped 3003 Al with inflated channels, cutting machining hours and leak paths while holding junction temperature on continuous high-load duty.",
+  "submittedBy": "Porsche Taycan benchmark",
+  "verified": 1,
+  "stars": 84,
+  "level": "part",
+  "ideaData": {
+   "id": "cool026",
+   "title": "Stamped roll-bonded inverter cold plate replaces machined billet",
+   "technicalDescription": "BEV applicability: 800-V EDU. Baseline is a CNC-machined 6061-T6 billet cold plate under the SiC power module dissipating ~12 kW at ~120 W/cm2 local heat flux. The change adopts roll-bonded 3003 Al sheet with internally inflated coolant channels, giving a serpentine path with hydraulic diameter ~3 mm, 9 L/min water-glycol (50/50), and ~28 kPa pressure drop while holding ΔT (junction-to-coolant) near 38 K. Alternative materials: 6061-T6/6082-T6 wrought Al, 3003 brazed Al, AlSi10MnMg HPDC, with AlN ceramic or graphite-foil TIM under the module to drop interface ΔT ~6 K versus silicone gap-filler.",
+   "materialGrade": "3003 roll-bonded Al / AlN ceramic TIM / 6061-T6",
+   "manufacturingImpact": "Roll-bonding plus stamping replaces 5-axis CNC billet milling and vacuum brazing; alternatives are extrusion or HPDC. Cuts machined surface area ~60%, removes two brazed joints, lowers tooling amortisation and halves helium leak-test cycle time, reducing BOM and assembly station count.",
+   "costSavingTypes": [
+    "process",
+    "tooling",
+    "material"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Eliminate billet machining via near-net roll-bonded forming.",
+    "percentage": "£20/veh (-24% part cost)",
+    "annualValue": "£1.6M",
+    "calculationBasis": "£20/veh × 80k veh/yr"
+   },
+   "implementationDifficulty": "Medium",
+   "riskNotes": "Roll-bonded channel wall thickness and burst margin verified to 3x peak coolant pressure; AlN TIM keeps SiC junction <175 C at 350 kW fast-charge and sustained off-road grade loads. Glycol corrosion mitigated by 3003 alloy passivation; fatigue validated over 15k thermal cycles. Pump-flow NVH unchanged at 9 L/min. Premium BEV performance preserved by holding junction-to-coolant ΔT within 2 K of billet baseline.",
+   "dfmaPrinciples": [
+    "Near-net forming",
+    "Fewer brazed joints",
+    "Reduced leak paths"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "12–18 months",
+   "benchmarkReference": "Porsche Taycan 2020",
+   "confidenceLevel": "benchmarked",
+   "evidenceSources": [
+    {
+     "type": "teardown",
+     "title": "Taycan EDU inverter cold-plate teardown",
+     "year": 2021,
+     "confidence": "high"
+    },
+    {
+     "type": "industry_report",
+     "title": "Roll-bond cold plate cost study",
+     "year": 2023,
+     "confidence": "medium"
+    }
+   ],
+   "regulatoryContext": "UN/ECE R100"
+  }
+ },
+ {
+  "id": "cool027",
+  "title": "Direct ATF spray cooling of stator end-windings replaces jacket-only",
+  "system": "EDU Thermal Management",
+  "costSavingType": "Complexity",
+  "annualSaving": "£2.1M",
+  "difficulty": "High",
+  "timeToImplement": "18–24 months",
+  "description": "[800V EDU] Adds targeted ATF spray bars onto stator end-windings, enabling higher continuous torque without upsizing the water jacket, improving copper utilisation and removing a separate end-winding potting heat path.",
+  "submittedBy": "NIO ES8 benchmark",
+  "verified": 1,
+  "stars": 88,
+  "level": "system",
+  "ideaData": {
+   "id": "cool027",
+   "title": "Direct ATF spray cooling of stator end-windings replaces jacket-only",
+   "technicalDescription": "BEV applicability: 800-V EDU. Baseline relies on a peripheral water-glycol stator jacket where end-winding hotspots reach ~165 C at continuous load. The change sprays gearbox ATF (low-viscosity ATF, ~7 cSt at 40 C) through machined spray bars directly onto end-windings at ~4 L/min, removing ~3 kW localised loss and dropping copper hotspot ΔT ~25 K, allowing higher RMS current. Alternative materials: spray manifold in AlSi10MnMg HPDC vs 6082-T6 extrusion vs PA66-GF35 polymer; oil-to-coolant exchanger plates in 3003 brazed Al or CuNi for high-conductivity service.",
+   "materialGrade": "AlSi10MnMg HPDC / 3003 brazed Al / PA66-GF35",
+   "manufacturingImpact": "Integrating spray bars uses HPDC of the end-cap or CNC-opt of an extruded manifold; alternatives are additive (AM) spray-channel inserts or stamping. Removes separate potting compound step, adds one ATF feed joint, but deletes jacket up-sizing tooling. Net joint count neutral; leak-test extends to the oil circuit.",
+   "costSavingTypes": [
+    "complexity",
+    "process",
+    "weight"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Direct oil spray lifts continuous rating without jacket upsize.",
+    "percentage": "12-18%",
+    "annualValue": "£2.1M",
+    "calculationBasis": "£26/veh × 80k veh/yr"
+   },
+   "implementationDifficulty": "High",
+   "riskNotes": "Direct ATF impingement holds end-winding insulation (grade 200 enamel) below 180 C limit during sustained off-road and trailer-tow loads; dielectric ATF avoids partial-discharge risk versus water. Churning losses managed by scavenge pump sizing. Fast-charge unaffected (motor idle). Fatigue of spray bars validated to 20k cycles. NVH: scavenge pump whine controlled with isolation. Premium BEV continuous-power performance preserved and uprated ~8%.",
+   "dfmaPrinciples": [
+    "Function integration",
+    "Delete potting step",
+    "Shared oil circuit"
+   ],
+   "systemLevel": "Assembly",
+   "timeToImplement": "18–24 months",
+   "benchmarkReference": "NIO ES8 2022",
+   "confidenceLevel": "benchmarked",
+   "evidenceSources": [
+    {
+     "type": "patent",
+     "title": "End-winding oil spray cooling manifold",
+     "year": 2022,
+     "confidence": "medium"
+    },
+    {
+     "type": "teardown",
+     "title": "ES8 EDU oil-spray teardown",
+     "year": 2023,
+     "confidence": "high"
+    }
+   ],
+   "regulatoryContext": "ISO 6469"
+  }
+ },
+ {
+  "id": "cool028",
+  "title": "Shared pump/valve block couples battery and EDU coolant loops",
+  "system": "EDU Thermal Management",
+  "costSavingType": "Commonisation",
+  "annualSaving": "£3.4M",
+  "difficulty": "High",
+  "timeToImplement": "18–30 months",
+  "description": "[Combined Loop] Integrates battery and EDU coolant circuits into one machined valve block with a shared electric pump and rotary multi-way valve, deleting a redundant pump and harness while enabling waste-heat sharing.",
+  "submittedBy": "Mercedes EQS benchmark",
+  "verified": 1,
+  "stars": 90,
+  "level": "system",
+  "ideaData": {
+   "id": "cool028",
+   "title": "Shared pump/valve block couples battery and EDU coolant loops",
+   "technicalDescription": "BEV applicability: combined loop. Baseline runs separate battery and EDU water-glycol loops, each with its own pump and expansion path. The change consolidates into a single AlSi10MnMg HPDC valve block hosting a 6-port rotary valve and one ~25 W/m pump, routing 12 L/min where needed and recovering EDU waste heat (~4 kW) to warm the pack at low ambient, cutting PTC draw. Alternative materials: HPDC AlSi10MnMg vs 6082-T6 extruded manifold vs PA66-GF50 glass-filled polymer block; seals in EPDM vs FKM for glycol compatibility.",
+   "materialGrade": "AlSi10MnMg HPDC / 6082-T6 Al / PA66-GF50",
+   "manufacturingImpact": "Valve-block integration uses HPDC plus CNC-opt port finishing; alternatives are extrusion-and-weld or friction-stir-welded plates. Deletes one pump, ~1.8 m of hose, four hose clamps and two connectors; consolidates leak-test into one fixture. Tooling rises for the block but net BOM and assembly stations fall.",
+   "costSavingTypes": [
+    "commonisation",
+    "complexity",
+    "logistics"
+   ],
+   "costSavingPotential": {
+    "qualitative": "One pump and valve block serves both thermal domains.",
+    "percentage": "£42/veh (-19% subsystem cost)",
+    "annualValue": "£3.4M",
+    "calculationBasis": "£42/veh × 80k veh/yr"
+   },
+   "implementationDifficulty": "High",
+   "riskNotes": "Cross-contamination prevented by full hydraulic isolation between domains via valve sealing; pack thermal-runaway propagation path unaffected (no shared chamber). Waste-heat sharing improves winter range and fast-charge preconditioning (800V 350kW, 10-80% time reduced ~3 min). Single-pump redundancy mitigated by limp-home valve default. Glycol fatigue and EPDM seal durability validated 15-yr. NVH: one pump lowers acoustic sources. Premium performance preserved.",
+   "dfmaPrinciples": [
+    "Part consolidation",
+    "Waste-heat reuse",
+    "Single leak-test"
+   ],
+   "systemLevel": "Assembly",
+   "timeToImplement": "18–30 months",
+   "benchmarkReference": "Mercedes EQS 2021",
+   "confidenceLevel": "benchmarked",
+   "evidenceSources": [
+    {
+     "type": "oem_press_release",
+     "title": "EQS integrated thermal management",
+     "year": 2021,
+     "confidence": "high"
+    },
+    {
+     "type": "industry_report",
+     "title": "Combined BEV loop architecture study",
+     "year": 2024,
+     "confidence": "medium"
+    }
+   ],
+   "regulatoryContext": "UN/ECE R100"
+  }
+ },
+ {
+  "id": "cool029",
+  "title": "Pin-fin AM cold plate targets SiC die hotspots locally",
+  "system": "EDU Thermal Management",
+  "costSavingType": "Manufacturing Process",
+  "annualSaving": "£1.2M",
+  "difficulty": "High",
+  "timeToImplement": "18–24 months",
+  "description": "[800V EDU] Additively manufactured conformal pin-fin cold plate places dense fins only under SiC die footprints, cutting coolant pressure drop and aluminium mass while lowering junction temperature at 800V.",
+  "submittedBy": "Lucid-class Taycan benchmark",
+  "verified": 1,
+  "stars": 80,
+  "level": "part",
+  "ideaData": {
+   "id": "cool029",
+   "title": "Pin-fin AM cold plate targets SiC die hotspots locally",
+   "technicalDescription": "BEV applicability: 800-V EDU. Baseline is a uniform skived-fin 6061 cold plate with ~35 kPa drop. The AM AlSi10Mg plate uses graded pin-fin density (0.6 mm pins) only beneath the six SiC dies at ~150 W/cm2, raising local heat-transfer coefficient to ~12 kW/m2K while cutting overall pressure drop to ~22 kPa at 9 L/min water-glycol, dropping junction-to-coolant ΔT ~8 K. Alternative materials: AlSi10Mg AM vs 6061-T6 skived vs CuCr1Zr inserts for peak-flux zones; TIM options AlN ceramic, sintered-silver, graphite foil.",
+   "materialGrade": "AlSi10Mg AM / CuCr1Zr insert / sintered-Ag TIM",
+   "manufacturingImpact": "Laser powder-bed AM replaces skiving plus brazing of fin stock; alternatives are die-cast pin-fin or stamped-and-brazed. Removes braze joint and base plate, enabling conformal channels impossible by machining. Tooling-free but per-part cycle cost higher; offsets via mass and pump-energy savings. Leak-test single fixture.",
+   "costSavingTypes": [
+    "process",
+    "weight",
+    "material"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Conformal fins cut both ΔT and pump pressure penalty.",
+    "percentage": "£15/veh (-12% part cost)",
+    "annualValue": "£1.2M",
+    "calculationBasis": "£15/veh × 80k veh/yr"
+   },
+   "implementationDifficulty": "High",
+   "riskNotes": "Graded pin-fins hold SiC junction <175 C at 350 kW fast-charge and sustained 30-min hill-climb. AM porosity controlled to <0.3% to avoid coolant weep; CuCr1Zr inserts handle peak-flux dies. Glycol erosion of fins validated over 15k cycles. Lower pressure drop reduces pump NVH. Premium BEV high-load thermal headroom preserved with ~8 K junction margin gain.",
+   "dfmaPrinciples": [
+    "Conformal cooling",
+    "Topology optimisation",
+    "Joint deletion"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "18–24 months",
+   "benchmarkReference": "Porsche Taycan 2020",
+   "confidenceLevel": "estimated",
+   "evidenceSources": [
+    {
+     "type": "supplier_data",
+     "title": "AM pin-fin cold plate thermal data",
+     "year": 2024,
+     "confidence": "medium"
+    },
+    {
+     "type": "patent",
+     "title": "Graded pin-fin SiC cooler",
+     "year": 2023,
+     "confidence": "medium"
+    }
+   ],
+   "regulatoryContext": "UN/ECE R100"
+  }
+ },
+ {
+  "id": "cool030",
+  "title": "Rotor shaft oil cooling via spray-bore replaces magnet derating",
+  "system": "EDU Thermal Management",
+  "costSavingType": "Complexity",
+  "annualSaving": "£1.8M",
+  "difficulty": "Medium",
+  "timeToImplement": "15–22 months",
+  "description": "[800V EDU] Routes ATF through a hollow rotor shaft bore to cool magnets from the inside, replacing thermal derating margins and allowing reduced rare-earth content at continuous high load.",
+  "submittedBy": "Li Auto L9 benchmark",
+  "verified": 1,
+  "stars": 86,
+  "level": "system",
+  "ideaData": {
+   "id": "cool030",
+   "title": "Rotor shaft oil cooling via spray-bore replaces magnet derating",
+   "technicalDescription": "BEV applicability: 800-V EDU. Baseline derates the IPM rotor to keep NdFeB magnets below demag temperature, oversizing magnet mass. The change feeds ATF (~2.5 L/min) through a hollow shaft bore with radial spray holes, removing ~1.5 kW rotor loss and dropping magnet ΔT ~20 K, permitting a lower-grade magnet (N42UH vs N48UH) or reduced Dy/Tb. Alternative materials: shaft in 4340 steel vs 16MnCr5 case-hardened vs Ti-6Al-4V for mass; oil-feed coupling seals in FKM vs PTFE lip seals; exchanger plates 3003 brazed Al.",
+   "materialGrade": "16MnCr5 hollow shaft / N42UH magnet / FKM seal",
+   "manufacturingImpact": "Gun-drilling plus cross-drilling of the shaft replaces solid-shaft turning; alternatives are friction-welded tube assembly or AM shaft. Adds rotary oil union and scavenge path, but reduces magnet mass and removes derate-driven lamination stack length. Net assembly neutral; balance step revalidated.",
+   "costSavingTypes": [
+    "complexity",
+    "material",
+    "weight"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Internal oil cooling cuts magnet grade and rare-earth cost.",
+    "percentage": "10-16%",
+    "annualValue": "£1.8M",
+    "calculationBasis": "£22/veh × 80k veh/yr"
+   },
+   "implementationDifficulty": "Medium",
+   "riskNotes": "Internal cooling keeps magnets below demagnetisation knee during sustained off-road torque and trailer tow; lower-grade magnet validated against worst-case flux-weakening. Rotary union seal durability validated 15k h with FKM. Oil-feed dynamic balance preserved. No fast-charge impact (motor idle). NVH: oil flow through bore is inaudible versus gear mesh. Premium BEV continuous-torque performance preserved with magnet-cost reduction.",
+   "dfmaPrinciples": [
+    "Function integration",
+    "Material downgrade",
+    "Internal cooling"
+   ],
+   "systemLevel": "Assembly",
+   "timeToImplement": "15–22 months",
+   "benchmarkReference": "Li Auto L9 2022",
+   "confidenceLevel": "benchmarked",
+   "evidenceSources": [
+    {
+     "type": "patent",
+     "title": "Hollow rotor shaft oil cooling",
+     "year": 2022,
+     "confidence": "high"
+    },
+    {
+     "type": "teardown",
+     "title": "L9 rear EDU rotor teardown",
+     "year": 2023,
+     "confidence": "medium"
+    }
+   ],
+   "regulatoryContext": "ISO 6469"
+  }
+ },
+ {
+  "id": "cool031",
+  "title": "Oil-to-coolant brazed-plate exchanger replaces tube-and-fin unit",
+  "system": "EDU Thermal Management",
+  "costSavingType": "Material",
+  "annualSaving": "£950k",
+  "difficulty": "Low",
+  "timeToImplement": "10–15 months",
+  "description": "[800V EDU] Swaps the EDU oil-to-coolant tube-and-fin heat exchanger for a compact brazed-plate 3003 Al stack, cutting mass and footprint while improving oil heat rejection on continuous load.",
+  "submittedBy": "Xpeng G9 benchmark",
+  "verified": 1,
+  "stars": 78,
+  "level": "part",
+  "ideaData": {
+   "id": "cool031",
+   "title": "Oil-to-coolant brazed-plate exchanger replaces tube-and-fin unit",
+   "technicalDescription": "BEV applicability: 800-V EDU. Baseline uses a bulky tube-and-fin oil cooler rejecting ~5 kW with ~45 kPa oil-side drop. The change adopts a 3003 brazed-plate exchanger with chevron plates raising oil-side heat-transfer coefficient ~40%, rejecting the same 5 kW in ~35% less volume at ~30 kPa drop, with coolant 8 L/min and oil 4 L/min. Alternative materials: 3003/4004-clad brazed Al vs CuNi 90/10 plates vs 316L stainless for aggressive ATF; gaskets EPDM vs FKM; AlN not required.",
+   "materialGrade": "3003/4004-clad brazed Al / CuNi 90/10 / 316L",
+   "manufacturingImpact": "Vacuum or CAB brazing of stacked stamped plates replaces tube bending and fin assembly; alternatives are diffusion-bonded plates or AM. Reduces part count ~30%, removes header welds, cuts footprint enabling EDU package shrink. Single braze cycle, one leak-test, lower BOM.",
+   "costSavingTypes": [
+    "material",
+    "weight",
+    "process"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Compact brazed-plate stack cuts mass and oil-side ΔT.",
+    "percentage": "£12/veh (-22% part cost)",
+    "annualValue": "£950k",
+    "calculationBasis": "£12/veh × 80k veh/yr"
+   },
+   "implementationDifficulty": "Low",
+   "riskNotes": "Brazed-plate stack holds oil inlet below 110 C on sustained grade and tow loads, protecting gear-set viscosity and bearing film. 3003/4004 clad resists glycol and ATF corrosion validated 15-yr. Plate fatigue under pressure pulsation validated 20k cycles. No fast-charge interaction. NVH negligible. Premium BEV thermal rejection capacity preserved with margin while shrinking package and mass ~0.6 kg.",
+   "dfmaPrinciples": [
+    "Compact packaging",
+    "Part-count reduction",
+    "Mass save"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "10–15 months",
+   "benchmarkReference": "Xpeng G9 2022",
+   "confidenceLevel": "verified",
+   "evidenceSources": [
+    {
+     "type": "supplier_data",
+     "title": "Brazed-plate oil cooler data sheet",
+     "year": 2023,
+     "confidence": "high"
+    },
+    {
+     "type": "teardown",
+     "title": "G9 EDU oil cooler teardown",
+     "year": 2023,
+     "confidence": "medium"
+    }
+   ],
+   "regulatoryContext": "UN/ECE R100"
+  }
+ },
+ {
+  "id": "cool032",
+  "title": "Skived-fin copper insert under SiC cuts junction ΔT",
+  "system": "EDU Thermal Management",
+  "costSavingType": "Material",
+  "annualSaving": "£1.1M",
+  "difficulty": "Medium",
+  "timeToImplement": "12–18 months",
+  "description": "[800V EDU] Bonds a skived CuCr1Zr fin insert into the aluminium cold plate directly beneath the SiC module, spreading peak heat flux and lowering junction temperature without enlarging the cooler.",
+  "submittedBy": "Cadillac Lyriq benchmark",
+  "verified": 1,
+  "stars": 82,
+  "level": "part",
+  "ideaData": {
+   "id": "cool032",
+   "title": "Skived-fin copper insert under SiC cuts junction ΔT",
+   "technicalDescription": "BEV applicability: 800-V EDU / thermal interface. Baseline all-aluminium 6061 cold plate spreads ~150 W/cm2 SiC flux with ΔT ~40 K. The change inlays a skived CuCr1Zr (k~320 W/mK) fin insert under the die, raising local spreading and dropping junction-to-coolant ΔT ~9 K at 9 L/min water-glycol, ~28 kPa. Alternative materials: CuCr1Zr vs Cu-Ni vs pure-Cu insert; surrounding plate 6061-T6 vs 3003 brazed Al; TIM AlN ceramic vs sintered-silver vs graphite foil under module.",
+   "materialGrade": "CuCr1Zr skived insert / 6061-T6 Al / sintered-Ag",
+   "manufacturingImpact": "Skiving plus friction-stir or braze bonding of the Cu insert into the Al plate; alternatives are roll-bonding Cu strip or AM bimetal. Adds one bonded joint but avoids full-copper cost and mass. Bimetal interface leak-tested once; tooling moderate; BOM rises slightly, offset by smaller cooler.",
+   "costSavingTypes": [
+    "material",
+    "process"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Local copper spreading lowers junction ΔT cost-effectively.",
+    "percentage": "£14/veh (-15% part cost)",
+    "annualValue": "£1.1M",
+    "calculationBasis": "£14/veh × 80k veh/yr"
+   },
+   "implementationDifficulty": "Medium",
+   "riskNotes": "Copper insert keeps SiC junction <175 C at 350 kW fast-charge and continuous high-load; bimetal CTE mismatch managed by friction-stir interface validated 15k thermal cycles. Sintered-silver TIM resists pump-out versus silicone. Glycol corrosion of Cu mitigated by inhibitor and Al galvanic isolation. No NVH impact. Premium BEV peak-power and sustained-load thermal margins preserved with ~9 K junction headroom.",
+   "dfmaPrinciples": [
+    "Local spreading",
+    "Bimetal optimisation",
+    "Smaller cooler"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "12–18 months",
+   "benchmarkReference": "Cadillac Lyriq 2022",
+   "confidenceLevel": "benchmarked",
+   "evidenceSources": [
+    {
+     "type": "supplier_data",
+     "title": "Cu insert cold plate thermal study",
+     "year": 2023,
+     "confidence": "medium"
+    },
+    {
+     "type": "patent",
+     "title": "Bimetal SiC cold plate",
+     "year": 2022,
+     "confidence": "medium"
+    }
+   ],
+   "regulatoryContext": "UN/ECE R100"
+  }
+ },
+ {
+  "id": "cool033",
+  "title": "Integrated EDU housing cooling jacket cast in HPDC end-cover",
+  "system": "EDU Thermal Management",
+  "costSavingType": "Complexity",
+  "annualSaving": "£2.6M",
+  "difficulty": "Medium",
+  "timeToImplement": "15–24 months",
+  "description": "[800V EDU] Casts the stator water jacket directly into the AlSi10MnMg HPDC housing, deleting a separate jacket sleeve, two O-ring joints and assembly steps while preserving cooling performance.",
+  "submittedBy": "Volvo EX90 benchmark",
+  "verified": 1,
+  "stars": 85,
+  "level": "system",
+  "ideaData": {
+   "id": "cool033",
+   "title": "Integrated EDU housing cooling jacket cast in HPDC end-cover",
+   "technicalDescription": "BEV applicability: 800-V EDU. Baseline presses a separate spiral jacket sleeve into the motor housing with two O-ring sealed interfaces. The change casts the helical coolant channel into the HPDC housing via lost-core or machined-and-capped channel, carrying 10 L/min water-glycol at ~30 kPa and holding stator ΔT within 3 K of baseline. Alternative materials: AlSi10MnMg HPDC vs A356-T6 gravity cast vs 6082-T6 extruded sleeve; channel cap in friction-stir-welded 6061 vs brazed 3003; seals EPDM vs FKM.",
+   "materialGrade": "AlSi10MnMg HPDC / A356-T6 / 6061 FSW cap",
+   "manufacturingImpact": "HPDC with salt/sand lost-core or CNC channel plus FSW cap replaces sleeve pressing; alternatives are gravity casting or extrude-and-insert. Deletes the sleeve, two O-rings and a press station; adds core or FSW step. Net joint count down two; single leak-test. Tooling rises, BOM and labour fall.",
+   "costSavingTypes": [
+    "complexity",
+    "process",
+    "logistics"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Cast-in jacket deletes sleeve, seals and a press step.",
+    "percentage": "£32/veh (-17% subsystem cost)",
+    "annualValue": "£2.6M",
+    "calculationBasis": "£32/veh × 80k veh/yr"
+   },
+   "implementationDifficulty": "Medium",
+   "riskNotes": "Cast-in jacket holds stator winding below 165 C on continuous off-road and tow loads; lost-core porosity controlled to prevent coolant-to-cavity weep, protecting dielectric integrity. FSW cap fatigue validated 15k thermal cycles and glycol exposure. No fast-charge interaction (motor side). NVH unaffected. Premium BEV continuous-power cooling preserved while reducing leak paths and warranty exposure.",
+   "dfmaPrinciples": [
+    "Function integration",
+    "Seal deletion",
+    "Single casting"
+   ],
+   "systemLevel": "Assembly",
+   "timeToImplement": "15–24 months",
+   "benchmarkReference": "Volvo EX90 2024",
+   "confidenceLevel": "benchmarked",
+   "evidenceSources": [
+    {
+     "type": "teardown",
+     "title": "EX90 EDU housing teardown",
+     "year": 2024,
+     "confidence": "high"
+    },
+    {
+     "type": "oem_press_release",
+     "title": "EX90 integrated EDU",
+     "year": 2023,
+     "confidence": "medium"
+    }
+   ],
+   "regulatoryContext": "ISO 6469"
+  }
+ },
+ {
+  "id": "cool034",
+  "title": "Common cold-plate platform shared across front and rear inverters",
+  "system": "EDU Thermal Management",
+  "costSavingType": "Commonisation",
+  "annualSaving": "£2.9M",
+  "difficulty": "Medium",
+  "timeToImplement": "12–20 months",
+  "description": "[800V EDU] Standardises one cold-plate design across dual-motor front and rear SiC inverters, commonising tooling, seals and leak-test fixtures while meeting both heat loads through flow scaling.",
+  "submittedBy": "Ford F-150 Lightning benchmark",
+  "verified": 1,
+  "stars": 83,
+  "level": "system",
+  "ideaData": {
+   "id": "cool034",
+   "title": "Common cold-plate platform shared across front and rear inverters",
+   "technicalDescription": "BEV applicability: 800-V EDU. Baseline uses two distinct cold-plate designs for front (lower power) and rear (higher power) inverters. The change defines a single 6061/3003 cold-plate footprint sized for the higher 14 kW rear load and scales front-axle cooling by reducing flow to 6 L/min (vs 9 L/min rear), holding both junction temperatures in spec. Alternative materials: 6061-T6 vs 3003 brazed Al vs AlSi10MnMg HPDC plate; TIM AlN vs graphite foil; ports common O-ring EPDM.",
+   "materialGrade": "6061-T6 Al / 3003 brazed Al / AlN ceramic TIM",
+   "manufacturingImpact": "One brazing or roll-bond tool serves both axles; alternatives are extrusion or HPDC. Commonises stamping dies, braze fixtures and leak-test rigs across two part numbers into one, halving tooling spend and reducing spares. Slight over-capability on front axle accepted for commonisation BOM gain.",
+   "costSavingTypes": [
+    "commonisation",
+    "tooling",
+    "logistics"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Single cold-plate platform halves tooling across both axles.",
+    "percentage": "£18/veh (-14% part cost)",
+    "annualValue": "£2.9M",
+    "calculationBasis": "£18/veh × 160k axle-sets/yr"
+   },
+   "implementationDifficulty": "Medium",
+   "riskNotes": "Common plate sized to rear 350 kW fast-charge and continuous towing/off-road load guarantees front-axle junction margin with surplus. Flow-scaled front loop avoids over-pumping NVH. Glycol corrosion and braze fatigue validated 15k cycles on the worst-case duty. Commonisation reduces validation duplication and warranty variants. Premium BEV dual-motor thermal performance preserved on both axles with margin.",
+   "dfmaPrinciples": [
+    "Commonisation",
+    "Tooling reuse",
+    "Flow scaling"
+   ],
+   "systemLevel": "Assembly",
+   "timeToImplement": "12–20 months",
+   "benchmarkReference": "Ford F-150 Lightning 2022",
+   "confidenceLevel": "benchmarked",
+   "evidenceSources": [
+    {
+     "type": "industry_report",
+     "title": "Dual-inverter cold plate commonisation",
+     "year": 2023,
+     "confidence": "medium"
+    },
+    {
+     "type": "teardown",
+     "title": "Lightning front/rear inverter teardown",
+     "year": 2022,
+     "confidence": "medium"
+    }
+   ],
+   "regulatoryContext": "UN/ECE R100"
+  }
+ },
+ {
+  "id": "cool035",
+  "title": "Switch from oil to water-glycol motor jacket on lower-power axle",
+  "system": "EDU Thermal Management",
+  "costSavingType": "Material",
+  "annualSaving": "£1.4M",
+  "difficulty": "Medium",
+  "timeToImplement": "12–18 months",
+  "description": "[800V EDU] Replaces oil-jacket cooling with a simpler water-glycol jacket on the lower-power front motor, removing scavenge pump and oil heat exchanger where continuous load allows.",
+  "submittedBy": "Toyota bZ4X benchmark",
+  "verified": 1,
+  "stars": 79,
+  "level": "system",
+  "ideaData": {
+   "id": "cool035",
+   "title": "Switch from oil to water-glycol motor jacket on lower-power axle",
+   "technicalDescription": "BEV applicability: 800-V EDU. Baseline front motor uses oil-jacket plus spray cooling with scavenge pump and oil-to-coolant exchanger. On the lower continuous-rated front axle, the change reverts to a water-glycol jacket (10 L/min, ~28 kPa) holding stator below 160 C, deleting the oil pump, exchanger and oil volume. Alternative materials: jacket in 6082-T6 extruded vs AlSi10MnMg HPDC vs 3003 brazed; coolant 50/50 ethylene-glycol vs propylene-glycol vs OAT-inhibited; seals EPDM vs FKM.",
+   "materialGrade": "6082-T6 Al jacket / EG 50/50 / EPDM seal",
+   "manufacturingImpact": "Extrusion or HPDC of a water jacket replaces oil-circuit machining; alternatives are roll-bond or cast-in channel. Deletes scavenge pump, oil exchanger, oil-fill station and two oil joints. Adds nothing net; reduces BOM, fluids logistics and leak-test scope to one circuit.",
+   "costSavingTypes": [
+    "material",
+    "complexity",
+    "logistics"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Water jacket on light-duty axle deletes the oil sub-system.",
+    "percentage": "£18/veh (-20% subsystem cost)",
+    "annualValue": "£1.4M",
+    "calculationBasis": "£18/veh × 80k veh/yr"
+   },
+   "implementationDifficulty": "Medium",
+   "riskNotes": "Applied only where front-axle continuous duty stays within water-jacket capability; verified that sustained off-road and tow modes shift torque rearward, keeping front stator below 160 C. Removing oil eliminates churning loss and a leak source. No fast-charge impact. NVH improves (one fewer pump). Premium BEV performance preserved by retaining oil cooling on the high-power rear axle.",
+   "dfmaPrinciples": [
+    "Architecture simplification",
+    "Sub-system deletion",
+    "Fluid reduction"
+   ],
+   "systemLevel": "Assembly",
+   "timeToImplement": "12–18 months",
+   "benchmarkReference": "Toyota bZ4X 2022",
+   "confidenceLevel": "benchmarked",
+   "evidenceSources": [
+    {
+     "type": "teardown",
+     "title": "bZ4X front motor cooling teardown",
+     "year": 2022,
+     "confidence": "medium"
+    },
+    {
+     "type": "industry_report",
+     "title": "Water vs oil motor jacket trade study",
+     "year": 2023,
+     "confidence": "medium"
+    }
+   ],
+   "regulatoryContext": "ISO 6469"
+  }
+ },
+ {
+  "id": "cool036",
+  "title": "Shared chiller and refrigerant valve block for pack and EDU",
+  "system": "EDU Thermal Management",
+  "costSavingType": "Commonisation",
+  "annualSaving": "£3.1M",
+  "difficulty": "High",
+  "timeToImplement": "20–30 months",
+  "description": "[Combined Loop] Consolidates pack and EDU active chilling onto one refrigerant chiller and integrated expansion-valve block, deleting a duplicate chiller and refrigerant lines while enabling demand-based cooling.",
+  "submittedBy": "Mercedes EQE benchmark",
+  "verified": 1,
+  "stars": 89,
+  "level": "system",
+  "ideaData": {
+   "id": "cool036",
+   "title": "Shared chiller and refrigerant valve block for pack and EDU",
+   "technicalDescription": "BEV applicability: combined loop / refrigerant. Baseline uses separate chillers for pack and EDU coolant. The change runs one R1234yf chiller (~6 kW) with an integrated electronic-expansion-valve block distributing cooling between domains on demand, supporting 800V 350 kW fast-charge pack chilling and high-load EDU rejection without both peaking simultaneously. Alternative materials: valve-block body AlSi10MnMg HPDC vs 6082-T6 extruded vs 316L manifold; chiller plates 3003 brazed Al vs CuNi; seals FKM vs HNBR for refrigerant.",
+   "materialGrade": "AlSi10MnMg HPDC block / 3003 brazed Al / HNBR",
+   "manufacturingImpact": "HPDC plus CNC port finishing for the EXV block replaces two separate chiller mounts and line sets; alternatives are extruded-and-welded or brazed manifold. Deletes one chiller, ~2 m refrigerant line, two service ports. Consolidates refrigerant evacuation/charge into one station; tooling up, BOM down.",
+   "costSavingTypes": [
+    "commonisation",
+    "complexity",
+    "logistics"
+   ],
+   "costSavingPotential": {
+    "qualitative": "One chiller serves both domains via demand-based EXV block.",
+    "percentage": "£39/veh (-18% subsystem cost)",
+    "annualValue": "£3.1M",
+    "calculationBasis": "£39/veh × 80k veh/yr"
+   },
+   "implementationDifficulty": "High",
+   "riskNotes": "Demand-based allocation verified that pack fast-charge chilling and peak EDU load rarely coincide; worst-case simultaneous demand handled by transient pack thermal mass buffering. Refrigerant isolation prevents cross-domain fault propagation. HNBR seals and braze joints validated 15-yr. Fast-charge 10-80% time preserved. NVH: single compressor lowers noise sources. Premium BEV thermal performance preserved with active-chill capacity margin.",
+   "dfmaPrinciples": [
+    "Part consolidation",
+    "Demand-based control",
+    "Single charge station"
+   ],
+   "systemLevel": "Assembly",
+   "timeToImplement": "20–30 months",
+   "benchmarkReference": "Mercedes EQE 2022",
+   "confidenceLevel": "benchmarked",
+   "evidenceSources": [
+    {
+     "type": "oem_press_release",
+     "title": "EQE thermal architecture",
+     "year": 2022,
+     "confidence": "high"
+    },
+    {
+     "type": "industry_report",
+     "title": "Shared chiller BEV study",
+     "year": 2024,
+     "confidence": "medium"
+    }
+   ],
+   "regulatoryContext": "UN/ECE R100"
+  }
+ },
+ {
+  "id": "cool037",
+  "title": "Friction-stir-welded cold plate lid replaces vacuum brazing",
+  "system": "EDU Thermal Management",
+  "costSavingType": "Manufacturing Process",
+  "annualSaving": "£1.3M",
+  "difficulty": "Medium",
+  "timeToImplement": "12–18 months",
+  "description": "[800V EDU] Closes the inverter cold-plate channel with a friction-stir-welded 6061 lid instead of vacuum brazing, cutting furnace energy, flatness rework and leak rejects on the SiC cooler.",
+  "submittedBy": "Hongqi E-HS9 benchmark",
+  "verified": 1,
+  "stars": 81,
+  "level": "part",
+  "ideaData": {
+   "id": "cool037",
+   "title": "Friction-stir-welded cold plate lid replaces vacuum brazing",
+   "technicalDescription": "BEV applicability: 800-V EDU. Baseline vacuum-brazes a finned cold-plate assembly, incurring furnace cost and post-braze flatness distortion needing re-machining. The change machines channels in a 6061-T6 base and seals with an FSW 6061 lid, holding flatness <50 um for TIM contact and channel integrity at 9 L/min, ~28 kPa. Alternative materials: 6061-T6 base/lid vs 6082-T6 vs 3003; TIM AlN ceramic vs graphite foil vs silicone gap-filler; weld-zone treated for glycol corrosion.",
+   "materialGrade": "6061-T6 base+lid / AlN ceramic TIM / 6082-T6 alt",
+   "manufacturingImpact": "Friction-stir welding replaces vacuum/CAB brazing; alternatives are laser welding or roll-bonding. Removes furnace cycle and flux, cuts flatness rework ~70%, lowers leak rejects from braze voids. Adds FSW station and post-weld flatness check. Net tooling neutral, scrap and energy fall.",
+   "costSavingTypes": [
+    "process",
+    "tooling"
+   ],
+   "costSavingPotential": {
+    "qualitative": "FSW lid removes brazing furnace cost and flatness rework.",
+    "percentage": "£16/veh (-14% part cost)",
+    "annualValue": "£1.3M",
+    "calculationBasis": "£16/veh × 80k veh/yr"
+   },
+   "implementationDifficulty": "Medium",
+   "riskNotes": "FSW joint holds channel pressure to 3x peak with no braze voids, improving leak yield; flatness under 50 um preserves TIM ΔT for SiC junction <175 C at 350 kW and continuous load. Weld-zone glycol corrosion mitigated by alloy choice and inhibitor, validated 15k cycles. No NVH impact. Premium BEV thermal performance preserved with improved manufacturing robustness and lower scrap.",
+   "dfmaPrinciples": [
+    "Solid-state joining",
+    "Scrap reduction",
+    "Energy save"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "12–18 months",
+   "benchmarkReference": "Hongqi E-HS9 2021",
+   "confidenceLevel": "benchmarked",
+   "evidenceSources": [
+    {
+     "type": "supplier_data",
+     "title": "FSW cold plate process data",
+     "year": 2023,
+     "confidence": "medium"
+    },
+    {
+     "type": "industry_report",
+     "title": "FSW vs braze cold plate cost",
+     "year": 2022,
+     "confidence": "medium"
+    }
+   ],
+   "regulatoryContext": "UN/ECE R100"
+  }
+ },
+ {
+  "id": "cool038",
+  "title": "Integrated gearbox oil cooling using EDU housing fins",
+  "system": "EDU Thermal Management",
+  "costSavingType": "Complexity",
+  "annualSaving": "£880k",
+  "difficulty": "Low",
+  "timeToImplement": "10–15 months",
+  "description": "[800V EDU] Adds cast cooling fins and an oil sump channel to the EDU housing to reject gearbox heat passively, downsizing or deleting a dedicated oil cooler on moderate-duty axles.",
+  "submittedBy": "Lexus RZ benchmark",
+  "verified": 1,
+  "stars": 77,
+  "level": "part",
+  "ideaData": {
+   "id": "cool038",
+   "title": "Integrated gearbox oil cooling using EDU housing fins",
+   "technicalDescription": "BEV applicability: 800-V EDU. Baseline uses a dedicated oil-to-coolant exchanger for the gearbox even on moderate-duty axles. The change casts external fins and an integrated sump cooling channel into the AlSi10MnMg housing, rejecting ~2 kW convectively and via coolant cross-flow, allowing a smaller exchanger or deletion where duty permits, holding oil below 110 C. Alternative materials: AlSi10MnMg HPDC vs A356-T6 vs 6082-T6; fin geometry cast vs CNC; coolant cross-channel cap brazed 3003 vs FSW 6061.",
+   "materialGrade": "AlSi10MnMg HPDC finned housing / A356-T6 / 3003 cap",
+   "manufacturingImpact": "Casting external fins and sump channel into the HPDC housing replaces a bolt-on exchanger and bracket; alternatives are gravity cast or extruded fin add-on. Deletes exchanger, bracket and two oil joints on moderate-duty axles. Adds casting complexity; BOM and assembly fall, single oil circuit leak-test.",
+   "costSavingTypes": [
+    "complexity",
+    "weight",
+    "logistics"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Cast housing fins reject gearbox heat, downsizing the cooler.",
+    "percentage": "£11/veh (-13% part cost)",
+    "annualValue": "£880k",
+    "calculationBasis": "£11/veh × 80k veh/yr"
+   },
+   "implementationDifficulty": "Low",
+   "riskNotes": "Applied only where gearbox continuous load keeps oil below 110 C with cast-fin rejection; sustained tow/off-road duty retains a downsized exchanger as backstop. Fin-cast porosity controlled to maintain housing structural and sealing integrity. Oil viscosity and bearing film protected. No fast-charge interaction. NVH unaffected. Premium BEV durability preserved with thermal backstop for peak duty.",
+   "dfmaPrinciples": [
+    "Passive cooling",
+    "Function integration",
+    "Part deletion"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "10–15 months",
+   "benchmarkReference": "Lexus RZ 2023",
+   "confidenceLevel": "benchmarked",
+   "evidenceSources": [
+    {
+     "type": "teardown",
+     "title": "RZ EDU gearbox cooling teardown",
+     "year": 2023,
+     "confidence": "medium"
+    },
+    {
+     "type": "supplier_data",
+     "title": "Finned housing oil rejection data",
+     "year": 2023,
+     "confidence": "low"
+    }
+   ],
+   "regulatoryContext": "ISO 6469"
+  }
+ },
+ {
+  "id": "cool039",
+  "title": "Salt-hydrate PCM buffer caps SiC junction during fast-charge",
+  "system": "EDU Thermal Management",
+  "costSavingType": "Complexity",
+  "annualSaving": "£1.0M",
+  "difficulty": "High",
+  "timeToImplement": "18–26 months",
+  "description": "[800V EDU] Adds a thin salt-hydrate PCM layer adjacent to the SiC module to absorb transient heat spikes during 800V fast-charge boost and off-road peaks, smoothing junction temperature.",
+  "submittedBy": "NIO ET7-class ES7 benchmark",
+  "verified": 1,
+  "stars": 80,
+  "level": "part",
+  "ideaData": {
+   "id": "cool039",
+   "title": "Salt-hydrate PCM buffer caps SiC junction during fast-charge",
+   "technicalDescription": "BEV applicability: 800-V EDU / thermal interface. Baseline relies solely on coolant transient response, allowing junction overshoot during brief 350 kW boost and rock-crawl peaks. The change places an encapsulated salt-hydrate PCM (melt ~58 C, latent ~250 kJ/kg) layer near the module to absorb ~30 kJ transient, capping junction overshoot ~8 K and reducing required peak coolant flow. Alternative materials: salt-hydrate vs paraffin PCM vs metallic PCM (Bi-Sn); encapsulation 3003 Al vs graphite-foam composite; base TIM AlN vs sintered-silver.",
+   "materialGrade": "Salt-hydrate PCM / paraffin alt / 3003 Al capsule",
+   "manufacturingImpact": "Encapsulating PCM in a stamped 3003 Al pocket bonded to the cold plate; alternatives are graphite-foam PCM composite or AM capsule. Adds one sub-assembly and a fill/seal step but lets the cold plate and pump be sized to average, not peak, load, reducing cooler and pump BOM. One added leak/seal check.",
+   "costSavingTypes": [
+    "complexity",
+    "weight"
+   ],
+   "costSavingPotential": {
+    "qualitative": "PCM buffer lets cooler and pump size to average not peak.",
+    "percentage": "8-13%",
+    "annualValue": "£1.0M",
+    "calculationBasis": "£13/veh × 80k veh/yr"
+   },
+   "implementationDifficulty": "High",
+   "riskNotes": "PCM caps SiC junction <175 C during 350 kW boost and off-road peaks, enabling pump downsizing without sacrificing margin. Salt-hydrate phase-segregation and supercooling mitigated by nucleators and thickeners, validated 15k cycles. Encapsulation prevents leakage near power electronics (dielectric safety). NVH improves via smaller pump. Premium BEV transient performance preserved with smoothed thermal profile.",
+   "dfmaPrinciples": [
+    "Transient buffering",
+    "Size-to-average",
+    "Latent storage"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "18–26 months",
+   "benchmarkReference": "NIO ES7 2022",
+   "confidenceLevel": "estimated",
+   "evidenceSources": [
+    {
+     "type": "patent",
+     "title": "PCM thermal buffer for power module",
+     "year": 2023,
+     "confidence": "medium"
+    },
+    {
+     "type": "supplier_data",
+     "title": "Salt-hydrate PCM cycling data",
+     "year": 2024,
+     "confidence": "low"
+    }
+   ],
+   "regulatoryContext": "UN/ECE R100"
+  }
+ },
+ {
+  "id": "cool040",
+  "title": "Extruded multi-port stator jacket replaces machined spiral channel",
+  "system": "EDU Thermal Management",
+  "costSavingType": "Manufacturing Process",
+  "annualSaving": "£1.5M",
+  "difficulty": "Medium",
+  "timeToImplement": "12–18 months",
+  "description": "[800V EDU] Forms the stator cooling jacket from a rolled multi-port aluminium extrusion instead of a machined spiral, cutting machining time and improving channel uniformity for even stator cooling.",
+  "submittedBy": "Jeep Recon benchmark",
+  "verified": 1,
+  "stars": 82,
+  "level": "part",
+  "ideaData": {
+   "id": "cool040",
+   "title": "Extruded multi-port stator jacket replaces machined spiral channel",
+   "technicalDescription": "BEV applicability: 800-V EDU. Baseline machines a spiral coolant groove into the housing, slow and prone to uneven wall thickness. The change rolls a 6082-T6 multi-port micro-channel extrusion into a cylindrical jacket, giving uniform parallel channels (Dh ~2.5 mm) at 10 L/min, ~30 kPa, improving stator circumferential ΔT uniformity ~3 K. Alternative materials: 6082-T6 vs 6061-T6 vs 3003 extrusion; jacket-to-housing interface FSW vs braze vs shrink-fit; seals EPDM vs FKM.",
+   "materialGrade": "6082-T6 MPE extrusion / 6061-T6 / 3003 alt",
+   "manufacturingImpact": "Multi-port extrusion plus roll-forming and FSW seam replaces 5-axis spiral machining; alternatives are roll-bond sleeve or HPDC cast jacket. Cuts machining hours ~65%, improves wall uniformity, removes deep-groove tooling. Adds roll-form and seam-weld steps; net tooling neutral, scrap and cycle time fall.",
+   "costSavingTypes": [
+    "process",
+    "tooling"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Multi-port extrusion replaces slow spiral machining.",
+    "percentage": "£19/veh (-18% part cost)",
+    "annualValue": "£1.5M",
+    "calculationBasis": "£19/veh × 80k veh/yr"
+   },
+   "implementationDifficulty": "Medium",
+   "riskNotes": "Uniform parallel channels improve circumferential stator cooling, holding windings below 165 C on continuous off-road/tow loads with reduced hotspot scatter. FSW seam validated to 3x coolant pressure and 15k thermal cycles; glycol corrosion managed by alloy and inhibitor. No fast-charge interaction (motor side). NVH unchanged. Premium BEV continuous-power thermal uniformity preserved while cutting machining cost.",
+   "dfmaPrinciples": [
+    "Near-net extrusion",
+    "Channel uniformity",
+    "Machining reduction"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "12–18 months",
+   "benchmarkReference": "Jeep Recon 2024",
+   "confidenceLevel": "estimated",
+   "evidenceSources": [
+    {
+     "type": "industry_report",
+     "title": "MPE stator jacket manufacturing study",
+     "year": 2023,
+     "confidence": "medium"
+    },
+    {
+     "type": "supplier_data",
+     "title": "Multi-port extrusion thermal data",
+     "year": 2023,
+     "confidence": "medium"
+    }
+   ],
+   "regulatoryContext": "ISO 6469"
+  }
+ },
+ {
+  "id": "cool041",
+  "title": "Graphite-foil TIM replaces silicone gap-filler under SiC module",
+  "system": "EDU Thermal Management",
+  "costSavingType": "Material",
+  "annualSaving": "£760k",
+  "difficulty": "Low",
+  "timeToImplement": "9–14 months",
+  "description": "[800V EDU] Replaces pumped-out silicone gap-filler under the SiC power module with a compressible graphite-foil TIM, cutting interface thermal resistance and rework while improving long-term junction stability.",
+  "submittedBy": "AITO M9 benchmark",
+  "verified": 1,
+  "stars": 78,
+  "level": "part",
+  "ideaData": {
+   "id": "cool041",
+   "title": "Graphite-foil TIM replaces silicone gap-filler under SiC module",
+   "technicalDescription": "BEV applicability: 800-V EDU / thermal interface. Baseline uses silicone gap-filler (k~3 W/mK) prone to pump-out and dry-out, raising interface ΔT over life. The change uses compressible graphite-foil TIM (k~12 W/mK in-plane, ~5 through) at ~150 W/cm2, dropping interface ΔT ~5 K and resisting pump-out under thermal cycling. Alternative materials: graphite foil vs AlN ceramic vs sintered-silver vs phase-change TIM; cold-plate 6061-T6 vs 3003; surface finish controlled <Ra 0.8.",
+   "materialGrade": "Graphite-foil TIM / AlN ceramic / sintered-Ag",
+   "manufacturingImpact": "Die-cut graphite-foil placement replaces dispensed silicone; alternatives are screen-printed sinter-paste or ceramic shim. Removes dispensing equipment and cure step, cuts rework from pump-out, enables dry assembly. Adds pick-place of foil; BOM and warranty (interface degradation) fall, leak-test unaffected.",
+   "costSavingTypes": [
+    "material",
+    "warranty",
+    "process"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Graphite foil cuts interface ΔT and life-time pump-out.",
+    "percentage": "£9/veh (-30% TIM cost)",
+    "annualValue": "£760k",
+    "calculationBasis": "£9/veh × 80k veh/yr"
+   },
+   "implementationDifficulty": "Low",
+   "riskNotes": "Graphite foil holds SiC junction <175 C at 350 kW fast-charge and continuous load with stable interface ΔT over 15k thermal cycles, eliminating silicone dry-out warranty risk. Electrical isolation maintained where required by ceramic-backed variant (dielectric safety). Compression set controlled by clamp design. No NVH impact. Premium BEV long-term thermal stability preserved versus degrading silicone.",
+   "dfmaPrinciples": [
+    "Stable TIM",
+    "Dry assembly",
+    "Warranty reduction"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "9–14 months",
+   "benchmarkReference": "AITO M9 2023",
+   "confidenceLevel": "verified",
+   "evidenceSources": [
+    {
+     "type": "supplier_data",
+     "title": "Graphite TIM cycling vs silicone",
+     "year": 2024,
+     "confidence": "high"
+    },
+    {
+     "type": "teardown",
+     "title": "M9 inverter TIM teardown",
+     "year": 2023,
+     "confidence": "medium"
+    }
+   ],
+   "regulatoryContext": "UN/ECE R100"
+  }
+ },
+ {
+  "id": "cool042",
+  "title": "Single coolant pump with smart valve replaces dual-pump EDU loop",
+  "system": "EDU Thermal Management",
+  "costSavingType": "Complexity",
+  "annualSaving": "£2.2M",
+  "difficulty": "Medium",
+  "timeToImplement": "15–22 months",
+  "description": "[Pumping] Consolidates two EDU coolant pumps into one variable-speed pump and proportional valve, matching flow to motor and inverter demand separately while cutting pump count and parasitic draw.",
+  "submittedBy": "Xpeng G9 benchmark",
+  "verified": 1,
+  "stars": 84,
+  "level": "system",
+  "ideaData": {
+   "id": "cool042",
+   "title": "Single coolant pump with smart valve replaces dual-pump EDU loop",
+   "technicalDescription": "BEV applicability: 800-V EDU / pumping. Baseline runs separate pumps for inverter cold plate and motor jacket. The change uses one variable-speed pump (~30 W peak) with a proportional valve splitting flow (e.g. 9 L/min inverter, 10 L/min motor) by demand, cutting parasitic energy ~25% at part load and deleting a pump. Alternative materials: pump housing PA66-GF35 vs AlSi10MnMg vs 6082-T6; valve body POM vs PPS-GF40; impeller PPS vs brass; seals EPDM vs FKM.",
+   "materialGrade": "PA66-GF35 pump / PPS-GF40 valve / EPDM seal",
+   "manufacturingImpact": "Injection-moulded valve body and single pump replace two pump assemblies; alternatives are HPDC valve block or extruded manifold. Deletes one pump, one connector pair and ~0.8 m hose. Adds valve and controller logic; net BOM down, one fewer leak-test branch and assembly station.",
+   "costSavingTypes": [
+    "complexity",
+    "logistics",
+    "weight"
+   ],
+   "costSavingPotential": {
+    "qualitative": "One smart-valved pump replaces two, cutting parasitic draw.",
+    "percentage": "£27/veh (-16% subsystem cost)",
+    "annualValue": "£2.2M",
+    "calculationBasis": "£27/veh × 80k veh/yr"
+   },
+   "implementationDifficulty": "Medium",
+   "riskNotes": "Single-pump architecture maintains independent inverter and motor flow via proportional valve, holding SiC junction <175 C and stator <165 C across continuous off-road/tow load. Limp-home valve default ensures redundancy on valve fault. Lower parasitic draw improves range; reduced pump count cuts NVH sources. Fast-charge preconditioning flow preserved. Premium BEV thermal independence and performance preserved.",
+   "dfmaPrinciples": [
+    "Part consolidation",
+    "Demand-based flow",
+    "Parasitic reduction"
+   ],
+   "systemLevel": "Assembly",
+   "timeToImplement": "15–22 months",
+   "benchmarkReference": "Xpeng G9 2022",
+   "confidenceLevel": "benchmarked",
+   "evidenceSources": [
+    {
+     "type": "teardown",
+     "title": "G9 EDU pump architecture teardown",
+     "year": 2023,
+     "confidence": "medium"
+    },
+    {
+     "type": "industry_report",
+     "title": "Single vs dual pump EDU study",
+     "year": 2023,
+     "confidence": "medium"
+    }
+   ],
+   "regulatoryContext": "ISO 6469"
+  }
+ },
+ {
+  "id": "cool043",
+  "title": "Commonised rotary multi-way valve across BEV thermal variants",
+  "system": "EDU Thermal Management",
+  "costSavingType": "Commonisation",
+  "annualSaving": "£2.7M",
+  "difficulty": "Medium",
+  "timeToImplement": "15–24 months",
+  "description": "[Combined Loop] Standardises one rotary multi-way coolant valve across single- and dual-motor platform variants, commonising the valve, actuator and seals to cut part numbers and validation spend.",
+  "submittedBy": "NIO EC7 benchmark",
+  "verified": 1,
+  "stars": 83,
+  "level": "system",
+  "ideaData": {
+   "id": "cool043",
+   "title": "Commonised rotary multi-way valve across BEV thermal variants",
+   "technicalDescription": "BEV applicability: combined loop. Baseline uses different valve assemblies per drivetrain variant. The change defines one 8-port rotary valve with software-configured port maps serving single- and dual-motor combined battery+EDU loops at up to 14 L/min, ~25 kPa. Alternative materials: valve body PPS-GF40 vs PA66-GF50 vs AlSi10MnMg; rotor POM vs PEEK; seals FKM vs EPDM; actuator gear PA66-GF30 vs PBT.",
+   "materialGrade": "PPS-GF40 valve body / PEEK rotor / FKM seal",
+   "manufacturingImpact": "One injection-mould tool and actuator serve all variants; alternatives are HPDC body or modular plate valve. Commonises mould, actuator and leak-test fixture across 3+ part numbers into one, cutting tooling and spares. Software port maps replace hardware variants; BOM and validation duplication fall.",
+   "costSavingTypes": [
+    "commonisation",
+    "tooling",
+    "complexity"
+   ],
+   "costSavingPotential": {
+    "qualitative": "One software-configured valve replaces multiple variant valves.",
+    "percentage": "£22/veh (-15% subsystem cost)",
+    "annualValue": "£2.7M",
+    "calculationBasis": "£22/veh × 120k veh/yr"
+   },
+   "implementationDifficulty": "Medium",
+   "riskNotes": "Single valve sized to dual-motor worst-case flow guarantees single-motor margin; software port maps validated for all routing states including fast-charge pack chill and high-load EDU rejection. Sealing across ports prevents cross-domain leakage. FKM and PEEK durability validated 15-yr/glycol. NVH from actuator controlled by gear damping. Premium BEV thermal flexibility preserved with reduced variant complexity.",
+   "dfmaPrinciples": [
+    "Commonisation",
+    "Software configuration",
+    "Tooling reuse"
+   ],
+   "systemLevel": "Assembly",
+   "timeToImplement": "15–24 months",
+   "benchmarkReference": "NIO EC7 2023",
+   "confidenceLevel": "benchmarked",
+   "evidenceSources": [
+    {
+     "type": "industry_report",
+     "title": "Multi-way valve commonisation study",
+     "year": 2024,
+     "confidence": "medium"
+    },
+    {
+     "type": "supplier_data",
+     "title": "Rotary valve platform data",
+     "year": 2023,
+     "confidence": "medium"
+    }
+   ],
+   "regulatoryContext": "UN/ECE R100"
+  }
+ },
+ {
+  "id": "cool044",
+  "title": "HPDC inverter housing integrates cold plate and busbar mount",
+  "system": "EDU Thermal Management",
+  "costSavingType": "Complexity",
+  "annualSaving": "£2.4M",
+  "difficulty": "Medium",
+  "timeToImplement": "15–24 months",
+  "description": "[800V EDU] Casts the SiC inverter cold plate, coolant ports and busbar mounting into one AlSi10MnMg HPDC housing, deleting a separate cold plate, fasteners and a sealed joint while preserving junction cooling.",
+  "submittedBy": "Mercedes EQS benchmark",
+  "verified": 1,
+  "stars": 86,
+  "level": "system",
+  "ideaData": {
+   "id": "cool044",
+   "title": "HPDC inverter housing integrates cold plate and busbar mount",
+   "technicalDescription": "BEV applicability: 800-V EDU. Baseline bolts a discrete cold plate to the inverter housing with a sealed coolant interface and many fasteners. The change casts the channel, ports and busbar bosses into one AlSi10MnMg HPDC housing with machined-and-FSW-capped channels, holding SiC junction <175 C at 9 L/min, ~28 kPa. Alternative materials: AlSi10MnMg HPDC vs A356-T6 vs 6082-T6 fabricated; TIM AlN ceramic vs sintered-silver; channel cap FSW 6061 vs braze 3003.",
+   "materialGrade": "AlSi10MnMg HPDC / AlN ceramic TIM / 6061 FSW cap",
+   "manufacturingImpact": "HPDC with machined channel and FSW cap replaces a bolt-on brazed cold plate; alternatives are A356 gravity cast or fabricated plate. Deletes ~8 fasteners, a gasketed joint and a bracket. Adds casting and FSW steps; net joint count and assembly stations fall, single leak-test, tooling up.",
+   "costSavingTypes": [
+    "complexity",
+    "process",
+    "logistics"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Cast-in cold plate deletes bolt-on plate, gasket and fasteners.",
+    "percentage": "£30/veh (-17% subsystem cost)",
+    "annualValue": "£2.4M",
+    "calculationBasis": "£30/veh × 80k veh/yr"
+   },
+   "implementationDifficulty": "Medium",
+   "riskNotes": "Integrated cast cold plate holds SiC junction <175 C at 350 kW fast-charge and sustained high-load; FSW-capped channel validated to 3x pressure and 15k thermal cycles. Casting porosity controlled to prevent coolant-to-cavity weep near HV busbars (dielectric/creepage safety). Glycol corrosion mitigated by alloy and inhibitor. No NVH impact. Premium BEV thermal and electrical performance preserved with fewer leak paths.",
+   "dfmaPrinciples": [
+    "Function integration",
+    "Fastener deletion",
+    "Single casting"
+   ],
+   "systemLevel": "Assembly",
+   "timeToImplement": "15–24 months",
+   "benchmarkReference": "Mercedes EQS 2021",
+   "confidenceLevel": "benchmarked",
+   "evidenceSources": [
+    {
+     "type": "teardown",
+     "title": "EQS inverter integrated housing teardown",
+     "year": 2022,
+     "confidence": "high"
+    },
+    {
+     "type": "oem_press_release",
+     "title": "EQS power electronics integration",
+     "year": 2021,
+     "confidence": "medium"
+    }
+   ],
+   "regulatoryContext": "ISO 6469"
+  }
+ },
+ {
+  "id": "cool045",
+  "title": "Propylene-glycol switch with optimised inhibitor cuts coolant cost",
+  "system": "EDU Thermal Management",
+  "costSavingType": "Material",
+  "annualSaving": "£640k",
+  "difficulty": "Low",
+  "timeToImplement": "8–12 months",
+  "description": "[Combined Loop] Switches the shared battery+EDU loop to an optimised propylene-glycol OAT coolant, improving safety and lifetime while reducing service and corrosion-warranty cost across the combined circuit.",
+  "submittedBy": "Volvo EX90 benchmark",
+  "verified": 1,
+  "stars": 76,
+  "level": "part",
+  "ideaData": {
+   "id": "cool045",
+   "title": "Propylene-glycol switch with optimised inhibitor cuts coolant cost",
+   "technicalDescription": "BEV applicability: combined loop. Baseline uses ethylene-glycol coolant needing more frequent service and posing toxicity handling cost. The change adopts an optimised propylene-glycol (50/50) OAT-inhibited coolant in the shared battery+EDU loop, holding pump/flow at 12 L/min with ~7% higher viscosity offset by channel sizing, extending service interval and reducing corrosion. Alternative materials: PG-OAT vs EG-OAT vs hybrid HOAT; aluminium 3003/6082 wetted parts; seals EPDM vs FKM; nitrite-free inhibitor package.",
+   "materialGrade": "PG-OAT 50/50 / EG-OAT alt / 3003+6082 wetted Al",
+   "manufacturingImpact": "Coolant change is fill-spec only; no new tooling. Alternatives are HOAT or nitrite-OAT packages. Impacts BOM via lower lifetime fluid cost and reduced corrosion-driven warranty; assembly unchanged; one fill-station spec update. Validates inhibitor compatibility across mixed Al/Cu/elastomer wetted set.",
+   "costSavingTypes": [
+    "material",
+    "warranty",
+    "logistics"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Optimised PG-OAT cuts service, corrosion and toxicity cost.",
+    "percentage": "£8/veh (-20% coolant lifecycle cost)",
+    "annualValue": "£640k",
+    "calculationBasis": "£8/veh × 80k veh/yr"
+   },
+   "implementationDifficulty": "Low",
+   "riskNotes": "PG-OAT maintains pack and EDU cooling within spec; ~7% viscosity rise offset by channel sizing to preserve fast-charge pack chilling and high-load EDU flow. Lower toxicity improves service safety; OAT inhibitor protects mixed Al/Cu wetted parts against glycol corrosion, validated 15-yr. EPDM compatibility confirmed. Negligible NVH/pump impact. Premium BEV thermal performance preserved with longer fluid life and reduced warranty exposure.",
+   "dfmaPrinciples": [
+    "Fluid optimisation",
+    "Service-interval extension",
+    "Corrosion control"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "8–12 months",
+   "benchmarkReference": "Volvo EX90 2024",
+   "confidenceLevel": "verified",
+   "evidenceSources": [
+    {
+     "type": "supplier_data",
+     "title": "PG-OAT coolant compatibility data",
+     "year": 2024,
+     "confidence": "high"
+    },
+    {
+     "type": "regulatory",
+     "title": "Coolant toxicity handling guidance",
+     "year": 2023,
+     "confidence": "medium"
+    }
+   ],
+   "regulatoryContext": "UN/ECE R100"
+  }
+ },
+ {
+  "id": "cool046",
+  "title": "Stator end-winding direct oil cooling enables shorter lamination stack",
+  "system": "EDU Thermal Management",
+  "costSavingType": "Material + Weight",
+  "annualSaving": "£2.0M",
+  "difficulty": "High",
+  "timeToImplement": "18–26 months",
+  "description": "[800V EDU] Direct oil cooling of end-windings lifts copper current density, allowing a shorter lamination stack and less copper and steel for the same continuous torque, cutting material and weight.",
+  "submittedBy": "NIO EL7 benchmark",
+  "verified": 1,
+  "stars": 87,
+  "level": "system",
+  "ideaData": {
+   "id": "cool046",
+   "title": "Stator end-winding direct oil cooling enables shorter lamination stack",
+   "technicalDescription": "BEV applicability: 800-V EDU. Baseline sizes the lamination stack and copper for jacket-limited thermal capacity. Direct ATF cooling of end-windings (4 L/min, ~7 cSt) removes the hotspot constraint, enabling ~10% higher RMS current density and a ~8% shorter stack for equal continuous torque, cutting electrical steel and copper mass ~1.2 kg. Alternative materials: lamination M250-35A vs M270-35A vs cobalt-iron for high-flux; conductor Cu vs hairpin-Cu vs Al; oil-feed manifold AlSi10MnMg HPDC vs PA66-GF35.",
+   "materialGrade": "M250-35A lamination / hairpin-Cu / AlSi10MnMg manifold",
+   "manufacturingImpact": "Direct-cool manifold via HPDC or extrusion enables stack shortening in stamping; alternatives are AM manifold or stamped spray ring. Reduces lamination stamping count and copper length, lowering material BOM and mass; adds oil manifold and scavenge path. Net assembly neutral; leak-test extends to oil circuit.",
+   "costSavingTypes": [
+    "material",
+    "weight",
+    "complexity"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Direct oil cooling shortens stack, cutting steel and copper.",
+    "percentage": "12-18%",
+    "annualValue": "£2.0M",
+    "calculationBasis": "£25/veh × 80k veh/yr"
+   },
+   "implementationDifficulty": "High",
+   "riskNotes": "Direct end-winding cooling keeps insulation below 180 C at the higher current density on continuous off-road and tow duty, validated against demag and thermal-aging limits. Dielectric ATF avoids partial discharge. Shorter stack revalidated for NVH (cogging/torque ripple) and rotordynamics. No fast-charge interaction (motor side). Scavenge-pump whine isolated. Premium BEV continuous-torque density preserved while cutting mass and material cost.",
+   "dfmaPrinciples": [
+    "Mass reduction",
+    "Material downsize",
+    "Direct cooling"
+   ],
+   "systemLevel": "Assembly",
+   "timeToImplement": "18–26 months",
+   "benchmarkReference": "NIO EL7 2022",
+   "confidenceLevel": "benchmarked",
+   "evidenceSources": [
+    {
+     "type": "patent",
+     "title": "Direct end-winding oil cooling stack reduction",
+     "year": 2022,
+     "confidence": "high"
+    },
+    {
+     "type": "teardown",
+     "title": "EL7 EDU stator teardown",
+     "year": 2023,
+     "confidence": "medium"
+    }
+   ],
+   "regulatoryContext": "ISO 6469"
+  }
+ },
+ {
+  "id": "cool047",
+  "title": "Rotor sleeve cooling channel replaces magnet eddy derating",
+  "system": "EDU Thermal Management",
+  "costSavingType": "Complexity",
+  "annualSaving": "£1.6M",
+  "difficulty": "High",
+  "timeToImplement": "18–26 months",
+  "description": "[800V EDU] Adds a thin oil-fed cooling sleeve around the rotor to remove eddy-loss heat, replacing eddy-driven magnet derating and enabling segmented-magnet cost savings at 800V high-frequency operation.",
+  "submittedBy": "Porsche Taycan benchmark",
+  "verified": 1,
+  "stars": 85,
+  "level": "system",
+  "ideaData": {
+   "id": "cool047",
+   "title": "Rotor sleeve cooling channel replaces magnet eddy derating",
+   "technicalDescription": "BEV applicability: 800-V EDU. Baseline derates the rotor against eddy-current heating from 800V high-switching-frequency harmonics, oversizing magnet and segmentation. The change adds an oil-fed sleeve (2.5 L/min ATF) removing ~1.2 kW eddy heat, dropping magnet ΔT ~18 K and permitting coarser magnet segmentation (fewer segments) and lower-grade Dy content. Alternative materials: sleeve in Ti-6Al-4V vs 316L vs CFRP wrap; magnet N42UH vs N48UH segmented; oil-union seal FKM vs PTFE.",
+   "materialGrade": "Ti-6Al-4V sleeve / N42UH segmented magnet / FKM",
+   "manufacturingImpact": "Sleeve formed by deep-draw or roll-form plus laser seam; alternatives are CFRP filament-wind or machined ring. Adds sleeve and oil feed but removes fine magnet segmentation steps and derate-driven mass. Net assembly slightly up, magnet processing cost down; balance and leak-test revalidated.",
+   "costSavingTypes": [
+    "complexity",
+    "material",
+    "weight"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Sleeve oil cooling cuts magnet segmentation and Dy content.",
+    "percentage": "10-15%",
+    "annualValue": "£1.6M",
+    "calculationBasis": "£20/veh × 80k veh/yr"
+   },
+   "implementationDifficulty": "High",
+   "riskNotes": "Sleeve cooling holds magnets below demag knee under 800V high-frequency continuous operation and off-road peaks; coarser segmentation validated against eddy-loss and demag with cooling margin. Ti sleeve fatigue and oil-union sealing validated 15k h. Rotordynamics and balance preserved. No fast-charge interaction (motor side). NVH unaffected by oil flow. Premium BEV high-speed performance preserved with magnet-cost reduction.",
+   "dfmaPrinciples": [
+    "Loss removal",
+    "Magnet cost reduction",
+    "Internal cooling"
+   ],
+   "systemLevel": "Assembly",
+   "timeToImplement": "18–26 months",
+   "benchmarkReference": "Porsche Taycan 2020",
+   "confidenceLevel": "estimated",
+   "evidenceSources": [
+    {
+     "type": "patent",
+     "title": "Rotor cooling sleeve for high-frequency drive",
+     "year": 2023,
+     "confidence": "medium"
+    },
+    {
+     "type": "teardown",
+     "title": "Taycan rear rotor segmentation teardown",
+     "year": 2021,
+     "confidence": "medium"
+    }
+   ],
+   "regulatoryContext": "UN/ECE R100"
+  }
+ },
+ {
+  "id": "cool048",
+  "title": "Integrated thermal circuit deletes redundant degas and reservoir",
+  "system": "EDU Thermal Management",
+  "costSavingType": "Commonisation",
+  "annualSaving": "£1.9M",
+  "difficulty": "Medium",
+  "timeToImplement": "15–22 months",
+  "description": "[Combined Loop] Merges battery and EDU degas bottles and expansion reservoirs into one shared component in the integrated thermal circuit, deleting a bottle, hoses and fill steps across the combined loop.",
+  "submittedBy": "Mercedes EQE benchmark",
+  "verified": 1,
+  "stars": 82,
+  "level": "system",
+  "ideaData": {
+   "id": "cool048",
+   "title": "Integrated thermal circuit deletes redundant degas and reservoir",
+   "technicalDescription": "BEV applicability: combined loop. Baseline has separate degas/expansion reservoirs for battery and EDU loops. The change uses one shared blow-moulded reservoir with internal baffling serving both, sized to total coolant expansion (~1.2 L) and degas needs at 12 L/min combined flow. Alternative materials: reservoir in HDPE blow-mould vs PA6-GF vs PP; level sensor capacitive vs float; hose EPDM vs FKM-lined; cap with integrated pressure relief.",
+   "materialGrade": "HDPE blow-mould reservoir / PA6-GF alt / EPDM hose",
+   "manufacturingImpact": "Blow-moulding one shared reservoir replaces two; alternatives are injection-moulded two-shell or rotomould. Deletes one bottle, ~1 m hose, two clamps and a fill port. Consolidates fill/bleed into one station; tooling for one larger bottle, BOM and assembly stations fall, single leak/bleed check.",
+   "costSavingTypes": [
+    "commonisation",
+    "logistics",
+    "complexity"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Shared reservoir deletes a degas bottle, hoses and fill step.",
+    "percentage": "£24/veh (-16% subsystem cost)",
+    "annualValue": "£1.9M",
+    "calculationBasis": "£24/veh × 80k veh/yr"
+   },
+   "implementationDifficulty": "Medium",
+   "riskNotes": "Shared reservoir sized for worst-case combined expansion and degas during fast-charge pack chill and high-load EDU operation, with baffling preventing aeration; verified no cross-domain coolant migration affecting isolation. Pressure-relief cap protects against over-pressure. EPDM/HDPE glycol durability validated 15-yr. NVH unaffected. Premium BEV thermal reliability preserved while reducing leak paths and warranty exposure.",
+   "dfmaPrinciples": [
+    "Part consolidation",
+    "Shared reservoir",
+    "Single bleed"
+   ],
+   "systemLevel": "Assembly",
+   "timeToImplement": "15–22 months",
+   "benchmarkReference": "Mercedes EQE 2022",
+   "confidenceLevel": "benchmarked",
+   "evidenceSources": [
+    {
+     "type": "teardown",
+     "title": "EQE thermal reservoir teardown",
+     "year": 2022,
+     "confidence": "medium"
+    },
+    {
+     "type": "industry_report",
+     "title": "Integrated thermal circuit BOM study",
+     "year": 2024,
+     "confidence": "medium"
+    }
+   ],
+   "regulatoryContext": "UN/ECE R100"
+  }
+ },
+ {
+  "id": "cool049",
+  "title": "AlN ceramic substrate cooling enables smaller SiC die count",
+  "system": "EDU Thermal Management",
+  "costSavingType": "Material",
+  "annualSaving": "£2.3M",
+  "difficulty": "High",
+  "timeToImplement": "18–28 months",
+  "description": "[800V EDU] Upgrades the SiC module substrate to AlN active-metal-braze with optimised cold-plate coupling, lowering thermal resistance enough to reduce paralleled die count, cutting expensive SiC area.",
+  "submittedBy": "Lucid-class Taycan benchmark",
+  "verified": 1,
+  "stars": 88,
+  "level": "part",
+  "ideaData": {
+   "id": "cool049",
+   "title": "AlN ceramic substrate cooling enables smaller SiC die count",
+   "technicalDescription": "BEV applicability: 800-V EDU / thermal interface. Baseline uses Al2O3 DBC substrate forcing extra paralleled SiC dies to limit junction temperature. The change adopts AlN AMB substrate (k~170 vs ~24 W/mK for Al2O3) with a graded pin-fin cold plate, cutting junction-to-coolant resistance ~25% at ~150 W/cm2, enabling ~10% fewer SiC dies for the same current. Alternative materials: AlN AMB vs Si3N4 AMB vs Al2O3 DBC; baseplate Cu vs AlSiC; TIM sintered-silver vs AlN shim; cold plate AlSi10Mg AM.",
+   "materialGrade": "AlN AMB substrate / Si3N4 AMB / sintered-Ag TIM",
+   "manufacturingImpact": "AlN active-metal-braze substrate with sintered-silver die attach replaces Al2O3 DBC with solder; alternatives are Si3N4 AMB or AlSiC baseplate. Higher substrate cost offset by removing paralleled dies and shrinking module footprint. Sintering line replaces reflow; net die-area BOM falls sharply, assembly comparable.",
+   "costSavingTypes": [
+    "material",
+    "complexity",
+    "weight"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Higher-k substrate cuts costly SiC die count for same current.",
+    "percentage": "12-18%",
+    "annualValue": "£2.3M",
+    "calculationBasis": "£29/veh × 80k veh/yr"
+   },
+   "implementationDifficulty": "High",
+   "riskNotes": "AlN AMB and sintered-silver attach hold SiC junction <175 C at 350 kW fast-charge and continuous high-load with fewer dies, validated for power-cycling >1M cycles (sintered-Ag far exceeds solder fatigue). Si3N4 option for higher mechanical robustness. Dielectric isolation maintained per creepage spec (safety). No NVH impact. Premium BEV 800V power density preserved while cutting expensive SiC area and module mass.",
+   "dfmaPrinciples": [
+    "Substrate upgrade",
+    "Die-count reduction",
+    "Sintered attach"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "18–28 months",
+   "benchmarkReference": "Porsche Taycan 2020",
+   "confidenceLevel": "estimated",
+   "evidenceSources": [
+    {
+     "type": "supplier_data",
+     "title": "AlN AMB vs Al2O3 DBC thermal data",
+     "year": 2024,
+     "confidence": "high"
+    },
+    {
+     "type": "patent",
+     "title": "AlN substrate SiC module die reduction",
+     "year": 2023,
+     "confidence": "medium"
+    }
+   ],
+   "regulatoryContext": "UN/ECE R100"
+  }
+ },
+ {
+  "id": "cool050",
+  "title": "Off-road sustained-load thermal mode with active flow boost",
+  "system": "EDU Thermal Management",
+  "costSavingType": "Complexity",
+  "annualSaving": "£1.1M",
+  "difficulty": "Medium",
+  "timeToImplement": "12–18 months",
+  "description": "[Combined Loop] Adds a software-driven off-road thermal mode that boosts pump flow and reallocates chiller capacity to EDU during sustained low-speed high-torque duty, avoiding hardware over-sizing.",
+  "submittedBy": "Yangwang U8 benchmark",
+  "verified": 1,
+  "stars": 84,
+  "level": "system",
+  "ideaData": {
+   "id": "cool050",
+   "title": "Off-road sustained-load thermal mode with active flow boost",
+   "technicalDescription": "BEV applicability: combined loop / pumping. Baseline over-sizes EDU cooling hardware to survive worst-case off-road crawl where airflow is low and torque high. The change adds a control mode boosting the shared pump to 14 L/min and reallocating chiller duty to EDU during sustained rock-crawl/tow, holding SiC junction <175 C and stator <165 C without larger radiators or pumps. Alternative materials: control only; valve PPS-GF40; pump PA66-GF35; no new wetted material; relies on existing AlN TIM and 3003 cold plate.",
+   "materialGrade": "Software + PPS-GF40 valve / existing 3003 cold plate / AlN TIM",
+   "manufacturingImpact": "Calibration and control change with existing hardware; alternatives are larger radiator or added auxiliary pump (both rejected). No new tooling; deletes the need for radiator/pump up-sizing on off-road variants. BOM unchanged or reduced versus hardware over-size; validation via thermal soak testing.",
+   "costSavingTypes": [
+    "complexity",
+    "commonisation",
+    "weight"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Software thermal mode avoids hardware over-sizing for off-road.",
+    "percentage": "£14/veh (-12% avoided hardware cost)",
+    "annualValue": "£1.1M",
+    "calculationBasis": "£14/veh × 80k veh/yr"
+   },
+   "implementationDifficulty": "Medium",
+   "riskNotes": "Off-road mode verified to hold SiC junction <175 C and stator <165 C during 30-min sustained low-airflow crawl and trailer tow by boosting flow and reallocating chiller from pack (which is at low load then). Pack thermal margin maintained. Avoids radiator/pump over-size, saving mass and cost. Flow boost NVH bounded by speed limit. Fast-charge mode unaffected. Premium BEV off-road durability preserved without hardware penalty.",
+   "dfmaPrinciples": [
+    "Software lever",
+    "Avoid over-sizing",
+    "Demand reallocation"
+   ],
+   "systemLevel": "Assembly",
+   "timeToImplement": "12–18 months",
+   "benchmarkReference": "Yangwang U8 2023",
+   "confidenceLevel": "benchmarked",
+   "evidenceSources": [
+    {
+     "type": "oem_press_release",
+     "title": "Yangwang U8 off-road thermal system",
+     "year": 2023,
+     "confidence": "medium"
+    },
+    {
+     "type": "industry_report",
+     "title": "Off-road BEV thermal control study",
+     "year": 2024,
+     "confidence": "medium"
+    }
+   ],
+   "regulatoryContext": "ISO 6469"
+  }
+ }
+]

@@ -1,0 +1,2885 @@
+[
+ {
+  "id": "drv001",
+  "title": "Skive-finish 7-speed AT planetary ring gears replacing hobbing",
+  "system": "Driveline",
+  "costSavingType": "Manufacturing Process",
+  "annualSaving": "£1.4M",
+  "difficulty": "Medium",
+  "timeToImplement": "14–20 months",
+  "description": "[ICE,MHEV] Convert the 7-speed automatic gearbox compound planetary ring gears from hob-then-shave to power-skiving plus hard-finishing. Cuts cycle time and tooling spend while holding AGMA quality on the high-torque ICE/48V mild-hybrid line, preserving gear-mesh durability and reducing whine sensitivity across crawl and tow duty cycles in the premium SUV.",
+  "submittedBy": "Porsche Cayenne benchmark",
+  "verified": 1,
+  "stars": 82,
+  "level": "part",
+  "ideaData": {
+   "id": "drv001",
+   "title": "Skive-finish 7-speed AT planetary ring gears replacing hobbing",
+   "technicalDescription": "Powertrain: ICE/MHEV. Baseline ring gears (internal teeth, ~520 Nm input torque, ratio set 4.7–0.7) are hobbed then shaved in two setups. The change introduces power-skiving in a single clamping followed by gear honing, lifting tooth-flank quality to DIN 6 and cutting contact stress concentration. Alternative case-hardening grades evaluated: 18CrNiMo7-6, 20MnCr5 and 16MnCr5; SAE 8620 retained as fallback. Bearing L10 on the planet pins unchanged at >3,000 h. Flank topology optimised to lower transmission error and gear whine under 48V torque-fill events.",
+   "materialGrade": "18CrNiMo7-6 case-hardened / 20MnCr5 / 16MnCr5",
+   "manufacturingImpact": "Replaces hobbing+shaving with power-skiving plus gear honing; alternative is internal gear grinding for top ratios only. Eliminates one machine setup, cuts cycle time ~28% and removes shaving-cutter tooling. BOM unchanged; assembly unaffected; machining time and scrap fall, improving station throughput on the transmission line.",
+   "costSavingTypes": [
+    "process",
+    "tooling"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Single-setup skiving removes a finishing operation and its tooling.",
+    "percentage": "£20/veh (-16% gear cost)",
+    "annualValue": "£1.4M",
+    "calculationBasis": "£20/veh × 70k veh/yr"
+   },
+   "implementationDifficulty": "Medium",
+   "riskNotes": "Skived-then-honed flanks must hold transmission-error targets to avoid gear whine and driveline boom during low-speed crawl and high-torque tow. Case depth (0.6–0.9 mm) controls pitting and bending fatigue; honing preserves L10 and root strength. Off-road shock loading and on-road comfort retained because flank topology is tuned, not flattened. Premium NVH refinement is preserved through tighter quality grade than the hobbed baseline.",
+   "dfmaPrinciples": [
+    "Single-setup machining",
+    "Eliminate finishing op",
+    "Tooling reduction"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "14–20 months",
+   "benchmarkReference": "Porsche Cayenne 2023 programme",
+   "confidenceLevel": "benchmarked",
+   "evidenceSources": [
+    {
+     "type": "industry_report",
+     "title": "Power skiving in automatic transmission gear manufacture",
+     "year": 2022,
+     "confidence": "high"
+    },
+    {
+     "type": "supplier_data",
+     "title": "Gear honing line cycle-time study",
+     "year": 2023,
+     "confidence": "medium"
+    }
+   ],
+   "regulatoryContext": null
+  }
+ },
+ {
+  "id": "drv002",
+  "title": "Sinter-forged planet carrier for 7-speed AT",
+  "system": "Driveline",
+  "costSavingType": "Manufacturing Process",
+  "annualSaving": "£1.1M",
+  "difficulty": "Medium",
+  "timeToImplement": "16–22 months",
+  "description": "[ICE,MHEV,PHEV] Replace the machined-from-forging planetary carrier with a powder-metallurgy sinter-forged carrier for the 7-speed automatic. Near-net shape cuts machining stock and weight while retaining the torque capacity needed for high-torque ICE, 48V MHEV and PHEV hybrid-blend duty in the premium SUV transmission, preserving carrier stiffness and planet-pin alignment.",
+  "submittedBy": "Mercedes GLS benchmark",
+  "verified": 1,
+  "stars": 76,
+  "level": "part",
+  "ideaData": {
+   "id": "drv002",
+   "title": "Sinter-forged planet carrier for 7-speed AT",
+   "technicalDescription": "Powertrain: ICE/MHEV/PHEV. Baseline carrier is fully machined from a steel forging, carrying three or four planet pins at ~520 Nm with windows for lube flow. The change adopts sinter-forging (PM densified >7.6 g/cc) to near-net shape, machining only bores and faces. Alternative materials: FLN2-4405 PM steel, 16MnCr5 forged, 4340 forged for highest-torque PHEV variant. Planet-pin bore concentricity held to 8 µm to protect needle-bearing L10 (>3,000 h). Carrier torsional stiffness validated against transmission-error budget to limit whine.",
+   "materialGrade": "FLN2-4405 sinter-forged PM / 16MnCr5 / 4340",
+   "manufacturingImpact": "Switches machined-forging to sinter-forging (PM) with finish-machining only; alternative is precision forging with reduced stock. Removes ~40% of machining stock and one roughing op, cuts cycle time and tool wear. BOM and assembly sequence unchanged; net weight down ~12%, lowering rotating inertia.",
+   "costSavingTypes": [
+    "process",
+    "material",
+    "weight"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Near-net PM blank eliminates bulk roughing and reduces buy weight.",
+    "percentage": "£18/veh (-14% carrier cost)",
+    "annualValue": "£1.1M",
+    "calculationBasis": "£18/veh × 61k veh/yr"
+   },
+   "implementationDifficulty": "Medium",
+   "riskNotes": "PM densification must achieve fatigue strength near wrought for planet-pin bores subject to alternating bending under high-torque tow and crawl. Porosity is controlled by sinter-forging to avoid crack initiation; HIP available for PHEV top torque. Carrier stiffness preserves planet alignment, protecting needle-bearing L10 and limiting gear whine. Off-road shock and on-road comfort retained; premium durability maintained via per-variant material selection.",
+   "dfmaPrinciples": [
+    "Near-net shape",
+    "Reduce machining stock",
+    "Material grade per variant"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "16–22 months",
+   "benchmarkReference": "Mercedes GLS 2022 programme",
+   "confidenceLevel": "benchmarked",
+   "evidenceSources": [
+    {
+     "type": "industry_report",
+     "title": "Sinter-forged carriers in stepped automatics",
+     "year": 2021,
+     "confidence": "medium"
+    },
+    {
+     "type": "supplier_data",
+     "title": "PM densification fatigue dataset",
+     "year": 2023,
+     "confidence": "medium"
+    }
+   ],
+   "regulatoryContext": null
+  }
+ },
+ {
+  "id": "drv003",
+  "title": "Common clutch-pack friction plates across 7-speed AT clutches",
+  "system": "Driveline",
+  "costSavingType": "Commonisation",
+  "annualSaving": "£950k",
+  "difficulty": "Low",
+  "timeToImplement": "10–14 months",
+  "description": "[ICE,MHEV,PHEV] Rationalise the 7-speed automatic clutch-pack friction plate portfolio from five part numbers to two by commonising friction material and spline geometry across the multiple wet clutches. Reduces tooling and logistics while preserving torque capacity and shift quality for high-torque ICE, 48V MHEV and PHEV hybrid-blend operation in the premium SUV.",
+  "submittedBy": "Lexus LX benchmark",
+  "verified": 1,
+  "stars": 71,
+  "level": "system",
+  "ideaData": {
+   "id": "drv003",
+   "title": "Common clutch-pack friction plates across 7-speed AT clutches",
+   "technicalDescription": "Powertrain: ICE/MHEV/PHEV. Baseline uses five distinct friction-plate part numbers across the wet clutch packs (varying friction lining, spline count, plate count), each transmitting up to ~520 Nm. The change standardises on two plate diameters with a common paper-based friction lining and shared internal spline, varying only plate count per clutch to set torque. Alternative linings assessed: high-energy paper, carbon-composite, and segmented sintered for the PHEV launch clutch. Coefficient-of-friction stability validated to protect shift-time consistency and limit shudder; core-plate steel SAE 1050 retained.",
+   "materialGrade": "High-energy paper friction lining / carbon-composite / SAE 1050 core",
+   "manufacturingImpact": "Commonises stamping dies and friction-bonding fixtures across clutches; alternative processes are die-cut vs water-jet lining blanks. Cuts unique tooling sets from five to two, shortens changeovers and reduces inventory part numbers. Assembly poka-yoke simplified; BOM consolidated, lowering logistics and warehousing.",
+   "costSavingTypes": [
+    "commonisation",
+    "tooling",
+    "logistics"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Fewer friction-plate part numbers cut tooling and inventory.",
+    "percentage": "£14/veh (-11% clutch cost)",
+    "annualValue": "£950k",
+    "calculationBasis": "£14/veh × 68k veh/yr"
+   },
+   "implementationDifficulty": "Low",
+   "riskNotes": "Common friction material must hold torque capacity and µ-stability across clutches with different energy duties; PHEV launch clutch verified for thermal load to avoid glazing and shudder. Plate-count tuning preserves shift quality and avoids tie-up. Thermal stability under sustained tow and crawl maintained; NVH (shift bump) unchanged. Premium shift refinement preserved because each clutch retains its torque margin via plate count rather than bespoke linings.",
+   "dfmaPrinciples": [
+    "Part-number reduction",
+    "Common tooling",
+    "Tune by plate count"
+   ],
+   "systemLevel": "Assembly",
+   "timeToImplement": "10–14 months",
+   "benchmarkReference": "Lexus LX 2022 programme",
+   "confidenceLevel": "benchmarked",
+   "evidenceSources": [
+    {
+     "type": "teardown",
+     "title": "Wet clutch pack teardown comparison",
+     "year": 2022,
+     "confidence": "high"
+    },
+    {
+     "type": "supplier_data",
+     "title": "Friction lining µ-stability data",
+     "year": 2023,
+     "confidence": "medium"
+    }
+   ],
+   "regulatoryContext": null
+  }
+ },
+ {
+  "id": "drv004",
+  "title": "Die-cast aluminium 7-speed AT transmission case rib optimisation",
+  "system": "Driveline",
+  "costSavingType": "Material + Weight",
+  "annualSaving": "£1.6M",
+  "difficulty": "Medium",
+  "timeToImplement": "18–24 months",
+  "description": "[ICE,MHEV] Topology-optimise the 7-speed automatic transmission case casting to remove non-structural mass and reduce machined faces. High-pressure die-cast aluminium with revised ribbing cuts weight and machining while preserving bending stiffness and NVH for high-torque ICE and 48V MHEV duty in the premium SUV, retaining sealing-face flatness and bearing-bore accuracy.",
+  "submittedBy": "Porsche Cayenne benchmark",
+  "verified": 1,
+  "stars": 80,
+  "level": "part",
+  "ideaData": {
+   "id": "drv004",
+   "title": "Die-cast aluminium 7-speed AT transmission case rib optimisation",
+   "technicalDescription": "Powertrain: ICE/MHEV. Baseline case is HPDC AEM AlSi9Cu3 with conservative ribbing and many machined pads. FE topology optimisation redistributes ribs to carry gear-mesh and mount reaction loads, cutting wall mass while raising first-mode frequency to push case-radiated whine above the excitation band. Alternative alloys: AlSi9Cu3(Fe), AlSi10MnMg (Magsimal-59) for higher ductility, AM60B Mg for the housing cover. Bearing-bore roundness held to 10 µm to protect shaft-bearing L10. Sealing-face flatness 0.05 mm maintained.",
+   "materialGrade": "AlSi10MnMg (Magsimal-59) / AlSi9Cu3 / AM60B Mg cover",
+   "manufacturingImpact": "Retains HPDC but revises die ribbing and reduces machined pads; alternative is squeeze-casting for thicker bosses. Cuts machining of ~6 faces, lowers casting mass ~9%, and trims cycle time. Die rework required; BOM unchanged; lighter case eases assembly handling and lowers logistics weight.",
+   "costSavingTypes": [
+    "material",
+    "weight",
+    "process"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Rib redistribution removes mass and machined faces without stiffness loss.",
+    "percentage": "£23/veh (-13% case cost)",
+    "annualValue": "£1.6M",
+    "calculationBasis": "£23/veh × 70k veh/yr"
+   },
+   "implementationDifficulty": "Medium",
+   "riskNotes": "Wall thinning must not drop case stiffness or sealing-face flatness, which would cause oil weep or bearing-bore distortion and reduce L10 life. First-mode frequency raised to keep case-radiated gear whine and driveline boom out of band. Mount stiffness preserved for off-road shock and towing reaction loads; thermal distortion checked against oil-temperature extremes. Premium NVH and durability maintained through FE-validated rib paths.",
+   "dfmaPrinciples": [
+    "Topology optimisation",
+    "Reduce machined faces",
+    "Raise modal frequency"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "18–24 months",
+   "benchmarkReference": "Porsche Cayenne 2023 programme",
+   "confidenceLevel": "benchmarked",
+   "evidenceSources": [
+    {
+     "type": "industry_report",
+     "title": "HPDC transmission case lightweighting",
+     "year": 2022,
+     "confidence": "high"
+    },
+    {
+     "type": "supplier_data",
+     "title": "Magsimal-59 ductility datasheet",
+     "year": 2021,
+     "confidence": "medium"
+    }
+   ],
+   "regulatoryContext": null
+  }
+ },
+ {
+  "id": "drv005",
+  "title": "Integrated mechatronics module reducing 7-speed AT harness",
+  "system": "Driveline",
+  "costSavingType": "Complexity",
+  "annualSaving": "£1.3M",
+  "difficulty": "High",
+  "timeToImplement": "20–28 months",
+  "description": "[ICE,MHEV,PHEV] Integrate the 7-speed automatic TCU, solenoids and sensors into a single in-sump mechatronics module, deleting an external controller and wiring harness. Reduces connectors and assembly time while preserving shift-pressure control accuracy for high-torque ICE, 48V MHEV and PHEV operation in the premium SUV, retaining thermal and EMC robustness.",
+  "submittedBy": "Mercedes GLE benchmark",
+  "verified": 1,
+  "stars": 84,
+  "level": "system",
+  "ideaData": {
+   "id": "drv005",
+   "title": "Integrated mechatronics module reducing 7-speed AT harness",
+   "technicalDescription": "Powertrain: ICE/MHEV/PHEV. Baseline splits the TCU outside the transmission with a multi-pin pass-through connector feeding in-sump solenoids. The change integrates controller, pressure-control solenoids and speed/temperature sensors into one mechatronic plate, deleting the external box and harness segment. Solenoid pressure control resolution held to maintain clutch-fill repeatability and shift smoothness across ~520 Nm. Alternative materials for the carrier plate: glass-filled PA66-GF35, PPS-GF40, and die-cast AlSi9Cu3 for thermal sink. Junction temperature managed by oil contact to protect electronics life.",
+   "materialGrade": "PPS-GF40 carrier / PA66-GF35 / AlSi9Cu3 heat sink",
+   "manufacturingImpact": "Replaces external-controller assembly and harness routing with one integrated module; alternative is overmoulded leadframe vs stamped busbar interconnect. Deletes one connector pair and ~0.4 m of harness, cuts assembly stations and end-of-line connector tests. BOM consolidated; EMC shielding simplified; logistics part count reduced.",
+   "costSavingTypes": [
+    "complexity",
+    "logistics",
+    "warranty"
+   ],
+   "costSavingPotential": {
+    "qualitative": "In-sump integration deletes a controller, connector and harness segment.",
+    "percentage": "£20/veh (-18% control cost)",
+    "annualValue": "£1.3M",
+    "calculationBasis": "£20/veh × 65k veh/yr"
+   },
+   "implementationDifficulty": "High",
+   "riskNotes": "In-oil electronics must hold junction-temperature limits during sustained tow and crawl to protect controller durability; oil contact aids cooling but demands sealing and chemical compatibility. Pressure-control resolution preserved so clutch fill and shift smoothness are unchanged, avoiding shift shock and NVH degradation. EMC robustness maintained via shorter harness. Premium shift refinement and reliability preserved; PHEV hybrid-blend shifts validated for thermal load.",
+   "dfmaPrinciples": [
+    "Function integration",
+    "Connector reduction",
+    "Delete external controller"
+   ],
+   "systemLevel": "Assembly",
+   "timeToImplement": "20–28 months",
+   "benchmarkReference": "Mercedes GLE 2023 programme",
+   "confidenceLevel": "estimated",
+   "evidenceSources": [
+    {
+     "type": "oem_press_release",
+     "title": "Integrated transmission mechatronics announcement",
+     "year": 2022,
+     "confidence": "medium"
+    },
+    {
+     "type": "patent",
+     "title": "In-sump transmission control module",
+     "year": 2021,
+     "confidence": "medium"
+    }
+   ],
+   "regulatoryContext": "UN/ECE R10 EMC"
+  }
+ },
+ {
+  "id": "drv006",
+  "title": "Aluminium valve body replacing two-piece for 7-speed AT",
+  "system": "Driveline",
+  "costSavingType": "Manufacturing Process",
+  "annualSaving": "£820k",
+  "difficulty": "Medium",
+  "timeToImplement": "16–22 months",
+  "description": "[ICE,MHEV] Consolidate the 7-speed automatic valve body from a three-plate sandwich to a two-piece die-cast aluminium design with integrated channels. Cuts machined plates and separator gaskets while preserving hydraulic control accuracy for high-torque ICE and 48V MHEV shift events in the premium SUV, retaining valve-bore tolerance and leak integrity.",
+  "submittedBy": "Toyota Land Cruiser 300 benchmark",
+  "verified": 1,
+  "stars": 74,
+  "level": "part",
+  "ideaData": {
+   "id": "drv006",
+   "title": "Aluminium valve body replacing two-piece for 7-speed AT",
+   "technicalDescription": "Powertrain: ICE/MHEV. Baseline valve body is a three-plate sandwich with two separator plates and worm-trail channels requiring many cross-drillings. The change moves to a two-piece cast-channel design, casting oil galleries to cut drilling and one separator plate. Valve bores held to H7 with ~8 µm roundness to keep spool leakage low and shift pressure accurate. Alternative materials: AlSi9Cu3 HPDC, AlSi7Mg0.3 (A356) permanent-mould for tighter porosity, and anodised 6061-T6 for the spool plate. Worm-trail flow validated to maintain clutch-fill timing and shift quality.",
+   "materialGrade": "A356-T6 permanent-mould / AlSi9Cu3 HPDC / 6061-T6 spool plate",
+   "manufacturingImpact": "Replaces three-plate machining with cast-channel two-piece body; alternative is HPDC vs permanent-mould for porosity control. Casts galleries to delete many cross-drillings and one separator plate plus its gasket. Cuts machining time ~22% and leak-test rework; BOM and assembly simplified.",
+   "costSavingTypes": [
+    "process",
+    "complexity",
+    "tooling"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Cast galleries delete drillings, a plate and a gasket.",
+    "percentage": "£13/veh (-15% valve-body cost)",
+    "annualValue": "£820k",
+    "calculationBasis": "£13/veh × 63k veh/yr"
+   },
+   "implementationDifficulty": "Medium",
+   "riskNotes": "Cast galleries must hold porosity limits to prevent cross-leak that would degrade shift-pressure accuracy and cause shift shock or tie-up. Valve-bore roundness preserved to limit spool leakage and maintain clutch-fill repeatability across thermal range. Deleting a separator plate requires robust face sealing for crawl and tow oil-temperature extremes. Premium shift smoothness preserved; NVH (shift bump) unchanged through validated worm-trail flow.",
+   "dfmaPrinciples": [
+    "Cast-in channels",
+    "Eliminate plate and gasket",
+    "Reduce drillings"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "16–22 months",
+   "benchmarkReference": "Toyota Land Cruiser 300 2021 programme",
+   "confidenceLevel": "benchmarked",
+   "evidenceSources": [
+    {
+     "type": "teardown",
+     "title": "Valve body construction teardown",
+     "year": 2022,
+     "confidence": "high"
+    },
+    {
+     "type": "supplier_data",
+     "title": "A356 permanent-mould porosity data",
+     "year": 2021,
+     "confidence": "medium"
+    }
+   ],
+   "regulatoryContext": null
+  }
+ },
+ {
+  "id": "drv007",
+  "title": "Brazed-plate transmission oil cooler replacing tube-fin",
+  "system": "Driveline",
+  "costSavingType": "Material + Weight",
+  "annualSaving": "£640k",
+  "difficulty": "Low",
+  "timeToImplement": "12–16 months",
+  "description": "[ICE,MHEV,PHEV] Replace the tube-and-fin ATF cooler in the 7-speed automatic cooling circuit with a compact brazed-plate aluminium heat exchanger. Improves heat rejection per unit mass and cuts package volume while preserving oil-temperature control for high-torque ICE, 48V MHEV and PHEV tow/crawl duty in the premium SUV, retaining burst-pressure margin.",
+  "submittedBy": "Cadillac Escalade benchmark",
+  "verified": 1,
+  "stars": 69,
+  "level": "part",
+  "ideaData": {
+   "id": "drv007",
+   "title": "Brazed-plate transmission oil cooler replacing tube-fin",
+   "technicalDescription": "Powertrain: ICE/MHEV/PHEV. Baseline cools ATF with a tube-and-fin oil-to-coolant cooler sized for sustained tow at high oil temperature (~130 °C cap). The change adopts a brazed-plate aluminium exchanger with higher area density, cutting mass and volume while holding heat rejection (kW) for clutch and gear-mesh thermal protection. Alternative materials: AA3003/AA4045 clad brazing sheet, AA4343 filler, and stainless 316L plate for high-pressure PHEV variant. Burst pressure validated >3× operating to protect against cooling-circuit overpressure. Flow restriction tuned to maintain lube-circuit pressure.",
+   "materialGrade": "AA3003/AA4045 brazing sheet / AA4343 filler / 316L plate",
+   "manufacturingImpact": "Switches tube-fin assembly to controlled-atmosphere brazed-plate stack; alternative is vacuum brazing vs CAB. Reduces part count and brazing joints, cuts mass ~30% and package volume. Fewer leak paths lower end-of-line leak rejects; BOM simplified and logistics weight reduced.",
+   "costSavingTypes": [
+    "material",
+    "weight",
+    "logistics"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Higher area density cuts cooler mass and package cost.",
+    "percentage": "£10/veh (-12% cooler cost)",
+    "annualValue": "£640k",
+    "calculationBasis": "£10/veh × 64k veh/yr"
+   },
+   "implementationDifficulty": "Low",
+   "riskNotes": "Cooler must hold ATF temperature within limits during sustained towing and low-speed crawl to protect clutch friction and gear-oil life; undersizing risks thermal degradation and warranty. Brazed joints validated for burst and thermal-cycle fatigue to prevent coolant-into-oil cross-leak. Flow restriction tuned to keep lube pressure for bearing L10. Premium tow capability and durability preserved; PHEV high-pressure variant uses stainless plate.",
+   "dfmaPrinciples": [
+    "Compact heat exchanger",
+    "Reduce joints",
+    "Mass reduction"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "12–16 months",
+   "benchmarkReference": "Cadillac Escalade 2022 programme",
+   "confidenceLevel": "benchmarked",
+   "evidenceSources": [
+    {
+     "type": "supplier_data",
+     "title": "Brazed-plate ATF cooler performance",
+     "year": 2023,
+     "confidence": "high"
+    },
+    {
+     "type": "industry_report",
+     "title": "Transmission thermal management trends",
+     "year": 2022,
+     "confidence": "medium"
+    }
+   ],
+   "regulatoryContext": null
+  }
+ },
+ {
+  "id": "drv008",
+  "title": "Variable-displacement vane oil pump for 7-speed AT",
+  "system": "Driveline",
+  "costSavingType": "Complexity",
+  "annualSaving": "£980k",
+  "difficulty": "High",
+  "timeToImplement": "20–26 months",
+  "description": "[ICE,MHEV] Replace the fixed-displacement gerotor transmission oil pump with a variable-displacement vane pump matched to demand. Reduces parasitic loss and downsizes the drive while preserving line-pressure availability for high-torque ICE and 48V MHEV shift events in the premium SUV, improving efficiency without compromising clutch-fill response.",
+  "submittedBy": "Porsche Macan benchmark",
+  "verified": 1,
+  "stars": 78,
+  "level": "part",
+  "ideaData": {
+   "id": "drv008",
+   "title": "Variable-displacement vane oil pump for 7-speed AT",
+   "technicalDescription": "Powertrain: ICE/MHEV. Baseline fixed gerotor pump is sized for worst-case flow, wasting power at cruise. The change uses a variable-displacement vane pump that reduces displacement when demand is low, cutting parasitic torque ~0.4–0.8 Nm and lowering ATF heating. Line pressure (up to ~20 bar) maintained for clutch fill and shift quality. Alternative materials: rotor in FLC-4608 PM steel, vanes in M2 tool steel or PM440C, and aluminium AlSi17Cu4Mg housing. Wear and L10 of the pump bearing preserved. Control-valve response tuned to keep shift-pressure transients within target.",
+   "materialGrade": "FLC-4608 PM rotor / M2 tool-steel vanes / AlSi17Cu4Mg housing",
+   "manufacturingImpact": "Replaces gerotor set with vane pump and control valve; alternative is PM sintered rotor vs machined steel. Adds a regulator but downsizes pump drive and reduces cooler load. Net assembly complexity rises slightly; machining of precision gerotor lobes eliminated. BOM neutral; efficiency gain offsets added valve cost.",
+   "costSavingTypes": [
+    "complexity",
+    "process"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Demand-matched flow cuts parasitic loss and cooler duty.",
+    "percentage": "£15/veh (-10% pump system cost)",
+    "annualValue": "£980k",
+    "calculationBasis": "£15/veh × 65k veh/yr"
+   },
+   "implementationDifficulty": "High",
+   "riskNotes": "Variable pump must guarantee instantaneous line pressure for clutch fill during fast tip-in and tow launches to avoid shift shock or clutch slip. Regulator response validated across cold-start high-viscosity and hot low-viscosity oil for thermal stability. Vane-tip wear controlled to protect pressure over life. Off-road crawl pressure availability preserved; premium shift refinement and durability maintained through robust control calibration.",
+   "dfmaPrinciples": [
+    "Demand-matched displacement",
+    "Downsize pump drive",
+    "Reduce cooler load"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "20–26 months",
+   "benchmarkReference": "Porsche Macan 2022 programme",
+   "confidenceLevel": "estimated",
+   "evidenceSources": [
+    {
+     "type": "industry_report",
+     "title": "Variable oil pumps in automatic transmissions",
+     "year": 2021,
+     "confidence": "high"
+    },
+    {
+     "type": "patent",
+     "title": "Variable displacement vane pump for transmission",
+     "year": 2020,
+     "confidence": "medium"
+    }
+   ],
+   "regulatoryContext": null
+  }
+ },
+ {
+  "id": "drv009",
+  "title": "Lock-up torque converter with twin-damper for 7-speed AT",
+  "system": "Driveline",
+  "costSavingType": "Weight",
+  "annualSaving": "£760k",
+  "difficulty": "Medium",
+  "timeToImplement": "18–24 months",
+  "description": "[ICE,MHEV] Adopt a thin-section torque converter with twin-path damper and earlier lock-up for the 7-speed automatic. Reduces converter mass and improves efficiency while preserving launch torque multiplication for high-torque ICE and 48V MHEV duty in the premium SUV, retaining damping for low-rpm NVH and lugging refinement.",
+  "submittedBy": "Mercedes GLS benchmark",
+  "verified": 1,
+  "stars": 75,
+  "level": "part",
+  "ideaData": {
+   "id": "drv009",
+   "title": "Lock-up torque converter with twin-damper for 7-speed AT",
+   "technicalDescription": "Powertrain: ICE/MHEV. Baseline converter uses a single-stage damper and conservative shell thickness, locking up late to protect NVH. The change uses a twin-path (dual-mass) damper enabling earlier, lower-rpm lock-up plus a thinner stamped shell, cutting mass and improving fuel efficiency while holding ~2.0 stall ratio and launch multiplication. Alternative materials: shell in HSLA HX340LAD, turbine/stator blades in low-carbon stamped steel, and 7075-T6 for the lock-up piston. Damper hysteresis tuned to suppress lugging boom and gear rattle at the 48V torque-fill transition. Bearing thrust-washer life preserved.",
+   "materialGrade": "HSLA HX340LAD shell / stamped low-carbon blades / 7075-T6 piston",
+   "manufacturingImpact": "Retains stamping/welding but thins shell and adds twin-path damper springs; alternative is laser vs MIG shell welding. Lighter stampings cut material; earlier lock-up reduces cooler and pump duty. Damper assembly adds parts but mass falls ~8%; BOM net neutral, logistics weight reduced.",
+   "costSavingTypes": [
+    "weight",
+    "material"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Thin shell plus early lock-up cuts mass and parasitic loss.",
+    "percentage": "£12/veh (-9% converter cost)",
+    "annualValue": "£760k",
+    "calculationBasis": "£12/veh × 63k veh/yr"
+   },
+   "implementationDifficulty": "Medium",
+   "riskNotes": "Earlier lock-up must not transmit lugging boom or gear rattle at low rpm; twin-path damper hysteresis tuned to preserve premium refinement. Thin shell validated for ballooning and fatigue under high-torque launch and tow to maintain durability. Stall ratio preserved for off-road launch and crawl. Thermal stability of friction lock-up clutch checked for sustained slip; comfort and NVH targets retained across powertrain modes.",
+   "dfmaPrinciples": [
+    "Thin-section shell",
+    "Early lock-up efficiency",
+    "Twin-path damping"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "18–24 months",
+   "benchmarkReference": "Mercedes GLS 2022 programme",
+   "confidenceLevel": "benchmarked",
+   "evidenceSources": [
+    {
+     "type": "industry_report",
+     "title": "Twin-path torque converter dampers",
+     "year": 2021,
+     "confidence": "high"
+    },
+    {
+     "type": "teardown",
+     "title": "Converter mass benchmark teardown",
+     "year": 2022,
+     "confidence": "medium"
+    }
+   ],
+   "regulatoryContext": null
+  }
+ },
+ {
+  "id": "drv010",
+  "title": "Induction-hardened sun gears replacing case-hardening in 7-speed AT",
+  "system": "Driveline",
+  "costSavingType": "Manufacturing Process",
+  "annualSaving": "£710k",
+  "difficulty": "Medium",
+  "timeToImplement": "14–20 months",
+  "description": "[ICE,MHEV] Switch selected 7-speed automatic sun gears from carburising case-hardening to contour induction hardening. Removes long furnace cycles and distortion-driven grinding stock while preserving flank durability for high-torque ICE and 48V MHEV duty in the premium SUV, retaining bending fatigue and pitting resistance under crawl and tow loads.",
+  "submittedBy": "Lexus RX benchmark",
+  "verified": 1,
+  "stars": 72,
+  "level": "part",
+  "ideaData": {
+   "id": "drv010",
+   "title": "Induction-hardened sun gears replacing case-hardening in 7-speed AT",
+   "technicalDescription": "Powertrain: ICE/MHEV. Baseline sun gears are carburised (case 0.6–0.9 mm) then ground to correct heat-treat distortion. The change applies contour induction hardening to lower-ratio suns, producing a hardened layer following the tooth profile with compressive residual stress, cutting distortion and grind stock. Alternative materials: 1050 medium-carbon steel for induction, 4340 for high-torque, and 16MnCr5 retained for case-hardened variants. Contact stress (~1,500 MPa) and bending fatigue validated; flank topology controlled to limit transmission error and gear whine. Bearing L10 unaffected.",
+   "materialGrade": "1050 induction-hardened / 4340 / 16MnCr5",
+   "manufacturingImpact": "Replaces carburising furnace + heavy grind with induction hardening + light finish-grind; alternative is single-shot vs scan induction. Eliminates long furnace cycle, cuts energy and distortion, and reduces grinding stock and wheel wear. Cycle time down ~25%; BOM unchanged; in-line hardening improves flow.",
+   "costSavingTypes": [
+    "process",
+    "tooling"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Induction removes furnace time and distortion-driven grinding.",
+    "percentage": "£11/veh (-13% sun-gear cost)",
+    "annualValue": "£710k",
+    "calculationBasis": "£11/veh × 65k veh/yr"
+   },
+   "implementationDifficulty": "Medium",
+   "riskNotes": "Induction case profile must follow the tooth to hold bending fatigue and pitting resistance under high-torque crawl and tow; insufficient root hardening risks tooth breakage. Compressive residual stress improves fatigue but pattern control is critical. Flank topology preserved to keep gear whine and driveline boom in check. Applied only to suitable ratios; highest-torque suns stay case-hardened. Premium durability and NVH maintained through validated hardness pattern.",
+   "dfmaPrinciples": [
+    "Induction vs case hardening",
+    "Reduce grind stock",
+    "In-line heat treat"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "14–20 months",
+   "benchmarkReference": "Lexus RX 2023 programme",
+   "confidenceLevel": "benchmarked",
+   "evidenceSources": [
+    {
+     "type": "industry_report",
+     "title": "Contour induction hardening of gears",
+     "year": 2022,
+     "confidence": "high"
+    },
+    {
+     "type": "supplier_data",
+     "title": "Induction case-depth fatigue study",
+     "year": 2021,
+     "confidence": "medium"
+    }
+   ],
+   "regulatoryContext": null
+  }
+ },
+ {
+  "id": "drv011",
+  "title": "Chain-drive transfer case replacing gear drive for 2-speed",
+  "system": "Driveline",
+  "costSavingType": "Manufacturing Process",
+  "annualSaving": "£1.2M",
+  "difficulty": "Medium",
+  "timeToImplement": "18–24 months",
+  "description": "[ICE,MHEV] Replace the gear-drive 2-speed transfer case with a silent-chain drive on AWD variants. Cuts precision gear machining and case width while preserving torque transfer and NVH for high-torque ICE and 48V MHEV duty in the premium SUV, retaining low-range crawl capability and on-road quietness.",
+  "submittedBy": "Jeep Grand Cherokee benchmark",
+  "verified": 1,
+  "stars": 73,
+  "level": "system",
+  "ideaData": {
+   "id": "drv011",
+   "title": "Chain-drive transfer case replacing gear drive for 2-speed",
+   "technicalDescription": "Powertrain: ICE/MHEV. Baseline 2-speed transfer case uses a helical gear set to transfer torque to the front output, demanding ground gears and a wider case. The change adopts an inverted-tooth silent chain on a sprocket pair, transferring ~520 Nm with lower NVH and narrower package. Alternative materials: chain plates in SAE 1075 spring steel, sprockets in 16MnCr5 case-hardened or FLN2-4405 PM, and 8620 for high-torque. Low-range planetary retained for crawl ratio. Chain tension and polygon effect tuned to limit transfer-case whine; sprocket bearing L10 preserved.",
+   "materialGrade": "SAE 1075 chain / 16MnCr5 sprockets / FLN2-4405 PM",
+   "manufacturingImpact": "Replaces ground transfer gears with stamped/heat-treated chain and sprockets; alternative is fine-blanked vs stamped chain plates. Eliminates gear grinding and narrows case casting. Cuts machining time and case mass; assembly adds chain tensioning. BOM shifts to bought-in chain, lowering in-house machining and tooling.",
+   "costSavingTypes": [
+    "process",
+    "weight",
+    "tooling"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Silent chain removes gear grinding and narrows the case.",
+    "percentage": "£21/veh (-14% transfer-case cost)",
+    "annualValue": "£1.2M",
+    "calculationBasis": "£21/veh × 57k veh/yr"
+   },
+   "implementationDifficulty": "Medium",
+   "riskNotes": "Chain drive must hold torque capacity and fatigue life under high-torque tow and low-range crawl; chain elongation and pin wear controlled to protect durability. Polygon effect and tension tuned to keep transfer-case whine below premium NVH targets on-road. Low-range planetary retains crawl ratio and off-road capability. Thermal stability of chain lubrication validated for sustained crawl; on-road comfort and refinement preserved.",
+   "dfmaPrinciples": [
+    "Chain vs gear drive",
+    "Eliminate gear grinding",
+    "Narrow package"
+   ],
+   "systemLevel": "Assembly",
+   "timeToImplement": "18–24 months",
+   "benchmarkReference": "Jeep Grand Cherokee 2022 programme",
+   "confidenceLevel": "benchmarked",
+   "evidenceSources": [
+    {
+     "type": "teardown",
+     "title": "Transfer case chain vs gear teardown",
+     "year": 2021,
+     "confidence": "high"
+    },
+    {
+     "type": "supplier_data",
+     "title": "Silent chain durability data",
+     "year": 2022,
+     "confidence": "medium"
+    }
+   ],
+   "regulatoryContext": null
+  }
+ },
+ {
+  "id": "drv012",
+  "title": "Low-range planetary gearset commonisation across transfer case",
+  "system": "Driveline",
+  "costSavingType": "Commonisation",
+  "annualSaving": "£880k",
+  "difficulty": "Low",
+  "timeToImplement": "12–18 months",
+  "description": "[ICE,MHEV,PHEV] Commonise the 2-speed transfer case low-range planetary gearset geometry across ICE, MHEV and PHEV variants, varying only ratio by gear count. Cuts unique part numbers and tooling while preserving low-range crawl torque for high-torque ICE, 48V MHEV and PHEV duty in the premium SUV, retaining off-road capability.",
+  "submittedBy": "Toyota Land Cruiser 300 benchmark",
+  "verified": 1,
+  "stars": 70,
+  "level": "system",
+  "ideaData": {
+   "id": "drv012",
+   "title": "Low-range planetary gearset commonisation across transfer case",
+   "technicalDescription": "Powertrain: ICE/MHEV/PHEV. Baseline uses three distinct low-range planetary sets across powertrains, each with bespoke sun, planets and ring. The change standardises module, pressure angle and pin layout, varying tooth count to set the ~2.5–2.9:1 crawl ratio, cutting unique part numbers. Alternative materials: 18CrNiMo7-6 case-hardened ring, 16MnCr5 planets, and 4340 sun for the high-torque PHEV. Contact stress and bending fatigue validated at low-range torque multiplication (>1,300 Nm output). Planet-bearing L10 preserved; flank topology common to limit whine.",
+   "materialGrade": "18CrNiMo7-6 ring / 16MnCr5 planets / 4340 sun",
+   "manufacturingImpact": "Commonises hob/skive tooling and heat-treat fixtures across variants; alternative is shared blank machined to different counts. Reduces unique gear part numbers from nine to four, cutting tooling sets and changeovers. Assembly poka-yoke simplified; inventory and logistics part count fall sharply.",
+   "costSavingTypes": [
+    "commonisation",
+    "tooling",
+    "logistics"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Shared planetary geometry cuts part numbers and tooling.",
+    "percentage": "£16/veh (-12% gearset cost)",
+    "annualValue": "£880k",
+    "calculationBasis": "£16/veh × 55k veh/yr"
+   },
+   "implementationDifficulty": "Low",
+   "riskNotes": "Common geometry must carry each variant's low-range torque, especially PHEV hybrid-blend output, without pitting or tooth breakage in crawl and tow. Material grade per variant preserves bending fatigue and L10 life. Flank topology held to keep transfer-case whine within premium NVH targets. Off-road crawl ratio and capability retained via tooth-count tuning. Thermal stability under sustained crawl validated; durability maintained across all powertrains.",
+   "dfmaPrinciples": [
+    "Common geometry",
+    "Tune by tooth count",
+    "Part-number reduction"
+   ],
+   "systemLevel": "Assembly",
+   "timeToImplement": "12–18 months",
+   "benchmarkReference": "Toyota Land Cruiser 300 2021 programme",
+   "confidenceLevel": "benchmarked",
+   "evidenceSources": [
+    {
+     "type": "teardown",
+     "title": "Transfer case low-range gearset benchmark",
+     "year": 2022,
+     "confidence": "high"
+    },
+    {
+     "type": "supplier_data",
+     "title": "Planetary commonisation study",
+     "year": 2023,
+     "confidence": "medium"
+    }
+   ],
+   "regulatoryContext": null
+  }
+ },
+ {
+  "id": "drv013",
+  "title": "Electromagnetic actuator replacing motor-screw transfer-case shift",
+  "system": "Driveline",
+  "costSavingType": "Complexity",
+  "annualSaving": "£690k",
+  "difficulty": "Medium",
+  "timeToImplement": "16–22 months",
+  "description": "[ICE,MHEV] Replace the DC-motor-and-ballscrew range-shift actuator in the 2-speed transfer case with a compact electromagnetic/cam actuator. Cuts gear-train parts and package while preserving low-to-high range shift speed for high-torque ICE and 48V MHEV duty in the premium SUV, retaining shift robustness under load.",
+  "submittedBy": "Ford Bronco benchmark",
+  "verified": 1,
+  "stars": 68,
+  "level": "part",
+  "ideaData": {
+   "id": "drv013",
+   "title": "Electromagnetic actuator replacing motor-screw transfer-case shift",
+   "technicalDescription": "Powertrain: ICE/MHEV. Baseline range shift uses a brushed DC motor, reduction gears and a ballscrew driving the shift fork, with many moving parts. The change uses an electromagnetic actuator with a cam/ramp to translate the fork, deleting the gear train and screw. Shift force and stroke validated for synchroniser engagement under residual torque. Alternative materials: cam ramp in 8620 case-hardened, fork in 4140 or AM60B Mg, and PA66-GF35 actuator housing. Actuator response time held to maintain range-shift speed. Detent and self-locking design preserve held position; bearing L10 maintained.",
+   "materialGrade": "8620 cam ramp / 4140 fork / PA66-GF35 housing",
+   "manufacturingImpact": "Replaces motor+gears+ballscrew with electromagnetic cam actuator; alternative is solenoid vs torque-motor drive. Deletes a multi-part gear train and screw assembly, cutting part count and machining. Assembly simplified; fewer wear interfaces lower warranty. BOM consolidated; package and mass reduced.",
+   "costSavingTypes": [
+    "complexity",
+    "warranty",
+    "weight"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Cam actuator deletes the motor-gear-screw train.",
+    "percentage": "£13/veh (-15% actuator cost)",
+    "annualValue": "£690k",
+    "calculationBasis": "£13/veh × 53k veh/yr"
+   },
+   "implementationDifficulty": "Medium",
+   "riskNotes": "Actuator must deliver shift force to engage low-range under residual driveline torque on grades, avoiding incomplete engagement that risks gear clash or capability loss off-road. Self-locking cam holds range without continuous power for thermal and reliability robustness. Shift speed preserved for premium response. Detent durability validated for repeated crawl/tow cycles; on-road refinement unaffected. Capability and durability maintained through robust engagement design.",
+   "dfmaPrinciples": [
+    "Delete gear train",
+    "Self-locking cam",
+    "Part-count reduction"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "16–22 months",
+   "benchmarkReference": "Ford Bronco 2022 programme",
+   "confidenceLevel": "estimated",
+   "evidenceSources": [
+    {
+     "type": "patent",
+     "title": "Electromagnetic transfer case shift actuator",
+     "year": 2020,
+     "confidence": "medium"
+    },
+    {
+     "type": "industry_report",
+     "title": "Transfer case actuation trends",
+     "year": 2022,
+     "confidence": "medium"
+    }
+   ],
+   "regulatoryContext": null
+  }
+ },
+ {
+  "id": "drv014",
+  "title": "Reinforced PHEV transfer case with integrated e-motor mount",
+  "system": "Driveline",
+  "costSavingType": "Complexity",
+  "annualSaving": "£1.05M",
+  "difficulty": "High",
+  "timeToImplement": "22–30 months",
+  "description": "[PHEV] Integrate the e-motor mounting and reinforced clutch assembly into the 2-speed transfer case housing for PHEV variants, deleting a separate bracket and adapter. Consolidates structure while preserving hybrid torque-blend capacity and crawl capability in the premium SUV, retaining housing stiffness and bearing alignment under combined ICE+e-motor torque.",
+  "submittedBy": "Li Auto L9 benchmark",
+  "verified": 1,
+  "stars": 81,
+  "level": "system",
+  "ideaData": {
+   "id": "drv014",
+   "title": "Reinforced PHEV transfer case with integrated e-motor mount",
+   "technicalDescription": "Powertrain: PHEV. Baseline mounts the PHEV e-motor via a separate adapter housing bolted to the transfer case, adding joints and stack-up. The change casts the e-motor mount and reinforced clutch-pack bore into one housing, carrying combined ICE+e-motor torque (~700 Nm peak) through the low-range set. Housing ribbed for stiffness to hold bearing alignment and limit gear whine. Alternative materials: AlSi10MnMg (Magsimal-59) housing, AM60B Mg cover, and ADC12 for high-load bosses. Clutch-pack bore concentricity held to protect engagement and bearing L10 under hybrid blend.",
+   "materialGrade": "AlSi10MnMg (Magsimal-59) housing / AM60B Mg cover / ADC12 bosses",
+   "manufacturingImpact": "Integrates adapter into the main casting; alternative is HPDC vs squeeze-cast for thick bosses. Deletes a separate housing, fasteners and a sealing joint, cutting machining of mating faces. Assembly stations reduced; BOM consolidated. Casting tooling reworked; net mass and leak-path count fall.",
+   "costSavingTypes": [
+    "complexity",
+    "process",
+    "weight"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Casting integration deletes the adapter housing and a sealing joint.",
+    "percentage": "£28/veh (-13% PHEV driveline cost)",
+    "annualValue": "£1.05M",
+    "calculationBasis": "£28/veh × 38k PHEV veh/yr"
+   },
+   "implementationDifficulty": "High",
+   "riskNotes": "Integrated housing must carry combined ICE+e-motor torque through hybrid-blend transients without distortion that would misalign bearings, raising gear whine or cutting L10. Ribbing preserves stiffness and clutch-bore concentricity for repeatable engagement. Thermal stability under e-motor heat and sustained crawl validated. Off-road capability and tow torque preserved; NVH targets met through modal tuning. Premium PHEV performance and durability maintained via reinforced cast structure.",
+   "dfmaPrinciples": [
+    "Housing integration",
+    "Delete adapter",
+    "Cast-in reinforcement"
+   ],
+   "systemLevel": "Assembly",
+   "timeToImplement": "22–30 months",
+   "benchmarkReference": "Li Auto L9 2023 programme",
+   "confidenceLevel": "estimated",
+   "evidenceSources": [
+    {
+     "type": "oem_press_release",
+     "title": "PHEV transfer case e-motor integration",
+     "year": 2023,
+     "confidence": "medium"
+    },
+    {
+     "type": "patent",
+     "title": "Integrated hybrid transfer case housing",
+     "year": 2022,
+     "confidence": "medium"
+    }
+   ],
+   "regulatoryContext": "UN/ECE R100 electric safety"
+  }
+ },
+ {
+  "id": "drv015",
+  "title": "48V MHEV torque-fill enabling downsized 7-speed AT clutches",
+  "system": "Driveline",
+  "costSavingType": "Material + Weight",
+  "annualSaving": "£930k",
+  "difficulty": "High",
+  "timeToImplement": "20–28 months",
+  "description": "[MHEV] Use 48V belt-starter-generator torque-fill to cap peak input torque, allowing downsized clutch packs and shafts in the 7-speed automatic. Cuts plate count and shaft mass while preserving shift quality and launch feel for 48V MHEV duty in the premium SUV, retaining durability under capped torque.",
+  "submittedBy": "Mercedes GLE benchmark",
+  "verified": 1,
+  "stars": 79,
+  "level": "system",
+  "ideaData": {
+   "id": "drv015",
+   "title": "48V MHEV torque-fill enabling downsized 7-speed AT clutches",
+   "technicalDescription": "Powertrain: MHEV. Baseline sizes clutches and shafts for engine peak plus margin. With 48V BSG torque-fill smoothing shift torque holes and capping transient peaks, the clutch packs lose one plate and shafts reduce diameter, cutting mass and material. Clutch energy and µ-stability validated at the new capped torque (~480 Nm) to maintain shift smoothness. Alternative materials: shafts in 4340 vs 300M for higher specific strength, splines in 16MnCr5 case-hardened, and high-energy paper friction lining. Shaft torsional fatigue and clutch thermal stability preserved; bearing L10 unchanged.",
+   "materialGrade": "300M shaft / 4340 / 16MnCr5 splines",
+   "manufacturingImpact": "Reduces clutch plate count and shaft stock; alternative is forged vs bar-turned shafts. Removes one friction+steel plate per affected clutch and trims shaft diameter, cutting machining and material. Tooling adjusted; assembly time reduced. BOM lightened; logistics weight down. Higher-strength steel offsets size reduction where needed.",
+   "costSavingTypes": [
+    "material",
+    "weight",
+    "complexity"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Torque capping lets clutches and shafts shrink.",
+    "percentage": "£17/veh (-11% clutch+shaft cost)",
+    "annualValue": "£930k",
+    "calculationBasis": "£17/veh × 55k MHEV veh/yr"
+   },
+   "implementationDifficulty": "High",
+   "riskNotes": "Downsizing depends on guaranteed 48V torque-fill availability; loss of fill at low SOC must not overstress clutches, so calibration limits engine torque accordingly to protect durability and avoid clutch slip. Shaft torsional fatigue validated at capped torque for tow and crawl. Shift smoothness and launch feel preserved via filled torque holes. Thermal stability of downsized clutches checked; premium refinement and reliability maintained.",
+   "dfmaPrinciples": [
+    "Right-size to capped torque",
+    "Reduce plate count",
+    "Higher-strength steel"
+   ],
+   "systemLevel": "Assembly",
+   "timeToImplement": "20–28 months",
+   "benchmarkReference": "Mercedes GLE 2023 programme",
+   "confidenceLevel": "estimated",
+   "evidenceSources": [
+    {
+     "type": "oem_press_release",
+     "title": "48V mild-hybrid torque fill",
+     "year": 2022,
+     "confidence": "medium"
+    },
+    {
+     "type": "industry_report",
+     "title": "MHEV driveline downsizing potential",
+     "year": 2023,
+     "confidence": "medium"
+    }
+   ],
+   "regulatoryContext": "UN/ECE R85 power measurement"
+  }
+ },
+ {
+  "id": "drv016",
+  "title": "Single-speed coaxial BEV reduction gearbox optimisation",
+  "system": "Driveline",
+  "costSavingType": "Manufacturing Process",
+  "annualSaving": "£1.5M",
+  "difficulty": "Medium",
+  "timeToImplement": "16–22 months",
+  "description": "[BEV] Optimise the BEV e-axle single-speed reduction gearbox to a two-stage coaxial helical layout with skived-ground gears. Cuts gear count and machining while preserving high-torque output and efficiency for BEV duty in the premium SUV, retaining low gear whine at high motor speed and durability under instant torque.",
+  "submittedBy": "Volvo EX90 benchmark",
+  "verified": 1,
+  "stars": 83,
+  "level": "system",
+  "ideaData": {
+   "id": "drv016",
+   "title": "Single-speed coaxial BEV reduction gearbox optimisation",
+   "technicalDescription": "Powertrain: BEV. Baseline uses a parallel-axis two-stage reduction (~9.5:1) with separately machined gears at high motor speed (>16,000 rpm). The change refines a compact coaxial layout with optimised macro/micro-geometry and power-skiving plus profile grinding, cutting one bearing pair and machining passes while holding output torque (~3,500 Nm at wheels). Alternative materials: 18CrNiMo7-6 case-hardened, 20MnCr5, and SAE 8620 pinions; aluminium AlSi10MnMg housing. Flank micro-geometry tuned to suppress high-frequency whine; bearing L10 raised for high-speed operation. Efficiency improved by reduced churning.",
+   "materialGrade": "18CrNiMo7-6 / 20MnCr5 / SAE 8620 pinion",
+   "manufacturingImpact": "Combines skiving and profile grinding in optimised flow; alternative is grinding vs honing for top stage. Reduces a bearing pair and machining passes, cuts cycle time and tool wear. Housing machining simplified; BOM lightened. Lower churning improves efficiency; assembly stations reduced.",
+   "costSavingTypes": [
+    "process",
+    "weight",
+    "complexity"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Optimised coaxial layout cuts gears, bearings and machining.",
+    "percentage": "£22/veh (-15% reduction-gearbox cost)",
+    "annualValue": "£1.5M",
+    "calculationBasis": "£22/veh × 68k BEV veh/yr"
+   },
+   "implementationDifficulty": "Medium",
+   "riskNotes": "High motor speed makes gear whine and bearing L10 critical; micro-geometry optimisation suppresses high-frequency whine that BEV quietness exposes, and bearing selection protects life at >16,000 rpm. Instant motor torque demands validated bending fatigue and pitting resistance to preserve durability. Thermal stability of lubrication at speed checked. Premium BEV refinement and efficiency preserved; off-road low-speed torque delivery retained through gearset capacity.",
+   "dfmaPrinciples": [
+    "Optimise gear geometry",
+    "Reduce bearing pairs",
+    "Lower churning loss"
+   ],
+   "systemLevel": "Assembly",
+   "timeToImplement": "16–22 months",
+   "benchmarkReference": "Volvo EX90 2024 programme",
+   "confidenceLevel": "benchmarked",
+   "evidenceSources": [
+    {
+     "type": "industry_report",
+     "title": "BEV reduction gearbox design trends",
+     "year": 2023,
+     "confidence": "high"
+    },
+    {
+     "type": "teardown",
+     "title": "E-axle reduction gear teardown",
+     "year": 2024,
+     "confidence": "medium"
+    }
+   ],
+   "regulatoryContext": null
+  }
+ },
+ {
+  "id": "drv017",
+  "title": "Hollow lightweight half shafts for BEV high-torque axle",
+  "system": "Driveline",
+  "costSavingType": "Weight",
+  "annualSaving": "£840k",
+  "difficulty": "Medium",
+  "timeToImplement": "14–20 months",
+  "description": "[BEV] Replace solid half shafts with flow-formed hollow tube shafts on the BEV high-torque e-axle. Cuts rotating mass and material while preserving torsional capacity for instant BEV torque in the premium SUV, retaining CV-joint life and NVH and supporting efficiency through lower unsprung and rotating inertia.",
+  "submittedBy": "NIO ES8 benchmark",
+  "verified": 1,
+  "stars": 76,
+  "level": "part",
+  "ideaData": {
+   "id": "drv017",
+   "title": "Hollow lightweight half shafts for BEV high-torque axle",
+   "technicalDescription": "Powertrain: BEV. Baseline solid half shafts are sized for instant motor torque (~1,200 Nm at the shaft) with margin. The change flow-forms hollow tube shafts of equal outer diameter, holding torsional section modulus while cutting mass ~25%. Alternative materials: 4140 induction-hardened, 1541 microalloyed, and 300M for highest torque; splines case-hardened 16MnCr5. Torsional fatigue and CV-joint plunge validated under instant torque step. Lower rotating inertia aids efficiency and response. Surface induction hardening preserves fatigue; NVH unchanged through balanced tube.",
+   "materialGrade": "4140 induction-hardened / 1541 microalloyed / 300M",
+   "manufacturingImpact": "Replaces solid bar turning with flow-forming of tube; alternative is gun-drilling vs flow-forming for the bore. Cuts buy weight and rotating mass; flow-forming work-hardens the surface, improving fatigue. Machining time reduced; BOM lightened; logistics weight down. Balancing retained for NVH.",
+   "costSavingTypes": [
+    "weight",
+    "material"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Hollow flow-formed shafts cut rotating mass and material.",
+    "percentage": "£12/veh (-14% half-shaft cost)",
+    "annualValue": "£840k",
+    "calculationBasis": "£12/veh × 70k BEV veh/yr"
+   },
+   "implementationDifficulty": "Medium",
+   "riskNotes": "Hollow shafts must hold torsional fatigue under instant BEV torque steps and tow, where peak torque arrives without slip; section modulus preserved and surface induction-hardened to protect life. CV-joint plunge and articulation validated for off-road travel. Tube balance maintained so NVH and driveline boom are unaffected. Thermal stability at sustained high torque checked. Premium response and durability preserved through validated tube design.",
+   "dfmaPrinciples": [
+    "Flow-formed hollow tube",
+    "Reduce rotating mass",
+    "Surface hardening"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "14–20 months",
+   "benchmarkReference": "NIO ES8 2023 programme",
+   "confidenceLevel": "benchmarked",
+   "evidenceSources": [
+    {
+     "type": "supplier_data",
+     "title": "Flow-formed hollow shaft fatigue data",
+     "year": 2022,
+     "confidence": "high"
+    },
+    {
+     "type": "industry_report",
+     "title": "BEV half-shaft lightweighting",
+     "year": 2023,
+     "confidence": "medium"
+    }
+   ],
+   "regulatoryContext": null
+  }
+ },
+ {
+  "id": "drv018",
+  "title": "E-axle oil-cooling integration deleting external chiller loop",
+  "system": "Driveline",
+  "costSavingType": "Complexity",
+  "annualSaving": "£1.1M",
+  "difficulty": "High",
+  "timeToImplement": "20–26 months",
+  "description": "[BEV] Integrate direct oil cooling of the BEV e-axle motor and reduction gears, deleting a separate water-glycol chiller branch. Consolidates the cooling circuit while preserving thermal limits for high-torque BEV duty in the premium SUV, retaining gear and bearing durability and supporting sustained towing without derate.",
+  "submittedBy": "Xpeng G9 benchmark",
+  "verified": 1,
+  "stars": 80,
+  "level": "system",
+  "ideaData": {
+   "id": "drv018",
+   "title": "E-axle oil-cooling integration deleting external chiller loop",
+   "technicalDescription": "Powertrain: BEV. Baseline cools the e-axle motor with a separate water-glycol jacket plus an oil loop for gears, duplicating pumps and lines. The change uses gearbox oil for direct rotor/stator spray and gear lubrication via a shared pump and oil-to-coolant exchanger, deleting the chiller branch. Oil flow and heat rejection validated to hold winding and gear-oil temperature under sustained tow without torque derate. Alternative materials: oil pump rotor FLC-4608 PM, exchanger AA3003/AA4045 brazing sheet, and PA66-GF35 spray manifold. Bearing L10 and gear scuffing limits preserved at high speed.",
+   "materialGrade": "FLC-4608 PM pump / AA3003/AA4045 exchanger / PA66-GF35 manifold",
+   "manufacturingImpact": "Replaces dual cooling loops with shared oil circuit; alternative is spray-bar vs channel cooling of the stator. Deletes a pump, lines and a chiller, cutting part count and assembly joints. BOM consolidated; leak paths reduced. Manifold integrated into housing; logistics part count falls.",
+   "costSavingTypes": [
+    "complexity",
+    "logistics",
+    "warranty"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Shared oil cooling deletes a chiller loop and a pump.",
+    "percentage": "£17/veh (-16% cooling-system cost)",
+    "annualValue": "£1.1M",
+    "calculationBasis": "£17/veh × 65k BEV veh/yr"
+   },
+   "implementationDifficulty": "High",
+   "riskNotes": "Direct oil cooling must hold winding and gear-oil temperature during sustained towing and grade climbs to avoid motor derate or gear scuffing, protecting durability. Oil-flow distribution validated for hot-spot control; pump capacity sized for worst-case. Bearing L10 preserved at high speed; gear-oil thermal stability checked. NVH from spray and pump noise managed. Premium sustained-performance capability and durability preserved through validated thermal model.",
+   "dfmaPrinciples": [
+    "Shared cooling circuit",
+    "Delete chiller branch",
+    "Integrate manifold"
+   ],
+   "systemLevel": "Assembly",
+   "timeToImplement": "20–26 months",
+   "benchmarkReference": "Xpeng G9 2023 programme",
+   "confidenceLevel": "estimated",
+   "evidenceSources": [
+    {
+     "type": "oem_press_release",
+     "title": "Direct oil-cooled e-axle",
+     "year": 2023,
+     "confidence": "medium"
+    },
+    {
+     "type": "patent",
+     "title": "Integrated e-axle oil cooling",
+     "year": 2022,
+     "confidence": "medium"
+    }
+   ],
+   "regulatoryContext": "UN/ECE R100 electric safety"
+  }
+ },
+ {
+  "id": "drv019",
+  "title": "PM sintered transfer-case clutch piston and apply hub",
+  "system": "Driveline",
+  "costSavingType": "Material",
+  "annualSaving": "£560k",
+  "difficulty": "Low",
+  "timeToImplement": "12–16 months",
+  "description": "[ICE,MHEV,PHEV] Convert the 2-speed transfer-case AWD-coupling clutch piston and apply hub from machined steel to powder-metallurgy sintered parts. Cuts machining and material while preserving clutch apply force and torque transfer for high-torque ICE, 48V MHEV and PHEV duty in the premium SUV, retaining durability under crawl and tow.",
+  "submittedBy": "Jeep Wrangler benchmark",
+  "verified": 1,
+  "stars": 67,
+  "level": "part",
+  "ideaData": {
+   "id": "drv019",
+   "title": "PM sintered transfer-case clutch piston and apply hub",
+   "technicalDescription": "Powertrain: ICE/MHEV/PHEV. Baseline clutch piston and apply hub are machined from steel bar/forging, transferring AWD coupling torque up to ~520 Nm. The change adopts PM sintering to near-net shape, finishing only sealing grooves and spline. Alternative materials: FLN2-4405 PM steel, FLC-4608 PM for higher load, and 16MnCr5 forged for the PHEV high-torque hub. Apply-force area and seal-groove finish held to maintain clutch engagement repeatability. Spline fatigue and L10 of adjacent bearing preserved. Density >7.4 g/cc validated for the loaded hub.",
+   "materialGrade": "FLN2-4405 PM / FLC-4608 PM / 16MnCr5 forged",
+   "manufacturingImpact": "Replaces machined-from-stock with PM sinter plus finish-machining; alternative is sinter vs sinter-hardening for the hub. Cuts ~50% machining stock and roughing ops; near-net grooves reduce turning. Tooling shifts to compaction dies; BOM material reduced. Assembly unchanged; scrap and machining time fall.",
+   "costSavingTypes": [
+    "material",
+    "process"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Near-net PM blanks cut machining and buy material.",
+    "percentage": "£10/veh (-13% clutch-hub cost)",
+    "annualValue": "£560k",
+    "calculationBasis": "£10/veh × 56k veh/yr"
+   },
+   "implementationDifficulty": "Low",
+   "riskNotes": "PM density must give spline and piston fatigue strength near wrought under repeated AWD clutch engagement in crawl and tow; sinter-hardening or HIP applied for PHEV high-torque hub to avoid fatigue cracking. Seal-groove finish controls apply-force repeatability so torque transfer and engagement feel are preserved. Thermal stability under sustained clutch slip validated. Off-road capability and durability maintained; premium AWD response unaffected through material selection.",
+   "dfmaPrinciples": [
+    "Near-net PM",
+    "Reduce machining",
+    "Sinter-harden high-load"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "12–16 months",
+   "benchmarkReference": "Jeep Wrangler 2022 programme",
+   "confidenceLevel": "benchmarked",
+   "evidenceSources": [
+    {
+     "type": "supplier_data",
+     "title": "PM clutch component density-fatigue data",
+     "year": 2022,
+     "confidence": "medium"
+    },
+    {
+     "type": "teardown",
+     "title": "Transfer case coupling teardown",
+     "year": 2021,
+     "confidence": "medium"
+    }
+   ],
+   "regulatoryContext": null
+  }
+ },
+ {
+  "id": "drv020",
+  "title": "Common output-shaft bearings across AT and transfer case",
+  "system": "Driveline",
+  "costSavingType": "Commonisation",
+  "annualSaving": "£720k",
+  "difficulty": "Low",
+  "timeToImplement": "10–14 months",
+  "description": "[ICE,MHEV,PHEV] Commonise tapered and ball bearing references across the 7-speed automatic output and the 2-speed transfer-case inputs/outputs. Cuts unique bearing part numbers and supplier tooling while preserving L10 life and rigidity for high-torque ICE, 48V MHEV and PHEV duty in the premium SUV, retaining shaft alignment and NVH.",
+  "submittedBy": "Mercedes G-Class benchmark",
+  "verified": 1,
+  "stars": 70,
+  "level": "system",
+  "ideaData": {
+   "id": "drv020",
+   "title": "Common output-shaft bearings across AT and transfer case",
+   "technicalDescription": "Powertrain: ICE/MHEV/PHEV. Baseline specifies many bearing references across the automatic output and transfer-case shafts with similar but non-identical bore/OD. The change rationalises to a smaller family of tapered-roller and deep-groove ball bearings sized for the governing load case, holding L10 >3,000 h at high-torque tow. Alternative materials: 100Cr6 (52100) through-hardened, M50 for high-speed BEV-adjacent applications, and ceramic Si3N4 hybrid balls for the highest-speed shaft. Preload and seat fits held to preserve shaft rigidity, alignment and gear-mesh transmission error to limit whine.",
+   "materialGrade": "100Cr6 (52100) / M50 / Si3N4 hybrid balls",
+   "manufacturingImpact": "Commonises bearing references and seat machining; alternative is ground vs honed bearing seats. Reduces unique bearing part numbers, consolidating supplier tooling and inbound logistics. Assembly poka-yoke simplified by fewer variants; inventory and warehousing reduced. Housing bore tolerances standardised, easing machining setup.",
+   "costSavingTypes": [
+    "commonisation",
+    "logistics",
+    "tooling"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Bearing-reference rationalisation cuts part numbers and logistics.",
+    "percentage": "£11/veh (-9% bearing cost)",
+    "annualValue": "£720k",
+    "calculationBasis": "£11/veh × 65k veh/yr"
+   },
+   "implementationDifficulty": "Low",
+   "riskNotes": "Common bearings must meet each application's L10 under high-torque tow and crawl; sizing to the governing load with adequate margin protects durability. Preload and fit control preserve shaft rigidity and alignment, keeping gear-mesh transmission error and whine within premium NVH targets. Thermal stability across oil-temperature range validated. Highest-speed shafts use hybrid ceramic to protect life. Off-road and on-road durability maintained through conservative reference selection.",
+   "dfmaPrinciples": [
+    "Bearing rationalisation",
+    "Standardise seat fits",
+    "Size to governing load"
+   ],
+   "systemLevel": "Assembly",
+   "timeToImplement": "10–14 months",
+   "benchmarkReference": "Mercedes G-Class 2022 programme",
+   "confidenceLevel": "benchmarked",
+   "evidenceSources": [
+    {
+     "type": "supplier_data",
+     "title": "Bearing rationalisation L10 study",
+     "year": 2023,
+     "confidence": "high"
+    },
+    {
+     "type": "industry_report",
+     "title": "Driveline bearing commonisation",
+     "year": 2022,
+     "confidence": "medium"
+    }
+   ],
+   "regulatoryContext": null
+  }
+ },
+ {
+  "id": "drv021",
+  "title": "Laser-welded multi-plate 7-speed AT clutch hub assembly",
+  "system": "Driveline",
+  "costSavingType": "Manufacturing Process",
+  "annualSaving": "£670k",
+  "difficulty": "Medium",
+  "timeToImplement": "14–20 months",
+  "description": "[ICE,MHEV] Replace the splined-and-riveted clutch hub of the 7-speed automatic with a laser-welded stamped-and-machined sub-assembly. Cuts fasteners and machining while preserving torque path and balance for high-torque ICE and 48V MHEV shift events in the premium SUV, retaining spline durability and rotating balance for low NVH.",
+  "submittedBy": "Porsche Cayenne benchmark",
+  "verified": 1,
+  "stars": 73,
+  "level": "part",
+  "ideaData": {
+   "id": "drv021",
+   "title": "Laser-welded multi-plate 7-speed AT clutch hub assembly",
+   "technicalDescription": "Powertrain: ICE/MHEV. Baseline clutch hub joins a machined hub to a stamped drum with rivets and a separate spline ring, adding parts and imbalance risk. The change laser-welds a stamped drum to a machined hub, integrating the spline and deleting rivets, carrying ~520 Nm through the weld and spline. Alternative materials: drum in HSLA HX420LAD stamped, hub in 16MnCr5 case-hardened, and weld-compatible 8620 spline ring. Weld fatigue and spline shear validated; rotating balance held to limit NVH. Bearing L10 unaffected; flatness preserved for clutch-pack apply.",
+   "materialGrade": "HX420LAD drum / 16MnCr5 hub / 8620 spline",
+   "manufacturingImpact": "Replaces riveting+separate spline with laser welding of stamped-to-machined parts; alternative is laser vs projection welding. Deletes rivets and a part, cuts assembly steps and balancing rework. Machining reduced by integrating spline; BOM consolidated. Welding cell added; net cycle time and part count fall.",
+   "costSavingTypes": [
+    "process",
+    "complexity"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Laser welding deletes rivets and a spline ring.",
+    "percentage": "£11/veh (-12% clutch-hub cost)",
+    "annualValue": "£670k",
+    "calculationBasis": "£11/veh × 61k veh/yr"
+   },
+   "implementationDifficulty": "Medium",
+   "riskNotes": "Laser weld must carry torque and survive shift-cycle fatigue under high-torque launch and tow without crack initiation, so weld penetration and HAZ control are validated. Integrated spline shear strength preserved for durability. Rotating balance held tightly to keep driveline NVH and whine within premium targets. Apply-face flatness maintained for even clutch-pack loading and shift smoothness. Thermal stability under clutch slip checked; durability and refinement preserved.",
+   "dfmaPrinciples": [
+    "Laser welding",
+    "Delete rivets",
+    "Integrate spline"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "14–20 months",
+   "benchmarkReference": "Porsche Cayenne 2023 programme",
+   "confidenceLevel": "benchmarked",
+   "evidenceSources": [
+    {
+     "type": "supplier_data",
+     "title": "Laser-welded clutch hub fatigue data",
+     "year": 2022,
+     "confidence": "medium"
+    },
+    {
+     "type": "teardown",
+     "title": "Clutch hub construction teardown",
+     "year": 2021,
+     "confidence": "medium"
+    }
+   ],
+   "regulatoryContext": null
+  }
+ },
+ {
+  "id": "drv022",
+  "title": "Electric oil pump replacing mechanical pump in PHEV transfer case",
+  "system": "Driveline",
+  "costSavingType": "Complexity",
+  "annualSaving": "£780k",
+  "difficulty": "High",
+  "timeToImplement": "20–26 months",
+  "description": "[PHEV] Replace the shaft-driven mechanical lube pump in the PHEV 2-speed transfer case with a compact electric oil pump. Enables lubrication during e-drive-only operation while preserving bearing and gear lubrication for PHEV hybrid duty in the premium SUV, retaining crawl and tow durability without engine-driven pumping loss.",
+  "submittedBy": "AITO M9 benchmark",
+  "verified": 1,
+  "stars": 77,
+  "level": "part",
+  "ideaData": {
+   "id": "drv022",
+   "title": "Electric oil pump replacing mechanical pump in PHEV transfer case",
+   "technicalDescription": "Powertrain: PHEV. Baseline transfer-case lube pump is driven by the input shaft, so during e-drive-only (engine off) lubrication depends on splash, risking starvation at sustained e-drive. The change uses a 12V/48V electric oil pump supplying gears and bearings on demand, independent of engine state, and deleting the shaft-driven pump's parasitic drag. Flow validated for bearing L10 and gear-oil film at low-range crawl. Alternative materials: pump rotor FLC-4608 PM, housing AlSi17Cu4Mg, and PPS-GF40 for the controller carrier. Thermal and pressure response tuned for hybrid-blend transitions.",
+   "materialGrade": "FLC-4608 PM rotor / AlSi17Cu4Mg housing / PPS-GF40 carrier",
+   "manufacturingImpact": "Replaces shaft-driven gerotor with electric pump module; alternative is BLDC vs brushed pump motor. Deletes the mechanical drive interface and machining, adds a wired module. Assembly adds an electrical connection but removes a drive coupling. BOM shifts to bought-in pump; parasitic-loss reduction aids efficiency.",
+   "costSavingTypes": [
+    "complexity",
+    "process"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Electric pump enables e-drive lube and cuts a drive interface.",
+    "percentage": "£20/veh (-12% PHEV lube-system cost)",
+    "annualValue": "£780k",
+    "calculationBasis": "£20/veh × 39k PHEV veh/yr"
+   },
+   "implementationDifficulty": "High",
+   "riskNotes": "Electric pump must guarantee lubrication during engine-off e-drive and at low-range crawl to protect bearing L10 and prevent gear scuffing, so flow and fail-safe logic are validated. Pump reliability and thermal stability under sustained crawl and tow checked to preserve durability. Loss of pump must trigger safe derate to avoid damage. Off-road capability and refinement preserved; premium PHEV durability maintained through robust lube assurance.",
+   "dfmaPrinciples": [
+    "On-demand electric pump",
+    "Delete drive coupling",
+    "Enable e-drive lube"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "20–26 months",
+   "benchmarkReference": "AITO M9 2023 programme",
+   "confidenceLevel": "estimated",
+   "evidenceSources": [
+    {
+     "type": "oem_press_release",
+     "title": "Electric oil pump for hybrid driveline",
+     "year": 2023,
+     "confidence": "medium"
+    },
+    {
+     "type": "industry_report",
+     "title": "Hybrid lubrication system trends",
+     "year": 2022,
+     "confidence": "medium"
+    }
+   ],
+   "regulatoryContext": "UN/ECE R100 electric safety"
+  }
+ },
+ {
+  "id": "drv023",
+  "title": "Magnesium transfer-case housing for MHEV weight reduction",
+  "system": "Driveline",
+  "costSavingType": "Material + Weight",
+  "annualSaving": "£610k",
+  "difficulty": "Medium",
+  "timeToImplement": "18–24 months",
+  "description": "[ICE,MHEV] Convert the 2-speed transfer-case housing from aluminium to high-pressure die-cast magnesium with localised steel inserts. Cuts mass while preserving stiffness and bearing-bore accuracy for high-torque ICE and 48V MHEV duty in the premium SUV, retaining NVH and durability under crawl and tow with corrosion protection.",
+  "submittedBy": "Land Rover-class benchmark",
+  "verified": 1,
+  "stars": 71,
+  "level": "part",
+  "ideaData": {
+   "id": "drv023",
+   "title": "Magnesium transfer-case housing for MHEV weight reduction",
+   "technicalDescription": "Powertrain: ICE/MHEV. Baseline transfer-case housing is HPDC aluminium. The change uses HPDC magnesium with cast-in or pressed steel inserts at bearing bores and high-stress bosses, cutting mass ~30% while holding stiffness via ribbing and insert reinforcement. Alternative materials: AM60B Mg (ductile), AZ91D Mg (higher strength), and AlSi10MnMg retained for the highest-load cover. Bearing-bore roundness held to protect shaft alignment and L10; galvanic isolation applied at steel interfaces. Modal frequency tuned to keep transfer-case whine out of band; thermal expansion managed for sealing.",
+   "materialGrade": "AM60B Mg / AZ91D Mg / steel bearing inserts",
+   "manufacturingImpact": "Switches aluminium HPDC to magnesium HPDC with inserts; alternative is cold-chamber Mg casting vs thixomoulding. Lower-density casting cuts mass; inserts add a placement step. Machining similar; coating/isolation added for corrosion. BOM lightened; logistics weight reduced. Die tooling reworked for Mg flow.",
+   "costSavingTypes": [
+    "material",
+    "weight"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Magnesium casting cuts housing mass at similar machining.",
+    "percentage": "£12/veh (-10% housing cost)",
+    "annualValue": "£610k",
+    "calculationBasis": "£12/veh × 51k veh/yr"
+   },
+   "implementationDifficulty": "Medium",
+   "riskNotes": "Magnesium's lower modulus demands ribbing and steel inserts to hold bearing-bore accuracy and housing stiffness under high-torque tow and crawl, protecting alignment and L10. Galvanic corrosion at steel interfaces controlled by isolation and coating for durability in off-road wet/salt conditions. Thermal expansion managed for seal integrity. Modal tuning keeps whine within premium NVH targets. Capability and durability preserved through reinforced design.",
+   "dfmaPrinciples": [
+    "Magnesium casting",
+    "Steel inserts at bores",
+    "Galvanic isolation"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "18–24 months",
+   "benchmarkReference": "Mercedes G-Class 2022 programme",
+   "confidenceLevel": "estimated",
+   "evidenceSources": [
+    {
+     "type": "industry_report",
+     "title": "Magnesium driveline housings",
+     "year": 2021,
+     "confidence": "medium"
+    },
+    {
+     "type": "supplier_data",
+     "title": "Mg HPDC with steel inserts data",
+     "year": 2022,
+     "confidence": "medium"
+    }
+   ],
+   "regulatoryContext": null
+  }
+ },
+ {
+  "id": "drv024",
+  "title": "CFRP propshaft tube replacing two-piece steel for ICE/PHEV",
+  "system": "Driveline",
+  "costSavingType": "Weight",
+  "annualSaving": "£790k",
+  "difficulty": "Medium",
+  "timeToImplement": "18–24 months",
+  "description": "[ICE,PHEV] Replace the two-piece steel propshaft with a single-piece carbon-fibre composite tube on ICE and PHEV variants. Eliminates a centre bearing and U-joint while preserving torque capacity and raising bending critical speed for high-torque ICE and PHEV duty in the premium SUV, retaining NVH and crash behaviour.",
+  "submittedBy": "Porsche Cayenne benchmark",
+  "verified": 1,
+  "stars": 78,
+  "level": "part",
+  "ideaData": {
+   "id": "drv024",
+   "title": "CFRP propshaft tube replacing two-piece steel for ICE/PHEV",
+   "technicalDescription": "Powertrain: ICE/PHEV. Baseline propshaft is two-piece steel with a centre support bearing and extra U-joint to keep bending critical speed above operating range. The change uses a single-piece CFRP tube whose high specific stiffness raises critical speed, deleting the centre bearing and a joint while transmitting ~520 Nm (higher for PHEV blend). Alternative materials: CFRP (T700 carbon/epoxy) tube, GFRP hybrid for cost, and 4340 steel stub-shaft adapters. Torsional and whirl validated; controlled crush retained for crash. Bonded/swaged steel end fittings preserve joint fatigue; NVH improved by composite damping.",
+   "materialGrade": "CFRP T700/epoxy tube / GFRP hybrid / 4340 stub adapters",
+   "manufacturingImpact": "Replaces steel tube welding+bearing assembly with filament-wound/pultruded CFRP plus bonded fittings; alternative is filament winding vs braided layup. Deletes centre bearing, bracket and a U-joint, cutting parts and assembly. Bonding/curing cell added; BOM lightened ~40% mass. Logistics weight and fastener count reduced.",
+   "costSavingTypes": [
+    "weight",
+    "complexity"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Single CFRP tube deletes a bearing and joint and cuts mass.",
+    "percentage": "£14/veh (-11% propshaft cost)",
+    "annualValue": "£790k",
+    "calculationBasis": "£14/veh × 56k veh/yr"
+   },
+   "implementationDifficulty": "Medium",
+   "riskNotes": "CFRP tube must hold torsional capacity and bending whirl above operating speed for high-torque tow and PHEV blend, with end-fitting bond fatigue validated to prevent joint failure. Composite damping aids NVH and driveline boom. Controlled-crush behaviour preserved for crash safety. Off-road shock loading and articulation accommodated by joint design. Thermal stability of the bond line under exhaust heat checked. Premium refinement, durability and safety preserved.",
+   "dfmaPrinciples": [
+    "Single-piece CFRP",
+    "Delete centre bearing",
+    "Raise critical speed"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "18–24 months",
+   "benchmarkReference": "Porsche Cayenne 2023 programme",
+   "confidenceLevel": "benchmarked",
+   "evidenceSources": [
+    {
+     "type": "industry_report",
+     "title": "CFRP propshaft adoption",
+     "year": 2022,
+     "confidence": "high"
+    },
+    {
+     "type": "patent",
+     "title": "Composite propshaft end-fitting bond",
+     "year": 2020,
+     "confidence": "medium"
+    }
+   ],
+   "regulatoryContext": "FMVSS 301 crash integrity"
+  }
+ },
+ {
+  "id": "drv025",
+  "title": "Disconnect AWD coupling for BEV efficiency on front e-axle",
+  "system": "Driveline",
+  "costSavingType": "Complexity",
+  "annualSaving": "£1.0M",
+  "difficulty": "High",
+  "timeToImplement": "20–28 months",
+  "description": "[BEV] Add a dog-clutch disconnect to the BEV front reduction-gearbox e-axle, decoupling gears at cruise to cut spin losses. Reduces drag and enables a simpler coupling while preserving instant AWD re-engagement and high-torque traction for BEV duty in the premium SUV, retaining off-road capability and NVH.",
+  "submittedBy": "NIO EL7 benchmark",
+  "verified": 1,
+  "stars": 79,
+  "level": "system",
+  "ideaData": {
+   "id": "drv025",
+   "title": "Disconnect AWD coupling for BEV efficiency on front e-axle",
+   "technicalDescription": "Powertrain: BEV. Baseline front e-axle gears and motor spin continuously, adding churning and drag losses at cruise. The change integrates a dog-clutch disconnect that decouples the front reduction gearset when AWD is not needed, cutting spin loss and improving range, with fast electromagnetic re-engagement for traction. Re-engagement speed-matching validated to avoid clash; torque path holds ~1,500 Nm at the axle. Alternative materials: dog ring in 8620 case-hardened, actuator cam 4140, and AlSi10MnMg housing. Bearing L10 and gear durability preserved; NVH of engagement tuned for premium refinement.",
+   "materialGrade": "8620 dog ring / 4140 cam / AlSi10MnMg housing",
+   "manufacturingImpact": "Adds a dog-clutch disconnect and actuator to the e-axle; alternative is dog clutch vs synchroniser engagement. Inserts a clutch and actuator but enables a simpler front coupling and efficiency gain. Machining of dog teeth added; BOM grows slightly, offset by range/efficiency value. Assembly adds one module; housing revised.",
+   "costSavingTypes": [
+    "complexity",
+    "weight"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Disconnect cuts spin loss and enables a simpler coupling.",
+    "percentage": "£15/veh (-10% front e-axle cost)",
+    "annualValue": "£1.0M",
+    "calculationBasis": "£15/veh × 67k BEV veh/yr"
+   },
+   "implementationDifficulty": "High",
+   "riskNotes": "Disconnect must re-engage instantly with speed-matching to deliver AWD traction on grades and off-road without dog-tooth clash or torque interruption, protecting capability and durability. Engagement NVH (clunk) tuned to meet premium refinement. Dog-tooth fatigue and bearing L10 preserved under high-torque traction. Fail-safe defaults to engaged for safety. Thermal stability of actuator validated; off-road crawl and tow capability retained through robust engagement logic.",
+   "dfmaPrinciples": [
+    "Dog-clutch disconnect",
+    "Reduce spin loss",
+    "Fail-safe engaged"
+   ],
+   "systemLevel": "Assembly",
+   "timeToImplement": "20–28 months",
+   "benchmarkReference": "NIO EL7 2023 programme",
+   "confidenceLevel": "estimated",
+   "evidenceSources": [
+    {
+     "type": "oem_press_release",
+     "title": "BEV front-axle disconnect for efficiency",
+     "year": 2023,
+     "confidence": "medium"
+    },
+    {
+     "type": "patent",
+     "title": "E-axle dog-clutch disconnect",
+     "year": 2022,
+     "confidence": "medium"
+    }
+   ],
+   "regulatoryContext": "UN/ECE R100 electric safety"
+  }
+ },
+ {
+  "id": "drv026",
+  "title": "Net-shape forged ring & pinion replacing full-cut blanks",
+  "system": "Driveline",
+  "costSavingType": "Manufacturing Process",
+  "annualSaving": "£1.8M",
+  "difficulty": "Medium",
+  "timeToImplement": "14–20 months",
+  "description": "[ICE,MHEV] Rear differential hypoid ring & pinion machined today from solid 18CrNiMo7-6 blanks. Switch to precision net-shape forged blanks with minimised grinding stock, cutting bar stock and cycle time on the high-torque crawl-rated final drive while preserving contact ratio and tooth-root fatigue margin for towing duty.",
+  "submittedBy": "Toyota Land Cruiser 300 benchmark",
+  "verified": 1,
+  "stars": 82,
+  "level": "part",
+  "ideaData": {
+   "id": "drv026",
+   "title": "Net-shape forged ring & pinion replacing full-cut blanks",
+   "technicalDescription": "Powertrain: ICE/MHEV. Baseline rear hypoid set is hobbed and ground from solid 18CrNiMo7-6 case-hardening steel transmitting ~4500 Nm at the crown with 3.73:1 ratio. Change to near-net precision-forged blanks reduces grinding stock from ~1.2 mm to 0.35 mm, lowering Hertzian contact stress variability and stabilising L10 pinion bearing life above 250k km. Alternative materials evaluated: 18CrNiMo7-6, 20MnCr5, and SAE 8620 case-hardening steel; 16MnCr5 considered for lower-torque variants. Tooth-root bending capacity retained via controlled grain flow from forging, improving fatigue versus machined-from-bar. Lapping retained for mesh pattern; crowning preserved for low gear whine under off-road crawl and full GVW tow.",
+   "materialGrade": "18CrNiMo7-6 case-hardened / 20MnCr5 / SAE 8620",
+   "manufacturingImpact": "Replaces full bar-stock turning with precision forging plus finish grinding/lapping; alternative powder-metallurgy sinter-forge route assessed for pinion. Bar-stock BOM falls ~22%, gear-cutting cycle time drops ~18%, grinding wheel consumption reduced. New forging dies are amortised tooling; assembly and lapping unchanged, preserving mesh setup time.",
+   "costSavingTypes": [
+    "process",
+    "material",
+    "tooling"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Forged grain flow plus reduced machining stock cuts cost and improves root fatigue.",
+    "percentage": "£26/veh (-16% set cost)",
+    "annualValue": "£1.8M",
+    "calculationBasis": "£26/veh × 69k veh/yr"
+   },
+   "implementationDifficulty": "Medium",
+   "riskNotes": "Forged grain flow improves tooth-root bending fatigue and pitting resistance, protecting durability under high-torque crawl and rated towing. Mesh crowning and lapping preserved to hold gear-whine NVH below baseline at 30–80 km/h. Case depth re-validated by metallography to maintain surface contact stress margins. L10 pinion bearing life unchanged. Risk of die wear shifting tooth geometry mitigated by SPC on lead and profile; premium refinement and off-road durability preserved.",
+   "dfmaPrinciples": [
+    "near-net shape",
+    "reduce machining stock",
+    "grain-flow strength"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "14–20 months",
+   "benchmarkReference": "Toyota Land Cruiser 300 (2022)",
+   "confidenceLevel": "benchmarked",
+   "evidenceSources": [
+    {
+     "type": "teardown",
+     "title": "LC300 rear axle hypoid set teardown",
+     "year": 2023,
+     "confidence": "medium"
+    },
+    {
+     "type": "supplier_data",
+     "title": "Net-shape gear forging stock allowance study",
+     "year": 2022,
+     "confidence": "medium"
+    }
+   ],
+   "regulatoryContext": null
+  }
+ },
+ {
+  "id": "drv027",
+  "title": "Open differential housing nodular-iron to thin-wall casting",
+  "system": "Driveline",
+  "costSavingType": "Material + Weight",
+  "annualSaving": "£940k",
+  "difficulty": "Medium",
+  "timeToImplement": "12–18 months",
+  "description": "[ICE,MHEV] Front open differential carrier housing currently heavy nodular iron. Re-engineer to optimised thin-wall ductile-iron casting with ribbed load paths, removing ~1.4 kg per axle while maintaining ring-gear bolt-up stiffness and bearing bore roundness for the high-torque front drive on the premium SUV platform.",
+  "submittedBy": "Mercedes GLS benchmark",
+  "verified": 1,
+  "stars": 74,
+  "level": "part",
+  "ideaData": {
+   "id": "drv027",
+   "title": "Open differential housing nodular-iron to thin-wall casting",
+   "technicalDescription": "Powertrain: ICE/MHEV. Baseline open-diff carrier is GJS-500-7 nodular iron sized conservatively, carrying ~3200 Nm crown load. Topology-optimised thin-wall redesign with directed ribs cuts mass ~1.4 kg while holding bearing-bore roundness within 8 µm and ring-gear flange deflection under load. Alternative materials: GJS-600-3 higher-strength ductile iron, GJS-450-10 for ductility, and AlSi9Cu3 aluminium reviewed but rejected on bolt-creep risk. FEA confirms first housing mode above driveline excitation band, avoiding boom. Bearing preload retention validated across -40 to 150 °C to protect L10 tapered-roller life under sustained off-road torque.",
+   "materialGrade": "GJS-500-7 thin-wall / GJS-600-3 / GJS-450-10",
+   "manufacturingImpact": "Green-sand casting retained but with optimised cores; alternative lost-foam and precision-machining-optimised routes evaluated for wall control. Machining stock on bores reduced, lowering CNC cycle ~10%. Lighter casting trims raw-iron BOM. Existing fixtures reused; new core boxes are the main tooling spend.",
+   "costSavingTypes": [
+    "material",
+    "weight",
+    "process"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Thin-wall topology removes iron mass and machining without losing stiffness.",
+    "percentage": "£14/veh (-12% housing cost)",
+    "annualValue": "£940k",
+    "calculationBasis": "£14/veh × 67k veh/yr"
+   },
+   "implementationDifficulty": "Medium",
+   "riskNotes": "Reduced wall thickness re-validated for ring-gear flange deflection to prevent mesh misalignment and gear whine. Bearing-bore roundness held to protect tapered-roller L10 life under high-torque off-road and tow loads. Housing modal frequency kept above driveline boom band confirmed by EMA. Thermal growth checked -40 to 150 °C to maintain bearing preload. Casting porosity controlled by gating SPC; premium NVH refinement and durability margins preserved.",
+   "dfmaPrinciples": [
+    "topology optimisation",
+    "thin-wall casting",
+    "lightweighting"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "12–18 months",
+   "benchmarkReference": "Mercedes GLS (2020)",
+   "confidenceLevel": "benchmarked",
+   "evidenceSources": [
+    {
+     "type": "industry_report",
+     "title": "Ductile-iron axle housing lightweighting trends",
+     "year": 2021,
+     "confidence": "medium"
+    },
+    {
+     "type": "teardown",
+     "title": "GLS front differential carrier inspection",
+     "year": 2022,
+     "confidence": "medium"
+    }
+   ],
+   "regulatoryContext": null
+  }
+ },
+ {
+  "id": "drv028",
+  "title": "BEV high-torque differential gear material downgrade with induction hardening",
+  "system": "Driveline",
+  "costSavingType": "Material",
+  "annualSaving": "£1.3M",
+  "difficulty": "High",
+  "timeToImplement": "18–24 months",
+  "description": "[BEV] BEV e-axle high-torque differential side and pinion gears use premium case-hardening steel. Re-specify to a leaner alloy with localised induction hardening of tooth flanks, cutting alloy content and furnace energy while sustaining the instant-torque diff loads of a dual-motor luxury SUV without pitting.",
+  "submittedBy": "NIO ES8 benchmark",
+  "verified": 1,
+  "stars": 79,
+  "level": "part",
+  "ideaData": {
+   "id": "drv028",
+   "title": "BEV high-torque differential gear material downgrade with induction hardening",
+   "technicalDescription": "Powertrain: BEV. Baseline diff bevel/spur gears in the e-axle use 18CrNiMo7-6 carburised, handling peak ~3800 Nm step torque from instant e-motor delivery. Move to leaner 16MnCr5 or 20MnCr5 with contour induction hardening of flanks produces a tough core and hard case targeting 58-62 HRC, controlling Hertzian contact stress and surface-initiated pitting. Alternatives: 16MnCr5, 20MnCr5, SAE 8620 carburised retained as fallback. Induction limits distortion versus deep carburising, reducing grinding. L10 differential bearing life held above 200k km. Tooth-root bending capacity verified for repeated regen-braking torque reversals characteristic of BEV duty.",
+   "materialGrade": "16MnCr5 induction-hardened / 20MnCr5 / SAE 8620",
+   "manufacturingImpact": "Switches from deep gas carburising furnace cycle to contour induction hardening; alternative low-pressure vacuum carburising assessed. Removes hours of furnace time, cuts energy and quench distortion so grinding stock and cycle fall ~15%. Leaner alloy lowers material BOM. New induction coil tooling required; assembly unchanged.",
+   "costSavingTypes": [
+    "material",
+    "process"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Leaner alloy plus induction hardening cuts alloy cost and furnace energy.",
+    "percentage": "£21/veh (-14% gear cost)",
+    "annualValue": "£1.3M",
+    "calculationBasis": "£21/veh × 62k veh/yr"
+   },
+   "implementationDifficulty": "High",
+   "riskNotes": "Induction case depth and hardness profile validated to sustain Hertzian contact stress and prevent flank pitting under instant BEV torque and regen reversals. Tooth-root bending fatigue re-qualified for high cycle torque steps. Reduced distortion improves mesh accuracy, lowering e-axle gear whine perceived strongly in silent BEV cabins. L10 bearing life preserved. Core toughness retained for shock loads off-road; premium NVH and durability margins maintained through coil-pattern SPC.",
+   "dfmaPrinciples": [
+    "alloy down-spec",
+    "contour hardening",
+    "distortion control"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "18–24 months",
+   "benchmarkReference": "NIO ES8 (2023)",
+   "confidenceLevel": "estimated",
+   "evidenceSources": [
+    {
+     "type": "supplier_data",
+     "title": "Induction vs carburised e-axle gear durability data",
+     "year": 2023,
+     "confidence": "medium"
+    },
+    {
+     "type": "industry_report",
+     "title": "BEV e-axle gear material selection review",
+     "year": 2024,
+     "confidence": "medium"
+    }
+   ],
+   "regulatoryContext": null
+  }
+ },
+ {
+  "id": "drv029",
+  "title": "BEV lightweight half shafts via flow-formed hollow bars",
+  "system": "Driveline",
+  "costSavingType": "Material + Weight",
+  "annualSaving": "£1.1M",
+  "difficulty": "Medium",
+  "timeToImplement": "14–20 months",
+  "description": "[BEV] Replace solid forged BEV front half-shaft bars with flow-formed hollow tubular shafts. Removes unsprung and rotating mass on the lightweight half-shaft set feeding the e-axle, improving efficiency and ride while retaining torsional capacity for instant dual-motor torque on the luxury SUV.",
+  "submittedBy": "Volvo EX90 benchmark",
+  "verified": 1,
+  "stars": 80,
+  "level": "part",
+  "ideaData": {
+   "id": "drv029",
+   "title": "BEV lightweight half shafts via flow-formed hollow bars",
+   "technicalDescription": "Powertrain: BEV. Baseline half-shaft interconnecting bar is solid 41Cr4/4140 forged, carrying ~2600 Nm per side from the e-axle. Flow-forming a hollow tube of equivalent polar section removes ~0.9 kg per shaft of rotating/unsprung mass, improving NVH first-order balance and range. Alternative materials: 4140 (41Cr4), 4340 high-strength, and 34CrMo4 tube stock; CFRP shaft assessed but deferred on joint-interface cost. Torsional yield and fatigue at the CV-joint splines validated for instant BEV torque steps and regen reversals. Wall thickness tuned so torsional stiffness and first bending mode stay above driveline excitation, preventing shaft whirl.",
+   "materialGrade": "34CrMo4 flow-formed tube / 4140 / 4340",
+   "manufacturingImpact": "Introduces flow forming plus friction-welded stub ends versus solid forging and turning; alternative rotary-swaging route assessed. Removes deep-hole drilling; bar material BOM falls ~25%. Spline rolling retained. Friction-weld and flow-form mandrels are new tooling; induction-hardening of spline ends unchanged.",
+   "costSavingTypes": [
+    "material",
+    "weight",
+    "process"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Hollow flow-formed shaft removes rotating mass and bar stock cost.",
+    "percentage": "£20/veh (-17% shaft cost)",
+    "annualValue": "£1.1M",
+    "calculationBasis": "£20/veh × 55k veh/yr"
+   },
+   "implementationDifficulty": "Medium",
+   "riskNotes": "Hollow section torsional capacity and spline fatigue re-validated for instant BEV torque and regen reversals to protect durability. Friction-weld joint qualified by burst and fatigue testing for safety-critical drive path. Shaft first bending mode kept above driveline excitation to avoid whirl and boom in the quiet BEV cabin. Reduced unsprung mass aids ride refinement. Surface induction hardening of splines preserved; premium durability and NVH targets maintained.",
+   "dfmaPrinciples": [
+    "hollow section",
+    "flow forming",
+    "mass reduction"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "14–20 months",
+   "benchmarkReference": "Volvo EX90 (2024)",
+   "confidenceLevel": "benchmarked",
+   "evidenceSources": [
+    {
+     "type": "supplier_data",
+     "title": "Flow-formed hollow halfshaft durability report",
+     "year": 2023,
+     "confidence": "high"
+    },
+    {
+     "type": "teardown",
+     "title": "EX90 front driveshaft assembly teardown",
+     "year": 2024,
+     "confidence": "medium"
+    }
+   ],
+   "regulatoryContext": null
+  }
+ },
+ {
+  "id": "drv030",
+  "title": "CV joint grease optimisation and lifetime fill standardisation",
+  "system": "Driveline",
+  "costSavingType": "Material",
+  "annualSaving": "£420k",
+  "difficulty": "Low",
+  "timeToImplement": "8–12 months",
+  "description": "[ICE,MHEV,PHEV,BEV] Consolidate three CV-joint grease specifications to a single high-performance lifetime-fill grease across outboard and inboard joints. Cuts purchasing complexity and fill volume variance while sustaining boot temperature and articulation duty across all powertrain half-shaft applications on the platform.",
+  "submittedBy": "Lexus LX benchmark",
+  "verified": 1,
+  "stars": 68,
+  "level": "part",
+  "ideaData": {
+   "id": "drv030",
+   "title": "CV joint grease optimisation and lifetime fill standardisation",
+   "technicalDescription": "Powertrain: ICE/MHEV/PHEV/BEV. Baseline uses three lithium-complex and urea greases differentiated by joint type, raising logistics and fill-line complexity. Standardise to one premium polyurea/MoS2 grease rated to 150 °C continuous covering fixed (Rzeppa) outboard and plunge (tripod/DOJ) inboard joints. Alternatives evaluated: lithium-complex, polyurea, and PTFE-thickened greases with varied EP additives. Fill volume tolerance tightened to reduce churn heat and boot swell. Frictional torque and wear-scar (4-ball) verified for high articulation off-road and sustained BEV-torque plunge duty, protecting joint L10 and boot life.",
+   "materialGrade": "Polyurea/MoS2 EP grease (single spec)",
+   "manufacturingImpact": "Single grease replaces three on the fill line; alternative automated metered-dispense versus pre-greased cartridge assessed. Reduces SKU count, dispensing-line changeovers and scrap. Fill tooling consolidated to one metering head; no machining impact. Boot and clamp assembly unchanged, trimming assembly complexity.",
+   "costSavingTypes": [
+    "material",
+    "logistics",
+    "complexity"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Grease commonisation cuts SKUs, fill variance and purchasing cost.",
+    "percentage": "£6/veh (-9% grease+fill cost)",
+    "annualValue": "£420k",
+    "calculationBasis": "£6/veh × 70k veh/yr"
+   },
+   "implementationDifficulty": "Low",
+   "riskNotes": "Single grease validated for both fixed and plunge joints across articulation angles to protect off-road durability and on-road NVH. Thermal rating confirmed for boot temperature under sustained high-torque tow and BEV plunge churn, preventing boot degradation. Wear-scar and frictional torque qualified to hold joint L10 life. EP additive compatibility with elastomer boots verified. No safety impact; premium refinement and joint durability preserved across all powertrains.",
+   "dfmaPrinciples": [
+    "commonisation",
+    "single-spec consumable",
+    "reduce SKUs"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "8–12 months",
+   "benchmarkReference": "Lexus LX (2022)",
+   "confidenceLevel": "estimated",
+   "evidenceSources": [
+    {
+     "type": "supplier_data",
+     "title": "CV joint lifetime grease qualification dataset",
+     "year": 2022,
+     "confidence": "medium"
+    },
+    {
+     "type": "industry_report",
+     "title": "Driveline grease consolidation case study",
+     "year": 2021,
+     "confidence": "low"
+    }
+   ],
+   "regulatoryContext": null
+  }
+ },
+ {
+  "id": "drv031",
+  "title": "Composite prop shaft tube replacing two-piece steel with center bearing",
+  "system": "Driveline",
+  "costSavingType": "Material + Weight",
+  "annualSaving": "£1.5M",
+  "difficulty": "High",
+  "timeToImplement": "18–26 months",
+  "description": "[ICE,MHEV] Replace two-piece steel prop shaft and its center support bearing with a single-piece filament-wound CFRP tube. Eliminates the center bearing, slip joint hardware and a U-joint, removing mass and an NVH source on the longitudinal driveline of the high-torque luxury SUV.",
+  "submittedBy": "Cadillac Escalade benchmark",
+  "verified": 1,
+  "stars": 85,
+  "level": "system",
+  "ideaData": {
+   "id": "drv031",
+   "title": "Composite prop shaft tube replacing two-piece steel with center bearing",
+   "technicalDescription": "Powertrain: ICE/MHEV. Baseline two-piece steel prop shaft uses a center support bearing and three U-joints to keep bending critical speed above the operating range while carrying ~3500 Nm. A single-piece filament-wound CFRP tube raises specific stiffness so the first bending critical speed clears redline as one span, eliminating the center bearing and one joint. Alternatives: CFRP, GFRP hybrid tube, and 6061-T6/7075-T6 aluminium tube assessed. Carbon's high damping lowers driveline boom. Yoke bonding/co-cure interface validated for torsional fatigue under tow and off-road shock; collapse mode tuned for crash energy management.",
+   "materialGrade": "Filament-wound CFRP tube / GFRP hybrid / 7075-T6 Al",
+   "manufacturingImpact": "Filament winding plus adhesive-bonded metal yokes replaces tube drawing, welding and center-bearing assembly; alternative pultrusion and aluminium hydroforming compared. Removes center-bearing bracket, slip yoke and one U-joint from BOM and assembly. Winding mandrels and bonding fixtures are new tooling; balancing simplified by single span.",
+   "costSavingTypes": [
+    "material",
+    "weight",
+    "complexity",
+    "process"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Single CFRP span deletes center bearing and a joint, cutting parts and mass.",
+    "percentage": "£34/veh (-21% prop assy cost)",
+    "annualValue": "£1.5M",
+    "calculationBasis": "£34/veh × 44k veh/yr"
+   },
+   "implementationDifficulty": "High",
+   "riskNotes": "Single-span CFRP critical speed validated to clear redline, removing the center bearing without driveline boom or whirl; carbon damping reduces gear-mesh and U-joint NVH. Bonded yoke joints qualified by torsional fatigue and impact for tow and off-road shock durability and safety. Controlled progressive collapse preserved for crash energy. Temperature and humidity ageing of the adhesive bond verified -40 to 120 °C. Premium refinement, towing capability and durability maintained.",
+   "dfmaPrinciples": [
+    "part consolidation",
+    "delete center bearing",
+    "high damping"
+   ],
+   "systemLevel": "Assembly",
+   "timeToImplement": "18–26 months",
+   "benchmarkReference": "Cadillac Escalade (2021)",
+   "confidenceLevel": "benchmarked",
+   "evidenceSources": [
+    {
+     "type": "teardown",
+     "title": "Escalade two-piece prop shaft teardown",
+     "year": 2022,
+     "confidence": "medium"
+    },
+    {
+     "type": "patent",
+     "title": "Single-piece composite driveshaft with bonded yokes",
+     "year": 2019,
+     "confidence": "medium"
+    }
+   ],
+   "regulatoryContext": "FMVSS"
+  }
+ },
+ {
+  "id": "drv032",
+  "title": "PHEV hybrid torque-blend LSD clutch pack material simplification",
+  "system": "Driveline",
+  "costSavingType": "Material",
+  "annualSaving": "£760k",
+  "difficulty": "Medium",
+  "timeToImplement": "14–20 months",
+  "description": "[PHEV] PHEV rear LSD uses premium carbon-faced clutch plates sized for combined engine plus e-motor torque blend. Re-specify to optimised sintered-bronze friction facings with revised groove pattern, reducing plate cost while holding locking torque and thermal stability during hybrid torque-blend events and off-road crawl.",
+  "submittedBy": "Li Auto L9 benchmark",
+  "verified": 1,
+  "stars": 76,
+  "level": "part",
+  "ideaData": {
+   "id": "drv032",
+   "title": "PHEV hybrid torque-blend LSD clutch pack material simplification",
+   "technicalDescription": "Powertrain: PHEV. Baseline limited-slip differential uses carbon-composite friction plates rated for blended ICE+e-motor input up to ~4200 Nm at the diff. Switch to sintered-bronze friction facings with optimised oil-groove pattern delivering target locking coefficient and bias ratio while improving thermal headroom for repeated torque-blend transitions. Alternative friction materials: carbon-composite, sintered bronze, and paper/cellulose organic faced plates evaluated; steel separators retained in 18CrNiMo5 hardened. Coefficient stability versus temperature validated to maintain bias ratio under crawl, tow and EV-launch blending without judder.",
+   "materialGrade": "Sintered-bronze friction plates / carbon-composite / organic",
+   "manufacturingImpact": "Sintered-bronze facing replaces carbon-paper lamination; alternative powder-metallurgy sinter-bond versus adhesive facing assessed. Lowers plate material BOM ~30% and simplifies groove coining. Steel separator stamping unchanged. New sinter and groove tooling required; pack assembly and preload shimming unchanged.",
+   "costSavingTypes": [
+    "material",
+    "process"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Sintered-bronze facings cut friction-plate cost with better thermal headroom.",
+    "percentage": "£18/veh (-15% LSD pack cost)",
+    "annualValue": "£760k",
+    "calculationBasis": "£18/veh × 42k veh/yr"
+   },
+   "implementationDifficulty": "Medium",
+   "riskNotes": "Friction coefficient and bias ratio re-validated across temperature to hold locking torque during PHEV torque-blend, crawl and tow without judder or NVH chatter. Sintered-bronze thermal capacity protects durability under repeated EV-launch and regen transitions. Plate wear and fluid-additive compatibility qualified to preserve service interval. Preload shimming unchanged for consistent bias. Off-road traction and on-road refinement preserved; locking response tuned to match baseline premium feel.",
+   "dfmaPrinciples": [
+    "friction-material substitution",
+    "thermal headroom",
+    "groove optimisation"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "14–20 months",
+   "benchmarkReference": "Li Auto L9 (2022)",
+   "confidenceLevel": "estimated",
+   "evidenceSources": [
+    {
+     "type": "supplier_data",
+     "title": "LSD friction plate material comparison",
+     "year": 2023,
+     "confidence": "medium"
+    },
+    {
+     "type": "industry_report",
+     "title": "PHEV torque-blend driveline thermal study",
+     "year": 2022,
+     "confidence": "low"
+    }
+   ],
+   "regulatoryContext": null
+  }
+ },
+ {
+  "id": "drv033",
+  "title": "eLSD actuator commonisation across front and rear differentials",
+  "system": "Driveline",
+  "costSavingType": "Commonisation",
+  "annualSaving": "£1.2M",
+  "difficulty": "Medium",
+  "timeToImplement": "16–22 months",
+  "description": "[ICE,MHEV,PHEV,BEV] Front and rear electronic LSDs use distinct electromechanical actuators. Commonise to one ball-ramp actuator and ECU variant with software-tuned clamp curves, cutting part numbers and validation across all powertrains while preserving torque-vectoring response for on-road agility and off-road traction.",
+  "submittedBy": "Porsche Cayenne benchmark",
+  "verified": 1,
+  "stars": 83,
+  "level": "system",
+  "ideaData": {
+   "id": "drv033",
+   "title": "eLSD actuator commonisation across front and rear differentials",
+   "technicalDescription": "Powertrain: ICE/MHEV/PHEV/BEV. Baseline carries two electromechanical eLSD actuators with different motors, ball-ramps and controllers sized for axle-specific clamp loads up to ~5 kN producing locking torque to ~2000 Nm. Commonise to a single ball-ramp actuator with shared BLDC motor and ECU, axle differences handled by software clamp maps and ramp angle option. Alternatives: ball-ramp electromechanical, hydraulic multiplate, and magnetorheological actuation assessed. Closed-loop response (<100 ms to full clamp) preserved for torque vectoring. Shared 18CrNiMo7-6 ramp plates validated for L10 thrust-bearing life under repeated locking cycles.",
+   "materialGrade": "Common ball-ramp 18CrNiMo7-6 / shared BLDC actuator",
+   "manufacturingImpact": "One actuator BOM and one ECU replaces two; alternative make-vs-buy and modular-port housing assessed. Cuts unique part numbers ~40%, consolidates supplier tooling and halves actuator validation test matrix. Precision-machined ramp plates share one line. Assembly poka-yoke simplified by single connector and mounting interface.",
+   "costSavingTypes": [
+    "commonisation",
+    "complexity",
+    "tooling"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Single actuator/ECU variant slashes part count and validation cost.",
+    "percentage": "£24/veh (-20% eLSD actuator cost)",
+    "annualValue": "£1.2M",
+    "calculationBasis": "£24/veh × 50k veh/yr"
+   },
+   "implementationDifficulty": "Medium",
+   "riskNotes": "Shared actuator clamp-force and response validated per axle via software maps to preserve torque-vectoring agility on-road and locking traction off-road. Ball-ramp thrust-bearing L10 life qualified for both axle duty cycles to protect durability. Thermal derating verified for sustained crawl and tow clamping. Single ECU functional-safety re-assessed to ISO 26262 path. NVH from actuation kept inaudible; premium dynamic response and off-road capability preserved across all powertrains.",
+   "dfmaPrinciples": [
+    "commonisation",
+    "software-defined variants",
+    "shared interface"
+   ],
+   "systemLevel": "Assembly",
+   "timeToImplement": "16–22 months",
+   "benchmarkReference": "Porsche Cayenne (2023)",
+   "confidenceLevel": "benchmarked",
+   "evidenceSources": [
+    {
+     "type": "oem_press_release",
+     "title": "Cayenne torque-vectoring eLSD architecture",
+     "year": 2023,
+     "confidence": "medium"
+    },
+    {
+     "type": "supplier_data",
+     "title": "Ball-ramp eLSD actuator platform datasheet",
+     "year": 2022,
+     "confidence": "medium"
+    }
+   ],
+   "regulatoryContext": "UN/ECE"
+  }
+ },
+ {
+  "id": "drv034",
+  "title": "Tripod plunge joint roller bearing commonisation across half shafts",
+  "system": "Driveline",
+  "costSavingType": "Commonisation",
+  "annualSaving": "£680k",
+  "difficulty": "Low",
+  "timeToImplement": "10–16 months",
+  "description": "[ICE,MHEV,PHEV] Inboard tripod (plunge) joints across front and rear half shafts use three needle-roller cassette sizes. Rationalise to two common roller-bearing cartridges with shared cage geometry, cutting part numbers and inventory while maintaining plunge smoothness and torque capacity across powertrain variants.",
+  "submittedBy": "Mercedes GLE benchmark",
+  "verified": 1,
+  "stars": 70,
+  "level": "part",
+  "ideaData": {
+   "id": "drv034",
+   "title": "Tripod plunge joint roller bearing commonisation across half shafts",
+   "technicalDescription": "Powertrain: ICE/MHEV/PHEV. Baseline tripod joints use three needle-roller cassette diameters matched per shaft torque (1800-3000 Nm) and length, increasing unique SKUs. Rationalise to two cartridge sizes with shared cage and SAE 52100 (100Cr6) needle rollers, covering the torque band via roller count and trunnion diameter. Alternatives: 100Cr6 through-hardened, 16MnCr5 case-hardened trunnions, and ceramic-hybrid rollers assessed. Plunge friction (generated axial force, GAF) controlled to limit driveline shudder. Roller L10 life and Hertzian contact stress validated at maximum articulation under tow and crawl to protect durability.",
+   "materialGrade": "100Cr6 needle rollers / 16MnCr5 trunnion / two cartridge sizes",
+   "manufacturingImpact": "Two cartridge variants replace three; alternative cold-formed versus turned trunnion assessed. Cuts unique bearing SKUs and safety stock ~33%, consolidates supplier tooling. Grinding of trunnion tracks shares fixtures. Assembly retains press-fit; reduced part variety lowers line-side picking errors.",
+   "costSavingTypes": [
+    "commonisation",
+    "logistics",
+    "complexity"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Bearing rationalisation cuts SKUs, inventory and supplier tooling.",
+    "percentage": "£11/veh (-10% plunge joint cost)",
+    "annualValue": "£680k",
+    "calculationBasis": "£11/veh × 62k veh/yr"
+   },
+   "implementationDifficulty": "Low",
+   "riskNotes": "Common cartridge sizing validated to hold roller L10 life and Hertzian contact stress at full articulation under crawl and tow, protecting durability. Generated axial force controlled to prevent plunge shudder and driveline boom on-road. Trunnion case depth verified for shock loads off-road. Boot and grease interfaces unchanged. No safety impact; premium NVH refinement and torque capacity preserved across ICE, MHEV and PHEV half-shaft applications.",
+   "dfmaPrinciples": [
+    "SKU rationalisation",
+    "shared cage geometry",
+    "inventory reduction"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "10–16 months",
+   "benchmarkReference": "Mercedes GLE (2021)",
+   "confidenceLevel": "estimated",
+   "evidenceSources": [
+    {
+     "type": "teardown",
+     "title": "GLE tripod joint cartridge inspection",
+     "year": 2022,
+     "confidence": "medium"
+    },
+    {
+     "type": "supplier_data",
+     "title": "Tripod needle-roller cartridge range study",
+     "year": 2021,
+     "confidence": "medium"
+    }
+   ],
+   "regulatoryContext": null
+  }
+ },
+ {
+  "id": "drv035",
+  "title": "U-joint needle bearing induction-hardened trunnions replacing carburised",
+  "system": "Driveline",
+  "costSavingType": "Manufacturing Process",
+  "annualSaving": "£540k",
+  "difficulty": "Medium",
+  "timeToImplement": "12–18 months",
+  "description": "[ICE,MHEV] Prop-shaft U-joint cross trunnions are deep carburised. Move to contour induction hardening of trunnion journals, cutting furnace energy and distortion-driven grinding while sustaining needle-bearing contact stress and L10 life under high-torque longitudinal driveline loads on the SUV.",
+  "submittedBy": "Jeep Grand Cherokee benchmark",
+  "verified": 1,
+  "stars": 71,
+  "level": "part",
+  "ideaData": {
+   "id": "drv035",
+   "title": "U-joint needle bearing induction-hardened trunnions replacing carburised",
+   "technicalDescription": "Powertrain: ICE/MHEV. Baseline universal-joint cross (spider) trunnions are gas carburised in 16MnCr5 to support needle rollers under ~3500 Nm prop-shaft torque with operating angle to 6 deg. Replace with contour induction hardening of the four journals targeting 58-62 HRC and a tough core, controlling needle-roller Hertzian contact stress and brinelling. Alternatives: 16MnCr5, SAE 8620 carburised, and 1050/C53 medium-carbon induction steel evaluated. Reduced quench distortion cuts journal grinding. Roller L10 life held above 200k km; trunnion bending fatigue verified for shock loads under tow start and off-road.",
+   "materialGrade": "C53 induction-hardened / 16MnCr5 / SAE 8620",
+   "manufacturingImpact": "Contour induction hardening replaces batch gas carburising; alternative low-pressure carburising compared. Removes furnace hours, cuts energy and distortion so journal grinding stock drops ~20%. Medium-carbon steel lowers alloy BOM. Induction coil and quench fixtures are new tooling; needle-cup assembly and staking unchanged.",
+   "costSavingTypes": [
+    "process",
+    "material"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Induction hardening cuts furnace energy and distortion grinding on trunnions.",
+    "percentage": "£12/veh (-13% U-joint cost)",
+    "annualValue": "£540k",
+    "calculationBasis": "£12/veh × 45k veh/yr"
+   },
+   "implementationDifficulty": "Medium",
+   "riskNotes": "Induction case depth validated to sustain needle-roller Hertzian contact stress and resist brinelling under high prop-shaft torque, protecting L10 life and durability. Trunnion bending fatigue qualified for tow-start and off-road shock. Reduced distortion improves journal roundness, lowering driveline vibration and U-joint NVH. Core toughness retained for impact. Boot seal and grease retention unchanged; premium refinement and towing durability preserved through coil-pattern SPC.",
+   "dfmaPrinciples": [
+    "induction hardening",
+    "distortion reduction",
+    "energy saving"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "12–18 months",
+   "benchmarkReference": "Jeep Grand Cherokee (2022)",
+   "confidenceLevel": "estimated",
+   "evidenceSources": [
+    {
+     "type": "supplier_data",
+     "title": "U-joint trunnion hardening comparison",
+     "year": 2022,
+     "confidence": "medium"
+    },
+    {
+     "type": "industry_report",
+     "title": "Induction hardening energy savings in driveline",
+     "year": 2021,
+     "confidence": "low"
+    }
+   ],
+   "regulatoryContext": null
+  }
+ },
+ {
+  "id": "drv036",
+  "title": "MHEV lightweight aluminium prop-shaft tube replacing steel",
+  "system": "Driveline",
+  "costSavingType": "Weight",
+  "annualSaving": "£890k",
+  "difficulty": "Medium",
+  "timeToImplement": "14–20 months",
+  "description": "[MHEV] Replace the steel prop-shaft tube with a 6082-T6 aluminium tube on the 48V mild-hybrid SUV. Cuts rotating mass to aid the 48V efficiency target while preserving torsional capacity and critical speed, with friction-welded steel yokes for joint durability.",
+  "submittedBy": "Mercedes GLE benchmark",
+  "verified": 1,
+  "stars": 75,
+  "level": "part",
+  "ideaData": {
+   "id": "drv036",
+   "title": "MHEV lightweight aluminium prop-shaft tube replacing steel",
+   "technicalDescription": "Powertrain: MHEV. Baseline single-piece steel prop tube carries ~3000 Nm with first bending critical speed above redline. A 6082-T6 aluminium tube of larger diameter and tuned wall matches torsional stiffness at ~1.6 kg lower mass, supporting the 48V mild-hybrid efficiency target. Alternatives: 6082-T6, 6061-T6, 7075-T6 aluminium and GFRP tube evaluated. Friction-welded or magnetic-pulse-welded steel yokes manage the dissimilar-metal joint and torsional fatigue. Critical speed re-checked for the larger tube to clear operating range, preventing whirl and driveline boom under high-torque MHEV launch assist.",
+   "materialGrade": "6082-T6 Al tube / 6061-T6 / 7075-T6",
+   "manufacturingImpact": "Aluminium tube extrusion plus friction/magnetic-pulse welded steel yokes replaces steel tube welding; alternative adhesive-bonded yoke assessed. Removes a weld operation, cuts tube BOM mass cost, but adds dissimilar-joint process. New welding fixtures are tooling; balancing retained with revised correction weights.",
+   "costSavingTypes": [
+    "weight",
+    "material",
+    "process"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Aluminium tube removes rotating mass supporting 48V efficiency goals.",
+    "percentage": "£19/veh (-14% prop tube cost)",
+    "annualValue": "£890k",
+    "calculationBasis": "£19/veh × 47k veh/yr"
+   },
+   "implementationDifficulty": "Medium",
+   "riskNotes": "Larger-diameter aluminium tube critical speed validated to clear redline, preventing whirl and driveline boom. Dissimilar steel-aluminium yoke joints qualified by torsional fatigue and corrosion testing for durability and safety. Galvanic isolation specified at the interface. Reduced rotating mass aids refinement and 48V efficiency. Torsional capacity verified for MHEV launch-assist torque and tow. Premium NVH and durability targets preserved; collapse behaviour tuned for crash energy management.",
+   "dfmaPrinciples": [
+    "material substitution",
+    "lightweighting",
+    "dissimilar-joint welding"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "14–20 months",
+   "benchmarkReference": "Mercedes GLE (2021)",
+   "confidenceLevel": "benchmarked",
+   "evidenceSources": [
+    {
+     "type": "supplier_data",
+     "title": "Aluminium propshaft critical speed analysis",
+     "year": 2022,
+     "confidence": "medium"
+    },
+    {
+     "type": "patent",
+     "title": "Friction-welded steel yoke to aluminium tube",
+     "year": 2018,
+     "confidence": "medium"
+    }
+   ],
+   "regulatoryContext": "FMVSS"
+  }
+ },
+ {
+  "id": "drv037",
+  "title": "Differential cooling fin redesign cast integral with housing",
+  "system": "Driveline",
+  "costSavingType": "Complexity",
+  "annualSaving": "£610k",
+  "difficulty": "Medium",
+  "timeToImplement": "12–18 months",
+  "description": "[ICE,MHEV,PHEV] Bolt-on differential cooling fin pack and its fasteners are replaced by cooling fins cast integrally into the optimised diff housing. Removes a sub-assembly and fasteners while improving heat rejection for sustained tow and crawl thermal duty on the high-torque rear axle.",
+  "submittedBy": "Toyota Land Cruiser 300 benchmark",
+  "verified": 1,
+  "stars": 73,
+  "level": "part",
+  "ideaData": {
+   "id": "drv037",
+   "title": "Differential cooling fin redesign cast integral with housing",
+   "technicalDescription": "Powertrain: ICE/MHEV/PHEV. Baseline uses a separate finned aluminium cooler plate bolted to the GJS-500-7 diff housing to shed oil heat during sustained tow/crawl, adding parts, fasteners and a gasket. Redesign casts directional fins integrally into the ductile-iron housing, increasing surface area ~30% for equivalent heat rejection. Alternatives: integral ductile-iron fins, AlSi10Mg bolt-on cooler retained as option, and active oil-cooler loop assessed. Fin geometry CFD-optimised for underbody airflow. Housing stiffness and bearing-bore roundness preserved; sump oil temperature held below 140 °C to protect gear and bearing L10 life.",
+   "materialGrade": "GJS-500-7 integral-fin casting / AlSi10Mg cooler / GJS-600-3",
+   "manufacturingImpact": "Casting integral fins replaces a bolt-on cooler sub-assembly with gasket and fasteners; alternative additive fin insert assessed. Deletes ~6 fasteners, a gasket and the cooler plate from BOM and assembly. New core boxes are tooling; machining adds minor fin-deburr but removes a bolt-up station, cutting assembly time.",
+   "costSavingTypes": [
+    "complexity",
+    "process",
+    "logistics"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Integral fins delete a cooler sub-assembly, gasket and fasteners.",
+    "percentage": "£13/veh (-11% cooling cost)",
+    "annualValue": "£610k",
+    "calculationBasis": "£13/veh × 47k veh/yr"
+   },
+   "implementationDifficulty": "Medium",
+   "riskNotes": "Integral-fin heat rejection validated by CFD and dyno to hold sump oil below 140 °C under sustained tow and crawl, protecting gear and bearing L10 life and thermal stability. Housing stiffness and bearing-bore roundness preserved to avoid mesh misalignment and gear whine. Fin geometry checked for stone-impact and mud-packing off-road. No fastener-joint leak path removes a warranty risk. Premium durability and off-road thermal capability maintained.",
+   "dfmaPrinciples": [
+    "part consolidation",
+    "delete fasteners",
+    "integral cooling"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "12–18 months",
+   "benchmarkReference": "Toyota Land Cruiser 300 (2022)",
+   "confidenceLevel": "benchmarked",
+   "evidenceSources": [
+    {
+     "type": "teardown",
+     "title": "LC300 rear diff cooling arrangement",
+     "year": 2023,
+     "confidence": "medium"
+    },
+    {
+     "type": "industry_report",
+     "title": "Differential thermal management integral fins",
+     "year": 2021,
+     "confidence": "low"
+    }
+   ],
+   "regulatoryContext": null
+  }
+ },
+ {
+  "id": "drv038",
+  "title": "BEV e-axle differential bearing preload shim deletion via selective fit",
+  "system": "Driveline",
+  "costSavingType": "Manufacturing Process",
+  "annualSaving": "£720k",
+  "difficulty": "Medium",
+  "timeToImplement": "12–18 months",
+  "description": "[BEV] BEV e-axle differential tapered-bearing preload set by trial shim stacks during assembly. Move to selective-fit measured assembly with a single calibrated shim, cutting shim SKUs and rework while precisely controlling preload for low-loss, low-NVH operation of the high-torque BEV diff.",
+  "submittedBy": "Xpeng G9 benchmark",
+  "verified": 1,
+  "stars": 77,
+  "level": "part",
+  "ideaData": {
+   "id": "drv038",
+   "title": "BEV e-axle differential bearing preload shim deletion via selective fit",
+   "technicalDescription": "Powertrain: BEV. Baseline e-axle differential tapered-roller preload is set by iterative shim trial, holding ~20-40 N·m rolling torque to control gear mesh and bearing L10 under ~3800 Nm step torque. Replace with in-line dimensional measurement and a single selective-fit shim chosen from a calibrated family, eliminating trial-and-error and tightening preload scatter. Alternatives: selective shim, collapsible spacer, and angular-contact ball-bearing cartridge assessed. Tighter preload control lowers e-axle gear whine, critical in silent BEV cabins, and stabilises L10 life across temperature and instant-torque/regen reversals.",
+   "materialGrade": "100Cr6 tapered bearings / hardened selective shim",
+   "manufacturingImpact": "Measured selective-fit assembly replaces iterative shim trial; alternative collapsible-spacer crush method assessed. Cuts shim SKUs ~50% and removes a rework loop, shortening assembly cycle ~15%. Adds an in-line gauging station as tooling. Gear and bearing machining unchanged; reduces preload-related scrap.",
+   "costSavingTypes": [
+    "process",
+    "complexity",
+    "logistics"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Selective-fit preload removes shim trial rework and SKUs.",
+    "percentage": "£14/veh (-12% assembly cost)",
+    "annualValue": "£720k",
+    "calculationBasis": "£14/veh × 51k veh/yr"
+   },
+   "implementationDifficulty": "Medium",
+   "riskNotes": "Selective-fit preload validated to hold rolling torque window protecting bearing L10 life under instant BEV torque and regen reversals. Tighter preload scatter reduces e-axle gear whine prominent in quiet BEV cabins, improving NVH. Thermal preload change verified -40 to 150 °C for durability. Gauging accuracy SPC-controlled to prevent over/under-preload. No safety impact; premium refinement and high-torque durability maintained while removing assembly rework.",
+   "dfmaPrinciples": [
+    "selective fit",
+    "measured assembly",
+    "reduce rework"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "12–18 months",
+   "benchmarkReference": "Xpeng G9 (2023)",
+   "confidenceLevel": "estimated",
+   "evidenceSources": [
+    {
+     "type": "supplier_data",
+     "title": "Selective-fit preload assembly study",
+     "year": 2023,
+     "confidence": "medium"
+    },
+    {
+     "type": "teardown",
+     "title": "G9 e-axle differential bearing setup",
+     "year": 2024,
+     "confidence": "low"
+    }
+   ],
+   "regulatoryContext": null
+  }
+ },
+ {
+  "id": "drv039",
+  "title": "CV joint boot material switch to TPE with crimpless clamping",
+  "system": "Driveline",
+  "costSavingType": "Material",
+  "annualSaving": "£500k",
+  "difficulty": "Low",
+  "timeToImplement": "10–14 months",
+  "description": "[ICE,MHEV,PHEV,BEV] Replace chloroprene (CR) rubber CV boots with thermoplastic-elastomer (TPE/Hytrel) boots and integrated snap clamping. Cuts boot cost and crimp tooling across all powertrain half shafts while sustaining articulation, ozone resistance and grease retention for off-road and high-torque duty.",
+  "submittedBy": "Volvo XC90 benchmark",
+  "verified": 1,
+  "stars": 69,
+  "level": "part",
+  "ideaData": {
+   "id": "drv039",
+   "title": "CV joint boot material switch to TPE with crimpless clamping",
+   "technicalDescription": "Powertrain: ICE/MHEV/PHEV/BEV. Baseline outboard/inboard boots are chloroprene rubber held by steel ear clamps requiring crimp tooling. Switch to injection-moulded TPE (Hytrel/TPC-ET) convoluted boots with integral snap-fit or low-profile band, improving fatigue at high articulation and ozone/heat resistance to 150 °C. Alternatives: TPE (TPC-ET), TPV (EPDM-PP), and silicone boots evaluated; grease compatibility re-verified. Convolute count and wall optimised for plunge stroke and 45 deg articulation off-road. Boot fatigue life and grease retention validated under high-torque tow and sustained BEV plunge churn to protect joint durability.",
+   "materialGrade": "TPC-ET (Hytrel) boot / TPV / silicone",
+   "manufacturingImpact": "Injection-moulded TPE with snap clamp replaces CR rubber moulding plus steel ear-clamp crimping; alternative band-clamp versus integral retainer assessed. Removes crimp tooling and a clamp SKU, shortening assembly. TPE recyclability aids scrap value. New injection tool is the main spend; cycle time lower than rubber cure.",
+   "costSavingTypes": [
+    "material",
+    "process",
+    "complexity"
+   ],
+   "costSavingPotential": {
+    "qualitative": "TPE boot with snap clamp cuts material and crimp tooling cost.",
+    "percentage": "£7/veh (-13% boot+clamp cost)",
+    "annualValue": "£500k",
+    "calculationBasis": "£7/veh × 71k veh/yr"
+   },
+   "implementationDifficulty": "Low",
+   "riskNotes": "TPE boot fatigue validated at full articulation and plunge stroke to protect joint durability off-road and under high-torque tow. Ozone, heat and grease compatibility qualified to 150 °C to prevent cracking and grease loss. Snap/band clamp retention tested against burst and thermal cycling for safety against grease leakage. NVH unaffected. Recyclable TPE improves end-of-life. Premium durability and off-road articulation preserved across all powertrains while removing crimp tooling.",
+   "dfmaPrinciples": [
+    "material substitution",
+    "crimpless clamping",
+    "recyclable"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "10–14 months",
+   "benchmarkReference": "Volvo XC90 (2020)",
+   "confidenceLevel": "estimated",
+   "evidenceSources": [
+    {
+     "type": "supplier_data",
+     "title": "TPE CV boot fatigue qualification",
+     "year": 2022,
+     "confidence": "medium"
+    },
+    {
+     "type": "industry_report",
+     "title": "Thermoplastic CV boot adoption review",
+     "year": 2021,
+     "confidence": "low"
+    }
+   ],
+   "regulatoryContext": null
+  }
+ },
+ {
+  "id": "drv040",
+  "title": "Rear differential ring-gear bolt count reduction via flange redesign",
+  "system": "Driveline",
+  "costSavingType": "Complexity",
+  "annualSaving": "£450k",
+  "difficulty": "Medium",
+  "timeToImplement": "12–16 months",
+  "description": "[ICE,MHEV] Reduce rear differential ring-gear-to-case bolt count from twelve to ten via a stiffened flange and higher-grade fasteners. Cuts fastener cost and assembly torque-down time while maintaining clamp load and joint fatigue under high-torque crawl and tow on the luxury SUV.",
+  "submittedBy": "Cadillac Escalade benchmark",
+  "verified": 1,
+  "stars": 67,
+  "level": "part",
+  "ideaData": {
+   "id": "drv040",
+   "title": "Rear differential ring-gear bolt count reduction via flange redesign",
+   "technicalDescription": "Powertrain: ICE/MHEV. Baseline hypoid ring gear bolts to the differential case with twelve M10 grade-10.9 fasteners carrying ~3500 Nm crown torque. A stiffened, locally thickened flange with optimised bolt-circle redistributes clamp load, allowing ten M10 grade-12.9 fasteners while raising per-bolt clamp margin. Alternatives: grade-10.9, grade-12.9, and flow-drilled boss with M11 evaluated. FE bolt-pattern analysis confirms flange separation and bearing-bore distortion within limits. Joint fatigue and ring-gear runout validated under crawl, tow and shock reversals to protect mesh accuracy and gear-whine NVH.",
+   "materialGrade": "Grade-12.9 fasteners / GJS-600-3 flange / 18CrNiMo7-6 ring gear",
+   "manufacturingImpact": "Two fewer tapped holes and bolts per diff; alternative weld-on versus bolt-on ring gear assessed. Removes two drill/tap operations and two torque-down cycles, cutting machining and assembly time. Higher-grade fastener slightly raises unit price but net BOM falls. Existing case tooling minor revision; torque-station program updated.",
+   "costSavingTypes": [
+    "complexity",
+    "process",
+    "logistics"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Fewer, higher-grade bolts cut fastener cost and assembly time.",
+    "percentage": "£10/veh (-9% joint cost)",
+    "annualValue": "£450k",
+    "calculationBasis": "£10/veh × 45k veh/yr"
+   },
+   "implementationDifficulty": "Medium",
+   "riskNotes": "Reduced bolt count with stiffened flange validated by FE and bolt-load testing to maintain clamp load, preventing flange separation and ring-gear runout that cause gear whine. Joint fatigue qualified under crawl, tow and shock-reversal loads to protect durability and safety of the drive path. Bearing-bore distortion held within limits to preserve L10 life. Torque-to-yield strategy verified. Premium NVH refinement and high-torque off-road durability maintained.",
+   "dfmaPrinciples": [
+    "reduce fasteners",
+    "flange stiffening",
+    "assembly time cut"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "12–16 months",
+   "benchmarkReference": "Cadillac Escalade (2021)",
+   "confidenceLevel": "estimated",
+   "evidenceSources": [
+    {
+     "type": "teardown",
+     "title": "Escalade rear diff ring-gear joint",
+     "year": 2022,
+     "confidence": "medium"
+    },
+    {
+     "type": "supplier_data",
+     "title": "Ring-gear bolt-pattern optimisation FE study",
+     "year": 2021,
+     "confidence": "medium"
+    }
+   ],
+   "regulatoryContext": null
+  }
+ },
+ {
+  "id": "drv041",
+  "title": "Prop-shaft NVH tuned damper deletion via tube wall tuning",
+  "system": "Driveline",
+  "costSavingType": "Complexity",
+  "annualSaving": "£560k",
+  "difficulty": "Medium",
+  "timeToImplement": "12–18 months",
+  "description": "[ICE,MHEV] Internal cardboard/rubber prop-shaft NVH damper is deleted by tuning tube wall thickness and adding a constrained-layer damping insert only where needed. Removes a damper part and assembly step while controlling driveline boom and bending modes on the high-torque SUV prop shaft.",
+  "submittedBy": "Lexus LX benchmark",
+  "verified": 1,
+  "stars": 72,
+  "level": "part",
+  "ideaData": {
+   "id": "drv041",
+   "title": "Prop-shaft NVH tuned damper deletion via tube wall tuning",
+   "technicalDescription": "Powertrain: ICE/MHEV. Baseline steel prop tube carries an internal liner/dynamic damper to suppress shell-mode boom and bending resonance under ~3000 Nm. Re-tune tube diameter and wall to push shell and first bending modes outside the excitation band, adding a localised constrained-layer damping (CLD) patch only if residual response remains. Alternatives: tuned-mass internal damper, CLD viscoelastic patch, and cardboard liner retained as fallback. Modal analysis confirms boom frequencies shift above operating range. Torsional capacity and balance preserved; gear-mesh and U-joint orders managed to protect premium cabin refinement.",
+   "materialGrade": "Steel tube wall-tuned / CLD viscoelastic patch",
+   "manufacturingImpact": "Wall-tuned tube with optional CLD patch replaces inserted internal damper; alternative applied external mass damper assessed. Removes a damper insertion station and a part from BOM. Tube draw die revised for new wall; balancing retained. CLD application is a simple bonded step if required, lowering net assembly content.",
+   "costSavingTypes": [
+    "complexity",
+    "process"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Wall tuning relocates resonances, deleting the internal damper part.",
+    "percentage": "£12/veh (-10% prop NVH cost)",
+    "annualValue": "£560k",
+    "calculationBasis": "£12/veh × 47k veh/yr"
+   },
+   "implementationDifficulty": "Medium",
+   "riskNotes": "Tube wall re-tuning validated by modal analysis and vehicle NVH to shift shell and bending modes outside excitation, preventing driveline boom and preserving premium cabin refinement. Torsional capacity and critical speed re-verified for high-torque tow and off-road shock to protect durability and safety. Optional CLD patch covers residual response. Balance and runout held to spec. No reduction in towing capability; premium NVH and durability targets maintained.",
+   "dfmaPrinciples": [
+    "delete part",
+    "modal tuning",
+    "targeted damping"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "12–18 months",
+   "benchmarkReference": "Lexus LX (2022)",
+   "confidenceLevel": "estimated",
+   "evidenceSources": [
+    {
+     "type": "teardown",
+     "title": "LX prop shaft internal damper teardown",
+     "year": 2022,
+     "confidence": "medium"
+    },
+    {
+     "type": "industry_report",
+     "title": "Driveline boom control via tube tuning",
+     "year": 2021,
+     "confidence": "low"
+    }
+   ],
+   "regulatoryContext": null
+  }
+ },
+ {
+  "id": "drv042",
+  "title": "Half-shaft surface coating switch to thin dense chrome over hard chrome",
+  "system": "Driveline",
+  "costSavingType": "Manufacturing Process",
+  "annualSaving": "£480k",
+  "difficulty": "Medium",
+  "timeToImplement": "12–18 months",
+  "description": "[ICE,MHEV,PHEV] Replace hard-chrome plating on half-shaft seal journals with thin-dense-chrome or DLC coating. Cuts plating thickness, masking and finishing while maintaining seal-journal wear and corrosion resistance for the half shafts across ICE, MHEV and PHEV variants.",
+  "submittedBy": "Porsche Macan benchmark",
+  "verified": 1,
+  "stars": 70,
+  "level": "part",
+  "ideaData": {
+   "id": "drv042",
+   "title": "Half-shaft surface coating switch to thin dense chrome over hard chrome",
+   "technicalDescription": "Powertrain: ICE/MHEV/PHEV. Baseline half-shaft seal journals carry thick hard-chrome plating requiring grinding/superfinishing and masking. Switch to thin-dense-chromium (TDC) or DLC coating giving uniform 2-8 µm conformal coverage with low friction at the radial-lip seal interface on 4140/41Cr4 shafts. Alternatives: thin-dense chrome, DLC (a-C:H), and nitrocarburising evaluated. Lower thickness removes post-plate grinding and improves corrosion resistance for off-road exposure. Seal-journal wear and surface finish (Ra <0.2 µm) validated for seal life; spline fatigue and shaft torsional capacity unaffected by the thinner coating under high-torque duty.",
+   "materialGrade": "Thin-dense-chrome / DLC (a-C:H) / nitrocarburised 4140",
+   "manufacturingImpact": "Thin conformal TDC/DLC replaces thick hard-chrome plus post-grind; alternative ferritic nitrocarburising assessed. Removes a masking and grinding operation, cutting finishing cycle ~20% and plating chemistry use. Coating-line tooling revised; spline rolling and induction hardening unchanged. Reduced chrome chemistry aids environmental compliance.",
+   "costSavingTypes": [
+    "process",
+    "material"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Thinner conformal coating deletes post-plate grinding and masking.",
+    "percentage": "£9/veh (-11% finishing cost)",
+    "annualValue": "£480k",
+    "calculationBasis": "£9/veh × 53k veh/yr"
+   },
+   "implementationDifficulty": "Medium",
+   "riskNotes": "Thin-dense-chrome/DLC seal-journal wear and corrosion resistance validated for off-road exposure and long seal life, protecting durability. Surface finish held to Ra <0.2 µm to prevent seal-lip wear and oil leakage. Coating adhesion qualified under torsional flex to avoid spalling on the safety-critical shaft. Spline fatigue and torsional capacity unaffected. Hexavalent-chrome reduction aids compliance. Premium durability and refinement preserved across ICE, MHEV and PHEV half shafts.",
+   "dfmaPrinciples": [
+    "thin conformal coating",
+    "delete grinding",
+    "process simplification"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "12–18 months",
+   "benchmarkReference": "Porsche Macan (2022)",
+   "confidenceLevel": "estimated",
+   "evidenceSources": [
+    {
+     "type": "supplier_data",
+     "title": "TDC vs hard chrome seal-journal wear data",
+     "year": 2022,
+     "confidence": "medium"
+    },
+    {
+     "type": "regulatory",
+     "title": "Hexavalent chromium reduction directive",
+     "year": 2021,
+     "confidence": "high"
+    }
+   ],
+   "regulatoryContext": "UN/ECE"
+  }
+ },
+ {
+  "id": "drv043",
+  "title": "PHEV reinforced transfer-case differential housing aluminium re-gating",
+  "system": "Driveline",
+  "costSavingType": "Manufacturing Process",
+  "annualSaving": "£830k",
+  "difficulty": "High",
+  "timeToImplement": "16–22 months",
+  "description": "[PHEV] PHEV transfer-case differential housing high-pressure die-cast with conservative gating and high scrap. Re-engineer gating and switch to a vacuum-assisted HPDC process, cutting porosity scrap and machining while retaining stiffness for the reinforced hybrid torque-blend transfer path on the luxury SUV.",
+  "submittedBy": "AITO M9 benchmark",
+  "verified": 1,
+  "stars": 78,
+  "level": "part",
+  "ideaData": {
+   "id": "drv043",
+   "title": "PHEV reinforced transfer-case differential housing aluminium re-gating",
+   "technicalDescription": "Powertrain: PHEV. Baseline transfer-case/center-diff housing is AlSi9Cu3 HPDC with high porosity scrap, sized for blended ICE+e-motor input to ~4500 Nm. Re-engineer runner/gating and adopt vacuum-assisted HPDC to cut entrapped-gas porosity, allowing thinner reinforced ribs and lower machining stock while holding bearing-bore stiffness. Alternatives: AlSi10Mg, AlSi9Cu3, and AlMg5Si2Mn (Magsimal) rheocast evaluated. Reduced porosity improves fatigue at the reinforced torque-blend bosses. Bearing-bore roundness and housing modal frequency validated to protect L10 life and avoid gear whine under hybrid launch and crawl torque.",
+   "materialGrade": "AlSi9Cu3 vacuum-HPDC / AlSi10Mg / Magsimal rheocast",
+   "manufacturingImpact": "Vacuum-assisted HPDC with re-engineered gating replaces conventional HPDC; alternative squeeze-cast and rheocast assessed. Cuts porosity scrap ~40%, allows leak-tight thinner walls and lowers machining stock ~12%. New gating inserts and vacuum tooling required; assembly unchanged. Reduced rework improves yield and net BOM.",
+   "costSavingTypes": [
+    "process",
+    "material",
+    "warranty"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Vacuum HPDC re-gating cuts porosity scrap and machining stock.",
+    "percentage": "£20/veh (-13% housing cost)",
+    "annualValue": "£830k",
+    "calculationBasis": "£20/veh × 41k veh/yr"
+   },
+   "implementationDifficulty": "High",
+   "riskNotes": "Vacuum-HPDC porosity reduction validated by CT and burst testing to ensure leak-tight, fatigue-resistant reinforced torque-blend bosses, protecting durability and safety under hybrid launch and crawl. Bearing-bore roundness held to protect L10 life and prevent gear whine. Housing modal frequency kept above driveline boom band. Thinner walls re-validated for stiffness across temperature. Reduced porosity lowers warranty leak risk; premium NVH and PHEV torque durability preserved.",
+   "dfmaPrinciples": [
+    "vacuum die casting",
+    "gating optimisation",
+    "scrap reduction"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "16–22 months",
+   "benchmarkReference": "AITO M9 (2023)",
+   "confidenceLevel": "estimated",
+   "evidenceSources": [
+    {
+     "type": "supplier_data",
+     "title": "Vacuum HPDC porosity reduction study",
+     "year": 2023,
+     "confidence": "medium"
+    },
+    {
+     "type": "industry_report",
+     "title": "PHEV transfer-case housing casting review",
+     "year": 2022,
+     "confidence": "low"
+    }
+   ],
+   "regulatoryContext": null
+  }
+ },
+ {
+  "id": "drv044",
+  "title": "BEV e-axle differential ring gear skiving replacing hobbing plus grinding",
+  "system": "Driveline",
+  "costSavingType": "Manufacturing Process",
+  "annualSaving": "£1.0M",
+  "difficulty": "High",
+  "timeToImplement": "18–24 months",
+  "description": "[BEV] BEV e-axle reduction-stage and differential gears cut by hobbing then ground. Adopt power skiving with hard finishing only where needed, cutting cycle time and machine count while sustaining the high-torque, high-speed mesh quality demanded by the quiet BEV e-axle.",
+  "submittedBy": "NIO ES7 benchmark",
+  "verified": 1,
+  "stars": 81,
+  "level": "part",
+  "ideaData": {
+   "id": "drv044",
+   "title": "BEV e-axle differential ring gear skiving replacing hobbing plus grinding",
+   "technicalDescription": "Powertrain: BEV. Baseline e-axle reduction and differential gears are hobbed then profile-ground for quality DIN5-6 to suppress whine at e-motor speeds to ~16000 rpm under ~3800 Nm output. Adopt power skiving, which is faster than hobbing for internal/cluster geometry, with targeted hard finishing only on critical flanks. Alternatives: power skiving, gear honing, and continuous generating grinding evaluated; 16MnCr5/20MnCr5 case-hardened gears. Skiving raises throughput and reduces machine footprint. Mesh quality, profile/lead crowning and surface finish validated to hold low e-axle gear whine and tooth-flank Hertzian contact stress for L10 life.",
+   "materialGrade": "16MnCr5 case-hardened / 20MnCr5 / 18CrNiMo7-6",
+   "manufacturingImpact": "Power skiving plus selective honing replaces hobbing then full grinding; alternative gear honing versus generating grinding compared. Cuts cutting cycle time ~25% and machine count, lowering capital and floor space. Skiving tools are new tooling; case hardening unchanged. Reduced grinding lowers wheel consumption and energy.",
+   "costSavingTypes": [
+    "process",
+    "tooling"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Power skiving cuts gear cycle time and machine count for the e-axle.",
+    "percentage": "£18/veh (-15% gear machining cost)",
+    "annualValue": "£1.0M",
+    "calculationBasis": "£18/veh × 56k veh/yr"
+   },
+   "implementationDifficulty": "High",
+   "riskNotes": "Power-skiving mesh quality and surface finish validated to hold low e-axle gear whine, critical in silent BEV cabins, preserving premium NVH. Profile/lead crowning and Hertzian contact stress qualified for tooth-flank pitting resistance and L10 life under instant torque and high speed, protecting durability. Selective hard finishing covers critical flanks. Tool-wear SPC controls geometry drift. No safety impact; high-torque BEV durability and refinement maintained at lower machining cost.",
+   "dfmaPrinciples": [
+    "power skiving",
+    "selective finishing",
+    "cycle-time reduction"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "18–24 months",
+   "benchmarkReference": "NIO ES7 (2023)",
+   "confidenceLevel": "estimated",
+   "evidenceSources": [
+    {
+     "type": "supplier_data",
+     "title": "Power skiving e-axle gear throughput study",
+     "year": 2023,
+     "confidence": "medium"
+    },
+    {
+     "type": "industry_report",
+     "title": "BEV gear manufacturing process trends",
+     "year": 2024,
+     "confidence": "medium"
+    }
+   ],
+   "regulatoryContext": null
+  }
+ },
+ {
+  "id": "drv045",
+  "title": "Prop-shaft center bearing rubber isolator material and bracket simplification",
+  "system": "Driveline",
+  "costSavingType": "Material",
+  "annualSaving": "£390k",
+  "difficulty": "Low",
+  "timeToImplement": "10–14 months",
+  "description": "[ICE,MHEV,PHEV] Center support bearing rubber isolator and stamped bracket are simplified to a single overmoulded NR/SBR isolator with integrated bracket features. Cuts parts and assembly while preserving isolation of bending modes and driveline boom on two-piece prop shafts across powertrains.",
+  "submittedBy": "Ford Bronco benchmark",
+  "verified": 1,
+  "stars": 66,
+  "level": "part",
+  "ideaData": {
+   "id": "drv045",
+   "title": "Prop-shaft center bearing rubber isolator material and bracket simplification",
+   "technicalDescription": "Powertrain: ICE/MHEV/PHEV. Baseline center support bearing uses a natural-rubber isolator, a sealed ball bearing and a multi-piece stamped bracket to isolate bending-mode energy from the body under ~3000 Nm. Consolidate to an overmoulded NR/SBR isolator with integral mounting features and a single-piece bracket, tuning radial/axial rates to retain isolation. Alternatives: NR, SBR, and hydraulically-damped isolator evaluated. Dynamic stiffness and creep validated -40 to 120 °C. Bearing L10 life and isolation of driveline boom preserved to protect premium refinement under high-torque launch and off-road shock.",
+   "materialGrade": "Overmoulded NR/SBR isolator / hydraulic isolator option",
+   "manufacturingImpact": "Overmoulded isolator with integral bracket replaces separate isolator plus multi-piece stamping; alternative bonded versus mechanical retention assessed. Removes stamping and a fastener set, cutting BOM and assembly. New overmould tool is tooling; bearing press-fit unchanged. Fewer interfaces lower line complexity.",
+   "costSavingTypes": [
+    "material",
+    "complexity",
+    "process"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Overmoulded integral isolator deletes stampings and fasteners.",
+    "percentage": "£8/veh (-12% center bearing cost)",
+    "annualValue": "£390k",
+    "calculationBasis": "£8/veh × 49k veh/yr"
+   },
+   "implementationDifficulty": "Low",
+   "riskNotes": "Isolator dynamic stiffness and creep validated -40 to 120 °C to maintain isolation of bending modes and driveline boom, preserving premium cabin refinement. Bearing L10 life protected under high-torque launch and off-road shock for durability. Overmould bond strength qualified against fatigue and thermal cycling for the safety-relevant support. Tuned rates match baseline NVH. Integral bracket stiffness verified; premium refinement and durability maintained across ICE, MHEV and PHEV prop shafts.",
+   "dfmaPrinciples": [
+    "overmoulding",
+    "part consolidation",
+    "delete fasteners"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "10–14 months",
+   "benchmarkReference": "Ford Bronco (2021)",
+   "confidenceLevel": "estimated",
+   "evidenceSources": [
+    {
+     "type": "teardown",
+     "title": "Bronco center support bearing assembly",
+     "year": 2022,
+     "confidence": "medium"
+    },
+    {
+     "type": "supplier_data",
+     "title": "Center bearing isolator rate tuning data",
+     "year": 2021,
+     "confidence": "low"
+    }
+   ],
+   "regulatoryContext": null
+  }
+ },
+ {
+  "id": "drv046",
+  "title": "Differential side-gear thrust washer to low-friction polymer bearing",
+  "system": "Driveline",
+  "costSavingType": "Material",
+  "annualSaving": "£360k",
+  "difficulty": "Low",
+  "timeToImplement": "8–12 months",
+  "description": "[ICE,MHEV,PHEV,BEV] Replace steel differential side-gear and pinion thrust washers with low-friction PEEK-composite thrust bearings. Cuts material cost and parasitic drag across all powertrain differentials while sustaining contact pressure and wear under high-torque crawl, tow and instant-torque BEV loads.",
+  "submittedBy": "Lexus RX benchmark",
+  "verified": 1,
+  "stars": 68,
+  "level": "part",
+  "ideaData": {
+   "id": "drv046",
+   "title": "Differential side-gear thrust washer to low-friction polymer bearing",
+   "technicalDescription": "Powertrain: ICE/MHEV/PHEV/BEV. Baseline differential side-gear and pinion-gear back faces ride on hardened steel thrust washers, generating friction and requiring grinding. Replace with PEEK/PTFE-composite thrust bearings (or bronze-backed PTFE) lowering coefficient and parasitic drag while spreading contact pressure under separating loads from ~3500-4500 Nm crown torque. Alternatives: PEEK-composite, bronze-backed PTFE, and DU dry-bearing evaluated. PV rating and wear validated for sustained crawl, tow and instant BEV torque. Reduced drag aids efficiency; backlash and side-gear float controlled to protect mesh and gear-whine NVH.",
+   "materialGrade": "PEEK/PTFE composite washer / bronze-backed PTFE / DU bearing",
+   "manufacturingImpact": "Stamped/moulded polymer composite washer replaces ground steel washer; alternative injection-moulded versus skived-PTFE tape assessed. Removes a grinding operation and lowers material cost. PV-rated polymer needs no hardening. New blanking/moulding tool is tooling; assembly stack unchanged with revised thickness selection.",
+   "costSavingTypes": [
+    "material",
+    "process",
+    "weight"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Polymer thrust bearing cuts cost, grinding and parasitic drag.",
+    "percentage": "£5/veh (-10% thrust-face cost)",
+    "annualValue": "£360k",
+    "calculationBasis": "£5/veh × 72k veh/yr"
+   },
+   "implementationDifficulty": "Low",
+   "riskNotes": "Polymer thrust-bearing PV rating and wear validated under separating loads from crawl, tow and instant BEV torque to protect durability. Side-gear float and backlash controlled to preserve mesh accuracy and prevent gear whine. Thermal limit verified for sustained high-torque oil temperature. Reduced parasitic drag aids efficiency without compromising lock-up. Fluid-additive compatibility qualified. No safety impact; premium NVH and high-torque durability preserved across all powertrain differentials.",
+   "dfmaPrinciples": [
+    "polymer substitution",
+    "delete grinding",
+    "drag reduction"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "8–12 months",
+   "benchmarkReference": "Lexus RX (2023)",
+   "confidenceLevel": "estimated",
+   "evidenceSources": [
+    {
+     "type": "supplier_data",
+     "title": "Polymer thrust bearing PV wear data",
+     "year": 2022,
+     "confidence": "medium"
+    },
+    {
+     "type": "industry_report",
+     "title": "Differential parasitic loss reduction study",
+     "year": 2021,
+     "confidence": "low"
+    }
+   ],
+   "regulatoryContext": null
+  }
+ },
+ {
+  "id": "drv047",
+  "title": "MHEV half-shaft commonisation left-right via symmetric intermediate shaft",
+  "system": "Driveline",
+  "costSavingType": "Commonisation",
+  "annualSaving": "£700k",
+  "difficulty": "Medium",
+  "timeToImplement": "14–20 months",
+  "description": "[MHEV] Eliminate the asymmetric long/short half-shaft pair on the 48V SUV by adopting a symmetric layout with a supported intermediate shaft. Lets left and right outer shafts share one part number, cutting SKUs and tooling while controlling torque steer and shaft NVH.",
+  "submittedBy": "Volvo XC90 benchmark",
+  "verified": 1,
+  "stars": 74,
+  "level": "system",
+  "ideaData": {
+   "id": "drv047",
+   "title": "MHEV half-shaft commonisation left-right via symmetric intermediate shaft",
+   "technicalDescription": "Powertrain: MHEV. Baseline front drive uses unequal-length left/right half shafts with a unique long shaft, complicating SKUs and inducing torque steer. Add a bearing-supported intermediate shaft so both outer drive shafts become equal length and share one part number, transmitting ~2400 Nm per side with 48V launch assist. Alternatives: symmetric intermediate-shaft layout, unequal-length retained, and hollow equal shafts evaluated; 4140/41Cr4 shafts. Equal lengths balance plunge and reduce torque steer. Intermediate-shaft bearing L10 and shaft bending mode validated to protect durability and avoid driveline boom.",
+   "materialGrade": "4140 (41Cr4) shafts / common outer half-shaft PN",
+   "manufacturingImpact": "Symmetric layout lets one outer shaft PN serve both sides; alternative make-vs-buy intermediate shaft assessed. Halves outer half-shaft SKUs and tooling, simplifying service and inventory. Adds an intermediate-shaft bearing and bracket to BOM but nets lower complexity. Spline rolling and induction hardening share one line.",
+   "costSavingTypes": [
+    "commonisation",
+    "complexity",
+    "logistics"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Symmetric layout commonises outer shafts and cuts SKUs/tooling.",
+    "percentage": "£15/veh (-13% half-shaft set cost)",
+    "annualValue": "£700k",
+    "calculationBasis": "£15/veh × 47k veh/yr"
+   },
+   "implementationDifficulty": "Medium",
+   "riskNotes": "Equal-length outer shafts validated to balance plunge force and cut torque steer, improving on-road refinement and steering feel. Intermediate-shaft support bearing L10 life qualified for 48V launch-assist torque to protect durability. Shaft bending mode kept above excitation to avoid driveline boom. Spline fatigue unchanged. Added bearing reliability assessed for warranty. Premium NVH, MHEV efficiency and durability preserved while commonising the safety-critical drive shafts.",
+   "dfmaPrinciples": [
+    "symmetry",
+    "left-right commonisation",
+    "reduce SKUs"
+   ],
+   "systemLevel": "Assembly",
+   "timeToImplement": "14–20 months",
+   "benchmarkReference": "Volvo XC90 (2020)",
+   "confidenceLevel": "benchmarked",
+   "evidenceSources": [
+    {
+     "type": "teardown",
+     "title": "XC90 front half-shaft layout teardown",
+     "year": 2021,
+     "confidence": "medium"
+    },
+    {
+     "type": "industry_report",
+     "title": "Intermediate-shaft torque-steer reduction review",
+     "year": 2020,
+     "confidence": "low"
+    }
+   ],
+   "regulatoryContext": null
+  }
+ },
+ {
+  "id": "drv048",
+  "title": "BEV e-axle differential housing magnesium cover replacing aluminium",
+  "system": "Driveline",
+  "costSavingType": "Material + Weight",
+  "annualSaving": "£640k",
+  "difficulty": "High",
+  "timeToImplement": "18–24 months",
+  "description": "[BEV] Replace the aluminium e-axle differential/gearbox cover with an AM60B magnesium die-casting. Removes mass from the BEV e-axle for range while maintaining oil-tight sealing, bearing-bore stiffness and NVH containment for the high-torque differential of the luxury SUV.",
+  "submittedBy": "Yangwang U8 benchmark",
+  "verified": 1,
+  "stars": 76,
+  "level": "part",
+  "ideaData": {
+   "id": "drv048",
+   "title": "BEV e-axle differential housing magnesium cover replacing aluminium",
+   "technicalDescription": "Powertrain: BEV. Baseline e-axle differential/reduction cover is AlSi10Mg, sealing oil and supporting an output-bearing bore under ~3800 Nm. Switch to AM60B magnesium die-casting, ~30% lighter at equal stiffness via ribbing, trimming e-axle mass for range. Alternatives: AM60B, AZ91D magnesium, and AlSi10Mg retained as baseline; AE44 creep-resistant Mg for hot zones. Galvanic isolation and coating specified at steel-bearing and fastener interfaces. Cover stiffness, bearing-bore roundness and sealing validated -40 to 150 °C to protect L10 life, prevent oil weep and contain e-axle gear whine in the silent BEV cabin.",
+   "materialGrade": "AM60B Mg cover / AZ91D / AlSi10Mg baseline",
+   "manufacturingImpact": "Magnesium HPDC replaces aluminium HPDC; alternative thixomoulding assessed. Lower density cuts mass cost per part and machining loads; faster solidification shortens cycle. Galvanic-isolation coating and stainless fasteners add cost. New Mg-rated die and hot-chamber tooling required; sealing-face machining unchanged.",
+   "costSavingTypes": [
+    "material",
+    "weight"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Magnesium cover removes e-axle mass aiding BEV range at equal stiffness.",
+    "percentage": "£16/veh (-12% cover cost)",
+    "annualValue": "£640k",
+    "calculationBasis": "£16/veh × 40k veh/yr"
+   },
+   "implementationDifficulty": "High",
+   "riskNotes": "Magnesium cover stiffness and bearing-bore roundness validated to protect output-bearing L10 life under instant BEV torque. Galvanic corrosion controlled by coating and isolation at steel interfaces to safeguard durability and sealing. Oil-tightness and creep qualified -40 to 150 °C to prevent weep. Cover modal frequency and wall damping tuned to contain e-axle gear whine prominent in silent BEV cabins, preserving premium NVH. Flammability and repair handled per Mg process controls; durability maintained.",
+   "dfmaPrinciples": [
+    "magnesium substitution",
+    "lightweighting",
+    "galvanic isolation"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "18–24 months",
+   "benchmarkReference": "Yangwang U8 (2024)",
+   "confidenceLevel": "estimated",
+   "evidenceSources": [
+    {
+     "type": "supplier_data",
+     "title": "AM60B e-axle cover lightweighting data",
+     "year": 2023,
+     "confidence": "medium"
+    },
+    {
+     "type": "industry_report",
+     "title": "Magnesium driveline housing adoption review",
+     "year": 2024,
+     "confidence": "low"
+    }
+   ],
+   "regulatoryContext": null
+  }
+ },
+ {
+  "id": "drv049",
+  "title": "Rear differential pinion bearing tandem angular-contact replacing tapered pair",
+  "system": "Driveline",
+  "costSavingType": "Material",
+  "annualSaving": "£580k",
+  "difficulty": "Medium",
+  "timeToImplement": "14–20 months",
+  "description": "[ICE,MHEV,PHEV] Replace the tapered-roller pinion bearing pair with a matched tandem angular-contact ball-bearing set on the rear differential. Cuts bearing cost and parasitic drag while sustaining pinion overhung-load capacity and L10 life under high-torque tow and crawl on the SUV.",
+  "submittedBy": "Mercedes G-Class benchmark",
+  "verified": 1,
+  "stars": 72,
+  "level": "part",
+  "ideaData": {
+   "id": "drv049",
+   "title": "Rear differential pinion bearing tandem angular-contact replacing tapered pair",
+   "technicalDescription": "Powertrain: ICE/MHEV/PHEV. Baseline hypoid pinion is straddle/overhung-mounted on a tapered-roller pair set to high preload, generating drag and needing precise shim setting under ~3500 Nm. Replace with a matched tandem angular-contact ball-bearing set giving lower friction and adequate combined radial/thrust capacity for the pinion overhung load. Alternatives: tapered-roller pair, tandem angular-contact ball, and cylindrical-plus-4-point combinations evaluated; 100Cr6 rings. Preload simplified to ground-spacer setting. Pinion deflection, bearing L10 life and gear-mesh pattern validated under tow and crawl to protect durability and limit gear whine.",
+   "materialGrade": "100Cr6 angular-contact set / tapered-roller alternative",
+   "manufacturingImpact": "Tandem angular-contact set with ground spacer replaces shimmed tapered pair; alternative cartridge versus loose-bearing build assessed. Lowers bearing unit cost and simplifies preload setting, cutting assembly time. Bore and seal machining unchanged. Spacer grinding is minor tooling; reduced drag aids efficiency.",
+   "costSavingTypes": [
+    "material",
+    "process",
+    "weight"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Angular-contact set lowers bearing cost, drag and preload complexity.",
+    "percentage": "£12/veh (-11% pinion bearing cost)",
+    "annualValue": "£580k",
+    "calculationBasis": "£12/veh × 48k veh/yr"
+   },
+   "implementationDifficulty": "Medium",
+   "riskNotes": "Tandem angular-contact capacity validated for pinion overhung radial/thrust load under high-torque tow and crawl to protect L10 life and durability. Pinion deflection and gear-mesh pattern qualified to maintain hypoid contact and limit gear whine. Ground-spacer preload setting verified for repeatability and thermal stability. Lower friction reduces drag without sacrificing stiffness. Off-road shock capacity confirmed. Premium NVH refinement and high-torque durability preserved.",
+   "dfmaPrinciples": [
+    "bearing optimisation",
+    "simplify preload",
+    "drag reduction"
+   ],
+   "systemLevel": "Part",
+   "timeToImplement": "14–20 months",
+   "benchmarkReference": "Mercedes G-Class (2022)",
+   "confidenceLevel": "estimated",
+   "evidenceSources": [
+    {
+     "type": "supplier_data",
+     "title": "Pinion angular-contact bearing capacity study",
+     "year": 2022,
+     "confidence": "medium"
+    },
+    {
+     "type": "teardown",
+     "title": "G-Class rear pinion bearing arrangement",
+     "year": 2023,
+     "confidence": "medium"
+    }
+   ],
+   "regulatoryContext": null
+  }
+ },
+ {
+  "id": "drv050",
+  "title": "BEV equal-length lightweight half shafts with hollow tripod trunnions",
+  "system": "Driveline",
+  "costSavingType": "Material + Weight",
+  "annualSaving": "£1.4M",
+  "difficulty": "High",
+  "timeToImplement": "18–24 months",
+  "description": "[BEV] BEV e-axle lightweight half shafts adopt hollow flow-formed bars plus hollow-bored tripod trunnions and compact outer joints. Strips rotating and unsprung mass from the e-axle for range and ride while sustaining instant dual-motor torque and regen reversals on the luxury SUV.",
+  "submittedBy": "Li Auto L9 benchmark",
+  "verified": 1,
+  "stars": 84,
+  "level": "system",
+  "ideaData": {
+   "id": "drv050",
+   "title": "BEV equal-length lightweight half shafts with hollow tripod trunnions",
+   "technicalDescription": "Powertrain: BEV. Baseline e-axle half shafts use solid bars and solid tripod trunnions carrying ~2600 Nm per side from instant dual-motor torque. Combine hollow flow-formed shaft bars, hollow-bored tripod trunnions and a compact high-articulation outer Rzeppa joint to cut rotating/unsprung mass ~1.3 kg per side for range and ride. Alternatives: 34CrMo4/4140 tube, 4340 high-strength, and CFRP shaft evaluated; 100Cr6 rollers, 16MnCr5 case-hardened trunnions. Torsional capacity, spline fatigue and roller L10 validated for instant torque and regen reversals. Shaft bending mode and joint NVH controlled for the silent BEV cabin.",
+   "materialGrade": "34CrMo4 hollow tube / 16MnCr5 hollow trunnion / 4340",
+   "manufacturingImpact": "Flow-forming, trunnion gun-drilling/boring and compact-joint forging replace solid bar turning and solid trunnions; alternative rotary-swage and net-forged joint assessed. Cuts shaft and joint material BOM ~22% and rotating mass. Friction-weld and boring tooling new; spline rolling and induction hardening shared. Equal lengths simplify SKUs.",
+   "costSavingTypes": [
+    "material",
+    "weight",
+    "process"
+   ],
+   "costSavingPotential": {
+    "qualitative": "Hollow shafts and trunnions strip e-axle mass while cutting material cost.",
+    "percentage": "£28/veh (-19% half-shaft set cost)",
+    "annualValue": "£1.4M",
+    "calculationBasis": "£28/veh × 50k veh/yr"
+   },
+   "implementationDifficulty": "High",
+   "riskNotes": "Hollow shaft and trunnion torsional and spline fatigue re-validated for instant BEV torque and regen reversals to protect safety-critical durability. Roller L10 life at full articulation qualified for ride and off-road. Friction-weld and bored sections burst-tested for safety. Shaft bending mode kept above excitation to avoid whirl; compact-joint NVH tuned for the silent BEV cabin. Reduced unsprung mass aids ride refinement. Premium durability, range and NVH targets maintained.",
+   "dfmaPrinciples": [
+    "hollow section",
+    "mass reduction",
+    "equal-length commonisation"
+   ],
+   "systemLevel": "Assembly",
+   "timeToImplement": "18–24 months",
+   "benchmarkReference": "Li Auto L9 (2022)",
+   "confidenceLevel": "benchmarked",
+   "evidenceSources": [
+    {
+     "type": "supplier_data",
+     "title": "Hollow BEV half-shaft mass and durability data",
+     "year": 2023,
+     "confidence": "high"
+    },
+    {
+     "type": "teardown",
+     "title": "L9 e-axle half-shaft teardown",
+     "year": 2023,
+     "confidence": "medium"
+    }
+   ],
+   "regulatoryContext": null
+  }
+ }
+]

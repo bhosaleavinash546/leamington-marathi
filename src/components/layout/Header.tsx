@@ -1,0 +1,283 @@
+import { useState, useRef, useEffect } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Menu, X, ChevronDown, LayoutDashboard, HelpCircle, LogOut, User, Sun, Moon, TrendingUp, FileBox, Calculator, Store, Link2, GitCompare, Zap, ClipboardList, GitMerge } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useAuth } from '../../contexts/AuthContext';
+import { useTheme } from '../../contexts/ThemeContext';
+
+const dropdownVariants = {
+  hidden: { opacity: 0, y: -6, scale: 0.97 },
+  visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.15, ease: 'easeOut' } },
+  exit:    { opacity: 0, y: -6, scale: 0.97, transition: { duration: 0.1, ease: 'easeIn' } },
+};
+
+const APP_VERSION = '3.0.0';
+
+export default function Header() {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { isAuthenticated, user, signOut } = useAuth();
+  const { theme, toggleTheme } = useTheme();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [toolsOpen, setToolsOpen] = useState(false);
+  const userMenuRef = useRef<HTMLDivElement>(null);
+  const toolsRef = useRef<HTMLDivElement>(null);
+
+  const isActive = (path: string) => location.pathname === path;
+
+  const initials = user?.name
+    ? user.name.split(' ').map(p => p[0]).join('').toUpperCase().slice(0, 2)
+    : 'U';
+
+  function handleSignOut() {
+    signOut();
+    setUserMenuOpen(false);
+    navigate('/auth');
+  }
+
+  useEffect(() => {
+    function onClickOutside(e: MouseEvent) {
+      if (userMenuRef.current && !userMenuRef.current.contains(e.target as Node)) {
+        setUserMenuOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', onClickOutside);
+    return () => document.removeEventListener('mousedown', onClickOutside);
+  }, []);
+
+  useEffect(() => {
+    function onClickOutside(e: MouseEvent) {
+      if (toolsRef.current && !toolsRef.current.contains(e.target as Node)) {
+        setToolsOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', onClickOutside);
+    return () => document.removeEventListener('mousedown', onClickOutside);
+  }, []);
+
+  return (
+    <header className="fixed top-0 left-0 right-0 z-50 bg-navy-950/95 backdrop-blur-md border-b border-white/10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16">
+
+          {/* Logo */}
+          <Link to={isAuthenticated ? '/dashboard' : '/'} className="flex items-center gap-2.5 group">
+            <img
+              src="/brainspark-logo.svg"
+              alt="BrainSpark"
+              className="w-9 h-9 group-hover:scale-105 transition-transform"
+            />
+            <div className="flex items-end gap-1.5">
+              <div>
+                <span className="text-white font-bold text-lg leading-none tracking-tight">Brain</span>
+                <span className="text-gold-400 font-bold text-lg leading-none">Spark</span>
+              </div>
+              <span className="mb-0.5 px-1.5 py-0.5 rounded bg-gold-500/15 border border-gold-500/30 text-gold-400 text-[10px] font-semibold leading-none">
+                v{APP_VERSION}
+              </span>
+            </div>
+          </Link>
+
+          {/* Desktop nav */}
+          <nav className="hidden md:flex items-center gap-1">
+            {isAuthenticated ? (
+              <>
+                {[
+                  { path: '/dashboard', label: 'Dashboard' },
+                  { path: '/analyze', label: 'Analyze' },
+                  { path: '/marketplace', label: 'Marketplace' },
+                  { path: '/vave-tracker', label: 'VAVE Tracker' },
+                  { path: '/pipeline',     label: 'Pipeline' },
+                ].map(({ path, label }) => (
+                  <Link key={path} to={path}
+                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${isActive(path) ? 'bg-gold-500/20 text-gold-400' : 'text-slate-300 hover:text-white hover:bg-white/5'}`}>
+                    {label}
+                  </Link>
+                ))}
+
+                {/* Tools dropdown */}
+                <div className="relative" ref={toolsRef}>
+                  <button onClick={() => setToolsOpen(v => !v)}
+                    className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-all ${['/bom-analysis','/cad-to-cost','/cad-diff','/should-cost','/trends'].some(p => isActive(p)) ? 'bg-gold-500/20 text-gold-400' : 'text-slate-300 hover:text-white hover:bg-white/5'}`}>
+                    Tools <ChevronDown size={13} className={`transition-transform ${toolsOpen ? 'rotate-180' : ''}`} />
+                  </button>
+                  <AnimatePresence>
+                    {toolsOpen && (
+                      <motion.div
+                        variants={dropdownVariants} initial="hidden" animate="visible" exit="exit"
+                        className="absolute top-full left-0 mt-1.5 w-48 rounded-xl bg-navy-800 border border-white/10 shadow-2xl shadow-black/50 py-1 overflow-hidden z-50"
+                      >
+                        {[
+                          { path: '/bom-analysis', label: 'BOM Batch' },
+                          { path: '/cad-to-cost', label: 'CAD to Cost' },
+                          { path: '/cad-diff', label: 'CAD Diff' },
+                          { path: '/should-cost', label: 'Should-Cost' },
+                          { path: '/trends', label: 'Trends' },
+                        ].map(({ path, label }, i) => (
+                          <motion.div key={path} initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.04, duration: 0.15 }}>
+                            <Link to={path} onClick={() => setToolsOpen(false)}
+                              className={`block px-4 py-2.5 text-sm transition-colors ${isActive(path) ? 'text-gold-400 bg-gold-500/10' : 'text-slate-300 hover:text-white hover:bg-white/5'}`}>
+                              {label}
+                            </Link>
+                          </motion.div>
+                        ))}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+
+                <Link to="/help"
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${isActive('/help') ? 'bg-gold-500/20 text-gold-400' : 'text-slate-300 hover:text-white hover:bg-white/5'}`}>
+                  Help
+                </Link>
+              </>
+            ) : (
+              <>
+                {[{ path: '/', label: 'Home' }, { path: '/help', label: 'Help' }].map(({ path, label }) => (
+                  <Link key={path} to={path}
+                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${isActive(path) ? 'bg-gold-500/20 text-gold-400' : 'text-slate-300 hover:text-white hover:bg-white/5'}`}>
+                    {label}
+                  </Link>
+                ))}
+              </>
+            )}
+          </nav>
+
+          {/* Right side */}
+          <div className="hidden md:flex items-center gap-3">
+            {/* Theme toggle */}
+            <button
+              onClick={toggleTheme}
+              title={theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
+              className="w-9 h-9 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10 hover:border-gold-500/30 transition-all group"
+            >
+              {theme === 'dark'
+                ? <Sun size={15} className="text-slate-400 group-hover:text-gold-400 transition-colors" />
+                : <Moon size={15} className="text-slate-500 group-hover:text-navy-950 transition-colors" />}
+            </button>
+
+            {isAuthenticated ? (
+              <div className="relative" ref={userMenuRef}>
+                <button
+                  onClick={() => setUserMenuOpen(!userMenuOpen)}
+                  className="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-white/5 transition-colors"
+                >
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-gold-400 to-gold-600 flex items-center justify-center text-navy-950 font-bold text-xs">
+                    {initials}
+                  </div>
+                  <span className="text-slate-300 text-sm font-medium max-w-[120px] truncate">{user?.name}</span>
+                  <ChevronDown size={14} className={`text-slate-500 transition-transform ${userMenuOpen ? 'rotate-180' : ''}`} />
+                </button>
+
+                <AnimatePresence>
+                  {userMenuOpen && (
+                    <motion.div
+                      variants={dropdownVariants} initial="hidden" animate="visible" exit="exit"
+                      className="absolute right-0 mt-2 w-52 rounded-xl bg-navy-800 border border-white/10 shadow-2xl shadow-black/50 py-1 overflow-hidden"
+                    >
+                      <div className="px-4 py-3 border-b border-white/8">
+                        <p className="text-white text-sm font-semibold truncate">{user?.name}</p>
+                        <p className="text-slate-500 text-xs truncate mt-0.5">{user?.email}</p>
+                      </div>
+                      {[
+                        { icon: LayoutDashboard, label: 'Dashboard', path: '/dashboard' },
+                        { icon: Zap,            label: 'Analyze',    path: '/analyze' },
+                        { icon: FileBox,        label: 'CAD to Cost',  path: '/cad-to-cost' },
+                        { icon: GitCompare,     label: 'CAD Diff',     path: '/cad-diff' },
+                        { icon: Calculator,     label: 'Should-Cost',  path: '/should-cost' },
+                        { icon: TrendingUp,     label: 'Trends',       path: '/trends' },
+                        { icon: Store,          label: 'Marketplace',  path: '/marketplace' },
+                        { icon: ClipboardList,  label: 'VAVE Tracker', path: '/vave-tracker' },
+                        { icon: GitMerge,       label: 'Pipeline',     path: '/pipeline' },
+                        { icon: Link2,          label: 'Integrations', path: '/integrations' },
+                        { icon: HelpCircle,     label: 'Help',       path: '/help' },
+                      ].map(({ icon: Icon, label, path }, i) => (
+                        <motion.div key={path} initial={{ opacity: 0, x: 8 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.03, duration: 0.15 }}>
+                          <Link
+                            to={path}
+                            onClick={() => setUserMenuOpen(false)}
+                            className="flex items-center gap-3 px-4 py-2.5 text-slate-300 hover:text-white hover:bg-white/5 text-sm transition-colors"
+                          >
+                            <Icon size={14} className="text-slate-500" />
+                            {label}
+                          </Link>
+                        </motion.div>
+                      ))}
+                      <div className="border-t border-white/8 mt-1 pt-1">
+                        <button
+                          onClick={handleSignOut}
+                          className="w-full flex items-center gap-3 px-4 py-2.5 text-red-400 hover:bg-red-500/10 text-sm transition-colors"
+                        >
+                          <LogOut size={14} />
+                          Sign Out
+                        </button>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            ) : (
+              <Link
+                to="/auth"
+                className="px-4 py-2 rounded-lg bg-gold-500 hover:bg-gold-400 text-navy-950 text-sm font-semibold transition-all hover:scale-105 shadow-lg shadow-gold-500/20"
+              >
+                Sign In
+              </Link>
+            )}
+          </div>
+
+          {/* Mobile menu button */}
+          <button className="md:hidden text-white p-2" onClick={() => setMenuOpen(!menuOpen)}>
+            {menuOpen ? <X size={20} /> : <Menu size={20} />}
+          </button>
+        </div>
+      </div>
+
+      {/* Mobile menu */}
+      <AnimatePresence>
+      {menuOpen && (
+        <motion.div
+          initial={{ opacity: 0, height: 0 }}
+          animate={{ opacity: 1, height: 'auto' }}
+          exit={{ opacity: 0, height: 0 }}
+          transition={{ duration: 0.22, ease: 'easeInOut' }}
+          className="md:hidden bg-navy-900 border-t border-white/10 px-4 py-3 space-y-1 overflow-hidden">
+          {isAuthenticated ? (
+            <>
+              <div className="flex items-center gap-3 px-3 py-2 mb-2 border-b border-white/8 pb-3">
+                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-gold-400 to-gold-600 flex items-center justify-center text-navy-950 font-bold text-xs">{initials}</div>
+                <div>
+                  <p className="text-white text-sm font-medium">{user?.name}</p>
+                  <p className="text-slate-500 text-xs">{user?.email}</p>
+                </div>
+              </div>
+              <Link to="/dashboard"   className="block px-3 py-2 text-sm text-slate-300 hover:text-white rounded-lg hover:bg-white/5" onClick={() => setMenuOpen(false)}>Dashboard</Link>
+              <Link to="/analyze"     className="block px-3 py-2 text-sm text-slate-300 hover:text-white rounded-lg hover:bg-white/5" onClick={() => setMenuOpen(false)}>Analyze</Link>
+              <Link to="/cad-to-cost" className="block px-3 py-2 text-sm text-slate-300 hover:text-white rounded-lg hover:bg-white/5" onClick={() => setMenuOpen(false)}>CAD to Cost</Link>
+              <Link to="/cad-diff"    className="block px-3 py-2 text-sm text-slate-300 hover:text-white rounded-lg hover:bg-white/5" onClick={() => setMenuOpen(false)}>CAD Diff</Link>
+              <Link to="/should-cost" className="block px-3 py-2 text-sm text-slate-300 hover:text-white rounded-lg hover:bg-white/5" onClick={() => setMenuOpen(false)}>Should-Cost</Link>
+              <Link to="/trends"       className="block px-3 py-2 text-sm text-slate-300 hover:text-white rounded-lg hover:bg-white/5" onClick={() => setMenuOpen(false)}>Trends</Link>
+              <Link to="/marketplace"   className="block px-3 py-2 text-sm text-slate-300 hover:text-white rounded-lg hover:bg-white/5" onClick={() => setMenuOpen(false)}>Marketplace</Link>
+              <Link to="/vave-tracker"  className="block px-3 py-2 text-sm text-slate-300 hover:text-white rounded-lg hover:bg-white/5" onClick={() => setMenuOpen(false)}>VAVE Tracker</Link>
+              <Link to="/pipeline"      className="block px-3 py-2 text-sm text-slate-300 hover:text-white rounded-lg hover:bg-white/5" onClick={() => setMenuOpen(false)}>Pipeline</Link>
+              <Link to="/integrations"  className="block px-3 py-2 text-sm text-slate-300 hover:text-white rounded-lg hover:bg-white/5" onClick={() => setMenuOpen(false)}>Integrations</Link>
+              <Link to="/help"         className="block px-3 py-2 text-sm text-slate-300 hover:text-white rounded-lg hover:bg-white/5" onClick={() => setMenuOpen(false)}>Help</Link>
+              <button onClick={() => { toggleTheme(); setMenuOpen(false); }} className="w-full text-left px-3 py-2 text-sm text-slate-300 hover:bg-white/5 rounded-lg">
+                {theme === 'dark' ? '☀️ Light Theme' : '🌙 Dark Theme'}
+              </button>
+              <button onClick={handleSignOut} className="w-full text-left px-3 py-2 text-sm text-red-400 hover:bg-red-500/10 rounded-lg">Sign Out</button>
+            </>
+          ) : (
+            <>
+              <Link to="/" className="block px-3 py-2 text-sm text-slate-300 hover:text-white rounded-lg hover:bg-white/5" onClick={() => setMenuOpen(false)}>Home</Link>
+              <Link to="/help" className="block px-3 py-2 text-sm text-slate-300 hover:text-white rounded-lg hover:bg-white/5" onClick={() => setMenuOpen(false)}>Help</Link>
+              <Link to="/auth" className="block px-3 py-2 text-sm text-gold-400 font-medium rounded-lg hover:bg-gold-500/10" onClick={() => setMenuOpen(false)}>Sign In</Link>
+            </>
+          )}
+        </motion.div>
+      )}
+      </AnimatePresence>
+    </header>
+  );
+}
