@@ -27,7 +27,6 @@ folder. You almost never need to touch `style.css` or `script.js`.
 | Next-event chip in the hero | `hero-next` — update the text AND `data-event-date="YYYY-MM-DD"` (drives the countdown) |
 | Event details / participant counts | `timeline-card` |
 | Stats (400+ families etc.) | `data-count` — change both the attribute and the visible number |
-| Committee / team names | `team-card` |
 | Testimonial quotes | `testimonial` — replace the sample quotes with real ones |
 | Sponsor logos | `supporter-slot` — swap a placeholder for `<img src="images/sponsor-name.png" alt="Sponsor Name">` |
 | Social media links | `socials` |
@@ -41,11 +40,9 @@ folder. You almost never need to touch `style.css` or `script.js`.
 4. Edit `index.html` and change the relevant `<img src="images/...">` to your new filename.
    Keep the `width`/`height` numbers roughly matching the photo's real proportions.
 
-## The photo carousel (Dhol section) and the bottom reel
+## The photo carousel (Dhol section)
 
-Search `dhol-carousel` (the one-by-one slideshow) or `marquee-group` (the moving strip
-at the bottom). Each is just a list of `<img>` lines — add, remove, or reorder them.
-The duplicate strip for the bottom reel is created automatically; only edit the first list.
+Search `dhol-carousel` — it's just a list of `<img>` lines; add, remove, or reorder them.
 
 ## Festival decorations (once a year job)
 

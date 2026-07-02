@@ -180,32 +180,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // Newsletter signup → same relay as the contact form, tagged separately
-  const newsForm = document.getElementById('newsletter-form');
-  const newsNote = document.querySelector('.newsletter-note');
-  newsForm.addEventListener('submit', async e => {
-    e.preventDefault();
-    const email = newsForm.elements.email.value.trim();
-    const btn = newsForm.querySelector('button');
-    btn.disabled = true;
-    btn.textContent = 'Adding…';
-    try {
-      const res = await fetch('https://formsubmit.co/ajax/leamingtonmarathi@gmail.com', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-        body: JSON.stringify({ email, _subject: 'Newsletter signup — Leamington Marathi' }),
-      });
-      if (!res.ok) throw new Error(`relay responded ${res.status}`);
-      newsForm.reset();
-      newsNote.textContent = 'धन्यवाद! You’re on the list 🎉';
-      btn.textContent = 'Done ✓';
-    } catch {
-      window.location.href = `mailto:leamingtonmarathi@gmail.com?subject=${encodeURIComponent('Newsletter signup')}&body=${encodeURIComponent(`Please add ${email} to the event updates list.`)}`;
-      newsNote.textContent = 'Opening your email app instead — just hit send.';
-      btn.disabled = false;
-      btn.textContent = 'Notify Me';
-    }
-  });
 
   // Get Involved form → same relay, subject tagged with the chosen interest
   const involvedForm = document.getElementById('involved-form');
@@ -242,21 +216,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Photo reel pause/play (hover pause doesn't exist on touch screens)
-  const reel = document.querySelector('.photo-marquee');
-  const reelToggle = document.getElementById('marquee-toggle');
-  reelToggle.addEventListener('click', () => {
-    const paused = reel.classList.toggle('paused');
-    reelToggle.setAttribute('aria-pressed', String(paused));
-    reelToggle.textContent = paused ? '▶ Play' : '⏸ Pause';
-  });
-
-  // Clone each marquee group once for the seamless loop (single source list in HTML)
-  document.querySelectorAll('.marquee-track').forEach(track => {
-    const clone = track.querySelector('.marquee-group').cloneNode(true);
-    clone.setAttribute('aria-hidden', 'true');
-    track.appendChild(clone);
-  });
 
   // Dhol carousel: auto-advance one photo at a time, right to left
   const carousel = document.getElementById('dhol-carousel');
