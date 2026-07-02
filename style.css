@@ -457,6 +457,17 @@ img { max-width: 100%; display: block; }
 
 .drum { display: inline-block; animation: drum-beat 1.1s ease-in-out infinite; }
 
+/* Sliding Pathak photo strip (right to left, like the footer reel) */
+.dhol-slider {
+  overflow: hidden;
+  margin: 54px -24px -80px;  /* bleed to the section's full width and bottom edge */
+  padding: 26px 0 34px;
+  background: rgba(0, 0, 0, 0.14);
+}
+.dhol-slider .marquee-group { animation-duration: 42s; }
+.dhol-slider:hover .marquee-group { animation-play-state: paused; }
+.dhol-slider .marquee-group img { height: 160px; }
+
 @keyframes drum-beat {
   0%, 100% { transform: scale(1) rotate(0deg); }
   25% { transform: scale(1.18) rotate(-8deg); }
@@ -795,12 +806,13 @@ footer p { margin: 6px 0; font-size: 0.95rem; }
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
-  .photo-marquee { overflow-x: auto; }
+  .photo-marquee, .dhol-slider { overflow-x: auto; }
 }
 
-/* Without JS the loop clone is missing: show the reel as a static, scrollable strip */
+/* Without JS the loop clone is missing: show the reels as static, scrollable strips */
 html:not(.js) .marquee-group { animation: none; }
-html:not(.js) .photo-marquee { overflow-x: auto; }
+html:not(.js) .photo-marquee,
+html:not(.js) .dhol-slider { overflow-x: auto; }
 
 /* ---------- Responsive ---------- */
 @media (max-width: 900px) {

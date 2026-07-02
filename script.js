@@ -104,13 +104,12 @@ document.addEventListener('DOMContentLoaded', () => {
     reelToggle.textContent = paused ? '▶ Play' : '⏸ Pause';
   });
 
-  // Clone the marquee group once for the seamless loop (single source list in HTML)
-  const marqueeTrack = document.querySelector('.marquee-track');
-  if (marqueeTrack) {
-    const clone = marqueeTrack.querySelector('.marquee-group').cloneNode(true);
+  // Clone each marquee group once for the seamless loop (single source list in HTML)
+  document.querySelectorAll('.marquee-track').forEach(track => {
+    const clone = track.querySelector('.marquee-group').cloneNode(true);
     clone.setAttribute('aria-hidden', 'true');
-    marqueeTrack.appendChild(clone);
-  }
+    track.appendChild(clone);
+  });
 
   // Footer year
   document.getElementById('year').textContent = new Date().getFullYear();
