@@ -146,6 +146,7 @@ img { max-width: 100%; display: block; }
 .nav-links a:hover,
 .nav-links a.active { color: var(--red); border-bottom-color: var(--saffron); }
 
+#nav-check { display: none; }
 #nav-toggle {
   display: none;
   flex-direction: column;
@@ -162,9 +163,9 @@ img { max-width: 100%; display: block; }
   border-radius: 2px;
   transition: transform 0.25s ease, opacity 0.25s ease;
 }
-#nav-toggle.open span:nth-child(1) { transform: translateY(8px) rotate(45deg); }
-#nav-toggle.open span:nth-child(2) { opacity: 0; }
-#nav-toggle.open span:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
+#nav-check:checked ~ #nav-toggle span:nth-child(1) { transform: translateY(8px) rotate(45deg); }
+#nav-check:checked ~ #nav-toggle span:nth-child(2) { opacity: 0; }
+#nav-check:checked ~ #nav-toggle span:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
 
 /* ---------- Hero ---------- */
 .hero {
@@ -814,13 +815,30 @@ html:not(.js) .photo-marquee { overflow-x: auto; }
     background: var(--cream);
     box-shadow: 0 12px 20px rgba(74, 19, 11, 0.15);
   }
-  /* Collapse only when JS can reopen it; without JS the nav stays visible */
-  .js #main-nav {
+  /* Collapse/expand driven purely by the checkbox — no JavaScript needed */
+  #main-nav {
     max-height: 0;
     overflow: hidden;
     transition: max-height 0.3s ease;
   }
-  .js #main-nav.open { max-height: 420px; }
+  #nav-check:checked ~ #main-nav { max-height: 480px; }
+  /* Keep the checkbox keyboard-operable but invisible, over the hamburger */
+  #nav-check {
+    display: inline-block;
+    position: absolute;
+    top: 16px;
+    right: 22px;
+    width: 44px;
+    height: 44px;
+    margin: 0;
+    opacity: 0;
+    pointer-events: none;
+  }
+  #nav-check:focus-visible ~ #nav-toggle {
+    outline: 2px solid var(--red);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
   .nav-links {
     flex-direction: column;
     gap: 0;

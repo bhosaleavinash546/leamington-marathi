@@ -55,6 +55,8 @@
         <img src="images/logo-emblem.png" alt="Leamington Marathi emblem" class="logo-emblem" width="216" height="216">
         <img src="images/logo.png" alt="Leamington Marathi" class="logo" width="444" height="120">
       </a>
+      <!-- CSS-only menu toggle: works even where JavaScript is disabled -->
+      <input type="checkbox" id="nav-check" aria-label="Toggle menu">
       <nav id="main-nav" aria-label="Main navigation">
         <ul class="nav-links">
           <li><a href="#home" class="active">Home</a></li>
@@ -67,9 +69,9 @@
           <li><a href="#contact">Contact</a></li>
         </ul>
       </nav>
-      <button id="nav-toggle" aria-label="Toggle menu" aria-expanded="false" aria-controls="main-nav">
+      <label for="nav-check" id="nav-toggle" aria-hidden="true">
         <span></span><span></span><span></span>
-      </button>
+      </label>
     </div>
   </header>
 

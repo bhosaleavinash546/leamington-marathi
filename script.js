@@ -1,19 +1,11 @@
 document.addEventListener('DOMContentLoaded', () => {
   const header = document.getElementById('site-header');
-  const nav = document.getElementById('main-nav');
-  const navToggle = document.getElementById('nav-toggle');
+  const navCheck = document.getElementById('nav-check');
   const navLinks = document.querySelectorAll('.nav-links a');
 
-  // Mobile menu
-  navToggle.addEventListener('click', () => {
-    const open = nav.classList.toggle('open');
-    navToggle.classList.toggle('open', open);
-    navToggle.setAttribute('aria-expanded', open);
-  });
+  // The menu itself is CSS-only (checkbox); JS just closes it when a link is tapped
   navLinks.forEach(link => link.addEventListener('click', () => {
-    nav.classList.remove('open');
-    navToggle.classList.remove('open');
-    navToggle.setAttribute('aria-expanded', 'false');
+    navCheck.checked = false;
   }));
 
   // Header shadow on scroll
