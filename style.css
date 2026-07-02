@@ -268,11 +268,17 @@ html:not(.js) #ticker-items li:first-child { display: block; opacity: 1; }
   50% { transform: translateY(-10px) rotate(3deg); }
 }
 
+/* Narrow screens: no left space, so the emblem sits centred above the title */
 @media (max-width: 1100px) {
-  .hero-emblem { display: none; }
+  .hero-emblem {
+    position: static;
+    width: 132px;
+    margin: 0 auto 16px;
+  }
 }
 @media (max-width: 600px) {
-  .hero-flag { width: 54px; }
+  .hero-flag { width: 58px; }
+  .flag-right { display: none; } /* that corner is occupied by the floating buttons */
 }
 
 /* Hero entrance animation on page load */
