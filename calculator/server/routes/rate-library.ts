@@ -30,7 +30,15 @@ import {
 const router = Router();
 router.use(requireAuth);
 
-const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 8 * 1024 * 1024 } });
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 8 * 1024 * 1024, files: 1 },
+  fileFilter: (_req, file, cb) => {
+    const ok = /\.xlsx$/i.test(file.originalname) &&
+      /spreadsheetml\.sheet|octet-stream/i.test(file.mimetype);
+    cb(ok ? null : new Error('Only .xlsx workbooks are accepted'));
+  },
+});
 
 function resolve() {
   return resolveActiveLibrary({
@@ -139,8 +147,17 @@ router.put('/source', (req: AuthenticatedRequest, res: Response): void => {
 router.post('/overrides', (req: AuthenticatedRequest, res: Response): void => {
   const { table, id, field, value } = req.body as { table?: RateTable; id?: string; field?: string; value?: number };
   const tables: RateTable[] = ['materials', 'machines', 'labour', 'energy', 'fx', 'overheadDefaults'];
-  if (!table || !tables.includes(table) || !id || !field || !Number.isFinite(value)) {
-    res.status(400).json({ error: 'table, id, field and a numeric value are required' }); return;
+  if (!table || !tables.includes(table) || !id || !field) {
+    res.status(400).json({ error: 'table, id and field are required' }); return;
+  }
+  if (!Number.isFinite(value) || (value as number) < 0) {
+    res.status(400).json({ error: 'value must be a non-negative number' }); return;   // parity with upload validation
+  }
+  if (field.split('.').some(p => p === '__proto__' || p === 'prototype' || p === 'constructor')) {
+    res.status(400).json({ error: 'invalid field path' }); return;                     // block prototype pollution
+  }
+  if ((field.split('.').pop() ?? '') === 'computedRatePerHr') {
+    res.status(400).json({ error: 'computedRatePerHr is derived from the machine build-up — override the build-up fields instead' }); return;
   }
   setOverride(db, { table, id, field, value: value as number }, new Date().toISOString(), req.user!.email);
   res.json({ ok: true });

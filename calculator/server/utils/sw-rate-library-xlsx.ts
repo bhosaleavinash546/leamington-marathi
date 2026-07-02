@@ -28,7 +28,13 @@ const GROUPS: Array<{ sheet: string; key: keyof SWRateLibrary }> = [
 const HEAD = ['key', 'value', 'source', 'asOf', 'confidence', 'note'];
 
 const str = (v: unknown) => (v == null ? '' : String(v).trim());
-const num = (v: unknown) => { const n = typeof v === 'string' ? Number(v.replace(/[£$€,\s]/g, '')) : Number(v); return Number.isFinite(n) ? n : NaN; };
+const num = (v: unknown) => {
+  if (v == null || v === '') return NaN;                             // blank cell → NaN (not 0)
+  const s = typeof v === 'string' ? v.replace(/[£$€,\s]/g, '') : v;
+  if (s === '') return NaN;
+  const n = Number(s);
+  return Number.isFinite(n) ? n : NaN;
+};
 const conf = (v: unknown): RateConfidence => { const s = str(v); return s === 'High' || s === 'Medium' || s === 'Low' ? s : 'Medium'; };
 
 // ─── Build / export ────────────────────────────────────────────────────────────

@@ -143,12 +143,19 @@ function ensureColumn(table: string, column: string, ddl: string): void {
 }
 ensureColumn('users', 'role', "role TEXT NOT NULL DEFAULT 'user'");
 
-// ── Bootstrap admins from env (comma-separated emails) at startup ──────────────
-const adminEmails = (process.env.ADMIN_EMAILS ?? '')
-  .split(',').map(e => e.trim().toLowerCase()).filter(Boolean);
-if (adminEmails.length) {
-  const stmt = db.prepare('UPDATE users SET role = ? WHERE lower(email) = ?');
-  for (const e of adminEmails) stmt.run('admin', e);
+// ── Bootstrap admins from env (comma-separated emails) ─────────────────────────
+export const ADMIN_EMAILS = new Set(
+  (process.env.ADMIN_EMAILS ?? '').split(',').map(e => e.trim().toLowerCase()).filter(Boolean),
+);
+
+/** Promote a user to admin if their email is in ADMIN_EMAILS. Safe to call any time. */
+export function promoteAdminIfListed(email: string): void {
+  const e = email.trim().toLowerCase();
+  if (ADMIN_EMAILS.has(e)) db.prepare('UPDATE users SET role = ? WHERE lower(email) = ?').run('admin', e);
 }
+
+// Apply once at startup for accounts that already exist; auth also re-applies on
+// signup/signin so an admin who registers later is promoted without a restart.
+for (const e of ADMIN_EMAILS) promoteAdminIfListed(e);
 
 export default db;

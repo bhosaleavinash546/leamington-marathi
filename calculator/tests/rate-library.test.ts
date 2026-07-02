@@ -26,6 +26,24 @@ describe('rate-library merge — overrides', () => {
     expect(out.materials[0].pricePerKg).toBe(lib.materials[0].pricePerKg);
   });
 
+  it('does NOT pollute Object.prototype via a __proto__ field path', () => {
+    applyRateOverrides(lib, [{ table: 'materials', id: lib.materials[0].id, field: '__proto__.polluted', value: 1 }]);
+    expect(({} as Record<string, unknown>).polluted).toBeUndefined();
+    applyRateOverrides(lib, [{ table: 'materials', id: lib.materials[0].id, field: 'constructor.prototype.x', value: 1 }]);
+    expect(({} as Record<string, unknown>).x).toBeUndefined();
+  });
+
+  it('ignores negative override values (parity with upload validation)', () => {
+    const out = applyRateOverrides(lib, [{ table: 'materials', id: lib.materials[0].id, field: 'pricePerKg', value: -50 }]);
+    expect(out.materials[0].pricePerKg).toBe(lib.materials[0].pricePerKg);
+  });
+
+  it('ignores a direct override of the derived machine rate', () => {
+    const m = lib.machines[0];
+    const out = applyRateOverrides(lib, [{ table: 'machines', id: m.id, field: 'computedRatePerHr', value: 9999 }]);
+    expect(out.machines.find(x => x.id === m.id)!.computedRatePerHr).not.toBe(9999);
+  });
+
   it('recomputes a machine £/hr when its build-up is overridden', () => {
     const m = lib.machines[0];
     const bumped = m.buildup.maintenance + 100000;
@@ -99,5 +117,29 @@ describe('rate-library Excel round-trip', () => {
     const { library, errors } = parseRateLibraryWorkbook(buf);
     expect(library).toBeNull();
     expect(errors.length).toBeGreaterThan(0);
+  });
+
+  it('rejects a BLANK required numeric cell instead of silently reading it as 0', () => {
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([
+      ['id', 'grade', 'category', 'pricePerKg', 'scrapRecoveryPricePerKg', 'densityKgPerM3', 'region', 'effectiveDate', 'sourceNote', 'confidence'],
+      ['mat-x', 'Al', 'metal', '', 0, 2700, 'UK', '2026-01', '', 'High'],   // blank pricePerKg
+    ]), 'Materials');
+    const buf = XLSX.write(wb, { bookType: 'xlsx', type: 'buffer' }) as Buffer;
+    const { library, errors } = parseRateLibraryWorkbook(buf);
+    expect(library).toBeNull();
+    expect(errors.some(e => e.includes('pricePerKg'))).toBe(true);
+  });
+
+  it('still accepts an explicit 0 (e.g. zero scrap recovery)', () => {
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([
+      ['id', 'grade', 'category', 'pricePerKg', 'scrapRecoveryPricePerKg', 'densityKgPerM3', 'region', 'effectiveDate', 'sourceNote', 'confidence'],
+      ['mat-x', 'Al', 'metal', 2.5, 0, 2700, 'UK', '2026-01', '', 'High'],
+    ]), 'Materials');
+    const buf = XLSX.write(wb, { bookType: 'xlsx', type: 'buffer' }) as Buffer;
+    const { library, errors } = parseRateLibraryWorkbook(buf);
+    expect(errors).toEqual([]);
+    expect(library!.materials[0].scrapRecoveryPricePerKg).toBe(0);
   });
 });

@@ -28,12 +28,19 @@ export function computeMachineRatePerHr(b: MachineRateBuildup): number {
   return totalAnnual / effectiveHrs;
 }
 
+/** Fields that must never appear in an override path — guards against prototype pollution. */
+const FORBIDDEN_KEYS = new Set(['__proto__', 'prototype', 'constructor']);
+
+/** Derived fields that are recomputed and so must not be overridden directly. */
+const DERIVED_FIELDS = new Set(['computedRatePerHr']);
+
 function setPath(obj: Record<string, unknown>, path: string, value: number): void {
   const parts = path.split('.');
+  if (parts.some(p => FORBIDDEN_KEYS.has(p))) return; // reject __proto__/prototype/constructor
   let cur: Record<string, unknown> = obj;
   for (let i = 0; i < parts.length - 1; i++) {
     const k = parts[i];
-    if (typeof cur[k] !== 'object' || cur[k] === null) return; // unknown path — ignore safely
+    if (!Object.prototype.hasOwnProperty.call(cur, k) || typeof cur[k] !== 'object' || cur[k] === null) return;
     cur = cur[k] as Record<string, unknown>;
   }
   cur[parts[parts.length - 1]] = value;
@@ -54,7 +61,8 @@ export function applyRateOverrides(lib: RateLibrary, overrides: RateOverride[]):
     if (!Array.isArray(rows)) continue;
     const row = rows.find(r => r.id === o.id);
     if (!row) continue;
-    if (!Number.isFinite(o.value)) continue;
+    if (!Number.isFinite(o.value) || o.value < 0) continue;           // no NaN/negatives
+    if (DERIVED_FIELDS.has(o.field.split('.').pop() ?? '')) continue; // don't override recomputed fields
     setPath(row, o.field, o.value);
     if (o.table === 'machines') touchedMachines.add(o.id);
   }

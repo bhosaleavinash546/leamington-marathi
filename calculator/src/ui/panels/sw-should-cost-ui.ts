@@ -2036,6 +2036,9 @@ async function saveConfig(name: string): Promise<void> {
   const id = `cfg-${Date.now()}`;
   const createdAt = new Date().toLocaleDateString('en-GB');
   const inputs = JSON.parse(JSON.stringify(_swInputs)) as SWProgramInputs;
+  // Never freeze the rate library into a saved config — rates are organisation
+  // policy and must reflect the CURRENT active library on load, not a snapshot.
+  delete inputs.rateLibrary;
   _savedConfigs.unshift({ id, name, createdAt, inputs });
   if (_savedConfigs.length > 10) _savedConfigs.pop(); // keep max 10 in view
   updateSavedConfigsUI();                             // optimistic — show immediately
@@ -2047,6 +2050,8 @@ function loadConfig(id: string): void {
   const cfg = _savedConfigs.find(c => c.id === id);
   if (!cfg) return;
   _swInputs = JSON.parse(JSON.stringify(cfg.inputs));
+  delete _swInputs.rateLibrary;          // legacy configs may carry a snapshot — drop it
+  void syncSWRateLibrary();              // apply the CURRENT active rate library
   // Stale result from a prior calculation no longer matches the loaded inputs;
   // clear it so exports/AI can't run against the wrong configuration.
   _swResult = null;

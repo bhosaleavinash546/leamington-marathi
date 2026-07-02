@@ -87,7 +87,10 @@ async function syncActiveRateLibrary(): Promise<void> {
     const res = await fetch('/api/rate-library/active', { headers: { Authorization: `Bearer ${token}` } });
     if (!res.ok) return;
     const data = await res.json() as { library?: RateLibrary; source?: 'builtin' | 'company' };
-    if (data.library && Array.isArray(data.library.materials) && data.library.materials.length) {
+    // Only override the local library when the organisation has COMPANY rates
+    // active — company policy wins. When the server is on built-in defaults we
+    // keep the user's local library so their manual rate edits aren't discarded.
+    if (data.source === 'company' && data.library && Array.isArray(data.library.materials) && data.library.materials.length) {
       library = recomputeMachineRates(data.library);
     }
   } catch { /* offline / not authed — keep the local library */ }

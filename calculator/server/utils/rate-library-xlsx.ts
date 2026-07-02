@@ -31,7 +31,10 @@ const SHEETS = {
 } as const;
 
 const num = (v: unknown): number => {
-  const n = typeof v === 'string' ? Number(v.replace(/[£$€,\s]/g, '')) : Number(v);
+  if (v == null || v === '') return NaN;                              // blank cell → NaN (not 0)
+  const s = typeof v === 'string' ? v.replace(/[£$€,\s]/g, '') : v;
+  if (s === '') return NaN;                                          // whitespace/symbols only
+  const n = Number(s);
   return Number.isFinite(n) ? n : NaN;
 };
 const str = (v: unknown): string => (v == null ? '' : String(v).trim());

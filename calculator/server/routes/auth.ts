@@ -3,7 +3,7 @@ import type { Request, Response } from 'express';
 import bcrypt from 'bcrypt';
 import crypto from 'crypto';
 import rateLimit from 'express-rate-limit';
-import db from '../db.js';
+import db, { promoteAdminIfListed } from '../db.js';
 import { sendOTPEmail, SMTP_CONFIGURED } from '../utils/email.js';
 import { signToken } from '../middleware/auth-middleware.js';
 
@@ -144,6 +144,7 @@ router.post('/signup', otpLimiter, async (req: Request, res: Response): Promise<
     `INSERT INTO users (id, email, password_hash, full_name, company_name, email_verified, failed_attempts, created_at)
      VALUES (?, ?, ?, ?, ?, 0, 0, ?)`,
   ).run(id, email.toLowerCase(), passwordHash, fullName.trim(), companyName.trim(), new Date().toISOString());
+  promoteAdminIfListed(email);   // promote if this email is configured as an admin
 
   const otp = generateOTP();
   await storeOTP(email.toLowerCase(), otp, 'signup');
@@ -223,6 +224,7 @@ router.post('/signin', signinLimiter, async (req: Request, res: Response): Promi
 
   // Reset failed attempts on successful login
   db.prepare(`UPDATE users SET failed_attempts = 0, locked_until = NULL WHERE id = ?`).run(user.id);
+  promoteAdminIfListed(user.email);   // keep admin role in sync with ADMIN_EMAILS on each login
 
   if (!user.email_verified) {
     // Resend OTP for unverified account
