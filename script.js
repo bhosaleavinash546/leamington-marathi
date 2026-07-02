@@ -143,6 +143,40 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  // Get Involved form → same relay, subject tagged with the chosen interest
+  const involvedForm = document.getElementById('involved-form');
+  const involvedNote = involvedForm.querySelector('.involved-note');
+  involvedForm.addEventListener('submit', async e => {
+    e.preventDefault();
+    const interest = involvedForm.elements.interest.value;
+    const name = involvedForm.elements.name.value.trim();
+    const email = involvedForm.elements.email.value.trim();
+    const phone = involvedForm.elements.phone.value.trim();
+    const btn = involvedForm.querySelector('button[type="submit"]');
+    btn.disabled = true;
+    btn.textContent = 'Sending…';
+    try {
+      const res = await fetch('https://formsubmit.co/ajax/leamingtonmarathi@gmail.com', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({
+          interest, name, email, phone,
+          _subject: `Get Involved — ${interest}`,
+        }),
+      });
+      if (!res.ok) throw new Error(`relay responded ${res.status}`);
+      involvedForm.reset();
+      involvedNote.textContent = 'धन्यवाद! We’ve got it — we’ll be in touch soon 🎉';
+      btn.textContent = 'Sent ✓';
+    } catch {
+      const body = encodeURIComponent(`Interest: ${interest}\nName: ${name}\nEmail: ${email}\nPhone: ${phone}`);
+      window.location.href = `mailto:leamingtonmarathi@gmail.com?subject=${encodeURIComponent(`Get Involved — ${interest}`)}&body=${body}`;
+      involvedNote.textContent = 'Opening your email app instead — just hit send.';
+      btn.disabled = false;
+      btn.textContent = 'Count Me In!';
+    }
+  });
+
   // Photo reel pause/play (hover pause doesn't exist on touch screens)
   const reel = document.querySelector('.photo-marquee');
   const reelToggle = document.getElementById('marquee-toggle');

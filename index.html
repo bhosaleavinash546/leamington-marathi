@@ -64,7 +64,7 @@
           <li><a href="#dhol">Dhol&nbsp;Tasha</a></li>
           <li><a href="#gallery">Gallery</a></li>
           <li><a href="#sponsor">Sponsor&nbsp;Us</a></li>
-          <li><a href="#join">Join&nbsp;Us</a></li>
+          <li><a href="#get-involved">Join&nbsp;Us</a></li>
           <li><a href="#contact">Contact</a></li>
         </ul>
       </nav>
@@ -301,6 +301,47 @@
     </p>
   </section>
 
+  <!-- ===== Get Involved (single enquiry form with interest dropdown) ===== -->
+  <section id="get-involved" class="get-involved" aria-label="Get involved with Leamington Marathi">
+    <div class="involved-inner reveal">
+      <p class="section-kicker light marathi" lang="mr">सहभागी व्हा</p>
+      <h2>Get Involved!</h2>
+      <p class="involved-sub">
+        Volunteer, play dhol, perform on stage, or simply join our WhatsApp family —
+        tell us what you'd love to do and we'll get back to you.
+      </p>
+      <form id="involved-form" class="involved-form">
+        <input type="text" name="_honey" class="honeypot" tabindex="-1" autocomplete="off" aria-hidden="true">
+        <label>
+          I would like to… <span class="marathi" lang="mr">/ मला आवडेल…</span>
+          <select name="interest" required>
+            <option value="" disabled selected>Choose an option…</option>
+            <option value="Volunteer for events">🙋 Become a volunteer for events</option>
+            <option value="Join the Dhol Tasha Pathak">🥁 Join the Dhol Tasha Pathak</option>
+            <option value="Join the WhatsApp community">💬 Join the Leamington Marathi WhatsApp community</option>
+            <option value="Perform at an event (dance / singing / acting)">🎭 Participate in events — dance, singing, acting…</option>
+          </select>
+        </label>
+        <div class="involved-row">
+          <label>
+            Name <span class="marathi" lang="mr">/ नाव</span>
+            <input type="text" name="name" placeholder="Your name" autocomplete="name" required>
+          </label>
+          <label>
+            Email <span class="marathi" lang="mr">/ ई-मेल</span>
+            <input type="email" name="email" placeholder="you@example.com" autocomplete="email" required>
+          </label>
+        </div>
+        <label>
+          Mobile <span class="involved-optional">(optional — needed for the WhatsApp group)</span>
+          <input type="tel" name="phone" placeholder="+44 …" autocomplete="tel">
+        </label>
+        <button type="submit" class="btn btn-light">Count Me In!</button>
+        <p class="involved-note" role="status" aria-live="polite">We'll get back to you within a few days 🙏</p>
+      </form>
+    </div>
+  </section>
+
   <!-- ===== Testimonials ===== -->
   <section id="testimonials" class="section testimonials">
     <div class="section-head reveal">
@@ -407,7 +448,7 @@
         volunteer, play dhol, or simply connect. We welcome you!
       </p>
       <p class="marathi join-marathi" lang="mr">आपल्या माणसांत या — इथे प्रत्येक सण घरचाच वाटतो.</p>
-      <a href="#contact" class="btn btn-light">Get in Touch</a>
+      <a href="#get-involved" class="btn btn-light">Get Involved</a>
     </div>
   </section>
 

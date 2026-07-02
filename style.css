@@ -601,6 +601,71 @@ img { max-width: 100%; display: block; }
 }
 .gallery-more a:hover { color: var(--red); border-bottom-color: var(--red); }
 
+/* ---------- Get Involved (highlighted mid-page enquiry) ---------- */
+.get-involved {
+  background:
+    radial-gradient(circle at 12% 18%, rgba(255, 255, 255, 0.12), transparent 45%),
+    linear-gradient(135deg, var(--red-dark), var(--red) 55%, var(--saffron));
+  padding: 76px 24px;
+  text-align: center;
+  color: var(--white);
+  border-top: 4px solid var(--gold);
+  border-bottom: 4px solid var(--gold);
+}
+.involved-inner { max-width: 620px; margin: auto; }
+.get-involved h2 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  color: var(--white);
+  font-size: clamp(1.9rem, 4.5vw, 2.6rem);
+  margin: 0 0 10px;
+  text-shadow: 1px 2px 0 rgba(74, 19, 11, 0.35);
+}
+.involved-sub { margin: 0 0 30px; font-size: 1.08rem; }
+.involved-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  background: var(--white);
+  border-radius: var(--radius);
+  padding: 30px;
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.3);
+  text-align: left;
+}
+.involved-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-weight: 700;
+  color: var(--maroon);
+  font-size: 0.95rem;
+}
+.involved-form input,
+.involved-form select {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  padding: 12px 14px;
+  border: 1.5px solid #e8d3b8;
+  border-radius: 10px;
+  background: var(--cream);
+  color: var(--ink);
+}
+.involved-form select { cursor: pointer; }
+.involved-form input:focus,
+.involved-form select:focus { outline: none; border-color: var(--saffron); }
+.involved-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.involved-optional { font-weight: 400; color: #8a6f63; font-size: 0.85rem; }
+.involved-form .btn { align-self: center; min-width: 200px; text-align: center; background: linear-gradient(135deg, var(--red), var(--saffron)); color: var(--white); }
+.involved-note { margin: 0; font-size: 0.85rem; color: #8a6f63; font-weight: 400; text-align: center; }
+
+@media (max-width: 560px) {
+  .involved-row { grid-template-columns: 1fr; }
+}
+
 /* ---------- Testimonials ---------- */
 .testimonial-grid {
   display: grid;
