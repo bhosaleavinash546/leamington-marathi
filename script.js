@@ -269,6 +269,30 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('load', buildRoad, { once: true });
   }
 
+  // Flyer lightbox: tap a flyer to view it full size
+  const lightbox = document.getElementById('lightbox');
+  if (lightbox) {
+    const lightboxImg = lightbox.querySelector('img');
+    document.querySelectorAll('.flyer-card').forEach(card => {
+      card.addEventListener('click', () => {
+        const img = card.querySelector('img');
+        lightboxImg.src = img.src;
+        lightboxImg.alt = img.alt;
+        lightbox.hidden = false;
+        document.body.style.overflow = 'hidden';
+      });
+    });
+    const closeLightbox = () => {
+      lightbox.hidden = true;
+      lightboxImg.src = '';
+      document.body.style.overflow = '';
+    };
+    lightbox.addEventListener('click', closeLightbox);
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape' && !lightbox.hidden) closeLightbox();
+    });
+  }
+
   // Countdown to the next event (date lives on the hero chip's data-event-date)
   const nextChip = document.querySelector('.hero-next');
   if (nextChip && nextChip.dataset.eventDate) {
