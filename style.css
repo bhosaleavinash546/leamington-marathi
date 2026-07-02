@@ -591,6 +591,79 @@ html:not(.js) .procession-marker { display: none; }
 }
 .ticket-link:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
 
+/* ---------- Event flyers ---------- */
+.flyers-row {
+  display: flex;
+  gap: 22px;
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+  padding: 6px 4px 18px;
+  scrollbar-width: thin;
+}
+.flyer-card {
+  margin: 0;
+  flex-shrink: 0;
+  scroll-snap-align: center;
+  background: var(--white);
+  border-radius: var(--radius);
+  padding: 10px 10px 6px;
+  box-shadow: var(--shadow);
+  text-align: center;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  cursor: zoom-in;
+}
+.flyer-card:hover { transform: translateY(-6px); box-shadow: 0 16px 36px rgba(74, 19, 11, 0.18); }
+.flyer-card img {
+  height: 340px;
+  width: auto;
+  border-radius: 8px;
+}
+.flyer-card figcaption {
+  font-weight: 700;
+  color: var(--red-dark);
+  padding: 8px 4px;
+  font-size: 0.95rem;
+}
+@media (max-width: 600px) {
+  .flyer-card img { height: 260px; }
+}
+
+/* Flyer lightbox */
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  background: rgba(20, 5, 3, 0.92);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  cursor: zoom-out;
+}
+.lightbox[hidden] { display: none; }
+.lightbox img {
+  max-width: 94vw;
+  max-height: 90vh;
+  width: auto;
+  height: auto;
+  border-radius: 10px;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+}
+.lightbox-close {
+  position: absolute;
+  top: 18px;
+  right: 22px;
+  width: 44px;
+  height: 44px;
+  border: none;
+  border-radius: 50%;
+  background: var(--white);
+  color: var(--red-dark);
+  font-size: 1.2rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
 /* ---------- Dhol Tasha ---------- */
 .dhol {
   max-width: none;
