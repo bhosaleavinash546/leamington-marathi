@@ -458,6 +458,19 @@ img { max-width: 100%; display: block; }
   border-bottom: 2px solid transparent;
 }
 .rsvp-link:hover { border-bottom-color: var(--saffron-text); }
+.ticket-link {
+  display: inline-block;
+  margin-left: 12px;
+  padding: 5px 16px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, var(--red), var(--saffron));
+  color: var(--white);
+  font-weight: 700;
+  font-size: 0.9rem;
+  text-decoration: none;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.ticket-link:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
 
 /* ---------- Dhol Tasha ---------- */
 .dhol {
