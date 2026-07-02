@@ -95,6 +95,69 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  // ---- Festival-aware theming ----
+  // Fixed-date festivals recur every year (recurring: true, MM-DD ranges).
+  // Lunar festivals move: update their YYYY-MM-DD ranges each January.
+  // Preview any theme with ?festival=<name>, e.g. ?festival=diwali
+  const FESTIVALS = [
+    { name: 'Makar Sankranti', recurring: true, ranges: [['01-12', '01-16']],
+      emojis: ['🪁', '✨'], greeting: '🪁 मकर संक्रांतीच्या हार्दिक शुभेच्छा! तिळगूळ घ्या, गोड गोड बोला!' },
+    { name: 'Shiv Jayanti', recurring: true, ranges: [['02-18', '02-20']],
+      emojis: ['🚩'], greeting: '🚩 छत्रपती शिवाजी महाराज जयंतीच्या शुभेच्छा! जय भवानी, जय शिवाजी!' },
+    { name: 'Maharashtra Din', recurring: true, ranges: [['04-30', '05-02']],
+      emojis: ['🚩'], greeting: '🚩 महाराष्ट्र दिनाच्या हार्दिक शुभेच्छा! जय महाराष्ट्र!' },
+    { name: 'Ganeshotsav', ranges: [['2026-09-14', '2026-09-24']],
+      emojis: ['🌺', '🌼', '🥁'], greeting: '🌺 गणपती बाप्पा मोरया! गणेशोत्सवाच्या हार्दिक शुभेच्छा!' },
+    { name: 'Diwali', ranges: [['2026-11-06', '2026-11-11']],
+      emojis: ['🪔', '✨'], greeting: '🪔 दिवाळीच्या हार्दिक शुभेच्छा! शुभ दीपावली!' },
+  ];
+  const previewFestival = new URLSearchParams(location.search).get('festival');
+  const now = new Date();
+  const mmdd = `${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+  const isoDate = `${now.getFullYear()}-${mmdd}`;
+  const festival = FESTIVALS.find(f => previewFestival
+    ? f.name.toLowerCase().includes(previewFestival.toLowerCase())
+    : f.ranges.some(([s, e]) => f.recurring ? (mmdd >= s && mmdd <= e) : (isoDate >= s && isoDate <= e)));
+
+  if (festival) {
+    // greeting takes the first slot in the What's New ticker
+    const tickerList = document.getElementById('ticker-items');
+    tickerList.querySelector('.active')?.classList.remove('active');
+    const greetItem = document.createElement('li');
+    greetItem.className = 'active';
+    greetItem.innerHTML = `<a href="#home" class="marathi" lang="mr"></a>`;
+    greetItem.firstChild.textContent = festival.greeting;
+    tickerList.prepend(greetItem);
+
+    // gently falling festival decorations in the hero
+    if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      const float = document.createElement('div');
+      float.className = 'festival-float';
+      float.setAttribute('aria-hidden', 'true');
+      for (let i = 0; i < 12; i++) {
+        const s = document.createElement('span');
+        s.textContent = festival.emojis[i % festival.emojis.length];
+        s.style.left = `${i * 8.3 + Math.random() * 5}%`;
+        s.style.fontSize = `${1.1 + Math.random() * 1.1}rem`;
+        s.style.animationDuration = `${8 + Math.random() * 8}s`;
+        s.style.animationDelay = `${Math.random() * 12}s`;
+        float.appendChild(s);
+      }
+      document.querySelector('.hero').appendChild(float);
+    }
+  }
+
+  // ---- What's New ticker rotation ----
+  const tickerEls = document.querySelectorAll('#ticker-items li');
+  if (tickerEls.length > 1) {
+    let tickerIdx = [...tickerEls].findIndex(li => li.classList.contains('active'));
+    setInterval(() => {
+      tickerEls[tickerIdx].classList.remove('active');
+      tickerIdx = (tickerIdx + 1) % tickerEls.length;
+      tickerEls[tickerIdx].classList.add('active');
+    }, 5000);
+  }
+
   // Countdown to the next event (date lives on the hero chip's data-event-date)
   const nextChip = document.querySelector('.hero-next');
   if (nextChip && nextChip.dataset.eventDate) {
