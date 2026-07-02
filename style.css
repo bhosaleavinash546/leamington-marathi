@@ -425,6 +425,22 @@ html:not(.js) #ticker-items li:first-child { display: block; opacity: 1; }
 .value-card p { margin: 0; font-size: 0.98rem; }
 .value-icon { font-size: 1.7rem; }
 
+/* ---------- Journey: two side-by-side timeline columns ---------- */
+.journey-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 48px;
+  max-width: 1150px;
+  margin: auto;
+}
+.journey-columns .timeline {
+  max-width: none;
+  margin: 0;
+}
+@media (max-width: 900px) {
+  .journey-columns { grid-template-columns: 1fr; gap: 0; }
+}
+
 /* ---------- Events timeline ---------- */
 .timeline {
   position: relative;
