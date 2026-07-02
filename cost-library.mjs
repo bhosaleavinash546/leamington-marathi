@@ -143,6 +143,33 @@ export function mergeLibrary(custom) {
   };
 }
 
+// Field-level diff between two custom libraries, compared on their EFFECTIVE
+// (merged-over-defaults) values — so the audit shows what actually changed in the
+// numbers that drive costing. Returns [{ table, key, field, from, to }].
+export function diffLibraries(prevCustom, nextCustom) {
+  const A = mergeLibrary(prevCustom);
+  const B = mergeLibrary(nextCustom);
+  const fmt = (v) => v === undefined ? '—' : Array.isArray(v) ? v.join('|') : String(v);
+  const changes = [];
+  const cmp = (table, aObj, bObj) => {
+    for (const k of new Set([...Object.keys(aObj), ...Object.keys(bObj)])) {
+      const a = aObj[k], b = bObj[k];
+      if (!a && b) { changes.push({ table, key: k, field: '(entry)', from: '—', to: 'added' }); continue; }
+      if (a && !b) { changes.push({ table, key: k, field: '(entry)', from: 'present', to: 'removed' }); continue; }
+      for (const f of new Set([...Object.keys(a), ...Object.keys(b)])) {
+        if (fmt(a[f]) !== fmt(b[f])) changes.push({ table, key: k, field: f, from: fmt(a[f]), to: fmt(b[f]) });
+      }
+    }
+  };
+  cmp('materials', A.MATERIALS, B.MATERIALS);
+  cmp('processes', A.PROCESSES, B.PROCESSES);
+  cmp('regions', A.REGIONS, B.REGIONS);
+  for (const f of new Set([...Object.keys(A.constants), ...Object.keys(B.constants)])) {
+    if (fmt(A.constants[f]) !== fmt(B.constants[f])) changes.push({ table: 'constants', key: 'constants', field: f, from: fmt(A.constants[f]), to: fmt(B.constants[f]) });
+  }
+  return changes;
+}
+
 // Count of overridden/added entries, for display.
 export function librarySummary(custom) {
   const c = custom || {};

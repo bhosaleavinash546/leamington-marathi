@@ -9,12 +9,12 @@ import { mergeLibrary, librarySummary } from './cost-library.mjs';
 
 let _custom = {};
 let _merged = mergeLibrary({});   // built-in defaults until a custom library is set
-let _meta = { updatedAt: null, updatedBy: null };
+let _meta = { updatedAt: null, updatedBy: null, version: null };
 
 export function setActiveLibrary(custom, meta = {}) {
   _custom = custom && typeof custom === 'object' ? custom : {};
   _merged = mergeLibrary(_custom);
-  _meta = { updatedAt: meta.updatedAt ?? null, updatedBy: meta.updatedBy ?? null };
+  _meta = { updatedAt: meta.updatedAt ?? null, updatedBy: meta.updatedBy ?? null, version: meta.version ?? null };
 }
 
 export function getActiveLibrary() { return _merged; }       // { MATERIALS, PROCESSES, REGIONS, constants }
@@ -26,5 +26,5 @@ export function isCustomActive() {
 }
 
 export function getActiveMeta() {
-  return { ..._meta, custom: isCustomActive(), summary: librarySummary(_custom) };
+  return { updatedAt: _meta.updatedAt, updatedBy: _meta.updatedBy, version: _meta.version, custom: isCustomActive(), summary: librarySummary(_custom) };
 }

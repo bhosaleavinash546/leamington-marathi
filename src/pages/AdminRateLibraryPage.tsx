@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import * as XLSX from 'xlsx';
-import { Database, Download, Upload, RotateCcw, ShieldAlert, CheckCircle, AlertTriangle } from 'lucide-react';
+import { Database, Download, Upload, RotateCcw, ShieldAlert, CheckCircle, AlertTriangle, History, GitCompare } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import ButtonSpinner from '../components/ui/ButtonSpinner';
 
@@ -10,6 +10,8 @@ type Table = 'materials' | 'processes' | 'regions';
 type Rows = Record<string, Record<string, unknown>>;
 interface Payload { fieldSpecs: Schema; defaults: { materials: Rows; processes: Rows; regions: Rows; constants: Record<string, unknown> }; custom: Partial<Record<Table | 'constants', Rows>>; meta: { custom: boolean; updatedAt: string | null; updatedBy: string | null; summary: Record<string, number> } }
 interface VErr { table?: string; row?: string; field?: string; message: string }
+interface Version { version: number; action: string; note: string | null; updatedBy: string | null; updatedAt: string; summary: Record<string, number>; active: boolean }
+interface Change { table: string; key: string; field: string; from: string; to: string }
 
 const TABLES: Table[] = ['materials', 'processes', 'regions'];
 const cell = (v: unknown): string | number => Array.isArray(v) ? v.join('|') : (v as string | number);
@@ -22,6 +24,8 @@ export default function AdminRateLibraryPage() {
   const [busy, setBusy] = useState(false);
   const [errors, setErrors] = useState<VErr[]>([]);
   const [msg, setMsg] = useState('');
+  const [versions, setVersions] = useState<Version[]>([]);
+  const [diffs, setDiffs] = useState<Record<number, Change[]>>({});
 
   const auth = { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` };
 
@@ -30,7 +34,22 @@ export default function AdminRateLibraryPage() {
     const r = await fetch('/api/admin/rate-library', { headers: auth });
     if (r.status === 403) { const d = await r.json().catch(() => ({})); setForbidden(d.error || 'Admin access required.'); return; }
     if (r.ok) setData(await r.json());
+    const rv = await fetch('/api/admin/rate-library/versions', { headers: auth });
+    if (rv.ok) { const d = await rv.json(); setVersions(d.versions || []); }
   }, [token]);
+
+  async function rollback(version: number) {
+    setBusy(true); setErrors([]); setMsg('');
+    await fetch('/api/admin/rate-library/rollback', { method: 'POST', headers: auth, body: JSON.stringify({ version }) });
+    setMsg(`Rolled back to v${version} — now active for all estimates.`);
+    setDiffs({}); await load(); setBusy(false);
+  }
+
+  async function toggleDiff(version: number) {
+    if (diffs[version]) { setDiffs(d => { const n = { ...d }; delete n[version]; return n; }); return; }
+    const r = await fetch(`/api/admin/rate-library/versions/${version}/diff`, { headers: auth });
+    if (r.ok) { const d = await r.json(); setDiffs(prev => ({ ...prev, [version]: d.changes || [] })); }
+  }
 
   useEffect(() => { if (token) load(); }, [token, load]);
 
@@ -196,7 +215,53 @@ export default function AdminRateLibraryPage() {
           </div>
         )}
 
-        <p className="text-slate-600 text-xs">Tip: leave a cell unchanged to keep the shipped default. Add a new row (new material/process/region name) to extend the catalogue — new rows must have every column filled. Percentages are fractions (0.15 = 15%).</p>
+        <p className="text-slate-600 text-xs mb-8">Tip: leave a cell unchanged to keep the shipped default. Add a new row (new material/process/region name) to extend the catalogue — new rows must have every column filled. Percentages are fractions (0.15 = 15%).</p>
+
+        {/* Version history / audit trail */}
+        {versions.length > 0 && (
+          <div className="bg-navy-900 border border-white/10 rounded-2xl p-5">
+            <p className="text-white font-semibold flex items-center gap-2 mb-1"><History size={16} className="text-teal-400" /> Version history</p>
+            <p className="text-slate-500 text-xs mb-4">Every change is recorded. The top entry is live; roll back to any earlier version in one click.</p>
+            <div className="space-y-2">
+              {versions.map(v => {
+                const counts = v.summary || {};
+                const total = (counts.materials || 0) + (counts.processes || 0) + (counts.regions || 0) + (counts.constants || 0);
+                return (
+                  <div key={v.version} className={`rounded-xl border p-3 ${v.active ? 'bg-teal-500/8 border-teal-500/25' : 'border-white/8'}`}>
+                    <div className="flex items-center gap-3 flex-wrap">
+                      <span className="text-white font-mono text-sm font-semibold">v{v.version}</span>
+                      <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border ${v.action === 'upload' ? 'bg-blue-500/10 text-blue-300 border-blue-500/25' : v.action === 'rollback' ? 'bg-violet-500/10 text-violet-300 border-violet-500/25' : 'bg-slate-500/10 text-slate-300 border-slate-500/25'}`}>{v.action}</span>
+                      {v.active && <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-teal-500/15 text-teal-300 border border-teal-500/30">Active</span>}
+                      <span className="text-slate-400 text-xs">{v.action === 'revert' ? 'built-in defaults' : `${total} override${total === 1 ? '' : 's'}`}</span>
+                      <span className="text-slate-600 text-xs flex-1 min-w-0 truncate">{v.note ? `“${v.note}” · ` : ''}{v.updatedBy || '—'} · {new Date(v.updatedAt).toLocaleString('en-GB')}</span>
+                      <div className="flex items-center gap-2 flex-shrink-0">
+                        <button onClick={() => toggleDiff(v.version)} className="flex items-center gap-1 text-[11px] px-2 py-1 rounded-lg border border-white/10 text-slate-300 hover:bg-white/5"><GitCompare size={12} /> {diffs[v.version] ? 'Hide' : 'Changes'}</button>
+                        {!v.active && <button onClick={() => rollback(v.version)} disabled={busy} className="flex items-center gap-1 text-[11px] px-2 py-1 rounded-lg border border-teal-500/30 text-teal-300 hover:bg-teal-500/10 disabled:opacity-40"><RotateCcw size={12} /> Roll back</button>}
+                      </div>
+                    </div>
+                    {diffs[v.version] && (
+                      <div className="mt-3 pt-3 border-t border-white/8">
+                        {diffs[v.version].length === 0 ? <p className="text-slate-500 text-xs">No effective changes vs the previous version.</p> : (
+                          <table className="w-full text-xs">
+                            <tbody>
+                              {diffs[v.version].map((c, i) => (
+                                <tr key={i} className="border-b border-white/5 last:border-0">
+                                  <td className="py-1 pr-3 text-slate-500 whitespace-nowrap">{c.table} · {c.key}</td>
+                                  <td className="py-1 pr-3 text-slate-300 font-medium">{c.field}</td>
+                                  <td className="py-1 text-right font-mono"><span className="text-danger-300/80">{c.from}</span> <span className="text-slate-600">→</span> <span className="text-teal-300">{c.to}</span></td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
