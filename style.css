@@ -802,6 +802,28 @@ html:not(.js) .stack-card:first-child { opacity: 1; transform: none; }
   color: var(--red-dark);
   text-align: center;
 }
+/* Ganpati Visarjan portrait video */
+.gallery-video {
+  max-width: 330px;
+  margin: 34px auto 0;
+  text-align: center;
+}
+.gallery-video video {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 9 / 16;
+  border-radius: var(--radius);
+  border: 4px solid var(--white);
+  box-shadow: var(--shadow);
+  background: #000;
+}
+.gallery-video-caption {
+  margin: 12px 0 0;
+  font-weight: 700;
+  color: var(--red-dark);
+  font-size: 0.98rem;
+}
+
 .gallery-more { text-align: center; margin: 28px 0 0; }
 .gallery-more a {
   color: var(--red-dark);
