@@ -8,9 +8,10 @@
 // active library. Every upload / revert / rollback appends a new row, giving a
 // full audit trail (who / when / note) and one-click rollback.
 // ─────────────────────────────────────────────────────────────────────────────
-import { MATERIALS, PROCESSES, REGIONS, COST_CONSTANTS } from '../costing-engine.mjs';
-import { validateLibrary, FIELD_SPECS, librarySummary, diffLibraries } from '../cost-library.mjs';
-import { setActiveLibrary, getActiveCustom, getActiveMeta } from '../active-library.mjs';
+import { MATERIALS, PROCESSES, REGIONS, COST_CONSTANTS, computeShouldCost } from '../costing-engine.mjs';
+import { validateLibrary, FIELD_SPECS, librarySummary, diffLibraries, mergeLibrary } from '../cost-library.mjs';
+import { setActiveLibrary, getActiveCustom, getActiveMeta, getActiveLibrary } from '../active-library.mjs';
+import { COST_FIXTURES } from '../benchmark/cost-fixtures.mjs';
 
 const ADMIN_EMAILS = (process.env.ADMIN_EMAILS || '').split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
 const isAdmin = (req) => !!(req.user?.email && ADMIN_EMAILS.includes(req.user.email.toLowerCase()));
@@ -62,6 +63,36 @@ export function registerRateLibraryRoutes(app, { db, requireAuth }) {
     next();
   };
   const meta = () => { const v = latest(); return { ...getActiveMeta(), version: v?.version ?? null }; };
+  const r2 = (n) => Math.round(n * 100) / 100;
+
+  // Representative parts to preview a library change against: the calibration
+  // fixtures plus the admin's own real quoted parts.
+  const sampleParts = (userId) => {
+    const parts = COST_FIXTURES.map(f => ({ name: f.name, input: f.input, quote: false }));
+    try {
+      for (const r of db.prepare('SELECT partName, material, process, weightKg, annualVolume, region FROM cost_quotes WHERE userId = ? ORDER BY createdAt DESC LIMIT 25').all(userId)) {
+        parts.push({ name: r.partName || `${r.material} / ${r.process}`, input: { material: r.material, process: r.process, weightKg: r.weightKg, annualVolume: r.annualVolume, region: r.region }, quote: true });
+      }
+    } catch { /* cost_quotes may not exist yet */ }
+    return parts;
+  };
+
+  // Compare current-active vs candidate library across the sample parts.
+  const impactOf = (candidateMerged, parts) => {
+    const current = getActiveLibrary();
+    const rows = [];
+    for (const p of parts) {
+      let cur, cand;
+      try { cur = computeShouldCost(p.input, {}, null, current).totalShouldCost; } catch { continue; }
+      try { cand = computeShouldCost(p.input, {}, null, candidateMerged).totalShouldCost; } catch { continue; }
+      const pct = cur > 0 ? ((cand - cur) / cur) * 100 : 0;
+      rows.push({ name: p.name, current: r2(cur), candidate: r2(cand), pct: +pct.toFixed(1), quote: p.quote });
+    }
+    const abs = rows.map(x => Math.abs(x.pct));
+    const meanAbsPct = abs.length ? +(abs.reduce((a, b) => a + b, 0) / abs.length).toFixed(1) : 0;
+    const maxPct = rows.reduce((m, x) => Math.abs(x.pct) > Math.abs(m) ? x.pct : m, 0);
+    return { rows, count: rows.length, meanAbsPct, maxPct };
+  };
 
   // Lightweight gate check for the UI (any authenticated user).
   app.get('/api/admin/rate-library/status', requireAuth, (req, res) => {
@@ -88,12 +119,24 @@ export function registerRateLibraryRoutes(app, { db, requireAuth }) {
     res.json({ version: v.version, comparedTo: prev?.version ?? 'built-in', changes: diffLibraries(prev ? dataOf(prev) : {}, dataOf(v)) });
   });
 
+  // Dry-run: validate + show the field diff, plausibility warnings, and the
+  // impact on representative parts BEFORE anything is committed.
+  app.post('/api/admin/rate-library/preview', requireAuth, requireAdmin, (req, res) => {
+    const { ok, errors, warnings, normalized } = validateLibrary(req.body?.custom);
+    const candidateMerged = mergeLibrary(normalized);
+    res.json({
+      ok, errors, warnings,
+      diff: diffLibraries(getActiveCustom(), normalized),
+      impact: impactOf(candidateMerged, sampleParts(req.user.id)),
+    });
+  });
+
   // Upload / replace the custom library.
   app.post('/api/admin/rate-library', requireAuth, requireAdmin, (req, res) => {
-    const { ok, errors, normalized } = validateLibrary(req.body?.custom);
+    const { ok, errors, warnings, normalized } = validateLibrary(req.body?.custom);
     if (!ok) return res.status(400).json({ error: 'Validation failed — no changes saved.', errors });
     const version = append(normalized, 'upload', String(req.body?.note || '').slice(0, 200), req.user.email || req.user.id);
-    res.json({ ok: true, version, meta: meta() });
+    res.json({ ok: true, version, warnings, meta: meta() });
   });
 
   // Revert to built-in defaults (recorded as a version for the audit trail).

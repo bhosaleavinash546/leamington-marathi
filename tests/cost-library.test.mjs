@@ -45,6 +45,14 @@ test('custom coefficients override cycle/tooling and a new region works end-to-e
   assert.equal(r.drivers.labourRate, 6);
 });
 
+test('plausibility warnings flag likely decimal typos without blocking', () => {
+  const { ok, warnings } = validateLibrary({ processes: { 'Machining (CNC)': { machineRate: 6500 } } });
+  assert.equal(ok, true, 'a high-but-valid number should not be an error');
+  assert.ok(warnings.some(w => w.field === 'machineRate' && /decimal/.test(w.message)));
+  // a normal value produces no warning
+  assert.equal(validateLibrary({ processes: { 'Machining (CNC)': { machineRate: 72 } } }).warnings.length, 0);
+});
+
 test('FIELD_SPECS cover every editable engine field', () => {
   const procFields = FIELD_SPECS.processes.fields.map(f => f.id);
   for (const f of ['machineRate', 'cycleBase', 'cyclePerKg', 'toolingBase', 'toolingPerKg', 'finishPct', 'families']) {

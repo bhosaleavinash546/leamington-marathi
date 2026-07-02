@@ -64,6 +64,28 @@ export const FIELD_SPECS = {
 
 const DEFAULTS = { materials: MATERIALS, processes: PROCESSES, regions: REGIONS };
 
+// Economic-plausibility bands (soft — produce WARNINGS, not errors). A value
+// outside these is almost always a typo (a misplaced decimal), so we flag it but
+// still let the admin apply if they mean it.
+const WARN_BANDS = {
+  materials: { price: [0.05, 300], density: [0.3, 25] },
+  processes: {
+    machineRate: [10, 600], operators: [0, 10], cavities: [1, 128], utilisation: [0.1, 1],
+    scrapPct: [0, 0.5], setupHr: [0, 40], batch: [1, 200000], toolLife: [100, 100_000_000],
+    cycleBase: [0, 7200], cyclePerKg: [0, 5000], toolingBase: [0, 5_000_000], toolingPerKg: [0, 2_000_000],
+    finishPct: [0, 1], setups: [1, 20], perishablePerHr: [0, 200],
+  },
+  regions: { labour: [2, 250], overheadPct: [0.02, 0.6], sgaPct: [0.02, 0.6] },
+  constants: { commercialPct: [0, 0.3], defaultFinishPct: [0, 0.5] },
+};
+function bandWarning(table, field, value) {
+  const b = WARN_BANDS[table]?.[field];
+  if (!b || typeof value !== 'number') return null;
+  if (value < b[0]) return `${value} looks low (typical ${b[0]}–${b[1]}) — check for a misplaced decimal`;
+  if (value > b[1]) return `${value} looks high (typical ${b[0]}–${b[1]}) — check for a misplaced decimal`;
+  return null;
+}
+
 // Coerce/validate a single value against its field spec. Returns { value } or { error }.
 function coerce(type, raw) {
   if (type === 'str') {
@@ -90,8 +112,9 @@ function coerce(type, raw) {
  */
 export function validateLibrary(custom) {
   const errors = [];
+  const warnings = [];
   const normalized = { materials: {}, processes: {}, regions: {}, constants: {} };
-  if (!custom || typeof custom !== 'object') return { ok: false, errors: [{ message: 'Empty or invalid library.' }], normalized };
+  if (!custom || typeof custom !== 'object') return { ok: false, errors: [{ message: 'Empty or invalid library.' }], warnings, normalized };
 
   for (const table of ['materials', 'processes', 'regions']) {
     const spec = FIELD_SPECS[table];
@@ -107,8 +130,10 @@ export function validateLibrary(custom) {
           continue;
         }
         const r = coerce(f.type, row[f.id]);
-        if (r.error) errors.push({ table, row: name, field: f.id, message: r.error });
-        else out[f.id] = r.value;
+        if (r.error) { errors.push({ table, row: name, field: f.id, message: r.error }); continue; }
+        out[f.id] = r.value;
+        const w = bandWarning(table, f.id, r.value);
+        if (w) warnings.push({ table, row: name, field: f.id, message: w });
       }
       if (Object.keys(out).length) normalized[table][name] = out;
     }
@@ -118,12 +143,14 @@ export function validateLibrary(custom) {
     for (const f of FIELD_SPECS.constants.fields) {
       if (custom.constants[f.id] === undefined || custom.constants[f.id] === '') continue;
       const r = coerce(f.type, custom.constants[f.id]);
-      if (r.error) errors.push({ table: 'constants', field: f.id, message: r.error });
-      else normalized.constants[f.id] = r.value;
+      if (r.error) { errors.push({ table: 'constants', field: f.id, message: r.error }); continue; }
+      normalized.constants[f.id] = r.value;
+      const w = bandWarning('constants', f.id, r.value);
+      if (w) warnings.push({ table: 'constants', field: f.id, message: w });
     }
   }
 
-  return { ok: errors.length === 0, errors, normalized };
+  return { ok: errors.length === 0, errors, warnings, normalized };
 }
 
 /** Merge a (validated) custom library over the built-in defaults, per-entry. */
