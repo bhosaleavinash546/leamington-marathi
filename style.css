@@ -24,6 +24,9 @@
 
 html { scroll-behavior: smooth; }
 
+/* Keep anchor targets clear of the sticky header */
+section[id] { scroll-margin-top: 90px; }
+
 body {
   margin: 0;
   font-family: var(--font-body);
@@ -172,15 +175,15 @@ img { max-width: 100%; display: block; }
 }
 
 /* Hero entrance animation on page load */
-body.js .hero-content > * {
+.js .hero-content > * {
   opacity: 0;
   animation: fade-up 0.9s ease forwards;
 }
-body.js .hero-content > *:nth-child(1) { animation-delay: 0.05s; }
-body.js .hero-content > *:nth-child(2) { animation-delay: 0.18s; }
-body.js .hero-content > *:nth-child(3) { animation-delay: 0.32s; }
-body.js .hero-content > *:nth-child(4) { animation-delay: 0.46s; }
-body.js .hero-content > *:nth-child(5) { animation-delay: 0.60s; }
+.js .hero-content > *:nth-child(1) { animation-delay: 0.05s; }
+.js .hero-content > *:nth-child(2) { animation-delay: 0.18s; }
+.js .hero-content > *:nth-child(3) { animation-delay: 0.32s; }
+.js .hero-content > *:nth-child(4) { animation-delay: 0.46s; }
+.js .hero-content > *:nth-child(5) { animation-delay: 0.60s; }
 
 @keyframes fade-up {
   from { opacity: 0; transform: translateY(24px); }
@@ -201,7 +204,12 @@ body.js .hero-content > *:nth-child(5) { animation-delay: 0.60s; }
   line-height: 1.15;
   text-shadow: 2px 3px 0 rgba(244, 164, 18, 0.35);
 }
-body.js .hero-title { animation: fade-up 0.9s ease 0.18s forwards, title-glow 4s ease-in-out 1.2s infinite; }
+/* Same specificity as the nth-child delay rules above and later in the
+   file, so the two-value delay list below wins for both animations */
+.js .hero-content > .hero-title {
+  animation: fade-up 0.9s ease forwards, title-glow 4s ease-in-out infinite;
+  animation-delay: 0.18s, 1.2s;
+}
 
 @keyframes title-glow {
   0%, 100% { text-shadow: 2px 3px 0 rgba(244, 164, 18, 0.35); }
@@ -274,8 +282,8 @@ body.js .hero-title { animation: fade-up 0.9s ease 0.18s forwards, title-glow 4s
   border-radius: 2px;
   background: linear-gradient(90deg, var(--red), var(--gold));
 }
-body.js .section-head.reveal h2::after { width: 0; transition: width 0.8s ease 0.3s; }
-body.js .section-head.reveal.visible h2::after { width: 70px; }
+.js .section-head.reveal h2::after { width: 0; transition: width 0.8s ease 0.3s; }
+.js .section-head.reveal.visible h2::after { width: 70px; }
 .section-sub { max-width: 720px; margin: 16px auto 0; color: #6b544b; }
 
 /* ---------- About ---------- */
@@ -393,16 +401,18 @@ body.js .section-head.reveal.visible h2::after { width: 70px; }
   text-align: left;
 }
 .dhol h2 { color: var(--white); }
+/* Sway animates the wrapper so the img's own hover transform still applies */
+.dhol-photo { animation: photo-sway 6s ease-in-out infinite; }
+.dhol-photo:hover { animation-play-state: paused; }
 .dhol-photo img {
   width: 100%;
+  height: auto;
   border-radius: var(--radius);
   border: 5px solid rgba(255, 255, 255, 0.85);
   box-shadow: 0 18px 44px rgba(0, 0, 0, 0.35);
-  transform: rotate(2.5deg);
   transition: transform 0.35s ease;
-  animation: photo-sway 6s ease-in-out infinite;
 }
-.dhol-photo img:hover { transform: rotate(0deg) scale(1.03); animation-play-state: paused; }
+.dhol-photo:hover img { transform: scale(1.04); }
 
 @keyframes photo-sway {
   0%, 100% { transform: rotate(2.5deg) translateY(0); }
@@ -685,23 +695,27 @@ footer p { margin: 6px 0; font-size: 0.95rem; }
 .footer-copy { opacity: 0.75; margin-top: 16px; font-size: 0.87rem; }
 
 /* ---------- Reveal animation (hidden state only when JS is running) ---------- */
-body.js .reveal {
+.js .reveal {
   opacity: 0;
   transform: translateY(26px);
   transition: opacity 0.7s ease, transform 0.7s ease;
 }
-body.js .reveal.visible { opacity: 1; transform: none; }
+.js .reveal.visible { opacity: 1; transform: none; }
 
 @media (prefers-reduced-motion: reduce) {
-  .reveal, body.js .reveal { opacity: 1; transform: none; transition: none; }
+  .reveal, .js .reveal { opacity: 1; transform: none; transition: none; }
   html { scroll-behavior: auto; }
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
-  .marquee-track { overflow-x: auto; }
+  .photo-marquee { overflow-x: auto; }
 }
+
+/* Without JS the loop clone is missing: show the reel as a static, scrollable strip */
+html:not(.js) .marquee-group { animation: none; }
+html:not(.js) .photo-marquee { overflow-x: auto; }
 
 /* ---------- Responsive ---------- */
 @media (max-width: 900px) {
@@ -720,11 +734,14 @@ body.js .reveal.visible { opacity: 1; transform: none; }
     right: 0;
     background: var(--cream);
     box-shadow: 0 12px 20px rgba(74, 19, 11, 0.15);
+  }
+  /* Collapse only when JS can reopen it; without JS the nav stays visible */
+  .js #main-nav {
     max-height: 0;
     overflow: hidden;
     transition: max-height 0.3s ease;
   }
-  #main-nav.open { max-height: 420px; }
+  .js #main-nav.open { max-height: 420px; }
   .nav-links {
     flex-direction: column;
     gap: 0;

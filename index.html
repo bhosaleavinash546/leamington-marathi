@@ -10,6 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Mukta:wght@300;400;500;600;700;800&family=Yatra+One&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
+  <script>document.documentElement.classList.add('js');</script>
   <script src="script.js" defer></script>
 </head>
 <body>
@@ -18,8 +19,8 @@
   <header id="site-header">
     <div class="header-inner">
       <a href="#home" class="brand">
-        <img src="images/logo-emblem.png" alt="Leamington Marathi emblem" class="logo-emblem">
-        <img src="images/logo.png" alt="Leamington Marathi" class="logo">
+        <img src="images/logo-emblem.png" alt="Leamington Marathi emblem" class="logo-emblem" width="216" height="216">
+        <img src="images/logo.png" alt="Leamington Marathi" class="logo" width="444" height="120">
       </a>
       <nav id="main-nav" aria-label="Main navigation">
         <ul class="nav-links">
@@ -40,7 +41,7 @@
 
   <!-- ===== Hero ===== -->
   <section id="home" class="hero">
-    <div class="hero-content reveal">
+    <div class="hero-content">
       <p class="hero-welcome">🙏 नमस्कार मंडळी, सुस्वागतम्&nbsp;!</p>
       <h1 class="hero-title marathi">लेमिंगटन मराठी</h1>
       <p class="hero-tagline marathi">“वारसा मराठी संस्कृतीचा”</p>
@@ -55,15 +56,15 @@
     </div>
     <div class="hero-stats reveal">
       <div class="stat">
-        <span class="stat-number" data-count="400">0</span><span class="stat-plus">+</span>
+        <span class="stat-number" data-count="400">400</span><span class="stat-plus">+</span>
         <span class="stat-label">Marathi Families<br><span class="marathi">मराठी कुटुंबे</span></span>
       </div>
       <div class="stat">
-        <span class="stat-number" data-count="6">0</span><span class="stat-plus">+</span>
+        <span class="stat-number" data-count="6">6</span><span class="stat-plus">+</span>
         <span class="stat-label">Events Every Year<br><span class="marathi">वार्षिक कार्यक्रम</span></span>
       </div>
       <div class="stat">
-        <span class="stat-number" data-count="700">0</span><span class="stat-plus">+</span>
+        <span class="stat-number" data-count="700">700</span><span class="stat-plus">+</span>
         <span class="stat-label">Festival Participants<br><span class="marathi">उत्सव सहभागी</span></span>
       </div>
     </div>
@@ -188,7 +189,7 @@
         <a href="#contact" class="btn btn-light">Want us to perform at your event?</a>
       </div>
       <div class="dhol-photo">
-        <img src="images/dhol-pathak.jpg" alt="Leamington Marathi Dhol Tasha Pathak performing in full costume" loading="lazy">
+        <img src="images/dhol-pathak.jpg" alt="Leamington Marathi Dhol Tasha Pathak performing in full costume" loading="lazy" width="1000" height="563">
       </div>
     </div>
   </section>
@@ -202,15 +203,15 @@
     </div>
     <div class="gallery-images reveal">
       <figure>
-        <img src="images/haldi-kunku.jpg" alt="Haldi Kunku 2024 celebration collage" loading="lazy">
+        <img src="images/haldi-kunku.jpg" alt="Haldi Kunku 2024 celebration collage" loading="lazy" width="900" height="500">
         <figcaption>Haldi Kunku <span class="marathi">| हळदी-कुंकू</span></figcaption>
       </figure>
       <figure>
-        <img src="images/ganeshotsav.jpg" alt="Ganeshotsav 2023 celebration collage" loading="lazy">
+        <img src="images/ganeshotsav.jpg" alt="Ganeshotsav 2023 celebration collage" loading="lazy" width="919" height="500">
         <figcaption>Ganeshotsav <span class="marathi">| गणेशोत्सव</span></figcaption>
       </figure>
       <figure>
-        <img src="images/diwali-bhet.jpg" alt="Diwali Bhet 2023 celebration collage" loading="lazy">
+        <img src="images/diwali-bhet.jpg" alt="Diwali Bhet 2023 celebration collage" loading="lazy" width="892" height="500">
         <figcaption>Diwali Bhet <span class="marathi">| दिवाळी भेट</span></figcaption>
       </figure>
     </div>
@@ -227,8 +228,8 @@
         our values to the next generation.
       </p>
     </div>
-    <div class="package-cards">
-      <div class="package reveal">
+    <div class="package-cards reveal">
+      <div class="package">
         <h3 class="package-name">Bronze</h3>
         <p class="package-price">£300<span> / event</span></p>
         <ul>
@@ -238,7 +239,7 @@
         </ul>
         <a href="mailto:leamingtonmarathi@gmail.com?subject=Bronze%20Sponsorship%20Enquiry" class="btn btn-outline">Enquire</a>
       </div>
-      <div class="package featured reveal">
+      <div class="package featured">
         <span class="package-ribbon">Popular</span>
         <h3 class="package-name">Silver</h3>
         <p class="package-price">£500<span> / event</span></p>
@@ -248,7 +249,7 @@
         </ul>
         <a href="mailto:leamingtonmarathi@gmail.com?subject=Silver%20Sponsorship%20Enquiry" class="btn btn-primary">Enquire</a>
       </div>
-      <div class="package reveal">
+      <div class="package">
         <h3 class="package-name">Gold</h3>
         <p class="package-price">£1000<span> / year (6 events)</span></p>
         <ul>
@@ -331,29 +332,21 @@
     <p class="marquee-title"><span class="marathi">आमच्या आठवणी</span> — Moments from our events 📸</p>
     <div class="marquee-track">
       <div class="marquee-group">
-        <img src="images/dhol-pathak.jpg" alt="Dhol Tasha Pathak performing" loading="lazy">
-        <img src="images/diwali-lights.jpg" alt="Diwali Lights Switch-On" loading="lazy">
-        <img src="images/haldi-kunku.jpg" alt="Haldi Kunku celebration" loading="lazy">
-        <img src="images/dhol-group.jpg" alt="Dhol Pathak group on stage" loading="lazy">
-        <img src="images/ganeshotsav.jpg" alt="Ganeshotsav celebration" loading="lazy">
-        <img src="images/cultural-evening.jpg" alt="Cultural evening on stage" loading="lazy">
-        <img src="images/diwali-bhet.jpg" alt="Diwali Bhet celebration" loading="lazy">
+        <img src="images/dhol-pathak.jpg" alt="Dhol Tasha Pathak performing" width="1000" height="563">
+        <img src="images/diwali-lights.jpg" alt="Diwali Lights Switch-On" width="533" height="400">
+        <img src="images/haldi-kunku.jpg" alt="Haldi Kunku celebration" width="900" height="500">
+        <img src="images/dhol-group.jpg" alt="Dhol Pathak group on stage" width="711" height="400">
+        <img src="images/ganeshotsav.jpg" alt="Ganeshotsav celebration" width="919" height="500">
+        <img src="images/cultural-evening.jpg" alt="Cultural evening on stage" width="810" height="400">
+        <img src="images/diwali-bhet.jpg" alt="Diwali Bhet celebration" width="892" height="500">
       </div>
-      <div class="marquee-group" aria-hidden="true">
-        <img src="images/dhol-pathak.jpg" alt="" loading="lazy">
-        <img src="images/diwali-lights.jpg" alt="" loading="lazy">
-        <img src="images/haldi-kunku.jpg" alt="" loading="lazy">
-        <img src="images/dhol-group.jpg" alt="" loading="lazy">
-        <img src="images/ganeshotsav.jpg" alt="" loading="lazy">
-        <img src="images/cultural-evening.jpg" alt="" loading="lazy">
-        <img src="images/diwali-bhet.jpg" alt="" loading="lazy">
-      </div>
+      <!-- Second group for the seamless loop is cloned by script.js -->
     </div>
   </section>
 
   <!-- ===== Footer ===== -->
   <footer>
-    <img src="images/logo-emblem.png" alt="Leamington Marathi emblem" class="footer-logo">
+    <img src="images/logo-emblem.png" alt="Leamington Marathi emblem" class="footer-logo" width="216" height="216">
     <p class="marathi footer-tagline">“वारसा मराठी संस्कृतीचा”</p>
     <p>Leamington Marathi — a volunteer-run, non-profit community group in Leamington Spa &amp; Warwick, UK.</p>
     <p class="footer-copy">© <span id="year"></span> Leamington Marathi. All rights reserved. | <span class="marathi">जय महाराष्ट्र 🚩</span></p>

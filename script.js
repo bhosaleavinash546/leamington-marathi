@@ -1,6 +1,4 @@
 document.addEventListener('DOMContentLoaded', () => {
-  document.body.classList.add('js');
-
   const header = document.getElementById('site-header');
   const nav = document.getElementById('main-nav');
   const navToggle = document.getElementById('nav-toggle');
@@ -24,7 +22,10 @@ document.addEventListener('DOMContentLoaded', () => {
   onScroll();
 
   // Highlight the nav link for the section in view
-  const sections = document.querySelectorAll('section[id]');
+  // (only sections that have a nav link, so e.g. #join doesn't clear the highlight)
+  const navTargets = new Set([...navLinks].map(link => link.getAttribute('href')));
+  const sections = [...document.querySelectorAll('section[id]')]
+    .filter(section => navTargets.has(`#${section.id}`));
   const sectionObserver = new IntersectionObserver(entries => {
     entries.forEach(entry => {
       if (!entry.isIntersecting) return;
@@ -80,6 +81,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const body = encodeURIComponent(`Name: ${name}\nEmail: ${email}\n\n${message}`);
     window.location.href = `mailto:leamingtonmarathi@gmail.com?subject=${subject}&body=${body}`;
   });
+
+  // Clone the marquee group once for the seamless loop (single source list in HTML)
+  const marqueeTrack = document.querySelector('.marquee-track');
+  if (marqueeTrack) {
+    const clone = marqueeTrack.querySelector('.marquee-group').cloneNode(true);
+    clone.setAttribute('aria-hidden', 'true');
+    marqueeTrack.appendChild(clone);
+  }
 
   // Footer year
   document.getElementById('year').textContent = new Date().getFullYear();
