@@ -667,24 +667,29 @@ img { max-width: 100%; display: block; }
 .form-note { margin: 0; font-size: 0.85rem; color: #8a6f63; font-weight: 400; text-align: center; }
 .honeypot { position: absolute; left: -9999px; height: 0; width: 0; border: 0; padding: 0; }
 
-/* Floating WhatsApp button */
-.whatsapp-fab {
+/* Floating Contact Us button */
+.contact-fab {
   position: fixed;
   bottom: 20px;
   right: 20px;
   z-index: 90;
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  background: #1faa53; /* WhatsApp green, darkened for 3:1+ on white icon */
+  gap: 8px;
+  padding: 13px 22px;
+  border-radius: 40px;
+  background: linear-gradient(135deg, var(--red), var(--saffron));
   color: var(--white);
+  font-weight: 700;
+  font-size: 0.98rem;
+  text-decoration: none;
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.28);
-  transition: transform 0.2s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
-.whatsapp-fab:hover { transform: scale(1.08); }
+.contact-fab:hover {
+  transform: translateY(-3px) scale(1.03);
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.32);
+}
 
 /* ---------- Photo marquee reel ---------- */
 .photo-marquee {
