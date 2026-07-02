@@ -4136,10 +4136,10 @@ var CURATED_AUDIO_NEWS = [
 
 function assignArticleCategory(title, body) {
   var t = (title + ' ' + body).toLowerCase();
-  if (/dsp|dirac|meridian|ai tuning|adaptive eq|sound zone|impulse response|luminfinity|personalspace/.test(t)) return 'dsp';
+  if (/dsp|dirac|meridian|ai tuning|adaptive eq|sound zone|impulse response|luminfinity|personalspace|dolby atmos|atmos automotive/.test(t)) return 'dsp';
   if (/sustain|recycl|bio.based|co2|carbon|bio-pp|neodymium recycl|closed.loop/.test(t)) return 'sustain';
-  if (/patent|r&d|research|sony 360|afeela|object.based|atmos|exciter|actuator|slim speaker/.test(t)) return 'patents';
-  if (/cone|magnet|tweeter|woofer|subwoofer|esotec|msp polymer|driver material|surround material/.test(t)) return 'hardware';
+  if (/patent|r&d|research|sony 360|afeela|object.based/.test(t)) return 'patents';
+  if (/cone|magnet|tweeter|woofer|subwoofer|esotec|msp polymer|driver material|surround material|exciter|actuator|slim speaker/.test(t)) return 'hardware';
   if (/benchmark|compar|rank|best.*audio|vs |versus|ces 2025 audio/.test(t)) return 'bench';
   if (/launch|new model|reveal|debut|partnersh|oem audio|announces.*audio|new.*system/.test(t)) return 'oem';
   return 'tech';
@@ -4335,7 +4335,10 @@ function renderTrendsTab() {
       var ss = sessionStorage.getItem('sce_trends');
       if (ss) {
         var parsed = JSON.parse(ss);
-        _trendsCache = parsed.articles;
+        // Re-hydrate dateObj: JSON.stringify turns Date objects into ISO strings
+        _trendsCache = parsed.articles.map(function(a){
+          return Object.assign({}, a, {dateObj: a.dateObj ? new Date(a.dateObj) : new Date(0)});
+        });
         _trendsCacheTime = parsed.time;
       }
     } catch(e) {}
@@ -4351,15 +4354,18 @@ function renderTrendsTab() {
     return;
   }
 
-  cont.innerHTML = '<div style="text-align:center;padding:50px;color:var(--t3)"><span style="font-size:28px;display:block;margin-bottom:12px">⏳</span>Fetching live commodity prices and automotive audio news…<br><span style="font-size:10px;margin-top:8px;display:block">Loading feeds one by one — may take ~10 seconds</span></div>';
+  cont.innerHTML = '<div style="text-align:center;padding:50px;color:var(--t3)"><span style="font-size:28px;display:block;margin-bottom:12px">⏳</span>Fetching live commodity prices and automotive audio news…<br><span style="font-size:10px;margin-top:8px;display:block">Loading feeds sequentially — may take up to 30 seconds</span></div>';
+
+  // Declared here so both .then() and .catch() can access it
+  var commodities = null;
 
   Promise.all([
     fetchCommodityPrices(),
     fetchAllFeeds()
   ]).then(function(results) {
-    var commodities = results[0];
+    commodities = results[0];
     var merged = results[1];
-    // Deduplicate by normalised title
+    // Deduplicate by normalised title (60-char key, consistent with buildTrendsHTML)
     var seen = {};
     var allArticles = merged.filter(function(a){
       var key = a.title.toLowerCase().replace(/[^a-z0-9]/g,'').slice(0,60);
@@ -4367,19 +4373,14 @@ function renderTrendsTab() {
       seen[key] = true;
       return true;
     });
-    // Sort: highest relevance score first, then newest first within same score tier
-    allArticles.sort(function(a,b){
-      if (b.score !== a.score) return b.score - a.score;
-      return (b.dateObj||new Date(0)) - (a.dateObj||new Date(0));
-    });
+    // Re-hydrate dateObj strings (JSON.stringify turns Dates into ISO strings)
+    allArticles.forEach(function(a){ if (a.dateObj && !(a.dateObj instanceof Date)) a.dateObj = new Date(a.dateObj); });
     _trendsCache = allArticles;
     _trendsCacheTime = now;
-    // Persist articles to sessionStorage to protect rss2json rate limit within the session
     try { sessionStorage.setItem('sce_trends', JSON.stringify({articles: allArticles, time: now})); } catch(e) {}
     buildTrendsHTML(allArticles, commodities);
   }).catch(function(e){
-    // Even if live feed fails, show curated content with commodity prices
-    buildTrendsHTML([], commodities || {});
+    buildTrendsHTML([], _commodityCache || {});
   });
 }
 
@@ -4426,7 +4427,7 @@ function buildTrendsHTML(liveArticles, commodities) {
   var all = CURATED_AUDIO_NEWS.concat(live);
   var seen = {};
   all = all.filter(function(a){
-    var key = (a.title||'').toLowerCase().replace(/[^a-z0-9]/g,'').slice(0,55);
+    var key = (a.title||'').toLowerCase().replace(/[^a-z0-9]/g,'').slice(0,60);
     if (seen[key]) return false; seen[key]=true; return true;
   });
   all.sort(function(a,b){
@@ -4437,9 +4438,10 @@ function buildTrendsHTML(liveArticles, commodities) {
   // Category pills
   html += '<div class="trends-cats" id="trendsCatPills">';
   var catOrder = ['all','oem','tech','hardware','dsp','sustain','patents','bench'];
+  var catCounts = all.reduce(function(acc, a){ acc[a.category] = (acc[a.category]||0) + 1; return acc; }, {});
   catOrder.forEach(function(cat) {
     var cfg = CATEGORY_CONFIG[cat];
-    var count = cat === 'all' ? all.length : all.filter(function(a){ return a.category === cat; }).length;
+    var count = cat === 'all' ? all.length : (catCounts[cat] || 0);
     if (count === 0 && cat !== 'all') return;
     html += '<button class="trends-cat-pill' + (cat === 'all' ? ' active' : '') + '" data-cat="' + cat + '" onclick="setTrendsCategory(\'' + cat + '\')" style="--cat-color:' + cfg.color + '">';
     html += cfg.icon + ' ' + cfg.label + ' <span style="font-size:9px;opacity:.7">(' + count + ')</span></button>';
@@ -4449,37 +4451,28 @@ function buildTrendsHTML(liveArticles, commodities) {
 
   // Article cards
   html += '<div id="trendsArticleList">';
-  if (all.length === 0) {
-    html += '<div class="card" style="padding:20px"><p style="color:var(--t3);margin-bottom:12px">No articles loaded. Visit these official sources directly:</p>';
-    html += '<div class="sources-grid">';
-    OFFICIAL_SOURCES.forEach(function(s){
-      html += '<a href="'+s.url+'" target="_blank" rel="noopener" class="source-tile"><div class="source-tile-name">'+esc(s.name)+'</div><div class="source-tile-type">'+esc(s.type)+'</div></a>';
-    });
-    html += '</div></div>';
-  } else {
-    all.forEach(function(item) {
-      var catCfg = CATEGORY_CONFIG[item.category] || CATEGORY_CONFIG.tech;
-      var leftColor = catCfg.color;
-      var tag = item.link ? 'a href="'+esc(item.link)+'" target="_blank" rel="noopener"' : 'div';
-      var closeTag = item.link ? 'a' : 'div';
-      html += '<'+tag+' class="trends-card trends-article-card" data-category="'+esc(item.category||'tech')+'" style="border-left:3px solid '+leftColor+'">';
-      html += '<div class="trends-card-meta">';
-      if (item.oem) html += '<span class="trends-badge trends-oem-badge">'+esc(item.oem)+'</span>';
-      if (item.partner) html += '<span class="trends-badge trends-partner-badge">'+esc(item.partner)+'</span>';
-      html += '<span class="trends-badge trends-cat-badge" style="color:'+leftColor+';border-color:'+leftColor+'22">'+catCfg.icon+' '+catCfg.label+'</span>';
-      if (item.live) html += '<span class="trends-badge" style="color:var(--green2);background:rgba(0,230,118,.08);border:1px solid rgba(0,230,118,.2)">● LIVE</span>';
-      html += '<span style="margin-left:auto;font-size:9px;color:var(--t3)">'+esc(item.date||'')+'</span>';
-      html += '</div>';
-      html += '<div class="trends-title">'+esc(item.title||'')+'</div>';
-      if (item.summary) html += '<div class="trends-summary">'+esc(item.summary)+'</div>';
-      if (item.techNote) html += '<div class="trends-tech">⚙ '+esc(item.techNote)+'</div>';
-      html += '<div class="trends-footer">';
-      html += '<span>'+esc(item.source||'')+'</span>';
-      if (item.link) html += '<span class="trends-read-link">↗ Read official source</span>';
-      html += '</div>';
-      html += '</'+closeTag+'>';
-    });
-  }
+  all.forEach(function(item) {
+    var catCfg = CATEGORY_CONFIG[item.category] || CATEGORY_CONFIG.tech;
+    var leftColor = catCfg.color;
+    var tag = item.link ? 'a href="'+esc(item.link)+'" target="_blank" rel="noopener"' : 'div';
+    var closeTag = item.link ? 'a' : 'div';
+    html += '<'+tag+' class="trends-card trends-article-card" data-category="'+esc(item.category||'tech')+'" style="border-left:3px solid '+leftColor+'">';
+    html += '<div class="trends-card-meta">';
+    if (item.oem) html += '<span class="trends-badge trends-oem-badge">'+esc(item.oem)+'</span>';
+    if (item.partner) html += '<span class="trends-badge trends-partner-badge">'+esc(item.partner)+'</span>';
+    html += '<span class="trends-badge trends-cat-badge" style="color:'+leftColor+';border-color:'+leftColor+'22">'+catCfg.icon+' '+catCfg.label+'</span>';
+    if (item.live) html += '<span class="trends-badge" style="color:var(--green2);background:rgba(0,230,118,.08);border:1px solid rgba(0,230,118,.2)">● LIVE</span>';
+    html += '<span style="margin-left:auto;font-size:9px;color:var(--t3)">'+esc(item.date||'')+'</span>';
+    html += '</div>';
+    html += '<div class="trends-title">'+esc(item.title||'')+'</div>';
+    if (item.summary) html += '<div class="trends-summary">'+esc(item.summary)+'</div>';
+    if (item.techNote) html += '<div class="trends-tech">⚙ '+esc(item.techNote)+'</div>';
+    html += '<div class="trends-footer">';
+    html += '<span>'+esc(item.source||'')+'</span>';
+    if (item.link) html += '<span class="trends-read-link">↗ Read official source</span>';
+    html += '</div>';
+    html += '</'+closeTag+'>';
+  });
   html += '</div>';
 
   // Official Newsrooms
@@ -4494,6 +4487,10 @@ function buildTrendsHTML(liveArticles, commodities) {
   html += '<p style="font-size:9px;color:var(--t3);margin-top:16px;text-align:center">⚠ Technical data is indicative — verify via official OEM/supplier sources before use in procurement decisions.</p>';
 
   cont.innerHTML = html;
+  // Restore the user's active category filter (survives Refresh)
+  if (_activeTrendsCategory && _activeTrendsCategory !== 'all') {
+    setTrendsCategory(_activeTrendsCategory);
+  }
 }
 
 // ─── Settings ─────────────────────────────────────────────────────────────────
