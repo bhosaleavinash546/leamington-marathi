@@ -409,16 +409,6 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
 
-  // "Ways to join" cards pre-select the matching option in the Get Involved form
-  const wayCards = document.querySelectorAll('.way-card');
-  wayCards.forEach(card => {
-    card.addEventListener('click', () => {
-      const select = document.querySelector('#involved-form select[name="interest"]');
-      if (select) select.value = card.dataset.interest;
-      wayCards.forEach(c => c.classList.toggle('selected', c === card));
-    });
-  });
-
   // Get Involved form → same relay, subject tagged with the chosen interest
   const involvedForm = document.getElementById('involved-form');
   const involvedNote = involvedForm.querySelector('.involved-note');
