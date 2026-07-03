@@ -163,8 +163,15 @@ export async function negotiationSummary(req: Request, res: Response): Promise<v
            CASE WHEN nt.current_price IS NOT NULL AND nt.target_price IS NOT NULL
                 THEN (nt.current_price - nt.target_price) *
                      COALESCE(
+                       -- Latest should-cost version that actually carries a
+                       -- positive volume; skip rows where annual_volume is
+                       -- NULL or 0 so a blank latest version doesn't mask a
+                       -- real historical volume, and a stored 0 doesn't zero
+                       -- out the saving. Falls back to 1000 when none exists.
                        (SELECT sch.annual_volume FROM should_cost_header sch
                         WHERE sch.part_id = nt.part_id
+                          AND sch.annual_volume IS NOT NULL
+                          AND sch.annual_volume > 0
                         ORDER BY sch.version DESC LIMIT 1),
                        1000
                      )

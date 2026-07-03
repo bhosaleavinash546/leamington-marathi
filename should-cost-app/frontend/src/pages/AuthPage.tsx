@@ -5,6 +5,26 @@ import { AuthUser } from '../types';
 import { useTheme } from '../context/ThemeContext';
 import Logo from '../components/Logo';
 
+// Local-dev only: shown when the backend returns devOtp (ALLOW_DEV_OTP=true).
+// Never rendered in shared/production environments because the field is absent.
+function DevOtpBanner({ otp }: { otp: string }) {
+  return (
+    <div style={{
+      background: 'rgba(251,191,36,0.15)', border: '1.5px solid #f59e0b',
+      borderRadius: 10, padding: '12px 16px', marginBottom: 16,
+      fontSize: 13, color: 'var(--text-1)',
+    }}>
+      <div style={{ fontWeight: 700, color: '#b45309', marginBottom: 4 }}>
+        🛠 Dev mode — SMTP not configured
+      </div>
+      <div>Your OTP code is: <strong style={{ fontSize: 18, letterSpacing: 4, color: 'var(--accent)' }}>{otp}</strong></div>
+      <div style={{ fontSize: 11, color: 'var(--text-3)', marginTop: 4 }}>
+        It has been auto-filled below. Click "Verify Code" to continue.
+      </div>
+    </div>
+  );
+}
+
 type View = 'login' | 'signup-details' | 'signup-otp' | 'forgot-email' | 'forgot-otp' | 'forgot-reset';
 
 interface Props {
@@ -310,21 +330,7 @@ export default function AuthPage({ initialView = 'login', onLogin }: Props) {
               <p className="auth-sub">Check your inbox for the 6-digit code</p>
 
               {/* Dev-mode hint — only shown when SMTP is not configured */}
-              {devOtp && (
-                <div style={{
-                  background: 'rgba(251,191,36,0.15)', border: '1.5px solid #f59e0b',
-                  borderRadius: 10, padding: '12px 16px', marginBottom: 16,
-                  fontSize: 13, color: 'var(--text-1)',
-                }}>
-                  <div style={{ fontWeight: 700, color: '#b45309', marginBottom: 4 }}>
-                    🛠 Dev mode — SMTP not configured
-                  </div>
-                  <div>Your OTP code is: <strong style={{ fontSize: 18, letterSpacing: 4, color: 'var(--accent)' }}>{devOtp}</strong></div>
-                  <div style={{ fontSize: 11, color: 'var(--text-3)', marginTop: 4 }}>
-                    It has been auto-filled below. Click "Verify Code" to continue.
-                  </div>
-                </div>
-              )}
+              {devOtp && <DevOtpBanner otp={devOtp} />}
 
               <OtpInput onSubmit={handleSignupVerify} />
             </>
@@ -358,21 +364,7 @@ export default function AuthPage({ initialView = 'login', onLogin }: Props) {
               <h1>Enter verification code</h1>
               <p className="auth-sub">6-digit code sent to {forgotEmail}</p>
 
-              {devOtp && (
-                <div style={{
-                  background: 'rgba(251,191,36,0.15)', border: '1.5px solid #f59e0b',
-                  borderRadius: 10, padding: '12px 16px', marginBottom: 16,
-                  fontSize: 13, color: 'var(--text-1)',
-                }}>
-                  <div style={{ fontWeight: 700, color: '#b45309', marginBottom: 4 }}>
-                    🛠 Dev mode — SMTP not configured
-                  </div>
-                  <div>Your OTP code is: <strong style={{ fontSize: 18, letterSpacing: 4, color: 'var(--accent)' }}>{devOtp}</strong></div>
-                  <div style={{ fontSize: 11, color: 'var(--text-3)', marginTop: 4 }}>
-                    It has been auto-filled below. Click "Verify Code" to continue.
-                  </div>
-                </div>
-              )}
+              {devOtp && <DevOtpBanner otp={devOtp} />}
 
               <OtpInput onSubmit={handleForgotVerify} />
             </>

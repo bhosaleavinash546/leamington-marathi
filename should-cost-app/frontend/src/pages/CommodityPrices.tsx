@@ -1,14 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import api from '../utils/api';
-
-async function downloadCsv(endpoint: string, filename: string) {
-  const res = await api.get(endpoint, { responseType: 'blob' });
-  const url = window.URL.createObjectURL(new Blob([res.data as BlobPart]));
-  const a = document.createElement('a');
-  a.href = url; a.download = filename;
-  document.body.appendChild(a); a.click();
-  window.URL.revokeObjectURL(url); document.body.removeChild(a);
-}
+import { downloadCsv } from '../utils/download';
 
 interface CommoditySummary {
   id: number;
