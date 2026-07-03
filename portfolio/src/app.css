@@ -91,7 +91,7 @@
 }
 .chip-1 { top: 2%; left: 50%; transform: translateX(-50%); color: var(--cyan); }
 .chip-2 { top: 42%; right: -4%; color: var(--accent-soft); }
-.chip-3 { bottom: 4%; left: 20%; color: var(--blue); font-size: 1.3rem; }
+.chip-3 { bottom: 4%; left: 20%; color: var(--blue); font-size: 0.78rem; }
 .chip-4 { top: 30%; left: -6%; font-size: 0.78rem; }
 
 .hero-nowcard { display: flex; align-items: center; gap: 14px; padding: 16px 22px; width: min(320px, 82vw); }

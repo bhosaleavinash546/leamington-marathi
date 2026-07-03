@@ -86,7 +86,7 @@ export default function Hero() {
                 <span>{profile.initials}</span>
               )}
             </div>
-            {['VE', 'AI', '£', 'VMA'].map((t, i) => (
+            {['VE', 'AI', 'TRIZ', 'VMA'].map((t, i) => (
               <motion.span
                 key={t}
                 className={`orbit-chip chip-${i + 1}`}
