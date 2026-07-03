@@ -160,34 +160,37 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 5000);
   }
 
-  // Dhol photo stack: each card pops in with a spring, holds, then rises away
-  const stack = document.getElementById('dhol-stack');
-  if (stack) {
-    const cards = [...stack.children];
-    let stackIdx = 0;
-    const applyStack = () => cards.forEach((card, j) => {
-      const rel = (j - stackIdx + cards.length) % cards.length;
-      card.classList.toggle('is-active', rel === 0);
-      card.classList.toggle('is-next', rel === 1);
-      card.classList.toggle('is-third', rel === 2);
-    });
-    applyStack();
+  // Dhol photo grid: four tiles; every few seconds one tile springs to the next photo.
+  // Off-screen photos wait in a queue, so no photo ever shows in two tiles at once.
+  const dholGrid = document.getElementById('dhol-grid');
+  if (dholGrid) {
+    const tiles = [...dholGrid.querySelectorAll('.dhol-tile img')];
+    const queue = [...dholGrid.querySelectorAll('.dhol-spare')]
+      .map(im => ({ src: im.getAttribute('src'), alt: im.alt }));
+    let tileIdx = 0;
     const advance = () => {
-      const leaving = cards[stackIdx];
-      leaving.classList.add('is-leaving');
-      setTimeout(() => leaving.classList.remove('is-leaving'), 650);
-      stackIdx = (stackIdx + 1) % cards.length;
-      applyStack();
+      const img = tiles[tileIdx];
+      const next = queue.shift();
+      queue.push({ src: img.getAttribute('src'), alt: img.alt });
+      img.classList.add('tile-out');
+      setTimeout(() => {
+        img.src = next.src;
+        img.alt = next.alt;
+        void img.offsetWidth; // restart the transition so the new photo springs in
+        img.classList.remove('tile-out');
+      }, 260);
+      tileIdx = (tileIdx + 1) % tiles.length;
     };
-    let stackTimer = null;
-    const stackReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const stackStop = () => { clearInterval(stackTimer); stackTimer = null; };
-    const stackStart = () => { if (!stackReduced && !stackTimer) stackTimer = setInterval(advance, 3200); };
-    stack.addEventListener('pointerenter', stackStop);
-    stack.addEventListener('pointerleave', stackStart);
+    let gridTimer = null;
+    const gridReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const gridStop = () => { clearInterval(gridTimer); gridTimer = null; };
+    const gridStart = () => { if (!gridReduced && !gridTimer) gridTimer = setInterval(advance, 2600); };
+    dholGrid.addEventListener('pointerenter', gridStop);
+    dholGrid.addEventListener('pointerleave', gridStart);
+    queue.forEach(entry => { const pre = new Image(); pre.src = entry.src; }); // warm the spare photos
     new IntersectionObserver(entries => {
-      entries.forEach(entry => entry.isIntersecting ? stackStart() : stackStop());
-    }, { threshold: 0.3 }).observe(stack);
+      entries.forEach(entry => entry.isIntersecting ? gridStart() : gridStop());
+    }, { threshold: 0.3 }).observe(dholGrid);
   }
 
   // Journey procession path: road drawn through the milestones, dhol marker

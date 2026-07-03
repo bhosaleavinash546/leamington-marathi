@@ -47,10 +47,11 @@ paste each one into the matching section (लेख आणि कविता / 
 the dashed "waiting for your words" boxes. The editorial and the submission deadline
 are marked with TODO comments for the committee to confirm.
 
-## The animated photo stack (Dhol section)
+## The photo grid (Dhol section)
 
-Search `dhol-stack` — it's just a list of `<img>` lines; add, remove, or reorder them.
-The first one in the list shows first.
+Search `dhol-grid` — four visible photo tiles plus hidden `dhol-spare` photos that
+rotate through them automatically. Add or swap the `<img>` lines; the four inside
+`dhol-tile` boxes show first.
 
 ## Festival decorations (once a year job)
 

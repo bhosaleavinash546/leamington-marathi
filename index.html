@@ -362,14 +362,22 @@
         </p>
         <a href="#contact" class="btn btn-light">Want us to perform at your event?</a>
       </div>
-      <!-- Animated photo stack: each card pops in, holds, then rises away (cycled by script.js) -->
-      <div class="dhol-stack" id="dhol-stack" aria-label="Photos of the Dhol Tasha Pathak">
-        <img class="stack-card" src="images/dhol-pathak.jpg" alt="Pathak performing in full costume at the racecourse" width="1000" height="563">
-        <img class="stack-card" src="images/dhol-park.jpg" alt="Pathak with dhols and flag at the Ganesh festival in the park" loading="lazy" width="580" height="400">
-        <img class="stack-card" src="images/diwali-lights.jpg" alt="Pathak at the Diwali Lights Switch-On in Leamington" loading="lazy" width="533" height="400">
-        <img class="stack-card" src="images/dhol-ganeshotsav.jpg" alt="Pathak in saffron kurtas at Ganeshotsav" loading="lazy" width="621" height="400">
-        <img class="stack-card" src="images/dhol-banner.jpg" alt="Pathak members with the Leamington Marathi banner and drums" loading="lazy" width="518" height="400">
-        <img class="stack-card" src="images/dhol-flag.jpg" alt="Pathak posing with the saffron flag and dhols" loading="lazy" width="533" height="400">
+      <!-- Photo grid: four tiles; script.js rotates the spare photos through them one tile at a time -->
+      <div class="dhol-grid" id="dhol-grid" aria-label="Photos of the Dhol Tasha Pathak">
+        <figure class="dhol-tile">
+          <img src="images/dhol-pathak.jpg" alt="Pathak performing in full costume at the racecourse" width="1000" height="563">
+        </figure>
+        <figure class="dhol-tile">
+          <img src="images/dhol-park.jpg" alt="Pathak with dhols and flag at the Ganesh festival in the park" loading="lazy" width="580" height="400">
+        </figure>
+        <figure class="dhol-tile">
+          <img src="images/diwali-lights.jpg" alt="Pathak at the Diwali Lights Switch-On in Leamington" loading="lazy" width="533" height="400">
+        </figure>
+        <figure class="dhol-tile">
+          <img src="images/dhol-ganeshotsav.jpg" alt="Pathak in saffron kurtas at Ganeshotsav" loading="lazy" width="621" height="400">
+        </figure>
+        <img class="dhol-spare" src="images/dhol-banner.jpg" alt="Pathak members with the Leamington Marathi banner and drums" loading="lazy" width="518" height="400" hidden>
+        <img class="dhol-spare" src="images/dhol-flag.jpg" alt="Pathak posing with the saffron flag and dhols" loading="lazy" width="533" height="400" hidden>
       </div>
     </div>
     <div class="dhol-achievement reveal">
