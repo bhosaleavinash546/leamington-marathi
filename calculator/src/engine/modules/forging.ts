@@ -21,6 +21,8 @@ export interface ForgingInputs {
   trimmingCycleHr?: number;
   heatTreatCostPerKg?: number;  // external heat treat cost £/kg of part
   descaleCostPerKg?: number;    // descaling / shot blast cost £/kg of billet
+  coiningCostPerPart?: number;  // coining / sizing / straightening cost £/part
+  ndtCostPerPart?: number;      // NDT (MPI/UT/CT) cost £/part for safety-critical forgings
   rejectRate?: number;          // forging scrap fraction 0–1
   amortizationVolume: number;
 }
@@ -48,6 +50,8 @@ export function getForgingInputSchema(): Record<string, string> {
     trimmingCycleHr: 'number? — trimming cycle time hr',
     heatTreatCostPerKg: 'number? — external heat treatment cost £/kg of part',
     descaleCostPerKg: 'number? — descaling/shot blast cost £/kg of billet',
+    coiningCostPerPart: 'number? — coining/sizing/straightening cost £/part',
+    ndtCostPerPart: 'number? — NDT (MPI/UT/CT) cost £/part for safety-critical forgings',
     rejectRate: 'number 0–1 (optional) — forging scrap fraction; uplifts material and cycle time',
     amortizationVolume: 'number — volume over which to amortize tooling and ancillary costs',
   };
@@ -122,7 +126,9 @@ export function computeForgingDrivers(inputs: ForgingInputs): CommodityDrivers {
   // Heat treat and descale are recurring per-part costs → rawMaterial.consumablesCostPerPart
   const heatTreatCostPerPart = (inputs.heatTreatCostPerKg ?? 0) * inputs.partWeightKg;
   const descaleCostPerPart = (inputs.descaleCostPerKg ?? 0) * billetWeightKg;
-  const consumablesCostPerPart = heatTreatCostPerPart + descaleCostPerPart;
+  const consumablesCostPerPart =
+    heatTreatCostPerPart + descaleCostPerPart +
+    (inputs.coiningCostPerPart ?? 0) + (inputs.ndtCostPerPart ?? 0);
 
   return {
     rawMaterial: consumablesCostPerPart > 0 ? { ...rawMaterial, consumablesCostPerPart } : rawMaterial,
