@@ -269,6 +269,97 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('load', buildRoad, { once: true });
   }
 
+  // ---- Site search: index every section and card, jump-and-highlight on pick ----
+  const searchToggle = document.getElementById('search-toggle');
+  const searchPanel = document.getElementById('search-panel');
+  const searchInput = document.getElementById('search-input');
+  const searchResults = document.getElementById('search-results');
+  if (searchToggle) {
+    const searchIndex = [];
+    document.querySelectorAll('section[id]').forEach(sec => {
+      const secTitle = (sec.querySelector('h2')?.textContent
+        || sec.id.charAt(0).toUpperCase() + sec.id.slice(1).replace(/-/g, ' ')).trim();
+      searchIndex.push({ label: secTitle, text: sec.textContent.toLowerCase(), el: sec, section: secTitle });
+      sec.querySelectorAll('h3').forEach(h3 => {
+        const card = h3.closest('.timeline-card, .package, .value-card, .testimonial, .contact-info') || h3.parentElement;
+        searchIndex.push({
+          label: h3.textContent.trim(),
+          text: (h3.textContent + ' ' + card.textContent).toLowerCase(),
+          el: card,
+          section: secTitle,
+        });
+      });
+    });
+    searchIndex.push({
+      label: 'दिवाळी अंक २०२६ — Diwali Ank',
+      text: 'diwali ank magazine articles poems recipes editorial दिवाळी अंक लेख कविता पाककृती बालविभाग संपादकीय',
+      href: 'ank.html',
+      section: 'Magazine',
+    });
+
+    const closeSearch = () => {
+      searchPanel.hidden = true;
+      searchToggle.setAttribute('aria-expanded', 'false');
+    };
+    const openSearch = () => {
+      searchPanel.hidden = false;
+      searchToggle.setAttribute('aria-expanded', 'true');
+      searchInput.focus();
+    };
+    searchToggle.addEventListener('click', () => (searchPanel.hidden ? openSearch() : closeSearch()));
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape' && !searchPanel.hidden) closeSearch();
+      if (e.key === '/' && searchPanel.hidden && !/^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName)) {
+        e.preventDefault();
+        openSearch();
+      }
+    });
+
+    const jumpTo = entry => {
+      if (entry.href) { window.location.href = entry.href; return; }
+      closeSearch();
+      entry.el.style.scrollMarginTop = '110px';
+      entry.el.scrollIntoView({ block: entry.el.tagName === 'SECTION' ? 'start' : 'center' });
+      entry.el.classList.add('search-highlight');
+      setTimeout(() => entry.el.classList.remove('search-highlight'), 2600);
+    };
+
+    searchInput.addEventListener('input', () => {
+      const q = searchInput.value.trim().toLowerCase();
+      searchResults.innerHTML = '';
+      if (q.length < 2) return;
+      const hits = searchIndex
+        .map(entry => ({
+          entry,
+          score: entry.label.toLowerCase().includes(q) ? 2 : entry.text.includes(q) ? 1 : 0,
+        }))
+        .filter(h => h.score > 0)
+        .sort((a, b) => b.score - a.score)
+        .slice(0, 8);
+      if (!hits.length) {
+        const li = document.createElement('li');
+        li.className = 'search-empty';
+        li.textContent = 'काही सापडलं नाही — nothing found for "' + searchInput.value.trim() + '"';
+        searchResults.appendChild(li);
+        return;
+      }
+      hits.forEach(({ entry }) => {
+        const li = document.createElement('li');
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        const name = document.createElement('span');
+        name.textContent = entry.label;
+        const chip = document.createElement('span');
+        chip.className = 'search-result-section';
+        chip.textContent = entry.section;
+        btn.append(name, chip);
+        btn.addEventListener('click', () => jumpTo(entry));
+        li.appendChild(btn);
+        searchResults.appendChild(li);
+      });
+    });
+  }
+
   // Flyer lightbox: tap a flyer to view it full size
   const lightbox = document.getElementById('lightbox');
   if (lightbox) {
