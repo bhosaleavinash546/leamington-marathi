@@ -279,7 +279,7 @@ db.exec(`CREATE TABLE IF NOT EXISTS commodity_prices (
 db.exec(`CREATE TABLE IF NOT EXISTS app_meta (key TEXT PRIMARY KEY, value TEXT NOT NULL)`);
 // Bump when the COMMODITY_BASELINE seed is refreshed. On mismatch we drop any
 // persisted prices so the new authentic seed wins over stale cached values.
-const PRICE_BASELINE_VERSION = '2026-07-01';
+const PRICE_BASELINE_VERSION = '2026-07-03';
 function initCommodityPriceDb() {
   try {
     const storedVer = db.prepare("SELECT value FROM app_meta WHERE key = 'price_baseline_version'").get();
@@ -3667,15 +3667,16 @@ function detectBatteryComponent(systemName, subassemblyName, partName) {
 
 const PRICE_CACHE_TTL = 24 * 60 * 60 * 1000;
 
-// Baseline seed values refreshed 1 Jul 2026 from authentic sources: LME 3-month
-// (copper/aluminium/nickel/zinc/lead), Argus/MEPS NW-Europe HRC & stainless,
-// SMM/Fastmarkets rare earths, SMM/Fastmarkets battery materials. USD quotes
-// converted at EUR/USD 1.1407 (ECB, 1 Jul 2026). Exchange/spot tiers are directly
-// sourced; indicative tiers are engineering estimates for BOM modelling. The live
-// refresh (refreshPriceCache) overrides these when a search API key is configured.
+// Baseline seed values refreshed 3 Jul 2026 from authentic sources: LME 3-month
+// (copper/aluminium/nickel/zinc/lead/cobalt/magnesium), Argus/MEPS NW-Europe
+// steel, SMM/Fastmarkets rare earths (NdPr/Dy/Tb), SMM/Fastmarkets & Benchmark
+// battery materials, BloombergNEF NMC/LFP pack prices, PlasticsEurope/Plasticker
+// polymers. USD quotes converted at EUR/USD 1.1407 (ECB). Exchange/spot tiers are
+// directly sourced; indicative tiers are engineering estimates for BOM modelling.
+// The live refresh (refreshPriceCache) overrides these when a search key is set.
 const COMMODITY_BASELINE = {
   // ── Ferrous Metals ──────────────────────────────────────────────────────────
-  steel_hrc_eu:       { label: 'Steel HRC (EU)',            value: 700,   unit: '€/t',   category: 'ferrous',     tier: 'exchange',   context: 'BIW structure, chassis, body stampings' },
+  steel_hrc_eu:       { label: 'Steel HRC (EU)',            value: 710,   unit: '€/t',   category: 'ferrous',     tier: 'exchange',   context: 'BIW structure, chassis, body stampings' },
   steel_crc_eu:       { label: 'Steel CRC (EU)',            value: 800,   unit: '€/t',   category: 'ferrous',     tier: 'spot',       context: 'Exposed panels, door outers, roof' },
   phs_22mnb5:         { label: 'PHS Steel (22MnB5)',        value: 1300,  unit: '€/t',   category: 'ferrous',     tier: 'spot',       context: 'Hot-stamped pillars, rails, sills' },
   dp980_ahss:         { label: 'DP980 AHSS',                value: 1150,  unit: '€/t',   category: 'ferrous',     tier: 'spot',       context: 'Advanced high-strength stampings' },
@@ -3696,19 +3697,19 @@ const COMMODITY_BASELINE = {
   // ── EV Battery Materials ───────────────────────────────────────────────────
   li_carbonate:       { label: 'Lithium Carbonate (99.5%)', value: 17,    unit: '€/kg',  category: 'battery',     tier: 'spot',       context: 'LFP / NMC cathode active material' },
   li_hydroxide:       { label: 'Lithium Hydroxide (LiOH)',  value: 17,    unit: '€/kg',  category: 'battery',     tier: 'spot',       context: 'High-Ni cathode (NMC811, NCA)' },
-  cobalt_sulfate:     { label: 'Cobalt Sulfate (EV grade)', value: 8.5,   unit: '€/kg',  category: 'battery',     tier: 'spot',       context: 'NMC cathode stabiliser' },
-  nickel_sulfate:     { label: 'Nickel Sulfate (EV grade)', value: 3.9,   unit: '€/kg',  category: 'battery',     tier: 'spot',       context: 'NMC high-Ni cathode precursor' },
+  cobalt_sulfate:     { label: 'Cobalt Sulfate (EV grade)', value: 10,    unit: '€/kg',  category: 'battery',     tier: 'spot',       context: 'NMC cathode stabiliser' },
+  nickel_sulfate:     { label: 'Nickel Sulfate (EV grade)', value: 4.0,   unit: '€/kg',  category: 'battery',     tier: 'spot',       context: 'NMC high-Ni cathode precursor' },
   manganese_sulfate:  { label: 'Manganese Sulfate',         value: 0.42,  unit: '€/kg',  category: 'battery',     tier: 'spot',       context: 'LMFP / NMN cathode additive' },
   natural_graphite:   { label: 'Natural Graphite (anode)',  value: 0.85,  unit: '€/kg',  category: 'battery',     tier: 'spot',       context: 'Cell anode — flake graphite (SC/GX)' },
-  synthetic_graphite: { label: 'Synthetic Graphite (anode)',value: 2.4,   unit: '€/kg',  category: 'battery',     tier: 'indicative', context: 'High-performance anode, fast-charge' },
-  nmc_cell:           { label: 'NMC Cell (pack level)',     value: 82,    unit: '€/kWh', category: 'battery',     tier: 'indicative', context: 'BEV battery — NMC811/622 chemistry' },
-  lfp_cell:           { label: 'LFP Cell (pack level)',     value: 60,    unit: '€/kWh', category: 'battery',     tier: 'indicative', context: 'BEV/PHEV — LFP/M3P chemistry' },
+  synthetic_graphite: { label: 'Synthetic Graphite (anode)',value: 2.2,   unit: '€/kg',  category: 'battery',     tier: 'indicative', context: 'High-performance anode, fast-charge' },
+  nmc_cell:           { label: 'NMC Pack (BNEF)',           value: 108,   unit: '€/kWh', category: 'battery',     tier: 'indicative', context: 'BEV battery pack — NMC811/622 chemistry' },
+  lfp_cell:           { label: 'LFP Pack (BNEF)',           value: 74,    unit: '€/kWh', category: 'battery',     tier: 'indicative', context: 'BEV/PHEV pack — LFP/M3P chemistry' },
 
   // ── Rare Earths / Magnets ──────────────────────────────────────────────────
   ndfeb_magnets:      { label: 'NdFeB Magnet (N42)',        value: 92,    unit: '€/kg',  category: 'rare-earth',  tier: 'spot',       context: 'IPM/SPM traction motor, power steering' },
   ndpr_oxide:         { label: 'NdPr Oxide',                value: 79,    unit: '€/kg',  category: 'rare-earth',  tier: 'spot',       context: 'NdFeB magnet precursor — key price driver' },
   dysprosium_oxide:   { label: 'Dysprosium Oxide',          value: 275,   unit: '€/kg',  category: 'rare-earth',  tier: 'spot',       context: 'Magnet coercivity booster (high-temp)' },
-  terbium_oxide:      { label: 'Terbium Oxide',             value: 1250,  unit: '€/kg',  category: 'rare-earth',  tier: 'spot',       context: 'Grain boundary diffusion in NdFeB' },
+  terbium_oxide:      { label: 'Terbium Oxide',             value: 1040,  unit: '€/kg',  category: 'rare-earth',  tier: 'spot',       context: 'Grain boundary diffusion in NdFeB' },
   smco_magnet:        { label: 'SmCo Magnet (Grade 28)',    value: 98,    unit: '€/kg',  category: 'rare-earth',  tier: 'indicative', context: 'High-temp motor: turbo, exhaust actuator' },
 
   // ── EDU / Motor Components ─────────────────────────────────────────────────
@@ -3718,19 +3719,19 @@ const COMMODITY_BASELINE = {
   al_rotor_cast:      { label: 'Al Rotor Cast (IM)',        value: 5.1,   unit: '€/kg',  category: 'edu',         tier: 'indicative', context: 'Induction motor squirrel-cage rotor' },
 
   // ── Inverter / Power Electronics ───────────────────────────────────────────
-  sic_module:         { label: 'SiC Power Module (1200V)',  value: 2.2,   unit: '€/kW',  category: 'inverter',    tier: 'spot',       context: 'Main traction inverter — full-bridge' },
-  sic_die_650v:       { label: 'SiC Bare Die (650V)',       value: 0.95,  unit: '€/A',   category: 'inverter',    tier: 'indicative', context: 'OBC / DC-DC converter switches' },
-  igbt_module:        { label: 'IGBT Module (automotive)',  value: 1.4,   unit: '€/kVA', category: 'inverter',    tier: 'indicative', context: '400V inverter — being displaced by SiC' },
-  gan_650v:           { label: 'GaN Transistor (650V)',     value: 0.18,  unit: '€/W',   category: 'inverter',    tier: 'indicative', context: 'OBC, DC-DC — high-frequency switching' },
-  dc_link_cap:        { label: 'DC Link Film Capacitor',    value: 0.35,  unit: '€/µF',  category: 'inverter',    tier: 'indicative', context: 'Inverter DC bus ripple filter' },
+  sic_module:         { label: 'SiC Power Module (1200V)',  value: 2.0,   unit: '€/kW',  category: 'inverter',    tier: 'spot',       context: 'Main traction inverter — full-bridge' },
+  sic_die_650v:       { label: 'SiC Bare Die (650V)',       value: 0.85,  unit: '€/A',   category: 'inverter',    tier: 'indicative', context: 'OBC / DC-DC converter switches' },
+  igbt_module:        { label: 'IGBT Module (automotive)',  value: 1.3,   unit: '€/kVA', category: 'inverter',    tier: 'indicative', context: '400V inverter — being displaced by SiC' },
+  gan_650v:           { label: 'GaN Transistor (650V)',     value: 0.16,  unit: '€/W',   category: 'inverter',    tier: 'indicative', context: 'OBC, DC-DC — high-frequency switching' },
+  dc_link_cap:        { label: 'DC Link Film Capacitor',    value: 0.33,  unit: '€/µF',  category: 'inverter',    tier: 'indicative', context: 'Inverter DC bus ripple filter' },
 
   // ── Plastics / Composites ──────────────────────────────────────────────────
   pa6_gf30:           { label: 'PA6-GF30 (Nylon)',          value: 3.2,   unit: '€/kg',  category: 'plastics',    tier: 'spot',       context: 'Engine covers, brackets, structural' },
-  pa66_gf30:          { label: 'PA66-GF30 (Nylon)',         value: 3.8,   unit: '€/kg',  category: 'plastics',    tier: 'spot',       context: 'Air intake manifolds, coolant housings' },
+  pa66_gf30:          { label: 'PA66-GF30 (Nylon)',         value: 3.9,   unit: '€/kg',  category: 'plastics',    tier: 'spot',       context: 'Air intake manifolds, coolant housings' },
   pp_td20:            { label: 'PP-TD20 (talc-filled)',     value: 1.65,  unit: '€/kg',  category: 'plastics',    tier: 'spot',       context: 'Interior trim, bumper carriers' },
   abs_auto:           { label: 'ABS (automotive grade)',    value: 2.1,   unit: '€/kg',  category: 'plastics',    tier: 'spot',       context: 'Interior trim, grille, trim panels' },
   pom_acetal:         { label: 'POM (Acetal/Delrin)',       value: 2.9,   unit: '€/kg',  category: 'plastics',    tier: 'spot',       context: 'Gear components, fuel system, clips' },
-  cfrp_prepreg:       { label: 'CFRP Prepreg',             value: 28,    unit: '€/kg',  category: 'plastics',    tier: 'indicative', context: 'BEV battery enclosure, lightweight structures' },
+  cfrp_prepreg:       { label: 'CFRP Prepreg (auto grade)', value: 88,    unit: '€/kg',  category: 'plastics',    tier: 'indicative', context: 'BEV battery enclosure, lightweight structures' },
   gfrp_smc:           { label: 'GFRP SMC',                 value: 2.8,   unit: '€/kg',  category: 'plastics',    tier: 'spot',       context: 'Body panels, battery trays (cost-optimised)' },
   pu_foam_seat:       { label: 'PU Foam (seat grade)',      value: 2.4,   unit: '€/kg',  category: 'plastics',    tier: 'indicative', context: 'Seat cushion, safety foam' },
 };
@@ -3738,7 +3739,7 @@ const COMMODITY_BASELINE = {
 const priceCache = {
   // Vintage of the seed values above. A successful live refresh overrides this
   // with the real fetch time; loading newer DB-persisted prices does too.
-  lastRefresh: Date.parse('2026-07-01T12:00:00Z'),
+  lastRefresh: Date.parse('2026-07-03T12:00:00Z'),
   data: Object.fromEntries(
     Object.entries(COMMODITY_BASELINE).map(([k, v]) => [k, { ...v }])
   ),
