@@ -678,14 +678,15 @@ html:not(.js) .procession-marker { display: none; }
   overflow: hidden;
   padding: 6px 0 18px;
 }
-/* The track holds two identical sets of flyers and slides right-to-left forever.
-   Moving by half its width (plus half a gap) lands exactly on the duplicate set,
-   so the loop is seamless. Pure CSS — works without JavaScript too. */
+/* The track holds two identical sets of flyers and slides left-to-right forever
+   (the keyframes run in reverse). Moving by half its width (plus half a gap)
+   lands exactly on the duplicate set, so the loop is seamless. Pure CSS —
+   works without JavaScript too. */
 .flyers-track {
   display: flex;
   gap: 22px;
   width: max-content;
-  animation: flyers-slide 42s linear infinite;
+  animation: flyers-slide 42s linear infinite reverse;
 }
 @keyframes flyers-slide {
   to { transform: translateX(calc(-50% - 11px)); }
