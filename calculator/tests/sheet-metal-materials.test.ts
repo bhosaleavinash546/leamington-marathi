@@ -55,6 +55,15 @@ describe('sheet-metal material coverage', () => {
     expect(price('mat-aa7075-t6')).toBeGreaterThan(price('mat-aa6016-t4')); // structural > skin
   });
 
+  it('all sheet-metal grades are refreshed to the 2026-07 index-anchored basis', () => {
+    const smCategories = /Steel Sheet|AHSS|Ultra-High|Press-Hardening|IF Steel|Bake-Hardening|Coated|Galvanised|Electrogalvanised|Low-Carbon Steel|Aluminium Sheet|Copper & Brass/;
+    const smGrades = lib.materials.filter(m => smCategories.test(m.category));
+    expect(smGrades.length).toBeGreaterThan(30);
+    for (const m of smGrades) {
+      expect(m.effectiveDate).toBe('2026-07');           // dated to the refresh
+    }
+  });
+
   it('a new AHSS grade drives the universal cost engine without error', () => {
     const input: UniversalStackInput = {
       partName: 'AHSS bracket',
