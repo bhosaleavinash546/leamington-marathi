@@ -335,62 +335,13 @@ html:not(.js) #ticker-items li:first-child { display: block; opacity: 1; }
 }
 .js .hero-emblem { opacity: 0; animation: fade-up 0.9s ease 0.05s forwards, gentle-float 5s ease-in-out 1s infinite; }
 
-/* Next-event card in the hero's open right space (mirrors the emblem) */
-.hero-event-card {
-  position: absolute;
-  right: clamp(30px, 8vw, 150px);
-  top: 27%;
-  display: flex;
-  flex-direction: column;
-  gap: 7px;
-  width: clamp(240px, 20vw, 300px);
-  padding: 22px 24px 20px;
-  background: var(--white);
-  border-radius: var(--radius);
-  border-top: 5px solid var(--gold);
-  box-shadow: 0 18px 40px rgba(74, 19, 11, 0.18);
-  text-decoration: none;
-  text-align: left;
-  transform: rotate(2deg);
-  transition: box-shadow 0.25s ease;
-}
-.hero-event-card:hover { box-shadow: 0 24px 52px rgba(74, 19, 11, 0.28); }
-.hero-event-card:hover .hec-cta { transform: translateX(4px); }
-.hec-kicker { color: var(--saffron-text); font-weight: 700; font-size: 0.85rem; letter-spacing: 0.4px; }
-.hec-title { color: var(--red-dark); font-weight: 800; font-size: 1.2rem; line-height: 1.35; }
-.hec-meta { color: var(--ink); font-size: 0.92rem; font-weight: 600; }
-.hec-cta {
-  margin-top: 8px;
-  align-self: flex-start;
-  padding: 8px 18px;
-  border-radius: 30px;
-  background: linear-gradient(135deg, var(--red), var(--saffron));
-  color: var(--white);
-  font-weight: 700;
-  font-size: 0.92rem;
-  transition: transform 0.2s ease;
-}
-.js .hero-event-card { opacity: 0; animation: hec-in 0.9s ease 0.35s forwards; }
-
-@keyframes hec-in {
-  from { opacity: 0; transform: translateY(24px) rotate(2deg); }
-  to { opacity: 1; transform: rotate(2deg); }
-}
-/* Desktop shows the rich card, so the small chip would be a duplicate
-   (.hero-content prefix outweighs the base .hero-next rule further down) */
-@media (min-width: 1101px) {
-  .hero-content .hero-next { display: none; }
-}
-
-/* Narrow screens: no side space, so the emblem sits centred above the title
-   and the event card gives way to the chip */
+/* Narrow screens: no left space, so the emblem sits centred above the title */
 @media (max-width: 1100px) {
   .hero-emblem {
     position: static;
     width: 132px;
     margin: 0 auto 16px;
   }
-  .hero-event-card { display: none; }
 }
 
 
@@ -670,19 +621,6 @@ html:not(.js) .procession-marker { display: none; }
   70% { box-shadow: 0 0 0 12px rgba(217, 42, 28, 0); }
   100% { box-shadow: 0 0 0 0 rgba(217, 42, 28, 0); }
 }
-
-/* Wide screens: rail moves to the centre and cards alternate left/right,
-   each row pulled up beside the previous one so the section stays compact */
-@media (min-width: 1000px) {
-  .timeline { max-width: 1100px; padding-left: 0; }
-  .timeline::before { left: 50%; transform: translateX(-50%); }
-  .timeline-item { width: calc(50% - 44px); }
-  .timeline-item:nth-child(odd) { margin-right: auto; }
-  .timeline-item:nth-child(odd)::before { left: auto; right: -55px; }
-  .timeline-item:nth-child(even) { margin-left: auto; margin-top: -100px; }
-  .timeline-item:nth-child(even)::before { left: -55px; }
-  .timeline-item:first-child { margin-top: 0; }
-}
 .timeline-month {
   font-weight: 800;
   color: var(--saffron-text);
@@ -829,7 +767,7 @@ html:not(.js) .procession-marker { display: none; }
   color: var(--white);
 }
 .dhol-inner {
-  max-width: 1200px;
+  max-width: 1100px;
   margin: auto;
   display: grid;
   grid-template-columns: 1.15fr 1fr;
@@ -998,43 +936,7 @@ html:not(.js) .procession-marker { display: none; }
   border-top: 4px solid var(--gold);
   border-bottom: 4px solid var(--gold);
 }
-.involved-inner { max-width: 1080px; margin: auto; }
-/* Two columns on wide screens: "ways to join" cards left, form right */
-.involved-grid {
-  display: grid;
-  grid-template-columns: 0.9fr 1.1fr;
-  gap: 30px;
-  align-items: start;
-  text-align: left;
-}
-/* let the form column shrink below the dropdown's longest option */
-.involved-grid > * { min-width: 0; }
-.involved-ways { display: flex; flex-direction: column; gap: 14px; }
-.way-card {
-  display: flex;
-  align-items: flex-start;
-  gap: 14px;
-  padding: 15px 18px;
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.12);
-  border: 1.5px solid rgba(255, 255, 255, 0.35);
-  color: var(--white);
-  text-decoration: none;
-  transition: background 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
-}
-.way-card:hover { background: rgba(255, 255, 255, 0.22); transform: translateX(5px); }
-.way-card.selected { background: var(--white); color: var(--maroon); border-color: var(--gold); }
-.way-card.selected .way-desc { color: #8a6f63; }
-.way-icon { font-size: 1.5rem; line-height: 1.3; }
-.way-body strong { display: block; font-size: 1.02rem; }
-.way-desc { display: block; font-size: 0.88rem; opacity: 0.92; margin-top: 2px; }
-#involved-form { scroll-margin-top: 110px; }
-
-@media (max-width: 900px) {
-  .involved-inner { max-width: 620px; }
-  .involved-grid { grid-template-columns: 1fr; }
-}
-
+.involved-inner { max-width: 620px; margin: auto; }
 .get-involved h2 {
   font-family: var(--font-display);
   font-weight: 400;
@@ -1175,11 +1077,10 @@ html:not(.js) .procession-marker { display: none; }
 .package-price span { font-size: 0.95rem; font-weight: 600; color: #8a6f63; }
 .package ul {
   list-style: none;
-  padding: 12px 0 24px;
-  /* auto top/bottom margins centre short lists (Bronze/Silver) in the leftover
-     space instead of leaving it all pooled under the list */
-  margin: auto 0;
+  padding: 0;
+  margin: 0 0 24px;
   text-align: left;
+  flex-grow: 1;
 }
 .package li { padding: 6px 0; border-bottom: 1px dashed #f0dcc3; font-size: 0.97rem; }
 .package li:last-child { border-bottom: none; }
@@ -1264,32 +1165,6 @@ html:not(.js) .procession-marker { display: none; }
 .contact-list li { padding: 8px 0; font-size: 1.05rem; }
 .contact-list a { color: var(--red-dark); font-weight: 600; text-decoration: none; }
 .contact-list a:hover { text-decoration: underline; }
-
-/* Stylised map card linking to Google Maps */
-.contact-map {
-  position: relative;
-  display: block;
-  margin-top: 28px;
-  border-radius: var(--radius);
-  overflow: hidden;
-  border: 1.5px solid #f0dcc3;
-  box-shadow: var(--shadow);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-.contact-map:hover { transform: translateY(-3px); box-shadow: 0 16px 36px rgba(74, 19, 11, 0.16); }
-.contact-map svg { display: block; width: 100%; height: auto; }
-.contact-map-cta {
-  position: absolute;
-  left: 12px;
-  bottom: 12px;
-  padding: 7px 14px;
-  border-radius: 30px;
-  background: var(--white);
-  color: var(--red-dark);
-  font-weight: 700;
-  font-size: 0.9rem;
-  box-shadow: var(--shadow);
-}
 
 .socials { display: flex; gap: 14px; flex-wrap: wrap; }
 .socials a {
