@@ -5,6 +5,17 @@ import { generateToken } from '../middleware/auth';
 import { generateOtp, saveOtp, verifyOtp } from '../services/otpService';
 import { sendOtpEmail } from '../services/emailService';
 
+// Returning the OTP in the HTTP response is a local-dev convenience ONLY.
+// It is gated behind an explicit opt-in flag that is intentionally set
+// nowhere in the repo (not in docker-compose, not in any deploy config),
+// so it can never leak in a shared/staging environment. Enabling it for
+// the password-reset flow would allow account takeover by anyone who knows
+// a victim's email, so the flag must be set deliberately and only on a
+// developer's own machine.
+function devOtpEnabled(): boolean {
+  return process.env.ALLOW_DEV_OTP === 'true';
+}
+
 // ── POST /api/auth/login ──────────────────────────────────────
 export async function login(req: Request, res: Response): Promise<void> {
   const { email, password } = req.body as { email: string; password: string };
@@ -63,10 +74,9 @@ export async function signupRequest(req: Request, res: Response): Promise<void> 
   await saveOtp(email.toLowerCase(), otp, 'signup');
   await sendOtpEmail({ to: email, otp, purpose: 'signup', name: fullName });
 
-  const devMode = !process.env.SMTP_HOST && process.env.NODE_ENV !== 'production';
   res.json({
     message: 'OTP sent to email. Verify to complete signup.',
-    ...(devMode ? { devOtp: otp, devNote: 'SMTP not configured — OTP shown for development only' } : {}),
+    ...(devOtpEnabled() ? { devOtp: otp, devNote: 'ALLOW_DEV_OTP enabled — local development only' } : {}),
   });
 }
 
@@ -115,13 +125,16 @@ export async function forgotPasswordRequest(req: Request, res: Response): Promis
     const otp = generateOtp();
     await saveOtp(email.toLowerCase(), otp, 'reset_password');
     await sendOtpEmail({ to: email, otp, purpose: 'reset_password', name: result.rows[0].full_name });
-    if (!process.env.SMTP_HOST && process.env.NODE_ENV !== 'production') devOtpHint = otp;
+    if (devOtpEnabled()) devOtpHint = otp;
   }
 
-  const devMode = !process.env.SMTP_HOST && process.env.NODE_ENV !== 'production';
+  // NOTE: exposing devOtp here is an account-takeover risk (anyone who knows a
+  // registered email could reset the password) and also leaks account existence
+  // — hence gated strictly behind ALLOW_DEV_OTP, which is never set in shared
+  // environments. In production this branch is always dead.
   res.json({
     message: 'If that email is registered, an OTP has been sent.',
-    ...(devMode && devOtpHint ? { devOtp: devOtpHint, devNote: 'SMTP not configured — OTP shown for development only' } : {}),
+    ...(devOtpHint ? { devOtp: devOtpHint, devNote: 'ALLOW_DEV_OTP enabled — local development only' } : {}),
   });
 }
 
