@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://bhosaleavinash546.github.io/leamington-marathi/sitemap.xml
+Sitemap: https://leamingtonmarathi.com/sitemap.xml
