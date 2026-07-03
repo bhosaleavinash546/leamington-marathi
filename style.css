@@ -163,6 +163,88 @@ img { max-width: 100%; display: block; }
   border-radius: 2px;
   transition: transform 0.25s ease, opacity 0.25s ease;
 }
+#search-toggle {
+  background: none;
+  border: none;
+  font-size: 1.15rem;
+  cursor: pointer;
+  padding: 8px 10px;
+  border-radius: 50%;
+  line-height: 1;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+#search-toggle:hover { background: var(--cream-deep); transform: scale(1.1); }
+html:not(.js) #search-toggle { display: none; }
+
+#search-panel {
+  border-top: 1px solid #f0dcc3;
+  padding: 14px 24px 18px;
+  background: var(--cream);
+}
+#search-input {
+  display: block;
+  width: min(680px, 100%);
+  margin: 0 auto;
+  font-family: var(--font-body);
+  font-size: 1.05rem;
+  padding: 12px 20px;
+  border: 2px solid var(--saffron);
+  border-radius: 40px;
+  background: var(--white);
+}
+#search-input:focus { outline: none; border-color: var(--red); }
+#search-results {
+  list-style: none;
+  margin: 10px auto 0;
+  padding: 0;
+  width: min(680px, 100%);
+  max-height: 320px;
+  overflow-y: auto;
+}
+#search-results li button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  width: 100%;
+  text-align: left;
+  background: var(--white);
+  border: none;
+  border-bottom: 1px solid #f5e6cf;
+  padding: 11px 18px;
+  font-family: var(--font-body);
+  font-size: 0.98rem;
+  font-weight: 600;
+  color: var(--ink);
+  cursor: pointer;
+}
+#search-results li:first-child button { border-radius: 12px 12px 0 0; }
+#search-results li:last-child button { border-radius: 0 0 12px 12px; border-bottom: none; }
+#search-results li:only-child button { border-radius: 12px; }
+#search-results li button:hover,
+#search-results li button:focus { background: var(--cream-deep); }
+.search-result-section {
+  flex-shrink: 0;
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: var(--saffron-text);
+  background: var(--cream-deep);
+  padding: 2px 10px;
+  border-radius: 12px;
+  white-space: nowrap;
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.search-empty { text-align: center; color: #8a6f63; padding: 12px; font-size: 0.95rem; }
+
+.search-highlight {
+  outline: 3px solid var(--gold);
+  outline-offset: 5px;
+  border-radius: 8px;
+  transition: outline-color 0.4s ease;
+}
+
 #nav-check:checked ~ #nav-toggle span:nth-child(1) { transform: translateY(8px) rotate(45deg); }
 #nav-check:checked ~ #nav-toggle span:nth-child(2) { opacity: 0; }
 #nav-check:checked ~ #nav-toggle span:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
