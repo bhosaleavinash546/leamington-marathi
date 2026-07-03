@@ -96,6 +96,14 @@
   <!-- ===== Hero ===== -->
   <section id="home" class="hero">
     <img src="images/logo-emblem.png" alt="" class="hero-emblem" width="216" height="216">
+    <!-- Next-event card in the hero's open right space (desktop only — mobile keeps the chip below) -->
+    <a class="hero-event-card" href="https://www.ticketsource.com/leamingtonmarathi/shivrajyostav-2026/e-vrzqqo" target="_blank" rel="noopener">
+      <span class="hec-kicker marathi" lang="mr">पुढील कार्यक्रम | Next Event</span>
+      <span class="hec-title">Shivrajyotsav 2026 <span class="marathi" lang="mr">शिवराज्योत्सव</span></span>
+      <span class="hec-meta">📅 Sunday, 21 June 2026</span>
+      <span class="hec-meta">📍 Campion School, Leamington Spa</span>
+      <span class="hec-cta">🎟 Book tickets →</span>
+    </a>
     <div class="hero-content">
       <p class="hero-welcome" lang="mr">🙏 नमस्कार मंडळी, सुस्वागतम्&nbsp;!</p>
       <h1 class="hero-title marathi" lang="mr">लेमिंगटन मराठी</h1>
@@ -448,7 +456,31 @@
         Volunteer, play dhol, perform on stage, or simply join our WhatsApp family —
         tell us what you'd love to do and we'll get back to you.
       </p>
-      <form id="involved-form" class="involved-form">
+      <div class="involved-grid">
+        <!-- Clicking a card pre-selects the matching option in the form (script.js) -->
+        <div class="involved-ways" aria-label="Ways to get involved">
+          <a class="way-card" href="#involved-form" data-interest="Volunteer for events">
+            <span class="way-icon">🙋</span>
+            <span class="way-body"><strong>Become a volunteer</strong><span class="way-desc">Help us run events behind the scenes.</span></span>
+          </a>
+          <a class="way-card" href="#involved-form" data-interest="Join the Dhol Tasha Pathak">
+            <span class="way-icon">🥁</span>
+            <span class="way-body"><strong>Join the Dhol Tasha Pathak</strong><span class="way-desc">No experience needed — we'll teach you.</span></span>
+          </a>
+          <a class="way-card" href="#involved-form" data-interest="Perform at an event (dance / singing / acting)">
+            <span class="way-icon">🎭</span>
+            <span class="way-body"><strong>Perform on stage</strong><span class="way-desc">Dance, singing, acting — the stage is yours.</span></span>
+          </a>
+          <a class="way-card" href="#involved-form" data-interest="Join the WhatsApp community">
+            <span class="way-icon">💬</span>
+            <span class="way-body"><strong>Join our WhatsApp family</strong><span class="way-desc">Stay close to everything happening.</span></span>
+          </a>
+          <a class="way-card" href="#involved-form" data-interest="Get event updates by email">
+            <span class="way-icon">📩</span>
+            <span class="way-body"><strong>Get event updates</strong><span class="way-desc">Event news straight to your inbox.</span></span>
+          </a>
+        </div>
+        <form id="involved-form" class="involved-form">
         <input type="text" name="_honey" class="honeypot" tabindex="-1" autocomplete="off" aria-hidden="true">
         <label>
           I would like to… <span class="marathi" lang="mr">/ मला आवडेल…</span>
@@ -481,7 +513,8 @@
         </label>
         <button type="submit" class="btn btn-light">Count Me In!</button>
         <p class="involved-note" role="status" aria-live="polite">We'll get back to you within a few days 🙏</p>
-      </form>
+        </form>
+      </div>
     </div>
   </section>
 
@@ -607,6 +640,24 @@
             <svg viewBox="0 0 24 24" fill="#FF0000" aria-hidden="true"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
           </a>
         </div>
+        <!-- Stylised map card (self-contained SVG, no external tiles) — opens Google Maps -->
+        <a class="contact-map" href="https://www.google.com/maps/search/?api=1&amp;query=Royal+Leamington+Spa" target="_blank" rel="noopener" aria-label="Royal Leamington Spa on Google Maps">
+          <svg viewBox="0 0 560 340" aria-hidden="true">
+            <rect width="560" height="340" rx="14" fill="#fdf3e3"/>
+            <path d="M0 218 C 90 190, 150 245, 250 228 S 430 195, 560 225" fill="none" stroke="#bfe0ea" stroke-width="16" stroke-linecap="round"/>
+            <path d="M60 0 V340 M180 0 V340 M460 0 V340 M0 90 H560 M0 280 H560" stroke="#f0dcc3" stroke-width="7"/>
+            <path d="M320 0 V340" stroke="#f4c98a" stroke-width="9"/>
+            <path d="M0 160 H560" stroke="#f4c98a" stroke-width="9"/>
+            <rect x="368" y="34" width="150" height="88" rx="12" fill="#dcead2"/>
+            <g transform="translate(320 160)">
+              <circle r="34" fill="rgba(217, 42, 28, 0.14)"/>
+              <path d="M0 20 C 0 20 -22 0 -22 -12 C -22 -24 -12 -32 0 -32 C 12 -32 22 -24 22 -12 C 22 0 0 20 0 20 Z" fill="#d92a1c"/>
+              <circle cy="-13" r="7" fill="#fff"/>
+            </g>
+            <text x="320" y="216" text-anchor="middle" font-family="'Mukta', sans-serif" font-weight="700" font-size="21" fill="#4a130b">Royal Leamington Spa</text>
+          </svg>
+          <span class="contact-map-cta">📍 Open in Google Maps →</span>
+        </a>
       </div>
       <form id="contact-form" class="contact-form reveal" action="https://formsubmit.co/leamingtonmarathi@gmail.com" method="POST">
         <input type="text" name="_honey" class="honeypot" tabindex="-1" autocomplete="off" aria-hidden="true">
