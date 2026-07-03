@@ -79,8 +79,12 @@ export default function Hero() {
               animate={{ rotate: -360 }}
               transition={{ duration: 34, repeat: Infinity, ease: 'linear' }}
             />
-            <div className="hero-avatar">
-              <span>{profile.initials}</span>
+            <div className={`hero-avatar ${profile.photo ? 'has-photo' : ''}`}>
+              {profile.photo ? (
+                <img src={profile.photo} alt={`${profile.name} headshot`} />
+              ) : (
+                <span>{profile.initials}</span>
+              )}
             </div>
             {['VE', 'AI', '£', 'VMA'].map((t, i) => (
               <motion.span

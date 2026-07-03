@@ -4,9 +4,14 @@
 // Source: Avinash Bhosale LinkedIn profile.
 // ---------------------------------------------------------------------------
 
+// To use a real headshot: drop the file in src/assets/ and set
+//   import photo from './assets/headshot.jpg'
+// at the top of this file, then set `photo: photo` below. Leave the string
+// empty to fall back to the "AB" monogram.
 export const profile = {
   name: 'Avinash Bhosale',
   initials: 'AB',
+  photo: '',
   title: 'Senior Cost Improvement Engineer — Propulsion',
   tagline:
     'AI-Driven Value Engineering & Cost Intelligence · Benchmarking · Should Costing',

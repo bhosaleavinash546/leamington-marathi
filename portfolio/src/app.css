@@ -81,6 +81,8 @@
   border: 1px solid var(--border); box-shadow: var(--shadow);
 }
 .hero-avatar span { font-family: var(--font-display); font-weight: 700; font-size: clamp(2rem, 6vw, 3rem); color: var(--accent-soft); }
+.hero-avatar.has-photo { padding: 0; overflow: hidden; background: var(--panel); }
+.hero-avatar.has-photo img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
 .orbit-chip {
   position: absolute; width: 52px; height: 52px; border-radius: 14px; display: grid; place-items: center;
   font-family: var(--font-display); font-weight: 700; font-size: 0.9rem; color: var(--text);
