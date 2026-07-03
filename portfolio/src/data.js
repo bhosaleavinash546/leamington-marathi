@@ -4,6 +4,11 @@
 // Source: Avinash Bhosale LinkedIn profile.
 // ---------------------------------------------------------------------------
 import headshot from './assets/headshot.jpg'
+import series1 from './assets/series-1.jpg'
+import series2 from './assets/series-2.jpg'
+import series3 from './assets/series-3.jpg'
+import series4 from './assets/series-4.jpg'
+import certVma from './assets/certificate-vma.jpg'
 
 // To use a real headshot: drop the file in src/assets/ and set
 //   import photo from './assets/headshot.jpg'
@@ -193,10 +198,20 @@ export const education = [
   },
 ]
 
+// LinkedIn "Value Engineering" series + certification — shown in the sliding gallery.
+export const insights = [
+  { src: series1, title: 'Where real money is left on the table', tag: 'Series 1 of 4' },
+  { src: series2, title: 'Cost savings hiding in your product', tag: 'Series 2 of 4' },
+  { src: series3, title: 'Value engineering is a mindset', tag: 'Series 3 of 4' },
+  { src: series4, title: 'Margin gets engineered in', tag: 'Series 4 of 4' },
+  { src: certVma, title: 'SAVE International — Value Methodology Associate', tag: 'Certification' },
+]
+
 export const nav = [
   { id: 'about', label: 'About' },
   { id: 'experience', label: 'Experience' },
   { id: 'expertise', label: 'Expertise' },
   { id: 'projects', label: 'Projects' },
+  { id: 'insights', label: 'Insights' },
   { id: 'contact', label: 'Contact' },
 ]

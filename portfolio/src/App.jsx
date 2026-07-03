@@ -5,6 +5,7 @@ import About from './components/About.jsx'
 import Experience from './components/Experience.jsx'
 import Expertise from './components/Expertise.jsx'
 import Projects from './components/Projects.jsx'
+import Insights from './components/Insights.jsx'
 import Contact from './components/Contact.jsx'
 import Footer from './components/Footer.jsx'
 
@@ -25,6 +26,7 @@ export default function App() {
         <Experience />
         <Expertise />
         <Projects />
+        <Insights />
         <Contact />
       </main>
       <Footer />
