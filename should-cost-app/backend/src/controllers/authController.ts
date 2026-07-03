@@ -4,6 +4,7 @@ import pool from '../db/pool';
 import { generateToken } from '../middleware/auth';
 import { generateOtp, saveOtp, verifyOtp } from '../services/otpService';
 import { sendOtpEmail } from '../services/emailService';
+import { DEFAULT_ORG_ID } from '../middleware/orgScope';
 
 // Returning the OTP in the HTTP response is a local-dev convenience ONLY.
 // It is gated behind an explicit opt-in flag that is intentionally set
@@ -36,6 +37,7 @@ export async function login(req: Request, res: Response): Promise<void> {
   const token = generateToken({
     sub: user.id, email: user.email, role: user.role_name,
     supplierId: user.supplier_id ?? undefined,
+    orgId: user.org_id ?? DEFAULT_ORG_ID,
   });
 
   res.json({

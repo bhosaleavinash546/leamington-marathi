@@ -192,6 +192,7 @@ export interface JwtPayload {
   email: string;
   role: string;
   supplierId?: number;
+  orgId?: string;    // organization (tenant) id — used for row-level isolation
   iat?: number;
   exp?: number;
 }

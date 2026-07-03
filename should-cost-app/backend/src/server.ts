@@ -37,6 +37,11 @@ import { startWeeklyDigest, generateAndSendDigest } from './services/weeklyDiges
 import { scheduledEmailDigest } from './controllers/emailDigestController';
 import { startCommodityPriceScheduler } from './services/commodityPriceService';
 import { requireAuth, requireRole } from './middleware/auth';
+import { validateEnv } from './config/env';
+
+// Fail fast on insecure/missing critical env (JWT secret, DATABASE_URL,
+// ALLOW_DEV_OTP in prod) before the app starts accepting traffic.
+validateEnv();
 
 const app  = express();
 const PORT = process.env.PORT ?? 4000;

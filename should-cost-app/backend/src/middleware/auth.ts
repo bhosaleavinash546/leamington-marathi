@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { JwtPayload } from '../models/types';
+import { resolveJwtSecret } from '../config/env';
 
 // Extend Express Request so downstream handlers can read req.user
 declare global {
@@ -11,7 +12,9 @@ declare global {
   }
 }
 
-const JWT_SECRET = process.env.JWT_SECRET ?? 'dev_secret_change_me';
+// Resolved once at module load. In production this throws if the secret is
+// missing/placeholder; in dev it falls back with a loud warning.
+const JWT_SECRET = resolveJwtSecret();
 
 // ---------------------------------------------------------------
 // requireAuth — verifies the Bearer token in Authorization header.
