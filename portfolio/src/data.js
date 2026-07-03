@@ -207,11 +207,56 @@ export const insights = [
   { src: certVma, title: 'SAVE International — Value Methodology Associate', tag: 'Certification' },
 ]
 
+// LinkedIn recommendations.
+export const recommendations = [
+  {
+    name: 'Dilip Sarode',
+    initials: 'DS',
+    role: 'Deputy General Manager, TAL Manufacturing Solutions',
+    relation: 'Senior to Avinash · Tata Technologies',
+    quote:
+      'Avinash is a person with strong ownership and striving for results all the time. Creative, energetic, solutions-oriented, highly committed and motivated, with good interpersonal skills. He is an asset to any company.',
+  },
+  {
+    name: 'Dilip Gowaikar',
+    initials: 'DG',
+    role: 'Value Engineering Consultant',
+    relation: "Avinash's mentor",
+    quote:
+      'Avinash is a very enthusiastic personality and grasped knowledge of Value Methodology very well. I am really very glad to recommend him for VAVE competency for any assignment.',
+  },
+  {
+    name: 'Bharath Kumar S T',
+    initials: 'BK',
+    role: 'Senior Leader, Techno-Commercial, Manufacturing Industry',
+    relation: 'Worked on the same team',
+    quote:
+      'I have worked with Avinash for Value Engineering projects on steel-industry equipment. He has good knowledge and experience in setting up and applying the Value Engineering process — a hard-working, focused individual and a quick learner, ready to take calculated risks.',
+  },
+  {
+    name: 'Abhishek Hazra',
+    initials: 'AH',
+    role: 'GM China & Associate VP SEA, Tata Technologies',
+    relation: 'Worked on the same team',
+    quote:
+      'Avinash has been an avid explorer of technology. Closely associated in customer-success projects, he has been a true doer even in the most challenging environments across global customers. Keep the inquisitiveness high — it will take you places.',
+  },
+  {
+    name: 'Akhil Desai',
+    initials: 'AD',
+    role: 'Sr. Technical Lead — Engineering ER&D, Tata Technologies',
+    relation: 'Worked on the same team',
+    quote:
+      'Worked with Avinash on a couple of projects — he is good technically, good in presentation, and has good knowledge of managing the customer as well as the internal team.',
+  },
+]
+
 export const nav = [
   { id: 'about', label: 'About' },
   { id: 'experience', label: 'Experience' },
   { id: 'expertise', label: 'Expertise' },
   { id: 'projects', label: 'Projects' },
   { id: 'insights', label: 'Insights' },
+  { id: 'praise', label: 'Praise' },
   { id: 'contact', label: 'Contact' },
 ]
