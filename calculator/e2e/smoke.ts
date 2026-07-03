@@ -115,6 +115,24 @@ async function main(): Promise<void> {
     const hasRateLib = await page.locator('details:has-text("Rate Library")').count();
     if (hasRateLib < 1) throw new Error('Rate Library provenance panel missing');
 
+    // 6. Regression guard: the SW panel hides the Calculate button. Switching to
+    // a standard commodity must restore it (switchCommodity used to leak the
+    // hidden state, so the results tabs — Breakdown / AI Insights / DFM-DFA —
+    // never appeared for any commodity after visiting SW / AI Agent).
+    await page.click('#new-costing-btn', { timeout: 15_000 });
+    await page.click('.cpicker-tile[data-commodity="machining"]', { timeout: 15_000 });
+    await page.waitForSelector('#costing-view', { state: 'visible', timeout: 15_000 });
+    if (!(await page.locator('#calc-btn').isVisible())) {
+      throw new Error('Calculate button hidden after SW → machining switch (results tabs would never render)');
+    }
+    await page.click('#load-ref-btn', { timeout: 15_000 });
+    await page.waitForTimeout(300);
+    await page.click('#calc-btn', { timeout: 15_000 });
+    await page.waitForSelector('#results-tabs', { state: 'visible', timeout: 15_000 });
+    const rtabCount = await page.locator('.rtab').count();
+    if (rtabCount < 3) throw new Error(`Results tab bar missing after Calculate (got ${rtabCount} tabs)`);
+    log(`results tabs render after commodity switch (${rtabCount} tabs)`);
+
     if (pageErrors.length) {
       throw new Error(`Uncaught page error(s):\n  - ${pageErrors.join('\n  - ')}`);
     }

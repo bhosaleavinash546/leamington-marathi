@@ -9000,6 +9000,15 @@ function switchCommodity(type: CommodityType): void {
   const calcBtn = el('calc-btn');
   if (type !== 'assembly') calcBtn.textContent = 'Calculate';
 
+  // Restore the default-visible controls before the per-commodity switch below
+  // re-hides them. The AI Agent and Automotive Software panels set these to
+  // display:none; without this reset that state leaked into every subsequent
+  // standard commodity — hiding Calculate so the results tabs (Breakdown /
+  // AI Insights / DFM-DFA) could never appear.
+  calcBtn.style.display = '';
+  const universalCostsEl = document.getElementById('universal-costs');
+  if (universalCostsEl) universalCostsEl.style.display = '';
+
   // Show/hide part-name for non-assembly modes
   const partNameWrap = el('part-name').closest<HTMLElement>('div[style]');
   if (partNameWrap) partNameWrap.style.display = type === 'assembly' ? 'none' : '';
