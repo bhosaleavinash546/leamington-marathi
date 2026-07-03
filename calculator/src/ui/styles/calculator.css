@@ -761,7 +761,15 @@ textarea.contact-form-input { resize: vertical; min-height: 100px; }
   position: sticky;
   top: 0;
   z-index: 10;
+  /* Keep every tab reachable at any panel width. Without this the narrower
+     classic/demo results column clips the rightmost tabs (DFM-DFA, Upload)
+     against .layout{overflow:hidden} — so the tab bar scrolls instead. */
+  overflow-x: auto;
+  scrollbar-width: thin;
+  scroll-snap-type: x proximity;
 }
+.results-tabs::-webkit-scrollbar { height: 6px; }
+.results-tabs::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 
 .rtab {
   border: none;
@@ -775,6 +783,9 @@ textarea.contact-form-input { resize: vertical; min-height: 100px; }
   margin-bottom: -1px;
   transition: all var(--transition);
   font-family: var(--font);
+  /* Never shrink/wrap tabs into an unreadable/clipped state — scroll instead. */
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 .rtab:hover { color: var(--accent); }
 .rtab.active { color: var(--accent); border-bottom-color: var(--accent); }
