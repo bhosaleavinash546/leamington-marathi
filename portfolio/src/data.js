@@ -3,6 +3,7 @@
 // components read everything from these exports.
 // Source: Avinash Bhosale LinkedIn profile.
 // ---------------------------------------------------------------------------
+import headshot from './assets/headshot.jpg'
 
 // To use a real headshot: drop the file in src/assets/ and set
 //   import photo from './assets/headshot.jpg'
@@ -11,7 +12,7 @@
 export const profile = {
   name: 'Avinash Bhosale',
   initials: 'AB',
-  photo: '',
+  photo: headshot,
   title: 'Senior Cost Improvement Engineer — Propulsion',
   tagline:
     'AI-Driven Value Engineering & Cost Intelligence · Benchmarking · Should Costing',
