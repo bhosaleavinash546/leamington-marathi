@@ -45,6 +45,10 @@ export interface CastAndMachineInputs {
   impregnationCostPerPart?: number;
   /** Deburring / fettling cost per part */
   deburringCostPerPart?: number;
+  /** Hot isostatic pressing cost per kg — closes micro-porosity for aero/safety-critical castings */
+  hipCostPerKg?: number;
+  /** Non-destructive test (X-ray/CT) cost per part — safety-critical porosity screening */
+  ndtCostPerPart?: number;
   /** Post-casting labour ID (for heat treat/shot blast operations) */
   postCastLabourId?: string;
   /** Post-casting machine ID (heat treat furnace) */
@@ -109,9 +113,11 @@ export function computeCastAndMachineDrivers(inputs: CastAndMachineInputs): Comm
   // 4. Aggregate post-casting consumable costs into material line
   const postCastCost =
     (inputs.heatTreatmentCostPerKg ?? 0) * inputs.castPartWeightKg +
+    (inputs.hipCostPerKg ?? 0) * inputs.castPartWeightKg +
     (inputs.shotBlastCostPerPart ?? 0) +
     (inputs.impregnationCostPerPart ?? 0) +
-    (inputs.deburringCostPerPart ?? 0);
+    (inputs.deburringCostPerPart ?? 0) +
+    (inputs.ndtCostPerPart ?? 0);
 
   const finalRawMaterial = postCastCost > 0
     ? {
