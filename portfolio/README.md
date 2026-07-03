@@ -1,45 +1,60 @@
 # Avinash Bhosale — Portfolio
 
-A fast, single-page personal portfolio. Pure static HTML/CSS/JS — no build step, no
-dependencies. Works on GitHub Pages, Netlify, or any static host.
+A professional, animated personal portfolio for **Avinash Bhosale** — Senior Cost
+Improvement Engineer (Propulsion) and builder of AI-powered cost-intelligence platforms.
 
-## Files
+Built with **React + Vite**, motion by **Framer Motion**, and data visualisations with
+**Recharts**. Fonts are self-hosted (Inter + Sora) so the site is fully self-contained —
+no runtime CDN calls.
 
-| File | Purpose |
-|------|---------|
-| `index.html` | All the content and structure |
-| `style.css` | Styling, colours, layout, dark/light theme |
-| `script.js` | Theme toggle, mobile menu, scroll animations |
-| `.nojekyll` | Tells GitHub Pages to serve files as-is |
+## Highlights
 
-## Personalise it (5 minutes)
+- Animated hero with an orbiting skill badge and live scroll-progress bar
+- Scroll-reveal motion on every section (respects `prefers-reduced-motion`)
+- Count-up stat band
+- Vertical career timeline (JLR → John Deere → Tata Technologies)
+- **Charts:** tenure-by-organisation bar chart + core-competency radar
+- AI platform showcase — BrainSpark, CostLens, CostVision
+- Fully responsive with a mobile nav; refined dark "gold on navy" theme
 
-All placeholder text is wrapped in double brackets like `[[ this ]]`.
-Open `index.html`, search for `[[`, and replace each one with your real details:
+## Run locally
 
-- **Hero** — headline, tagline, location, role, social links
-- **About** — your LinkedIn "About" summary + the three stat numbers
-- **Experience** — one timeline block per role (title, company, dates, bullets)
-- **Skills** — group names and skill chips
-- **Projects** — name, description, tags, link per card
-- **Contact** — email and LinkedIn URL
+```bash
+npm install
+npm run dev      # http://localhost:5173
+npm run build    # production build → dist/
+npm run preview  # preview the built site
+```
 
-To add or remove an item (a job, a project, a skill), copy or delete the matching
-block in `index.html`. The layout adjusts automatically.
+## Edit the content
 
-## Deploy on GitHub Pages
+Everything lives in **`src/data.js`** — profile, stats, experience, projects, skills,
+certifications, awards, education, and the chart data. Change the text there and the whole
+site updates. Colours are CSS variables at the top of `src/index.css` (`--accent` re-skins
+the site).
 
-1. Create a new repository (e.g. `avinash-bhosale-portfolio`).
-2. Put these files in the repository **root** (not in a subfolder).
-3. Repo **Settings → Pages → Build and deployment → Deploy from a branch**.
-4. Choose branch `main` and folder `/ (root)`, then **Save**.
-5. Your site goes live at `https://<username>.github.io/<repo>/` within a minute or two.
+## Deploy to GitHub Pages
 
-Want a custom domain? Add a `CNAME` file containing just your domain, and point the
-domain's DNS at GitHub Pages.
+The repo includes a ready-made workflow at `.github/workflows/deploy.yml`.
 
-## Theme
+1. Create a new GitHub repository (e.g. `avinash-bhosale-portfolio`).
+2. Put **the contents of this folder at the repository root** (so `package.json` and
+   `.github/` sit at the top level).
+3. In the repo: **Settings → Pages → Build and deployment → Source → GitHub Actions**.
+4. Push to `main`. The workflow builds the site and publishes it automatically.
 
-The site follows the visitor's system light/dark preference and remembers the toggle
-choice. Colours live at the top of `style.css` under `:root` — change `--accent` to
-re-skin the whole site.
+Prefer a custom domain? Add a `public/CNAME` file containing just your domain, then point
+the domain's DNS at GitHub Pages.
+
+> Note: this folder currently lives inside the Leamington Marathi repo only as a staging
+> area — it does not affect that live site. It is designed to move into its own repository.
+
+## Tech
+
+| Tool | Role |
+|------|------|
+| React 18 + Vite 6 | App framework & build |
+| Framer Motion | Animation & scroll reveals |
+| Recharts | Bar + radar charts |
+| lucide-react | Icons |
+| @fontsource | Self-hosted Inter & Sora fonts |
