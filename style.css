@@ -675,17 +675,28 @@ html:not(.js) .procession-marker { display: none; }
 
 /* ---------- Event flyers ---------- */
 .flyers-row {
+  overflow: hidden;
+  padding: 6px 0 18px;
+}
+/* The track holds two identical sets of flyers and slides right-to-left forever.
+   Moving by half its width (plus half a gap) lands exactly on the duplicate set,
+   so the loop is seamless. Pure CSS — works without JavaScript too. */
+.flyers-track {
   display: flex;
   gap: 22px;
-  overflow-x: auto;
-  scroll-snap-type: x proximity;
-  padding: 6px 4px 18px;
-  scrollbar-width: thin;
+  width: max-content;
+  animation: flyers-slide 42s linear infinite;
+}
+@keyframes flyers-slide {
+  to { transform: translateX(calc(-50% - 11px)); }
+}
+.flyers-row:hover .flyers-track,
+.flyers-row:focus-within .flyers-track {
+  animation-play-state: paused;
 }
 .flyer-card {
   margin: 0;
   flex-shrink: 0;
-  scroll-snap-align: center;
   background: var(--white);
   border-radius: var(--radius);
   padding: 10px 10px 6px;
@@ -1310,6 +1321,14 @@ footer p { margin: 6px 0; font-size: 0.95rem; }
 @media (prefers-reduced-motion: reduce) {
   .reveal, .js .reveal { opacity: 1; transform: none; transition: none; }
   html { scroll-behavior: auto; }
+  /* Flyers: no marquee — swipe/scroll through them by hand instead */
+  .flyers-track { animation: none; }
+  .flyers-row {
+    overflow-x: auto;
+    scroll-snap-type: x proximity;
+    scrollbar-width: thin;
+    padding: 6px 4px 18px;
+  }
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
