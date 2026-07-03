@@ -6424,6 +6424,7 @@ async function analyzePCBImages(): Promise<void> {
     let buffer = '';
     type StreamResult = { success: boolean; analysis: PCBImageAnalysis; selectedCountry?: string; selectedCountryBreakdown?: PCBCountryBreakdown; countryComparison?: PCBCountryBreakdown[]; volumeCurves?: Record<string, VolumeCurvePoint[]>; complexityScore?: PCBComplexityScore; confidenceBand?: PCBConfidenceBand; volumeMultiplier?: number; sanityWarnings?: SanityWarning[]; npiBreakdown?: NPIBreakdown; livePriceHits?: number; asilLevel?: string; asilRationale?: string; asilSafetyFunctions?: string[]; automotiveNRE?: AutomotiveNRE; automotiveGradeEnforcedCount?: number; singleSourceWarnings?: SingleSourceWarning[]; conformalCoatingCost?: number; automotiveAssemblyCost?: AutomotiveAssemblyCost; automotiveFabAdjustment?: AutomotiveFabAdjustment; bomCompleteness?: BOMCompletenessResult; programPricing?: ProgramPricingResult };
     let data: StreamResult | null = null;
+    let streamError: string | null = null;
     while (true) {
       const { done, value } = await reader.read();
       if (done) break;
@@ -6433,22 +6434,26 @@ async function analyzePCBImages(): Promise<void> {
       for (const chunk of lines) {
         const line = chunk.replace(/^data: /, '').trim();
         if (!line) continue;
+        // Parse the SSE frame — a malformed chunk is ignored, but a well-formed
+        // `error` event must surface (it was previously swallowed by this catch).
+        let evt: Record<string, unknown> | null = null;
         try {
-          const evt = JSON.parse(line) as Record<string, unknown>;
-          if (evt.type === 'progress') {
-            const pct = Number(evt.pct ?? 0);
-            const label = String(evt.label ?? '');
-            if (analyzeBtn) analyzeBtn.textContent = `⏳ ${label}`;
-            if (zone) zone.title = `${pct}% — ${label}`;
-          } else if (evt.type === 'error') {
-            throw new Error(String(evt.message ?? 'Stream error'));
-          } else if (evt.type === 'complete') {
-            data = evt as unknown as StreamResult;
-          }
-        } catch (_parseErr) { /* ignore parse errors on individual SSE chunks */ }
+          evt = JSON.parse(line) as Record<string, unknown>;
+        } catch (_parseErr) { continue; /* ignore parse errors on individual SSE chunks */ }
+        if (evt.type === 'progress') {
+          const pct = Number(evt.pct ?? 0);
+          const label = String(evt.label ?? '');
+          if (analyzeBtn) analyzeBtn.textContent = `⏳ ${label}`;
+          if (zone) zone.title = `${pct}% — ${label}`;
+        } else if (evt.type === 'error') {
+          streamError = String(evt.message ?? 'Stream error');
+        } else if (evt.type === 'complete') {
+          data = evt as unknown as StreamResult;
+        }
       }
     }
-    if (!data || !data.analysis) throw new Error('Analysis result empty');
+    if (streamError) throw new Error(streamError);
+    if (!data || !data.analysis) throw new Error('Analysis result empty — the server closed the stream before finishing (possible timeout or crash during Stage 3). Try again, reduce to 1–2 images, or attach a BOM file.');
     pcbImageResult = data.analysis;
     // Attach country data to analysis object for rendering
     if (pcbImageResult) {

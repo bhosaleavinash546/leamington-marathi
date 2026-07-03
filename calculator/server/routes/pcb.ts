@@ -1035,7 +1035,7 @@ router.post('/analyze-image', upload.fields([
     // ── Attempt 1: Full vision analysis (all images) ─────────────────────
     const msg1 = await anthropic.messages.create({ temperature: 0,
       model: 'claude-sonnet-4-6',
-      max_tokens: 8192,
+      max_tokens: 16384,
       system: specialistSystem,
       messages: [{
         role: 'user',
@@ -1058,7 +1058,7 @@ router.post('/analyze-image', upload.fields([
       // ── Attempt 2: Send raw response back to Claude for JSON repair ────
       const msg2 = await anthropic.messages.create({ temperature: 0,
         model: 'claude-sonnet-4-6',
-        max_tokens: 8192,
+        max_tokens: 16384,
         system: 'You are a JSON repair assistant. Return ONLY valid JSON — nothing else. Start with { and end with }.',
         messages: [{ role: 'user', content: buildRepairPrompt(lastRaw) }],
       });
@@ -1421,7 +1421,7 @@ router.post('/reanalyze', upload.fields([
 
     const msg1 = await anthropic.messages.create({ temperature: 0,
       model: 'claude-sonnet-4-6',
-      max_tokens: 8192,
+      max_tokens: 16384,
       system: specialistSystem,
       messages: [{
         role: 'user',
@@ -1442,7 +1442,7 @@ router.post('/reanalyze', upload.fields([
       // ── Attempt 2: JSON repair ────────────────────────────────────────
       const msg2 = await anthropic.messages.create({ temperature: 0,
         model: 'claude-sonnet-4-6',
-        max_tokens: 8192,
+        max_tokens: 16384,
         system: 'You are a JSON repair assistant. Return ONLY valid JSON — nothing else. Start with { and end with }.',
         messages: [{ role: 'user', content: buildRepairPrompt(lastRaw) }],
       });
@@ -1806,22 +1806,49 @@ router.post('/analyze-image-stream', upload.fields([
   const userPromptText2 = buildUserPrompt(ocrResult, stage1Result, domain, reqOrderQty2) + multiNote + (parsedBOM2.length > 0 ? buildParsedBOMContext(parsedBOM2) : '');
 
   let analysis: unknown;
+  let stage3Raw = '';
+  // ── Stage 3 attempt 1: full vision analysis ──────────────────────────────
   try {
     const msg = await anthropic.messages.create({ temperature: 0,
-      model: 'claude-sonnet-4-6', max_tokens: 8192, system: specSystem,
+      model: 'claude-sonnet-4-6', max_tokens: 16384, system: specSystem,
       messages: [{ role: 'user', content: [
         ...buildImageContentBlocks(imageFiles, imageLabels, multiImage),
         { type: 'text', text: userPromptText2 },
       ]}],
     });
-    const raw = msg.content[0]?.type === 'text' ? msg.content[0].text : '';
-    analysis = JSON.parse(extractJSON(raw));
-    emit('stage3', { partName: (analysis as Record<string, unknown>).partName, confidence: (analysis as Record<string, unknown>).confidenceLevel });
+    stage3Raw = msg.content[0]?.type === 'text' ? msg.content[0].text : '';
   } catch (err) {
-    emit('error', { message: `Stage 3 failed: ${(err as Error).message}` });
+    emit('error', { message: `Stage 3 AI service error: ${(err as Error).message}` });
     res.end();
     return;
   }
+  try {
+    analysis = JSON.parse(extractJSON(stage3Raw));
+  } catch (parseErr) {
+    // ── Attempt 2: JSON repair (mirrors the non-streaming handler) ──────────
+    console.warn('[PCB/stream] Stage 3 JSON parse failed, attempting repair:', String(parseErr));
+    console.warn('[PCB/stream] Raw (first 500):', stage3Raw.slice(0, 500));
+    emit('progress', { stage: 3, label: 'Stage 3 — repairing AI response', pct: 60 });
+    try {
+      const repair = await anthropic.messages.create({ temperature: 0,
+        model: 'claude-sonnet-4-6', max_tokens: 16384,
+        system: 'You are a JSON repair assistant. Return ONLY valid JSON — nothing else. Start with { and end with }.',
+        messages: [{ role: 'user', content: buildRepairPrompt(stage3Raw) }],
+      });
+      const repairRaw = repair.content[0]?.type === 'text' ? repair.content[0].text : '';
+      analysis = JSON.parse(extractJSON(repairRaw));
+    } catch (repairErr) {
+      emit('error', { message: `Stage 3 could not produce valid JSON after repair: ${(repairErr as Error).message}. The response was likely truncated — try fewer images or attach a BOM file.` });
+      res.end();
+      return;
+    }
+  }
+  if (!analysis || typeof analysis !== 'object') {
+    emit('error', { message: 'Stage 3 returned an empty analysis result.' });
+    res.end();
+    return;
+  }
+  emit('stage3', { partName: (analysis as Record<string, unknown>).partName, confidence: (analysis as Record<string, unknown>).confidenceLevel });
 
   emit('progress', { stage: 4, label: 'Stage 4 — Cost breakdown & country comparison', pct: 85 });
 
