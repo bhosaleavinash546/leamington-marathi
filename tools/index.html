@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Should-Cost Engineering Tools</title>
+  <meta name="description" content="A hub of parameterized should-cost models: Automotive IVI SoC ($/die & total product cost) and a 360° PCB should-cost model (all PCB types, 2026 data, AI advisor)." />
+  <style>
+    :root{
+      --bg:#05060a; --panel:#0e111c; --panel2:#121627; --line:#1f2740; --line2:#2b3556;
+      --ink:#e8ecff; --soft:#8b95bf; --dim:#5a648f;
+      --cyan:#00e5ff; --magenta:#ff2bd6; --lime:#6cff3f; --violet:#a06bff; --amber:#ffcf33;
+      --glow-cyan:0 0 14px rgba(0,229,255,.55); --glow-mag:0 0 14px rgba(255,43,214,.5);
+      --shadow:0 10px 40px rgba(0,0,0,.55);
+    }
+    *{box-sizing:border-box;} html,body{margin:0;}
+    body{
+      font-family:"Segoe UI",-apple-system,BlinkMacSystemFont,Roboto,Helvetica,Arial,sans-serif;
+      color:var(--ink); min-height:100vh; line-height:1.55;
+      background:
+        radial-gradient(1100px 560px at 12% -12%, rgba(0,229,255,.10), transparent 60%),
+        radial-gradient(1000px 520px at 100% 0%, rgba(255,43,214,.09), transparent 55%),
+        radial-gradient(900px 500px at 50% 120%, rgba(160,107,255,.08), transparent 60%),
+        var(--bg);
+    }
+    header{padding:52px 24px 20px; text-align:center; max-width:1100px; margin:0 auto;}
+    .kicker{font-size:.78rem; letter-spacing:3px; text-transform:uppercase; color:var(--cyan); text-shadow:var(--glow-cyan); font-weight:700;}
+    h1{
+      font-size:clamp(1.8rem,4.5vw,3rem); margin:12px 0 8px; font-weight:900; letter-spacing:.4px;
+      background:linear-gradient(90deg,var(--cyan),#fff 55%,var(--magenta));
+      -webkit-background-clip:text; background-clip:text; color:transparent;
+    }
+    header p{color:var(--soft); font-size:1rem; max-width:680px; margin:0 auto;}
+    main{max-width:1100px; margin:0 auto; padding:24px 24px 40px;}
+    .grid{display:grid; grid-template-columns:1fr 1fr; gap:22px;}
+    @media (max-width:820px){ .grid{grid-template-columns:1fr;} }
+    .card{
+      position:relative; background:linear-gradient(180deg,var(--panel),var(--panel2));
+      border:1px solid var(--line); border-radius:18px; padding:24px; box-shadow:var(--shadow);
+      display:flex; flex-direction:column; overflow:hidden; transition:transform .12s, border-color .2s, box-shadow .2s;
+    }
+    .card:hover{transform:translateY(-4px);}
+    .card.soc:hover{border-color:var(--cyan); box-shadow:0 14px 46px rgba(0,229,255,.18);}
+    .card.pcb:hover{border-color:var(--magenta); box-shadow:0 14px 46px rgba(255,43,214,.18);}
+    .card .glow{position:absolute; inset:-1px -1px auto -1px; height:3px;}
+    .card.soc .glow{background:linear-gradient(90deg,var(--cyan),var(--violet)); box-shadow:var(--glow-cyan);}
+    .card.pcb .glow{background:linear-gradient(90deg,var(--magenta),var(--amber)); box-shadow:var(--glow-mag);}
+    .badge{display:inline-flex; align-items:center; gap:8px; font-size:.68rem; font-weight:900; letter-spacing:1px;
+      text-transform:uppercase; padding:5px 11px; border-radius:999px; width:fit-content;}
+    .card.soc .badge{background:rgba(0,229,255,.12); color:var(--cyan); border:1px solid rgba(0,229,255,.35);}
+    .card.pcb .badge{background:rgba(255,43,214,.12); color:var(--magenta); border:1px solid rgba(255,43,214,.35);}
+    .card h2{font-size:1.35rem; margin:14px 0 6px; color:#fff; font-weight:800;}
+    .card .tagline{color:var(--soft); font-size:.9rem; margin:0 0 14px;}
+    ul.feat{list-style:none; padding:0; margin:0 0 18px; display:flex; flex-direction:column; gap:8px;}
+    ul.feat li{font-size:.85rem; color:var(--ink); display:flex; gap:9px; align-items:flex-start;}
+    ul.feat li::before{content:"▹"; color:var(--lime); font-weight:900; text-shadow:0 0 8px rgba(108,255,63,.5);}
+    .metrics{display:flex; gap:10px; flex-wrap:wrap; margin:0 0 18px;}
+    .chip{font-size:.72rem; font-variant-numeric:tabular-nums; background:#070912; border:1px solid var(--line2);
+      border-radius:8px; padding:6px 9px; color:var(--soft);}
+    .chip b{color:var(--ink);}
+    .actions{margin-top:auto; display:flex; gap:10px; flex-wrap:wrap; align-items:center;}
+    .btn{text-decoration:none; border-radius:10px; padding:11px 18px; font-size:.86rem; font-weight:800; letter-spacing:.3px;
+      display:inline-flex; align-items:center; gap:8px; transition:box-shadow .18s, transform .05s;}
+    .btn:active{transform:translateY(1px);}
+    .card.soc .btn.primary{background:var(--cyan); color:#04121a; box-shadow:var(--glow-cyan);}
+    .card.pcb .btn.primary{background:var(--magenta); color:#1a0416; box-shadow:var(--glow-mag);}
+    .btn.primary:hover{filter:brightness(1.08);}
+    .btn.ghost{background:rgba(255,255,255,.05); color:var(--ink); border:1px solid var(--line2);}
+    .btn.ghost:hover{border-color:var(--cyan); color:var(--cyan);}
+    .note{max-width:1100px; margin:8px auto 0; padding:0 24px; color:var(--dim); font-size:.78rem; text-align:center;}
+    footer{max-width:1100px; margin:26px auto 50px; padding:18px 24px 0; border-top:1px solid var(--line);
+      display:flex; justify-content:space-between; align-items:center; gap:14px; flex-wrap:wrap;
+      color:var(--dim); font-size:.8rem;}
+    footer a{color:var(--soft); text-decoration:none;}
+    footer a:hover{color:var(--cyan);}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="kicker">Should-Cost Engineering</div>
+    <h1>Cost Model Toolkit</h1>
+    <p>Parameterized, transparent should-cost models for automotive electronics — from silicon to circuit board. Pick a tool to estimate unit cost, run scenarios, and generate design-for-cost ideas.</p>
+  </header>
+
+  <main>
+    <div class="grid">
+      <!-- SoC -->
+      <div class="card soc">
+        <div class="glow"></div>
+        <span class="badge">◈ Silicon</span>
+        <h2>Automotive IVI SoC Should-Cost Model</h2>
+        <p class="tagline">Unit silicon cost ($/die) &amp; total product cost ($/SoC) for a fabless In-Vehicle Infotainment SoC, 2025–2026.</p>
+        <div class="metrics">
+          <span class="chip">Nodes <b>40nm → 5nm EUV</b></span>
+          <span class="chip">Accuracy <b>90–95%</b></span>
+          <span class="chip">Volume <b>100k–10M/yr</b></span>
+        </div>
+        <ul class="feat">
+          <li>Dies-per-wafer (edge loss) + negative-binomial defect yield</li>
+          <li>Package, assembly, test, IP royalty + amortized NRE</li>
+          <li>AEC-Q100 / ASIL adders, scenario compare, sensitivity</li>
+        </ul>
+        <div class="actions">
+          <a class="btn primary" href="../soc-cost-model/index.html">Open tool →</a>
+          <a class="btn ghost" href="../soc-cost-model/soc-cost-model.html">Single-file</a>
+        </div>
+      </div>
+
+      <!-- PCB -->
+      <div class="card pcb">
+        <div class="glow"></div>
+        <span class="badge">◈ Circuit board · 2026</span>
+        <h2>360° PCB Should-Cost Model</h2>
+        <p class="tagline">All PCB types — rigid, HDI, any-layer/SLP, flex, rigid-flex, high-speed/RF, power. Layer count &amp; stack-up first, with an AI advisor.</p>
+        <div class="metrics">
+          <span class="chip">Materials <b>13</b></span>
+          <span class="chip">Gold-price <b>aware</b></span>
+          <span class="chip">AI advisor <b>built-in + Claude</b></span>
+        </div>
+        <ul class="feat">
+          <li>2026 data: mSAP/SAP, back-drill, via-fill, HVLP foil, low-loss/RF</li>
+          <li>Updated labour/region indices + gold-price finish sensitivity</li>
+          <li>Process routing, DfC ideas, and generative Claude cost review</li>
+        </ul>
+        <div class="actions">
+          <a class="btn primary" href="../pcb-cost-model/index.html">Open tool →</a>
+          <a class="btn ghost" href="../pcb-cost-model/pcb-cost-model.html">Single-file</a>
+        </div>
+      </div>
+    </div>
+    <p class="note">All figures are industry-aligned engineering estimates for 2025–2026, not supplier quotes. Each tool is a self-contained static page — no build step, no dependencies.</p>
+  </main>
+
+  <footer>
+    <span>Cost Model Toolkit · self-contained · scenario-ready</span>
+    <span>Also in this repo: <a href="../index.html">Leamington Marathi community site →</a></span>
+  </footer>
+</body>
+</html>
