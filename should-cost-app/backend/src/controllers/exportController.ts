@@ -952,7 +952,11 @@ function escapeHtml(str: string): string {
 function toCsv(headers: string[], rows: (string | number | null | undefined)[][]): string {
   const escape = (v: string | number | null | undefined): string => {
     if (v == null) return '';
-    const s = String(v);
+    let s = String(v);
+    // Neutralize CSV/formula injection: a cell that a spreadsheet would
+    // interpret as a formula (leading = + - @, or tab/CR) is prefixed with a
+    // single quote so Excel/Sheets render it as literal text.
+    if (/^[=+\-@\t\r]/.test(s)) s = `'${s}`;
     return s.includes(',') || s.includes('"') || s.includes('\n')
       ? `"${s.replace(/"/g, '""')}"` : s;
   };
