@@ -146,21 +146,22 @@ export function validateIdea(raw, index = 0, ctx = {}) {
   idea.qualityScore = Math.max(0, Math.min(100, score));
   idea.validationFlags = flags;
 
-  // ── Evidence trust ───────────────────────────────────────────────────────
-  // Without live retrieval, the model's "verified"/"benchmarked" claims and the
-  // sources it cites are self-asserted from training data and cannot be treated
-  // as corroborated. Cap confidence and mark the evidence unverified so the UI
-  // never dresses an un-retrieved claim as confirmed fact. Only applied when the
-  // caller explicitly reports search did not run (unknown context = unchanged).
-  if (ctx.searchExecuted === false) {
-    idea.evidenceUnverified = true;
-    if (idea.confidenceLevel === 'verified' || idea.confidenceLevel === 'benchmarked') {
-      idea.confidenceLevel = 'estimated';
-      flags.push('confidence-capped-no-search');
+  // ── Evidence trust (per-idea) ────────────────────────────────────────────
+  // An idea is only treated as retrieval-backed when the batch actually ran a
+  // search that returned data (ctx.searchExecuted) AND this specific idea claims
+  // it used that data (raw.searchDataUsed). One lucky snippet must not "verify"
+  // every idea. When ctx is absent (unknown provenance, e.g. tests) leave as-is.
+  if (ctx.searchExecuted !== undefined) {
+    const searchBacked = ctx.searchExecuted === true && raw.searchDataUsed === true;
+    idea.searchDataUsed = searchBacked;                 // never trust the model's own claim
+    idea.evidenceUnverified = !searchBacked;
+    if (!searchBacked) {
+      if (idea.confidenceLevel === 'verified' || idea.confidenceLevel === 'benchmarked') {
+        idea.confidenceLevel = 'estimated';
+        flags.push('confidence-capped-no-search');
+      }
+      idea.evidenceSources = idea.evidenceSources.map(s => ({ ...s, confidence: 'low' }));
     }
-    idea.evidenceSources = idea.evidenceSources.map(s => ({ ...s, confidence: 'low' }));
-  } else if (ctx.searchExecuted === true) {
-    idea.evidenceUnverified = false;
   }
 
   return idea;

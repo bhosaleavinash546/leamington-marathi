@@ -82,10 +82,15 @@ test('caps confidence and marks evidence unverified when search did not run', ()
   assert.ok(v.validationFlags.includes('confidence-capped-no-search'));
 });
 
-test('preserves confidence and marks verified when live search ran', () => {
-  const v = validateIdea(goodIdea, 0, { searchExecuted: true });
-  assert.equal(v.confidenceLevel, 'benchmarked');
-  assert.equal(v.evidenceUnverified, false);
+test('preserves confidence only when live search ran AND the idea used it', () => {
+  const backed = validateIdea({ ...goodIdea, searchDataUsed: true }, 0, { searchExecuted: true });
+  assert.equal(backed.confidenceLevel, 'benchmarked');
+  assert.equal(backed.evidenceUnverified, false);
+  assert.equal(backed.searchDataUsed, true);
+  // search ran for the batch, but THIS idea didn't use it → still unverified
+  const notBacked = validateIdea({ ...goodIdea, searchDataUsed: false }, 0, { searchExecuted: true });
+  assert.equal(notBacked.evidenceUnverified, true);
+  assert.equal(notBacked.confidenceLevel, 'estimated');
 });
 
 test('no context leaves confidence untouched (unknown provenance)', () => {

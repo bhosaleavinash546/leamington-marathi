@@ -144,7 +144,10 @@ app.post('/api/should-cost', requireAuth, rateLimit(60, 60 * 60 * 1000), async (
   const cv   = (n) => Number(n) * rate;                       // EUR → target currency
   const fmt  = (n) => `${sym}${cv(n).toFixed(2)}`;            // EUR value → labelled string
   const total = calc.totalShouldCost;
-  const processCost = b.machine.value + b.labour.value + b.setup.value + b.tooling.value;
+  // Headline lines MUST sum to the total: conversion carries finishing, and the
+  // overhead line carries the commercial (packaging/freight) add.
+  const processCost = b.machine.value + b.labour.value + b.setup.value + b.finishing.value + b.tooling.value;
+  const overheadPlus = b.overhead.value + b.commercial.value + b.sgaProfit.value;
 
   // Converted copies of the raw figures the frontend renders directly, so those
   // numbers stay consistent with the labelled strings above.
@@ -186,7 +189,7 @@ app.post('/api/should-cost', requireAuth, rateLimit(60, 60 * 60 * 1000), async (
     fx: currency === 'EUR' ? null : { base: 'EUR', rate: Number(rate.toFixed(4)), asOf: fx.live ? fx.date : null, source: fx.source, stale: !!fx.stale },
     materialCost: fmt(b.material.value),
     processCost: fmt(processCost),
-    overheadCost: fmt(b.overhead.value + b.sgaProfit.value),
+    overheadCost: fmt(overheadPlus),
     totalShouldCost: fmt(total),
     totalValue: Number(cv(total).toFixed(2)),
     gapVsQuote,
@@ -200,7 +203,7 @@ app.post('/api/should-cost', requireAuth, rateLimit(60, 60 * 60 * 1000), async (
       `Tooling ${sym}${driversCv.toolingTotal.toLocaleString()} amortised over ${d.amortVolume.toLocaleString()} parts; scrap ${d.scrapPct}%.`,
       `Overhead and SG&A/profit applied per ${region} factory norms.`,
     ],
-    explanation: `Bottom-up should-cost for ${partName} is ${fmt(total)} per unit at ${Number(annualVolume).toLocaleString()}/yr. Material is ${b.material.pct}% of cost, conversion (machine+labour+setup) ${(b.machine.pct + b.labour.pct + b.setup.pct).toFixed(1)}%, tooling ${b.tooling.pct}%, overhead+SG&A ${(b.overhead.pct + b.sgaProfit.pct).toFixed(1)}%. Monte-Carlo P10–P90 range: ${fmt(sim.p10)}–${fmt(sim.p90)}.`,
+    explanation: `Bottom-up should-cost for ${partName} is ${fmt(total)} per unit at ${Number(annualVolume).toLocaleString()}/yr. Material is ${b.material.pct}% of cost, conversion (machine+labour+setup+finishing) ${(b.machine.pct + b.labour.pct + b.setup.pct + b.finishing.pct).toFixed(1)}%, tooling ${b.tooling.pct}%, overhead+commercial+SG&A ${(b.overhead.pct + b.commercial.pct + b.sgaProfit.pct).toFixed(1)}%. Monte-Carlo P10–P90 range: ${fmt(sim.p10)}–${fmt(sim.p90)}.`,
     negotiationLeverage: quotedCost && Number(quotedCost) > 0
       ? (Number(quotedCost) > cv(total)
           ? `Quote sits ${sym}${(Number(quotedCost) - cv(total)).toFixed(2)} above should-cost (above the P90 of ${fmt(sim.p90)}${Number(quotedCost) > cv(sim.p90) ? ' — outside the modelled range' : ''}). Challenge conversion and overhead; target ${fmt(sim.p50)}.`
@@ -214,7 +217,7 @@ app.post('/api/should-cost', requireAuth, rateLimit(60, 60 * 60 * 1000), async (
       const client = makeAnthropic(apiKey);
       const prompt = `You are a 20-year automotive cost engineer. A DETERMINISTIC should-cost model has produced these figures for "${partName}" (${matRes.key}, ${procRes.key}, ${weightKg}kg, ${Number(annualVolume).toLocaleString()}/yr, ${region}):
 - Total should-cost: ${fmt(total)} (Monte-Carlo P10–P90 ${fmt(sim.p10)}–${fmt(sim.p90)})
-- Material ${fmt(b.material.value)} | Machine ${fmt(b.machine.value)} | Labour ${fmt(b.labour.value)} | Tooling ${fmt(b.tooling.value)} | Overhead+SG&A ${fmt(b.overhead.value + b.sgaProfit.value)}
+- Material ${fmt(b.material.value)} | Machine ${fmt(b.machine.value)} | Labour ${fmt(b.labour.value)} | Finishing ${fmt(b.finishing.value)} | Tooling ${fmt(b.tooling.value)} | Overhead+Commercial+SG&A ${fmt(overheadPlus)}
 ${quotedCost ? `- Supplier quote: ${sym}${quotedCost} (gap ${gapVsQuote})` : ''}
 
 Do NOT change any number. Return ONLY JSON: {"explanation":"2-3 sentences interpreting these figures","negotiationLeverage":"1-2 sentence negotiation strategy","assumptions":["3-5 short engineering caveats specific to this part/process"]}`;

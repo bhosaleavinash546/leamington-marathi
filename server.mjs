@@ -17,6 +17,7 @@ import jwt from 'jsonwebtoken';
 import nodemailer from 'nodemailer';
 import Database from 'better-sqlite3';
 import { validateIdeas } from './idea-validation.mjs';
+import { getFxRates } from './fx-rates.mjs';
 import { registerShouldCostRoutes } from './routes/should-cost.mjs';
 import { registerRateLibraryRoutes } from './routes/rate-library.mjs';
 import { analyzeFeatures } from './src/services/cad-features.mjs';
@@ -294,10 +295,13 @@ function initCommodityPriceDb() {
   try {
     const storedVer = db.prepare("SELECT value FROM app_meta WHERE key = 'price_baseline_version'").get();
     if (!storedVer || storedVer.value !== PRICE_BASELINE_VERSION) {
-      db.prepare('DELETE FROM commodity_prices').run();
+      // Seed bumped: drop only rows OLDER than the new seed vintage, so genuinely
+      // newer live-refreshed prices survive (was: wiped everything → could move
+      // the system backwards from fresh data to older seed).
+      db.prepare('DELETE FROM commodity_prices WHERE updatedAt < ?').run(new Date(priceCache.lastRefresh).toISOString());
       db.prepare("INSERT INTO app_meta (key, value) VALUES ('price_baseline_version', ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value").run(PRICE_BASELINE_VERSION);
-      console.log(`[Prices] Baseline updated to ${PRICE_BASELINE_VERSION} — cleared stale persisted prices.`);
-      return;   // use the fresh in-memory baseline (already seeded)
+      console.log(`[Prices] Baseline updated to ${PRICE_BASELINE_VERSION} — cleared stale persisted prices (kept any newer live data).`);
+      // fall through: load any surviving newer rows over the seed
     }
     const rows = db.prepare('SELECT key, value, updatedAt FROM commodity_prices').all();
     let loaded = 0;
@@ -2989,12 +2993,17 @@ function setAnalysisCache(key, ideas, sources) {
     .run(key, JSON.stringify(ideas), JSON.stringify(sources), new Date().toISOString());
 }
 
-function buildCacheKey(config, systemName, subName, partName) {
+function buildCacheKey(config, systemName, subName, partName, userId) {
   const payload = JSON.stringify({
+    // Scope per user so one user's proprietary-context ideas can't be served to
+    // another, and hash the FULL prompt-relevant config (no truncation) so
+    // different contexts/programme lengths never collide.
+    user: userId || '',
     sys: systemName, sub: subName, part: partName || '',
     vehicle: config.vehicleType || '', body: config.bodyStyle || '',
     vol: config.annualVolume || '', region: config.plantRegion || '',
-    currency: config.currency || '', ctx: (config.additionalContext || '').slice(0, 200),
+    currency: config.currency || '', years: config.programmeLengthYears || '',
+    ctx: config.additionalContext || '',
   });
   return crypto.createHash('sha256').update(payload).digest('hex');
 }
@@ -3869,33 +3878,41 @@ async function refreshPriceCache(braveApiKey) {
   const now = Date.now();
   if (priceCache.lastRefresh && (now - priceCache.lastRefresh) < PRICE_CACHE_TTL) return priceCache.data;
 
+  // ccy = the currency the query asks for; the cache stores EUR, so USD hits are
+  // converted before the sanity-band check and store (was: stored raw → ~14% off).
   const searchGroups = [
-    { query: 'LME copper aluminium zinc nickel lead price USD per tonne 2025', keys: ['copper_lme', 'aluminium_lme', 'zinc_lme', 'nickel_lme', 'lead_lme'] },
-    { query: 'European steel HRC CRC price EUR per tonne hot rolled coil 2025', keys: ['steel_hrc_eu', 'steel_crc_eu', 'phs_22mnb5', 'dp980_ahss'] },
-    { query: 'lithium carbonate lithium hydroxide battery price USD per kg tonne 2025', keys: ['li_carbonate', 'li_hydroxide'] },
-    { query: 'cobalt nickel sulfate cathode material price per tonne 2025 battery', keys: ['cobalt_sulfate', 'nickel_sulfate', 'manganese_sulfate'] },
-    { query: 'natural graphite flake anode NMC LFP battery cell pack price per kWh 2025', keys: ['natural_graphite', 'nmc_cell', 'lfp_cell'] },
-    { query: 'neodymium praseodymium NdPr oxide rare earth price per kg 2025', keys: ['ndfeb_magnets', 'ndpr_oxide'] },
-    { query: 'dysprosium terbium oxide rare earth price USD per kg 2025', keys: ['dysprosium_oxide', 'terbium_oxide'] },
-    { query: 'SiC silicon carbide power module automotive price per kW 2025', keys: ['sic_module'] },
-    { query: 'PA6 PA66 GF30 nylon polypropylene ABS resin price per tonne kg 2025', keys: ['pa6_gf30', 'pa66_gf30', 'pp_td20', 'abs_auto', 'pom_acetal'] },
-    { query: 'magnesium ingot silicon electrical steel M270 price per tonne automotive 2025', keys: ['magnesium_ingot', 'silicon_steel_m270', 'stainless_304'] },
+    { ccy: 'USD', query: 'LME copper aluminium zinc nickel lead price USD per tonne 2025', keys: ['copper_lme', 'aluminium_lme', 'zinc_lme', 'nickel_lme', 'lead_lme'] },
+    { ccy: 'EUR', query: 'European steel HRC CRC price EUR per tonne hot rolled coil 2025', keys: ['steel_hrc_eu', 'steel_crc_eu', 'phs_22mnb5', 'dp980_ahss'] },
+    { ccy: 'USD', query: 'lithium carbonate lithium hydroxide battery price USD per kg tonne 2025', keys: ['li_carbonate', 'li_hydroxide'] },
+    { ccy: 'USD', query: 'cobalt nickel sulfate cathode material price USD per tonne 2025 battery', keys: ['cobalt_sulfate', 'nickel_sulfate', 'manganese_sulfate'] },
+    { ccy: 'USD', query: 'natural graphite flake anode NMC LFP battery cell pack price USD per kWh 2025', keys: ['natural_graphite', 'nmc_cell', 'lfp_cell'] },
+    { ccy: 'USD', query: 'neodymium praseodymium NdPr oxide rare earth price USD per kg 2025', keys: ['ndfeb_magnets', 'ndpr_oxide'] },
+    { ccy: 'USD', query: 'dysprosium terbium oxide rare earth price USD per kg 2025', keys: ['dysprosium_oxide', 'terbium_oxide'] },
+    { ccy: 'USD', query: 'SiC silicon carbide power module automotive price USD per kW 2025', keys: ['sic_module'] },
+    { ccy: 'EUR', query: 'PA6 PA66 GF30 nylon polypropylene ABS resin price EUR per tonne kg 2025', keys: ['pa6_gf30', 'pa66_gf30', 'pp_td20', 'abs_auto', 'pom_acetal'] },
+    { ccy: 'EUR', query: 'magnesium ingot silicon electrical steel M270 price EUR per tonne automotive 2025', keys: ['magnesium_ingot', 'silicon_steel_m270', 'stainless_304'] },
   ];
+
+  // USD→EUR rate (units of EUR per 1 USD); FX_FALLBACK when the feed is down.
+  const fx = await getFxRates().catch(() => null);
+  const usdPerEur = fx?.rates?.USD || 1.08;
+  const usdToEur = 1 / usdPerEur;
 
   let updatedCount = 0;
   try {
-    for (const { query, keys } of searchGroups) {
+    for (const { query, keys, ccy } of searchGroups) {
       const results = await performSearch(query, braveApiKey).catch(() => []);
       if (!results?.length) continue;
       const text = results.map(r => `${r.title} ${r.snippet}`).join(' ');
       for (const key of keys) {
         const extracted = extractCommodityPrice(text, key);
         if (extracted !== null) {
+          const value = ccy === 'USD' ? extracted * usdToEur : extracted;   // store EUR
           const [min, max] = PRICE_SANITY[key] || [0, Infinity];
-          if (extracted >= min && extracted <= max) {
-            priceCache.data[key].value = extracted;
+          if (value >= min && value <= max) {
+            priceCache.data[key].value = Number(value.toFixed(key.includes('_lme') || priceCache.data[key].unit === '€/t' ? 0 : 3));
             updatedCount++;
-            console.log(`[Prices] Updated ${key}: ${extracted} ${priceCache.data[key].unit}`);
+            console.log(`[Prices] Updated ${key}: ${priceCache.data[key].value} ${priceCache.data[key].unit}`);
           }
         }
       }
@@ -3905,8 +3922,12 @@ async function refreshPriceCache(braveApiKey) {
     console.log('[Prices] Web refresh failed, using persisted/baseline:', e.message);
   }
 
-  priceCache.lastRefresh = now;
-  await savePricesToDb();
+  // Only claim a fresh refresh (and persist) when something actually updated —
+  // otherwise a no-op/failed refresh would launder the static seed as "live".
+  if (updatedCount > 0) {
+    priceCache.lastRefresh = now;
+    await savePricesToDb();
+  }
   return priceCache.data;
 }
 
@@ -4498,15 +4519,20 @@ app.post('/api/analyze', requireAuth, rateLimit(40, 60 * 60 * 1000), async (req,
 
   // Check cache (only when search is disabled — search results are time-sensitive)
   if (!enableSearch && !cadGeometry) {
-    const cacheKey = buildCacheKey(config, sysName, subName, prtName);
+    const cacheKey = buildCacheKey(config, sysName, subName, prtName, req.user.id);
     const cached = analysisCache(cacheKey);
     if (cached) {
-      emit({ type: 'connecting', message: 'Loading cached analysis…' });
-      emit({ type: 'synthesizing', message: 'Restoring from cache…' });
       const projectId = crypto.randomUUID();
       autoSaveProject(req.user.id, projectId, sysName, subName, prtName, config, cached.ideas, cached.sources);
-      emit({ type: 'complete', ideas: cached.ideas, sources: cached.sources, projectId, cached: true });
-      res.end();
+      if (useSSE) {
+        emit({ type: 'connecting', message: 'Loading cached analysis…' });
+        emit({ type: 'synthesizing', message: 'Restoring from cache…' });
+        emit({ type: 'complete', ideas: cached.ideas, sources: cached.sources, projectId, cached: true });
+        res.end();
+      } else {
+        // Non-SSE callers (e.g. BOM analysis) expect a JSON body, not an SSE stream.
+        res.json({ ideas: cached.ideas, sources: cached.sources, projectId, cached: true });
+      }
       return;
     }
   }
@@ -4578,7 +4604,7 @@ app.post('/api/analyze', requireAuth, rateLimit(40, 60 * 60 * 1000), async (req,
 
         // Cache when search was disabled (results are deterministic)
         if (!enableSearch && !cadGeometry) {
-          const cacheKey = buildCacheKey(config, sysName, subName, prtName);
+          const cacheKey = buildCacheKey(config, sysName, subName, prtName, req.user.id);
           setAnalysisCache(cacheKey, ideas, sources);
         }
 
