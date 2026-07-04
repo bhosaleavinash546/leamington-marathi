@@ -33,13 +33,17 @@ export default function Recommendations() {
               <Quote className="rec-quote-mark" size={26} aria-hidden="true" />
               <blockquote className="rec-quote">{r.quote}</blockquote>
               <figcaption className="rec-person">
-                <span
-                  className="rec-avatar"
-                  style={{ background: avatarColors[i % avatarColors.length] }}
-                  aria-hidden="true"
-                >
-                  {r.initials}
-                </span>
+                {r.photo ? (
+                  <img className="rec-avatar rec-avatar-photo" src={r.photo} alt={r.name} loading="lazy" />
+                ) : (
+                  <span
+                    className="rec-avatar"
+                    style={{ background: avatarColors[i % avatarColors.length] }}
+                    aria-hidden="true"
+                  >
+                    {r.initials}
+                  </span>
+                )}
                 <span className="rec-meta">
                   <strong>{r.name}</strong>
                   <em>{r.role}</em>

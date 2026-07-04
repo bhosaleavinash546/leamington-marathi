@@ -9,6 +9,10 @@ import series2 from './assets/series-2.jpg'
 import series3 from './assets/series-3.jpg'
 import series4 from './assets/series-4.jpg'
 import certVma from './assets/certificate-vma.jpg'
+import recDilipSarode from './assets/avatars/dilip-sarode.jpg'
+import recAbhishekHazra from './assets/avatars/abhishek-hazra.jpg'
+import recAkhilDesai from './assets/avatars/akhil-desai.jpg'
+import recDilipGowaikar from './assets/avatars/dilip-gowaikar.jpg'
 
 // To use a real headshot: drop the file in src/assets/ and set
 //   import photo from './assets/headshot.jpg'
@@ -212,6 +216,7 @@ export const recommendations = [
   {
     name: 'Dilip Sarode',
     initials: 'DS',
+    photo: recDilipSarode,
     role: 'Deputy General Manager, TAL Manufacturing Solutions',
     relation: 'Senior to Avinash · Tata Technologies',
     quote:
@@ -220,6 +225,7 @@ export const recommendations = [
   {
     name: 'Dilip Gowaikar',
     initials: 'DG',
+    photo: recDilipGowaikar,
     role: 'Value Engineering Consultant',
     relation: "Avinash's mentor",
     quote:
@@ -236,6 +242,7 @@ export const recommendations = [
   {
     name: 'Abhishek Hazra',
     initials: 'AH',
+    photo: recAbhishekHazra,
     role: 'GM China & Associate VP SEA, Tata Technologies',
     relation: 'Worked on the same team',
     quote:
@@ -244,6 +251,7 @@ export const recommendations = [
   {
     name: 'Akhil Desai',
     initials: 'AD',
+    photo: recAkhilDesai,
     role: 'Sr. Technical Lead — Engineering ER&D, Tata Technologies',
     relation: 'Worked on the same team',
     quote:
