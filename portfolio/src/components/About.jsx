@@ -1,4 +1,4 @@
-import { Quote } from 'lucide-react'
+import { Quote, BadgeCheck, GraduationCap } from 'lucide-react'
 import { Reveal, Counter, motion } from './motion.jsx'
 import { profile, stats, certifications, education } from '../data.js'
 
@@ -47,7 +47,7 @@ export default function About() {
 
           <div className="about-side">
             <Reveal className="panel about-card" delay={0.1}>
-              <h3 className="about-card-title">Certifications</h3>
+              <h3 className="about-card-title"><BadgeCheck size={18} className="accent" /> Certifications</h3>
               <ul className="cert-list">
                 {certifications.map((c) => (
                   <li key={c}>
@@ -59,7 +59,7 @@ export default function About() {
             </Reveal>
 
             <Reveal className="panel about-card" delay={0.18}>
-              <h3 className="about-card-title">Education</h3>
+              <h3 className="about-card-title"><GraduationCap size={19} className="accent" /> Education</h3>
               <ul className="edu-list">
                 {education.map((e) => (
                   <li key={e.school}>
