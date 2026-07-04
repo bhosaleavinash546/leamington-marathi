@@ -9,7 +9,7 @@ export default function Experience() {
       <div className="container">
         <div className="section-head">
           <Reveal>
-            <span className="section-eyebrow">Experience</span>
+            <span className="section-eyebrow"><Briefcase size={13} /> Experience</span>
             <h2 className="section-title">A decade turning cost into value</h2>
             <p className="section-sub">
               Progressive roles across three global automotive engineering leaders — from mechanical

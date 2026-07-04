@@ -183,7 +183,7 @@
 /* ---------- Skills ---------- */
 .skills-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
 .skill-card { padding: 22px; }
-.skill-title { font-size: 0.98rem; margin-bottom: 15px; }
+.skill-title { font-size: 0.98rem; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
 .chips { display: flex; flex-wrap: wrap; gap: 8px; }
 .chips li {
   font-size: 0.8rem; color: var(--text-soft); background: rgba(255, 255, 255, 0.03);

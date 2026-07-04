@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import { Quote, Linkedin } from 'lucide-react'
+import { Quote, Linkedin, MessageSquareQuote } from 'lucide-react'
 import { Reveal } from './motion.jsx'
 import { recommendations } from '../data.js'
 
@@ -11,7 +11,7 @@ export default function Recommendations() {
       <div className="container">
         <div className="section-head">
           <Reveal>
-            <span className="section-eyebrow">Recommendations</span>
+            <span className="section-eyebrow"><MessageSquareQuote size={13} /> Recommendations</span>
             <h2 className="section-title">What colleagues and mentors say</h2>
             <p className="section-sub">
               <Linkedin size={15} style={{ verticalAlign: '-2px' }} /> Verbatim from LinkedIn

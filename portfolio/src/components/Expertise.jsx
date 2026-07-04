@@ -1,6 +1,9 @@
 import { lazy, Suspense } from 'react'
+import { BarChart3, Calculator, Car, BrainCircuit, Workflow } from 'lucide-react'
 import { Reveal } from './motion.jsx'
 import { skillGroups } from '../data.js'
+
+const skillIcons = [Calculator, Car, BrainCircuit, Workflow]
 
 // Recharts is heavy — load it only when this section is reached.
 const TenureChart = lazy(() => import('./Charts.jsx'))
@@ -18,7 +21,7 @@ export default function Expertise() {
       <div className="container">
         <div className="section-head">
           <Reveal>
-            <span className="section-eyebrow">Expertise</span>
+            <span className="section-eyebrow"><BarChart3 size={13} /> Expertise</span>
             <h2 className="section-title">Depth across domains, measured in impact</h2>
             <p className="section-sub">
               Thirteen years of tenure and a competency profile shaped by value engineering,
@@ -42,16 +45,19 @@ export default function Expertise() {
         </div>
 
         <div className="skills-grid">
-          {skillGroups.map((g, i) => (
+          {skillGroups.map((g, i) => {
+            const SkillIcon = skillIcons[i % skillIcons.length]
+            return (
             <Reveal key={g.title} className="panel skill-card" delay={i * 0.07}>
-              <h3 className="skill-title">{g.title}</h3>
+              <h3 className="skill-title"><SkillIcon size={16} className="accent" /> {g.title}</h3>
               <ul className="chips">
                 {g.items.map((s) => (
                   <li key={s}>{s}</li>
                 ))}
               </ul>
             </Reveal>
-          ))}
+            )
+          })}
         </div>
       </div>
     </section>

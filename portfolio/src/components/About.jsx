@@ -1,4 +1,4 @@
-import { Quote, BadgeCheck, GraduationCap } from 'lucide-react'
+import { Quote, BadgeCheck, GraduationCap, UserRound } from 'lucide-react'
 import { Reveal, Counter, motion } from './motion.jsx'
 import { profile, stats, certifications, education } from '../data.js'
 
@@ -20,7 +20,7 @@ export default function About() {
 
         <div className="section-head" style={{ marginTop: 'clamp(48px,7vw,88px)' }}>
           <Reveal>
-            <span className="section-eyebrow">About</span>
+            <span className="section-eyebrow"><UserRound size={13} /> About</span>
             <h2 className="section-title">Engineering value, not just cutting cost</h2>
           </Reveal>
         </div>

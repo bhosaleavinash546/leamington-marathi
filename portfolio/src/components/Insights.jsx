@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react'
+import { Newspaper } from 'lucide-react'
 import { Reveal } from './motion.jsx'
 import Lightbox from './Lightbox.jsx'
 import { insights } from '../data.js'
@@ -18,7 +19,7 @@ export default function Insights() {
       <div className="container">
         <div className="section-head">
           <Reveal>
-            <span className="section-eyebrow">Insights</span>
+            <span className="section-eyebrow"><Newspaper size={13} /> Insights</span>
             <h2 className="section-title">Value Engineering, shared publicly</h2>
             <p className="section-sub">
               A LinkedIn series on where cost really lives in a product — plus the SAVE

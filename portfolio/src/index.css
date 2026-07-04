@@ -92,10 +92,10 @@ img { display: block; max-width: 100%; }
 .section { padding-block: clamp(64px, 10vw, 120px); position: relative; }
 .section-head { margin-bottom: clamp(32px, 5vw, 56px); }
 .section-eyebrow {
-  display: inline-flex; align-items: center; gap: 10px;
+  display: inline-flex; align-items: center; gap: 9px;
   color: var(--accent-soft); font-size: 0.78rem; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase;
 }
-.section-eyebrow::before { content: ''; width: 28px; height: 1px; background: var(--accent); }
+.section-eyebrow svg { color: var(--accent); flex-shrink: 0; }
 .section-title { font-size: clamp(1.9rem, 4.5vw, 2.9rem); margin-top: 14px; }
 .section-sub { color: var(--text-soft); margin-top: 12px; max-width: 60ch; }
 

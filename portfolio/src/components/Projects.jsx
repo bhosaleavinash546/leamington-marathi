@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import { BrainCircuit, ScanSearch, Gauge, ArrowUpRight } from 'lucide-react'
+import { BrainCircuit, ScanSearch, Gauge, ArrowUpRight, Cpu } from 'lucide-react'
 import { Reveal } from './motion.jsx'
 import { projects } from '../data.js'
 
@@ -11,7 +11,7 @@ export default function Projects() {
       <div className="container">
         <div className="section-head">
           <Reveal>
-            <span className="section-eyebrow">AI Platforms</span>
+            <span className="section-eyebrow"><Cpu size={13} /> AI Platforms</span>
             <h2 className="section-title">Turning engineering data into cost intelligence</h2>
             <p className="section-sub">
               Self-built, AI-powered platforms that convert images, CAD, drawings, PCB layouts and

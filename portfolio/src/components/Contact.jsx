@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import { Mail, Linkedin, MapPin, Award, ArrowUpRight } from 'lucide-react'
+import { Mail, Linkedin, MapPin, Award, ArrowUpRight, Send } from 'lucide-react'
 import { Reveal } from './motion.jsx'
 import { profile, awards } from '../data.js'
 
@@ -28,7 +28,7 @@ export default function Contact() {
           </Reveal>
 
           <Reveal className="contact-cta" delay={0.1}>
-            <span className="section-eyebrow">Contact</span>
+            <span className="section-eyebrow"><Send size={13} /> Contact</span>
             <h2 className="contact-title">Let&apos;s engineer more value together</h2>
             <p className="text-soft contact-copy">
               Open to conversations on value engineering, should-costing, benchmarking, and applying
