@@ -72,6 +72,9 @@ function main() {
   }, null, 2));
 
   let fail = false;
+  // A fixture that THREW (e.g. a family/library regression made it uncostable) is a
+  // failure, not an excluded row — otherwise the gate could pass on the survivors.
+  if (r.errored > 0) { console.error(`  ✗ FAIL: ${r.errored} fixture(s) could not be costed (errored).`); fail = true; }
   const minHit = process.argv.indexOf('--min-hit');
   if (minHit !== -1) {
     const m = parseFloat(process.argv[minHit + 1]);

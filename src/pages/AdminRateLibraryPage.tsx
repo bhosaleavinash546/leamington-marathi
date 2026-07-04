@@ -20,11 +20,20 @@ interface Preview { ok: boolean; errors: VErr[]; warnings: VErr[]; diff: Change[
 // right-most separator is treated as the decimal point.
 function parseNum(raw: unknown): number {
   if (typeof raw === 'number') return raw;
-  let s = String(raw ?? '').trim();
+  let s = String(raw ?? '').trim().replace(/[€£$¥\s]/g, '');   // strip currency/space
   if (!s) return NaN;
   const lc = s.lastIndexOf(','), ld = s.lastIndexOf('.');
-  if (lc > -1 && ld > -1) { const dec = lc > ld ? ',' : '.'; const thou = dec === ',' ? '.' : ','; s = s.split(thou).join('').replace(dec, '.'); }
-  else if (lc > -1) s = s.replace(',', '.');   // lone comma → decimal (European)
+  if (lc > -1 && ld > -1) {
+    // both present → the right-most separator is the decimal point
+    const dec = lc > ld ? ',' : '.'; const thou = dec === ',' ? '.' : ',';
+    s = s.split(thou).join('').replace(dec, '.');
+  } else if (lc > -1) {
+    // lone comma: thousands separator if there are several, or exactly 3 digits
+    // follow the last one ("1,234"→1234); otherwise a European decimal ("1,5"→1.5).
+    const commas = (s.match(/,/g) || []).length;
+    const after = s.length - lc - 1;
+    s = commas > 1 || after === 3 ? s.split(',').join('') : s.replace(',', '.');
+  }
   return Number(s);
 }
 
@@ -39,6 +48,7 @@ export default function AdminRateLibraryPage() {
   const [busy, setBusy] = useState(false);
   const [errors, setErrors] = useState<VErr[]>([]);
   const [msg, setMsg] = useState('');
+  const [errMsg, setErrMsg] = useState('');
   const [versions, setVersions] = useState<Version[]>([]);
   const [diffs, setDiffs] = useState<Record<number, Change[]>>({});
   const [candidate, setCandidate] = useState<Record<string, unknown> | null>(null);
@@ -47,19 +57,28 @@ export default function AdminRateLibraryPage() {
   const auth = { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` };
 
   const load = useCallback(async () => {
-    setForbidden(null);
-    const r = await fetch('/api/admin/rate-library', { headers: auth });
-    if (r.status === 403) { const d = await r.json().catch(() => ({})); setForbidden(d.error || 'Admin access required.'); return; }
-    if (r.ok) setData(await r.json());
-    const rv = await fetch('/api/admin/rate-library/versions', { headers: auth });
-    if (rv.ok) { const d = await rv.json(); setVersions(d.versions || []); }
+    setForbidden(null); setErrMsg('');
+    try {
+      const r = await fetch('/api/admin/rate-library', { headers: auth });
+      if (r.status === 403) { const d = await r.json().catch(() => ({})); setForbidden(d.error || 'Admin access required.'); return; }
+      if (r.status === 401) { setForbidden('Your session has expired — please sign in again.'); return; }
+      if (!r.ok) { setErrMsg('Could not load the rate library.'); return; }
+      setData(await r.json());
+      const rv = await fetch('/api/admin/rate-library/versions', { headers: auth });
+      if (rv.ok) { const d = await rv.json(); setVersions(d.versions || []); }
+    } catch { setErrMsg('Network error loading the rate library.'); }
   }, [token]);
 
   async function rollback(version: number) {
-    setBusy(true); setErrors([]); setMsg('');
-    await fetch('/api/admin/rate-library/rollback', { method: 'POST', headers: auth, body: JSON.stringify({ version }) });
-    setMsg(`Rolled back to v${version} — now active for all estimates.`);
-    setDiffs({}); await load(); setBusy(false);
+    setBusy(true); setErrors([]); setMsg(''); setErrMsg('');
+    try {
+      const r = await fetch('/api/admin/rate-library/rollback', { method: 'POST', headers: auth, body: JSON.stringify({ version }) });
+      const d = await r.json().catch(() => ({}));
+      if (!r.ok) { setErrMsg(d.error || `Rollback to v${version} failed.`); setBusy(false); return; }
+      setMsg(`Rolled back to v${version} — now active for all estimates.`);
+      setDiffs({}); await load();
+    } catch { setErrMsg('Network error during rollback.'); }
+    setBusy(false);
   }
 
   async function toggleDiff(version: number) {
@@ -139,16 +158,16 @@ export default function AdminRateLibraryPage() {
       const built = { ...custom, ...(Object.keys(constants).length ? { constants } : {}) };
       await runPreview(built);   // stage it — admin reviews impact before applying
     } catch (e) {
-      setMsg(e instanceof Error ? e.message : 'Could not read that file.');
+      setErrMsg(e instanceof Error ? e.message : 'Could not read that file.');
     } finally { setBusy(false); }
   }
 
   // Dry-run the candidate library: diff, plausibility warnings, and impact on
   // representative parts — shown before the admin commits.
   async function runPreview(custom: Record<string, unknown>) {
-    setErrors([]); setMsg('');
+    setErrors([]); setMsg(''); setErrMsg('');
     const r = await fetch('/api/admin/rate-library/preview', { method: 'POST', headers: auth, body: JSON.stringify({ custom }) });
-    if (!r.ok) { setMsg('Could not preview the changes.'); return; }
+    if (!r.ok) { const d = await r.json().catch(() => ({})); setErrMsg(d.error || 'Could not preview the changes.'); return; }
     setCandidate(custom);
     setPreview(await r.json());
   }
@@ -157,19 +176,27 @@ export default function AdminRateLibraryPage() {
 
   async function applyCandidate() {
     if (!candidate) return;
-    setBusy(true); setErrors([]); setMsg('');
-    const r = await fetch('/api/admin/rate-library', { method: 'POST', headers: auth, body: JSON.stringify({ custom: candidate }) });
-    const d = await r.json().catch(() => ({}));
-    if (!r.ok) { setErrors(d.errors || [{ message: d.error || 'Save failed' }]); setBusy(false); return; }
-    setMsg('Applied — your rate library is now active for all should-cost estimates.');
-    cancelPreview(); await load(); setBusy(false);
+    setBusy(true); setErrors([]); setMsg(''); setErrMsg('');
+    try {
+      const r = await fetch('/api/admin/rate-library', { method: 'POST', headers: auth, body: JSON.stringify({ custom: candidate }) });
+      const d = await r.json().catch(() => ({}));
+      if (!r.ok) { setErrors(d.errors || [{ message: d.error || 'Save failed' }]); setBusy(false); return; }
+      setMsg('Applied — your rate library is now active for all should-cost estimates.');
+      cancelPreview(); await load();
+    } catch { setErrMsg('Network error while applying.'); }
+    setBusy(false);
   }
 
   async function revert() {
-    setBusy(true); setErrors([]); setMsg('');
-    await fetch('/api/admin/rate-library/revert', { method: 'POST', headers: auth });
-    setMsg('Reverted to the built-in defaults.');
-    await load(); setBusy(false);
+    setBusy(true); setErrors([]); setMsg(''); setErrMsg('');
+    try {
+      const r = await fetch('/api/admin/rate-library/revert', { method: 'POST', headers: auth });
+      const d = await r.json().catch(() => ({}));
+      if (!r.ok) { setErrMsg(d.error || 'Revert failed.'); setBusy(false); return; }
+      setMsg('Reverted to the built-in defaults.');
+      await load();
+    } catch { setErrMsg('Network error during revert.'); }
+    setBusy(false);
   }
 
   if (forbidden) return (
@@ -306,6 +333,7 @@ export default function AdminRateLibraryPage() {
         })()}
 
         {msg && <div className="mb-4 flex items-center gap-2 text-sm text-teal-300 bg-teal-500/10 border border-teal-500/25 rounded-xl px-4 py-3"><CheckCircle size={15} /> {msg}</div>}
+        {errMsg && <div className="mb-4 flex items-center gap-2 text-sm text-danger-300 bg-danger-500/10 border border-danger-500/25 rounded-xl px-4 py-3"><AlertTriangle size={15} /> {errMsg}</div>}
 
         {errors.length > 0 && (
           <div className="mb-4 bg-danger-500/8 border border-danger-500/25 rounded-xl px-4 py-3">
