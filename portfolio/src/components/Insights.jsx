@@ -41,7 +41,6 @@ export default function Insights() {
                   className="marquee-open"
                   onClick={() => real && setActive(i % insights.length)}
                   tabIndex={real ? 0 : -1}
-                  aria-label={`View ${item.title} full size`}
                 >
                   <img src={item.src} alt={item.title} loading="lazy" />
                   <span className="marquee-cap">

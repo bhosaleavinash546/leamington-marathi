@@ -109,6 +109,31 @@
 .hero-scroll { position: absolute; bottom: 26px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 8px; color: var(--text-dim); font-size: 0.72rem; letter-spacing: 0.2em; text-transform: uppercase; }
 .scroll-line { width: 1px; height: 34px; background: linear-gradient(var(--accent), transparent); transform-origin: top; }
 
+/* ---------- Logo strip ---------- */
+.logostrip {
+  padding-block: 26px;
+  border-top: 1px solid var(--border-soft);
+  border-bottom: 1px solid var(--border-soft);
+  background: rgba(255, 255, 255, 0.012);
+}
+.logostrip-inner {
+  display: flex; align-items: center; justify-content: center; gap: 18px 40px; flex-wrap: wrap;
+}
+.logostrip-label {
+  font-size: 0.72rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-dim);
+}
+.logostrip-list { display: flex; align-items: center; gap: 18px 40px; flex-wrap: wrap; }
+.logostrip-list li {
+  font-family: var(--font-display); font-weight: 700; font-size: clamp(1rem, 2.4vw, 1.25rem);
+  letter-spacing: 0.01em; color: var(--text-soft); opacity: 0.7;
+  transition: color 0.2s ease, opacity 0.2s ease; position: relative;
+}
+.logostrip-list li:not(:last-child)::after {
+  content: ''; position: absolute; right: -20px; top: 50%; transform: translateY(-50%);
+  width: 4px; height: 4px; border-radius: 50%; background: var(--border);
+}
+.logostrip-list li:hover { color: var(--accent-soft); opacity: 1; }
+
 /* ---------- Stats band ---------- */
 .stats-band {
   display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px;

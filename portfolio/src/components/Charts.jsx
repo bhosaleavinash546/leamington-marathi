@@ -47,7 +47,7 @@ export default function Charts() {
               axisLine={{ stroke: '#212a3c' }}
               interval={0}
             />
-            <YAxis tick={{ fill: '#6b7488', fontSize: 12 }} tickLine={false} axisLine={false} />
+            <YAxis tick={{ fill: '#8791a5', fontSize: 12 }} tickLine={false} axisLine={false} />
             <Tooltip cursor={{ fill: 'rgba(255,255,255,0.03)' }} content={<ChartTooltip unit=" yrs" />} />
             <Bar dataKey="years" radius={[8, 8, 0, 0]} maxBarSize={64}>
               {experienceChart.map((_, i) => (

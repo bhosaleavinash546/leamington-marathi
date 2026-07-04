@@ -81,7 +81,14 @@ export default function Hero() {
             />
             <div className={`hero-avatar ${profile.photo ? 'has-photo' : ''}`}>
               {profile.photo ? (
-                <img src={profile.photo} alt={`${profile.name} headshot`} />
+                <img
+                  src={profile.photo}
+                  alt={`${profile.name} headshot`}
+                  width="480"
+                  height="480"
+                  fetchpriority="high"
+                  decoding="async"
+                />
               ) : (
                 <span>{profile.initials}</span>
               )}

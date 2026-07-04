@@ -279,6 +279,9 @@ export const recommendations = [
   },
 ]
 
+// Organisations worked with — shown as a credibility logo strip.
+export const companies = ['JLR', 'John Deere', 'Tata Technologies']
+
 export const nav = [
   { id: 'about', label: 'About' },
   { id: 'experience', label: 'Experience' },

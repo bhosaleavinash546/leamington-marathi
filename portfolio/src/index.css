@@ -14,7 +14,7 @@
 
   --text: #eef2f9;
   --text-soft: #a7b0c2;
-  --text-dim: #6b7488;
+  --text-dim: #7c8598; /* meets WCAG AA (>=4.5:1) on --bg */
 
   --accent: #c8a24a;        /* refined gold */
   --accent-soft: #e2c37e;
