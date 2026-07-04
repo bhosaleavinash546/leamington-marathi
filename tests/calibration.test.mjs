@@ -10,6 +10,12 @@ test('fitCalibration returns a neutral factor with no data', () => {
   assert.equal(calibrationFactor(cal, 'Machining (CNC)'), 1);
 });
 
+test('a process named like a prototype member does not crash the fit or lookup', () => {
+  const cal = fitCalibration([{ process: 'constructor', modelled: 10, actual: 12 }, { process: 'constructor', modelled: 5, actual: 6 }]);
+  assert.ok(calibrationFactor(cal, 'constructor') > 1);
+  assert.equal(calibrationFactor(cal, 'toString'), calibrationFactor(cal, 'toString')); // no throw, resolves via global
+});
+
 test('a process that quotes consistently high gets a >1 correction', () => {
   const records = [
     { process: 'Sand Casting', modelled: 10, actual: 13 },

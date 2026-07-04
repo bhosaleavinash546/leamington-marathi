@@ -233,16 +233,22 @@ export function computeShouldCost(input, overrides = {}, calibration = null, lib
   const commercialPct    = library?.constants?.commercialPct    ?? COMMERCIAL_PCT;
   const defaultFinishPct = library?.constants?.defaultFinishPct ?? DEFAULT_FINISH_PCT;
 
-  const mat = MAT[material];
-  const proc = PROC[process];
-  const reg = REG[region];
+  // Own-property lookups only — a key like "constructor"/"__proto__" must resolve
+  // to "unknown", not to an inherited Object.prototype member (which would slip
+  // past the guards and yield NaN).
+  const mat = Object.hasOwn(MAT, material) ? MAT[material] : undefined;
+  const proc = Object.hasOwn(PROC, process) ? PROC[process] : undefined;
+  const reg = Object.hasOwn(REG, region) ? REG[region] : undefined;
   if (!mat) throw new Error(`Unknown material: ${material}`);
   if (!proc) throw new Error(`Unknown process: ${process}`);
   if (!reg) throw new Error(`Unknown region: ${region}`);
   // Family compatibility: costing a ferrous part on an aluminium-die-casting model
   // (or similar) yields a physically meaningless number. Refuse rather than mislead.
-  if (Array.isArray(proc.families) && !proc.families.includes(mat.family)) {
-    throw new Error(`${material} (${mat.family}) is not compatible with ${process}, which is modelled for ${proc.families.join(' / ')} only.`);
+  // A non-array `families` (e.g. from an unvalidated custom library) must NOT
+  // silently disable the guard — treat it as incompatible.
+  if (!Array.isArray(proc.families) || !proc.families.includes(mat.family)) {
+    const allowed = Array.isArray(proc.families) ? proc.families.join(' / ') : '(process has no valid family list)';
+    throw new Error(`${material} (${mat.family}) is not compatible with ${process}, which is modelled for ${allowed} only.`);
   }
 
   const w = Number(weightKg);

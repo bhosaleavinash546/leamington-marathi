@@ -44,9 +44,11 @@ export function fitCalibration(records) {
   // quotes don't over-correct the whole engine.
   const globalShrunk = (valid.length * gMed) / (valid.length + PRIOR_STRENGTH);
 
-  const groups = {};
+  // null-proto so a process literally named "constructor"/"toString" can't defeat
+  // the ??= (inherited members are truthy) and crash the fit.
+  const groups = Object.create(null);
   for (const r of valid) (groups[r.process] ??= []).push(Math.log(r.actual / r.modelled));
-  const process = {};
+  const process = Object.create(null);
   for (const [proc, logs] of Object.entries(groups)) {
     const n = logs.length;
     const shrunk = (n * median(logs) + PRIOR_STRENGTH * globalShrunk) / (n + PRIOR_STRENGTH);
@@ -57,7 +59,7 @@ export function fitCalibration(records) {
 
 export function calibrationFactor(cal, process) {
   if (!cal) return 1;
-  const p = cal.process && cal.process[process];
+  const p = cal.process && Object.hasOwn(cal.process, process) ? cal.process[process] : undefined;
   if (Number.isFinite(p) && p > 0) return p;
   return Number.isFinite(cal.global) && cal.global > 0 ? cal.global : 1;
 }

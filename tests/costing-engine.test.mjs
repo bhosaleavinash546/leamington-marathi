@@ -58,6 +58,14 @@ test('invalid inputs throw clearly', () => {
   assert.throws(() => computeShouldCost({ ...base, annualVolume: -5 }), /annualVolume/);
 });
 
+test('prototype-chain keys resolve to "unknown", not NaN', () => {
+  for (const bad of ['constructor', '__proto__', 'hasOwnProperty', 'toString']) {
+    assert.throws(() => computeShouldCost({ ...base, material: bad }), /Unknown material/, `material=${bad}`);
+    assert.throws(() => computeShouldCost({ ...base, process: bad }), /Unknown process/, `process=${bad}`);
+    assert.throws(() => computeShouldCost({ ...base, region: bad }), /Unknown region/, `region=${bad}`);
+  }
+});
+
 test('incompatible material/process family throws instead of silently mis-costing', () => {
   // A ferrous part cannot be costed on the aluminium-die-casting model.
   assert.throws(

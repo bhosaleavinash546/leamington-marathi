@@ -97,7 +97,17 @@ setInterval(() => {
 }, 30 * 60 * 1000);
 
 const PORT        = process.env.PORT        || 3001;
+const IS_PROD     = process.env.NODE_ENV === 'production';
 const JWT_SECRET  = process.env.JWT_SECRET  || 'autocost-ai-dev-secret-2025';
+// Never run production on the shipped dev secret — it's in source control, so a
+// default secret means anyone can forge tokens (incl. admin). Fail closed.
+if (IS_PROD && (!process.env.JWT_SECRET || JWT_SECRET === 'autocost-ai-dev-secret-2025')) {
+  console.error('FATAL: JWT_SECRET must be set to a strong, unique value in production.');
+  process.exit(1);
+}
+// Admin allowlist (also used by routes/rate-library.mjs). Public signup is blocked
+// for these addresses so an admin identity can't be self-registered.
+const ADMIN_EMAILS = (process.env.ADMIN_EMAILS || '').split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
 const USERS_FILE  = path.join(__dirname, 'users.json');
 const APP_VERSION = '3.1.0';
 
@@ -3132,6 +3142,10 @@ app.post('/api/auth/signup', rateLimit(5, 15 * 60 * 1000), async (req, res) => {
   if (!name?.trim() || !email?.trim() || !password) return res.status(400).json({ error: 'Name, email and password are required.' });
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return res.status(400).json({ error: 'Please enter a valid email address.' });
   if (password.length < 8) return res.status(400).json({ error: 'Password must be at least 8 characters.' });
+  // Admin identities are provisioned out-of-band, never via public self-signup.
+  if (ADMIN_EMAILS.includes(email.toLowerCase())) {
+    return res.status(403).json({ error: 'This email is reserved. Contact your administrator to be provisioned.' });
+  }
 
   const users = await readUsers();
   if (users.find(u => u.email.toLowerCase() === email.toLowerCase())) {
@@ -3202,7 +3216,9 @@ app.post('/api/auth/forgot-password', rateLimit(5, 15 * 60 * 1000), async (req, 
     const otp = storeOTP(email, 'reset');
     try {
       const emailResult = await sendOTPEmail(email, otp, 'reset');
-      if (emailResult?.devMode) devOtp = otp;
+      // Only ever surface the code in the response in non-production; in prod a
+      // missing mailer must NOT leak reset codes to the caller.
+      if (emailResult?.devMode && !IS_PROD) devOtp = otp;
     } catch (err) { console.error('Email error:', err.message); }
   }
 
@@ -4811,17 +4827,38 @@ registerRateLibraryRoutes(app, { db, requireAuth });
 
 // ─── WEBHOOK TEST ─────────────────────────────────────────────────────────────
 
-app.post('/api/webhooks/test', requireAuth, async (req, res) => {
+// Block SSRF: only https/http to public hosts (no loopback/private/link-local,
+// no cloud metadata). Not DNS-resolving, but stops the obvious internal targets.
+function isSafeWebhookUrl(raw) {
+  let u;
+  try { u = new URL(raw); } catch { return false; }
+  if (u.protocol !== 'https:' && u.protocol !== 'http:') return false;
+  const h = u.hostname.toLowerCase();
+  if (h === 'localhost' || h.endsWith('.localhost') || h.endsWith('.internal') || h.endsWith('.local')) return false;
+  if (h === '169.254.169.254' || h === 'metadata.google.internal') return false;   // cloud IMDS
+  // literal IPv4 in private / loopback / link-local ranges
+  const m = h.match(/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/);
+  if (m) {
+    const [a, b] = [Number(m[1]), Number(m[2])];
+    if (a === 127 || a === 10 || a === 0 || a === 169 && b === 254 || a === 172 && b >= 16 && b <= 31 || a === 192 && b === 168) return false;
+  }
+  if (h === '::1' || h.startsWith('fe80') || h.startsWith('fc') || h.startsWith('fd') || h === '[::1]') return false;
+  return true;
+}
+
+app.post('/api/webhooks/test', requireAuth, rateLimit(20, 60 * 60 * 1000), async (req, res) => {
   const { url, type } = req.body;
   if (!url) return res.status(400).json({ error: 'url required' });
+  if (!isSafeWebhookUrl(url)) return res.status(400).json({ error: 'URL must be a public https/http endpoint (private, loopback and metadata addresses are blocked).' });
   try {
     const payload = type === 'teams'
       ? { '@type': 'MessageCard', '@context': 'https://schema.org/extensions', summary: 'BrainSpark Test', text: '✅ BrainSpark webhook connected successfully!' }
       : { text: '✅ BrainSpark webhook connected successfully!' };
-    const r = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+    const r = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload), redirect: 'manual', signal: AbortSignal.timeout(5000) });
     res.json({ ok: r.ok, status: r.status });
-  } catch (e) {
-    res.status(500).json({ error: e.message });
+  } catch {
+    // Don't reflect internal error text (would leak SSRF probe detail).
+    res.status(502).json({ error: 'Could not reach the webhook URL.' });
   }
 });
 
@@ -4853,7 +4890,7 @@ Return ONLY the JSON array with no markdown fences.`;
 // ─── Cross-Pollination ────────────────────────────────────────────────────────
 app.post('/api/projects/:id/cross-pollinate', requireAuth, (req, res) => {
   const { id } = req.params;
-  const userId = req.user.userId;
+  const userId = req.user.id;
   try {
     const target = db.prepare('SELECT * FROM projects WHERE id = ? AND userId = ?').get(id, userId);
     if (!target) return res.status(404).json({ error: 'Project not found' });
@@ -4930,7 +4967,7 @@ app.post('/api/marketplace', requireAuth, rateLimit(5, 60 * 60 * 1000), (req, re
   try {
     const id = crypto.randomUUID();
     db.prepare('INSERT INTO marketplace_ideas (id,title,system,costSavingType,annualSaving,difficulty,timeToImplement,description,ideaData,submittedBy,verified,stars,status,createdAt) VALUES (?,?,?,?,?,?,?,?,?,?,0,0,"pending",?)')
-      .run(id, title, system || '', costSavingType || '', annualSaving || '', difficulty || 'Medium', timeToImplement || '', description, ideaData || null, req.user.userId, new Date().toISOString());
+      .run(id, title, system || '', costSavingType || '', annualSaving || '', difficulty || 'Medium', timeToImplement || '', description, ideaData || null, req.user.id, new Date().toISOString());
     res.json({ ok: true, message: 'Idea submitted for review. Thank you!' });
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
@@ -5099,15 +5136,15 @@ app.post('/api/business-cases', requireAuth, rateLimit(30, 60 * 60 * 1000), (req
   res.status(201).json(row);
 });
 
-// List all business cases (full team visibility — read-only for non-owners)
+// List the signed-in user's business cases (scoped — no cross-tenant leakage).
 app.get('/api/business-cases', requireAuth, (req, res) => {
-  const rows = db.prepare('SELECT * FROM idea_business_cases ORDER BY createdAt DESC').all();
+  const rows = db.prepare('SELECT * FROM idea_business_cases WHERE userId = ? ORDER BY createdAt DESC').all(req.user.id);
   res.json(rows.map(r => ({ ...r, vehicleData: JSON.parse(r.vehicleData || '[]'), ideaData: r.ideaData || null })));
 });
 
-// KPI aggregates for dashboard
+// KPI aggregates for dashboard (scoped to the signed-in user).
 app.get('/api/business-cases/kpi', requireAuth, rateLimit(120, 60 * 60 * 1000), (req, res) => {
-  const rows = db.prepare('SELECT * FROM idea_business_cases').all()
+  const rows = db.prepare('SELECT * FROM idea_business_cases WHERE userId = ?').all(req.user.id)
     .map(r => ({ ...r, vehicleData: JSON.parse(r.vehicleData || '[]') }));
 
   const gates = ['G0', 'G1', 'G2', 'G3'];
@@ -5198,8 +5235,8 @@ app.delete('/api/business-cases/:id', requireAuth, (req, res) => {
 
 // Add comment to business case (any authenticated user)
 app.post('/api/business-cases/:id/comments', requireAuth, rateLimit(60, 60 * 60 * 1000), (req, res) => {
-  const row = db.prepare('SELECT id FROM idea_business_cases WHERE id = ?').get(req.params.id);
-  if (!row) return res.status(404).json({ error: 'Business case not found' });
+  const row = db.prepare('SELECT userId FROM idea_business_cases WHERE id = ?').get(req.params.id);
+  if (!row || row.userId !== req.user.id) return res.status(404).json({ error: 'Business case not found' });
   const { comment } = req.body;
   if (!comment?.trim()) return res.status(400).json({ error: 'comment is required' });
 
@@ -5213,8 +5250,10 @@ app.post('/api/business-cases/:id/comments', requireAuth, rateLimit(60, 60 * 60 
   res.status(201).json(db.prepare('SELECT * FROM business_case_comments WHERE id = ?').get(id));
 });
 
-// Get comments for a business case
+// Get comments for a business case (owner-scoped).
 app.get('/api/business-cases/:id/comments', requireAuth, (req, res) => {
+  const bc = db.prepare('SELECT userId FROM idea_business_cases WHERE id = ?').get(req.params.id);
+  if (!bc || bc.userId !== req.user.id) return res.status(404).json({ error: 'Business case not found' });
   const comments = db.prepare(
     'SELECT * FROM business_case_comments WHERE businessCaseId = ? ORDER BY createdAt ASC'
   ).all(req.params.id);

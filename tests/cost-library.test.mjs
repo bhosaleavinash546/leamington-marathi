@@ -45,6 +45,17 @@ test('custom coefficients override cycle/tooling and a new region works end-to-e
   assert.equal(r.drivers.labourRate, 6);
 });
 
+test('reserved prototype keys are rejected, not merged', () => {
+  const { ok, errors } = validateLibrary({ materials: { '__proto__': { price: 5 }, 'constructor': { price: 6 } } });
+  assert.equal(ok, false);
+  assert.ok(errors.some(e => /reserved/.test(e.message)));
+});
+
+test('material family is lowercased so it matches process families', () => {
+  const { normalized } = validateLibrary({ materials: { 'Cast Iron (Grey)': { family: 'Ferrous' } } });
+  assert.equal(normalized.materials['Cast Iron (Grey)'].family, 'ferrous');
+});
+
 test('plausibility warnings flag likely decimal typos without blocking', () => {
   const { ok, warnings } = validateLibrary({ processes: { 'Machining (CNC)': { machineRate: 6500 } } });
   assert.equal(ok, true, 'a high-but-valid number should not be an error');

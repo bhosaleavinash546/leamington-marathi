@@ -21,7 +21,7 @@ export const FIELD_SPECS = {
       { id: 'price',         label: 'Price (€/kg)',        type: 'num' },
       { id: 'density',       label: 'Density (g/cm³)',     type: 'num' },
       { id: 'scrapRecovery', label: 'Scrap recovery (0-1)',type: 'pct' },
-      { id: 'family',        label: 'Family',              type: 'str' },
+      { id: 'family',        label: 'Family',              type: 'lstr' },
     ],
   },
   processes: {
@@ -63,6 +63,8 @@ export const FIELD_SPECS = {
 };
 
 const DEFAULTS = { materials: MATERIALS, processes: PROCESSES, regions: REGIONS };
+// Names that would poison object prototypes if used as material/process/region keys.
+const RESERVED_KEYS = new Set(['__proto__', 'constructor', 'prototype']);
 
 // Economic-plausibility bands (soft — produce WARNINGS, not errors). A value
 // outside these is almost always a typo (a misplaced decimal), so we flag it but
@@ -88,8 +90,9 @@ function bandWarning(table, field, value) {
 
 // Coerce/validate a single value against its field spec. Returns { value } or { error }.
 function coerce(type, raw) {
-  if (type === 'str') {
-    const s = String(raw ?? '').trim();
+  if (type === 'str' || type === 'lstr') {
+    let s = String(raw ?? '').trim();
+    if (type === 'lstr') s = s.toLowerCase();   // family must match lowercased process families
     return s ? { value: s } : { error: 'required' };
   }
   if (type === 'list') {
@@ -120,8 +123,9 @@ export function validateLibrary(custom) {
     const spec = FIELD_SPECS[table];
     const rows = custom[table] && typeof custom[table] === 'object' ? custom[table] : {};
     for (const [name, row] of Object.entries(rows)) {
+      if (RESERVED_KEYS.has(name)) { errors.push({ table, row: name, message: 'reserved name not allowed' }); continue; }
       if (!row || typeof row !== 'object') { errors.push({ table, row: name, message: 'row must be an object' }); continue; }
-      const isNew = !DEFAULTS[table][name];
+      const isNew = !Object.hasOwn(DEFAULTS[table], name);
       const out = {};
       for (const f of spec.fields) {
         const provided = row[f.id] !== undefined && row[f.id] !== '' && row[f.id] !== null;
@@ -159,7 +163,10 @@ export function mergeLibrary(custom) {
   const merge = (defaults, over = {}) => {
     const out = {};
     for (const [k, v] of Object.entries(defaults)) out[k] = { ...v };
-    for (const [k, v] of Object.entries(over)) out[k] = { ...(out[k] || {}), ...v };
+    for (const [k, v] of Object.entries(over)) {
+      if (RESERVED_KEYS.has(k)) continue;   // never let a custom key poison the prototype
+      out[k] = { ...(out[k] || {}), ...v };
+    }
     return out;
   };
   return {
