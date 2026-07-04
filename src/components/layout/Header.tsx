@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Menu, X, ChevronDown, LayoutDashboard, HelpCircle, LogOut, User, Sun, Moon, TrendingUp, FileBox, Calculator, Store, Link2, GitCompare, Zap, ClipboardList, GitMerge } from 'lucide-react';
+import { Menu, X, ChevronDown, LayoutDashboard, HelpCircle, LogOut, User, Sun, Moon, TrendingUp, FileBox, Calculator, Store, Link2, GitCompare, Zap, ClipboardList, GitMerge, CircuitBoard } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
@@ -111,6 +111,7 @@ export default function Header() {
                         {[
                           { path: '/bom-analysis', label: 'BOM Batch' },
                           { path: '/cad-to-cost', label: 'CAD to Cost' },
+                          { path: '/pcb-bom-cost', label: 'PCB → BOM → Cost' },
                           { path: '/cad-diff', label: 'CAD Diff' },
                           { path: '/should-cost', label: 'Should-Cost' },
                           { path: '/trends', label: 'Trends' },
@@ -184,6 +185,7 @@ export default function Header() {
                         { icon: LayoutDashboard, label: 'Dashboard', path: '/dashboard' },
                         { icon: Zap,            label: 'Analyze',    path: '/analyze' },
                         { icon: FileBox,        label: 'CAD to Cost',  path: '/cad-to-cost' },
+                        { icon: CircuitBoard,   label: 'PCB → BOM → Cost', path: '/pcb-bom-cost' },
                         { icon: GitCompare,     label: 'CAD Diff',     path: '/cad-diff' },
                         { icon: Calculator,     label: 'Should-Cost',  path: '/should-cost' },
                         { icon: TrendingUp,     label: 'Trends',       path: '/trends' },

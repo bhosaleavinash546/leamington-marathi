@@ -18,6 +18,7 @@ import nodemailer from 'nodemailer';
 import Database from 'better-sqlite3';
 import { validateIdeas } from './idea-validation.mjs';
 import { getFxRates } from './fx-rates.mjs';
+import { costBom, COMPONENT_TYPES, COMPONENT_CLASSES } from './pcb-cost.mjs';
 import { registerShouldCostRoutes } from './routes/should-cost.mjs';
 import { registerRateLibraryRoutes } from './routes/rate-library.mjs';
 import { analyzeFeatures } from './src/services/cad-features.mjs';
@@ -4987,6 +4988,64 @@ app.post('/api/teardown-vision', requireAuth, rateLimit(10, 60 * 60 * 1000), asy
     res.json({ description });
   } catch (e) {
     res.status(500).json({ error: safeLlmError(e) });
+  }
+});
+
+// ─── PCB IMAGE → BOM → COST ───────────────────────────────────────────────────
+
+// Vision: a PCB photo → a structured component BOM estimate, then costed.
+app.post('/api/pcb-bom-cost', requireAuth, rateLimit(15, 60 * 60 * 1000), async (req, res) => {
+  const { imageBase64, mimeType, apiKey, volume } = req.body;
+  if (!imageBase64 || !apiKey) return res.status(400).json({ error: 'imageBase64 and apiKey are required.' });
+  if (typeof imageBase64 === 'string' && imageBase64.length > 12_000_000) return res.status(413).json({ error: 'Image too large (max ~9 MB).' });
+
+  const prompt = `You are a PCB teardown estimator. Examine this photo of a printed circuit board and produce a STRUCTURED bill-of-materials ESTIMATE. Group identical components into one line with a qty.
+
+For EACH line give: refDes (silkscreen ref if legible, else ""), type (EXACTLY one of: ${COMPONENT_TYPES.join(', ')}), package (e.g. "0402","0603","SOIC-8","QFN-48","TH"), mount ("SMT" or "TH"), pins (approx pin/lead count), qty (integer).
+Also estimate the board: widthMm, heightMm, layers (2,4,6,8), finish ("hasl","enig","osp").
+
+Rules: estimate conservatively from what is visible; do NOT invent exact manufacturer part numbers; if unsure pick the closest type and your best-guess package/qty.
+Return ONLY minified JSON, no prose: {"board":{"widthMm":0,"heightMm":0,"layers":2,"finish":"hasl"},"components":[{"refDes":"","type":"","package":"","mount":"SMT","pins":2,"qty":1}]}`;
+
+  try {
+    const client = makeAnthropic(apiKey);
+    const msg = await client.messages.create({
+      model: 'claude-opus-4-8', max_tokens: 4000,
+      messages: [{ role: 'user', content: [
+        { type: 'image', source: { type: 'base64', media_type: mimeType || 'image/jpeg', data: imageBase64 } },
+        { type: 'text', text: prompt },
+      ] }],
+    }, { timeout: 120_000, maxRetries: 1 });
+
+    let raw = (msg.content[0]?.type === 'text' ? msg.content[0].text : '').trim();
+    if (raw.startsWith('```')) raw = raw.replace(/^```[a-z]*\n?/, '').replace(/\n?```$/, '').trim();
+    const s = raw.indexOf('{'), e = raw.lastIndexOf('}');
+    if (s === -1 || e <= s) return res.status(502).json({ error: 'Could not read a BOM from that image — try a sharper, top-down photo.' });
+    let extracted;
+    try { extracted = JSON.parse(raw.slice(s, e + 1)); }
+    catch { return res.status(502).json({ error: 'The BOM read from the image was not valid — please retry.' }); }
+
+    const cost = costBom(extracted, { volume: Number(volume) || 1000 });
+    res.json({ board: cost.board, cost, extraction: 'ai-vision' });
+  } catch (err) {
+    res.status(500).json({ error: safeLlmError(err) });
+  }
+});
+
+// Component classes for the UI dropdown (single source of truth).
+app.get('/api/pcb-cost/catalogue', (_req, res) => {
+  res.json({ types: COMPONENT_TYPES, classes: Object.fromEntries(Object.entries(COMPONENT_CLASSES).map(([k, v]) => [k, { label: v.label, mount: v.mount, unit: v.unit }])) });
+});
+
+// Re-cost an edited BOM (no vision) — deterministic, no API key needed.
+app.post('/api/pcb-cost', requireAuth, rateLimit(120, 60 * 60 * 1000), (req, res) => {
+  const { board, components, volume } = req.body || {};
+  if (!Array.isArray(components) || components.length === 0) return res.status(400).json({ error: 'components array is required.' });
+  if (components.length > 2000) return res.status(400).json({ error: 'Too many BOM lines (max 2000).' });
+  try {
+    res.json({ cost: costBom({ board, components }, { volume: Number(volume) || 1000 }) });
+  } catch (e) {
+    res.status(400).json({ error: e.message || 'Could not cost that BOM.' });
   }
 });
 
