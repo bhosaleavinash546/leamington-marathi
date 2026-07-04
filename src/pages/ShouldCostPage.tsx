@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Calculator, ChevronDown, Cpu, ShieldCheck, Sparkles, Database } from 'lucide-react';
@@ -12,7 +12,7 @@ interface ShouldCostResult {
   currency: string;
   symbol?: string;
   fx?: { base: string; rate: number; asOf: string | null; source: string; stale?: boolean } | null;
-  calibration?: { applied: boolean; factor: number; quotes: number };
+  calibration?: { applied: boolean; factor: number; quotes: number; source?: string };
   materialCost: string;
   processCost: string;
   overheadCost: string;
@@ -52,6 +52,7 @@ export default function ShouldCostPage() {
   const [teaching, setTeaching] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [libraryCustom, setLibraryCustom] = useState(false);
+  const calcReqRef = useRef(0);
 
   useEffect(() => {
     fetch('/api/should-cost/catalogue')
@@ -75,6 +76,7 @@ export default function ShouldCostPage() {
   async function handleCalc() {
     if (!partName || !weightKg || !annualVolume) { setError('Please fill in part name, weight, and annual volume.'); return; }
     if (!token) { setError('Please sign in to use the should-cost engine.'); return; }
+    const reqId = ++calcReqRef.current;   // only the latest request may paint the result
     setLoading(true);
     setError('');
     setResult(null);
@@ -88,11 +90,13 @@ export default function ShouldCostPage() {
       });
       if (!r.ok) { const d = await r.json().catch(() => ({})); throw new Error(d.error || 'Request failed'); }
       const data = await r.json();
+      if (reqId !== calcReqRef.current) return;   // a newer request (e.g. currency change) superseded this
       setResult(data);
     } catch (e) {
+      if (reqId !== calcReqRef.current) return;
       setError(e instanceof Error ? e.message : 'Calculation failed');
     } finally {
-      setLoading(false);
+      if (reqId === calcReqRef.current) setLoading(false);
     }
   }
 
@@ -188,7 +192,7 @@ export default function ShouldCostPage() {
               <div>
                 <label htmlFor="sc-currency" className="block text-xs text-slate-400 mb-1.5">Currency</label>
                 <div className="relative">
-                  <select id="sc-currency" value={currency} onChange={e => { setCurrency(e.target.value); setResult(null); }} className="w-full bg-navy-800 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm appearance-none focus:outline-none focus:border-teal-500/40">
+                  <select id="sc-currency" value={currency} onChange={e => { setCurrency(e.target.value); setResult(null); calcReqRef.current++; }} className="w-full bg-navy-800 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm appearance-none focus:outline-none focus:border-teal-500/40">
                     {CURRENCIES.map(c => <option key={c} value={c}>{c}</option>)}
                   </select>
                   <ChevronDown size={14} className="absolute right-3 top-3 text-slate-500 pointer-events-none" />
@@ -247,7 +251,7 @@ export default function ShouldCostPage() {
                   )}
                   {result.calibration?.applied && (
                     <p className="text-[10px] mt-1 text-teal-300/90 flex items-center gap-1">
-                      <Sparkles size={10} /> Calibrated from {result.calibration.quotes} of your quote{result.calibration.quotes === 1 ? '' : 's'} (×{result.calibration.factor})
+                      <Sparkles size={10} /> Calibrated from {result.calibration.quotes} of your quote{result.calibration.quotes === 1 ? '' : 's'} (×{result.calibration.factor}){result.calibration.source === 'global' ? ' · cross-process (no direct quotes for this process yet)' : ''}
                     </p>
                   )}
                   {result.simulation && (

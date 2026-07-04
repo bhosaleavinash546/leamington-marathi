@@ -64,6 +64,17 @@ export function calibrationFactor(cal, process) {
   return Number.isFinite(cal.global) && cal.global > 0 ? cal.global : 1;
 }
 
+// Where the applied factor came from: 'process' (direct quotes for this process),
+// 'global' (cross-process fallback — the user has quotes, but none for THIS
+// process), or 'none'. Lets the UI flag a cross-process correction honestly.
+export function calibrationSource(cal, process) {
+  if (!cal) return 'none';
+  const p = cal.process && Object.hasOwn(cal.process, process) ? cal.process[process] : undefined;
+  if (Number.isFinite(p) && p > 0) return 'process';
+  if (Number.isFinite(cal.global) && cal.global > 0 && cal.global !== 1) return 'global';
+  return 'none';
+}
+
 /**
  * Leave-one-out cross-validation — the honesty check. Fits on every quote but
  * the held-out one, then measures error on the held-out one. If mapeAfter <

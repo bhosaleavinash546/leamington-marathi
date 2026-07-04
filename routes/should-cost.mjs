@@ -183,7 +183,7 @@ app.post('/api/should-cost', requireAuth, rateLimit(60, 60 * 60 * 1000), async (
     materialApprox: matRes.approx,
     processApprox: procRes.approx,
     // Learned-calibration status: whether the user's own quotes adjusted this estimate.
-    calibration: { applied: calc.calibration.applied, factor: calc.calibration.factor, quotes: userCal.n },
+    calibration: { applied: calc.calibration.applied, factor: calc.calibration.factor, source: calc.calibration.source, quotes: userCal.n },
     // Which rate library produced this estimate (built-in vs the admin's custom data).
     library: getActiveMeta(),
     fx: currency === 'EUR' ? null : { base: 'EUR', rate: Number(rate.toFixed(4)), asOf: fx.live ? fx.date : null, source: fx.source, stale: !!fx.stale },

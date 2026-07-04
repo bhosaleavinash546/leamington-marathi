@@ -4548,10 +4548,13 @@ app.post('/api/analyze', requireAuth, rateLimit(40, 60 * 60 * 1000), async (req,
   try {
     for (let i = 0; i < 8; i++) {
       if (Date.now() > deadline) throw new Error('Analysis timed out after 2 minutes. Please try again with web search disabled.');
-      const params = { model: 'claude-opus-4-8', max_tokens: 32000, system: CHIEF_ENGINEER_PROMPT, messages };
+      const params = { model: 'claude-opus-4-8', max_tokens: 24000, system: CHIEF_ENGINEER_PROMPT, messages };
       if (enableSearch) { params.tools = [webSearchTool]; params.tool_choice = { type: 'auto' }; }
 
-      const response = await client.messages.create(params);
+      // A 24k-token generation legitimately exceeds the default 90s client
+      // timeout; give it room and don't retry the full doomed request 3× (which
+      // would burn ~4× the tokens before failing).
+      const response = await client.messages.create(params, { timeout: 300_000, maxRetries: 1 });
 
       if (response.stop_reason === 'tool_use') {
         const toolResults = [];

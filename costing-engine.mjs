@@ -17,7 +17,7 @@
  *   listMaterials(), listProcesses(), listRegions()
  */
 
-import { calibrationFactor } from './calibration.mjs';
+import { calibrationFactor, calibrationSource } from './calibration.mjs';
 
 // ─── Material database ────────────────────────────────────────────────────────
 // price = €/kg (derived from COMMODITY_BASELINE), density = g/cm³,
@@ -262,7 +262,10 @@ export function computeShouldCost(input, overrides = {}, calibration = null, lib
   const cycleMult   = overrides.cycleMult   ?? 1;
   const scrapAdd    = overrides.scrapAdd    ?? 0;
 
-  const scrapPct = Math.max(0, proc.scrapPct + scrapAdd);
+  const scrapPct = Math.min(0.9, Math.max(0, proc.scrapPct + scrapAdd));
+  // Correct yield gross-up: producing one GOOD part requires 1/(1-s) attempts
+  // (not 1+s), and rejects consume setup share and tool life too.
+  const yieldMult = 1 / (1 - scrapPct);
 
   // ── Material cost ──────────────────────────────────────────────────────────
   const pricePerKg = mat.price * priceMult;
@@ -270,7 +273,7 @@ export function computeShouldCost(input, overrides = {}, calibration = null, lib
   const offcutMass = inputMass - w;
   const grossMaterial = inputMass * pricePerKg;
   const scrapCredit   = offcutMass * pricePerKg * mat.scrapRecovery;
-  const materialCost  = (grossMaterial - scrapCredit) * (1 + scrapPct);
+  const materialCost  = (grossMaterial - scrapCredit) * yieldMult;
 
   // ── Conversion: machine + labour ────────────────────────────────────────────
   const cycleSec = (proc.cycleBase + proc.cyclePerKg * w) * cycleMult;
@@ -281,13 +284,14 @@ export function computeShouldCost(input, overrides = {}, calibration = null, lib
   // consumed per machine-hour. Material for machining (billet removal) and
   // significant for grinding/casting fettling; 0 for net-shape moulding.
   const perishablePerHr = proc.perishablePerHr ?? 0;
-  const machineCost = hrPerPart * (machineRate + perishablePerHr) * (1 + scrapPct);
-  const labourCost  = hrPerPart * reg.labour * proc.operators * (1 + scrapPct);
+  const machineCost = hrPerPart * (machineRate + perishablePerHr) * yieldMult;
+  const labourCost  = hrPerPart * reg.labour * proc.operators * yieldMult;
 
   // ── Setup (amortised over batch) ────────────────────────────────────────────
   // Machining needs multiple fixturing setups (op10/op20/…); `setups` (default 1)
   // multiplies the per-batch setup so multi-op parts carry realistic non-cut cost.
-  const setupCost = ((proc.setups ?? 1) * proc.setupHr * (machineRate + reg.labour)) / proc.batch;
+  // Grossed for yield: a batch yields batch·(1-s) good parts.
+  const setupCost = ((proc.setups ?? 1) * proc.setupHr * (machineRate + reg.labour)) / proc.batch * yieldMult;
 
   // ── Secondary / finishing operations ────────────────────────────────────────
   // Deburr, fettling, heat-treat, surface finish, gauging/inspection — real
@@ -300,7 +304,7 @@ export function computeShouldCost(input, overrides = {}, calibration = null, lib
   const toolingTotal = proc.toolingBase + proc.toolingPerKg * w;
   const lifetimeVol = vol * programYears;
   const amortVol = Math.max(1, Math.min(proc.toolLife, lifetimeVol));
-  const toolingCost = toolingTotal / amortVol;
+  const toolingCost = toolingTotal / amortVol * yieldMult;   // rejects consume tool life too
 
   // ── Overhead + commercial + SG&A/profit ─────────────────────────────────────
   const conversion = machineCost + labourCost + setupCost + finishingCost;
@@ -323,7 +327,9 @@ export function computeShouldCost(input, overrides = {}, calibration = null, lib
 
   return {
     inputs: { material, process, weightKg: w, annualVolume: vol, region, programYears },
-    calibration: cf !== 1 ? { factor: round(cf, 3), applied: true } : { factor: 1, applied: false },
+    calibration: cf !== 1
+      ? { factor: round(cf, 3), applied: true, source: calibration ? calibrationSource(calibration, process) : 'none' }
+      : { factor: 1, applied: false, source: 'none' },
     drivers: {
       pricePerKg: round(pricePerKg, 3),
       inputMassKg: round(inputMass, 3),
