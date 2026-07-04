@@ -757,22 +757,22 @@ textarea.contact-form-input { resize: vertical; min-height: 100px; }
 .results-tabs {
   display: flex;
   gap: 0;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--border-strong);
   background: var(--surface);
   margin: -16px -20px 0;
   padding: 0 20px;
   position: sticky;
   top: 0;
   z-index: 10;
-  /* Keep every tab reachable at any panel width. Without this the narrower
-     classic/demo results column clips the rightmost tabs (DFM-DFA, Upload)
-     against .layout{overflow:hidden} — so the tab bar scrolls instead. */
-  overflow-x: auto;
-  scrollbar-width: thin;
-  scroll-snap-type: x proximity;
+  /* WRAP every tab onto the next row rather than hiding the rightmost ones.
+     The narrower classic/demo results column can't fit all 7 tabs
+     (Breakdown, Detail, AI Insights, Sensitivity, Scenarios, DFM/DFA,
+     Upload) on one line; horizontal-scroll hid them behind a non-obvious
+     gesture, so tabs "disappeared". Wrapping keeps every tab visible at
+     any width, in every demo and new-costing. */
+  flex-wrap: wrap;
+  row-gap: 0;
 }
-.results-tabs::-webkit-scrollbar { height: 6px; }
-.results-tabs::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 
 .rtab {
   border: none;
@@ -781,12 +781,12 @@ textarea.contact-form-input { resize: vertical; min-height: 100px; }
   font-size: 0.8rem;
   font-weight: 600;
   cursor: pointer;
-  color: var(--text-muted);
+  color: var(--text-secondary);
   border-bottom: 2px solid transparent;
   margin-bottom: -1px;
   transition: all var(--transition);
   font-family: var(--font);
-  /* Never shrink/wrap tabs into an unreadable/clipped state — scroll instead. */
+  /* Never shrink/squish a tab into an unreadable state — wrap instead. */
   flex-shrink: 0;
   white-space: nowrap;
 }
@@ -1335,7 +1335,7 @@ textarea.contact-form-input { resize: vertical; min-height: 100px; }
   .field-group { min-width: 0; width: 100%; }
   .commodity-tabs { gap: 3px; padding: 6px 4px; }
   .ctab { padding: 3px 8px; font-size: 0.7rem; }
-  .results-tabs { overflow-x: auto; white-space: nowrap; }
+  .results-tabs { flex-wrap: wrap; }
   .rtab { padding: 7px 12px; font-size: 0.75rem; }
   .breakdown-table th, .breakdown-table td { padding: 5px 6px; font-size: 0.78rem; }
   .tornado-bar-wrap { min-width: 80px; }
