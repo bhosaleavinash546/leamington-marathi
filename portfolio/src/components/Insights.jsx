@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react'
-import { Newspaper } from 'lucide-react'
+import { Newspaper, Linkedin } from 'lucide-react'
 import { Reveal } from './motion.jsx'
 import Lightbox from './Lightbox.jsx'
 import { insights } from '../data.js'
@@ -23,7 +23,8 @@ export default function Insights() {
             <h2 className="section-title">Value Engineering, shared publicly</h2>
             <p className="section-sub">
               A LinkedIn series on where cost really lives in a product — plus the SAVE
-              International certification behind the method. Hover to pause; click to view full size.
+              International certification behind the method. Hover to pause; click to view full size,
+              or open the original post on LinkedIn.
             </p>
           </Reveal>
         </div>
@@ -34,21 +35,33 @@ export default function Insights() {
           {loop.map((item, i) => {
             const real = i < insights.length
             return (
-              <button
-                key={i}
-                type="button"
-                className="marquee-card"
-                role="listitem"
-                onClick={() => real && setActive(i)}
-                aria-hidden={real ? undefined : 'true'}
-                tabIndex={real ? 0 : -1}
-              >
-                <img src={item.src} alt={item.title} loading="lazy" />
-                <span className="marquee-cap">
-                  <em>{item.tag}</em>
-                  {item.title}
-                </span>
-              </button>
+              <div className="marquee-card" role="listitem" key={i} aria-hidden={real ? undefined : 'true'}>
+                <button
+                  type="button"
+                  className="marquee-open"
+                  onClick={() => real && setActive(i % insights.length)}
+                  tabIndex={real ? 0 : -1}
+                  aria-label={`View ${item.title} full size`}
+                >
+                  <img src={item.src} alt={item.title} loading="lazy" />
+                  <span className="marquee-cap">
+                    <em>{item.tag}</em>
+                    {item.title}
+                  </span>
+                </button>
+                {real && item.href && (
+                  <a
+                    className="marquee-linkedin"
+                    href={item.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={`Read "${item.title}" on LinkedIn`}
+                    title="Read the full post on LinkedIn"
+                  >
+                    <Linkedin size={15} />
+                  </a>
+                )}
+              </div>
             )
           })}
         </div>

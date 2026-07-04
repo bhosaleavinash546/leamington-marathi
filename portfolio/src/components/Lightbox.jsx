@@ -1,6 +1,6 @@
 import { useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { X, ChevronLeft, ChevronRight } from 'lucide-react'
+import { X, ChevronLeft, ChevronRight, Linkedin, ArrowUpRight } from 'lucide-react'
 
 // Full-screen image viewer with prev/next and keyboard controls.
 export default function Lightbox({ items, index, onClose, onNav }) {
@@ -79,6 +79,11 @@ export default function Lightbox({ items, index, onClose, onNav }) {
             <figcaption>
               <em>{item.tag}</em>
               {item.title}
+              {item.href && (
+                <a className="lb-link" href={item.href} target="_blank" rel="noopener noreferrer">
+                  <Linkedin size={16} /> Read the full post on LinkedIn <ArrowUpRight size={14} />
+                </a>
+              )}
             </figcaption>
           </motion.figure>
         </motion.div>

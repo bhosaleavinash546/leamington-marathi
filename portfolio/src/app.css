@@ -230,6 +230,7 @@
 .marquee:focus-within .marquee-track { animation-play-state: paused; }
 
 .marquee-card {
+  position: relative;
   flex: 0 0 auto;
   width: 286px;
   border-radius: var(--radius-sm);
@@ -238,16 +239,21 @@
   border: 1px solid var(--border);
   box-shadow: var(--shadow-sm);
   transition: transform 0.25s ease, border-color 0.25s ease;
-  display: block;
-  padding: 0;
-  margin: 0;
-  cursor: pointer;
-  text-align: left;
-  font: inherit;
-  color: inherit;
 }
 .marquee-card:hover { transform: translateY(-6px); border-color: rgba(200, 162, 74, 0.5); }
-.marquee-card:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.marquee-open {
+  display: block; width: 100%; padding: 0; margin: 0; border: none;
+  background: none; cursor: pointer; text-align: left; font: inherit; color: inherit;
+}
+.marquee-open:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+.marquee-linkedin {
+  position: absolute; top: 10px; right: 10px; z-index: 2;
+  display: grid; place-items: center; width: 30px; height: 30px; border-radius: 8px;
+  color: #fff; background: rgba(10, 14, 23, 0.72); border: 1px solid rgba(255, 255, 255, 0.14);
+  backdrop-filter: blur(4px); transition: background 0.2s ease, transform 0.15s ease, color 0.2s ease;
+}
+.marquee-linkedin:hover { background: #0a66c2; color: #fff; transform: translateY(-2px); }
+.marquee-linkedin:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .marquee-card img {
   width: 100%;
   height: 340px;
@@ -314,6 +320,12 @@
   display: flex; flex-direction: column; gap: 3px;
 }
 .lb-figure figcaption em { font-style: normal; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent-soft); }
+.lb-link {
+  display: inline-flex; align-items: center; gap: 7px; margin-top: 10px; align-self: center;
+  padding: 9px 16px; border-radius: 999px; font-size: 0.85rem; font-weight: 600;
+  color: #fff; background: #0a66c2; transition: background 0.2s ease, transform 0.15s ease;
+}
+.lb-link:hover { background: #0959a8; transform: translateY(-1px); }
 .lb-btn {
   position: absolute; z-index: 2; display: grid; place-items: center; cursor: pointer;
   width: 48px; height: 48px; border-radius: 50%; color: var(--text);

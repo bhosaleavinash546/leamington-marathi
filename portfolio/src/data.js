@@ -204,10 +204,30 @@ export const education = [
 
 // LinkedIn "Value Engineering" series + certification — shown in the sliding gallery.
 export const insights = [
-  { src: series1, title: 'Where real money is left on the table', tag: 'Series 1 of 4' },
-  { src: series2, title: 'Cost savings hiding in your product', tag: 'Series 2 of 4' },
-  { src: series3, title: 'Value engineering is a mindset', tag: 'Series 3 of 4' },
-  { src: series4, title: 'Margin gets engineered in', tag: 'Series 4 of 4' },
+  {
+    src: series1,
+    title: 'Where real money is left on the table',
+    tag: 'Series 1 of 4',
+    href: 'https://www.linkedin.com/posts/avinash-bhosale-671bbb80_automotive-valueengineering-npi-activity-7463219991736270849-AI9W',
+  },
+  {
+    src: series2,
+    title: 'Cost savings hiding in your product',
+    tag: 'Series 2 of 4',
+    href: 'https://www.linkedin.com/posts/avinash-bhosale-671bbb80_valueengineering-costengineering-automotive-activity-7464209607738060800-QOrE',
+  },
+  {
+    src: series3,
+    title: 'Value engineering is a mindset',
+    tag: 'Series 3 of 4',
+    href: 'https://www.linkedin.com/posts/avinash-bhosale-671bbb80_valueengineering-engineeringculture-automotive-activity-7466712378793971713-qxHb',
+  },
+  {
+    src: series4,
+    title: 'Margin gets engineered in',
+    tag: 'Series 4 of 4',
+    href: 'https://www.linkedin.com/posts/avinash-bhosale-671bbb80_valueengineering-automotive-costengineering-activity-7468657282910859264-we6_',
+  },
   { src: certVma, title: 'SAVE International — Value Methodology Associate', tag: 'Certification' },
 ]
 
