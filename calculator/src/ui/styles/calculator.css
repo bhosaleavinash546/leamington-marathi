@@ -5377,3 +5377,44 @@ kbd {
   white-space: nowrap;
 }
 #help-tour-btn:hover { background: #2563eb; color: #fff; }
+
+/* ── One-Click tiles → method-card treatment (home redesign increment) ──────── */
+.dash-tiles-grid .dash-tile {
+  position: relative;
+  min-height: 128px;
+  padding: 15px 15px 13px;
+  gap: 9px;
+  border-radius: 14px;
+}
+/* Icon becomes a tinted chip */
+.dash-tiles-grid .tile-icon {
+  width: 40px; height: 40px; margin: 0;
+  display: grid; place-items: center;
+  border-radius: 11px; font-size: 1.15rem;
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  transition: background var(--dur-hover) var(--ease-std), transform var(--dur-hover) var(--ease-std);
+}
+.dash-tiles-grid .dash-tile:hover .tile-icon {
+  background: color-mix(in srgb, var(--accent) 22%, transparent);
+  transform: translateY(-1px);
+}
+.dash-tiles-grid .tile-sub { font-family: var(--font-mono); letter-spacing: 0.01em; }
+/* Sliding "Open →" affordance pinned to the card foot */
+.dash-tiles-grid .dash-tile::after {
+  content: "Open →";
+  margin-top: auto;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.02em;
+  color: var(--accent);
+  opacity: 0.72;
+  transform: translateX(0);
+  transition: transform var(--dur-hover) var(--ease-std), opacity var(--dur-hover) var(--ease-std);
+}
+.dash-tiles-grid .dash-tile:hover::after { opacity: 1; transform: translateX(4px); }
+/* Featured (PCB) tile sits on a gradient — chip + arrow go translucent-white */
+.dash-tiles-grid .dash-tile--primary .tile-icon { background: rgba(255, 255, 255, 0.18); }
+.dash-tiles-grid .dash-tile--primary::after { color: rgba(255, 255, 255, 0.85); }
+@media (prefers-reduced-motion: reduce) {
+  .dash-tiles-grid .dash-tile:hover::after { transform: none; }
+}
