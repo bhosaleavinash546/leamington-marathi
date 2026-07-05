@@ -2263,8 +2263,11 @@ function renderSheetMetalFabForm(): string {
       <div class="field-group"><label>Time / Bend (s) <span title="Per bend including repositioning. Simple bends: 30–45s. Complex back-gauge reposition: 60–120s.">ℹ</span></label><input type="number" id="smf-bend-t" step="5" min="0" value="45"/></div>
     </div>
     <div class="field-row" style="margin-top:6px">
-      <div class="field-group"><label>Tool Changes <span title="Number of die/punch setups per part run. Multi-radius bends need multiple setups.">ℹ</span></label><input type="number" id="smf-tool-chg" step="1" min="0" value="1"/></div>
-      <div class="field-group"><label>Tool Change (s) <span title="Setup time per tool change, amortized over batch. Typically 300–600s per setup.">ℹ</span></label><input type="number" id="smf-tool-chg-t" step="30" min="0" value="300"/></div>
+      <div class="field-group"><label>Tool Changes <span title="Number of die/punch setups per batch run. Multi-radius bends need multiple setups.">ℹ</span></label><input type="number" id="smf-tool-chg" step="1" min="0" value="1"/></div>
+      <div class="field-group"><label>Tool Change (s) <span title="Setup time per tool change. Typically 300–600s per setup. Amortized over batch size.">ℹ</span></label><input type="number" id="smf-tool-chg-t" step="30" min="0" value="300"/></div>
+    </div>
+    <div class="field-row" style="margin-top:6px">
+      <div class="field-group"><label>Batch Size <span title="Parts per production batch. Tool-change/setup time is divided by this. Job shop: 20–200. Set 1 for one-offs.">ℹ</span></label><input type="number" id="smf-batch" step="10" min="1" value="50"/></div>
     </div>
     <div class="field-row" style="margin-top:6px">
       <div class="field-group"><label>Brake Machine</label><select id="smf-brake-mach" class="machine-select"></select></div>
@@ -9781,6 +9784,7 @@ function collectSheetMetalFabInput(): UniversalStackInput {
     timePerBendSec: num('smf-bend-t') || 45,
     toolChangeCount: num('smf-tool-chg'),
     toolChangeTimeSec: num('smf-tool-chg-t') || 300,
+    batchSize: num('smf-batch') || 1,
     bendMachineId: sel('smf-brake-mach'),
     bendLabourId: sel('smf-brake-lab'),
     oee: num('smf-oee'),

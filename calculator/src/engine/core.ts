@@ -28,10 +28,11 @@ export function validateStackInput(
     if (!mat)
       errors.push({ field: 'rawMaterial.materialId', message: `Material '${rm.materialId}' not found in rate library` });
   } else {
-    if (rm.netWeightKg <= 0)
-      errors.push({ field: 'rawMaterial.netWeightKg', message: 'Must be positive' });
+    // Note: comparisons are written so NaN also fails (NaN <= 0 is false, but !(NaN > 0) is true)
+    if (!(Number.isFinite(rm.netWeightKg) && rm.netWeightKg > 0))
+      errors.push({ field: 'rawMaterial.netWeightKg', message: 'Must be a positive finite number' });
 
-    if (rm.materialUtilization <= 0 || rm.materialUtilization > 1)
+    if (!(Number.isFinite(rm.materialUtilization) && rm.materialUtilization > 0 && rm.materialUtilization <= 1))
       errors.push({ field: 'rawMaterial.materialUtilization', message: 'Must be in range (0, 1]' });
 
     const mat = library.materials.find(m => m.id === rm.materialId);
@@ -48,12 +49,13 @@ export function validateStackInput(
     const op = input.operations[i];
     const p = `operations[${i}] (${op.operationName})`;
 
-    if (op.cycleTimeHr <= 0) errors.push({ field: `${p}.cycleTimeHr`, message: 'Must be positive' });
-    if (op.partsPerCycle < 1) errors.push({ field: `${p}.partsPerCycle`, message: 'Must be ≥ 1' });
-    if (op.oee <= 0 || op.oee > 1) errors.push({ field: `${p}.oee`, message: 'Must be in (0, 1]' });
-    if (op.manning <= 0) errors.push({ field: `${p}.manning`, message: 'Must be positive' });
-    if (op.labourTimeHr <= 0) errors.push({ field: `${p}.labourTimeHr`, message: 'Must be positive' });
-    if (op.labourEfficiency <= 0 || op.labourEfficiency > 1)
+    // Conditions written positively so NaN and ±Infinity are rejected too
+    if (!(Number.isFinite(op.cycleTimeHr) && op.cycleTimeHr > 0)) errors.push({ field: `${p}.cycleTimeHr`, message: 'Must be a positive finite number' });
+    if (!(op.partsPerCycle >= 1)) errors.push({ field: `${p}.partsPerCycle`, message: 'Must be ≥ 1' });
+    if (!(op.oee > 0 && op.oee <= 1)) errors.push({ field: `${p}.oee`, message: 'Must be in (0, 1]' });
+    if (!(Number.isFinite(op.manning) && op.manning > 0)) errors.push({ field: `${p}.manning`, message: 'Must be a positive finite number' });
+    if (!(Number.isFinite(op.labourTimeHr) && op.labourTimeHr > 0)) errors.push({ field: `${p}.labourTimeHr`, message: 'Must be a positive finite number' });
+    if (!(op.labourEfficiency > 0 && op.labourEfficiency <= 1))
       errors.push({ field: `${p}.labourEfficiency`, message: 'Must be in (0, 1]' });
 
     if (!library.machines.find(m => m.id === op.machineId))

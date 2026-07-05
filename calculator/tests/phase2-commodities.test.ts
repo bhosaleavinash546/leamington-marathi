@@ -53,6 +53,28 @@ describe('Sheet Metal module', () => {
     expect(d.operations[0].cycleTimeHr).toBeCloseTo(expected, 8);
   });
 
+  it('multi-part die: cycleTimeHr stays per-stroke, allocation via partsPerCycle (no double count)', () => {
+    const d = computeSheetMetalDrivers({ ...SM_INPUTS, partsPerStroke: 2 });
+    // Per-stroke time is independent of parts per stroke…
+    expect(d.operations[0].cycleTimeHr).toBeCloseTo(1 / (80 * 60), 8);
+    // …and the core allocates per part through partsPerCycle
+    expect(d.operations[0].partsPerCycle).toBe(2);
+    // Net effect: 2-out die halves per-part press cost vs 1-out, not quarters it
+    const r1 = computeUniversalStack({ partName: 'SM 1-out', ...computeSheetMetalDrivers(SM_INPUTS), ...STACK_DEFAULTS }, DEFAULT_RATE_LIBRARY);
+    const r2 = computeUniversalStack({ partName: 'SM 2-out', ...d, ...STACK_DEFAULTS }, DEFAULT_RATE_LIBRARY);
+    expect(r2.breakdown.process).toBeCloseTo(r1.breakdown.process / 2, 6);
+  });
+
+  it('zero strokes-per-min or zero strip geometry fails validation instead of passing NaN/∞ through', () => {
+    const dSpm = computeSheetMetalDrivers({ ...SM_INPUTS, strokesPerMin: 0 });
+    const vSpm = validateStackInput({ partName: 'SM Bad SPM', ...dSpm, ...STACK_DEFAULTS }, DEFAULT_RATE_LIBRARY);
+    expect(vSpm.valid).toBe(false);
+
+    const dStrip = computeSheetMetalDrivers({ ...SM_INPUTS, stripWidthMm: 0 });
+    const vStrip = validateStackInput({ partName: 'SM Bad Strip', ...dStrip, ...STACK_DEFAULTS }, DEFAULT_RATE_LIBRARY);
+    expect(vStrip.valid).toBe(false);
+  });
+
   it('tonnage estimate is physically plausible', () => {
     const kN = estimateTonnageKN({ perimeterMm: 700, thicknessMm: 1.2, shearStrengthMPa: 280 });
     expect(kN).toBeGreaterThan(0);

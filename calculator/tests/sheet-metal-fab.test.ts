@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { computeSheetMetalFabDrivers, ASSIST_GAS_COST_PER_HR } from '../src/engine/modules/sheet-metal-fab.js';
+import { computeSheetMetalFabDrivers, ASSIST_GAS_COST_PER_HR, WATERJET_ABRASIVE_COST_PER_HR } from '../src/engine/modules/sheet-metal-fab.js';
 import { adviseSheetMetalProcess, classifyVolume } from '../src/engine/modules/sheet-metal-advisor.js';
 import { computeUniversalStack } from '../src/engine/core.js';
 import { DEFAULT_RATE_LIBRARY } from '../src/engine/rate-library.js';
@@ -80,6 +80,21 @@ describe('Sheet Metal Fab — press brake bending', () => {
     const bendOp = d.operations.find(o => o.operationName === 'Press Brake Bending')!;
     expect(bendOp.cycleTimeHr).toBeCloseTo(expected, 8);
   });
+
+  it('tool-change time is amortized over batchSize', () => {
+    const d = computeSheetMetalFabDrivers({ ...BASE_FAB, toleranceMm: undefined, batchSize: 50 });
+    const expected = (3 * 45 + (1 * 300) / 50) / 3600;
+    const bendOp = d.operations.find(o => o.operationName === 'Press Brake Bending')!;
+    expect(bendOp.cycleTimeHr).toBeCloseTo(expected, 8);
+  });
+
+  it('batchSize below 1 is clamped to 1 (no amplification of setup time)', () => {
+    const d1 = computeSheetMetalFabDrivers({ ...BASE_FAB, toleranceMm: undefined, batchSize: 0 });
+    const d2 = computeSheetMetalFabDrivers({ ...BASE_FAB, toleranceMm: undefined });
+    const b1 = d1.operations.find(o => o.operationName === 'Press Brake Bending')!;
+    const b2 = d2.operations.find(o => o.operationName === 'Press Brake Bending')!;
+    expect(b1.cycleTimeHr).toBeCloseTo(b2.cycleTimeHr, 10);
+  });
 });
 
 // ─── Tolerance multiplier ─────────────────────────────────────────────────────
@@ -135,6 +150,26 @@ describe('Sheet Metal Fab — assist gas consumable', () => {
 
   it('assist gas only added when method is laser (not punch)', () => {
     const d = computeSheetMetalFabDrivers({ ...BASE_FAB, blankingMethod: 'punch', assistGas: 'nitrogen' });
+    expect(d.rawMaterial.consumablesCostPerPart ?? 0).toBe(0);
+  });
+
+  it('nitrogen rate reflects bulk-liquid high-pressure cutting (≥ £5/hr, > oxygen)', () => {
+    expect(ASSIST_GAS_COST_PER_HR.nitrogen).toBeGreaterThanOrEqual(5);
+    expect(ASSIST_GAS_COST_PER_HR.nitrogen).toBeGreaterThan(ASSIST_GAS_COST_PER_HR.oxygen);
+    expect(ASSIST_GAS_COST_PER_HR.oxygen).toBeGreaterThan(ASSIST_GAS_COST_PER_HR.air);
+  });
+
+  it('waterjet blanking adds garnet abrasive consumable over cutting time', () => {
+    const d = computeSheetMetalFabDrivers({
+      ...BASE_FAB, blankingMethod: 'waterjet', blankingMachineId: 'waterjet-flow-mach500',
+      blankingCycleTimeSec: 120, toleranceMm: undefined, assistGas: undefined,
+    });
+    const expected = WATERJET_ABRASIVE_COST_PER_HR * (120 / 3600);
+    expect(d.rawMaterial.consumablesCostPerPart).toBeCloseTo(expected, 6);
+  });
+
+  it('no abrasive consumable for non-waterjet methods', () => {
+    const d = computeSheetMetalFabDrivers({ ...BASE_FAB, blankingMethod: 'shear', assistGas: undefined });
     expect(d.rawMaterial.consumablesCostPerPart ?? 0).toBe(0);
   });
 });
@@ -199,6 +234,17 @@ describe('Sheet Metal Fab — reject uplift', () => {
     const base = computeSheetMetalFabDrivers({ ...BASE_FAB, toleranceMm: undefined });
     const rej  = computeSheetMetalFabDrivers({ ...BASE_FAB, toleranceMm: undefined, rejectRate: 0.05 });
     expect(rej.operations[0].cycleTimeHr).toBeCloseTo(base.operations[0].cycleTimeHr / (1 - 0.05), 6);
+  });
+
+  it('reject rate uplifts MIG weld consumables (wire/gas wasted on scrapped parts)', () => {
+    const weld = {
+      ...BASE_FAB,
+      migWeldLengthM: 0.5, migWeldMachineId: 'mig-welder-manual', migWeldLabourId: 'lab-uk-skilled',
+      migWeldConsumableCostPerM: 0.40,
+    };
+    const base = computeSheetMetalFabDrivers(weld);
+    const rej  = computeSheetMetalFabDrivers({ ...weld, rejectRate: 0.05 });
+    expect(rej.rawMaterial.consumablesCostPerPart).toBeCloseTo(base.rawMaterial.consumablesCostPerPart! / (1 - 0.05), 6);
   });
 });
 

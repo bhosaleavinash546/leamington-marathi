@@ -3,11 +3,27 @@ import type { CommodityDrivers, OperationInput, RawMaterialInput, ToolingInput }
 export type FabBlankingMethod = 'laser' | 'plasma' | 'waterjet' | 'punch' | 'shear';
 export type AssistGas = 'nitrogen' | 'oxygen' | 'air';
 
+/**
+ * Assist-gas cost while the beam is cutting, £/hr (UK, 2026).
+ * Nitrogen: high-pressure fusion cutting (SS/Al) consumes 20–90 Nm³/hr at 10–20 bar.
+ *   Bulk liquid N₂ ≈ £0.15–0.30/m³ → £5–18/hr; on-site generation £3–5/hr; cylinders £20+/hr.
+ *   £9/hr is the bulk-liquid mid-point — the defensible basis for a UK fab shop quote.
+ * Oxygen: mild-steel oxidation cutting uses far lower flow (2–5 m³/hr, <6 bar) → £1–3/hr bulk.
+ * Air: compressor amortization + energy for compressed-air cutting/plasma.
+ */
 export const ASSIST_GAS_COST_PER_HR: Record<AssistGas, number> = {
-  nitrogen: 3.50,
-  oxygen:   1.20,
+  nitrogen: 9.00,
+  oxygen:   1.80,
   air:      0.40,
 };
+
+/**
+ * Waterjet abrasive consumable, £/hr of cutting (UK, 2026).
+ * Garnet 80-mesh: 0.3–0.45 kg/min ≈ 20–27 kg/hr at £0.60–0.85/kg → £12–20/hr,
+ * plus orifice/mixing-tube wear ~£2–4/hr. Without this, waterjet parts are
+ * materially under-costed (abrasive is the dominant waterjet operating cost).
+ */
+export const WATERJET_ABRASIVE_COST_PER_HR = 18.00;
 
 // [min_tolerance_mm, factor] — check from widest to tightest
 export const SM_FAB_TOLERANCE_FACTOR: [number, number][] = [
@@ -36,6 +52,8 @@ export interface SheetMetalFabInputs {
   timePerBendSec: number;
   toolChangeCount: number;
   toolChangeTimeSec: number;
+  /** Parts per production batch. Press-brake tool-change time is amortized over this. Default 1. */
+  batchSize?: number;
   bendMachineId: string;
   bendLabourId: string;
 
@@ -88,8 +106,9 @@ export function getSheetMetalFabInputSchema(): Record<string, string> {
     assistGas: 'nitrogen | oxygen | air — assist gas for laser (N₂ for SS/Al, O₂ for mild steel) or plasma gas type',
     bendCount: 'number — number of bends per part',
     timePerBendSec: 'number — seconds per bend including repositioning (default 45s)',
-    toolChangeCount: 'number — press brake die/punch tool setups per part run',
-    toolChangeTimeSec: 'number — seconds per tool change amortized over batch (default 300s)',
+    toolChangeCount: 'number — press brake die/punch tool setups per batch',
+    toolChangeTimeSec: 'number — seconds per tool change (default 300s); amortized over batchSize',
+    batchSize: 'number? — parts per production batch; tool-change time is divided by this (default 1)',
     bendMachineId: 'string — press brake machine ID',
     bendLabourId: 'string — labour rate ID for bending',
     oee: 'number 0–1 — overall equipment effectiveness for blanking and bending',
@@ -149,13 +168,20 @@ export function computeSheetMetalFabDrivers(inputs: SheetMetalFabInputs): Commod
       (inputs.blankingCycleTimeSec / 3600) * toleranceFactor * rejectUplift
     : 0;
 
+  // Waterjet garnet abrasive + orifice wear — dominant waterjet operating cost
+  const abrasiveAdder = inputs.blankingMethod === 'waterjet'
+    ? WATERJET_ABRASIVE_COST_PER_HR *
+      (inputs.blankingCycleTimeSec / 3600) * toleranceFactor * rejectUplift
+    : 0;
+
+  // Weld consumables are wasted on rejected parts too — uplift like the gas adder
   const migConsumableCost =
-    (inputs.migWeldLengthM ?? 0) * (inputs.migWeldConsumableCostPerM ?? 0.40);
+    (inputs.migWeldLengthM ?? 0) * (inputs.migWeldConsumableCostPerM ?? 0.40) * rejectUplift;
 
   const tigConsumableCost =
-    (inputs.tigWeldLengthM ?? 0) * (inputs.tigWeldConsumableCostPerM ?? 0.60);
+    (inputs.tigWeldLengthM ?? 0) * (inputs.tigWeldConsumableCostPerM ?? 0.60) * rejectUplift;
 
-  const consumablesCostPerPart = gasAdder + migConsumableCost + tigConsumableCost;
+  const consumablesCostPerPart = gasAdder + abrasiveAdder + migConsumableCost + tigConsumableCost;
 
   const rawMaterial: RawMaterialInput = {
     materialId: inputs.materialId,
@@ -182,9 +208,11 @@ export function computeSheetMetalFabDrivers(inputs: SheetMetalFabInputs): Commod
   ];
 
   if (inputs.bendCount > 0) {
+    // Tool-change (setup) time is a per-batch cost — amortize over the batch size
+    const effectiveBatch = Math.max(1, inputs.batchSize ?? 1);
     const bendingCycleTimeSec =
       inputs.bendCount * inputs.timePerBendSec +
-      inputs.toolChangeCount * inputs.toolChangeTimeSec;
+      (inputs.toolChangeCount * inputs.toolChangeTimeSec) / effectiveBatch;
     const bendingCycleHr = (bendingCycleTimeSec / 3600) * toleranceFactor * rejectUplift;
     operations.push({
       operationName: 'Press Brake Bending',

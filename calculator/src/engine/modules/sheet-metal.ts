@@ -59,14 +59,24 @@ export function getSheetMetalInputSchema(): Record<string, string> {
     secondaryOpsMachineId: 'string? — optional secondary operation machine ID',
     secondaryOpsLabourId: 'string? — optional secondary operation labour ID',
     secondaryOpsCycleHr: 'number? — optional secondary operation cycle time hr',
+    secondaryOpsOee: 'number? 0–1 — secondary op OEE (defaults to press OEE)',
+    secondaryOpsManning: 'number? — secondary op operators per machine (defaults to press manning)',
+    secondaryOpsLabourEfficiency: 'number? 0–1 — secondary op labour efficiency (defaults to press value)',
+    rejectRate: 'number? 0–1 — press-shop scrap fraction; uplifts material weight and cycle times',
   };
 }
 
 export function computeSheetMetalDrivers(inputs: SheetMetalInputs): CommodityDrivers {
-  // Strip utilization: ratio of blank area to strip cell area
+  // Strip utilization: ratio of blank area to strip cell area.
+  // NOTE: this captures strip-nesting scrap only (edge trim + pitch allowance). Piercing/trim
+  // scrap inside the blank is NOT captured unless netWeightKg ≈ blank weight — see input docs.
   const blankArea = inputs.blankLengthMm * inputs.blankWidthMm;
   const stripCellArea = inputs.stripWidthMm * inputs.pitchMm;
-  const materialUtilization = Math.min((blankArea / stripCellArea) * inputs.partsPerStroke, 1.0);
+  // Guard: zero/negative strip geometry must not silently clamp to 100% utilisation
+  // (blankArea / 0 = Infinity → Math.min(∞, 1) = 1). NaN is rejected by validateStackInput.
+  const materialUtilization = blankArea > 0 && stripCellArea > 0
+    ? Math.min((blankArea / stripCellArea) * inputs.partsPerStroke, 1.0)
+    : NaN;
 
   const rejectUplift = inputs.rejectRate && inputs.rejectRate > 0
     ? 1 / (1 - inputs.rejectRate)
@@ -78,8 +88,12 @@ export function computeSheetMetalDrivers(inputs: SheetMetalInputs): CommodityDri
     materialUtilization,
   };
 
-  // Cycle time per part: 1 stroke takes 1/SPM minutes = 1/(SPM*60) hours
-  const baseCycleHr = 1 / (inputs.strokesPerMin * 60 * inputs.partsPerStroke);
+  // Cycle time per STROKE: 1 stroke takes 1/SPM minutes = 1/(SPM*60) hours.
+  // Per-part allocation happens in the core via partsPerCycle — do NOT divide by
+  // partsPerStroke here as well (that double-counted multi-part dies, halving press
+  // cost for a 2-out die instead of allocating it correctly).
+  // Guard: SPM ≤ 0 would give Infinity; emit NaN so validateStackInput rejects it.
+  const baseCycleHr = inputs.strokesPerMin > 0 ? 1 / (inputs.strokesPerMin * 60) : NaN;
   const cycleTimeHr = baseCycleHr * rejectUplift;
 
   const operations: OperationInput[] = [
