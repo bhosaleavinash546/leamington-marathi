@@ -42,12 +42,12 @@
       } catch { window.location.replace('/auth.html'); }
     })();
   </script>
-  <script type="module" crossorigin src="/calculator/assets/index-BCwhA2RR.js"></script>
+  <script type="module" crossorigin src="/calculator/assets/index-Y4LXQsVt.js"></script>
   <link rel="modulepreload" crossorigin href="/calculator/assets/vendor-motion-OZhY1uFQ.js">
   <link rel="modulepreload" crossorigin href="/calculator/assets/vendor-Bs6metFb.js">
   <link rel="modulepreload" crossorigin href="/calculator/assets/vendor-pdf-fDPUKpjF.js">
   <link rel="modulepreload" crossorigin href="/calculator/assets/vendor-chart-K87R2BAO.js">
-  <link rel="stylesheet" crossorigin href="/calculator/assets/index-CloYqmHJ.css">
+  <link rel="stylesheet" crossorigin href="/calculator/assets/index-ZkKkmY1I.css">
 </head>
 <body>
 
@@ -149,6 +149,46 @@
 </script>
 
 <section id="home-view">
+  <!-- ── Adaptive Home Hero ───────────────────────────────────────────────────── -->
+  <div class="cv-hero" id="cv-hero">
+    <div class="cv-hero-glow" aria-hidden="true"></div>
+
+    <!-- Full hero — first-time / empty state -->
+    <div class="cv-hero-full">
+      <div class="cv-hero-copy">
+        <div class="cv-eyebrow">Manufacturing should-cost intelligence</div>
+        <h1 class="cv-hero-h1">Know what a part <span class="cv-hl">should cost</span> — before you negotiate.</h1>
+        <p class="cv-hero-lede">CostVision breaks any part down to a defensible piece price across casting, sheet metal, machining, plastics, forging and PCB — from a photo, a CAD file, or a plain-English brief.</p>
+        <div class="cv-hero-cta">
+          <button class="btn btn-primary cv-hero-start">⊕ Start a costing</button>
+          <button class="btn btn-secondary cv-hero-demos">▶ Explore live demos</button>
+        </div>
+      </div>
+      <div class="cv-impact">
+        <div class="cv-impact-head"><span class="cv-eyebrow">Your workspace</span><span class="cv-live">Live</span></div>
+        <div class="cv-stat-grid">
+          <div class="cv-stat"><div class="k">Parts costed</div><div class="v" id="hero-f-parts">—</div></div>
+          <div class="cv-stat"><div class="k">Savings identified</div><div class="v good" id="hero-f-save">—</div></div>
+          <div class="cv-stat"><div class="k">Avg part cost</div><div class="v" id="hero-f-avg">—</div></div>
+          <div class="cv-stat"><div class="k">High-cost parts</div><div class="v" id="hero-f-high">—</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Compact hero — returning user with data -->
+    <div class="cv-hero-compact">
+      <div class="cv-hc-row">
+        <div class="cv-hc-greet">Welcome back<span class="cv-hc-sub" id="hero-greet-sub"></span></div>
+        <div class="cv-hc-stats">
+          <div class="cv-hc-stat"><span class="k">Parts</span><span class="v" id="hero-c-parts">—</span></div>
+          <div class="cv-hc-stat"><span class="k">Savings</span><span class="v good" id="hero-c-save">—</span></div>
+          <div class="cv-hc-stat"><span class="k">Avg part</span><span class="v" id="hero-c-avg">—</span></div>
+        </div>
+        <button class="btn btn-primary cv-hero-start">⊕ New costing</button>
+      </div>
+    </div>
+  </div>
+
   <!-- ── Commodity Intelligence Section ─────────────────────────────────────── -->
   <div id="comm-section">
 

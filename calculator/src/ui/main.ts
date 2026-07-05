@@ -737,6 +737,39 @@ function renderDashboard(): void {
     else kpiHighCost.textContent = '0';
   }
 
+  // ── Adaptive hero: full welcome for a new/empty workspace, compact for a
+  //    returning user with costing history. Stats reuse the KPI computation. ──
+  const homeView = document.getElementById('home-view');
+  if (homeView) {
+    homeView.dataset.mode = records.length === 0 ? 'new' : 'power';
+    if (!homeView.dataset.heroWired) {
+      homeView.dataset.heroWired = '1';
+      homeView.querySelectorAll('.cv-hero-start').forEach(b =>
+        b.addEventListener('click', () => document.getElementById('new-costing-btn')?.click()));
+      homeView.querySelectorAll('.cv-hero-demos').forEach(b =>
+        b.addEventListener('click', () => document.getElementById('demo-btn')?.click()));
+    }
+  }
+  const sym = CURRENCY_SYMBOL[_displayCurrency] ?? _displayCurrency;
+  const fmtSave = (v: number) => `${sym}${v < 1000 ? v.toFixed(0) : (v / 1000).toFixed(1) + 'k'}`;
+  const setHero = (id: string, target: number, fmt: (v: number) => string): void => {
+    const e = document.getElementById(id);
+    if (e) countUp(e, target, fmt);
+  };
+  const dispSave = savings * _displayFxRate;
+  setHero('hero-f-parts', records.length, v => String(Math.round(v)));
+  setHero('hero-f-save', dispSave, fmtSave);
+  setHero('hero-f-avg', avgCost, v => _currFmt(v));
+  setHero('hero-f-high', highCostCount, v => String(Math.round(v)));
+  setHero('hero-c-parts', records.length, v => String(Math.round(v)));
+  setHero('hero-c-save', dispSave, fmtSave);
+  setHero('hero-c-avg', avgCost, v => _currFmt(v));
+  const greetSub = document.getElementById('hero-greet-sub');
+  if (greetSub) {
+    const topLabel = topComm ? COMMODITY_LABELS[topComm[0]] ?? topComm[0] : '—';
+    greetSub.textContent = `${records.length} costing${records.length !== 1 ? 's' : ''} · top commodity ${topLabel}`;
+  }
+
   // AI insight — dynamic based on data
   const daiEl = document.getElementById('dai-dynamic');
   if (daiEl) {
