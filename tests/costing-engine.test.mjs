@@ -133,3 +133,37 @@ test('all regions have sane rate fields', () => {
     assert.ok(r.sgaPct > 0 && r.sgaPct < 1, `${name} sgaPct`);
   }
 });
+
+test('non-finite / out-of-range weight & volume throw instead of returning NaN', () => {
+  const ok = { material: 'Cast Iron (Ductile/GJS)', process: 'Sand Casting', annualVolume: 200000, region: 'China' };
+  for (const w of [Infinity, -Infinity, NaN, 0, -5, '1e999']) {
+    assert.throws(() => computeShouldCost({ ...ok, weightKg: Number(w) }), /weightKg must be a finite number/);
+  }
+  // finite-but-overflowing weight is caught by the non-finite-total guard
+  assert.throws(() => computeShouldCost({ ...ok, weightKg: 1e306 }), /finite/);
+  for (const v of [Infinity, NaN, 0, -1]) {
+    assert.throws(() => computeShouldCost({ material: 'Steel (mild)', process: 'Stamping / Deep Drawing', weightKg: 2, annualVolume: v, region: 'Germany' }), /annualVolume must be a finite number/);
+  }
+});
+
+test('a library process missing load-bearing fields throws, not NaN', () => {
+  const badLib = {
+    MATERIALS, REGIONS,
+    PROCESSES: { Broken: { machineRate: 50, operators: 1, cavities: 1, scrapPct: 0.05, setupHr: 1, batch: 100, toolLife: 1e6, cycleBase: 10, cyclePerKg: 1, toolingBase: 1000, toolingPerKg: 0, families: ['ferrous'] } },
+  }; // utilisation intentionally absent
+  assert.throws(() => computeShouldCost({ material: 'Steel (mild)', process: 'Broken', weightKg: 2, annualVolume: 80000, region: 'Germany' }, {}, null, badLib), /utilisation/);
+});
+
+test('simulation band is wide enough to be a useful should-cost range', () => {
+  const s = simulateShouldCost({ material: 'Cast Iron (Ductile/GJS)', process: 'Sand Casting', weightKg: 6.7, annualVolume: 200000, region: 'China' });
+  assert.ok(s.p10 < s.p50 && s.p50 < s.p90, 'percentiles must be ordered');
+  const spread = (s.p90 - s.p10) / s.p50;
+  assert.ok(spread > 0.12, `P10–P90 spread ${(spread * 100).toFixed(0)}% too narrow to cover real price scatter`);
+  assert.ok(spread < 0.80, `P10–P90 spread ${(spread * 100).toFixed(0)}% implausibly wide`);
+});
+
+test('casting reports a physical poured (buy-to-fly) mass, not finished mass', () => {
+  const r = computeShouldCost({ material: 'Cast Iron (Ductile/GJS)', process: 'Sand Casting', weightKg: 6.7, annualVolume: 200000, region: 'China' });
+  // sand-cast metal yield 0.55 → poured mass ≈ 12 kg, well above the 6.7 kg finished part
+  assert.ok(r.drivers.inputMassKg > 10 && r.drivers.inputMassKg < 14, `poured mass ${r.drivers.inputMassKg}kg not physical`);
+});

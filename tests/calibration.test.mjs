@@ -84,3 +84,14 @@ test('leave-one-out: calibration GENERALISES to held-out quotes (learns, not mem
   assert.ok(cv.mapeAfter < cv.mapeBefore * 0.6,
     `expected clear out-of-sample gain, before ${(cv.mapeBefore * 100).toFixed(1)}% after ${(cv.mapeAfter * 100).toFixed(1)}%`);
 });
+
+test('a mis-keyed quote (wrong units/currency) cannot swing the factor beyond the clamp', () => {
+  // actual 1e30× modelled — e.g. a price pasted in the wrong units. Must NOT fit
+  // an astronomical factor that would corrupt every other estimate via `global`.
+  const cal = fitCalibration([{ modelled: 10, actual: 1e30, process: 'Sand Casting' }]);
+  assert.ok(cal.global <= 4 && cal.global >= 0.25, `global factor ${cal.global} escaped the clamp`);
+  assert.ok(cal.process['Sand Casting'] <= 4, `process factor ${cal.process['Sand Casting']} escaped the clamp`);
+  // a tiny (cents) mis-entry is clamped on the low side too
+  const low = fitCalibration([{ modelled: 10, actual: 0.001, process: 'Sand Casting' }]);
+  assert.ok(low.global >= 0.25, `global factor ${low.global} escaped the low clamp`);
+});

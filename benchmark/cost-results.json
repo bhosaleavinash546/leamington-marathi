@@ -1,23 +1,23 @@
 {
   "hitRate": 100,
-  "mape": 8.4,
-  "bias": -2.4,
-  "bandCoverage": 50,
-  "hits": 10,
-  "total": 10,
+  "mape": 8.3,
+  "bias": -3.3,
+  "bandCoverage": 84.6,
+  "hits": 13,
+  "total": 13,
   "rows": [
     {
       "name": "Steering knuckle (ductile iron, sand cast)",
       "ref": 12.5,
-      "modelled": 13.46,
-      "errPct": 7.7,
+      "modelled": 12.05,
+      "errPct": -3.6,
       "withinTol": true
     },
     {
       "name": "Suspension bracket (Al, high-pressure die cast)",
       "ref": 8.5,
-      "modelled": 8.27,
-      "errPct": -2.7,
+      "modelled": 8.01,
+      "errPct": -5.8,
       "withinTol": true
     },
     {
@@ -37,43 +37,64 @@
     {
       "name": "Forged control arm (high-strength steel)",
       "ref": 10,
-      "modelled": 9.68,
-      "errPct": -3.2,
+      "modelled": 9.65,
+      "errPct": -3.5,
       "withinTol": true
     },
     {
       "name": "CNC-machined aluminium fitting (low volume)",
       "ref": 13,
-      "modelled": 14.7,
-      "errPct": 13.1,
+      "modelled": 14.69,
+      "errPct": 13,
       "withinTol": true
     },
     {
       "name": "CNC-machined steel bracket (mid volume)",
       "ref": 24,
-      "modelled": 25.6,
-      "errPct": 6.7,
+      "modelled": 25.59,
+      "errPct": 6.6,
       "withinTol": true
     },
     {
       "name": "CNC-machined aluminium housing (larger, low volume)",
       "ref": 46,
-      "modelled": 44.85,
-      "errPct": -2.5,
+      "modelled": 44.8,
+      "errPct": -2.6,
       "withinTol": true
     },
     {
       "name": "Zinc die-cast lock cam",
       "ref": 1.1,
-      "modelled": 0.94,
-      "errPct": -14.5,
+      "modelled": 0.92,
+      "errPct": -16.4,
       "withinTol": true
     },
     {
       "name": "Roll-formed steel rail",
       "ref": 3.2,
-      "modelled": 2.88,
-      "errPct": -10,
+      "modelled": 2.87,
+      "errPct": -10.3,
+      "withinTol": true
+    },
+    {
+      "name": "Investment-cast 304 bracket",
+      "ref": 24,
+      "modelled": 22.76,
+      "errPct": -5.2,
+      "withinTol": true
+    },
+    {
+      "name": "LPDC aluminium head (gravity/permanent-mould model)",
+      "ref": 30,
+      "modelled": 27.99,
+      "errPct": -6.7,
+      "withinTol": true
+    },
+    {
+      "name": "Cold-headed high-strength bolt (M10-class)",
+      "ref": 0.1,
+      "modelled": 0.11,
+      "errPct": 10,
       "withinTol": true
     }
   ]

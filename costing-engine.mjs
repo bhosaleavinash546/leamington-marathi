@@ -97,40 +97,48 @@ export const PROCESSES = {
     cycleBase: 30, cyclePerKg: 12, toolingBase: 8_000, toolingPerKg: 0,
     families: ['ferrous', 'aluminium'],
   },
+  // Casting `utilisation` is metal yield = finished-mass / poured-mass; the values
+  // reflect real gating/riser/biscuit/overflow overhead (HPDC 0.60, sand 0.55,
+  // investment 0.50, gravity 0.65, zinc hot-chamber 0.75). `returnsRecovery` is the
+  // in-house remelt value of those returns + rejected castings (~0.9 of alloy),
+  // which offsets the higher poured mass — so totals stay realistic while the
+  // displayed buy-to-fly and input mass become physically defensible.
   'Die Casting (Aluminium)': {
-    machineRate: 95, operators: 0.5, cavities: 1, utilisation: 0.85, scrapPct: 0.05,
+    machineRate: 95, operators: 0.5, cavities: 1, utilisation: 0.60, scrapPct: 0.05,
     setupHr: 3.0, batch: 1500, toolLife: 150_000,
     cycleBase: 35, cyclePerKg: 6, toolingBase: 90_000, toolingPerKg: 60_000,
     families: ['aluminium', 'magnesium'],
-    finishPct: 0.1,
+    finishPct: 0.1, returnsRecovery: 0.90,
   },
   'Die Casting (Zinc)': {
-    machineRate: 75, operators: 0.5, cavities: 2, utilisation: 0.90, scrapPct: 0.04,
+    machineRate: 75, operators: 0.5, cavities: 2, utilisation: 0.75, scrapPct: 0.04,
     setupHr: 2.0, batch: 2000, toolLife: 500_000,
     cycleBase: 12, cyclePerKg: 5, toolingBase: 60_000, toolingPerKg: 40_000,
     families: ['zinc'],
-    finishPct: 0.1,
+    finishPct: 0.1, returnsRecovery: 0.90,
   },
   'Sand Casting': {
-    machineRate: 55, operators: 1.2, cavities: 1, utilisation: 0.70, scrapPct: 0.06,
+    machineRate: 55, operators: 1.2, cavities: 1, utilisation: 0.55, scrapPct: 0.06,
     setupHr: 2.0, batch: 400, toolLife: 50_000,
     cycleBase: 45, cyclePerKg: 12, toolingBase: 18_000, toolingPerKg: 12_000,
     families: ['castiron', 'ferrous', 'aluminium', 'copper'],
-    finishPct: 0.2,
+    finishPct: 0.2, returnsRecovery: 0.90,
   },
   'Investment Casting': {
-    machineRate: 70, operators: 1.4, cavities: 1, utilisation: 0.85, scrapPct: 0.05,
+    // Shell route: wax injection, tree assembly, 7-9 ceramic dips over days,
+    // dewax/fire/pour/cutoff/grind — the most labour-intensive casting process.
+    machineRate: 70, operators: 2.5, cavities: 1, utilisation: 0.50, scrapPct: 0.05,
     setupHr: 3.0, batch: 800, toolLife: 100_000,
-    cycleBase: 90, cyclePerKg: 20, toolingBase: 40_000, toolingPerKg: 30_000,
+    cycleBase: 150, cyclePerKg: 60, toolingBase: 40_000, toolingPerKg: 30_000,
     families: ['ferrous', 'castiron', 'aluminium', 'titanium', 'copper'],
-    finishPct: 0.15,
+    finishPct: 0.15, returnsRecovery: 0.90,
   },
   'Gravity Die Casting': {
-    machineRate: 80, operators: 0.7, cavities: 1, utilisation: 0.82, scrapPct: 0.05,
+    machineRate: 80, operators: 0.7, cavities: 1, utilisation: 0.65, scrapPct: 0.05,
     setupHr: 2.5, batch: 1500, toolLife: 120_000,
     cycleBase: 40, cyclePerKg: 8, toolingBase: 70_000, toolingPerKg: 45_000,
     families: ['aluminium', 'copper'],
-    finishPct: 0.12,
+    finishPct: 0.12, returnsRecovery: 0.90,
   },
   'Injection Moulding': {
     machineRate: 65, operators: 0.4, cavities: 2, utilisation: 0.95, scrapPct: 0.02,
@@ -152,9 +160,14 @@ export const PROCESSES = {
     finishPct: 0.12,
   },
   'Forging (Cold)': {
-    machineRate: 100, operators: 0.6, cavities: 1, utilisation: 0.88, scrapPct: 0.03,
-    setupHr: 1.5, batch: 4000, toolLife: 400_000,
-    cycleBase: 4, cyclePerKg: 1.5, toolingBase: 50_000, toolingPerKg: 35_000,
+    // Cold heading/forming: multi-station headers run 100-300 strokes/min, so a
+    // fastener is sub-second, tapering up for larger press-cold-forged parts. The
+    // old flat 4s base made an M8 bolt ~10x too dear. Tooling is cheap carbide
+    // die stations run over millions of hits (toolLife 2M), so a fastener isn't
+    // tooling-dominated; larger cold-forged parts carry more via toolingPerKg.
+    machineRate: 100, operators: 0.6, cavities: 1, utilisation: 0.88, scrapPct: 0.015,
+    setupHr: 1.5, batch: 6000, toolLife: 2_000_000,
+    cycleBase: 0.6, cyclePerKg: 4, toolingBase: 18_000, toolingPerKg: 40_000,
     families: ['ferrous', 'aluminium', 'copper'],
     finishPct: 0.1,
   },
@@ -253,14 +266,29 @@ export function computeShouldCost(input, overrides = {}, calibration = null, lib
 
   const w = Number(weightKg);
   const vol = Number(annualVolume);
-  if (!(w > 0)) throw new Error('weightKg must be > 0');
-  if (!(vol > 0)) throw new Error('annualVolume must be > 0');
+  // Number.isFinite rejects Infinity/NaN too — a plain `> 0` lets `1e999`
+  // (JSON.parse → Infinity) through, then `Infinity - Infinity` = NaN poisons
+  // the whole breakdown and the endpoint returns HTTP 200 full of NaN.
+  if (!Number.isFinite(w) || w <= 0) throw new Error('weightKg must be a finite number > 0');
+  if (!Number.isFinite(vol) || vol <= 0) throw new Error('annualVolume must be a finite number > 0');
 
-  // Simulation multipliers (1 = deterministic)
-  const priceMult   = overrides.priceMult   ?? 1;
-  const machineMult = overrides.machineMult ?? 1;
-  const cycleMult   = overrides.cycleMult   ?? 1;
-  const scrapAdd    = overrides.scrapAdd    ?? 0;
+  // A custom (admin-uploaded) library or a programmatic caller can hand us a
+  // process/material/region missing a load-bearing numeric field; guarding here
+  // turns a silent NaN total into a clear error.
+  const finitePos = (v) => Number.isFinite(v) && v > 0;
+  if (!(proc.utilisation > 0 && proc.utilisation <= 1)) throw new Error(`${process}: utilisation must be in (0,1]`);
+  if (!(Number.isFinite(proc.scrapPct) && proc.scrapPct >= 0 && proc.scrapPct < 1)) throw new Error(`${process}: scrapPct must be in [0,1)`);
+  if (!finitePos(proc.cavities) || !finitePos(proc.batch)) throw new Error(`${process}: cavities and batch must be > 0`);
+  if (!Number.isFinite(mat.price) || mat.price < 0) throw new Error(`${material}: price must be a finite number ≥ 0`);
+  if (!Number.isFinite(reg.labour) || reg.labour < 0) throw new Error(`${region}: labour must be a finite number ≥ 0`);
+
+  // Simulation multipliers (1 = deterministic). Floored at a small positive so a
+  // stray negative/zero can't silently net conversion against material.
+  const clampMult = (v) => Math.max(0.01, Number.isFinite(v) ? v : 1);
+  const priceMult   = clampMult(overrides.priceMult   ?? 1);
+  const machineMult = clampMult(overrides.machineMult ?? 1);
+  const cycleMult   = clampMult(overrides.cycleMult   ?? 1);
+  const scrapAdd    = Number.isFinite(overrides.scrapAdd) ? overrides.scrapAdd : 0;
 
   const scrapPct = Math.min(0.9, Math.max(0, proc.scrapPct + scrapAdd));
   // Correct yield gross-up: producing one GOOD part requires 1/(1-s) attempts
@@ -268,12 +296,20 @@ export function computeShouldCost(input, overrides = {}, calibration = null, lib
   const yieldMult = 1 / (1 - scrapPct);
 
   // ── Material cost ──────────────────────────────────────────────────────────
+  // Recovery of returned metal: a foundry/forge remelts its own runners, risers,
+  // biscuits and REJECTED parts in-house at ~0.9 of alloy value (process-level
+  // `returnsRecovery`), whereas machining swarf / stamping skeleton is sold as
+  // external scrap at the material's `scrapRecovery`. Both offcuts AND rejected
+  // parts are recovered — the old code recovered offcuts only and wrote off the
+  // full material value of every reject.
   const pricePerKg = mat.price * priceMult;
-  const inputMass  = w / proc.utilisation;          // buy-to-fly
+  const recovery   = Number.isFinite(proc.returnsRecovery) ? proc.returnsRecovery : mat.scrapRecovery;
+  const inputMass  = w / proc.utilisation;          // buy-to-fly (per good part)
   const offcutMass = inputMass - w;
-  const grossMaterial = inputMass * pricePerKg;
-  const scrapCredit   = offcutMass * pricePerKg * mat.scrapRecovery;
-  const materialCost  = (grossMaterial - scrapCredit) * yieldMult;
+  const grossMaterial   = inputMass * pricePerKg * yieldMult;             // input over all attempts
+  const offcutRecovered = offcutMass * yieldMult;                        // gating/runner returns
+  const rejectRecovered = w * (yieldMult - 1);                           // rejected part bodies, remelted
+  const materialCost    = grossMaterial - pricePerKg * recovery * (offcutRecovered + rejectRecovered);
 
   // ── Conversion: machine + labour ────────────────────────────────────────────
   const cycleSec = (proc.cycleBase + proc.cyclePerKg * w) * cycleMult;
@@ -300,11 +336,17 @@ export function computeShouldCost(input, overrides = {}, calibration = null, lib
   const finishPct = proc.finishPct ?? defaultFinishPct;
   const finishingCost = (machineCost + labourCost) * finishPct;
 
-  // ── Tooling (amortised over min(toolLife, lifetime volume)) ─────────────────
+  // ── Tooling (amortised over the GOOD parts a tool set yields) ───────────────
+  // The tool set is a fixed buy; its cost spreads over the good parts produced.
+  // When tool life binds, that's toolLife·(1-scrap) good parts; when program
+  // volume binds, you buy one set for lifetimeVol good parts. Folding scrap into
+  // the amortisation base is equivalent to today's `×yieldMult` in the tool-life
+  // case but AVOIDS charging the tool yieldMult-times-over when volume binds
+  // (the low-volume casting/forging case) — a real +scrap% overstatement.
   const toolingTotal = proc.toolingBase + proc.toolingPerKg * w;
   const lifetimeVol = vol * programYears;
-  const amortVol = Math.max(1, Math.min(proc.toolLife, lifetimeVol));
-  const toolingCost = toolingTotal / amortVol * yieldMult;   // rejects consume tool life too
+  const amortVol = Math.max(1, Math.min(proc.toolLife * (1 - scrapPct), lifetimeVol));
+  const toolingCost = toolingTotal / amortVol;
 
   // ── Overhead + commercial + SG&A/profit ─────────────────────────────────────
   const conversion = machineCost + labourCost + setupCost + finishingCost;
@@ -322,6 +364,9 @@ export function computeShouldCost(input, overrides = {}, calibration = null, lib
   // moves toward the user's actual price history. cf = 1 when uncalibrated.
   const cf = calibration ? calibrationFactor(calibration, process) : 1;
   const total = baseTotal * cf;
+  // Last line of defence: never return a non-finite price (would serialise to
+  // null/NaN and render as a blank figure with no error).
+  if (!Number.isFinite(total)) throw new Error('Costing produced a non-finite total — check inputs and rate library.');
   const sv = x => round(x * cf);                                   // scaled value
   const pct = x => (baseTotal > 0 ? round((x / baseTotal) * 100, 1) : 0);
 
@@ -386,23 +431,36 @@ function mulberry32(seed) {
 function noise(rng, spread) {
   return (rng() + rng() - 1) * spread; // sum of two uniforms → triangular
 }
+// Uniform symmetric noise in [-spread, +spread] — flatter shoulders than the
+// triangular form, used for the systematic supplier/model-dispersion term so the
+// band reflects genuine part-to-part and supplier-to-supplier price scatter.
+function noiseUniform(rng, spread) {
+  return (rng() * 2 - 1) * spread;
+}
 
 /**
  * Monte-Carlo simulation of should-cost uncertainty.
- * Varies commodity price (±15%), machine rate (±10%), cycle time (±12%),
- * scrap (±2pp). Returns percentile band on total unit cost.
+ * Sources of variance modelled:
+ *   – commodity price ±20% (metals swing that much year-on-year),
+ *   – machine rate ±12%, cycle time ±15%, scrap ±3pp (input-cost uncertainty),
+ *   – a systematic ±13% supplier/model-dispersion term on the total, capturing
+ *     un-modelled part complexity, supplier efficiency and negotiated margin —
+ *     without it the band collapses to the input noise alone and P10–P90 fails
+ *     to span the real price spread a benchmark of actual quotes shows.
+ * Returns a percentile band on total unit cost.
  */
 export function simulateShouldCost(input, samples = 2000, seed = 12345, calibration = null, library = null) {
   const rng = mulberry32(seed);
   const totals = [];
   for (let i = 0; i < samples; i++) {
     const o = {
-      priceMult: 1 + noise(rng, 0.15),
-      machineMult: 1 + noise(rng, 0.10),
-      cycleMult: 1 + noise(rng, 0.12),
-      scrapAdd: noise(rng, 0.02),
+      priceMult: 1 + noise(rng, 0.20),
+      machineMult: 1 + noise(rng, 0.12),
+      cycleMult: 1 + noise(rng, 0.15),
+      scrapAdd: noise(rng, 0.03),
     };
-    totals.push(computeShouldCost(input, o, calibration, library).totalShouldCost);
+    const modelMult = 1 + noiseUniform(rng, 0.13);
+    totals.push(computeShouldCost(input, o, calibration, library).totalShouldCost * modelMult);
   }
   totals.sort((a, b) => a - b);
   const at = q => totals[Math.min(totals.length - 1, Math.max(0, Math.floor(q * totals.length)))];

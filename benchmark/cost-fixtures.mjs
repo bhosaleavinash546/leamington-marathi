@@ -76,4 +76,22 @@ export const COST_FIXTURES = [
     refPriceEur: 3.2, tol: 0.30,
     source: 'Roll-formed mild-steel rail ~€3–6 at 250k/yr, NAFTA.',
   },
+  {
+    name: 'Investment-cast 304 bracket',
+    input: { material: 'Stainless Steel 304', process: 'Investment Casting', weightKg: 0.8, annualVolume: 20000, region: 'Germany' },
+    refPriceEur: 24.0, tol: 0.30,
+    source: 'EU stainless investment casting ~€18–35/kg (shell route), raw+fettled, 20k/yr.',
+  },
+  {
+    name: 'LPDC aluminium head (gravity/permanent-mould model)',
+    input: { material: 'Aluminium A356 (cast)', process: 'Gravity Die Casting', weightKg: 6.0, annualVolume: 100000, region: 'Germany' },
+    refPriceEur: 30.0, tol: 0.30,
+    source: 'Low-pressure/permanent-mould Al casting ~€4–6/kg raw at 100k/yr, EU.',
+  },
+  {
+    name: 'Cold-headed high-strength bolt (M10-class)',
+    input: { material: 'Steel (high-strength)', process: 'Forging (Cold)', weightKg: 0.02, annualVolume: 5000000, region: 'China' },
+    refPriceEur: 0.10, tol: 0.40,
+    source: 'Traceable automotive cold-headed 10.9 fastener ~€0.06–0.15 at 5M/yr, Asia.',
+  },
 ];

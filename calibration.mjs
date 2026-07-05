@@ -19,6 +19,15 @@
 // correction (and the global toward 1.0), so sparse data can't wildly swing it.
 const PRIOR_STRENGTH = 3;
 
+// Hard bound on any learned correction. Shrinkage limits how far a FEW quotes
+// move the factor, but not its magnitude — a single quote entered in the wrong
+// units/currency (e.g. cents, or ₹ under a EUR label) can otherwise fit a factor
+// of 10^n and, via the global fallback, corrupt EVERY other estimate. A real
+// systematic model error is well within ±4×; anything beyond is a data error.
+const FACTOR_MIN = 0.25;
+const FACTOR_MAX = 4;
+const clampFactor = (f) => Math.min(FACTOR_MAX, Math.max(FACTOR_MIN, f));
+
 function median(xs) {
   if (!xs.length) return 0;
   const s = [...xs].sort((a, b) => a - b);
@@ -52,9 +61,9 @@ export function fitCalibration(records) {
   for (const [proc, logs] of Object.entries(groups)) {
     const n = logs.length;
     const shrunk = (n * median(logs) + PRIOR_STRENGTH * globalShrunk) / (n + PRIOR_STRENGTH);
-    process[proc] = round(Math.exp(shrunk));
+    process[proc] = round(clampFactor(Math.exp(shrunk)));
   }
-  return { global: round(Math.exp(globalShrunk)), process, n: valid.length };
+  return { global: round(clampFactor(Math.exp(globalShrunk))), process, n: valid.length };
 }
 
 export function calibrationFactor(cal, process) {

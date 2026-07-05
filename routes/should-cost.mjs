@@ -76,6 +76,15 @@ app.post('/api/should-cost/quotes', requireAuth, rateLimit(120, 60 * 60 * 1000),
   const rate = fx.rates[currency] ?? 1;
   const actualPriceEur = Number(actualPrice) / rate;
   if (!(actualPriceEur > 0)) return res.status(400).json({ error: 'actualPrice must be > 0.' });
+  // Units/currency sanity: a quote more than ~8× off the model is almost always a
+  // data-entry error (price in cents, or a ₹/¥ figure entered under EUR). Reject
+  // it rather than let it poison the learned calibration for every future part.
+  if (modelledEur > 0) {
+    const ratio = actualPriceEur / modelledEur;
+    if (ratio > 8 || ratio < 1 / 8) {
+      return res.status(400).json({ error: `Quoted price (${actualPriceEur.toFixed(2)} EUR) is ${ratio > 1 ? ratio.toFixed(0) + '×' : '1/' + (1 / ratio).toFixed(0)} the modelled ${modelledEur.toFixed(2)} EUR — check the units and currency (was it entered in cents, or a non-EUR figure under a EUR label?).` });
+    }
+  }
 
   db.prepare(`INSERT INTO cost_quotes (id, userId, partName, material, process, weightKg, annualVolume, region, actualPriceEur, modelledEur, createdAt)
               VALUES (?,?,?,?,?,?,?,?,?,?,?)`).run(
@@ -96,8 +105,20 @@ app.get('/api/should-cost/quotes', requireAuth, (req, res) => {
 
 app.post('/api/should-cost', requireAuth, rateLimit(60, 60 * 60 * 1000), async (req, res) => {
   const { partName, material, process, weightKg, annualVolume, quotedCost, region, apiKey } = req.body;
-  if (!partName || !material || !process || !weightKg || !annualVolume) {
+  // Presence check keyed on undefined (not falsiness) so a genuine 0 reaches the
+  // engine and gets its precise "must be > 0" message instead of "missing field".
+  if (partName === undefined || material === undefined || process === undefined || weightKg === undefined || annualVolume === undefined) {
     return res.status(400).json({ error: 'Missing required fields: partName, material, process, weightKg, annualVolume.' });
+  }
+  // Plausibility caps: reject Infinity/NaN and absurd magnitudes at the edge so a
+  // pasted "1e999" can't reach the engine (defence-in-depth — the engine now
+  // guards too, but a clear 400 beats a generic 500).
+  const wNum = Number(weightKg), vNum = Number(annualVolume);
+  if (!Number.isFinite(wNum) || wNum <= 0 || wNum > 100_000) {
+    return res.status(400).json({ error: 'weightKg must be a number between 0 and 100,000 kg.' });
+  }
+  if (!Number.isFinite(vNum) || vNum <= 0 || vNum > 1_000_000_000) {
+    return res.status(400).json({ error: 'annualVolume must be a number between 0 and 1,000,000,000 units/yr.' });
   }
   // Currency must be one we can actually convert — otherwise we'd emit raw EUR
   // numbers under a foreign label (rate would silently fall back to 1).
@@ -145,9 +166,11 @@ app.post('/api/should-cost', requireAuth, rateLimit(60, 60 * 60 * 1000), async (
   const fmt  = (n) => `${sym}${cv(n).toFixed(2)}`;            // EUR value → labelled string
   const total = calc.totalShouldCost;
   // Headline lines MUST sum to the total: conversion carries finishing, and the
-  // overhead line carries the commercial (packaging/freight) add.
+  // overhead line carries the commercial (packaging/freight) add. Derive the
+  // overhead line by subtraction so rounding of the individual breakdown values
+  // can never make the three headline figures drift off the total.
   const processCost = b.machine.value + b.labour.value + b.setup.value + b.finishing.value + b.tooling.value;
-  const overheadPlus = b.overhead.value + b.commercial.value + b.sgaProfit.value;
+  const overheadPlus = Number((total - b.material.value - processCost).toFixed(4));
 
   // Converted copies of the raw figures the frontend renders directly, so those
   // numbers stay consistent with the labelled strings above.
@@ -198,10 +221,10 @@ app.post('/api/should-cost', requireAuth, rateLimit(60, 60 * 60 * 1000), async (
     simulation: { p10: fmt(sim.p10), p50: fmt(sim.p50), p90: fmt(sim.p90), p10Value: Number(cv(sim.p10).toFixed(2)), p50Value: Number(cv(sim.p50).toFixed(2)), p90Value: Number(cv(sim.p90).toFixed(2)), stdev: Number(cv(sim.stdev).toFixed(2)) },
     volumeCurve: volumeCurve.map(p => ({ volume: p.volume, unitCost: Number(cv(p.unitCost).toFixed(4)), unitCostLabel: fmt(p.unitCost) })),
     assumptions: [
-      `Material ${matRes.key} @ ${sym}${driversCv.pricePerKg}/kg, buy-to-fly input mass ${d.inputMassKg} kg (process utilisation ${(d.utilisation * 100).toFixed(0)}%).`,
+      `Material ${matRes.key} @ ${sym}${driversCv.pricePerKg}/kg (static library baseline, not live-indexed), buy-to-fly input mass ${d.inputMassKg} kg (metal yield ${(d.utilisation * 100).toFixed(0)}%).`,
       `${procRes.key}: cycle ${d.cycleSecPerPart}s/part, machine rate ${sym}${driversCv.machineRate}/hr, ${d.operators} operator(s) @ ${sym}${driversCv.labourRate}/hr (${region}).`,
       `Tooling ${sym}${driversCv.toolingTotal.toLocaleString()} amortised over ${d.amortVolume.toLocaleString()} parts; scrap ${d.scrapPct}%.`,
-      `Overhead and SG&A/profit applied per ${region} factory norms.`,
+      `Overhead and SG&A/profit applied per ${region} factory norms. Figure is a raw/fettled works cost — secondary CNC machining of the casting/forging, if required, is additional.`,
     ],
     explanation: `Bottom-up should-cost for ${partName} is ${fmt(total)} per unit at ${Number(annualVolume).toLocaleString()}/yr. Material is ${b.material.pct}% of cost, conversion (machine+labour+setup+finishing) ${(b.machine.pct + b.labour.pct + b.setup.pct + b.finishing.pct).toFixed(1)}%, tooling ${b.tooling.pct}%, overhead+commercial+SG&A ${(b.overhead.pct + b.commercial.pct + b.sgaProfit.pct).toFixed(1)}%. Monte-Carlo P10–P90 range: ${fmt(sim.p10)}–${fmt(sim.p90)}.`,
     negotiationLeverage: quotedCost && Number(quotedCost) > 0
