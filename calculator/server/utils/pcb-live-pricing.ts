@@ -52,7 +52,11 @@ function isAutomotiveGrade(...texts: string[]): boolean {
 
 const NEXAR_ENDPOINT = 'https://api.nexar.com/graphql';
 
-const NEXAR_QUERY = `query GetPrices($mpns: [String!]!, $qty: Int!) {
+// NOTE: $qty is intentionally NOT declared here. GraphQL rejects an operation
+// that declares a variable it never uses ("$qty is never used"), which was
+// silently failing every Nexar call. Quantity is applied client-side when
+// picking the applicable price break below.
+const NEXAR_QUERY = `query GetPrices($mpns: [String!]!) {
   supSearch(q: "", filters: { mpn: $mpns }, limit: 20) {
     results {
       part {
@@ -102,7 +106,7 @@ export async function fetchOctopartPrices(
       },
       body: JSON.stringify({
         query: NEXAR_QUERY,
-        variables: { mpns: partNumbers.slice(0, 20), qty },
+        variables: { mpns: partNumbers.slice(0, 20) },
       }),
       signal: AbortSignal.timeout(15_000),
     });

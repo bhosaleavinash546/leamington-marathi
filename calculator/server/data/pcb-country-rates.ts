@@ -1161,8 +1161,11 @@ export function computeComplexityScore(
   // Fine-pitch surcharge handled by HDI/trace; keep BGA cap at 20.
   bgaScore = Math.min(20, bgaScore);
 
-  // HDI structure
-  const hdi = (boardSpec.hdiStructure ?? 'none').toLowerCase().replace(/[\s_]/g, '');
+  // HDI structure. Normalise away separators AND the word "plus" so that every
+  // format collapses to a canonical form: '2plus_n_plus2' | '2+N+2' | '2 N 2'
+  // all become '2n2'. Previously only spaces/underscores were stripped, so
+  // '2plus_n_plus2' failed the /2.?n.?2/ test and fell through to 10 instead of 16.
+  const hdi = (boardSpec.hdiStructure ?? 'none').toLowerCase().replace(/plus/g, '').replace(/[\s_+\-]/g, '');
   const hdiScore =
     /anylayer/.test(hdi) ? 20 :
     /2.?n.?2/.test(hdi) ? 16 :

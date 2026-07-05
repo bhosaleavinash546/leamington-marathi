@@ -175,9 +175,13 @@ export function computePCBADrivers(inputs: PCBAInputs): CommodityDrivers {
     (inputs.conformalCoatAreaCm2 ?? 0) * (inputs.conformalCoatPricePerCm2 ?? 0);
   const externalTestCost = inputs.testCostPerBoard ?? 0;
 
-  // 3. Rework / yield adjustment
+  // 3. Rework / yield adjustment.
+  // Guard against a zero/invalid yield producing Infinity (or a negative from
+  // yield > 1). Clamp into (0,1]; a non-positive yield is treated as perfect
+  // (no rework) rather than crashing the whole cost with Infinity.
+  const safeYield = inputs.assemblyYield > 0 ? Math.min(1, inputs.assemblyYield) : 1;
   const reworkCostPerBoard =
-    (1 / inputs.assemblyYield - 1) * inputs.reworkCostPerFailure;
+    (1 / safeYield - 1) * inputs.reworkCostPerFailure;
 
   const totalDirectCost =
     inputs.pcbCostPerBoard +

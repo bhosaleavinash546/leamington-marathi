@@ -15,9 +15,9 @@ export type PCBTechnology =
 export type PCBQualityGrade =
   | 'consumer'     // IPC Class 1 — £×1.0
   | 'industrial'   // IPC Class 2 — £×1.25
-  | 'auto_grade2'  // AEC-Q Grade 2, PPAP — £×1.55
-  | 'auto_grade1'  // AEC-Q Grade 1, IATF 16949 — £×1.85
-  | 'aerospace';   // IPC Class 3, AS9100 — £×2.30
+  | 'auto_grade2'  // AEC-Q Grade 2, PPAP — £×1.50
+  | 'auto_grade1'  // AEC-Q Grade 1, IATF 16949 — £×1.80
+  | 'aerospace';   // IPC Class 3, AS9100 — £×2.20
 
 export type SurfaceFinish = 'hasl' | 'hasl_lf' | 'osp' | 'enig' | 'enepig' | 'iteq';
 
