@@ -21,6 +21,9 @@ import { getFxRates, FX_FALLBACK, FX_SYMBOLS, FX_CURRENCIES } from './fx-rates.m
 import { computeShouldCost, simulateShouldCost } from './costing-engine.mjs';
 import { resolveMaterial, resolveProcess } from './material-process-resolve.mjs';
 import { getActiveLibrary } from './active-library.mjs';
+import { applyLiveMaterialPrices } from './material-commodity.mjs';
+import { buildCostTools, runToolLoop } from './cost-tools.mjs';
+import { messagesJson } from './llm-json.mjs';
 import { costBom, COMPONENT_TYPES, COMPONENT_CLASSES } from './pcb-cost.mjs';
 import { registerShouldCostRoutes } from './routes/should-cost.mjs';
 import { registerRateLibraryRoutes } from './routes/rate-library.mjs';
@@ -5026,7 +5029,14 @@ Keep it practical and actionable for an engineering team.`,
 });
 
 // ─── SHOULD-COST ──────────────────────────────────────────────────────────────
-registerShouldCostRoutes(app, { db, requireAuth, rateLimit, makeAnthropic, getCommodityPrices: () => priceCache });
+const shouldCostApi = registerShouldCostRoutes(app, { db, requireAuth, rateLimit, makeAnthropic, getCommodityPrices: () => priceCache });
+
+// Active rate library with live commodity prices bridged in — shared by the
+// engine-as-tools chat and the agentic cost-down endpoint below.
+function liveLibraryForTools() {
+  try { return applyLiveMaterialPrices(getActiveLibrary(), priceCache).library; }
+  catch { return getActiveLibrary(); }
+}
 registerRateLibraryRoutes(app, { db, requireAuth });
 
 // ─── WEBHOOK TEST ─────────────────────────────────────────────────────────────
@@ -5353,17 +5363,118 @@ app.post('/api/assistant-chat', requireAuth, rateLimit(40, 60 * 60 * 1000), asyn
       ...history.slice(-8).map(h => ({ role: h.role, content: h.content })),
       { role: 'user', content: message.trim() },
     ];
-    const resp = await client.messages.create({
-      model: 'claude-opus-4-8',
-      max_tokens: 1024,
-      system: cachedSystem(BRAINSPARK_ASSISTANT_PROMPT),
-      messages,
+    // Engine-as-tools: the assistant can call the deterministic should-cost engine
+    // (calibrated to this user's quotes) instead of guessing a number. It still
+    // never invents a cost — it requests one and the engine computes it.
+    let calibration = null;
+    try { calibration = shouldCostApi.getUserCalibration(req.user.id); } catch { /* uncalibrated */ }
+    const kit = buildCostTools({ library: liveLibraryForTools(), calibration });
+    const { finalText } = await runToolLoop(client, {
+      system: cachedSystem(BRAINSPARK_ASSISTANT_PROMPT + '\n\nYou have tools that run the deterministic should-cost engine. When the user asks what a part should cost, or to compare materials/processes/regions, CALL the tools and quote the engine figure — never estimate a price yourself.'),
+      messages, tools: kit.tools, exec: kit.exec, maxTokens: 1024, maxTurns: 6,
     });
-    const reply = resp.content[0]?.type === 'text' ? resp.content[0].text : 'I could not generate a response. Please try again.';
-    res.json({ reply });
+    res.json({ reply: finalText || 'I could not generate a response. Please try again.' });
   } catch (err) {
     console.error('Assistant chat error:', err.message);
     res.status(500).json({ error: 'AI assistant temporarily unavailable. Please try again shortly.' });
+  }
+});
+
+// ── Agentic cost-down: propose alternatives, re-cost each on the ENGINE, and
+//    return only engine-verified savings vs the baseline. Every number here is a
+//    real deterministic computation — the LLM explores and narrates, it does not
+//    invent savings. ────────────────────────────────────────────────────────────
+app.post('/api/cost-down', requireAuth, rateLimit(20, 60 * 60 * 1000), async (req, res) => {
+  try {
+    const { partName, material, process, weightKg, annualVolume, region = 'Germany', apiKey: bodyKey } = req.body || {};
+    const apiKey = bodyKey || req.headers['x-anthropic-key'] || process.env.ANTHROPIC_API_KEY;
+    if (!apiKey) return res.status(400).json({ error: 'Anthropic API key required.' });
+    if (material === undefined || process === undefined || weightKg === undefined || annualVolume === undefined) {
+      return res.status(400).json({ error: 'Missing required fields: material, process, weightKg, annualVolume.' });
+    }
+    const library = liveLibraryForTools();
+    let calibration = null;
+    try { calibration = shouldCostApi.getUserCalibration(req.user.id); } catch { /* uncalibrated */ }
+
+    // Baseline (engine).
+    const matRes = resolveMaterial(String(material), library.MATERIALS);
+    const procRes = resolveProcess(String(process), library.PROCESSES);
+    if (!matRes || !procRes) return res.status(400).json({ error: 'Material or process not recognised by the cost engine.' });
+    const baseInput = { material: matRes.key, process: procRes.key, weightKg: Number(weightKg), annualVolume: Number(annualVolume), region };
+    let baseline;
+    try { baseline = computeShouldCost(baseInput, {}, calibration, library).totalShouldCost; }
+    catch (e) { return res.status(400).json({ error: e.message || 'Baseline is not costable.' }); }
+
+    const client = makeAnthropic(apiKey);
+    const kit = buildCostTools({ library, calibration });
+    const explore = `You are a VAVE cost-reduction engineer. The baseline part is:
+- ${partName || 'Component'}: ${matRes.key} via ${procRes.key}, ${baseInput.weightKg} kg, ${baseInput.annualVolume.toLocaleString()}/yr, ${region}.
+- Engine baseline should-cost: €${baseline.toFixed(2)}/unit.
+
+First call list_catalogue. Then use compute_should_cost to test 6-10 realistic cost-down alternatives — material substitutions, process changes, and region moves that preserve function. Explore genuinely cheaper options; the engine will reject physically incompatible pairs (learn from the error and try another). You do not need to write a summary; just probe the alternatives with the tool.`;
+    await runToolLoop(client, {
+      system: cachedSystem('You explore manufacturing cost-down alternatives by calling the deterministic cost engine. Numbers come only from the tools.'),
+      messages: [{ role: 'user', content: explore }],
+      tools: kit.tools, exec: kit.exec, maxTokens: 1200, maxTurns: 10,
+    });
+
+    // Deterministic roll-up: dedupe the engine-computed alternatives, keep those
+    // cheaper than the baseline. Every figure is a real engine result from kit.log.
+    const seen = new Set();
+    const alternatives = [];
+    for (const a of kit.log) {
+      const key = `${a.material}|${a.process}|${a.region}`;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      if (key === `${baseInput.material}|${baseInput.process}|${region}`) continue;   // skip baseline re-runs
+      const saving = baseline - a.total;
+      if (saving > 0.005) alternatives.push({ ...a, saving: Number(saving.toFixed(2)), savingPct: Number(((saving / baseline) * 100).toFixed(1)) });
+    }
+    alternatives.sort((x, y) => y.saving - x.saving);
+    const top = alternatives.slice(0, 8);
+
+    // LLM narrates each verified alternative (rationale + risk) — numbers are fixed.
+    let narrated = top;
+    if (top.length) {
+      try {
+        const llm = await messagesJson(client, {
+          maxTokens: 1400,
+          toolName: 'cost_down_report',
+          toolDescription: 'Explain each engine-verified cost-down alternative.',
+          messages: [{ role: 'user', content: `Baseline: ${matRes.key} / ${procRes.key} / ${region} at €${baseline.toFixed(2)}/unit. The cost engine verified these cheaper alternatives (do NOT change the numbers):\n${top.map((a, i) => `${i + 1}. ${a.material} / ${a.process} / ${a.region} → €${a.total.toFixed(2)} (saves €${a.saving}, ${a.savingPct}%)`).join('\n')}\n\nFor EACH, give a one-line engineering rationale and the top risk/caveat (function, quality, capex, or supply).` }],
+          schema: {
+            type: 'object',
+            properties: {
+              items: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  properties: {
+                    index: { type: 'number', description: '1-based index matching the list' },
+                    rationale: { type: 'string' },
+                    risk: { type: 'string' },
+                  },
+                  required: ['index', 'rationale', 'risk'],
+                },
+              },
+            },
+            required: ['items'],
+          },
+        });
+        const byIdx = new Map((llm.items || []).map(it => [it.index, it]));
+        narrated = top.map((a, i) => ({ ...a, rationale: byIdx.get(i + 1)?.rationale || '', risk: byIdx.get(i + 1)?.risk || '' }));
+      } catch { /* narration best-effort; numbers already verified */ }
+    }
+
+    res.json({
+      engine: 'deterministic+ai-explore',
+      baseline: { partName: partName || 'Component', material: matRes.key, process: procRes.key, region, weightKg: baseInput.weightKg, annualVolume: baseInput.annualVolume, totalShouldCost: Number(baseline.toFixed(2)), currency: 'EUR' },
+      alternatives: narrated,
+      note: 'Every alternative cost is computed by the deterministic engine (rate library + live commodity prices + your calibration). The AI only explores options and writes the rationale/risk — it does not invent savings.',
+    });
+  } catch (err) {
+    console.error('[Cost-Down Error]', err.message);
+    res.status(500).json({ error: safeLlmError(err) });
   }
 });
 

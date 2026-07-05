@@ -26,6 +26,19 @@ interface ShouldCostResult {
   assumptions: string[];
   explanation: string;
   negotiationLeverage: string;
+  materialPrice?: { live?: boolean; commodityLabel?: string; commodityPerKg?: number; effectivePerKg?: number; pricedAt?: string | null; note?: string };
+}
+
+interface CostDownAlt {
+  material: string; process: string; region: string;
+  total: number; saving: number; savingPct: number;
+  rationale?: string; risk?: string;
+}
+interface CostDownResult {
+  engine: string;
+  baseline: { partName: string; material: string; process: string; region: string; totalShouldCost: number; currency: string };
+  alternatives: CostDownAlt[];
+  note: string;
 }
 
 const BREAKDOWN_META = COST_COMPONENTS.map(c => ({ key: c.key, label: c.label, color: c.text, bar: c.bar }));
@@ -50,6 +63,9 @@ export default function ShouldCostPage() {
   const [teachPrice, setTeachPrice] = useState('');
   const [teachMsg, setTeachMsg] = useState('');
   const [teaching, setTeaching] = useState(false);
+  const [costDown, setCostDown] = useState<CostDownResult | null>(null);
+  const [cdLoading, setCdLoading] = useState(false);
+  const [cdError, setCdError] = useState('');
   const [isAdmin, setIsAdmin] = useState(false);
   const [libraryCustom, setLibraryCustom] = useState(false);
   const calcReqRef = useRef(0);
@@ -120,6 +136,26 @@ export default function ShouldCostPage() {
     } catch (e) {
       setTeachMsg(e instanceof Error ? e.message : 'Could not save the quote');
     } finally { setTeaching(false); }
+  }
+
+  // Agentic cost-down: the engine verifies every alternative the AI proposes.
+  async function findCostDown() {
+    if (!token || !weightKg || !annualVolume) { setCdError('Run a should-cost first.'); return; }
+    setCdLoading(true); setCdError(''); setCostDown(null);
+    try {
+      const apiKey = localStorage.getItem('brainspark_api_key') || undefined;
+      if (!apiKey) { setCdError('Add your Anthropic API key in settings to explore cost-down ideas (numbers stay engine-verified).'); return; }
+      const r = await fetch('/api/cost-down', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ partName, material, process, weightKg: Number(weightKg), annualVolume: Number(annualVolume), region, apiKey }),
+      });
+      const d = await r.json().catch(() => ({}));
+      if (!r.ok) throw new Error(d.error || 'Cost-down failed');
+      setCostDown(d);
+    } catch (e) {
+      setCdError(e instanceof Error ? e.message : 'Cost-down failed');
+    } finally { setCdLoading(false); }
   }
 
   return (
@@ -348,6 +384,36 @@ export default function ShouldCostPage() {
                 <div className="p-3 rounded-xl bg-gold-500/10 border border-gold-500/20">
                   <div className="text-gold-400 text-xs font-semibold mb-1">Negotiation Leverage</div>
                   <p className="text-slate-300 text-xs leading-relaxed">{result.negotiationLeverage}</p>
+                </div>
+
+                {/* Agentic cost-down — engine-verified alternatives */}
+                <div className="pt-2">
+                  <button
+                    onClick={findCostDown}
+                    disabled={cdLoading}
+                    className="w-full py-2.5 rounded-xl bg-teal-500/15 border border-teal-500/30 text-teal-200 text-sm font-semibold hover:bg-teal-500/25 disabled:opacity-50 transition"
+                  >
+                    {cdLoading ? 'Exploring alternatives on the engine…' : 'Find cost-down ideas (engine-verified)'}
+                  </button>
+                  {cdError && <p className="text-red-400 text-xs mt-2">{cdError}</p>}
+                  {costDown && (
+                    <div className="mt-3 space-y-2">
+                      <p className="text-slate-500 text-[11px]">{costDown.note}</p>
+                      {costDown.alternatives.length === 0 ? (
+                        <p className="text-slate-400 text-xs">No cheaper compatible alternative was found for this part — the current design is close to cost-optimal in the modelled space.</p>
+                      ) : costDown.alternatives.map((a, i) => (
+                        <div key={i} className="p-3 rounded-xl bg-white/4 border border-white/10">
+                          <div className="flex items-center justify-between gap-2">
+                            <div className="text-white text-sm font-medium">{a.material} · {a.process} · {a.region}</div>
+                            <div className="text-emerald-400 text-sm font-bold whitespace-nowrap">−{costDown.baseline.currency === 'EUR' ? '€' : ''}{a.saving.toFixed(2)} ({a.savingPct}%)</div>
+                          </div>
+                          <div className="text-slate-500 text-[11px] mt-0.5">Engine should-cost €{a.total.toFixed(2)}/unit vs €{costDown.baseline.totalShouldCost.toFixed(2)} baseline</div>
+                          {a.rationale && <p className="text-slate-300 text-xs mt-1.5">{a.rationale}</p>}
+                          {a.risk && <p className="text-amber-300/80 text-[11px] mt-1">Risk: {a.risk}</p>}
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </motion.div>
             )}

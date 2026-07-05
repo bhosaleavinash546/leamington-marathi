@@ -305,4 +305,9 @@ Do NOT change any number — interpret them.`;
 
   res.json(result);
 });
+
+  // Expose the per-user calibration + live library to other server modules (the
+  // engine-as-tools chat and the cost-down endpoint) so their engine calls are
+  // calibrated to that user's own quote history too.
+  return { getUserCalibration, liveLibrary };
 }
