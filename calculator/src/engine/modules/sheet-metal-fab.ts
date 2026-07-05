@@ -33,6 +33,64 @@ export const SM_FAB_TOLERANCE_FACTOR: [number, number][] = [
   [0.10, 1.6],
 ];
 
+// ─── Laser/plasma/waterjet feed-rate model ───────────────────────────────────
+export type FabMaterialFamily = 'mild_steel' | 'stainless' | 'aluminium';
+
+/**
+ * Cutting feed rate in mm/min for a mid-range (~6 kW) fibre laser, by material
+ * and thickness. Fitted as feed = k / t^p from 2025–26 machine cut charts
+ * (Trumpf/Bystronic): speed falls off ~linearly-to-superlinearly with thickness.
+ *   mild steel (O₂):  ~8500/t^1.05  · stainless (N₂): ~7000/t^1.35  · Al (N₂): ~7500/t^1.25
+ * Method scaling vs laser: plasma faster on thick steel but not fine work (×1.4,
+ * only sensible >3 mm), waterjet ~0.12× (slow, cold), punch/shear are not
+ * feed-rate cut (return NaN → caller should use a stroke/manual basis instead).
+ */
+export function estimateLaserFeedRateMmMin(
+  family: FabMaterialFamily,
+  thicknessMm: number,
+  method: FabBlankingMethod = 'laser',
+): number {
+  const t = Math.max(0.3, thicknessMm);
+  const laser =
+    family === 'mild_steel' ? 8500 / Math.pow(t, 1.05) :
+    family === 'stainless'  ? 7000 / Math.pow(t, 1.35) :
+                              7500 / Math.pow(t, 1.25); // aluminium
+  if (method === 'plasma')   return laser * 1.4;
+  if (method === 'waterjet') return laser * 0.12;
+  if (method === 'punch' || method === 'shear') return NaN; // not a continuous-cut process
+  return laser;
+}
+
+/** Laser pierce time per hole/contour start, seconds — grows with thickness. */
+export function estimatePierceSec(thicknessMm: number): number {
+  return 0.3 + 0.15 * Math.max(0, thicknessMm);
+}
+
+export interface BlankingCycleInputs {
+  method: FabBlankingMethod;
+  materialFamily: FabMaterialFamily;
+  thicknessMm: number;
+  /** Total cut path length per part in mm (external perimeter + internal features). */
+  cutLengthMm: number;
+  /** Number of pierce starts (external contour + each internal hole/slot). */
+  pierceCount: number;
+  /** Fixed sheet load/unload + positioning overhead per part, seconds. Default 8. */
+  loadUnloadSec?: number;
+}
+
+/**
+ * Physically-grounded blanking cycle time (seconds) = cut length ÷ feed rate
+ * + pierce time × pierces + load/unload. Replaces a raw manual seconds guess.
+ * Punch/shear return NaN (no continuous feed) — the caller keeps its own basis.
+ */
+export function estimateBlankingCycleSec(inputs: BlankingCycleInputs): number {
+  const feed = estimateLaserFeedRateMmMin(inputs.materialFamily, inputs.thicknessMm, inputs.method);
+  if (!Number.isFinite(feed) || feed <= 0) return NaN;
+  const cutSec = (Math.max(0, inputs.cutLengthMm) / feed) * 60;
+  const pierceSec = Math.max(0, inputs.pierceCount) * estimatePierceSec(inputs.thicknessMm);
+  return cutSec + pierceSec + (inputs.loadUnloadSec ?? 8);
+}
+
 export interface SheetMetalFabInputs {
   // ── Material ────────────────────────────────────────────────────────────────
   materialId: string;

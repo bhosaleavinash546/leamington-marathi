@@ -583,18 +583,23 @@ export const DEFAULT_RATE_LIBRARY: RateLibrary = {
       { annualDepreciation: 22000, maintenance: 8000, energy: 35000, floorSpace: 6000, indirectSupport: 5000, financeCost: 2750, annualAvailableHours: 6000, machineUtilization: 0.75 },
       'UK', 'T5/T6 solution + ageing furnace, UK foundry benchmark'),
     // ── Sheet Metal Presses ────────────────────────────────────────────────
-    makeMachine('press-100t', '100T Mechanical Press',
+    // Generic press-shop presses: STANDARD/AMORTISED mechanical presses (general
+    // subcontract press shop). Rates are intentionally lower than the named
+    // premium automotive stamping lines (press-schuler-400t ~£150/hr,
+    // press-aida-200t ~£120/hr) which model NEW servo/transfer capex — pick the
+    // named machines when quoting a dedicated automotive stamping programme.
+    makeMachine('press-100t', '100T Mechanical Press (general press shop)',
       { annualDepreciation: 18000, maintenance: 9000, energy: 5000, floorSpace: 5000, indirectSupport: 4000, financeCost: 2250, annualAvailableHours: 3500, machineUtilization: 0.80 },
-      'UK', 'UK press shop benchmark, Jun 2026'),
-    makeMachine('press-200t', '200T Mechanical Press',
+      'UK', 'UK general press-shop benchmark (standard/amortised mechanical press), Jun 2026'),
+    makeMachine('press-200t', '200T Mechanical Press (general press shop)',
       { annualDepreciation: 28000, maintenance: 14000, energy: 7500, floorSpace: 7500, indirectSupport: 6000, financeCost: 3500, annualAvailableHours: 3500, machineUtilization: 0.80 },
-      'UK', 'UK press shop benchmark, Jun 2026'),
-    makeMachine('press-400t', '400T Servo Transfer Press',
+      'UK', 'UK general press-shop benchmark (standard/amortised mechanical press), Jun 2026'),
+    makeMachine('press-400t', '400T Mechanical Press (general press shop)',
       { annualDepreciation: 50000, maintenance: 22000, energy: 11000, floorSpace: 10000, indirectSupport: 9000, financeCost: 6250, annualAvailableHours: 3500, machineUtilization: 0.80 },
-      'UK', 'UK press shop benchmark, Jun 2026'),
-    makeMachine('press-630t', '630T Transfer Press',
+      'UK', 'UK general press-shop benchmark (standard/amortised mechanical press; new servo transfer line: use press-schuler-400t), Jun 2026'),
+    makeMachine('press-630t', '630T Mechanical Press (general press shop)',
       { annualDepreciation: 75000, maintenance: 35000, energy: 15000, floorSpace: 15000, indirectSupport: 14000, financeCost: 9375, annualAvailableHours: 3500, machineUtilization: 0.78 },
-      'UK', 'UK press shop benchmark, Jun 2026'),
+      'UK', 'UK general press-shop benchmark (standard/amortised mechanical press), Jun 2026'),
     // ── Injection Moulding Machines ────────────────────────────────────────
     // IMM energy: corrected to reflect actual running power (hydraulic pump + heaters + cooling)
     // 100T ~20 kW avg × 4000 hr × £0.25/kWh ≈ £20k/yr; 200T ~35 kW; 400T ~60 kW; 800T ~105 kW

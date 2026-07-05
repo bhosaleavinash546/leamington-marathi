@@ -16,7 +16,7 @@ import type { PCBTechnology, PCBQualityGrade } from '../engine/modules/pcb-fab.j
 import { computePCBADrivers } from '../engine/modules/pcba.js';
 import type { AssemblyComplexityLevel, PCBAQualityGrade } from '../engine/modules/pcba.js';
 import { computeCastAndMachineDrivers } from '../engine/modules/cast-and-machine.js';
-import { computeSheetMetalFabDrivers } from '../engine/modules/sheet-metal-fab.js';
+import { computeSheetMetalFabDrivers, estimateBlankingCycleSec, type FabMaterialFamily } from '../engine/modules/sheet-metal-fab.js';
 import { adviseSheetMetalProcess } from '../engine/modules/sheet-metal-advisor.js';
 import type { FabBlankingMethod, AssistGas } from '../engine/modules/sheet-metal-fab.js';
 import { computeBlowMouldingDrivers } from '../engine/modules/blow-moulding.js';
@@ -8780,14 +8780,20 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
         if (smfWallMean) {
           setNumericField('smf-tolerance', Math.max(0.1, smfWallMean * 0.05), 2);
         }
-        // Laser blanking cycle time: perimeter / laser speed + pierce time per hole
+        // Laser blanking cycle time — feed rate derived from material + thickness
+        // (a 6 mm stainless part cuts ~3× slower than 1 mm mild steel; a flat feed
+        //  under-costs thick/stainless blanks). Cut length ≈ perimeter + hole edges.
         const smfBB = cadOCCTGeometry?.boundingBox;
         if (smfBB) {
           const fbDims = [smfBB.xMm, smfBB.yMm, smfBB.zMm].sort((a, b) => b - a);
           const perimMm = 2 * (fbDims[0] * 1.05 + fbDims[1] * 1.05);
           const holeCount = cadOCCTGeometry?.features?.estimatedHoleCount ?? 0;
-          const laserSpeedMmPerSec = 333; // ~20 m/min typical laser feed
-          const blankCt = Math.max(15, Math.round(perimMm / laserSpeedMmPerSec + holeCount * 2 + 5));
+          const family = inferFabMaterialFamily(c.materialId);
+          const thick = smfWallMean && smfWallMean > 0 ? smfWallMean : Math.max(0.5, fbDims[2]);
+          const blankCt = Math.max(15, Math.round(estimateBlankingCycleSec({
+            method: 'laser', materialFamily: family, thicknessMm: thick,
+            cutLengthMm: perimMm + holeCount * 30, pierceCount: holeCount + 1,
+          })));
           setNumericField('smf-blank-ct', blankCt, 0);
         }
         const smFab = c.sheetMetal;
@@ -9441,6 +9447,7 @@ function collectSheetMetalInput(): UniversalStackInput {
     const assessment = assessPressTonnage({ perimeterMm, thicknessMm, shearStrengthMPa }, capacityTonnes);
     if (assessment.message) _smExtraWarnings.push(`Press tonnage: ${assessment.message}`);
   }
+  if ((num('sm-amort') || 0) <= 0) _smExtraWarnings.push('Amortisation volume is empty/zero — tooling NRE defaulted to 1 part (full die cost on this part). Set a realistic programme volume.');
 
   const drivers = computeSheetMetalDrivers({
     materialId,
@@ -9785,6 +9792,14 @@ function collectCastAndMachineInput(): UniversalStackInput {
   return { ...getUniversalTail(), rawMaterial: drivers.rawMaterial, operations: drivers.operations, tooling: drivers.tooling };
 }
 
+/** Map a rate-library material to a laser feed-rate family (steel/stainless/aluminium). */
+function inferFabMaterialFamily(materialId: string): FabMaterialFamily {
+  const cat = (library.materials.find(m => m.id === materialId)?.category ?? '').toLowerCase();
+  if (/alumin/.test(cat)) return 'aluminium';
+  if (/stainless/.test(cat)) return 'stainless';
+  return 'mild_steel';
+}
+
 function collectSheetMetalFabInput(): UniversalStackInput {
   const swCount = num('smf-sw-count');
   const swMach = sel('smf-sw-mach') || undefined;
@@ -9796,6 +9811,14 @@ function collectSheetMetalFabInput(): UniversalStackInput {
   const tigMach = sel('smf-tig-mach') || undefined;
   const tigLab = sel('smf-tig-lab') || undefined;
   const gasVal = sel('smf-gas') || undefined;
+
+  // Guard: a weld quantity with no machine/labour is silently dropped by the
+  // driver (its cost vanishes → understated quote). Warn instead of hiding it.
+  _smExtraWarnings = [];
+  if (swCount > 0 && (!swMach || !swLab)) _smExtraWarnings.push(`Spot welding: ${swCount} welds specified but no spot-weld machine/labour selected — weld cost omitted.`);
+  if (migLen > 0 && (!migMach || !migLab)) _smExtraWarnings.push(`MIG welding: ${migLen} m specified but no MIG machine/labour selected — weld cost omitted.`);
+  if (tigLen > 0 && (!tigMach || !tigLab)) _smExtraWarnings.push(`TIG welding: ${tigLen} m specified but no TIG machine/labour selected — weld cost omitted.`);
+  if ((num('smf-amort') || 0) <= 0) _smExtraWarnings.push('Amortisation volume is empty/zero — tooling NRE defaulted to 1 part (full die cost on this part). Set a realistic programme volume.');
 
   const drivers = computeSheetMetalFabDrivers({
     materialId: sel('smf-mat'),

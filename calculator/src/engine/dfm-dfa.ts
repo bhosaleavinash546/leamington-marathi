@@ -289,6 +289,32 @@ export function generateDFMDFA(
         recommendation: 'Combine operations using progressive or transfer die; review form sequence for efficiency',
       });
     }
+    // Continuous welding on sheet → heat distortion + residual stress
+    const opNames = (input.operations ?? []).map(o => o.operationName ?? '');
+    const hasSeamWeld = opNames.some(n => /MIG Welding|TIG Welding/i.test(n));
+    if (hasSeamWeld) {
+      dfmIssues.push({
+        severity: 'major',
+        category: 'process',
+        title: 'Seam welding — distortion risk',
+        description: 'Continuous MIG/TIG welding on thin sheet induces heat distortion, residual stress and post-weld straightening cost.',
+        savingPct: 6,
+        risk: 'Medium',
+        recommendation: 'Prefer spot welds, clinching or self-pierce rivets; if welding is required use stitch welds, a balanced sequence and fixturing',
+      });
+    }
+    // Tooling-dominated cost → volume too low to amortise hard tooling
+    if (toolPct > 40) {
+      dfmIssues.push({
+        severity: 'major',
+        category: 'tooling',
+        title: `Tooling is ${toolPct.toFixed(0)}% of piece cost`,
+        description: 'Hard-tooling NRE dominates the piece cost — the programme volume is too low to amortise a stamping die / press-brake tooling.',
+        savingPct: 10,
+        risk: 'Low',
+        recommendation: 'Increase the amortisation volume, or switch to a low-NRE route (laser + press brake) until volume grows',
+      });
+    }
   }
 
   if (commodity === 'injection_moulding' || commodity === 'blow_moulding' || commodity === 'thermoforming') {
