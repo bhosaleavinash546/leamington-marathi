@@ -5,7 +5,7 @@ import {
 } from '../engine/index.js';
 import type { CADAnalysisResult, OCCTGeometry } from '../engine/ai-analysis.js';
 import { computeMachiningDrivers } from '../engine/modules/machining.js';
-import { computeSheetMetalDrivers } from '../engine/modules/sheet-metal.js';
+import { computeSheetMetalDrivers, assessPressTonnage } from '../engine/modules/sheet-metal.js';
 import { computeInjectionMouldingDrivers } from '../engine/modules/injection-moulding.js';
 import { computeCastingDrivers } from '../engine/modules/casting.js';
 import { computeForgingDrivers } from '../engine/modules/forging.js';
@@ -72,6 +72,9 @@ import { initMotionFX, motionInViewReveal, motionRevealRows } from './motion-fx.
 // ─── State ────────────────────────────────────────────────────────────────────
 
 let library: RateLibrary = recomputeMachineRates(getLibraryFromStorage());
+// Commodity-specific advisory warnings surfaced by a collector (e.g. sheet-metal
+// press-tonnage adequacy). Reset each compute(); merged into the warnings box.
+let _smExtraWarnings: string[] = [];
 let lastResult: PartCostResult | null = null;
 let lastInput: UniversalStackInput | null = null;
 
@@ -9417,18 +9420,41 @@ function collectMachiningInput(): UniversalStackInput {
 }
 
 function collectSheetMetalInput(): UniversalStackInput {
+  const materialId = sel('sm-mat');
+  const pressId = sel('sm-press');
+  const perimeterMm = num('sm-perim');
+  const thicknessMm = num('sm-thick');
+  const shearStrengthMPa = num('sm-shear');
+
+  // Density from the active library — enables the accurate strip-consumption
+  // gross-material model in computeSheetMetalDrivers (captures trim/pierce scrap).
+  const densityKgPerM3 = library.materials.find(m => m.id === materialId)?.densityKgPerM3;
+
+  // Press-tonnage adequacy check (surfaced as a warning in compute()).
+  _smExtraWarnings = [];
+  const press = library.machines.find(m => m.id === pressId);
+  // Tonnage is encoded in the id ('press-400t', 'press-schuler-400t') and/or class label.
+  const pressLabel = `${press?.machineClass ?? ''} ${pressId}`;
+  const tMatch = /(\d+(?:\.\d+)?)\s*t\b/i.exec(pressLabel);
+  const capacityTonnes = tMatch ? parseFloat(tMatch[1]) : 0;
+  if (perimeterMm > 0 && thicknessMm > 0 && shearStrengthMPa > 0) {
+    const assessment = assessPressTonnage({ perimeterMm, thicknessMm, shearStrengthMPa }, capacityTonnes);
+    if (assessment.message) _smExtraWarnings.push(`Press tonnage: ${assessment.message}`);
+  }
+
   const drivers = computeSheetMetalDrivers({
-    materialId: sel('sm-mat'),
+    materialId,
     netWeightKg: num('sm-net-wt'),
     blankLengthMm: num('sm-blank-l'),
     blankWidthMm: num('sm-blank-w'),
-    thicknessMm: num('sm-thick'),
-    perimeterMm: num('sm-perim'),
-    shearStrengthMPa: num('sm-shear'),
+    thicknessMm,
+    perimeterMm,
+    shearStrengthMPa,
     stripWidthMm: num('sm-strip-w'),
     pitchMm: num('sm-pitch'),
     partsPerStroke: num('sm-pps') || 1,
-    pressId: sel('sm-press'),
+    densityKgPerM3,
+    pressId,
     labourId: sel('sm-lab'),
     strokesPerMin: num('sm-spm'),
     oee: num('sm-oee'),
@@ -10049,6 +10075,7 @@ function compute(): void {
   calcBtn.disabled = true;
   calcBtn.textContent = '⏳ Calculating…';
 
+  _smExtraWarnings = [];
   let input: UniversalStackInput;
   try {
     input = collectInput();
@@ -10072,9 +10099,13 @@ function compute(): void {
   }
   errBox.style.display = 'none';
 
-  if (validation.warnings.length > 0) {
+  const allWarnings = [
+    ...validation.warnings.map(w => `${w.field}: ${w.message}`),
+    ..._smExtraWarnings,
+  ];
+  if (allWarnings.length > 0) {
     warnBox.style.display = 'block';
-    warnBox.innerHTML = `<strong>Warnings:</strong><ul>${validation.warnings.map(w => `<li>${escHtml(w.field)}: ${escHtml(w.message)}</li>`).join('')}</ul>`;
+    warnBox.innerHTML = `<strong>Warnings:</strong><ul>${allWarnings.map(w => `<li>${escHtml(w)}</li>`).join('')}</ul>`;
   } else {
     warnBox.style.display = 'none';
   }

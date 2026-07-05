@@ -3,7 +3,7 @@
  * Each module is tested: schema present, drivers computed, full stack positive, key formulas.
  */
 import { describe, it, expect } from 'vitest';
-import { computeSheetMetalDrivers, estimateTonnageKN } from '../src/engine/modules/sheet-metal.js';
+import { computeSheetMetalDrivers, estimateTonnageKN, estimateTonnageTonnes, assessPressTonnage } from '../src/engine/modules/sheet-metal.js';
 import { computeInjectionMouldingDrivers } from '../src/engine/modules/injection-moulding.js';
 import { computeCastingDrivers } from '../src/engine/modules/casting.js';
 import { computeUniversalStack, validateStackInput } from '../src/engine/core.js';
@@ -98,6 +98,54 @@ describe('Sheet Metal module', () => {
     const r = computeUniversalStack({ partName: 'SM Test', ...d, ...STACK_DEFAULTS }, DEFAULT_RATE_LIBRARY);
     const expected = SM_INPUTS.dieCostEstimate / SM_INPUTS.amortizationVolume;
     expect(r.breakdown.tooling).toBeCloseTo(expected, 6);
+  });
+});
+
+describe('Sheet Metal — density-based gross material (review follow-up #1)', () => {
+  it('with density, utilisation = net / strip-consumed-per-part (captures trim/pierce scrap)', () => {
+    // Al part: strip 920×1210×1.0 mm at 2650 kg/m³ → 2.95 kg fed per stroke.
+    const d = computeSheetMetalDrivers({
+      ...SM_INPUTS, netWeightKg: 2.20, stripWidthMm: 920, pitchMm: 1210, thicknessMm: 1.0,
+      blankLengthMm: 1200, blankWidthMm: 900, partsPerStroke: 1, densityKgPerM3: 2650,
+    });
+    const grossPerPart = (920 * 1210 * 1.0) * 2650 / 1e9; // ≈ 2.95 kg
+    expect(d.rawMaterial.materialUtilization).toBeCloseTo(2.20 / grossPerPart, 4);
+    expect(d.rawMaterial.materialUtilization).toBeLessThan(0.80); // ~0.746
+  });
+
+  it('density model gives lower utilisation (more gross material) than the area-only fallback', () => {
+    const common = { ...SM_INPUTS, netWeightKg: 2.20, stripWidthMm: 920, pitchMm: 1210, thicknessMm: 1.0, blankLengthMm: 1200, blankWidthMm: 900 };
+    const areaOnly = computeSheetMetalDrivers(common).rawMaterial.materialUtilization;
+    const withDensity = computeSheetMetalDrivers({ ...common, densityKgPerM3: 2650 }).rawMaterial.materialUtilization;
+    expect(withDensity).toBeLessThan(areaOnly);
+  });
+
+  it('falls back to area ratio when density omitted (legacy behaviour unchanged)', () => {
+    const d = computeSheetMetalDrivers(SM_INPUTS);
+    expect(d.rawMaterial.materialUtilization).toBeCloseTo((200 * 150) / (160 * 210), 6);
+  });
+});
+
+describe('Sheet Metal — press tonnage assessment (review follow-up #4)', () => {
+  const blank = { perimeterMm: 2400, thicknessMm: 2.0, shearStrengthMPa: 350 }; // ~171 tonf
+
+  it('estimateTonnageTonnes converts kN to tonnes-force', () => {
+    expect(estimateTonnageTonnes(blank)).toBeCloseTo(estimateTonnageKN(blank) / 9.807, 6);
+  });
+
+  it('flags an under-sized press and stays silent for an adequate one', () => {
+    const req = estimateTonnageTonnes(blank);
+    const under = assessPressTonnage(blank, Math.floor(req)); // press smaller than required
+    expect(under.adequate).toBe(false);
+    expect(under.message).toMatch(/under-sized/i);
+
+    const ok = assessPressTonnage(blank, req * 1.5); // comfortable margin
+    expect(ok.adequate).toBe(true);
+    expect(ok.message).toBeNull();
+  });
+
+  it('treats unknown capacity (≤0) as no warning', () => {
+    expect(assessPressTonnage(blank, 0).message).toBeNull();
   });
 });
 

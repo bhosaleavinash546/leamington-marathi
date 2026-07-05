@@ -31,6 +31,13 @@ export interface SheetMetalInputs {
   secondaryOpsManning?: number;         // defaults to press manning if not supplied
   secondaryOpsLabourEfficiency?: number;// defaults to press labourEfficiency if not supplied
   rejectRate?: number;                  // 0–1 scrap fraction; uplifts both material and cycle time
+  /**
+   * Material density kg/m³. When supplied (>0), gross material is computed from the
+   * actual strip fed per part (strip-cell volume × density) so blank→part trim/pierce
+   * scrap is captured — not just strip-nesting scrap. Falls back to the blank-area
+   * ratio (nesting only) when omitted, preserving legacy behaviour.
+   */
+  densityKgPerM3?: number;
 }
 
 export function getSheetMetalInputSchema(): Record<string, string> {
@@ -63,20 +70,32 @@ export function getSheetMetalInputSchema(): Record<string, string> {
     secondaryOpsManning: 'number? — secondary op operators per machine (defaults to press manning)',
     secondaryOpsLabourEfficiency: 'number? 0–1 — secondary op labour efficiency (defaults to press value)',
     rejectRate: 'number? 0–1 — press-shop scrap fraction; uplifts material weight and cycle times',
+    densityKgPerM3: 'number? kg/m³ — if supplied, gross material is computed from actual strip fed per part (captures trim/pierce scrap); falls back to blank-area ratio when omitted',
   };
 }
 
 export function computeSheetMetalDrivers(inputs: SheetMetalInputs): CommodityDrivers {
-  // Strip utilization: ratio of blank area to strip cell area.
-  // NOTE: this captures strip-nesting scrap only (edge trim + pitch allowance). Piercing/trim
-  // scrap inside the blank is NOT captured unless netWeightKg ≈ blank weight — see input docs.
   const blankArea = inputs.blankLengthMm * inputs.blankWidthMm;
   const stripCellArea = inputs.stripWidthMm * inputs.pitchMm;
-  // Guard: zero/negative strip geometry must not silently clamp to 100% utilisation
-  // (blankArea / 0 = Infinity → Math.min(∞, 1) = 1). NaN is rejected by validateStackInput.
-  const materialUtilization = blankArea > 0 && stripCellArea > 0
-    ? Math.min((blankArea / stripCellArea) * inputs.partsPerStroke, 1.0)
-    : NaN;
+
+  // Material utilisation = finished-part weight ÷ gross strip consumed per part.
+  // Preferred (density supplied): gross = strip-cell volume × thickness × density,
+  // per part — this captures BOTH strip-nesting scrap AND blank→part trim/pierce
+  // scrap (because net is the finished weight and gross is the metal actually fed).
+  // Fallback (no density): blank-area/strip-cell ratio, which captures nesting scrap
+  // only (legacy behaviour, preserved so existing callers/tests are unchanged).
+  // Guard: zero strip geometry / part count → NaN (rejected by validateStackInput)
+  // rather than silently clamping to 100% utilisation (x / 0 = Infinity → min(∞,1)=1).
+  let materialUtilization: number;
+  if ((inputs.densityKgPerM3 ?? 0) > 0 && stripCellArea > 0 && inputs.partsPerStroke > 0 && inputs.netWeightKg > 0) {
+    const stripKgPerStroke = (stripCellArea * inputs.thicknessMm) * (inputs.densityKgPerM3 as number) / 1e9; // mm³→m³ × kg/m³
+    const grossPerPartKg = stripKgPerStroke / inputs.partsPerStroke;
+    materialUtilization = grossPerPartKg > 0 ? Math.min(inputs.netWeightKg / grossPerPartKg, 1.0) : NaN;
+  } else {
+    materialUtilization = blankArea > 0 && stripCellArea > 0
+      ? Math.min((blankArea / stripCellArea) * inputs.partsPerStroke, 1.0)
+      : NaN;
+  }
 
   const rejectUplift = inputs.rejectRate && inputs.rejectRate > 0
     ? 1 / (1 - inputs.rejectRate)
@@ -142,4 +161,39 @@ export function computeSheetMetalDrivers(inputs: SheetMetalInputs): CommodityDri
 /** Indicative blanking/piercing tonnage estimate (kN). Not used in cost model — reference only. */
 export function estimateTonnageKN(inputs: Pick<SheetMetalInputs, 'perimeterMm' | 'thicknessMm' | 'shearStrengthMPa'>): number {
   return inputs.perimeterMm * 1e-3 * inputs.thicknessMm * 1e-3 * inputs.shearStrengthMPa * 1e6 / 1000;
+}
+
+/** Force required for blanking, expressed in metric tonnes-force (1 tonf ≈ 9.807 kN). */
+export function estimateTonnageTonnes(inputs: Pick<SheetMetalInputs, 'perimeterMm' | 'thicknessMm' | 'shearStrengthMPa'>): number {
+  return estimateTonnageKN(inputs) / 9.807;
+}
+
+export interface PressTonnageAssessment {
+  requiredTonnes: number;
+  capacityTonnes: number;
+  /** Recommended press ≥ requiredTonnes × safety factor (default 1.25). */
+  recommendedTonnes: number;
+  adequate: boolean;
+  message: string | null;
+}
+
+/**
+ * Compare a selected press capacity against the estimated blanking force.
+ * Presses are sized ~1.25–1.5× the calculated force to cover snap-through,
+ * friction and tolerance. Returns a warning when the press is under-sized;
+ * `message` is null when adequate or when capacity is unknown (≤0).
+ */
+export function assessPressTonnage(
+  inputs: Pick<SheetMetalInputs, 'perimeterMm' | 'thicknessMm' | 'shearStrengthMPa'>,
+  capacityTonnes: number,
+  safetyFactor = 1.25,
+): PressTonnageAssessment {
+  const requiredTonnes = estimateTonnageTonnes(inputs);
+  const recommendedTonnes = requiredTonnes * safetyFactor;
+  const known = capacityTonnes > 0 && Number.isFinite(requiredTonnes) && requiredTonnes > 0;
+  const adequate = !known || capacityTonnes >= recommendedTonnes;
+  const message = known && !adequate
+    ? `Selected press ${capacityTonnes.toFixed(0)}T is under-sized: blanking needs ~${requiredTonnes.toFixed(0)}T (≥${recommendedTonnes.toFixed(0)}T with 1.25× margin). Risk of overload/tool damage — select a larger press.`
+    : null;
+  return { requiredTonnes, capacityTonnes, recommendedTonnes, adequate, message };
 }
