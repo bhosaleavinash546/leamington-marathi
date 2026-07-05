@@ -158,9 +158,11 @@ app.post('/api/should-cost/export', requireAuth, rateLimit(40, 60 * 60 * 1000), 
       curve = volumeSensitivity(input, undefined, userCal, lib);
     } catch (e) { return res.status(400).json({ error: e.message || 'Invalid costing parameters.' }); }
 
-    // FX (engine is EUR-denominated).
-    const fx = currency === 'EUR' ? { rates: FX_FALLBACK, date: null } : await getFxRates();
-    const rate = fx.rates[currency] ?? 1;
+    // FX (engine is EUR-denominated). A validated currency with no rate is an
+    // error, not a silent 1:1 conversion under a foreign label.
+    const fx = currency === 'EUR' ? { rates: FX_FALLBACK, date: null, live: false, stale: false } : await getFxRates();
+    const rate = fx.rates[currency];
+    if (!Number.isFinite(rate) || rate <= 0) return res.status(502).json({ error: `No FX rate available for ${currency}; try again shortly.` });
     const sym = FX_SYMBOLS[currency] || `${currency} `;
     const cv = (n) => Number((Number(n) * rate).toFixed(4));
     const b = calc.breakdown, d = calc.drivers;
@@ -196,6 +198,7 @@ app.post('/api/should-cost/export', requireAuth, rateLimit(40, 60 * 60 * 1000), 
       [],
       ['Material price basis', priceBasis[matRes.key] ? `${priceBasis[matRes.key].commodityLabel} @ ${sym}${cv(priceBasis[matRes.key].commodityPerKg)}/kg` : 'static library baseline'],
       ['Price as of', pricedAt ? pricedAt.slice(0, 10) : 'n/a (static)'],
+      ...(currency === 'EUR' ? [] : [['FX', `1 EUR = ${rate.toFixed(4)} ${currency}${fx.date ? `, as of ${fx.date}` : ''}${fx.stale ? ' (stale)' : ''}`]]),
       ['Calibration', calc.calibration.applied ? `applied ×${calc.calibration.factor} (${calc.calibration.source}, ${userCal.n} quote(s))` : 'none (uncalibrated)'],
       ['Rate library', getActiveMeta()?.name || 'built-in defaults'],
       ['Generated at', genAt],
@@ -347,11 +350,18 @@ app.post('/api/should-cost', requireAuth, rateLimit(60, 60 * 60 * 1000), async (
     calibration: { applied: calc.calibration.applied, factor: calc.calibration.factor, source: calc.calibration.source, quotes: userCal.n },
     // Which rate library produced this estimate (built-in vs the admin's custom data).
     library: getActiveMeta(),
-    // Live material-price provenance: the commodity this grade's €/kg is derived
+    // Live material-price provenance: the commodity this grade's price is derived
     // from, its current index value, and the price vintage (null if unmapped).
+    // Values are converted into the requested currency so a UI can render them
+    // under the selected symbol without mislabeling EUR figures.
     materialPrice: priceBasis[matRes.key]
-      ? { ...priceBasis[matRes.key], pricedAt, live: true }
-      : { effectivePerKg: calc.drivers.pricePerKg, live: false, note: 'static library baseline (no live commodity mapping)' },
+      ? {
+          ...priceBasis[matRes.key],
+          commodityPerKg: Number(cv(priceBasis[matRes.key].commodityPerKg).toFixed(4)),
+          effectivePerKg: Number(cv(priceBasis[matRes.key].effectivePerKg).toFixed(4)),
+          currency, pricedAt, live: true,
+        }
+      : { effectivePerKg: driversCv.pricePerKg, currency, live: false, note: 'static library baseline (no live commodity mapping)' },
     fx: currency === 'EUR' ? null : { base: 'EUR', rate: Number(rate.toFixed(4)), asOf: fx.live ? fx.date : null, source: fx.source, stale: !!fx.stale },
     materialCost: fmt(b.material.value),
     processCost: fmt(processCost),

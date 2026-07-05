@@ -28,14 +28,38 @@ test('commodityPerKg normalises €/t and €/kg, rejects non-mass units', () =>
 test('mapped materials get a live €/kg; unmapped keep the baseline', () => {
   const base = { MATERIALS, PROCESSES: {}, REGIONS: {} };
   const { library, priceBasis, pricedAt } = applyLiveMaterialPrices(base, priceCache());
-  // seed commodity values reproduce the library baseline (within the alloy factor/premium)
   assert.ok(Math.abs(library.MATERIALS['Aluminium 6061'].price - 2.85) < 0.01);
-  assert.ok(Math.abs(library.MATERIALS['Aluminium A356 (cast)'].price - 2.60) < 0.01);
   assert.ok(priceBasis['Aluminium 6061'].commodityKey === 'aluminium_lme');
   // Titanium has no mapping → untouched
   assert.equal(library.MATERIALS['Titanium Ti-6Al-4V'].price, MATERIALS['Titanium Ti-6Al-4V'].price);
   assert.equal(priceBasis['Titanium Ti-6Al-4V'], undefined);
   assert.equal(pricedAt, '2026-07-03T12:00:00.000Z');
+});
+
+test('INVARIANT: at seed commodity values, every mapped material lands on its baseline (no day-one jump)', () => {
+  // Full seed cache mirroring COMMODITY_BASELINE so factor/premium must reproduce
+  // the library baseline exactly — otherwise the price silently jumps on ship.
+  const seed = { lastRefresh: Date.now(), data: {
+    steel_hrc_eu:{value:710,unit:'€/t'}, dp780_ahss:{value:1000,unit:'€/t'}, stainless_304:{value:2850,unit:'€/t'},
+    aluminium_lme:{value:2700,unit:'€/t'}, al_hpdc_a380:{value:2850,unit:'€/t'}, magnesium_ingot:{value:2200,unit:'€/t'},
+    copper_lme:{value:11700,unit:'€/t'}, zinc_lme:{value:3100,unit:'€/t'},
+    pp_td20:{value:1.65,unit:'€/kg'}, pa6_gf30:{value:3.2,unit:'€/kg'}, pa66_gf30:{value:3.9,unit:'€/kg'},
+    abs_auto:{value:2.1,unit:'€/kg'}, pom_acetal:{value:2.9,unit:'€/kg'},
+  }};
+  const { library, priceBasis } = applyLiveMaterialPrices({ MATERIALS, PROCESSES: {}, REGIONS: {} }, seed);
+  for (const [k, m] of Object.entries(MATERIALS)) {
+    if (!priceBasis[k]) continue;   // unmapped grades keep baseline
+    const pct = Math.abs(library.MATERIALS[k].price - m.price) / m.price * 100;
+    assert.ok(pct < 0.5, `${k} jumps ${pct.toFixed(1)}% at seed (should be ~0)`);
+  }
+});
+
+test('an implausible/crashed commodity print falls back to the baseline, not €0.01', () => {
+  const c = priceCache();
+  c.data.zinc_lme.value = 50;   // €/t — a >98% crash
+  const { library, priceBasis } = applyLiveMaterialPrices({ MATERIALS, PROCESSES: {}, REGIONS: {} }, c);
+  assert.equal(library.MATERIALS['Zinc (ZAMAK 5)'].price, MATERIALS['Zinc (ZAMAK 5)'].price, 'should keep baseline');
+  assert.equal(priceBasis['Zinc (ZAMAK 5)'], undefined, 'should not be labelled as a live basis');
 });
 
 test('a commodity spike raises the deterministic part cost', () => {

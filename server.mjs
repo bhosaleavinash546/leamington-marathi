@@ -3046,39 +3046,55 @@ if (JWT_SECRET === 'autocost-ai-dev-secret-2025') {
 // ─── User store (JSON file, async + atomic write) ────────────────────────────
 
 // ─── Users: SQLite-backed (was a git-tracked users.json) ─────────────────────
-// readUsers()/writeUsers(users) keep their original array-in/array-out contract
-// so every call site is unchanged; the storage underneath is now the DB, which
-// removes the committed-credentials risk and the whole-file lost-update race.
+// readUsers() returns the full array for lookups; mutations go through single-row
+// insertUser()/updateUser() so a concurrent signup/reset can't clobber another
+// account (the old read-all/write-all pattern raced across the bcrypt await).
 const _selUsers = db.prepare('SELECT data FROM users');
-const _insUser  = db.prepare('INSERT INTO users (id, email, data) VALUES (?,?,?)');
-const _delUsers = db.prepare('DELETE FROM users');
-const _replaceUsers = db.transaction((users) => {
-  _delUsers.run();
-  for (const u of users) _insUser.run(String(u.id), (u.email || '').toLowerCase(), JSON.stringify(u));
-});
+const _insUserRow = db.prepare('INSERT INTO users (id, email, data) VALUES (?,?,?)');
+const _insUserIgnore = db.prepare('INSERT OR IGNORE INTO users (id, email, data) VALUES (?,?,?)');
+const _updUserRow = db.prepare('UPDATE users SET email = ?, data = ? WHERE id = ?');
 
-// One-time migration: if the DB has no users but a legacy users.json exists, import
-// it, then leave the file in place (now git-ignored) as a local backup.
+// Single-row writes — the ONLY safe way to mutate one account under concurrency.
+// The old read-all → modify → write-all pattern raced across the `await bcrypt.hash`
+// between two signups (the second write, built from a stale snapshot, dropped the
+// first user). INSERT relies on UNIQUE(email) to reject a concurrent duplicate.
+class DuplicateEmailError extends Error {}
+function insertUser(user) {
+  try { _insUserRow.run(String(user.id), (user.email || '').toLowerCase(), JSON.stringify(user)); }
+  catch (e) {
+    if (String(e.message).includes('UNIQUE')) throw new DuplicateEmailError('An account with this email already exists.');
+    throw e;
+  }
+}
+function updateUser(user) {
+  _updUserRow.run((user.email || '').toLowerCase(), JSON.stringify(user), String(user.id));
+}
+
+// One-time migration: import a legacy users.json when the table is empty. Deduped
+// by lowercased email and INSERT-OR-IGNORE per row, so one bad/duplicate/empty
+// email can't abort the whole import (the old all-or-nothing transaction did).
 function migrateUsersFromFile() {
   try {
-    const count = db.prepare('SELECT COUNT(*) n FROM users').get().n;
-    if (count > 0) return;
+    if (db.prepare('SELECT COUNT(*) n FROM users').get().n > 0) return;
     if (!fs.existsSync(USERS_FILE)) return;
     const legacy = JSON.parse(fs.readFileSync(USERS_FILE, 'utf8'));
-    if (Array.isArray(legacy) && legacy.length) {
-      _replaceUsers(legacy);
-      console.log(`[Auth] Migrated ${legacy.length} user(s) from users.json into the database.`);
+    if (!Array.isArray(legacy) || !legacy.length) return;
+    let imported = 0, skipped = 0;
+    const seen = new Set();
+    for (const u of legacy) {
+      const email = (u?.email || '').toLowerCase();
+      if (!u?.id || !email || seen.has(email)) { skipped++; continue; }
+      seen.add(email);
+      const info = _insUserIgnore.run(String(u.id), email, JSON.stringify(u));
+      if (info.changes) imported++; else skipped++;
     }
+    console.log(`[Auth] Migrated ${imported} user(s) from users.json${skipped ? ` (${skipped} skipped: duplicate/empty email)` : ''}.`);
   } catch (e) { console.log('[Auth] User migration skipped:', e.message); }
 }
 migrateUsersFromFile();
 
 async function readUsers() {
   return _selUsers.all().map(r => { try { return JSON.parse(r.data); } catch { return null; } }).filter(Boolean);
-}
-
-async function writeUsers(users) {
-  _replaceUsers(Array.isArray(users) ? users : []);
 }
 
 // ─── Persistent JWT revocation (DB-backed) ───────────────────────────────────
@@ -3222,8 +3238,13 @@ app.post('/api/auth/signup', rateLimit(5, 15 * 60 * 1000), async (req, res) => {
 
   const passwordHash = await bcrypt.hash(password, 10);
   const user = { id: crypto.randomUUID(), name: name.trim(), email: email.toLowerCase(), passwordHash, createdAt: new Date().toISOString(), verified: true };
-  users.push(user);
-  await writeUsers(users);
+  // Single-row insert; UNIQUE(email) is the real guard against a concurrent
+  // duplicate signup that the pre-hash existence check above can race past.
+  try { insertUser(user); }
+  catch (e) {
+    if (e instanceof DuplicateEmailError) return res.status(409).json({ error: 'An account with this email already exists. Please sign in.' });
+    throw e;
+  }
 
   const token = signToken(user);
   res.json({ token, user: { id: user.id, name: user.name, email: user.email } });
@@ -3246,8 +3267,11 @@ app.post('/api/auth/verify-signup', rateLimit(5, 15 * 60 * 1000), async (req, re
   }
 
   const user = { id: crypto.randomUUID(), name: pending.name, email: pending.email, passwordHash: pending.passwordHash, createdAt: new Date().toISOString(), verified: true };
-  users.push(user);
-  await writeUsers(users);
+  try { insertUser(user); }
+  catch (e) {
+    if (e instanceof DuplicateEmailError) return res.status(409).json({ error: 'Account already exists.' });
+    throw e;
+  }
 
   const token = signToken(user);
   res.json({ token, user: { id: user.id, name: user.name, email: user.email } });
@@ -3312,7 +3336,7 @@ app.post('/api/auth/reset-password', rateLimit(5, 15 * 60 * 1000), async (req, r
   if (idx === -1) return res.status(404).json({ error: 'Account not found.' });
 
   users[idx].passwordHash = await bcrypt.hash(newPassword, 10);
-  await writeUsers(users);
+  updateUser(users[idx]);   // single-row UPDATE — no whole-table rewrite
 
   const token = signToken(users[idx]);
   res.json({ token, user: { id: users[idx].id, name: users[idx].name, email: users[idx].email } });
@@ -5023,20 +5047,22 @@ const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 async function seedAdminAccount() {
   if (!ADMIN_EMAIL || !ADMIN_PASSWORD) return;
   const users = await readUsers();
-  const exists = users.find(u => u.email === ADMIN_EMAIL);
-  if (exists) return;
+  if (users.find(u => u.email === ADMIN_EMAIL)) return;
   const passwordHash = await bcrypt.hash(ADMIN_PASSWORD, 10);
-  users.unshift({
-    id: 'admin-00000000-0000-0000-0000-000000000001',
-    name: 'Admin — Avinash Bhosale',
-    email: ADMIN_EMAIL,
-    passwordHash,
-    isAdmin: true,
-    verified: true,
-    createdAt: new Date().toISOString(),
-  });
-  await writeUsers(users);
-  console.log(`   Admin account ready: ${ADMIN_EMAIL}`);
+  try {
+    insertUser({
+      id: 'admin-00000000-0000-0000-0000-000000000001',
+      name: 'Admin — Avinash Bhosale',
+      email: ADMIN_EMAIL,
+      passwordHash,
+      isAdmin: true,
+      verified: true,
+      createdAt: new Date().toISOString(),
+    });
+    console.log(`   Admin account ready: ${ADMIN_EMAIL}`);
+  } catch (e) {
+    if (!(e instanceof DuplicateEmailError)) throw e;   // already seeded — fine
+  }
 }
 
 // ─── PATENT WATCH ─────────────────────────────────────────────────────────────

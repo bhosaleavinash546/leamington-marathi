@@ -17,20 +17,20 @@
 // factor/premium chosen so the live-derived €/kg lands on the library baseline at
 // the seed commodity values, then tracks the commodity from there.
 export const MATERIAL_COMMODITY_MAP = {
-  'Steel (mild)':             { commodityKey: 'steel_hrc_eu',  factor: 1.0,  premium: 0.09, note: 'HRC coil + coil-to-part premium' },
+  'Steel (mild)':             { commodityKey: 'steel_hrc_eu',  factor: 1.0,  premium: -0.09, note: 'HRC coil, tracks EU steel index' },
   'Steel (high-strength)':    { commodityKey: 'dp780_ahss',    factor: 1.0,  premium: 0.10, note: 'AHSS grade + premium' },
   'Stainless Steel 304':      { commodityKey: 'stainless_304',  factor: 1.0,  premium: 0.00, note: '304 flat product' },
   'Aluminium 6061':           { commodityKey: 'aluminium_lme', factor: 1.0,  premium: 0.15, note: 'LME Al + 6xxx billet/extrusion premium' },
   'Aluminium 7075':           { commodityKey: 'aluminium_lme', factor: 1.0,  premium: 1.50, note: 'LME Al + 7xxx aerospace-grade premium' },
   'Aluminium A356 (cast)':    { commodityKey: 'al_hpdc_a380',  factor: 1.0,  premium: -0.25, note: 'Foundry casting alloy (A356 slightly below A380)' },
   'Magnesium AZ31':           { commodityKey: 'magnesium_ingot', factor: 1.0, premium: 1.00, note: 'Mg ingot + wrought-alloy premium' },
-  'Brass (CuZn39)':           { commodityKey: 'copper_lme',    factor: 0.61, premium: 0.60, note: '0.61·Cu + Zn + fabrication (CuZn39)' },
+  'Brass (CuZn39)':           { commodityKey: 'copper_lme',    factor: 0.61, premium: -0.64, note: '0.61·Cu (CuZn39), tracks copper' },
   'Zinc (ZAMAK 5)':           { commodityKey: 'zinc_lme',      factor: 1.0,  premium: -0.20, note: 'LME Zn + ~4% Al alloying' },
   'Polypropylene (PP)':       { commodityKey: 'pp_td20',       factor: 1.0,  premium: 0.00, note: 'PP compound' },
   'PA6 (Nylon)':              { commodityKey: 'pa6_gf30',      factor: 1.0,  premium: 0.00, note: 'PA6 compound' },
-  'PA66-GF30 (glass-filled)': { commodityKey: 'pa66_gf30',     factor: 1.0,  premium: 0.00, note: 'PA66-GF30 compound' },
+  'PA66-GF30 (glass-filled)': { commodityKey: 'pa66_gf30',     factor: 1.0,  premium: -0.10, note: 'PA66-GF30 compound' },
   'ABS':                      { commodityKey: 'abs_auto',      factor: 1.0,  premium: 0.00, note: 'ABS automotive grade' },
-  'POM (Acetal)':             { commodityKey: 'pom_acetal',    factor: 1.0,  premium: 0.00, note: 'POM (acetal)' },
+  'POM (Acetal)':             { commodityKey: 'pom_acetal',    factor: 1.0,  premium: -0.30, note: 'POM (acetal)' },
   // NOTE: no live mapping for CFRP (baseline is raw-fibre €/kg, the only commodity
   // is finished prepreg at ~3x — different product form), Titanium, cast irons,
   // or polycarbonate — no matching mass commodity exists, so they keep baseline.
@@ -63,8 +63,11 @@ export function applyLiveMaterialPrices(library, priceCache) {
   for (const [key, mat] of Object.entries(library.MATERIALS)) {
     const map = MATERIAL_COMMODITY_MAP[key];
     const perKg = map ? commodityPerKg(data[map.commodityKey]) : null;
-    if (map && perKg != null) {
-      const effective = Math.max(0.01, perKg * map.factor + map.premium);
+    const effective = (map && perKg != null) ? perKg * map.factor + map.premium : null;
+    // Guard against a bad/crashed commodity print (esp. with negative premiums):
+    // if the derived price is implausible (< 25% of the library baseline) fall back
+    // to the baseline rather than serve a near-zero "live" €/kg.
+    if (effective != null && effective >= 0.25 * mat.price) {
       materials[key] = { ...mat, price: Number(effective.toFixed(4)) };
       priceBasis[key] = {
         commodityKey: map.commodityKey,
