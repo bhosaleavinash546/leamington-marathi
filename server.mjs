@@ -4999,24 +4999,33 @@ app.post('/api/pcb-bom-cost', requireAuth, rateLimit(15, 60 * 60 * 1000), async 
   if (!imageBase64 || !apiKey) return res.status(400).json({ error: 'imageBase64 and apiKey are required.' });
   if (typeof imageBase64 === 'string' && imageBase64.length > 12_000_000) return res.status(413).json({ error: 'Image too large (max ~9 MB).' });
 
-  const prompt = `You are a PCB teardown estimator. Examine this photo of a printed circuit board and produce a STRUCTURED bill-of-materials ESTIMATE. Group identical components into one line with a qty.
+  const bottomPopulated = req.body.bottomPopulated === true;
+  const scaleHint = typeof req.body.boardWidthMm === 'number' && req.body.boardWidthMm > 0
+    ? ` The user states the board is ~${Math.round(req.body.boardWidthMm)} mm wide — use that to scale widthMm/heightMm and component sizes.`
+    : ' No physical scale reference was given, so board dimensions are a best guess from recognisable packages/connectors — mark board size as low confidence.';
 
-For EACH line give: refDes (silkscreen ref if legible, else ""), type (EXACTLY one of: ${COMPONENT_TYPES.join(', ')}), package (e.g. "0402","0603","SOIC-8","QFN-48","TH"), mount ("SMT" or "TH"), pins (approx pin/lead count), qty (integer).
-Also estimate the board: widthMm, heightMm, layers (2,4,6,8), finish ("hasl","enig","osp").
+  const prompt = `You are a PCB teardown estimator. Examine this photo of a printed circuit board and produce a STRUCTURED bill-of-materials ESTIMATE. Group identical components into one line with a qty. Cap the output at 120 grouped lines.${scaleHint}
+${bottomPopulated ? 'The BOTTOM side is also populated but not shown — include your best estimate of likely bottom-side parts (typically mirrored decoupling capacitors and passives) and set their confidence to "low".' : 'Assume single-sided unless the photo clearly shows otherwise.'}
+
+For EACH line give: refDes (silkscreen ref if legible, else ""), type (EXACTLY one of: ${COMPONENT_TYPES.join(', ')}), package (e.g. "0402","0603","SOIC-8","QFN-48","TH"), mount ("SMT" or "TH"), pins (approx pin/lead count), qty (integer), confidence ("high" if clearly identified, "med", or "low" if inferred/hidden).
+Also estimate the board: widthMm, heightMm, layers (one of ${[1, 2, 4, 6, 8, 10].join('/')}), finish (one of ${Object.keys({ hasl: 1, leadfree_hasl: 1, enig: 1, osp: 1, immersion_silver: 1 }).join('/')}), and note which properties you could NOT observe in "assumptions" (e.g. layer count, board size, bottom side).
 
 Rules: estimate conservatively from what is visible; do NOT invent exact manufacturer part numbers; if unsure pick the closest type and your best-guess package/qty.
-Return ONLY minified JSON, no prose: {"board":{"widthMm":0,"heightMm":0,"layers":2,"finish":"hasl"},"components":[{"refDes":"","type":"","package":"","mount":"SMT","pins":2,"qty":1}]}`;
+Return ONLY minified JSON, no prose: {"board":{"widthMm":0,"heightMm":0,"layers":2,"finish":"hasl","assumptions":""},"components":[{"refDes":"","type":"","package":"","mount":"SMT","pins":2,"qty":1,"confidence":"med"}]}`;
 
   try {
     const client = makeAnthropic(apiKey);
     const msg = await client.messages.create({
-      model: 'claude-opus-4-8', max_tokens: 4000,
+      model: 'claude-opus-4-8', max_tokens: 8000,
       messages: [{ role: 'user', content: [
         { type: 'image', source: { type: 'base64', media_type: mimeType || 'image/jpeg', data: imageBase64 } },
         { type: 'text', text: prompt },
       ] }],
-    }, { timeout: 120_000, maxRetries: 1 });
+    }, { timeout: 180_000, maxRetries: 1 });
 
+    if (msg.stop_reason === 'max_tokens') {
+      return res.status(502).json({ error: 'This board has too many components to read in one pass. Crop to a section, or use a lower-resolution overview and add the dense areas manually.' });
+    }
     let raw = (msg.content[0]?.type === 'text' ? msg.content[0].text : '').trim();
     if (raw.startsWith('```')) raw = raw.replace(/^```[a-z]*\n?/, '').replace(/\n?```$/, '').trim();
     const s = raw.indexOf('{'), e = raw.lastIndexOf('}');
@@ -5026,7 +5035,10 @@ Return ONLY minified JSON, no prose: {"board":{"widthMm":0,"heightMm":0,"layers"
     catch { return res.status(502).json({ error: 'The BOM read from the image was not valid — please retry.' }); }
 
     const cost = costBom(extracted, { volume: Number(volume) || 1000 });
-    res.json({ board: cost.board, cost, extraction: 'ai-vision' });
+    // carry per-line confidence + board assumptions through for the UI
+    const conf = Array.isArray(extracted.components) ? extracted.components.map(c => (['high', 'med', 'low'].includes(c?.confidence) ? c.confidence : 'med')) : [];
+    cost.lines = cost.lines.map((l, i) => ({ ...l, confidence: conf[i] || 'med' }));
+    res.json({ board: cost.board, cost, assumptions: String(extracted.board?.assumptions || '').slice(0, 400), extraction: 'ai-vision' });
   } catch (err) {
     res.status(500).json({ error: safeLlmError(err) });
   }

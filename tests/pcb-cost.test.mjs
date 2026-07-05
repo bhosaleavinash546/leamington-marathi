@@ -17,19 +17,28 @@ const sampleBom = {
 test('costs a typical board with a breakdown that sums to the total', () => {
   const r = costBom(sampleBom);
   assert.ok(r.total > 0);
-  const sum = r.breakdown.components.value + r.breakdown.fab.value + r.breakdown.assembly.value + r.breakdown.overhead.value;
+  const sum = Object.values(r.breakdown).reduce((a, b) => a + b.value, 0);
   assert.ok(Math.abs(sum - r.total) < 0.05, `breakdown ${sum} vs total ${r.total}`);
-  // component + fab + assembly + overhead identity
-  assert.ok(Math.abs((r.componentCost + r.fabCost + r.assemblyCost + r.overhead) - r.total) < 0.05);
+  assert.ok(Math.abs((r.componentCost + r.fabCost + r.assemblyCost + r.logistics + r.overhead) - r.total) < 0.05);
   assert.equal(r.currency, 'EUR');
 });
 
-test('placement/lead counts route SMT vs TH correctly', () => {
+test('placement/lead counts route SMT vs TH correctly, and BGA/active flagged', () => {
   const r = costBom(sampleBom);
-  // SMT placements = 1(mcu)+1(power)+20(R)+15(C)+1(crystal) = 38
-  assert.equal(r.stats.totalPlacements, 38);
-  // TH leads = connector 10 pins × 1
-  assert.equal(r.stats.thLeads, 10);
+  assert.equal(r.stats.totalPlacements, 38);   // mcu+power+20R+15C+crystal
+  assert.equal(r.stats.thLeads, 10);           // connector 10 pins × 1
+  assert.equal(r.stats.bgaPlacements, 1);      // mcu 48 pins ≥ 48 → fine-pitch
+  assert.equal(r.stats.activeDevices, 2);      // mcu + ic_power
+});
+
+test('cost scales down with volume across tiers (not just NRE)', () => {
+  const proto = costBom(sampleBom, { volume: 10 });
+  const k1 = costBom(sampleBom, { volume: 1000 });
+  const k100 = costBom(sampleBom, { volume: 100000 });
+  assert.ok(proto.total > k1.total * 1.4, 'prototype should be well above 1k');
+  assert.ok(k100.total < k1.total * 0.75, 'high volume should be well below 1k');
+  // component unit price itself moves with volume (not just NRE)
+  assert.ok(k100.componentCost < k1.componentCost * 0.7);
 });
 
 test('more layers and a larger board cost more to fab', () => {
@@ -58,9 +67,29 @@ test('garbage/negative inputs are clamped, never NaN', () => {
   assert.equal(r.lines[0].qty, 1);          // qty clamped to ≥1
 });
 
-test('a unit-cost override wins over the class average', () => {
-  const r = costBom({ board: {}, components: [{ type: 'mcu', qty: 1, unitCostOverride: 12.5 }] });
-  assert.equal(r.lines[0].unitCost, 12.5);
+test('a POSITIVE unit-cost override wins; blank/zero falls back to class average', () => {
+  assert.equal(costBom({ board: {}, components: [{ type: 'mcu', qty: 1, unitCostOverride: 12.5 }] }).lines[0].unitCost, 12.5);
+  // blank / 0 must NOT zero the component out
+  const zeroed = costBom({ board: {}, components: [{ type: 'mcu', qty: 1, unitCostOverride: 0 }] });
+  assert.ok(zeroed.lines[0].unitCost > 1, 'zero override should fall back to class average, not 0');
+  const blank = costBom({ board: {}, components: [{ type: 'mcu', qty: 1, unitCostOverride: '' }] });
+  assert.ok(blank.lines[0].unitCost > 1);
+});
+
+test('output type is normalised so a re-cost reprices consistently', () => {
+  const r = costBom({ board: {}, components: [{ type: '  MCU  ', qty: 1 }] });
+  assert.equal(r.lines[0].type, 'mcu');          // not 'other'
+  assert.equal(r.lines[0].label, 'Microcontroller');
+});
+
+test('uniqueParts dedupes by type+package', () => {
+  const r = costBom({ board: {}, components: [
+    { type: 'resistor', package: '0402', qty: 10 },
+    { type: 'resistor', package: '0402', qty: 5 },   // same class+pkg
+    { type: 'resistor', package: '0603', qty: 8 },   // different pkg
+  ] });
+  assert.equal(r.stats.uniqueParts, 2);
+  assert.equal(r.stats.lineItems, 3);
 });
 
 test('every component class has a positive unit price and valid mount', () => {

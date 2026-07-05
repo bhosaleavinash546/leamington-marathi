@@ -32,9 +32,9 @@ export const COMPONENT_CLASSES = {
   ic_analog:       { unit: 0.55,  mount: 'SMT', pins: 8,  label: 'Analog IC' },
   ic_power:        { unit: 0.80,  mount: 'SMT', pins: 8,  label: 'Power/regulator IC' },
   mcu:             { unit: 2.50,  mount: 'SMT', pins: 48, label: 'Microcontroller' },
-  soc:             { unit: 8.00,  mount: 'SMT', pins: 256, label: 'SoC / processor' },
+  soc:             { unit: 15.0,  mount: 'SMT', pins: 256, label: 'SoC / processor' },
   memory:          { unit: 1.20,  mount: 'SMT', pins: 48, label: 'Memory' },
-  connector:       { unit: 0.55,  mount: 'TH',  pins: 8,  label: 'Connector' },
+  connector:       { unit: 0.55,  mount: 'TH',  pins: 8,  label: 'Connector', th: true },
   header:          { unit: 0.15,  mount: 'TH',  pins: 4,  label: 'Header / jumper' },
   crystal:         { unit: 0.25,  mount: 'SMT', pins: 4,  label: 'Crystal' },
   oscillator:      { unit: 0.55,  mount: 'SMT', pins: 4,  label: 'Oscillator' },
@@ -48,23 +48,47 @@ export const COMPONENT_CLASSES = {
 };
 export const COMPONENT_TYPES = Object.keys(COMPONENT_CLASSES);
 
-// Bare-board fab rate (EUR / cm²) by layer count, at ~1k volume.
+// Basis: Asia-sourced bare board + EU/Asia-blend assembly, EUR, at ~1k boards/yr.
+// Bare-board fab rate (EUR / cm²) by layer count.
 const LAYER_RATE = { 1: 0.016, 2: 0.024, 4: 0.060, 6: 0.105, 8: 0.170, 10: 0.24 };
 const FINISH_MULT = { hasl: 1.0, leadfree_hasl: 1.05, enig: 1.25, osp: 0.98, immersion_silver: 1.15 };
-const FAB_NRE = 220;             // panel/tooling €, amortised over volume
-const ASSY_NRE = 180;            // stencil + programming €, amortised over volume
-const SMT_PLACEMENT = 0.0045;    // €/placement (machine + paste amort) at ~1k
-const TH_LEAD = 0.03;            // €/lead (selective/hand solder)
-const AOI_TEST = 0.12;           // €/board inspection + FCT allowance
-const EMS_OVERHEAD = 0.18;       // SG&A + margin on cost of goods
+const FAB_NRE = 220;             // panel/tooling €, amortised over annual volume
+const ASSY_NRE = 180;            // stencil + programming €, amortised over annual volume
+const FEEDER_SETUP = 1.6;        // €/unique part (feeder load + changeover), amortised
+const SMT_PLACEMENT = 0.02;      // €/placement (machine + paste + reflow + handling) at ~1k
+const BGA_PREMIUM = 0.15;        // extra €/placement for fine-pitch/BGA (pins ≥ 48, SMT)
+const XRAY_PER_BOARD = 0.20;     // X-ray inspection when any BGA/fine-pitch part present
+const TH_LEAD = 0.035;           // €/lead (selective/hand solder)
+const AOI_FLAT = 0.08;           // €/board optical inspection
+const FCT_BASE = 0.30;           // €/board functional test setup
+const FCT_PER_ACTIVE = 0.08;     // €/board per active device (IC/MCU/SoC…) under test
+const FREIGHT_PCT = 0.06;        // inbound freight/duty on materials + fab
+const FIRST_PASS_YIELD = 0.985;  // rework/scrap divisor
+const ATTRITION = 1.02;          // component reel/handling attrition
+const EMS_OVERHEAD = 0.22;       // SG&A + margin on cost of goods at ~1k volume
+
+const ACTIVE_TYPES = new Set(['ic_logic', 'ic_analog', 'ic_power', 'mcu', 'soc', 'memory', 'module']);
+
+// Volume tier multipliers on component unit price (mat), conversion/assembly rates
+// (conv) and fab €/cm² (fab). ~1.0 at 1k. Approximates MOQ/reel effects at low
+// volume and price-break/rate erosion at high volume.
+function volTier(v) {
+  if (v <= 10)     return { mat: 2.2, conv: 1.8, fab: 2.0 };
+  if (v <= 100)    return { mat: 1.4, conv: 1.3, fab: 1.35 };
+  if (v <= 1000)   return { mat: 1.0, conv: 1.0, fab: 1.0 };
+  if (v <= 10000)  return { mat: 0.78, conv: 0.82, fab: 0.75 };
+  if (v <= 100000) return { mat: 0.62, conv: 0.60, fab: 0.55 };
+  return { mat: 0.52, conv: 0.50, fab: 0.45 };
+}
 
 const round = (n, dp = 2) => { const f = 10 ** dp; return Math.round((n + Number.EPSILON) * f) / f; };
 const clampNum = (v, min, max, dflt) => { const n = Number(v); return Number.isFinite(n) && n >= min && n <= max ? n : dflt; };
 
-function classOf(type) {
+function classKey(type) {
   const t = String(type || '').toLowerCase().trim();
-  return Object.hasOwn(COMPONENT_CLASSES, t) ? COMPONENT_CLASSES[t] : COMPONENT_CLASSES.other;
+  return Object.hasOwn(COMPONENT_CLASSES, t) ? t : 'other';
 }
+function classOf(type) { return COMPONENT_CLASSES[classKey(type)]; }
 
 /**
  * Cost a (vision-extracted or edited) PCB BOM.
@@ -81,38 +105,53 @@ export function costBom(input, opts = {}) {
   const layers   = [1, 2, 4, 6, 8, 10].includes(Number(board.layers)) ? Number(board.layers) : 2;
   const finish   = Object.hasOwn(FINISH_MULT, board.finish) ? board.finish : 'hasl';
   const areaCm2  = (widthMm * heightMm) / 100;
+  const tier     = volTier(volume);
+  const y        = 1 / FIRST_PASS_YIELD;   // yield/rework gross-up
 
-  // ── Components ────────────────────────────────────────────────────────────
-  let componentCost = 0, placements = 0, thLeads = 0, uniquePartNos = 0;
+  // ── Components (volume-tiered unit price + reel attrition) ─────────────────
+  let componentCost = 0, placements = 0, bgaPlacements = 0, thLeads = 0, activeDevices = 0;
+  const uniqueKeys = new Set();
   const lines = comps.map((c) => {
-    const cls = classOf(c.type);
+    const key = classKey(c.type);
+    const cls = COMPONENT_CLASSES[key];
     const qty = Math.max(1, Math.round(clampNum(c.qty, 1, 100000, 1)));
     const mount = (c.mount === 'TH' || c.mount === 'SMT') ? c.mount : cls.mount;
     const pins = Math.max(1, Math.round(clampNum(c.pins, 1, 2000, cls.pins)));
-    const unit = clampNum(c.unitCostOverride, 0, 100000, cls.unit);
-    const lineCost = unit * qty;
-    componentCost += lineCost;
-    uniquePartNos += 1;
-    if (mount === 'TH') thLeads += pins * qty; else placements += qty;
+    const pkg = String(c.package || '').slice(0, 24);
+    // Unit-cost override wins ONLY when a positive number is given; else the
+    // volume-tiered class average (blank/0 must not zero out a component).
+    const override = Number(c.unitCostOverride);
+    const unit = Number.isFinite(override) && override > 0 ? override : cls.unit * tier.mat;
+    componentCost += unit * qty;
+    uniqueKeys.add(`${key}|${pkg}`);
+    if (ACTIVE_TYPES.has(key)) activeDevices += qty;
+    if (mount === 'TH') thLeads += pins * qty;
+    else { placements += qty; if (pins >= 48) bgaPlacements += qty; }   // fine-pitch/BGA proxy
     return {
       refDes: String(c.refDes || '').slice(0, 24),
-      type: Object.hasOwn(COMPONENT_CLASSES, String(c.type || '').toLowerCase()) ? String(c.type).toLowerCase() : 'other',
-      label: cls.label,
-      package: String(c.package || '').slice(0, 24),
-      mount, pins, qty,
-      unitCost: round(unit, 4),
-      lineCost: round(lineCost, 3),
+      type: key, label: cls.label, package: pkg, mount, pins, qty,
+      unitCost: round(unit, 4), lineCost: round(unit * qty, 3),
     };
   });
+  componentCost *= ATTRITION * y;
+  const uniqueParts = uniqueKeys.size;
 
   // ── Fab (bare board) ──────────────────────────────────────────────────────
-  const rate = LAYER_RATE[layers] || LAYER_RATE[2];
-  const fabCost = areaCm2 * rate * (FINISH_MULT[finish] || 1) + FAB_NRE / volume;
+  const rate = (LAYER_RATE[layers] || LAYER_RATE[2]) * tier.fab;
+  const fabCost = (areaCm2 * rate * (FINISH_MULT[finish] || 1) + FAB_NRE / volume) * y;
 
-  // ── Assembly (SMT + TH + inspection) ──────────────────────────────────────
-  const assemblyCost = placements * SMT_PLACEMENT + thLeads * TH_LEAD + AOI_TEST + ASSY_NRE / volume;
+  // ── Assembly: placement + BGA premium + TH + inspection + FCT + setup ──────
+  const placementCost = placements * SMT_PLACEMENT * tier.conv + bgaPlacements * BGA_PREMIUM;
+  const thCost   = thLeads * TH_LEAD * tier.conv;
+  const xray     = bgaPlacements > 0 ? XRAY_PER_BOARD : 0;
+  const fct      = activeDevices > 0 ? FCT_BASE + FCT_PER_ACTIVE * activeDevices : 0;
+  const setupNre = (ASSY_NRE + uniqueParts * FEEDER_SETUP) / volume;
+  const assemblyCost = (placementCost + thCost + AOI_FLAT + xray + fct + setupNre) * y;
 
-  const cogs = componentCost + fabCost + assemblyCost;
+  // ── Logistics (inbound freight/duty on materials + fab) ────────────────────
+  const logistics = (componentCost + fabCost) * FREIGHT_PCT;
+
+  const cogs = componentCost + fabCost + assemblyCost + logistics;
   const overhead = cogs * EMS_OVERHEAD;
   const total = cogs + overhead;
 
@@ -120,20 +159,22 @@ export function costBom(input, opts = {}) {
   return {
     currency: 'EUR',
     board: { widthMm, heightMm, areaCm2: round(areaCm2, 1), layers, finish },
-    stats: { lineItems: lines.length, uniquePartNos, totalPlacements: placements, thLeads },
+    stats: { lineItems: lines.length, uniqueParts, totalPlacements: placements, bgaPlacements, thLeads, activeDevices },
     lines,
     breakdown: {
       components: { value: round(componentCost), pct: pct(componentCost) },
       fab:        { value: round(fabCost), pct: pct(fabCost) },
       assembly:   { value: round(assemblyCost), pct: pct(assemblyCost) },
+      logistics:  { value: round(logistics), pct: pct(logistics) },
       overhead:   { value: round(overhead), pct: pct(overhead) },
     },
     componentCost: round(componentCost),
     fabCost: round(fabCost),
     assemblyCost: round(assemblyCost),
+    logistics: round(logistics),
     overhead: round(overhead),
     total: round(total),
     volume,
-    note: 'Indicative parametric estimate. Vision infers component class/package/qty, not exact part numbers — edit the BOM and re-cost for a firm number.',
+    note: 'Indicative parametric estimate (Asia-sourced fab, ~1k-volume basis). Vision infers component class/package/qty and board size — not exact part numbers, layer count or hidden bottom-side parts — so treat as ±30–50%. Edit the BOM and re-cost for a firm number.',
   };
 }
