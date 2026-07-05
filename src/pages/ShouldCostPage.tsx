@@ -138,6 +138,30 @@ export default function ShouldCostPage() {
     } finally { setTeaching(false); }
   }
 
+  // Download the server-generated cost-breakdown-structure (.xlsx negotiation pack).
+  const [exporting, setExporting] = useState(false);
+  async function exportCbs() {
+    if (!token || !weightKg || !annualVolume) return;
+    setExporting(true);
+    try {
+      const r = await fetch('/api/should-cost/export', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ partName, material, process, weightKg: Number(weightKg), annualVolume: Number(annualVolume), region, currency, quotedCost: quotedCost ? Number(quotedCost) : undefined }),
+      });
+      if (!r.ok) { const d = await r.json().catch(() => ({})); throw new Error(d.error || 'Export failed'); }
+      const blob = await r.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `CBS_${(partName || 'should-cost').replace(/[^\w.-]+/g, '_').slice(0, 60)}.xlsx`;
+      document.body.appendChild(a); a.click(); a.remove();
+      URL.revokeObjectURL(url);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Export failed');
+    } finally { setExporting(false); }
+  }
+
   // Agentic cost-down: the engine verifies every alternative the AI proposes.
   async function findCostDown() {
     if (!token || !weightKg || !annualVolume) { setCdError('Run a should-cost first.'); return; }
@@ -385,6 +409,15 @@ export default function ShouldCostPage() {
                   <div className="text-gold-400 text-xs font-semibold mb-1">Negotiation Leverage</div>
                   <p className="text-slate-300 text-xs leading-relaxed">{result.negotiationLeverage}</p>
                 </div>
+
+                {/* Export the cost-breakdown-structure (negotiation pack) */}
+                <button
+                  onClick={exportCbs}
+                  disabled={exporting}
+                  className="w-full py-2.5 rounded-xl bg-white/5 border border-white/15 text-slate-200 text-sm font-semibold hover:bg-white/10 disabled:opacity-50 transition"
+                >
+                  {exporting ? 'Generating…' : 'Export cost breakdown (.xlsx negotiation pack)'}
+                </button>
 
                 {/* Agentic cost-down — engine-verified alternatives */}
                 <div className="pt-2">

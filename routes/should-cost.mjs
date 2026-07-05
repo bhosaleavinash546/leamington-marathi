@@ -128,6 +128,118 @@ app.get('/api/should-cost/quotes', requireAuth, (req, res) => {
   res.json({ quotes: rows, count: rows.length, calibration: { global: cal.global, process: cal.process, n: cal.n } });
 });
 
+// ── Cost-breakdown-structure (CBS) / negotiation-pack export ──────────────────
+// Recomputes the should-cost deterministically and returns a multi-sheet .xlsx
+// (Summary, Breakdown, Drivers, Volume Sensitivity, Assumptions) — the auditable
+// artifact a cost engineer takes into a sourcing committee / supplier negotiation.
+app.post('/api/should-cost/export', requireAuth, rateLimit(40, 60 * 60 * 1000), async (req, res) => {
+  try {
+    const { partName, material, process, weightKg, annualVolume, region = 'Germany', quotedCost } = req.body || {};
+    if (material === undefined || process === undefined || weightKg === undefined || annualVolume === undefined) {
+      return res.status(400).json({ error: 'Missing required fields: material, process, weightKg, annualVolume.' });
+    }
+    const wNum = Number(weightKg), vNum = Number(annualVolume);
+    if (!Number.isFinite(wNum) || wNum <= 0 || wNum > 100_000) return res.status(400).json({ error: 'weightKg out of range.' });
+    if (!Number.isFinite(vNum) || vNum <= 0 || vNum > 1e9) return res.status(400).json({ error: 'annualVolume out of range.' });
+    const currency = String(req.body.currency || 'EUR').toUpperCase();
+    if (!FX_CURRENCIES.includes(currency)) return res.status(400).json({ error: `Unsupported currency "${currency}".` });
+
+    const { library: lib, priceBasis, pricedAt } = liveLibrary();
+    const matRes = resolveMaterial(material, lib.MATERIALS);
+    const procRes = resolveProcess(process, lib.PROCESSES);
+    if (!matRes || !procRes) return res.status(400).json({ error: 'Material or process not recognised.' });
+
+    const userCal = getUserCalibration(req.user.id);
+    const input = { material: matRes.key, process: procRes.key, weightKg: wNum, annualVolume: vNum, region };
+    let calc, sim, curve;
+    try {
+      calc = computeShouldCost(input, {}, userCal, lib);
+      sim = simulateShouldCost(input, 2000, 12345, userCal, lib);
+      curve = volumeSensitivity(input, undefined, userCal, lib);
+    } catch (e) { return res.status(400).json({ error: e.message || 'Invalid costing parameters.' }); }
+
+    // FX (engine is EUR-denominated).
+    const fx = currency === 'EUR' ? { rates: FX_FALLBACK, date: null } : await getFxRates();
+    const rate = fx.rates[currency] ?? 1;
+    const sym = FX_SYMBOLS[currency] || `${currency} `;
+    const cv = (n) => Number((Number(n) * rate).toFixed(4));
+    const b = calc.breakdown, d = calc.drivers;
+    const BREAKDOWN_LABELS = {
+      material: 'Material', machine: 'Machine', labour: 'Labour', setup: 'Setup / changeover',
+      finishing: 'Finishing / secondary', tooling: 'Tooling (amortised)', overhead: 'Factory overhead',
+      commercial: 'Packaging & freight', sgaProfit: 'SG&A + profit',
+    };
+
+    const XLSX = await import('xlsx');
+    const wb = XLSX.utils.book_new();
+
+    const genAt = new Date().toISOString();
+    const summary = [
+      ['CostVision — Should-Cost Breakdown Structure (CBS)'],
+      [],
+      ['Part', String(partName || 'Component')],
+      ['Material (resolved)', matRes.key + (matRes.approx ? ' (approx match)' : '')],
+      ['Process (resolved)', procRes.key + (procRes.approx ? ' (approx match)' : '')],
+      ['Region', region],
+      ['Finished mass (kg)', wNum],
+      ['Annual volume (units/yr)', vNum],
+      ['Currency', currency],
+      [],
+      ['Total should-cost / unit', cv(calc.totalShouldCost)],
+      ['Monte-Carlo P10', cv(sim.p10)],
+      ['Monte-Carlo P50', cv(sim.p50)],
+      ['Monte-Carlo P90', cv(sim.p90)],
+      ['Annual spend (total × volume)', Number((cv(calc.totalShouldCost) * vNum).toFixed(0))],
+      ...(quotedCost && Number(quotedCost) > 0
+        ? [['Supplier quote', Number(quotedCost)], ['Gap vs should-cost', Number((Number(quotedCost) - cv(calc.totalShouldCost)).toFixed(2))]]
+        : []),
+      [],
+      ['Material price basis', priceBasis[matRes.key] ? `${priceBasis[matRes.key].commodityLabel} @ ${sym}${cv(priceBasis[matRes.key].commodityPerKg)}/kg` : 'static library baseline'],
+      ['Price as of', pricedAt ? pricedAt.slice(0, 10) : 'n/a (static)'],
+      ['Calibration', calc.calibration.applied ? `applied ×${calc.calibration.factor} (${calc.calibration.source}, ${userCal.n} quote(s))` : 'none (uncalibrated)'],
+      ['Rate library', getActiveMeta()?.name || 'built-in defaults'],
+      ['Generated at', genAt],
+      ['Basis', 'Bottom-up parametric should-cost. Raw/fettled works cost; secondary machining additional. Validate against detailed supplier breakdowns before commercial use.'],
+    ];
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(summary), 'Summary');
+
+    const breakdown = [['Cost element', `Value (${currency})`, 'Share %']];
+    for (const [k, label] of Object.entries(BREAKDOWN_LABELS)) {
+      if (b[k]) breakdown.push([label, cv(b[k].value), b[k].pct]);
+    }
+    breakdown.push(['TOTAL', cv(calc.totalShouldCost), 100]);
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(breakdown), 'Breakdown');
+
+    const drivers = [
+      ['Driver', 'Value'],
+      [`Material price (${currency}/kg)`, cv(d.pricePerKg)],
+      ['Buy-to-fly input mass (kg)', d.inputMassKg],
+      ['Metal yield %', Number((d.utilisation * 100).toFixed(0))],
+      ['Cycle time (s/part)', d.cycleSecPerPart],
+      [`Machine rate (${currency}/hr)`, cv(d.machineRate)],
+      [`Labour rate (${currency}/hr)`, cv(d.labourRate)],
+      ['Operators', d.operators],
+      [`Tooling total (${currency})`, cv(d.toolingTotal)],
+      ['Tooling amortised over (parts)', d.amortVolume],
+      ['Scrap %', d.scrapPct],
+    ];
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(drivers), 'Drivers');
+
+    const vs = [['Annual volume', `Unit cost (${currency})`]];
+    for (const p of curve) vs.push([p.volume, cv(p.unitCost)]);
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(vs), 'Volume Sensitivity');
+
+    const buf = XLSX.write(wb, { type: 'buffer', bookType: 'xlsx' });
+    const safeName = String(partName || 'should-cost').replace(/[^\w.-]+/g, '_').slice(0, 60);
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    res.setHeader('Content-Disposition', `attachment; filename="CBS_${safeName}.xlsx"`);
+    res.send(buf);
+  } catch (err) {
+    console.error('[Should-Cost Export Error]', err.message);
+    res.status(500).json({ error: 'Could not generate the export.' });
+  }
+});
+
 app.post('/api/should-cost', requireAuth, rateLimit(60, 60 * 60 * 1000), async (req, res) => {
   const { partName, material, process, weightKg, annualVolume, quotedCost, region, apiKey } = req.body;
   // Presence check keyed on undefined (not falsiness) so a genuine 0 reaches the
