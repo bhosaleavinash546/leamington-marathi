@@ -9,8 +9,22 @@ import { getFxRates, FX_FALLBACK, FX_SYMBOLS, FX_CURRENCIES } from '../fx-rates.
 import { fitCalibration } from '../calibration.mjs';
 import { getActiveLibrary, getActiveMeta } from '../active-library.mjs';
 import { messagesJson } from '../llm-json.mjs';
+import { applyLiveMaterialPrices } from '../material-commodity.mjs';
 
-export function registerShouldCostRoutes(app, { db, requireAuth, rateLimit, makeAnthropic }) {
+export function registerShouldCostRoutes(app, { db, requireAuth, rateLimit, makeAnthropic, getCommodityPrices }) {
+  // Active rate library with live commodity prices bridged into material €/kg, so
+  // deterministic estimates move with the LME / EU steel index. Falls back to the
+  // static baseline if the price cache is unavailable.
+  function liveLibrary() {
+    const base = getActiveLibrary();
+    if (typeof getCommodityPrices !== 'function') return { library: base, priceBasis: {}, pricedAt: null };
+    try { return applyLiveMaterialPrices(base, getCommodityPrices()); }
+    catch { return { library: base, priceBasis: {}, pricedAt: null }; }
+  }
+
+  // Store the material-line € at quote time so calibration can index-rebase old
+  // quotes. Guarded ALTER: harmless if the column already exists.
+  try { db.prepare('ALTER TABLE cost_quotes ADD COLUMN matEurAtQuote REAL').run(); } catch { /* column exists */ }
 // ─── SHOULD-COST ──────────────────────────────────────────────────────────────
 
 // Catalogue endpoint so the UI populates dropdowns from the engine (single source of truth)
@@ -37,17 +51,25 @@ function invalidateUserCal(userId) {
   for (const k of calCache.keys()) if (k.startsWith(`${userId}:`)) calCache.delete(k);
 }
 function getUserCalibration(userId) {
-  const lib = getActiveLibrary();
-  const key = `${userId}:${getActiveMeta().version ?? 'builtin'}`;
+  const { library: lib, pricedAt } = liveLibrary();
+  // Include the price vintage in the cache key: a commodity refresh changes both
+  // the modelled baseline and the index-rebasing, so the fit must refresh with it.
+  const key = `${userId}:${getActiveMeta().version ?? 'builtin'}:${pricedAt ? pricedAt.slice(0, 10) : 'static'}`;
   if (calCache.has(key)) return calCache.get(key);
-  const rows = db.prepare('SELECT material, process, weightKg, annualVolume, region, actualPriceEur FROM cost_quotes WHERE userId = ?').all(userId);
+  const rows = db.prepare('SELECT material, process, weightKg, annualVolume, region, actualPriceEur, matEurAtQuote FROM cost_quotes WHERE userId = ?').all(userId);
   const pairs = [];
   for (const r of rows) {
-    let modelled;
+    let now;
     try {
-      modelled = computeShouldCost({ material: r.material, process: r.process, weightKg: r.weightKg, annualVolume: r.annualVolume, region: r.region }, {}, null, lib).totalShouldCost;
+      now = computeShouldCost({ material: r.material, process: r.process, weightKg: r.weightKg, annualVolume: r.annualVolume, region: r.region }, {}, null, lib);
     } catch { continue; }   // input no longer costable under the current library — skip
-    pairs.push({ process: r.process, modelled, actual: r.actualPriceEur });
+    // Index rebasing: the modelled cost is at TODAY's material prices, but the
+    // quote was taken at older prices. Shift the actual by the material-line
+    // movement since the quote so calibration compares like-with-like (a quote
+    // captured during a commodity spike no longer permanently biases the fit).
+    let actual = r.actualPriceEur;
+    if (Number.isFinite(r.matEurAtQuote)) actual += (now.breakdown.material.value - r.matEurAtQuote);
+    if (actual > 0) pairs.push({ process: r.process, modelled: now.totalShouldCost, actual });
   }
   const cal = fitCalibration(pairs);
   calCache.set(key, cal);
@@ -62,14 +84,16 @@ app.post('/api/should-cost/quotes', requireAuth, rateLimit(120, 60 * 60 * 1000),
   }
   const currency = String(req.body.currency || 'EUR').toUpperCase();
   if (!FX_CURRENCIES.includes(currency)) return res.status(400).json({ error: `Unsupported currency "${currency}".` });
-  const lib = getActiveLibrary();
+  const { library: lib } = liveLibrary();
   const matRes = resolveMaterial(material, lib.MATERIALS);
   const procRes = resolveProcess(process, lib.PROCESSES);
   if (!matRes || !procRes) return res.status(400).json({ error: 'Material or process not recognised.' });
 
-  let modelledEur;
+  let modelledEur, matEurAtQuote;
   try {
-    modelledEur = computeShouldCost({ material: matRes.key, process: procRes.key, weightKg: Number(weightKg), annualVolume: Number(annualVolume), region: region || 'Germany' }, {}, null, lib).totalShouldCost;
+    const calc = computeShouldCost({ material: matRes.key, process: procRes.key, weightKg: Number(weightKg), annualVolume: Number(annualVolume), region: region || 'Germany' }, {}, null, lib);
+    modelledEur = calc.totalShouldCost;
+    matEurAtQuote = calc.breakdown.material.value;   // material-line € at today's prices, for future index rebasing
   } catch (e) { return res.status(400).json({ error: e.message || 'Invalid parameters.' }); }
 
   // Convert the user's quoted price to EUR (rates are EUR-based: units per 1 EUR).
@@ -87,10 +111,10 @@ app.post('/api/should-cost/quotes', requireAuth, rateLimit(120, 60 * 60 * 1000),
     }
   }
 
-  db.prepare(`INSERT INTO cost_quotes (id, userId, partName, material, process, weightKg, annualVolume, region, actualPriceEur, modelledEur, createdAt)
-              VALUES (?,?,?,?,?,?,?,?,?,?,?)`).run(
+  db.prepare(`INSERT INTO cost_quotes (id, userId, partName, material, process, weightKg, annualVolume, region, actualPriceEur, modelledEur, matEurAtQuote, createdAt)
+              VALUES (?,?,?,?,?,?,?,?,?,?,?,?)`).run(
     crypto.randomUUID(), req.user.id, String(partName || '').slice(0, 200), matRes.key, procRes.key,
-    Number(weightKg), Number(annualVolume), region || 'Germany', actualPriceEur, modelledEur, new Date().toISOString());
+    Number(weightKg), Number(annualVolume), region || 'Germany', actualPriceEur, modelledEur, matEurAtQuote, new Date().toISOString());
   invalidateUserCal(req.user.id);   // refit on next estimate
 
   const cal = getUserCalibration(req.user.id);
@@ -129,9 +153,10 @@ app.post('/api/should-cost', requireAuth, rateLimit(60, 60 * 60 * 1000), async (
   }
 
   // Resolve free-text material/process against the ACTIVE library (built-in
-  // defaults merged with the admin's custom rates). Exact dropdown keys pass
-  // straight through; free text is fuzzy-matched — no client matcher to drift.
-  const lib = getActiveLibrary();
+  // defaults merged with the admin's custom rates) — now with live commodity
+  // prices bridged into material €/kg. Exact dropdown keys pass straight through;
+  // free text is fuzzy-matched — no client matcher to drift.
+  const { library: lib, priceBasis, pricedAt } = liveLibrary();
   const matRes = resolveMaterial(material, lib.MATERIALS);
   const procRes = resolveProcess(process, lib.PROCESSES);
   if (!matRes || !procRes) {
@@ -210,6 +235,11 @@ app.post('/api/should-cost', requireAuth, rateLimit(60, 60 * 60 * 1000), async (
     calibration: { applied: calc.calibration.applied, factor: calc.calibration.factor, source: calc.calibration.source, quotes: userCal.n },
     // Which rate library produced this estimate (built-in vs the admin's custom data).
     library: getActiveMeta(),
+    // Live material-price provenance: the commodity this grade's €/kg is derived
+    // from, its current index value, and the price vintage (null if unmapped).
+    materialPrice: priceBasis[matRes.key]
+      ? { ...priceBasis[matRes.key], pricedAt, live: true }
+      : { effectivePerKg: calc.drivers.pricePerKg, live: false, note: 'static library baseline (no live commodity mapping)' },
     fx: currency === 'EUR' ? null : { base: 'EUR', rate: Number(rate.toFixed(4)), asOf: fx.live ? fx.date : null, source: fx.source, stale: !!fx.stale },
     materialCost: fmt(b.material.value),
     processCost: fmt(processCost),
@@ -222,7 +252,9 @@ app.post('/api/should-cost', requireAuth, rateLimit(60, 60 * 60 * 1000), async (
     simulation: { p10: fmt(sim.p10), p50: fmt(sim.p50), p90: fmt(sim.p90), p10Value: Number(cv(sim.p10).toFixed(2)), p50Value: Number(cv(sim.p50).toFixed(2)), p90Value: Number(cv(sim.p90).toFixed(2)), stdev: Number(cv(sim.stdev).toFixed(2)) },
     volumeCurve: volumeCurve.map(p => ({ volume: p.volume, unitCost: Number(cv(p.unitCost).toFixed(4)), unitCostLabel: fmt(p.unitCost) })),
     assumptions: [
-      `Material ${matRes.key} @ ${sym}${driversCv.pricePerKg}/kg (static library baseline, not live-indexed), buy-to-fly input mass ${d.inputMassKg} kg (metal yield ${(d.utilisation * 100).toFixed(0)}%).`,
+      priceBasis[matRes.key]
+        ? `Material ${matRes.key} @ ${sym}${driversCv.pricePerKg}/kg — indexed to ${priceBasis[matRes.key].commodityLabel} (${sym}${Number(cv(priceBasis[matRes.key].commodityPerKg).toFixed(2))}/kg${pricedAt ? `, as of ${pricedAt.slice(0, 10)}` : ''}); buy-to-fly input mass ${d.inputMassKg} kg (metal yield ${(d.utilisation * 100).toFixed(0)}%).`
+        : `Material ${matRes.key} @ ${sym}${driversCv.pricePerKg}/kg (static library baseline — no live commodity mapping), buy-to-fly input mass ${d.inputMassKg} kg (metal yield ${(d.utilisation * 100).toFixed(0)}%).`,
       `${procRes.key}: cycle ${d.cycleSecPerPart}s/part, machine rate ${sym}${driversCv.machineRate}/hr, ${d.operators} operator(s) @ ${sym}${driversCv.labourRate}/hr (${region}).`,
       `Tooling ${sym}${driversCv.toolingTotal.toLocaleString()} amortised over ${d.amortVolume.toLocaleString()} parts; scrap ${d.scrapPct}%.`,
       `Overhead and SG&A/profit applied per ${region} factory norms. Figure is a raw/fettled works cost — secondary CNC machining of the casting/forging, if required, is additional.`,

@@ -5026,7 +5026,7 @@ Keep it practical and actionable for an engineering team.`,
 });
 
 // ─── SHOULD-COST ──────────────────────────────────────────────────────────────
-registerShouldCostRoutes(app, { db, requireAuth, rateLimit, makeAnthropic });
+registerShouldCostRoutes(app, { db, requireAuth, rateLimit, makeAnthropic, getCommodityPrices: () => priceCache });
 registerRateLibraryRoutes(app, { db, requireAuth });
 
 // ─── WEBHOOK TEST ─────────────────────────────────────────────────────────────
