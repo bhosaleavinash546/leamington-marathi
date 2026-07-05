@@ -305,6 +305,20 @@ db.exec(`CREATE TABLE IF NOT EXISTS commodity_prices (
   updatedAt TEXT NOT NULL
 )`);
 db.exec(`CREATE TABLE IF NOT EXISTS app_meta (key TEXT PRIMARY KEY, value TEXT NOT NULL)`);
+// Users live in the DB (not a git-tracked flat file). The full record is stored as
+// JSON so every existing field (passwordHash, name, verified, resetToken, …) is
+// preserved without a rigid column schema; email is indexed for lookups.
+db.exec(`CREATE TABLE IF NOT EXISTS users (
+  id TEXT PRIMARY KEY,
+  email TEXT UNIQUE,
+  data TEXT NOT NULL
+)`);
+// Persistent JWT revocation — survives a process restart (the old in-memory Set
+// forgot every revoked session on reboot, silently un-revoking them).
+db.exec(`CREATE TABLE IF NOT EXISTS revoked_tokens (
+  token TEXT PRIMARY KEY,
+  expiresAt INTEGER NOT NULL
+)`);
 // Bump when the COMMODITY_BASELINE seed is refreshed. On mismatch we drop any
 // persisted prices so the new authentic seed wins over stale cached values.
 const PRICE_BASELINE_VERSION = '2026-07-03';
@@ -3031,28 +3045,56 @@ if (JWT_SECRET === 'autocost-ai-dev-secret-2025') {
 
 // ─── User store (JSON file, async + atomic write) ────────────────────────────
 
-async function readUsers() {
+// ─── Users: SQLite-backed (was a git-tracked users.json) ─────────────────────
+// readUsers()/writeUsers(users) keep their original array-in/array-out contract
+// so every call site is unchanged; the storage underneath is now the DB, which
+// removes the committed-credentials risk and the whole-file lost-update race.
+const _selUsers = db.prepare('SELECT data FROM users');
+const _insUser  = db.prepare('INSERT INTO users (id, email, data) VALUES (?,?,?)');
+const _delUsers = db.prepare('DELETE FROM users');
+const _replaceUsers = db.transaction((users) => {
+  _delUsers.run();
+  for (const u of users) _insUser.run(String(u.id), (u.email || '').toLowerCase(), JSON.stringify(u));
+});
+
+// One-time migration: if the DB has no users but a legacy users.json exists, import
+// it, then leave the file in place (now git-ignored) as a local backup.
+function migrateUsersFromFile() {
   try {
-    const data = await fs.promises.readFile(USERS_FILE, 'utf8');
-    return JSON.parse(data);
-  } catch { return []; }
+    const count = db.prepare('SELECT COUNT(*) n FROM users').get().n;
+    if (count > 0) return;
+    if (!fs.existsSync(USERS_FILE)) return;
+    const legacy = JSON.parse(fs.readFileSync(USERS_FILE, 'utf8'));
+    if (Array.isArray(legacy) && legacy.length) {
+      _replaceUsers(legacy);
+      console.log(`[Auth] Migrated ${legacy.length} user(s) from users.json into the database.`);
+    }
+  } catch (e) { console.log('[Auth] User migration skipped:', e.message); }
+}
+migrateUsersFromFile();
+
+async function readUsers() {
+  return _selUsers.all().map(r => { try { return JSON.parse(r.data); } catch { return null; } }).filter(Boolean);
 }
 
 async function writeUsers(users) {
-  const tmp = `${USERS_FILE}.tmp`;
-  await fs.promises.writeFile(tmp, JSON.stringify(users, null, 2));
-  await fs.promises.rename(tmp, USERS_FILE);
+  _replaceUsers(Array.isArray(users) ? users : []);
 }
 
-// ─── In-memory JWT revocation set ────────────────────────────────────────────
-
-const revokedTokens = new Set();
-// Prune tokens that have already expired (no need to keep them revoked)
-setInterval(() => {
-  for (const t of revokedTokens) {
-    try { jwt.verify(t, JWT_SECRET); } catch { revokedTokens.delete(t); }
-  }
-}, 60 * 60 * 1000);
+// ─── Persistent JWT revocation (DB-backed) ───────────────────────────────────
+const _insRevoked = db.prepare('INSERT OR IGNORE INTO revoked_tokens (token, expiresAt) VALUES (?,?)');
+const _isRevoked  = db.prepare('SELECT 1 FROM revoked_tokens WHERE token = ?');
+const _pruneRevoked = db.prepare('DELETE FROM revoked_tokens WHERE expiresAt < ?');
+const revokedTokens = {
+  add(token) {
+    let exp = Date.now() + 8 * 24 * 3600 * 1000;   // safe upper bound if decode fails
+    try { const d = jwt.decode(token); if (d?.exp) exp = d.exp * 1000; } catch { /* keep default */ }
+    _insRevoked.run(token, exp);
+  },
+  has(token) { return !!_isRevoked.get(token); },
+};
+// Prune tokens that have already expired (no need to keep them revoked).
+setInterval(() => { try { _pruneRevoked.run(Date.now()); } catch { /* ignore */ } }, 60 * 60 * 1000);
 
 // ─── In-memory OTP store { email → { otp, expiry, type, attempts } } ─────────
 
@@ -5653,7 +5695,7 @@ app.listen(PORT, async () => {
   console.log(`\n⚡ BrainSpark Server v${APP_VERSION}`);
   console.log(`   Running on http://localhost:${PORT}`);
   console.log(`   Email mode: ${process.env.EMAIL_USER ? `SMTP (${process.env.EMAIL_USER})` : 'DEV (OTP shown on screen)'}`);
-  console.log(`   Users file: ${USERS_FILE}`);
+  console.log(`   Users: SQLite (${db.prepare('SELECT COUNT(*) n FROM users').get().n} account(s) in the database)`);
   await seedAdminAccount();
   console.log();
 });
