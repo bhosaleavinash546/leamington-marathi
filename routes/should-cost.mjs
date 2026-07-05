@@ -8,6 +8,7 @@ import { resolveMaterial, resolveProcess } from '../material-process-resolve.mjs
 import { getFxRates, FX_FALLBACK, FX_SYMBOLS, FX_CURRENCIES } from '../fx-rates.mjs';
 import { fitCalibration } from '../calibration.mjs';
 import { getActiveLibrary, getActiveMeta } from '../active-library.mjs';
+import { messagesJson } from '../llm-json.mjs';
 
 export function registerShouldCostRoutes(app, { db, requireAuth, rateLimit, makeAnthropic }) {
 // ─── SHOULD-COST ──────────────────────────────────────────────────────────────
@@ -243,11 +244,24 @@ app.post('/api/should-cost', requireAuth, rateLimit(60, 60 * 60 * 1000), async (
 - Material ${fmt(b.material.value)} | Machine ${fmt(b.machine.value)} | Labour ${fmt(b.labour.value)} | Finishing ${fmt(b.finishing.value)} | Tooling ${fmt(b.tooling.value)} | Overhead+Commercial+SG&A ${fmt(overheadPlus)}
 ${quotedCost ? `- Supplier quote: ${sym}${quotedCost} (gap ${gapVsQuote})` : ''}
 
-Do NOT change any number. Return ONLY JSON: {"explanation":"2-3 sentences interpreting these figures","negotiationLeverage":"1-2 sentence negotiation strategy","assumptions":["3-5 short engineering caveats specific to this part/process"]}`;
-      const msg = await client.messages.create({ model: 'claude-opus-4-8', max_tokens: 700, messages: [{ role: 'user', content: prompt }] });
-      const text = msg.content[0]?.type === 'text' ? msg.content[0].text : '{}';
-      const clean = text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
-      const llm = JSON.parse(clean);
+Do NOT change any number — interpret them.`;
+      // Structured output: the model MUST call this tool, so we read a validated
+      // object with no fenced-JSON stripping / parse-failure path.
+      const llm = await messagesJson(client, {
+        maxTokens: 700,
+        messages: [{ role: 'user', content: prompt }],
+        toolName: 'cost_narrative',
+        toolDescription: 'Return a qualitative interpretation of the given deterministic cost figures.',
+        schema: {
+          type: 'object',
+          properties: {
+            explanation: { type: 'string', description: '2-3 sentences interpreting these figures' },
+            negotiationLeverage: { type: 'string', description: '1-2 sentence negotiation strategy' },
+            assumptions: { type: 'array', items: { type: 'string' }, description: '3-5 short engineering caveats specific to this part/process' },
+          },
+          required: ['explanation', 'negotiationLeverage', 'assumptions'],
+        },
+      });
       if (typeof llm.explanation === 'string' && llm.explanation.trim()) result.explanation = llm.explanation.trim();
       if (typeof llm.negotiationLeverage === 'string' && llm.negotiationLeverage.trim()) result.negotiationLeverage = llm.negotiationLeverage.trim();
       if (Array.isArray(llm.assumptions) && llm.assumptions.length) result.assumptions = llm.assumptions.filter(a => typeof a === 'string').slice(0, 6);

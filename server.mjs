@@ -124,6 +124,16 @@ const LLM_TIMEOUT_MS  = 90_000;
 function makeAnthropic(apiKey) {
   return new Anthropic({ apiKey: (apiKey || '').trim(), maxRetries: LLM_MAX_RETRIES, timeout: LLM_TIMEOUT_MS });
 }
+
+// Wrap a long, stable system prompt as a cacheable content block. Prompt caching
+// (cache_control: ephemeral) makes the model store the prompt prefix so repeat
+// calls — and every turn of the /api/analyze tool loop — read it at ~0.1× input
+// price instead of re-billing the full ~700-line prompt each time. Falls back to
+// a plain string prompt below the model's minimum cacheable length isn't our
+// concern here: both prompts we wrap clear the Opus 4.8 threshold comfortably.
+function cachedSystem(text) {
+  return [{ type: 'text', text, cache_control: { type: 'ephemeral' } }];
+}
 // Map raw SDK/API errors to safe, non-leaking client messages.
 function safeLlmError(err) {
   const status = err?.status || err?.response?.status;
@@ -4508,7 +4518,7 @@ app.post('/api/cad-analyze', requireAuth, rateLimit(15, 60 * 60 * 1000), async (
       ? [{ role: 'user', content: [{ type: 'image', source: { type: 'base64', media_type: geometry.mimeType || 'image/png', data: geometry.base64Data } }, { type: 'text', text: prompt }] }]
       : [{ role: 'user', content: prompt }];
 
-    const response = await client.messages.create({ model: 'claude-opus-4-8', max_tokens: 4000, system: CAD_COST_SYSTEM_PROMPT, messages }, { timeout: 180_000, maxRetries: 1 });
+    const response = await client.messages.create({ model: 'claude-opus-4-8', max_tokens: 4000, system: cachedSystem(CAD_COST_SYSTEM_PROMPT), messages }, { timeout: 180_000, maxRetries: 1 });
     if (response.stop_reason === 'max_tokens') return res.status(502).json({ error: 'The analysis was too long to complete — try again.' });
 
     const textBlock = response.content.find(b => b.type === 'text');
@@ -4696,7 +4706,7 @@ app.post('/api/analyze', requireAuth, rateLimit(40, 60 * 60 * 1000), async (req,
   try {
     for (let i = 0; i < 8; i++) {
       if (Date.now() > deadline) throw new Error('Analysis timed out after 2 minutes. Please try again with web search disabled.');
-      const params = { model: 'claude-opus-4-8', max_tokens: 24000, system: CHIEF_ENGINEER_PROMPT, messages };
+      const params = { model: 'claude-opus-4-8', max_tokens: 24000, system: cachedSystem(CHIEF_ENGINEER_PROMPT), messages };
       if (enableSearch) { params.tools = [webSearchTool]; params.tool_choice = { type: 'auto' }; }
 
       // A 24k-token generation legitimately exceeds the default 90s client
@@ -5346,7 +5356,7 @@ app.post('/api/assistant-chat', requireAuth, rateLimit(40, 60 * 60 * 1000), asyn
     const resp = await client.messages.create({
       model: 'claude-opus-4-8',
       max_tokens: 1024,
-      system: BRAINSPARK_ASSISTANT_PROMPT,
+      system: cachedSystem(BRAINSPARK_ASSISTANT_PROMPT),
       messages,
     });
     const reply = resp.content[0]?.type === 'text' ? resp.content[0].text : 'I could not generate a response. Please try again.';

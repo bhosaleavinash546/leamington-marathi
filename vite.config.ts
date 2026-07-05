@@ -24,9 +24,15 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,svg,woff,woff2}'],
+        // Chunks are code-split and well under 2 MiB now, but keep a headroom
+        // ceiling so a single large vendor chunk can never silently drop out of
+        // the precache manifest (the previous 3 MB entry chunk did exactly that).
+        maximumFileSizeToCacheInBytes: 4 * 1024 * 1024,
         runtimeCaching: [
           {
-            urlPattern: /^\/api\/projects/,
+            // workbox matches urlPattern against the FULL url, so a `^/api` regex
+            // never matched — use a URL predicate on the pathname instead.
+            urlPattern: ({ url }) => url.pathname.startsWith('/api/projects'),
             handler: 'NetworkFirst',
             options: { cacheName: 'api-projects', networkTimeoutSeconds: 5 },
           },
@@ -36,6 +42,22 @@ export default defineConfig({
   ],
   optimizeDeps: {
     include: ['pptxgenjs', 'jszip'],
+  },
+  build: {
+    rollupOptions: {
+      output: {
+        // Isolate the heaviest libraries into their own chunks so they are
+        // fetched only by the routes that use them and cached independently.
+        manualChunks: {
+          'vendor-react': ['react', 'react-dom', 'react-router-dom'],
+          'vendor-motion': ['framer-motion'],
+          'vendor-charts': ['recharts'],
+          'vendor-xlsx': ['xlsx'],
+          'vendor-pptx': ['pptxgenjs'],
+          'vendor-pdf': ['jspdf'],
+        },
+      },
+    },
   },
   server: {
     proxy: {

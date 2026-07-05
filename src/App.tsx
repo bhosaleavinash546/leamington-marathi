@@ -1,3 +1,4 @@
+import { lazy } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AnimatePresence, MotionConfig } from 'framer-motion';
 import { AuthProvider } from './contexts/AuthContext';
@@ -10,28 +11,32 @@ import PageTransition from './components/layout/PageTransition';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import RouteErrorBoundary from './components/layout/RouteErrorBoundary';
 import { useIsNative } from './hooks/useMobile';
-import HomePage from './pages/HomePage';
-import AuthPage from './pages/AuthPage';
-import DashboardPage from './pages/DashboardPage';
-import AnalyzePage from './pages/AnalyzePage';
-import ResultsPage from './pages/ResultsPage';
-import HelpPage from './pages/HelpPage';
-import TrendsPage from './pages/TrendsPage';
-import CadToCostPage from './pages/CadToCostPage';
-import BomAnalysisPage from './pages/BomAnalysisPage';
-import SharedResultPage from './pages/SharedResultPage';
-import ShouldCostPage from './pages/ShouldCostPage';
-import IdeaStudioPage from './pages/IdeaStudioPage';
-import AdminRateLibraryPage from './pages/AdminRateLibraryPage';
-import PcbBomCostPage from './pages/PcbBomCostPage';
-import IntegrationsPage from './pages/IntegrationsPage';
-import MarketplacePage from './pages/MarketplacePage';
-import CadDiffPage from './pages/CadDiffPage';
-import ServerSettingsPage from './pages/ServerSettingsPage';
-import MobileSettingsPage from './pages/MobileSettingsPage';
-import VaveTrackerPage from './pages/VaveTrackerPage';
-import PipelinePage from './pages/PipelinePage';
 import AiChatbot from './components/AiChatbot';
+
+// Route components are code-split: each page (and its heavy deps — recharts,
+// framer-motion charts, the xlsx/pptx/jspdf export libs) loads on demand instead
+// of bloating the entry chunk. PageTransition provides the Suspense boundary.
+const HomePage = lazy(() => import('./pages/HomePage'));
+const AuthPage = lazy(() => import('./pages/AuthPage'));
+const DashboardPage = lazy(() => import('./pages/DashboardPage'));
+const AnalyzePage = lazy(() => import('./pages/AnalyzePage'));
+const ResultsPage = lazy(() => import('./pages/ResultsPage'));
+const HelpPage = lazy(() => import('./pages/HelpPage'));
+const TrendsPage = lazy(() => import('./pages/TrendsPage'));
+const CadToCostPage = lazy(() => import('./pages/CadToCostPage'));
+const BomAnalysisPage = lazy(() => import('./pages/BomAnalysisPage'));
+const SharedResultPage = lazy(() => import('./pages/SharedResultPage'));
+const ShouldCostPage = lazy(() => import('./pages/ShouldCostPage'));
+const IdeaStudioPage = lazy(() => import('./pages/IdeaStudioPage'));
+const AdminRateLibraryPage = lazy(() => import('./pages/AdminRateLibraryPage'));
+const PcbBomCostPage = lazy(() => import('./pages/PcbBomCostPage'));
+const IntegrationsPage = lazy(() => import('./pages/IntegrationsPage'));
+const MarketplacePage = lazy(() => import('./pages/MarketplacePage'));
+const CadDiffPage = lazy(() => import('./pages/CadDiffPage'));
+const ServerSettingsPage = lazy(() => import('./pages/ServerSettingsPage'));
+const MobileSettingsPage = lazy(() => import('./pages/MobileSettingsPage'));
+const VaveTrackerPage = lazy(() => import('./pages/VaveTrackerPage'));
+const PipelinePage = lazy(() => import('./pages/PipelinePage'));
 
 function AnimatedRoutes() {
   const location = useLocation();
