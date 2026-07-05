@@ -42,6 +42,16 @@ test('out-of-range inputs are rejected by the tool', async () => {
   assert.ok(r.error && /weightKg/.test(r.error));
 });
 
+test('pinInputs forces weight/volume so alternatives stay comparable', async () => {
+  const kit = buildCostTools({ library, pinInputs: { weightKg: 1.2, annualVolume: 150000 } });
+  // model tries to cheat with a 10x volume and half the weight — both ignored
+  const r = await kit.exec('compute_should_cost', { material: 'A356', process: 'HPDC', weightKg: 0.6, annualVolume: 1500000, region: 'Germany' });
+  assert.equal(r.weightKg, 1.2, 'weight must be pinned to baseline');
+  assert.equal(r.annualVolume, 150000, 'volume must be pinned to baseline');
+  assert.equal(kit.log[0].weightKg, 1.2);
+  assert.equal(kit.log[0].annualVolume, 150000);
+});
+
 test('runToolLoop drives a tool call then returns the final text', async () => {
   const kit = buildCostTools({ library });
   // Stub client: first turn asks to call the tool, second turn returns text.

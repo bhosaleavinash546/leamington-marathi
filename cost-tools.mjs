@@ -17,8 +17,12 @@ import { resolveMaterial, resolveProcess } from './material-process-resolve.mjs'
 
 const REGION_KEYS = (lib) => Object.keys(lib.REGIONS);
 
-export function buildCostTools({ library, calibration = null }) {
+export function buildCostTools({ library, calibration = null, pinInputs = null }) {
   const log = [];   // [{ material, process, weightKg, annualVolume, region, total }]
+  // When pinInputs is set (cost-down), weightKg/annualVolume are FORCED to the
+  // baseline so every alternative is compared like-for-like — the model can only
+  // vary material/process/region, never silently change the part's mass or volume
+  // (which would fabricate a non-comparable "saving").
 
   const tools = [
     {
@@ -61,7 +65,8 @@ export function buildCostTools({ library, calibration = null }) {
     const procRes = resolveProcess(String(input.process || ''), library.PROCESSES);
     if (!matRes) return { error: `Material "${input.material}" is not in the cost catalogue. Call list_catalogue for valid options.` };
     if (!procRes) return { error: `Process "${input.process}" is not in the cost catalogue. Call list_catalogue for valid options.` };
-    const weightKg = Number(input.weightKg), annualVolume = Number(input.annualVolume);
+    const weightKg = pinInputs ? pinInputs.weightKg : Number(input.weightKg);
+    const annualVolume = pinInputs ? pinInputs.annualVolume : Number(input.annualVolume);
     if (!Number.isFinite(weightKg) || weightKg <= 0 || weightKg > 100_000) return { error: 'weightKg must be a number between 0 and 100000.' };
     if (!Number.isFinite(annualVolume) || annualVolume <= 0 || annualVolume > 1e9) return { error: 'annualVolume must be a number between 0 and 1e9.' };
     const region = REGION_KEYS(library).includes(input.region) ? input.region : 'Germany';
@@ -133,5 +138,13 @@ export async function runToolLoop(client, { model = 'claude-opus-4-8', system, m
     }
     convo.push({ role: 'user', content: results });
   }
-  return { finalText: '', turns, stoppedOnBudget: true };
+  // Turn budget hit while still calling tools: make one final call WITHOUT tools so
+  // the model must produce a text answer instead of us returning an empty reply.
+  try {
+    const wrap = await client.messages.create({ model, max_tokens: maxTokens, system, messages: convo }, requestOptions);
+    const finalText = wrap.content.filter(b => b.type === 'text').map(b => b.text).join('\n').trim();
+    return { finalText, turns, stoppedOnBudget: true };
+  } catch {
+    return { finalText: '', turns, stoppedOnBudget: true };
+  }
 }
