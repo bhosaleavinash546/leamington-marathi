@@ -62,10 +62,19 @@ function toBase64(buffer: ArrayBuffer): string {
 // ─── STL parser ──────────────────────────────────────────────────────────────
 
 function parseStl(buffer: ArrayBuffer): Partial<CadGeometry> {
-  const text = new TextDecoder('utf-8', { fatal: false }).decode(buffer.slice(0, 256));
-  const isAscii = text.trimStart().startsWith('solid');
-
-  if (isAscii) return parseAsciiStl(new TextDecoder().decode(buffer));
+  // "solid" prefix is NOT reliable: some CAD exporters write "solid <name>" into
+  // the 80-byte binary header too. Confirm by the exact binary size law
+  // (84 + triangleCount × 50 === byteLength) before trusting the ASCII guess.
+  const head = new TextDecoder('utf-8', { fatal: false }).decode(buffer.slice(0, 256));
+  const looksAscii = head.trimStart().toLowerCase().startsWith('solid');
+  let binarySized = false;
+  if (buffer.byteLength >= 84) {
+    const triangleCount = new DataView(buffer).getUint32(80, true);
+    binarySized = buffer.byteLength === 84 + triangleCount * 50;
+  }
+  // Exact binary size wins over the "solid" hint; only parse as ASCII when the
+  // hint is present AND the size does not match the binary layout.
+  if (looksAscii && !binarySized) return parseAsciiStl(new TextDecoder().decode(buffer));
   return parseBinaryStl(buffer);
 }
 
@@ -316,6 +325,12 @@ function parseStep(text: string): Partial<CadGeometry> {
 
 // ─── Main entry point ─────────────────────────────────────────────────────────
 
+// Fail fast before reading a pathological file into memory / base64. Images are
+// held tighter because the server caps them at ~5 MB raw (7 MB base64) and a
+// bigger one only wastes an upload round-trip.
+const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
+const MAX_MODEL_BYTES = 40 * 1024 * 1024;
+
 export async function parseCadFile(file: File): Promise<CadGeometry> {
   const extension = ext(file.name);
   const fileName = file.name;
@@ -323,6 +338,13 @@ export async function parseCadFile(file: File): Promise<CadGeometry> {
 
   const IMAGE_EXTS = ['png', 'jpg', 'jpeg', 'webp', 'gif'];
   const PDF_EXTS = ['pdf'];
+
+  const isImageLike = IMAGE_EXTS.includes(extension) || PDF_EXTS.includes(extension);
+  const cap = isImageLike ? MAX_IMAGE_BYTES : MAX_MODEL_BYTES;
+  if (fileSize > cap) {
+    return { fileName, fileType: 'unknown', fileSize, isImage: false,
+      warnings: [`File is ${formatFileSize(fileSize)} — over the ${formatFileSize(cap)} limit. ${isImageLike ? 'Downscale the drawing image' : 'Decimate/simplify the model'} and retry.`] };
+  }
 
   // Images & PDFs → base64 for Claude Vision
   if (IMAGE_EXTS.includes(extension) || PDF_EXTS.includes(extension)) {

@@ -39,12 +39,18 @@ interface CadResult {
   massEstimateKg: number | null;
   dfmaScore: number;
   dfmaScoreRationale: string;
-  costBreakdown: CostBreakdown;
-  annualSpend: { value: number; currency: string };
+  costBreakdown: CostBreakdown | null;
+  simulation?: { p10: number; p50: number; p90: number; currency: string } | null;
+  annualSpend: { value: number; currency: string } | null;
   confidence: ConfidenceLevel;
   benchmarkReference: string;
   recommendations: CadRecommendation[];
   topRisks: string[];
+  // Provenance from the server: 'deterministic' = engine-computed, 'llm-estimate' = un-grounded.
+  engine?: 'deterministic' | 'llm-estimate';
+  resolved?: { material: string; process: string; region: string; approxMaterial?: boolean; approxProcess?: boolean } | null;
+  costError?: string | null;
+  note?: string;
 }
 
 // ─── Constants ────────────────────────────────────────────────────────────────
@@ -256,11 +262,10 @@ export default function CadToCostPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({
-          geometry: {
-            ...geometry,
-            // Truncate base64 if very large to stay within 10MB JSON limit
-            base64Data: geometry.base64Data?.slice(0, 5_000_000),
-          },
+          // Send the geometry as-is. Images are already capped at ~5 MB raw by
+          // parseCadFile; the server returns a clean 413 above its base64 limit.
+          // (Never slice base64 mid-stream — that corrupts an otherwise-valid image.)
+          geometry,
           config: {
             annualVolume, plantRegion, currency, programmeLengthYears,
             materialSpec: materialSpec !== 'Auto-detect from drawing' ? materialSpec : undefined,
@@ -595,29 +600,75 @@ export default function CadToCostPage() {
                       )}
                     </div>
                   </div>
-                  <div className="text-right">
-                    <p className="text-slate-500 text-xs mb-1">Unit Cost</p>
-                    <p className="text-3xl font-black text-gold-400">{formatCost(result.costBreakdown.totalUnit.value, result.costBreakdown.totalUnit.currency)}</p>
-                    <p className="text-slate-500 text-xs mt-1">Annual: {formatCost(result.annualSpend.value, result.annualSpend.currency)}</p>
-                    <p className={`text-xs mt-0.5 ${CONF_CONFIG[result.confidence]?.color}`}>
-                      {CONF_CONFIG[result.confidence]?.label} estimate
+                  {result.costBreakdown ? (
+                    <div className="text-right">
+                      <p className="text-slate-500 text-xs mb-1">Unit Cost</p>
+                      <p className="text-3xl font-black text-gold-400">{formatCost(result.costBreakdown.totalUnit.value, result.costBreakdown.totalUnit.currency)}</p>
+                      {result.simulation && (
+                        <p className="text-slate-500 text-[11px] mt-0.5">P10–P90: {formatCost(result.simulation.p10, result.simulation.currency)} – {formatCost(result.simulation.p90, result.simulation.currency)}</p>
+                      )}
+                      {result.annualSpend && (
+                        <p className="text-slate-500 text-xs mt-1">Annual: {formatCost(result.annualSpend.value, result.annualSpend.currency)}</p>
+                      )}
+                      <p className={`text-xs mt-0.5 ${CONF_CONFIG[result.confidence]?.color}`}>
+                        {CONF_CONFIG[result.confidence]?.label} estimate
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="text-right max-w-[16rem]">
+                      <p className="text-slate-500 text-xs mb-1">Unit Cost</p>
+                      <p className="text-lg font-bold text-slate-400">Not costed</p>
+                      <p className="text-amber-400/80 text-[11px] mt-1 leading-tight">Set a material &amp; process to get a firm figure.</p>
+                    </div>
+                  )}
+                </div>
+
+                {/* Provenance badge */}
+                <div className="flex flex-wrap items-center gap-2 mb-4 -mt-1">
+                  {result.engine === 'deterministic' ? (
+                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-green-500/10 border border-green-500/20 text-green-300 text-[11px] font-medium">
+                      <Shield size={12} /> Engine-computed (rate library + FX)
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-300 text-[11px] font-medium">
+                      <AlertTriangle size={12} /> Un-grounded AI estimate
+                    </span>
+                  )}
+                  {result.resolved && (result.resolved.approxMaterial || result.resolved.approxProcess) && (
+                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white/5 border border-white/10 text-slate-400 text-[11px]">
+                      <Info size={12} /> Approx. match: {result.resolved.material} / {result.resolved.process}
+                    </span>
+                  )}
+                </div>
+
+                {result.costBreakdown ? (
+                  <>
+                    {/* Cost bar */}
+                    <CostBar breakdown={result.costBreakdown} currency={result.costBreakdown.totalUnit.currency} />
+
+                    {/* Cost breakdown detail */}
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-4">
+                      {(['material', 'process', 'tooling', 'overhead'] as const).map(key => (
+                        <div key={key} className="bg-white/4 rounded-xl p-3">
+                          <p className="text-slate-500 text-xs capitalize mb-0.5">{key}</p>
+                          <p className="text-white font-semibold">{formatCost(result.costBreakdown![key].value, result.costBreakdown![key].currency)}</p>
+                          <p className="text-slate-600 text-[10px] leading-tight mt-1">{result.costBreakdown![key].basis}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                ) : (
+                  <div className="flex items-start gap-2.5 bg-amber-500/5 border border-amber-500/20 rounded-xl p-3.5">
+                    <AlertTriangle size={16} className="text-amber-400 shrink-0 mt-0.5" />
+                    <p className="text-amber-200/90 text-xs leading-relaxed">
+                      {result.costError || 'The material/process could not be resolved to the cost library, so no should-cost figure was computed. Pick a material and process below and re-run to get an engine-grade estimate. The DFMA analysis and recommendations below are still valid.'}
                     </p>
                   </div>
-                </div>
+                )}
 
-                {/* Cost bar */}
-                <CostBar breakdown={result.costBreakdown} currency={result.costBreakdown.totalUnit.currency} />
-
-                {/* Cost breakdown detail */}
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-4">
-                  {(['material', 'process', 'tooling', 'overhead'] as const).map(key => (
-                    <div key={key} className="bg-white/4 rounded-xl p-3">
-                      <p className="text-slate-500 text-xs capitalize mb-0.5">{key}</p>
-                      <p className="text-white font-semibold">{formatCost(result.costBreakdown[key].value, result.costBreakdown[key].currency)}</p>
-                      <p className="text-slate-600 text-[10px] leading-tight mt-1">{result.costBreakdown[key].basis}</p>
-                    </div>
-                  ))}
-                </div>
+                {result.note && (
+                  <p className="text-slate-600 text-[11px] leading-relaxed mt-3">{result.note}</p>
+                )}
               </div>
 
               {/* DFMA Score + benchmark */}
