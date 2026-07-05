@@ -81,10 +81,14 @@
 :root {
   --radius-sm: 5px;
   --radius: 8px;
+  --radius-md: 10px;
+  --radius-card: 14px;
   --radius-lg: 12px;
   --radius-xl: 20px;
   --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+  /* System monospace — no webfont dependency, renders crisply everywhere.
+     (JetBrains/Fira were never loaded, so the old stack fell back to Courier.) */
+  --font-mono: ui-monospace, 'SF Mono', 'JetBrains Mono', 'Cascadia Code', Menlo, Consolas, monospace;
   --transition: 0.15s ease;
   --transition-md: 0.2s ease;
 }
@@ -1812,15 +1816,29 @@ textarea.contact-form-input { resize: vertical; min-height: 100px; }
 /* ── HOME DASHBOARD ──────────────────────────────────────────────────────── */
 
 #home-view {
-  padding: 0 16px 40px;
-  max-width: 1400px;
+  padding: 0 24px 40px;
+  max-width: 1200px;
   margin: 0 auto;
   width: 100%;
   box-sizing: border-box;
 }
+/* New / empty workspace: hide the analytics chrome (filters, KPIs, charts,
+   commodity panel) — a first-time user has nothing to filter or chart. The
+   hero + method section carry the whole view. */
+#home-view[data-mode="new"] .dash-filter-bar,
+#home-view[data-mode="new"] .dash-kpi-row,
+#home-view[data-mode="new"] .dash-charts-col,
+#home-view[data-mode="new"] .dash-recent-section,
+#home-view[data-mode="new"] #comm-section { display: none; }
+/* With the charts column hidden, let the method tiles fill the row */
+#home-view[data-mode="new"] .dash-body { display: block; }
+#home-view[data-mode="new"] .dash-tiles-col { max-width: none; }
+#home-view[data-mode="new"] .dash-tiles-grid { grid-template-columns: repeat(3, 1fr); }
+@media (max-width: 780px) { #home-view[data-mode="new"] .dash-tiles-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 520px) { #home-view[data-mode="new"] .dash-tiles-grid { grid-template-columns: 1fr; } }
 
 /* ── Adaptive Home Hero ─────────────────────────────────────────────────────── */
-.cv-hero { position: relative; max-width: 1200px; margin: 0 auto; padding: 44px 24px 26px; overflow: hidden; }
+.cv-hero { position: relative; padding: 46px 0 30px; overflow: hidden; }   /* shares #home-view gutter → aligned rails */
 .cv-hero-glow {
   position: absolute; inset: -50% -10% auto -10%; height: 160%; z-index: 0; pointer-events: none;
   background:
@@ -1830,46 +1848,74 @@ textarea.contact-form-input { resize: vertical; min-height: 100px; }
 }
 @keyframes cv-hero-drift { to { transform: translate3d(4%, 2%, 0) scale(1.06); } }
 .cv-hero-full, .cv-hero-compact { position: relative; z-index: 1; }
-.cv-hero-full { display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 44px; align-items: center; }
+.cv-hero-full { display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 48px; align-items: center; }
 .cv-hero-compact { display: none; }
-#home-view[data-mode="power"] .cv-hero { padding: 22px 24px 12px; }
+#home-view[data-mode="power"] .cv-hero { padding: 26px 0 16px; }
 #home-view[data-mode="power"] .cv-hero-full { display: none; }
 #home-view[data-mode="power"] .cv-hero-compact { display: block; }
 
 .cv-eyebrow { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--text-muted); font-weight: 600; }
-.cv-hero-h1 { font-size: clamp(28px, 3.6vw, 44px); line-height: 1.05; letter-spacing: -0.025em; margin: 14px 0 0; font-weight: 750; color: var(--text-primary); text-wrap: balance; }
+.cv-hero-h1 { font-size: clamp(30px, 3.7vw, 46px); line-height: 1.04; letter-spacing: -0.025em; margin: 14px 0 0; font-weight: 760; color: var(--text-primary); text-wrap: balance; }
 .cv-hl { background: linear-gradient(120deg, var(--accent), var(--accent2)); -webkit-background-clip: text; background-clip: text; color: transparent; }
-.cv-hero-lede { color: var(--text-secondary); font-size: 15.5px; max-width: 48ch; margin: 16px 0 22px; }
-.cv-hero-cta { display: flex; gap: 11px; flex-wrap: wrap; }
+.cv-hero-lede { color: var(--text-secondary); font-size: 16.5px; line-height: 1.55; max-width: 48ch; margin: 18px 0 24px; }
+.cv-hero-cta { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+.cv-hero-cta .btn { font-size: 15px; padding: 12px 20px; border-radius: var(--radius-md); font-weight: 650; }
+.cv-hero-trust { margin-top: 22px; display: flex; gap: 14px; flex-wrap: wrap; align-items: center; font-size: 12px; color: var(--text-muted); }
+.cv-hero-trust .mono { font-family: var(--font-mono); color: var(--text-secondary); }
+.cv-hero-trust .tdot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); box-shadow: 0 0 8px var(--green); display: inline-block; margin-right: 6px; vertical-align: middle; }
+.cv-hero-trust .sep { opacity: 0.45; }
 
-.cv-impact { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; box-shadow: var(--shadow-md); padding: 4px; }
+.cv-impact { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-card); box-shadow: var(--shadow-md); padding: 4px; }
 .cv-impact-head { display: flex; align-items: center; justify-content: space-between; padding: 13px 15px 7px; }
-.cv-live { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--green); display: inline-flex; align-items: center; gap: 6px; }
+.cv-live { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--green); display: inline-flex; align-items: center; gap: 6px; }
 .cv-live::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--green); box-shadow: 0 0 8px var(--green); animation: cv-live-pulse 2s infinite; }
 @keyframes cv-live-pulse { 50% { opacity: 0.35; } }
 .cv-stat-grid { display: grid; grid-template-columns: 1fr 1fr; }
 .cv-stat { padding: 14px 15px; border-top: 1px solid var(--border); }
 .cv-stat:nth-child(odd) { border-right: 1px solid var(--border); }
-.cv-stat .k { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--text-muted); }
+.cv-stat .k { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--text-muted); }
 .cv-stat .v { font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-size: 27px; font-weight: 680; letter-spacing: -0.02em; margin-top: 5px; color: var(--text-primary); }
 .cv-stat .v.good { color: var(--green); }
+.cv-stat .delta { font-family: var(--font-mono); font-size: 11px; margin-top: 5px; color: var(--text-muted); }
+.cv-stat .delta.up { color: var(--green); }
+.cv-stat .delta.dn { color: var(--red); }
+
+/* Onboarding card — the new-user right column (replaces a zeroed stat panel) */
+.cv-onboard { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-card); box-shadow: var(--shadow-md); padding: 20px; }
+.cv-onboard-head { margin-bottom: 12px; }
+.cv-onboard-steps { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 14px; }
+.cv-onboard-steps li { display: flex; gap: 13px; align-items: flex-start; }
+.cv-step-n { flex: 0 0 auto; width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; font-family: var(--font-mono); font-size: 12px; font-weight: 700; color: var(--accent); background: color-mix(in srgb, var(--accent) 14%, transparent); }
+.cv-onboard-steps b { display: block; font-size: 13.5px; color: var(--text-primary); font-weight: 640; }
+.cv-onboard-steps span { display: block; font-size: 12.5px; color: var(--text-secondary); margin-top: 2px; }
+.cv-onboard-cta { margin-top: 18px; width: 100%; justify-content: center; }
 
 .cv-hc-row { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
-.cv-hc-greet { font-size: 19px; font-weight: 700; letter-spacing: -0.02em; color: var(--text-primary); white-space: nowrap; }
+.cv-hc-greet { flex: 1 1 auto; font-size: 20px; font-weight: 700; letter-spacing: -0.02em; color: var(--text-primary); }
 .cv-hc-sub { display: block; font-family: var(--font-mono); font-size: 11.5px; font-weight: 500; color: var(--text-muted); letter-spacing: 0.02em; margin-top: 2px; }
-.cv-hc-stats { display: flex; gap: 9px; flex: 1; flex-wrap: wrap; }
-.cv-hc-stat { display: flex; flex-direction: column; gap: 1px; padding: 7px 13px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); min-width: 96px; }
-.cv-hc-stat .k { font-family: var(--font-mono); font-size: 9.5px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--text-muted); }
-.cv-hc-stat .v { font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-size: 17px; font-weight: 680; color: var(--text-primary); }
-.cv-hc-stat .v.good { color: var(--green); }
+.cv-hc-actions { display: flex; gap: 10px; align-items: center; }
+.cv-hc-filter { display: inline-flex; align-items: center; gap: 8px; font-family: var(--font-mono); font-size: 11.5px; color: var(--text-secondary); border: 1px dashed var(--border-strong); border-radius: var(--radius-md); padding: 9px 13px; background: none; cursor: pointer; transition: border-color var(--transition), color var(--transition); }
+.cv-hc-filter:hover { border-color: var(--accent); color: var(--accent); }
 
-.cv-hero-full .cv-eyebrow  { animation: cv-fade-slide-up 0.5s var(--ease-decel) both; }
-.cv-hero-h1                { animation: cv-fade-slide-up 0.5s var(--ease-decel) 60ms both; }
-.cv-hero-lede              { animation: cv-fade-slide-up 0.5s var(--ease-decel) 120ms both; }
-.cv-hero-cta               { animation: cv-fade-slide-up 0.5s var(--ease-decel) 180ms both; }
-.cv-impact                 { animation: cv-fade-slide-up 0.5s var(--ease-decel) 150ms both; }
-.cv-hero-compact           { animation: cv-fade-slide-up 0.45s var(--ease-decel) both; }
-@media (prefers-reduced-motion: reduce) { .cv-hero-glow, .cv-live::before { animation: none; } }
+/* Hero entrance — 16px rise on an expo ease, staggered (richer than the 6px default) */
+@keyframes cv-hero-rise { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+.cv-hero-full .cv-eyebrow  { animation: cv-hero-rise 0.58s var(--ease-out-expo) both; }
+.cv-hero-h1                { animation: cv-hero-rise 0.58s var(--ease-out-expo) 70ms both; }
+.cv-hero-lede              { animation: cv-hero-rise 0.58s var(--ease-out-expo) 140ms both; }
+.cv-hero-cta               { animation: cv-hero-rise 0.58s var(--ease-out-expo) 210ms both; }
+.cv-hero-trust             { animation: cv-hero-rise 0.58s var(--ease-out-expo) 280ms both; }
+.cv-impact                 { animation: cv-hero-rise 0.58s var(--ease-out-expo) 180ms both; }
+.cv-hero-compact           { animation: cv-hero-rise 0.5s var(--ease-out-expo) both; }
+/* Only choreograph the very first home render per session — not every nav-back */
+#home-view.cv-motion-done .cv-hero-full > *,
+#home-view.cv-motion-done .cv-impact,
+#home-view.cv-motion-done .cv-hero-compact { animation: none; }
+/* Infinite decorative loops must fully STOP under reduced-motion — the global
+   1ms duration clamp would otherwise restart them every frame (jitter). */
+@media (prefers-reduced-motion: reduce) {
+  .cv-hero-glow, .cv-live::before, .skel, .comm-ticker-track, .cv-hero-compact,
+  .cv-hero-full > *, .cv-impact { animation: none !important; }
+}
 @media (max-width: 900px) { .cv-hero-full { grid-template-columns: 1fr; gap: 26px; } .cv-impact { max-width: 520px; } }
 
 /* Filter Bar */
@@ -2388,9 +2434,11 @@ textarea.contact-form-input { resize: vertical; min-height: 100px; }
 
 /* ── Gradient & Motion Tokens ──────────────────────────────────────────────── */
 :root {
-  /* Primary gradients */
-  --grad-primary:    linear-gradient(135deg, #0A1A3F 0%, #1E5BFF 100%);
-  --grad-indigo:     linear-gradient(135deg, #3A3FCE 0%, #4F7BFF 100%);
+  /* Primary gradients — derived from the theme accent so CTAs, the primary
+     tile and the hero highlight all speak one blue in both themes (was a
+     hard-coded indigo that fought the sky accent). */
+  --grad-primary:    linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
+  --grad-indigo:     linear-gradient(135deg, var(--accent-dark) 0%, var(--accent2) 100%);
   /* Secondary */
   --grad-teal:       linear-gradient(135deg, #0F4C5C 0%, #2EC4B6 100%);
   --grad-slate:      linear-gradient(135deg, #2A3A4A 0%, #4A6FA5 100%);
@@ -2560,7 +2608,6 @@ textarea.contact-form-input { resize: vertical; min-height: 100px; }
     box-shadow var(--dur-hover) var(--ease-std),
     border-color var(--dur-hover) var(--ease-std),
     background var(--dur-hover) var(--ease-std);
-  will-change: transform, box-shadow;
 }
 .dash-tile:hover {
   transform: translateY(-3px) scale(1.02);
@@ -2591,9 +2638,10 @@ textarea.contact-form-input { resize: vertical; min-height: 100px; }
   will-change: transform;
 }
 .dash-kpi-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(0,0,0,0.18);
-  border-color: var(--accent);
+  /* No lift/scale — KPI cards are read-outs, not buttons. A subtle border +
+     shadow reads as "surface", not "click me". */
+  box-shadow: var(--shadow-md);
+  border-color: var(--border-strong);
 }
 .dash-kpi-card.accent:hover { border-color: var(--amber); }
 
@@ -4799,7 +4847,6 @@ input, select, textarea { font-size: 0.88rem !important; }  /* enforce legible i
 .news-date,
 .glossary-def,
 .comm-sub,
-.tile-label,
 .demo-card-process-label { color: var(--text-muted) !important; }
 
 
@@ -5379,21 +5426,37 @@ kbd {
 #help-tour-btn:hover { background: #2563eb; color: #fff; }
 
 /* ── One-Click tiles → method-card treatment (home redesign increment) ──────── */
+/* Section head — introduces the missing 20px scale step between H1 and labels */
+.dash-sec-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; margin-bottom: 16px; }
+.dash-sec-h2 { font-size: 20px; letter-spacing: -0.02em; margin: 5px 0 0; font-weight: 720; color: var(--text-primary); }
+.dash-sec-link { background: none; border: none; cursor: pointer; font-family: var(--font-mono); font-size: 12px; color: var(--accent); display: inline-flex; align-items: center; gap: 6px; padding: 4px 2px; transition: gap var(--transition); }
+.dash-sec-link:hover { gap: 9px; }
+
 .dash-tiles-grid .dash-tile {
   position: relative;
-  min-height: 128px;
+  min-height: 132px;
   padding: 15px 15px 13px;
   gap: 9px;
-  border-radius: 14px;
+  border-radius: var(--radius-card);
 }
-/* Icon becomes a tinted chip */
+/* Icon becomes a tinted chip holding a stroke-SVG (currentColor = accent) */
 .dash-tiles-grid .tile-icon {
   width: 40px; height: 40px; margin: 0;
   display: grid; place-items: center;
-  border-radius: 11px; font-size: 1.15rem;
+  border-radius: var(--radius-md);
+  color: var(--accent);
   background: color-mix(in srgb, var(--accent) 14%, transparent);
   transition: background var(--dur-hover) var(--ease-std), transform var(--dur-hover) var(--ease-std);
 }
+.dash-tiles-grid .tile-icon svg { display: block; }
+/* AI / Beta badge */
+.dash-tiles-grid .tile-badge {
+  position: absolute; top: 13px; right: 13px;
+  font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--accent); border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+  padding: 2px 6px; border-radius: 5px;
+}
+.dash-tiles-grid .dash-tile--primary .tile-badge { color: #fff; border-color: rgba(255,255,255,0.5); }
 .dash-tiles-grid .dash-tile:hover .tile-icon {
   background: color-mix(in srgb, var(--accent) 22%, transparent);
   transform: translateY(-1px);
@@ -5404,7 +5467,7 @@ kbd {
   content: "Open →";
   margin-top: auto;
   font-family: var(--font-mono);
-  font-size: 0.68rem;
+  font-size: 0.72rem;
   letter-spacing: 0.02em;
   color: var(--accent);
   opacity: 0.72;
@@ -5413,7 +5476,7 @@ kbd {
 }
 .dash-tiles-grid .dash-tile:hover::after { opacity: 1; transform: translateX(4px); }
 /* Featured (PCB) tile sits on a gradient — chip + arrow go translucent-white */
-.dash-tiles-grid .dash-tile--primary .tile-icon { background: rgba(255, 255, 255, 0.18); }
+.dash-tiles-grid .dash-tile--primary .tile-icon { background: rgba(255, 255, 255, 0.18); color: #fff; }
 .dash-tiles-grid .dash-tile--primary::after { color: rgba(255, 255, 255, 0.85); }
 @media (prefers-reduced-motion: reduce) {
   .dash-tiles-grid .dash-tile:hover::after { transform: none; }

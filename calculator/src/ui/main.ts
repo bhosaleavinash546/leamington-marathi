@@ -665,6 +665,10 @@ function renderAlertList(): void {
 // ── Count-up number animation ──────────────────────────────────────────────
 function countUp(el: HTMLElement, target: number, fmt: (v: number) => string, dur = 700): void {
   if (!isFinite(target) || target === 0) { el.textContent = fmt(0); return; }
+  // Respect reduced-motion — show the final value immediately, no scramble.
+  if (typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    el.textContent = fmt(target); return;
+  }
   const t0 = performance.now();
   const tick = (t: number) => {
     const p = Math.min((t - t0) / dur, 1);
@@ -740,30 +744,36 @@ function renderDashboard(): void {
   // ── Adaptive hero: full welcome for a new/empty workspace, compact for a
   //    returning user with costing history. Stats reuse the KPI computation. ──
   const homeView = document.getElementById('home-view');
+  const hasHistory = records.length > 0;
   if (homeView) {
-    homeView.dataset.mode = records.length === 0 ? 'new' : 'power';
+    homeView.dataset.mode = hasHistory ? 'power' : 'new';
+    // Cache the mode so the pre-paint script can set it before first render (no hero flash)
+    try { localStorage.setItem('cv_has_history', hasHistory ? '1' : '0'); } catch { /* ignore */ }
     if (!homeView.dataset.heroWired) {
       homeView.dataset.heroWired = '1';
       homeView.querySelectorAll('.cv-hero-start').forEach(b =>
         b.addEventListener('click', () => document.getElementById('new-costing-btn')?.click()));
       homeView.querySelectorAll('.cv-hero-demos').forEach(b =>
         b.addEventListener('click', () => document.getElementById('demo-btn')?.click()));
+      document.getElementById('tile-browse-all')?.addEventListener('click', () => document.getElementById('new-costing-btn')?.click());
+      document.getElementById('hero-filter-jump')?.addEventListener('click', () =>
+        document.getElementById('dash-filter-bar')?.scrollIntoView({ behavior: 'smooth', block: 'center' }));
     }
+    // Choreograph the entrance only on the first home render per session
+    if (homeView.classList.contains('cv-motion-primed')) homeView.classList.add('cv-motion-done');
+    else homeView.classList.add('cv-motion-primed');
   }
-  const sym = CURRENCY_SYMBOL[_displayCurrency] ?? _displayCurrency;
-  const fmtSave = (v: number) => `${sym}${v < 1000 ? v.toFixed(0) : (v / 1000).toFixed(1) + 'k'}`;
-  const setHero = (id: string, target: number, fmt: (v: number) => string): void => {
-    const e = document.getElementById(id);
-    if (e) countUp(e, target, fmt);
-  };
-  const dispSave = savings * _displayFxRate;
-  setHero('hero-f-parts', records.length, v => String(Math.round(v)));
-  setHero('hero-f-save', dispSave, fmtSave);
-  setHero('hero-f-avg', avgCost, v => _currFmt(v));
-  setHero('hero-f-high', highCostCount, v => String(Math.round(v)));
-  setHero('hero-c-parts', records.length, v => String(Math.round(v)));
-  setHero('hero-c-save', dispSave, fmtSave);
-  setHero('hero-c-avg', avgCost, v => _currFmt(v));
+  // Compact hero is a slim greeting bar; the KPI row below owns the numbers
+  // (no duplicate stat chips). Personalise the greeting from the signed-in user.
+  const greetName = document.getElementById('hero-greet-name');
+  if (greetName) {
+    let first = '';
+    try {
+      const u = JSON.parse(localStorage.getItem('auth_user') || sessionStorage.getItem('auth_user') || '{}') as { fullName?: string };
+      first = (u.fullName ?? '').trim().split(' ')[0] ?? '';
+    } catch { /* ignore */ }
+    greetName.textContent = first ? `Welcome back, ${first}` : 'Welcome back';
+  }
   const greetSub = document.getElementById('hero-greet-sub');
   if (greetSub) {
     const topLabel = topComm ? COMMODITY_LABELS[topComm[0]] ?? topComm[0] : '—';
@@ -14673,6 +14683,8 @@ async function init(): Promise<void> {
   // Quick action tiles (commodity-specific shortcuts)
   document.getElementById('tile-casting')?.addEventListener('click', () => showCosting('casting'));
   document.getElementById('tile-sheet-metal')?.addEventListener('click', () => showCosting('sheet_metal'));
+  document.getElementById('tile-machining')?.addEventListener('click', () => showCosting('machining'));
+  document.getElementById('tile-forging')?.addEventListener('click', () => showCosting('forging'));
   document.getElementById('tile-plastic')?.addEventListener('click', () => showCosting('injection_moulding'));
   document.getElementById('tile-cad')?.addEventListener('click', () => showCosting('cad_analysis'));
   document.getElementById('tile-pcb-image')?.addEventListener('click', () => showCosting('pcb_fab'));

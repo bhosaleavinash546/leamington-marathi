@@ -42,12 +42,12 @@
       } catch { window.location.replace('/auth.html'); }
     })();
   </script>
-  <script type="module" crossorigin src="/calculator/assets/index-YyYj6LWU.js"></script>
+  <script type="module" crossorigin src="/calculator/assets/index-BO5ow60v.js"></script>
   <link rel="modulepreload" crossorigin href="/calculator/assets/vendor-motion-OZhY1uFQ.js">
   <link rel="modulepreload" crossorigin href="/calculator/assets/vendor-Bs6metFb.js">
   <link rel="modulepreload" crossorigin href="/calculator/assets/vendor-pdf-fDPUKpjF.js">
   <link rel="modulepreload" crossorigin href="/calculator/assets/vendor-chart-K87R2BAO.js">
-  <link rel="stylesheet" crossorigin href="/calculator/assets/index-GuxJXnlb.css">
+  <link rel="stylesheet" crossorigin href="/calculator/assets/index-DpconO7y.css">
 </head>
 <body>
 
@@ -149,6 +149,9 @@
 </script>
 
 <section id="home-view">
+  <!-- Set the adaptive mode before the hero paints (avoids a full→compact flash
+       for returning users). renderDashboard re-affirms it authoritatively. -->
+  <script>try{document.getElementById('home-view').dataset.mode=(localStorage.getItem('cv_has_history')==='1')?'power':'new';}catch(e){}</script>
   <!-- ── Adaptive Home Hero ───────────────────────────────────────────────────── -->
   <div class="cv-hero" id="cv-hero">
     <div class="cv-hero-glow" aria-hidden="true"></div>
@@ -163,28 +166,33 @@
           <button class="btn btn-primary cv-hero-start">⊕ Start a costing</button>
           <button class="btn btn-secondary cv-hero-demos">▶ Explore live demos</button>
         </div>
-      </div>
-      <div class="cv-impact">
-        <div class="cv-impact-head"><span class="cv-eyebrow">Your workspace</span><span class="cv-live">Live</span></div>
-        <div class="cv-stat-grid">
-          <div class="cv-stat"><div class="k">Parts costed</div><div class="v" id="hero-f-parts">—</div></div>
-          <div class="cv-stat"><div class="k">Savings identified</div><div class="v good" id="hero-f-save">—</div></div>
-          <div class="cv-stat"><div class="k">Avg part cost</div><div class="v" id="hero-f-avg">—</div></div>
-          <div class="cv-stat"><div class="k">High-cost parts</div><div class="v" id="hero-f-high">—</div></div>
+        <div class="cv-hero-trust">
+          <span><span class="tdot"></span>No external AI required</span>
+          <span class="sep">·</span><span>Deployable on-prem</span>
+          <span class="sep">·</span><span>Prices in <span class="mono">GBP</span></span>
         </div>
+      </div>
+      <!-- New user has nothing to report yet → onboarding, not a wall of zeros -->
+      <div class="cv-onboard">
+        <div class="cv-onboard-head"><span class="cv-eyebrow">Get started</span></div>
+        <ol class="cv-onboard-steps">
+          <li><span class="cv-step-n">1</span><div><b>Pick a method or drop a file</b><span>Choose a commodity, upload a STEP/STL, or a PCB photo.</span></div></li>
+          <li><span class="cv-step-n">2</span><div><b>Enter or auto-extract details</b><span>Type the inputs, or let AI read them from the file.</span></div></li>
+          <li><span class="cv-step-n">3</span><div><b>Get a defensible price + DFM</b><span>Full cost breakdown, PPV vs quotes, and manufacturability flags.</span></div></li>
+        </ol>
+        <button class="btn btn-secondary cv-hero-demos cv-onboard-cta">▶ Try a demo costing</button>
       </div>
     </div>
 
     <!-- Compact hero — returning user with data -->
     <div class="cv-hero-compact">
       <div class="cv-hc-row">
-        <div class="cv-hc-greet">Welcome back<span class="cv-hc-sub" id="hero-greet-sub"></span></div>
-        <div class="cv-hc-stats">
-          <div class="cv-hc-stat"><span class="k">Parts</span><span class="v" id="hero-c-parts">—</span></div>
-          <div class="cv-hc-stat"><span class="k">Savings</span><span class="v good" id="hero-c-save">—</span></div>
-          <div class="cv-hc-stat"><span class="k">Avg part</span><span class="v" id="hero-c-avg">—</span></div>
+        <div class="cv-hc-greet"><span id="hero-greet-name">Welcome back</span><span class="cv-hc-sub" id="hero-greet-sub"></span></div>
+        <div class="cv-hc-actions">
+          <button class="cv-hc-filter" id="hero-filter-jump">
+            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 5h18l-7 8v6l-4-2v-4z"/></svg>Filter portfolio</button>
+          <button class="btn btn-primary cv-hero-start">⊕ New costing</button>
         </div>
-        <button class="btn btn-primary cv-hero-start">⊕ New costing</button>
       </div>
     </div>
   </div>
@@ -423,37 +431,54 @@
 
     <!-- Quick Action Tiles -->
     <div class="dash-tiles-col">
-      <div class="dash-section-title">One-Click Start</div>
+      <div class="dash-sec-head">
+        <div><div class="cv-eyebrow">Start here</div><h2 class="dash-sec-h2">Cost a part</h2></div>
+        <button class="dash-sec-link" id="tile-browse-all">Browse all methods
+          <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+      </div>
       <div class="dash-tiles-grid">
         <button class="dash-tile" id="tile-casting">
-          <div class="tile-icon">⚙️</div>
+          <div class="tile-icon"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round" stroke-linecap="round"><path d="M4 7l8-4 8 4v10l-8 4-8-4z M4 7l8 4 8-4 M12 11v10"/></svg></div>
           <div class="tile-label">Casting</div>
           <div class="tile-sub">HPDC · Sand · Investment</div>
         </button>
         <button class="dash-tile" id="tile-sheet-metal">
-          <div class="tile-icon">🔨</div>
+          <div class="tile-icon"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round" stroke-linecap="round"><path d="M3 7h18v4H3z M3 13h18v4H3z"/></svg></div>
           <div class="tile-label">Sheet Metal</div>
           <div class="tile-sub">Stamp · Laser · Fold</div>
         </button>
+        <button class="dash-tile" id="tile-machining">
+          <div class="tile-icon"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round" stroke-linecap="round"><path d="M12 8a4 4 0 100 8 4 4 0 000-8z M12 2v3 M12 19v3 M2 12h3 M19 12h3"/></svg></div>
+          <div class="tile-label">Machining</div>
+          <div class="tile-sub">Turn · Mill · 5-axis</div>
+        </button>
         <button class="dash-tile" id="tile-plastic">
-          <div class="tile-icon">🧪</div>
+          <div class="tile-icon"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round" stroke-linecap="round"><path d="M7 3h10l-1 6a5 5 0 01-8 0z M9 15h6v6H9z"/></svg></div>
           <div class="tile-label">Plastics</div>
           <div class="tile-sub">Injection · Blow · Thermo</div>
         </button>
-        <button class="dash-tile" id="tile-cad">
-          <div class="tile-icon">📐</div>
-          <div class="tile-label">CAD-to-Cost</div>
-          <div class="tile-sub">Upload STEP / STL file</div>
+        <button class="dash-tile" id="tile-forging">
+          <div class="tile-icon"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round" stroke-linecap="round"><path d="M3 20h7 M6 20V9l6-4 3 5-4 3v7"/></svg></div>
+          <div class="tile-label">Forging</div>
+          <div class="tile-sub">Open · Closed · Ring-roll</div>
         </button>
         <button class="dash-tile dash-tile--primary" id="tile-pcb-image">
-          <div class="tile-icon">🔬</div>
-          <div class="tile-label">PCB Image-to-BOM</div>
-          <div class="tile-sub">AI-extract BOM from photo</div>
+          <span class="tile-badge">AI</span>
+          <div class="tile-icon"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round" stroke-linecap="round"><path d="M4 4h16v16H4z M8 4v4 M16 4v4 M4 12h4 M16 16h4 M11 11h2v2h-2z"/></svg></div>
+          <div class="tile-label">PCB Image → BOM</div>
+          <div class="tile-sub">Extract from a photo</div>
+        </button>
+        <button class="dash-tile" id="tile-cad">
+          <span class="tile-badge">Beta</span>
+          <div class="tile-icon"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round" stroke-linecap="round"><path d="M3 3h13l5 5v13H3z M16 3v5h5 M8 13l-2 2 2 2 M14 13l2 2-2 2"/></svg></div>
+          <div class="tile-label">CAD to Cost</div>
+          <div class="tile-sub">Upload STEP / STL</div>
         </button>
         <button class="dash-tile" id="tile-ai-agent">
-          <div class="tile-icon">✦</div>
+          <span class="tile-badge">AI</span>
+          <div class="tile-icon"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round" stroke-linecap="round"><path d="M12 3a4 4 0 014 4 4 4 0 010 8 4 4 0 01-8 0 4 4 0 010-8 4 4 0 014-4z M9 12h6"/></svg></div>
           <div class="tile-label">AI Agent</div>
-          <div class="tile-sub">Natural language costing</div>
+          <div class="tile-sub">Cost it in plain English</div>
         </button>
       </div>
 
