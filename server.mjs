@@ -2972,11 +2972,17 @@ if (mktCount.c === 0) {
 // ─── Curated marketplace idea packs — loaded from data files (upsert) ──────────
 // Each file is a JSON array of ideas carrying flat fields + a detailed `ideaData`
 // object. Upsert inserts on fresh DBs and backfills ideaData on existing DBs.
+const normTitle = (s) => String(s || '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
 function seedMarketplaceIdeasFromFile(fileName, label) {
   try {
     const p = path.join(__dirname, fileName);
     if (!fs.existsSync(p)) return;
     const list = JSON.parse(fs.readFileSync(p, 'utf-8'));
+    // Duplication check: map every existing idea's normalised title to its id, so
+    // an incoming idea whose title already belongs to a DIFFERENT id is skipped as
+    // a duplicate (re-seeding a file's own ideas by matching id still updates).
+    const titleOwner = new Map();
+    for (const r of db.prepare('SELECT id, title FROM marketplace_ideas').all()) titleOwner.set(normTitle(r.title), r.id);
     const ins = db.prepare(`INSERT INTO marketplace_ideas (id,title,system,costSavingType,annualSaving,difficulty,timeToImplement,description,submittedBy,verified,stars,level,ideaData,status,createdAt)
       VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,'approved',?)
       ON CONFLICT(id) DO UPDATE SET
@@ -2985,13 +2991,16 @@ function seedMarketplaceIdeasFromFile(fileName, label) {
         level=excluded.level,
         annualSaving=excluded.annualSaving`);
     const ts = new Date().toISOString();
-    let n = 0;
+    let n = 0, dup = 0;
     for (const i of list) {
+      const owner = titleOwner.get(normTitle(i.title));
+      if (owner && owner !== i.id) { dup++; continue; }   // duplicate of another idea — skip
       const ideaDataStr = i.ideaData ? JSON.stringify(i.ideaData) : null;
       ins.run(i.id, i.title, i.system, i.costSavingType, i.annualSaving, i.difficulty, i.timeToImplement, i.description, i.submittedBy, i.verified ? 1 : 0, i.stars || 0, i.level || null, ideaDataStr, ts);
+      titleOwner.set(normTitle(i.title), i.id);
       n++;
     }
-    console.log(`[Marketplace] Seeded/updated ${n} ${label} (with detailed ideaData)`);
+    console.log(`[Marketplace] Seeded/updated ${n} ${label}${dup ? ` (${dup} skipped as duplicates)` : ''}`);
   } catch (e) {
     console.log(`[Marketplace] ${label} seed warning:`, e.message);
   }
@@ -3006,6 +3015,9 @@ seedMarketplaceIdeasFromFile('marketplace-suv-ideas.json', 'premium-SUV Chassis 
 seedMarketplaceIdeasFromFile('marketplace-bev-cooling-ideas.json', 'BEV 800V cooling ideas');
 // 50 premium-SUV driveline ideas (gearbox, transfer case, diffs, half/prop shafts).
 seedMarketplaceIdeasFromFile('marketplace-driveline-ideas.json', 'premium-SUV driveline ideas');
+// 300 premium OFF-ROAD LUXURY part-level ideas across 20 commodities (800V battery/
+// EDU/inverter, cooling, BIW, body, chassis, driveline, interior/exterior).
+seedMarketplaceIdeasFromFile('marketplace-offroad-luxury-ideas.json', 'off-road luxury cost-reduction ideas');
 
 const CACHE_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
 
