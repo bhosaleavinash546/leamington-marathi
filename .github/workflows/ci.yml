@@ -24,6 +24,12 @@ jobs:
       - name: Type-check
         run: npx tsc --noEmit
 
+      - name: Dependency audit (report high/critical)
+        run: npm audit --omit=dev --audit-level=high || true
+
+      - name: Server syntax
+        run: node --check server.mjs
+
       - name: Unit tests (costing engine, validation, classifiers, CAD features)
         run: npm test
 

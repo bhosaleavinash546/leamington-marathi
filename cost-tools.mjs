@@ -117,10 +117,11 @@ export function buildCostTools({ library, calibration = null, pinInputs = null }
  * kit.exec, feeds results back, and repeats until the model stops calling tools
  * or maxTurns is reached. Returns { finalText, turns, stoppedOnBudget }.
  */
-export async function runToolLoop(client, { model = 'claude-opus-4-8', system, messages, tools, exec, maxTokens = 1500, maxTurns = 8, requestOptions }) {
+export async function runToolLoop(client, { model = 'claude-opus-4-8', system, messages, tools, exec, maxTokens = 1500, maxTurns = 8, deadlineMs = 0, requestOptions }) {
   const convo = [...messages];
+  const deadline = deadlineMs > 0 ? Date.now() + deadlineMs : Infinity;
   let turns = 0;
-  while (turns < maxTurns) {
+  while (turns < maxTurns && Date.now() < deadline) {
     turns++;
     const resp = await client.messages.create({ model, max_tokens: maxTokens, system, messages: convo, tools }, requestOptions);
     const toolUses = resp.content.filter(b => b.type === 'tool_use');

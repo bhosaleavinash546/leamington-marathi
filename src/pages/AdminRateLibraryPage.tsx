@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import * as XLSX from 'xlsx';
+import { parseWorkbook } from '../services/safe-xlsx';
 import { Database, Download, Upload, RotateCcw, ShieldAlert, CheckCircle, AlertTriangle, History, GitCompare } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import ButtonSpinner from '../components/ui/ButtonSpinner';
@@ -116,16 +117,16 @@ export default function AdminRateLibraryPage() {
     if (!data) return;
     setBusy(true); setErrors([]); setMsg('');
     try {
-      const wb = XLSX.read(await file.arrayBuffer(), { type: 'array' });
+      // exceljs parse (safe path) — xlsx retained for template WRITING only.
+      const parsedWb = await parseWorkbook(await file.arrayBuffer());
       const custom: Record<string, Rows> = { materials: {}, processes: {}, regions: {} };
       const constants: Record<string, unknown> = {};
       const labelToId = (spec: { fields: FieldSpec[] }) => Object.fromEntries(spec.fields.map(f => [f.label.toLowerCase(), f.id]));
 
       for (const t of TABLES) {
         const spec = data.fieldSpecs[t];
-        const sheet = wb.Sheets[spec.key + 's'];
-        if (!sheet) continue;
-        const aoa = XLSX.utils.sheet_to_json<(string | number)[]>(sheet, { header: 1 });
+        const aoa = parsedWb.sheets[spec.key + 's'];
+        if (!aoa) continue;
         const [head, ...body] = aoa;
         if (!head) continue;
         const map = labelToId(spec);
@@ -147,10 +148,10 @@ export default function AdminRateLibraryPage() {
           if (Object.keys(over).length) custom[t][name] = over;
         }
       }
-      const cSheet = wb.Sheets['Constants'];
-      if (cSheet) {
+      const cRows = parsedWb.sheets['Constants'];
+      if (cRows) {
         const map = labelToId(data.fieldSpecs.constants);
-        for (const [label, value] of XLSX.utils.sheet_to_json<(string | number)[]>(cSheet, { header: 1 }).slice(1)) {
+        for (const [label, value] of cRows.slice(1)) {
           const id = map[String(label).trim().toLowerCase()];
           if (id && value !== '' && value !== undefined && !numEq(parseNum(value), data.defaults.constants[id])) constants[id] = parseNum(value);
         }

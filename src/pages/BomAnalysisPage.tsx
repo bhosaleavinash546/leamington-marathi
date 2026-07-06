@@ -3,6 +3,7 @@ import { useDropzone } from 'react-dropzone';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Upload, FileText, X, Zap, AlertCircle, CheckCircle, BarChart3, Download } from 'lucide-react';
 import * as XLSX from 'xlsx';
+import { parseWorkbook, parseCsv } from '../services/safe-xlsx';
 import ButtonSpinner from '../components/ui/ButtonSpinner';
 import { AUTOMOTIVE_SYSTEMS, getSystemById, getSubassemblyById } from '../data/automotive-catalog';
 
@@ -41,12 +42,16 @@ export default function BomAnalysisPage() {
   const onDrop = useCallback((files: File[]) => {
     const file = files[0];
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (e) => {
+    (async () => {
       try {
-        const wb = XLSX.read(e.target?.result, { type: 'binary' });
-        const ws = wb.Sheets[wb.SheetNames[0]];
-        const data: string[][] = XLSX.utils.sheet_to_json(ws, { header: 1 });
+        // Parse uploads with exceljs/CSV (safe path) — xlsx is kept for WRITING only.
+        let data: (string | number)[][];
+        if (/\.csv$/i.test(file.name)) {
+          data = parseCsv(await file.text());
+        } else {
+          const parsedWb = await parseWorkbook(await file.arrayBuffer());
+          data = parsedWb.sheets[parsedWb.sheetNames[0]] || [];
+        }
         const parsed: BomRow[] = [];
         // Try to auto-detect columns: systemId, subassemblyId, partName
         const header = data[0]?.map(c => String(c).toLowerCase().trim()) || [];
@@ -78,8 +83,7 @@ export default function BomAnalysisPage() {
           setError('');
         }
       } catch { setError('Failed to parse file. Please use the template format.'); }
-    };
-    reader.readAsBinaryString(file);
+    })();
   }, []);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({

@@ -9,6 +9,7 @@ import { getFxRates, FX_FALLBACK, FX_SYMBOLS, FX_CURRENCIES } from '../fx-rates.
 import { fitCalibration } from '../calibration.mjs';
 import { getActiveLibrary, getActiveMeta } from '../active-library.mjs';
 import { messagesJson } from '../llm-json.mjs';
+import { validate, SCHEMAS } from '../schemas.mjs';
 import { applyLiveMaterialPrices } from '../material-commodity.mjs';
 
 export function registerShouldCostRoutes(app, { db, requireAuth, rateLimit, makeAnthropic, getCommodityPrices }) {
@@ -77,7 +78,7 @@ function getUserCalibration(userId) {
 }
 
 // Add a real supplier quote to the user's corpus; the engine learns from it.
-app.post('/api/should-cost/quotes', requireAuth, rateLimit(120, 60 * 60 * 1000), async (req, res) => {
+app.post('/api/should-cost/quotes', requireAuth, rateLimit(120, 60 * 60 * 1000), validate(SCHEMAS.quote), async (req, res) => {
   const { partName, material, process, weightKg, annualVolume, region, actualPrice } = req.body;
   if (!material || !process || !weightKg || !annualVolume || !actualPrice) {
     return res.status(400).json({ error: 'Missing required fields: material, process, weightKg, annualVolume, actualPrice.' });
@@ -243,7 +244,7 @@ app.post('/api/should-cost/export', requireAuth, rateLimit(40, 60 * 60 * 1000), 
   }
 });
 
-app.post('/api/should-cost', requireAuth, rateLimit(60, 60 * 60 * 1000), async (req, res) => {
+app.post('/api/should-cost', requireAuth, rateLimit(60, 60 * 60 * 1000), validate(SCHEMAS.shouldCost), async (req, res) => {
   const { partName, material, process, weightKg, annualVolume, quotedCost, region, apiKey } = req.body;
   // Presence check keyed on undefined (not falsiness) so a genuine 0 reaches the
   // engine and gets its precise "must be > 0" message instead of "missing field".

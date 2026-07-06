@@ -381,12 +381,24 @@ export async function parseCadFile(file: File): Promise<CadGeometry> {
     try {
       const buffer = await file.arrayBuffer();
       const token = (() => { try { return JSON.parse(localStorage.getItem('brainspark_auth') || '{}').token; } catch { return ''; } })();
+      const authHeaders = { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) };
       const resp = await fetch('/api/cad-step', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+        headers: authHeaders,
         body: JSON.stringify({ fileBase64: toBase64(buffer), fileName, fileSize }),
       });
-      if (resp.ok) {
+      if (resp.status === 202) {
+        // Large model — parsed in a background job; poll until done (~120 s cap).
+        const { jobId } = await resp.json();
+        for (let i = 0; i < 130; i++) {
+          await new Promise(r => setTimeout(r, 1000));
+          const jr = await fetch(`/api/jobs/${jobId}`, { headers: authHeaders });
+          if (!jr.ok) break;
+          const job = await jr.json();
+          if (job.status === 'done' && job.result) return { fileName, fileType: 'step', fileSize, isImage: false, ...job.result };
+          if (job.status === 'error') throw new Error(job.error || 'STEP parse failed');
+        }
+      } else if (resp.ok) {
         const geo = await resp.json();
         return { fileName, fileType: 'step', fileSize, isImage: false, ...geo };
       }
