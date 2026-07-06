@@ -94,4 +94,24 @@ export const COST_FIXTURES = [
     refPriceEur: 0.10, tol: 0.40,
     source: 'Traceable automotive cold-headed 10.9 fastener ~€0.06–0.15 at 5M/yr, Asia.',
   },
+  // ── Routed (multi-operation) parts — the machined-casting class the single-op
+  //    model could only approximate via finishPct. ────────────────────────────
+  {
+    name: 'MACHINED GJS knuckle (cast + op-20 + wash)',
+    input: { material: 'Cast Iron (Ductile/GJS)', route: ['Sand Casting', 'Machining (secondary ops)', 'Washing & Final Inspection'], weightKg: 6.7, annualVolume: 200000, region: 'China' },
+    refPriceEur: 18.0, tol: 0.35,
+    source: 'Finished machined knuckle ~€15–22 at 200k/yr China (raw casting ~€12 + €3–6 machining).',
+  },
+  {
+    name: 'Machined + powder-coated HPDC bracket',
+    input: { material: 'Aluminium A356 (cast)', route: ['Die Casting (Aluminium)', 'Machining (secondary ops)', 'Powder Coating'], weightKg: 1.2, annualVolume: 150000, region: 'Germany' },
+    refPriceEur: 11.5, tol: 0.30,
+    source: 'Finished structural bracket ~€10–13 (raw HPDC ~€8 + machining + coat), EU.',
+  },
+  {
+    name: 'Forged + machined control arm (finished)',
+    input: { material: 'Steel (high-strength)', route: ['Forging (Hot)', 'Machining (secondary ops)'], weightKg: 2.5, annualVolume: 120000, region: 'Spain' },
+    refPriceEur: 13.0, tol: 0.30,
+    source: 'Finished machined forging ~€11–15 at 120k/yr EU-South (raw forge ~€10).',
+  },
 ];

@@ -3,14 +3,15 @@
 // quote corpus + learned calibration. Extracted from server.mjs (de-monolith).
 // ─────────────────────────────────────────────────────────────────────────────
 import crypto from 'crypto';
-import { computeShouldCost, simulateShouldCost, volumeSensitivity } from '../costing-engine.mjs';
-import { resolveMaterial, resolveProcess } from '../material-process-resolve.mjs';
+import { computeShouldCost, simulateShouldCost, volumeSensitivity, computeRouteCost, simulateRouteCost } from '../costing-engine.mjs';
+import { resolveMaterial, resolveProcess, resolveRoute } from '../material-process-resolve.mjs';
 import { getFxRates, FX_FALLBACK, FX_SYMBOLS, FX_CURRENCIES } from '../fx-rates.mjs';
 import { fitCalibration } from '../calibration.mjs';
 import { getActiveLibrary, getActiveMeta } from '../active-library.mjs';
 import { messagesJson } from '../llm-json.mjs';
 import { validate, SCHEMAS } from '../schemas.mjs';
 import { applyLiveMaterialPrices } from '../material-commodity.mjs';
+import { computeCarbon } from '../carbon.mjs';
 
 export function registerShouldCostRoutes(app, { db, requireAuth, rateLimit, makeAnthropic, getCommodityPrices }) {
   // Active rate library with live commodity prices bridged into material €/kg, so
@@ -274,7 +275,12 @@ app.post('/api/should-cost', requireAuth, rateLimit(60, 60 * 60 * 1000), validat
   // free text is fuzzy-matched — no client matcher to drift.
   const { library: lib, priceBasis, pricedAt } = liveLibrary();
   const matRes = resolveMaterial(material, lib.MATERIALS);
-  const procRes = resolveProcess(process, lib.PROCESSES);
+  // Route support: an explicit `route` array, or a chained process string
+  // ("HPDC + CNC machining + powder coat"), costs the part as an ordered
+  // multi-operation routing instead of one op.
+  const routeRes = resolveRoute(req.body.route || process, lib.PROCESSES);
+  const isRoute = !!(routeRes && routeRes.keys.length > 1);
+  const procRes = isRoute ? { key: routeRes.keys[0], approx: routeRes.approx } : resolveProcess(process, lib.PROCESSES);
   if (!matRes || !procRes) {
     const missing = [];
     if (!matRes) missing.push(`a material the cost library recognises — “${material}” isn’t in it (try "Aluminium 6061", "Cast iron", "DP780 steel")`);
@@ -285,12 +291,52 @@ app.post('/api/should-cost', requireAuth, rateLimit(60, 60 * 60 * 1000), validat
   // ── 1. Deterministic bottom-up cost (NO LLM — real rate × time / mass × price) ─
   // Uses the active rate library and the user's learned calibration (from quotes).
   const userCal = getUserCalibration(req.user.id);
-  let calc, sim, volumeCurve;
+  // Optional geometry/quality drivers (tolerance class, surface finish, CCs,
+  // projected area for tonnage tiers, wall thickness for cooling-dominated cycle).
+  const extraDrivers = {
+    toleranceClass: req.body.toleranceClass, surfaceFinish: req.body.surfaceFinish,
+    criticalCharacteristics: req.body.criticalCharacteristics,
+    projectedAreaCm2: req.body.projectedAreaCm2, wallThicknessMm: req.body.wallThicknessMm,
+  };
+  let calc, sim, volumeCurve, routeCalc = null;
   try {
-    const engineInput = { material: matRes.key, process: procRes.key, weightKg: Number(weightKg), annualVolume: Number(annualVolume), region: region || 'Germany' };
-    calc = computeShouldCost(engineInput, {}, userCal, lib);
-    sim  = simulateShouldCost(engineInput, 2000, 12345, userCal, lib);
-    volumeCurve = volumeSensitivity(engineInput, undefined, userCal, lib);
+    const engineInput = { material: matRes.key, process: procRes.key, weightKg: Number(weightKg), annualVolume: Number(annualVolume), region: region || 'Germany', ...extraDrivers };
+    if (isRoute) {
+      const routeInput = { ...engineInput, route: routeRes.keys };
+      routeCalc = computeRouteCost(routeInput, {}, userCal, lib);
+      sim = simulateRouteCost(routeInput, 1000, 12345, userCal, lib);
+      volumeCurve = [10000, 25000, 50000, 100000, 250000, 500000].map(v => ({
+        volume: v, unitCost: computeRouteCost({ ...routeInput, annualVolume: v }, {}, userCal, lib).totalShouldCost,
+      }));
+      // Project the routed result into the classic 9-line shape so the existing UI
+      // renders: op conversions sum under "machine", op tooling under "tooling".
+      const opsConv = routeCalc.breakdown.operations.reduce((s, o) => s + o.conversion, 0);
+      const opsTool = routeCalc.breakdown.operations.reduce((s, o) => s + o.tooling, 0);
+      const tot = routeCalc.totalShouldCost;
+      const pct = (x) => tot > 0 ? Number((x / tot * 100).toFixed(1)) : 0;
+      calc = {
+        ...routeCalc,
+        breakdown: {
+          material: routeCalc.breakdown.material,
+          machine: { value: Number(opsConv.toFixed(2)), pct: pct(opsConv) },
+          labour: { value: 0, pct: 0 }, setup: { value: 0, pct: 0 }, finishing: { value: 0, pct: 0 },
+          tooling: { value: Number(opsTool.toFixed(2)), pct: pct(opsTool) },
+          overhead: { value: routeCalc.breakdown.overhead.value, pct: pct(routeCalc.breakdown.overhead.value) },
+          commercial: { value: routeCalc.breakdown.commercial.value, pct: pct(routeCalc.breakdown.commercial.value) },
+          sgaProfit: { value: routeCalc.breakdown.sgaProfit.value, pct: pct(routeCalc.breakdown.sgaProfit.value) },
+        },
+        drivers: {
+          ...routeCalc.drivers,
+          cycleSecPerPart: 0, machineRate: 0, labourRate: lib.REGIONS[region || 'Germany']?.labour ?? 0,
+          operators: 0, utilisation: 0, scrapPct: Number((100 - routeCalc.drivers.rolledThroughputYield).toFixed(1)),
+          toolingTotal: 0, amortVolume: Number(annualVolume) * 5,
+        },
+      };
+    } else {
+      calc = computeShouldCost(engineInput, {}, userCal, lib);
+      sim  = simulateShouldCost(engineInput, 2000, 12345, userCal, lib);
+      volumeCurve = volumeSensitivity(engineInput, undefined, userCal, lib);
+    }
   } catch (e) {
     return res.status(400).json({ error: e.message || 'Invalid costing parameters.' });
   }
@@ -364,6 +410,17 @@ app.post('/api/should-cost', requireAuth, rateLimit(60, 60 * 60 * 1000), validat
         }
       : { effectivePerKg: driversCv.pricePerKg, currency, live: false, note: 'static library baseline (no live commodity mapping)' },
     fx: currency === 'EUR' ? null : { base: 'EUR', rate: Number(rate.toFixed(4)), asOf: fx.live ? fx.date : null, source: fx.source, stale: !!fx.stale },
+    // Multi-operation routing: per-op cost lines + rolled-throughput yield.
+    route: isRoute ? {
+      operations: routeCalc.inputs.route,
+      lines: routeCalc.breakdown.operations.map(o => ({ ...o, conversion: Number(cv(o.conversion).toFixed(2)), tooling: Number(cv(o.tooling).toFixed(2)) })),
+      rolledThroughputYield: routeCalc.drivers.rolledThroughputYield,
+    } : null,
+    // CO2e + CBAM from the same mass/energy drivers (indicative factors).
+    carbon: computeCarbon(
+      { material: matRes.key, process: procRes.key, route: isRoute ? routeCalc.inputs.route : undefined, region: region || 'Germany' },
+      { inputMassKg: calc.drivers.inputMassKg, finishedMassKg: Number(weightKg) },
+    ),
     materialCost: fmt(b.material.value),
     processCost: fmt(processCost),
     overheadCost: fmt(overheadPlus),
@@ -372,15 +429,22 @@ app.post('/api/should-cost', requireAuth, rateLimit(60, 60 * 60 * 1000), validat
     gapVsQuote,
     breakdown: breakdownCv,
     drivers: driversCv,
-    simulation: { p10: fmt(sim.p10), p50: fmt(sim.p50), p90: fmt(sim.p90), p10Value: Number(cv(sim.p10).toFixed(2)), p50Value: Number(cv(sim.p50).toFixed(2)), p90Value: Number(cv(sim.p90).toFixed(2)), stdev: Number(cv(sim.stdev).toFixed(2)) },
+    simulation: { p10: fmt(sim.p10), p50: fmt(sim.p50), p90: fmt(sim.p90), p10Value: Number(cv(sim.p10).toFixed(2)), p50Value: Number(cv(sim.p50).toFixed(2)), p90Value: Number(cv(sim.p90).toFixed(2)), stdev: Number.isFinite(sim.stdev) ? Number(cv(sim.stdev).toFixed(2)) : null },
     volumeCurve: volumeCurve.map(p => ({ volume: p.volume, unitCost: Number(cv(p.unitCost).toFixed(4)), unitCostLabel: fmt(p.unitCost) })),
-    assumptions: [
+    assumptions: isRoute ? [
+      priceBasis[matRes.key]
+        ? `Material ${matRes.key} @ ${sym}${driversCv.pricePerKg}/kg — indexed to ${priceBasis[matRes.key].commodityLabel}${pricedAt ? ` (as of ${pricedAt.slice(0, 10)})` : ''}; primary-op input mass ${d.inputMassKg} kg.`
+        : `Material ${matRes.key} @ ${sym}${driversCv.pricePerKg}/kg (static library baseline); primary-op input mass ${d.inputMassKg} kg.`,
+      `Routing: ${routeCalc.inputs.route.join(' → ')} — rolled-throughput yield ${routeCalc.drivers.rolledThroughputYield}% (a reject at a late op scraps all accumulated value).`,
+      `Overhead, packaging/freight and SG&A/profit applied once on the accumulated works content (${region} norms).`,
+      `Finished-part price including all listed operations. Validate against detailed supplier breakdowns before commercial use.`,
+    ] : [
       priceBasis[matRes.key]
         ? `Material ${matRes.key} @ ${sym}${driversCv.pricePerKg}/kg — indexed to ${priceBasis[matRes.key].commodityLabel} (${sym}${Number(cv(priceBasis[matRes.key].commodityPerKg).toFixed(2))}/kg${pricedAt ? `, as of ${pricedAt.slice(0, 10)}` : ''}); buy-to-fly input mass ${d.inputMassKg} kg (metal yield ${(d.utilisation * 100).toFixed(0)}%).`
         : `Material ${matRes.key} @ ${sym}${driversCv.pricePerKg}/kg (static library baseline — no live commodity mapping), buy-to-fly input mass ${d.inputMassKg} kg (metal yield ${(d.utilisation * 100).toFixed(0)}%).`,
       `${procRes.key}: cycle ${d.cycleSecPerPart}s/part, machine rate ${sym}${driversCv.machineRate}/hr, ${d.operators} operator(s) @ ${sym}${driversCv.labourRate}/hr (${region}).`,
       `Tooling ${sym}${driversCv.toolingTotal.toLocaleString()} amortised over ${d.amortVolume.toLocaleString()} parts; scrap ${d.scrapPct}%.`,
-      `Overhead and SG&A/profit applied per ${region} factory norms. Figure is a raw/fettled works cost — secondary CNC machining of the casting/forging, if required, is additional.`,
+      `Overhead and SG&A/profit applied per ${region} factory norms. Figure is a raw/fettled works cost — add secondary operations to the route (e.g. "+ CNC machining") for a finished-part price.`,
     ],
     explanation: `Bottom-up should-cost for ${partName} is ${fmt(total)} per unit at ${Number(annualVolume).toLocaleString()}/yr. Material is ${b.material.pct}% of cost, conversion (machine+labour+setup+finishing) ${(b.machine.pct + b.labour.pct + b.setup.pct + b.finishing.pct).toFixed(1)}%, tooling ${b.tooling.pct}%, overhead+commercial+SG&A ${(b.overhead.pct + b.commercial.pct + b.sgaProfit.pct).toFixed(1)}%. Monte-Carlo P10–P90 range: ${fmt(sim.p10)}–${fmt(sim.p90)}.`,
     negotiationLeverage: quotedCost && Number(quotedCost) > 0
@@ -427,6 +491,99 @@ Do NOT change any number — interpret them.`;
   }
 
   res.json(result);
+});
+
+// ── BOM / assembly roll-up ─────────────────────────────────────────────────────
+// Costs a multi-line BOM: make-lines run the deterministic engine (per-user
+// calibration + live prices), buy-lines take the entered price. The Monte-Carlo
+// is CORRELATED: one commodity-price draw per material FAMILY per sample, shared
+// across every line of that family — when aluminium moves, every aluminium part
+// moves together (independent line noise would understate portfolio risk).
+app.post('/api/should-cost/bom', requireAuth, rateLimit(30, 60 * 60 * 1000), async (req, res) => {
+  try {
+    const { lines, annualVolume, region = 'Germany' } = req.body || {};
+    if (!Array.isArray(lines) || lines.length === 0) return res.status(400).json({ error: 'lines[] is required.' });
+    if (lines.length > 200) return res.status(400).json({ error: 'BOM roll-up supports up to 200 lines.' });
+    const vol = Number(annualVolume);
+    if (!Number.isFinite(vol) || vol <= 0 || vol > 1e9) return res.status(400).json({ error: 'annualVolume must be a positive number.' });
+
+    const { library: lib, pricedAt } = liveLibrary();
+    const userCal = getUserCalibration(req.user.id);
+
+    const out = [];
+    for (let i = 0; i < lines.length; i++) {
+      const L = lines[i] || {};
+      const qty = Math.max(1, Math.min(1000, Number(L.qty) || 1));
+      const partName = String(L.partName || `Line ${i + 1}`).slice(0, 120);
+      if (L.make === false || (L.buyPrice != null && L.buyPrice !== '')) {
+        const buy = Number(L.buyPrice);
+        if (!(buy >= 0)) { out.push({ partName, qty, error: 'buyPrice must be ≥ 0 for a buy line.' }); continue; }
+        out.push({ partName, qty, make: false, unitCost: buy, extended: Number((buy * qty).toFixed(4)) });
+        continue;
+      }
+      const matRes = resolveMaterial(String(L.material || ''), lib.MATERIALS);
+      const routeRes = resolveRoute(L.route || L.process, lib.PROCESSES);
+      const weightKg = Number(L.weightKg);
+      if (!matRes || !routeRes) { out.push({ partName, qty, error: 'material/process not recognised' }); continue; }
+      if (!Number.isFinite(weightKg) || weightKg <= 0 || weightKg > 100000) { out.push({ partName, qty, error: 'weightKg out of range' }); continue; }
+      try {
+        const input = { material: matRes.key, route: routeRes.keys, weightKg, annualVolume: vol, region };
+        const calc = computeRouteCost(input, {}, userCal, lib);
+        out.push({
+          partName, qty, make: true,
+          material: matRes.key, route: routeRes.keys, weightKg,
+          unitCost: calc.totalShouldCost,
+          extended: Number((calc.totalShouldCost * qty).toFixed(4)),
+          family: lib.MATERIALS[matRes.key].family,
+          _input: input,   // for the correlated simulation below (stripped before response)
+        });
+      } catch (e) { out.push({ partName, qty, error: e.message }); }
+    }
+
+    const costed = out.filter(l => !l.error);
+    const total = costed.reduce((s, l) => s + l.extended, 0);
+
+    // Correlated Monte-Carlo at assembly level (300 samples for latency).
+    const makeLines = out.filter(l => l.make && l._input);
+    let simulation = null;
+    if (makeLines.length) {
+      const rng = (() => { let a = 424243 >>> 0; return () => { a |= 0; a = (a + 0x6D2B79F5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; })();
+      const tri = (spread) => (rng() + rng() - 1) * spread;
+      const families = [...new Set(makeLines.map(l => l.family))];
+      const buyTotal = out.filter(l => l.make === false && !l.error).reduce((s, l) => s + l.extended, 0);
+      const totals = [];
+      for (let s = 0; s < 300; s++) {
+        const familyPrice = Object.fromEntries(families.map(f => [f, 1 + tri(0.20)]));   // ONE draw per family
+        let t = buyTotal;
+        for (const l of makeLines) {
+          const o = { priceMult: familyPrice[l.family], machineMult: 1 + tri(0.12), cycleMult: 1 + tri(0.15), scrapAdd: tri(0.03) };
+          t += computeRouteCost(l._input, o, userCal, lib).totalShouldCost * l.qty;
+        }
+        totals.push(t * (1 + (rng() * 2 - 1) * 0.10));
+      }
+      totals.sort((a, b) => a - b);
+      const at = (q) => totals[Math.min(totals.length - 1, Math.floor(q * totals.length))];
+      simulation = { p10: Number(at(0.10).toFixed(2)), p50: Number(at(0.50).toFixed(2)), p90: Number(at(0.90).toFixed(2)), correlated: true, note: 'One commodity draw per material family per sample — portfolio-correct risk.' };
+    }
+
+    // Pareto: which lines carry the cost.
+    const pareto = [...costed].sort((a, b) => b.extended - a.extended).slice(0, 10)
+      .map(l => ({ partName: l.partName, extended: l.extended, sharePct: total > 0 ? Number((l.extended / total * 100).toFixed(1)) : 0 }));
+
+    res.json({
+      engine: 'deterministic',
+      currency: 'EUR',
+      lines: out.map(({ _input, family, ...rest }) => rest),
+      lineCount: out.length, costedCount: costed.length, errorCount: out.length - costed.length,
+      assemblyUnitCost: Number(total.toFixed(2)),
+      annualSpend: Number((total * vol).toFixed(0)),
+      simulation, pareto, pricedAt,
+      note: 'Make-lines are engine-computed (live prices + your calibration); buy-lines use the entered price. Validate against supplier breakdowns before commercial use.',
+    });
+  } catch (err) {
+    console.error('[BOM Roll-up Error]', err.message);
+    res.status(500).json({ error: 'BOM roll-up failed.' });
+  }
 });
 
   // Expose the per-user calibration + live library to other server modules (the

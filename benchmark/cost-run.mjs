@@ -13,7 +13,7 @@
 import { writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
-import { computeShouldCost, simulateShouldCost } from '../costing-engine.mjs';
+import { computeShouldCost, simulateShouldCost, computeRouteCost, simulateRouteCost } from '../costing-engine.mjs';
 import { COST_FIXTURES } from './cost-fixtures.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -23,8 +23,9 @@ export function scoreCost(fixtures = COST_FIXTURES) {
   for (const fx of fixtures) {
     let modelled, band;
     try {
-      modelled = computeShouldCost(fx.input).totalShouldCost;
-      const s = simulateShouldCost(fx.input);
+      const routed = Array.isArray(fx.input.route);
+      modelled = (routed ? computeRouteCost(fx.input) : computeShouldCost(fx.input)).totalShouldCost;
+      const s = routed ? simulateRouteCost(fx.input) : simulateShouldCost(fx.input);
       band = { p10: s.p10, p90: s.p90 };
     } catch (e) {
       rows.push({ name: fx.name, error: e.message, ok: false });

@@ -18,6 +18,10 @@
 // the seed commodity values, then tracks the commodity from there.
 export const MATERIAL_COMMODITY_MAP = {
   'Steel (mild)':             { commodityKey: 'steel_hrc_eu',  factor: 1.0,  premium: -0.09, note: 'HRC coil, tracks EU steel index' },
+  // Cast irons have no daily foundry-melt index — proxied to the EU steel index
+  // (scrap-charge economics track it) and flagged `proxy` so the UI is honest.
+  'Cast Iron (Grey)':         { commodityKey: 'steel_hrc_eu',  factor: 0.704, premium: 0, proxy: true, note: 'proxy: EU steel index (foundry melt-charge basis)' },
+  'Cast Iron (Ductile/GJS)':  { commodityKey: 'steel_hrc_eu',  factor: 0.817, premium: 0, proxy: true, note: 'proxy: EU steel index (foundry melt-charge basis)' },
   'Steel (high-strength)':    { commodityKey: 'dp780_ahss',    factor: 1.0,  premium: 0.10, note: 'AHSS grade + premium' },
   'Stainless Steel 304':      { commodityKey: 'stainless_304',  factor: 1.0,  premium: 0.00, note: '304 flat product' },
   'Aluminium 6061':           { commodityKey: 'aluminium_lme', factor: 1.0,  premium: 0.15, note: 'LME Al + 6xxx billet/extrusion premium' },
@@ -76,6 +80,7 @@ export function applyLiveMaterialPrices(library, priceCache) {
         factor: map.factor,
         premium: map.premium,
         effectivePerKg: Number(effective.toFixed(4)),
+        ...(map.proxy ? { proxy: true } : {}),
         note: map.note,
       };
     } else {

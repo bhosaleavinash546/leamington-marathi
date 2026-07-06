@@ -109,6 +109,13 @@ export const PROCESSES = {
     cycleBase: 35, cyclePerKg: 6, toolingBase: 90_000, toolingPerKg: 60_000,
     families: ['aluminium', 'magnesium'],
     finishPct: 0.1, returnsRecovery: 0.90,
+    // Tonnage-tiered machine rates: clamp T ≈ projected area (cm²) × 0.7 t/cm².
+    // Used only when the caller supplies projectedAreaCm2; else the flat rate.
+    clampTPerCm2: 0.7,
+    machineTiers: [
+      { maxClampT: 400, rate: 70 }, { maxClampT: 800, rate: 95 }, { maxClampT: 1200, rate: 130 },
+      { maxClampT: 1800, rate: 180 }, { maxClampT: 2700, rate: 240 }, { maxClampT: 99999, rate: 320 },
+    ],
   },
   'Die Casting (Zinc)': {
     machineRate: 75, operators: 0.5, cavities: 2, utilisation: 0.75, scrapPct: 0.04,
@@ -145,6 +152,15 @@ export const PROCESSES = {
     setupHr: 2.0, batch: 5000, toolLife: 1_000_000,
     cycleBase: 18, cyclePerKg: 22, toolingBase: 45_000, toolingPerKg: 80_000,
     families: ['plastic'],
+    // Cooling-dominated cycle: with wallThicknessMm, cycle = base + k·wall² (a
+    // 2 mm clip and a 4 mm carrier are not the same s/kg). k ≈ 2 s/mm² for PP/PA.
+    coolingKSecPerMm2: 2.0,
+    // Clamp T ≈ projected area (cm²) × 0.35 t/cm² for engineering thermoplastics.
+    clampTPerCm2: 0.35,
+    machineTiers: [
+      { maxClampT: 100, rate: 28 }, { maxClampT: 250, rate: 45 }, { maxClampT: 500, rate: 65 },
+      { maxClampT: 1000, rate: 95 }, { maxClampT: 2000, rate: 140 }, { maxClampT: 99999, rate: 190 },
+    ],
   },
   'Composite Layup (RTM)': {
     machineRate: 60, operators: 1.5, cavities: 1, utilisation: 0.90, scrapPct: 0.05,
@@ -199,6 +215,49 @@ export const PROCESSES = {
     setupHr: 0.8, batch: 1000, toolLife: 5_000_000,
     cycleBase: 25, cyclePerKg: 10, toolingBase: 120_000, toolingPerKg: 0,
     families: ['ferrous', 'aluminium'],
+  },
+
+  // ── Conversion-only downstream operations (process-chain routing) ───────────
+  // These never appear as a primary op: they add conversion cost to a part that
+  // already exists (costPerKg model — typical merchant-rate €/kg incl. energy,
+  // labour and line burden). utilisation = mass retained through the op.
+  'Machining (secondary ops)': {
+    // Op-20/op-30 machining of a casting/forging: datum faces, bores, drilled &
+    // tapped holes — NOT billet machining (that's 'Machining (CNC)'). Stock
+    // removal ~8%, so the upstream op must deliver a slightly heavier part.
+    conversionOnly: true,
+    machineRate: 65, operators: 0.5, cavities: 1, utilisation: 0.92, scrapPct: 0.015,
+    setupHr: 1.0, batch: 400, toolLife: 10_000_000,
+    cycleBase: 30, cyclePerKg: 22, toolingBase: 6_000, toolingPerKg: 0,
+    setups: 2, perishablePerHr: 8,
+    families: ['ferrous', 'castiron', 'aluminium', 'magnesium', 'titanium', 'copper', 'zinc'],
+  },
+  'Heat Treatment (batch)': {
+    conversionOnly: true, costPerKg: 0.32, utilisation: 1, scrapPct: 0.008,
+    families: ['ferrous', 'castiron', 'aluminium', 'titanium', 'copper'],
+    note: 'Normalise / Q&T / T6 in a batch furnace, merchant rate incl. energy',
+  },
+  'E-coat (KTL)': {
+    conversionOnly: true, costPerKg: 0.28, utilisation: 1, scrapPct: 0.005,
+    families: ['ferrous', 'castiron', 'aluminium'],
+    note: 'Cathodic dip coating, rack density typical of chassis parts',
+  },
+  'Powder Coating': {
+    conversionOnly: true, costPerKg: 0.45, utilisation: 1, scrapPct: 0.01,
+    families: ['ferrous', 'castiron', 'aluminium'],
+  },
+  'Zinc Plating': {
+    conversionOnly: true, costPerKg: 0.38, utilisation: 1, scrapPct: 0.01,
+    families: ['ferrous'],
+  },
+  'Grinding (finish)': {
+    conversionOnly: true, costPerKg: 0.85, utilisation: 0.995, scrapPct: 0.01,
+    families: ['ferrous', 'castiron', 'aluminium', 'titanium'],
+    note: 'Finish grinding of functional faces / journals to tight Ra',
+  },
+  'Washing & Final Inspection': {
+    conversionOnly: true, costPerKg: 0.10, utilisation: 1, scrapPct: 0.002,
+    families: ['ferrous', 'castiron', 'aluminium', 'magnesium', 'titanium', 'copper', 'zinc', 'plastic', 'composite'],
   },
 };
 
@@ -255,6 +314,7 @@ export function computeShouldCost(input, overrides = {}, calibration = null, lib
   if (!mat) throw new Error(`Unknown material: ${material}`);
   if (!proc) throw new Error(`Unknown process: ${process}`);
   if (!reg) throw new Error(`Unknown region: ${region}`);
+  if (proc.conversionOnly) throw new Error(`${process} is a downstream operation — use it in a route after a primary forming process (e.g. "Sand Casting + ${process}").`);
   // Family compatibility: costing a ferrous part on an aluminium-die-casting model
   // (or similar) yields a physically meaningless number. Refuse rather than mislead.
   // A non-array `families` (e.g. from an unvalidated custom library) must NOT
@@ -311,23 +371,55 @@ export function computeShouldCost(input, overrides = {}, calibration = null, lib
   const rejectRecovered = w * (yieldMult - 1);                           // rejected part bodies, remelted
   const materialCost    = grossMaterial - pricePerKg * recovery * (offcutRecovered + rejectRecovered);
 
+  // ── Tolerance / surface-finish drivers (bounded, disclosed multipliers) ─────
+  // Costing the DRAWING, not just the mass: tighter IT grades raise cycle and
+  // scrap; fine surface finish adds passes; each critical characteristic (CC/SC)
+  // adds per-part gauging time. All effects surface in `drivers` for audit.
+  const TOL_CLASSES = { standard: { cycle: 1, scrap: 0 }, tight: { cycle: 1.15, scrap: 0.01 }, precision: { cycle: 1.35, scrap: 0.03 } };
+  const FIN_CLASSES = { standard: 1, fine: 1.10, polished: 1.25 };
+  const tol = TOL_CLASSES[input.toleranceClass] ?? TOL_CLASSES.standard;
+  const finMult = FIN_CLASSES[input.surfaceFinish] ?? 1;
+  const ccCount = Math.max(0, Math.min(50, Number(input.criticalCharacteristics) || 0));
+  const scrapPctEff = Math.min(0.9, scrapPct + tol.scrap);
+  const yieldMultEff = 1 / (1 - scrapPctEff);
+
   // ── Conversion: machine + labour ────────────────────────────────────────────
-  const cycleSec = (proc.cycleBase + proc.cyclePerKg * w) * cycleMult;
+  // Cooling-dominated moulding: when wall thickness is known, cycle scales with
+  // wall² (Chvorinov-style) instead of mass — a 2 mm clip and a 4 mm carrier are
+  // NOT the same seconds-per-kg.
+  const wallMm = Number(input.wallThicknessMm) || 0;
+  let cycleSec;
+  if (proc.coolingKSecPerMm2 && wallMm > 0) {
+    cycleSec = (proc.cycleBase + proc.coolingKSecPerMm2 * wallMm * wallMm) * cycleMult * tol.cycle * finMult;
+  } else {
+    cycleSec = (proc.cycleBase + proc.cyclePerKg * w) * cycleMult * tol.cycle * finMult;
+  }
   const secPerPart = cycleSec / proc.cavities;
   const hrPerPart = secPerPart / 3600;
-  const machineRate = proc.machineRate * machineMult;
+  // Machine-size selection: with a projected area, pick the tonnage-tiered rate
+  // (a 2,500 t HPDC cell is not a 400 t cell). Without geometry, keep the flat
+  // catalogue rate (status quo — benchmark unaffected).
+  let machineRate = proc.machineRate * machineMult;
+  let machineTier = null;
+  const projArea = Number(input.projectedAreaCm2) || 0;
+  if (Array.isArray(proc.machineTiers) && projArea > 0) {
+    const tonnage = projArea * (proc.clampTPerCm2 ?? 0.5) * proc.cavities;
+    const tier = proc.machineTiers.find(t => tonnage <= t.maxClampT) || proc.machineTiers[proc.machineTiers.length - 1];
+    machineRate = tier.rate * machineMult;
+    machineTier = { clampTonnage: Math.round(tonnage), rate: tier.rate };
+  }
   // Perishable tooling: cutting inserts/drills, coolant, abrasives, wheels —
   // consumed per machine-hour. Material for machining (billet removal) and
   // significant for grinding/casting fettling; 0 for net-shape moulding.
   const perishablePerHr = proc.perishablePerHr ?? 0;
-  const machineCost = hrPerPart * (machineRate + perishablePerHr) * yieldMult;
-  const labourCost  = hrPerPart * reg.labour * proc.operators * yieldMult;
+  const machineCost = hrPerPart * (machineRate + perishablePerHr) * yieldMultEff;
+  const labourCost  = hrPerPart * reg.labour * proc.operators * yieldMultEff + ccCount * (4 / 3600) * reg.labour;
 
   // ── Setup (amortised over batch) ────────────────────────────────────────────
   // Machining needs multiple fixturing setups (op10/op20/…); `setups` (default 1)
   // multiplies the per-batch setup so multi-op parts carry realistic non-cut cost.
   // Grossed for yield: a batch yields batch·(1-s) good parts.
-  const setupCost = ((proc.setups ?? 1) * proc.setupHr * (machineRate + reg.labour)) / proc.batch * yieldMult;
+  const setupCost = ((proc.setups ?? 1) * proc.setupHr * (machineRate + reg.labour)) / proc.batch * yieldMultEff;
 
   // ── Secondary / finishing operations ────────────────────────────────────────
   // Deburr, fettling, heat-treat, surface finish, gauging/inspection — real
@@ -345,7 +437,7 @@ export function computeShouldCost(input, overrides = {}, calibration = null, lib
   // (the low-volume casting/forging case) — a real +scrap% overstatement.
   const toolingTotal = proc.toolingBase + proc.toolingPerKg * w;
   const lifetimeVol = vol * programYears;
-  const amortVol = Math.max(1, Math.min(proc.toolLife * (1 - scrapPct), lifetimeVol));
+  const amortVol = Math.max(1, Math.min(proc.toolLife * (1 - scrapPctEff), lifetimeVol));
   const toolingCost = toolingTotal / amortVol;
 
   // ── Overhead + commercial + SG&A/profit ─────────────────────────────────────
@@ -383,9 +475,13 @@ export function computeShouldCost(input, overrides = {}, calibration = null, lib
       labourRate: reg.labour,
       operators: proc.operators,
       utilisation: proc.utilisation,
-      scrapPct: round(scrapPct * 100, 1),
+      scrapPct: round(scrapPctEff * 100, 1),
       toolingTotal: round(toolingTotal),
       amortVolume: amortVol,
+      ...(machineTier ? { machineTier } : {}),
+      ...(input.toleranceClass && input.toleranceClass !== 'standard' ? { toleranceClass: input.toleranceClass, toleranceCycleMult: tol.cycle } : {}),
+      ...(input.surfaceFinish && input.surfaceFinish !== 'standard' ? { surfaceFinish: input.surfaceFinish } : {}),
+      ...(ccCount ? { criticalCharacteristics: ccCount } : {}),
     },
     breakdown: {
       material:   { value: sv(materialCost),   pct: pct(materialCost) },
@@ -400,6 +496,167 @@ export function computeShouldCost(input, overrides = {}, calibration = null, lib
     },
     totalShouldCost: round(total),
   };
+}
+
+// ─── Process-chain routing (cast → machine → heat-treat → coat) ───────────────
+// A real automotive part is a ROUTING, not one op. computeRouteCost costs an
+// ordered chain: op 1 is the primary (consumes material); downstream ops are
+// conversion-only. Scrap compounds as rolled-throughput yield, and a reject at
+// op N writes off the ACCUMULATED value (single-op yieldMult cannot express
+// this). Overhead, commercial and SG&A are applied once, at the end.
+//
+//   computeRouteCost({ material, route: ['Sand Casting','Machining (secondary ops)',
+//     'Washing & Final Inspection'], weightKg, annualVolume, region })
+export function computeRouteCost(input, overrides = {}, calibration = null, library = null) {
+  const { material, route, weightKg, annualVolume, region, programYears = 5 } = input;
+  const MAT = library?.MATERIALS || MATERIALS;
+  const PROC = library?.PROCESSES || PROCESSES;
+  const REG = library?.REGIONS || REGIONS;
+  const commercialPct = library?.constants?.commercialPct ?? COMMERCIAL_PCT;
+  const defaultFinishPct = library?.constants?.defaultFinishPct ?? DEFAULT_FINISH_PCT;
+
+  if (!Array.isArray(route) || route.length < 1) throw new Error('route must be a non-empty array of process names');
+  if (route.length === 1) return computeShouldCost({ ...input, process: route[0] }, overrides, calibration, library);
+  if (route.length > 8) throw new Error('route supports at most 8 operations');
+
+  const mat = Object.hasOwn(MAT, material) ? MAT[material] : undefined;
+  const reg = Object.hasOwn(REG, region) ? REG[region] : undefined;
+  if (!mat) throw new Error(`Unknown material: ${material}`);
+  if (!reg) throw new Error(`Unknown region: ${region}`);
+  const w = Number(weightKg), vol = Number(annualVolume);
+  if (!Number.isFinite(w) || w <= 0) throw new Error('weightKg must be a finite number > 0');
+  if (!Number.isFinite(vol) || vol <= 0) throw new Error('annualVolume must be a finite number > 0');
+
+  const clampMult = (v) => Math.max(0.01, Number.isFinite(v) ? v : 1);
+  const priceMult = clampMult(overrides.priceMult ?? 1);
+  const machineMult = clampMult(overrides.machineMult ?? 1);
+  const cycleMult = clampMult(overrides.cycleMult ?? 1);
+  const scrapAdd = Number.isFinite(overrides.scrapAdd) ? overrides.scrapAdd : 0;
+
+  // Resolve ops. A primary process appearing downstream would double-charge
+  // buy-to-fly, so billet 'Machining (CNC)' downstream maps to the secondary-op
+  // model (op-20 machining of a near-net part).
+  const ops = route.map((name, i) => {
+    let key = name;
+    if (i > 0 && key === 'Machining (CNC)' && Object.hasOwn(PROC, 'Machining (secondary ops)')) key = 'Machining (secondary ops)';
+    const p = Object.hasOwn(PROC, key) ? PROC[key] : undefined;
+    if (!p) throw new Error(`Unknown process in route: ${key}`);
+    if (i === 0 && p.conversionOnly) throw new Error(`${key} cannot be the primary operation — start the route with a forming/primary process.`);
+    if (!Array.isArray(p.families) || !p.families.includes(mat.family)) {
+      throw new Error(`${material} (${mat.family}) is not compatible with ${key} in this route.`);
+    }
+    return { key, p };
+  });
+
+  // Mass chain, walked backwards from the finished mass: each op's OUTPUT is the
+  // next op's input; ops with utilisation < 1 must be fed a heavier part.
+  const massOut = new Array(ops.length);
+  massOut[ops.length - 1] = w;
+  for (let i = ops.length - 1; i > 0; i--) {
+    const util = ops[i].p.utilisation ?? 1;
+    massOut[i - 1] = massOut[i] / util;
+  }
+  const op1 = ops[0].p;
+  const op1OutMass = massOut[0];
+  const op1InMass = op1OutMass / (op1.utilisation ?? 1);   // buy-to-fly of the primary
+
+  // Material (primary op only) — same recovery algebra as computeShouldCost.
+  const pricePerKg = mat.price * priceMult;
+  const recovery = Number.isFinite(op1.returnsRecovery) ? op1.returnsRecovery : mat.scrapRecovery;
+  const s1 = Math.min(0.9, Math.max(0, (op1.scrapPct ?? 0) + scrapAdd));
+  const yield1 = 1 / (1 - s1);
+  const grossMaterial = op1InMass * pricePerKg * yield1;
+  const materialCost = grossMaterial - pricePerKg * recovery * ((op1InMass - op1OutMass) * yield1 + op1OutMass * (yield1 - 1));
+
+  // Per-op conversion (per ATTEMPT at that op), then rolled accumulation:
+  // A_i = (A_{i-1} + c_i) / (1 - s_i) — a reject at op i scraps everything spent.
+  const lifetimeVol = vol * programYears;
+  const opLines = [];
+  let accumulated = materialCost;   // already grossed for op-1 scrap
+  let conversionTotal = 0, toolingTotal = 0, rolledYield = 1 - s1;
+  for (let i = 0; i < ops.length; i++) {
+    const { key, p } = ops[i];
+    const outMass = massOut[i];
+    const sI = i === 0 ? s1 : Math.min(0.9, Math.max(0, (p.scrapPct ?? 0) + (i === 0 ? scrapAdd : 0)));
+    let convPerAttempt, toolPerGood = 0;
+    if (p.costPerKg != null) {
+      convPerAttempt = p.costPerKg * outMass * machineMult;
+    } else {
+      const cycleSec = ((p.cycleBase ?? 0) + (p.cyclePerKg ?? 0) * outMass) * cycleMult;
+      const hrPerPart = cycleSec / (p.cavities ?? 1) / 3600;
+      const rate = (p.machineRate ?? 60) * machineMult;
+      const machine = hrPerPart * (rate + (p.perishablePerHr ?? 0));
+      const labour = hrPerPart * reg.labour * (p.operators ?? 0.5);
+      const setup = ((p.setups ?? 1) * (p.setupHr ?? 1) * (rate + reg.labour)) / (p.batch ?? 500);
+      const finishing = (machine + labour) * (p.finishPct ?? (i === 0 ? defaultFinishPct : 0));
+      convPerAttempt = machine + labour + setup + finishing;
+      const toolTotal = (p.toolingBase ?? 0) + (p.toolingPerKg ?? 0) * outMass;
+      const amort = Math.max(1, Math.min((p.toolLife ?? 1e7) * (1 - sI), lifetimeVol));
+      toolPerGood = toolTotal / amort;
+    }
+    if (i === 0) {
+      // material already accumulated with op-1 scrap; add op-1 conversion grossed the same way
+      accumulated += convPerAttempt / (1 - sI) + toolPerGood;
+    } else {
+      accumulated = (accumulated + convPerAttempt) / (1 - sI) + toolPerGood;
+      rolledYield *= (1 - sI);
+    }
+    conversionTotal += convPerAttempt / (1 - sI);
+    toolingTotal += toolPerGood;
+    opLines.push({ op: key, conversion: round(convPerAttempt / (1 - sI)), tooling: round(toolPerGood, 3), scrapPct: round(sI * 100, 1), outMassKg: round(outMass, 3) });
+  }
+
+  // Overhead + commercial + SG&A once, on the accumulated works content.
+  const overheadCost = conversionTotal * reg.overheadPct;
+  const preCommercial = accumulated + overheadCost;
+  const commercialCost = preCommercial * commercialPct;
+  const worksCost = preCommercial + commercialCost;
+  const sgaCost = worksCost * reg.sgaPct;
+  const baseTotal = worksCost + sgaCost;
+
+  const cf = calibration ? calibrationFactor(calibration, route[0]) : 1;
+  const total = baseTotal * cf;
+  if (!Number.isFinite(total)) throw new Error('Route costing produced a non-finite total — check inputs.');
+  const sv = (x) => round(x * cf);
+
+  return {
+    inputs: { material, route: ops.map(o => o.key), weightKg: w, annualVolume: vol, region, programYears },
+    calibration: cf !== 1 ? { factor: round(cf, 3), applied: true, source: calibration ? calibrationSource(calibration, route[0]) : 'none' } : { factor: 1, applied: false, source: 'none' },
+    drivers: {
+      pricePerKg: round(pricePerKg, 3),
+      inputMassKg: round(op1InMass, 3),
+      finishedMassKg: w,
+      rolledThroughputYield: round(rolledYield * 100, 1),
+      operations: ops.length,
+    },
+    breakdown: {
+      material: { value: sv(materialCost), pct: baseTotal > 0 ? round(materialCost / baseTotal * 100, 1) : 0 },
+      operations: opLines.map(l => ({ ...l, conversion: sv(l.conversion), tooling: sv(l.tooling) })),
+      overhead: { value: sv(overheadCost) },
+      commercial: { value: sv(commercialCost) },
+      sgaProfit: { value: sv(sgaCost) },
+    },
+    totalShouldCost: round(total),
+  };
+}
+
+/** Monte-Carlo band for a routed part (same uncertainty model as single-op). */
+export function simulateRouteCost(input, samples = 1000, seed = 12345, calibration = null, library = null) {
+  const rng = mulberry32(seed);
+  const totals = [];
+  for (let i = 0; i < samples; i++) {
+    const o = {
+      priceMult: 1 + noise(rng, 0.20),
+      machineMult: 1 + noise(rng, 0.12),
+      cycleMult: 1 + noise(rng, 0.15),
+      scrapAdd: noise(rng, 0.03),
+    };
+    const modelMult = 1 + noiseUniform(rng, 0.13);
+    totals.push(computeRouteCost(input, o, calibration, library).totalShouldCost * modelMult);
+  }
+  totals.sort((a, b) => a - b);
+  const at = q => totals[Math.min(totals.length - 1, Math.max(0, Math.floor(q * totals.length)))];
+  return { p10: round(at(0.10)), p50: round(at(0.50)), p90: round(at(0.90)), samples };
 }
 
 /**

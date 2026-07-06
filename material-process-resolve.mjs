@@ -63,6 +63,27 @@ export function resolveMaterial(typed, materials = MATERIALS) {
   return key ? { key, approx: true } : null;
 }
 
+/**
+ * Resolve a process CHAIN: "HPDC + CNC + e-coat", ["Sand Casting","Machining…"],
+ * or [{process:'…'}]. Returns { keys, approx } or null if any op fails to
+ * resolve. Single-op inputs resolve to a one-element route.
+ */
+export function resolveRoute(input, processes = PROCESSES) {
+  const parts = Array.isArray(input)
+    ? input.map(p => (p && typeof p === 'object' ? p.process : p)).filter(Boolean)
+    : String(input || '').split(/\s*(?:\+|->|→|\|| then )\s*/i).filter(Boolean);
+  if (!parts.length) return null;
+  const resolved = [];
+  let approx = false;
+  for (const p of parts) {
+    const r = resolveProcess(p, processes);
+    if (!r) return null;
+    resolved.push(r.key);
+    approx = approx || r.approx;
+  }
+  return { keys: resolved, approx };
+}
+
 export function resolveProcess(typed, processes = PROCESSES) {
   const keys = Object.keys(processes);
   const t = norm(typed);
@@ -91,6 +112,14 @@ export function resolveProcess(typed, processes = PROCESSES) {
   else if (/hydroform/.test(t)) key = has('hydroform');
   else if (/laser/.test(t)) key = has('laser');
   else if (/rtm|prepreg|autoclave|layup|lay-up|hand lai|composite mould|composite mold/.test(t)) key = has('composite');
+  // Conversion-only downstream ops (process-chain routing)
+  else if (/heat.?treat|q&t|quench|anneal|normali[sz]|carburi[sz]|\bt6\b/.test(t)) key = has('heat treatment');
+  else if (/e-?coat|\bktl\b|cathodic dip/.test(t)) key = has('e-coat');
+  else if (/powder.?coat/.test(t)) key = has('powder coating');
+  else if (/zinc.?plat|electroplat/.test(t)) key = has('zinc plating');
+  else if (/grind|hone\b|honing|lapping/.test(t)) key = has('grinding');
+  else if (/wash|final inspect|deburr/.test(t)) key = has('washing');
+  else if (/secondary mach|op-?20|finish mach/.test(t)) key = has('secondary ops');
   else if (/machin|cnc|mill|turn|billet|vmc|hmc|lathe/.test(t)) key = has('machining');
   else if (/mould|mold|inject/.test(t)) key = has('injection') || has('moulding');
   else if (/extru/.test(t)) key = has('extrusion');

@@ -1,10 +1,10 @@
 {
   "hitRate": 100,
   "mape": 8.3,
-  "bias": -3.3,
-  "bandCoverage": 84.6,
-  "hits": 13,
-  "total": 13,
+  "bias": -1.1,
+  "bandCoverage": 87.5,
+  "hits": 16,
+  "total": 16,
   "rows": [
     {
       "name": "Steering knuckle (ductile iron, sand cast)",
@@ -95,6 +95,27 @@
       "ref": 0.1,
       "modelled": 0.11,
       "errPct": 10,
+      "withinTol": true
+    },
+    {
+      "name": "MACHINED GJS knuckle (cast + op-20 + wash)",
+      "ref": 18,
+      "modelled": 19.86,
+      "errPct": 10.3,
+      "withinTol": true
+    },
+    {
+      "name": "Machined + powder-coated HPDC bracket",
+      "ref": 11.5,
+      "modelled": 12.47,
+      "errPct": 8.4,
+      "withinTol": true
+    },
+    {
+      "name": "Forged + machined control arm (finished)",
+      "ref": 13,
+      "modelled": 13.84,
+      "errPct": 6.5,
       "withinTol": true
     }
   ]

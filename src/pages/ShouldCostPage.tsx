@@ -26,7 +26,16 @@ interface ShouldCostResult {
   assumptions: string[];
   explanation: string;
   negotiationLeverage: string;
-  materialPrice?: { live?: boolean; commodityLabel?: string; commodityPerKg?: number; effectivePerKg?: number; pricedAt?: string | null; note?: string };
+  materialPrice?: { live?: boolean; commodityLabel?: string; commodityPerKg?: number; effectivePerKg?: number; pricedAt?: string | null; note?: string; proxy?: boolean };
+  route?: {
+    operations: string[];
+    lines: { op: string; conversion: number; tooling: number; scrapPct: number; outMassKg: number }[];
+    rolledThroughputYield: number;
+  } | null;
+  carbon?: {
+    materialKgCo2e: number; processKgCo2e: number; totalKgCo2e: number;
+    cbam: { eur: number; basis: string } | null; basis: string;
+  } | null;
 }
 
 interface CostDownAlt {
@@ -42,6 +51,13 @@ interface CostDownResult {
 }
 
 const BREAKDOWN_META = COST_COMPONENTS.map(c => ({ key: c.key, label: c.label, color: c.text, bar: c.bar }));
+
+// Downstream (conversion-only) operations offered as route steps — kept out of
+// the primary-process dropdown, selectable as chips instead.
+const SECONDARY_OPS = [
+  'Machining (secondary ops)', 'Heat Treatment (batch)', 'E-coat (KTL)',
+  'Powder Coating', 'Zinc Plating', 'Grinding (finish)', 'Washing & Final Inspection',
+];
 
 export default function ShouldCostPage() {
   const { token } = useAuth();
@@ -66,6 +82,10 @@ export default function ShouldCostPage() {
   const [costDown, setCostDown] = useState<CostDownResult | null>(null);
   const [cdLoading, setCdLoading] = useState(false);
   const [cdError, setCdError] = useState('');
+  // Process-chain routing: optional downstream operations after the primary op.
+  const [secondaryOps, setSecondaryOps] = useState<string[]>([]);
+  const [toleranceClass, setToleranceClass] = useState('standard');
+  const [surfaceFinish, setSurfaceFinish] = useState('standard');
   const [isAdmin, setIsAdmin] = useState(false);
   const [libraryCustom, setLibraryCustom] = useState(false);
   const calcReqRef = useRef(0);
@@ -102,7 +122,14 @@ export default function ShouldCostPage() {
       const r = await fetch('/api/should-cost', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ partName, material, process, weightKg: Number(weightKg), annualVolume: Number(annualVolume), quotedCost: quotedCost ? Number(quotedCost) : undefined, region, currency, apiKey }),
+        body: JSON.stringify({
+          partName, material, process, weightKg: Number(weightKg), annualVolume: Number(annualVolume),
+          quotedCost: quotedCost ? Number(quotedCost) : undefined, region, currency, apiKey,
+          // Multi-op routing + quality drivers (all optional)
+          route: secondaryOps.length ? [process, ...secondaryOps] : undefined,
+          toleranceClass: toleranceClass !== 'standard' ? toleranceClass : undefined,
+          surfaceFinish: surfaceFinish !== 'standard' ? surfaceFinish : undefined,
+        }),
       });
       if (!r.ok) { const d = await r.json().catch(() => ({})); throw new Error(d.error || 'Request failed'); }
       const data = await r.json();
@@ -221,7 +248,50 @@ export default function ShouldCostPage() {
                 <label htmlFor="sc-process" className="block text-xs text-slate-400 mb-1.5">Manufacturing Process</label>
                 <div className="relative">
                   <select id="sc-process" value={process} onChange={e => setProcess(e.target.value)} className="w-full bg-navy-800 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm appearance-none focus:outline-none focus:border-teal-500/40">
-                    {processes.map(p => <option key={p} value={p}>{p}</option>)}
+                    {processes.filter(p => !SECONDARY_OPS.includes(p)).map(p => <option key={p} value={p}>{p}</option>)}
+                  </select>
+                  <ChevronDown size={14} className="absolute right-3 top-3 text-slate-500 pointer-events-none" />
+                </div>
+              </div>
+            </div>
+
+            {/* Process-chain routing: downstream operations after the primary op */}
+            <div>
+              <label className="block text-xs text-slate-400 mb-1.5">Secondary operations <span className="text-slate-600">(finished-part routing — optional)</span></label>
+              <div className="flex flex-wrap gap-1.5">
+                {SECONDARY_OPS.filter(op => processes.includes(op)).map(op => {
+                  const on = secondaryOps.includes(op);
+                  return (
+                    <button key={op} type="button"
+                      onClick={() => setSecondaryOps(s => on ? s.filter(x => x !== op) : [...s, op])}
+                      className={`px-2.5 py-1 rounded-lg border text-[11px] transition ${on ? 'bg-teal-500/20 border-teal-500/40 text-teal-200' : 'bg-white/4 border-white/10 text-slate-400 hover:bg-white/8'}`}>
+                      {on ? '✓ ' : '+ '}{op.replace(' (secondary ops)', '').replace(' (batch)', '').replace(' (KTL)', '')}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Quality drivers */}
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label htmlFor="sc-tol" className="block text-xs text-slate-400 mb-1.5">Tolerance class</label>
+                <div className="relative">
+                  <select id="sc-tol" value={toleranceClass} onChange={e => setToleranceClass(e.target.value)} className="w-full bg-navy-800 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm appearance-none focus:outline-none focus:border-teal-500/40">
+                    <option value="standard">Standard (IT10+)</option>
+                    <option value="tight">Tight (IT8–9)</option>
+                    <option value="precision">Precision (≤IT7)</option>
+                  </select>
+                  <ChevronDown size={14} className="absolute right-3 top-3 text-slate-500 pointer-events-none" />
+                </div>
+              </div>
+              <div>
+                <label htmlFor="sc-fin" className="block text-xs text-slate-400 mb-1.5">Surface finish</label>
+                <div className="relative">
+                  <select id="sc-fin" value={surfaceFinish} onChange={e => setSurfaceFinish(e.target.value)} className="w-full bg-navy-800 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm appearance-none focus:outline-none focus:border-teal-500/40">
+                    <option value="standard">Standard</option>
+                    <option value="fine">Fine (Ra ≤ 1.6)</option>
+                    <option value="polished">Polished (Ra ≤ 0.4)</option>
                   </select>
                   <ChevronDown size={14} className="absolute right-3 top-3 text-slate-500 pointer-events-none" />
                 </div>
@@ -392,6 +462,53 @@ export default function ShouldCostPage() {
                   <div className="text-slate-400 text-xs font-semibold uppercase tracking-wider mb-2">Explanation</div>
                   <p className="text-slate-300 text-sm leading-relaxed">{result.explanation}</p>
                 </div>
+                {/* Multi-operation route breakdown */}
+                {result.route && (
+                  <div>
+                    <div className="text-slate-400 text-xs font-semibold uppercase tracking-wider mb-2">
+                      Routing: {result.route.operations.join(' → ')}
+                      <span className="ml-2 text-teal-400 normal-case font-normal">RTY {result.route.rolledThroughputYield}%</span>
+                    </div>
+                    <div className="overflow-x-auto rounded-xl border border-white/10">
+                      <table className="w-full text-xs">
+                        <thead><tr className="text-slate-500 bg-white/4">
+                          <th className="text-left px-3 py-1.5 font-medium">Operation</th>
+                          <th className="text-right px-3 py-1.5 font-medium">Conversion</th>
+                          <th className="text-right px-3 py-1.5 font-medium">Tooling</th>
+                          <th className="text-right px-3 py-1.5 font-medium">Scrap %</th>
+                          <th className="text-right px-3 py-1.5 font-medium">Out mass kg</th>
+                        </tr></thead>
+                        <tbody>
+                          {result.route.lines.map((l, i) => (
+                            <tr key={i} className="border-t border-white/5 text-slate-300">
+                              <td className="px-3 py-1.5">{l.op}</td>
+                              <td className="px-3 py-1.5 text-right">{result.symbol || '€'}{l.conversion.toFixed(2)}</td>
+                              <td className="px-3 py-1.5 text-right">{result.symbol || '€'}{l.tooling.toFixed(2)}</td>
+                              <td className="px-3 py-1.5 text-right">{l.scrapPct}%</td>
+                              <td className="px-3 py-1.5 text-right">{l.outMassKg}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                )}
+
+                {/* CO2e + CBAM (indicative) */}
+                {result.carbon && (
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-[11px]">
+                      🌍 {result.carbon.totalKgCo2e} kg CO2e/part (material {result.carbon.materialKgCo2e} + process {result.carbon.processKgCo2e})
+                    </span>
+                    {result.carbon.cbam && (
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-300 text-[11px]">
+                        CBAM ≈ €{result.carbon.cbam.eur}/part if EU-imported
+                      </span>
+                    )}
+                    <span className="text-slate-600 text-[10px]">{result.carbon.basis}</span>
+                  </div>
+                )}
+
                 {result.assumptions?.length > 0 && (
                   <div>
                     <div className="text-slate-400 text-xs font-semibold uppercase tracking-wider mb-2">Assumptions &amp; Cost Drivers</div>
