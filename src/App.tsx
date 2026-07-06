@@ -12,6 +12,7 @@ import ProtectedRoute from './components/auth/ProtectedRoute';
 import RouteErrorBoundary from './components/layout/RouteErrorBoundary';
 import { useIsNative } from './hooks/useMobile';
 import AiChatbot from './components/AiChatbot';
+import OnboardingChecklist from './components/OnboardingChecklist';
 
 // Route components are code-split: each page (and its heavy deps — recharts,
 // framer-motion charts, the xlsx/pptx/jspdf export libs) loads on demand instead
@@ -91,6 +92,7 @@ function AppShell() {
       {/* Bottom tab bar: always on native; on mobile-web only (hidden ≥lg). */}
       {native ? <MobileNav /> : <div className="lg:hidden"><MobileNav /></div>}
       <AiChatbot />
+      <OnboardingChecklist />
     </div>
   );
 }

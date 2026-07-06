@@ -11,6 +11,7 @@ import path from 'path';
 import { Worker } from 'worker_threads';
 import crypto from 'crypto';
 import helmet from 'helmet';
+import pino from 'pino';
 import zlib from 'zlib';
 import { fileURLToPath } from 'url';
 import Anthropic from '@anthropic-ai/sdk';
@@ -30,6 +31,7 @@ import { validate, SCHEMAS } from './schemas.mjs';
 import { buildIndex } from './idea-index.mjs';
 import { costBom, COMPONENT_TYPES, COMPONENT_CLASSES } from './pcb-cost.mjs';
 import { registerShouldCostRoutes } from './routes/should-cost.mjs';
+import { registerMarketplaceRoutes } from './routes/marketplace.mjs';
 import { registerRateLibraryRoutes } from './routes/rate-library.mjs';
 import { analyzeFeatures } from './src/services/cad-features.mjs';
 import { aggregateOcctMeshes, analyzeBrep } from './src/services/cad-brep.mjs';
@@ -103,6 +105,21 @@ app.use(helmet({
   crossOriginEmbedderPolicy: false,   // PWA/service-worker compatibility
 }));
 
+// ─── Structured request logging (pino) ───────────────────────────────────────
+// One line per API request: id, route, status, latency. Replaces ad-hoc
+// console.log for the request path; LLM usage is tracked in llm_calls below.
+const logger = pino({ level: process.env.LOG_LEVEL || 'info' });
+app.use((req, res, next) => {
+  if (!req.path.startsWith('/api/')) return next();
+  const id = crypto.randomUUID().slice(0, 8);
+  const t0 = Date.now();
+  req.reqId = id;
+  res.on('finish', () => {
+    logger.info({ id, m: req.method, path: req.path, status: res.statusCode, ms: Date.now() - t0 }, 'req');
+  });
+  next();
+});
+
 // ─── Rate limiter (SQLite-backed) ─────────────────────────────────────────────
 // Counters live in the DB so a restart doesn't reset abuse windows and multiple
 // processes share state. Statements are prepared lazily because `db` is created
@@ -156,7 +173,28 @@ const APP_VERSION = '3.1.0';
 const LLM_MAX_RETRIES = 3;
 const LLM_TIMEOUT_MS  = 90_000;
 function makeAnthropic(apiKey) {
-  return new Anthropic({ apiKey: (apiKey || '').trim(), maxRetries: LLM_MAX_RETRIES, timeout: LLM_TIMEOUT_MS });
+  const client = new Anthropic({ apiKey: (apiKey || '').trim(), maxRetries: LLM_MAX_RETRIES, timeout: LLM_TIMEOUT_MS });
+  // Instrument messages.create: every call logs model/tokens/latency to llm_calls
+  // (metadata only — never prompt content). Failures are logged with ok=0.
+  const origCreate = client.messages.create.bind(client.messages);
+  client.messages.create = async (params, opts) => {
+    const t0 = Date.now();
+    try {
+      const resp = await origCreate(params, opts);
+      try {
+        db.prepare('INSERT INTO llm_calls (id, model, inputTokens, outputTokens, cacheReadTokens, latencyMs, ok, createdAt) VALUES (?,?,?,?,?,?,1,?)')
+          .run(crypto.randomUUID(), params?.model || '', resp?.usage?.input_tokens ?? null, resp?.usage?.output_tokens ?? null, resp?.usage?.cache_read_input_tokens ?? null, Date.now() - t0, new Date().toISOString());
+      } catch { /* logging must never break the call */ }
+      return resp;
+    } catch (e) {
+      try {
+        db.prepare('INSERT INTO llm_calls (id, model, latencyMs, ok, createdAt) VALUES (?,?,?,0,?)')
+          .run(crypto.randomUUID(), params?.model || '', Date.now() - t0, new Date().toISOString());
+      } catch { /* ignore */ }
+      throw e;
+    }
+  };
+  return client;
 }
 
 // Mark a stable system prompt as cacheable (cache_control: ephemeral). Prompt
@@ -386,6 +424,18 @@ db.exec(`CREATE TABLE IF NOT EXISTS jobs (
   updatedAt TEXT NOT NULL
 )`);
 db.exec('CREATE INDEX IF NOT EXISTS idx_jobs_user ON jobs(userId, createdAt)');
+// LLM usage log — answers "what does this endpoint / user cost us": model,
+// token counts, latency per call. No prompt content is stored.
+db.exec(`CREATE TABLE IF NOT EXISTS llm_calls (
+  id TEXT PRIMARY KEY,
+  model TEXT,
+  inputTokens INTEGER,
+  outputTokens INTEGER,
+  cacheReadTokens INTEGER,
+  latencyMs INTEGER,
+  ok INTEGER,
+  createdAt TEXT NOT NULL
+)`);
 // Real user votes on marketplace ideas (seed `stars` are curation-time values;
 // votes are earned per-user, one each, and shown separately).
 // Idea lifecycle linking: a business case / VAVE action remembers which
@@ -5373,6 +5423,7 @@ Keep it practical and actionable for an engineering team.`,
 
 // ─── SHOULD-COST ──────────────────────────────────────────────────────────────
 const shouldCostApi = registerShouldCostRoutes(app, { db, requireAuth, rateLimit, makeAnthropic, getCommodityPrices: () => priceCache });
+registerMarketplaceRoutes(app, { db, requireAuth, rateLimit });
 
 // Active rate library with live commodity prices bridged in — shared by the
 // engine-as-tools chat and the agentic cost-down endpoint below.
@@ -5574,41 +5625,7 @@ app.post('/api/pcb-cost', requireAuth, rateLimit(120, 60 * 60 * 1000), (req, res
 // ─── MARKETPLACE ──────────────────────────────────────────────────────────────
 
 // Cheap count for landing-page stats — avoids shipping the full table just to count.
-app.get('/api/marketplace/count', (_req, res) => {
-  try {
-    const row = db.prepare("SELECT COUNT(*) AS c FROM marketplace_ideas WHERE status = 'approved'").get();
-    res.json({ count: row.c });
-  } catch { res.json({ count: 0 }); }
-});
-
-app.get('/api/marketplace', (req, res) => {
-  try {
-    const ideas = db.prepare("SELECT m.*, (SELECT COUNT(*) FROM idea_votes v WHERE v.ideaId = m.id) AS votes FROM marketplace_ideas m WHERE m.status = 'approved' ORDER BY m.stars DESC, m.createdAt DESC").all();
-    res.json(ideas.map(i => ({ ...i, verified: !!i.verified })));
-  } catch (e) { res.status(500).json({ error: e.message }); }
-});
-
-app.post('/api/marketplace', requireAuth, rateLimit(5, 60 * 60 * 1000), validate(SCHEMAS.marketplaceSubmit), (req, res) => {
-  const { title, system, costSavingType, annualSaving, difficulty, timeToImplement, description, ideaData } = req.body;
-  if (!title || !description) return res.status(400).json({ error: 'title and description required' });
-  try {
-    const id = crypto.randomUUID();
-    db.prepare('INSERT INTO marketplace_ideas (id,title,system,costSavingType,annualSaving,difficulty,timeToImplement,description,ideaData,submittedBy,verified,stars,status,createdAt) VALUES (?,?,?,?,?,?,?,?,?,?,0,0,"pending",?)')
-      .run(id, title, system || '', costSavingType || '', annualSaving || '', difficulty || 'Medium', timeToImplement || '', description, ideaData || null, req.user.id, new Date().toISOString());
-    res.json({ ok: true, message: 'Idea submitted for review. Thank you!' });
-  } catch (e) { res.status(500).json({ error: e.message }); }
-});
-
-// Toggle a vote on a marketplace idea (one per user; second call removes it).
-app.post('/api/marketplace/:id/vote', requireAuth, rateLimit(60, 60 * 60 * 1000), (req, res) => {
-  const idea = db.prepare("SELECT id FROM marketplace_ideas WHERE id = ? AND status = 'approved'").get(req.params.id);
-  if (!idea) return res.status(404).json({ error: 'Idea not found.' });
-  const existing = db.prepare('SELECT 1 FROM idea_votes WHERE ideaId = ? AND userId = ?').get(idea.id, req.user.id);
-  if (existing) db.prepare('DELETE FROM idea_votes WHERE ideaId = ? AND userId = ?').run(idea.id, req.user.id);
-  else db.prepare('INSERT INTO idea_votes (ideaId, userId, createdAt) VALUES (?,?,?)').run(idea.id, req.user.id, new Date().toISOString());
-  const votes = db.prepare('SELECT COUNT(*) c FROM idea_votes WHERE ideaId = ?').get(idea.id).c;
-  res.json({ ok: true, voted: !existing, votes });
-});
+// Marketplace routes live in routes/marketplace.mjs (registered below).
 
 // ─── START ────────────────────────────────────────────────────────────────────
 

@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import ButtonSpinner from '../components/ui/ButtonSpinner';
 import { toast } from '../hooks/useToast';
+import { markOnboardingStep } from '../components/OnboardingChecklist';
 import { AUTOMOTIVE_SYSTEMS, getSystemById, getSubassemblyById } from '../data/automotive-catalog';
 import { generateCostReductionIdeas, saveFullResult, ProgressEvent } from '../services/claude-service';
 import { parseCadFile, CadGeometry, formatFileSize } from '../services/cad-parser';
@@ -351,6 +352,7 @@ export default function AnalyzePage() {
       sessionStorage.setItem('analysisSystemName', system.name);
       sessionStorage.setItem('analysisSubName', sub.name);
       saveFullResult(resultId, result, system.name, sub.name);
+      markOnboardingStep('generate');
       navigate('/results');
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : String(err);

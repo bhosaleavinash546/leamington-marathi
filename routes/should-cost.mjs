@@ -234,8 +234,54 @@ app.post('/api/should-cost/export', requireAuth, rateLimit(40, 60 * 60 * 1000), 
     for (const p of curve) vs.push([p.volume, cv(p.unitCost)]);
     XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(vs), 'Volume Sensitivity');
 
-    const buf = XLSX.write(wb, { type: 'buffer', bookType: 'xlsx' });
     const safeName = String(partName || 'should-cost').replace(/[^\w.-]+/g, '_').slice(0, 60);
+
+    // format=pptx → 3-slide negotiation deck (server-side pptxgenjs).
+    if (String(req.query.format || req.body.format || '').toLowerCase() === 'pptx') {
+      const PptxGenJS = (await import('pptxgenjs')).default;
+      const pptx = new PptxGenJS();
+      pptx.defineLayout({ name: 'W', width: 13.33, height: 7.5 });
+      pptx.layout = 'W';
+      const NAVY = '0D1F33', GOLD = 'F59E0B', SLATE = '94A3B8';
+
+      const s1 = pptx.addSlide();
+      s1.background = { color: NAVY };
+      s1.addText('Should-Cost Negotiation Pack', { x: 0.6, y: 0.5, w: 12, h: 0.8, fontSize: 28, bold: true, color: 'FFFFFF' });
+      s1.addText(String(partName || 'Component'), { x: 0.6, y: 1.3, w: 12, h: 0.6, fontSize: 18, color: GOLD });
+      s1.addText([
+        { text: `Total should-cost:  ${sym}${cv(calc.totalShouldCost)} / unit\n`, options: { fontSize: 22, bold: true, color: 'FFFFFF' } },
+        { text: `Monte-Carlo P10–P90:  ${sym}${cv(sim.p10)} – ${sym}${cv(sim.p90)}\n`, options: { fontSize: 15, color: SLATE } },
+        { text: `${matRes.key}  ·  ${procRes.key}  ·  ${region}  ·  ${wNum} kg  ·  ${vNum.toLocaleString()}/yr\n`, options: { fontSize: 13, color: SLATE } },
+        { text: `Material basis: ${priceBasis[matRes.key] ? `${priceBasis[matRes.key].commodityLabel}${pricedAt ? ` (as of ${pricedAt.slice(0, 10)})` : ''}` : 'static library baseline'}   ·   Calibration: ${calc.calibration.applied ? `applied ×${calc.calibration.factor}` : 'none'}\n`, options: { fontSize: 12, color: SLATE } },
+        ...(quotedCost && Number(quotedCost) > 0 ? [{ text: `Supplier quote ${sym}${Number(quotedCost).toFixed(2)} → gap ${sym}${(Number(quotedCost) - cv(calc.totalShouldCost)).toFixed(2)}`, options: { fontSize: 15, bold: true, color: GOLD } }] : []),
+      ], { x: 0.6, y: 2.3, w: 12, h: 3.5 });
+      s1.addText('Deterministic bottom-up estimate — validate against detailed supplier breakdowns before commercial use.', { x: 0.6, y: 6.8, w: 12, h: 0.4, fontSize: 10, italic: true, color: SLATE });
+
+      const s2 = pptx.addSlide();
+      s2.background = { color: NAVY };
+      s2.addText('Cost Breakdown Structure', { x: 0.6, y: 0.4, w: 12, h: 0.6, fontSize: 22, bold: true, color: 'FFFFFF' });
+      const rows2 = [[{ text: 'Cost element', options: { bold: true, color: 'FFFFFF' } }, { text: `Value (${currency})`, options: { bold: true, color: 'FFFFFF' } }, { text: 'Share %', options: { bold: true, color: 'FFFFFF' } }]];
+      for (const [k, label] of Object.entries(BREAKDOWN_LABELS)) {
+        if (b[k]) rows2.push([{ text: label, options: { color: 'DDE3EA' } }, { text: String(cv(b[k].value)), options: { color: 'DDE3EA' } }, { text: String(b[k].pct ?? ''), options: { color: 'DDE3EA' } }]);
+      }
+      rows2.push([{ text: 'TOTAL', options: { bold: true, color: GOLD } }, { text: String(cv(calc.totalShouldCost)), options: { bold: true, color: GOLD } }, { text: '100', options: { bold: true, color: GOLD } }]);
+      s2.addTable(rows2, { x: 0.6, y: 1.2, w: 8.5, fontSize: 12, border: { type: 'solid', color: '1E3A5F', pt: 0.5 }, fill: { color: '0B1A2C' } });
+
+      const s3 = pptx.addSlide();
+      s3.background = { color: NAVY };
+      s3.addText('Volume Sensitivity (tooling amortisation)', { x: 0.6, y: 0.4, w: 12, h: 0.6, fontSize: 22, bold: true, color: 'FFFFFF' });
+      const rows3 = [[{ text: 'Annual volume', options: { bold: true, color: 'FFFFFF' } }, { text: `Unit cost (${currency})`, options: { bold: true, color: 'FFFFFF' } }]];
+      for (const p of curve) rows3.push([{ text: p.volume.toLocaleString(), options: { color: 'DDE3EA' } }, { text: String(cv(p.unitCost)), options: { color: 'DDE3EA' } }]);
+      s3.addTable(rows3, { x: 0.6, y: 1.2, w: 6.5, fontSize: 12, border: { type: 'solid', color: '1E3A5F', pt: 0.5 }, fill: { color: '0B1A2C' } });
+      s3.addText(`Negotiation anchor: target P50 ${sym}${cv(sim.p50)}; anything above P90 ${sym}${cv(sim.p90)} is outside the modelled range.`, { x: 0.6, y: 6.5, w: 12, h: 0.5, fontSize: 13, color: GOLD });
+
+      const pbuf = await pptx.write({ outputType: 'nodebuffer' });
+      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.presentationml.presentation');
+      res.setHeader('Content-Disposition', `attachment; filename="Negotiation_${safeName}.pptx"`);
+      return res.send(pbuf);
+    }
+
+    const buf = XLSX.write(wb, { type: 'buffer', bookType: 'xlsx' });
     res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     res.setHeader('Content-Disposition', `attachment; filename="CBS_${safeName}.xlsx"`);
     res.send(buf);

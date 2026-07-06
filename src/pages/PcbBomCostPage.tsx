@@ -119,6 +119,7 @@ export default function PcbBomCostPage() {
 
   return (
     <div className="min-h-screen bg-navy-950 pt-20 pb-16 px-4">
+      <div className="lg:hidden max-w-3xl mx-auto mb-4 px-3 py-2 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-200/90 text-xs">This data-dense workspace is best used on a desktop screen — editing tables here is cramped on mobile.</div>
       <div className="max-w-6xl mx-auto">
         <div className="flex items-start gap-3 mb-8">
           <div className="w-12 h-12 rounded-xl bg-teal-500/15 border border-teal-500/30 flex items-center justify-center flex-shrink-0"><CircuitBoard size={22} className="text-teal-400" /></div>

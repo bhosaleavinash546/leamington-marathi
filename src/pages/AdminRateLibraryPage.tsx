@@ -202,6 +202,7 @@ export default function AdminRateLibraryPage() {
 
   if (forbidden) return (
     <div className="min-h-screen bg-navy-950 pt-24 px-4">
+      <div className="lg:hidden max-w-3xl mx-auto mb-4 px-3 py-2 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-200/90 text-xs">This data-dense workspace is best used on a desktop screen — editing tables here is cramped on mobile.</div>
       <div className="max-w-lg mx-auto text-center bg-navy-900 border border-white/10 rounded-2xl p-8">
         <ShieldAlert size={32} className="text-amber-400 mx-auto mb-3" />
         <h1 className="text-white text-lg font-semibold mb-2">Admin access required</h1>

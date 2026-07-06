@@ -108,20 +108,36 @@ export default function BomAnalysisPage() {
     XLSX.writeFile(wb, 'BrainSpark_BOM_Template.xlsx');
   }
 
-  async function runBomAnalysis() {
+  // Checkpoint key: a BOM run survives tab close/refresh — completed rows are
+  // saved after each part and the run resumes from the first unfinished row.
+  const CKPT_KEY = 'brainspark_bom_checkpoint_v1';
+
+  async function runBomAnalysis(resume = false) {
     if (!rows.length || !apiKey.trim()) return;
     setRunning(true);
-    setResults([]);
-    setProgress(0);
     setError('');
     const token = (() => { try { return JSON.parse(localStorage.getItem('brainspark_auth') || '{}').token; } catch { return null; } })();
-    const batchResults: BomResult[] = [];
+
+    // Resume: restore completed results and skip those rows.
+    let batchResults: BomResult[] = [];
+    let startAt = 0;
+    if (resume) {
+      try {
+        const ck = JSON.parse(localStorage.getItem(CKPT_KEY) || 'null');
+        if (ck && Array.isArray(ck.results) && ck.rowsFingerprint === rows.map(r => r.partName).join('|')) {
+          batchResults = ck.results;
+          startAt = ck.results.length;
+        }
+      } catch { /* fresh run */ }
+    }
+    setResults([...batchResults]);
+    setProgress(Math.round((startAt / rows.length) * 100));
 
     const controller = new AbortController();
     abortRef.current = controller;
     setCancelled(false);
 
-    for (let i = 0; i < rows.length; i++) {
+    for (let i = startAt; i < rows.length; i++) {
       if (controller.signal.aborted) break;
       const row = rows[i];
       setCurrentPart(row.partName);
@@ -165,12 +181,28 @@ export default function BomAnalysisPage() {
         if (controller.signal.aborted) break;
         batchResults.push({ partName: row.partName, ideasCount: 0, quickWins: 0 });
       }
+      // Checkpoint after every part so a refresh/crash never loses finished work.
+      try {
+        localStorage.setItem(CKPT_KEY, JSON.stringify({ rowsFingerprint: rows.map(r => r.partName).join('|'), results: batchResults, savedAt: Date.now() }));
+      } catch { /* storage full — run continues uncheckpointed */ }
+      setResults([...batchResults]);
     }
     setResults(batchResults);
     setProgress(100);
     setCurrentPart('');
     setRunning(false);
+    if (!abortRef.current?.signal.aborted && batchResults.length >= rows.length) {
+      localStorage.removeItem(CKPT_KEY);   // completed — clear the checkpoint
+    }
   }
+
+  // Offer resume when a matching checkpoint exists for the loaded BOM.
+  const hasCheckpoint = (() => {
+    try {
+      const ck = JSON.parse(localStorage.getItem(CKPT_KEY) || 'null');
+      return !!(ck && rows.length && ck.rowsFingerprint === rows.map(r => r.partName).join('|') && ck.results.length < rows.length);
+    } catch { return false; }
+  })();
 
   function exportBomResults() {
     const wb = XLSX.utils.book_new();
@@ -242,12 +274,21 @@ export default function BomAnalysisPage() {
               ))}
             </div>
             <button
-              onClick={runBomAnalysis}
+              onClick={() => runBomAnalysis(false)}
               disabled={running || !apiKey.trim()}
               className="mt-4 w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-gold-500 hover:bg-gold-400 disabled:opacity-40 text-navy-950 font-bold transition-all shadow-glow-gold"
             >
               {running ? <><ButtonSpinner size={18} /> Analysing {rows.length} parts…</> : <><Zap size={18} /> Run BOM Analysis</>}
             </button>
+            {hasCheckpoint && !running && (
+              <button
+                onClick={() => runBomAnalysis(true)}
+                disabled={!apiKey.trim()}
+                className="mt-2 w-full py-2.5 rounded-xl bg-teal-500/15 border border-teal-500/30 text-teal-200 text-sm font-semibold hover:bg-teal-500/25 transition"
+              >
+                Resume previous run (progress was checkpointed)
+              </button>
+            )}
             {running && (
               <div className="mt-3">
                 <div className="flex items-center justify-between text-xs text-slate-500 mb-1">

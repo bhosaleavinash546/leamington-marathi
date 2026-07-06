@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { Calculator, ChevronDown, Cpu, ShieldCheck, Sparkles, Database } from 'lucide-react';
 import ButtonSpinner from '../components/ui/ButtonSpinner';
 import { useAuth } from '../contexts/AuthContext';
+import { markOnboardingStep } from '../components/OnboardingChecklist';
 import { CURRENCIES, COST_COMPONENTS, FALLBACK_MATERIALS, FALLBACK_PROCESSES, FALLBACK_REGIONS } from '../constants/costing';
 
 interface CostComponent { value: number; pct: number; }
@@ -135,6 +136,7 @@ export default function ShouldCostPage() {
       const data = await r.json();
       if (reqId !== calcReqRef.current) return;   // a newer request (e.g. currency change) superseded this
       setResult(data);
+      markOnboardingStep('shouldcost');
     } catch (e) {
       if (reqId !== calcReqRef.current) return;
       setError(e instanceof Error ? e.message : 'Calculation failed');
@@ -158,6 +160,7 @@ export default function ShouldCostPage() {
       const d = await r.json().catch(() => ({}));
       if (!r.ok) throw new Error(d.error || 'Could not save the quote');
       setTeachMsg(`Learned — the engine is now calibrated from ${d.quotes} of your quote${d.quotes === 1 ? '' : 's'}.`);
+      markOnboardingStep('teach');
       setTeachPrice('');
       await handleCalc();   // re-estimate with the updated calibration
     } catch (e) {
@@ -167,11 +170,11 @@ export default function ShouldCostPage() {
 
   // Download the server-generated cost-breakdown-structure (.xlsx negotiation pack).
   const [exporting, setExporting] = useState(false);
-  async function exportCbs() {
+  async function exportCbs(format: 'xlsx' | 'pptx' = 'xlsx') {
     if (!token || !weightKg || !annualVolume) return;
     setExporting(true);
     try {
-      const r = await fetch('/api/should-cost/export', {
+      const r = await fetch(`/api/should-cost/export${format === 'pptx' ? '?format=pptx' : ''}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({ partName, material, process, weightKg: Number(weightKg), annualVolume: Number(annualVolume), region, currency, quotedCost: quotedCost ? Number(quotedCost) : undefined }),
@@ -181,7 +184,7 @@ export default function ShouldCostPage() {
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `CBS_${(partName || 'should-cost').replace(/[^\w.-]+/g, '_').slice(0, 60)}.xlsx`;
+      a.download = `${format === 'pptx' ? 'Negotiation' : 'CBS'}_${(partName || 'should-cost').replace(/[^\w.-]+/g, '_').slice(0, 60)}.${format}`;
       document.body.appendChild(a); a.click(); a.remove();
       URL.revokeObjectURL(url);
     } catch (e) {
@@ -528,13 +531,22 @@ export default function ShouldCostPage() {
                 </div>
 
                 {/* Export the cost-breakdown-structure (negotiation pack) */}
-                <button
-                  onClick={exportCbs}
-                  disabled={exporting}
-                  className="w-full py-2.5 rounded-xl bg-white/5 border border-white/15 text-slate-200 text-sm font-semibold hover:bg-white/10 disabled:opacity-50 transition"
-                >
-                  {exporting ? 'Generating…' : 'Export cost breakdown (.xlsx negotiation pack)'}
-                </button>
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    onClick={() => exportCbs('xlsx')}
+                    disabled={exporting}
+                    className="py-2.5 rounded-xl bg-white/5 border border-white/15 text-slate-200 text-sm font-semibold hover:bg-white/10 disabled:opacity-50 transition"
+                  >
+                    {exporting ? 'Generating…' : 'Export CBS (.xlsx)'}
+                  </button>
+                  <button
+                    onClick={() => exportCbs('pptx')}
+                    disabled={exporting}
+                    className="py-2.5 rounded-xl bg-white/5 border border-white/15 text-slate-200 text-sm font-semibold hover:bg-white/10 disabled:opacity-50 transition"
+                  >
+                    {exporting ? 'Generating…' : 'Negotiation deck (.pptx)'}
+                  </button>
+                </div>
 
                 {/* Agentic cost-down — engine-verified alternatives */}
                 <div className="pt-2">
