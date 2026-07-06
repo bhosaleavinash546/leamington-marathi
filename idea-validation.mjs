@@ -165,6 +165,23 @@ export function validateIdea(raw, index = 0, ctx = {}) {
     }
   }
 
+  // ── Named-OEM benchmark gating ───────────────────────────────────────────
+  // A specific "BMW/Toyota/NIO does X" claim is only presented as trusted when
+  // retrieval evidence backs it; otherwise it is explicitly tagged unverified
+  // and cannot carry benchmarked+ confidence. Soft claims without an OEM name
+  // are unaffected.
+  const OEM_RE = /\b(bmw|mercedes|audi|porsche|volkswagen|\bvw\b|volvo|toyota|lexus|ford|cadillac|jeep|stellantis|tesla|nio|xpeng|li auto|byd|hongqi|yangwang|aito|rivian|jaguar|land rover|hyundai|kia|magna|bosch|zf\b|continental)\b/i;
+  if (idea.benchmarkReference && OEM_RE.test(idea.benchmarkReference)) {
+    const backed = idea.searchDataUsed === true || idea.evidenceSources.some(s => s.confidence === 'high');
+    if (!backed) {
+      if (!/^unverified:/i.test(idea.benchmarkReference)) idea.benchmarkReference = `unverified: ${idea.benchmarkReference}`;
+      if (idea.confidenceLevel === 'verified' || idea.confidenceLevel === 'benchmarked') {
+        idea.confidenceLevel = 'estimated';
+        flags.push('oem-claim-unverified');
+      }
+    }
+  }
+
   return idea;
 }
 

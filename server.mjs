@@ -27,6 +27,7 @@ import { applyLiveMaterialPrices } from './material-commodity.mjs';
 import { buildCostTools, runToolLoop } from './cost-tools.mjs';
 import { messagesJson } from './llm-json.mjs';
 import { validate, SCHEMAS } from './schemas.mjs';
+import { buildIndex } from './idea-index.mjs';
 import { costBom, COMPONENT_TYPES, COMPONENT_CLASSES } from './pcb-cost.mjs';
 import { registerShouldCostRoutes } from './routes/should-cost.mjs';
 import { registerRateLibraryRoutes } from './routes/rate-library.mjs';
@@ -385,6 +386,18 @@ db.exec(`CREATE TABLE IF NOT EXISTS jobs (
   updatedAt TEXT NOT NULL
 )`);
 db.exec('CREATE INDEX IF NOT EXISTS idx_jobs_user ON jobs(userId, createdAt)');
+// Real user votes on marketplace ideas (seed `stars` are curation-time values;
+// votes are earned per-user, one each, and shown separately).
+// Idea lifecycle linking: a business case / VAVE action remembers which
+// marketplace idea spawned it, so the pipeline shows idea → BC → action chains.
+try { db.exec('ALTER TABLE idea_business_cases ADD COLUMN sourceIdeaId TEXT'); } catch { /* exists */ }
+try { db.exec('ALTER TABLE vave_actions ADD COLUMN sourceIdeaId TEXT'); } catch { /* exists */ }
+db.exec(`CREATE TABLE IF NOT EXISTS idea_votes (
+  ideaId TEXT NOT NULL,
+  userId TEXT NOT NULL,
+  createdAt TEXT NOT NULL,
+  PRIMARY KEY (ideaId, userId)
+)`);
 // Bump when the COMMODITY_BASELINE seed is refreshed. On mismatch we drop any
 // persisted prices so the new authentic seed wins over stale cached values.
 const PRICE_BASELINE_VERSION = '2026-07-03';
@@ -3084,6 +3097,8 @@ seedMarketplaceIdeasFromFile('marketplace-driveline-ideas.json', 'premium-SUV dr
 // 300 premium OFF-ROAD LUXURY part-level ideas across 20 commodities (800V battery/
 // EDU/inverter, cooling, BIW, body, chassis, driveline, interior/exterior).
 seedMarketplaceIdeasFromFile('marketplace-offroad-luxury-ideas.json', 'off-road luxury cost-reduction ideas');
+// 45 domain-expansion ideas: tolerance/GD&T relaxation, modern joining, E/E & software.
+seedMarketplaceIdeasFromFile('marketplace-domain-expansion-ideas.json', 'domain-expansion ideas (GD&T / joining / E-E)');
 
 const CACHE_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
 
@@ -3520,6 +3535,53 @@ app.delete('/api/settings/api-key', requireAuth, (req, res) => {
   db.prepare('DELETE FROM api_credentials WHERE userId = ?').run(req.user.id);
   res.json({ ok: true });
 });
+
+// ─── Idea retrieval (BM25 over the marketplace corpus) ───────────────────────
+// Powers global search and the "prior art" pre-pass in idea generation: before
+// generating, we retrieve the closest existing ideas so the model must go deeper
+// or different instead of re-inventing what the marketplace already holds.
+let _ideaIndex = null, _ideaIndexCount = -1;
+function getIdeaIndex() {
+  const n = db.prepare("SELECT COUNT(*) c FROM marketplace_ideas WHERE status='approved'").get().c;
+  if (_ideaIndex && n === _ideaIndexCount) return _ideaIndex;
+  const rows = db.prepare("SELECT id, title, system, annualSaving, description FROM marketplace_ideas WHERE status='approved'").all();
+  _ideaIndex = buildIndex(rows.map(r => ({ id: r.id, title: r.title, system: r.system, annualSaving: r.annualSaving, text: `${r.title} ${r.system} ${r.description}` })));
+  _ideaIndexCount = n;
+  return _ideaIndex;
+}
+
+// Global search: marketplace ideas + the caller's own projects and quotes.
+app.get('/api/search', requireAuth, (req, res) => {
+  const q = String(req.query.q || '').slice(0, 200);
+  if (!q.trim()) return res.status(400).json({ error: 'q is required' });
+  const ideas = getIdeaIndex().search(q, 8).map(({ doc, score }) => ({ type: 'idea', id: doc.id, title: doc.title, system: doc.system, annualSaving: doc.annualSaving, score: Number(score.toFixed(2)) }));
+  const like = `%${q.replace(/[%_]/g, '')}%`;
+  const projects = db.prepare('SELECT id, systemName, subassemblyName, createdAt FROM projects WHERE userId = ? AND (systemName LIKE ? OR subassemblyName LIKE ?) ORDER BY createdAt DESC LIMIT 5')
+    .all(req.user.id, like, like).map(p => ({ type: 'project', id: p.id, title: `${p.systemName} — ${p.subassemblyName}`, createdAt: p.createdAt }));
+  const quotes = db.prepare('SELECT id, partName, material, process, actualPriceEur FROM cost_quotes WHERE userId = ? AND (partName LIKE ? OR material LIKE ? OR process LIKE ?) LIMIT 5')
+    .all(req.user.id, like, like, like).map(qr => ({ type: 'quote', id: qr.id, title: `${qr.partName} (${qr.material} / ${qr.process})`, priceEur: qr.actualPriceEur }));
+  res.json({ query: q, ideas, projects, quotes });
+});
+
+// Prior-art + negative-feedback context for the generation prompt.
+function buildRetrievalContext(userId, systemName, subassemblyName, partName) {
+  const parts = [];
+  try {
+    const hits = getIdeaIndex().search(`${systemName} ${subassemblyName} ${partName}`, 8);
+    if (hits.length) {
+      parts.push('EXISTING MARKETPLACE IDEAS (prior art — do NOT duplicate these; propose ideas that are materially different or go one level deeper):');
+      for (const { doc } of hits) parts.push(`- ${doc.title} [${doc.system}]`);
+    }
+  } catch { /* index unavailable — skip */ }
+  try {
+    const fb = db.prepare("SELECT category, reason, COUNT(*) n FROM feedback_signals WHERE userId = ? GROUP BY category, reason ORDER BY n DESC LIMIT 8").all(userId);
+    if (fb.length) {
+      parts.push('THIS USER PREVIOUSLY REJECTED ideas for these reasons (avoid repeating them):');
+      for (const f of fb) parts.push(`- ${f.category}: ${f.reason} (×${f.n})`);
+    }
+  } catch { /* no signals */ }
+  return parts.length ? '\n\n' + parts.join('\n') : '';
+}
 
 // ─── ANALYSIS ROUTE ───────────────────────────────────────────────────────────
 
@@ -4750,9 +4812,8 @@ app.post('/api/cad-analyze', requireAuth, rateLimit(15, 60 * 60 * 1000), async (
     if (geometry.isImage && typeof geometry.base64Data === 'string' && geometry.base64Data.length > 7_000_000) {
       return res.status(413).json({ error: 'Drawing image too large (max ~5 MB). Please downscale and retry.' });
     }
-    if (geometry.isImage && geometry.mimeType === 'application/pdf') {
-      return res.status(400).json({ error: 'PDF drawings are not supported — export the sheet as a PNG/JPG image.' });
-    }
+    // PDF drawing packs are supported natively via document blocks (SDK ≥0.39):
+    // multi-sheet packs get per-page vision. Size guard above still applies.
 
     await refreshPriceCache(null).catch(() => {});
     const currency = FX_CURRENCIES.includes(String(config.currency || 'EUR').toUpperCase()) ? String(config.currency).toUpperCase() : 'EUR';
@@ -4785,8 +4846,14 @@ app.post('/api/cad-analyze', requireAuth, rateLimit(15, 60 * 60 * 1000), async (
 
     // Narrative prompt: cost numbers are given (deterministic) or requested (fallback).
     const prompt = buildCadCostPrompt(geometry, config, getPriceString(), { costBreakdown, currency, sym });
-    const messages = geometry.isImage && geometry.base64Data
-      ? [{ role: 'user', content: [{ type: 'image', source: { type: 'base64', media_type: geometry.mimeType || 'image/png', data: geometry.base64Data } }, { type: 'text', text: prompt }] }]
+    // PDFs travel as a document block (multi-page vision); raster images as image blocks.
+    const mediaBlock = geometry.isImage && geometry.base64Data
+      ? (geometry.mimeType === 'application/pdf'
+          ? { type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: geometry.base64Data } }
+          : { type: 'image', source: { type: 'base64', media_type: geometry.mimeType || 'image/png', data: geometry.base64Data } })
+      : null;
+    const messages = mediaBlock
+      ? [{ role: 'user', content: [mediaBlock, { type: 'text', text: prompt }] }]
       : [{ role: 'user', content: prompt }];
 
     const response = await client.messages.create({ model: 'claude-opus-4-8', max_tokens: 4000, system: cachedSystem(CAD_COST_SYSTEM_PROMPT), messages }, { timeout: 180_000, maxRetries: 1 });
@@ -4972,7 +5039,8 @@ app.post('/api/analyze', requireAuth, rateLimit(40, 60 * 60 * 1000), async (req,
   }
 
   const client = makeAnthropic(config.apiKey);
-  const messages = [{ role: 'user', content: buildAnalysisPrompt(config, sysName, subName, prtName, enableSearch, cadGeometry) }];
+  const retrievalCtx = buildRetrievalContext(req.user.id, sysName, subName, prtName);
+  const messages = [{ role: 'user', content: buildAnalysisPrompt(config, sysName, subName, prtName, enableSearch, cadGeometry) + retrievalCtx }];
   const sources = [];
 
   emit({ type: 'connecting', message: 'Connecting to AI chief engineer...' });
@@ -5515,7 +5583,7 @@ app.get('/api/marketplace/count', (_req, res) => {
 
 app.get('/api/marketplace', (req, res) => {
   try {
-    const ideas = db.prepare("SELECT * FROM marketplace_ideas WHERE status = 'approved' ORDER BY stars DESC, createdAt DESC").all();
+    const ideas = db.prepare("SELECT m.*, (SELECT COUNT(*) FROM idea_votes v WHERE v.ideaId = m.id) AS votes FROM marketplace_ideas m WHERE m.status = 'approved' ORDER BY m.stars DESC, m.createdAt DESC").all();
     res.json(ideas.map(i => ({ ...i, verified: !!i.verified })));
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
@@ -5531,19 +5599,30 @@ app.post('/api/marketplace', requireAuth, rateLimit(5, 60 * 60 * 1000), validate
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
+// Toggle a vote on a marketplace idea (one per user; second call removes it).
+app.post('/api/marketplace/:id/vote', requireAuth, rateLimit(60, 60 * 60 * 1000), (req, res) => {
+  const idea = db.prepare("SELECT id FROM marketplace_ideas WHERE id = ? AND status = 'approved'").get(req.params.id);
+  if (!idea) return res.status(404).json({ error: 'Idea not found.' });
+  const existing = db.prepare('SELECT 1 FROM idea_votes WHERE ideaId = ? AND userId = ?').get(idea.id, req.user.id);
+  if (existing) db.prepare('DELETE FROM idea_votes WHERE ideaId = ? AND userId = ?').run(idea.id, req.user.id);
+  else db.prepare('INSERT INTO idea_votes (ideaId, userId, createdAt) VALUES (?,?,?)').run(idea.id, req.user.id, new Date().toISOString());
+  const votes = db.prepare('SELECT COUNT(*) c FROM idea_votes WHERE ideaId = ?').get(idea.id).c;
+  res.json({ ok: true, voted: !existing, votes });
+});
+
 // ─── START ────────────────────────────────────────────────────────────────────
 
 // ─── VAVE Action Tracking ─────────────────────────────────────────────────────
 
 app.post('/api/vave-actions', requireAuth, (req, res) => {
-  const { ideaTitle, ideaDescription, systemName, subassemblyName, partName, targetSaving, projectId } = req.body;
+  const { ideaTitle, ideaDescription, systemName, subassemblyName, partName, targetSaving, projectId, sourceIdeaId } = req.body;
   if (!ideaTitle) return res.status(400).json({ error: 'ideaTitle is required' });
   const id = crypto.randomUUID();
   const now = new Date().toISOString();
   db.prepare(`INSERT INTO vave_actions
-    (id,userId,projectId,ideaTitle,ideaDescription,systemName,subassemblyName,partName,targetSaving,stage,createdAt,updatedAt)
-    VALUES (?,?,?,?,?,?,?,?,?,'Identified',?,?)`)
-    .run(id, req.user.id, projectId || null, ideaTitle, ideaDescription || '', systemName || '', subassemblyName || '', partName || '', targetSaving || '', now, now);
+    (id,userId,projectId,ideaTitle,ideaDescription,systemName,subassemblyName,partName,targetSaving,stage,sourceIdeaId,createdAt,updatedAt)
+    VALUES (?,?,?,?,?,?,?,?,?,'Identified',?,?,?)`)
+    .run(id, req.user.id, projectId || null, ideaTitle, ideaDescription || '', systemName || '', subassemblyName || '', partName || '', targetSaving || '', String(sourceIdeaId || '') || null, now, now);
   res.json({ id, stage: 'Identified', createdAt: now });
 });
 
@@ -5784,7 +5863,7 @@ app.post('/api/business-cases', requireAuth, rateLimit(30, 60 * 60 * 1000), (req
     ideaTitle, ideaSource = 'manual', commodityName = '', systemName = '',
     vehicleData = [], savingPerPart = 0, toolingCost = 0, tvCost = 0,
     implementationYear = new Date().getFullYear() + 1, implementationMonths = 12,
-    gate = 'G0', notes = '', ideaData,
+    gate = 'G0', notes = '', ideaData, sourceIdeaId,
   } = req.body;
 
   if (!ideaTitle?.trim()) return res.status(400).json({ error: 'ideaTitle is required' });
@@ -5803,13 +5882,13 @@ app.post('/api/business-cases', requireAuth, rateLimit(30, 60 * 60 * 1000), (req
       (id, userId, userName, ideaTitle, ideaSource, commodityName, systemName,
        vehicleData, savingPerPart, totalAnnualSaving, toolingCost, tvCost,
        roi, irr, paybackMonths, implementationYear, implementationMonths,
-       gate, ideaNumber, notes, ideaData, createdAt, updatedAt)
-    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+       gate, ideaNumber, notes, ideaData, sourceIdeaId, createdAt, updatedAt)
+    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
   `).run(
     id, userId, userName, ideaTitle.trim(), ideaSource, commodityName, systemName,
     JSON.stringify(vehicleData), savingPerPart, metrics.totalAnnualSaving,
     toolingCost, tvCost, metrics.roi, metrics.irr, metrics.paybackMonths,
-    implementationYear, implementationMonths, gate, ideaNumber, notes, ideaData || null, now, now,
+    implementationYear, implementationMonths, gate, ideaNumber, notes, ideaData || null, String(sourceIdeaId || '') || null, now, now,
   );
 
   const row = db.prepare('SELECT * FROM idea_business_cases WHERE id = ?').get(id);

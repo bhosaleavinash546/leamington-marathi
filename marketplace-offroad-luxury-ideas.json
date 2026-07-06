@@ -59,7 +59,16 @@
         "High-pressure die casting (giga/mega press)",
         "Vacuum-assisted HPDC",
         "Structural HPDC + T7 heat treat"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "2.5 kg multi-piece steel assembly → single Al structural casting, 60k/yr, Germany",
+        "baselinePerPart": 10.52,
+        "proposedPerPart": 10.48,
+        "savingPct": 0.4,
+        "direction": "confirmed",
+        "note": "Al casting is lighter (−28% mass) and deletes the welding op — the engine compares full make-routes.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -120,7 +129,16 @@
         "CAE topology optimisation",
         "Variable-gauge casting/roll-forming",
         "AI machining path optimisation"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "2.0 kg part down-gauged 12% at equal process, 60k/yr, Germany",
+        "baselinePerPart": 5.81,
+        "proposedPerPart": 5.23,
+        "savingPct": 10,
+        "direction": "confirmed",
+        "note": "Pure mass take-out on the same process; savings scale with the material share.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -182,7 +200,8 @@
         "Closed-loop scrap remelt",
         "Mass-balance certified feedstock",
         "Water-based / powder coating"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -243,7 +262,8 @@
         "Weld-bonding (adhesive + spot)",
         "Self-pierce riveting",
         "Moulded snap-fit assembly"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -304,7 +324,8 @@
         "Tool commonisation",
         "Modular fixturing",
         "Family-mould / shared die"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -367,7 +388,16 @@
         "High-pressure die casting (giga/mega press)",
         "Vacuum-assisted HPDC",
         "Structural HPDC + T7 heat treat"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "2.5 kg multi-piece steel assembly → single Al structural casting, 60k/yr, Germany",
+        "baselinePerPart": 10.52,
+        "proposedPerPart": 10.48,
+        "savingPct": 0.4,
+        "direction": "confirmed",
+        "note": "Al casting is lighter (−28% mass) and deletes the welding op — the engine compares full make-routes.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -428,7 +458,16 @@
         "CAE topology optimisation",
         "Variable-gauge casting/roll-forming",
         "AI machining path optimisation"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "2.0 kg part down-gauged 12% at equal process, 60k/yr, Germany",
+        "baselinePerPart": 5.81,
+        "proposedPerPart": 5.23,
+        "savingPct": 10,
+        "direction": "confirmed",
+        "note": "Pure mass take-out on the same process; savings scale with the material share.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -490,7 +529,8 @@
         "Closed-loop scrap remelt",
         "Mass-balance certified feedstock",
         "Water-based / powder coating"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -551,7 +591,8 @@
         "Weld-bonding (adhesive + spot)",
         "Self-pierce riveting",
         "Moulded snap-fit assembly"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -612,7 +653,8 @@
         "Tool commonisation",
         "Modular fixturing",
         "Family-mould / shared die"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -675,7 +717,16 @@
         "High-pressure die casting (giga/mega press)",
         "Vacuum-assisted HPDC",
         "Structural HPDC + T7 heat treat"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "2.5 kg multi-piece steel assembly → single Al structural casting, 60k/yr, Germany",
+        "baselinePerPart": 10.52,
+        "proposedPerPart": 10.48,
+        "savingPct": 0.4,
+        "direction": "confirmed",
+        "note": "Al casting is lighter (−28% mass) and deletes the welding op — the engine compares full make-routes.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -736,7 +787,16 @@
         "CAE topology optimisation",
         "Variable-gauge casting/roll-forming",
         "AI machining path optimisation"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "2.0 kg part down-gauged 12% at equal process, 60k/yr, Germany",
+        "baselinePerPart": 5.81,
+        "proposedPerPart": 5.23,
+        "savingPct": 10,
+        "direction": "confirmed",
+        "note": "Pure mass take-out on the same process; savings scale with the material share.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -798,7 +858,8 @@
         "Closed-loop scrap remelt",
         "Mass-balance certified feedstock",
         "Water-based / powder coating"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -859,7 +920,8 @@
         "Weld-bonding (adhesive + spot)",
         "Self-pierce riveting",
         "Moulded snap-fit assembly"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -920,7 +982,8 @@
         "Tool commonisation",
         "Modular fixturing",
         "Family-mould / shared die"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -983,7 +1046,16 @@
         "High-pressure die casting (giga/mega press)",
         "Vacuum-assisted HPDC",
         "Structural HPDC + T7 heat treat"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "2.5 kg multi-piece steel assembly → single Al structural casting, 60k/yr, Germany",
+        "baselinePerPart": 10.52,
+        "proposedPerPart": 10.48,
+        "savingPct": 0.4,
+        "direction": "confirmed",
+        "note": "Al casting is lighter (−28% mass) and deletes the welding op — the engine compares full make-routes.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -1045,7 +1117,16 @@
         "Precision closed-die forging",
         "Warm forging + hard turning",
         "Cross-wedge-rolled preform + finish forge"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "1.5 kg HS-steel part: billet machining → hot forge + finish machining, 60k/yr, Germany",
+        "baselinePerPart": 42.27,
+        "proposedPerPart": 10.82,
+        "savingPct": 74.4,
+        "direction": "confirmed",
+        "note": "Forged near-net + op-20 machining vs full billet machining.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -1106,7 +1187,16 @@
         "CAE topology optimisation",
         "Variable-gauge casting/roll-forming",
         "AI machining path optimisation"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "2.0 kg part down-gauged 12% at equal process, 60k/yr, Germany",
+        "baselinePerPart": 5.81,
+        "proposedPerPart": 5.23,
+        "savingPct": 10,
+        "direction": "confirmed",
+        "note": "Pure mass take-out on the same process; savings scale with the material share.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -1168,7 +1258,8 @@
         "Closed-loop scrap remelt",
         "Mass-balance certified feedstock",
         "Water-based / powder coating"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -1229,7 +1320,8 @@
         "Tool commonisation",
         "Modular fixturing",
         "Family-mould / shared die"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -1292,7 +1384,16 @@
         "High-pressure die casting (giga/mega press)",
         "Vacuum-assisted HPDC",
         "Structural HPDC + T7 heat treat"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "2.5 kg multi-piece steel assembly → single Al structural casting, 60k/yr, Germany",
+        "baselinePerPart": 10.52,
+        "proposedPerPart": 10.48,
+        "savingPct": 0.4,
+        "direction": "confirmed",
+        "note": "Al casting is lighter (−28% mass) and deletes the welding op — the engine compares full make-routes.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -1354,7 +1455,16 @@
         "Precision closed-die forging",
         "Warm forging + hard turning",
         "Cross-wedge-rolled preform + finish forge"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "1.5 kg HS-steel part: billet machining → hot forge + finish machining, 60k/yr, Germany",
+        "baselinePerPart": 42.27,
+        "proposedPerPart": 10.82,
+        "savingPct": 74.4,
+        "direction": "confirmed",
+        "note": "Forged near-net + op-20 machining vs full billet machining.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -1415,7 +1525,16 @@
         "CAE topology optimisation",
         "Variable-gauge casting/roll-forming",
         "AI machining path optimisation"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "2.0 kg part down-gauged 12% at equal process, 60k/yr, Germany",
+        "baselinePerPart": 5.81,
+        "proposedPerPart": 5.23,
+        "savingPct": 10,
+        "direction": "confirmed",
+        "note": "Pure mass take-out on the same process; savings scale with the material share.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -1477,7 +1596,8 @@
         "Closed-loop scrap remelt",
         "Mass-balance certified feedstock",
         "Water-based / powder coating"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -1538,7 +1658,8 @@
         "Tool commonisation",
         "Modular fixturing",
         "Family-mould / shared die"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -1601,7 +1722,16 @@
         "High-pressure die casting (giga/mega press)",
         "Vacuum-assisted HPDC",
         "Structural HPDC + T7 heat treat"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "2.5 kg multi-piece steel assembly → single Al structural casting, 60k/yr, Germany",
+        "baselinePerPart": 10.52,
+        "proposedPerPart": 10.48,
+        "savingPct": 0.4,
+        "direction": "confirmed",
+        "note": "Al casting is lighter (−28% mass) and deletes the welding op — the engine compares full make-routes.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -1663,7 +1793,16 @@
         "Precision closed-die forging",
         "Warm forging + hard turning",
         "Cross-wedge-rolled preform + finish forge"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "1.5 kg HS-steel part: billet machining → hot forge + finish machining, 60k/yr, Germany",
+        "baselinePerPart": 42.27,
+        "proposedPerPart": 10.82,
+        "savingPct": 74.4,
+        "direction": "confirmed",
+        "note": "Forged near-net + op-20 machining vs full billet machining.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -1724,7 +1863,16 @@
         "CAE topology optimisation",
         "Variable-gauge casting/roll-forming",
         "AI machining path optimisation"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "2.0 kg part down-gauged 12% at equal process, 60k/yr, Germany",
+        "baselinePerPart": 5.81,
+        "proposedPerPart": 5.23,
+        "savingPct": 10,
+        "direction": "confirmed",
+        "note": "Pure mass take-out on the same process; savings scale with the material share.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -1786,7 +1934,8 @@
         "Closed-loop scrap remelt",
         "Mass-balance certified feedstock",
         "Water-based / powder coating"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -1847,7 +1996,8 @@
         "Tool commonisation",
         "Modular fixturing",
         "Family-mould / shared die"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -1910,7 +2060,16 @@
         "High-pressure die casting (giga/mega press)",
         "Vacuum-assisted HPDC",
         "Structural HPDC + T7 heat treat"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "2.5 kg multi-piece steel assembly → single Al structural casting, 60k/yr, Germany",
+        "baselinePerPart": 10.52,
+        "proposedPerPart": 10.48,
+        "savingPct": 0.4,
+        "direction": "confirmed",
+        "note": "Al casting is lighter (−28% mass) and deletes the welding op — the engine compares full make-routes.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -1973,7 +2132,16 @@
         "High-speed injection moulding",
         "Injection-compression moulding",
         "Overmoulded metal-insert hybrid"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "0.9 kg stamped 2-piece bracket set + assembly → one 0.45 kg PA66-GF30 moulding with integrated clips, 60k/yr, Germany",
+        "baselinePerPart": 6.27,
+        "proposedPerPart": 3.03,
+        "savingPct": 51.7,
+        "direction": "confirmed",
+        "note": "Wins through part consolidation + deleted assembly, not raw €/kg — a lone small steel bracket is usually CHEAPER in steel (the engine will say so).",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -2035,7 +2203,8 @@
         "Closed-loop scrap remelt",
         "Mass-balance certified feedstock",
         "Water-based / powder coating"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -2096,7 +2265,8 @@
         "Weld-bonding (adhesive + spot)",
         "Self-pierce riveting",
         "Moulded snap-fit assembly"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -2157,7 +2327,8 @@
         "Tool commonisation",
         "Modular fixturing",
         "Family-mould / shared die"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -2220,7 +2391,16 @@
         "High-pressure die casting (giga/mega press)",
         "Vacuum-assisted HPDC",
         "Structural HPDC + T7 heat treat"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "2.5 kg multi-piece steel assembly → single Al structural casting, 60k/yr, Germany",
+        "baselinePerPart": 10.52,
+        "proposedPerPart": 10.48,
+        "savingPct": 0.4,
+        "direction": "confirmed",
+        "note": "Al casting is lighter (−28% mass) and deletes the welding op — the engine compares full make-routes.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -2283,7 +2463,16 @@
         "High-speed injection moulding",
         "Injection-compression moulding",
         "Overmoulded metal-insert hybrid"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "0.9 kg stamped 2-piece bracket set + assembly → one 0.45 kg PA66-GF30 moulding with integrated clips, 60k/yr, Germany",
+        "baselinePerPart": 6.27,
+        "proposedPerPart": 3.03,
+        "savingPct": 51.7,
+        "direction": "confirmed",
+        "note": "Wins through part consolidation + deleted assembly, not raw €/kg — a lone small steel bracket is usually CHEAPER in steel (the engine will say so).",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -2345,7 +2534,8 @@
         "Closed-loop scrap remelt",
         "Mass-balance certified feedstock",
         "Water-based / powder coating"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -2406,7 +2596,8 @@
         "Weld-bonding (adhesive + spot)",
         "Self-pierce riveting",
         "Moulded snap-fit assembly"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -2467,7 +2658,8 @@
         "Tool commonisation",
         "Modular fixturing",
         "Family-mould / shared die"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -2530,7 +2722,16 @@
         "High-pressure die casting (giga/mega press)",
         "Vacuum-assisted HPDC",
         "Structural HPDC + T7 heat treat"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "2.5 kg multi-piece steel assembly → single Al structural casting, 60k/yr, Germany",
+        "baselinePerPart": 10.52,
+        "proposedPerPart": 10.48,
+        "savingPct": 0.4,
+        "direction": "confirmed",
+        "note": "Al casting is lighter (−28% mass) and deletes the welding op — the engine compares full make-routes.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -2593,7 +2794,16 @@
         "High-speed injection moulding",
         "Injection-compression moulding",
         "Overmoulded metal-insert hybrid"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "0.9 kg stamped 2-piece bracket set + assembly → one 0.45 kg PA66-GF30 moulding with integrated clips, 60k/yr, Germany",
+        "baselinePerPart": 6.27,
+        "proposedPerPart": 3.03,
+        "savingPct": 51.7,
+        "direction": "confirmed",
+        "note": "Wins through part consolidation + deleted assembly, not raw €/kg — a lone small steel bracket is usually CHEAPER in steel (the engine will say so).",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -2655,7 +2865,8 @@
         "Closed-loop scrap remelt",
         "Mass-balance certified feedstock",
         "Water-based / powder coating"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -2716,7 +2927,8 @@
         "Weld-bonding (adhesive + spot)",
         "Self-pierce riveting",
         "Moulded snap-fit assembly"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -2777,7 +2989,8 @@
         "Tool commonisation",
         "Modular fixturing",
         "Family-mould / shared die"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -2840,7 +3053,16 @@
         "High-speed injection moulding",
         "Injection-compression moulding",
         "Overmoulded metal-insert hybrid"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "0.9 kg stamped 2-piece bracket set + assembly → one 0.45 kg PA66-GF30 moulding with integrated clips, 60k/yr, Germany",
+        "baselinePerPart": 6.27,
+        "proposedPerPart": 3.03,
+        "savingPct": 51.7,
+        "direction": "confirmed",
+        "note": "Wins through part consolidation + deleted assembly, not raw €/kg — a lone small steel bracket is usually CHEAPER in steel (the engine will say so).",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -2903,7 +3125,16 @@
         "High-pressure die casting (giga/mega press)",
         "Vacuum-assisted HPDC",
         "Structural HPDC + T7 heat treat"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "2.5 kg multi-piece steel assembly → single Al structural casting, 60k/yr, Germany",
+        "baselinePerPart": 10.52,
+        "proposedPerPart": 10.48,
+        "savingPct": 0.4,
+        "direction": "confirmed",
+        "note": "Al casting is lighter (−28% mass) and deletes the welding op — the engine compares full make-routes.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -2965,7 +3196,8 @@
         "Closed-loop scrap remelt",
         "Mass-balance certified feedstock",
         "Water-based / powder coating"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -3026,7 +3258,8 @@
         "Weld-bonding (adhesive + spot)",
         "Self-pierce riveting",
         "Moulded snap-fit assembly"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -3087,7 +3320,8 @@
         "Tool commonisation",
         "Modular fixturing",
         "Family-mould / shared die"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -3150,7 +3384,16 @@
         "High-speed injection moulding",
         "Injection-compression moulding",
         "Overmoulded metal-insert hybrid"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "0.9 kg stamped 2-piece bracket set + assembly → one 0.45 kg PA66-GF30 moulding with integrated clips, 60k/yr, Germany",
+        "baselinePerPart": 6.27,
+        "proposedPerPart": 3.03,
+        "savingPct": 51.7,
+        "direction": "confirmed",
+        "note": "Wins through part consolidation + deleted assembly, not raw €/kg — a lone small steel bracket is usually CHEAPER in steel (the engine will say so).",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -3213,7 +3456,16 @@
         "High-pressure die casting (giga/mega press)",
         "Vacuum-assisted HPDC",
         "Structural HPDC + T7 heat treat"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "2.5 kg multi-piece steel assembly → single Al structural casting, 60k/yr, Germany",
+        "baselinePerPart": 10.52,
+        "proposedPerPart": 10.48,
+        "savingPct": 0.4,
+        "direction": "confirmed",
+        "note": "Al casting is lighter (−28% mass) and deletes the welding op — the engine compares full make-routes.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -3275,7 +3527,8 @@
         "Closed-loop scrap remelt",
         "Mass-balance certified feedstock",
         "Water-based / powder coating"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -3336,7 +3589,8 @@
         "Weld-bonding (adhesive + spot)",
         "Self-pierce riveting",
         "Moulded snap-fit assembly"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -3397,7 +3651,8 @@
         "Tool commonisation",
         "Modular fixturing",
         "Family-mould / shared die"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -3460,7 +3715,16 @@
         "High-speed injection moulding",
         "Injection-compression moulding",
         "Overmoulded metal-insert hybrid"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "0.9 kg stamped 2-piece bracket set + assembly → one 0.45 kg PA66-GF30 moulding with integrated clips, 60k/yr, Germany",
+        "baselinePerPart": 6.27,
+        "proposedPerPart": 3.03,
+        "savingPct": 51.7,
+        "direction": "confirmed",
+        "note": "Wins through part consolidation + deleted assembly, not raw €/kg — a lone small steel bracket is usually CHEAPER in steel (the engine will say so).",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -3523,7 +3787,16 @@
         "High-pressure die casting (giga/mega press)",
         "Vacuum-assisted HPDC",
         "Structural HPDC + T7 heat treat"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "2.5 kg multi-piece steel assembly → single Al structural casting, 60k/yr, Germany",
+        "baselinePerPart": 10.52,
+        "proposedPerPart": 10.48,
+        "savingPct": 0.4,
+        "direction": "confirmed",
+        "note": "Al casting is lighter (−28% mass) and deletes the welding op — the engine compares full make-routes.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -3585,7 +3858,8 @@
         "Closed-loop scrap remelt",
         "Mass-balance certified feedstock",
         "Water-based / powder coating"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -3646,7 +3920,8 @@
         "Weld-bonding (adhesive + spot)",
         "Self-pierce riveting",
         "Moulded snap-fit assembly"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -3707,7 +3982,8 @@
         "Tool commonisation",
         "Modular fixturing",
         "Family-mould / shared die"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -3770,7 +4046,16 @@
         "High-pressure die casting (giga/mega press)",
         "Vacuum-assisted HPDC",
         "Structural HPDC + T7 heat treat"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "2.5 kg multi-piece steel assembly → single Al structural casting, 60k/yr, Germany",
+        "baselinePerPart": 10.52,
+        "proposedPerPart": 10.48,
+        "savingPct": 0.4,
+        "direction": "confirmed",
+        "note": "Al casting is lighter (−28% mass) and deletes the welding op — the engine compares full make-routes.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -3832,7 +4117,16 @@
         "Laser-welded tailored blanks",
         "Tailor-rolled blanks",
         "Press-hardening with tailored tempering"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "3.0 kg stamped part with 10% blank mass saved via TWB, 60k/yr, Germany",
+        "baselinePerPart": 8.22,
+        "proposedPerPart": 7.85,
+        "savingPct": 4.5,
+        "direction": "confirmed",
+        "note": "TWB saves blank mass but adds a laser blank-weld (~€0.35/part) — the engine nets the two.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -3893,7 +4187,16 @@
         "CAE topology optimisation",
         "Variable-gauge casting/roll-forming",
         "AI machining path optimisation"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "2.0 kg part down-gauged 12% at equal process, 60k/yr, Germany",
+        "baselinePerPart": 5.81,
+        "proposedPerPart": 5.23,
+        "savingPct": 10,
+        "direction": "confirmed",
+        "note": "Pure mass take-out on the same process; savings scale with the material share.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -3954,7 +4257,8 @@
         "Weld-bonding (adhesive + spot)",
         "Self-pierce riveting",
         "Moulded snap-fit assembly"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -4016,7 +4320,8 @@
         "Closed-loop scrap remelt",
         "Mass-balance certified feedstock",
         "Water-based / powder coating"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -4079,7 +4384,16 @@
         "High-pressure die casting (giga/mega press)",
         "Vacuum-assisted HPDC",
         "Structural HPDC + T7 heat treat"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "2.5 kg multi-piece steel assembly → single Al structural casting, 60k/yr, Germany",
+        "baselinePerPart": 10.52,
+        "proposedPerPart": 10.48,
+        "savingPct": 0.4,
+        "direction": "confirmed",
+        "note": "Al casting is lighter (−28% mass) and deletes the welding op — the engine compares full make-routes.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -4141,7 +4455,16 @@
         "Laser-welded tailored blanks",
         "Tailor-rolled blanks",
         "Press-hardening with tailored tempering"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "3.0 kg stamped part with 10% blank mass saved via TWB, 60k/yr, Germany",
+        "baselinePerPart": 8.22,
+        "proposedPerPart": 7.85,
+        "savingPct": 4.5,
+        "direction": "confirmed",
+        "note": "TWB saves blank mass but adds a laser blank-weld (~€0.35/part) — the engine nets the two.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -4202,7 +4525,16 @@
         "CAE topology optimisation",
         "Variable-gauge casting/roll-forming",
         "AI machining path optimisation"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "2.0 kg part down-gauged 12% at equal process, 60k/yr, Germany",
+        "baselinePerPart": 5.81,
+        "proposedPerPart": 5.23,
+        "savingPct": 10,
+        "direction": "confirmed",
+        "note": "Pure mass take-out on the same process; savings scale with the material share.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -4263,7 +4595,8 @@
         "Weld-bonding (adhesive + spot)",
         "Self-pierce riveting",
         "Moulded snap-fit assembly"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -4325,7 +4658,8 @@
         "Closed-loop scrap remelt",
         "Mass-balance certified feedstock",
         "Water-based / powder coating"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -4388,7 +4722,16 @@
         "High-pressure die casting (giga/mega press)",
         "Vacuum-assisted HPDC",
         "Structural HPDC + T7 heat treat"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "2.5 kg multi-piece steel assembly → single Al structural casting, 60k/yr, Germany",
+        "baselinePerPart": 10.52,
+        "proposedPerPart": 10.48,
+        "savingPct": 0.4,
+        "direction": "confirmed",
+        "note": "Al casting is lighter (−28% mass) and deletes the welding op — the engine compares full make-routes.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -4450,7 +4793,16 @@
         "Laser-welded tailored blanks",
         "Tailor-rolled blanks",
         "Press-hardening with tailored tempering"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "3.0 kg stamped part with 10% blank mass saved via TWB, 60k/yr, Germany",
+        "baselinePerPart": 8.22,
+        "proposedPerPart": 7.85,
+        "savingPct": 4.5,
+        "direction": "confirmed",
+        "note": "TWB saves blank mass but adds a laser blank-weld (~€0.35/part) — the engine nets the two.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -4511,7 +4863,16 @@
         "CAE topology optimisation",
         "Variable-gauge casting/roll-forming",
         "AI machining path optimisation"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "2.0 kg part down-gauged 12% at equal process, 60k/yr, Germany",
+        "baselinePerPart": 5.81,
+        "proposedPerPart": 5.23,
+        "savingPct": 10,
+        "direction": "confirmed",
+        "note": "Pure mass take-out on the same process; savings scale with the material share.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -4572,7 +4933,8 @@
         "Weld-bonding (adhesive + spot)",
         "Self-pierce riveting",
         "Moulded snap-fit assembly"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -4634,7 +4996,8 @@
         "Closed-loop scrap remelt",
         "Mass-balance certified feedstock",
         "Water-based / powder coating"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -4696,7 +5059,16 @@
         "Laser-welded tailored blanks",
         "Tailor-rolled blanks",
         "Press-hardening with tailored tempering"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "3.0 kg stamped part with 10% blank mass saved via TWB, 60k/yr, Germany",
+        "baselinePerPart": 8.22,
+        "proposedPerPart": 7.85,
+        "savingPct": 4.5,
+        "direction": "confirmed",
+        "note": "TWB saves blank mass but adds a laser blank-weld (~€0.35/part) — the engine nets the two.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -4757,7 +5129,16 @@
         "CAE topology optimisation",
         "Variable-gauge casting/roll-forming",
         "AI machining path optimisation"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "2.0 kg part down-gauged 12% at equal process, 60k/yr, Germany",
+        "baselinePerPart": 5.81,
+        "proposedPerPart": 5.23,
+        "savingPct": 10,
+        "direction": "confirmed",
+        "note": "Pure mass take-out on the same process; savings scale with the material share.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -4820,7 +5201,16 @@
         "High-pressure die casting (giga/mega press)",
         "Vacuum-assisted HPDC",
         "Structural HPDC + T7 heat treat"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "2.5 kg multi-piece steel assembly → single Al structural casting, 60k/yr, Germany",
+        "baselinePerPart": 10.52,
+        "proposedPerPart": 10.48,
+        "savingPct": 0.4,
+        "direction": "confirmed",
+        "note": "Al casting is lighter (−28% mass) and deletes the welding op — the engine compares full make-routes.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -4882,7 +5272,8 @@
         "Closed-loop scrap remelt",
         "Mass-balance certified feedstock",
         "Water-based / powder coating"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -4943,7 +5334,8 @@
         "Tool commonisation",
         "Modular fixturing",
         "Family-mould / shared die"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -5005,7 +5397,16 @@
         "Laser-welded tailored blanks",
         "Tailor-rolled blanks",
         "Press-hardening with tailored tempering"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "3.0 kg stamped part with 10% blank mass saved via TWB, 60k/yr, Germany",
+        "baselinePerPart": 8.22,
+        "proposedPerPart": 7.85,
+        "savingPct": 4.5,
+        "direction": "confirmed",
+        "note": "TWB saves blank mass but adds a laser blank-weld (~€0.35/part) — the engine nets the two.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -5066,7 +5467,16 @@
         "CAE topology optimisation",
         "Variable-gauge casting/roll-forming",
         "AI machining path optimisation"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "2.0 kg part down-gauged 12% at equal process, 60k/yr, Germany",
+        "baselinePerPart": 5.81,
+        "proposedPerPart": 5.23,
+        "savingPct": 10,
+        "direction": "confirmed",
+        "note": "Pure mass take-out on the same process; savings scale with the material share.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -5129,7 +5539,16 @@
         "High-pressure die casting (giga/mega press)",
         "Vacuum-assisted HPDC",
         "Structural HPDC + T7 heat treat"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "2.5 kg multi-piece steel assembly → single Al structural casting, 60k/yr, Germany",
+        "baselinePerPart": 10.52,
+        "proposedPerPart": 10.48,
+        "savingPct": 0.4,
+        "direction": "confirmed",
+        "note": "Al casting is lighter (−28% mass) and deletes the welding op — the engine compares full make-routes.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -5191,7 +5610,8 @@
         "Closed-loop scrap remelt",
         "Mass-balance certified feedstock",
         "Water-based / powder coating"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -5252,7 +5672,8 @@
         "Tool commonisation",
         "Modular fixturing",
         "Family-mould / shared die"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -5314,7 +5735,16 @@
         "Laser-welded tailored blanks",
         "Tailor-rolled blanks",
         "Press-hardening with tailored tempering"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "3.0 kg stamped part with 10% blank mass saved via TWB, 60k/yr, Germany",
+        "baselinePerPart": 8.22,
+        "proposedPerPart": 7.85,
+        "savingPct": 4.5,
+        "direction": "confirmed",
+        "note": "TWB saves blank mass but adds a laser blank-weld (~€0.35/part) — the engine nets the two.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -5375,7 +5805,16 @@
         "CAE topology optimisation",
         "Variable-gauge casting/roll-forming",
         "AI machining path optimisation"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "2.0 kg part down-gauged 12% at equal process, 60k/yr, Germany",
+        "baselinePerPart": 5.81,
+        "proposedPerPart": 5.23,
+        "savingPct": 10,
+        "direction": "confirmed",
+        "note": "Pure mass take-out on the same process; savings scale with the material share.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -5438,7 +5877,16 @@
         "High-pressure die casting (giga/mega press)",
         "Vacuum-assisted HPDC",
         "Structural HPDC + T7 heat treat"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "2.5 kg multi-piece steel assembly → single Al structural casting, 60k/yr, Germany",
+        "baselinePerPart": 10.52,
+        "proposedPerPart": 10.48,
+        "savingPct": 0.4,
+        "direction": "confirmed",
+        "note": "Al casting is lighter (−28% mass) and deletes the welding op — the engine compares full make-routes.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -5500,7 +5948,8 @@
         "Closed-loop scrap remelt",
         "Mass-balance certified feedstock",
         "Water-based / powder coating"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -5561,7 +6010,8 @@
         "Tool commonisation",
         "Modular fixturing",
         "Family-mould / shared die"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -5624,7 +6074,16 @@
         "High-speed injection moulding",
         "Injection-compression moulding",
         "Overmoulded metal-insert hybrid"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "0.9 kg stamped 2-piece bracket set + assembly → one 0.45 kg PA66-GF30 moulding with integrated clips, 60k/yr, Germany",
+        "baselinePerPart": 6.27,
+        "proposedPerPart": 3.03,
+        "savingPct": 51.7,
+        "direction": "confirmed",
+        "note": "Wins through part consolidation + deleted assembly, not raw €/kg — a lone small steel bracket is usually CHEAPER in steel (the engine will say so).",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -5686,7 +6145,8 @@
         "Closed-loop scrap remelt",
         "Mass-balance certified feedstock",
         "Water-based / powder coating"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -5747,7 +6207,8 @@
         "Weld-bonding (adhesive + spot)",
         "Self-pierce riveting",
         "Moulded snap-fit assembly"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -5808,7 +6269,8 @@
         "Tool commonisation",
         "Modular fixturing",
         "Family-mould / shared die"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -5870,7 +6332,16 @@
         "Laser-welded tailored blanks",
         "Tailor-rolled blanks",
         "Press-hardening with tailored tempering"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "3.0 kg stamped part with 10% blank mass saved via TWB, 60k/yr, Germany",
+        "baselinePerPart": 8.22,
+        "proposedPerPart": 7.85,
+        "savingPct": 4.5,
+        "direction": "confirmed",
+        "note": "TWB saves blank mass but adds a laser blank-weld (~€0.35/part) — the engine nets the two.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -5933,7 +6404,16 @@
         "High-speed injection moulding",
         "Injection-compression moulding",
         "Overmoulded metal-insert hybrid"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "0.9 kg stamped 2-piece bracket set + assembly → one 0.45 kg PA66-GF30 moulding with integrated clips, 60k/yr, Germany",
+        "baselinePerPart": 6.27,
+        "proposedPerPart": 3.03,
+        "savingPct": 51.7,
+        "direction": "confirmed",
+        "note": "Wins through part consolidation + deleted assembly, not raw €/kg — a lone small steel bracket is usually CHEAPER in steel (the engine will say so).",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -5995,7 +6475,8 @@
         "Closed-loop scrap remelt",
         "Mass-balance certified feedstock",
         "Water-based / powder coating"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -6056,7 +6537,8 @@
         "Weld-bonding (adhesive + spot)",
         "Self-pierce riveting",
         "Moulded snap-fit assembly"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -6117,7 +6599,8 @@
         "Tool commonisation",
         "Modular fixturing",
         "Family-mould / shared die"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -6179,7 +6662,16 @@
         "Laser-welded tailored blanks",
         "Tailor-rolled blanks",
         "Press-hardening with tailored tempering"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "3.0 kg stamped part with 10% blank mass saved via TWB, 60k/yr, Germany",
+        "baselinePerPart": 8.22,
+        "proposedPerPart": 7.85,
+        "savingPct": 4.5,
+        "direction": "confirmed",
+        "note": "TWB saves blank mass but adds a laser blank-weld (~€0.35/part) — the engine nets the two.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -6242,7 +6734,16 @@
         "High-speed injection moulding",
         "Injection-compression moulding",
         "Overmoulded metal-insert hybrid"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "0.9 kg stamped 2-piece bracket set + assembly → one 0.45 kg PA66-GF30 moulding with integrated clips, 60k/yr, Germany",
+        "baselinePerPart": 6.27,
+        "proposedPerPart": 3.03,
+        "savingPct": 51.7,
+        "direction": "confirmed",
+        "note": "Wins through part consolidation + deleted assembly, not raw €/kg — a lone small steel bracket is usually CHEAPER in steel (the engine will say so).",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -6304,7 +6805,8 @@
         "Closed-loop scrap remelt",
         "Mass-balance certified feedstock",
         "Water-based / powder coating"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -6365,7 +6867,8 @@
         "Weld-bonding (adhesive + spot)",
         "Self-pierce riveting",
         "Moulded snap-fit assembly"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -6426,7 +6929,8 @@
         "Tool commonisation",
         "Modular fixturing",
         "Family-mould / shared die"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -6488,7 +6992,16 @@
         "Laser-welded tailored blanks",
         "Tailor-rolled blanks",
         "Press-hardening with tailored tempering"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "3.0 kg stamped part with 10% blank mass saved via TWB, 60k/yr, Germany",
+        "baselinePerPart": 8.22,
+        "proposedPerPart": 7.85,
+        "savingPct": 4.5,
+        "direction": "confirmed",
+        "note": "TWB saves blank mass but adds a laser blank-weld (~€0.35/part) — the engine nets the two.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -6551,7 +7064,16 @@
         "High-speed injection moulding",
         "Injection-compression moulding",
         "Overmoulded metal-insert hybrid"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "0.9 kg stamped 2-piece bracket set + assembly → one 0.45 kg PA66-GF30 moulding with integrated clips, 60k/yr, Germany",
+        "baselinePerPart": 6.27,
+        "proposedPerPart": 3.03,
+        "savingPct": 51.7,
+        "direction": "confirmed",
+        "note": "Wins through part consolidation + deleted assembly, not raw €/kg — a lone small steel bracket is usually CHEAPER in steel (the engine will say so).",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -6612,7 +7134,8 @@
         "Weld-bonding (adhesive + spot)",
         "Self-pierce riveting",
         "Moulded snap-fit assembly"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -6674,7 +7197,8 @@
         "Closed-loop scrap remelt",
         "Mass-balance certified feedstock",
         "Water-based / powder coating"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -6735,7 +7259,8 @@
         "Tool commonisation",
         "Modular fixturing",
         "Family-mould / shared die"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -6796,7 +7321,16 @@
         "CAE topology optimisation",
         "Variable-gauge casting/roll-forming",
         "AI machining path optimisation"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "2.0 kg part down-gauged 12% at equal process, 60k/yr, Germany",
+        "baselinePerPart": 5.81,
+        "proposedPerPart": 5.23,
+        "savingPct": 10,
+        "direction": "confirmed",
+        "note": "Pure mass take-out on the same process; savings scale with the material share.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -6859,7 +7393,16 @@
         "High-speed injection moulding",
         "Injection-compression moulding",
         "Overmoulded metal-insert hybrid"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "0.9 kg stamped 2-piece bracket set + assembly → one 0.45 kg PA66-GF30 moulding with integrated clips, 60k/yr, Germany",
+        "baselinePerPart": 6.27,
+        "proposedPerPart": 3.03,
+        "savingPct": 51.7,
+        "direction": "confirmed",
+        "note": "Wins through part consolidation + deleted assembly, not raw €/kg — a lone small steel bracket is usually CHEAPER in steel (the engine will say so).",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -6920,7 +7463,8 @@
         "Weld-bonding (adhesive + spot)",
         "Self-pierce riveting",
         "Moulded snap-fit assembly"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -6982,7 +7526,8 @@
         "Closed-loop scrap remelt",
         "Mass-balance certified feedstock",
         "Water-based / powder coating"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -7043,7 +7588,8 @@
         "Tool commonisation",
         "Modular fixturing",
         "Family-mould / shared die"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -7104,7 +7650,16 @@
         "CAE topology optimisation",
         "Variable-gauge casting/roll-forming",
         "AI machining path optimisation"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "2.0 kg part down-gauged 12% at equal process, 60k/yr, Germany",
+        "baselinePerPart": 5.81,
+        "proposedPerPart": 5.23,
+        "savingPct": 10,
+        "direction": "confirmed",
+        "note": "Pure mass take-out on the same process; savings scale with the material share.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -7167,7 +7722,16 @@
         "High-speed injection moulding",
         "Injection-compression moulding",
         "Overmoulded metal-insert hybrid"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "0.9 kg stamped 2-piece bracket set + assembly → one 0.45 kg PA66-GF30 moulding with integrated clips, 60k/yr, Germany",
+        "baselinePerPart": 6.27,
+        "proposedPerPart": 3.03,
+        "savingPct": 51.7,
+        "direction": "confirmed",
+        "note": "Wins through part consolidation + deleted assembly, not raw €/kg — a lone small steel bracket is usually CHEAPER in steel (the engine will say so).",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -7228,7 +7792,8 @@
         "Weld-bonding (adhesive + spot)",
         "Self-pierce riveting",
         "Moulded snap-fit assembly"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -7290,7 +7855,8 @@
         "Closed-loop scrap remelt",
         "Mass-balance certified feedstock",
         "Water-based / powder coating"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -7351,7 +7917,8 @@
         "Tool commonisation",
         "Modular fixturing",
         "Family-mould / shared die"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -7412,7 +7979,16 @@
         "CAE topology optimisation",
         "Variable-gauge casting/roll-forming",
         "AI machining path optimisation"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "2.0 kg part down-gauged 12% at equal process, 60k/yr, Germany",
+        "baselinePerPart": 5.81,
+        "proposedPerPart": 5.23,
+        "savingPct": 10,
+        "direction": "confirmed",
+        "note": "Pure mass take-out on the same process; savings scale with the material share.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -7474,7 +8050,16 @@
         "Precision closed-die forging",
         "Warm forging + hard turning",
         "Cross-wedge-rolled preform + finish forge"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "1.5 kg HS-steel part: billet machining → hot forge + finish machining, 60k/yr, Germany",
+        "baselinePerPart": 42.27,
+        "proposedPerPart": 10.82,
+        "savingPct": 74.4,
+        "direction": "confirmed",
+        "note": "Forged near-net + op-20 machining vs full billet machining.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -7537,7 +8122,16 @@
         "High-speed injection moulding",
         "Injection-compression moulding",
         "Overmoulded metal-insert hybrid"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "0.9 kg stamped 2-piece bracket set + assembly → one 0.45 kg PA66-GF30 moulding with integrated clips, 60k/yr, Germany",
+        "baselinePerPart": 6.27,
+        "proposedPerPart": 3.03,
+        "savingPct": 51.7,
+        "direction": "confirmed",
+        "note": "Wins through part consolidation + deleted assembly, not raw €/kg — a lone small steel bracket is usually CHEAPER in steel (the engine will say so).",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -7598,7 +8192,16 @@
         "CAE topology optimisation",
         "Variable-gauge casting/roll-forming",
         "AI machining path optimisation"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "2.0 kg part down-gauged 12% at equal process, 60k/yr, Germany",
+        "baselinePerPart": 5.81,
+        "proposedPerPart": 5.23,
+        "savingPct": 10,
+        "direction": "confirmed",
+        "note": "Pure mass take-out on the same process; savings scale with the material share.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -7659,7 +8262,8 @@
         "Tool commonisation",
         "Modular fixturing",
         "Family-mould / shared die"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -7721,7 +8325,8 @@
         "Closed-loop scrap remelt",
         "Mass-balance certified feedstock",
         "Water-based / powder coating"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -7783,7 +8388,16 @@
         "Precision closed-die forging",
         "Warm forging + hard turning",
         "Cross-wedge-rolled preform + finish forge"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "1.5 kg HS-steel part: billet machining → hot forge + finish machining, 60k/yr, Germany",
+        "baselinePerPart": 42.27,
+        "proposedPerPart": 10.82,
+        "savingPct": 74.4,
+        "direction": "confirmed",
+        "note": "Forged near-net + op-20 machining vs full billet machining.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -7846,7 +8460,16 @@
         "High-speed injection moulding",
         "Injection-compression moulding",
         "Overmoulded metal-insert hybrid"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "0.9 kg stamped 2-piece bracket set + assembly → one 0.45 kg PA66-GF30 moulding with integrated clips, 60k/yr, Germany",
+        "baselinePerPart": 6.27,
+        "proposedPerPart": 3.03,
+        "savingPct": 51.7,
+        "direction": "confirmed",
+        "note": "Wins through part consolidation + deleted assembly, not raw €/kg — a lone small steel bracket is usually CHEAPER in steel (the engine will say so).",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -7907,7 +8530,16 @@
         "CAE topology optimisation",
         "Variable-gauge casting/roll-forming",
         "AI machining path optimisation"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "2.0 kg part down-gauged 12% at equal process, 60k/yr, Germany",
+        "baselinePerPart": 5.81,
+        "proposedPerPart": 5.23,
+        "savingPct": 10,
+        "direction": "confirmed",
+        "note": "Pure mass take-out on the same process; savings scale with the material share.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -7968,7 +8600,8 @@
         "Tool commonisation",
         "Modular fixturing",
         "Family-mould / shared die"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -8030,7 +8663,8 @@
         "Closed-loop scrap remelt",
         "Mass-balance certified feedstock",
         "Water-based / powder coating"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -8092,7 +8726,16 @@
         "Precision closed-die forging",
         "Warm forging + hard turning",
         "Cross-wedge-rolled preform + finish forge"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "1.5 kg HS-steel part: billet machining → hot forge + finish machining, 60k/yr, Germany",
+        "baselinePerPart": 42.27,
+        "proposedPerPart": 10.82,
+        "savingPct": 74.4,
+        "direction": "confirmed",
+        "note": "Forged near-net + op-20 machining vs full billet machining.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -8155,7 +8798,16 @@
         "High-speed injection moulding",
         "Injection-compression moulding",
         "Overmoulded metal-insert hybrid"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "0.9 kg stamped 2-piece bracket set + assembly → one 0.45 kg PA66-GF30 moulding with integrated clips, 60k/yr, Germany",
+        "baselinePerPart": 6.27,
+        "proposedPerPart": 3.03,
+        "savingPct": 51.7,
+        "direction": "confirmed",
+        "note": "Wins through part consolidation + deleted assembly, not raw €/kg — a lone small steel bracket is usually CHEAPER in steel (the engine will say so).",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -8216,7 +8868,16 @@
         "CAE topology optimisation",
         "Variable-gauge casting/roll-forming",
         "AI machining path optimisation"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "2.0 kg part down-gauged 12% at equal process, 60k/yr, Germany",
+        "baselinePerPart": 5.81,
+        "proposedPerPart": 5.23,
+        "savingPct": 10,
+        "direction": "confirmed",
+        "note": "Pure mass take-out on the same process; savings scale with the material share.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -8277,7 +8938,8 @@
         "Tool commonisation",
         "Modular fixturing",
         "Family-mould / shared die"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -8339,7 +9001,8 @@
         "Closed-loop scrap remelt",
         "Mass-balance certified feedstock",
         "Water-based / powder coating"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -8401,7 +9064,16 @@
         "Precision closed-die forging",
         "Warm forging + hard turning",
         "Cross-wedge-rolled preform + finish forge"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "1.5 kg HS-steel part: billet machining → hot forge + finish machining, 60k/yr, Germany",
+        "baselinePerPart": 42.27,
+        "proposedPerPart": 10.82,
+        "savingPct": 74.4,
+        "direction": "confirmed",
+        "note": "Forged near-net + op-20 machining vs full billet machining.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -8462,7 +9134,16 @@
         "CAE topology optimisation",
         "Variable-gauge casting/roll-forming",
         "AI machining path optimisation"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "2.0 kg part down-gauged 12% at equal process, 60k/yr, Germany",
+        "baselinePerPart": 5.81,
+        "proposedPerPart": 5.23,
+        "savingPct": 10,
+        "direction": "confirmed",
+        "note": "Pure mass take-out on the same process; savings scale with the material share.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -8525,7 +9206,16 @@
         "High-speed injection moulding",
         "Injection-compression moulding",
         "Overmoulded metal-insert hybrid"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "0.9 kg stamped 2-piece bracket set + assembly → one 0.45 kg PA66-GF30 moulding with integrated clips, 60k/yr, Germany",
+        "baselinePerPart": 6.27,
+        "proposedPerPart": 3.03,
+        "savingPct": 51.7,
+        "direction": "confirmed",
+        "note": "Wins through part consolidation + deleted assembly, not raw €/kg — a lone small steel bracket is usually CHEAPER in steel (the engine will say so).",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -8586,7 +9276,8 @@
         "Tool commonisation",
         "Modular fixturing",
         "Family-mould / shared die"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -8648,7 +9339,8 @@
         "Closed-loop scrap remelt",
         "Mass-balance certified feedstock",
         "Water-based / powder coating"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -8710,7 +9402,16 @@
         "Precision closed-die forging",
         "Warm forging + hard turning",
         "Cross-wedge-rolled preform + finish forge"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "1.5 kg HS-steel part: billet machining → hot forge + finish machining, 60k/yr, Germany",
+        "baselinePerPart": 42.27,
+        "proposedPerPart": 10.82,
+        "savingPct": 74.4,
+        "direction": "confirmed",
+        "note": "Forged near-net + op-20 machining vs full billet machining.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -8771,7 +9472,16 @@
         "CAE topology optimisation",
         "Variable-gauge casting/roll-forming",
         "AI machining path optimisation"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "2.0 kg part down-gauged 12% at equal process, 60k/yr, Germany",
+        "baselinePerPart": 5.81,
+        "proposedPerPart": 5.23,
+        "savingPct": 10,
+        "direction": "confirmed",
+        "note": "Pure mass take-out on the same process; savings scale with the material share.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -8834,7 +9544,16 @@
         "High-speed injection moulding",
         "Injection-compression moulding",
         "Overmoulded metal-insert hybrid"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "0.9 kg stamped 2-piece bracket set + assembly → one 0.45 kg PA66-GF30 moulding with integrated clips, 60k/yr, Germany",
+        "baselinePerPart": 6.27,
+        "proposedPerPart": 3.03,
+        "savingPct": 51.7,
+        "direction": "confirmed",
+        "note": "Wins through part consolidation + deleted assembly, not raw €/kg — a lone small steel bracket is usually CHEAPER in steel (the engine will say so).",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -8895,7 +9614,8 @@
         "Tool commonisation",
         "Modular fixturing",
         "Family-mould / shared die"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -8957,7 +9677,8 @@
         "Closed-loop scrap remelt",
         "Mass-balance certified feedstock",
         "Water-based / powder coating"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -9019,7 +9740,16 @@
         "Precision closed-die forging",
         "Warm forging + hard turning",
         "Cross-wedge-rolled preform + finish forge"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "1.5 kg HS-steel part: billet machining → hot forge + finish machining, 60k/yr, Germany",
+        "baselinePerPart": 42.27,
+        "proposedPerPart": 10.82,
+        "savingPct": 74.4,
+        "direction": "confirmed",
+        "note": "Forged near-net + op-20 machining vs full billet machining.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -9080,7 +9810,16 @@
         "CAE topology optimisation",
         "Variable-gauge casting/roll-forming",
         "AI machining path optimisation"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "2.0 kg part down-gauged 12% at equal process, 60k/yr, Germany",
+        "baselinePerPart": 5.81,
+        "proposedPerPart": 5.23,
+        "savingPct": 10,
+        "direction": "confirmed",
+        "note": "Pure mass take-out on the same process; savings scale with the material share.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -9143,7 +9882,16 @@
         "High-speed injection moulding",
         "Injection-compression moulding",
         "Overmoulded metal-insert hybrid"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "0.9 kg stamped 2-piece bracket set + assembly → one 0.45 kg PA66-GF30 moulding with integrated clips, 60k/yr, Germany",
+        "baselinePerPart": 6.27,
+        "proposedPerPart": 3.03,
+        "savingPct": 51.7,
+        "direction": "confirmed",
+        "note": "Wins through part consolidation + deleted assembly, not raw €/kg — a lone small steel bracket is usually CHEAPER in steel (the engine will say so).",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -9204,7 +9952,8 @@
         "Tool commonisation",
         "Modular fixturing",
         "Family-mould / shared die"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -9266,7 +10015,8 @@
         "Closed-loop scrap remelt",
         "Mass-balance certified feedstock",
         "Water-based / powder coating"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -9328,7 +10078,16 @@
         "Precision closed-die forging",
         "Warm forging + hard turning",
         "Cross-wedge-rolled preform + finish forge"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "1.5 kg HS-steel part: billet machining → hot forge + finish machining, 60k/yr, Germany",
+        "baselinePerPart": 42.27,
+        "proposedPerPart": 10.82,
+        "savingPct": 74.4,
+        "direction": "confirmed",
+        "note": "Forged near-net + op-20 machining vs full billet machining.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -9389,7 +10148,16 @@
         "CAE topology optimisation",
         "Variable-gauge casting/roll-forming",
         "AI machining path optimisation"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "2.0 kg part down-gauged 12% at equal process, 60k/yr, Germany",
+        "baselinePerPart": 5.81,
+        "proposedPerPart": 5.23,
+        "savingPct": 10,
+        "direction": "confirmed",
+        "note": "Pure mass take-out on the same process; savings scale with the material share.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -9450,7 +10218,8 @@
         "Tool commonisation",
         "Modular fixturing",
         "Family-mould / shared die"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -9512,7 +10281,8 @@
         "Closed-loop scrap remelt",
         "Mass-balance certified feedstock",
         "Water-based / powder coating"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -9575,7 +10345,16 @@
         "High-speed injection moulding",
         "Injection-compression moulding",
         "Overmoulded metal-insert hybrid"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "0.9 kg stamped 2-piece bracket set + assembly → one 0.45 kg PA66-GF30 moulding with integrated clips, 60k/yr, Germany",
+        "baselinePerPart": 6.27,
+        "proposedPerPart": 3.03,
+        "savingPct": 51.7,
+        "direction": "confirmed",
+        "note": "Wins through part consolidation + deleted assembly, not raw €/kg — a lone small steel bracket is usually CHEAPER in steel (the engine will say so).",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -9637,7 +10416,16 @@
         "Precision closed-die forging",
         "Warm forging + hard turning",
         "Cross-wedge-rolled preform + finish forge"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "1.5 kg HS-steel part: billet machining → hot forge + finish machining, 60k/yr, Germany",
+        "baselinePerPart": 42.27,
+        "proposedPerPart": 10.82,
+        "savingPct": 74.4,
+        "direction": "confirmed",
+        "note": "Forged near-net + op-20 machining vs full billet machining.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -9698,7 +10486,16 @@
         "CAE topology optimisation",
         "Variable-gauge casting/roll-forming",
         "AI machining path optimisation"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "2.0 kg part down-gauged 12% at equal process, 60k/yr, Germany",
+        "baselinePerPart": 5.81,
+        "proposedPerPart": 5.23,
+        "savingPct": 10,
+        "direction": "confirmed",
+        "note": "Pure mass take-out on the same process; savings scale with the material share.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -9759,7 +10556,8 @@
         "Tool commonisation",
         "Modular fixturing",
         "Family-mould / shared die"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -9821,7 +10619,8 @@
         "Closed-loop scrap remelt",
         "Mass-balance certified feedstock",
         "Water-based / powder coating"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -9884,7 +10683,16 @@
         "High-speed injection moulding",
         "Injection-compression moulding",
         "Overmoulded metal-insert hybrid"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "0.9 kg stamped 2-piece bracket set + assembly → one 0.45 kg PA66-GF30 moulding with integrated clips, 60k/yr, Germany",
+        "baselinePerPart": 6.27,
+        "proposedPerPart": 3.03,
+        "savingPct": 51.7,
+        "direction": "confirmed",
+        "note": "Wins through part consolidation + deleted assembly, not raw €/kg — a lone small steel bracket is usually CHEAPER in steel (the engine will say so).",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -9946,7 +10754,16 @@
         "Precision closed-die forging",
         "Warm forging + hard turning",
         "Cross-wedge-rolled preform + finish forge"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "1.5 kg HS-steel part: billet machining → hot forge + finish machining, 60k/yr, Germany",
+        "baselinePerPart": 42.27,
+        "proposedPerPart": 10.82,
+        "savingPct": 74.4,
+        "direction": "confirmed",
+        "note": "Forged near-net + op-20 machining vs full billet machining.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -10007,7 +10824,16 @@
         "CAE topology optimisation",
         "Variable-gauge casting/roll-forming",
         "AI machining path optimisation"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "2.0 kg part down-gauged 12% at equal process, 60k/yr, Germany",
+        "baselinePerPart": 5.81,
+        "proposedPerPart": 5.23,
+        "savingPct": 10,
+        "direction": "confirmed",
+        "note": "Pure mass take-out on the same process; savings scale with the material share.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -10068,7 +10894,8 @@
         "Tool commonisation",
         "Modular fixturing",
         "Family-mould / shared die"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -10130,7 +10957,8 @@
         "Closed-loop scrap remelt",
         "Mass-balance certified feedstock",
         "Water-based / powder coating"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -10193,7 +11021,16 @@
         "High-speed injection moulding",
         "Injection-compression moulding",
         "Overmoulded metal-insert hybrid"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "0.9 kg stamped 2-piece bracket set + assembly → one 0.45 kg PA66-GF30 moulding with integrated clips, 60k/yr, Germany",
+        "baselinePerPart": 6.27,
+        "proposedPerPart": 3.03,
+        "savingPct": 51.7,
+        "direction": "confirmed",
+        "note": "Wins through part consolidation + deleted assembly, not raw €/kg — a lone small steel bracket is usually CHEAPER in steel (the engine will say so).",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -10254,7 +11091,16 @@
         "CAE topology optimisation",
         "Variable-gauge casting/roll-forming",
         "AI machining path optimisation"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "2.0 kg part down-gauged 12% at equal process, 60k/yr, Germany",
+        "baselinePerPart": 5.81,
+        "proposedPerPart": 5.23,
+        "savingPct": 10,
+        "direction": "confirmed",
+        "note": "Pure mass take-out on the same process; savings scale with the material share.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -10316,7 +11162,8 @@
         "Closed-loop scrap remelt",
         "Mass-balance certified feedstock",
         "Water-based / powder coating"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -10377,7 +11224,8 @@
         "Tool commonisation",
         "Modular fixturing",
         "Family-mould / shared die"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -10440,7 +11288,16 @@
         "High-speed injection moulding",
         "Injection-compression moulding",
         "Overmoulded metal-insert hybrid"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "0.9 kg stamped 2-piece bracket set + assembly → one 0.45 kg PA66-GF30 moulding with integrated clips, 60k/yr, Germany",
+        "baselinePerPart": 6.27,
+        "proposedPerPart": 3.03,
+        "savingPct": 51.7,
+        "direction": "confirmed",
+        "note": "Wins through part consolidation + deleted assembly, not raw €/kg — a lone small steel bracket is usually CHEAPER in steel (the engine will say so).",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -10502,7 +11359,16 @@
         "Precision closed-die forging",
         "Warm forging + hard turning",
         "Cross-wedge-rolled preform + finish forge"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "1.5 kg HS-steel part: billet machining → hot forge + finish machining, 60k/yr, Germany",
+        "baselinePerPart": 42.27,
+        "proposedPerPart": 10.82,
+        "savingPct": 74.4,
+        "direction": "confirmed",
+        "note": "Forged near-net + op-20 machining vs full billet machining.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -10563,7 +11429,16 @@
         "CAE topology optimisation",
         "Variable-gauge casting/roll-forming",
         "AI machining path optimisation"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "2.0 kg part down-gauged 12% at equal process, 60k/yr, Germany",
+        "baselinePerPart": 5.81,
+        "proposedPerPart": 5.23,
+        "savingPct": 10,
+        "direction": "confirmed",
+        "note": "Pure mass take-out on the same process; savings scale with the material share.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -10625,7 +11500,8 @@
         "Closed-loop scrap remelt",
         "Mass-balance certified feedstock",
         "Water-based / powder coating"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -10686,7 +11562,8 @@
         "Tool commonisation",
         "Modular fixturing",
         "Family-mould / shared die"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -10749,7 +11626,16 @@
         "High-speed injection moulding",
         "Injection-compression moulding",
         "Overmoulded metal-insert hybrid"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "0.9 kg stamped 2-piece bracket set + assembly → one 0.45 kg PA66-GF30 moulding with integrated clips, 60k/yr, Germany",
+        "baselinePerPart": 6.27,
+        "proposedPerPart": 3.03,
+        "savingPct": 51.7,
+        "direction": "confirmed",
+        "note": "Wins through part consolidation + deleted assembly, not raw €/kg — a lone small steel bracket is usually CHEAPER in steel (the engine will say so).",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -10811,7 +11697,16 @@
         "Precision closed-die forging",
         "Warm forging + hard turning",
         "Cross-wedge-rolled preform + finish forge"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "1.5 kg HS-steel part: billet machining → hot forge + finish machining, 60k/yr, Germany",
+        "baselinePerPart": 42.27,
+        "proposedPerPart": 10.82,
+        "savingPct": 74.4,
+        "direction": "confirmed",
+        "note": "Forged near-net + op-20 machining vs full billet machining.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -10872,7 +11767,16 @@
         "CAE topology optimisation",
         "Variable-gauge casting/roll-forming",
         "AI machining path optimisation"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "2.0 kg part down-gauged 12% at equal process, 60k/yr, Germany",
+        "baselinePerPart": 5.81,
+        "proposedPerPart": 5.23,
+        "savingPct": 10,
+        "direction": "confirmed",
+        "note": "Pure mass take-out on the same process; savings scale with the material share.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -10934,7 +11838,8 @@
         "Closed-loop scrap remelt",
         "Mass-balance certified feedstock",
         "Water-based / powder coating"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -10995,7 +11900,8 @@
         "Tool commonisation",
         "Modular fixturing",
         "Family-mould / shared die"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -11058,7 +11964,16 @@
         "High-speed injection moulding",
         "Injection-compression moulding",
         "Overmoulded metal-insert hybrid"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "0.9 kg stamped 2-piece bracket set + assembly → one 0.45 kg PA66-GF30 moulding with integrated clips, 60k/yr, Germany",
+        "baselinePerPart": 6.27,
+        "proposedPerPart": 3.03,
+        "savingPct": 51.7,
+        "direction": "confirmed",
+        "note": "Wins through part consolidation + deleted assembly, not raw €/kg — a lone small steel bracket is usually CHEAPER in steel (the engine will say so).",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -11120,7 +12035,16 @@
         "Precision closed-die forging",
         "Warm forging + hard turning",
         "Cross-wedge-rolled preform + finish forge"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "1.5 kg HS-steel part: billet machining → hot forge + finish machining, 60k/yr, Germany",
+        "baselinePerPart": 42.27,
+        "proposedPerPart": 10.82,
+        "savingPct": 74.4,
+        "direction": "confirmed",
+        "note": "Forged near-net + op-20 machining vs full billet machining.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -11182,7 +12106,16 @@
         "Precision closed-die forging",
         "Warm forging + hard turning",
         "Cross-wedge-rolled preform + finish forge"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "1.5 kg HS-steel part: billet machining → hot forge + finish machining, 60k/yr, Germany",
+        "baselinePerPart": 42.27,
+        "proposedPerPart": 10.82,
+        "savingPct": 74.4,
+        "direction": "confirmed",
+        "note": "Forged near-net + op-20 machining vs full billet machining.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -11245,7 +12178,16 @@
         "High-pressure die casting (giga/mega press)",
         "Vacuum-assisted HPDC",
         "Structural HPDC + T7 heat treat"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "2.5 kg multi-piece steel assembly → single Al structural casting, 60k/yr, Germany",
+        "baselinePerPart": 10.52,
+        "proposedPerPart": 10.48,
+        "savingPct": 0.4,
+        "direction": "confirmed",
+        "note": "Al casting is lighter (−28% mass) and deletes the welding op — the engine compares full make-routes.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -11306,7 +12248,16 @@
         "CAE topology optimisation",
         "Variable-gauge casting/roll-forming",
         "AI machining path optimisation"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "2.0 kg part down-gauged 12% at equal process, 60k/yr, Germany",
+        "baselinePerPart": 5.81,
+        "proposedPerPart": 5.23,
+        "savingPct": 10,
+        "direction": "confirmed",
+        "note": "Pure mass take-out on the same process; savings scale with the material share.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -11367,7 +12318,8 @@
         "Tool commonisation",
         "Modular fixturing",
         "Family-mould / shared die"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -11429,7 +12381,8 @@
         "Closed-loop scrap remelt",
         "Mass-balance certified feedstock",
         "Water-based / powder coating"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -11491,7 +12444,16 @@
         "Precision closed-die forging",
         "Warm forging + hard turning",
         "Cross-wedge-rolled preform + finish forge"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "1.5 kg HS-steel part: billet machining → hot forge + finish machining, 60k/yr, Germany",
+        "baselinePerPart": 42.27,
+        "proposedPerPart": 10.82,
+        "savingPct": 74.4,
+        "direction": "confirmed",
+        "note": "Forged near-net + op-20 machining vs full billet machining.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -11554,7 +12516,16 @@
         "High-pressure die casting (giga/mega press)",
         "Vacuum-assisted HPDC",
         "Structural HPDC + T7 heat treat"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "2.5 kg multi-piece steel assembly → single Al structural casting, 60k/yr, Germany",
+        "baselinePerPart": 10.52,
+        "proposedPerPart": 10.48,
+        "savingPct": 0.4,
+        "direction": "confirmed",
+        "note": "Al casting is lighter (−28% mass) and deletes the welding op — the engine compares full make-routes.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -11615,7 +12586,16 @@
         "CAE topology optimisation",
         "Variable-gauge casting/roll-forming",
         "AI machining path optimisation"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "2.0 kg part down-gauged 12% at equal process, 60k/yr, Germany",
+        "baselinePerPart": 5.81,
+        "proposedPerPart": 5.23,
+        "savingPct": 10,
+        "direction": "confirmed",
+        "note": "Pure mass take-out on the same process; savings scale with the material share.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -11676,7 +12656,8 @@
         "Tool commonisation",
         "Modular fixturing",
         "Family-mould / shared die"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -11738,7 +12719,8 @@
         "Closed-loop scrap remelt",
         "Mass-balance certified feedstock",
         "Water-based / powder coating"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -11800,7 +12782,16 @@
         "Precision closed-die forging",
         "Warm forging + hard turning",
         "Cross-wedge-rolled preform + finish forge"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "1.5 kg HS-steel part: billet machining → hot forge + finish machining, 60k/yr, Germany",
+        "baselinePerPart": 42.27,
+        "proposedPerPart": 10.82,
+        "savingPct": 74.4,
+        "direction": "confirmed",
+        "note": "Forged near-net + op-20 machining vs full billet machining.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -11863,7 +12854,16 @@
         "High-pressure die casting (giga/mega press)",
         "Vacuum-assisted HPDC",
         "Structural HPDC + T7 heat treat"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "2.5 kg multi-piece steel assembly → single Al structural casting, 60k/yr, Germany",
+        "baselinePerPart": 10.52,
+        "proposedPerPart": 10.48,
+        "savingPct": 0.4,
+        "direction": "confirmed",
+        "note": "Al casting is lighter (−28% mass) and deletes the welding op — the engine compares full make-routes.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -11924,7 +12924,16 @@
         "CAE topology optimisation",
         "Variable-gauge casting/roll-forming",
         "AI machining path optimisation"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "2.0 kg part down-gauged 12% at equal process, 60k/yr, Germany",
+        "baselinePerPart": 5.81,
+        "proposedPerPart": 5.23,
+        "savingPct": 10,
+        "direction": "confirmed",
+        "note": "Pure mass take-out on the same process; savings scale with the material share.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -11985,7 +12994,8 @@
         "Tool commonisation",
         "Modular fixturing",
         "Family-mould / shared die"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -12047,7 +13057,8 @@
         "Closed-loop scrap remelt",
         "Mass-balance certified feedstock",
         "Water-based / powder coating"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -12110,7 +13121,16 @@
         "High-pressure die casting (giga/mega press)",
         "Vacuum-assisted HPDC",
         "Structural HPDC + T7 heat treat"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "2.5 kg multi-piece steel assembly → single Al structural casting, 60k/yr, Germany",
+        "baselinePerPart": 10.52,
+        "proposedPerPart": 10.48,
+        "savingPct": 0.4,
+        "direction": "confirmed",
+        "note": "Al casting is lighter (−28% mass) and deletes the welding op — the engine compares full make-routes.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -12172,7 +13192,16 @@
         "Precision closed-die forging",
         "Warm forging + hard turning",
         "Cross-wedge-rolled preform + finish forge"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "1.5 kg HS-steel part: billet machining → hot forge + finish machining, 60k/yr, Germany",
+        "baselinePerPart": 42.27,
+        "proposedPerPart": 10.82,
+        "savingPct": 74.4,
+        "direction": "confirmed",
+        "note": "Forged near-net + op-20 machining vs full billet machining.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -12233,7 +13262,16 @@
         "CAE topology optimisation",
         "Variable-gauge casting/roll-forming",
         "AI machining path optimisation"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "2.0 kg part down-gauged 12% at equal process, 60k/yr, Germany",
+        "baselinePerPart": 5.81,
+        "proposedPerPart": 5.23,
+        "savingPct": 10,
+        "direction": "confirmed",
+        "note": "Pure mass take-out on the same process; savings scale with the material share.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -12295,7 +13333,8 @@
         "Closed-loop scrap remelt",
         "Mass-balance certified feedstock",
         "Water-based / powder coating"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -12356,7 +13395,8 @@
         "Tool commonisation",
         "Modular fixturing",
         "Family-mould / shared die"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -12419,7 +13459,16 @@
         "High-pressure die casting (giga/mega press)",
         "Vacuum-assisted HPDC",
         "Structural HPDC + T7 heat treat"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "2.5 kg multi-piece steel assembly → single Al structural casting, 60k/yr, Germany",
+        "baselinePerPart": 10.52,
+        "proposedPerPart": 10.48,
+        "savingPct": 0.4,
+        "direction": "confirmed",
+        "note": "Al casting is lighter (−28% mass) and deletes the welding op — the engine compares full make-routes.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -12481,7 +13530,16 @@
         "Precision closed-die forging",
         "Warm forging + hard turning",
         "Cross-wedge-rolled preform + finish forge"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "1.5 kg HS-steel part: billet machining → hot forge + finish machining, 60k/yr, Germany",
+        "baselinePerPart": 42.27,
+        "proposedPerPart": 10.82,
+        "savingPct": 74.4,
+        "direction": "confirmed",
+        "note": "Forged near-net + op-20 machining vs full billet machining.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -12542,7 +13600,16 @@
         "CAE topology optimisation",
         "Variable-gauge casting/roll-forming",
         "AI machining path optimisation"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "2.0 kg part down-gauged 12% at equal process, 60k/yr, Germany",
+        "baselinePerPart": 5.81,
+        "proposedPerPart": 5.23,
+        "savingPct": 10,
+        "direction": "confirmed",
+        "note": "Pure mass take-out on the same process; savings scale with the material share.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -12604,7 +13671,8 @@
         "Closed-loop scrap remelt",
         "Mass-balance certified feedstock",
         "Water-based / powder coating"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -12665,7 +13733,8 @@
         "Tool commonisation",
         "Modular fixturing",
         "Family-mould / shared die"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -12728,7 +13797,16 @@
         "High-pressure die casting (giga/mega press)",
         "Vacuum-assisted HPDC",
         "Structural HPDC + T7 heat treat"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "2.5 kg multi-piece steel assembly → single Al structural casting, 60k/yr, Germany",
+        "baselinePerPart": 10.52,
+        "proposedPerPart": 10.48,
+        "savingPct": 0.4,
+        "direction": "confirmed",
+        "note": "Al casting is lighter (−28% mass) and deletes the welding op — the engine compares full make-routes.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -12790,7 +13868,16 @@
         "Precision closed-die forging",
         "Warm forging + hard turning",
         "Cross-wedge-rolled preform + finish forge"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "1.5 kg HS-steel part: billet machining → hot forge + finish machining, 60k/yr, Germany",
+        "baselinePerPart": 42.27,
+        "proposedPerPart": 10.82,
+        "savingPct": 74.4,
+        "direction": "confirmed",
+        "note": "Forged near-net + op-20 machining vs full billet machining.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -12851,7 +13938,16 @@
         "CAE topology optimisation",
         "Variable-gauge casting/roll-forming",
         "AI machining path optimisation"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "2.0 kg part down-gauged 12% at equal process, 60k/yr, Germany",
+        "baselinePerPart": 5.81,
+        "proposedPerPart": 5.23,
+        "savingPct": 10,
+        "direction": "confirmed",
+        "note": "Pure mass take-out on the same process; savings scale with the material share.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -12913,7 +14009,8 @@
         "Closed-loop scrap remelt",
         "Mass-balance certified feedstock",
         "Water-based / powder coating"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -12974,7 +14071,8 @@
         "Tool commonisation",
         "Modular fixturing",
         "Family-mould / shared die"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -13037,7 +14135,16 @@
         "High-pressure die casting (giga/mega press)",
         "Vacuum-assisted HPDC",
         "Structural HPDC + T7 heat treat"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "2.5 kg multi-piece steel assembly → single Al structural casting, 60k/yr, Germany",
+        "baselinePerPart": 10.52,
+        "proposedPerPart": 10.48,
+        "savingPct": 0.4,
+        "direction": "confirmed",
+        "note": "Al casting is lighter (−28% mass) and deletes the welding op — the engine compares full make-routes.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -13099,7 +14206,16 @@
         "Laser-welded tailored blanks",
         "Tailor-rolled blanks",
         "Press-hardening with tailored tempering"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "3.0 kg stamped part with 10% blank mass saved via TWB, 60k/yr, Germany",
+        "baselinePerPart": 8.22,
+        "proposedPerPart": 7.85,
+        "savingPct": 4.5,
+        "direction": "confirmed",
+        "note": "TWB saves blank mass but adds a laser blank-weld (~€0.35/part) — the engine nets the two.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -13160,7 +14276,16 @@
         "CAE topology optimisation",
         "Variable-gauge casting/roll-forming",
         "AI machining path optimisation"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "2.0 kg part down-gauged 12% at equal process, 60k/yr, Germany",
+        "baselinePerPart": 5.81,
+        "proposedPerPart": 5.23,
+        "savingPct": 10,
+        "direction": "confirmed",
+        "note": "Pure mass take-out on the same process; savings scale with the material share.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -13221,7 +14346,8 @@
         "Weld-bonding (adhesive + spot)",
         "Self-pierce riveting",
         "Moulded snap-fit assembly"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -13283,7 +14409,8 @@
         "Closed-loop scrap remelt",
         "Mass-balance certified feedstock",
         "Water-based / powder coating"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -13346,7 +14473,16 @@
         "High-pressure die casting (giga/mega press)",
         "Vacuum-assisted HPDC",
         "Structural HPDC + T7 heat treat"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "2.5 kg multi-piece steel assembly → single Al structural casting, 60k/yr, Germany",
+        "baselinePerPart": 10.52,
+        "proposedPerPart": 10.48,
+        "savingPct": 0.4,
+        "direction": "confirmed",
+        "note": "Al casting is lighter (−28% mass) and deletes the welding op — the engine compares full make-routes.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -13408,7 +14544,16 @@
         "Laser-welded tailored blanks",
         "Tailor-rolled blanks",
         "Press-hardening with tailored tempering"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "3.0 kg stamped part with 10% blank mass saved via TWB, 60k/yr, Germany",
+        "baselinePerPart": 8.22,
+        "proposedPerPart": 7.85,
+        "savingPct": 4.5,
+        "direction": "confirmed",
+        "note": "TWB saves blank mass but adds a laser blank-weld (~€0.35/part) — the engine nets the two.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -13469,7 +14614,16 @@
         "CAE topology optimisation",
         "Variable-gauge casting/roll-forming",
         "AI machining path optimisation"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "2.0 kg part down-gauged 12% at equal process, 60k/yr, Germany",
+        "baselinePerPart": 5.81,
+        "proposedPerPart": 5.23,
+        "savingPct": 10,
+        "direction": "confirmed",
+        "note": "Pure mass take-out on the same process; savings scale with the material share.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -13530,7 +14684,8 @@
         "Weld-bonding (adhesive + spot)",
         "Self-pierce riveting",
         "Moulded snap-fit assembly"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -13592,7 +14747,8 @@
         "Closed-loop scrap remelt",
         "Mass-balance certified feedstock",
         "Water-based / powder coating"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -13655,7 +14811,16 @@
         "High-pressure die casting (giga/mega press)",
         "Vacuum-assisted HPDC",
         "Structural HPDC + T7 heat treat"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "2.5 kg multi-piece steel assembly → single Al structural casting, 60k/yr, Germany",
+        "baselinePerPart": 10.52,
+        "proposedPerPart": 10.48,
+        "savingPct": 0.4,
+        "direction": "confirmed",
+        "note": "Al casting is lighter (−28% mass) and deletes the welding op — the engine compares full make-routes.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -13717,7 +14882,16 @@
         "Laser-welded tailored blanks",
         "Tailor-rolled blanks",
         "Press-hardening with tailored tempering"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "3.0 kg stamped part with 10% blank mass saved via TWB, 60k/yr, Germany",
+        "baselinePerPart": 8.22,
+        "proposedPerPart": 7.85,
+        "savingPct": 4.5,
+        "direction": "confirmed",
+        "note": "TWB saves blank mass but adds a laser blank-weld (~€0.35/part) — the engine nets the two.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -13778,7 +14952,16 @@
         "CAE topology optimisation",
         "Variable-gauge casting/roll-forming",
         "AI machining path optimisation"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "2.0 kg part down-gauged 12% at equal process, 60k/yr, Germany",
+        "baselinePerPart": 5.81,
+        "proposedPerPart": 5.23,
+        "savingPct": 10,
+        "direction": "confirmed",
+        "note": "Pure mass take-out on the same process; savings scale with the material share.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -13839,7 +15022,8 @@
         "Weld-bonding (adhesive + spot)",
         "Self-pierce riveting",
         "Moulded snap-fit assembly"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -13901,7 +15085,8 @@
         "Closed-loop scrap remelt",
         "Mass-balance certified feedstock",
         "Water-based / powder coating"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -13963,7 +15148,16 @@
         "Precision closed-die forging",
         "Warm forging + hard turning",
         "Cross-wedge-rolled preform + finish forge"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "1.5 kg HS-steel part: billet machining → hot forge + finish machining, 60k/yr, Germany",
+        "baselinePerPart": 42.27,
+        "proposedPerPart": 10.82,
+        "savingPct": 74.4,
+        "direction": "confirmed",
+        "note": "Forged near-net + op-20 machining vs full billet machining.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -14026,7 +15220,16 @@
         "High-pressure die casting (giga/mega press)",
         "Vacuum-assisted HPDC",
         "Structural HPDC + T7 heat treat"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "2.5 kg multi-piece steel assembly → single Al structural casting, 60k/yr, Germany",
+        "baselinePerPart": 10.52,
+        "proposedPerPart": 10.48,
+        "savingPct": 0.4,
+        "direction": "confirmed",
+        "note": "Al casting is lighter (−28% mass) and deletes the welding op — the engine compares full make-routes.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -14087,7 +15290,16 @@
         "CAE topology optimisation",
         "Variable-gauge casting/roll-forming",
         "AI machining path optimisation"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "2.0 kg part down-gauged 12% at equal process, 60k/yr, Germany",
+        "baselinePerPart": 5.81,
+        "proposedPerPart": 5.23,
+        "savingPct": 10,
+        "direction": "confirmed",
+        "note": "Pure mass take-out on the same process; savings scale with the material share.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -14148,7 +15360,8 @@
         "Tool commonisation",
         "Modular fixturing",
         "Family-mould / shared die"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -14210,7 +15423,8 @@
         "Closed-loop scrap remelt",
         "Mass-balance certified feedstock",
         "Water-based / powder coating"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -14272,7 +15486,16 @@
         "Precision closed-die forging",
         "Warm forging + hard turning",
         "Cross-wedge-rolled preform + finish forge"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "1.5 kg HS-steel part: billet machining → hot forge + finish machining, 60k/yr, Germany",
+        "baselinePerPart": 42.27,
+        "proposedPerPart": 10.82,
+        "savingPct": 74.4,
+        "direction": "confirmed",
+        "note": "Forged near-net + op-20 machining vs full billet machining.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -14335,7 +15558,16 @@
         "High-pressure die casting (giga/mega press)",
         "Vacuum-assisted HPDC",
         "Structural HPDC + T7 heat treat"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "2.5 kg multi-piece steel assembly → single Al structural casting, 60k/yr, Germany",
+        "baselinePerPart": 10.52,
+        "proposedPerPart": 10.48,
+        "savingPct": 0.4,
+        "direction": "confirmed",
+        "note": "Al casting is lighter (−28% mass) and deletes the welding op — the engine compares full make-routes.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -14396,7 +15628,16 @@
         "CAE topology optimisation",
         "Variable-gauge casting/roll-forming",
         "AI machining path optimisation"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "2.0 kg part down-gauged 12% at equal process, 60k/yr, Germany",
+        "baselinePerPart": 5.81,
+        "proposedPerPart": 5.23,
+        "savingPct": 10,
+        "direction": "confirmed",
+        "note": "Pure mass take-out on the same process; savings scale with the material share.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -14457,7 +15698,8 @@
         "Tool commonisation",
         "Modular fixturing",
         "Family-mould / shared die"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -14519,7 +15761,8 @@
         "Closed-loop scrap remelt",
         "Mass-balance certified feedstock",
         "Water-based / powder coating"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -14581,7 +15824,16 @@
         "Precision closed-die forging",
         "Warm forging + hard turning",
         "Cross-wedge-rolled preform + finish forge"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "1.5 kg HS-steel part: billet machining → hot forge + finish machining, 60k/yr, Germany",
+        "baselinePerPart": 42.27,
+        "proposedPerPart": 10.82,
+        "savingPct": 74.4,
+        "direction": "confirmed",
+        "note": "Forged near-net + op-20 machining vs full billet machining.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -14644,7 +15896,16 @@
         "High-pressure die casting (giga/mega press)",
         "Vacuum-assisted HPDC",
         "Structural HPDC + T7 heat treat"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "2.5 kg multi-piece steel assembly → single Al structural casting, 60k/yr, Germany",
+        "baselinePerPart": 10.52,
+        "proposedPerPart": 10.48,
+        "savingPct": 0.4,
+        "direction": "confirmed",
+        "note": "Al casting is lighter (−28% mass) and deletes the welding op — the engine compares full make-routes.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -14705,7 +15966,16 @@
         "CAE topology optimisation",
         "Variable-gauge casting/roll-forming",
         "AI machining path optimisation"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "2.0 kg part down-gauged 12% at equal process, 60k/yr, Germany",
+        "baselinePerPart": 5.81,
+        "proposedPerPart": 5.23,
+        "savingPct": 10,
+        "direction": "confirmed",
+        "note": "Pure mass take-out on the same process; savings scale with the material share.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -14766,7 +16036,8 @@
         "Tool commonisation",
         "Modular fixturing",
         "Family-mould / shared die"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -14828,7 +16099,8 @@
         "Closed-loop scrap remelt",
         "Mass-balance certified feedstock",
         "Water-based / powder coating"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -14890,7 +16162,16 @@
         "Precision closed-die forging",
         "Warm forging + hard turning",
         "Cross-wedge-rolled preform + finish forge"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "1.5 kg HS-steel part: billet machining → hot forge + finish machining, 60k/yr, Germany",
+        "baselinePerPart": 42.27,
+        "proposedPerPart": 10.82,
+        "savingPct": 74.4,
+        "direction": "confirmed",
+        "note": "Forged near-net + op-20 machining vs full billet machining.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -14953,7 +16234,16 @@
         "High-pressure die casting (giga/mega press)",
         "Vacuum-assisted HPDC",
         "Structural HPDC + T7 heat treat"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "2.5 kg multi-piece steel assembly → single Al structural casting, 60k/yr, Germany",
+        "baselinePerPart": 10.52,
+        "proposedPerPart": 10.48,
+        "savingPct": 0.4,
+        "direction": "confirmed",
+        "note": "Al casting is lighter (−28% mass) and deletes the welding op — the engine compares full make-routes.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -15014,7 +16304,16 @@
         "CAE topology optimisation",
         "Variable-gauge casting/roll-forming",
         "AI machining path optimisation"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "2.0 kg part down-gauged 12% at equal process, 60k/yr, Germany",
+        "baselinePerPart": 5.81,
+        "proposedPerPart": 5.23,
+        "savingPct": 10,
+        "direction": "confirmed",
+        "note": "Pure mass take-out on the same process; savings scale with the material share.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -15075,7 +16374,8 @@
         "Tool commonisation",
         "Modular fixturing",
         "Family-mould / shared die"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -15137,7 +16437,8 @@
         "Closed-loop scrap remelt",
         "Mass-balance certified feedstock",
         "Water-based / powder coating"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -15199,7 +16500,16 @@
         "Precision closed-die forging",
         "Warm forging + hard turning",
         "Cross-wedge-rolled preform + finish forge"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "1.5 kg HS-steel part: billet machining → hot forge + finish machining, 60k/yr, Germany",
+        "baselinePerPart": 42.27,
+        "proposedPerPart": 10.82,
+        "savingPct": 74.4,
+        "direction": "confirmed",
+        "note": "Forged near-net + op-20 machining vs full billet machining.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -15262,7 +16572,16 @@
         "High-pressure die casting (giga/mega press)",
         "Vacuum-assisted HPDC",
         "Structural HPDC + T7 heat treat"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "2.5 kg multi-piece steel assembly → single Al structural casting, 60k/yr, Germany",
+        "baselinePerPart": 10.52,
+        "proposedPerPart": 10.48,
+        "savingPct": 0.4,
+        "direction": "confirmed",
+        "note": "Al casting is lighter (−28% mass) and deletes the welding op — the engine compares full make-routes.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -15323,7 +16642,16 @@
         "CAE topology optimisation",
         "Variable-gauge casting/roll-forming",
         "AI machining path optimisation"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "2.0 kg part down-gauged 12% at equal process, 60k/yr, Germany",
+        "baselinePerPart": 5.81,
+        "proposedPerPart": 5.23,
+        "savingPct": 10,
+        "direction": "confirmed",
+        "note": "Pure mass take-out on the same process; savings scale with the material share.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -15384,7 +16712,8 @@
         "Tool commonisation",
         "Modular fixturing",
         "Family-mould / shared die"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -15446,7 +16775,8 @@
         "Closed-loop scrap remelt",
         "Mass-balance certified feedstock",
         "Water-based / powder coating"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -15508,7 +16838,16 @@
         "Precision closed-die forging",
         "Warm forging + hard turning",
         "Cross-wedge-rolled preform + finish forge"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "1.5 kg HS-steel part: billet machining → hot forge + finish machining, 60k/yr, Germany",
+        "baselinePerPart": 42.27,
+        "proposedPerPart": 10.82,
+        "savingPct": 74.4,
+        "direction": "confirmed",
+        "note": "Forged near-net + op-20 machining vs full billet machining.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -15571,7 +16910,16 @@
         "High-pressure die casting (giga/mega press)",
         "Vacuum-assisted HPDC",
         "Structural HPDC + T7 heat treat"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "2.5 kg multi-piece steel assembly → single Al structural casting, 60k/yr, Germany",
+        "baselinePerPart": 10.52,
+        "proposedPerPart": 10.48,
+        "savingPct": 0.4,
+        "direction": "confirmed",
+        "note": "Al casting is lighter (−28% mass) and deletes the welding op — the engine compares full make-routes.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -15632,7 +16980,16 @@
         "CAE topology optimisation",
         "Variable-gauge casting/roll-forming",
         "AI machining path optimisation"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "2.0 kg part down-gauged 12% at equal process, 60k/yr, Germany",
+        "baselinePerPart": 5.81,
+        "proposedPerPart": 5.23,
+        "savingPct": 10,
+        "direction": "confirmed",
+        "note": "Pure mass take-out on the same process; savings scale with the material share.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -15693,7 +17050,8 @@
         "Tool commonisation",
         "Modular fixturing",
         "Family-mould / shared die"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -15755,7 +17113,8 @@
         "Closed-loop scrap remelt",
         "Mass-balance certified feedstock",
         "Water-based / powder coating"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -15817,7 +17176,16 @@
         "Precision closed-die forging",
         "Warm forging + hard turning",
         "Cross-wedge-rolled preform + finish forge"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "1.5 kg HS-steel part: billet machining → hot forge + finish machining, 60k/yr, Germany",
+        "baselinePerPart": 42.27,
+        "proposedPerPart": 10.82,
+        "savingPct": 74.4,
+        "direction": "confirmed",
+        "note": "Forged near-net + op-20 machining vs full billet machining.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -15880,7 +17248,16 @@
         "High-speed injection moulding",
         "Injection-compression moulding",
         "Overmoulded metal-insert hybrid"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "0.9 kg stamped 2-piece bracket set + assembly → one 0.45 kg PA66-GF30 moulding with integrated clips, 60k/yr, Germany",
+        "baselinePerPart": 6.27,
+        "proposedPerPart": 3.03,
+        "savingPct": 51.7,
+        "direction": "confirmed",
+        "note": "Wins through part consolidation + deleted assembly, not raw €/kg — a lone small steel bracket is usually CHEAPER in steel (the engine will say so).",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -15941,7 +17318,16 @@
         "CAE topology optimisation",
         "Variable-gauge casting/roll-forming",
         "AI machining path optimisation"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "2.0 kg part down-gauged 12% at equal process, 60k/yr, Germany",
+        "baselinePerPart": 5.81,
+        "proposedPerPart": 5.23,
+        "savingPct": 10,
+        "direction": "confirmed",
+        "note": "Pure mass take-out on the same process; savings scale with the material share.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -16002,7 +17388,8 @@
         "Tool commonisation",
         "Modular fixturing",
         "Family-mould / shared die"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -16064,7 +17451,8 @@
         "Closed-loop scrap remelt",
         "Mass-balance certified feedstock",
         "Water-based / powder coating"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -16126,7 +17514,16 @@
         "Precision closed-die forging",
         "Warm forging + hard turning",
         "Cross-wedge-rolled preform + finish forge"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "1.5 kg HS-steel part: billet machining → hot forge + finish machining, 60k/yr, Germany",
+        "baselinePerPart": 42.27,
+        "proposedPerPart": 10.82,
+        "savingPct": 74.4,
+        "direction": "confirmed",
+        "note": "Forged near-net + op-20 machining vs full billet machining.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -16189,7 +17586,16 @@
         "High-speed injection moulding",
         "Injection-compression moulding",
         "Overmoulded metal-insert hybrid"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "0.9 kg stamped 2-piece bracket set + assembly → one 0.45 kg PA66-GF30 moulding with integrated clips, 60k/yr, Germany",
+        "baselinePerPart": 6.27,
+        "proposedPerPart": 3.03,
+        "savingPct": 51.7,
+        "direction": "confirmed",
+        "note": "Wins through part consolidation + deleted assembly, not raw €/kg — a lone small steel bracket is usually CHEAPER in steel (the engine will say so).",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -16250,7 +17656,16 @@
         "CAE topology optimisation",
         "Variable-gauge casting/roll-forming",
         "AI machining path optimisation"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "2.0 kg part down-gauged 12% at equal process, 60k/yr, Germany",
+        "baselinePerPart": 5.81,
+        "proposedPerPart": 5.23,
+        "savingPct": 10,
+        "direction": "confirmed",
+        "note": "Pure mass take-out on the same process; savings scale with the material share.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -16311,7 +17726,8 @@
         "Tool commonisation",
         "Modular fixturing",
         "Family-mould / shared die"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -16373,7 +17789,8 @@
         "Closed-loop scrap remelt",
         "Mass-balance certified feedstock",
         "Water-based / powder coating"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -16435,7 +17852,16 @@
         "Precision closed-die forging",
         "Warm forging + hard turning",
         "Cross-wedge-rolled preform + finish forge"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "1.5 kg HS-steel part: billet machining → hot forge + finish machining, 60k/yr, Germany",
+        "baselinePerPart": 42.27,
+        "proposedPerPart": 10.82,
+        "savingPct": 74.4,
+        "direction": "confirmed",
+        "note": "Forged near-net + op-20 machining vs full billet machining.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -16498,7 +17924,16 @@
         "High-speed injection moulding",
         "Injection-compression moulding",
         "Overmoulded metal-insert hybrid"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "0.9 kg stamped 2-piece bracket set + assembly → one 0.45 kg PA66-GF30 moulding with integrated clips, 60k/yr, Germany",
+        "baselinePerPart": 6.27,
+        "proposedPerPart": 3.03,
+        "savingPct": 51.7,
+        "direction": "confirmed",
+        "note": "Wins through part consolidation + deleted assembly, not raw €/kg — a lone small steel bracket is usually CHEAPER in steel (the engine will say so).",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -16559,7 +17994,16 @@
         "CAE topology optimisation",
         "Variable-gauge casting/roll-forming",
         "AI machining path optimisation"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "2.0 kg part down-gauged 12% at equal process, 60k/yr, Germany",
+        "baselinePerPart": 5.81,
+        "proposedPerPart": 5.23,
+        "savingPct": 10,
+        "direction": "confirmed",
+        "note": "Pure mass take-out on the same process; savings scale with the material share.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -16620,7 +18064,8 @@
         "Tool commonisation",
         "Modular fixturing",
         "Family-mould / shared die"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -16682,7 +18127,8 @@
         "Closed-loop scrap remelt",
         "Mass-balance certified feedstock",
         "Water-based / powder coating"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -16744,7 +18190,16 @@
         "Precision closed-die forging",
         "Warm forging + hard turning",
         "Cross-wedge-rolled preform + finish forge"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "1.5 kg HS-steel part: billet machining → hot forge + finish machining, 60k/yr, Germany",
+        "baselinePerPart": 42.27,
+        "proposedPerPart": 10.82,
+        "savingPct": 74.4,
+        "direction": "confirmed",
+        "note": "Forged near-net + op-20 machining vs full billet machining.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -16805,7 +18260,16 @@
         "CAE topology optimisation",
         "Variable-gauge casting/roll-forming",
         "AI machining path optimisation"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "2.0 kg part down-gauged 12% at equal process, 60k/yr, Germany",
+        "baselinePerPart": 5.81,
+        "proposedPerPart": 5.23,
+        "savingPct": 10,
+        "direction": "confirmed",
+        "note": "Pure mass take-out on the same process; savings scale with the material share.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -16866,7 +18330,8 @@
         "Tool commonisation",
         "Modular fixturing",
         "Family-mould / shared die"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -16928,7 +18393,8 @@
         "Closed-loop scrap remelt",
         "Mass-balance certified feedstock",
         "Water-based / powder coating"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -16991,7 +18457,16 @@
         "High-speed injection moulding",
         "Injection-compression moulding",
         "Overmoulded metal-insert hybrid"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "0.9 kg stamped 2-piece bracket set + assembly → one 0.45 kg PA66-GF30 moulding with integrated clips, 60k/yr, Germany",
+        "baselinePerPart": 6.27,
+        "proposedPerPart": 3.03,
+        "savingPct": 51.7,
+        "direction": "confirmed",
+        "note": "Wins through part consolidation + deleted assembly, not raw €/kg — a lone small steel bracket is usually CHEAPER in steel (the engine will say so).",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -17053,7 +18528,16 @@
         "Precision closed-die forging",
         "Warm forging + hard turning",
         "Cross-wedge-rolled preform + finish forge"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "1.5 kg HS-steel part: billet machining → hot forge + finish machining, 60k/yr, Germany",
+        "baselinePerPart": 42.27,
+        "proposedPerPart": 10.82,
+        "savingPct": 74.4,
+        "direction": "confirmed",
+        "note": "Forged near-net + op-20 machining vs full billet machining.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -17114,7 +18598,16 @@
         "CAE topology optimisation",
         "Variable-gauge casting/roll-forming",
         "AI machining path optimisation"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "2.0 kg part down-gauged 12% at equal process, 60k/yr, Germany",
+        "baselinePerPart": 5.81,
+        "proposedPerPart": 5.23,
+        "savingPct": 10,
+        "direction": "confirmed",
+        "note": "Pure mass take-out on the same process; savings scale with the material share.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -17175,7 +18668,8 @@
         "Tool commonisation",
         "Modular fixturing",
         "Family-mould / shared die"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -17237,7 +18731,8 @@
         "Closed-loop scrap remelt",
         "Mass-balance certified feedstock",
         "Water-based / powder coating"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -17300,7 +18795,16 @@
         "High-speed injection moulding",
         "Injection-compression moulding",
         "Overmoulded metal-insert hybrid"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "0.9 kg stamped 2-piece bracket set + assembly → one 0.45 kg PA66-GF30 moulding with integrated clips, 60k/yr, Germany",
+        "baselinePerPart": 6.27,
+        "proposedPerPart": 3.03,
+        "savingPct": 51.7,
+        "direction": "confirmed",
+        "note": "Wins through part consolidation + deleted assembly, not raw €/kg — a lone small steel bracket is usually CHEAPER in steel (the engine will say so).",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -17362,7 +18866,16 @@
         "Precision closed-die forging",
         "Warm forging + hard turning",
         "Cross-wedge-rolled preform + finish forge"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "1.5 kg HS-steel part: billet machining → hot forge + finish machining, 60k/yr, Germany",
+        "baselinePerPart": 42.27,
+        "proposedPerPart": 10.82,
+        "savingPct": 74.4,
+        "direction": "confirmed",
+        "note": "Forged near-net + op-20 machining vs full billet machining.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -17423,7 +18936,16 @@
         "CAE topology optimisation",
         "Variable-gauge casting/roll-forming",
         "AI machining path optimisation"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "2.0 kg part down-gauged 12% at equal process, 60k/yr, Germany",
+        "baselinePerPart": 5.81,
+        "proposedPerPart": 5.23,
+        "savingPct": 10,
+        "direction": "confirmed",
+        "note": "Pure mass take-out on the same process; savings scale with the material share.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -17484,7 +19006,8 @@
         "Tool commonisation",
         "Modular fixturing",
         "Family-mould / shared die"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -17546,7 +19069,8 @@
         "Closed-loop scrap remelt",
         "Mass-balance certified feedstock",
         "Water-based / powder coating"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -17609,7 +19133,16 @@
         "High-speed injection moulding",
         "Injection-compression moulding",
         "Overmoulded metal-insert hybrid"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "0.9 kg stamped 2-piece bracket set + assembly → one 0.45 kg PA66-GF30 moulding with integrated clips, 60k/yr, Germany",
+        "baselinePerPart": 6.27,
+        "proposedPerPart": 3.03,
+        "savingPct": 51.7,
+        "direction": "confirmed",
+        "note": "Wins through part consolidation + deleted assembly, not raw €/kg — a lone small steel bracket is usually CHEAPER in steel (the engine will say so).",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -17671,7 +19204,16 @@
         "Precision closed-die forging",
         "Warm forging + hard turning",
         "Cross-wedge-rolled preform + finish forge"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "1.5 kg HS-steel part: billet machining → hot forge + finish machining, 60k/yr, Germany",
+        "baselinePerPart": 42.27,
+        "proposedPerPart": 10.82,
+        "savingPct": 74.4,
+        "direction": "confirmed",
+        "note": "Forged near-net + op-20 machining vs full billet machining.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -17734,7 +19276,16 @@
         "High-pressure die casting (giga/mega press)",
         "Vacuum-assisted HPDC",
         "Structural HPDC + T7 heat treat"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "2.5 kg multi-piece steel assembly → single Al structural casting, 60k/yr, Germany",
+        "baselinePerPart": 10.52,
+        "proposedPerPart": 10.48,
+        "savingPct": 0.4,
+        "direction": "confirmed",
+        "note": "Al casting is lighter (−28% mass) and deletes the welding op — the engine compares full make-routes.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -17795,7 +19346,16 @@
         "CAE topology optimisation",
         "Variable-gauge casting/roll-forming",
         "AI machining path optimisation"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "2.0 kg part down-gauged 12% at equal process, 60k/yr, Germany",
+        "baselinePerPart": 5.81,
+        "proposedPerPart": 5.23,
+        "savingPct": 10,
+        "direction": "confirmed",
+        "note": "Pure mass take-out on the same process; savings scale with the material share.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -17856,7 +19416,8 @@
         "Tool commonisation",
         "Modular fixturing",
         "Family-mould / shared die"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -17918,7 +19479,8 @@
         "Closed-loop scrap remelt",
         "Mass-balance certified feedstock",
         "Water-based / powder coating"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -17980,7 +19542,16 @@
         "Precision closed-die forging",
         "Warm forging + hard turning",
         "Cross-wedge-rolled preform + finish forge"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "1.5 kg HS-steel part: billet machining → hot forge + finish machining, 60k/yr, Germany",
+        "baselinePerPart": 42.27,
+        "proposedPerPart": 10.82,
+        "savingPct": 74.4,
+        "direction": "confirmed",
+        "note": "Forged near-net + op-20 machining vs full billet machining.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -18043,7 +19614,16 @@
         "High-pressure die casting (giga/mega press)",
         "Vacuum-assisted HPDC",
         "Structural HPDC + T7 heat treat"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "2.5 kg multi-piece steel assembly → single Al structural casting, 60k/yr, Germany",
+        "baselinePerPart": 10.52,
+        "proposedPerPart": 10.48,
+        "savingPct": 0.4,
+        "direction": "confirmed",
+        "note": "Al casting is lighter (−28% mass) and deletes the welding op — the engine compares full make-routes.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -18104,7 +19684,16 @@
         "CAE topology optimisation",
         "Variable-gauge casting/roll-forming",
         "AI machining path optimisation"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "2.0 kg part down-gauged 12% at equal process, 60k/yr, Germany",
+        "baselinePerPart": 5.81,
+        "proposedPerPart": 5.23,
+        "savingPct": 10,
+        "direction": "confirmed",
+        "note": "Pure mass take-out on the same process; savings scale with the material share.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -18165,7 +19754,8 @@
         "Tool commonisation",
         "Modular fixturing",
         "Family-mould / shared die"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -18227,7 +19817,8 @@
         "Closed-loop scrap remelt",
         "Mass-balance certified feedstock",
         "Water-based / powder coating"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -18289,7 +19880,16 @@
         "Precision closed-die forging",
         "Warm forging + hard turning",
         "Cross-wedge-rolled preform + finish forge"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "1.5 kg HS-steel part: billet machining → hot forge + finish machining, 60k/yr, Germany",
+        "baselinePerPart": 42.27,
+        "proposedPerPart": 10.82,
+        "savingPct": 74.4,
+        "direction": "confirmed",
+        "note": "Forged near-net + op-20 machining vs full billet machining.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -18352,7 +19952,16 @@
         "High-pressure die casting (giga/mega press)",
         "Vacuum-assisted HPDC",
         "Structural HPDC + T7 heat treat"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "2.5 kg multi-piece steel assembly → single Al structural casting, 60k/yr, Germany",
+        "baselinePerPart": 10.52,
+        "proposedPerPart": 10.48,
+        "savingPct": 0.4,
+        "direction": "confirmed",
+        "note": "Al casting is lighter (−28% mass) and deletes the welding op — the engine compares full make-routes.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -18413,7 +20022,16 @@
         "CAE topology optimisation",
         "Variable-gauge casting/roll-forming",
         "AI machining path optimisation"
-      ]
+      ],
+      "engineCheck": {
+        "referenceCase": "2.0 kg part down-gauged 12% at equal process, 60k/yr, Germany",
+        "baselinePerPart": 5.81,
+        "proposedPerPart": 5.23,
+        "savingPct": 10,
+        "direction": "confirmed",
+        "note": "Pure mass take-out on the same process; savings scale with the material share.",
+        "basis": "Deterministic engine comparison on a reference part — validates the DIRECTION and rough magnitude of the move, not this specific part."
+      }
     }
   },
   {
@@ -18474,7 +20092,8 @@
         "Tool commonisation",
         "Modular fixturing",
         "Family-mould / shared die"
-      ]
+      ],
+      "engineCheck": null
     }
   },
   {
@@ -18536,7 +20155,8 @@
         "Closed-loop scrap remelt",
         "Mass-balance certified feedstock",
         "Water-based / powder coating"
-      ]
+      ],
+      "engineCheck": null
     }
   }
 ]

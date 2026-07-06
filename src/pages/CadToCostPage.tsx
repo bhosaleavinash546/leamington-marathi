@@ -55,9 +55,8 @@ interface CadResult {
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-// Only formats the parser actually supports. (.dwg is binary→garbage; .pdf hits a
-// broken vision mime path — both removed so the picker can't offer them.)
-const ACCEPTED_FORMATS = '.step,.stp,.stl,.dxf,.png,.jpg,.jpeg,.webp';
+// Only formats the parser actually supports (.dwg is binary→garbage, excluded).
+const ACCEPTED_FORMATS = '.step,.stp,.stl,.dxf,.png,.jpg,.jpeg,.webp,.pdf';   // PDFs render server-side via document blocks (multi-sheet packs supported)
 
 const PLANT_REGIONS = [
   { value: 'germany', label: 'Germany (€45-55/hr)' },

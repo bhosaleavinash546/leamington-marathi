@@ -1,0 +1,2681 @@
+[
+  {
+    "id": "dxp001",
+    "title": "Relax non-functional tolerances on the steering knuckle machined faces",
+    "system": "Chassis",
+    "costSavingType": "Design / Specification",
+    "annualSaving": "€360k",
+    "difficulty": "Low",
+    "timeToImplement": "3–6 months",
+    "description": "[ALL] Audit every toleranced dimension on the knuckle drawing against actual mating-part function; relax non-datum faces from IT7 to IT9-10 and widen positional tolerances on non-critical bolt bosses. Cuts CNC finishing passes, in-process gauging and CMM time; scrap",
+    "submittedBy": "Porsche Cayenne benchmark",
+    "verified": 0,
+    "stars": 0,
+    "level": "part",
+    "ideaData": {
+      "id": "dxp001",
+      "title": "Relax non-functional tolerances on the steering knuckle machined faces",
+      "technicalDescription": "Audit every toleranced dimension on the knuckle drawing against actual mating-part function; relax non-datum faces from IT7 to IT9-10 and widen positional tolerances on non-critical bolt bosses. Cuts CNC finishing passes, in-process gauging and CMM time; scrap falls with the wider window. Requires a tolerance-stack study to prove assembly function is preserved.",
+      "materialGrade": "42CrMo4 / GJS-500 (unchanged) / Same material — spec change only / n/a",
+      "manufacturingImpact": "Delete finishing pass on relaxed faces; Reduced CMM sampling plan",
+      "costSavingTypes": [
+        "design",
+        "process"
+      ],
+      "costSavingPotential": {
+        "qualitative": "Tolerance-cost curve discipline",
+        "percentage": "€6/veh (-8% machining)",
+        "annualValue": "€360k",
+        "calculationBasis": "€6/veh × 60k veh/yr (indicative)"
+      },
+      "implementationDifficulty": "Low",
+      "riskNotes": "Stack-up must be re-validated; supplier PPAP re-approval needed on the changed drawing.",
+      "dfmaPrinciples": [
+        "Tolerance-cost curve discipline",
+        "Function-driven GD&T",
+        "Inspection reduction"
+      ],
+      "systemLevel": "Part",
+      "timeToImplement": "3–6 months",
+      "benchmarkReference": "Porsche Cayenne programme (indicative)",
+      "confidenceLevel": "estimated",
+      "evidenceSources": [
+        {
+          "type": "benchmark",
+          "title": "Porsche Cayenne teardown/industry norm",
+          "year": 2024,
+          "confidence": "medium"
+        }
+      ],
+      "regulatoryContext": null,
+      "materialAlternatives": [
+        "42CrMo4 / GJS-500 (unchanged)",
+        "Same material — spec change only",
+        "n/a"
+      ],
+      "processAlternatives": [
+        "Delete finishing pass on relaxed faces",
+        "Reduced CMM sampling plan"
+      ],
+      "engineCheck": null
+    }
+  },
+  {
+    "id": "dxp002",
+    "title": "Widen caliper-bracket positional tolerances to match real fixture capability",
+    "system": "Braking System",
+    "costSavingType": "Design / Specification",
+    "annualSaving": "€240k",
+    "difficulty": "Low",
+    "timeToImplement": "3–6 months",
+    "description": "[ALL] Positional tolerances on caliper-bracket holes are commonly specified at the machine-capability limit rather than the function limit. Widening from ±0.1 to ±0.25 where the bolted joint allows removes a dedicated drill-jig stage and lets the holes run in the ma",
+    "submittedBy": "Mercedes GLE benchmark",
+    "verified": 0,
+    "stars": 0,
+    "level": "part",
+    "ideaData": {
+      "id": "dxp002",
+      "title": "Widen caliper-bracket positional tolerances to match real fixture capability",
+      "technicalDescription": "Positional tolerances on caliper-bracket holes are commonly specified at the machine-capability limit rather than the function limit. Widening from ±0.1 to ±0.25 where the bolted joint allows removes a dedicated drill-jig stage and lets the holes run in the main op.",
+      "materialGrade": "GJS-500 / 6082-T6 (unchanged)",
+      "manufacturingImpact": "Combine drilling into main machining op; Delete dedicated jig",
+      "costSavingTypes": [
+        "design",
+        "process"
+      ],
+      "costSavingPotential": {
+        "qualitative": "Function-limit GD&T",
+        "percentage": "€4/veh (-10% bracket machining)",
+        "annualValue": "€240k",
+        "calculationBasis": "€4/veh × 60k veh/yr (indicative)"
+      },
+      "implementationDifficulty": "Low",
+      "riskNotes": "Brake-hose routing and pad wear clearance verified across the widened window.",
+      "dfmaPrinciples": [
+        "Function-limit GD&T",
+        "Op consolidation"
+      ],
+      "systemLevel": "Part",
+      "timeToImplement": "3–6 months",
+      "benchmarkReference": "Mercedes GLE programme (indicative)",
+      "confidenceLevel": "estimated",
+      "evidenceSources": [
+        {
+          "type": "benchmark",
+          "title": "Mercedes GLE teardown/industry norm",
+          "year": 2024,
+          "confidence": "medium"
+        }
+      ],
+      "regulatoryContext": null,
+      "materialAlternatives": [
+        "GJS-500 / 6082-T6 (unchanged)"
+      ],
+      "processAlternatives": [
+        "Combine drilling into main machining op",
+        "Delete dedicated jig"
+      ],
+      "engineCheck": null
+    }
+  },
+  {
+    "id": "dxp003",
+    "title": "Replace tight gap-and-flush specs on hidden trim interfaces",
+    "system": "Interior",
+    "costSavingType": "Design / Specification",
+    "annualSaving": "€300k",
+    "difficulty": "Low",
+    "timeToImplement": "3–6 months",
+    "description": "[ALL] Gap/flush specs written for A-surfaces are frequently copied onto hidden interfaces (under-console, lower IP). Relaxing hidden-interface gaps from ±0.5 to ±1.5 mm removes mould re-cuts, slide actions and fitting rework at assembly.",
+    "submittedBy": "BMW X5 benchmark",
+    "verified": 0,
+    "stars": 0,
+    "level": "part",
+    "ideaData": {
+      "id": "dxp003",
+      "title": "Replace tight gap-and-flush specs on hidden trim interfaces",
+      "technicalDescription": "Gap/flush specs written for A-surfaces are frequently copied onto hidden interfaces (under-console, lower IP). Relaxing hidden-interface gaps from ±0.5 to ±1.5 mm removes mould re-cuts, slide actions and fitting rework at assembly.",
+      "materialGrade": "PP-TD20 / ABS (unchanged)",
+      "manufacturingImpact": "Simpler mould without slide re-cuts; Reduced fitting rework",
+      "costSavingTypes": [
+        "design",
+        "process"
+      ],
+      "costSavingPotential": {
+        "qualitative": "A-surface vs hidden-surface spec split",
+        "percentage": "€5/veh (-6% trim set)",
+        "annualValue": "€300k",
+        "calculationBasis": "€5/veh × 60k veh/yr (indicative)"
+      },
+      "implementationDifficulty": "Low",
+      "riskNotes": "Squeak & rattle validated at the wider gaps with foam/felt where needed.",
+      "dfmaPrinciples": [
+        "A-surface vs hidden-surface spec split",
+        "Mould simplification"
+      ],
+      "systemLevel": "Part",
+      "timeToImplement": "3–6 months",
+      "benchmarkReference": "BMW X5 programme (indicative)",
+      "confidenceLevel": "estimated",
+      "evidenceSources": [
+        {
+          "type": "benchmark",
+          "title": "BMW X5 teardown/industry norm",
+          "year": 2024,
+          "confidence": "medium"
+        }
+      ],
+      "regulatoryContext": null,
+      "materialAlternatives": [
+        "PP-TD20 / ABS (unchanged)"
+      ],
+      "processAlternatives": [
+        "Simpler mould without slide re-cuts",
+        "Reduced fitting rework"
+      ],
+      "engineCheck": null
+    }
+  },
+  {
+    "id": "dxp004",
+    "title": "Relax over-specified tolerances on the B-pillar reinforcement weld-flange",
+    "system": "Body Structure",
+    "costSavingType": "Design / Specification",
+    "annualSaving": "€180k",
+    "difficulty": "Low",
+    "timeToImplement": "2–4 months",
+    "description": "[ALL] Function-audit the B-pillar reinforcement weld-flange drawing: identify dimensions toleranced tighter than the mating interface requires (legacy copy-paste specs are endemic), relax to the function limit, and delete the finishing/gauging content the tight spec",
+    "submittedBy": "Audi Q8 benchmark",
+    "verified": 0,
+    "stars": 0,
+    "level": "part",
+    "ideaData": {
+      "id": "dxp004",
+      "title": "Relax over-specified tolerances on the B-pillar reinforcement weld-flange",
+      "technicalDescription": "Function-audit the B-pillar reinforcement weld-flange drawing: identify dimensions toleranced tighter than the mating interface requires (legacy copy-paste specs are endemic), relax to the function limit, and delete the finishing/gauging content the tight spec forced. Classic Boothroyd-Dewhurst tolerance-cost discipline: below IT8 the cost curve is exponential.",
+      "materialGrade": "Material unchanged — specification change only",
+      "manufacturingImpact": "Delete finishing pass; Reduce CMM/gauging sampling",
+      "costSavingTypes": [
+        "design",
+        "process"
+      ],
+      "costSavingPotential": {
+        "qualitative": "Function-driven GD&T",
+        "percentage": "€3/veh (-5-10% part machining)",
+        "annualValue": "€180k",
+        "calculationBasis": "€3/veh × 60k veh/yr (indicative)"
+      },
+      "implementationDifficulty": "Low",
+      "riskNotes": "Tolerance stack re-validated with the mating parts; PPAP delta approval on the B-pillar reinforcement weld-flange drawing.",
+      "dfmaPrinciples": [
+        "Function-driven GD&T",
+        "Tolerance-cost curve",
+        "Inspection reduction"
+      ],
+      "systemLevel": "Part",
+      "timeToImplement": "2–4 months",
+      "benchmarkReference": "Audi Q8 programme (indicative)",
+      "confidenceLevel": "estimated",
+      "evidenceSources": [
+        {
+          "type": "benchmark",
+          "title": "Audi Q8 teardown/industry norm",
+          "year": 2024,
+          "confidence": "medium"
+        }
+      ],
+      "regulatoryContext": null,
+      "materialAlternatives": [
+        "Material unchanged — specification change only"
+      ],
+      "processAlternatives": [
+        "Delete finishing pass",
+        "Reduce CMM/gauging sampling"
+      ],
+      "engineCheck": null
+    }
+  },
+  {
+    "id": "dxp005",
+    "title": "Relax over-specified tolerances on the tailgate hinge bracket",
+    "system": "Exterior",
+    "costSavingType": "Design / Specification",
+    "annualSaving": "€180k",
+    "difficulty": "Low",
+    "timeToImplement": "2–4 months",
+    "description": "[ALL] Function-audit the tailgate hinge bracket drawing: identify dimensions toleranced tighter than the mating interface requires (legacy copy-paste specs are endemic), relax to the function limit, and delete the finishing/gauging content the tight spec forced. Cla",
+    "submittedBy": "Volvo EX90 benchmark",
+    "verified": 0,
+    "stars": 0,
+    "level": "part",
+    "ideaData": {
+      "id": "dxp005",
+      "title": "Relax over-specified tolerances on the tailgate hinge bracket",
+      "technicalDescription": "Function-audit the tailgate hinge bracket drawing: identify dimensions toleranced tighter than the mating interface requires (legacy copy-paste specs are endemic), relax to the function limit, and delete the finishing/gauging content the tight spec forced. Classic Boothroyd-Dewhurst tolerance-cost discipline: below IT8 the cost curve is exponential.",
+      "materialGrade": "Material unchanged — specification change only",
+      "manufacturingImpact": "Delete finishing pass; Reduce CMM/gauging sampling",
+      "costSavingTypes": [
+        "design",
+        "process"
+      ],
+      "costSavingPotential": {
+        "qualitative": "Function-driven GD&T",
+        "percentage": "€3/veh (-5-10% part machining)",
+        "annualValue": "€180k",
+        "calculationBasis": "€3/veh × 60k veh/yr (indicative)"
+      },
+      "implementationDifficulty": "Low",
+      "riskNotes": "Tolerance stack re-validated with the mating parts; PPAP delta approval on the tailgate hinge bracket drawing.",
+      "dfmaPrinciples": [
+        "Function-driven GD&T",
+        "Tolerance-cost curve",
+        "Inspection reduction"
+      ],
+      "systemLevel": "Part",
+      "timeToImplement": "2–4 months",
+      "benchmarkReference": "Volvo EX90 programme (indicative)",
+      "confidenceLevel": "estimated",
+      "evidenceSources": [
+        {
+          "type": "benchmark",
+          "title": "Volvo EX90 teardown/industry norm",
+          "year": 2024,
+          "confidence": "medium"
+        }
+      ],
+      "regulatoryContext": null,
+      "materialAlternatives": [
+        "Material unchanged — specification change only"
+      ],
+      "processAlternatives": [
+        "Delete finishing pass",
+        "Reduce CMM/gauging sampling"
+      ],
+      "engineCheck": null
+    }
+  },
+  {
+    "id": "dxp006",
+    "title": "Relax over-specified tolerances on the compressor bracket",
+    "system": "Air Suspension",
+    "costSavingType": "Design / Specification",
+    "annualSaving": "€180k",
+    "difficulty": "Low",
+    "timeToImplement": "2–4 months",
+    "description": "[ALL] Function-audit the compressor bracket drawing: identify dimensions toleranced tighter than the mating interface requires (legacy copy-paste specs are endemic), relax to the function limit, and delete the finishing/gauging content the tight spec forced. Classic",
+    "submittedBy": "Lexus RX benchmark",
+    "verified": 0,
+    "stars": 0,
+    "level": "part",
+    "ideaData": {
+      "id": "dxp006",
+      "title": "Relax over-specified tolerances on the compressor bracket",
+      "technicalDescription": "Function-audit the compressor bracket drawing: identify dimensions toleranced tighter than the mating interface requires (legacy copy-paste specs are endemic), relax to the function limit, and delete the finishing/gauging content the tight spec forced. Classic Boothroyd-Dewhurst tolerance-cost discipline: below IT8 the cost curve is exponential.",
+      "materialGrade": "Material unchanged — specification change only",
+      "manufacturingImpact": "Delete finishing pass; Reduce CMM/gauging sampling",
+      "costSavingTypes": [
+        "design",
+        "process"
+      ],
+      "costSavingPotential": {
+        "qualitative": "Function-driven GD&T",
+        "percentage": "€3/veh (-5-10% part machining)",
+        "annualValue": "€180k",
+        "calculationBasis": "€3/veh × 60k veh/yr (indicative)"
+      },
+      "implementationDifficulty": "Low",
+      "riskNotes": "Tolerance stack re-validated with the mating parts; PPAP delta approval on the compressor bracket drawing.",
+      "dfmaPrinciples": [
+        "Function-driven GD&T",
+        "Tolerance-cost curve",
+        "Inspection reduction"
+      ],
+      "systemLevel": "Part",
+      "timeToImplement": "2–4 months",
+      "benchmarkReference": "Lexus RX programme (indicative)",
+      "confidenceLevel": "estimated",
+      "evidenceSources": [
+        {
+          "type": "benchmark",
+          "title": "Lexus RX teardown/industry norm",
+          "year": 2024,
+          "confidence": "medium"
+        }
+      ],
+      "regulatoryContext": null,
+      "materialAlternatives": [
+        "Material unchanged — specification change only"
+      ],
+      "processAlternatives": [
+        "Delete finishing pass",
+        "Reduce CMM/gauging sampling"
+      ],
+      "engineCheck": null
+    }
+  },
+  {
+    "id": "dxp007",
+    "title": "Relax over-specified tolerances on the column bracket",
+    "system": "Steering System",
+    "costSavingType": "Design / Specification",
+    "annualSaving": "€180k",
+    "difficulty": "Low",
+    "timeToImplement": "2–4 months",
+    "description": "[ALL] Function-audit the column bracket drawing: identify dimensions toleranced tighter than the mating interface requires (legacy copy-paste specs are endemic), relax to the function limit, and delete the finishing/gauging content the tight spec forced. Classic Boo",
+    "submittedBy": "NIO ES8 benchmark",
+    "verified": 0,
+    "stars": 0,
+    "level": "part",
+    "ideaData": {
+      "id": "dxp007",
+      "title": "Relax over-specified tolerances on the column bracket",
+      "technicalDescription": "Function-audit the column bracket drawing: identify dimensions toleranced tighter than the mating interface requires (legacy copy-paste specs are endemic), relax to the function limit, and delete the finishing/gauging content the tight spec forced. Classic Boothroyd-Dewhurst tolerance-cost discipline: below IT8 the cost curve is exponential.",
+      "materialGrade": "Material unchanged — specification change only",
+      "manufacturingImpact": "Delete finishing pass; Reduce CMM/gauging sampling",
+      "costSavingTypes": [
+        "design",
+        "process"
+      ],
+      "costSavingPotential": {
+        "qualitative": "Function-driven GD&T",
+        "percentage": "€3/veh (-5-10% part machining)",
+        "annualValue": "€180k",
+        "calculationBasis": "€3/veh × 60k veh/yr (indicative)"
+      },
+      "implementationDifficulty": "Low",
+      "riskNotes": "Tolerance stack re-validated with the mating parts; PPAP delta approval on the column bracket drawing.",
+      "dfmaPrinciples": [
+        "Function-driven GD&T",
+        "Tolerance-cost curve",
+        "Inspection reduction"
+      ],
+      "systemLevel": "Part",
+      "timeToImplement": "2–4 months",
+      "benchmarkReference": "NIO ES8 programme (indicative)",
+      "confidenceLevel": "estimated",
+      "evidenceSources": [
+        {
+          "type": "benchmark",
+          "title": "NIO ES8 teardown/industry norm",
+          "year": 2024,
+          "confidence": "medium"
+        }
+      ],
+      "regulatoryContext": null,
+      "materialAlternatives": [
+        "Material unchanged — specification change only"
+      ],
+      "processAlternatives": [
+        "Delete finishing pass",
+        "Reduce CMM/gauging sampling"
+      ],
+      "engineCheck": null
+    }
+  },
+  {
+    "id": "dxp008",
+    "title": "Relax over-specified tolerances on the hub-flange face",
+    "system": "Axles",
+    "costSavingType": "Design / Specification",
+    "annualSaving": "€180k",
+    "difficulty": "Low",
+    "timeToImplement": "2–4 months",
+    "description": "[ALL] Function-audit the hub-flange face drawing: identify dimensions toleranced tighter than the mating interface requires (legacy copy-paste specs are endemic), relax to the function limit, and delete the finishing/gauging content the tight spec forced. Classic Bo",
+    "submittedBy": "Li Auto L9 benchmark",
+    "verified": 0,
+    "stars": 0,
+    "level": "part",
+    "ideaData": {
+      "id": "dxp008",
+      "title": "Relax over-specified tolerances on the hub-flange face",
+      "technicalDescription": "Function-audit the hub-flange face drawing: identify dimensions toleranced tighter than the mating interface requires (legacy copy-paste specs are endemic), relax to the function limit, and delete the finishing/gauging content the tight spec forced. Classic Boothroyd-Dewhurst tolerance-cost discipline: below IT8 the cost curve is exponential.",
+      "materialGrade": "Material unchanged — specification change only",
+      "manufacturingImpact": "Delete finishing pass; Reduce CMM/gauging sampling",
+      "costSavingTypes": [
+        "design",
+        "process"
+      ],
+      "costSavingPotential": {
+        "qualitative": "Function-driven GD&T",
+        "percentage": "€3/veh (-5-10% part machining)",
+        "annualValue": "€180k",
+        "calculationBasis": "€3/veh × 60k veh/yr (indicative)"
+      },
+      "implementationDifficulty": "Low",
+      "riskNotes": "Tolerance stack re-validated with the mating parts; PPAP delta approval on the hub-flange face drawing.",
+      "dfmaPrinciples": [
+        "Function-driven GD&T",
+        "Tolerance-cost curve",
+        "Inspection reduction"
+      ],
+      "systemLevel": "Part",
+      "timeToImplement": "2–4 months",
+      "benchmarkReference": "Li Auto L9 programme (indicative)",
+      "confidenceLevel": "estimated",
+      "evidenceSources": [
+        {
+          "type": "benchmark",
+          "title": "Li Auto L9 teardown/industry norm",
+          "year": 2024,
+          "confidence": "medium"
+        }
+      ],
+      "regulatoryContext": null,
+      "materialAlternatives": [
+        "Material unchanged — specification change only"
+      ],
+      "processAlternatives": [
+        "Delete finishing pass",
+        "Reduce CMM/gauging sampling"
+      ],
+      "engineCheck": null
+    }
+  },
+  {
+    "id": "dxp009",
+    "title": "Relax over-specified tolerances on the valve-body face",
+    "system": "2-Speed Automatic Gearbox",
+    "costSavingType": "Design / Specification",
+    "annualSaving": "€180k",
+    "difficulty": "Low",
+    "timeToImplement": "2–4 months",
+    "description": "[ALL] Function-audit the valve-body face drawing: identify dimensions toleranced tighter than the mating interface requires (legacy copy-paste specs are endemic), relax to the function limit, and delete the finishing/gauging content the tight spec forced. Classic Bo",
+    "submittedBy": "Xpeng G9 benchmark",
+    "verified": 0,
+    "stars": 0,
+    "level": "part",
+    "ideaData": {
+      "id": "dxp009",
+      "title": "Relax over-specified tolerances on the valve-body face",
+      "technicalDescription": "Function-audit the valve-body face drawing: identify dimensions toleranced tighter than the mating interface requires (legacy copy-paste specs are endemic), relax to the function limit, and delete the finishing/gauging content the tight spec forced. Classic Boothroyd-Dewhurst tolerance-cost discipline: below IT8 the cost curve is exponential.",
+      "materialGrade": "Material unchanged — specification change only",
+      "manufacturingImpact": "Delete finishing pass; Reduce CMM/gauging sampling",
+      "costSavingTypes": [
+        "design",
+        "process"
+      ],
+      "costSavingPotential": {
+        "qualitative": "Function-driven GD&T",
+        "percentage": "€3/veh (-5-10% part machining)",
+        "annualValue": "€180k",
+        "calculationBasis": "€3/veh × 60k veh/yr (indicative)"
+      },
+      "implementationDifficulty": "Low",
+      "riskNotes": "Tolerance stack re-validated with the mating parts; PPAP delta approval on the valve-body face drawing.",
+      "dfmaPrinciples": [
+        "Function-driven GD&T",
+        "Tolerance-cost curve",
+        "Inspection reduction"
+      ],
+      "systemLevel": "Part",
+      "timeToImplement": "2–4 months",
+      "benchmarkReference": "Xpeng G9 programme (indicative)",
+      "confidenceLevel": "estimated",
+      "evidenceSources": [
+        {
+          "type": "benchmark",
+          "title": "Xpeng G9 teardown/industry norm",
+          "year": 2024,
+          "confidence": "medium"
+        }
+      ],
+      "regulatoryContext": null,
+      "materialAlternatives": [
+        "Material unchanged — specification change only"
+      ],
+      "processAlternatives": [
+        "Delete finishing pass",
+        "Reduce CMM/gauging sampling"
+      ],
+      "engineCheck": null
+    }
+  },
+  {
+    "id": "dxp010",
+    "title": "Relax over-specified tolerances on the cover-plate face",
+    "system": "Front & Rear Differentials",
+    "costSavingType": "Design / Specification",
+    "annualSaving": "€180k",
+    "difficulty": "Low",
+    "timeToImplement": "2–4 months",
+    "description": "[ALL] Function-audit the cover-plate face drawing: identify dimensions toleranced tighter than the mating interface requires (legacy copy-paste specs are endemic), relax to the function limit, and delete the finishing/gauging content the tight spec forced. Classic B",
+    "submittedBy": "Rivian R1S benchmark",
+    "verified": 0,
+    "stars": 0,
+    "level": "part",
+    "ideaData": {
+      "id": "dxp010",
+      "title": "Relax over-specified tolerances on the cover-plate face",
+      "technicalDescription": "Function-audit the cover-plate face drawing: identify dimensions toleranced tighter than the mating interface requires (legacy copy-paste specs are endemic), relax to the function limit, and delete the finishing/gauging content the tight spec forced. Classic Boothroyd-Dewhurst tolerance-cost discipline: below IT8 the cost curve is exponential.",
+      "materialGrade": "Material unchanged — specification change only",
+      "manufacturingImpact": "Delete finishing pass; Reduce CMM/gauging sampling",
+      "costSavingTypes": [
+        "design",
+        "process"
+      ],
+      "costSavingPotential": {
+        "qualitative": "Function-driven GD&T",
+        "percentage": "€3/veh (-5-10% part machining)",
+        "annualValue": "€180k",
+        "calculationBasis": "€3/veh × 60k veh/yr (indicative)"
+      },
+      "implementationDifficulty": "Low",
+      "riskNotes": "Tolerance stack re-validated with the mating parts; PPAP delta approval on the cover-plate face drawing.",
+      "dfmaPrinciples": [
+        "Function-driven GD&T",
+        "Tolerance-cost curve",
+        "Inspection reduction"
+      ],
+      "systemLevel": "Part",
+      "timeToImplement": "2–4 months",
+      "benchmarkReference": "Rivian R1S programme (indicative)",
+      "confidenceLevel": "estimated",
+      "evidenceSources": [
+        {
+          "type": "benchmark",
+          "title": "Rivian R1S teardown/industry norm",
+          "year": 2024,
+          "confidence": "medium"
+        }
+      ],
+      "regulatoryContext": null,
+      "materialAlternatives": [
+        "Material unchanged — specification change only"
+      ],
+      "processAlternatives": [
+        "Delete finishing pass",
+        "Reduce CMM/gauging sampling"
+      ],
+      "engineCheck": null
+    }
+  },
+  {
+    "id": "dxp011",
+    "title": "Relax over-specified tolerances on the wheel-nut seat",
+    "system": "Tires & Wheels",
+    "costSavingType": "Design / Specification",
+    "annualSaving": "€180k",
+    "difficulty": "Low",
+    "timeToImplement": "2–4 months",
+    "description": "[ALL] Function-audit the wheel-nut seat drawing: identify dimensions toleranced tighter than the mating interface requires (legacy copy-paste specs are endemic), relax to the function limit, and delete the finishing/gauging content the tight spec forced. Classic Boo",
+    "submittedBy": "Land Cruiser 300 benchmark",
+    "verified": 0,
+    "stars": 0,
+    "level": "part",
+    "ideaData": {
+      "id": "dxp011",
+      "title": "Relax over-specified tolerances on the wheel-nut seat",
+      "technicalDescription": "Function-audit the wheel-nut seat drawing: identify dimensions toleranced tighter than the mating interface requires (legacy copy-paste specs are endemic), relax to the function limit, and delete the finishing/gauging content the tight spec forced. Classic Boothroyd-Dewhurst tolerance-cost discipline: below IT8 the cost curve is exponential.",
+      "materialGrade": "Material unchanged — specification change only",
+      "manufacturingImpact": "Delete finishing pass; Reduce CMM/gauging sampling",
+      "costSavingTypes": [
+        "design",
+        "process"
+      ],
+      "costSavingPotential": {
+        "qualitative": "Function-driven GD&T",
+        "percentage": "€3/veh (-5-10% part machining)",
+        "annualValue": "€180k",
+        "calculationBasis": "€3/veh × 60k veh/yr (indicative)"
+      },
+      "implementationDifficulty": "Low",
+      "riskNotes": "Tolerance stack re-validated with the mating parts; PPAP delta approval on the wheel-nut seat drawing.",
+      "dfmaPrinciples": [
+        "Function-driven GD&T",
+        "Tolerance-cost curve",
+        "Inspection reduction"
+      ],
+      "systemLevel": "Part",
+      "timeToImplement": "2–4 months",
+      "benchmarkReference": "Land Cruiser 300 programme (indicative)",
+      "confidenceLevel": "estimated",
+      "evidenceSources": [
+        {
+          "type": "benchmark",
+          "title": "Land Cruiser 300 teardown/industry norm",
+          "year": 2024,
+          "confidence": "medium"
+        }
+      ],
+      "regulatoryContext": null,
+      "materialAlternatives": [
+        "Material unchanged — specification change only"
+      ],
+      "processAlternatives": [
+        "Delete finishing pass",
+        "Reduce CMM/gauging sampling"
+      ],
+      "engineCheck": null
+    }
+  },
+  {
+    "id": "dxp012",
+    "title": "Relax over-specified tolerances on the bushing-bore face",
+    "system": "Subframe",
+    "costSavingType": "Design / Specification",
+    "annualSaving": "€180k",
+    "difficulty": "Low",
+    "timeToImplement": "2–4 months",
+    "description": "[ALL] Function-audit the bushing-bore face drawing: identify dimensions toleranced tighter than the mating interface requires (legacy copy-paste specs are endemic), relax to the function limit, and delete the finishing/gauging content the tight spec forced. Classic ",
+    "submittedBy": "Cadillac Escalade IQ benchmark",
+    "verified": 0,
+    "stars": 0,
+    "level": "part",
+    "ideaData": {
+      "id": "dxp012",
+      "title": "Relax over-specified tolerances on the bushing-bore face",
+      "technicalDescription": "Function-audit the bushing-bore face drawing: identify dimensions toleranced tighter than the mating interface requires (legacy copy-paste specs are endemic), relax to the function limit, and delete the finishing/gauging content the tight spec forced. Classic Boothroyd-Dewhurst tolerance-cost discipline: below IT8 the cost curve is exponential.",
+      "materialGrade": "Material unchanged — specification change only",
+      "manufacturingImpact": "Delete finishing pass; Reduce CMM/gauging sampling",
+      "costSavingTypes": [
+        "design",
+        "process"
+      ],
+      "costSavingPotential": {
+        "qualitative": "Function-driven GD&T",
+        "percentage": "€3/veh (-5-10% part machining)",
+        "annualValue": "€180k",
+        "calculationBasis": "€3/veh × 60k veh/yr (indicative)"
+      },
+      "implementationDifficulty": "Low",
+      "riskNotes": "Tolerance stack re-validated with the mating parts; PPAP delta approval on the bushing-bore face drawing.",
+      "dfmaPrinciples": [
+        "Function-driven GD&T",
+        "Tolerance-cost curve",
+        "Inspection reduction"
+      ],
+      "systemLevel": "Part",
+      "timeToImplement": "2–4 months",
+      "benchmarkReference": "Cadillac Escalade IQ programme (indicative)",
+      "confidenceLevel": "estimated",
+      "evidenceSources": [
+        {
+          "type": "benchmark",
+          "title": "Cadillac Escalade IQ teardown/industry norm",
+          "year": 2024,
+          "confidence": "medium"
+        }
+      ],
+      "regulatoryContext": null,
+      "materialAlternatives": [
+        "Material unchanged — specification change only"
+      ],
+      "processAlternatives": [
+        "Delete finishing pass",
+        "Reduce CMM/gauging sampling"
+      ],
+      "engineCheck": null
+    }
+  },
+  {
+    "id": "dxp013",
+    "title": "Relax over-specified tolerances on the ball-joint seat",
+    "system": "Control Arms",
+    "costSavingType": "Design / Specification",
+    "annualSaving": "€180k",
+    "difficulty": "Low",
+    "timeToImplement": "2–4 months",
+    "description": "[ALL] Function-audit the ball-joint seat drawing: identify dimensions toleranced tighter than the mating interface requires (legacy copy-paste specs are endemic), relax to the function limit, and delete the finishing/gauging content the tight spec forced. Classic Bo",
+    "submittedBy": "AITO M9 benchmark",
+    "verified": 0,
+    "stars": 0,
+    "level": "part",
+    "ideaData": {
+      "id": "dxp013",
+      "title": "Relax over-specified tolerances on the ball-joint seat",
+      "technicalDescription": "Function-audit the ball-joint seat drawing: identify dimensions toleranced tighter than the mating interface requires (legacy copy-paste specs are endemic), relax to the function limit, and delete the finishing/gauging content the tight spec forced. Classic Boothroyd-Dewhurst tolerance-cost discipline: below IT8 the cost curve is exponential.",
+      "materialGrade": "Material unchanged — specification change only",
+      "manufacturingImpact": "Delete finishing pass; Reduce CMM/gauging sampling",
+      "costSavingTypes": [
+        "design",
+        "process"
+      ],
+      "costSavingPotential": {
+        "qualitative": "Function-driven GD&T",
+        "percentage": "€3/veh (-5-10% part machining)",
+        "annualValue": "€180k",
+        "calculationBasis": "€3/veh × 60k veh/yr (indicative)"
+      },
+      "implementationDifficulty": "Low",
+      "riskNotes": "Tolerance stack re-validated with the mating parts; PPAP delta approval on the ball-joint seat drawing.",
+      "dfmaPrinciples": [
+        "Function-driven GD&T",
+        "Tolerance-cost curve",
+        "Inspection reduction"
+      ],
+      "systemLevel": "Part",
+      "timeToImplement": "2–4 months",
+      "benchmarkReference": "AITO M9 programme (indicative)",
+      "confidenceLevel": "estimated",
+      "evidenceSources": [
+        {
+          "type": "benchmark",
+          "title": "AITO M9 teardown/industry norm",
+          "year": 2024,
+          "confidence": "medium"
+        }
+      ],
+      "regulatoryContext": null,
+      "materialAlternatives": [
+        "Material unchanged — specification change only"
+      ],
+      "processAlternatives": [
+        "Delete finishing pass",
+        "Reduce CMM/gauging sampling"
+      ],
+      "engineCheck": null
+    }
+  },
+  {
+    "id": "dxp014",
+    "title": "Relax over-specified tolerances on the flange pilot",
+    "system": "Prop Shafts",
+    "costSavingType": "Design / Specification",
+    "annualSaving": "€180k",
+    "difficulty": "Low",
+    "timeToImplement": "2–4 months",
+    "description": "[ALL] Function-audit the flange pilot drawing: identify dimensions toleranced tighter than the mating interface requires (legacy copy-paste specs are endemic), relax to the function limit, and delete the finishing/gauging content the tight spec forced. Classic Booth",
+    "submittedBy": "Jeep Grand Cherokee benchmark",
+    "verified": 0,
+    "stars": 0,
+    "level": "part",
+    "ideaData": {
+      "id": "dxp014",
+      "title": "Relax over-specified tolerances on the flange pilot",
+      "technicalDescription": "Function-audit the flange pilot drawing: identify dimensions toleranced tighter than the mating interface requires (legacy copy-paste specs are endemic), relax to the function limit, and delete the finishing/gauging content the tight spec forced. Classic Boothroyd-Dewhurst tolerance-cost discipline: below IT8 the cost curve is exponential.",
+      "materialGrade": "Material unchanged — specification change only",
+      "manufacturingImpact": "Delete finishing pass; Reduce CMM/gauging sampling",
+      "costSavingTypes": [
+        "design",
+        "process"
+      ],
+      "costSavingPotential": {
+        "qualitative": "Function-driven GD&T",
+        "percentage": "€3/veh (-5-10% part machining)",
+        "annualValue": "€180k",
+        "calculationBasis": "€3/veh × 60k veh/yr (indicative)"
+      },
+      "implementationDifficulty": "Low",
+      "riskNotes": "Tolerance stack re-validated with the mating parts; PPAP delta approval on the flange pilot drawing.",
+      "dfmaPrinciples": [
+        "Function-driven GD&T",
+        "Tolerance-cost curve",
+        "Inspection reduction"
+      ],
+      "systemLevel": "Part",
+      "timeToImplement": "2–4 months",
+      "benchmarkReference": "Jeep Grand Cherokee programme (indicative)",
+      "confidenceLevel": "estimated",
+      "evidenceSources": [
+        {
+          "type": "benchmark",
+          "title": "Jeep Grand Cherokee teardown/industry norm",
+          "year": 2024,
+          "confidence": "medium"
+        }
+      ],
+      "regulatoryContext": null,
+      "materialAlternatives": [
+        "Material unchanged — specification change only"
+      ],
+      "processAlternatives": [
+        "Delete finishing pass",
+        "Reduce CMM/gauging sampling"
+      ],
+      "engineCheck": null
+    }
+  },
+  {
+    "id": "dxp015",
+    "title": "Relax over-specified tolerances on the boot-groove",
+    "system": "Half Shafts",
+    "costSavingType": "Design / Specification",
+    "annualSaving": "€180k",
+    "difficulty": "Low",
+    "timeToImplement": "2–4 months",
+    "description": "[ALL] Function-audit the boot-groove drawing: identify dimensions toleranced tighter than the mating interface requires (legacy copy-paste specs are endemic), relax to the function limit, and delete the finishing/gauging content the tight spec forced. Classic Boothr",
+    "submittedBy": "Yangwang U8 benchmark",
+    "verified": 0,
+    "stars": 0,
+    "level": "part",
+    "ideaData": {
+      "id": "dxp015",
+      "title": "Relax over-specified tolerances on the boot-groove",
+      "technicalDescription": "Function-audit the boot-groove drawing: identify dimensions toleranced tighter than the mating interface requires (legacy copy-paste specs are endemic), relax to the function limit, and delete the finishing/gauging content the tight spec forced. Classic Boothroyd-Dewhurst tolerance-cost discipline: below IT8 the cost curve is exponential.",
+      "materialGrade": "Material unchanged — specification change only",
+      "manufacturingImpact": "Delete finishing pass; Reduce CMM/gauging sampling",
+      "costSavingTypes": [
+        "design",
+        "process"
+      ],
+      "costSavingPotential": {
+        "qualitative": "Function-driven GD&T",
+        "percentage": "€3/veh (-5-10% part machining)",
+        "annualValue": "€180k",
+        "calculationBasis": "€3/veh × 60k veh/yr (indicative)"
+      },
+      "implementationDifficulty": "Low",
+      "riskNotes": "Tolerance stack re-validated with the mating parts; PPAP delta approval on the boot-groove drawing.",
+      "dfmaPrinciples": [
+        "Function-driven GD&T",
+        "Tolerance-cost curve",
+        "Inspection reduction"
+      ],
+      "systemLevel": "Part",
+      "timeToImplement": "2–4 months",
+      "benchmarkReference": "Yangwang U8 programme (indicative)",
+      "confidenceLevel": "estimated",
+      "evidenceSources": [
+        {
+          "type": "benchmark",
+          "title": "Yangwang U8 teardown/industry norm",
+          "year": 2024,
+          "confidence": "medium"
+        }
+      ],
+      "regulatoryContext": null,
+      "materialAlternatives": [
+        "Material unchanged — specification change only"
+      ],
+      "processAlternatives": [
+        "Delete finishing pass",
+        "Reduce CMM/gauging sampling"
+      ],
+      "engineCheck": null
+    }
+  },
+  {
+    "id": "dxp016",
+    "title": "Flow-drill screws replace welded nuts on the mixed-material rocker",
+    "system": "Body Structure",
+    "costSavingType": "Design / Specification",
+    "annualSaving": "€480k",
+    "difficulty": "Medium",
+    "timeToImplement": "9–14 months",
+    "description": "[ALL] Where an Al rocker meets steel reinforcements, replace welded nuts + bolts with flow-drill screws (FDS): single-sided access, no pre-hole, joins Al-steel stacks without weld spatter or galvanic sleeves. Deletes nut-welding stations and hole-punching ops.",
+    "submittedBy": "Porsche Cayenne benchmark",
+    "verified": 0,
+    "stars": 0,
+    "level": "part",
+    "ideaData": {
+      "id": "dxp016",
+      "title": "Flow-drill screws replace welded nuts on the mixed-material rocker",
+      "technicalDescription": "Where an Al rocker meets steel reinforcements, replace welded nuts + bolts with flow-drill screws (FDS): single-sided access, no pre-hole, joins Al-steel stacks without weld spatter or galvanic sleeves. Deletes nut-welding stations and hole-punching ops.",
+      "materialGrade": "EN AW-6xxx + CR340 stacks / Structural adhesive companion bead",
+      "manufacturingImpact": "Flow-drill screwing (FDS); Self-pierce riveting alternative",
+      "costSavingTypes": [
+        "design",
+        "process"
+      ],
+      "costSavingPotential": {
+        "qualitative": "Single-sided joining",
+        "percentage": "€8/veh (-15% joint cost)",
+        "annualValue": "€480k",
+        "calculationBasis": "€8/veh × 60k veh/yr (indicative)"
+      },
+      "implementationDifficulty": "Medium",
+      "riskNotes": "FDS torque window and stripping validated per stack; service-release procedure for repairs.",
+      "dfmaPrinciples": [
+        "Single-sided joining",
+        "Delete pre-holes",
+        "Mixed-material capability"
+      ],
+      "systemLevel": "Part",
+      "timeToImplement": "9–14 months",
+      "benchmarkReference": "Porsche Cayenne programme (indicative)",
+      "confidenceLevel": "estimated",
+      "evidenceSources": [
+        {
+          "type": "benchmark",
+          "title": "Porsche Cayenne teardown/industry norm",
+          "year": 2024,
+          "confidence": "medium"
+        }
+      ],
+      "regulatoryContext": null,
+      "materialAlternatives": [
+        "EN AW-6xxx + CR340 stacks",
+        "Structural adhesive companion bead"
+      ],
+      "processAlternatives": [
+        "Flow-drill screwing (FDS)",
+        "Self-pierce riveting alternative"
+      ],
+      "engineCheck": null
+    }
+  },
+  {
+    "id": "dxp017",
+    "title": "Laser brazing replaces spot-weld + sealer on the roof-to-bodyside joint",
+    "system": "BIW",
+    "costSavingType": "Design / Specification",
+    "annualSaving": "€540k",
+    "difficulty": "High",
+    "timeToImplement": "18–24 months",
+    "description": "[ALL] Convert the roof ditch joint from spot welds + finisher mouldings to laser brazing: a continuous sealed seam that deletes the ditch moulding, its clips and the sealer bead, and improves flushness.",
+    "submittedBy": "Mercedes GLE benchmark",
+    "verified": 0,
+    "stars": 0,
+    "level": "part",
+    "ideaData": {
+      "id": "dxp017",
+      "title": "Laser brazing replaces spot-weld + sealer on the roof-to-bodyside joint",
+      "technicalDescription": "Convert the roof ditch joint from spot welds + finisher mouldings to laser brazing: a continuous sealed seam that deletes the ditch moulding, its clips and the sealer bead, and improves flushness.",
+      "materialGrade": "CuSi3 braze wire on galvanised steel",
+      "manufacturingImpact": "Laser brazing cell; Roller hemming alternative",
+      "costSavingTypes": [
+        "design",
+        "process"
+      ],
+      "costSavingPotential": {
+        "qualitative": "Part deletion (moulding + clips)",
+        "percentage": "€9/veh (moulding set deleted)",
+        "annualValue": "€540k",
+        "calculationBasis": "€9/veh × 60k veh/yr (indicative)"
+      },
+      "implementationDifficulty": "High",
+      "riskNotes": "Zinc outgassing porosity managed with wire/optics choice; A-surface braze quality gating.",
+      "dfmaPrinciples": [
+        "Part deletion (moulding + clips)",
+        "Seal + join in one pass"
+      ],
+      "systemLevel": "Part",
+      "timeToImplement": "18–24 months",
+      "benchmarkReference": "Mercedes GLE programme (indicative)",
+      "confidenceLevel": "estimated",
+      "evidenceSources": [
+        {
+          "type": "benchmark",
+          "title": "Mercedes GLE teardown/industry norm",
+          "year": 2024,
+          "confidence": "medium"
+        }
+      ],
+      "regulatoryContext": null,
+      "materialAlternatives": [
+        "CuSi3 braze wire on galvanised steel"
+      ],
+      "processAlternatives": [
+        "Laser brazing cell",
+        "Roller hemming alternative"
+      ],
+      "engineCheck": null
+    }
+  },
+  {
+    "id": "dxp018",
+    "title": "Laser welding replaces bolted busbar joints inside the pack",
+    "system": "Battery Pack",
+    "costSavingType": "Design / Specification",
+    "annualSaving": "€720k",
+    "difficulty": "Medium",
+    "timeToImplement": "12–18 months",
+    "description": "[ALL] Replace bolted + torque-audited module busbar joints with laser-welded tabs: deletes fasteners, torque stations and re-torque audits, cuts contact resistance and heat. Weld depth control protects cells; vision-checked seams replace torque traceability.",
+    "submittedBy": "BMW X5 benchmark",
+    "verified": 0,
+    "stars": 0,
+    "level": "part",
+    "ideaData": {
+      "id": "dxp018",
+      "title": "Laser welding replaces bolted busbar joints inside the pack",
+      "technicalDescription": "Replace bolted + torque-audited module busbar joints with laser-welded tabs: deletes fasteners, torque stations and re-torque audits, cuts contact resistance and heat. Weld depth control protects cells; vision-checked seams replace torque traceability.",
+      "materialGrade": "Al 1050/Cu hybrid busbars / Ni-plated Cu tabs",
+      "manufacturingImpact": "Fiber-laser welding with beam wobble; Ultrasonic wedge bonding alternative",
+      "costSavingTypes": [
+        "design",
+        "process"
+      ],
+      "costSavingPotential": {
+        "qualitative": "Fastener elimination",
+        "percentage": "€12/veh (-20% busbar joint cost)",
+        "annualValue": "€720k",
+        "calculationBasis": "€12/veh × 60k veh/yr (indicative)"
+      },
+      "implementationDifficulty": "Medium",
+      "riskNotes": "Weld penetration windows validated against cell venting; serviceability strategy for module replacement.",
+      "dfmaPrinciples": [
+        "Fastener elimination",
+        "Electrical-joint quality by design"
+      ],
+      "systemLevel": "Part",
+      "timeToImplement": "12–18 months",
+      "benchmarkReference": "BMW X5 programme (indicative)",
+      "confidenceLevel": "estimated",
+      "evidenceSources": [
+        {
+          "type": "benchmark",
+          "title": "BMW X5 teardown/industry norm",
+          "year": 2024,
+          "confidence": "medium"
+        }
+      ],
+      "regulatoryContext": null,
+      "materialAlternatives": [
+        "Al 1050/Cu hybrid busbars",
+        "Ni-plated Cu tabs"
+      ],
+      "processAlternatives": [
+        "Fiber-laser welding with beam wobble",
+        "Ultrasonic wedge bonding alternative"
+      ],
+      "engineCheck": null
+    }
+  },
+  {
+    "id": "dxp019",
+    "title": "Structural adhesive + SPR replaces bolts on the aluminium tailgate inner",
+    "system": "Exterior",
+    "costSavingType": "Design / Specification",
+    "annualSaving": "€300k",
+    "difficulty": "Medium",
+    "timeToImplement": "9–15 months",
+    "description": "[ALL] Structural adhesive + SPR replaces bolts on the aluminium tailgate inner. Modern joining substitutes the legacy fastened/welded interface: fewer parts, fewer stations, better sealed or lighter joints; validated by joint-strength, fatigue and service-repair stu",
+    "submittedBy": "Audi Q8 benchmark",
+    "verified": 0,
+    "stars": 0,
+    "level": "part",
+    "ideaData": {
+      "id": "dxp019",
+      "title": "Structural adhesive + SPR replaces bolts on the aluminium tailgate inner",
+      "technicalDescription": "Structural adhesive + SPR replaces bolts on the aluminium tailgate inner. Modern joining substitutes the legacy fastened/welded interface: fewer parts, fewer stations, better sealed or lighter joints; validated by joint-strength, fatigue and service-repair studies. Typical automotive adopters run this on current premium programmes.",
+      "materialGrade": "Joint materials unchanged; consumable/filler per process",
+      "manufacturingImpact": "See title process; Legacy joint as fallback",
+      "costSavingTypes": [
+        "design",
+        "process"
+      ],
+      "costSavingPotential": {
+        "qualitative": "Fastener/part elimination",
+        "percentage": "€5/veh (-10-20% joint cost)",
+        "annualValue": "€300k",
+        "calculationBasis": "€5/veh × 60k veh/yr (indicative)"
+      },
+      "implementationDifficulty": "Medium",
+      "riskNotes": "Joint validation (static/fatigue/corrosion) and service-repair procedure required before cutover.",
+      "dfmaPrinciples": [
+        "Fastener/part elimination",
+        "Station reduction",
+        "Joint quality by design"
+      ],
+      "systemLevel": "Part",
+      "timeToImplement": "9–15 months",
+      "benchmarkReference": "Audi Q8 programme (indicative)",
+      "confidenceLevel": "estimated",
+      "evidenceSources": [
+        {
+          "type": "benchmark",
+          "title": "Audi Q8 teardown/industry norm",
+          "year": 2024,
+          "confidence": "medium"
+        }
+      ],
+      "regulatoryContext": null,
+      "materialAlternatives": [
+        "Joint materials unchanged; consumable/filler per process"
+      ],
+      "processAlternatives": [
+        "See title process",
+        "Legacy joint as fallback"
+      ],
+      "engineCheck": null
+    }
+  },
+  {
+    "id": "dxp020",
+    "title": "Friction-stir welding seals the EDU cooling jacket without a gasket",
+    "system": "EDU / Electric Drive Unit",
+    "costSavingType": "Design / Specification",
+    "annualSaving": "€300k",
+    "difficulty": "Medium",
+    "timeToImplement": "9–15 months",
+    "description": "[ALL] Friction-stir welding seals the EDU cooling jacket without a gasket. Modern joining substitutes the legacy fastened/welded interface: fewer parts, fewer stations, better sealed or lighter joints; validated by joint-strength, fatigue and service-repair studies.",
+    "submittedBy": "Volvo EX90 benchmark",
+    "verified": 0,
+    "stars": 0,
+    "level": "part",
+    "ideaData": {
+      "id": "dxp020",
+      "title": "Friction-stir welding seals the EDU cooling jacket without a gasket",
+      "technicalDescription": "Friction-stir welding seals the EDU cooling jacket without a gasket. Modern joining substitutes the legacy fastened/welded interface: fewer parts, fewer stations, better sealed or lighter joints; validated by joint-strength, fatigue and service-repair studies. Typical automotive adopters run this on current premium programmes.",
+      "materialGrade": "Joint materials unchanged; consumable/filler per process",
+      "manufacturingImpact": "See title process; Legacy joint as fallback",
+      "costSavingTypes": [
+        "design",
+        "process"
+      ],
+      "costSavingPotential": {
+        "qualitative": "Fastener/part elimination",
+        "percentage": "€5/veh (-10-20% joint cost)",
+        "annualValue": "€300k",
+        "calculationBasis": "€5/veh × 60k veh/yr (indicative)"
+      },
+      "implementationDifficulty": "Medium",
+      "riskNotes": "Joint validation (static/fatigue/corrosion) and service-repair procedure required before cutover.",
+      "dfmaPrinciples": [
+        "Fastener/part elimination",
+        "Station reduction",
+        "Joint quality by design"
+      ],
+      "systemLevel": "Part",
+      "timeToImplement": "9–15 months",
+      "benchmarkReference": "Volvo EX90 programme (indicative)",
+      "confidenceLevel": "estimated",
+      "evidenceSources": [
+        {
+          "type": "benchmark",
+          "title": "Volvo EX90 teardown/industry norm",
+          "year": 2024,
+          "confidence": "medium"
+        }
+      ],
+      "regulatoryContext": null,
+      "materialAlternatives": [
+        "Joint materials unchanged; consumable/filler per process"
+      ],
+      "processAlternatives": [
+        "See title process",
+        "Legacy joint as fallback"
+      ],
+      "engineCheck": null
+    }
+  },
+  {
+    "id": "dxp021",
+    "title": "Ultrasonic welding replaces screws on the inverter busbar stack",
+    "system": "Inverter Assembly",
+    "costSavingType": "Design / Specification",
+    "annualSaving": "€300k",
+    "difficulty": "Medium",
+    "timeToImplement": "9–15 months",
+    "description": "[ALL] Ultrasonic welding replaces screws on the inverter busbar stack. Modern joining substitutes the legacy fastened/welded interface: fewer parts, fewer stations, better sealed or lighter joints; validated by joint-strength, fatigue and service-repair studies. Typ",
+    "submittedBy": "Lexus RX benchmark",
+    "verified": 0,
+    "stars": 0,
+    "level": "part",
+    "ideaData": {
+      "id": "dxp021",
+      "title": "Ultrasonic welding replaces screws on the inverter busbar stack",
+      "technicalDescription": "Ultrasonic welding replaces screws on the inverter busbar stack. Modern joining substitutes the legacy fastened/welded interface: fewer parts, fewer stations, better sealed or lighter joints; validated by joint-strength, fatigue and service-repair studies. Typical automotive adopters run this on current premium programmes.",
+      "materialGrade": "Joint materials unchanged; consumable/filler per process",
+      "manufacturingImpact": "See title process; Legacy joint as fallback",
+      "costSavingTypes": [
+        "design",
+        "process"
+      ],
+      "costSavingPotential": {
+        "qualitative": "Fastener/part elimination",
+        "percentage": "€5/veh (-10-20% joint cost)",
+        "annualValue": "€300k",
+        "calculationBasis": "€5/veh × 60k veh/yr (indicative)"
+      },
+      "implementationDifficulty": "Medium",
+      "riskNotes": "Joint validation (static/fatigue/corrosion) and service-repair procedure required before cutover.",
+      "dfmaPrinciples": [
+        "Fastener/part elimination",
+        "Station reduction",
+        "Joint quality by design"
+      ],
+      "systemLevel": "Part",
+      "timeToImplement": "9–15 months",
+      "benchmarkReference": "Lexus RX programme (indicative)",
+      "confidenceLevel": "estimated",
+      "evidenceSources": [
+        {
+          "type": "benchmark",
+          "title": "Lexus RX teardown/industry norm",
+          "year": 2024,
+          "confidence": "medium"
+        }
+      ],
+      "regulatoryContext": null,
+      "materialAlternatives": [
+        "Joint materials unchanged; consumable/filler per process"
+      ],
+      "processAlternatives": [
+        "See title process",
+        "Legacy joint as fallback"
+      ],
+      "engineCheck": null
+    }
+  },
+  {
+    "id": "dxp022",
+    "title": "MIG-brazing replaces GMAW on thin-wall subframe nodes",
+    "system": "Subframe",
+    "costSavingType": "Design / Specification",
+    "annualSaving": "€300k",
+    "difficulty": "Medium",
+    "timeToImplement": "9–15 months",
+    "description": "[ALL] MIG-brazing replaces GMAW on thin-wall subframe nodes. Modern joining substitutes the legacy fastened/welded interface: fewer parts, fewer stations, better sealed or lighter joints; validated by joint-strength, fatigue and service-repair studies. Typical autom",
+    "submittedBy": "NIO ES8 benchmark",
+    "verified": 0,
+    "stars": 0,
+    "level": "part",
+    "ideaData": {
+      "id": "dxp022",
+      "title": "MIG-brazing replaces GMAW on thin-wall subframe nodes",
+      "technicalDescription": "MIG-brazing replaces GMAW on thin-wall subframe nodes. Modern joining substitutes the legacy fastened/welded interface: fewer parts, fewer stations, better sealed or lighter joints; validated by joint-strength, fatigue and service-repair studies. Typical automotive adopters run this on current premium programmes.",
+      "materialGrade": "Joint materials unchanged; consumable/filler per process",
+      "manufacturingImpact": "See title process; Legacy joint as fallback",
+      "costSavingTypes": [
+        "design",
+        "process"
+      ],
+      "costSavingPotential": {
+        "qualitative": "Fastener/part elimination",
+        "percentage": "€5/veh (-10-20% joint cost)",
+        "annualValue": "€300k",
+        "calculationBasis": "€5/veh × 60k veh/yr (indicative)"
+      },
+      "implementationDifficulty": "Medium",
+      "riskNotes": "Joint validation (static/fatigue/corrosion) and service-repair procedure required before cutover.",
+      "dfmaPrinciples": [
+        "Fastener/part elimination",
+        "Station reduction",
+        "Joint quality by design"
+      ],
+      "systemLevel": "Part",
+      "timeToImplement": "9–15 months",
+      "benchmarkReference": "NIO ES8 programme (indicative)",
+      "confidenceLevel": "estimated",
+      "evidenceSources": [
+        {
+          "type": "benchmark",
+          "title": "NIO ES8 teardown/industry norm",
+          "year": 2024,
+          "confidence": "medium"
+        }
+      ],
+      "regulatoryContext": null,
+      "materialAlternatives": [
+        "Joint materials unchanged; consumable/filler per process"
+      ],
+      "processAlternatives": [
+        "See title process",
+        "Legacy joint as fallback"
+      ],
+      "engineCheck": null
+    }
+  },
+  {
+    "id": "dxp023",
+    "title": "IR staking replaces screws on the IP carrier-to-duct joints",
+    "system": "Interior",
+    "costSavingType": "Design / Specification",
+    "annualSaving": "€300k",
+    "difficulty": "Medium",
+    "timeToImplement": "9–15 months",
+    "description": "[ALL] IR staking replaces screws on the IP carrier-to-duct joints. Modern joining substitutes the legacy fastened/welded interface: fewer parts, fewer stations, better sealed or lighter joints; validated by joint-strength, fatigue and service-repair studies. Typical",
+    "submittedBy": "Li Auto L9 benchmark",
+    "verified": 0,
+    "stars": 0,
+    "level": "part",
+    "ideaData": {
+      "id": "dxp023",
+      "title": "IR staking replaces screws on the IP carrier-to-duct joints",
+      "technicalDescription": "IR staking replaces screws on the IP carrier-to-duct joints. Modern joining substitutes the legacy fastened/welded interface: fewer parts, fewer stations, better sealed or lighter joints; validated by joint-strength, fatigue and service-repair studies. Typical automotive adopters run this on current premium programmes.",
+      "materialGrade": "Joint materials unchanged; consumable/filler per process",
+      "manufacturingImpact": "See title process; Legacy joint as fallback",
+      "costSavingTypes": [
+        "design",
+        "process"
+      ],
+      "costSavingPotential": {
+        "qualitative": "Fastener/part elimination",
+        "percentage": "€5/veh (-10-20% joint cost)",
+        "annualValue": "€300k",
+        "calculationBasis": "€5/veh × 60k veh/yr (indicative)"
+      },
+      "implementationDifficulty": "Medium",
+      "riskNotes": "Joint validation (static/fatigue/corrosion) and service-repair procedure required before cutover.",
+      "dfmaPrinciples": [
+        "Fastener/part elimination",
+        "Station reduction",
+        "Joint quality by design"
+      ],
+      "systemLevel": "Part",
+      "timeToImplement": "9–15 months",
+      "benchmarkReference": "Li Auto L9 programme (indicative)",
+      "confidenceLevel": "estimated",
+      "evidenceSources": [
+        {
+          "type": "benchmark",
+          "title": "Li Auto L9 teardown/industry norm",
+          "year": 2024,
+          "confidence": "medium"
+        }
+      ],
+      "regulatoryContext": null,
+      "materialAlternatives": [
+        "Joint materials unchanged; consumable/filler per process"
+      ],
+      "processAlternatives": [
+        "See title process",
+        "Legacy joint as fallback"
+      ],
+      "engineCheck": null
+    }
+  },
+  {
+    "id": "dxp024",
+    "title": "CAB-brazed manifold replaces O-ring hose stack-ups",
+    "system": "Thermal Management",
+    "costSavingType": "Design / Specification",
+    "annualSaving": "€300k",
+    "difficulty": "Medium",
+    "timeToImplement": "9–15 months",
+    "description": "[ALL] CAB-brazed manifold replaces O-ring hose stack-ups. Modern joining substitutes the legacy fastened/welded interface: fewer parts, fewer stations, better sealed or lighter joints; validated by joint-strength, fatigue and service-repair studies. Typical automoti",
+    "submittedBy": "Xpeng G9 benchmark",
+    "verified": 0,
+    "stars": 0,
+    "level": "part",
+    "ideaData": {
+      "id": "dxp024",
+      "title": "CAB-brazed manifold replaces O-ring hose stack-ups",
+      "technicalDescription": "CAB-brazed manifold replaces O-ring hose stack-ups. Modern joining substitutes the legacy fastened/welded interface: fewer parts, fewer stations, better sealed or lighter joints; validated by joint-strength, fatigue and service-repair studies. Typical automotive adopters run this on current premium programmes.",
+      "materialGrade": "Joint materials unchanged; consumable/filler per process",
+      "manufacturingImpact": "See title process; Legacy joint as fallback",
+      "costSavingTypes": [
+        "design",
+        "process"
+      ],
+      "costSavingPotential": {
+        "qualitative": "Fastener/part elimination",
+        "percentage": "€5/veh (-10-20% joint cost)",
+        "annualValue": "€300k",
+        "calculationBasis": "€5/veh × 60k veh/yr (indicative)"
+      },
+      "implementationDifficulty": "Medium",
+      "riskNotes": "Joint validation (static/fatigue/corrosion) and service-repair procedure required before cutover.",
+      "dfmaPrinciples": [
+        "Fastener/part elimination",
+        "Station reduction",
+        "Joint quality by design"
+      ],
+      "systemLevel": "Part",
+      "timeToImplement": "9–15 months",
+      "benchmarkReference": "Xpeng G9 programme (indicative)",
+      "confidenceLevel": "estimated",
+      "evidenceSources": [
+        {
+          "type": "benchmark",
+          "title": "Xpeng G9 teardown/industry norm",
+          "year": 2024,
+          "confidence": "medium"
+        }
+      ],
+      "regulatoryContext": null,
+      "materialAlternatives": [
+        "Joint materials unchanged; consumable/filler per process"
+      ],
+      "processAlternatives": [
+        "See title process",
+        "Legacy joint as fallback"
+      ],
+      "engineCheck": null
+    }
+  },
+  {
+    "id": "dxp025",
+    "title": "Magnetic-pulse welding joins the Al tube to steel yoke on the axle shaft",
+    "system": "Axles",
+    "costSavingType": "Design / Specification",
+    "annualSaving": "€300k",
+    "difficulty": "Medium",
+    "timeToImplement": "9–15 months",
+    "description": "[ALL] Magnetic-pulse welding joins the Al tube to steel yoke on the axle shaft. Modern joining substitutes the legacy fastened/welded interface: fewer parts, fewer stations, better sealed or lighter joints; validated by joint-strength, fatigue and service-repair stu",
+    "submittedBy": "Rivian R1S benchmark",
+    "verified": 0,
+    "stars": 0,
+    "level": "part",
+    "ideaData": {
+      "id": "dxp025",
+      "title": "Magnetic-pulse welding joins the Al tube to steel yoke on the axle shaft",
+      "technicalDescription": "Magnetic-pulse welding joins the Al tube to steel yoke on the axle shaft. Modern joining substitutes the legacy fastened/welded interface: fewer parts, fewer stations, better sealed or lighter joints; validated by joint-strength, fatigue and service-repair studies. Typical automotive adopters run this on current premium programmes.",
+      "materialGrade": "Joint materials unchanged; consumable/filler per process",
+      "manufacturingImpact": "See title process; Legacy joint as fallback",
+      "costSavingTypes": [
+        "design",
+        "process"
+      ],
+      "costSavingPotential": {
+        "qualitative": "Fastener/part elimination",
+        "percentage": "€5/veh (-10-20% joint cost)",
+        "annualValue": "€300k",
+        "calculationBasis": "€5/veh × 60k veh/yr (indicative)"
+      },
+      "implementationDifficulty": "Medium",
+      "riskNotes": "Joint validation (static/fatigue/corrosion) and service-repair procedure required before cutover.",
+      "dfmaPrinciples": [
+        "Fastener/part elimination",
+        "Station reduction",
+        "Joint quality by design"
+      ],
+      "systemLevel": "Part",
+      "timeToImplement": "9–15 months",
+      "benchmarkReference": "Rivian R1S programme (indicative)",
+      "confidenceLevel": "estimated",
+      "evidenceSources": [
+        {
+          "type": "benchmark",
+          "title": "Rivian R1S teardown/industry norm",
+          "year": 2024,
+          "confidence": "medium"
+        }
+      ],
+      "regulatoryContext": null,
+      "materialAlternatives": [
+        "Joint materials unchanged; consumable/filler per process"
+      ],
+      "processAlternatives": [
+        "See title process",
+        "Legacy joint as fallback"
+      ],
+      "engineCheck": null
+    }
+  },
+  {
+    "id": "dxp026",
+    "title": "Inertia friction welding replaces bolted flanges on the prop tube",
+    "system": "Prop Shafts",
+    "costSavingType": "Design / Specification",
+    "annualSaving": "€300k",
+    "difficulty": "Medium",
+    "timeToImplement": "9–15 months",
+    "description": "[ALL] Inertia friction welding replaces bolted flanges on the prop tube. Modern joining substitutes the legacy fastened/welded interface: fewer parts, fewer stations, better sealed or lighter joints; validated by joint-strength, fatigue and service-repair studies. T",
+    "submittedBy": "Land Cruiser 300 benchmark",
+    "verified": 0,
+    "stars": 0,
+    "level": "part",
+    "ideaData": {
+      "id": "dxp026",
+      "title": "Inertia friction welding replaces bolted flanges on the prop tube",
+      "technicalDescription": "Inertia friction welding replaces bolted flanges on the prop tube. Modern joining substitutes the legacy fastened/welded interface: fewer parts, fewer stations, better sealed or lighter joints; validated by joint-strength, fatigue and service-repair studies. Typical automotive adopters run this on current premium programmes.",
+      "materialGrade": "Joint materials unchanged; consumable/filler per process",
+      "manufacturingImpact": "See title process; Legacy joint as fallback",
+      "costSavingTypes": [
+        "design",
+        "process"
+      ],
+      "costSavingPotential": {
+        "qualitative": "Fastener/part elimination",
+        "percentage": "€5/veh (-10-20% joint cost)",
+        "annualValue": "€300k",
+        "calculationBasis": "€5/veh × 60k veh/yr (indicative)"
+      },
+      "implementationDifficulty": "Medium",
+      "riskNotes": "Joint validation (static/fatigue/corrosion) and service-repair procedure required before cutover.",
+      "dfmaPrinciples": [
+        "Fastener/part elimination",
+        "Station reduction",
+        "Joint quality by design"
+      ],
+      "systemLevel": "Part",
+      "timeToImplement": "9–15 months",
+      "benchmarkReference": "Land Cruiser 300 programme (indicative)",
+      "confidenceLevel": "estimated",
+      "evidenceSources": [
+        {
+          "type": "benchmark",
+          "title": "Land Cruiser 300 teardown/industry norm",
+          "year": 2024,
+          "confidence": "medium"
+        }
+      ],
+      "regulatoryContext": null,
+      "materialAlternatives": [
+        "Joint materials unchanged; consumable/filler per process"
+      ],
+      "processAlternatives": [
+        "See title process",
+        "Legacy joint as fallback"
+      ],
+      "engineCheck": null
+    }
+  },
+  {
+    "id": "dxp027",
+    "title": "Rotary-friction weld joins forged ends to a tube control arm",
+    "system": "Control Arms",
+    "costSavingType": "Design / Specification",
+    "annualSaving": "€300k",
+    "difficulty": "Medium",
+    "timeToImplement": "9–15 months",
+    "description": "[ALL] Rotary-friction weld joins forged ends to a tube control arm. Modern joining substitutes the legacy fastened/welded interface: fewer parts, fewer stations, better sealed or lighter joints; validated by joint-strength, fatigue and service-repair studies. Typica",
+    "submittedBy": "Cadillac Escalade IQ benchmark",
+    "verified": 0,
+    "stars": 0,
+    "level": "part",
+    "ideaData": {
+      "id": "dxp027",
+      "title": "Rotary-friction weld joins forged ends to a tube control arm",
+      "technicalDescription": "Rotary-friction weld joins forged ends to a tube control arm. Modern joining substitutes the legacy fastened/welded interface: fewer parts, fewer stations, better sealed or lighter joints; validated by joint-strength, fatigue and service-repair studies. Typical automotive adopters run this on current premium programmes.",
+      "materialGrade": "Joint materials unchanged; consumable/filler per process",
+      "manufacturingImpact": "See title process; Legacy joint as fallback",
+      "costSavingTypes": [
+        "design",
+        "process"
+      ],
+      "costSavingPotential": {
+        "qualitative": "Fastener/part elimination",
+        "percentage": "€5/veh (-10-20% joint cost)",
+        "annualValue": "€300k",
+        "calculationBasis": "€5/veh × 60k veh/yr (indicative)"
+      },
+      "implementationDifficulty": "Medium",
+      "riskNotes": "Joint validation (static/fatigue/corrosion) and service-repair procedure required before cutover.",
+      "dfmaPrinciples": [
+        "Fastener/part elimination",
+        "Station reduction",
+        "Joint quality by design"
+      ],
+      "systemLevel": "Part",
+      "timeToImplement": "9–15 months",
+      "benchmarkReference": "Cadillac Escalade IQ programme (indicative)",
+      "confidenceLevel": "estimated",
+      "evidenceSources": [
+        {
+          "type": "benchmark",
+          "title": "Cadillac Escalade IQ teardown/industry norm",
+          "year": 2024,
+          "confidence": "medium"
+        }
+      ],
+      "regulatoryContext": null,
+      "materialAlternatives": [
+        "Joint materials unchanged; consumable/filler per process"
+      ],
+      "processAlternatives": [
+        "See title process",
+        "Legacy joint as fallback"
+      ],
+      "engineCheck": null
+    }
+  },
+  {
+    "id": "dxp028",
+    "title": "Roller-hemmed closure edge deletes the door-skin adhesive oven pass",
+    "system": "Body Structure",
+    "costSavingType": "Design / Specification",
+    "annualSaving": "€300k",
+    "difficulty": "Medium",
+    "timeToImplement": "9–15 months",
+    "description": "[ALL] Roller-hemmed closure edge deletes the door-skin adhesive oven pass. Modern joining substitutes the legacy fastened/welded interface: fewer parts, fewer stations, better sealed or lighter joints; validated by joint-strength, fatigue and service-repair studies.",
+    "submittedBy": "AITO M9 benchmark",
+    "verified": 0,
+    "stars": 0,
+    "level": "part",
+    "ideaData": {
+      "id": "dxp028",
+      "title": "Roller-hemmed closure edge deletes the door-skin adhesive oven pass",
+      "technicalDescription": "Roller-hemmed closure edge deletes the door-skin adhesive oven pass. Modern joining substitutes the legacy fastened/welded interface: fewer parts, fewer stations, better sealed or lighter joints; validated by joint-strength, fatigue and service-repair studies. Typical automotive adopters run this on current premium programmes.",
+      "materialGrade": "Joint materials unchanged; consumable/filler per process",
+      "manufacturingImpact": "See title process; Legacy joint as fallback",
+      "costSavingTypes": [
+        "design",
+        "process"
+      ],
+      "costSavingPotential": {
+        "qualitative": "Fastener/part elimination",
+        "percentage": "€5/veh (-10-20% joint cost)",
+        "annualValue": "€300k",
+        "calculationBasis": "€5/veh × 60k veh/yr (indicative)"
+      },
+      "implementationDifficulty": "Medium",
+      "riskNotes": "Joint validation (static/fatigue/corrosion) and service-repair procedure required before cutover.",
+      "dfmaPrinciples": [
+        "Fastener/part elimination",
+        "Station reduction",
+        "Joint quality by design"
+      ],
+      "systemLevel": "Part",
+      "timeToImplement": "9–15 months",
+      "benchmarkReference": "AITO M9 programme (indicative)",
+      "confidenceLevel": "estimated",
+      "evidenceSources": [
+        {
+          "type": "benchmark",
+          "title": "AITO M9 teardown/industry norm",
+          "year": 2024,
+          "confidence": "medium"
+        }
+      ],
+      "regulatoryContext": null,
+      "materialAlternatives": [
+        "Joint materials unchanged; consumable/filler per process"
+      ],
+      "processAlternatives": [
+        "See title process",
+        "Legacy joint as fallback"
+      ],
+      "engineCheck": null
+    }
+  },
+  {
+    "id": "dxp029",
+    "title": "Form-locked caliper bridge replaces two body bolts",
+    "system": "Braking System",
+    "costSavingType": "Design / Specification",
+    "annualSaving": "€300k",
+    "difficulty": "Medium",
+    "timeToImplement": "9–15 months",
+    "description": "[ALL] Form-locked caliper bridge replaces two body bolts. Modern joining substitutes the legacy fastened/welded interface: fewer parts, fewer stations, better sealed or lighter joints; validated by joint-strength, fatigue and service-repair studies. Typical automoti",
+    "submittedBy": "Jeep Grand Cherokee benchmark",
+    "verified": 0,
+    "stars": 0,
+    "level": "part",
+    "ideaData": {
+      "id": "dxp029",
+      "title": "Form-locked caliper bridge replaces two body bolts",
+      "technicalDescription": "Form-locked caliper bridge replaces two body bolts. Modern joining substitutes the legacy fastened/welded interface: fewer parts, fewer stations, better sealed or lighter joints; validated by joint-strength, fatigue and service-repair studies. Typical automotive adopters run this on current premium programmes.",
+      "materialGrade": "Joint materials unchanged; consumable/filler per process",
+      "manufacturingImpact": "See title process; Legacy joint as fallback",
+      "costSavingTypes": [
+        "design",
+        "process"
+      ],
+      "costSavingPotential": {
+        "qualitative": "Fastener/part elimination",
+        "percentage": "€5/veh (-10-20% joint cost)",
+        "annualValue": "€300k",
+        "calculationBasis": "€5/veh × 60k veh/yr (indicative)"
+      },
+      "implementationDifficulty": "Medium",
+      "riskNotes": "Joint validation (static/fatigue/corrosion) and service-repair procedure required before cutover.",
+      "dfmaPrinciples": [
+        "Fastener/part elimination",
+        "Station reduction",
+        "Joint quality by design"
+      ],
+      "systemLevel": "Part",
+      "timeToImplement": "9–15 months",
+      "benchmarkReference": "Jeep Grand Cherokee programme (indicative)",
+      "confidenceLevel": "estimated",
+      "evidenceSources": [
+        {
+          "type": "benchmark",
+          "title": "Jeep Grand Cherokee teardown/industry norm",
+          "year": 2024,
+          "confidence": "medium"
+        }
+      ],
+      "regulatoryContext": null,
+      "materialAlternatives": [
+        "Joint materials unchanged; consumable/filler per process"
+      ],
+      "processAlternatives": [
+        "See title process",
+        "Legacy joint as fallback"
+      ],
+      "engineCheck": null
+    }
+  },
+  {
+    "id": "dxp030",
+    "title": "Orbital forming replaces circlip + groove on the joint retention",
+    "system": "Half Shafts",
+    "costSavingType": "Design / Specification",
+    "annualSaving": "€300k",
+    "difficulty": "Medium",
+    "timeToImplement": "9–15 months",
+    "description": "[ALL] Orbital forming replaces circlip + groove on the joint retention. Modern joining substitutes the legacy fastened/welded interface: fewer parts, fewer stations, better sealed or lighter joints; validated by joint-strength, fatigue and service-repair studies. Ty",
+    "submittedBy": "Yangwang U8 benchmark",
+    "verified": 0,
+    "stars": 0,
+    "level": "part",
+    "ideaData": {
+      "id": "dxp030",
+      "title": "Orbital forming replaces circlip + groove on the joint retention",
+      "technicalDescription": "Orbital forming replaces circlip + groove on the joint retention. Modern joining substitutes the legacy fastened/welded interface: fewer parts, fewer stations, better sealed or lighter joints; validated by joint-strength, fatigue and service-repair studies. Typical automotive adopters run this on current premium programmes.",
+      "materialGrade": "Joint materials unchanged; consumable/filler per process",
+      "manufacturingImpact": "See title process; Legacy joint as fallback",
+      "costSavingTypes": [
+        "design",
+        "process"
+      ],
+      "costSavingPotential": {
+        "qualitative": "Fastener/part elimination",
+        "percentage": "€5/veh (-10-20% joint cost)",
+        "annualValue": "€300k",
+        "calculationBasis": "€5/veh × 60k veh/yr (indicative)"
+      },
+      "implementationDifficulty": "Medium",
+      "riskNotes": "Joint validation (static/fatigue/corrosion) and service-repair procedure required before cutover.",
+      "dfmaPrinciples": [
+        "Fastener/part elimination",
+        "Station reduction",
+        "Joint quality by design"
+      ],
+      "systemLevel": "Part",
+      "timeToImplement": "9–15 months",
+      "benchmarkReference": "Yangwang U8 programme (indicative)",
+      "confidenceLevel": "estimated",
+      "evidenceSources": [
+        {
+          "type": "benchmark",
+          "title": "Yangwang U8 teardown/industry norm",
+          "year": 2024,
+          "confidence": "medium"
+        }
+      ],
+      "regulatoryContext": null,
+      "materialAlternatives": [
+        "Joint materials unchanged; consumable/filler per process"
+      ],
+      "processAlternatives": [
+        "See title process",
+        "Legacy joint as fallback"
+      ],
+      "engineCheck": null
+    }
+  },
+  {
+    "id": "dxp031",
+    "title": "Zonal harness consolidation deletes the door-module home-runs",
+    "system": "Electrical Architecture",
+    "costSavingType": "Design / Specification",
+    "annualSaving": "€840k",
+    "difficulty": "High",
+    "timeToImplement": "24–36 months",
+    "description": "[ALL] Move door electronics onto a zonal controller with a CAN-FD/LIN ring: the per-door home-run bundles collapse into short local stubs. Cuts copper mass, connector count and assembly routing time; the zonal ECU is amortised across four doors.",
+    "submittedBy": "Porsche Cayenne benchmark",
+    "verified": 0,
+    "stars": 0,
+    "level": "part",
+    "ideaData": {
+      "id": "dxp031",
+      "title": "Zonal harness consolidation deletes the door-module home-runs",
+      "technicalDescription": "Move door electronics onto a zonal controller with a CAN-FD/LIN ring: the per-door home-run bundles collapse into short local stubs. Cuts copper mass, connector count and assembly routing time; the zonal ECU is amortised across four doors.",
+      "materialGrade": "Recycled-copper harness strands / Al conductor for power runs",
+      "manufacturingImpact": "Zonal E/E architecture; CAN-FD/LIN ring topology",
+      "costSavingTypes": [
+        "design",
+        "process"
+      ],
+      "costSavingPotential": {
+        "qualitative": "Wire-length reduction",
+        "percentage": "€14/veh (-18% door-harness cost)",
+        "annualValue": "€840k",
+        "calculationBasis": "€14/veh × 60k veh/yr (indicative)"
+      },
+      "implementationDifficulty": "High",
+      "riskNotes": "Zonal failure modes (single-point door loss) mitigated by limp strategies; EMC re-validation.",
+      "dfmaPrinciples": [
+        "Wire-length reduction",
+        "Connector-count reduction",
+        "Zonal consolidation"
+      ],
+      "systemLevel": "Part",
+      "timeToImplement": "24–36 months",
+      "benchmarkReference": "Porsche Cayenne programme (indicative)",
+      "confidenceLevel": "estimated",
+      "evidenceSources": [
+        {
+          "type": "benchmark",
+          "title": "Porsche Cayenne teardown/industry norm",
+          "year": 2024,
+          "confidence": "medium"
+        }
+      ],
+      "regulatoryContext": null,
+      "materialAlternatives": [
+        "Recycled-copper harness strands",
+        "Al conductor for power runs"
+      ],
+      "processAlternatives": [
+        "Zonal E/E architecture",
+        "CAN-FD/LIN ring topology"
+      ],
+      "engineCheck": null
+    }
+  },
+  {
+    "id": "dxp032",
+    "title": "Consolidate seat/climate/door ECUs into one comfort domain controller",
+    "system": "Electrical Architecture",
+    "costSavingType": "Design / Specification",
+    "annualSaving": "€1.1M",
+    "difficulty": "High",
+    "timeToImplement": "24–36 months",
+    "description": "[ALL] Replace 4-6 single-function comfort ECUs with one domain controller running mixed-criticality software partitions. Deletes housings, connectors, and per-ECU flash/EOL stations; software becomes the integration point.",
+    "submittedBy": "Mercedes GLE benchmark",
+    "verified": 0,
+    "stars": 0,
+    "level": "part",
+    "ideaData": {
+      "id": "dxp032",
+      "title": "Consolidate seat/climate/door ECUs into one comfort domain controller",
+      "technicalDescription": "Replace 4-6 single-function comfort ECUs with one domain controller running mixed-criticality software partitions. Deletes housings, connectors, and per-ECU flash/EOL stations; software becomes the integration point.",
+      "materialGrade": "n/a — electronics consolidation",
+      "manufacturingImpact": "Domain-controller integration; AUTOSAR/hypervisor partitioning",
+      "costSavingTypes": [
+        "design",
+        "process"
+      ],
+      "costSavingPotential": {
+        "qualitative": "ECU-count reduction",
+        "percentage": "€18/veh (-30% comfort-ECU BOM)",
+        "annualValue": "€1.1M",
+        "calculationBasis": "€18/veh × 60k veh/yr (indicative)"
+      },
+      "implementationDifficulty": "High",
+      "riskNotes": "Supplier software integration risk; ASIL partitioning and OTA strategy must be owned in-house.",
+      "dfmaPrinciples": [
+        "ECU-count reduction",
+        "Flash/EOL station reduction"
+      ],
+      "systemLevel": "Part",
+      "timeToImplement": "24–36 months",
+      "benchmarkReference": "Mercedes GLE programme (indicative)",
+      "confidenceLevel": "estimated",
+      "evidenceSources": [
+        {
+          "type": "benchmark",
+          "title": "Mercedes GLE teardown/industry norm",
+          "year": 2024,
+          "confidence": "medium"
+        }
+      ],
+      "regulatoryContext": null,
+      "materialAlternatives": [
+        "n/a — electronics consolidation"
+      ],
+      "processAlternatives": [
+        "Domain-controller integration",
+        "AUTOSAR/hypervisor partitioning"
+      ],
+      "engineCheck": null
+    }
+  },
+  {
+    "id": "dxp033",
+    "title": "Replace shielded sensor lines with unshielded twisted pair + software filtering",
+    "system": "Electrical Architecture",
+    "costSavingType": "Design / Specification",
+    "annualSaving": "€240k",
+    "difficulty": "Medium",
+    "timeToImplement": "9–12 months",
+    "description": "[ALL] Several chassis/ADAS sensor runs carry legacy shielded cable specified before modern DSP filtering. Where EMC budgets allow, unshielded twisted pair with software-side filtering deletes the shield, drain wire, and shielded-connector premium.",
+    "submittedBy": "BMW X5 benchmark",
+    "verified": 0,
+    "stars": 0,
+    "level": "part",
+    "ideaData": {
+      "id": "dxp033",
+      "title": "Replace shielded sensor lines with unshielded twisted pair + software filtering",
+      "technicalDescription": "Several chassis/ADAS sensor runs carry legacy shielded cable specified before modern DSP filtering. Where EMC budgets allow, unshielded twisted pair with software-side filtering deletes the shield, drain wire, and shielded-connector premium.",
+      "materialGrade": "UTP automotive cable / Recycled copper strands",
+      "manufacturingImpact": "DSP filtering at the receiver; Selective shielding only in proven-noisy zones",
+      "costSavingTypes": [
+        "design",
+        "process"
+      ],
+      "costSavingPotential": {
+        "qualitative": "Cable-spec right-sizing",
+        "percentage": "€4/veh (-25% affected line cost)",
+        "annualValue": "€240k",
+        "calculationBasis": "€4/veh × 60k veh/yr (indicative)"
+      },
+      "implementationDifficulty": "Medium",
+      "riskNotes": "EMC validation per run; keep shields on proven-critical paths (radar, audio).",
+      "dfmaPrinciples": [
+        "Cable-spec right-sizing",
+        "Connector simplification"
+      ],
+      "systemLevel": "Part",
+      "timeToImplement": "9–12 months",
+      "benchmarkReference": "BMW X5 programme (indicative)",
+      "confidenceLevel": "estimated",
+      "evidenceSources": [
+        {
+          "type": "benchmark",
+          "title": "BMW X5 teardown/industry norm",
+          "year": 2024,
+          "confidence": "medium"
+        }
+      ],
+      "regulatoryContext": null,
+      "materialAlternatives": [
+        "UTP automotive cable",
+        "Recycled copper strands"
+      ],
+      "processAlternatives": [
+        "DSP filtering at the receiver",
+        "Selective shielding only in proven-noisy zones"
+      ],
+      "engineCheck": null
+    }
+  },
+  {
+    "id": "dxp034",
+    "title": "Software-flash at supplier deleted — single EOL flash-over-diagnostic session",
+    "system": "Electrical Architecture",
+    "costSavingType": "Design / Specification",
+    "annualSaving": "€360k",
+    "difficulty": "Medium",
+    "timeToImplement": "12–24 months",
+    "description": "[ALL] One consolidated end-of-line flash session replaces per-ECU supplier pre-flash: deletes supplier flash fees and version-mismatch rework. Cost falls through copper mass, connector count, station time and part-number complexity; validated by EMC, functional-safe",
+    "submittedBy": "Audi Q8 benchmark",
+    "verified": 0,
+    "stars": 0,
+    "level": "part",
+    "ideaData": {
+      "id": "dxp034",
+      "title": "Software-flash at supplier deleted — single EOL flash-over-diagnostic session",
+      "technicalDescription": "One consolidated end-of-line flash session replaces per-ECU supplier pre-flash: deletes supplier flash fees and version-mismatch rework. Cost falls through copper mass, connector count, station time and part-number complexity; validated by EMC, functional-safety and service diagnostics reviews.",
+      "materialGrade": "Recycled-copper strands where applicable / Al conductors for power runs / Platform connector families",
+      "manufacturingImpact": "Zonal/backbone E/E architecture; Software-defined feature enablement",
+      "costSavingTypes": [
+        "design",
+        "process"
+      ],
+      "costSavingPotential": {
+        "qualitative": "Harness mass reduction",
+        "percentage": "€6/veh (-10-25% affected content)",
+        "annualValue": "€360k",
+        "calculationBasis": "€6/veh × 60k veh/yr (indicative)"
+      },
+      "implementationDifficulty": "Medium",
+      "riskNotes": "EMC + functional-safety re-validation; service/diagnostic tooling updates; supplier resourcing.",
+      "dfmaPrinciples": [
+        "Harness mass reduction",
+        "ECU/connector consolidation",
+        "Variant reduction"
+      ],
+      "systemLevel": "Part",
+      "timeToImplement": "12–24 months",
+      "benchmarkReference": "Audi Q8 programme (indicative)",
+      "confidenceLevel": "estimated",
+      "evidenceSources": [
+        {
+          "type": "benchmark",
+          "title": "Audi Q8 teardown/industry norm",
+          "year": 2024,
+          "confidence": "medium"
+        }
+      ],
+      "regulatoryContext": null,
+      "materialAlternatives": [
+        "Recycled-copper strands where applicable",
+        "Al conductors for power runs",
+        "Platform connector families"
+      ],
+      "processAlternatives": [
+        "Zonal/backbone E/E architecture",
+        "Software-defined feature enablement"
+      ],
+      "engineCheck": null
+    }
+  },
+  {
+    "id": "dxp035",
+    "title": "LIN replaces CAN on low-rate actuators",
+    "system": "Electrical Architecture",
+    "costSavingType": "Design / Specification",
+    "annualSaving": "€360k",
+    "difficulty": "Medium",
+    "timeToImplement": "12–24 months",
+    "description": "[ALL] Window-lift, flap and pump actuators on CAN migrate to LIN daisy-chains: cheaper transceivers, less harness. Cost falls through copper mass, connector count, station time and part-number complexity; validated by EMC, functional-safety and service diagnostics r",
+    "submittedBy": "Volvo EX90 benchmark",
+    "verified": 0,
+    "stars": 0,
+    "level": "part",
+    "ideaData": {
+      "id": "dxp035",
+      "title": "LIN replaces CAN on low-rate actuators",
+      "technicalDescription": "Window-lift, flap and pump actuators on CAN migrate to LIN daisy-chains: cheaper transceivers, less harness. Cost falls through copper mass, connector count, station time and part-number complexity; validated by EMC, functional-safety and service diagnostics reviews.",
+      "materialGrade": "Recycled-copper strands where applicable / Al conductors for power runs / Platform connector families",
+      "manufacturingImpact": "Zonal/backbone E/E architecture; Software-defined feature enablement",
+      "costSavingTypes": [
+        "design",
+        "process"
+      ],
+      "costSavingPotential": {
+        "qualitative": "Harness mass reduction",
+        "percentage": "€6/veh (-10-25% affected content)",
+        "annualValue": "€360k",
+        "calculationBasis": "€6/veh × 60k veh/yr (indicative)"
+      },
+      "implementationDifficulty": "Medium",
+      "riskNotes": "EMC + functional-safety re-validation; service/diagnostic tooling updates; supplier resourcing.",
+      "dfmaPrinciples": [
+        "Harness mass reduction",
+        "ECU/connector consolidation",
+        "Variant reduction"
+      ],
+      "systemLevel": "Part",
+      "timeToImplement": "12–24 months",
+      "benchmarkReference": "Volvo EX90 programme (indicative)",
+      "confidenceLevel": "estimated",
+      "evidenceSources": [
+        {
+          "type": "benchmark",
+          "title": "Volvo EX90 teardown/industry norm",
+          "year": 2024,
+          "confidence": "medium"
+        }
+      ],
+      "regulatoryContext": null,
+      "materialAlternatives": [
+        "Recycled-copper strands where applicable",
+        "Al conductors for power runs",
+        "Platform connector families"
+      ],
+      "processAlternatives": [
+        "Zonal/backbone E/E architecture",
+        "Software-defined feature enablement"
+      ],
+      "engineCheck": null
+    }
+  },
+  {
+    "id": "dxp036",
+    "title": "48V power distribution for heated surfaces",
+    "system": "Electrical Architecture",
+    "costSavingType": "Design / Specification",
+    "annualSaving": "€360k",
+    "difficulty": "Medium",
+    "timeToImplement": "12–24 months",
+    "description": "[ALL] Heated seats/steering move to the 48V rail: quarter the current, thinner copper, smaller connectors. Cost falls through copper mass, connector count, station time and part-number complexity; validated by EMC, functional-safety and service diagnostics reviews.",
+    "submittedBy": "Lexus RX benchmark",
+    "verified": 0,
+    "stars": 0,
+    "level": "part",
+    "ideaData": {
+      "id": "dxp036",
+      "title": "48V power distribution for heated surfaces",
+      "technicalDescription": "Heated seats/steering move to the 48V rail: quarter the current, thinner copper, smaller connectors. Cost falls through copper mass, connector count, station time and part-number complexity; validated by EMC, functional-safety and service diagnostics reviews.",
+      "materialGrade": "Recycled-copper strands where applicable / Al conductors for power runs / Platform connector families",
+      "manufacturingImpact": "Zonal/backbone E/E architecture; Software-defined feature enablement",
+      "costSavingTypes": [
+        "design",
+        "process"
+      ],
+      "costSavingPotential": {
+        "qualitative": "Harness mass reduction",
+        "percentage": "€6/veh (-10-25% affected content)",
+        "annualValue": "€360k",
+        "calculationBasis": "€6/veh × 60k veh/yr (indicative)"
+      },
+      "implementationDifficulty": "Medium",
+      "riskNotes": "EMC + functional-safety re-validation; service/diagnostic tooling updates; supplier resourcing.",
+      "dfmaPrinciples": [
+        "Harness mass reduction",
+        "ECU/connector consolidation",
+        "Variant reduction"
+      ],
+      "systemLevel": "Part",
+      "timeToImplement": "12–24 months",
+      "benchmarkReference": "Lexus RX programme (indicative)",
+      "confidenceLevel": "estimated",
+      "evidenceSources": [
+        {
+          "type": "benchmark",
+          "title": "Lexus RX teardown/industry norm",
+          "year": 2024,
+          "confidence": "medium"
+        }
+      ],
+      "regulatoryContext": null,
+      "materialAlternatives": [
+        "Recycled-copper strands where applicable",
+        "Al conductors for power runs",
+        "Platform connector families"
+      ],
+      "processAlternatives": [
+        "Zonal/backbone E/E architecture",
+        "Software-defined feature enablement"
+      ],
+      "engineCheck": null
+    }
+  },
+  {
+    "id": "dxp037",
+    "title": "Connector family commonisation across the cockpit harness",
+    "system": "Electrical Architecture",
+    "costSavingType": "Design / Specification",
+    "annualSaving": "€360k",
+    "difficulty": "Medium",
+    "timeToImplement": "12–24 months",
+    "description": "[ALL] Reduce 23 connector families to 8 platform-standard ones: pooled volume, fewer crimp tools, fewer wrong-connector defects. Cost falls through copper mass, connector count, station time and part-number complexity; validated by EMC, functional-safety and service",
+    "submittedBy": "NIO ES8 benchmark",
+    "verified": 0,
+    "stars": 0,
+    "level": "part",
+    "ideaData": {
+      "id": "dxp037",
+      "title": "Connector family commonisation across the cockpit harness",
+      "technicalDescription": "Reduce 23 connector families to 8 platform-standard ones: pooled volume, fewer crimp tools, fewer wrong-connector defects. Cost falls through copper mass, connector count, station time and part-number complexity; validated by EMC, functional-safety and service diagnostics reviews.",
+      "materialGrade": "Recycled-copper strands where applicable / Al conductors for power runs / Platform connector families",
+      "manufacturingImpact": "Zonal/backbone E/E architecture; Software-defined feature enablement",
+      "costSavingTypes": [
+        "design",
+        "process"
+      ],
+      "costSavingPotential": {
+        "qualitative": "Harness mass reduction",
+        "percentage": "€6/veh (-10-25% affected content)",
+        "annualValue": "€360k",
+        "calculationBasis": "€6/veh × 60k veh/yr (indicative)"
+      },
+      "implementationDifficulty": "Medium",
+      "riskNotes": "EMC + functional-safety re-validation; service/diagnostic tooling updates; supplier resourcing.",
+      "dfmaPrinciples": [
+        "Harness mass reduction",
+        "ECU/connector consolidation",
+        "Variant reduction"
+      ],
+      "systemLevel": "Part",
+      "timeToImplement": "12–24 months",
+      "benchmarkReference": "NIO ES8 programme (indicative)",
+      "confidenceLevel": "estimated",
+      "evidenceSources": [
+        {
+          "type": "benchmark",
+          "title": "NIO ES8 teardown/industry norm",
+          "year": 2024,
+          "confidence": "medium"
+        }
+      ],
+      "regulatoryContext": null,
+      "materialAlternatives": [
+        "Recycled-copper strands where applicable",
+        "Al conductors for power runs",
+        "Platform connector families"
+      ],
+      "processAlternatives": [
+        "Zonal/backbone E/E architecture",
+        "Software-defined feature enablement"
+      ],
+      "engineCheck": null
+    }
+  },
+  {
+    "id": "dxp038",
+    "title": "E-fuses replace melting fuses + relays in the power box",
+    "system": "Electrical Architecture",
+    "costSavingType": "Design / Specification",
+    "annualSaving": "€360k",
+    "difficulty": "Medium",
+    "timeToImplement": "12–24 months",
+    "description": "[ALL] Solid-state e-fuses delete the fuse/relay box, enable soft-start and diagnostics, and cut wiring by allowing higher protection granularity. Cost falls through copper mass, connector count, station time and part-number complexity; validated by EMC, functional-s",
+    "submittedBy": "Li Auto L9 benchmark",
+    "verified": 0,
+    "stars": 0,
+    "level": "part",
+    "ideaData": {
+      "id": "dxp038",
+      "title": "E-fuses replace melting fuses + relays in the power box",
+      "technicalDescription": "Solid-state e-fuses delete the fuse/relay box, enable soft-start and diagnostics, and cut wiring by allowing higher protection granularity. Cost falls through copper mass, connector count, station time and part-number complexity; validated by EMC, functional-safety and service diagnostics reviews.",
+      "materialGrade": "Recycled-copper strands where applicable / Al conductors for power runs / Platform connector families",
+      "manufacturingImpact": "Zonal/backbone E/E architecture; Software-defined feature enablement",
+      "costSavingTypes": [
+        "design",
+        "process"
+      ],
+      "costSavingPotential": {
+        "qualitative": "Harness mass reduction",
+        "percentage": "€6/veh (-10-25% affected content)",
+        "annualValue": "€360k",
+        "calculationBasis": "€6/veh × 60k veh/yr (indicative)"
+      },
+      "implementationDifficulty": "Medium",
+      "riskNotes": "EMC + functional-safety re-validation; service/diagnostic tooling updates; supplier resourcing.",
+      "dfmaPrinciples": [
+        "Harness mass reduction",
+        "ECU/connector consolidation",
+        "Variant reduction"
+      ],
+      "systemLevel": "Part",
+      "timeToImplement": "12–24 months",
+      "benchmarkReference": "Li Auto L9 programme (indicative)",
+      "confidenceLevel": "estimated",
+      "evidenceSources": [
+        {
+          "type": "benchmark",
+          "title": "Li Auto L9 teardown/industry norm",
+          "year": 2024,
+          "confidence": "medium"
+        }
+      ],
+      "regulatoryContext": null,
+      "materialAlternatives": [
+        "Recycled-copper strands where applicable",
+        "Al conductors for power runs",
+        "Platform connector families"
+      ],
+      "processAlternatives": [
+        "Zonal/backbone E/E architecture",
+        "Software-defined feature enablement"
+      ],
+      "engineCheck": null
+    }
+  },
+  {
+    "id": "dxp039",
+    "title": "Single 100BASE-T1 backbone replaces LVDS camera home-runs",
+    "system": "Electrical Architecture",
+    "costSavingType": "Design / Specification",
+    "annualSaving": "€360k",
+    "difficulty": "Medium",
+    "timeToImplement": "12–24 months",
+    "description": "[ALL] Camera streams share an automotive-Ethernet backbone with switch-based zonal aggregation instead of point-to-point coax/LVDS. Cost falls through copper mass, connector count, station time and part-number complexity; validated by EMC, functional-safety and serv",
+    "submittedBy": "Xpeng G9 benchmark",
+    "verified": 0,
+    "stars": 0,
+    "level": "part",
+    "ideaData": {
+      "id": "dxp039",
+      "title": "Single 100BASE-T1 backbone replaces LVDS camera home-runs",
+      "technicalDescription": "Camera streams share an automotive-Ethernet backbone with switch-based zonal aggregation instead of point-to-point coax/LVDS. Cost falls through copper mass, connector count, station time and part-number complexity; validated by EMC, functional-safety and service diagnostics reviews.",
+      "materialGrade": "Recycled-copper strands where applicable / Al conductors for power runs / Platform connector families",
+      "manufacturingImpact": "Zonal/backbone E/E architecture; Software-defined feature enablement",
+      "costSavingTypes": [
+        "design",
+        "process"
+      ],
+      "costSavingPotential": {
+        "qualitative": "Harness mass reduction",
+        "percentage": "€6/veh (-10-25% affected content)",
+        "annualValue": "€360k",
+        "calculationBasis": "€6/veh × 60k veh/yr (indicative)"
+      },
+      "implementationDifficulty": "Medium",
+      "riskNotes": "EMC + functional-safety re-validation; service/diagnostic tooling updates; supplier resourcing.",
+      "dfmaPrinciples": [
+        "Harness mass reduction",
+        "ECU/connector consolidation",
+        "Variant reduction"
+      ],
+      "systemLevel": "Part",
+      "timeToImplement": "12–24 months",
+      "benchmarkReference": "Xpeng G9 programme (indicative)",
+      "confidenceLevel": "estimated",
+      "evidenceSources": [
+        {
+          "type": "benchmark",
+          "title": "Xpeng G9 teardown/industry norm",
+          "year": 2024,
+          "confidence": "medium"
+        }
+      ],
+      "regulatoryContext": null,
+      "materialAlternatives": [
+        "Recycled-copper strands where applicable",
+        "Al conductors for power runs",
+        "Platform connector families"
+      ],
+      "processAlternatives": [
+        "Zonal/backbone E/E architecture",
+        "Software-defined feature enablement"
+      ],
+      "engineCheck": null
+    }
+  },
+  {
+    "id": "dxp040",
+    "title": "Diagnostic-over-IP consolidates the OBD star wiring",
+    "system": "Electrical Architecture",
+    "costSavingType": "Design / Specification",
+    "annualSaving": "€360k",
+    "difficulty": "Medium",
+    "timeToImplement": "12–24 months",
+    "description": "[ALL] DoIP over the Ethernet backbone deletes the dedicated K-line/CAN diagnostic star to every ECU. Cost falls through copper mass, connector count, station time and part-number complexity; validated by EMC, functional-safety and service diagnostics reviews.",
+    "submittedBy": "Rivian R1S benchmark",
+    "verified": 0,
+    "stars": 0,
+    "level": "part",
+    "ideaData": {
+      "id": "dxp040",
+      "title": "Diagnostic-over-IP consolidates the OBD star wiring",
+      "technicalDescription": "DoIP over the Ethernet backbone deletes the dedicated K-line/CAN diagnostic star to every ECU. Cost falls through copper mass, connector count, station time and part-number complexity; validated by EMC, functional-safety and service diagnostics reviews.",
+      "materialGrade": "Recycled-copper strands where applicable / Al conductors for power runs / Platform connector families",
+      "manufacturingImpact": "Zonal/backbone E/E architecture; Software-defined feature enablement",
+      "costSavingTypes": [
+        "design",
+        "process"
+      ],
+      "costSavingPotential": {
+        "qualitative": "Harness mass reduction",
+        "percentage": "€6/veh (-10-25% affected content)",
+        "annualValue": "€360k",
+        "calculationBasis": "€6/veh × 60k veh/yr (indicative)"
+      },
+      "implementationDifficulty": "Medium",
+      "riskNotes": "EMC + functional-safety re-validation; service/diagnostic tooling updates; supplier resourcing.",
+      "dfmaPrinciples": [
+        "Harness mass reduction",
+        "ECU/connector consolidation",
+        "Variant reduction"
+      ],
+      "systemLevel": "Part",
+      "timeToImplement": "12–24 months",
+      "benchmarkReference": "Rivian R1S programme (indicative)",
+      "confidenceLevel": "estimated",
+      "evidenceSources": [
+        {
+          "type": "benchmark",
+          "title": "Rivian R1S teardown/industry norm",
+          "year": 2024,
+          "confidence": "medium"
+        }
+      ],
+      "regulatoryContext": null,
+      "materialAlternatives": [
+        "Recycled-copper strands where applicable",
+        "Al conductors for power runs",
+        "Platform connector families"
+      ],
+      "processAlternatives": [
+        "Zonal/backbone E/E architecture",
+        "Software-defined feature enablement"
+      ],
+      "engineCheck": null
+    }
+  },
+  {
+    "id": "dxp041",
+    "title": "Right-size ECU compute by consolidating sleep-mode loads",
+    "system": "Electrical Architecture",
+    "costSavingType": "Design / Specification",
+    "annualSaving": "€360k",
+    "difficulty": "Medium",
+    "timeToImplement": "12–24 months",
+    "description": "[ALL] Quiescent-current audit lets two always-on ECUs sleep behind a zonal wake concentrator: smaller battery, thinner always-hot wiring. Cost falls through copper mass, connector count, station time and part-number complexity; validated by EMC, functional-safety an",
+    "submittedBy": "Land Cruiser 300 benchmark",
+    "verified": 0,
+    "stars": 0,
+    "level": "part",
+    "ideaData": {
+      "id": "dxp041",
+      "title": "Right-size ECU compute by consolidating sleep-mode loads",
+      "technicalDescription": "Quiescent-current audit lets two always-on ECUs sleep behind a zonal wake concentrator: smaller battery, thinner always-hot wiring. Cost falls through copper mass, connector count, station time and part-number complexity; validated by EMC, functional-safety and service diagnostics reviews.",
+      "materialGrade": "Recycled-copper strands where applicable / Al conductors for power runs / Platform connector families",
+      "manufacturingImpact": "Zonal/backbone E/E architecture; Software-defined feature enablement",
+      "costSavingTypes": [
+        "design",
+        "process"
+      ],
+      "costSavingPotential": {
+        "qualitative": "Harness mass reduction",
+        "percentage": "€6/veh (-10-25% affected content)",
+        "annualValue": "€360k",
+        "calculationBasis": "€6/veh × 60k veh/yr (indicative)"
+      },
+      "implementationDifficulty": "Medium",
+      "riskNotes": "EMC + functional-safety re-validation; service/diagnostic tooling updates; supplier resourcing.",
+      "dfmaPrinciples": [
+        "Harness mass reduction",
+        "ECU/connector consolidation",
+        "Variant reduction"
+      ],
+      "systemLevel": "Part",
+      "timeToImplement": "12–24 months",
+      "benchmarkReference": "Land Cruiser 300 programme (indicative)",
+      "confidenceLevel": "estimated",
+      "evidenceSources": [
+        {
+          "type": "benchmark",
+          "title": "Land Cruiser 300 teardown/industry norm",
+          "year": 2024,
+          "confidence": "medium"
+        }
+      ],
+      "regulatoryContext": null,
+      "materialAlternatives": [
+        "Recycled-copper strands where applicable",
+        "Al conductors for power runs",
+        "Platform connector families"
+      ],
+      "processAlternatives": [
+        "Zonal/backbone E/E architecture",
+        "Software-defined feature enablement"
+      ],
+      "engineCheck": null
+    }
+  },
+  {
+    "id": "dxp042",
+    "title": "Software feature-flagging replaces per-variant hardware",
+    "system": "Electrical Architecture",
+    "costSavingType": "Design / Specification",
+    "annualSaving": "€360k",
+    "difficulty": "Medium",
+    "timeToImplement": "12–24 months",
+    "description": "[ALL] One hardware level with software-enabled features deletes variant harness/ECU part numbers and EOL complexity. Cost falls through copper mass, connector count, station time and part-number complexity; validated by EMC, functional-safety and service diagnostics",
+    "submittedBy": "Cadillac Escalade IQ benchmark",
+    "verified": 0,
+    "stars": 0,
+    "level": "part",
+    "ideaData": {
+      "id": "dxp042",
+      "title": "Software feature-flagging replaces per-variant hardware",
+      "technicalDescription": "One hardware level with software-enabled features deletes variant harness/ECU part numbers and EOL complexity. Cost falls through copper mass, connector count, station time and part-number complexity; validated by EMC, functional-safety and service diagnostics reviews.",
+      "materialGrade": "Recycled-copper strands where applicable / Al conductors for power runs / Platform connector families",
+      "manufacturingImpact": "Zonal/backbone E/E architecture; Software-defined feature enablement",
+      "costSavingTypes": [
+        "design",
+        "process"
+      ],
+      "costSavingPotential": {
+        "qualitative": "Harness mass reduction",
+        "percentage": "€6/veh (-10-25% affected content)",
+        "annualValue": "€360k",
+        "calculationBasis": "€6/veh × 60k veh/yr (indicative)"
+      },
+      "implementationDifficulty": "Medium",
+      "riskNotes": "EMC + functional-safety re-validation; service/diagnostic tooling updates; supplier resourcing.",
+      "dfmaPrinciples": [
+        "Harness mass reduction",
+        "ECU/connector consolidation",
+        "Variant reduction"
+      ],
+      "systemLevel": "Part",
+      "timeToImplement": "12–24 months",
+      "benchmarkReference": "Cadillac Escalade IQ programme (indicative)",
+      "confidenceLevel": "estimated",
+      "evidenceSources": [
+        {
+          "type": "benchmark",
+          "title": "Cadillac Escalade IQ teardown/industry norm",
+          "year": 2024,
+          "confidence": "medium"
+        }
+      ],
+      "regulatoryContext": null,
+      "materialAlternatives": [
+        "Recycled-copper strands where applicable",
+        "Al conductors for power runs",
+        "Platform connector families"
+      ],
+      "processAlternatives": [
+        "Zonal/backbone E/E architecture",
+        "Software-defined feature enablement"
+      ],
+      "engineCheck": null
+    }
+  },
+  {
+    "id": "dxp043",
+    "title": "Antenna consolidation into a smart roof module",
+    "system": "Electrical Architecture",
+    "costSavingType": "Design / Specification",
+    "annualSaving": "€360k",
+    "difficulty": "Medium",
+    "timeToImplement": "12–24 months",
+    "description": "[ALL] GNSS/LTE/BT/UWB antennas + tuners consolidate into one roof module with a single backbone link, deleting four coax home-runs. Cost falls through copper mass, connector count, station time and part-number complexity; validated by EMC, functional-safety and serv",
+    "submittedBy": "AITO M9 benchmark",
+    "verified": 0,
+    "stars": 0,
+    "level": "part",
+    "ideaData": {
+      "id": "dxp043",
+      "title": "Antenna consolidation into a smart roof module",
+      "technicalDescription": "GNSS/LTE/BT/UWB antennas + tuners consolidate into one roof module with a single backbone link, deleting four coax home-runs. Cost falls through copper mass, connector count, station time and part-number complexity; validated by EMC, functional-safety and service diagnostics reviews.",
+      "materialGrade": "Recycled-copper strands where applicable / Al conductors for power runs / Platform connector families",
+      "manufacturingImpact": "Zonal/backbone E/E architecture; Software-defined feature enablement",
+      "costSavingTypes": [
+        "design",
+        "process"
+      ],
+      "costSavingPotential": {
+        "qualitative": "Harness mass reduction",
+        "percentage": "€6/veh (-10-25% affected content)",
+        "annualValue": "€360k",
+        "calculationBasis": "€6/veh × 60k veh/yr (indicative)"
+      },
+      "implementationDifficulty": "Medium",
+      "riskNotes": "EMC + functional-safety re-validation; service/diagnostic tooling updates; supplier resourcing.",
+      "dfmaPrinciples": [
+        "Harness mass reduction",
+        "ECU/connector consolidation",
+        "Variant reduction"
+      ],
+      "systemLevel": "Part",
+      "timeToImplement": "12–24 months",
+      "benchmarkReference": "AITO M9 programme (indicative)",
+      "confidenceLevel": "estimated",
+      "evidenceSources": [
+        {
+          "type": "benchmark",
+          "title": "AITO M9 teardown/industry norm",
+          "year": 2024,
+          "confidence": "medium"
+        }
+      ],
+      "regulatoryContext": null,
+      "materialAlternatives": [
+        "Recycled-copper strands where applicable",
+        "Al conductors for power runs",
+        "Platform connector families"
+      ],
+      "processAlternatives": [
+        "Zonal/backbone E/E architecture",
+        "Software-defined feature enablement"
+      ],
+      "engineCheck": null
+    }
+  },
+  {
+    "id": "dxp044",
+    "title": "Wireless BMS eliminates the module daisy-chain harness",
+    "system": "Electrical Architecture",
+    "costSavingType": "Design / Specification",
+    "annualSaving": "€360k",
+    "difficulty": "Medium",
+    "timeToImplement": "12–24 months",
+    "description": "[ALL] wBMS deletes the inter-module comms harness and connectors inside the pack and simplifies module replacement. Cost falls through copper mass, connector count, station time and part-number complexity; validated by EMC, functional-safety and service diagnostics ",
+    "submittedBy": "Jeep Grand Cherokee benchmark",
+    "verified": 0,
+    "stars": 0,
+    "level": "part",
+    "ideaData": {
+      "id": "dxp044",
+      "title": "Wireless BMS eliminates the module daisy-chain harness",
+      "technicalDescription": "wBMS deletes the inter-module comms harness and connectors inside the pack and simplifies module replacement. Cost falls through copper mass, connector count, station time and part-number complexity; validated by EMC, functional-safety and service diagnostics reviews.",
+      "materialGrade": "Recycled-copper strands where applicable / Al conductors for power runs / Platform connector families",
+      "manufacturingImpact": "Zonal/backbone E/E architecture; Software-defined feature enablement",
+      "costSavingTypes": [
+        "design",
+        "process"
+      ],
+      "costSavingPotential": {
+        "qualitative": "Harness mass reduction",
+        "percentage": "€6/veh (-10-25% affected content)",
+        "annualValue": "€360k",
+        "calculationBasis": "€6/veh × 60k veh/yr (indicative)"
+      },
+      "implementationDifficulty": "Medium",
+      "riskNotes": "EMC + functional-safety re-validation; service/diagnostic tooling updates; supplier resourcing.",
+      "dfmaPrinciples": [
+        "Harness mass reduction",
+        "ECU/connector consolidation",
+        "Variant reduction"
+      ],
+      "systemLevel": "Part",
+      "timeToImplement": "12–24 months",
+      "benchmarkReference": "Jeep Grand Cherokee programme (indicative)",
+      "confidenceLevel": "estimated",
+      "evidenceSources": [
+        {
+          "type": "benchmark",
+          "title": "Jeep Grand Cherokee teardown/industry norm",
+          "year": 2024,
+          "confidence": "medium"
+        }
+      ],
+      "regulatoryContext": null,
+      "materialAlternatives": [
+        "Recycled-copper strands where applicable",
+        "Al conductors for power runs",
+        "Platform connector families"
+      ],
+      "processAlternatives": [
+        "Zonal/backbone E/E architecture",
+        "Software-defined feature enablement"
+      ],
+      "engineCheck": null
+    }
+  },
+  {
+    "id": "dxp045",
+    "title": "HV interlock loop simplification via connector-integrated HVIL",
+    "system": "Electrical Architecture",
+    "costSavingType": "Design / Specification",
+    "annualSaving": "€360k",
+    "difficulty": "Medium",
+    "timeToImplement": "12–24 months",
+    "description": "[ALL] HVIL contacts integrated in HV connector families delete the separate interlock wiring loop. Cost falls through copper mass, connector count, station time and part-number complexity; validated by EMC, functional-safety and service diagnostics reviews.",
+    "submittedBy": "Yangwang U8 benchmark",
+    "verified": 0,
+    "stars": 0,
+    "level": "part",
+    "ideaData": {
+      "id": "dxp045",
+      "title": "HV interlock loop simplification via connector-integrated HVIL",
+      "technicalDescription": "HVIL contacts integrated in HV connector families delete the separate interlock wiring loop. Cost falls through copper mass, connector count, station time and part-number complexity; validated by EMC, functional-safety and service diagnostics reviews.",
+      "materialGrade": "Recycled-copper strands where applicable / Al conductors for power runs / Platform connector families",
+      "manufacturingImpact": "Zonal/backbone E/E architecture; Software-defined feature enablement",
+      "costSavingTypes": [
+        "design",
+        "process"
+      ],
+      "costSavingPotential": {
+        "qualitative": "Harness mass reduction",
+        "percentage": "€6/veh (-10-25% affected content)",
+        "annualValue": "€360k",
+        "calculationBasis": "€6/veh × 60k veh/yr (indicative)"
+      },
+      "implementationDifficulty": "Medium",
+      "riskNotes": "EMC + functional-safety re-validation; service/diagnostic tooling updates; supplier resourcing.",
+      "dfmaPrinciples": [
+        "Harness mass reduction",
+        "ECU/connector consolidation",
+        "Variant reduction"
+      ],
+      "systemLevel": "Part",
+      "timeToImplement": "12–24 months",
+      "benchmarkReference": "Yangwang U8 programme (indicative)",
+      "confidenceLevel": "estimated",
+      "evidenceSources": [
+        {
+          "type": "benchmark",
+          "title": "Yangwang U8 teardown/industry norm",
+          "year": 2024,
+          "confidence": "medium"
+        }
+      ],
+      "regulatoryContext": null,
+      "materialAlternatives": [
+        "Recycled-copper strands where applicable",
+        "Al conductors for power runs",
+        "Platform connector families"
+      ],
+      "processAlternatives": [
+        "Zonal/backbone E/E architecture",
+        "Software-defined feature enablement"
+      ],
+      "engineCheck": null
+    }
+  }
+]
