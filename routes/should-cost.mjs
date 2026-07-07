@@ -148,16 +148,59 @@ app.post('/api/should-cost/export', requireAuth, rateLimit(40, 60 * 60 * 1000), 
 
     const { library: lib, priceBasis, pricedAt } = liveLibrary();
     const matRes = resolveMaterial(material, lib.MATERIALS);
-    const procRes = resolveProcess(process, lib.PROCESSES);
+    // Routed parts export the ROUTED numbers — a chained process string must never
+    // silently fall back to the first op (the exported pack would anchor ~40% low
+    // vs the on-screen total: the exact artifact taken into a sourcing committee).
+    const routeResX = resolveRoute(req.body.route || process, lib.PROCESSES);
+    const isRouteX = !!(routeResX && routeResX.keys.length > 1);
+    const procRes = isRouteX ? { key: routeResX.keys[0], approx: routeResX.approx } : resolveProcess(process, lib.PROCESSES);
     if (!matRes || !procRes) return res.status(400).json({ error: 'Material or process not recognised.' });
 
     const userCal = getUserCalibration(req.user.id);
-    const input = { material: matRes.key, process: procRes.key, weightKg: wNum, annualVolume: vNum, region };
-    let calc, sim, curve;
+    const extraDriversX = {
+      toleranceClass: req.body.toleranceClass, surfaceFinish: req.body.surfaceFinish,
+      criticalCharacteristics: req.body.criticalCharacteristics,
+      projectedAreaCm2: req.body.projectedAreaCm2, wallThicknessMm: req.body.wallThicknessMm,
+    };
+    const input = { material: matRes.key, process: procRes.key, weightKg: wNum, annualVolume: vNum, region, ...extraDriversX };
+    let calc, sim, curve, routeCalcX = null;
     try {
-      calc = computeShouldCost(input, {}, userCal, lib);
-      sim = simulateShouldCost(input, 2000, 12345, userCal, lib);
-      curve = volumeSensitivity(input, undefined, userCal, lib);
+      if (isRouteX) {
+        const rInput = { ...input, route: routeResX.keys };
+        routeCalcX = computeRouteCost(rInput, {}, userCal, lib);
+        sim = simulateRouteCost(rInput, 1000, 12345, userCal, lib);
+        curve = [10000, 25000, 50000, 100000, 250000, 500000].map(v => ({
+          volume: v, unitCost: computeRouteCost({ ...rInput, annualVolume: v }, {}, userCal, lib).totalShouldCost,
+        }));
+        // Project into the classic 9-line shape (same mapping as the estimate
+        // endpoint) so the CBS sheets stay consistent with the on-screen result.
+        const opsConv = routeCalcX.breakdown.operations.reduce((s, o) => s + o.conversion, 0);
+        const opsTool = routeCalcX.breakdown.operations.reduce((s, o) => s + o.tooling, 0);
+        const tot = routeCalcX.totalShouldCost;
+        const pctX = (x) => tot > 0 ? Number((x / tot * 100).toFixed(1)) : 0;
+        calc = {
+          ...routeCalcX,
+          breakdown: {
+            material: routeCalcX.breakdown.material,
+            machine: { value: Number(opsConv.toFixed(2)), pct: pctX(opsConv) },
+            labour: { value: 0, pct: 0 }, setup: { value: 0, pct: 0 }, finishing: { value: 0, pct: 0 },
+            tooling: { value: Number(opsTool.toFixed(2)), pct: pctX(opsTool) },
+            overhead: { value: routeCalcX.breakdown.overhead.value, pct: pctX(routeCalcX.breakdown.overhead.value) },
+            commercial: { value: routeCalcX.breakdown.commercial.value, pct: pctX(routeCalcX.breakdown.commercial.value) },
+            sgaProfit: { value: routeCalcX.breakdown.sgaProfit.value, pct: pctX(routeCalcX.breakdown.sgaProfit.value) },
+          },
+          drivers: {
+            ...routeCalcX.drivers,
+            cycleSecPerPart: 0, machineRate: 0, labourRate: lib.REGIONS[region]?.labour ?? 0,
+            operators: 0, utilisation: 0, scrapPct: routeCalcX.drivers.primaryScrapPct,
+            toolingTotal: 0, amortVolume: vNum * 5,
+          },
+        };
+      } else {
+        calc = computeShouldCost(input, {}, userCal, lib);
+        sim = simulateShouldCost(input, 2000, 12345, userCal, lib);
+        curve = volumeSensitivity(input, undefined, userCal, lib);
+      }
     } catch (e) { return res.status(400).json({ error: e.message || 'Invalid costing parameters.' }); }
 
     // FX (engine is EUR-denominated). A validated currency with no rate is an
@@ -183,7 +226,8 @@ app.post('/api/should-cost/export', requireAuth, rateLimit(40, 60 * 60 * 1000), 
       [],
       ['Part', String(partName || 'Component')],
       ['Material (resolved)', matRes.key + (matRes.approx ? ' (approx match)' : '')],
-      ['Process (resolved)', procRes.key + (procRes.approx ? ' (approx match)' : '')],
+      [isRouteX ? 'Routing (resolved)' : 'Process (resolved)', (isRouteX ? routeCalcX.inputs.route.join(' → ') : procRes.key) + (procRes.approx ? ' (approx match)' : '')],
+      ...(isRouteX ? [['Rolled-throughput yield', `${routeCalcX.drivers.rolledThroughputYield}%`]] : []),
       ['Region', region],
       ['Finished mass (kg)', wNum],
       ['Annual volume (units/yr)', vNum],
@@ -230,6 +274,13 @@ app.post('/api/should-cost/export', requireAuth, rateLimit(40, 60 * 60 * 1000), 
     ];
     XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(drivers), 'Drivers');
 
+    // Per-operation lines for routed parts (values per FINAL good part).
+    if (isRouteX) {
+      const opsSheet = [['Operation', `Conversion (${currency})`, `Tooling (${currency})`, 'Scrap %', 'Out mass (kg)']];
+      for (const l of routeCalcX.breakdown.operations) opsSheet.push([l.op, cv(l.conversion), cv(l.tooling), l.scrapPct, l.outMassKg]);
+      XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(opsSheet), 'Operations');
+    }
+
     const vs = [['Annual volume', `Unit cost (${currency})`]];
     for (const p of curve) vs.push([p.volume, cv(p.unitCost)]);
     XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(vs), 'Volume Sensitivity');
@@ -251,7 +302,7 @@ app.post('/api/should-cost/export', requireAuth, rateLimit(40, 60 * 60 * 1000), 
       s1.addText([
         { text: `Total should-cost:  ${sym}${cv(calc.totalShouldCost)} / unit\n`, options: { fontSize: 22, bold: true, color: 'FFFFFF' } },
         { text: `Monte-Carlo P10–P90:  ${sym}${cv(sim.p10)} – ${sym}${cv(sim.p90)}\n`, options: { fontSize: 15, color: SLATE } },
-        { text: `${matRes.key}  ·  ${procRes.key}  ·  ${region}  ·  ${wNum} kg  ·  ${vNum.toLocaleString()}/yr\n`, options: { fontSize: 13, color: SLATE } },
+        { text: `${matRes.key}  ·  ${isRouteX ? routeCalcX.inputs.route.join(' → ') : procRes.key}  ·  ${region}  ·  ${wNum} kg  ·  ${vNum.toLocaleString()}/yr\n`, options: { fontSize: 13, color: SLATE } },
         { text: `Material basis: ${priceBasis[matRes.key] ? `${priceBasis[matRes.key].commodityLabel}${pricedAt ? ` (as of ${pricedAt.slice(0, 10)})` : ''}` : 'static library baseline'}   ·   Calibration: ${calc.calibration.applied ? `applied ×${calc.calibration.factor}` : 'none'}\n`, options: { fontSize: 12, color: SLATE } },
         ...(quotedCost && Number(quotedCost) > 0 ? [{ text: `Supplier quote ${sym}${Number(quotedCost).toFixed(2)} → gap ${sym}${(Number(quotedCost) - cv(calc.totalShouldCost)).toFixed(2)}`, options: { fontSize: 15, bold: true, color: GOLD } }] : []),
       ], { x: 0.6, y: 2.3, w: 12, h: 3.5 });
@@ -374,7 +425,7 @@ app.post('/api/should-cost', requireAuth, rateLimit(60, 60 * 60 * 1000), validat
         drivers: {
           ...routeCalc.drivers,
           cycleSecPerPart: 0, machineRate: 0, labourRate: lib.REGIONS[region || 'Germany']?.labour ?? 0,
-          operators: 0, utilisation: 0, scrapPct: Number((100 - routeCalc.drivers.rolledThroughputYield).toFixed(1)),
+          operators: 0, utilisation: 0, scrapPct: routeCalc.drivers.primaryScrapPct,
           toolingTotal: 0, amortVolume: Number(annualVolume) * 5,
         },
       };
@@ -482,6 +533,7 @@ app.post('/api/should-cost', requireAuth, rateLimit(60, 60 * 60 * 1000), validat
         ? `Material ${matRes.key} @ ${sym}${driversCv.pricePerKg}/kg — indexed to ${priceBasis[matRes.key].commodityLabel}${pricedAt ? ` (as of ${pricedAt.slice(0, 10)})` : ''}; primary-op input mass ${d.inputMassKg} kg.`
         : `Material ${matRes.key} @ ${sym}${driversCv.pricePerKg}/kg (static library baseline); primary-op input mass ${d.inputMassKg} kg.`,
       `Routing: ${routeCalc.inputs.route.join(' → ')} — rolled-throughput yield ${routeCalc.drivers.rolledThroughputYield}% (a reject at a late op scraps all accumulated value).`,
+      ...(calc.calibration.applied ? [`Calibration ×${calc.calibration.factor} was fitted on primary-op quotes; if your quotes were finished-part prices the routed total may double-count downstream content — teach finished-part quotes against the same routing for a clean fit.`] : []),
       `Overhead, packaging/freight and SG&A/profit applied once on the accumulated works content (${region} norms).`,
       `Finished-part price including all listed operations. Validate against detailed supplier breakdowns before commercial use.`,
     ] : [

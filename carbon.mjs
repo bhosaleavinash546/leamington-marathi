@@ -68,7 +68,19 @@ export const GRID_G_CO2_PER_KWH = {
 // costs through their rates already; the CBAM line prices the embedded carbon of
 // a non-EU source at the ETS reference so region comparisons are like-for-like.
 const EU_REGIONS = new Set(['Germany', 'Czech Republic', 'Spain']);
+// CBAM covers specific goods categories (iron/steel, aluminium, cement,
+// fertilisers, hydrogen, electricity) — NOT plastics, zinc, magnesium, titanium
+// or copper parts. Showing a CBAM € on a PP moulding would be an overclaim.
+const CBAM_FAMILIES = new Set(['ferrous', 'castiron', 'aluminium']);
 export const ETS_EUR_PER_T_CO2E = 80;   // admin-tunable reference price
+
+// Material name → family (mirrors the engine catalogue; kept local so this
+// module stays dependency-free for tests).
+const MATERIAL_FAMILY = {
+  'Steel (mild)': 'ferrous', 'Steel (high-strength)': 'ferrous', 'Stainless Steel 304': 'ferrous',
+  'Cast Iron (Grey)': 'castiron', 'Cast Iron (Ductile/GJS)': 'castiron',
+  'Aluminium 6061': 'aluminium', 'Aluminium 7075': 'aluminium', 'Aluminium A356 (cast)': 'aluminium',
+};
 
 /**
  * @param {{material:string, process?:string, route?:string[], region:string}} input
@@ -91,13 +103,14 @@ export function computeCarbon(input, drivers) {
   }
   const totalKg = materialKg + processKg;
   const importedToEU = !EU_REGIONS.has(input.region);
+  const cbamScope = CBAM_FAMILIES.has(MATERIAL_FAMILY[input.material]);
   return {
     materialKgCo2e: Number(materialKg.toFixed(2)),
     processKgCo2e: Number(processKg.toFixed(2)),
     totalKgCo2e: Number(totalKg.toFixed(2)),
-    cbam: importedToEU
-      ? { eur: Number((totalKg / 1000 * ETS_EUR_PER_T_CO2E).toFixed(3)), basis: `embedded CO2e × €${ETS_EUR_PER_T_CO2E}/t ETS reference — indicative, assumes EU-destined import` }
+    cbam: importedToEU && cbamScope
+      ? { eur: Number((totalKg / 1000 * ETS_EUR_PER_T_CO2E).toFixed(3)), basis: `embedded CO2e × €${ETS_EUR_PER_T_CO2E}/t ETS reference — indicative, iron/steel & aluminium CBAM scope, assumes EU-destined import` }
       : null,
-    basis: 'Indicative industry-average factors (worldsteel/IAI/PlasticsEurope/Ember) — for option comparison, not regulatory reporting.',
+    basis: 'Indicative industry-average factors (worldsteel/IAI/PlasticsEurope/Ember) — for option comparison, not regulatory reporting. Process energy uses finished mass, so upstream heavy-input ops (billet machining) are understated.',
   };
 }

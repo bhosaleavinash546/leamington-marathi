@@ -100,15 +100,15 @@
     {
       "name": "MACHINED GJS knuckle (cast + op-20 + wash)",
       "ref": 18,
-      "modelled": 19.86,
-      "errPct": 10.3,
+      "modelled": 19.87,
+      "errPct": 10.4,
       "withinTol": true
     },
     {
       "name": "Machined + powder-coated HPDC bracket",
       "ref": 11.5,
-      "modelled": 12.47,
-      "errPct": 8.4,
+      "modelled": 12.49,
+      "errPct": 8.6,
       "withinTol": true
     },
     {

@@ -177,7 +177,14 @@ export default function ShouldCostPage() {
       const r = await fetch(`/api/should-cost/export${format === 'pptx' ? '?format=pptx' : ''}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ partName, material, process, weightKg: Number(weightKg), annualVolume: Number(annualVolume), region, currency, quotedCost: quotedCost ? Number(quotedCost) : undefined }),
+        body: JSON.stringify({
+          partName, material, process, weightKg: Number(weightKg), annualVolume: Number(annualVolume), region, currency,
+          quotedCost: quotedCost ? Number(quotedCost) : undefined,
+          // Keep the export identical to the on-screen estimate: same route + drivers.
+          route: secondaryOps.length ? [process, ...secondaryOps] : undefined,
+          toleranceClass: toleranceClass !== 'standard' ? toleranceClass : undefined,
+          surfaceFinish: surfaceFinish !== 'standard' ? surfaceFinish : undefined,
+        }),
       });
       if (!r.ok) { const d = await r.json().catch(() => ({})); throw new Error(d.error || 'Export failed'); }
       const blob = await r.blob();

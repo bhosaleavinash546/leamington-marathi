@@ -351,9 +351,22 @@ export function computeShouldCost(input, overrides = {}, calibration = null, lib
   const scrapAdd    = Number.isFinite(overrides.scrapAdd) ? overrides.scrapAdd : 0;
 
   const scrapPct = Math.min(0.9, Math.max(0, proc.scrapPct + scrapAdd));
+
+  // ── Tolerance / surface-finish drivers (bounded, disclosed multipliers) ─────
+  // Costing the DRAWING, not just the mass: tighter IT grades raise cycle and
+  // scrap; fine surface finish adds passes; each critical characteristic (CC/SC)
+  // adds per-part gauging time. All effects surface in `drivers` for audit.
+  // Defined BEFORE material: a tolerance reject is a physical part — its material
+  // is consumed too, so the effective scrap grosses the material line as well.
+  const TOL_CLASSES = { standard: { cycle: 1, scrap: 0 }, tight: { cycle: 1.15, scrap: 0.01 }, precision: { cycle: 1.35, scrap: 0.03 } };
+  const FIN_CLASSES = { standard: 1, fine: 1.10, polished: 1.25 };
+  const tol = TOL_CLASSES[input.toleranceClass] ?? TOL_CLASSES.standard;
+  const finMult = FIN_CLASSES[input.surfaceFinish] ?? 1;
+  const ccCount = Math.max(0, Math.min(50, Number(input.criticalCharacteristics) || 0));
+  const scrapPctEff = Math.min(0.9, scrapPct + tol.scrap);
   // Correct yield gross-up: producing one GOOD part requires 1/(1-s) attempts
   // (not 1+s), and rejects consume setup share and tool life too.
-  const yieldMult = 1 / (1 - scrapPct);
+  const yieldMultEff = 1 / (1 - scrapPctEff);
 
   // ── Material cost ──────────────────────────────────────────────────────────
   // Recovery of returned metal: a foundry/forge remelts its own runners, risers,
@@ -366,22 +379,10 @@ export function computeShouldCost(input, overrides = {}, calibration = null, lib
   const recovery   = Number.isFinite(proc.returnsRecovery) ? proc.returnsRecovery : mat.scrapRecovery;
   const inputMass  = w / proc.utilisation;          // buy-to-fly (per good part)
   const offcutMass = inputMass - w;
-  const grossMaterial   = inputMass * pricePerKg * yieldMult;             // input over all attempts
-  const offcutRecovered = offcutMass * yieldMult;                        // gating/runner returns
-  const rejectRecovered = w * (yieldMult - 1);                           // rejected part bodies, remelted
+  const grossMaterial   = inputMass * pricePerKg * yieldMultEff;           // input over all attempts
+  const offcutRecovered = offcutMass * yieldMultEff;                      // gating/runner returns
+  const rejectRecovered = w * (yieldMultEff - 1);                         // rejected part bodies, remelted
   const materialCost    = grossMaterial - pricePerKg * recovery * (offcutRecovered + rejectRecovered);
-
-  // ── Tolerance / surface-finish drivers (bounded, disclosed multipliers) ─────
-  // Costing the DRAWING, not just the mass: tighter IT grades raise cycle and
-  // scrap; fine surface finish adds passes; each critical characteristic (CC/SC)
-  // adds per-part gauging time. All effects surface in `drivers` for audit.
-  const TOL_CLASSES = { standard: { cycle: 1, scrap: 0 }, tight: { cycle: 1.15, scrap: 0.01 }, precision: { cycle: 1.35, scrap: 0.03 } };
-  const FIN_CLASSES = { standard: 1, fine: 1.10, polished: 1.25 };
-  const tol = TOL_CLASSES[input.toleranceClass] ?? TOL_CLASSES.standard;
-  const finMult = FIN_CLASSES[input.surfaceFinish] ?? 1;
-  const ccCount = Math.max(0, Math.min(50, Number(input.criticalCharacteristics) || 0));
-  const scrapPctEff = Math.min(0.9, scrapPct + tol.scrap);
-  const yieldMultEff = 1 / (1 - scrapPctEff);
 
   // ── Conversion: machine + labour ────────────────────────────────────────────
   // Cooling-dominated moulding: when wall thickness is known, cycle scales with
@@ -390,7 +391,12 @@ export function computeShouldCost(input, overrides = {}, calibration = null, lib
   const wallMm = Number(input.wallThicknessMm) || 0;
   let cycleSec;
   if (proc.coolingKSecPerMm2 && wallMm > 0) {
-    cycleSec = (proc.cycleBase + proc.coolingKSecPerMm2 * wallMm * wallMm) * cycleMult * tol.cycle * finMult;
+    // Cooling dominates thin-wall cycles, but fill + screw recovery still scale
+    // with shot mass — floor the wall² model at 40% of the mass model so a heavy
+    // thin-wall part (3 kg @ 2 mm) isn't costed like a 30 g clip.
+    const coolingCycle = proc.cycleBase + proc.coolingKSecPerMm2 * wallMm * wallMm;
+    const massCycle = proc.cycleBase + proc.cyclePerKg * w;
+    cycleSec = Math.max(coolingCycle, 0.4 * massCycle) * cycleMult * tol.cycle * finMult;
   } else {
     cycleSec = (proc.cycleBase + proc.cyclePerKg * w) * cycleMult * tol.cycle * finMult;
   }
@@ -560,33 +566,60 @@ export function computeRouteCost(input, overrides = {}, calibration = null, libr
   const op1OutMass = massOut[0];
   const op1InMass = op1OutMass / (op1.utilisation ?? 1);   // buy-to-fly of the primary
 
+  // Quality/geometry drivers apply to the PRIMARY op (same semantics as the
+  // single-op engine): tolerance class raises op-1 cycle + scrap, surface finish
+  // raises cycle, projected area picks the op-1 machine tier, CCs add gauging.
+  const TOLR = { standard: { cycle: 1, scrap: 0 }, tight: { cycle: 1.15, scrap: 0.01 }, precision: { cycle: 1.35, scrap: 0.03 } };
+  const FINR = { standard: 1, fine: 1.10, polished: 1.25 };
+  const tolR = TOLR[input.toleranceClass] ?? TOLR.standard;
+  const finMultR = FINR[input.surfaceFinish] ?? 1;
+  const ccCountR = Math.max(0, Math.min(50, Number(input.criticalCharacteristics) || 0));
+
   // Material (primary op only) — same recovery algebra as computeShouldCost.
   const pricePerKg = mat.price * priceMult;
   const recovery = Number.isFinite(op1.returnsRecovery) ? op1.returnsRecovery : mat.scrapRecovery;
-  const s1 = Math.min(0.9, Math.max(0, (op1.scrapPct ?? 0) + scrapAdd));
+  const s1 = Math.min(0.9, Math.max(0, (op1.scrapPct ?? 0) + scrapAdd + tolR.scrap));
   const yield1 = 1 / (1 - s1);
   const grossMaterial = op1InMass * pricePerKg * yield1;
   const materialCost = grossMaterial - pricePerKg * recovery * ((op1InMass - op1OutMass) * yield1 + op1OutMass * (yield1 - 1));
 
-  // Per-op conversion (per ATTEMPT at that op), then rolled accumulation:
-  // A_i = (A_{i-1} + c_i) / (1 - s_i) — a reject at op i scraps everything spent.
+  // Per-op scrap first (downstream MC noise applies to every op), so each op's
+  // DOWNSTREAM suffix yield is known: a displayed line is that op's cost per
+  // FINAL good part — line_i = own-gross(c_i) / Π_{j>i}(1-s_j). With lines
+  // grossed this way, material + Σops + overhead + commercial + SG&A reconciles
+  // EXACTLY with the accumulated total (no invisible scrap-cascade bucket).
   const lifetimeVol = vol * programYears;
+  const scraps = ops.map(({ p }, i) => i === 0 ? s1 : Math.min(0.9, Math.max(0, (p.scrapPct ?? 0) + scrapAdd)));
+  const suffixYield = new Array(ops.length + 1).fill(1);
+  for (let i = ops.length - 1; i >= 0; i--) suffixYield[i] = suffixYield[i + 1] * (1 - scraps[i]);
+  // suffixAfter(i) = Π_{j>i}(1-s_j): how many attempts at op i one FINAL good part needs beyond op i's own scrap.
+  const suffixAfter = (i) => suffixYield[i + 1];
+
   const opLines = [];
-  let accumulated = materialCost;   // already grossed for op-1 scrap
-  let conversionTotal = 0, toolingTotal = 0, rolledYield = 1 - s1;
+  let machineTierR = null;
+  let opsConvPerGood = 0, opsToolPerGood = 0, conversionBase = 0;
   for (let i = 0; i < ops.length; i++) {
     const { key, p } = ops[i];
     const outMass = massOut[i];
-    const sI = i === 0 ? s1 : Math.min(0.9, Math.max(0, (p.scrapPct ?? 0) + (i === 0 ? scrapAdd : 0)));
+    const sI = scraps[i];
     let convPerAttempt, toolPerGood = 0;
     if (p.costPerKg != null) {
       convPerAttempt = p.costPerKg * outMass * machineMult;
     } else {
-      const cycleSec = ((p.cycleBase ?? 0) + (p.cyclePerKg ?? 0) * outMass) * cycleMult;
+      const qualCycle = i === 0 ? tolR.cycle * finMultR : 1;
+      const cycleSec = ((p.cycleBase ?? 0) + (p.cyclePerKg ?? 0) * outMass) * cycleMult * qualCycle;
       const hrPerPart = cycleSec / (p.cavities ?? 1) / 3600;
-      const rate = (p.machineRate ?? 60) * machineMult;
+      let rate = (p.machineRate ?? 60) * machineMult;
+      // Tonnage tier on the primary op when projected area is known.
+      const projArea = Number(input.projectedAreaCm2) || 0;
+      if (i === 0 && Array.isArray(p.machineTiers) && projArea > 0) {
+        const tonnage = projArea * (p.clampTPerCm2 ?? 0.5) * (p.cavities ?? 1);
+        const tier = p.machineTiers.find(t => tonnage <= t.maxClampT) || p.machineTiers[p.machineTiers.length - 1];
+        rate = tier.rate * machineMult;
+        machineTierR = { clampTonnage: Math.round(tonnage), rate: tier.rate };
+      }
       const machine = hrPerPart * (rate + (p.perishablePerHr ?? 0));
-      const labour = hrPerPart * reg.labour * (p.operators ?? 0.5);
+      const labour = hrPerPart * reg.labour * (p.operators ?? 0.5) + (i === 0 ? ccCountR * (4 / 3600) * reg.labour : 0);
       const setup = ((p.setups ?? 1) * (p.setupHr ?? 1) * (rate + reg.labour)) / (p.batch ?? 500);
       const finishing = (machine + labour) * (p.finishPct ?? (i === 0 ? defaultFinishPct : 0));
       convPerAttempt = machine + labour + setup + finishing;
@@ -594,20 +627,23 @@ export function computeRouteCost(input, overrides = {}, calibration = null, libr
       const amort = Math.max(1, Math.min((p.toolLife ?? 1e7) * (1 - sI), lifetimeVol));
       toolPerGood = toolTotal / amort;
     }
-    if (i === 0) {
-      // material already accumulated with op-1 scrap; add op-1 conversion grossed the same way
-      accumulated += convPerAttempt / (1 - sI) + toolPerGood;
-    } else {
-      accumulated = (accumulated + convPerAttempt) / (1 - sI) + toolPerGood;
-      rolledYield *= (1 - sI);
-    }
-    conversionTotal += convPerAttempt / (1 - sI);
-    toolingTotal += toolPerGood;
-    opLines.push({ op: key, conversion: round(convPerAttempt / (1 - sI)), tooling: round(toolPerGood, 3), scrapPct: round(sI * 100, 1), outMassKg: round(outMass, 3) });
+    // Per FINAL good part: own scrap gross-up AND downstream attempts.
+    const convPerGood = convPerAttempt / (1 - sI) / suffixAfter(i);
+    const toolPerFinal = toolPerGood / suffixAfter(i);
+    opsConvPerGood += convPerGood;
+    opsToolPerGood += toolPerFinal;
+    conversionBase += convPerGood;   // overhead base: true embedded conversion content
+    opLines.push({ op: key, conversion: round(convPerGood), tooling: round(toolPerFinal, 3), scrapPct: round(sI * 100, 1), outMassKg: round(outMass, 3) });
   }
+  const rolledYield = suffixYield[0];
+  // Material per FINAL good part: op-1 gross already in materialCost, downstream
+  // attempts multiply it (a part scrapped at op-20 wastes its casting too). NOTE:
+  // downstream rejects get no remelt credit — conservative, disclosed here.
+  const materialPerGood = materialCost / suffixAfter(0);
+  const accumulated = materialPerGood + opsConvPerGood + opsToolPerGood;
 
   // Overhead + commercial + SG&A once, on the accumulated works content.
-  const overheadCost = conversionTotal * reg.overheadPct;
+  const overheadCost = conversionBase * reg.overheadPct;
   const preCommercial = accumulated + overheadCost;
   const commercialCost = preCommercial * commercialPct;
   const worksCost = preCommercial + commercialCost;
@@ -628,9 +664,16 @@ export function computeRouteCost(input, overrides = {}, calibration = null, libr
       finishedMassKg: w,
       rolledThroughputYield: round(rolledYield * 100, 1),
       operations: ops.length,
+      primaryScrapPct: round(s1 * 100, 1),
+      ...(machineTierR ? { machineTier: machineTierR } : {}),
+      ...(input.toleranceClass && input.toleranceClass !== 'standard' ? { toleranceClass: input.toleranceClass } : {}),
+      ...(input.surfaceFinish && input.surfaceFinish !== 'standard' ? { surfaceFinish: input.surfaceFinish } : {}),
+      ...(ccCountR ? { criticalCharacteristics: ccCountR } : {}),
     },
     breakdown: {
-      material: { value: sv(materialCost), pct: baseTotal > 0 ? round(materialCost / baseTotal * 100, 1) : 0 },
+      // All lines are per FINAL good part (downstream-attempt grossed), so
+      // material + Σ operations + overhead + commercial + SG&A === total.
+      material: { value: sv(materialPerGood), pct: baseTotal > 0 ? round(materialPerGood / baseTotal * 100, 1) : 0 },
       operations: opLines.map(l => ({ ...l, conversion: sv(l.conversion), tooling: sv(l.tooling) })),
       overhead: { value: sv(overheadCost) },
       commercial: { value: sv(commercialCost) },
