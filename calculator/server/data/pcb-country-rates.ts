@@ -43,7 +43,10 @@ export interface PCBFabRates {
 export interface SMTAssemblyRates {
   /** Fully-loaded SMT machine line rate £/hr (machine + overhead + indirect labour) */
   smtLineRatePerHr: number;
-  /** Direct operator labour £/hr (for manning/staffing ratio) */
+  /** Direct operator labour £/hr — actual country-specific figure (IPC/CBRE).
+   *  INFORMATIONAL in the cost model: direct labour is bundled into
+   *  smtLineRatePerHr / per-joint rates; this field documents the underlying
+   *  country labour rate those bundled figures were built from. */
   labourRatePerHr: number;
   /** Through-hole wave solder cost per joint (£) */
   thRatePerJoint: number;
@@ -81,7 +84,12 @@ export interface LogisticsToUK {
 export interface ComponentSourcing {
   /** Availability index 0–1 (1 = full global component availability on doorstep) */
   availabilityIndex: number;
-  /** Spot/distributor component price multiplier vs. UK Farnell/RS pricing */
+  /** Country-specific component-sourcing index vs UK distributor pricing —
+   *  reflects local availability, spot-market access and logistics into the EMS
+   *  (e.g. CN 0.88 = Shenzhen sourcing discount; UK 1.22 = distributor premium).
+   *  APPLIED to the BOM in computePCBCountryCost (audit fix — previously dead,
+   *  which held BOM cost constant across all countries). Region-scoped live
+   *  distributor pricing is the roadmap replacement for this index. */
   priceMultiplier: number;
   /** Whether the region has good access to Asian spot market (grey/surplus) */
   hasSpotMarketAccess: boolean;
@@ -94,7 +102,9 @@ export interface PCBCountryRate {
   flag: string;
   region: 'asia_low' | 'asia_mid' | 'asia_premium' | 'europe_low' | 'europe_premium' | 'americas' | 'domestic';
   currency: string;
-  /** 2026 FX mid-rate to GBP */
+  /** 2026 FX mid-rate to GBP — INFORMATIONAL/display only. All cost figures in
+   *  this database are actual country-specific values already expressed in GBP;
+   *  nothing is derived by FX conversion. */
   fxToGBP: number;
 
   pcbFab: PCBFabRates;
@@ -994,15 +1004,25 @@ export function computePCBCountryCost(input: PCBCostInput, countryId: string): P
   const confCost = input.conformalCoatAreaCm2 * a.conformalCoatPerCm2;
   const assemblyPerBoard = smtAssembly + thAssembly + manualAssembly + aoiCost + xrayCost + ictCost + confCost;
 
-  // Logistics
+  // Component sourcing (audit fix): BOM varies by country via the sourcing
+  // index — local availability/spot-market access, NOT an FX conversion.
+  const bomSourced = input.totalBOMCostGBP * (rate.components?.priceMultiplier ?? 1);
+
+  // Logistics. Sea freight applies at volume (>= 2500 boards/order) where a
+  // sea rate exists (audit fix: seaFreightPerKgGBP was defined but never used,
+  // so bulk orders were costed at air rates).
   const estWeightKg = Math.max(0.02, boardAreaDm2 * input.layers * 0.028);
+  const useSea = input.orderQuantity >= 2500 && l.seaFreightPerKgGBP > 0;
+  const freightRate = useSea ? l.seaFreightPerKgGBP : l.airFreightPerKgGBP;
   const freight = Math.max(l.minAirFreightGBP / Math.max(input.orderQuantity, 1),
-    estWeightKg * l.airFreightPerKgGBP);
-  const dutiableValue = pcbFabPerBoard + assemblyPerBoard;
+    estWeightKg * freightRate);
+  // Duty base includes the BOM (audit fix): customs value of a populated
+  // assembly = components + fab + assembly, not fab + assembly alone.
+  const dutiableValue = pcbFabPerBoard + assemblyPerBoard + bomSourced;
   const importDuty = dutiableValue * l.importDutyFraction;
   const logisticsPerBoard = freight + importDuty;
 
-  const totalPerBoard = pcbFabPerBoard + assemblyPerBoard + logisticsPerBoard + input.totalBOMCostGBP;
+  const totalPerBoard = pcbFabPerBoard + assemblyPerBoard + logisticsPerBoard + bomSourced;
 
   return {
     countryId,
@@ -1011,7 +1031,7 @@ export function computePCBCountryCost(input: PCBCostInput, countryId: string): P
     pcbFabPerBoard: Math.round(pcbFabPerBoard * 100) / 100,
     assemblyPerBoard: Math.round(assemblyPerBoard * 100) / 100,
     logisticsPerBoard: Math.round(logisticsPerBoard * 100) / 100,
-    bomCostPerBoard: Math.round(input.totalBOMCostGBP * 100) / 100,
+    bomCostPerBoard: Math.round(bomSourced * 100) / 100,
     totalPerBoard: Math.round(totalPerBoard * 100) / 100,
     leadTimeWeeks: rate.leadTimeWeeks.production,
     qualityIndex: rate.qualityIndex,

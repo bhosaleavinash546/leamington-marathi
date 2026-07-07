@@ -31,12 +31,38 @@ export interface BomScore {
 const norm = (s: unknown) => String(s ?? '').trim().toUpperCase();
 const lineTotal = (i: BomItem) => (Number(i.qty) || 0) * (Number(i.unitPriceGBP) || 0);
 
+/**
+ * Expand a grouped reference designator into individual refs so that a
+ * predicted "R1-R10" scores against ten truth lines "R1".."R10" (and vice
+ * versa) instead of collapsing to a single unmatchable key (audit fix).
+ * Handles "R1-R10", "C1–C4" (en-dash), comma/space lists "R1, R2 R3",
+ * and plain single refs. Malformed ranges fall back to the raw token.
+ */
+export function expandRefDes(refDes: unknown): string[] {
+  const raw = norm(refDes);
+  if (!raw) return [];
+  const out: string[] = [];
+  for (const token of raw.split(/[,\s]+/).filter(Boolean)) {
+    const m = /^([A-Z]+)(\d+)[-–]([A-Z]*)(\d+)$/.exec(token);
+    if (m && (m[3] === '' || m[3] === m[1])) {
+      const prefix = m[1];
+      const lo = parseInt(m[2], 10), hi = parseInt(m[4], 10);
+      if (hi >= lo && hi - lo < 500) {
+        for (let n = lo; n <= hi; n++) out.push(`${prefix}${n}`);
+        continue;
+      }
+    }
+    out.push(token);
+  }
+  return out;
+}
+
 /** Score predicted vs ground-truth, matching components by reference designator. */
 export function scoreBom(predicted: BomItem[], truth: BomItem[]): BomScore {
   const predByRef = new Map<string, BomItem>();
-  for (const p of predicted) { const r = norm(p.refDes); if (r) predByRef.set(r, p); }
+  for (const p of predicted) for (const r of expandRefDes(p.refDes)) predByRef.set(r, p);
   const truthByRef = new Map<string, BomItem>();
-  for (const t of truth) { const r = norm(t.refDes); if (r) truthByRef.set(r, t); }
+  for (const t of truth) for (const r of expandRefDes(t.refDes)) truthByRef.set(r, t);
 
   let tp = 0, pnCorrect = 0, pnComparable = 0;
   const mape: number[] = [];

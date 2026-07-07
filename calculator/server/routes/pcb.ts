@@ -11,7 +11,7 @@ import {
   COUNTRY_DISPLAY_ORDER,
   type PCBCostInput,
 } from '../data/pcb-country-rates.js';
-import { fetchLivePrices, fetchLivePricesWithAECQ, type LivePricingProvider, type LivePriceResult } from '../utils/pcb-live-pricing.js';
+import { fetchLivePrices, fetchLivePricesWithAECQ, resolveNexarAccessToken, type LivePricingProvider, type LivePriceResult } from '../utils/pcb-live-pricing.js';
 import { reconcileBomWithCatalogue, groundingCandidates } from '../utils/pcb-bom-grounding.js';
 import { parseBOMFile, type ParsedBOMLine } from '../utils/pcb-bom-parser.js';
 
@@ -993,7 +993,7 @@ router.post('/analyze-image', upload.fields([
       : '';
     const s2Msg = await anthropic.messages.create({ temperature: 0,
       model: 'claude-haiku-4-5',
-      max_tokens: 1024,
+      max_tokens: 4096,
       system: 'You are an expert at reading text from PCB images. Extract all readable text. Return ONLY JSON.',
       messages: [{
         role: 'user',
@@ -1268,7 +1268,7 @@ ${userPromptText}`;
     const candidatePNs = groundingCandidates(enrichedBOM, 20);
     let livePrices: LivePriceResult[] = [];
     if (candidatePNs.length > 0) {
-      const octoKey = process.env.OCTOPART_API_KEY ?? '';
+      const octoKey = await resolveNexarAccessToken();   // OAuth2 client-credentials (audit fix)
       const rsKey = process.env.RS_API_KEY ?? '';
       const liveProvider: LivePricingProvider | null = octoKey ? 'octopart' : rsKey ? 'rs' : null;
       if (liveProvider) {
@@ -1779,7 +1779,7 @@ router.post('/analyze-image-stream', upload.fields([
     emit('progress', { stage: 2, label: 'Stage 2 — OCR text extraction', pct: 35 });
     const s2Note = multiImage ? `\n\nNOTE: ${imageFiles.length} photos provided (${imageLabels.slice(0, imageFiles.length).join(', ')}). Extract from ALL images.` : '';
     const s2Msg = await anthropic.messages.create({ temperature: 0,
-      model: 'claude-haiku-4-5', max_tokens: 1024,
+      model: 'claude-haiku-4-5', max_tokens: 4096,
       system: 'You are an expert at reading PCB text. Return ONLY JSON.',
       messages: [{ role: 'user', content: [
         ...buildImageContentBlocks(imageFiles, imageLabels, multiImage),
@@ -1871,6 +1871,8 @@ router.post('/analyze-image-stream', upload.fields([
   let streamAutomotiveFabAdjustment: AutomotiveFabAdjustment | null = null;
   let streamBomCompleteness: BOMCompletenessResult | null = null;
   let streamProgramPricing: ProgramPricingResult | null = null;
+  let streamLivePriceHits = 0;
+  let streamNeedsVerification = 0;
 
   try {
     const a = analysis as Record<string, unknown>;
@@ -1894,6 +1896,33 @@ router.post('/analyze-image-stream', upload.fields([
       streamAutomotiveAssemblyCost = computeAutomotiveAssemblyCost(assemblyData, streamAsilClassification.asilLevel, orderQty2, streamCountryAssemblyPerBoard);
       // Automotive fab adjustment
       streamAutomotiveFabAdjustment = computeAutomotiveFabAdjustment(boardSpec, fabCostMid2, domain);
+    }
+    // Catalogue grounding (audit fix): the streaming path — the one the UI
+    // actually uses — previously hardcoded livePriceHits: 0 and never called
+    // the distributor APIs. Ground BEFORE totals so real prices flow into the
+    // BOM total and the country comparison. Offline (no key) it still runs
+    // reconcile for the needs-verification flags.
+    {
+      const candidatePNs2 = groundingCandidates(enrichedBOM2, 20);
+      let livePrices2: LivePriceResult[] = [];
+      if (candidatePNs2.length > 0) {
+        const octoKey2 = await resolveNexarAccessToken();
+        const rsKey2 = process.env.RS_API_KEY ?? '';
+        const liveProvider2: LivePricingProvider | null = octoKey2 ? 'octopart' : rsKey2 ? 'rs' : null;
+        if (liveProvider2) {
+          emit('progress', { stage: 4, label: 'Stage 4 — grounding prices against distributor catalogue', pct: 90 });
+          try {
+            livePrices2 = await fetchLivePricesWithAECQ(candidatePNs2, liveProvider2, liveProvider2 === 'octopart' ? octoKey2 : rsKey2, orderQty2, domain === 'automotive_adas');
+            console.log(`[PCB/stream] Catalogue grounding: ${livePrices2.length}/${candidatePNs2.length} parts priced via ${liveProvider2}`);
+          } catch (lpErr) {
+            console.warn('[PCB/stream] Live pricing fetch failed (non-fatal):', (lpErr as Error).message);
+          }
+        }
+      }
+      const reconciled2 = reconcileBomWithCatalogue(enrichedBOM2, livePrices2);
+      enrichedBOM2 = reconciled2.bom as Array<Record<string, unknown>>;
+      streamLivePriceHits = reconciled2.matched;
+      streamNeedsVerification = reconciled2.needsVerification;
     }
     a.bom = enrichedBOM2;
     const correctedBOMTotal2 = enrichedBOM2.reduce((s, l) => s + Number(l.lineTotalGBP ?? 0), 0);
@@ -1932,7 +1961,9 @@ router.post('/analyze-image-stream', upload.fields([
     analysis, selectedCountry: selectedCountry2, selectedCountryBreakdown: selectedCountryBreakdown2,
     countryComparison: countryComparison2, volumeCurves: volumeCurves2, complexityScore: complexityScore2,
     confidenceBand: confidenceBand2, volumeMultiplier: volumeMultiplier2, sanityWarnings: sanityWarnings2,
-    npiBreakdown: npiBreakdown2, livePriceHits: 0, fromCache: false,
+    npiBreakdown: npiBreakdown2, livePriceHits: streamLivePriceHits,
+    catalogueVerifiedCount: streamLivePriceHits, needsVerificationCount: streamNeedsVerification,
+    fromCache: false,
     asilLevel: streamAsilClassification.asilLevel,
     asilRationale: streamAsilClassification.asilRationale,
     asilSafetyFunctions: streamAsilClassification.safetyFunctions,

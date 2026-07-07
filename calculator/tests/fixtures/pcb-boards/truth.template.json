@@ -1,0 +1,9 @@
+{
+  "board": "REPLACE — board name / revision (e.g. Acme Motor Controller rev C)",
+  "notes": "Photograph top (and ideally bottom) side. Fill bom[] from the REAL schematic/BOM, not from the photo. Save the pipeline output BOM for the same photo as <name>.prediction.json alongside this file — the golden runner (tests/pcb-golden-boards.test.ts) scores every pair automatically.",
+  "bom": [
+    { "refDes": "U1",     "partNumber": "STM32F407VGT6", "componentType": "ic_tqfp",      "qty": 1,  "unitPriceGBP": 4.20 },
+    { "refDes": "R1-R10", "partNumber": "",              "componentType": "passive_0402", "qty": 10, "unitPriceGBP": 0.002 },
+    { "refDes": "J1",     "partNumber": "MX150L-2x6",    "componentType": "connector_smt","qty": 1,  "unitPriceGBP": 3.80 }
+  ]
+}

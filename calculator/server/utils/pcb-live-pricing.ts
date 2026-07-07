@@ -45,12 +45,63 @@ function toGBP(amount: number, currency: string): number {
 
 function isAutomotiveGrade(...texts: string[]): boolean {
   const joined = texts.join(' ').toUpperCase();
-  return /AEC|Q100|Q101|GRADE|AUTOMOTIVE/.test(joined);
+  // Tightened (audit fix): the old pattern included bare /GRADE/ which
+  // false-positived on "Industrial Grade", and bare Q100 matched inside
+  // unrelated part numbers. Require an explicit AEC-Qxxx qualifier or the
+  // word AUTOMOTIVE.
+  return /\bAEC[-\s]?Q(?:100|101|102|103|104|200)?\b|\bAUTOMOTIVE\b/.test(joined);
 }
 
 // ─── Octopart / Nexar GraphQL ─────────────────────────────────────────────────
 
 const NEXAR_ENDPOINT = 'https://api.nexar.com/graphql';
+const NEXAR_TOKEN_ENDPOINT = 'https://identity.nexar.com/connect/token';
+
+/**
+ * Nexar (Octopart) uses OAuth2 client-credentials — a raw API key sent as a
+ * Bearer is rejected. If OCTOPART_CLIENT_ID / OCTOPART_CLIENT_SECRET are set,
+ * exchange them for an access token (cached until ~80% of its lifetime).
+ * Fallback: treat OCTOPART_API_KEY as a ready-made access token (covers users
+ * who mint a token themselves).
+ */
+let _nexarToken: { token: string; expiresAt: number } | null = null;
+
+export async function resolveNexarAccessToken(): Promise<string> {
+  const id = process.env.OCTOPART_CLIENT_ID ?? '';
+  const secret = process.env.OCTOPART_CLIENT_SECRET ?? '';
+  if (!id || !secret) return process.env.OCTOPART_API_KEY ?? '';
+
+  if (_nexarToken && Date.now() < _nexarToken.expiresAt) return _nexarToken.token;
+
+  try {
+    const resp = await fetch(NEXAR_TOKEN_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        grant_type: 'client_credentials',
+        client_id: id,
+        client_secret: secret,
+        scope: 'supply.domain',
+      }),
+      signal: AbortSignal.timeout(10_000),
+    });
+    if (!resp.ok) {
+      console.warn(`[LivePricing/Nexar] Token exchange failed: HTTP ${resp.status}`);
+      return process.env.OCTOPART_API_KEY ?? '';
+    }
+    const data = await resp.json() as { access_token?: string; expires_in?: number };
+    if (!data.access_token) return process.env.OCTOPART_API_KEY ?? '';
+    _nexarToken = {
+      token: data.access_token,
+      // refresh at 80% of lifetime (Nexar default 86400 s)
+      expiresAt: Date.now() + (data.expires_in ?? 86_400) * 0.8 * 1000,
+    };
+    return _nexarToken.token;
+  } catch (err) {
+    console.warn('[LivePricing/Nexar] Token exchange error:', (err as Error).message);
+    return process.env.OCTOPART_API_KEY ?? '';
+  }
+}
 
 // NOTE: $qty is intentionally NOT declared here. GraphQL rejects an operation
 // that declares a variable it never uses ("$qty is never used"), which was
@@ -189,6 +240,9 @@ export async function fetchRSPrices(
   qty = 100,
 ): Promise<LivePriceResult[]> {
   if (!partNumbers.length || !apiKey) return [];
+  // RS search API exposes only a single qty-1 unitPrice (no price breaks) —
+  // RS-sourced prices are qty-1 and will OVERSTATE cost at volume; the
+  // priceBreakQty:1 field below flags this to consumers.
   void qty;
   const results: LivePriceResult[] = [];
 
@@ -259,7 +313,6 @@ export async function fetchFarnellPrices(
   qty = 100,
 ): Promise<LivePriceResult[]> {
   if (!partNumbers.length || !apiKey) return [];
-  void qty;
   const results: LivePriceResult[] = [];
 
   for (const mpn of partNumbers.slice(0, 20)) {
@@ -288,8 +341,15 @@ export async function fetchFarnellPrices(
 
       const prices = product.prices ?? [];
       if (!prices.length) continue;
-      // Use the last (highest) price break — best volume price.
-      const priceBreak = prices[prices.length - 1];
+      // Audit fix: pick the price break APPLICABLE to the requested quantity
+      // (largest `from` <= qty), not blindly the deepest break — the old
+      // behaviour understated cost at prototype/low quantities.
+      const applicable = prices
+        .filter(pb => typeof pb.cost === 'number' && (pb.from ?? 1) <= qty)
+        .sort((x, y) => (y.from ?? 1) - (x.from ?? 1))[0]
+        ?? prices.find(pb => typeof pb.cost === 'number');
+      if (!applicable) continue;
+      const priceBreak = applicable;
       const cost = priceBreak.cost;
       if (typeof cost !== 'number') continue;
 
@@ -336,7 +396,9 @@ export async function fetchLivePrices(
 // ─── AEC-Q automotive variant search ─────────────────────────────────────────
 /** Build automotive grade variant MPN list: adds common AEC-Q suffixes like -Q1, /Q, etc. */
 export function buildAutomotiveSearchVariants(partNumbers: string[]): string[] {
-  const suffixes = ['-Q1', 'Q', 'TR', '/Q', '-T1', 'CT'];
+  // Audit fix: TR / CT / -T1 are tape-reel PACKAGING suffixes, not automotive
+  // qualifiers — matching them mislabelled reel variants as AEC-Q parts.
+  const suffixes = ['-Q1', 'Q', '/Q'];
   const variants: Set<string> = new Set();
   for (const pn of partNumbers) {
     variants.add(pn);
@@ -363,7 +425,7 @@ export async function fetchLivePricesWithAECQ(
   // For each original MPN, if we have both an automotive and non-automotive hit prefer automotive
   const bestPerMPN = new Map<string, LivePriceResult>();
   for (const r of results) {
-    const key = r.mpn.toUpperCase().replace(/[-\/](Q1|Q|T1|TR|CT)$/i, '');
+    const key = r.mpn.toUpperCase().replace(/[-\/]?(Q1|Q)$/i, '');
     const existing = bestPerMPN.get(key);
     if (!existing || (r.automotiveGrade && !existing.automotiveGrade)) {
       bestPerMPN.set(key, r);
@@ -372,7 +434,7 @@ export async function fetchLivePricesWithAECQ(
   // Map back to original MPNs
   const out: LivePriceResult[] = [];
   for (const orig of partNumbers) {
-    const key = orig.toUpperCase().replace(/[-\/](Q1|Q|T1|TR|CT)$/i, '');
+    const key = orig.toUpperCase().replace(/[-\/]?(Q1|Q)$/i, '');
     const hit = bestPerMPN.get(key);
     if (hit) out.push({ ...hit, mpn: orig });
   }
