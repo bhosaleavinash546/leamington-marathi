@@ -23,6 +23,7 @@ interface MarketplaceIdea {
   difficulty: string;
   timeToImplement: string;
   stars: number;
+  votes?: number;
   verified: boolean;
   description: string;
   ideaData?: string | null;
@@ -655,8 +656,24 @@ export default function MarketplacePage() {
                     <span className="flex items-center gap-1"><Clock size={10} />{idea.timeToImplement}</span>
                     <span className="flex items-center gap-1"><TrendingDown size={10} />{idea.costSavingType}</span>
                     <button
+                      onClick={async e => {
+                        e.stopPropagation();
+                        const token = (() => { try { return JSON.parse(localStorage.getItem('brainspark_auth') || '{}').token; } catch { return null; } })();
+                        if (!token) { toast('Sign in to vote', 'error'); return; }
+                        try {
+                          const r = await fetch(`/api/marketplace/${idea.id}/vote`, { method: 'POST', headers: { Authorization: `Bearer ${token}` } });
+                          const d = await r.json();
+                          if (r.ok) setIdeas(prev => prev.map(i => i.id === idea.id ? { ...i, votes: d.votes } : i));
+                        } catch { /* best-effort */ }
+                      }}
+                      className="ml-auto flex items-center gap-1 px-2.5 py-1 rounded-lg border border-gold-500/30 bg-gold-500/10 text-gold-300 hover:bg-gold-500/20 transition-colors text-xs"
+                      title="Vote for this idea"
+                    >
+                      ▲ {idea.votes || 0}
+                    </button>
+                    <button
                       onClick={e => { e.stopPropagation(); setPipelineIdea(idea); }}
-                      className="ml-auto flex items-center gap-1 px-2.5 py-1 rounded-lg border border-violet-500/30 bg-violet-500/10 text-violet-300 hover:bg-violet-500/20 transition-colors text-xs"
+                      className="flex items-center gap-1 px-2.5 py-1 rounded-lg border border-violet-500/30 bg-violet-500/10 text-violet-300 hover:bg-violet-500/20 transition-colors text-xs"
                     >
                       <Layers size={11} /> Add to Pipeline
                     </button>
