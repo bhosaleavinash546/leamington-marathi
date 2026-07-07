@@ -125,6 +125,7 @@ app.use((req, res, next) => {
 // processes share state. Statements are prepared lazily because `db` is created
 // further down; middleware only executes at request time, after init.
 let _rlHit = null;
+let _rlFaultLogged = false;   // fail-open is logged ONCE, not per request (log flood)
 function rateLimit(maxRequests, windowMs) {
   return (req, res, next) => {
     try {
@@ -144,7 +145,7 @@ function rateLimit(maxRequests, windowMs) {
       next();
     } catch (e) {
       // A rate-limiter fault must never take the API down — fail open, log once.
-      console.error('[RateLimit]', e.message);
+      if (!_rlFaultLogged) { _rlFaultLogged = true; console.error('[RateLimit] disabled (fail-open):', e.message); }
       next();
     }
   };
@@ -182,8 +183,11 @@ function makeAnthropic(apiKey) {
     try {
       const resp = await origCreate(params, opts);
       try {
+        // Streaming calls return a Stream immediately (no usage, ~0 ms) — record
+        // them with null latency/tokens so the log never shows a fake fast call.
+        const streaming = params?.stream === true;
         db.prepare('INSERT INTO llm_calls (id, model, inputTokens, outputTokens, cacheReadTokens, latencyMs, ok, createdAt) VALUES (?,?,?,?,?,?,1,?)')
-          .run(crypto.randomUUID(), params?.model || '', resp?.usage?.input_tokens ?? null, resp?.usage?.output_tokens ?? null, resp?.usage?.cache_read_input_tokens ?? null, Date.now() - t0, new Date().toISOString());
+          .run(crypto.randomUUID(), (params?.model || '') + (streaming ? ' (stream)' : ''), resp?.usage?.input_tokens ?? null, resp?.usage?.output_tokens ?? null, resp?.usage?.cache_read_input_tokens ?? null, streaming ? null : Date.now() - t0, new Date().toISOString());
       } catch { /* logging must never break the call */ }
       return resp;
     } catch (e) {
@@ -5281,11 +5285,13 @@ app.post('/api/projects', requireAuth, (req, res) => {
   if (!ideas || !config) return res.status(400).json({ error: 'ideas and config are required.' });
   const projectId = id || crypto.randomUUID();
   const now = new Date().toISOString();
+  // Never persist an API key inside a saved project (same redaction as autoSaveProject).
+  const safeConfig = config && typeof config === 'object' ? { ...config, ...(config.apiKey ? { apiKey: '[redacted]' } : {}) } : config;
   db.prepare(`INSERT OR REPLACE INTO projects
     (id, userId, systemName, subassemblyName, partName, vehicleType, config, ideas, sources, summary, generatedAt, createdAt, updatedAt)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`).run(
     projectId, req.user.id, systemName || '', subassemblyName || '', partName || '', vehicleType || '',
-    JSON.stringify(config), JSON.stringify(ideas), JSON.stringify(sources || []), JSON.stringify(summary || {}),
+    JSON.stringify(safeConfig), JSON.stringify(ideas), JSON.stringify(sources || []), JSON.stringify(summary || {}),
     generatedAt || now, now, now,
   );
   res.json({ id: projectId });

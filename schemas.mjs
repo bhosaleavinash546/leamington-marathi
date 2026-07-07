@@ -68,6 +68,9 @@ export const SCHEMAS = {
     difficulty: shortStr(20).optional(),
     timeToImplement: shortStr(60).optional(),
     description: z.string().max(5000),
+    // Rich payload is stored verbatim in the DB — cap it so a submission can't
+    // stuff a near-1MB blob into every marketplace list response.
+    ideaData: z.string().max(100_000).optional(),
   }).loose(),
 };
 
