@@ -514,6 +514,10 @@ function estimateMissingPassives(bom: Array<Record<string, unknown>>, smtPlaceme
     if (icTypes.has(ct)) icCount += qty;
     if (passiveTypes.has(ct)) passiveCount += qty;
   }
+  // Ratios are engineering-typical board-design practice (decoupling: 2-4
+  // ceramics per IC power domain per IPC/manufacturer app notes; pull-ups,
+  // ferrite filtering and ESD on external interfaces). Calibrate against the
+  // golden-board set (tests/fixtures/pcb-boards/) as it grows.
   const expectedDecoupling = Math.round(icCount * 3.2);
   const expectedPullResistors = Math.round(icCount * 0.8);
   const expectedFerrites = Math.round(icCount * 0.4);

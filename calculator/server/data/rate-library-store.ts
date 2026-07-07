@@ -98,3 +98,23 @@ export function setSWRateSource(db: Database, source: RateSource): void {
     ON CONFLICT(key) DO UPDATE SET value = excluded.value
   `).run(SW_SOURCE_KEY, source === 'company' ? 'company' : 'builtin');
 }
+
+// ── PCB country-rate overrides (audit fix: country DB is admin-editable) ─────
+const PCB_COUNTRY_OV_KEY = 'pcb_country_overrides';
+
+export function getPCBCountryOverrides(db: Database): Record<string, unknown> {
+  const row = db.prepare('SELECT value FROM app_settings WHERE key = ?').get(PCB_COUNTRY_OV_KEY) as { value: string } | undefined;
+  if (!row) return {};
+  try { return JSON.parse(row.value) as Record<string, unknown>; } catch { return {}; }
+}
+
+export function setPCBCountryOverrides(db: Database, overrides: Record<string, unknown>): void {
+  db.prepare(`
+    INSERT INTO app_settings (key, value) VALUES (?, ?)
+    ON CONFLICT(key) DO UPDATE SET value = excluded.value
+  `).run(PCB_COUNTRY_OV_KEY, JSON.stringify(overrides ?? {}));
+}
+
+export function clearPCBCountryOverrides(db: Database): void {
+  db.prepare('DELETE FROM app_settings WHERE key = ?').run(PCB_COUNTRY_OV_KEY);
+}

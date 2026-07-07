@@ -317,6 +317,10 @@ export async function fetchFarnellPrices(
 
   for (const mpn of partNumbers.slice(0, 20)) {
     try {
+      // element14's REST API only accepts the key as the callInfo.apiKey query
+      // parameter (no header auth exists). Mitigation (audit): never log the
+      // assembled URL — error paths below log the MPN only — and keep the key
+      // out of thrown messages so it cannot leak into server/proxy logs.
       const url = new URL(FARNELL_ENDPOINT);
       url.searchParams.set('callInfo.responseDataFormat', 'JSON');
       url.searchParams.set('term', `manuPartNum:${mpn}`);

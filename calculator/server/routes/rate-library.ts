@@ -25,7 +25,21 @@ import {
   getCompanyLibrary, setCompanyLibrary, clearCompanyLibrary,
   getRateSource, setRateSource, getOverrides, setOverride, deleteOverride, clearOverrides,
   getSWCompanyLibrary, setSWCompanyLibrary, clearSWCompanyLibrary, getSWRateSource, setSWRateSource,
+  getPCBCountryOverrides, setPCBCountryOverrides, clearPCBCountryOverrides,
 } from '../data/rate-library-store.js';
+import {
+  PCB_COUNTRY_RATES, applyPCBCountryRateOverrides, getActivePCBCountryOverrides,
+} from '../data/pcb-country-rates.js';
+
+// Apply persisted PCB country overrides at startup so restarts keep the
+// admin's edited rates (audit fix: country DB was hardcoded constants).
+{
+  const persisted = getPCBCountryOverrides(db);
+  if (Object.keys(persisted).length > 0) {
+    const r = applyPCBCountryRateOverrides(persisted);
+    console.log(`[rate-library] PCB country overrides restored: ${r.appliedPaths.length} applied, ${r.rejectedPaths.length} rejected`);
+  }
+}
 
 const router = Router();
 router.use(requireAuth);
@@ -167,6 +181,34 @@ router.delete('/overrides', (req: AuthenticatedRequest, res: Response): void => 
   const { table, id, field } = req.query as { table?: string; id?: string; field?: string };
   if (!table || !id || !field) { res.status(400).json({ error: 'table, id and field query params required' }); return; }
   res.json({ ok: deleteOverride(db, table, id, field) });
+});
+
+// ── PCB country rates (admin-editable; audit fix) ────────────────────────────
+router.get('/pcb-countries', (_req, res: Response) => {
+  res.json({ countries: PCB_COUNTRY_RATES, overrides: getActivePCBCountryOverrides() });
+});
+
+router.put('/pcb-countries/overrides', (req: AuthenticatedRequest, res: Response): void => {
+  const overrides = (req.body?.overrides ?? {}) as Record<string, unknown>;
+  if (overrides === null || typeof overrides !== 'object' || Array.isArray(overrides)) {
+    res.status(400).json({ error: 'overrides must be an object keyed by country id' });
+    return;
+  }
+  const result = applyPCBCountryRateOverrides(overrides);
+  if (result.appliedPaths.length === 0 && result.rejectedPaths.length > 0) {
+    // nothing valid — restore whatever was persisted before and reject
+    applyPCBCountryRateOverrides(getPCBCountryOverrides(db));
+    res.status(400).json({ error: 'No valid numeric override paths', rejectedPaths: result.rejectedPaths });
+    return;
+  }
+  setPCBCountryOverrides(db, overrides);
+  res.json({ ok: true, appliedPaths: result.appliedPaths, rejectedPaths: result.rejectedPaths });
+});
+
+router.delete('/pcb-countries/overrides', (_req, res: Response): void => {
+  clearPCBCountryOverrides(db);
+  applyPCBCountryRateOverrides({});
+  res.json({ ok: true });
 });
 
 router.post('/reset', (_req, res: Response): void => {

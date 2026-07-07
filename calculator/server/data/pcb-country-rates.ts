@@ -132,6 +132,11 @@ export interface PCBCountryRate {
   };
   /** Automotive programme NRE cost layer (Feature 7) */
   automotiveNRE?: AutomotiveNRECosts;
+  /** Actual country industrial electricity tariff, £/kWh (2025-26 published
+   *  tariffs — country-specific values, NOT derived by conversion). */
+  energyCostPerKWh?: number;
+  /** ESD bag/tray/box + pack labour per finished board, £ — country-specific. */
+  packagingCostPerBoard?: number;
   /** Supply-chain risk dimensions (Feature 6) — each 0..1, 1 = lowest risk */
   riskDimensions?: {
     geopolitical: number;
@@ -834,6 +839,26 @@ const NRE_DATA: Record<string, AutomotiveNRECosts> = {
   jp: mkNRE(7800, 6300, 8800, 3600, 4600),
 };
 
+// Energy: industrial electricity tariffs £/kWh (IEA/Eurostat/EIA 2025-26,
+// each the country's own published tariff). Packaging: ESD bag/tray/carton +
+// pack labour per board, country labour-dependent.
+const ENERGY_PACKAGING: Record<string, { kwh: number; pack: number }> = {
+  cn: { kwh: 0.075, pack: 0.06 },
+  vn: { kwh: 0.062, pack: 0.05 },
+  in: { kwh: 0.082, pack: 0.06 },
+  th: { kwh: 0.100, pack: 0.08 },
+  my: { kwh: 0.088, pack: 0.08 },
+  tw: { kwh: 0.086, pack: 0.12 },
+  kr: { kwh: 0.094, pack: 0.14 },
+  mx: { kwh: 0.105, pack: 0.10 },
+  cz: { kwh: 0.175, pack: 0.15 },
+  pl: { kwh: 0.155, pack: 0.14 },
+  de: { kwh: 0.260, pack: 0.28 },
+  gb: { kwh: 0.255, pack: 0.30 },
+  us: { kwh: 0.095, pack: 0.28 },
+  jp: { kwh: 0.160, pack: 0.30 },
+};
+
 // Risk dimensions: each 0..1, 1 = lowest risk / most reliable
 const RISK_DATA: Record<string, NonNullable<PCBCountryRate['riskDimensions']>> = {
   cn: { geopolitical: 0.55, logisticsReliability: 0.80, qualityConsistency: 0.78, leadTimeVariance: 0.80 },
@@ -857,6 +882,81 @@ for (const id of Object.keys(PCB_COUNTRY_RATES)) {
   if (TREND_DATA[id]) rate.priceTrend = TREND_DATA[id];
   if (NRE_DATA[id]) rate.automotiveNRE = NRE_DATA[id];
   if (RISK_DATA[id]) rate.riskDimensions = RISK_DATA[id];
+  if (ENERGY_PACKAGING[id]) {
+    rate.energyCostPerKWh = ENERGY_PACKAGING[id].kwh;
+    rate.packagingCostPerBoard = ENERGY_PACKAGING[id].pack;
+  }
+}
+
+// ── Admin overrides (Rate-Library-editable country data) ────────────────────
+// Pristine snapshot taken AFTER augmentation; applyPCBCountryRateOverrides
+// resets to this then deep-merges numeric overrides, so overrides are always
+// relative to the shipped baseline (never compounding).
+const PRISTINE_RATES: Record<string, PCBCountryRate> = JSON.parse(JSON.stringify(PCB_COUNTRY_RATES));
+let _activeOverrides: Record<string, unknown> = {};
+
+const FORBIDDEN_KEYS = new Set(['__proto__', 'prototype', 'constructor']);
+
+function mergeNumericLeaves(
+  target: Record<string, unknown>,
+  pristine: Record<string, unknown>,
+  patch: Record<string, unknown>,
+  path: string,
+  applied: string[],
+  rejected: string[],
+): void {
+  for (const key of Object.keys(patch)) {
+    const p = path ? `${path}.${key}` : key;
+    if (FORBIDDEN_KEYS.has(key) || !Object.prototype.hasOwnProperty.call(pristine, key)) {
+      rejected.push(p); continue;
+    }
+    const pv = (pristine as Record<string, unknown>)[key];
+    const nv = (patch as Record<string, unknown>)[key];
+    if (typeof pv === 'number') {
+      const n = Number(nv);
+      if (Number.isFinite(n) && n >= 0) { (target as Record<string, unknown>)[key] = n; applied.push(p); }
+      else rejected.push(p);
+    } else if (pv !== null && typeof pv === 'object' && !Array.isArray(pv) && nv !== null && typeof nv === 'object') {
+      mergeNumericLeaves(
+        (target as Record<string, Record<string, unknown>>)[key],
+        pv as Record<string, unknown>,
+        nv as Record<string, unknown>,
+        p, applied, rejected,
+      );
+    } else {
+      rejected.push(p); // strings/arrays/structure are not override-able
+    }
+  }
+}
+
+export interface PCBOverrideResult { appliedPaths: string[]; rejectedPaths: string[] }
+
+/** Reset to the shipped baseline, then apply numeric-leaf overrides per country. */
+export function applyPCBCountryRateOverrides(overrides: Record<string, unknown>): PCBOverrideResult {
+  // reset in place so existing imports keep working
+  for (const id of Object.keys(PCB_COUNTRY_RATES)) {
+    (PCB_COUNTRY_RATES as Record<string, unknown>)[id] = JSON.parse(JSON.stringify(PRISTINE_RATES[id]));
+  }
+  const applied: string[] = []; const rejected: string[] = [];
+  for (const id of Object.keys(overrides ?? {})) {
+    if (FORBIDDEN_KEYS.has(id) || !Object.prototype.hasOwnProperty.call(PRISTINE_RATES, id)) {
+      rejected.push(id); continue;
+    }
+    const patch = (overrides as Record<string, unknown>)[id];
+    if (patch === null || typeof patch !== 'object' || Array.isArray(patch)) { rejected.push(id); continue; }
+    mergeNumericLeaves(
+      PCB_COUNTRY_RATES[id] as unknown as Record<string, unknown>,
+      PRISTINE_RATES[id] as unknown as Record<string, unknown>,
+      patch as Record<string, unknown>,
+      id, applied, rejected,
+    );
+  }
+  _activeOverrides = applied.length > 0 ? JSON.parse(JSON.stringify(overrides)) : {};
+  return { appliedPaths: applied, rejectedPaths: rejected };
+}
+
+export function getActivePCBCountryOverrides(): Record<string, unknown> {
+  return JSON.parse(JSON.stringify(_activeOverrides));
 }
 
 // ─── Ordered list for UI display ──────────────────────────────────────────────
@@ -917,6 +1017,12 @@ export interface PCBCountryCostBreakdown {
     aoi: number;
     logistics: number;
     importDuty: number;
+    /** Fab + assembly electricity at the country's actual tariff (audit fix) */
+    energy: number;
+    /** ESD packaging + pack labour per board (audit fix) */
+    packaging: number;
+    /** Cost of quality from country dppm: rework + scrap expectation (audit fix) */
+    yieldLoss: number;
   };
   /** Panelisation result (Feature 3 / panel optimiser) */
   panelInfo: { boardsPerPanel: number; utilisation: number; panelW: number; panelH: number };
@@ -1022,7 +1128,29 @@ export function computePCBCountryCost(input: PCBCostInput, countryId: string): P
   const importDuty = dutiableValue * l.importDutyFraction;
   const logisticsPerBoard = freight + importDuty;
 
-  const totalPerBoard = pcbFabPerBoard + assemblyPerBoard + logisticsPerBoard + bomSourced;
+  // Energy (audit fix): explicit element at the country's ACTUAL industrial
+  // tariff. Engineering-typical consumption: fab (lamination/drill/plate/etch)
+  // ~0.9 kWh/dm² for 2L + 0.15 kWh/dm² per extra layer; assembly ~0.06 kWh
+  // per board (reflow/oven share) + 0.0008 kWh per placement.
+  const fabKWh = boardAreaDm2 * (0.9 + 0.15 * extraLayers);
+  const asmKWh = 0.06 + 0.0008 * input.smtPlacements;
+  const energyCost = (fabKWh + asmKWh) * (rate.energyCostPerKWh ?? 0.15);
+
+  // Packaging (audit fix): country-specific ESD bag/tray/carton + pack labour.
+  const packagingCost = rate.packagingCostPerBoard ?? 0.12;
+
+  // Yield / cost of quality (audit fix): country dppm (defects per million
+  // placements) was stored but never applied. Expected defects per board
+  // λ = placements × dppm/1e6 (capped 0.30); 95% of defects are AOI/ICT-caught
+  // touch-ups (rework ≈ 20% of assembly + half an ICT retest), 5% true scrap
+  // losing fab + assembly + components.
+  const lambda = Math.min(0.30, input.smtPlacements * a.dppm / 1_000_000);
+  const reworkCost = 0.2 * assemblyPerBoard + 0.5 * a.ictPerBoard;
+  const scrapCost = pcbFabPerBoard + assemblyPerBoard + bomSourced;
+  const yieldLossCost = lambda * (0.95 * reworkCost + 0.05 * scrapCost);
+
+  const totalPerBoard = pcbFabPerBoard + assemblyPerBoard + logisticsPerBoard + bomSourced
+    + energyCost + packagingCost + yieldLossCost;
 
   return {
     countryId,
@@ -1049,6 +1177,9 @@ export function computePCBCountryCost(input: PCBCostInput, countryId: string): P
       aoi: Math.round((aoiCost + xrayCost + ictCost + confCost) * 100) / 100,
       logistics: Math.round(freight * 100) / 100,
       importDuty: Math.round(importDuty * 100) / 100,
+      energy: Math.round(energyCost * 100) / 100,
+      packaging: Math.round(packagingCost * 100) / 100,
+      yieldLoss: Math.round(yieldLossCost * 100) / 100,
     },
     panelInfo: {
       boardsPerPanel: panel.boardsPerPanel,
