@@ -77,6 +77,21 @@ export interface SWProgramInputs {
   /** Optional rate-library override (partial). Any group omitted falls back to
    *  DEFAULT_SW_RATE_LIBRARY. Lets an engagement supply its own sourced rates. */
   rateLibrary?:             Partial<SWRateLibrary>;
+  // ── Optional accuracy levers (all default-neutral: omitting them reproduces
+  //    the validated baseline exactly) ──
+  /** Schedule compression: 1.0 = nominal; <1 compresses the timeline and inflates
+   *  effort (Brooks/COCOMO SCED). e.g. 0.7 = deliver in 70% of nominal time. */
+  scheduleCompression?:     number;
+  /** Discount rate % for NPV of multi-year lifecycle costs. 0 = nominal (default). */
+  discountRatePct?:         number;
+  /** NRE cost-recovery window (years) for the per-vehicle figure. Defaults to
+   *  programLifeYears; set ~2 to reflect the industry's short recovery window. */
+  costRecoveryYears?:       number;
+  /** Include ML dataset acquisition/annotation/retraining cost for ML modules. */
+  includeMLDataCost?:       boolean;
+  /** Include programme-level homologation/compliance (UNECE R155 CSMS + R156
+   *  SUMS audits + external ISO 26262 functional-safety assessment). */
+  includeHomologation?:     boolean;
 }
 
 export interface SWDevBreakdown {
@@ -116,7 +131,8 @@ export interface SWModuleCostResult {
   maintenanceCost:    number;
   toolchainCost:      number;
   calibrationCost:    number;
-  totalNonRecurring:  number;  // NRE (dev + test + integration + tool + cyber + calibration)
+  mlDataCost:         number;  // ML dataset / annotation / retraining (0 unless includeMLDataCost + hasMLContent)
+  totalNonRecurring:  number;  // NRE (dev + test + integration + tool + cyber + calibration + ML data)
   totalLifecycle:     number;  // maintenance + cloud + IP licensing over program life
   grandTotal:         number;
   perVehicle:         number;
@@ -132,7 +148,9 @@ export interface SWSummary {
   totalMaintenance:   number;
   totalToolchain:     number;
   totalCalibration:   number;
-  nreTotal:           number;  // dev + test + integration + toolchain + cybersec + calibration
+  totalMLData:        number;  // ML dataset/annotation/retraining across modules
+  totalHomologation:  number;  // programme-level R155/R156 + ISO 26262 assessment
+  nreTotal:           number;  // dev + test + integration + toolchain + cybersec + calibration + ML data + homologation
   grandTotal:         number;
   totalPersonMonths:  number;
   perVehicle:         number;
@@ -726,6 +744,23 @@ export const SW_MODULES: SWModuleDef[] = [
 
 // ─── Cost Calculation Engine ──────────────────────────────────────────────────
 
+// ─── Model-tuning constants (calibrated against the sw-validation back-test) ──
+/** Mean per-module testingFractionBase — re-bases the ASIL test scale so reviving
+ *  the per-module fraction (SW1) is neutral on the average module. */
+const TEST_INTENSITY_REF = 0.38;
+/** Fraction of the complexity delta also carried by the implementation bucket
+ *  (SW2). 0 = old algorithm-only behaviour; Medium (complexity=1) is always neutral. */
+const IMPL_COMPLEXITY_WEIGHT = 0.15;
+/** Safety/verification effort resists reuse: the reuse factor applied to the
+ *  safety bucket cannot fall below this floor by ASIL (SW3) — reused ASIL-C/D
+ *  code still needs re-verification/qualification. QM/A unaffected. */
+const SAFETY_REUSE_FLOOR: Record<ASILLevel, number> = { QM: 0, A: 0, B: 0.40, C: 0.50, D: 0.60 };
+/** ML dataset acquisition/annotation/retraining as a fraction of dev, per ML
+ *  module, over the programme (only when includeMLDataCost). */
+const ML_DATA_FRACTION = 0.15;
+/** Schedule-compression effort penalty slope (Brooks/COCOMO SCED). */
+const SCHEDULE_COMPRESSION_K = 1.5;
+
 function computeModuleCost(
   def:    SWModuleDef,
   input:  SWModuleInput,
@@ -739,23 +774,38 @@ function computeModuleCost(
   const asilDev    = rates.asilDev[input.asil];
   const complexity = rates.complexity[input.complexity];
   const reuse      = rates.reuse[input.reuse];
-  const testFrac   = rates.asilTest[input.asil];
+  // SW1: per-module test intensity honoured, scaled by ASIL and re-based so the
+  // mean module (testingFractionBase = TEST_INTENSITY_REF) reproduces the old value.
+  const testFrac   = def.testingFractionBase * (rates.asilTest[input.asil] / TEST_INTENSITY_REF);
+
+  // SW3: safety bucket resists reuse — floor the reuse it sees, then scale the
+  // 0.15 safety slice up relative to the dev reuse (neutral when reuse ≥ floor,
+  // e.g. Medium reuse 0.60 at ASIL-D floor 0.60 → scale 1.0).
+  const safetyReuse   = Math.max(reuse, SAFETY_REUSE_FLOOR[input.asil]);
+  const safetyScale   = reuse > 0 ? safetyReuse / reuse : 1;
+
+  // SW-schedule: compressing the timeline below nominal inflates effort.
+  const sched         = prog.scheduleCompression && prog.scheduleCompression > 0 ? prog.scheduleCompression : 1;
+  const schedPenalty  = sched >= 1 ? 1 : 1 + (1 - sched) * SCHEDULE_COMPRESSION_K;
 
   const effectivePM = (input.customPersonMonths ?? def.basePersonMonths) * reuse;
 
-  // Development sub-buckets. Complexity applied to algorithm bucket only.
+  // Development sub-buckets. Complexity on the algorithm bucket in full, and a
+  // weighted share on implementation (SW2). Safety bucket carries the reuse floor.
   const devPM    = effectivePM * asilDev;
+  const implComplexity = 1 + (complexity - 1) * IMPL_COMPLEXITY_WEIGHT;
   const reqsPM   = devPM * 0.12;
   const archPM   = devPM * 0.14;
   const algoPM   = devPM * 0.22 * complexity;
-  const implPM   = devPM * 0.37;
-  const safetyPM = devPM * 0.15;
+  const implPM   = devPM * 0.37 * implComplexity;
+  const safetyPM = devPM * 0.15 * safetyScale;
 
-  const reqs   = reqsPM   * regionRate;
-  const arch   = archPM   * regionRate;
-  const algo   = algoPM   * regionRate;
-  const impl   = implPM   * regionRate;
-  const safety = safetyPM * regionRate;
+  const effortRate = regionRate * schedPenalty;
+  const reqs   = reqsPM   * effortRate;
+  const arch   = archPM   * effortRate;
+  const algo   = algoPM   * effortRate;
+  const impl   = implPM   * effortRate;
+  const safety = safetyPM * effortRate;
   const devTotal = reqs + arch + algo + impl + safety;
 
   // Testing breakdown — HIL absorbs residual to ensure fractions sum exactly.
@@ -787,23 +837,38 @@ function computeModuleCost(
     ? (input.asil === 'D' ? 0.14 : input.asil === 'C' ? 0.10 : 0.08) : 0;
   const cybersec    = devTotal * cybersecPct;
 
-  // Toolchain and IP licensing are now fully separate cost pools.
-  const toolchain = def.annualToolLicenceGBP * prog.programLifeYears;
-  const licensing = def.annualIPLicenceGBP   * prog.programLifeYears;
-
   // Physical/model calibration effort (dyno runs, proving ground, model fitting)
   const calibration = devTotal * def.calibrationFractionBase;
 
-  const cloudCost   = prog.includeCloudCost
-    ? def.annualCloudCostGBP * prog.programLifeYears : 0;
-  const maintenance = prog.includeMaintenanceCost
-    ? devTotal * (def.maintenancePctPerYear / 100) * prog.programLifeYears : 0;
+  // ML dataset acquisition / annotation / continuous retraining (opt-in).
+  const mlDataCost = (prog.includeMLDataCost && def.hasMLContent)
+    ? devTotal * ML_DATA_FRACTION : 0;
 
-  const totalNRE      = devTotal + testTotal + integration + toolchain + cybersec + calibration;
+  // Multi-year cost pools. NPV factor Σ 1/(1+r)^t discounts spread costs; r=0
+  // reproduces the flat "annual × years" baseline exactly.
+  const years    = prog.programLifeYears;
+  const r        = (prog.discountRatePct ?? 0) / 100;
+  let   pvFactor = years;
+  if (r > 0) { pvFactor = 0; for (let t = 1; t <= years; t++) pvFactor += 1 / Math.pow(1 + r, t); }
+
+  const toolchain   = def.annualToolLicenceGBP * pvFactor;
+  const licensing   = def.annualIPLicenceGBP   * pvFactor;
+  const cloudCost   = prog.includeCloudCost
+    ? def.annualCloudCostGBP * pvFactor : 0;
+  const maintenance = prog.includeMaintenanceCost
+    ? devTotal * (def.maintenancePctPerYear / 100) * pvFactor : 0;
+
+  const totalNRE      = devTotal + testTotal + integration + toolchain + cybersec + calibration + mlDataCost;
   const totalLifecycle = maintenance + cloudCost + licensing;
   const grandTotal     = totalNRE + totalLifecycle;
-  const vehicles       = prog.annualProductionVolume * prog.programLifeYears;
-  const perVehicle     = vehicles > 0 ? grandTotal / vehicles : 0;
+
+  // Per-vehicle: NRE recovered over the (short) recovery window, ongoing lifecycle
+  // spread over full life. Default recoveryYears = life reproduces the old figure.
+  const recoveryYears = Math.max(1, prog.costRecoveryYears ?? years);
+  const nreVehicles   = prog.annualProductionVolume * recoveryYears;
+  const lifeVehicles  = prog.annualProductionVolume * years;
+  const perVehicle    = (nreVehicles > 0 ? totalNRE / nreVehicles : 0)
+                      + (lifeVehicles > 0 ? totalLifecycle / lifeVehicles : 0);
 
   return {
     moduleId:       def.id,
@@ -823,6 +888,7 @@ function computeModuleCost(
     maintenanceCost:  maintenance,
     toolchainCost:    toolchain,
     calibrationCost:  calibration,
+    mlDataCost,
     totalNonRecurring: totalNRE,
     totalLifecycle,
     grandTotal,
@@ -935,6 +1001,14 @@ export function computeSWProgram(
 
   const sum = (arr: number[]) => arr.reduce((a, b) => a + b, 0);
 
+  // Programme-level homologation / compliance (opt-in): UNECE R155 CSMS audit +
+  // R156 SUMS audit + external ISO 26262 functional-safety assessment. Scaled up
+  // when the programme carries ASIL-D content. Default off → 0 (baseline neutral).
+  const hasASILD = modules.some(m => m.asilUsed === 'D');
+  const homologation = prog.includeHomologation
+    ? (1_500_000 /* R155 CSMS */ + 800_000 /* R156 SUMS */ + (hasASILD ? 600_000 : 250_000) /* ISO26262 assessor */)
+    : 0;
+
   const summary: SWSummary = {
     totalDevelopment:   sum(modules.map(m => m.development.total)),
     totalTesting:       sum(modules.map(m => m.testing.total)),
@@ -945,16 +1019,25 @@ export function computeSWProgram(
     totalMaintenance:   sum(modules.map(m => m.maintenanceCost)),
     totalToolchain:     sum(modules.map(m => m.toolchainCost)),
     totalCalibration:   sum(modules.map(m => m.calibrationCost)),
+    totalMLData:        sum(modules.map(m => m.mlDataCost)),
+    totalHomologation:  homologation,
     nreTotal:           0,
-    grandTotal:         sum(modules.map(m => m.grandTotal)),
+    grandTotal:         sum(modules.map(m => m.grandTotal)) + homologation,
     totalPersonMonths:  sum(modules.map(m => m.personMonths)),
     perVehicle:         0,
     byCategory:         {} as Record<SWCategory, number>,
   };
   summary.nreTotal = summary.totalDevelopment + summary.totalTesting + summary.totalIntegration
-                   + summary.totalToolchain + summary.totalCybersecurity + summary.totalCalibration;
-  const vehicles = prog.annualProductionVolume * prog.programLifeYears;
-  summary.perVehicle = vehicles > 0 ? summary.grandTotal / vehicles : 0;
+                   + summary.totalToolchain + summary.totalCybersecurity + summary.totalCalibration
+                   + summary.totalMLData + summary.totalHomologation;
+  // Per-vehicle: NRE over the recovery window, lifecycle over full life (mirrors
+  // the per-module split). Default costRecoveryYears = life reproduces the old figure.
+  const totalLifecycle = summary.totalMaintenance + summary.totalCloud + summary.totalLicensing;
+  const recoveryYears  = Math.max(1, prog.costRecoveryYears ?? prog.programLifeYears);
+  const nreVehicles    = prog.annualProductionVolume * recoveryYears;
+  const lifeVehicles   = prog.annualProductionVolume * prog.programLifeYears;
+  summary.perVehicle = (nreVehicles > 0 ? summary.nreTotal / nreVehicles : 0)
+                     + (lifeVehicles > 0 ? totalLifecycle / lifeVehicles : 0);
 
   for (const cat of ['A','B','C','D','E','F','G'] as SWCategory[]) {
     summary.byCategory[cat] = sum(modules.filter(m => m.category === cat).map(m => m.grandTotal));
