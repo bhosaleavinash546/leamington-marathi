@@ -6,7 +6,7 @@ import {
 import type { CADAnalysisResult, OCCTGeometry } from '../engine/ai-analysis.js';
 import { computeMachiningDrivers } from '../engine/modules/machining.js';
 import { computeSheetMetalDrivers, assessPressTonnage } from '../engine/modules/sheet-metal.js';
-import { computeInjectionMouldingDrivers } from '../engine/modules/injection-moulding.js';
+import { computeInjectionMouldingDrivers, estimateClampingTonnage, estimateMouldCost, autoCoolFactorForMaterial, type MouldSteelClass } from '../engine/modules/injection-moulding.js';
 import { computeCastingDrivers } from '../engine/modules/casting.js';
 import { computeForgingDrivers } from '../engine/modules/forging.js';
 import { computePaintingDrivers } from '../engine/modules/painting.js';
@@ -2463,8 +2463,12 @@ function renderInjectionForm(): string {
     </div>
     <div class="section-title" style="margin-top:8px">Tooling</div>
     <div class="field-row">
-      <div class="field-group"><label>Mould Cost (£)</label><input type="number" id="imm-mould-cost" step="1000" min="0" value="25000"/></div>
+      <div class="field-group"><label>Mould Cost (£) <span title="Enter a figure to use it directly. Leave 0 to auto-estimate from cavities, area, steel class, side-actions and runner type.">ℹ</span></label><input type="number" id="imm-mould-cost" step="1000" min="0" value="25000" title="0 = auto-estimate parametrically"/></div>
       <div class="field-group"><label>Mould Life (shots)</label><input type="number" id="imm-mould-life" step="10000" min="0" value="500000"/></div>
+    </div>
+    <div class="field-row" style="margin-top:6px">
+      <div class="field-group"><label>Tool Steel Class <span title="Estimator only (Mould Cost=0): prototype ×0.55, standard P20 ×1.0, production H13 ×1.35, high-volume ×1.70.">ℹ</span></label><select id="imm-steel-class"><option value="prototype">Prototype (Al/soft, ~10–50k shots)</option><option value="standard" selected>Standard (P20, ~500k shots)</option><option value="production">Production (H13, ~1M+ shots)</option><option value="high_volume">High-volume (hardened, 5M+ shots)</option></select></div>
+      <div class="field-group"><label>Side-Actions / Lifters <span title="Estimator only (Mould Cost=0): number of slides + lifters for undercuts, ~£3.5k each.">ℹ</span></label><input type="number" id="imm-side-actions" step="1" min="0" value="0"/></div>
     </div>
     <div class="field-row" style="margin-top:6px">
       <div class="field-group"><label>Amort. Volume</label><input type="number" id="imm-amort" step="10000" min="1" value="500000"/></div>
@@ -9174,7 +9178,12 @@ function switchCommodity(type: CommodityType): void {
         const machEl = el<HTMLSelectElement>('imm-mach');
         if (machEl) { const opt = Array.from(machEl.options).find(o => o.value.includes('imm-200t')); if (opt) machEl.value = opt.value; }
         const matEl = el<HTMLSelectElement>('imm-mat');
-        if (matEl) { const opt = Array.from(matEl.options).find(o => o.value.includes('mat-pp')); if (opt) matEl.value = opt.value; }
+        if (matEl) {
+          const opt = Array.from(matEl.options).find(o => o.value.includes('mat-pp')); if (opt) matEl.value = opt.value;
+          // M7: auto-fill the cool factor from the resin, and keep it in sync on change.
+          syncImmCoolFactor();
+          matEl.addEventListener('change', syncImmCoolFactor);
+        }
       }, 0);
       break;
 
@@ -9527,32 +9536,87 @@ function collectSheetMetalInput(): UniversalStackInput {
 }
 
 function collectIMMInput(): UniversalStackInput {
+  const runnerSystem = validSel<'cold'|'hot'>('imm-runner-sys', ['cold','hot'], 'cold');
+  const cavities = num('imm-cav') || 1;
+  const projectedAreaCm2 = num('imm-area');
+  const cavityPressureMPa = num('imm-cav-press');
+  const machineId = sel('imm-mach');
+  const steelClass = validSel<MouldSteelClass>('imm-steel-class', ['prototype','standard','production','high_volume'], 'standard');
+  const sideActionsLifters = num('imm-side-actions') || 0;
+  const manualMouldCost = num('imm-mould-cost');
+
   const drivers = computeInjectionMouldingDrivers({
     materialId: sel('imm-mat'),
     partWeightKg: num('imm-part-wt'),
-    runnerSystem: validSel<'cold'|'hot'>('imm-runner-sys', ['cold','hot'], 'cold'),
+    runnerSystem,
     runnerWeightKg: num('imm-runner-wt'),
     regrindFraction: num('imm-regrind'),
-    cavities: num('imm-cav') || 1,
-    projectedAreaCm2: num('imm-area'),
-    cavityPressureMPa: num('imm-cav-press'),
+    cavities,
+    projectedAreaCm2,
+    cavityPressureMPa,
     wallThicknessMm: num('imm-wall'),
     coolTimeFactorSPerMm2: num('imm-cool-f'),
     fillTimeSec: num('imm-fill'),
     packTimeSec: num('imm-pack'),
     ejectTimeSec: num('imm-eject'),
-    machineId: sel('imm-mach'),
+    machineId,
     labourId: sel('imm-lab'),
     oee: num('imm-oee'),
     manning: num('imm-manning'),
     labourEfficiency: num('imm-lab-eff'),
-    mouldCost: num('imm-mould-cost'),
+    // 0 / blank → estimate parametrically from cavities, area, steel class, side-actions, runner.
+    mouldCost: manualMouldCost > 0 ? manualMouldCost : undefined,
+    steelClass,
+    sideActionsLifters,
     mouldLife: num('imm-mould-life'),
     amortizationVolume: num('imm-amort') || 1,
     toleranceMm: num('imm-tolerance') || undefined,
     surfaceFinishGrade: validSel<'standard'|'textured'|'high_gloss'|'painted'>('imm-finish', ['standard','textured','high_gloss','painted'], 'standard'),
   });
+
+  // H5: clamping-tonnage validation — warn if the part needs more clamp than the selected machine.
+  const ratedTonnage = parseImmRatedTonnage(machineId);
+  if (ratedTonnage && projectedAreaCm2 > 0 && cavityPressureMPa > 0) {
+    const requiredTonnage = estimateClampingTonnage({ projectedAreaCm2, cavityPressureMPa });
+    if (requiredTonnage > ratedTonnage) {
+      _smExtraWarnings.push(
+        `Clamping tonnage: part needs ≈${Math.round(requiredTonnage)}T (${projectedAreaCm2} cm² × ${cavityPressureMPa} MPa × 1.15 SF) ` +
+        `but the selected ${ratedTonnage}T machine is undersized — flash, short shots or press damage. ` +
+        `Select a machine ≥ ${Math.ceil(requiredTonnage / 50) * 50}T, reduce cavitation, or lower cavity pressure.`
+      );
+    } else if (requiredTonnage > ratedTonnage * 0.9) {
+      _smExtraWarnings.push(
+        `Clamping tonnage: part needs ≈${Math.round(requiredTonnage)}T vs ${ratedTonnage}T rated — running above 90% of clamp capacity leaves little safety margin.`
+      );
+    }
+  }
+
+  // H3: surface the estimated tool cost when it was auto-derived (mould cost left at 0).
+  if (manualMouldCost <= 0) {
+    const est = estimateMouldCost({ cavities, projectedAreaCm2, steelClass, sideActionsLifters, runnerSystem });
+    _smExtraWarnings.push(
+      `Tooling: mould cost auto-estimated at £${est.total.toLocaleString()} ` +
+      `(base £${est.base.toLocaleString()} + cavities £${est.cavityBlock.toLocaleString()}` +
+      `${est.sideActions ? ` + side-actions £${est.sideActions.toLocaleString()}` : ''}` +
+      `${est.hotRunner ? ` + hot-runner £${est.hotRunner.toLocaleString()}` : ''}). Enter a Mould Cost to override.`
+    );
+  }
+
   return { ...getUniversalTail(), rawMaterial: drivers.rawMaterial, operations: drivers.operations, tooling: drivers.tooling };
+}
+
+/** Parse an IMM machine's rated clamp tonnage from its id (e.g. 'imm-400t' → 400). */
+function parseImmRatedTonnage(machineId: string): number | null {
+  const m = /(?:^|-)(\d+)t\b/i.exec(machineId);
+  return m ? Number(m[1]) : null;
+}
+
+/** M7: set the injection cool-factor field from the selected resin's diffusivity-derived value. */
+function syncImmCoolFactor(): void {
+  const matId = sel('imm-mat');
+  const coolEl = el<HTMLInputElement>('imm-cool-f');
+  if (!matId || !coolEl) return;
+  coolEl.value = String(autoCoolFactorForMaterial(matId));
 }
 
 function collectCastingInput(): UniversalStackInput {

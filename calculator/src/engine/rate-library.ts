@@ -213,6 +213,7 @@ export const DEFAULT_RATE_LIBRARY: RateLibrary = {
     // ── PP grades ──────────────────────────────────────────────────────────────
     { id: 'mat-pp-homo', grade: 'PP Homopolymer (MFI 12)', category: 'Thermoplastic', pricePerKg: 0.96, scrapRecoveryPricePerKg: 0.10, densityKgPerM3: 905, region: 'UK', effectiveDate: '2026-07', sourceNote: 'UK resin distributor Jun 2026. High stiffness housings, caps. coolFactor ~3.16 s/mm² Index-anchored 2026-07 (see RESIN PRICING BASIS).', confidence: 'Medium' },
     { id: 'mat-pp-impact', grade: 'PP Impact Copolymer (PP-B)', category: 'Thermoplastic', pricePerKg: 1.01, scrapRecoveryPricePerKg: 0.10, densityKgPerM3: 900, region: 'UK', effectiveDate: '2026-07', sourceNote: 'UK resin distributor Jun 2026. Bumpers, battery cases. coolFactor ~3.16 s/mm² Index-anchored 2026-07 (see RESIN PRICING BASIS).', confidence: 'Medium' },
+    { id: 'mat-pp-gf30', grade: 'PP GF30 (Short Glass)', category: 'Thermoplastic', pricePerKg: 1.85, scrapRecoveryPricePerKg: 0.08, densityKgPerM3: 1120, region: 'UK', effectiveDate: '2026-07', sourceNote: 'UK resin distributor Jun 2026. 30% short-glass PP — stiff housings, fan shrouds, pump bodies, brackets. coolFactor ~3.0 s/mm² Index-anchored 2026-07 (see RESIN PRICING BASIS).', confidence: 'Low' },
     // ── PET ────────────────────────────────────────────────────────────────────
     { id: 'mat-pet-bg', grade: 'PET Bottle Grade (1101)', category: 'Thermoplastic', pricePerKg: 1.21, scrapRecoveryPricePerKg: 0.08, densityKgPerM3: 1380, region: 'UK', effectiveDate: '2026-07', sourceNote: 'UK resin distributor Jun 2026. SBM beverage bottles. coolFactor ~3.0 s/mm² Index-anchored 2026-07 (see RESIN PRICING BASIS).', confidence: 'Medium' },
     { id: 'mat-pet-gf30', grade: 'PET GF30 (Engineering)', category: 'Thermoplastic', pricePerKg: 3.05, scrapRecoveryPricePerKg: 0.05, densityKgPerM3: 1520, region: 'UK', effectiveDate: '2026-07', sourceNote: 'UK resin distributor Jun 2026. Gears, precision parts. coolFactor ~2.5 s/mm² Index-anchored 2026-07 (see RESIN PRICING BASIS).', confidence: 'Medium' },
@@ -601,20 +602,35 @@ export const DEFAULT_RATE_LIBRARY: RateLibrary = {
       { annualDepreciation: 75000, maintenance: 35000, energy: 15000, floorSpace: 15000, indirectSupport: 14000, financeCost: 9375, annualAvailableHours: 3500, machineUtilization: 0.78 },
       'UK', 'UK general press-shop benchmark (standard/amortised mechanical press), Jun 2026'),
     // ── Injection Moulding Machines ────────────────────────────────────────
-    // IMM energy: corrected to reflect actual running power (hydraulic pump + heaters + cooling)
-    // 100T ~20 kW avg × 4000 hr × £0.25/kWh ≈ £20k/yr; 200T ~35 kW; 400T ~60 kW; 800T ~105 kW
+    // IMM energy: reflects actual running power (hydraulic pump + heaters + cooling).
+    // Energy £ lines are on the UK £0.23/kWh basis (matches REGIONAL_DATA.UK) so
+    // buildRegionalLibrary can re-tariff them at each region's actual electricity price.
+    // Approx avg power: 50T ~12 kW · 100T ~22 kW · 200T ~38 kW · 350T ~57 kW ·
+    // 400T ~65 kW · 500T ~78 kW · 800T ~114 kW · 1200T ~163 kW.
+    makeMachine('imm-50t', '50T Injection Moulding Machine',
+      { annualDepreciation: 9000, maintenance: 4500, energy: 11000, floorSpace: 2500, indirectSupport: 2000, financeCost: 1125, annualAvailableHours: 4000, machineUtilization: 0.80 },
+      'UK', 'UK plastics benchmark (small precision/technical mouldings), Jun 2026'),
     makeMachine('imm-100t', '100T Injection Moulding Machine',
       { annualDepreciation: 14000, maintenance: 7000, energy: 20000, floorSpace: 3500, indirectSupport: 3000, financeCost: 1750, annualAvailableHours: 4000, machineUtilization: 0.80 },
       'UK', 'UK plastics benchmark, Jun 2026'),
     makeMachine('imm-200t', '200T Injection Moulding Machine',
       { annualDepreciation: 22000, maintenance: 11000, energy: 35000, floorSpace: 5000, indirectSupport: 4500, financeCost: 2750, annualAvailableHours: 4000, machineUtilization: 0.80 },
       'UK', 'UK plastics benchmark, Jun 2026'),
+    makeMachine('imm-350t', '350T Injection Moulding Machine',
+      { annualDepreciation: 34000, maintenance: 15500, energy: 52000, floorSpace: 7000, indirectSupport: 6800, financeCost: 4250, annualAvailableHours: 4000, machineUtilization: 0.80 },
+      'UK', 'UK plastics benchmark, Jun 2026'),
     makeMachine('imm-400t', '400T Injection Moulding Machine',
       { annualDepreciation: 40000, maintenance: 18000, energy: 60000, floorSpace: 8000, indirectSupport: 8000, financeCost: 5000, annualAvailableHours: 4000, machineUtilization: 0.80 },
+      'UK', 'UK plastics benchmark, Jun 2026'),
+    makeMachine('imm-500t', '500T Injection Moulding Machine',
+      { annualDepreciation: 50000, maintenance: 22000, energy: 72000, floorSpace: 9500, indirectSupport: 10000, financeCost: 6250, annualAvailableHours: 4000, machineUtilization: 0.80 },
       'UK', 'UK plastics benchmark, Jun 2026'),
     makeMachine('imm-800t', '800T Injection Moulding Machine',
       { annualDepreciation: 70000, maintenance: 32000, energy: 105000, floorSpace: 14000, indirectSupport: 14000, financeCost: 8750, annualAvailableHours: 4000, machineUtilization: 0.78 },
       'UK', 'UK plastics benchmark, Jun 2026'),
+    makeMachine('imm-1200t', '1200T Injection Moulding Machine',
+      { annualDepreciation: 100000, maintenance: 46000, energy: 150000, floorSpace: 20000, indirectSupport: 20000, financeCost: 12500, annualAvailableHours: 4000, machineUtilization: 0.78 },
+      'UK', 'UK plastics benchmark (large structural mouldings), Jun 2026'),
     // ── HPDC Machines ─────────────────────────────────────────────────────
     makeMachine('hpdc-500t', 'HPDC 500T',
       { annualDepreciation: 50000, maintenance: 25000, energy: 40000, floorSpace: 12000, indirectSupport: 10000, financeCost: 6250, annualAvailableHours: 3500, machineUtilization: 0.78 },
@@ -1001,6 +1017,24 @@ export const DEFAULT_RATE_LIBRARY: RateLibrary = {
       fullyLoadedRatePerHr: 27.50,
       effectiveDate: '2026-06-14',
       sourceNote: 'UK quality/inspection wage benchmark Jun 2026, incl. NI + benefits',
+      confidence: 'Medium',
+    },
+    {
+      id: 'lab-uk-technician',
+      region: 'UK',
+      skillLevel: 'Maintenance / Mould-Setter Technician',
+      fullyLoadedRatePerHr: 28.60,
+      effectiveDate: '2026-06-14',
+      sourceNote: 'UK process/maintenance technician benchmark Jun 2026, incl. NI + benefits',
+      confidence: 'Medium',
+    },
+    {
+      id: 'lab-uk-supervisor',
+      region: 'UK',
+      skillLevel: 'Shift / Production Supervisor',
+      fullyLoadedRatePerHr: 35.10,
+      effectiveDate: '2026-06-14',
+      sourceNote: 'UK production supervisor benchmark Jun 2026, incl. NI + benefits',
       confidence: 'Medium',
     },
     {

@@ -1,4 +1,5 @@
-import type { RateLibrary } from './types.js';
+import type { RateLibrary, MaterialRate } from './types.js';
+import { computeMachineRatePerHr } from './rate-library-merge.js';
 
 // ─── Manufacturing Regions ─────────────────────────────────────────────────────
 
@@ -44,13 +45,28 @@ interface RegionalData {
     foundry: number;       // foundry / casting operative
     electronics: number;   // SMT / EMS operator
     inspector: number;     // QA / CMM inspector
+    technician: number;    // maintenance / mould-setter / process technician
+    supervisor: number;    // shift / production supervisor / team leader
   };
   /** Industrial energy rates £/kWh (2026 Q2) */
   energy: {
     electricityPerKwh: number;
     gasPerKwh: number;
   };
-  /** Multiplier applied to all material base prices vs UK (1.0 = same) */
+  /**
+   * Family-aware material price factors vs UK (1.0 = same as UK base).
+   * A single flat multiplier is wrong for polymers: commodity resins track
+   * regional oil/feedstock and vary widely, while high-performance specialities
+   * (PEEK/PEI/LCP/PPS) trade on a near-global market and barely move by country.
+   * The builder picks the factor by resin family; metals and everything
+   * non-resin fall back to `materialMultiplier`.
+   */
+  materialFactors: {
+    commodityResin: number;    // PP/PE/PS/PVC — feedstock-linked, widest regional spread
+    engineeringResin: number;  // ABS/PC/PA/POM/PBT — moderate (blended regional index)
+    highPerfResin: number;     // PEEK/PEI/LCP/PPS/PPA — globally traded, ~flat by region
+  };
+  /** Multiplier applied to metal & non-resin material base prices vs UK (1.0 = same) */
   materialMultiplier: number;
   /** Multiplier applied to machine rates (capex + energy + labour overhead) vs UK */
   machineRateMultiplier: number;
@@ -67,8 +83,9 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
     name: 'United Kingdom',
     currency: 'GBP',
     fxToGBP: 1.00,
-    labour: { skilled: 26.00, semiskilled: 19.80, engineer: 42.50, foundry: 18.50, electronics: 17.50, inspector: 27.50 },
+    labour: { skilled: 26.00, semiskilled: 19.80, engineer: 42.50, foundry: 18.50, electronics: 17.50, inspector: 27.50, technician: 28.60, supervisor: 35.10 },
     energy: { electricityPerKwh: 0.23, gasPerKwh: 0.065 },
+    materialFactors: { commodityResin: 1.000, engineeringResin: 1.00, highPerfResin: 1.000 },
     materialMultiplier: 1.00,
     machineRateMultiplier: 1.00,
     overheadMultiplier: 1.00,
@@ -79,8 +96,9 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
     name: 'Germany',
     currency: 'EUR',
     fxToGBP: 1.16,
-    labour: { skilled: 40.50, semiskilled: 32.00, engineer: 65.00, foundry: 28.00, electronics: 30.00, inspector: 35.00 },
+    labour: { skilled: 40.50, semiskilled: 32.00, engineer: 65.00, foundry: 28.00, electronics: 30.00, inspector: 35.00, technician: 44.55, supervisor: 54.68 },
     energy: { electricityPerKwh: 0.20, gasPerKwh: 0.08 },
+    materialFactors: { commodityResin: 1.042, engineeringResin: 1.03, highPerfResin: 1.008 },
     materialMultiplier: 1.03,
     machineRateMultiplier: 1.05,
     overheadMultiplier: 1.10,
@@ -91,8 +109,9 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
     name: 'France',
     currency: 'EUR',
     fxToGBP: 1.16,
-    labour: { skilled: 30.00, semiskilled: 23.00, engineer: 48.00, foundry: 22.00, electronics: 20.00, inspector: 28.00 },
+    labour: { skilled: 30.00, semiskilled: 23.00, engineer: 48.00, foundry: 22.00, electronics: 20.00, inspector: 28.00, technician: 33.00, supervisor: 40.50 },
     energy: { electricityPerKwh: 0.16, gasPerKwh: 0.07 },
+    materialFactors: { commodityResin: 1.028, engineeringResin: 1.02, highPerfResin: 1.005 },
     materialMultiplier: 1.02,
     machineRateMultiplier: 0.92,
     overheadMultiplier: 1.05,
@@ -103,8 +122,9 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
     name: 'Italy',
     currency: 'EUR',
     fxToGBP: 1.16,
-    labour: { skilled: 24.00, semiskilled: 18.00, engineer: 42.00, foundry: 17.00, electronics: 16.00, inspector: 24.00 },
+    labour: { skilled: 24.00, semiskilled: 18.00, engineer: 42.00, foundry: 17.00, electronics: 16.00, inspector: 24.00, technician: 26.40, supervisor: 32.40 },
     energy: { electricityPerKwh: 0.26, gasPerKwh: 0.09 },
+    materialFactors: { commodityResin: 1.028, engineeringResin: 1.02, highPerfResin: 1.005 },
     materialMultiplier: 1.02,
     machineRateMultiplier: 0.97,
     overheadMultiplier: 1.00,
@@ -115,8 +135,9 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
     name: 'Spain',
     currency: 'EUR',
     fxToGBP: 1.16,
-    labour: { skilled: 19.00, semiskilled: 14.50, engineer: 34.00, foundry: 13.50, electronics: 13.00, inspector: 20.00 },
+    labour: { skilled: 19.00, semiskilled: 14.50, engineer: 34.00, foundry: 13.50, electronics: 13.00, inspector: 20.00, technician: 20.90, supervisor: 25.65 },
     energy: { electricityPerKwh: 0.19, gasPerKwh: 0.07 },
+    materialFactors: { commodityResin: 1.000, engineeringResin: 1.00, highPerfResin: 1.000 },
     materialMultiplier: 1.00,
     machineRateMultiplier: 0.88,
     overheadMultiplier: 0.95,
@@ -127,8 +148,9 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
     name: 'Poland',
     currency: 'PLN',
     fxToGBP: 5.05,
-    labour: { skilled: 12.00, semiskilled: 9.00, engineer: 20.00, foundry: 8.00, electronics: 10.50, inspector: 12.00 },
+    labour: { skilled: 12.00, semiskilled: 9.00, engineer: 20.00, foundry: 8.00, electronics: 10.50, inspector: 12.00, technician: 13.20, supervisor: 16.20 },
     energy: { electricityPerKwh: 0.14, gasPerKwh: 0.06 },
+    materialFactors: { commodityResin: 0.958, engineeringResin: 0.97, highPerfResin: 0.993 },
     materialMultiplier: 0.97,
     machineRateMultiplier: 0.72,
     overheadMultiplier: 0.85,
@@ -139,8 +161,9 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
     name: 'Czech Republic',
     currency: 'CZK',
     fxToGBP: 29.5,
-    labour: { skilled: 13.00, semiskilled: 10.00, engineer: 22.00, foundry: 9.50, electronics: 9.00, inspector: 14.00 },
+    labour: { skilled: 13.00, semiskilled: 10.00, engineer: 22.00, foundry: 9.50, electronics: 9.00, inspector: 14.00, technician: 14.30, supervisor: 17.55 },
     energy: { electricityPerKwh: 0.13, gasPerKwh: 0.05 },
+    materialFactors: { commodityResin: 0.958, engineeringResin: 0.97, highPerfResin: 0.993 },
     materialMultiplier: 0.97,
     machineRateMultiplier: 0.74,
     overheadMultiplier: 0.87,
@@ -151,8 +174,9 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
     name: 'Romania',
     currency: 'RON',
     fxToGBP: 5.8,
-    labour: { skilled: 7.50, semiskilled: 5.80, engineer: 13.00, foundry: 5.50, electronics: 5.20, inspector: 8.50 },
+    labour: { skilled: 7.50, semiskilled: 5.80, engineer: 13.00, foundry: 5.50, electronics: 5.20, inspector: 8.50, technician: 8.25, supervisor: 10.13 },
     energy: { electricityPerKwh: 0.11, gasPerKwh: 0.05 },
+    materialFactors: { commodityResin: 0.944, engineeringResin: 0.96, highPerfResin: 0.990 },
     materialMultiplier: 0.96,
     machineRateMultiplier: 0.65,
     overheadMultiplier: 0.80,
@@ -163,8 +187,9 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
     name: 'Hungary',
     currency: 'HUF',
     fxToGBP: 450,
-    labour: { skilled: 9.50, semiskilled: 7.50, engineer: 17.00, foundry: 7.00, electronics: 6.80, inspector: 11.00 },
+    labour: { skilled: 9.50, semiskilled: 7.50, engineer: 17.00, foundry: 7.00, electronics: 6.80, inspector: 11.00, technician: 10.45, supervisor: 12.83 },
     energy: { electricityPerKwh: 0.12, gasPerKwh: 0.05 },
+    materialFactors: { commodityResin: 0.958, engineeringResin: 0.97, highPerfResin: 0.993 },
     materialMultiplier: 0.97,
     machineRateMultiplier: 0.70,
     overheadMultiplier: 0.83,
@@ -175,8 +200,9 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
     name: 'Sweden',
     currency: 'SEK',
     fxToGBP: 13.8,
-    labour: { skilled: 40.00, semiskilled: 32.00, engineer: 62.00, foundry: 30.00, electronics: 28.00, inspector: 38.00 },
+    labour: { skilled: 40.00, semiskilled: 32.00, engineer: 62.00, foundry: 30.00, electronics: 28.00, inspector: 38.00, technician: 44.00, supervisor: 54.00 },
     energy: { electricityPerKwh: 0.09, gasPerKwh: 0.04 },
+    materialFactors: { commodityResin: 1.056, engineeringResin: 1.04, highPerfResin: 1.010 },
     materialMultiplier: 1.04,
     machineRateMultiplier: 0.87,
     overheadMultiplier: 1.08,
@@ -187,8 +213,9 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
     name: 'Netherlands',
     currency: 'EUR',
     fxToGBP: 1.16,
-    labour: { skilled: 34.00, semiskilled: 27.00, engineer: 52.00, foundry: 25.00, electronics: 23.00, inspector: 32.00 },
+    labour: { skilled: 34.00, semiskilled: 27.00, engineer: 52.00, foundry: 25.00, electronics: 23.00, inspector: 32.00, technician: 37.40, supervisor: 45.90 },
     energy: { electricityPerKwh: 0.22, gasPerKwh: 0.08 },
+    materialFactors: { commodityResin: 1.028, engineeringResin: 1.02, highPerfResin: 1.005 },
     materialMultiplier: 1.02,
     machineRateMultiplier: 1.00,
     overheadMultiplier: 1.05,
@@ -199,8 +226,9 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
     name: 'Turkey',
     currency: 'TRY',
     fxToGBP: 42.0,
-    labour: { skilled: 6.50, semiskilled: 5.00, engineer: 12.00, foundry: 4.80, electronics: 4.50, inspector: 7.00 },
+    labour: { skilled: 6.50, semiskilled: 5.00, engineer: 12.00, foundry: 4.80, electronics: 4.50, inspector: 7.00, technician: 7.15, supervisor: 8.78 },
     energy: { electricityPerKwh: 0.09, gasPerKwh: 0.04 },
+    materialFactors: { commodityResin: 0.860, engineeringResin: 0.90, highPerfResin: 0.975 },
     materialMultiplier: 0.90,
     machineRateMultiplier: 0.60,
     overheadMultiplier: 0.78,
@@ -211,8 +239,9 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
     name: 'China',
     currency: 'CNY',
     fxToGBP: 9.05,
-    labour: { skilled: 7.90, semiskilled: 5.50, engineer: 18.00, foundry: 5.00, electronics: 6.50, inspector: 8.00 },
+    labour: { skilled: 7.90, semiskilled: 5.50, engineer: 18.00, foundry: 5.00, electronics: 6.50, inspector: 8.00, technician: 8.69, supervisor: 10.67 },
     energy: { electricityPerKwh: 0.07, gasPerKwh: 0.03 },
+    materialFactors: { commodityResin: 0.832, engineeringResin: 0.88, highPerfResin: 0.970 },
     materialMultiplier: 0.88,
     machineRateMultiplier: 0.55,
     overheadMultiplier: 0.75,
@@ -223,8 +252,9 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
     name: 'India',
     currency: 'INR',
     fxToGBP: 109.5,
-    labour: { skilled: 5.10, semiskilled: 3.50, engineer: 12.00, foundry: 3.00, electronics: 4.50, inspector: 5.50 },
+    labour: { skilled: 5.10, semiskilled: 3.50, engineer: 12.00, foundry: 3.00, electronics: 4.50, inspector: 5.50, technician: 5.61, supervisor: 6.89 },
     energy: { electricityPerKwh: 0.07, gasPerKwh: 0.03 },
+    materialFactors: { commodityResin: 0.860, engineeringResin: 0.90, highPerfResin: 0.975 },
     materialMultiplier: 0.90,
     machineRateMultiplier: 0.52,
     overheadMultiplier: 0.72,
@@ -235,8 +265,9 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
     name: 'Mexico',
     currency: 'MXN',
     fxToGBP: 25.5,
-    labour: { skilled: 7.50, semiskilled: 5.80, engineer: 12.00, foundry: 4.80, electronics: 6.50, inspector: 7.50 },
+    labour: { skilled: 7.50, semiskilled: 5.80, engineer: 12.00, foundry: 4.80, electronics: 6.50, inspector: 7.50, technician: 8.25, supervisor: 10.13 },
     energy: { electricityPerKwh: 0.08, gasPerKwh: 0.04 },
+    materialFactors: { commodityResin: 0.930, engineeringResin: 0.95, highPerfResin: 0.988 },
     materialMultiplier: 0.95,
     machineRateMultiplier: 0.60,
     overheadMultiplier: 0.78,
@@ -247,8 +278,9 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
     name: 'United States',
     currency: 'USD',
     fxToGBP: 1.27,
-    labour: { skilled: 34.00, semiskilled: 26.00, engineer: 58.00, foundry: 24.00, electronics: 24.00, inspector: 32.00 },
+    labour: { skilled: 34.00, semiskilled: 26.00, engineer: 58.00, foundry: 24.00, electronics: 24.00, inspector: 32.00, technician: 37.40, supervisor: 45.90 },
     energy: { electricityPerKwh: 0.10, gasPerKwh: 0.04 },
+    materialFactors: { commodityResin: 1.000, engineeringResin: 1.00, highPerfResin: 1.000 },
     materialMultiplier: 1.00,
     machineRateMultiplier: 0.85,
     overheadMultiplier: 0.95,
@@ -259,8 +291,9 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
     name: 'Thailand',
     currency: 'THB',
     fxToGBP: 45.5,
-    labour: { skilled: 5.80, semiskilled: 4.20, engineer: 10.00, foundry: 3.80, electronics: 4.00, inspector: 6.00 },
+    labour: { skilled: 5.80, semiskilled: 4.20, engineer: 10.00, foundry: 3.80, electronics: 4.00, inspector: 6.00, technician: 6.38, supervisor: 7.83 },
     energy: { electricityPerKwh: 0.08, gasPerKwh: 0.04 },
+    materialFactors: { commodityResin: 0.902, engineeringResin: 0.93, highPerfResin: 0.983 },
     materialMultiplier: 0.93,
     machineRateMultiplier: 0.58,
     overheadMultiplier: 0.75,
@@ -271,8 +304,9 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
     name: 'Vietnam',
     currency: 'VND',
     fxToGBP: 33800,
-    labour: { skilled: 3.80, semiskilled: 2.80, engineer: 7.50, foundry: 2.50, electronics: 3.00, inspector: 4.50 },
+    labour: { skilled: 3.80, semiskilled: 2.80, engineer: 7.50, foundry: 2.50, electronics: 3.00, inspector: 4.50, technician: 4.18, supervisor: 5.13 },
     energy: { electricityPerKwh: 0.06, gasPerKwh: 0.03 },
+    materialFactors: { commodityResin: 0.916, engineeringResin: 0.94, highPerfResin: 0.985 },
     materialMultiplier: 0.94,
     machineRateMultiplier: 0.52,
     overheadMultiplier: 0.70,
@@ -283,8 +317,9 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
     name: 'Brazil',
     currency: 'BRL',
     fxToGBP: 6.85,
-    labour: { skilled: 8.50, semiskilled: 6.50, engineer: 16.00, foundry: 6.00, electronics: 6.50, inspector: 9.50 },
+    labour: { skilled: 8.50, semiskilled: 6.50, engineer: 16.00, foundry: 6.00, electronics: 6.50, inspector: 9.50, technician: 9.35, supervisor: 11.48 },
     energy: { electricityPerKwh: 0.11, gasPerKwh: 0.05 },
+    materialFactors: { commodityResin: 1.028, engineeringResin: 1.02, highPerfResin: 1.005 },
     materialMultiplier: 1.02,
     machineRateMultiplier: 0.70,
     overheadMultiplier: 0.85,
@@ -295,8 +330,9 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
     name: 'South Korea',
     currency: 'KRW',
     fxToGBP: 1790,
-    labour: { skilled: 22.00, semiskilled: 17.00, engineer: 38.00, foundry: 16.00, electronics: 17.00, inspector: 24.00 },
+    labour: { skilled: 22.00, semiskilled: 17.00, engineer: 38.00, foundry: 16.00, electronics: 17.00, inspector: 24.00, technician: 24.20, supervisor: 29.70 },
     energy: { electricityPerKwh: 0.13, gasPerKwh: 0.06 },
+    materialFactors: { commodityResin: 1.000, engineeringResin: 1.00, highPerfResin: 1.000 },
     materialMultiplier: 1.00,
     machineRateMultiplier: 0.80,
     overheadMultiplier: 0.90,
@@ -308,12 +344,46 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
 // ─── Regional Library Builder ──────────────────────────────────────────────────
 
 /**
+ * UK electricity tariff (£/kWh) that machine build-up `energy` lines in the base
+ * library are expressed against. Regional machine rates back annual kWh out of
+ * the base energy figure using this basis, then re-tariff at the region's actual
+ * electricity price — so a region's `electricityPerKwh` genuinely drives machine
+ * cost instead of being dead data. Keep in sync with REGIONAL_DATA.UK.
+ */
+const UK_ELECTRICITY_BASIS_PER_KWH = 0.23;
+
+/** Resin family used to select the country price factor. */
+export type ResinFamily = 'commodity' | 'engineering' | 'highPerformance';
+
+// Commodity (feedstock/oil-linked) resins by material-id stem. Everything else in
+// a plastic category that isn't high-performance is treated as an engineering resin.
+const COMMODITY_RESIN_RE =
+  /^mat-(pp|hdpe|ldpe|lldpe|upvc|fpvc|pvc|gpps|hips|ps|pet-bg|pcr-pp)(-|$)/;
+
+/**
+ * Classify a material for country pricing. High-performance and metal/other
+ * materials are keyed off the category; commodity vs engineering resins are
+ * separated by material id (both share the generic "Thermoplastic" category).
+ */
+export function classifyMaterialFamily(m: Pick<MaterialRate, 'id' | 'category'>): ResinFamily | 'metalOther' {
+  const cat = m.category.toLowerCase();
+  const isPlastic =
+    cat.includes('thermoplastic') || cat.includes('plastic') ||
+    cat.includes('moulding') || cat.includes('resin') || cat.includes('elastomer');
+  if (!isPlastic) return 'metalOther';
+  if (cat.includes('high-performance') || cat.includes('high performance')) return 'highPerformance';
+  return COMMODITY_RESIN_RE.test(m.id) ? 'commodity' : 'engineering';
+}
+
+/**
  * Build a rate library for a specific manufacturing region.
  * Takes the UK base library and adjusts:
- *   1. Labour rates → replaced with regional rates
- *   2. Machine rates → scaled by regional machineRateMultiplier
- *   3. Material prices → scaled by regional materialMultiplier
- *   4. Energy rates → replaced with regional energy rates
+ *   1. Labour rates  → replaced with the region's actual per-category rate
+ *   2. Machine rates → capex/overhead scaled by machineRateMultiplier AND energy
+ *                      re-tariffed at the region's actual £/kWh (rate recomputed)
+ *   3. Material prices → resin family-aware factor (commodity/engineering/high-perf);
+ *                        metals & non-resin use materialMultiplier
+ *   4. Energy rates  → replaced with regional energy rates
  */
 export function buildRegionalLibrary(baseLibrary: RateLibrary, region: ManufacturingRegion): RateLibrary {
   const rd = REGIONAL_DATA[region];
@@ -328,6 +398,18 @@ export function buildRegionalLibrary(baseLibrary: RateLibrary, region: Manufactu
     foundry:     rd.labour.foundry,
     electronics: rd.labour.electronics,
     inspector:   rd.labour.inspector,
+    technician:  rd.labour.technician,
+    supervisor:  rd.labour.supervisor,
+  };
+
+  // Family-aware material factor: resins priced by family, metals/other flat.
+  const materialFactorFor = (m: MaterialRate): number => {
+    switch (classifyMaterialFamily(m)) {
+      case 'commodity':       return rd.materialFactors.commodityResin;
+      case 'engineering':     return rd.materialFactors.engineeringResin;
+      case 'highPerformance': return rd.materialFactors.highPerfResin;
+      default:                return rd.materialMultiplier;
+    }
   };
 
   return {
@@ -345,23 +427,54 @@ export function buildRegionalLibrary(baseLibrary: RateLibrary, region: Manufactu
       confidence: 'Low' as const,
     })),
 
-    // Adjust material prices
-    materials: baseLibrary.materials.map(m => ({
-      ...m,
-      pricePerKg: m.pricePerKg * rd.materialMultiplier,
-      scrapRecoveryPricePerKg: m.scrapRecoveryPricePerKg * rd.materialMultiplier,
-      region: rd.name,
-      sourceNote: `${m.sourceNote} | Regional adj. ×${rd.materialMultiplier}`,
-    })),
+    // Adjust material prices — resin family-aware, metals/other flat.
+    materials: baseLibrary.materials.map(m => {
+      const f = materialFactorFor(m);
+      return {
+        ...m,
+        pricePerKg: m.pricePerKg * f,
+        scrapRecoveryPricePerKg: m.scrapRecoveryPricePerKg * f,
+        region: rd.name,
+        sourceNote: `${m.sourceNote} | Regional adj. ×${f.toFixed(3)} (${classifyMaterialFamily(m)})`,
+      };
+    }),
 
-    // Adjust machine rates
-    machines: baseLibrary.machines.map(m => ({
-      ...m,
-      computedRatePerHr: m.computedRatePerHr * rd.machineRateMultiplier,
-      region: rd.name,
-      sourceNote: `${m.sourceNote} | Regional adj. ×${rd.machineRateMultiplier}`,
-      confidence: 'Low' as const,
-    })),
+    // Adjust machine rates: scale capex/overhead by machineRateMultiplier, and
+    // re-tariff the energy component at the region's actual electricity price so
+    // a cheap-power region (e.g. DE 0.20 vs UK 0.23) is genuinely cheaper to run.
+    // The £/hr is recomputed from the rebuilt build-up (single source of truth).
+    machines: baseLibrary.machines.map(m => {
+      if (!m.buildup) {
+        // No build-up to rebuild from — fall back to the flat capex scale.
+        return {
+          ...m,
+          computedRatePerHr: m.computedRatePerHr * rd.machineRateMultiplier,
+          region: rd.name,
+          sourceNote: `${m.sourceNote} | Regional adj. ×${rd.machineRateMultiplier}`,
+          confidence: 'Low' as const,
+        };
+      }
+      const b = m.buildup;
+      const annualKwh = b.energy / UK_ELECTRICITY_BASIS_PER_KWH;      // back out kWh from UK-basis £
+      const regionalEnergy = annualKwh * rd.energy.electricityPerKwh; // re-tariff at region £/kWh
+      const rebuilt = {
+        ...b,
+        annualDepreciation: b.annualDepreciation * rd.machineRateMultiplier,
+        maintenance:        b.maintenance        * rd.machineRateMultiplier,
+        floorSpace:         b.floorSpace          * rd.machineRateMultiplier,
+        indirectSupport:    b.indirectSupport     * rd.machineRateMultiplier,
+        financeCost:        b.financeCost         * rd.machineRateMultiplier,
+        energy:             regionalEnergy,
+      };
+      return {
+        ...m,
+        buildup: rebuilt,
+        computedRatePerHr: computeMachineRatePerHr(rebuilt),
+        region: rd.name,
+        sourceNote: `${m.sourceNote} | Regional: capex/overhead ×${rd.machineRateMultiplier}, energy re-tariffed @£${rd.energy.electricityPerKwh}/kWh`,
+        confidence: 'Low' as const,
+      };
+    }),
 
     // Adjust energy rates
     energy: [
