@@ -111,7 +111,8 @@ function _initThemeTransitionOverlay(): void {
 function _initCardTilt(): void {
   // Use event delegation so it works after dynamic renders
   document.addEventListener('mousemove', (e: MouseEvent) => {
-    const card = (e.target as HTMLElement).closest<HTMLElement>(
+    if (!(e.target instanceof Element)) return;   // document/window targets have no .closest
+    const card = e.target.closest<HTMLElement>(
       '.dash-kpi-card, .dash-chart-card, .cpicker-tile'
     );
     if (!card) return;
@@ -127,7 +128,8 @@ function _initCardTilt(): void {
     });
   });
   document.addEventListener('mouseleave', (e: MouseEvent) => {
-    const card = (e.target as HTMLElement).closest<HTMLElement>(
+    if (!(e.target instanceof Element)) return;   // document/window targets have no .closest
+    const card = e.target.closest<HTMLElement>(
       '.dash-kpi-card, .dash-chart-card, .cpicker-tile'
     );
     if (!card) return;
@@ -251,8 +253,19 @@ export function onTableRendered(): void {
 export function onResultsReady(): void {
   const tl = gsap.timeline({ defaults: { ease: EASE_OUT } });
 
-  // Results tab bar
-  tl.from('.results-tabs, .rtab', { autoAlpha: 0, y: -8, duration: 0.3, stagger: 0.05 }, 0);
+  // Results tab bar. autoAlpha toggles visibility:hidden, so a `from(autoAlpha:0)`
+  // that gets interrupted/killed can strand the whole tab bar hidden (the reported
+  // "empty tab strip" bug). Guard on presence, clear props on complete, AND force
+  // the bar visible again if the tween is ever interrupted.
+  const tabEls = document.querySelectorAll('.results-tabs, .rtab');
+  if (tabEls.length) {
+    const forceVisible = () => gsap.set(tabEls, { clearProps: 'opacity,visibility,transform' });
+    tl.from(tabEls, {
+      autoAlpha: 0, y: -8, duration: 0.3, stagger: 0.05,
+      clearProps: 'opacity,visibility,transform',
+      onInterrupt: forceVisible,
+    }, 0);
+  }
 
   // Grand total row — "pop" in
   tl.from('.total-row, .cost-total-row, [data-total], .breakdown-total', {

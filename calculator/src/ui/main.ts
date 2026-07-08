@@ -4550,6 +4550,7 @@ async function analyzeCAD(autoCalculate = false): Promise<void> {
 
 function renderCADResults(r: CADAnalysisResult, autoCalculate = false, annualVolume = 100000): void {
   const panel = el('cad-results');
+  if (!panel) return;   // CAD results container not in the DOM for this view — avoid null.innerHTML crash
   const g = r.geometry;
 
   // Confidence badge helper — looks up AI-provided per-field confidence scores
@@ -10913,6 +10914,16 @@ function showResultsArea(): void {
     onResultsReady();
     motionRevealRows('#results-tabs .breakdown-row, #results-tabs tr');
   }, 80);
+  // Failsafe: whatever the reveal animation does, guarantee the tab bar is
+  // visible shortly after (a stranded autoAlpha/opacity tween must never leave
+  // an empty tab strip). Runs after the ~0.3s reveal completes.
+  setTimeout(() => {
+    const bar = document.getElementById('results-tabs');
+    if (bar) { bar.style.visibility = 'visible'; bar.style.opacity = '1'; bar.style.display = 'flex'; }
+    document.querySelectorAll<HTMLElement>('.rtab').forEach(t => {
+      t.style.visibility = 'visible'; t.style.opacity = '1';
+    });
+  }, 500);
 }
 
 // ─── Upload / Parts Library Tab ───────────────────────────────────────────────
