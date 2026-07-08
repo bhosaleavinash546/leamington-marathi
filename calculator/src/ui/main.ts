@@ -10900,8 +10900,14 @@ function compute(): void {
 
 function showResultsArea(): void {
   const resultsEl = el('results-tabs');
-  resultsEl.style.display = '';
+  // Explicit flex (not '') so no stale inline style can leave it collapsed, and
+  // force it above sibling content — guards the "empty tab strip" regression.
+  resultsEl.style.display = 'flex';
+  resultsEl.style.visibility = 'visible';
   switchResultTab('breakdown');
+  // Make sure the tab bar is actually in view (its scroll container may have been
+  // left scrolled past the top by a previous render / demo switch).
+  (resultsEl.closest('.results-panel') as HTMLElement | null)?.scrollTo?.({ top: 0 });
   // Animate results panel after Chart.js renders (needs one frame)
   setTimeout(() => {
     onResultsReady();
@@ -13229,8 +13235,13 @@ function loadSUVDemo(commodity: string, slot: number): void {
   showCosting(commodity);
 
   const switchToInsights = () => {
+    // Make sure the tab bar itself is shown before selecting a tab (defensive —
+    // if compute() somehow didn't run showResultsArea, the strip would be empty).
+    const tabsEl = document.getElementById('results-tabs');
+    if (tabsEl) { tabsEl.style.display = 'flex'; tabsEl.style.visibility = 'visible'; }
     const insightsTab = document.querySelector<HTMLElement>('.rtab[data-panel="insights"]');
     if (insightsTab) insightsTab.click();
+    (document.querySelector('.results-panel') as HTMLElement | null)?.scrollTo?.({ top: 0 });
   };
 
   setTimeout(() => {

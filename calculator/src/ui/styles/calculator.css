@@ -763,17 +763,19 @@ textarea.contact-form-input { resize: vertical; min-height: 100px; }
   gap: 0;
   border-bottom: 1px solid var(--border-strong);
   background: var(--surface);
-  margin: -16px -20px 0;
-  padding: 0 20px;
+  /* Normal-flow, no negative margins. The previous `margin:-16px -20px 0`
+     (a full-bleed trick) combined with `position:sticky` was pulled into a
+     clipped/off-screen region inside the redesigned scroll/transform layouts
+     (new-costing + demo report), so the whole tab bar "disappeared" leaving an
+     empty strip. Keeping it in normal flow guarantees it is always visible even
+     if sticky is neutralised by a transformed ancestor. */
+  margin: 0 0 4px;
+  padding: 0;
   position: sticky;
   top: 0;
-  z-index: 10;
-  /* WRAP every tab onto the next row rather than hiding the rightmost ones.
-     The narrower classic/demo results column can't fit all 7 tabs
-     (Breakdown, Detail, AI Insights, Sensitivity, Scenarios, DFM/DFA,
-     Upload) on one line; horizontal-scroll hid them behind a non-obvious
-     gesture, so tabs "disappeared". Wrapping keeps every tab visible at
-     any width, in every demo and new-costing. */
+  z-index: 20;
+  /* WRAP every tab onto the next row rather than hiding the rightmost ones —
+     the narrower classic/demo column can't fit all 7 tabs on one line. */
   flex-wrap: wrap;
   row-gap: 0;
 }
