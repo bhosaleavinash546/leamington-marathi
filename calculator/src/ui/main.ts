@@ -23,7 +23,11 @@ import { computePCBADrivers } from '../engine/modules/pcba.js';
 import type { AssemblyComplexityLevel, PCBAQualityGrade } from '../engine/modules/pcba.js';
 import { computeCastAndMachineDrivers } from '../engine/modules/cast-and-machine.js';
 import { computeSheetMetalFabDrivers, estimateBlankingCycleSec, type FabMaterialFamily } from '../engine/modules/sheet-metal-fab.js';
-import { adviseSheetMetalProcess } from '../engine/modules/sheet-metal-advisor.js';
+import {
+  adviseSheetMetalProcess, analyseSheetMetalDFM,
+  estimateStampingDieCost, estimateStampingDieLife,
+  type StampingDieType, type SMMaterialFamily,
+} from '../engine/modules/sheet-metal-advisor.js';
 import type { FabBlankingMethod, AssistGas } from '../engine/modules/sheet-metal-fab.js';
 import { computeBlowMouldingDrivers } from '../engine/modules/blow-moulding.js';
 import {
@@ -2196,11 +2200,12 @@ function renderSheetMetalForm(): string {
         <option value="progressive">Progressive</option>
         <option value="transfer">Transfer</option>
         <option value="single_stage">Single Stage</option>
+        <option value="fine_blanking">Fine Blanking</option>
       </select></div>
-      <div class="field-group"><label>Die Life (strokes)</label><input type="number" id="sm-die-life" step="10000" min="0" value="500000"/></div>
+      <div class="field-group"><label>Die Life (strokes) <span title="Parts per die set. Leave 0 to auto-predict from material hardness, thickness and die type.">ℹ</span></label><input type="number" id="sm-die-life" step="10000" min="0" value="500000" title="0 = auto-predict"/></div>
     </div>
     <div class="field-row" style="margin-top:6px">
-      <div class="field-group"><label>Die Cost (£)</label><input type="number" id="sm-die-cost" step="1000" min="0" value="45000"/></div>
+      <div class="field-group"><label>Die Cost (£) <span title="Enter a figure to use it directly. Leave 0 to auto-estimate from die type, stations (Num. Ops), blank size and material hardness.">ℹ</span></label><input type="number" id="sm-die-cost" step="1000" min="0" value="45000" title="0 = auto-estimate parametrically"/></div>
       <div class="field-group"><label>Amort. Volume</label><input type="number" id="sm-amort" step="10000" min="1" value="500000"/></div>
     </div>
     <div class="field-row" style="margin-top:6px">
@@ -2218,7 +2223,33 @@ function renderSheetMetalForm(): string {
     <div class="field-row" style="margin-top:6px">
       <div class="field-group"><label>Manning</label><input type="number" id="sm-sec-manning" step="0.25" min="0" value="1"/></div>
       <div class="field-group"><label>Labour Eff.</label><input type="number" id="sm-sec-lab-eff" step="0.01" min="0.01" max="1" value="0.92"/></div>
-    </div>`;
+    </div>
+    <details style="background:#fff8f3;border:1px solid #ffd699;border-radius:6px;padding:6px 8px;margin-top:8px">
+      <summary style="font-weight:600;font-size:0.78rem;cursor:pointer;color:#b34700">⚙ Stamping Advisor — process route + DFM check</summary>
+      <div style="margin-top:6px">
+        <div class="field-row">
+          <div class="field-group"><label>Annual Volume</label><input type="number" id="sm-adv-vol" step="1000" min="1" value="200000"/></div>
+          <div class="field-group"><label>Material Family</label><select id="sm-adv-fam"><option value="steel" selected>Mild / HSLA Steel</option><option value="stainless">Stainless</option><option value="aluminium">Aluminium</option><option value="galvanised">Galvanised</option></select></div>
+        </div>
+        <div class="field-row" style="margin-top:4px">
+          <div class="field-group"><label>Complexity</label><select id="sm-adv-cmplx"><option value="low">Low</option><option value="medium" selected>Medium</option><option value="high">High</option></select></div>
+          <div class="field-group"><label>Hole Density</label><select id="sm-adv-holes"><option value="low" selected>Low</option><option value="high">High</option></select></div>
+        </div>
+        <div class="field-row" style="margin-top:4px">
+          <div class="field-group"><label>High-Strength (UHSS/boron)?</label><select id="sm-adv-hss"><option value="no" selected>No</option><option value="yes">Yes</option></select></div>
+          <div class="field-group"><label>Bend Count</label><input type="number" id="sm-adv-bends" step="1" min="0" value="2"/></div>
+        </div>
+        <div class="field-row" style="margin-top:4px">
+          <div class="field-group"><label>Min Bend R (mm)</label><input type="number" id="sm-adv-bendr" step="0.1" min="0" value="2"/></div>
+          <div class="field-group"><label>Min Hole Ø (mm)</label><input type="number" id="sm-adv-hole" step="0.1" min="0" value="3"/></div>
+        </div>
+        <div class="field-row" style="margin-top:4px">
+          <div class="field-group"><label>Feature-to-Edge (mm)</label><input type="number" id="sm-adv-edge" step="0.5" min="0" value="4"/></div>
+          <div class="field-group" style="display:flex;align-items:flex-end"><button class="btn btn-secondary btn-sm" id="sm-adv-btn" style="width:100%">Advise + DFM →</button></div>
+        </div>
+        <div id="sm-adv-result" style="margin-top:6px;font-size:0.75rem;display:none"></div>
+      </div>
+    </details>`;
 }
 
 // ─── Form: Sheet Metal Fabrication ───────────────────────────────────────────
@@ -9282,6 +9313,7 @@ function switchCommodity(type: CommodityType): void {
     case 'sheet_metal':
       area.innerHTML = renderSheetMetalForm();
       populateSelects();
+      wireStampingAdvisor();
       // Set default select values after populating
       setTimeout(() => {
         const pressEl = el<HTMLSelectElement>('sm-press');
@@ -9636,6 +9668,28 @@ function collectSheetMetalInput(): UniversalStackInput {
   }
   if ((num('sm-amort') || 0) <= 0) _smExtraWarnings.push('Amortisation volume is empty/zero — tooling NRE defaulted to 1 part (full die cost on this part). Set a realistic programme volume.');
 
+  const dieType = validSel<StampingDieType>('sm-die-type', ['progressive', 'transfer', 'single_stage', 'fine_blanking'], 'progressive');
+  const stations = num('sm-num-ops') || 1;
+  const blankAreaCm2 = (num('sm-blank-l') * num('sm-blank-w')) / 100;
+  const manualDieCost = num('sm-die-cost');
+  const manualDieLife = num('sm-die-life');
+
+  // Surface the die-cost estimate / die-life prediction when auto-derived.
+  if (manualDieCost <= 0 && blankAreaCm2 > 0 && shearStrengthMPa > 0) {
+    const est = estimateStampingDieCost({ dieType, stations, blankAreaCm2, shearStrengthMPa });
+    _smExtraWarnings.push(
+      `Tooling: die cost auto-estimated at £${est.total.toLocaleString()} ` +
+      `(${dieType.replace('_', ' ')}, ${stations} stations, ${Math.round(blankAreaCm2)} cm², shear ${shearStrengthMPa} MPa). Enter a Die Cost to override.`
+    );
+  }
+  if (manualDieLife <= 0 && shearStrengthMPa > 0 && thicknessMm > 0) {
+    const life = estimateStampingDieLife({ shearStrengthMPa, thicknessMm, dieType });
+    _smExtraWarnings.push(
+      `Tooling: die life auto-predicted at ${life.toLocaleString()} strokes ` +
+      `(shear ${shearStrengthMPa} MPa, ${thicknessMm} mm, ${dieType.replace('_', ' ')}). Enter Die Life to override.`
+    );
+  }
+
   const drivers = computeSheetMetalDrivers({
     materialId,
     netWeightKg: num('sm-net-wt'),
@@ -9655,7 +9709,7 @@ function collectSheetMetalInput(): UniversalStackInput {
     manning: num('sm-manning'),
     labourEfficiency: num('sm-lab-eff'),
     numOperations: num('sm-num-ops') || 1,
-    dieType: validSel<'progressive' | 'transfer' | 'single_stage'>('sm-die-type', ['progressive', 'transfer', 'single_stage'], 'progressive'),
+    dieType,
     dieLife: num('sm-die-life'),
     dieCostEstimate: num('sm-die-cost'),
     amortizationVolume: num('sm-amort') || 1,
@@ -9668,6 +9722,44 @@ function collectSheetMetalInput(): UniversalStackInput {
     secondaryOpsLabourEfficiency: num('sm-sec-lab-eff') || undefined,
   });
   return { ...getUniversalTail(), rawMaterial: drivers.rawMaterial, operations: drivers.operations, tooling: drivers.tooling };
+}
+
+/** SM3: wire the stamping process-advisor + DFM widget. */
+function wireStampingAdvisor(): void {
+  const btn = document.getElementById('sm-adv-btn');
+  if (!btn) return;
+  btn.addEventListener('click', () => {
+    const materialFamily = validSel<SMMaterialFamily>('sm-adv-fam', ['steel','stainless','aluminium','galvanised'], 'steel');
+    const thicknessMm = num('sm-thick') || 1.5;
+    const complexity = validSel<'low'|'medium'|'high'>('sm-adv-cmplx', ['low','medium','high'], 'medium');
+    const holeDensity = validSel<'low'|'high'>('sm-adv-holes', ['low','high'], 'low');
+    const rec = adviseSheetMetalProcess({ annualVolume: num('sm-adv-vol') || 200000, thicknessMm, complexity, holeDensity, materialFamily });
+    const dfm = analyseSheetMetalDFM({
+      thicknessMm,
+      materialFamily,
+      highStrength: sel('sm-adv-hss') === 'yes',
+      bendCount: num('sm-adv-bends') || undefined,
+      minBendRadiusMm: num('sm-adv-bendr') || undefined,
+      minHoleDiameterMm: num('sm-adv-hole') || undefined,
+      minFeatureToEdgeMm: num('sm-adv-edge') || undefined,
+    });
+    const out = document.getElementById('sm-adv-result');
+    if (!out) return;
+    const volLabel = { low: '< 1k', medium: '1k–50k', high: '> 50k' }[rec.volumeCategory];
+    out.innerHTML = `
+      <div style="background:#fff;border:1px solid #e0e0e0;border-radius:4px;padding:8px;margin-bottom:6px">
+        <div style="font-weight:700;color:#b34700">${escHtml(rec.primaryProcess)} → ${escHtml(rec.formingProcess)}</div>
+        <div style="color:#555;margin-top:2px">Route: ${rec.processRoute.map(escHtml).join(' → ')}</div>
+        <div style="margin-top:4px;display:flex;gap:12px;flex-wrap:wrap">
+          <span><strong>Volume:</strong> ${volLabel}/yr</span>
+          <span><strong>Tolerance:</strong> ${escHtml(rec.toleranceCapability)}</span>
+          <span><strong>Tooling:</strong> ${escHtml(rec.toolingBand)}</span>
+        </div>
+        <div style="color:#555;margin-top:4px"><em>${escHtml(rec.reason)}</em></div>
+      </div>
+      ${renderDFMPanel(dfm.score, dfm.issues, dfm.summary)}`;
+    out.style.display = 'block';
+  });
 }
 
 function collectIMMInput(): UniversalStackInput {

@@ -240,3 +240,78 @@ export function analyseSheetMetalDFM(inputs: SheetMetalDFMInputs): SheetMetalDFM
 
   return { score, issues, summary };
 }
+
+// ─── Stamping die-cost estimator + die-life predictor (SM1) ───────────────────
+
+export type StampingDieType = 'single_stage' | 'progressive' | 'transfer' | 'fine_blanking';
+
+export interface StampingDieCostInputs {
+  dieType: StampingDieType;
+  /** Number of die stations / operations (blank/pierce/form/trim…). */
+  stations: number;
+  /** Developed blank footprint in cm² — drives die block size. */
+  blankAreaCm2: number;
+  /** Material shear strength MPa — a proxy for hardness/abrasiveness (UHSS/boron ≫ mild). */
+  shearStrengthMPa: number;
+}
+
+export interface StampingDieCostBreakdown {
+  base: number;
+  stations: number;   // station machining cost (all stations)
+  total: number;
+}
+
+/** Die-construction base + per-station cost by die type. */
+function stampingDieRates(type: StampingDieType): { base: number; perStation: number } {
+  switch (type) {
+    case 'single_stage':  return { base: 6000, perStation: 2500 };
+    case 'transfer':      return { base: 20000, perStation: 9000 };
+    case 'fine_blanking': return { base: 30000, perStation: 12000 };  // triple-action FB tools are dear
+    case 'progressive':
+    default:              return { base: 12000, perStation: 6000 };
+  }
+}
+
+/** Tool-steel/coating hardness factor from workpiece shear strength (mild ~280 → 1.0, boron ~900 → ~1.8). */
+export function stampingHardnessFactor(shearStrengthMPa: number): number {
+  return Math.min(2.0, 1 + Math.max(0, (shearStrengthMPa - 300)) / 300 * 0.4);
+}
+
+/**
+ * Estimate a stamping die-set cost (£) from die type, station count, blank size
+ * and material hardness, instead of a bare manual number. Progressive/transfer
+ * dies scale with stations; harder materials (UHSS/boron) need premium tool
+ * steel + coatings.
+ */
+export function estimateStampingDieCost(inputs: StampingDieCostInputs): StampingDieCostBreakdown {
+  const stations = Math.max(1, Math.floor(inputs.stations || 1));
+  const rates = stampingDieRates(inputs.dieType);
+  const sizeFactor = 0.5 + Math.max(0, inputs.blankAreaCm2) / 500;   // 300 cm² → 1.1×
+  const hardnessFactor = stampingHardnessFactor(inputs.shearStrengthMPa);
+
+  const base = rates.base * sizeFactor * hardnessFactor;
+  const stationCost = stations * rates.perStation * sizeFactor * hardnessFactor;
+  const total = Math.round(base + stationCost);
+  return { base: Math.round(base), stations: Math.round(stationCost), total };
+}
+
+export interface StampingDieLifeInputs {
+  shearStrengthMPa: number;
+  thicknessMm: number;
+  dieType: StampingDieType;
+}
+
+/**
+ * Predict die life (parts/strokes per die set). Abrasive high-strength steel and
+ * thick stock wear tools fast; fine-blanking tools wear faster than blanking.
+ * Clamped to a sane 50k–3M window.
+ */
+export function estimateStampingDieLife(inputs: StampingDieLifeInputs): number {
+  const shear = Math.max(150, inputs.shearStrengthMPa);
+  const lifeFromShear = 1_000_000 * Math.pow(300 / shear, 1.3);
+  const thicknessFactor = inputs.thicknessMm <= 1.5 ? 1.0 : Math.max(0.5, 1.5 / inputs.thicknessMm);
+  const fineBlankFactor = inputs.dieType === 'fine_blanking' ? 0.6 : 1.0;
+  const life = lifeFromShear * thicknessFactor * fineBlankFactor;
+  const clamped = Math.min(3_000_000, Math.max(50_000, life));
+  return Math.round(clamped / 10_000) * 10_000;   // round to nearest 10k
+}

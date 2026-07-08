@@ -624,6 +624,18 @@ export const DEFAULT_RATE_LIBRARY: RateLibrary = {
     makeMachine('press-630t', '630T Mechanical Press (general press shop)',
       { annualDepreciation: 75000, maintenance: 35000, energy: 15000, floorSpace: 15000, indirectSupport: 14000, financeCost: 9375, annualAvailableHours: 3500, machineUtilization: 0.78 },
       'UK', 'UK general press-shop benchmark (standard/amortised mechanical press), Jun 2026'),
+    makeMachine('press-800t', '800T Mechanical Press (general press shop)',
+      { annualDepreciation: 90000, maintenance: 42000, energy: 18000, floorSpace: 18000, indirectSupport: 16000, financeCost: 11250, annualAvailableHours: 3500, machineUtilization: 0.78 },
+      'UK', 'UK general press-shop benchmark (standard/amortised mechanical press), Jun 2026'),
+    makeMachine('press-1000t', '1000T Mechanical Press (general press shop)',
+      { annualDepreciation: 115000, maintenance: 52000, energy: 22000, floorSpace: 22000, indirectSupport: 20000, financeCost: 14375, annualAvailableHours: 3500, machineUtilization: 0.78 },
+      'UK', 'UK general press-shop benchmark (large stamping press — deep-draw panels, structural), Jun 2026'),
+    makeMachine('press-1250t', '1250T Mechanical Press (general press shop)',
+      { annualDepreciation: 145000, maintenance: 65000, energy: 27000, floorSpace: 26000, indirectSupport: 24000, financeCost: 18125, annualAvailableHours: 3500, machineUtilization: 0.78 },
+      'UK', 'UK general press-shop benchmark (heavy stamping press — large body/chassis panels), Jun 2026'),
+    makeMachine('press-fineblank-250t', '250T Fine-Blanking Press (triple-action)',
+      { annualDepreciation: 60000, maintenance: 28000, energy: 12000, floorSpace: 12000, indirectSupport: 11000, financeCost: 7500, annualAvailableHours: 3500, machineUtilization: 0.80 },
+      'UK', 'UK fine-blanking benchmark. Triple-action FB press — full-shear precision edges (gears, levers, seat recliners). Jun 2026'),
     // ── Injection Moulding Machines ────────────────────────────────────────
     // IMM energy: reflects actual running power (hydraulic pump + heaters + cooling).
     // Energy £ lines are on the UK £0.23/kWh basis (matches REGIONAL_DATA.UK) so

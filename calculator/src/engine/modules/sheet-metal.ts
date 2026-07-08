@@ -1,6 +1,7 @@
 import type { CommodityDrivers, OperationInput, RawMaterialInput, ToolingInput } from '../types.js';
+import { estimateStampingDieCost, estimateStampingDieLife } from './sheet-metal-advisor.js';
 
-export type DieType = 'single_stage' | 'progressive' | 'transfer';
+export type DieType = 'single_stage' | 'progressive' | 'transfer' | 'fine_blanking';
 
 export interface SheetMetalInputs {
   materialId: string;
@@ -59,9 +60,9 @@ export function getSheetMetalInputSchema(): Record<string, string> {
     manning: 'number — operators per press',
     labourEfficiency: 'number 0–1',
     numOperations: 'number — informational: blank/pierce/form/trim stages',
-    dieType: 'single_stage | progressive | transfer',
-    dieLife: 'number — parts per die life',
-    dieCostEstimate: 'number — total die/tooling cost £',
+    dieType: 'single_stage | progressive | transfer | fine_blanking',
+    dieLife: 'number — parts per die life. ≤0 → predict from material hardness / thickness / die type',
+    dieCostEstimate: 'number — total die/tooling cost £. ≤0 → estimate from die type, stations, blank size and hardness',
     amortizationVolume: 'number — volume over which to amortize tooling',
     secondaryOpsMachineId: 'string? — optional secondary operation machine ID',
     secondaryOpsLabourId: 'string? — optional secondary operation labour ID',
@@ -147,10 +148,29 @@ export function computeSheetMetalDrivers(inputs: SheetMetalInputs): CommodityDri
     });
   }
 
+  // Die life: use the given value, else predict from material hardness / thickness / die type.
+  const dieLife = inputs.dieLife > 0
+    ? inputs.dieLife
+    : estimateStampingDieLife({
+        shearStrengthMPa: inputs.shearStrengthMPa,
+        thicknessMm: inputs.thicknessMm,
+        dieType: inputs.dieType,
+      });
+
+  // Die cost: use the given value, else estimate parametrically.
+  const dieCost = inputs.dieCostEstimate > 0
+    ? inputs.dieCostEstimate
+    : estimateStampingDieCost({
+        dieType: inputs.dieType,
+        stations: inputs.numOperations,
+        blankAreaCm2: (inputs.blankLengthMm * inputs.blankWidthMm) / 100,  // mm² → cm²
+        shearStrengthMPa: inputs.shearStrengthMPa,
+      }).total;
+
   // Number of die sets needed over the programme life
-  const numDieSets = inputs.dieLife > 0 ? Math.ceil(inputs.amortizationVolume / inputs.dieLife) : 1;
+  const numDieSets = dieLife > 0 ? Math.ceil(inputs.amortizationVolume / dieLife) : 1;
   const tooling: ToolingInput = {
-    totalToolingCost: inputs.dieCostEstimate * numDieSets,
+    totalToolingCost: dieCost * numDieSets,
     amortizationVolume: inputs.amortizationVolume,
     mode: 'amortized',
   };
