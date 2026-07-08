@@ -1,49 +1,41 @@
-# Leamington Marathi — Official Website
+# 🔊 SonoCost — Automotive Speaker Should-Cost Engine
 
-**लेमिंगटन मराठी | "वारसा मराठी संस्कृतीचा"**
+Factory-gate cost intelligence for automotive audio systems. Teardown-grade BOM + 19-step process routing, 12 manufacturing countries, live commodity trends, Thiele-Small physics validation, PDF/PPT export.
 
-The website of Leamington Marathi, a volunteer-run, non-profit community group of 400+
-Marathi families in Leamington Spa & Warwick, UK.
+<br>
 
-## What's here
+## ▶ Start the tool — one click
 
-| File | Purpose |
-|------|---------|
-| `index.html` | The whole website (single page) |
-| `style.css` | All styling — colours, layout, animations |
-| `script.js` | Interactivity — menus, carousel, forms, counters |
-| `images/` | Logos and event photos |
-| `404.html`, `robots.txt`, `sitemap.xml` | Hosting/search-engine support files |
-| `EDITING.md` | **How to update the site — start here if you're a volunteer** |
+<p align="center">
+  <a href="https://raw.githack.com/bhosaleavinash546/leamington-marathi/claude/speaker-should-cost-engine-guo6xs/login.html">
+    <img src="https://img.shields.io/badge/▶%20%20START%20SONOCOST-Click%20to%20Launch-00E676?style=for-the-badge&labelColor=060810" alt="Start SonoCost">
+  </a>
+</p>
 
-## Hosting
+No install, no server — it opens right in your browser. Sign up once (account stays in your browser only, password hashed) and you're in.
 
-The site is fully static — no server or database. It is designed for **GitHub Pages**
-(Settings → Pages → Deploy from branch → `main` → `/ (root)`), free of charge.
+<br>
 
-## Contact form & newsletter
+## What's inside
 
-Both post to [FormSubmit](https://formsubmit.co) and arrive at the group inbox
-(`leamingtonmarathi@gmail.com`). The very first submission triggers a one-time
-activation email to that inbox — click the link in it once and everything flows.
+| | |
+|---|---|
+| 💰 **Should-cost engine** | 45+ materials with grades (NdFeB N35–N52/SH, Y30/Y35 ferrite, mica-PP…), 19 process stations, country-specific labour/machine rates, tooling amortisation, Tier-1 cost structure (FOH, G&A, ED&D, ICC, warranty) |
+| 🌍 **12 countries** | China (coastal/inland), Vietnam, India, Thailand, Mexico, Eastern Europe, UK, Germany, USA — burdened 2026 labour rates |
+| 🔬 **Physics validation** | Thiele-Small estimates (fs, Qts, BL, sensitivity) derived from the actual BOM — flags acoustically inconsistent configs |
+| 📡 **Live trends** | SHFE/COMEX commodity tickers + curated automotive audio industry news |
+| 📊 **Benchmarking** | Your system vs 10 branded reference systems (Bose → Burmester) |
+| 🤖 **AI insights** | Optional Claude API integration for cost-reduction commentary |
+| 📤 **Export** | Boardroom-ready PDF and PPT decks |
 
-## Updating content
+<br>
 
-See **[EDITING.md](EDITING.md)** — written for non-developers; everything can be done
-from the GitHub website without installing anything.
+## Alternate launch links
 
-## Add to phone (PWA)
+- **Direct engine link** (skips to app if already signed in): [speaker-cost-engine.html](https://raw.githack.com/bhosaleavinash546/leamington-marathi/claude/speaker-should-cost-engine-guo6xs/speaker-cost-engine.html)
+- **After merging to `main` + enabling GitHub Pages** (Settings → Pages → Deploy from branch → `main`), the permanent link becomes:
+  `https://bhosaleavinash546.github.io/leamington-marathi/login.html`
 
-`manifest.webmanifest` and `sw.js` make the site installable (home screen icon, opens
-like an app) and keep visited pages working offline. Pages are always fetched fresh
-when online; other files are served from cache and refreshed in the background. Videos
-are never cached. If you add a new page, add it to the `CORE` list in `sw.js` and bump
-`VERSION` there so old caches are cleared. Icons live in `images/icons/`.
+## Run locally
 
-## Membership (member.html)
-
-Free member accounts (sign up / sign in / forgot password / one-time email-link
-sign-in) run on **Firebase Authentication** — free tier, no server needed.
-The page shows a "launching soon" note until `member-config.js` is filled in;
-the step-by-step switch-on checklist is written at the top of that file.
-Member data stored: name + email only, in the community's own Firebase project.
+Download `login.html` + `speaker-cost-engine.html` into the same folder and double-click `login.html`. Everything is inline — works offline except live feeds.
