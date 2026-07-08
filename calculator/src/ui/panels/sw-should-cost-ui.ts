@@ -16,7 +16,7 @@
 
 import type {
   ASILLevel, SWComplexity, SWReuse, SWRegion, DevSource,
-  SWProgramInputs, SWProgramResult,
+  SWProgramInputs, SWProgramResult, SWModuleInput,
 } from '../../engine/sw-should-cost.js';
 import {
   computeSWProgram, defaultSWProgramInputs, SW_MODULES,
@@ -753,6 +753,12 @@ function renderSWPanelHTML(): string {
     <button class="sw-preset-btn" data-preset="offshored">🌏 Offshored (India Team)</button>
   </div>
 
+  <!-- ── Vehicle programme demos ────────────────────────────────── -->
+  <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;align-items:center">
+    <span style="font-size:0.78rem;color:var(--sw-text-muted);font-weight:600">Demo Programmes:</span>
+    ${SW_VEHICLE_DEMOS.map(v => `<button class="sw-preset-btn sw-vehicle-btn" data-vehicle="${v.id}" title="${esc(v.desc)}">${v.label}</button>`).join('')}
+  </div>
+
   <!-- ── Module Configuration ─────────────────────────────────── -->
   <div style="font-weight:700;font-size:0.88rem;color:var(--sw-text-primary);margin-bottom:10px;display:flex;align-items:center;justify-content:space-between">
     <span style="display:flex;align-items:center;gap:6px"><span>📋</span> Module Configuration (43 modules)</span>
@@ -1212,6 +1218,110 @@ function readConfig(): void {
     const v = parseInt(inp.value);
     m.customPersonMonths = isNaN(v) || inp.value.trim() === '' ? null : v;
   });
+}
+
+// ─── Vehicle programme demos ────────────────────────────────────────────────
+//
+// Four detailed, realistic luxury-SUV software programmes. Each sets the
+// programme-level parameters (region, dev source, volume, life, overhead) and a
+// tailored module stack: powertrain SW scoped to the actual drivetrain (PHEV vs
+// 48V mild-hybrid), plus each OEM's reuse posture (platform sharing / Tier-1).
+
+interface SWVehicleDemo {
+  id:              string;
+  label:           string;
+  desc:            string;
+  region:          SWRegion;
+  devSource:       DevSource;
+  volume:          number;
+  life:            number;
+  overhead:        number;
+  senior:          number;
+  reuse:           SWReuse;
+  /** Category-A powertrain modules to DISABLE (not applicable to this drivetrain). */
+  disabledModules: string[];
+  /** Optional per-module tweaks (complexity/asil) for signature systems. */
+  moduleOverrides?: Record<string, Partial<Pick<SWModuleInput, 'asil' | 'complexity' | 'reuse'>>>;
+}
+
+// 48V mild-hybrid: no BEV-scale HV powertrain SW — keep only 48V regen + light
+// thermal; disable the BEV battery/charge/drive modules.
+const MHEV_DISABLED = ['bms_core', 'cell_balancing', 'soc_soh_soe', 'fast_charge', 'edu_control', 'inverter_ctrl', 'motor_ctrl'];
+
+export const SW_VEHICLE_DEMOS: SWVehicleDemo[] = [
+  {
+    id: 'rr_l460', label: '🇬🇧 Range Rover L460 (PHEV)',
+    desc: 'JLR flagship, EVA2 (MLA) architecture, Pivi Pro infotainment. Heavy Tier-1 outsourcing; PHEV P550e keeps a (smaller) EV powertrain stack. Published ≈ £390M.',
+    region: 'UK', devSource: 'Tier1_Supplier', volume: 75_000, life: 8, overhead: 1.55, senior: 0.55, reuse: 'Medium',
+    disabledModules: [],  // PHEV: retains battery/charge/drive SW at reduced scope
+    moduleOverrides: {
+      bms_core:    { complexity: 'High' },     // PHEV pack smaller than a BEV
+      soc_soh_soe: { complexity: 'High' },
+      fast_charge: { complexity: 'Medium' },   // AC + modest DC
+      edu_control: { complexity: 'High' },
+    },
+  },
+  {
+    id: 'bmw_x7', label: '🇩🇪 BMW X7 (48V MHEV)',
+    desc: 'G07 flagship SUV, CLAR platform, iDrive 8 (BMW OS 8). ICE + 48V mild hybrid. Strong platform reuse across 7-Series/X5/X7 — heavy carry-forward.',
+    region: 'EU', devSource: 'OEM_Internal', volume: 60_000, life: 8, overhead: 1.60, senior: 0.55, reuse: 'Heavy',
+    disabledModules: MHEV_DISABLED,
+  },
+  {
+    id: 'audi_q8', label: '🇩🇪 Audi Q8 (48V MHEV)',
+    desc: 'MLB Evo platform, MMI/MIB3 infotainment, VW Group + CARIAD shared software stacks. ICE + 48V mild hybrid. Strong platform reuse (VW.OS carry-across), but each variant still funds integration/validation.',
+    region: 'EU', devSource: 'OEM_Internal', volume: 55_000, life: 9, overhead: 1.58, senior: 0.55, reuse: 'Heavy',
+    // Core platform middleware genuinely carries across the VW Group → Platform reuse there.
+    moduleOverrides: { autosar_classic: { reuse: 'Platform' }, autosar_adaptive: { reuse: 'Platform' }, rtos: { reuse: 'Platform' }, comm_stacks: { reuse: 'Platform' } },
+    disabledModules: MHEV_DISABLED,
+  },
+  {
+    id: 'merc_gls', label: '🇩🇪 Mercedes GLS 450 (48V MHEV)',
+    desc: 'X167 flagship, MBUX / NTG6 (infotainment-heavy), EQ Boost 48V mild hybrid. Moderate cross-range reuse; MBUX and voice are signature Very-High-complexity systems.',
+    region: 'EU', devSource: 'OEM_Internal', volume: 45_000, life: 9, overhead: 1.62, senior: 0.55, reuse: 'Medium',
+    disabledModules: MHEV_DISABLED,
+    moduleOverrides: {
+      ivi_os:          { complexity: 'Very High' },
+      voice_assistant: { complexity: 'Very High' },
+      navigation:      { complexity: 'Very High' },
+    },
+  },
+];
+
+/** Build a full programme-inputs object for a vehicle demo. */
+function buildVehicleInputs(v: SWVehicleDemo): SWProgramInputs {
+  const b = defaultSWProgramInputs();
+  const disabled = new Set(v.disabledModules);
+  return {
+    ...b,
+    region:                 v.region,
+    devSource:              v.devSource,
+    programLifeYears:       v.life,
+    annualProductionVolume: v.volume,
+    overheadMultiplier:     v.overhead,
+    teamSeniorFraction:     v.senior,
+    modules: b.modules.map(m => ({
+      ...m,
+      enabled: !disabled.has(m.moduleId),
+      reuse:   v.reuse,
+      ...(v.moduleOverrides?.[m.moduleId] ?? {}),
+    })),
+  };
+}
+
+/** Apply a vehicle demo: set inputs, re-render the panel, and compute immediately. */
+function applyVehicleDemo(id: string): void {
+  const v = SW_VEHICLE_DEMOS.find(d => d.id === id);
+  if (!v) return;
+  _swInputs = buildVehicleInputs(v);
+  _swResult = null;
+  const panel = document.getElementById('sw-panel');
+  if (panel?.parentElement) {
+    panel.parentElement.innerHTML = renderSWPanelHTML();
+    wireSWPanel();
+  }
+  // Auto-run so the demo shows a full result immediately.
+  document.getElementById('sw-calc-btn')?.dispatchEvent(new MouseEvent('click'));
 }
 
 // ─── Apply preset ─────────────────────────────────────────────────────────────
@@ -2205,13 +2315,18 @@ export function wireSWPanel(): void {
     });
   }
 
-  // Preset buttons
-  document.querySelectorAll<HTMLButtonElement>('.sw-preset-btn').forEach(btn => {
+  // Preset buttons (excluding the vehicle demos, which have their own handler)
+  document.querySelectorAll<HTMLButtonElement>('.sw-preset-btn:not(.sw-vehicle-btn)').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll<HTMLButtonElement>('.sw-preset-btn').forEach(b => b.classList.remove('sw-preset-active'));
       btn.classList.add('sw-preset-active');
       applyPreset(btn.dataset.preset ?? '');
     });
+  });
+
+  // Vehicle programme demos — load a full detailed configuration and compute.
+  document.querySelectorAll<HTMLButtonElement>('.sw-vehicle-btn').forEach(btn => {
+    btn.addEventListener('click', () => applyVehicleDemo(btn.dataset.vehicle ?? ''));
   });
 
   // Select/deselect all
