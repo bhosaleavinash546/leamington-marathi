@@ -2224,6 +2224,29 @@ function renderSheetMetalForm(): string {
       <div class="field-group"><label>Manning</label><input type="number" id="sm-sec-manning" step="0.25" min="0" value="1"/></div>
       <div class="field-group"><label>Labour Eff.</label><input type="number" id="sm-sec-lab-eff" step="0.01" min="0.01" max="1" value="0.92"/></div>
     </div>
+    <div class="field-row" style="margin-top:6px">
+      <div class="field-group"><label>Secondary Op 2 — Machine</label><select id="sm-sec2-mach" class="machine-select"><option value="">— None —</option></select></div>
+      <div class="field-group"><label>Op 2 — Labour</label><select id="sm-sec2-lab" class="labour-select"><option value="">— None —</option></select></div>
+      <div class="field-group"><label>Op 2 — Cycle (hr, 0=none)</label><input type="number" id="sm-sec2-ct" step="0.001" min="0" value="0"/></div>
+    </div>
+    <div class="field-row" style="margin-top:6px">
+      <div class="field-group"><label>Secondary Op 3 — Machine</label><select id="sm-sec3-mach" class="machine-select"><option value="">— None —</option></select></div>
+      <div class="field-group"><label>Op 3 — Labour</label><select id="sm-sec3-lab" class="labour-select"><option value="">— None —</option></select></div>
+      <div class="field-group"><label>Op 3 — Cycle (hr, 0=none)</label><input type="number" id="sm-sec3-ct" step="0.001" min="0" value="0"/></div>
+    </div>
+    <div class="section-title" style="margin-top:8px">Hot Stamping / Press-Hardening (optional)</div>
+    <div class="field-row">
+      <div class="field-group"><label>Hot Stamping? <span title="Boron/Usibor press-hardening: austenitise ~900°C then form+quench in water-cooled dies. Adds furnace energy and a quench-dwell cycle.">ℹ</span></label><select id="sm-hs-on"><option value="no" selected>No (cold stamping)</option><option value="yes">Yes (press-hardening)</option></select></div>
+      <div class="field-group"><label>Austenitise (kWh/kg) <span title="Furnace heat per kg of blank to ~900°C incl. losses. Default 0.30.">ℹ</span></label><input type="number" id="sm-hs-energy" step="0.05" min="0" value="0.30"/></div>
+    </div>
+    <div class="field-row" style="margin-top:6px">
+      <div class="field-group"><label>Quench Dwell (s) <span title="Die-closed quench time — governs the press cycle in hot stamping (not SPM). Typical 6–12s.">ℹ</span></label><input type="number" id="sm-hs-dwell" step="1" min="0" value="8"/></div>
+      <div class="field-group"><label>Furnace Cycle (hr/part) <span title="Effective furnace occupancy per part (residence ÷ parts in furnace). 0 = omit furnace machine line.">ℹ</span></label><input type="number" id="sm-hs-furn-ct" step="0.001" min="0" value="0"/></div>
+    </div>
+    <div class="field-row" style="margin-top:6px">
+      <div class="field-group"><label>Furnace Machine</label><select id="sm-hs-furn-mach" class="machine-select"><option value="">— None —</option></select></div>
+      <div class="field-group"><label>Furnace Labour</label><select id="sm-hs-furn-lab" class="labour-select"><option value="">— None —</option></select></div>
+    </div>
     <details style="background:#fff8f3;border:1px solid #ffd699;border-radius:6px;padding:6px 8px;margin-top:8px">
       <summary style="font-weight:600;font-size:0.78rem;cursor:pointer;color:#b34700">⚙ Stamping Advisor — process route + DFM check</summary>
       <div style="margin-top:6px">
@@ -9669,6 +9692,7 @@ function collectSheetMetalInput(): UniversalStackInput {
   if ((num('sm-amort') || 0) <= 0) _smExtraWarnings.push('Amortisation volume is empty/zero — tooling NRE defaulted to 1 part (full die cost on this part). Set a realistic programme volume.');
 
   const dieType = validSel<StampingDieType>('sm-die-type', ['progressive', 'transfer', 'single_stage', 'fine_blanking'], 'progressive');
+  const hotStamping = sel('sm-hs-on') === 'yes';
   const stations = num('sm-num-ops') || 1;
   const blankAreaCm2 = (num('sm-blank-l') * num('sm-blank-w')) / 100;
   const manualDieCost = num('sm-die-cost');
@@ -9720,7 +9744,26 @@ function collectSheetMetalInput(): UniversalStackInput {
     secondaryOpsOee: num('sm-sec-oee') || undefined,
     secondaryOpsManning: num('sm-sec-manning') || undefined,
     secondaryOpsLabourEfficiency: num('sm-sec-lab-eff') || undefined,
+    secondaryOps: [
+      { machineId: sel('sm-sec2-mach'), labourId: sel('sm-sec2-lab'), cycleTimeHr: num('sm-sec2-ct'), operationName: 'Secondary Operation 2' },
+      { machineId: sel('sm-sec3-mach'), labourId: sel('sm-sec3-lab'), cycleTimeHr: num('sm-sec3-ct'), operationName: 'Secondary Operation 3' },
+    ].filter(op => op.machineId && op.labourId && op.cycleTimeHr > 0),
+    hotStamping,
+    austenitiseEnergyKwhPerKg: hotStamping ? (num('sm-hs-energy') || 0.30) : undefined,
+    hotStampingEnergyPricePerKwh: hotStamping ? (library.energy?.[0]?.electricityPerKwh ?? 0.23) : undefined,
+    quenchDwellSec: hotStamping ? (num('sm-hs-dwell') || undefined) : undefined,
+    furnaceMachineId: hotStamping ? (sel('sm-hs-furn-mach') || undefined) : undefined,
+    furnaceLabourId: hotStamping ? (sel('sm-hs-furn-lab') || undefined) : undefined,
+    furnaceCycleHrPerPart: hotStamping ? (num('sm-hs-furn-ct') || undefined) : undefined,
   });
+
+  if (hotStamping) {
+    _smExtraWarnings.push(
+      `Hot stamping: austenitising-furnace energy costed at ${num('sm-hs-energy') || 0.30} kWh/kg × blank × £${library.energy?.[0]?.electricityPerKwh ?? 0.23}/kWh; ` +
+      `press cycle set by ${num('sm-hs-dwell') || 8}s quench dwell (not SPM).`
+    );
+  }
+
   return { ...getUniversalTail(), rawMaterial: drivers.rawMaterial, operations: drivers.operations, tooling: drivers.tooling };
 }
 

@@ -103,3 +103,81 @@ describe('SM4 — press ladder additions', () => {
     expect(rate('press-1000t')).toBeLessThan(rate('press-1250t'));
   });
 });
+
+describe('SM5 — new stamping material grades', () => {
+  it('adds electrical, spring and deep-draw grades', () => {
+    for (const id of ['mat-dc04', 'mat-dc05', 'mat-dc06',
+      'mat-nogo-m270-35a', 'mat-nogo-m400-50a', 'mat-go-m105-30p',
+      'mat-c67s-spring', 'mat-ss301-spring']) {
+      const m = lib.materials.find(x => x.id === id)!;
+      expect(m).toBeTruthy();
+      expect(m.pricePerKg).toBeGreaterThan(0);
+      expect(m.effectiveDate).toBe('2026-07');
+    }
+    // grain-oriented electrical steel is a premium over non-oriented
+    const go = lib.materials.find(m => m.id === 'mat-go-m105-30p')!.pricePerKg;
+    const no = lib.materials.find(m => m.id === 'mat-nogo-m400-50a')!.pricePerKg;
+    expect(go).toBeGreaterThan(no);
+  });
+});
+
+describe('SM6 — hot stamping / press-hardening process', () => {
+  it('adds furnace energy consumable and a quench-dwell press cycle', () => {
+    const cold = computeSheetMetalDrivers({ ...BASE, materialId: 'mat-usibor1500' });
+    const hot = computeSheetMetalDrivers({
+      ...BASE, materialId: 'mat-usibor1500', hotStamping: true,
+      austenitiseEnergyKwhPerKg: 0.30, hotStampingEnergyPricePerKwh: 0.23, quenchDwellSec: 8,
+    });
+    // furnace heat → material consumable (cold path has none)
+    expect(cold.rawMaterial.consumablesCostPerPart ?? 0).toBe(0);
+    expect(hot.rawMaterial.consumablesCostPerPart ?? 0).toBeGreaterThan(0);
+    // press op is relabelled and quench-dwell governs the cycle (8s = 0.00222 hr), not 80 SPM (0.000208 hr)
+    expect(hot.operations[0].operationName).toBe('Hot Stamping (form + quench)');
+    expect(hot.operations[0].cycleTimeHr).toBeGreaterThan(cold.operations[0].cycleTimeHr);
+    expect(hot.operations[0].cycleTimeHr).toBeCloseTo(8 / 3600, 6);
+  });
+
+  it('adds an austenitising-furnace operation when furnace fields are supplied', () => {
+    const hot = computeSheetMetalDrivers({
+      ...BASE, hotStamping: true, quenchDwellSec: 8,
+      furnaceMachineId: 'furnace-roller-hearth', furnaceLabourId: 'lab-uk-furnace', furnaceCycleHrPerPart: 0.02,
+    });
+    expect(hot.operations[0].operationName).toBe('Austenitising Furnace');
+    expect(hot.operations[1].operationName).toBe('Hot Stamping (form + quench)');
+  });
+
+  it('adds the hot-stamping press + roller-hearth furnace to the library', () => {
+    expect(lib.machines.find(m => m.id === 'press-hotstamp-1000t')).toBeTruthy();
+    expect(lib.machines.find(m => m.id === 'furnace-roller-hearth')).toBeTruthy();
+  });
+});
+
+describe('SM7 — multiple secondary operations', () => {
+  it('chains legacy + array secondary ops into the operation list', () => {
+    const d = computeSheetMetalDrivers({
+      ...BASE,
+      secondaryOpsMachineId: 'press-100t', secondaryOpsLabourId: 'lab-uk-semiskilled', secondaryOpsCycleHr: 0.01,
+      secondaryOps: [
+        { machineId: 'press-100t', labourId: 'lab-uk-semiskilled', cycleTimeHr: 0.005, operationName: 'Tap' },
+        { machineId: 'press-100t', labourId: 'lab-uk-semiskilled', cycleTimeHr: 0.004, operationName: 'Deburr' },
+      ],
+    });
+    const names = d.operations.map(o => o.operationName);
+    expect(names).toContain('Secondary Operation'); // legacy
+    expect(names).toContain('Tap');
+    expect(names).toContain('Deburr');
+    // press + 3 secondary ops
+    expect(d.operations.length).toBe(4);
+  });
+
+  it('ignores array entries with missing machine/labour or zero cycle', () => {
+    const d = computeSheetMetalDrivers({
+      ...BASE,
+      secondaryOps: [
+        { machineId: '', labourId: 'lab-uk-semiskilled', cycleTimeHr: 0.005 },
+        { machineId: 'press-100t', labourId: 'lab-uk-semiskilled', cycleTimeHr: 0 },
+      ],
+    });
+    expect(d.operations.length).toBe(1); // just the press
+  });
+});

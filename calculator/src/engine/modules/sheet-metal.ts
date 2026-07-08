@@ -3,6 +3,16 @@ import { estimateStampingDieCost, estimateStampingDieLife } from './sheet-metal-
 
 export type DieType = 'single_stage' | 'progressive' | 'transfer' | 'fine_blanking';
 
+export interface SheetMetalSecondaryOp {
+  operationName?: string;
+  machineId: string;
+  labourId: string;
+  cycleTimeHr: number;
+  oee?: number;
+  manning?: number;
+  labourEfficiency?: number;
+}
+
 export interface SheetMetalInputs {
   materialId: string;
   netWeightKg: number;
@@ -31,6 +41,16 @@ export interface SheetMetalInputs {
   secondaryOpsOee?: number;             // defaults to press OEE if not supplied
   secondaryOpsManning?: number;         // defaults to press manning if not supplied
   secondaryOpsLabourEfficiency?: number;// defaults to press labourEfficiency if not supplied
+  /** Additional chained secondary operations (tap / deburr / wash / anodise …). */
+  secondaryOps?: SheetMetalSecondaryOp[];
+  // ── Hot stamping / press-hardening (boron / Usibor) ──
+  hotStamping?: boolean;
+  austenitiseEnergyKwhPerKg?: number;    // wall-plug/gas energy to ~900°C per kg blank (default 0.30)
+  hotStampingEnergyPricePerKwh?: number; // effective fuel tariff £/kWh (default 0.23)
+  quenchDwellSec?: number;               // die-closed quench time; overrides SPM press cycle when hot stamping
+  furnaceMachineId?: string;             // austenitising furnace machine ID
+  furnaceLabourId?: string;
+  furnaceCycleHrPerPart?: number;        // effective furnace occupancy per part
   rejectRate?: number;                  // 0–1 scrap fraction; uplifts both material and cycle time
   /**
    * Material density kg/m³. When supplied (>0), gross material is computed from the
@@ -72,6 +92,14 @@ export function getSheetMetalInputSchema(): Record<string, string> {
     secondaryOpsLabourEfficiency: 'number? 0–1 — secondary op labour efficiency (defaults to press value)',
     rejectRate: 'number? 0–1 — press-shop scrap fraction; uplifts material weight and cycle times',
     densityKgPerM3: 'number? kg/m³ — if supplied, gross material is computed from actual strip fed per part (captures trim/pierce scrap); falls back to blank-area ratio when omitted',
+    secondaryOps: 'SecondaryOp[]? — chained secondary operations (tap/deburr/wash…), each {machineId, labourId, cycleTimeHr, oee?, manning?, labourEfficiency?, operationName?}',
+    hotStamping: 'boolean? — press-hardening (boron/Usibor): adds austenitising-furnace energy + quench-dwell press cycle',
+    austenitiseEnergyKwhPerKg: 'number? — furnace heat kWh/kg of blank to ~900°C (default 0.30)',
+    hotStampingEnergyPricePerKwh: 'number? — furnace fuel tariff £/kWh (default 0.23)',
+    quenchDwellSec: 'number? — die-closed quench time s; overrides SPM press cycle when hotStamping',
+    furnaceMachineId: 'string? — austenitising furnace machine ID (hot stamping)',
+    furnaceLabourId: 'string? — furnace labour ID',
+    furnaceCycleHrPerPart: 'number? — effective furnace occupancy per part hr',
   };
 }
 
@@ -102,34 +130,68 @@ export function computeSheetMetalDrivers(inputs: SheetMetalInputs): CommodityDri
     ? 1 / (1 - inputs.rejectRate)
     : 1;
 
+  // Gross blank weight fed per part (for hot-stamping furnace energy).
+  const grossBlankKg = materialUtilization > 0 ? inputs.netWeightKg / materialUtilization : inputs.netWeightKg;
+
+  // Hot stamping / press-hardening: austenitising furnace heat is a per-part
+  // energy consumable (dominant, part-size driven), priced at the fuel tariff.
+  const furnaceEnergyPerPart = inputs.hotStamping
+    ? (inputs.austenitiseEnergyKwhPerKg ?? 0.30) * grossBlankKg * (inputs.hotStampingEnergyPricePerKwh ?? 0.23)
+    : 0;
+
   const rawMaterial: RawMaterialInput = {
     materialId: inputs.materialId,
     netWeightKg: inputs.netWeightKg * rejectUplift,
     materialUtilization,
+    ...(furnaceEnergyPerPart > 0 ? { consumablesCostPerPart: furnaceEnergyPerPart } : {}),
   };
 
   // Cycle time per STROKE: 1 stroke takes 1/SPM minutes = 1/(SPM*60) hours.
-  // Per-part allocation happens in the core via partsPerCycle — do NOT divide by
-  // partsPerStroke here as well (that double-counted multi-part dies, halving press
-  // cost for a 2-out die instead of allocating it correctly).
+  // Hot stamping is quench-dwell limited (die-closed cooling), not SPM limited —
+  // use the quench dwell when supplied. Per-part allocation happens in the core via
+  // partsPerCycle — do NOT divide by partsPerStroke here as well.
   // Guard: SPM ≤ 0 would give Infinity; emit NaN so validateStackInput rejects it.
-  const baseCycleHr = inputs.strokesPerMin > 0 ? 1 / (inputs.strokesPerMin * 60) : NaN;
+  const baseCycleHr = (inputs.hotStamping && (inputs.quenchDwellSec ?? 0) > 0)
+    ? (inputs.quenchDwellSec as number) / 3600
+    : inputs.strokesPerMin > 0 ? 1 / (inputs.strokesPerMin * 60) : NaN;
   const cycleTimeHr = baseCycleHr * rejectUplift;
 
-  const operations: OperationInput[] = [
-    {
-      operationName: `Press (${inputs.dieType.replace('_', ' ')})`,
-      machineId: inputs.pressId,
-      labourId: inputs.labourId,
-      cycleTimeHr,
-      partsPerCycle: inputs.partsPerStroke,
+  const operations: OperationInput[] = [];
+
+  // Austenitising furnace stage (hot stamping only), before the press.
+  if (
+    inputs.hotStamping &&
+    inputs.furnaceMachineId !== undefined &&
+    inputs.furnaceLabourId !== undefined &&
+    inputs.furnaceCycleHrPerPart !== undefined &&
+    inputs.furnaceCycleHrPerPart > 0
+  ) {
+    operations.push({
+      operationName: 'Austenitising Furnace',
+      machineId: inputs.furnaceMachineId,
+      labourId: inputs.furnaceLabourId,
+      cycleTimeHr: inputs.furnaceCycleHrPerPart * rejectUplift,
+      partsPerCycle: 1,
       oee: inputs.oee,
       manning: inputs.manning,
-      labourTimeHr: cycleTimeHr,
+      labourTimeHr: inputs.furnaceCycleHrPerPart * rejectUplift,
       labourEfficiency: inputs.labourEfficiency,
-    },
-  ];
+    });
+  }
 
+  operations.push({
+    operationName: inputs.hotStamping ? 'Hot Stamping (form + quench)' : `Press (${inputs.dieType.replace('_', ' ')})`,
+    machineId: inputs.pressId,
+    labourId: inputs.labourId,
+    cycleTimeHr,
+    partsPerCycle: inputs.partsPerStroke,
+    oee: inputs.oee,
+    manning: inputs.manning,
+    labourTimeHr: cycleTimeHr,
+    labourEfficiency: inputs.labourEfficiency,
+  });
+
+  // Legacy single secondary op (backward compatible).
   if (
     inputs.secondaryOpsMachineId !== undefined &&
     inputs.secondaryOpsLabourId !== undefined &&
@@ -145,6 +207,22 @@ export function computeSheetMetalDrivers(inputs: SheetMetalInputs): CommodityDri
       manning: inputs.secondaryOpsManning ?? inputs.manning,
       labourTimeHr: inputs.secondaryOpsCycleHr * rejectUplift,
       labourEfficiency: inputs.secondaryOpsLabourEfficiency ?? inputs.labourEfficiency,
+    });
+  }
+
+  // Additional chained secondary operations.
+  for (const op of inputs.secondaryOps ?? []) {
+    if (!op.machineId || !op.labourId || !(op.cycleTimeHr > 0)) continue;
+    operations.push({
+      operationName: op.operationName ?? 'Secondary Operation',
+      machineId: op.machineId,
+      labourId: op.labourId,
+      cycleTimeHr: op.cycleTimeHr * rejectUplift,
+      partsPerCycle: 1,
+      oee: op.oee ?? inputs.oee,
+      manning: op.manning ?? inputs.manning,
+      labourTimeHr: op.cycleTimeHr * rejectUplift,
+      labourEfficiency: op.labourEfficiency ?? inputs.labourEfficiency,
     });
   }
 
