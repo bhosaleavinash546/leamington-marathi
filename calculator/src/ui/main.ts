@@ -28,6 +28,9 @@ import {
   estimateStampingDieCost, estimateStampingDieLife,
   type StampingDieType, type SMMaterialFamily,
 } from '../engine/modules/sheet-metal-advisor.js';
+import {
+  estimateLaminationFinishing, analyseLaminationDFM, type StackMethod,
+} from '../engine/modules/lamination-advisor.js';
 import type { FabBlankingMethod, AssistGas } from '../engine/modules/sheet-metal-fab.js';
 import { computeBlowMouldingDrivers } from '../engine/modules/blow-moulding.js';
 import {
@@ -2246,6 +2249,19 @@ function renderSheetMetalForm(): string {
     <div class="field-row" style="margin-top:6px">
       <div class="field-group"><label>Furnace Machine</label><select id="sm-hs-furn-mach" class="machine-select"><option value="">— None —</option></select></div>
       <div class="field-group"><label>Furnace Labour</label><select id="sm-hs-furn-lab" class="labour-select"><option value="">— None —</option></select></div>
+    </div>
+    <div class="section-title" style="margin-top:8px">E-Motor Lamination (optional)</div>
+    <div class="field-row">
+      <div class="field-group"><label>Stack Join Method <span title="Interlock (in-die, cheapest) · laser weld (fast, small loss penalty) · backlack self-bond (lowest loss, EV) · cleat/rivet · loose + end-plate.">ℹ</span></label><select id="sm-lam-method"><option value="" selected>— Not a lamination —</option><option value="interlock">Interlock (in-die)</option><option value="laser-weld">Laser weld</option><option value="backlack">Backlack bond</option><option value="cleat-rivet">Cleat / rivet</option><option value="loose-endplate">Loose + end-plate</option></select></div>
+      <div class="field-group"><label>Laminations / Stack</label><input type="number" id="sm-lam-count" step="1" min="1" value="200"/></div>
+    </div>
+    <div class="field-row" style="margin-top:6px">
+      <div class="field-group"><label>Stack Height (mm)</label><input type="number" id="sm-lam-height" step="1" min="0" value="70"/></div>
+      <div class="field-group"><label>Stress-Relief Anneal? <span title="~800°C N₂/H₂ anneal restores core loss degraded by blanking. Mandatory for semi-processed grades.">ℹ</span></label><select id="sm-lam-anneal"><option value="no" selected>No</option><option value="yes">Yes</option></select></div>
+    </div>
+    <div class="field-row" style="margin-top:6px">
+      <div class="field-group"><label>Insulation Re-coat?</label><select id="sm-lam-coat"><option value="no" selected>No</option><option value="yes">Yes (C5/C6)</option></select></div>
+      <div class="field-group"><label>Min Tooth/Slot (mm) <span title="DFM: narrowest tooth/slot — punch breakage below ~1×thickness.">ℹ</span></label><input type="number" id="sm-lam-tooth" step="0.1" min="0" value="2"/></div>
     </div>
     <details style="background:#fff8f3;border:1px solid #ffd699;border-radius:6px;padding:6px 8px;margin-top:8px">
       <summary style="font-weight:600;font-size:0.78rem;cursor:pointer;color:#b34700">⚙ Stamping Advisor — process route + DFM check</summary>
@@ -9694,6 +9710,28 @@ function collectSheetMetalInput(): UniversalStackInput {
   const dieType = validSel<StampingDieType>('sm-die-type', ['progressive', 'transfer', 'single_stage', 'fine_blanking'], 'progressive');
   const hotStamping = sel('sm-hs-on') === 'yes';
   const stations = num('sm-num-ops') || 1;
+
+  // E-motor lamination finishing (join + stress-relief anneal energy + re-coat).
+  let extraConsumablesPerPart: number | undefined;
+  const lamMethod = sel('sm-lam-method');
+  if (lamMethod) {
+    const fin = estimateLaminationFinishing({
+      stackMethod: lamMethod as StackMethod,
+      laminationCount: num('sm-lam-count') || 1,
+      stackHeightMm: num('sm-lam-height') || undefined,
+      partWeightKg: num('sm-net-wt'),
+      stressReliefAnneal: sel('sm-lam-anneal') === 'yes',
+      reCoat: sel('sm-lam-coat') === 'yes',
+      annealEnergyPricePerKwh: library.energy?.[0]?.electricityPerKwh ?? 0.23,
+    });
+    extraConsumablesPerPart = fin.totalPerPart;
+    _smExtraWarnings.push(
+      `Lamination finishing: £${fin.totalPerPart.toFixed(3)}/part — join £${fin.joinPerStack.toFixed(3)}/stack ÷ ${num('sm-lam-count') || 1}` +
+      `${fin.annealEnergyPerPart ? ` + anneal £${fin.annealEnergyPerPart.toFixed(3)}` : ''}` +
+      `${fin.coatingPerPart ? ` + coat £${fin.coatingPerPart.toFixed(3)}` : ''}. ` +
+      `Add the anneal/weld/bond machine time as a secondary op if in-house.`
+    );
+  }
   const blankAreaCm2 = (num('sm-blank-l') * num('sm-blank-w')) / 100;
   const manualDieCost = num('sm-die-cost');
   const manualDieLife = num('sm-die-life');
@@ -9755,6 +9793,7 @@ function collectSheetMetalInput(): UniversalStackInput {
     furnaceMachineId: hotStamping ? (sel('sm-hs-furn-mach') || undefined) : undefined,
     furnaceLabourId: hotStamping ? (sel('sm-hs-furn-lab') || undefined) : undefined,
     furnaceCycleHrPerPart: hotStamping ? (num('sm-hs-furn-ct') || undefined) : undefined,
+    extraConsumablesPerPart,
   });
 
   if (hotStamping) {
@@ -9789,6 +9828,21 @@ function wireStampingAdvisor(): void {
     const out = document.getElementById('sm-adv-result');
     if (!out) return;
     const volLabel = { low: '< 1k', medium: '1k–50k', high: '> 50k' }[rec.volumeCategory];
+
+    // If a lamination stack method is selected, add a lamination-specific DFM panel.
+    const lamMethod = sel('sm-lam-method');
+    let lamHtml = '';
+    if (lamMethod) {
+      const lamDfm = analyseLaminationDFM({
+        thicknessMm,
+        minToothWidthMm: num('sm-lam-tooth') || undefined,
+        stackMethod: lamMethod as StackMethod,
+        stressReliefAnneal: sel('sm-lam-anneal') === 'yes',
+        thinGauge: thicknessMm > 0 && thicknessMm <= 0.27,
+      });
+      lamHtml = `<div style="margin-top:6px;font-weight:600;color:#0059b3">Lamination DFM</div>${renderDFMPanel(lamDfm.score, lamDfm.issues, lamDfm.summary)}`;
+    }
+
     out.innerHTML = `
       <div style="background:#fff;border:1px solid #e0e0e0;border-radius:4px;padding:8px;margin-bottom:6px">
         <div style="font-weight:700;color:#b34700">${escHtml(rec.primaryProcess)} → ${escHtml(rec.formingProcess)}</div>
@@ -9800,7 +9854,8 @@ function wireStampingAdvisor(): void {
         </div>
         <div style="color:#555;margin-top:4px"><em>${escHtml(rec.reason)}</em></div>
       </div>
-      ${renderDFMPanel(dfm.score, dfm.issues, dfm.summary)}`;
+      ${renderDFMPanel(dfm.score, dfm.issues, dfm.summary)}
+      ${lamHtml}`;
     out.style.display = 'block';
   });
 }

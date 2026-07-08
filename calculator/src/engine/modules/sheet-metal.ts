@@ -51,6 +51,8 @@ export interface SheetMetalInputs {
   furnaceMachineId?: string;             // austenitising furnace machine ID
   furnaceLabourId?: string;
   furnaceCycleHrPerPart?: number;        // effective furnace occupancy per part
+  /** Generic per-part material-bucket consumable (e.g. lamination join + anneal energy + coating). */
+  extraConsumablesPerPart?: number;
   rejectRate?: number;                  // 0–1 scrap fraction; uplifts both material and cycle time
   /**
    * Material density kg/m³. When supplied (>0), gross material is computed from the
@@ -139,11 +141,15 @@ export function computeSheetMetalDrivers(inputs: SheetMetalInputs): CommodityDri
     ? (inputs.austenitiseEnergyKwhPerKg ?? 0.30) * grossBlankKg * (inputs.hotStampingEnergyPricePerKwh ?? 0.23)
     : 0;
 
+  // Per-part material-bucket consumables: hot-stamp furnace heat + any extra
+  // (e.g. lamination join/anneal-energy/coating passed via extraConsumablesPerPart).
+  const consumablesCostPerPart = furnaceEnergyPerPart + Math.max(0, inputs.extraConsumablesPerPart ?? 0);
+
   const rawMaterial: RawMaterialInput = {
     materialId: inputs.materialId,
     netWeightKg: inputs.netWeightKg * rejectUplift,
     materialUtilization,
-    ...(furnaceEnergyPerPart > 0 ? { consumablesCostPerPart: furnaceEnergyPerPart } : {}),
+    ...(consumablesCostPerPart > 0 ? { consumablesCostPerPart } : {}),
   };
 
   // Cycle time per STROKE: 1 stroke takes 1/SPM minutes = 1/(SPM*60) hours.
