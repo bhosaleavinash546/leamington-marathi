@@ -565,7 +565,10 @@
       .auth-panel { padding: 24px 18px; }
       .auth-inner { max-width: 100%; }
     }
-  </style>
+  @media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:0.001s!important;animation-iteration-count:1!important;transition-duration:0.001s!important}
+}
+</style>
 </head>
 <body>
 
@@ -668,7 +671,7 @@
 
       <div class="auth-heading" id="authHeading">Welcome back</div>
       <div class="auth-sub" id="authSub">
-        Don't have an account? <a id="switchLink" onclick="switchMode('signup')">Sign up free</a>
+        Don't have an account? <a id="switchLink" href="#" role="button" onclick="switchMode('signup');return false">Sign up free</a>
       </div>
 
       <!-- Tab rail -->
@@ -695,7 +698,7 @@
           <label class="flabel" for="inEmail">Email Address</label>
           <div class="finput-wrap">
             <span class="ficon">✉️</span>
-            <input class="finput" type="email" id="inEmail" placeholder="you@company.com" autocomplete="email">
+            <input class="finput" type="email" id="inEmail" placeholder="you@company.com" autocomplete="username email" autofocus>
           </div>
           <div class="ferr" id="errEmail">Please enter a valid email</div>
         </div>
@@ -707,7 +710,7 @@
             <span class="ficon">🔒</span>
             <input class="finput" type="password" id="inPw" placeholder="••••••••"
                    autocomplete="current-password" oninput="onPwInput(this.value)">
-            <button type="button" class="eye-btn" onclick="toggleEye('inPw',this)">👁</button>
+            <button type="button" class="eye-btn" aria-label="Show password" onclick="toggleEye('inPw',this)">👁</button>
           </div>
           <div class="pw-strength" id="pwStrength">
             <div class="pw-bar-track"><div class="pw-bar-fill" id="pwBar"></div></div>
@@ -722,7 +725,7 @@
           <div class="finput-wrap">
             <span class="ficon">🔒</span>
             <input class="finput" type="password" id="inConfirm" placeholder="••••••••" autocomplete="new-password">
-            <button type="button" class="eye-btn" onclick="toggleEye('inConfirm',this)">👁</button>
+            <button type="button" class="eye-btn" aria-label="Show password" onclick="toggleEye('inConfirm',this)">👁</button>
           </div>
           <div class="ferr" id="errConfirm">Passwords do not match</div>
         </div>
@@ -770,7 +773,7 @@
 
       <div class="auth-footer">
         By continuing you agree to our <a href="#">Terms</a> and <a href="#">Privacy Policy</a>.<br>
-        Credentials are stored locally in your browser only.
+        Accounts live only in this browser (passwords stored salted &amp; hashed). Demo auth — don't reuse a real password.
       </div>
 
     </div>
@@ -868,19 +871,28 @@ function switchMode(m) {
   document.getElementById('authHeading').textContent = isUp ? 'Create your account' : 'Welcome back';
   document.getElementById('btnLabel').textContent    = isUp ? 'Create Account'       : 'Sign In';
   document.getElementById('authSub').innerHTML = isUp
-    ? 'Already have an account? <a onclick="switchMode(\'login\')">Sign in</a>'
-    : 'Don\'t have an account? <a onclick="switchMode(\'signup\')">Sign up free</a>';
+    ? 'Already have an account? <a href="#" role="button" onclick="switchMode(\'login\');return false">Sign in</a>'
+    : 'Don\'t have an account? <a href="#" role="button" onclick="switchMode(\'signup\');return false">Sign up free</a>';
 
   document.getElementById('inPw').setAttribute('autocomplete', isUp ? 'new-password' : 'current-password');
   clearErrs();
 
   var M = window.Motion;
   if (M) M.animate(document.getElementById('authForm'), {opacity:[0.55,1], y:[8,0]}, {duration:0.28, easing:'ease-out'});
+  var focusEl = document.getElementById(isUp ? 'inName' : 'inEmail');
+  if (focusEl) focusEl.focus();
 }
 
 /* ── Password strength ─────────────────────────────────────── */
 function onPwInput(val) {
   if (mode !== 'signup') return;
+  if (val.length > 0 && val.length < 6) {
+    document.getElementById('pwBar').style.width      = '12%';
+    document.getElementById('pwBar').style.background = '#ef4444';
+    document.getElementById('pwLabel').textContent    = 'Too short (min 6)';
+    document.getElementById('pwLabel').style.color    = '#ef4444';
+    return;
+  }
   var score = 0;
   if (val.length >= 6)  score++;
   if (val.length >= 10) score++;
@@ -945,14 +957,27 @@ function validate() {
   return ok;
 }
 
+/* ── Password hashing (SHA-256 + per-user salt) ────────────── */
+function hashPw(pw, salt) {
+  var data = new TextEncoder().encode(salt + ':' + pw);
+  return crypto.subtle.digest('SHA-256', data).then(function(buf) {
+    return Array.prototype.map.call(new Uint8Array(buf), function(b) {
+      return ('0' + b.toString(16)).slice(-2);
+    }).join('');
+  });
+}
+function makeSalt() {
+  var a = new Uint8Array(12);
+  crypto.getRandomValues(a);
+  return Array.prototype.map.call(a, function(b){ return ('0'+b.toString(16)).slice(-2); }).join('');
+}
+
 /* ── Submit ────────────────────────────────────────────────── */
 function handleSubmit(e) {
   e.preventDefault();
   if (!validate()) return;
   setLoading(true);
-  setTimeout(function() {
-    if (mode === 'login') doLogin(); else doSignup();
-  }, 700);
+  if (mode === 'login') doLogin(); else doSignup();
 }
 
 function doLogin() {
@@ -961,17 +986,33 @@ function doLogin() {
   var rem   = document.getElementById('chkRemember').checked;
 
   var users = getUsers();
-  var user  = users.filter(function(u){ return u.email === email && u.pw === pw; })[0];
+  var user  = users.filter(function(u){ return u.email === email; })[0];
 
-  if (!user) {
+  var fail = function() {
     setLoading(false);
     fieldErr('inEmail','errEmail','Incorrect email or password');
     fieldErr('inPw','errPw','Incorrect email or password');
     toast('Invalid email or password', 'err');
-    return;
-  }
-  saveSession({email:user.email, name:user.name, loginTime:Date.now(), rememberMe:rem});
-  showSuccess(user.name || 'Welcome');
+  };
+  if (!user) { fail(); return; }
+
+  if (user.pwHash && user.salt) {
+    hashPw(pw, user.salt).then(function(h) {
+      if (h !== user.pwHash) { fail(); return; }
+      saveSession({email:user.email, name:user.name, loginTime:Date.now(), rememberMe:rem});
+      showSuccess(user.name || 'Welcome');
+    });
+  } else if (user.pw !== undefined) {
+    // Legacy plaintext account: verify once, then upgrade to hashed storage
+    if (user.pw !== pw) { fail(); return; }
+    var salt = makeSalt();
+    hashPw(pw, salt).then(function(h) {
+      user.salt = salt; user.pwHash = h; delete user.pw;
+      saveUsers(users);
+      saveSession({email:user.email, name:user.name, loginTime:Date.now(), rememberMe:rem});
+      showSuccess(user.name || 'Welcome');
+    });
+  } else { fail(); }
 }
 
 function doSignup() {
@@ -986,10 +1027,13 @@ function doSignup() {
     fieldErr('inEmail','errEmail','An account with this email already exists');
     return;
   }
-  users.push({name:name, email:email, pw:pw, created:Date.now()});
-  saveUsers(users);
-  saveSession({email:email, name:name, loginTime:Date.now(), rememberMe:rem});
-  showSuccess(name);
+  var salt = makeSalt();
+  hashPw(pw, salt).then(function(h) {
+    users.push({name:name, email:email, salt:salt, pwHash:h, created:Date.now()});
+    saveUsers(users);
+    saveSession({email:email, name:name, loginTime:Date.now(), rememberMe:rem});
+    showSuccess(name);
+  });
 }
 
 function showSuccess(name) {
@@ -998,7 +1042,11 @@ function showSuccess(name) {
   veil.classList.add('on');
   var M = window.Motion;
   if (M) M.animate(veil, {opacity:[0,1]}, {duration:0.3});
-  setTimeout(function(){ window.location.replace('speaker-cost-engine.html'); }, 1700);
+  var go = function(){ window.location.replace('speaker-cost-engine.html'); };
+  // Don't trap the user behind the veil: click or any key skips the wait
+  veil.addEventListener('click', go);
+  document.addEventListener('keydown', go);
+  setTimeout(go, 1200);
 }
 
 /* ── UI helpers ────────────────────────────────────────────── */
