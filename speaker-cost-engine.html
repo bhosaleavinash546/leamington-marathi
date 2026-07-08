@@ -3869,7 +3869,11 @@ function exportPPT() {
   var dateStr = new Date().toLocaleDateString('en-GB', {day:'2-digit',month:'short',year:'numeric'});
 
   try {
-    var pptx = new PptxGenJS();
+    if (typeof PptxGenJS === 'undefined') {
+    alert('PPT export library failed to load — check your internet connection and reload the page.');
+    return;
+  }
+  var pptx = new PptxGenJS();
     pptx.layout  = 'LAYOUT_WIDE';
     pptx.author  = 'SonoCost v2.1';
     pptx.subject = 'Automotive Speaker Should-Cost Report';
@@ -3994,7 +3998,7 @@ function exportPPT() {
       s4.addShape(pptx.ShapeType.rect, {x:2.2,y:y+0.35,w:10.5,h:0.38, fill:{color:'0d1520'}, line:{color:'1d2e50',width:1}});
       if (barW > 0.1) s4.addShape(pptx.ShapeType.rect, {x:2.2,y:y+0.35,w:barW,h:0.38, fill:{color:b.color}, line:{color:b.color}});
       s4.addText(b.lbl, {x:0.3,y:y+0.3,w:1.8,h:0.45, fontSize:10.5, color:C.t2, bold:true, fontFace:'Segoe UI'});
-      s4.addText('£'+b.val.toFixed(2)+' ('+b.pct.toFixed(1)+'%)', {x:2.3,y:y+0.07,w:5,h:0.35, fontSize:10, color:'#'+b.color, bold:true, fontFace:'Segoe UI'});
+      s4.addText('£'+b.val.toFixed(2)+' ('+b.pct.toFixed(1)+'%)', {x:2.3,y:y+0.07,w:5,h:0.35, fontSize:10, color:b.color, bold:true, fontFace:'Segoe UI'});
     });
 
     pptx.writeFile({fileName:'SonoCost-'+system.replace(/\s/g,'-')+'-'+country.replace(/\s/g,'')+'.pptx'});
@@ -4460,10 +4464,18 @@ function parseRSSXML(xml, feed) {
   } catch(e) { return []; }
 }
 
+// fetch with a hard deadline — a proxy that accepts the socket but never
+// responds must not stall the whole Trends tab.
+function fetchT(url, ms) {
+  var opts = {};
+  if (typeof AbortSignal !== 'undefined' && AbortSignal.timeout) opts.signal = AbortSignal.timeout(ms || 12000);
+  return fetch(url, opts);
+}
+
 function fetchRSSFeed(feed) {
   var cutoff = Date.now() - _TWELVE_MONTHS_MS;
   function fromRss2json() {
-    return fetch('https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(feed.url) + '&count=30')
+    return fetchT('https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(feed.url) + '&count=30')
       .then(function(r){ return r.json(); })
       .then(function(d){
         if (!d.items || d.items.length === 0 || d.status === 'error') throw new Error('empty');
@@ -4487,20 +4499,20 @@ function fetchRSSFeed(feed) {
       });
   }
   function fromProxy(base) {
-    return fetch(base + encodeURIComponent(feed.url)).then(function(r){ if(!r.ok) throw new Error(r.status); return r.text(); }).then(function(xml){ return parseRSSXML(xml, feed); });
+    return fetchT(base + encodeURIComponent(feed.url)).then(function(r){ if(!r.ok) throw new Error(r.status); return r.text(); }).then(function(xml){ return parseRSSXML(xml, feed); });
   }
   function fromAllOrigins() {
-    return fetch('https://api.allorigins.win/get?url=' + encodeURIComponent(feed.url)).then(function(r){ return r.json(); }).then(function(d){ return parseRSSXML(d.contents||'', feed); });
+    return fetchT('https://api.allorigins.win/get?url=' + encodeURIComponent(feed.url)).then(function(r){ return r.json(); }).then(function(d){ return parseRSSXML(d.contents||'', feed); });
   }
   return fromRss2json().catch(function(){ return fromProxy('https://corsproxy.io/?'); }).catch(function(){ return fromAllOrigins(); }).catch(function(){ return []; });
 }
 
 function fetchAllFeeds() {
-  return TREND_FEEDS.reduce(function(chain, feed) {
-    return chain.then(function(all) {
-      return fetchRSSFeed(feed).then(function(articles){ return all.concat(articles); }).catch(function(){ return all; });
-    });
-  }, Promise.resolve([]));
+  return Promise.all(TREND_FEEDS.map(function(feed) {
+    return fetchRSSFeed(feed).catch(function(){ return []; });
+  })).then(function(perFeed) {
+    return perFeed.reduce(function(all, a){ return all.concat(a); }, []);
+  });
 }
 
 function fetchCommodityPrices() {
@@ -4524,7 +4536,7 @@ function fetchCommodityPrices() {
   // Try corsproxy.io (returns raw JSON) then allorigins.win (wraps in {contents})
   function yahooFetch(ticker) {
     var yUrl = yBase + ticker + yParams;
-    return fetch('https://corsproxy.io/?' + encodeURIComponent(yUrl))
+    return fetchT('https://corsproxy.io/?' + encodeURIComponent(yUrl))
       .then(function(r) {
         if (!r.ok) throw new Error('corsproxy status ' + r.status);
         return r.json();
@@ -4607,7 +4619,7 @@ function renderTrendsTab() {
     return;
   }
 
-  cont.innerHTML = '<div style="text-align:center;padding:50px;color:var(--t3)"><span style="font-size:28px;display:block;margin-bottom:12px">⏳</span>Fetching live commodity prices and automotive audio news…<br><span style="font-size:10px;margin-top:8px;display:block">Loading feeds sequentially — may take up to 30 seconds</span></div>';
+  cont.innerHTML = '<div style="text-align:center;padding:50px;color:var(--t3)"><span style="font-size:28px;display:block;margin-bottom:12px">⏳</span>Fetching live commodity prices and automotive audio news…<br><span style="font-size:10px;margin-top:8px;display:block">Loading all feeds in parallel — typically a few seconds</span></div>';
 
   // Declared here so both .then() and .catch() can access it
   var commodities = null;
@@ -4665,7 +4677,7 @@ function buildTrendsHTML(liveArticles, commodities) {
     html += '<div style="font-size:9px;color:var(--t3);margin-top:6px">' + esc(c.source||'') + (c.updated ? ' · ' + c.updated : '') + '</div>';
     if (c.offline) html += '<div style="font-size:9px;color:#ff9800;margin-top:4px;line-height:1.4">⚠ Live fetch failed — showing indicative estimate. Click ↺ to retry.</div>';
     if (c.note) html += '<div style="font-size:9px;color:var(--amber);margin-top:4px;line-height:1.4">⚠ ' + esc(c.note) + '</div>';
-    if (c.sourceUrl) html += '<a href="' + c.sourceUrl + '" target="_blank" style="font-size:9px;color:var(--blue2);margin-top:4px;display:block">→ Verify at source</a>';
+    if (c.sourceUrl) html += '<a href="' + esc(c.sourceUrl) + '" target="_blank" rel="noopener" style="font-size:9px;color:var(--blue2);margin-top:4px;display:block">→ Verify at source</a>';
     html += '</div>';
   });
   html += '</div>';
@@ -4708,6 +4720,7 @@ function buildTrendsHTML(liveArticles, commodities) {
     var catCfg = CATEGORY_CONFIG[item.category] || CATEGORY_CONFIG.tech;
     var leftColor = catCfg.color;
     var itemUrl = item.link || item.sourceUrl || '';
+    if (itemUrl && !/^https?:\/\//i.test(itemUrl)) itemUrl = '';  // feed/proxy could smuggle javascript:
     var tag = itemUrl ? 'a href="'+esc(itemUrl)+'" target="_blank" rel="noopener noreferrer"' : 'div';
     var closeTag = itemUrl ? 'a' : 'div';
     html += '<'+tag+' class="trends-card trends-article-card" data-category="'+esc(item.category||'tech')+'" style="border-left:3px solid '+leftColor+'">';
@@ -4830,6 +4843,7 @@ function callClaudeStream(prompt, signal, onChunk, onDone, onError) {
     var reader = res.body.getReader();
     var decoder = new TextDecoder();
     var buf = '';
+    var streamError = null;  // mid-stream API error event (e.g. overloaded_error)
     function processLines(chunk) {
       buf += chunk;
       var lines = buf.split('\n');
@@ -4837,11 +4851,12 @@ function callClaudeStream(prompt, signal, onChunk, onDone, onError) {
       lines.forEach(function(line) {
         if (!line.startsWith('data: ')) return;
         var data = line.slice(6).trim();
-        if (data === '[DONE]') return;
         try {
           var ev = JSON.parse(data);
           if (ev.type === 'content_block_delta' && ev.delta && ev.delta.text) {
             onChunk(ev.delta.text);
+          } else if (ev.type === 'error' && ev.error) {
+            streamError = new Error(ev.error.message || 'Claude stream error');
           }
         } catch(e) {}
       });
@@ -4852,6 +4867,7 @@ function callClaudeStream(prompt, signal, onChunk, onDone, onError) {
           // Flush any bytes held by the TextDecoder for partial UTF-8 sequences
           var tail = decoder.decode();
           if (tail) processLines(tail);
+          if (streamError) { onError(streamError); return; }
           onDone();
           return;
         }
@@ -4984,11 +5000,12 @@ function _parseVideoUrl(url) {
   // Vimeo
   var vi = url.match(/vimeo\.com\/(?:video\/)?(\d+)/);
   if (vi) return { type: 'iframe', src: 'https://player.vimeo.com/video/' + vi[1] + '?autoplay=1' };
+  // Only ever emit http(s) URLs — anything else is rejected outright
+  if (!/^https?:\/\//i.test(url)) return null;
   // Direct video file
   if (/\.(mp4|webm|ogg|mov)(\?|$)/i.test(url)) return { type: 'video', src: url };
   // Anything else (Google Drive embed, SharePoint, Teams, etc.) — try as iframe
-  if (url.startsWith('http')) return { type: 'iframe', src: url };
-  return null;
+  return { type: 'iframe', src: url };
 }
 
 function initVideoPlayer() {
@@ -5016,9 +5033,9 @@ function initVideoPlayer() {
   }
   if (btn) btn.textContent = '✎ Change Video';
   if (parsed.type === 'iframe') {
-    wrap.innerHTML = '<div class="video-embed-wrap"><iframe src="' + parsed.src + '" allowfullscreen allow="autoplay; encrypted-media; picture-in-picture"></iframe></div>';
+    wrap.innerHTML = '<div class="video-embed-wrap"><iframe src="' + esc(parsed.src) + '" allowfullscreen allow="autoplay; encrypted-media; picture-in-picture"></iframe></div>';
   } else {
-    wrap.innerHTML = '<div class="video-embed-wrap"><video src="' + parsed.src + '" controls autoplay style="background:#000"></video></div>';
+    wrap.innerHTML = '<div class="video-embed-wrap"><video src="' + esc(parsed.src) + '" controls autoplay style="background:#000"></video></div>';
   }
 }
 

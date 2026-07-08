@@ -805,7 +805,7 @@ function clearSession(){ localStorage.removeItem(SESSION_KEY); }
 /* Redirect immediately if a valid session exists */
 (function checkAuth() {
   var s = getSession();
-  if (!s) return;
+  if (!s || typeof s.loginTime !== 'number') return;
   var maxAge = s.rememberMe ? 30 * 86400000 : 8 * 3600000;
   if (Date.now() - s.loginTime < maxAge) {
     window.location.replace('speaker-cost-engine.html');
@@ -869,13 +869,16 @@ function switchMode(m) {
   document.getElementById('pwStrength').classList.toggle('on', isUp);
 
   document.getElementById('authHeading').textContent = isUp ? 'Create your account' : 'Welcome back';
-  document.getElementById('btnLabel').textContent    = isUp ? 'Create Account'       : 'Sign In';
+  var btnLbl = document.getElementById('btnLabel');   // absent while the spinner is showing
+  if (btnLbl) btnLbl.textContent = isUp ? 'Create Account' : 'Sign In';
   document.getElementById('authSub').innerHTML = isUp
     ? 'Already have an account? <a href="#" role="button" onclick="switchMode(\'login\');return false">Sign in</a>'
     : 'Don\'t have an account? <a href="#" role="button" onclick="switchMode(\'signup\');return false">Sign up free</a>';
 
   document.getElementById('inPw').setAttribute('autocomplete', isUp ? 'new-password' : 'current-password');
+  if (!isUp) document.getElementById('inConfirm').value = '';
   clearErrs();
+  if (isUp) onPwInput(document.getElementById('inPw').value);
 
   var M = window.Motion;
   if (M) M.animate(document.getElementById('authForm'), {opacity:[0.55,1], y:[8,0]}, {duration:0.28, easing:'ease-out'});
@@ -959,12 +962,21 @@ function validate() {
 
 /* ── Password hashing (SHA-256 + per-user salt) ────────────── */
 function hashPw(pw, salt) {
-  var data = new TextEncoder().encode(salt + ':' + pw);
-  return crypto.subtle.digest('SHA-256', data).then(function(buf) {
+  return Promise.resolve().then(function() {
+    if (!window.crypto || !crypto.subtle) {
+      throw new Error('Secure crypto unavailable — open this page via https:// or file://, not plain http.');
+    }
+    var data = new TextEncoder().encode(salt + ':' + pw);
+    return crypto.subtle.digest('SHA-256', data);
+  }).then(function(buf) {
     return Array.prototype.map.call(new Uint8Array(buf), function(b) {
       return ('0' + b.toString(16)).slice(-2);
     }).join('');
   });
+}
+function authFail(msg) {
+  setLoading(false);
+  toast(msg || 'Something went wrong — please try again', 'err');
 }
 function makeSalt() {
   var a = new Uint8Array(12);
@@ -1001,7 +1013,7 @@ function doLogin() {
       if (h !== user.pwHash) { fail(); return; }
       saveSession({email:user.email, name:user.name, loginTime:Date.now(), rememberMe:rem});
       showSuccess(user.name || 'Welcome');
-    });
+    }).catch(function(e){ authFail(e.message); });
   } else if (user.pw !== undefined) {
     // Legacy plaintext account: verify once, then upgrade to hashed storage
     if (user.pw !== pw) { fail(); return; }
@@ -1011,7 +1023,7 @@ function doLogin() {
       saveUsers(users);
       saveSession({email:user.email, name:user.name, loginTime:Date.now(), rememberMe:rem});
       showSuccess(user.name || 'Welcome');
-    });
+    }).catch(function(e){ authFail(e.message); });
   } else { fail(); }
 }
 
@@ -1033,7 +1045,7 @@ function doSignup() {
     saveUsers(users);
     saveSession({email:email, name:name, loginTime:Date.now(), rememberMe:rem});
     showSuccess(name);
-  });
+  }).catch(function(e){ authFail(e.message); });
 }
 
 function showSuccess(name) {
@@ -1045,7 +1057,7 @@ function showSuccess(name) {
   var go = function(){ window.location.replace('speaker-cost-engine.html'); };
   // Don't trap the user behind the veil: click or any key skips the wait
   veil.addEventListener('click', go);
-  document.addEventListener('keydown', go);
+  document.addEventListener('keydown', function(e){ if (!e.repeat) go(); });
   setTimeout(go, 1200);
 }
 
