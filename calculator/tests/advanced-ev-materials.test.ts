@@ -48,3 +48,27 @@ describe('Advanced 2026 EV materials (BYD / Xiaomi class)', () => {
     expect(rate('hpdc-giga-6100t')).toBeLessThan(rate('hpdc-giga-9000t'));
   });
 });
+
+describe('Flagship high-speed motor laminations (SU7 Ultra / Yangwang U7/U8/U9)', () => {
+  it('adds ultra-thin, 6.5% Si, ~1100 MPa and thin cobalt-iron grades', () => {
+    for (const id of ['mat-no15-15a', 'mat-no10-10a', 'mat-si65-jnex-10', 'mat-uhsno-1100', 'mat-cofe-thin-010']) {
+      const m = mat(id)!;
+      expect(m, id).toBeTruthy();
+      expect(m.category).toBe('Electrical Steel Sheet');
+      expect(m.pricePerKg).toBeGreaterThan(0);
+      expect(m.effectiveDate).toBe('2026-07');
+    }
+  });
+
+  it('price ladder: thinner NO dearer, 6.5%Si premium, CoFe tops the ladder', () => {
+    expect(price('mat-no10-10a')).toBeGreaterThan(price('mat-no15-15a'));
+    expect(price('mat-no15-15a')).toBeGreaterThan(price('mat-no20-20a'));   // 0.15 > 0.20mm
+    expect(price('mat-uhsno-1100')).toBeGreaterThan(price('mat-hsno-rotor-960'));
+    expect(price('mat-cofe-thin-010')).toBeGreaterThan(price('mat-si65-jnex-10'));
+  });
+
+  it('thin flagship grades still classify as mill steel for country pricing', () => {
+    expect(classifyMaterialFamily(mat('mat-no10-10a')!)).toBe('millSteel');
+    expect(classifyMaterialFamily(mat('mat-si65-jnex-10')!)).toBe('millSteel');
+  });
+});
