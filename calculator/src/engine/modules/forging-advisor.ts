@@ -407,3 +407,142 @@ export function estimateForgingSecondaryAdders(inputs: ForgingSecondaryInputs): 
   const totalPerPartGbp = adders.reduce((s, a) => s + a.costPerPartGbp, 0);
   return { adders, totalPerPartGbp };
 }
+
+// ─── Billet heating: fuel selection (F-C1) ────────────────────────────────────
+
+export type FurnaceType = 'induction' | 'gas' | 'electric-resistance';
+
+/**
+ * Effective £/kWh for billet heating by furnace type, given the region's
+ * electricity and gas tariffs. `heatingEnergyKwhPerKg` is expressed as the
+ * wall-plug electrical energy an INDUCTION heater draws per kg; the factors
+ * below re-base it onto the chosen fuel:
+ *   - induction:          electricity, factor 1.0 (baseline)
+ *   - electric-resistance: electricity, ~1.35× (lower efficiency than induction)
+ *   - gas:                gas tariff, ~2.4× thermal energy but far cheaper per kWh
+ * Net effect: gas is usually the cheapest heat, induction the most controllable.
+ */
+export function resolveFurnaceEnergyPricePerKwh(
+  furnaceType: FurnaceType,
+  electricityPerKwh: number,
+  gasPerKwh: number,
+): number {
+  switch (furnaceType) {
+    case 'gas':                return gasPerKwh * 2.4;
+    case 'electric-resistance': return electricityPerKwh * 1.35;
+    case 'induction':
+    default:                   return electricityPerKwh * 1.0;
+  }
+}
+
+// ─── Forging load / press-tonnage estimate (F-H2) ─────────────────────────────
+
+export type ShapeComplexity = 'simple' | 'moderate' | 'complex';
+
+/**
+ * Representative hot-forging flow stress (MPa) at forging temperature by alloy
+ * family. These are order-of-magnitude die-fill pressures, not room-temperature
+ * yield: superalloys and titanium stay strong hot; aluminium is soft.
+ */
+export const FORGING_FLOW_STRESS_MPA: Record<ForgingAlloyFamily, number> = {
+  aluminium: 55,
+  copper: 70,
+  'carbon-steel': 90,
+  'alloy-steel': 110,
+  'microalloyed-steel': 105,
+  'stainless-steel': 150,
+  titanium: 210,
+  superalloy: 380,
+};
+
+/**
+ * Shape/constraint multiplier (Kt) applied to flow stress — closed impressions
+ * and thin ribs need many times the flow stress to fill.
+ */
+function shapeConstraintFactor(shape: ShapeComplexity): number {
+  return shape === 'complex' ? 8 : shape === 'moderate' ? 5 : 3;
+}
+
+export interface ForgingTonnageInputs {
+  projectedAreaCm2: number;      // plan-view projected area at the parting plane
+  alloyFamily: ForgingAlloyFamily;
+  shapeComplexity?: ShapeComplexity;
+  /** Override flow stress (MPa) if a die-fill value is known. */
+  flowStressMpaOverride?: number;
+}
+
+/**
+ * Estimate required press force (tonnes) to fill the die:
+ *   F = Kt · σflow · A_projected.
+ * Returns metric tonnes-force. Use to validate that the selected press can
+ * strike the part.
+ */
+export function estimateForgingTonnage(inputs: ForgingTonnageInputs): number {
+  const sigma = inputs.flowStressMpaOverride ?? FORGING_FLOW_STRESS_MPA[inputs.alloyFamily]; // N/mm²
+  const kt = shapeConstraintFactor(inputs.shapeComplexity ?? 'moderate');
+  const areaMm2 = Math.max(0, inputs.projectedAreaCm2) * 100;   // cm² → mm²
+  const forceN = kt * sigma * areaMm2;                           // MPa·mm² = N
+  return forceN / 9806.65;                                       // N → tonnes-force
+}
+
+// ─── Parametric forging die-cost estimator (F-H3) ─────────────────────────────
+
+export type DieSteel = 'h13' | 'premium' | 'hammer';
+
+export interface ForgingDieCostInputs {
+  projectedAreaCm2: number;      // part plan area — drives block size & machining
+  partWeightKg: number;
+  dieSteel?: DieSteel;           // H13 (standard), premium (1.2367/PM), hammer (1.2714)
+  impressions?: number;          // blocker + finisher (+ edger) cavities; default 2
+  complexity?: ShapeComplexity;
+}
+
+export interface ForgingDieCostBreakdown {
+  block: number;        // die block steel
+  machining: number;    // sink/CNC/EDM per impression
+  heatTreat: number;    // die HT
+  polish: number;       // finishing / polishing per impression
+  total: number;
+}
+
+/** Die-steel cost multiplier applied to block + machining. */
+export function dieSteelFactor(steel: DieSteel | undefined): number {
+  switch (steel) {
+    case 'premium': return 1.40;  // 1.2367 / PM steels — hot-hard, superalloy dies
+    case 'hammer':  return 0.85;  // 1.2714 tough hammer-die steel
+    case 'h13':
+    default:        return 1.00;  // 1.2344 / H13 workhorse
+  }
+}
+
+/**
+ * Estimate a forging die-set cost (£) from part envelope and die construction
+ * instead of a bare manual number. Captures block steel, per-impression
+ * machining (blocker/finisher), die heat-treat and polishing, scaled by
+ * die-steel grade and geometric complexity.
+ */
+export function estimateForgingDieCost(inputs: ForgingDieCostInputs): ForgingDieCostBreakdown {
+  const areaCm2 = Math.max(0, inputs.projectedAreaCm2);
+  const impressions = Math.max(1, Math.floor(inputs.impressions ?? 2));
+  const complexityFactor = (inputs.complexity ?? 'moderate') === 'complex' ? 1.4
+    : (inputs.complexity ?? 'moderate') === 'simple' ? 0.8 : 1.0;
+  const steelFactor = dieSteelFactor(inputs.dieSteel);
+
+  // Block scales with part envelope (area) + a mass allowance for the holder.
+  const blockRaw = 6000 + areaCm2 * 45 + Math.max(0, inputs.partWeightKg) * 250;
+  const machiningRaw = impressions * (3500 + areaCm2 * 55) * complexityFactor;
+
+  const block = blockRaw * steelFactor;
+  const machining = machiningRaw * steelFactor;
+  const heatTreat = 2500 + areaCm2 * 6;                 // harden + temper the block
+  const polish = impressions * 800 * complexityFactor;  // finish impressions
+
+  const total = Math.round(block + machining + heatTreat + polish);
+  return {
+    block: Math.round(block),
+    machining: Math.round(machining),
+    heatTreat: Math.round(heatTreat),
+    polish: Math.round(polish),
+    total,
+  };
+}

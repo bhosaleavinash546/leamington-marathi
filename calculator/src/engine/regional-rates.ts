@@ -354,25 +354,41 @@ const UK_ELECTRICITY_BASIS_PER_KWH = 0.23;
 
 /** Resin family used to select the country price factor. */
 export type ResinFamily = 'commodity' | 'engineering' | 'highPerformance';
+/** Full material family: resins, plus metal sub-types and a catch-all. */
+export type MaterialFamily = ResinFamily | 'exchangeMetal' | 'millSteel' | 'other';
 
 // Commodity (feedstock/oil-linked) resins by material-id stem. Everything else in
 // a plastic category that isn't high-performance is treated as an engineering resin.
 const COMMODITY_RESIN_RE =
   /^mat-(pp|hdpe|ldpe|lldpe|upvc|fpvc|pvc|gpps|hips|ps|pet-bg|pcr-pp)(-|$)/;
 
+// Exchange-traded metals (LME/producer + surcharge) — priced on a near-global
+// market, so they barely vary by country. Non-ferrous + Ti/Ni superalloys.
+const EXCHANGE_METAL_RE = /alumin|titanium|nickel|superalloy|copper|brass|bronze|magnesium|zinc/;
+// Steel/iron mill products — conversion cost is regional, so wider country spread.
+const MILL_STEEL_RE = /steel|stainless|iron|\btool\b/;
+
 /**
- * Classify a material for country pricing. High-performance and metal/other
- * materials are keyed off the category; commodity vs engineering resins are
- * separated by material id (both share the generic "Thermoplastic" category).
+ * Classify a material for country pricing.
+ *   - Resins: commodity / engineering (by id) / high-performance (by category).
+ *   - Metals: exchange-traded (Al/Ti/Ni/Cu/Mg — ~flat globally) vs mill steel
+ *     (carbon/alloy/stainless/tool — wider regional spread).
+ *   - Everything else (paint, composite, consumables) → 'other'.
+ * A single flat multiplier is wrong for global alloys: it would discount a
+ * China-forged Inconel billet's material ~12% when nickel is exchange-priced.
  */
-export function classifyMaterialFamily(m: Pick<MaterialRate, 'id' | 'category'>): ResinFamily | 'metalOther' {
+export function classifyMaterialFamily(m: Pick<MaterialRate, 'id' | 'category'>): MaterialFamily {
   const cat = m.category.toLowerCase();
   const isPlastic =
     cat.includes('thermoplastic') || cat.includes('plastic') ||
     cat.includes('moulding') || cat.includes('resin') || cat.includes('elastomer');
-  if (!isPlastic) return 'metalOther';
-  if (cat.includes('high-performance') || cat.includes('high performance')) return 'highPerformance';
-  return COMMODITY_RESIN_RE.test(m.id) ? 'commodity' : 'engineering';
+  if (isPlastic) {
+    if (cat.includes('high-performance') || cat.includes('high performance')) return 'highPerformance';
+    return COMMODITY_RESIN_RE.test(m.id) ? 'commodity' : 'engineering';
+  }
+  if (EXCHANGE_METAL_RE.test(cat)) return 'exchangeMetal';
+  if (MILL_STEEL_RE.test(cat)) return 'millSteel';
+  return 'other';
 }
 
 /**
@@ -402,12 +418,16 @@ export function buildRegionalLibrary(baseLibrary: RateLibrary, region: Manufactu
     supervisor:  rd.labour.supervisor,
   };
 
-  // Family-aware material factor: resins priced by family, metals/other flat.
+  // Family-aware material factor: resins priced by family; exchange-traded metals
+  // (Al/Ti/Ni/Cu/Mg) use the near-flat global compression (same as high-perf resin);
+  // mill steel and everything else use the regional index.
   const materialFactorFor = (m: MaterialRate): number => {
     switch (classifyMaterialFamily(m)) {
       case 'commodity':       return rd.materialFactors.commodityResin;
       case 'engineering':     return rd.materialFactors.engineeringResin;
       case 'highPerformance': return rd.materialFactors.highPerfResin;
+      case 'exchangeMetal':   return rd.materialFactors.highPerfResin; // global market → ~flat
+      case 'millSteel':       return rd.materialMultiplier;
       default:                return rd.materialMultiplier;
     }
   };

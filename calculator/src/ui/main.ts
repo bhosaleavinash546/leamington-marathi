@@ -9,6 +9,10 @@ import { computeSheetMetalDrivers, assessPressTonnage } from '../engine/modules/
 import { computeInjectionMouldingDrivers, estimateClampingTonnage, estimateMouldCost, autoCoolFactorForMaterial, type MouldSteelClass } from '../engine/modules/injection-moulding.js';
 import { computeCastingDrivers } from '../engine/modules/casting.js';
 import { computeForgingDrivers } from '../engine/modules/forging.js';
+import {
+  estimateForgingTonnage, resolveFurnaceEnergyPricePerKwh, estimateForgingDieCost,
+  type FurnaceType, type ShapeComplexity, type DieSteel, type ForgingAlloyFamily,
+} from '../engine/modules/forging-advisor.js';
 import { computePaintingDrivers } from '../engine/modules/painting.js';
 import { computeBIWDrivers } from '../engine/modules/biw-assembly.js';
 import { computePCBFabDrivers } from '../engine/modules/pcb-fab.js';
@@ -3206,18 +3210,31 @@ function renderForgingForm(): string {
       <div class="field-group"><label>Labour Eff.</label><input type="number" id="forge-lab-eff" step="0.01" min="0.01" max="1" value="0.92"/></div>
       <div class="field-group"><label>Heating (kWh/kg)</label><input type="number" id="forge-heat-energy" step="0.1" min="0" value="0.4"/></div>
     </div>
+    <div class="field-row" style="margin-top:6px">
+      <div class="field-group"><label>Furnace Type <span title="Selects the heating fuel/tariff: induction (electricity ×1.0), electric-resistance (electricity ×1.35), gas (gas tariff ×2.4 thermal).">ℹ</span></label><select id="forge-furnace"><option value="induction" selected>Induction (electric)</option><option value="gas">Gas furnace</option><option value="electric-resistance">Electric resistance</option></select></div>
+      <div class="field-group"><label>Projected Area (cm²) <span title="Plan-view area at the parting plane. Drives the forging-load check and the die-cost estimate.">ℹ</span></label><input type="number" id="forge-proj-area" step="1" min="0" value="80"/></div>
+    </div>
     <div class="section-title" style="margin-top:8px">Tooling</div>
     <div class="field-row">
-      <div class="field-group"><label>Die Cost (£)</label><input type="number" id="forge-die-cost" step="1000" min="0" value="80000"/></div>
+      <div class="field-group"><label>Die Cost (£) <span title="Enter a figure to use it directly. Leave 0 to auto-estimate from area, steel, impressions and complexity.">ℹ</span></label><input type="number" id="forge-die-cost" step="1000" min="0" value="80000" title="0 = auto-estimate parametrically"/></div>
       <div class="field-group"><label>Die Life (forgings)</label><input type="number" id="forge-die-life" step="1000" min="0" value="50000"/></div>
     </div>
     <div class="field-row" style="margin-top:6px">
+      <div class="field-group"><label>Die Steel <span title="Die-cost estimator only (Die Cost=0): H13 ×1.0, premium 1.2367/PM ×1.4, hammer 1.2714 ×0.85.">ℹ</span></label><select id="forge-die-steel"><option value="h13" selected>H13 / 1.2344 (standard)</option><option value="premium">Premium (1.2367 / PM)</option><option value="hammer">Hammer die (1.2714)</option></select></div>
+      <div class="field-group"><label>Die Impressions <span title="Die-cost estimator only: blocker + finisher (+ edger) cavities. Default 2.">ℹ</span></label><input type="number" id="forge-die-impr" step="1" min="1" value="2"/></div>
+    </div>
+    <div class="field-row" style="margin-top:6px">
+      <div class="field-group"><label>Shape Complexity <span title="Drives the forging-load factor and die-cost estimate: simple ×3, moderate ×5, complex ×8 on flow stress.">ℹ</span></label><select id="forge-shape"><option value="simple">Simple (upset/block)</option><option value="moderate" selected>Moderate (impression)</option><option value="complex">Complex (thin ribs/webs)</option></select></div>
       <div class="field-group"><label>Amort. Volume</label><input type="number" id="forge-amort" step="1000" min="1" value="100000"/></div>
     </div>
-    <div class="section-title" style="margin-top:8px">Optional</div>
+    <div class="section-title" style="margin-top:8px">Secondary &amp; Optional</div>
     <div class="field-row">
       <div class="field-group"><label>Heat Treat (£/kg, 0=none)</label><input type="number" id="forge-ht-cost" step="0.1" min="0" value="0"/></div>
       <div class="field-group"><label>Descale (£/kg, 0=none)</label><input type="number" id="forge-descale" step="0.1" min="0" value="0"/></div>
+    </div>
+    <div class="field-row" style="margin-top:6px">
+      <div class="field-group"><label>Coining/Sizing (£/part, 0=none) <span title="Cold restrike for tight flatness/thickness after forging.">ℹ</span></label><input type="number" id="forge-coining" step="0.05" min="0" value="0"/></div>
+      <div class="field-group"><label>NDT (£/part, 0=none) <span title="Non-destructive test per part: MPI ~£2.5, UT ~£6, CT ~£32 for safety-critical forgings.">ℹ</span></label><input type="number" id="forge-ndt" step="0.5" min="0" value="0"/></div>
     </div>
     <div class="field-row" style="margin-top:6px">
       <div class="field-group"><label>Trim Machine (opt.)</label><select id="forge-trim-mach" class="machine-select"><option value="">— None —</option></select></div>
@@ -9658,12 +9675,32 @@ function collectForgingInput(): UniversalStackInput {
   const trimCt = num('forge-trim-ct');
   const trimmingMachineId = sel('forge-trim-mach') || undefined;
   const trimmingLabourId = sel('forge-trim-lab') || undefined;
+
+  const materialId = sel('forge-mat');
+  const forgeId = sel('forge-mach');
+  const partWeightKg = num('forge-part-wt');
+  const flashAndScaleKg = num('forge-flash');
+  const yieldFraction = num('forge-yield');
+  const projectedAreaCm2 = num('forge-proj-area');
+  const shapeComplexity = validSel<ShapeComplexity>('forge-shape', ['simple','moderate','complex'], 'moderate');
+  const dieSteel = validSel<DieSteel>('forge-die-steel', ['h13','premium','hammer'], 'h13');
+  const dieImpressions = num('forge-die-impr') || 2;
+  const manualDieCost = num('forge-die-cost');
+  const furnaceType = validSel<FurnaceType>('forge-furnace', ['induction','gas','electric-resistance'], 'induction');
+
+  // F-C1: resolve the region's heating tariff for the selected fuel from the active library.
+  const elecPerKwh = library.energy?.[0]?.electricityPerKwh ?? 0.23;
+  const gasPerKwh = library.energy?.[0]?.gasPerKwh ?? 0.065;
+  const heatingEnergyPricePerKwh = resolveFurnaceEnergyPricePerKwh(furnaceType, elecPerKwh, gasPerKwh);
+
+  const alloyFamily = forgingAlloyFamilyFor(materialId);
+
   const drivers = computeForgingDrivers({
-    materialId: sel('forge-mat'),
-    partWeightKg: num('forge-part-wt'),
-    flashAndScaleKg: num('forge-flash'),
-    yieldFraction: num('forge-yield'),
-    forgeId: sel('forge-mach'),
+    materialId,
+    partWeightKg,
+    flashAndScaleKg,
+    yieldFraction,
+    forgeId,
     labourId: sel('forge-lab'),
     strokesToForm: num('forge-strokes') || 1,
     timePerBlowSec: num('forge-time-per-blow') || undefined,
@@ -9672,16 +9709,82 @@ function collectForgingInput(): UniversalStackInput {
     manning: num('forge-manning'),
     labourEfficiency: num('forge-lab-eff'),
     heatingEnergyKwhPerKg: num('forge-heat-energy'),
+    heatingEnergyPricePerKwh,
     dieLife: num('forge-die-life'),
-    dieCost: num('forge-die-cost'),
+    // 0 / blank → estimate parametrically from area, steel, impressions and complexity.
+    dieCost: manualDieCost > 0 ? manualDieCost : undefined,
+    projectedAreaCm2,
+    dieSteel,
+    dieImpressions,
+    dieComplexity: shapeComplexity,
     amortizationVolume: num('forge-amort') || 1,
     heatTreatCostPerKg: num('forge-ht-cost') || undefined,
     descaleCostPerKg: num('forge-descale') || undefined,
+    coiningCostPerPart: num('forge-coining') || undefined,
+    ndtCostPerPart: num('forge-ndt') || undefined,
     trimmingMachineId: trimCt > 0 ? trimmingMachineId : undefined,
     trimmingLabourId: trimCt > 0 ? trimmingLabourId : undefined,
     trimmingCycleHr: trimCt > 0 ? trimCt : undefined,
   });
+
+  // F-H2: forging-load validation — warn if the part needs more force than the press can deliver.
+  // Only force-rated machines (press / screw / upsetter) carry a tonnage; hammers do not.
+  const ratedTonnage = parseForgeRatedTonnage(forgeId);
+  if (ratedTonnage && projectedAreaCm2 > 0) {
+    const requiredTonnage = estimateForgingTonnage({ projectedAreaCm2, alloyFamily, shapeComplexity });
+    if (requiredTonnage > ratedTonnage) {
+      _smExtraWarnings.push(
+        `Forging load: part needs ≈${Math.round(requiredTonnage)}T (${projectedAreaCm2} cm² × ${alloyFamily} flow stress × ${shapeComplexity} shape) ` +
+        `but the selected ${ratedTonnage}T press is undersized — under-fill, laps or press overload. ` +
+        `Select a press ≥ ${Math.ceil(requiredTonnage / 500) * 500}T, simplify the shape, or split into a preform + finish sequence.`
+      );
+    } else if (requiredTonnage > ratedTonnage * 0.9) {
+      _smExtraWarnings.push(
+        `Forging load: part needs ≈${Math.round(requiredTonnage)}T vs ${ratedTonnage}T rated — running near press capacity leaves little margin for die wear/temperature drop.`
+      );
+    }
+  }
+
+  // F-H3: surface the die-cost estimate when it was auto-derived.
+  if (manualDieCost <= 0) {
+    const est = estimateForgingDieCost({ projectedAreaCm2, partWeightKg, dieSteel, impressions: dieImpressions, complexity: shapeComplexity });
+    _smExtraWarnings.push(
+      `Tooling: die cost auto-estimated at £${est.total.toLocaleString()} ` +
+      `(block £${est.block.toLocaleString()} + machining £${est.machining.toLocaleString()} + HT £${est.heatTreat.toLocaleString()} + polish £${est.polish.toLocaleString()}). Enter a Die Cost to override.`
+    );
+  }
+
+  // F-M4: scale double-count guard — flash+scale AND a low yield both cite furnace scale.
+  if (flashAndScaleKg > 0 && yieldFraction > 0 && yieldFraction < 0.85 && partWeightKg > 0) {
+    const flashFrac = flashAndScaleKg / (partWeightKg + flashAndScaleKg);
+    if (flashFrac > 0.15) {
+      _smExtraWarnings.push(
+        `Material loss: Flash+Scale (${(flashFrac * 100).toFixed(0)}% of forged weight) AND yield ${(yieldFraction * 100).toFixed(0)}% both account for scale. ` +
+        `Enter flash in "Flash + Scale" and reserve Yield for end-crop/bar-loss only, or scale may be double-counted.`
+      );
+    }
+  }
+
   return { ...getUniversalTail(), rawMaterial: drivers.rawMaterial, operations: drivers.operations, tooling: drivers.tooling };
+}
+
+/** Parse a force-rated forge machine's tonnage from its id (press/screw/upsetter only). */
+function parseForgeRatedTonnage(machineId: string): number | null {
+  if (!/press|screw|upsetter/i.test(machineId)) return null;   // hammers are energy-rated
+  const m = /(\d+)t\b/i.exec(machineId);
+  return m ? Number(m[1]) : null;
+}
+
+/** Infer the forging alloy family from a material's library category (for load estimation). */
+function forgingAlloyFamilyFor(materialId: string): ForgingAlloyFamily {
+  const cat = (library.materials.find(m => m.id === materialId)?.category ?? '').toLowerCase();
+  if (cat.includes('titanium')) return 'titanium';
+  if (cat.includes('superalloy') || cat.includes('nickel')) return 'superalloy';
+  if (cat.includes('stainless')) return 'stainless-steel';
+  if (cat.includes('alloy steel')) return 'alloy-steel';
+  if (cat.includes('aluminium') || cat.includes('magnesium')) return 'aluminium';
+  if (cat.includes('brass') || cat.includes('copper') || cat.includes('bronze')) return 'copper';
+  return 'carbon-steel';
 }
 
 function collectPaintingInput(): UniversalStackInput {

@@ -408,6 +408,12 @@ export const DEFAULT_RATE_LIBRARY: RateLibrary = {
     // ── Nickel superalloy forging bar ──────────────────────────────────────
     { id: 'mat-inconel718-forge', grade: 'Inconel 718 (Forging Bar)', category: 'Nickel Superalloy Billet', pricePerKg: 44.00, scrapRecoveryPricePerKg: 8.00, densityKgPerM3: 8190, region: 'UK', effectiveDate: '2026-07', sourceNote: 'Index-anchored 2026-07 (see FORGING PRICING BASIS). Age-hardenable Ni-Cr superalloy — turbine discs, shafts, rings; VIM/VAR remelt, high hot-strength.', confidence: 'Low' },
     { id: 'mat-waspaloy-forge', grade: 'Waspaloy (Forging Bar)', category: 'Nickel Superalloy Billet', pricePerKg: 70.00, scrapRecoveryPricePerKg: 12.00, densityKgPerM3: 8190, region: 'UK', effectiveDate: '2026-07', sourceNote: 'Index-anchored 2026-07 (see FORGING PRICING BASIS). Co-strengthened Ni superalloy — hot-section turbine discs, seals; retains strength to ~700°C, Co adder over 718.', confidence: 'Low' },
+    { id: 'mat-inconel625-forge', grade: 'Inconel 625 (Forging Bar)', category: 'Nickel Superalloy Billet', pricePerKg: 38.00, scrapRecoveryPricePerKg: 7.00, densityKgPerM3: 8440, region: 'UK', effectiveDate: '2026-07', sourceNote: 'Index-anchored 2026-07 (see FORGING PRICING BASIS). Solid-solution Ni-Cr-Mo — marine/chemical, exhaust, subsea; excellent corrosion + weldability, non-age-hardening.', confidence: 'Low' },
+    { id: 'mat-hastelloy-c276-forge', grade: 'Hastelloy C-276 (Forging Bar)', category: 'Nickel Superalloy Billet', pricePerKg: 55.00, scrapRecoveryPricePerKg: 9.00, densityKgPerM3: 8890, region: 'UK', effectiveDate: '2026-07', sourceNote: 'Index-anchored 2026-07 (see FORGING PRICING BASIS). Ni-Mo-Cr — severe chemical/acid, flue-gas, subsea valves; outstanding pitting/crevice resistance, high Mo adder.', confidence: 'Low' },
+    { id: 'mat-monel400-forge', grade: 'Monel 400 (Forging Bar)', category: 'Nickel Alloy Billet', pricePerKg: 28.00, scrapRecoveryPricePerKg: 5.00, densityKgPerM3: 8800, region: 'UK', effectiveDate: '2026-07', sourceNote: 'Index-anchored 2026-07 (see FORGING PRICING BASIS). Ni-Cu — marine shafting, valves, seawater service; resists chlorides and HF, non-hardenable.', confidence: 'Low' },
+    { id: 'mat-ti-6242-forge', grade: 'Ti-6Al-2Sn-4Zr-2Mo (Forging Bar)', category: 'Titanium Forging Billet', pricePerKg: 52.00, scrapRecoveryPricePerKg: 6.50, densityKgPerM3: 4540, region: 'UK', effectiveDate: '2026-07', sourceNote: 'Index-anchored 2026-07 (see FORGING PRICING BASIS). Near-α high-temp titanium — compressor discs/blades to ~540°C, engine forgings; premium over Ti-6Al-4V.', confidence: 'Low' },
+    { id: 'mat-al7050-forge', grade: '7050 (Al-Zn Aero Forging Stock)', category: 'Aluminium Forging Billet', pricePerKg: 8.50, scrapRecoveryPricePerKg: 1.10, densityKgPerM3: 2830, region: 'UK', effectiveDate: '2026-07', sourceNote: 'Index-anchored 2026-07 (see FORGING PRICING BASIS). High-strength aerospace 7xxx — thick-section airframe fittings, bulkheads; better SCC resistance than 7075.', confidence: 'Low' },
+    { id: 'mat-mg-az31-forge', grade: 'AZ31B (Mg Forging Bar)', category: 'Magnesium Forging Billet', pricePerKg: 6.50, scrapRecoveryPricePerKg: 0.90, densityKgPerM3: 1770, region: 'UK', effectiveDate: '2026-07', sourceNote: 'Index-anchored 2026-07 (see FORGING PRICING BASIS). Wrought Mg-Al-Zn — lightweight brackets, aerospace/defence, portable structures; forged warm (~300–400°C).', confidence: 'Low' },
     // ── Copper alloy forging stock ─────────────────────────────────────────
     { id: 'mat-brass-cz122-forge', grade: 'CZ122 / CW617N (Forging Brass)', category: 'Copper Alloy Billet', pricePerKg: 7.20, scrapRecoveryPricePerKg: 3.00, densityKgPerM3: 8500, region: 'UK', effectiveDate: '2026-07', sourceNote: 'Index-anchored 2026-07 (see FORGING PRICING BASIS). Hot-stamping brass — valve bodies, fittings, plumbing; excellent forgeability and machinability.', confidence: 'Low' },
     // ── Paint / coating materials (price per kg wet paint) ─────────────────
@@ -648,14 +654,44 @@ export const DEFAULT_RATE_LIBRARY: RateLibrary = {
       { annualDepreciation: 18000, maintenance: 9000, energy: 14000, floorSpace: 5000, indirectSupport: 4000, financeCost: 2250, annualAvailableHours: 3500, machineUtilization: 0.80 },
       'UK', 'Small HPDC / zinc die casting machine, UK foundry benchmark'),
     // ── Forging Machines ──────────────────────────────────────────────────
-    // Forge energy: hydraulic press ~55 kW avg; pneumatic hammer + compressor ~50 kW avg
-    // Induction heating is a separate per-part cost (heatingEnergyKwhPerKg input field)
-    makeMachine('forge-press-500t', '500T Forge Press',
+    // Forge press/hammer energy = press motor / compressor only (UK £0.23/kWh basis,
+    // re-tariffed regionally). Billet furnace/induction heating is a SEPARATE per-part
+    // cost via the heatingEnergyKwhPerKg input — do not fold it into these rates.
+    // Presses/screw/upsetter are force-rated (tonnage in the id → load validation);
+    // hammers are energy/ram-mass rated and are NOT tonnage-validated.
+    makeMachine('forge-press-500t', '500T Mechanical Forge Press',
       { annualDepreciation: 45000, maintenance: 22000, energy: 55000, floorSpace: 12000, indirectSupport: 10000, financeCost: 5625, annualAvailableHours: 3500, machineUtilization: 0.78 },
       'UK', 'UK forge shop benchmark, Jun 2026'),
+    makeMachine('forge-press-1600t', '1600T Mechanical Forge Press',
+      { annualDepreciation: 90000, maintenance: 42000, energy: 85000, floorSpace: 20000, indirectSupport: 18000, financeCost: 11250, annualAvailableHours: 3500, machineUtilization: 0.78 },
+      'UK', 'UK forge shop benchmark (mid-size crank press), Jun 2026'),
+    makeMachine('forge-press-2500t', '2500T Mechanical Forge Press',
+      { annualDepreciation: 130000, maintenance: 60000, energy: 120000, floorSpace: 28000, indirectSupport: 26000, financeCost: 16250, annualAvailableHours: 3500, machineUtilization: 0.78 },
+      'UK', 'UK forge shop benchmark (automotive crank/con-rod press), Jun 2026'),
+    makeMachine('forge-press-4000t', '4000T Hydraulic Forge Press',
+      { annualDepreciation: 200000, maintenance: 90000, energy: 175000, floorSpace: 40000, indirectSupport: 40000, financeCost: 25000, annualAvailableHours: 3500, machineUtilization: 0.78 },
+      'UK', 'UK forge shop benchmark (large hydraulic press), Jun 2026'),
+    makeMachine('forge-press-8000t', '8000T Hydraulic Forge Press',
+      { annualDepreciation: 380000, maintenance: 170000, energy: 320000, floorSpace: 70000, indirectSupport: 75000, financeCost: 47500, annualAvailableHours: 3500, machineUtilization: 0.75 },
+      'UK', 'UK forge shop benchmark (heavy structural/aero press), Jun 2026'),
+    makeMachine('forge-screw-1000t', '1000T Screw Press',
+      { annualDepreciation: 70000, maintenance: 32000, energy: 60000, floorSpace: 16000, indirectSupport: 14000, financeCost: 8750, annualAvailableHours: 3500, machineUtilization: 0.78 },
+      'UK', 'UK forge shop benchmark (screw press — precision/near-net), Jun 2026'),
+    makeMachine('forge-upsetter-1000t', '1000T Horizontal Upsetter',
+      { annualDepreciation: 60000, maintenance: 28000, energy: 40000, floorSpace: 14000, indirectSupport: 12000, financeCost: 7500, annualAvailableHours: 3500, machineUtilization: 0.78 },
+      'UK', 'UK forge shop benchmark (upset forging — gears, valves, flanges), Jun 2026'),
+    makeMachine('forge-hammer-2t', '2T Pneumatic Forge Hammer',
+      { annualDepreciation: 20000, maintenance: 10000, energy: 28000, floorSpace: 10000, indirectSupport: 6000, financeCost: 2500, annualAvailableHours: 3500, machineUtilization: 0.78 },
+      'UK', 'UK forge shop benchmark (small drop hammer), Jun 2026'),
     makeMachine('forge-hammer-5t', '5T Pneumatic Forge Hammer',
       { annualDepreciation: 35000, maintenance: 18000, energy: 45000, floorSpace: 15000, indirectSupport: 9000, financeCost: 4375, annualAvailableHours: 3500, machineUtilization: 0.78 },
       'UK', 'UK forge shop benchmark, Jun 2026'),
+    makeMachine('forge-hammer-10t', '10T Counterblow Forge Hammer',
+      { annualDepreciation: 60000, maintenance: 30000, energy: 70000, floorSpace: 22000, indirectSupport: 15000, financeCost: 7500, annualAvailableHours: 3500, machineUtilization: 0.78 },
+      'UK', 'UK forge shop benchmark (heavy counterblow hammer), Jun 2026'),
+    makeMachine('forge-ring-mill', 'CNC Seamless Ring Rolling Mill',
+      { annualDepreciation: 120000, maintenance: 55000, energy: 90000, floorSpace: 30000, indirectSupport: 25000, financeCost: 15000, annualAvailableHours: 3500, machineUtilization: 0.78 },
+      'UK', 'UK forge shop benchmark (radial-axial ring mill), Jun 2026'),
     // ── Painting ──────────────────────────────────────────────────────────
     makeMachine('paint-line-std', 'Standard Paint Line (E-coat + Topcoat)',
       { annualDepreciation: 120000, maintenance: 50000, energy: 80000, floorSpace: 40000, indirectSupport: 30000, financeCost: 15000, annualAvailableHours: 4000, machineUtilization: 0.82 },
@@ -1035,6 +1071,24 @@ export const DEFAULT_RATE_LIBRARY: RateLibrary = {
       fullyLoadedRatePerHr: 35.10,
       effectiveDate: '2026-06-14',
       sourceNote: 'UK production supervisor benchmark Jun 2026, incl. NI + benefits',
+      confidence: 'Medium',
+    },
+    {
+      id: 'lab-uk-forge',
+      region: 'UK',
+      skillLevel: 'Forge Operator / Hammer-man',
+      fullyLoadedRatePerHr: 24.00,
+      effectiveDate: '2026-06-14',
+      sourceNote: 'UK drop-forge operator wage benchmark Jun 2026, incl. NI + benefits + hot-work allowance',
+      confidence: 'Medium',
+    },
+    {
+      id: 'lab-uk-furnace',
+      region: 'UK',
+      skillLevel: 'Furnace / Heat Operator',
+      fullyLoadedRatePerHr: 22.00,
+      effectiveDate: '2026-06-14',
+      sourceNote: 'UK furnace/induction heat operator wage benchmark Jun 2026, incl. NI + benefits',
       confidence: 'Medium',
     },
     {

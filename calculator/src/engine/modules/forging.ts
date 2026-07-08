@@ -1,4 +1,5 @@
 import type { CommodityDrivers, OperationInput, RawMaterialInput, ToolingInput } from '../types.js';
+import { estimateForgingDieCost, type DieSteel, type ShapeComplexity } from './forging-advisor.js';
 
 export interface ForgingInputs {
   materialId: string;
@@ -13,9 +14,17 @@ export interface ForgingInputs {
   oee: number;
   manning: number;
   labourEfficiency: number;
-  heatingEnergyKwhPerKg: number;  // induction heating energy (informational; included in machine rate)
+  heatingEnergyKwhPerKg: number;  // wall-plug billet heating energy kWh/kg (induction basis)
+  /** Effective heating tariff £/kWh for the selected fuel (see resolveFurnaceEnergyPricePerKwh). Default 0.23. */
+  heatingEnergyPricePerKwh?: number;
   dieLife: number;           // forgings per die set
-  dieCost: number;           // die set cost £
+  /** Die-set cost £. Omit/≤0 to estimate parametrically (see estimateForgingDieCost). */
+  dieCost?: number;
+  // ── Parametric die-cost inputs (used only when dieCost is omitted/≤0) ──
+  projectedAreaCm2?: number;  // part plan area — drives die block/machining and forging load
+  dieSteel?: DieSteel;
+  dieImpressions?: number;    // blocker + finisher (+ edger) cavities; default 2
+  dieComplexity?: ShapeComplexity;
   trimmingMachineId?: string;
   trimmingLabourId?: string;
   trimmingCycleHr?: number;
@@ -42,9 +51,14 @@ export function getForgingInputSchema(): Record<string, string> {
     manning: 'number — operators per forge',
     labourEfficiency: 'number 0–1',
     heatingEnergyKwhPerKg:
-      'number — induction heating energy kWh/kg (informational; energy cost captured in machine rate)',
-    dieLife: 'number — forgings per die set (informational)',
-    dieCost: 'number — die set cost £',
+      'number — wall-plug billet heating energy kWh/kg (induction basis); costed per part at the region fuel tariff',
+    heatingEnergyPricePerKwh: 'number? — effective heating £/kWh for the selected fuel (default 0.23)',
+    dieLife: 'number — forgings per die set; numDieSets = ceil(amortVol / dieLife)',
+    dieCost: 'number? — die set cost £. Omit/≤0 to estimate from area, steel, impressions and complexity',
+    projectedAreaCm2: 'number? — part projected (plan) area cm²; drives die-cost estimate and forging-load check',
+    dieSteel: 'h13|premium|hammer — die steel grade (die-cost estimator only)',
+    dieImpressions: 'number? — die impressions/cavities (die-cost estimator only; default 2)',
+    dieComplexity: 'simple|moderate|complex — die geometry complexity (die-cost estimator only)',
     trimmingMachineId: 'string? — trimming press machine ID',
     trimmingLabourId: 'string? — trimming labour rate ID',
     trimmingCycleHr: 'number? — trimming cycle time hr',
@@ -117,17 +131,33 @@ export function computeForgingDrivers(inputs: ForgingInputs): CommodityDrivers {
   // Number of die sets needed over the programme life
   const numDieSets = inputs.dieLife > 0 ? Math.ceil(inputs.amortizationVolume / inputs.dieLife) : 1;
 
+  // Die-set cost: use the manual figure if provided, else estimate it parametrically.
+  const baseDieCost = (inputs.dieCost && inputs.dieCost > 0)
+    ? inputs.dieCost
+    : estimateForgingDieCost({
+        projectedAreaCm2: inputs.projectedAreaCm2 ?? 0,
+        partWeightKg: inputs.partWeightKg,
+        dieSteel: inputs.dieSteel,
+        impressions: inputs.dieImpressions,
+        complexity: inputs.dieComplexity,
+      }).total;
+
   const tooling: ToolingInput = {
-    totalToolingCost: inputs.dieCost * numDieSets,
+    totalToolingCost: baseDieCost * numDieSets,
     amortizationVolume: inputs.amortizationVolume,
     mode: 'amortized',
   };
+
+  // Billet heating energy — a real per-part cost (furnace/induction), previously
+  // collected but never costed. Priced on the whole billet at the fuel tariff.
+  const heatingCostPerPart =
+    (inputs.heatingEnergyKwhPerKg ?? 0) * billetWeightKg * (inputs.heatingEnergyPricePerKwh ?? 0.23);
 
   // Heat treat and descale are recurring per-part costs → rawMaterial.consumablesCostPerPart
   const heatTreatCostPerPart = (inputs.heatTreatCostPerKg ?? 0) * inputs.partWeightKg;
   const descaleCostPerPart = (inputs.descaleCostPerKg ?? 0) * billetWeightKg;
   const consumablesCostPerPart =
-    heatTreatCostPerPart + descaleCostPerPart +
+    heatingCostPerPart + heatTreatCostPerPart + descaleCostPerPart +
     (inputs.coiningCostPerPart ?? 0) + (inputs.ndtCostPerPart ?? 0);
 
   return {

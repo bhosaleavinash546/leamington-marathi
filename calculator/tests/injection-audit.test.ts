@@ -226,7 +226,7 @@ describe('C1 — family-aware country resin pricing', () => {
     expect(classifyMaterialFamily({ id: 'mat-pp', category: 'Thermoplastic' })).toBe('commodity');
     expect(classifyMaterialFamily({ id: 'mat-pc', category: 'Thermoplastic' })).toBe('engineering');
     expect(classifyMaterialFamily({ id: 'mat-peek', category: 'High-Performance Thermoplastic' })).toBe('highPerformance');
-    expect(classifyMaterialFamily({ id: 'mat-al6061', category: 'Aluminium' })).toBe('metalOther');
+    expect(classifyMaterialFamily({ id: 'mat-al6061', category: 'Aluminium' })).toBe('exchangeMetal');
   });
 
   it('commodity resins carry a wider country spread than high-performance ones', () => {

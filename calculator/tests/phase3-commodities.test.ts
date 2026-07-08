@@ -70,9 +70,11 @@ describe('Forging module', () => {
     const r = computeUniversalStack({ partName: 'Forge HT', ...d, ...STACK_DEFAULTS }, DEFAULT_RATE_LIBRARY);
     // Die life=50000, amortVol=100000 → 2 die sets → tooling = dieCost×2 / amortVol
     const numSets = Math.ceil(withHT.amortizationVolume / FORGE_INPUTS.dieLife);
-    expect(r.breakdown.tooling).toBeCloseTo((FORGE_INPUTS.dieCost * numSets) / withHT.amortizationVolume, 3);
-    // Heat treat is a per-part recurring cost → appears in rawMaterial, not tooling
-    expect(d.rawMaterial.consumablesCostPerPart).toBeCloseTo(0.80 * FORGE_INPUTS.partWeightKg, 4);
+    expect(r.breakdown.tooling).toBeCloseTo(((FORGE_INPUTS.dieCost ?? 0) * numSets) / withHT.amortizationVolume, 3);
+    // Heat treat + billet heating are per-part recurring costs → appear in rawMaterial, not tooling
+    const billetWt = (withHT.partWeightKg + withHT.flashAndScaleKg) / withHT.yieldFraction;
+    const heating = withHT.heatingEnergyKwhPerKg * billetWt * 0.23;   // default UK tariff
+    expect(d.rawMaterial.consumablesCostPerPart).toBeCloseTo(0.80 * withHT.partWeightKg + heating, 4);
   });
 });
 
