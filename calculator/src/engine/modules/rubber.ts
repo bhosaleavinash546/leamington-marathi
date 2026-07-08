@@ -1,4 +1,8 @@
 import type { CommodityDrivers, OperationInput, RawMaterialInput, ToolingInput } from '../types.js';
+import {
+  estimateRubberCureTimeSec, estimateRubberMouldCost,
+  type RubberCompoundFamily, type RubberMouldSteel, type RubberComplexity,
+} from './rubber-advisor.js';
 
 export type RubberProcess =
   | 'extrusion_vulcanise'   // EPDM seals, hoses — extrude then cure in salt bath / oven
@@ -15,7 +19,7 @@ export interface RubberInputs {
   process: RubberProcess;
   machineId: string;
   labourId: string;
-  cycleTimeSec: number;       // full moulding/extrusion cycle per part (or per cut length for extrusion)
+  cycleTimeSec: number;       // full moulding/extrusion cycle per part. ≤0 → predict from thickness/compound/temp
   cavities: number;           // cavities per mould (compression/transfer); 1 for extrusion
   oee: number;
   manning: number;
@@ -24,12 +28,26 @@ export interface RubberInputs {
   // Curing (for extrusion_vulcanise)
   cureTimeSec?: number;       // oven/salt-bath cure time per part s (default 0 — included in cycleTimeSec)
   cureOvenMachineId?: string; // separate cure oven machine ID
+  // Cure-time prediction (used when cycleTimeSec ≤0)
+  thicknessMm?: number;
+  compoundFamily?: RubberCompoundFamily;
+  moldTempC?: number;
   // Tooling
-  mouldCost: number;          // mould/die cost £
+  mouldCost?: number;         // mould/die cost £. ≤0 → estimate parametrically
   mouldLife: number;          // cycles per mould life (compression: 200k, LSR: 500k)
   amortizationVolume: number;
+  // Mould estimation (used when mouldCost ≤0)
+  projectedAreaCm2?: number;
+  moldSteel?: RubberMouldSteel;
+  mouldComplexity?: RubberComplexity;
+  metalInserts?: number;
   // Secondary bonding (rubber-to-metal)
   bondingPrimerCostPerPart?: number; // adhesive primer cost per part £
+  // Deflash / trim + inspection
+  deflashMachineId?: string;
+  deflashLabourId?: string;
+  deflashCycleSec?: number;   // cryo/tumble deflash or manual trim time per part s
+  inspectionCostPerPart?: number; // visual + dimensional / leak-test £/part
 }
 
 export function getRubberInputSchema(): Record<string, string> {
@@ -40,7 +58,15 @@ export function getRubberInputSchema(): Record<string, string> {
     process: 'extrusion_vulcanise | compression_mould | transfer_mould | injection_mould_lsr | calendering',
     machineId: 'string — machine ID from rate library',
     labourId: 'string — labour rate ID',
-    cycleTimeSec: 'number — full cycle time per part (or per extrusion cut) in seconds',
+    cycleTimeSec: 'number — full cycle time per part s. ≤0 → predict from thickness/compound/temp (t90 model)',
+    thicknessMm: 'number? — section thickness mm (drives predicted cure time)',
+    compoundFamily: 'string? — compound family for cure prediction (nr/sbr/br/epdm-sulphur/epdm-peroxide/nbr/hnbr/cr/iir/halobutyl/fkm/ffkm/silicone-hcr/silicone-lsr/acm/aem/eco/csm/pu)',
+    moldTempC: 'number? — cure temperature °C (default per family)',
+    projectedAreaCm2: 'number? — footprint cm² for mould-cost estimate',
+    moldSteel: 'aluminium|p20|h13 — mould steel (mould-cost estimate)',
+    metalInserts: 'number? — insert-moulding nests (mould-cost estimate)',
+    deflashCycleSec: 'number? — deflash/trim time per part s (adds a Deflash/Trim op)',
+    inspectionCostPerPart: 'number? — visual/dimensional/leak-test £/part',
     cavities: 'number — cavities per mould (1 for extrusion/calendering)',
     oee: 'number 0–1',
     manning: 'number — operators per machine',
@@ -63,18 +89,28 @@ export function computeRubberDrivers(inputs: RubberInputs): CommodityDrivers {
   const grossWeightKg = inputs.partWeightKg + inputs.flashAndRunnerWeightKg;
   const materialUtilization = inputs.partWeightKg / grossWeightKg;
 
-  const consumablesCostPerPart = (inputs.bondingPrimerCostPerPart ?? 0) > 0
-    ? inputs.bondingPrimerCostPerPart!
-    : undefined;
+  // Bonding primer + inspection (visual/dimensional/leak) are per-part consumables.
+  const consumablesTotal =
+    (inputs.bondingPrimerCostPerPart ?? 0) + (inputs.inspectionCostPerPart ?? 0);
 
   const rawMaterial: RawMaterialInput = {
     materialId: inputs.materialId,
     netWeightKg: inputs.partWeightKg * rejectUplift,
     materialUtilization,
-    ...(consumablesCostPerPart ? { consumablesCostPerPart } : {}),
+    ...(consumablesTotal > 0 ? { consumablesCostPerPart: consumablesTotal } : {}),
   };
 
-  const mainCycleHr = (inputs.cycleTimeSec / 3600) * rejectUplift;
+  // Cure/cycle time: use the given value, else predict from thickness × compound × temp.
+  const effectiveCycleSec = inputs.cycleTimeSec > 0
+    ? inputs.cycleTimeSec
+    : estimateRubberCureTimeSec({
+        compoundFamily: inputs.compoundFamily ?? 'epdm-sulphur',
+        thicknessMm: inputs.thicknessMm ?? 3,
+        moldTempC: inputs.moldTempC,
+        process: inputs.process,
+      });
+
+  const mainCycleHr = (effectiveCycleSec / 3600) * rejectUplift;
 
   const operations: OperationInput[] = [
     {
@@ -110,13 +146,46 @@ export function computeRubberDrivers(inputs: RubberInputs): CommodityDrivers {
     });
   }
 
+  // Optional deflash / trim operation (cryo-tumble or manual).
+  if (
+    inputs.deflashMachineId &&
+    inputs.deflashLabourId &&
+    inputs.deflashCycleSec !== undefined &&
+    inputs.deflashCycleSec > 0
+  ) {
+    const deflashHr = (inputs.deflashCycleSec / 3600) * rejectUplift;
+    operations.push({
+      operationName: 'Deflash / Trim',
+      machineId: inputs.deflashMachineId,
+      labourId: inputs.deflashLabourId,
+      cycleTimeHr: deflashHr,
+      partsPerCycle: 1,
+      oee: inputs.oee,
+      manning: inputs.manning,
+      labourTimeHr: deflashHr,
+      labourEfficiency: inputs.labourEfficiency,
+    });
+  }
+
+  // Mould cost: manual figure, else estimate parametrically.
+  const baseMouldCost = (inputs.mouldCost && inputs.mouldCost > 0)
+    ? inputs.mouldCost
+    : estimateRubberMouldCost({
+        process: inputs.process,
+        cavities: inputs.cavities,
+        projectedAreaCm2: inputs.projectedAreaCm2,
+        moldSteel: inputs.moldSteel,
+        complexity: inputs.mouldComplexity,
+        metalInserts: inputs.metalInserts,
+      }).total;
+
   // Mould life accounting
   const numMoulds = inputs.mouldLife > 0
     ? Math.ceil(inputs.amortizationVolume / (inputs.mouldLife * inputs.cavities))
     : 1;
 
   const tooling: ToolingInput = {
-    totalToolingCost: inputs.mouldCost * numMoulds,
+    totalToolingCost: baseMouldCost * numMoulds,
     amortizationVolume: inputs.amortizationVolume,
     mode: 'amortized',
   };

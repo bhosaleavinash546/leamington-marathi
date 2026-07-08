@@ -354,8 +354,8 @@ const UK_ELECTRICITY_BASIS_PER_KWH = 0.23;
 
 /** Resin family used to select the country price factor. */
 export type ResinFamily = 'commodity' | 'engineering' | 'highPerformance';
-/** Full material family: resins, plus metal sub-types and a catch-all. */
-export type MaterialFamily = ResinFamily | 'exchangeMetal' | 'millSteel' | 'other';
+/** Full material family: resins, plus metal sub-types, rubber and a catch-all. */
+export type MaterialFamily = ResinFamily | 'exchangeMetal' | 'millSteel' | 'rubber' | 'other';
 
 // Commodity (feedstock/oil-linked) resins by material-id stem. Everything else in
 // a plastic category that isn't high-performance is treated as an engineering resin.
@@ -386,6 +386,7 @@ export function classifyMaterialFamily(m: Pick<MaterialRate, 'id' | 'category'>)
     if (cat.includes('high-performance') || cat.includes('high performance')) return 'highPerformance';
     return COMMODITY_RESIN_RE.test(m.id) ? 'commodity' : 'engineering';
   }
+  if (cat.includes('rubber')) return 'rubber';   // gum rubber is globally traded → near-flat by country
   if (EXCHANGE_METAL_RE.test(cat)) return 'exchangeMetal';
   if (MILL_STEEL_RE.test(cat)) return 'millSteel';
   return 'other';
@@ -427,6 +428,7 @@ export function buildRegionalLibrary(baseLibrary: RateLibrary, region: Manufactu
       case 'engineering':     return rd.materialFactors.engineeringResin;
       case 'highPerformance': return rd.materialFactors.highPerfResin;
       case 'exchangeMetal':   return rd.materialFactors.highPerfResin; // global market → ~flat
+      case 'rubber':          return rd.materialFactors.highPerfResin; // globally-traded gum → ~flat
       case 'millSteel':       return rd.materialMultiplier;
       default:                return rd.materialMultiplier;
     }

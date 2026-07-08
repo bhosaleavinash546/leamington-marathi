@@ -46,6 +46,10 @@ import { computeThermoformingDrivers } from '../engine/modules/thermoforming.js'
 import { computeRotationalMouldingDrivers } from '../engine/modules/rotational-moulding.js';
 import { computeRubberDrivers } from '../engine/modules/rubber.js';
 import type { RubberProcess } from '../engine/modules/rubber.js';
+import {
+  analyseRubberDFM, estimateRubberMouldCost,
+  type RubberCompoundFamily, type RubberMouldSteel, type RubberComplexity,
+} from '../engine/modules/rubber-advisor.js';
 import { computeCompositeDrivers } from '../engine/modules/composites.js';
 import type { CompositeProcess } from '../engine/modules/composites.js';
 import { computeWiringHarnessDrivers } from '../engine/modules/wiring-harness.js';
@@ -2976,6 +2980,16 @@ function renderRubberForm(): string {
       <input type="number" id="rub-flash-wt" step="0.001" min="0" value="0.010"/>
     </div>
   </div>
+  <div class="field-row" style="margin-top:4px">
+    <div class="field-group">
+      <label title="Section thickness (mm). Drives the predicted cure time (cure ∝ thickness²) when Cycle Time is set to 0.">Thickness (mm) ⓘ</label>
+      <input type="number" id="rub-thickness" step="0.5" min="0.3" value="3"/>
+    </div>
+    <div class="field-group">
+      <label title="Cure temperature °C. Leave 0 to use the compound default (~170°C; LSR/FKM hotter).">Cure Temp (°C, 0=default)</label>
+      <input type="number" id="rub-mold-temp" step="5" min="0" value="0"/>
+    </div>
+  </div>
   <div class="section-title" style="margin-top:6px">Machine &amp; Labour</div>
   <div class="field-row">
     <div class="field-group"><label>Press / Machine</label><select id="rub-mach" class="machine-select"></select></div>
@@ -2983,8 +2997,8 @@ function renderRubberForm(): string {
   </div>
   <div class="field-row" style="margin-top:4px">
     <div class="field-group">
-      <label title="Full cycle time per shot in seconds (mould close to next mould close). Includes loading, cure, eject. Compression: 120–600s, Transfer: 60–240s, LSR: 15–60s, Die-cut: 5–20s per shot.">Cycle Time (sec)</label>
-      <input type="number" id="rub-cycle-sec" step="1" min="1" value="180"/>
+      <label title="Full cycle time per shot in seconds. Set to 0 to auto-predict the cure cycle from thickness × compound × temperature (t90 model).">Cycle Time (sec, 0=predict) ⓘ</label>
+      <input type="number" id="rub-cycle-sec" step="1" min="0" value="180"/>
     </div>
     <div class="field-group">
       <label title="Parts per shot (cavities per mould). Compression: 4–64, Transfer: 4–32, LSR: 8–128, Die-cut: 1–12.">Cavities</label>
@@ -3027,12 +3041,32 @@ function renderRubberForm(): string {
   <div class="section-title" style="margin-top:6px">Tooling &amp; NRE</div>
   <div class="field-row">
     <div class="field-group">
-      <label title="Mould / die cost £. Compression 4-cav: £3k–£12k. Transfer 8-cav: £6k–£25k. LSR 16-cav: £15k–£60k. Extrusion die: £1k–£4k. Die-cut tool: £0.5k–£5k.">Mould / Die Cost (£)</label>
+      <label title="Mould / die cost £. Set to 0 to auto-estimate from process, cavities, footprint, steel and complexity.">Mould / Die Cost (£, 0=estimate) ⓘ</label>
       <input type="number" id="rub-mould-cost" step="100" min="0" value="5000"/>
     </div>
     <div class="field-group">
       <label title="Tool life in shots (not parts — multiply by cavities for total parts). Steel compression: 200k–500k shots. LSR hardened: 500k+.">Mould Life (shots)</label>
       <input type="number" id="rub-mould-life" step="10000" min="1000" value="200000"/>
+    </div>
+  </div>
+  <div class="field-row" style="margin-top:4px">
+    <div class="field-group">
+      <label title="Part footprint cm² — drives the mould-cost estimate when Mould Cost=0.">Projected Area (cm²)</label>
+      <input type="number" id="rub-proj-area" step="1" min="0" value="20"/>
+    </div>
+    <div class="field-group">
+      <label title="Mould steel (estimator): aluminium ×0.7, P20 ×1.0, H13 ×1.3.">Mould Steel</label>
+      <select id="rub-mold-steel"><option value="p20" selected>P20</option><option value="aluminium">Aluminium</option><option value="h13">H13</option></select>
+    </div>
+  </div>
+  <div class="field-row" style="margin-top:4px">
+    <div class="field-group">
+      <label title="Estimator complexity: simple ×0.8, moderate ×1.0, complex (undercuts/inserts/parting) ×1.5.">Mould Complexity</label>
+      <select id="rub-mold-cplx"><option value="simple">Simple</option><option value="moderate" selected>Moderate</option><option value="complex">Complex</option></select>
+    </div>
+    <div class="field-group">
+      <label title="Number of metal/fabric insert nests (insert moulding). Adds tool + handling cost.">Metal Inserts</label>
+      <input type="number" id="rub-inserts" step="1" min="0" value="0"/>
     </div>
   </div>
   <div class="field-row" style="margin-top:4px">
@@ -3044,7 +3078,37 @@ function renderRubberForm(): string {
       <label title="Adhesive primer / bonding agent cost per part (£). For rubber-to-metal bonded mounts and bushes. Set to 0 for plain rubber-only parts.">Bonding Primer (£/part)</label>
       <input type="number" id="rub-primer" step="0.01" min="0" value="0"/>
     </div>
-  </div>`;
+  </div>
+  <div class="section-title" style="margin-top:6px">Finishing &amp; Inspection (optional)</div>
+  <div class="field-row">
+    <div class="field-group"><label title="Deflash / trim machine (cryo-tumble or press). Leave none to skip.">Deflash Machine</label><select id="rub-deflash-mach" class="machine-select"><option value="">— None —</option></select></div>
+    <div class="field-group"><label>Deflash Labour</label><select id="rub-deflash-lab" class="labour-select"><option value="">— None —</option></select></div>
+  </div>
+  <div class="field-row" style="margin-top:4px">
+    <div class="field-group"><label title="Deflash/trim time per part s (0 = none).">Deflash Cycle (s, 0=none)</label><input type="number" id="rub-deflash-sec" step="1" min="0" value="0"/></div>
+    <div class="field-group"><label title="Visual + dimensional / leak-test cost per part £ (seals, hoses).">Inspection (£/part)</label><input type="number" id="rub-inspect" step="0.01" min="0" value="0"/></div>
+  </div>
+  <details style="background:#f3f8ff;border:1px solid #b3d1ff;border-radius:6px;padding:6px 8px;margin-top:8px">
+    <summary style="font-weight:600;font-size:0.78rem;cursor:pointer;color:#0059b3">🔍 Rubber DFM check — wall/cure, draft, flash line, inserts, tolerance</summary>
+    <div style="margin-top:6px">
+      <div class="field-row">
+        <div class="field-group"><label>Min Wall (mm)</label><input type="number" id="rub-dfm-minwall" step="0.5" min="0" value="2"/></div>
+        <div class="field-group"><label>Max Wall (mm)</label><input type="number" id="rub-dfm-maxwall" step="0.5" min="0" value="4"/></div>
+      </div>
+      <div class="field-row" style="margin-top:4px">
+        <div class="field-group"><label>Draft (°)</label><input type="number" id="rub-dfm-draft" step="0.5" min="0" value="1"/></div>
+        <div class="field-group"><label>Tolerance (mm)</label><input type="number" id="rub-dfm-tol" step="0.05" min="0" value="0.2"/></div>
+      </div>
+      <div class="field-row" style="margin-top:4px">
+        <div class="field-group"><label>Undercuts</label><input type="number" id="rub-dfm-undercut" step="1" min="0" value="0"/></div>
+        <div class="field-group"><label>Flash line on seal?</label><select id="rub-dfm-flash"><option value="no" selected>No</option><option value="yes">Yes</option></select></div>
+      </div>
+      <div class="field-row" style="margin-top:4px">
+        <div class="field-group" style="display:flex;align-items:flex-end"><button class="btn btn-secondary btn-sm" id="rub-dfm-btn" style="width:100%">Check DFM →</button></div>
+      </div>
+      <div id="rub-dfm-result" style="margin-top:6px;font-size:0.75rem;display:none"></div>
+    </div>
+  </details>`;
 }
 
 // ─── Form: Composites ─────────────────────────────────────────────────────────
@@ -9583,6 +9647,7 @@ function switchCommodity(type: CommodityType): void {
         }
         // Wire process change handler — sets defaults + info band for initial process
         wireRubberProcessChange();
+        wireRubberDFM();
       }, 0);
       break;
 
@@ -10668,14 +10733,30 @@ function wireRotoDFM(): void {
 }
 
 function collectRubberInput(): UniversalStackInput {
+  const materialId = sel('rub-mat');
+  const process = (sel('rub-process') || 'compression_mould') as RubberProcess;
+  const manualCycleSec = num('rub-cycle-sec');
+  const manualMouldCost = num('rub-mould-cost');
+  const thicknessMm = num('rub-thickness') || 3;
+  const compoundFamily = rubberCompoundFamilyFor(materialId);
+  const moldTempC = num('rub-mold-temp') || undefined;
+  const projectedAreaCm2 = num('rub-proj-area') || undefined;
+  const moldSteel = validSel<RubberMouldSteel>('rub-mold-steel', ['aluminium','p20','h13'], 'p20');
+  const mouldComplexity = validSel<RubberComplexity>('rub-mold-cplx', ['simple','moderate','complex'], 'moderate');
+  const deflashSec = num('rub-deflash-sec');
+
   const drivers = computeRubberDrivers({
-    materialId: sel('rub-mat'),
+    materialId,
     partWeightKg: num('rub-part-wt') || 0.05,
     flashAndRunnerWeightKg: num('rub-flash-wt'),
-    process: (sel('rub-process') || 'compression_mould') as RubberProcess,
+    process,
     machineId: sel('rub-mach'),
     labourId: sel('rub-lab'),
-    cycleTimeSec: num('rub-cycle-sec') || 120,
+    // 0 → predict cure cycle from thickness × compound × temp.
+    cycleTimeSec: manualCycleSec > 0 ? manualCycleSec : 0,
+    thicknessMm,
+    compoundFamily,
+    moldTempC,
     cavities: num('rub-cavities') || 4,
     oee: num('rub-oee') || 0.80,
     manning: num('rub-manning') || 1,
@@ -10683,12 +10764,77 @@ function collectRubberInput(): UniversalStackInput {
     rejectRate: num('rub-reject') || 0,
     cureTimeSec: num('rub-cure-sec') || undefined,
     cureOvenMachineId: sel('rub-cure-mach') || undefined,
-    mouldCost: num('rub-mould-cost') || 5000,
+    // 0 → estimate mould cost parametrically.
+    mouldCost: manualMouldCost > 0 ? manualMouldCost : 0,
+    projectedAreaCm2,
+    moldSteel,
+    mouldComplexity,
+    metalInserts: num('rub-inserts') || undefined,
     mouldLife: num('rub-mould-life') || 200000,
     amortizationVolume: num('rub-amort') || 50000,
     bondingPrimerCostPerPart: num('rub-primer') || undefined,
+    inspectionCostPerPart: num('rub-inspect') || undefined,
+    deflashMachineId: deflashSec > 0 ? (sel('rub-deflash-mach') || undefined) : undefined,
+    deflashLabourId: deflashSec > 0 ? (sel('rub-deflash-lab') || undefined) : undefined,
+    deflashCycleSec: deflashSec > 0 ? deflashSec : undefined,
   });
+
+  if (manualCycleSec <= 0) {
+    _smExtraWarnings.push(
+      `Cure cycle auto-predicted (${compoundFamily}, ${thicknessMm} mm${moldTempC ? `, ${moldTempC}°C` : ''}). Enter Cycle Time to override.`
+    );
+  }
+  if (manualMouldCost <= 0) {
+    const est = estimateRubberMouldCost({ process, cavities: num('rub-cavities') || 4, projectedAreaCm2, moldSteel, complexity: mouldComplexity, metalInserts: num('rub-inserts') || undefined });
+    _smExtraWarnings.push(`Tooling: rubber mould auto-estimated at £${est.total.toLocaleString()} (${process.replace(/_/g,' ')}, ${num('rub-cavities') || 4}-cav). Enter a Mould Cost to override.`);
+  }
+
   return { ...getUniversalTail(), rawMaterial: drivers.rawMaterial, operations: drivers.operations, tooling: drivers.tooling };
+}
+
+/** Infer the rubber compound family from a material id (for cure prediction). */
+function rubberCompoundFamilyFor(materialId: string): RubberCompoundFamily {
+  const id = materialId.toLowerCase();
+  if (id.includes('ffkm')) return 'ffkm';
+  if (id.includes('fkm') || id.includes('viton') || id.includes('fvmq')) return 'fkm';
+  if (id.includes('hnbr')) return 'hnbr';
+  if (id.includes('nbr')) return 'nbr';
+  if (id.includes('bromobutyl') || id.includes('chlorobutyl') || id.includes('halobutyl')) return 'halobutyl';
+  if (id.includes('iir') || id.includes('butyl')) return 'iir';
+  if (id.includes('epdm-peroxide')) return 'epdm-peroxide';
+  if (id.includes('epdm')) return 'epdm-sulphur';
+  if (id.includes('lsr') || id.includes('silicone-medical')) return 'silicone-lsr';
+  if (id.includes('silicone') || id.includes('vmq')) return 'silicone-hcr';
+  if (id.includes('acm')) return 'acm';
+  if (id.includes('aem')) return 'aem';
+  if (id.includes('eco')) return 'eco';
+  if (id.includes('csm')) return 'csm';
+  if (id.includes('cr')) return 'cr';
+  if (id.includes('sbr')) return 'sbr';
+  if (id.includes('-br') || id === 'mat-br') return 'br';
+  if (id.includes('pu-elastomer')) return 'pu';
+  return 'nr';
+}
+
+/** Wire the rubber DFM advisor panel. */
+function wireRubberDFM(): void {
+  const btn = document.getElementById('rub-dfm-btn');
+  if (!btn) return;
+  btn.addEventListener('click', () => {
+    const r = analyseRubberDFM({
+      compoundFamily: rubberCompoundFamilyFor(sel('rub-mat')),
+      thicknessMm: num('rub-thickness') || 3,
+      minWallMm: num('rub-dfm-minwall') || undefined,
+      maxWallMm: num('rub-dfm-maxwall') || undefined,
+      draftAngleDeg: num('rub-dfm-draft'),
+      flashLineOnSealingFace: sel('rub-dfm-flash') === 'yes',
+      undercutCount: num('rub-dfm-undercut') || undefined,
+      metalInsert: (num('rub-inserts') || 0) > 0,
+      toleranceMm: num('rub-dfm-tol') || undefined,
+    });
+    const out = document.getElementById('rub-dfm-result');
+    if (out) { out.innerHTML = renderDFMPanel(r.score, r.issues, r.summary); out.style.display = 'block'; }
+  });
 }
 
 function collectCompositesInput(): UniversalStackInput {
