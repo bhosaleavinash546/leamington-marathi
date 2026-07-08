@@ -1,4 +1,8 @@
 import type { CommodityDrivers, RawMaterialInput, OperationInput, ToolingInput } from '../types.js';
+import {
+  estimateRotoCycle, estimateRotoMouldCost,
+  type RotoMaterialFamily, type RotoCoolingMethod, type RotoMouldType, type RotoComplexity,
+} from './roto-advisor.js';
 
 export interface RotationalMouldingInputs {
   materialId: string;
@@ -6,7 +10,9 @@ export interface RotationalMouldingInputs {
   powderCostAdderPerKg: number;
   numArms: number;
   partsPerArm: number;
+  /** Oven residence time s. Omit/≤0 to predict from wall × material × cooling method. */
   heatingTimeSec: number;
+  /** Cooling booth time s. Omit/≤0 to predict from the heating time × cooling method. */
   coolingTimeSec: number;
   loadUnloadTimeSec: number;
   machineId: string;
@@ -14,9 +20,21 @@ export interface RotationalMouldingInputs {
   oee: number;
   manning: number;
   labourEfficiency: number;
+  /** Mould cost £. Omit/≤0 to estimate parametrically (see estimateRotoMouldCost). */
   mouldCost: number;
   mouldLife: number;
   amortizationVolume: number;
+  // ── Cycle prediction (used when heating/cooling times ≤0) ──
+  wallThicknessMm?: number;
+  rotoMaterial?: RotoMaterialFamily;
+  coolingMethod?: RotoCoolingMethod;
+  // ── Mould estimation (used when mouldCost ≤0) ──
+  projectedAreaCm2?: number;
+  mouldType?: RotoMouldType;
+  mouldComplexity?: RotoComplexity;
+  ventsAndInserts?: number;
+  // ── Additive ──
+  masterbatchCostPerKg?: number;   // colour/UV/FR masterbatch premium £/kg of part
 }
 
 export function getRotationalMouldingInputSchema(): Record<string, string> {
@@ -26,9 +44,15 @@ export function getRotationalMouldingInputSchema(): Record<string, string> {
     powderCostAdderPerKg: 'number — grinding/screening premium over pellet price £/kg (0.15–0.40 typical)',
     numArms: 'number — number of carousel arms (1=single, 3=biaxial standard, 4=rock-and-roll). One full cycle produces numArms × partsPerArm parts total',
     partsPerArm: 'number — number of moulds per arm (1–4 typically)',
-    heatingTimeSec: 'number — oven residence time s (600–1800s typical)',
-    coolingTimeSec: 'number — cooling booth time s (900–2400s typical)',
+    heatingTimeSec: 'number — oven residence time s (600–1800s typical). ≤0 → predict from wall × material × cooling method',
+    coolingTimeSec: 'number — cooling booth time s (900–2400s typical). ≤0 → predict from heating time × cooling method',
     loadUnloadTimeSec: 'number — demould + charge load time s (120–300s typical)',
+    wallThicknessMm: 'number? — nominal wall mm (drives predicted heating/cooling when times ≤0)',
+    rotoMaterial: 'pe|xlpe|pp|pa12 — material family for cycle prediction',
+    coolingMethod: 'ambient|forced-air|water-spray — cooling method for cycle prediction',
+    projectedAreaCm2: 'number? — part footprint cm² for mould-cost estimate',
+    mouldType: 'cast-al|cnc-al|fabricated — roto tool construction (mould-cost estimate)',
+    masterbatchCostPerKg: 'number? — colour/UV/FR masterbatch premium £/kg of part',
     machineId: 'string — rotomoulding machine ID from rate library',
     labourId: 'string — labour rate ID',
     oee: 'number 0–1',
@@ -41,14 +65,26 @@ export function getRotationalMouldingInputSchema(): Record<string, string> {
 }
 
 export function computeRotationalMouldingDrivers(inputs: RotationalMouldingInputs): CommodityDrivers {
-  const cycleTimeSec = inputs.heatingTimeSec + inputs.coolingTimeSec + inputs.loadUnloadTimeSec;
+  // Predict heating/cooling from wall × material × cooling method when not given.
+  const predicted = (inputs.heatingTimeSec > 0 && inputs.coolingTimeSec > 0)
+    ? null
+    : estimateRotoCycle({
+        wallThicknessMm: inputs.wallThicknessMm ?? 3,
+        material: inputs.rotoMaterial,
+        coolingMethod: inputs.coolingMethod,
+      });
+  const heatingTimeSec = inputs.heatingTimeSec > 0 ? inputs.heatingTimeSec : (predicted?.heatingSec ?? 900);
+  const coolingTimeSec = inputs.coolingTimeSec > 0 ? inputs.coolingTimeSec : (predicted?.coolingSec ?? 1200);
+
+  const cycleTimeSec = heatingTimeSec + coolingTimeSec + inputs.loadUnloadTimeSec;
   const cycleTimeHr = cycleTimeSec / 3600;
 
   // Virtually no material waste in rotomoulding; all powder sinters onto mould walls
   const materialUtilization = 0.99;
 
-  // Powder grinding premium is a per-part consumable added to the material cost bucket
-  const consumablesCostPerPart = inputs.powderCostAdderPerKg * inputs.partWeightKg;
+  // Powder grinding premium + optional masterbatch are per-part consumables on material.
+  const consumablesCostPerPart =
+    (inputs.powderCostAdderPerKg + (inputs.masterbatchCostPerKg ?? 0)) * inputs.partWeightKg;
 
   const rawMaterial: RawMaterialInput = {
     materialId: inputs.materialId,
@@ -79,8 +115,18 @@ export function computeRotationalMouldingDrivers(inputs: RotationalMouldingInput
     ? Math.ceil(inputs.amortizationVolume / (inputs.mouldLife * totalMouldCount))
     : 1;
 
+  // Per-mould cost: manual figure, else estimated parametrically.
+  const perMouldCost = (inputs.mouldCost && inputs.mouldCost > 0)
+    ? inputs.mouldCost
+    : estimateRotoMouldCost({
+        projectedAreaCm2: inputs.projectedAreaCm2 ?? 0,
+        mouldType: inputs.mouldType,
+        complexity: inputs.mouldComplexity,
+        ventsAndInserts: inputs.ventsAndInserts,
+      }).total;
+
   const tooling: ToolingInput = {
-    totalToolingCost: inputs.mouldCost * totalMouldCount * numMouldSets,
+    totalToolingCost: perMouldCost * totalMouldCount * numMouldSets,
     amortizationVolume: inputs.amortizationVolume,
     mode: 'amortized',
   };

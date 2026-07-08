@@ -26,6 +26,14 @@ import { computeSheetMetalFabDrivers, estimateBlankingCycleSec, type FabMaterial
 import { adviseSheetMetalProcess } from '../engine/modules/sheet-metal-advisor.js';
 import type { FabBlankingMethod, AssistGas } from '../engine/modules/sheet-metal-fab.js';
 import { computeBlowMouldingDrivers } from '../engine/modules/blow-moulding.js';
+import {
+  estimateBlowMouldCost, analyseBlowDFM,
+  type BlowProcess, type BlowMouldMaterial,
+} from '../engine/modules/blow-advisor.js';
+import {
+  estimateRotoCycle, estimateRotoMouldCost, analyseRotoDFM,
+  type RotoMaterialFamily, type RotoCoolingMethod, type RotoMouldType,
+} from '../engine/modules/roto-advisor.js';
 import { computeExtrusionDrivers } from '../engine/modules/extrusion.js';
 import { computeThermoformingDrivers } from '../engine/modules/thermoforming.js';
 import { computeRotationalMouldingDrivers } from '../engine/modules/rotational-moulding.js';
@@ -2587,10 +2595,19 @@ function renderBlowMouldingForm(): string {
     <div class="field-row" style="margin-top:6px">
       <div class="field-group"><label>Labour Eff.</label><input type="number" id="bm-lab-eff" step="0.01" min="0.01" max="1" value="0.95"/></div>
     </div>
+    <div class="section-title" style="margin-top:8px">Material Adders (optional)</div>
+    <div class="field-row">
+      <div class="field-group"><label>Masterbatch (£/kg, 0=none) <span title="Colour / UV / barrier masterbatch premium per kg of part.">ℹ</span></label><input type="number" id="bm-masterbatch" step="0.05" min="0" value="0"/></div>
+      <div class="field-group"><label>SBM Preform Cost (£/part) <span title="Two-stage SBM only: bought-in / separately-injected preform cost per part.">ℹ</span></label><input type="number" id="bm-preform-cost" step="0.01" min="0" value="0"/></div>
+    </div>
     <div class="section-title" style="margin-top:8px">Tooling</div>
     <div class="field-row">
-      <div class="field-group"><label>Mould Cost (£) <span title="Al blow mould: £5k–£25k. Steel (high cavities): higher. IBM mould: £20k–£40k.">ℹ</span></label><input type="number" id="bm-mould-cost" step="500" min="0" value="8000"/></div>
+      <div class="field-group"><label>Mould Cost (£) <span title="Enter a figure to use it directly. Leave 0 to auto-estimate from process, cavities and part volume.">ℹ</span></label><input type="number" id="bm-mould-cost" step="500" min="0" value="8000" title="0 = auto-estimate parametrically"/></div>
       <div class="field-group"><label>Mould Life (cycles) <span title="Al blow moulds: 500k–2M cycles. IBM steel: up to 5M.">ℹ</span></label><input type="number" id="bm-mould-life" step="50000" min="0" value="1000000"/></div>
+    </div>
+    <div class="field-row" style="margin-top:6px">
+      <div class="field-group"><label>Part Volume (L) <span title="Swept volume of the part in litres — drives the mould-cost estimate when Mould Cost=0.">ℹ</span></label><input type="number" id="bm-part-vol" step="0.1" min="0" value="1"/></div>
+      <div class="field-group"><label>Mould Material <span title="Estimator only (Mould Cost=0): aluminium ×1.0, P20 ×1.4, H13 ×1.8.">ℹ</span></label><select id="bm-mould-mat"><option value="aluminium" selected>Aluminium (EBM)</option><option value="steel-p20">Steel P20</option><option value="steel-h13">Steel H13</option></select></div>
     </div>
     <div class="field-row" style="margin-top:6px">
       <div class="field-group"><label>Amort. Volume</label><input type="number" id="bm-amort" step="10000" min="1" value="500000"/></div>
@@ -2602,7 +2619,25 @@ function renderBlowMouldingForm(): string {
     </div>
     <div class="field-row" style="margin-top:6px">
       <div class="field-group"><label>Deflash Cycle (s, 0=none) <span title="Time per part for automated deflash. Typical 6–15s for EBM parts with pinch-off flash.">ℹ</span></label><input type="number" id="bm-deflash-ct" step="1" min="0" value="0"/></div>
-    </div>`;
+    </div>
+    <details style="background:#f3f8ff;border:1px solid #b3d1ff;border-radius:6px;padding:6px 8px;margin-top:8px">
+      <summary style="font-weight:600;font-size:0.78rem;cursor:pointer;color:#0059b3">🔍 Blow DFM check — BUR / wall / corners / weld line</summary>
+      <div style="margin-top:6px">
+        <div class="field-row">
+          <div class="field-group"><label>Blow-Up Ratio</label><input type="number" id="bm-dfm-bur" step="0.1" min="0" value="2.5"/></div>
+          <div class="field-group"><label>Min Corner R (mm)</label><input type="number" id="bm-dfm-corner" step="0.1" min="0" value="3"/></div>
+        </div>
+        <div class="field-row" style="margin-top:4px">
+          <div class="field-group"><label>Parison L/D (EBM)</label><input type="number" id="bm-dfm-ld" step="1" min="0" value="5"/></div>
+          <div class="field-group"><label>Tolerance (mm)</label><input type="number" id="bm-dfm-tol" step="0.05" min="0" value="0.3"/></div>
+        </div>
+        <div class="field-row" style="margin-top:4px">
+          <div class="field-group"><label>Handle/Weld line?</label><select id="bm-dfm-weld"><option value="no" selected>No</option><option value="yes">Yes</option></select></div>
+          <div class="field-group" style="display:flex;align-items:flex-end"><button class="btn btn-secondary btn-sm" id="bm-dfm-btn" style="width:100%">Check DFM →</button></div>
+        </div>
+        <div id="bm-dfm-result" style="margin-top:6px;font-size:0.75rem;display:none"></div>
+      </div>
+    </details>`;
 }
 
 // ─── Form: Extrusion ──────────────────────────────────────────────────────────
@@ -2699,14 +2734,20 @@ function renderRotationalMouldingForm(): string {
     </div>
     <div class="field-row" style="margin-top:6px">
       <div class="field-group"><label>Parts / Arm</label><input type="number" id="rm-parts-per-arm" step="1" min="1" value="1"/></div>
+      <div class="field-group"><label>Wall Thickness (mm) <span title="Nominal wall. Drives predicted heating/cooling time when those are set to 0.">ℹ</span></label><input type="number" id="rm-wall" step="0.5" min="0.5" value="4"/></div>
+    </div>
+    <div class="field-row" style="margin-top:6px">
+      <div class="field-group"><label>Material Family <span title="For cycle prediction: PA12 bakes longest, PE/PP shortest.">ℹ</span></label><select id="rm-mat-fam"><option value="pe" selected>PE (LLDPE/HDPE)</option><option value="xlpe">Cross-linked PE</option><option value="pp">PP</option><option value="pa12">PA12</option></select></div>
+      <div class="field-group"><label>Cooling Method <span title="Ambient ×1.9, forced-air ×1.35, water-spray ×0.85 on heating time.">ℹ</span></label><select id="rm-cool-method"><option value="forced-air" selected>Forced air</option><option value="ambient">Ambient</option><option value="water-spray">Water spray</option></select></div>
     </div>
     <div class="section-title" style="margin-top:8px">Cycle Time</div>
     <div class="field-row">
-      <div class="field-group"><label>Heating Time (s) <span title="Oven residence time. Typically 600–1800s.">ℹ</span></label><input type="number" id="rm-heat" step="30" min="60" value="900"/></div>
-      <div class="field-group"><label>Cooling Time (s) <span title="Forced air cooling. Typically 900–2400s.">ℹ</span></label><input type="number" id="rm-cool" step="30" min="60" value="1200"/></div>
+      <div class="field-group"><label>Heating Time (s) <span title="Oven residence. 600–1800s. Set 0 to auto-predict from wall × material.">ℹ</span></label><input type="number" id="rm-heat" step="30" min="0" value="0" title="0 = auto-predict"/></div>
+      <div class="field-group"><label>Cooling Time (s) <span title="Cooling booth. 900–2400s. Set 0 to auto-predict from heating × method.">ℹ</span></label><input type="number" id="rm-cool" step="30" min="0" value="0" title="0 = auto-predict"/></div>
     </div>
     <div class="field-row" style="margin-top:6px">
       <div class="field-group"><label>Load/Unload (s) <span title="Demould + charge load. Typically 120–300s.">ℹ</span></label><input type="number" id="rm-load" step="30" min="30" value="180"/></div>
+      <div class="field-group"><label>Masterbatch (£/kg, 0=none) <span title="Colour / UV / FR masterbatch premium per kg of part.">ℹ</span></label><input type="number" id="rm-masterbatch" step="0.05" min="0" value="0"/></div>
     </div>
     <div class="section-title" style="margin-top:8px">Machine &amp; Labour</div>
     <div class="field-row">
@@ -2722,12 +2763,34 @@ function renderRotationalMouldingForm(): string {
     </div>
     <div class="section-title" style="margin-top:8px">Tooling</div>
     <div class="field-row">
-      <div class="field-group"><label>Mould Cost (£) <span title="Al casting tool. Much cheaper than IM: typically £3k–£30k.">ℹ</span></label><input type="number" id="rm-mould-cost" step="500" min="0" value="8000"/></div>
+      <div class="field-group"><label>Mould Cost (£) <span title="Enter a figure to use it directly. Leave 0 to auto-estimate from footprint, type and complexity.">ℹ</span></label><input type="number" id="rm-mould-cost" step="500" min="0" value="8000" title="0 = auto-estimate parametrically"/></div>
       <div class="field-group"><label>Mould Life (cycles) <span title="Rotomould Al tools: 50k–200k cycles">ℹ</span></label><input type="number" id="rm-mould-life" step="10000" min="0" value="100000"/></div>
     </div>
     <div class="field-row" style="margin-top:6px">
+      <div class="field-group"><label>Projected Area (cm²) <span title="Part footprint — drives the mould-cost estimate when Mould Cost=0.">ℹ</span></label><input type="number" id="rm-proj-area" step="10" min="0" value="600"/></div>
+      <div class="field-group"><label>Mould Type <span title="Estimator only: cast-Al (complex shapes), CNC-Al (precision), fabricated sheet (large simple tanks).">ℹ</span></label><select id="rm-mould-type"><option value="cast-al" selected>Cast aluminium</option><option value="cnc-al">CNC aluminium</option><option value="fabricated">Fabricated sheet</option></select></div>
+    </div>
+    <div class="field-row" style="margin-top:6px">
       <div class="field-group"><label>Amort. Volume</label><input type="number" id="rm-amort" step="1000" min="1" value="5000"/></div>
-    </div>`;
+    </div>
+    <details style="background:#f3f8ff;border:1px solid #b3d1ff;border-radius:6px;padding:6px 8px;margin-top:8px">
+      <summary style="font-weight:600;font-size:0.78rem;cursor:pointer;color:#0059b3">🔍 Roto DFM check — wall / radii / draft / warpage / venting</summary>
+      <div style="margin-top:6px">
+        <div class="field-row">
+          <div class="field-group"><label>Min Internal R (mm)</label><input type="number" id="rm-dfm-radius" step="1" min="0" value="12"/></div>
+          <div class="field-group"><label>Draft (°)</label><input type="number" id="rm-dfm-draft" step="0.5" min="0" value="2"/></div>
+        </div>
+        <div class="field-row" style="margin-top:4px">
+          <div class="field-group"><label>Flat Unsupported Span (mm)</label><input type="number" id="rm-dfm-span" step="10" min="0" value="200"/></div>
+          <div class="field-group"><label>Enclosed, no vent?</label><select id="rm-dfm-vent"><option value="no" selected>No</option><option value="yes">Yes</option></select></div>
+        </div>
+        <div class="field-row" style="margin-top:4px">
+          <div class="field-group"><label>Double-wall / kiss-off?</label><select id="rm-dfm-kiss"><option value="no" selected>No</option><option value="yes">Yes</option></select></div>
+          <div class="field-group" style="display:flex;align-items:flex-end"><button class="btn btn-secondary btn-sm" id="rm-dfm-btn" style="width:100%">Check DFM →</button></div>
+        </div>
+        <div id="rm-dfm-result" style="margin-top:6px;font-size:0.75rem;display:none"></div>
+      </div>
+    </details>`;
 }
 
 // ─── Form: Rubber ─────────────────────────────────────────────────────────────
@@ -9360,8 +9423,9 @@ function switchCommodity(type: CommodityType): void {
         }
         // Labour default to semiskilled
         const labEl = el<HTMLSelectElement>('bm-lab');
-        if (labEl) { const opt = Array.from(labEl.options).find(o => o.value === 'lab-uk-semiskilled'); if (opt) labEl.value = 'lab-uk-semiskilled'; }
+        if (labEl) { const opt = Array.from(labEl.options).find(o => o.value === 'lab-uk-blow') ?? Array.from(labEl.options).find(o => o.value === 'lab-uk-semiskilled'); if (opt) labEl.value = opt.value; }
         wireBlowMouldingProcessChange();
+        wireBlowDFM();
       }, 0);
       break;
 
@@ -9391,10 +9455,23 @@ function switchCommodity(type: CommodityType): void {
       area.innerHTML = renderRotationalMouldingForm();
       populateSelects();
       setTimeout(() => {
-        const machEl = el<HTMLSelectElement>('rm-mach');
-        if (machEl) { const opt = Array.from(machEl.options).find(o => o.value.includes('rotomould-biaxial')); if (opt) machEl.value = opt.value; }
+        // Filter machine select to rotomoulders only
+        const rmMachEl = el<HTMLSelectElement>('rm-mach');
+        if (rmMachEl) {
+          const rmMachs = library.machines.filter(m => m.id.startsWith('rotomould'));
+          if (rmMachs.length) rmMachEl.innerHTML = rmMachs.map(m => `<option value="${escHtml(m.id)}">${escHtml(m.machineClass)} — £${m.computedRatePerHr.toFixed(2)}/hr</option>`).join('');
+          if (Array.from(rmMachEl.options).some(o => o.value === 'rotomould-biaxial')) rmMachEl.value = 'rotomould-biaxial';
+        }
+        // Filter material select to roto grades (+ generic LLDPE fallback)
         const matEl = el<HTMLSelectElement>('rm-mat');
-        if (matEl) { const opt = Array.from(matEl.options).find(o => o.value.includes('mat-lldpe')); if (opt) matEl.value = opt.value; }
+        if (matEl) {
+          const rmMats = library.materials.filter(m => m.category === 'Rotational Moulding' || m.id === 'mat-lldpe');
+          if (rmMats.length) matEl.innerHTML = rmMats.map(m => `<option value="${escHtml(m.id)}">${escHtml(m.grade)} — £${m.pricePerKg.toFixed(2)}/kg</option>`).join('');
+          if (Array.from(matEl.options).some(o => o.value === 'mat-lldpe-roto')) matEl.value = 'mat-lldpe-roto';
+        }
+        const labEl = el<HTMLSelectElement>('rm-lab');
+        if (labEl) { const opt = Array.from(labEl.options).find(o => o.value === 'lab-uk-roto') ?? Array.from(labEl.options).find(o => o.value === 'lab-uk-semiskilled'); if (opt) labEl.value = opt.value; }
+        wireRotoDFM();
       }, 0);
       break;
 
@@ -10197,6 +10274,15 @@ function collectBlowMouldingInput(): UniversalStackInput {
   const deflashLab = sel('bm-deflash-lab') || undefined;
   const parisonT = num('bm-parison-t');
   const rejectR = num('bm-reject');
+  const machineId = sel('bm-mach');
+  const cavities = num('bm-cav') || 1;
+  const partVolumeL = num('bm-part-vol');
+  const mouldMaterial = validSel<BlowMouldMaterial>('bm-mould-mat', ['aluminium','steel-p20','steel-h13'], 'aluminium');
+  const manualMouldCost = num('bm-mould-cost');
+  const blowProcess: BlowProcess =
+    machineId.startsWith('blow-ibm') ? 'ibm' :
+    machineId.startsWith('blow-sbm') || machineId.includes('pet') ? 'sbm' : 'ebm';
+
   const drivers = computeBlowMouldingDrivers({
     materialId: sel('bm-mat'),
     partWeightKg: num('bm-part-wt'),
@@ -10205,13 +10291,17 @@ function collectBlowMouldingInput(): UniversalStackInput {
     coolTimeFactorSPerMm2: num('bm-cool-f'),
     blowTimeSec: num('bm-blow-t'),
     openCloseSec: num('bm-open-close'),
-    machineId: sel('bm-mach'),
+    machineId,
     labourId: sel('bm-lab'),
-    cavities: num('bm-cav') || 1,
+    cavities,
     oee: num('bm-oee'),
     manning: num('bm-manning'),
     labourEfficiency: num('bm-lab-eff'),
-    mouldCost: num('bm-mould-cost'),
+    mouldCost: manualMouldCost > 0 ? manualMouldCost : undefined,
+    partVolumeL: partVolumeL > 0 ? partVolumeL : undefined,
+    mouldMaterial,
+    preformCostPerPart: num('bm-preform-cost') || undefined,
+    masterbatchCostPerKg: num('bm-masterbatch') || undefined,
     mouldLife: num('bm-mould-life'),
     amortizationVolume: num('bm-amort') || 1,
     deflashMachineId: deflashCt > 0 ? deflashMach : undefined,
@@ -10220,6 +10310,16 @@ function collectBlowMouldingInput(): UniversalStackInput {
     parisonExtrusionTimeSec: parisonT > 0 ? parisonT : undefined,
     rejectRate: rejectR > 0 ? rejectR : undefined,
   });
+
+  // Surface the mould-cost estimate when auto-derived.
+  if (manualMouldCost <= 0) {
+    const est = estimateBlowMouldCost({ process: blowProcess, cavities, partVolumeL: partVolumeL || 1, mouldMaterial });
+    _smExtraWarnings.push(
+      `Tooling: blow-mould cost auto-estimated at £${est.total.toLocaleString()} ` +
+      `(${blowProcess.toUpperCase()}, ${cavities}-cav, ${partVolumeL || 1} L). Enter a Mould Cost to override.`
+    );
+  }
+
   return { ...getUniversalTail(), rawMaterial: drivers.rawMaterial, operations: drivers.operations, tooling: drivers.tooling };
 }
 
@@ -10264,25 +10364,116 @@ function collectThermoformingInput(): UniversalStackInput {
 }
 
 function collectRotationalMouldingInput(): UniversalStackInput {
+  const heatingTimeSec = num('rm-heat');
+  const coolingTimeSec = num('rm-cool');
+  const manualMouldCost = num('rm-mould-cost');
+  const wallThicknessMm = num('rm-wall') || 4;
+  const rotoMaterial = validSel<RotoMaterialFamily>('rm-mat-fam', ['pe','xlpe','pp','pa12'], 'pe');
+  const coolingMethod = validSel<RotoCoolingMethod>('rm-cool-method', ['ambient','forced-air','water-spray'], 'forced-air');
+  const projectedAreaCm2 = num('rm-proj-area');
+  const mouldType = validSel<RotoMouldType>('rm-mould-type', ['cast-al','cnc-al','fabricated'], 'cast-al');
+
   const drivers = computeRotationalMouldingDrivers({
     materialId: sel('rm-mat'),
     partWeightKg: num('rm-part-wt'),
     powderCostAdderPerKg: num('rm-powder-adder'),
     numArms: num('rm-num-arms') || 3,
     partsPerArm: num('rm-parts-per-arm') || 1,
-    heatingTimeSec: num('rm-heat'),
-    coolingTimeSec: num('rm-cool'),
+    heatingTimeSec,
+    coolingTimeSec,
     loadUnloadTimeSec: num('rm-load'),
     machineId: sel('rm-mach'),
     labourId: sel('rm-lab'),
     oee: num('rm-oee'),
     manning: num('rm-manning'),
     labourEfficiency: num('rm-lab-eff'),
-    mouldCost: num('rm-mould-cost'),
+    mouldCost: manualMouldCost > 0 ? manualMouldCost : 0,
     mouldLife: num('rm-mould-life'),
     amortizationVolume: num('rm-amort') || 1,
+    wallThicknessMm,
+    rotoMaterial,
+    coolingMethod,
+    projectedAreaCm2,
+    mouldType,
+    mouldComplexity: 'moderate',
+    masterbatchCostPerKg: num('rm-masterbatch') || undefined,
   });
+
+  // Surface predicted cycle times when auto-derived.
+  if (heatingTimeSec <= 0 || coolingTimeSec <= 0) {
+    const cyc = estimateRotoCycle({ wallThicknessMm, material: rotoMaterial, coolingMethod });
+    _smExtraWarnings.push(
+      `Cycle: heating/cooling auto-predicted at ${cyc.heatingSec}s / ${cyc.coolingSec}s ` +
+      `(${wallThicknessMm} mm ${rotoMaterial}, ${coolingMethod}). Enter times to override.`
+    );
+  }
+  if (manualMouldCost <= 0) {
+    const est = estimateRotoMouldCost({ projectedAreaCm2, mouldType, complexity: 'moderate' });
+    _smExtraWarnings.push(
+      `Tooling: roto mould cost auto-estimated at £${est.total.toLocaleString()} ` +
+      `(${mouldType}, ${projectedAreaCm2} cm²). Enter a Mould Cost to override.`
+    );
+  }
+
   return { ...getUniversalTail(), rawMaterial: drivers.rawMaterial, operations: drivers.operations, tooling: drivers.tooling };
+}
+
+// ─── Blow / Roto DFM advisor panels (BR3/BR4) ─────────────────────────────────
+
+interface _DFMIssueLike { severity: string; title: string; description: string; recommendation: string }
+function renderDFMPanel(score: number, issues: _DFMIssueLike[], summary: string): string {
+  const sevColor: Record<string, string> = { critical: '#c62828', major: '#e65100', minor: '#f9a825', opportunity: '#2e7d32' };
+  const scoreColor = score >= 8 ? '#2e7d32' : score >= 5 ? '#e65100' : '#c62828';
+  const body = issues.length === 0
+    ? `<div style="color:#2e7d32;margin-top:4px">✓ ${escHtml(summary)}</div>`
+    : issues.map(i => `
+        <div style="margin-top:4px;padding-left:6px;border-left:3px solid ${sevColor[i.severity] ?? '#999'}">
+          <div style="font-weight:600;color:${sevColor[i.severity] ?? '#555'}">[${i.severity.toUpperCase()}] ${escHtml(i.title)}</div>
+          <div style="color:#555">${escHtml(i.description)}</div>
+          <div style="color:#333"><em>Fix:</em> ${escHtml(i.recommendation)}</div>
+        </div>`).join('');
+  return `<div style="background:#fff;border:1px solid #e0e0e0;border-radius:4px;padding:8px">
+      <span style="font-weight:700">DFM score: <span style="color:${scoreColor}">${score}/10</span></span>${body}
+    </div>`;
+}
+
+function wireBlowDFM(): void {
+  const btn = document.getElementById('bm-dfm-btn');
+  if (!btn) return;
+  btn.addEventListener('click', () => {
+    const machineId = sel('bm-mach');
+    const process: BlowProcess = machineId.startsWith('blow-ibm') ? 'ibm'
+      : machineId.startsWith('blow-sbm') || machineId.includes('pet') ? 'sbm' : 'ebm';
+    const r = analyseBlowDFM({
+      process,
+      wallThicknessMm: num('bm-wall'),
+      blowUpRatio: num('bm-dfm-bur') || undefined,
+      parisonLtoD: num('bm-dfm-ld') || undefined,
+      minCornerRadiusMm: num('bm-dfm-corner') || undefined,
+      handleOrWeldLine: sel('bm-dfm-weld') === 'yes',
+      toleranceMm: num('bm-dfm-tol') || undefined,
+    });
+    const out = document.getElementById('bm-dfm-result');
+    if (out) { out.innerHTML = renderDFMPanel(r.score, r.issues, r.summary); out.style.display = 'block'; }
+  });
+}
+
+function wireRotoDFM(): void {
+  const btn = document.getElementById('rm-dfm-btn');
+  if (!btn) return;
+  btn.addEventListener('click', () => {
+    const r = analyseRotoDFM({
+      wallThicknessMm: num('rm-wall'),
+      material: validSel<RotoMaterialFamily>('rm-mat-fam', ['pe','xlpe','pp','pa12'], 'pe'),
+      minInternalRadiusMm: num('rm-dfm-radius') || undefined,
+      draftAngleDeg: num('rm-dfm-draft'),
+      flatUnsupportedSpanMm: num('rm-dfm-span') || undefined,
+      enclosedNoVent: sel('rm-dfm-vent') === 'yes',
+      doubleWallKissOff: sel('rm-dfm-kiss') === 'yes',
+    });
+    const out = document.getElementById('rm-dfm-result');
+    if (out) { out.innerHTML = renderDFMPanel(r.score, r.issues, r.summary); out.style.display = 'block'; }
+  });
 }
 
 function collectRubberInput(): UniversalStackInput {

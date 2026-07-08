@@ -1,4 +1,5 @@
 import type { CommodityDrivers, OperationInput, RawMaterialInput, ToolingInput } from '../types.js';
+import { estimateBlowMouldCost, type BlowProcess, type BlowMouldMaterial } from './blow-advisor.js';
 
 export interface BlowMouldingInputs {
   materialId: string;
@@ -14,7 +15,8 @@ export interface BlowMouldingInputs {
   oee: number;
   manning: number;
   labourEfficiency: number;
-  mouldCost: number;
+  /** Blow-mould set cost £. Omit/≤0 to estimate parametrically (see estimateBlowMouldCost). */
+  mouldCost?: number;
   mouldLife: number;
   amortizationVolume: number;
   deflashMachineId?: string;
@@ -24,6 +26,14 @@ export interface BlowMouldingInputs {
   parisonExtrusionTimeSec?: number;
   /** Scrap fraction 0–1 (wall thickness failure, leak, flash). Uplifts material and cycle time. */
   rejectRate?: number;
+  // ── Mould-cost estimator inputs (used when mouldCost ≤0) ──
+  partVolumeL?: number;
+  mouldMaterial?: BlowMouldMaterial;
+  highCooling?: boolean;
+  /** SBM two-stage: bought-in / separately-injected preform cost £/part → material consumable. */
+  preformCostPerPart?: number;
+  /** Colour/UV/barrier masterbatch premium £/kg of part. */
+  masterbatchCostPerKg?: number;
 }
 
 export function getBlowMouldingInputSchema(): Record<string, string> {
@@ -65,19 +75,25 @@ export function computeBlowMouldingDrivers(inputs: BlowMouldingInputs): Commodit
   const grossWeightKg = inputs.partWeightKg + inputs.flashWeightKg;
   const materialUtilization = inputs.partWeightKg / grossWeightKg;
 
+  // Per-part material consumables: bought-in SBM preform + colour/barrier masterbatch.
+  const consumablesCostPerPart =
+    (inputs.preformCostPerPart ?? 0) + (inputs.masterbatchCostPerKg ?? 0) * inputs.partWeightKg;
+
   const rawMaterial: RawMaterialInput = {
     materialId: inputs.materialId,
     netWeightKg: inputs.partWeightKg * rejectUplift,
     materialUtilization,
+    ...(consumablesCostPerPart > 0 ? { consumablesCostPerPart } : {}),
   };
 
   const effectiveCycleTimeHr = cycleTimeHr * rejectUplift;
 
-  const processName = inputs.machineId.startsWith('bm-ibm')
-    ? 'Injection Blow Moulding'
-    : inputs.machineId.startsWith('bm-sbm') || inputs.machineId.startsWith('bm-pet')
-      ? 'Stretch Blow Moulding'
-      : 'Extrusion Blow Moulding';
+  // Process label from the actual machine-id prefixes (blow-ibm-* / blow-sbm-*).
+  const id = inputs.machineId;
+  const processName =
+    id.startsWith('blow-ibm') || id.startsWith('bm-ibm') ? 'Injection Blow Moulding' :
+    id.startsWith('blow-sbm') || id.startsWith('bm-sbm') || id.includes('pet') ? 'Stretch Blow Moulding' :
+    'Extrusion Blow Moulding';
 
   const operations: OperationInput[] = [
     {
@@ -118,8 +134,22 @@ export function computeBlowMouldingDrivers(inputs: BlowMouldingInputs): Commodit
     ? Math.ceil(inputs.amortizationVolume / (inputs.mouldLife * inputs.cavities))
     : 1;
 
+  // Mould cost: manual figure, else estimate parametrically from process/cavities/size.
+  const blowProcess: BlowProcess =
+    id.startsWith('blow-ibm') || id.startsWith('bm-ibm') ? 'ibm' :
+    id.startsWith('blow-sbm') || id.startsWith('bm-sbm') || id.includes('pet') ? 'sbm' : 'ebm';
+  const baseMouldCost = (inputs.mouldCost && inputs.mouldCost > 0)
+    ? inputs.mouldCost
+    : estimateBlowMouldCost({
+        process: blowProcess,
+        cavities: inputs.cavities,
+        partVolumeL: inputs.partVolumeL,
+        mouldMaterial: inputs.mouldMaterial,
+        highCooling: inputs.highCooling,
+      }).total;
+
   const tooling: ToolingInput = {
-    totalToolingCost: inputs.mouldCost * numMoulds,
+    totalToolingCost: baseMouldCost * numMoulds,
     amortizationVolume: inputs.amortizationVolume,
     mode: 'amortized',
   };
