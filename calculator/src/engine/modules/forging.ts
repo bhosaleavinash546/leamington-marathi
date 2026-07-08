@@ -25,6 +25,10 @@ export interface ForgingInputs {
   dieSteel?: DieSteel;
   dieImpressions?: number;    // blocker + finisher (+ edger) cavities; default 2
   dieComplexity?: ShapeComplexity;
+  // ── Optional preform / blocker stage (multi-step forging) ──
+  preformMachineId?: string;  // upsetter / blocking press / roll for the preform pass
+  preformLabourId?: string;
+  preformCycleHr?: number;    // preform cycle time hr (>0 to add the stage)
   trimmingMachineId?: string;
   trimmingLabourId?: string;
   trimmingCycleHr?: number;
@@ -59,6 +63,9 @@ export function getForgingInputSchema(): Record<string, string> {
     dieSteel: 'h13|premium|hammer — die steel grade (die-cost estimator only)',
     dieImpressions: 'number? — die impressions/cavities (die-cost estimator only; default 2)',
     dieComplexity: 'simple|moderate|complex — die geometry complexity (die-cost estimator only)',
+    preformMachineId: 'string? — preform/blocker machine ID (multi-step forging)',
+    preformLabourId: 'string? — preform labour rate ID',
+    preformCycleHr: 'number? — preform cycle time hr (>0 adds the preform stage)',
     trimmingMachineId: 'string? — trimming press machine ID',
     trimmingLabourId: 'string? — trimming labour rate ID',
     trimmingCycleHr: 'number? — trimming cycle time hr',
@@ -93,20 +100,41 @@ export function computeForgingDrivers(inputs: ForgingInputs): CommodityDrivers {
     ? inputs.cycleTimeHr
     : (inputs.strokesToForm * (inputs.timePerBlowSec ?? 10)) / 3600;
 
-  // Primary forge operation
-  const operations: OperationInput[] = [
-    {
-      operationName: 'Forging',
-      machineId: inputs.forgeId,
-      labourId: inputs.labourId,
-      cycleTimeHr: effectiveCycleHr * rejectUplift,
+  const operations: OperationInput[] = [];
+
+  // Optional preform / blocker stage (multi-step forging): an upset/block pass
+  // before the finish impression, on its own machine + labour.
+  if (
+    inputs.preformMachineId !== undefined &&
+    inputs.preformLabourId !== undefined &&
+    inputs.preformCycleHr !== undefined &&
+    inputs.preformCycleHr > 0
+  ) {
+    operations.push({
+      operationName: 'Preform / Blocker',
+      machineId: inputs.preformMachineId,
+      labourId: inputs.preformLabourId,
+      cycleTimeHr: inputs.preformCycleHr * rejectUplift,
       partsPerCycle: 1,
       oee: inputs.oee,
       manning: inputs.manning,
-      labourTimeHr: effectiveCycleHr * rejectUplift,
+      labourTimeHr: inputs.preformCycleHr * rejectUplift,
       labourEfficiency: inputs.labourEfficiency,
-    },
-  ];
+    });
+  }
+
+  // Primary (finish) forge operation
+  operations.push({
+    operationName: 'Forging',
+    machineId: inputs.forgeId,
+    labourId: inputs.labourId,
+    cycleTimeHr: effectiveCycleHr * rejectUplift,
+    partsPerCycle: 1,
+    oee: inputs.oee,
+    manning: inputs.manning,
+    labourTimeHr: effectiveCycleHr * rejectUplift,
+    labourEfficiency: inputs.labourEfficiency,
+  });
 
   // Optional trimming operation
   if (

@@ -11,7 +11,9 @@ import { computeCastingDrivers } from '../engine/modules/casting.js';
 import { computeForgingDrivers } from '../engine/modules/forging.js';
 import {
   estimateForgingTonnage, resolveFurnaceEnergyPricePerKwh, estimateForgingDieCost,
+  estimateForgingDieLife, adviseForgingProcess, analyseForgingDFM,
   type FurnaceType, type ShapeComplexity, type DieSteel, type ForgingAlloyFamily,
+  type ForgingProcess, type ComplexityLevel, type ToleranceClass,
 } from '../engine/modules/forging-advisor.js';
 import { computePaintingDrivers } from '../engine/modules/painting.js';
 import { computeBIWDrivers } from '../engine/modules/biw-assembly.js';
@@ -3181,6 +3183,37 @@ function updateCastingSubtype(): void {
 
 function renderForgingForm(): string {
   return `
+    <details style="background:#fff8f3;border:1px solid #ffd699;border-radius:6px;padding:6px 8px;margin-bottom:8px">
+      <summary style="font-weight:600;font-size:0.78rem;cursor:pointer;color:#b34700">⚙ Forging Advisor — Process route + DFM check</summary>
+      <div style="margin-top:6px">
+        <div class="field-row">
+          <div class="field-group"><label>Annual Volume</label><input type="number" id="forge-adv-vol" step="1000" min="1" value="100000"/></div>
+          <div class="field-group"><label>Alloy Family</label><select id="forge-adv-alloy"><option value="carbon-steel">Carbon Steel</option><option value="alloy-steel" selected>Alloy Steel</option><option value="microalloyed-steel">Microalloyed Steel</option><option value="stainless-steel">Stainless Steel</option><option value="aluminium">Aluminium</option><option value="titanium">Titanium</option><option value="superalloy">Ni Superalloy</option><option value="copper">Copper/Brass</option></select></div>
+        </div>
+        <div class="field-row" style="margin-top:4px">
+          <div class="field-group"><label>Complexity</label><select id="forge-adv-cmplx"><option value="low">Low</option><option value="medium" selected>Medium</option><option value="high">High</option></select></div>
+          <div class="field-group"><label>Tolerance</label><select id="forge-adv-tol"><option value="loose">Loose</option><option value="standard" selected>Standard</option><option value="tight">Tight</option></select></div>
+        </div>
+        <div class="field-row" style="margin-top:4px">
+          <div class="field-group"><label>Ring/Axisymmetric?</label><select id="forge-adv-ring"><option value="no" selected>No</option><option value="yes">Yes (flange/gear blank)</option></select></div>
+          <div class="field-group"><label>Safety-critical?</label><select id="forge-adv-safety"><option value="no" selected>No</option><option value="yes">Yes (aero/powertrain)</option></select></div>
+        </div>
+        <div class="section-title" style="margin-top:6px;font-size:0.72rem">DFM geometry (optional)</div>
+        <div class="field-row">
+          <div class="field-group"><label>Min Web (mm)</label><input type="number" id="forge-adv-web" step="0.5" min="0" value="6"/></div>
+          <div class="field-group"><label>Draft (°)</label><input type="number" id="forge-adv-draft" step="0.5" min="0" value="5"/></div>
+        </div>
+        <div class="field-row" style="margin-top:4px">
+          <div class="field-group"><label>Fillet R (mm)</label><input type="number" id="forge-adv-fillet" step="0.5" min="0" value="4"/></div>
+          <div class="field-group"><label>Machining Stock (mm)</label><input type="number" id="forge-adv-stock" step="0.5" min="0" value="2"/></div>
+        </div>
+        <div class="field-row" style="margin-top:4px">
+          <div class="field-group"><label>Rib H:T ratio</label><input type="number" id="forge-adv-rib" step="0.5" min="0" value="2"/></div>
+          <div class="field-group" style="display:flex;align-items:flex-end"><button class="btn btn-secondary btn-sm" id="forge-adv-btn" style="width:100%">Advise →</button></div>
+        </div>
+        <div id="forge-adv-result" style="margin-top:6px;font-size:0.75rem;display:none"></div>
+      </div>
+    </details>
     <div class="section-title">Material &amp; Billet</div>
     <div class="field-row">
       <div class="field-group"><label>Material</label><select id="forge-mat" class="material-select"></select></div>
@@ -3217,7 +3250,7 @@ function renderForgingForm(): string {
     <div class="section-title" style="margin-top:8px">Tooling</div>
     <div class="field-row">
       <div class="field-group"><label>Die Cost (£) <span title="Enter a figure to use it directly. Leave 0 to auto-estimate from area, steel, impressions and complexity.">ℹ</span></label><input type="number" id="forge-die-cost" step="1000" min="0" value="80000" title="0 = auto-estimate parametrically"/></div>
-      <div class="field-group"><label>Die Life (forgings)</label><input type="number" id="forge-die-life" step="1000" min="0" value="50000"/></div>
+      <div class="field-group"><label>Die Life (forgings) <span title="Forgings per die set. Leave 0 to auto-predict from alloy, part size and complexity.">ℹ</span></label><input type="number" id="forge-die-life" step="1000" min="0" value="50000" title="0 = auto-predict from alloy/size/complexity"/></div>
     </div>
     <div class="field-row" style="margin-top:6px">
       <div class="field-group"><label>Die Steel <span title="Die-cost estimator only (Die Cost=0): H13 ×1.0, premium 1.2367/PM ×1.4, hammer 1.2714 ×0.85.">ℹ</span></label><select id="forge-die-steel"><option value="h13" selected>H13 / 1.2344 (standard)</option><option value="premium">Premium (1.2367 / PM)</option><option value="hammer">Hammer die (1.2714)</option></select></div>
@@ -3235,6 +3268,13 @@ function renderForgingForm(): string {
     <div class="field-row" style="margin-top:6px">
       <div class="field-group"><label>Coining/Sizing (£/part, 0=none) <span title="Cold restrike for tight flatness/thickness after forging.">ℹ</span></label><input type="number" id="forge-coining" step="0.05" min="0" value="0"/></div>
       <div class="field-group"><label>NDT (£/part, 0=none) <span title="Non-destructive test per part: MPI ~£2.5, UT ~£6, CT ~£32 for safety-critical forgings.">ℹ</span></label><input type="number" id="forge-ndt" step="0.5" min="0" value="0"/></div>
+    </div>
+    <div class="field-row" style="margin-top:6px">
+      <div class="field-group"><label>Preform Machine (opt.) <span title="Multi-step forging: an upset/blocker pass before the finish impression, on its own machine + labour.">ℹ</span></label><select id="forge-preform-mach" class="machine-select"><option value="">— None —</option></select></div>
+      <div class="field-group"><label>Preform Labour (opt.)</label><select id="forge-preform-lab" class="labour-select"><option value="">— None —</option></select></div>
+    </div>
+    <div class="field-row" style="margin-top:6px">
+      <div class="field-group"><label>Preform Cycle (hr, 0=none)</label><input type="number" id="forge-preform-ct" step="0.001" min="0" value="0"/></div>
     </div>
     <div class="field-row" style="margin-top:6px">
       <div class="field-group"><label>Trim Machine (opt.)</label><select id="forge-trim-mach" class="machine-select"><option value="">— None —</option></select></div>
@@ -9220,6 +9260,7 @@ function switchCommodity(type: CommodityType): void {
     case 'forging':
       area.innerHTML = renderForgingForm();
       populateSelects();
+      wireForgingAdvisor();
       setTimeout(() => {
         const matEl = el<HTMLSelectElement>('forge-mat');
         if (matEl) { const opt = Array.from(matEl.options).find(o => o.value.includes('mat-steel1020')); if (opt) matEl.value = opt.value; }
@@ -9695,6 +9736,17 @@ function collectForgingInput(): UniversalStackInput {
 
   const alloyFamily = forgingAlloyFamilyFor(materialId);
 
+  // F2-A: predict die life from alloy/size/complexity when left at 0.
+  const manualDieLife = num('forge-die-life');
+  const dieLife = manualDieLife > 0
+    ? manualDieLife
+    : estimateForgingDieLife({ alloyFamily, projectedAreaCm2, complexity: shapeComplexity });
+
+  // F2-C: optional preform / blocker stage.
+  const preformCt = num('forge-preform-ct');
+  const preformMachineId = sel('forge-preform-mach') || undefined;
+  const preformLabourId = sel('forge-preform-lab') || undefined;
+
   const drivers = computeForgingDrivers({
     materialId,
     partWeightKg,
@@ -9710,7 +9762,7 @@ function collectForgingInput(): UniversalStackInput {
     labourEfficiency: num('forge-lab-eff'),
     heatingEnergyKwhPerKg: num('forge-heat-energy'),
     heatingEnergyPricePerKwh,
-    dieLife: num('forge-die-life'),
+    dieLife,
     // 0 / blank → estimate parametrically from area, steel, impressions and complexity.
     dieCost: manualDieCost > 0 ? manualDieCost : undefined,
     projectedAreaCm2,
@@ -9722,10 +9774,21 @@ function collectForgingInput(): UniversalStackInput {
     descaleCostPerKg: num('forge-descale') || undefined,
     coiningCostPerPart: num('forge-coining') || undefined,
     ndtCostPerPart: num('forge-ndt') || undefined,
+    preformMachineId: preformCt > 0 ? preformMachineId : undefined,
+    preformLabourId: preformCt > 0 ? preformLabourId : undefined,
+    preformCycleHr: preformCt > 0 ? preformCt : undefined,
     trimmingMachineId: trimCt > 0 ? trimmingMachineId : undefined,
     trimmingLabourId: trimCt > 0 ? trimmingLabourId : undefined,
     trimmingCycleHr: trimCt > 0 ? trimCt : undefined,
   });
+
+  // F2-A: surface the predicted die life when auto-derived.
+  if (manualDieLife <= 0) {
+    _smExtraWarnings.push(
+      `Tooling: die life auto-predicted at ${dieLife.toLocaleString()} forgings/set ` +
+      `(${alloyFamily}, ${projectedAreaCm2} cm², ${shapeComplexity}). Enter Die Life to override.`
+    );
+  }
 
   // F-H2: forging-load validation — warn if the part needs more force than the press can deliver.
   // Only force-rated machines (press / screw / upsetter) carry a tonnage; hammers do not.
@@ -9785,6 +9848,63 @@ function forgingAlloyFamilyFor(materialId: string): ForgingAlloyFamily {
   if (cat.includes('aluminium') || cat.includes('magnesium')) return 'aluminium';
   if (cat.includes('brass') || cat.includes('copper') || cat.includes('bronze')) return 'copper';
   return 'carbon-steel';
+}
+
+/** F2-B: wire the forging process/DFM advisor widget (process route + geometry check). */
+function wireForgingAdvisor(): void {
+  const btn = document.getElementById('forge-adv-btn');
+  if (!btn) return;
+  btn.addEventListener('click', () => {
+    const volume = num('forge-adv-vol') || 100000;
+    const alloyFamily = validSel<ForgingAlloyFamily>('forge-adv-alloy',
+      ['carbon-steel','alloy-steel','microalloyed-steel','stainless-steel','aluminium','titanium','superalloy','copper'], 'alloy-steel');
+    const complexity = validSel<ComplexityLevel>('forge-adv-cmplx', ['low','medium','high'], 'medium');
+    const toleranceClass = validSel<ToleranceClass>('forge-adv-tol', ['loose','standard','tight'], 'standard');
+    const isRingShape = sel('forge-adv-ring') === 'yes';
+    const safetyCritical = sel('forge-adv-safety') === 'yes';
+    const partWeightKg = num('forge-part-wt') || 1.5;
+
+    const rec = adviseForgingProcess({ annualVolume: volume, partWeightKg, complexity, alloyFamily, toleranceClass, isRingShape, safetyCritical });
+    const dfm = analyseForgingDFM({
+      process: rec.process as ForgingProcess,
+      minWebThicknessMm: num('forge-adv-web') || rec.reference.minWebMm,
+      draftAngleDeg: num('forge-adv-draft'),
+      filletRadiusMm: num('forge-adv-fillet') || undefined,
+      ribHeightToThickness: num('forge-adv-rib') || undefined,
+      machiningStockMm: num('forge-adv-stock') || undefined,
+    });
+
+    const sevColor: Record<string, string> = { critical: '#c62828', major: '#e65100', minor: '#f9a825', opportunity: '#2e7d32' };
+    const scoreColor = dfm.score >= 8 ? '#2e7d32' : dfm.score >= 5 ? '#e65100' : '#c62828';
+    const issuesHtml = dfm.issues.length === 0
+      ? `<div style="color:#2e7d32;margin-top:4px">✓ ${escHtml(dfm.summary)}</div>`
+      : dfm.issues.map(i => `
+          <div style="margin-top:4px;padding-left:6px;border-left:3px solid ${sevColor[i.severity] ?? '#999'}">
+            <div style="font-weight:600;color:${sevColor[i.severity] ?? '#555'}">[${i.severity.toUpperCase()}] ${escHtml(i.title)}</div>
+            <div style="color:#555">${escHtml(i.description)}</div>
+            <div style="color:#333"><em>Fix:</em> ${escHtml(i.recommendation)}</div>
+          </div>`).join('');
+
+    const resultEl = document.getElementById('forge-adv-result');
+    if (!resultEl) return;
+    resultEl.innerHTML = `
+      <div style="background:#fff;border:1px solid #e0e0e0;border-radius:4px;padding:8px">
+        <div style="font-weight:700;color:#b34700">${escHtml(rec.processLabel)}</div>
+        <div style="color:#555;margin-top:2px">Route: ${rec.processRoute.map(escHtml).join(' → ')}</div>
+        <div style="margin-top:4px;display:flex;gap:12px;flex-wrap:wrap">
+          <span><strong>Yield:</strong> ${(rec.reference.yieldBand[0] * 100).toFixed(0)}–${(rec.reference.yieldBand[1] * 100).toFixed(0)}%</span>
+          <span><strong>Tolerance:</strong> ${escHtml(rec.reference.toleranceMm)}</span>
+          <span><strong>Tooling:</strong> ${escHtml(rec.reference.toolingBand)}</span>
+        </div>
+        <div style="color:#555;margin-top:4px"><em>${escHtml(rec.reason)}</em></div>
+        ${rec.suggestedSecondary.length ? `<div style="color:#555;margin-top:4px"><strong>Secondary:</strong> ${rec.suggestedSecondary.map(escHtml).join(', ')}</div>` : ''}
+        <div style="margin-top:6px;border-top:1px solid #eee;padding-top:6px">
+          <span style="font-weight:700">DFM score: <span style="color:${scoreColor}">${dfm.score}/10</span></span>
+          ${issuesHtml}
+        </div>
+      </div>`;
+    resultEl.style.display = 'block';
+  });
 }
 
 function collectPaintingInput(): UniversalStackInput {

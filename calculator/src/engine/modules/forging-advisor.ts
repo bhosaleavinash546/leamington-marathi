@@ -546,3 +546,44 @@ export function estimateForgingDieCost(inputs: ForgingDieCostInputs): ForgingDie
     total,
   };
 }
+
+// ─── Die-life predictor (F2-A) ────────────────────────────────────────────────
+
+/**
+ * Baseline die life (forgings per die set) by alloy family. Hot-hard, high
+ * flow-stress alloys (Ti/Ni) abrade and heat-check dies far faster than
+ * aluminium; steel sits in between. These are impression-die order-of-magnitude
+ * figures for a moderate part.
+ */
+export const FORGING_DIE_LIFE_BASE: Record<ForgingAlloyFamily, number> = {
+  aluminium: 80000,
+  copper: 60000,
+  'carbon-steel': 40000,
+  'microalloyed-steel': 38000,
+  'alloy-steel': 30000,
+  'stainless-steel': 18000,
+  titanium: 8000,
+  superalloy: 3500,
+};
+
+export interface ForgingDieLifeInputs {
+  alloyFamily: ForgingAlloyFamily;
+  projectedAreaCm2?: number;      // larger dies wear faster per hit
+  complexity?: ShapeComplexity;   // thin ribs/webs heat-check sooner
+}
+
+/**
+ * Predict die life (forgings per die set) from alloy, part size and geometry —
+ * so the die-set count (and amortised tooling cost) reflects reality instead of
+ * a flat guess. Bigger dies and complex thin-web impressions cut life; simple
+ * upsets extend it.
+ */
+export function estimateForgingDieLife(inputs: ForgingDieLifeInputs): number {
+  const base = FORGING_DIE_LIFE_BASE[inputs.alloyFamily];
+  const complexityFactor = (inputs.complexity ?? 'moderate') === 'complex' ? 0.6
+    : (inputs.complexity ?? 'moderate') === 'simple' ? 1.3 : 1.0;
+  // Size penalty: parts ≤ 100 cm² keep full life; larger dies see more wear per hit.
+  const area = Math.max(1, inputs.projectedAreaCm2 ?? 100);
+  const sizeFactor = area <= 100 ? 1.0 : Math.pow(100 / area, 0.2);
+  return Math.max(250, Math.round(base * complexityFactor * sizeFactor));
+}

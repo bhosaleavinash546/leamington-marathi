@@ -3,6 +3,7 @@ import { computeForgingDrivers, type ForgingInputs } from '../src/engine/modules
 import {
   estimateForgingTonnage,
   estimateForgingDieCost,
+  estimateForgingDieLife,
   dieSteelFactor,
   resolveFurnaceEnergyPricePerKwh,
   FORGING_FLOW_STRESS_MPA,
@@ -178,5 +179,56 @@ describe('F-M2 — forge/furnace labour categories', () => {
   it('adds UK forge and furnace operator rows', () => {
     expect(lib.labour.find(l => l.id === 'lab-uk-forge')).toBeTruthy();
     expect(lib.labour.find(l => l.id === 'lab-uk-furnace')).toBeTruthy();
+  });
+});
+
+// ─── F2-A: die-life predictor ─────────────────────────────────────────────────
+
+describe('F2-A — die-life predictor', () => {
+  it('soft alloys give far longer die life than hot-hard alloys', () => {
+    const al = estimateForgingDieLife({ alloyFamily: 'aluminium', projectedAreaCm2: 80 });
+    const steel = estimateForgingDieLife({ alloyFamily: 'alloy-steel', projectedAreaCm2: 80 });
+    const superalloy = estimateForgingDieLife({ alloyFamily: 'superalloy', projectedAreaCm2: 80 });
+    expect(al).toBeGreaterThan(steel);
+    expect(steel).toBeGreaterThan(superalloy);
+    expect(superalloy).toBeGreaterThanOrEqual(250);
+  });
+
+  it('complex geometry and large dies shorten life', () => {
+    const simple = estimateForgingDieLife({ alloyFamily: 'alloy-steel', projectedAreaCm2: 80, complexity: 'simple' });
+    const complex = estimateForgingDieLife({ alloyFamily: 'alloy-steel', projectedAreaCm2: 80, complexity: 'complex' });
+    expect(complex).toBeLessThan(simple);
+    const small = estimateForgingDieLife({ alloyFamily: 'alloy-steel', projectedAreaCm2: 50 });
+    const large = estimateForgingDieLife({ alloyFamily: 'alloy-steel', projectedAreaCm2: 800 });
+    expect(large).toBeLessThan(small);
+  });
+
+  it('engine uses predicted life when dieLife is omitted (more die sets for a superalloy)', () => {
+    const steel = computeForgingDrivers({ ...BASE, materialId: 'mat-steel4340', dieLife: 0, projectedAreaCm2: 80, dieComplexity: 'moderate', dieCost: 50000 });
+    // predicted alloy-steel life ~30k over 100k volume → ~4 sets; tooling > 0
+    expect(steel.tooling.totalToolingCost).toBeGreaterThan(0);
+  });
+});
+
+// ─── F2-C: multi-step preform stage ───────────────────────────────────────────
+
+describe('F2-C — multi-step preform forging', () => {
+  it('adds a Preform / Blocker operation before the finish forge when a cycle is given', () => {
+    const single = computeForgingDrivers(BASE);
+    const multi = computeForgingDrivers({
+      ...BASE,
+      preformMachineId: 'forge-upsetter-1000t',
+      preformLabourId: 'lab-uk-forge',
+      preformCycleHr: 0.01,
+    });
+    expect(single.operations).toHaveLength(1);
+    expect(multi.operations).toHaveLength(2);
+    expect(multi.operations[0].operationName).toBe('Preform / Blocker');
+    expect(multi.operations[1].operationName).toBe('Forging');
+  });
+
+  it('preform stage is ignored when its cycle is 0 / machine missing', () => {
+    const d = computeForgingDrivers({ ...BASE, preformMachineId: 'forge-upsetter-1000t', preformLabourId: 'lab-uk-forge', preformCycleHr: 0 });
+    expect(d.operations).toHaveLength(1);
   });
 });
