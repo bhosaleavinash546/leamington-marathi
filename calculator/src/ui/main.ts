@@ -8546,37 +8546,67 @@ function exportPCBAnalysisPrint(r: PCBImageAnalysis): void {
   };
 
   // ── COVER HEADER ────────────────────────────────────────────────────────────
+  const headerH = 33;
   doc.setFillColor(...BLUE);
-  doc.roundedRect(margin, y, usable, 34, 3, 3, 'F');
+  doc.roundedRect(margin, y, usable, headerH, 3, 3, 'F');
 
-  // PCB icon placeholder (circuit node dots)
-  doc.setFillColor(...CYAN);
-  doc.circle(pageW - margin - 18, y + 7, 5, 'F');
-  doc.setFillColor(...WHITE);
-  [[0,0],[4,4],[-4,4],[4,-4],[-4,-4]].forEach(([dx, dy]) => doc.circle(pageW - margin - 18 + dx, y + 7 + dy, 0.8, 'F'));
+  // Title — shrink-to-fit then ellipsis, so long board names never overflow the banner.
+  doc.setFont('helvetica', 'bold'); doc.setTextColor(...WHITE);
+  const titleMaxW = usable - 12;
+  let titleSize = 15;
+  doc.setFontSize(titleSize);
+  while (doc.getTextWidth(r.partName) > titleMaxW && titleSize > 10.5) { titleSize -= 0.5; doc.setFontSize(titleSize); }
+  let title = r.partName;
+  if (doc.getTextWidth(title) > titleMaxW) {
+    while (title.length > 8 && doc.getTextWidth(title + '...') > titleMaxW) title = title.slice(0, -1);
+    title = title.replace(/\s+$/, '') + '...';
+  }
+  doc.text(title, margin + 6, y + 11);
 
-  doc.setFontSize(14); doc.setFont('helvetica', 'bold'); doc.setTextColor(...WHITE);
-  doc.text(r.partName, margin + 6, y + 10);
-  doc.setFontSize(8); doc.setFont('helvetica', 'normal');
-  doc.text('PCB Image Analysis  ·  CostVision', margin + 6, y + 16);
+  doc.setFontSize(8); doc.setFont('helvetica', 'normal'); doc.setTextColor(...WHITE);
+  doc.text('PCB Image Analysis  ·  CostVision', margin + 6, y + 17);
 
+  // Badge row — each chip sized to its own text so they never overlap.
+  let bx = margin + 6;
+  const by = y + 20.5;
+  const chip = (label: string, bg: RGB, fg: RGB) => {
+    doc.setFontSize(7); doc.setFont('helvetica', 'bold');
+    const w = doc.getTextWidth(label) + 6;
+    doc.setFillColor(...bg);
+    doc.roundedRect(bx, by, w, 5.6, 1.2, 1.2, 'F');
+    doc.setTextColor(...fg);
+    doc.text(label, bx + 3, by + 3.9);
+    bx += w + 3;
+  };
   const confCol: RGB = r.confidenceLevel === 'High' ? GRN_R : r.confidenceLevel === 'Medium' ? AMB_R : RED_R;
-  doc.setFillColor(...confCol);
-  doc.roundedRect(margin + 6, y + 19, 28, 6, 1, 1, 'F');
-  doc.setFontSize(7.5); doc.setFont('helvetica', 'bold');
-  doc.text(`${r.confidenceLevel} Confidence`, margin + 20, y + 23.5, { align: 'center' });
-
+  chip(`${r.confidenceLevel} Confidence`, confCol, WHITE);
   if (r.complexityScore) {
     const cx = r.complexityScore;
-    doc.setFillColor(255, 255, 255, 0.15);
-    doc.roundedRect(margin + 38, y + 19, 42, 6, 1, 1, 'F');
-    doc.setTextColor(...WHITE); doc.setFont('helvetica', 'normal');
-    doc.text(`Complexity: ${cx.score}/100  ·  IPC Class ${cx.ipcClass}  ·  ${cx.label}`, margin + 59, y + 23.5, { align: 'center' });
+    chip(`Complexity ${cx.score}/100  ·  IPC Class ${cx.ipcClass}  ·  ${cx.label}`, LIGHT, BLUE);
   }
 
-  doc.setFontSize(7.5); doc.setTextColor(...WHITE);
-  doc.text(`Generated: ${dateStr}  ·  Domain: ${r.stage1Classification?.domain?.replace(/_/g, ' ') ?? 'General'}`, margin + 6, y + 30);
-  y += 38;
+  doc.setFontSize(7); doc.setFont('helvetica', 'normal'); doc.setTextColor(...WHITE);
+  doc.text(`Generated ${dateStr}  ·  Domain: ${r.stage1Classification?.domain?.replace(/_/g, ' ') ?? 'General'}`, margin + 6, y + headerH - 3);
+  y += headerH + 5;
+
+  // ── PRIMARY BOARD PHOTO (page 1) — so the reader instantly knows the board ──
+  if (pcbUploadedImages.length > 0) {
+    const im = pcbUploadedImages[0];
+    try {
+      const maxH = 58, maxW = usable * 0.62;
+      let iw = maxH * (im.w / Math.max(1, im.h)), ih = maxH;
+      if (iw > maxW) { iw = maxW; ih = maxW * (im.h / Math.max(1, im.w)); }
+      const bxp = margin + (usable - iw) / 2;
+      doc.setFillColor(...LIGHT);
+      doc.roundedRect(margin, y, usable, ih + 11, 2, 2, 'F');
+      doc.addImage(im.dataUrl, 'JPEG', bxp, y + 4, iw, ih, undefined, 'FAST');
+      const extra = pcbUploadedImages.length > 1 ? `  (+${pcbUploadedImages.length - 1} more in the image gallery)` : '';
+      doc.setFontSize(7); doc.setFont('helvetica', 'normal'); doc.setTextColor(...GREY);
+      doc.text(`Analysed board — ${im.label}${extra}`, margin + usable / 2, y + ih + 8.5, { align: 'center' });
+      doc.setTextColor(...DARK);
+      y += ih + 15;
+    } catch { /* skip an image that fails to embed */ }
+  }
 
   // ── §1 BOARD SPECIFICATION ───────────────────────────────────────────────────
   const b = r.boardSpec;

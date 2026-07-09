@@ -164,8 +164,18 @@ export function printPDF(
   doc.setFillColor(...ORANGE);
   doc.roundedRect(MG, y, CW, 2.5, 1, 1, 'F');
 
-  doc.setFontSize(13); doc.setFont('helvetica', 'bold'); doc.setTextColor(...NAVY);
-  doc.text(result.partName, MG + 6, y + 12);
+  doc.setFont('helvetica', 'bold'); doc.setTextColor(...NAVY);
+  // Shrink-to-fit then ellipsis so long part names never overflow the summary card.
+  const nameMaxW = CW - 12;
+  let nameSize = 13;
+  doc.setFontSize(nameSize);
+  while (doc.getTextWidth(result.partName) > nameMaxW && nameSize > 9) { nameSize -= 0.5; doc.setFontSize(nameSize); }
+  let partName = result.partName;
+  if (doc.getTextWidth(partName) > nameMaxW) {
+    while (partName.length > 8 && doc.getTextWidth(partName + '...') > nameMaxW) partName = partName.slice(0, -1);
+    partName = partName.replace(/\s+$/, '') + '...';
+  }
+  doc.text(partName, MG + 6, y + 12);
 
   doc.setFontSize(7.5); doc.setFont('helvetica', 'normal'); doc.setTextColor(...GREY);
   const meta = [
