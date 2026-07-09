@@ -1852,6 +1852,7 @@ function _applyAgentActionAndCompute(): void {
       el('export-pdf-btn').style.display = '';
       el('export-all-pdf-btn').style.display = '';
       el('save-scenario-btn').style.display = '';
+      el('save-library-btn').style.display = '';
 
       // Send result to agent for interpretation (return to agent mode after brief delay)
       agentLastResult = {
@@ -8865,6 +8866,42 @@ function savePCBResultToLibrary(): void {
   showToast(`Saved "${r.partName}" to Parts Library (£${total.toFixed(2)}/board)`, 'info');
 }
 
+/**
+ * Save the current calculated result to the Parts Library from the main action
+ * row (works for every commodity, incl. a PCB BOM applied to the costing form).
+ * Reuses the optional project/customer fields from the Library tab if present.
+ */
+function saveLastResultToLibrary(): void {
+  if (!lastResult) { showToast('Run Calculate first, then save', 'warning'); return; }
+  const partName = (document.getElementById('part-name') as HTMLInputElement)?.value || lastResult.partName || 'Part';
+  const existing = getPartsLibrary();
+  if (existing.some(r => r.partName === partName && r.commodity === activeCommodity && Math.abs(r.totalCost - lastResult!.total) < 0.005)) {
+    showToast('This costing is already in your Parts Library', 'info');
+    return;
+  }
+  const bkd = lastResult.breakdown;
+  existing.push({
+    id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+    savedAt: Date.now(),
+    projectName: (document.getElementById('lib-project') as HTMLInputElement)?.value ?? '',
+    partNumber:  (document.getElementById('lib-partno') as HTMLInputElement)?.value ?? '',
+    customer:    (document.getElementById('lib-customer') as HTMLInputElement)?.value ?? '',
+    vehicleProgramme: (document.getElementById('lib-vehicle-prog') as HTMLInputElement)?.value ?? '',
+    system:      (document.getElementById('lib-system') as HTMLInputElement)?.value ?? '',
+    notes:       (document.getElementById('lib-notes') as HTMLInputElement)?.value ?? '',
+    partName,
+    commodity:   activeCommodity,
+    totalCost:   lastResult.total,
+    currency:    _displayCurrency,
+    region:      (document.getElementById('mfg-region-selector') as HTMLSelectElement)?.value ?? 'UK',
+    confidence:  'Medium',
+    breakdown:   bkd ? { rawMaterial: bkd.rawMaterial, process: bkd.process, labour: bkd.labour, tooling: bkd.tooling, overhead: bkd.overhead, packaging: bkd.packaging, logistics: bkd.logistics, margin: bkd.margin } : undefined,
+  });
+  savePartsLibrary(existing);
+  showToast(`Saved "${partName}" to Parts Library`, 'info');
+  if (document.getElementById('results-upload')) renderUploadPanel();
+}
+
 function applyPCBImageToFab(): void {
   if (!pcbImageResult) return;
   const b = pcbImageResult.boardSpec;
@@ -11560,6 +11597,7 @@ function compute(): void {
     el('export-card-btn').style.display = '';
     el('export-all-pdf-btn').style.display = '';
     el('save-scenario-btn').style.display = '';
+    el('save-library-btn').style.display = '';
   } catch (err) {
     errBox.style.display = 'block';
     errBox.innerHTML = `<strong>Calculation error:</strong> ${escHtml(err instanceof Error ? err.message : String(err))}`;
@@ -15892,6 +15930,7 @@ async function init(): Promise<void> {
   el('export-pdf-btn')?.addEventListener('click', openPDF);
   el('export-all-pdf-btn')?.addEventListener('click', printMasterPDF);
   el('save-scenario-btn')?.addEventListener('click', openScenarioModal);
+  el('save-library-btn')?.addEventListener('click', saveLastResultToLibrary);
   el('load-ref-btn')?.addEventListener('click', loadExample);
   el('rates-btn')?.addEventListener('click', openRateLibrary);
 
