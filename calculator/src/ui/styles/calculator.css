@@ -5527,10 +5527,25 @@ kbd {
 /* 4 — Calmer live/status pulses (state indicators stay, but softer + slower). */
 .cv-status-dot, .cv-live::before { animation-duration: 2.6s !important; }
 
-/* 5 — Belt-and-braces: honour reduced-motion for everything above. */
+/* 5 — Full-view swaps: quiet pure fade (no slide), quicker. A slide-up on
+       every top-level view change is theatrical for a data tool — a short
+       cross-fade reads as instant and composed. */
+:root { --dur-enter: 150ms; }
+#home-view, #costing-view, #commodity-picker-view, #news-view, #comm-view {
+  animation: cv-fade-in var(--dur-enter) var(--ease-decel) both !important;
+}
+
+/* 6 — Content tickers (news + commodity prices) already pause on hover; keep
+       them, but stop entirely under reduced-motion. */
+@media (prefers-reduced-motion: reduce) {
+  .news-ticker-track, .comm-ticker-track { animation: none !important; }
+}
+
+/* 7 — Belt-and-braces: honour reduced-motion for everything above. */
 @media (prefers-reduced-motion: reduce) {
   .ai-chat-fab:hover, .theme-toggle:hover { transform: none !important; }
   .cv-status-dot, .cv-live::before,
+  #home-view, #costing-view, #commodity-picker-view, #news-view, #comm-view,
   .cv-hero-full .cv-eyebrow, .cv-hero-h1, .cv-hero-lede, .cv-hero-cta,
   .cv-hero-trust, .cv-impact, .cv-hero-compact { animation: none !important; }
 }
