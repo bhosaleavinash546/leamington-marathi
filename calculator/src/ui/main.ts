@@ -42,6 +42,11 @@ import {
   type RotoMaterialFamily, type RotoCoolingMethod, type RotoMouldType,
 } from '../engine/modules/roto-advisor.js';
 import { computeExtrusionDrivers } from '../engine/modules/extrusion.js';
+import {
+  estimateExtrusionLineRate, estimateExtrusionSpecificEnergy, estimateExtrusionDieCost,
+  estimateDieSwellPct, analyseExtrusionDFM, extrusionFamilyOf,
+  type ExtrusionProcess, type ExtrusionCooling, type DieComplexity,
+} from '../engine/modules/extrusion-advisor.js';
 import { computeThermoformingDrivers } from '../engine/modules/thermoforming.js';
 import { computeRotationalMouldingDrivers } from '../engine/modules/rotational-moulding.js';
 import { computeRubberDrivers } from '../engine/modules/rubber.js';
@@ -2721,32 +2726,85 @@ function renderExtrusionForm(): string {
     <div class="section-title">Material &amp; Profile</div>
     <div class="field-row">
       <div class="field-group"><label>Material</label><select id="ext-mat" class="material-select"></select></div>
-      <div class="field-group"><label>Profile kg/m <span title="Linear weight density of the extruded profile kg/m. E.g. 20mm dia rod PE: ~0.28 kg/m.">ℹ</span></label><input type="number" id="ext-kg-per-m" step="0.01" min="0.001" value="0.20"/></div>
+      <div class="field-group"><label>Process <span title="Extrusion process — sets die/calibration tooling, downstream, cooling and DFM limits.">ℹ</span></label>
+        <select id="ext-process">
+          <option value="pipe">Pipe</option>
+          <option value="profile" selected>Profile (solid/simple)</option>
+          <option value="profile-complex">Profile (complex/hollow)</option>
+          <option value="sheet">Sheet</option>
+          <option value="cable">Cable / Wire</option>
+          <option value="tube-medical">Medical Tube</option>
+          <option value="coex">Co-Extrusion</option>
+        </select></div>
     </div>
     <div class="field-row" style="margin-top:6px">
-      <div class="field-group"><label>Part Length (m)</label><input type="number" id="ext-length" step="0.1" min="0.01" value="2.0"/></div>
-      <div class="field-group"><label>Line Rate (kg/hr) <span title="Extrusion throughput. 75mm SSE: ~200–400 kg/hr for PE pipe; lower for complex profiles.">ℹ</span></label><input type="number" id="ext-rate" step="10" min="1" value="250"/></div>
+      <div class="field-group"><label>Profile kg/m <span title="Linear weight density of the extruded profile kg/m. E.g. 20mm dia rod PE: ~0.28 kg/m.">ℹ</span></label><input type="number" id="ext-kg-per-m" step="0.01" min="0.001" value="0.50"/></div>
+      <div class="field-group"><label>Part Length (m)</label><input type="number" id="ext-length" step="0.1" min="0.01" value="6.0"/></div>
     </div>
     <div class="field-row" style="margin-top:6px">
-      <div class="field-group"><label>Startup Scrap <span title="Fraction of run lost to startup purge, colour change. Typically 0.02–0.08.">ℹ</span></label><input type="number" id="ext-scrap" step="0.01" min="0" max="0.4" value="0.03"/></div>
+      <div class="field-group"><label>Wall Thickness (mm) <span title="Nominal wall — drives cooling-limited line speed and DFM.">ℹ</span></label><input type="number" id="ext-wall" step="0.1" min="0.1" value="3.0"/></div>
+      <div class="field-group"><label>Screw Ø (mm) <span title="Extruder screw diameter — used to estimate line rate when Line Rate is 0.">ℹ</span></label><input type="number" id="ext-screw" step="5" min="20" value="90"/></div>
     </div>
+    <div class="field-row" style="margin-top:6px">
+      <div class="field-group"><label>Cooling <span title="Downstream cooling — governs the cooling-limited haul-off speed.">ℹ</span></label>
+        <select id="ext-cooling"><option value="water-bath" selected>Water bath</option><option value="vacuum-tank">Vacuum tank</option><option value="water-spray">Water spray</option><option value="air">Air</option></select></div>
+      <div class="field-group"><label>Line Rate (kg/hr) <span title="Throughput. Set 0 to auto-estimate from screw Ø, material and cooling (min of screw output and cooling limit).">ℹ</span></label><input type="number" id="ext-rate" step="10" min="0" value="0"/></div>
+    </div>
+
+    <div class="section-title" style="margin-top:8px">Additives &amp; Scrap</div>
+    <div class="field-row">
+      <div class="field-group"><label>Additive / MB</label><select id="ext-additive"><option value="">None</option></select></div>
+      <div class="field-group"><label>Additive % <span title="Masterbatch/additive let-down fraction (colour ~2–4%, FR ~10–25%).">ℹ</span></label><input type="number" id="ext-add-pct" step="0.5" min="0" max="30" value="0"/></div>
+    </div>
+    <div class="field-row" style="margin-top:6px">
+      <div class="field-group"><label>Startup Scrap <span title="Startup purge scrap fraction. Typically 0.02–0.08.">ℹ</span></label><input type="number" id="ext-scrap" step="0.01" min="0" max="0.4" value="0.03"/></div>
+      <div class="field-group"><label>Steady Scrap <span title="Running scrap — out-of-tolerance, sampling. Typically 0.01–0.03.">ℹ</span></label><input type="number" id="ext-steady-scrap" step="0.005" min="0" max="0.2" value="0.02"/></div>
+    </div>
+    <div class="field-row" style="margin-top:6px">
+      <div class="field-group"><label>Colour changes/day <span title="Each colour change purges ~15 kg — amortised over the day's output.">ℹ</span></label><input type="number" id="ext-colour-chg" step="1" min="0" value="0"/></div>
+      <div class="field-group"><label>Die changes/day <span title="Each die change purges/scraps ~40 kg.">ℹ</span></label><input type="number" id="ext-die-chg" step="1" min="0" value="0"/></div>
+    </div>
+
     <div class="section-title" style="margin-top:8px">Machine &amp; Labour</div>
     <div class="field-row">
-      <div class="field-group"><label>Extruder</label><select id="ext-mach" class="machine-select"></select></div>
+      <div class="field-group"><label>Extruder / Line</label><select id="ext-mach" class="machine-select"></select></div>
       <div class="field-group"><label>Labour</label><select id="ext-lab" class="labour-select"></select></div>
     </div>
     <div class="field-row" style="margin-top:6px">
-      <div class="field-group"><label>OEE</label><input type="number" id="ext-oee" step="0.01" min="0.01" max="1" value="0.82"/></div>
+      <div class="field-group"><label>OEE</label><input type="number" id="ext-oee" step="0.01" min="0.01" max="1" value="0.85"/></div>
       <div class="field-group"><label>Manning</label><input type="number" id="ext-manning" step="0.5" min="0" value="1"/></div>
     </div>
     <div class="field-row" style="margin-top:6px">
       <div class="field-group"><label>Labour Eff.</label><input type="number" id="ext-lab-eff" step="0.01" min="0.01" max="1" value="0.95"/></div>
+      <div class="field-group"><label>Energy £/kWh <span title="Electricity price for the variable melt+chill process energy (regional).">ℹ</span></label><input type="number" id="ext-kwh" step="0.01" min="0" value="0.20"/></div>
     </div>
-    <div class="section-title" style="margin-top:8px">Tooling</div>
+    <div class="field-row" style="margin-top:6px">
+      <div class="field-group"><label><input type="checkbox" id="ext-leak" style="width:auto;margin-right:5px"/>Pressure / Leak test (pipe/tube)</label></div>
+    </div>
+
+    <div class="section-title" style="margin-top:8px">Tooling (die + calibration)</div>
     <div class="field-row">
-      <div class="field-group"><label>Die Cost (£)</label><input type="number" id="ext-die-cost" step="500" min="0" value="3000"/></div>
+      <div class="field-group"><label>Die+Calib Cost (£) <span title="Die + calibration/sizing tooling. Set 0 to auto-estimate from process, size and layers.">ℹ</span></label><input type="number" id="ext-die-cost" step="500" min="0" value="0"/></div>
       <div class="field-group"><label>Amort. Volume</label><input type="number" id="ext-amort" step="1000" min="1" value="100000"/></div>
-    </div>`;
+    </div>
+    <div class="field-row" style="margin-top:6px">
+      <div class="field-group"><label>Die size (mm)</label><input type="number" id="ext-die-size" step="5" min="2" value="90"/></div>
+      <div class="field-group"><label>Co-ex layers</label><input type="number" id="ext-die-layers" step="1" min="1" value="1"/></div>
+    </div>
+    <div class="field-row" style="margin-top:6px">
+      <div class="field-group"><label>Die complexity</label><select id="ext-die-cx"><option value="simple">Simple</option><option value="moderate" selected>Moderate</option><option value="complex">Complex</option></select></div>
+    </div>
+
+    <div class="section-title" style="margin-top:8px">DFM (optional)</div>
+    <div class="field-row">
+      <div class="field-group"><label>Min wall (mm)</label><input type="number" id="ext-minwall" step="0.1" min="0" value="0"/></div>
+      <div class="field-group"><label>Max wall (mm)</label><input type="number" id="ext-maxwall" step="0.1" min="0" value="0"/></div>
+    </div>
+    <div class="field-row" style="margin-top:6px">
+      <div class="field-group"><label>Min int. radius (mm)</label><input type="number" id="ext-radius" step="0.1" min="0" value="0"/></div>
+      <div class="field-group"><label>Tolerance ±(mm)</label><input type="number" id="ext-tol" step="0.01" min="0" value="0"/></div>
+    </div>
+    <div id="ext-advisor" style="display:none;margin-top:8px"></div>`;
 }
 
 // ─── Form: Thermoforming ──────────────────────────────────────────────────────
@@ -9569,10 +9627,24 @@ function switchCommodity(type: CommodityType): void {
       area.innerHTML = renderExtrusionForm();
       populateSelects();
       setTimeout(() => {
-        const machEl = el<HTMLSelectElement>('ext-mach');
-        if (machEl) { const opt = Array.from(machEl.options).find(o => o.value.includes('extruder-75mm')); if (opt) machEl.value = opt.value; }
+        // Filter the material picker to polymer/extrusion families (not metals/castings/forgings).
+        const allowMat = new Set(['Extrusion', 'Thermoplastic', 'Blow Moulding', 'Thermoplastic Elastomer', 'High-Performance Thermoplastic', 'Rubber']);
         const matEl = el<HTMLSelectElement>('ext-mat');
-        if (matEl) { const opt = Array.from(matEl.options).find(o => o.value.includes('mat-hdpe')); if (opt) matEl.value = opt.value; }
+        if (matEl) {
+          const catOf = (id: string) => library.materials.find(m => m.id === id)?.category ?? '';
+          Array.from(matEl.options).forEach(o => { if (!allowMat.has(catOf(o.value))) o.remove(); });
+          const pref = Array.from(matEl.options).find(o => o.value === 'mat-pe100-pipe') || Array.from(matEl.options).find(o => o.value.includes('mat-hdpe'));
+          if (pref) matEl.value = pref.value;
+        }
+        // Populate the additive/masterbatch picker.
+        const addEl = el<HTMLSelectElement>('ext-additive');
+        if (addEl) {
+          const adds = library.materials.filter(m => m.category === 'Additive / Masterbatch');
+          addEl.innerHTML = '<option value="">None</option>' + adds.map(a => `<option value="${a.id}">${a.grade} — ${_currFmt(a.pricePerKg)}/kg</option>`).join('');
+        }
+        const machEl = el<HTMLSelectElement>('ext-mach');
+        if (machEl) { const opt = Array.from(machEl.options).find(o => o.value.includes('extruder-pipe-line')); if (opt) machEl.value = opt.value; }
+        wireExtrusionAdvisor();
       }, 0);
       break;
 
@@ -10579,7 +10651,54 @@ function collectBlowMouldingInput(): UniversalStackInput {
   return { ...getUniversalTail(), rawMaterial: drivers.rawMaterial, operations: drivers.operations, tooling: drivers.tooling };
 }
 
+/** Live advisor panel — estimated line rate, specific energy, die cost, DFM. */
+function wireExtrusionAdvisor(): void {
+  const out = el<HTMLDivElement>('ext-advisor');
+  if (!out) return;
+  const ids = ['ext-mat','ext-process','ext-kg-per-m','ext-wall','ext-screw','ext-cooling','ext-rate','ext-mach','ext-die-cost','ext-die-size','ext-die-layers','ext-die-cx','ext-minwall','ext-maxwall','ext-radius','ext-tol'];
+  const update = () => {
+    const family = extrusionFamilyOf(sel('ext-mat'));
+    const process = (sel('ext-process') || 'profile') as ExtrusionProcess;
+    const screwType = (sel('ext-mach').includes('150mm') || sel('ext-mach').includes('coex')) ? 'twin' : 'single';
+    const wall = num('ext-wall') || undefined;
+    const kgPerM = num('ext-kg-per-m') || undefined;
+    const lr = estimateExtrusionLineRate({ screwDiameterMm: num('ext-screw') || 90, family, screwType, wallThicknessMm: wall, profileKgPerM: kgPerM, cooling: (sel('ext-cooling') || 'water-bath') as ExtrusionCooling });
+    const se = estimateExtrusionSpecificEnergy(family, screwType);
+    const swell = estimateDieSwellPct(family);
+    const die = estimateExtrusionDieCost({ process, sizeMm: num('ext-die-size') || undefined, layers: num('ext-die-layers') || 1, complexity: (sel('ext-die-cx') || 'moderate') as DieComplexity });
+    const usedRate = num('ext-rate') > 0 ? num('ext-rate') : lr.lineRateKgHr;
+    const dfm = analyseExtrusionDFM({
+      process, family, wallThicknessMm: wall,
+      minWallMm: num('ext-minwall') || undefined, maxWallMm: num('ext-maxwall') || undefined,
+      minInternalRadiusMm: num('ext-radius') || undefined, toleranceMm: num('ext-tol') || undefined, layers: num('ext-die-layers') || 1,
+    });
+    out.innerHTML = `
+      <div style="background:#fff;border:1px solid #e0e0e0;border-radius:4px;padding:8px;margin-bottom:6px;font-size:0.82rem">
+        <div style="font-weight:700;color:#ca8a04">Extrusion process estimate</div>
+        <div style="margin-top:4px;display:flex;gap:14px;flex-wrap:wrap">
+          <span><strong>Line rate:</strong> ${usedRate} kg/hr ${num('ext-rate') > 0 ? '(manual)' : `(auto — ${lr.limitedBy === 'cooling' ? 'cooling-limited' : 'screw-output'})`}</span>
+          <span><strong>Cooling limit:</strong> ${lr.coolingLimitedKgHr != null ? lr.coolingLimitedKgHr + ' kg/hr' : 'n/a'}${lr.lineSpeedMPerMin != null ? ` (${lr.lineSpeedMPerMin} m/min)` : ''}</span>
+        </div>
+        <div style="margin-top:3px;display:flex;gap:14px;flex-wrap:wrap">
+          <span><strong>Specific energy:</strong> ${se} kWh/kg</span>
+          <span><strong>Die swell:</strong> ~${swell}%</span>
+          <span><strong>Die+calibration:</strong> ${_currFmt(die.total)} (die ${_currFmt(die.die)} + calib ${_currFmt(die.calibration)}${die.layers > 0 ? ' + layers ' + _currFmt(die.layers) : ''})</span>
+        </div>
+      </div>
+      ${renderDFMPanel(dfm.score, dfm.issues, dfm.summary)}`;
+    out.style.display = 'block';
+  };
+  ids.forEach(id => { const e = document.getElementById(id); if (e) { e.addEventListener('change', update); e.addEventListener('input', update); } });
+  update();
+}
+
 function collectExtrusionInput(): UniversalStackInput {
+  const family = extrusionFamilyOf(sel('ext-mat'));
+  const process = (sel('ext-process') || 'profile') as ExtrusionProcess;
+  const additiveId = sel('ext-additive');
+  const additivePricePerKg = additiveId ? (library.materials.find(m => m.id === additiveId)?.pricePerKg ?? 0) : 0;
+  const screwType = (sel('ext-mach').includes('150mm') || sel('ext-mach').includes('coex')) ? 'twin' : 'single';
+
   const drivers = computeExtrusionDrivers({
     materialId: sel('ext-mat'),
     profileWeightKgPerM: num('ext-kg-per-m'),
@@ -10593,7 +10712,29 @@ function collectExtrusionInput(): UniversalStackInput {
     startupScrapFraction: num('ext-scrap'),
     dieCost: num('ext-die-cost'),
     amortizationVolume: num('ext-amort') || 1,
+    family, process, screwType,
+    screwDiameterMm: num('ext-screw') || undefined,
+    wallThicknessMm: num('ext-wall') || undefined,
+    cooling: (sel('ext-cooling') || 'water-bath') as ExtrusionCooling,
+    energyPricePerKwh: num('ext-kwh') || 0.20,
+    additiveFraction: (num('ext-add-pct') || 0) / 100,
+    additivePricePerKg,
+    steadyScrapFraction: num('ext-steady-scrap'),
+    colourChangesPerDay: num('ext-colour-chg') || 0,
+    dieChangesPerDay: num('ext-die-chg') || 0,
+    dieSizeMm: num('ext-die-size') || undefined,
+    dieLayers: num('ext-die-layers') || 1,
+    dieComplexity: (sel('ext-die-cx') || 'moderate') as DieComplexity,
+    includeLeakTest: (el<HTMLInputElement>('ext-leak')?.checked) ?? false,
   });
+
+  // Surface the auto-estimated line rate when the user left it at 0.
+  if (num('ext-rate') <= 0) {
+    const lr = estimateExtrusionLineRate({ screwDiameterMm: num('ext-screw') || 90, family, screwType, wallThicknessMm: num('ext-wall') || undefined, profileKgPerM: num('ext-kg-per-m') || undefined, cooling: (sel('ext-cooling') || 'water-bath') as ExtrusionCooling });
+    _smExtraWarnings.push(`Line rate auto-estimated at ${lr.lineRateKgHr} kg/hr (${lr.limitedBy === 'cooling' ? 'cooling-limited by wall thickness' : 'screw-output-limited'}).`);
+  }
+  if (num('ext-die-cost') <= 0) _smExtraWarnings.push(`Die + calibration tooling auto-estimated at ${_currFmt(drivers.tooling.totalToolingCost)} — enter a quoted figure to override.`);
+
   return { ...getUniversalTail(), rawMaterial: drivers.rawMaterial, operations: drivers.operations, tooling: drivers.tooling };
 }
 

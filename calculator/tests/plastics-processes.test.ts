@@ -109,15 +109,19 @@ describe('Extrusion module', () => {
     expect(d.rawMaterial.netWeightKg).toBeCloseTo(0.20 * 2.0, 6);
   });
 
-  it('cycle time = partWeightKg / lineRateKgPerHr', () => {
+  it('cycle time = grossWeightKg / lineRateKgPerHr (line runs the scrap mass too)', () => {
     const d = computeExtrusionDrivers(EXT_INPUTS);
-    const partWt = 0.20 * 2.0;
-    expect(d.operations[0].cycleTimeHr).toBeCloseTo(partWt / 250, 8);
+    // Gross-weight based: the line must extrude the scrapped material as well.
+    const grossKg = d.rawMaterial.netWeightKg / d.rawMaterial.materialUtilization;
+    expect(d.operations[0].cycleTimeHr).toBeCloseTo(grossKg / 250, 8);
   });
 
-  it('material utilization reflects startup scrap', () => {
+  it('material utilization reflects startup + steady-state scrap (default steady 0.02)', () => {
     const d = computeExtrusionDrivers(EXT_INPUTS);
-    expect(d.rawMaterial.materialUtilization).toBeCloseTo(1 - 0.03, 4);
+    expect(d.rawMaterial.materialUtilization).toBeCloseTo(1 - (0.03 + 0.02), 4);
+    // Isolating startup only (steady = 0) restores the pure-startup figure.
+    const d0 = computeExtrusionDrivers({ ...EXT_INPUTS, steadyScrapFraction: 0 });
+    expect(d0.rawMaterial.materialUtilization).toBeCloseTo(1 - 0.03, 4);
   });
 
   it('startup scrap clamped to 0.4999 maximum', () => {
