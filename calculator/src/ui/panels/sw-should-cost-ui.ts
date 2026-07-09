@@ -1282,6 +1282,7 @@ export const SW_VEHICLE_DEMOS: SWVehicleDemo[] = [
     id: 'bmw_x7', label: '🇩🇪 BMW X7 (48V MHEV)',
     desc: 'G07 flagship SUV, CLAR platform, iDrive 8 (BMW OS 8). ICE + 48V mild hybrid. Strong platform reuse across 7-Series/X5/X7. Premium software: Executive Drive Pro (48V active roll) + Integral Active Steering, Bowers & Wilkins Diamond audio, Parking Assistant Professional + 360, Digital Key Plus (UWB), AR-ready HUD.',
     region: 'EU', devSource: 'OEM_Internal', volume: 60_000, life: 8, overhead: 1.60, senior: 0.55, reuse: 'Heavy',
+    reportUrl: 'reports/bmw-x7-software-cost-breakdown.html',
     disabledModules: MHEV_DISABLED,
     moduleOverrides: {
       digital_key: { complexity: 'Very High' },   // BMW Digital Key Plus (UWB), industry-leading
@@ -1291,6 +1292,7 @@ export const SW_VEHICLE_DEMOS: SWVehicleDemo[] = [
     id: 'audi_q8', label: '🇩🇪 Audi Q8 (48V MHEV)',
     desc: 'MLB Evo platform, MMI/MIB3 infotainment, VW Group + CARIAD shared software stacks. ICE + 48V mild hybrid. Strong platform reuse (VW.OS carry-across). Premium software: adaptive air suspension + all-wheel steer, Bang & Olufsen 3D, park assist plus + 360, 4-zone climate, HUD.',
     region: 'EU', devSource: 'OEM_Internal', volume: 55_000, life: 9, overhead: 1.58, senior: 0.55, reuse: 'Heavy',
+    reportUrl: 'reports/audi-q8-software-cost-breakdown.html',
     // Core platform middleware genuinely carries across the VW Group → Platform reuse there.
     moduleOverrides: { autosar_classic: { reuse: 'Platform' }, autosar_adaptive: { reuse: 'Platform' }, rtos: { reuse: 'Platform' }, comm_stacks: { reuse: 'Platform' } },
     disabledModules: MHEV_DISABLED,
@@ -1299,6 +1301,7 @@ export const SW_VEHICLE_DEMOS: SWVehicleDemo[] = [
     id: 'merc_gls', label: '🇩🇪 Mercedes GLS 450 (48V MHEV)',
     desc: 'X167 flagship, MBUX / NTG6 (infotainment-heavy), EQ Boost 48V mild hybrid. Signature software: E-Active Body Control (48V, camera Road-Surface-Scan), MBUX + "Hey Mercedes" voice, Burmester 3D surround, active parking + 360, MB AR-HUD, 5-zone climate + air purification, digital key.',
     region: 'EU', devSource: 'OEM_Internal', volume: 45_000, life: 9, overhead: 1.62, senior: 0.55, reuse: 'Medium',
+    reportUrl: 'reports/mercedes-gls-software-cost-breakdown.html',
     disabledModules: MHEV_DISABLED,
     moduleOverrides: {
       ivi_os:            { complexity: 'Very High' },
