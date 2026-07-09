@@ -1852,7 +1852,6 @@ function _applyAgentActionAndCompute(): void {
       el('export-pdf-btn').style.display = '';
       el('export-all-pdf-btn').style.display = '';
       el('save-scenario-btn').style.display = '';
-      el('save-library-btn').style.display = '';
 
       // Send result to agent for interpretation (return to agent mode after brief delay)
       agentLastResult = {
@@ -11597,7 +11596,6 @@ function compute(): void {
     el('export-card-btn').style.display = '';
     el('export-all-pdf-btn').style.display = '';
     el('save-scenario-btn').style.display = '';
-    el('save-library-btn').style.display = '';
   } catch (err) {
     errBox.style.display = 'block';
     errBox.innerHTML = `<strong>Calculation error:</strong> ${escHtml(err instanceof Error ? err.message : String(err))}`;
