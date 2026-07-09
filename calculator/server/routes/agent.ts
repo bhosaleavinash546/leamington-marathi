@@ -2,6 +2,7 @@ import { Router } from 'express';
 import Anthropic from '@anthropic-ai/sdk';
 import { z } from 'zod';
 import { DEFAULT_RATE_LIBRARY } from '../../src/engine/rate-library.js';
+import { buildRateCorpus, groundingBlock } from '../../src/engine/rag-retrieval.js';
 import { executeCalculateCost, type CostToolInput } from '../services/cost-executor.js';
 
 const router = Router();
@@ -91,6 +92,10 @@ const AgentResponseSchema = z.object({
 });
 
 // ─── Valid rate library ID sets (built once at module load) ───────────────────
+
+// RAG grounding corpus — built once from the rate library so the agent answers
+// from real rates (with citable [kind:id] tags), not parametric memory.
+const _ragCorpus = buildRateCorpus(DEFAULT_RATE_LIBRARY);
 
 const VALID_MATERIAL_IDS = new Set(DEFAULT_RATE_LIBRARY.materials.map(m => m.id));
 const VALID_MACHINE_IDS  = new Set(DEFAULT_RATE_LIBRARY.machines.map(m => m.id));
@@ -908,6 +913,12 @@ function buildMessages(
   if (costResult) {
     msgText = `${msgText}\n\n[Cost Engine Result: ${JSON.stringify(costResult, null, 2)}]`;
   }
+  // RAG grounding: retrieve the most relevant rates for this query and prepend them
+  // so the model quotes real library figures (and cites the [kind:id] tag).
+  try {
+    const grounding = groundingBlock(message, _ragCorpus, 6);
+    if (grounding) msgText = `${grounding}\n\n${msgText}`;
+  } catch { /* grounding is best-effort */ }
 
   const userContent: Anthropic.MessageParam['content'] =
     photoBase64 && photoMime && visionMimes.has(photoMime)
