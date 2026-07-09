@@ -20,6 +20,7 @@ import commoditiesRouter from './routes/commodities.js';
 import pricesRouter from './routes/prices.js';
 import quotesRouter from './routes/quotes.js';
 import bomRouter from './routes/bom.js';
+import rfqRouter from './routes/rfq.js';
 import { fetchAndCachePrices, arePricesStale } from './services/price-fetcher.js';
 import db from './db.js';
 
@@ -74,6 +75,7 @@ app.use('/api/commodities', commoditiesRouter);
 app.use('/api/prices', pricesRouter);
 app.use('/api/quotes', quotesRouter);
 app.use('/api/bom', bomRouter);
+app.use('/api/rfq', rfqRouter);
 
 // ── In production serve the Vite build so one URL covers everything ──────────
 if (IS_PROD) {
