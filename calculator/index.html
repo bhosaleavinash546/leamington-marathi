@@ -2909,22 +2909,38 @@
         <div class="help-card">
           <div class="help-card-title">Inputs Required</div>
           <ul>
-            <li>Material grade and sheet thickness (mm)</li>
-            <li>Part weight (kg) and draw ratio (affects material utilisation 50–80%)</li>
-            <li>Process type: vacuum form, pressure form, or twin-sheet</li>
-            <li>Heating time (s), forming time (s), trim time (s)</li>
-            <li>Machine (roll-fed inline or cut-sheet), tool cost and life</li>
-            <li>Optional: in-mould laminate or foam backing</li>
+            <li>Sheet material grade (filtered to formable sheet — HIPS / ABS / PETG / APET / CPET / rigid-PVC / PP / PE / PMMA / PC / PEI / PPS / co-ex multilayer) and <strong>sheet thickness (mm)</strong></li>
+            <li>Sheet weight (gross, heated in full) and part weight (net after trim); parts per sheet</li>
+            <li>Method: vacuum / pressure / twin-sheet — <em>now drives forming energy and tool cost</em></li>
+            <li>Cycle: heat / form / cool / trim / index (s) — <strong>leave heat/cool at 0 to auto-estimate from thickness &amp; material</strong></li>
+            <li>Electricity £/kWh, reject %, optional additive / masterbatch (UV, anti-static, FR, impact) + let-down %</li>
+            <li>Thermoformer (small / large / pressure / twin-sheet / roll-fed / oven), tool cost (0 = auto-estimate) and amortisation volume</li>
+            <li>Tooling estimator: projected area, mould material (epoxy / cast-Al / CNC-Al / steel), complexity, trim type</li>
+            <li>Optional geometry for DFM &amp; wall-thinning: draw depth, min opening, unsupported span, internal radius, draft angle, tolerance, plug assist / undercut / textured</li>
           </ul>
         </div>
         <div class="help-card">
-          <div class="help-card-title">Cost Drivers</div>
+          <div class="help-card-title">Cost Drivers &amp; Process Physics</div>
           <ul>
-            <li><strong>Material utilisation:</strong> Trim scrap is 20–50% of sheet area; utilisation 50–80%. Include scrap value recovery.</li>
-            <li><strong>Tooling:</strong> Aluminium tools £5–40k (vs. steel injection tools £20–200k); matched-die tools higher.</li>
-            <li><strong>Trim operation:</strong> Robotic trimming cell adds £15–35/hr but is essential for Class A surfaces.</li>
+            <li><strong>Oven energy:</strong> part-level, from material c<sub>p</sub>·ΔT ÷ oven efficiency (0.18–0.28 kWh/kg of sheet) — thickness- and material-aware, not a flat machine lump. PC/PEI/PP cost more energy than HIPS.</li>
+            <li><strong>Heating &amp; cooling:</strong> auto heat time ∝ thickness<sup>1.6</sup>; auto cool time ∝ thickness² (water-cooled tool cools ~2× faster than ambient). Cooling is a real cycle element — previously omitted.</li>
+            <li><strong>Sag:</strong> self-weight plate deflection ∝ span⁴ ÷ t² — low-melt-strength PP/PE/TPO on wide thin sheets flag high sag (needs plug assist / sag bands).</li>
+            <li><strong>Material utilisation:</strong> skeleton/trim scrap 20–50% of sheet; the trimmed skeleton is credited back at the grade's regrind (scrap-recovery) value.</li>
+            <li><strong>Tooling:</strong> parametric estimate — mould (epoxy £1.5k → steel £15k+ base) × area × complexity × method × cavities, with expected life (5k → 3M cycles) and £/cycle maintenance. Pressure/twin-sheet tools cost 1.6×/2.2× vacuum.</li>
+            <li><strong>Draw ratio → wall thinning:</strong> predicts average &amp; corner wall from depth ÷ opening; flags over-draw beyond the method limit (vacuum ~1.5:1, +plug ~3:1, pressure ~4:1) → webbing / thin walls.</li>
+            <li><strong>Method:</strong> vacuum → pressure (+~6%) → twin-sheet (+~14%) on a typical panel, driven by forming energy + tooling.</li>
           </ul>
         </div>
+        <div class="help-card">
+          <div class="help-card-title">DFM Advisor &amp; Country Pricing</div>
+          <ul>
+            <li><strong>Thermoforming DFM panel</strong> scores geometry (draw ratio, wall thinning, sag, internal radius, draft angle, undercut, texture wash-out, tolerance realism, formability) and lists critical/major/minor issues live as you edit.</li>
+            <li><strong>Authentic country pricing:</strong> per-country £/kg for 18 sheet grades × US/DE/PL/CN/IN/MX/TH/VN — real regional quotes, not a UK×factor. Commodity sheet swings ±~20%; specialities near-flat.</li>
+            <li><strong>Supplier tiers:</strong> overhead/margin now split Tier-1 / Tier-2 / Tier-3 (automotive validation vs lean packaging).</li>
+          </ul>
+        </div>
+        <div style="margin:8px 0 0;padding:9px 11px;background:#f0f9ff;border-radius:6px;border-left:3px solid #0ea5e9;font-size:0.8rem"><strong>🆕 Latest features (2026):</strong> full process-physics engine — material + thickness heating time and part-level oven energy (c<sub>p</sub>·ΔT), sag prediction, cooling model, and method-driven forming energy/tooling (vacuum / pressure / twin-sheet, previously cosmetic); parametric mould + trim estimator with mould-material life &amp; maintenance; draw-ratio → wall-thinning predictor; thermoforming DFM advisor; 18 dedicated sheet grades (commodity / engineering / high-perf / multilayer co-ex) with authentic per-country pricing; +5 machines (pressure / twin-sheet / roll-fed / oven / CNC trim router); dedicated thermoforming &amp; trim-router labour; Tier-1/2/3 overhead; and additive / masterbatch adders.</div>
+        <div style="margin:6px 0 0;padding:8px 11px;background:#fffbeb;border-radius:6px;border-left:3px solid #f59e0b;font-size:0.78rem"><strong>Accuracy note:</strong> the model structure is engineering-correct; reference prices and physics coefficients are benchmark-anchored (confidence: <em>Low</em>) — ready to be calibrated against live sheet-price feeds and measured cycle times.</div>
       </div>
 
       <!-- Guide: Rotomoulding -->
