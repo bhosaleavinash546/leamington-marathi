@@ -13680,6 +13680,29 @@ function printMasterPDF(): void {
       });
       y = lastY() + 5;
     }
+
+    // §C7 Uploaded Board Images
+    if (pcbUploadedImages.length > 0) {
+      secBar(`§C7 — Uploaded Board Images (${pcbUploadedImages.length})`, BLUE);
+      const gap = 5;
+      const colW = (cW - gap) / 2;   // two images per row
+      const maxCellH = 75;
+      for (let i = 0; i < pcbUploadedImages.length; i += 2) {
+        const row = pcbUploadedImages.slice(i, i + 2);
+        const rowH = Math.min(maxCellH, Math.max(...row.map(im => colW * (im.h / Math.max(1, im.w)))));
+        chk(rowH + 8);
+        row.forEach((im, j) => {
+          const x = mg + j * (colW + gap);
+          let dw = colW, dh = colW * (im.h / Math.max(1, im.w));
+          if (dh > maxCellH) { dh = maxCellH; dw = maxCellH * (im.w / Math.max(1, im.h)); }
+          try { doc.addImage(im.dataUrl, 'JPEG', x, y, dw, dh, undefined, 'FAST'); } catch { /* skip */ }
+          doc.setFontSize(7); doc.setTextColor(...GREY);
+          doc.text(im.label, x, y + rowH + 4);
+          doc.setTextColor(...SLATE);
+        });
+        y += rowH + 8;
+      }
+    }
   }
 
   // ── Global page footers ────────────────────────────────────────────────────
