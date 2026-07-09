@@ -3,7 +3,8 @@
  * Senior Chief Automotive Software Should-Cost Engineer model
  * Premium Luxury SUV — Full Software Stack (2024-2026)
  *
- * Covers 43 software modules across 7 categories:
+ * Covers 49 software modules across 7 categories (43 core + 6 premium-trim
+ * options that default to off):
  *  A. EV Powertrain & Battery   B. ADAS L2/L2+
  *  C. Infotainment & UX         D. Vehicle Domain Controllers
  *  E. Middleware & Platform      F. Cybersecurity
@@ -49,6 +50,10 @@ export interface SWModuleDef {
   annualIPLicenceGBP:        number;   // embedded IP/SW licences (RTOS royalty, map data, ASR engine, etc.) per year
   annualCloudCostGBP:        number;   // cloud infra, per year operational
   calibrationFractionBase:   number;   // physical/model calibration effort ÷ dev cost
+  /** Premium/optional feature modules default to false — they are itemised scope
+   *  present on premium trims but folded into the generic domain buckets on base
+   *  vehicles, so leaving them off preserves the validated baseline. Undefined ⇒ on. */
+  defaultEnabled?:           boolean;
   notes:                     string;
 }
 
@@ -251,7 +256,7 @@ function resolveRates(prog: SWProgramInputs): ResolvedRates {
   };
 }
 
-// ─── Module Database (43 modules) ────────────────────────────────────────────
+// ─── Module Database (43 core + 6 premium-optional) ──────────────────────────
 
 export const SW_MODULES: SWModuleDef[] = [
   // ── CATEGORY A: EV Powertrain & Battery ──────────────────────────────────
@@ -740,6 +745,85 @@ export const SW_MODULES: SWModuleDef[] = [
     calibrationFractionBase: 0.03,
     notes: 'SaaS platform option (Bright Box, Verizon Connect) vs in-house. Dealer portal API licensing.',
   },
+
+  // ── PREMIUM / FLAGSHIP-TRIM OPTIONS ───────────────────────────────────────
+  // Itemised software that flagship trims fund as distinct workstreams but that
+  // base vehicles fold into the generic domain buckets (chassis/body/HMI). These
+  // default to OFF so the validated 43-module baseline is unchanged; the vehicle
+  // demos and any premium programme switch them on. Categories reuse B/C/D so the
+  // UI groups them under the existing domain headers.
+  {
+    id: 'active_suspension', name: 'Predictive Active Suspension & Body Control', shortName: 'Active Body Ctrl',
+    category: 'D', categoryLabel: 'Vehicle Domain Controllers',
+    description: 'Camera-fed road-surface preview, 48V active anti-roll / active body control (e.g. Mercedes E-Active Body Control, BMW Executive Drive Pro, JLR Dynamic Response Pro), coordinated air-spring + adaptive-damper + rear-axle-steer control on top of baseline chassis control.',
+    defaultAsil: 'C', defaultComplexity: 'Very High', basePersonMonths: 42,
+    hasMLContent: false, hasCloudDependency: false, hasCybersecRequirement: false,
+    testingFractionBase: 0.44, integrationFractionBase: 0.20, maintenancePctPerYear: 11,
+    annualToolLicenceGBP: 34_000, annualIPLicenceGBP: 16_000, annualCloudCostGBP: 0,
+    calibrationFractionBase: 0.16,
+    defaultEnabled: false,
+    notes: 'Premium-trim increment over chassis_control. Heavy proving-ground ride/handling calibration. ASIL-C.',
+  },
+  {
+    id: 'premium_audio', name: 'Premium Audio DSP & Active Noise Control', shortName: 'Premium Audio/ANC',
+    category: 'C', categoryLabel: 'Infotainment, Connectivity & UX',
+    description: 'Branded 3D surround tuning (Meridian / Bowers & Wilkins / Bang & Olufsen / Burmester), active road/engine noise cancellation (ANC/RNC), active sound design, per-cabin acoustic calibration.',
+    defaultAsil: 'QM', defaultComplexity: 'High', basePersonMonths: 28,
+    hasMLContent: false, hasCloudDependency: false, hasCybersecRequirement: false,
+    testingFractionBase: 0.28, integrationFractionBase: 0.12, maintenancePctPerYear: 7,
+    annualToolLicenceGBP: 20_000, annualIPLicenceGBP: 42_000, annualCloudCostGBP: 0,
+    calibrationFractionBase: 0.12,
+    defaultEnabled: false,
+    notes: 'Branded-audio DSP royalty (Dirac/Klippel toolchain). Per-model cabin acoustic tuning dominates effort.',
+  },
+  {
+    id: 'park_assist', name: 'Automated Parking & Surround-View', shortName: 'Auto Park/360',
+    category: 'B', categoryLabel: 'ADAS Level 2 & 2+',
+    description: 'Automated parking assist (APA), remote/summon parking (RPA), 360° surround-view stitching, parking-slot detection, low-speed manoeuvre planning fusing ultrasonic + cameras.',
+    defaultAsil: 'B', defaultComplexity: 'High', basePersonMonths: 48,
+    hasMLContent: true, hasCloudDependency: false, hasCybersecRequirement: false,
+    testingFractionBase: 0.40, integrationFractionBase: 0.18, maintenancePctPerYear: 10,
+    annualToolLicenceGBP: 30_000, annualIPLicenceGBP: 12_000, annualCloudCostGBP: 0,
+    calibrationFractionBase: 0.10,
+    defaultEnabled: false,
+    notes: 'Slot-detection CNN (ML). Extensive parking-scenario validation. ASIL-B (low-speed manoeuvring).',
+  },
+  {
+    id: 'climate_control', name: 'Climate & Thermal Comfort Control', shortName: 'Climate/HVAC',
+    category: 'D', categoryLabel: 'Vehicle Domain Controllers',
+    description: 'Multi-zone HVAC control, heat-pump coordination, cabin air purification/ionisation, pre-conditioning, humidity & fogging management, seat/steering-wheel comfort thermal loops.',
+    defaultAsil: 'A', defaultComplexity: 'Medium', basePersonMonths: 26,
+    hasMLContent: false, hasCloudDependency: false, hasCybersecRequirement: false,
+    testingFractionBase: 0.30, integrationFractionBase: 0.12, maintenancePctPerYear: 8,
+    annualToolLicenceGBP: 15_000, annualIPLicenceGBP: 6_000, annualCloudCostGBP: 0,
+    calibrationFractionBase: 0.08,
+    defaultEnabled: false,
+    notes: 'Cabin-comfort software split out of body_control on premium multizone systems. Thermal calibration effort.',
+  },
+  {
+    id: 'digital_key', name: 'Digital Key (UWB/BLE) & Secure Access', shortName: 'Digital Key',
+    category: 'C', categoryLabel: 'Infotainment, Connectivity & UX',
+    description: 'CCC Digital Key 3.0 phone-as-key, UWB ranging & relay-attack protection, BLE fallback, secure-element / HSM integration, key sharing & cloud provisioning backend.',
+    defaultAsil: 'QM', defaultComplexity: 'High', basePersonMonths: 22,
+    hasMLContent: false, hasCloudDependency: true, hasCybersecRequirement: true,
+    testingFractionBase: 0.32, integrationFractionBase: 0.14, maintenancePctPerYear: 9,
+    annualToolLicenceGBP: 15_000, annualIPLicenceGBP: 20_000, annualCloudCostGBP: 30_000,
+    calibrationFractionBase: 0.03,
+    defaultEnabled: false,
+    notes: 'CCC consortium membership + UWB IP. Cybersecurity-critical (relay attacks). Cloud key provisioning.',
+  },
+  {
+    id: 'ar_hud', name: 'AR Head-Up Display & AR Navigation', shortName: 'AR-HUD',
+    category: 'C', categoryLabel: 'Infotainment, Connectivity & UX',
+    description: 'Augmented-reality head-up display compositor, sensor-registered navigation/ADAS overlays, optical distortion correction, graphics rendering pipeline for the AR-HUD projector.',
+    defaultAsil: 'A', defaultComplexity: 'High', basePersonMonths: 30,
+    hasMLContent: false, hasCloudDependency: false, hasCybersecRequirement: false,
+    testingFractionBase: 0.32, integrationFractionBase: 0.14, maintenancePctPerYear: 9,
+    annualToolLicenceGBP: 22_000, annualIPLicenceGBP: 18_000, annualCloudCostGBP: 0,
+    calibrationFractionBase: 0.10,
+    defaultEnabled: false,
+    notes: 'AR engine licence (e.g. WayRay/Envisics). Optical registration & distortion calibration. ASIL-A (driver-facing overlay).',
+  },
 ];
 
 // ─── Cost Calculation Engine ──────────────────────────────────────────────────
@@ -1156,7 +1240,7 @@ export function defaultSWProgramInputs(): SWProgramInputs {
     // unless the user explicitly overrides it in the UI.
     modules: SW_MODULES.map(m => ({
       moduleId:           m.id,
-      enabled:            true,
+      enabled:            m.defaultEnabled !== false,
       asil:               m.defaultAsil,
       complexity:         m.defaultComplexity,
       reuse:              'Medium' as SWReuse,

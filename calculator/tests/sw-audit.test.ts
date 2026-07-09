@@ -14,6 +14,34 @@ describe('SW — validation back-test still passes after the accuracy fixes', ()
   });
 });
 
+describe('SW — premium-trim modules are catalogued but default-off (baseline preserved)', () => {
+  const PREMIUM = ['active_suspension', 'premium_audio', 'park_assist', 'climate_control', 'digital_key', 'ar_hud'];
+
+  it('all six premium modules exist in the catalogue', () => {
+    for (const id of PREMIUM) {
+      expect(SW_MODULES.find(m => m.id === id), `${id} missing`).toBeTruthy();
+    }
+    expect(SW_MODULES.length).toBe(49);
+  });
+
+  it('premium modules are default-off; the 43-module baseline is on by default', () => {
+    const def = defaultSWProgramInputs();
+    const enabled = new Set(def.modules.filter(m => m.enabled).map(m => m.moduleId));
+    expect(enabled.size).toBe(43);
+    for (const id of PREMIUM) expect(enabled.has(id), `${id} should be off by default`).toBe(false);
+  });
+
+  it('enabling a premium module adds cost on top of the baseline', () => {
+    const b = base();
+    const baseTotal = total(b);
+    const withAudio = {
+      ...b,
+      modules: b.modules.map(m => m.moduleId === 'premium_audio' ? { ...m, enabled: true } : m),
+    };
+    expect(total(withAudio)).toBeGreaterThan(baseTotal);
+  });
+});
+
 describe('SW1 — per-module testingFractionBase is now honoured', () => {
   it('a module with a higher testing fraction costs more test than a lower one at equal ASIL', () => {
     // Pick two ASIL-D modules with different testingFractionBase and cost each alone.

@@ -335,7 +335,7 @@ let _wizCfg: Record<SWCat, GuidedDomainCfg> =
   Object.fromEntries(ALL_CATS.map(c => [c, { complexity: 'default', reuse: 'Medium', asil: 'default' }])) as Record<SWCat, GuidedDomainCfg>;
 let _programPhase: 'Concept' | 'Development' | 'SOP' | 'Facelift' = 'Development';
 
-/** Map the guided selections onto the full 43-module _swInputs. */
+/** Map the guided selections onto the full module set in _swInputs. */
 function applyGuidedToInputs(): void {
   for (const m of _swInputs.modules) {
     const def = SW_MODULES.find(d => d.id === m.moduleId)!;
@@ -662,7 +662,7 @@ function renderSWPanelHTML(): string {
         <span style="font-size:2rem">🚗</span>
         <div>
           <h2 style="margin:0;font-size:1.35rem;font-weight:800;color:#fff;letter-spacing:-0.3px">Automotive Software Should-Cost</h2>
-          <div style="font-size:0.78rem;color:#94a3b8;margin-top:2px">Premium Luxury SUV — Full SW Stack · 43 Modules · 7 Categories · ISO 26262 / ISO 21434</div>
+          <div style="font-size:0.78rem;color:#94a3b8;margin-top:2px">Premium Luxury SUV — Full SW Stack · ${SW_MODULES.length} Modules · 7 Categories · ISO 26262 / ISO 21434</div>
         </div>
       </div>
       <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:12px">
@@ -761,7 +761,7 @@ function renderSWPanelHTML(): string {
 
   <!-- ── Module Configuration ─────────────────────────────────── -->
   <div style="font-weight:700;font-size:0.88rem;color:var(--sw-text-primary);margin-bottom:10px;display:flex;align-items:center;justify-content:space-between">
-    <span style="display:flex;align-items:center;gap:6px"><span>📋</span> Module Configuration (43 modules)</span>
+    <span style="display:flex;align-items:center;gap:6px"><span>📋</span> Module Configuration (${SW_MODULES.length} modules)</span>
     <div style="display:flex;gap:8px">
       <button id="sw-select-all" style="font-size:0.72rem;padding:3px 10px;border-radius:4px;border:1px solid var(--sw-border);background:var(--sw-surface);color:var(--sw-text-body);cursor:pointer">Select All</button>
       <button id="sw-deselect-all" style="font-size:0.72rem;padding:3px 10px;border-radius:4px;border:1px solid var(--sw-border);background:var(--sw-surface);color:var(--sw-text-body);cursor:pointer">Deselect All</button>
@@ -1251,25 +1251,29 @@ const MHEV_DISABLED = ['bms_core', 'cell_balancing', 'soc_soh_soe', 'fast_charge
 export const SW_VEHICLE_DEMOS: SWVehicleDemo[] = [
   {
     id: 'rr_l460', label: '🇬🇧 Range Rover L460 (PHEV)',
-    desc: 'JLR flagship, EVA2 (MLA) architecture, Pivi Pro infotainment. Heavy Tier-1 outsourcing; PHEV P550e keeps a (smaller) EV powertrain stack. Published ≈ £390M.',
+    desc: 'JLR flagship, EVA2 (MLA) architecture, Pivi Pro infotainment. Heavy Tier-1 outsourcing; PHEV P550e keeps a (smaller) EV powertrain stack. Premium software: Dynamic Response Pro (48V active anti-roll) + rear-axle steer, Meridian 3D audio, park assist + 3D surround, cabin-air purification, digital key, HUD. Published ≈ £390M (core stack).',
     region: 'UK', devSource: 'Tier1_Supplier', volume: 75_000, life: 8, overhead: 1.55, senior: 0.55, reuse: 'Medium',
     disabledModules: [],  // PHEV: retains battery/charge/drive SW at reduced scope
     moduleOverrides: {
-      bms_core:    { complexity: 'High' },     // PHEV pack smaller than a BEV
-      soc_soh_soe: { complexity: 'High' },
-      fast_charge: { complexity: 'Medium' },   // AC + modest DC
-      edu_control: { complexity: 'High' },
+      bms_core:       { complexity: 'High' },     // PHEV pack smaller than a BEV
+      soc_soh_soe:    { complexity: 'High' },
+      fast_charge:    { complexity: 'Medium' },   // AC + modest DC
+      edu_control:    { complexity: 'High' },
+      premium_audio:  { complexity: 'Very High' }, // Meridian Signature 3D
     },
   },
   {
     id: 'bmw_x7', label: '🇩🇪 BMW X7 (48V MHEV)',
-    desc: 'G07 flagship SUV, CLAR platform, iDrive 8 (BMW OS 8). ICE + 48V mild hybrid. Strong platform reuse across 7-Series/X5/X7 — heavy carry-forward.',
+    desc: 'G07 flagship SUV, CLAR platform, iDrive 8 (BMW OS 8). ICE + 48V mild hybrid. Strong platform reuse across 7-Series/X5/X7. Premium software: Executive Drive Pro (48V active roll) + Integral Active Steering, Bowers & Wilkins Diamond audio, Parking Assistant Professional + 360, Digital Key Plus (UWB), AR-ready HUD.',
     region: 'EU', devSource: 'OEM_Internal', volume: 60_000, life: 8, overhead: 1.60, senior: 0.55, reuse: 'Heavy',
     disabledModules: MHEV_DISABLED,
+    moduleOverrides: {
+      digital_key: { complexity: 'Very High' },   // BMW Digital Key Plus (UWB), industry-leading
+    },
   },
   {
     id: 'audi_q8', label: '🇩🇪 Audi Q8 (48V MHEV)',
-    desc: 'MLB Evo platform, MMI/MIB3 infotainment, VW Group + CARIAD shared software stacks. ICE + 48V mild hybrid. Strong platform reuse (VW.OS carry-across), but each variant still funds integration/validation.',
+    desc: 'MLB Evo platform, MMI/MIB3 infotainment, VW Group + CARIAD shared software stacks. ICE + 48V mild hybrid. Strong platform reuse (VW.OS carry-across). Premium software: adaptive air suspension + all-wheel steer, Bang & Olufsen 3D, park assist plus + 360, 4-zone climate, HUD.',
     region: 'EU', devSource: 'OEM_Internal', volume: 55_000, life: 9, overhead: 1.58, senior: 0.55, reuse: 'Heavy',
     // Core platform middleware genuinely carries across the VW Group → Platform reuse there.
     moduleOverrides: { autosar_classic: { reuse: 'Platform' }, autosar_adaptive: { reuse: 'Platform' }, rtos: { reuse: 'Platform' }, comm_stacks: { reuse: 'Platform' } },
@@ -1277,13 +1281,15 @@ export const SW_VEHICLE_DEMOS: SWVehicleDemo[] = [
   },
   {
     id: 'merc_gls', label: '🇩🇪 Mercedes GLS 450 (48V MHEV)',
-    desc: 'X167 flagship, MBUX / NTG6 (infotainment-heavy), EQ Boost 48V mild hybrid. Moderate cross-range reuse; MBUX and voice are signature Very-High-complexity systems.',
+    desc: 'X167 flagship, MBUX / NTG6 (infotainment-heavy), EQ Boost 48V mild hybrid. Signature software: E-Active Body Control (48V, camera Road-Surface-Scan), MBUX + "Hey Mercedes" voice, Burmester 3D surround, active parking + 360, MB AR-HUD, 5-zone climate + air purification, digital key.',
     region: 'EU', devSource: 'OEM_Internal', volume: 45_000, life: 9, overhead: 1.62, senior: 0.55, reuse: 'Medium',
     disabledModules: MHEV_DISABLED,
     moduleOverrides: {
-      ivi_os:          { complexity: 'Very High' },
-      voice_assistant: { complexity: 'Very High' },
-      navigation:      { complexity: 'Very High' },
+      ivi_os:            { complexity: 'Very High' },
+      voice_assistant:   { complexity: 'Very High' },
+      navigation:        { complexity: 'Very High' },
+      active_suspension: { complexity: 'Very High' }, // E-Active Body Control, camera-fed 48V
+      premium_audio:     { complexity: 'Very High' }, // Burmester high-end 3D
     },
   },
 ];
@@ -1366,7 +1372,7 @@ function renderResults(result: SWProgramResult): void {
     { label: 'Total NRE',              value: fmtM(nreTotal),                  sub: 'Dev + Test + Integ + Tools + Cyber + Calib',  color: '#7c3aed' },
     { label: 'Total Person-Months',    value: `${fmt(s.totalPersonMonths, 0)} PM`, sub: `Avg team: ${fmt(avgFTE,0)} FTE over ${result.inputs.programLifeYears}yr`, color: '#d97706' },
     { label: 'Lifecycle (Maint+Cloud)',value: fmtM(s.totalMaintenance + s.totalCloud), sub: `${fmt((s.totalMaintenance+s.totalCloud)/s.grandTotal*100,0)}% of total programme`, color: '#0891b2' },
-    { label: 'Active Modules',         value: `${result.modules.length}`,      sub: `of 43 modules · ${result.inputs.region} / ${result.inputs.devSource.replace('_',' ')}`, color: '#64748b' },
+    { label: 'Active Modules',         value: `${result.modules.length}`,      sub: `of ${SW_MODULES.length} modules · ${result.inputs.region} / ${result.inputs.devSource.replace('_',' ')}`, color: '#64748b' },
   ];
 
   const cardsHTML = cards.map(c => `
@@ -1764,7 +1770,7 @@ Total Programme Cost: ${(s.grandTotal/1e6).toFixed(1)}M GBP
 Per Vehicle: £${Math.round(s.perVehicle)}
 Total Person-Months: ${Math.round(s.totalPersonMonths)} PM (avg ${Math.round(s.totalPersonMonths/(result.inputs.programLifeYears*12))} FTE)
 Region: ${result.inputs.region} | Source: ${result.inputs.devSource} | Life: ${result.inputs.programLifeYears}yr | Volume: ${(result.inputs.annualProductionVolume/1000).toFixed(0)}k/yr
-Active Modules: ${result.modules.length}/43
+Active Modules: ${result.modules.length}/${SW_MODULES.length}
 
 COST BREAKDOWN:
 - Development: £${(s.totalDevelopment/1e6).toFixed(1)}M (${(s.totalDevelopment/s.grandTotal*100).toFixed(0)}%)
@@ -2214,7 +2220,7 @@ function compareConfigs(): void {
     ['MC P90',          c => fmtM(c.r.monteCarlo.p90)],
     ['Region',          c => c.r.inputs.region],
     ['Dev Source',      c => c.r.inputs.devSource.replace('_', ' ')],
-    ['Active Modules',  c => `${c.r.modules.length}/43`],
+    ['Active Modules',  c => `${c.r.modules.length}/${SW_MODULES.length}`],
   ];
 
   const bodyRows = rows.map(([label, fn, isBest]) => {
