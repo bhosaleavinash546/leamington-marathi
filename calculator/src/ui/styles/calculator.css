@@ -1846,9 +1846,7 @@ textarea.contact-form-input { resize: vertical; min-height: 100px; }
   background:
     radial-gradient(55% 70% at 14% -10%, color-mix(in srgb, var(--accent) 16%, transparent), transparent 60%),
     radial-gradient(50% 60% at 100% -5%, color-mix(in srgb, var(--accent2) 14%, transparent), transparent 55%);
-  animation: cv-hero-drift 22s ease-in-out infinite alternate;
 }
-@keyframes cv-hero-drift { to { transform: translate3d(4%, 2%, 0) scale(1.06); } }
 .cv-hero-full, .cv-hero-compact { position: relative; z-index: 1; }
 .cv-hero-full { display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 48px; align-items: center; }
 .cv-hero-compact { display: none; }
@@ -2317,7 +2315,7 @@ textarea.contact-form-input { resize: vertical; min-height: 100px; }
   box-shadow: 0 4px 16px rgba(0,0,0,0.3);
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
-.ai-chat-fab:hover { transform: scale(1.08); box-shadow: 0 6px 24px rgba(0,0,0,0.4); }
+.ai-chat-fab:hover { transform: translateY(-2px); box-shadow: 0 10px 26px rgba(0,0,0,0.28); }
 
 .ai-chat-drawer {
   position: fixed;
@@ -2661,7 +2659,7 @@ textarea.contact-form-input { resize: vertical; min-height: 100px; }
   transition: transform var(--dur-micro) var(--ease-std);
   cursor: default;
 }
-.conf-badge:hover { transform: scale(1.06); }
+/* Confidence badge is informational — no hover motion. */
 
 .conf-badge--high {
   background: var(--grad-high);
@@ -2764,7 +2762,7 @@ textarea.contact-form-input { resize: vertical; min-height: 100px; }
     transform var(--dur-hover) var(--ease-std),
     background var(--dur-hover) var(--ease-std) !important;
 }
-.theme-toggle:hover { transform: rotate(20deg) scale(1.1); }
+.theme-toggle:hover { background: var(--surface-2, rgba(127,127,127,0.12)); }
 
 /* ── AI Chat FAB ─────────────────────────────────────────────────────────────── */
 .ai-chat-fab {
@@ -5482,4 +5480,57 @@ kbd {
 .dash-tiles-grid .dash-tile--primary::after { color: rgba(255, 255, 255, 0.85); }
 @media (prefers-reduced-motion: reduce) {
   .dash-tiles-grid .dash-tile:hover::after { transform: none; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   PROFESSIONAL MOTION REFINEMENT  (senior UI/UX + motion pass)
+   Principles applied:
+   • No perpetual/ambient motion — decorative infinite loops read as "toy",
+     draw the eye away from data, and never rest. Motion is reserved for
+     state change (enter, hover, load), not idle decoration.
+   • Hover = elevation, not growth. Subtle translateY + shadow, never scale/
+     rotate on structural controls. One easing, one duration family.
+   • Functional motion kept: loading spinners/skeletons, live-status dots,
+     content tickers — these communicate state.
+   Appended last so it wins the cascade; scoped, no blanket selectors.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* 1 — Retire idle decorative loops (breathing cards, shimmering titles,
+       drifting hero, ambient/one-shot CTA pulses). */
+.summary-card.total-card,
+[data-theme="dark"] .summary-card.total-card,
+.btn-primary,
+.new-costing-btn,
+.cpicker-title,
+[data-theme="light"] .cpicker-title { animation: none !important; }
+
+/* Rainbow shimmer title → calm, solid, legible. */
+.cpicker-title,
+[data-theme="light"] .cpicker-title {
+  background: none !important;
+  -webkit-text-fill-color: currentColor !important;
+  color: var(--text-primary) !important;
+}
+
+/* Dark total-card keeps a static premium elevation instead of "breathing". */
+[data-theme="dark"] .summary-card.total-card {
+  box-shadow: 0 0 22px rgba(56, 189, 248, 0.16), 0 6px 22px rgba(0, 0, 0, 0.5);
+}
+
+/* 2 — Structural-control hovers (theme toggle, confidence badge, AI FAB) are
+       fixed at source to elevation/tint, not scale/rotate — see those rules. */
+
+/* 3 — Trim hero entrance to a crisper, more confident timing. */
+.cv-hero-full .cv-eyebrow, .cv-hero-h1, .cv-hero-lede, .cv-hero-cta,
+.cv-hero-trust, .cv-impact, .cv-hero-compact { animation-duration: 0.42s !important; }
+
+/* 4 — Calmer live/status pulses (state indicators stay, but softer + slower). */
+.cv-status-dot, .cv-live::before { animation-duration: 2.6s !important; }
+
+/* 5 — Belt-and-braces: honour reduced-motion for everything above. */
+@media (prefers-reduced-motion: reduce) {
+  .ai-chat-fab:hover, .theme-toggle:hover { transform: none !important; }
+  .cv-status-dot, .cv-live::before,
+  .cv-hero-full .cv-eyebrow, .cv-hero-h1, .cv-hero-lede, .cv-hero-cta,
+  .cv-hero-trust, .cv-impact, .cv-hero-compact { animation: none !important; }
 }
