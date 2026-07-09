@@ -599,12 +599,28 @@ function buildImageContentBlocks(
       `use it to measure board dimensions rather than estimating. Note each component's side (top/bottom) where discernible.`,
     });
   }
+  // Server-side safety net for the Anthropic 32 MB per-request limit. The web
+  // client already downscales to ≤1568 px, but a direct API caller (or a stale
+  // cached client) could still send large buffers. Rather than hard-fail with a
+  // 413, admit images in priority order (Top, Bottom, Close-ups…) up to a safe
+  // base64 budget and drop the rest with a warning — a partial analysis beats none.
+  const MAX_TOTAL_BASE64_BYTES = 24 * 1024 * 1024; // ~24 MB of base64, leaving headroom under 32 MB
+  let usedBytes = 0;
+  let dropped = 0;
   for (let i = 0; i < files.length; i++) {
     const f = files[i];
     const base64 = f.buffer.toString('base64');
+    if (usedBytes + base64.length > MAX_TOTAL_BASE64_BYTES && out.some(b => b.type === 'image')) {
+      dropped++;
+      continue; // keep at least the first image; skip further ones that would blow the budget
+    }
+    usedBytes += base64.length;
     const mtype = f.mimetype as 'image/jpeg' | 'image/png' | 'image/webp';
     if (includeLabels) out.push({ type: 'text', text: `**${labels[i] ?? `Image ${i + 1}`}:**` });
     out.push({ type: 'image', source: { type: 'base64', media_type: mtype, data: base64 } });
+  }
+  if (dropped > 0) {
+    console.warn(`[PCB] Image payload over budget — included ${files.length - dropped}/${files.length} image(s), dropped ${dropped} to stay under the API request limit. Client should downscale before upload.`);
   }
   return out;
 }
@@ -1822,7 +1838,11 @@ router.post('/analyze-image-stream', upload.fields([
     });
     stage3Raw = msg.content[0]?.type === 'text' ? msg.content[0].text : '';
   } catch (err) {
-    emit('error', { message: `Stage 3 AI service error: ${(err as Error).message}` });
+    const raw = (err as Error).message ?? '';
+    const tooLarge = /413|request_too_large|maximum size|too large/i.test(raw);
+    emit('error', { message: tooLarge
+      ? 'Images are too large for the AI service even after compression. Please retry with fewer images (2–3), or attach a BOM file to reduce reliance on the photos.'
+      : `Stage 3 AI service error: ${raw}` });
     res.end();
     return;
   }

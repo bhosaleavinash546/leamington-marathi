@@ -6780,6 +6780,47 @@ function wirePCBImageZone(): void {
   });
 }
 
+/**
+ * Downscale a PCB photo to a JPEG bounded by `maxEdge` px before upload.
+ * Claude's vision model already works at ≤1568 px, so full-resolution phone
+ * photos (often 4–8 MB each) add no accuracy but push the multi-image request
+ * past the Anthropic API's ~32 MB per-request limit → HTTP 413
+ * ("request_too_large") on Stage 3. Bounding to 1568 px q0.82 keeps five images
+ * comfortably under the cap. Falls back to the original file if anything fails.
+ */
+async function downscaleImageForUpload(file: File, maxEdge = 1568, quality = 0.82): Promise<File> {
+  if (!file.type.startsWith('image/')) return file;
+  try {
+    const dataUrl = await new Promise<string>((resolve, reject) => {
+      const r = new FileReader();
+      r.onload = () => resolve(r.result as string);
+      r.onerror = () => reject(r.error);
+      r.readAsDataURL(file);
+    });
+    const img = await new Promise<HTMLImageElement>((resolve, reject) => {
+      const im = new Image();
+      im.onload = () => resolve(im);
+      im.onerror = () => reject(new Error('image decode failed'));
+      im.src = dataUrl;
+    });
+    const scale = Math.min(1, maxEdge / Math.max(img.width, img.height));
+    // Already small in both dimensions and bytes — leave it untouched.
+    if (scale >= 1 && file.size < 1_200_000) return file;
+    const canvas = document.createElement('canvas');
+    canvas.width = Math.max(1, Math.round(img.width * scale));
+    canvas.height = Math.max(1, Math.round(img.height * scale));
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return file;
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    const blob = await new Promise<Blob | null>(res => canvas.toBlob(res, 'image/jpeg', quality));
+    if (!blob || blob.size >= file.size) return file;
+    const baseName = file.name.replace(/\.[^.]+$/, '') || 'pcb';
+    return new File([blob], `${baseName}.jpg`, { type: 'image/jpeg' });
+  } catch {
+    return file;
+  }
+}
+
 async function analyzePCBImages(): Promise<void> {
   const selectedFiles = pcbImageFiles.map((f, i) => f ? { file: f, label: ['Top side', 'Bottom side', 'Close-up 1', 'Close-up 2', 'Close-up 3'][i] } : null).filter((x): x is { file: File; label: string } => x !== null);
   if (!selectedFiles.length || pcbImageLoading) return;
@@ -6799,8 +6840,10 @@ async function analyzePCBImages(): Promise<void> {
   const orderQty = (document.getElementById('pcb-order-qty') as HTMLInputElement)?.value ?? '100';
 
   const formData = new FormData();
-  // Append all selected images and their labels
-  selectedFiles.forEach(({ file }) => formData.append('pcbImages', file));
+  // Append all selected images (downscaled to ≤1568 px so the multi-image request
+  // stays under the API's 32 MB limit — full-res adds no accuracy) and their labels.
+  const uploadFiles = await Promise.all(selectedFiles.map(x => downscaleImageForUpload(x.file)));
+  uploadFiles.forEach(file => formData.append('pcbImages', file));
   formData.append('pcbImageLabels', JSON.stringify(selectedFiles.map(x => x.label)));
   formData.append('country', selectedCountry);
   formData.append('orderQty', orderQty);
@@ -7143,9 +7186,11 @@ async function reanalyzePCBWithCorrections(): Promise<void> {
   const orderQty = (document.getElementById('pcb-order-qty') as HTMLInputElement)?.value ?? '100';
 
   const formData = new FormData();
-  // Append images if available
+  // Append images if available (downscaled to ≤1568 px to stay under the API's
+  // 32 MB per-request limit — same guard as the initial analysis).
   const activeFiles = pcbImageFiles.filter((f): f is File => f !== null);
-  activeFiles.forEach(f => formData.append('pcbImages', f));
+  const uploadFiles = await Promise.all(activeFiles.map(f => downscaleImageForUpload(f)));
+  uploadFiles.forEach(f => formData.append('pcbImages', f));
   if (activeFiles.length > 0) {
     formData.append('pcbImageLabels', JSON.stringify(
       pcbImageFiles.map((f, i) => f ? ['Top side','Bottom side','Close-up 1','Close-up 2','Close-up 3'][i] : null).filter(Boolean)
