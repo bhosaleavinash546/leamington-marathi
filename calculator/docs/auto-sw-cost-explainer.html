@@ -1,0 +1,446 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How Auto SW Cost is built — CostVision</title>
+<style>
+  :root {
+    --paper:#F1F4F7; --surface:#FFFFFF; --surface-2:#F8FAFC;
+    --ink:#141A21; --ink-soft:#4B5966; --ink-faint:#7C8A97;
+    --line:#D9E0E7; --line-strong:#C2CCD6;
+    --steel:#33557E; --steel-2:#4E74A6; --steel-soft:#E7EEF6;
+    --gold:#9C6A12; --gold-soft:#F5EAD3;
+    --good:#2C7A57; --warn:#9A6A16; --crit:#B4443A;
+    --good-soft:#E1F0E8; --crit-soft:#F7E3E1;
+    --shadow:0 1px 2px rgba(20,26,33,.05), 0 8px 28px -14px rgba(20,26,33,.18);
+    --mono:ui-monospace,"SF Mono","Cascadia Code","JetBrains Mono",Menlo,Consolas,monospace;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{
+      --paper:#0D1218; --surface:#141C24; --surface-2:#101820;
+      --ink:#E8EDF2; --ink-soft:#9DACBA; --ink-faint:#6C7C8A;
+      --line:#25313D; --line-strong:#31404E;
+      --steel:#6E9BD8; --steel-2:#8FB4E6; --steel-soft:#182635;
+      --gold:#E3B15A; --gold-soft:#2B2314;
+      --good:#4FB88A; --warn:#E0AE5A; --crit:#E17B6E;
+      --good-soft:#132821; --crit-soft:#2A1613;
+      --shadow:0 1px 2px rgba(0,0,0,.3), 0 10px 30px -16px rgba(0,0,0,.6);
+    }
+  }
+  :root[data-theme="light"]{
+    --paper:#F1F4F7; --surface:#FFFFFF; --surface-2:#F8FAFC;
+    --ink:#141A21; --ink-soft:#4B5966; --ink-faint:#7C8A97;
+    --line:#D9E0E7; --line-strong:#C2CCD6;
+    --steel:#33557E; --steel-2:#4E74A6; --steel-soft:#E7EEF6;
+    --gold:#9C6A12; --gold-soft:#F5EAD3;
+    --good:#2C7A57; --warn:#9A6A16; --crit:#B4443A;
+    --good-soft:#E1F0E8; --crit-soft:#F7E3E1;
+  }
+  :root[data-theme="dark"]{
+    --paper:#0D1218; --surface:#141C24; --surface-2:#101820;
+    --ink:#E8EDF2; --ink-soft:#9DACBA; --ink-faint:#6C7C8A;
+    --line:#25313D; --line-strong:#31404E;
+    --steel:#6E9BD8; --steel-2:#8FB4E6; --steel-soft:#182635;
+    --gold:#E3B15A; --gold-soft:#2B2314;
+    --good:#4FB88A; --warn:#E0AE5A; --crit:#E17B6E;
+    --good-soft:#132821; --crit-soft:#2A1613;
+  }
+
+  *{box-sizing:border-box}
+  body{background:var(--paper);color:var(--ink);font-family:var(--sans);line-height:1.55;
+    -webkit-font-smoothing:antialiased;margin:0;}
+  .wrap{max-width:920px;margin:0 auto;padding:clamp(20px,4vw,56px) clamp(16px,4vw,32px) 80px;}
+  .eyebrow{font-family:var(--mono);font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;
+    color:var(--steel-2);font-weight:600;}
+  h1{font-size:clamp(1.9rem,4.6vw,3rem);line-height:1.04;letter-spacing:-.02em;font-weight:750;
+    margin:.35em 0 .3em;text-wrap:balance;}
+  .deck{font-size:clamp(1.02rem,2vw,1.18rem);color:var(--ink-soft);max-width:60ch;margin:0;}
+  h2{font-size:1.32rem;letter-spacing:-.01em;font-weight:700;margin:0 0 .2em;text-wrap:balance;}
+  h2 .n{font-family:var(--mono);color:var(--steel-2);font-size:.9rem;font-weight:600;margin-right:.6em;
+    vertical-align:.12em;}
+  section{margin-top:clamp(40px,6vw,64px);}
+  .lede{color:var(--ink-soft);max-width:64ch;margin:.2em 0 1.4em;}
+
+  /* meta chips */
+  .meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px;}
+  .chip{font-family:var(--mono);font-size:.74rem;letter-spacing:.02em;padding:5px 10px;border-radius:999px;
+    background:var(--surface);border:1px solid var(--line);color:var(--ink-soft);white-space:nowrap;}
+  .chip b{color:var(--ink);font-weight:600;}
+
+  hr.rule{border:none;border-top:1px solid var(--line);margin:0;}
+
+  /* pipeline */
+  .pipe{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;}
+  @media(max-width:720px){.pipe{grid-template-columns:1fr 1fr;}}
+  .stage{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:12px;
+    padding:14px 13px 15px;box-shadow:var(--shadow);}
+  .stage .sn{font-family:var(--mono);font-size:.7rem;color:var(--steel-2);font-weight:600;}
+  .stage h3{font-size:.96rem;margin:.35em 0 .3em;letter-spacing:-.01em;}
+  .stage p{font-size:.8rem;color:var(--ink-soft);margin:0;}
+  .stage::after{content:"›";position:absolute;right:-11px;top:50%;transform:translateY(-50%);
+    color:var(--line-strong);font-size:1.3rem;z-index:2;}
+  .pipe .stage:nth-child(5)::after{display:none}
+  @media(max-width:720px){.stage::after{display:none}}
+
+  /* card */
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);
+    overflow:hidden;}
+  .card-h{padding:14px 18px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;
+    align-items:baseline;gap:12px;flex-wrap:wrap;background:var(--surface-2);}
+  .card-h .t{font-weight:650;letter-spacing:-.01em;}
+  .card-h .s{font-family:var(--mono);font-size:.74rem;color:var(--ink-faint);}
+
+  /* taxonomy */
+  .tax{display:flex;flex-direction:column;}
+  .trow{display:grid;grid-template-columns:34px 1fr;gap:14px;padding:11px 18px;align-items:center;
+    border-bottom:1px solid var(--line);}
+  .trow:last-child{border-bottom:none;}
+  .tcat{font-family:var(--mono);font-weight:700;color:var(--steel);background:var(--steel-soft);
+    border-radius:8px;text-align:center;padding:6px 0;font-size:.9rem;}
+  .tname{font-weight:600;font-size:.92rem;}
+  .tex{color:var(--ink-soft);font-size:.82rem;}
+  .tex .new{color:var(--gold);font-weight:600;}
+
+  /* worked ledger */
+  .ledger{font-family:var(--mono);font-size:.83rem;}
+  .lrow{display:grid;grid-template-columns:1fr auto;gap:14px;padding:8px 18px;border-bottom:1px solid var(--line);
+    align-items:baseline;}
+  .lrow .lbl{color:var(--ink-soft);}
+  .lrow .lbl .k{color:var(--ink);}
+  .lrow .val{font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap;}
+  .lrow.calc{background:var(--surface-2);}
+  .lrow.calc .lbl{color:var(--ink-faint);font-size:.78rem;}
+  .lrow.sub{padding-left:34px;}
+  .lrow.sub .lbl::before{content:"└ ";color:var(--line-strong);}
+  .lrow.total{background:var(--steel-soft);border-top:1px solid var(--line-strong);border-bottom:none;
+    padding-top:13px;padding-bottom:13px;}
+  .lrow.total .lbl .k{font-weight:700;color:var(--ink);}
+  .money{color:var(--gold);font-weight:600;}
+  .grand .val{font-size:1.15rem;color:var(--gold);font-weight:700;}
+  .lgroup{padding:9px 18px 6px;font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;
+    text-transform:uppercase;color:var(--steel-2);background:var(--surface-2);border-bottom:1px solid var(--line);
+    font-weight:600;}
+  .inputs-strip{display:flex;flex-wrap:wrap;gap:6px;padding:14px 18px;border-bottom:1px solid var(--line);}
+  .ip{font-family:var(--mono);font-size:.75rem;padding:4px 9px;border-radius:7px;background:var(--surface-2);
+    border:1px solid var(--line);}
+  .ip b{color:var(--steel-2);}
+
+  /* multiplier tables */
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+  @media(max-width:640px){.grid2{grid-template-columns:1fr;}}
+  table.mult{width:100%;border-collapse:collapse;font-size:.83rem;}
+  table.mult caption{font-family:var(--mono);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--steel-2);text-align:left;padding:12px 16px 8px;font-weight:600;}
+  table.mult td{padding:7px 16px;border-top:1px solid var(--line);}
+  table.mult td.v{font-family:var(--mono);text-align:right;font-variant-numeric:tabular-nums;color:var(--ink);
+    font-weight:600;}
+  table.mult tr td:first-child{color:var(--ink-soft);}
+
+  /* validation */
+  .vrow{display:grid;grid-template-columns:1fr auto auto;gap:12px;align-items:center;padding:9px 18px;
+    border-bottom:1px solid var(--line);font-size:.86rem;}
+  .vrow:last-child{border-bottom:none;}
+  .vrow .prog{font-weight:600;}
+  .vrow .src{color:var(--ink-faint);font-size:.74rem;font-weight:400;display:block;margin-top:1px;}
+  .vrow .var{font-family:var(--mono);font-variant-numeric:tabular-nums;text-align:right;font-weight:600;}
+  .badge{font-family:var(--mono);font-size:.68rem;font-weight:600;padding:3px 8px;border-radius:6px;text-align:center;
+    white-space:nowrap;}
+  .badge.in{background:var(--good-soft);color:var(--good);}
+  .badge.out{background:var(--crit-soft);color:var(--crit);}
+
+  .callout{border:1px solid var(--line);border-left:3px solid var(--gold);background:var(--gold-soft);
+    border-radius:10px;padding:16px 18px;font-size:.9rem;color:var(--ink);}
+  .callout b{font-weight:700;}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  @media(max-width:640px){.two{grid-template-columns:1fr;}}
+  .note{font-size:.9rem;color:var(--ink-soft);}
+  .footer{margin-top:64px;padding-top:22px;border-top:1px solid var(--line);font-family:var(--mono);
+    font-size:.74rem;color:var(--ink-faint);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+  strong.k{font-weight:650;color:var(--ink);}
+
+  /* headline stat pair */
+  .heads{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:18px;border-bottom:1px solid var(--line);}
+  @media(max-width:520px){.heads{grid-template-columns:1fr;}}
+  .head{background:var(--surface-2);border:1px solid var(--line);border-radius:11px;padding:15px 17px;}
+  .head .k{font-family:var(--mono);font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--steel-2);font-weight:600;}
+  .head .big{font-size:1.85rem;font-weight:750;letter-spacing:-.02em;color:var(--gold);font-variant-numeric:tabular-nums;margin-top:.1em;}
+  .head .sub{font-family:var(--mono);font-size:.74rem;color:var(--ink-faint);}
+
+  /* category bars */
+  .bars{display:flex;flex-direction:column;}
+  .brow{display:grid;grid-template-columns:132px 1fr 86px;gap:14px;align-items:center;padding:9px 18px;border-bottom:1px solid var(--line);}
+  .brow:last-child{border-bottom:none;}
+  .blab{font-size:.86rem;font-weight:600;}
+  .blab span{display:block;font-family:var(--mono);font-size:.66rem;color:var(--ink-faint);font-weight:400;letter-spacing:.04em;}
+  .btrack{height:10px;background:var(--surface-2);border-radius:999px;overflow:hidden;border:1px solid var(--line);}
+  .bfill{height:100%;background:linear-gradient(90deg,var(--steel),var(--steel-2));border-radius:999px;}
+  .bval{font-family:var(--mono);font-size:.82rem;text-align:right;font-variant-numeric:tabular-nums;color:var(--ink-soft);}
+  .bval b{color:var(--gold);font-weight:600;}
+
+  /* driver list + stack chips */
+  .drivers{padding:6px 18px 16px;}
+  .drivers .dh{font-family:var(--mono);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--steel-2);font-weight:600;padding:12px 0 8px;}
+  .drow{display:grid;grid-template-columns:1fr auto;gap:12px;font-family:var(--mono);font-size:.82rem;padding:5px 0;border-top:1px solid var(--line);}
+  .drow .m{color:var(--ink-soft);}
+  .drow .v{color:var(--gold);font-weight:600;font-variant-numeric:tabular-nums;}
+
+  /* monte carlo */
+  .mc-tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding:18px 18px 6px;}
+  @media(max-width:520px){.mc-tiles{grid-template-columns:1fr;}}
+  .mct{background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:15px 14px;text-align:center;}
+  .mct.p50{border-color:var(--steel-2);box-shadow:inset 0 0 0 1px var(--steel-2);}
+  .mct .p{font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;color:var(--steel-2);font-weight:700;}
+  .mct .big{font-size:1.55rem;font-weight:750;color:var(--gold);letter-spacing:-.02em;margin:.12em 0 .02em;font-variant-numeric:tabular-nums;}
+  .mct .pv{font-family:var(--mono);font-size:.73rem;color:var(--ink-soft);}
+  .mc-track{position:relative;height:9px;border-radius:999px;margin:34px 20px 44px;
+    background:linear-gradient(90deg,var(--good-soft),var(--steel-soft) 50%,var(--crit-soft));border:1px solid var(--line);}
+  .mc-fill{position:absolute;top:-1px;bottom:-1px;border-radius:999px;opacity:.9;
+    background:linear-gradient(90deg,var(--good),var(--steel-2) 55%,var(--crit));}
+  .mc-mark{position:absolute;top:-7px;width:2px;height:23px;background:var(--ink);}
+  .mc-mark::after{content:attr(data-l);position:absolute;top:26px;left:50%;transform:translateX(-50%);
+    font-family:var(--mono);font-size:.66rem;color:var(--ink-soft);white-space:nowrap;font-weight:600;}
+  .mc-mark.up::after{top:auto;bottom:26px;}
+  .mc-axis{display:flex;justify-content:space-between;padding:0 18px 4px;font-family:var(--mono);font-size:.68rem;color:var(--ink-faint);}
+</style>
+
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="eyebrow">CostVision · Should-Cost Engine</div>
+    <h1>How Auto&nbsp;SW&nbsp;Cost is built</h1>
+    <p class="deck">A bottom-up parametric model that decomposes a premium vehicle's software into 49 costed modules, prices each from engineering first principles, then reports its own error against real programmes.</p>
+    <div class="meta">
+      <span class="chip"><b>49</b> modules</span>
+      <span class="chip"><b>7</b> domains</span>
+      <span class="chip">ISO&nbsp;<b>26262</b> / <b>21434</b></span>
+      <span class="chip">Monte-Carlo <b>P10 / P50 / P90</b></span>
+      <span class="chip">back-test MAPE <b>24.9%</b></span>
+      <span class="chip">GBP throughout</span>
+    </div>
+  </header>
+
+  <section>
+    <h2><span class="n">01</span>The pipeline</h2>
+    <p class="lede">Every estimate flows through the same five stages. Nothing is a single guessed number — the total is assembled from 49 independent module estimates and then stress-tested.</p>
+    <div class="pipe">
+      <div class="stage"><div class="sn">STAGE 1</div><h3>Decompose</h3><p>Programme → 49 modules across 7 domains, each with its own cost DNA.</p></div>
+      <div class="stage"><div class="sn">STAGE 2</div><h3>Cost each</h3><p>Per-module formula: effort × sourced rate, split into dev / test / lifecycle.</p></div>
+      <div class="stage"><div class="sn">STAGE 3</div><h3>Roll up</h3><p>Sum to programme total, NRE and £/vehicle, grouped by domain.</p></div>
+      <div class="stage"><div class="sn">STAGE 4</div><h3>Simulate</h3><p>1,000-run Monte-Carlo, ρ=0.55 correlated → P10 / P50 / P90 band.</p></div>
+      <div class="stage"><div class="sn">STAGE 5</div><h3>Validate</h3><p>Back-test vs 7 published programmes; report the model's own variance.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="n">02</span>The 360° catalogue</h2>
+    <p class="lede">Coverage is "360°" because it isn't one formula — it's 49 individually-parameterised estimators. The six premium-trim modules (highlighted) default off, so a base programme and the validated baseline stay unchanged.</p>
+    <div class="card">
+      <div class="tax">
+        <div class="trow"><div class="tcat">A</div><div><div class="tname">EV Powertrain &amp; Battery</div><div class="tex">BMS, cell balancing, SOC/SOH, inverter &amp; motor control, fast-charge</div></div></div>
+        <div class="trow"><div class="tcat">B</div><div><div class="tname">ADAS L2 / L2+</div><div class="tex">camera · radar · ultrasonic · sensor fusion · ACC/LKA/AEB · <span class="new">automated parking</span></div></div></div>
+        <div class="trow"><div class="tcat">C</div><div><div class="tname">Infotainment &amp; UX</div><div class="tex">IVI OS · nav · voice · connectivity · <span class="new">premium audio · digital key · AR-HUD</span></div></div></div>
+        <div class="trow"><div class="tcat">D</div><div><div class="tname">Domain Controllers</div><div class="tex">body · chassis · gateway · zonal · VMM · <span class="new">active body control · climate</span></div></div></div>
+        <div class="trow"><div class="tcat">E</div><div><div class="tname">Middleware &amp; Platform</div><div class="tex">AUTOSAR Classic/Adaptive · RTOS · diagnostics · comm stacks · time-sync</div></div></div>
+        <div class="trow"><div class="tcat">F</div><div><div class="tname">Cybersecurity (ISO 21434)</div><div class="tex">secure boot · encryption · IDS · secure OTA · key management</div></div></div>
+        <div class="trow"><div class="tcat">G</div><div><div class="tname">OTA &amp; Cloud Backend</div><div class="tex">OTA manager · cloud backend · data pipeline · fleet analytics</div></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="n">03</span>The per-module formula</h2>
+    <p class="lede">Each module builds a fully-loaded labour rate, converts base effort through reuse and ASIL, then splits development into engineering sub-buckets. Testing scales with ASIL (an ASIL-D module verifies harder than it develops), and multi-year costs are added on top.</p>
+    <div class="card" style="padding:18px;font-family:var(--mono);font-size:.82rem;line-height:1.9;color:var(--ink-soft);overflow-x:auto;">
+      <div><span style="color:var(--steel-2)">rate</span> = ukBase × region × devSource × seniority × overhead × schedule</div>
+      <div><span style="color:var(--steel-2)">effortPM</span> = basePersonMonths × reuse &nbsp;→&nbsp; <span style="color:var(--steel-2)">devPM</span> = effortPM × asil<sub>dev</sub></div>
+      <div style="padding-left:2ch;color:var(--ink-faint)">dev = reqs 12% + arch 14% + algo 22%·cx + impl 37%·cx' + safety 15%·floor</div>
+      <div><span style="color:var(--steel-2)">test</span> = dev × testFrac × (asil<sub>test</sub> ÷ ref) &nbsp;<span style="color:var(--ink-faint)">// SIL·MIL·HIL·regression·pentest</span></div>
+      <div><span style="color:var(--steel-2)">+</span> integration · cybersecurity · calibration &nbsp;<span style="color:var(--ink-faint)">(NRE)</span></div>
+      <div><span style="color:var(--steel-2)">+</span> (maintenance + cloud + IP licence) × NPV factor &nbsp;<span style="color:var(--ink-faint)">(lifecycle)</span></div>
+    </div>
+    <div class="two" style="margin-top:14px;">
+      <p class="note"><strong class="k">Reuse can't erase safety.</strong> The safety-compliance slice is floored by ASIL — reused ASIL-C/D code still needs re-verification and re-qualification.</p>
+      <p class="note"><strong class="k">Correlated uncertainty.</strong> Overruns move together: a slipped schedule inflates dev, test and integration at once. The Monte-Carlo blends a shared draw at ρ=0.55, so the tail isn't understated.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="n">04</span>Worked example — BMS Core</h2>
+    <p class="lede">Every figure below is emitted by the live engine for a single ASIL-D battery-management module, costed alone at the default UK / OEM-internal programme (80,000 vehicles/yr over 10 years). Follow it from 90 person-months to £51.4M.</p>
+    <div class="card">
+      <div class="card-h"><span class="t">BMS Core Software</span><span class="s">ISO 26262 · AUTOSAR Classic</span></div>
+      <div class="inputs-strip">
+        <span class="ip"><b>ASIL</b> D</span>
+        <span class="ip"><b>complexity</b> Very High</span>
+        <span class="ip"><b>reuse</b> Medium</span>
+        <span class="ip"><b>region</b> UK</span>
+        <span class="ip"><b>source</b> OEM internal</span>
+        <span class="ip"><b>volume</b> 80k/yr × 10yr</span>
+      </div>
+      <div class="ledger">
+        <div class="lgroup">Effort &amp; blended rate</div>
+        <div class="lrow calc"><div class="lbl">base 90&nbsp;PM × reuse 0.60</div><div class="val">54.0 PM</div></div>
+        <div class="lrow calc"><div class="lbl">× ASIL-D dev multiplier 3.2</div><div class="val">172.8 PM</div></div>
+        <div class="lrow calc"><div class="lbl">rate £28,000 × 1.0 UK × 1.0 OEM × 0.975 senior × 1.6 overhead</div><div class="val">£43,680 / PM</div></div>
+
+        <div class="lgroup">Development — £11.29M</div>
+        <div class="lrow sub"><div class="lbl"><span class="k">Requirements</span> · 12%</div><div class="val money">£905,748</div></div>
+        <div class="lrow sub"><div class="lbl"><span class="k">Architecture</span> · 14%</div><div class="val money">£1,056,707</div></div>
+        <div class="lrow sub"><div class="lbl"><span class="k">Algorithms</span> · 22% × cx 2.8</div><div class="val money">£4,649,509</div></div>
+        <div class="lrow sub"><div class="lbl"><span class="k">Implementation</span> · 37% × cx′ 1.27</div><div class="val money">£3,546,760</div></div>
+        <div class="lrow sub"><div class="lbl"><span class="k">Safety compliance</span> · 15% (ASIL-D floored)</div><div class="val money">£1,132,186</div></div>
+
+        <div class="lgroup">Verification, integration &amp; calibration</div>
+        <div class="lrow"><div class="lbl"><span class="k">Testing</span> · frac 0.40 × (1.8 ÷ 0.38) → 1.9× dev</div><div class="val money">£21,393,302</div></div>
+        <div class="lrow"><div class="lbl"><span class="k">Integration</span> · 18% of dev</div><div class="val money">£2,032,364</div></div>
+        <div class="lrow"><div class="lbl"><span class="k">Cybersecurity</span> · 14% (ASIL-D)</div><div class="val money">£1,580,727</div></div>
+        <div class="lrow"><div class="lbl"><span class="k">Calibration</span> · 8% (dyno / proving ground)</div><div class="val money">£903,273</div></div>
+        <div class="lrow"><div class="lbl"><span class="k">Dev toolchain</span> · £52k/yr × 10</div><div class="val money">£520,000</div></div>
+
+        <div class="lgroup">Lifecycle — £13.73M over 10 years</div>
+        <div class="lrow"><div class="lbl"><span class="k">Maintenance</span> · 12%/yr of dev × 10</div><div class="val money">£13,549,092</div></div>
+        <div class="lrow"><div class="lbl"><span class="k">Embedded IP licence</span> · £18k/yr × 10</div><div class="val money">£180,000</div></div>
+
+        <div class="lrow total"><div class="lbl"><span class="k">Non-recurring engineering (NRE)</span></div><div class="val money">£37,720,576</div></div>
+        <div class="lrow total grand"><div class="lbl"><span class="k">Grand total</span></div><div class="val">£51,449,667</div></div>
+        <div class="lrow total"><div class="lbl"><span class="k">Per vehicle</span> · over 800,000 units</div><div class="val money">£64.31</div></div>
+      </div>
+    </div>
+    <p class="note" style="margin-top:12px;">One module. A full flagship programme sums dozens of these — which is why a premium SUV's software lands in the hundreds of millions.</p>
+  </section>
+
+  <section>
+    <h2><span class="n">05</span>Full programme roll-up — Range Rover L460</h2>
+    <p class="lede">The same engine, run across all 49 modules for a real flagship (PHEV, UK / Tier-1-heavy, 75,000 vehicles/yr over 8 years, premium modules enabled). Note how ADAS and powertrain dominate — perception and battery software are the expensive frontier.</p>
+    <div class="card">
+      <div class="heads">
+        <div class="head"><div class="k">Programme point estimate</div><div class="big">£539.6M</div><div class="sub">49 modules · NRE £345M + lifecycle £195M</div></div>
+        <div class="head"><div class="k">Per vehicle</div><div class="big">£899</div><div class="sub">over 600,000 units (75k × 8yr)</div></div>
+      </div>
+      <div class="bars">
+        <div class="brow"><div class="blab">ADAS L2/L2+<span>CATEGORY B</span></div><div class="btrack"><div class="bfill" style="width:100%"></div></div><div class="bval"><b>£191.7M</b> 35.5%</div></div>
+        <div class="brow"><div class="blab">EV Powertrain<span>CATEGORY A</span></div><div class="btrack"><div class="bfill" style="width:67%"></div></div><div class="bval"><b>£128.3M</b> 23.8%</div></div>
+        <div class="brow"><div class="blab">Domain Controllers<span>CATEGORY D</span></div><div class="btrack"><div class="bfill" style="width:39%"></div></div><div class="bval"><b>£74.1M</b> 13.7%</div></div>
+        <div class="brow"><div class="blab">Infotainment &amp; UX<span>CATEGORY C</span></div><div class="btrack"><div class="bfill" style="width:34%"></div></div><div class="bval"><b>£64.8M</b> 12.0%</div></div>
+        <div class="brow"><div class="blab">OTA &amp; Cloud<span>CATEGORY G</span></div><div class="btrack"><div class="bfill" style="width:17%"></div></div><div class="bval"><b>£33.5M</b> 6.2%</div></div>
+        <div class="brow"><div class="blab">Middleware<span>CATEGORY E</span></div><div class="btrack"><div class="bfill" style="width:15%"></div></div><div class="bval"><b>£29.6M</b> 5.5%</div></div>
+        <div class="brow"><div class="blab">Cybersecurity<span>CATEGORY F</span></div><div class="btrack"><div class="bfill" style="width:9%"></div></div><div class="bval"><b>£17.7M</b> 3.3%</div></div>
+      </div>
+      <div class="drivers">
+        <div class="dh">Top cost-driving modules</div>
+        <div class="drow"><div class="m">Camera Perception Stack</div><div class="v">£38.9M</div></div>
+        <div class="drow"><div class="m">BMS Core Software</div><div class="v">£34.0M</div></div>
+        <div class="drow"><div class="m">Sensor Fusion Engine</div><div class="v">£33.7M</div></div>
+        <div class="drow"><div class="m">Path Planning Algorithms</div><div class="v">£28.0M</div></div>
+        <div class="drow"><div class="m">Highway Assist / Traffic-Jam Assist</div><div class="v">£27.4M</div></div>
+        <div class="drow"><div class="m">Control Algorithms (ACC / LKA / AEB)</div><div class="v">£27.3M</div></div>
+      </div>
+    </div>
+    <p class="note" style="margin-top:12px;">Across the whole stack, verification (£160M) and 8-year maintenance (£134M) each rival raw development (£130M) — the reason should-cost must model the full lifecycle, not just "writing the code".</p>
+  </section>
+
+  <section>
+    <h2><span class="n">06</span>Confidence band — Monte-Carlo</h2>
+    <p class="lede">A single number hides the risk. The engine runs 1,000 correlated simulations (ρ=0.55 — overruns move together) to produce a proper distribution for the same L460 programme. The gap between P10 and P90 is the honest planning range.</p>
+    <div class="card">
+      <div class="mc-tiles">
+        <div class="mct"><div class="p">P10 · optimistic</div><div class="big">£503M</div><div class="pv">£838 / vehicle</div></div>
+        <div class="mct p50"><div class="p">P50 · expected</div><div class="big">£554M</div><div class="pv">£924 / vehicle</div></div>
+        <div class="mct"><div class="p">P90 · conservative</div><div class="big">£616M</div><div class="pv">£1,027 / vehicle</div></div>
+      </div>
+      <div class="mc-track">
+        <div class="mc-fill" style="left:21.5%;width:56.5%"></div>
+        <div class="mc-mark up" data-l="P10 £503M" style="left:21.5%"></div>
+        <div class="mc-mark" data-l="P50 £554M" style="left:47%"></div>
+        <div class="mc-mark up" data-l="P90 £616M" style="left:78%"></div>
+      </div>
+      <div class="mc-axis"><span>£460M</span><span>1,000 correlated runs · triangular ± per bucket</span><span>£660M</span></div>
+    </div>
+    <p class="note" style="margin-top:12px;">Read it as: <strong class="k">90% confident the programme lands under ~£616M</strong>; budget to P50–P90, not the point estimate. Alongside this the engine also emits a tornado sensitivity chart and a milestone spend curve.</p>
+  </section>
+
+  <section>
+    <h2><span class="n">07</span>The sourced rate library</h2>
+    <p class="lede">Every multiplier is a defensible, dated figure — not a magic number. Each carries a provenance string and a confidence grade in the code, and any of them can be overridden with your own company rates.</p>
+    <div class="card"><div class="grid2">
+      <table class="mult">
+        <caption>Region — labour £/PM vs UK</caption>
+        <tr><td>Silicon Valley</td><td class="v">1.85×</td></tr>
+        <tr><td>USA — Detroit</td><td class="v">1.35×</td></tr>
+        <tr><td>UK (baseline)</td><td class="v">1.00×</td></tr>
+        <tr><td>EU (DE/FR/NL)</td><td class="v">0.95×</td></tr>
+        <tr><td>Eastern Europe</td><td class="v">0.45×</td></tr>
+        <tr><td>China</td><td class="v">0.35×</td></tr>
+        <tr><td>India</td><td class="v">0.20×</td></tr>
+      </table>
+      <table class="mult">
+        <caption>ASIL — dev &amp; test overhead vs QM</caption>
+        <tr><td>QM — no safety integrity</td><td class="v">1.0 / 0.35</td></tr>
+        <tr><td>ASIL-A</td><td class="v">1.35 / 0.55</td></tr>
+        <tr><td>ASIL-B</td><td class="v">1.80 / 0.85</td></tr>
+        <tr><td>ASIL-C</td><td class="v">2.30 / 1.20</td></tr>
+        <tr><td>ASIL-D — most stringent</td><td class="v">3.20 / 1.80</td></tr>
+      </table>
+      <table class="mult">
+        <caption>Complexity multiplier</caption>
+        <tr><td>Low</td><td class="v">0.60×</td></tr>
+        <tr><td>Medium (baseline)</td><td class="v">1.00×</td></tr>
+        <tr><td>High</td><td class="v">1.70×</td></tr>
+        <tr><td>Very High — frontier</td><td class="v">2.80×</td></tr>
+      </table>
+      <table class="mult">
+        <caption>Reuse factor (× base effort)</caption>
+        <tr><td>Fresh — greenfield</td><td class="v">1.00×</td></tr>
+        <tr><td>Light — platform port</td><td class="v">0.82×</td></tr>
+        <tr><td>Medium — core reused</td><td class="v">0.60×</td></tr>
+        <tr><td>Heavy — copy-forward</td><td class="v">0.35×</td></tr>
+        <tr><td>Platform — shared stack</td><td class="v">0.14×</td></tr>
+      </table>
+    </div></div>
+  </section>
+
+  <section>
+    <h2><span class="n">08</span>The honesty mechanism</h2>
+    <p class="lede">What separates this from a spreadsheet guess: the engine back-tests itself against seven published premium programmes and reports its own variance instead of presenting one number as truth.</p>
+    <div class="card">
+      <div class="card-h"><span class="t">Back-test — modelled vs published total SW investment</span><span class="s">band ±35%</span></div>
+      <div class="vrow"><div class="prog">Tesla Model S HW4<span class="src">Morgan Stanley Research</span></div><div class="badge in">in band</div><div class="var" style="color:var(--good)">−0.3%</div></div>
+      <div class="vrow"><div class="prog">BMW iX<span class="src">Berylls Strategy Advisors</span></div><div class="badge in">in band</div><div class="var" style="color:var(--good)">−3.8%</div></div>
+      <div class="vrow"><div class="prog">Audi Q8 e-tron<span class="src">VW Group report + EY model</span></div><div class="badge in">in band</div><div class="var" style="color:var(--good)">+14.7%</div></div>
+      <div class="vrow"><div class="prog">Mercedes EQS<span class="src">MBUX Hyperscreen estimate</span></div><div class="badge in">in band</div><div class="var" style="color:var(--good)">−16.0%</div></div>
+      <div class="vrow"><div class="prog">Porsche Taycan<span class="src">SBD Automotive teardown</span></div><div class="badge in">in band</div><div class="var" style="color:var(--warn)">+18.6%</div></div>
+      <div class="vrow"><div class="prog">Range Rover L460<span class="src">JLR programme estimate</span></div><div class="badge out">out</div><div class="var" style="color:var(--crit)">+36.6%</div></div>
+      <div class="vrow"><div class="prog">Lucid Air<span class="src">Startup, very low volume</span></div><div class="badge out">out</div><div class="var" style="color:var(--crit)">+84.2%</div></div>
+    </div>
+    <div class="meta" style="margin-top:14px;">
+      <span class="chip">MAPE <b>24.9%</b></span>
+      <span class="chip"><b>5 / 7</b> inside ±35%</span>
+      <span class="chip">outliers = <b>ultra-low-volume</b> &amp; Tier-1-heavy</span>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="n">09</span>So — how accurate is it?</h2>
+    <div class="callout">
+      <b>An envelope, not audited-to-the-pound.</b> This is a ±25–35% parametric should-cost model. The validation targets are themselves third-party analyst estimates, not internal books — so it validates a range, and its real value is that it <b>tells you its own confidence band</b> rather than pretending to a precision the data doesn't support.
+    </div>
+    <div class="two" style="margin-top:14px;">
+      <p class="note"><strong class="k">Costs by domain, not by brand.</strong> It captures the cost of Burmester audio, E-Active Body Control or Digital Key — but won't enumerate every marketing-named ECU. That would be false precision.</p>
+      <p class="note"><strong class="k">Only as good as its inputs.</strong> Give it the right region, source, volume, reuse and ASIL and it lands in-band. It's built to be driven by a cost engineer — every rate overrideable with your data.</p>
+    </div>
+    <p class="note" style="margin-top:16px;">Strong enough to challenge a supplier quote or set a target cost; honest enough to show its error bars while doing it.</p>
+  </section>
+
+  <div class="footer">
+    <span>CostVision · Auto SW Cost engine</span>
+    <span>49 modules · 7 domains · figures from live engine output</span>
+  </div>
+
+</div>
+
+</body>
+</html>
