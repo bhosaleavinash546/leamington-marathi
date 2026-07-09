@@ -4994,7 +4994,7 @@ function renderCADResults(r: CADAnalysisResult, autoCalculate = false, annualVol
 
   // Wire PDF export button
   el('cad-export-pdf-btn')?.addEventListener('click', () => {
-    if (cadAnalysisResult) printCADAnalysisPDF(cadAnalysisResult);
+    if (cadAnalysisResult) printCADAnalysisPDF(cadAnalysisResult, currentPartPhotoDataUrl());
   });
 
   // Wire alternative process cards
@@ -13338,6 +13338,22 @@ function printMasterPDF(): void {
 
     partPage('PART A — SHOULD-COST ANALYSIS', `${lastResult.partName}  ·  ${COMMODITY_LABELS[activeCommodity] ?? activeCommodity}  ·  ${dateStr}`, ORANGE);
 
+    // §A0 Uploaded part photo (any commodity)
+    const partPhoto = currentPartPhotoDataUrl();
+    if (partPhoto) {
+      try {
+        const props = doc.getImageProperties(partPhoto);
+        const maxH = 44, maxW = cW * 0.45;
+        let iw = maxH * (props.width / props.height), ih = maxH;
+        if (iw > maxW) { iw = maxW; ih = maxW * (props.height / props.width); }
+        secBar('§A0 — Uploaded Part Photo', ORANGE);
+        doc.setDrawColor(...GREY); doc.setLineWidth(0.25);
+        doc.roundedRect(mg, y, iw + 4, ih + 4, 2, 2, 'S');
+        doc.addImage(partPhoto, props.fileType || 'JPEG', mg + 2, y + 2, iw, ih, undefined, 'FAST');
+        y += ih + 8;
+      } catch { /* skip */ }
+    }
+
     // §A1 Cost Breakdown
     secBar('§A1 — 8-Bucket Cost Breakdown', ORANGE);
     const buckets: [string, number, number, string][] = [
@@ -13720,9 +13736,16 @@ function printMasterPDF(): void {
   doc.save(`master-report-${parts}-${new Date().toISOString().slice(0, 10)}.pdf`);
 }
 
+/** Uploaded part photo as a data URL — from the costing photo drop-zone or the CAD flow. */
+function currentPartPhotoDataUrl(): string | null {
+  if (partPhotoDataUrl) return partPhotoDataUrl;
+  if (cadPartPhotoBase64) return `data:${cadPartPhotoMime};base64,${cadPartPhotoBase64}`;
+  return null;
+}
+
 function openPDF(): void {
   if (!lastResult || !lastInput) return;
-  printPDF(lastResult, lastInput, library, _displayCurrency, _displayFxRate, activeCommodity);
+  printPDF(lastResult, lastInput, library, _displayCurrency, _displayFxRate, activeCommodity, currentPartPhotoDataUrl());
 }
 
 // ─── Scenario modal ───────────────────────────────────────────────────────────

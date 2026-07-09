@@ -93,7 +93,8 @@ export function printPDF(
   library: RateLibrary,
   currency = 'GBP',
   fxRate   = 1,
-  commodityType: CommodityType = 'machining'
+  commodityType: CommodityType = 'machining',
+  partPhotoDataUrl?: string | null
 ): void {
 
   const sym  = ({ GBP: '£', EUR: '€', USD: '$', CNY: '¥', INR: '₹' } as Record<string,string>)[currency] ?? currency;
@@ -194,6 +195,22 @@ export function printPDF(
   });
 
   y += 42;
+
+  // ── Uploaded part photo (any commodity) ──────────────────────────────────
+  if (partPhotoDataUrl) {
+    try {
+      const props = doc.getImageProperties(partPhotoDataUrl);
+      const maxH = 42, maxW = CW * 0.5;
+      let iw = maxH * (props.width / props.height), ih = maxH;
+      if (iw > maxW) { iw = maxW; ih = maxW * (props.height / props.width); }
+      doc.setFontSize(7.5); doc.setFont('helvetica', 'bold'); doc.setTextColor(...NAVY);
+      doc.text('Uploaded Part Photo', MG, y + 3);
+      doc.setDrawColor(...NAVY); doc.setLineWidth(0.25);
+      doc.roundedRect(MG, y + 5, iw + 4, ih + 4, 2, 2, 'S');
+      doc.addImage(partPhotoDataUrl, props.fileType || 'JPEG', MG + 2, y + 7, iw, ih, undefined, 'FAST');
+      y += ih + 12;
+    } catch { /* skip an image that fails to embed */ }
+  }
 
   // ── Confidence & traceability summary ────────────────────────────────────
   const highCount = result.traceability.filter(t => t.confidence === 'High').length;
@@ -798,7 +815,7 @@ export { printPDF as openPDF };
 // ════════════════════════════════════════════════════════════════════════════
 //  AI CAD-to-COST ANALYSIS PDF
 // ════════════════════════════════════════════════════════════════════════════
-export function printCADAnalysisPDF(r: CADAnalysisResult): void {
+export function printCADAnalysisPDF(r: CADAnalysisResult, partPhotoDataUrl?: string | null): void {
   type RGB3 = [number, number, number];
 
   const TEAL:   RGB3 = [13,  148, 136];
@@ -930,6 +947,22 @@ export function printCADAnalysisPDF(r: CADAnalysisResult): void {
   doc.text(`Manufacturability: ${r.manufacturabilityScore}/100  ·  Confidence: ${r.confidenceLevel}`, MG + 30, y + 26);
 
   y += 38;
+
+  // ── Uploaded part photo ──────────────────────────────────────────────────
+  if (partPhotoDataUrl) {
+    try {
+      const props = doc.getImageProperties(partPhotoDataUrl);
+      const maxH = 42, maxW = CW * 0.45;
+      let iw = maxH * (props.width / props.height), ih = maxH;
+      if (iw > maxW) { iw = maxW; ih = maxW * (props.height / props.width); }
+      ck(ih + 14);
+      section('Uploaded Part Photo');
+      doc.setDrawColor(...GREY3); doc.setLineWidth(0.25);
+      doc.roundedRect(MG, y, iw + 4, ih + 4, 2, 2, 'S');
+      doc.addImage(partPhotoDataUrl, props.fileType || 'JPEG', MG + 2, y + 2, iw, ih, undefined, 'FAST');
+      y += ih + 10;
+    } catch { /* skip */ }
+  }
 
   // ── §1 Geometry & Part Summary ───────────────────────────────────────────
   section('§1 — Geometry & Part Summary');
