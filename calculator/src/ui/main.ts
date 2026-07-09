@@ -6564,7 +6564,7 @@ function buildPCBImageUploadZone(): string {
       <div class="pcb-img-zone-content" id="pcb-img-zone-content">
         <div style="font-size:1.4rem;margin-bottom:4px">🔬</div>
         <div style="font-size:0.78rem;font-weight:600;color:var(--text-secondary)">PCB Image-to-BOM Analysis</div>
-        <div style="font-size:0.68rem;color:var(--text-muted);margin-top:2px">Upload a PCB photo or silkscreen image — 4-stage AI pipeline detects components, builds BOM &amp; computes should-cost across 14 manufacturing countries</div>
+        <div style="font-size:0.68rem;color:var(--text-secondary);margin-top:2px;line-height:1.45">Upload a PCB photo or silkscreen image — 4-stage AI pipeline detects components, builds BOM &amp; computes should-cost across 14 manufacturing countries</div>
 
         <!-- Manufacturing Country Selector -->
         <div style="margin-top:10px;display:flex;align-items:center;gap:8px;justify-content:center;flex-wrap:wrap">
@@ -6605,7 +6605,7 @@ function buildPCBImageUploadZone(): string {
 
         <!-- Multi-image slots: Top, Bottom, + 3 Additional -->
         <div style="margin-top:10px">
-          <div style="font-size:0.68rem;color:var(--text-muted);margin-bottom:6px;text-align:center">
+          <div style="font-size:0.68rem;color:var(--text-secondary);margin-bottom:6px;text-align:center">
             Upload up to 5 photos — top &amp; bottom sides + close-ups for best accuracy
           </div>
           <div style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap">
@@ -6638,11 +6638,11 @@ function buildPCBImageUploadZone(): string {
         <!-- BOM/netlist file upload — attaching a BOM file significantly improves cost accuracy -->
         <div style="margin-top:10px;padding:10px 12px;background:rgba(230,81,0,0.06);border:1px dashed rgba(230,81,0,0.35);border-radius:8px">
           <div style="font-size:0.72rem;font-weight:600;color:var(--accent);margin-bottom:4px">📋 Attach BOM File — Recommended for better cost accuracy</div>
-          <div style="font-size:0.65rem;color:var(--text-muted);margin-bottom:8px">Uploading your BOM (.csv / .xml / .txt) locks in real part numbers and quantities, removing AI guesswork on component pricing. Without a BOM, AI extracts from the image only.</div>
+          <div style="font-size:0.68rem;color:var(--text-secondary);margin-bottom:8px;line-height:1.45">Uploading your BOM (.csv / .xml / .txt) locks in real part numbers and quantities, removing AI guesswork on component pricing. Without a BOM, AI extracts from the image only.</div>
           <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
             <input type="file" id="pcb-bom-input" accept=".csv,.xml,.txt" style="display:none"/>
             <button class="btn btn-primary btn-sm" id="pcb-bom-pick-btn" style="font-size:0.68rem;padding:4px 12px">📋 Attach BOM File</button>
-            <span id="pcb-bom-filename" style="font-size:0.65rem;color:var(--text-muted);font-style:italic">No file selected — AI will infer BOM from image</span>
+            <span id="pcb-bom-filename" style="font-size:0.66rem;color:var(--text-secondary);font-style:italic">No file selected — AI will infer BOM from image</span>
           </div>
         </div>
 
@@ -6656,9 +6656,9 @@ function buildPCBImageUploadZone(): string {
 
         <!-- Live Pricing (optional, collapsible) -->
         <details style="margin-top:8px;text-align:left">
-          <summary style="font-size:0.68rem;color:var(--text-muted);cursor:pointer;user-select:none">⚡ Live Component Pricing (optional)</summary>
-          <div style="margin-top:6px;padding:8px;background:var(--border);border-radius:6px;font-size:0.70rem">
-            <div style="color:var(--text-muted);margin-bottom:6px">Fetch real-time distributor prices for identified IC part numbers. Requires an API key from your chosen provider.</div>
+          <summary style="font-size:0.68rem;color:var(--text-secondary);cursor:pointer;user-select:none">⚡ Live Component Pricing (optional)</summary>
+          <div style="margin-top:6px;padding:8px;background:var(--surface-elevated);border:1px solid var(--border);border-radius:6px;font-size:0.70rem">
+            <div style="color:var(--text-secondary);margin-bottom:6px;line-height:1.45">Fetch real-time distributor prices for identified IC part numbers. Requires an API key from your chosen provider.</div>
             <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-bottom:6px">
               <label style="white-space:nowrap;font-weight:600">Provider:</label>
               <select id="pcb-live-provider" style="font-size:0.70rem;padding:2px 6px;border:1px solid var(--border);border-radius:3px;background:var(--card-bg)">
