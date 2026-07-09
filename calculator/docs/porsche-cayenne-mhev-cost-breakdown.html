@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Porsche Cayenne Electric (2026) — Software Should-Cost Breakdown</title>
+<title>Porsche Cayenne 48V (2026) — Software Should-Cost Breakdown</title>
 <style>
   :root{
     --paper:#EEF2F6; --surface:#FFFFFF; --surface-2:#F6F9FC;
@@ -255,13 +255,13 @@
   <header class="hero">
     <div class="kd"><span>CostVision Should-Cost</span><span class="dot"></span><span>Confidential — Management Review</span><span class="dot"></span><span>GBP</span></div>
     <div class="eyebrow" style="margin-top:22px">Programme Software Cost Breakdown</div>
-    <h1>Porsche Cayenne <span class="accent">Electric</span><br>software should-cost</h1>
-    <p class="sub">A full bottom-up teardown of the vehicle's embedded software programme — 49 modules, every parameter, traced from person-months to the last pound.</p>
+    <h1>Porsche Cayenne <span class="accent">48V</span><br>software should-cost</h1>
+    <p class="sub">A full bottom-up teardown of the vehicle's embedded software programme — 42 modules, every parameter, traced from person-months to the last pound.</p>
     <div class="herofig stagger">
-      <div class="hf money"><div class="k">Programme total</div><div class="v"><span class="cu" data-to="616.1" data-dec="1" data-pre="£" data-suf="M">£0M</span></div><div class="s">point estimate · 49 modules</div></div>
-      <div class="hf money"><div class="k">Per vehicle</div><div class="v"><span class="cu" data-to="1540" data-pre="£">£0</span></div><div class="s">400,000 units (50k × 8yr)</div></div>
-      <div class="hf"><div class="k">NRE (one-off)</div><div class="v"><span class="cu" data-to="400.4" data-dec="1" data-pre="£" data-suf="M">£0M</span></div><div class="s">65% of programme</div></div>
-      <div class="hf"><div class="k">Lifecycle (8yr)</div><div class="v"><span class="cu" data-to="215.8" data-dec="1" data-pre="£" data-suf="M">£0M</span></div><div class="s">maintenance + cloud + IP</div></div>
+      <div class="hf money"><div class="k">Programme total</div><div class="v"><span class="cu" data-to="456.1" data-dec="1" data-pre="£" data-suf="M">£0M</span></div><div class="s">point estimate · 42 modules</div></div>
+      <div class="hf money"><div class="k">Per vehicle</div><div class="v"><span class="cu" data-to="1140" data-pre="£">£0</span></div><div class="s">400,000 units (50k × 8yr)</div></div>
+      <div class="hf"><div class="k">NRE (one-off)</div><div class="v"><span class="cu" data-to="277.6" data-dec="1" data-pre="£" data-suf="M">£0M</span></div><div class="s">61% of programme</div></div>
+      <div class="hf"><div class="k">Lifecycle (8yr)</div><div class="v"><span class="cu" data-to="178.5" data-dec="1" data-pre="£" data-suf="M">£0M</span></div><div class="s">maintenance + cloud + IP</div></div>
     </div>
   </header>
 
@@ -269,7 +269,7 @@
     <div class="reveal"><div class="eyebrow">The starting point</div><h2><span class="n">01</span>What we costed</h2>
       <p class="lede">The estimate is driven by seven macro parameters describing the programme. These are the only judgement inputs — everything downstream is derived mechanically from them and the sourced rate library.</p></div>
     <div class="card reveal">
-      <div class="card-h"><span class="t">Programme parameters — Porsche Cayenne Electric (2026)</span><span class="s">E4 · PPE 800V platform · Porsche Driver Experience</span></div>
+      <div class="card-h"><span class="t">Programme parameters — Porsche Cayenne 48V (2026)</span><span class="s">MLB Evo · PCM · 48V mild-hybrid powertrain</span></div>
       <div class="inp">
         <div class="row"><div class="l">Development region<span>sets the labour rate</span></div><div class="val">European Union (0.95×)</div></div>
         <div class="row"><div class="l">Development source<span>OEM vs supplier efficiency</span></div><div class="val">OEM in-house (1.00×)</div></div>
@@ -278,10 +278,10 @@
         <div class="row"><div class="l">Overhead multiplier<span>facilities, IT, management</span></div><div class="val">1.62×</div></div>
         <div class="row"><div class="l">Senior-engineer fraction<span>blends the day-rate</span></div><div class="val">60%</div></div>
         <div class="row"><div class="l">Baseline reuse<span>carry-forward vs greenfield</span></div><div class="val">Medium (0.60×)</div></div>
-        <div class="row"><div class="l">Modules enabled<span>of 49 in the catalogue</span></div><div class="val">49 of 49</div></div>
+        <div class="row"><div class="l">Modules enabled<span>of 49 in the catalogue</span></div><div class="val">42 of 49</div></div>
       </div>
     </div>
-    <p class="note reveal">Full battery-electric (BEV) — the full EV powertrain software stack (BMS, charging, drive-unit, inverter, motor control) is in scope. Premium software is switched on: Porsche 4D Chassis Control + torque vectoring, Porsche Active Ride, 800V 270 kW+ high-power charging, Burmester High-End 3D audio, park assist + 360, digital key, HUD.</p>
+    <p class="note reveal">ICE + 48V mild hybrid (MHEV) — the high-voltage battery / charge / drive modules are not applicable and are disabled; 48V regen and battery-thermal software are retained. Premium software is switched on: Porsche 4D Chassis Control + torque vectoring, Porsche Active Ride, Burmester High-End 3D audio, park assist + 360, digital key, HUD.</p>
   </section>
 
   <section>
@@ -289,7 +289,7 @@
       <p class="lede">No figure is guessed at the top. The programme is broken into modules, each is costed from first principles, results roll up, then the total is stress-tested for risk and sanity.</p></div>
     <div class="card reveal" style="padding:30px 18px 26px;">
       <div class="flow" id="flow">
-        <div class="fnode"><div class="fline"></div><div class="disc">1</div><h4>Decompose</h4><p>Programme → 49 active modules across 7 domains</p></div>
+        <div class="fnode"><div class="fline"></div><div class="disc">1</div><h4>Decompose</h4><p>Programme → 42 active modules across 7 domains</p></div>
         <div class="fnode"><div class="fline"></div><div class="disc">2</div><h4>Cost each</h4><p>Effort × sourced rate → dev / test / lifecycle</p></div>
         <div class="fnode"><div class="fline"></div><div class="disc">3</div><h4>Roll up</h4><p>Sum to total, NRE &amp; £/vehicle</p></div>
         <div class="fnode"><div class="fline"></div><div class="disc">4</div><h4>Simulate</h4><p>1,000 correlated runs → P10 / P50 / P90</p></div>
@@ -299,15 +299,15 @@
   </section>
 
   <section>
-    <div class="reveal"><div class="eyebrow">Stage 2, in full — one module, every parameter</div><h2><span class="n">03</span>Anatomy of a calculation: BMS Core Software</h2>
-      <p class="lede">This is the exact chain the engine runs for the largest single line in this programme (£48.9M). Every one of the 49 modules is costed by this identical formula; only the inputs change.</p></div>
+    <div class="reveal"><div class="eyebrow">Stage 2, in full — one module, every parameter</div><h2><span class="n">03</span>Anatomy of a calculation: Camera Perception Stack</h2>
+      <p class="lede">This is the exact chain the engine runs for the largest single line in this programme (£43.5M). Every one of the 42 modules is costed by this identical formula; only the inputs change.</p></div>
     
     <div class="card reveal" style="margin-bottom:16px;">
       <div class="card-h"><span class="t">① Effort — how much engineering</span><span class="s">person-months</span></div>
       <div class="chain">
-        <div class="cstep"><div class="lbl"><span class="k">Base effort</span><span class="f">catalogue size for a fresh build at ASIL-D</span></div><div class="out">90.0 PM</div></div>
-        <div class="cstep"><div class="lbl"><span class="k">× Reuse — Medium 0.60</span></div><div class="out">54.0 PM</div></div>
-        <div class="cstep tot"><div class="lbl"><span class="k">× ASIL-D dev overhead 3.20</span></div><div class="out">172.8 PM</div></div>
+        <div class="cstep"><div class="lbl"><span class="k">Base effort</span><span class="f">catalogue size for a fresh build at ASIL-B</span></div><div class="out">130.0 PM</div></div>
+        <div class="cstep"><div class="lbl"><span class="k">× Reuse — Medium 0.60</span></div><div class="out">78.0 PM</div></div>
+        <div class="cstep tot"><div class="lbl"><span class="k">× ASIL-B dev overhead 1.80</span></div><div class="out">140.4 PM</div></div>
       </div>
     </div>
     <div class="card reveal" style="margin-bottom:16px;">
@@ -321,59 +321,52 @@
       </div>
     </div>
     <div class="card reveal" style="margin-bottom:16px;">
-      <div class="card-h"><span class="t">③ Development — split into engineering buckets</span><span class="s">£11.4M</span></div>
+      <div class="card-h"><span class="t">③ Development — split into engineering buckets</span><span class="s">£9.2M</span></div>
       <div class="chain">
         <div class="cstep head"><div class="lbl">bucket · share × modifier</div><div class="out">cost</div></div>
-        <div class="cstep money sub"><div class="lbl"><span class="k">Requirements</span> · 12%</div><div class="out">£0.9M</div></div>
-        <div class="cstep money sub"><div class="lbl"><span class="k">Architecture</span> · 14%</div><div class="out">£1.1M</div></div>
-        <div class="cstep money sub"><div class="lbl"><span class="k">Algorithms</span> · 22% × complexity 2.80</div><div class="out">£4.7M</div></div>
-        <div class="cstep money sub"><div class="lbl"><span class="k">Implementation</span> · 37% × 1.270</div><div class="out">£3.6M</div></div>
-        <div class="cstep money sub"><div class="lbl"><span class="k">Safety compliance</span> · 15% (floored)</div><div class="out">£1.1M</div></div>
-        <div class="cstep tot"><div class="lbl"><span class="k">Development total</span> · 172.8 PM × £43,954 (weighted)</div><div class="out">£11.4M</div></div>
+        <div class="cstep money sub"><div class="lbl"><span class="k">Requirements</span> · 12%</div><div class="out">£0.7M</div></div>
+        <div class="cstep money sub"><div class="lbl"><span class="k">Architecture</span> · 14%</div><div class="out">£0.9M</div></div>
+        <div class="cstep money sub"><div class="lbl"><span class="k">Algorithms</span> · 22% × complexity 2.80</div><div class="out">£3.8M</div></div>
+        <div class="cstep money sub"><div class="lbl"><span class="k">Implementation</span> · 37% × 1.270</div><div class="out">£2.9M</div></div>
+        <div class="cstep money sub"><div class="lbl"><span class="k">Safety compliance</span> · 15%</div><div class="out">£0.9M</div></div>
+        <div class="cstep tot"><div class="lbl"><span class="k">Development total</span> · 140.4 PM × £43,954 (weighted)</div><div class="out">£9.2M</div></div>
       </div>
     </div>
     <div class="card reveal" style="margin-bottom:16px;">
       <div class="card-h"><span class="t">④ Verification, integration &amp; one-off costs</span><span class="s">NRE add-ons</span></div>
       <div class="chain">
-        <div class="cstep money"><div class="lbl"><span class="k">Testing</span><span class="f">frac 0.40 × (ASIL-D 1.80 ÷ 0.38 ref) = 1.9× dev</span></div><div class="out">£21.5M</div></div>
-        <div class="cstep money"><div class="lbl"><span class="k">Integration</span><span class="f">18% of dev</span></div><div class="out">£2.0M</div></div>
-        <div class="cstep money"><div class="lbl"><span class="k">Cybersecurity</span><span class="f">14% (ASIL-D) — ISO 21434</span></div><div class="out">£1.6M</div></div>
-        <div class="cstep money"><div class="lbl"><span class="k">Calibration</span><span class="f">8% — model fitting / proving ground</span></div><div class="out">£0.9M</div></div>
-        <div class="cstep money"><div class="lbl"><span class="k">Dev toolchain</span><span class="f">£52,000/yr × 8</span></div><div class="out">£0.4M</div></div>
+        <div class="cstep money"><div class="lbl"><span class="k">Testing</span><span class="f">frac 0.50 × (ASIL-B 0.85 ÷ 0.38 ref) = 1.1× dev</span></div><div class="out">£10.3M</div></div>
+        <div class="cstep money"><div class="lbl"><span class="k">Integration</span><span class="f">20% of dev</span></div><div class="out">£1.8M</div></div>
+        <div class="cstep money"><div class="lbl"><span class="k">Cybersecurity</span><span class="f">8% (ASIL-B) — ISO 21434</span></div><div class="out">£0.7M</div></div>
+        <div class="cstep money"><div class="lbl"><span class="k">Calibration</span><span class="f">6% — model fitting / proving ground</span></div><div class="out">£0.6M</div></div>
+        <div class="cstep money"><div class="lbl"><span class="k">Dev toolchain</span><span class="f">£108,000/yr × 8</span></div><div class="out">£0.9M</div></div>
       </div>
     </div>
     <div class="card reveal">
       <div class="card-h"><span class="t">⑤ Lifecycle &amp; totals</span><span class="s">8-year window</span></div>
       <div class="chain">
-        <div class="cstep money"><div class="lbl"><span class="k">Maintenance</span><span class="f">12%/yr of dev × 8 years</span></div><div class="out">£10.9M</div></div>
-        
-        <div class="cstep money"><div class="lbl"><span class="k">Embedded IP licence</span><span class="f">£18,000/yr × 8</span></div><div class="out">£0.1M</div></div>
-        <div class="cstep tot"><div class="lbl"><span class="k">Non-recurring engineering (NRE)</span></div><div class="out">£37.8M</div></div>
-        <div class="cstep tot"><div class="lbl"><span class="k">Lifecycle total</span></div><div class="out">£11.1M</div></div>
-        <div class="cstep grand"><div class="lbl"><span class="k">BMS Core Software grand total</span><span class="f">£122 per vehicle over 400,000 units</span></div><div class="out">£48.9M</div></div>
+        <div class="cstep money"><div class="lbl"><span class="k">Maintenance</span><span class="f">16%/yr of dev × 8 years</span></div><div class="out">£11.8M</div></div>
+        <div class="cstep money"><div class="lbl"><span class="k">Cloud ops</span><span class="f">8-year operational</span></div><div class="out">£6.8M</div></div>
+        <div class="cstep money"><div class="lbl"><span class="k">Embedded IP licence</span><span class="f">£160,000/yr × 8</span></div><div class="out">£1.3M</div></div>
+        <div class="cstep tot"><div class="lbl"><span class="k">Non-recurring engineering (NRE)</span></div><div class="out">£23.6M</div></div>
+        <div class="cstep tot"><div class="lbl"><span class="k">Lifecycle total</span></div><div class="out">£19.9M</div></div>
+        <div class="cstep grand"><div class="lbl"><span class="k">Camera Perception Stack grand total</span><span class="f">£109 per vehicle over 400,000 units</span></div><div class="out">£43.5M</div></div>
       </div>
     </div>
-    <p class="note reveal" style="margin-top:14px;">Read across all 49 modules and the same five steps repeat — different base effort, ASIL, complexity and reuse each time. The next table shows every one.</p>
+    <p class="note reveal" style="margin-top:14px;">Read across all 42 modules and the same five steps repeat — different base effort, ASIL, complexity and reuse each time. The next table shows every one.</p>
   </section>
 
   <section>
-    <div class="reveal"><div class="eyebrow">Stage 2 × 49 — the complete teardown</div><h2><span class="n">04</span>Every module, costed</h2>
-      <p class="lede">All 49 active modules, grouped by domain and ranked by cost within each. "Other NRE" folds integration, cybersecurity, calibration and toolchain; "Lifecycle" folds 8-year maintenance, cloud and IP licence.</p></div>
+    <div class="reveal"><div class="eyebrow">Stage 2 × 42 — the complete teardown</div><h2><span class="n">04</span>Every module, costed</h2>
+      <p class="lede">All 42 active modules, grouped by domain and ranked by cost within each. "Other NRE" folds integration, cybersecurity, calibration and toolchain; "Lifecycle" folds 8-year maintenance, cloud and IP licence.</p></div>
     <div class="card reveal">
-      <div class="card-h"><span class="t">Module-level cost breakdown</span><span class="s">£M · 49 modules · 7 domains</span></div>
+      <div class="card-h"><span class="t">Module-level cost breakdown</span><span class="s">£M · 42 modules · 7 domains</span></div>
       <div class="tblwrap"><table class="big">
         <thead><tr><th>Module / domain</th><th>ASIL</th><th>Cx</th><th>Reuse</th><th>Dev&nbsp;PM</th><th>Development</th><th>Testing</th><th>Other&nbsp;NRE</th><th>Lifecycle</th><th>Total</th></tr></thead>
         <tbody>
-<tr class="catrow"><td class="cn"><span class="cc cc-A">A</span>EV Powertrain & Battery</td><td class="ce sm">9 mod</td><td></td><td></td><td class="num">645</td><td class="num">£41.2M</td><td class="num">£72.3M</td><td class="num">£16.6M</td><td class="num">£39.9M</td><td class="num tot">£169.9M</td></tr>
-<tr><td class="mn">BMS Core Software</td><td class="ce"><span class="pill asil-D">D</span></td><td class="ce sm">Very High</td><td class="ce sm">Medium</td><td class="num">172.8</td><td class="num">£11.4M</td><td class="num">£21.5M</td><td class="num">£5.0M</td><td class="num">£11.1M</td><td class="num tot">£48.9M</td></tr>
-<tr><td class="mn">EDU (Electric Drive Unit) Control Software</td><td class="ce"><span class="pill asil-D">D</span></td><td class="ce sm">Very High</td><td class="ce sm">Medium</td><td class="num">124.8</td><td class="num">£8.2M</td><td class="num">£16.3M</td><td class="num">£4.2M</td><td class="num">£8.1M</td><td class="num tot">£36.8M</td></tr>
-<tr><td class="mn">Inverter Control Algorithms</td><td class="ce"><span class="pill asil-D">D</span></td><td class="ce sm">Very High</td><td class="ce sm">Medium</td><td class="num">86.4</td><td class="num">£5.7M</td><td class="num">£11.3M</td><td class="num">£2.0M</td><td class="num">£4.7M</td><td class="num tot">£23.6M</td></tr>
-<tr><td class="mn">Motor Control (FOC/DTC/SVPWM)</td><td class="ce"><span class="pill asil-D">D</span></td><td class="ce sm">Very High</td><td class="ce sm">Medium</td><td class="num">80.6</td><td class="num">£5.3M</td><td class="num">£10.5M</td><td class="num">£1.9M</td><td class="num">£4.3M</td><td class="num tot">£22.1M</td></tr>
-<tr><td class="mn">SOC/SOH/SOE Estimation Models</td><td class="ce"><span class="pill asil-C">C</span></td><td class="ce sm">Very High</td><td class="ce sm">Medium</td><td class="num">58.0</td><td class="num">£3.8M</td><td class="num">£5.1M</td><td class="num">£1.2M</td><td class="num">£5.4M</td><td class="num tot">£15.5M</td></tr>
-<tr><td class="mn">Fast-Charging Control Software</td><td class="ce"><span class="pill asil-C">C</span></td><td class="ce sm">Very High</td><td class="ce sm">Medium</td><td class="num">34.5</td><td class="num">£2.3M</td><td class="num">£2.7M</td><td class="num">£0.8M</td><td class="num">£2.5M</td><td class="num tot">£8.3M</td></tr>
+<tr class="catrow"><td class="cn"><span class="cc cc-A">A</span>EV Powertrain & Battery</td><td class="ce sm">2 mod</td><td></td><td></td><td class="num">60</td><td class="num">£3.1M</td><td class="num">£3.1M</td><td class="num">£1.1M</td><td class="num">£2.6M</td><td class="num tot">£9.9M</td></tr>
 <tr><td class="mn">Battery Thermal Management Software</td><td class="ce"><span class="pill asil-B">B</span></td><td class="ce sm">High</td><td class="ce sm">Medium</td><td class="num">32.4</td><td class="num">£1.7M</td><td class="num">£1.3M</td><td class="num">£0.6M</td><td class="num">£1.4M</td><td class="num tot">£5.0M</td></tr>
 <tr><td class="mn">Regenerative Braking Software</td><td class="ce"><span class="pill asil-C">C</span></td><td class="ce sm">High</td><td class="ce sm">Medium</td><td class="num">27.6</td><td class="num">£1.4M</td><td class="num">£1.7M</td><td class="num">£0.5M</td><td class="num">£1.2M</td><td class="num tot">£4.9M</td></tr>
-<tr><td class="mn">Cell Balancing Algorithms</td><td class="ce"><span class="pill asil-C">C</span></td><td class="ce sm">High</td><td class="ce sm">Medium</td><td class="num">27.6</td><td class="num">£1.4M</td><td class="num">£1.7M</td><td class="num">£0.4M</td><td class="num">£1.2M</td><td class="num tot">£4.8M</td></tr>
 <tr class="catrow"><td class="cn"><span class="cc cc-B">B</span>ADAS L2/L2+</td><td class="ce sm">9 mod</td><td></td><td></td><td class="num">802</td><td class="num">£50.1M</td><td class="num">£72.2M</td><td class="num">£18.9M</td><td class="num">£76.7M</td><td class="num tot">£217.9M</td></tr>
 <tr><td class="mn">Camera Perception Stack</td><td class="ce"><span class="pill asil-B">B</span></td><td class="ce sm">Very High</td><td class="ce sm">Medium</td><td class="num">140.4</td><td class="num">£9.2M</td><td class="num">£10.3M</td><td class="num">£4.0M</td><td class="num">£19.9M</td><td class="num tot">£43.5M</td></tr>
 <tr><td class="mn">Sensor Fusion Engine</td><td class="ce"><span class="pill asil-C">C</span></td><td class="ce sm">Very High</td><td class="ce sm">Medium</td><td class="num">131.1</td><td class="num">£8.6M</td><td class="num">£13.6M</td><td class="num">£3.2M</td><td class="num">£13.1M</td><td class="num tot">£38.5M</td></tr>
@@ -421,40 +414,40 @@
 <tr><td class="mn">Data Pipeline &amp; Telemetry</td><td class="ce"><span class="pill asil-QM">QM</span></td><td class="ce sm">High</td><td class="ce sm">Medium</td><td class="num">18.0</td><td class="num">£0.9M</td><td class="num">£0.3M</td><td class="num">£0.5M</td><td class="num">£4.1M</td><td class="num tot">£5.8M</td></tr>
 <tr><td class="mn">Fleet Management &amp; Analytics Software</td><td class="ce"><span class="pill asil-QM">QM</span></td><td class="ce sm">Medium</td><td class="ce sm">Medium</td><td class="num">12.0</td><td class="num">£0.5M</td><td class="num">£0.1M</td><td class="num">£0.2M</td><td class="num">£2.6M</td><td class="num tot">£3.5M</td></tr>
         </tbody>
-        <tfoot><tr class="catrow"><td class="cn" style="font-size:.95rem">PROGRAMME TOTAL</td><td class="ce sm">49 mod</td><td></td><td></td><td class="num">—</td><td class="num">£149.5M</td><td class="num">£189.1M</td><td class="num">£61.8M</td><td class="num">£215.8M</td><td class="num tot" style="font-size:.95rem">£616.1M</td></tr></tfoot>
+        <tfoot><tr class="catrow"><td class="cn" style="font-size:.95rem">PROGRAMME TOTAL</td><td class="ce sm">42 mod</td><td></td><td></td><td class="num">—</td><td class="num">£111.4M</td><td class="num">£119.9M</td><td class="num">£46.3M</td><td class="num">£178.5M</td><td class="num tot" style="font-size:.95rem">£456.1M</td></tr></tfoot>
       </table></div>
     </div>
   </section>
 
   <section>
     <div class="reveal"><div class="eyebrow">Stage 3 — roll-up</div><h2><span class="n">05</span>Where the money goes</h2>
-      <p class="lede">Two views of the same £616.1M: by vehicle domain (which systems), and by cost type (which activities).</p></div>
+      <p class="lede">Two views of the same £456.1M: by vehicle domain (which systems), and by cost type (which activities).</p></div>
     <div class="two">
       <div class="card reveal"><div class="card-h"><span class="t">By vehicle domain</span></div><div class="bars" id="catbars">
-    <div class="brow"><div class="bl">ADAS L2 / L2+<span>CATEGORY B</span></div><div class="btrack"><div class="bfill" data-w="100" style="background:var(--a-B)"></div></div><div class="bv"><b>£217.9M</b> 35.4%</div></div>
-    <div class="brow"><div class="bl">EV Powertrain<span>CATEGORY A</span></div><div class="btrack"><div class="bfill" data-w="78" style="background:var(--a-A)"></div></div><div class="bv"><b>£169.9M</b> 27.6%</div></div>
-    <div class="brow"><div class="bl">Domain Controllers<span>CATEGORY D</span></div><div class="btrack"><div class="bfill" data-w="39" style="background:var(--a-D)"></div></div><div class="bv"><b>£85.1M</b> 13.8%</div></div>
-    <div class="brow"><div class="bl">Infotainment & UX<span>CATEGORY C</span></div><div class="btrack"><div class="bfill" data-w="33" style="background:var(--a-C)"></div></div><div class="bv"><b>£71.8M</b> 11.7%</div></div>
-    <div class="brow"><div class="bl">OTA & Cloud<span>CATEGORY G</span></div><div class="btrack"><div class="bfill" data-w="16" style="background:var(--a-G)"></div></div><div class="bv"><b>£35.8M</b> 5.8%</div></div>
-    <div class="brow"><div class="bl">Cybersecurity<span>CATEGORY F</span></div><div class="btrack"><div class="bfill" data-w="9" style="background:var(--a-F)"></div></div><div class="bv"><b>£19.7M</b> 3.2%</div></div>
-    <div class="brow"><div class="bl">Middleware & Platform<span>CATEGORY E</span></div><div class="btrack"><div class="bfill" data-w="7" style="background:var(--a-E)"></div></div><div class="bv"><b>£16.0M</b> 2.6%</div></div></div></div>
-      <div class="card reveal"><div class="card-h"><span class="t">By cost type</span></div><div class="stack"><div class="si"><div class="l">Testing & V&V</div><div class="v">£189.1M</div></div><div class="si"><div class="l">Maintenance <small>8yr</small></div><div class="v">£155.2M</div></div><div class="si"><div class="l">Development</div><div class="v">£149.5M</div></div><div class="si"><div class="l">Cloud ops <small>8yr</small></div><div class="v">£41.7M</div></div><div class="si"><div class="l">Integration</div><div class="v">£27.4M</div></div><div class="si"><div class="l">IP licences <small>8yr</small></div><div class="v">£18.9M</div></div><div class="si"><div class="l">Toolchain <small>8yr</small></div><div class="v">£15.6M</div></div><div class="si"><div class="l">Calibration</div><div class="v">£12.5M</div></div><div class="si"><div class="l">Cybersecurity</div><div class="v">£6.4M</div></div><div class="si sub"><div class="l"><b>NRE subtotal</b></div><div class="v">£400.4M</div></div><div class="si sub"><div class="l"><b>Lifecycle subtotal</b></div><div class="v">£215.8M</div></div></div></div>
+    <div class="brow"><div class="bl">ADAS L2 / L2+<span>CATEGORY B</span></div><div class="btrack"><div class="bfill" data-w="100" style="background:var(--a-B)"></div></div><div class="bv"><b>£217.9M</b> 47.8%</div></div>
+    <div class="brow"><div class="bl">Domain Controllers<span>CATEGORY D</span></div><div class="btrack"><div class="bfill" data-w="39" style="background:var(--a-D)"></div></div><div class="bv"><b>£85.1M</b> 18.7%</div></div>
+    <div class="brow"><div class="bl">Infotainment & UX<span>CATEGORY C</span></div><div class="btrack"><div class="bfill" data-w="33" style="background:var(--a-C)"></div></div><div class="bv"><b>£71.8M</b> 15.7%</div></div>
+    <div class="brow"><div class="bl">OTA & Cloud<span>CATEGORY G</span></div><div class="btrack"><div class="bfill" data-w="16" style="background:var(--a-G)"></div></div><div class="bv"><b>£35.8M</b> 7.9%</div></div>
+    <div class="brow"><div class="bl">Cybersecurity<span>CATEGORY F</span></div><div class="btrack"><div class="bfill" data-w="9" style="background:var(--a-F)"></div></div><div class="bv"><b>£19.7M</b> 4.3%</div></div>
+    <div class="brow"><div class="bl">Middleware & Platform<span>CATEGORY E</span></div><div class="btrack"><div class="bfill" data-w="7" style="background:var(--a-E)"></div></div><div class="bv"><b>£16.0M</b> 3.5%</div></div>
+    <div class="brow"><div class="bl">EV Powertrain<span>CATEGORY A</span></div><div class="btrack"><div class="bfill" data-w="5" style="background:var(--a-A)"></div></div><div class="bv"><b>£9.9M</b> 2.2%</div></div></div></div>
+      <div class="card reveal"><div class="card-h"><span class="t">By cost type</span></div><div class="stack"><div class="si"><div class="l">Maintenance <small>8yr</small></div><div class="v">£120.1M</div></div><div class="si"><div class="l">Testing & V&V</div><div class="v">£119.9M</div></div><div class="si"><div class="l">Development</div><div class="v">£111.4M</div></div><div class="si"><div class="l">Cloud ops <small>8yr</small></div><div class="v">£40.5M</div></div><div class="si"><div class="l">Integration</div><div class="v">£20.7M</div></div><div class="si"><div class="l">IP licences <small>8yr</small></div><div class="v">£18.0M</div></div><div class="si"><div class="l">Toolchain <small>8yr</small></div><div class="v">£13.6M</div></div><div class="si"><div class="l">Calibration</div><div class="v">£8.6M</div></div><div class="si"><div class="l">Cybersecurity</div><div class="v">£3.4M</div></div><div class="si sub"><div class="l"><b>NRE subtotal</b></div><div class="v">£277.6M</div></div><div class="si sub"><div class="l"><b>Lifecycle subtotal</b></div><div class="v">£178.5M</div></div></div></div>
     </div>
   </section>
 
   <section>
     <div class="reveal"><div class="eyebrow">Cash-flow shape</div><h2><span class="n">06</span>When the NRE is spent</h2>
-      <p class="lede">The £400.4M of one-off engineering spreads across a 90-month programme. Series development is the peak-burn phase — half the entire NRE budget.</p></div>
-    <div class="card reveal"><div class="card-h"><span class="t">NRE spend by programme phase</span><span class="s">£400.4M over 90 months</span></div>
-      <div class="phases" id="phases"><div class="ph"><div class="v">£20.0M</div><div class="bar" data-h="10"></div><div class="nm">Feasibility</div><div class="mo">M1–M6 · 5%</div></div><div class="ph"><div class="v">£60.1M</div><div class="bar" data-h="30"></div><div class="nm">Concept / Architecture</div><div class="mo">M7–M18 · 15%</div></div><div class="ph"><div class="v">£200.2M</div><div class="bar" data-h="100"></div><div class="nm">Series Development</div><div class="mo">M19–M54 · 50%</div></div><div class="ph"><div class="v">£80.1M</div><div class="bar" data-h="40"></div><div class="nm">Validation &amp; V&amp;V</div><div class="mo">M55–M78 · 20%</div></div><div class="ph"><div class="v">£40.0M</div><div class="bar" data-h="20"></div><div class="nm">Ramp / SOP</div><div class="mo">M79–M90 · 10%</div></div></div></div>
+      <p class="lede">The £277.6M of one-off engineering spreads across a 90-month programme. Series development is the peak-burn phase — half the entire NRE budget.</p></div>
+    <div class="card reveal"><div class="card-h"><span class="t">NRE spend by programme phase</span><span class="s">£277.6M over 90 months</span></div>
+      <div class="phases" id="phases"><div class="ph"><div class="v">£13.9M</div><div class="bar" data-h="10"></div><div class="nm">Feasibility</div><div class="mo">M1–M6 · 5%</div></div><div class="ph"><div class="v">£41.6M</div><div class="bar" data-h="30"></div><div class="nm">Concept / Architecture</div><div class="mo">M7–M18 · 15%</div></div><div class="ph"><div class="v">£138.8M</div><div class="bar" data-h="100"></div><div class="nm">Series Development</div><div class="mo">M19–M54 · 50%</div></div><div class="ph"><div class="v">£55.5M</div><div class="bar" data-h="40"></div><div class="nm">Validation &amp; V&amp;V</div><div class="mo">M55–M78 · 20%</div></div><div class="ph"><div class="v">£27.8M</div><div class="bar" data-h="20"></div><div class="nm">Ramp / SOP</div><div class="mo">M79–M90 · 10%</div></div></div></div>
   </section>
 
   <section>
     <div class="reveal"><div class="eyebrow">Stage 4a — what moves the number</div><h2><span class="n">07</span>The biggest levers</h2>
-      <p class="lede">Each bar swings one input across its plausible range while holding the rest at base (£616.1M, black line). Region and reuse dominate.</p></div>
-    <div class="card reveal"><div class="card-h"><span class="t">Single-parameter sensitivity</span><span class="s">£M · base £616.1M</span></div>
-      <div class="torn" id="torn" data-min="150" data-max="1200" data-base="616.1"><div class="trow"><div class="tl">Region<span>India ↔ Silicon Valley</span></div><div class="tbar" data-lo="189.827049779361" data-hi="1127.71221045909"><div class="seg" style="left:3.8%;width:89.3%"></div><div class="base" style="left:44.4%"></div><div class="lo">£190M</div><div class="hi">£1128M</div></div></div><div class="trow"><div class="tl">ASIL rigour<span>all-B ↔ all-D</span></div><div class="tbar" data-lo="534.7144625287343" data-hi="1152.033475433497"><div class="seg" style="left:36.6%;width:58.8%"></div><div class="base" style="left:44.4%"></div><div class="lo">£535M</div><div class="hi">£1152M</div></div></div><div class="trow"><div class="tl">Reuse level<span>Heavy ↔ Fresh</span></div><div class="tbar" data-lo="414.65617992126624" data-hi="1005.0516094197038"><div class="seg" style="left:25.2%;width:56.2%"></div><div class="base" style="left:44.4%"></div><div class="lo">£415M</div><div class="hi">£1005M</div></div></div><div class="trow"><div class="tl">Complexity<span>Medium ↔ Very High</span></div><div class="tbar" data-lo="462.5473127479169" data-hi="653.346417423529"><div class="seg" style="left:29.8%;width:18.2%"></div><div class="base" style="left:44.4%"></div><div class="lo">£463M</div><div class="hi">£653M</div></div></div><div class="trow"><div class="tl">Programme life<span>8 ↔ 14 years</span></div><div class="tbar" data-lo="616.1384864519652" data-hi="789.667869335303"><div class="seg" style="left:44.4%;width:16.5%"></div><div class="base" style="left:44.4%"></div><div class="lo">£616M</div><div class="hi">£790M</div></div></div></div></div>
-    <p class="note reveal" style="margin-top:12px;">Volume is a per-vehicle lever, not a total lever: at 50k/yr the cost is £1,540/car, at 150k/yr it is £513/car — the £616.1M programme is unchanged, just spread over more cars.</p>
+      <p class="lede">Each bar swings one input across its plausible range while holding the rest at base (£456.1M, black line). Region and reuse dominate.</p></div>
+    <div class="card reveal"><div class="card-h"><span class="t">Single-parameter sensitivity</span><span class="s">£M · base £456.1M</span></div>
+      <div class="torn" id="torn" data-min="150" data-max="1000" data-base="456.1"><div class="trow"><div class="tl">Region<span>India ↔ Silicon Valley</span></div><div class="tbar" data-lo="152.94438366880456" data-hi="819.8775489364418"><div class="seg" style="left:0.3%;width:78.5%"></div><div class="base" style="left:36.0%"></div><div class="lo">£153M</div><div class="hi">£820M</div></div></div><div class="trow"><div class="tl">ASIL rigour<span>all-B ↔ all-D</span></div><div class="tbar" data-lo="457.6425021924903" data-hi="974.8075943852282"><div class="seg" style="left:36.2%;width:60.8%"></div><div class="base" style="left:36.0%"></div><div class="lo">£458M</div><div class="hi">£975M</div></div></div><div class="trow"><div class="tl">Reuse level<span>Heavy ↔ Fresh</span></div><div class="tbar" data-lo="313.51287536862804" data-hi="741.0071693777978"><div class="seg" style="left:19.2%;width:50.3%"></div><div class="base" style="left:36.0%"></div><div class="lo">£314M</div><div class="hi">£741M</div></div></div><div class="trow"><div class="tl">Programme life<span>8 ↔ 14 years</span></div><div class="tbar" data-lo="456.09582242682154" data-hi="600.2142729885195"><div class="seg" style="left:36.0%;width:17.0%"></div><div class="base" style="left:36.0%"></div><div class="lo">£456M</div><div class="hi">£600M</div></div></div><div class="trow"><div class="tl">Complexity<span>Medium ↔ Very High</span></div><div class="tbar" data-lo="353.4291271499649" data-hi="492.11995958755307"><div class="seg" style="left:23.9%;width:16.3%"></div><div class="base" style="left:36.0%"></div><div class="lo">£353M</div><div class="hi">£492M</div></div></div></div></div>
+    <p class="note reveal" style="margin-top:12px;">Volume is a per-vehicle lever, not a total lever: at 50k/yr the cost is £1,140/car, at 150k/yr it is £380/car — the £456.1M programme is unchanged, just spread over more cars.</p>
   </section>
 
   <section>
@@ -462,27 +455,27 @@
       <p class="lede">1,000 correlated simulations (overruns move together, ρ=0.55) give the honest planning range. Budget to P50–P90, not to the headline.</p></div>
     <div class="card reveal"><div class="card-h"><span class="t">Monte-Carlo distribution — programme total</span><span class="s">1,000 runs · triangular ± per bucket</span></div>
       <div class="mct">
-        <div class="mc"><div class="p">P10 · OPTIMISTIC</div><div class="v">£574M</div><div class="s">£1,435 / vehicle</div></div>
-        <div class="mc p50"><div class="p">P50 · EXPECTED</div><div class="v">£634M</div><div class="s">£1,585 / vehicle</div></div>
-        <div class="mc"><div class="p">P90 · CONSERVATIVE</div><div class="v">£703M</div><div class="s">£1,758 / vehicle</div></div>
+        <div class="mc"><div class="p">P10 · OPTIMISTIC</div><div class="v">£426M</div><div class="s">£1,064 / vehicle</div></div>
+        <div class="mc p50"><div class="p">P50 · EXPECTED</div><div class="v">£472M</div><div class="s">£1,179 / vehicle</div></div>
+        <div class="mc"><div class="p">P90 · CONSERVATIVE</div><div class="v">£522M</div><div class="s">£1,304 / vehicle</div></div>
       </div>
       <div class="mctrack" id="mctrack">
         <div class="mcfill" data-l="22.2" data-w="55.6"></div>
-        <div class="mcm up" data-l="P10 £574M" style="left:22.2%"></div>
-        <div class="mcm" data-l="P50 £634M" style="left:48.0%"></div>
-        <div class="mcm up" data-l="P90 £703M" style="left:77.8%"></div>
+        <div class="mcm up" data-l="P10 £426M" style="left:22.2%"></div>
+        <div class="mcm" data-l="P50 £472M" style="left:48.8%"></div>
+        <div class="mcm up" data-l="P90 £522M" style="left:77.8%"></div>
       </div>
-      <div class="mc-axis" style="display:flex;justify-content:space-between;padding:0 18px 4px;font-family:var(--mono);font-size:.68rem;color:var(--ink-faint)"><span>£522M</span><span>1,000 correlated runs</span><span>£755M</span></div>
+      <div class="mc-axis" style="display:flex;justify-content:space-between;padding:0 18px 4px;font-family:var(--mono);font-size:.68rem;color:var(--ink-faint)"><span>£387M</span><span>1,000 correlated runs</span><span>£560M</span></div>
     </div>
-    <p class="note reveal" style="margin-top:12px;">90% confident the programme lands under ~£703M. The point estimate (£616.1M) sits near P50 — expected, given the right-skew of triangular cost distributions.</p>
+    <p class="note reveal" style="margin-top:12px;">90% confident the programme lands under ~£522M. The point estimate (£456.1M) sits near P50 — expected, given the right-skew of triangular cost distributions.</p>
   </section>
 
   <section>
     <div class="reveal"><div class="eyebrow">Stage 5 — sanity check</div><h2><span class="n">09</span>How it sits against real programmes</h2>
-      <p class="lede">The model back-tests against seven published premium programmes. This Electric estimate lands where a full battery-electric (bev) flagship should.</p></div>
+      <p class="lede">The model back-tests against seven published premium programmes. This 48V estimate lands where a ice + 48v mild hybrid (mhev) flagship should.</p></div>
     <div class="card reveal"><div class="card-h"><span class="t">Published programme comparison</span><span class="s">total SW investment · £M</span></div>
-      <div class="bmk" id="bmk"><div class="bmrow"><div class="nm">Tesla Model S (Gen 3 HW4)<span>Morgan Stanley Research, annualised amortised</span></div><div class="amt">£850M</div><div class="track"><div class="tf" data-w="100"></div></div></div><div class="bmrow"><div class="nm">Mercedes EQS (2021–2026)<span>McKinsey Future of Software in Automotive, 2022</span></div><div class="amt">£710M</div><div class="track"><div class="tf" data-w="84"></div></div></div><div class="bmrow"><div class="nm">BMW iX (2021–2026)<span>Berylls Strategy Advisors estimate, 2023</span></div><div class="amt">£620M</div><div class="track"><div class="tf" data-w="73"></div></div></div><div class="bmrow self"><div class="nm">Porsche Cayenne Electric<span>CostVision — this model</span></div><div class="amt">£616M</div><div class="track"><div class="tf" data-w="72" style="background:var(--gold)"></div></div></div><div class="bmrow"><div class="nm">Audi Q8 e-tron (2023–2028)<span>VW Group Annual Report + EY SW cost model</span></div><div class="amt">£520M</div><div class="track"><div class="tf" data-w="61"></div></div></div><div class="bmrow"><div class="nm">Porsche Taycan (2019–2024)<span>SBD Automotive teardown + SW analysis</span></div><div class="amt">£480M</div><div class="track"><div class="tf" data-w="56"></div></div></div><div class="bmrow"><div class="nm">Range Rover (L460, 2022–2027)<span>JLR investor reports + industry est.</span></div><div class="amt">£390M</div><div class="track"><div class="tf" data-w="46"></div></div></div><div class="bmrow"><div class="nm">Lucid Air (2022–2027)<span>Low-volume amortisation — Lucid investor notes</span></div><div class="amt">£380M</div><div class="track"><div class="tf" data-w="45"></div></div></div></div></div>
-    <p class="note reveal" style="margin-top:12px;">Across all seven published programmes the model's mean absolute error is <strong class="k">24.9%</strong>, with 5 of 7 inside ±35%. This Electric figure is a model estimate, not a published actual.</p>
+      <div class="bmk" id="bmk"><div class="bmrow"><div class="nm">Tesla Model S (Gen 3 HW4)<span>Morgan Stanley Research, annualised amortised</span></div><div class="amt">£850M</div><div class="track"><div class="tf" data-w="100"></div></div></div><div class="bmrow"><div class="nm">Mercedes EQS (2021–2026)<span>McKinsey Future of Software in Automotive, 2022</span></div><div class="amt">£710M</div><div class="track"><div class="tf" data-w="84"></div></div></div><div class="bmrow"><div class="nm">BMW iX (2021–2026)<span>Berylls Strategy Advisors estimate, 2023</span></div><div class="amt">£620M</div><div class="track"><div class="tf" data-w="73"></div></div></div><div class="bmrow"><div class="nm">Audi Q8 e-tron (2023–2028)<span>VW Group Annual Report + EY SW cost model</span></div><div class="amt">£520M</div><div class="track"><div class="tf" data-w="61"></div></div></div><div class="bmrow"><div class="nm">Porsche Taycan (2019–2024)<span>SBD Automotive teardown + SW analysis</span></div><div class="amt">£480M</div><div class="track"><div class="tf" data-w="56"></div></div></div><div class="bmrow self"><div class="nm">Porsche Cayenne 48V<span>CostVision — this model</span></div><div class="amt">£456M</div><div class="track"><div class="tf" data-w="54" style="background:var(--gold)"></div></div></div><div class="bmrow"><div class="nm">Range Rover (L460, 2022–2027)<span>JLR investor reports + industry est.</span></div><div class="amt">£390M</div><div class="track"><div class="tf" data-w="46"></div></div></div><div class="bmrow"><div class="nm">Lucid Air (2022–2027)<span>Low-volume amortisation — Lucid investor notes</span></div><div class="amt">£380M</div><div class="track"><div class="tf" data-w="45"></div></div></div></div></div>
+    <p class="note reveal" style="margin-top:12px;">Across all seven published programmes the model's mean absolute error is <strong class="k">24.9%</strong>, with 5 of 7 inside ±35%. This 48V figure is a model estimate, not a published actual.</p>
   </section>
 
   <section>
@@ -521,10 +514,10 @@
         <li><b>Inputs drive everything</b> — a wrong reuse or ASIL assumption moves the total materially.</li>
         <li><b>Benchmarks are estimates</b> — the validation targets are analyst figures, not audited books.</li></ul></div>
     </div>
-    <p class="note reveal" style="margin-top:16px;">All figures on this page are live output from the CostVision engine (<code>sw-should-cost.ts</code>), regenerated from the module catalogue — not hand-entered. Full battery-electric (BEV).</p>
+    <p class="note reveal" style="margin-top:16px;">All figures on this page are live output from the CostVision engine (<code>sw-should-cost.ts</code>), regenerated from the module catalogue — not hand-entered. ICE + 48V mild hybrid (MHEV).</p>
   </section>
 
-  <div class="footer"><span>CostVision · Auto SW Cost — Porsche Cayenne Electric breakdown</span><span>49 modules · 7 domains · figures from live engine output · GBP</span></div>
+  <div class="footer"><span>CostVision · Auto SW Cost — Porsche Cayenne 48V breakdown</span><span>42 modules · 7 domains · figures from live engine output · GBP</span></div>
 </div>
 <script>
 (function(){

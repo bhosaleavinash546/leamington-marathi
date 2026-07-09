@@ -28,34 +28,61 @@ interface Meta {
   region: 'EU'|'UK'; devSource: 'OEM_Internal'|'Tier1_Supplier'; volume: number; life: number;
   overhead: number; senior: number; reuse: SWReuse; disabled: string[];
   overrides: Record<string, Partial<Pick<SWModuleInput,'asil'|'complexity'|'reuse'>>>;
-  arch: string; drivetrain: string; premiumNote: string; reuseNote: string;
+  arch: string; drivetrain: string; powertrainNote: string; premiumNote: string; reuseNote: string;
 }
+
+// Shared Porsche Cayenne assumptions (2026): EU / Porsche in-house, 50k/yr × 8yr,
+// premium overhead + seniority. Only the powertrain-software scope changes across
+// variants, so the four reports form a clean "software cost by drivetrain" set.
+const PORSCHE_MW: Meta['overrides'] = { autosar_classic:{reuse:'Platform'}, autosar_adaptive:{reuse:'Platform'}, rtos:{reuse:'Platform'}, comm_stacks:{reuse:'Platform'} };
+const PORSCHE_SIG: Meta['overrides'] = { vehicle_motion:{complexity:'Very High'}, active_suspension:{complexity:'Very High'}, premium_audio:{complexity:'Very High'} };
+const cayenneBase = { flag:'🇩🇪', region:'EU', devSource:'OEM_Internal', volume:50_000, life:8, overhead:1.62, senior:0.60, reuse:'Medium',
+  reuseNote:'PPE / VW-Group middleware shared across platforms → Platform reuse on AUTOSAR / RTOS / comm stacks; bespoke Porsche performance software otherwise.' } as const;
 
 const VEHICLES: Meta[] = [
   { id:'bmw_x7', file:'bmw-x7-software-cost-breakdown.html', docFile:'bmw-x7-cost-breakdown.html', flag:'🇩🇪', name:'BMW X7', code:'X7',
     region:'EU', devSource:'OEM_Internal', volume:60_000, life:8, overhead:1.60, senior:0.55, reuse:'Heavy',
     disabled:MHEV_DISABLED, overrides:{ digital_key:{complexity:'Very High'} },
     arch:'G07 · CLAR platform · iDrive 8 (BMW OS 8)', drivetrain:'ICE + 48V mild hybrid',
+    powertrainNote:'the BEV battery / charge / drive modules are not applicable and are disabled',
     premiumNote:'Executive Drive Pro (48V active roll) + Integral Active Steering, Bowers & Wilkins Diamond audio, Parking Assistant Professional + 360, Digital Key Plus (UWB), AR-ready HUD.',
     reuseNote:'Heavy platform reuse across 7-Series / X5 / X7 — most software carries forward.' },
   { id:'audi_q8', file:'audi-q8-software-cost-breakdown.html', docFile:'audi-q8-cost-breakdown.html', flag:'🇩🇪', name:'Audi Q8', code:'Q8',
     region:'EU', devSource:'OEM_Internal', volume:55_000, life:9, overhead:1.58, senior:0.55, reuse:'Heavy',
     disabled:MHEV_DISABLED, overrides:{ autosar_classic:{reuse:'Platform'}, autosar_adaptive:{reuse:'Platform'}, rtos:{reuse:'Platform'}, comm_stacks:{reuse:'Platform'} },
     arch:'MLB Evo · MMI/MIB3 · VW Group + CARIAD stacks', drivetrain:'ICE + 48V mild hybrid',
+    powertrainNote:'the BEV battery / charge / drive modules are not applicable and are disabled',
     premiumNote:'Adaptive air suspension + all-wheel steer, Bang & Olufsen 3D, park assist plus + 360, 4-zone climate, HUD.',
     reuseNote:'VW.OS core middleware carried across the Group — Platform reuse on AUTOSAR / RTOS / comm stacks.' },
   { id:'merc_gls', file:'mercedes-gls-software-cost-breakdown.html', docFile:'mercedes-gls-cost-breakdown.html', flag:'🇩🇪', name:'Mercedes GLS 450', code:'GLS 450',
     region:'EU', devSource:'OEM_Internal', volume:45_000, life:9, overhead:1.62, senior:0.55, reuse:'Medium',
     disabled:MHEV_DISABLED, overrides:{ ivi_os:{complexity:'Very High'}, voice_assistant:{complexity:'Very High'}, navigation:{complexity:'Very High'}, active_suspension:{complexity:'Very High'}, premium_audio:{complexity:'Very High'} },
     arch:'X167 · MBUX / NTG6 · EQ Boost 48V', drivetrain:'ICE + 48V mild hybrid',
+    powertrainNote:'the BEV battery / charge / drive modules are not applicable and are disabled',
     premiumNote:'E-Active Body Control (48V, camera Road-Surface-Scan), MBUX + “Hey Mercedes” voice, Burmester 3D surround, active parking + 360, MB AR-HUD, 5-zone climate.',
     reuseNote:'Signature MBUX / voice / active-body at Very-High complexity; moderate cross-range reuse.' },
-  { id:'porsche_cayenne', file:'porsche-cayenne-software-cost-breakdown.html', docFile:'porsche-cayenne-cost-breakdown.html', flag:'🇩🇪', name:'Porsche Cayenne Electric', code:'Cayenne',
-    region:'EU', devSource:'OEM_Internal', volume:50_000, life:8, overhead:1.62, senior:0.60, reuse:'Medium',
-    disabled:[], overrides:{ autosar_classic:{reuse:'Platform'}, autosar_adaptive:{reuse:'Platform'}, rtos:{reuse:'Platform'}, comm_stacks:{reuse:'Platform'}, vehicle_motion:{complexity:'Very High'}, active_suspension:{complexity:'Very High'}, fast_charge:{complexity:'Very High'}, premium_audio:{complexity:'Very High'} },
+  // ── Porsche Cayenne (2026) — four powertrain variants, same macro assumptions ──
+  { ...cayenneBase, id:'porsche_cayenne', file:'porsche-cayenne-software-cost-breakdown.html', docFile:'porsche-cayenne-cost-breakdown.html', name:'Porsche Cayenne Electric', code:'Electric',
+    disabled:[], overrides:{ ...PORSCHE_MW, ...PORSCHE_SIG, fast_charge:{complexity:'Very High'} },
     arch:'E4 · PPE 800V platform · Porsche Driver Experience', drivetrain:'Full battery-electric (BEV)',
-    premiumNote:'Porsche 4D Chassis Control + torque vectoring, Porsche Active Ride, 800V 270 kW+ high-power charging, Burmester High-End 3D audio, park assist + 360, digital key, HUD.',
-    reuseNote:'PPE middleware shared with Macan EV / Audi Q6 e-tron → Platform reuse on AUTOSAR / RTOS / comm stacks; bespoke Porsche performance software otherwise.' },
+    powertrainNote:'the full EV powertrain software stack (BMS, charging, drive-unit, inverter, motor control) is in scope',
+    premiumNote:'Porsche 4D Chassis Control + torque vectoring, Porsche Active Ride, 800V 270 kW+ high-power charging, Burmester High-End 3D audio, park assist + 360, digital key, HUD.' },
+  { ...cayenneBase, id:'porsche_cayenne_phev', file:'porsche-cayenne-phev-software-cost-breakdown.html', docFile:'porsche-cayenne-phev-cost-breakdown.html', name:'Porsche Cayenne E-Hybrid', code:'E-Hybrid',
+    disabled:[], overrides:{ ...PORSCHE_MW, ...PORSCHE_SIG, bms_core:{complexity:'High'}, soc_soh_soe:{complexity:'High'}, edu_control:{complexity:'High'}, fast_charge:{complexity:'Medium'} },
+    arch:'MLB Evo · PCM · E-Hybrid plug-in powertrain', drivetrain:'E-Hybrid plug-in hybrid (PHEV)',
+    powertrainNote:'the plug-in-hybrid powertrain is retained but de-rated vs a full BEV (smaller pack, lower charging power) — BMS / SOC / drive-unit run at High rather than Very-High complexity',
+    premiumNote:'Porsche 4D Chassis Control + torque vectoring, Porsche Active Ride, AC + DC plug-in charging, Burmester High-End 3D audio, park assist + 360, digital key, HUD.' },
+  { ...cayenneBase, id:'porsche_cayenne_mhev', file:'porsche-cayenne-mhev-software-cost-breakdown.html', docFile:'porsche-cayenne-mhev-cost-breakdown.html', name:'Porsche Cayenne 48V', code:'48V',
+    disabled:MHEV_DISABLED, overrides:{ ...PORSCHE_MW, ...PORSCHE_SIG },
+    arch:'MLB Evo · PCM · 48V mild-hybrid powertrain', drivetrain:'ICE + 48V mild hybrid (MHEV)',
+    powertrainNote:'the high-voltage battery / charge / drive modules are not applicable and are disabled; 48V regen and battery-thermal software are retained',
+    premiumNote:'Porsche 4D Chassis Control + torque vectoring, Porsche Active Ride, Burmester High-End 3D audio, park assist + 360, digital key, HUD.' },
+  { ...cayenneBase, id:'porsche_cayenne_ice', file:'porsche-cayenne-ice-software-cost-breakdown.html', docFile:'porsche-cayenne-ice-cost-breakdown.html', name:'Porsche Cayenne V8', code:'V8',
+    disabled:['bms_core','cell_balancing','soc_soh_soe','thermal_mgmt','fast_charge','edu_control','inverter_ctrl','motor_ctrl','regen_braking'],
+    overrides:{ ...PORSCHE_MW, ...PORSCHE_SIG },
+    arch:'MLB Evo · PCM · V8 twin-turbo powertrain', drivetrain:'V8 twin-turbo combustion (ICE)',
+    powertrainNote:'there is no electrified-powertrain software — all nine EV powertrain / battery modules are out of scope',
+    premiumNote:'Porsche 4D Chassis Control + torque vectoring, Porsche Active Ride, Burmester High-End 3D audio, park assist + 360, digital key, HUD.' },
 ];
 
 // ── helpers ──────────────────────────────────────────────────────────────────
@@ -237,7 +264,7 @@ function report(v: Meta): { file:string; docFile:string; html:string; gt:number;
         <div class="row"><div class="l">Modules enabled<span>of 49 in the catalogue</span></div><div class="val">${r.modules.length} of 49</div></div>
       </div>
     </div>
-    <p class="note reveal">${esc(v.drivetrain)}${v.disabled.length? ' — the BEV battery / charge / drive modules are not applicable and are disabled.' : ' — the full EV powertrain software stack (BMS, charging, drive-unit, inverter, motor control) is in scope.'} Premium software is switched on: ${esc(v.premiumNote)}</p>
+    <p class="note reveal">${esc(v.drivetrain)} — ${esc(v.powertrainNote)}. Premium software is switched on: ${esc(v.premiumNote)}</p>
   </section>
 
   <section>

@@ -1327,6 +1327,40 @@ export const SW_VEHICLE_DEMOS: SWVehicleDemo[] = [
       premium_audio:     { complexity: 'Very High' }, // Burmester High-End 3D
     },
   },
+  {
+    id: 'porsche_cayenne_phev', label: '🇩🇪 Porsche Cayenne E-Hybrid (PHEV)',
+    desc: 'MLB Evo · PCM · E-Hybrid plug-in powertrain. Same Porsche performance software as the BEV, but the plug-in-hybrid powertrain is retained at reduced scope (smaller pack, lower charging power) — BMS / SOC / drive-unit at High rather than Very-High.',
+    region: 'EU', devSource: 'OEM_Internal', volume: 50_000, life: 8, overhead: 1.62, senior: 0.60, reuse: 'Medium',
+    reportUrl: 'reports/porsche-cayenne-phev-software-cost-breakdown.html',
+    disabledModules: [],  // PHEV: retains battery/charge/drive SW at reduced scope
+    moduleOverrides: {
+      autosar_classic: { reuse: 'Platform' }, autosar_adaptive: { reuse: 'Platform' }, rtos: { reuse: 'Platform' }, comm_stacks: { reuse: 'Platform' },
+      vehicle_motion: { complexity: 'Very High' }, active_suspension: { complexity: 'Very High' }, premium_audio: { complexity: 'Very High' },
+      bms_core: { complexity: 'High' }, soc_soh_soe: { complexity: 'High' }, edu_control: { complexity: 'High' }, fast_charge: { complexity: 'Medium' },
+    },
+  },
+  {
+    id: 'porsche_cayenne_mhev', label: '🇩🇪 Porsche Cayenne (48V MHEV)',
+    desc: 'MLB Evo · PCM · 48V mild-hybrid powertrain. High-voltage battery / charge / drive modules are not applicable and disabled; 48V regen and battery-thermal retained. Porsche performance software at Very-High complexity.',
+    region: 'EU', devSource: 'OEM_Internal', volume: 50_000, life: 8, overhead: 1.62, senior: 0.60, reuse: 'Medium',
+    reportUrl: 'reports/porsche-cayenne-mhev-software-cost-breakdown.html',
+    disabledModules: MHEV_DISABLED,
+    moduleOverrides: {
+      autosar_classic: { reuse: 'Platform' }, autosar_adaptive: { reuse: 'Platform' }, rtos: { reuse: 'Platform' }, comm_stacks: { reuse: 'Platform' },
+      vehicle_motion: { complexity: 'Very High' }, active_suspension: { complexity: 'Very High' }, premium_audio: { complexity: 'Very High' },
+    },
+  },
+  {
+    id: 'porsche_cayenne_ice', label: '🇩🇪 Porsche Cayenne V8 (ICE)',
+    desc: 'MLB Evo · PCM · V8 twin-turbo powertrain. No electrified-powertrain software — all nine EV powertrain / battery modules are out of scope. Porsche performance, chassis and infotainment software otherwise identical.',
+    region: 'EU', devSource: 'OEM_Internal', volume: 50_000, life: 8, overhead: 1.62, senior: 0.60, reuse: 'Medium',
+    reportUrl: 'reports/porsche-cayenne-ice-software-cost-breakdown.html',
+    disabledModules: ['bms_core', 'cell_balancing', 'soc_soh_soe', 'thermal_mgmt', 'fast_charge', 'edu_control', 'inverter_ctrl', 'motor_ctrl', 'regen_braking'],
+    moduleOverrides: {
+      autosar_classic: { reuse: 'Platform' }, autosar_adaptive: { reuse: 'Platform' }, rtos: { reuse: 'Platform' }, comm_stacks: { reuse: 'Platform' },
+      vehicle_motion: { complexity: 'Very High' }, active_suspension: { complexity: 'Very High' }, premium_audio: { complexity: 'Very High' },
+    },
+  },
 ];
 
 /** Build a full programme-inputs object for a vehicle demo. */
