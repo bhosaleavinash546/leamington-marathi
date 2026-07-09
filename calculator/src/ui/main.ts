@@ -81,6 +81,7 @@ import { exportToExcelBlob } from '../export/excel.js';
 import { printPDF, printCADAnalysisPDF, drawCostVisionLogo } from '../export/pdf.js';
 import { computeCostUncertainty } from '../engine/uncertainty.js';
 import { computeCalibration, applyCalibration, type CalibrationRecord } from '../engine/calibration.js';
+import { computeCarbon } from '../engine/carbon.js';
 import { generateInsights, totalPotentialSaving, FX_TO_GBP } from '../engine/insights.js';
 import { generateDFMDFA } from '../engine/dfm-dfa.js';
 import type { DFMIssue, CostOptimisation } from '../engine/dfm-dfa.js';
@@ -13103,6 +13104,34 @@ function renderInsights(result: PartCostResult, input: UniversalStackInput): voi
           <span>Bias correction <strong>×${cal.biasFactor}</strong> (${dirTxt})</span>
           <span>Accuracy: MAPE <strong>${cal.mapePct}% → ${cal.calibratedMapePct}%</strong> after calibration</span>
         </div>
+      </div>`;
+      })()}
+
+      ${(() => {
+        // #4 Carbon co-costing — embodied CO2e alongside the £ should-cost.
+        if (input.rawMaterial.netWeightKg <= 0 || input.rawMaterial.directCost !== undefined) return '';
+        const region = (document.getElementById('mfg-region-selector') as HTMLSelectElement)?.value ?? 'UK';
+        const cb = computeCarbon({ result, input, library, commodity: activeCommodity, region });
+        if (cb.totalKgCO2e <= 0) return '';
+        const seg = (v: number, color: string, label: string) => {
+          const w = cb.totalKgCO2e > 0 ? (v / cb.totalKgCO2e) * 100 : 0;
+          return w > 0.5 ? `<div title="${label}: ${v} kgCO₂e" style="width:${w}%;background:${color}"></div>` : '';
+        };
+        return `
+      <div style="margin-top:8px;padding:12px 14px;border:1px solid var(--border);border-left:4px solid #059669;border-radius:8px;background:var(--surface-elevated)">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px">
+          <div style="font-weight:700;font-size:0.9rem;color:var(--text-primary)">🌱 Embodied carbon <span style="font-weight:400;font-size:0.72rem;color:var(--text-muted)">(cradle-to-gate, indicative)</span></div>
+          <div style="font-size:1.15rem;font-weight:700;color:#059669">${cb.totalKgCO2e} kgCO₂e <span style="font-size:0.78rem;color:var(--text-muted)">· ${cb.perNetKgCO2e} /kg</span></div>
+        </div>
+        <div style="margin-top:8px;height:8px;border-radius:4px;overflow:hidden;display:flex;background:var(--border)">
+          ${seg(cb.materialKgCO2e, '#059669', 'Material')}${seg(cb.processKgCO2e, '#f59e0b', 'Process energy')}${seg(cb.logisticsKgCO2e, '#64748b', 'Logistics')}
+        </div>
+        <div style="margin-top:6px;display:flex;gap:16px;flex-wrap:wrap;font-size:0.76rem;color:var(--text-secondary)">
+          <span><span style="color:#059669">●</span> Material ${cb.materialKgCO2e} <span style="color:var(--text-muted)">(${escHtml(cb.materialClass)})</span></span>
+          <span><span style="color:#f59e0b">●</span> Process ${cb.processKgCO2e} <span style="color:var(--text-muted)">(${cb.processKwh} kWh · ${cb.gridKgPerKwh} kg/kWh)</span></span>
+          <span><span style="color:#64748b">●</span> Logistics ${cb.logisticsKgCO2e}</span>
+        </div>
+        <div style="margin-top:6px;font-size:0.7rem;color:var(--text-muted);line-height:1.4">Indicative — representative cradle-to-gate factors; replace with supplier EPDs for reporting.</div>
       </div>`;
       })()}
 
