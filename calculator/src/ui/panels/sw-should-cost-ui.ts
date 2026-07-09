@@ -125,6 +125,8 @@ interface SavedConfig {
 
 let _swResult: SWProgramResult | null = null;
 let _swInputs: SWProgramInputs = defaultSWProgramInputs();
+/** The vehicle demo currently loaded (drives the "detailed report" banner). */
+let _swActiveVehicle: string | null = null;
 let _savedConfigs: SavedConfig[] = [];
 
 const STORAGE_KEY = 'cv-sw-saved-configs';
@@ -758,6 +760,17 @@ function renderSWPanelHTML(): string {
     <span style="font-size:0.78rem;color:var(--sw-text-muted);font-weight:600">Demo Programmes:</span>
     ${SW_VEHICLE_DEMOS.map(v => `<button class="sw-preset-btn sw-vehicle-btn" data-vehicle="${v.id}" title="${esc(v.desc)}">${v.label}</button>`).join('')}
   </div>
+  ${(() => {
+    const active = _swActiveVehicle ? SW_VEHICLE_DEMOS.find(d => d.id === _swActiveVehicle) : null;
+    if (!active?.reportUrl) return '';
+    return `<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:-6px 0 16px;padding:10px 14px;border-radius:8px;border:1px solid rgba(29,78,216,0.30);background:linear-gradient(135deg,rgba(37,99,235,0.10),rgba(37,99,235,0.04))">
+      <span style="font-size:1.05rem">📄</span>
+      <span style="flex:1;min-width:180px;font-size:0.78rem;font-weight:600;color:var(--sw-text-primary)">Detailed board-level breakdown available for ${esc(active.label)} — every parameter, all ${SW_MODULES.length} modules.</span>
+      <button type="button" id="sw-demo-report-btn" data-report-url="${esc(active.reportUrl)}" style="display:flex;align-items:center;gap:6px;font-size:0.76rem;font-weight:700;padding:7px 15px;background:linear-gradient(135deg,#1d4ed8,#2563eb);border:none;border-radius:7px;cursor:pointer;color:#fff;box-shadow:0 3px 10px rgba(37,99,235,0.30);transition:transform 0.15s" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform='none'">
+        View full report →
+      </button>
+    </div>`;
+  })()}
 
   <!-- ── Module Configuration ─────────────────────────────────── -->
   <div style="font-weight:700;font-size:0.88rem;color:var(--sw-text-primary);margin-bottom:10px;display:flex;align-items:center;justify-content:space-between">
@@ -1242,6 +1255,8 @@ interface SWVehicleDemo {
   disabledModules: string[];
   /** Optional per-module tweaks (complexity/asil) for signature systems. */
   moduleOverrides?: Record<string, Partial<Pick<SWModuleInput, 'asil' | 'complexity' | 'reuse'>>>;
+  /** Optional path to a detailed, board-level cost-breakdown report for this programme. */
+  reportUrl?: string;
 }
 
 // 48V mild-hybrid: no BEV-scale HV powertrain SW — keep only 48V regen + light
@@ -1253,6 +1268,7 @@ export const SW_VEHICLE_DEMOS: SWVehicleDemo[] = [
     id: 'rr_l460', label: '🇬🇧 Range Rover L460 (PHEV)',
     desc: 'JLR flagship, EVA2 (MLA) architecture, Pivi Pro infotainment. Heavy Tier-1 outsourcing; PHEV P550e keeps a (smaller) EV powertrain stack. Premium software: Dynamic Response Pro (48V active anti-roll) + rear-axle steer, Meridian 3D audio, park assist + 3D surround, cabin-air purification, digital key, HUD. Published ≈ £390M (core stack).',
     region: 'UK', devSource: 'Tier1_Supplier', volume: 75_000, life: 8, overhead: 1.55, senior: 0.55, reuse: 'Medium',
+    reportUrl: 'reports/l460-software-cost-breakdown.html',  // relative to import.meta.env.BASE_URL
     disabledModules: [],  // PHEV: retains battery/charge/drive SW at reduced scope
     moduleOverrides: {
       bms_core:       { complexity: 'High' },     // PHEV pack smaller than a BEV
@@ -1319,6 +1335,7 @@ function buildVehicleInputs(v: SWVehicleDemo): SWProgramInputs {
 function applyVehicleDemo(id: string): void {
   const v = SW_VEHICLE_DEMOS.find(d => d.id === id);
   if (!v) return;
+  _swActiveVehicle = id;
   _swInputs = buildVehicleInputs(v);
   _swResult = null;
   const panel = document.getElementById('sw-panel');
@@ -2326,6 +2343,9 @@ export function wireSWPanel(): void {
     btn.addEventListener('click', () => {
       document.querySelectorAll<HTMLButtonElement>('.sw-preset-btn').forEach(b => b.classList.remove('sw-preset-active'));
       btn.classList.add('sw-preset-active');
+      // A generic preset is not a vehicle programme — retire the report banner.
+      _swActiveVehicle = null;
+      document.getElementById('sw-demo-report-btn')?.parentElement?.remove();
       applyPreset(btn.dataset.preset ?? '');
     });
   });
@@ -2333,6 +2353,12 @@ export function wireSWPanel(): void {
   // Vehicle programme demos — load a full detailed configuration and compute.
   document.querySelectorAll<HTMLButtonElement>('.sw-vehicle-btn').forEach(btn => {
     btn.addEventListener('click', () => applyVehicleDemo(btn.dataset.vehicle ?? ''));
+  });
+
+  // "View full report" — open the detailed board-level breakdown for the demo.
+  document.getElementById('sw-demo-report-btn')?.addEventListener('click', evt => {
+    const url = (evt.currentTarget as HTMLElement).dataset.reportUrl;
+    if (url) window.open(import.meta.env.BASE_URL + url, '_blank', 'noopener');
   });
 
   // Select/deselect all
