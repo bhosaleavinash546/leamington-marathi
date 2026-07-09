@@ -1764,6 +1764,30 @@ router.post('/analyze-image-stream', upload.fields([
   const base64Data = primaryImage.buffer.toString('base64');
   const anthropic = new Anthropic({ apiKey });
 
+  // ── Result cache ────────────────────────────────────────────────────────────
+  // The AI pipeline is not deterministic run-to-run — even at temperature 0, LLM
+  // output varies (batching / MoE routing), so the same board produced different
+  // BOMs and totals each run. Cache the finished analysis keyed by the exact image
+  // bytes + cost params; an identical re-run replays the stored result verbatim.
+  const bomFileForKey = files?.bomFile?.[0];
+  const streamCacheKey = buildCacheKey([
+    ...imageFiles.map(f => f.buffer),
+    Buffer.from(JSON.stringify({
+      country: req.body?.country ?? 'cn',
+      orderQty: req.body?.orderQty ?? '100',
+      nre: req.body?.automotiveNRE ?? req.body?.includeAutomotiveNRE ?? '',
+    })),
+    ...(bomFileForKey ? [bomFileForKey.buffer] : []),
+  ]);
+  const streamCached = getCached(streamCacheKey) as Record<string, unknown> | null;
+  if (streamCached) {
+    console.log(`[PCB/stream] Cache HIT ${streamCacheKey.slice(0, 12)} — replaying stored result (deterministic)`);
+    emit('progress', { stage: 5, label: 'Loaded cached analysis', pct: 100 });
+    emit('complete', { ...streamCached, fromCache: true });
+    res.end();
+    return;
+  }
+
   emit('progress', { stage: 0, label: 'Starting analysis…', pct: 5 });
 
   // Stage 1
@@ -1981,7 +2005,7 @@ router.post('/analyze-image-stream', upload.fields([
   }
 
   emit('progress', { stage: 5, label: 'Complete', pct: 100 });
-  emit('complete', {
+  const streamComplete = {
     analysis, selectedCountry: selectedCountry2, selectedCountryBreakdown: selectedCountryBreakdown2,
     countryComparison: countryComparison2, volumeCurves: volumeCurves2, complexityScore: complexityScore2,
     confidenceBand: confidenceBand2, volumeMultiplier: volumeMultiplier2, sanityWarnings: sanityWarnings2,
@@ -1999,7 +2023,10 @@ router.post('/analyze-image-stream', upload.fields([
     automotiveFabAdjustment: streamAutomotiveFabAdjustment,
     bomCompleteness: streamBomCompleteness,
     programPricing: streamProgramPricing,
-  });
+  };
+  // Store so an identical re-run replays this exact result instead of re-invoking the LLM.
+  setCached(streamCacheKey, streamComplete);
+  emit('complete', streamComplete);
   res.end();
 });
 
