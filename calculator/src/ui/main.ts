@@ -78,7 +78,7 @@ import type { LearningCurveResult } from '../engine/learning-curve.js';
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { exportToExcelBlob } from '../export/excel.js';
-import { printPDF, printCADAnalysisPDF } from '../export/pdf.js';
+import { printPDF, printCADAnalysisPDF, drawCostVisionLogo } from '../export/pdf.js';
 import { generateInsights, totalPotentialSaving, FX_TO_GBP } from '../engine/insights.js';
 import { generateDFMDFA } from '../engine/dfm-dfa.js';
 import type { DFMIssue, CostOptimisation } from '../engine/dfm-dfa.js';
@@ -8415,6 +8415,7 @@ function csvCell(v: unknown): string {
 function exportPCBAnalysisCSV(r: PCBImageAnalysis): void {
   const lines: string[] = [];
   const dateStr = new Date().toISOString().slice(0, 10);
+  lines.push('CostVision — AI Cost Intelligence');
   lines.push(`PCB Analysis Export,${csvCell(r.partName)},${dateStr}`);
   lines.push('');
   lines.push('=== BILL OF MATERIALS ===');
@@ -8493,6 +8494,11 @@ function exportPCBAnalysisExcel(r: PCBImageAnalysis): void {
   const html = `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
   <head><meta charset="utf-8"/><style>table{border-collapse:collapse;font-family:Arial,sans-serif;font-size:11px;margin-bottom:16px}h2{font-family:Arial;font-size:14px;color:#1e3a8a}</style></head>
   <body>
+    <table style="border:none;margin-bottom:6px"><tr>
+      <td style="border:none;background:#4f46e5;color:#ffffff;font-weight:bold;font-size:18px;font-family:Arial;padding:4px 10px;text-align:center">cv</td>
+      <td style="border:none;color:#2563eb;font-weight:bold;font-size:22px;font-family:Arial;padding-left:10px">CostVision</td>
+      <td style="border:none;color:#475569;font-size:10px;font-family:Arial;padding-left:10px;vertical-align:bottom">AI COST INTELLIGENCE</td>
+    </tr></table>
     <h2>PCB Should-Cost Analysis — ${escHtml(r.partName)}</h2>
     <div style="font-size:11px;color:#475569">Exported ${dateStr} · Total BOM cost ${money(r.costEstimates.totalBOMCostGBP)}</div>
     <h2>Bill of Materials</h2>
@@ -8566,8 +8572,9 @@ function exportPCBAnalysisPrint(r: PCBImageAnalysis): void {
       doc.setPage(i);
       doc.setDrawColor(...BLUE); doc.setLineWidth(0.4);
       doc.line(margin, 290, pageW - margin, 290);
-      doc.setFontSize(6.5); doc.setTextColor(...GREY);
-      doc.text(`PCB Image Analysis Report  ·  ${r.partName}  ·  ${dateStr}`, margin, 294);
+      const lw = drawCostVisionLogo(doc, margin, 290.7, 3.4);
+      doc.setFontSize(6.5); doc.setFont('helvetica', 'normal'); doc.setTextColor(...GREY);
+      doc.text(`PCB Image Analysis  ·  ${dateStr}`, margin + lw + 3, 294);
       doc.text(`Page ${i} of ${total}  ·  CONFIDENTIAL`, pageW - margin, 294, { align: 'right' });
     }
   };
@@ -13877,8 +13884,9 @@ function printMasterPDF(): void {
     doc.setPage(i);
     doc.setDrawColor(...GREY); doc.setLineWidth(0.3);
     doc.line(mg, 290, W - mg, 290);
-    doc.setFontSize(6.5); doc.setTextColor(...GREY);
-    doc.text('CostVision  ·  Master Cost Report  ·  CONFIDENTIAL', mg, 294);
+    const lw = drawCostVisionLogo(doc, mg, 290.7, 3.4);
+    doc.setFontSize(6.5); doc.setFont('helvetica', 'normal'); doc.setTextColor(...GREY);
+    doc.text('Master Cost Report  ·  CONFIDENTIAL', mg + lw + 3, 294);
     doc.text(`Page ${i} of ${totalPgs}`, W - mg, 294, { align: 'right' });
   }
 

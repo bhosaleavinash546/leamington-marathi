@@ -83,6 +83,28 @@ const TH = {
   },
 };
 
+/**
+ * Draw the CostVision logo as crisp vector — indigo "cv" badge + blue wordmark,
+ * matching the brand colours/typeface. Sharp at any size; used in every report
+ * footer so branding shows on every page. `x`,`y` = top-left of the badge (mm),
+ * `badgeH` = badge height (mm). Returns the total width drawn (mm).
+ */
+export function drawCostVisionLogo(doc: jsPDF, x: number, y: number, badgeH = 4.2): number {
+  const BADGE: RGB = [79, 70, 229];   // indigo "cv" badge
+  const WORD:  RGB = [37, 99, 235];   // "CostVision" blue
+  const r = badgeH * 0.26;
+  doc.setFillColor(...BADGE);
+  doc.roundedRect(x, y, badgeH, badgeH, r, r, 'F');
+  doc.setTextColor(...WHITE); doc.setFont('helvetica', 'bold'); doc.setFontSize(badgeH * 1.7);
+  doc.text('cv', x + badgeH / 2, y + badgeH * 0.73, { align: 'center' });
+  const wx = x + badgeH + badgeH * 0.30;
+  doc.setTextColor(...WORD); doc.setFont('helvetica', 'bold'); doc.setFontSize(badgeH * 1.95);
+  doc.text('CostVision', wx, y + badgeH * 0.78);
+  const width = (wx - x) + doc.getTextWidth('CostVision');
+  doc.setFont('helvetica', 'normal');
+  return width;
+}
+
 // ════════════════════════════════════════════════════════════════════════════
 //  MAIN SHOULD-COST PDF
 // ════════════════════════════════════════════════════════════════════════════
@@ -113,8 +135,9 @@ export function printPDF(
       doc.setPage(i);
       doc.setDrawColor(...ORANGE); doc.setLineWidth(0.4);
       doc.line(MG, 285, W - MG, 285);
+      const lw = drawCostVisionLogo(doc, MG, 287, 4);
       doc.setFontSize(6.5); doc.setFont('helvetica', 'normal'); doc.setTextColor(...GREY);
-      doc.text('CostVision  ·  Should-Cost Analysis Report  ·  CONFIDENTIAL', MG, 291);
+      doc.text('Should-Cost Analysis Report  ·  CONFIDENTIAL', MG + lw + 3, 291);
       doc.text(`${dateStr}  ${timeStr}`, W / 2, 291, { align: 'center' });
       doc.text(`Page ${i} of ${total}`, W - MG, 291, { align: 'right' });
     }
@@ -892,8 +915,9 @@ export function printCADAnalysisPDF(r: CADAnalysisResult, partPhotoDataUrl?: str
       doc.setPage(i);
       doc.setDrawColor(...TEAL); doc.setLineWidth(0.4);
       doc.line(MG, 285, W - MG, 285);
+      const lw = drawCostVisionLogo(doc, MG, 287, 4);
       doc.setFontSize(6.5); doc.setFont('helvetica', 'normal'); doc.setTextColor(...GREY3);
-      doc.text('CostVision  ·  AI CAD-to-Cost Analysis Report  ·  CONFIDENTIAL', MG, 291);
+      doc.text('AI CAD-to-Cost Analysis Report  ·  CONFIDENTIAL', MG + lw + 3, 291);
       doc.text(`Generated: ${dateStr}`, W / 2, 291, { align: 'center' });
       doc.text(`Page ${i} of ${total}`, W - MG, 291, { align: 'right' });
     }

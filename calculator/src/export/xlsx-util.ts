@@ -17,7 +17,9 @@ export async function buildWorkbook(sheets: SheetSpec[]): Promise<XLSXType.WorkB
   const XLSX = await import('xlsx');
   const wb = XLSX.utils.book_new();
   for (const sh of sheets) {
-    const ws = XLSX.utils.aoa_to_sheet(sh.rows);
+    // Brand every sheet. The .xlsx community build can't embed the logo image or
+    // colour cells, so the wordmark is stamped as the first row of each sheet.
+    const ws = XLSX.utils.aoa_to_sheet([['CostVision — AI Cost Intelligence'], [], ...sh.rows]);
     if (sh.cols) ws['!cols'] = sh.cols.map(wch => ({ wch }));
     XLSX.utils.book_append_sheet(wb, ws, sh.name);
   }
