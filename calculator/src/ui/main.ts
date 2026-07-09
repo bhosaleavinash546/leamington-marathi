@@ -7001,6 +7001,7 @@ function injectPCBImagePanel(): void {
 
   el('pcb-apply-fab-btn')?.addEventListener('click', () => applyPCBImageToFab());
   el('pcb-apply-pcba-btn')?.addEventListener('click', () => applyPCBImageToPCBA());
+  el('pcb-save-lib-btn')?.addEventListener('click', () => savePCBResultToLibrary());
   el('pcb-clear-btn')?.addEventListener('click', () => {
     pcbImageResult = null;
     pcbImageFiles = [null, null, null, null, null];
@@ -7449,6 +7450,7 @@ function buildPCBImagePanel(r: PCBImageAnalysis): string {
       <div class="pcb-apply-row">
         <button class="btn btn-primary btn-sm" id="pcb-apply-fab-btn">⚡ Apply to PCB Fab Form</button>
         <button class="btn btn-primary btn-sm" id="pcb-apply-pcba-btn">⚡ Apply to PCBA BOM + Assembly</button>
+        <button class="btn btn-secondary btn-sm" id="pcb-save-lib-btn" title="Save this PCB should-cost into the Parts Library so it appears in your dashboard and saved results">&#11014; Save to Library</button>
       </div>
 
       <div class="pcb-analysis-section">
@@ -8821,6 +8823,46 @@ function exportPCBAnalysisPrint(r: PCBImageAnalysis): void {
   addFooters();
   const fname = `pcb-analysis-${r.partName.replace(/[^a-z0-9]/gi, '-').toLowerCase()}-${new Date().toISOString().slice(0, 10)}.pdf`;
   doc.save(fname);
+}
+
+/**
+ * Persist the PCB Image-to-Cost result into the Parts Library — the same store
+ * every other commodity's "Save to Library" writes to — so the PCB should-cost
+ * is retained in the system and appears in the dashboard / saved results.
+ * (The BOM line items can additionally be pushed into a working costing via
+ * "Apply to PCBA BOM + Assembly".)
+ */
+function savePCBResultToLibrary(): void {
+  const r = pcbImageResult;
+  if (!r) { showToast('Run a PCB analysis first', 'warning'); return; }
+  const co = r.costEstimates;
+  const total = co.totalBOMCostGBP + co.pcbFabGBP.mid + co.smtAssemblyCostGBP;
+  const existing = getPartsLibrary();
+  // Avoid an accidental duplicate of the exact same board+total saved moments ago.
+  if (existing.some(x => x.commodity === 'pcba' && x.partName === r.partName && Math.abs(x.totalCost - total) < 0.005)) {
+    showToast('This PCB result is already in your Parts Library', 'info');
+    return;
+  }
+  existing.push({
+    id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+    savedAt: Date.now(),
+    projectName: '', partNumber: '', customer: '', vehicleProgramme: '', system: '',
+    notes: `Imported from PCB Image-to-Cost — ${r.bom.length} BOM lines, ${r.assembly.smtPlacements} SMT placements`,
+    partName: r.partName,
+    commodity: 'pcba',
+    totalCost: total,
+    currency: 'GBP',
+    region: (r._selectedCountry ?? 'cn').toUpperCase(),
+    confidence: r.confidenceLevel ?? 'Medium',
+    breakdown: {
+      rawMaterial: co.totalBOMCostGBP,      // components (BOM)
+      process: co.pcbFabGBP.mid,            // bare-board fabrication
+      labour: co.smtAssemblyCostGBP,        // SMT + assembly
+      tooling: 0, overhead: 0, packaging: 0, logistics: 0, margin: 0,
+    },
+  });
+  savePartsLibrary(existing);
+  showToast(`Saved "${r.partName}" to Parts Library (£${total.toFixed(2)}/board)`, 'info');
 }
 
 function applyPCBImageToFab(): void {
