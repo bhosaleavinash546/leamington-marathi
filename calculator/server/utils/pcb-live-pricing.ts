@@ -164,6 +164,11 @@ export async function fetchOctopartPrices(
 
     if (!resp.ok) {
       console.warn(`[LivePricing/Octopart] HTTP ${resp.status}: ${resp.statusText}`);
+      // Auth failures are actionable — surface them instead of returning an empty
+      // list that looks like "no matches". Octopart/Nexar needs a valid OAuth token.
+      if (resp.status === 401 || resp.status === 403) {
+        throw new Error(`Octopart/Nexar authentication failed (HTTP ${resp.status}) — the access token is missing, invalid or expired.`);
+      }
       return [];
     }
 

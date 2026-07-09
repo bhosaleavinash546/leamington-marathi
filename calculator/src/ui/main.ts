@@ -6658,7 +6658,7 @@ function buildPCBImageUploadZone(): string {
         <details style="margin-top:8px;text-align:left">
           <summary style="font-size:0.68rem;color:var(--text-secondary);cursor:pointer;user-select:none">⚡ Live Component Pricing (optional)</summary>
           <div style="margin-top:6px;padding:8px;background:var(--surface-elevated);border:1px solid var(--border);border-radius:6px;font-size:0.70rem">
-            <div style="color:var(--text-secondary);margin-bottom:6px;line-height:1.45">Fetch real-time distributor prices for identified IC part numbers. Requires an API key from your chosen provider.</div>
+            <div style="color:var(--text-secondary);margin-bottom:6px;line-height:1.45">Fetch real-time distributor prices for the BOM's identified part numbers. <strong>Available after you analyse a board.</strong> Requires an API key/token from your chosen provider (Octopart/Nexar uses an OAuth access token).</div>
             <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-bottom:6px">
               <label style="white-space:nowrap;font-weight:600">Provider:</label>
               <select id="pcb-live-provider" style="font-size:0.70rem;padding:2px 6px;border:1px solid var(--border);border-radius:3px;background:var(--card-bg)">
@@ -7022,13 +7022,29 @@ function injectPCBImagePanel(): void {
     drawVolumeCurveChart(pcbImageResult);
   }
 
-  // Enable live pricing fetch button if there are OCR-identified parts
-  const icMarkings = pcbImageResult.ocrExtraction?.icMarkings ?? [];
+  // Enable live pricing on every identified part number in the BOM. The OCR
+  // icMarkings list is frequently empty even when the BOM has real MPNs — gating
+  // solely on it left the button permanently greyed. Union both, keep plausible MPNs.
+  const bomMPNs = (pcbImageResult.bom ?? [])
+    .map(it => (it.partNumber ?? '').trim())
+    .filter(pn => pn.length >= 3 && /\d/.test(pn));
+  const ocrMPNs = (pcbImageResult.ocrExtraction?.icMarkings ?? []).map(s => s.trim()).filter(Boolean);
+  const priceableMPNs = Array.from(new Set([...bomMPNs, ...ocrMPNs]));
   const liveFetchBtn = document.getElementById('pcb-live-fetch-btn') as HTMLButtonElement | null;
-  if (liveFetchBtn && icMarkings.length > 0) {
-    liveFetchBtn.disabled = false;
-    liveFetchBtn.title = `Fetch live prices for: ${icMarkings.slice(0, 3).join(', ')}${icMarkings.length > 3 ? '…' : ''}`;
-    liveFetchBtn.addEventListener('click', () => void fetchLivePricingForBOM(icMarkings));
+  const liveStatusEl = document.getElementById('pcb-live-status');
+  if (liveFetchBtn) {
+    if (priceableMPNs.length > 0) {
+      liveFetchBtn.disabled = false;
+      liveFetchBtn.title = `Fetch live prices for ${priceableMPNs.length} part number${priceableMPNs.length === 1 ? '' : 's'}`;
+      liveFetchBtn.onclick = () => void fetchLivePricingForBOM(priceableMPNs);   // onclick (not addEventListener) — no stacking across re-renders
+      if (liveStatusEl && !liveStatusEl.textContent) {
+        liveStatusEl.textContent = `${priceableMPNs.length} part number${priceableMPNs.length === 1 ? '' : 's'} ready — paste an API key and click Fetch Live Prices.`;
+      }
+    } else {
+      liveFetchBtn.disabled = true;
+      liveFetchBtn.onclick = null;
+      if (liveStatusEl) liveStatusEl.textContent = 'No manufacturer part numbers were detected in the BOM to price.';
+    }
   }
 
   // Edit toggle
@@ -7122,6 +7138,15 @@ async function fetchLivePricingForBOM(icMarkings: string[]): Promise<void> {
     if (!resp.ok || data.error) throw new Error(data.error ?? resp.statusText);
 
     const prices = data.prices ?? [];
+    if (prices.length === 0) {
+      // A valid request that returns nothing almost always means the key/token was
+      // rejected (Octopart needs a Nexar OAuth access token, not a plain key) or the
+      // MPNs weren't recognised — surface that instead of a misleading "success".
+      const hint = provider === 'octopart' ? ' Octopart/Nexar needs a valid access token (not a plain API key).' : '';
+      if (statusEl) statusEl.textContent = `⚠ 0/${icMarkings.length} priced — check your ${provider} API key/token is valid.${hint}`;
+      showToast(`No live prices returned from ${provider} — verify your API key/token`, 'warning');
+      return;
+    }
     if (statusEl) statusEl.textContent = `✓ Live prices fetched for ${prices.length}/${icMarkings.length} parts.`;
 
     // Update BOM table rows with live prices
