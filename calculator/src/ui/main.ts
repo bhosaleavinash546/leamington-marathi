@@ -153,6 +153,9 @@ let pcbImageResult: PCBImageAnalysis | null = null;
 let pcbImageLoading = false;
 let pcbBOMFile: File | null = null;
 let pcbImageDataURL: string | null = null;
+// All uploaded board photos (downscaled JPEG data URLs + dimensions), retained so
+// every export report (PDF, Excel) can embed the exact images the analysis used.
+let pcbUploadedImages: { label: string; dataUrl: string; w: number; h: number }[] = [];
 let pcbNREEnabled = false;
 // Slot 0=Top (primary), 1=Bottom, 2-4=Additional 1-3
 let pcbImageFiles: (File | null)[] = [null, null, null, null, null];
@@ -6845,6 +6848,25 @@ async function analyzePCBImages(): Promise<void> {
   const uploadFiles = await Promise.all(selectedFiles.map(x => downscaleImageForUpload(x.file)));
   uploadFiles.forEach(file => formData.append('pcbImages', file));
   formData.append('pcbImageLabels', JSON.stringify(selectedFiles.map(x => x.label)));
+
+  // Retain every uploaded (downscaled) image so all export reports can embed them.
+  try {
+    pcbUploadedImages = await Promise.all(uploadFiles.map(async (file, i) => {
+      const dataUrl = await new Promise<string>((resolve, reject) => {
+        const rd = new FileReader();
+        rd.onload = () => resolve(rd.result as string);
+        rd.onerror = () => reject(rd.error);
+        rd.readAsDataURL(file);
+      });
+      const dims = await new Promise<{ w: number; h: number }>((resolve) => {
+        const im = new Image();
+        im.onload = () => resolve({ w: im.naturalWidth || 1, h: im.naturalHeight || 1 });
+        im.onerror = () => resolve({ w: 1, h: 1 });
+        im.src = dataUrl;
+      });
+      return { label: selectedFiles[i].label, dataUrl, w: dims.w, h: dims.h };
+    }));
+  } catch { pcbUploadedImages = []; }
   formData.append('country', selectedCountry);
   formData.append('orderQty', orderQty);
 
@@ -6983,12 +7005,14 @@ function injectPCBImagePanel(): void {
     pcbImageResult = null;
     pcbImageFiles = [null, null, null, null, null];
     pcbImageDataURL = null;
+    pcbUploadedImages = [];
     if (_pcbVolumeChart) { _pcbVolumeChart.destroy(); _pcbVolumeChart = null; }
     injectPCBDemoCards();
   });
 
   // Feature wiring (Phase 1-2)
   el('pcb-export-csv-btn')?.addEventListener('click', () => { if (pcbImageResult) exportPCBAnalysisCSV(pcbImageResult); });
+  el('pcb-export-excel-btn')?.addEventListener('click', () => { if (pcbImageResult) exportPCBAnalysisExcel(pcbImageResult); });
   el('pcb-export-pdf-btn')?.addEventListener('click', () => { if (pcbImageResult) exportPCBAnalysisPrint(pcbImageResult); });
   if (pcbImageResult) {
     wireScenarioBuilder(pcbImageResult);
@@ -7333,6 +7357,7 @@ function buildPCBImagePanel(r: PCBImageAnalysis): string {
 
       <div style="display:flex;gap:6px;margin-top:6px">
         <button class="btn btn-secondary btn-sm" id="pcb-export-csv-btn" style="font-size:0.65rem">&#11015; Export CSV</button>
+        <button class="btn btn-secondary btn-sm" id="pcb-export-excel-btn" style="font-size:0.65rem" title="Excel workbook — BOM, country comparison and all uploaded board images embedded">&#11015; Export Excel</button>
         <button class="btn btn-secondary btn-sm" id="pcb-export-pdf-btn" style="font-size:0.65rem;display:flex;align-items:center;gap:3px"><svg viewBox="0 0 16 16" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12H3a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1h7l3 3v6a1 1 0 0 1-1 1h-1"/><polyline points="4 9 4 16 12 16 12 9"/><line x1="8" y1="4" x2="8" y2="12"/><polyline points="5 9 8 12 11 9"/></svg> Export PDF</button>
       </div>
 
@@ -8388,6 +8413,13 @@ function exportPCBAnalysisCSV(r: PCBImageAnalysis): void {
       lines.push([q, ...ids.map(id => (r._volumeCurves![id][i]?.totalPerBoard ?? 0).toFixed(2))].join(','));
     });
   }
+  if (pcbUploadedImages.length > 0) {
+    lines.push('');
+    lines.push('=== UPLOADED BOARD IMAGES ===');
+    lines.push('View,Pixels (WxH)');
+    for (const im of pcbUploadedImages) lines.push([im.label, `${im.w}x${im.h}`].map(csvCell).join(','));
+    lines.push('Note: images are embedded in the Excel (.xls) and PDF exports (CSV is text-only).');
+  }
   const blob = new Blob([lines.join('\n')], { type: 'text/csv;charset=utf-8' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
@@ -8398,6 +8430,63 @@ function exportPCBAnalysisCSV(r: PCBImageAnalysis): void {
   a.remove();
   URL.revokeObjectURL(url);
 }
+// Excel export — an HTML-table workbook (.xls) so the uploaded board photos can be
+// embedded as pictures. SheetJS's community build cannot write images into .xlsx;
+// the HTML-workbook format is the reliable, dependency-free way Excel / Google
+// Sheets / LibreOffice all open with the images shown. Machine-readable data stays
+// in the CSV export.
+function exportPCBAnalysisExcel(r: PCBImageAnalysis): void {
+  const dateStr = new Date().toISOString().slice(0, 10);
+  const money = (n: number) => `£${n.toFixed(2)}`;
+  const th = (t: string) => `<th style="background:#1e3a8a;color:#fff;border:1px solid #cbd5e1;padding:4px 8px;text-align:left">${escHtml(t)}</th>`;
+  const td = (t: string | number, extra = '') => `<td style="border:1px solid #cbd5e1;padding:3px 8px;${extra}">${escHtml(String(t))}</td>`;
+
+  const bomRows = r.bom.map(b => `<tr>${[
+    td(b.refDes), td(b.description), td(b.pkg), td(b.value), td(b.partNumber ?? ''),
+    td(b.qty), td(b.unitPriceGBP.toFixed(4)), td((b.qty * b.unitPriceGBP).toFixed(2)),
+    td(b.automotive ? 'Y' : 'N'), td(b.highCost ? 'Y' : 'N'),
+  ].join('')}</tr>`).join('');
+
+  const countryRows = (r._countryComparison ?? []).map(c => `<tr>${[
+    td(c.countryName), td(money(c.pcbFabPerBoard)), td(money(c.assemblyPerBoard)),
+    td(money(c.logisticsPerBoard)), td(money(c.bomCostPerBoard)), td(money(c.totalPerBoard)),
+    td(c.leadTimeWeeks), td(`${Math.round(c.qualityIndex * 100)}%`),
+  ].join('')}</tr>`).join('');
+
+  // Embedded board images — each in its own row so Excel sizes the cell to the picture.
+  const imageRows = pcbUploadedImages.map(im => {
+    const w = Math.min(420, im.w);
+    const h = Math.round(w * (im.h / Math.max(1, im.w)));
+    return `<tr>
+      <td style="border:1px solid #cbd5e1;padding:6px;font-weight:bold;vertical-align:top">${escHtml(im.label)}</td>
+      <td style="border:1px solid #cbd5e1;padding:6px"><img src="${im.dataUrl}" width="${w}" height="${h}"/></td>
+    </tr>`;
+  }).join('');
+
+  const html = `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
+  <head><meta charset="utf-8"/><style>table{border-collapse:collapse;font-family:Arial,sans-serif;font-size:11px;margin-bottom:16px}h2{font-family:Arial;font-size:14px;color:#1e3a8a}</style></head>
+  <body>
+    <h2>PCB Should-Cost Analysis — ${escHtml(r.partName)}</h2>
+    <div style="font-size:11px;color:#475569">Exported ${dateStr} · Total BOM cost ${money(r.costEstimates.totalBOMCostGBP)}</div>
+    <h2>Bill of Materials</h2>
+    <table><tr>${['RefDes','Description','Package','Value','Part Number','Qty','Unit £','Ext £','Automotive','High-Cost'].map(th).join('')}</tr>${bomRows}
+      <tr><td colspan="7" style="border:1px solid #cbd5e1;padding:3px 8px;font-weight:bold;text-align:right">Total BOM Cost</td>${td(r.costEstimates.totalBOMCostGBP.toFixed(2), 'font-weight:bold')}<td></td><td></td></tr>
+    </table>
+    ${countryRows ? `<h2>Country Comparison (per board)</h2><table><tr>${['Country','PCB Fab','Assembly','Logistics','BOM','Total/Board','Lead (wk)','Quality'].map(th).join('')}</tr>${countryRows}</table>` : ''}
+    ${imageRows ? `<h2>Uploaded Board Images (${pcbUploadedImages.length})</h2><table>${imageRows}</table>` : '<p style="font-size:11px;color:#94a3b8">No board images were uploaded for this analysis.</p>'}
+  </body></html>`;
+
+  const blob = new Blob(['﻿', html], { type: 'application/vnd.ms-excel' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `pcb-analysis-${r.partName.replace(/[^a-z0-9]+/gi, '-').slice(0, 40)}-${dateStr}.xls`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
 function exportPCBAnalysisPrint(r: PCBImageAnalysis): void {
   type RGB = [number, number, number];
   const BLUE: RGB   = [37,  99,  235];
@@ -8670,6 +8759,33 @@ function exportPCBAnalysisPrint(r: PCBImageAnalysis): void {
   if (r.analysisLimitations.length > 0) {
     sectionTitle('§10  Analysis Limitations');
     bulletList(r.analysisLimitations, () => GREY);
+  }
+
+  // ── §11 UPLOADED BOARD IMAGES ─────────────────────────────────────────────────
+  if (pcbUploadedImages.length > 0) {
+    sectionTitle(`§11  Uploaded Board Images (${pcbUploadedImages.length})`);
+    const gap = 5;
+    const colW = (usable - gap) / 2;      // two images per row
+    const maxCellH = 75;                  // cap image height (mm)
+    for (let i = 0; i < pcbUploadedImages.length; i += 2) {
+      const row = pcbUploadedImages.slice(i, i + 2);
+      // Height of the tallest image in this row (drives page-break + label placement).
+      const rowH = Math.min(maxCellH, Math.max(...row.map(im => colW * (im.h / Math.max(1, im.w)))));
+      checkPage(rowH + 8);
+      row.forEach((im, j) => {
+        const x = margin + j * (colW + gap);
+        let dw = colW;
+        let dh = colW * (im.h / Math.max(1, im.w));
+        if (dh > maxCellH) { dh = maxCellH; dw = maxCellH * (im.w / Math.max(1, im.h)); }
+        try {
+          doc.addImage(im.dataUrl, 'JPEG', x, y, dw, dh, undefined, 'FAST');
+        } catch { /* skip an image that fails to embed */ }
+        doc.setFontSize(7); doc.setTextColor(...GREY);
+        doc.text(im.label, x, y + rowH + 4);
+        doc.setTextColor(...DARK);
+      });
+      y += rowH + 8;
+    }
   }
 
   addFooters();
