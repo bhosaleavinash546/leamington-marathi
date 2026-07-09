@@ -760,6 +760,7 @@ function renderSWPanelHTML(): string {
     <span style="font-size:0.78rem;color:var(--sw-text-muted);font-weight:600">Demo Programmes:</span>
     ${SW_VEHICLE_DEMOS.map(v => `<button class="sw-preset-btn sw-vehicle-btn" data-vehicle="${v.id}" title="${esc(v.desc)}">${v.label}</button>`).join('')}
     <button class="sw-preset-btn" id="sw-study-btn" title="Open the apple-to-apple powertrain cost study — 5 cars × 4 drivetrains" style="border-color:rgba(180,120,20,0.4);color:var(--gold,#B67D1E);font-weight:700">📊 Powertrain Cost Study</button>
+    <button class="sw-preset-btn" id="sw-bench-btn" title="Range Rover L460 competitive benchmark — vs BMW X7 / Audi Q8 / Mercedes GLS / Porsche Cayenne, real drivetrains only" style="border-color:rgba(30,64,52,0.45);color:#1E4034;font-weight:700">🟢 L460 Competitive Benchmark</button>
   </div>
   ${(() => {
     const active = _swActiveVehicle ? SW_VEHICLE_DEMOS.find(d => d.id === _swActiveVehicle) : null;
@@ -2425,7 +2426,7 @@ export function wireSWPanel(): void {
   }
 
   // Preset buttons (excluding the vehicle demos, which have their own handler)
-  document.querySelectorAll<HTMLButtonElement>('.sw-preset-btn:not(.sw-vehicle-btn):not(#sw-study-btn)').forEach(btn => {
+  document.querySelectorAll<HTMLButtonElement>('.sw-preset-btn:not(.sw-vehicle-btn):not(#sw-study-btn):not(#sw-bench-btn)').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll<HTMLButtonElement>('.sw-preset-btn').forEach(b => b.classList.remove('sw-preset-active'));
       btn.classList.add('sw-preset-active');
@@ -2450,6 +2451,11 @@ export function wireSWPanel(): void {
   // "Powertrain Cost Study" — open the apple-to-apple cross-car comparison.
   document.getElementById('sw-study-btn')?.addEventListener('click', () => {
     window.open(import.meta.env.BASE_URL + 'reports/powertrain-cost-study.html', '_blank', 'noopener');
+  });
+
+  // "L460 Competitive Benchmark" — open the board-level benchmark report.
+  document.getElementById('sw-bench-btn')?.addEventListener('click', () => {
+    window.open(import.meta.env.BASE_URL + 'reports/l460-benchmark.html', '_blank', 'noopener');
   });
 
   // Select/deselect all

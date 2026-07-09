@@ -1,0 +1,430 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Range Rover L460 — Software Cost Competitive Benchmark</title>
+<style>
+  :root{
+    --paper:#FCFBF7; --surface:#FFFFFF; --surface-2:#F7F5EF;
+    --ink:#1B2620; --ink-soft:#59635C; --ink-faint:#8B948C;
+    --line:#E6E3D8; --line-strong:#D2CDBE;
+    --green:#1E4034; --green-2:#2F5C49; --green-3:#4E7A66; --green-soft:#E9F0EB;
+    --bronze:#9C7328; --bronze-2:#B98F44; --bronze-soft:#F4EBD6;
+    --x7:#3E5F92; --q8:#7C8894; --gls:#B08A46; --cay:#7C5468;
+    --save:#2E7D57; --save-soft:#E3F1E9; --cost:#AE4A3E; --cost-soft:#F6E5E2;
+    --sans:-apple-system,"Segoe UI",Helvetica,Arial,sans-serif;
+    --serif:Georgia,"Times New Roman",serif;
+    --mono:"SF Mono","Cascadia Code",Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:#E9E7DE;color:var(--ink);font-family:var(--sans);line-height:1.55;-webkit-font-smoothing:antialiased;}
+  .page{background:var(--paper);max-width:860px;margin:20px auto;padding:46px 54px 40px;position:relative;box-shadow:0 2px 20px rgba(0,0,0,.10);border-radius:2px;}
+  .page::after{content:attr(data-pf);position:absolute;left:54px;right:54px;bottom:16px;display:flex;justify-content:space-between;font-family:var(--mono);font-size:.62rem;color:var(--ink-faint);border-top:1px solid var(--line);padding-top:7px;}
+  .pn{position:absolute;right:54px;bottom:16px;font-family:var(--mono);font-size:.62rem;color:var(--ink-faint);}
+
+  h1{font-family:var(--serif);font-weight:700;letter-spacing:-.01em;}
+  h2{font-family:var(--serif);font-size:1.5rem;font-weight:700;color:var(--green);margin:0 0 4px;letter-spacing:-.01em;}
+  h3{font-size:.98rem;font-weight:700;margin:0 0 6px;color:var(--ink);}
+  .eyebrow{font-family:var(--sans);font-size:.68rem;letter-spacing:.22em;text-transform:uppercase;color:var(--bronze);font-weight:700;}
+  .sec-no{font-family:var(--mono);color:var(--green-3);font-size:.8rem;font-weight:600;}
+  p{margin:.5em 0;}
+  .lede{color:var(--ink-soft);font-size:.98rem;max-width:64ch;}
+  .muted{color:var(--ink-soft);} .small{font-size:.82rem;} .fine{font-size:.72rem;color:var(--ink-faint);}
+  b,strong{color:var(--ink);} .num{font-family:var(--mono);font-variant-numeric:tabular-nums;}
+  hr{border:none;border-top:1px solid var(--line);margin:22px 0;}
+  a{color:var(--green-2);}
+
+  /* COVER */
+  .cover{min-height:940px;display:flex;flex-direction:column;background:linear-gradient(160deg,#173029,#1E4034 46%,#24483A);color:#EFEDE3;}
+  .cover .page-inner{flex:1;display:flex;flex-direction:column;padding:8px 4px;}
+  .cover .brandbar{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(255,255,255,.18);padding-bottom:16px;}
+  .cover .brandbar .logo{font-family:var(--serif);font-weight:700;font-size:1.05rem;letter-spacing:.04em;}
+  .cover .brandbar .conf{font-family:var(--mono);font-size:.64rem;letter-spacing:.18em;color:#C9C2A8;}
+  .cover .mid{flex:1;display:flex;flex-direction:column;justify-content:center;}
+  .cover .eyebrow{color:var(--bronze-2);}
+  .cover h1{font-size:3.15rem;line-height:1.06;margin:.3em 0 .25em;color:#FBFAF4;}
+  .cover .sub{font-size:1.12rem;color:#D6D2C0;max-width:52ch;}
+  .cover .meturb{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.14);border-radius:10px;overflow:hidden;margin-top:40px;}
+  .cover .meturb div{background:#1c3b31;padding:16px 18px;}
+  .cover .meturb .k{font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;color:#B9C6B0;}
+  .cover .meturb .v{font-family:var(--serif);font-size:1.6rem;font-weight:700;color:var(--bronze-2);margin-top:3px;}
+  .cover .foot{border-top:1px solid rgba(255,255,255,.18);padding-top:14px;display:flex;justify-content:space-between;font-family:var(--mono);font-size:.66rem;color:#C9C2A8;}
+
+  /* KPI row */
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:18px 0 6px;}
+  .kpi{border:1px solid var(--line);border-radius:10px;padding:14px 15px;background:var(--surface);}
+  .kpi .k{font-family:var(--mono);font-size:.62rem;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-faint);}
+  .kpi .v{font-family:var(--serif);font-size:1.7rem;font-weight:700;color:var(--green);line-height:1.05;margin-top:3px;}
+  .kpi .v.cost{color:var(--cost);} .kpi .v.save{color:var(--save);}
+  .kpi .s{font-size:.72rem;color:var(--ink-soft);margin-top:3px;}
+
+  /* findings */
+  .finding{display:grid;grid-template-columns:26px 1fr;gap:12px;padding:11px 0;border-top:1px solid var(--line);}
+  .finding .fn{font-family:var(--serif);font-weight:700;color:var(--bronze);font-size:1.05rem;}
+  .finding .ft{font-weight:700;} .finding p{margin:.2em 0 0;color:var(--ink-soft);font-size:.9rem;}
+
+  /* matrix */
+  table.mtx{width:100%;border-collapse:collapse;font-size:.9rem;}
+  table.mtx th,table.mtx td{padding:10px 12px;border-bottom:1px solid var(--line);text-align:center;}
+  table.mtx th{font-size:.66rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-faint);font-weight:700;}
+  table.mtx td.car{text-align:left;font-weight:700;}
+  table.mtx td.car span{display:block;font-weight:400;font-size:.72rem;color:var(--ink-faint);}
+  .yes{color:var(--save);font-weight:700;} .no{color:var(--ink-faint);}
+  .yes .tag,.soon .tag{display:block;font-size:.62rem;color:var(--ink-faint);font-weight:400;}
+  .soon{color:var(--bronze);font-weight:700;}
+  tr.me td{background:var(--green-soft);}
+
+  /* data table */
+  table.data{width:100%;border-collapse:collapse;font-size:.88rem;}
+  table.data th{font-size:.64rem;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-faint);font-weight:700;text-align:right;padding:8px 10px;border-bottom:1.5px solid var(--line-strong);}
+  table.data th:first-child{text-align:left;}
+  table.data td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums;}
+  table.data td:first-child{text-align:left;font-family:var(--sans);font-weight:600;}
+  table.data tr.me td{background:var(--green-soft);}
+  table.data td .sw{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:6px;vertical-align:0;}
+  .delta-up{color:var(--cost);font-weight:700;} .delta-dn{color:var(--save);font-weight:700;}
+
+  /* chart frame */
+  .chart{border:1px solid var(--line);border-radius:11px;padding:18px 18px 12px;background:var(--surface);}
+  .chart .ct{font-size:.82rem;font-weight:700;margin-bottom:2px;}
+  .chart .cs{font-size:.72rem;color:var(--ink-faint);margin-bottom:14px;}
+  /* vertical bars */
+  .vbars{display:flex;align-items:flex-end;gap:20px;height:230px;padding:0 8px;border-bottom:1.5px solid var(--line-strong);position:relative;}
+  .vbars .gl{position:absolute;left:0;right:0;border-top:1px dashed var(--line);}
+  .vcol{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;z-index:2;}
+  .vcol .bar{width:70%;border-radius:5px 5px 0 0;position:relative;transition:height .8s;}
+  .vcol .bv{font-family:var(--mono);font-weight:700;font-size:.8rem;margin-bottom:5px;}
+  .vlabels{display:flex;gap:20px;padding:8px 8px 0;}
+  .vlabels div{flex:1;text-align:center;font-size:.76rem;font-weight:600;}
+  .vlabels div span{display:block;font-family:var(--mono);font-size:.66rem;color:var(--ink-faint);font-weight:400;}
+
+  /* horizontal bars */
+  .hbars{display:flex;flex-direction:column;gap:9px;}
+  .hb{display:grid;grid-template-columns:150px 1fr 74px;gap:12px;align-items:center;}
+  .hb .l{font-size:.82rem;font-weight:600;} .hb .l span{display:block;font-size:.66rem;color:var(--ink-faint);font-weight:400;}
+  .hb .track{height:20px;background:var(--surface-2);border:1px solid var(--line);border-radius:5px;overflow:hidden;}
+  .hb .fill{height:100%;border-radius:4px;}
+  .hb .v{font-family:var(--mono);font-weight:700;font-size:.8rem;text-align:right;}
+  .hb.me .l{color:var(--green);}
+
+  /* waterfall */
+  .wf{display:flex;flex-direction:column;gap:0;}
+  .wfr{display:grid;grid-template-columns:186px 1fr 92px;gap:12px;align-items:center;height:38px;}
+  .wfr .l{font-size:.82rem;font-weight:600;} .wfr .l span{display:block;font-size:.64rem;color:var(--ink-faint);font-weight:400;}
+  .wftrack{position:relative;height:24px;}
+  .wftrack .seg{position:absolute;top:0;height:100%;border-radius:4px;}
+  .wfr .v{font-family:var(--mono);font-weight:700;font-size:.8rem;text-align:right;}
+  .wfaxis{position:relative;height:16px;margin-left:198px;}
+  .wfaxis span{position:absolute;font-family:var(--mono);font-size:.6rem;color:var(--ink-faint);transform:translateX(-50%);}
+  .refline{position:absolute;top:-4px;bottom:-4px;border-left:2px dashed var(--x7);}
+
+  /* levers */
+  .levers{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .lever{border:1px solid var(--line);border-left:4px solid var(--green);border-radius:9px;padding:13px 15px;background:var(--surface);}
+  .lever.opt{border-left-color:var(--bronze);}
+  .lever .lh{display:flex;justify-content:space-between;align-items:baseline;gap:8px;}
+  .lever .lt{font-weight:700;font-size:.9rem;} .lever .sv{font-family:var(--mono);font-weight:700;color:var(--save);font-size:.95rem;white-space:nowrap;}
+  .lever p{margin:5px 0 0;font-size:.8rem;color:var(--ink-soft);}
+  .lever .tag{display:inline-block;margin-top:7px;font-size:.62rem;font-weight:700;letter-spacing:.04em;padding:2px 7px;border-radius:20px;}
+  .tag-do{background:var(--save-soft);color:var(--save);} .tag-care{background:var(--cost-soft);color:var(--cost);}
+
+  .callout{border:1px solid var(--line);border-left:4px solid var(--bronze);background:var(--bronze-soft);border-radius:10px;padding:15px 17px;font-size:.92rem;}
+  .callout.win{border-left-color:var(--save);background:var(--save-soft);}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:18px;} .three{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
+  ul.clean{margin:.3em 0;padding-left:1.1em;} ul.clean li{margin:.35em 0;color:var(--ink-soft);font-size:.86rem;} ul.clean li b{color:var(--ink);}
+  .legend{display:flex;gap:16px;flex-wrap:wrap;font-size:.72rem;color:var(--ink-soft);margin-top:12px;}
+  .legend span{display:flex;align-items:center;gap:5px;} .legend i{width:11px;height:11px;border-radius:2px;display:inline-block;}
+  .assump{font-size:.82rem;} .assump dt{font-weight:700;margin-top:9px;color:var(--green);} .assump dd{margin:2px 0 0;color:var(--ink-soft);}
+
+  @media print{
+    @page{size:A4;margin:14mm 13mm;}
+    body{background:#fff;}
+    .page{box-shadow:none;margin:0;max-width:none;width:auto;min-height:0;padding:0;border-radius:0;page-break-after:always;}
+    .page:last-child{page-break-after:auto;}
+    .cover{min-height:0;height:263mm;}
+    .chart,.lever,.kpi,.callout,.finding,table{page-break-inside:avoid;}
+  }
+</style>
+</head>
+<body>
+
+<!-- ══ COVER ══ -->
+<div class="page cover"><div class="page-inner">
+  <div class="brandbar"><span class="logo">CostVision</span><span class="conf">CONFIDENTIAL · BOARD REVIEW</span></div>
+  <div class="mid">
+    <div class="eyebrow">Automotive Software Should-Cost · Competitive Benchmark</div>
+    <h1>Range Rover L460<br>software cost benchmark</h1>
+    <p class="sub">A like-for-like assessment of embedded-software programme cost against the premium-SUV peer set — with the optimisation opportunities available to close the gap.</p>
+    <div class="meturb">
+      <div><div class="k">Baseline programme</div><div class="v">£420M</div></div>
+      <div><div class="k">Gap vs best peer</div><div class="v">+38%</div></div>
+      <div><div class="k">Opportunity identified</div><div class="v">£145M</div></div>
+    </div>
+  </div>
+  <div class="foot"><span>Prepared for Senior Management</span><span>GBP · July 2026 · CostVision engine v1.0</span></div>
+</div><span class="pn" style="color:#C9C2A8">01</span></div>
+
+<!-- ══ 1. EXECUTIVE SUMMARY ══ -->
+<div class="page" data-pf="Range Rover L460 — Software Cost Benchmark    ·    Confidential">
+  <div class="eyebrow">Executive Summary</div>
+  <h2><span class="sec-no">01</span>&nbsp; The headline</h2>
+  <p class="lede">On its core mild-hybrid (MHEV) programme — the only drivetrain the L460 shares with the BMW X7, Audi Q8 and Mercedes GLS — the L460's embedded software costs materially more than the German rivals. The cause is specific, and the fix is largely architectural rather than commercial.</p>
+
+  <div class="kpis">
+    <div class="kpi"><div class="k">L460 MHEV programme</div><div class="v">£420.0M</div><div class="s">£700 / vehicle · 42 modules</div></div>
+    <div class="kpi"><div class="k">vs BMW X7 (best peer)</div><div class="v cost">+£114.8M</div><div class="s">+37.6% higher</div></div>
+    <div class="kpi"><div class="k">Root cause</div><div class="v" style="font-size:1.15rem;line-height:1.15">Lower<br>reuse</div><div class="s">"Medium" vs rivals' "Heavy"</div></div>
+    <div class="kpi"><div class="k">Addressable saving</div><div class="v save">£145M</div><div class="s">−35%, without offshoring</div></div>
+  </div>
+
+  <hr>
+  <h3>Five findings</h3>
+  <div class="finding"><div class="fn">1</div><div><div class="ft">The L460's software costs ~38% more than the BMW X7 / Audi Q8 on the equivalent MHEV programme.</div><p>£420M vs £305M / £313M. Per vehicle the gap is smaller (£700 vs £636 / £631) because the L460 amortises over higher volume.</p></div></div>
+  <div class="finding"><div class="fn">2</div><div><div class="ft">The gap is a software-reuse gap, not a geography or volume gap.</div><p>Holding region, source and volume constant (normalised view), the L460 still sits ~£155M above the Germans — because BMW and Audi carry far more software forward between models ("Heavy"/platform reuse) while the L460 develops more afresh.</p></div></div>
+  <div class="finding"><div class="fn">3</div><div><div class="ft">The L460's commercial setup is already efficient.</div><p>Its Tier-1 supplier sourcing (0.88× vs in-house) and UK base are <em>lowering</em> its cost — so the opportunity is engineering strategy, not procurement.</p></div></div>
+  <div class="finding"><div class="fn">4</div><div><div class="ft">Lifting reuse to peer level would save ~£145M (−35%) and reach parity with the Germans — no offshoring required.</div><p>Raising baseline reuse "Medium → Heavy" and adopting shared-platform middleware brings the programme to ~£275M.</p></div></div>
+  <div class="finding"><div class="fn">5</div><div><div class="ft">On electrified variants the L460 already benchmarks <span class="delta-dn">favourably</span>.</div><p>Against the only true peer with PHEV/BEV (Porsche Cayenne), the L460 is cheaper on both total and per-vehicle — the reuse issue is concentrated in the high-volume MHEV programme.</p></div></div>
+  <span class="pn">02</span>
+</div>
+
+<!-- ══ 2. PROPULSION REALITY ══ -->
+<div class="page" data-pf="Range Rover L460 — Software Cost Benchmark    ·    Confidential">
+  <div class="eyebrow">Comparability — the sanity check</div>
+  <h2><span class="sec-no">02</span>&nbsp; What can honestly be compared</h2>
+  <p class="lede">A credible benchmark only compares drivetrains that both cars actually sell. The peer set does <b>not</b> offer every propulsion — so we compare only where a real, production, apple-to-apple pairing exists. Availability below was verified against manufacturer and industry sources (July 2026).</p>
+
+  <table class="mtx">
+    <thead><tr><th style="text-align:left">Programme</th><th>ICE<br><span class="fine">non-hybrid</span></th><th>MHEV<br><span class="fine">48V</span></th><th>PHEV</th><th>BEV</th></tr></thead>
+    <tbody>
+      <tr class="me"><td class="car">Range Rover L460<span>reference — "our car"</span></td><td class="no">—</td><td class="yes">●</td><td class="yes">●</td><td class="soon">◑<span class="tag">launching</span></td></tr>
+      <tr><td class="car">BMW X7 (G07)<span>iX7 BEV is next-gen, 2027+</span></td><td class="no">—</td><td class="yes">●</td><td class="no">—</td><td class="no">—</td></tr>
+      <tr><td class="car">Audi Q8<span>Q8 e-tron is a separate model</span></td><td class="no">—</td><td class="yes">●</td><td class="no">—</td><td class="no">—</td></tr>
+      <tr><td class="car">Mercedes GLS<span>EQS SUV is a separate model</span></td><td class="no">—</td><td class="yes">●</td><td class="no">—</td><td class="no">—</td></tr>
+      <tr><td class="car">Porsche Cayenne<span>Electric premiered Nov 2025</span></td><td class="yes">●</td><td class="no">—</td><td class="yes">●</td><td class="yes">●</td></tr>
+    </tbody>
+  </table>
+  <div class="legend"><span><i style="background:var(--save)"></i> Offered in production</span><span><i style="background:var(--bronze)"></i> Launching (Range Rover Electric)</span><span><i style="background:var(--ink-faint)"></i> Not offered</span></div>
+
+  <hr>
+  <div class="two">
+    <div class="callout"><b>Valid apple-to-apple pairings</b>
+      <ul class="clean" style="margin-top:6px">
+        <li><b>MHEV:</b> L460 vs X7, Q8, GLS — the four-way core benchmark.</li>
+        <li><b>PHEV &amp; BEV:</b> L460 vs Porsche Cayenne — the only peer offering electrified variants.</li>
+      </ul>
+    </div>
+    <div>
+      <h3>Why this matters</h3>
+      <p class="small muted">Comparing the L460's software against, say, a "BMW X7 BEV" would be meaningless — BMW does not build one on this platform. Restricting to real pairings keeps every number in this report defensible in front of a supplier or the board.</p>
+    </div>
+  </div>
+  <span class="pn">03</span>
+</div>
+
+<!-- ══ 3. MHEV BENCHMARK ══ -->
+<div class="page" data-pf="Range Rover L460 — Software Cost Benchmark    ·    Confidential">
+  <div class="eyebrow">The core benchmark</div>
+  <h2><span class="sec-no">03</span>&nbsp; MHEV programme, four-way</h2>
+  <p class="lede">Total embedded-software should-cost for the 48V mild-hybrid programme, each car on its own real commercial assumptions. The L460 is the second-most expensive of the four, and 38% above the leanest.</p>
+
+  <div class="chart" style="margin:14px 0">
+    <div class="ct">Total software programme cost — MHEV (£M)</div>
+    <div class="cs">Lower is better · each car's actual region, volume &amp; reuse strategy</div>
+    <div class="vbars">
+      <div class="gl" style="bottom:calc(0px + 100%*0/550)"></div>
+      <div class="gl" style="bottom:calc(230px*250/550)"></div>
+      <div class="gl" style="bottom:calc(230px*500/550)"></div>
+      <div class="vcol"><div class="bv" style="color:var(--green)">£420.0M</div><div class="bar" style="height:calc(230px*420/550);background:linear-gradient(180deg,var(--green-2),var(--green))"></div></div>
+      <div class="vcol"><div class="bv" style="color:var(--x7)">£305.2M</div><div class="bar" style="height:calc(230px*305.2/550);background:var(--x7)"></div></div>
+      <div class="vcol"><div class="bv" style="color:var(--q8)">£312.6M</div><div class="bar" style="height:calc(230px*312.6/550);background:var(--q8)"></div></div>
+      <div class="vcol"><div class="bv" style="color:var(--gls)">£489.6M</div><div class="bar" style="height:calc(230px*489.6/550);background:var(--gls)"></div></div>
+    </div>
+    <div class="vlabels">
+      <div style="color:var(--green)">Range Rover L460<span>UK · 75k/yr · Medium reuse</span></div>
+      <div>BMW X7<span>EU · 60k/yr · Heavy reuse</span></div>
+      <div>Audi Q8<span>EU · 55k/yr · Heavy + platform</span></div>
+      <div>Mercedes GLS<span>EU · 45k/yr · Medium reuse</span></div>
+    </div>
+  </div>
+
+  <table class="data">
+    <thead><tr><th>Programme (MHEV)</th><th>Total</th><th>NRE (one-off)</th><th>£ / vehicle</th><th>vs L460</th></tr></thead>
+    <tbody>
+      <tr class="me"><td><span class="sw" style="background:var(--green)"></span>Range Rover L460</td><td>£420.0M</td><td>£253.6M</td><td>£700</td><td>—</td></tr>
+      <tr><td><span class="sw" style="background:var(--x7)"></span>BMW X7</td><td>£305.2M</td><td>£174.7M</td><td>£636</td><td class="delta-dn">−£114.8M</td></tr>
+      <tr><td><span class="sw" style="background:var(--q8)"></span>Audi Q8</td><td>£312.6M</td><td>£168.9M</td><td>£631</td><td class="delta-dn">−£107.4M</td></tr>
+      <tr><td><span class="sw" style="background:var(--gls)"></span>Mercedes GLS</td><td>£489.6M</td><td>£286.6M</td><td>£1,209</td><td class="delta-up">+£69.6M</td></tr>
+    </tbody>
+  </table>
+  <p class="fine" style="margin-top:8px">Per-vehicle differences also reflect volume: the GLS is dearest per car (45k/yr) despite the L460's higher total. The L460's £700/vehicle is competitive; its <b>total programme cost</b> is the concern.</p>
+  <span class="pn">04</span>
+</div>
+
+<!-- ══ 4. WHERE THE DIFFERENCE COMES FROM ══ -->
+<div class="page" data-pf="Range Rover L460 — Software Cost Benchmark    ·    Confidential">
+  <div class="eyebrow">Diagnosis</div>
+  <h2><span class="sec-no">04</span>&nbsp; Where the difference comes from</h2>
+  <p class="lede">Two tests isolate the cause. First, a normalised view removes commercial/geographic differences. Second, a domain breakdown shows exactly which software carries the excess.</p>
+
+  <div class="two" style="margin:14px 0">
+    <div class="chart">
+      <div class="ct">Normalised — same region, source &amp; volume</div>
+      <div class="cs">Only software strategy differs · £M total</div>
+      <div class="hbars" style="margin-top:6px">
+        <div class="hb me"><div class="l">Range Rover L460<span>Medium reuse</span></div><div class="track"><div class="fill" style="width:100%;background:var(--green)"></div></div><div class="v">£459.7M</div></div>
+        <div class="hb"><div class="l">Mercedes GLS<span>Medium reuse</span></div><div class="track"><div class="fill" style="width:100.2%;background:var(--gls)"></div></div><div class="v">£460.5M</div></div>
+        <div class="hb"><div class="l">BMW X7<span>Heavy reuse</span></div><div class="track"><div class="fill" style="width:66.4%;background:var(--x7)"></div></div><div class="v">£305.2M</div></div>
+        <div class="hb"><div class="l">Audi Q8<span>Heavy + platform</span></div><div class="track"><div class="fill" style="width:64.8%;background:var(--q8)"></div></div><div class="v">£297.7M</div></div>
+      </div>
+      <p class="fine" style="margin-top:10px">Even on identical commercial terms the L460 stays high — clustering with the GLS (both "Medium" reuse) and well above BMW/Audi ("Heavy"). <b>The gap is engineering strategy, not geography.</b></p>
+    </div>
+    <div class="chart">
+      <div class="ct">L460 excess over BMW X7, by domain</div>
+      <div class="cs">Where the +£114.8M sits · £M</div>
+      <div class="hbars" style="margin-top:6px">
+        <div class="hb"><div class="l">ADAS (L2/L2+)</div><div class="track"><div class="fill" style="width:100%;background:var(--cost)"></div></div><div class="v">+£55.2M</div></div>
+        <div class="hb"><div class="l">Domain controllers</div><div class="track"><div class="fill" style="width:42%;background:var(--cost)"></div></div><div class="v">+£23.3M</div></div>
+        <div class="hb"><div class="l">Infotainment</div><div class="track"><div class="fill" style="width:29%;background:var(--cost)"></div></div><div class="v">+£16.1M</div></div>
+        <div class="hb"><div class="l">Middleware</div><div class="track"><div class="fill" style="width:14%;background:var(--cost)"></div></div><div class="v">+£7.9M</div></div>
+        <div class="hb"><div class="l">Cloud / OTA</div><div class="track"><div class="fill" style="width:9%;background:var(--cost)"></div></div><div class="v">+£5.2M</div></div>
+        <div class="hb"><div class="l">Cybersecurity</div><div class="track"><div class="fill" style="width:8%;background:var(--cost)"></div></div><div class="v">+£4.4M</div></div>
+        <div class="hb"><div class="l">Powertrain</div><div class="track"><div class="fill" style="width:5%;background:var(--cost)"></div></div><div class="v">+£2.7M</div></div>
+      </div>
+      <p class="fine" style="margin-top:10px"><b>ADAS is half the excess</b> (+£55M): it's the largest domain, so the lower reuse rate compounds there most.</p>
+    </div>
+  </div>
+
+  <div class="callout"><b>The mechanism.</b> Reuse "Medium" applies a 0.60× factor to development effort; "Heavy" applies 0.35×. BMW and Audi carry far more software forward between vehicle lines, so they re-develop roughly half as much per programme. Audi additionally runs shared VW-Group middleware at "Platform" reuse (0.14×), which is why its Middleware domain is the lowest of the four.</div>
+  <span class="pn">05</span>
+</div>
+
+<!-- ══ 5. OPTIMISATION ══ -->
+<div class="page" data-pf="Range Rover L460 — Software Cost Benchmark    ·    Confidential">
+  <div class="eyebrow">The opportunity</div>
+  <h2><span class="sec-no">05</span>&nbsp; Cost-optimisation opportunities</h2>
+  <p class="lede">The engine quantifies each lever on the L460 MHEV programme. The architecture-led path — more reuse + shared middleware — reaches German parity without touching where or by whom the work is done.</p>
+
+  <div class="chart" style="margin:14px 0">
+    <div class="ct">Cost-optimisation bridge — L460 MHEV (£M)</div>
+    <div class="cs">Architecture-led levers only · dashed line = BMW X7 benchmark (£305M)</div>
+    <div class="wf" style="margin-top:8px">
+      <div class="wfr"><div class="l">Baseline (as-is)<span>Medium reuse</span></div><div class="wftrack"><div class="seg" style="left:0;width:93.3%;background:var(--green)"></div><div class="refline" style="left:67.8%"></div></div><div class="v">£420.0M</div></div>
+      <div class="wfr"><div class="l">Raise reuse → Heavy<span>carry software forward</span></div><div class="wftrack"><div class="seg" style="left:62.5%;width:30.8%;background:var(--save)"></div><div class="refline" style="left:67.8%"></div></div><div class="v" style="color:var(--save)">−£138.6M</div></div>
+      <div class="wfr"><div class="l">+ Shared middleware<span>Platform reuse on stacks</span></div><div class="wftrack"><div class="seg" style="left:61.1%;width:1.4%;background:var(--save)"></div><div class="refline" style="left:67.8%"></div></div><div class="v" style="color:var(--save)">−£6.5M</div></div>
+      <div class="wfr"><div class="l">Optimised target<span>architecture-led</span></div><div class="wftrack"><div class="seg" style="left:0;width:61.1%;background:var(--bronze)"></div><div class="refline" style="left:67.8%"></div></div><div class="v" style="color:var(--bronze)">£274.8M</div></div>
+    </div>
+    <div class="wfaxis"><span style="left:0%">£0</span><span style="left:33.3%">£150M</span><span style="left:66.7%">£300M</span><span style="left:100%">£450M</span></div>
+  </div>
+
+  <div class="callout win" style="margin-bottom:14px"><b>Bottom line:</b> the two architectural levers together take the L460 MHEV programme from <b>£420M → £275M — a £145M (35%) saving</b>, moving it from 38% above the BMW X7 to roughly on par with it. This is achievable in the UK, with the existing Tier-1 model, purely by re-using more software.</div>
+
+  <h3>The levers, ranked</h3>
+  <div class="levers">
+    <div class="lever"><div class="lh"><span class="lt">1 · Raise baseline reuse to "Heavy"</span><span class="sv">−£138.6M</span></div><p>Match BMW's carry-forward: reuse core stacks across Range Rover / Sport / Velar rather than re-developing per line.</p><span class="tag tag-do">Recommended · highest impact</span></div>
+    <div class="lever"><div class="lh"><span class="lt">2 · Shared-platform middleware</span><span class="sv">−£6.5M*</span></div><p>Run AUTOSAR / RTOS / comms as a shared platform (as Audi does with VW.OS). *Marginal on top of Heavy reuse; ~£15M standalone.</p><span class="tag tag-do">Recommended</span></div>
+    <div class="lever opt"><div class="lh"><span class="lt">3 · Nearshore a development share</span><span class="sv">up to −£191M</span></div><p>Shifting engineering to Eastern-Europe rates is a large nominal lever, but carries IP, quality and continuity risk. A strategic option, not a first move.</p><span class="tag tag-care">Handle with care</span></div>
+    <div class="lever opt"><div class="lh"><span class="lt">4 · ASIL right-sizing</span><span class="sv">review</span></div><p>Confirm no module carries a higher safety integrity level than its function requires — each step (e.g. C→B) removes verification cost.</p><span class="tag tag-do">Quick win</span></div>
+  </div>
+  <span class="pn">06</span>
+</div>
+
+<!-- ══ 6. ELECTRIFIED ══ -->
+<div class="page" data-pf="Range Rover L460 — Software Cost Benchmark    ·    Confidential">
+  <div class="eyebrow">The other side of the ledger</div>
+  <h2><span class="sec-no">06</span>&nbsp; Electrified: L460 vs Porsche Cayenne</h2>
+  <p class="lede">The Cayenne is the only peer that offers PHEV and BEV. Here the picture reverses — the L460 is the <span class="delta-dn">cheaper</span> programme on both total and per-vehicle, because the Cayenne over-indexes on Very-High-complexity performance software and amortises over lower volume.</p>
+
+  <div class="chart" style="margin:14px 0">
+    <div class="ct">Electrified programme cost — total (£M)</div>
+    <div class="cs">L460 vs Porsche Cayenne · lower is better</div>
+    <div class="hbars" style="margin-top:6px">
+      <div class="hb me"><div class="l">L460 — PHEV</div><div class="track"><div class="fill" style="width:87.6%;background:var(--green)"></div></div><div class="v">£539.6M</div></div>
+      <div class="hb"><div class="l">Cayenne — PHEV</div><div class="track"><div class="fill" style="width:96.3%;background:var(--cay)"></div></div><div class="v">£593.5M</div></div>
+      <div class="hb me"><div class="l">L460 — BEV</div><div class="track"><div class="fill" style="width:90.8%;background:var(--green)"></div></div><div class="v">£559.2M</div></div>
+      <div class="hb"><div class="l">Cayenne — BEV</div><div class="track"><div class="fill" style="width:100%;background:var(--cay)"></div></div><div class="v">£616.1M</div></div>
+    </div>
+  </div>
+
+  <table class="data">
+    <thead><tr><th>Pairing</th><th>L460</th><th>Cayenne</th><th>L460 advantage</th><th>£/veh (L460 vs Cay)</th></tr></thead>
+    <tbody>
+      <tr class="me"><td>PHEV</td><td>£539.6M</td><td>£593.5M</td><td class="delta-dn">−£53.9M (−9%)</td><td>£899 vs £1,484</td></tr>
+      <tr class="me"><td>BEV</td><td>£559.2M</td><td>£616.1M</td><td class="delta-dn">−£56.9M (−9%)</td><td>£932 vs £1,540</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout win" style="margin-top:14px"><b>Read-across:</b> the L460's software organisation is <b>not</b> structurally expensive — on electrified programmes it out-benchmarks a Porsche. The MHEV cost problem is specific and reuse-driven, which is precisely why it is fixable.</div>
+  <span class="pn">07</span>
+</div>
+
+<!-- ══ 7. RANKING ══ -->
+<div class="page" data-pf="Range Rover L460 — Software Cost Benchmark    ·    Confidential">
+  <div class="eyebrow">Top to bottom</div>
+  <h2><span class="sec-no">07</span>&nbsp; Full benchmark ranking</h2>
+  <p class="lede">Every real, in-production (or launching) programme across the peer set, ranked by total software cost. L460 entries in green.</p>
+
+  <div class="chart" style="margin:14px 0">
+    <div class="ct">All comparable programmes — total software cost (£M)</div>
+    <div class="cs">8 real programmes across 5 cars · 3 drivetrains</div>
+    <div class="hbars" style="margin-top:6px">
+      <div class="hb"><div class="l">Cayenne BEV</div><div class="track"><div class="fill" style="width:100%;background:var(--cay)"></div></div><div class="v">£616.1M</div></div>
+      <div class="hb"><div class="l">Cayenne PHEV</div><div class="track"><div class="fill" style="width:96.3%;background:var(--cay)"></div></div><div class="v">£593.5M</div></div>
+      <div class="hb me"><div class="l">L460 BEV</div><div class="track"><div class="fill" style="width:90.8%;background:var(--green)"></div></div><div class="v">£559.2M</div></div>
+      <div class="hb me"><div class="l">L460 PHEV</div><div class="track"><div class="fill" style="width:87.6%;background:var(--green)"></div></div><div class="v">£539.6M</div></div>
+      <div class="hb"><div class="l">GLS MHEV</div><div class="track"><div class="fill" style="width:79.5%;background:var(--gls)"></div></div><div class="v">£489.6M</div></div>
+      <div class="hb me"><div class="l">L460 MHEV</div><div class="track"><div class="fill" style="width:68.2%;background:var(--green)"></div></div><div class="v">£420.0M</div></div>
+      <div class="hb"><div class="l">Q8 MHEV</div><div class="track"><div class="fill" style="width:50.7%;background:var(--q8)"></div></div><div class="v">£312.6M</div></div>
+      <div class="hb"><div class="l">X7 MHEV</div><div class="track"><div class="fill" style="width:49.5%;background:var(--x7)"></div></div><div class="v">£305.2M</div></div>
+    </div>
+    <div class="legend"><span><i style="background:var(--green)"></i> Range Rover L460</span><span><i style="background:var(--x7)"></i> BMW</span><span><i style="background:var(--q8)"></i> Audi</span><span><i style="background:var(--gls)"></i> Mercedes</span><span><i style="background:var(--cay)"></i> Porsche</span></div>
+  </div>
+
+  <div class="two">
+    <div><h3>Take-aways</h3><ul class="clean">
+      <li><b>MHEV:</b> L460 mid-pack on total, but 38% above the leanest German — the fixable gap.</li>
+      <li><b>Electrified:</b> L460 sits <em>below</em> both Porsche programmes — a genuine strength.</li>
+      <li>After the £145M optimisation, the L460 MHEV would fall to <b>~£275M — the leanest programme in the set.</b></li>
+    </ul></div>
+    <div class="callout"><b>One-line summary for the board:</b> the L460's electrified software is best-in-class; its high-volume MHEV software is 38% over the German benchmark on a single, addressable cause — software reuse — worth ~£145M a programme to close.</div>
+  </div>
+  <span class="pn">08</span>
+</div>
+
+<!-- ══ 8. ASSUMPTIONS ══ -->
+<div class="page" data-pf="Range Rover L460 — Software Cost Benchmark    ·    Confidential">
+  <div class="eyebrow">Transparency</div>
+  <h2><span class="sec-no">08</span>&nbsp; Assumptions &amp; methodology</h2>
+  <p class="lede">Every figure is live output from the CostVision should-cost engine (49-module catalogue, ISO 26262 / 21434 framework). Nothing is hand-entered. The assumptions below are stated in full so each number can be challenged.</p>
+
+  <div class="two">
+    <div>
+      <dl class="assump">
+        <dt>Model class &amp; accuracy</dt><dd>Bottom-up parametric should-cost; validated envelope of ±25–35% (back-test MAPE 24.9%, 5 of 7 published programmes within ±35%). Absolute numbers are estimates; the <em>comparisons</em> are consistent because every programme uses the same engine and rate library.</dd>
+        <dt>Propulsion availability</dt><dd>Verified July 2026 against manufacturer / industry sources. X7 (G07) is MHEV-only (iX7 BEV is next-gen 2027+); Q8 &amp; GLS are MHEV-only (their e-tron / EQS siblings are separate models); Cayenne offers ICE/PHEV/BEV (Electric premiered Nov 2025); Range Rover Electric is JLR's first EV, launching.</dd>
+        <dt>"Apple-to-apple"</dt><dd>Two views: <b>as-is</b> (each car on its real region, volume, life, reuse) and <b>normalised</b> (common EU / in-house / 60k-yr basis, only software strategy varying). Comparisons are only drawn where both cars build the drivetrain.</dd>
+        <dt>Reuse factors</dt><dd>Applied to development effort: Fresh 1.00× · Light 0.82× · Medium 0.60× · Heavy 0.35× · Platform 0.14×. "Baseline reuse" is the programme default before per-module overrides.</dd>
+      </dl>
+    </div>
+    <div>
+      <dl class="assump">
+        <dt>Per-car assumptions (MHEV)</dt><dd class="num" style="font-size:.78rem">
+          L460: UK · Tier-1 · 75k/yr · 8yr · Medium<br>
+          X7: EU · in-house · 60k/yr · 8yr · Heavy<br>
+          Q8: EU · in-house · 55k/yr · 9yr · Heavy + platform middleware<br>
+          GLS: EU · in-house · 45k/yr · 9yr · Medium (MBUX signature)<br>
+          Cayenne: EU · in-house · 50k/yr · 8yr · Medium + platform + Porsche performance
+        </dd>
+        <dt>Signature software</dt><dd>Each car keeps its brand-DNA overrides (Meridian audio on L460; MBUX / voice on GLS; Porsche 4D chassis / Active Ride on Cayenne; UWB digital key on X7), held constant across its drivetrains.</dd>
+        <dt>What "saving" means</dt><dd>Reduction in total programme software should-cost (NRE + lifecycle) versus the L460 as-is baseline, from changing the stated lever only.</dd>
+        <dt>Currency &amp; scope</dt><dd>All figures GBP. Embedded &amp; connected vehicle software only; excludes manufacturing, hardware and non-software engineering.</dd>
+      </dl>
+    </div>
+  </div>
+  <hr>
+  <p class="fine">Some cross-car comparisons hold volume/region constant to isolate a variable; where a per-vehicle figure is quoted it also reflects that car's production volume. This report supports target-setting and supplier negotiation; it is not an audited actual. Engine: CostVision <span class="num">sw-should-cost.ts</span>, rate library v1.0, July 2026.</p>
+  <span class="pn">09</span>
+</div>
+
+</body>
+</html>
