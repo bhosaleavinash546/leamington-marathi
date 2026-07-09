@@ -79,6 +79,7 @@ import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { exportToExcelBlob } from '../export/excel.js';
 import { printPDF, printCADAnalysisPDF, drawCostVisionLogo } from '../export/pdf.js';
+import { computeCostUncertainty } from '../engine/uncertainty.js';
 import { generateInsights, totalPotentialSaving, FX_TO_GBP } from '../engine/insights.js';
 import { generateDFMDFA } from '../engine/dfm-dfa.js';
 import type { DFMIssue, CostOptimisation } from '../engine/dfm-dfa.js';
@@ -13029,6 +13030,26 @@ function renderInsights(result: PartCostResult, input: UniversalStackInput): voi
           Commodity: <strong>${activeCommodity.replace(/_/g, ' ')}</strong>
         </div>
       </div>
+
+      ${(() => {
+        // #2 Uncertainty — Monte-Carlo confidence band on the total should-cost.
+        const u = computeCostUncertainty(result, input);
+        const bandColor = u.band === 'tight' ? '#16a34a' : u.band === 'moderate' ? '#d97706' : '#dc2626';
+        return `
+      <div style="margin-top:12px;padding:12px 14px;border:1px solid var(--border);border-left:4px solid ${bandColor};border-radius:8px;background:var(--surface-elevated)">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px">
+          <div style="font-weight:700;font-size:0.9rem;color:var(--text-primary)">Should-Cost with uncertainty <span style="font-weight:400;font-size:0.72rem;color:var(--text-muted)">(Monte-Carlo, ${u.overallConfidence} confidence)</span></div>
+          <div style="font-size:1.15rem;font-weight:700;color:var(--text-primary)">${cf(result.total)} <span style="font-size:0.8rem;color:${bandColor}">± ${u.plusMinusPct}%</span></div>
+        </div>
+        <div style="margin-top:8px;display:flex;gap:18px;flex-wrap:wrap;font-size:0.78rem;color:var(--text-secondary)">
+          <span><strong style="color:#16a34a">P10</strong> ${cf(u.p10)} <span style="color:var(--text-muted)">(optimistic)</span></span>
+          <span><strong>P50</strong> ${cf(u.p50)} <span style="color:var(--text-muted)">(median)</span></span>
+          <span><strong style="color:#dc2626">P90</strong> ${cf(u.p90)} <span style="color:var(--text-muted)">(conservative)</span></span>
+          <span style="color:${bandColor};text-transform:capitalize">${u.band} band · CV ${u.cvPct}%</span>
+        </div>
+        <div style="margin-top:6px;font-size:0.7rem;color:var(--text-muted);line-height:1.4">Range reflects how well each cost driver is known (High/Medium/Low confidence). Tighten it by attaching CAD, a BOM, or logging an actual quote.</div>
+      </div>`;
+      })()}
 
       ${insights.length === 0
         ? '<div class="placeholder">Cost structure is within industry benchmarks. No significant optimisation opportunities identified.</div>'
