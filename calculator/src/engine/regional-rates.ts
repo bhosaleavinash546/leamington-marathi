@@ -372,6 +372,39 @@ export const EXTRUSION_COUNTRY_PRICES: Record<string, Partial<Record<Manufacturi
   'mat-pa12-ext-tube':   { US: 6.00, DE: 6.40, PL: 6.10, CN: 5.80, IN: 6.05, MX: 6.10, TH: 6.05, VN: 6.10 },
 };
 
+// ─── Authentic country prices — Thermoforming sheet grades ─────────────────────
+
+/**
+ * Authentic per-country prices (£/kg, 2026 Q2) for thermoforming-sheet materials.
+ * These REPLACE the family multiplier for the listed (material, region) pairs — a
+ * China APET sheet price is the real China price, not "UK × factor". Commodity sheet
+ * (HIPS/PP/PE/PVC/PET) swings ±~20% on regional feedstock/energy (US shale-ethane
+ * cheapest, EU energy-costly, Asia low); engineering/multilayer/high-perf specialities
+ * (PMMA/PC/PEI/PPS/co-ex) barely move by country. UK is the library base and omitted.
+ * Confidence: Low — index/benchmark anchored, ready for a live sheet-price feed.
+ */
+export const THERMOFORMING_COUNTRY_PRICES: Record<string, Partial<Record<ManufacturingRegion, number>>> = {
+  //                     US      DE      PL      CN      IN      MX      TH      VN
+  'mat-hips-tf':          { US: 0.92,  DE: 1.16,  PL: 1.02,  CN: 0.85,  IN: 0.94,  MX: 0.90,  TH: 0.95,  VN: 0.97 },
+  'mat-abs-tf':           { US: 1.78,  DE: 2.22,  PL: 1.96,  CN: 1.70,  IN: 1.86,  MX: 1.82,  TH: 1.88,  VN: 1.90 },
+  'mat-petg-tf':          { US: 1.62,  DE: 2.02,  PL: 1.78,  CN: 1.55,  IN: 1.72,  MX: 1.68,  TH: 1.74,  VN: 1.76 },
+  'mat-apet-tf':          { US: 1.36,  DE: 1.70,  PL: 1.49,  CN: 1.28,  IN: 1.42,  MX: 1.40,  TH: 1.45,  VN: 1.47 },
+  'mat-cpet-tf':          { US: 1.55,  DE: 1.90,  PL: 1.68,  CN: 1.48,  IN: 1.62,  MX: 1.60,  TH: 1.65,  VN: 1.67 },
+  'mat-rpvc-tf':          { US: 1.20,  DE: 1.50,  PL: 1.30,  CN: 1.12,  IN: 1.24,  MX: 1.26,  TH: 1.28,  VN: 1.30 },
+  'mat-pp-tf':            { US: 1.10,  DE: 1.44,  PL: 1.24,  CN: 1.05,  IN: 1.16,  MX: 1.14,  TH: 1.19,  VN: 1.21 },
+  'mat-hdpe-tf':          { US: 1.05,  DE: 1.38,  PL: 1.18,  CN: 1.00,  IN: 1.11,  MX: 1.09,  TH: 1.14,  VN: 1.16 },
+  'mat-ldpe-tf':          { US: 1.12,  DE: 1.44,  PL: 1.22,  CN: 1.05,  IN: 1.16,  MX: 1.14,  TH: 1.19,  VN: 1.21 },
+  'mat-ps-foam-tf':       { US: 1.42,  DE: 1.76,  PL: 1.55,  CN: 1.34,  IN: 1.48,  MX: 1.46,  TH: 1.51,  VN: 1.53 },
+  'mat-pmma-tf':          { US: 2.72,  DE: 3.08,  PL: 2.85,  CN: 2.60,  IN: 2.82,  MX: 2.84,  TH: 2.82,  VN: 2.85 },
+  'mat-pc-tf':            { US: 3.20,  DE: 3.60,  PL: 3.34,  CN: 3.05,  IN: 3.30,  MX: 3.32,  TH: 3.30,  VN: 3.33 },
+  'mat-pei-tf':           { US: 27.00, DE: 28.80, PL: 28.00, CN: 26.50, IN: 27.60, MX: 27.80, TH: 27.60, VN: 27.80 },
+  'mat-pps-tf':           { US: 13.40, DE: 14.60, PL: 14.00, CN: 13.00, IN: 13.80, MX: 13.90, TH: 13.80, VN: 13.90 },
+  'mat-abs-pmma-tf':      { US: 2.40,  DE: 2.84,  PL: 2.56,  CN: 2.28,  IN: 2.48,  MX: 2.46,  TH: 2.50,  VN: 2.52 },
+  'mat-abs-pc-tf':        { US: 2.88,  DE: 3.36,  PL: 3.06,  CN: 2.78,  IN: 3.00,  MX: 2.98,  TH: 3.02,  VN: 3.04 },
+  'mat-pp-tpo-tf':        { US: 1.68,  DE: 2.10,  PL: 1.84,  CN: 1.60,  IN: 1.78,  MX: 1.74,  TH: 1.80,  VN: 1.82 },
+  'mat-petg-barrier-tf':  { US: 2.18,  DE: 2.62,  PL: 2.36,  CN: 2.10,  IN: 2.30,  MX: 2.28,  TH: 2.32,  VN: 2.34 },
+};
+
 // ─── Regional Library Builder ──────────────────────────────────────────────────
 
 /**
@@ -486,7 +519,7 @@ export function buildRegionalLibrary(baseLibrary: RateLibrary, region: Manufactu
     // tracks the local resin value. Everything else uses the resin family-aware
     // factor (metals/other flat).
     materials: baseLibrary.materials.map(m => {
-      const authentic = EXTRUSION_COUNTRY_PRICES[m.id]?.[region];
+      const authentic = EXTRUSION_COUNTRY_PRICES[m.id]?.[region] ?? THERMOFORMING_COUNTRY_PRICES[m.id]?.[region];
       if (authentic !== undefined) {
         const ratio = m.pricePerKg > 0 ? authentic / m.pricePerKg : 1;
         return {

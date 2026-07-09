@@ -48,6 +48,12 @@ import {
   type ExtrusionProcess, type ExtrusionCooling, type DieComplexity,
 } from '../engine/modules/extrusion-advisor.js';
 import { computeThermoformingDrivers } from '../engine/modules/thermoforming.js';
+import {
+  thermoformFamilyOf, estimateHeatTimeSec, estimateCoolTimeSec, estimateThermoformSpecificEnergy,
+  estimateSagRisk, estimateWallThinning, estimateThermoformToolCost, analyseThermoformingDFM,
+  formingPressureBar,
+  type ThermoformMethod, type MouldMaterial, type ToolCooling, type FormComplexity,
+} from '../engine/modules/thermoforming-advisor.js';
 import { computeRotationalMouldingDrivers } from '../engine/modules/rotational-moulding.js';
 import { computeRubberDrivers } from '../engine/modules/rubber.js';
 import type { RubberProcess } from '../engine/modules/rubber.js';
@@ -2814,23 +2820,37 @@ function renderThermoformingForm(): string {
     <div class="section-title">Sheet &amp; Part</div>
     <div class="field-row">
       <div class="field-group"><label>Material</label><select id="tf-mat" class="material-select"></select></div>
-      <div class="field-group"><label>Sheet Weight (kg) <span title="Gross sheet weight per cycle before forming.">ℹ</span></label><input type="number" id="tf-sheet-wt" step="0.01" min="0.001" value="1.2"/></div>
+      <div class="field-group"><label>Sheet Weight (kg) <span title="Gross sheet weight per cycle before forming. The whole sheet is heated.">ℹ</span></label><input type="number" id="tf-sheet-wt" step="0.01" min="0.001" value="1.2"/></div>
     </div>
     <div class="field-row" style="margin-top:6px">
       <div class="field-group"><label>Part Weight (kg) <span title="Net part weight after trim.">ℹ</span></label><input type="number" id="tf-part-wt" step="0.001" min="0.001" value="0.25"/></div>
       <div class="field-group"><label>Parts / Sheet</label><input type="number" id="tf-pps" step="1" min="1" value="4"/></div>
     </div>
     <div class="field-row" style="margin-top:6px">
+      <div class="field-group"><label>Sheet Thickness (mm) <span title="Drives auto heat/cool time, sag and wall-thinning. Leave heat/cool at 0 to auto-fill.">ℹ</span></label><input type="number" id="tf-thk" step="0.1" min="0" value="2"/></div>
       <div class="field-group"><label>Method</label><select id="tf-method"><option value="vacuum" selected>Vacuum</option><option value="pressure">Pressure</option><option value="twin_sheet">Twin-Sheet</option></select></div>
     </div>
-    <div class="section-title" style="margin-top:8px">Cycle Time</div>
+    <div class="section-title" style="margin-top:8px">Cycle Time <span style="font-weight:400;color:#888;font-size:0.8em">(leave 0 to auto-estimate from thickness &amp; material)</span></div>
     <div class="field-row">
-      <div class="field-group"><label>Heat Time (s)</label><input type="number" id="tf-heat" step="1" min="1" value="30"/></div>
-      <div class="field-group"><label>Form Time (s)</label><input type="number" id="tf-form" step="1" min="1" value="10"/></div>
+      <div class="field-group"><label>Heat Time (s)</label><input type="number" id="tf-heat" step="1" min="0" value="0"/></div>
+      <div class="field-group"><label>Form Time (s)</label><input type="number" id="tf-form" step="1" min="0" value="0"/></div>
+    </div>
+    <div class="field-row" style="margin-top:6px">
+      <div class="field-group"><label>Cool Time (s)</label><input type="number" id="tf-cool" step="1" min="0" value="0"/></div>
+      <div class="field-group"><label>Tool Cooling</label><select id="tf-tool-cool"><option value="water" selected>Water-cooled tool</option><option value="air">Forced air</option><option value="ambient">Ambient</option></select></div>
     </div>
     <div class="field-row" style="margin-top:6px">
       <div class="field-group"><label>Trim Time (s)</label><input type="number" id="tf-trim" step="1" min="0" value="20"/></div>
       <div class="field-group"><label>Index Time (s)</label><input type="number" id="tf-index" step="1" min="1" value="10"/></div>
+    </div>
+    <div class="section-title" style="margin-top:8px">Energy, Additives &amp; Scrap</div>
+    <div class="field-row">
+      <div class="field-group"><label>Electricity (£/kWh)</label><input type="number" id="tf-kwh" step="0.01" min="0" value="0.20"/></div>
+      <div class="field-group"><label>Reject Rate (%)</label><input type="number" id="tf-reject" step="0.5" min="0" max="49" value="3"/></div>
+    </div>
+    <div class="field-row" style="margin-top:6px">
+      <div class="field-group"><label>Additive / Masterbatch</label><select id="tf-additive"><option value="">None</option></select></div>
+      <div class="field-group"><label>Additive Let-down (%)</label><input type="number" id="tf-add-pct" step="0.5" min="0" max="20" value="0"/></div>
     </div>
     <div class="section-title" style="margin-top:8px">Machine &amp; Labour</div>
     <div class="field-row">
@@ -2843,12 +2863,39 @@ function renderThermoformingForm(): string {
     </div>
     <div class="field-row" style="margin-top:6px">
       <div class="field-group"><label>Labour Eff.</label><input type="number" id="tf-lab-eff" step="0.01" min="0.01" max="1" value="0.92"/></div>
+      <div class="field-group"><label><input type="checkbox" id="tf-inspect"/> Add inspection op</label></div>
     </div>
-    <div class="section-title" style="margin-top:8px">Tooling</div>
+    <div class="section-title" style="margin-top:8px">Tooling <span style="font-weight:400;color:#888;font-size:0.8em">(leave cost 0 to auto-estimate)</span></div>
     <div class="field-row">
-      <div class="field-group"><label>Tool Cost (£) <span title="Forming tool + trim die. Much lower than injection mould — typically £2k–£20k.">ℹ</span></label><input type="number" id="tf-tool-cost" step="500" min="0" value="5000"/></div>
+      <div class="field-group"><label>Tool Cost (£) <span title="Forming tool + trim. Leave 0 to estimate from area, mould material, method &amp; complexity.">ℹ</span></label><input type="number" id="tf-tool-cost" step="500" min="0" value="0"/></div>
       <div class="field-group"><label>Amort. Volume</label><input type="number" id="tf-amort" step="1000" min="1" value="50000"/></div>
-    </div>`;
+    </div>
+    <div class="field-row" style="margin-top:6px">
+      <div class="field-group"><label>Projected Area (cm²)</label><input type="number" id="tf-area" step="10" min="0" value="400"/></div>
+      <div class="field-group"><label>Mould Material</label><select id="tf-mould-mat"><option value="cast-al" selected>Cast aluminium</option><option value="cnc-al">CNC aluminium</option><option value="epoxy">Epoxy / composite</option><option value="steel">Steel</option></select></div>
+    </div>
+    <div class="field-row" style="margin-top:6px">
+      <div class="field-group"><label>Form Complexity</label><select id="tf-cx"><option value="simple">Simple</option><option value="moderate" selected>Moderate</option><option value="complex">Complex</option></select></div>
+      <div class="field-group"><label>Trim Tooling</label><select id="tf-trim-type"><option value="cnc-router" selected>CNC router / robot</option><option value="steel-rule">Steel-rule die</option><option value="in-machine">Trim-in-machine</option></select></div>
+    </div>
+    <div class="section-title" style="margin-top:8px">Geometry (DFM &amp; wall-thinning) <span style="font-weight:400;color:#888;font-size:0.8em">(optional)</span></div>
+    <div class="field-row">
+      <div class="field-group"><label>Draw Depth (mm)</label><input type="number" id="tf-depth" step="1" min="0" value="60"/></div>
+      <div class="field-group"><label>Min Opening (mm)</label><input type="number" id="tf-open" step="1" min="0" value="120"/></div>
+    </div>
+    <div class="field-row" style="margin-top:6px">
+      <div class="field-group"><label>Unsupported Span (mm)</label><input type="number" id="tf-span" step="10" min="0" value="500"/></div>
+      <div class="field-group"><label>Min Internal Radius (mm)</label><input type="number" id="tf-radius" step="0.5" min="0" value="4"/></div>
+    </div>
+    <div class="field-row" style="margin-top:6px">
+      <div class="field-group"><label>Draft Angle (°)</label><input type="number" id="tf-draft" step="0.5" min="0" value="5"/></div>
+      <div class="field-group"><label>Tolerance (± mm)</label><input type="number" id="tf-tol" step="0.05" min="0" value="0"/></div>
+    </div>
+    <div class="field-row" style="margin-top:6px">
+      <div class="field-group"><label><input type="checkbox" id="tf-plug"/> Plug assist</label></div>
+      <div class="field-group"><label><input type="checkbox" id="tf-undercut"/> Undercut &nbsp;&nbsp; <input type="checkbox" id="tf-texture"/> Textured</label></div>
+    </div>
+    <div id="tf-advisor" style="margin-top:10px;display:none"></div>`;
 }
 
 // ─── Form: Rotational Moulding ────────────────────────────────────────────────
@@ -9652,10 +9699,32 @@ function switchCommodity(type: CommodityType): void {
       area.innerHTML = renderThermoformingForm();
       populateSelects();
       setTimeout(() => {
-        const machEl = el<HTMLSelectElement>('tf-mach');
-        if (machEl) { const opt = Array.from(machEl.options).find(o => o.value.includes('thermoform-small')); if (opt) machEl.value = opt.value; }
+        // Filter the material picker to formable sheet grades (not metals/castings/forgings).
+        const allowMat = new Set(['Thermoforming Sheet', 'Thermoplastic', 'Extrusion', 'High-Performance Thermoplastic']);
         const matEl = el<HTMLSelectElement>('tf-mat');
-        if (matEl) { const opt = Array.from(matEl.options).find(o => o.value.includes('mat-hips')); if (opt) matEl.value = opt.value; }
+        if (matEl) {
+          const catOf = (id: string) => library.materials.find(m => m.id === id)?.category ?? '';
+          Array.from(matEl.options).forEach(o => { if (!allowMat.has(catOf(o.value))) o.remove(); });
+          const pref = Array.from(matEl.options).find(o => o.value === 'mat-hips-tf') || Array.from(matEl.options).find(o => o.value.includes('mat-hips'));
+          if (pref) matEl.value = pref.value;
+        }
+        // Populate the additive/masterbatch picker.
+        const addEl = el<HTMLSelectElement>('tf-additive');
+        if (addEl) {
+          const adds = library.materials.filter(m => m.category === 'Additive / Masterbatch');
+          addEl.innerHTML = '<option value="">None</option>' + adds.map(a => `<option value="${a.id}">${a.grade} — ${_currFmt(a.pricePerKg)}/kg</option>`).join('');
+        }
+        // Filter the machine picker to thermoformers only.
+        const machEl = el<HTMLSelectElement>('tf-mach');
+        if (machEl) {
+          const tfMachs = library.machines.filter(m => m.id.startsWith('thermoform'));
+          if (tfMachs.length) machEl.innerHTML = tfMachs.map(m => `<option value="${escHtml(m.id)}">${escHtml(m.machineClass)} — ${_currFmt(m.computedRatePerHr)}/hr</option>`).join('');
+          const opt = Array.from(machEl.options).find(o => o.value.includes('thermoform-small')); if (opt) machEl.value = opt.value;
+        }
+        // Default labour to the thermoforming operator.
+        const labEl = el<HTMLSelectElement>('tf-lab');
+        if (labEl) { const opt = Array.from(labEl.options).find(o => o.value.includes('lab-uk-thermoform')); if (opt) labEl.value = opt.value; }
+        wireThermoformingAdvisor();
       }, 0);
       break;
 
@@ -10738,13 +10807,72 @@ function collectExtrusionInput(): UniversalStackInput {
   return { ...getUniversalTail(), rawMaterial: drivers.rawMaterial, operations: drivers.operations, tooling: drivers.tooling };
 }
 
+function wireThermoformingAdvisor(): void {
+  const out = el<HTMLDivElement>('tf-advisor');
+  if (!out) return;
+  const ids = ['tf-mat','tf-thk','tf-method','tf-tool-cool','tf-heat','tf-cool','tf-area','tf-mould-mat','tf-cx','tf-trim-type',
+    'tf-depth','tf-open','tf-span','tf-radius','tf-draft','tf-tol','tf-plug','tf-undercut','tf-texture','tf-pps'];
+  const update = () => {
+    const family = thermoformFamilyOf(sel('tf-mat'));
+    const method = validSel<ThermoformMethod>('tf-method', ['vacuum','pressure','twin_sheet'], 'vacuum');
+    const thk = num('tf-thk') || undefined;
+    const toolCool = validSel<ToolCooling>('tf-tool-cool', ['water','air','ambient'], 'water');
+    const heat = num('tf-heat') > 0 ? num('tf-heat') : (thk ? estimateHeatTimeSec(family, thk) : 0);
+    const cool = num('tf-cool') > 0 ? num('tf-cool') : (thk ? estimateCoolTimeSec(family, thk, toolCool) : 0);
+    const se = estimateThermoformSpecificEnergy(family, method);
+    const sag = thk ? estimateSagRisk(family, thk, num('tf-span') || 500) : null;
+    const tool = estimateThermoformToolCost({
+      projectedAreaCm2: num('tf-area') || undefined, mouldMaterial: validSel<MouldMaterial>('tf-mould-mat', ['epoxy','cast-al','cnc-al','steel'], 'cast-al'),
+      method, complexity: validSel<FormComplexity>('tf-cx', ['simple','moderate','complex'], 'moderate'),
+      cavities: num('tf-pps') || 1, trim: validSel('tf-trim-type', ['cnc-router','steel-rule','in-machine'] as const, 'cnc-router'),
+    });
+    const thinning = (num('tf-depth') && num('tf-open') && thk)
+      ? estimateWallThinning({ sheetThicknessMm: thk, depthMm: num('tf-depth'), minOpeningMm: num('tf-open'), method, plugAssist: el<HTMLInputElement>('tf-plug')?.checked })
+      : null;
+    const dfm = analyseThermoformingDFM({
+      family, method, sheetThicknessMm: thk, depthMm: num('tf-depth') || undefined, minOpeningMm: num('tf-open') || undefined,
+      unsupportedSpanMm: num('tf-span') || undefined, minInternalRadiusMm: num('tf-radius') || undefined,
+      draftAngleDeg: num('tf-draft') || undefined, toleranceMm: num('tf-tol') || undefined,
+      hasUndercut: el<HTMLInputElement>('tf-undercut')?.checked, textured: el<HTMLInputElement>('tf-texture')?.checked,
+      plugAssist: el<HTMLInputElement>('tf-plug')?.checked,
+    });
+    out.innerHTML = `
+      <div style="background:#fff;border:1px solid #e0e0e0;border-radius:4px;padding:8px;margin-bottom:6px;font-size:0.82rem">
+        <div style="font-weight:700;color:#ec4899">Thermoforming process estimate</div>
+        <div style="margin-top:4px;display:flex;gap:14px;flex-wrap:wrap">
+          <span><strong>Heat:</strong> ${heat ? heat + ' s' : 'n/a'}${num('tf-heat') > 0 ? ' (manual)' : ' (auto)'}</span>
+          <span><strong>Cool:</strong> ${cool ? cool + ' s' : 'n/a'}${num('tf-cool') > 0 ? ' (manual)' : ' (auto)'}</span>
+          <span><strong>Forming:</strong> ${formingPressureBar(method)} bar (${method})</span>
+        </div>
+        <div style="margin-top:3px;display:flex;gap:14px;flex-wrap:wrap">
+          <span><strong>Oven energy:</strong> ${se} kWh/kg sheet</span>
+          ${sag ? `<span><strong>Sag:</strong> ${sag.risk} (index ${sag.sagIndex})</span>` : ''}
+          ${thinning ? `<span><strong>Draw:</strong> ${thinning.drawRatio}:1 (limit ${thinning.drawLimit}:1) → min wall ~${thinning.minWallMm.toFixed(2)} mm</span>` : ''}
+        </div>
+        <div style="margin-top:3px;display:flex;gap:14px;flex-wrap:wrap">
+          <span><strong>Tool (est):</strong> ${_currFmt(tool.total)} (mould ${_currFmt(tool.mould)}${tool.vacuumHoles > 0 ? ' + vac ' + _currFmt(tool.vacuumHoles) : ''}${tool.trim > 0 ? ' + trim ' + _currFmt(tool.trim) : ''})</span>
+          <span><strong>Tool life:</strong> ${(tool.lifeCycles / 1000).toLocaleString()}k cycles</span>
+        </div>
+      </div>
+      ${renderDFMPanel(dfm.score, dfm.issues, dfm.summary)}`;
+    out.style.display = 'block';
+  };
+  ids.forEach(id => { const e = document.getElementById(id); if (e) { e.addEventListener('change', update); e.addEventListener('input', update); } });
+  update();
+}
+
 function collectThermoformingInput(): UniversalStackInput {
+  const method = validSel<ThermoformMethod>('tf-method', ['vacuum','pressure','twin_sheet'], 'vacuum');
+  const family = thermoformFamilyOf(sel('tf-mat'));
+  const additiveId = sel('tf-additive');
+  const additivePricePerKg = additiveId ? (library.materials.find(m => m.id === additiveId)?.pricePerKg ?? 0) : 0;
+
   const drivers = computeThermoformingDrivers({
     materialId: sel('tf-mat'),
     sheetWeightKg: num('tf-sheet-wt'),
     partsPerSheet: num('tf-pps') || 1,
     partWeightKg: num('tf-part-wt'),
-    method: validSel<'vacuum'|'pressure'|'twin_sheet'>('tf-method', ['vacuum','pressure','twin_sheet'], 'vacuum'),
+    method,
     machineId: sel('tf-mach'),
     labourId: sel('tf-lab'),
     heatTimeSec: num('tf-heat'),
@@ -10756,7 +10884,31 @@ function collectThermoformingInput(): UniversalStackInput {
     labourEfficiency: num('tf-lab-eff'),
     toolCost: num('tf-tool-cost'),
     amortizationVolume: num('tf-amort') || 1,
+    rejectRate: (num('tf-reject') || 0) / 100,
+    family,
+    sheetThicknessMm: num('tf-thk') || undefined,
+    coolTimeSec: num('tf-cool') || undefined,
+    toolCooling: validSel<ToolCooling>('tf-tool-cool', ['water','air','ambient'], 'water'),
+    energyPricePerKwh: num('tf-kwh') || 0.20,
+    additiveFraction: (num('tf-add-pct') || 0) / 100,
+    additivePricePerKg,
+    projectedAreaCm2: num('tf-area') || undefined,
+    mouldMaterial: validSel<MouldMaterial>('tf-mould-mat', ['epoxy','cast-al','cnc-al','steel'], 'cast-al'),
+    complexity: validSel<FormComplexity>('tf-cx', ['simple','moderate','complex'], 'moderate'),
+    trimType: validSel('tf-trim-type', ['cnc-router','steel-rule','in-machine'] as const, 'cnc-router'),
+    includeInspection: (el<HTMLInputElement>('tf-inspect')?.checked) ?? false,
   });
+
+  // Surface auto-estimated cycle elements and tooling when left at 0.
+  const thk = num('tf-thk');
+  if (thk > 0 && num('tf-heat') <= 0) _smExtraWarnings.push(`Heat time auto-estimated at ${estimateHeatTimeSec(family, thk)} s (${family.toUpperCase()}, ${thk} mm).`);
+  if (thk > 0 && num('tf-cool') <= 0) _smExtraWarnings.push(`Cool time auto-estimated at ${estimateCoolTimeSec(family, thk, validSel<ToolCooling>('tf-tool-cool', ['water','air','ambient'], 'water'))} s.`);
+  if (num('tf-tool-cost') <= 0) _smExtraWarnings.push(`Forming + trim tooling auto-estimated at ${_currFmt(drivers.tooling.totalToolingCost)} — enter a quoted figure to override.`);
+  if (thk > 0 && num('tf-depth') > 0 && num('tf-open') > 0) {
+    const wt = estimateWallThinning({ sheetThicknessMm: thk, depthMm: num('tf-depth'), minOpeningMm: num('tf-open'), method, plugAssist: el<HTMLInputElement>('tf-plug')?.checked });
+    if (!wt.withinLimit) _smExtraWarnings.push(`Draw ratio ${wt.drawRatio}:1 exceeds the ${wt.drawLimit}:1 limit for ${method}${el<HTMLInputElement>('tf-plug')?.checked ? ' + plug' : ''} — expect webbing / excessive thinning.`);
+  }
+
   return { ...getUniversalTail(), rawMaterial: drivers.rawMaterial, operations: drivers.operations, tooling: drivers.tooling };
 }
 
@@ -13975,10 +14127,11 @@ function loadSUVDemo(commodity: string, slot: number): void {
         if (slot === 3) {
           (el<HTMLInputElement>('part-name')).value = 'Land Rover Defender Spare Wheel Carrier Cover';
           const matEl3 = el<HTMLSelectElement>('tf-mat');
-          if (matEl3) { const o = Array.from(matEl3.options).find(x => x.value === 'mat-abs'); if (o) matEl3.value = o.value; }
+          if (matEl3) { const o = Array.from(matEl3.options).find(x => x.value === 'mat-abs-tf') || Array.from(matEl3.options).find(x => x.value === 'mat-abs'); if (o) matEl3.value = o.value; }
           (el<HTMLInputElement>('tf-sheet-wt')).value = '2.10';
           (el<HTMLInputElement>('tf-part-wt')).value = '1.15';
           (el<HTMLInputElement>('tf-pps')).value = '1';
+          { const t = el<HTMLInputElement>('tf-thk'); if (t) t.value = '3'; }
           const tfMeth3 = el<HTMLSelectElement>('tf-method');
           if (tfMeth3) tfMeth3.value = 'vacuum';
           (el<HTMLInputElement>('tf-heat')).value = '55';
@@ -14001,10 +14154,12 @@ function loadSUVDemo(commodity: string, slot: number): void {
         } else {
           (el<HTMLInputElement>('part-name')).value = slot === 1 ? 'Mercedes GLS Boot / Cargo Liner' : 'Porsche Cayenne Dashboard Lower Cover';
           const matEl = el<HTMLSelectElement>('tf-mat');
-          if (matEl) { const o = Array.from(matEl.options).find(x => x.value === (slot === 1 ? 'mat-hips' : 'mat-abs')); if (o) matEl.value = o.value; }
+          const demoMat = slot === 1 ? 'mat-hips-tf' : 'mat-abs-tf';
+          if (matEl) { const o = Array.from(matEl.options).find(x => x.value === demoMat) || Array.from(matEl.options).find(x => x.value === (slot === 1 ? 'mat-hips' : 'mat-abs')); if (o) matEl.value = o.value; }
           (el<HTMLInputElement>('tf-sheet-wt')).value = slot === 1 ? '2.80' : '1.85';
           (el<HTMLInputElement>('tf-part-wt')).value = slot === 1 ? '0.92' : '0.65';
           (el<HTMLInputElement>('tf-pps')).value = '1';
+          { const t = el<HTMLInputElement>('tf-thk'); if (t) t.value = slot === 1 ? '3' : '2.5'; }
           const tfMeth = el<HTMLSelectElement>('tf-method');
           if (tfMeth) tfMeth.value = slot === 1 ? 'vacuum' : 'pressure';
           (el<HTMLInputElement>('tf-heat')).value = slot === 1 ? '60' : '45';
