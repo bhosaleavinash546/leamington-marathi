@@ -1311,6 +1311,22 @@ export const SW_VEHICLE_DEMOS: SWVehicleDemo[] = [
       premium_audio:     { complexity: 'Very High' }, // Burmester high-end 3D
     },
   },
+  {
+    id: 'porsche_cayenne', label: '🇩🇪 Porsche Cayenne Electric (2026)',
+    desc: 'E4 platform (PPE, 800V), full BEV, Porsche Driver Experience HMI. Shares PPE middleware with Macan EV / Audi Q6 e-tron (Platform reuse there); bespoke Porsche 4D chassis, Active Ride, 800V high-power charging and Burmester audio at Very-High complexity. Full EV powertrain stack retained.',
+    region: 'EU', devSource: 'OEM_Internal', volume: 50_000, life: 8, overhead: 1.62, senior: 0.60, reuse: 'Medium',
+    reportUrl: 'reports/porsche-cayenne-software-cost-breakdown.html',
+    disabledModules: [],  // full BEV: BMS / charge / drive software all in scope
+    moduleOverrides: {
+      // PPE middleware shared with Macan EV / Q6 e-tron → Platform reuse.
+      autosar_classic: { reuse: 'Platform' }, autosar_adaptive: { reuse: 'Platform' }, rtos: { reuse: 'Platform' }, comm_stacks: { reuse: 'Platform' },
+      // Signature Porsche performance systems → Very-High complexity.
+      vehicle_motion:    { complexity: 'Very High' }, // Porsche 4D chassis / torque vectoring
+      active_suspension: { complexity: 'Very High' }, // Porsche Active Ride
+      fast_charge:       { complexity: 'Very High' }, // 800V high-power DC charging
+      premium_audio:     { complexity: 'Very High' }, // Burmester High-End 3D
+    },
+  },
 ];
 
 /** Build a full programme-inputs object for a vehicle demo. */
