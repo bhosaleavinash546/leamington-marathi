@@ -1,0 +1,489 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Range Rover L460 — Software Cost Deep-Dive</title>
+<style>
+:root{--paper:#FCFBF7;--surface:#fff;--ink:#1B2620;--soft:#59635C;--faint:#8B948C;--line:#E6E3D8;--green:#1E4034;--green2:#2F5C49;--bronze:#9C7328;--bronzeL:#F4EBD6;--save:#2E7D57;--cost:#AE4A3E;--softbg:#F7F5EF;--sans:-apple-system,'Segoe UI',Helvetica,Arial,sans-serif;--serif:Georgia,'Times New Roman',serif;--mono:'SF Mono',Menlo,Consolas,monospace;}
+*{box-sizing:border-box}body{margin:0;background:#E9E7DE;color:var(--ink);font-family:var(--sans);line-height:1.5}
+.wrap{max-width:900px;margin:0 auto;padding:0 0 60px}
+.cover{background:linear-gradient(160deg,#173029,#1E4034 55%);color:#EFEDE3;padding:60px 54px 40px;border-radius:2px 2px 0 0}
+.cover .eb{font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:#B98F44;font-weight:700}
+.cover h1{font-family:var(--serif);font-size:2.9rem;line-height:1.05;margin:.3em 0 .2em;color:#FBFAF4}
+.cover .sub{font-size:1.05rem;color:#D6D2C0;max-width:56ch}
+.cover .mrow{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;margin-top:34px;background:rgba(255,255,255,.12);border-radius:9px;overflow:hidden}
+.cover .mrow div{background:#1c3b31;padding:15px 17px}.cover .mrow .k{font-family:var(--mono);font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:#B9C6B0}.cover .mrow .v{font-family:var(--serif);font-size:1.6rem;font-weight:700;color:#B98F44}
+.pg{background:var(--paper);padding:34px 54px}
+.eyebrow{font-size:.66rem;letter-spacing:.2em;text-transform:uppercase;color:var(--bronze);font-weight:700}
+h2{font-family:var(--serif);font-size:1.5rem;color:var(--green);margin:.1em 0 .5em}
+h2 .n{font-family:var(--mono);font-size:.85rem;color:var(--green2)}
+p{color:var(--soft);max-width:70ch}.small{font-size:.85rem}.faint{color:var(--faint)}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:16px 0}
+.kpi{border:1px solid var(--line);border-radius:10px;padding:13px 15px;background:#fff}.kpi .k{font-family:var(--mono);font-size:.6rem;letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}.kpi .v{font-family:var(--serif);font-size:1.6rem;font-weight:700;color:var(--green);margin-top:2px}.kpi .v.cost{color:var(--cost)}.kpi .v.save{color:var(--save)}.kpi .s{font-size:.72rem;color:var(--soft)}
+.dmap{display:flex;flex-direction:column;gap:2px;margin-top:8px}
+.dmap .r{display:grid;grid-template-columns:20px 1fr 90px 70px;gap:8px;align-items:center;padding:7px 0;border-bottom:1px solid var(--line);font-size:.88rem}
+.dmap .sw{width:11px;height:11px;border-radius:3px}.dmap .nm{font-weight:700}.dmap .ct{font-family:var(--mono);color:var(--soft);font-size:.78rem}.dmap .tt{font-family:var(--mono);color:var(--bronze);font-weight:700;text-align:right}
+.domain{margin-top:26px}
+.dhead{display:flex;align-items:center;gap:12px;color:#fff;padding:11px 18px;border-radius:9px 9px 0 0}
+.dhead .dl{font-family:var(--serif);font-weight:700;font-size:1.3rem}.dhead .dn{font-weight:700;font-size:1.05rem;flex:1}.dhead .dm{font-family:var(--mono);font-size:.8rem;opacity:.9}
+.mblock{background:#fff;border:1px solid var(--line);border-left:4px solid;border-radius:0 0 2px 2px;border-bottom:1px solid var(--line);padding:13px 17px;margin-bottom:8px}
+.mblock:first-of-type{margin-top:8px}
+.mh{display:flex;justify-content:space-between;align-items:baseline;gap:12px}.mn{font-weight:700;font-size:1.02rem}.mtot{font-family:var(--mono);font-weight:700;font-size:1.1rem;color:var(--green)}
+.mtags{font-family:var(--mono);font-size:.72rem;color:var(--soft);margin:3px 0 6px}
+.mfeat{font-size:.86rem;color:var(--soft);margin-bottom:7px}
+.mstack{font-family:var(--mono);font-size:.74rem;color:var(--ink);background:var(--softbg);border-radius:6px;padding:6px 9px;margin-bottom:7px;overflow-x:auto;white-space:nowrap}
+.mvs{font-size:.8rem;color:var(--ink);margin-bottom:7px}.mvs .lbl{font-size:.64rem;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);font-weight:700;margin-right:6px}
+.mvs .delta{font-family:var(--mono);font-weight:700;margin-left:8px}.delta.up{color:var(--cost)}.delta.dn{color:var(--save)}
+.mins{font-size:.82rem;color:var(--soft);font-style:italic;border-top:1px dashed var(--line);padding-top:6px}.mins b{color:var(--green);font-style:normal}
+table.reg{width:100%;border-collapse:collapse;font-size:.86rem;margin-top:10px}
+table.reg th{font-size:.62rem;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);text-align:left;padding:7px 8px;border-bottom:1.5px solid var(--line)}
+table.reg td{padding:7px 8px;border-bottom:1px solid var(--line)}table.reg td.n{font-family:var(--mono);color:var(--soft)}
+.regbar{display:inline-block;height:9px;border-radius:3px;background:var(--save);vertical-align:middle;margin-right:8px}
+.reg .sv{font-family:var(--mono);font-weight:700;color:var(--save)}
+.assump dt{font-weight:700;color:var(--green);margin-top:10px}.assump dd{margin:2px 0 0;color:var(--soft);font-size:.85rem}
+hr{border:none;border-top:1px solid var(--line);margin:18px 0}
+.bars{display:flex;flex-direction:column;gap:8px;margin-top:8px}.bar{display:grid;grid-template-columns:120px 1fr 74px;gap:10px;align-items:center}.bar .l{font-size:.82rem;font-weight:600}.bar .t{height:18px;background:var(--softbg);border:1px solid var(--line);border-radius:4px;overflow:hidden}.bar .f{height:100%}.bar .v{font-family:var(--mono);font-weight:700;font-size:.8rem;text-align:right}
+@media print{@page{size:A4;margin:13mm}body{background:#fff}.wrap{max-width:none}.pg,.cover{padding:0}.mblock,.domain,.kpi,.dhead{page-break-inside:avoid}.dhead{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="cover"><div class="eb">Automotive Software Should-Cost · Module-by-Module Deep-Dive</div>
+<h1>Range Rover L460<br>software cost deep-dive</h1>
+<p class="sub">A full teardown of all 49 embedded-software modules — features, cost detail, competitive differences and a specific insight for every one — behind the L460 benchmark.</p>
+<div class="mrow"><div><div class="k">Modules analysed</div><div class="v">49</div></div><div><div class="k">Software domains</div><div class="v">7</div></div><div><div class="k">Opportunity</div><div class="v">£145M</div></div></div></div>
+
+<div class="pg"><div class="eyebrow">Part A · Executive summary</div><h2><span class="n">A</span> &nbsp;The benchmark, in brief</h2>
+<p>The L460's core mild-hybrid (MHEV) software programme costs materially more than the German rivals it competes with — the only drivetrain they share. The cause is software reuse, and it is addressable. This report then dissects all 49 modules behind that headline.</p>
+<div class="kpis"><div class="kpi"><div class="k">L460 MHEV programme</div><div class="v">£420.0M</div><div class="s">£700 / vehicle</div></div><div class="kpi"><div class="k">vs BMW X7 (best peer)</div><div class="v cost">+£114.8M</div><div class="s">+37.6%</div></div><div class="kpi"><div class="k">Root cause</div><div class="v" style="font-size:1.15rem">Lower reuse</div><div class="s">Medium vs Heavy</div></div><div class="kpi"><div class="k">Addressable saving</div><div class="v save">£145M</div><div class="s">−35%</div></div></div>
+<div class="bars"><div class="bar"><div class="l" style="color:var(--green)">L460</div><div class="t"><div class="f" style="width:100%;background:var(--green)"></div></div><div class="v">£420M</div></div>
+<div class="bar"><div class="l">BMW X7</div><div class="t"><div class="f" style="width:72.7%;background:#3E5F92"></div></div><div class="v">£305M</div></div>
+<div class="bar"><div class="l">Audi Q8</div><div class="t"><div class="f" style="width:74.4%;background:#7C8894"></div></div><div class="v">£313M</div></div>
+<div class="bar"><div class="l">Merc GLS</div><div class="t"><div class="f" style="width:100%;background:#B08A46"></div></div><div class="v">£490M</div></div></div>
+<p class="small" style="margin-top:12px">The gap is not geography or volume (a normalised view keeps the L460 ~£155M above BMW/Audi). BMW and Audi carry far more software forward — "Heavy"/platform reuse (0.35× / 0.14×) vs the L460's "Medium" (0.60×). Two architecture-led levers — Heavy reuse plus shared middleware — take the MHEV programme to ~£275M, a £145M (35%) saving, without offshoring. On electrified programmes the L460 already out-benchmarks the Porsche Cayenne.</p></div>
+
+<div class="pg"><div class="eyebrow">Part B · Module-by-module deep-dive</div><h2><span class="n">B</span> &nbsp;The seven domains</h2>
+<p>Each block states what the software does, its full cost for the L460, the same module priced for the peers that build it, and a specific insight. Mild-hybrid modules are benchmarked against the BMW X7 / Audi Q8 / Mercedes GLS; the seven EV-powertrain modules (which the German MHEVs omit) are benchmarked against the Porsche Cayenne.</p>
+<div class="dmap"><div class="r"><span class="sw" style="background:#2F5C49"></span><span class="nm">A · EV Powertrain &amp; Battery</span><span class="ct">9 modules</span><span class="tt">£147.9M</span></div><div class="r"><span class="sw" style="background:#3E5F92"></span><span class="nm">B · ADAS L2 / L2+</span><span class="ct">9 modules</span><span class="tt">£191.7M</span></div><div class="r"><span class="sw" style="background:#7C5468"></span><span class="nm">C · Infotainment &amp; UX</span><span class="ct">9 modules</span><span class="tt">£64.8M</span></div><div class="r"><span class="sw" style="background:#9C7328"></span><span class="nm">D · Vehicle Domain Controllers</span><span class="ct">7 modules</span><span class="tt">£74.1M</span></div><div class="r"><span class="sw" style="background:#5E7686"></span><span class="nm">E · Middleware &amp; Platform</span><span class="ct">6 modules</span><span class="tt">£29.6M</span></div><div class="r"><span class="sw" style="background:#AC4A3E"></span><span class="nm">F · Cybersecurity (ISO 21434)</span><span class="ct">5 modules</span><span class="tt">£17.7M</span></div><div class="r"><span class="sw" style="background:#3F8FB0"></span><span class="nm">G · OTA &amp; Cloud Backend</span><span class="ct">4 modules</span><span class="tt">£33.5M</span></div></div>
+<section class="domain"><div class="dhead" style="background:#2F5C49"><span class="dl">A</span><span class="dn">EV Powertrain &amp; Battery</span><span class="dm">9 modules · £147.9M</span></div>
+    <div class="mblock" style="border-left-color:#2F5C49">
+    <div class="mh"><div class="mn">BMS Core Software</div><div class="mtot">£42.5M</div></div>
+    <div class="mtags">ASIL D · Very High · reuse Medium · 173 PM · £71/veh</div>
+    <div class="mfeat">Battery pack monitoring, protection logic, cell voltage/temp acquisition, state machine management, ASIL-D safety logic.</div>
+    <div class="mstack">Dev £9.8M · Test £18.7M · Integ £1.8M · Cyber £1.4M · Calib £0.8M · Tool £0.4M · Maint £9.5M · IP £0.1M</div>
+    <div class="mvs"><span class="lbl">vs peers</span> Cayenne <b>£48.9M</b> <span class="delta dn">£-6.4M vs best</span></div>
+    <div class="mins"><b>Insight</b> — EV-powertrain software the German MHEV peers omit — benchmarked against the Porsche Cayenne. At £42.5M the L460 is £6.4M cheaper than the Cayenne (£48.9M), on its lower UK / Tier-1 blended rate. Heavier carry-forward would save ~£15.7M.</div>
+  </div>
+<div class="mblock" style="border-left-color:#2F5C49">
+    <div class="mh"><div class="mn">EDU (Electric Drive Unit) Control Software</div><div class="mtot">£32.0M</div></div>
+    <div class="mtags">ASIL D · Very High · reuse Medium · 125 PM · £53/veh</div>
+    <div class="mfeat">Integrated electric drive unit control, dual-motor torque vectoring, multi-speed gearbox integration, creep &amp; one-pedal drive.</div>
+    <div class="mstack">Dev £7.1M · Test £14.1M · Integ £1.4M · Cyber £1.0M · Calib £0.9M · Tool £0.5M · Maint £6.8M · IP £0.2M</div>
+    <div class="mvs"><span class="lbl">vs peers</span> Cayenne <b>£36.8M</b> <span class="delta dn">£-4.8M vs best</span></div>
+    <div class="mins"><b>Insight</b> — EV-powertrain software the German MHEV peers omit — benchmarked against the Porsche Cayenne. At £32.0M the L460 is £4.8M cheaper than the Cayenne (£36.8M), on its lower UK / Tier-1 blended rate. Heavier carry-forward would save ~£11.8M.</div>
+  </div>
+<div class="mblock" style="border-left-color:#2F5C49">
+    <div class="mh"><div class="mn">Inverter Control Algorithms</div><div class="mtot">£20.5M</div></div>
+    <div class="mtags">ASIL D · Very High · reuse Medium · 86 PM · £34/veh</div>
+    <div class="mfeat">Space Vector PWM, switching frequency optimisation, dead-time compensation, EMI management, demagnetisation protection.</div>
+    <div class="mstack">Dev £4.9M · Test £9.8M · Integ £0.9M · Cyber £0.0M · Calib £0.5M · Tool £0.4M · Maint £3.9M · IP £0.1M</div>
+    <div class="mvs"><span class="lbl">vs peers</span> Cayenne <b>£23.6M</b> <span class="delta dn">£-3.1M vs best</span></div>
+    <div class="mins"><b>Insight</b> — EV-powertrain software the German MHEV peers omit — benchmarked against the Porsche Cayenne. At £20.5M the L460 is £3.1M cheaper than the Cayenne (£23.6M), on its lower UK / Tier-1 blended rate. Heavier carry-forward would save ~£7.5M.</div>
+  </div>
+<div class="mblock" style="border-left-color:#2F5C49">
+    <div class="mh"><div class="mn">Motor Control (FOC/DTC/SVPWM)</div><div class="mtot">£19.2M</div></div>
+    <div class="mtags">ASIL D · Very High · reuse Medium · 81 PM · £32/veh</div>
+    <div class="mfeat">Field-oriented control, direct torque control, sensorless rotor position estimation, flux linkage tables, temperature derating.</div>
+    <div class="mstack">Dev £4.6M · Test £9.1M · Integ £0.8M · Cyber £0.0M · Calib £0.6M · Tool £0.3M · Maint £3.7M · IP £0.1M</div>
+    <div class="mvs"><span class="lbl">vs peers</span> Cayenne <b>£22.1M</b> <span class="delta dn">£-2.9M vs best</span></div>
+    <div class="mins"><b>Insight</b> — EV-powertrain software the German MHEV peers omit — benchmarked against the Porsche Cayenne. At £19.2M the L460 is £2.9M cheaper than the Cayenne (£22.1M), on its lower UK / Tier-1 blended rate. Heavier carry-forward would save ~£7.0M.</div>
+  </div>
+<div class="mblock" style="border-left-color:#2F5C49">
+    <div class="mh"><div class="mn">SOC/SOH/SOE Estimation Models</div><div class="mtot">£13.6M</div></div>
+    <div class="mtags">ASIL C · Very High · reuse Medium · 58 PM · £23/veh</div>
+    <div class="mfeat">Electrochemical &amp; data-driven (ML) State of Charge, Health, Energy estimation. Kalman, EKF, neural network approaches.</div>
+    <div class="mstack">Dev £3.3M · Test £4.4M · Integ £0.5M · Cyber £0.0M · Calib £0.4M · Tool £0.2M · Maint £3.7M · IP £0.2M</div>
+    <div class="mvs"><span class="lbl">vs peers</span> Cayenne <b>£15.5M</b> <span class="delta dn">£-1.9M vs best</span></div>
+    <div class="mins"><b>Insight</b> — EV-powertrain software the German MHEV peers omit — benchmarked against the Porsche Cayenne. At £13.6M the L460 is £1.9M cheaper than the Cayenne (£15.5M), on its lower UK / Tier-1 blended rate. Heavier carry-forward would save ~£4.8M.</div>
+  </div>
+<div class="mblock" style="border-left-color:#2F5C49">
+    <div class="mh"><div class="mn">Fast-Charging Control Software</div><div class="mtot">£7.3M</div></div>
+    <div class="mtags">ASIL C · Very High · reuse Medium · 35 PM · £12/veh</div>
+    <div class="mfeat">CCS/CHAdeMO/OCPP protocol stacks, dynamic power curve management, thermal derating during charge.</div>
+    <div class="mstack">Dev £2.0M · Test £2.4M · Integ £0.3M · Cyber £0.2M · Calib £0.2M · Tool £0.1M · Maint £1.9M · IP £0.1M</div>
+    <div class="mvs"><span class="lbl">vs peers</span> Cayenne <b>£8.3M</b> <span class="delta dn">£-1.1M vs best</span></div>
+    <div class="mins"><b>Insight</b> — EV-powertrain software the German MHEV peers omit — benchmarked against the Porsche Cayenne. At £7.3M the L460 is £1.1M cheaper than the Cayenne (£8.3M), on its lower UK / Tier-1 blended rate. Heavier carry-forward would save ~£2.7M.</div>
+  </div>
+<div class="mblock" style="border-left-color:#2F5C49">
+    <div class="mh"><div class="mn">Battery Thermal Management Software</div><div class="mtot">£4.4M</div></div>
+    <div class="mtags">ASIL B · High · reuse Medium · 32 PM · £7/veh</div>
+    <div class="mfeat">Thermal control loops, coolant pump/valve actuation, fast-charge thermal preconditioning, cabin integration.</div>
+    <div class="mstack">Dev £1.5M · Test £1.2M · Integ £0.2M · Cyber £0.0M · Calib £0.1M · Tool £0.1M · Maint £1.2M · IP £0.0M</div>
+    <div class="mvs"><span class="lbl">vs peers</span> BMW X7 <b>£3.0M</b> &nbsp;·&nbsp; Audi Q8 <b>£3.0M</b> &nbsp;·&nbsp; Merc GLS <b>£5.1M</b> <span class="delta up">+£1.4M vs best</span></div>
+    <div class="mins"><b>Insight</b> — £4.4M — £1.4M above BMW X7. A reuse gap worth ~£1.7M to close by carrying more forward.</div>
+  </div>
+<div class="mblock" style="border-left-color:#2F5C49">
+    <div class="mh"><div class="mn">Regenerative Braking Software</div><div class="mtot">£4.3M</div></div>
+    <div class="mtags">ASIL C · High · reuse Medium · 28 PM · £7/veh</div>
+    <div class="mfeat">Brake blending control, hydraulic-electric transition, ABS/ESC coordination, one-pedal tuning, driver feel calibration.</div>
+    <div class="mstack">Dev £1.3M · Test £1.5M · Integ £0.2M · Cyber £0.0M · Calib £0.1M · Tool £0.1M · Maint £1.0M · IP £0.0M</div>
+    <div class="mvs"><span class="lbl">vs peers</span> BMW X7 <b>£3.0M</b> &nbsp;·&nbsp; Audi Q8 <b>£3.0M</b> &nbsp;·&nbsp; Merc GLS <b>£4.9M</b> <span class="delta up">+£1.3M vs best</span></div>
+    <div class="mins"><b>Insight</b> — £4.3M — £1.3M above BMW X7. A reuse gap worth ~£1.6M to close by carrying more forward.</div>
+  </div>
+<div class="mblock" style="border-left-color:#2F5C49">
+    <div class="mh"><div class="mn">Cell Balancing Algorithms</div><div class="mtot">£4.2M</div></div>
+    <div class="mtags">ASIL C · High · reuse Medium · 28 PM · £7/veh</div>
+    <div class="mfeat">Active/passive balancing algorithms, balancing current control, energy routing optimisation.</div>
+    <div class="mstack">Dev £1.3M · Test £1.5M · Integ £0.2M · Cyber £0.0M · Calib £0.1M · Tool £0.1M · Maint £1.0M · IP £0.0M</div>
+    <div class="mvs"><span class="lbl">vs peers</span> Cayenne <b>£4.8M</b> <span class="delta dn">£-0.6M vs best</span></div>
+    <div class="mins"><b>Insight</b> — EV-powertrain software the German MHEV peers omit — benchmarked against the Porsche Cayenne. At £4.2M the L460 is £0.6M cheaper than the Cayenne (£4.8M), on its lower UK / Tier-1 blended rate. Heavier carry-forward would save ~£1.6M.</div>
+  </div></section>
+<section class="domain"><div class="dhead" style="background:#3E5F92"><span class="dl">B</span><span class="dn">ADAS L2 / L2+</span><span class="dm">9 modules · £191.7M</span></div>
+    <div class="mblock" style="border-left-color:#3E5F92">
+    <div class="mh"><div class="mn">Camera Perception Stack</div><div class="mtot">£38.9M</div></div>
+    <div class="mtags">ASIL B · Very High · reuse Medium · 140 PM · £65/veh</div>
+    <div class="mfeat">Object detection/classification (DNN), lane detection, traffic sign recognition, free-space estimation, parking vision. Mono + stereo cameras.</div>
+    <div class="mstack">Dev £8.0M · Test £8.9M · Integ £1.6M · Cyber £0.6M · Calib £0.5M · Tool £0.9M · Maint £10.2M · IP £1.3M</div>
+    <div class="mvs"><span class="lbl">vs peers</span> BMW X7 <b>£28.7M</b> &nbsp;·&nbsp; Audi Q8 <b>£30.4M</b> &nbsp;·&nbsp; Merc GLS <b>£45.3M</b> <span class="delta up">+£10.2M vs best</span></div>
+    <div class="mins"><b>Insight</b> — A top cost-driver: £38.9M is £10.2M above the leanest peer (BMW X7). The gap is software reuse — carrying this module forward (Heavy) recovers ~£12.2M.</div>
+  </div>
+<div class="mblock" style="border-left-color:#3E5F92">
+    <div class="mh"><div class="mn">Sensor Fusion Engine</div><div class="mtot">£33.7M</div></div>
+    <div class="mtags">ASIL C · Very High · reuse Medium · 131 PM · £56/veh</div>
+    <div class="mfeat">Multi-modal object fusion (camera + radar + lidar if fitted), probabilistic world model, occupancy grid, track management.</div>
+    <div class="mstack">Dev £7.5M · Test £11.8M · Integ £1.6M · Cyber £0.0M · Calib £0.6M · Tool £0.6M · Maint £9.6M · IP £0.4M</div>
+    <div class="mvs"><span class="lbl">vs peers</span> BMW X7 <b>£23.7M</b> &nbsp;·&nbsp; Audi Q8 <b>£24.5M</b> &nbsp;·&nbsp; Merc GLS <b>£39.4M</b> <span class="delta up">+£10.0M vs best</span></div>
+    <div class="mins"><b>Insight</b> — A top cost-driver: £33.7M is £10.0M above the leanest peer (BMW X7). The gap is software reuse — carrying this module forward (Heavy) recovers ~£12.2M.</div>
+  </div>
+<div class="mblock" style="border-left-color:#3E5F92">
+    <div class="mh"><div class="mn">Path Planning Algorithms</div><div class="mtot">£28.0M</div></div>
+    <div class="mtags">ASIL C · Very High · reuse Medium · 110 PM · £47/veh</div>
+    <div class="mfeat">Behaviour prediction, trajectory generation, cost-function optimisation, comfort/safety trade-off. HD map integration where applicable.</div>
+    <div class="mstack">Dev £6.3M · Test £9.9M · Integ £1.3M · Cyber £0.0M · Calib £0.4M · Tool £0.5M · Maint £8.1M · IP £0.4M</div>
+    <div class="mvs"><span class="lbl">vs peers</span> BMW X7 <b>£19.6M</b> &nbsp;·&nbsp; Audi Q8 <b>£20.3M</b> &nbsp;·&nbsp; Merc GLS <b>£32.7M</b> <span class="delta up">+£8.3M vs best</span></div>
+    <div class="mins"><b>Insight</b> — A top cost-driver: £28.0M is £8.3M above the leanest peer (BMW X7). The gap is software reuse — carrying this module forward (Heavy) recovers ~£10.1M.</div>
+  </div>
+<div class="mblock" style="border-left-color:#3E5F92">
+    <div class="mh"><div class="mn">Highway Assist / Traffic Jam Assist</div><div class="mtot">£27.4M</div></div>
+    <div class="mtags">ASIL C · Very High · reuse Medium · 104 PM · £46/veh</div>
+    <div class="mfeat">Combined longitudinal + lateral control for highway driving, hands-off monitoring, lane change assist, automated speed adaptation.</div>
+    <div class="mstack">Dev £5.9M · Test £9.3M · Integ £1.3M · Cyber £0.0M · Calib £0.6M · Tool £0.5M · Maint £7.5M · IP £0.5M</div>
+    <div class="mvs"><span class="lbl">vs peers</span> BMW X7 <b>£19.5M</b> &nbsp;·&nbsp; Audi Q8 <b>£20.2M</b> &nbsp;·&nbsp; Merc GLS <b>£32.0M</b> <span class="delta up">+£7.9M vs best</span></div>
+    <div class="mins"><b>Insight</b> — A top cost-driver: £27.4M is £7.9M above the leanest peer (BMW X7). The gap is software reuse — carrying this module forward (Heavy) recovers ~£9.7M.</div>
+  </div>
+<div class="mblock" style="border-left-color:#3E5F92">
+    <div class="mh"><div class="mn">Control Algorithms (ACC / LKA / AEB)</div><div class="mtot">£27.3M</div></div>
+    <div class="mtags">ASIL D · High · reuse Medium · 125 PM · £45/veh</div>
+    <div class="mfeat">Longitudinal ACC, lateral LKA, emergency AEB, FCW, emergency steering. Control law design, tuning, gain scheduling.</div>
+    <div class="mstack">Dev £5.7M · Test £12.9M · Integ £1.0M · Cyber £0.0M · Calib £0.8M · Tool £0.4M · Maint £6.4M · IP £0.2M</div>
+    <div class="mvs"><span class="lbl">vs peers</span> BMW X7 <b>£19.5M</b> &nbsp;·&nbsp; Audi Q8 <b>£19.9M</b> &nbsp;·&nbsp; Merc GLS <b>£31.7M</b> <span class="delta up">+£7.8M vs best</span></div>
+    <div class="mins"><b>Insight</b> — A top cost-driver: £27.3M is £7.8M above the leanest peer (BMW X7). The gap is software reuse — carrying this module forward (Heavy) recovers ~£9.7M.</div>
+  </div>
+<div class="mblock" style="border-left-color:#3E5F92">
+    <div class="mh"><div class="mn">Driver Monitoring Software (DMS)</div><div class="mtot">£14.2M</div></div>
+    <div class="mtags">ASIL B · Very High · reuse Medium · 59 PM · £24/veh</div>
+    <div class="mfeat">Gaze tracking, drowsiness detection, attention estimation, hands-on-wheel detection. IR camera + CNN inference.</div>
+    <div class="mstack">Dev £3.4M · Test £3.4M · Integ £0.5M · Cyber £0.3M · Calib £0.2M · Tool £0.4M · Maint £3.8M · IP £0.7M</div>
+    <div class="mvs"><span class="lbl">vs peers</span> BMW X7 <b>£10.2M</b> &nbsp;·&nbsp; Audi Q8 <b>£10.8M</b> &nbsp;·&nbsp; Merc GLS <b>£16.5M</b> <span class="delta up">+£4.0M vs best</span></div>
+    <div class="mins"><b>Insight</b> — A top cost-driver: £14.2M is £4.0M above the leanest peer (BMW X7). The gap is software reuse — carrying this module forward (Heavy) recovers ~£4.7M.</div>
+  </div>
+<div class="mblock" style="border-left-color:#3E5F92">
+    <div class="mh"><div class="mn">Radar Processing Stack</div><div class="mtot">£13.2M</div></div>
+    <div class="mtags">ASIL B · Very High · reuse Medium · 65 PM · £22/veh</div>
+    <div class="mfeat">FMCW radar DSP, CFAR detection, Doppler processing, angle estimation, object tracking and classification.</div>
+    <div class="mstack">Dev £3.7M · Test £3.7M · Integ £0.6M · Cyber £0.0M · Calib £0.3M · Tool £0.4M · Maint £3.5M · IP £0.3M</div>
+    <div class="mvs"><span class="lbl">vs peers</span> BMW X7 <b>£9.2M</b> &nbsp;·&nbsp; Audi Q8 <b>£9.6M</b> &nbsp;·&nbsp; Merc GLS <b>£15.4M</b> <span class="delta up">+£4.0M vs best</span></div>
+    <div class="mins"><b>Insight</b> — A top cost-driver: £13.2M is £4.0M above the leanest peer (BMW X7). The gap is software reuse — carrying this module forward (Heavy) recovers ~£4.8M.</div>
+  </div>
+<div class="mblock" style="border-left-color:#3E5F92">
+    <div class="mh"><div class="mn">Automated Parking &amp; Surround-View</div><div class="mtot">£7.3M</div></div>
+    <div class="mtags">ASIL B · High · reuse Medium · 52 PM · £12/veh</div>
+    <div class="mfeat">Automated parking assist (APA), remote/summon parking (RPA), 360° surround-view stitching, parking-slot detection, low-speed manoeuvre planning fusing ultrasonic + cameras.</div>
+    <div class="mstack">Dev £2.4M · Test £2.1M · Integ £0.4M · Cyber £0.0M · Calib £0.2M · Tool £0.2M · Maint £1.9M · IP £0.1M</div>
+    <div class="mvs"><span class="lbl">vs peers</span> BMW X7 <b>£5.0M</b> &nbsp;·&nbsp; Audi Q8 <b>£5.1M</b> &nbsp;·&nbsp; Merc GLS <b>£8.6M</b> <span class="delta up">+£2.4M vs best</span></div>
+    <div class="mins"><b>Insight</b> — £7.3M — £2.4M above BMW X7. A reuse gap worth ~£2.8M to close by carrying more forward.</div>
+  </div>
+<div class="mblock" style="border-left-color:#3E5F92">
+    <div class="mh"><div class="mn">Ultrasonic Processing Software</div><div class="mtot">£1.7M</div></div>
+    <div class="mtags">ASIL B · Medium · reuse Medium · 16 PM · £3/veh</div>
+    <div class="mfeat">Short-range object detection, parking guidance, cross-traffic alert, time-of-flight processing for 12-16 sensors.</div>
+    <div class="mstack">Dev £0.6M · Test £0.5M · Integ £0.1M · Cyber £0.0M · Calib £0.0M · Tool £0.1M · Maint £0.4M · IP £0.1M</div>
+    <div class="mvs"><span class="lbl">vs peers</span> BMW X7 <b>£1.2M</b> &nbsp;·&nbsp; Audi Q8 <b>£1.2M</b> &nbsp;·&nbsp; Merc GLS <b>£2.0M</b> <span class="delta up">+£0.5M vs best</span></div>
+    <div class="mins"><b>Insight</b> — £1.7M — £0.5M above BMW X7. A reuse gap worth ~£0.6M to close by carrying more forward.</div>
+  </div></section>
+<section class="domain"><div class="dhead" style="background:#7C5468"><span class="dl">C</span><span class="dn">Infotainment &amp; UX</span><span class="dm">9 modules · £64.8M</span></div>
+    <div class="mblock" style="border-left-color:#7C5468">
+    <div class="mh"><div class="mn">IVI Operating System (Android Automotive / QNX)</div><div class="mtot">£20.9M</div></div>
+    <div class="mtags">ASIL QM · Very High · reuse Medium · 96 PM · £35/veh</div>
+    <div class="mfeat">Android Automotive OS or QNX BSP integration, platform services, GPU driver optimisation, boot time optimisation, security hardening.</div>
+    <div class="mstack">Dev £5.5M · Test £1.8M · Integ £1.2M · Cyber £0.4M · Calib £0.1M · Tool £1.3M · Maint £7.9M · IP £1.8M</div>
+    <div class="mvs"><span class="lbl">vs peers</span> BMW X7 <b>£15.0M</b> &nbsp;·&nbsp; Audi Q8 <b>£16.0M</b> &nbsp;·&nbsp; Merc GLS <b>£24.7M</b> <span class="delta up">+£5.9M vs best</span></div>
+    <div class="mins"><b>Insight</b> — A top cost-driver: £20.9M is £5.9M above the leanest peer (BMW X7). The gap is software reuse — carrying this module forward (Heavy) recovers ~£7.0M.</div>
+  </div>
+<div class="mblock" style="border-left-color:#7C5468">
+    <div class="mh"><div class="mn">Vehicle Voice Assistant</div><div class="mtot">£12.3M</div></div>
+    <div class="mtags">ASIL QM · Very High · reuse Medium · 39 PM · £20/veh</div>
+    <div class="mfeat">Wake word detection, ASR (on-device + cloud), NLU, TTS, vehicle function control, 3rd-party assistant integration (Alexa/Google).</div>
+    <div class="mstack">Dev £2.2M · Test £0.7M · Integ £0.4M · Cyber £0.2M · Calib £0.1M · Tool £0.5M · Maint £2.8M · IP £1.8M</div>
+    <div class="mvs"><span class="lbl">vs peers</span> BMW X7 <b>£10.0M</b> &nbsp;·&nbsp; Audi Q8 <b>£10.9M</b> &nbsp;·&nbsp; Merc GLS <b>£14.2M</b> <span class="delta up">+£2.3M vs best</span></div>
+    <div class="mins"><b>Insight</b> — £12.3M — £2.3M above BMW X7. A reuse gap worth ~£2.7M to close by carrying more forward.</div>
+  </div>
+<div class="mblock" style="border-left-color:#7C5468">
+    <div class="mh"><div class="mn">App Framework &amp; HMI Layer</div><div class="mtot">£8.5M</div></div>
+    <div class="mtags">ASIL QM · Very High · reuse Medium · 51 PM · £14/veh</div>
+    <div class="mfeat">UI framework (Qt/Flutter/React Native Automotive), instrument cluster rendering, haptics, multi-screen management, UX design system.</div>
+    <div class="mstack">Dev £2.9M · Test £0.8M · Integ £0.4M · Cyber £0.0M · Calib £0.1M · Tool £0.3M · Maint £3.3M · IP £0.7M</div>
+    <div class="mvs"><span class="lbl">vs peers</span> BMW X7 <b>£5.9M</b> &nbsp;·&nbsp; Audi Q8 <b>£6.2M</b> &nbsp;·&nbsp; Merc GLS <b>£10.0M</b> <span class="delta up">+£2.6M vs best</span></div>
+    <div class="mins"><b>Insight</b> — £8.5M — £2.6M above BMW X7. A reuse gap worth ~£3.1M to close by carrying more forward.</div>
+  </div>
+<div class="mblock" style="border-left-color:#7C5468">
+    <div class="mh"><div class="mn">Navigation Stack</div><div class="mtot">£7.6M</div></div>
+    <div class="mtags">ASIL QM · High · reuse Medium · 25 PM · £13/veh</div>
+    <div class="mfeat">Routing engine, map rendering, offline capability, real-time traffic (HERE/TomTom), EV routing with charge planning.</div>
+    <div class="mstack">Dev £1.1M · Test £0.3M · Integ £0.2M · Cyber £0.0M · Calib £0.0M · Tool £0.3M · Maint £1.1M · IP £1.6M</div>
+    <div class="mvs"><span class="lbl">vs peers</span> BMW X7 <b>£6.7M</b> &nbsp;·&nbsp; Audi Q8 <b>£7.4M</b> &nbsp;·&nbsp; Merc GLS <b>£9.6M</b> <span class="delta up">+£1.0M vs best</span></div>
+    <div class="mins"><b>Insight</b> — £7.6M — £1.0M above BMW X7. A reuse gap worth ~£1.1M to close by carrying more forward.</div>
+  </div>
+<div class="mblock" style="border-left-color:#7C5468">
+    <div class="mh"><div class="mn">Telematics Control Unit (TCU) Software</div><div class="mtot">£5.6M</div></div>
+    <div class="mtags">ASIL B · High · reuse Medium · 32 PM · £9/veh</div>
+    <div class="mfeat">5G/LTE modem management, emergency call (eCall), remote diagnostics, remote access, V2X readiness, OBD-II data relay.</div>
+    <div class="mstack">Dev £1.5M · Test £1.3M · Integ £0.2M · Cyber £0.1M · Calib £0.1M · Tool £0.2M · Maint £1.4M · IP £0.1M</div>
+    <div class="mvs"><span class="lbl">vs peers</span> BMW X7 <b>£4.0M</b> &nbsp;·&nbsp; Audi Q8 <b>£4.2M</b> &nbsp;·&nbsp; Merc GLS <b>£6.5M</b> <span class="delta up">+£1.5M vs best</span></div>
+    <div class="mins"><b>Insight</b> — £5.6M — £1.5M above BMW X7. A reuse gap worth ~£1.8M to close by carrying more forward.</div>
+  </div>
+<div class="mblock" style="border-left-color:#7C5468">
+    <div class="mh"><div class="mn">AR Head-Up Display &amp; AR Navigation</div><div class="mtot">£3.0M</div></div>
+    <div class="mtags">ASIL A · High · reuse Medium · 24 PM · £5/veh</div>
+    <div class="mfeat">Augmented-reality head-up display compositor, sensor-registered navigation/ADAS overlays, optical distortion correction, graphics rendering pipeline for the AR-HUD projector.</div>
+    <div class="mstack">Dev £1.1M · Test £0.5M · Integ £0.2M · Cyber £0.0M · Calib £0.1M · Tool £0.2M · Maint £0.8M · IP £0.1M</div>
+    <div class="mvs"><span class="lbl">vs peers</span> BMW X7 <b>£2.1M</b> &nbsp;·&nbsp; Audi Q8 <b>£2.1M</b> &nbsp;·&nbsp; Merc GLS <b>£3.5M</b> <span class="delta up">+£0.9M vs best</span></div>
+    <div class="mins"><b>Insight</b> — £3.0M — £0.9M above BMW X7. A reuse gap worth ~£1.1M to close by carrying more forward.</div>
+  </div>
+<div class="mblock" style="border-left-color:#7C5468">
+    <div class="mh"><div class="mn">Bluetooth / WiFi / 5G Connectivity Stack</div><div class="mtot">£2.5M</div></div>
+    <div class="mtags">ASIL QM · High · reuse Medium · 18 PM · £4/veh</div>
+    <div class="mfeat">BT5.x stack (audio, phone), WiFi 6/6E AP+client, 5G SA/NSA modem driver integration, hotspot management.</div>
+    <div class="mstack">Dev £0.8M · Test £0.2M · Integ £0.1M · Cyber £0.1M · Calib £0.0M · Tool £0.2M · Maint £0.7M · IP £0.3M</div>
+    <div class="mvs"><span class="lbl">vs peers</span> BMW X7 <b>£1.9M</b> &nbsp;·&nbsp; Audi Q8 <b>£2.0M</b> &nbsp;·&nbsp; Merc GLS <b>£2.9M</b> <span class="delta up">+£0.7M vs best</span></div>
+    <div class="mins"><b>Insight</b> — £2.5M — £0.7M above BMW X7. A reuse gap worth ~£0.8M to close by carrying more forward.</div>
+  </div>
+<div class="mblock" style="border-left-color:#7C5468">
+    <div class="mh"><div class="mn">Premium Audio DSP &amp; Active Noise Control</div><div class="mtot">£2.5M</div></div>
+    <div class="mtags">ASIL QM · Very High · reuse Medium · 17 PM · £4/veh</div>
+    <div class="mfeat">Branded 3D surround tuning (Meridian / Bowers &amp; Wilkins / Bang &amp; Olufsen / Burmester), active road/engine noise cancellation (ANC/RNC), active sound design, per-cabin acoustic calibration.</div>
+    <div class="mstack">Dev £1.0M · Test £0.2M · Integ £0.1M · Cyber £0.0M · Calib £0.1M · Tool £0.2M · Maint £0.5M · IP £0.3M</div>
+    <div class="mvs"><span class="lbl">vs peers</span> BMW X7 <b>£1.5M</b> &nbsp;·&nbsp; Audi Q8 <b>£1.6M</b> &nbsp;·&nbsp; Merc GLS <b>£2.9M</b> <span class="delta up">+£0.9M vs best</span></div>
+    <div class="mins"><b>Insight</b> — Signature system for the L460 (Meridian 3D audio), deliberately run at Very High complexity — a brand investment, not an inefficiency. £2.5M vs £1.5M at the leanest peer (BMW X7).</div>
+  </div>
+<div class="mblock" style="border-left-color:#7C5468">
+    <div class="mh"><div class="mn">Digital Key (UWB/BLE) &amp; Secure Access</div><div class="mtot">£1.9M</div></div>
+    <div class="mtags">ASIL QM · High · reuse Medium · 13 PM · £3/veh</div>
+    <div class="mfeat">CCC Digital Key 3.0 phone-as-key, UWB ranging &amp; relay-attack protection, BLE fallback, secure-element / HSM integration, key sharing &amp; cloud provisioning backend.</div>
+    <div class="mstack">Dev £0.6M · Test £0.2M · Integ £0.1M · Cyber £0.0M · Calib £0.0M · Tool £0.1M · Maint £0.4M · IP £0.2M</div>
+    <div class="mvs"><span class="lbl">vs peers</span> BMW X7 <b>£1.6M</b> &nbsp;·&nbsp; Audi Q8 <b>£1.5M</b> &nbsp;·&nbsp; Merc GLS <b>£2.2M</b> <span class="delta up">+£0.4M vs best</span></div>
+    <div class="mins"><b>Insight</b> — Competitive at £1.9M — at or near the leanest peer. Remaining reuse upside ~£0.6M.</div>
+  </div></section>
+<section class="domain"><div class="dhead" style="background:#9C7328"><span class="dl">D</span><span class="dn">Vehicle Domain Controllers</span><span class="dm">7 modules · £74.1M</span></div>
+    <div class="mblock" style="border-left-color:#9C7328">
+    <div class="mh"><div class="mn">Vehicle Motion Management (VMM)</div><div class="mtot">£24.3M</div></div>
+    <div class="mtags">ASIL C · Very High · reuse Medium · 110 PM · £41/veh</div>
+    <div class="mfeat">Unified torque arbitration, coordinated chassis &amp; propulsion control, stability control, oversteer/understeer management, tyre model.</div>
+    <div class="mstack">Dev £6.3M · Test £8.9M · Integ £1.4M · Cyber £0.0M · Calib £1.0M · Tool £0.4M · Maint £6.0M · IP £0.2M</div>
+    <div class="mvs"><span class="lbl">vs peers</span> BMW X7 <b>£16.7M</b> &nbsp;·&nbsp; Audi Q8 <b>£17.1M</b> &nbsp;·&nbsp; Merc GLS <b>£28.3M</b> <span class="delta up">+£7.6M vs best</span></div>
+    <div class="mins"><b>Insight</b> — A top cost-driver: £24.3M is £7.6M above the leanest peer (BMW X7). The gap is software reuse — carrying this module forward (Heavy) recovers ~£9.3M.</div>
+  </div>
+<div class="mblock" style="border-left-color:#9C7328">
+    <div class="mh"><div class="mn">Chassis Control Software</div><div class="mtot">£13.1M</div></div>
+    <div class="mtags">ASIL C · High · reuse Medium · 83 PM · £22/veh</div>
+    <div class="mfeat">Air suspension, CDC (Continuous Damping Control), active anti-roll bars, 4WS (rear steering), hill-hold, terrain modes.</div>
+    <div class="mstack">Dev £3.8M · Test £4.8M · Integ £0.7M · Cyber £0.0M · Calib £0.5M · Tool £0.3M · Maint £3.0M · IP £0.1M</div>
+    <div class="mvs"><span class="lbl">vs peers</span> BMW X7 <b>£9.1M</b> &nbsp;·&nbsp; Audi Q8 <b>£9.3M</b> &nbsp;·&nbsp; Merc GLS <b>£15.2M</b> <span class="delta up">+£4.0M vs best</span></div>
+    <div class="mins"><b>Insight</b> — A top cost-driver: £13.1M is £4.0M above the leanest peer (BMW X7). The gap is software reuse — carrying this module forward (Heavy) recovers ~£4.9M.</div>
+  </div>
+<div class="mblock" style="border-left-color:#9C7328">
+    <div class="mh"><div class="mn">Zonal Architecture Software</div><div class="mtot">£13.1M</div></div>
+    <div class="mtags">ASIL B · Very High · reuse Medium · 70 PM · £22/veh</div>
+    <div class="mfeat">Zone controller software, power distribution management, ECU consolidation logic, 100BASE-T1 Ethernet backbone management.</div>
+    <div class="mstack">Dev £4.0M · Test £3.4M · Integ £0.8M · Cyber £0.3M · Calib £0.2M · Tool £0.4M · Maint £3.8M · IP £0.2M</div>
+    <div class="mvs"><span class="lbl">vs peers</span> BMW X7 <b>£8.8M</b> &nbsp;·&nbsp; Audi Q8 <b>£9.1M</b> &nbsp;·&nbsp; Merc GLS <b>£15.3M</b> <span class="delta up">+£4.3M vs best</span></div>
+    <div class="mins"><b>Insight</b> — A top cost-driver: £13.1M is £4.3M above the leanest peer (BMW X7). The gap is software reuse — carrying this module forward (Heavy) recovers ~£5.1M.</div>
+  </div>
+<div class="mblock" style="border-left-color:#9C7328">
+    <div class="mh"><div class="mn">Predictive Active Suspension &amp; Body Control</div><div class="mtot">£12.4M</div></div>
+    <div class="mtags">ASIL C · Very High · reuse Medium · 58 PM · £21/veh</div>
+    <div class="mfeat">Camera-fed road-surface preview, 48V active anti-roll / active body control (e.g. Mercedes E-Active Body Control, BMW Executive Drive Pro, JLR Dynamic Response Pro), coordinated air-spring + adaptive-damper + rear-axle-steer control on top of baseline chassis control.</div>
+    <div class="mstack">Dev £3.3M · Test £4.6M · Integ £0.7M · Cyber £0.0M · Calib £0.5M · Tool £0.3M · Maint £2.9M · IP £0.1M</div>
+    <div class="mvs"><span class="lbl">vs peers</span> BMW X7 <b>£8.5M</b> &nbsp;·&nbsp; Audi Q8 <b>£8.7M</b> &nbsp;·&nbsp; Merc GLS <b>£14.4M</b> <span class="delta up">+£3.9M vs best</span></div>
+    <div class="mins"><b>Insight</b> — A top cost-driver: £12.4M is £3.9M above the leanest peer (BMW X7). The gap is software reuse — carrying this module forward (Heavy) recovers ~£4.7M.</div>
+  </div>
+<div class="mblock" style="border-left-color:#9C7328">
+    <div class="mh"><div class="mn">Body Control Software</div><div class="mtot">£4.9M</div></div>
+    <div class="mtags">ASIL B · Medium · reuse Medium · 49 PM · £8/veh</div>
+    <div class="mfeat">Lighting control, power windows/mirrors/sunroof, door locks, wiper logic, ambient lighting, comfort features state machines.</div>
+    <div class="mstack">Dev £1.9M · Test £1.3M · Integ £0.3M · Cyber £0.0M · Calib £0.1M · Tool £0.1M · Maint £1.2M · IP £0.1M</div>
+    <div class="mvs"><span class="lbl">vs peers</span> BMW X7 <b>£3.4M</b> &nbsp;·&nbsp; Audi Q8 <b>£3.4M</b> &nbsp;·&nbsp; Merc GLS <b>£5.7M</b> <span class="delta up">+£1.6M vs best</span></div>
+    <div class="mins"><b>Insight</b> — £4.9M — £1.6M above BMW X7. A reuse gap worth ~£1.9M to close by carrying more forward.</div>
+  </div>
+<div class="mblock" style="border-left-color:#9C7328">
+    <div class="mh"><div class="mn">Gateway ECU Software</div><div class="mtot">£4.2M</div></div>
+    <div class="mtags">ASIL B · High · reuse Medium · 30 PM · £7/veh</div>
+    <div class="mfeat">CAN/LIN/FlexRay/Ethernet routing, signal translation, diagnostic gateway, firewall, network management master.</div>
+    <div class="mstack">Dev £1.4M · Test £1.1M · Integ £0.2M · Cyber £0.1M · Calib £0.1M · Tool £0.2M · Maint £1.1M · IP £0.1M</div>
+    <div class="mvs"><span class="lbl">vs peers</span> BMW X7 <b>£2.9M</b> &nbsp;·&nbsp; Audi Q8 <b>£3.0M</b> &nbsp;·&nbsp; Merc GLS <b>£4.9M</b> <span class="delta up">+£1.3M vs best</span></div>
+    <div class="mins"><b>Insight</b> — £4.2M — £1.3M above BMW X7. A reuse gap worth ~£1.6M to close by carrying more forward.</div>
+  </div>
+<div class="mblock" style="border-left-color:#9C7328">
+    <div class="mh"><div class="mn">Climate &amp; Thermal Comfort Control</div><div class="mtot">£2.0M</div></div>
+    <div class="mtags">ASIL A · Medium · reuse Medium · 21 PM · £3/veh</div>
+    <div class="mfeat">Multi-zone HVAC control, heat-pump coordination, cabin air purification/ionisation, pre-conditioning, humidity &amp; fogging management, seat/steering-wheel comfort thermal loops.</div>
+    <div class="mstack">Dev £0.8M · Test £0.3M · Integ £0.1M · Cyber £0.0M · Calib £0.1M · Tool £0.1M · Maint £0.5M · IP £0.0M</div>
+    <div class="mvs"><span class="lbl">vs peers</span> BMW X7 <b>£1.4M</b> &nbsp;·&nbsp; Audi Q8 <b>£1.4M</b> &nbsp;·&nbsp; Merc GLS <b>£2.3M</b> <span class="delta up">+£0.6M vs best</span></div>
+    <div class="mins"><b>Insight</b> — £2.0M — £0.6M above BMW X7. A reuse gap worth ~£0.8M to close by carrying more forward.</div>
+  </div></section>
+<section class="domain"><div class="dhead" style="background:#5E7686"><span class="dl">E</span><span class="dn">Middleware &amp; Platform</span><span class="dm">6 modules · £29.6M</span></div>
+    <div class="mblock" style="border-left-color:#5E7686">
+    <div class="mh"><div class="mn">AUTOSAR Adaptive Platform</div><div class="mtot">£11.3M</div></div>
+    <div class="mtags">ASIL B · High · reuse Medium · 65 PM · £19/veh</div>
+    <div class="mfeat">ara::com service-oriented communication, execution management, update management (UCM), PHM, crypto API, DDS integration.</div>
+    <div class="mstack">Dev £2.9M · Test £2.5M · Integ £0.6M · Cyber £0.2M · Calib £0.1M · Tool £0.9M · Maint £2.8M · IP £0.9M</div>
+    <div class="mvs"><span class="lbl">vs peers</span> BMW X7 <b>£8.1M</b> &nbsp;·&nbsp; Audi Q8 <b>£5.3M</b> &nbsp;·&nbsp; Merc GLS <b>£13.1M</b> <span class="delta up">+£6.0M vs best</span></div>
+    <div class="mins"><b>Insight</b> — The L460 develops this in-house while Audi runs it as shared VW-Group middleware (Platform reuse). That is why the L460 sits £6.0M above Audi Q8. Adopting a shared-platform stack is the targeted fix here (~£3.8M).</div>
+  </div>
+<div class="mblock" style="border-left-color:#5E7686">
+    <div class="mh"><div class="mn">AUTOSAR Classic BSW &amp; Integration</div><div class="mtot">£10.5M</div></div>
+    <div class="mtags">ASIL C · High · reuse Medium · 62 PM · £18/veh</div>
+    <div class="mfeat">AUTOSAR Classic BSW configuration (Vector DaVinci, ETAS ISOLAR), OS (OSEK/VDX), COM stack, run-time environment (RTE) integration.</div>
+    <div class="mstack">Dev £2.8M · Test £3.1M · Integ £0.6M · Cyber £0.0M · Calib £0.1M · Tool £1.1M · Maint £1.8M · IP £1.0M</div>
+    <div class="mvs"><span class="lbl">vs peers</span> BMW X7 <b>£7.9M</b> &nbsp;·&nbsp; Audi Q8 <b>£5.3M</b> &nbsp;·&nbsp; Merc GLS <b>£12.1M</b> <span class="delta up">+£5.2M vs best</span></div>
+    <div class="mins"><b>Insight</b> — The L460 develops this in-house while Audi runs it as shared VW-Group middleware (Platform reuse). That is why the L460 sits £5.2M above Audi Q8. Adopting a shared-platform stack is the targeted fix here (~£3.2M).</div>
+  </div>
+<div class="mblock" style="border-left-color:#5E7686">
+    <div class="mh"><div class="mn">CAN / LIN / FlexRay / Ethernet Communication Stacks</div><div class="mtot">£2.5M</div></div>
+    <div class="mtags">ASIL B · Medium · reuse Medium · 22 PM · £4/veh</div>
+    <div class="mfeat">AUTOSAR ComStack configuration, CAN-XL support, Automotive Ethernet (10/100BASE-T1), signal routing, PDU mapping, SOME/IP.</div>
+    <div class="mstack">Dev £0.8M · Test £0.6M · Integ £0.1M · Cyber £0.0M · Calib £0.0M · Tool £0.2M · Maint £0.5M · IP £0.2M</div>
+    <div class="mvs"><span class="lbl">vs peers</span> BMW X7 <b>£1.8M</b> &nbsp;·&nbsp; Audi Q8 <b>£1.2M</b> &nbsp;·&nbsp; Merc GLS <b>£2.8M</b> <span class="delta up">+£1.3M vs best</span></div>
+    <div class="mins"><b>Insight</b> — The L460 develops this in-house while Audi runs it as shared VW-Group middleware (Platform reuse). That is why the L460 sits £1.3M above Audi Q8. Adopting a shared-platform stack is the targeted fix here (~£0.8M).</div>
+  </div>
+<div class="mblock" style="border-left-color:#5E7686">
+    <div class="mh"><div class="mn">RTOS &amp; OS Porting</div><div class="mtot">£2.2M</div></div>
+    <div class="mtags">ASIL C · Medium · reuse Medium · 17 PM · £4/veh</div>
+    <div class="mfeat">OSEK/VDX, FreeRTOS, or commercial RTOS BSP integration, task scheduling optimisation, interrupt management, memory protection.</div>
+    <div class="mstack">Dev £0.6M · Test £0.7M · Integ £0.1M · Cyber £0.0M · Calib £0.0M · Tool £0.2M · Maint £0.3M · IP £0.3M</div>
+    <div class="mvs"><span class="lbl">vs peers</span> BMW X7 <b>£1.7M</b> &nbsp;·&nbsp; Audi Q8 <b>£1.2M</b> &nbsp;·&nbsp; Merc GLS <b>£2.6M</b> <span class="delta up">+£1.0M vs best</span></div>
+    <div class="mins"><b>Insight</b> — The L460 develops this in-house while Audi runs it as shared VW-Group middleware (Platform reuse). That is why the L460 sits £1.0M above Audi Q8. Adopting a shared-platform stack is the targeted fix here (~£0.7M).</div>
+  </div>
+<div class="mblock" style="border-left-color:#5E7686">
+    <div class="mh"><div class="mn">Diagnostics (UDS / OBD-II)</div><div class="mtot">£2.2M</div></div>
+    <div class="mtags">ASIL A · Medium · reuse Medium · 20 PM · £4/veh</div>
+    <div class="mfeat">UDS (ISO 14229), OBD-II (SAE J1979), DTC definition, diagnostic service implementation, DEXT generation, coding routines.</div>
+    <div class="mstack">Dev £0.8M · Test £0.3M · Integ £0.1M · Cyber £0.0M · Calib £0.0M · Tool £0.1M · Maint £0.5M · IP £0.1M</div>
+    <div class="mvs"><span class="lbl">vs peers</span> BMW X7 <b>£1.6M</b> &nbsp;·&nbsp; Audi Q8 <b>£1.7M</b> &nbsp;·&nbsp; Merc GLS <b>£2.6M</b> <span class="delta up">+£0.6M vs best</span></div>
+    <div class="mins"><b>Insight</b> — £2.2M — £0.6M above BMW X7. A reuse gap worth ~£0.7M to close by carrying more forward.</div>
+  </div>
+<div class="mblock" style="border-left-color:#5E7686">
+    <div class="mh"><div class="mn">Time Synchronisation &amp; Network Management</div><div class="mtot">£0.9M</div></div>
+    <div class="mtags">ASIL A · Low · reuse Medium · 11 PM · £2/veh</div>
+    <div class="mfeat">gPTP (IEEE 802.1AS) for Ethernet time sync, CAN NM master, sleep/wake management, partial networking.</div>
+    <div class="mstack">Dev £0.4M · Test £0.2M · Integ £0.0M · Cyber £0.0M · Calib £0.0M · Tool £0.1M · Maint £0.2M · IP £0.0M</div>
+    <div class="mvs"><span class="lbl">vs peers</span> BMW X7 <b>£0.6M</b> &nbsp;·&nbsp; Audi Q8 <b>£0.7M</b> &nbsp;·&nbsp; Merc GLS <b>£1.1M</b> <span class="delta up">+£0.3M vs best</span></div>
+    <div class="mins"><b>Insight</b> — Competitive at £0.9M — at or near the leanest peer. Remaining reuse upside ~£0.3M.</div>
+  </div></section>
+<section class="domain"><div class="dhead" style="background:#AC4A3E"><span class="dl">F</span><span class="dn">Cybersecurity (ISO 21434)</span><span class="dm">5 modules · £17.7M</span></div>
+    <div class="mblock" style="border-left-color:#AC4A3E">
+    <div class="mh"><div class="mn">Secure OTA Software Update Framework</div><div class="mtot">£4.7M</div></div>
+    <div class="mtags">ASIL B · High · reuse Medium · 22 PM · £8/veh</div>
+    <div class="mfeat">Delta update generation, signature verification, rollback protection, update orchestration, bandwidth management.</div>
+    <div class="mstack">Dev £1.0M · Test £0.9M · Integ £0.2M · Cyber £0.1M · Calib £0.0M · Tool £0.2M · Maint £1.1M · IP £0.3M</div>
+    <div class="mvs"><span class="lbl">vs peers</span> BMW X7 <b>£3.6M</b> &nbsp;·&nbsp; Audi Q8 <b>£3.9M</b> &nbsp;·&nbsp; Merc GLS <b>£5.5M</b> <span class="delta up">+£1.1M vs best</span></div>
+    <div class="mins"><b>Insight</b> — £4.7M — £1.1M above BMW X7. A reuse gap worth ~£1.3M to close by carrying more forward.</div>
+  </div>
+<div class="mblock" style="border-left-color:#AC4A3E">
+    <div class="mh"><div class="mn">Secure Boot &amp; Root of Trust</div><div class="mtot">£4.0M</div></div>
+    <div class="mtags">ASIL B · High · reuse Medium · 22 PM · £7/veh</div>
+    <div class="mfeat">Hardware Security Module (HSM) integration, key provisioning, boot chain verification, anti-rollback, attestation.</div>
+    <div class="mstack">Dev £1.0M · Test £1.0M · Integ £0.2M · Cyber £0.1M · Calib £0.0M · Tool £0.2M · Maint £0.9M · IP £0.2M</div>
+    <div class="mvs"><span class="lbl">vs peers</span> BMW X7 <b>£2.9M</b> &nbsp;·&nbsp; Audi Q8 <b>£3.0M</b> &nbsp;·&nbsp; Merc GLS <b>£4.6M</b> <span class="delta up">+£1.1M vs best</span></div>
+    <div class="mins"><b>Insight</b> — £4.0M — £1.1M above BMW X7. A reuse gap worth ~£1.3M to close by carrying more forward.</div>
+  </div>
+<div class="mblock" style="border-left-color:#AC4A3E">
+    <div class="mh"><div class="mn">Intrusion Detection System (IDS)</div><div class="mtot">£3.6M</div></div>
+    <div class="mtags">ASIL QM · High · reuse Medium · 17 PM · £6/veh</div>
+    <div class="mfeat">In-vehicle network anomaly detection, CAN message monitoring, rate-limiting, VSOC integration, event reporting to cloud.</div>
+    <div class="mstack">Dev £0.8M · Test £0.3M · Integ £0.1M · Cyber £0.1M · Calib £0.0M · Tool £0.3M · Maint £1.0M · IP £0.4M</div>
+    <div class="mvs"><span class="lbl">vs peers</span> BMW X7 <b>£2.8M</b> &nbsp;·&nbsp; Audi Q8 <b>£3.0M</b> &nbsp;·&nbsp; Merc GLS <b>£4.2M</b> <span class="delta up">+£0.8M vs best</span></div>
+    <div class="mins"><b>Insight</b> — £3.6M — £0.8M above BMW X7. A reuse gap worth ~£0.9M to close by carrying more forward.</div>
+  </div>
+<div class="mblock" style="border-left-color:#AC4A3E">
+    <div class="mh"><div class="mn">Key Management System</div><div class="mtot">£3.3M</div></div>
+    <div class="mtags">ASIL B · High · reuse Medium · 16 PM · £6/veh</div>
+    <div class="mfeat">Certificate lifecycle management, PKI integration, key derivation, secure key storage, provisioning infrastructure.</div>
+    <div class="mstack">Dev £0.7M · Test £0.7M · Integ £0.1M · Cyber £0.1M · Calib £0.0M · Tool £0.2M · Maint £0.7M · IP £0.2M</div>
+    <div class="mvs"><span class="lbl">vs peers</span> BMW X7 <b>£2.5M</b> &nbsp;·&nbsp; Audi Q8 <b>£2.7M</b> &nbsp;·&nbsp; Merc GLS <b>£3.8M</b> <span class="delta up">+£0.8M vs best</span></div>
+    <div class="mins"><b>Insight</b> — £3.3M — £0.8M above BMW X7. A reuse gap worth ~£0.9M to close by carrying more forward.</div>
+  </div>
+<div class="mblock" style="border-left-color:#AC4A3E">
+    <div class="mh"><div class="mn">Encryption Modules &amp; Crypto Stack</div><div class="mtot">£2.1M</div></div>
+    <div class="mtags">ASIL B · Medium · reuse Medium · 16 PM · £3/veh</div>
+    <div class="mfeat">AES-256, RSA-2048, ECC, TLS 1.3 for V2X/cloud, AUTOSAR Crypto Stack, hardware crypto acceleration.</div>
+    <div class="mstack">Dev £0.6M · Test £0.6M · Integ £0.1M · Cyber £0.0M · Calib £0.0M · Tool £0.1M · Maint £0.5M · IP £0.1M</div>
+    <div class="mvs"><span class="lbl">vs peers</span> BMW X7 <b>£1.5M</b> &nbsp;·&nbsp; Audi Q8 <b>£1.5M</b> &nbsp;·&nbsp; Merc GLS <b>£2.4M</b> <span class="delta up">+£0.6M vs best</span></div>
+    <div class="mins"><b>Insight</b> — £2.1M — £0.6M above BMW X7. A reuse gap worth ~£0.7M to close by carrying more forward.</div>
+  </div></section>
+<section class="domain"><div class="dhead" style="background:#3F8FB0"><span class="dl">G</span><span class="dn">OTA &amp; Cloud Backend</span><span class="dm">4 modules · £33.5M</span></div>
+    <div class="mblock" style="border-left-color:#3F8FB0">
+    <div class="mh"><div class="mn">Cloud Backend Services</div><div class="mtot">£18.1M</div></div>
+    <div class="mtags">ASIL QM · Very High · reuse Medium · 39 PM · £30/veh</div>
+    <div class="mfeat">Vehicle connectivity backend, API gateway, device shadow, remote command, data lake, microservices architecture (AWS/Azure/GCP).</div>
+    <div class="mstack">Dev £2.2M · Test £0.7M · Integ £0.4M · Cyber £0.2M · Calib £0.1M · Tool £0.4M · Maint £3.6M · IP £1.0M</div>
+    <div class="mvs"><span class="lbl">vs peers</span> BMW X7 <b>£15.6M</b> &nbsp;·&nbsp; Audi Q8 <b>£17.2M</b> &nbsp;·&nbsp; Merc GLS <b>£20.8M</b> <span class="delta up">+£2.5M vs best</span></div>
+    <div class="mins"><b>Insight</b> — £18.1M — £2.5M above BMW X7. A reuse gap worth ~£2.9M to close by carrying more forward.</div>
+  </div>
+<div class="mblock" style="border-left-color:#3F8FB0">
+    <div class="mh"><div class="mn">OTA Update Manager (Vehicle-side)</div><div class="mtot">£6.7M</div></div>
+    <div class="mtags">ASIL B · High · reuse Medium · 32 PM · £11/veh</div>
+    <div class="mfeat">Vehicle-side update campaign execution, ECU coordination, rollback, consent management, network condition handling.</div>
+    <div class="mstack">Dev £1.5M · Test £1.3M · Integ £0.3M · Cyber £0.1M · Calib £0.1M · Tool £0.2M · Maint £1.4M · IP £0.4M</div>
+    <div class="mvs"><span class="lbl">vs peers</span> BMW X7 <b>£5.1M</b> &nbsp;·&nbsp; Audi Q8 <b>£5.4M</b> &nbsp;·&nbsp; Merc GLS <b>£7.7M</b> <span class="delta up">+£1.5M vs best</span></div>
+    <div class="mins"><b>Insight</b> — £6.7M — £1.5M above BMW X7. A reuse gap worth ~£1.9M to close by carrying more forward.</div>
+  </div>
+<div class="mblock" style="border-left-color:#3F8FB0">
+    <div class="mh"><div class="mn">Data Pipeline &amp; Telemetry</div><div class="mtot">£5.5M</div></div>
+    <div class="mtags">ASIL QM · High · reuse Medium · 18 PM · £9/veh</div>
+    <div class="mfeat">In-vehicle data collection agent, edge pre-processing, telemetry streaming, data lake ingestion, GDPR/data governance.</div>
+    <div class="mstack">Dev £0.8M · Test £0.2M · Integ £0.1M · Cyber £0.1M · Calib £0.0M · Tool £0.2M · Maint £0.9M · IP £0.5M</div>
+    <div class="mvs"><span class="lbl">vs peers</span> BMW X7 <b>£4.7M</b> &nbsp;·&nbsp; Audi Q8 <b>£5.2M</b> &nbsp;·&nbsp; Merc GLS <b>£6.3M</b> <span class="delta up">+£0.8M vs best</span></div>
+    <div class="mins"><b>Insight</b> — £5.5M — £0.8M above BMW X7. A reuse gap worth ~£0.9M to close by carrying more forward.</div>
+  </div>
+<div class="mblock" style="border-left-color:#3F8FB0">
+    <div class="mh"><div class="mn">Fleet Management &amp; Analytics Software</div><div class="mtot">£3.3M</div></div>
+    <div class="mtags">ASIL QM · Medium · reuse Medium · 12 PM · £6/veh</div>
+    <div class="mfeat">Fleet health dashboard, predictive maintenance, usage analytics, dealer portal, subscription management, over-the-air campaign tools.</div>
+    <div class="mstack">Dev £0.5M · Test £0.1M · Integ £0.1M · Cyber £0.0M · Calib £0.0M · Tool £0.1M · Maint £0.6M · IP £0.4M</div>
+    <div class="mvs"><span class="lbl">vs peers</span> BMW X7 <b>£2.9M</b> &nbsp;·&nbsp; Audi Q8 <b>£3.2M</b> &nbsp;·&nbsp; Merc GLS <b>£3.8M</b> <span class="delta up">+£0.4M vs best</span></div>
+    <div class="mins"><b>Insight</b> — £3.3M — £0.4M above BMW X7. A reuse gap worth ~£0.5M to close by carrying more forward.</div>
+  </div></section>
+</div>
+
+<div class="pg"><div class="eyebrow">Part C · Opportunity register</div><h2><span class="n">C</span> &nbsp;Where the £145M sits, by module</h2>
+<p>The MHEV optimisation (reuse "Medium to Heavy" + shared middleware) decomposed to the modules that contribute most.</p>
+<table class="reg"><thead><tr><th>Module</th><th>Domain</th><th>L460 cost</th><th style="width:230px">Saving (Heavy reuse)</th></tr></thead><tbody>
+<tr><td><b>Camera Perception Stack</b></td><td class="n">B</td><td class="n">£38.9M</td><td><span class="regbar" style="width:150px"></span><span class="sv">£12.2M</span></td></tr><tr><td><b>Sensor Fusion Engine</b></td><td class="n">B</td><td class="n">£33.7M</td><td><span class="regbar" style="width:149px"></span><span class="sv">£12.2M</span></td></tr><tr><td><b>Path Planning Algorithms</b></td><td class="n">B</td><td class="n">£28.0M</td><td><span class="regbar" style="width:125px"></span><span class="sv">£10.1M</span></td></tr><tr><td><b>Control Algorithms (ACC / LKA / AEB)</b></td><td class="n">B</td><td class="n">£27.3M</td><td><span class="regbar" style="width:120px"></span><span class="sv">£9.7M</span></td></tr><tr><td><b>Highway Assist / Traffic Jam Assist</b></td><td class="n">B</td><td class="n">£27.4M</td><td><span class="regbar" style="width:119px"></span><span class="sv">£9.7M</span></td></tr><tr><td><b>Vehicle Motion Management (VMM)</b></td><td class="n">D</td><td class="n">£24.3M</td><td><span class="regbar" style="width:114px"></span><span class="sv">£9.3M</span></td></tr><tr><td><b>IVI Operating System (Android Automotive / QNX)</b></td><td class="n">C</td><td class="n">£20.9M</td><td><span class="regbar" style="width:86px"></span><span class="sv">£7.0M</span></td></tr><tr><td><b>Zonal Architecture Software</b></td><td class="n">D</td><td class="n">£13.1M</td><td><span class="regbar" style="width:63px"></span><span class="sv">£5.1M</span></td></tr><tr><td><b>Chassis Control Software</b></td><td class="n">D</td><td class="n">£13.1M</td><td><span class="regbar" style="width:60px"></span><span class="sv">£4.9M</span></td></tr><tr><td><b>Radar Processing Stack</b></td><td class="n">B</td><td class="n">£13.2M</td><td><span class="regbar" style="width:59px"></span><span class="sv">£4.8M</span></td></tr><tr><td><b>Driver Monitoring Software (DMS)</b></td><td class="n">B</td><td class="n">£14.2M</td><td><span class="regbar" style="width:58px"></span><span class="sv">£4.7M</span></td></tr><tr><td><b>Predictive Active Suspension &amp; Body Control</b></td><td class="n">D</td><td class="n">£12.4M</td><td><span class="regbar" style="width:58px"></span><span class="sv">£4.7M</span></td></tr><tr><td><b>AUTOSAR Adaptive Platform</b></td><td class="n">E</td><td class="n">£11.3M</td><td><span class="regbar" style="width:46px"></span><span class="sv">£3.8M</span></td></tr><tr><td><b>AUTOSAR Classic BSW &amp; Integration</b></td><td class="n">E</td><td class="n">£10.5M</td><td><span class="regbar" style="width:40px"></span><span class="sv">£3.2M</span></td></tr><tr><td><b>App Framework &amp; HMI Layer</b></td><td class="n">C</td><td class="n">£8.5M</td><td><span class="regbar" style="width:38px"></span><span class="sv">£3.1M</span></td></tr><tr><td><b>Cloud Backend Services</b></td><td class="n">G</td><td class="n">£18.1M</td><td><span class="regbar" style="width:36px"></span><span class="sv">£2.9M</span></td></tr>
+</tbody></table>
+<p class="small" style="margin-top:10px">Reuse alone recovers ~£138.6M on the MHEV programme; shared-platform middleware adds ~£6.5M. ADAS (Category B) carries roughly half the opportunity.</p></div>
+
+<div class="pg"><div class="eyebrow">Part D · Transparency</div><h2><span class="n">D</span> &nbsp;Assumptions &amp; methodology</h2>
+<dl class="assump">
+<dt>Model class &amp; accuracy</dt><dd>Bottom-up parametric should-cost; validated envelope ±25–35% (back-test MAPE 24.9%). Absolute numbers are estimates; comparisons are consistent (same engine + rate library).</dd>
+<dt>Comparison basis</dt><dd>MHEV modules priced for L460 (UK / Tier-1 / 75k / Medium) vs BMW X7, Audi Q8, Mercedes GLS. The 7 EV-powertrain modules — which the German MHEVs omit — priced in the BEV configuration vs the Porsche Cayenne.</dd>
+<dt>Per-module cost</dt><dd>Development + testing + integration + cybersecurity + calibration + toolchain (NRE) plus maintenance + cloud + IP licence (lifecycle), over programme life.</dd>
+<dt>Reuse factors (× dev effort)</dt><dd>Fresh 1.00 · Light 0.82 · Medium 0.60 · Heavy 0.35 · Platform 0.14. Module-level "saving" is the effect of moving that module from the L460 baseline reuse to "Heavy".</dd>
+<dt>Propulsion availability</dt><dd>Verified July 2026: X7 / Q8 / GLS are MHEV-only in production; Cayenne offers ICE/PHEV/BEV; Range Rover Electric is launching. No fabricated variants are benchmarked.</dd>
+<dt>Currency &amp; scope</dt><dd>All figures GBP. Embedded &amp; connected vehicle software only; excludes manufacturing, hardware and non-software engineering.</dd>
+</dl>
+<hr><p class="small faint">This report supports target-setting and supplier negotiation; it is not an audited actual. Engine: CostVision sw-should-cost.ts, rate library v1.0, July 2026.</p></div>
+</div>
+</body>
+</html>
