@@ -9237,10 +9237,85 @@ function setNumericField(id: string, value: number, decimals = 3): void {
   if (el2) { el2.value = value.toFixed(decimals); markAIFilled(el2); }
 }
 
+// ─── Inline CAD-to-fill (per-commodity uploader) ──────────────────────────────
+// Geometry-relevant commodities get a small "Upload CAD" panel on their form that
+// reuses the CAD-to-Cost OCCT pipeline and applyCADToForm() mapping.
+const CAD_INLINE_COMMODITIES = new Set<CommodityType>([
+  'machining', 'casting', 'cast_and_machine', 'forging', 'sheet_metal', 'sheet_metal_fab',
+  'injection_moulding', 'blow_moulding', 'extrusion', 'thermoforming', 'rotational_moulding', 'rubber', 'composites',
+]);
+
+function inlineCADPanelHTML(): string {
+  return `
+    <details class="cad-inline-panel" style="margin:0 0 10px;border:1px dashed var(--border-strong);border-radius:8px;background:var(--surface-elevated)">
+      <summary style="cursor:pointer;padding:8px 12px;font-size:0.8rem;font-weight:600;color:var(--accent);user-select:none">📐 Upload CAD to auto-fill this form <span style="font-weight:400;color:var(--text-secondary)">— STEP / IGES → real weight, size &amp; inputs</span></summary>
+      <div style="padding:2px 12px 12px">
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          <input type="file" id="cad-inline-input" accept=".step,.stp,.iges,.igs,.brep,.stl,.obj" style="font-size:0.72rem"/>
+          <button class="btn btn-secondary btn-sm" id="cad-inline-btn" disabled style="font-size:0.72rem">Analyze &amp; Fill</button>
+        </div>
+        <div id="cad-inline-status" style="margin-top:6px;font-size:0.7rem;color:var(--text-secondary);line-height:1.45">Solid formats (STEP/IGES) give true volume &amp; weight; STL/OBJ meshes are approximate.</div>
+      </div>
+    </details>`;
+}
+
+function wireInlineCAD(commodity: CommodityType): void {
+  const input = el<HTMLInputElement>('cad-inline-input');
+  const btn = el<HTMLButtonElement>('cad-inline-btn');
+  const status = el('cad-inline-status');
+  if (!input || !btn) return;
+  let picked: File | null = null;
+  input.addEventListener('change', () => {
+    picked = input.files?.[0] ?? null;
+    btn.disabled = !picked;
+    if (status) status.textContent = picked ? `${picked.name} (${(picked.size / 1024).toFixed(0)} KB) — click Analyze & Fill` : '';
+  });
+  btn.addEventListener('click', () => { if (picked) void analyzeCADInline(picked, commodity); });
+}
+
+async function analyzeCADInline(file: File, commodity: CommodityType): Promise<void> {
+  const status = el('cad-inline-status');
+  const btn = el<HTMLButtonElement>('cad-inline-btn');
+  const setStatus = (t: string) => { if (status) status.textContent = t; };
+  cadFile = file;
+  if (btn) { btn.disabled = true; btn.textContent = '⏳ Analyzing…'; }
+  setStatus('Uploading & running the OCCT geometry engine… (can take ~20–60 s)');
+  try {
+    const annVol = el<HTMLInputElement>('annual-volume')?.value || '100000';
+    const fd = new FormData();
+    fd.append('cadFile', file);
+    fd.append('commodity', commodity);   // tell the AI the target process so it suggests matching inputs
+    fd.append('annualVolume', annVol);
+    if (cadPartPhotoBase64) { fd.append('partPhotoBase64', cadPartPhotoBase64); fd.append('partPhotoMime', cadPartPhotoMime); }
+    const apiKey = sessionStorage.getItem('cad-api-key') ?? '';
+    const headers: HeadersInit = {};
+    if (apiKey) headers['x-api-key'] = apiKey;
+    const controller = new AbortController();
+    const to = setTimeout(() => controller.abort(new DOMException('Timed out after 150 s', 'TimeoutError')), 150_000);
+    const res = await fetch('/api/cad/analyze', { method: 'POST', headers, body: fd, signal: controller.signal });
+    clearTimeout(to);
+    const data = await res.json() as { success?: boolean; analysis?: CADAnalysisResult; occtGeometry?: OCCTGeometry | null; geometrySource?: 'occt' | 'text_parsing'; error?: string };
+    if (!res.ok || !data.success || !data.analysis) throw new Error(data.error ?? `Server error ${res.status}`);
+    cadAnalysisResult = data.analysis;
+    cadOCCTGeometry = data.occtGeometry ?? null;
+    cadGeometrySource = data.geometrySource ?? 'text_parsing';
+    const g = data.analysis.geometry;
+    applyCADToForm(commodity);   // re-renders this form and fills it from the geometry
+    showToast(`CAD applied — ${data.geometrySource === 'occt' ? 'OCCT solid geometry' : 'text-parsed'}: ${g.estimatedVolumeCm3.toFixed(1)} cm³, net ${data.analysis.costInputSuggestions.netWeightKg.toFixed(3)} kg`, 'info');
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    setStatus(`⚠ ${msg.slice(0, 160)}`);
+    showToast(`CAD analysis failed: ${msg.slice(0, 80)}`, 'error');
+    if (btn) { btn.disabled = false; btn.textContent = 'Analyze & Fill'; }
+  }
+}
+
 function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): void {
   if (!cadAnalysisResult) return;
   const r = cadAnalysisResult;
   const c = r.costInputSuggestions;
+  // Longest bounding-box axis (mm) — used to derive an extrusion profile length.
+  const bboxMaxMm = Math.max(r.geometry.boundingBoxMm.x, r.geometry.boundingBoxMm.y, r.geometry.boundingBoxMm.z);
 
   // Sync annual volume from CAD form to Universal Costs
   const cadAnnVol = (document.getElementById('cad-annual-volume') as HTMLInputElement | null)?.value;
@@ -9551,6 +9626,18 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
         setNumericField('imm-fill', Math.max(1.5, parseFloat((wallForCycle * 0.5).toFixed(1))), 1);
         setNumericField('imm-pack', Math.max(2.0, parseFloat((wallForCycle * 0.8).toFixed(1))), 1);
         setNumericField('imm-eject', 2, 0);
+        break;
+      }
+
+      case 'extrusion': {
+        // No AI extrusion sub-object — derive the profile from geometry: material,
+        // length = longest bbox axis, linear weight = net weight ÷ length, wall from OCCT.
+        setMaterial(el<HTMLSelectElement>('ext-mat'), c.materialId);
+        const extLenM = Math.max(0.05, bboxMaxMm / 1000);
+        setNumericField('ext-length', extLenM, 3);
+        if (c.netWeightKg > 0) setNumericField('ext-kg-per-m', c.netWeightKg / extLenM, 4);
+        const extWall = cadOCCTGeometry?.wallThickness?.meanMm;
+        if (extWall && extWall > 0) setNumericField('ext-wall', extWall, 1);
         break;
       }
 
@@ -10138,6 +10225,13 @@ function switchCommodity(type: CommodityType): void {
   const _inlineDemoCommodities = new Set(['machining','sheet_metal','sheet_metal_fab','injection_moulding','blow_moulding','extrusion','thermoforming','rotational_moulding','casting','forging','painting','biw_assembly','cast_and_machine','rubber','composites','wiring_harness']);
   if (_inlineDemoCommodities.has(type as string)) {
     area.insertAdjacentHTML('afterbegin', buildInlineDemoSection(type as string));
+  }
+
+  // Inline CAD-to-fill uploader on geometry-relevant commodity forms (reuses the
+  // CAD-to-Cost OCCT pipeline + applyCADToForm mapping). Injected on top.
+  if (CAD_INLINE_COMMODITIES.has(type)) {
+    area.insertAdjacentHTML('afterbegin', inlineCADPanelHTML());
+    wireInlineCAD(type);
   }
 }
 
