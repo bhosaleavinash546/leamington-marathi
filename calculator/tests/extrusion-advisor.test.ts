@@ -4,6 +4,8 @@ import {
   estimateDieSwellPct, analyseExtrusionDFM, extrusionFamilyOf,
 } from '../src/engine/modules/extrusion-advisor.js';
 import { computeExtrusionDrivers } from '../src/engine/modules/extrusion.js';
+import { DEFAULT_RATE_LIBRARY } from '../src/engine/rate-library.js';
+import { buildRegionalLibrary, EXTRUSION_COUNTRY_PRICES } from '../src/engine/regional-rates.js';
 
 describe('extrusion advisor — line rate (screw output vs cooling limit)', () => {
   it('thin-wall is screw-output-limited; thick-wall becomes cooling-limited', () => {
@@ -104,5 +106,60 @@ describe('extrusion engine — integration', () => {
     expect(d1.operations.some(o => o.operationName.includes('Leak'))).toBe(false);
     const d2 = computeExtrusionDrivers({ ...base(), includeLeakTest: true });
     expect(d2.operations.some(o => o.operationName.includes('Leak'))).toBe(true);
+  });
+});
+
+describe('extrusion — authentic country prices (not multiplier-scaled)', () => {
+  const lib = DEFAULT_RATE_LIBRARY;
+  const matPrice = (l: typeof lib, id: string) => l.materials.find(m => m.id === id)!.pricePerKg;
+
+  it('a country price replaces the family multiplier with the real regional quote', () => {
+    const cn = buildRegionalLibrary(lib, 'CN');
+    // CN PE100 pipe grade is the authentic 1.08 £/kg, NOT UK 1.35 × commodity factor.
+    expect(matPrice(cn, 'mat-pe100-pipe')).toBeCloseTo(1.08, 6);
+    expect(matPrice(cn, 'mat-pe100-pipe')).toBe(EXTRUSION_COUNTRY_PRICES['mat-pe100-pipe']!.CN);
+    // And it is genuinely different from the UK base (a real regional price, not identity).
+    expect(matPrice(cn, 'mat-pe100-pipe')).not.toBeCloseTo(matPrice(lib, 'mat-pe100-pipe'), 3);
+  });
+
+  it('every country price for a grade lands verbatim in that region library', () => {
+    for (const [id, byRegion] of Object.entries(EXTRUSION_COUNTRY_PRICES)) {
+      for (const [region, price] of Object.entries(byRegion)) {
+        const rl = buildRegionalLibrary(lib, region as any);
+        expect(matPrice(rl, id)).toBeCloseTo(price as number, 6);
+      }
+    }
+  });
+
+  it('spread is grade-specific: commodity PE swings wider by country than specialty PC', () => {
+    const pe = EXTRUSION_COUNTRY_PRICES['mat-pe100-pipe']!;
+    const pc = EXTRUSION_COUNTRY_PRICES['mat-pc-ext-sheet']!;
+    const spread = (r: Record<string, number>, base: number) => {
+      const vals = Object.values(r);
+      return (Math.max(...vals) - Math.min(...vals)) / base;
+    };
+    const peSpread = spread(pe as Record<string, number>, matPrice(lib, 'mat-pe100-pipe'));
+    const pcSpread = spread(pc as Record<string, number>, matPrice(lib, 'mat-pc-ext-sheet'));
+    expect(peSpread).toBeGreaterThan(pcSpread);   // feedstock-linked resin moves more than a global specialty
+  });
+
+  it('scrap-recovery credit scales with the authentic/UK price ratio', () => {
+    const cn = buildRegionalLibrary(lib, 'CN');
+    const ukMat = lib.materials.find(m => m.id === 'mat-pe100-pipe')!;
+    const cnMat = cn.materials.find(m => m.id === 'mat-pe100-pipe')!;
+    const ratio = 1.08 / ukMat.pricePerKg;
+    expect(cnMat.scrapRecoveryPricePerKg).toBeCloseTo(ukMat.scrapRecoveryPricePerKg * ratio, 6);
+  });
+
+  it('UK build leaves extrusion grades at their base price (no override for the base region)', () => {
+    const uk = buildRegionalLibrary(lib, 'UK');
+    expect(matPrice(uk, 'mat-pe100-pipe')).toBeCloseTo(matPrice(lib, 'mat-pe100-pipe'), 6);
+    expect(matPrice(uk, 'mat-pc-ext-sheet')).toBeCloseTo(matPrice(lib, 'mat-pc-ext-sheet'), 6);
+  });
+
+  it('a non-extrusion material still uses the family multiplier (override is scoped)', () => {
+    const cn = buildRegionalLibrary(lib, 'CN');
+    // mat-pp is a general resin with no country override → still multiplier-scaled, below UK.
+    expect(matPrice(cn, 'mat-pp')).toBeLessThan(matPrice(lib, 'mat-pp'));
   });
 });

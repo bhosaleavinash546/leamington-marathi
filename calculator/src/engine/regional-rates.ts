@@ -341,6 +341,37 @@ export const REGIONAL_DATA: Record<ManufacturingRegion, RegionalData> = {
   },
 };
 
+// ─── Authentic country prices — Extrusion grades ───────────────────────────────
+
+/**
+ * Authentic per-country prices (£/kg, 2026 Q2) for extrusion-grade materials.
+ * These REPLACE the family multiplier for the listed (material, region) pairs, so
+ * a China PE100 price is the real China price — not "UK × 0.83". Each grade carries
+ * its OWN regional spread: commodity resins (PE/PVC/PP) swing ±20% on regional
+ * feedstock/energy (US shale-ethane cheapest, EU energy-costly, Asia low), while
+ * globally-traded specialities (PC/PMMA/PA12/TPU/XLPE) barely move by country.
+ * UK is the library base and is intentionally omitted here. Confidence: Low —
+ * index/benchmark anchored, ready to be replaced by a live polymer-price feed.
+ */
+export const EXTRUSION_COUNTRY_PRICES: Record<string, Partial<Record<ManufacturingRegion, number>>> = {
+  //                    US     DE     PL     CN     IN     MX     TH     VN
+  'mat-pe100-pipe':      { US: 1.14, DE: 1.44, PL: 1.27, CN: 1.08, IN: 1.19, MX: 1.16, TH: 1.21, VN: 1.23 },
+  'mat-pe80-pipe':       { US: 1.08, DE: 1.37, PL: 1.21, CN: 1.03, IN: 1.13, MX: 1.10, TH: 1.15, VN: 1.17 },
+  'mat-upvc-pipe':       { US: 0.77, DE: 0.98, PL: 0.85, CN: 0.71, IN: 0.79, MX: 0.81, TH: 0.83, VN: 0.85 },
+  'mat-pvc-cable':       { US: 1.19, DE: 1.44, PL: 1.27, CN: 1.11, IN: 1.21, MX: 1.23, TH: 1.25, VN: 1.27 },
+  'mat-xlpe-cable':      { US: 1.95, DE: 2.18, PL: 2.02, CN: 1.88, IN: 1.99, MX: 2.00, TH: 2.03, VN: 2.05 },
+  'mat-gpps-ext':        { US: 1.14, DE: 1.39, PL: 1.23, CN: 1.09, IN: 1.18, MX: 1.20, TH: 1.21, VN: 1.23 },
+  'mat-abs-ext-sheet':   { US: 1.66, DE: 1.94, PL: 1.76, CN: 1.55, IN: 1.68, MX: 1.71, TH: 1.70, VN: 1.72 },
+  'mat-pmma-ext-sheet':  { US: 2.44, DE: 2.70, PL: 2.52, CN: 2.30, IN: 2.48, MX: 2.50, TH: 2.49, VN: 2.51 },
+  'mat-pc-ext-sheet':    { US: 3.02, DE: 3.33, PL: 3.10, CN: 2.85, IN: 3.02, MX: 3.08, TH: 3.05, VN: 3.07 },
+  'mat-pvc-medical-tube':{ US: 1.82, DE: 2.03, PL: 1.90, CN: 1.70, IN: 1.86, MX: 1.88, TH: 1.88, VN: 1.90 },
+  'mat-tpu-medical-tube':{ US: 6.25, DE: 6.70, PL: 6.40, CN: 6.00, IN: 6.30, MX: 6.35, TH: 6.30, VN: 6.35 },
+  'mat-tpe-profile':     { US: 2.22, DE: 2.50, PL: 2.32, CN: 2.10, IN: 2.28, MX: 2.30, TH: 2.30, VN: 2.32 },
+  'mat-pvc-foam':        { US: 1.02, DE: 1.24, PL: 1.09, CN: 0.94, IN: 1.03, MX: 1.05, TH: 1.06, VN: 1.08 },
+  'mat-pp-ext-sheet':    { US: 0.96, DE: 1.24, PL: 1.08, CN: 0.92, IN: 1.02, MX: 1.00, TH: 1.05, VN: 1.07 },
+  'mat-pa12-ext-tube':   { US: 6.00, DE: 6.40, PL: 6.10, CN: 5.80, IN: 6.05, MX: 6.10, TH: 6.05, VN: 6.10 },
+};
+
 // ─── Regional Library Builder ──────────────────────────────────────────────────
 
 /**
@@ -449,8 +480,24 @@ export function buildRegionalLibrary(baseLibrary: RateLibrary, region: Manufactu
       confidence: 'Low' as const,
     })),
 
-    // Adjust material prices — resin family-aware, metals/other flat.
+    // Adjust material prices. Extrusion grades with an authentic per-country
+    // price use it directly (a real regional quote, not "UK × factor"); scrap
+    // recovery is scaled by the same authentic/UK ratio so the recovery credit
+    // tracks the local resin value. Everything else uses the resin family-aware
+    // factor (metals/other flat).
     materials: baseLibrary.materials.map(m => {
+      const authentic = EXTRUSION_COUNTRY_PRICES[m.id]?.[region];
+      if (authentic !== undefined) {
+        const ratio = m.pricePerKg > 0 ? authentic / m.pricePerKg : 1;
+        return {
+          ...m,
+          pricePerKg: authentic,
+          scrapRecoveryPricePerKg: m.scrapRecoveryPricePerKg * ratio,
+          region: rd.name,
+          sourceNote: `${m.sourceNote} | ${rd.name} authentic 2026 Q2 price £${authentic.toFixed(2)}/kg (country-specific, not multiplier-scaled)`,
+          confidence: 'Low' as const,
+        };
+      }
       const f = materialFactorFor(m);
       return {
         ...m,
