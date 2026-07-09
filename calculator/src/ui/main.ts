@@ -80,6 +80,7 @@ import autoTable from 'jspdf-autotable';
 import { exportToExcelBlob } from '../export/excel.js';
 import { printPDF, printCADAnalysisPDF, drawCostVisionLogo } from '../export/pdf.js';
 import { computeCostUncertainty } from '../engine/uncertainty.js';
+import { computeCalibration, applyCalibration, type CalibrationRecord } from '../engine/calibration.js';
 import { generateInsights, totalPotentialSaving, FX_TO_GBP } from '../engine/insights.js';
 import { generateDFMDFA } from '../engine/dfm-dfa.js';
 import type { DFMIssue, CostOptimisation } from '../engine/dfm-dfa.js';
@@ -346,6 +347,38 @@ function getPartsLibrary(): LibraryRecord[] {
 }
 function savePartsLibrary(records: LibraryRecord[]): void {
   localStorage.setItem('cv-library', JSON.stringify(records));
+}
+
+// ─── Calibration store (learning from actual quotes) ──────────────────────────
+function getCalibrationRecords(): CalibrationRecord[] {
+  try { return JSON.parse(localStorage.getItem('cv-calibration') ?? '[]'); } catch { return []; }
+}
+function saveCalibrationRecords(records: CalibrationRecord[]): void {
+  localStorage.setItem('cv-calibration', JSON.stringify(records.slice(-500)));
+}
+/** Log the current result's actual quoted/PO price so the model self-calibrates. */
+function logActualQuote(): void {
+  if (!lastResult) { showToast('Run Calculate first, then log the actual', 'warning'); return; }
+  const raw = window.prompt(`Enter the ACTUAL quoted / PO unit price for "${lastResult.partName}" (${_displayCurrency}) — the model estimated ${_currFmt(lastResult.total)}:`);
+  if (raw === null) return;
+  const actual = parseFloat(raw.replace(/[^0-9.]/g, ''));
+  if (!Number.isFinite(actual) || actual <= 0) { showToast('Please enter a positive number', 'warning'); return; }
+  const recs = getCalibrationRecords();
+  recs.push({
+    id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+    savedAt: Date.now(),
+    commodity: activeCommodity,
+    region: (document.getElementById('mfg-region-selector') as HTMLSelectElement)?.value ?? 'UK',
+    shouldCost: lastResult.total,
+    actualCost: actual,
+    currency: _displayCurrency,
+  });
+  saveCalibrationRecords(recs);
+  const s = computeCalibration(recs, activeCommodity);
+  showToast(s.applied
+    ? `Logged. ${activeCommodity.replace(/_/g, ' ')} now calibrated ×${s.biasFactor} from ${s.n} quotes (MAPE ${s.calibratedMapePct}%).`
+    : `Logged (${s.n}/${3} quotes for ${activeCommodity.replace(/_/g, ' ')} — need ${3 - s.n} more to calibrate).`, 'info');
+  if (lastResult && lastInput) renderInsights(lastResult, lastInput);
 }
 
 // ─── View switching ───────────────────────────────────────────────────────────
@@ -13051,6 +13084,28 @@ function renderInsights(result: PartCostResult, input: UniversalStackInput): voi
       </div>`;
       })()}
 
+      ${(() => {
+        // #1 Calibration — show the estimate corrected by logged actual quotes.
+        const cal = computeCalibration(getCalibrationRecords(), activeCommodity);
+        if (cal.n === 0) return '';
+        if (!cal.applied) {
+          return `<div style="margin-top:8px;padding:9px 12px;border:1px dashed var(--border-strong);border-radius:8px;font-size:0.76rem;color:var(--text-secondary)">📈 Calibration: ${cal.n}/3 actual quote${cal.n === 1 ? '' : 's'} logged for <strong>${escHtml(activeCommodity.replace(/_/g, ' '))}</strong>. Log ${3 - cal.n} more (🎯 Log Actual £) to unlock a data-corrected estimate.</div>`;
+        }
+        const calibrated = applyCalibration(result.total, cal);
+        const dirTxt = cal.direction === 'under' ? 'model tends to UNDER-estimate' : cal.direction === 'over' ? 'model tends to OVER-estimate' : 'model is well-centred';
+        return `
+      <div style="margin-top:8px;padding:12px 14px;border:1px solid var(--border);border-left:4px solid #7c3aed;border-radius:8px;background:var(--surface-elevated)">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px">
+          <div style="font-weight:700;font-size:0.9rem;color:var(--text-primary)">📈 Data-calibrated estimate <span style="font-weight:400;font-size:0.72rem;color:var(--text-muted)">(learned from ${cal.n} actual quotes)</span></div>
+          <div style="font-size:1.15rem;font-weight:700;color:#7c3aed">${cf(calibrated)}</div>
+        </div>
+        <div style="margin-top:6px;display:flex;gap:18px;flex-wrap:wrap;font-size:0.78rem;color:var(--text-secondary)">
+          <span>Bias correction <strong>×${cal.biasFactor}</strong> (${dirTxt})</span>
+          <span>Accuracy: MAPE <strong>${cal.mapePct}% → ${cal.calibratedMapePct}%</strong> after calibration</span>
+        </div>
+      </div>`;
+      })()}
+
       ${insights.length === 0
         ? '<div class="placeholder">Cost structure is within industry benchmarks. No significant optimisation opportunities identified.</div>'
         : insightCards}
@@ -16077,6 +16132,7 @@ async function init(): Promise<void> {
   el('export-all-pdf-btn')?.addEventListener('click', printMasterPDF);
   el('save-scenario-btn')?.addEventListener('click', openScenarioModal);
   el('save-library-btn')?.addEventListener('click', saveLastResultToLibrary);
+  el('log-actual-btn')?.addEventListener('click', logActualQuote);
   el('load-ref-btn')?.addEventListener('click', loadExample);
   el('rates-btn')?.addEventListener('click', openRateLibrary);
 
