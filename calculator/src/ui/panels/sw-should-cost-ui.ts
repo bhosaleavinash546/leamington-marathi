@@ -759,6 +759,7 @@ function renderSWPanelHTML(): string {
   <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;align-items:center">
     <span style="font-size:0.78rem;color:var(--sw-text-muted);font-weight:600">Demo Programmes:</span>
     ${SW_VEHICLE_DEMOS.map(v => `<button class="sw-preset-btn sw-vehicle-btn" data-vehicle="${v.id}" title="${esc(v.desc)}">${v.label}</button>`).join('')}
+    <button class="sw-preset-btn" id="sw-study-btn" title="Open the apple-to-apple powertrain cost study — 5 cars × 4 drivetrains" style="border-color:rgba(180,120,20,0.4);color:var(--gold,#B67D1E);font-weight:700">📊 Powertrain Cost Study</button>
   </div>
   ${(() => {
     const active = _swActiveVehicle ? SW_VEHICLE_DEMOS.find(d => d.id === _swActiveVehicle) : null;
@@ -1362,6 +1363,38 @@ export const SW_VEHICLE_DEMOS: SWVehicleDemo[] = [
     },
   },
 ];
+
+// ── Cross-car powertrain variants (apple-to-apple study) ──────────────────────
+// Generated from car identity × drivetrain so they match scripts/gen-sw-report.ts
+// and the comparison study exactly. Each car keeps the drivetrain it already ships
+// as its primary demo above; the other three are appended here.
+const _ICE_OFF = ['bms_core', 'cell_balancing', 'soc_soh_soe', 'thermal_mgmt', 'fast_charge', 'edu_control', 'inverter_ctrl', 'motor_ctrl', 'regen_braking'];
+type Sig = Record<string, Partial<Pick<SWModuleInput, 'asil' | 'complexity' | 'reuse'>>>;
+interface StudyCar { id: string; slug: string; flag: string; name: string; region: SWRegion; devSource: DevSource; volume: number; life: number; overhead: number; senior: number; reuse: SWReuse; sig: Sig; skip: string; }
+interface StudyDT { key: string; code: string; dis: string[]; ov: Sig; note: string; }
+const STUDY_CARS: StudyCar[] = [
+  { id: 'l460', slug: 'range-rover-l460', flag: '🇬🇧', name: 'Range Rover L460', region: 'UK', devSource: 'Tier1_Supplier', volume: 75_000, life: 8, overhead: 1.55, senior: 0.55, reuse: 'Medium', sig: { premium_audio: { complexity: 'Very High' } }, skip: 'phev' },
+  { id: 'bmw_x7', slug: 'bmw-x7', flag: '🇩🇪', name: 'BMW X7', region: 'EU', devSource: 'OEM_Internal', volume: 60_000, life: 8, overhead: 1.60, senior: 0.55, reuse: 'Heavy', sig: { digital_key: { complexity: 'Very High' } }, skip: 'mhev' },
+  { id: 'audi_q8', slug: 'audi-q8', flag: '🇩🇪', name: 'Audi Q8', region: 'EU', devSource: 'OEM_Internal', volume: 55_000, life: 9, overhead: 1.58, senior: 0.55, reuse: 'Heavy', sig: { autosar_classic: { reuse: 'Platform' }, autosar_adaptive: { reuse: 'Platform' }, rtos: { reuse: 'Platform' }, comm_stacks: { reuse: 'Platform' } }, skip: 'mhev' },
+  { id: 'merc_gls', slug: 'mercedes-gls', flag: '🇩🇪', name: 'Mercedes GLS 450', region: 'EU', devSource: 'OEM_Internal', volume: 45_000, life: 9, overhead: 1.62, senior: 0.55, reuse: 'Medium', sig: { ivi_os: { complexity: 'Very High' }, voice_assistant: { complexity: 'Very High' }, navigation: { complexity: 'Very High' }, active_suspension: { complexity: 'Very High' }, premium_audio: { complexity: 'Very High' } }, skip: 'mhev' },
+];
+const STUDY_DTS: StudyDT[] = [
+  { key: 'ice', code: 'ICE', dis: _ICE_OFF, ov: {}, note: 'combustion — no EV powertrain software' },
+  { key: 'mhev', code: 'MHEV', dis: MHEV_DISABLED, ov: {}, note: '48V mild hybrid — HV battery/charge/drive disabled' },
+  { key: 'phev', code: 'PHEV', dis: [], ov: { bms_core: { complexity: 'High' }, soc_soh_soe: { complexity: 'High' }, edu_control: { complexity: 'High' }, fast_charge: { complexity: 'Medium' } }, note: 'plug-in hybrid — powertrain retained, de-rated vs BEV' },
+  { key: 'bev', code: 'BEV', dis: [], ov: { fast_charge: { complexity: 'Very High' } }, note: 'full battery-electric — entire EV powertrain stack in scope' },
+];
+for (const c of STUDY_CARS) for (const dt of STUDY_DTS) {
+  if (dt.key === c.skip) continue;
+  SW_VEHICLE_DEMOS.push({
+    id: `${c.id}__${dt.key}`, label: `${c.flag} ${c.name} (${dt.code})`,
+    desc: `${c.name} — ${dt.code} powertrain variant (apple-to-apple study): ${dt.note}. Car identity and macro assumptions held constant; only the powertrain-software scope changes.`,
+    region: c.region, devSource: c.devSource, volume: c.volume, life: c.life, overhead: c.overhead, senior: c.senior, reuse: c.reuse,
+    reportUrl: `reports/${c.slug}-${dt.key}-software-cost-breakdown.html`,
+    disabledModules: [...dt.dis],
+    moduleOverrides: { ...c.sig, ...dt.ov },
+  });
+}
 
 /** Build a full programme-inputs object for a vehicle demo. */
 function buildVehicleInputs(v: SWVehicleDemo): SWProgramInputs {
@@ -2392,7 +2425,7 @@ export function wireSWPanel(): void {
   }
 
   // Preset buttons (excluding the vehicle demos, which have their own handler)
-  document.querySelectorAll<HTMLButtonElement>('.sw-preset-btn:not(.sw-vehicle-btn)').forEach(btn => {
+  document.querySelectorAll<HTMLButtonElement>('.sw-preset-btn:not(.sw-vehicle-btn):not(#sw-study-btn)').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll<HTMLButtonElement>('.sw-preset-btn').forEach(b => b.classList.remove('sw-preset-active'));
       btn.classList.add('sw-preset-active');
@@ -2412,6 +2445,11 @@ export function wireSWPanel(): void {
   document.getElementById('sw-demo-report-btn')?.addEventListener('click', evt => {
     const url = (evt.currentTarget as HTMLElement).dataset.reportUrl;
     if (url) window.open(import.meta.env.BASE_URL + url, '_blank', 'noopener');
+  });
+
+  // "Powertrain Cost Study" — open the apple-to-apple cross-car comparison.
+  document.getElementById('sw-study-btn')?.addEventListener('click', () => {
+    window.open(import.meta.env.BASE_URL + 'reports/powertrain-cost-study.html', '_blank', 'noopener');
   });
 
   // Select/deselect all

@@ -31,59 +31,89 @@ interface Meta {
   arch: string; drivetrain: string; powertrainNote: string; premiumNote: string; reuseNote: string;
 }
 
-// Shared Porsche Cayenne assumptions (2026): EU / Porsche in-house, 50k/yr × 8yr,
-// premium overhead + seniority. Only the powertrain-software scope changes across
-// variants, so the four reports form a clean "software cost by drivetrain" set.
-const PORSCHE_MW: Meta['overrides'] = { autosar_classic:{reuse:'Platform'}, autosar_adaptive:{reuse:'Platform'}, rtos:{reuse:'Platform'}, comm_stacks:{reuse:'Platform'} };
-const PORSCHE_SIG: Meta['overrides'] = { vehicle_motion:{complexity:'Very High'}, active_suspension:{complexity:'Very High'}, premium_audio:{complexity:'Very High'} };
-const cayenneBase = { flag:'🇩🇪', region:'EU', devSource:'OEM_Internal', volume:50_000, life:8, overhead:1.62, senior:0.60, reuse:'Medium',
-  reuseNote:'PPE / VW-Group middleware shared across platforms → Platform reuse on AUTOSAR / RTOS / comm stacks; bespoke Porsche performance software otherwise.' } as const;
+// ── Car identity (brand DNA) × drivetrain (powertrain scope) ──────────────────
+// Each car's macro parameters and signature-software overrides are held constant;
+// only the drivetrain changes the powertrain-module scope. This makes the whole
+// matrix (5 cars × 4 drivetrains) a clean apple-to-apple study, and reproduces the
+// already-shipped combos exactly.
+const ICE_DISABLED = ['bms_core','cell_balancing','soc_soh_soe','thermal_mgmt','fast_charge','edu_control','inverter_ctrl','motor_ctrl','regen_braking'];
 
-const VEHICLES: Meta[] = [
-  { id:'bmw_x7', file:'bmw-x7-software-cost-breakdown.html', docFile:'bmw-x7-cost-breakdown.html', flag:'🇩🇪', name:'BMW X7', code:'X7',
-    region:'EU', devSource:'OEM_Internal', volume:60_000, life:8, overhead:1.60, senior:0.55, reuse:'Heavy',
-    disabled:MHEV_DISABLED, overrides:{ digital_key:{complexity:'Very High'} },
-    arch:'G07 · CLAR platform · iDrive 8 (BMW OS 8)', drivetrain:'ICE + 48V mild hybrid',
-    powertrainNote:'the BEV battery / charge / drive modules are not applicable and are disabled',
-    premiumNote:'Executive Drive Pro (48V active roll) + Integral Active Steering, Bowers & Wilkins Diamond audio, Parking Assistant Professional + 360, Digital Key Plus (UWB), AR-ready HUD.',
+interface Car {
+  id: string; slug: string; flag: string; name: string;
+  region: 'EU'|'UK'; devSource: 'OEM_Internal'|'Tier1_Supplier';
+  volume: number; life: number; overhead: number; senior: number; reuse: SWReuse;
+  sig: Meta['overrides']; arch: string; audio: string; premiumExtras: string; reuseNote: string;
+}
+interface Drivetrain {
+  key: 'ice'|'mhev'|'phev'|'bev'; code: string;
+  disabled: string[]; overrides: Meta['overrides'];
+  drivetrain: string; archNote: string; powertrainNote: string; chargeNote: string;
+}
+
+export const CARS: Car[] = [
+  { id:'l460', slug:'range-rover-l460', flag:'🇬🇧', name:'Range Rover L460', region:'UK', devSource:'Tier1_Supplier', volume:75_000, life:8, overhead:1.55, senior:0.55, reuse:'Medium',
+    sig:{ premium_audio:{complexity:'Very High'} }, arch:'EVA2 (MLA) · Pivi Pro', audio:'Meridian 3D',
+    premiumExtras:'Dynamic Response Pro active body + rear-axle steer, park assist + 3D surround, cabin-air purification, digital key, HUD',
+    reuseNote:'JLR flagship with heavy Tier-1 outsourcing; Medium baseline reuse.' },
+  { id:'bmw_x7', slug:'bmw-x7', flag:'🇩🇪', name:'BMW X7', region:'EU', devSource:'OEM_Internal', volume:60_000, life:8, overhead:1.60, senior:0.55, reuse:'Heavy',
+    sig:{ digital_key:{complexity:'Very High'} }, arch:'G07 · CLAR · iDrive 8 (BMW OS 8)', audio:'Bowers & Wilkins Diamond',
+    premiumExtras:'Executive Drive Pro active roll + Integral Active Steering, Parking Assistant Professional + 360, Digital Key Plus (UWB), AR-HUD',
     reuseNote:'Heavy platform reuse across 7-Series / X5 / X7 — most software carries forward.' },
-  { id:'audi_q8', file:'audi-q8-software-cost-breakdown.html', docFile:'audi-q8-cost-breakdown.html', flag:'🇩🇪', name:'Audi Q8', code:'Q8',
-    region:'EU', devSource:'OEM_Internal', volume:55_000, life:9, overhead:1.58, senior:0.55, reuse:'Heavy',
-    disabled:MHEV_DISABLED, overrides:{ autosar_classic:{reuse:'Platform'}, autosar_adaptive:{reuse:'Platform'}, rtos:{reuse:'Platform'}, comm_stacks:{reuse:'Platform'} },
-    arch:'MLB Evo · MMI/MIB3 · VW Group + CARIAD stacks', drivetrain:'ICE + 48V mild hybrid',
-    powertrainNote:'the BEV battery / charge / drive modules are not applicable and are disabled',
-    premiumNote:'Adaptive air suspension + all-wheel steer, Bang & Olufsen 3D, park assist plus + 360, 4-zone climate, HUD.',
+  { id:'audi_q8', slug:'audi-q8', flag:'🇩🇪', name:'Audi Q8', region:'EU', devSource:'OEM_Internal', volume:55_000, life:9, overhead:1.58, senior:0.55, reuse:'Heavy',
+    sig:{ autosar_classic:{reuse:'Platform'}, autosar_adaptive:{reuse:'Platform'}, rtos:{reuse:'Platform'}, comm_stacks:{reuse:'Platform'} }, arch:'MLB Evo · MMI/MIB3 · VW Group', audio:'Bang & Olufsen 3D',
+    premiumExtras:'adaptive air suspension + all-wheel steer, park assist plus + 360, 4-zone climate, HUD',
     reuseNote:'VW.OS core middleware carried across the Group — Platform reuse on AUTOSAR / RTOS / comm stacks.' },
-  { id:'merc_gls', file:'mercedes-gls-software-cost-breakdown.html', docFile:'mercedes-gls-cost-breakdown.html', flag:'🇩🇪', name:'Mercedes GLS 450', code:'GLS 450',
-    region:'EU', devSource:'OEM_Internal', volume:45_000, life:9, overhead:1.62, senior:0.55, reuse:'Medium',
-    disabled:MHEV_DISABLED, overrides:{ ivi_os:{complexity:'Very High'}, voice_assistant:{complexity:'Very High'}, navigation:{complexity:'Very High'}, active_suspension:{complexity:'Very High'}, premium_audio:{complexity:'Very High'} },
-    arch:'X167 · MBUX / NTG6 · EQ Boost 48V', drivetrain:'ICE + 48V mild hybrid',
-    powertrainNote:'the BEV battery / charge / drive modules are not applicable and are disabled',
-    premiumNote:'E-Active Body Control (48V, camera Road-Surface-Scan), MBUX + “Hey Mercedes” voice, Burmester 3D surround, active parking + 360, MB AR-HUD, 5-zone climate.',
+  { id:'merc_gls', slug:'mercedes-gls', flag:'🇩🇪', name:'Mercedes GLS 450', region:'EU', devSource:'OEM_Internal', volume:45_000, life:9, overhead:1.62, senior:0.55, reuse:'Medium',
+    sig:{ ivi_os:{complexity:'Very High'}, voice_assistant:{complexity:'Very High'}, navigation:{complexity:'Very High'}, active_suspension:{complexity:'Very High'}, premium_audio:{complexity:'Very High'} }, arch:'X167 · MBUX / NTG6', audio:'Burmester 3D',
+    premiumExtras:'E-Active Body Control, MBUX + “Hey Mercedes” voice, active parking + 360, MB AR-HUD, 5-zone climate',
     reuseNote:'Signature MBUX / voice / active-body at Very-High complexity; moderate cross-range reuse.' },
-  // ── Porsche Cayenne (2026) — four powertrain variants, same macro assumptions ──
-  { ...cayenneBase, id:'porsche_cayenne', file:'porsche-cayenne-software-cost-breakdown.html', docFile:'porsche-cayenne-cost-breakdown.html', name:'Porsche Cayenne Electric', code:'Electric',
-    disabled:[], overrides:{ ...PORSCHE_MW, ...PORSCHE_SIG, fast_charge:{complexity:'Very High'} },
-    arch:'E4 · PPE 800V platform · Porsche Driver Experience', drivetrain:'Full battery-electric (BEV)',
-    powertrainNote:'the full EV powertrain software stack (BMS, charging, drive-unit, inverter, motor control) is in scope',
-    premiumNote:'Porsche 4D Chassis Control + torque vectoring, Porsche Active Ride, 800V 270 kW+ high-power charging, Burmester High-End 3D audio, park assist + 360, digital key, HUD.' },
-  { ...cayenneBase, id:'porsche_cayenne_phev', file:'porsche-cayenne-phev-software-cost-breakdown.html', docFile:'porsche-cayenne-phev-cost-breakdown.html', name:'Porsche Cayenne E-Hybrid', code:'E-Hybrid',
-    disabled:[], overrides:{ ...PORSCHE_MW, ...PORSCHE_SIG, bms_core:{complexity:'High'}, soc_soh_soe:{complexity:'High'}, edu_control:{complexity:'High'}, fast_charge:{complexity:'Medium'} },
-    arch:'MLB Evo · PCM · E-Hybrid plug-in powertrain', drivetrain:'E-Hybrid plug-in hybrid (PHEV)',
-    powertrainNote:'the plug-in-hybrid powertrain is retained but de-rated vs a full BEV (smaller pack, lower charging power) — BMS / SOC / drive-unit run at High rather than Very-High complexity',
-    premiumNote:'Porsche 4D Chassis Control + torque vectoring, Porsche Active Ride, AC + DC plug-in charging, Burmester High-End 3D audio, park assist + 360, digital key, HUD.' },
-  { ...cayenneBase, id:'porsche_cayenne_mhev', file:'porsche-cayenne-mhev-software-cost-breakdown.html', docFile:'porsche-cayenne-mhev-cost-breakdown.html', name:'Porsche Cayenne 48V', code:'48V',
-    disabled:MHEV_DISABLED, overrides:{ ...PORSCHE_MW, ...PORSCHE_SIG },
-    arch:'MLB Evo · PCM · 48V mild-hybrid powertrain', drivetrain:'ICE + 48V mild hybrid (MHEV)',
-    powertrainNote:'the high-voltage battery / charge / drive modules are not applicable and are disabled; 48V regen and battery-thermal software are retained',
-    premiumNote:'Porsche 4D Chassis Control + torque vectoring, Porsche Active Ride, Burmester High-End 3D audio, park assist + 360, digital key, HUD.' },
-  { ...cayenneBase, id:'porsche_cayenne_ice', file:'porsche-cayenne-ice-software-cost-breakdown.html', docFile:'porsche-cayenne-ice-cost-breakdown.html', name:'Porsche Cayenne V8', code:'V8',
-    disabled:['bms_core','cell_balancing','soc_soh_soe','thermal_mgmt','fast_charge','edu_control','inverter_ctrl','motor_ctrl','regen_braking'],
-    overrides:{ ...PORSCHE_MW, ...PORSCHE_SIG },
-    arch:'MLB Evo · PCM · V8 twin-turbo powertrain', drivetrain:'V8 twin-turbo combustion (ICE)',
-    powertrainNote:'there is no electrified-powertrain software — all nine EV powertrain / battery modules are out of scope',
-    premiumNote:'Porsche 4D Chassis Control + torque vectoring, Porsche Active Ride, Burmester High-End 3D audio, park assist + 360, digital key, HUD.' },
+  { id:'porsche_cayenne', slug:'porsche-cayenne', flag:'🇩🇪', name:'Porsche Cayenne', region:'EU', devSource:'OEM_Internal', volume:50_000, life:8, overhead:1.62, senior:0.60, reuse:'Medium',
+    sig:{ autosar_classic:{reuse:'Platform'}, autosar_adaptive:{reuse:'Platform'}, rtos:{reuse:'Platform'}, comm_stacks:{reuse:'Platform'}, vehicle_motion:{complexity:'Very High'}, active_suspension:{complexity:'Very High'}, premium_audio:{complexity:'Very High'} }, arch:'PPE / MLB Evo · Porsche Driver Experience', audio:'Burmester High-End 3D',
+    premiumExtras:'Porsche 4D Chassis Control + torque vectoring, Porsche Active Ride, park assist + 360, digital key, HUD',
+    reuseNote:'PPE / VW-Group middleware shared across platforms → Platform reuse; bespoke Porsche performance software otherwise.' },
 ];
+
+export const DRIVETRAINS: Drivetrain[] = [
+  { key:'ice', code:'ICE', disabled:ICE_DISABLED, overrides:{}, drivetrain:'Combustion (ICE)', archNote:'combustion powertrain', chargeNote:'',
+    powertrainNote:'there is no electrified-powertrain software — all nine EV powertrain / battery modules are out of scope' },
+  { key:'mhev', code:'MHEV', disabled:MHEV_DISABLED, overrides:{}, drivetrain:'ICE + 48V mild hybrid (MHEV)', archNote:'48V mild-hybrid powertrain', chargeNote:'',
+    powertrainNote:'the high-voltage battery / charge / drive modules are not applicable and are disabled; 48V regen and battery-thermal software are retained' },
+  { key:'phev', code:'PHEV', disabled:[], overrides:{ bms_core:{complexity:'High'}, soc_soh_soe:{complexity:'High'}, edu_control:{complexity:'High'}, fast_charge:{complexity:'Medium'} }, drivetrain:'Plug-in hybrid (PHEV)', archNote:'plug-in-hybrid powertrain', chargeNote:', AC + DC plug-in charging',
+    powertrainNote:'the plug-in-hybrid powertrain is retained but de-rated vs a full BEV — BMS / SOC / drive-unit run at High rather than Very-High complexity' },
+  { key:'bev', code:'BEV', disabled:[], overrides:{ fast_charge:{complexity:'Very High'} }, drivetrain:'Full battery-electric (BEV)', archNote:'battery-electric powertrain', chargeNote:', high-power DC charging',
+    powertrainNote:'the full EV powertrain software stack (BMS, charging, drive-unit, inverter, motor control) is in scope' },
+];
+
+// Combos already shipped (hand-authored L460 PHEV + the earlier reports) keep their
+// filenames and are NOT regenerated, so committed reports never churn.
+const EXISTING: Record<string, [string, string]> = {  // carId__dt : [publicFile, docFile]
+  'l460__phev':            ['l460-software-cost-breakdown.html',            'l460-cost-breakdown.html'],
+  'bmw_x7__mhev':          ['bmw-x7-software-cost-breakdown.html',          'bmw-x7-cost-breakdown.html'],
+  'audi_q8__mhev':         ['audi-q8-software-cost-breakdown.html',         'audi-q8-cost-breakdown.html'],
+  'merc_gls__mhev':        ['mercedes-gls-software-cost-breakdown.html',    'mercedes-gls-cost-breakdown.html'],
+  'porsche_cayenne__bev':  ['porsche-cayenne-software-cost-breakdown.html', 'porsche-cayenne-cost-breakdown.html'],
+  'porsche_cayenne__phev': ['porsche-cayenne-phev-software-cost-breakdown.html', 'porsche-cayenne-phev-cost-breakdown.html'],
+  'porsche_cayenne__mhev': ['porsche-cayenne-mhev-software-cost-breakdown.html', 'porsche-cayenne-mhev-cost-breakdown.html'],
+  'porsche_cayenne__ice':  ['porsche-cayenne-ice-software-cost-breakdown.html',  'porsche-cayenne-ice-cost-breakdown.html'],
+};
+const SKIP_REGEN = new Set(Object.keys(EXISTING));  // committed reports — leave untouched
+
+function buildMeta(car: Car, dt: Drivetrain): Meta & { carId: string; dtKey: string } {
+  const key = `${car.id}__${dt.key}`;
+  const [file, docFile] = EXISTING[key] ?? [`${car.slug}-${dt.key}-software-cost-breakdown.html`, `${car.slug}-${dt.key}-cost-breakdown.html`];
+  return {
+    carId: car.id, dtKey: dt.key,
+    id: key, file, docFile, flag: car.flag,
+    name: `${car.name} ${dt.code}`, code: dt.code,
+    region: car.region, devSource: car.devSource, volume: car.volume, life: car.life, overhead: car.overhead, senior: car.senior, reuse: car.reuse,
+    disabled: dt.disabled, overrides: { ...car.sig, ...dt.overrides },
+    arch: `${car.arch} · ${dt.archNote}`, drivetrain: dt.drivetrain, powertrainNote: dt.powertrainNote,
+    premiumNote: `${car.premiumExtras}${dt.chargeNote}, ${car.audio} audio.`,
+    reuseNote: car.reuseNote,
+  };
+}
+
+const VEHICLES = CARS.flatMap(c => DRIVETRAINS.map(dt => buildMeta(c, dt)));
 
 // ── helpers ──────────────────────────────────────────────────────────────────
 const CATNAME: Record<string,string> = { A:'EV Powertrain & Battery', B:'ADAS L2/L2+', C:'Infotainment & UX', D:'Domain Controllers', E:'Middleware & Platform', F:'Cybersecurity', G:'OTA & Cloud' };
@@ -413,12 +443,143 @@ ${JS}
   return { file:v.file, docFile:v.docFile, html, gt:s.grandTotal, pv:s.perVehicle, mods:r.modules.length };
 }
 
-const want = process.argv.slice(2);
-const list = want.length ? VEHICLES.filter(v => want.includes(v.id)) : VEHICLES;
-if (!list.length) { console.error('No matching vehicle ids. Known:', VEHICLES.map(v=>v.id).join(', ')); process.exit(1); }
-for (const v of list) {
-  const out = report(v);
-  fs.writeFileSync('public/reports/'+out.file, out.html);
-  fs.writeFileSync('docs/'+out.docFile, out.html);
-  console.log(`${v.name.padEnd(24)} ${out.mods} mods  ${M(out.gt)}  ${P(out.pv)}/veh  → ${out.file} (${out.html.length} bytes)`);
+// ── Apple-to-apple comparison study (5 cars × 4 drivetrains) ──────────────────
+const DT_COLOR: Record<string,string> = { ice:'#6B7A89', mhev:'var(--steel-3)', phev:'var(--steel-2)', bev:'var(--gold)' };
+
+function renderStudy(): { file: string; html: string } {
+  interface Cell { car: Car; dt: Drivetrain; gt: number; pv: number; nre: number; mods: number; file: string; }
+  const grid: Cell[][] = CARS.map(car => DRIVETRAINS.map(dt => {
+    const meta = buildMeta(car, dt);
+    const r = computeSWProgram(buildInputs(meta) as any, { summaryOnly: true });
+    return { car, dt, gt: r.summary.grandTotal, pv: r.summary.perVehicle, nre: r.summary.nreTotal, mods: r.modules.length, file: meta.file };
+  }));
+  const rows = [...grid].sort((a, b) => b[3].gt - a[3].gt);   // by BEV total, richest first
+  const flat = grid.flat();
+  const gmin = Math.min(...flat.map(c => c.gt)), gmax = Math.max(...flat.map(c => c.gt));
+  const heat = (gt: number) => 0.05 + 0.55 * (gt - gmin) / (gmax - gmin);
+  const cheapest = flat.reduce((a, b) => b.gt < a.gt ? b : a);
+  const priciest = flat.reduce((a, b) => b.gt > a.gt ? b : a);
+
+  const matrix = rows.map(r => {
+    const car = r[0].car;
+    const tds = r.map(c => `<td class="hcell"><a href="${c.file}" style="background:rgba(214,150,40,${heat(c.gt).toFixed(3)})">
+      <span class="hg">${M(c.gt)}</span><span class="hp">${P(c.pv)}/veh</span><span class="hm">${c.mods} mod</span></a></td>`).join('');
+    return `<tr><th class="hrow">${car.flag} ${esc(car.name)}<span>${car.region} · ${(car.volume/1000)}k/yr · ${car.life}yr</span></th>${tds}</tr>`;
+  }).join('');
+
+  // ICE → BEV software premium per car
+  const prem = CARS.map(car => {
+    const ice = grid.find(r => r[0].car.id === car.id)![0];
+    const bev = grid.find(r => r[0].car.id === car.id)![3];
+    return { car, delta: bev.gt - ice.gt, pct: (bev.gt - ice.gt) / ice.gt * 100, ice: ice.gt, bev: bev.gt };
+  }).sort((a, b) => b.delta - a.delta);
+  const maxDelta = Math.max(...prem.map(p => p.delta));
+  const avgPct = prem.reduce((a, p) => a + p.pct, 0) / prem.length;
+  const premBars = prem.map(p => `
+    <div class="brow"><div class="bl">${p.car.flag} ${esc(p.car.name)}<span>${M(p.ice)} → ${M(p.bev)}</span></div><div class="btrack"><div class="bfill" data-w="${(p.delta/maxDelta*100).toFixed(0)}" style="background:linear-gradient(90deg,var(--steel-2),var(--gold))"></div></div><div class="bv"><b>+${M(p.delta)}</b> +${p.pct.toFixed(0)}%</div></div>`).join('');
+
+  const body = `
+<div class="wrap">
+  <header class="hero">
+    <div class="kd"><span>CostVision Should-Cost</span><span class="dot"></span><span>Confidential — Management Review</span><span class="dot"></span><span>GBP</span></div>
+    <div class="eyebrow" style="margin-top:22px">Cross-Programme Comparison</div>
+    <h1>Powertrain software<br><span class="accent">cost study</span></h1>
+    <p class="sub">The same embedded-software should-cost model run across five premium SUV programmes and four drivetrains — 20 fully-costed programmes, apple-to-apple. Each car's assumptions are held constant; only the powertrain-software scope changes.</p>
+    <div class="herofig stagger">
+      <div class="hf"><div class="k">Programmes costed</div><div class="v"><span class="cu" data-to="20">0</span></div><div class="s">5 cars × 4 drivetrains</div></div>
+      <div class="hf money"><div class="k">Range</div><div class="v"><span class="cu" data-to="${(gmin/1e6).toFixed(0)}" data-pre="£" data-suf="M">£0M</span></div><div class="s">to ${M0(gmax)} (${esc(priciest.car.name)} ${priciest.dt.code})</div></div>
+      <div class="hf money"><div class="k">Avg ICE→BEV premium</div><div class="v"><span class="cu" data-to="${avgPct.toFixed(0)}" data-pre="+" data-suf="%">+0%</span></div><div class="s">software added by full electrification</div></div>
+      <div class="hf"><div class="k">Cheapest → priciest</div><div class="v" style="font-size:1.25rem">${M0(cheapest.gt)}–${M0(priciest.gt)}</div><div class="s">${esc(cheapest.car.name)} ${cheapest.dt.code} → ${esc(priciest.car.name)} ${priciest.dt.code}</div></div>
+    </div>
+  </header>
+
+  <section>
+    <div class="reveal"><div class="eyebrow">The matrix</div><h2><span class="n">01</span>Programme cost by car &amp; drivetrain</h2>
+      <p class="lede">Total software should-cost (£M), shaded by size. The small figure is £ per vehicle (which also reflects each car's own volume). Click any cell to open that programme's full board-level report.</p></div>
+    <div class="card reveal">
+      <div class="tblwrap"><table class="big heat">
+        <thead><tr><th class="hrow">Programme</th><th>ICE</th><th>MHEV</th><th>PHEV</th><th>BEV</th></tr></thead>
+        <tbody>${matrix}</tbody>
+      </table></div>
+    </div>
+    <p class="note reveal" style="margin-top:12px;">Reading <b>across a row</b> isolates the drivetrain effect (same car, same assumptions). Reading <b>down a column</b> compares cars at the same drivetrain — though per-vehicle figures also move with each car's production volume.</p>
+  </section>
+
+  <section>
+    <div class="reveal"><div class="eyebrow">The electrification premium</div><h2><span class="n">02</span>What full electrification adds</h2>
+      <p class="lede">Going from a pure-ICE to a full-BEV version of the <em>same</em> vehicle adds the entire EV powertrain software stack — BMS, charging, drive-unit, inverter and motor control. This is the software delta, holding everything else constant.</p></div>
+    <div class="card reveal"><div class="card-h"><span class="t">ICE → BEV software premium</span><span class="s">£M added · +% over ICE</span></div>
+      <div class="bars" id="prembars">${premBars}</div></div>
+    <p class="note reveal" style="margin-top:12px;">On average, full electrification adds <strong class="k">${avgPct.toFixed(0)}%</strong> to a premium SUV's embedded-software programme — the single largest drivetrain-driven cost. PHEV sits close behind BEV (it carries almost the same powertrain stack); MHEV and ICE shed the high-voltage battery / charge / drive software entirely.</p>
+  </section>
+
+  <section>
+    <div class="reveal"><div class="eyebrow">Read this before you quote the number</div><h2><span class="n">03</span>Method &amp; assumptions</h2></div>
+    <div class="callout reveal"><b>Apple-to-apple, within the model's envelope.</b> Every cell is live output from the same ±25–35% parametric engine, so the <em>comparisons</em> are consistent even though any single number is a should-cost estimate, not an audited actual.</div>
+    <div class="two reveal" style="margin-top:14px;">
+      <div><h3>What is held constant</h3><ul class="clean">
+        <li><b>Each car's identity</b> — region, volume, life, overhead, seniority, baseline reuse and its signature-software overrides (MBUX, Meridian, Porsche 4D chassis, etc.) are fixed across its four drivetrains.</li>
+        <li><b>The rate library</b> — same sourced multipliers throughout.</li></ul></div>
+      <div><h3>What to keep in mind</h3><ul class="clean">
+        <li><b>Some cells are hypothetical</b> — not every car ships in every drivetrain today; the off-catalogue combos exist purely for the comparison.</li>
+        <li><b>Per-vehicle ≠ apples-to-apples across cars</b> — it also reflects each car's production volume, so compare <em>totals</em> across cars and <em>per-vehicle</em> within a car.</li></ul></div>
+    </div>
+    <p class="note reveal" style="margin-top:16px;">All figures are live output from the CostVision engine (<code>sw-should-cost.ts</code>), computed from the 49-module catalogue — not hand-entered.</p>
+  </section>
+
+  <div class="footer"><span>CostVision · Auto SW Cost — powertrain cost study</span><span>5 cars × 4 drivetrains · 20 programmes · live engine output · GBP</span></div>
+</div>`;
+
+  const html = `<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Powertrain Software Cost Study — CostVision</title>
+${CSS}
+<style>
+  table.heat th{ text-align:center; }
+  table.heat th.hrow{ text-align:left; font-weight:600; }
+  table.heat th.hrow span{ display:block; font-family:var(--mono); font-size:.66rem; color:var(--ink-faint); font-weight:400; }
+  td.hcell{ padding:5px; }
+  td.hcell a{ display:flex; flex-direction:column; gap:1px; padding:9px 8px; border-radius:9px; text-decoration:none; color:var(--ink); border:1px solid var(--line); transition:transform .15s, box-shadow .15s; }
+  td.hcell a:hover{ transform:translateY(-2px); box-shadow:var(--shadow); }
+  td.hcell .hg{ font-family:var(--mono); font-weight:700; font-variant-numeric:tabular-nums; }
+  td.hcell .hp{ font-family:var(--mono); font-size:.68rem; color:var(--ink-soft); }
+  td.hcell .hm{ font-family:var(--mono); font-size:.62rem; color:var(--ink-faint); }
+</style>
+</head>
+<body>
+${body}
+${JS}
+</body>
+</html>
+`;
+  return { file: 'powertrain-cost-study.html', html };
+}
+
+// ── CLI ───────────────────────────────────────────────────────────────────────
+const args = process.argv.slice(2);
+const studyOnly = args.includes('--study');
+const ids = args.filter(a => a !== '--study');
+
+if (!studyOnly) {
+  const targets = ids.length
+    ? VEHICLES.filter(v => ids.includes(v.id) || ids.includes(v.carId))
+    : VEHICLES.filter(v => !SKIP_REGEN.has(v.id));   // default: the not-yet-shipped combos
+  if (!targets.length) { console.error('No matching combos. Known car ids:', CARS.map(c=>c.id).join(', ')); process.exit(1); }
+  for (const v of targets) {
+    const out = report(v);
+    fs.writeFileSync('public/reports/'+out.file, out.html);
+    fs.writeFileSync('docs/'+out.docFile, out.html);
+    console.log(`${v.name.padEnd(26)} ${out.mods} mods  ${M(out.gt)}  ${P(out.pv)}/veh  → ${out.file}`);
+  }
+}
+
+// Always (re)build the comparison study unless targeting specific report ids.
+if (studyOnly || !ids.length) {
+  const st = renderStudy();
+  fs.writeFileSync('public/reports/'+st.file, st.html);
+  fs.writeFileSync('docs/powertrain-cost-study.html', st.html);
+  console.log(`study → ${st.file} (${st.html.length} bytes)`);
 }
