@@ -82,6 +82,7 @@ import { printPDF, printCADAnalysisPDF, drawCostVisionLogo } from '../export/pdf
 import { computeCostUncertainty } from '../engine/uncertainty.js';
 import { computeCalibration, applyCalibration, type CalibrationRecord } from '../engine/calibration.js';
 import { computeCarbon } from '../engine/carbon.js';
+import { computeFeatureCosting } from '../engine/feature-costing.js';
 import { generateInsights, totalPotentialSaving, FX_TO_GBP } from '../engine/insights.js';
 import { generateDFMDFA } from '../engine/dfm-dfa.js';
 import type { DFMIssue, CostOptimisation } from '../engine/dfm-dfa.js';
@@ -4755,6 +4756,53 @@ async function analyzeCAD(autoCalculate = false): Promise<void> {
   }
 }
 
+/**
+ * #3 Feature-based costing card — turns OCCT feature recognition (holes, threads,
+ * planar vs free-form faces, undercuts, setups) into a per-feature cost breakdown
+ * + DFM, so the designer sees exactly which features drive machining cost.
+ */
+function buildFeatureCostCard(): string {
+  const f = cadOCCTGeometry?.features;
+  if (!f || (f.estimatedHoleCount + f.planarFaceCount + f.freeFormFaceCount) === 0) return '';
+  const undercuts = cadOCCTGeometry?.draftAnalysis?.undercutFaceCount ?? 0;
+  const setups = cadOCCTGeometry?.setupAnalysis?.estimatedSetupCount ?? 1;
+  const threadCount = f.threadFeaturesDetected ? Math.max(1, Math.round(f.estimatedHoleCount * 0.3)) : 0;
+  // Material factor from the AI-suggested material (harder alloys machine slower).
+  const matStr = `${cadAnalysisResult?.costInputSuggestions?.materialId ?? ''}`.toLowerCase();
+  const matFactor = /ti|titan/.test(matStr) ? 2.5 : /inconel|nickel|superalloy/.test(matStr) ? 3.0
+    : /steel|stainless|iron/.test(matStr) ? 1.5 : /alum/.test(matStr) ? 1.0 : 1.2;
+
+  const fc = computeFeatureCosting({
+    holeCount: f.estimatedHoleCount, holeRadiiMm: f.holeRadiiMm ?? [],
+    threadCount, planarFaceCount: f.planarFaceCount, freeFormFaceCount: f.freeFormFaceCount,
+    undercutFaceCount: undercuts, setupCount: setups,
+  }, { materialFactor: matFactor });
+
+  const rows = fc.lines.map(l => `
+    <tr>
+      <td style="padding:3px 8px">${escHtml(l.feature)}</td>
+      <td style="padding:3px 8px;text-align:right">${l.count}</td>
+      <td style="padding:3px 8px;text-align:right">${l.totalMinutes} min</td>
+      <td style="padding:3px 8px;text-align:right;font-weight:600">${_currFmt(l.costGBP)}</td>
+      <td style="padding:3px 8px;text-align:right;color:var(--text-muted)">${l.pctOfCost}%</td>
+    </tr>`).join('');
+  const dfm = fc.dfm.map(d => `<div style="font-size:0.72rem;color:${d.severity === 'major' ? 'var(--amber, #d97706)' : 'var(--text-secondary)'};margin-top:3px">• ${escHtml(d.title)} — ${escHtml(d.recommendation)}</div>`).join('');
+
+  return `
+    <div style="margin-bottom:12px;border:1px solid var(--border);border-left:4px solid #0891b2;border-radius:8px;padding:10px 12px;background:var(--surface-elevated)">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px">
+        <div class="panel-title" style="margin:0">🧩 Feature-based cost breakdown <span style="font-weight:400;font-size:0.72rem;color:var(--text-muted)">(from CAD geometry)</span></div>
+        <div style="font-size:0.95rem;font-weight:700;color:#0891b2">${_currFmt(fc.machiningCostGBP)} <span style="font-size:0.72rem;color:var(--text-muted)">· ${fc.totalCycleMin} min</span></div>
+      </div>
+      <table style="width:100%;border-collapse:collapse;font-size:0.76rem;margin-top:8px">
+        <tr style="color:var(--text-muted);text-align:left"><th style="padding:2px 8px;font-weight:600">Feature</th><th style="padding:2px 8px;text-align:right">Count</th><th style="padding:2px 8px;text-align:right">Time</th><th style="padding:2px 8px;text-align:right">Cost</th><th style="padding:2px 8px;text-align:right">%</th></tr>
+        ${rows}
+      </table>
+      <div style="margin-top:6px;font-size:0.72rem;color:var(--text-secondary)">Cost driver: <strong>${escHtml(fc.costliestFeature)}</strong></div>
+      ${dfm ? `<div style="margin-top:6px;border-top:1px solid var(--border);padding-top:5px">${dfm}</div>` : ''}
+    </div>`;
+}
+
 function renderCADResults(r: CADAnalysisResult, autoCalculate = false, annualVolume = 100000): void {
   const panel = el('cad-results');
   if (!panel) return;   // CAD results container not in the DOM for this view — avoid null.innerHTML crash
@@ -4816,6 +4864,8 @@ function renderCADResults(r: CADAnalysisResult, autoCalculate = false, annualVol
     </div>
 
     ${occtPanel}
+
+    ${buildFeatureCostCard()}
 
     <!-- Detected features -->
     <div style="margin-bottom:12px">
