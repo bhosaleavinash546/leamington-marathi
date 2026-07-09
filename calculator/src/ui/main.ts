@@ -13372,13 +13372,30 @@ function printMasterPDF(): void {
     autoTable(doc, {
       startY: y, margin: { left: mg, right: mg },
       head: [['Cost Bucket', `Amount (${_displayCurrency})`, '% of Total', 'Cost Bar']],
-      body: buckets.map(([label, val, p]) => [label, c(val), pct(p), '█'.repeat(Math.round(Math.max(0, Math.min(p, 50)) / 2))]),
+      // Cost Bar column left blank in text — the bar is drawn as a rectangle in didDrawCell
+      // (a block glyph like U+2588 is not in jsPDF's WinAnsi font and renders as garbage).
+      body: buckets.map(([label, val, p]) => [label, c(val), pct(p), '']),
       styles: { fontSize: 8 }, headStyles: { fillColor: hdr_bg, textColor: SLATE, fontStyle: 'bold' },
-      columnStyles: { 0: { cellWidth: 70 }, 1: { cellWidth: 30, halign: 'right' }, 2: { cellWidth: 22, halign: 'right' }, 3: { font: 'courier', fontSize: 6, textColor: ORANGE } },
+      columnStyles: { 0: { cellWidth: 70 }, 1: { cellWidth: 30, halign: 'right' }, 2: { cellWidth: 22, halign: 'right' }, 3: {} },
       didParseCell: (d) => {
         const rt = buckets[d.row.index]?.[3];
         if (rt === 'total') { d.cell.styles.fontStyle = 'bold'; d.cell.styles.fillColor = [255, 243, 230]; }
         else if (rt === 'sub') { d.cell.styles.fontStyle = 'bold'; d.cell.styles.fillColor = hdr_bg; }
+      },
+      didDrawCell: (d) => {
+        if (d.section !== 'body' || d.column.index !== 3) return;
+        const p = Math.max(0, Math.min(100, buckets[d.row.index]?.[2] ?? 0));
+        const pad = 2;
+        const trackW = d.cell.width - pad * 2;
+        if (trackW <= 0) return;
+        const bh = 2.6;
+        const bx = d.cell.x + pad;
+        const by = d.cell.y + d.cell.height / 2 - bh / 2;
+        doc.setFillColor(...hdr_bg);                       // track
+        doc.roundedRect(bx, by, trackW, bh, 0.6, 0.6, 'F');
+        const bw = Math.max(0.4, trackW * (p / 100));
+        doc.setFillColor(...ORANGE);                       // filled portion
+        doc.roundedRect(bx, by, bw, bh, 0.6, 0.6, 'F');
       },
     });
     y = lastY() + 5;

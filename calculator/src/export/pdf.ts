@@ -171,7 +171,7 @@ export function printPDF(
   const meta = [
     `Commodity: ${commodityType.replace(/_/g, ' ').toUpperCase()}`,
     `Currency: ${currency}`,
-    `FX Rate: ${fxRate.toFixed(4)} → GBP`,
+    `FX Rate: ${fxRate.toFixed(4)} to GBP`,
     `Operations: ${result.operationDetails.length}`,
     `Region: ${(input as { region?: string }).region ?? 'UK'}`,
   ].join('   ·   ');
@@ -354,17 +354,17 @@ export function printPDF(
   } else {
     matRows.push(
       ['Gross Weight (stock)',        `${grossWt.toFixed(4)} kg`,                              'kg',           'Net ÷ utilisation ratio'],
-      ['Scrap / Runner Weight',       `${scrapWt.toFixed(4)} kg`,                             'kg',           'Gross − Net'],
+      ['Scrap / Runner Weight',       `${scrapWt.toFixed(4)} kg`,                             'kg',           'Gross - Net'],
       ['Material Utilisation',        pct(input.rawMaterial.materialUtilization * 100),        '%',            'Benchmark: casting 65–85 %, machining 60–75 %'],
       ['Material Price',              c(mat?.pricePerKg ?? 0),                                `${currency}/kg`, mat?.sourceNote ?? ''],
       ['Scrap Recovery Price',        c(mat?.scrapRecoveryPricePerKg ?? 0),                   `${currency}/kg`, ''],
       ['Gross Material Cost',         c(grossWt * (mat?.pricePerKg ?? 0)),                    currency,       'Gross × price/kg'],
-      ['Scrap Credit',                `−${c(scrapValue)}`,                                    currency,       'Scrap × recovery price'],
+      ['Scrap Credit',                `-${c(scrapValue)}`,                                    currency,       'Scrap × recovery price'],
     );
     if ((input.rawMaterial.consumablesCostPerPart ?? 0) > 0) {
       matRows.push(['Consumables (core / wax / shell)', c(input.rawMaterial.consumablesCostPerPart!), currency, 'Per-part recurring']);
     }
-    matRows.push(['NET RAW MATERIAL COST', c(result.breakdown.rawMaterial), currency, 'Gross − scrap credit + consumables']);
+    matRows.push(['NET RAW MATERIAL COST', c(result.breakdown.rawMaterial), currency, 'Gross - scrap credit + consumables']);
   }
   matRows.push(
     ['', '', '', ''],
@@ -913,7 +913,7 @@ export function printCADAnalysisPDF(r: CADAnalysisResult, partPhotoDataUrl?: str
 
   doc.setFontSize(7.5); doc.setFont('helvetica', 'normal'); doc.setTextColor(185, 220, 215);
   doc.text(`Generated: ${dateStr}`, MG + 32, 44);
-  doc.text('Geometry → Process → Cost  ·  Fully AI-reasoned', MG + 32, 50);
+  doc.text('Geometry to Process to Cost  ·  Fully AI-reasoned', MG + 32, 50);
 
   y = 66;
 
