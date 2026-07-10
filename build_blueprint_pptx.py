@@ -128,11 +128,11 @@ box(s, 0, 0, W, H, fill=BG)
 box(s, 0, 0, W, Inches(0.16), fill=INDIGO)
 logo(s, x=Inches(0.5), y=Inches(0.45), scale=1.25)
 text(s, Inches(0.9), Inches(2.15), Inches(11.8), Inches(1.0),
-     [[('CostVision Implementation Blueprint', 42, DARK, True)]])
+     [[('CostVision Implementation Blueprint', 36, DARK, True)]])
 text(s, Inches(0.9), Inches(3.1), Inches(11.4), Inches(0.9),
      [[('Secure enterprise deployment inside our network — and integration with CAPEE.', 19, BODY, False)],
       [('All CAD models, drawings and images stay inside the company. Verified in the code.', 19, BODY, False)]])
-for i, (t, c) in enumerate([('100% CAD stays internal', GREEN), ('CAPEE integration ready', BLUE), ('4–6 weeks of changes', VIOLET), ('6-phase rollout', CYAN)]):
+for i, (t, c) in enumerate([('100% CAD stays internal', GREEN), ('AI controls BUILT & tested', BLUE), ('~3–5 weeks remaining', VIOLET), ('6-phase rollout', CYAN)]):
     x = Inches(0.9 + i * 2.95)
     chip = box(s, x, Inches(4.55), Inches(2.7), Inches(0.52), fill=PANEL, round_=True, radius=0.5)
     tf = chip.text_frame; tf.vertical_anchor = MSO_ANCHOR.MIDDLE
@@ -144,6 +144,8 @@ box(s, 0, H - Inches(0.16), W, Inches(0.16), fill=INDIGO)
 notes(s, "Welcome. This session is the implementation blueprint for CostVision: how we deploy it securely so that "
          "no CAD data ever leaves our network, and how we integrate it with our existing CAPEE costing tool. "
          "Everything in this deck comes from an actual audit of the platform's code — not vendor promises. "
+         "One important update since the written plan: the two security controls at the heart of this blueprint — "
+         "private AI routing and the air-gapped switch — have now been BUILT into the platform and tested live. "
          "By the end I'll ask for one decision: approval to start Phase 1 and 2.")
 
 # ═══════════════ 2 — THE DECISION ═══════════════
@@ -155,8 +157,8 @@ text(s, Inches(0.8), Inches(2.35), Inches(11.8), Inches(1.1),
         'and connecting it to CAPEE.  (~5–7 weeks, existing teams, no licence spend.)', 17, BODY, False)]],
      line_spacing=1.2)
 pts = [
-    ('Why now', 'The tool is built, tested (790 automated tests) and proven on live runs — the value is waiting on deployment, not development.', BLUE),
-    ('Why it is safe', 'CAD processing already runs fully inside the server. One configuration change closes the only external AI connection.', GREEN),
+    ('Why now', 'The tool is built, tested (793 automated tests) and proven on live runs — the value is waiting on deployment, not development.', BLUE),
+    ('Why it is safe', 'CAD processing already runs fully inside the server. The private AI routing and the air-gapped switch are now BUILT and tested live.', GREEN),
     ('Why CAPEE wins', 'CAPEE keeps the workflow; CostVision adds the AI, physics and organisational memory behind it. No tool replacement.', VIOLET),
 ]
 for i, (t, d, c) in enumerate(pts):
@@ -168,8 +170,9 @@ for i, (t, d, c) in enumerate(pts):
 notes(s, "One clear ask: approve the first two phases — the security assessment and the architecture design. "
          "That's five to seven weeks with existing teams and no new licence spend. Why now? Because the tool itself is "
          "finished and proven; what remains is deployment. Why is it safe? Because CAD processing already happens "
-         "entirely inside the server — we verified this in the code. And why does CAPEE win? Because we are not "
-         "replacing CAPEE — we're giving it an AI engine and a memory.")
+         "entirely inside the server — we verified this in the code — and the two security controls this plan called "
+         "for, private AI routing and the air-gapped switch, are now built into the platform and tested live. "
+         "And why does CAPEE win? Because we are not replacing CAPEE — we're giving it an AI engine and a memory.")
 
 # ═══════════════ 3 — WHAT COSTVISION IS ═══════════════
 s = header('What CostVision is — a quick recap', 'Background')
@@ -189,7 +192,7 @@ box(s, Inches(0.45), Inches(5.55), Inches(12.45), Inches(1.3), fill=GREENBG, rou
 text(s, Inches(0.8), Inches(5.75), Inches(11.8), Inches(0.95),
      [[('Proven, not promised:  ', 13.5, GREEN, True),
        ('estimating error cut from 10.9% to 0.3% after learning from 3 real quotes  ·  £512k/yr of pricing issues '
-        'found autonomously in the live demo  ·  790 automated tests protect it all.', 13.5, BODY, False)]],
+        'found autonomously in the live demo  ·  793 automated tests protect it all.', 13.5, BODY, False)]],
      line_spacing=1.2)
 notes(s, "Thirty seconds of background for anyone new. CostVision costs parts bottom-up with physics across 18 "
          "manufacturing processes. It reads CAD files directly, it can cost a circuit board from photographs, and — "
@@ -204,7 +207,7 @@ stack = [
     ('Backend', 'The engine room', 'The server application that does the work: runs the 18 cost engines, the AI logic and all calculations. Runs on a standard company virtual machine.', INDIGO),
     ('Database', 'The memory', 'Where rate libraries, saved costings and the AI knowledge base live. Standard corporate database (PostgreSQL), encrypted, backed up by IT.', VIOLET),
     ('CAD engine', 'The 3D model reader', 'Specialist geometry software (OCCT — the same core used by CAD vendors) that measures the 3D model: volume, weight, walls, holes. Runs INSIDE the backend.', CYAN),
-    ('AI layer', 'The language brain', 'The AI model used for vision and language tasks. Today it calls an external API — the ONE connection this blueprint moves inside our control.', AMBER),
+    ('AI layer', 'The language brain', 'The AI model used for vision and language tasks. NOW BUILT: one switchboard controls every AI call — route it to a private endpoint, or turn it fully OFF (air-gapped).', GREEN),
 ]
 for i, (t, tag, d, c) in enumerate(stack):
     y = Inches(2.05 + i * 0.95)
@@ -217,8 +220,10 @@ notes(s, "Before the architecture, the five building blocks in plain words. The 
          "their browser — nothing installs on laptops. The BACKEND is the engine room on our server, where all "
          "calculations happen. The DATABASE is the memory — a standard corporate database our IT already knows how to "
          "run and back up. The GEOMETRY ENGINE is the specialist CAD reader — and note, it runs inside our backend, "
-         "not in any cloud. The AI LAYER is the only piece that currently talks to an external service — and moving "
-         "that inside our control is exactly what this blueprint does.")
+         "not in any cloud. The AI LAYER is the only piece that talks to an external service — and the control for "
+         "that is now BUILT into the platform: a single switchboard that every AI call must pass through. Point it at "
+         "a private endpoint with one setting, or flip the air-gapped switch and it makes no external calls at all. "
+         "We tested all three modes live and the server announces its mode at start-up for audit.")
 
 # ═══════════════ 5 — THE REQUIREMENT & KEY FINDING ═══════════════
 s = header('The security requirement — and the key finding', 'Security')
@@ -233,7 +238,8 @@ text(s, Inches(0.8), Inches(3.72), Inches(11.8), Inches(1.6),
        ('CAD files already never leave the server.', 15, DARK, True)],
       [('The geometry engine runs inside our backend and processes CAD models in memory — files are not even '
         'written to disk, let alone sent anywhere. The only outbound flows are the AI layer (photos and derived '
-        'summaries) and two optional public feeds. One endpoint change closes the gap.', 13, BODY, False)]],
+        'summaries) and two optional public feeds. The controls that close this gap are now BUILT: private AI '
+        'routing and a provable air-gapped switch, tested live in all three modes.', 13, BODY, False)]],
      space_after=8, line_spacing=1.2)
 text(s, Inches(0.45), Inches(5.85), Inches(12.4), Inches(0.9),
      [[('Why you can trust this: ', 12.5, DARK, True),
@@ -244,8 +250,10 @@ notes(s, "The requirement is absolute: CAD data must never leave our network. He
          "project straightforward: it already doesn't. We audited every outbound connection in the source code. "
          "CAD models are processed in memory, inside our server, by the local geometry engine — they are not even "
          "saved to disk. The only traffic that leaves today is the AI layer — photographs and derived summaries — "
-         "plus two optional public feeds we can simply switch off. So the job is not a redesign; it is closing "
-         "one connection.")
+         "plus two optional public feeds. And here is the update since the written plan: the controls that close "
+         "this gap are already built. Every AI call now goes through one switchboard that can be pointed at a "
+         "private endpoint or switched off entirely, and we tested all three modes live. So the job is not a "
+         "redesign — the software side is done; what remains is infrastructure.")
 
 # ═══════════════ 6 — DATA-FLOW MAP ═══════════════
 s = header('Where data flows today — verified in the code', 'Data-flow map')
@@ -265,11 +273,11 @@ for i, (a, b) in enumerate(inside):
          [[(a, 12.5, DARK, True)], [(b, 10.5, BODY, False)]], space_after=2, line_spacing=1.05)
 box(s, Inches(8.3), Inches(2.0), Inches(4.6), Inches(4.7), fill=AMBERBG, round_=True, radius=0.05)
 text(s, Inches(8.6), Inches(2.2), Inches(4.0), Inches(0.4),
-     [[('LEAVES TODAY — to fix', 14, AMBER, True)]])
+     [[('LEAVES TODAY — controlled ✓', 14, AMBER, True)]])
 outside = [
-    ('AI layer calls', 'Part/PCB photos + CAD-derived summaries → route to a private AI endpoint (§ next slides)', AMBER),
-    ('Live part pricing (optional, OFF by default)', 'Part-number text only — keep off, or approve separately', MUTED),
-    ('News ticker feeds', 'Public news fetch, no company data — switch off or proxy', MUTED),
+    ('AI layer calls', 'Photos + CAD-derived summaries. Private routing BUILT — one setting points every call at our endpoint', AMBER),
+    ('Live part pricing (optional, OFF by default)', 'Part-number text only — silenced by the air-gap switch', MUTED),
+    ('News ticker feeds', 'Public news, no company data — silenced by the air-gap switch', MUTED),
 ]
 for i, (a, b, c) in enumerate(outside):
     y = Inches(2.7 + i * 1.28)
@@ -278,17 +286,18 @@ for i, (a, b, c) in enumerate(outside):
          [[(a, 12, DARK, True)], [(b, 10.5, BODY, False)]], space_after=2, line_spacing=1.05)
 notes(s, "The whole security story on one slide. Green, left: what already stays inside — CAD processing, all cost "
          "engines, the learning loop, reports. That is the overwhelming majority of the platform. Amber, right: the "
-         "three flows that currently go out. The AI layer is the one that matters — photos and derived summaries — "
-         "and the next slides show how we bring it under our control. The other two are optional conveniences we "
-         "simply switch off.")
+         "three flows that go out — and all three are now under our control in the shipped code. The AI layer is the "
+         "one that matters — photos and derived summaries — and its private routing is built: one setting points "
+         "every call at our own endpoint. The other two are optional conveniences, and the new air-gapped switch "
+         "silences them along with everything else, which we verified live.")
 
 # ═══════════════ 7 — DEPLOYMENT OPTIONS ═══════════════
 s = header('Deployment options — our recommendation', 'Decision')
 cols = [
-    ('OPTION A', 'Fully air-gapped', 'Everything on our VMs. AI features off (or a self-hosted model later). Deterministic engines fully working.',
-     'Zero external connections — provable today', 'Reduced AI capability', PANEL, MUTED),
+    ('OPTION A', 'Fully air-gapped', 'Everything on our VMs. AI features off via the built-in AIR-GAPPED switch (already implemented and tested). Deterministic engines fully working.',
+     'Zero external connections — provable today, switch is built', 'Reduced AI capability', PANEL, MUTED),
     ('OPTION B  ★ RECOMMENDED', 'Private AI, on-prem core', 'Platform on our VMs. AI calls go to Claude running in OUR OWN cloud tenancy over a private link — no public internet, no data retention.',
-     'Full capability + contractual & technical data control', 'Requires cloud tenancy sign-off', PANEL2, BLUE),
+     'Full capability + data control — routing already BUILT (one setting)', 'Requires cloud tenancy sign-off', PANEL2, BLUE),
     ('OPTION C', 'Public AI API', 'Platform on-prem but AI calls to the public API.',
      'Simplest', 'Fails our requirement — photos would traverse a public API', PANEL, RED),
 ]
@@ -304,12 +313,14 @@ for i, (tag, t, d, pro, con, fill, c) in enumerate(cols):
     text(s, x + Inches(0.25), Inches(5.7), Inches(3.55), Inches(0.75),
          [[('– ', 12, RED, True), (con, 11, BODY, False)]], line_spacing=1.1)
 text(s, Inches(0.45), Inches(6.75), Inches(12.4), Inches(0.5),
-     [[('Recommendation: Option B — with Option A available immediately for the most sensitive programmes.', 13, DARK, True)]])
+     [[('Recommendation: Option B — the software for BOTH A and B is already built; what remains is infrastructure sign-off.', 13, DARK, True)]])
 notes(s, "Three ways to deploy. Option A: fully air-gapped — everything on our machines, zero external connections, "
-         "available today, but the vision AI features are reduced. Option C is the public API — I include it only to "
-         "reject it, because photos would traverse a public endpoint. Option B is our recommendation: the platform "
-         "runs on-premise, and the AI model runs in OUR OWN cloud tenancy, reached over a private link with a "
-         "no-data-retention configuration. Full capability, and both contractual and technical control of the data. "
+         "and the switch that enforces it is already implemented and tested; but the vision AI features are reduced. "
+         "Option C is the public API — I include it only to reject it, because photos would traverse a public "
+         "endpoint. Option B is our recommendation: the platform runs on-premise, and the AI model runs in OUR OWN "
+         "cloud tenancy, reached over a private link with a no-data-retention configuration. The routing for this is "
+         "also already built — a single setting points every AI call at our endpoint; we demonstrated it live. "
+         "So the software work for both A and B is done; the remaining effort is infrastructure and sign-off. "
          "And note — the two options combine: the most sensitive programmes can run air-gapped while the rest use B.")
 
 # ═══════════════ 8 — TARGET ARCHITECTURE ═══════════════
@@ -357,7 +368,7 @@ rows = [
     ('Feature detection (holes, threads, walls)', 'Inside our backend', 'Already local — verified'),
     ('BOM extraction from files', 'Inside our backend (local parsers)', 'Already local — verified'),
     ('Cost calculation & learning', 'Inside our backend + our database', 'Already local — verified'),
-    ('Photo analysis & AI narrative', 'Private AI endpoint (Option B)', 'The one change we make'),
+    ('Photo analysis & AI narrative', 'Private AI endpoint (Option B)', 'Routing BUILT — set one value'),
     ('CAD file storage', 'Nowhere — processed in memory only', 'Files never written to disk'),
 ]
 for i, (a, b, c) in enumerate(rows):
@@ -370,14 +381,15 @@ for i, (a, b, c) in enumerate(rows):
     col = GREEN if 'verified' in c or 'never' in c else AMBER
     text(s, Inches(9.7), y + Inches(0.12), Inches(3.0), Inches(0.4), [[(('✓  ' if col == GREEN else '→  ') + c, 11.5, col, True)]])
 text(s, Inches(0.45), Inches(6.6), Inches(12.4), Inches(0.6),
-     [[('Plus: logs never contain CAD payloads; metadata goes to the corporate SIEM; an "air-gapped" switch lets '
-        'security PROVE zero egress in a witnessed firewall test.', 12, MUTED, False, True)]], line_spacing=1.15)
+     [[('Plus: logs never contain CAD payloads; metadata goes to the corporate SIEM; and the "air-gapped" switch is '
+        'now BUILT & tested — security can PROVE zero egress in a witnessed firewall test.', 12, MUTED, False, True)]], line_spacing=1.15)
 notes(s, "Function by function: where does CAD data actually go? Opening and measuring the model, detecting features, "
          "extracting BOMs, calculating cost — all of it already happens inside our backend, verified in code. "
-         "The single amber row is photo analysis and AI narrative, which moves to the private AI endpoint. And note "
-         "the last row — CostVision never stores CAD files at all; they are processed in memory and released. "
-         "We will also give security an air-gapped switch so they can prove zero egress in a witnessed test, "
-         "not take our word for it.")
+         "The single amber row is photo analysis and AI narrative — and the routing for it is now built: one "
+         "configuration value points it at the private endpoint. And note the last row — CostVision never stores CAD "
+         "files at all; they are processed in memory and released. Finally, the air-gapped switch is no longer a "
+         "promise — it is built and tested, so security can prove zero egress in a witnessed firewall test rather "
+         "than take our word for it.")
 
 # ═══════════════ 10 — CAPEE INTEGRATION ═══════════════
 s = header('CAPEE + CostVision — better together', 'Integration')
@@ -426,19 +438,22 @@ notes(s, "The integration philosophy: CAPEE stays the front door — the workflo
 # ═══════════════ 11 — WHAT EACH SIDE NEEDS ═══════════════
 s = header('What each side needs to change', 'Scope of work')
 box(s, Inches(0.45), Inches(2.05), Inches(6.0), Inches(4.55), fill=PANEL2, round_=True, radius=0.05)
-text(s, Inches(0.75), Inches(2.25), Inches(5.4), Inches(0.4), [[('CostVision — 6 bounded items', 15, BLUE, True)]])
+text(s, Inches(0.75), Inches(2.25), Inches(5.4), Inches(0.4), [[('CostVision — 6 items (2 DONE)', 15, BLUE, True)]])
 cv = [
-    ('Private AI routing', 'point the AI client at our endpoint (config + small factory)'),
-    ('"Air-gapped" switch', 'provably disable all external calls'),
-    ('Azure AD sign-on', 'replace local logins with company SSO'),
-    ('PostgreSQL', 'move from file database to the corporate DB estate'),
-    ('Cost API wrapper', 'one clean endpoint per commodity for CAPEE'),
-    ('Audit hardening', 'admin audit table + logs to SIEM'),
+    ('Private AI routing', 'DONE — one setting routes every AI call to our endpoint', True),
+    ('"Air-gapped" switch', 'DONE — provably disables all external calls; tested live', True),
+    ('Azure AD sign-on', 'replace local logins with company SSO', False),
+    ('PostgreSQL', 'move from file database to the corporate DB estate', False),
+    ('Cost API wrapper', 'one clean endpoint per commodity for CAPEE', False),
+    ('Audit hardening', 'admin audit table + logs to SIEM', False),
 ]
-for i, (a, b) in enumerate(cv):
+for i, (a, b, done) in enumerate(cv):
     y = Inches(2.75 + i * 0.63)
+    mark = '✓ ' if done else f'{i+1}. '
+    tc = GREEN if done else DARK
+    dc = GREEN if done else BODY
     text(s, Inches(0.75), y, Inches(5.5), Inches(0.6),
-         [[(f'{i+1}. ' + a + ' — ', 12, DARK, True), (b, 11, BODY, False)]], line_spacing=1.05)
+         [[(mark + a + ' — ', 12, tc, True), (b, 11, dc, False)]], line_spacing=1.05)
 box(s, Inches(6.85), Inches(2.05), Inches(6.05), Inches(4.55), fill=PANEL, round_=True, radius=0.05)
 text(s, Inches(7.15), Inches(2.25), Inches(5.4), Inches(0.4), [[('CAPEE — small, additive changes', 15, VIOLET, True)]])
 cap = [
@@ -452,19 +467,21 @@ for i, (a, b, sz) in enumerate(cap):
          [[(a + '  ', 13, DARK, True), ('· ' + sz, 11, VIOLET, True)],
           [(b, 11.5, BODY, False)]], space_after=3, line_spacing=1.12)
 text(s, Inches(0.45), Inches(6.8), Inches(12.4), Inches(0.45),
-     [[('Total critical path: ~4–6 engineering weeks. No architectural surgery on either side.', 13.5, DARK, True)]])
-notes(s, "The scope of work, honestly sized. CostVision needs six bounded changes — private AI routing, the air-gap "
-         "switch, company single sign-on, the corporate database, a clean API wrapper for CAPEE, and audit hardening. "
-         "CAPEE's changes are additive, not invasive: a client in the backend, an AI-insights panel in the UI, and "
-         "adopting the shared rate library — plus a one-off import of historical quotes so the memory starts smart. "
-         "Total critical path: four to six engineering weeks. Nothing here is architectural surgery.")
+     [[('Items 1–2 are built & tested. Remaining critical path: ~3–5 engineering weeks. No architectural surgery on either side.', 13.5, DARK, True)]])
+notes(s, "The scope of work, honestly sized. CostVision needed six bounded changes — and the first two, private AI "
+         "routing and the air-gap switch, are already done: built, covered by automated tests, and demonstrated live "
+         "in all three deployment modes. What remains on the CostVision side is company single sign-on, the corporate "
+         "database, a clean API wrapper for CAPEE, and audit hardening. CAPEE's changes are additive, not invasive: "
+         "a client in the backend, an AI-insights panel in the UI, and adopting the shared rate library — plus a "
+         "one-off import of historical quotes so the memory starts smart. Remaining critical path: roughly three to "
+         "five engineering weeks. Nothing here is architectural surgery.")
 
 # ═══════════════ 12 — SECURITY & COMPLIANCE ═══════════════
 s = header('Security & compliance — how we tick the boxes', 'Compliance')
 comp = [
     ('Encryption', 'TLS everywhere in transit; encrypted database at rest; CAD never stored at all', GREEN),
     ('Access control', 'Azure AD single sign-on; roles mapped to AD groups; CAPEE uses a least-privilege service account', BLUE),
-    ('Data-loss prevention', 'One AI exit door, inspected and logged; firewall denies everything else; witnessed air-gap test', AMBER),
+    ('Data-loss prevention', 'One AI exit door, inspected and logged; firewall denies everything else; witnessed air-gap test (switch built)', AMBER),
     ('Audit trails', 'Every rate change, knowledge write and admin action attributable to a user; logs to corporate SIEM', VIOLET),
 ]
 for i, (t, d, c) in enumerate(comp):
@@ -534,7 +551,7 @@ s = header('Risks — and how we manage them', 'Honest view')
 risks = [
     ('Cloud tenancy not approved', 'Medium', 'Fall back to Option A (air-gapped) — deterministic engines keep full value today; add a self-hosted vision model later if needed.', AMBER),
     ('Learning depends on logged quotes', 'Medium', 'The CAPEE PO-price hook automates it — quotes flow in without anyone changing habits. Plus a one-off historical import to start smart.', BLUE),
-    ('Single-team knowledge of the platform', 'Low–Med', '790 automated tests, written architecture docs, and a named CAPEE-side maintainer trained during Phase 4.', VIOLET),
+    ('Single-team knowledge of the platform', 'Low–Med', '793 automated tests, written architecture docs, and a named CAPEE-side maintainer trained during Phase 4.', VIOLET),
     ('Adoption ("another tool")', 'Low', 'Users stay in CAPEE — CostVision works behind the scenes. Nothing new to learn except better answers appearing.', GREEN),
 ]
 for i, (t, sev, m, c) in enumerate(risks):
@@ -555,9 +572,9 @@ notes(s, "The honest risk view. If the cloud tenancy isn't approved, we don't st
 # ═══════════════ 15 — VERDICT & ASK ═══════════════
 s = header('Feasibility verdict — and the ask', 'Decision')
 verdicts = [
-    ('Secure deployment, CAD fully internal', 'FEASIBLE — CAD already never leaves; one AI endpoint change closes the gap', GREEN),
+    ('Secure deployment, CAD fully internal', 'FEASIBLE — CAD never leaves; AI routing + air-gap switch already BUILT', GREEN),
     ('CAPEE + CostVision integration', 'FEASIBLE — API-first design; CAPEE stays the front door', GREEN),
-    ('Changes required', 'Bounded: ~4–6 engineering weeks critical path', BLUE),
+    ('Changes required', 'Head start delivered: 2 of 6 items built — ~3–5 engineering weeks remain', BLUE),
     ('Long-term governance', 'Rate-library board · monthly findings review · quarterly access & egress audit', VIOLET),
 ]
 for i, (a, b, c) in enumerate(verdicts):
@@ -573,10 +590,12 @@ text(s, Inches(0.8), Inches(5.8), Inches(11.8), Inches(0.9),
      line_spacing=1.2)
 box(s, 0, H - Inches(0.16), W, Inches(0.16), fill=INDIGO)
 notes(s, "To summarise: secure deployment with CAD fully internal is feasible — in fact, the platform was built that "
-         "way; one endpoint change completes it. CAPEE integration is feasible and high-value, with CAPEE remaining "
-         "the front door. The changes are bounded — weeks, not months — and governance is defined. The ask today is "
-         "simple: approve Phases 1 and 2, the security assessment and the architecture design. The full written plan, "
-         "including the security checklist, is ready to hand to the IT-Security team. Thank you — questions welcome.")
+         "way, and the two controls that complete it — private AI routing and the air-gapped switch — are already "
+         "built, tested and demonstrated live. CAPEE integration is feasible and high-value, with CAPEE remaining "
+         "the front door. The remaining changes are bounded — roughly three to five weeks, not months — and "
+         "governance is defined. The ask today is simple: approve Phases 1 and 2, the security assessment and the "
+         "architecture design. The full written plan, including the security checklist, is ready to hand to the "
+         "IT-Security team. Thank you — questions welcome.")
 
 OUT = 'CostVision-Implementation-Blueprint.pptx'
 prs.save(OUT)
