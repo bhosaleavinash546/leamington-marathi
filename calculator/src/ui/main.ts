@@ -920,10 +920,59 @@ async function renderIntelligencePanel(): Promise<void> {
   } catch { /* offline — panel stays hidden */ }
 }
 
+/**
+ * Autonomous drift monitor panel — findings the unattended agent opened by
+ * itself (renegotiation opportunities, underwater pricing, stale estimates).
+ */
+async function renderDriftPanel(): Promise<void> {
+  const box = document.getElementById('dash-drift');
+  const token = _authToken();
+  if (!box || !token) return;
+  try {
+    const resp = await fetch('/api/knowledge/drift', { headers: { Authorization: `Bearer ${token}` } });
+    if (!resp.ok) return;
+    const data = await resp.json() as { findings: Array<{ kind: string; partName: string; commodity: string; message: string; annualImpactGBP: number; severity: string }>; totalImpactGBP: number };
+    if (!data.findings.length) { box.style.display = 'none'; return; }
+
+    const icon = (k: string) => k === 'renegotiation' ? '💰' : k === 'underwater' ? '🚨' : '⏳';
+    const sevColor = (s: string) => s === 'high' ? '#dc2626' : s === 'medium' ? '#d97706' : 'var(--text-muted)';
+    const rows = data.findings.slice(0, 6).map(f => `
+      <div style="display:flex;gap:8px;align-items:flex-start;padding:6px 0;border-bottom:1px dashed var(--border)">
+        <span>${icon(f.kind)}</span>
+        <div style="flex:1;font-size:0.78rem;color:var(--text-secondary)">
+          <strong style="color:${sevColor(f.severity)}">${escHtml(f.partName)}</strong> — ${escHtml(f.message)}
+        </div>
+        <button class="btn btn-secondary btn-sm drift-dismiss-btn" data-part="${escHtml(f.partName)}" data-commodity="${escHtml(f.commodity)}" data-kind="${escHtml(f.kind)}" style="font-size:0.64rem;padding:2px 8px;flex-shrink:0">Dismiss</button>
+      </div>`).join('');
+
+    box.innerHTML = `
+      <div style="padding:12px 16px;border:1px solid var(--border);border-left:4px solid #dc2626;border-radius:10px;background:var(--surface-elevated)">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:10px">
+          <div style="font-weight:700;font-size:0.92rem;color:var(--text-primary)">🤖 Autonomous findings <span style="font-weight:400;font-size:0.72rem;color:var(--text-muted)">(the drift monitor opened these on its own)</span></div>
+          ${data.totalImpactGBP > 0 ? `<div style="font-size:0.8rem;font-weight:700;color:#dc2626">≈ £${Math.round(data.totalImpactGBP).toLocaleString()}/yr at stake</div>` : ''}
+        </div>
+        <div style="margin-top:6px">${rows}</div>
+      </div>`;
+    box.style.display = '';
+
+    box.querySelectorAll<HTMLButtonElement>('.drift-dismiss-btn').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        await fetch('/api/knowledge/drift/dismiss', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+          body: JSON.stringify({ partName: btn.dataset.part, commodity: btn.dataset.commodity, kind: btn.dataset.kind }),
+        }).catch(() => { /* offline */ });
+        void renderDriftPanel();
+      });
+    });
+  } catch { /* offline — panel stays hidden */ }
+}
+
 function renderDashboard(): void {
   const all = getCostingHistory();
   const records = filterHistory(all);
   void renderIntelligencePanel();
+  void renderDriftPanel();
 
   // KPIs
   const kpiTotal = document.getElementById('kpi-total-val');

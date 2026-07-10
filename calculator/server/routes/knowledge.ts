@@ -13,11 +13,41 @@ import { Router, type Response } from 'express';
 import rateLimit from 'express-rate-limit';
 import db from '../db.js';
 import { requireAuth, type AuthenticatedRequest } from '../middleware/auth-middleware.js';
-import { ensureKnowledgeTable, upsertCase, listCases, recordActual, knowledgeStats, type UpsertCaseInput } from '../data/knowledge-store.js';
+import {
+  ensureKnowledgeTable, upsertCase, listCases, recordActual, knowledgeStats,
+  ensureDriftTable, dismissFinding, isDismissed, type UpsertCaseInput,
+} from '../data/knowledge-store.js';
 import { findSimilarCases, deriveSuggestions, proactiveInsights, type PartFingerprint } from '../../src/engine/part-similarity.js';
 import { computeIntelligenceSummary } from '../../src/engine/intelligence.js';
+import { scanForDrift, type DriftFinding } from '../../src/engine/drift-monitor.js';
 
 ensureKnowledgeTable(db);
+ensureDriftTable(db);
+
+// ── Autonomous drift monitor (the unattended agent) ────────────────────────────
+// Scans the knowledge base on a schedule and opens findings by itself; the
+// dashboard shows whatever is open. Dismissed findings stay closed.
+
+let _lastScan: { at: number; open: number; totalImpactGBP: number } | null = null;
+
+function runDriftScan(): DriftFinding[] {
+  const open = scanForDrift(listCases(db, undefined, 5000))
+    .filter(f => !isDismissed(db, f.partName, f.commodity, f.kind));
+  _lastScan = { at: Date.now(), open: open.length, totalImpactGBP: open.reduce((s, f) => s + f.annualImpactGBP, 0) };
+  return open;
+}
+
+const DRIFT_SCAN_MS = Math.max(0.25, Number(process.env.DRIFT_SCAN_HOURS ?? 6)) * 3_600_000;
+if (process.env.DISABLE_DRIFT_MONITOR !== '1') {
+  // First scan shortly after boot, then on the interval. unref() so the timers
+  // never hold the process open (tests, CLI imports).
+  setTimeout(() => {
+    const f = runDriftScan();
+    if (f.length) console.log(`[DriftMonitor] ${f.length} open finding(s), ≈ £${_lastScan!.totalImpactGBP.toLocaleString()}/yr total impact — top: ${f[0].partName} (${f[0].kind})`);
+    else console.log('[DriftMonitor] scan complete — no open findings');
+  }, 30_000).unref();
+  setInterval(() => { runDriftScan(); }, DRIFT_SCAN_MS).unref();
+}
 
 const router = Router();
 router.use(requireAuth);
@@ -63,6 +93,20 @@ router.get('/stats', (_req: AuthenticatedRequest, res: Response): void => {
 /** Step 6 — the trust dashboard: is the tool measurably getting smarter? */
 router.get('/intelligence', (_req: AuthenticatedRequest, res: Response): void => {
   res.json({ success: true, intelligence: computeIntelligenceSummary(listCases(db, undefined, 5000)) });
+});
+
+/** Open autonomous findings (fresh scan each call; dismissed ones excluded). */
+router.get('/drift', (_req: AuthenticatedRequest, res: Response): void => {
+  const findings = runDriftScan();
+  res.json({ success: true, findings, lastScanAt: _lastScan?.at ?? null, totalImpactGBP: _lastScan?.totalImpactGBP ?? 0 });
+});
+
+/** Mark a finding handled so the monitor stops raising it. */
+router.post('/drift/dismiss', (req: AuthenticatedRequest, res: Response): void => {
+  const { partName, commodity, kind } = req.body as { partName?: string; commodity?: string; kind?: string };
+  if (!partName || !commodity || !kind) { res.status(400).json({ error: 'partName, commodity and kind are required' }); return; }
+  dismissFinding(db, partName, commodity, kind);
+  res.json({ success: true });
 });
 
 export default router;

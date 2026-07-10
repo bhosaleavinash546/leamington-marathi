@@ -62,3 +62,17 @@ describe('knowledge store', () => {
     expect(listCases(db)[0].userAdjusted).toBe(true);
   });
 });
+
+describe('drift dismissals', () => {
+  it('dismissing a finding keeps it closed; keys are kind+part+commodity scoped', async () => {
+    const { ensureDriftTable, dismissFinding, isDismissed } = await import('../server/data/knowledge-store.js');
+    ensureDriftTable(db);
+    expect(isDismissed(db, 'AL Bracket', 'machining', 'renegotiation')).toBe(false);
+    dismissFinding(db, 'AL Bracket', 'machining', 'renegotiation');
+    expect(isDismissed(db, 'AL Bracket', 'machining', 'renegotiation')).toBe(true);
+    // different kind for the same part stays open
+    expect(isDismissed(db, 'AL Bracket', 'machining', 'underwater')).toBe(false);
+    // name normalisation matches the case key rules
+    expect(isDismissed(db, '  al   bracket ', 'machining', 'renegotiation')).toBe(true);
+  });
+});

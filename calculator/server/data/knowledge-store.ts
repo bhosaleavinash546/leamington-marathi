@@ -106,6 +106,31 @@ export function recordActual(db: Database, partName: string, commodity: string, 
   return res.changes > 0;
 }
 
+// ── Drift-finding dismissals ───────────────────────────────────────────────────
+// Findings are computed live from the knowledge base (always fresh); a dismissal
+// marks one as handled so the autonomous monitor doesn't re-raise it.
+
+export function ensureDriftTable(db: Database): void {
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS drift_dismissals (
+      finding_key  TEXT PRIMARY KEY,
+      dismissed_at INTEGER NOT NULL
+    );
+  `);
+}
+
+const findingKey = (partName: string, commodity: string, kind: string) =>
+  `${kind}::${partKey(partName, commodity)}`;
+
+export function dismissFinding(db: Database, partName: string, commodity: string, kind: string, now = Date.now()): void {
+  db.prepare('INSERT OR REPLACE INTO drift_dismissals (finding_key, dismissed_at) VALUES (?, ?)')
+    .run(findingKey(partName, commodity, kind), now);
+}
+
+export function isDismissed(db: Database, partName: string, commodity: string, kind: string): boolean {
+  return !!db.prepare('SELECT 1 FROM drift_dismissals WHERE finding_key = ?').get(findingKey(partName, commodity, kind));
+}
+
 export interface KnowledgeStats { total: number; withActuals: number; byCommodity: Record<string, number>; }
 
 export function knowledgeStats(db: Database): KnowledgeStats {
