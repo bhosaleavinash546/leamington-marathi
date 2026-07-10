@@ -31,3 +31,11 @@ activation email to that inbox — click the link in it once and everything flow
 
 See **[EDITING.md](EDITING.md)** — written for non-developers; everything can be done
 from the GitHub website without installing anything.
+
+## Membership (member.html)
+
+Free member accounts (sign up / sign in / forgot password / one-time email-link
+sign-in) run on **Firebase Authentication** — free tier, no server needed.
+The page shows a "launching soon" note until `member-config.js` is filled in;
+the step-by-step switch-on checklist is written at the top of that file.
+Member data stored: name + email only, in the community's own Firebase project.

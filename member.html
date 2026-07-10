@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Membership | Leamington Marathi – सभासद व्हा</title>
+  <meta name="description" content="Become a member of Leamington Marathi — free membership for Marathi families in Leamington Spa & Warwick, UK. Create your account, sign in and stay connected.">
+  <link rel="icon" type="image/png" href="images/logo-emblem.png">
+  <link rel="apple-touch-icon" href="images/logo-emblem.png">
+  <link rel="canonical" href="https://leamingtonmarathi.com/member.html">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Membership | Leamington Marathi – सभासद व्हा">
+  <meta property="og:description" content="Free membership for Marathi families in Leamington Spa & Warwick — create your account and stay connected.">
+  <meta property="og:url" content="https://leamingtonmarathi.com/member.html">
+  <meta property="og:image" content="https://leamingtonmarathi.com/images/share-banner.jpg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Mukta:wght@400;600;700;800&family=Yatra+One&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script src="member-config.js"></script>
+  <script src="member.js" defer></script>
+</head>
+<body class="member-page">
+
+  <!-- Slim header: emblem + wordmark, back to the main site -->
+  <header id="site-header">
+    <div class="header-inner">
+      <a href="index.html" class="brand">
+        <img src="images/logo-emblem.png" alt="Leamington Marathi emblem" class="logo-emblem" width="216" height="216">
+        <img src="images/logo.png" alt="Leamington Marathi" class="logo" width="444" height="120">
+      </a>
+      <a href="index.html" class="member-back">← Back to website</a>
+    </div>
+  </header>
+
+  <main class="member-wrap">
+    <div class="member-head">
+      <p class="section-kicker marathi" lang="mr">सभासद व्हा</p>
+      <h1>Become a Member</h1>
+      <p class="member-sub">
+        Membership is <strong>free</strong> — create your account to be counted as part of the
+        Leamington Marathi family, and get ready for member-only goodies as we grow.
+        <span class="marathi" lang="mr">सभासदत्व मोफत आहे — आजच सामील व्हा!</span>
+      </p>
+    </div>
+
+    <!-- Shown until the Firebase config is filled in (member-config.js) -->
+    <div id="member-setup" class="member-note" hidden>
+      <h2>🚧 Launching very soon!</h2>
+      <p lang="mr" class="marathi">सभासद नोंदणी लवकरच सुरू होत आहे…</p>
+      <p>Member sign-up is being switched on. Please check back shortly — or
+        <a href="index.html#get-involved">leave your details on the Get Involved form</a>
+        and we'll let you know the moment it's live.</p>
+    </div>
+
+    <!-- Shown if the sign-in service can't be reached (offline etc.) -->
+    <div id="member-offline" class="member-note" hidden>
+      <h2>😕 Can't reach the sign-in service</h2>
+      <p>Please check your internet connection and refresh the page. If it keeps happening,
+        email us at <a href="mailto:leamingtonmarathi@gmail.com">leamingtonmarathi@gmail.com</a>.</p>
+    </div>
+
+    <!-- Sign in / sign up card -->
+    <div id="auth-box" class="auth-box" hidden>
+      <div class="auth-tabs" role="tablist" aria-label="Sign in or create account">
+        <button id="tab-signin" role="tab" aria-selected="true" aria-controls="panel-signin" class="active">Sign In</button>
+        <button id="tab-signup" role="tab" aria-selected="false" aria-controls="panel-signup">Create Account</button>
+      </div>
+
+      <p id="auth-msg" class="auth-msg" role="status" aria-live="polite" hidden></p>
+
+      <!-- Sign in with password -->
+      <form id="panel-signin" class="auth-panel" role="tabpanel" aria-labelledby="tab-signin">
+        <label>Email <span class="marathi" lang="mr">/ ई-मेल</span>
+          <input type="email" name="email" placeholder="you@example.com" autocomplete="email" required>
+        </label>
+        <label>Password <span class="marathi" lang="mr">/ पासवर्ड</span>
+          <input type="password" name="password" placeholder="Your password" autocomplete="current-password" required>
+        </label>
+        <button type="submit" class="btn btn-primary">Sign In</button>
+        <div class="auth-links">
+          <button type="button" class="linklike" id="show-reset">Forgot password?</button>
+          <button type="button" class="linklike" id="show-magic">Email me a one-time sign-in link</button>
+        </div>
+      </form>
+
+      <!-- Create account -->
+      <form id="panel-signup" class="auth-panel" role="tabpanel" aria-labelledby="tab-signup" hidden>
+        <label>Full name <span class="marathi" lang="mr">/ पूर्ण नाव</span>
+          <input type="text" name="name" placeholder="Your name" autocomplete="name" required>
+        </label>
+        <label>Email <span class="marathi" lang="mr">/ ई-मेल</span>
+          <input type="email" name="email" placeholder="you@example.com" autocomplete="email" required>
+        </label>
+        <label>Password <span class="auth-hint">(at least 8 characters)</span>
+          <input type="password" name="password" placeholder="Choose a password" autocomplete="new-password" minlength="8" required>
+        </label>
+        <button type="submit" class="btn btn-primary">Create My Free Account</button>
+        <p class="auth-hint">By creating an account you agree that we store your name and email to
+          run your membership. Nothing is shared with third parties —
+          <a href="index.html#privacy">privacy note</a>.</p>
+      </form>
+
+      <!-- One-time email link (passwordless / OTP-style) -->
+      <form id="panel-magic" class="auth-panel" hidden>
+        <h2 class="auth-panel-title">🔑 One-time sign-in link</h2>
+        <p class="auth-hint">No password needed — we'll email you a secure link that signs you straight in.</p>
+        <label>Email <span class="marathi" lang="mr">/ ई-मेल</span>
+          <input type="email" name="email" placeholder="you@example.com" autocomplete="email" required>
+        </label>
+        <button type="submit" class="btn btn-primary">Send me the link</button>
+        <div class="auth-links"><button type="button" class="linklike auth-back">← Back to sign in</button></div>
+      </form>
+
+      <!-- Forgot password -->
+      <form id="panel-reset" class="auth-panel" hidden>
+        <h2 class="auth-panel-title">🔒 Reset your password</h2>
+        <p class="auth-hint">Enter your email and we'll send you a reset link.</p>
+        <label>Email <span class="marathi" lang="mr">/ ई-मेल</span>
+          <input type="email" name="email" placeholder="you@example.com" autocomplete="email" required>
+        </label>
+        <button type="submit" class="btn btn-primary">Send reset link</button>
+        <div class="auth-links"><button type="button" class="linklike auth-back">← Back to sign in</button></div>
+      </form>
+    </div>
+
+    <!-- Signed-in member view -->
+    <div id="member-view" hidden>
+      <p id="verify-banner" class="member-verify" hidden>
+        📧 Please verify your email — check your inbox for our verification message.
+        <button type="button" class="linklike" id="resend-verify">Resend email</button>
+      </p>
+      <div class="member-card">
+        <img src="images/logo-emblem.png" alt="" width="216" height="216">
+        <div class="member-card-body">
+          <span class="member-card-org marathi" lang="mr">लेमिंगटन मराठी</span>
+          <span class="member-card-name" id="member-name">Member</span>
+          <span class="member-card-meta" id="member-email"></span>
+          <span class="member-card-meta" id="member-since"></span>
+          <span class="member-card-id" id="member-id"></span>
+        </div>
+      </div>
+      <div class="member-benefits">
+        <h2>Your membership <span class="marathi" lang="mr">| तुमचं सभासदत्व</span></h2>
+        <ul>
+          <li>✅ You're officially part of the Leamington Marathi family — <strong>free, forever</strong></li>
+          <li>🎟 Priority news on event tickets before they sell out</li>
+          <li>🪔 Invitations to contribute to the दिवाळी अंक and community projects</li>
+          <li>🥁 First call for Dhol Tasha Pathak places and volunteering</li>
+          <li>🌟 Member-only benefits as we grow — watch this space!</li>
+        </ul>
+      </div>
+      <div class="member-actions">
+        <a class="btn btn-outline" href="index.html#events">See upcoming events</a>
+        <button type="button" class="btn btn-primary" id="sign-out">Sign Out</button>
+      </div>
+    </div>
+
+    <noscript>
+      <div class="member-note">
+        <h2>JavaScript needed</h2>
+        <p>Member sign-in needs JavaScript turned on. Alternatively, email us at
+          <a href="mailto:leamingtonmarathi@gmail.com">leamingtonmarathi@gmail.com</a> and
+          we'll register you by hand.</p>
+      </div>
+    </noscript>
+  </main>
+
+  <footer>
+    <p class="footer-copy">© 2026 Leamington Marathi | <span class="marathi" lang="mr">जय महाराष्ट्र 🚩</span></p>
+    <p class="footer-credit">Designed &amp; Developed by Avinash Bhosale</p>
+  </footer>
+
+</body>
+</html>
