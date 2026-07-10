@@ -1,3 +1,4 @@
+import { isAirGapped } from './ai-client.js';
 /**
  * Optional live component pricing integration.
  * Three providers: Octopart/Nexar (GraphQL), RS Components, Farnell/element14.
@@ -391,6 +392,8 @@ export async function fetchLivePrices(
   apiKey: string,
   qty = 100,
 ): Promise<LivePriceResult[]> {
+  // Air-gapped deployments make no distributor calls; library prices are used as-is.
+  if (isAirGapped()) return [];
   const cleaned = partNumbers.map(p => p.trim()).filter(Boolean);
   if (!cleaned.length || !apiKey) return [];
 

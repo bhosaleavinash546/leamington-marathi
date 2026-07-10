@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import type { Request, Response } from 'express';
-import Anthropic from '@anthropic-ai/sdk';
+import { createAnthropic } from '../utils/ai-client.js';
 import { analyzeRfq, type RfqLineItem } from '../../src/engine/rfq.js';
 
 const router = Router();
@@ -20,7 +20,7 @@ router.post('/analyze', async (req: Request, res: Response): Promise<void> => {
     if ((!items || items.length === 0) && text && text.trim()) {
       const key = apiKey || process.env.ANTHROPIC_API_KEY;
       if (!key) { res.status(400).json({ error: 'Provide "lines", or "text" plus an Anthropic API key to decompose it.' }); return; }
-      const anthropic = new Anthropic({ apiKey: key });
+      const anthropic = createAnthropic(key);
       const msg = await anthropic.messages.create({
         model: 'claude-sonnet-4-6', max_tokens: 4096, temperature: 0,
         system: DECOMPOSE_SYSTEM,

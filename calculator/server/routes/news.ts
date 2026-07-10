@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { isAirGapped } from '../utils/ai-client.js';
 import type { Request, Response } from 'express';
 
 const router = Router();
@@ -203,6 +204,9 @@ let cache: { articles: NewsArticle[]; ts: number } | null = null;
 const CACHE_MS = 15 * 60 * 1000;
 
 async function buildFeed(): Promise<NewsArticle[]> {
+  // Air-gapped deployments make no outbound fetches — an empty feed, not an error.
+  if (isAirGapped()) return [];
+
   const results = await Promise.allSettled(FEED_SOURCES.map(fetchFeed));
   const all: NewsArticle[] = [];
   const seen = new Set<string>();

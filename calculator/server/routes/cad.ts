@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import multer from 'multer';
-import Anthropic from '@anthropic-ai/sdk';
+import { createAnthropic } from '../utils/ai-client.js';
 import { preprocessCADFile } from '../utils/preprocessor.js';
 import { analyzeGeometry } from '../utils/geometry-bridge.js';
 import type { OCCTGeometry } from '../utils/geometry-bridge.js';
@@ -219,7 +219,7 @@ router.post('/analyze', upload.single('cadFile'), async (req, res): Promise<void
       }
     : preprocessCADFile(content, originalname, size);
 
-  const anthropic = new Anthropic({ apiKey });
+  const anthropic = createAnthropic(apiKey);
 
   // --- Phase 3: Stage 1 — Fast commodity pre-selection (Haiku) OR user override ---
   let stage1Selection: { primary: string; conf: number; alt: Array<{ type: string; conf: number }> } | null = null;
@@ -954,7 +954,7 @@ router.post('/reanalyze', async (req, res): Promise<void> => {
   const partPhotoMime   = (typeof req.body?.partPhotoMime === 'string' ? req.body.partPhotoMime : 'image/jpeg') as 'image/jpeg' | 'image/png' | 'image/gif' | 'image/webp';
 
   const userOverrides = { forcedCommodity, forcedMaterial, annualVolume, ovrWeightKg, ovrVolumeCm3, ovrLengthMm, ovrWidthMm, ovrHeightMm, ovrDensityGcm3 };
-  const anthropic = new Anthropic({ apiKey });
+  const anthropic = createAnthropic(apiKey);
 
   let stage1Selection: { primary: string; conf: number; alt: Array<{ type: string; conf: number }> } | null = null;
   let selectedCommodity = 'machining';

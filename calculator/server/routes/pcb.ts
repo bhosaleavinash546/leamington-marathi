@@ -2,6 +2,7 @@ import { createHash } from 'crypto';
 import { Router } from 'express';
 import multer from 'multer';
 import Anthropic from '@anthropic-ai/sdk';
+import { createAnthropic } from '../utils/ai-client.js';
 import {
   computeAllCountryCosts,
   computePCBCountryCost,
@@ -965,7 +966,7 @@ router.post('/analyze-image', upload.fields([
 
   const mediaType = primaryImage.mimetype as 'image/jpeg' | 'image/png' | 'image/webp';
   const base64Data = primaryImage.buffer.toString('base64');
-  const anthropic = new Anthropic({ apiKey });
+  const anthropic = createAnthropic(apiKey);
   console.log(`[PCB] ${imageFiles.length} image(s) received: ${imageLabels.slice(0, imageFiles.length).join(', ')}`);
 
   // ── Stage 1: Board domain classification (Haiku) ───────────────────────
@@ -1422,7 +1423,7 @@ router.post('/reanalyze', upload.fields([
     extractionQuality: 'high',
   };
 
-  const anthropic = new Anthropic({ apiKey });
+  const anthropic = createAnthropic(apiKey);
   console.log(`[PCB/reanalyze] domain=${domain}, ${imageFiles.length} image(s), correction context provided`);
 
   // ── Stage 3: Specialist analysis with corrections injected ─────────────
@@ -1762,7 +1763,7 @@ router.post('/analyze-image-stream', upload.fields([
   const multiImage = imageFiles.length > 1;
   const mediaType = primaryImage.mimetype as 'image/jpeg' | 'image/png' | 'image/webp';
   const base64Data = primaryImage.buffer.toString('base64');
-  const anthropic = new Anthropic({ apiKey });
+  const anthropic = createAnthropic(apiKey);
 
   // ── Result cache ────────────────────────────────────────────────────────────
   // The AI pipeline is not deterministic run-to-run — even at temperature 0, LLM

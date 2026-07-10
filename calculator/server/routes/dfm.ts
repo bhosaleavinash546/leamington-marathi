@@ -1,9 +1,8 @@
 import { Router } from 'express';
 import type { Request, Response } from 'express';
-import Anthropic from '@anthropic-ai/sdk';
+import { createAnthropic } from '../utils/ai-client.js';
 
 const router = Router();
-const client = new Anthropic();
 
 router.post('/analyze', async (req: Request, res: Response) => {
   try {
@@ -65,6 +64,7 @@ Provide a deep engineering analysis covering:
 
 Be specific, engineering-literate, and concise. Target 400–500 words. Do not repeat verbatim what the rule-based engine already said — provide expert commentary and depth.`;
 
+    const client = createAnthropic();
     const message = await client.messages.create({
       model: 'claude-haiku-4-5-20251001',
       max_tokens: 1024,

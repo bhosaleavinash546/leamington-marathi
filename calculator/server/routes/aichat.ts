@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import Anthropic from '@anthropic-ai/sdk';
+import { createAnthropic } from '../utils/ai-client.js';
 
 const router = Router();
 
@@ -37,7 +37,7 @@ router.post('/', async (req, res): Promise<void> => {
   }
 
   try {
-    const client = new Anthropic({ apiKey });
+    const client = createAnthropic(apiKey);
     const msg = await client.messages.create({
       model: 'claude-haiku-4-5-20251001',
       max_tokens: 420,

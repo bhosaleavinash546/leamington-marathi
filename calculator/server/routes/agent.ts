@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import Anthropic from '@anthropic-ai/sdk';
+import { createAnthropic } from '../utils/ai-client.js';
 import { z } from 'zod';
 import { DEFAULT_RATE_LIBRARY } from '../../src/engine/rate-library.js';
 import { buildRateCorpus, groundingBlock } from '../../src/engine/rag-retrieval.js';
@@ -957,7 +958,7 @@ router.post('/chat', async (req, res): Promise<void> => {
     return;
   }
 
-  const anthropic = new Anthropic({ apiKey });
+  const anthropic = createAnthropic(apiKey);
   const messages: Anthropic.MessageParam[] = buildMessages(
     message, photoBase64, photoMime, history, costResult, region,
   );
@@ -1050,7 +1051,7 @@ router.post('/chat/stream', async (req, res): Promise<void> => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.flushHeaders();
 
-  const anthropic = new Anthropic({ apiKey });
+  const anthropic = createAnthropic(apiKey);
   const messages: Anthropic.MessageParam[] = buildMessages(
     message, photoBase64, photoMime, history, costResult, region,
   );

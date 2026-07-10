@@ -21,6 +21,7 @@ import pricesRouter from './routes/prices.js';
 import quotesRouter from './routes/quotes.js';
 import bomRouter from './routes/bom.js';
 import rfqRouter from './routes/rfq.js';
+import { aiEndpointDescription } from './utils/ai-client.js';
 import knowledgeRouter from './routes/knowledge.js';
 import { fetchAndCachePrices, arePricesStale } from './services/price-fetcher.js';
 import db from './db.js';
@@ -108,6 +109,7 @@ app.use((err: Error & { status?: number }, _req: Request, res: Response, _next: 
 
 const server = app.listen(PORT, () => {
   console.log(`Should-Cost server running on http://localhost:${PORT}`);
+  console.log(`[Deployment] AI egress: ${aiEndpointDescription()}`);
   console.log(`API key:      ${process.env.ANTHROPIC_API_KEY ? '✓ configured' : '✗ NOT SET — set ANTHROPIC_API_KEY in .env'}`);
   console.log(`JWT secret:   ${process.env.JWT_SECRET ? '✓ configured' : '⚠  using dev default — set JWT_SECRET in .env'}`);
   console.log(`SMTP:         ${process.env.SMTP_HOST ? `✓ ${process.env.SMTP_HOST}` : 'not configured — OTPs logged to console'}`);
