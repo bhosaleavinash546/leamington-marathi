@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Automotive IVI SoC — Should-Cost Model</title>
+  <meta name="description" content="Parameterized, transparent should-cost model for automotive In-Vehicle Infotainment (IVI) SoCs. Estimates $/die and total product cost for 2025–2026 production." />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="app-header">
+    <div class="brand">
+      <div class="brand-mark">SoC</div>
+      <div class="brand-text">
+        <h1>Automotive IVI SoC — Should-Cost Model</h1>
+        <p class="subtitle">Unit silicon cost &amp; total product cost · Fabless · 2025–2026 calibration</p>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button id="btnReset" class="btn btn-ghost" type="button">Reset defaults</button>
+      <button id="btnSaveScenario" class="btn btn-primary" type="button">＋ Save as scenario</button>
+    </div>
+  </header>
+
+  <nav class="tabbar" aria-label="Sections">
+    <button class="tab active" data-tab="model" type="button">Model</button>
+    <button class="tab" data-tab="scenarios" type="button">Scenario Compare</button>
+    <button class="tab" data-tab="methodology" type="button">Methodology &amp; Sources</button>
+  </nav>
+
+  <main>
+    <!-- ============ MODEL TAB ============ -->
+    <section id="tab-model" class="tab-panel active">
+      <div class="layout">
+        <!-- INPUT COLUMN -->
+        <div class="inputs">
+          <div class="preset-bar">
+            <label class="preset-label">Technology node preset</label>
+            <div class="node-presets" id="nodePresets"></div>
+            <p class="hint" id="presetHint">Pick a node to auto-load 2025–2026 benchmark wafer cost, mask-set NRE, and defect density. Every value remains editable.</p>
+          </div>
+
+          <!-- Wafer & node -->
+          <fieldset class="group">
+            <legend>1 · Wafer &amp; foundry</legend>
+            <div class="field">
+              <label for="waferDiameter">Wafer diameter (mm)</label>
+              <input type="number" id="waferDiameter" value="300" min="100" step="50" />
+            </div>
+            <div class="field">
+              <label for="waferCost">Processed wafer cost ($/wafer) <span class="info" data-tip="Foundry price for a fully processed wafer at this node, automotive-qualified flow. Benchmark ranges in the Methodology tab.">ⓘ</span></label>
+              <input type="number" id="waferCost" value="3000" min="0" step="50" />
+            </div>
+            <div class="field">
+              <label for="edgeExclusion">Edge exclusion (mm)</label>
+              <input type="number" id="edgeExclusion" value="3" min="0" step="0.5" />
+            </div>
+            <div class="field">
+              <label for="scribe">Scribe / kerf per side (mm)</label>
+              <input type="number" id="scribe" value="0.1" min="0" step="0.01" />
+            </div>
+          </fieldset>
+
+          <!-- Die -->
+          <fieldset class="group">
+            <legend>2 · Die</legend>
+            <div class="field">
+              <label for="dieArea">Design die area (mm²) <span class="info" data-tip="Active silicon area of the design before scribe/ASIL overhead. IVI SoCs typically 60–180 mm² depending on node and feature set.">ⓘ</span></label>
+              <input type="number" id="dieArea" value="100" min="1" step="1" />
+            </div>
+            <div class="field">
+              <label for="asilOverhead">ASIL safety area overhead (%) <span class="info" data-tip="Extra die area for lockstep cores, ECC, redundancy, BIST and safety islands needed for ASIL-B/D. Increases effective die area.">ⓘ</span></label>
+              <input type="number" id="asilOverhead" value="8" min="0" step="1" />
+            </div>
+          </fieldset>
+
+          <!-- Yield -->
+          <fieldset class="group">
+            <legend>3 · Yield</legend>
+            <div class="field">
+              <label for="defectDensity">Defect density D₀ (defects/cm²) <span class="info" data-tip="Random defect density for a mature automotive-grade process. Lower is better. ~0.05–0.10 mature, 0.10–0.20 advanced/EUV ramp.">ⓘ</span></label>
+              <input type="number" id="defectDensity" value="0.08" min="0" step="0.01" />
+            </div>
+            <div class="field">
+              <label for="clustering">Clustering factor α <span class="info" data-tip="Negative-binomial yield model clustering parameter. Lower α = more clustered defects = higher yield for big dies. Typical 1.5–4.">ⓘ</span></label>
+              <input type="number" id="clustering" value="2.5" min="0.2" step="0.1" />
+            </div>
+            <div class="field">
+              <label for="systematicYield">Systematic / parametric yield (%) <span class="info" data-tip="Baseline yield loss not from random defects (parametric, design-process interaction). Multiplies the random-defect yield.">ⓘ</span></label>
+              <input type="number" id="systematicYield" value="95" min="1" max="100" step="0.5" />
+            </div>
+          </fieldset>
+
+          <!-- Package, assembly, test -->
+          <fieldset class="group">
+            <legend>4 · Package · Assembly · Test (OSAT)</legend>
+            <div class="field">
+              <label for="packageType">Package type</label>
+              <select id="packageType"></select>
+            </div>
+            <div class="field">
+              <label for="ballCount">Ball / pad count</label>
+              <input type="number" id="ballCount" value="600" min="50" step="10" />
+            </div>
+            <div class="field">
+              <label for="packageCost">Package + substrate cost ($) <span class="info" data-tip="Substrate + bumping + underfill + lid. Auto-estimated from package type and ball count; override as needed.">ⓘ</span></label>
+              <input type="number" id="packageCost" value="2.50" min="0" step="0.05" />
+            </div>
+            <div class="field">
+              <label for="assemblyCost">Assembly cost ($)</label>
+              <input type="number" id="assemblyCost" value="0.45" min="0" step="0.05" />
+            </div>
+            <div class="field">
+              <label for="testTime">Final test time (s) <span class="info" data-tip="ATE seconds per unit. Automotive parts run longer test for higher coverage (DPPM targets).">ⓘ</span></label>
+              <input type="number" id="testTime" value="12" min="0" step="1" />
+            </div>
+            <div class="field">
+              <label for="testerRate">Tester rate ($/hr)</label>
+              <input type="number" id="testerRate" value="180" min="0" step="10" />
+            </div>
+            <div class="field check">
+              <label><input type="checkbox" id="burnIn" /> Burn-in (automotive, +cost &amp; yield loss)</label>
+            </div>
+            <div class="field">
+              <label for="burnInCost">Burn-in cost / unit ($)</label>
+              <input type="number" id="burnInCost" value="0.35" min="0" step="0.05" />
+            </div>
+            <div class="field">
+              <label for="assemblyYield">Assembly yield (%)</label>
+              <input type="number" id="assemblyYield" value="99" min="50" max="100" step="0.5" />
+            </div>
+            <div class="field">
+              <label for="testYield">Final-test yield (%)</label>
+              <input type="number" id="testYield" value="98" min="50" max="100" step="0.5" />
+            </div>
+          </fieldset>
+
+          <!-- IP -->
+          <fieldset class="group">
+            <legend>5 · IP licensing</legend>
+            <div class="field">
+              <label for="ipRoyalty">IP royalty per unit ($) <span class="info" data-tip="Running royalties for CPU/GPU/ISP/codec/connectivity IP (e.g. Arm, Imagination, Cadence, Synopsys), per shipped unit.">ⓘ</span></label>
+              <input type="number" id="ipRoyalty" value="1.80" min="0" step="0.05" />
+            </div>
+            <div class="field">
+              <label for="ipUpfront">IP upfront license ($, one-time)</label>
+              <input type="number" id="ipUpfront" value="8000000" min="0" step="100000" />
+            </div>
+          </fieldset>
+
+          <!-- NRE -->
+          <fieldset class="group">
+            <legend>6 · NRE (amortized)</legend>
+            <div class="field">
+              <label for="maskCost">Mask set cost ($) <span class="info" data-tip="Photomask set for the node. Grows steeply with EUV: ~$1–2M at 28nm to $20–30M+ at 5nm.">ⓘ</span></label>
+              <input type="number" id="maskCost" value="1500000" min="0" step="100000" />
+            </div>
+            <div class="field">
+              <label for="designNRE">Design NRE ($) <span class="info" data-tip="Engineering, EDA, verification, prototype, packages, board bring-up. Excludes IP upfront (entered above).">ⓘ</span></label>
+              <input type="number" id="designNRE" value="25000000" min="0" step="1000000" />
+            </div>
+            <div class="field">
+              <label for="qualNRE">Automotive qualification NRE ($) <span class="info" data-tip="AEC-Q100 qualification, ISO 26262 / ASIL functional-safety work, reliability and characterization.">ⓘ</span></label>
+              <input type="number" id="qualNRE" value="6000000" min="0" step="500000" />
+            </div>
+          </fieldset>
+
+          <!-- Volume & overhead -->
+          <fieldset class="group">
+            <legend>7 · Volume &amp; overhead</legend>
+            <div class="field">
+              <label for="annualVolume">Annual volume (units/yr)</label>
+              <input type="number" id="annualVolume" value="2000000" min="1000" step="100000" />
+            </div>
+            <div class="field">
+              <label for="programYears">Program lifetime (years) <span class="info" data-tip="NRE and upfront IP are amortized over total lifetime volume = annual × years.">ⓘ</span></label>
+              <input type="number" id="programYears" value="5" min="1" step="1" />
+            </div>
+            <div class="field">
+              <label for="overheadPct">Fabless overhead / SG&amp;A (%) <span class="info" data-tip="Operating overhead applied on COGS: logistics, scrap, support, supply-chain. Not company gross margin.">ⓘ</span></label>
+              <input type="number" id="overheadPct" value="12" min="0" step="1" />
+            </div>
+            <div class="field">
+              <label for="grossMargin">Target gross margin for ASP (%) <span class="info" data-tip="Optional: derive an indicative selling price (ASP) = total cost / (1 − margin). Cost figures above are margin-free.">ⓘ</span></label>
+              <input type="number" id="grossMargin" value="45" min="0" max="95" step="1" />
+            </div>
+          </fieldset>
+        </div>
+
+        <!-- RESULTS COLUMN -->
+        <div class="results">
+          <div class="result-cards">
+            <div class="result-card primary">
+              <div class="rc-label">Unit silicon cost</div>
+              <div class="rc-value" id="outSilicon">$—</div>
+              <div class="rc-sub" id="outSiliconSub">per good die</div>
+            </div>
+            <div class="result-card primary">
+              <div class="rc-label">Total product cost</div>
+              <div class="rc-value" id="outTotal">$—</div>
+              <div class="rc-sub">per shipped SoC (incl. NRE/IP/overhead)</div>
+            </div>
+            <div class="result-card">
+              <div class="rc-label">Indicative ASP</div>
+              <div class="rc-value alt" id="outASP">$—</div>
+              <div class="rc-sub" id="outASPsub">at target margin</div>
+            </div>
+          </div>
+
+          <div class="metrics-strip" id="metricsStrip"></div>
+
+          <div class="panel">
+            <h3>Cost stack (per shipped SoC)</h3>
+            <div class="stackbar" id="stackBar"></div>
+            <div class="legend" id="stackLegend"></div>
+          </div>
+
+          <div class="panel">
+            <h3>Cost breakdown</h3>
+            <table class="breakdown" id="breakdownTable">
+              <thead>
+                <tr><th>Cost element</th><th class="num">$ / unit</th><th class="num">% of total</th></tr>
+              </thead>
+              <tbody></tbody>
+              <tfoot></tfoot>
+            </table>
+          </div>
+
+          <div class="panel">
+            <h3>Sensitivity — what moves the cost</h3>
+            <p class="hint">Effect on total product cost of a ±10% change in each driver (one-at-a-time).</p>
+            <div class="tornado" id="tornado"></div>
+          </div>
+
+          <div class="accuracy-note" id="accuracyNote"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ SCENARIOS TAB ============ -->
+    <section id="tab-scenarios" class="tab-panel">
+      <div class="panel">
+        <div class="scenario-head">
+          <h3>Saved scenarios</h3>
+          <button id="btnClearScenarios" class="btn btn-ghost" type="button">Clear all</button>
+        </div>
+        <p class="hint">Use “＋ Save as scenario” on the Model tab to snapshot the current inputs and results, then compare side-by-side here.</p>
+        <div class="scenario-table-wrap">
+          <table class="scenario-table" id="scenarioTable"><tbody></tbody></table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ METHODOLOGY TAB ============ -->
+    <section id="tab-methodology" class="tab-panel">
+      <div class="panel prose" id="methodologyProse"></div>
+    </section>
+  </main>
+
+  <div class="tooltip" id="tooltip" role="tooltip"></div>
+  <footer class="app-footer">
+    <span>Should-cost model · transparent &amp; parameterized · all figures are engineering estimates, not vendor quotes.</span>
+  </footer>
+
+  <script src="data.js"></script>
+  <script src="model.js"></script>
+  <script src="methodology.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
