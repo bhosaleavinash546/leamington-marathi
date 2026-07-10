@@ -15,6 +15,7 @@ import db from '../db.js';
 import { requireAuth, type AuthenticatedRequest } from '../middleware/auth-middleware.js';
 import { ensureKnowledgeTable, upsertCase, listCases, recordActual, knowledgeStats, type UpsertCaseInput } from '../data/knowledge-store.js';
 import { findSimilarCases, deriveSuggestions, proactiveInsights, type PartFingerprint } from '../../src/engine/part-similarity.js';
+import { computeIntelligenceSummary } from '../../src/engine/intelligence.js';
 
 ensureKnowledgeTable(db);
 
@@ -57,6 +58,11 @@ router.post('/actual', (req: AuthenticatedRequest, res: Response): void => {
 
 router.get('/stats', (_req: AuthenticatedRequest, res: Response): void => {
   res.json({ success: true, stats: knowledgeStats(db) });
+});
+
+/** Step 6 — the trust dashboard: is the tool measurably getting smarter? */
+router.get('/intelligence', (_req: AuthenticatedRequest, res: Response): void => {
+  res.json({ success: true, intelligence: computeIntelligenceSummary(listCases(db, undefined, 5000)) });
 });
 
 export default router;

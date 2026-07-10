@@ -873,9 +873,57 @@ function showDashboardSkeleton(): void {
   }
 }
 
+/**
+ * Step 6 — Intelligence panel: evidence the tool is learning. Fills async from
+ * the knowledge base (size, coverage, measured accuracy trend); hidden when
+ * signed out, offline, or the knowledge base is still empty.
+ */
+async function renderIntelligencePanel(): Promise<void> {
+  const box = document.getElementById('dash-intelligence');
+  const token = _authToken();
+  if (!box || !token) return;
+  try {
+    const resp = await fetch('/api/knowledge/intelligence', { headers: { Authorization: `Bearer ${token}` } });
+    if (!resp.ok) return;
+    const { intelligence: iq } = await resp.json() as { intelligence: {
+      totalCases: number; withActuals: number; byCommodity: Record<string, number>; adjustedCases: number;
+      overallMapePct: number | null; biasDirection: string | null;
+      trend: Array<{ month: string; mapePct: number; n: number }>; verdict: string;
+    } };
+    if (!iq || iq.totalCases === 0) { box.style.display = 'none'; return; }
+
+    const verdictBadge = iq.verdict === 'improving' ? '<span style="color:#16a34a;font-weight:700">▲ improving</span>'
+      : iq.verdict === 'degrading' ? '<span style="color:#dc2626;font-weight:700">▼ degrading</span>'
+      : iq.verdict === 'stable' ? '<span style="color:#d97706;font-weight:700">stable</span>'
+      : '<span style="color:var(--text-muted)">building evidence…</span>';
+    const trendTxt = iq.trend.length
+      ? iq.trend.slice(-4).map(t => `${t.month.slice(5)}: ${t.mapePct}% (n=${t.n})`).join('  ·  ')
+      : 'no actuals logged yet — use 🎯 Log Actual £ after costings';
+    const topCommodities = Object.entries(iq.byCommodity).sort((a, b) => b[1] - a[1]).slice(0, 4)
+      .map(([c, n]) => `${(COMMODITY_LABELS[c] ?? c)} ${n}`).join(' · ');
+
+    box.innerHTML = `
+      <div style="padding:12px 16px;border:1px solid var(--border);border-left:4px solid #0ea5e9;border-radius:10px;background:var(--surface-elevated)">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:10px">
+          <div style="font-weight:700;font-size:0.92rem;color:var(--text-primary)">🧠 Tool intelligence <span style="font-weight:400;font-size:0.72rem;color:var(--text-muted)">(learned from your analyses)</span></div>
+          <div style="font-size:0.78rem">${verdictBadge}</div>
+        </div>
+        <div style="margin-top:8px;display:flex;gap:22px;flex-wrap:wrap;font-size:0.8rem;color:var(--text-secondary)">
+          <span>📚 <strong>${iq.totalCases}</strong> analyses remembered</span>
+          <span>🎯 <strong>${iq.withActuals}</strong> with real quotes</span>
+          ${iq.overallMapePct !== null ? `<span>Accuracy: MAPE <strong>${iq.overallMapePct}%</strong>${iq.biasDirection && iq.biasDirection !== 'centred' ? ` (${iq.biasDirection}-estimates)` : ''}</span>` : ''}
+          ${iq.adjustedCases > 0 ? `<span>✍ <strong>${iq.adjustedCases}</strong> expert-corrected</span>` : ''}
+        </div>
+        <div style="margin-top:5px;font-size:0.72rem;color:var(--text-muted)">Accuracy trend: ${trendTxt}${topCommodities ? `<br>Coverage: ${topCommodities}` : ''}</div>
+      </div>`;
+    box.style.display = '';
+  } catch { /* offline — panel stays hidden */ }
+}
+
 function renderDashboard(): void {
   const all = getCostingHistory();
   const records = filterHistory(all);
+  void renderIntelligencePanel();
 
   // KPIs
   const kpiTotal = document.getElementById('kpi-total-val');
