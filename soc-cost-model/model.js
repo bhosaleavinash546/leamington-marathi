@@ -129,7 +129,7 @@ function sensitivity(input, pct = 10) {
     { key: "waferCost",     label: "Wafer cost" },
     { key: "dieArea",       label: "Die area" },
     { key: "defectDensity", label: "Defect density D₀" },
-    { key: "annualVolume",  label: "Annual volume", invert: true },
+    { key: "annualVolume",  label: "Annual volume" },
     { key: "packageCost",   label: "Package cost" },
     { key: "ipRoyalty",     label: "IP royalty" },
     { key: "designNRE",     label: "Design NRE" },

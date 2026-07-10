@@ -248,6 +248,32 @@ table.breakdown, table.scenario-table { width: 100%; border-collapse: collapse; 
 .callout { background: rgba(255,43,214,.06); border-left: 3px solid var(--neon-magenta); padding: 10px 14px; border-radius: 8px; margin: 10px 0; font-size: .84rem; color: var(--ink); }
 
 /* ---------- Tooltip ---------- */
+/* ---------- v2 additions ---------- */
+.beta-tag { font-size: .6rem; font-weight: 900; padding: 1px 7px; border-radius: 999px; background: rgba(255,207,51,.15); color: var(--neon-amber); border: 1px solid rgba(255,207,51,.4); vertical-align: middle; }
+.import-report { font-size: .74rem; color: var(--neon-lime); margin-top: 8px; line-height: 1.5; }
+input[type="file"] { color: var(--ink-soft); font-size: .78rem; width: 100%; }
+input[type="file"]::file-selector-button { border: 1px solid var(--line-2); background: rgba(0,229,255,.06); color: var(--neon-cyan); border-radius: 8px; padding: 7px 12px; font-weight: 700; cursor: pointer; margin-right: 10px; }
+.config-alerts .config-alert { display: flex; gap: 10px; padding: 10px 12px; border-radius: 10px; font-size: .8rem; border: 1px solid var(--neon-red); background: rgba(255,59,107,.08); color: var(--ink); margin-bottom: 10px; box-shadow: 0 0 14px rgba(255,59,107,.25); }
+.config-alerts .tag { font-weight: 900; font-size: .64rem; padding: 2px 8px; border-radius: 999px; background: var(--neon-red); color: #1a0410; height: fit-content; white-space: nowrap; }
+.btn-apply { border: 1px solid var(--neon-lime); background: rgba(108,255,63,.1); color: var(--neon-lime); border-radius: 7px; padding: 3px 10px; font-size: .7rem; font-weight: 800; cursor: pointer; margin-left: 8px; }
+.btn-apply:hover { background: var(--neon-lime); color: #04140a; }
+.ai-ideas { margin-top: 12px; display: flex; flex-direction: column; gap: 8px; }
+.ai-ideas h4 { color: var(--neon-lime); margin: 6px 0 2px; font-size: .88rem; }
+.ai-ideas .rec { display: flex; gap: 10px; padding: 10px 12px; border-radius: 10px; font-size: .8rem; border: 1px solid var(--line-2); background: #070912; color: var(--ink); }
+.ai-ideas .rec .tag { font-weight: 900; font-size: .66rem; padding: 2px 8px; border-radius: 999px; height: fit-content; white-space: nowrap; }
+.ai-ideas .rec.ok { border-color: var(--neon-lime); } .ai-ideas .rec.ok .tag { background: var(--neon-lime); color: #04140a; }
+.ai-ideas .rec.med { border-color: var(--neon-amber); } .ai-ideas .rec.med .tag { background: var(--neon-amber); color: #1a1400; }
+.ai-chat { margin-top: 14px; }
+.chat-row { display: flex; gap: 10px; align-items: center; }
+.chat-row input[type="text"] { flex: 1; border: 1px solid var(--line-2); border-radius: 9px; padding: 9px 11px; background: #070912; color: var(--ink); font-size: .85rem; }
+.chat-row input[type="text"]:focus { outline: none; border-color: var(--neon-cyan); box-shadow: var(--glow-cyan); }
+.ai-table { border-collapse: collapse; margin: 8px 0; font-size: .78rem; width: 100%; }
+.ai-table td { border: 1px solid var(--line); padding: 5px 8px; color: var(--ink); }
+.ai-table tr:first-child td { background: var(--panel-2); color: var(--neon-cyan); font-weight: 700; }
+.cal-form { display: grid; grid-template-columns: 1fr 220px auto; gap: 12px; align-items: end; margin: 12px 0; }
+@media (max-width: 760px) { .cal-form { grid-template-columns: 1fr; } }
+button:disabled { opacity: .45; cursor: not-allowed; }
+
 .tooltip { position: fixed; z-index: 50; max-width: 300px; background: #04060c; color: var(--ink); padding: 9px 11px; border-radius: 9px; font-size: .76rem; line-height: 1.45; box-shadow: 0 6px 28px rgba(0,0,0,.7); border: 1px solid var(--neon-cyan); pointer-events: none; opacity: 0; transition: opacity .12s; display: none; }
 .tooltip.show { opacity: 1; display: block; }
 .app-footer { text-align: center; padding: 18px; color: var(--ink-dim); font-size: .74rem; border-top: 1px solid var(--line); }

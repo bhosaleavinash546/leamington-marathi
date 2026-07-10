@@ -109,23 +109,23 @@ function render() {
   document.querySelector("#breakdownTable tfoot").innerHTML =
     `<tr><td>Total product cost</td><td class="num">${fmtUSD(r.totalCost,3)}</td><td class="num">100%</td></tr>`;
 
-  // tornado sensitivity
+  // tornado sensitivity (single aligned row per driver: label · bar · percent)
   const sens = sensitivity(input, 10);
   const maxSwing = Math.max(...sens.map((s) => Math.max(Math.abs(s.hi), Math.abs(s.lo))), 1);
   $("tornado").innerHTML = sens.map((s) => {
-    const w = (Math.max(Math.abs(s.hi), Math.abs(s.lo)) / maxSwing) * 100;
+    const mag = Math.max(Math.abs(s.hi), Math.abs(s.lo));
     return `<div class="row"><span>${s.label}</span>
-      <div class="bar-wrap"><div class="bar" style="width:${w}%"></div></div>
-      </div>
-      <div class="row"><span></span><span class="pct">±${(Math.max(Math.abs(s.hi),Math.abs(s.lo))).toFixed(1)}% on total</span></div>`;
+      <div class="bar-wrap"><div class="bar" style="width:${(mag / maxSwing) * 100}%"></div></div>
+      <span class="pct">±${mag.toFixed(1)}%</span></div>`;
   }).join("");
 
   // accuracy note
   $("accuracyNote").innerHTML =
-    `<b>Accuracy band:</b> with calibrated wafer cost, defect density, and back-end inputs this model targets
-     <b>90–95%</b> agreement with realized cost for 2025–2026 automotive production. The largest residual
-     uncertainties are wafer price negotiation (±10–15%), achieved yield during ramp, and IP royalty terms.
-     Treat outputs as a <b>cost envelope</b>, not a quote.`;
+    `<b>Accuracy band:</b> this is a parametric model on public benchmark ranges — expect a <b>±15–25%</b>
+     envelope out of the box. The <b>90–95%</b> target is reachable only once wafer price, defect density,
+     package and IP terms are calibrated to your negotiated program data. Largest residual uncertainties:
+     wafer price negotiation (±10–15%), achieved yield during ramp, and IP royalty terms. Treat outputs as
+     a <b>cost envelope</b>, not a quote.`;
 }
 
 /* ---------- scenarios ---------- */

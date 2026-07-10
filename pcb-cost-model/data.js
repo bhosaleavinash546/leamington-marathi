@@ -130,19 +130,58 @@ const QUALITY_LEVELS = [
  *      India ~0.3, Vietnam ~0.65, Taiwan ~1.7, Korea ~3.5, USA ~7.2, DE ~8.8.
  *      Energy costs (EU highest, China/US ~$0.08/kWh) sit in the overhead term. */
 const REGIONS = [
-  { id: "china",   label: "China",             labor: 1.00, overhead: 1.00 },
-  { id: "vietnam", label: "Vietnam / SE-Asia", labor: 0.85, overhead: 0.94 },
-  { id: "india",   label: "India",             labor: 0.90, overhead: 1.00 },
-  { id: "taiwan",  label: "Taiwan",            labor: 1.40, overhead: 1.20 },
-  { id: "skorea",  label: "South Korea",       labor: 1.60, overhead: 1.25 },
-  { id: "na",      label: "North America",     labor: 2.60, overhead: 1.90 },
-  { id: "eu",      label: "Europe",            labor: 2.85, overhead: 2.10 },
+  { id: "china",    label: "China",             labor: 1.00, overhead: 1.00, matFactor: 1.00 },
+  { id: "vietnam",  label: "Vietnam",           labor: 0.85, overhead: 0.94, matFactor: 1.03 },
+  { id: "thailand", label: "Thailand",          labor: 0.88, overhead: 0.96, matFactor: 1.03 },
+  { id: "india",    label: "India",             labor: 0.90, overhead: 1.00, matFactor: 1.04 },
+  { id: "taiwan",   label: "Taiwan",            labor: 1.40, overhead: 1.20, matFactor: 1.00 },
+  { id: "skorea",   label: "South Korea",       labor: 1.60, overhead: 1.25, matFactor: 1.00 },
+  { id: "japan",    label: "Japan",             labor: 1.85, overhead: 1.40, matFactor: 1.04 },
+  { id: "mexico",   label: "Mexico",            labor: 1.20, overhead: 1.20, matFactor: 1.08 },
+  { id: "na",       label: "North America",     labor: 2.60, overhead: 1.90, matFactor: 1.12 },
+  { id: "eu",       label: "Europe",            labor: 2.85, overhead: 2.10, matFactor: 1.12 },
 ];
+
+/* ---- Landed-cost duty lanes (fab region → destination market). Editable 2026
+ *      defaults: cumulative import-duty stack on customs value. China→US
+ *      reflects the post-Feb-2026 Section 301 + Section 122 stack (some
+ *      categories run higher; exclusions expire Nov 2026). All others are
+ *      indicative MFN-level rates — always verify per HTS code. ---- */
+const DUTY_LANES = {
+  domestic: { label: "Domestic / none", rates: {} },                       // no duty
+  us: { label: "United States", rates: { china: 38, vietnam: 10, thailand: 10, india: 10, taiwan: 10, skorea: 0, japan: 10, mexico: 0, na: 0, eu: 10 } },
+  eu: { label: "European Union", rates: { china: 3.7, vietnam: 0, thailand: 3.7, india: 3.7, taiwan: 3.7, skorea: 0, japan: 3.7, mexico: 3.7, na: 3.7, eu: 0 } },
+};
+
+/* ---- Lot-size curve: fab quotes run 3–5× volume pricing at prototype
+ *      quantities, decaying toward 1.0 by a few thousand boards.
+ *      lotFactor = 1 + LOT_AMPL·exp(−qty/LOT_TAU): ~3.8× @10, ~3.1× @100,
+ *      ~1.5× @500, ~1.1× @1k, ~1.00 @≥3k. Applied to material+processing. ---- */
+const LOT_AMPL = 2.8;
+const LOT_TAU  = 300;
+
+/* ---- PCBA assembly module (optional add-on; region labour applies). ---- */
+const ASSEMBLY = {
+  smtPerPlacement: 0.0045,  // $/SMT placement (China volume baseline)
+  thtPerJoint:     0.08,    // $/THT insertion (wave/selective + hand)
+  sideChangeover:  0.02,    // per-board adder for double-sided reflow
+  aoiSpiPerBoard:  0.05,    // SPI + AOI per board
+  testPerComp100:  0.02,    // functional/ICT per 100 components
+  nreStencil:      80,      // laser stencil, per side handled in engine
+  nreProgramming:  300,     // line programming + first article
+  assyYield:       0.99,    // assembly yield (post-rework)
+};
+
+/* ---- Monte Carlo uncertainty (1σ, relative) on major cost groups —
+ *      reflects the calibration confidence of each block. ---- */
+const MC_SIGMA = { material: 0.08, processing: 0.11, test: 0.10, yldAbs: 0.02, gold: 0.08 };
 
 /* ---- Global cost coefficients ($/dm² unless noted). Calibrated to 2026 fab
  *      economics. Tune here, transparently. */
 const COEFF = {
   materialCal:     1.00,
+  procCal:         0.90,    // global processing calibration knob (v2: re-anchored
+                            // after fixing the missing-finish-in-total bug)
   imagePerLayerDm2: 0.13,   // inner/outer imaging per copper layer
   etchPerLayerDm2:  0.11,   // develop-etch-strip per layer
   aoiPerLayerDm2:   0.05,   // AOI per layer
@@ -209,6 +248,16 @@ const DEFAULTS = {
   marginPct: 25,
   marketSurcharge: 6,              // 2026 metal/energy surcharge on material+processing
   goldPrice: 4100,                 // spot gold $/oz — scales gold-finish variable cost
+  // landed cost (optional)
+  destMarket: "domestic",
+  dutyPct: 0,                      // auto-suggested from DUTY_LANES, editable
+  freightPerBoard: 0,
+  // PCBA assembly (optional)
+  assemblyOn: false,
+  smtCount: 250,
+  thtCount: 10,
+  sides: 2,
+  bomCost: 18,
 };
 
 /* ---- Pre-loaded worked examples (luxury SUV context) ---- */

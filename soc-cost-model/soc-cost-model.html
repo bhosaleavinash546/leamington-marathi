@@ -161,10 +161,10 @@ table.breakdown, table.scenario-table { width: 100%; border-collapse: collapse; 
 
 /* Tornado */
 .tornado { display: flex; flex-direction: column; gap: 7px; margin-top: 6px; }
-.tornado .row { display: grid; grid-template-columns: 150px 1fr; gap: 10px; align-items: center; font-size: .76rem; }
+.tornado .row { display: grid; grid-template-columns: 150px 1fr 64px; gap: 10px; align-items: center; font-size: .76rem; }
 .tornado .bar-wrap { position: relative; height: 18px; background: #f0f3f9; border-radius: 5px; }
 .tornado .bar { position: absolute; top: 0; height: 100%; background: var(--accent); opacity: .85; border-radius: 5px; }
-.tornado .pct { font-variant-numeric: tabular-nums; color: var(--ink-soft); }
+.tornado .pct { font-variant-numeric: tabular-nums; color: var(--ink-soft); text-align: right; }
 
 .accuracy-note {
   font-size: .76rem; color: var(--ink-soft); background: #fffbeb; border: 1px solid #fde68a;
@@ -666,7 +666,7 @@ function sensitivity(input, pct = 10) {
     { key: "waferCost",     label: "Wafer cost" },
     { key: "dieArea",       label: "Die area" },
     { key: "defectDensity", label: "Defect density D₀" },
-    { key: "annualVolume",  label: "Annual volume", invert: true },
+    { key: "annualVolume",  label: "Annual volume" },
     { key: "packageCost",   label: "Package cost" },
     { key: "ipRoyalty",     label: "IP royalty" },
     { key: "designNRE",     label: "Design NRE" },
@@ -694,8 +694,8 @@ function clamp(x, lo, hi) { return Math.min(hi, Math.max(lo, x)); }
 function buildMethodology() {
   const nodeRows = NODES.map((n) =>
     `<tr><td>${n.label}</td><td>${n.tier}${n.euv ? " · EUV" : ""}</td>
-      <td>$${n.waferLo.toLocaleString()}–$${n.waferHi.toLocaleString()}</td>
-      <td>$${(n.mask/1e6).toFixed(1)}M</td><td>${n.d0}</td></tr>`
+      <td>${n.waferLo.toLocaleString()}–${n.waferHi.toLocaleString()}</td>
+      <td>${(n.mask/1e6).toFixed(1)}M</td><td>${n.d0}</td></tr>`
   ).join("");
 
   $("methodologyProse").innerHTML = `
@@ -848,7 +848,7 @@ function applyNode(id) {
   $("dieArea").value = n.dieArea;
   document.querySelectorAll(".node-chip").forEach((c) => c.classList.toggle("active", c.dataset.node === id));
   $("presetHint").textContent =
-    `${n.label} (${n.tier}${n.euv ? ", EUV" : ""}) — benchmark wafer $${n.waferLo.toLocaleString()}–$${n.waferHi.toLocaleString()}, mask set $${(n.mask/1e6).toFixed(1)}M, D₀ ${n.d0}/cm². All editable.`;
+    `${n.label} (${n.tier}${n.euv ? ", EUV" : ""}) — benchmark wafer ${n.waferLo.toLocaleString()}–${n.waferHi.toLocaleString()}, mask set ${(n.mask/1e6).toFixed(1)}M, D₀ ${n.d0}/cm². All editable.`;
   render();
 }
 
@@ -903,23 +903,23 @@ function render() {
   document.querySelector("#breakdownTable tfoot").innerHTML =
     `<tr><td>Total product cost</td><td class="num">${fmtUSD(r.totalCost,3)}</td><td class="num">100%</td></tr>`;
 
-  // tornado sensitivity
+  // tornado sensitivity (single aligned row per driver: label · bar · percent)
   const sens = sensitivity(input, 10);
   const maxSwing = Math.max(...sens.map((s) => Math.max(Math.abs(s.hi), Math.abs(s.lo))), 1);
   $("tornado").innerHTML = sens.map((s) => {
-    const w = (Math.max(Math.abs(s.hi), Math.abs(s.lo)) / maxSwing) * 100;
+    const mag = Math.max(Math.abs(s.hi), Math.abs(s.lo));
     return `<div class="row"><span>${s.label}</span>
-      <div class="bar-wrap"><div class="bar" style="width:${w}%"></div></div>
-      </div>
-      <div class="row"><span></span><span class="pct">±${(Math.max(Math.abs(s.hi),Math.abs(s.lo))).toFixed(1)}% on total</span></div>`;
+      <div class="bar-wrap"><div class="bar" style="width:${(mag / maxSwing) * 100}%"></div></div>
+      <span class="pct">±${mag.toFixed(1)}%</span></div>`;
   }).join("");
 
   // accuracy note
   $("accuracyNote").innerHTML =
-    `<b>Accuracy band:</b> with calibrated wafer cost, defect density, and back-end inputs this model targets
-     <b>90–95%</b> agreement with realized cost for 2025–2026 automotive production. The largest residual
-     uncertainties are wafer price negotiation (±10–15%), achieved yield during ramp, and IP royalty terms.
-     Treat outputs as a <b>cost envelope</b>, not a quote.`;
+    `<b>Accuracy band:</b> this is a parametric model on public benchmark ranges — expect a <b>±15–25%</b>
+     envelope out of the box. The <b>90–95%</b> target is reachable only once wafer price, defect density,
+     package and IP terms are calibrated to your negotiated program data. Largest residual uncertainties:
+     wafer price negotiation (±10–15%), achieved yield during ramp, and IP royalty terms. Treat outputs as
+     a <b>cost envelope</b>, not a quote.`;
 }
 
 /* ---------- scenarios ---------- */

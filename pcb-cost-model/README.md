@@ -23,6 +23,25 @@ No build step, no dependencies. Open `index.html` (or the single-file
 python3 -m http.server 8000   # http://localhost:8000/pcb-cost-model/
 ```
 
+## v2 — review fixes & next-level features
+
+- **Utilisation is now a real cost driver** (panel-waste factor, 80% reference) and the
+  breakdown reconciles exactly to total cost — both review-caught bugs.
+- **Lot-size curve** (proto ≈3–5× → 1.0× by ~3k boards) and **config validation**
+  (contradictory stack-ups are flagged, and type changes snap incompatible selections).
+- **Landed cost:** duty lanes (China→US 2026 stack, editable) + freight; **10 fab regions**
+  incl. Japan, Thailand, Mexico with material-purchasing factors.
+- **Monte Carlo uncertainty** (P10/P50/P90 on calibration σ) beside every estimate.
+- **Quote calibration tab:** log real supplier quotes → live MAPE + per-region correction
+  factor you can toggle onto the results.
+- **PCBA assembly module**, **batch CSV costing**, **share links**, **JSON/CSV export**,
+  and **Gerber/Excellon import (beta)** for board size, layer count and hole density.
+- **AI v2:** streaming Claude review, grounded follow-up chat, an **agentic optimizer**
+  (Claude drives the live cost engine as a tool and only recommends verified savings),
+  and one-click **Apply** buttons on every machine-readable idea.
+- Tests: `node pcb-cost-model/tests/engine-tests.mjs` (28 golden/invariant tests).
+  Bundles: `node build.mjs` (or `--check` in CI).
+
 ## 2026 edition — what's new
 
 - **Expanded materials (13):** FR-4 std/mid-Tg/High-Tg/halogen-free, low-loss

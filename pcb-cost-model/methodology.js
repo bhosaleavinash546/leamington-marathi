@@ -52,7 +52,7 @@ function buildMethodology() {
        → ÷ yield → +test/inspection(AOI·AXI·e-test) → +tooling/NRE ÷ qty → +overhead → fab cost
        ÷ (1 − margin) → quoted price</div>
 
-    <h2>2 · What's new in the 2026 edition</h2>
+    <h2>2 · What's new in the 2026 edition (v2)</h2>
     <ul>
       <li><b>Expanded materials:</b> FR-4 std/mid-Tg/High-Tg/halogen-free, low-loss (Megtron 6 / I-Tera),
       ultra-low-loss (Megtron 7/8), Rogers RO4350B/RO4003C/RO3003 (77 GHz), PTFE/Taconic, polyimide, LCP, IMS.</li>
@@ -60,9 +60,37 @@ function buildMethodology() {
       (per-via), via-fill / via-in-pad, copper-foil profile (HTE/RTF/VLP/HVLP), VCP plating, laser depanel,
       plasma desmear for PTFE, 3D AXI, IST/CAF reliability coupons, extreme copper.</li>
       <li><b>2026 market data:</b> gold-price finish sensitivity (~70% of ENIG cost is gold; +10% gold ≈
-      +6.8% ENIG), CCL/copper inflation surcharge, and updated labour/region indices (China baseline; raw
-      wage spread US ~7×, Germany ~9×, compressed to blended fab multipliers).</li>
-      <li><b>AI advisor:</b> a built-in insight/idea engine plus optional live Claude generation.</li>
+      +6.8% ENIG), CCL/copper inflation surcharge, and updated labour/region indices for 10 regions
+      (China baseline; incl. Japan, Thailand, Mexico; NA/EU material-purchasing premium).</li>
+      <li><b>AI advisor:</b> built-in insight engine, streaming Claude review, follow-up chat, and an
+      <b>agentic optimizer</b> that uses the live cost engine as a tool to numerically verify every idea.</li>
+    </ul>
+
+    <h3>v2 review fixes &amp; new modules</h3>
+    <ul>
+      <li><b>Panel utilisation now enters the cost math.</b> The board pays for its true panel share via a
+      waste factor <code>0.80 / utilisation</code>, normalized so the 80% calibration reference is
+      unchanged. (Previously utilisation was display-only — a review-caught bug.)</li>
+      <li><b>Finish cost reconciliation fixed:</b> surface finish is now correctly inside the processing
+      total, and the breakdown sums to total cost exactly; the processing calibration knob
+      (<code>COEFF.procCal</code>) was re-anchored so the validated benchmark suite still passes.</li>
+      <li><b>Lot-size curve:</b> <code>1 + 2.8·e^(−qty/300)</code> — prototype quantities run ~3–5× volume
+      pricing, decaying to 1.0 by ~3k boards (matches published proto multipliers).</li>
+      <li><b>Config validation:</b> contradictory stack-ups (HDI without microvias, flex on FR-4, buried
+      vias on 2-layer) are flagged as CONFIG alerts instead of being silently costed.</li>
+      <li><b>Scrap &amp; finish setup wired in:</b> the IPC-class scrap allowance now inflates material and
+      the finish line-setup joins NRE (both were previously dead parameters).</li>
+      <li><b>Landed cost:</b> duty lanes (indicative 2026 rates — China→US reflects the Section 301 +
+      Section 122 stack; verify per HTS code) + freight → landed $/board.</li>
+      <li><b>Monte Carlo uncertainty:</b> 400 samples over the calibration σ of each cost block →
+      P10/P50/P90 band shown next to the point estimate.</li>
+      <li><b>Quote calibration:</b> log real supplier quotes; the model reports its live MAPE and learns a
+      per-region median correction factor you can toggle on.</li>
+      <li><b>PCBA assembly module (optional):</b> SMT/THT placements, sides, BOM, stencil/programming NRE,
+      assembly yield → full PCBA cost.</li>
+      <li><b>Design-file import (beta):</b> board extents from RS-274X Gerbers, hole count/density from
+      Excellon drill files, layer count from copper-layer filename conventions.</li>
+      <li><b>Batch CSV costing, share links, JSON/CSV export.</b></li>
     </ul>
 
     <h2>3 · Parameter list</h2>
