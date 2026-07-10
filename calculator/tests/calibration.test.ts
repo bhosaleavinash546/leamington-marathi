@@ -1,5 +1,8 @@
 import { describe, it, expect } from 'vitest';
-import { computeCalibration, applyCalibration, calibrationSummary, MIN_SAMPLES, type CalibrationRecord } from '../src/engine/calibration.js';
+import {
+  computeCalibration, applyCalibration, calibrationSummary, MIN_SAMPLES,
+  computeCalibrationHierarchical, cvFromMape, type CalibrationRecord,
+} from '../src/engine/calibration.js';
 
 let _id = 0;
 const rec = (commodity: string, shouldCost: number, actualCost: number): CalibrationRecord =>
@@ -48,5 +51,38 @@ describe('calibration — learning from actuals', () => {
     expect(sum.totalSamples).toBe(6);
     expect(sum.commodities.length).toBe(2);
     expect(sum.weightedCalibratedMapePct).toBeLessThan(sum.weightedMapePct);
+  });
+});
+
+describe('hierarchical (segment) calibration', () => {
+  const seg = (family: string, region: string, ratio: number, n: number): CalibrationRecord[] =>
+    Array.from({ length: n }, () => ({ ...rec('casting', 100, 100 * ratio), materialFamily: family, region }));
+
+  it('uses the most specific segment when it has enough samples', () => {
+    const records = [...seg('Aluminium', 'CN', 1.12, 3), ...seg('Steel', 'UK', 0.95, 3)];
+    const h = computeCalibrationHierarchical(records, { commodity: 'casting', materialFamily: 'Aluminium', region: 'CN' });
+    expect(h.segment).toBe('commodity+family+region');
+    expect(h.biasFactor).toBeCloseTo(1.12, 2);
+  });
+
+  it('falls back family → commodity as evidence thins', () => {
+    const records = [...seg('Aluminium', 'CN', 1.12, 2), ...seg('Aluminium', 'DE', 1.10, 2)];  // 4 for family, 2 per region
+    const fam = computeCalibrationHierarchical(records, { commodity: 'casting', materialFamily: 'Aluminium', region: 'CN' });
+    expect(fam.segment).toBe('commodity+family');
+    const other = computeCalibrationHierarchical(records, { commodity: 'casting', materialFamily: 'Zinc', region: 'CN' });
+    expect(other.segment).toBe('commodity');       // no Zinc data → whole-commodity tier (4 records)
+    expect(other.applied).toBe(true);
+  });
+
+  it('reports segment "none" (bias 1.0) when even the commodity lacks samples', () => {
+    const h = computeCalibrationHierarchical(seg('Aluminium', 'CN', 1.2, 2), { commodity: 'casting' });
+    expect(h.segment).toBe('none');
+    expect(h.biasFactor).toBe(1);
+  });
+
+  it('cvFromMape maps observed error to a clamped CV for the Monte-Carlo band', () => {
+    expect(cvFromMape(10)).toBeCloseTo(0.125, 3);
+    expect(cvFromMape(0)).toBe(0.03);    // floor: no false precision
+    expect(cvFromMape(80)).toBe(0.35);   // ceiling
   });
 });

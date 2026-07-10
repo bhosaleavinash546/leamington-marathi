@@ -17,6 +17,7 @@ export interface CalibrationRecord {
   savedAt: number;
   commodity: string;
   region?: string;
+  materialFamily?: string;   // e.g. 'Aluminium', 'Steel', 'Thermoplastic' — enables segment calibration
   shouldCost: number;   // the model estimate at the time it was logged
   actualCost: number;   // the real quoted / PO unit price
   currency: string;
@@ -76,6 +77,44 @@ export function computeCalibration(records: CalibrationRecord[], commodity: stri
 /** Apply a commodity's calibration to a fresh should-cost estimate. */
 export function applyCalibration(shouldCost: number, stats: CalibrationStats): number {
   return round2(shouldCost * stats.biasFactor);
+}
+
+// ── Hierarchical (segment) calibration ─────────────────────────────────────────
+
+export interface SegmentQuery { commodity: string; materialFamily?: string; region?: string; }
+export interface HierarchicalCalibration extends CalibrationStats {
+  /** Which segment supplied the correction, most→least specific. */
+  segment: 'commodity+family+region' | 'commodity+family' | 'commodity' | 'none';
+}
+
+/**
+ * Calibration at the most specific segment with enough evidence:
+ * commodity×family×region → commodity×family → commodity → none.
+ * A narrow segment ("aluminium castings from China run +12%") beats a broad one,
+ * but only when it has MIN_SAMPLES of its own — no over-fitting to 2 data points.
+ */
+export function computeCalibrationHierarchical(records: CalibrationRecord[], q: SegmentQuery): HierarchicalCalibration {
+  const tiers: Array<{ segment: HierarchicalCalibration['segment']; recs: CalibrationRecord[] }> = [
+    { segment: 'commodity+family+region', recs: records.filter(r => r.commodity === q.commodity && !!q.materialFamily && r.materialFamily === q.materialFamily && !!q.region && r.region === q.region) },
+    { segment: 'commodity+family', recs: records.filter(r => r.commodity === q.commodity && !!q.materialFamily && r.materialFamily === q.materialFamily) },
+    { segment: 'commodity', recs: records.filter(r => r.commodity === q.commodity) },
+  ];
+  for (const t of tiers) {
+    if (t.recs.length >= MIN_SAMPLES) {
+      return { ...computeCalibration(t.recs, q.commodity), segment: t.segment };
+    }
+  }
+  // Not enough evidence anywhere — report the commodity tier (unapplied bias 1.0).
+  return { ...computeCalibration(tiers[2].recs, q.commodity), segment: 'none' };
+}
+
+/**
+ * Convert an observed (calibrated) MAPE into a coefficient of variation for the
+ * Monte-Carlo bands — real accuracy data should drive the uncertainty width.
+ * Clamped so a lucky 0% MAPE on 3 quotes doesn't claim false precision.
+ */
+export function cvFromMape(mapePct: number): number {
+  return Math.min(0.35, Math.max(0.03, (mapePct / 100) * 1.25));
 }
 
 /** Portfolio-wide accuracy across every commodity that has logged actuals. */

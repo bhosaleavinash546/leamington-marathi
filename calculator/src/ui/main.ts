@@ -80,7 +80,11 @@ import autoTable from 'jspdf-autotable';
 import { exportToExcelBlob } from '../export/excel.js';
 import { printPDF, printCADAnalysisPDF, drawCostVisionLogo } from '../export/pdf.js';
 import { computeCostUncertainty } from '../engine/uncertainty.js';
-import { computeCalibration, applyCalibration, type CalibrationRecord } from '../engine/calibration.js';
+import {
+  computeCalibration, applyCalibration, computeCalibrationHierarchical, cvFromMape,
+  type CalibrationRecord,
+} from '../engine/calibration.js';
+import type { PartFingerprint, SimilarCase, CaseSuggestion, ProactiveInsight } from '../engine/part-similarity.js';
 import { computeCarbon } from '../engine/carbon.js';
 import { computeFeatureCosting } from '../engine/feature-costing.js';
 import { generateInsights, totalPotentialSaving, FX_TO_GBP } from '../engine/insights.js';
@@ -371,16 +375,114 @@ function logActualQuote(): void {
     savedAt: Date.now(),
     commodity: activeCommodity,
     region: (document.getElementById('mfg-region-selector') as HTMLSelectElement)?.value ?? 'UK',
+    materialFamily: currentMaterialFamily(),
     shouldCost: lastResult.total,
     actualCost: actual,
     currency: _displayCurrency,
   });
   saveCalibrationRecords(recs);
+  // Also attach the actual to this part's knowledge-base case (org memory).
+  const kbToken = _authToken();
+  if (kbToken) {
+    const partName = (document.getElementById('part-name') as HTMLInputElement)?.value || lastResult.partName;
+    void fetch('/api/knowledge/actual', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${kbToken}` },
+      body: JSON.stringify({ partName, commodity: activeCommodity, actualCost: actual }),
+    }).catch(() => { /* offline — local calibration still recorded */ });
+  }
   const s = computeCalibration(recs, activeCommodity);
   showToast(s.applied
     ? `Logged. ${activeCommodity.replace(/_/g, ' ')} now calibrated ×${s.biasFactor} from ${s.n} quotes (MAPE ${s.calibratedMapePct}%).`
     : `Logged (${s.n}/${3} quotes for ${activeCommodity.replace(/_/g, ' ')} — need ${3 - s.n} more to calibrate).`, 'info');
   if (lastResult && lastInput) renderInsights(lastResult, lastInput);
+}
+
+// ─── Knowledge base (self-learning memory) ─────────────────────────────────────
+
+function _authToken(): string | null {
+  return localStorage.getItem('auth_token') ?? sessionStorage.getItem('auth_token');
+}
+
+/** Material family of the current costing (library category, e.g. "Aluminium"). */
+function currentMaterialFamily(): string | undefined {
+  const matId = lastInput?.rawMaterial?.materialId;
+  if (!matId) return undefined;
+  return library.materials.find(m => m.id === matId)?.category;
+}
+
+/** Numeric fingerprint of the current part — powers similarity matching. */
+function buildCurrentFingerprint(): PartFingerprint {
+  const g = cadAnalysisResult?.geometry;
+  const feats = cadOCCTGeometry?.features;
+  return {
+    commodity: activeCommodity,
+    materialId: lastInput?.rawMaterial?.materialId,
+    materialFamily: currentMaterialFamily(),
+    region: (document.getElementById('mfg-region-selector') as HTMLSelectElement)?.value ?? 'UK',
+    netWeightKg: lastInput?.rawMaterial?.netWeightKg || undefined,
+    annualVolume: parseFloat((document.getElementById('annual-volume') as HTMLInputElement)?.value ?? '') || undefined,
+    bboxMaxMm: g ? Math.max(g.boundingBoxMm.x, g.boundingBoxMm.y, g.boundingBoxMm.z) : undefined,
+    volumeCm3: g?.estimatedVolumeCm3 || undefined,
+    holeCount: feats?.estimatedHoleCount,
+    freeFormFaceCount: feats?.freeFormFaceCount,
+  };
+}
+
+/**
+ * The learning loop's client side: after every Calculate, remember this costing in
+ * the org knowledge base, retrieve similar past parts, and render suggestions +
+ * proactive insights into the #kb-panel placeholder. Silent when offline/signed-out.
+ */
+async function updateKnowledgePanel(result: PartCostResult): Promise<void> {
+  const panel = document.getElementById('kb-panel');
+  const token = _authToken();
+  if (!panel || !token) return;
+  const headers = { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` };
+  const fingerprint = buildCurrentFingerprint();
+  const partName = (document.getElementById('part-name') as HTMLInputElement)?.value || result.partName || 'Part';
+  try {
+    // 1. Remember (upsert) this costing as a case.
+    void fetch('/api/knowledge/case', {
+      method: 'POST', headers,
+      body: JSON.stringify({
+        partName, fingerprint, totalCost: result.total, currency: _displayCurrency,
+        breakdown: result.breakdown,
+      }),
+    }).catch(() => { /* offline — memory sync skipped */ });
+
+    // 2. Retrieve similar past parts + derived suggestions + proactive insights.
+    const resp = await fetch('/api/knowledge/similar', {
+      method: 'POST', headers,
+      body: JSON.stringify({ fingerprint, currentTotal: result.total, breakdown: result.breakdown, excludePartName: partName }),
+    });
+    if (!resp.ok) return;
+    const data = await resp.json() as {
+      similar: SimilarCase[]; suggestions: CaseSuggestion[]; insights: ProactiveInsight[];
+      stats: { total: number; withActuals: number };
+    };
+    const { similar, suggestions, insights, stats } = data;
+    if (!similar.length && !insights.length) return;
+
+    const matchRows = similar.map(s => `
+      <div style="display:flex;justify-content:space-between;gap:10px;font-size:0.76rem;padding:3px 0;border-bottom:1px dashed var(--border)">
+        <span>${escHtml(s.partName)} <span style="color:var(--text-muted)">(${Math.round(s.similarity * 100)}% match: ${s.matchedOn.slice(0, 3).join(', ')})</span></span>
+        <span style="white-space:nowrap"><strong>${_currFmt(s.totalCost)}</strong>${s.actualCost ? ` <span style="color:#7c3aed" title="Logged actual quote">· actual ${_currFmt(s.actualCost)}</span>` : ''}</span>
+      </div>`).join('');
+    const suggRows = suggestions.map(s => `<div style="font-size:0.76rem;margin-top:3px;color:${s.kind === 'warning' ? '#d97706' : 'var(--text-secondary)'}">${s.kind === 'warning' ? '⚠' : '•'} ${escHtml(s.text)}</div>`).join('');
+    const insightRows = insights.map(i => `<div style="font-size:0.76rem;margin-top:3px;color:${i.severity === 'attention' ? '#d97706' : 'var(--text-secondary)'}">${i.severity === 'attention' ? '⚠' : 'ℹ'} ${escHtml(i.text)}</div>`).join('');
+
+    panel.innerHTML = `
+      <div style="margin-top:8px;padding:12px 14px;border:1px solid var(--border);border-left:4px solid #0ea5e9;border-radius:8px;background:var(--surface-elevated)">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px">
+          <div style="font-weight:700;font-size:0.9rem;color:var(--text-primary)">🧠 AI memory — similar past parts</div>
+          <div style="font-size:0.7rem;color:var(--text-muted)">Knowledge base: ${stats.total} analyses · ${stats.withActuals} with actuals</div>
+        </div>
+        ${matchRows ? `<div style="margin-top:6px">${matchRows}</div>` : ''}
+        ${suggRows}
+        ${insightRows}
+      </div>`;
+  } catch { /* offline / server down — the panel simply stays empty */ }
 }
 
 // ─── View switching ───────────────────────────────────────────────────────────
@@ -13116,13 +13218,25 @@ function renderInsights(result: PartCostResult, input: UniversalStackInput): voi
       </div>
 
       ${(() => {
-        // #2 Uncertainty — Monte-Carlo confidence band on the total should-cost.
-        const u = computeCostUncertainty(result, input);
+        // #1+#4: hierarchical calibration — most specific segment with evidence
+        // (commodity×family×region → commodity×family → commodity).
+        const hcal = computeCalibrationHierarchical(getCalibrationRecords(), {
+          commodity: activeCommodity,
+          materialFamily: currentMaterialFamily(),
+          region: (document.getElementById('mfg-region-selector') as HTMLSelectElement)?.value ?? 'UK',
+        });
+        // #2+#4: when real accuracy data exists, it drives the Monte-Carlo width.
+        const u = hcal.applied
+          ? computeCostUncertainty(result, input, { baseCvOverride: cvFromMape(hcal.calibratedMapePct) })
+          : computeCostUncertainty(result, input);
         const bandColor = u.band === 'tight' ? '#16a34a' : u.band === 'moderate' ? '#d97706' : '#dc2626';
-        return `
+        const bandNote = hcal.applied
+          ? `Band width comes from OBSERVED accuracy (${hcal.calibratedMapePct}% MAPE over ${hcal.n} actuals) — it tightens as more quotes are logged.`
+          : 'Range reflects how well each cost driver is known (High/Medium/Low confidence). Tighten it by attaching CAD, a BOM, or logging an actual quote.';
+        const uncertaintyCard = `
       <div style="margin-top:12px;padding:12px 14px;border:1px solid var(--border);border-left:4px solid ${bandColor};border-radius:8px;background:var(--surface-elevated)">
         <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px">
-          <div style="font-weight:700;font-size:0.9rem;color:var(--text-primary)">Should-Cost with uncertainty <span style="font-weight:400;font-size:0.72rem;color:var(--text-muted)">(Monte-Carlo, ${u.overallConfidence} confidence)</span></div>
+          <div style="font-weight:700;font-size:0.9rem;color:var(--text-primary)">Should-Cost with uncertainty <span style="font-weight:400;font-size:0.72rem;color:var(--text-muted)">(Monte-Carlo, ${hcal.applied ? 'accuracy-driven' : `${u.overallConfidence} confidence`})</span></div>
           <div style="font-size:1.15rem;font-weight:700;color:var(--text-primary)">${cf(result.total)} <span style="font-size:0.8rem;color:${bandColor}">± ${u.plusMinusPct}%</span></div>
         </div>
         <div style="margin-top:8px;display:flex;gap:18px;flex-wrap:wrap;font-size:0.78rem;color:var(--text-secondary)">
@@ -13131,31 +13245,33 @@ function renderInsights(result: PartCostResult, input: UniversalStackInput): voi
           <span><strong style="color:#dc2626">P90</strong> ${cf(u.p90)} <span style="color:var(--text-muted)">(conservative)</span></span>
           <span style="color:${bandColor};text-transform:capitalize">${u.band} band · CV ${u.cvPct}%</span>
         </div>
-        <div style="margin-top:6px;font-size:0.7rem;color:var(--text-muted);line-height:1.4">Range reflects how well each cost driver is known (High/Medium/Low confidence). Tighten it by attaching CAD, a BOM, or logging an actual quote.</div>
+        <div style="margin-top:6px;font-size:0.7rem;color:var(--text-muted);line-height:1.4">${bandNote}</div>
       </div>`;
-      })()}
 
-      ${(() => {
-        // #1 Calibration — show the estimate corrected by logged actual quotes.
-        const cal = computeCalibration(getCalibrationRecords(), activeCommodity);
-        if (cal.n === 0) return '';
-        if (!cal.applied) {
-          return `<div style="margin-top:8px;padding:9px 12px;border:1px dashed var(--border-strong);border-radius:8px;font-size:0.76rem;color:var(--text-secondary)">📈 Calibration: ${cal.n}/3 actual quote${cal.n === 1 ? '' : 's'} logged for <strong>${escHtml(activeCommodity.replace(/_/g, ' '))}</strong>. Log ${3 - cal.n} more (🎯 Log Actual £) to unlock a data-corrected estimate.</div>`;
-        }
-        const calibrated = applyCalibration(result.total, cal);
-        const dirTxt = cal.direction === 'under' ? 'model tends to UNDER-estimate' : cal.direction === 'over' ? 'model tends to OVER-estimate' : 'model is well-centred';
-        return `
+        let calibrationCard = '';
+        if (hcal.n > 0 && !hcal.applied) {
+          calibrationCard = `<div style="margin-top:8px;padding:9px 12px;border:1px dashed var(--border-strong);border-radius:8px;font-size:0.76rem;color:var(--text-secondary)">📈 Calibration: ${hcal.n}/3 actual quote${hcal.n === 1 ? '' : 's'} logged for <strong>${escHtml(activeCommodity.replace(/_/g, ' '))}</strong>. Log ${3 - hcal.n} more (🎯 Log Actual £) to unlock a data-corrected estimate.</div>`;
+        } else if (hcal.applied) {
+          const calibrated = applyCalibration(result.total, hcal);
+          const dirTxt = hcal.direction === 'under' ? 'model tends to UNDER-estimate' : hcal.direction === 'over' ? 'model tends to OVER-estimate' : 'model is well-centred';
+          const segTxt = hcal.segment === 'commodity+family+region' ? 'this material family in this region'
+            : hcal.segment === 'commodity+family' ? 'this material family' : 'this commodity';
+          calibrationCard = `
       <div style="margin-top:8px;padding:12px 14px;border:1px solid var(--border);border-left:4px solid #7c3aed;border-radius:8px;background:var(--surface-elevated)">
         <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px">
-          <div style="font-weight:700;font-size:0.9rem;color:var(--text-primary)">📈 Data-calibrated estimate <span style="font-weight:400;font-size:0.72rem;color:var(--text-muted)">(learned from ${cal.n} actual quotes)</span></div>
+          <div style="font-weight:700;font-size:0.9rem;color:var(--text-primary)">📈 Data-calibrated estimate <span style="font-weight:400;font-size:0.72rem;color:var(--text-muted)">(learned from ${hcal.n} actual quotes for ${segTxt})</span></div>
           <div style="font-size:1.15rem;font-weight:700;color:#7c3aed">${cf(calibrated)}</div>
         </div>
         <div style="margin-top:6px;display:flex;gap:18px;flex-wrap:wrap;font-size:0.78rem;color:var(--text-secondary)">
-          <span>Bias correction <strong>×${cal.biasFactor}</strong> (${dirTxt})</span>
-          <span>Accuracy: MAPE <strong>${cal.mapePct}% → ${cal.calibratedMapePct}%</strong> after calibration</span>
+          <span>Bias correction <strong>×${hcal.biasFactor}</strong> (${dirTxt})</span>
+          <span>Accuracy: MAPE <strong>${hcal.mapePct}% → ${hcal.calibratedMapePct}%</strong> after calibration</span>
         </div>
       </div>`;
+        }
+        return uncertaintyCard + calibrationCard;
       })()}
+
+      <div id="kb-panel"></div>
 
       ${(() => {
         // #4 Carbon co-costing — embodied CO2e alongside the £ should-cost.
@@ -13208,6 +13324,9 @@ function renderInsights(result: PartCostResult, input: UniversalStackInput): voi
     _landedCostMode = !_landedCostMode;
     if (lastResult && lastInput) renderInsights(lastResult, lastInput);
   });
+
+  // Self-learning loop: remember this costing + surface similar past parts (async fills #kb-panel).
+  void updateKnowledgePanel(result);
 }
 
 // ─── Render: DFM / DFA Tab ────────────────────────────────────────────────────
