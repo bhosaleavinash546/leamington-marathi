@@ -666,6 +666,44 @@ notes(s, "The second half of the backup answer: given the market exists, why bui
          "OUR regions — data no vendor has. The positioning is not 'better than aPriori'; it is an internal, "
          "secure, self-learning engine behind CAPEE.")
 
+# ═══════════════ 18 — BACKUP: COMPANY RATE DATA UPLOAD (PROOF) ═══════════════
+s = header('Your rates, not vendor rates — already built', 'Backup · Company cost database')
+pic = s.shapes.add_picture('docs/rate-library-upload-proof.png', Inches(0.45), Inches(2.0), width=Inches(6.9))
+pic.line.color.rgb = LINE; pic.line.width = Pt(1)
+text(s, Inches(0.45), Inches(6.72), Inches(6.9), Inches(0.5),
+     [[('Live screenshot (July 2026): Rate Library screen after a company workbook upload — badge shows '
+        '"Company rates active".', 9.5, MUTED, False, True)]], line_spacing=1.1)
+text(s, Inches(7.6), Inches(2.0), Inches(5.3), Inches(2.4),
+     [[('How admins load company data', 14, BLUE, True)],
+      [('1.  Download the Excel template — six sheets: Materials · Machines · Labour · Energy · FX · Overhead.', 11.5, BODY, False)],
+      [('2.  Fill in our rates and upload — every row is validated; the file becomes the active library instantly.', 11.5, BODY, False)],
+      [('3.  Fine-tune any single cell in the tables — each change is logged with the user\'s name and a timestamp.', 11.5, BODY, False)]],
+     space_after=7, line_spacing=1.15)
+box(s, Inches(7.6), Inches(4.35), Inches(5.3), Inches(1.15), fill=GREENBG, round_=True, radius=0.1)
+text(s, Inches(7.85), Inches(4.5), Inches(4.85), Inches(0.9),
+     [[('Proven live today:  ', 11.5, GREEN, True),
+       ('a full workbook uploaded and accepted — 328 materials, 155 machines, 42 labour, 11 energy, 9 FX and '
+        '23 overhead rows — then activated.', 11, BODY, False)]], line_spacing=1.15)
+text(s, Inches(7.6), Inches(5.7), Inches(5.3), Inches(1.4),
+     [[('Also built in:', 12, DARK, True)],
+      [('• 20 country rate sets, 8 labour categories each', 11, BODY, False)],
+      [('• PCB country cost table — admin-editable', 11, BODY, False)],
+      [('• Separate rate library for software costing', 11, BODY, False)],
+      [('• One click back to built-in defaults, full audit trail', 11, BODY, False)]],
+     space_after=3, line_spacing=1.12)
+notes(s, "This backup slide answers 'whose numbers are these?' The answer: ours, whenever we want them to be. "
+         "What you see is a live screenshot of the tool, not a mock-up. An administrator downloads an Excel "
+         "template with six sheets — materials, machines, labour, energy, exchange rates and overheads — fills in "
+         "our company rates, and uploads it. The file is validated row by row and becomes the active rate library "
+         "instantly; the green badge confirms company rates are in force. After that, any single cell can be "
+         "fine-tuned in the on-screen tables, and every change is recorded with the user's name and a timestamp — "
+         "a full audit trail. We proved this live: a complete workbook with over five hundred rows across the six "
+         "sheets uploaded, validated and activated. On top of that, the tool ships twenty country rate sets with "
+         "eight labour categories each, the PCB country cost table is editable the same way, and the software-"
+         "costing engine has its own separate library. And if anything goes wrong, one click returns to the "
+         "built-in defaults. So management should hear this clearly: the tool calculates on OUR labour, material, "
+         "machine and energy rates, by country — vendor tools can't offer that level of transparency and control.")
+
 OUT = 'CostVision-Implementation-Blueprint.pptx'
 prs.save(OUT)
 print(f'Wrote {OUT} with {len(prs.slides._sldIdLst)} slides')

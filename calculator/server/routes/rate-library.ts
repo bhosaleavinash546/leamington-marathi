@@ -50,7 +50,9 @@ const upload = multer({
   fileFilter: (_req, file, cb) => {
     const ok = /\.xlsx$/i.test(file.originalname) &&
       /spreadsheetml\.sheet|octet-stream/i.test(file.mimetype);
-    cb(ok ? null : new Error('Only .xlsx workbooks are accepted'));
+    // multer requires an explicit acceptFile=true — cb(null) silently drops the file
+    if (ok) cb(null, true);
+    else cb(new Error('Only .xlsx workbooks are accepted'));
   },
 });
 
