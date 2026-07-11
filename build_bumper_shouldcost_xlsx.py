@@ -14,7 +14,13 @@ Regenerate:  python3 build_bumper_shouldcost_xlsx.py
 from openpyxl import Workbook
 from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 from openpyxl.utils import get_column_letter
-from openpyxl.chart import BarChart, Reference
+from openpyxl.chart import BarChart, DoughnutChart, Reference
+from openpyxl.chart.label import DataLabelList
+from openpyxl.drawing.image import Image as XLImage
+from openpyxl.comments import Comment
+import os
+
+IMG_DIR = 'bumper-part-images'
 
 INDIGO = '4F46E5'
 DARK   = '0F172A'
@@ -251,9 +257,31 @@ for r in range(r0, rlast + 1):
         if c in (25, 26):
             cell.font = Font(size=9.5, bold=True, color=DARK, name='Calibri')
 
-widths = [4, 34, 20, 17, 7, 10, 8, 11, 11, 11, 15, 11, 8, 6, 11, 8, 11, 10, 13, 10, 10, 11, 9, 9, 12, 12]
+widths = [4, 34, 20, 17, 7, 10, 8, 11, 11, 11, 15, 11, 8, 6, 11, 8, 11, 10, 13, 10, 10, 11, 9, 9, 12, 12, 16]
 for i, w in enumerate(widths, 1):
     wp.column_dimensions[get_column_letter(i)].width = w
+
+# Part photos (cropped from the customer's exploded-view drawing)
+wp.cell(row=3, column=27, value='Photo')
+style_header_row(wp, 3, [27])
+PHOTO_MAP = {   # parts-sheet row -> image file
+    4: 'part01-fascia.png', 5: 'part01-fascia.png',
+    6: 'part02-upper-grille.png', 7: 'part05-lower-grille.png',
+    8: 'part03-side-bracket.png', 9: 'part04-numplate-bkt.png',
+    10: 'part06-fog-bezel.png', 11: 'part07-absorber.png',
+    12: 'part08-beam.png', 13: 'part08-beam.png',
+    14: 'part09-side-beam-bkt.png',
+}
+for prow, fname in PHOTO_MAP.items():
+    path = os.path.join(IMG_DIR, fname)
+    if not os.path.exists(path):
+        continue
+    wp.row_dimensions[prow].height = 44
+    im = XLImage(path)
+    ratio = im.height / im.width
+    im.width = 105
+    im.height = int(105 * ratio)
+    wp.add_image(im, f'AA{prow}')
 wp.freeze_panes = 'C4'
 
 
@@ -457,19 +485,110 @@ wsm.cell(row=12, column=4, value=f'={A(4)}').number_format = '#,##0 "veh/yr"'
 wsm.cell(row=13, column=2, value='Painted fascia only (compare against fascia-only quotes)').font = Font(size=10.5, color=MUTED, name='Calibri')
 wsm.cell(row=13, column=4, value="='Parts Costing'!Y4+'Parts Costing'!Y5").number_format = INR2
 
-chart = BarChart()
-chart.type = 'col'
-chart.title = 'Should-cost breakdown (₹/vehicle set)'
-chart.height = 8; chart.width = 16
-data = Reference(wsm, min_col=4, min_row=5, max_row=7)
-cats = Reference(wsm, min_col=2, min_row=5, max_row=7)
-chart.add_data(data, titles_from_data=False)
-chart.set_categories(cats)
-chart.legend = None
-chart.y_axis.title = '₹ per vehicle set'
-wsm.add_chart(chart, 'A15')
+# Assembly exploded-view photo, top-right
+if os.path.exists(os.path.join(IMG_DIR, 'assembly-exploded.png')):
+    ai = XLImage(os.path.join(IMG_DIR, 'assembly-exploded.png'))
+    ratio = ai.height / ai.width
+    ai.width = 420
+    ai.height = int(420 * ratio)
+    wsm.add_image(ai, 'G4')
 
-notes_r = 32
+# ── Hidden helper tables driving the three doughnuts (rows 100+) ─────────────
+hp = 100
+wsm.cell(row=hp, column=1, value='Mechanical parts & assembly')
+wsm.cell(row=hp, column=2, value=f"=D8-{ELEC}").number_format = INR2
+wsm.cell(row=hp + 1, column=1, value='Electronics (radar, camera, sensors, harness)')
+wsm.cell(row=hp + 1, column=2, value=f'={ELEC}').number_format = INR2
+
+cs = 103
+cost_structure = [
+ ('Material', "=SUMPRODUCT('Parts Costing'!$J$4:$J$21,'Parts Costing'!$E$4:$E$21)"),
+ ('Process', "=SUMPRODUCT('Parts Costing'!$O$4:$O$21+'Parts Costing'!$R$4:$R$21,'Parts Costing'!$E$4:$E$21)"),
+ ('Tooling', "=SUMPRODUCT('Parts Costing'!$T$4:$T$21,'Parts Costing'!$E$4:$E$21)"),
+ ('Overheads', "=SUMPRODUCT('Parts Costing'!$U$4:$U$21,'Parts Costing'!$E$4:$E$21)"),
+ ('SG&A', "=SUMPRODUCT('Parts Costing'!$W$4:$W$21,'Parts Costing'!$E$4:$E$21)"),
+ ('Profit', "=SUMPRODUCT('Parts Costing'!$X$4:$X$21,'Parts Costing'!$E$4:$E$21)"),
+ ('Bought-out', "=SUMPRODUCT('Bought-Out'!$E$4:$E$10,'Bought-Out'!$D$4:$D$10)"),
+ ('Logistics', "=SUMPRODUCT('Bought-Out'!$F$4:$F$10,'Bought-Out'!$D$4:$D$10)"),
+ ('Assembly', f'={ASSY_TOTAL}'),
+]
+for i, (lbl, f) in enumerate(cost_structure):
+    wsm.cell(row=cs + i, column=1, value=lbl)
+    wsm.cell(row=cs + i, column=2, value=f).number_format = INR2
+
+pl = 115
+for i in range(18):                                   # 18 manufactured rows (4..21)
+    wsm.cell(row=pl + i, column=1, value=f"='Parts Costing'!B{4 + i}")
+    wsm.cell(row=pl + i, column=2, value=f"='Parts Costing'!Z{4 + i}").number_format = INR2
+for i in range(7):                                    # 7 bought-out rows (4..10)
+    wsm.cell(row=pl + 18 + i, column=1, value=f"='Bought-Out'!B{4 + i}")
+    wsm.cell(row=pl + 18 + i, column=2, value=f"='Bought-Out'!G{4 + i}").number_format = INR2
+wsm.cell(row=hp - 1, column=1, value='CHART DATA (live formulas — do not delete)').font = Font(size=9, italic=True, color=MUTED, name='Calibri')
+
+# ── Section header + three doughnut charts ───────────────────────────────────
+wsm.merge_cells(start_row=15, start_column=1, end_row=15, end_column=13)
+sh = wsm.cell(row=15, column=1, value='COST BREAKDOWN — THREE VIEWS  (1: mechanical vs electronics · 2: cost structure · 3: part-level)')
+sh.font = Font(bold=True, size=11, color=WHITE, name='Calibri')
+sh.fill = PatternFill('solid', fgColor=INDIGO)
+sh.alignment = Alignment(vertical='center', indent=1)
+wsm.row_dimensions[15].height = 20
+
+def donut(title, cat_r0, cat_r1, anchor, width=8.6, labels=True, hole=52, legend='r'):
+    ch = DoughnutChart()
+    ch.title = title
+    ch.height = 8.6
+    ch.width = width
+    ch.holeSize = hole
+    data = Reference(wsm, min_col=2, min_row=cat_r0, max_row=cat_r1)
+    cats = Reference(wsm, min_col=1, min_row=cat_r0, max_row=cat_r1)
+    ch.add_data(data, titles_from_data=False)
+    ch.set_categories(cats)
+    ch.dataLabels = DataLabelList()
+    ch.dataLabels.showPercent = bool(labels)
+    ch.dataLabels.showVal = False
+    ch.dataLabels.showCatName = False
+    ch.dataLabels.showSerName = False
+    ch.dataLabels.showLegendKey = False
+    ch.dataLabels.showBubbleSize = False
+    ch.style = 10
+    ch.plotVisOnly = False
+    if legend is None:
+        ch.legend = None
+    else:
+        ch.legend.position = legend
+        ch.legend.overlay = False
+    wsm.add_chart(ch, anchor)
+    return ch
+
+donut('Mechanical vs Electronics', hp, hp + 1, 'A16')
+donut('Cost structure (₹/veh)', cs, cs + 8, 'E16', width=10.5, legend='r')
+donut('Part-level breakup — 25 items (see CHART DATA below & cost drivers)', pl, pl + 24, 'J16',
+      width=10.5, labels=False, legend=None)
+
+# Major cost drivers — visible block + spreadsheet comment on the 3rd donut header
+drv = 34
+wsm.cell(row=drv, column=1, value='TOP COST DRIVERS').font = Font(bold=True, size=11, color=INDIGO, name='Calibri')
+drivers = [
+ ('1. Front radar sensor (bought-out)', "='Bought-Out'!G5", 'Largest single item — negotiate LTA with annual step-downs'),
+ ('2. Painted fascia (moulding + paint)', "='Parts Costing'!Z4+'Parts Costing'!Z5", 'Largest manufactured item — see savings idea #1'),
+ ('3. Front camera module (bought-out)', "='Bought-Out'!G6", 'Directed part — bundle with radar for leverage'),
+ ('4. Parking sensors ×4 (bought-out)', "='Bought-Out'!G4", 'Sensor count is trim-dependent (Assumptions B44)'),
+ ('5. Reinforcement beam (form + weld)', "='Parts Costing'!Z12+'Parts Costing'!Z13", 'Steel mass dominates — gauge optimisation is the lever'),
+]
+for i, (lbl, f, why) in enumerate(drivers):
+    r = drv + 1 + i
+    wsm.cell(row=r, column=1, value=lbl).font = Font(size=10, bold=True, color=DARK, name='Calibri')
+    wsm.cell(row=r, column=4, value=f).number_format = INR2
+    wsm.cell(row=r, column=4).font = Font(size=10, bold=True, color=GREEN, name='Calibri')
+    wsm.cell(row=r, column=5, value=why).font = Font(size=9, color=MUTED, name='Calibri')
+cmt = Comment('Major cost drivers:\n1. Front radar — largest single item (~38% of total)\n'
+              '2. Painted fascia — largest manufactured part (~12%)\n3. Front camera (~18%)\n'
+              '4. Parking sensors set (~10%)\n5. Steel reinforcement beam (~5%)\n'
+              'Together the top 5 are ~83% of the should-cost — focus negotiation there.', 'CostVision')
+cmt.width = 320; cmt.height = 160
+wsm['A15'].comment = cmt
+
+notes_r = 41
 wsm.cell(row=notes_r, column=1, value='KEY NOTES & BASIS').font = Font(bold=True, size=11, color=INDIGO, name='Calibri')
 note_lines = [
  '1.  Basis: ex-works tier-1 supplier, India, 2026 rates. Edit any yellow cell (Assumptions / Parts Costing) — every figure recalculates.',
@@ -485,6 +604,56 @@ note_lines = [
 ]
 for i, ln in enumerate(note_lines):
     wsm.cell(row=notes_r + 1 + i, column=1, value=ln).font = Font(size=9.5, color=BODY, name='Calibri')
+
+# ── Cost-saving ideas (VA/VE) ────────────────────────────────────────────────
+sv = notes_r + len(note_lines) + 2
+wsm.merge_cells(start_row=sv, start_column=1, end_row=sv, end_column=6)
+svh = wsm.cell(row=sv, column=1, value='COST-SAVING IDEAS (VA/VE) — indicative ₹/vehicle, each needs engineering validation')
+svh.font = Font(bold=True, size=11, color=WHITE, name='Calibri')
+svh.fill = PatternFill('solid', fgColor=GREEN)
+svh.alignment = Alignment(vertical='center', indent=1)
+wsm.row_dimensions[sv].height = 20
+for i, h in enumerate(['#', 'Idea', 'Area', 'Saving ₹/veh', '', ''], 1):
+    if h:
+        wsm.cell(row=sv + 1, column=i, value=h).font = Font(bold=True, size=9.5, color=DARK, name='Calibri')
+        wsm.cell(row=sv + 1, column=i).fill = PatternFill('solid', fgColor=PANEL)
+        wsm.cell(row=sv + 1, column=i).border = BORDER
+ideas = [
+ ('Moulded-in-colour fascia — delete the paint operation entirely', 'Fascia', "='Parts Costing'!Y5"),
+ ('TPO resin long-term agreement / price indexing (−₹10/kg)', 'Material', "='Parts Costing'!F4*(1+'Parts Costing'!G4)*10"),
+ ('Closed-loop runner regrind reuse instead of selling scrap', 'Material', 8),
+ ('Conformal-cooled fascia mould — cycle −6 s', 'Process', '=6*Assumptions!$B$21/3600*1.6'),
+ ('Beam gauge/grade optimisation — take 0.4 kg out of the steel', 'Beam', '=0.4*Assumptions!$B$15*1.3'),
+ ('Integrate bracket piercing into rollform — fewer weld operations', 'Beam', 12),
+ ('EPP density 45 → 38 g/l (validated crash performance)', 'Energy absorber', '=0.04*Assumptions!$B$13*1.35'),
+ ('Mould sensor-holder bosses into fascia — delete 4 parts + 1 tool', 'Small parts', "='Parts Costing'!Z16"),
+ ('Family mould: wheel-arch retainers + side supports in one tool', 'Tooling', 6),
+ ('Snap-fits replace 6 screws (fascia dress parts)', 'Fasteners / assembly', 18),
+ ('Single-vendor moulding consolidation (−2% conversion overhead)', 'All plastics', 9),
+ ('Radar + camera LTA with 5% annual step-down', 'Electronics', "=('Bought-Out'!G5+'Bought-Out'!G6)*0.05"),
+ ('Parking-sensor price negotiation to ₹200 (−₹20 each)', 'Electronics', '=Assumptions!$B$44*20*1.03'),
+ ('Returnable-packaging pooling across programmes (−25% trip cost)', 'Logistics', '=Assumptions!$B$43*0.25'),
+ ('Combine assembly stations 4 + 5 (line balancing)', 'Assembly', 10),
+]
+for i, (idea, area, saving) in enumerate(ideas):
+    r = sv + 2 + i
+    wsm.cell(row=r, column=1, value=i + 1)
+    wsm.cell(row=r, column=2, value=idea).font = Font(size=9.5, color=BODY, name='Calibri')
+    wsm.cell(row=r, column=3, value=area).font = Font(size=9.5, color=MUTED, name='Calibri')
+    sc = wsm.cell(row=r, column=4, value=saving)
+    sc.number_format = INR2
+    sc.font = Font(size=9.5, bold=True, color=GREEN, name='Calibri')
+    for c in range(1, 5):
+        wsm.cell(row=r, column=c).border = BORDER
+        if i % 2 == 0:
+            wsm.cell(row=r, column=c).fill = PatternFill('solid', fgColor=GREENBG)
+sv_tot = sv + 2 + len(ideas)
+wsm.cell(row=sv_tot, column=2, value='TOTAL IDENTIFIED POTENTIAL (not all additive — pursue top 5 first)').font = Font(bold=True, size=10, color=DARK, name='Calibri')
+wsm.cell(row=sv_tot, column=4, value=f'=SUM(D{sv+2}:D{sv_tot-1})').number_format = INR2
+wsm.cell(row=sv_tot, column=4).font = Font(bold=True, size=10.5, color=GREEN, name='Calibri')
+for c in range(1, 5):
+    wsm.cell(row=sv_tot, column=c).fill = PatternFill('solid', fgColor=PANEL2)
+    wsm.cell(row=sv_tot, column=c).border = BORDER
 
 for i, w in enumerate([6, 62, 46, 18, 11, 4], 1):
     wsm.column_dimensions[get_column_letter(i)].width = w
