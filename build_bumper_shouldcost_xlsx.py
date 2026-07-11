@@ -740,6 +740,69 @@ for (n, t, how, exl, exf, fmt, h) in steps:
     m_step(r, n, t, how, exl, exf, fmt, h)
     r += 2 if exf else 1
 
+# ── Deep-dive: paint cost build-up ───────────────────────────────────────────
+m_section(r + 1, 'DEEP-DIVE: PAINT COST — how the body-colour paint line item is built (all values LIVE)')
+paint_steps = [
+ ('P1', 'Paint material — ₹160/bumper',
+  'Primer + basecoat + clearcoat + thinners, materials only. Basis: ~0.40 litre of mixed paint per bumper at OEM robotic transfer efficiency, '
+  '~₹400/litre blended across the three coats. This is an input (Assumptions B18) — put in our paint shop\'s actual chemical cost per unit if we have it.',
+  'Paint material ₹', f'={A(18)}', INR2, 52),
+ ('P2', 'Paint line time — the biggest piece',
+  'A conveyorised robotic bumper paint line costs ₹2,400/hr all-in: booth depreciation, ventilation and booth energy (the big consumers), robots, '
+  'sludge/filter handling. At ~110 s effective takt per bumper: 110 ÷ 3600 × 2,400. Painting is a PROCESS cost — the booth hour, not the paint, is what you pay for.',
+  'Line cost ₹/bumper', "='Parts Costing'!O5", INR2, 55),
+ ('P3', 'Labour — small by design',
+  'Robotic line: 0.5 manning (loader/unloader shared) × skilled rate ₹260/hr × 110 s. Manual painting would triple this and hurt quality consistency.',
+  'Paint labour ₹', "='Parts Costing'!R5", INR2, 42),
+ ('P4', 'Paint jigs & masks — ₹60 L amortised',
+  'Bumper-specific carriers, masking jigs and skids, spread over volume × years like any tool: ₹60 L ÷ 360,000 bumpers.',
+  'Jig amortisation ₹', "='Parts Costing'!T5", INR2, 42),
+ ('P5', 'Overhead + markups',
+  'Factory overhead 40% on the conversion (line + labour, NOT on paint material), then SG&A 8% and profit 10% like every other line.',
+  'Paint line item ₹', "='Parts Costing'!Y5", INR2, 42),
+ ('P6', 'Sanity checks & the lever',
+  'Checks: India tier-1 bumper paint jobs benchmark at ₹280–₹380 all-in — we sit mid-range. First-run yield ~92–95% is assumed inside the line rate. '
+  'The lever: if the fascia can be moulded-in-colour (masterbatch), this entire line item disappears — savings idea #1.',
+  None, None, INR2, 50),
+]
+r = r + 2
+for (n, t, how, exl, exf, fmt, h) in paint_steps:
+    m_step(r, n, t, how, exl, exf, fmt, h)
+    r += 2 if exf else 1
+
+# ── Deep-dive: tooling cost build-up ─────────────────────────────────────────
+m_section(r + 1, 'DEEP-DIVE: TOOLING — what is in the investment and how it reaches the piece price (all values LIVE)')
+tool_steps = [
+ ('T1', 'What the investment covers',
+  'Injection moulds for every plastic part, the EPP shape mould, rollform tooling for the beam, the progressive die for crash-box brackets, weld fixtures, '
+  'paint jigs, assembly fixtures and end-of-line equipment. Parts tooling ₹6.28 Cr + assembly fixtures ₹0.40 Cr + EOL equipment ₹0.60 Cr.',
+  'Total investment ₹', '=Tooling!B7', INR0, 52),
+ ('T2', 'The biggest tool — fascia mould ₹1.8 Cr',
+  'A single-cavity hot-runner mould for a 1500-tonne press, ~3.6 kg part with texture and complex shut-offs. India toolroom benchmark: ₹1.5–2.5 Cr '
+  '(the same tool imported from Japan/Korea would be 2–3×). Next: paint jigs ₹60 L, grille moulds ₹50 L each, beam rollform set ₹50 L, EPP mould ₹35 L.',
+  'Fascia mould ₹', "='Parts Costing'!S4", INR0, 52),
+ ('T3', 'The amortisation formula',
+  'Tool ÷ (annual volume × years × parts per vehicle). Fascia: ₹1.8 Cr ÷ (72,000 × 5 × 1) = ₹50.00 per part. Every tool row uses the same formula — '
+  'column T on Parts Costing.',
+  'Fascia amort ₹/pc', "='Parts Costing'!T4", INR2, 46),
+ ('T4', 'Family tools cost less per piece',
+  'LH+RH parts share one mould and come out in the same shot, so the tool spreads over twice the pieces: side brackets ₹18 L ÷ (72,000 × 5 × 2) = ₹2.50/pc. '
+  'The sensor holder runs 4 cavities for the same reason.',
+  'Side-bracket amort ₹/pc', "='Parts Costing'!T8", INR2, 46),
+ ('T5', 'Tool life check — why 5 years is safe',
+  '5 years × 72,000 = 360,000 shots on the fascia mould. A hardened hot-runner bumper mould is good for 500k–1M shots, so life does not limit the '
+  'amortisation period; small tools are specified hardened (H13/P20) for the same duty.',
+  None, None, INR2, 46),
+ ('T6', 'What tooling adds to each vehicle — and who pays',
+  'Summing column T × qty across all parts: the tooling inside the piece prices. If the OEM pays tooling up-front instead (common for dedicated moulds), '
+  'zero column S — piece prices drop by this amount and the ₹7.28 Cr becomes a separate one-time negotiation with tool-ownership rights.',
+  'Tooling ₹/vehicle', '=Summary!B105', INR2, 52),
+]
+r = r + 2
+for (n, t, how, exl, exf, fmt, h) in tool_steps:
+    m_step(r, n, t, how, exl, exf, fmt, h)
+    r += 2 if exf else 1
+
 qa_start = r + 1
 m_section(qa_start, 'MANAGER Q&A — the questions you will get, and the answers (live numbers in the right column)')
 qa = [
