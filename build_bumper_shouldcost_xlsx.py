@@ -108,7 +108,7 @@ a_row(14, 'POM (clips)', 210, '₹/kg', 'Reference for clip costing (bought-out 
 a_row(15, 'High-strength steel sheet (HR, 590+)', 68, '₹/kg', 'For reinforcement beam & steel brackets.', INR2)
 a_row(16, 'Steel scrap credit', 32, '₹/kg', 'Offal / engineered scrap sold back.', INR2)
 a_row(17, 'Plastic regrind credit', 40, '₹/kg', 'Runner/sprue regrind value (where not reused).', INR2)
-a_row(18, 'Paint material per bumper (primer+base+clear)', 185, '₹/unit', 'Body-colour robotic paint, material only.', INR2)
+a_row(18, 'Paint material per bumper (primer+base+clear)', 160, '₹/unit', 'Body-colour robotic paint, material only.', INR2)
 
 a_section(20, 'MACHINE RATES  (₹/hr — includes depreciation, energy @ ₹8.5/kWh, maintenance, floor space, supervision)')
 a_row(21, 'Injection moulding 1500T', 2100, '₹/hr', 'For bumper fascia.', INR0)
@@ -120,7 +120,7 @@ a_row(26, 'EPP shape-moulding machine', 650, '₹/hr', 'Steam-chest moulding for
 a_row(27, 'Progressive press 250T (with feeder)', 900, '₹/hr', 'Steel beam brackets.', INR0)
 a_row(28, 'Rollform + pierce + sweep line', 1600, '₹/hr', 'Reinforcement beam forming.', INR0)
 a_row(29, 'MIG/spot weld cell', 800, '₹/hr', 'Beam bracket welding.', INR0)
-a_row(30, 'Robotic paint line (bumper)', 2800, '₹/hr', 'Conveyorised, incl. booth energy & ventilation.', INR0)
+a_row(30, 'Robotic paint line (bumper)', 2400, '₹/hr', 'Conveyorised, incl. booth energy & ventilation.', INR0)
 
 a_section(32, 'LABOUR RATES  (₹/hr, fully loaded — wages + statutory + benefits + supervision share)')
 a_row(33, 'Operator (semi-skilled)', 190, '₹/hr', 'Press/moulding/assembly operator.', INR0)
@@ -161,22 +161,22 @@ wp.row_dimensions[3].height = 30
 #  machine label, machine ref, cycle, cav, manning, labour ref, tool cost)
 S = 'Q_SENS'  # marker: qty = sensor-count cell
 parts = [
- ('Front bumper fascia', 'Injection moulding', 'PP+EPDM (TPO)', 1, 4.20, 0.04, 11, 17, 'IMM 1500T', 21, 58, 1, 0.5, 33, 22000000),
- ('Painting — fascia, body colour', 'Robotic paint (P+B+C)', 'Paint system', 1, None, None, None, None, 'Paint line', 30, 130, 1, 0.5, 34, 6000000),
- ('Upper grille', 'Injection moulding', 'PP (textured)', 1, 0.55, 0.05, 10, 17, 'IMM 450T', 23, 34, 1, 0.33, 33, 5500000),
- ('Lower grille', 'Injection moulding', 'PP (textured)', 1, 0.65, 0.05, 10, 17, 'IMM 450T', 23, 40, 1, 0.33, 33, 5500000),
+ ('Front bumper fascia', 'Injection moulding', 'PP+EPDM (TPO)', 1, 3.60, 0.04, 11, 17, 'IMM 1500T', 21, 55, 1, 0.5, 33, 18000000),
+ ('Painting — fascia, body colour', 'Robotic paint (P+B+C)', 'Paint system', 1, None, None, None, None, 'Paint line', 30, 110, 1, 0.5, 34, 6000000),
+ ('Upper grille', 'Injection moulding', 'PP (textured)', 1, 0.45, 0.05, 10, 17, 'IMM 450T', 23, 32, 1, 0.33, 33, 5000000),
+ ('Lower grille', 'Injection moulding', 'PP (textured)', 1, 0.55, 0.05, 10, 17, 'IMM 450T', 23, 38, 1, 0.33, 33, 5000000),
  ('Side bracket LH+RH (fascia)', 'Injection moulding', 'PP', 2, 0.12, 0.04, 10, 17, 'IMM 150T', 25, 26, 2, 0.25, 33, 1800000),
  ('Number / licence plate bracket', 'Injection moulding', 'PP', 1, 0.18, 0.04, 10, 17, 'IMM 150T', 25, 28, 1, 0.25, 33, 1200000),
  ('Fog lamp bezel / DRL housing LH+RH', 'Injection moulding', 'ABS', 2, 0.15, 0.05, 12, 17, 'IMM 250T', 24, 34, 2, 0.33, 33, 2800000),
- ('Energy absorber', 'EPP shape moulding', 'EPP foam 45 g/l', 1, 0.30, 0.02, 13, 17, 'EPP moulder', 26, 95, 1, 0.5, 33, 3500000),
- ('Reinforcement beam — form & pierce', 'Rollform + sweep', 'HSS 590 sheet', 1, 4.80, 0.08, 15, 16, 'Rollform line', 28, 45, 1, 1.0, 33, 6000000),
+ ('Energy absorber', 'EPP shape moulding', 'EPP foam 45 g/l', 1, 0.25, 0.02, 13, 17, 'EPP moulder', 26, 90, 1, 0.5, 33, 3500000),
+ ('Reinforcement beam — form & pierce', 'Rollform + sweep', 'HSS 590 sheet', 1, 4.20, 0.08, 15, 16, 'Rollform line', 28, 45, 1, 1.0, 33, 5000000),
  ('Reinforcement beam — bracket welding', 'MIG weld op', '(consumables in rate)', 1, None, None, None, None, 'Weld cell', 29, 60, 1, 1.0, 34, 1500000),
  ('Side beam bracket LH+RH (crash-box)', 'Progressive stamping', 'HSS 590 sheet', 2, 0.35, 0.12, 15, 16, 'Press 250T prog', 27, 12, 2, 0.5, 33, 2500000),
  ('Tow hook cover', 'Injection moulding', 'PP', 1, 0.05, 0.04, 10, 17, 'IMM 150T', 25, 22, 2, 0.25, 33, 900000),
  ('Parking sensor holder', 'Injection moulding', 'PP', S, 0.02, 0.04, 10, 17, 'IMM 150T', 25, 20, 4, 0.25, 33, 1400000),
  ('Radar sensor bracket', 'Injection moulding', 'PP', 1, 0.08, 0.04, 10, 17, 'IMM 150T', 25, 25, 2, 0.25, 33, 1100000),
  ('Camera mount bracket', 'Injection moulding', 'PP', 1, 0.05, 0.04, 10, 17, 'IMM 150T', 25, 22, 2, 0.25, 33, 900000),
- ('Air deflector', 'Injection moulding', 'PP', 1, 0.45, 0.05, 10, 17, 'IMM 450T', 23, 36, 1, 0.33, 33, 3200000),
+ ('Air deflector', 'Injection moulding', 'PP', 1, 0.35, 0.05, 10, 17, 'IMM 450T', 23, 33, 1, 0.33, 33, 3000000),
  ('Wheel-arch retainer LH+RH', 'Injection moulding', 'PP', 2, 0.15, 0.04, 10, 17, 'IMM 250T', 24, 30, 2, 0.33, 33, 1600000),
  ('Side support bracket LH+RH', 'Injection moulding', 'PP', 2, 0.15, 0.04, 10, 17, 'IMM 250T', 24, 30, 2, 0.33, 33, 1600000),
 ]
@@ -267,10 +267,10 @@ for i, h in enumerate(BO_H, 1):
 style_header_row(wo, 3, range(1, 8))
 
 bo = [
- ('Ultrasonic parking sensor', 'Electronics', f'={A(44)}', 380),
- ('Front radar sensor (77 GHz)', 'Electronics', 1, 5800),
- ('Front camera module', 'Electronics', 1, 2200),
- ('Bumper wiring harness', 'Electrical', 1, 520),
+ ('Ultrasonic parking sensor', 'Electronics', f'={A(44)}', 220),
+ ('Front radar sensor (77 GHz)', 'Electronics', 1, 3200),
+ ('Front camera module', 'Electronics', 1, 1500),
+ ('Bumper wiring harness', 'Electrical', 1, 420),
  ('Clips & fasteners set (push clips, u-nuts, spring nuts)', 'Hardware', 1, 95),
  ('Bolts M8/M10 set', 'Hardware', 1, 28),
  ('Nuts & washers set', 'Hardware', 1, 20),
@@ -454,6 +454,9 @@ wsm.cell(row=11, column=4, value='=Tooling!B7').number_format = INR0
 wsm.cell(row=12, column=2, value=f'Annual volume assumption').font = Font(size=10.5, color=MUTED, name='Calibri')
 wsm.cell(row=12, column=4, value=f'={A(4)}').number_format = '#,##0 "veh/yr"'
 
+wsm.cell(row=13, column=2, value='Painted fascia only (compare against fascia-only quotes)').font = Font(size=10.5, color=MUTED, name='Calibri')
+wsm.cell(row=13, column=4, value="='Parts Costing'!Y4+'Parts Costing'!Y5").number_format = INR2
+
 chart = BarChart()
 chart.type = 'col'
 chart.title = 'Should-cost breakdown (₹/vehicle set)'
@@ -464,9 +467,9 @@ chart.add_data(data, titles_from_data=False)
 chart.set_categories(cats)
 chart.legend = None
 chart.y_axis.title = '₹ per vehicle set'
-wsm.add_chart(chart, 'A14')
+wsm.add_chart(chart, 'A15')
 
-notes_r = 31
+notes_r = 32
 wsm.cell(row=notes_r, column=1, value='KEY NOTES & BASIS').font = Font(bold=True, size=11, color=INDIGO, name='Calibri')
 note_lines = [
  '1.  Basis: ex-works tier-1 supplier, India, 2026 rates. Edit any yellow cell (Assumptions / Parts Costing) — every figure recalculates.',
@@ -477,6 +480,8 @@ note_lines = [
  '6.  Tooling amortised over volume × 5 years into piece price. For tooling paid separately by OEM, set tool costs to 0 on Parts Costing (column S).',
  '7.  Paint: fascia costed body-colour painted (material + robotic line). Delete row 5 on Parts Costing if supplied moulded-in-colour.',
  '8.  Logistics to OEM plant, warranty and ED/GST excluded (per should-cost convention).',
+ '9.  COMPARING TO A QUOTE: match the scope first. A bumper supplier quote normally EXCLUDES radar/camera/sensors/harness (directed parts) and often the steel beam — '
+ 'compare it to the mechanical-module or painted-fascia lines above, not the headline total.',
 ]
 for i, ln in enumerate(note_lines):
     wsm.cell(row=notes_r + 1 + i, column=1, value=ln).font = Font(size=9.5, color=BODY, name='Calibri')
