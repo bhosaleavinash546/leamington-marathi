@@ -711,20 +711,20 @@ notes(s, "This backup slide answers 'whose numbers are these?' The answer: ours,
 
 # ═══════════════ 19 — BACKUP: BUSINESS CASE ═══════════════
 s = header('What it costs vs what it returns', 'Backup · Business case')
-box(s, Inches(0.45), Inches(2.0), Inches(6.0), Inches(3.85), fill=PANEL, round_=True, radius=0.05)
-text(s, Inches(0.75), Inches(2.2), Inches(5.4), Inches(0.4), [[('What it costs', 15, DARK, True)]])
+box(s, Inches(0.45), Inches(2.0), Inches(6.0), Inches(3.5), fill=PANEL, round_=True, radius=0.05)
+text(s, Inches(0.75), Inches(2.18), Inches(5.4), Inches(0.4), [[('What it costs', 15, DARK, True)]])
 costs = [
     ('Engineering', '~3–5 weeks remaining on CostVision + small additive CAPEE changes — existing teams'),
     ('Infrastructure', 'one VM + corporate PostgreSQL — standard IT estate our teams already run'),
     ('AI usage', 'pay-per-use in our own cloud tenancy — no per-seat fees, off in air-gap mode'),
-    ('Licence spend', '£0 — built in-house. The code, rate library and knowledge base are OUR IP'),
+    ('Licence spend', '£0 — built in-house, nothing to buy or renew'),
 ]
 for i, (a, b) in enumerate(costs):
-    y = Inches(2.72 + i * 0.78)
-    text(s, Inches(0.75), y, Inches(5.5), Inches(0.75),
+    y = Inches(2.66 + i * 0.72)
+    text(s, Inches(0.75), y, Inches(5.5), Inches(0.7),
          [[(a + ' — ', 12, DARK, True), (b, 11, BODY, False)]], line_spacing=1.1)
-box(s, Inches(6.85), Inches(2.0), Inches(6.05), Inches(3.85), fill=GREENBG, round_=True, radius=0.05)
-text(s, Inches(7.15), Inches(2.2), Inches(5.4), Inches(0.4), [[('What it returns', 15, GREEN, True)]])
+box(s, Inches(6.85), Inches(2.0), Inches(6.05), Inches(3.5), fill=GREENBG, round_=True, radius=0.05)
+text(s, Inches(7.15), Inches(2.18), Inches(5.4), Inches(0.4), [[('What it returns', 15, GREEN, True)]])
 gains = [
     ('Savings found', '£512k/yr of pricing issues surfaced autonomously in the live demo (indicative)'),
     ('Licence avoided', 'commercial should-cost suites run six figures per year, recurring'),
@@ -732,11 +732,17 @@ gains = [
     ('Leverage', 'bottom-up numbers on OUR rates that suppliers cannot wave away'),
 ]
 for i, (a, b) in enumerate(gains):
-    y = Inches(2.72 + i * 0.78)
-    text(s, Inches(7.15), y, Inches(5.5), Inches(0.75),
+    y = Inches(2.66 + i * 0.72)
+    text(s, Inches(7.15), y, Inches(5.5), Inches(0.7),
          [[(a + ' — ', 12, GREEN, True), (b, 11, BODY, False)]], line_spacing=1.1)
-box(s, Inches(0.45), Inches(6.1), Inches(12.45), Inches(0.95), fill=AMBERBG, round_=True, radius=0.08)
-text(s, Inches(0.75), Inches(6.24), Inches(11.9), Inches(0.7),
+ip = box(s, Inches(0.45), Inches(5.68), Inches(12.45), Inches(0.62), fill=GREENBG, round_=True, radius=0.12)
+box(s, Inches(0.45), Inches(5.68), Inches(0.09), Inches(0.62), fill=GREEN)
+text(s, Inches(0.8), Inches(5.83), Inches(11.9), Inches(0.4),
+     [[('OUR IP:  ', 13.5, GREEN, True),
+       ('built in-house — the code, the rate library and the knowledge base are entirely our intellectual property. '
+        'No vendor owns any part of it.', 13.5, DARK, True)]])
+box(s, Inches(0.45), Inches(6.44), Inches(12.45), Inches(0.85), fill=AMBERBG, round_=True, radius=0.08)
+text(s, Inches(0.75), Inches(6.55), Inches(11.9), Inches(0.65),
      [[('Honest numbers: ', 12, AMBER, True),
        ('the £512k/yr figure comes from demonstration data — we treat it as indicative and validate it against real '
         'programmes during the Phase 3–4 pilot before claiming it in any business case.', 11.5, BODY, False)]],
