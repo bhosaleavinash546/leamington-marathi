@@ -16,6 +16,8 @@ from pptx.util import Inches, Pt
 from pptx.dml.color import RGBColor
 from pptx.enum.text import PP_ALIGN, MSO_ANCHOR
 from pptx.enum.shapes import MSO_SHAPE
+from pptx.chart.data import CategoryChartData
+from pptx.enum.chart import XL_CHART_TYPE, XL_LEGEND_POSITION
 
 INDIGO  = RGBColor(0x4F, 0x46, 0xE5)
 BLUE    = RGBColor(0x25, 0x63, 0xEB)
@@ -539,6 +541,9 @@ for i, (a, b) in enumerate(gates):
     box(s, Inches(0.45), y, Inches(0.09), Inches(0.82), fill=BLUE)
     text(s, Inches(0.75), y + Inches(0.1), Inches(2.6), Inches(0.4), [[(a, 12.5, BLUE, True)]])
     text(s, Inches(3.5), y + Inches(0.1), Inches(9.2), Inches(0.65), [[(b, 11.5, BODY, False)]], line_spacing=1.1)
+text(s, Inches(0.45), Inches(6.82), Inches(12.4), Inches(0.5),
+     [[('After go-live we track: ', 11.5, DARK, True),
+       ('accuracy vs PO prices · costings via CAPEE · £ findings actioned · adoption.   Approval today → pilot value by ~September 2026.', 11.5, BODY, False)]])
 notes(s, "Six phases. The first two — assessment and design — are what we're asking approval for today. Phase three "
          "is a sealed pilot with dummy CAD data, and its exit gate is a security-witnessed test: firewall blocking "
          "everything, full test suite passing, zero unexpected traffic. Phase four connects CAPEE, with a real "
@@ -703,6 +708,123 @@ notes(s, "This backup slide answers 'whose numbers are these?' The answer: ours,
          "costing engine has its own separate library. And if anything goes wrong, one click returns to the "
          "built-in defaults. So management should hear this clearly: the tool calculates on OUR labour, material, "
          "machine and energy rates, by country — vendor tools can't offer that level of transparency and control.")
+
+# ═══════════════ 19 — BACKUP: BUSINESS CASE ═══════════════
+s = header('What it costs vs what it returns', 'Backup · Business case')
+box(s, Inches(0.45), Inches(2.0), Inches(6.0), Inches(3.85), fill=PANEL, round_=True, radius=0.05)
+text(s, Inches(0.75), Inches(2.2), Inches(5.4), Inches(0.4), [[('What it costs', 15, DARK, True)]])
+costs = [
+    ('Engineering', '~3–5 weeks remaining on CostVision + small additive CAPEE changes — existing teams'),
+    ('Infrastructure', 'one VM + corporate PostgreSQL — standard IT estate our teams already run'),
+    ('AI usage', 'pay-per-use in our own cloud tenancy — no per-seat fees, off in air-gap mode'),
+    ('Licence spend', '£0 — built in-house. The code, rate library and knowledge base are OUR IP'),
+]
+for i, (a, b) in enumerate(costs):
+    y = Inches(2.72 + i * 0.78)
+    text(s, Inches(0.75), y, Inches(5.5), Inches(0.75),
+         [[(a + ' — ', 12, DARK, True), (b, 11, BODY, False)]], line_spacing=1.1)
+box(s, Inches(6.85), Inches(2.0), Inches(6.05), Inches(3.85), fill=GREENBG, round_=True, radius=0.05)
+text(s, Inches(7.15), Inches(2.2), Inches(5.4), Inches(0.4), [[('What it returns', 15, GREEN, True)]])
+gains = [
+    ('Savings found', '£512k/yr of pricing issues surfaced autonomously in the live demo (indicative)'),
+    ('Licence avoided', 'commercial should-cost suites run six figures per year, recurring'),
+    ('Speed', 'first defensible should-cost in minutes, not days — every quote challengeable'),
+    ('Leverage', 'bottom-up numbers on OUR rates that suppliers cannot wave away'),
+]
+for i, (a, b) in enumerate(gains):
+    y = Inches(2.72 + i * 0.78)
+    text(s, Inches(7.15), y, Inches(5.5), Inches(0.75),
+         [[(a + ' — ', 12, GREEN, True), (b, 11, BODY, False)]], line_spacing=1.1)
+box(s, Inches(0.45), Inches(6.1), Inches(12.45), Inches(0.95), fill=AMBERBG, round_=True, radius=0.08)
+text(s, Inches(0.75), Inches(6.24), Inches(11.9), Inches(0.7),
+     [[('Honest numbers: ', 12, AMBER, True),
+       ('the £512k/yr figure comes from demonstration data — we treat it as indicative and validate it against real '
+        'programmes during the Phase 3–4 pilot before claiming it in any business case.', 11.5, BODY, False)]],
+     line_spacing=1.15)
+notes(s, "The business case in one view. Costs, left: three to five engineering weeks remaining plus small additive "
+         "changes in CAPEE, all with existing teams; infrastructure is one virtual machine and our standard "
+         "corporate database; AI usage is pay-per-use in our own tenancy with no per-seat fees; and licence spend "
+         "is zero — this was built in-house, so the code, the rate library and the knowledge base are our "
+         "intellectual property. Returns, right: the autonomous agent surfaced half a million pounds a year of "
+         "pricing findings in the demonstration; a commercial should-cost suite would cost six figures every year, "
+         "recurring; quotes get a defensible counter-number in minutes; and negotiations start from bottom-up "
+         "figures built on our own rates. And the amber bar is deliberate honesty: the savings figure is from demo "
+         "data — we validate it in the pilot before it goes into any business case. That candour is what makes the "
+         "rest of this slide believable.")
+
+# ═══════════════ 20 — BACKUP: EVIDENCE PACK ═══════════════
+s = header('Does it actually work? The measured results', 'Backup · Evidence')
+cd = CategoryChartData()
+cd.categories = ['Machining error %', 'Casting error %', 'Uncertainty band ±%']
+cd.add_series('Before learning', (10.9, 8.7, 20.4))
+cd.add_series('After 3 real quotes', (0.3, 0.6, 2.8))
+gf = s.shapes.add_chart(XL_CHART_TYPE.COLUMN_CLUSTERED, Inches(0.45), Inches(2.0), Inches(7.3), Inches(4.4), cd)
+ch = gf.chart
+ch.has_legend = True
+ch.legend.position = XL_LEGEND_POSITION.BOTTOM
+ch.legend.include_in_layout = False
+ch.legend.font.size = Pt(10)
+plot = ch.plots[0]
+plot.has_data_labels = True
+plot.data_labels.font.size = Pt(9.5)
+plot.data_labels.font.bold = True
+ch.category_axis.tick_labels.font.size = Pt(9.5)
+ch.value_axis.tick_labels.font.size = Pt(9)
+ch.series[0].format.fill.solid(); ch.series[0].format.fill.fore_color.rgb = MUTED
+ch.series[1].format.fill.solid(); ch.series[1].format.fill.fore_color.rgb = GREEN
+text(s, Inches(0.45), Inches(6.5), Inches(7.3), Inches(0.6),
+     [[('Live test runs, July 2026 — after the engine learned from just 3 real supplier quotes per commodity.', 10, MUTED, False, True)]],
+     line_spacing=1.1)
+stats = [
+    ('99%', 'part-match accuracy — the AI memory finds the right similar past part', BLUE),
+    ('793', 'automated tests protect every engine and feature on each change', VIOLET),
+    ('3 quotes', 'is all the calibration needs before accuracy lands under 1%', GREEN),
+    ('£512k/yr', 'findings raised by the autonomous agent in the live demo', CYAN),
+]
+for i, (n, d, c) in enumerate(stats):
+    y = Inches(2.0 + i * 1.23)
+    box(s, Inches(8.1), y, Inches(4.8), Inches(1.08), fill=PANEL, round_=True, radius=0.1)
+    box(s, Inches(8.1), y, Inches(0.09), Inches(1.08), fill=c)
+    text(s, Inches(8.4), y + Inches(0.12), Inches(1.7), Inches(0.5), [[(n, 19, c, True)]])
+    text(s, Inches(10.05), y + Inches(0.14), Inches(2.75), Inches(0.85), [[(d, 10, BODY, False)]], line_spacing=1.1)
+notes(s, "The evidence slide, for when someone asks 'does it actually work?' The chart shows measured accuracy from "
+         "live test runs. Grey bars are the engine before learning: machining estimates were off by about eleven "
+         "percent, casting by about nine, and the honest uncertainty band was around plus-or-minus twenty percent. "
+         "Green bars are after the engine learned from just three real supplier quotes per commodity: errors drop "
+         "below one percent and the band tightens to under three. That is the self-learning loop working — and it "
+         "is why CAPEE's PO prices matter so much, because they are exactly the fuel this loop runs on. On the "
+         "right: the part-matching memory finds the right historical part ninety-nine percent of the time; "
+         "seven hundred and ninety-three automated tests protect the platform on every change; and the autonomous "
+         "agent found half a million pounds a year of pricing issues in the demo without anyone asking it to.")
+
+# ═══════════════ 21 — BACKUP: LIKELY QUESTIONS ═══════════════
+s = header('Questions you may be asking', 'Backup · Straight answers')
+qa = [
+    ('Why not just buy aPriori?', 'A SaaS suite means our CAD and rates live in a vendor cloud, it cannot learn from our '
+     'quote history, and it costs six figures every year. CostVision is on-prem, self-learning, and our IP.'),
+    ('Is our data training a public AI?', 'No. AI calls run zero-retention in our own cloud tenancy (Option B) — and in '
+     'air-gapped mode there are provably no external calls at all. Nothing is ever used to train public models.'),
+    ('What if the key developer leaves?', '793 automated tests define how everything must behave, the architecture is '
+     'documented in writing, and Phase 4 trains a named CAPEE-side maintainer.'),
+    ('What does it cost to run?', 'One VM, a standard corporate database, and pay-per-use AI in our tenancy. '
+     'No licences, no per-seat fees.'),
+    ('How do we know the numbers are right?', 'Physics-based cost build-ups on OUR uploaded rates, calibrated against OUR '
+     'real PO prices — and the accuracy dashboard tracks the error openly, part by part.'),
+]
+for i, (q, a) in enumerate(qa):
+    y = Inches(2.0 + i * 0.98)
+    box(s, Inches(0.45), y, Inches(12.45), Inches(0.86), fill=(PANEL if i % 2 == 0 else BG), round_=True, radius=0.1)
+    text(s, Inches(0.8), y + Inches(0.1), Inches(3.9), Inches(0.7), [[(q, 12.5, BLUE, True)]], line_spacing=1.08)
+    text(s, Inches(4.9), y + Inches(0.1), Inches(7.8), Inches(0.7), [[(a, 11, BODY, False)]], line_spacing=1.1)
+notes(s, "Backup for the question-and-answer session — the five questions most likely to come up, with straight "
+         "answers. Why not buy aPriori? Because a vendor SaaS puts our CAD and our rates in their cloud, can't learn "
+         "from our quote history, and bills six figures a year forever — while CostVision is on-premise, "
+         "self-learning and our own intellectual property. Is our data training a public AI? No — zero retention in "
+         "our own tenancy, and the air-gapped switch makes 'no external calls' provable rather than promised. "
+         "Key-person risk? Seven hundred ninety-three automated tests, written architecture docs, and a trained "
+         "second maintainer from Phase 4. Running cost? A virtual machine, a standard database, pay-per-use AI — "
+         "no licences. And how do we trust the numbers? Physics build-ups on our own rates, calibrated against our "
+         "own purchase orders, with the error tracked openly on the accuracy dashboard.")
 
 OUT = 'CostVision-Implementation-Blueprint.pptx'
 prs.save(OUT)
