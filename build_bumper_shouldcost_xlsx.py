@@ -106,10 +106,10 @@ a_row(6,  'Currency', 'INR', '', 'All values in Indian Rupees, ex-works supplier
 a_row(7,  'FX reference', 106, 'INR/GBP', 'Reference only — no conversion applied in this workbook.', '#,##0')
 
 a_section(9, 'MATERIAL PRICES  (₹/kg, delivered India plant)')
-a_row(10, 'PP (black, textured grade)', 98, '₹/kg', 'Polypropylene copolymer, bulk OEM contract.', INR2)
-a_row(11, 'PP+EPDM (TPO bumper grade)', 142, '₹/kg', 'Impact-modified bumper compound, paintable grade.', INR2)
-a_row(12, 'ABS (plating/paint grade)', 148, '₹/kg', 'For fog-lamp bezels / DRL housings.', INR2)
-a_row(13, 'EPP beads (45 g/l)', 330, '₹/kg', 'Expanded polypropylene for energy absorber.', INR2)
+a_row(10, 'PP (black, textured grade)', 112, '₹/kg', 'PP copolymer ₹110–120/kg India spot (OfBusiness, Jul 2026); OEM contract mid-range.', INR2)
+a_row(11, 'PP+EPDM (TPO bumper grade)', 155, '₹/kg', 'PP copolymer + EPDM/talc compounding premium ~₹35–45/kg; paintable bumper grade.', INR2)
+a_row(12, 'ABS (plating/paint grade)', 158, '₹/kg', 'ABS coloured/auto grade ₹155–170/kg India (OfBusiness, Jul 2026).', INR2)
+a_row(13, 'EPP beads (45 g/l)', 700, '₹/kg', 'Delivered India automotive grade (imported beads + duty + freight); FOB China ~₹330 — corrected per procurement input.', INR2)
 a_row(14, 'POM (clips)', 210, '₹/kg', 'Reference for clip costing (bought-out set used instead).', INR2)
 a_row(15, 'High-strength steel sheet (HR, 590+)', 68, '₹/kg', 'For reinforcement beam & steel brackets.', INR2)
 a_row(16, 'Steel scrap credit', 32, '₹/kg', 'Offal / engineered scrap sold back.', INR2)
@@ -581,10 +581,10 @@ for i, (lbl, f, why) in enumerate(drivers):
     wsm.cell(row=r, column=4, value=f).number_format = INR2
     wsm.cell(row=r, column=4).font = Font(size=10, bold=True, color=GREEN, name='Calibri')
     wsm.cell(row=r, column=5, value=why).font = Font(size=9, color=MUTED, name='Calibri')
-cmt = Comment('Major cost drivers:\n1. Front radar — largest single item (~38% of total)\n'
+cmt = Comment('Major cost drivers:\n1. Front radar — largest single item (~37% of total)\n'
               '2. Painted fascia — largest manufactured part (~12%)\n3. Front camera (~18%)\n'
               '4. Parking sensors set (~10%)\n5. Steel reinforcement beam (~5%)\n'
-              'Together the top 5 are ~83% of the should-cost — focus negotiation there.', 'CostVision')
+              'Together the top 5 are ~82% of the should-cost — focus negotiation there.', 'CostVision')
 cmt.width = 320; cmt.height = 160
 wsm['A15'].comment = cmt
 
@@ -707,7 +707,7 @@ steps = [
  ('2', 'Material cost per part',
   'Net part mass × (1 + scrap%) × material price ₹/kg, minus scrap credit for the recoverable portion.  '
   'Formula in words: you buy slightly more plastic/steel than ends up in the part (runners, offal), and sell back what you can.  '
-  'Excel: =Mass×(1+Scrap)×Price − Mass×Scrap×Credit  →  Fascia: 3.60 kg TPO at ₹142/kg with 4% runner scrap.',
+  'Excel: =Mass×(1+Scrap)×Price − Mass×Scrap×Credit  →  Fascia: 3.60 kg TPO at ₹155/kg with 4% runner scrap.',
   'Fascia material ₹', "='Parts Costing'!J4", INR2, 62),
  ('3', 'Process (machine) cost',
   'Cycle time ÷ 3600 × machine hour rate ÷ cavities.  The machine rate (Assumptions sheet) is a full build-up: depreciation + energy @ ₹8.5/kWh + maintenance '
@@ -752,7 +752,7 @@ qa = [
   'They are on the Assumptions sheet with a note per line. If purchasing has better contract rates, type them in — that makes the model MORE accurate, not broken.',
   None, None),
  ('“₹13,000 for a bumper? The aftermarket part is ₹5,000!”',
-  'Two different things. The ₹8.7k total includes the ADAS electronics — radar, camera, 4 parking sensors, harness — which are ~71% of the total and are usually on separate '
+  'Two different things. The ₹9.0k total includes the ADAS electronics — radar, camera, 4 parking sensors, harness — which are ~69% of the total and are usually on separate '
   'commodity contracts. The mechanical bumper module (what a bumper supplier actually quotes) is the number on the right. Aftermarket MRP is also a retail price with '
   'distribution margins — not comparable to an OEM ex-works piece price.',
   'Mechanical module ₹', '=Summary!D10'),
@@ -785,7 +785,7 @@ qa = [
   'line-by-line conversation — and this workbook is exactly the agenda for that conversation.',
   None, None),
  ('“Which parts carry the most cost?”',
-  'Painted fascia (~₹1,078 = moulding + body-colour paint), then the steel reinforcement beam (~₹442), then the grilles. Everything else is small brackets and covers '
+  'Painted fascia (~₹1,136 = moulding + body-colour paint), then the steel reinforcement beam (~₹442), then the energy absorber (EPP is a premium imported material). Everything else is small brackets and covers '
   'below ₹120. In bought-out: the radar alone is more than the entire painted fascia.',
   'Painted fascia ₹', "='Parts Costing'!Y4+'Parts Costing'!Y5"),
  ('“Can we use this in a supplier negotiation?”',
