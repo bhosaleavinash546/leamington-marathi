@@ -707,11 +707,11 @@ steps = [
  ('2', 'Material cost per part',
   'Net part mass × (1 + scrap%) × material price ₹/kg, minus scrap credit for the recoverable portion.  '
   'Formula in words: you buy slightly more plastic/steel than ends up in the part (runners, offal), and sell back what you can.  '
-  'Excel: =Mass×(1+Scrap)×Price − Mass×Scrap×Credit  →  Fascia: 4.20 kg TPO at ₹142/kg with 4% runner scrap.',
+  'Excel: =Mass×(1+Scrap)×Price − Mass×Scrap×Credit  →  Fascia: 3.60 kg TPO at ₹142/kg with 4% runner scrap.',
   'Fascia material ₹', "='Parts Costing'!J4", INR2, 62),
  ('3', 'Process (machine) cost',
   'Cycle time ÷ 3600 × machine hour rate ÷ cavities.  The machine rate (Assumptions sheet) is a full build-up: depreciation + energy @ ₹8.5/kWh + maintenance '
-  '+ floor space + supervision.  A 1500-tonne press at ₹2,100/hr running a 58 s cycle costs ₹33.83 of machine time per shot — big-ticket machines, small per-part cost, '
+  '+ floor space + supervision.  A 1500-tonne press at ₹2,100/hr running a 55 s cycle costs ₹32.08 of machine time per shot — big-ticket machines, small per-part cost, '
   'because the hour is shared across every part made in it.',
   'Fascia process ₹', "='Parts Costing'!O4", INR2, 62),
  ('4', 'Direct labour',
@@ -719,7 +719,7 @@ steps = [
   'per two presses).  Labour rates are FULLY LOADED: wages + statutory contributions + benefits + supervision share.',
   'Fascia labour ₹', "='Parts Costing'!R4", INR2, 52),
  ('5', 'Tooling amortisation',
-  'Tool cost ÷ (annual volume × amortisation years × parts per vehicle).  The ₹2.2 Cr fascia mould spread over 72,000 vehicles × 5 years = a per-part charge.  '
+  'Tool cost ÷ (annual volume × amortisation years × parts per vehicle).  The ₹1.8 Cr fascia mould spread over 72,000 vehicles × 5 years = a per-part charge (₹50/part).  '
   'This is the number most sensitive to VOLUME — halve the volume and this line doubles.  If the OEM pays for tooling separately, set column S to zero on Parts Costing.',
   'Fascia tooling ₹/pc', "='Parts Costing'!T4", INR2, 55),
  ('6', 'Overheads and margin',
@@ -752,13 +752,13 @@ qa = [
   'They are on the Assumptions sheet with a note per line. If purchasing has better contract rates, type them in — that makes the model MORE accurate, not broken.',
   None, None),
  ('“₹13,000 for a bumper? The aftermarket part is ₹5,000!”',
-  'Two different things. The ₹13.2k includes the ADAS electronics — radar, camera, 4 parking sensors, harness — which are ~79% of the total and are usually on separate '
+  'Two different things. The ₹8.7k total includes the ADAS electronics — radar, camera, 4 parking sensors, harness — which are ~71% of the total and are usually on separate '
   'commodity contracts. The mechanical bumper module (what a bumper supplier actually quotes) is the number on the right. Aftermarket MRP is also a retail price with '
   'distribution margins — not comparable to an OEM ex-works piece price.',
   'Mechanical module ₹', '=Summary!D10'),
  ('“What happens if the volume assumption is wrong?”',
   'One cell: Assumptions B4. Volume only touches amortisation (tooling, fixtures, equipment) — material, process and labour are per-piece and unaffected. '
-  'At 72k/yr the fascia carries ₹61 of tooling; at 36k/yr it would carry ₹122. Test any scenario in seconds by editing the cell.',
+  'At 72k/yr the fascia carries ₹50 of tooling; at 36k/yr it would carry ₹100. Test any scenario in seconds by editing the cell.',
   'Current volume', f'={A(4)}'),
  ('“Why is tooling inside the piece price?”',
   'Convention for should-cost comparisons — most Indian RFQs quote amortised piece price. If our programme pays tooling as a separate one-time invoice, zero out column S '
@@ -785,24 +785,25 @@ qa = [
   'line-by-line conversation — and this workbook is exactly the agenda for that conversation.',
   None, None),
  ('“Which parts carry the most cost?”',
-  'Painted fascia (~₹1,276 = moulding + body-colour paint), then the steel reinforcement beam (~₹495), then the grilles. Everything else is small brackets and covers '
+  'Painted fascia (~₹1,078 = moulding + body-colour paint), then the steel reinforcement beam (~₹442), then the grilles. Everything else is small brackets and covers '
   'below ₹120. In bought-out: the radar alone is more than the entire painted fascia.',
   'Painted fascia ₹', "='Parts Costing'!Y4+'Parts Costing'!Y5"),
  ('“Can we use this in a supplier negotiation?”',
   'Yes — that is its purpose. Hand the supplier the same structure and ask them to fill THEIR numbers: where their material price, cycle time or overhead differs from '
   'ours, that specific cell becomes the discussion. Suppliers concede far more against a bottom-up model than against “please give 5% discount”.',
   None, None),
- ('“Why does paint cost ₹416 when the paint material is only ₹185?”',
-  'Body-colour painting is a process cost, not a material cost: a robotic paint line at ₹2,800/hr with booth energy and ventilation, ~130 s per bumper, plus overhead and '
+ ('“Why does paint cost ₹338 when the paint material is only ₹160?”',
+  'Body-colour painting is a process cost, not a material cost: a robotic paint line at ₹2,400/hr with booth energy and ventilation, ~110 s per bumper, plus overhead and '
   'margin on that conversion. If the fascia is supplied moulded-in-colour, delete the paint row — the model drops it cleanly.',
   'Paint line item ₹', "='Parts Costing'!Y5"),
  ('“4 parking sensors or 8?”',
   'Base trim = 4 (assumed), top trim = 8. One cell — Assumptions B44 — drives the sensor count, the holder count and the bought-out total together.',
   None, None),
  ('“How would we make this part cheaper?”',
-  'The levers, in order of size: (1) delete/reduce paint (moulded-in-colour saves ~₹400), (2) resin contract price — every ₹10/kg on TPO is ~₹44 on the fascia, '
-  '(3) volume pooling to spread tooling, (4) runner regrind reuse instead of selling scrap, (5) beam gauge/grade optimisation. The workbook quantifies each in seconds.',
-  None, None),
+  'The levers, in order of size: (1) delete/reduce paint (moulded-in-colour saves ~₹338), (2) resin contract price — every ₹10/kg on TPO is ~₹37 on the fascia, '
+  '(3) volume pooling to spread tooling, (4) runner regrind reuse instead of selling scrap, (5) beam gauge/grade optimisation. '
+  'All 15 ideas are quantified in the green COST-SAVING IDEAS table on the Summary sheet — the total indicative potential is shown live on the right.',
+  'Savings potential ₹/veh', '=Summary!D69'),
 ]
 r = qa_start + 1
 for (q, a, exl, exf) in qa:
