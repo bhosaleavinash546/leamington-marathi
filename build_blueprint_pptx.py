@@ -832,6 +832,161 @@ notes(s, "Backup for the question-and-answer session — the five questions most
          "no licences. And how do we trust the numbers? Physics build-ups on our own rates, calibrated against our "
          "own purchase orders, with the error tracked openly on the accuracy dashboard.")
 
+# ═══════════════ 22 — BACKUP: PHOTO-TO-BOM WORKFLOW ═══════════════
+s = header('Photo to costed BOM — how it works, step by step', 'Backup · Feature deep-dive')
+pcb_steps = [
+    ('1 · Upload photos', 'Up to 5 photos of the board (+ an optional BOM or pick-and-place file). Photos are auto-downsized in the browser; nothing is stored.', BLUE),
+    ('2 · Board classification', 'AI identifies what the board is — domain (automotive, industrial, consumer) and safety level (ASIL) — so the right cost assumptions apply.', INDIGO),
+    ('3 · OCR text pass', 'Every printed marking is read: chip part numbers, connector types, silkscreen references — hard evidence, not guesswork.', VIOLET),
+    ('4 · Full vision BOM extraction', 'The AI locates and identifies every visible component — type, package, value, manufacturer part number (~20 seconds).', CYAN),
+    ('5 · Deterministic clean-up & costing', 'Code (not AI) normalises types, parses values, scores per-line confidence, grounds prices against the distributor catalogue, then adds board fabrication + SMT assembly + test on country rates.', GREEN),
+    ('6 · Same photos, same answer', 'The result is cached by a digital fingerprint (SHA-256) — re-running identical photos returns the identical BOM. Export PDF/Excel, save to library, feed the learning loop.', AMBER),
+]
+y = Inches(1.95)
+for i, (t, d, c) in enumerate(pcb_steps):
+    flow_box(s, Inches(0.45), y, Inches(12.45), Inches(0.68), t, d, c, fill=PANEL)
+    y += Inches(0.68)
+    if i < len(pcb_steps) - 1:
+        down_arrow(s, Inches(6.5), y + Inches(0.015), h=Inches(0.15))
+        y += Inches(0.18)
+notes(s, "The photo-to-BOM workflow in six steps. An engineer photographs a circuit board — up to five photos, and "
+         "optionally a BOM or pick-and-place file if one exists. Step two: the AI first classifies what kind of "
+         "board it is, including automotive safety level, so the right cost assumptions apply. Step three is an OCR "
+         "pass — it literally reads the part numbers printed on the chips, which anchors the analysis in hard "
+         "evidence. Step four is the full vision extraction: every visible component located, typed and identified, "
+         "in about twenty seconds. Step five matters for trust: ordinary deterministic code — not AI — cleans the "
+         "list, scores confidence line by line, grounds prices against a distributor catalogue, and then builds the "
+         "full cost: bare board fabrication, component purchase, SMT assembly time and test, on our country rates. "
+         "And step six: the result is fingerprinted and cached, so the same photos always give the same answer — "
+         "an auditable property no ad-hoc AI chat can offer.")
+
+# ═══════════════ 23 — BACKUP: PHOTO-TO-BOM TECH / ACCURACY / TIME ═══════════════
+s = header('Photo to costed BOM — technology, accuracy, speed', 'Backup · Feature deep-dive')
+cols3 = [
+    ('Technology', BLUE, [
+        'Claude vision model — via our controlled endpoint (Option B) ',
+        '5-stage pipeline: classify → OCR → extract → cost → cache',
+        'Deterministic TypeScript post-processor for types, values, MPNs',
+        'SHA-256 result cache — repeatable, auditable output',
+        'Optional live pricing (Nexar/RS/Farnell) — part numbers only, opt-in',
+    ]),
+    ('Why it is accurate', GREEN, [
+        'OCR evidence + vision cross-check — read, not guessed',
+        'Code normalises every line; implausible part numbers rejected',
+        'Per-line confidence score — low lines flagged for engineer review',
+        'Prices grounded against the distributor catalogue, shown as ranges',
+        'Learning loop calibrates against real quotes over time',
+    ]),
+    ('Speed', VIOLET, [
+        'Main AI pass: ~20 seconds',
+        'Full costed BOM: typically under a minute',
+        'Repeat of the same board: instant (cache)',
+        'Manual alternative: hours to days per board',
+        'Works from photos alone — no CAD, no drawings needed',
+    ]),
+]
+for i, (t, c, items) in enumerate(cols3):
+    x = Inches(0.45 + i * 4.25)
+    box(s, x, Inches(2.0), Inches(4.0), Inches(4.15), fill=(PANEL2 if i == 0 else PANEL if i == 2 else GREENBG), round_=True, radius=0.06)
+    box(s, x, Inches(2.0), Inches(4.0), Inches(0.09), fill=c)
+    text(s, x + Inches(0.25), Inches(2.2), Inches(3.55), Inches(0.4), [[(t, 14.5, c, True)]])
+    text(s, x + Inches(0.25), Inches(2.68), Inches(3.55), Inches(3.4),
+         [[('• ' + it, 10.5, BODY, False)] for it in items], space_after=7, line_spacing=1.12)
+box(s, Inches(0.45), Inches(6.42), Inches(12.45), Inches(0.85), fill=AMBERBG, round_=True, radius=0.08)
+text(s, Inches(0.75), Inches(6.53), Inches(11.9), Inches(0.65),
+     [[('Honest limits: ', 12, AMBER, True),
+       ('a vision BOM is a strong first pass, not gospel — hidden or underside parts need extra photos, and '
+        'low-confidence lines are deliberately flagged for a human check rather than silently guessed.', 11.5, BODY, False)]],
+     line_spacing=1.15)
+notes(s, "The same feature from three angles. Technology: the vision model runs through our controlled endpoint, "
+         "inside a five-stage pipeline, and everything after the AI step is plain deterministic code — including a "
+         "fingerprint cache that makes results repeatable and auditable. Live distributor pricing is opt-in and "
+         "sends only part-number text, never images. Accuracy: the OCR pass means part numbers are read off the "
+         "chips, not guessed; the post-processor rejects implausible part numbers; every line carries a confidence "
+         "score and low ones are flagged for review; and prices are grounded against a catalogue and shown as "
+         "ranges, not false precision. Speed: the heavy AI pass is about twenty seconds, a full costed BOM lands in "
+         "under a minute, and repeating the same board is instant. The honest limit to state up front: it can only "
+         "see what is photographed — underside components need an underside photo — and where it is unsure it says "
+         "so and asks for a human check. That is by design.")
+
+# ═══════════════ 24 — BACKUP: CAD-TO-COST WORKFLOW ═══════════════
+s = header('CAD file to cost — how it works, step by step', 'Backup · Feature deep-dive')
+cad_steps = [
+    ('1 · Upload a CAD model', 'STEP, IGES or STL from any CAD system — as the standalone CAD-to-Cost flow or inside any of the 13 commodity calculators.', BLUE),
+    ('2 · Opened in memory, inside our server', 'The OCCT geometry kernel (the same engine class commercial CAD tools are built on) reads the model in memory. The file is never written to disk and never leaves the server.', INDIGO),
+    ('3 · The model is measured', 'Exact volume, surface area, bounding box, mean wall thickness, hole count, free-form faces — measured from the geometry, not typed in from a drawing.', VIOLET),
+    ('4 · Inputs auto-filled', 'Mass from volume × material density, stock/billet size, and suggested process parameters for the chosen commodity — the engineer reviews and adjusts.', CYAN),
+    ('5 · Physics engines cost it', 'Material, cycle or machining time, labour, tooling amortisation, energy and overheads — computed bottom-up on OUR uploaded rates for the chosen country.', GREEN),
+    ('6 · Defensible result', 'Full cost breakdown + DFM warnings (thin walls, tonnage limits) + an honest uncertainty band — and the learning loop tightens it as real quotes arrive.', AMBER),
+]
+y = Inches(1.95)
+for i, (t, d, c) in enumerate(cad_steps):
+    flow_box(s, Inches(0.45), y, Inches(12.45), Inches(0.68), t, d, c, fill=PANEL)
+    y += Inches(0.68)
+    if i < len(cad_steps) - 1:
+        down_arrow(s, Inches(6.5), y + Inches(0.015), h=Inches(0.15))
+        y += Inches(0.18)
+notes(s, "The CAD-to-cost workflow. An engineer uploads a STEP, IGES or STL model — either in the dedicated "
+         "CAD-to-Cost flow or directly inside any of thirteen commodity calculators. Step two is the security "
+         "headline: the geometry engine opens the model in memory, inside our own server — the file is never "
+         "written to disk and never leaves the network. Step three, the engine measures the part: exact volume, "
+         "surface area, wall thickness, holes — numbers measured from the actual geometry rather than read off a "
+         "drawing by eye. Step four, those measurements auto-fill the costing inputs — mass, stock size, suggested "
+         "process parameters — which the engineer reviews rather than types. Step five, the physics engines build "
+         "the cost bottom-up on our own rates. And step six, the output is a defensible breakdown with "
+         "manufacturability warnings and an honest uncertainty band that tightens as the learning loop absorbs "
+         "real quotes.")
+
+# ═══════════════ 25 — BACKUP: CAD-TO-COST TECH / ACCURACY / TIME ═══════════════
+s = header('CAD file to cost — technology, accuracy, speed', 'Backup · Feature deep-dive')
+cols4 = [
+    ('Technology', BLUE, [
+        'OCCT (Open CASCADE) geometry kernel — runs inside our backend',
+        'Pure-TypeScript STL fast path — no external process at all',
+        '18 deterministic physics cost engines do the actual costing',
+        'AI translates the measured geometry into process inputs — it never receives the CAD file itself',
+        'Rate library + 20-country regional rates drive every figure',
+    ]),
+    ('Why it is accurate', GREEN, [
+        'Measured, not estimated — exact volume → exact material mass',
+        'Physics build-ups traceable line by line (no black box)',
+        'DFM sanity checks: wall thickness, clamp tonnage, press force',
+        'Honest uncertainty band shown with every result',
+        'Calibration on 3 real quotes took machining error 10.9% → 0.3%',
+    ]),
+    ('Speed', VIOLET, [
+        'Geometry read and measured in seconds',
+        'Costing computes instantly once inputs are filled',
+        'Model-to-first-price: a few minutes, mostly review time',
+        'Manual alternative: hours of take-off per part',
+        'Same flow in 13 commodities — one skill to learn',
+    ]),
+]
+for i, (t, c, items) in enumerate(cols4):
+    x = Inches(0.45 + i * 4.25)
+    box(s, x, Inches(2.0), Inches(4.0), Inches(4.15), fill=(PANEL2 if i == 0 else PANEL if i == 2 else GREENBG), round_=True, radius=0.06)
+    box(s, x, Inches(2.0), Inches(4.0), Inches(0.09), fill=c)
+    text(s, x + Inches(0.25), Inches(2.2), Inches(3.55), Inches(0.4), [[(t, 14.5, c, True)]])
+    text(s, x + Inches(0.25), Inches(2.68), Inches(3.55), Inches(3.4),
+         [[('• ' + it, 10.5, BODY, False)] for it in items], space_after=7, line_spacing=1.12)
+box(s, Inches(0.45), Inches(6.42), Inches(12.45), Inches(0.85), fill=GREENBG, round_=True, radius=0.08)
+text(s, Inches(0.75), Inches(6.53), Inches(11.9), Inches(0.65),
+     [[('Security, restated: ', 12, GREEN, True),
+       ('the CAD file is processed in memory inside our backend and is never stored or transmitted. Only a short '
+        'numeric geometry summary reaches the AI layer — and in air-gapped mode, nothing leaves at all.', 11.5, BODY, True)]],
+     line_spacing=1.15)
+notes(s, "CAD-to-cost from the same three angles. Technology: the geometry work is done by OCCT — Open CASCADE, "
+         "the same engineering kernel class that commercial CAD packages build on — running inside our backend, "
+         "with a pure-TypeScript fast path for STL files. The costing itself is done by our eighteen deterministic "
+         "physics engines. The AI's only job is translating the measured geometry into sensible process inputs — "
+         "and it never receives the CAD file, only a short numeric summary. Accuracy: the inputs are measured, not "
+         "estimated — exact volume gives exact mass; every cost line is traceable; manufacturability checks catch "
+         "physically impossible set-ups; the uncertainty band is shown honestly; and calibration against just "
+         "three real quotes took machining error from eleven percent to a third of a percent. Speed: seconds to "
+         "measure, instant to cost, minutes to a defensible first price — against hours of manual take-off. And "
+         "the green bar restates the point that matters most in this room: the CAD never leaves our walls, full "
+         "stop.")
+
 OUT = 'CostVision-Implementation-Blueprint.pptx'
 prs.save(OUT)
 print(f'Wrote {OUT} with {len(prs.slides._sldIdLst)} slides')
