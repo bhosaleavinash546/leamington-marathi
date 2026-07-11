@@ -484,6 +484,178 @@ for i, ln in enumerate(note_lines):
 for i, w in enumerate([6, 62, 46, 18, 11, 4], 1):
     wsm.column_dimensions[get_column_letter(i)].width = w
 
+# ═════════════════════════════ METHODOLOGY & Q&A ═════════════════════════════
+wm = wb.create_sheet('Methodology & Q&A', 1)
+title_block(wm, 'How this should-cost was calculated — step by step',
+            'Read top to bottom. The right-hand column shows LIVE numbers pulled by formula from the costing sheets (worked example: front bumper fascia).', 4)
+wm.column_dimensions['A'].width = 7
+wm.column_dimensions['B'].width = 30
+wm.column_dimensions['C'].width = 100
+wm.column_dimensions['D'].width = 20
+
+def m_section(row, label):
+    wm.merge_cells(start_row=row, start_column=1, end_row=row, end_column=4)
+    c = wm.cell(row=row, column=1, value=label)
+    c.font = Font(bold=True, size=12, color='FFFFFF', name='Calibri')
+    c.fill = PatternFill('solid', fgColor=INDIGO)
+    c.alignment = Alignment(vertical='center', indent=1)
+    wm.row_dimensions[row].height = 22
+
+def m_step(row, step, title, how, example_label=None, example_formula=None, fmt=INR2, height=52):
+    wm.cell(row=row, column=1, value=step).font = Font(bold=True, size=14, color=INDIGO, name='Calibri')
+    wm.cell(row=row, column=1).alignment = Alignment(horizontal='center', vertical='center')
+    wm.cell(row=row, column=2, value=title).font = Font(bold=True, size=10.5, color=DARK, name='Calibri')
+    wm.cell(row=row, column=2).alignment = Alignment(vertical='center', wrap_text=True)
+    wm.cell(row=row, column=3, value=how).font = Font(size=10, color=BODY, name='Calibri')
+    wm.cell(row=row, column=3).alignment = Alignment(vertical='center', wrap_text=True)
+    if example_label:
+        wm.cell(row=row, column=4, value=example_label).font = Font(size=8.5, color=MUTED, name='Calibri')
+        wm.cell(row=row, column=4).alignment = Alignment(vertical='top', wrap_text=True, horizontal='center')
+    if example_formula:
+        v = wm.cell(row=row + 1, column=4, value=example_formula)
+        v.number_format = fmt
+        v.font = Font(bold=True, size=11, color=GREEN, name='Calibri')
+        v.alignment = Alignment(horizontal='center', vertical='center')
+        v.fill = PatternFill('solid', fgColor=GREENBG)
+        v.border = BORDER
+    for c in range(1, 5):
+        wm.cell(row=row, column=c).border = BORDER
+        if row % 2 == 0:
+            pass
+    wm.row_dimensions[row].height = height
+
+m_section(3, 'THE 8-STEP METHOD  (worked example on the right: Front Bumper Fascia — values are LIVE, they change if you edit inputs)')
+steps = [
+ ('1', 'Break the assembly into parts and decide make vs buy',
+  'The 26-line part list from the drawing was split into: 18 MANUFACTURED items (we cost these bottom-up on the Parts Costing sheet) and 7 BOUGHT-OUT items '
+  '(electronics & standard hardware — no one should-costs a radar chip bottom-up; we use market reference prices + 3% handling on the Bought-Out sheet).',
+  'Manufactured line items', None, INR2, 50),
+ ('2', 'Material cost per part',
+  'Net part mass × (1 + scrap%) × material price ₹/kg, minus scrap credit for the recoverable portion.  '
+  'Formula in words: you buy slightly more plastic/steel than ends up in the part (runners, offal), and sell back what you can.  '
+  'Excel: =Mass×(1+Scrap)×Price − Mass×Scrap×Credit  →  Fascia: 4.20 kg TPO at ₹142/kg with 4% runner scrap.',
+  'Fascia material ₹', "='Parts Costing'!J4", INR2, 62),
+ ('3', 'Process (machine) cost',
+  'Cycle time ÷ 3600 × machine hour rate ÷ cavities.  The machine rate (Assumptions sheet) is a full build-up: depreciation + energy @ ₹8.5/kWh + maintenance '
+  '+ floor space + supervision.  A 1500-tonne press at ₹2,100/hr running a 58 s cycle costs ₹33.83 of machine time per shot — big-ticket machines, small per-part cost, '
+  'because the hour is shared across every part made in it.',
+  'Fascia process ₹', "='Parts Costing'!O4", INR2, 62),
+ ('4', 'Direct labour',
+  'Cycle time × manning × labour rate ÷ 3600 ÷ cavities.  Manning below 1.0 means one operator tends several machines (standard moulding practice — 0.5 = one operator '
+  'per two presses).  Labour rates are FULLY LOADED: wages + statutory contributions + benefits + supervision share.',
+  'Fascia labour ₹', "='Parts Costing'!R4", INR2, 52),
+ ('5', 'Tooling amortisation',
+  'Tool cost ÷ (annual volume × amortisation years × parts per vehicle).  The ₹2.2 Cr fascia mould spread over 72,000 vehicles × 5 years = a per-part charge.  '
+  'This is the number most sensitive to VOLUME — halve the volume and this line doubles.  If the OEM pays for tooling separately, set column S to zero on Parts Costing.',
+  'Fascia tooling ₹/pc', "='Parts Costing'!T4", INR2, 55),
+ ('6', 'Overheads and margin',
+  'Factory overhead (40%) is applied on CONVERSION cost only (process + labour), never on material — a supplier does not "manage" resin price, so it earns no overhead on it.  '
+  'Then SG&A 8% on manufacturing cost, and 10% profit on top of that.  The result is the ex-works unit price we should expect a competitive tier-1 to quote.',
+  'Fascia unit price ₹', "='Parts Costing'!Y4", INR2, 55),
+ ('7', 'Assembly & packing',
+  'Six stations, each = manned seconds × operators × labour rate.  Add fixture and end-of-line equipment amortisation, 45% assembly overhead on the labour, consumables, '
+  'and the returnable-dunnage trip cost.  Bumper assembly is clip-and-screw work — it is deliberately cheap (~1% of total).',
+  'Assembly & packing ₹', f"={ASSY_TOTAL}", INR2, 52),
+ ('8', 'Roll up the total',
+  'Total = Σ(manufactured unit price × qty) + Σ(bought-out landed × qty) + assembly & packing.  The Summary sheet also shows the MECHANICAL-ONLY subtotal '
+  '(excluding radar/camera/sensors/harness) because that is the number to compare against a bumper supplier\'s quote — the electronics are usually priced separately.',
+  'TOTAL should cost ₹', "=Summary!D8", INR2, 55),
+]
+r = 4
+for (n, t, how, exl, exf, fmt, h) in steps:
+    m_step(r, n, t, how, exl, exf, fmt, h)
+    r += 2 if exf else 1
+
+qa_start = r + 1
+m_section(qa_start, 'MANAGER Q&A — the questions you will get, and the answers (live numbers in the right column)')
+qa = [
+ ('“Why should I trust these numbers?”',
+  'Because nothing is a black box. Every figure is built bottom-up from physics and visible inputs: mass × material price, cycle × machine rate, tool ÷ volume. '
+  'Every input sits in a yellow cell you can challenge and change — and the whole workbook recalculates. A supplier quote can be compared against this line by line.',
+  None, None),
+ ('“Where do the rates come from?”',
+  'India tier-1 benchmarks, July 2026: delivered polymer/steel contract prices, machine-hour build-ups at Indian energy (₹8.5/kWh) and wage levels, fully-loaded labour. '
+  'They are on the Assumptions sheet with a note per line. If purchasing has better contract rates, type them in — that makes the model MORE accurate, not broken.',
+  None, None),
+ ('“₹13,000 for a bumper? The aftermarket part is ₹5,000!”',
+  'Two different things. The ₹13.2k includes the ADAS electronics — radar, camera, 4 parking sensors, harness — which are ~79% of the total and are usually on separate '
+  'commodity contracts. The mechanical bumper module (what a bumper supplier actually quotes) is the number on the right. Aftermarket MRP is also a retail price with '
+  'distribution margins — not comparable to an OEM ex-works piece price.',
+  'Mechanical module ₹', '=Summary!D10'),
+ ('“What happens if the volume assumption is wrong?”',
+  'One cell: Assumptions B4. Volume only touches amortisation (tooling, fixtures, equipment) — material, process and labour are per-piece and unaffected. '
+  'At 72k/yr the fascia carries ₹61 of tooling; at 36k/yr it would carry ₹122. Test any scenario in seconds by editing the cell.',
+  'Current volume', f'={A(4)}'),
+ ('“Why is tooling inside the piece price?”',
+  'Convention for should-cost comparisons — most Indian RFQs quote amortised piece price. If our programme pays tooling as a separate one-time invoice, zero out column S '
+  'on Parts Costing; the piece prices drop and the Tooling sheet still shows the ₹ Cr investment to negotiate separately.',
+  'Tooling investment ₹', '=Tooling!B7'),
+ ('“Are the part weights real?”',
+  'They are engineering estimates from typical B-segment bumper benchmarks (fascia 4.2 kg, beam 4.8 kg…). They sit in yellow cells on Parts Costing — replace them with '
+  'CAD or weighed actuals and the model tightens immediately. Until then treat the result as a ±15–20% class estimate.',
+  None, None),
+ ('“The part list says ABS for the grilles but you costed PP?”',
+  'The exploded drawing says PP, the part list says ABS — a genuine document conflict, flagged rather than hidden. PP (textured black) is typical for this segment, so PP '
+  'was used. To switch: change the material price reference on the two grille rows to the ABS cell — roughly +₹50/kg on ~1.2 kg of parts.',
+  None, None),
+ ('“What is included and what is not?”',
+  'Included: material, process, labour, tooling amortisation, factory overhead, SG&A, profit, assembly, returnable packaging — ex-works supplier. '
+  'Excluded (by should-cost convention): freight to OEM plant, GST/duties, warranty provisions, ED&D. Add a logistics line if you need landed cost.',
+  None, None),
+ ('“Isn\'t 40% overhead too high (or too low)?”',
+  'It is applied on conversion only (process + labour), NOT on material — so it is a much smaller ₹ than it sounds. 35–50% on conversion is the normal band for Indian '
+  'tier-1 plastics/stamping plants. It is one editable cell (Assumptions B38) if our benchmark differs.',
+  None, None),
+ ('“How much margin did we allow the supplier?”',
+  'SG&A 8% + profit 10%, both visible and editable. Together they are the negotiation band: a quote at our number ±5% is honest; a quote 25% above it needs a '
+  'line-by-line conversation — and this workbook is exactly the agenda for that conversation.',
+  None, None),
+ ('“Which parts carry the most cost?”',
+  'Painted fascia (~₹1,276 = moulding + body-colour paint), then the steel reinforcement beam (~₹495), then the grilles. Everything else is small brackets and covers '
+  'below ₹120. In bought-out: the radar alone is more than the entire painted fascia.',
+  'Painted fascia ₹', "='Parts Costing'!Y4+'Parts Costing'!Y5"),
+ ('“Can we use this in a supplier negotiation?”',
+  'Yes — that is its purpose. Hand the supplier the same structure and ask them to fill THEIR numbers: where their material price, cycle time or overhead differs from '
+  'ours, that specific cell becomes the discussion. Suppliers concede far more against a bottom-up model than against “please give 5% discount”.',
+  None, None),
+ ('“Why does paint cost ₹416 when the paint material is only ₹185?”',
+  'Body-colour painting is a process cost, not a material cost: a robotic paint line at ₹2,800/hr with booth energy and ventilation, ~130 s per bumper, plus overhead and '
+  'margin on that conversion. If the fascia is supplied moulded-in-colour, delete the paint row — the model drops it cleanly.',
+  'Paint line item ₹', "='Parts Costing'!Y5"),
+ ('“4 parking sensors or 8?”',
+  'Base trim = 4 (assumed), top trim = 8. One cell — Assumptions B44 — drives the sensor count, the holder count and the bought-out total together.',
+  None, None),
+ ('“How would we make this part cheaper?”',
+  'The levers, in order of size: (1) delete/reduce paint (moulded-in-colour saves ~₹400), (2) resin contract price — every ₹10/kg on TPO is ~₹44 on the fascia, '
+  '(3) volume pooling to spread tooling, (4) runner regrind reuse instead of selling scrap, (5) beam gauge/grade optimisation. The workbook quantifies each in seconds.',
+  None, None),
+]
+r = qa_start + 1
+for (q, a, exl, exf) in qa:
+    wm.cell(row=r, column=1, value='Q').font = Font(bold=True, size=12, color=AMBER, name='Calibri')
+    wm.cell(row=r, column=1).alignment = Alignment(horizontal='center', vertical='center')
+    wm.cell(row=r, column=2, value=q).font = Font(bold=True, size=10, color=DARK, name='Calibri')
+    wm.cell(row=r, column=2).alignment = Alignment(vertical='center', wrap_text=True)
+    wm.cell(row=r, column=3, value=a).font = Font(size=9.5, color=BODY, name='Calibri')
+    wm.cell(row=r, column=3).alignment = Alignment(vertical='center', wrap_text=True)
+    if exl:
+        wm.cell(row=r, column=4, value=exl).font = Font(size=8.5, color=MUTED, name='Calibri')
+        wm.cell(row=r, column=4).alignment = Alignment(vertical='top', wrap_text=True, horizontal='center')
+        v = wm.cell(row=r + 1, column=4, value=exf)
+        v.number_format = INR2 if 'volume' not in exl.lower() else '#,##0 "veh/yr"'
+        v.font = Font(bold=True, size=11, color=GREEN, name='Calibri')
+        v.alignment = Alignment(horizontal='center', vertical='center')
+        v.fill = PatternFill('solid', fgColor=GREENBG)
+        v.border = BORDER
+    for c in range(1, 5):
+        wm.cell(row=r, column=c).border = BORDER
+        if (r - qa_start) % 2 == 0:
+            if not wm.cell(row=r, column=c).fill.fgColor.rgb or wm.cell(row=r, column=c).fill.fgColor.rgb == '00000000':
+                wm.cell(row=r, column=c).fill = PatternFill('solid', fgColor=PANEL)
+    wm.row_dimensions[r].height = 66
+    r += 2 if exl else 1
+wm.freeze_panes = 'A3'
+
 OUT = 'Altroz-Front-Bumper-Should-Cost-India.xlsx'
 wb.save(OUT)
 print(f'Wrote {OUT} with sheets: {wb.sheetnames}')
