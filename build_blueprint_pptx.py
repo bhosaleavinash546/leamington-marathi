@@ -597,6 +597,75 @@ notes(s, "To summarise: secure deployment with CAD fully internal is feasible �
          "architecture design. The full written plan, including the security checklist, is ready to hand to the "
          "IT-Security team. Thank you — questions welcome.")
 
+# ═══════════════ 16 — BACKUP: MARKET LANDSCAPE ═══════════════
+s = header('Has anyone done this? Yes — the market is real', 'Backup · Market landscape')
+market = [
+    ('aPriori', 'Market leader (US)', 'CAD-to-cost with physics-based models and regional cost databases. Used by Fortune-500 OEMs and Tier-1 suppliers — companies our size already pay for this category.', BLUE, 'apriori.com'),
+    ('Siemens PCM', 'PLM giant (Teamcenter)', 'Bottom-up should-costing with process models and supplier collaboration, embedded in the Siemens PLM suite.', INDIGO, 'siemens.com/teamcenter'),
+    ('Tset', 'AI challenger (Austria, 2018)', 'Automotive-focused costing from 3D models and BOMs, 50+ calculation modules plus CO2. Being acquired by A2MAC1 (June 2026) to build "AI-enabled costing intelligence".', VIOLET, 'tset.com · globenewswire.com (18 Jun 2026)'),
+    ('Boothroyd DFMA', 'The classic (Dewhurst)', 'Design-for-manufacture and concurrent costing — the methodology textbooks are built on, used for decades.', CYAN, 'dfma.com'),
+    ('New AI entrants', 'Start-ups', 'Razorlabs Cost Advisor, Emithran and others: AI quotes from CAD files, calibrated on live machining data.', MUTED, 'emithran.com'),
+]
+for i, (t, tag, d, c, src) in enumerate(market):
+    y = Inches(1.98 + i * 0.87)
+    box(s, Inches(0.45), y, Inches(12.45), Inches(0.78), fill=PANEL, round_=True, radius=0.14)
+    box(s, Inches(0.45), y, Inches(0.09), Inches(0.78), fill=c)
+    text(s, Inches(0.75), y + Inches(0.08), Inches(2.55), Inches(0.4), [[(t, 13, c, True)]])
+    text(s, Inches(0.75), y + Inches(0.44), Inches(2.55), Inches(0.3), [[(tag, 9, MUTED, False, True)]])
+    text(s, Inches(3.45), y + Inches(0.08), Inches(9.2), Inches(0.45), [[(d, 10.5, BODY, False)]], line_spacing=1.05)
+    text(s, Inches(3.45), y + Inches(0.55), Inches(9.2), Inches(0.22), [[('Source: ' + src, 8.5, MUTED, False, True)]])
+box(s, Inches(0.45), Inches(6.45), Inches(12.45), Inches(0.75), fill=PANEL2, round_=True, radius=0.1)
+text(s, Inches(0.75), Inches(6.58), Inches(11.9), Inches(0.55),
+     [[('Takeaway: ', 12, BLUE, True),
+       ('the should-cost category is proven — large OEMs already pay for it. The question is not IF it works, '
+        'but why OURS fits us better: security, learning on our own data, and CAPEE integration (next slide).', 12, BODY, False)]],
+     line_spacing=1.12)
+notes(s, "Backup slide, for the question 'has anyone done this before — are we the only ones?' The answer is "
+         "reassuring in both directions. No, we are not inventing an unproven category: should-cost software is an "
+         "established market. aPriori is the leader — CAD-to-cost with physics models, sold to exactly our kind of "
+         "company. Siemens ships it inside the PLM suite. Tset is the automotive AI challenger — and notably A2MAC1 "
+         "agreed to acquire them in June 2026 specifically to build AI-enabled costing intelligence, which tells you "
+         "the whole market believes in the direction we've already built. Boothroyd Dewhurst is the classic "
+         "methodology, and a wave of AI start-ups is doing CAD-to-quote. So the category is validated by the market. "
+         "The real question is why our own tool rather than buying one — and that's the next slide.")
+
+# ═══════════════ 17 — BACKUP: WHERE COSTVISION STANDS APART ═══════════════
+s = header('Why ours — what no vendor offers today', 'Backup · Differentiation')
+diffs = [
+    ('PCB photo → costed BOM', 'Photograph a circuit board, get a costed bill of materials with live component pricing. Design tools generate BOMs; no mainstream costing suite costs a board from photos.', GREEN),
+    ('Self-learning on OUR data', 'Calibrates itself on our real PO prices (error 10.9% → 0.3% after 3 quotes in testing) and raises findings autonomously. Incumbents are still marketing toward this.', GREEN),
+    ('Runs inside our walls', 'Commercial tools are cloud SaaS — our CAD would live in their cloud. CostVision is on-prem with private AI routing and a provable air-gapped switch, both already built.', GREEN),
+    ('One platform, no module licences', '18 commodity engines + automotive software costing + carbon + RFQ generation in one codebase. Vendors sell comparable breadth as separately licensed modules.', GREEN),
+]
+for i, (t, d, c) in enumerate(diffs):
+    x = Inches(0.45 + (i % 2) * 6.35); y = Inches(2.0 + (i // 2) * 1.62)
+    box(s, x, y, Inches(6.1), Inches(1.45), fill=GREENBG, round_=True, radius=0.09)
+    box(s, x, y, Inches(0.09), Inches(1.45), fill=c)
+    text(s, x + Inches(0.28), y + Inches(0.12), Inches(5.6), Inches(0.35), [[(t, 13.5, GREEN, True)]])
+    text(s, x + Inches(0.28), y + Inches(0.5), Inches(5.6), Inches(0.9), [[(d, 10.5, BODY, False)]], line_spacing=1.1)
+box(s, Inches(0.45), Inches(5.4), Inches(12.45), Inches(1.0), fill=AMBERBG, round_=True, radius=0.08)
+text(s, Inches(0.75), Inches(5.53), Inches(11.9), Inches(0.8),
+     [[('Honest caveat: ', 12, AMBER, True),
+       ('vendors like aPriori have decades of curated global cost data behind their numbers. Our answer is the '
+        'learning loop: every quote CAPEE logs turns OUR history into a moat no vendor can buy — and our rates stay confidential.', 11.5, BODY, False)]],
+     line_spacing=1.15)
+text(s, Inches(0.45), Inches(6.55), Inches(12.4), Inches(0.35),
+     [[('Positioning: not "better than aPriori" — an internal, secure, self-learning costing engine behind CAPEE that gets smarter on our own data.', 12, DARK, True)]])
+text(s, Inches(0.45), Inches(6.95), Inches(12.4), Inches(0.25),
+     [[('Sources: apriori.com · siemens.com/teamcenter · tset.com · globenewswire.com (A2MAC1-Tset, 18 Jun 2026) · dfma.com · emithran.com · flux.ai · circuitmind.io', 8.5, MUTED, False, True)]])
+notes(s, "The second half of the backup answer: given the market exists, why build our own? Four things no vendor "
+         "offers today. One — photo-to-cost for PCBs: photograph a supplier's or competitor's board and get a costed "
+         "bill of materials; design tools generate BOMs during design, but no costing suite does this from photos. "
+         "Two — the self-learning loop: CostVision calibrates on our own purchase-order prices, cutting error from "
+         "about eleven percent to under one percent in testing after just three quotes, and raises findings on its "
+         "own; the incumbents are only now marketing toward AI-enabled costing. Three — deployment: the commercial "
+         "tools are cloud SaaS, meaning our CAD and our rates would sit in a vendor's cloud; CostVision runs inside "
+         "our network with the private-AI and air-gap controls already built. Four — breadth without per-module "
+         "licences. And the honest caveat management should hear: aPriori's strength is decades of curated cost "
+         "data. Our counter is that every quote CAPEE logs makes CostVision smarter on OUR parts, OUR suppliers, "
+         "OUR regions — data no vendor has. The positioning is not 'better than aPriori'; it is an internal, "
+         "secure, self-learning engine behind CAPEE.")
+
 OUT = 'CostVision-Implementation-Blueprint.pptx'
 prs.save(OUT)
 print(f'Wrote {OUT} with {len(prs.slides._sldIdLst)} slides')
