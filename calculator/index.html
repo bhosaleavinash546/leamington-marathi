@@ -6,13 +6,15 @@
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="theme-color" content="#0e1525" />
-  <link rel="manifest" href="/calculator/manifest.webmanifest" />
+    <link rel="manifest" href="/calculator/manifest.webmanifest" />
   <link rel="apple-touch-icon" href="/calculator/icons/icon-192x192.png" />
+    <link rel="icon" type="image/svg+xml" href="/calculator/favicon.svg" />
+  <meta name="description" content="CostVision — AI-powered should-cost intelligence. Bottom-up cost engineering across 19+ manufacturing processes, from a photo, a CAD file, or a plain-English brief." />
+  <meta property="og:title" content="CostVision — AI Cost Intelligence" />
+  <meta property="og:description" content="Know what a part should cost — before you negotiate. Physics-based should-costing with self-learning accuracy." />
+  <meta property="og:type" content="website" />
+  <meta name="theme-color" content="#4F46E5" />
   <title>CostVision — AI-Powered Cost Intelligence</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <script>
     // Apply saved theme before render to prevent flash
     (function() {
@@ -27,6 +29,8 @@
     (function() {
       const authUrl = window.location.pathname.replace(/[^/]*$/, '') + 'auth.html';
       window.__cvAuthUrl = authUrl;
+      // Shared view-only links are public — skip the auth gate
+      if (new URLSearchParams(window.location.search).has('share')) return;
       const token = localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token');
       if (!token) { window.location.replace(authUrl); return; }
       try {
@@ -1037,9 +1041,11 @@
     <div id="validation-errors"   class="validation-box error"   style="display:none"></div>
     <div id="validation-warnings" class="validation-box warning" style="display:none"></div>
 
-    <!-- Action buttons -->
-    <div class="btn-row">
+    <!-- Action buttons (sticky) -->
+    <div class="btn-row cv-sticky-actions">
       <button class="btn btn-primary" id="calc-btn">Calculate</button>
+      <button id="cv-validation-chip" style="display:none" type="button"></button>
+      <span id="cv-dirty-dot" style="display:none" title="Unsaved changes — Calculate or Save to Library">Unsaved changes</span>
       <button class="btn btn-secondary" id="export-excel-btn" style="display:none" title="Export 6-sheet Excel workbook: Summary, Material, Operations, Machine Rates, Labour Rates, Traceability">Export Excel ↗</button>
       <button class="btn btn-secondary" id="export-pdf-btn"   style="display:none" title="Generate professional PDF report: 5 pages, aPriori-style cost breakdown with full machine rate buildup">PDF Report ↗</button>
       <button class="btn btn-primary"   id="export-all-pdf-btn" style="display:none" title="Export everything into one PDF: Should-Cost + DFM/DFA + CAD Analysis + PCB Analysis">⬇ Export All to PDF</button>
@@ -1055,6 +1061,9 @@
 
   <!-- ── Results Panel ─────────────────────────────────────────────────── -->
   <div class="results-panel">
+
+    <!-- Sticky result hero — the answer, always in view -->
+    <div id="cv-result-hero" style="display:none"></div>
 
     <!-- Results tab bar -->
     <div class="results-tabs" id="results-tabs" style="display:none">
@@ -1212,11 +1221,11 @@
         <div class="help-card-title"><div class="help-icon">1</div>Navigate to a Commodity</div>
         <p>There are two ways to start a costing:</p>
         <ul>
-          <li><strong>⊕ New Costing</strong> (top nav button) → opens the full commodity picker screen with all 19+ manufacturing processes and specialist tools as tiles → click a tile to open the right-side workflow panel.</li>
+          <li><strong>New Costing</strong> (top bar, or press <strong>&#8984;K</strong>) → opens the full commodity picker screen with all 19+ manufacturing processes and specialist tools as tiles → click a tile to open the right-side workflow panel.</li>
           <li><strong>One-Click Shortcuts</strong> on the Home Dashboard → jump directly to a specific commodity in full-screen mode.</li>
           <li><strong>🚗 Automotive Software Should-Cost</strong> — new in V4.1 — select from the picker to open the dedicated 49-module software cost model for premium EV programmes.</li>
         </ul>
-        <p style="margin-top:6px">Use the <strong>Home</strong> button or click the <strong>CostVision logo</strong> to return to the dashboard at any time.</p>
+        <p style="margin-top:6px">Use <strong>Home</strong> in the left sidebar or click the <strong>CostVision logo</strong> to return to the dashboard at any time.</p>
       </div>
       <div class="help-card">
         <div class="help-card-title"><div class="help-icon">2</div>Enter Part Data</div>
@@ -1537,7 +1546,7 @@
             cap:'A modern EV runs on <b>100+ million lines of code</b>. Unlike a stamped part, that cost is almost all engineering time — which makes it hard to estimate and easy to get wrong. This tool prices it from first principles.' },
           { ch:'Open', title:'Open the tool',
             body:'<div class="swdemo-h">Open it in two clicks</div><div class="swdemo-mock">'+tile('① ⊕ New Costing','top navigation bar')+tile('② Software section','scroll to it')+tile('③ 💻 Auto SW Cost','click the tile',true)+'</div><div class="swdemo-cursor" style="left:auto;right:120px;bottom:70px">🖱️</div>',
-            cap:'Start from <b>⊕ New Costing</b> in the top bar, scroll to the <b>Software</b> section, and click the <b>💻 Auto SW Cost</b> tile. The panel opens on the right.' },
+            cap:'Start from <b>New Costing</b> in the top bar, scroll to the <b>Software</b> section, and click the <b>Auto SW Cost</b> tile. The panel opens on the right.' },
           { ch:'Two modes', title:'Guided vs Advanced',
             body:'<div class="swdemo-h">Pick your mode</div><div class="swdemo-mock">'+tile('🧭 Guided','6 simple steps — the default for new users',true)+tile('⚙️ Advanced','all 49 modules at once — for experts')+'</div><div class="swdemo-sub" style="margin-top:12px">Both produce the same result — switch anytime; your choices carry over.</div>',
             cap:'The panel opens in <b>Guided</b> mode — a 6-step wizard, ideal when you\'re new. Power users can flip to <b>Advanced</b> for the full 49-module grid. Both drive the same engine, so nothing is lost switching.' },
@@ -1617,7 +1626,7 @@
       <div class="help-card" style="border-left:4px solid #2563eb">
         <div class="help-card-title"><div class="help-icon" style="background:#2563eb">1</div>How to Open the Auto SW Cost Tool</div>
         <ol style="margin-top:6px">
-          <li>Click the <strong>⊕ New Costing</strong> button in the top navigation bar.</li>
+          <li>Click the <strong>New Costing</strong> button in the top bar (or press <strong>&#8984;K</strong>).</li>
           <li>The <strong>Start New Should Costing</strong> screen appears, showing tiles for all available commodity types.</li>
           <li>Scroll down to the <strong>Software</strong> section.</li>
           <li>Click the <strong>💻 Auto SW Cost</strong> tile.</li>
@@ -1975,7 +1984,7 @@
     <div class="help-section" id="help-news-feed">
       <div class="help-card">
         <div class="help-card-title"><div class="help-icon">📰</div>What is the News Feed?</div>
-        <p>The <strong>📰 News</strong> section in the top navigation bar aggregates live articles from <strong>30 curated RSS sources</strong> covering automotive manufacturing, battery technology, commodity markets, EV technology, robotics, and supply chain. Up to <strong>120 articles</strong> are fetched and displayed, refreshed automatically every 15 minutes.</p>
+        <p>The <strong>News</strong> section in the left sidebar aggregates live articles from <strong>30 curated RSS sources</strong> covering automotive manufacturing, battery technology, commodity markets, EV technology, robotics, and supply chain. Up to <strong>120 articles</strong> are fetched and displayed, refreshed automatically every 15 minutes.</p>
         <ul style="margin-top:8px">
           <li>Click <strong>📰 News</strong> in the nav bar to open the full news view.</li>
           <li>A live <strong>news ticker</strong> scrolls the latest headlines across the top of the screen.</li>
@@ -2088,7 +2097,7 @@
     <div class="help-section" id="help-faq">
       <div class="faq-item">
         <div class="faq-q" id="faq-q1">How do I change the manufacturing region?</div>
-        <div class="faq-a" id="faq-a1" style="display:none">Use the 🌍 dropdown in the top navigation bar. Selecting a different country automatically adjusts machine rates, labour rates, energy costs, and material transport costs for that region. All rates are from the Rate Library which you can inspect and edit via <strong>Edit Rates</strong>.</div>
+        <div class="faq-a" id="faq-a1" style="display:none">Use the region dropdown in the top bar. Selecting a different country automatically adjusts machine rates, labour rates, energy costs, and material transport costs for that region. All rates are from the Rate Library which you can inspect and edit via <strong>Edit Rates</strong>.</div>
       </div>
       <div class="faq-item">
         <div class="faq-q" id="faq-q2">Can I edit the rate library?</div>
@@ -3239,6 +3248,8 @@
   function openHelp() {
     const m = document.getElementById('help-modal');
     if (m) { m.style.display = 'flex'; document.body.style.overflow = 'hidden'; }
+    // One overlay at a time: opening Help closes the AI chat drawer
+    document.dispatchEvent(new CustomEvent('cv:close-chat'));
   }
   function closeHelp() {
     const m = document.getElementById('help-modal');
@@ -3326,7 +3337,7 @@
   <div style="background:var(--surface);border:1px solid var(--border-strong);border-radius:14px;max-width:820px;width:100%;padding:0;box-shadow:0 24px 80px rgba(0,0,0,0.5)">
     <!-- Header -->
     <div style="padding:20px 24px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px">
-      <div style="font-size:1.5rem">🚗</div>
+      <div style="width:38px;height:38px;border-radius:9px;display:grid;place-items:center;color:var(--accent);background:color-mix(in srgb, var(--accent) 12%, transparent)"><svg class="ic" style="width:19px;height:19px"><use href="#i-car"/></svg></div>
       <div style="flex:1">
         <div id="demo-modal-title" style="font-size:1.1rem;font-weight:700;color:var(--text-primary);font-family:var(--font)">Luxury SUV Demo Gallery</div>
         <div style="font-size:0.76rem;color:var(--text-muted);margin-top:2px">Real-world automotive cost examples — click any card to load it instantly with AI insights</div>
@@ -4929,12 +4940,12 @@ function initTooltips() {
 
 // ── 2. Product Tour ───────────────────────────────────────────────────────
 var TOUR_STEPS = [
-  { selector: null, title: 'Welcome to CostVision V4.1 👋', body: 'This quick tour covers the key features in under 2 minutes. Skip at any time with the button below.', position: 'center' },
-  { selector: '#new-costing-btn', title: '⊕ Start a New Costing', body: 'Click <strong>⊕ New Costing</strong> to open the commodity picker. Choose from 19+ manufacturing processes or AI-powered tools.', position: 'below' },
-  { selector: '#demo-btn', title: '🚗 Demo Gallery', body: 'Browse <strong>50+ pre-loaded luxury SUV examples</strong> across all commodity types. Load any demo instantly with one click.', position: 'below' },
-  { selector: '#news-btn', title: '📰 Live Market Intelligence', body: 'Access <strong>120 articles from 30 curated feeds</strong> — battery, EV, materials, supply chain. Auto-refreshes every 15 minutes.', position: 'below' },
-  { selector: '#help-btn', title: '? Help Centre', body: 'This button opens the <strong>Help Centre</strong> with search, guides, glossary, keyboard shortcuts, and the changelog. You\'re here now!', position: 'below' },
-  { selector: '#ai-chat-fab', title: '💬 AI Cost Assistant', body: 'The floating button opens your <strong>AI manufacturing cost chatbot</strong>. Ask about any commodity, process, or cost driver — available 24/7.', position: 'above' },
+  { selector: null, title: 'Welcome to CostVision V4.1', body: 'This quick tour covers the key features in under 2 minutes. Skip at any time with the button below.', position: 'center' },
+  { selector: '#new-costing-btn', title: 'Start a New Costing', body: 'Click <strong>New Costing</strong> in the top bar to open the commodity picker. Choose from 19+ manufacturing processes or AI-powered tools — or press <strong>&#8984;K</strong> and type a commodity name.', position: 'below' },
+  { selector: '#demo-btn', title: 'Demo Gallery', body: '<strong>Demos</strong> in the left sidebar opens 50+ pre-loaded luxury SUV examples across all commodity types. Load any demo instantly with one click.', position: 'below' },
+  { selector: '#news-btn', title: 'Live Market Intelligence', body: '<strong>News</strong> in the left sidebar gives you 120 articles from 30 curated feeds — battery, EV, materials, supply chain. Auto-refreshes every 15 minutes.', position: 'below' },
+  { selector: '#help-btn', title: 'Help Centre', body: '<strong>Help</strong> at the bottom of the sidebar opens search, guides, glossary, keyboard shortcuts, and the changelog.', position: 'below' },
+  { selector: '#ai-chat-fab', title: 'AI Cost Assistant', body: 'The floating button opens your <strong>AI manufacturing cost chatbot</strong>. Ask about any commodity, process, or cost driver — available 24/7.', position: 'above' },
 ];
 
 var tourStep = 0;

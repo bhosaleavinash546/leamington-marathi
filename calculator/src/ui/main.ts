@@ -75,8 +75,17 @@ import {
 import { computeAssemblyRollup, newAssembly, saveAssembly, deleteAssembly, listAssemblies } from '../engine/assembly.js';
 import type { Assembly, AssemblyLine } from '../engine/assembly.js';
 import type { LearningCurveResult } from '../engine/learning-curve.js';
-import { jsPDF } from 'jspdf';
-import autoTable from 'jspdf-autotable';
+// PDF vendor libs are heavy — loaded on demand at first export, not at startup.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let jsPDF: any;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let autoTable: any;
+async function ensurePdfLibs(): Promise<void> {
+  if (jsPDF && autoTable) return;
+  const [m1, m2] = await Promise.all([import('jspdf'), import('jspdf-autotable')]);
+  jsPDF = m1.jsPDF;
+  autoTable = m2.default;
+}
 import { exportToExcelBlob } from '../export/excel.js';
 import { printPDF, printCADAnalysisPDF, drawCostVisionLogo } from '../export/pdf.js';
 import { computeCostUncertainty } from '../engine/uncertainty.js';
@@ -598,6 +607,7 @@ function showWorkflowPanel(commodity: string): void {
   if (headerEl) headerEl.style.display = '';
   if (backdrop) { backdrop.classList.remove('visible'); backdrop.style.display = 'none'; }
   switchCommodity(commodity as CommodityType);
+  setTimeout(() => { restoreDraft(); initBenchmarkHints(); }, 250);
   setTimeout(() => maybeShowWizard(commodity), 400);
 }
 
@@ -1571,6 +1581,11 @@ function renderComparePanel(): void {
 
 function toggleChat(): void {
   _chatOpen = !_chatOpen;
+  // One overlay at a time: opening the chat closes the Help modal
+  if (_chatOpen) {
+    const help = document.getElementById('help-modal');
+    if (help && help.style.display !== 'none') { help.style.display = 'none'; document.body.style.overflow = ''; }
+  }
   const fab = document.getElementById('ai-chat-fab');
   if (fab) fab.setAttribute('aria-expanded', String(_chatOpen));
   if (_chatOpen && _chatMessages.length === 0) {
@@ -1581,6 +1596,8 @@ function toggleChat(): void {
   onChatToggled(_chatOpen);
   if (_chatOpen) setTimeout(() => document.getElementById('ai-chat-input')?.focus(), 300);
 }
+
+document.addEventListener('cv:close-chat', () => { if (_chatOpen) toggleChat(); });
 
 function renderChatMessages(): void {
   const list = document.getElementById('ai-chat-messages');
@@ -8869,7 +8886,8 @@ function exportPCBAnalysisExcel(r: PCBImageAnalysis): void {
   URL.revokeObjectURL(url);
 }
 
-function exportPCBAnalysisPrint(r: PCBImageAnalysis): void {
+async function exportPCBAnalysisPrint(r: PCBImageAnalysis): Promise<void> {
+  await ensurePdfLibs();
   type RGB = [number, number, number];
   const BLUE: RGB   = [37,  99,  235];
   const DARK: RGB   = [15,  23,  42];
@@ -9057,7 +9075,7 @@ function exportPCBAnalysisPrint(r: PCBImageAnalysis): void {
     bodyStyles: { halign: 'right' },
     columnStyles: { 0: { halign: 'left', fontStyle: 'bold' } },
     theme: 'grid',
-    didParseCell: (data) => {
+    didParseCell: (data: any) => {
       if (data.section === 'body' && data.row.index === 3) {
         data.cell.styles.fillColor = [220, 242, 255];
         data.cell.styles.fontStyle = 'bold';
@@ -9093,7 +9111,7 @@ function exportPCBAnalysisPrint(r: PCBImageAnalysis): void {
         5: { fontStyle: 'bold', textColor: BLUE },
       },
       theme: 'grid',
-      didParseCell: (data) => {
+      didParseCell: (data: any) => {
         if (data.section === 'body' && data.row.index === 0 && data.column.index === 5) {
           data.cell.styles.fillColor = [220, 242, 220];
           data.cell.styles.fontStyle = 'bold';
@@ -9134,7 +9152,7 @@ function exportPCBAnalysisPrint(r: PCBImageAnalysis): void {
       8: { cellWidth: 16 },
     },
     theme: 'grid',
-    didParseCell: (data) => {
+    didParseCell: (data: any) => {
       if (data.section === 'body') {
         const item = r.bom[data.row.index];
         if (item?.highCost) data.cell.styles.fillColor = [255, 248, 220];
@@ -11991,7 +12009,7 @@ function compute(): void {
   const calcBtn = el<HTMLButtonElement>('calc-btn');
   const originalLabel = calcBtn.textContent ?? 'Calculate';
   calcBtn.disabled = true;
-  calcBtn.textContent = '⏳ Calculating…';
+  calcBtn.textContent = 'Calculating…';
 
   _smExtraWarnings = [];
   let input: UniversalStackInput;
@@ -12002,6 +12020,7 @@ function compute(): void {
     calcBtn.textContent = originalLabel;
     errBox.style.display = 'block';
     errBox.innerHTML = `<strong>Input error:</strong> ${escHtml(err instanceof Error ? err.message : String(err))}`;
+    setValidationChip(1);
     return;
   }
 
@@ -12013,9 +12032,12 @@ function compute(): void {
     errBox.style.display = 'block';
     errBox.innerHTML = `<strong>Errors:</strong><ul>${validation.errors.map(e => `<li>${escHtml(e.field)}: ${escHtml(e.message)}</li>`).join('')}</ul>`;
     warnBox.style.display = 'none';
+    setValidationChip(validation.errors.length);
     return;
   }
   errBox.style.display = 'none';
+  setValidationChip(0);
+  setDirty(false);
 
   const allWarnings = [
     ...validation.warnings.map(w => `${w.field}: ${w.message}`),
@@ -12089,6 +12111,8 @@ function showResultsArea(): void {
   resultsEl.style.display = 'flex';
   resultsEl.style.visibility = 'visible';
   switchResultTab('breakdown');
+  renderResultHero();
+  tagTraceableRows();
   // Make sure the tab bar is actually in view (its scroll container may have been
   // left scrolled past the top by a previous render / demo switch).
   (resultsEl.closest('.results-panel') as HTMLElement | null)?.scrollTo?.({ top: 0 });
@@ -12106,6 +12130,10 @@ function showResultsArea(): void {
     document.querySelectorAll<HTMLElement>('.rtab').forEach(t => {
       t.style.visibility = 'visible'; t.style.opacity = '1';
     });
+    // Content renders after this hook fires — re-run the hero (band info is set
+    // during the insights render) and re-tag the breakdown rows for the drawer.
+    renderResultHero();
+    tagTraceableRows();
   }, 500);
 }
 
@@ -12196,8 +12224,12 @@ function renderUploadPanel(): void {
 
 function switchResultTab(tab: string): void {
   document.querySelectorAll<HTMLElement>('.rtab').forEach(t => {
-    t.classList.toggle('active', t.dataset.panel === tab);
+    const active = t.dataset.panel === tab;
+    t.classList.toggle('active', active);
+    t.setAttribute('role', 'tab');
+    t.setAttribute('aria-selected', String(active));
   });
+  document.getElementById('results-tabs')?.setAttribute('role', 'tablist');
   document.getElementById('results-breakdown')?.style.setProperty('display', tab === 'breakdown' ? '' : 'none');
   document.getElementById('results-detail')?.style.setProperty('display', tab === 'detail' ? '' : 'none');
   document.getElementById('results-insights')?.style.setProperty('display', tab === 'insights' ? '' : 'none');
@@ -13392,6 +13424,7 @@ function renderInsights(result: PartCostResult, input: UniversalStackInput): voi
           ? computeCostUncertainty(result, input, { baseCvOverride: cvFromMape(hcal.calibratedMapePct) })
           : computeCostUncertainty(result, input);
         const bandColor = u.band === 'tight' ? '#16a34a' : u.band === 'moderate' ? '#d97706' : '#dc2626';
+        _lastBandInfo = { pm: u.plusMinusPct, band: String(u.band), conf: hcal.applied ? 'calibrated' : String(u.overallConfidence) };
         const bandNote = hcal.applied
           ? `Band width comes from OBSERVED accuracy (${hcal.calibratedMapePct}% MAPE over ${hcal.n} actuals) — it tightens as more quotes are logged.`
           : 'Range reflects how well each cost driver is known (High/Medium/Low confidence). Tighten it by attaching CAD, a BOM, or logging an actual quote.';
@@ -13860,7 +13893,8 @@ async function downloadExcel(): Promise<void> {
 
 // ─── Master Combined PDF Export ───────────────────────────────────────────────
 
-function printMasterPDF(): void {
+async function printMasterPDF(): Promise<void> {
+  await ensurePdfLibs();
   const hasCost = !!(lastResult && lastInput);
   const hasCAD  = !!cadAnalysisResult;
   const hasPCB  = !!pcbImageResult;
@@ -14047,12 +14081,12 @@ function printMasterPDF(): void {
       body: buckets.map(([label, val, p]) => [label, c(val), pct(p), '']),
       styles: { fontSize: 8 }, headStyles: { fillColor: hdr_bg, textColor: SLATE, fontStyle: 'bold' },
       columnStyles: { 0: { cellWidth: 70 }, 1: { cellWidth: 30, halign: 'right' }, 2: { cellWidth: 22, halign: 'right' }, 3: {} },
-      didParseCell: (d) => {
+      didParseCell: (d: any) => {
         const rt = buckets[d.row.index]?.[3];
         if (rt === 'total') { d.cell.styles.fontStyle = 'bold'; d.cell.styles.fillColor = [255, 243, 230]; }
         else if (rt === 'sub') { d.cell.styles.fontStyle = 'bold'; d.cell.styles.fillColor = hdr_bg; }
       },
-      didDrawCell: (d) => {
+      didDrawCell: (d: any) => {
         if (d.section !== 'body' || d.column.index !== 3) return;
         const p = Math.max(0, Math.min(100, buckets[d.row.index]?.[2] ?? 0));
         const pad = 2;
@@ -14102,7 +14136,7 @@ function printMasterPDF(): void {
           body: dfm.dfm.issues.map(i => [i.severity.toUpperCase(), i.category, i.title, i.description, `${i.savingPct.toFixed(0)}%`, i.recommendation]),
           styles: { fontSize: 7, overflow: 'linebreak' }, headStyles: { fillColor: hdr_bg, textColor: SLATE, fontStyle: 'bold', fontSize: 7 },
           columnStyles: { 0: { cellWidth: 18, fontStyle: 'bold' }, 1: { cellWidth: 18 }, 2: { cellWidth: 28 }, 3: { cellWidth: 45 }, 4: { cellWidth: 13, halign: 'right' }, 5: { cellWidth: cW - 125 } },
-          didParseCell: (d) => {
+          didParseCell: (d: any) => {
             if (d.section === 'body' && d.column.index === 0) {
               const sev = dfm.dfm.issues[d.row.index]?.severity;
               d.cell.styles.textColor = sev === 'critical' ? RED_R : sev === 'major' ? AMB_R : sev === 'opportunity' ? GRN_R : GREY;
@@ -14126,7 +14160,7 @@ function printMasterPDF(): void {
           body: dfm.dfa.issues.map(i => [i.severity.toUpperCase(), i.category, i.title, i.description, `${i.savingPct.toFixed(0)}%`, i.recommendation]),
           styles: { fontSize: 7, overflow: 'linebreak' }, headStyles: { fillColor: hdr_bg, textColor: SLATE, fontStyle: 'bold', fontSize: 7 },
           columnStyles: { 0: { cellWidth: 18, fontStyle: 'bold' }, 1: { cellWidth: 18 }, 2: { cellWidth: 28 }, 3: { cellWidth: 45 }, 4: { cellWidth: 13, halign: 'right' }, 5: { cellWidth: cW - 125 } },
-          didParseCell: (d) => {
+          didParseCell: (d: any) => {
             if (d.section === 'body' && d.column.index === 0) {
               const sev = dfm.dfa.issues[d.row.index]?.severity;
               d.cell.styles.textColor = sev === 'critical' ? RED_R : sev === 'major' ? AMB_R : sev === 'opportunity' ? GRN_R : GREY;
@@ -14145,7 +14179,7 @@ function printMasterPDF(): void {
           body: dfm.costOptimisations.map(o => [o.title, `${o.expectedSavingPct.toFixed(0)}%`, o.timeframe, o.risk, `${o.description}  ·  ${o.technicalJustification}`]),
           styles: { fontSize: 7, overflow: 'linebreak' }, headStyles: { fillColor: hdr_bg, textColor: SLATE, fontStyle: 'bold', fontSize: 7 },
           columnStyles: { 0: { cellWidth: 35, fontStyle: 'bold' }, 1: { cellWidth: 14, halign: 'right' }, 2: { cellWidth: 22 }, 3: { cellWidth: 12 }, 4: { cellWidth: cW - 86 } },
-          didParseCell: (d) => {
+          didParseCell: (d: any) => {
             if (d.section === 'body' && d.column.index === 1) {
               const o = dfm.costOptimisations[d.row.index];
               if (o && o.expectedSavingPct >= 10) d.cell.styles.textColor = GRN_R;
@@ -14213,7 +14247,7 @@ function printMasterPDF(): void {
         body: r.manufacturabilityRisks.map(rk => [rk.severity, rk.feature, rk.description, rk.suggestion]),
         styles: { fontSize: 7, overflow: 'linebreak' }, headStyles: { fillColor: [232,248,243], textColor: SLATE, fontStyle: 'bold', fontSize: 7 },
         columnStyles: { 0: { cellWidth: 16 }, 1: { cellWidth: 26 }, 2: { cellWidth: 65 }, 3: { cellWidth: cW - 110 } },
-        didParseCell: (d) => {
+        didParseCell: (d: any) => {
           if (d.section === 'body' && d.column.index === 0) {
             const sev = (r.manufacturabilityRisks[d.row.index]?.severity ?? '').toLowerCase();
             d.cell.styles.textColor = sev === 'high' ? RED_R : sev === 'medium' ? AMB_R : GRN_R;
@@ -14250,7 +14284,7 @@ function printMasterPDF(): void {
           body: cadDFM.map(i => [i.severity, i.area, i.description, i.impact, i.fix]),
           styles: { fontSize: 7, overflow: 'linebreak' }, headStyles: { fillColor: [232,248,243], textColor: SLATE, fontStyle: 'bold', fontSize: 7 },
           columnStyles: { 0: { cellWidth: 18 }, 1: { cellWidth: 22 }, 2: { cellWidth: 45 }, 3: { cellWidth: 30 }, 4: { cellWidth: cW - 118 } },
-          didParseCell: (d) => {
+          didParseCell: (d: any) => {
             if (d.section === 'body' && d.column.index === 0) {
               const sev = (cadDFM[d.row.index]?.severity ?? '').toLowerCase();
               d.cell.styles.textColor = sev === 'critical' || sev === 'high' ? RED_R : sev === 'medium' ? AMB_R : GRN_R;
@@ -14323,7 +14357,7 @@ function printMasterPDF(): void {
       ],
       styles: { fontSize: 8 }, headStyles: { fillColor: [219,234,254], textColor: SLATE, fontStyle: 'bold' },
       columnStyles: { 0: { fontStyle: 'bold' }, 1: { halign: 'right' }, 2: { halign: 'right' }, 3: { halign: 'right' } },
-      didParseCell: (d) => {
+      didParseCell: (d: any) => {
         if (d.section === 'body' && d.row.index === 3) { d.cell.styles.fillColor = [219,234,254]; d.cell.styles.fontStyle = 'bold'; }
       },
     });
@@ -14340,7 +14374,7 @@ function printMasterPDF(): void {
         body: sorted.map(ct => [ct.countryName, `£${ct.pcbFabPerBoard.toFixed(2)}`, `£${ct.assemblyPerBoard.toFixed(2)}`, `£${ct.bomCostPerBoard.toFixed(2)}`, `£${ct.logisticsPerBoard.toFixed(2)}`, `£${ct.totalPerBoard.toFixed(2)}`, `${ct.leadTimeWeeks}w`]),
         styles: { fontSize: 7 }, headStyles: { fillColor: [219,234,254], textColor: SLATE, fontStyle: 'bold', fontSize: 7 },
         columnStyles: { 0: { cellWidth: 30 }, 1: { halign: 'right' }, 2: { halign: 'right' }, 3: { halign: 'right' }, 4: { halign: 'right' }, 5: { halign: 'right', fontStyle: 'bold', textColor: BLUE }, 6: { halign: 'right' } },
-        didParseCell: (d) => {
+        didParseCell: (d: any) => {
           if (d.section === 'body' && d.row.index === 0 && d.column.index === 5) { d.cell.styles.fillColor = [220,242,220]; }
         },
       });
@@ -14357,7 +14391,7 @@ function printMasterPDF(): void {
       styles: { fontSize: 6.5 }, headStyles: { fillColor: [219,234,254], textColor: SLATE, fontStyle: 'bold', fontSize: 7 },
       footStyles: { fillColor: LIGHT, fontStyle: 'bold' },
       columnStyles: { 0: { cellWidth: 7, halign: 'center' }, 1: { cellWidth: 14 }, 6: { halign: 'right' }, 7: { halign: 'right', fontStyle: 'bold' } },
-      didParseCell: (d) => {
+      didParseCell: (d: any) => {
         if (d.section === 'body' && r.bom[d.row.index]?.highCost) d.cell.styles.fillColor = [255,248,220];
       },
     });
@@ -14373,7 +14407,7 @@ function printMasterPDF(): void {
         body: allInsights,
         styles: { fontSize: 7.5, overflow: 'linebreak' }, headStyles: { fillColor: [219,234,254], textColor: SLATE, fontStyle: 'bold' },
         columnStyles: { 0: { cellWidth: 22, fontStyle: 'bold' }, 1: { cellWidth: cW - 25 } },
-        didParseCell: (d) => {
+        didParseCell: (d: any) => {
           if (d.section === 'body' && d.column.index === 0) {
             const type = allInsights[d.row.index]?.[0] ?? '';
             if (type === 'DFM Issue') d.cell.styles.textColor = AMB_R;
@@ -16272,6 +16306,8 @@ function resetRateLibrary(): void {
 // ─── Init ─────────────────────────────────────────────────────────────────────
 
 async function init(): Promise<void> {
+  const shareId = new URLSearchParams(location.search).get('share');
+  if (shareId) { renderShareView(shareId); return; }
   // Install runtime error observability before anything else can throw.
   initObservability();
   breadcrumb('app:init');
@@ -16608,6 +16644,11 @@ async function init(): Promise<void> {
   // Command palette (Cmd/Ctrl+K)
   initCommandPalette();
 
+  // Form quality-of-life
+  initBenchmarkHints();
+  initDraftAutosave();
+  initWhatsNew();
+
   // ─── News section wiring ──────────────────────────────────────────────────
   document.getElementById('news-btn')?.addEventListener('click', () => { setNavActive('news-btn'); showNews(); });
   document.getElementById('news-back-btn')?.addEventListener('click', showHome);
@@ -16843,6 +16884,364 @@ async function init(): Promise<void> {
 }
 
 
+
+
+
+
+
+// ═══ What's new — release notes popover on the footer version badge ══════════
+const RELEASE_NOTES: Array<{ v: string; date: string; items: string[] }> = [
+  { v: '4.1', date: 'Jul 2026', items: [
+    'New app shell: sidebar navigation, ⌘K command palette, one-accent icon system',
+    'Sticky result header with share links, uncertainty band and run-over-run delta',
+    'Click any cost bucket to see exactly how it was computed (trace drawer)',
+    'PCB analysis shows a live 5-stage pipeline; drafts autosave as you type',
+    'Private AI routing + provable air-gapped mode for secure deployments',
+  ] },
+  { v: '4.0', date: 'Jun 2026', items: [
+    'Agentic AI: self-learning knowledge base, calibration and autonomous drift findings',
+    'Six advanced AI features: uncertainty bands, carbon, feature costing, RAG, RFQ',
+  ] },
+];
+
+function initWhatsNew(): void {
+  const badge = document.querySelector<HTMLElement>('.footer-version');
+  if (!badge) return;
+  badge.style.cursor = 'pointer';
+  badge.title = "What's new";
+  badge.addEventListener('click', () => {
+    let pop = document.getElementById('cv-whatsnew');
+    if (pop) { pop.remove(); return; }
+    pop = document.createElement('div');
+    pop.id = 'cv-whatsnew';
+    pop.innerHTML = `
+      <div class="cwn-head">What&rsquo;s new <button class="cwn-close" aria-label="Close"><svg class="ic"><use href="#i-x"/></svg></button></div>
+      ${RELEASE_NOTES.map(r => `
+        <div class="cwn-rel"><span class="cwn-v">v${r.v}</span><span class="cwn-date">${r.date}</span></div>
+        <ul class="cwn-list">${r.items.map(i => `<li>${i}</li>`).join('')}</ul>`).join('')}
+      <button class="btn btn-secondary btn-sm cwn-full">Full changelog</button>`;
+    document.body.appendChild(pop);
+    pop.querySelector('.cwn-close')?.addEventListener('click', () => pop!.remove());
+    pop.querySelector('.cwn-full')?.addEventListener('click', () => {
+      pop!.remove();
+      document.getElementById('help-btn')?.click();
+      setTimeout(() => document.querySelector<HTMLElement>('.help-tab[data-help="changelog"]')?.click(), 250);
+    });
+  });
+}
+
+// ═══ Share links — read-only costing summaries ═══════════════════════════════
+async function shareCurrentCosting(): Promise<void> {
+  if (!lastResult) return;
+  const r = lastResult;
+  const region = (document.getElementById('mfg-region-selector') as HTMLSelectElement)?.value ?? 'UK';
+  const payload = {
+    partName: r.partName, commodity: activeCommodity, region,
+    total: r.total, factoryCost: r.factoryCost,
+    breakdown: r.breakdown,
+    band: _lastBandInfo, ratesAsOf: RATES_ASOF,
+    generatedAt: new Date().toISOString(),
+  };
+  try {
+    const resp = await fetch('/api/share', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...authHeader() },
+      body: JSON.stringify({ payload, partName: r.partName }),
+    });
+    if (!resp.ok) throw new Error((await resp.json().catch(() => ({ error: resp.statusText }))).error);
+    const { id } = await resp.json() as { id: string };
+    const url = `${location.origin}${location.pathname}?share=${id}`;
+    await navigator.clipboard.writeText(url).catch(() => { /* clipboard blocked — show url anyway */ });
+    showToast('Share link copied — view-only, expires in 90 days', 'info');
+    window.prompt('View-only share link (copied to clipboard):', url);
+  } catch (err) {
+    showToast(`Share failed: ${err instanceof Error ? err.message : String(err)}`, 'error');
+  }
+}
+
+function renderShareView(id: string): void {
+  document.title = 'Shared costing — CostVision';
+  const host = document.createElement('div');
+  host.id = 'cv-share-view';
+  host.innerHTML = '<div class="csv-card"><div class="csv-loading">Loading shared costing…</div></div>';
+  document.body.appendChild(host);
+  const card = host.querySelector<HTMLElement>('.csv-card')!;
+  fetch(`/api/share/${encodeURIComponent(id)}`)
+    .then(async resp => {
+      if (!resp.ok) throw new Error((await resp.json().catch(() => ({ error: resp.statusText }))).error);
+      return resp.json() as Promise<{ partName: string; createdAt: string; payload: {
+        partName: string; commodity: string; region: string; total: number; factoryCost: number;
+        breakdown: Record<string, number>; band: { pm: number; band: string } | null; ratesAsOf: string; generatedAt: string } }>;
+    })
+    .then(({ payload }) => {
+      const order: Array<[string, string]> = [['rawMaterial', 'Raw Material'], ['process', 'Process'], ['labour', 'Labour'],
+        ['tooling', 'Tooling'], ['packaging', 'Packaging'], ['logistics', 'Logistics'], ['overhead', 'Overhead'], ['margin', 'Margin']];
+      const maxV = Math.max(...order.map(([k]) => payload.breakdown[k] ?? 0), 0.0001);
+      card.innerHTML = `
+        <div class="csv-brand"><span class="csv-logo">CV</span> CostVision <span class="csv-viewonly">view-only</span></div>
+        <div class="csv-part">${escHtml(payload.partName || 'Unnamed part')}</div>
+        <div class="csv-meta">${escHtml(payload.commodity.replace(/_/g, ' '))} · ${escHtml(payload.region)} rates · ${escHtml(payload.ratesAsOf ?? '')}</div>
+        <div class="csv-total">£${payload.total.toFixed(2)}${payload.band ? ` <span class="csv-pm">±${payload.band.pm}%</span>` : ''}</div>
+        <table class="csv-table"><tbody>
+          ${order.map(([k, label]) => {
+            const v = payload.breakdown[k] ?? 0;
+            const pct = payload.total > 0 ? (v / payload.total) * 100 : 0;
+            return `<tr><td>${label}</td><td class="num">£${v.toFixed(2)}</td><td class="pct">${pct.toFixed(1)}%</td>
+              <td class="bar"><div style="width:${Math.max(2, (v / maxV) * 100)}%"></div></td></tr>`;
+          }).join('')}
+        </tbody></table>
+        <div class="csv-foot">Generated ${new Date(payload.generatedAt).toLocaleDateString('en-GB')} · bottom-up should-cost · shared read-only via CostVision</div>`;
+    })
+    .catch(err => {
+      card.innerHTML = `<div class="csv-error">This share link is invalid or has expired.<br><span style="font-size:0.75rem;color:#94a3b8">${escHtml(err instanceof Error ? err.message : String(err))}</span></div>`;
+    });
+}
+
+// ═══ Form quality-of-life: validation chip · benchmark hints · draft autosave ═
+function setValidationChip(count: number): void {
+  const chip = document.getElementById('cv-validation-chip');
+  if (!chip) return;
+  if (count > 0) {
+    chip.textContent = `${count} field${count === 1 ? '' : 's'} need${count === 1 ? 's' : ''} attention`;
+    chip.style.display = '';
+    chip.onclick = () => document.getElementById('validation-errors')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  } else {
+    chip.style.display = 'none';
+  }
+}
+
+function setDirty(dirty: boolean): void {
+  const dot = document.getElementById('cv-dirty-dot');
+  if (dot) dot.style.display = dirty ? '' : 'none';
+}
+
+const BENCH_HINTS: Array<{ id: string; min: number; max: number; text: string }> = [
+  { id: 'packaging', min: 0.05, max: 1.5, text: 'typical £0.05–1.50/part' },
+  { id: 'logistics', min: 0.10, max: 2.0, text: 'typical £0.10–2.00/part' },
+  { id: 'overhead-pct', min: 8, max: 15, text: 'typical 8–15%' },
+  { id: 'margin-pct', min: 5, max: 12, text: 'typical 5–12%' },
+  { id: 'learning-curve-pct', min: 80, max: 90, text: 'typical 80–90%' },
+];
+
+function initBenchmarkHints(): void {
+  BENCH_HINTS.forEach(h => {
+    const input = document.getElementById(h.id) as HTMLInputElement | null;
+    if (!input || input.dataset.benchWired) return;
+    input.dataset.benchWired = '1';
+    const hint = document.createElement('span');
+    hint.className = 'cv-bench';
+    hint.textContent = h.text;
+    input.insertAdjacentElement('afterend', hint);
+    const check = () => {
+      const v = parseFloat(input.value);
+      const out = isFinite(v) && (v < h.min || v > h.max);
+      input.classList.toggle('cv-outlier', out);
+      hint.textContent = out ? `${h.text} — outside typical range, double-check` : h.text;
+    };
+    input.addEventListener('blur', check);
+    check();
+  });
+}
+
+// Draft autosave — per commodity, debounced; restores when a form opens clean.
+let _draftTimer: number | null = null;
+function draftKey(): string { return `cv-draft-${activeCommodity}`; }
+
+function collectDraft(): Record<string, string> {
+  const out: Record<string, string> = {};
+  document.querySelectorAll<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>(
+    '#costing-view input[id], #costing-view select[id], #costing-view textarea[id]').forEach(elm => {
+    if (elm instanceof HTMLInputElement && (elm.type === 'file' || elm.type === 'button')) return;
+    if (elm instanceof HTMLInputElement && elm.type === 'checkbox') { out[elm.id] = elm.checked ? '1' : ''; return; }
+    out[elm.id] = elm.value;
+  });
+  return out;
+}
+
+function saveDraftSoon(): void {
+  if (_draftTimer) window.clearTimeout(_draftTimer);
+  _draftTimer = window.setTimeout(() => {
+    try { localStorage.setItem(draftKey(), JSON.stringify({ ts: Date.now(), fields: collectDraft() })); } catch { /* quota */ }
+  }, 800);
+}
+
+function restoreDraft(): void {
+  try {
+    const raw = localStorage.getItem(draftKey());
+    if (!raw) return;
+    const draft = JSON.parse(raw) as { ts: number; fields: Record<string, string> };
+    if (!draft?.fields) return;
+    Object.entries(draft.fields).forEach(([id, val]) => {
+      const elm = document.getElementById(id) as HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement | null;
+      if (!elm) return;
+      if (elm instanceof HTMLInputElement && elm.type === 'checkbox') elm.checked = val === '1';
+      else if (val !== '') elm.value = val;
+    });
+  } catch { /* corrupt draft — ignore */ }
+}
+
+function initDraftAutosave(): void {
+  const host = document.getElementById('costing-view');
+  if (!host || (host as HTMLElement & { _draftWired?: boolean } as { _draftWired?: boolean })._draftWired) return;
+  (host as HTMLElement & { _draftWired?: boolean })._draftWired = true;
+  host.addEventListener('input', () => { setDirty(true); saveDraftSoon(); });
+  host.addEventListener('change', () => { setDirty(true); saveDraftSoon(); });
+}
+
+// ═══ Result hero + trace drawer (money-screen pass) ══════════════════════════
+const RATES_ASOF = 'Jul 2026';
+let _lastBandInfo: { pm: number; band: string; conf: string } | null = null;
+
+const BUCKET_TRACE_META: Record<string, { formula: string; match: RegExp }> = {
+  'Raw Material': { formula: 'Net mass × (1 + scrap%) × material £/kg − scrap credit. Prices from the active rate library for the selected region.', match: /material|scrap|regrind|billet|resin|sheet|blank/i },
+  'Process': { formula: 'Cycle time ÷ 3600 × machine rate ÷ cavities (+ energy where metered separately). Machine rates are full build-ups: depreciation, energy, maintenance, floor space.', match: /machine|cycle|process|press|energy|kwh|oven|weld|paint/i },
+  'Labour': { formula: 'Cycle time × manning × fully-loaded labour rate ÷ 3600 ÷ cavities. Manning below 1.0 = one operator tending several machines.', match: /labou?r|operator|manning|setup|inspect/i },
+  'Tooling': { formula: 'Tool cost ÷ (annual volume × amortisation years × parts per vehicle). Most volume-sensitive line in the model.', match: /tool|mould|die|fixture|amort/i },
+  'Packaging': { formula: 'Returnable dunnage trip cost or one-way pack cost per part.', match: /pack/i },
+  'Logistics': { formula: 'Freight per part based on region lane and part size/weight class.', match: /logistic|freight|transport|duty/i },
+  'Overhead': { formula: 'Factory overhead % applied on conversion cost (process + labour) — never on material.', match: /overhead|indirect/i },
+  'Margin': { formula: 'SG&A % on manufacturing cost, then profit % on the subtotal — the supplier commercial stack.', match: /margin|profit|sga|s&ga/i },
+};
+
+function renderResultHero(): void {
+  const host = document.getElementById('cv-result-hero');
+  if (!host || !lastResult) { if (host) host.style.display = 'none'; return; }
+  const r = lastResult;
+  const region = (document.getElementById('mfg-region-selector') as HTMLSelectElement)?.value ?? 'UK';
+  const band = _lastBandInfo;
+  // Delta vs the previous run of the same part+commodity
+  let deltaHtml = '';
+  try {
+    const runs = getCostingHistory()
+      .filter(h => h.partName === r.partName && h.commodity === activeCommodity)
+      .sort((a, b) => b.timestamp - a.timestamp);
+    const prev = runs.find(h => Math.abs(h.totalCost - r.total) > 0.005);
+    if (prev) {
+      const d = r.total - prev.totalCost;
+      const cls = d > 0 ? 'crh-delta-up' : 'crh-delta-dn';
+      deltaHtml = `<span class="crh-chip" title="Compared with the previous run of this part">` +
+        `<span class="${cls}">${d > 0 ? '+' : '−'}${_currFmt(Math.abs(d))}</span>&nbsp;vs previous run</span>`;
+    }
+  } catch { /* history unavailable — skip delta */ }
+  const bandChip = band
+    ? `<span class="crh-chip crh-chip--band-${band.band}" title="Monte-Carlo uncertainty band (${band.conf})">±${band.pm}% · ${band.band} band</span>`
+    : '';
+  host.innerHTML = `
+    <div class="crh-part">
+      <div class="crh-name" title="${escHtml(r.partName)}">${escHtml(r.partName || 'Unnamed part')}</div>
+      <div class="crh-total">${_currFmt(r.total)}${band ? ` <span class="crh-pm" style="color:${band.band === 'tight' ? '#059669' : band.band === 'moderate' ? '#d97706' : '#dc2626'}">±${band.pm}%</span>` : ''}</div>
+    </div>
+    <div class="crh-chips">
+      ${bandChip}
+      <span class="crh-chip" title="Rates and material prices in force for this calculation — edit in the Rate Library">${escHtml(region)} rates · ${RATES_ASOF}</span>
+      ${deltaHtml}
+    </div>
+    <div class="crh-actions">
+      <button class="btn btn-secondary btn-sm" id="crh-share-btn">Share</button>
+      <button class="btn btn-secondary btn-sm" data-proxy="export-excel-btn">Export Excel</button>
+      <button class="btn btn-secondary btn-sm" data-proxy="export-pdf-btn">PDF</button>
+      <button class="btn btn-secondary btn-sm" data-proxy="save-library-btn">Save</button>
+      <button class="btn btn-secondary btn-sm" data-proxy="log-actual-btn">Log Actual £</button>
+    </div>`;
+  host.style.display = 'flex';
+  host.querySelectorAll<HTMLButtonElement>('[data-proxy]').forEach(b =>
+    b.addEventListener('click', () => document.getElementById(b.dataset.proxy ?? '')?.click()));
+  document.getElementById('crh-share-btn')?.addEventListener('click', () => { void shareCurrentCosting(); });
+}
+
+function tagTraceableRows(): void {
+  const host = document.getElementById('results-breakdown');
+  if (!host) return;
+  const labels = Object.keys(BUCKET_TRACE_META);
+  host.querySelectorAll<HTMLElement>('tr, .breakdown-row').forEach(row => {
+    if (row.querySelector('th')) return;   // header rows aren't buckets
+    const first = (row.querySelector('td, .breakdown-label, span') ?? row).textContent?.trim() ?? '';
+    // Rows render as "1. Raw Material", "2. Process (Machine)", "3. Direct Labour" …
+    const normalized = first.replace(/^\d+\.\s*/, '').toLowerCase();
+    if (/^(factory cost|subtotal|total)/.test(normalized)) return;
+    const hit = labels.find(l => normalized.includes(l.toLowerCase()));
+    if (hit) { row.classList.add('cv-traceable'); row.dataset.bucket = hit; row.title = 'Click to see how this number was computed'; }
+  });
+  if (!(host as HTMLElement & { _traceWired?: boolean })._traceWired) {
+    (host as HTMLElement & { _traceWired?: boolean })._traceWired = true;
+    host.addEventListener('click', e => {
+      const row = (e.target as HTMLElement).closest<HTMLElement>('.cv-traceable');
+      if (row?.dataset.bucket) openTraceDrawer(row.dataset.bucket);
+    });
+  }
+}
+
+function openTraceDrawer(bucket: string): void {
+  if (!lastResult) return;
+  const meta = BUCKET_TRACE_META[bucket];
+  const key = ({ 'Raw Material': 'rawMaterial', 'Process': 'process', 'Labour': 'labour', 'Tooling': 'tooling',
+                 'Packaging': 'packaging', 'Logistics': 'logistics', 'Overhead': 'overhead', 'Margin': 'margin' } as Record<string, keyof typeof lastResult.breakdown>)[bucket];
+  const value = key ? lastResult.breakdown[key] : 0;
+  const pct = lastResult.total > 0 ? (value / lastResult.total) * 100 : 0;
+  const region = (document.getElementById('mfg-region-selector') as HTMLSelectElement)?.value ?? 'UK';
+  const rows = (lastResult.traceability ?? []).filter(t => meta?.match.test(t.field) || meta?.match.test(t.rateSource));
+  let host = document.getElementById('cv-trace-drawer');
+  if (!host) {
+    host = document.createElement('div');
+    host.id = 'cv-trace-drawer';
+    document.body.appendChild(host);
+    host.addEventListener('click', e => {
+      if ((e.target as HTMLElement).closest('.ctd-close') || (e.target as HTMLElement).classList.contains('ctd-scrim')) host!.classList.remove('open');
+    });
+  }
+  host.innerHTML = `
+    <div class="ctd-scrim"></div>
+    <div class="ctd-panel" role="dialog" aria-label="How ${escHtml(bucket)} was computed">
+      <div class="ctd-head">
+        <h3>${escHtml(bucket)} — how this was computed</h3>
+        <button class="btn btn-secondary btn-sm ctd-close" aria-label="Close"><svg class="ic"><use href="#i-x"/></svg></button>
+      </div>
+      <div class="ctd-body">
+        <div class="ctd-value">${_currFmt(value)} <span style="font-size:0.85rem;color:var(--text-muted);font-weight:500">· ${pct.toFixed(1)}% of total</span></div>
+        <div class="ctd-formula"><strong>Formula:</strong> ${escHtml(meta?.formula ?? '')}</div>
+        ${rows.length ? `
+        <table class="ctd-table">
+          <thead><tr><th>Input</th><th style="text-align:right">Value</th><th>Source</th><th>Conf.</th></tr></thead>
+          <tbody>${rows.map(t => `<tr>
+            <td>${escHtml(t.field)}</td>
+            <td class="num">${t.value.toLocaleString('en-GB', { maximumFractionDigits: 3 })} ${escHtml(t.unit)}</td>
+            <td>${escHtml(t.rateSource)}</td>
+            <td><span class="badge ${escHtml(String(t.confidence))}">${escHtml(String(t.confidence))}</span></td>
+          </tr>`).join('')}</tbody>
+        </table>` : '<div style="font-size:0.78rem;color:var(--text-muted)">No line-level trace records matched this bucket — see the Detail tab for the full trace table.</div>'}
+      </div>
+      <div class="ctd-foot">${escHtml(region)} rates · as-of ${RATES_ASOF} · every rate is editable in the Rate Library (Edit Rates)</div>
+    </div>`;
+  host.classList.add('open');
+}
+
+
+// ═══ Accessibility: keep Tab focus inside the topmost open dialog ════════════
+function _visibleDialogs(): HTMLElement[] {
+  return Array.from(document.querySelectorAll<HTMLElement>('[role="dialog"], #cv-cmdk.open .cmdk-panel, #cv-trace-drawer.open .ctd-panel'))
+    .filter(d => {
+      const host = d.closest<HTMLElement>('#cv-cmdk, #cv-trace-drawer') ?? d;
+      const cs = getComputedStyle(host);
+      return cs.display !== 'none' && cs.visibility !== 'hidden';
+    });
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Tab') return;
+  const dialogs = _visibleDialogs();
+  if (!dialogs.length) return;
+  const dlg = dialogs[dialogs.length - 1];
+  const focusables = Array.from(dlg.querySelectorAll<HTMLElement>(
+    'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'))
+    .filter(f => f.offsetParent !== null);
+  if (!focusables.length) return;
+  const first = focusables[0];
+  const last = focusables[focusables.length - 1];
+  const active = document.activeElement as HTMLElement | null;
+  if (!active || !dlg.contains(active)) { e.preventDefault(); first.focus(); return; }
+  if (e.shiftKey && active === first) { e.preventDefault(); last.focus(); }
+  else if (!e.shiftKey && active === last) { e.preventDefault(); first.focus(); }
+});
 
 // ═══ Command palette (⌘K) — fuzzy launcher over views, actions & commodities ══
 interface CmdkEntry { label: string; sub: string; icon: string; run: () => void }

@@ -99,6 +99,15 @@ db.exec(`
     error TEXT
   );
 
+  CREATE TABLE IF NOT EXISTS shared_costings (
+    id TEXT PRIMARY KEY,
+    part_name TEXT NOT NULL DEFAULT '',
+    payload TEXT NOT NULL,
+    created_by TEXT NOT NULL DEFAULT '',
+    created_at TEXT NOT NULL,
+    expires_at TEXT NOT NULL
+  );
+
   CREATE TABLE IF NOT EXISTS supplier_quotes (
     id TEXT PRIMARY KEY,
     scenario_id TEXT NOT NULL,

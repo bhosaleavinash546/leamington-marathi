@@ -24,6 +24,7 @@
     "@capacitor/cli": "^8.4.1",
     "@capacitor/core": "^8.4.1",
     "@capacitor/ios": "^8.4.1",
+    "@fontsource/inter": "^5.2.8",
     "@types/morgan": "^1.9.10",
     "bcrypt": "^6.0.0",
     "better-sqlite3": "^12.10.0",

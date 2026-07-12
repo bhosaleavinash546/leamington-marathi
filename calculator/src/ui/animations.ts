@@ -180,10 +180,19 @@ function _animatePicker(): void {
 }
 
 function _animateCosting(): void {
-  const tl = gsap.timeline({ defaults: { ease: EASE_OUT } });
-  tl.from('#wf-panel-header', { autoAlpha: 0, y: -10, duration: 0.32 }, 0)
-    .from('.input-panel', { autoAlpha: 0, x: -24, duration: 0.42 }, 0.08)
-    .from('.results-area', { autoAlpha: 0, x: 18, duration: 0.42 }, 0.08);
+  // `from()` tweens on structural panels can be interrupted by a re-render and
+  // strand the panel at low opacity (the "ghosted form" bug). Force-clear on
+  // both complete AND interrupt so the final state is always fully visible.
+  // NOTE: never clearProps:'all' here — these elements carry JS-managed inline
+  // display values (wf-panel-header is display:none outside workflow mode), and
+  // 'all' wipes them, leaving the header visible and breaking the grid.
+  const panels = document.querySelectorAll<HTMLElement>('#wf-panel-header, .input-panel, .results-area');
+  const CLEAR = 'opacity,visibility,transform';
+  const forceVisible = () => gsap.set(panels, { clearProps: CLEAR });
+  const tl = gsap.timeline({ defaults: { ease: EASE_OUT }, onComplete: forceVisible, onInterrupt: forceVisible });
+  tl.from('#wf-panel-header', { autoAlpha: 0, y: -10, duration: 0.32, clearProps: CLEAR, onInterrupt: forceVisible }, 0)
+    .from('.input-panel', { autoAlpha: 0, x: -24, duration: 0.42, clearProps: CLEAR, onInterrupt: forceVisible }, 0.08)
+    .from('.results-area', { autoAlpha: 0, x: 18, duration: 0.42, clearProps: CLEAR, onInterrupt: forceVisible }, 0.08);
 }
 
 function _animateNews(): void {

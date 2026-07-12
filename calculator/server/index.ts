@@ -23,6 +23,7 @@ import bomRouter from './routes/bom.js';
 import rfqRouter from './routes/rfq.js';
 import { aiEndpointDescription } from './utils/ai-client.js';
 import knowledgeRouter from './routes/knowledge.js';
+import shareRouter from './routes/share.js';
 import { fetchAndCachePrices, arePricesStale } from './services/price-fetcher.js';
 import db from './db.js';
 
@@ -79,6 +80,7 @@ app.use('/api/quotes', quotesRouter);
 app.use('/api/bom', bomRouter);
 app.use('/api/rfq', rfqRouter);
 app.use('/api/knowledge', knowledgeRouter);
+app.use('/api/share', shareRouter);
 
 // ── In production serve the Vite build so one URL covers everything ──────────
 if (IS_PROD) {

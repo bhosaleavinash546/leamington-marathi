@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CostVision — Know what a part should cost</title>
+  <meta name="description" content="AI-powered should-cost intelligence for manufacturers. 19+ commodity engines, CAD-to-cost, PCB photo-to-BOM, and a learning loop that calibrates on your own quotes. Runs on your servers." />
+  <meta property="og:title" content="CostVision — AI Cost Intelligence" />
+  <meta property="og:description" content="Know what a part should cost — before you negotiate." />
+  <meta name="theme-color" content="#4F46E5" />
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <style>
+    :root { --ink:#0f172a; --body:#334155; --muted:#64748b; --accent:#4f46e5; --tint:#eef2ff; --border:#e2e8f0; }
+    * { box-sizing:border-box; margin:0; }
+    body { font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; color:var(--body); line-height:1.6; }
+    .wrap { max-width:1020px; margin:0 auto; padding:0 24px; }
+    header { display:flex; align-items:center; gap:10px; padding:22px 0; }
+    .logo { width:34px; height:34px; border-radius:9px; background:var(--accent); color:#fff; display:grid; place-items:center; font-weight:800; font-size:0.85rem; }
+    .brand { font-weight:800; color:var(--accent); font-size:1.1rem; }
+    header nav { margin-left:auto; display:flex; gap:22px; font-size:0.85rem; }
+    header a { color:var(--body); text-decoration:none; font-weight:600; }
+    .cta { background:var(--accent); color:#fff !important; padding:8px 16px; border-radius:8px; }
+    .hero { padding:64px 0 46px; }
+    .hero h1 { font-size:2.6rem; line-height:1.15; letter-spacing:-0.02em; color:var(--ink); max-width:720px; }
+    .hero h1 em { font-style:normal; color:var(--accent); }
+    .hero p { max-width:640px; margin-top:18px; font-size:1.1rem; }
+    .hero .actions { margin-top:28px; display:flex; gap:12px; flex-wrap:wrap; }
+    .btn { display:inline-block; padding:12px 22px; border-radius:10px; font-weight:700; text-decoration:none; font-size:0.95rem; }
+    .btn-primary { background:var(--accent); color:#fff; }
+    .btn-ghost { border:1.5px solid var(--border); color:var(--ink); }
+    .trust { margin-top:22px; font-size:0.8rem; color:var(--muted); }
+    .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:18px; padding:36px 0 10px; }
+    .card { border:1px solid var(--border); border-radius:14px; padding:22px; }
+    .card h3 { color:var(--ink); font-size:1rem; margin-bottom:8px; }
+    .card p { font-size:0.88rem; }
+    .chip { display:inline-block; font-size:0.68rem; font-weight:700; color:var(--accent); background:var(--tint); border-radius:20px; padding:3px 10px; margin-bottom:12px; letter-spacing:0.04em; }
+    section h2 { color:var(--ink); font-size:1.5rem; letter-spacing:-0.01em; margin:54px 0 6px; }
+    section .sub { color:var(--muted); font-size:0.95rem; }
+    .pricing { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:18px; margin:26px 0; }
+    .price-card { border:1.5px solid var(--border); border-radius:16px; padding:26px; }
+    .price-card.feature { border-color:var(--accent); box-shadow:0 12px 40px rgba(79,70,229,0.12); }
+    .price { font-size:1.9rem; font-weight:800; color:var(--ink); margin:10px 0 2px; }
+    .per { font-size:0.75rem; color:var(--muted); }
+    .price-card ul { margin:14px 0 0 18px; font-size:0.85rem; }
+    footer { border-top:1px solid var(--border); margin-top:70px; padding:26px 0 40px; font-size:0.8rem; color:var(--muted); display:flex; gap:18px; flex-wrap:wrap; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="logo">CV</div><div class="brand">CostVision</div>
+      <nav><a href="#features">Product</a><a href="#pricing">Pricing</a><a href="#security">Security</a><a class="cta" href="mailto:avinash.bhosale8925@gmail.com?subject=CostVision%20demo">Book a demo</a></nav>
+    </header>
+
+    <div class="hero">
+      <h1>Know what a part <em>should cost</em> — before you negotiate.</h1>
+      <p>CostVision breaks any manufactured part down to a defensible piece price — from a photo, a CAD file, or a plain-English brief. Physics-based engines across 19+ commodities, and an AI that gets more accurate with every real quote you log.</p>
+      <div class="actions">
+        <a class="btn btn-primary" href="mailto:avinash.bhosale8925@gmail.com?subject=CostVision%20demo">Book a live demo</a>
+        <a class="btn btn-ghost" href="#pricing">See licensing</a>
+      </div>
+      <div class="trust">Runs on your servers · your data never leaves your network · no per-analysis fees</div>
+    </div>
+
+    <section id="features">
+      <h2>What it does</h2>
+      <p class="sub">Bottom-up cost engineering, not black-box estimates — every number traceable to a rate, a cycle time, or a material price.</p>
+      <div class="grid">
+        <div class="card"><span class="chip">19+ ENGINES</span><h3>Physics-based should-costing</h3><p>Machining, casting, injection moulding, stamping, forging, PCB &amp; PCBA, wiring harness, composites, automotive software and more — with regional rates for 20 countries.</p></div>
+        <div class="card"><span class="chip">AI VISION</span><h3>PCB photo → costed BOM</h3><p>Photograph a circuit board and get a costed bill of materials with per-line confidence, catalogue-grounded pricing and country comparison — in under a minute.</p></div>
+        <div class="card"><span class="chip">CAD</span><h3>CAD-to-Cost</h3><p>Drop a STEP/IGES/STL file. The geometry engine measures it in memory — volume, walls, holes — and auto-fills the costing. The file never leaves your server.</p></div>
+        <div class="card"><span class="chip">LEARNING LOOP</span><h3>Self-calibrating accuracy</h3><p>Log real PO prices and the model calibrates per commodity — estimating error dropped from 10.9% to 0.3% after three quotes in live testing.</p></div>
+        <div class="card"><span class="chip">AGENTIC</span><h3>Autonomous findings</h3><p>A drift monitor watches your portfolio and opens renegotiation findings on its own — £512k/yr surfaced in our demonstration data.</p></div>
+        <div class="card"><span class="chip">NEGOTIATION</span><h3>Quote vs should-cost</h3><p>PPV analysis against supplier quotes, uncertainty bands (P10/P50/P90), sensitivity, scenarios, and shareable one-page cost cards.</p></div>
+      </div>
+    </section>
+
+    <section id="security">
+      <h2>Built for security-first manufacturers</h2>
+      <p class="sub">CostVision deploys inside your network. CAD models are processed in memory and never stored. AI calls route through your own cloud tenancy — or switch fully air-gapped with one setting, provably.</p>
+    </section>
+
+    <section id="pricing">
+      <h2>Licensing</h2>
+      <p class="sub">Annual licence per company, priced by seats. Your installation, your data, your rates.</p>
+      <div class="pricing">
+        <div class="price-card"><h3>Starter</h3><div class="price">£4,900<span class="per">/year</span></div><div class="per">up to 5 users</div><ul><li>All 19+ costing engines</li><li>CAD-to-Cost &amp; PCB photo-to-BOM</li><li>Your own rate libraries</li><li>Email support</li></ul></div>
+        <div class="price-card feature"><h3>Team</h3><div class="price">£9,800<span class="per">/year</span></div><div class="per">up to 15 users</div><ul><li>Everything in Starter</li><li>Learning loop &amp; autonomous findings</li><li>Priority support &amp; updates</li><li>Deployment assistance</li></ul></div>
+        <div class="price-card"><h3>Enterprise</h3><div class="price">Custom</div><div class="per">unlimited users · air-gapped option</div><ul><li>Private AI routing / air-gapped</li><li>SSO integration</li><li>ERP/PLM integration support</li><li>Named support engineer</li></ul></div>
+      </div>
+    </section>
+
+    <footer>
+      <span>© 2026 CostVision · Avinash Bhosale</span>
+      <span>Contact: avinash.bhosale8925@gmail.com</span>
+    </footer>
+  </div>
+</body>
+</html>

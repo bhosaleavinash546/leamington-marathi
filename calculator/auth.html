@@ -6,30 +6,42 @@
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="theme-color" content="#0e1525" />
-  <link rel="manifest" href="/calculator/manifest.webmanifest" />
+    <link rel="manifest" href="/calculator/manifest.webmanifest" />
   <link rel="apple-touch-icon" href="/calculator/icons/icon-192x192.png" />
+    <link rel="icon" type="image/svg+xml" href="/calculator/favicon.svg" />
+  <meta name="description" content="CostVision — AI-powered should-cost intelligence. Bottom-up cost engineering across 19+ manufacturing processes, from a photo, a CAD file, or a plain-English brief." />
+  <meta property="og:title" content="CostVision — AI Cost Intelligence" />
+  <meta property="og:description" content="Know what a part should cost — before you negotiate. Physics-based should-costing with self-learning accuracy." />
+  <meta property="og:type" content="website" />
+  <meta name="theme-color" content="#4F46E5" />
   <title>CostVision — AI Automotive Cost Intelligence · Sign In</title>
   <meta name="description" content="CostVision: AI-Powered Automotive Cost Intelligence Platform" />
   <style>
+/* Self-hosted Inter */
+@font-face { font-family:'Inter'; font-style:normal; font-weight:400; font-display:swap; src:url('/calculator/fonts/inter-latin-400-normal.woff2') format('woff2'); }
+@font-face { font-family:'Inter'; font-style:normal; font-weight:500; font-display:swap; src:url('/calculator/fonts/inter-latin-500-normal.woff2') format('woff2'); }
+@font-face { font-family:'Inter'; font-style:normal; font-weight:600; font-display:swap; src:url('/calculator/fonts/inter-latin-600-normal.woff2') format('woff2'); }
+@font-face { font-family:'Inter'; font-style:normal; font-weight:700; font-display:swap; src:url('/calculator/fonts/inter-latin-700-normal.woff2') format('woff2'); }
+@font-face { font-family:'Inter'; font-style:normal; font-weight:800; font-display:swap; src:url('/calculator/fonts/inter-latin-800-normal.woff2') format('woff2'); }
+
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --cyan:        #00d4ff;
-      --blue:        #2563eb;
-      --blue-light:  #3b82f6;
+      --cyan:        #818cf8;   /* app indigo-300 — aligned with the product */
+      --blue:        #4f46e5;   /* app accent */
+      --blue-light:  #6366f1;
       --purple:      #7c3aed;
       --green:       #22c55e;
       --panel-dark:  #050d1a;
       --form-bg:     #0b1426;
       --card-bg:     #111e36;
       --border:      rgba(255,255,255,0.08);
-      --border-blue: rgba(0,212,255,0.25);
+      --border-blue: rgba(99,102,241,0.32);
       --text-1:      #f0f6ff;
       --text-2:      #94a3b8;
       --text-3:      #8fa3bb;   /* was #64748b — raised for WCAG AA */
       --input-bg:    rgba(255,255,255,0.05);
-      --input-focus: rgba(37,99,235,0.12);
+      --input-focus: rgba(79,70,229,0.14);
       --error:       #ef4444;
       --error-bg:    rgba(239,68,68,0.08);
       --success:     #22c55e;
@@ -39,7 +51,7 @@
       --radius:      12px;
       --radius-sm:   8px;
       --trans:       .18s ease;
-      --font:        -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      --font:        'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     }
 
     html, body { height: 100%; }
@@ -101,7 +113,7 @@
           rgba(5,13,26,0.60) 85%,
           rgba(11,20,38,0.95) 100%),
         radial-gradient(ellipse 70% 50% at 10% 100%, rgba(37,99,235,0.28) 0%, transparent 70%),
-        radial-gradient(ellipse 55% 45% at 90% 5%,  rgba(0,212,255,0.12) 0%, transparent 70%);
+        radial-gradient(ellipse 55% 45% at 90% 5%,  rgba(99,102,241,0.12) 0%, transparent 70%);
     }
 
     /* HUD rings — responsive with min() */
@@ -109,7 +121,7 @@
     .hud-ring {
       position: absolute;
       border-radius: 50%;
-      border: 1px dashed rgba(0,212,255,0.12);
+      border: 1px dashed rgba(99,102,241,0.12);
       will-change: transform;
     }
     .hud-ring-1 {
@@ -171,7 +183,7 @@
       position: absolute;
       right: 0; top: 10%; bottom: 10%;
       width: 1px;
-      background: linear-gradient(to bottom, transparent, rgba(0,212,255,0.4), transparent);
+      background: linear-gradient(to bottom, transparent, rgba(99,102,241,0.4), transparent);
     }
 
     /* ── Hero content ── */
@@ -197,8 +209,8 @@
       animation: logo-pulse 3s ease-in-out 1s infinite;
     }
     @keyframes logo-pulse {
-      0%, 100% { box-shadow: 0 0 0 0 rgba(37,99,235,0.5), 0 4px 20px rgba(0,212,255,0.2); }
-      50%       { box-shadow: 0 0 0 10px rgba(37,99,235,0), 0 4px 30px rgba(0,212,255,0.4); }
+      0%, 100% { box-shadow: 0 0 0 0 rgba(37,99,235,0.5), 0 4px 20px rgba(99,102,241,0.2); }
+      50%       { box-shadow: 0 0 0 10px rgba(37,99,235,0), 0 4px 30px rgba(99,102,241,0.4); }
     }
     .logo-name { font-size: 1.55rem; font-weight: 800; color: #fff; letter-spacing: -0.5px; line-height: 1; }
     .logo-tag  { font-size: 0.72rem; font-weight: 500; color: var(--cyan); letter-spacing: 0.1em; text-transform: uppercase; margin-top: 3px; }
@@ -245,14 +257,14 @@
       from { opacity: 0; transform: translateX(-18px); }
       to   { opacity: 1; transform: translateX(0); }
     }
-    .feature-chip:hover { background: rgba(37,99,235,0.14); border-color: rgba(0,212,255,0.22); transform: translateX(4px); }
+    .feature-chip:hover { background: rgba(37,99,235,0.14); border-color: rgba(99,102,241,0.22); transform: translateX(4px); }
     .chip-icon {
       flex-shrink: 0; width: 28px; height: 28px;
-      background: linear-gradient(135deg, rgba(37,99,235,0.3), rgba(0,212,255,0.15));
+      background: linear-gradient(135deg, rgba(37,99,235,0.3), rgba(99,102,241,0.15));
       border-radius: 7px;
       display: flex; align-items: center; justify-content: center;
       font-size: 0.88rem;
-      border: 1px solid rgba(0,212,255,0.15);
+      border: 1px solid rgba(99,102,241,0.15);
     }
 
     /* Stats row */
@@ -265,7 +277,7 @@
       text-align: center; backdrop-filter: blur(8px);
       transition: background var(--trans), border-color var(--trans);
     }
-    .stat-pill:hover { background: rgba(37,99,235,0.1); border-color: rgba(0,212,255,0.2); }
+    .stat-pill:hover { background: rgba(37,99,235,0.1); border-color: rgba(99,102,241,0.2); }
     .stat-val   { font-size: 1.05rem; font-weight: 800; color: var(--cyan); letter-spacing: -0.5px; display: block; line-height: 1; }
     .stat-label { font-size: 0.60rem; font-weight: 500; color: var(--text-2); text-transform: uppercase; letter-spacing: 0.06em; margin-top: 4px; display: block; }
 
@@ -307,7 +319,7 @@
       border-radius: 16px;   /* was 18px — harmonised with inputs */
       padding: 36px;
       backdrop-filter: blur(20px);
-      box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(0,212,255,0.05);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(99,102,241,0.05);
       position: relative;
       animation: card-appear 0.8s 0.15s ease both;
     }
@@ -320,7 +332,7 @@
       position: absolute;
       top: 0; left: 10%; right: 10%;
       height: 1px;
-      background: linear-gradient(to right, transparent, rgba(0,212,255,0.5), transparent);
+      background: linear-gradient(to right, transparent, rgba(99,102,241,0.5), transparent);
     }
 
     /* Terms / privacy below card */
@@ -504,7 +516,7 @@
       transition: border-color var(--trans), box-shadow var(--trans), background var(--trans);
     }
     .otp-grid input:focus  { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(37,99,235,0.18); background: rgba(37,99,235,0.07); }
-    .otp-grid input.filled { border-color: rgba(0,212,255,0.4); background: rgba(0,212,255,0.06); }
+    .otp-grid input.filled { border-color: rgba(99,102,241,0.4); background: rgba(99,102,241,0.06); }
     .otp-grid input.error  { border-color: var(--error); animation: shake .3s ease; }
     @keyframes shake {
       0%, 100% { transform: translateX(0); }
@@ -591,10 +603,10 @@
 
     <!-- Circuit lines -->
     <svg class="circuit-svg" viewBox="0 0 400 300" fill="none" aria-hidden="true">
-      <path d="M0 240 H60 V200 H120 V220 H200" stroke="#00d4ff" stroke-width="0.8" style="animation-delay:0.5s"/>
+      <path d="M0 240 H60 V200 H120 V220 H200" stroke="#818cf8" stroke-width="0.8" style="animation-delay:0.5s"/>
       <path d="M0 180 H40 V150 H100"           stroke="#3b82f6" stroke-width="0.8" style="animation-delay:1.2s"/>
       <path d="M0 260 H30 L80 210 H160 V240 H250" stroke="#7c3aed" stroke-width="0.8" stroke-dasharray="600" stroke-dashoffset="600" style="animation:circuit-draw 5s 0.8s ease forwards"/>
-      <circle cx="120" cy="220" r="3" fill="none" stroke="#00d4ff" stroke-width="0.8" opacity="0.5"/>
+      <circle cx="120" cy="220" r="3" fill="none" stroke="#818cf8" stroke-width="0.8" opacity="0.5"/>
       <circle cx="100" cy="150" r="3" fill="none" stroke="#3b82f6" stroke-width="0.8" opacity="0.5"/>
       <circle cx="160" cy="240" r="3" fill="none" stroke="#7c3aed" stroke-width="0.8" opacity="0.5"/>
     </svg>

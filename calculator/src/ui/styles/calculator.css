@@ -1,3 +1,47 @@
+/* Self-hosted Inter — no external font dependency (air-gap friendly) */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url('/calculator/fonts/inter-latin-300-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/calculator/fonts/inter-latin-400-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('/calculator/fonts/inter-latin-500-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('/calculator/fonts/inter-latin-600-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('/calculator/fonts/inter-latin-700-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url('/calculator/fonts/inter-latin-800-normal.woff2') format('woff2');
+}
+
 /* ── Design Tokens — CostVision ─────────────────────────────────────────── */
 
 [data-theme="dark"] {
@@ -5721,3 +5765,130 @@ kbd {
   .hdr-select { max-width: 86px; }
   .header { flex-wrap: nowrap; overflow-x: auto; }
 }
+
+/* ── Demo gallery joins the app token system (was hard-coded dark-neon zones) ── */
+.demo-card-visual,
+[class*="demo-card-visual--"] {
+  background-color: color-mix(in srgb, var(--accent) 7%, var(--surface-elevated)) !important;
+  background-image: none !important;
+  border-bottom: 1px solid var(--border) !important;
+}
+.demo-card-visual::before, .demo-card-visual::after { display: none !important; }
+.demo-card-visual .demo-card-icon { color: var(--accent) !important; filter: none !important; }
+.demo-card-visual .demo-card-process-label { color: var(--text-muted) !important; text-shadow: none !important; }
+.demo-card--ai-cad[class*="cat-"] { border-top-color: var(--accent) !important; }
+
+/* ── Sticky result hero ─────────────────────────────────────────────────────── */
+#cv-result-hero {
+  position: sticky; top: 0; z-index: 30;
+  background: color-mix(in srgb, var(--surface) 88%, transparent);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--border-strong);
+  border-radius: 12px;
+  padding: 12px 16px;
+  margin-bottom: 12px;
+  display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+  box-shadow: 0 6px 24px rgba(15, 23, 42, 0.07);
+}
+.crh-part { min-width: 0; }
+.crh-part .crh-name { font-size: 0.72rem; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 220px; }
+.crh-total { font-size: 1.5rem; font-weight: 800; color: var(--text-primary); font-family: var(--font-mono); letter-spacing: -0.02em; white-space: nowrap; }
+.crh-total .crh-pm { font-size: 0.8rem; font-weight: 700; }
+.crh-chips { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+.crh-chip { font-size: 0.68rem; font-weight: 600; padding: 3px 9px; border-radius: 20px; border: 1px solid var(--border); color: var(--text-secondary); background: var(--surface-elevated); white-space: nowrap; }
+.crh-chip--band-tight { color: #059669; border-color: #05966955; background: #05966912; }
+.crh-chip--band-moderate { color: #d97706; border-color: #d9770655; background: #d9770612; }
+.crh-chip--band-wide { color: #dc2626; border-color: #dc262655; background: #dc262612; }
+.crh-delta-up { color: #dc2626; font-weight: 700; }
+.crh-delta-dn { color: #059669; font-weight: 700; }
+.crh-actions { margin-left: auto; display: flex; gap: 7px; flex-wrap: wrap; }
+.crh-actions .btn { font-size: 0.72rem; padding: 5px 11px; }
+
+/* ── Trace drawer: click any bucket → how it was computed ──────────────────── */
+#cv-trace-drawer { position: fixed; inset: 0; z-index: 10040; display: none; }
+#cv-trace-drawer.open { display: block; }
+.ctd-scrim { position: absolute; inset: 0; background: rgba(15,23,42,0.35); }
+.ctd-panel {
+  position: absolute; top: 0; right: 0; bottom: 0; width: min(480px, 94vw);
+  background: var(--surface); border-left: 1px solid var(--border-strong);
+  box-shadow: -18px 0 50px rgba(0,0,0,0.25); display: flex; flex-direction: column;
+  animation: ctd-in 240ms var(--ease-std);
+}
+@keyframes ctd-in { from { transform: translateX(30px); opacity: 0; } to { transform: none; opacity: 1; } }
+.ctd-head { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
+.ctd-head h3 { margin: 0; font-size: 1rem; color: var(--text-primary); flex: 1; }
+.ctd-body { padding: 16px 20px; overflow-y: auto; flex: 1; }
+.ctd-value { font-size: 1.6rem; font-weight: 800; font-family: var(--font-mono); color: var(--text-primary); }
+.ctd-formula { margin: 12px 0; padding: 11px 13px; background: var(--surface-elevated); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 8px; font-size: 0.8rem; color: var(--text-secondary); line-height: 1.5; }
+.ctd-table { width: 100%; border-collapse: collapse; font-size: 0.76rem; }
+.ctd-table th { text-align: left; color: var(--text-muted); font-weight: 600; padding: 6px 8px; border-bottom: 1px solid var(--border-strong); }
+.ctd-table td { padding: 6px 8px; border-bottom: 1px solid var(--border); color: var(--text-secondary); }
+.ctd-table td.num { font-family: var(--font-mono); text-align: right; white-space: nowrap; color: var(--text-primary); }
+.ctd-foot { padding: 12px 20px; border-top: 1px solid var(--border); font-size: 0.7rem; color: var(--text-muted); }
+#results-breakdown .cv-traceable { cursor: pointer; }
+#results-breakdown .cv-traceable:hover { background: color-mix(in srgb, var(--accent) 7%, transparent); }
+@media (prefers-reduced-motion: reduce) { .ctd-panel { animation: none; } }
+
+/* ── Sticky form action bar ─────────────────────────────────────────────────── */
+.input-panel .cv-sticky-actions {
+  position: sticky; bottom: 0; z-index: 20;
+  background: color-mix(in srgb, var(--surface) 90%, transparent);
+  backdrop-filter: blur(8px);
+  border-top: 1px solid var(--border);
+  margin-top: 10px; padding: 10px 2px;
+}
+#cv-validation-chip {
+  border: 1px solid #dc262666; color: #dc2626; background: #dc262610;
+  font-family: var(--font); font-size: 0.72rem; font-weight: 700;
+  border-radius: 20px; padding: 5px 11px; cursor: pointer;
+}
+#cv-dirty-dot { font-size: 0.7rem; color: var(--text-muted); align-self: center; }
+#cv-dirty-dot::before { content: "●"; color: #d97706; margin-right: 5px; }
+
+/* ── Benchmark helper text + soft outlier flag ─────────────────────────────── */
+.cv-bench { display: block; font-size: 0.64rem; color: var(--text-muted); margin-top: 2px; }
+input.cv-outlier { border-color: #d97706 !important; box-shadow: 0 0 0 2px #d9770622; }
+
+/* ── Accessibility: visible focus rings on the app chrome ──────────────────── */
+.anav-item:focus-visible, .cmdk-trigger:focus-visible, .theme-toggle:focus-visible,
+.hdr-primary:focus-visible, .rtab:focus-visible, .dash-tile:focus-visible,
+.cpicker-tile:focus-visible, .cmdk-item:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+
+/* ── Read-only share view ───────────────────────────────────────────────────── */
+#cv-share-view { position: fixed; inset: 0; z-index: 20000; overflow-y: auto; background: var(--bg-primary, #f1f5f9); display: flex; align-items: flex-start; justify-content: center; padding: 6vh 16px; }
+.csv-card { width: 100%; max-width: 560px; background: var(--surface, #fff); border: 1px solid var(--border-strong, #cbd5e1); border-radius: 16px; padding: 28px 30px; box-shadow: 0 20px 70px rgba(15,23,42,0.15); font-family: var(--font); }
+.csv-brand { display: flex; align-items: center; gap: 8px; font-weight: 800; color: var(--accent, #4f46e5); font-size: 0.95rem; }
+.csv-logo { display: grid; place-items: center; width: 26px; height: 26px; border-radius: 7px; background: var(--accent, #4f46e5); color: #fff; font-size: 0.7rem; font-weight: 800; }
+.csv-viewonly { margin-left: auto; font-size: 0.64rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted, #64748b); border: 1px solid var(--border, #e2e8f0); padding: 2px 8px; border-radius: 20px; }
+.csv-part { margin-top: 18px; font-size: 1.15rem; font-weight: 700; color: var(--text-primary, #0f172a); }
+.csv-meta { font-size: 0.74rem; color: var(--text-muted, #64748b); margin-top: 2px; text-transform: capitalize; }
+.csv-total { font-size: 2.1rem; font-weight: 800; font-family: var(--font-mono); color: var(--text-primary, #0f172a); margin: 12px 0 18px; }
+.csv-pm { font-size: 0.95rem; color: #d97706; font-weight: 700; }
+.csv-table { width: 100%; border-collapse: collapse; }
+.csv-table td { padding: 7px 6px; border-bottom: 1px solid var(--border, #e2e8f0); font-size: 0.8rem; color: var(--text-secondary, #334155); }
+.csv-table td.num { font-family: var(--font-mono); text-align: right; white-space: nowrap; color: var(--text-primary, #0f172a); }
+.csv-table td.pct { color: var(--text-muted, #64748b); text-align: right; width: 52px; }
+.csv-table td.bar { width: 30%; } 
+.csv-table td.bar div { height: 8px; border-radius: 4px; background: var(--accent, #4f46e5); opacity: 0.75; }
+.csv-foot { margin-top: 16px; font-size: 0.68rem; color: var(--text-muted, #64748b); }
+.csv-loading, .csv-error { padding: 40px 10px; text-align: center; color: var(--text-muted, #64748b); font-size: 0.9rem; }
+
+/* ── What's new popover ─────────────────────────────────────────────────────── */
+#cv-whatsnew {
+  position: fixed; bottom: 46px; left: 50%; transform: translateX(-50%);
+  width: min(420px, 92vw); max-height: 60vh; overflow-y: auto; z-index: 9000;
+  background: var(--surface); border: 1px solid var(--border-strong); border-radius: 14px;
+  padding: 16px 18px; box-shadow: 0 18px 60px rgba(15,23,42,0.25); font-family: var(--font);
+}
+.cwn-head { display: flex; align-items: center; justify-content: space-between; font-weight: 700; color: var(--text-primary); font-size: 0.95rem; margin-bottom: 6px; }
+.cwn-close { background: none; border: none; cursor: pointer; color: var(--text-muted); padding: 4px; }
+.cwn-rel { display: flex; align-items: baseline; gap: 8px; margin-top: 10px; }
+.cwn-v { font-family: var(--font-mono); font-weight: 700; color: var(--accent); font-size: 0.8rem; }
+.cwn-date { font-size: 0.7rem; color: var(--text-muted); }
+.cwn-list { margin: 6px 0 0 18px; font-size: 0.78rem; color: var(--text-secondary); }
+.cwn-list li { margin-bottom: 3px; }
+.cwn-full { margin-top: 12px; }
