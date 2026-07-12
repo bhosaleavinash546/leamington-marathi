@@ -21,10 +21,14 @@
     })();
   </script>
   <script>
-    // Auth guard — redirect to sign-in if no valid token
+    // Auth guard — redirect to sign-in if no valid token.
+    // Base-relative: the app is served under /calculator/ in production, so a
+    // root-absolute '/auth.html' 404s. Resolve against the current directory.
     (function() {
+      const authUrl = window.location.pathname.replace(/[^/]*$/, '') + 'auth.html';
+      window.__cvAuthUrl = authUrl;
       const token = localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token');
-      if (!token) { window.location.replace('/auth.html'); return; }
+      if (!token) { window.location.replace(authUrl); return; }
       try {
         const parts = token.split('.');
         if (parts.length < 2) throw new Error('bad token');
@@ -37,21 +41,52 @@
           localStorage.removeItem('auth_user');
           sessionStorage.removeItem('auth_token');
           sessionStorage.removeItem('auth_user');
-          window.location.replace('/auth.html');
+          window.location.replace(authUrl);
         }
-      } catch { window.location.replace('/auth.html'); }
+      } catch { window.location.replace(authUrl); }
     })();
   </script>
-  <script type="module" crossorigin src="/calculator/assets/index-BO5ow60v.js"></script>
+  <script type="module" crossorigin src="/calculator/assets/index-CjJZeiO3.js"></script>
   <link rel="modulepreload" crossorigin href="/calculator/assets/vendor-motion-OZhY1uFQ.js">
   <link rel="modulepreload" crossorigin href="/calculator/assets/vendor-Bs6metFb.js">
   <link rel="modulepreload" crossorigin href="/calculator/assets/vendor-pdf-fDPUKpjF.js">
   <link rel="modulepreload" crossorigin href="/calculator/assets/vendor-chart-K87R2BAO.js">
-  <link rel="stylesheet" crossorigin href="/calculator/assets/index-DpconO7y.css">
+  <link rel="stylesheet" crossorigin href="/calculator/assets/index-DYYzVIEL.css">
 </head>
 <body>
 
+<!-- ── Icon sprite — single SVG system (Lucide-style), stroke = currentColor ── -->
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5z"/></symbol>
+  <symbol id="i-news" viewBox="0 0 24 24"><path d="M4 5h13v14H4z"/><path d="M17 8h3v9a2 2 0 0 1-2 2"/><path d="M7 9h7M7 12.5h7M7 16h4"/></symbol>
+  <symbol id="i-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.6 9.4a2.5 2.5 0 0 1 4.9.6c0 1.6-2.5 2-2.5 3.2"/><path d="M12 17h.01"/></symbol>
+  <symbol id="i-mail" viewBox="0 0 24 24"><path d="M3 6h18v12H3z"/><path d="m3 7 9 6 9-6"/></symbol>
+  <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></symbol>
+  <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.5-4.5"/></symbol>
+  <symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7"/><path d="M2 20h20"/></symbol>
+  <symbol id="i-bulb" viewBox="0 0 24 24"><path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 1 4 10.5c-.8.7-1 1.5-1 2.5H9c0-1-.2-1.8-1-2.5A6 6 0 0 1 12 3z"/></symbol>
+  <symbol id="i-factory" viewBox="0 0 24 24"><path d="M2 20h20"/><path d="M4 20V9l6 4V9l6 4V4h4v16"/></symbol>
+  <symbol id="i-warn" viewBox="0 0 24 24"><path d="M12 3 22 21H2z"/><path d="M12 10v5M12 18h.01"/></symbol>
+  <symbol id="i-trend-up" viewBox="0 0 24 24"><path d="m2 18 7-7 4 4 9-9"/><path d="M15 6h7v7"/></symbol>
+  <symbol id="i-trend-dn" viewBox="0 0 24 24"><path d="m2 6 7 7 4-4 9 9"/><path d="M15 18h7v-7"/></symbol>
+  <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 9a6 6 0 0 1 12 0c0 5 2 6 2 6H4s2-1 2-6"/><path d="M10 19a2 2 0 0 0 4 0"/></symbol>
+  <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 11a8 8 0 1 0-.6 4.6"/><path d="M20 4v7h-7"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+  <symbol id="i-chev-d" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+  <symbol id="i-zap" viewBox="0 0 24 24"><path d="M13 2 4 14h6l-1 8 9-12h-6z"/></symbol>
+  <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
+  <symbol id="i-panel" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16"/></symbol>
+  <symbol id="i-car" viewBox="0 0 24 24"><path d="M5 16.5 6.6 12a2 2 0 0 1 1.9-1.4h7a2 2 0 0 1 1.9 1.4L19 16.5"/><path d="M4 16.5h16V20h-2.5a1.5 1.5 0 0 1-3 0h-5a1.5 1.5 0 0 1-3 0H4z"/></symbol>
+  <symbol id="i-gauge" viewBox="0 0 24 24"><path d="M4 15a8 8 0 0 1 16 0"/><path d="m12 15 4-5"/><path d="M2 19h20"/></symbol>
+  <symbol id="i-hourglass" viewBox="0 0 24 24"><path d="M6 3h12M6 21h12"/><path d="M7 3v3l5 6-5 6v3M17 3v3l-5 6 5 6v3"/></symbol>
+</svg>
+
 <header class="header">
+  <button class="anav-mobile-toggle" id="nav-mobile-btn" aria-label="Open navigation"><svg class="ic"><use href="#i-menu"/></svg></button>
   <!-- Logo -->
   <div class="nav-logo" id="logo-home-btn" title="CostVision — AI-Powered Cost Intelligence" style="cursor:pointer">
     <div class="logo-icon">CV</div>
@@ -61,67 +96,59 @@
     </div>
   </div>
 
-  <!-- Center title (desktop only) -->
-  <div class="nav-title">Should-Cost Calculator</div>
-
   <div style="flex:1"></div>
 
-  <!-- Right controls -->
+  <!-- Right controls: search · region · currency · ONE primary CTA · theme · account -->
   <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+    <button class="cmdk-trigger" id="cmdk-btn" title="Search commodities & actions" aria-label="Open command palette">
+      <svg class="ic"><use href="#i-search"/></svg><span>Search</span><kbd>⌘K</kbd>
+    </button>
     <!-- Manufacturing region -->
-    <div style="display:flex;align-items:center;gap:5px">
-      <label style="font-size:0.72rem;color:var(--text-muted);white-space:nowrap">🌍</label>
-      <select id="mfg-region-selector" style="font-size:0.77rem;padding:4px 8px;border:1px solid var(--border-strong);border-radius:6px;background:var(--surface-elevated);color:var(--text-primary);font-family:var(--font)" title="Select manufacturing country/region — rates (labour, machine, material, energy) adjust automatically for the selected location">
-        <option value="UK">🇬🇧 UK</option>
-        <option value="DE">🇩🇪 Germany</option>
-        <option value="FR">🇫🇷 France</option>
-        <option value="IT">🇮🇹 Italy</option>
-        <option value="ES">🇪🇸 Spain</option>
-        <option value="PL">🇵🇱 Poland</option>
-        <option value="CZ">🇨🇿 Czech Rep.</option>
-        <option value="RO">🇷🇴 Romania</option>
-        <option value="HU">🇭🇺 Hungary</option>
-        <option value="SE">🇸🇪 Sweden</option>
-        <option value="NL">🇳🇱 Netherlands</option>
-        <option value="TR">🇹🇷 Turkey</option>
-        <option value="CN">🇨🇳 China</option>
-        <option value="IN">🇮🇳 India</option>
-        <option value="MX">🇲🇽 Mexico</option>
-        <option value="US">🇺🇸 USA</option>
-        <option value="TH">🇹🇭 Thailand</option>
-        <option value="VN">🇻🇳 Vietnam</option>
-        <option value="BR">🇧🇷 Brazil</option>
-        <option value="KR">🇰🇷 S. Korea</option>
+    <div class="hdr-select-wrap" title="Select manufacturing country/region — rates (labour, machine, material, energy) adjust automatically for the selected location">
+      <svg class="ic hdr-select-ic"><use href="#i-globe"/></svg>
+      <select id="mfg-region-selector" class="hdr-select">
+        <option value="UK">UK</option>
+        <option value="DE">Germany</option>
+        <option value="FR">France</option>
+        <option value="IT">Italy</option>
+        <option value="ES">Spain</option>
+        <option value="PL">Poland</option>
+        <option value="CZ">Czech Rep.</option>
+        <option value="RO">Romania</option>
+        <option value="HU">Hungary</option>
+        <option value="SE">Sweden</option>
+        <option value="NL">Netherlands</option>
+        <option value="TR">Turkey</option>
+        <option value="CN">China</option>
+        <option value="IN">India</option>
+        <option value="MX">Mexico</option>
+        <option value="US">USA</option>
+        <option value="TH">Thailand</option>
+        <option value="VN">Vietnam</option>
+        <option value="BR">Brazil</option>
+        <option value="KR">S. Korea</option>
       </select>
     </div>
     <!-- Currency -->
-    <select id="currency-selector" style="font-size:0.77rem;padding:4px 8px;border:1px solid var(--border-strong);border-radius:6px;background:var(--surface-elevated);color:var(--text-primary);font-family:var(--font)" title="Display currency">
-      <option value="GBP">£ GBP</option>
-      <option value="EUR">€ EUR</option>
-      <option value="USD">$ USD</option>
-      <option value="CNY">¥ CNY</option>
-      <option value="INR">₹ INR</option>
-      <option value="MXN">$M MXN</option>
-      <option value="THB">฿ THB</option>
-      <option value="VND">₫ VND</option>
-      <option value="BRL">R$ BRL</option>
-      <option value="KRW">₩ KRW</option>
-      <option value="PLN">zł PLN</option>
-      <option value="CZK">Kč CZK</option>
-    </select>
-    <!-- Home button -->
-    <button class="nav-action-btn home-btn" id="home-btn" aria-label="Go to dashboard">⌂ Home</button>
-    <button class="nav-action-btn new-costing-btn" id="new-costing-btn" aria-label="Start new should-costing">⊕ New Costing</button>
-    <!-- Demo Gallery button -->
-    <button class="nav-action-btn demo-btn" id="demo-btn" aria-label="Open demo gallery" title="Load luxury SUV demo examples for any commodity" data-cv-tip="Browse 50+ pre-loaded luxury SUV demos across all 19+ commodity types. One click loads full cost breakdown." data-cv-tip-title="Demo Gallery">🚗 Demos</button>
-    <!-- News button -->
-    <button class="nav-action-btn" id="news-btn" aria-label="Automotive Industry News" title="Live automotive manufacturing &amp; costing news" data-cv-tip="120 articles from 30 curated feeds — battery, EV, materials, supply chain. Auto-refreshes every 15 min." data-cv-tip-title="Market Intelligence">📰 NEWS</button>
-    <!-- Help button -->
-    <button class="nav-action-btn" id="help-btn" aria-label="Open help centre" data-cv-tip="Help Centre with search, guides, keyboard shortcuts (?), and the product tour." data-cv-tip-title="Help Centre">? Help</button>
-    <!-- Contact button -->
-    <button class="nav-action-btn" id="contact-btn" aria-label="Contact support">✉ Contact</button>
+    <div class="hdr-select-wrap" title="Display currency">
+      <select id="currency-selector" class="hdr-select">
+        <option value="GBP">£ GBP</option>
+        <option value="EUR">€ EUR</option>
+        <option value="USD">$ USD</option>
+        <option value="CNY">¥ CNY</option>
+        <option value="INR">₹ INR</option>
+        <option value="MXN">$M MXN</option>
+        <option value="THB">฿ THB</option>
+        <option value="VND">₫ VND</option>
+        <option value="BRL">R$ BRL</option>
+        <option value="KRW">₩ KRW</option>
+        <option value="PLN">zł PLN</option>
+        <option value="CZK">Kč CZK</option>
+      </select>
+    </div>
+    <button class="btn btn-primary hdr-primary" id="new-costing-btn" aria-label="Start new should-costing"><svg class="ic"><use href="#i-plus"/></svg>New Costing</button>
     <!-- Theme toggle -->
-    <button class="theme-toggle" id="theme-toggle-btn" title="Toggle dark/light theme" aria-label="Toggle theme">🌙</button>
+    <button class="theme-toggle" id="theme-toggle-btn" title="Toggle dark/light theme" aria-label="Toggle theme"><svg class="ic"><use href="#i-moon"/></svg></button>
     <!-- User -->
     <div id="user-menu" style="display:flex;align-items:center;gap:7px">
       <span id="user-greeting" style="font-size:0.73rem;color:var(--text-muted);white-space:nowrap"></span>
@@ -129,6 +156,40 @@
     </div>
   </div>
 </header>
+
+<!-- ── App navigation sidebar (collapsible; overlay on mobile) ──────────────── -->
+<nav id="app-nav" aria-label="Primary">
+  <div class="anav-group">
+    <button class="anav-item" id="home-btn" aria-label="Go to dashboard"><svg class="ic"><use href="#i-home"/></svg><span class="anav-label">Home</span></button>
+    <button class="anav-item" id="demo-btn" aria-label="Open demo gallery" title="Load luxury SUV demo examples for any commodity" data-cv-tip="Browse 50+ pre-loaded luxury SUV demos across all 19+ commodity types. One click loads full cost breakdown." data-cv-tip-title="Demo Gallery"><svg class="ic"><use href="#i-car"/></svg><span class="anav-label">Demos</span></button>
+    <button class="anav-item" id="news-btn" aria-label="Automotive Industry News" title="Live automotive manufacturing &amp; costing news" data-cv-tip="120 articles from 30 curated feeds — battery, EV, materials, supply chain. Auto-refreshes every 15 min." data-cv-tip-title="Market Intelligence"><svg class="ic"><use href="#i-news"/></svg><span class="anav-label">News</span></button>
+  </div>
+  <div class="anav-group anav-group--bottom">
+    <button class="anav-item" id="help-btn" aria-label="Open help centre" data-cv-tip="Help Centre with search, guides, keyboard shortcuts (?), and the product tour." data-cv-tip-title="Help Centre"><svg class="ic"><use href="#i-help"/></svg><span class="anav-label">Help</span></button>
+    <button class="anav-item" id="contact-btn" aria-label="Contact support"><svg class="ic"><use href="#i-mail"/></svg><span class="anav-label">Contact</span></button>
+    <button class="anav-item anav-collapse" id="nav-collapse-btn" title="Collapse navigation" aria-label="Collapse navigation"><svg class="ic"><use href="#i-panel"/></svg><span class="anav-label">Collapse</span></button>
+  </div>
+</nav>
+<div id="anav-scrim" aria-hidden="true"></div>
+<script>
+  // Sidebar collapse + mobile overlay — inline so layout is right on first paint.
+  (function() {
+    const root = document.documentElement;
+    if (localStorage.getItem('cv-nav') === 'collapsed') root.classList.add('cv-nav-collapsed');
+    function bind(id, fn) { const el = document.getElementById(id); if (el) el.addEventListener('click', fn); }
+    bind('nav-collapse-btn', function() {
+      root.classList.toggle('cv-nav-collapsed');
+      localStorage.setItem('cv-nav', root.classList.contains('cv-nav-collapsed') ? 'collapsed' : 'open');
+    });
+    bind('nav-mobile-btn', function() { root.classList.toggle('cv-nav-open'); });
+    bind('anav-scrim', function() { root.classList.remove('cv-nav-open'); });
+    // Any nav action closes the mobile overlay
+    const nav = document.getElementById('app-nav');
+    if (nav) nav.addEventListener('click', function(e) {
+      if (e.target.closest('.anav-item') && !e.target.closest('#nav-collapse-btn')) root.classList.remove('cv-nav-open');
+    });
+  })();
+</script>
 <script>
   (function() {
     try {
@@ -144,7 +205,7 @@
     localStorage.removeItem('auth_user');
     sessionStorage.removeItem('auth_token');
     sessionStorage.removeItem('auth_user');
-    window.location.replace('/auth.html');
+    window.location.replace(window.__cvAuthUrl || (window.location.pathname.replace(/[^/]*$/, '') + 'auth.html'));
   }
 </script>
 
@@ -163,8 +224,8 @@
         <h1 class="cv-hero-h1">Know what a part <span class="cv-hl">should cost</span> — before you negotiate.</h1>
         <p class="cv-hero-lede">CostVision breaks any part down to a defensible piece price across casting, sheet metal, machining, plastics, forging and PCB — from a photo, a CAD file, or a plain-English brief.</p>
         <div class="cv-hero-cta">
-          <button class="btn btn-primary cv-hero-start">⊕ Start a costing</button>
-          <button class="btn btn-secondary cv-hero-demos">▶ Explore live demos</button>
+          <button class="btn btn-primary cv-hero-start"><svg class="ic"><use href="#i-plus"/></svg>Start a costing</button>
+          <button class="btn btn-secondary cv-hero-demos"><svg class="ic"><use href="#i-play"/></svg>Explore live demos</button>
         </div>
         <div class="cv-hero-trust">
           <span><span class="tdot"></span>No external AI required</span>
@@ -180,7 +241,7 @@
           <li><span class="cv-step-n">2</span><div><b>Enter or auto-extract details</b><span>Type the inputs, or let AI read them from the file.</span></div></li>
           <li><span class="cv-step-n">3</span><div><b>Get a defensible price + DFM</b><span>Full cost breakdown, PPV vs quotes, and manufacturability flags.</span></div></li>
         </ol>
-        <button class="btn btn-secondary cv-hero-demos cv-onboard-cta">▶ Try a demo costing</button>
+        <button class="btn btn-secondary cv-hero-demos cv-onboard-cta"><svg class="ic"><use href="#i-play"/></svg>Try a demo costing</button>
       </div>
     </div>
 
@@ -191,7 +252,7 @@
         <div class="cv-hc-actions">
           <button class="cv-hc-filter" id="hero-filter-jump">
             <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 5h18l-7 8v6l-4-2v-4z"/></svg>Filter portfolio</button>
-          <button class="btn btn-primary cv-hero-start">⊕ New costing</button>
+          <button class="btn btn-primary cv-hero-start"><svg class="ic"><use href="#i-plus"/></svg>New costing</button>
         </div>
       </div>
     </div>
@@ -202,13 +263,13 @@
 
     <!-- Live Commodity Ticker -->
     <div class="comm-ticker-outer" id="comm-ticker-outer">
-      <span class="comm-ticker-label">📊 PRICES</span>
+      <span class="comm-ticker-label"><svg class="ic ic-xs"><use href="#i-chart"/></svg> PRICES</span>
       <div class="comm-ticker-clip">
         <div class="comm-ticker-track" id="comm-ticker-track">
           <span class="comm-ticker-loading">Loading commodity prices…</span>
         </div>
       </div>
-      <button class="comm-ticker-expand" id="comm-panel-toggle" title="Expand commodity dashboard">⌄ Dashboard</button>
+      <button class="comm-ticker-expand" id="comm-panel-toggle" title="Expand commodity dashboard"><svg class="ic ic-xs"><use href="#i-chev-d"/></svg> Dashboard</button>
     </div>
 
     <!-- Commodity Dashboard Panel (collapsible) -->
@@ -217,11 +278,11 @@
       <!-- Panel Header -->
       <div class="comm-panel-header">
         <div class="comm-panel-title-wrap">
-          <span class="comm-panel-icon">🏭</span>
+          <span class="comm-panel-icon"><svg class="ic"><use href="#i-factory"/></svg></span>
           <span class="comm-panel-title">Commodity Intelligence</span>
           <span class="comm-badge" id="comm-updated-badge" style="background:var(--text-muted,#64748b)">Benchmark</span>
           <span class="comm-updated" id="comm-updated-time"></span>
-          <span style="font-size:0.62rem;color:var(--text-muted);margin-left:6px" title="Prices are modelled benchmarks calibrated to market references. Not live feed data. Verify with broker for binding decisions.">⚠ indicative only</span>
+          <span style="font-size:0.62rem;color:var(--text-muted);margin-left:6px" title="Prices are modelled benchmarks calibrated to market references. Not live feed data. Verify with broker for binding decisions."><svg class="ic ic-xs"><use href="#i-warn"/></svg> indicative only</span>
         </div>
         <div class="comm-panel-controls">
           <select class="comm-filter-sel" id="comm-filter-cat" title="Filter by category">
@@ -244,36 +305,36 @@
             <option value="Asia">Asia</option>
             <option value="Global">Global</option>
           </select>
-          <input class="comm-search" id="comm-search" type="search" placeholder="🔍 Search commodity…" />
-          <button class="btn btn-secondary btn-sm" id="comm-refresh-btn" style="font-size:0.78rem;padding:4px 10px" title="Refresh prices">↻ Refresh</button>
-          <button class="comm-close-btn" id="comm-panel-close" title="Collapse">✕</button>
+          <input class="comm-search" id="comm-search" type="search" placeholder="Search commodity…" />
+          <button class="btn btn-secondary btn-sm" id="comm-refresh-btn" style="font-size:0.78rem;padding:4px 10px" title="Refresh prices"><svg class="ic ic-xs"><use href="#i-refresh"/></svg> Refresh</button>
+          <button class="comm-close-btn" id="comm-panel-close" title="Collapse"><svg class="ic"><use href="#i-x"/></svg></button>
         </div>
       </div>
 
       <!-- KPI Strip -->
       <div class="comm-kpi-strip" id="comm-kpi-strip">
         <div class="comm-kpi-card comm-kpi-riser">
-          <div class="comm-kpi-label">▲ Top Riser</div>
+          <div class="comm-kpi-label"><svg class="ic ic-xs"><use href="#i-trend-up"/></svg> Top Riser</div>
           <div class="comm-kpi-val" id="ck-riser-name">—</div>
           <div class="comm-kpi-chg comm-up" id="ck-riser-chg">—</div>
         </div>
         <div class="comm-kpi-card comm-kpi-faller">
-          <div class="comm-kpi-label">▼ Top Faller</div>
+          <div class="comm-kpi-label"><svg class="ic ic-xs"><use href="#i-trend-dn"/></svg> Top Faller</div>
           <div class="comm-kpi-val" id="ck-faller-name">—</div>
           <div class="comm-kpi-chg comm-dn" id="ck-faller-chg">—</div>
         </div>
         <div class="comm-kpi-card comm-kpi-volatility">
-          <div class="comm-kpi-label">⚡ Volatility</div>
+          <div class="comm-kpi-label"><svg class="ic ic-xs"><use href="#i-zap"/></svg> Volatility</div>
           <div class="comm-kpi-val" id="ck-vol">—</div>
           <div class="comm-kpi-sub" id="ck-vol-sub">Market avg daily vol</div>
         </div>
         <div class="comm-kpi-card comm-kpi-risk">
-          <div class="comm-kpi-label">🌍 Supply Risk</div>
+          <div class="comm-kpi-label"><svg class="ic ic-xs"><use href="#i-globe"/></svg> Supply Risk</div>
           <div class="comm-kpi-val" id="ck-risk">—</div>
           <div class="comm-kpi-sub" id="ck-risk-sub">Global index</div>
         </div>
         <div class="comm-kpi-card comm-kpi-pressure">
-          <div class="comm-kpi-label">⚙️ Cost Pressure</div>
+          <div class="comm-kpi-label"><svg class="ic ic-xs"><use href="#i-gauge"/></svg> Cost Pressure</div>
           <div class="comm-kpi-val" id="ck-pressure">—</div>
           <div class="comm-kpi-sub">Automotive avg</div>
         </div>
@@ -290,7 +351,7 @@
         <div class="comm-footer-note">
           Commodity prices are indicative market values refreshed every 30 minutes, based on LME, SMM, ICIS, and Fastmarkets reference benchmarks. Not financial advice.
         </div>
-        <button class="btn btn-secondary btn-sm" id="comm-alert-btn" style="font-size:0.78rem;padding:4px 12px;white-space:nowrap">🔔 Price Alerts</button>
+        <button class="btn btn-secondary btn-sm" id="comm-alert-btn" style="font-size:0.78rem;padding:4px 12px;white-space:nowrap"><svg class="ic ic-xs"><use href="#i-bell"/></svg> Price Alerts</button>
       </div>
     </div>
 
@@ -300,7 +361,7 @@
   <div id="comm-alert-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:1000;align-items:center;justify-content:center">
     <div style="background:var(--surface);border-radius:14px;padding:28px;min-width:380px;max-width:520px;width:90%;border:1px solid var(--border-strong);position:relative">
       <button onclick="document.getElementById('comm-alert-modal').style.display='none'" style="position:absolute;top:12px;right:14px;background:none;border:none;font-size:1.2rem;cursor:pointer;color:var(--text-muted)">✕</button>
-      <h3 style="margin:0 0 16px;font-size:1rem;font-weight:700">🔔 Price Alerts</h3>
+      <h3 style="margin:0 0 16px;font-size:1rem;font-weight:700"><svg class="ic"><use href="#i-bell"/></svg> Price Alerts</h3>
       <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
         <select id="alert-commodity-sel" style="flex:1;min-width:160px;padding:6px 10px;border-radius:7px;border:1px solid var(--border-strong);background:var(--surface-elevated);color:var(--text-primary);font-family:var(--font);font-size:0.83rem"></select>
         <select id="alert-dir-sel" style="padding:6px 10px;border-radius:7px;border:1px solid var(--border-strong);background:var(--surface-elevated);color:var(--text-primary);font-family:var(--font);font-size:0.83rem">
@@ -390,21 +451,21 @@
   <!-- KPI Cards -->
   <div class="dash-kpi-row" id="dash-kpi-row">
     <div class="dash-kpi-card" id="kpi-total">
-      <div class="kpi-icon">📊</div>
+      <div class="kpi-icon"><svg class="ic"><use href="#i-chart"/></svg></div>
       <div class="kpi-body">
         <div class="kpi-value" id="kpi-total-val">—</div>
         <div class="kpi-label">Total Costings</div>
       </div>
     </div>
     <div class="dash-kpi-card" id="kpi-saving">
-      <div class="kpi-icon">💡</div>
+      <div class="kpi-icon"><svg class="ic"><use href="#i-bulb"/></svg></div>
       <div class="kpi-body">
         <div class="kpi-value" id="kpi-saving-val">—</div>
         <div class="kpi-label">Savings Identified</div>
       </div>
     </div>
     <div class="dash-kpi-card" id="kpi-top-commodity">
-      <div class="kpi-icon">🏭</div>
+      <div class="kpi-icon"><svg class="ic"><use href="#i-factory"/></svg></div>
       <div class="kpi-body">
         <div class="kpi-value" id="kpi-top-commodity-val">—</div>
         <div class="kpi-label">Top Commodity</div>
@@ -418,12 +479,16 @@
       </div>
     </div>
     <div class="dash-kpi-card accent" id="kpi-high-cost">
-      <div class="kpi-icon">⚠</div>
+      <div class="kpi-icon"><svg class="ic"><use href="#i-warn"/></svg></div>
       <div class="kpi-body">
         <div class="kpi-value" id="kpi-high-cost-val">—</div>
         <div class="kpi-label">High-Cost Parts</div>
       </div>
     </div>
+    <!-- Step 6: Intelligence panel — fills async from /api/knowledge/intelligence when signed in -->
+    <div id="dash-intelligence" style="display:none;margin-top:10px"></div>
+    <!-- Autonomous drift monitor findings — the unattended agent's output -->
+    <div id="dash-drift" style="display:none;margin-top:10px"></div>
   </div>
 
   <!-- Main body: tiles + charts -->
@@ -486,15 +551,15 @@
       <div class="dash-section-title" style="margin-top:20px">AI Recommendations</div>
       <div class="dash-ai-panel" id="dash-ai-panel">
         <div class="dash-ai-item dash-ai-item--insight">
-          <span class="dai-icon">💡</span>
+          <span class="dai-icon"><svg class="ic"><use href="#i-bulb"/></svg></span>
           <span>Start by costing your highest-volume parts first — typically drives 80% of the savings opportunity.</span>
         </div>
         <div class="dash-ai-item dash-ai-item--warn">
-          <span class="dai-icon">⚠</span>
+          <span class="dai-icon"><svg class="ic"><use href="#i-warn"/></svg></span>
           <span>PCB &amp; PCBA parts often show 15–30% variance vs. supplier quotes — high-priority for should-cost.</span>
         </div>
         <div class="dash-ai-item dash-ai-item--opt">
-          <span class="dai-icon">📉</span>
+          <span class="dai-icon"><svg class="ic"><use href="#i-trend-dn"/></svg></span>
           <span>China-sourced castings: apply 2× complexity factor for hidden logistics/quality costs before accepting quotes.</span>
         </div>
         <div class="dash-ai-item dash-ai-item--insight" id="dai-dynamic"></div>
@@ -556,10 +621,10 @@
 </section>
 
 <!-- ─── News View ──────────────────────────────────────────────────────── -->
-<section id="news-view" style="display:none;padding:0 24px 48px;max-width:1400px;margin:0 auto">
+<section id="news-view" style="display:none;padding:0 24px 48px;max-width:1400px">
   <div class="news-header">
     <div class="news-title-bar">
-      <h2 style="font-size:1.3rem;font-weight:700;color:var(--text-primary);margin:0">📰 Automotive Industry News</h2>
+      <h2 style="font-size:1.3rem;font-weight:700;color:var(--text-primary);margin:0"><svg class="ic"><use href="#i-news"/></svg> Automotive Industry News</h2>
       <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
         <div class="news-search-wrap">
           <svg class="news-search-icon" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
@@ -809,7 +874,7 @@
     <button class="cpicker-tile cpicker-tile--primary" data-commodity="automotive_software">
       <div class="cpicker-tile-icon">💻</div>
       <div class="cpicker-tile-label">Auto SW Cost</div>
-      <div class="cpicker-tile-sub">43 modules · ASIL · NRE</div>
+      <div class="cpicker-tile-sub">49 modules · ASIL · NRE</div>
     </button>
   </div>
   <div class="cpicker-section-label" style="margin-top:8px">AI-Powered</div>
@@ -986,6 +1051,8 @@
       <button class="btn btn-primary"   id="export-all-pdf-btn" style="display:none" title="Export everything into one PDF: Should-Cost + DFM/DFA + CAD Analysis + PCB Analysis">⬇ Export All to PDF</button>
       <button class="btn btn-secondary" id="export-card-btn"  style="display:none" title="Export a one-page shareable cost summary card">Share Card ↗</button>
       <button class="btn btn-secondary" id="save-scenario-btn" style="display:none">Save Scenario</button>
+      <button class="btn btn-primary" id="save-library-btn" title="Save this costing to your Parts Library — appears in the dashboard and saved results">&#11014; Save to Library</button>
+      <button class="btn btn-secondary" id="log-actual-btn" title="Log the real quoted/PO price so the model learns and self-calibrates for this commodity">&#127919; Log Actual £</button>
       <button class="btn btn-secondary" id="load-ref-btn">Load Example</button>
       <button class="btn btn-secondary" id="rates-btn">Edit Rates</button>
     </div>
@@ -1086,9 +1153,11 @@
 
 <!-- ── Footer ─────────────────────────────────────────────────────────────── -->
 <footer class="footer">
-  <span>Designed &amp; Developed by <strong>Avinash Bhosale</strong></span>
-  <span class="footer-divider">·</span>
   <span>CostVision &copy; 2026</span>
+  <span class="footer-divider">·</span>
+  <span class="footer-version">v4.1</span>
+  <span class="footer-divider">·</span>
+  <span>Designed &amp; Developed by <strong>Avinash Bhosale</strong></span>
   <span class="footer-divider">·</span>
   <a href="#" id="footer-help-link">Help</a>
   <span class="footer-divider">·</span>
@@ -1121,8 +1190,8 @@
       <button class="help-tab" data-help="ai-agent">AI Agent</button>
       <button class="help-tab" data-help="cad-upload">CAD &amp; Photo</button>
       <button class="help-tab" data-help="commodities">Commodities</button>
-      <button class="help-tab" data-help="sw-should-cost">🚗 Auto SW Cost</button>
-      <button class="help-tab" data-help="news-feed">📰 News</button>
+      <button class="help-tab" data-help="sw-should-cost">Auto SW Cost</button>
+      <button class="help-tab" data-help="news-feed">News</button>
       <button class="help-tab" data-help="commodity-dashboard">📈 Live Prices</button>
       <button class="help-tab" data-help="faq">FAQ</button>
       <button class="help-tab" data-help="glossary">Glossary</button>
@@ -1151,7 +1220,7 @@
         <ul>
           <li><strong>⊕ New Costing</strong> (top nav button) → opens the full commodity picker screen with all 19+ manufacturing processes and specialist tools as tiles → click a tile to open the right-side workflow panel.</li>
           <li><strong>One-Click Shortcuts</strong> on the Home Dashboard → jump directly to a specific commodity in full-screen mode.</li>
-          <li><strong>🚗 Automotive Software Should-Cost</strong> — new in V4.1 — select from the picker to open the dedicated 43-module software cost model for premium EV programmes.</li>
+          <li><strong>🚗 Automotive Software Should-Cost</strong> — new in V4.1 — select from the picker to open the dedicated 49-module software cost model for premium EV programmes.</li>
         </ul>
         <p style="margin-top:6px">Use the <strong>Home</strong> button or click the <strong>CostVision logo</strong> to return to the dashboard at any time.</p>
       </div>
@@ -1376,7 +1445,7 @@
         <div class="help-card" style="margin:0"><div class="help-card-title">Wiring Harness</div><p>Wire gauges, connectors, splices, conduit, tape, crimping assembly, electrical test included.</p></div>
         <div class="help-card" style="margin:0"><div class="help-card-title">Rubber</div><p>Compression, transfer, LSR injection moulding, extrusion+vulcanise. EPDM, NBR, Silicone, FKM.</p></div>
         <div class="help-card" style="margin:0"><div class="help-card-title">Assembly BOM</div><p>Full BOM costing: upload or enter component list with costs, then add assembly operations on top.</p></div>
-        <div class="help-card" style="margin:0;border:1px solid #2563eb33;background:#eff6ff"><div class="help-card-title" style="color:#1d4ed8">🚗 Automotive SW Should-Cost <span style="font-size:0.65rem;background:#2563eb;color:#fff;border-radius:3px;padding:1px 6px;margin-left:4px;font-weight:700">V4.1 NEW</span></div><p>Parameter-driven software cost model for premium luxury EV programmes. 43 modules × 7 categories, ASIL QM–D multipliers, 9 regional rates, complexity/reuse factors, sensitivity analysis, and OEM benchmark comparisons.</p></div>
+        <div class="help-card" style="margin:0;border:1px solid #2563eb33;background:#eff6ff"><div class="help-card-title" style="color:#1d4ed8">🚗 Automotive SW Should-Cost <span style="font-size:0.65rem;background:#2563eb;color:#fff;border-radius:3px;padding:1px 6px;margin-left:4px;font-weight:700">V4.1 NEW</span></div><p>Parameter-driven software cost model for premium luxury EV programmes. 49 modules × 7 categories, ASIL QM–D multipliers, 9 regional rates, complexity/reuse factors, sensitivity analysis, and OEM benchmark comparisons.</p></div>
       </div>
     </div>
 
@@ -1386,15 +1455,16 @@
       <!-- INTRO BANNER -->
       <div class="help-card" style="border-top:3px solid #2563eb;background:linear-gradient(135deg,#eff6ff 0%,#f8fafc 100%)">
         <div class="help-card-title" style="color:#1d4ed8;font-size:1.05rem">🚗 Automotive Software Should-Cost — Complete Beginner's Guide</div>
-        <p style="margin-bottom:8px">This tool helps you estimate <strong>how much it costs to develop all the software inside a modern electric vehicle</strong>. Think of it as a detailed price calculator — but instead of shopping items, you are pricing out engineering teams, safety certifications, tools, and licences for 43 separate software systems.</p>
+        <p style="margin-bottom:8px">This tool helps you estimate <strong>how much it costs to develop all the software inside a modern electric vehicle</strong>. Think of it as a detailed price calculator — but instead of shopping items, you are pricing out engineering teams, safety certifications, tools, and licences for 49 separate software systems.</p>
         <p style="margin-bottom:8px">You do <em>not</em> need to be a software engineer to use this. Just follow the steps below one at a time.</p>
         <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
-          <span style="background:#2563eb;color:#fff;border-radius:20px;padding:3px 12px;font-size:0.75rem;font-weight:600">43 Software Modules</span>
+          <span style="background:#2563eb;color:#fff;border-radius:20px;padding:3px 12px;font-size:0.75rem;font-weight:600">49 Software Modules</span>
           <span style="background:#7c3aed;color:#fff;border-radius:20px;padding:3px 12px;font-size:0.75rem;font-weight:600">7 Categories</span>
-          <span style="background:#059669;color:#fff;border-radius:20px;padding:3px 12px;font-size:0.75rem;font-weight:600">9 Cost Dimensions</span>
+          <span style="background:#0ea5e9;color:#fff;border-radius:20px;padding:3px 12px;font-size:0.75rem;font-weight:600">5 Vehicle Demos</span>
           <span style="background:#dc2626;color:#fff;border-radius:20px;padding:3px 12px;font-size:0.75rem;font-weight:600">ISO 26262 ASIL Safety</span>
-          <span style="background:#d97706;color:#fff;border-radius:20px;padding:3px 12px;font-size:0.75rem;font-weight:600">7 OEM Benchmarks</span>
+          <span style="background:#d97706;color:#fff;border-radius:20px;padding:3px 12px;font-size:0.75rem;font-weight:600">Benchmark &amp; Deep-Dive Reports</span>
         </div>
+        <p style="margin:10px 0 0;padding:8px 10px;background:#f0f9ff;border-radius:6px;border-left:3px solid #0ea5e9;font-size:0.8rem"><strong>🆕 Latest update (July 2026):</strong> now <strong>49 modules</strong> (43 core + 6 premium-trim options — active body control, premium audio/ANC, automated parking, climate, digital key, AR-HUD), <strong>one-click Demo Programmes</strong> for five real cars (Range Rover L460, BMW X7, Audi Q8, Mercedes GLS, Porsche Cayenne) across ICE/MHEV/PHEV/BEV, and four exportable <strong>comparison reports</strong>. Back-tested to a ±25–35% envelope (MAPE 24.9% vs 7 published programmes).</p>
       </div>
 
       <!-- ▶ INTERACTIVE NARRATED DEMO ─────────────────────────────────────── -->
@@ -1445,7 +1515,7 @@
             <button class="swdemo-btn" id="swdemo-prev">‹ Prev</button>
             <button class="swdemo-btn" id="swdemo-next">Next ›</button>
             <button class="swdemo-btn" id="swdemo-replay">↻ Replay</button>
-            <span class="swdemo-count" id="swdemo-count">1 / 11</span>
+            <span class="swdemo-count" id="swdemo-count">1 / 13</span>
             <div class="swdemo-dots" id="swdemo-dots"></div>
           </div>
         </div>
@@ -1465,8 +1535,8 @@
         var kpi = function(v,l,c){ return '<div class="swdemo-kpi"><div class="v" style="color:'+c+'">'+v+'</div><div class="l">'+l+'</div></div>'; };
         var scenes = [
           { ch:'Intro', title:'Automotive Software Should-Cost',
-            body:'<div class="swdemo-h">Automotive Software Should-Cost</div><div class="swdemo-sub">A 6-step guided walkthrough for new team members</div><div class="swdemo-mock">'+
-                 '<span class="swdemo-pill" style="background:#2563eb">43 Modules</span><span class="swdemo-pill" style="background:#7c3aed">7 Categories</span><span class="swdemo-pill" style="background:#059669">Monte Carlo</span><span class="swdemo-pill" style="background:#dc2626">ISO 26262 ASIL</span><span class="swdemo-pill" style="background:#d97706">7 OEM Benchmarks</span></div>',
+            body:'<div class="swdemo-h">Automotive Software Should-Cost</div><div class="swdemo-sub">A guided walkthrough for new team members</div><div class="swdemo-mock">'+
+                 '<span class="swdemo-pill" style="background:#2563eb">49 Modules</span><span class="swdemo-pill" style="background:#7c3aed">7 Categories</span><span class="swdemo-pill" style="background:#0ea5e9">5 Vehicle Demos</span><span class="swdemo-pill" style="background:#dc2626">ISO 26262 ASIL</span><span class="swdemo-pill" style="background:#d97706">Benchmark Reports</span></div>',
             cap:'Welcome. In under two minutes you\'ll learn to produce a defensible software should-cost for a premium EV programme — from picking domains to a full benchmarked report. No software-engineering background needed.' },
           { ch:'Why it matters', title:'Why software cost matters',
             body:'<div class="swdemo-h">Why this matters</div><div class="swdemo-mock">'+tile('100M+ lines','of code in a modern EV — more than an airliner')+tile('£380M–£850M','typical premium-EV software NRE')+tile('Human effort','SW cost is engineering time, not materials')+'</div>',
@@ -1475,8 +1545,11 @@
             body:'<div class="swdemo-h">Open it in two clicks</div><div class="swdemo-mock">'+tile('① ⊕ New Costing','top navigation bar')+tile('② Software section','scroll to it')+tile('③ 💻 Auto SW Cost','click the tile',true)+'</div><div class="swdemo-cursor" style="left:auto;right:120px;bottom:70px">🖱️</div>',
             cap:'Start from <b>⊕ New Costing</b> in the top bar, scroll to the <b>Software</b> section, and click the <b>💻 Auto SW Cost</b> tile. The panel opens on the right.' },
           { ch:'Two modes', title:'Guided vs Advanced',
-            body:'<div class="swdemo-h">Pick your mode</div><div class="swdemo-mock">'+tile('🧭 Guided','6 simple steps — the default for new users',true)+tile('⚙️ Advanced','all 43 modules at once — for experts')+'</div><div class="swdemo-sub" style="margin-top:12px">Both produce the same result — switch anytime; your choices carry over.</div>',
-            cap:'The panel opens in <b>Guided</b> mode — a 6-step wizard, ideal when you\'re new. Power users can flip to <b>Advanced</b> for the full 43-module grid. Both drive the same engine, so nothing is lost switching.' },
+            body:'<div class="swdemo-h">Pick your mode</div><div class="swdemo-mock">'+tile('🧭 Guided','6 simple steps — the default for new users',true)+tile('⚙️ Advanced','all 49 modules at once — for experts')+'</div><div class="swdemo-sub" style="margin-top:12px">Both produce the same result — switch anytime; your choices carry over.</div>',
+            cap:'The panel opens in <b>Guided</b> mode — a 6-step wizard, ideal when you\'re new. Power users can flip to <b>Advanced</b> for the full 49-module grid. Both drive the same engine, so nothing is lost switching.' },
+          { ch:'Fast start', title:'Demo Programmes (one click)',
+            body:'<div class="swdemo-h">Fastest start · Demo Programmes</div><div class="swdemo-mock">'+tile('🇬🇧 Range Rover L460','PHEV · £540M',true)+tile('🇩🇪 BMW X7','48V MHEV · £305M')+tile('🇩🇪 Porsche Cayenne','Electric BEV · £616M')+'</div><div class="swdemo-sub" style="margin-top:10px">5 real cars · ICE / MHEV / PHEV / BEV · fully pre-configured</div>',
+            cap:'<b>New — Demo Programmes.</b> The quickest way to see a real result: click a vehicle button (Range Rover L460, BMW X7, Audi Q8, Mercedes GLS, Porsche Cayenne, each across its real drivetrains). It loads a fully-configured programme and computes instantly — a perfect starting point to then tweak.' },
           { ch:'Step 1', title:'Context',
             body:'<div class="swdemo-h">Step 1 · Programme context</div><div class="swdemo-mock">'+tile('Region','UK',true)+tile('Phase','Development')+tile('Volume','80,000 /yr')+tile('Life','10 years')+'</div>',
             cap:'<b>Step 1 — Context.</b> Region sets the labour rate (Silicon Valley is ~9× India). Volume and programme life decide how the one-time engineering cost is spread across vehicles. These four inputs anchor everything downstream.' },
@@ -1495,9 +1568,12 @@
           { ch:'Step 6', title:'Report',
             body:'<div class="swdemo-h">Step 6 · Final report</div><div class="swdemo-mock">'+kpi('£576M','P10','#34d399')+kpi('£624M','P50','#60a5fa')+kpi('£673M','P90','#f87171')+'</div><div class="swdemo-sub" style="margin-top:10px">Monte Carlo range · benchmarked vs 7 real OEM programmes</div>',
             cap:'<b>Step 6 — Report.</b> The full picture: a Monte Carlo <b>P10/P50/P90</b> range (not a false single number), phase timeline, OEM benchmarks, an AI executive summary, and one-click Excel/PDF export. This is what you take to a review.' },
+          { ch:'Reports', title:'Benchmark &amp; deep-dive reports',
+            body:'<div class="swdemo-h">Board-ready comparison reports</div><div class="swdemo-mock">'+tile('🟢 Competitive Benchmark','one car vs its rivals',true)+tile('🔬 Deep-Dive','all 49 modules, one car')+tile('📊 All-Models','every module × 5 cars')+tile('📈 Powertrain Study','5 cars × 4 drivetrains')+'</div>',
+            cap:'<b>New — comparison reports.</b> From the demo row you can open four board-level reports: a <b>Competitive Benchmark</b> (your car vs real rivals), a module-by-module <b>Deep-Dive</b>, an <b>All-Models Comparison</b>, and a <b>Powertrain Cost Study</b> — each apple-to-apple on real drivetrains, exportable to PDF.' },
           { ch:'You\'re ready', title:'Wrap',
-            body:'<div class="swdemo-h">You\'re ready 🎉</div><div class="swdemo-mock">'+tile('Guided','when you\'re new')+tile('Advanced','for deep tuning')+tile('Save &amp; Compare','scenarios side by side')+tile('Rate Library','every number is sourced')+'</div>',
-            cap:'That\'s the whole flow. Start in <b>Guided</b>, tweak in <b>Advanced</b>, save and compare scenarios, and check the <b>Rate Library</b> tab to see the source behind every figure. You\'re ready to run your first should-cost.' }
+            body:'<div class="swdemo-h">You\'re ready 🎉</div><div class="swdemo-mock">'+tile('Demo Programmes','fastest way to start')+tile('Guided','when you\'re new')+tile('Advanced','for deep tuning')+tile('Rate Library','every number is sourced')+'</div>',
+            cap:'That\'s the whole flow. Start from a <b>Demo Programme</b> or the <b>Guided</b> wizard, tweak in <b>Advanced</b>, open a <b>benchmark report</b>, and check the <b>Rate Library</b> tab to see the source behind every figure. You\'re ready to run your first should-cost.' }
         ];
         var i = 0, elapsed = 0, timer = null;
         scenes.forEach(function(_,idx){ var d=document.createElement('button'); d.className='swdemo-dot'+(idx===0?' on':''); d.title='Scene '+(idx+1); d.onclick=function(){ go(idx,false); }; dotsEl.appendChild(d); });
@@ -1581,8 +1657,20 @@
 
       <!-- STEP 3: PRESETS -->
       <div class="help-card" style="border-left:4px solid #059669">
-        <div class="help-card-title"><div class="help-icon" style="background:#059669">3</div>Step 3 — Use a Preset (Quickest Way to Start)</div>
-        <p>If you are new to this tool, the easiest way to begin is to click one of the <strong>Quick-Set Presets</strong>. A preset automatically fills in all 43 modules with sensible values, so you can see results immediately and then adjust individual modules afterwards.</p>
+        <div class="help-card-title"><div class="help-icon" style="background:#059669">3</div>Step 3 — Start Fast: Demo Programmes or a Preset</div>
+        <div style="padding:11px;background:#f0f9ff;border-radius:8px;border-left:3px solid #0ea5e9;margin-bottom:10px">
+          <strong>🚗 Demo Programmes (the fastest start)</strong>
+          <p style="margin:4px 0 6px">In the <em>Demo Programmes</em> row, one click loads a fully-configured real vehicle and calculates instantly — the best way to see a credible result before you change anything.</p>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;font-size:0.72rem">
+            <span style="background:#e0f2fe;border-radius:5px;padding:2px 8px">🇬🇧 Range Rover L460 (PHEV)</span>
+            <span style="background:#e0f2fe;border-radius:5px;padding:2px 8px">🇩🇪 BMW X7 (48V MHEV)</span>
+            <span style="background:#e0f2fe;border-radius:5px;padding:2px 8px">🇩🇪 Audi Q8 (MHEV)</span>
+            <span style="background:#e0f2fe;border-radius:5px;padding:2px 8px">🇩🇪 Mercedes GLS (MHEV)</span>
+            <span style="background:#e0f2fe;border-radius:5px;padding:2px 8px">🇩🇪 Porsche Cayenne (ICE / MHEV / PHEV / Electric)</span>
+          </div>
+          <p style="margin:6px 0 0;font-size:0.78rem;color:#64748b">Each demo also has a <strong>View full report</strong> button (detailed board-level breakdown). See Step 6 for the report types.</p>
+        </div>
+        <p>Prefer to build from scratch? Click one of the <strong>Quick-Set Presets</strong>. A preset automatically fills in all 49 modules with sensible values, so you can see results immediately and then adjust individual modules afterwards.</p>
         <div style="display:flex;flex-direction:column;gap:8px;margin-top:10px;font-size:0.82rem">
           <div style="padding:10px;background:#fef2f2;border-radius:8px;border-left:3px solid #ef4444">
             <strong>🚀 Aggressive</strong> — Sets the lowest possible costs: minimal safety requirements (ASIL-A), maximum reuse of existing code, and cheap offshore labour (China rates). Use this to see the <em>floor</em> — the absolute minimum spend if everything goes perfectly.
@@ -1603,7 +1691,8 @@
       <!-- STEP 4: MODULE TABLE -->
       <div class="help-card" style="border-left:4px solid #f59e0b">
         <div class="help-card-title"><div class="help-icon" style="background:#f59e0b">4</div>Step 4 — Configure Individual Modules (The Module Table)</div>
-        <p>Below the presets, you will see a table of all <strong>43 software modules</strong> grouped into 7 categories. Each row is one software system in the vehicle. You can adjust three settings per module:</p>
+        <p>Below the presets, you will see a table of all <strong>49 software modules</strong> grouped into 7 categories. Each row is one software system in the vehicle. You can adjust three settings per module:</p>
+        <p style="padding:8px 10px;background:#faf5ff;border-radius:6px;border-left:3px solid #a855f7;font-size:0.8rem"><strong>43 core + 6 premium.</strong> 43 modules are on by default. Six <em>premium-trim</em> options — active body control, premium audio &amp; active noise control, automated parking, climate control, digital key (UWB), and AR head-up display — default to <em>off</em> (a base car may not have them). Tick them on for a flagship programme; the Demo Programmes enable the right ones automatically.</p>
 
         <div style="margin-top:10px;display:flex;flex-direction:column;gap:10px;font-size:0.82rem">
 
@@ -1652,7 +1741,7 @@
       <!-- STEP 5: THE 7 CATEGORIES -->
       <div class="help-card" style="border-left:4px solid #06b6d4">
         <div class="help-card-title"><div class="help-icon" style="background:#06b6d4">5</div>Understanding the 7 Software Categories</div>
-        <p>The 43 modules are grouped into 7 functional categories. Here is what each one means in plain English:</p>
+        <p>The 49 modules are grouped into 7 functional categories. Here is what each one means in plain English:</p>
         <div style="display:flex;flex-direction:column;gap:6px;margin-top:10px;font-size:0.82rem">
           <div style="padding:10px;background:#f0fdf4;border-radius:8px;border-left:3px solid #22c55e">
             <strong>A · EV Powertrain &amp; Battery (9 modules)</strong><br>
@@ -1751,7 +1840,7 @@
             <ul style="margin-top:4px">
               <li><em>Summary</em> — headline numbers and programme parameters</li>
               <li><em>Category Breakdown</em> — cost by the 7 software categories</li>
-              <li><em>Module Detail</em> — line-by-line cost for all 43 modules with ASIL, complexity, reuse settings</li>
+              <li><em>Module Detail</em> — line-by-line cost for all 49 modules with ASIL, complexity, reuse settings</li>
               <li><em>Sensitivity &amp; Monte Carlo</em> — P10/P50/P90 and sensitivity tornado</li>
               <li><em>Benchmarks</em> — your estimate vs 7 OEM comparators</li>
               <li><em>Configuration</em> — full record of every input you used</li>
@@ -1759,6 +1848,17 @@
           </div>
           <div style="padding:10px;background:#eff6ff;border-radius:8px">
             <strong>🤖 Get AI Analysis</strong> — Sends your results to an AI and returns a written narrative explaining the key cost drivers, risks, and recommendations in plain English. Useful for presenting to non-technical stakeholders.
+          </div>
+        </div>
+
+        <div style="margin-top:12px;padding:11px;background:#f0f9ff;border-radius:8px;border-left:3px solid #0ea5e9">
+          <strong>📑 Board-level comparison reports (buttons in the Demo Programmes row)</strong>
+          <p style="margin:4px 0 6px;font-size:0.82rem">Four ready-made, apple-to-apple reports (real drivetrains only) open in a new tab and print to PDF:</p>
+          <div style="display:flex;flex-direction:column;gap:6px;font-size:0.8rem">
+            <div style="padding:7px 9px;background:#fff;border-radius:6px"><strong>🟢 L460 Competitive Benchmark</strong> — one car vs its real rivals (BMW X7 / Audi Q8 / Mercedes GLS on MHEV; Porsche Cayenne on PHEV/BEV), with the cost-optimisation opportunity.</div>
+            <div style="padding:7px 9px;background:#fff;border-radius:6px"><strong>🔬 L460 Deep-Dive (all 49)</strong> — every module for one car: features, full cost stack, competitive delta and an insight each.</div>
+            <div style="padding:7px 9px;background:#fff;border-radius:6px"><strong>📊 All-Models Comparison</strong> — every module priced across all five models side by side, ranked leanest→dearest.</div>
+            <div style="padding:7px 9px;background:#fff;border-radius:6px"><strong>📈 Powertrain Cost Study</strong> — 5 cars × 4 drivetrains (ICE/MHEV/PHEV/BEV) in one matrix.</div>
           </div>
         </div>
       </div>
@@ -1841,7 +1941,7 @@
           </div>
           <div style="padding:10px;background:#f8fafc;border-radius:8px">
             <strong>Q: Can I include only some modules and exclude others?</strong><br>
-            A: All 43 modules are included by default. To effectively "exclude" a module, set its Reuse to <em>Platform reuse (0.14×)</em> and Complexity to <em>Low</em> — this reduces its cost to near-zero, representing a module that is fully reused with no development effort.
+            A: All 49 modules are included by default. To effectively "exclude" a module, set its Reuse to <em>Platform reuse (0.14×)</em> and Complexity to <em>Low</em> — this reduces its cost to near-zero, representing a module that is fully reused with no development effort.
           </div>
           <div style="padding:10px;background:#f8fafc;border-radius:8px">
             <strong>Q: What does the orange ASIL warning badge mean?</strong><br>
@@ -2110,12 +2210,31 @@
     <!-- What's New -->
     <div class="help-section" id="help-whats-new">
 
+      <!-- V4.2 release header -->
+      <div style="background:linear-gradient(135deg,#0f172a 0%,#164e3b 60%,#1e6b4f 100%);border-radius:10px;padding:18px 22px;margin-bottom:14px;display:flex;align-items:center;gap:16px">
+        <div style="background:linear-gradient(135deg,#059669,#0ea5e9);border-radius:8px;padding:10px 16px;font-size:1.2rem;font-weight:900;color:#fff;letter-spacing:-0.5px;white-space:nowrap">V4.2</div>
+        <div>
+          <div style="font-size:1rem;font-weight:800;color:#fff;margin-bottom:3px">CostVision V4.2 — Auto SW Cost: Demos, Premium Modules &amp; Comparison Reports</div>
+          <div style="font-size:0.75rem;color:#cbd5e1">July 2026 · latest update to the Automotive Software Should-Cost model</div>
+        </div>
+      </div>
+      <div class="help-card" style="margin:0 0 20px;border:1px solid #0ea5e933;background:#f0f9ff">
+        <div class="help-card-title" style="color:#0369a1">🚗 What changed in Auto SW Cost <span style="font-size:0.62rem;background:#0ea5e9;color:#fff;border-radius:3px;padding:1px 6px;margin-left:4px;font-weight:700">LATEST</span></div>
+        <ul>
+          <li><strong>49 modules</strong> — the catalogue grew from 43 to 49 with <strong>6 premium-trim options</strong> (active body control, premium audio &amp; ANC, automated parking, climate control, digital key UWB, AR-HUD). They default to off so the validated 43-module baseline is unchanged.</li>
+          <li><strong>Demo Programmes</strong> — one-click, fully-configured real vehicles: Range Rover L460, BMW X7, Audi Q8, Mercedes GLS and Porsche Cayenne, each across its real drivetrains (ICE / MHEV / PHEV / BEV). Every demo auto-computes and offers a <em>View full report</em>.</li>
+          <li><strong>Four comparison reports</strong> — Competitive Benchmark, module-by-module Deep-Dive (all 49), All-Models Comparison, and a Powertrain Cost Study (5 cars × 4 drivetrains) — apple-to-apple on real drivetrains only, exportable to PDF.</li>
+          <li><strong>Accuracy stated</strong> — validated to a ±25–35% envelope (back-test MAPE 24.9%, 5 of 7 published programmes within ±35%). Every figure is live engine output.</li>
+          <li><strong>Engine refinements</strong> — ASIL-scaled testing effort, complexity broadened beyond the algorithm bucket, safety-effort reuse floor, and optional levers (schedule compression, NPV, cost-recovery window, ML-data cost, programme homologation).</li>
+        </ul>
+      </div>
+
       <!-- V4.1 release header -->
       <div style="background:linear-gradient(135deg,#0f172a 0%,#1e3a5f 60%,#1e4a8a 100%);border-radius:10px;padding:18px 22px;margin-bottom:18px;display:flex;align-items:center;gap:16px">
         <div style="background:linear-gradient(135deg,#2563eb,#7c3aed);border-radius:8px;padding:10px 16px;font-size:1.2rem;font-weight:900;color:#fff;letter-spacing:-0.5px;white-space:nowrap">V4.1</div>
         <div>
           <div style="font-size:1rem;font-weight:800;color:#fff;margin-bottom:3px">CostVision V4.1 — Automotive Software Should-Cost + Animation Layer</div>
-          <div style="font-size:0.75rem;color:#94a3b8">June 2026 · 4 major features · 19+ calculators · 43-module EV software cost model</div>
+          <div style="font-size:0.75rem;color:#94a3b8">June 2026 · 4 major features · 19+ calculators · 49-module EV software cost model</div>
         </div>
       </div>
 
@@ -2125,7 +2244,7 @@
 
         <div class="help-card" style="margin:0;border:1px solid #2563eb33;background:#eff6ff">
           <div class="help-card-title" style="color:#1d4ed8">🚗 Automotive Software Should-Cost <span style="font-size:0.62rem;background:#2563eb;color:#fff;border-radius:3px;padding:1px 6px;margin-left:4px;font-weight:700">NEW</span></div>
-          <p>A complete parameter-driven software cost model for premium luxury EV programmes (2024–2026). <strong>43 modules</strong> across 7 categories: EV Powertrain &amp; Battery, ADAS L2+, Infotainment/UX, Domain Controllers, Middleware/Platform, Cybersecurity (ISO 21434), and OTA/Cloud Backend.</p>
+          <p>A complete parameter-driven software cost model for premium luxury EV programmes (2024–2026). <strong>49 modules</strong> across 7 categories: EV Powertrain &amp; Battery, ADAS L2+, Infotainment/UX, Domain Controllers, Middleware/Platform, Cybersecurity (ISO 21434), and OTA/Cloud Backend.</p>
           <ul>
             <li><strong>ASIL multipliers</strong> (QM → D) for both development and testing phases</li>
             <li><strong>9 regional labour rates</strong> from India (0.20×) to USA Silicon Valley (1.85×)</li>
@@ -2332,6 +2451,7 @@
         <div class="help-card">
           <div class="help-card-title">Overview — Injection Moulding</div>
           <p>Injection moulding is a high-volume thermoplastic process. A heated screw injects molten polymer into a steel or aluminium tool. Cycle times are typically 15–90 seconds. Cost is dominated by tooling amortisation at low-to-medium volumes and material at high volumes.</p>
+          <div style="margin:8px 0 0;padding:9px 11px;background:#f0f9ff;border-radius:6px;border-left:3px solid #0ea5e9;font-size:0.8rem"><strong>🆕 Latest features (2026):</strong> parametric mould-cost estimator (by cavities / steel grade / complexity); IMM machine ladder 50–1200T with clamp-tonnage validation warnings; expanded resin library (PC/ABS, PMMA, HIPS, LCP + glass-fill ladder) with auto cool-factor from resin thermal diffusivity; injection-moulding DFM advisor; technician &amp; supervisor labour categories; family-aware regional resin pricing.</div>
         </div>
         <div class="help-card">
           <div class="help-card-title">Inputs Required</div>
@@ -2382,6 +2502,7 @@
         <div class="help-card">
           <div class="help-card-title">Overview — Sheet Metal Fabrication</div>
           <p>Sheet metal fabrication covers laser cutting, turret punching, press brake bending, and optional welding. It is a low-tooling, high-flexibility route suited to low-to-medium volumes (1–50k). Cost is labour-intensive and driven by machine time, bends, and weld length.</p>
+          <div style="margin:8px 0 0;padding:9px 11px;background:#f0f9ff;border-radius:6px;border-left:3px solid #0ea5e9;font-size:0.8rem"><strong>🆕 Latest features (2026):</strong> parametric stamping die-cost estimator + die-life predictor; fine-blanking route; stamping DFM advisor; press ladder to 1250T (+ fine-blank press); expanded grades (electrical, spring, deep-draw steels) and hot-stamping / press-hardening; multiple secondary operations; <strong>e-motor lamination costing</strong> (all electrical-steel grades — NO / EV-thin / GO / CoFe / NiFe / amorphous — join methods, anneal &amp; coating, lamination DFM); and advanced 2026 EV materials (giga-cast HTF, high-speed rotor steel, hairpin copper, busbar — incl. BYD / Xiaomi flagship grades).</div>
         </div>
         <div class="help-card">
           <div class="help-card-title">Inputs Required</div>
@@ -2532,6 +2653,7 @@
         <div class="help-card">
           <div class="help-card-title">Overview — Forgings</div>
           <p>Forging plastically deforms metal (hot or warm) into a die to produce high-strength near-net-shape parts. Closed-die forging produces tighter tolerances than open-die. Cost is driven by material, press tonnage, die cost, and heat treatment. Forgings have superior grain structure vs. castings.</p>
+          <div style="margin:8px 0 0;padding:9px 11px;background:#f0f9ff;border-radius:6px;border-left:3px solid #0ea5e9;font-size:0.8rem"><strong>🆕 Latest features (2026):</strong> billet-heating energy now costed; forging-force estimate with press-tonnage validation; parametric die-cost estimator + die-life predictor; forge machine / tonnage ladder; family-aware metal pricing (exchange-traded vs mill); NDT / coining / furnace operations; superalloy / Ti / Al / Mg billets; multi-step (preform) forging; and a forging DFMA advisor.</div>
         </div>
         <div class="help-card">
           <div class="help-card-title">Inputs Required</div>
@@ -2632,6 +2754,7 @@
         <div class="help-card">
           <div class="help-card-title">Overview — PCBA Assembly</div>
           <p>PCBA assembly involves SMT placement (solder paste → pick-and-place → reflow), through-hole soldering (wave or selective), and optional processes (BGA underfill, conformal coat, ICT, X-ray). Cost is driven by component count, placement complexity, BGA presence, and quality grade.</p>
+          <div style="margin:8px 0 0;padding:9px 11px;background:#f0f9ff;border-radius:6px;border-left:3px solid #0ea5e9;font-size:0.8rem"><strong>🆕 Latest features (2026):</strong> PCB Image-to-BOM accuracy layer — optional BOM / pick-and-place file import (Altium / KiCad CPL), a deterministic post-processor (component-type &amp; MPN normalisation, passive detection, per-line confidence + cost range), and self-consistency merge across multiple AI extractions.</div>
         </div>
         <div class="help-card">
           <div class="help-card-title">Inputs Required</div>
@@ -2826,6 +2949,7 @@
         <div class="help-card">
           <div class="help-card-title">Overview — Blow Moulding</div>
           <p>Blow moulding produces hollow thermoplastic parts (bottles, tanks, ducts). Three main variants: <strong>EBM</strong> (extrusion blow — parison extruded then blown), <strong>IBM</strong> (injection blow — preform injection-moulded then blown), and <strong>SBM/ISBM</strong> (stretch blow — PET preform biaxially oriented for bottles). EBM dominates automotive (fuel tanks, ducting); SBM/ISBM for PET bottles.</p>
+          <div style="margin:8px 0 0;padding:9px 11px;background:#f0f9ff;border-radius:6px;border-left:3px solid #0ea5e9;font-size:0.8rem"><strong>🆕 Latest features (2026):</strong> blow mould-cost estimator + blow DFM advisor; EBM / IBM / SBM process labelling; auto cool-factor from wall thickness; SBM two-stage preform modelling; additive / masterbatch adder; and filled material gaps.</div>
         </div>
         <div class="help-card">
           <div class="help-card-title">Inputs Required</div>
@@ -2860,22 +2984,38 @@
         <div class="help-card">
           <div class="help-card-title">Inputs Required</div>
           <ul>
-            <li>Material grade and sheet thickness (mm)</li>
-            <li>Part weight (kg) and draw ratio (affects material utilisation 50–80%)</li>
-            <li>Process type: vacuum form, pressure form, or twin-sheet</li>
-            <li>Heating time (s), forming time (s), trim time (s)</li>
-            <li>Machine (roll-fed inline or cut-sheet), tool cost and life</li>
-            <li>Optional: in-mould laminate or foam backing</li>
+            <li>Sheet material grade (filtered to formable sheet — HIPS / ABS / PETG / APET / CPET / rigid-PVC / PP / PE / PMMA / PC / PEI / PPS / co-ex multilayer) and <strong>sheet thickness (mm)</strong></li>
+            <li>Sheet weight (gross, heated in full) and part weight (net after trim); parts per sheet</li>
+            <li>Method: vacuum / pressure / twin-sheet — <em>now drives forming energy and tool cost</em></li>
+            <li>Cycle: heat / form / cool / trim / index (s) — <strong>leave heat/cool at 0 to auto-estimate from thickness &amp; material</strong></li>
+            <li>Electricity £/kWh, reject %, optional additive / masterbatch (UV, anti-static, FR, impact) + let-down %</li>
+            <li>Thermoformer (small / large / pressure / twin-sheet / roll-fed / oven), tool cost (0 = auto-estimate) and amortisation volume</li>
+            <li>Tooling estimator: projected area, mould material (epoxy / cast-Al / CNC-Al / steel), complexity, trim type</li>
+            <li>Optional geometry for DFM &amp; wall-thinning: draw depth, min opening, unsupported span, internal radius, draft angle, tolerance, plug assist / undercut / textured</li>
           </ul>
         </div>
         <div class="help-card">
-          <div class="help-card-title">Cost Drivers</div>
+          <div class="help-card-title">Cost Drivers &amp; Process Physics</div>
           <ul>
-            <li><strong>Material utilisation:</strong> Trim scrap is 20–50% of sheet area; utilisation 50–80%. Include scrap value recovery.</li>
-            <li><strong>Tooling:</strong> Aluminium tools £5–40k (vs. steel injection tools £20–200k); matched-die tools higher.</li>
-            <li><strong>Trim operation:</strong> Robotic trimming cell adds £15–35/hr but is essential for Class A surfaces.</li>
+            <li><strong>Oven energy:</strong> part-level, from material c<sub>p</sub>·ΔT ÷ oven efficiency (0.18–0.28 kWh/kg of sheet) — thickness- and material-aware, not a flat machine lump. PC/PEI/PP cost more energy than HIPS.</li>
+            <li><strong>Heating &amp; cooling:</strong> auto heat time ∝ thickness<sup>1.6</sup>; auto cool time ∝ thickness² (water-cooled tool cools ~2× faster than ambient). Cooling is a real cycle element — previously omitted.</li>
+            <li><strong>Sag:</strong> self-weight plate deflection ∝ span⁴ ÷ t² — low-melt-strength PP/PE/TPO on wide thin sheets flag high sag (needs plug assist / sag bands).</li>
+            <li><strong>Material utilisation:</strong> skeleton/trim scrap 20–50% of sheet; the trimmed skeleton is credited back at the grade's regrind (scrap-recovery) value.</li>
+            <li><strong>Tooling:</strong> parametric estimate — mould (epoxy £1.5k → steel £15k+ base) × area × complexity × method × cavities, with expected life (5k → 3M cycles) and £/cycle maintenance. Pressure/twin-sheet tools cost 1.6×/2.2× vacuum.</li>
+            <li><strong>Draw ratio → wall thinning:</strong> predicts average &amp; corner wall from depth ÷ opening; flags over-draw beyond the method limit (vacuum ~1.5:1, +plug ~3:1, pressure ~4:1) → webbing / thin walls.</li>
+            <li><strong>Method:</strong> vacuum → pressure (+~6%) → twin-sheet (+~14%) on a typical panel, driven by forming energy + tooling.</li>
           </ul>
         </div>
+        <div class="help-card">
+          <div class="help-card-title">DFM Advisor &amp; Country Pricing</div>
+          <ul>
+            <li><strong>Thermoforming DFM panel</strong> scores geometry (draw ratio, wall thinning, sag, internal radius, draft angle, undercut, texture wash-out, tolerance realism, formability) and lists critical/major/minor issues live as you edit.</li>
+            <li><strong>Authentic country pricing:</strong> per-country £/kg for 18 sheet grades × US/DE/PL/CN/IN/MX/TH/VN — real regional quotes, not a UK×factor. Commodity sheet swings ±~20%; specialities near-flat.</li>
+            <li><strong>Supplier tiers:</strong> overhead/margin now split Tier-1 / Tier-2 / Tier-3 (automotive validation vs lean packaging).</li>
+          </ul>
+        </div>
+        <div style="margin:8px 0 0;padding:9px 11px;background:#f0f9ff;border-radius:6px;border-left:3px solid #0ea5e9;font-size:0.8rem"><strong>🆕 Latest features (2026):</strong> full process-physics engine — material + thickness heating time and part-level oven energy (c<sub>p</sub>·ΔT), sag prediction, cooling model, and method-driven forming energy/tooling (vacuum / pressure / twin-sheet, previously cosmetic); parametric mould + trim estimator with mould-material life &amp; maintenance; draw-ratio → wall-thinning predictor; thermoforming DFM advisor; 18 dedicated sheet grades (commodity / engineering / high-perf / multilayer co-ex) with authentic per-country pricing; +5 machines (pressure / twin-sheet / roll-fed / oven / CNC trim router); dedicated thermoforming &amp; trim-router labour; Tier-1/2/3 overhead; and additive / masterbatch adders.</div>
+        <div style="margin:6px 0 0;padding:8px 11px;background:#fffbeb;border-radius:6px;border-left:3px solid #f59e0b;font-size:0.78rem"><strong>Accuracy note:</strong> the model structure is engineering-correct; reference prices and physics coefficients are benchmark-anchored (confidence: <em>Low</em>) — ready to be calibrated against live sheet-price feeds and measured cycle times.</div>
       </div>
 
       <!-- Guide: Rotomoulding -->
@@ -2883,6 +3023,7 @@
         <div class="help-card">
           <div class="help-card-title">Overview — Rotational Moulding</div>
           <p>Rotational moulding (rotomoulding) is a low-pressure process for large, hollow, seamless parts. Powdered resin is loaded into a mould mounted on a rotating arm, heated in an oven until the powder fuses to the mould walls, then cooled and demoulded. Ideal for tanks, playground equipment, kayaks, and large automotive components. Typical part weight 0.5–30 kg.</p>
+          <div style="margin:8px 0 0;padding:9px 11px;background:#f0f9ff;border-radius:6px;border-left:3px solid #0ea5e9;font-size:0.8rem"><strong>🆕 Latest features (2026):</strong> rotomoulding material family &amp; gaps; roto machine ladder; cycle-time predictor (oven + cool) + mould-cost estimator + roto DFM advisor; and oven fuel energy costed.</div>
         </div>
         <div class="help-card">
           <div class="help-card-title">Inputs Required</div>
@@ -2910,6 +3051,7 @@
         <div class="help-card">
           <div class="help-card-title">Overview — Rubber Moulding</div>
           <p>Rubber moulding covers compression moulding, transfer moulding, and injection moulding of elastomers (NR, SBR, EPDM, NBR, silicone). Key automotive applications: seals, gaskets, grommets, vibration mounts, and hoses. Cycle includes a cure (vulcanisation) step that is time and temperature sensitive.</p>
+          <div style="margin:8px 0 0;padding:9px 11px;background:#f0f9ff;border-radius:6px;border-left:3px solid #0ea5e9;font-size:0.8rem"><strong>🆕 Latest features (2026):</strong> cure-time (t90) kinetics predictor; rubber mould-cost estimator; rubber DFM advisor; expanded elastomer grades; deflash + inspection operations; and family-aware regional compound pricing.</div>
         </div>
         <div class="help-card">
           <div class="help-card-title">Inputs Required</div>
@@ -2965,6 +3107,7 @@
         <div class="help-card">
           <div class="help-card-title">Overview — Extrusion</div>
           <p>Extrusion forces molten thermoplastic through a shaped die to produce continuous profiles (tubes, channels, seals, weatherstripping). The profile is then cut to length, cooled, and optionally co-extruded with a second material. Key automotive applications: window seals (EPDM co-extruded TPE/EPDM), fluid tubes (PA/PE), structural profiles.</p>
+          <div style="margin:8px 0 0;padding:9px 11px;background:#f0f9ff;border-radius:6px;border-left:3px solid #0ea5e9;font-size:0.8rem"><strong>🆕 Latest features (2026):</strong> process-physics line-rate estimator (screw-output vs cooling-limited haul-off — thick-wall pipe is now correctly cooling-limited); per-material specific-energy (kWh/kg) variable-energy model; die-swell reference; a parametric die + calibration/sizing tooling estimator (pipe / profile / sheet / cable / medical-tube / co-ex by size &amp; layers); a full scrap chain (startup + steady-state + colour/die-change purge); additive / masterbatch let-down adder; downstream cut-off/QA and optional pressure/leak-test operations; an <strong>extrusion DFM advisor</strong> (wall min/uniformity, corners, tolerance realism, hollow-chamber &amp; co-ex-layer checks); a process-line machine ladder (pipe / profile / sheet / cable / co-ex / micro-tube) and an extrusion-grade material ladder (PE100/PE80 pipe, uPVC pipe, PVC/XLPE cable, PS/ABS/PMMA/PC sheet, medical PVC/TPU tube, TPE profile, PVC foam, PA12) plus a commodity-filtered material picker.</div>
         </div>
         <div class="help-card">
           <div class="help-card-title">Inputs Required</div>

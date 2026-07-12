@@ -25,9 +25,16 @@ const EASE_OUT   = 'power3.out';
 const EASE_BACK  = 'back.out(1.6)';
 const EASE_ELAST = 'elastic.out(1, 0.45)';
 
+// Accessibility: users who ask for reduced motion get none of the decorative
+// passes. Every hook below is enter/hover decoration with clearProps, so
+// skipping leaves the UI fully visible in its final state.
+export const PREFERS_REDUCED_MOTION =
+  typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches === true;
+
 // ── ONE-TIME SETUP ────────────────────────────────────────────────────────────
 
 export function initCVAnimations(): void {
+  if (PREFERS_REDUCED_MOTION) return;
   _animateHeaderLoad();
   _initButtonRipple();
   _initMagneticFAB();
@@ -35,13 +42,13 @@ export function initCVAnimations(): void {
   _initCardTilt();
 }
 
-// Header items cascade in on page load
+// Header + sidebar items cascade in on page load
 function _animateHeaderLoad(): void {
-  gsap.set('.nav-logo, .nav-action-btn, .header-right > *', { autoAlpha: 0, y: -8 });
+  gsap.set('.nav-logo, .anav-item, .header-right > *', { autoAlpha: 0, y: -8 });
   gsap.to('.nav-logo', { autoAlpha: 1, y: 0, duration: 0.5, ease: EASE_OUT, delay: 0.05 });
-  gsap.to('.nav-action-btn', {
+  gsap.to('.anav-item', {
     autoAlpha: 1, y: 0, duration: 0.4, ease: EASE_OUT,
-    stagger: 0.055, delay: 0.15
+    stagger: 0.05, delay: 0.15
   });
   gsap.to('.header-right > *', {
     autoAlpha: 1, y: 0, duration: 0.4, ease: EASE_OUT,
@@ -140,6 +147,7 @@ function _initCardTilt(): void {
 // ── VIEW TRANSITION HOOKS ─────────────────────────────────────────────────────
 
 export function onViewShown(view: 'home' | 'picker' | 'costing' | 'news'): void {
+  if (PREFERS_REDUCED_MOTION) return;
   switch (view) {
     case 'picker':  _animatePicker();  break;
     case 'costing': _animateCosting(); break;
@@ -191,6 +199,7 @@ function _animateNews(): void {
 // ── DASHBOARD HOOK ─────────────────────────────────────────────────────────────
 
 export function onDashboardRendered(): void {
+  if (PREFERS_REDUCED_MOTION) return;
   const tl = gsap.timeline({ defaults: { ease: EASE_OUT } });
 
   // Ticker banner
@@ -236,6 +245,7 @@ export function onDashboardRendered(): void {
 // ── TABLE ROWS HOOK ───────────────────────────────────────────────────────────
 
 export function onTableRendered(): void {
+  if (PREFERS_REDUCED_MOTION) return;
   const tbody = document.getElementById('dash-recent-tbody');
   if (!tbody) return;
   const rows = Array.from(tbody.querySelectorAll<HTMLTableRowElement>('tr'));
@@ -251,6 +261,7 @@ export function onTableRendered(): void {
 // ── RESULTS PANEL HOOK ────────────────────────────────────────────────────────
 
 export function onResultsReady(): void {
+  if (PREFERS_REDUCED_MOTION) return;
   const tl = gsap.timeline({ defaults: { ease: EASE_OUT } });
 
   // Results tab bar. autoAlpha toggles visibility:hidden, so a `from(autoAlpha:0)`
@@ -305,11 +316,33 @@ export function onResultsReady(): void {
       gsap.from(bar, { width: 0, duration: 0.65, ease: 'power2.out', delay: 0.55, clearProps: 'width' });
     });
   }
+
+  // Headline total counts up once (400ms) — the single "reward" moment.
+  const totalVal = document.querySelector<HTMLElement>('.summary-card.total-card .card-value');
+  const finalText = totalVal?.textContent ?? '';
+  const numMatch = finalText.match(/^([^0-9-]*)([\d,]+(?:\.\d+)?)(.*)$/);
+  if (totalVal && numMatch) {
+    const target = parseFloat(numMatch[2].replace(/,/g, ''));
+    if (isFinite(target) && target > 0) {
+      const dec = numMatch[2].includes('.') ? (numMatch[2].split('.')[1] ?? '').length : 0;
+      const counter = { v: target * 0.4 };
+      gsap.to(counter, {
+        v: target, duration: 0.4, ease: 'power2.out', delay: 0.15,
+        onUpdate: () => {
+          totalVal.textContent = numMatch[1] +
+            counter.v.toLocaleString('en-GB', { minimumFractionDigits: dec, maximumFractionDigits: dec }) +
+            numMatch[3];
+        },
+        onComplete: () => { totalVal.textContent = finalText; },
+      });
+    }
+  }
 }
 
 // ── CHAT DRAWER HOOK ──────────────────────────────────────────────────────────
 
 export function onChatToggled(open: boolean): void {
+  if (PREFERS_REDUCED_MOTION) return;
   const drawer = document.getElementById('ai-chat-drawer');
   if (!drawer) return;
 
@@ -333,6 +366,7 @@ export function onChatToggled(open: boolean): void {
 // ── CHAT MESSAGE HOOK ─────────────────────────────────────────────────────────
 
 export function onChatMessageAdded(): void {
+  if (PREFERS_REDUCED_MOTION) return;
   const list = document.getElementById('ai-chat-messages');
   if (!list) return;
   // Animate the last message only
@@ -352,6 +386,7 @@ export function onChatMessageAdded(): void {
 // ── TOAST HOOK ────────────────────────────────────────────────────────────────
 
 export function onToastShown(toast: HTMLElement): void {
+  if (PREFERS_REDUCED_MOTION) return;
   // Override the default CSS animation with a GSAP spring
   toast.style.animation = 'none';
   gsap.fromTo(toast,
@@ -361,6 +396,7 @@ export function onToastShown(toast: HTMLElement): void {
 }
 
 export function dismissToast(toast: HTMLElement, onDone: () => void): void {
+  if (PREFERS_REDUCED_MOTION) { onDone(); return; }
   gsap.to(toast, {
     x: 80, autoAlpha: 0, duration: 0.28, ease: 'power2.in',
     onComplete: onDone
@@ -370,6 +406,7 @@ export function dismissToast(toast: HTMLElement, onDone: () => void): void {
 // ── COMMODITY PRICE PULSE ─────────────────────────────────────────────────────
 
 export function animateCommPriceChange(card: HTMLElement, dir: 'up' | 'down'): void {
+  if (PREFERS_REDUCED_MOTION) return;
   const col = dir === 'up' ? '#10b981' : '#ef4444';
   gsap.timeline()
     .to(card, { boxShadow: `0 0 22px 5px ${col}60`, duration: 0.18 })
@@ -379,6 +416,7 @@ export function animateCommPriceChange(card: HTMLElement, dir: 'up' | 'down'): v
 // ── PCB / RESULTS SECTION REVEALS ────────────────────────────────────────────
 
 export function onPCBResultShown(): void {
+  if (PREFERS_REDUCED_MOTION) return;
   // Called after PCB image analysis result panel is injected
   const tl = gsap.timeline({ defaults: { ease: EASE_OUT } });
   tl.from('.occt-stat', { autoAlpha: 0, y: 12, scale: 0.88, duration: 0.38, stagger: 0.07, clearProps: 'all' }, 0)
@@ -387,6 +425,7 @@ export function onPCBResultShown(): void {
 }
 
 export function onBOMTableShown(): void {
+  if (PREFERS_REDUCED_MOTION) return;
   const rows = document.querySelectorAll<HTMLElement>('.bom-row, .bom-line, tr.bom-item');
   if (!rows.length) return;
   gsap.from(rows, {
@@ -399,6 +438,7 @@ export function onBOMTableShown(): void {
 
 /** Call once after long content is rendered (commodity panel, news feed, etc.) */
 export function initScrollReveal(root: Element | Document = document): void {
+  if (PREFERS_REDUCED_MOTION) return;
   const targets = (root as Element).querySelectorAll<HTMLElement>(
     '.comm-card, .summary-card, .help-card, .news-card, .news-item'
   );
@@ -417,6 +457,7 @@ export function initScrollReveal(root: Element | Document = document): void {
 // ── FORM FIELD FOCUS GLOW ─────────────────────────────────────────────────────
 
 export function initFormAnimations(formEl: HTMLElement): void {
+  if (PREFERS_REDUCED_MOTION) return;
   formEl.querySelectorAll<HTMLElement>('input, select, textarea').forEach(field => {
     field.addEventListener('focus', () => {
       gsap.to(field, {
@@ -433,6 +474,7 @@ export function initFormAnimations(formEl: HTMLElement): void {
 // ── SIDEBAR COLLAPSE ANIMATION ────────────────────────────────────────────────
 
 export function animateSidebarToggle(collapsed: boolean): void {
+  if (PREFERS_REDUCED_MOTION) return;
   const sidebar = document.querySelector<HTMLElement>('.input-panel, .sidebar, #commodity-sidebar');
   if (!sidebar) return;
   if (collapsed) {

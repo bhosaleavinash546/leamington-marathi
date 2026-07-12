@@ -21,10 +21,14 @@
     })();
   </script>
   <script>
-    // Auth guard — redirect to sign-in if no valid token
+    // Auth guard — redirect to sign-in if no valid token.
+    // Base-relative: the app is served under /calculator/ in production, so a
+    // root-absolute '/auth.html' 404s. Resolve against the current directory.
     (function() {
+      const authUrl = window.location.pathname.replace(/[^/]*$/, '') + 'auth.html';
+      window.__cvAuthUrl = authUrl;
       const token = localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token');
-      if (!token) { window.location.replace('/auth.html'); return; }
+      if (!token) { window.location.replace(authUrl); return; }
       try {
         const parts = token.split('.');
         if (parts.length < 2) throw new Error('bad token');
@@ -37,15 +41,46 @@
           localStorage.removeItem('auth_user');
           sessionStorage.removeItem('auth_token');
           sessionStorage.removeItem('auth_user');
-          window.location.replace('/auth.html');
+          window.location.replace(authUrl);
         }
-      } catch { window.location.replace('/auth.html'); }
+      } catch { window.location.replace(authUrl); }
     })();
   </script>
 </head>
 <body>
 
+<!-- ── Icon sprite — single SVG system (Lucide-style), stroke = currentColor ── -->
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5z"/></symbol>
+  <symbol id="i-news" viewBox="0 0 24 24"><path d="M4 5h13v14H4z"/><path d="M17 8h3v9a2 2 0 0 1-2 2"/><path d="M7 9h7M7 12.5h7M7 16h4"/></symbol>
+  <symbol id="i-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.6 9.4a2.5 2.5 0 0 1 4.9.6c0 1.6-2.5 2-2.5 3.2"/><path d="M12 17h.01"/></symbol>
+  <symbol id="i-mail" viewBox="0 0 24 24"><path d="M3 6h18v12H3z"/><path d="m3 7 9 6 9-6"/></symbol>
+  <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></symbol>
+  <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.5-4.5"/></symbol>
+  <symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7"/><path d="M2 20h20"/></symbol>
+  <symbol id="i-bulb" viewBox="0 0 24 24"><path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 1 4 10.5c-.8.7-1 1.5-1 2.5H9c0-1-.2-1.8-1-2.5A6 6 0 0 1 12 3z"/></symbol>
+  <symbol id="i-factory" viewBox="0 0 24 24"><path d="M2 20h20"/><path d="M4 20V9l6 4V9l6 4V4h4v16"/></symbol>
+  <symbol id="i-warn" viewBox="0 0 24 24"><path d="M12 3 22 21H2z"/><path d="M12 10v5M12 18h.01"/></symbol>
+  <symbol id="i-trend-up" viewBox="0 0 24 24"><path d="m2 18 7-7 4 4 9-9"/><path d="M15 6h7v7"/></symbol>
+  <symbol id="i-trend-dn" viewBox="0 0 24 24"><path d="m2 6 7 7 4-4 9 9"/><path d="M15 18h7v-7"/></symbol>
+  <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 9a6 6 0 0 1 12 0c0 5 2 6 2 6H4s2-1 2-6"/><path d="M10 19a2 2 0 0 0 4 0"/></symbol>
+  <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 11a8 8 0 1 0-.6 4.6"/><path d="M20 4v7h-7"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+  <symbol id="i-chev-d" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+  <symbol id="i-zap" viewBox="0 0 24 24"><path d="M13 2 4 14h6l-1 8 9-12h-6z"/></symbol>
+  <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
+  <symbol id="i-panel" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16"/></symbol>
+  <symbol id="i-car" viewBox="0 0 24 24"><path d="M5 16.5 6.6 12a2 2 0 0 1 1.9-1.4h7a2 2 0 0 1 1.9 1.4L19 16.5"/><path d="M4 16.5h16V20h-2.5a1.5 1.5 0 0 1-3 0h-5a1.5 1.5 0 0 1-3 0H4z"/></symbol>
+  <symbol id="i-gauge" viewBox="0 0 24 24"><path d="M4 15a8 8 0 0 1 16 0"/><path d="m12 15 4-5"/><path d="M2 19h20"/></symbol>
+  <symbol id="i-hourglass" viewBox="0 0 24 24"><path d="M6 3h12M6 21h12"/><path d="M7 3v3l5 6-5 6v3M17 3v3l-5 6 5 6v3"/></symbol>
+</svg>
+
 <header class="header">
+  <button class="anav-mobile-toggle" id="nav-mobile-btn" aria-label="Open navigation"><svg class="ic"><use href="#i-menu"/></svg></button>
   <!-- Logo -->
   <div class="nav-logo" id="logo-home-btn" title="CostVision — AI-Powered Cost Intelligence" style="cursor:pointer">
     <div class="logo-icon">CV</div>
@@ -55,67 +90,59 @@
     </div>
   </div>
 
-  <!-- Center title (desktop only) -->
-  <div class="nav-title">Should-Cost Calculator</div>
-
   <div style="flex:1"></div>
 
-  <!-- Right controls -->
+  <!-- Right controls: search · region · currency · ONE primary CTA · theme · account -->
   <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+    <button class="cmdk-trigger" id="cmdk-btn" title="Search commodities & actions" aria-label="Open command palette">
+      <svg class="ic"><use href="#i-search"/></svg><span>Search</span><kbd>⌘K</kbd>
+    </button>
     <!-- Manufacturing region -->
-    <div style="display:flex;align-items:center;gap:5px">
-      <label style="font-size:0.72rem;color:var(--text-muted);white-space:nowrap">🌍</label>
-      <select id="mfg-region-selector" style="font-size:0.77rem;padding:4px 8px;border:1px solid var(--border-strong);border-radius:6px;background:var(--surface-elevated);color:var(--text-primary);font-family:var(--font)" title="Select manufacturing country/region — rates (labour, machine, material, energy) adjust automatically for the selected location">
-        <option value="UK">🇬🇧 UK</option>
-        <option value="DE">🇩🇪 Germany</option>
-        <option value="FR">🇫🇷 France</option>
-        <option value="IT">🇮🇹 Italy</option>
-        <option value="ES">🇪🇸 Spain</option>
-        <option value="PL">🇵🇱 Poland</option>
-        <option value="CZ">🇨🇿 Czech Rep.</option>
-        <option value="RO">🇷🇴 Romania</option>
-        <option value="HU">🇭🇺 Hungary</option>
-        <option value="SE">🇸🇪 Sweden</option>
-        <option value="NL">🇳🇱 Netherlands</option>
-        <option value="TR">🇹🇷 Turkey</option>
-        <option value="CN">🇨🇳 China</option>
-        <option value="IN">🇮🇳 India</option>
-        <option value="MX">🇲🇽 Mexico</option>
-        <option value="US">🇺🇸 USA</option>
-        <option value="TH">🇹🇭 Thailand</option>
-        <option value="VN">🇻🇳 Vietnam</option>
-        <option value="BR">🇧🇷 Brazil</option>
-        <option value="KR">🇰🇷 S. Korea</option>
+    <div class="hdr-select-wrap" title="Select manufacturing country/region — rates (labour, machine, material, energy) adjust automatically for the selected location">
+      <svg class="ic hdr-select-ic"><use href="#i-globe"/></svg>
+      <select id="mfg-region-selector" class="hdr-select">
+        <option value="UK">UK</option>
+        <option value="DE">Germany</option>
+        <option value="FR">France</option>
+        <option value="IT">Italy</option>
+        <option value="ES">Spain</option>
+        <option value="PL">Poland</option>
+        <option value="CZ">Czech Rep.</option>
+        <option value="RO">Romania</option>
+        <option value="HU">Hungary</option>
+        <option value="SE">Sweden</option>
+        <option value="NL">Netherlands</option>
+        <option value="TR">Turkey</option>
+        <option value="CN">China</option>
+        <option value="IN">India</option>
+        <option value="MX">Mexico</option>
+        <option value="US">USA</option>
+        <option value="TH">Thailand</option>
+        <option value="VN">Vietnam</option>
+        <option value="BR">Brazil</option>
+        <option value="KR">S. Korea</option>
       </select>
     </div>
     <!-- Currency -->
-    <select id="currency-selector" style="font-size:0.77rem;padding:4px 8px;border:1px solid var(--border-strong);border-radius:6px;background:var(--surface-elevated);color:var(--text-primary);font-family:var(--font)" title="Display currency">
-      <option value="GBP">£ GBP</option>
-      <option value="EUR">€ EUR</option>
-      <option value="USD">$ USD</option>
-      <option value="CNY">¥ CNY</option>
-      <option value="INR">₹ INR</option>
-      <option value="MXN">$M MXN</option>
-      <option value="THB">฿ THB</option>
-      <option value="VND">₫ VND</option>
-      <option value="BRL">R$ BRL</option>
-      <option value="KRW">₩ KRW</option>
-      <option value="PLN">zł PLN</option>
-      <option value="CZK">Kč CZK</option>
-    </select>
-    <!-- Home button -->
-    <button class="nav-action-btn home-btn" id="home-btn" aria-label="Go to dashboard">⌂ Home</button>
-    <button class="nav-action-btn new-costing-btn" id="new-costing-btn" aria-label="Start new should-costing">⊕ New Costing</button>
-    <!-- Demo Gallery button -->
-    <button class="nav-action-btn demo-btn" id="demo-btn" aria-label="Open demo gallery" title="Load luxury SUV demo examples for any commodity" data-cv-tip="Browse 50+ pre-loaded luxury SUV demos across all 19+ commodity types. One click loads full cost breakdown." data-cv-tip-title="Demo Gallery">🚗 Demos</button>
-    <!-- News button -->
-    <button class="nav-action-btn" id="news-btn" aria-label="Automotive Industry News" title="Live automotive manufacturing &amp; costing news" data-cv-tip="120 articles from 30 curated feeds — battery, EV, materials, supply chain. Auto-refreshes every 15 min." data-cv-tip-title="Market Intelligence">📰 NEWS</button>
-    <!-- Help button -->
-    <button class="nav-action-btn" id="help-btn" aria-label="Open help centre" data-cv-tip="Help Centre with search, guides, keyboard shortcuts (?), and the product tour." data-cv-tip-title="Help Centre">? Help</button>
-    <!-- Contact button -->
-    <button class="nav-action-btn" id="contact-btn" aria-label="Contact support">✉ Contact</button>
+    <div class="hdr-select-wrap" title="Display currency">
+      <select id="currency-selector" class="hdr-select">
+        <option value="GBP">£ GBP</option>
+        <option value="EUR">€ EUR</option>
+        <option value="USD">$ USD</option>
+        <option value="CNY">¥ CNY</option>
+        <option value="INR">₹ INR</option>
+        <option value="MXN">$M MXN</option>
+        <option value="THB">฿ THB</option>
+        <option value="VND">₫ VND</option>
+        <option value="BRL">R$ BRL</option>
+        <option value="KRW">₩ KRW</option>
+        <option value="PLN">zł PLN</option>
+        <option value="CZK">Kč CZK</option>
+      </select>
+    </div>
+    <button class="btn btn-primary hdr-primary" id="new-costing-btn" aria-label="Start new should-costing"><svg class="ic"><use href="#i-plus"/></svg>New Costing</button>
     <!-- Theme toggle -->
-    <button class="theme-toggle" id="theme-toggle-btn" title="Toggle dark/light theme" aria-label="Toggle theme">🌙</button>
+    <button class="theme-toggle" id="theme-toggle-btn" title="Toggle dark/light theme" aria-label="Toggle theme"><svg class="ic"><use href="#i-moon"/></svg></button>
     <!-- User -->
     <div id="user-menu" style="display:flex;align-items:center;gap:7px">
       <span id="user-greeting" style="font-size:0.73rem;color:var(--text-muted);white-space:nowrap"></span>
@@ -123,6 +150,40 @@
     </div>
   </div>
 </header>
+
+<!-- ── App navigation sidebar (collapsible; overlay on mobile) ──────────────── -->
+<nav id="app-nav" aria-label="Primary">
+  <div class="anav-group">
+    <button class="anav-item" id="home-btn" aria-label="Go to dashboard"><svg class="ic"><use href="#i-home"/></svg><span class="anav-label">Home</span></button>
+    <button class="anav-item" id="demo-btn" aria-label="Open demo gallery" title="Load luxury SUV demo examples for any commodity" data-cv-tip="Browse 50+ pre-loaded luxury SUV demos across all 19+ commodity types. One click loads full cost breakdown." data-cv-tip-title="Demo Gallery"><svg class="ic"><use href="#i-car"/></svg><span class="anav-label">Demos</span></button>
+    <button class="anav-item" id="news-btn" aria-label="Automotive Industry News" title="Live automotive manufacturing &amp; costing news" data-cv-tip="120 articles from 30 curated feeds — battery, EV, materials, supply chain. Auto-refreshes every 15 min." data-cv-tip-title="Market Intelligence"><svg class="ic"><use href="#i-news"/></svg><span class="anav-label">News</span></button>
+  </div>
+  <div class="anav-group anav-group--bottom">
+    <button class="anav-item" id="help-btn" aria-label="Open help centre" data-cv-tip="Help Centre with search, guides, keyboard shortcuts (?), and the product tour." data-cv-tip-title="Help Centre"><svg class="ic"><use href="#i-help"/></svg><span class="anav-label">Help</span></button>
+    <button class="anav-item" id="contact-btn" aria-label="Contact support"><svg class="ic"><use href="#i-mail"/></svg><span class="anav-label">Contact</span></button>
+    <button class="anav-item anav-collapse" id="nav-collapse-btn" title="Collapse navigation" aria-label="Collapse navigation"><svg class="ic"><use href="#i-panel"/></svg><span class="anav-label">Collapse</span></button>
+  </div>
+</nav>
+<div id="anav-scrim" aria-hidden="true"></div>
+<script>
+  // Sidebar collapse + mobile overlay — inline so layout is right on first paint.
+  (function() {
+    const root = document.documentElement;
+    if (localStorage.getItem('cv-nav') === 'collapsed') root.classList.add('cv-nav-collapsed');
+    function bind(id, fn) { const el = document.getElementById(id); if (el) el.addEventListener('click', fn); }
+    bind('nav-collapse-btn', function() {
+      root.classList.toggle('cv-nav-collapsed');
+      localStorage.setItem('cv-nav', root.classList.contains('cv-nav-collapsed') ? 'collapsed' : 'open');
+    });
+    bind('nav-mobile-btn', function() { root.classList.toggle('cv-nav-open'); });
+    bind('anav-scrim', function() { root.classList.remove('cv-nav-open'); });
+    // Any nav action closes the mobile overlay
+    const nav = document.getElementById('app-nav');
+    if (nav) nav.addEventListener('click', function(e) {
+      if (e.target.closest('.anav-item') && !e.target.closest('#nav-collapse-btn')) root.classList.remove('cv-nav-open');
+    });
+  })();
+</script>
 <script>
   (function() {
     try {
@@ -138,7 +199,7 @@
     localStorage.removeItem('auth_user');
     sessionStorage.removeItem('auth_token');
     sessionStorage.removeItem('auth_user');
-    window.location.replace('/auth.html');
+    window.location.replace(window.__cvAuthUrl || (window.location.pathname.replace(/[^/]*$/, '') + 'auth.html'));
   }
 </script>
 
@@ -157,8 +218,8 @@
         <h1 class="cv-hero-h1">Know what a part <span class="cv-hl">should cost</span> — before you negotiate.</h1>
         <p class="cv-hero-lede">CostVision breaks any part down to a defensible piece price across casting, sheet metal, machining, plastics, forging and PCB — from a photo, a CAD file, or a plain-English brief.</p>
         <div class="cv-hero-cta">
-          <button class="btn btn-primary cv-hero-start">⊕ Start a costing</button>
-          <button class="btn btn-secondary cv-hero-demos">▶ Explore live demos</button>
+          <button class="btn btn-primary cv-hero-start"><svg class="ic"><use href="#i-plus"/></svg>Start a costing</button>
+          <button class="btn btn-secondary cv-hero-demos"><svg class="ic"><use href="#i-play"/></svg>Explore live demos</button>
         </div>
         <div class="cv-hero-trust">
           <span><span class="tdot"></span>No external AI required</span>
@@ -174,7 +235,7 @@
           <li><span class="cv-step-n">2</span><div><b>Enter or auto-extract details</b><span>Type the inputs, or let AI read them from the file.</span></div></li>
           <li><span class="cv-step-n">3</span><div><b>Get a defensible price + DFM</b><span>Full cost breakdown, PPV vs quotes, and manufacturability flags.</span></div></li>
         </ol>
-        <button class="btn btn-secondary cv-hero-demos cv-onboard-cta">▶ Try a demo costing</button>
+        <button class="btn btn-secondary cv-hero-demos cv-onboard-cta"><svg class="ic"><use href="#i-play"/></svg>Try a demo costing</button>
       </div>
     </div>
 
@@ -185,7 +246,7 @@
         <div class="cv-hc-actions">
           <button class="cv-hc-filter" id="hero-filter-jump">
             <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 5h18l-7 8v6l-4-2v-4z"/></svg>Filter portfolio</button>
-          <button class="btn btn-primary cv-hero-start">⊕ New costing</button>
+          <button class="btn btn-primary cv-hero-start"><svg class="ic"><use href="#i-plus"/></svg>New costing</button>
         </div>
       </div>
     </div>
@@ -196,13 +257,13 @@
 
     <!-- Live Commodity Ticker -->
     <div class="comm-ticker-outer" id="comm-ticker-outer">
-      <span class="comm-ticker-label">📊 PRICES</span>
+      <span class="comm-ticker-label"><svg class="ic ic-xs"><use href="#i-chart"/></svg> PRICES</span>
       <div class="comm-ticker-clip">
         <div class="comm-ticker-track" id="comm-ticker-track">
           <span class="comm-ticker-loading">Loading commodity prices…</span>
         </div>
       </div>
-      <button class="comm-ticker-expand" id="comm-panel-toggle" title="Expand commodity dashboard">⌄ Dashboard</button>
+      <button class="comm-ticker-expand" id="comm-panel-toggle" title="Expand commodity dashboard"><svg class="ic ic-xs"><use href="#i-chev-d"/></svg> Dashboard</button>
     </div>
 
     <!-- Commodity Dashboard Panel (collapsible) -->
@@ -211,11 +272,11 @@
       <!-- Panel Header -->
       <div class="comm-panel-header">
         <div class="comm-panel-title-wrap">
-          <span class="comm-panel-icon">🏭</span>
+          <span class="comm-panel-icon"><svg class="ic"><use href="#i-factory"/></svg></span>
           <span class="comm-panel-title">Commodity Intelligence</span>
           <span class="comm-badge" id="comm-updated-badge" style="background:var(--text-muted,#64748b)">Benchmark</span>
           <span class="comm-updated" id="comm-updated-time"></span>
-          <span style="font-size:0.62rem;color:var(--text-muted);margin-left:6px" title="Prices are modelled benchmarks calibrated to market references. Not live feed data. Verify with broker for binding decisions.">⚠ indicative only</span>
+          <span style="font-size:0.62rem;color:var(--text-muted);margin-left:6px" title="Prices are modelled benchmarks calibrated to market references. Not live feed data. Verify with broker for binding decisions."><svg class="ic ic-xs"><use href="#i-warn"/></svg> indicative only</span>
         </div>
         <div class="comm-panel-controls">
           <select class="comm-filter-sel" id="comm-filter-cat" title="Filter by category">
@@ -238,36 +299,36 @@
             <option value="Asia">Asia</option>
             <option value="Global">Global</option>
           </select>
-          <input class="comm-search" id="comm-search" type="search" placeholder="🔍 Search commodity…" />
-          <button class="btn btn-secondary btn-sm" id="comm-refresh-btn" style="font-size:0.78rem;padding:4px 10px" title="Refresh prices">↻ Refresh</button>
-          <button class="comm-close-btn" id="comm-panel-close" title="Collapse">✕</button>
+          <input class="comm-search" id="comm-search" type="search" placeholder="Search commodity…" />
+          <button class="btn btn-secondary btn-sm" id="comm-refresh-btn" style="font-size:0.78rem;padding:4px 10px" title="Refresh prices"><svg class="ic ic-xs"><use href="#i-refresh"/></svg> Refresh</button>
+          <button class="comm-close-btn" id="comm-panel-close" title="Collapse"><svg class="ic"><use href="#i-x"/></svg></button>
         </div>
       </div>
 
       <!-- KPI Strip -->
       <div class="comm-kpi-strip" id="comm-kpi-strip">
         <div class="comm-kpi-card comm-kpi-riser">
-          <div class="comm-kpi-label">▲ Top Riser</div>
+          <div class="comm-kpi-label"><svg class="ic ic-xs"><use href="#i-trend-up"/></svg> Top Riser</div>
           <div class="comm-kpi-val" id="ck-riser-name">—</div>
           <div class="comm-kpi-chg comm-up" id="ck-riser-chg">—</div>
         </div>
         <div class="comm-kpi-card comm-kpi-faller">
-          <div class="comm-kpi-label">▼ Top Faller</div>
+          <div class="comm-kpi-label"><svg class="ic ic-xs"><use href="#i-trend-dn"/></svg> Top Faller</div>
           <div class="comm-kpi-val" id="ck-faller-name">—</div>
           <div class="comm-kpi-chg comm-dn" id="ck-faller-chg">—</div>
         </div>
         <div class="comm-kpi-card comm-kpi-volatility">
-          <div class="comm-kpi-label">⚡ Volatility</div>
+          <div class="comm-kpi-label"><svg class="ic ic-xs"><use href="#i-zap"/></svg> Volatility</div>
           <div class="comm-kpi-val" id="ck-vol">—</div>
           <div class="comm-kpi-sub" id="ck-vol-sub">Market avg daily vol</div>
         </div>
         <div class="comm-kpi-card comm-kpi-risk">
-          <div class="comm-kpi-label">🌍 Supply Risk</div>
+          <div class="comm-kpi-label"><svg class="ic ic-xs"><use href="#i-globe"/></svg> Supply Risk</div>
           <div class="comm-kpi-val" id="ck-risk">—</div>
           <div class="comm-kpi-sub" id="ck-risk-sub">Global index</div>
         </div>
         <div class="comm-kpi-card comm-kpi-pressure">
-          <div class="comm-kpi-label">⚙️ Cost Pressure</div>
+          <div class="comm-kpi-label"><svg class="ic ic-xs"><use href="#i-gauge"/></svg> Cost Pressure</div>
           <div class="comm-kpi-val" id="ck-pressure">—</div>
           <div class="comm-kpi-sub">Automotive avg</div>
         </div>
@@ -284,7 +345,7 @@
         <div class="comm-footer-note">
           Commodity prices are indicative market values refreshed every 30 minutes, based on LME, SMM, ICIS, and Fastmarkets reference benchmarks. Not financial advice.
         </div>
-        <button class="btn btn-secondary btn-sm" id="comm-alert-btn" style="font-size:0.78rem;padding:4px 12px;white-space:nowrap">🔔 Price Alerts</button>
+        <button class="btn btn-secondary btn-sm" id="comm-alert-btn" style="font-size:0.78rem;padding:4px 12px;white-space:nowrap"><svg class="ic ic-xs"><use href="#i-bell"/></svg> Price Alerts</button>
       </div>
     </div>
 
@@ -294,7 +355,7 @@
   <div id="comm-alert-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:1000;align-items:center;justify-content:center">
     <div style="background:var(--surface);border-radius:14px;padding:28px;min-width:380px;max-width:520px;width:90%;border:1px solid var(--border-strong);position:relative">
       <button onclick="document.getElementById('comm-alert-modal').style.display='none'" style="position:absolute;top:12px;right:14px;background:none;border:none;font-size:1.2rem;cursor:pointer;color:var(--text-muted)">✕</button>
-      <h3 style="margin:0 0 16px;font-size:1rem;font-weight:700">🔔 Price Alerts</h3>
+      <h3 style="margin:0 0 16px;font-size:1rem;font-weight:700"><svg class="ic"><use href="#i-bell"/></svg> Price Alerts</h3>
       <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
         <select id="alert-commodity-sel" style="flex:1;min-width:160px;padding:6px 10px;border-radius:7px;border:1px solid var(--border-strong);background:var(--surface-elevated);color:var(--text-primary);font-family:var(--font);font-size:0.83rem"></select>
         <select id="alert-dir-sel" style="padding:6px 10px;border-radius:7px;border:1px solid var(--border-strong);background:var(--surface-elevated);color:var(--text-primary);font-family:var(--font);font-size:0.83rem">
@@ -384,21 +445,21 @@
   <!-- KPI Cards -->
   <div class="dash-kpi-row" id="dash-kpi-row">
     <div class="dash-kpi-card" id="kpi-total">
-      <div class="kpi-icon">📊</div>
+      <div class="kpi-icon"><svg class="ic"><use href="#i-chart"/></svg></div>
       <div class="kpi-body">
         <div class="kpi-value" id="kpi-total-val">—</div>
         <div class="kpi-label">Total Costings</div>
       </div>
     </div>
     <div class="dash-kpi-card" id="kpi-saving">
-      <div class="kpi-icon">💡</div>
+      <div class="kpi-icon"><svg class="ic"><use href="#i-bulb"/></svg></div>
       <div class="kpi-body">
         <div class="kpi-value" id="kpi-saving-val">—</div>
         <div class="kpi-label">Savings Identified</div>
       </div>
     </div>
     <div class="dash-kpi-card" id="kpi-top-commodity">
-      <div class="kpi-icon">🏭</div>
+      <div class="kpi-icon"><svg class="ic"><use href="#i-factory"/></svg></div>
       <div class="kpi-body">
         <div class="kpi-value" id="kpi-top-commodity-val">—</div>
         <div class="kpi-label">Top Commodity</div>
@@ -412,7 +473,7 @@
       </div>
     </div>
     <div class="dash-kpi-card accent" id="kpi-high-cost">
-      <div class="kpi-icon">⚠</div>
+      <div class="kpi-icon"><svg class="ic"><use href="#i-warn"/></svg></div>
       <div class="kpi-body">
         <div class="kpi-value" id="kpi-high-cost-val">—</div>
         <div class="kpi-label">High-Cost Parts</div>
@@ -484,15 +545,15 @@
       <div class="dash-section-title" style="margin-top:20px">AI Recommendations</div>
       <div class="dash-ai-panel" id="dash-ai-panel">
         <div class="dash-ai-item dash-ai-item--insight">
-          <span class="dai-icon">💡</span>
+          <span class="dai-icon"><svg class="ic"><use href="#i-bulb"/></svg></span>
           <span>Start by costing your highest-volume parts first — typically drives 80% of the savings opportunity.</span>
         </div>
         <div class="dash-ai-item dash-ai-item--warn">
-          <span class="dai-icon">⚠</span>
+          <span class="dai-icon"><svg class="ic"><use href="#i-warn"/></svg></span>
           <span>PCB &amp; PCBA parts often show 15–30% variance vs. supplier quotes — high-priority for should-cost.</span>
         </div>
         <div class="dash-ai-item dash-ai-item--opt">
-          <span class="dai-icon">📉</span>
+          <span class="dai-icon"><svg class="ic"><use href="#i-trend-dn"/></svg></span>
           <span>China-sourced castings: apply 2× complexity factor for hidden logistics/quality costs before accepting quotes.</span>
         </div>
         <div class="dash-ai-item dash-ai-item--insight" id="dai-dynamic"></div>
@@ -554,10 +615,10 @@
 </section>
 
 <!-- ─── News View ──────────────────────────────────────────────────────── -->
-<section id="news-view" style="display:none;padding:0 24px 48px;max-width:1400px;margin:0 auto">
+<section id="news-view" style="display:none;padding:0 24px 48px;max-width:1400px">
   <div class="news-header">
     <div class="news-title-bar">
-      <h2 style="font-size:1.3rem;font-weight:700;color:var(--text-primary);margin:0">📰 Automotive Industry News</h2>
+      <h2 style="font-size:1.3rem;font-weight:700;color:var(--text-primary);margin:0"><svg class="ic"><use href="#i-news"/></svg> Automotive Industry News</h2>
       <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
         <div class="news-search-wrap">
           <svg class="news-search-icon" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
@@ -1086,9 +1147,11 @@
 
 <!-- ── Footer ─────────────────────────────────────────────────────────────── -->
 <footer class="footer">
-  <span>Designed &amp; Developed by <strong>Avinash Bhosale</strong></span>
-  <span class="footer-divider">·</span>
   <span>CostVision &copy; 2026</span>
+  <span class="footer-divider">·</span>
+  <span class="footer-version">v4.1</span>
+  <span class="footer-divider">·</span>
+  <span>Designed &amp; Developed by <strong>Avinash Bhosale</strong></span>
   <span class="footer-divider">·</span>
   <a href="#" id="footer-help-link">Help</a>
   <span class="footer-divider">·</span>
@@ -1121,8 +1184,8 @@
       <button class="help-tab" data-help="ai-agent">AI Agent</button>
       <button class="help-tab" data-help="cad-upload">CAD &amp; Photo</button>
       <button class="help-tab" data-help="commodities">Commodities</button>
-      <button class="help-tab" data-help="sw-should-cost">🚗 Auto SW Cost</button>
-      <button class="help-tab" data-help="news-feed">📰 News</button>
+      <button class="help-tab" data-help="sw-should-cost">Auto SW Cost</button>
+      <button class="help-tab" data-help="news-feed">News</button>
       <button class="help-tab" data-help="commodity-dashboard">📈 Live Prices</button>
       <button class="help-tab" data-help="faq">FAQ</button>
       <button class="help-tab" data-help="glossary">Glossary</button>

@@ -485,10 +485,19 @@ async function updateKnowledgePanel(result: PartCostResult): Promise<void> {
   } catch { /* offline / server down — the panel simply stays empty */ }
 }
 
+
+// ─── App-nav active state (sidebar) ──────────────────────────────────────────
+function setNavActive(id: 'home-btn' | 'news-btn' | null): void {
+  document.querySelectorAll('#app-nav .anav-item').forEach(el => el.classList.remove('active'));
+  if (id) document.getElementById(id)?.classList.add('active');
+}
+
 // ─── View switching ───────────────────────────────────────────────────────────
 
 
 function showHome(): void {
+  setNavActive('home-btn');
+  document.getElementById('wizard-overlay')?.remove();
   const homeEl = document.getElementById('home-view');
   const pickerEl = document.getElementById('commodity-picker-view');
   const costingEl = document.getElementById('costing-view');
@@ -514,6 +523,7 @@ function showHome(): void {
 
 
 function showCosting(commodity?: string): void {
+  setNavActive(null);
   const homeEl = document.getElementById('home-view');
   const pickerEl = document.getElementById('commodity-picker-view');
   const costingEl = document.getElementById('costing-view');
@@ -535,6 +545,8 @@ function showCosting(commodity?: string): void {
 }
 
 function showCommodityPicker(): void {
+  setNavActive(null);
+  document.getElementById('wizard-overlay')?.remove();
   const homeEl = document.getElementById('home-view');
   const pickerEl = document.getElementById('commodity-picker-view');
   const costingEl = document.getElementById('costing-view');
@@ -568,8 +580,13 @@ function showWorkflowPanel(commodity: string): void {
   if (errEl) errEl.style.display = 'none';
   if (warnEl) warnEl.style.display = 'none';
 
-  const meta = CPICKER_META[commodity] ?? { icon: '⚙️', name: commodity };
-  if (iconEl) iconEl.textContent = meta.icon;
+  const meta = CPICKER_META[commodity] ?? { icon: '', name: commodity };
+  if (iconEl) {
+    // Reuse the picker tile's line-art SVG so the whole flow shares one icon system
+    const tileIcon = document.querySelector(`#commodity-picker-view .cpicker-tile[data-commodity="${commodity}"] .cpicker-tile-icon`);
+    if (tileIcon) iconEl.innerHTML = tileIcon.innerHTML;
+    else iconEl.textContent = meta.icon;
+  }
   if (nameEl) nameEl.textContent = meta.name;
 
   // Full-screen split layout: picker becomes narrow sidebar, costing takes remaining width
@@ -898,7 +915,7 @@ async function renderIntelligencePanel(): Promise<void> {
       : '<span style="color:var(--text-muted)">building evidence…</span>';
     const trendTxt = iq.trend.length
       ? iq.trend.slice(-4).map(t => `${t.month.slice(5)}: ${t.mapePct}% (n=${t.n})`).join('  ·  ')
-      : 'no actuals logged yet — use 🎯 Log Actual £ after costings';
+      : 'no actuals logged yet — use Log Actual £ after costings';
     const topCommodities = Object.entries(iq.byCommodity).sort((a, b) => b[1] - a[1]).slice(0, 4)
       .map(([c, n]) => `${(COMMODITY_LABELS[c] ?? c)} ${n}`).join(' · ');
 
@@ -910,7 +927,7 @@ async function renderIntelligencePanel(): Promise<void> {
         </div>
         <div style="margin-top:8px;display:flex;gap:22px;flex-wrap:wrap;font-size:0.8rem;color:var(--text-secondary)">
           <span>📚 <strong>${iq.totalCases}</strong> analyses remembered</span>
-          <span>🎯 <strong>${iq.withActuals}</strong> with real quotes</span>
+          <span><strong>${iq.withActuals}</strong> with real quotes</span>
           ${iq.overallMapePct !== null ? `<span>Accuracy: MAPE <strong>${iq.overallMapePct}%</strong>${iq.biasDirection && iq.biasDirection !== 'centred' ? ` (${iq.biasDirection}-estimates)` : ''}</span>` : ''}
           ${iq.adjustedCases > 0 ? `<span>✍ <strong>${iq.adjustedCases}</strong> expert-corrected</span>` : ''}
         </div>
@@ -948,7 +965,7 @@ async function renderDriftPanel(): Promise<void> {
     box.innerHTML = `
       <div style="padding:12px 16px;border:1px solid var(--border);border-left:4px solid #dc2626;border-radius:10px;background:var(--surface-elevated)">
         <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:10px">
-          <div style="font-weight:700;font-size:0.92rem;color:var(--text-primary)">🤖 Autonomous findings <span style="font-weight:400;font-size:0.72rem;color:var(--text-muted)">(the drift monitor opened these on its own)</span></div>
+          <div style="font-weight:700;font-size:0.92rem;color:var(--text-primary)"><svg class="ic"><use href="#i-zap"/></svg> Autonomous findings <span style="font-weight:400;font-size:0.72rem;color:var(--text-muted)">(the drift monitor opened these on its own)</span></div>
           ${data.totalImpactGBP > 0 ? `<div style="font-size:0.8rem;font-weight:700;color:#dc2626">≈ £${Math.round(data.totalImpactGBP).toLocaleString()}/yr at stake</div>` : ''}
         </div>
         <div style="margin-top:6px">${rows}</div>
@@ -1061,7 +1078,7 @@ function renderDashboard(): void {
       daiEl.innerHTML = '';
     } else if (highCostCount > 0) {
       daiEl.className = 'dash-ai-item dash-ai-item--warn';
-      daiEl.innerHTML = `<span class="dai-icon">🎯</span><span>${highCostCount} part${highCostCount>1?'s':''} exceed ${_currFmt(100)} — prioritise these for detailed supplier negotiation.</span>`;
+      daiEl.innerHTML = `<span class="dai-icon"><svg class="ic"><use href="#i-bulb"/></svg></span><span>${highCostCount} part${highCostCount>1?'s':''} exceed ${_currFmt(100)} — prioritise these for detailed supplier negotiation.</span>`;
     } else {
       daiEl.className = 'dash-ai-item dash-ai-item--opt';
       daiEl.innerHTML = `<span class="dai-icon">✅</span><span>All costed parts are below ${_currFmt(100)}. Consider checking wiring harness and PCB assemblies next.</span>`;
@@ -6852,7 +6869,7 @@ function buildPCBImageUploadZone(): string {
 
         <!-- Manufacturing Country Selector -->
         <div style="margin-top:10px;display:flex;align-items:center;gap:8px;justify-content:center;flex-wrap:wrap">
-          <label style="font-size:0.72rem;font-weight:600;color:var(--text-secondary);white-space:nowrap">🏭 Manufacturing Country:</label>
+          <label style="font-size:0.72rem;font-weight:600;color:var(--text-secondary);white-space:nowrap">Manufacturing Country:</label>
           <select id="pcb-mfg-country" style="font-size:0.72rem;padding:3px 8px;border:1px solid var(--border);border-radius:4px;background:var(--card-bg)">
             <optgroup label="Asia — Low Cost">
               <option value="cn" selected>🇨🇳 China (Shenzhen) — Default</option>
@@ -6916,7 +6933,7 @@ function buildPCBImageUploadZone(): string {
           <div id="pcb-img-count" style="font-size:0.62rem;color:var(--text-muted);margin-top:4px;text-align:center">No images selected</div>
         </div>
         <div style="display:flex;gap:6px;margin-top:8px;justify-content:center;flex-wrap:wrap">
-          <button class="btn btn-primary btn-sm" id="pcb-img-analyze-btn" disabled>🔬 Analyze PCB</button>
+          <button class="btn btn-primary btn-sm" id="pcb-img-analyze-btn" disabled>Analyze PCB</button>
         </div>
 
         <!-- BOM/netlist file upload — attaching a BOM file significantly improves cost accuracy -->
@@ -7115,10 +7132,11 @@ async function analyzePCBImages(): Promise<void> {
   pcbImageLoading = true;
 
   const analyzeBtn = el<HTMLButtonElement>('pcb-img-analyze-btn');
-  if (analyzeBtn) { analyzeBtn.disabled = true; analyzeBtn.textContent = `⏳ Analyzing ${selectedFiles.length} image${selectedFiles.length > 1 ? 's' : ''}…`; }
+  if (analyzeBtn) { analyzeBtn.disabled = true; analyzeBtn.textContent = `Analyzing ${selectedFiles.length} image${selectedFiles.length > 1 ? 's' : ''}…`; }
 
   const zone = el('pcb-img-zone');
   if (zone) zone.classList.add('pcb-img-zone--analyzing');
+  ensurePcbStageTrack();
 
   const apiKey = (document.querySelector<HTMLInputElement>('#api-key-input'))?.value?.trim()
     ?? sessionStorage.getItem('cv_api_key') ?? '';
@@ -7205,7 +7223,9 @@ async function analyzePCBImages(): Promise<void> {
         if (evt.type === 'progress') {
           const pct = Number(evt.pct ?? 0);
           const label = String(evt.label ?? '');
-          if (analyzeBtn) analyzeBtn.textContent = `⏳ ${label}`;
+          const stageN = Number(evt.stage ?? 0);
+          if (analyzeBtn) analyzeBtn.textContent = `Analyzing… ${pct}%`;
+          updatePcbStageTrack(stageN, label);
           if (zone) zone.title = `${pct}% — ${label}`;
         } else if (evt.type === 'error') {
           streamError = String(evt.message ?? 'Stream error');
@@ -7259,10 +7279,55 @@ async function analyzePCBImages(): Promise<void> {
     if (resultsEl) resultsEl.innerHTML = `<div class="pcb-img-error">⚠ Analysis failed: ${msg}</div>`;
   } finally {
     pcbImageLoading = false;
+    finishPcbStageTrack();
     const n = pcbImageFiles.filter(Boolean).length;
-    if (analyzeBtn) { analyzeBtn.disabled = n === 0; analyzeBtn.textContent = '🔬 Re-analyze'; }
+    if (analyzeBtn) { analyzeBtn.disabled = n === 0; analyzeBtn.textContent = 'Re-analyze'; }
     if (zone) zone.classList.remove('pcb-img-zone--analyzing');
   }
+}
+
+
+// ─── PCB analysis stage skeleton (5-stage pipeline progress) ─────────────────
+const PCB_STAGES = [
+  'Board classification & safety level',
+  'OCR — reading printed markings',
+  'Full vision BOM extraction',
+  'Costing & country comparison',
+  'Finalising result',
+];
+
+function ensurePcbStageTrack(): HTMLElement | null {
+  let track = document.getElementById('pcb-stage-track');
+  if (!track) {
+    const zone = el('pcb-img-zone');
+    if (!zone) return null;
+    track = document.createElement('div');
+    track.id = 'pcb-stage-track';
+    zone.insertAdjacentElement('afterend', track);
+  }
+  track.innerHTML = PCB_STAGES.map((label, i) =>
+    `<div class="pcb-stage" data-stage="${i + 1}"><span class="ps-dot"></span><span class="ps-label">${label}</span><span class="ps-bar"></span></div>`).join('');
+  track.classList.add('live');
+  return track;
+}
+
+function updatePcbStageTrack(stage: number, label: string): void {
+  const track = document.getElementById('pcb-stage-track');
+  if (!track) return;
+  track.querySelectorAll<HTMLElement>('.pcb-stage').forEach(row => {
+    const n = parseInt(row.dataset.stage ?? '0', 10);
+    row.classList.toggle('done', n < stage || stage >= 5);
+    row.classList.toggle('active', n === stage && stage < 5);
+    if (n === stage && label) {
+      const lbl = row.querySelector('.ps-label');
+      if (lbl) lbl.textContent = label.replace(/^Stage \d+[ab]? — /, '');
+    }
+  });
+}
+
+function finishPcbStageTrack(): void {
+  const track = document.getElementById('pcb-stage-track');
+  if (track) { track.classList.remove('live'); track.innerHTML = ''; }
 }
 
 function injectPCBDemoCards(): void {
@@ -7858,7 +7923,7 @@ function buildNPISection(r: PCBImageAnalysis): string {
   if (!r._npiBreakdown) return '';
   const n = r._npiBreakdown;
   return `<div class="pcb-analysis-section">
-    <div class="pcb-analysis-section-title">🏭 NPI vs Production Cost</div>
+    <div class="pcb-analysis-section-title">NPI vs Production Cost</div>
     <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;padding:8px 4px">
       <div style="padding:8px;background:rgba(220,38,38,0.07);border-radius:6px;border:1px solid rgba(220,38,38,0.2)">
         <div style="font-size:0.62rem;color:var(--text-muted);margin-bottom:4px">NPI / Prototype Run (50 units)</div>
@@ -7892,7 +7957,7 @@ function buildConfidenceRoadmap(r: PCBImageAnalysis): string {
   if (r._volumeMultiplier && r._volumeMultiplier > 3) steps.push(`Volume is very low (${r._volumeMultiplier.toFixed(1)}× cost uplift vs 100K) — prices at this volume are distributor-dependent; request actual supplier quotes`);
   if (steps.length === 0) return '';
   return `<div class="pcb-analysis-section">
-    <div class="pcb-analysis-section-title">🎯 How to Improve Confidence</div>
+    <div class="pcb-analysis-section-title">How to Improve Confidence</div>
     <div style="padding:8px 4px">
       <ol style="margin:0;padding-left:18px;font-size:0.72rem;color:var(--text-secondary)">
         ${steps.map(s => `<li style="margin-bottom:6px">${s}</li>`).join('')}
@@ -8229,7 +8294,7 @@ function buildCountryBreakdownSection(r: PCBImageAnalysis): string {
         <div style="font-size:0.68rem;color:var(--text-muted)">Breakdown: PCB base £${sel.breakdown.pcbBase.toFixed(2)} + layers £${sel.breakdown.pcbLayers.toFixed(2)} + surface £${sel.breakdown.pcbSurface.toFixed(2)} + vias £${sel.breakdown.pcbVias.toFixed(2)} + HDI £${sel.breakdown.pcbHDI.toFixed(2)} + setup £${sel.breakdown.pcbSetup.toFixed(2)} | assembly £${sel.breakdown.smtAssembly.toFixed(2)} | test £${sel.breakdown.aoi.toFixed(2)} | logistics £${sel.breakdown.logistics.toFixed(2)} + duty £${sel.breakdown.importDuty.toFixed(2)}</div>
       </div>
       ${sel.panelInfo ? `<div style="margin-top:6px;padding:6px 8px;background:var(--card-bg);border-radius:6px;font-size:0.68rem;color:var(--text-muted)">📐 Panelisation: <strong style="color:var(--text-secondary)">${sel.panelInfo.boardsPerPanel}-up</strong> on ${sel.panelInfo.panelW}×${sel.panelInfo.panelH}mm panel · utilisation <strong style="color:var(--text-secondary)">${Math.round(sel.panelInfo.utilisation * 100)}%</strong> (waste amortised into PCB base cost)</div>` : ''}
-      ${pcbNREEnabled && PCB_COUNTRY_META[selectedCountryId]?.nre ? `<div style="margin-top:6px;padding:6px 8px;background:var(--card-bg);border-radius:6px;font-size:0.68rem;color:var(--text-muted)">🏭 Automotive NRE (one-time/programme): PPAP £${PCB_COUNTRY_META[selectedCountryId].nre.ppapGBP.toLocaleString()} + FMEA £${PCB_COUNTRY_META[selectedCountryId].nre.fmeaGBP.toLocaleString()} + DVP&amp;R £${PCB_COUNTRY_META[selectedCountryId].nre.dvprGBP.toLocaleString()} + FAI £${PCB_COUNTRY_META[selectedCountryId].nre.firstArticleGBP.toLocaleString()} + IATF £${PCB_COUNTRY_META[selectedCountryId].nre.iatfAuditGBP.toLocaleString()} = <strong style="color:var(--text-secondary)">£${PCB_COUNTRY_META[selectedCountryId].nre.totalGBP.toLocaleString()}</strong></div>` : ''}
+      ${pcbNREEnabled && PCB_COUNTRY_META[selectedCountryId]?.nre ? `<div style="margin-top:6px;padding:6px 8px;background:var(--card-bg);border-radius:6px;font-size:0.68rem;color:var(--text-muted)">Automotive NRE (one-time/programme): PPAP £${PCB_COUNTRY_META[selectedCountryId].nre.ppapGBP.toLocaleString()} + FMEA £${PCB_COUNTRY_META[selectedCountryId].nre.fmeaGBP.toLocaleString()} + DVP&amp;R £${PCB_COUNTRY_META[selectedCountryId].nre.dvprGBP.toLocaleString()} + FAI £${PCB_COUNTRY_META[selectedCountryId].nre.firstArticleGBP.toLocaleString()} + IATF £${PCB_COUNTRY_META[selectedCountryId].nre.iatfAuditGBP.toLocaleString()} = <strong style="color:var(--text-secondary)">£${PCB_COUNTRY_META[selectedCountryId].nre.totalGBP.toLocaleString()}</strong></div>` : ''}
       <div style="margin-top:4px;font-size:0.68rem;color:var(--text-muted)">Best for: ${escHtml(sel.bestFor)}</div>
     </div>` : '';
 
@@ -13347,7 +13412,7 @@ function renderInsights(result: PartCostResult, input: UniversalStackInput): voi
 
         let calibrationCard = '';
         if (hcal.n > 0 && !hcal.applied) {
-          calibrationCard = `<div style="margin-top:8px;padding:9px 12px;border:1px dashed var(--border-strong);border-radius:8px;font-size:0.76rem;color:var(--text-secondary)">📈 Calibration: ${hcal.n}/3 actual quote${hcal.n === 1 ? '' : 's'} logged for <strong>${escHtml(activeCommodity.replace(/_/g, ' '))}</strong>. Log ${3 - hcal.n} more (🎯 Log Actual £) to unlock a data-corrected estimate.</div>`;
+          calibrationCard = `<div style="margin-top:8px;padding:9px 12px;border:1px dashed var(--border-strong);border-radius:8px;font-size:0.76rem;color:var(--text-secondary)">Calibration: ${hcal.n}/3 actual quote${hcal.n === 1 ? '' : 's'} logged for <strong>${escHtml(activeCommodity.replace(/_/g, ' '))}</strong>. Log ${3 - hcal.n} more (Log Actual £) to unlock a data-corrected estimate.</div>`;
         } else if (hcal.applied) {
           const calibrated = applyCalibration(result.total, hcal);
           const dirTxt = hcal.direction === 'under' ? 'model tends to UNDER-estimate' : hcal.direction === 'over' ? 'model tends to OVER-estimate' : 'model is well-centred';
@@ -16128,7 +16193,7 @@ async function renderCompanyRateAdmin(): Promise<void> {
   host.innerHTML = `
     <div style="border:1px solid #D9E2F1;border-radius:10px;padding:14px 16px;background:#F7FAFF">
       <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
-        <span style="font-weight:700;color:#1F2A44">🏭 Company Rate Library</span>${badge}
+        <span style="font-weight:700;color:#1F2A44"><svg class="ic"><use href="#i-factory"/></svg> Company Rate Library</span>${badge}
         ${status.hasCompany ? '<span style="font-size:0.72rem;color:#636B7A">company file uploaded</span>' : '<span style="font-size:0.72rem;color:#636B7A">no company file yet</span>'}
         ${status.overrideCount ? `<span style="font-size:0.72rem;color:#636B7A">· ${status.overrideCount} cell override(s)</span>` : ''}
       </div>
@@ -16223,13 +16288,13 @@ async function init(): Promise<void> {
   document.documentElement.setAttribute('data-theme', savedTheme);
   const themeBtn = document.getElementById('theme-toggle-btn');
   if (themeBtn) {
-    themeBtn.textContent = savedTheme === 'dark' ? '🌙' : '☀️';
+    themeBtn.innerHTML = `<svg class="ic"><use href="#${savedTheme === 'dark' ? 'i-moon' : 'i-sun'}"/></svg>`;
     themeBtn.addEventListener('click', () => {
       const current = document.documentElement.getAttribute('data-theme') || 'dark';
       const next = current === 'dark' ? 'light' : 'dark';
       document.documentElement.setAttribute('data-theme', next);
       localStorage.setItem('sc-theme', next);
-      themeBtn.textContent = next === 'dark' ? '🌙' : '☀️';
+      themeBtn.innerHTML = `<svg class="ic"><use href="#${next === 'dark' ? 'i-moon' : 'i-sun'}"/></svg>`;
     });
   }
 
@@ -16540,8 +16605,11 @@ async function init(): Promise<void> {
   // Auto-fetch ticker on home load (don't wait for panel open)
   void fetchCommodities();
 
+  // Command palette (Cmd/Ctrl+K)
+  initCommandPalette();
+
   // ─── News section wiring ──────────────────────────────────────────────────
-  document.getElementById('news-btn')?.addEventListener('click', showNews);
+  document.getElementById('news-btn')?.addEventListener('click', () => { setNavActive('news-btn'); showNews(); });
   document.getElementById('news-back-btn')?.addEventListener('click', showHome);
   document.getElementById('news-refresh-btn')?.addEventListener('click', () => { void refreshNews(); });
 
@@ -16772,6 +16840,101 @@ async function init(): Promise<void> {
 
   // Initial view: show home on load
   showHome();
+}
+
+
+
+// ═══ Command palette (⌘K) — fuzzy launcher over views, actions & commodities ══
+interface CmdkEntry { label: string; sub: string; icon: string; run: () => void }
+let _cmdkEntries: CmdkEntry[] = [];
+let _cmdkFiltered: CmdkEntry[] = [];
+let _cmdkSel = 0;
+
+function _cmdkBuild(): CmdkEntry[] {
+  const byId = (id: string) => () => document.getElementById(id)?.click();
+  const entries: CmdkEntry[] = [
+    { label: 'Home dashboard', sub: 'View', icon: 'i-home', run: () => showHome() },
+    { label: 'New costing — browse all methods', sub: 'View', icon: 'i-plus', run: () => showCommodityPicker() },
+    { label: 'Automotive industry news', sub: 'View', icon: 'i-news', run: byId('news-btn') },
+    { label: 'Demo gallery', sub: 'Open', icon: 'i-play', run: byId('demo-btn') },
+    { label: 'Help centre', sub: 'Open', icon: 'i-help', run: byId('help-btn') },
+    { label: 'Contact support', sub: 'Open', icon: 'i-mail', run: byId('contact-btn') },
+    { label: 'Toggle dark / light theme', sub: 'Action', icon: 'i-moon', run: byId('theme-toggle-btn') },
+    { label: 'PCB image to BOM', sub: 'AI', icon: 'i-chart', run: byId('tile-pcb-image') },
+    { label: 'CAD to cost — upload STEP / STL', sub: 'AI', icon: 'i-plus', run: byId('tile-cad') },
+    { label: 'AI agent — cost it in plain English', sub: 'AI', icon: 'i-bulb', run: byId('tile-ai-agent') },
+  ];
+  document.querySelectorAll<HTMLElement>('#commodity-picker-view .cpicker-tile[data-commodity]').forEach(tile => {
+    const label = tile.querySelector('.cpicker-tile-label')?.textContent?.trim();
+    const sub = tile.querySelector('.cpicker-tile-sub')?.textContent?.trim() ?? '';
+    if (!label) return;
+    entries.push({ label: `Cost a part: ${label}`, sub: sub.slice(0, 34), icon: 'i-plus',
+                   run: () => { showCommodityPicker(); (tile as HTMLButtonElement).click(); } });
+  });
+  return entries;
+}
+
+function _cmdkRender(): void {
+  const list = document.getElementById('cv-cmdk-list');
+  if (!list) return;
+  if (!_cmdkFiltered.length) { list.innerHTML = '<div class="cmdk-empty">No matches — try a commodity name like “casting”.</div>'; return; }
+  list.innerHTML = _cmdkFiltered.map((it, i) =>
+    `<button class="cmdk-item${i === _cmdkSel ? ' sel' : ''}" data-i="${i}">
+       <svg class="ic"><use href="#${it.icon}"/></svg><span>${it.label}</span><span class="cmdk-sub">${it.sub}</span>
+     </button>`).join('');
+  list.querySelector('.cmdk-item.sel')?.scrollIntoView({ block: 'nearest' });
+}
+
+function _cmdkFilter(q: string): void {
+  const terms = q.toLowerCase().split(/\s+/).filter(Boolean);
+  _cmdkFiltered = !terms.length ? _cmdkEntries.slice(0, 12)
+    : _cmdkEntries.filter(it => terms.every(t => (it.label + ' ' + it.sub).toLowerCase().includes(t))).slice(0, 12);
+  _cmdkSel = 0;
+  _cmdkRender();
+}
+
+function openCmdk(): void {
+  let host = document.getElementById('cv-cmdk');
+  if (!host) {
+    host = document.createElement('div');
+    host.id = 'cv-cmdk';
+    host.innerHTML = `<div class="cmdk-panel" role="dialog" aria-label="Command palette">
+        <div class="cmdk-input-row"><svg class="ic"><use href="#i-search"/></svg>
+          <input id="cv-cmdk-input" placeholder="Search commodities, views, actions…" autocomplete="off" /></div>
+        <div class="cmdk-list" id="cv-cmdk-list"></div>
+        <div class="cmdk-hint"><span><kbd>↑</kbd><kbd>↓</kbd> navigate</span><span><kbd>↵</kbd> open</span><span><kbd>esc</kbd> close</span></div>
+      </div>`;
+    document.body.appendChild(host);
+    host.addEventListener('click', e => {
+      if (e.target === host) { closeCmdk(); return; }
+      const item = (e.target as HTMLElement).closest<HTMLElement>('.cmdk-item');
+      if (item) { const i = parseInt(item.dataset.i ?? '0', 10); closeCmdk(); _cmdkFiltered[i]?.run(); }
+    });
+    const input = host.querySelector<HTMLInputElement>('#cv-cmdk-input');
+    input?.addEventListener('input', () => _cmdkFilter(input.value));
+    input?.addEventListener('keydown', e => {
+      if (e.key === 'ArrowDown') { e.preventDefault(); _cmdkSel = Math.min(_cmdkSel + 1, _cmdkFiltered.length - 1); _cmdkRender(); }
+      else if (e.key === 'ArrowUp') { e.preventDefault(); _cmdkSel = Math.max(_cmdkSel - 1, 0); _cmdkRender(); }
+      else if (e.key === 'Enter') { e.preventDefault(); const it = _cmdkFiltered[_cmdkSel]; closeCmdk(); it?.run(); }
+      else if (e.key === 'Escape') { closeCmdk(); }
+    });
+  }
+  _cmdkEntries = _cmdkBuild();
+  _cmdkFilter('');
+  host.classList.add('open');
+  const input = host.querySelector<HTMLInputElement>('#cv-cmdk-input');
+  if (input) { input.value = ''; setTimeout(() => input.focus(), 30); }
+}
+
+function closeCmdk(): void {
+  document.getElementById('cv-cmdk')?.classList.remove('open');
+}
+
+function initCommandPalette(): void {
+  document.getElementById('cmdk-btn')?.addEventListener('click', openCmdk);
+  document.addEventListener('keydown', e => {
+    if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); openCmdk(); }
+  });
 }
 
 document.addEventListener('DOMContentLoaded', () => { void init(); });

@@ -5549,3 +5549,175 @@ kbd {
   .cv-hero-full .cv-eyebrow, .cv-hero-h1, .cv-hero-lede, .cv-hero-cta,
   .cv-hero-trust, .cv-impact, .cv-hero-compact { animation: none !important; }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   FABLE UI REVIEW IMPLEMENTATION — P0/P1/P2 (app shell pass)
+   • One SVG icon system (.ic) — emojis retired from chrome
+   • Collapsible app sidebar (#app-nav) + slim top bar, one primary CTA
+   • Custom-styled selects (appearance:none + chevron)
+   • Mono reserved for data; UI text back to Inter
+   • ⌘K command palette · PCB stage skeleton · reduced-motion blanket
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Icon system ── */
+.ic { width: 15px; height: 15px; stroke: currentColor; fill: none; stroke-width: 2;
+      stroke-linecap: round; stroke-linejoin: round; vertical-align: -2px; flex: 0 0 auto; }
+.ic-xs { width: 12px; height: 12px; stroke-width: 2.2; }
+.kpi-icon .ic { width: 18px; height: 18px; }
+.dai-icon .ic { width: 15px; height: 15px; }
+.comm-panel-icon .ic { width: 16px; height: 16px; }
+.theme-toggle .ic { width: 16px; height: 16px; }
+.btn .ic, .anav-item .ic { margin-right: 0; }
+.btn { display: inline-flex; align-items: center; gap: 7px; }
+
+/* ── Header refinements ── */
+.hdr-primary { padding: 7px 14px; font-size: 0.8rem; }
+.hdr-select-wrap { position: relative; display: inline-flex; align-items: center; gap: 5px; }
+.hdr-select-ic { color: var(--text-muted); }
+.hdr-select, select.comm-filter-sel, select.dash-smart-sel {
+  -webkit-appearance: none; appearance: none;
+  font-size: 0.77rem; font-family: var(--font); font-weight: 500;
+  padding: 5px 24px 5px 10px;
+  border: 1px solid var(--border-strong); border-radius: 7px;
+  background-color: var(--surface-elevated); color: var(--text-primary);
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 7px center; background-size: 13px;
+  cursor: pointer;
+  transition: border-color var(--dur-hover) var(--ease-std), box-shadow var(--dur-hover) var(--ease-std);
+}
+.hdr-select:hover, select.comm-filter-sel:hover, select.dash-smart-sel:hover { border-color: var(--accent); }
+.hdr-select:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+/* ⌘K trigger */
+.cmdk-trigger {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-family: var(--font); font-size: 0.77rem; color: var(--text-muted);
+  background: var(--surface-elevated); border: 1px solid var(--border-strong);
+  border-radius: 7px; padding: 5px 10px; cursor: pointer;
+  transition: border-color var(--dur-hover) var(--ease-std), color var(--dur-hover) var(--ease-std);
+}
+.cmdk-trigger:hover { border-color: var(--accent); color: var(--text-secondary); }
+.cmdk-trigger kbd {
+  font-family: var(--font); font-size: 0.64rem; color: var(--text-muted);
+  border: 1px solid var(--border); border-radius: 4px; padding: 1px 5px; background: var(--surface);
+}
+
+/* ── App sidebar ── */
+:root { --anav-w: 200px; --anav-w-min: 62px; }
+#app-nav {
+  position: fixed; left: 0; top: 56px; bottom: 0; width: var(--anav-w);
+  display: flex; flex-direction: column; justify-content: space-between;
+  padding: 12px 10px; z-index: 40;
+  background: var(--surface); border-right: 1px solid var(--border);
+  transition: width 240ms var(--ease-std);
+}
+.anav-group { display: flex; flex-direction: column; gap: 3px; }
+.anav-item {
+  display: flex; align-items: center; gap: 11px; width: 100%;
+  padding: 9px 12px; border: none; border-radius: 8px; background: none; cursor: pointer;
+  font-family: var(--font); font-size: 0.82rem; font-weight: 500; color: var(--text-secondary);
+  transition: background var(--dur-hover) var(--ease-std), color var(--dur-hover) var(--ease-std);
+  white-space: nowrap; text-align: left;
+}
+.anav-item:hover { background: var(--surface-elevated); color: var(--text-primary); }
+.anav-item.active { background: color-mix(in srgb, var(--accent) 12%, transparent); color: var(--accent); font-weight: 600; }
+.anav-item .ic { width: 17px; height: 17px; }
+.cv-nav-collapsed #app-nav { width: var(--anav-w-min); }
+.cv-nav-collapsed .anav-label { display: none; }
+.cv-nav-collapsed .anav-item { justify-content: center; padding: 9px 0; }
+/* Content offset */
+#home-view, #news-view, #commodity-picker-view, #costing-view, footer.footer {
+  margin-left: var(--anav-w);
+  transition: margin-left 240ms var(--ease-std);
+}
+.cv-nav-collapsed #home-view, .cv-nav-collapsed #news-view,
+.cv-nav-collapsed #commodity-picker-view, .cv-nav-collapsed #costing-view,
+.cv-nav-collapsed footer.footer { margin-left: var(--anav-w-min); }
+/* Mobile: sidebar becomes an overlay */
+.anav-mobile-toggle { display: none; background: none; border: none; cursor: pointer; color: var(--text-secondary); padding: 6px; }
+#anav-scrim { display: none; }
+@media (max-width: 880px) {
+  #app-nav { transform: translateX(-100%); transition: transform 240ms var(--ease-std); width: var(--anav-w) !important; box-shadow: var(--shadow-lg, 0 12px 40px rgba(0,0,0,0.25)); }
+  .cv-nav-open #app-nav { transform: translateX(0); }
+  .cv-nav-open #anav-scrim { display: block; position: fixed; inset: 0; z-index: 39; background: rgba(15,23,42,0.4); }
+  #home-view, #news-view, #commodity-picker-view, #costing-view, footer.footer { margin-left: 0 !important; }
+  .anav-mobile-toggle { display: inline-flex; }
+  .cmdk-trigger span, .cmdk-trigger kbd { display: none; }
+}
+
+/* ── Mono discipline: UI text is Inter; mono stays on data (tables, prices) ── */
+.dash-tiles-grid .tile-sub { font-family: var(--font); letter-spacing: 0; }
+.dash-sec-link { font-family: var(--font); font-weight: 600; font-size: 12.5px; }
+.dash-tiles-grid .tile-badge { font-family: var(--font); font-weight: 700; }
+.dash-tiles-grid .dash-tile::after { font-family: var(--font); font-weight: 600; }
+.cv-hero-trust .mono { font-family: var(--font); font-weight: 600; }
+
+/* ── Command palette ── */
+#cv-cmdk { position: fixed; inset: 0; z-index: 10050; display: none; align-items: flex-start; justify-content: center; padding: 12vh 16px 16px; background: rgba(15,23,42,0.45); backdrop-filter: blur(2px); }
+#cv-cmdk.open { display: flex; }
+.cmdk-panel { width: 100%; max-width: 560px; background: var(--surface); border: 1px solid var(--border-strong); border-radius: 12px; box-shadow: 0 24px 80px rgba(0,0,0,0.35); overflow: hidden; animation: cmdk-in 180ms var(--ease-std); }
+@keyframes cmdk-in { from { opacity: 0; transform: translateY(-8px) scale(0.985); } to { opacity: 1; transform: none; } }
+.cmdk-input-row { display: flex; align-items: center; gap: 10px; padding: 13px 16px; border-bottom: 1px solid var(--border); color: var(--text-muted); }
+#cv-cmdk-input { flex: 1; border: none; outline: none; background: none; font-family: var(--font); font-size: 0.95rem; color: var(--text-primary); }
+.cmdk-list { max-height: 46vh; overflow-y: auto; padding: 6px; }
+.cmdk-item { display: flex; align-items: center; gap: 11px; width: 100%; padding: 9px 11px; border: none; border-radius: 8px; background: none; cursor: pointer; font-family: var(--font); font-size: 0.85rem; color: var(--text-primary); text-align: left; }
+.cmdk-item .ic { color: var(--accent); }
+.cmdk-item .cmdk-sub { margin-left: auto; font-size: 0.7rem; color: var(--text-muted); }
+.cmdk-item.sel, .cmdk-item:hover { background: color-mix(in srgb, var(--accent) 10%, transparent); }
+.cmdk-empty { padding: 22px; text-align: center; color: var(--text-muted); font-size: 0.82rem; }
+.cmdk-hint { display: flex; gap: 14px; padding: 8px 16px; border-top: 1px solid var(--border); font-size: 0.66rem; color: var(--text-muted); }
+.cmdk-hint kbd { border: 1px solid var(--border); border-radius: 4px; padding: 0 4px; background: var(--surface-elevated); font-family: var(--font); }
+
+/* ── PCB analysis stage skeleton ── */
+#pcb-stage-track { display: none; flex-direction: column; gap: 7px; margin: 12px 0; }
+#pcb-stage-track.live { display: flex; }
+.pcb-stage { display: flex; align-items: center; gap: 10px; font-size: 0.78rem; color: var(--text-muted); font-family: var(--font); }
+.pcb-stage .ps-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border-strong); flex: 0 0 auto; transition: background 200ms var(--ease-std); }
+.pcb-stage.active { color: var(--text-primary); font-weight: 600; }
+.pcb-stage.active .ps-dot { background: var(--accent); animation: ps-pulse 1.1s ease-in-out infinite; }
+.pcb-stage.done { color: var(--text-secondary); }
+.pcb-stage.done .ps-dot { background: var(--success, #059669); animation: none; }
+.pcb-stage .ps-bar { flex: 1; height: 7px; border-radius: 4px; background: var(--surface-elevated); overflow: hidden; position: relative; }
+.pcb-stage.active .ps-bar::after {
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--accent) 22%, transparent), transparent);
+  animation: ps-shimmer 1.2s linear infinite; transform: translateX(-100%);
+}
+.pcb-stage.done .ps-bar { background: color-mix(in srgb, var(--success, #059669) 18%, transparent); }
+@keyframes ps-pulse { 50% { opacity: 0.45; } }
+@keyframes ps-shimmer { to { transform: translateX(100%); } }
+
+/* ── Footer version ── */
+.footer-version { font-family: var(--font-mono); font-size: 0.68rem; color: var(--text-muted); border: 1px solid var(--border); border-radius: 5px; padding: 1px 6px; }
+
+/* ── Reduced motion: final blanket for everything this pass added ── */
+@media (prefers-reduced-motion: reduce) {
+  #app-nav, #home-view, #news-view, #commodity-picker-view, #costing-view, footer.footer { transition: none; }
+  .cmdk-panel { animation: none; }
+  .pcb-stage.active .ps-dot, .pcb-stage.active .ps-bar::after { animation: none; }
+}
+
+/* ── One accent: picker tile line-art unifies to indigo (was per-tile colours) ── */
+#commodity-picker-view .cpicker-tile-icon svg,
+#commodity-picker-view .cpicker-tile-icon svg * { stroke: var(--accent); }
+#commodity-picker-view .cpicker-tile-icon svg [fill]:not([fill="none"]) { fill: var(--accent); }
+#commodity-picker-view .cpicker-tile-icon {
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  border-radius: 10px;
+  width: 44px; height: 44px;
+  display: grid; place-items: center;
+  flex: 0 0 auto;
+}
+.wf-panel-commodity-icon svg, .wf-panel-commodity-icon svg * { stroke: var(--accent); }
+.wf-panel-commodity-icon svg [fill]:not([fill="none"]) { fill: var(--accent); }
+
+/* News view: sidebar offset owns the left edge; centre in remaining space */
+#news-view { margin-right: auto; }
+
+/* Mobile header: drop secondary chrome so the primary CTA stays reachable */
+@media (max-width: 880px) {
+  #user-greeting, .logo-tagline, .hdr-select-ic { display: none; }
+  .hdr-select { max-width: 86px; }
+  .header { flex-wrap: nowrap; overflow-x: auto; }
+}
