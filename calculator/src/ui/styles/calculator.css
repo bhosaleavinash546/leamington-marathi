@@ -6062,3 +6062,14 @@ input.cv-outlier { border-color: var(--warning) !important; box-shadow: 0 0 0 2p
    `clip` (not `hidden`) doesn't create a scroll container, so position:sticky
    descendants keep working. The recent table still scrolls inside its own wrap. */
 #home-view, #negotiation-view, #news-view { overflow-x: clip; }
+
+/* ── Total-should-cost tile: match the app's flat accent blue, and keep its text
+      readable on that blue. The global ".card-label{color:var(--text-muted)!important}"
+      readability rule was dimming the label/subtitle to dark grey — restore white. */
+.summary-card.total-card {
+  background: var(--accent) !important;
+  border-color: var(--accent);
+}
+.summary-card.total-card .card-label { color: rgba(255,255,255,0.88) !important; }
+.summary-card.total-card .card-value { color: #ffffff !important; }
+.summary-card.total-card .card-sub   { color: rgba(255,255,255,0.75) !important; }

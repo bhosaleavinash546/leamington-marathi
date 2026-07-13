@@ -13777,6 +13777,27 @@ function renderBreakdown(result: PartCostResult): void {
           ctx.fillText(line2, x, y + 7);
           ctx.restore();
         });
+
+        // Centre of the donut: the total should-cost.
+        const c0 = meta.data[0] as any;
+        if (c0 && bkdTotal > 0) {
+          const cx = c0.x, cy = c0.y;
+          const inner = c0.innerRadius ?? 40;
+          const totalStr = `${sym}${(result.total * _displayFxRate).toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+          ctx.save();
+          ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+          let fs = Math.min(inner * 0.46, 22);
+          ctx.font = `800 ${fs}px Inter, sans-serif`;
+          while (ctx.measureText(totalStr).width > inner * 1.7 && fs > 8) { fs -= 1; ctx.font = `800 ${fs}px Inter, sans-serif`; }
+          const capFs = Math.max(8, Math.round(fs * 0.42));
+          ctx.fillStyle = isDark ? '#94a3b8' : '#64748b';
+          ctx.font = `700 ${capFs}px Inter, sans-serif`;
+          ctx.fillText('TOTAL', cx, cy - fs * 0.62);
+          ctx.fillStyle = isDark ? '#f1f5f9' : '#0f172a';
+          ctx.font = `800 ${fs}px Inter, sans-serif`;
+          ctx.fillText(totalStr, cx, cy + capFs * 0.35);
+          ctx.restore();
+        }
       },
     };
 
