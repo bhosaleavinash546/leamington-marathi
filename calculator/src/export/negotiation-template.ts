@@ -65,6 +65,8 @@ const COMMODITY_LABELS: Record<string, Partial<Record<DriverKey, Lbl>>> = {
   pcba: { netWeight: { label: 'Board + components' }, price: { label: 'BOM / material cost' }, partsPerCycle: { label: 'Boards per cycle', unit: 'boards' }, cycleTime: { label: 'Placement / assembly time' }, machineRate: { label: 'SMT / line rate' } },
   wiring_harness: { netWeight: { label: 'Copper + material weight' }, price: { label: 'Wire / terminal price' }, cycleTime: { label: 'Assembly cycle time' }, machineRate: { label: 'Bench / machine rate' }, labourTime: { label: 'Assembly labour time' } },
   assembly: { netWeight: { label: 'Component material' }, price: { label: 'BOM cost' }, cycleTime: { label: 'Station cycle time' }, machineRate: { label: 'Line rate' }, labourTime: { label: 'Assembly labour time' } },
+  painting: { price: { label: 'Paint / material cost' }, cycleTime: { label: 'Line cycle time' }, machineRate: { label: 'Booth / line rate' }, partsPerCycle: { label: 'Parts per carrier', unit: 'parts' }, oee: { label: 'Line OEE' }, labourTime: { label: 'Handling labour time' } },
+  biw_assembly: { netWeight: { label: 'Sub-assembly material' }, price: { label: 'Material / sub-assembly cost' }, cycleTime: { label: 'Station cycle time' }, machineRate: { label: 'Line / robot rate' }, partsPerCycle: { label: 'Parts per station', unit: 'parts' }, oee: { label: 'Line OEE' }, labourTime: { label: 'Assembly labour time' } },
 };
 
 function labelFor(commodity: string, key: DriverKey, cur: string): { label: string; unit: string } {
@@ -187,7 +189,7 @@ function fieldFromLabel(section: string, label: string): string | null {
     if (has('direct')) return 'mat.directCost';
     if (has('weight', 'shot', 'mass', 'blank', 'laminate', 'billet weight')) return 'mat.netWeightKg';
     if (has('util', 'yield', 'nesting', 'buy-to-fly', 'buy to fly')) return 'mat.utilizationPct';
-    if (has('price', 'resin', 'alloy', 'coil', 'billet', 'compound', 'powder', 'prepreg', 'bom', 'wire', 'laminate price')) return 'mat.pricePerKg';
+    if (has('price', 'resin', 'alloy', 'coil', 'billet', 'compound', 'powder', 'prepreg', 'bom', 'wire', 'laminate price', 'material cost')) return 'mat.pricePerKg';
     if (has('consumable', 'core', 'wax', 'shell')) return 'mat.consumables';
     return null;
   }
