@@ -109,6 +109,10 @@ import {
 import {
   analyzeQuote, type TeardownInput, type NegotiationReport,
 } from '../engine/quote-teardown.js';
+import {
+  analyzeDetailedQuote,
+  type PartDetail, type SupplierDetail, type DetailedTeardown,
+} from '../engine/quote-teardown-detailed.js';
 import type { Breakdown8Bucket } from '../engine/types.js';
 import type { PartFingerprint, SimilarCase, CaseSuggestion, ProactiveInsight } from '../engine/part-similarity.js';
 import { computeCarbon } from '../engine/carbon.js';
@@ -240,6 +244,8 @@ interface CostingRecord {
     rawMaterial: number; process: number; labour: number; tooling: number;
     overhead: number; packaging: number; logistics: number; margin: number;
   };
+  /** Full cost-driver detail — powers the Negotiation Intelligence detailed teardown. */
+  detail?: PartDetail;
   warnings?: string[];
 }
 
@@ -345,6 +351,38 @@ function saveCostingHistory(records: CostingRecord[]): void {
   // Keep last 200 records
   localStorage.setItem('cv-history', JSON.stringify(records.slice(-200)));
 }
+/** Distil a full cost-driver detail from a costing result + input, for persistence. */
+function buildPartDetail(result: PartCostResult, input: UniversalStackInput): PartDetail {
+  const rm = input.rawMaterial;
+  const trace = (f: string) => result.traceability.find(t => t.field === f)?.value ?? 0;
+  return {
+    commodity: activeCommodity,
+    material: {
+      grade: rm.materialId,
+      directMode: rm.directCost !== undefined,
+      netWeightKg: rm.netWeightKg ?? 0,
+      utilization: rm.materialUtilization ?? 1,
+      pricePerKg: trace('material.pricePerKg'),
+      scrapRecoveryPerKg: trace('material.scrapRecoveryPricePerKg'),
+      consumablesPerPart: rm.consumablesCostPerPart ?? 0,
+      materialCost: result.breakdown.rawMaterial,
+    },
+    operations: result.operationDetails.map(o => ({
+      name: o.operationName,
+      cycleTimeHr: o.cycleTimeHr, machineRate: o.machineRateUsed, partsPerCycle: o.partsPerCycle, oee: o.oee,
+      labourTimeHr: o.labourTimeHr, labourRate: o.labourRateUsed, manning: o.manning, labourEfficiency: o.labourEfficiency,
+      processCost: o.processCost, labourCost: o.labourCost,
+    })),
+    toolingPerPart: result.breakdown.tooling,
+    toolingTotal: input.tooling.totalToolingCost,
+    amortVolume: input.tooling.amortizationVolume,
+    overheadPct: input.overheadPct,
+    marginPct: input.marginPct,
+    annualVolume: input.annualVolume,
+    total: result.total,
+  };
+}
+
 function pushCostingRecord(r: Partial<CostingRecord> & { totalCost: number }): void {
   const records = getCostingHistory();
   const region = (document.getElementById('mfg-region-selector') as HTMLSelectElement)?.value ?? 'UK';
@@ -1292,7 +1330,66 @@ function demoSupplierBreakdown(shouldBd: Breakdown8Bucket, quote: number): Parti
 }
 
 interface NegoMeta { partName: string; commodityLabel: string; annualVolume: number; shouldCost: number; quote: number; }
-const _negoState: { report: NegotiationReport | null; showBreakdown: boolean; meta: NegoMeta | null; chart: Chart | null } = { report: null, showBreakdown: false, meta: null, chart: null };
+const _negoState: {
+  report: NegotiationReport | null; showBreakdown: boolean; meta: NegoMeta | null; chart: Chart | null;
+  detailed: DetailedTeardown | null; uploaded: SupplierDetail | null; uploadedName: string;
+} = { report: null, showBreakdown: false, meta: null, chart: null, detailed: null, uploaded: null, uploadedName: '' };
+
+/** Saved costings that carry full cost-driver detail — the parts we can tear down in detail. */
+function _negoDetailedParts(): CostingRecord[] {
+  const seen = new Set<string>();
+  return getCostingHistory().filter(r => r.detail && r.detail.operations?.length)
+    .reverse()
+    .filter(r => { const k = r.id; if (seen.has(k)) return false; seen.add(k); return true; })
+    .slice(0, 40);
+}
+function _negoPartOptions(): string {
+  const parts = _negoDetailedParts();
+  if (!parts.length) return `<option value="">No costed parts yet — run a should-cost first</option>`;
+  return parts.map(r => `<option value="${escHtml(r.id)}">${escHtml(r.partName)} · ${escHtml(COMMODITY_LABELS[r.commodity] ?? r.commodity)} · ${_currFmt(r.totalCost)}</option>`).join('');
+}
+
+/** Run the detailed teardown for a selected costed part + an uploaded supplier quote. */
+function runNegotiationDetailed(host: HTMLElement): void {
+  const id = (host.querySelector('#ni-part') as HTMLSelectElement)?.value;
+  const rec = getCostingHistory().find(r => r.id === id);
+  if (!rec || !rec.detail) { showToast('Pick a costed part first (run a should-cost if the list is empty)', 'warning'); return; }
+  if (!_negoState.uploaded) { showToast('Download the Excel template, fill it, then upload the supplier’s quote', 'warning'); return; }
+  const part = rec.detail;
+  const sup = _negoState.uploaded;
+  const dt = analyzeDetailedQuote(part, sup);
+
+  // Derive an 8-bucket supplier breakdown from the detailed lines (their value, or
+  // ours where the supplier left a line blank) so the summary tier is consistent.
+  const should = rec.breakdown ?? shouldBreakdownFor(rec.totalCost, rec.commodity);
+  const opProc = dt.operations.reduce((s, o) => s + (o.process.theirGBP ?? o.process.ourGBP), 0);
+  const opLab = dt.operations.reduce((s, o) => s + (o.labour.theirGBP ?? o.labour.ourGBP), 0);
+  const supB: Breakdown8Bucket = {
+    rawMaterial: dt.material.theirGBP ?? dt.material.ourGBP,
+    process: opProc,
+    labour: opLab,
+    tooling: dt.tooling.theirGBP ?? dt.tooling.ourGBP,
+    packaging: should.packaging,
+    logistics: should.logistics,
+    overhead: dt.overhead.theirGBP ?? dt.overhead.ourGBP,
+    margin: dt.margin.theirGBP ?? dt.margin.ourGBP,
+  };
+  const supTotal = Object.values(supB).reduce((a, b) => a + b, 0);
+  const vol = part.annualVolume ?? (parseFloat((host.querySelector('#ni-vol') as HTMLInputElement)?.value ?? '') || 5000);
+  const family = part.material.grade || undefined;
+
+  const input: TeardownInput = {
+    commodity: rec.commodity, shouldCost: rec.totalCost, shouldBreakdown: should,
+    supplierQuoteGBP: Math.round(supTotal * 100) / 100, supplierBreakdown: supB,
+    annualVolume: vol, materialFamily: family,
+    impliedIndexPremiumPct: null, indexCategory: null, conformalHalfWidthPct: null,
+  };
+  _negoState.report = analyzeQuote(input);
+  _negoState.detailed = dt;
+  _negoState.meta = { partName: rec.partName, commodityLabel: COMMODITY_LABELS[rec.commodity] ?? rec.commodity, annualVolume: vol, shouldCost: rec.totalCost, quote: input.supplierQuoteGBP };
+  renderNegotiationReport();
+  (host.querySelector('#ni-report') as HTMLElement)?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
 
 function renderNegotiationPanel(): void {
   const host = document.getElementById('dash-negotiation');
@@ -1314,6 +1411,20 @@ function renderNegotiationPanel(): void {
         </div>
       </div>
       <div style="padding:14px 16px">
+        <!-- Detailed teardown: pick a costed part → download template → upload filled quote -->
+        <div style="border:1px solid var(--border);border-radius:11px;background:var(--surface-elevated);padding:13px 14px;margin-bottom:14px">
+          <div style="font-weight:800;font-size:0.85rem;color:var(--text-primary);display:flex;align-items:center;gap:7px"><span style="width:3px;height:14px;background:var(--accent);border-radius:2px;display:inline-block"></span>Detailed teardown from a costed part</div>
+          <div style="font-size:0.72rem;color:var(--text-muted);margin-top:3px">Pick a part you've should-costed, download its Excel template for the supplier, then upload their filled quote for a driver-level comparison — material, cycle time, machine &amp; labour rates, manning and more.</div>
+          <div style="display:flex;gap:9px;flex-wrap:wrap;align-items:flex-end;margin-top:11px">
+            <label style="font-size:0.72rem;color:var(--text-secondary)">Costed part<br><select id="ni-part" class="hdr-select" style="margin-top:3px;min-width:220px;max-width:340px">${_negoPartOptions()}</select></label>
+            <button class="btn btn-secondary" id="ni-tmpl" style="padding:8px 13px;font-size:0.79rem">↓ Excel template</button>
+            <label class="btn btn-secondary" for="ni-upload" style="padding:8px 13px;font-size:0.79rem;cursor:pointer;margin:0">⬆ Upload filled quote<input id="ni-upload" type="file" accept=".xlsx" style="display:none"></label>
+            <span id="ni-upload-name" style="font-size:0.72rem;color:var(--text-muted);max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${_negoState.uploadedName ? escHtml(_negoState.uploadedName) : ''}</span>
+            <button class="btn btn-primary" id="ni-analyze-detailed" style="padding:8px 16px">Analyze quote</button>
+          </div>
+        </div>
+
+        <div style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;color:var(--text-muted);margin-bottom:8px">Or a quick summary check — paste totals</div>
         <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end">
           <label style="font-size:0.72rem;color:var(--text-secondary)">Should-cost £<br><input id="ni-should" type="number" step="0.01" value="${preShould ? preShould.toFixed(2) : ''}" placeholder="86.34" style="width:110px;margin-top:3px;padding:6px 8px;border:1px solid var(--border-strong);border-radius:7px;background:var(--surface-elevated);color:var(--text-primary);font-family:var(--font)"></label>
           <label style="font-size:0.72rem;color:var(--text-secondary)">Supplier quote £<br><input id="ni-quote" type="number" step="0.01" placeholder="102.00" style="width:110px;margin-top:3px;padding:6px 8px;border:1px solid var(--border-strong);border-radius:7px;background:var(--surface-elevated);color:var(--text-primary);font-family:var(--font)"></label>
@@ -1347,6 +1458,40 @@ function renderNegotiationPanel(): void {
     bdHost.style.display = _negoState.showBreakdown ? 'block' : 'none';
     if (_negoState.showBreakdown && !bdHost.innerHTML) renderBd();
   });
+
+  // ── Detailed teardown wiring ────────────────────────────────────────────────
+  host.querySelector('#ni-tmpl')?.addEventListener('click', async () => {
+    const id = (host.querySelector('#ni-part') as HTMLSelectElement)?.value;
+    const rec = getCostingHistory().find(r => r.id === id);
+    if (!rec || !rec.detail) { showToast('Pick a costed part first — run a should-cost if the list is empty', 'warning'); return; }
+    try {
+      const mod = await import('../export/negotiation-template.js');
+      await mod.downloadNegotiationTemplate(rec.detail, {
+        partName: rec.partName, commodityLabel: COMMODITY_LABELS[rec.commodity] ?? rec.commodity,
+        currency: CURRENCY_SYMBOL[_displayCurrency] ?? _displayCurrency,
+        dateLabel: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
+      });
+      showToast('Template downloaded — send it to your supplier to fill', 'info');
+    } catch (e) { console.error('[nego template]', e); showToast('Could not build the template', 'error'); }
+  });
+  host.querySelector('#ni-upload')?.addEventListener('change', async (e) => {
+    const file = (e.target as HTMLInputElement).files?.[0];
+    if (!file) return;
+    const nameEl = host.querySelector('#ni-upload-name') as HTMLElement;
+    try {
+      const mod = await import('../export/negotiation-template.js');
+      const parsed = await mod.parseNegotiationTemplate(file);
+      if (parsed.rowsFilled === 0) { showToast('That template has no supplier values filled in yet', 'warning'); return; }
+      _negoState.uploaded = parsed.detail;
+      _negoState.uploadedName = file.name;
+      if (nameEl) nameEl.textContent = `${file.name} · ${parsed.rowsFilled} values`;
+      showToast(`Loaded ${parsed.rowsFilled} supplier values — click Analyze quote`, 'info');
+    } catch (err) {
+      console.error('[nego upload]', err);
+      showToast(err instanceof Error ? err.message : 'Could not read that file', 'error');
+    }
+  });
+  host.querySelector('#ni-analyze-detailed')?.addEventListener('click', () => runNegotiationDetailed(host));
 
   const runFromDom = (override?: { family?: string; part?: string }) => {
     const shouldCost = parseFloat((host.querySelector('#ni-should') as HTMLInputElement).value) || 0;
@@ -1383,6 +1528,7 @@ function renderNegotiationPanel(): void {
       conformalHalfWidthPct: conf.applied ? conf.halfWidthPct : null,
     };
     _negoState.report = analyzeQuote(input);
+    _negoState.detailed = null;   // summary-only path — clear any prior detailed tier
     const partName = override?.part
       || ((document.getElementById('part-name') as HTMLInputElement)?.value || '').trim()
       || `${COMMODITY_LABELS[commodity] ?? commodity} quote`;
@@ -1544,6 +1690,64 @@ function renderNegotiationReport(): void {
   renderNegotiationChart(r, gaps);
   box.querySelector('#ni-export-pdf')?.addEventListener('click', () => void exportNegotiation('pdf'));
   box.querySelector('#ni-export-pptx')?.addEventListener('click', () => void exportNegotiation('pptx'));
+
+  if (_negoState.detailed) renderNegotiationDetailedTier(box, _negoState.detailed);
+}
+
+// The second tier: driver-level comparison (material · process · labour · commercial).
+function renderNegotiationDetailedTier(box: HTMLElement, dt: DetailedTeardown): void {
+  const cf = (n: number) => _moneyG(n);
+  const gapCell = (g: number) => {
+    const tok = g > 0.005 ? '--danger' : g < -0.005 ? '--success' : '--text-muted';
+    const txt = Math.abs(g) < 0.005 ? '£0.00' : `${g > 0 ? '+' : ''}${_moneyG(g)}`;
+    return `<span style="font-family:var(--font-mono);font-weight:700;color:var(${tok})">${txt}</span>`;
+  };
+  const driverPills = (drivers: DetailedTeardown['material']['drivers']) => drivers.filter(d => Math.abs(d.deltaGBP) > 0.01).map(d => {
+    const tok = d.deltaGBP > 0 ? '--danger' : '--success';
+    return `<span title="${escHtml(d.label)}: our ${d.ourValue}${d.unit} vs their ${d.theirValue}${d.unit}" style="display:inline-block;margin:2px 3px 0 0;padding:1px 7px;border-radius:6px;font-size:0.66rem;font-weight:600;color:var(${tok});background:color-mix(in srgb, var(${tok}) 12%, transparent)">${escHtml(d.label)} ${d.deltaPct > 0 ? '+' : ''}${d.deltaPct}% → ${d.deltaGBP > 0 ? '+' : ''}${_moneyG(d.deltaGBP)}</span>`;
+  }).join('');
+
+  const th = 'padding:7px 9px;text-align:left;font-size:0.62rem;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;color:var(--text-muted);border-bottom:2px solid var(--border)';
+  const td = 'padding:7px 9px;border-bottom:1px solid var(--border);vertical-align:top';
+  const theirTxt = (v: number | null) => v === null ? '<span style="color:var(--text-muted)">—</span>' : `<span style="font-family:var(--font-mono)">${cf(v)}</span>`;
+
+  const rowsHtml: string[] = [];
+  // Material
+  rowsHtml.push(`<tr style="background:color-mix(in srgb, var(--text-muted) 4%, transparent)"><td style="${td};font-weight:700;color:var(--text-primary)" colspan="4">Material</td></tr>`);
+  rowsHtml.push(`<tr><td style="${td}">Raw material<div style="margin-top:3px">${driverPills(dt.material.drivers)}</div></td><td style="${td};text-align:right;font-family:var(--font-mono);color:var(--text-secondary)">${cf(dt.material.ourGBP)}</td><td style="${td};text-align:right">${theirTxt(dt.material.theirGBP)}</td><td style="${td};text-align:right">${gapCell(dt.material.gapGBP)}</td></tr>`);
+  // Operations
+  dt.operations.forEach(o => {
+    rowsHtml.push(`<tr style="background:color-mix(in srgb, var(--text-muted) 4%, transparent)"><td style="${td};font-weight:700;color:var(--text-primary)" colspan="4">${escHtml(o.name)}</td></tr>`);
+    rowsHtml.push(`<tr><td style="${td}">Process<div style="margin-top:3px">${driverPills(o.process.drivers)}</div></td><td style="${td};text-align:right;font-family:var(--font-mono);color:var(--text-secondary)">${cf(o.process.ourGBP)}</td><td style="${td};text-align:right">${theirTxt(o.process.theirGBP)}</td><td style="${td};text-align:right">${gapCell(o.process.gapGBP)}</td></tr>`);
+    rowsHtml.push(`<tr><td style="${td}">Labour<div style="margin-top:3px">${driverPills(o.labour.drivers)}</div></td><td style="${td};text-align:right;font-family:var(--font-mono);color:var(--text-secondary)">${cf(o.labour.ourGBP)}</td><td style="${td};text-align:right">${theirTxt(o.labour.theirGBP)}</td><td style="${td};text-align:right">${gapCell(o.labour.gapGBP)}</td></tr>`);
+  });
+  // Commercial
+  rowsHtml.push(`<tr style="background:color-mix(in srgb, var(--text-muted) 4%, transparent)"><td style="${td};font-weight:700;color:var(--text-primary)" colspan="4">Tooling &amp; commercial</td></tr>`);
+  rowsHtml.push(`<tr><td style="${td}">Tooling (per part)</td><td style="${td};text-align:right;font-family:var(--font-mono);color:var(--text-secondary)">${cf(dt.tooling.ourGBP)}</td><td style="${td};text-align:right">${theirTxt(dt.tooling.theirGBP)}</td><td style="${td};text-align:right">${gapCell(dt.tooling.gapGBP)}</td></tr>`);
+  rowsHtml.push(`<tr><td style="${td}">Overhead / SG&amp;A <span style="color:var(--text-muted);font-size:0.7rem">(${dt.overhead.ourPct}%${dt.overhead.theirPct !== null ? ` → ${dt.overhead.theirPct}%` : ''})</span></td><td style="${td};text-align:right;font-family:var(--font-mono);color:var(--text-secondary)">${cf(dt.overhead.ourGBP)}</td><td style="${td};text-align:right">${theirTxt(dt.overhead.theirGBP)}</td><td style="${td};text-align:right">${gapCell(dt.overhead.gapGBP)}</td></tr>`);
+  rowsHtml.push(`<tr><td style="${td}">Margin <span style="color:var(--text-muted);font-size:0.7rem">(${dt.margin.ourPct}%${dt.margin.theirPct !== null ? ` → ${dt.margin.theirPct}%` : ''})</span></td><td style="${td};text-align:right;font-family:var(--font-mono);color:var(--text-secondary)">${cf(dt.margin.ourGBP)}</td><td style="${td};text-align:right">${theirTxt(dt.margin.theirGBP)}</td><td style="${td};text-align:right">${gapCell(dt.margin.gapGBP)}</td></tr>`);
+
+  const topDrivers = dt.topDrivers.length
+    ? `<div style="margin-top:12px;padding:11px 13px;background:var(--info-bg);border:1px solid var(--info-border);border-left:3px solid var(--info);border-radius:9px"><div style="font-size:0.64rem;letter-spacing:0.05em;text-transform:uppercase;font-weight:700;color:var(--info);margin-bottom:5px">Top cost-driver gaps</div>${dt.topDrivers.map(s => `<div style="font-size:0.76rem;color:var(--text-secondary);line-height:1.5">• ${escHtml(s)}</div>`).join('')}</div>`
+    : '';
+
+  const wrap = document.createElement('div');
+  wrap.style.marginTop = '18px';
+  wrap.innerHTML = `
+    <div style="display:flex;align-items:center;gap:7px;margin-bottom:9px">
+      <span style="width:3px;height:15px;background:var(--accent);border-radius:2px;display:inline-block"></span>
+      <div style="font-weight:800;font-size:0.9rem;color:var(--text-primary)">Detailed cost-driver comparison</div>
+      <span style="font-size:0.68rem;color:var(--text-muted)">${Math.round(dt.coverage * 100)}% of lines quoted${dt.unmatchedSupplierOps.length ? ` · ${dt.unmatchedSupplierOps.length} extra supplier line(s)` : ''}</span>
+    </div>
+    ${topDrivers}
+    <div style="overflow-x:auto;margin-top:10px;border:1px solid var(--border);border-radius:11px">
+      <table style="width:100%;border-collapse:collapse;font-size:0.8rem">
+        <thead><tr><th style="${th}">Cost element &amp; drivers</th><th style="${th};text-align:right">Should</th><th style="${th};text-align:right">Supplier</th><th style="${th};text-align:right">Gap</th></tr></thead>
+        <tbody>${rowsHtml.join('')}</tbody>
+      </table>
+    </div>
+    <div style="margin-top:8px;font-size:0.68rem;color:var(--text-muted)">Each gap is decomposed to the parameter that drives it — recost with the supplier's value for one driver at a time, holding the rest at should-cost. Deterministic; blank supplier lines show "—".</div>`;
+  box.appendChild(wrap);
 }
 
 // Grouped Should-vs-Quote comparison bars for the on-screen report.
@@ -1598,8 +1802,8 @@ async function exportNegotiation(kind: 'pdf' | 'pptx'): Promise<void> {
       currencySymbol: CURRENCY_SYMBOL[_displayCurrency] ?? _displayCurrency, fxRate: _displayFxRate,
       dateLabel: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
     };
-    if (kind === 'pdf') await mod.exportNegotiationPdf(r, meta);
-    else await mod.exportNegotiationPptx(r, meta);
+    if (kind === 'pdf') await mod.exportNegotiationPdf(r, meta, _negoState.detailed);
+    else await mod.exportNegotiationPptx(r, meta, _negoState.detailed);
     showToast(`${kind === 'pdf' ? 'PDF' : 'PowerPoint'} report exported`, 'info');
   } catch (e) {
     console.error('[negotiation export]', e);
@@ -12696,7 +12900,7 @@ function compute(): void {
 
     lastResult = result;
     lastInput = input;
-    pushCostingRecord({ totalCost: result.total, confidence: result.warnings?.length ? 'Medium' : 'High', breakdown: result.breakdown, warnings: result.warnings });
+    pushCostingRecord({ totalCost: result.total, confidence: result.warnings?.length ? 'Medium' : 'High', breakdown: result.breakdown, warnings: result.warnings, detail: buildPartDetail(result, input) });
     showResultsArea();
     renderBreakdown(result);
     updateTabBadges(result, input);
