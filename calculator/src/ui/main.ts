@@ -103,9 +103,13 @@ import {
   type CalibrationRecord,
 } from '../engine/calibration.js';
 import {
-  buildCausalModel, counterfactual, coachSentence,
+  buildCausalModel, counterfactual, coachSentence, impliedIndexPremiumPct,
   type CommodityIndexRef,
 } from '../engine/causal-model.js';
+import {
+  analyzeQuote, type TeardownInput, type NegotiationReport,
+} from '../engine/quote-teardown.js';
+import type { Breakdown8Bucket } from '../engine/types.js';
 import type { PartFingerprint, SimilarCase, CaseSuggestion, ProactiveInsight } from '../engine/part-similarity.js';
 import { computeCarbon } from '../engine/carbon.js';
 import { computeFeatureCosting } from '../engine/feature-costing.js';
@@ -1109,12 +1113,185 @@ async function renderWhatIfPanel(): Promise<void> {
   void run();
 }
 
+
+// ═══ Negotiation Intelligence — automatic supplier-quote teardown (Home) ══════
+// Typical bucket shares by commodity, used to model a should-cost breakdown when
+// the user analyses a quote without a live costing open (attribution mode).
+const TYPICAL_SHARES: Record<string, Partial<Record<keyof Breakdown8Bucket, number>>> = {
+  _default:  { rawMaterial: 0.35, process: 0.28, labour: 0.12, tooling: 0.05, packaging: 0.01, logistics: 0.02, overhead: 0.10, margin: 0.07 },
+  machining: { rawMaterial: 0.22, process: 0.40, labour: 0.16, tooling: 0.03, packaging: 0.01, logistics: 0.02, overhead: 0.10, margin: 0.06 },
+  casting:   { rawMaterial: 0.38, process: 0.24, labour: 0.10, tooling: 0.08, packaging: 0.01, logistics: 0.02, overhead: 0.10, margin: 0.07 },
+  injection_moulding: { rawMaterial: 0.42, process: 0.22, labour: 0.06, tooling: 0.09, packaging: 0.02, logistics: 0.02, overhead: 0.10, margin: 0.07 },
+  forging:   { rawMaterial: 0.40, process: 0.24, labour: 0.10, tooling: 0.06, packaging: 0.01, logistics: 0.02, overhead: 0.10, margin: 0.07 },
+  sheet_metal: { rawMaterial: 0.32, process: 0.30, labour: 0.12, tooling: 0.06, packaging: 0.01, logistics: 0.02, overhead: 0.10, margin: 0.07 },
+};
+
+function shouldBreakdownFor(total: number, commodity: string): Breakdown8Bucket {
+  const sh = TYPICAL_SHARES[commodity] ?? TYPICAL_SHARES._default;
+  const g = (k: keyof Breakdown8Bucket) => Math.round((total * (sh[k] ?? 0)) * 100) / 100;
+  return { rawMaterial: g('rawMaterial'), process: g('process'), labour: g('labour'), tooling: g('tooling'),
+           packaging: g('packaging'), logistics: g('logistics'), overhead: g('overhead'), margin: g('margin') };
+}
+
+const _negoState: { report: NegotiationReport | null; showBreakdown: boolean } = { report: null, showBreakdown: false };
+
+function renderNegotiationPanel(): void {
+  const host = document.getElementById('dash-negotiation');
+  if (!host) return;
+  // Pre-fill from the last costing, if one exists.
+  const haveLast = !!lastResult;
+  const preShould = haveLast ? lastResult!.total : 0;
+  const preCommodity = haveLast ? activeCommodity : 'machining';
+  const preVol = parseFloat((document.getElementById('annual-volume') as HTMLInputElement)?.value ?? '') || 5000;
+  const commodities = ['machining','casting','injection_moulding','forging','sheet_metal','sheet_metal_fab','rubber','composites','pcb_fab','pcba'];
+
+  host.innerHTML = `
+    <div style="border:1px solid var(--border-strong);border-radius:12px;background:var(--surface);overflow:hidden">
+      <div style="padding:14px 16px;background:color-mix(in srgb, var(--accent) 8%, var(--surface));border-bottom:1px solid var(--border);display:flex;align-items:center;gap:9px">
+        <svg class="ic" style="width:18px;height:18px;color:var(--accent)"><use href="#i-trend-up"/></svg>
+        <div style="flex:1">
+          <div style="font-weight:800;font-size:0.98rem;color:var(--text-primary)">Negotiation Intelligence</div>
+          <div style="font-size:0.72rem;color:var(--text-muted)">Paste a supplier quote — the agent tears it down against should-cost and hands you the levers, questions and closing plays.</div>
+        </div>
+      </div>
+      <div style="padding:14px 16px">
+        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end">
+          <label style="font-size:0.72rem;color:var(--text-secondary)">Should-cost £<br><input id="ni-should" type="number" step="0.01" value="${preShould ? preShould.toFixed(2) : ''}" placeholder="86.34" style="width:110px;margin-top:3px;padding:6px 8px;border:1px solid var(--border-strong);border-radius:7px;background:var(--surface-elevated);color:var(--text-primary);font-family:var(--font)"></label>
+          <label style="font-size:0.72rem;color:var(--text-secondary)">Supplier quote £<br><input id="ni-quote" type="number" step="0.01" placeholder="102.00" style="width:110px;margin-top:3px;padding:6px 8px;border:1px solid var(--border-strong);border-radius:7px;background:var(--surface-elevated);color:var(--text-primary);font-family:var(--font)"></label>
+          <label style="font-size:0.72rem;color:var(--text-secondary)">Commodity<br><select id="ni-comm" class="hdr-select" style="margin-top:3px;max-width:150px">${commodities.map(c => `<option value="${c}"${c===preCommodity?' selected':''}>${escHtml(c.replace(/_/g,' '))}</option>`).join('')}</select></label>
+          <label style="font-size:0.72rem;color:var(--text-secondary)">Annual vol<br><input id="ni-vol" type="number" step="100" value="${preVol}" style="width:90px;margin-top:3px;padding:6px 8px;border:1px solid var(--border-strong);border-radius:7px;background:var(--surface-elevated);color:var(--text-primary);font-family:var(--font)"></label>
+          <button class="btn btn-primary" id="ni-run" style="padding:8px 16px">Analyze quote</button>
+        </div>
+        <div style="margin-top:8px"><label style="font-size:0.72rem;color:var(--text-muted);cursor:pointer;display:inline-flex;align-items:center;gap:6px"><input type="checkbox" id="ni-bd-toggle" ${_negoState.showBreakdown?'checked':''}> Supplier disclosed a cost breakdown (line-by-line teardown)</label></div>
+        <div id="ni-breakdown" style="display:${_negoState.showBreakdown?'block':'none'};margin-top:8px"></div>
+        <div id="ni-report" style="margin-top:12px"></div>
+      </div>
+    </div>`;
+
+  const bdBuckets: Array<[keyof Breakdown8Bucket, string]> = [
+    ['rawMaterial','Material'],['process','Process'],['labour','Labour'],['tooling','Tooling'],
+    ['packaging','Packaging'],['logistics','Logistics'],['overhead','Overhead'],['margin','Margin'],
+  ];
+  const bdHost = host.querySelector('#ni-breakdown') as HTMLElement;
+  const renderBd = () => {
+    bdHost.innerHTML = `<div style="display:flex;gap:6px;flex-wrap:wrap;padding:8px;background:var(--surface-elevated);border-radius:8px;border:1px solid var(--border)">${bdBuckets.map(([k,l]) =>
+      `<label style="font-size:0.66rem;color:var(--text-muted)">${l}<br><input class="ni-bd" data-k="${k}" type="number" step="0.01" placeholder="£" style="width:66px;margin-top:2px;padding:4px 6px;border:1px solid var(--border);border-radius:6px;background:var(--surface);color:var(--text-primary)"></label>`).join('')}</div>`;
+  };
+  if (_negoState.showBreakdown) renderBd();
+  (host.querySelector('#ni-bd-toggle') as HTMLInputElement)?.addEventListener('change', (e) => {
+    _negoState.showBreakdown = (e.target as HTMLInputElement).checked;
+    bdHost.style.display = _negoState.showBreakdown ? 'block' : 'none';
+    if (_negoState.showBreakdown && !bdHost.innerHTML) renderBd();
+  });
+
+  host.querySelector('#ni-run')?.addEventListener('click', () => {
+    const shouldCost = parseFloat((host.querySelector('#ni-should') as HTMLInputElement).value) || 0;
+    const quote = parseFloat((host.querySelector('#ni-quote') as HTMLInputElement).value) || 0;
+    const commodity = (host.querySelector('#ni-comm') as HTMLSelectElement).value;
+    const vol = parseFloat((host.querySelector('#ni-vol') as HTMLInputElement).value) || 1;
+    if (!(shouldCost > 0) || !(quote > 0)) { showToast('Enter both a should-cost and a supplier quote', 'warning'); return; }
+
+    // Use the live breakdown when the entered should-cost matches the last costing; else model it.
+    const shouldBreakdown: Breakdown8Bucket = (haveLast && Math.abs(shouldCost - lastResult!.total) < 0.01)
+      ? lastResult!.breakdown
+      : shouldBreakdownFor(shouldCost, commodity);
+    const family = haveLast && Math.abs(shouldCost - lastResult!.total) < 0.01 ? currentMaterialFamily() : undefined;
+
+    // supplier breakdown, if provided
+    let supplierBreakdown: Partial<Record<keyof Breakdown8Bucket, number>> | undefined;
+    if (_negoState.showBreakdown) {
+      supplierBreakdown = {};
+      host.querySelectorAll<HTMLInputElement>('.ni-bd').forEach(inp => {
+        const v = parseFloat(inp.value);
+        if (isFinite(v) && v >= 0) supplierBreakdown![inp.dataset.k as keyof Breakdown8Bucket] = v;
+      });
+      if (!Object.keys(supplierBreakdown).length) supplierBreakdown = undefined;
+    }
+
+    // Enrich with causal + conformal signals.
+    const causal = buildCausalModel({ partTotal: shouldCost, materialCostGBP: shouldBreakdown.rawMaterial, materialFamily: family, overheadPct: 0.12, marginPct: 0.08, indices: commodityIndices() });
+    const premium = causal.driver ? impliedIndexPremiumPct(causal, quote) : null;
+    const conf = computeConformalBand(getCalibrationRecords(), { commodity, materialFamily: family, region: (document.getElementById('mfg-region-selector') as HTMLSelectElement)?.value ?? 'UK' }, 0.9);
+
+    const input: TeardownInput = {
+      commodity, shouldCost, shouldBreakdown, supplierQuoteGBP: quote,
+      supplierBreakdown, annualVolume: vol, materialFamily: family,
+      impliedIndexPremiumPct: premium, indexCategory: causal.driver?.indexCategory ?? null,
+      conformalHalfWidthPct: conf.applied ? conf.halfWidthPct : null,
+    };
+    _negoState.report = analyzeQuote(input);
+    renderNegotiationReport();
+  });
+
+  if (_negoState.report) renderNegotiationReport();
+}
+
+function renderNegotiationReport(): void {
+  const box = document.getElementById('ni-report');
+  const r = _negoState.report;
+  if (!box || !r) return;
+  const cf = (n: number) => _currFmt(n);
+  const ragColor = r.verdict.rag === 'green' ? 'var(--success)' : r.verdict.rag === 'amber' ? 'var(--warning)' : 'var(--danger)';
+  const sev = (s: string) => s === 'high' ? 'var(--danger)' : s === 'medium' ? 'var(--warning)' : 'var(--text-muted)';
+
+  const gapRows = r.gaps.filter(g => (r.mode === 'line-by-line' ? g.quoteGBP !== null : true)).slice(0, 8).map(g => {
+    const bmFlag = g.benchmark?.over ? `<span style="color:var(--danger);font-weight:700"> · ${g.benchmark.sharePct}% vs ${g.benchmark.loPct}–${g.benchmark.hiPct}% norm</span>` : '';
+    if (r.mode === 'line-by-line') {
+      return `<tr><td style="padding:4px 8px">${escHtml(g.label)}</td><td style="padding:4px 8px;text-align:right;font-family:var(--font-mono)">${cf(g.shouldGBP)}</td><td style="padding:4px 8px;text-align:right;font-family:var(--font-mono)">${cf(g.quoteGBP!)}</td><td style="padding:4px 8px;text-align:right;font-family:var(--font-mono);color:${g.gapGBP>0?'var(--danger)':'var(--success)'};font-weight:700">${g.gapGBP>0?'+':''}${cf(g.gapGBP)}</td><td style="padding:4px 8px;font-size:0.7rem;color:${sev(g.severity)}">${g.gapGBP>0?g.severity:''}${bmFlag}</td></tr>`;
+    }
+    return `<tr><td style="padding:4px 8px">${escHtml(g.label)}</td><td style="padding:4px 8px;text-align:right;font-family:var(--font-mono)">${cf(g.shouldGBP)}</td><td style="padding:4px 8px;text-align:right;font-size:0.72rem;color:var(--text-muted)">${g.benchmark ? g.benchmark.sharePct + '% of cost' : ''}</td><td style="padding:4px 8px;font-size:0.7rem">${bmFlag}</td></tr>`;
+  }).join('');
+
+  box.innerHTML = `
+    <div style="border-top:1px dashed var(--border);padding-top:12px">
+      <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap">
+        <span style="font-size:0.72rem;font-weight:800;text-transform:uppercase;letter-spacing:0.05em;color:${ragColor};border:1px solid ${ragColor}55;background:${ragColor}12;border-radius:20px;padding:2px 10px">${r.verdict.rag==='green'?'Competitive':r.verdict.rag==='amber'?'Review':'Overpriced'}</span>
+        <span style="font-size:0.86rem;color:var(--text-secondary)">${escHtml(r.headline)}</span>
+      </div>
+      <div style="margin-top:8px;display:flex;gap:16px;flex-wrap:wrap;font-size:0.76rem;color:var(--text-secondary)">
+        <span>PPV <strong style="color:${ragColor}">${r.verdict.ppvPct>0?'+':''}${r.verdict.ppvPct}%</strong> (${cf(r.verdict.ppvGBP)}/part)</span>
+        <span>Annual impact <strong>${cf(r.verdict.annualImpactGBP)}/yr</strong></span>
+        ${r.verdict.withinConformal !== null ? `<span>Empirical band: <strong style="color:${r.verdict.withinConformal?'var(--success)':'var(--danger)'}">${r.verdict.withinConformal?'inside':'BEYOND'}</strong></span>` : ''}
+        <span style="color:var(--text-muted)">Mode: ${r.mode === 'line-by-line' ? 'line-by-line teardown' : 'attribution (total only)'}</span>
+      </div>
+      ${r.causalDiagnosis ? `<div style="margin-top:8px;padding:8px 10px;background:var(--info-bg);border:1px solid var(--info-border);border-radius:7px;font-size:0.76rem;color:var(--text-secondary)"><strong style="color:var(--info)">Causal diagnosis:</strong> ${escHtml(r.causalDiagnosis)}</div>` : ''}
+
+      <div style="margin-top:10px;font-weight:700;font-size:0.8rem;color:var(--text-primary)">Gap teardown</div>
+      <div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:0.78rem;margin-top:4px">
+        <thead><tr style="color:var(--text-muted);font-size:0.68rem;text-transform:uppercase">
+          <th style="padding:4px 8px;text-align:left">Element</th><th style="padding:4px 8px;text-align:right">Should</th>${r.mode==='line-by-line'?'<th style="padding:4px 8px;text-align:right">Quote</th><th style="padding:4px 8px;text-align:right">Gap</th>':'<th style="padding:4px 8px;text-align:right">Share</th>'}<th style="padding:4px 8px"></th>
+        </tr></thead><tbody>${gapRows}</tbody>
+      </table></div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px">
+        <div>
+          <div style="font-weight:700;font-size:0.8rem;color:var(--text-primary)">Negotiation levers</div>
+          ${r.levers.map(l => `<div style="margin-top:5px;font-size:0.76rem;color:var(--text-secondary)"><strong style="color:var(--success)">${escHtml(l.area)}${l.expectedRecoveryGBP>0?` · ${cf(l.expectedRecoveryGBP)}/yr`:''}:</strong> ${escHtml(l.lever)}</div>`).join('')}
+        </div>
+        <div>
+          <div style="font-weight:700;font-size:0.8rem;color:var(--text-primary)">Ask the supplier</div>
+          ${r.supplierQuestions.map(q => `<div style="margin-top:5px;font-size:0.76rem;color:var(--text-secondary)">• ${escHtml(q)}</div>`).join('')}
+        </div>
+      </div>
+
+      ${r.closingPlays.length ? `<div style="margin-top:12px"><div style="font-weight:700;font-size:0.8rem;color:var(--text-primary)">How to close each gap</div>${r.closingPlays.map(c => `<div style="margin-top:4px;font-size:0.76rem;color:var(--text-secondary)"><strong>${escHtml(c.gap)}:</strong> ${escHtml(c.play)}</div>`).join('')}</div>` : ''}
+
+      ${r.benchmarkFlags.length ? `<div style="margin-top:10px;padding:8px 10px;background:var(--warning-bg);border:1px solid var(--warning-border);border-radius:7px;font-size:0.74rem;color:var(--text-secondary)"><strong style="color:var(--warning)">Benchmark flags:</strong> ${r.benchmarkFlags.map(escHtml).join(' ')}</div>` : ''}
+
+      <div style="margin-top:10px;padding-top:8px;border-top:1px dashed var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+        <span style="font-size:0.84rem;color:var(--text-primary)">Total opportunity: <strong style="color:var(--success)">${cf(r.totalOpportunityGBP)}/yr</strong></span>
+        <span style="font-size:0.68rem;color:var(--text-muted)">Deterministic teardown — every figure is arithmetic on the should-cost. ${r.mode==='attribution'?'Ask the supplier for a breakdown to unlock line-by-line.':''}</span>
+      </div>
+    </div>`;
+}
+
 function renderDashboard(): void {
   const all = getCostingHistory();
   const records = filterHistory(all);
   void renderIntelligencePanel();
   void renderDriftPanel();
   void renderWhatIfPanel();
+  renderNegotiationPanel();
 
   // KPIs
   const kpiTotal = document.getElementById('kpi-total-val');
