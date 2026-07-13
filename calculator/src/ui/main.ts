@@ -6129,7 +6129,9 @@ const PCB_DEMO_ECU: PCBImageAnalysis = {
   bom: [
     { refDes: 'U1', componentType: 'ic_bga', description: 'ARM Cortex-M7 MCU 550MHz, 1MB Flash', pkg: 'BGA-201', value: 'STM32H735IGK6', voltage: '3.3V', qty: 1, unitPriceGBP: 6.20, moq: 1, automotive: true, highCost: true, partNumber: 'STM32H735IGK6', lineConf: 0.93, ocrExtracted: true },
     { refDes: 'U2', componentType: 'ic_soic', description: 'CAN/LIN System Basis Chip', pkg: 'SOIC-14', value: 'NXP SJA1124', voltage: '5V/3.3V', qty: 2, unitPriceGBP: 3.80, moq: 5, automotive: true, highCost: false, partNumber: 'SJA1124', lineConf: 0.87, ocrExtracted: true },
-    { refDes: 'U3', componentType: 'ic_qfn', description: 'Multi-channel Automotive PMIC', pkg: 'QFN-40', value: 'TPS65942A1', voltage: '6–40V in', qty: 1, unitPriceGBP: 4.20, moq: 1, automotive: true, highCost: true, partNumber: 'TPS65942A1', lineConf: 0.90, ocrExtracted: true },
+    // Deliberately unconfirmed in the demo: QFN marking unreadable (glare) — this
+    // is what triggers the targeted re-capture panel, so demos showcase the loop.
+    { refDes: 'U3', componentType: 'ic_qfn', description: 'Multi-channel Automotive PMIC', pkg: 'QFN-40', value: 'PMIC (est.)', voltage: '6–40V in', qty: 1, unitPriceGBP: 4.20, moq: 1, automotive: true, highCost: true, lineConf: 0.55, ocrExtracted: false, unconfirmedHighValue: true, lineTotalGBP: 4.20 },
     { refDes: 'U4', componentType: 'ic_soic', description: 'SPI NOR Flash 128Mb AEC-Q100', pkg: 'SOIC-8', value: 'S25FL128SAGBHIA10', voltage: '3.3V', qty: 1, unitPriceGBP: 1.80, moq: 10, automotive: true, highCost: false, partNumber: 'S25FL128SAGBHIA10', lineConf: 0.85, ocrExtracted: true },
     { refDes: 'U5,U6', componentType: 'ic_soic', description: '3-phase Gate Driver 100V', pkg: 'SOIC-28', value: 'DRV8323RS', voltage: '6–60V', qty: 2, unitPriceGBP: 2.40, moq: 5, automotive: true, highCost: false, partNumber: 'DRV8323RS', lineConf: 0.82, ocrExtracted: true },
     { refDes: 'U7,U8,U9', componentType: 'ic_soic', description: '4A LDO Regulator AEC-Q100 Grd2', pkg: 'D-PAK', value: 'LP2951ACMX/NOPB', voltage: '30V max', qty: 3, unitPriceGBP: 1.20, moq: 10, automotive: true, highCost: false },
@@ -6505,8 +6507,11 @@ function buildPCBImageUploadZone(): string {
 
         <!-- Multi-image slots: Top, Bottom, + 3 Additional -->
         <div style="margin-top:10px">
-          <div style="font-size:0.68rem;color:var(--text-secondary);margin-bottom:6px;text-align:center">
+          <div style="font-size:0.68rem;color:var(--text-secondary);margin-bottom:2px;text-align:center">
             Upload up to 5 photos — top &amp; bottom sides + close-ups for best accuracy
+          </div>
+          <div style="font-size:0.63rem;color:var(--text-muted);margin-bottom:6px;text-align:center">
+            📸 Fill the frame, avoid glare — accuracy depends on IC part markings being readable
           </div>
           <div style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap">
             ${(['Top side ★', 'Bottom side', 'Close-up 1', 'Close-up 2', 'Close-up 3'] as const).map((label, idx) => `
@@ -6581,6 +6586,10 @@ function buildPCBImageUploadZone(): string {
     </div>`;
 }
 
+// Set by wirePCBImageZone so the results panel (targeted re-capture) can drop a
+// close-up into an upload slot without duplicating the thumbnail/state logic.
+let _pcbSetSlot: ((idx: number, file: File) => void) | null = null;
+
 function wirePCBImageZone(): void {
   const analyzeBtn = el<HTMLButtonElement>('pcb-img-analyze-btn');
   const countLabel = el('pcb-img-count');
@@ -6609,6 +6618,7 @@ function wirePCBImageZone(): void {
     if (slot) slot.style.borderColor = idx === 0 ? 'var(--accent)' : 'rgba(79,142,247,0.4)';
     updateAnalyzeBtn();
   }
+  _pcbSetSlot = setSlot;
 
   function clearSlot(idx: number): void {
     pcbImageFiles[idx] = null;
@@ -6950,6 +6960,29 @@ function injectPCBImagePanel(): void {
   el('pcb-apply-fab-btn')?.addEventListener('click', () => applyPCBImageToFab());
   el('pcb-apply-pcba-btn')?.addEventListener('click', () => applyPCBImageToPCBA());
   el('pcb-save-lib-btn')?.addEventListener('click', () => savePCBResultToLibrary());
+
+  // Targeted re-capture: drop new close-ups into the Close-up 1-3 slots (fall
+  // back to replacing the last one when all are taken) and re-run the analysis.
+  // The server caches by image hash, so a new photo always yields a fresh pass.
+  const recapInput = el<HTMLInputElement>('pcb-recapture-input');
+  el('pcb-recapture-add')?.addEventListener('click', () => recapInput?.click());
+  recapInput?.addEventListener('change', () => {
+    const files = Array.from(recapInput?.files ?? []);
+    if (!files.length || !_pcbSetSlot) return;
+    const placed: string[] = [];
+    for (const f of files) {
+      let idx = pcbImageFiles.findIndex((s, i) => i >= 2 && s === null);
+      if (idx === -1) idx = 4;
+      _pcbSetSlot(idx, f);
+      placed.push(`Close-up ${idx - 1}`);
+    }
+    const status = el('pcb-recapture-status');
+    if (status) status.textContent = `${placed.join(', ')} added — click Re-analyze`;
+  });
+  el('pcb-recapture-rerun')?.addEventListener('click', () => {
+    if (!pcbImageFiles.some(Boolean)) { showToast('Add at least one photo first.', 'warning'); return; }
+    void analyzePCBImages();
+  });
   el('pcb-clear-btn')?.addEventListener('click', () => {
     pcbImageResult = null;
     pcbImageFiles = [null, null, null, null, null];
@@ -7419,6 +7452,32 @@ function buildPCBImagePanel(r: PCBImageAnalysis): string {
           </div>
         </div>`;
       })() : ''}
+
+      ${(() => {
+        // Targeted re-capture loop: name the exact components whose markings the
+        // AI could not read, and offer an inline close-up upload + re-analyze so
+        // the user doesn't have to guess what to photograph.
+        const uc = (r.bom ?? []).filter(b => b.unconfirmedHighValue);
+        if (!uc.length) return '';
+        const rows = uc.slice(0, 8).map(b => `
+          <li style="margin:3px 0;line-height:1.45">
+            <span style="font-family:var(--font-mono);font-weight:700;background:rgba(220,38,38,0.12);color:#dc2626;padding:0 5px;border-radius:4px">${escHtml(b.refDes || '?')}</span>
+            <span style="color:var(--text-primary)">${escHtml(b.description || b.componentType || 'component')}</span>
+            <span style="color:var(--text-muted)">${b.pkg ? `· ${escHtml(b.pkg)}` : ''}${b.lineTotalGBP ? ` · est. £${b.lineTotalGBP.toFixed(2)}/board` : ''}</span>
+          </li>`).join('');
+        return `<div id="pcb-recapture-panel" style="margin-top:8px;padding:11px 13px;background:rgba(220,38,38,0.05);border:1px solid rgba(220,38,38,0.3);border-left:3px solid #dc2626;border-radius:8px">
+          <div style="font-size:0.76rem;font-weight:700;color:var(--text-primary)">🎯 Improve accuracy — ${uc.length} component${uc.length > 1 ? 's' : ''} need${uc.length > 1 ? '' : 's'} a close-up</div>
+          <div style="font-size:0.68rem;color:var(--text-secondary);margin-top:3px;line-height:1.5">The AI priced these high-value parts without reading their markings. Take a close, glare-free photo where the printed part numbers are legible, add it below, and re-analyze — the second pass will identify and re-price them.</div>
+          <ul style="margin:7px 0 0;padding-left:16px;font-size:0.7rem">${rows}</ul>
+          ${uc.length > 8 ? `<div style="font-size:0.64rem;color:var(--text-muted);margin-top:2px">…and ${uc.length - 8} more (flagged UNCONFIRMED in the BOM table below)</div>` : ''}
+          <div style="display:flex;gap:8px;margin-top:9px;flex-wrap:wrap;align-items:center">
+            <input type="file" id="pcb-recapture-input" accept="image/jpeg,image/png,image/webp" multiple style="display:none"/>
+            <button class="btn btn-secondary btn-sm" id="pcb-recapture-add" style="font-size:0.7rem">📷 Add close-up photo</button>
+            <button class="btn btn-primary btn-sm" id="pcb-recapture-rerun" style="font-size:0.7rem">↻ Re-analyze with close-ups</button>
+            <span id="pcb-recapture-status" style="font-size:0.66rem;color:var(--text-muted)"></span>
+          </div>
+        </div>`;
+      })()}
 
       <div class="pcb-apply-row">
         <button class="btn btn-primary btn-sm" id="pcb-apply-fab-btn">⚡ Apply to PCB Fab Form</button>
