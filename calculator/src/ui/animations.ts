@@ -526,3 +526,50 @@ export function gsapCountUp(
     onComplete: () => { el.textContent = fmt(target); }
   });
 }
+
+// ── SIGNATURE MOMENT: result hero entrance + total count-up ───────────────────
+// The hero is the payoff of every costing. It rises in and its headline total
+// counts up once — the single "reward" beat, then it rests.
+export function animateResultHero(): void {
+  const hero = document.getElementById('cv-result-hero');
+  if (!hero) return;
+  if (PREFERS_REDUCED_MOTION) return;
+  gsap.fromTo(hero,
+    { autoAlpha: 0, y: -10 },
+    { autoAlpha: 1, y: 0, duration: 0.4, ease: EASE_OUT, clearProps: 'transform' });
+  gsap.fromTo(hero.querySelectorAll('.crh-chips > *, .crh-actions > *'),
+    { autoAlpha: 0, y: 4 },
+    { autoAlpha: 1, y: 0, duration: 0.32, ease: EASE_OUT, stagger: 0.035, delay: 0.08, clearProps: 'all' });
+
+  // Count up the headline total (parse currency, preserve prefix/suffix)
+  const totalEl = hero.querySelector<HTMLElement>('.crh-total');
+  if (!totalEl) return;
+  const full = totalEl.innerHTML;                 // may contain the ±% span
+  const text = totalEl.textContent ?? '';
+  const m = text.match(/([^\d-]*)([\d,]+(?:\.\d+)?)/);
+  if (!m) return;
+  const target = parseFloat(m[2].replace(/,/g, ''));
+  if (!isFinite(target) || target <= 0) return;
+  const dec = m[2].includes('.') ? (m[2].split('.')[1] ?? '').length : 0;
+  const prefix = m[1];
+  const proxy = { v: target * 0.35 };
+  gsap.to(proxy, {
+    v: target, duration: 0.5, ease: 'power2.out', delay: 0.05,
+    onUpdate: () => {
+      totalEl.textContent = prefix + proxy.v.toLocaleString('en-GB',
+        { minimumFractionDigits: dec, maximumFractionDigits: dec });
+    },
+    onComplete: () => { totalEl.innerHTML = full; },   // restore incl. ±% span
+  });
+}
+
+// ── Tactile feedback: a quick pulse ring on Calculate (compute is synchronous,
+//    so this gives the "it worked" beat the payload can't). ────────────────────
+export function pulseCalculate(): void {
+  if (PREFERS_REDUCED_MOTION) return;
+  const btn = document.getElementById('calc-btn');
+  if (!btn) return;
+  gsap.fromTo(btn,
+    { boxShadow: '0 0 0 0 rgba(79,70,229,0.45)' },
+    { boxShadow: '0 0 0 12px rgba(79,70,229,0)', duration: 0.6, ease: 'power2.out', clearProps: 'boxShadow' });
+}

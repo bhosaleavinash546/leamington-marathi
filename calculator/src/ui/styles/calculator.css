@@ -75,6 +75,12 @@
   --amber-bg: rgba(251,191,36,0.14);
   --blue: #818cf8;
   --blue-bg: rgba(129,140,248,0.14);
+  /* ── Canonical semantic tokens (single source of truth for status colour).
+       Prefer these names in code; --green/--red/--amber remain as aliases. ── */
+  --success: var(--green);   --success-bg: var(--green-bg);   --success-border: rgba(52,211,153,0.4);
+  --danger:  var(--red);     --danger-bg:  var(--red-bg);     --danger-border:  rgba(248,113,113,0.4);
+  --warning: var(--amber);   --warning-bg: var(--amber-bg);   --warning-border: rgba(251,191,36,0.4);
+  --info:    var(--blue);    --info-bg:    var(--blue-bg);    --info-border:    rgba(129,140,248,0.4);
   /* Softer, cleaner shadows — no muddy near-black halos */
   --shadow-sm: 0 1px 3px rgba(0,0,0,0.40);
   --shadow-md: 0 4px 18px rgba(0,0,0,0.48);
@@ -113,6 +119,11 @@
   --amber-bg: #fffbeb;
   --blue: #4f46e5;
   --blue-bg: #eef2ff;
+  /* Canonical semantic tokens (light theme) */
+  --success: var(--green);   --success-bg: var(--green-bg);   --success-border: #05966955;
+  --danger:  var(--red);     --danger-bg:  var(--red-bg);     --danger-border:  #dc262655;
+  --warning: var(--amber);   --warning-bg: var(--amber-bg);   --warning-border: #d9770655;
+  --info:    var(--blue);    --info-bg:    var(--blue-bg);    --info-border:    #4f46e555;
   /* Coloured shadows — blue-tinted, not grey */
   --shadow-sm: 0 1px 4px rgba(37,99,235,0.08);
   --shadow-md: 0 4px 16px rgba(37,99,235,0.10);
@@ -5616,6 +5627,7 @@ kbd {
 
 /* ── Header refinements ── */
 .hdr-primary { padding: 7px 14px; font-size: 0.8rem; }
+.hdr-right { flex-wrap: wrap; }
 .hdr-select-wrap { position: relative; display: inline-flex; align-items: center; gap: 5px; }
 .hdr-select-ic { color: var(--text-muted); }
 .hdr-select, select.comm-filter-sel, select.dash-smart-sel {
@@ -5765,6 +5777,23 @@ kbd {
   .hdr-select { max-width: 86px; }
   .header { flex-wrap: nowrap; overflow-x: auto; }
 }
+/* Small mobile: header stays a tidy single row. Region/currency live in the
+   costing form's own Country selector, so drop them from the header here;
+   New Costing collapses to an icon-only pill. */
+@media (max-width: 560px) {
+  .header { gap: 8px; padding: 0 12px; flex-wrap: nowrap; }
+  .header > div[style*="flex:1"] { flex: 1 1 auto; }
+  .hdr-select-wrap { display: none; }
+  .cmdk-trigger { padding: 6px; }
+  .hdr-primary { padding: 7px 10px; }
+  .hdr-primary span, .hdr-primary { font-size: 0; gap: 0; }
+  .hdr-primary .ic { font-size: initial; width: 17px; height: 17px; }
+  /* Right cluster stays on one line; account collapses to Sign Out only */
+  .hdr-right { flex-wrap: nowrap; gap: 6px; }
+  #user-menu { flex-shrink: 0; }
+  #user-menu button { padding: 5px 8px; white-space: nowrap; }
+  .logo-name { font-size: 15px; }
+}
 
 /* ── Demo gallery joins the app token system (was hard-coded dark-neon zones) ── */
 .demo-card-visual,
@@ -5796,11 +5825,11 @@ kbd {
 .crh-total .crh-pm { font-size: 0.8rem; font-weight: 700; }
 .crh-chips { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
 .crh-chip { font-size: 0.68rem; font-weight: 600; padding: 3px 9px; border-radius: 20px; border: 1px solid var(--border); color: var(--text-secondary); background: var(--surface-elevated); white-space: nowrap; }
-.crh-chip--band-tight { color: #059669; border-color: #05966955; background: #05966912; }
-.crh-chip--band-moderate { color: #d97706; border-color: #d9770655; background: #d9770612; }
-.crh-chip--band-wide { color: #dc2626; border-color: #dc262655; background: #dc262612; }
-.crh-delta-up { color: #dc2626; font-weight: 700; }
-.crh-delta-dn { color: #059669; font-weight: 700; }
+.crh-chip--band-tight { color: var(--success); border-color: var(--success-border); background: var(--success-bg); }
+.crh-chip--band-moderate { color: var(--warning); border-color: var(--warning-border); background: var(--warning-bg); }
+.crh-chip--band-wide { color: var(--danger); border-color: var(--danger-border); background: var(--danger-bg); }
+.crh-delta-up { color: var(--danger); font-weight: 700; }
+.crh-delta-dn { color: var(--success); font-weight: 700; }
 .crh-actions { margin-left: auto; display: flex; gap: 7px; flex-wrap: wrap; }
 .crh-actions .btn { font-size: 0.72rem; padding: 5px 11px; }
 
@@ -5838,16 +5867,16 @@ kbd {
   margin-top: 10px; padding: 10px 2px;
 }
 #cv-validation-chip {
-  border: 1px solid #dc262666; color: #dc2626; background: #dc262610;
+  border: 1px solid var(--danger-border); color: var(--danger); background: var(--danger-bg);
   font-family: var(--font); font-size: 0.72rem; font-weight: 700;
   border-radius: 20px; padding: 5px 11px; cursor: pointer;
 }
 #cv-dirty-dot { font-size: 0.7rem; color: var(--text-muted); align-self: center; }
-#cv-dirty-dot::before { content: "●"; color: #d97706; margin-right: 5px; }
+#cv-dirty-dot::before { content: "●"; color: var(--warning); margin-right: 5px; }
 
 /* ── Benchmark helper text + soft outlier flag ─────────────────────────────── */
 .cv-bench { display: block; font-size: 0.64rem; color: var(--text-muted); margin-top: 2px; }
-input.cv-outlier { border-color: #d97706 !important; box-shadow: 0 0 0 2px #d9770622; }
+input.cv-outlier { border-color: var(--warning) !important; box-shadow: 0 0 0 2px var(--warning-bg); }
 
 /* ── Accessibility: visible focus rings on the app chrome ──────────────────── */
 .anav-item:focus-visible, .cmdk-trigger:focus-visible, .theme-toggle:focus-visible,
@@ -5892,3 +5921,44 @@ input.cv-outlier { border-color: #d97706 !important; box-shadow: 0 0 0 2px #d977
 .cwn-list { margin: 6px 0 0 18px; font-size: 0.78rem; color: var(--text-secondary); }
 .cwn-list li { margin-bottom: 3px; }
 .cwn-full { margin-top: 12px; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   MOBILE COSTING PASS — world-class refinement
+   • Commodity switcher → one horizontal-scroll row (was a tall wrapped block)
+   • Action row de-duplicated: hero owns result actions; form keeps essentials
+   • Header stays on one tidy row; hero is the primary action surface
+   ═══════════════════════════════════════════════════════════════════════════ */
+@media (max-width: 640px) {
+  /* Commodity switcher: single scrollable row, no vertical sprawl */
+  #commodity-tabs {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding: 8px 8px 10px;
+    gap: 6px;
+    scroll-snap-type: x proximity;
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 12px, #000 calc(100% - 18px), transparent);
+            mask-image: linear-gradient(90deg, transparent, #000 12px, #000 calc(100% - 18px), transparent);
+  }
+  #commodity-tabs::-webkit-scrollbar { display: none; }
+  #commodity-tabs .ctab { flex: 0 0 auto; scroll-snap-align: start; white-space: nowrap; }
+
+  /* Action row: hero already carries Export/PDF/Save/Log/Share — hide the
+     duplicates here and keep only the form-native controls. */
+  .input-panel .btn-row #export-excel-btn,
+  .input-panel .btn-row #export-pdf-btn,
+  .input-panel .btn-row #export-all-pdf-btn,
+  .input-panel .btn-row #export-card-btn,
+  .input-panel .btn-row #save-scenario-btn,
+  .input-panel .btn-row #save-library-btn,
+  .input-panel .btn-row #log-actual-btn { display: none !important; }
+  .input-panel .btn-row #calc-btn { flex: 1 1 auto; min-width: 130px; }
+
+  /* Hero: full-width primary action surface on mobile */
+  #cv-result-hero { padding: 12px 14px; }
+  #cv-result-hero .crh-actions { margin-left: 0; width: 100%; }
+  #cv-result-hero .crh-actions .btn { flex: 1 1 auto; text-align: center; justify-content: center; }
+  #cv-result-hero .crh-part { flex: 1 1 100%; }
+}

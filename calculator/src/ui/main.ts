@@ -80,14 +80,22 @@ import type { LearningCurveResult } from '../engine/learning-curve.js';
 let jsPDF: any;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 let autoTable: any;
+// Lazy handles for our own PDF helpers (pdf.ts statically pulls jsPDF, so it
+// must load on demand too — otherwise vendor-pdf lands on the initial paint).
+let printPDF: typeof printPDFType | undefined;
+let printCADAnalysisPDF: typeof printCADType | undefined;
+let drawCostVisionLogo: typeof drawLogoType | undefined;
 async function ensurePdfLibs(): Promise<void> {
-  if (jsPDF && autoTable) return;
-  const [m1, m2] = await Promise.all([import('jspdf'), import('jspdf-autotable')]);
+  if (jsPDF && autoTable && printPDF) return;
+  const [m1, m2, m3] = await Promise.all([import('jspdf'), import('jspdf-autotable'), import('../export/pdf.js')]);
   jsPDF = m1.jsPDF;
   autoTable = m2.default;
+  printPDF = m3.printPDF;
+  printCADAnalysisPDF = m3.printCADAnalysisPDF;
+  drawCostVisionLogo = m3.drawCostVisionLogo;
 }
 import { exportToExcelBlob } from '../export/excel.js';
-import { printPDF, printCADAnalysisPDF, drawCostVisionLogo } from '../export/pdf.js';
+import type { printPDF as printPDFType, printCADAnalysisPDF as printCADType, drawCostVisionLogo as drawLogoType } from '../export/pdf.js';
 import { computeCostUncertainty } from '../engine/uncertainty.js';
 import {
   computeCalibration, applyCalibration, computeCalibrationHierarchical, cvFromMape,
@@ -119,6 +127,7 @@ import { apiBase } from '../api-base.js';
 import {
   initCVAnimations, onViewShown, onDashboardRendered, onTableRendered,
   onResultsReady, onChatToggled, onChatMessageAdded, onToastShown, dismissToast,
+  animateResultHero, pulseCalculate,
 } from './animations.js';
 import { initMotionFX, motionInViewReveal, motionRevealRows } from './motion-fx.js';
 
@@ -684,7 +693,7 @@ function commSparkline(history: number[]): string {
   });
   const last = history[history.length - 1];
   const first = history[0];
-  const color = last >= first ? '#22c55e' : '#ef4444';
+  const color = last >= first ? 'var(--success)' : 'var(--danger)';
   return `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" class="comm-spark"><polyline points="${pts.join(' ')}" fill="none" stroke="${color}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 }
 
@@ -5312,7 +5321,8 @@ function renderCADResults(r: CADAnalysisResult, autoCalculate = false, annualVol
 
   // Wire PDF export button
   el('cad-export-pdf-btn')?.addEventListener('click', () => {
-    if (cadAnalysisResult) printCADAnalysisPDF(cadAnalysisResult, currentPartPhotoDataUrl());
+    if (!cadAnalysisResult) return;
+    void ensurePdfLibs().then(() => printCADAnalysisPDF!(cadAnalysisResult!, currentPartPhotoDataUrl()));
   });
 
   // Wire alternative process cards
@@ -8939,7 +8949,7 @@ async function exportPCBAnalysisPrint(r: PCBImageAnalysis): Promise<void> {
       doc.setPage(i);
       doc.setDrawColor(...BLUE); doc.setLineWidth(0.4);
       doc.line(margin, 290, pageW - margin, 290);
-      const lw = drawCostVisionLogo(doc, margin, 290.7, 3.4);
+      const lw = drawCostVisionLogo!(doc, margin, 290.7, 3.4);
       doc.setFontSize(6.5); doc.setFont('helvetica', 'normal'); doc.setTextColor(...GREY);
       doc.text(`PCB Image Analysis  ·  ${dateStr}`, margin + lw + 3, 294);
       doc.text(`Page ${i} of ${total}  ·  CONFIDENTIAL`, pageW - margin, 294, { align: 'right' });
@@ -12010,6 +12020,7 @@ function compute(): void {
   const originalLabel = calcBtn.textContent ?? 'Calculate';
   calcBtn.disabled = true;
   calcBtn.textContent = 'Calculating…';
+  pulseCalculate();
 
   _smExtraWarnings = [];
   let input: UniversalStackInput;
@@ -12134,6 +12145,7 @@ function showResultsArea(): void {
     // during the insights render) and re-tag the breakdown rows for the drawer.
     renderResultHero();
     tagTraceableRows();
+    animateResultHero();   // signature moment: hero rises + total counts up
   }, 500);
 }
 
@@ -13423,7 +13435,7 @@ function renderInsights(result: PartCostResult, input: UniversalStackInput): voi
         const u = hcal.applied
           ? computeCostUncertainty(result, input, { baseCvOverride: cvFromMape(hcal.calibratedMapePct) })
           : computeCostUncertainty(result, input);
-        const bandColor = u.band === 'tight' ? '#16a34a' : u.band === 'moderate' ? '#d97706' : '#dc2626';
+        const bandColor = u.band === 'tight' ? 'var(--success)' : u.band === 'moderate' ? 'var(--warning)' : 'var(--danger)';
         _lastBandInfo = { pm: u.plusMinusPct, band: String(u.band), conf: hcal.applied ? 'calibrated' : String(u.overallConfidence) };
         const bandNote = hcal.applied
           ? `Band width comes from OBSERVED accuracy (${hcal.calibratedMapePct}% MAPE over ${hcal.n} actuals) — it tightens as more quotes are logged.`
@@ -13435,9 +13447,9 @@ function renderInsights(result: PartCostResult, input: UniversalStackInput): voi
           <div style="font-size:1.15rem;font-weight:700;color:var(--text-primary)">${cf(result.total)} <span style="font-size:0.8rem;color:${bandColor}">± ${u.plusMinusPct}%</span></div>
         </div>
         <div style="margin-top:8px;display:flex;gap:18px;flex-wrap:wrap;font-size:0.78rem;color:var(--text-secondary)">
-          <span><strong style="color:#16a34a">P10</strong> ${cf(u.p10)} <span style="color:var(--text-muted)">(optimistic)</span></span>
+          <span><strong style="color:var(--success)">P10</strong> ${cf(u.p10)} <span style="color:var(--text-muted)">(optimistic)</span></span>
           <span><strong>P50</strong> ${cf(u.p50)} <span style="color:var(--text-muted)">(median)</span></span>
-          <span><strong style="color:#dc2626">P90</strong> ${cf(u.p90)} <span style="color:var(--text-muted)">(conservative)</span></span>
+          <span><strong style="color:var(--danger)">P90</strong> ${cf(u.p90)} <span style="color:var(--text-muted)">(conservative)</span></span>
           <span style="color:${bandColor};text-transform:capitalize">${u.band} band · CV ${u.cvPct}%</span>
         </div>
         <div style="margin-top:6px;font-size:0.7rem;color:var(--text-muted);line-height:1.4">${bandNote}</div>
@@ -14448,7 +14460,7 @@ async function printMasterPDF(): Promise<void> {
     doc.setPage(i);
     doc.setDrawColor(...GREY); doc.setLineWidth(0.3);
     doc.line(mg, 290, W - mg, 290);
-    const lw = drawCostVisionLogo(doc, mg, 290.7, 3.4);
+    const lw = drawCostVisionLogo!(doc, mg, 290.7, 3.4);
     doc.setFontSize(6.5); doc.setFont('helvetica', 'normal'); doc.setTextColor(...GREY);
     doc.text('Master Cost Report  ·  CONFIDENTIAL', mg + lw + 3, 294);
     doc.text(`Page ${i} of ${totalPgs}`, W - mg, 294, { align: 'right' });
@@ -14465,9 +14477,10 @@ function currentPartPhotoDataUrl(): string | null {
   return null;
 }
 
-function openPDF(): void {
+async function openPDF(): Promise<void> {
   if (!lastResult || !lastInput) return;
-  printPDF(lastResult, lastInput, library, _displayCurrency, _displayFxRate, activeCommodity, currentPartPhotoDataUrl());
+  await ensurePdfLibs();
+  printPDF!(lastResult, lastInput, library, _displayCurrency, _displayFxRate, activeCommodity, currentPartPhotoDataUrl());
 }
 
 // ─── Scenario modal ───────────────────────────────────────────────────────────
@@ -17129,7 +17142,7 @@ function renderResultHero(): void {
   host.innerHTML = `
     <div class="crh-part">
       <div class="crh-name" title="${escHtml(r.partName)}">${escHtml(r.partName || 'Unnamed part')}</div>
-      <div class="crh-total">${_currFmt(r.total)}${band ? ` <span class="crh-pm" style="color:${band.band === 'tight' ? '#059669' : band.band === 'moderate' ? '#d97706' : '#dc2626'}">±${band.pm}%</span>` : ''}</div>
+      <div class="crh-total">${_currFmt(r.total)}${band ? ` <span class="crh-pm" style="color:${band.band === 'tight' ? 'var(--success)' : band.band === 'moderate' ? 'var(--warning)' : 'var(--danger)'}">±${band.pm}%</span>` : ''}</div>
     </div>
     <div class="crh-chips">
       ${bandChip}
