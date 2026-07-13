@@ -1,4 +1,4 @@
-import type { RateLibrary, MaterialRate } from './types.js';
+import type { RateLibrary, MaterialRate, Breakdown8Bucket } from './types.js';
 import { computeMachineRatePerHr } from './rate-library-merge.js';
 
 // ─── Manufacturing Regions ─────────────────────────────────────────────────────
@@ -607,4 +607,55 @@ export function getRegionalLogistics(
     packaging: basePackaging * rd.packagingMultiplier,
     logistics: baseLogistics * rd.logisticsMultiplier,
   };
+}
+
+// ─── Regional cost comparison ───────────────────────────────────────────────────
+// Scales an 8-bucket should-cost across regions using the per-region multipliers,
+// so the same figures back the on-screen table and the PDF export. Ex-Works by
+// default; pass { landed: true } to add import duty + international freight.
+
+export interface RegionalComparisonRow {
+  code: ManufacturingRegion;
+  name: string;
+  currency: string;
+  material: number; process: number; labour: number; tooling: number; overhead: number;
+  exWorks: number; packaging: number; logistics: number; margin: number; total: number;
+  vsBasePct: number;   // (baseTotal − total) / baseTotal × 100 — positive = cheaper than base
+  isBase: boolean;
+}
+
+/** Import duty + international shipping as a fraction of Ex-Works, for landed cost. */
+const LANDED_ADDERS: Partial<Record<ManufacturingRegion, { duty: number; shipping: number }>> = {
+  UK: { duty: 0, shipping: 0 },     DE: { duty: 0, shipping: 0.020 }, FR: { duty: 0, shipping: 0.022 },
+  ES: { duty: 0, shipping: 0.025 }, PL: { duty: 0, shipping: 0.030 }, TR: { duty: 0.035, shipping: 0.040 },
+  CN: { duty: 0.065, shipping: 0.070 }, IN: { duty: 0.065, shipping: 0.065 }, MX: { duty: 0.050, shipping: 0.060 }, US: { duty: 0, shipping: 0.045 },
+};
+
+const DEFAULT_RC_REGIONS: ManufacturingRegion[] = ['UK', 'DE', 'FR', 'ES', 'PL', 'TR', 'CN', 'IN', 'MX', 'US'];
+
+export function computeRegionalComparison(
+  bkd: Breakdown8Bucket,
+  opts: { regions?: ManufacturingRegion[]; baseRegion?: ManufacturingRegion; landed?: boolean } = {},
+): RegionalComparisonRow[] {
+  const regions = opts.regions ?? DEFAULT_RC_REGIONS;
+  const base = opts.baseRegion ?? 'UK';
+  const ukSemi = REGIONAL_DATA['UK'].labour.semiskilled;
+  const rows = regions.map((code): RegionalComparisonRow | null => {
+    const rd = REGIONAL_DATA[code];
+    if (!rd) return null;
+    const material = bkd.rawMaterial * rd.materialMultiplier;
+    const process = bkd.process * rd.machineRateMultiplier;
+    const labour = bkd.labour * (rd.labour.semiskilled / ukSemi);
+    const tooling = bkd.tooling;
+    const overhead = bkd.overhead * rd.overheadMultiplier;
+    const exWorks = material + process + labour + tooling + overhead;
+    const packaging = bkd.packaging * rd.packagingMultiplier;
+    const logistics = bkd.logistics * rd.logisticsMultiplier;
+    const adder = opts.landed ? (LANDED_ADDERS[code] ?? { duty: 0.05, shipping: 0.05 }) : { duty: 0, shipping: 0 };
+    const total = exWorks + packaging + logistics + bkd.margin + exWorks * adder.duty + exWorks * adder.shipping;
+    return { code, name: rd.name, currency: rd.currency, material, process, labour, tooling, overhead, exWorks, packaging, logistics, margin: bkd.margin, total, vsBasePct: 0, isBase: code === base };
+  }).filter((r): r is RegionalComparisonRow => r !== null);
+  const baseTotal = rows.find(r => r.code === base)?.total ?? rows[0]?.total ?? 0;
+  rows.forEach(r => { r.vsBasePct = baseTotal > 0 ? ((baseTotal - r.total) / baseTotal) * 100 : 0; });
+  return rows;
 }

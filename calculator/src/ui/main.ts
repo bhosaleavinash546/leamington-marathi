@@ -64,7 +64,7 @@ import {
 import { computeCompositeDrivers } from '../engine/modules/composites.js';
 import type { CompositeProcess } from '../engine/modules/composites.js';
 import { computeWiringHarnessDrivers } from '../engine/modules/wiring-harness.js';
-import { buildRegionalLibrary, REGIONAL_DATA } from '../engine/regional-rates.js';
+import { buildRegionalLibrary, REGIONAL_DATA, computeRegionalComparison } from '../engine/regional-rates.js';
 import type { ManufacturingRegion } from '../engine/regional-rates.js';
 import { recommendMachineIds } from '../engine/process-taxonomy.js';
 import { runSensitivity } from '../engine/sensitivity.js';
@@ -14072,55 +14072,9 @@ function renderInsights(result: PartCostResult, input: UniversalStackInput): voi
     </div>`;
   }).join('');
 
-  // Regional comparison detailed breakdown table (10 key regions)
-  const RC_REGIONS: ManufacturingRegion[] = ['UK', 'DE', 'FR', 'ES', 'PL', 'TR', 'CN', 'IN', 'MX', 'US'];
-  const ukRd = REGIONAL_DATA['UK'];
-  const ukSemiSkilled = ukRd.labour.semiskilled;
-  const bkd = result.breakdown;
-
-  interface RCRow {
-    code: ManufacturingRegion;
-    name: string;
-    currency: string;
-    material: number;
-    process: number;
-    labour: number;
-    tooling: number;
-    overhead: number;
-    exWorks: number;
-    logistics: number;
-    total: number;
-  }
-
-  // Landed cost adders: import duty + international shipping as fraction of exWorks
-  const landedAdders: Partial<Record<ManufacturingRegion, { duty: number; shipping: number }>> = {
-    UK: { duty: 0,     shipping: 0     },
-    DE: { duty: 0,     shipping: 0.020 },
-    FR: { duty: 0,     shipping: 0.022 },
-    ES: { duty: 0,     shipping: 0.025 },
-    PL: { duty: 0,     shipping: 0.030 },
-    TR: { duty: 0.035, shipping: 0.040 },
-    CN: { duty: 0.065, shipping: 0.070 },
-    IN: { duty: 0.065, shipping: 0.065 },
-    MX: { duty: 0.050, shipping: 0.060 },
-    US: { duty: 0,     shipping: 0.045 },
-  };
-
-  const rcRows: RCRow[] = RC_REGIONS.map(code => {
-    const rd = REGIONAL_DATA[code];
-    if (!rd) return null as unknown as RCRow;
-    const material  = bkd.rawMaterial * rd.materialMultiplier;
-    const process   = bkd.process    * rd.machineRateMultiplier;
-    const labour    = bkd.labour     * (rd.labour.semiskilled / ukSemiSkilled);
-    const tooling   = bkd.tooling;
-    const overhead  = bkd.overhead   * rd.overheadMultiplier;
-    const exWorks   = material + process + labour + tooling + overhead;
-    const logistics = bkd.logistics  * rd.logisticsMultiplier;
-    const adder = _landedCostMode ? (landedAdders[code] ?? { duty: 0.05, shipping: 0.05 }) : { duty: 0, shipping: 0 };
-    const total = exWorks + (bkd.packaging * rd.packagingMultiplier) + logistics + bkd.margin
-                  + exWorks * adder.duty + exWorks * adder.shipping;
-    return { code, name: rd.name, currency: rd.currency, material, process, labour, tooling, overhead, exWorks, logistics, total };
-  }).filter(r => r !== null);
+  // Regional comparison — computed by the shared engine helper (same figures back
+  // the on-screen table and the PDF export). Landed toggle adds duty + freight.
+  const rcRows = computeRegionalComparison(result.breakdown, { landed: _landedCostMode });
 
   type RCCol = 'material' | 'process' | 'labour' | 'overhead' | 'exWorks' | 'total';
   const rcCols: RCCol[] = ['material', 'process', 'labour', 'overhead', 'exWorks', 'total'];
@@ -15308,7 +15262,7 @@ function currentPartPhotoDataUrl(): string | null {
 async function openPDF(): Promise<void> {
   if (!lastResult || !lastInput) return;
   await ensurePdfLibs();
-  printPDF!(lastResult, lastInput, library, _displayCurrency, _displayFxRate, activeCommodity, currentPartPhotoDataUrl());
+  printPDF!(lastResult, lastInput, library, _displayCurrency, _displayFxRate, activeCommodity, currentPartPhotoDataUrl(), _mfgRegion, listScenarios());
 }
 
 // ─── Scenario modal ───────────────────────────────────────────────────────────

@@ -1,10 +1,14 @@
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
-import type { PartCostResult, UniversalStackInput, RateLibrary, CommodityType } from '../engine/types.js';
+import type { PartCostResult, UniversalStackInput, RateLibrary, CommodityType, Scenario } from '../engine/types.js';
 import type { CADAnalysisResult } from '../engine/ai-analysis.js';
 import { breakdownPercentages } from '../engine/core.js';
-import { generateInsights } from '../engine/insights.js';
+import { generateInsights, totalPotentialSaving } from '../engine/insights.js';
 import { generateDFMDFA } from '../engine/dfm-dfa.js';
+import { computeCostUncertainty } from '../engine/uncertainty.js';
+import { runSensitivity } from '../engine/sensitivity.js';
+import { computeCarbon } from '../engine/carbon.js';
+import { computeRegionalComparison, type ManufacturingRegion } from '../engine/regional-rates.js';
 
 // ─── Shared constants ─────────────────────────────────────────────────────────
 type RGB = [number, number, number];
@@ -116,7 +120,9 @@ export function printPDF(
   currency = 'GBP',
   fxRate   = 1,
   commodityType: CommodityType = 'machining',
-  partPhotoDataUrl?: string | null
+  partPhotoDataUrl?: string | null,
+  region: ManufacturingRegion = 'UK',
+  scenarios: Scenario[] = []
 ): void {
 
   const sym  = ({ GBP: '£', EUR: '€', USD: '$', CNY: '¥', INR: '₹' } as Record<string,string>)[currency] ?? currency;
@@ -630,12 +636,115 @@ export function printPDF(
   y = lastFinalY(doc) + 10;
 
   // ════════════════════════════════════════════════════════════════════════
-  // §7 — Cost Intelligence Insights
+  // §7 — Should-Cost with Uncertainty (Monte-Carlo)
+  // ════════════════════════════════════════════════════════════════════════
+  doc.addPage(); y = 18;
+  {
+    const u = computeCostUncertainty(result, input);
+    y = secBar(doc, y, '§7 — Should-Cost with Uncertainty', `Monte-Carlo  ·  ${u.overallConfidence} confidence`);
+    autoTable(doc, {
+      startY: y, margin: { left: MG, right: MG }, theme: 'grid',
+      head: [['Estimate (± band)', 'P10 · optimistic', 'P50 · median', 'P90 · conservative', 'Band', 'CV']],
+      body: [[`${c(result.total)}  ± ${u.plusMinusPct}%`, c(u.p10), c(u.p50), c(u.p90), String(u.band), `${u.cvPct}%`]],
+      headStyles: { fillColor: NAVY as RGB, textColor: WHITE as RGB, fontStyle: 'bold', fontSize: 7.5 },
+      bodyStyles: { fontSize: 8.5, cellPadding: 3, halign: 'center' },
+      columnStyles: { 0: { fontStyle: 'bold', textColor: NAVY as RGB } },
+    });
+    y = lastFinalY(doc) + 3;
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(7.5); doc.setTextColor(...GREY);
+    const note = doc.splitTextToSize('Range reflects how well each cost driver is known (High / Medium / Low confidence). Tighten it by attaching CAD, a BOM, or logging an actual quote.', CW);
+    doc.text(note, MG, y + 3); y += note.length * 3.6 + 8;
+  }
+
+  // ════════════════════════════════════════════════════════════════════════
+  // §8 — Sensitivity Analysis
+  // ════════════════════════════════════════════════════════════════════════
+  {
+    const sens = runSensitivity(input, library, 10);
+    if (sens.drivers.length) {
+      y = chk(doc, y, 46);
+      y = secBar(doc, y, '§8 — Sensitivity Analysis', `± ${sens.variationPct}% driver swing  ·  ranked by £ impact`);
+      const r1 = (n: number) => Math.round(n * 10) / 10;
+      const r2v = (n: number) => Math.round(n * 100) / 100;
+      autoTable(doc, {
+        startY: y, margin: { left: MG, right: MG }, theme: 'grid',
+        head: [['Cost Driver', 'Base', `-${sens.variationPct}% cost`, `+${sens.variationPct}% cost`, 'Range £']],
+        body: sens.drivers.slice(0, 8).map(d => [
+          d.driver, `${r2v(d.baseValue)}${d.unit}`,
+          `${d.minusPct > 0 ? '+' : ''}${r1(d.minusPct)}%`, `${d.plusPct > 0 ? '+' : ''}${r1(d.plusPct)}%`, c(d.range),
+        ]),
+        headStyles: { fillColor: NAVY as RGB, textColor: WHITE as RGB, fontStyle: 'bold', fontSize: 7.5 },
+        bodyStyles: { fontSize: 8, cellPadding: 2.5 },
+        alternateRowStyles: { fillColor: LIGHT as RGB },
+        columnStyles: { 0: { fontStyle: 'bold', cellWidth: 60 }, 2: { halign: 'right' }, 3: { halign: 'right' }, 4: { halign: 'right', fontStyle: 'bold' } },
+      });
+      y = lastFinalY(doc) + 8;
+    }
+  }
+
+  // ════════════════════════════════════════════════════════════════════════
+  // §9 — Regional Cost Comparison (Ex-Works)
+  // ════════════════════════════════════════════════════════════════════════
+  {
+    const rc = computeRegionalComparison(result.breakdown, { landed: false });
+    const cheapest = Math.min(...rc.map(r => r.total));
+    doc.addPage(); y = 18;
+    y = secBar(doc, y, '§9 — Regional Cost Comparison', 'Ex-Works  ·  per-region should-cost  ·  vs UK');
+    autoTable(doc, {
+      startY: y, margin: { left: MG, right: MG }, theme: 'grid',
+      head: [['Region', 'Material', 'Process', 'Labour', 'Tooling', 'Overhead', 'Ex-Works', 'Logistics', 'Total', 'vs UK']],
+      body: rc.map(r => [
+        `${r.name} (${r.currency})`, c(r.material), c(r.process), c(r.labour), c(r.tooling), c(r.overhead), c(r.exWorks), c(r.logistics), c(r.total),
+        r.isBase ? 'Base' : `${r.vsBasePct >= 0 ? '-' : '+'}${Math.abs(r.vsBasePct).toFixed(0)}%`,
+      ]),
+      headStyles: { fillColor: NAVY as RGB, textColor: WHITE as RGB, fontStyle: 'bold', fontSize: 6.5 },
+      bodyStyles: { fontSize: 6.9, cellPadding: 1.8 },
+      columnStyles: { 0: { fontStyle: 'bold', cellWidth: 26 }, 6: { fontStyle: 'bold' }, 8: { fontStyle: 'bold' }, 9: { halign: 'center', fontStyle: 'bold' } },
+      didParseCell: (d: { section: string; row: { index: number }; column: { index: number }; cell: { styles: { fillColor?: unknown; textColor?: unknown } } }) => {
+        if (d.section !== 'body') return;
+        const row = rc[d.row.index];
+        if (row.isBase) d.cell.styles.fillColor = HDR as RGB;
+        if (d.column.index === 8 && Math.abs(row.total - cheapest) < 0.005) { d.cell.styles.fillColor = [220, 252, 231] as RGB; d.cell.styles.textColor = GN as RGB; }
+        if (d.column.index === 9 && !row.isBase) d.cell.styles.textColor = (row.vsBasePct >= 0 ? GN : RD) as RGB;
+      },
+    });
+    y = lastFinalY(doc) + 3;
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(7); doc.setTextColor(...GREY);
+    doc.text('Per-region should-cost using regional labour, energy and rate benchmarks. Tooling held fixed. Ex-Works — excludes import duty + international freight. Indicative — confirm with RFQ.', MG, y + 3, { maxWidth: CW });
+    y += 12;
+  }
+
+  // ════════════════════════════════════════════════════════════════════════
+  // §10 — Embodied Carbon
+  // ════════════════════════════════════════════════════════════════════════
+  {
+    const cb = computeCarbon({ result, input, library, commodity: commodityType, region });
+    y = chk(doc, y, 42);
+    y = secBar(doc, y, '§10 — Embodied Carbon', `${cb.totalKgCO2e.toFixed(2)} kgCO2e  ·  ${cb.perNetKgCO2e.toFixed(2)} /kg  ·  cradle-to-gate`);
+    autoTable(doc, {
+      startY: y, margin: { left: MG, right: MG }, theme: 'plain',
+      body: [
+        ['Material', `${cb.materialKgCO2e.toFixed(2)} kgCO2e`, 'Material factor', `${cb.materialFactorKgPerKg.toFixed(2)} kg/kg (${cb.materialClass})`],
+        ['Process', `${cb.processKgCO2e.toFixed(2)} kgCO2e`, 'Grid intensity', `${cb.gridKgPerKwh.toFixed(3)} kg/kWh · ${cb.processKwh.toFixed(2)} kWh`],
+        ['Logistics', `${cb.logisticsKgCO2e.toFixed(2)} kgCO2e`, 'Total', `${cb.totalKgCO2e.toFixed(2)} kgCO2e`],
+      ],
+      bodyStyles: { fontSize: 8, cellPadding: { top: 3.5, bottom: 3.5, left: 4, right: 4 } },
+      alternateRowStyles: { fillColor: LIGHT as RGB },
+      columnStyles: { 0: { cellWidth: 44, textColor: GREY as RGB }, 1: { cellWidth: 50, fontStyle: 'bold', textColor: NAVY as RGB }, 2: { cellWidth: 44, textColor: GREY as RGB }, 3: { cellWidth: 44, fontStyle: 'bold', textColor: NAVY as RGB } },
+    });
+    y = lastFinalY(doc) + 3;
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(7); doc.setTextColor(...GREY);
+    doc.text('Indicative cradle-to-gate factors — replace with supplier EPDs for formal reporting.', MG, y + 3, { maxWidth: CW });
+    y += 10;
+  }
+
+  // ════════════════════════════════════════════════════════════════════════
+  // §11 — Cost Intelligence Insights
   // ════════════════════════════════════════════════════════════════════════
   const insights = generateInsights(result, input, library, commodityType);
   if (insights.length > 0) {
     doc.addPage(); y = 18;
-    y = secBar(doc, y, '§7 — Cost Intelligence Insights', `${insights.length} findings`);
+    y = secBar(doc, y, '§11 — Cost Intelligence Insights', `${insights.length} findings  ·  ~${totalPotentialSaving(insights).toFixed(0)}% combined saving`);
 
     const impCol = (imp: string): RGB => imp === 'High' ? RD : imp === 'Medium' ? AM : GREY;
     const typeLabel: Record<string, string> = {
@@ -685,7 +794,7 @@ export function printPDF(
 
     // §8 DFM
     y = chk(doc, y, 22);
-    y = secBar(doc, y, '§8 — Design for Manufacture (DFM)', `Score: ${dfm.dfm.score.toFixed(1)}/10  ·  Saving Potential: ${dfm.dfm.totalSavingPct.toFixed(0)}%`);
+    y = secBar(doc, y, '§12 — Design for Manufacture (DFM)', `Score: ${dfm.dfm.score.toFixed(1)}/10  ·  Saving Potential: ${dfm.dfm.totalSavingPct.toFixed(0)}%`);
 
     if (dfm.dfm.summary) {
       const ls = doc.splitTextToSize(dfm.dfm.summary, CW) as string[];
@@ -727,7 +836,7 @@ export function printPDF(
 
     // §9 DFA
     y = chk(doc, y, 22);
-    y = secBar(doc, y, '§9 — Design for Assembly (DFA)', `Score: ${dfm.dfa.score.toFixed(1)}/10  ·  Saving Potential: ${dfm.dfa.totalSavingPct.toFixed(0)}%`);
+    y = secBar(doc, y, '§13 — Design for Assembly (DFA)', `Score: ${dfm.dfa.score.toFixed(1)}/10  ·  Saving Potential: ${dfm.dfa.totalSavingPct.toFixed(0)}%`);
 
     if (dfm.dfa.summary) {
       const ls = doc.splitTextToSize(dfm.dfa.summary, CW) as string[];
@@ -769,7 +878,7 @@ export function printPDF(
     // §10 Cost Optimisation
     if (dfm.costOptimisations.length > 0) {
       y = chk(doc, y, 22);
-      y = secBar(doc, y, '§10 — Cost Optimisation Opportunities',
+      y = secBar(doc, y, '§14 — Cost Optimisation Opportunities',
         `${dfm.costOptimisations.length} actions  ·  Total Potential: ${dfm.totalPotentialSavingPct.toFixed(0)}%`);
 
       // col widths: 30 + 36 + 12 + 22 + 12 + (182-112) = 112+70 = 182 ✓
@@ -807,7 +916,7 @@ export function printPDF(
     // §11 Roadmap
     if (dfm.quickWins.length > 0 || dfm.longTermChanges.length > 0) {
       y = chk(doc, y, 22);
-      y = secBar(doc, y, '§11 — Implementation Roadmap');
+      y = secBar(doc, y, '§15 — Implementation Roadmap');
 
       if (dfm.quickWins.length > 0) {
         doc.setFontSize(8.5); doc.setFont('helvetica', 'bold'); doc.setTextColor(...GN);
@@ -834,6 +943,30 @@ export function printPDF(
     }
   } catch {
     // DFM/DFA not available for this commodity — silently skip
+  }
+
+  // ════════════════════════════════════════════════════════════════════════
+  // §16 — Saved Scenarios (only when the user has saved any)
+  // ════════════════════════════════════════════════════════════════════════
+  if (scenarios.length > 0) {
+    y = chk(doc, y, 40);
+    y = secBar(doc, y, '§16 — Saved Scenarios', `${scenarios.length} scenario${scenarios.length === 1 ? '' : 's'}  ·  vs this costing`);
+    autoTable(doc, {
+      startY: y, margin: { left: MG, right: MG }, theme: 'grid',
+      head: [['Scenario', 'Total', 'vs this costing', 'Saved']],
+      body: scenarios.map(s => {
+        const delta = result.total > 0 ? ((s.result.total - result.total) / result.total) * 100 : 0;
+        return [
+          s.name + (s.description ? ` — ${s.description}` : ''), c(s.result.total),
+          Math.abs(delta) < 0.05 ? '—' : `${delta > 0 ? '+' : ''}${delta.toFixed(1)}%`,
+          new Date(s.createdAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
+        ];
+      }),
+      headStyles: { fillColor: NAVY as RGB, textColor: WHITE as RGB, fontStyle: 'bold', fontSize: 7.5 },
+      bodyStyles: { fontSize: 8, cellPadding: 2.5 },
+      alternateRowStyles: { fillColor: LIGHT as RGB },
+      columnStyles: { 0: { fontStyle: 'bold' }, 1: { halign: 'right' }, 2: { halign: 'right', fontStyle: 'bold' }, 3: { halign: 'right', textColor: GREY as RGB } },
+    });
   }
 
   addFooters();
