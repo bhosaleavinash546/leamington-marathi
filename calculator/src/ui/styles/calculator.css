@@ -6073,3 +6073,59 @@ input.cv-outlier { border-color: var(--warning) !important; box-shadow: 0 0 0 2p
 .summary-card.total-card .card-label { color: rgba(255,255,255,0.88) !important; }
 .summary-card.total-card .card-value { color: #ffffff !important; }
 .summary-card.total-card .card-sub   { color: rgba(255,255,255,0.75) !important; }
+
+/* ── Focus mode — expand the report to full width ─────────────────────────────
+   The costing screen is a 3-band layout (app nav · input form · results). On a
+   laptop the results band gets squeezed. The "⤢ Focus" button on the results
+   tab bar hides the input form (and collapses the app nav) so the report gets
+   the full viewport width. Click again to restore. */
+.results-focus-btn {
+  margin-left: auto;
+  align-self: center;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid var(--border-strong);
+  background: var(--surface-elevated);
+  color: var(--text-secondary);
+  font-family: var(--font);
+  font-size: 0.74rem;
+  font-weight: 600;
+  padding: 5px 11px;
+  margin-right: 4px;
+  border-radius: 7px;
+  cursor: pointer;
+  transition: all var(--dur-hover) var(--ease-std);
+}
+.results-focus-btn:hover { background: var(--surface-hover); border-color: var(--accent); color: var(--accent); }
+.results-focus-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.results-focus-btn .rfb-icon { font-size: 0.95rem; line-height: 1; }
+
+/* Active state — filled accent so it reads as "on". */
+:root.cv-focus-report .results-focus-btn {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+:root.cv-focus-report .results-focus-btn:hover { filter: brightness(1.06); color: #fff; }
+
+/* When focus is on: drop the input column and let the results span full width.
+   Covers both the classic grid layout and the new-costing flex layout. */
+:root.cv-focus-report #costing-view.layout { grid-template-columns: 1fr !important; }
+:root.cv-focus-report #costing-view .input-panel { display: none !important; }
+:root.cv-focus-report #costing-view .results-panel { border-left: none; }
+:root.cv-focus-report #costing-view .wf-panel-header .sidebar-toggle-btn { display: none; }
+
+/* New-costing split mode: also drop the fixed commodity-picker rail and let the
+   costing view span the full viewport width. */
+:root.cv-focus-report body.cv-new-costing #commodity-picker-view { display: none !important; }
+:root.cv-focus-report body.cv-new-costing #costing-view {
+  left: 0 !important;
+  width: 100vw !important;
+}
+
+@media (max-width: 900px) {
+  /* On narrow screens the layout is already stacked; keep the button but the
+     focus toggle just hides the form (nothing to reclaim horizontally). */
+  .results-focus-btn .rfb-label { display: none; }
+}

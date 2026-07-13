@@ -17189,6 +17189,30 @@ async function init(): Promise<void> {
     tab.addEventListener('click', () => switchResultTab(tab.dataset.panel!));
   });
 
+  // Focus mode — expand the report to full width by hiding the input form and
+  // collapsing the app nav. Restores the nav to its prior state on exit and
+  // re-renders any active chart so it resizes into the wider column.
+  const focusBtn = document.getElementById('results-focus-btn');
+  if (focusBtn) {
+    let navWasCollapsed = false;
+    focusBtn.addEventListener('click', () => {
+      const root = document.documentElement;
+      const on = !root.classList.contains('cv-focus-report');
+      if (on) {
+        navWasCollapsed = root.classList.contains('cv-nav-collapsed');
+        root.classList.add('cv-focus-report', 'cv-nav-collapsed');
+      } else {
+        root.classList.remove('cv-focus-report');
+        if (!navWasCollapsed) root.classList.remove('cv-nav-collapsed');
+      }
+      focusBtn.querySelector('.rfb-label')!.textContent = on ? 'Exit' : 'Focus';
+      focusBtn.querySelector('.rfb-icon')!.textContent = on ? '⤡' : '⤢';
+      focusBtn.setAttribute('title', on ? 'Restore the input form' : 'Expand the report to full width (hide the input form)');
+      // Charts read their container width at layout time — nudge them to resize.
+      setTimeout(() => { _breakdownChart?.resize(); _waterfallChart?.resize(); }, 60);
+    });
+  }
+
   // Currency selector
   const _applyCurrency = (cur: string) => {
     _displayCurrency = cur;
