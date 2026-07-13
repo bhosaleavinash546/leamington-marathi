@@ -159,7 +159,7 @@ text(s, Inches(0.8), Inches(2.35), Inches(11.8), Inches(1.1),
         'and connecting it to CAPEE.  (~5–7 weeks, existing teams, no licence spend.)', 17, BODY, False)]],
      line_spacing=1.2)
 pts = [
-    ('Why now', 'The tool is built, tested (793 automated tests) and proven on live runs — the value is waiting on deployment, not development.', BLUE),
+    ('Why now', 'The tool is built, tested (813 automated tests) and proven on live runs — the value is waiting on deployment, not development.', BLUE),
     ('Why it is safe', 'CAD processing already runs fully inside the server. The private AI routing and the air-gapped switch are now BUILT and tested live.', GREEN),
     ('Why CAPEE wins', 'CAPEE keeps the workflow; CostVision adds the AI, physics and organisational memory behind it. No tool replacement.', VIOLET),
 ]
@@ -182,7 +182,7 @@ caps = [
     ('18 cost engines', 'Machining, casting, injection, PCB, software and more — physics-based, every figure traceable', BLUE),
     ('CAD-to-Cost', 'Reads STEP/IGES models with a real geometry engine and auto-fills the costing', CYAN),
     ('Photo-to-BOM', 'Costs a PCB from photographs — detects components and builds the bill of materials', VIOLET),
-    ('Agentic AI', 'Learns from every analysis and real quote; suggests, self-corrects and raises findings on its own', GREEN),
+    ('Agentic AI (upgraded 2026)', 'Learns from every quote; conformal confidence with a guarantee, a causal negotiation coach, outcome-weighted findings and what-if scenarios — all glass-box', GREEN),
 ]
 for i, (t, d, c) in enumerate(caps):
     x = Inches(0.45 + (i % 2) * 6.35); y = Inches(2.05 + (i // 2) * 1.62)
@@ -194,13 +194,38 @@ box(s, Inches(0.45), Inches(5.55), Inches(12.45), Inches(1.3), fill=GREENBG, rou
 text(s, Inches(0.8), Inches(5.75), Inches(11.8), Inches(0.95),
      [[('Proven, not promised:  ', 13.5, GREEN, True),
        ('estimating error cut from 10.9% to 0.3% after learning from 3 real quotes  ·  £512k/yr of pricing issues '
-        'found autonomously in the live demo  ·  793 automated tests protect it all.', 13.5, BODY, False)]],
+        'found autonomously in the live demo  ·  813 automated tests protect it all.', 13.5, BODY, False)]],
      line_spacing=1.2)
 notes(s, "Thirty seconds of background for anyone new. CostVision costs parts bottom-up with physics across 18 "
          "manufacturing processes. It reads CAD files directly, it can cost a circuit board from photographs, and — "
          "the newest layer — it learns: from every analysis and every real supplier quote, getting measurably more "
          "accurate and even raising savings findings on its own. The green bar shows verified results from live runs, "
          "including half a million pounds a year of findings surfaced autonomously in our demonstration.")
+
+# ═══════════════ 3B — LATEST AGENTIC INTELLIGENCE (2026) ═══════════════
+s = header('Latest intelligence — five upgrades that widen the moat', 'Background · new in 2026')
+rows = [
+    ('Conformal confidence', 'An empirical band with a coverage guarantee — "90% of your logged quotes landed within ±6.5%". Defensible, not asserted.', GREEN),
+    ('Negotiation coach', 'Names the cost driver and writes the counter: "a quote of £95 implies aluminium +14% above spot — hold at £86.34."', BLUE),
+    ('Outcome-weighted findings', 'The agent learns which findings convert and ranks by money it can really recover — a £100k gap that closes beats a £200k gap that never does.', VIOLET),
+    ('What-if engine', 'Drag a commodity ±20% and the price recomputes live; run it across the whole portfolio ("if steel +10%, 7 parts go underwater").', CYAN),
+    ('Glass-box by design', 'Every learned or derived number stays auditable — no black-box weight ever touches the price. The competitor edge is the opposite.', AMBER),
+]
+for i, (t, d, c) in enumerate(rows):
+    y = Inches(2.0 + i * 0.98)
+    box(s, Inches(0.45), y, Inches(12.45), Inches(0.86), fill=PANEL if i % 2 == 0 else BG, round_=True, radius=0.1)
+    box(s, Inches(0.45), y, Inches(0.09), Inches(0.86), fill=c)
+    text(s, Inches(0.78), y + Inches(0.12), Inches(3.5), Inches(0.6), [[(t, 12.5, c, True)]])
+    text(s, Inches(4.3), y + Inches(0.12), Inches(8.4), Inches(0.65), [[(d, 11.5, BODY, False)]], line_spacing=1.12)
+notes(s, "One slide on what's newest, because it directly strengthens the security-and-defensibility case this deck "
+         "makes. Five upgrades shipped in 2026, all built and tested. Conformal confidence gives an uncertainty band "
+         "with an actual coverage guarantee from our own logged quotes — a number a buyer can defend. The negotiation "
+         "coach names the commodity driving a part's cost and writes the counter-argument for the buyer. The autonomous "
+         "agent now learns which findings actually convert into savings and prioritises the money we can really recover. "
+         "The what-if engine answers 'if a commodity moves, what happens' for one part or the whole portfolio, as a "
+         "defensible conditional rather than a forecast. And the principle underneath all of it: everything stays "
+         "glass-box — every learned number is auditable, nothing is a black box. That is the opposite of how the "
+         "competitors work, and it's what makes our numbers usable in a real negotiation.")
 
 # ═══════════════ 4 — TECH STACK IN PLAIN WORDS ═══════════════
 s = header('What the tool is made of — in plain words', 'Technology, simply explained')
@@ -556,7 +581,7 @@ s = header('Risks — and how we manage them', 'Honest view')
 risks = [
     ('Cloud tenancy not approved', 'Medium', 'Fall back to Option A (air-gapped) — deterministic engines keep full value today; add a self-hosted vision model later if needed.', AMBER),
     ('Learning depends on logged quotes', 'Medium', 'The CAPEE PO-price hook automates it — quotes flow in without anyone changing habits. Plus a one-off historical import to start smart.', BLUE),
-    ('Single-team knowledge of the platform', 'Low–Med', '793 automated tests, written architecture docs, and a named CAPEE-side maintainer trained during Phase 4.', VIOLET),
+    ('Single-team knowledge of the platform', 'Low–Med', '813 automated tests, written architecture docs, and a named CAPEE-side maintainer trained during Phase 4.', VIOLET),
     ('Adoption ("another tool")', 'Low', 'Users stay in CAPEE — CostVision works behind the scenes. Nothing new to learn except better answers appearing.', GREEN),
 ]
 for i, (t, sev, m, c) in enumerate(risks):
@@ -783,7 +808,7 @@ text(s, Inches(0.45), Inches(6.5), Inches(7.3), Inches(0.6),
      line_spacing=1.1)
 stats = [
     ('99%', 'part-match accuracy — the AI memory finds the right similar past part', BLUE),
-    ('793', 'automated tests protect every engine and feature on each change', VIOLET),
+    ('813', 'automated tests protect every engine and feature on each change', VIOLET),
     ('3 quotes', 'is all the calibration needs before accuracy lands under 1%', GREEN),
     ('£512k/yr', 'findings raised by the autonomous agent in the live demo', CYAN),
 ]
@@ -810,7 +835,7 @@ qa = [
      'quote history, and it costs six figures every year. CostVision is on-prem, self-learning, and our IP.'),
     ('Is our data training a public AI?', 'No. AI calls run zero-retention in our own cloud tenancy (Option B) — and in '
      'air-gapped mode there are provably no external calls at all. Nothing is ever used to train public models.'),
-    ('What if the key developer leaves?', '793 automated tests define how everything must behave, the architecture is '
+    ('What if the key developer leaves?', '813 automated tests define how everything must behave, the architecture is '
      'documented in writing, and Phase 4 trains a named CAPEE-side maintainer.'),
     ('What does it cost to run?', 'One VM, a standard corporate database, and pay-per-use AI in our tenancy. '
      'No licences, no per-seat fees.'),

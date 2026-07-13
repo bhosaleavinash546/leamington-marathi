@@ -204,7 +204,7 @@ kpi_card(s, Inches(3.65), Inches(2.0), Inches(3.0), Inches(1.75), '£512k/yr', '
          'In our live demo the background agent flagged £512k/yr of pricing issues — with nobody at the keyboard.', RED)
 kpi_card(s, Inches(6.85), Inches(2.0), Inches(3.0), Inches(1.75), '99%', 'Part recognition',
          'A new bracket was matched to 3 past bracket analyses at 98–99% similarity, with reasons shown.', CYAN)
-kpi_card(s, Inches(10.05), Inches(2.0), Inches(2.85), Inches(1.75), '790', 'Automated tests',
+kpi_card(s, Inches(10.05), Inches(2.0), Inches(2.85), Inches(1.75), '813', 'Automated tests',
          'Every capability is covered by automated tests and was exercised end-to-end on the running system.', VIOLET)
 box(s, Inches(0.45), Inches(4.1), Inches(12.45), Inches(2.7), fill=PANEL2, round_=True, radius=0.06)
 text(s, Inches(0.75), Inches(4.35), Inches(11.9), Inches(2.3),
@@ -218,7 +218,7 @@ notes(s, "Four headline numbers, all verified. One: after learning from only thr
          "in a segment dropped from about 11% to under 1%. Two: the autonomous monitor found half a million pounds a year "
          "of pricing issues in our demonstration, entirely unattended. Three: when we costed a new bracket, the tool "
          "recognised three similar past parts at 99% similarity and told us why. Four: this is production-grade — "
-         "790 automated tests. The key message: costing knowledge now accumulates as a company asset instead of "
+         "813 automated tests. The key message: costing knowledge now accumulates as a company asset instead of "
          "living in individual experts' heads.")
 
 # ════════════════════════════════════════════════════════════════════════════
@@ -536,7 +536,7 @@ notes(s, "Everything on this slide was measured on the running system — live s
          "The two headline accuracy results: after learning from three quotes, segment error dropped to well under "
          "one percent in both directions of bias. The confidence band tightened seven-fold. Recognition worked at 99 "
          "percent on the live example. The unattended agent surfaced half a million pounds. And the whole capability "
-         "is protected by 790 automated tests, so it won't quietly regress. One caveat I want to be transparent about: "
+         "is protected by 813 automated tests, so it won't quietly regress. One caveat I want to be transparent about: "
          "these demos used small seeded datasets — real-world accuracy will build as OUR data accumulates. The "
          "mechanism is proven; the asset grows with use.")
 
@@ -569,13 +569,201 @@ notes(s, "Four benefits worth remembering. Speed — new parts start from histor
          "costing intelligence.")
 
 # ════════════════════════════════════════════════════════════════════════════
+# NEW A — CONFORMAL CONFIDENCE
+# ════════════════════════════════════════════════════════════════════════════
+s = header('Confidence you can defend — not just assert', 'New in 2026 · advanced intelligence')
+text(s, Inches(0.45), Inches(1.85), Inches(12.4), Inches(0.45),
+     [[('Every should-cost now carries two ranges — the physics estimate, and an ', 13.5, BODY, False),
+       ('empirical band proven against your own logged quotes.', 13.5, DARK, True)]])
+# Left: physics prior
+box(s, Inches(0.45), Inches(2.5), Inches(6.05), Inches(2.5), fill=PANEL, round_=True, radius=0.06)
+box(s, Inches(0.45), Inches(2.5), Inches(6.05), Inches(0.09), fill=BLUE)
+text(s, Inches(0.75), Inches(2.72), Inches(5.5), Inches(0.4), [[('Physics prior (Monte-Carlo)', 14, BLUE, True)]])
+text(s, Inches(0.75), Inches(3.2), Inches(5.5), Inches(1.7),
+     [[('How well the inputs are known — before you have any real quotes.', 12, BODY, False)],
+      [('Example:  £86.34  ± 3.4%', 14, DARK, True)],
+      [('Always available, every part, every commodity.', 11, MUTED, False, True)]],
+     space_after=8, line_spacing=1.15)
+# Right: empirical conformal
+box(s, Inches(6.85), Inches(2.5), Inches(6.05), Inches(2.5), fill=PANEL2, round_=True, radius=0.06)
+box(s, Inches(6.85), Inches(2.5), Inches(6.05), Inches(0.09), fill=GREEN)
+text(s, Inches(7.15), Inches(2.72), Inches(5.5), Inches(0.4), [[('Empirical band (conformal)', 14, GREEN, True)]])
+text(s, Inches(7.15), Inches(3.2), Inches(5.5), Inches(1.7),
+     [[('Proven against the quotes YOU logged — with a coverage guarantee.', 12, BODY, False)],
+      [('Example:  90% of your quotes land within  ± 6.5%  →  £81.54 – £92.88', 13, DARK, True)],
+      [('Tightens automatically as more quotes are logged.', 11, GREEN, False, True)]],
+     space_after=8, line_spacing=1.15)
+box(s, Inches(0.45), Inches(5.25), Inches(12.45), Inches(1.5), fill=PANEL2, round_=True, radius=0.06)
+text(s, Inches(0.75), Inches(5.45), Inches(11.9), Inches(1.2),
+     [[('Why it helps:  ', 13, BLUE, True),
+       ('a buyer can’t defend "trust me, ±5%". They CAN defend "90% of our real quotes for this family landed within '
+        '±6.5%." The band edge is an observed error — evidence, not an assertion. It is the honest uncertainty '
+        'no competitor states this way.', 12.5, BODY, False)]], line_spacing=1.2)
+notes(s, "A new capability that sharpens the moat. Every should-cost now shows two ranges. On the left, the physics "
+         "prior — a Monte-Carlo band that reflects how well the inputs are known; it's always available. On the right, "
+         "the new one: an empirical band computed from the actual quotes you've logged, using a statistical method "
+         "called conformal prediction that comes with a coverage guarantee. So instead of asserting a precision, the "
+         "tool says, honestly, '90% of your real quotes for this material family have landed within plus-or-minus 6.5%.' "
+         "That band edge is an observed error, not a claim — which is exactly why a buyer can defend it in the room. "
+         "And it tightens on its own as more quotes are logged. No competitor states uncertainty with a guarantee like this.")
+
+# ════════════════════════════════════════════════════════════════════════════
+# NEW B — OUTCOME-WEIGHTED FINDINGS
+# ════════════════════════════════════════════════════════════════════════════
+s = header('The agent learns what actually earns money', 'New in 2026 · advanced intelligence')
+text(s, Inches(0.45), Inches(1.85), Inches(12.4), Inches(0.45),
+     [[('The autonomous agent no longer just finds gaps — it learns which findings ', 13.5, BODY, False),
+       ('actually convert into savings, and re-ranks by the money it can really recover.', 13.5, DARK, True)]])
+# comparison table
+hdr = ['Finding', 'Raw gap (impact)', 'Learned conversion', 'Expected realizable']
+cols_x = [Inches(0.6), Inches(4.4), Inches(7.4), Inches(10.2)]
+box(s, Inches(0.45), Inches(2.5), Inches(12.45), Inches(0.5), fill=DARK, round_=False)
+for i, htext in enumerate(hdr):
+    text(s, cols_x[i], Inches(2.58), Inches(3.4), Inches(0.35), [[(htext, 11.5, BG, True)]])
+rows = [
+    ('Cast Housing', '£200k/yr', '20% — rarely closes', '£40k', RED),
+    ('Machined Knuckle', '£100k/yr', '80% — usually closes', '£80k', GREEN),
+]
+for i, (a, b, c, d, col) in enumerate(rows):
+    y = Inches(3.0 + i * 0.62)
+    box(s, Inches(0.45), y, Inches(12.45), Inches(0.6), fill=PANEL if i % 2 == 0 else BG)
+    text(s, cols_x[0], y + Inches(0.14), Inches(3.6), Inches(0.35), [[(a, 12.5, DARK, True)]])
+    text(s, cols_x[1], y + Inches(0.14), Inches(3.0), Inches(0.35), [[(b, 12, BODY, False)]])
+    text(s, cols_x[2], y + Inches(0.14), Inches(2.8), Inches(0.35), [[(c, 12, BODY, False)]])
+    text(s, cols_x[3], y + Inches(0.14), Inches(2.6), Inches(0.35), [[(d, 13, col, True)]])
+box(s, Inches(0.45), Inches(4.5), Inches(12.45), Inches(0.95), fill=PANEL2, round_=True, radius=0.08)
+text(s, Inches(0.75), Inches(4.66), Inches(11.9), Inches(0.7),
+     [[('The result: ', 12.5, BLUE, True),
+       ('the machining finding — HALF the raw gap — now ranks ABOVE the casting one, because the agent learned '
+        'casting renegotiations don’t close. It stops shouting about theoretical money and surfaces the money you can get.', 12.5, BODY, False)]],
+     line_spacing=1.2)
+text(s, Inches(0.45), Inches(5.7), Inches(12.4), Inches(1.0),
+     [[('Why it helps:  ', 13, GREEN, True),
+       ('sourcing time is scarce. The agent spends it where the return is real — and tracks the £ actually saved, '
+        'so you can prove the tool paid for itself. One click ("Actioned £") teaches it after every negotiation.', 12.5, BODY, False)]],
+     line_spacing=1.2)
+notes(s, "This is a genuine closed loop on the autonomous agent. Until now it ranked findings by the size of the gap "
+         "times the volume — the theoretical money. Now it learns which findings actually convert. Look at the table: "
+         "the cast housing has a two-hundred-thousand-pound gap, but in our data casting renegotiations almost never "
+         "close — a twenty percent hit rate — so the expected realizable value is forty thousand. The machined knuckle "
+         "has half the raw gap, but machining renegotiations usually close — eighty percent — so its realizable value is "
+         "eighty thousand. The agent now ranks the machining finding first, even though its headline number is smaller. "
+         "Why does that help? Sourcing time is scarce; the agent points it at money you can actually recover, and it "
+         "tracks pounds truly saved so the tool proves its own worth. Every closed negotiation teaches it with one click.")
+
+# ════════════════════════════════════════════════════════════════════════════
+# NEW C — NEGOTIATION COACH
+# ════════════════════════════════════════════════════════════════════════════
+s = header('The negotiation coach — it hands you the argument', 'New in 2026 · advanced intelligence')
+text(s, Inches(0.45), Inches(1.85), Inches(12.4), Inches(0.45),
+     [[('The tool now knows ', 13.5, BODY, False), ('why', 13.5, DARK, True, True),
+       (' a part costs what it does — and turns that into the sentence that wins the negotiation.', 13.5, BODY, False)]])
+box(s, Inches(0.45), Inches(2.5), Inches(12.45), Inches(2.0), fill=PANEL2, round_=True, radius=0.05)
+box(s, Inches(0.45), Inches(2.5), Inches(0.09), Inches(2.0), fill=BLUE)
+text(s, Inches(0.8), Inches(2.72), Inches(11.8), Inches(0.35), [[('Live example — real output from the tool', 12, BLUE, True)]])
+text(s, Inches(0.8), Inches(3.12), Inches(11.8), Inches(1.3),
+     [[('“Material is £8.39 of this part, driven by Aluminium. Every 1% move in the Aluminium index shifts the '
+        'piece price by £0.11. ', 14, DARK, True),
+       ('A quote of £95 is only justified if Aluminium were ~14% above today’s index — ask the supplier to show '
+        'that, or hold at £86.34.”', 14, VIOLET, True)]], line_spacing=1.3)
+box(s, Inches(0.45), Inches(4.75), Inches(6.05), Inches(2.0), fill=PANEL, round_=True, radius=0.06)
+text(s, Inches(0.75), Inches(4.95), Inches(5.5), Inches(1.7),
+     [[('What it does', 13.5, DARK, True)],
+      [('Links the material to its commodity index, then works out — through the same maths the engine uses — '
+        'exactly how much a supplier’s price implies the metal has moved.', 11.5, BODY, False)]],
+     space_after=6, line_spacing=1.18)
+box(s, Inches(6.85), Inches(4.75), Inches(6.05), Inches(2.0), fill=PANEL2, round_=True, radius=0.06)
+text(s, Inches(7.15), Inches(4.95), Inches(5.5), Inches(1.7),
+     [[('Why it helps', 13.5, GREEN, True)],
+      [('The buyer walks in with a defensible, arithmetic counter-argument instead of "that feels high". '
+        'It converts should-cost into negotiating power — the number and the words to win with it.', 11.5, BODY, False)]],
+     space_after=6, line_spacing=1.18)
+notes(s, "This is the capability that turns a number into leverage. The tool now builds a small causal model of the "
+         "part: it knows the material bucket is driven by a specific commodity index — aluminium here — and it computes, "
+         "through the very same overhead and margin maths the engine already uses, how sensitive the price is. Then it "
+         "writes the argument for you. Read the live example: material is eight-thirty-nine, driven by aluminium; every "
+         "one percent move in aluminium shifts the piece price by eleven pence; and a supplier quote of ninety-five is "
+         "only justified if aluminium were about fourteen percent above today's index — so ask them to prove that, or "
+         "hold at eighty-six thirty-four. That is a defensible, arithmetic counter a buyer can say out loud. It converts "
+         "should-cost into negotiating power — the number AND the sentence to win with it.")
+
+# ════════════════════════════════════════════════════════════════════════════
+# NEW D — WHAT-IF ENGINE
+# ════════════════════════════════════════════════════════════════════════════
+s = header('Cost weather on demand — the what-if engine', 'New in 2026 · advanced intelligence')
+text(s, Inches(0.45), Inches(1.85), Inches(12.4), Inches(0.45),
+     [[('Ask "what if a commodity moves?" and get the answer instantly — for one part, or the whole portfolio.', 13.5, BODY, False)]])
+box(s, Inches(0.45), Inches(2.5), Inches(6.05), Inches(2.7), fill=PANEL, round_=True, radius=0.06)
+box(s, Inches(0.45), Inches(2.5), Inches(6.05), Inches(0.09), fill=BLUE)
+text(s, Inches(0.75), Inches(2.72), Inches(5.5), Inches(0.4), [[('One part — the live slider', 14, BLUE, True)]])
+text(s, Inches(0.75), Inches(3.2), Inches(5.5), Inches(1.9),
+     [[('Drag a commodity −20% … +20% and the piece price recomputes as you move.', 12, BODY, False)],
+      [('Example:  Aluminium +15%  →  £86.34 → £87.92', 13.5, DARK, True)],
+      [('Instant sensitivity in a single gesture.', 11, MUTED, False, True)]],
+     space_after=8, line_spacing=1.15)
+box(s, Inches(6.85), Inches(2.5), Inches(6.05), Inches(2.7), fill=PANEL, round_=True, radius=0.06)
+box(s, Inches(6.85), Inches(2.5), Inches(6.05), Inches(0.09), fill=VIOLET)
+text(s, Inches(7.15), Inches(2.72), Inches(5.5), Inches(0.4), [[('Whole portfolio — the scenario', 14, VIOLET, True)]])
+text(s, Inches(7.15), Inches(3.2), Inches(5.5), Inches(1.9),
+     [[('Apply a move across every part at once and see who changes status.', 12, BODY, False)],
+      [('Example:  "If Steel +10% → 7 parts cross underwater, £X/yr at risk."', 13.5, DARK, True)],
+      [('Pre-empt losses before the market moves them.', 11, MUTED, False, True)]],
+     space_after=8, line_spacing=1.15)
+box(s, Inches(0.45), Inches(5.45), Inches(12.45), Inches(1.3), fill=PANEL2, round_=True, radius=0.06)
+text(s, Inches(0.75), Inches(5.62), Inches(11.9), Inches(1.05),
+     [[('Honest by design:  ', 13, AMBER, True),
+       ('this is a conditional — "IF the index moves" — never a price forecast. So it stays defensible even on an '
+        'indicative commodity feed, and upgrades to a true forecast the day a live market feed is connected.', 12.5, BODY, False)]],
+     line_spacing=1.2)
+notes(s, "Two ways to ask 'what if a commodity moves?' On the left, for a single part: drag a slider from minus twenty "
+         "to plus twenty percent and the piece price recomputes live as you move it — plus fifteen percent aluminium takes "
+         "this part from eighty-six thirty-four to eighty-seven ninety-two. On the right, for the whole portfolio: apply a "
+         "move across every part at once and see who changes status — if steel rises ten percent, these seven parts flip "
+         "underwater and here's the money at risk. That lets sourcing pre-empt losses instead of reacting to them. And the "
+         "honest framing that keeps it credible: this is always a conditional — IF the index moves — never a forecast we "
+         "can't defend. The day we connect a live market feed, the same machinery becomes a genuine forecast.")
+
+# ════════════════════════════════════════════════════════════════════════════
+# NEW E — GLASS-BOX DIFFERENTIATION
+# ════════════════════════════════════════════════════════════════════════════
+s = header('Why ours is different — glass-box autonomy', 'The differentiator')
+box(s, Inches(0.45), Inches(2.0), Inches(12.45), Inches(1.3), fill=PANEL2, round_=True, radius=0.06)
+text(s, Inches(0.75), Inches(2.2), Inches(11.9), Inches(1.0),
+     [[('The principle:  ', 15, BLUE, True),
+       ('every learned or derived number stays auditable — a value a cost engineer can read and defend. '
+        'No black-box weight ever touches the price. The AI narrates and explains; it never decides the number in secret.', 13.5, BODY, False)]],
+     line_spacing=1.2)
+cmp = [
+    ('Continuous learning', 'Calibrates on YOUR quotes; conformal band with a guarantee', GREEN),
+    ('Autonomous action', 'Agent opens findings unattended AND learns which convert', GREEN),
+    ('Causal reasoning', 'Knows why a part costs what it does; coaches the negotiation', GREEN),
+    ('Explainable — always', 'Every number defensible line-by-line; the competitor’s edge is the opposite', BLUE),
+    ('Runs in your walls', 'On-premise; the knowledge is your IP and never leaves', VIOLET),
+]
+for i, (t, d, c) in enumerate(cmp):
+    y = Inches(3.5 + i * 0.66)
+    box(s, Inches(0.45), y, Inches(12.45), Inches(0.58), fill=PANEL if i % 2 == 0 else BG, round_=True, radius=0.1)
+    box(s, Inches(0.45), y, Inches(0.09), Inches(0.58), fill=c)
+    text(s, Inches(0.75), y + Inches(0.13), Inches(3.6), Inches(0.35), [[(t, 12.5, c, True)]])
+    text(s, Inches(4.5), y + Inches(0.13), Inches(8.2), Inches(0.35), [[(d, 12, BODY, False)]])
+notes(s, "The one slide that says why this beats what's on the market. The competitors demo continuous learning and "
+         "adaptive reasoning, but they do it as a black box — a number you're told to trust. Our principle is the "
+         "opposite, and it's the harder thing to build: every learned or derived number stays auditable. The bias "
+         "factor, the conformal band, the hit-rate, the coach's arithmetic — all of it is a value a cost engineer can "
+         "read and defend in a negotiation. The AI narrates and explains; it never decides the price in secret. So we "
+         "match them on learning, autonomy and causal reasoning — and beat them on the one thing that actually wins "
+         "deals in this field: defensibility. And it all runs inside our own walls, so the intelligence is our IP and "
+         "never leaves the building. That combination — autonomous, self-improving, AND glass-box, on-premise — is not "
+         "available anywhere else.")
+
+# ════════════════════════════════════════════════════════════════════════════
 # 14 — NEXT STEPS
 # ════════════════════════════════════════════════════════════════════════════
 s = header('Where we are, and the ask', 'Next steps')
 box(s, Inches(0.45), Inches(2.0), Inches(6.0), Inches(4.4), fill=PANEL, round_=True, radius=0.05)
 text(s, Inches(0.75), Inches(2.25), Inches(5.4), Inches(0.4), [[('Status today', 16, GREEN, True)]])
 st = [
-    'All 6 capabilities built, tested (790 tests) and live',
+    'All capabilities built, tested (813 tests) and live — incl. 5 new for 2026',
     'Verified end-to-end on the running system',
     'Zero extra licence cost — built into our tool',
     'Runs on-premise; no data leaves the company',
