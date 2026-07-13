@@ -20,6 +20,7 @@ import {
 import { findSimilarCases, deriveSuggestions, proactiveInsights, type PartFingerprint } from '../../src/engine/part-similarity.js';
 import { computeIntelligenceSummary } from '../../src/engine/intelligence.js';
 import { scanForDrift, rankFindings, computeHitRates, type DriftFinding, type FindingOutcome, type DriftKind } from '../../src/engine/drift-monitor.js';
+import { scenarioPortfolioDrift, type PortfolioCase } from '../../src/engine/causal-model.js';
 
 ensureKnowledgeTable(db);
 ensureDriftTable(db);
@@ -130,6 +131,30 @@ router.post('/drift/dismiss', (req: AuthenticatedRequest, res: Response): void =
   if (!partName || !commodity || !kind) { res.status(400).json({ error: 'partName, commodity and kind are required' }); return; }
   dismissFinding(db, partName, commodity, kind);
   res.json({ success: true });
+});
+
+/** Portfolio what-if — a defensible conditional ('if this index moves'), not a forecast. */
+router.post('/scenario', (req: AuthenticatedRequest, res: Response): void => {
+  const { indexDeltaByCategory } = req.body as { indexDeltaByCategory?: Record<string, number> };
+  if (!indexDeltaByCategory || typeof indexDeltaByCategory !== 'object') {
+    res.status(400).json({ error: 'indexDeltaByCategory object required' }); return;
+  }
+  const portfolio: PortfolioCase[] = listCases(db, undefined, 5000)
+    .filter(c => c.breakdown && typeof c.breakdown.rawMaterial === 'number' && c.breakdown.rawMaterial > 0 && c.fingerprint?.materialFamily)
+    .map(c => ({
+      partName: c.partName, commodity: c.fingerprint.commodity, materialFamily: c.fingerprint.materialFamily,
+      totalCost: c.totalCost, actualCost: c.actualCost, materialCostGBP: c.breakdown!.rawMaterial as number,
+    }));
+  const impacts = scenarioPortfolioDrift(portfolio, indexDeltaByCategory);
+  res.json({
+    success: true, impacts,
+    summary: {
+      affected: impacts.length,
+      newUnderwater: impacts.filter(i => i.crossesUnderwater).length,
+      newRenegotiation: impacts.filter(i => i.crossesRenegotiation).length,
+      totalDeltaGBP: Math.round(impacts.reduce((s2, i) => s2 + i.deltaGBP, 0)),
+    },
+  });
 });
 
 export default router;

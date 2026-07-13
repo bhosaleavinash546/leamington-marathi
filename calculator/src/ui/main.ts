@@ -102,6 +102,10 @@ import {
   computeConformalBand, applyConformalBand,
   type CalibrationRecord,
 } from '../engine/calibration.js';
+import {
+  buildCausalModel, counterfactual, coachSentence,
+  type CommodityIndexRef,
+} from '../engine/causal-model.js';
 import type { PartFingerprint, SimilarCase, CaseSuggestion, ProactiveInsight } from '../engine/part-similarity.js';
 import { computeCarbon } from '../engine/carbon.js';
 import { computeFeatureCosting } from '../engine/feature-costing.js';
@@ -428,6 +432,16 @@ function currentMaterialFamily(): string | undefined {
   const matId = lastInput?.rawMaterial?.materialId;
   if (!matId) return undefined;
   return library.materials.find(m => m.id === matId)?.category;
+}
+
+
+/** Commodity indices (one representative per category) for the causal cost model. */
+function commodityIndices(): CommodityIndexRef[] {
+  const out = new Map<string, CommodityIndexRef>();
+  for (const c of (_commData?.commodities ?? [])) {
+    if (!out.has(c.category)) out.set(c.category, { category: c.category, currentPrice: c.currentPrice, unit: c.unit });
+  }
+  return [...out.values()];
 }
 
 /** Numeric fingerprint of the current part — powers similarity matching. */
@@ -1033,11 +1047,74 @@ async function renderDriftPanel(): Promise<void> {
   } catch { /* offline — panel stays hidden */ }
 }
 
+
+/**
+ * Portfolio what-if — the agent answers "if a commodity index moves, what happens
+ * to my portfolio?" A conditional, defensible scenario (never a forecast).
+ */
+async function renderWhatIfPanel(): Promise<void> {
+  const box = document.getElementById('dash-whatif');
+  const token = _authToken();
+  if (!box || !token) return;
+  const cats = commodityIndices().map(i => i.category);
+  const priorityCats = ['Steel', 'Aluminium', 'Copper'].filter(c => cats.includes(c));
+  const useCats = (priorityCats.length ? priorityCats : cats).slice(0, 6);
+  if (!useCats.length) { box.style.display = 'none'; return; }
+
+  const state = (box as HTMLElement & { _wf?: { cat: string; delta: number } })._wf ?? { cat: useCats[0], delta: 10 };
+  (box as HTMLElement & { _wf?: { cat: string; delta: number } })._wf = state;
+
+  const run = async () => {
+    let summary = { affected: 0, newUnderwater: 0, newRenegotiation: 0, totalDeltaGBP: 0 };
+    try {
+      const resp = await fetch('/api/knowledge/scenario', {
+        method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ indexDeltaByCategory: { [state.cat]: state.delta } }),
+      });
+      if (resp.ok) summary = (await resp.json()).summary ?? summary;
+    } catch { /* offline */ }
+    const resEl = box.querySelector('#wf-result');
+    if (resEl) {
+      resEl.innerHTML = summary.affected === 0
+        ? `<span style="color:var(--text-muted)">No ${state.cat}-driven parts in the portfolio yet — cost a few and log their material family.</span>`
+        : `<strong>${summary.affected}</strong> ${state.cat} part${summary.affected === 1 ? '' : 's'} affected · portfolio Δ <strong style="color:${state.delta > 0 ? 'var(--danger)' : 'var(--success)'}">${state.delta > 0 ? '+' : ''}${_currFmt(summary.totalDeltaGBP)}/yr</strong>` +
+          (summary.newUnderwater ? ` · <strong style="color:var(--warning)">${summary.newUnderwater}</strong> newly underwater` : '') +
+          (summary.newRenegotiation ? ` · <strong style="color:var(--success)">${summary.newRenegotiation}</strong> new renegotiation lead${summary.newRenegotiation === 1 ? '' : 's'}` : '');
+    }
+  };
+
+  box.innerHTML = `
+    <div style="padding:12px 16px;border:1px solid var(--border);border-left:4px solid var(--info);border-radius:10px;background:var(--surface-elevated)">
+      <div style="font-weight:700;font-size:0.9rem;color:var(--text-primary);display:flex;align-items:center;gap:6px"><svg class="ic"><use href="#i-gauge"/></svg> Portfolio what-if <span style="font-weight:400;font-size:0.72rem;color:var(--text-muted)">(conditional scenario — defensible, not a forecast)</span></div>
+      <div style="margin-top:8px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:0.8rem;color:var(--text-secondary)">
+        <span>If</span>
+        <select id="wf-cat" class="hdr-select" style="max-width:150px">${useCats.map(c => `<option value="${escHtml(c)}"${c === state.cat ? ' selected' : ''}>${escHtml(c)}</option>`).join('')}</select>
+        <span>moves</span>
+        <input id="wf-delta" type="range" min="-20" max="20" step="5" value="${state.delta}" style="width:140px;accent-color:var(--info)" />
+        <strong id="wf-delta-lbl" style="min-width:44px;color:var(--info)">${state.delta > 0 ? '+' : ''}${state.delta}%</strong>
+      </div>
+      <div id="wf-result" style="margin-top:8px;font-size:0.8rem;color:var(--text-secondary)">Computing…</div>
+    </div>`;
+  box.style.display = '';
+
+  const catEl = box.querySelector('#wf-cat') as HTMLSelectElement | null;
+  const deltaEl = box.querySelector('#wf-delta') as HTMLInputElement | null;
+  const lblEl = box.querySelector('#wf-delta-lbl');
+  catEl?.addEventListener('change', () => { state.cat = catEl.value; void run(); });
+  deltaEl?.addEventListener('input', () => {
+    state.delta = parseInt(deltaEl.value, 10) || 0;
+    if (lblEl) lblEl.textContent = `${state.delta > 0 ? '+' : ''}${state.delta}%`;
+  });
+  deltaEl?.addEventListener('change', () => { void run(); });
+  void run();
+}
+
 function renderDashboard(): void {
   const all = getCostingHistory();
   const records = filterHistory(all);
   void renderIntelligencePanel();
   void renderDriftPanel();
+  void renderWhatIfPanel();
 
   // KPIs
   const kpiTotal = document.getElementById('kpi-total-val');
@@ -13517,7 +13594,42 @@ function renderInsights(result: PartCostResult, input: UniversalStackInput): voi
         </div>
       </div>`;
         }
-        return uncertaintyCard + calibrationCard;
+        // ── Causal cost drivers + negotiation coach (Phase 2) ──────────────
+        let causalCard = '';
+        const causal = buildCausalModel({
+          partTotal: result.total,
+          materialCostGBP: result.breakdown.rawMaterial,
+          materialFamily: currentMaterialFamily(),
+          overheadPct: input.overheadPct,
+          marginPct: input.marginPct,
+          indices: commodityIndices(),
+        });
+        if (causal.driver) {
+          const d = causal.driver;
+          const lowestQuoteGBP = supplierQuotes.length
+            ? Math.min(...supplierQuotes.map(q => q.quotedPriceGBP * q.fxRate))
+            : null;
+          const coach = coachSentence(causal, lowestQuoteGBP, (n: number) => cf(n));
+          const cf10dn = counterfactual(causal, -10)!;
+          const cf10up = counterfactual(causal, 10)!;
+          causalCard = `
+      <div style="margin-top:8px;padding:12px 14px;border:1px solid var(--border);border-left:4px solid var(--info);border-radius:8px;background:var(--surface-elevated)" id="cv-causal-card">
+        <div style="font-weight:700;font-size:0.9rem;color:var(--text-primary);display:flex;align-items:center;gap:6px"><svg class="ic"><use href="#i-trend-up"/></svg> Cost drivers &amp; negotiation coach <span style="font-weight:400;font-size:0.72rem;color:var(--text-muted)">(what actually moves this price)</span></div>
+        <div style="margin-top:7px;font-size:0.8rem;color:var(--text-secondary);line-height:1.5">${escHtml(coach ?? '')}</div>
+        <div style="margin-top:10px;padding-top:9px;border-top:1px dashed var(--border)">
+          <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+            <span style="font-size:0.76rem;color:var(--text-secondary)">What-if: <strong id="cv-wi-label">${d.indexCategory} unchanged</strong></span>
+            <span style="font-size:0.95rem;font-weight:700;color:var(--info)" id="cv-wi-total">${cf(result.total)}</span>
+          </div>
+          <input type="range" class="cv-whatif-slider" min="-20" max="20" step="1" value="0"
+                 data-total="${result.total}" data-per="${d.gbpPer1pctIndex}" data-cat="${escHtml(d.indexCategory)}"
+                 style="width:100%;margin-top:6px;accent-color:var(--info)" aria-label="${escHtml(d.indexCategory)} index change" />
+          <div style="display:flex;justify-content:space-between;font-size:0.66rem;color:var(--text-muted)"><span>−20%</span><span>spot</span><span>+20%</span></div>
+          <div style="margin-top:4px;font-size:0.72rem;color:var(--text-muted)">Reference: ${d.indexCategory} −10% → ${cf(cf10dn.newTotal)} · +10% → ${cf(cf10up.newTotal)}. Conditional model — a defensible what-if, not a price forecast.</div>
+        </div>
+      </div>`;
+        }
+        return uncertaintyCard + calibrationCard + causalCard;
       })()}
 
       <div id="kb-panel"></div>
@@ -16703,6 +16815,7 @@ async function init(): Promise<void> {
   initBenchmarkHints();
   initDraftAutosave();
   initWhatsNew();
+  initWhatIfSlider();
 
   // ─── News section wiring ──────────────────────────────────────────────────
   document.getElementById('news-btn')?.addEventListener('click', () => { setNavActive('news-btn'); showNews(); });
@@ -17297,6 +17410,28 @@ document.addEventListener('keydown', e => {
   if (e.shiftKey && active === first) { e.preventDefault(); last.focus(); }
   else if (!e.shiftKey && active === last) { e.preventDefault(); first.focus(); }
 });
+
+
+// ═══ What-if slider for the causal cost model (delegated; CSP-safe) ══════════
+function initWhatIfSlider(): void {
+  document.addEventListener('input', (e) => {
+    const el = e.target as HTMLInputElement;
+    if (!el.classList?.contains('cv-whatif-slider')) return;
+    const total = parseFloat(el.dataset.total ?? '0');
+    const per = parseFloat(el.dataset.per ?? '0');     // £ per +1% index move
+    const cat = el.dataset.cat ?? 'index';
+    const pct = parseInt(el.value, 10) || 0;
+    const newTotal = total + per * pct;
+    const card = el.closest('#cv-causal-card');
+    const totalEl = card?.querySelector('#cv-wi-total');
+    const labelEl = card?.querySelector('#cv-wi-label');
+    if (totalEl) {
+      totalEl.textContent = _currFmt(newTotal);
+      (totalEl as HTMLElement).style.color = pct > 0 ? 'var(--danger)' : pct < 0 ? 'var(--success)' : 'var(--info)';
+    }
+    if (labelEl) labelEl.textContent = pct === 0 ? `${cat} unchanged` : `${cat} ${pct > 0 ? '+' : ''}${pct}%`;
+  });
+}
 
 // ═══ Command palette (⌘K) — fuzzy launcher over views, actions & commodities ══
 interface CmdkEntry { label: string; sub: string; icon: string; run: () => void }
