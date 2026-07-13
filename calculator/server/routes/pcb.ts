@@ -227,7 +227,7 @@ Return ONLY a JSON array (same order as the list above):
 [{"refDes":"U1","identifiedPartNumber":"STM32F407","unitPriceGBP":3.20,"lineConf":0.85}]
 If still unreadable, set identifiedPartNumber to "" and adjust lineConf downward.`;
   try {
-    const msg = await anthropic.messages.create({ temperature: 0,
+    const msg = await anthropic.messages.create({
       model: 'claude-sonnet-5', max_tokens: 2048, system: specialistSystem,
       messages: [{ role: 'user', content: [
         ...buildImageContentBlocks(imageFiles, imageLabels, imageFiles.length > 1),
@@ -1085,7 +1085,7 @@ router.post('/analyze-image', upload.fields([
 
   try {
     // ── Attempt 1: Full vision analysis (all images) ─────────────────────
-    const msg1 = await anthropic.messages.create({ temperature: 0,
+    const msg1 = await anthropic.messages.create({
       model: 'claude-sonnet-5',
       max_tokens: 16384,
       system: specialistSystem,
@@ -1108,7 +1108,7 @@ router.post('/analyze-image', upload.fields([
       console.warn('[PCB] Raw (first 500):', lastRaw.slice(0, 500));
 
       // ── Attempt 2: Send raw response back to Claude for JSON repair ────
-      const msg2 = await anthropic.messages.create({ temperature: 0,
+      const msg2 = await anthropic.messages.create({
         model: 'claude-sonnet-5',
         max_tokens: 16384,
         system: 'You are a JSON repair assistant. Return ONLY valid JSON — nothing else. Start with { and end with }.',
@@ -1129,7 +1129,7 @@ router.post('/analyze-image', upload.fields([
 
 ${userPromptText}`;
 
-        const msg3 = await anthropic.messages.create({ temperature: 0,
+        const msg3 = await anthropic.messages.create({
           model: 'claude-sonnet-5',
           max_tokens: 4096,
           system: specialistSystem,
@@ -1471,7 +1471,7 @@ router.post('/reanalyze', upload.fields([
     const contentBlocks: Array<{ type: 'image'; source: { type: 'base64'; media_type: string; data: string } } | { type: 'text'; text: string }> =
       imageFiles.length > 0 ? buildImageContentBlocks(imageFiles, imageLabels, multiImage) : [];
 
-    const msg1 = await anthropic.messages.create({ temperature: 0,
+    const msg1 = await anthropic.messages.create({
       model: 'claude-sonnet-5',
       max_tokens: 16384,
       system: specialistSystem,
@@ -1492,7 +1492,7 @@ router.post('/reanalyze', upload.fields([
       console.warn('[PCB/reanalyze] Attempt 1 JSON parse failed:', String(e1));
 
       // ── Attempt 2: JSON repair ────────────────────────────────────────
-      const msg2 = await anthropic.messages.create({ temperature: 0,
+      const msg2 = await anthropic.messages.create({
         model: 'claude-sonnet-5',
         max_tokens: 16384,
         system: 'You are a JSON repair assistant. Return ONLY valid JSON — nothing else. Start with { and end with }.',
@@ -1510,7 +1510,7 @@ router.post('/reanalyze', upload.fields([
         const fallbackContentBlocks: Array<{ type: 'image'; source: { type: 'base64'; media_type: string; data: string } } | { type: 'text'; text: string }> =
           imageFiles.length > 0 ? buildImageContentBlocks(imageFiles, imageLabels, multiImage) : [];
 
-        const msg3 = await anthropic.messages.create({ temperature: 0,
+        const msg3 = await anthropic.messages.create({
           model: 'claude-sonnet-5',
           max_tokens: 4096,
           system: specialistSystem,
@@ -1885,7 +1885,7 @@ router.post('/analyze-image-stream', upload.fields([
   let stage3Raw = '';
   // ── Stage 3 attempt 1: full vision analysis ──────────────────────────────
   try {
-    const msg = await anthropic.messages.create({ temperature: 0,
+    const msg = await anthropic.messages.create({
       model: 'claude-sonnet-5', max_tokens: 16384, system: specSystem,
       messages: [{ role: 'user', content: [
         ...buildImageContentBlocks(imageFiles, imageLabels, multiImage),
@@ -1910,7 +1910,7 @@ router.post('/analyze-image-stream', upload.fields([
     console.warn('[PCB/stream] Raw (first 500):', stage3Raw.slice(0, 500));
     emit('progress', { stage: 3, label: 'Stage 3 — repairing AI response', pct: 60 });
     try {
-      const repair = await anthropic.messages.create({ temperature: 0,
+      const repair = await anthropic.messages.create({
         model: 'claude-sonnet-5', max_tokens: 16384,
         system: 'You are a JSON repair assistant. Return ONLY valid JSON — nothing else. Start with { and end with }.',
         messages: [{ role: 'user', content: buildRepairPrompt(stage3Raw) }],

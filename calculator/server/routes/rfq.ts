@@ -22,7 +22,7 @@ router.post('/analyze', async (req: Request, res: Response): Promise<void> => {
       if (!key) { res.status(400).json({ error: 'Provide "lines", or "text" plus an Anthropic API key to decompose it.' }); return; }
       const anthropic = createAnthropic(key);
       const msg = await anthropic.messages.create({
-        model: 'claude-sonnet-5', max_tokens: 4096, temperature: 0,
+        model: 'claude-sonnet-5', max_tokens: 4096,
         system: DECOMPOSE_SYSTEM,
         messages: [{ role: 'user', content: text.slice(0, 20000) }],
       });
