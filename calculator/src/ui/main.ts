@@ -1486,6 +1486,10 @@ function renderNegotiationPanel(): void {
       _negoState.uploadedName = file.name;
       if (nameEl) nameEl.textContent = `${file.name} · ${parsed.rowsFilled} values`;
       showToast(`Loaded ${parsed.rowsFilled} supplier values — click Analyze quote`, 'info');
+      if (parsed.warnings.length) {
+        showToast(parsed.warnings.length === 1 ? parsed.warnings[0] : `${parsed.warnings.length} notes on the upload: ${parsed.warnings[0]}`, 'warning');
+        console.info('[nego upload notes]', parsed.warnings);
+      }
     } catch (err) {
       console.error('[nego upload]', err);
       showToast(err instanceof Error ? err.message : 'Could not read that file', 'error');
