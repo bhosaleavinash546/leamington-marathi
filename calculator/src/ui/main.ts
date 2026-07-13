@@ -142,6 +142,9 @@ import { initObservability, breadcrumb } from './observability.js';
 import { escHtml } from './toast.js';
 import { el, val, num, sel, fmtPct, validSel } from './helpers.js';
 import { CAD_AI_DEMOS } from './data/cad-ai-demos.js';
+import { CAD_COMMODITY_OPTIONS, CAD_MATERIALS_BY_COMMODITY } from './data/cad-options.js';
+import { COMMODITY_DEMO_SNIPPETS } from './data/demo-snippets.js';
+import { PCB_COUNTRY_META, computeClientRiskProfile } from './data/pcb-country-meta.js';
 import { apiBase } from '../api-base.js';
 import {
   initCVAnimations, onViewShown, onDashboardRendered, onTableRendered,
@@ -5279,130 +5282,7 @@ function addCAMMachOp(d?: Partial<MachiningOperation>): void {
 
 // ─── Form: AI CAD Analysis ────────────────────────────────────────────────────
 
-const CAD_COMMODITY_OPTIONS: Array<{ value: string; label: string }> = [
-  { value: '', label: '— Auto-detect (AI selects) —' },
-  { value: 'machining', label: 'Machining (CNC)' },
-  { value: 'casting', label: 'Casting (HPDC / Sand / Gravity)' },
-  { value: 'cast_and_machine', label: 'Cast + Machine' },
-  { value: 'forging', label: 'Forging (Closed-die)' },
-  { value: 'sheet_metal', label: 'Sheet Metal (Stamping)' },
-  { value: 'sheet_metal_fab', label: 'Sheet Metal Fabrication (Laser/Bend/Weld)' },
-  { value: 'injection_moulding', label: 'Injection Moulding' },
-  { value: 'blow_moulding', label: 'Blow Moulding' },
-  { value: 'thermoforming', label: 'Thermoforming' },
-  { value: 'rotational_moulding', label: 'Rotational Moulding' },
-  { value: 'extrusion', label: 'Extrusion' },
-  { value: 'composites', label: 'Composites (CFRP / GFRP)' },
-  { value: 'rubber', label: 'Rubber Moulding' },
-  { value: 'wiring_harness', label: 'Wiring Harness' },
-  { value: 'assembly', label: 'Assembly' },
-  { value: 'painting', label: 'Painting / Coating' },
-  { value: 'pcb_fab', label: 'PCB Fabrication' },
-  { value: 'pcba', label: 'PCBA (Electronics Assembly)' },
-  { value: 'biw_assembly', label: 'BIW Assembly' },
-];
-
-const CAD_MATERIALS_BY_COMMODITY: Record<string, Array<{ id: string; label: string }>> = {
-  '': [],
-  machining: [
-    { id: 'mat-al6061', label: 'Aluminium 6061-T6' },
-    { id: 'mat-al5052', label: 'Aluminium 5052-H32' },
-    { id: 'mat-steel1045', label: 'Carbon Steel 1045' },
-    { id: 'mat-steel4140', label: 'Alloy Steel 4140 / 4340' },
-    { id: 'mat-ss316l', label: 'Stainless Steel 316L' },
-    { id: 'mat-ti6al4v', label: 'Titanium Ti-6Al-4V' },
-  ],
-  casting: [
-    { id: 'mat-al6061', label: 'LM25 / A356 Aluminium (Gravity/Sand)' },
-    { id: 'mat-al5052', label: 'ADC12 / A380 Aluminium (HPDC)' },
-    { id: 'mat-steel1045', label: 'Carbon Steel (Sand Casting)' },
-    { id: 'mat-ss316l', label: 'Stainless Steel 316 (Investment)' },
-  ],
-  cast_and_machine: [
-    { id: 'mat-al6061', label: 'Aluminium 6061 (Cast then Machine)' },
-    { id: 'mat-al5052', label: 'ADC12 Aluminium HPDC + Machine' },
-    { id: 'mat-steel1045', label: 'Carbon Steel (Sand Cast + Machine)' },
-    { id: 'mat-ss316l', label: 'Stainless Steel 316 (Cast + Machine)' },
-  ],
-  forging: [
-    { id: 'mat-steel1045', label: 'Carbon Steel 1045' },
-    { id: 'mat-steel4140', label: 'Alloy Steel 4140 (High Strength)' },
-    { id: 'mat-al6061', label: 'Aluminium 6061 Forging' },
-    { id: 'mat-ti6al4v', label: 'Titanium Ti-6Al-4V' },
-    { id: 'mat-ss316l', label: 'Stainless Steel 316' },
-  ],
-  sheet_metal: [
-    { id: 'mat-dc01', label: 'Mild Steel DC01' },
-    { id: 'mat-dp600', label: 'DP600 (Advanced High Strength)' },
-    { id: 'mat-hsla340', label: 'HSLA 340' },
-    { id: 'mat-22mnb5', label: '22MnB5 Boron Steel (Hot Stamp)' },
-    { id: 'mat-dc01-gi', label: 'DC01 GI (Galvanised)' },
-    { id: 'mat-aa5182', label: 'AA5182 Aluminium' },
-    { id: 'mat-aa5754-sheet', label: 'AA5754-H22 Aluminium' },
-    { id: 'mat-ss304-sheet', label: 'Stainless Steel 304L' },
-    { id: 'mat-ss316-sheet', label: 'Stainless Steel 316L' },
-  ],
-  sheet_metal_fab: [
-    { id: 'mat-dc01', label: 'Mild Steel DC01' },
-    { id: 'mat-hrpo', label: 'HRPO (Hot Rolled P&O)' },
-    { id: 'mat-aa5052', label: 'Aluminium AA5052-H32' },
-    { id: 'mat-aa6082-sheet', label: 'Aluminium AA6082-T6' },
-    { id: 'mat-ss304-sheet', label: 'Stainless Steel 304L' },
-    { id: 'mat-ss316-sheet', label: 'Stainless Steel 316L' },
-  ],
-  injection_moulding: [
-    { id: 'mat-pp', label: 'PP Copolymer' },
-    { id: 'mat-pp-homo', label: 'PP Homopolymer' },
-    { id: 'mat-abs', label: 'ABS' },
-    { id: 'mat-pc', label: 'PC (Polycarbonate)' },
-    { id: 'mat-pc-abs', label: 'PC/ABS Blend' },
-    { id: 'mat-pa6', label: 'PA6 Nylon' },
-    { id: 'mat-pa6-gf30', label: 'PA6 GF30 (Glass-filled)' },
-    { id: 'mat-pa66gf30', label: 'PA66 GF30' },
-    { id: 'mat-pom', label: 'POM / Acetal (Delrin)' },
-    { id: 'mat-hdpe', label: 'HDPE' },
-    { id: 'mat-pbt-gf30', label: 'PBT GF30' },
-    { id: 'mat-pet-gf30', label: 'PET GF30' },
-    { id: 'mat-tpu-shore85', label: 'TPU Shore 85A' },
-  ],
-  blow_moulding: [
-    { id: 'mat-hdpe', label: 'HDPE (EBM bottles/tanks)' },
-    { id: 'mat-pp', label: 'PP (EBM ducts/containers)' },
-    { id: 'mat-pet-bg', label: 'PET Bottle Grade (SBM)' },
-    { id: 'mat-ldpe', label: 'LDPE (Film/bags)' },
-    { id: 'mat-pc', label: 'PC (IBM precision)' },
-  ],
-  thermoforming: [
-    { id: 'mat-hips', label: 'HIPS Sheet' },
-    { id: 'mat-gpps', label: 'GPPS (Crystal PS)' },
-    { id: 'mat-abs', label: 'ABS Sheet' },
-    { id: 'mat-pet-bg', label: 'PET Sheet' },
-    { id: 'mat-hdpe', label: 'HDPE Sheet' },
-    { id: 'mat-pc', label: 'PC Sheet' },
-    { id: 'mat-pp', label: 'PP Sheet' },
-  ],
-  rotational_moulding: [
-    { id: 'mat-lldpe', label: 'LLDPE C6 Powder (most common)' },
-    { id: 'mat-hdpe', label: 'HDPE Powder' },
-    { id: 'mat-pp', label: 'PP Powder' },
-  ],
-  extrusion: [
-    { id: 'mat-al6061', label: 'Aluminium 6061 Extrusion' },
-    { id: 'mat-upvc', label: 'Rigid PVC (uPVC) Profile' },
-    { id: 'mat-fpvc', label: 'Flexible PVC (fPVC) Profile' },
-    { id: 'mat-pp', label: 'PP Profile' },
-    { id: 'mat-hdpe', label: 'HDPE Pipe/Profile' },
-  ],
-  composites: [
-    { id: 'mat-al6061', label: 'CFRP (equiv. Al ref for weight)' },
-    { id: 'mat-al5052', label: 'GFRP (equiv. Al ref for weight)' },
-  ],
-  rubber: [
-    { id: 'mat-tpu-shore85', label: 'TPU Shore 85A' },
-    { id: 'mat-pp', label: 'EPDM (natural rubber equiv.)' },
-    { id: 'mat-hdpe', label: 'Silicone (medical/food grade)' },
-  ],
-};
+// CAD commodity/material option lists moved to ./data/cad-options.ts
 
 function _buildCadMaterialOptions(commodity: string): string {
   const mats = CAD_MATERIALS_BY_COMMODITY[commodity] ?? [];
@@ -6180,90 +6060,7 @@ const FACE_COLOURS: Record<string, string> = {
 // ─── PCB Image Analysis ───────────────────────────────────────────────────────
 
 // AI CAD-to-Cost pre-computed demo results moved to ./data/cad-ai-demos.ts
-
-// ─── Inline Demo Cards (all non-PCB commodities) ─────────────────────────────
-const COMMODITY_DEMO_SNIPPETS: Record<string, Array<{brand: string; name: string; spec: string}>> = {
-  machining: [
-    { brand: 'BMW X7', name: 'Rear Suspension Knuckle', spec: 'Al6061-T6 · 5-axis · 1.85 kg' },
-    { brand: 'Range Rover Velar', name: 'Steering Rack Housing', spec: 'Al6061-T6 · 3-axis · 2.10 kg' },
-    { brand: 'Toyota Land Cruiser', name: 'Rear Hub Carrier', spec: 'Al6061-T6 · 5-axis · 2.45 kg' },
-  ],
-  sheet_metal: [
-    { brand: 'Porsche Cayenne', name: 'Door Outer Panel', spec: 'AA5182 Al · 1.0 mm · 2.20 kg' },
-    { brand: 'Mercedes GLE', name: 'B-Pillar Reinforcement', spec: 'DP600 AHSS · 1.8 mm · 3.20 kg' },
-    { brand: 'Ford Bronco Sport', name: 'Floor Cross-Member', spec: 'DP800 AHSS · 2.0 mm · 4.20 kg' },
-  ],
-  sheet_metal_fab: [
-    { brand: 'Audi Q7', name: 'Side Sill Bracket', spec: 'DC01 · Laser + 4 bends + MIG' },
-    { brand: 'BMW X5', name: 'Engine Undertray Bracket', spec: 'DC01 · Laser + 3 bends + spot welds' },
-    { brand: 'Volvo XC60', name: 'Rear Subframe Mount Bracket', spec: 'DC01 · Laser + 5 bends · 2.80 kg' },
-  ],
-  injection_moulding: [
-    { brand: 'Range Rover Sport', name: 'Front Grille Housing', spec: 'ABS · 2-cavity · 0.45 kg' },
-    { brand: 'Bentley Bentayga', name: 'Centre Console Trim', spec: 'PC/ABS · 1-cavity · hot runner' },
-    { brand: 'Toyota RAV4', name: 'Rear Bumper Fascia', spec: 'PP-GF · 2-cavity · 1.85 kg' },
-  ],
-  blow_moulding: [
-    { brand: 'BMW X7', name: 'Washer Fluid Reservoir', spec: 'HDPE · EBM · 2-cavity · 0.35 kg' },
-    { brand: 'Land Rover Defender', name: 'Coolant Expansion Tank', spec: 'HDPE · EBM · 1-cavity · 0.55 kg' },
-    { brand: 'Volvo XC90', name: 'Washer Fluid Reservoir', spec: 'HDPE · EBM · 2-cavity · 0.48 kg' },
-  ],
-  extrusion: [
-    { brand: 'Rolls-Royce Cullinan', name: 'Door Sealing Strip', spec: 'Flexible PVC · 0.18 kg/m · 2.4 m' },
-    { brand: 'Range Rover Vogue', name: 'Weatherstrip Profile', spec: 'Flexible PVC · 0.12 kg/m · 3.2 m' },
-    { brand: 'BMW X5 M', name: 'Rear Bumper Rubber Trim', spec: 'EPDM · 0.22 kg/m · 1.6 m' },
-  ],
-  thermoforming: [
-    { brand: 'Mercedes GLS', name: 'Boot / Cargo Liner', spec: 'HIPS · Vacuum form · 0.92 kg' },
-    { brand: 'Porsche Cayenne', name: 'Dashboard Lower Cover', spec: 'ABS · Pressure form · 0.65 kg' },
-    { brand: 'Land Rover Defender', name: 'Spare Wheel Carrier Cover', spec: 'ABS · Vacuum form · 1.15 kg' },
-  ],
-  rotational_moulding: [
-    { brand: 'Land Rover Defender', name: 'Fuel Tank (40L)', spec: 'LLDPE · 3.80 kg · Biaxial' },
-    { brand: 'Mercedes G-Class', name: 'Roof Storage Box', spec: 'LLDPE · 6.50 kg · Biaxial' },
-    { brand: 'Jeep Grand Cherokee', name: 'Air Intake Snorkel Box', spec: 'LLDPE · 2.80 kg · Biaxial' },
-  ],
-  casting: [
-    { brand: 'Bentley Bentayga', name: 'Differential Housing', spec: 'ADC12 · HPDC 800T · 4.80 kg' },
-    { brand: 'Rolls-Royce Cullinan', name: 'Brake Caliper Housing', spec: 'A380 Al · HPDC 800T · 3.20 kg' },
-    { brand: 'Toyota Hilux', name: 'Rear Differential Carrier', spec: 'GJL350 · Sand Cast · 8.50 kg' },
-  ],
-  forging: [
-    { brand: 'BMW X7', name: 'Front Lower Control Arm', spec: 'Al 6082 · 500T press · 1.85 kg' },
-    { brand: 'Range Rover Vogue', name: '4WD Drive Shaft Yoke', spec: '4340 Steel · 5T hammer · 2.80 kg' },
-    { brand: 'Jeep Wrangler', name: 'Front Axle Shaft Flange', spec: '4340 Steel · 5T hammer · 4.20 kg' },
-  ],
-  painting: [
-    { brand: 'Lamborghini Urus', name: 'Body Panel OEM Paint', spec: 'E-coat + primer + base + clear · 8.5 m²' },
-    { brand: 'Aston Martin DBX', name: 'Instrument Panel Painting', spec: 'Waterborne basecoat · 0.65 m²' },
-    { brand: 'Toyota Land Cruiser', name: 'Tailgate Panel (4-Coat)', spec: 'E-coat + primer + base + clear · 2.8 m²' },
-  ],
-  biw_assembly: [
-    { brand: 'Mercedes GLS', name: 'Door Inner Panel Assembly', spec: '3 robot weld stations · £85 sub-parts' },
-    { brand: 'Porsche Cayenne', name: 'BIW Side Frame Assembly', spec: '4 stations · robot frame + spot + hem' },
-    { brand: 'Volkswagen Touareg', name: 'Front Door Inner Assembly', spec: '4 stations · 28 spot welds + MIG seam' },
-  ],
-  cast_and_machine: [
-    { brand: 'Bentley Bentayga', name: 'Differential Housing (Cast+Mill)', spec: 'ADC12 · HPDC + 3-axis VMC · 4.80 kg' },
-    { brand: 'BMW X5', name: 'Gearbox Housing (Cast+Mill)', spec: 'A380 Al · HPDC + 5-axis · 3.20 kg' },
-    { brand: 'Toyota Hilux', name: 'Diff Carrier (Cast+Drill)', spec: 'GJL350 · Sand Cast + drilling · 8.50 kg' },
-  ],
-  rubber: [
-    { brand: 'Range Rover', name: 'Engine Mount Isolator', spec: 'EPDM · Compression mould · 0.45 kg' },
-    { brand: 'BMW X7', name: 'Suspension Bush', spec: 'Natural rubber · Transfer mould · 0.12 kg' },
-    { brand: 'Land Rover Defender', name: 'Door Seal Profile', spec: 'EPDM · Extrusion · 3.2 m' },
-  ],
-  composites: [
-    { brand: 'McLaren', name: 'Carbon Fibre Monocoque Panel', spec: 'CFRP · Autoclave · 1.2 kg' },
-    { brand: 'BMW i3', name: 'CFRP Door Inner Panel', spec: 'CFRP · RTM · 2.8 kg' },
-    { brand: 'Aston Martin', name: 'Carbon Fibre Boot Lid', spec: 'CFRP · Wet lay-up · 3.5 kg' },
-  ],
-  wiring_harness: [
-    { brand: 'BMW X7', name: 'Main Body Harness', spec: '42 circuits · 18 connectors · 3.2 kg' },
-    { brand: 'Range Rover', name: 'Engine Bay Harness', spec: '28 circuits · 12 connectors · 1.8 kg' },
-    { brand: 'Porsche Taycan', name: 'HV Battery Harness', spec: 'HV shielded · 8 circuits · 2.1 kg' },
-  ],
-};
+// Inline demo snippets (COMMODITY_DEMO_SNIPPETS) moved to ./data/demo-snippets.ts
 
 function buildInlineDemoSection(commodity: string): string {
   const snippets = COMMODITY_DEMO_SNIPPETS[commodity];
@@ -6643,48 +6440,7 @@ function buildPCBDemoSection(): string {
       </div>
     </div>`;
 }
-
-// ─── Client-side country metadata (trend / NRE / risk) — Features 5,6,7 ─────
-interface PCBCountryMeta {
-  trend: { direction: 'rising' | 'stable' | 'falling'; pctChange6m: number; note: string };
-  nre: { ppapGBP: number; fmeaGBP: number; dvprGBP: number; firstArticleGBP: number; iatfAuditGBP: number; totalGBP: number };
-  risk: { geopolitical: number; logisticsReliability: number; qualityConsistency: number; leadTimeVariance: number };
-}
-function mkMeta(
-  dir: 'rising' | 'stable' | 'falling', pct: number, note: string,
-  ppap: number, fmea: number, dvpr: number, fai: number, iatf: number,
-  geo: number, log: number, qual: number, lead: number,
-): PCBCountryMeta {
-  return {
-    trend: { direction: dir, pctChange6m: pct, note },
-    nre: { ppapGBP: ppap, fmeaGBP: fmea, dvprGBP: dvpr, firstArticleGBP: fai, iatfAuditGBP: iatf, totalGBP: ppap + fmea + dvpr + fai + iatf },
-    risk: { geopolitical: geo, logisticsReliability: log, qualityConsistency: qual, leadTimeVariance: lead },
-  };
-}
-const PCB_COUNTRY_META: Record<string, PCBCountryMeta> = {
-  cn: mkMeta('rising', 4, 'Copper CCL price increase and CNY appreciation pushing fab cost up', 3500, 2800, 4200, 1800, 2500, 0.55, 0.80, 0.78, 0.80),
-  vn: mkMeta('stable', 1, 'Strong EMS investment offsetting wage growth', 3800, 3000, 4500, 1900, 2800, 0.72, 0.76, 0.75, 0.74),
-  in: mkMeta('rising', 3, 'PLI-driven capacity ramp but rising skilled-labour wages', 3600, 2900, 4300, 1850, 2700, 0.70, 0.70, 0.72, 0.68),
-  th: mkMeta('stable', 1, 'Mature automotive EMS cluster keeps pricing flat', 4200, 3400, 5000, 2100, 3000, 0.74, 0.82, 0.84, 0.80),
-  my: mkMeta('rising', 3, 'Semiconductor demand and MYR firming lift assembly rates', 4400, 3500, 5200, 2200, 3100, 0.80, 0.84, 0.85, 0.82),
-  tw: mkMeta('rising', 3, 'High demand for HDI/substrate capacity constrains supply', 5000, 4000, 6000, 2500, 3300, 0.48, 0.88, 0.93, 0.86),
-  kr: mkMeta('stable', 2, 'Premium HDI stable; KRW softness offsetting wage rises', 5200, 4200, 6200, 2600, 3400, 0.68, 0.90, 0.93, 0.88),
-  mx: mkMeta('rising', 5, 'Nearshoring surge tightening EMS capacity and labour', 4600, 3700, 5400, 2300, 3000, 0.74, 0.78, 0.82, 0.76),
-  cz: mkMeta('stable', 1, 'EU automotive demand steady; energy costs normalising', 5500, 4400, 6400, 2700, 3400, 0.92, 0.91, 0.90, 0.90),
-  pl: mkMeta('falling', -2, 'EU investment and improved yields lowering effective cost', 5000, 4000, 5900, 2500, 3200, 0.90, 0.90, 0.89, 0.89),
-  de: mkMeta('rising', 6, 'Energy costs and IG-Metall wage agreements raising rates', 7500, 6000, 8500, 3500, 4500, 0.96, 0.97, 0.97, 0.96),
-  gb: mkMeta('stable', 2, 'Domestic capacity stable; modest inflation pass-through', 5500, 4500, 6500, 2800, 3500, 0.95, 0.97, 0.96, 0.97),
-  us: mkMeta('rising', 5, 'Reshoring incentives raising demand faster than capacity', 7000, 5600, 8000, 3300, 4300, 0.90, 0.93, 0.95, 0.92),
-  jp: mkMeta('stable', 1, 'Weak JPY offsetting premium fab cost inflation', 7800, 6300, 8800, 3600, 4600, 0.88, 0.95, 0.99, 0.95),
-};
-
-function computeClientRiskProfile(countryId: string, autoCount: number): { overall: number; label: string; dims: PCBCountryMeta['risk']; singleSource: number } {
-  const dims = PCB_COUNTRY_META[countryId]?.risk ?? { geopolitical: 0.7, logisticsReliability: 0.8, qualityConsistency: 0.8, leadTimeVariance: 0.8 };
-  const singleSource = Math.max(0.3, 1 - Math.min(autoCount, 12) * 0.05);
-  const overall = dims.geopolitical * 0.25 + dims.logisticsReliability * 0.20 + dims.qualityConsistency * 0.25 + singleSource * 0.15 + dims.leadTimeVariance * 0.15;
-  const label = overall >= 0.85 ? 'Low Risk' : overall >= 0.68 ? 'Medium Risk' : 'High Risk';
-  return { overall, label, dims, singleSource };
-}
+// PCB country metadata + computeClientRiskProfile moved to ./data/pcb-country-meta.ts
 
 function buildPCBImageUploadZone(): string {
   return `
