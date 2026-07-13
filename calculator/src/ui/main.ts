@@ -1121,9 +1121,21 @@ const TYPICAL_SHARES: Record<string, Partial<Record<keyof Breakdown8Bucket, numb
   _default:  { rawMaterial: 0.35, process: 0.28, labour: 0.12, tooling: 0.05, packaging: 0.01, logistics: 0.02, overhead: 0.10, margin: 0.07 },
   machining: { rawMaterial: 0.22, process: 0.40, labour: 0.16, tooling: 0.03, packaging: 0.01, logistics: 0.02, overhead: 0.10, margin: 0.06 },
   casting:   { rawMaterial: 0.38, process: 0.24, labour: 0.10, tooling: 0.08, packaging: 0.01, logistics: 0.02, overhead: 0.10, margin: 0.07 },
+  cast_and_machine:   { rawMaterial: 0.30, process: 0.34, labour: 0.12, tooling: 0.06, packaging: 0.01, logistics: 0.02, overhead: 0.09, margin: 0.06 },
   injection_moulding: { rawMaterial: 0.42, process: 0.22, labour: 0.06, tooling: 0.09, packaging: 0.02, logistics: 0.02, overhead: 0.10, margin: 0.07 },
+  blow_moulding:      { rawMaterial: 0.40, process: 0.24, labour: 0.07, tooling: 0.08, packaging: 0.02, logistics: 0.02, overhead: 0.10, margin: 0.07 },
+  extrusion:          { rawMaterial: 0.48, process: 0.22, labour: 0.06, tooling: 0.04, packaging: 0.02, logistics: 0.03, overhead: 0.09, margin: 0.06 },
+  thermoforming:      { rawMaterial: 0.44, process: 0.22, labour: 0.08, tooling: 0.06, packaging: 0.02, logistics: 0.02, overhead: 0.09, margin: 0.07 },
+  rotational_moulding:{ rawMaterial: 0.40, process: 0.24, labour: 0.09, tooling: 0.06, packaging: 0.02, logistics: 0.02, overhead: 0.10, margin: 0.07 },
   forging:   { rawMaterial: 0.40, process: 0.24, labour: 0.10, tooling: 0.06, packaging: 0.01, logistics: 0.02, overhead: 0.10, margin: 0.07 },
   sheet_metal: { rawMaterial: 0.32, process: 0.30, labour: 0.12, tooling: 0.06, packaging: 0.01, logistics: 0.02, overhead: 0.10, margin: 0.07 },
+  sheet_metal_fab:    { rawMaterial: 0.30, process: 0.28, labour: 0.16, tooling: 0.05, packaging: 0.01, logistics: 0.02, overhead: 0.10, margin: 0.08 },
+  rubber:    { rawMaterial: 0.34, process: 0.26, labour: 0.12, tooling: 0.07, packaging: 0.01, logistics: 0.02, overhead: 0.11, margin: 0.07 },
+  composites:{ rawMaterial: 0.46, process: 0.20, labour: 0.14, tooling: 0.05, packaging: 0.01, logistics: 0.02, overhead: 0.06, margin: 0.06 },
+  pcb_fab:   { rawMaterial: 0.40, process: 0.28, labour: 0.08, tooling: 0.04, packaging: 0.02, logistics: 0.03, overhead: 0.09, margin: 0.06 },
+  pcba:      { rawMaterial: 0.55, process: 0.16, labour: 0.10, tooling: 0.03, packaging: 0.02, logistics: 0.03, overhead: 0.06, margin: 0.05 },
+  wiring_harness:     { rawMaterial: 0.45, process: 0.14, labour: 0.22, tooling: 0.03, packaging: 0.01, logistics: 0.03, overhead: 0.06, margin: 0.06 },
+  assembly:  { rawMaterial: 0.30, process: 0.10, labour: 0.34, tooling: 0.03, packaging: 0.02, logistics: 0.03, overhead: 0.10, margin: 0.08 },
 };
 
 function shouldBreakdownFor(total: number, commodity: string): Breakdown8Bucket {
@@ -1131,6 +1143,45 @@ function shouldBreakdownFor(total: number, commodity: string): Breakdown8Bucket 
   const g = (k: keyof Breakdown8Bucket) => Math.round((total * (sh[k] ?? 0)) * 100) / 100;
   return { rawMaterial: g('rawMaterial'), process: g('process'), labour: g('labour'), tooling: g('tooling'),
            packaging: g('packaging'), logistics: g('logistics'), overhead: g('overhead'), margin: g('margin') };
+}
+
+// One worked demo per commodity we cost — a realistic automotive part, a
+// should-cost, and a supplier quote that sits above it. Clicking a chip loads
+// the inputs and a supplier breakdown, then runs the full teardown so the user
+// instantly sees the levers, questions and closing plays for that commodity.
+interface NegoDemo { commodity: string; part: string; family?: string; should: number; quote: number; vol: number; }
+const NEGO_DEMOS: NegoDemo[] = [
+  { commodity:'machining',           part:'Rear suspension knuckle (Al 6061)', family:'aluminium',     should:86.34,  quote:102.00, vol:24000 },
+  { commodity:'casting',             part:'Transfer-case housing (ADC12)',      family:'aluminium',     should:142.50, quote:168.00, vol:12000 },
+  { commodity:'cast_and_machine',    part:'Turbo bearing housing (cast iron)',  family:'cast iron',     should:74.20,  quote:88.90,  vol:60000 },
+  { commodity:'sheet_metal',         part:'Seat cross-member (HSLA)',           family:'steel',         should:12.80,  quote:15.40,  vol:180000 },
+  { commodity:'sheet_metal_fab',     part:'Battery tray weldment (Al)',         family:'aluminium',     should:96.00,  quote:115.00, vol:30000 },
+  { commodity:'injection_moulding',  part:'Bumper fascia (TPO)',                family:'polypropylene', should:34.60,  quote:41.20,  vol:90000 },
+  { commodity:'blow_moulding',       part:'Coolant expansion tank (PP)',        family:'polypropylene', should:8.90,   quote:11.10,  vol:120000 },
+  { commodity:'extrusion',           part:'Roof-rail trim (Al 6063)',           family:'aluminium',     should:6.40,   quote:7.85,   vol:200000 },
+  { commodity:'thermoforming',       part:'Load-floor panel (ABS)',             family:'abs',           should:22.30,  quote:26.50,  vol:40000 },
+  { commodity:'rotational_moulding', part:'Washer-fluid reservoir (PE)',        family:'polyethylene',  should:14.20,  quote:17.00,  vol:50000 },
+  { commodity:'forging',             part:'Front axle beam (steel)',            family:'steel',         should:58.00,  quote:69.50,  vol:45000 },
+  { commodity:'rubber',              part:'Engine mount (EPDM)',                family:'rubber',        should:9.60,   quote:12.10,  vol:150000 },
+  { commodity:'composites',          part:'Battery enclosure lid (CFRP)',       family:'composite',     should:210.00, quote:249.00, vol:8000 },
+  { commodity:'pcb_fab',             part:'ADAS radar PCB (6-layer)',           family:'electronics',   should:18.40,  quote:22.30,  vol:75000 },
+  { commodity:'pcba',                part:'BMS control board (PCBA)',           family:'electronics',   should:64.00,  quote:76.80,  vol:40000 },
+  { commodity:'wiring_harness',      part:'Main body harness (Cu)',             family:'copper',        should:128.00, quote:151.00, vol:60000 },
+  { commodity:'assembly',            part:'HVAC module assembly',                                       should:88.00,  quote:103.50, vol:55000 },
+];
+
+// Model a plausible supplier breakdown for a demo: start from the should-cost
+// split, then load the overrun disproportionately onto raw-material and margin
+// (where suppliers pad most) so the teardown surfaces the over-benchmark flags.
+function demoSupplierBreakdown(shouldBd: Breakdown8Bucket, quote: number): Partial<Record<keyof Breakdown8Bucket, number>> {
+  const shouldTotal = (Object.values(shouldBd) as number[]).reduce((a, b) => a + b, 0);
+  const overrun = quote - shouldTotal;
+  const w: Partial<Record<keyof Breakdown8Bucket, number>> = { rawMaterial: 0.40, margin: 0.32, process: 0.16, overhead: 0.12 };
+  const out: Partial<Record<keyof Breakdown8Bucket, number>> = {};
+  (Object.keys(shouldBd) as (keyof Breakdown8Bucket)[]).forEach(k => {
+    out[k] = Math.round((shouldBd[k] + overrun * (w[k] ?? 0)) * 100) / 100;
+  });
+  return out;
 }
 
 const _negoState: { report: NegotiationReport | null; showBreakdown: boolean } = { report: null, showBreakdown: false };
@@ -1143,7 +1194,7 @@ function renderNegotiationPanel(): void {
   const preShould = haveLast ? lastResult!.total : 0;
   const preCommodity = haveLast ? activeCommodity : 'machining';
   const preVol = parseFloat((document.getElementById('annual-volume') as HTMLInputElement)?.value ?? '') || 5000;
-  const commodities = ['machining','casting','injection_moulding','forging','sheet_metal','sheet_metal_fab','rubber','composites','pcb_fab','pcba'];
+  const commodities = ['machining','casting','cast_and_machine','sheet_metal','sheet_metal_fab','injection_moulding','blow_moulding','extrusion','thermoforming','rotational_moulding','forging','rubber','composites','pcb_fab','pcba','wiring_harness','assembly'];
 
   host.innerHTML = `
     <div style="border:1px solid var(--border-strong);border-radius:12px;background:var(--surface);overflow:hidden">
@@ -1164,6 +1215,11 @@ function renderNegotiationPanel(): void {
         </div>
         <div style="margin-top:8px"><label style="font-size:0.72rem;color:var(--text-muted);cursor:pointer;display:inline-flex;align-items:center;gap:6px"><input type="checkbox" id="ni-bd-toggle" ${_negoState.showBreakdown?'checked':''}> Supplier disclosed a cost breakdown (line-by-line teardown)</label></div>
         <div id="ni-breakdown" style="display:${_negoState.showBreakdown?'block':'none'};margin-top:8px"></div>
+        <div style="margin-top:12px;padding-top:10px;border-top:1px dashed var(--border)">
+          <div style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;color:var(--text-muted);margin-bottom:6px">Try a demo — one worked example per commodity</div>
+          <div id="ni-demos" style="display:flex;gap:6px;flex-wrap:wrap">${NEGO_DEMOS.map((d, i) =>
+            `<button class="ni-demo" data-i="${i}" title="${escHtml(d.part)} — should ${_currFmt(d.should)} vs quote ${_currFmt(d.quote)}" style="cursor:pointer;font-size:0.7rem;padding:4px 9px;border:1px solid var(--border-strong);border-radius:20px;background:var(--surface-elevated);color:var(--text-secondary);font-family:var(--font);white-space:nowrap"><strong style="color:var(--accent)">${escHtml(COMMODITY_LABELS[d.commodity] ?? d.commodity)}</strong> · ${escHtml(d.part)}</button>`).join('')}</div>
+        </div>
         <div id="ni-report" style="margin-top:12px"></div>
       </div>
     </div>`;
@@ -1184,7 +1240,7 @@ function renderNegotiationPanel(): void {
     if (_negoState.showBreakdown && !bdHost.innerHTML) renderBd();
   });
 
-  host.querySelector('#ni-run')?.addEventListener('click', () => {
+  const runFromDom = (override?: { family?: string }) => {
     const shouldCost = parseFloat((host.querySelector('#ni-should') as HTMLInputElement).value) || 0;
     const quote = parseFloat((host.querySelector('#ni-quote') as HTMLInputElement).value) || 0;
     const commodity = (host.querySelector('#ni-comm') as HTMLSelectElement).value;
@@ -1192,10 +1248,9 @@ function renderNegotiationPanel(): void {
     if (!(shouldCost > 0) || !(quote > 0)) { showToast('Enter both a should-cost and a supplier quote', 'warning'); return; }
 
     // Use the live breakdown when the entered should-cost matches the last costing; else model it.
-    const shouldBreakdown: Breakdown8Bucket = (haveLast && Math.abs(shouldCost - lastResult!.total) < 0.01)
-      ? lastResult!.breakdown
-      : shouldBreakdownFor(shouldCost, commodity);
-    const family = haveLast && Math.abs(shouldCost - lastResult!.total) < 0.01 ? currentMaterialFamily() : undefined;
+    const matchesLast = haveLast && Math.abs(shouldCost - lastResult!.total) < 0.01;
+    const shouldBreakdown: Breakdown8Bucket = matchesLast ? lastResult!.breakdown : shouldBreakdownFor(shouldCost, commodity);
+    const family = override?.family ?? (matchesLast ? currentMaterialFamily() : undefined);
 
     // supplier breakdown, if provided
     let supplierBreakdown: Partial<Record<keyof Breakdown8Bucket, number>> | undefined;
@@ -1221,6 +1276,33 @@ function renderNegotiationPanel(): void {
     };
     _negoState.report = analyzeQuote(input);
     renderNegotiationReport();
+  };
+  host.querySelector('#ni-run')?.addEventListener('click', () => runFromDom());
+
+  // Demo chips — load a worked example for the commodity and run the teardown.
+  const loadDemo = (d: NegoDemo) => {
+    (host.querySelector('#ni-should') as HTMLInputElement).value = d.should.toFixed(2);
+    (host.querySelector('#ni-quote') as HTMLInputElement).value = d.quote.toFixed(2);
+    (host.querySelector('#ni-vol') as HTMLInputElement).value = String(d.vol);
+    (host.querySelector('#ni-comm') as HTMLSelectElement).value = d.commodity;
+    // Disclose a modelled supplier breakdown so the demo runs line-by-line.
+    _negoState.showBreakdown = true;
+    (host.querySelector('#ni-bd-toggle') as HTMLInputElement).checked = true;
+    bdHost.style.display = 'block';
+    renderBd();
+    const bd = demoSupplierBreakdown(shouldBreakdownFor(d.should, d.commodity), d.quote);
+    host.querySelectorAll<HTMLInputElement>('.ni-bd').forEach(inp => {
+      const v = bd[inp.dataset.k as keyof Breakdown8Bucket];
+      if (v !== undefined) inp.value = v.toFixed(2);
+    });
+    runFromDom({ family: d.family });
+    (host.querySelector('#ni-report') as HTMLElement)?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  };
+  host.querySelectorAll<HTMLButtonElement>('.ni-demo').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const d = NEGO_DEMOS[parseInt(btn.dataset.i ?? '', 10)];
+      if (d) loadDemo(d);
+    });
   });
 
   if (_negoState.report) renderNegotiationReport();
