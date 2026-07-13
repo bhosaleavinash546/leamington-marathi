@@ -50,12 +50,12 @@
       } catch { window.location.replace(authUrl); }
     })();
   </script>
-  <script type="module" crossorigin src="/calculator/assets/index-BDh-uby5.js"></script>
+  <script type="module" crossorigin src="/calculator/assets/index-t-BzbBNP.js"></script>
   <link rel="modulepreload" crossorigin href="/calculator/assets/vendor-motion-OZhY1uFQ.js">
   <link rel="modulepreload" crossorigin href="/calculator/assets/vendor-BIjUmgcW.js">
   <link rel="modulepreload" crossorigin href="/calculator/assets/vendor-pdf-CiJl9Bng.js">
   <link rel="modulepreload" crossorigin href="/calculator/assets/vendor-chart-K87R2BAO.js">
-  <link rel="stylesheet" crossorigin href="/calculator/assets/index-Cujw1-tH.css">
+  <link rel="stylesheet" crossorigin href="/calculator/assets/index-Daa0URBl.css">
 </head>
 <body>
 
@@ -382,8 +382,8 @@
 
   <!-- Filter Bar -->
   <div class="dash-filter-bar" id="dash-filter-bar">
-    <div class="dash-filter-group">
-      <span class="dash-filter-label">Vehicle</span>
+    <div class="dash-filter-group" data-fg="vehicle">
+      <span class="dash-filter-label" role="button" tabindex="0" aria-expanded="true"><svg class="dfl-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>Vehicle</span>
       <div class="dash-filter-chips" id="filter-vehicle">
         <button class="dchip active" data-val="">All</button>
         <button class="dchip" data-val="SUV1">SUV1</button>
@@ -393,8 +393,8 @@
         <button class="dchip" data-val="SUV5">SUV5</button>
       </div>
     </div>
-    <div class="dash-filter-group">
-      <span class="dash-filter-label">Commodity</span>
+    <div class="dash-filter-group" data-fg="commodity">
+      <span class="dash-filter-label" role="button" tabindex="0" aria-expanded="true"><svg class="dfl-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>Commodity</span>
       <div class="dash-filter-chips" id="filter-commodity">
         <button class="dchip active" data-val="">All</button>
         <button class="dchip" data-val="machining">Machining</button>
@@ -410,8 +410,8 @@
         <button class="dchip" data-val="assembly">Assembly</button>
       </div>
     </div>
-    <div class="dash-filter-group">
-      <span class="dash-filter-label">System</span>
+    <div class="dash-filter-group" data-fg="system">
+      <span class="dash-filter-label" role="button" tabindex="0" aria-expanded="true"><svg class="dfl-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>System</span>
       <div class="dash-filter-chips" id="filter-system">
         <button class="dchip active" data-val="">All</button>
         <button class="dchip" data-val="Powertrain">Powertrain</button>
@@ -424,8 +424,8 @@
         <button class="dchip" data-val="ADAS">ADAS</button>
       </div>
     </div>
-    <div class="dash-filter-group">
-      <span class="dash-filter-label">Smart Filters</span>
+    <div class="dash-filter-group" data-fg="smart">
+      <span class="dash-filter-label" role="button" tabindex="0" aria-expanded="true"><svg class="dfl-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>Smart Filters</span>
       <div class="dash-filter-smart">
         <select class="dash-smart-sel" id="filter-cost-range" title="Filter by cost range">
           <option value="">Cost: All</option>
@@ -490,12 +490,26 @@
         <div class="kpi-label">High-Cost Parts</div>
       </div>
     </div>
-    <!-- Step 6: Intelligence panel — fills async from /api/knowledge/intelligence when signed in -->
-    <div id="dash-intelligence" style="display:none;margin-top:10px"></div>
-    <!-- Autonomous drift monitor findings — the unattended agent's output -->
-    <div id="dash-drift" style="display:none;margin-top:10px"></div>
-    <div id="dash-whatif" style="display:none;margin-top:10px"></div>
   </div>
+
+  <!-- ── Portfolio Intelligence — learning accuracy + what-if simulator + autonomous findings ─── -->
+  <section id="dash-portfolio-intel" class="dash-pi" style="display:none">
+    <div class="dash-pi-head">
+      <span class="dash-pi-bar"></span>
+      <div>
+        <div class="dash-pi-title">Portfolio Intelligence</div>
+        <div class="dash-pi-sub">What the tool has learned from your analyses — and how a commodity move would ripple through your portfolio.</div>
+      </div>
+    </div>
+    <div class="dash-pi-grid">
+      <!-- Intelligence panel — fills async from /api/knowledge/intelligence when signed in -->
+      <div id="dash-intelligence" style="display:none"></div>
+      <!-- Portfolio what-if simulator -->
+      <div id="dash-whatif" style="display:none"></div>
+    </div>
+    <!-- Autonomous drift monitor findings — the unattended agent's output -->
+    <div id="dash-drift" style="display:none"></div>
+  </section>
 
   <!-- Main body: tiles + charts -->
   <div class="dash-body">

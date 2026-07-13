@@ -1884,9 +1884,10 @@ textarea.contact-form-input { resize: vertical; min-height: 100px; }
    hero + method section carry the whole view. */
 #home-view[data-mode="new"] .dash-filter-bar,
 #home-view[data-mode="new"] .dash-kpi-row,
+#home-view[data-mode="new"] #dash-portfolio-intel,
 #home-view[data-mode="new"] .dash-charts-col,
 #home-view[data-mode="new"] .dash-recent-section,
-#home-view[data-mode="new"] #comm-section { display: none; }
+#home-view[data-mode="new"] #comm-section { display: none !important; }
 /* With the charts column hidden, let the method tiles fill the row */
 #home-view[data-mode="new"] .dash-body { display: block; }
 #home-view[data-mode="new"] .dash-tiles-col { max-width: none; }
@@ -5962,3 +5963,102 @@ input.cv-outlier { border-color: var(--warning) !important; box-shadow: 0 0 0 2p
   #cv-result-hero .crh-actions .btn { flex: 1 1 auto; text-align: center; justify-content: center; }
   #cv-result-hero .crh-part { flex: 1 1 100%; }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   HOME DASHBOARD REFRESH — professional KPI band, Portfolio Intelligence
+   section, and collapsible filter groups. (Appended last so these win.)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── KPI band: a clean, uniform horizontal strip (no longer stretched by the
+      intelligence panels, which now live in their own section below). ── */
+.dash-kpi-row {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12px;
+  margin-bottom: 22px;
+  align-items: stretch;
+}
+.dash-kpi-card {
+  min-height: 82px;
+  padding: 15px 16px;
+  gap: 13px;
+  align-items: center;
+}
+.dash-kpi-card .kpi-icon {
+  width: 40px; height: 40px; min-width: 40px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 11px; font-size: 1.05rem; font-weight: 700;
+  background: color-mix(in srgb, var(--accent) 11%, transparent);
+  color: var(--accent);
+}
+.dash-kpi-card.accent .kpi-icon {
+  background: color-mix(in srgb, var(--amber) 14%, transparent);
+  color: var(--amber);
+}
+.dash-kpi-card .kpi-icon .ic { width: 19px; height: 19px; }
+.dash-kpi-card .kpi-value { font-size: 1.5rem; font-weight: 800; letter-spacing: -0.01em; }
+.dash-kpi-card .kpi-label { font-size: 0.72rem !important; color: var(--text-muted); margin-top: 3px; font-weight: 500; }
+@media (max-width: 1080px) { .dash-kpi-row { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 620px)  { .dash-kpi-row { grid-template-columns: repeat(2, 1fr); } }
+
+/* ── Portfolio Intelligence section ── */
+.dash-pi { margin: 0 0 24px; }
+.dash-pi-head { display: flex; align-items: flex-start; gap: 11px; margin-bottom: 13px; }
+.dash-pi-bar { width: 4px; align-self: stretch; min-height: 34px; border-radius: 3px;
+  background: linear-gradient(180deg, var(--accent), color-mix(in srgb, var(--accent) 40%, transparent)); flex: 0 0 auto; }
+.dash-pi-title { font-size: 1.05rem; font-weight: 800; color: var(--text-primary); letter-spacing: -0.01em; }
+.dash-pi-sub { font-size: 0.78rem; color: var(--text-muted); margin-top: 2px; max-width: 720px; line-height: 1.45; }
+.dash-pi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; align-items: stretch; }
+.dash-pi-grid > div { min-width: 0; }
+.dash-pi-grid.pi-grid-single { grid-template-columns: 1fr; }
+@media (max-width: 900px) { .dash-pi-grid { grid-template-columns: 1fr; } }
+
+/* Shared card shell for the intelligence panels (matches the Negotiation look) */
+.pi-card {
+  height: 100%;
+  border: 1px solid var(--border);
+  border-radius: 13px;
+  background: var(--surface-elevated);
+  padding: 15px 16px;
+  display: flex; flex-direction: column;
+}
+.pi-card-head { display: flex; align-items: center; gap: 9px; margin-bottom: 11px; }
+.pi-card-ic { width: 30px; height: 30px; min-width: 30px; border-radius: 9px; display: flex; align-items: center; justify-content: center; }
+.pi-card-ic .ic { width: 16px; height: 16px; }
+.pi-card-title { font-weight: 800; font-size: 0.9rem; color: var(--text-primary); }
+.pi-card-tag { font-weight: 400; font-size: 0.68rem; color: var(--text-muted); }
+.pi-pill { display: inline-flex; align-items: center; gap: 5px; font-size: 0.72rem; font-weight: 700; border-radius: 20px; padding: 2px 10px; white-space: nowrap; }
+.pi-stat-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 2px; }
+.pi-stat { flex: 1 1 auto; min-width: 96px; background: var(--surface); border: 1px solid var(--border); border-radius: 9px; padding: 8px 10px; }
+.pi-stat-v { font-size: 1.15rem; font-weight: 800; font-family: var(--font-mono); color: var(--text-primary); line-height: 1.1; }
+.pi-stat-l { font-size: 0.64rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-muted); margin-top: 3px; }
+.pi-note { font-size: 0.72rem; color: var(--text-muted); margin-top: auto; padding-top: 10px; line-height: 1.5; }
+
+/* ── Collapsible filter groups ── */
+.dash-filter-label {
+  display: flex; align-items: center; gap: 6px;
+  cursor: pointer; user-select: none;
+  -webkit-user-select: none;
+}
+.dash-filter-label .dfl-chev {
+  width: 13px; height: 13px; flex: 0 0 auto; transition: transform 180ms var(--ease-std);
+  stroke: currentColor; fill: none; stroke-width: 2.4; opacity: 0.65;
+}
+.dash-filter-group.collapsed .dfl-chev { transform: rotate(-90deg); }
+.dash-filter-group.collapsed .dash-filter-chips,
+.dash-filter-group.collapsed .dash-filter-smart { display: none; }
+.dash-filter-label:hover { color: var(--accent); }
+/* Whole-bar collapse: hide every group, show a compact hint */
+.dash-filter-bar.filters-collapsed .dash-filter-group { display: none; }
+.dash-filter-bar.filters-collapsed { padding-top: 0; padding-bottom: 0; border-color: transparent; background: transparent; min-height: 0; }
+.cv-hc-filter.is-active { background: color-mix(in srgb, var(--accent) 12%, transparent); border-color: var(--accent); color: var(--accent); }
+
+/* Sanity: keep wide data tables from blowing out the page width on mobile —
+   constrain the recent-costings wrapper so its overflow-x:auto actually scrolls. */
+.dash-recent-section { min-width: 0; max-width: 100%; }
+.dash-recent-wrap { min-width: 0; max-width: 100%; overflow-x: auto; }
+.dash-body > .dash-tiles-col, .dash-body > .dash-charts-col { min-width: 0; }
+/* Safety net — no dashboard child may push the page wider than the viewport.
+   `clip` (not `hidden`) doesn't create a scroll container, so position:sticky
+   descendants keep working. The recent table still scrolls inside its own wrap. */
+#home-view, #negotiation-view, #news-view { overflow-x: clip; }

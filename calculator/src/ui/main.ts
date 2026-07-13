@@ -975,29 +975,34 @@ async function renderIntelligencePanel(): Promise<void> {
     } };
     if (!iq || iq.totalCases === 0) { box.style.display = 'none'; return; }
 
-    const verdictBadge = iq.verdict === 'improving' ? '<span style="color:#16a34a;font-weight:700">▲ improving</span>'
-      : iq.verdict === 'degrading' ? '<span style="color:#dc2626;font-weight:700">▼ degrading</span>'
-      : iq.verdict === 'stable' ? '<span style="color:#d97706;font-weight:700">stable</span>'
-      : '<span style="color:var(--text-muted)">building evidence…</span>';
+    const pillMap: Record<string, [string, string]> = {
+      improving: ['--success', '▲ improving'], degrading: ['--danger', '▼ degrading'], stable: ['--warning', 'stable'],
+    };
+    const [pillTok, pillLabel] = pillMap[iq.verdict] ?? ['--text-muted', 'building evidence…'];
+    const verdictPill = `<span class="pi-pill" style="color:var(${pillTok});background:color-mix(in srgb, var(${pillTok}) 13%, transparent)">${pillLabel}</span>`;
     const trendTxt = iq.trend.length
       ? iq.trend.slice(-4).map(t => `${t.month.slice(5)}: ${t.mapePct}% (n=${t.n})`).join('  ·  ')
       : 'no actuals logged yet — use Log Actual £ after costings';
     const topCommodities = Object.entries(iq.byCommodity).sort((a, b) => b[1] - a[1]).slice(0, 4)
       .map(([c, n]) => `${(COMMODITY_LABELS[c] ?? c)} ${n}`).join(' · ');
+    const bias = iq.biasDirection && iq.biasDirection !== 'centred' ? ` · ${iq.biasDirection}` : '';
 
     box.innerHTML = `
-      <div style="padding:12px 16px;border:1px solid var(--border);border-left:4px solid #0ea5e9;border-radius:10px;background:var(--surface-elevated)">
-        <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:10px">
-          <div style="font-weight:700;font-size:0.92rem;color:var(--text-primary)">🧠 Tool intelligence <span style="font-weight:400;font-size:0.72rem;color:var(--text-muted)">(learned from your analyses)</span></div>
-          <div style="font-size:0.78rem">${verdictBadge}</div>
+      <div class="pi-card">
+        <div class="pi-card-head">
+          <span class="pi-card-ic" style="background:color-mix(in srgb, var(--info) 14%, transparent);color:var(--info)"><svg class="ic"><use href="#i-bulb"/></svg></span>
+          <div style="flex:1;min-width:0">
+            <div class="pi-card-title">Accuracy &amp; Learning <span class="pi-card-tag">· learned from your analyses</span></div>
+          </div>
+          ${verdictPill}
         </div>
-        <div style="margin-top:8px;display:flex;gap:22px;flex-wrap:wrap;font-size:0.8rem;color:var(--text-secondary)">
-          <span>📚 <strong>${iq.totalCases}</strong> analyses remembered</span>
-          <span><strong>${iq.withActuals}</strong> with real quotes</span>
-          ${iq.overallMapePct !== null ? `<span>Accuracy: MAPE <strong>${iq.overallMapePct}%</strong>${iq.biasDirection && iq.biasDirection !== 'centred' ? ` (${iq.biasDirection}-estimates)` : ''}</span>` : ''}
-          ${iq.adjustedCases > 0 ? `<span>✍ <strong>${iq.adjustedCases}</strong> expert-corrected</span>` : ''}
+        <div class="pi-stat-row">
+          <div class="pi-stat"><div class="pi-stat-v">${iq.totalCases}</div><div class="pi-stat-l">Analyses remembered</div></div>
+          <div class="pi-stat"><div class="pi-stat-v">${iq.withActuals}</div><div class="pi-stat-l">With real quotes</div></div>
+          ${iq.overallMapePct !== null ? `<div class="pi-stat"><div class="pi-stat-v">${iq.overallMapePct}%</div><div class="pi-stat-l">MAPE${bias}</div></div>` : ''}
+          ${iq.adjustedCases > 0 ? `<div class="pi-stat"><div class="pi-stat-v">${iq.adjustedCases}</div><div class="pi-stat-l">Expert-corrected</div></div>` : ''}
         </div>
-        <div style="margin-top:5px;font-size:0.72rem;color:var(--text-muted)">Accuracy trend: ${trendTxt}${topCommodities ? `<br>Coverage: ${topCommodities}` : ''}</div>
+        <div class="pi-note">Accuracy trend: ${trendTxt}${topCommodities ? `<br>Coverage: ${topCommodities}` : ''}</div>
       </div>`;
     box.style.display = '';
   } catch { /* offline — panel stays hidden */ }
@@ -1038,16 +1043,19 @@ async function renderDriftPanel(): Promise<void> {
       </div>`; }).join('');
 
     box.innerHTML = `
-      <div style="padding:12px 16px;border:1px solid var(--border);border-left:4px solid var(--danger);border-radius:10px;background:var(--surface-elevated)">
-        <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:10px">
-          <div style="font-weight:700;font-size:0.92rem;color:var(--text-primary)"><svg class="ic"><use href="#i-zap"/></svg> Autonomous findings <span style="font-weight:400;font-size:0.72rem;color:var(--text-muted)">(the drift monitor opened these on its own)</span></div>
+      <div class="pi-card" style="margin-top:14px">
+        <div class="pi-card-head" style="margin-bottom:8px">
+          <span class="pi-card-ic" style="background:color-mix(in srgb, var(--danger) 13%, transparent);color:var(--danger)"><svg class="ic"><use href="#i-zap"/></svg></span>
+          <div style="flex:1;min-width:0">
+            <div class="pi-card-title">Autonomous findings <span class="pi-card-tag">· the drift monitor opened these on its own</span></div>
+          </div>
           <div style="text-align:right">
-            ${data.totalImpactGBP > 0 ? `<div style="font-size:0.8rem;font-weight:700;color:var(--danger)">≈ £${Math.round(data.totalImpactGBP).toLocaleString()}/yr at stake</div>` : ''}
+            ${data.totalImpactGBP > 0 ? `<div style="font-size:0.82rem;font-weight:800;font-family:var(--font-mono);color:var(--danger)">≈ £${Math.round(data.totalImpactGBP).toLocaleString()}/yr at stake</div>` : ''}
             ${(data.expectedRealizableGBP ?? 0) > 0 ? `<div style="font-size:0.68rem;color:var(--success);font-weight:600" title="Impact weighted by learned conversion rates">≈ £${Math.round(data.expectedRealizableGBP!).toLocaleString()}/yr realizable</div>` : ''}
             ${(data.realizedToDateGBP ?? 0) > 0 ? `<div style="font-size:0.66rem;color:var(--text-muted)">£${Math.round(data.realizedToDateGBP!).toLocaleString()} saved to date</div>` : ''}
           </div>
         </div>
-        <div style="margin-top:6px">${rows}</div>
+        <div>${rows}</div>
       </div>`;
     box.style.display = '';
 
@@ -1116,16 +1124,21 @@ async function renderWhatIfPanel(): Promise<void> {
   };
 
   box.innerHTML = `
-    <div style="padding:12px 16px;border:1px solid var(--border);border-left:4px solid var(--info);border-radius:10px;background:var(--surface-elevated)">
-      <div style="font-weight:700;font-size:0.9rem;color:var(--text-primary);display:flex;align-items:center;gap:6px"><svg class="ic"><use href="#i-gauge"/></svg> Portfolio what-if <span style="font-weight:400;font-size:0.72rem;color:var(--text-muted)">(conditional scenario — defensible, not a forecast)</span></div>
-      <div style="margin-top:8px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:0.8rem;color:var(--text-secondary)">
+    <div class="pi-card">
+      <div class="pi-card-head">
+        <span class="pi-card-ic" style="background:color-mix(in srgb, var(--accent) 13%, transparent);color:var(--accent)"><svg class="ic"><use href="#i-gauge"/></svg></span>
+        <div style="flex:1;min-width:0">
+          <div class="pi-card-title">What-if simulator <span class="pi-card-tag">· conditional scenario, not a forecast</span></div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap;font-size:0.84rem;color:var(--text-secondary)">
         <span>If</span>
         <select id="wf-cat" class="hdr-select" style="max-width:150px">${useCats.map(c => `<option value="${escHtml(c)}"${c === state.cat ? ' selected' : ''}>${escHtml(c)}</option>`).join('')}</select>
         <span>moves</span>
-        <input id="wf-delta" type="range" min="-20" max="20" step="5" value="${state.delta}" style="width:140px;accent-color:var(--info)" />
-        <strong id="wf-delta-lbl" style="min-width:44px;color:var(--info)">${state.delta > 0 ? '+' : ''}${state.delta}%</strong>
+        <strong id="wf-delta-lbl" style="min-width:48px;font-family:var(--font-mono);color:var(--accent);font-size:0.98rem">${state.delta > 0 ? '+' : ''}${state.delta}%</strong>
       </div>
-      <div id="wf-result" style="margin-top:8px;font-size:0.8rem;color:var(--text-secondary)">Computing…</div>
+      <input id="wf-delta" type="range" min="-20" max="20" step="5" value="${state.delta}" style="width:100%;margin-top:11px;accent-color:var(--accent);cursor:pointer" />
+      <div id="wf-result" style="margin-top:auto;padding-top:12px;font-size:0.8rem;color:var(--text-secondary);line-height:1.5;border-top:1px solid var(--border)">Computing…</div>
     </div>`;
   box.style.display = '';
 
@@ -1139,6 +1152,72 @@ async function renderWhatIfPanel(): Promise<void> {
   });
   deltaEl?.addEventListener('change', () => { void run(); });
   void run();
+}
+
+/**
+ * Portfolio Intelligence coordinator — renders the three learning panels into
+ * their unified section and shows/hides the section as a whole (so an empty
+ * or signed-out state doesn't leave a stray header).
+ */
+async function renderPortfolioIntel(): Promise<void> {
+  await Promise.allSettled([renderIntelligencePanel(), renderWhatIfPanel(), renderDriftPanel()]);
+  const sec = document.getElementById('dash-portfolio-intel');
+  if (!sec) return;
+  const visible = (id: string) => {
+    const el = document.getElementById(id);
+    return el != null && el.style.display !== 'none' && el.innerHTML.trim() !== '';
+  };
+  const shown = ['dash-intelligence', 'dash-whatif', 'dash-drift'].some(visible);
+  sec.style.display = shown ? '' : 'none';
+  // Collapse the two-up grid to one column when only one card is present, so
+  // there's never a stray empty cell.
+  const grid = sec.querySelector('.dash-pi-grid');
+  grid?.classList.toggle('pi-grid-single', !(visible('dash-intelligence') && visible('dash-whatif')));
+}
+
+/**
+ * Collapsible dashboard filters — each group (Vehicle / Commodity / System /
+ * Smart Filters) collapses via its header chevron, and the hero 'Filter
+ * portfolio' button collapses/expands the whole bar. State persists per user.
+ */
+function initFilterCollapse(): void {
+  const KEY = 'cv-filter-collapse';
+  let state: Record<string, boolean> = {};
+  try { state = JSON.parse(localStorage.getItem(KEY) || '{}'); } catch { state = {}; }
+  const save = () => { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch { /* ignore */ } };
+
+  document.querySelectorAll<HTMLElement>('.dash-filter-group[data-fg]').forEach(group => {
+    const fg = group.dataset.fg ?? '';
+    const label = group.querySelector<HTMLElement>('.dash-filter-label');
+    if (!label) return;
+    const apply = (collapsed: boolean) => {
+      group.classList.toggle('collapsed', collapsed);
+      label.setAttribute('aria-expanded', String(!collapsed));
+    };
+    apply(!!state[fg]);
+    const toggle = () => { const c = !group.classList.contains('collapsed'); apply(c); state[fg] = c; save(); };
+    label.addEventListener('click', toggle);
+    label.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); }
+    });
+  });
+
+  const bar = document.getElementById('dash-filter-bar');
+  const btn = document.getElementById('hero-filter-jump');
+  if (bar && btn) {
+    const applyBar = (collapsed: boolean) => {
+      bar.classList.toggle('filters-collapsed', collapsed);
+      btn.classList.toggle('is-active', collapsed);
+      btn.setAttribute('aria-pressed', String(collapsed));
+    };
+    applyBar(!!state.__bar);
+    btn.addEventListener('click', () => {
+      const collapsed = !bar.classList.contains('filters-collapsed');
+      applyBar(collapsed);
+      state.__bar = collapsed; save();
+      if (!collapsed) bar.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    });
+  }
 }
 
 
@@ -1533,9 +1612,7 @@ async function exportNegotiation(kind: 'pdf' | 'pptx'): Promise<void> {
 function renderDashboard(): void {
   const all = getCostingHistory();
   const records = filterHistory(all);
-  void renderIntelligencePanel();
-  void renderDriftPanel();
-  void renderWhatIfPanel();
+  void renderPortfolioIntel();
   // Negotiation Intelligence now lives in its own left-nav view (showNegotiation).
 
   // KPIs
@@ -1594,8 +1671,7 @@ function renderDashboard(): void {
       homeView.querySelectorAll('.cv-hero-demos').forEach(b =>
         b.addEventListener('click', () => document.getElementById('demo-btn')?.click()));
       document.getElementById('tile-browse-all')?.addEventListener('click', () => document.getElementById('new-costing-btn')?.click());
-      document.getElementById('hero-filter-jump')?.addEventListener('click', () =>
-        document.getElementById('dash-filter-bar')?.scrollIntoView({ behavior: 'smooth', block: 'center' }));
+      // 'Filter portfolio' collapse/expand is wired once in initFilterCollapse().
     }
     // Choreograph the entrance only on the first home render per session
     if (homeView.classList.contains('cv-motion-primed')) homeView.classList.add('cv-motion-done');
@@ -17327,6 +17403,8 @@ async function init(): Promise<void> {
     (document.getElementById('filter-confidence') as HTMLSelectElement).value = '';
     renderDashboard();
   });
+
+  initFilterCollapse();
 
   // Clear history
   document.getElementById('dash-clear-hist')?.addEventListener('click', () => {
