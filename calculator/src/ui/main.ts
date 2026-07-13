@@ -1693,18 +1693,46 @@ function renderNegotiationChart(r: NegotiationReport, gaps: NegotiationReport['g
       ]
     : [{ label: 'Should-cost', data: gaps.map(g => +(g.shouldGBP * fx).toFixed(2)), backgroundColor: cssVar('--accent'), borderRadius: 4, maxBarThickness: 40 }];
 
+  // Compact per-part value shown above each bar.
+  const fmtLbl = (v: number) => `${sym}${v >= 100 ? Math.round(v).toLocaleString('en-GB') : v >= 10 ? v.toFixed(1) : v.toFixed(2)}`;
+  const fontStack = cssVar('--font-mono') || 'monospace';
+  // Custom plugin — draws each bar's value on top (no extra dependency).
+  const barValueLabels = {
+    id: 'niBarValueLabels',
+    afterDatasetsDraw(chart: Chart) {
+      const { ctx } = chart;
+      ctx.save();
+      ctx.font = `700 9px ${fontStack}`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'bottom';
+      ctx.fillStyle = textCol;
+      chart.data.datasets.forEach((ds, di) => {
+        const meta = chart.getDatasetMeta(di);
+        if (meta.hidden) return;
+        meta.data.forEach((el, i) => {
+          const v = Number((ds.data as number[])[i]);
+          if (!(v > 0.005)) return;   // skip empty/zero bars to avoid clutter
+          ctx.fillText(fmtLbl(v), el.x, el.y - 3);
+        });
+      });
+      ctx.restore();
+    },
+  };
+
   _negoState.chart = new Chart(canvas, {
     type: 'bar',
     data: { labels: gaps.map(g => shortLabel(g.label)), datasets },
+    plugins: [barValueLabels],
     options: {
       responsive: true, maintainAspectRatio: false,
+      layout: { padding: { top: 22 } },   // headroom so top labels aren't clipped
       plugins: {
         legend: { display: lineMode, position: 'top', align: 'end', labels: { color: textCol, boxWidth: 12, boxHeight: 12, font: { size: 11 }, usePointStyle: true, pointStyle: 'rectRounded' } },
         tooltip: { callbacks: { label: (c) => `${c.dataset.label}: ${sym}${(c.parsed.y as number).toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` } },
       },
       scales: {
         x: { grid: { display: false }, ticks: { color: textCol, font: { size: 10 }, maxRotation: 30, minRotation: 0 } },
-        y: { grid: { color: gridCol }, ticks: { color: mutedCol, font: { size: 10 }, callback: (v) => `${sym}${Number(v).toLocaleString('en-GB')}` } },
+        y: { grace: '8%', grid: { color: gridCol }, ticks: { color: mutedCol, font: { size: 10 }, callback: (v) => `${sym}${Number(v).toLocaleString('en-GB')}` } },
       },
     },
   });
