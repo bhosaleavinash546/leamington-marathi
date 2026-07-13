@@ -25,6 +25,13 @@ const EASE_OUT   = 'power3.out';
 const EASE_BACK  = 'back.out(1.6)';
 const EASE_ELAST = 'elastic.out(1, 0.45)';
 
+// What entrance tweens are allowed to clear when they finish. Never 'all':
+// that wipes every inline style, including JS-managed ones the tween never
+// touched (display toggles, chart sizing) — elements hidden by application
+// code pop back visible when the animation completes. Every tween in this
+// file animates only autoAlpha/x/y/scale, all covered by these three.
+const CLEAR_PROPS = 'opacity,visibility,transform';
+
 // Accessibility: users who ask for reduced motion get none of the decorative
 // passes. Every hook below is enter/hover decoration with clearProps, so
 // skipping leaves the UI fully visible in its final state.
@@ -167,7 +174,7 @@ function _animatePicker(): void {
     .to(tiles, {
       autoAlpha: 1, y: 0, scale: 1, duration: 0.38,
       stagger: { amount: 0.5, from: 'start', grid: 'auto', axis: 'y' },
-      clearProps: 'all'
+      clearProps: CLEAR_PROPS
     }, 0.18);
 
   // Reset opacity set above if no stagger needed
@@ -175,7 +182,7 @@ function _animatePicker(): void {
   gsap.to(tiles, {
     autoAlpha: 1, y: 0, scale: 1, duration: 0.4,
     stagger: { amount: 0.52, from: 'start' },
-    ease: EASE_BACK, clearProps: 'all', delay: 0.1
+    ease: EASE_BACK, clearProps: CLEAR_PROPS, delay: 0.1
   });
 }
 
@@ -187,7 +194,7 @@ function _animateCosting(): void {
   // display values (wf-panel-header is display:none outside workflow mode), and
   // 'all' wipes them, leaving the header visible and breaking the grid.
   const panels = document.querySelectorAll<HTMLElement>('#wf-panel-header, .input-panel, .results-area');
-  const CLEAR = 'opacity,visibility,transform';
+  const CLEAR = CLEAR_PROPS;
   const forceVisible = () => gsap.set(panels, { clearProps: CLEAR });
   const tl = gsap.timeline({ defaults: { ease: EASE_OUT }, onComplete: forceVisible, onInterrupt: forceVisible });
   tl.from('#wf-panel-header', { autoAlpha: 0, y: -10, duration: 0.32, clearProps: CLEAR, onInterrupt: forceVisible }, 0)
@@ -201,7 +208,7 @@ function _animateNews(): void {
   gsap.from(items, {
     autoAlpha: 0, y: 18, duration: 0.38,
     stagger: { amount: 0.45, from: 'start' },
-    ease: EASE_OUT, clearProps: 'all'
+    ease: EASE_OUT, clearProps: CLEAR_PROPS
   });
 }
 
@@ -219,7 +226,7 @@ export function onDashboardRendered(): void {
   if (kpiCards.length) {
     tl.from(kpiCards, {
       autoAlpha: 0, y: 22, scale: 0.94, duration: 0.44,
-      stagger: { amount: 0.32 }, clearProps: 'all'
+      stagger: { amount: 0.32 }, clearProps: CLEAR_PROPS
     }, 0.1);
   }
 
@@ -231,13 +238,13 @@ export function onDashboardRendered(): void {
   if (tiles.length) {
     tl.from(tiles, {
       autoAlpha: 0, y: 16, scale: 0.92, duration: 0.38,
-      stagger: { amount: 0.28 }, ease: EASE_BACK, clearProps: 'all'
+      stagger: { amount: 0.28 }, ease: EASE_BACK, clearProps: CLEAR_PROPS
     }, 0.28);
   }
 
   // Chart cards
   tl.from('.dash-chart-card', {
-    autoAlpha: 0, y: 18, duration: 0.4, stagger: 0.1, clearProps: 'all'
+    autoAlpha: 0, y: 18, duration: 0.4, stagger: 0.1, clearProps: CLEAR_PROPS
   }, 0.35);
 
   // Recent table section
@@ -247,7 +254,7 @@ export function onDashboardRendered(): void {
 
   // AI insight panel
   tl.from('.dash-ai-item', {
-    autoAlpha: 0, x: 16, duration: 0.35, stagger: 0.08, clearProps: 'all'
+    autoAlpha: 0, x: 16, duration: 0.35, stagger: 0.08, clearProps: CLEAR_PROPS
   }, 0.55);
 }
 
@@ -263,7 +270,7 @@ export function onTableRendered(): void {
   gsap.from(rows, {
     autoAlpha: 0, y: 10, duration: 0.3,
     stagger: { amount: Math.min(0.38, rows.length * 0.045) },
-    ease: EASE_OUT, clearProps: 'all'
+    ease: EASE_OUT, clearProps: CLEAR_PROPS
   });
 }
 
@@ -279,17 +286,17 @@ export function onResultsReady(): void {
   // the bar visible again if the tween is ever interrupted.
   const tabEls = document.querySelectorAll('.results-tabs, .rtab');
   if (tabEls.length) {
-    const forceVisible = () => gsap.set(tabEls, { clearProps: 'opacity,visibility,transform' });
+    const forceVisible = () => gsap.set(tabEls, { clearProps: CLEAR_PROPS });
     tl.from(tabEls, {
       autoAlpha: 0, y: -8, duration: 0.3, stagger: 0.05,
-      clearProps: 'opacity,visibility,transform',
+      clearProps: CLEAR_PROPS,
       onInterrupt: forceVisible,
     }, 0);
   }
 
   // Grand total row — "pop" in
   tl.from('.total-row, .cost-total-row, [data-total], .breakdown-total', {
-    autoAlpha: 0, scale: 0.88, duration: 0.46, ease: EASE_BACK, clearProps: 'all'
+    autoAlpha: 0, scale: 0.88, duration: 0.46, ease: EASE_BACK, clearProps: CLEAR_PROPS
   }, 0.12);
 
   // Waterfall chart canvas — grow from bottom
@@ -297,25 +304,25 @@ export function onResultsReady(): void {
   if (wf) {
     tl.from(wf.closest('.chart-wrap, canvas, .breakdown-chart-container') ?? wf, {
       autoAlpha: 0, scaleY: 0.15, transformOrigin: 'bottom center', duration: 0.55,
-      clearProps: 'all'
+      clearProps: CLEAR_PROPS
     }, 0.18);
   }
 
   // Breakdown / bucket rows
   tl.from('.breakdown-row, .cost-row, .stack-row, .bucket-row', {
     autoAlpha: 0, x: -16, duration: 0.32,
-    stagger: { amount: 0.28 }, clearProps: 'all'
+    stagger: { amount: 0.28 }, clearProps: CLEAR_PROPS
   }, 0.3);
 
   // Confidence band
   tl.from('.confidence-band, .confidence-badge, .conf-band', {
-    autoAlpha: 0, scale: 0.82, duration: 0.4, ease: EASE_BACK, clearProps: 'all'
+    autoAlpha: 0, scale: 0.82, duration: 0.4, ease: EASE_BACK, clearProps: CLEAR_PROPS
   }, 0.44);
 
   // Sensitivity / insights section
   tl.from('.sensitivity-row, .insight-row, .insight-card', {
     autoAlpha: 0, x: 12, duration: 0.3,
-    stagger: { amount: 0.22 }, clearProps: 'all'
+    stagger: { amount: 0.22 }, clearProps: CLEAR_PROPS
   }, 0.52);
 
   // Regional comparison bars — grow width from 0
@@ -359,7 +366,7 @@ export function onChatToggled(open: boolean): void {
     drawer.style.display = 'flex';  // ensure visible before animating
     gsap.fromTo(drawer,
       { y: 80, autoAlpha: 0, scale: 0.96 },
-      { y: 0,  autoAlpha: 1, scale: 1, duration: 0.45, ease: EASE_BACK, clearProps: 'all' }
+      { y: 0,  autoAlpha: 1, scale: 1, duration: 0.45, ease: EASE_BACK, clearProps: CLEAR_PROPS }
     );
     // fab rotates to show X
     gsap.to('#ai-chat-fab', { rotate: 45, duration: 0.35, ease: EASE_BACK });
@@ -388,7 +395,7 @@ export function onChatMessageAdded(): void {
     y: 8,
     duration: 0.38,
     ease: EASE_OUT,
-    clearProps: 'all'
+    clearProps: CLEAR_PROPS
   });
 }
 
@@ -428,9 +435,9 @@ export function onPCBResultShown(): void {
   if (PREFERS_REDUCED_MOTION) return;
   // Called after PCB image analysis result panel is injected
   const tl = gsap.timeline({ defaults: { ease: EASE_OUT } });
-  tl.from('.occt-stat', { autoAlpha: 0, y: 12, scale: 0.88, duration: 0.38, stagger: 0.07, clearProps: 'all' }, 0)
-    .from('.pcb-result-section', { autoAlpha: 0, y: 16, duration: 0.4, stagger: 0.08, clearProps: 'all' }, 0.18)
-    .from('.pcb-confidence-band, .asil-badge', { autoAlpha: 0, scale: 0.82, ease: EASE_BACK, duration: 0.42, clearProps: 'all' }, 0.32);
+  tl.from('.occt-stat', { autoAlpha: 0, y: 12, scale: 0.88, duration: 0.38, stagger: 0.07, clearProps: CLEAR_PROPS }, 0)
+    .from('.pcb-result-section', { autoAlpha: 0, y: 16, duration: 0.4, stagger: 0.08, clearProps: CLEAR_PROPS }, 0.18)
+    .from('.pcb-confidence-band, .asil-badge', { autoAlpha: 0, scale: 0.82, ease: EASE_BACK, duration: 0.42, clearProps: CLEAR_PROPS }, 0.32);
 }
 
 export function onBOMTableShown(): void {
@@ -439,7 +446,7 @@ export function onBOMTableShown(): void {
   if (!rows.length) return;
   gsap.from(rows, {
     autoAlpha: 0, x: -12, duration: 0.28,
-    stagger: { amount: 0.4 }, ease: EASE_OUT, clearProps: 'all'
+    stagger: { amount: 0.4 }, ease: EASE_OUT, clearProps: CLEAR_PROPS
   });
 }
 
@@ -457,7 +464,7 @@ export function initScrollReveal(root: Element | Document = document): void {
       start: 'top 94%',
       once: true,
       onEnter: () => gsap.from(el, {
-        autoAlpha: 0, y: 18, duration: 0.4, ease: EASE_OUT, clearProps: 'all'
+        autoAlpha: 0, y: 18, duration: 0.4, ease: EASE_OUT, clearProps: CLEAR_PROPS
       })
     });
   });
@@ -503,7 +510,7 @@ export function animateKPIEntrance(kpiIds: string[]): void {
     gsap.from(el.closest('.dash-kpi-card') ?? el, {
       autoAlpha: 0, y: 20, scale: 0.9,
       duration: 0.44, ease: EASE_BACK,
-      delay: i * 0.08, clearProps: 'all'
+      delay: i * 0.08, clearProps: CLEAR_PROPS
     });
   });
 }
@@ -539,7 +546,7 @@ export function animateResultHero(): void {
     { autoAlpha: 1, y: 0, duration: 0.4, ease: EASE_OUT, clearProps: 'transform' });
   gsap.fromTo(hero.querySelectorAll('.crh-chips > *, .crh-actions > *'),
     { autoAlpha: 0, y: 4 },
-    { autoAlpha: 1, y: 0, duration: 0.32, ease: EASE_OUT, stagger: 0.035, delay: 0.08, clearProps: 'all' });
+    { autoAlpha: 1, y: 0, duration: 0.32, ease: EASE_OUT, stagger: 0.035, delay: 0.08, clearProps: CLEAR_PROPS });
 
   // Count up the headline total (parse currency, preserve prefix/suffix)
   const totalEl = hero.querySelector<HTMLElement>('.crh-total');

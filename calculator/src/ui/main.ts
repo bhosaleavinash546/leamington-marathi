@@ -1565,7 +1565,12 @@ function renderNegotiationReport(): void {
         ${stat('Price variance', `${r.verdict.ppvPct > 0 ? '+' : ''}${r.verdict.ppvPct}%`, ragTok)}
         ${stat('Gap / part', _moneyG(r.verdict.ppvGBP), r.verdict.ppvGBP > 0 ? '--danger' : '--success')}
         ${stat('Annual impact', _moneyG(r.verdict.annualImpactGBP, 0), '--text-primary')}
-        ${stat('Total opportunity / yr', _moneyG(r.totalOpportunityGBP, 0), '--success')}
+        ${r.levers.length
+          // Top lever, not the opportunity total — the total usually equals the
+          // annual-impact tile (sum of gaps = whole gap) and it already appears
+          // in the headline and the closing "Total realisable opportunity" line.
+          ? stat(`Top lever · ${escHtml(r.levers[0].area)}`, _moneyG(r.levers[0].expectedRecoveryGBP, 0), '--success')
+          : stat('Total opportunity / yr', _moneyG(r.totalOpportunityGBP, 0), '--success')}
       </div>
 
       <div style="margin-top:12px;font-size:0.84rem;color:var(--text-secondary);line-height:1.5">${escHtml(r.headline)}</div>
@@ -11997,7 +12002,12 @@ function renderWaterfallChart(result: PartCostResult): void {
         if (!raw) return;
         const value = Math.abs(raw[1] - raw[0]) * _displayFxRate;
         if (value < 0.001) return;
-        const pct = grandTotal > 0 ? (value / grandTotal * 100).toFixed(0) : '0';
+        const pctNum = grandTotal > 0 ? (value / grandTotal * 100) : 0;
+        // Sub-2% bars sit shoulder-to-shoulder (tooling/packaging/logistics) and
+        // their labels collide — skip them like the donut does; tooltips still
+        // carry the exact values.
+        if (pctNum < 2 && idx < meta.data.length - 1) return;
+        const pct = pctNum.toFixed(0);
         const topY = scales.y.getPixelForValue(Math.max(raw[0], raw[1]));
         const line1 = `${sym}${value < 10 ? value.toFixed(2) : value.toFixed(1)}`;
         const line2 = `${pct}%`;
@@ -12728,6 +12738,13 @@ function renderDetail(result: PartCostResult, input: UniversalStackInput): void 
   const panel = el('results-detail');
   const cf = _currFmt;
   const pct = (n: number) => `${n.toFixed(1)}%`;
+  // Long source notes get visually truncated — keep the full text reachable on
+  // hover instead of cutting mid-sentence with no signal that more exists.
+  const note = (s: string | undefined, max: number): string => {
+    if (!s) return '';
+    if (s.length <= max) return escHtml(s);
+    return `<span title="${escHtml(s)}">${escHtml(s.slice(0, max - 1))}…</span>`;
+  };
 
   const mat = library.materials.find(m => m.id === input.rawMaterial.materialId);
   const grossWeight = input.rawMaterial.directCost === undefined
@@ -12740,7 +12757,7 @@ function renderDetail(result: PartCostResult, input: UniversalStackInput): void 
     <table class="detail-table">
       <thead><tr><th>Parameter</th><th>Value</th><th>Unit</th><th>Notes</th></tr></thead>
       <tbody>
-        <tr><td>Material Grade</td><td>${mat?.grade ?? 'Direct cost'}</td><td></td><td class="detail-src">${mat?.sourceNote?.slice(0,55) ?? ''}</td></tr>
+        <tr><td>Material Grade</td><td>${mat?.grade ?? 'Direct cost'}</td><td></td><td class="detail-src">${note(mat?.sourceNote, 56)}</td></tr>
         <tr><td>Region</td><td>${mat?.region ?? '—'}</td><td></td><td></td></tr>`;
 
   if (input.rawMaterial.directCost !== undefined) {
@@ -12751,7 +12768,7 @@ function renderDetail(result: PartCostResult, input: UniversalStackInput): void 
         <tr><td>Gross (Stock/Cast) Weight</td><td class="num">${grossWeight.toFixed(4)}</td><td>kg</td><td>= net ÷ utilisation</td></tr>
         <tr><td>Scrap Weight</td><td class="num">${scrapWeight.toFixed(4)}</td><td>kg</td><td>= gross − net</td></tr>
         <tr><td>Material Utilisation</td><td class="num">${pct(input.rawMaterial.materialUtilization * 100)}</td><td></td><td>Benchmark: 72–85% for machined parts</td></tr>
-        <tr><td>Material Price</td><td class="num">${cf(mat?.pricePerKg ?? 0)}</td><td>${_displayCurrency}/kg</td><td>Source: ${mat?.sourceNote?.slice(0,40) ?? '—'}</td></tr>
+        <tr><td>Material Price</td><td class="num">${cf(mat?.pricePerKg ?? 0)}</td><td>${_displayCurrency}/kg</td><td>Source: ${note(mat?.sourceNote, 41) || '—'}</td></tr>
         <tr><td>Scrap Recovery Price</td><td class="num">${cf(mat?.scrapRecoveryPricePerKg ?? 0)}</td><td>${_displayCurrency}/kg</td><td></td></tr>
         <tr><td>Gross Material Cost</td><td class="num">${cf(grossWeight * (mat?.pricePerKg ?? 0))}</td><td>${_displayCurrency}</td><td>= gross weight × price/kg</td></tr>
         <tr><td>Scrap Credit</td><td class="num">(${cf(scrapWeight * (mat?.scrapRecoveryPricePerKg ?? 0))})</td><td>${_displayCurrency}</td><td>= scrap weight × recovery price</td></tr>
@@ -13381,8 +13398,14 @@ function renderScenarios(): void {
   const panel = el('results-scenarios');
   const scenarios = listScenarios();
 
-  const scOptions = scenarios.map(s =>
-    `<option value="${s.id}">${s.name} — ${fmt(s.result.total)}</option>`
+  // Comparing needs two saved scenarios. Below that, show why the control is
+  // inert instead of empty dropdowns + a button that silently does nothing.
+  const canCompare = scenarios.length >= 2;
+  const scPlaceholder = scenarios.length === 0
+    ? '<option value="" disabled selected>No scenarios saved yet</option>'
+    : scenarios.length === 1 ? '<option value="" disabled selected>Save one more to compare</option>' : '';
+  const scOptions = scPlaceholder + scenarios.map(s =>
+    `<option value="${s.id}">${escHtml(s.name)} — ${fmt(s.result.total)}</option>`
   ).join('');
 
   panel.innerHTML = `
@@ -13401,11 +13424,11 @@ function renderScenarios(): void {
       <div class="scenario-compare-box">
         <div class="panel-title" style="margin-bottom:10px">Compare Two Scenarios</div>
         <div class="field-row">
-          <div class="field-group"><label>Baseline</label><select id="sc-cmp1">${scOptions}</select></div>
-          <div class="field-group"><label>Target</label><select id="sc-cmp2">${scOptions}</select></div>
+          <div class="field-group"><label>Baseline</label><select id="sc-cmp1" ${canCompare ? '' : 'disabled'}>${scOptions}</select></div>
+          <div class="field-group"><label>Target</label><select id="sc-cmp2" ${canCompare ? '' : 'disabled'}>${scOptions}</select></div>
         </div>
         <div class="btn-row" style="margin-top:8px">
-          <button class="btn btn-primary btn-sm" id="run-compare-btn">Compare</button>
+          <button class="btn btn-primary btn-sm" id="run-compare-btn" ${canCompare ? '' : 'disabled title="Save at least two scenarios to compare"'}>Compare</button>
           <button class="btn btn-secondary btn-sm" id="export-sc-btn">Export JSON</button>
           <label class="btn btn-secondary btn-sm" for="import-sc-file" style="margin:0;cursor:pointer">Import JSON</label>
           <input type="file" id="import-sc-file" accept=".json" style="display:none">
