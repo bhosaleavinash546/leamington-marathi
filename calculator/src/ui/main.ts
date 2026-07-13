@@ -530,7 +530,7 @@ async function updateKnowledgePanel(result: PartCostResult): Promise<void> {
 
 
 // ─── App-nav active state (sidebar) ──────────────────────────────────────────
-function setNavActive(id: 'home-btn' | 'news-btn' | null): void {
+function setNavActive(id: 'home-btn' | 'news-btn' | 'negotiation-btn' | null): void {
   document.querySelectorAll('#app-nav .anav-item').forEach(el => el.classList.remove('active'));
   if (id) document.getElementById(id)?.classList.add('active');
 }
@@ -550,6 +550,7 @@ function showHome(): void {
   document.body.classList.remove('cv-new-costing');
   document.body.classList.remove('sidebar-collapsed');
   document.getElementById('news-view')?.style.setProperty('display', 'none');
+  document.getElementById('negotiation-view')?.style.setProperty('display', 'none');
   if (homeEl) homeEl.style.display = '';
   if (pickerEl) pickerEl.style.display = 'none';
   if (backdrop) { backdrop.classList.remove('visible'); backdrop.style.display = 'none'; }
@@ -564,6 +565,25 @@ function showHome(): void {
   setTimeout(renderDashboard, 340);
 }
 
+// Negotiation Intelligence — dedicated left-nav view (its own page).
+function showNegotiation(): void {
+  setNavActive('negotiation-btn');
+  document.getElementById('wizard-overlay')?.remove();
+  document.body.classList.remove('cv-new-costing');
+  document.body.classList.remove('sidebar-collapsed');
+  document.getElementById('home-view')?.style.setProperty('display', 'none');
+  document.getElementById('commodity-picker-view')?.style.setProperty('display', 'none');
+  document.getElementById('news-view')?.style.setProperty('display', 'none');
+  const costingEl = document.getElementById('costing-view');
+  if (costingEl) { costingEl.classList.remove('wf-panel', 'wf-panel--open'); costingEl.style.display = 'none'; }
+  document.getElementById('wf-panel-header')?.style?.setProperty('display', 'none');
+  document.getElementById('picker-backdrop')?.style.setProperty('display', 'none');
+  const el = document.getElementById('negotiation-view');
+  if (el) el.style.display = '';
+  renderNegotiationPanel();
+  window.scrollTo({ top: 0, behavior: 'auto' });
+}
+
 
 function showCosting(commodity?: string): void {
   setNavActive(null);
@@ -574,6 +594,7 @@ function showCosting(commodity?: string): void {
   document.body.classList.remove('cv-new-costing');
   document.body.classList.remove('sidebar-collapsed');
   document.getElementById('news-view')?.style.setProperty('display', 'none');
+  document.getElementById('negotiation-view')?.style.setProperty('display', 'none');
   if (homeEl) homeEl.style.display = 'none';
   if (pickerEl) pickerEl.style.display = 'none';
   if (backdrop) { backdrop.classList.remove('visible'); backdrop.style.display = 'none'; }
@@ -598,6 +619,7 @@ function showCommodityPicker(): void {
   const warnEl = document.getElementById('validation-warnings');
   document.body.classList.remove('cv-new-costing');
   document.getElementById('news-view')?.style.setProperty('display', 'none');
+  document.getElementById('negotiation-view')?.style.setProperty('display', 'none');
   if (homeEl) homeEl.style.display = 'none';
   if (pickerEl) pickerEl.style.display = '';
   if (costingEl) {
@@ -1514,7 +1536,7 @@ function renderDashboard(): void {
   void renderIntelligencePanel();
   void renderDriftPanel();
   void renderWhatIfPanel();
-  renderNegotiationPanel();
+  // Negotiation Intelligence now lives in its own left-nav view (showNegotiation).
 
   // KPIs
   const kpiTotal = document.getElementById('kpi-total-val');
@@ -17220,6 +17242,10 @@ async function init(): Promise<void> {
   // ─── News section wiring ──────────────────────────────────────────────────
   document.getElementById('news-btn')?.addEventListener('click', () => { setNavActive('news-btn'); showNews(); });
   document.getElementById('news-back-btn')?.addEventListener('click', showHome);
+
+  // ─── Negotiation Intelligence section wiring ──────────────────────────────
+  document.getElementById('negotiation-btn')?.addEventListener('click', showNegotiation);
+  document.getElementById('nego-back-btn')?.addEventListener('click', showHome);
   document.getElementById('news-refresh-btn')?.addEventListener('click', () => { void refreshNews(); });
 
   document.querySelectorAll<HTMLElement>('#demo-gallery-body .demo-card').forEach(card => {
@@ -17845,6 +17871,7 @@ function _cmdkBuild(): CmdkEntry[] {
     { label: 'Home dashboard', sub: 'View', icon: 'i-home', run: () => showHome() },
     { label: 'New costing — browse all methods', sub: 'View', icon: 'i-plus', run: () => showCommodityPicker() },
     { label: 'Automotive industry news', sub: 'View', icon: 'i-news', run: byId('news-btn') },
+    { label: 'Negotiation Intelligence — supplier-quote teardown', sub: 'View', icon: 'i-trend-up', run: () => showNegotiation() },
     { label: 'Demo gallery', sub: 'Open', icon: 'i-play', run: byId('demo-btn') },
     { label: 'Help centre', sub: 'Open', icon: 'i-help', run: byId('help-btn') },
     { label: 'Contact support', sub: 'Open', icon: 'i-mail', run: byId('contact-btn') },

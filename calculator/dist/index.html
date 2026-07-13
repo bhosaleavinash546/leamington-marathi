@@ -50,7 +50,7 @@
       } catch { window.location.replace(authUrl); }
     })();
   </script>
-  <script type="module" crossorigin src="/calculator/assets/index-Dj2QfDAA.js"></script>
+  <script type="module" crossorigin src="/calculator/assets/index-LWh4wEsV.js"></script>
   <link rel="modulepreload" crossorigin href="/calculator/assets/vendor-motion-OZhY1uFQ.js">
   <link rel="modulepreload" crossorigin href="/calculator/assets/vendor-BIjUmgcW.js">
   <link rel="modulepreload" crossorigin href="/calculator/assets/vendor-pdf-CiJl9Bng.js">
@@ -167,6 +167,7 @@
     <button class="anav-item" id="home-btn" aria-label="Go to dashboard"><svg class="ic"><use href="#i-home"/></svg><span class="anav-label">Home</span></button>
     <button class="anav-item" id="demo-btn" aria-label="Open demo gallery" title="Load luxury SUV demo examples for any commodity" data-cv-tip="Browse 50+ pre-loaded luxury SUV demos across all 19+ commodity types. One click loads full cost breakdown." data-cv-tip-title="Demo Gallery"><svg class="ic"><use href="#i-car"/></svg><span class="anav-label">Demos</span></button>
     <button class="anav-item" id="news-btn" aria-label="Automotive Industry News" title="Live automotive manufacturing &amp; costing news" data-cv-tip="120 articles from 30 curated feeds — battery, EV, materials, supply chain. Auto-refreshes every 15 min." data-cv-tip-title="Market Intelligence"><svg class="ic"><use href="#i-news"/></svg><span class="anav-label">News</span></button>
+    <button class="anav-item" id="negotiation-btn" aria-label="Negotiation Intelligence" title="Supplier-quote teardown vs should-cost" data-cv-tip="Paste a supplier quote — the agent tears it down against should-cost and hands you the levers, questions and closing plays. Export to PDF or PowerPoint." data-cv-tip-title="Negotiation Intelligence"><svg class="ic"><use href="#i-trend-up"/></svg><span class="anav-label">Negotiation</span></button>
   </div>
   <div class="anav-group anav-group--bottom">
     <button class="anav-item" id="help-btn" aria-label="Open help centre" data-cv-tip="Help Centre with search, guides, keyboard shortcuts (?), and the product tour." data-cv-tip-title="Help Centre"><svg class="ic"><use href="#i-help"/></svg><span class="anav-label">Help</span></button>
@@ -501,8 +502,6 @@
 
     <!-- Quick Action Tiles -->
     <div class="dash-tiles-col">
-      <!-- Negotiation Intelligence — supplier-quote teardown (rendered by JS) -->
-      <div id="dash-negotiation" style="margin-bottom:20px"></div>
       <div class="dash-sec-head">
         <div><div class="cv-eyebrow">Start here</div><h2 class="dash-sec-h2">Cost a part</h2></div>
         <button class="dash-sec-link" id="tile-browse-all">Browse all methods
@@ -628,6 +627,15 @@
 </section>
 
 <!-- ─── News View ──────────────────────────────────────────────────────── -->
+<!-- ── Negotiation Intelligence view (its own left-nav section) ──────────────── -->
+<section id="negotiation-view" style="display:none;padding:0 24px 48px;max-width:1400px">
+  <div style="display:flex;align-items:center;justify-content:flex-end;margin:10px 0 14px">
+    <button class="btn btn-secondary btn-sm" id="nego-back-btn" style="font-size:0.78rem;padding:6px 12px">← Back to Home</button>
+  </div>
+  <!-- Negotiation Intelligence card — supplier-quote teardown (rendered by JS) -->
+  <div id="dash-negotiation"></div>
+</section>
+
 <section id="news-view" style="display:none;padding:0 24px 48px;max-width:1400px">
   <div class="news-header">
     <div class="news-title-bar">

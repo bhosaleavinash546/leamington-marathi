@@ -225,6 +225,7 @@ export async function refreshNews(): Promise<void> {
 
 export function showNews(): void {
   document.getElementById('home-view')?.style.setProperty('display', 'none');
+  document.getElementById('negotiation-view')?.style.setProperty('display', 'none');
   document.getElementById('commodity-picker-view')?.style.setProperty('display', 'none');
   const costingEl = document.getElementById('costing-view');
   if (costingEl) { costingEl.classList.remove('wf-panel','wf-panel--open'); costingEl.style.display = 'none'; }
