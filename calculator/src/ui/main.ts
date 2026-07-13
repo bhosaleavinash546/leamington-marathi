@@ -580,6 +580,11 @@ async function updateKnowledgePanel(result: PartCostResult): Promise<void> {
 function setNavActive(id: 'home-btn' | 'news-btn' | 'negotiation-btn' | null): void {
   document.querySelectorAll('#app-nav .anav-item').forEach(el => el.classList.remove('active'));
   if (id) document.getElementById(id)?.classList.add('active');
+  // Every view switch passes through here — close the demo-gallery modal so it
+  // can't stay glued on top of the next view, and restore page scroll (its
+  // opener sets body overflow:hidden).
+  const dm = document.getElementById('demo-modal');
+  if (dm && dm.style.display !== 'none') { dm.style.display = 'none'; document.body.style.overflow = ''; }
 }
 
 // ─── View switching ───────────────────────────────────────────────────────────
@@ -1857,6 +1862,11 @@ function renderDashboard(): void {
   // AI insight — dynamic based on data
   const daiEl = document.getElementById('dai-dynamic');
   if (daiEl) {
+    // Hide outright when empty — the pill classes would otherwise paint an
+    // empty ghost row under the three static recommendations. Class, not
+    // inline style: the dashboard entrance tween clears inline styles
+    // (clearProps:'all') when it completes.
+    daiEl.classList.toggle('u-hidden', records.length === 0);
     if (records.length === 0) {
       daiEl.innerHTML = '';
     } else if (highCostCount > 0) {
@@ -16033,9 +16043,11 @@ async function init(): Promise<void> {
     }
     if (lastResult && lastInput) {
       renderBreakdown(lastResult);
+      renderResultHero(); // sticky hero shows the headline price — must follow the currency
       const activePanel = document.querySelector<HTMLElement>('.rtab.active')?.dataset.panel;
       if (activePanel === 'detail') renderDetail(lastResult, lastInput);
       if (activePanel === 'insights') renderInsights(lastResult, lastInput);
+      if (activePanel === 'sensitivity') renderSensitivity();
     }
   };
   el<HTMLSelectElement>('currency-selector')?.addEventListener('change', e => {
@@ -16216,8 +16228,8 @@ async function init(): Promise<void> {
 
   // ─── Demo Gallery modal ──────────────────────────────────────────────────────
   const demoModal = document.getElementById('demo-modal');
-  const openDemoModal = () => { if (demoModal) demoModal.style.display = 'flex'; };
-  const closeDemoModal = () => { if (demoModal) demoModal.style.display = 'none'; };
+  const openDemoModal = () => { if (demoModal) { demoModal.style.display = 'flex'; document.body.style.overflow = 'hidden'; } };
+  const closeDemoModal = () => { if (demoModal) { demoModal.style.display = 'none'; document.body.style.overflow = ''; } };
 
   document.getElementById('demo-btn')?.addEventListener('click', openDemoModal);
   document.getElementById('close-demo-modal')?.addEventListener('click', closeDemoModal);
@@ -16336,7 +16348,7 @@ async function init(): Promise<void> {
       closeWorkflowPanel();
     }
     const demoModalEsc = document.getElementById('demo-modal');
-    if (demoModalEsc?.style.display === 'flex') { demoModalEsc.style.display = 'none'; return; }
+    if (demoModalEsc?.style.display === 'flex') { demoModalEsc.style.display = 'none'; document.body.style.overflow = ''; return; }
     const rateModal = el('rate-modal');
     if (rateModal?.style.display === 'flex') { rateModal.style.display = 'none'; return; }
     const scenarioModal = el('scenario-modal');

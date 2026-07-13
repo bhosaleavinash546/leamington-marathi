@@ -1876,7 +1876,10 @@ textarea.contact-form-input { resize: vertical; min-height: 100px; }
   padding: 0 24px 40px;
   max-width: 1200px;
   margin: 0 auto;
-  width: 100%;
+  /* width:auto, NOT 100% — the app-nav offset rule adds margin-left:200px, and
+     a 100%-of-viewport width starting 200px in overflows the right edge on any
+     screen narrower than 1400px. auto fills the space that remains. */
+  width: auto;
   box-sizing: border-box;
 }
 /* New / empty workspace: hide the analytics chrome (filters, KPIs, charts,
@@ -6129,3 +6132,7 @@ input.cv-outlier { border-color: var(--warning) !important; box-shadow: 0 0 0 2p
      focus toggle just hides the form (nothing to reclaim horizontally). */
   .results-focus-btn .rfb-label { display: none; }
 }
+
+/* Utility: hard-hide an element. Survives the GSAP entrance tweens, which
+   clear inline styles (clearProps:'all') when they complete. */
+.u-hidden { display: none !important; }
