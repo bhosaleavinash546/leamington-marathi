@@ -83,3 +83,75 @@ export function scanForDrift(cases: KnowledgeCase[], opts: DriftOptions = {}): D
   // Biggest money first; nudges last.
   return out.sort((a, b) => b.annualImpactGBP - a.annualImpactGBP);
 }
+
+// ── Outcome learning: the agent learns which findings actually earn money ─────
+/**
+ * A closed loop on the autonomous agent. Raw findings rank by gap × volume, but
+ * not every renegotiation lead converts — some commodities/suppliers are simply
+ * harder to move. When a user marks a finding actioned (with the £ actually
+ * saved) or dismisses it as not worth pursuing, we log the OUTCOME. From those
+ * outcomes we learn a per-(commodity,kind) hit-rate and re-rank findings by
+ * EXPECTED REALIZABLE value — the agent stops shouting about theoretically-large
+ * gaps that history says never close, and surfaces the money it can actually get.
+ *
+ * Smoothed toward a neutral 0.5 prior so a single outcome doesn't over-swing the
+ * ranking (Bayesian shrinkage); fully explainable — the hit-rate is just
+ * actioned ÷ total for that segment.
+ */
+export interface FindingOutcome {
+  commodity: string;
+  kind: DriftKind;
+  actioned: boolean;      // true = pursued and saved money; false = dismissed as not worth it
+  realizedGBP: number;    // £/yr actually saved (0 for dismissals)
+  at: number;
+}
+
+export interface HitRate { rate: number; n: number; realizedTotal: number }
+export interface RankedFinding extends DriftFinding {
+  hitRate: number;                 // learned P(this kind of finding converts) for the commodity
+  expectedRealizableGBP: number;   // annualImpactGBP × hitRate — what the agent expects to actually recover
+}
+
+const PRIOR_RATE = 0.5;            // neutral belief before any evidence
+const PRIOR_STRENGTH = 2;         // pseudo-counts — how much to trust the prior vs data
+
+const rateKey = (commodity: string, kind: DriftKind) => `${commodity}::${kind}`;
+
+/** Smoothed hit-rate per (commodity, kind) from logged outcomes. */
+export function computeHitRates(outcomes: FindingOutcome[]): Map<string, HitRate> {
+  const grouped = new Map<string, FindingOutcome[]>();
+  for (const o of outcomes) {
+    const k = rateKey(o.commodity, o.kind);
+    (grouped.get(k) ?? grouped.set(k, []).get(k)!).push(o);
+  }
+  const out = new Map<string, HitRate>();
+  for (const [k, os] of grouped) {
+    const actioned = os.filter(o => o.actioned).length;
+    const n = os.length;
+    // Bayesian shrinkage toward PRIOR_RATE with PRIOR_STRENGTH pseudo-observations.
+    const rate = (actioned + PRIOR_RATE * PRIOR_STRENGTH) / (n + PRIOR_STRENGTH);
+    const realizedTotal = os.reduce((s, o) => s + (o.realizedGBP || 0), 0);
+    out.set(k, { rate: Math.round(rate * 1000) / 1000, n, realizedTotal: Math.round(realizedTotal) });
+  }
+  return out;
+}
+
+/** Look up the learned hit-rate for a finding, falling back to the neutral prior. */
+export function hitRateFor(commodity: string, kind: DriftKind, rates: Map<string, HitRate>): number {
+  return rates.get(rateKey(commodity, kind))?.rate ?? PRIOR_RATE;
+}
+
+/**
+ * Re-rank findings by expected realizable value (impact × learned hit-rate).
+ * Stale-estimate nudges (no £ impact) always sort last, unchanged.
+ */
+export function rankFindings(findings: DriftFinding[], outcomes: FindingOutcome[]): RankedFinding[] {
+  const rates = computeHitRates(outcomes);
+  return findings
+    .map(f => {
+      const hitRate = hitRateFor(f.commodity, f.kind, rates);
+      const expectedRealizableGBP = Math.round(f.annualImpactGBP * hitRate);
+      return { ...f, hitRate, expectedRealizableGBP };
+    })
+    .sort((a, b) => b.expectedRealizableGBP - a.expectedRealizableGBP || b.annualImpactGBP - a.annualImpactGBP);
+}

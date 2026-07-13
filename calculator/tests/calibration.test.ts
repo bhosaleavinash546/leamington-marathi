@@ -1,7 +1,8 @@
 import { describe, it, expect } from 'vitest';
 import {
   computeCalibration, applyCalibration, calibrationSummary, MIN_SAMPLES,
-  computeCalibrationHierarchical, cvFromMape, type CalibrationRecord,
+  computeCalibrationHierarchical, cvFromMape, computeConformalBand, applyConformalBand,
+  type CalibrationRecord,
 } from '../src/engine/calibration.js';
 
 let _id = 0;
@@ -84,5 +85,71 @@ describe('hierarchical (segment) calibration', () => {
     expect(cvFromMape(10)).toBeCloseTo(0.125, 3);
     expect(cvFromMape(0)).toBe(0.03);    // floor: no false precision
     expect(cvFromMape(80)).toBe(0.35);   // ceiling
+  });
+});
+
+
+describe('conformal confidence bands', () => {
+  const recF = (commodity: string, shouldCost: number, actualCost: number, family?: string, region?: string): CalibrationRecord =>
+    ({ id: String(_id++), savedAt: 0, commodity, shouldCost, actualCost, currency: 'GBP', materialFamily: family, region });
+
+  it('reports no band below MIN_SAMPLES', () => {
+    const recs = [recF('machining', 100, 105), recF('machining', 100, 96)];
+    const band = computeConformalBand(recs, { commodity: 'machining' });
+    expect(band.applied).toBe(false);
+    expect(band.halfWidthPct).toBe(0);
+  });
+
+  it('derives a band from the observed error quantile', () => {
+    // errors after (near-1) bias: ~ ±3-8%
+    const recs = [
+      recF('machining', 100, 103), recF('machining', 100, 97),
+      recF('machining', 100, 108), recF('machining', 100, 95),
+      recF('machining', 100, 102), recF('machining', 100, 99),
+    ];
+    const band = computeConformalBand(recs, { commodity: 'machining' }, 0.9);
+    expect(band.applied).toBe(true);
+    expect(band.n).toBe(6);
+    expect(band.halfWidthPct).toBeGreaterThan(0);
+    expect(band.halfWidthPct).toBeLessThan(20);
+    // empirical coverage must meet or beat the request in-sample
+    expect(band.empiricalCoverage).toBeGreaterThanOrEqual(90);
+  });
+
+  it('empirical coverage is at least the requested coverage (validity)', () => {
+    const recs = Array.from({ length: 12 }, (_, i) =>
+      recF('casting', 50, 50 * (0.9 + (i % 5) * 0.05)));   // spread of ratios
+    const band = computeConformalBand(recs, { commodity: 'casting' }, 0.9);
+    expect(band.empiricalCoverage).toBeGreaterThanOrEqual(90);
+  });
+
+  it('wider target coverage yields a wider (or equal) band', () => {
+    const recs = Array.from({ length: 15 }, (_, i) =>
+      recF('forging', 80, 80 * (0.85 + (i % 7) * 0.05)));
+    const b80 = computeConformalBand(recs, { commodity: 'forging' }, 0.8);
+    const b95 = computeConformalBand(recs, { commodity: 'forging' }, 0.95);
+    expect(b95.halfWidthPct).toBeGreaterThanOrEqual(b80.halfWidthPct);
+  });
+
+  it('applyConformalBand brackets the estimate symmetrically', () => {
+    const recs = Array.from({ length: 8 }, (_, i) => recF('rubber', 20, 20 * (0.95 + (i % 3) * 0.05)));
+    const band = computeConformalBand(recs, { commodity: 'rubber' }, 0.9);
+    const { low, high } = applyConformalBand(100, band);
+    expect(low).toBeLessThan(100);
+    expect(high).toBeGreaterThan(100);
+    expect(Math.abs((high - 100) - (100 - low))).toBeLessThan(0.02);
+  });
+
+  it('prefers the most specific segment with enough evidence', () => {
+    const recs = [
+      // family+region tier: aluminium/CN casting runs high-variance
+      recF('casting', 100, 130, 'Aluminium', 'CN'), recF('casting', 100, 128, 'Aluminium', 'CN'),
+      recF('casting', 100, 132, 'Aluminium', 'CN'),
+      // broad commodity tier: tight
+      recF('casting', 100, 101), recF('casting', 100, 99), recF('casting', 100, 100),
+    ];
+    const band = computeConformalBand(recs, { commodity: 'casting', materialFamily: 'Aluminium', region: 'CN' }, 0.9);
+    expect(band.segment).toBe('commodity+family+region');
+    expect(band.n).toBe(3);
   });
 });

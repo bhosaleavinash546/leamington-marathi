@@ -15,11 +15,11 @@ import db from '../db.js';
 import { requireAuth, type AuthenticatedRequest } from '../middleware/auth-middleware.js';
 import {
   ensureKnowledgeTable, upsertCase, listCases, recordActual, knowledgeStats,
-  ensureDriftTable, dismissFinding, isDismissed, type UpsertCaseInput,
+  ensureDriftTable, dismissFinding, isDismissed, recordFindingOutcome, listFindingOutcomes, type UpsertCaseInput,
 } from '../data/knowledge-store.js';
 import { findSimilarCases, deriveSuggestions, proactiveInsights, type PartFingerprint } from '../../src/engine/part-similarity.js';
 import { computeIntelligenceSummary } from '../../src/engine/intelligence.js';
-import { scanForDrift, type DriftFinding } from '../../src/engine/drift-monitor.js';
+import { scanForDrift, rankFindings, computeHitRates, type DriftFinding, type FindingOutcome, type DriftKind } from '../../src/engine/drift-monitor.js';
 
 ensureKnowledgeTable(db);
 ensureDriftTable(db);
@@ -30,9 +30,11 @@ ensureDriftTable(db);
 
 let _lastScan: { at: number; open: number; totalImpactGBP: number } | null = null;
 
-function runDriftScan(): DriftFinding[] {
-  const open = scanForDrift(listCases(db, undefined, 5000))
+function runDriftScan(): ReturnType<typeof rankFindings> {
+  const raw = scanForDrift(listCases(db, undefined, 5000))
     .filter(f => !isDismissed(db, f.partName, f.commodity, f.kind));
+  const outcomes = listFindingOutcomes(db).map(o => ({ ...o, kind: o.kind as DriftKind })) as FindingOutcome[];
+  const open = rankFindings(raw, outcomes);   // re-ranked by expected realizable value
   _lastScan = { at: Date.now(), open: open.length, totalImpactGBP: open.reduce((s, f) => s + f.annualImpactGBP, 0) };
   return open;
 }
@@ -98,7 +100,28 @@ router.get('/intelligence', (_req: AuthenticatedRequest, res: Response): void =>
 /** Open autonomous findings (fresh scan each call; dismissed ones excluded). */
 router.get('/drift', (_req: AuthenticatedRequest, res: Response): void => {
   const findings = runDriftScan();
-  res.json({ success: true, findings, lastScanAt: _lastScan?.at ?? null, totalImpactGBP: _lastScan?.totalImpactGBP ?? 0 });
+  const outcomes = listFindingOutcomes(db);
+  const realizedToDateGBP = outcomes.reduce((s, o) => s + (o.realizedGBP || 0), 0);
+  res.json({
+    success: true, findings,
+    lastScanAt: _lastScan?.at ?? null,
+    totalImpactGBP: _lastScan?.totalImpactGBP ?? 0,
+    expectedRealizableGBP: findings.reduce((s, f) => s + f.expectedRealizableGBP, 0),
+    realizedToDateGBP: Math.round(realizedToDateGBP),
+  });
+});
+
+/** Log a finding outcome — the closed loop the autonomous agent learns from. */
+router.post('/drift/outcome', (req: AuthenticatedRequest, res: Response): void => {
+  const { partName, commodity, kind, actioned, realizedGBP } = req.body as
+    { partName?: string; commodity?: string; kind?: string; actioned?: boolean; realizedGBP?: number };
+  if (!commodity || !kind || typeof actioned !== 'boolean') {
+    res.status(400).json({ error: 'commodity, kind and actioned are required' }); return;
+  }
+  recordFindingOutcome(db, commodity, kind, actioned, Number(realizedGBP) || 0);
+  // Actioning a finding also closes it so the monitor stops raising it.
+  if (partName) dismissFinding(db, partName, commodity, kind);
+  res.json({ success: true });
 });
 
 /** Mark a finding handled so the monitor stops raising it. */

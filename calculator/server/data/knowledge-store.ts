@@ -116,7 +116,29 @@ export function ensureDriftTable(db: Database): void {
       finding_key  TEXT PRIMARY KEY,
       dismissed_at INTEGER NOT NULL
     );
+    CREATE TABLE IF NOT EXISTS finding_outcomes (
+      id           INTEGER PRIMARY KEY AUTOINCREMENT,
+      commodity    TEXT NOT NULL,
+      kind         TEXT NOT NULL,
+      actioned     INTEGER NOT NULL,
+      realized_gbp REAL NOT NULL DEFAULT 0,
+      at           INTEGER NOT NULL
+    );
   `);
+}
+
+/** Log the outcome of an autonomous finding — the closed loop the agent learns from. */
+export function recordFindingOutcome(
+  db: Database, commodity: string, kind: string, actioned: boolean, realizedGBP: number, now = Date.now(),
+): void {
+  db.prepare('INSERT INTO finding_outcomes (commodity, kind, actioned, realized_gbp, at) VALUES (?, ?, ?, ?, ?)')
+    .run(commodity, kind, actioned ? 1 : 0, Math.max(0, realizedGBP || 0), now);
+}
+
+/** All logged finding outcomes (for hit-rate learning + realized-savings reporting). */
+export function listFindingOutcomes(db: Database): Array<{ commodity: string; kind: string; actioned: boolean; realizedGBP: number; at: number }> {
+  const rows = db.prepare('SELECT commodity, kind, actioned, realized_gbp, at FROM finding_outcomes').all() as Array<{ commodity: string; kind: string; actioned: number; realized_gbp: number; at: number }>;
+  return rows.map(r => ({ commodity: r.commodity, kind: r.kind, actioned: !!r.actioned, realizedGBP: r.realized_gbp, at: r.at }));
 }
 
 const findingKey = (partName: string, commodity: string, kind: string) =>

@@ -99,6 +99,7 @@ import type { printPDF as printPDFType, printCADAnalysisPDF as printCADType, dra
 import { computeCostUncertainty } from '../engine/uncertainty.js';
 import {
   computeCalibration, applyCalibration, computeCalibrationHierarchical, cvFromMape,
+  computeConformalBand, applyConformalBand,
   type CalibrationRecord,
 } from '../engine/calibration.js';
 import type { PartFingerprint, SimilarCase, CaseSuggestion, ProactiveInsight } from '../engine/part-similarity.js';
@@ -967,25 +968,38 @@ async function renderDriftPanel(): Promise<void> {
   try {
     const resp = await fetch('/api/knowledge/drift', { headers: { Authorization: `Bearer ${token}` } });
     if (!resp.ok) return;
-    const data = await resp.json() as { findings: Array<{ kind: string; partName: string; commodity: string; message: string; annualImpactGBP: number; severity: string }>; totalImpactGBP: number };
+    const data = await resp.json() as { findings: Array<{ kind: string; partName: string; commodity: string; message: string; annualImpactGBP: number; severity: string; expectedRealizableGBP?: number; hitRate?: number }>; totalImpactGBP: number; expectedRealizableGBP?: number; realizedToDateGBP?: number };
     if (!data.findings.length) { box.style.display = 'none'; return; }
 
-    const icon = (k: string) => k === 'renegotiation' ? '💰' : k === 'underwater' ? '🚨' : '⏳';
-    const sevColor = (s: string) => s === 'high' ? '#dc2626' : s === 'medium' ? '#d97706' : 'var(--text-muted)';
-    const rows = data.findings.slice(0, 6).map(f => `
+    const icon = (k: string) => `<svg class="ic" style="width:13px;height:13px"><use href="#${k === 'renegotiation' ? 'i-trend-up' : k === 'underwater' ? 'i-warn' : 'i-hourglass'}"/></svg>`;
+    const sevColor = (s: string) => s === 'high' ? 'var(--danger)' : s === 'medium' ? 'var(--warning)' : 'var(--text-muted)';
+    const rows = data.findings.slice(0, 6).map(f => {
+      const showExp = f.kind !== 'stale-estimate' && (f.expectedRealizableGBP ?? 0) > 0;
+      const expChip = showExp
+        ? `<span title="Expected realizable = annual impact × learned hit-rate for this commodity (${Math.round((f.hitRate ?? 0.5) * 100)}%)" style="display:inline-block;margin-top:3px;font-size:0.66rem;font-weight:700;color:var(--success);background:var(--success-bg);border:1px solid var(--success-border);border-radius:20px;padding:1px 8px">≈ £${(f.expectedRealizableGBP ?? 0).toLocaleString()}/yr realizable · ${Math.round((f.hitRate ?? 0.5) * 100)}% convert</span>`
+        : '';
+      return `
       <div style="display:flex;gap:8px;align-items:flex-start;padding:6px 0;border-bottom:1px dashed var(--border)">
         <span>${icon(f.kind)}</span>
         <div style="flex:1;font-size:0.78rem;color:var(--text-secondary)">
           <strong style="color:${sevColor(f.severity)}">${escHtml(f.partName)}</strong> — ${escHtml(f.message)}
+          ${expChip ? `<div>${expChip}</div>` : ''}
         </div>
-        <button class="btn btn-secondary btn-sm drift-dismiss-btn" data-part="${escHtml(f.partName)}" data-commodity="${escHtml(f.commodity)}" data-kind="${escHtml(f.kind)}" style="font-size:0.64rem;padding:2px 8px;flex-shrink:0">Dismiss</button>
-      </div>`).join('');
+        <div style="display:flex;flex-direction:column;gap:3px;flex-shrink:0">
+          ${f.kind !== 'stale-estimate' ? `<button class="btn btn-secondary btn-sm drift-actioned-btn" data-part="${escHtml(f.partName)}" data-commodity="${escHtml(f.commodity)}" data-kind="${escHtml(f.kind)}" style="font-size:0.64rem;padding:2px 8px;color:var(--success)">Actioned £</button>` : ''}
+          <button class="btn btn-secondary btn-sm drift-dismiss-btn" data-part="${escHtml(f.partName)}" data-commodity="${escHtml(f.commodity)}" data-kind="${escHtml(f.kind)}" style="font-size:0.64rem;padding:2px 8px">Dismiss</button>
+        </div>
+      </div>`; }).join('');
 
     box.innerHTML = `
-      <div style="padding:12px 16px;border:1px solid var(--border);border-left:4px solid #dc2626;border-radius:10px;background:var(--surface-elevated)">
+      <div style="padding:12px 16px;border:1px solid var(--border);border-left:4px solid var(--danger);border-radius:10px;background:var(--surface-elevated)">
         <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:10px">
           <div style="font-weight:700;font-size:0.92rem;color:var(--text-primary)"><svg class="ic"><use href="#i-zap"/></svg> Autonomous findings <span style="font-weight:400;font-size:0.72rem;color:var(--text-muted)">(the drift monitor opened these on its own)</span></div>
-          ${data.totalImpactGBP > 0 ? `<div style="font-size:0.8rem;font-weight:700;color:#dc2626">≈ £${Math.round(data.totalImpactGBP).toLocaleString()}/yr at stake</div>` : ''}
+          <div style="text-align:right">
+            ${data.totalImpactGBP > 0 ? `<div style="font-size:0.8rem;font-weight:700;color:var(--danger)">≈ £${Math.round(data.totalImpactGBP).toLocaleString()}/yr at stake</div>` : ''}
+            ${(data.expectedRealizableGBP ?? 0) > 0 ? `<div style="font-size:0.68rem;color:var(--success);font-weight:600" title="Impact weighted by learned conversion rates">≈ £${Math.round(data.expectedRealizableGBP!).toLocaleString()}/yr realizable</div>` : ''}
+            ${(data.realizedToDateGBP ?? 0) > 0 ? `<div style="font-size:0.66rem;color:var(--text-muted)">£${Math.round(data.realizedToDateGBP!).toLocaleString()} saved to date</div>` : ''}
+          </div>
         </div>
         <div style="margin-top:6px">${rows}</div>
       </div>`;
@@ -993,11 +1007,26 @@ async function renderDriftPanel(): Promise<void> {
 
     box.querySelectorAll<HTMLButtonElement>('.drift-dismiss-btn').forEach(btn => {
       btn.addEventListener('click', async () => {
-        await fetch('/api/knowledge/drift/dismiss', {
+        // Dismiss = not worth pursuing → an outcome the agent learns from (actioned:false).
+        await fetch('/api/knowledge/drift/outcome', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-          body: JSON.stringify({ partName: btn.dataset.part, commodity: btn.dataset.commodity, kind: btn.dataset.kind }),
+          body: JSON.stringify({ partName: btn.dataset.part, commodity: btn.dataset.commodity, kind: btn.dataset.kind, actioned: false, realizedGBP: 0 }),
         }).catch(() => { /* offline */ });
+        void renderDriftPanel();
+      });
+    });
+    box.querySelectorAll<HTMLButtonElement>('.drift-actioned-btn').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const raw = window.prompt('You pursued this finding — how much £/yr did you actually save?\n(The agent learns which findings convert and re-prioritises accordingly.)', '');
+        if (raw === null) return;
+        const realizedGBP = Math.max(0, parseFloat(raw.replace(/[^0-9.]/g, '')) || 0);
+        await fetch('/api/knowledge/drift/outcome', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+          body: JSON.stringify({ partName: btn.dataset.part, commodity: btn.dataset.commodity, kind: btn.dataset.kind, actioned: true, realizedGBP }),
+        }).catch(() => { /* offline */ });
+        showToast(`Logged — agent learned this ${btn.dataset.commodity} finding converted${realizedGBP ? ` (£${realizedGBP.toLocaleString()}/yr saved)` : ''}`, 'info');
         void renderDriftPanel();
       });
     });
@@ -13436,6 +13465,12 @@ function renderInsights(result: PartCostResult, input: UniversalStackInput): voi
           ? computeCostUncertainty(result, input, { baseCvOverride: cvFromMape(hcal.calibratedMapePct) })
           : computeCostUncertainty(result, input);
         const bandColor = u.band === 'tight' ? 'var(--success)' : u.band === 'moderate' ? 'var(--warning)' : 'var(--danger)';
+        // Empirical conformal band — a coverage-guaranteed range from logged actuals.
+        const conf90 = computeConformalBand(getCalibrationRecords(), {
+          commodity: activeCommodity,
+          materialFamily: currentMaterialFamily(),
+          region: (document.getElementById('mfg-region-selector') as HTMLSelectElement)?.value ?? 'UK',
+        }, 0.9);
         _lastBandInfo = { pm: u.plusMinusPct, band: String(u.band), conf: hcal.applied ? 'calibrated' : String(u.overallConfidence) };
         const bandNote = hcal.applied
           ? `Band width comes from OBSERVED accuracy (${hcal.calibratedMapePct}% MAPE over ${hcal.n} actuals) — it tightens as more quotes are logged.`
@@ -13452,6 +13487,13 @@ function renderInsights(result: PartCostResult, input: UniversalStackInput): voi
           <span><strong style="color:var(--danger)">P90</strong> ${cf(u.p90)} <span style="color:var(--text-muted)">(conservative)</span></span>
           <span style="color:${bandColor};text-transform:capitalize">${u.band} band · CV ${u.cvPct}%</span>
         </div>
+        ${conf90.applied ? (() => {
+          const cb = applyConformalBand(applyCalibration(result.total, hcal), conf90);
+          const seg = conf90.segment === 'commodity+family+region' ? 'this family+region' : conf90.segment === 'commodity+family' ? 'this material family' : 'this commodity';
+          return `<div style="margin-top:8px;padding:8px 10px;border-radius:7px;background:var(--success-bg);border:1px solid var(--success-border);font-size:0.76rem;color:var(--text-secondary)">
+          <strong style="color:var(--success)">Empirical band (conformal):</strong> ${conf90.guaranteed ? '<strong>90%</strong> of your logged quotes have' : 'so far, logged quotes have'} landed within <strong>± ${conf90.halfWidthPct}%</strong> &nbsp;→&nbsp; <strong>${cf(cb.low)} – ${cf(cb.high)}</strong>
+          <span style="color:var(--text-muted)"> · n=${conf90.n} for ${seg}${conf90.guaranteed ? ' · coverage-guaranteed' : ' · needs more data to guarantee'}</span>
+        </div>`; })() : ''}
         <div style="margin-top:6px;font-size:0.7rem;color:var(--text-muted);line-height:1.4">${bandNote}</div>
       </div>`;
 

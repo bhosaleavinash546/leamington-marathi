@@ -138,3 +138,86 @@ export function calibrationSummary(records: CalibrationRecord[]): {
     weightedCalibratedMapePct: round1(wsum(c => c.calibratedMapePct)),
   };
 }
+
+// ── Conformal prediction bands ──────────────────────────────────────────────
+/**
+ * Split-conformal confidence band on a should-cost estimate.
+ *
+ * Where the Monte-Carlo band expresses the *physics prior* (how well the inputs
+ * are known), this expresses the *empirical truth*: from the logged actuals it
+ * derives a band that comes with a finite-sample COVERAGE GUARANTEE — under the
+ * usual exchangeability assumption, at least `targetCoverage` of future real
+ * quotes for this segment fall inside it. That lets the tool say, honestly,
+ * "90% of your logged quotes have landed within ±X%" rather than asserting a
+ * precision. Fully explainable: the band edge IS an observed error quantile.
+ *
+ * Nonconformity score per record = |actual − calibratedEstimate| ÷ actual,
+ * i.e. the absolute percentage error AFTER the median-ratio bias correction, so
+ * the band is centred on the number the tool actually reports.
+ */
+export interface ConformalBand {
+  n: number;                 // records in the chosen segment
+  requestedCoverage: number; // e.g. 0.90
+  halfWidthPct: number;      // ± as a percent of the calibrated estimate
+  guaranteed: boolean;       // n large enough for the coverage to be guaranteed in-sample
+  empiricalCoverage: number; // fraction of in-sample actuals inside the band (sanity check, %)
+  segment: HierarchicalCalibration['segment'];
+  applied: boolean;          // enough evidence to report a band at all (n ≥ MIN_SAMPLES)
+}
+
+/** Ceil to a valid array index for the conformal quantile. */
+function conformalQuantileScore(scores: number[], targetCoverage: number): { score: number; guaranteed: boolean } {
+  const s = [...scores].sort((a, b) => a - b);
+  const n = s.length;
+  // Split-conformal rank: the ⌈(n+1)(1−α)⌉-th smallest score gives ≥ target coverage.
+  const rank = Math.ceil((n + 1) * targetCoverage);
+  if (rank > n) {
+    // Not enough samples for the quantile to sit inside the sample → widest observed,
+    // reported but NOT guaranteed (the tail is unbounded by the data we have).
+    return { score: s[n - 1] ?? 0, guaranteed: false };
+  }
+  return { score: s[rank - 1], guaranteed: true };
+}
+
+export function computeConformalBand(
+  records: CalibrationRecord[],
+  q: SegmentQuery,
+  targetCoverage = 0.90,
+): ConformalBand {
+  const cal = computeCalibrationHierarchical(records, q);
+  // Reselect the same segment's records the hierarchical calibration used.
+  const segRecs = (() => {
+    switch (cal.segment) {
+      case 'commodity+family+region':
+        return records.filter(r => r.commodity === q.commodity && r.materialFamily === q.materialFamily && r.region === q.region);
+      case 'commodity+family':
+        return records.filter(r => r.commodity === q.commodity && r.materialFamily === q.materialFamily);
+      default:
+        return records.filter(r => r.commodity === q.commodity);
+    }
+  })().filter(r => r.shouldCost > 0 && r.actualCost > 0);
+
+  const n = segRecs.length;
+  const applied = n >= MIN_SAMPLES;
+  if (!applied) {
+    return { n, requestedCoverage: targetCoverage, halfWidthPct: 0, guaranteed: false,
+             empiricalCoverage: 0, segment: cal.segment, applied: false };
+  }
+  const bias = cal.biasFactor;
+  const scores = segRecs.map(r => Math.abs(r.actualCost - r.shouldCost * bias) / r.actualCost);
+  const { score, guaranteed } = conformalQuantileScore(scores, targetCoverage);
+  const halfWidthPct = round1(score * 100);
+  const inside = scores.filter(x => x <= score).length;
+  return {
+    n, requestedCoverage: targetCoverage,
+    halfWidthPct, guaranteed,
+    empiricalCoverage: round1((inside / n) * 100),
+    segment: cal.segment, applied: true,
+  };
+}
+
+/** Apply a conformal band to a calibrated estimate → absolute low/high bounds. */
+export function applyConformalBand(calibratedEstimate: number, band: ConformalBand): { low: number; high: number } {
+  const w = calibratedEstimate * (band.halfWidthPct / 100);
+  return { low: round2(calibratedEstimate - w), high: round2(calibratedEstimate + w) };
+}
