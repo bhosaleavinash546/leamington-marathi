@@ -15,6 +15,7 @@
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
     "server": "tsx server/index.ts",
+    "accuracy": "tsx scripts/accuracy-report.ts",
     "dev:full": "concurrently \"npm run dev\" \"npm run server\"",
     "test:e2e": "tsx e2e/smoke.ts"
   },

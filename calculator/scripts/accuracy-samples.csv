@@ -1,0 +1,10 @@
+# CostVision accuracy dataset — TEMPLATE.
+# Replace the example rows below with REAL (estimate, actual) pairs before trusting any number.
+# 'estimate' = the tool's should-cost.  'actual' = the real supplier quote / PO price.
+# Lines starting with # are ignored. Columns: commodity,part,estimate,actual,source
+commodity,part,estimate,actual,source
+machining,EXAMPLE Rear suspension knuckle,86.34,91.00,EXAMPLE — replace with real quote
+machining,EXAMPLE Steering arm,42.10,44.50,EXAMPLE — replace with real quote
+casting,EXAMPLE Transfer-case housing,142.50,151.00,EXAMPLE — replace with real quote
+injection_moulding,EXAMPLE Bumper fascia,34.60,33.20,EXAMPLE — replace with real quote
+sheet_metal,EXAMPLE Seat cross-member,12.80,13.40,EXAMPLE — replace with real quote
