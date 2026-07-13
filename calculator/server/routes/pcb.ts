@@ -115,6 +115,18 @@ function flagAndEnrichBOM(
   });
 }
 
+// ── Extraction model selection ────────────────────────────────────────────────
+// Sonnet 5 is the workhorse for vision extraction (near-Opus on structured
+// extraction, faster, cheaper). "Deep analysis" escalates the extraction stages
+// to Opus 4.8 for complex/high-value boards — deeper reasoning on ambiguous
+// components. The Stage 3b refinement of unconfirmed ICs ALWAYS runs on Opus:
+// it is small (2K tokens) and sits exactly where analyses fail.
+const EXTRACT_MODEL = 'claude-sonnet-5';
+const DEEP_EXTRACT_MODEL = 'claude-opus-4-8';
+const extractionModel = (deep: boolean): string => (deep ? DEEP_EXTRACT_MODEL : EXTRACT_MODEL);
+const isDeep = (req: { body?: Record<string, unknown> }): boolean =>
+  req.body?.deepAnalysis === 'true' || req.body?.deepAnalysis === true;
+
 // ── Image analysis cache (SHA-256 of image buffers + params) ─────────────────
 // Persistent (SQLite) with an in-memory L1. Repeatability is a product promise:
 // the same photo at the same qty/country must return the IDENTICAL should-cost
@@ -228,7 +240,7 @@ Return ONLY a JSON array (same order as the list above):
 If still unreadable, set identifiedPartNumber to "" and adjust lineConf downward.`;
   try {
     const msg = await anthropic.messages.create({
-      model: 'claude-sonnet-5', max_tokens: 2048, system: specialistSystem,
+      model: DEEP_EXTRACT_MODEL, max_tokens: 2048, system: specialistSystem,
       messages: [{ role: 'user', content: [
         ...buildImageContentBlocks(imageFiles, imageLabels, imageFiles.length > 1),
         { type: 'text', text: prompt },
@@ -967,9 +979,10 @@ router.post('/analyze-image', upload.fields([
   const multiImage = imageFiles.length > 1;
 
   // Check cache — keyed by SHA-256 of all uploaded images + body params
+  const deepAnalysis = isDeep(req);
   const cacheKey = buildCacheKey([
     ...imageFiles.map(f => f.buffer),
-    Buffer.from(JSON.stringify({ country: req.body?.country, orderQty: req.body?.orderQty })),
+    Buffer.from(JSON.stringify({ country: req.body?.country, orderQty: req.body?.orderQty, deep: deepAnalysis })),
   ]);
   const cached = getCached(cacheKey);
   if (cached) {
@@ -1086,7 +1099,7 @@ router.post('/analyze-image', upload.fields([
   try {
     // ── Attempt 1: Full vision analysis (all images) ─────────────────────
     const msg1 = await anthropic.messages.create({
-      model: 'claude-sonnet-5',
+      model: extractionModel(deepAnalysis),
       max_tokens: 16384,
       system: specialistSystem,
       messages: [{
@@ -1109,7 +1122,7 @@ router.post('/analyze-image', upload.fields([
 
       // ── Attempt 2: Send raw response back to Claude for JSON repair ────
       const msg2 = await anthropic.messages.create({
-        model: 'claude-sonnet-5',
+        model: extractionModel(deepAnalysis),
         max_tokens: 16384,
         system: 'You are a JSON repair assistant. Return ONLY valid JSON — nothing else. Start with { and end with }.',
         messages: [{ role: 'user', content: buildRepairPrompt(lastRaw) }],
@@ -1130,7 +1143,7 @@ router.post('/analyze-image', upload.fields([
 ${userPromptText}`;
 
         const msg3 = await anthropic.messages.create({
-          model: 'claude-sonnet-5',
+          model: extractionModel(deepAnalysis),
           max_tokens: 4096,
           system: specialistSystem,
           messages: [{
@@ -1416,6 +1429,7 @@ router.post('/reanalyze', upload.fields([
 ]), async (req, res): Promise<void> => {
   const files = req.files as Record<string, Express.Multer.File[]> | undefined;
   const imageFiles = files?.pcbImages ?? [];
+  const deepAnalysis = isDeep(req);
 
   const apiKey = process.env.ANTHROPIC_API_KEY ?? (req.headers['x-api-key'] as string);
   if (!apiKey) {
@@ -1472,7 +1486,7 @@ router.post('/reanalyze', upload.fields([
       imageFiles.length > 0 ? buildImageContentBlocks(imageFiles, imageLabels, multiImage) : [];
 
     const msg1 = await anthropic.messages.create({
-      model: 'claude-sonnet-5',
+      model: extractionModel(deepAnalysis),
       max_tokens: 16384,
       system: specialistSystem,
       messages: [{
@@ -1493,7 +1507,7 @@ router.post('/reanalyze', upload.fields([
 
       // ── Attempt 2: JSON repair ────────────────────────────────────────
       const msg2 = await anthropic.messages.create({
-        model: 'claude-sonnet-5',
+        model: extractionModel(deepAnalysis),
         max_tokens: 16384,
         system: 'You are a JSON repair assistant. Return ONLY valid JSON — nothing else. Start with { and end with }.',
         messages: [{ role: 'user', content: buildRepairPrompt(lastRaw) }],
@@ -1511,7 +1525,7 @@ router.post('/reanalyze', upload.fields([
           imageFiles.length > 0 ? buildImageContentBlocks(imageFiles, imageLabels, multiImage) : [];
 
         const msg3 = await anthropic.messages.create({
-          model: 'claude-sonnet-5',
+          model: extractionModel(deepAnalysis),
           max_tokens: 4096,
           system: specialistSystem,
           messages: [{
@@ -1802,12 +1816,14 @@ router.post('/analyze-image-stream', upload.fields([
   // BOMs and totals each run. Cache the finished analysis keyed by the exact image
   // bytes + cost params; an identical re-run replays the stored result verbatim.
   const bomFileForKey = files?.bomFile?.[0];
+  const deepAnalysis = isDeep(req);
   const streamCacheKey = buildCacheKey([
     ...imageFiles.map(f => f.buffer),
     Buffer.from(JSON.stringify({
       country: req.body?.country ?? 'cn',
       orderQty: req.body?.orderQty ?? '100',
       nre: req.body?.automotiveNRE ?? req.body?.includeAutomotiveNRE ?? '',
+      deep: deepAnalysis,
     })),
     ...(bomFileForKey ? [bomFileForKey.buffer] : []),
   ]);
@@ -1886,7 +1902,7 @@ router.post('/analyze-image-stream', upload.fields([
   // ── Stage 3 attempt 1: full vision analysis ──────────────────────────────
   try {
     const msg = await anthropic.messages.create({
-      model: 'claude-sonnet-5', max_tokens: 16384, system: specSystem,
+      model: extractionModel(deepAnalysis), max_tokens: 16384, system: specSystem,
       messages: [{ role: 'user', content: [
         ...buildImageContentBlocks(imageFiles, imageLabels, multiImage),
         { type: 'text', text: userPromptText2 },
@@ -1911,7 +1927,7 @@ router.post('/analyze-image-stream', upload.fields([
     emit('progress', { stage: 3, label: 'Stage 3 — repairing AI response', pct: 60 });
     try {
       const repair = await anthropic.messages.create({
-        model: 'claude-sonnet-5', max_tokens: 16384,
+        model: extractionModel(deepAnalysis), max_tokens: 16384,
         system: 'You are a JSON repair assistant. Return ONLY valid JSON — nothing else. Start with { and end with }.',
         messages: [{ role: 'user', content: buildRepairPrompt(stage3Raw) }],
       });

@@ -6561,6 +6561,14 @@ function buildPCBImageUploadZone(): string {
           </label>
         </div>
 
+        <!-- Deep analysis: run extraction on Claude Opus (higher accuracy, ~2x cost, slower) -->
+        <div style="margin-top:6px;display:flex;justify-content:center">
+          <label style="font-size:0.70rem;display:flex;align-items:center;gap:6px;cursor:pointer" title="Runs the vision extraction on Claude Opus 4.8 instead of Sonnet — deeper reasoning on ambiguous components and complex boards. Roughly 2x AI cost and slower; best for high-value or HDI/RF boards.">
+            <input type="checkbox" id="pcb-deep-analysis" style="margin:0"/>
+            <span>🔬 Deep analysis — Claude Opus 4.8 (higher accuracy on complex boards, slower)</span>
+          </label>
+        </div>
+
         <!-- Live Pricing (optional, collapsible) -->
         <details style="margin-top:8px;text-align:left">
           <summary style="font-size:0.68rem;color:var(--text-secondary);cursor:pointer;user-select:none">⚡ Live Component Pricing (optional)</summary>
@@ -6697,13 +6705,14 @@ function wirePCBImageZone(): void {
 
 /**
  * Downscale a PCB photo to a JPEG bounded by `maxEdge` px before upload.
- * Claude's vision model already works at ≤1568 px, so full-resolution phone
- * photos (often 4–8 MB each) add no accuracy but push the multi-image request
- * past the Anthropic API's ~32 MB per-request limit → HTTP 413
- * ("request_too_large") on Stage 3. Bounding to 1568 px q0.82 keeps five images
- * comfortably under the cap. Falls back to the original file if anything fails.
+ * Claude Sonnet 5 / Opus 4.8 accept up to 2576 px on the long edge, and IC
+ * part-marking OCR is the accuracy bottleneck — so we keep every pixel the
+ * model can use. Full-resolution phone photos (often 4–8 MB) still need
+ * bounding or the multi-image request pushes past the Anthropic API's ~32 MB
+ * per-request limit → HTTP 413 on Stage 3; 2576 px q0.82 keeps five images
+ * comfortably under it. Falls back to the original file if anything fails.
  */
-async function downscaleImageForUpload(file: File, maxEdge = 1568, quality = 0.82): Promise<File> {
+async function downscaleImageForUpload(file: File, maxEdge = 2576, quality = 0.82): Promise<File> {
   if (!file.type.startsWith('image/')) return file;
   try {
     const dataUrl = await new Promise<string>((resolve, reject) => {
@@ -6782,6 +6791,7 @@ async function analyzePCBImages(): Promise<void> {
   } catch { pcbUploadedImages = []; }
   formData.append('country', selectedCountry);
   formData.append('orderQty', orderQty);
+  formData.append('deepAnalysis', String((document.getElementById('pcb-deep-analysis') as HTMLInputElement | null)?.checked ?? false));
 
   // Optional BOM/netlist file (Priority 2)
   const bomFileInput = document.getElementById('pcb-bom-input') as HTMLInputElement | null;
@@ -7236,6 +7246,7 @@ async function reanalyzePCBWithCorrections(): Promise<void> {
   formData.append('ocrMarkings', JSON.stringify(pcbImageResult.ocrExtraction?.icMarkings ?? []));
   formData.append('country', selectedCountry);
   formData.append('orderQty', orderQty);
+  formData.append('deepAnalysis', String((document.getElementById('pcb-deep-analysis') as HTMLInputElement | null)?.checked ?? false));
 
   try {
     const resp = await fetch('/api/pcb/reanalyze', {
