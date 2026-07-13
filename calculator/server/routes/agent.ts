@@ -970,7 +970,7 @@ router.post('/chat', async (req, res): Promise<void> => {
     for (let i = 0; i < MAX_ITER; i++) {
       const apiResp = await withTimeout(
         anthropic.messages.create({
-          model: 'claude-sonnet-4-6',
+          model: 'claude-opus-4-8',
           max_tokens: 8192,
           tools: [CALCULATE_COST_TOOL],
           tool_choice: { type: 'auto' },
@@ -1064,7 +1064,7 @@ router.post('/chat/stream', async (req, res): Promise<void> => {
     for (let i = 0; i < MAX_ITER; i++) {
       const apiResp = await withTimeout(
         anthropic.messages.create({
-          model: 'claude-sonnet-4-6',
+          model: 'claude-opus-4-8',
           max_tokens: 8192,
           tools: [CALCULATE_COST_TOOL],
           tool_choice: { type: 'auto' },
@@ -1118,7 +1118,7 @@ router.post('/chat/stream', async (req, res): Promise<void> => {
       let fullText = '';
 
       const stream = anthropic.messages.stream({
-        model: 'claude-sonnet-4-6',
+        model: 'claude-opus-4-8',
         max_tokens: 8192,
         system: SYSTEM_PROMPT,
         messages,

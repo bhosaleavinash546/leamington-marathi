@@ -282,7 +282,7 @@ router.post('/analyze', upload.single('cadFile'), async (req, res): Promise<void
 
   for (let attempt = 1; attempt <= 2; attempt++) {
     const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
+      model: 'claude-opus-4-8',
       max_tokens: 8192,
       system: systemPrompt,
       messages: attempt === 1
@@ -1015,7 +1015,7 @@ router.post('/reanalyze', async (req, res): Promise<void> => {
 
   for (let attempt = 1; attempt <= 2; attempt++) {
     const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
+      model: 'claude-opus-4-8',
       max_tokens: 8192,
       system: systemPrompt,
       messages: attempt === 1
