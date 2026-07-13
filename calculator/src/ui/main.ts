@@ -2658,6 +2658,8 @@ interface PCBImageAnalysis {
   _automotiveFabAdjustment?: AutomotiveFabAdjustment;
   _bomCompleteness?: BOMCompletenessResult;
   _programPricing?: ProgramPricingResult;
+  /** Server returned the stored result for this exact photo+qty+country (repeatable). */
+  fromCache?: boolean;
 }
 
 interface AutomotiveNRE {
@@ -7357,6 +7359,7 @@ function buildPCBImagePanel(r: PCBImageAnalysis): string {
           <span style="font-size:0.65rem;color:var(--text-muted);margin-left:8px">PCB Image Analysis</span>
         </div>
         <span class="occt-mfg-score ${confClass}">${r.confidenceLevel} Confidence</span>
+        ${r.fromCache ? '<span title="This exact photo + quantity + country was analysed before — the identical result is returned, so the should-cost is repeatable run to run." style="background:var(--info-bg,#eff6ff);color:var(--info,#2563eb);border:1px solid var(--info-border,#bfdbfe);font-size:0.6rem;padding:2px 6px;border-radius:10px;margin-left:6px;font-weight:700">&#8635; Repeat analysis — identical result</span>' : ''}
         ${r._isReanalyzed ? '<span style="background:#16a34a;color:#fff;font-size:0.6rem;padding:2px 6px;border-radius:10px;margin-left:6px">&#10003; Recalculated</span>' : ''}
         <button class="btn btn-secondary btn-sm" id="pcb-edit-toggle-btn" style="font-size:0.65rem;padding:2px 8px">${pcbEditMode ? '&#10005; Cancel Edit' : '&#9999; Edit'}</button>
         <button class="btn btn-secondary btn-sm" id="pcb-clear-btn" style="font-size:0.65rem;padding:2px 8px">&#10005; Clear</button>

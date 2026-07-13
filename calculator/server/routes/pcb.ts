@@ -2,6 +2,7 @@ import { createHash } from 'crypto';
 import { Router } from 'express';
 import multer from 'multer';
 import Anthropic from '@anthropic-ai/sdk';
+import db from '../db.js';
 import { createAnthropic } from '../utils/ai-client.js';
 import {
   computeAllCountryCosts,
@@ -114,9 +115,23 @@ function flagAndEnrichBOM(
   });
 }
 
-// ── Image analysis cache (SHA-256 of image buffers, 4h TTL) ──────────────────
+// ── Image analysis cache (SHA-256 of image buffers + params) ─────────────────
+// Persistent (SQLite) with an in-memory L1. Repeatability is a product promise:
+// the same photo at the same qty/country must return the IDENTICAL should-cost
+// on every run. A fresh LLM pass is not bit-deterministic even at temperature 0,
+// so the previous in-memory 4h cache leaked variance every server restart —
+// users saw a different total for the same board on each iteration.
 const _analysisCache = new Map<string, { ts: number; payload: unknown }>();
-const CACHE_TTL_MS = 4 * 60 * 60 * 1000;
+const CACHE_TTL_MS = 30 * 24 * 60 * 60 * 1000; // 30 days
+db.exec(`
+  CREATE TABLE IF NOT EXISTS pcb_analysis_cache (
+    key TEXT PRIMARY KEY,
+    ts  INTEGER NOT NULL,
+    payload TEXT NOT NULL
+  );
+`);
+db.prepare('DELETE FROM pcb_analysis_cache WHERE ts < ?').run(Date.now() - CACHE_TTL_MS);
+
 function buildCacheKey(buffers: Buffer[]): string {
   const h = createHash('sha256');
   for (const b of buffers) h.update(b);
@@ -124,9 +139,19 @@ function buildCacheKey(buffers: Buffer[]): string {
 }
 function getCached(key: string): unknown | null {
   const e = _analysisCache.get(key);
-  if (!e) return null;
-  if (Date.now() - e.ts > CACHE_TTL_MS) { _analysisCache.delete(key); return null; }
-  return e.payload;
+  if (e && Date.now() - e.ts <= CACHE_TTL_MS) return e.payload;
+  if (e) _analysisCache.delete(key);
+  try {
+    const row = db.prepare('SELECT ts, payload FROM pcb_analysis_cache WHERE key = ?').get(key) as { ts: number; payload: string } | undefined;
+    if (!row) return null;
+    if (Date.now() - row.ts > CACHE_TTL_MS) { db.prepare('DELETE FROM pcb_analysis_cache WHERE key = ?').run(key); return null; }
+    const payload = JSON.parse(row.payload) as unknown;
+    _analysisCache.set(key, { ts: row.ts, payload });
+    return payload;
+  } catch (err) {
+    console.warn('[PCB] cache read failed:', err instanceof Error ? err.message : String(err));
+    return null;
+  }
 }
 function setCached(key: string, payload: unknown): void {
   if (_analysisCache.size > 200) {
@@ -134,6 +159,12 @@ function setCached(key: string, payload: unknown): void {
     if (oldest) _analysisCache.delete(oldest[0]);
   }
   _analysisCache.set(key, { ts: Date.now(), payload });
+  try {
+    db.prepare('INSERT OR REPLACE INTO pcb_analysis_cache (key, ts, payload) VALUES (?, ?, ?)')
+      .run(key, Date.now(), JSON.stringify(payload));
+  } catch (err) {
+    console.warn('[PCB] cache write failed:', err instanceof Error ? err.message : String(err));
+  }
 }
 
 // ── Board sanity checks ────────────────────────────────────────────────────────
