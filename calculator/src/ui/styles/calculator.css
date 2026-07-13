@@ -5586,7 +5586,7 @@ kbd {
        every top-level view change is theatrical for a data tool — a short
        cross-fade reads as instant and composed. */
 :root { --dur-enter: 150ms; }
-#home-view, #costing-view, #commodity-picker-view, #news-view, #comm-view {
+#home-view, #costing-view, #commodity-picker-view, #news-view, #negotiation-view, #comm-view {
   animation: cv-fade-in var(--dur-enter) var(--ease-decel) both !important;
 }
 
@@ -5600,7 +5600,7 @@ kbd {
 @media (prefers-reduced-motion: reduce) {
   .ai-chat-fab:hover, .theme-toggle:hover { transform: none !important; }
   .cv-status-dot, .cv-live::before,
-  #home-view, #costing-view, #commodity-picker-view, #news-view, #comm-view,
+  #home-view, #costing-view, #commodity-picker-view, #news-view, #negotiation-view, #comm-view,
   .cv-hero-full .cv-eyebrow, .cv-hero-h1, .cv-hero-lede, .cv-hero-cta,
   .cv-hero-trust, .cv-impact, .cv-hero-compact { animation: none !important; }
 }
@@ -5682,11 +5682,11 @@ kbd {
 .cv-nav-collapsed .anav-label { display: none; }
 .cv-nav-collapsed .anav-item { justify-content: center; padding: 9px 0; }
 /* Content offset */
-#home-view, #news-view, #commodity-picker-view, #costing-view, footer.footer {
+#home-view, #news-view, #negotiation-view, #commodity-picker-view, #costing-view, footer.footer {
   margin-left: var(--anav-w);
   transition: margin-left 240ms var(--ease-std);
 }
-.cv-nav-collapsed #home-view, .cv-nav-collapsed #news-view,
+.cv-nav-collapsed #home-view, .cv-nav-collapsed #news-view, .cv-nav-collapsed #negotiation-view,
 .cv-nav-collapsed #commodity-picker-view, .cv-nav-collapsed #costing-view,
 .cv-nav-collapsed footer.footer { margin-left: var(--anav-w-min); }
 /* Mobile: sidebar becomes an overlay */
@@ -5696,7 +5696,7 @@ kbd {
   #app-nav { transform: translateX(-100%); transition: transform 240ms var(--ease-std); width: var(--anav-w) !important; box-shadow: var(--shadow-lg, 0 12px 40px rgba(0,0,0,0.25)); }
   .cv-nav-open #app-nav { transform: translateX(0); }
   .cv-nav-open #anav-scrim { display: block; position: fixed; inset: 0; z-index: 39; background: rgba(15,23,42,0.4); }
-  #home-view, #news-view, #commodity-picker-view, #costing-view, footer.footer { margin-left: 0 !important; }
+  #home-view, #news-view, #negotiation-view, #commodity-picker-view, #costing-view, footer.footer { margin-left: 0 !important; }
   .anav-mobile-toggle { display: inline-flex; }
   .cmdk-trigger span, .cmdk-trigger kbd { display: none; }
 }
