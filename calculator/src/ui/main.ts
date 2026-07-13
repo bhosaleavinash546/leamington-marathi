@@ -13272,6 +13272,30 @@ function renderWaterfallChart(result: PartCostResult): void {
   });
 }
 
+// Re-tint the breakdown charts when the theme is toggled. Chart.js caches the
+// palette from when the chart was built, so a donut created in dark mode keeps
+// its dark segment borders / legend colours after switching to light (and vice
+// versa). Patch the themeable props in place; the waterfall's label plugin
+// closes over the theme at creation, so rebuild it outright.
+function retintChartsForTheme(dark: boolean): void {
+  const bc = _breakdownChart;
+  if (bc) {
+    const ds = bc.data.datasets[0] as any;
+    ds.borderColor = dark ? '#141414' : '#ffffff';
+    const opts = bc.options as any;
+    if (opts.plugins?.legend?.labels) opts.plugins.legend.labels.color = dark ? '#94a3b8' : '#475569';
+    const tt = opts.plugins?.tooltip;
+    if (tt) {
+      tt.backgroundColor = dark ? '#1e293b' : '#fff';
+      tt.titleColor = dark ? '#f0f0f0' : '#0a0a0a';
+      tt.bodyColor = dark ? '#94a3b8' : '#475569';
+      tt.borderColor = dark ? '#334155' : '#e2e8f0';
+    }
+    bc.update('none');
+  }
+  if (_waterfallChart && lastResult) renderWaterfallChart(lastResult);
+}
+
 // ─── Export Cost Card ──────────────────────────────────────────────────────────
 
 function exportCostCard(): void {
@@ -13790,10 +13814,11 @@ function renderBreakdown(result: PartCostResult): void {
           ctx.font = `800 ${fs}px Inter, sans-serif`;
           while (ctx.measureText(totalStr).width > inner * 1.7 && fs > 8) { fs -= 1; ctx.font = `800 ${fs}px Inter, sans-serif`; }
           const capFs = Math.max(8, Math.round(fs * 0.42));
-          ctx.fillStyle = isDark ? '#94a3b8' : '#64748b';
+          const darkNow = document.documentElement.getAttribute('data-theme') !== 'light';
+          ctx.fillStyle = darkNow ? '#94a3b8' : '#64748b';
           ctx.font = `700 ${capFs}px Inter, sans-serif`;
           ctx.fillText('TOTAL', cx, cy - fs * 0.62);
-          ctx.fillStyle = isDark ? '#f1f5f9' : '#0f172a';
+          ctx.fillStyle = darkNow ? '#f1f5f9' : '#0f172a';
           ctx.font = `800 ${fs}px Inter, sans-serif`;
           ctx.fillText(totalStr, cx, cy + capFs * 0.35);
           ctx.restore();
@@ -17126,6 +17151,7 @@ async function init(): Promise<void> {
       document.documentElement.setAttribute('data-theme', next);
       localStorage.setItem('sc-theme', next);
       themeBtn.innerHTML = `<svg class="ic"><use href="#${next === 'dark' ? 'i-moon' : 'i-sun'}"/></svg>`;
+      retintChartsForTheme(next === 'dark');
     });
   }
 
