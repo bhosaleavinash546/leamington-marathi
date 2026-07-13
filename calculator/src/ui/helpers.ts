@@ -9,6 +9,12 @@ export function sel(id: string): string { return el<HTMLSelectElement>(id)?.valu
 export function fmt(n: number): string { return '£' + n.toFixed(2); }
 export function fmtPct(n: number): string { return n.toFixed(1) + '%'; }
 
+/** Read a <select>'s value, falling back to `fallback` when it isn't one of `valid`. */
+export function validSel<T extends string>(id: string, valid: readonly T[], fallback: T): T {
+  const v = sel(id);
+  return (valid as readonly string[]).includes(v) ? (v as T) : fallback;
+}
+
 export function chk(id: string): boolean { return (document.getElementById(id) as HTMLInputElement)?.checked ?? false; }
 
 export function getUniversalTail(): Pick<UniversalStackInput, 'partName' | 'packagingPerPart' | 'logisticsPerPart' | 'overheadPct' | 'marginPct'> {
