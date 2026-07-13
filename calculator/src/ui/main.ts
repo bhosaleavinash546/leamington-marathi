@@ -217,6 +217,12 @@ function _currFmt(n: number): string {
   return `${sym}${(n * _displayFxRate).toFixed(2)}`;
 }
 
+// Grouped money — thousands separators, variable dp (2 for per-part, 0 for annual).
+function _moneyG(n: number, dp = 2): string {
+  const sym = CURRENCY_SYMBOL[_displayCurrency] ?? _displayCurrency;
+  return `${sym}${(n * _displayFxRate).toLocaleString('en-GB', { minimumFractionDigits: dp, maximumFractionDigits: dp })}`;
+}
+
 // ─── Dashboard state ──────────────────────────────────────────────────────────
 
 interface CostingRecord {
@@ -1184,7 +1190,8 @@ function demoSupplierBreakdown(shouldBd: Breakdown8Bucket, quote: number): Parti
   return out;
 }
 
-const _negoState: { report: NegotiationReport | null; showBreakdown: boolean } = { report: null, showBreakdown: false };
+interface NegoMeta { partName: string; commodityLabel: string; annualVolume: number; shouldCost: number; quote: number; }
+const _negoState: { report: NegotiationReport | null; showBreakdown: boolean; meta: NegoMeta | null; chart: Chart | null } = { report: null, showBreakdown: false, meta: null, chart: null };
 
 function renderNegotiationPanel(): void {
   const host = document.getElementById('dash-negotiation');
@@ -1240,7 +1247,7 @@ function renderNegotiationPanel(): void {
     if (_negoState.showBreakdown && !bdHost.innerHTML) renderBd();
   });
 
-  const runFromDom = (override?: { family?: string }) => {
+  const runFromDom = (override?: { family?: string; part?: string }) => {
     const shouldCost = parseFloat((host.querySelector('#ni-should') as HTMLInputElement).value) || 0;
     const quote = parseFloat((host.querySelector('#ni-quote') as HTMLInputElement).value) || 0;
     const commodity = (host.querySelector('#ni-comm') as HTMLSelectElement).value;
@@ -1275,6 +1282,10 @@ function renderNegotiationPanel(): void {
       conformalHalfWidthPct: conf.applied ? conf.halfWidthPct : null,
     };
     _negoState.report = analyzeQuote(input);
+    const partName = override?.part
+      || ((document.getElementById('part-name') as HTMLInputElement)?.value || '').trim()
+      || `${COMMODITY_LABELS[commodity] ?? commodity} quote`;
+    _negoState.meta = { partName, commodityLabel: COMMODITY_LABELS[commodity] ?? commodity, annualVolume: vol, shouldCost, quote };
     renderNegotiationReport();
   };
   host.querySelector('#ni-run')?.addEventListener('click', () => runFromDom());
@@ -1295,7 +1306,7 @@ function renderNegotiationPanel(): void {
       const v = bd[inp.dataset.k as keyof Breakdown8Bucket];
       if (v !== undefined) inp.value = v.toFixed(2);
     });
-    runFromDom({ family: d.family });
+    runFromDom({ family: d.family, part: d.part });
     (host.querySelector('#ni-report') as HTMLElement)?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   };
   host.querySelectorAll<HTMLButtonElement>('.ni-demo').forEach(btn => {
@@ -1311,60 +1322,190 @@ function renderNegotiationPanel(): void {
 function renderNegotiationReport(): void {
   const box = document.getElementById('ni-report');
   const r = _negoState.report;
+  const m = _negoState.meta;
   if (!box || !r) return;
-  const cf = (n: number) => _currFmt(n);
-  const ragColor = r.verdict.rag === 'green' ? 'var(--success)' : r.verdict.rag === 'amber' ? 'var(--warning)' : 'var(--danger)';
-  const sev = (s: string) => s === 'high' ? 'var(--danger)' : s === 'medium' ? 'var(--warning)' : 'var(--text-muted)';
+  const lineMode = r.mode === 'line-by-line';
+  const rag = r.verdict.rag;
+  const ragTok = rag === 'green' ? '--success' : rag === 'amber' ? '--warning' : '--danger';
+  const ragWord = rag === 'green' ? 'Competitive' : rag === 'amber' ? 'Review' : 'Overpriced';
+  const dateLabel = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
 
-  const gapRows = r.gaps.filter(g => (r.mode === 'line-by-line' ? g.quoteGBP !== null : true)).slice(0, 8).map(g => {
-    const bmFlag = g.benchmark?.over ? `<span style="color:var(--danger);font-weight:700"> · ${g.benchmark.sharePct}% vs ${g.benchmark.loPct}–${g.benchmark.hiPct}% norm</span>` : '';
-    if (r.mode === 'line-by-line') {
-      return `<tr><td style="padding:4px 8px">${escHtml(g.label)}</td><td style="padding:4px 8px;text-align:right;font-family:var(--font-mono)">${cf(g.shouldGBP)}</td><td style="padding:4px 8px;text-align:right;font-family:var(--font-mono)">${cf(g.quoteGBP!)}</td><td style="padding:4px 8px;text-align:right;font-family:var(--font-mono);color:${g.gapGBP>0?'var(--danger)':'var(--success)'};font-weight:700">${g.gapGBP>0?'+':''}${cf(g.gapGBP)}</td><td style="padding:4px 8px;font-size:0.7rem;color:${sev(g.severity)}">${g.gapGBP>0?g.severity:''}${bmFlag}</td></tr>`;
+  // ── Reusable chip/pill snippets ─────────────────────────────────────────
+  const tintPill = (tok: string, txt: string) =>
+    `<span style="display:inline-block;padding:1px 7px;border-radius:6px;font-size:0.66rem;font-weight:700;color:var(${tok});background:color-mix(in srgb, var(${tok}) 13%, transparent)">${txt}</span>`;
+  const sevPill = (s: string) => tintPill(s === 'high' ? '--danger' : s === 'medium' ? '--warning' : '--text-muted', s);
+
+  const stat = (label: string, value: string, tok: string) => `
+    <div style="flex:1;min-width:130px;background:var(--surface-elevated);border:1px solid var(--border);border-radius:10px;padding:11px 13px">
+      <div style="font-size:0.62rem;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;color:var(--text-muted)">${label}</div>
+      <div style="margin-top:4px;font-size:1.34rem;font-weight:800;font-family:var(--font-mono);color:var(${tok})">${value}</div>
+    </div>`;
+
+  // ── Gap table rows ───────────────────────────────────────────────────────
+  const gaps = r.gaps.filter(g => (lineMode ? g.quoteGBP !== null : g.shouldGBP > 0)).slice(0, 8);
+  const gapRows = gaps.map((g, i) => {
+    const zebra = i % 2 ? 'background:color-mix(in srgb, var(--text-muted) 5%, transparent)' : '';
+    const flag = g.benchmark?.over
+      ? tintPill('--danger', `${g.benchmark.sharePct}% vs ${g.benchmark.loPct}–${g.benchmark.hiPct}% norm`)
+      : (g.gapGBP > 0 ? sevPill(g.severity) : '<span style="color:var(--text-muted)">—</span>');
+    const td = 'padding:7px 10px;border-bottom:1px solid var(--border)';
+    if (lineMode) {
+      const gpTok = g.gapGBP > 0 ? '--danger' : '--success';
+      const gapChip = `<span style="display:inline-block;padding:2px 8px;border-radius:6px;font-family:var(--font-mono);font-weight:700;color:var(${gpTok});background:color-mix(in srgb, var(${gpTok}) 12%, transparent)">${g.gapGBP > 0 ? '+' : ''}${_moneyG(g.gapGBP)}</span>`;
+      return `<tr style="${zebra}"><td style="${td};font-weight:600;color:var(--text-primary)">${escHtml(g.label)}</td><td style="${td};text-align:right;font-family:var(--font-mono);color:var(--text-secondary)">${_moneyG(g.shouldGBP)}</td><td style="${td};text-align:right;font-family:var(--font-mono);color:var(--text-secondary)">${_moneyG(g.quoteGBP!)}</td><td style="${td};text-align:right">${gapChip}</td><td style="${td}">${flag}</td></tr>`;
     }
-    return `<tr><td style="padding:4px 8px">${escHtml(g.label)}</td><td style="padding:4px 8px;text-align:right;font-family:var(--font-mono)">${cf(g.shouldGBP)}</td><td style="padding:4px 8px;text-align:right;font-size:0.72rem;color:var(--text-muted)">${g.benchmark ? g.benchmark.sharePct + '% of cost' : ''}</td><td style="padding:4px 8px;font-size:0.7rem">${bmFlag}</td></tr>`;
+    return `<tr style="${zebra}"><td style="${td};font-weight:600;color:var(--text-primary)">${escHtml(g.label)}</td><td style="${td};text-align:right;font-family:var(--font-mono);color:var(--text-secondary)">${_moneyG(g.shouldGBP)}</td><td style="${td};text-align:right;color:var(--text-muted)">${g.benchmark ? g.benchmark.sharePct + '%' : ''}</td><td style="${td}">${flag}</td></tr>`;
   }).join('');
+  const thStyle = 'padding:8px 10px;text-align:left;font-size:0.64rem;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;color:var(--text-muted);border-bottom:2px solid var(--border)';
+
+  const secHead = (t: string) => `<div style="font-weight:800;font-size:0.82rem;color:var(--text-primary);display:flex;align-items:center;gap:7px"><span style="width:3px;height:14px;background:var(--accent);border-radius:2px;display:inline-block"></span>${t}</div>`;
 
   box.innerHTML = `
-    <div style="border-top:1px dashed var(--border);padding-top:12px">
-      <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap">
-        <span style="font-size:0.72rem;font-weight:800;text-transform:uppercase;letter-spacing:0.05em;color:${ragColor};border:1px solid ${ragColor}55;background:${ragColor}12;border-radius:20px;padding:2px 10px">${r.verdict.rag==='green'?'Competitive':r.verdict.rag==='amber'?'Review':'Overpriced'}</span>
-        <span style="font-size:0.86rem;color:var(--text-secondary)">${escHtml(r.headline)}</span>
-      </div>
-      <div style="margin-top:8px;display:flex;gap:16px;flex-wrap:wrap;font-size:0.76rem;color:var(--text-secondary)">
-        <span>PPV <strong style="color:${ragColor}">${r.verdict.ppvPct>0?'+':''}${r.verdict.ppvPct}%</strong> (${cf(r.verdict.ppvGBP)}/part)</span>
-        <span>Annual impact <strong>${cf(r.verdict.annualImpactGBP)}/yr</strong></span>
-        ${r.verdict.withinConformal !== null ? `<span>Empirical band: <strong style="color:${r.verdict.withinConformal?'var(--success)':'var(--danger)'}">${r.verdict.withinConformal?'inside':'BEYOND'}</strong></span>` : ''}
-        <span style="color:var(--text-muted)">Mode: ${r.mode === 'line-by-line' ? 'line-by-line teardown' : 'attribution (total only)'}</span>
-      </div>
-      ${r.causalDiagnosis ? `<div style="margin-top:8px;padding:8px 10px;background:var(--info-bg);border:1px solid var(--info-border);border-radius:7px;font-size:0.76rem;color:var(--text-secondary)"><strong style="color:var(--info)">Causal diagnosis:</strong> ${escHtml(r.causalDiagnosis)}</div>` : ''}
-
-      <div style="margin-top:10px;font-weight:700;font-size:0.8rem;color:var(--text-primary)">Gap teardown</div>
-      <div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:0.78rem;margin-top:4px">
-        <thead><tr style="color:var(--text-muted);font-size:0.68rem;text-transform:uppercase">
-          <th style="padding:4px 8px;text-align:left">Element</th><th style="padding:4px 8px;text-align:right">Should</th>${r.mode==='line-by-line'?'<th style="padding:4px 8px;text-align:right">Quote</th><th style="padding:4px 8px;text-align:right">Gap</th>':'<th style="padding:4px 8px;text-align:right">Share</th>'}<th style="padding:4px 8px"></th>
-        </tr></thead><tbody>${gapRows}</tbody>
-      </table></div>
-
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px">
-        <div>
-          <div style="font-weight:700;font-size:0.8rem;color:var(--text-primary)">Negotiation levers</div>
-          ${r.levers.map(l => `<div style="margin-top:5px;font-size:0.76rem;color:var(--text-secondary)"><strong style="color:var(--success)">${escHtml(l.area)}${l.expectedRecoveryGBP>0?` · ${cf(l.expectedRecoveryGBP)}/yr`:''}:</strong> ${escHtml(l.lever)}</div>`).join('')}
+    <div style="border-top:1px solid var(--border);margin-top:6px;padding-top:16px">
+      <!-- Report header: verdict + identity + export -->
+      <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:center;justify-content:space-between">
+        <div style="display:flex;gap:13px;align-items:center;min-width:0">
+          <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 14px;border-radius:11px;background:color-mix(in srgb, var(${ragTok}) 12%, transparent);border:1px solid color-mix(in srgb, var(${ragTok}) 40%, transparent)">
+            <span style="font-size:0.94rem;font-weight:800;color:var(${ragTok})">${ragWord}</span>
+            <span style="font-size:0.62rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.03em">${lineMode ? 'Line-by-line' : 'Attribution'}</span>
+          </div>
+          <div style="min-width:0">
+            <div style="font-weight:800;font-size:1rem;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${escHtml(m?.partName ?? 'Supplier quote')}</div>
+            <div style="font-size:0.72rem;color:var(--text-muted)">${escHtml(m?.commodityLabel ?? '')}${m ? ` · vol ${m.annualVolume.toLocaleString('en-GB')}` : ''} · ${dateLabel}</div>
+          </div>
         </div>
-        <div>
-          <div style="font-weight:700;font-size:0.8rem;color:var(--text-primary)">Ask the supplier</div>
-          ${r.supplierQuestions.map(q => `<div style="margin-top:5px;font-size:0.76rem;color:var(--text-secondary)">• ${escHtml(q)}</div>`).join('')}
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-secondary" id="ni-export-pdf" style="padding:7px 14px;font-size:0.78rem">↓ PDF</button>
+          <button class="btn btn-secondary" id="ni-export-pptx" style="padding:7px 14px;font-size:0.78rem">↓ PowerPoint</button>
         </div>
       </div>
 
-      ${r.closingPlays.length ? `<div style="margin-top:12px"><div style="font-weight:700;font-size:0.8rem;color:var(--text-primary)">How to close each gap</div>${r.closingPlays.map(c => `<div style="margin-top:4px;font-size:0.76rem;color:var(--text-secondary)"><strong>${escHtml(c.gap)}:</strong> ${escHtml(c.play)}</div>`).join('')}</div>` : ''}
+      <!-- Stat cards -->
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px">
+        ${stat('Price variance', `${r.verdict.ppvPct > 0 ? '+' : ''}${r.verdict.ppvPct}%`, ragTok)}
+        ${stat('Gap / part', _moneyG(r.verdict.ppvGBP), r.verdict.ppvGBP > 0 ? '--danger' : '--success')}
+        ${stat('Annual impact', _moneyG(r.verdict.annualImpactGBP, 0), '--text-primary')}
+        ${stat('Total opportunity / yr', _moneyG(r.totalOpportunityGBP, 0), '--success')}
+      </div>
 
-      ${r.benchmarkFlags.length ? `<div style="margin-top:10px;padding:8px 10px;background:var(--warning-bg);border:1px solid var(--warning-border);border-radius:7px;font-size:0.74rem;color:var(--text-secondary)"><strong style="color:var(--warning)">Benchmark flags:</strong> ${r.benchmarkFlags.map(escHtml).join(' ')}</div>` : ''}
+      <div style="margin-top:12px;font-size:0.84rem;color:var(--text-secondary);line-height:1.5">${escHtml(r.headline)}</div>
 
-      <div style="margin-top:10px;padding-top:8px;border-top:1px dashed var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
-        <span style="font-size:0.84rem;color:var(--text-primary)">Total opportunity: <strong style="color:var(--success)">${cf(r.totalOpportunityGBP)}/yr</strong></span>
-        <span style="font-size:0.68rem;color:var(--text-muted)">Deterministic teardown — every figure is arithmetic on the should-cost. ${r.mode==='attribution'?'Ask the supplier for a breakdown to unlock line-by-line.':''}</span>
+      ${r.causalDiagnosis ? `<div style="margin-top:12px;padding:11px 13px;background:var(--info-bg);border:1px solid var(--info-border);border-left:3px solid var(--info);border-radius:9px;font-size:0.78rem;color:var(--text-secondary);line-height:1.5"><strong style="color:var(--info);display:block;font-size:0.64rem;letter-spacing:0.05em;text-transform:uppercase;margin-bottom:3px">Causal diagnosis</strong>${escHtml(r.causalDiagnosis)}</div>` : ''}
+
+      <!-- Comparison chart -->
+      <div style="margin-top:16px;background:var(--surface-elevated);border:1px solid var(--border);border-radius:11px;padding:14px">
+        ${secHead(lineMode ? 'Cost comparison — should-cost vs supplier quote' : 'Should-cost composition')}
+        <div style="height:230px;margin-top:10px;position:relative"><canvas id="ni-chart"></canvas></div>
+      </div>
+
+      <!-- Gap teardown table -->
+      <div style="margin-top:16px">
+        ${secHead('Gap teardown')}
+        <div style="overflow-x:auto;margin-top:8px;border:1px solid var(--border);border-radius:11px">
+          <table style="width:100%;border-collapse:collapse;font-size:0.8rem">
+            <thead><tr>
+              <th style="${thStyle}">Cost element</th><th style="${thStyle};text-align:right">Should</th>${lineMode ? `<th style="${thStyle};text-align:right">Quote</th><th style="${thStyle};text-align:right">Gap</th>` : `<th style="${thStyle};text-align:right">Share</th>`}<th style="${thStyle}">Flag</th>
+            </tr></thead>
+            <tbody>${gapRows}</tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Levers + questions -->
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin-top:16px">
+        <div>
+          ${secHead('Negotiation levers')}
+          <div style="margin-top:9px;display:flex;flex-direction:column;gap:9px">
+          ${r.levers.map(l => `<div style="padding:10px 12px;background:var(--surface-elevated);border:1px solid var(--border);border-radius:9px">
+            <div style="display:flex;justify-content:space-between;gap:8px;align-items:baseline"><strong style="font-size:0.79rem;color:var(--text-primary)">${escHtml(l.area)}</strong>${l.expectedRecoveryGBP > 0 ? `<span style="font-size:0.74rem;font-weight:700;font-family:var(--font-mono);color:var(--success);white-space:nowrap">${_moneyG(l.expectedRecoveryGBP, 0)}/yr</span>` : ''}</div>
+            <div style="margin-top:4px;font-size:0.76rem;color:var(--text-secondary);line-height:1.45">${escHtml(l.lever)}</div>
+          </div>`).join('')}
+          </div>
+        </div>
+        <div>
+          ${secHead('Ask the supplier')}
+          <div style="margin-top:9px;display:flex;flex-direction:column;gap:8px">
+          ${r.supplierQuestions.map(q => `<div style="display:flex;gap:8px;font-size:0.76rem;color:var(--text-secondary);line-height:1.45"><span style="color:var(--accent);font-weight:800;flex-shrink:0">?</span><span>${escHtml(q)}</span></div>`).join('')}
+          </div>
+        </div>
+      </div>
+
+      ${r.closingPlays.length ? `<div style="margin-top:16px">${secHead('How to close each gap')}<div style="margin-top:9px;display:flex;flex-direction:column;gap:6px">${r.closingPlays.map(c => `<div style="font-size:0.77rem;color:var(--text-secondary);line-height:1.45"><strong style="color:var(--text-primary)">${escHtml(c.gap)}:</strong> ${escHtml(c.play)}</div>`).join('')}</div></div>` : ''}
+
+      ${r.benchmarkFlags.length ? `<div style="margin-top:14px;padding:10px 12px;background:var(--warning-bg);border:1px solid var(--warning-border);border-radius:9px;font-size:0.75rem;color:var(--text-secondary)"><strong style="color:var(--warning)">Benchmark flags:</strong> ${r.benchmarkFlags.map(escHtml).join(' ')}</div>` : ''}
+
+      <div style="margin-top:16px;padding:12px 14px;background:color-mix(in srgb, var(--success) 8%, var(--surface-elevated));border:1px solid color-mix(in srgb, var(--success) 30%, transparent);border-radius:11px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+        <span style="font-size:0.9rem;color:var(--text-primary);font-weight:700">Total realisable opportunity <strong style="color:var(--success);font-family:var(--font-mono)">${_moneyG(r.totalOpportunityGBP, 0)}/yr</strong></span>
+        <span style="font-size:0.68rem;color:var(--text-muted)">Deterministic teardown — every figure is arithmetic on the should-cost.${r.mode === 'attribution' ? ' Ask the supplier for a breakdown to unlock line-by-line.' : ''}</span>
       </div>
     </div>`;
+
+  renderNegotiationChart(r, gaps);
+  box.querySelector('#ni-export-pdf')?.addEventListener('click', () => void exportNegotiation('pdf'));
+  box.querySelector('#ni-export-pptx')?.addEventListener('click', () => void exportNegotiation('pptx'));
+}
+
+// Grouped Should-vs-Quote comparison bars for the on-screen report.
+function renderNegotiationChart(r: NegotiationReport, gaps: NegotiationReport['gaps']): void {
+  const canvas = document.getElementById('ni-chart') as HTMLCanvasElement | null;
+  if (!canvas) return;
+  _negoState.chart?.destroy();
+  const cssVar = (n: string) => getComputedStyle(document.documentElement).getPropertyValue(n).trim() || '#94a3b8';
+  const lineMode = r.mode === 'line-by-line';
+  const ragHex = r.verdict.rag === 'green' ? cssVar('--success') : r.verdict.rag === 'amber' ? cssVar('--warning') : cssVar('--danger');
+  const textCol = cssVar('--text-secondary'), mutedCol = cssVar('--text-muted'), gridCol = cssVar('--border');
+  const shortLabel = (s: string) => s.replace(' (SG&A)', '');
+  const fx = _displayFxRate;
+  const sym = CURRENCY_SYMBOL[_displayCurrency] ?? _displayCurrency;
+
+  const datasets = lineMode
+    ? [
+        { label: 'Should-cost', data: gaps.map(g => +(g.shouldGBP * fx).toFixed(2)), backgroundColor: mutedCol, borderRadius: 4, maxBarThickness: 30 },
+        { label: 'Supplier quote', data: gaps.map(g => +((g.quoteGBP ?? 0) * fx).toFixed(2)), backgroundColor: ragHex, borderRadius: 4, maxBarThickness: 30 },
+      ]
+    : [{ label: 'Should-cost', data: gaps.map(g => +(g.shouldGBP * fx).toFixed(2)), backgroundColor: cssVar('--accent'), borderRadius: 4, maxBarThickness: 40 }];
+
+  _negoState.chart = new Chart(canvas, {
+    type: 'bar',
+    data: { labels: gaps.map(g => shortLabel(g.label)), datasets },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { display: lineMode, position: 'top', align: 'end', labels: { color: textCol, boxWidth: 12, boxHeight: 12, font: { size: 11 }, usePointStyle: true, pointStyle: 'rectRounded' } },
+        tooltip: { callbacks: { label: (c) => `${c.dataset.label}: ${sym}${(c.parsed.y as number).toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` } },
+      },
+      scales: {
+        x: { grid: { display: false }, ticks: { color: textCol, font: { size: 10 }, maxRotation: 30, minRotation: 0 } },
+        y: { grid: { color: gridCol }, ticks: { color: mutedCol, font: { size: 10 }, callback: (v) => `${sym}${Number(v).toLocaleString('en-GB')}` } },
+      },
+    },
+  });
+}
+
+// Lazy-load the export module and hand it the report + display context.
+async function exportNegotiation(kind: 'pdf' | 'pptx'): Promise<void> {
+  const r = _negoState.report, m = _negoState.meta;
+  if (!r || !m) return;
+  const btn = document.getElementById(kind === 'pdf' ? 'ni-export-pdf' : 'ni-export-pptx') as HTMLButtonElement | null;
+  const orig = btn?.innerHTML;
+  if (btn) { btn.disabled = true; btn.innerHTML = 'Exporting…'; }
+  try {
+    const mod = await import('../export/negotiation-report.js');
+    const meta = {
+      partName: m.partName, commodityLabel: m.commodityLabel, annualVolume: m.annualVolume,
+      shouldCost: m.shouldCost, quote: m.quote,
+      currencySymbol: CURRENCY_SYMBOL[_displayCurrency] ?? _displayCurrency, fxRate: _displayFxRate,
+      dateLabel: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
+    };
+    if (kind === 'pdf') await mod.exportNegotiationPdf(r, meta);
+    else await mod.exportNegotiationPptx(r, meta);
+    showToast(`${kind === 'pdf' ? 'PDF' : 'PowerPoint'} report exported`, 'info');
+  } catch (e) {
+    console.error('[negotiation export]', e);
+    showToast('Export failed — see console', 'error');
+  } finally {
+    if (btn && orig !== undefined) { btn.disabled = false; btn.innerHTML = orig; }
+  }
 }
 
 function renderDashboard(): void {
