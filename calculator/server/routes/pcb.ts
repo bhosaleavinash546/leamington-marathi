@@ -16,6 +16,7 @@ import {
 import { fetchLivePrices, fetchLivePricesWithAECQ, resolveNexarAccessToken, type LivePricingProvider, type LivePriceResult } from '../utils/pcb-live-pricing.js';
 import { reconcileBomWithCatalogue, groundingCandidates } from '../utils/pcb-bom-grounding.js';
 import { parseBOMFile, type ParsedBOMLine } from '../utils/pcb-bom-parser.js';
+import { normalizePCBAnalysis } from '../utils/pcb-normalize.js';
 
 // ── Volume BOM price correction ────────────────────────────────────────────
 // Pricing table is calibrated to 100K units. Multipliers scale cost up for
@@ -940,7 +941,7 @@ router.post('/analyze-image', upload.fields([
     ...imageFiles.map(f => f.buffer),
     // v2: payload-shape version — bumped when the response contract changes so
     // stale cached payloads (e.g. pre-`assembly`-normalization) never replay.
-    Buffer.from(JSON.stringify({ country: req.body?.country, orderQty: req.body?.orderQty, deep: deepAnalysis, v: 2 })),
+    Buffer.from(JSON.stringify({ country: req.body?.country, orderQty: req.body?.orderQty, deep: deepAnalysis, v: 3 })),
   ]);
   const cached = getCached(cacheKey);
   if (cached) {
@@ -1317,33 +1318,11 @@ ${userPromptText}`;
   }
 
   // ── Structural guarantee for the client ─────────────────────────────────
-  // The model occasionally omits a whole section (e.g. `assembly`) even after
-  // JSON repair; the renderer assumes these exist and crashed with
-  // "undefined is not an object (evaluating 'a.smtPlacements')". Fill any
-  // missing section with conservative defaults derived from the BOM.
-  {
-    const a = analysis as Record<string, unknown>;
-    const bomArr = Array.isArray(a.bom) ? (a.bom as Array<Record<string, unknown>>) : [];
-    a.bom = bomArr;
-    const totalQty = bomArr.reduce((s, l) => s + (Number(l.quantity) || 0), 0);
-    const asm = (a.assembly && typeof a.assembly === 'object') ? a.assembly as Record<string, unknown> : {};
-    a.assembly = {
-      smtPlacements: Number(asm.smtPlacements) || totalQty,
-      throughHoleJoints: Number(asm.throughHoleJoints) || 0,
-      manualJoints: Number(asm.manualJoints) || 0,
-      bgaCount: Number(asm.bgaCount) || 0,
-      complexity: typeof asm.complexity === 'string' ? asm.complexity : 'Medium',
-      reflowSides: Number(asm.reflowSides) || 1,
-      aoiRequired: typeof asm.aoiRequired === 'boolean' ? asm.aoiRequired : true,
-      ictTimeSec: Number(asm.ictTimeSec) || 0,
-      ...asm,
-      // re-assert the numerics AFTER the spread so NaN/undefined can't leak back
-      ...(Number.isFinite(Number(asm.smtPlacements)) && asm.smtPlacements != null ? {} : { smtPlacements: totalQty }),
-    };
-    if (!a.boardSpec || typeof a.boardSpec !== 'object') a.boardSpec = {};
-    if (!a.costEstimates || typeof a.costEstimates !== 'object') a.costEstimates = {};
-    if (typeof a.partName !== 'string' || !a.partName) a.partName = 'PCB Assembly';
-  }
+  // The model can omit sections OR individual numerics from the Stage 3 JSON
+  // even after repair; the renderer calls .toFixed() on them and crashes.
+  // Deep-normalize the full contract: every section exists, every numeric the
+  // renderer touches is a finite number, with defaults derived from the BOM.
+  normalizePCBAnalysis(analysis as Record<string, unknown>);
 
   const finalPayload = {
     success: true,

@@ -7060,16 +7060,42 @@ async function analyzePCBImages(): Promise<void> {
     }
     if (streamError) throw new Error(streamError);
     if (!data || !data.analysis) throw new Error('Analysis result empty — the server closed the stream before finishing (possible timeout or crash during Stage 3). Try again, reduce to 1–2 images, or attach a BOM file.');
-    // Defensive: the renderer assumes these sections exist. New servers
-    // guarantee them; this guard also covers older/cached payloads.
-    const an = data.analysis as unknown as Record<string, unknown>;
-    if (!Array.isArray(an.bom)) an.bom = [];
-    if (!an.assembly || typeof an.assembly !== 'object') {
-      const qty = (an.bom as Array<{ quantity?: number }>).reduce((s, l) => s + (Number(l.quantity) || 0), 0);
-      an.assembly = { smtPlacements: qty, throughHoleJoints: 0, manualJoints: 0, bgaCount: 0, complexity: 'Medium', reflowSides: 1, aoiRequired: true, ictTimeSec: 0 };
+    // Defensive mirror of the server's normalizePCBAnalysis: the renderer
+    // calls .toFixed() on these — every one must be a finite number even when
+    // the payload came from an older server or cache.
+    {
+      const an = data.analysis as unknown as Record<string, unknown>;
+      const num = (v: unknown, d: number) => (Number.isFinite(Number(v)) ? Number(v) : d);
+      const bom = (Array.isArray(an.bom) ? an.bom : []) as Array<Record<string, unknown>>;
+      for (const l of bom) { l.qty = num(l.qty, 1); l.unitPriceGBP = num(l.unitPriceGBP, 0); }
+      an.bom = bom;
+      const totalQty = bom.reduce((s, l) => s + (l.qty as number), 0);
+      const bomTotal = bom.reduce((s, l) => s + (l.qty as number) * (l.unitPriceGBP as number), 0);
+      const asm = (an.assembly && typeof an.assembly === 'object' ? an.assembly : {}) as Record<string, unknown>;
+      an.assembly = {
+        ...asm,
+        smtPlacements: num(asm.smtPlacements, totalQty), throughHoleJoints: num(asm.throughHoleJoints, 0),
+        manualJoints: num(asm.manualJoints, 0), bgaCount: num(asm.bgaCount, 0),
+        complexity: typeof asm.complexity === 'string' ? asm.complexity : 'Medium',
+        reflowSides: num(asm.reflowSides, 1),
+        aoiRequired: typeof asm.aoiRequired === 'boolean' ? asm.aoiRequired : true,
+        ictTimeSec: num(asm.ictTimeSec, 0),
+      };
+      const bs = (an.boardSpec && typeof an.boardSpec === 'object' ? an.boardSpec : {}) as Record<string, unknown>;
+      an.boardSpec = { ...bs, estimatedLayers: num(bs.estimatedLayers, 4), widthMm: num(bs.widthMm, 100), heightMm: num(bs.heightMm, 80), panelUtilisation: num(bs.panelUtilisation, 0.8), copperWeightOz: num(bs.copperWeightOz, 1) };
+      const ce = (an.costEstimates && typeof an.costEstimates === 'object' ? an.costEstimates : {}) as Record<string, unknown>;
+      const fab = (ce.pcbFabGBP && typeof ce.pcbFabGBP === 'object' ? ce.pcbFabGBP : {}) as Record<string, unknown>;
+      const fabMid = num(fab.mid, 2.5);
+      an.costEstimates = {
+        ...ce,
+        pcbFabGBP: { min: num(fab.min, fabMid * 0.8), mid: fabMid, max: num(fab.max, fabMid * 1.3) },
+        totalBOMCostGBP: num(ce.totalBOMCostGBP, Math.round(bomTotal * 100) / 100),
+        smtAssemblyCostGBP: num(ce.smtAssemblyCostGBP, 0),
+      };
+      for (const k of ['aiInsights', 'dfmIssues', 'highCostComponents', 'optimisationSuggestions', 'analysisLimitations']) {
+        if (!Array.isArray(an[k])) an[k] = [];
+      }
     }
-    if (!an.boardSpec || typeof an.boardSpec !== 'object') an.boardSpec = {};
-    if (!an.costEstimates || typeof an.costEstimates !== 'object') an.costEstimates = {};
     pcbImageResult = data.analysis;
     // Attach country data to analysis object for rendering
     if (pcbImageResult) {
