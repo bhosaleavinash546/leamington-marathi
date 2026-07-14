@@ -17,6 +17,7 @@ import { fetchLivePrices, fetchLivePricesWithAECQ, resolveNexarAccessToken, type
 import { reconcileBomWithCatalogue, groundingCandidates } from '../utils/pcb-bom-grounding.js';
 import { parseBOMFile, type ParsedBOMLine } from '../utils/pcb-bom-parser.js';
 import { normalizePCBAnalysis } from '../utils/pcb-normalize.js';
+import { salvageAnalysisFromRaw } from '../utils/pcb-salvage.js';
 
 // ── Volume BOM price correction ────────────────────────────────────────────
 // Pricing table is calibrated to 100K units. Multipliers scale cost up for
@@ -127,6 +128,16 @@ function flagAndEnrichBOM(
 const EXTRACT_MODEL = 'claude-sonnet-5';
 const DEEP_EXTRACT_MODEL = 'claude-opus-4-8';
 const extractionModel = (deep: boolean): string => (deep ? DEEP_EXTRACT_MODEL : EXTRACT_MODEL);
+
+// A fully-populated automotive/HDI board can enumerate hundreds of components at
+// automotive grade. At the old 16384-token ceiling that BOM was cut off
+// mid-array — the JSON failed to parse and the analysis rolled back to an empty
+// BOM, "again and again". Both Sonnet 5 and Opus 4.8 support up to 128K output
+// tokens; 32000 roughly doubles the headroom while staying well under the
+// SDK's non-streaming timeout envelope (it only spends what the model emits).
+// Truncation-tolerant salvage (pcb-salvage.ts) backs this up for the rare board
+// that still overflows.
+const EXTRACT_MAX_TOKENS = 32000;
 const isDeep = (req: { body?: Record<string, unknown> }): boolean =>
   req.body?.deepAnalysis === 'true' || req.body?.deepAnalysis === true;
 
@@ -920,7 +931,7 @@ function bomIsEmpty(analysis: unknown): boolean {
 
 const EMPTY_BOM_RETRY_NOTE = `
 
-CRITICAL: Your previous response contained ZERO BOM lines. That is never correct for a populated PCB photo — enumerate EVERY visible component (ICs, passive groups, connectors, magnetics, crystals) as BOM lines even at low confidence. If the board is truly bare/unpopulated, state that in analysisLimitations but still return the visible connector/board-level lines.`;
+CRITICAL: Your previous response contained ZERO usable BOM lines (it was empty or ran past the output limit before the BOM closed). Enumerate EVERY visible component (ICs, passive groups, connectors, magnetics, crystals) as BOM lines even at low confidence. To keep the whole BOM within the response limit: GROUP identical passives into a single line with a combined quantity (e.g. one "C1-C40, 100nF 0402, qty 40" line, not 40 lines), keep every field terse, and emit ONLY the JSON object — no prose before or after. If the board is truly bare/unpopulated, say so in analysisLimitations but still return the visible connector/board-level lines.`;
 
 function buildRepairPrompt(raw: string): string {
   return `The following text was supposed to be a valid JSON object but it may be malformed, truncated, or wrapped in code fences. Extract and return ONLY the valid JSON object. Fix any syntax errors. Start your response with { and end with }. Do not add any other text.
@@ -1073,7 +1084,7 @@ router.post('/analyze-image', upload.fields([
     // ── Attempt 1: Full vision analysis (all images) ─────────────────────
     const msg1 = await anthropic.messages.create({
       model: extractionModel(deepAnalysis),
-      max_tokens: 16384,
+      max_tokens: EXTRACT_MAX_TOKENS,
       system: specialistSystem,
       messages: [{
         role: 'user',
@@ -1083,6 +1094,7 @@ router.post('/analyze-image', upload.fields([
         ],
       }],
     });
+    if (msg1.stop_reason === 'max_tokens') console.warn('[PCB] Stage 3 hit the output-token limit — BOM likely truncated; will salvage/consolidate');
 
     lastRaw = msg1.content[0]?.type === 'text' ? msg1.content[0].text : '';
 
@@ -1093,50 +1105,70 @@ router.post('/analyze-image', upload.fields([
       console.warn('[PCB] Attempt 1 JSON parse failed:', lastError);
       console.warn('[PCB] Raw (first 500):', lastRaw.slice(0, 500));
 
-      // ── Attempt 2: Send raw response back to Claude for JSON repair ────
-      const msg2 = await anthropic.messages.create({
-        model: extractionModel(deepAnalysis),
-        max_tokens: 16384,
-        system: 'You are a JSON repair assistant. Return ONLY valid JSON — nothing else. Start with { and end with }.',
-        messages: [{ role: 'user', content: buildRepairPrompt(lastRaw) }],
-      });
-
-      lastRaw = msg2.content[0]?.type === 'text' ? msg2.content[0].text : '';
-
-      try {
-        analysis = JSON.parse(extractJSON(lastRaw));
-      } catch (e2) {
-        lastError = String(e2);
-        console.error('[PCB] Attempt 2 JSON repair also failed:', lastError);
-        console.error('[PCB] Repair raw (first 500):', lastRaw.slice(0, 500));
-
-        // ── Attempt 3: Minimal fallback prompt ───────────────────────────
-        const fallbackPrompt = `A PCB image was analysed and the result should have been JSON. The analysis failed. Return a valid JSON object with these exact fields, set confidenceLevel to "Low", and include an analysisLimitation explaining the parse failure. You MUST still enumerate every visible component as bom lines — an empty bom array is not acceptable for a populated board.
-
-${userPromptText}`;
-
-        const msg3 = await anthropic.messages.create({
+      // ── Attempt 1b: salvage complete BOM lines from a truncated response ──
+      // Cheaper and more faithful than a repair round-trip when the failure is
+      // output-token truncation (the common case for large automotive boards).
+      const salvaged = salvageAnalysisFromRaw(lastRaw);
+      if (salvaged) {
+        console.warn(`[PCB] Salvaged ${(salvaged.bom as unknown[]).length} BOM line(s) from a truncated/malformed Stage-3 response`);
+        analysis = salvaged;
+      } else {
+        // ── Attempt 2: Send raw response back to Claude for JSON repair ────
+        const msg2 = await anthropic.messages.create({
           model: extractionModel(deepAnalysis),
-          max_tokens: 4096,
-          system: specialistSystem,
-          messages: [{
-            role: 'user',
-            content: [
-              ...buildImageContentBlocks(imageFiles, imageLabels, multiImage),
-              { type: 'text', text: fallbackPrompt },
-            ],
-          }],
+          max_tokens: EXTRACT_MAX_TOKENS,
+          system: 'You are a JSON repair assistant. Return ONLY valid JSON — nothing else. Start with { and end with }.',
+          messages: [{ role: 'user', content: buildRepairPrompt(lastRaw) }],
         });
 
-        lastRaw = msg3.content[0]?.type === 'text' ? msg3.content[0].text : '';
+        lastRaw = msg2.content[0]?.type === 'text' ? msg2.content[0].text : '';
 
         try {
           analysis = JSON.parse(extractJSON(lastRaw));
-        } catch (e3) {
-          res.status(500).json({
-            error: `PCB analysis failed after 3 attempts. The AI could not produce valid JSON. Parse error: ${String(e3)}. Raw response preview: ${lastRaw.slice(0, 400)}`,
-          });
-          return;
+        } catch (e2) {
+          lastError = String(e2);
+          console.error('[PCB] Attempt 2 JSON repair also failed:', lastError);
+          console.error('[PCB] Repair raw (first 500):', lastRaw.slice(0, 500));
+
+          const salvaged2 = salvageAnalysisFromRaw(lastRaw);
+          if (salvaged2) {
+            console.warn(`[PCB] Salvaged ${(salvaged2.bom as unknown[]).length} BOM line(s) from the repair response`);
+            analysis = salvaged2;
+          } else {
+            // ── Attempt 3: Minimal fallback prompt ───────────────────────────
+            const fallbackPrompt = `A PCB image was analysed and the result should have been JSON. The analysis failed. Return a valid JSON object with these exact fields, set confidenceLevel to "Low", and include an analysisLimitation explaining the parse failure. You MUST still enumerate every visible component as bom lines — an empty bom array is not acceptable for a populated board. Group identical passives into one line with a combined quantity to keep the response compact.
+
+${userPromptText}`;
+
+            const msg3 = await anthropic.messages.create({
+              model: extractionModel(deepAnalysis),
+              max_tokens: 8192,
+              system: specialistSystem,
+              messages: [{
+                role: 'user',
+                content: [
+                  ...buildImageContentBlocks(imageFiles, imageLabels, multiImage),
+                  { type: 'text', text: fallbackPrompt },
+                ],
+              }],
+            });
+
+            lastRaw = msg3.content[0]?.type === 'text' ? msg3.content[0].text : '';
+
+            try {
+              analysis = JSON.parse(extractJSON(lastRaw));
+            } catch (e3) {
+              const salvaged3 = salvageAnalysisFromRaw(lastRaw);
+              if (salvaged3) {
+                analysis = salvaged3;
+              } else {
+                res.status(500).json({
+                  error: `PCB analysis failed after 3 attempts. The AI could not produce valid JSON. Parse error: ${String(e3)}. Raw response preview: ${lastRaw.slice(0, 400)}`,
+                });
+                return;
+              }
+            }
+          }
         }
       }
     }
@@ -1154,17 +1186,21 @@ ${userPromptText}`;
     console.warn('[PCB] Stage 3 returned an EMPTY BOM — retrying once with emphasis');
     try {
       const retry = await anthropic.messages.create({
-        model: extractionModel(deepAnalysis), max_tokens: 16384, system: specialistSystem,
+        model: extractionModel(deepAnalysis), max_tokens: EXTRACT_MAX_TOKENS, system: specialistSystem,
         messages: [{ role: 'user', content: [
           ...buildImageContentBlocks(imageFiles, imageLabels, multiImage),
           { type: 'text', text: userPromptText + EMPTY_BOM_RETRY_NOTE },
         ]}],
       });
-      if (retry.stop_reason === 'max_tokens') console.warn('[PCB] Empty-BOM retry was TRUNCATED at max_tokens');
+      if (retry.stop_reason === 'max_tokens') console.warn('[PCB] Empty-BOM retry hit the output-token limit — salvaging');
       const retryRaw = retry.content[0]?.type === 'text' ? retry.content[0].text : '';
-      const retryAnalysis = JSON.parse(extractJSON(retryRaw)) as Record<string, unknown>;
-      normalizePCBAnalysis(retryAnalysis);
-      if (!bomIsEmpty(retryAnalysis)) analysis = retryAnalysis;
+      let retryAnalysis: Record<string, unknown> | null;
+      try { retryAnalysis = JSON.parse(extractJSON(retryRaw)) as Record<string, unknown>; }
+      catch { retryAnalysis = salvageAnalysisFromRaw(retryRaw); }
+      if (retryAnalysis) {
+        normalizePCBAnalysis(retryAnalysis);
+        if (!bomIsEmpty(retryAnalysis)) analysis = retryAnalysis;
+      }
     } catch (retryErr) {
       console.warn('[PCB] Empty-BOM retry failed:', (retryErr as Error).message);
     }
@@ -1498,7 +1534,7 @@ router.post('/reanalyze', upload.fields([
 
     const msg1 = await anthropic.messages.create({
       model: extractionModel(deepAnalysis),
-      max_tokens: 16384,
+      max_tokens: EXTRACT_MAX_TOKENS,
       system: specialistSystem,
       messages: [{
         role: 'user',
@@ -1519,7 +1555,7 @@ router.post('/reanalyze', upload.fields([
       // ── Attempt 2: JSON repair ────────────────────────────────────────
       const msg2 = await anthropic.messages.create({
         model: extractionModel(deepAnalysis),
-        max_tokens: 16384,
+        max_tokens: EXTRACT_MAX_TOKENS,
         system: 'You are a JSON repair assistant. Return ONLY valid JSON — nothing else. Start with { and end with }.',
         messages: [{ role: 'user', content: buildRepairPrompt(lastRaw) }],
       });
@@ -1967,13 +2003,13 @@ router.post('/analyze-image-stream', upload.fields([
   // ── Stage 3 attempt 1: full vision analysis ──────────────────────────────
   try {
     const msg = await anthropic.messages.create({
-      model: extractionModel(deepAnalysis), max_tokens: 16384, system: specSystem,
+      model: extractionModel(deepAnalysis), max_tokens: EXTRACT_MAX_TOKENS, system: specSystem,
       messages: [{ role: 'user', content: [
         ...buildImageContentBlocks(imageFiles, imageLabels, multiImage),
         { type: 'text', text: userPromptText2 },
       ]}],
     });
-    if (msg.stop_reason === 'max_tokens') console.warn('[PCB/stream] Stage 3 response TRUNCATED at max_tokens — JSON will likely fail to parse');
+    if (msg.stop_reason === 'max_tokens') console.warn('[PCB/stream] Stage 3 hit the output-token limit — BOM likely truncated; will salvage/consolidate');
     stage3Raw = msg.content[0]?.type === 'text' ? msg.content[0].text : '';
   } catch (err) {
     const raw = (err as Error).message ?? '';
@@ -1987,22 +2023,33 @@ router.post('/analyze-image-stream', upload.fields([
   try {
     analysis = JSON.parse(extractJSON(stage3Raw));
   } catch (parseErr) {
-    // ── Attempt 2: JSON repair (mirrors the non-streaming handler) ──────────
-    console.warn('[PCB/stream] Stage 3 JSON parse failed, attempting repair:', String(parseErr));
-    console.warn('[PCB/stream] Raw (first 500):', stage3Raw.slice(0, 500));
-    emit('progress', { stage: 3, label: 'Stage 3 — repairing AI response', pct: 60 });
-    try {
-      const repair = await anthropic.messages.create({
-        model: extractionModel(deepAnalysis), max_tokens: 16384,
-        system: 'You are a JSON repair assistant. Return ONLY valid JSON — nothing else. Start with { and end with }.',
-        messages: [{ role: 'user', content: buildRepairPrompt(stage3Raw) }],
-      });
-      const repairRaw = repair.content[0]?.type === 'text' ? repair.content[0].text : '';
-      analysis = JSON.parse(extractJSON(repairRaw));
-    } catch (repairErr) {
-      emit('error', { message: `Stage 3 could not produce valid JSON after repair: ${(repairErr as Error).message}. The response was likely truncated — try fewer images or attach a BOM file.` });
-      res.end();
-      return;
+    // ── Attempt 1b: salvage complete BOM lines from a truncated response ─────
+    const salvaged = salvageAnalysisFromRaw(stage3Raw);
+    if (salvaged) {
+      console.warn(`[PCB/stream] Salvaged ${(salvaged.bom as unknown[]).length} BOM line(s) from a truncated/malformed Stage-3 response`);
+      analysis = salvaged;
+    } else {
+      // ── Attempt 2: JSON repair (mirrors the non-streaming handler) ────────
+      console.warn('[PCB/stream] Stage 3 JSON parse failed, attempting repair:', String(parseErr));
+      console.warn('[PCB/stream] Raw (first 500):', stage3Raw.slice(0, 500));
+      emit('progress', { stage: 3, label: 'Stage 3 — repairing AI response', pct: 60 });
+      try {
+        const repair = await anthropic.messages.create({
+          model: extractionModel(deepAnalysis), max_tokens: EXTRACT_MAX_TOKENS,
+          system: 'You are a JSON repair assistant. Return ONLY valid JSON — nothing else. Start with { and end with }.',
+          messages: [{ role: 'user', content: buildRepairPrompt(stage3Raw) }],
+        });
+        const repairRaw = repair.content[0]?.type === 'text' ? repair.content[0].text : '';
+        try { analysis = JSON.parse(extractJSON(repairRaw)); }
+        catch (repErr) {
+          const salvaged2 = salvageAnalysisFromRaw(repairRaw);
+          if (salvaged2) analysis = salvaged2; else throw repErr;
+        }
+      } catch (repairErr) {
+        emit('error', { message: `Stage 3 could not produce valid JSON after repair: ${(repairErr as Error).message}. The response was likely truncated — try fewer images or attach a BOM file.` });
+        res.end();
+        return;
+      }
     }
   }
   if (!analysis || typeof analysis !== 'object') {
@@ -2025,17 +2072,21 @@ router.post('/analyze-image-stream', upload.fields([
     emit('progress', { stage: 3, label: 'Stage 3 — empty BOM returned, retrying', pct: 65 });
     try {
       const retry = await anthropic.messages.create({
-        model: extractionModel(deepAnalysis), max_tokens: 16384, system: specSystem,
+        model: extractionModel(deepAnalysis), max_tokens: EXTRACT_MAX_TOKENS, system: specSystem,
         messages: [{ role: 'user', content: [
           ...buildImageContentBlocks(imageFiles, imageLabels, multiImage),
           { type: 'text', text: userPromptText2 + EMPTY_BOM_RETRY_NOTE },
         ]}],
       });
-      if (retry.stop_reason === 'max_tokens') console.warn('[PCB/stream] Empty-BOM retry was TRUNCATED at max_tokens');
+      if (retry.stop_reason === 'max_tokens') console.warn('[PCB/stream] Empty-BOM retry hit the output-token limit — salvaging');
       const retryRaw = retry.content[0]?.type === 'text' ? retry.content[0].text : '';
-      const retryAnalysis = JSON.parse(extractJSON(retryRaw)) as Record<string, unknown>;
-      normalizePCBAnalysis(retryAnalysis);
-      if (!bomIsEmpty(retryAnalysis)) analysis = retryAnalysis;
+      let retryAnalysis: Record<string, unknown> | null;
+      try { retryAnalysis = JSON.parse(extractJSON(retryRaw)) as Record<string, unknown>; }
+      catch { retryAnalysis = salvageAnalysisFromRaw(retryRaw); }
+      if (retryAnalysis) {
+        normalizePCBAnalysis(retryAnalysis);
+        if (!bomIsEmpty(retryAnalysis)) analysis = retryAnalysis;
+      }
     } catch (retryErr) {
       console.warn('[PCB/stream] Empty-BOM retry failed:', (retryErr as Error).message);
     }

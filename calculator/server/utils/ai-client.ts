@@ -56,5 +56,11 @@ export function createAnthropic(apiKey?: string): Anthropic {
     // retries with exponential backoff; the long multi-image vision calls are
     // the most exposed, so give them more headroom.
     maxRetries: 4,
+    // The BOM/CAD extraction calls request a high max_tokens (32K) so a large
+    // automotive board can be fully enumerated. The SDK otherwise refuses a
+    // non-streaming request it estimates could exceed its 10-minute default
+    // ("Streaming is required…"). An explicit timeout suppresses that guard and
+    // gives the heavy vision calls real headroom (they finish in 1–2 min).
+    timeout: 20 * 60 * 1000,
   });
 }
