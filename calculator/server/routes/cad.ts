@@ -9,7 +9,7 @@ import { parseSTL } from '../services/stl-parser.js';
 import type { STLGeometry } from '../services/stl-parser.js';
 import { createAnalysisCache } from '../utils/analysis-cache.js';
 import { runCADSanityChecks } from '../utils/cad-sanity.js';
-import { CAD_ANALYSIS_SCHEMA, normalizeFieldConfidences } from '../utils/cad-schema.js';
+import { normalizeFieldConfidences } from '../utils/cad-schema.js';
 
 const router = Router();
 
@@ -347,20 +347,14 @@ router.post('/analyze', upload.fields([
   // Express 4 does NOT catch async throws — an uncaught rejection here killed
   // the whole Node process (empty response to the client, dead server after).
   try {
-    const message = await anthropic.messages.create({
-      model: cadModel(deepAnalysis),
-      max_tokens: 8192,
-      system: [{ type: 'text', text: systemPrompt, cache_control: { type: 'ephemeral' } }],
-      output_config: {
-        format: { type: 'json_schema', schema: CAD_ANALYSIS_SCHEMA },
-        effort: deepAnalysis ? 'high' : 'medium',
-      },
-      messages: [{ role: 'user', content: userContent }],
-    } as Parameters<typeof anthropic.messages.create>[0]);
-
-    const raw = (message as { content: Array<{ type: string; text?: string }> }).content.find(b => b.type === 'text')?.text ?? '';
-    analysis = JSON.parse(raw); // guaranteed valid by output_config.format
+    // Prompt-guided JSON (the prompt ends with the exact schema via
+    // buildJSONSchema, tailored to the selected commodity). We do NOT use
+    // structured outputs here: the full CAD schema has 86 optional params and
+    // the API caps structured-output optionals at 24. extractJson + a one-shot
+    // repair retry gives us robust parsing without that limit.
+    analysis = await cadAnalyzeJSON(anthropic, deepAnalysis, systemPrompt, userContent);
     normalizeFieldConfidences(analysis);
+    normalizeCADAnalysis(analysis as Record<string, unknown>);
   } catch (err) {
     respondAIError(res, err);
     return;
@@ -416,6 +410,82 @@ function extractJson(text: string): string {
     s = s.slice(first, last + 1);
   }
   return s;
+}
+
+/**
+ * Run the main CAD analysis as prompt-guided JSON (no structured outputs).
+ * Parses with extractJson; on parse failure, asks the model once to return
+ * only corrected JSON. Throws on a second failure (caller maps to a 502).
+ */
+async function cadAnalyzeJSON(
+  anthropic: Anthropic,
+  deepAnalysis: boolean,
+  systemPrompt: string,
+  userContent: unknown,
+): Promise<unknown> {
+  const create = (content: unknown) => anthropic.messages.create({
+    model: cadModel(deepAnalysis),
+    max_tokens: 8192,
+    system: [{ type: 'text', text: systemPrompt, cache_control: { type: 'ephemeral' } }],
+    messages: [{ role: 'user', content }],
+  } as Parameters<typeof anthropic.messages.create>[0]);
+
+  const textOf = (m: unknown) => (m as { content: Array<{ type: string; text?: string }> }).content.find(b => b.type === 'text')?.text ?? '';
+
+  const raw = textOf(await create(userContent));
+  try {
+    return JSON.parse(extractJson(raw));
+  } catch {
+    // one repair attempt — cheap and usually decisive
+    const repair = await create([
+      { type: 'text', text: `The following was supposed to be a single valid JSON object but did not parse. Return ONLY the corrected JSON object, no prose, no code fences:\n\n${raw.slice(0, 12000)}` },
+    ]);
+    return JSON.parse(extractJson(textOf(repair)));
+  }
+}
+
+/**
+ * Defensive normalization of the CAD analysis so a field the model omitted
+ * can't crash the renderer (it reads many nested numbers via .toFixed()).
+ * Guarantees the top-level sections and their key numerics exist.
+ */
+function normalizeCADAnalysis(a: Record<string, unknown>): void {
+  const num = (v: unknown, d: number) => (Number.isFinite(Number(v)) ? Number(v) : d);
+  const str = (v: unknown, d: string) => (typeof v === 'string' && v ? v : d);
+  const obj = (v: unknown) => (v && typeof v === 'object' ? v as Record<string, unknown> : {});
+  const arr = (v: unknown) => (Array.isArray(v) ? v : []);
+
+  a.partName = str(a.partName, 'CAD Part');
+  a.aiExplanation = str(a.aiExplanation, '');
+  a.confidenceLevel = str(a.confidenceLevel, 'Low');
+  a.manufacturabilityScore = num(a.manufacturabilityScore, 60);
+  a.detectedFeatures = arr(a.detectedFeatures);
+  a.processRecommendations = arr(a.processRecommendations);
+  a.manufacturabilityRisks = arr(a.manufacturabilityRisks);
+  a.analysisLimitations = arr(a.analysisLimitations);
+
+  const g = obj(a.geometry);
+  const bb = obj(g.boundingBoxMm);
+  g.boundingBoxMm = { x: num(bb.x, 0), y: num(bb.y, 0), z: num(bb.z, 0) };
+  g.estimatedVolumeCm3 = num(g.estimatedVolumeCm3, 0);
+  g.estimatedSurfaceAreaCm2 = num(g.estimatedSurfaceAreaCm2, 0);
+  const w = obj(g.estimatedWeightKg);
+  g.estimatedWeightKg = { aluminum: num(w.aluminum, 0), steel: num(w.steel, 0), plastic: num(w.plastic, 0) };
+  a.geometry = g;
+
+  const ma = obj(a.materialAnalysis);
+  const ps = obj(ma.primarySuggestion);
+  ma.primarySuggestion = { materialId: str(ps.materialId, ''), name: str(ps.name, 'Unspecified'), confidencePct: num(ps.confidencePct, 50), ...ps };
+  ma.alternatives = arr(ma.alternatives);
+  a.materialAnalysis = ma;
+
+  const ci = obj(a.costInputSuggestions);
+  ci.recommendedCommodity = str(ci.recommendedCommodity, 'machining');
+  ci.netWeightKg = num(ci.netWeightKg, g.estimatedWeightKg && (g.estimatedWeightKg as Record<string, number>).aluminum || 0);
+  ci.estimatedOperations = arr(ci.estimatedOperations);
+  const cr = obj(ci.costRange);
+  ci.costRange = { low: num(cr.low, 0), mid: num(cr.mid, 0), high: num(cr.high, 0), currency: str(cr.currency, 'GBP') };
+  a.costInputSuggestions = ci;
 }
 
 // ─── Prompt builder ─────────────────────────────────────────────────────────
@@ -1197,20 +1267,14 @@ router.post('/reanalyze', asyncRoute(async (req, res): Promise<void> => {
   // Express 4 does NOT catch async throws — an uncaught rejection here killed
   // the whole Node process (empty response to the client, dead server after).
   try {
-    const message = await anthropic.messages.create({
-      model: cadModel(deepAnalysis),
-      max_tokens: 8192,
-      system: [{ type: 'text', text: systemPrompt, cache_control: { type: 'ephemeral' } }],
-      output_config: {
-        format: { type: 'json_schema', schema: CAD_ANALYSIS_SCHEMA },
-        effort: deepAnalysis ? 'high' : 'medium',
-      },
-      messages: [{ role: 'user', content: userContent }],
-    } as Parameters<typeof anthropic.messages.create>[0]);
-
-    const raw = (message as { content: Array<{ type: string; text?: string }> }).content.find(b => b.type === 'text')?.text ?? '';
-    analysis = JSON.parse(raw); // guaranteed valid by output_config.format
+    // Prompt-guided JSON (the prompt ends with the exact schema via
+    // buildJSONSchema, tailored to the selected commodity). We do NOT use
+    // structured outputs here: the full CAD schema has 86 optional params and
+    // the API caps structured-output optionals at 24. extractJson + a one-shot
+    // repair retry gives us robust parsing without that limit.
+    analysis = await cadAnalyzeJSON(anthropic, deepAnalysis, systemPrompt, userContent);
     normalizeFieldConfidences(analysis);
+    normalizeCADAnalysis(analysis as Record<string, unknown>);
   } catch (err) {
     respondAIError(res, err);
     return;
