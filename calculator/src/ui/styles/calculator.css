@@ -6207,6 +6207,7 @@ input.cv-outlier { border-color: var(--warning) !important; box-shadow: 0 0 0 2p
   position: relative;
   flex: 1;
   min-height: 0;
+  background: #ffffff; /* matches the white scene — no dark flash before first render */
 }
 .cv3d-canvas {
   position: absolute;

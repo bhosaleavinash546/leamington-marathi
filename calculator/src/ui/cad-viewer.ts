@@ -134,7 +134,7 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, preserveDrawingBuffer: true });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   const scene = new THREE.Scene();
-  scene.background = new THREE.Color(0x22262b);
+  scene.background = new THREE.Color(0xffffff);
   const camera = new THREE.PerspectiveCamera(40, 1, 0.1, 10000);
   const controls = new OrbitControls(camera, canvas);
   controls.enableDamping = true;
@@ -299,7 +299,7 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
 
     const span = new THREE.Vector3(); bb.getSize(span);
     const gridSize = Math.max(span.x, span.y) * 2.2;
-    grid = new THREE.GridHelper(gridSize, 20, 0x3a4250, 0x2b323d);
+    grid = new THREE.GridHelper(gridSize, 20, 0x9aa4b0, 0xdde2e8); // light greys — readable on the white viewport
     grid.rotation.x = Math.PI / 2;              // grid on the part's XY plane (Z-up world)
     grid.position.z = -span.z / 2 - partRadius * 0.02;
     partGroup.add(grid);

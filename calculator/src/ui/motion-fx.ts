@@ -244,6 +244,9 @@ function _applyCursorGlow(): void {
   document.body.appendChild(glow);
 
   document.addEventListener('pointermove', (e: PointerEvent) => {
+    // Hide over the 3D CAD viewer — the tinted glow reads as a render artifact
+    // on its white viewport and distracts from precision picking.
+    if ((e.target as Element | null)?.closest?.('.cv3d')) { glow.style.opacity = '0'; return; }
     animate(glow, { x: e.clientX, y: e.clientY }, { duration: 0.55, ease: 'linear' });
     glow.style.opacity = '1';
   }, { passive: true });
