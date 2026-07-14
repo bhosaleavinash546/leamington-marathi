@@ -16445,11 +16445,12 @@ async function init(): Promise<void> {
       const infoEl = document.getElementById('country-bar-info');
       if (infoEl) {
         const sym = CURRENCY_SYMBOL[cur] ?? cur;
-        const matDelta = (rd.materialMultiplier - 1) * 100;
         const labRatio = rd.labour.semiskilled / REGIONAL_DATA['UK'].labour.semiskilled;
         const labDelta = (labRatio - 1) * 100;
         const sign = (n: number) => n >= 0 ? '+' : '';
-        infoEl.textContent = `${rd.name} · ${sym} ${cur} · Mat ${sign(matDelta)}${matDelta.toFixed(0)}% · Labour ${sign(labDelta)}${labDelta.toFixed(0)}%`;
+        // Word this as what it IS — the country's own rate tables active — not a
+        // bare multiplier readout (which made it look factor-based end to end).
+        infoEl.textContent = `${rd.name} · ${sym} ${cur} · ${code} labour, energy & material rates active (labour ${sign(labDelta)}${labDelta.toFixed(0)}% vs UK)`;
       }
     }
     // Refresh select option labels to reflect new regional rates
@@ -16459,6 +16460,16 @@ async function init(): Promise<void> {
   };
   el<HTMLSelectElement>('costing-country-sel')?.addEventListener('change', e => {
     _applyCountry((e.target as HTMLSelectElement).value);
+  });
+
+  // Rate-database transparency export: dump the ACTIVE library (all rates with
+  // their audit-trail source notes) + the full multi-country reference table.
+  document.getElementById('export-rates-btn')?.addEventListener('click', () => {
+    const region = (el<HTMLSelectElement>('costing-country-sel')?.value ?? 'UK') as ManufacturingRegion;
+    void import('../export/rates-export.js')
+      .then(m => m.exportActiveRates(library, region))
+      .then(() => showToast(`Rate database exported — active ${region} library + all-country reference`, 'info'))
+      .catch(err => showToast(`Rate export failed: ${err instanceof Error ? err.message : err}`, 'error'));
   });
 
   // Manufacturing region selector — rebuilds rate library and auto-switches display currency
