@@ -109,6 +109,17 @@ app.use((err: Error & { status?: number }, _req: Request, res: Response, _next: 
   res.status(status).json({ error: IS_PROD ? 'Internal server error' : (err.message ?? 'Unknown error') });
 });
 
+// ── Last-resort crash guards ─────────────────────────────────────────────────
+// Express 4 does not catch async route errors; one unhandled rejection used to
+// kill the whole server mid-request (client saw an empty response, every later
+// request failed). Log loudly and keep serving — a wounded answer beats death.
+process.on('unhandledRejection', (reason) => {
+  console.error('[FATAL-AVOIDED] Unhandled promise rejection:', reason instanceof Error ? reason.stack ?? reason.message : reason);
+});
+process.on('uncaughtException', (err) => {
+  console.error('[FATAL-AVOIDED] Uncaught exception:', err.stack ?? err.message);
+});
+
 const server = app.listen(PORT, () => {
   console.log(`Should-Cost server running on http://localhost:${PORT}`);
   console.log(`[Deployment] AI egress: ${aiEndpointDescription()}`);

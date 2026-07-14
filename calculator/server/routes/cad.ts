@@ -338,7 +338,9 @@ router.post('/analyze', upload.fields([
   }
 
   let analysis: unknown;
-  {
+  // Express 4 does NOT catch async throws — an uncaught rejection here killed
+  // the whole Node process (empty response to the client, dead server after).
+  try {
     const message = await anthropic.messages.create({
       model: cadModel(deepAnalysis),
       max_tokens: 8192,
@@ -353,6 +355,9 @@ router.post('/analyze', upload.fields([
     const raw = (message as { content: Array<{ type: string; text?: string }> }).content.find(b => b.type === 'text')?.text ?? '';
     analysis = JSON.parse(raw); // guaranteed valid by output_config.format
     normalizeFieldConfidences(analysis);
+  } catch (err) {
+    respondAIError(res, err);
+    return;
   }
 
   const measuredVol = stlGeometry?.volume ?? (geo.status === 'success' ? (geo.volumeCm3 ?? null) : null);
@@ -941,6 +946,26 @@ function safeLogName(name: string): string {
   return name.replace(/[^\x20-\x7e]/g, '_').slice(0, 120);
 }
 
+/** Turn an Anthropic SDK error into a helpful JSON response instead of a crash. */
+function respondAIError(res: Parameters<Parameters<typeof router.post>[1]>[1], err: unknown): void {
+  const e = err as { status?: number; message?: string };
+  const msg = e?.message ?? String(err);
+  console.error('[CAD] AI call failed:', msg);
+  if (e?.status === 401) {
+    res.status(401).json({
+      error: 'Anthropic rejected the API key (invalid x-api-key). ' +
+             'If you typed a key into the form\'s "Claude API Key" field, clear that field — ' +
+             'when it is empty the server\'s .env key is used. Otherwise check ANTHROPIC_API_KEY in .env and restart the server.',
+    });
+    return;
+  }
+  if (e?.status === 400 && /credit balance/i.test(msg)) {
+    res.status(402).json({ error: 'Anthropic account has insufficient credits — add credits at console.anthropic.com → Billing.' });
+    return;
+  }
+  res.status(502).json({ error: `AI service error: ${msg.slice(0, 300)}` });
+}
+
 router.post('/tessellate', tessellateLimiter, upload.single('cadFile'), async (req, res): Promise<void> => {
   if (!req.file) { res.status(400).json({ error: 'No file uploaded' }); return; }
   const ext = req.file.originalname.toLowerCase().split('.').pop() ?? '';
@@ -1144,7 +1169,9 @@ router.post('/reanalyze', async (req, res): Promise<void> => {
   }
 
   let analysis: unknown;
-  {
+  // Express 4 does NOT catch async throws — an uncaught rejection here killed
+  // the whole Node process (empty response to the client, dead server after).
+  try {
     const message = await anthropic.messages.create({
       model: cadModel(deepAnalysis),
       max_tokens: 8192,
@@ -1159,6 +1186,9 @@ router.post('/reanalyze', async (req, res): Promise<void> => {
     const raw = (message as { content: Array<{ type: string; text?: string }> }).content.find(b => b.type === 'text')?.text ?? '';
     analysis = JSON.parse(raw); // guaranteed valid by output_config.format
     normalizeFieldConfidences(analysis);
+  } catch (err) {
+    respondAIError(res, err);
+    return;
   }
 
   const sanityWarnings = runCADSanityChecks(analysis as Parameters<typeof runCADSanityChecks>[0], geo.volumeCm3 ?? null);
