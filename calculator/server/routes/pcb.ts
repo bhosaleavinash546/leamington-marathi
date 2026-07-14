@@ -1567,6 +1567,29 @@ router.post('/reanalyze', upload.fields([
     return;
   }
 
+  if (!analysis || typeof analysis !== 'object') {
+    res.status(502).json({ error: 'Re-analysis returned an empty result — please try again.' });
+    return;
+  }
+  // Same structural guarantee as the other two analysis routes: a sparse model
+  // response (missing assembly/costEstimates/boardSpec strings) crashed the
+  // renderer after re-analysis with "undefined is not an object (evaluating
+  // 'a.smtPlacements')" — this route was the only one left un-normalized.
+  normalizePCBAnalysis(analysis as Record<string, unknown>);
+  // The user's corrected BOM is authoritative ground truth: if the model
+  // dropped the BOM entirely, restore it instead of failing.
+  if (bomIsEmpty(analysis) && Array.isArray(correctedBOM) && correctedBOM.length > 0) {
+    console.warn('[PCB/reanalyze] Model returned no BOM — restoring the user-corrected BOM (ground truth)');
+    (analysis as Record<string, unknown>).bom = correctedBOM;
+    normalizePCBAnalysis(analysis as Record<string, unknown>);
+  }
+  if (bomIsEmpty(analysis)) {
+    res.status(422).json({
+      error: 'Re-analysis returned no BOM lines. Your original result is unchanged — try Re-analyze again, or correct the BOM rows before re-analyzing.',
+    });
+    return;
+  }
+
   // ── Stage 4: Volume correction + confidence band + country costs ──────────
   const selectedCountry = (req.body?.country as string | undefined) ?? 'cn';
   const orderQty = parseInt(req.body?.orderQty as string ?? '100', 10) || 100;
@@ -1610,6 +1633,36 @@ router.post('/reanalyze', upload.fields([
       reanalAutomotiveAssemblyCost = computeAutomotiveAssemblyCost(assemblyData, 'Unknown' as ASILLevel, orderQty, reanalCountryAssemblyPerBoard);
       // Automotive fab adjustment
       reanalAutomotiveFabAdjustment = computeAutomotiveFabAdjustment(boardSpec, fabCostMid, domain);
+    }
+
+    // User-corrected lines are AUTHORITATIVE: restore their qty/price verbatim.
+    // The corrected prices were read from the UI, which displays volume-ADJUSTED
+    // (and automotive-graded) prices — running them through flagAndEnrichBOM/
+    // enforceAutomotiveGrading again multiplied them a second time, inflating
+    // the BOM total on every re-analysis (×8 at qty 100).
+    if (Array.isArray(correctedBOM) && correctedBOM.length > 0) {
+      const corr = new Map<string, Record<string, unknown>>();
+      for (const l of correctedBOM as Array<Record<string, unknown>>) {
+        const rd = String(l?.refDes ?? '').trim();
+        if (rd) corr.set(rd, l);
+      }
+      enrichedBOM = enrichedBOM.map(line => {
+        const c = corr.get(String(line.refDes ?? '').trim());
+        if (!c) return line;
+        const price = Number(c.unitPriceGBP);
+        if (!Number.isFinite(price) || price < 0) return line;
+        const qtyRaw = Number(c.qty);
+        const qty = Number.isFinite(qtyRaw) && qtyRaw > 0 ? Math.round(qtyRaw) : Number(line.qty) || 1;
+        return {
+          ...line,
+          qty,
+          unitPriceGBP: Math.round(price * 10000) / 10000,
+          lineTotalGBP: Math.round(price * qty * 100) / 100,
+          volumeAdjusted: false,
+          automotiveGradeForced: false,
+          userCorrected: true,
+        };
+      });
     }
 
     a.bom = enrichedBOM;

@@ -6948,6 +6948,58 @@ async function downscaleImageForUpload(file: File, maxEdge = 2576, quality = 0.8
   }
 }
 
+/** Defensive mirror of the server's normalizePCBAnalysis, shared by BOTH the
+ *  analyze and re-analyze handlers. The renderer calls .toFixed()/.replace()
+ *  on these fields — every one must exist and be well-typed even when the
+ *  payload came from an older server, a cache, or a sparse model response.
+ *  (The re-analyze path missing this crashed with "undefined is not an
+ *  object (evaluating 'a.smtPlacements')".) */
+function normalizePCBPayloadForRender(an: Record<string, unknown>): void {
+  const num = (v: unknown, d: number) => (Number.isFinite(Number(v)) ? Number(v) : d);
+  const bom = (Array.isArray(an.bom) ? an.bom : []) as Array<Record<string, unknown>>;
+  for (const l of bom) { l.qty = num(l.qty, 1); l.unitPriceGBP = num(l.unitPriceGBP, 0); l.lineConf = num(l.lineConf, 0.5); }
+  an.bom = bom;
+  const totalQty = bom.reduce((s, l) => s + (l.qty as number), 0);
+  const bomTotal = bom.reduce((s, l) => s + (l.qty as number) * (l.unitPriceGBP as number), 0);
+  const asm = (an.assembly && typeof an.assembly === 'object' ? an.assembly : {}) as Record<string, unknown>;
+  an.assembly = {
+    ...asm,
+    smtPlacements: num(asm.smtPlacements, totalQty), throughHoleJoints: num(asm.throughHoleJoints, 0),
+    manualJoints: num(asm.manualJoints, 0), bgaCount: num(asm.bgaCount, 0),
+    complexity: typeof asm.complexity === 'string' ? asm.complexity : 'Medium',
+    reflowSides: num(asm.reflowSides, 1),
+    aoiRequired: typeof asm.aoiRequired === 'boolean' ? asm.aoiRequired : true,
+    ictTimeSec: num(asm.ictTimeSec, 0),
+  };
+  const bstr = (v: unknown, d: string) => (typeof v === 'string' && v ? v : d);
+  const bs = (an.boardSpec && typeof an.boardSpec === 'object' ? an.boardSpec : {}) as Record<string, unknown>;
+  an.boardSpec = {
+    ...bs,
+    estimatedLayers: num(bs.estimatedLayers, 4), widthMm: num(bs.widthMm, 100), heightMm: num(bs.heightMm, 80),
+    panelUtilisation: num(bs.panelUtilisation, 0.8), copperWeightOz: num(bs.copperWeightOz, 1),
+    // string fields the renderer calls .replace() on — must never be undefined
+    technologyType: bstr(bs.technologyType, 'standard_rigid'),
+    qualityGrade: bstr(bs.qualityGrade, 'industrial'),
+    surfaceFinish: bstr(bs.surfaceFinish, 'HASL'),
+    solderMaskColour: bstr(bs.solderMaskColour, 'green'),
+  };
+  for (const l of bom) if (typeof l.componentType !== 'string' || !l.componentType) l.componentType = 'other';
+  const ce = (an.costEstimates && typeof an.costEstimates === 'object' ? an.costEstimates : {}) as Record<string, unknown>;
+  const fab = (ce.pcbFabGBP && typeof ce.pcbFabGBP === 'object' ? ce.pcbFabGBP : {}) as Record<string, unknown>;
+  const fabMid = num(fab.mid, 2.5);
+  an.costEstimates = {
+    ...ce,
+    pcbFabGBP: { min: num(fab.min, fabMid * 0.8), mid: fabMid, max: num(fab.max, fabMid * 1.3) },
+    totalBOMCostGBP: num(ce.totalBOMCostGBP, Math.round(bomTotal * 100) / 100),
+    smtAssemblyCostGBP: num(ce.smtAssemblyCostGBP, 0),
+  };
+  if (typeof an.partName !== 'string' || !an.partName) an.partName = 'PCB Assembly';
+  if (typeof an.confidenceLevel !== 'string' || !an.confidenceLevel) an.confidenceLevel = 'Medium';
+  for (const k of ['aiInsights', 'dfmIssues', 'highCostComponents', 'optimisationSuggestions', 'analysisLimitations']) {
+    if (!Array.isArray(an[k])) an[k] = [];
+  }
+}
+
 async function analyzePCBImages(): Promise<void> {
   const selectedFiles = pcbImageFiles.map((f, i) => f ? { file: f, label: ['Top side', 'Bottom side', 'Close-up 1', 'Close-up 2', 'Close-up 3'][i] } : null).filter((x): x is { file: File; label: string } => x !== null);
   if (!selectedFiles.length || pcbImageLoading) return;
@@ -7060,58 +7112,12 @@ async function analyzePCBImages(): Promise<void> {
     }
     if (streamError) throw new Error(streamError);
     if (!data || !data.analysis) throw new Error('Analysis result empty — the server closed the stream before finishing (possible timeout or crash during Stage 3). Try again, reduce to 1–2 images, or attach a BOM file.');
-    // Defensive mirror of the server's normalizePCBAnalysis: the renderer
-    // calls .toFixed() on these — every one must be a finite number even when
-    // the payload came from an older server or cache.
-    {
-      const an = data.analysis as unknown as Record<string, unknown>;
-      const num = (v: unknown, d: number) => (Number.isFinite(Number(v)) ? Number(v) : d);
-      const bom = (Array.isArray(an.bom) ? an.bom : []) as Array<Record<string, unknown>>;
-      for (const l of bom) { l.qty = num(l.qty, 1); l.unitPriceGBP = num(l.unitPriceGBP, 0); l.lineConf = num(l.lineConf, 0.5); }
-      an.bom = bom;
-      const totalQty = bom.reduce((s, l) => s + (l.qty as number), 0);
-      const bomTotal = bom.reduce((s, l) => s + (l.qty as number) * (l.unitPriceGBP as number), 0);
-      const asm = (an.assembly && typeof an.assembly === 'object' ? an.assembly : {}) as Record<string, unknown>;
-      an.assembly = {
-        ...asm,
-        smtPlacements: num(asm.smtPlacements, totalQty), throughHoleJoints: num(asm.throughHoleJoints, 0),
-        manualJoints: num(asm.manualJoints, 0), bgaCount: num(asm.bgaCount, 0),
-        complexity: typeof asm.complexity === 'string' ? asm.complexity : 'Medium',
-        reflowSides: num(asm.reflowSides, 1),
-        aoiRequired: typeof asm.aoiRequired === 'boolean' ? asm.aoiRequired : true,
-        ictTimeSec: num(asm.ictTimeSec, 0),
-      };
-      const bstr = (v: unknown, d: string) => (typeof v === 'string' && v ? v : d);
-      const bs = (an.boardSpec && typeof an.boardSpec === 'object' ? an.boardSpec : {}) as Record<string, unknown>;
-      an.boardSpec = {
-        ...bs,
-        estimatedLayers: num(bs.estimatedLayers, 4), widthMm: num(bs.widthMm, 100), heightMm: num(bs.heightMm, 80),
-        panelUtilisation: num(bs.panelUtilisation, 0.8), copperWeightOz: num(bs.copperWeightOz, 1),
-        // string fields the renderer calls .replace() on — must never be undefined
-        technologyType: bstr(bs.technologyType, 'standard_rigid'),
-        qualityGrade: bstr(bs.qualityGrade, 'industrial'),
-        surfaceFinish: bstr(bs.surfaceFinish, 'HASL'),
-        solderMaskColour: bstr(bs.solderMaskColour, 'green'),
-      };
-      for (const l of bom) if (typeof l.componentType !== 'string' || !l.componentType) l.componentType = 'other';
-      const ce = (an.costEstimates && typeof an.costEstimates === 'object' ? an.costEstimates : {}) as Record<string, unknown>;
-      const fab = (ce.pcbFabGBP && typeof ce.pcbFabGBP === 'object' ? ce.pcbFabGBP : {}) as Record<string, unknown>;
-      const fabMid = num(fab.mid, 2.5);
-      an.costEstimates = {
-        ...ce,
-        pcbFabGBP: { min: num(fab.min, fabMid * 0.8), mid: fabMid, max: num(fab.max, fabMid * 1.3) },
-        totalBOMCostGBP: num(ce.totalBOMCostGBP, Math.round(bomTotal * 100) / 100),
-        smtAssemblyCostGBP: num(ce.smtAssemblyCostGBP, 0),
-      };
-      for (const k of ['aiInsights', 'dfmIssues', 'highCostComponents', 'optimisationSuggestions', 'analysisLimitations']) {
-        if (!Array.isArray(an[k])) an[k] = [];
-      }
-      // Final net: an empty BOM is a failed analysis, not a result. New servers
-      // never send one (retry + 422), but an old cached payload still could —
-      // surface a clear error instead of rendering a silently-empty BOM table.
-      if ((an.bom as unknown[]).length === 0) {
-        throw new Error('The AI returned no BOM lines for this board. Click Re-analyze to retry (empty results are no longer cached), add close-up photos with readable chip markings, or attach a BOM file.');
-      }
+    normalizePCBPayloadForRender(data.analysis as unknown as Record<string, unknown>);
+    // An empty BOM is a failed analysis, not a result. New servers never send
+    // one (retry + 422), but an old cached payload still could — surface a
+    // clear error instead of rendering a silently-empty BOM table.
+    if ((data.analysis.bom ?? []).length === 0) {
+      throw new Error('The AI returned no BOM lines for this board. Click Re-analyze to retry (empty results are no longer cached), add close-up photos with readable chip markings, or attach a BOM file.');
     }
     pcbImageResult = data.analysis;
     // Attach country data to analysis object for rendering
@@ -7548,6 +7554,11 @@ async function reanalyzePCBWithCorrections(): Promise<void> {
 
     const originalAIValues = pcbImageResult._originalAIValues ?? JSON.parse(JSON.stringify(pcbImageResult)) as PCBImageAnalysis;
 
+    if (!data.analysis || typeof data.analysis !== 'object') throw new Error('Re-analysis returned an empty result — your original analysis is unchanged.');
+    normalizePCBPayloadForRender(data.analysis as unknown as Record<string, unknown>);
+    if ((data.analysis.bom ?? []).length === 0) {
+      throw new Error('Re-analysis returned no BOM lines — your original analysis is unchanged. Try again or correct the BOM rows first.');
+    }
     pcbImageResult = data.analysis;
     if (pcbImageResult) {
       pcbImageResult._selectedCountry = data.selectedCountry ?? selectedCountry;
