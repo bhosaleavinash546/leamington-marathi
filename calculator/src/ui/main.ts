@@ -5330,8 +5330,8 @@ function renderCADAnalysisForm(): string {
       <div class="cad-upload-icon">📐</div>
       <div style="font-size:0.85rem;color:var(--text-secondary);margin-bottom:8px">Drop your CAD file here, or click to browse</div>
       <label class="btn btn-primary btn-sm" for="cad-file-input" style="cursor:pointer">Browse Files</label>
-      <input type="file" id="cad-file-input" accept=".stp,.step,.igs,.iges" style="display:none"/>
-      <div class="cad-file-formats">STEP (.stp, .step) &nbsp;·&nbsp; IGES (.igs, .iges)</div>
+      <input type="file" id="cad-file-input" accept=".stp,.step,.igs,.iges,.stl" style="display:none"/>
+      <div class="cad-file-formats">STEP (.stp, .step) &nbsp;·&nbsp; IGES (.igs, .iges) &nbsp;·&nbsp; STL (.stl)</div>
     </div>
     <div id="cad-file-info" class="cad-file-info" style="display:none">
       <span class="file-icon">📄</span>
@@ -5341,6 +5341,9 @@ function renderCADAnalysisForm(): string {
       </div>
       <button class="btn btn-secondary btn-sm" id="cad-clear-btn">✕ Clear</button>
     </div>
+
+    <!-- Interactive 3D viewer (orbit/measure/faces) — mounts when a file is picked -->
+    <div id="cad-viewer-host" style="display:none;margin-top:10px"></div>
 
     <!-- Process + Material overrides -->
     <div class="field-row" style="margin-top:10px">
@@ -5448,6 +5451,56 @@ function renderCADAnalysisForm(): string {
     <div id="cad-results"></div>`;
 }
 
+// ─── Interactive 3D CAD viewer mounts ─────────────────────────────────────────
+// Two mounts share src/ui/cad-viewer.ts: the standalone CAD-to-Cost form and the
+// per-commodity inline uploader. Snapshots from the standalone viewer feed the
+// part-photo slot, so a chosen camera angle rides into analysis + reports.
+let cadViewer: import('./cad-viewer.js').CADViewerHandle | null = null;
+let cadInlineViewer: import('./cad-viewer.js').CADViewerHandle | null = null;
+
+function cadViewerHeaders(): Record<string, string> {
+  const apiKey = sessionStorage.getItem('cad-api-key') ?? '';
+  return apiKey ? { 'x-api-key': apiKey } : {};
+}
+
+/** Snapshot → part-photo slot: same path as uploading a photo manually. */
+function attachCADSnapshotAsPhoto(dataUrl: string): void {
+  cadPartPhotoBase64 = dataUrl.split(',')[1] ?? '';
+  cadPartPhotoMime = 'image/jpeg';
+  const photoInfo = document.getElementById('cad-photo-info');
+  if (photoInfo) photoInfo.textContent = '3D viewer snapshot (attached to analysis)';
+  const photoClear = document.getElementById('cad-photo-clear') as HTMLButtonElement | null;
+  if (photoClear) photoClear.style.display = '';
+}
+
+async function mountCADViewer(hostId: string, file: File, compact: boolean): Promise<void> {
+  const host = document.getElementById(hostId);
+  if (!host) return;
+  try {
+    const { createCADViewer } = await import('./cad-viewer.js');
+    const existing = hostId === 'cad-viewer-host' ? cadViewer : cadInlineViewer;
+    existing?.dispose();
+    host.style.display = '';
+    const handle = await createCADViewer(host, {
+      compact,
+      headers: cadViewerHeaders(),
+      onSnapshot: hostId === 'cad-viewer-host' ? attachCADSnapshotAsPhoto : undefined,
+    });
+    if (hostId === 'cad-viewer-host') cadViewer = handle; else cadInlineViewer = handle;
+    await handle.loadFile(file);
+  } catch (err) {
+    console.warn('[CAD viewer] mount failed:', err instanceof Error ? err.message : String(err));
+    host.style.display = 'none'; // viewer is an enhancement — analysis flow continues without it
+  }
+}
+
+function unmountCADViewer(): void {
+  cadViewer?.dispose();
+  cadViewer = null;
+  const host = document.getElementById('cad-viewer-host');
+  if (host) { host.innerHTML = ''; host.style.display = 'none'; }
+}
+
 function wireCADEvents(): void {
   const dropZone = el('cad-drop-zone');
   const fileInput = el<HTMLInputElement>('cad-file-input');
@@ -5476,6 +5529,7 @@ function wireCADEvents(): void {
   // Clear button
   el('cad-clear-btn')?.addEventListener('click', () => {
     cadFile = null; cadAnalysisResult = null; cadOCCTGeometry = null;
+    unmountCADViewer();
     document.getElementById('cad-file-info')?.style.setProperty('display', 'none');
     document.getElementById('cad-drop-zone')?.style.setProperty('display', '');
     analyzeBtn?.setAttribute('disabled', 'true');
@@ -5555,8 +5609,8 @@ function wireCADEvents(): void {
 
 function setCADFile(f: File): void {
   const ext = f.name.toLowerCase().split('.').pop() ?? '';
-  if (!['stp', 'step', 'igs', 'iges'].includes(ext)) {
-    alert('Unsupported file format. Please use STEP (.stp/.step) or IGES (.igs/.iges).');
+  if (!['stp', 'step', 'igs', 'iges', 'stl'].includes(ext)) {
+    alert('Unsupported file format. Please use STEP (.stp/.step), IGES (.igs/.iges), or STL (.stl).');
     return;
   }
   cadFile = f;
@@ -5573,6 +5627,7 @@ function setCADFile(f: File): void {
   if (cadResults) cadResults.innerHTML = '';
   cadAnalysisResult = null;
   cadOCCTGeometry = null;
+  void mountCADViewer('cad-viewer-host', f, false);
 }
 
 async function analyzeCAD(autoCalculate = false): Promise<void> {
@@ -9417,6 +9472,7 @@ function inlineCADPanelHTML(): string {
           <button class="btn btn-secondary btn-sm" id="cad-inline-btn" disabled style="font-size:0.72rem">Analyze &amp; Fill</button>
         </div>
         <div id="cad-inline-status" style="margin-top:6px;font-size:0.7rem;color:var(--text-secondary);line-height:1.45">Solid formats (STEP/IGES) give true volume &amp; weight; STL/OBJ meshes are approximate.</div>
+        <div id="cad-inline-viewer-host" style="display:none;margin-top:8px"></div>
       </div>
     </details>`;
 }
@@ -9431,6 +9487,9 @@ function wireInlineCAD(commodity: CommodityType): void {
     picked = input.files?.[0] ?? null;
     btn.disabled = !picked;
     if (status) status.textContent = picked ? `${picked.name} (${(picked.size / 1024).toFixed(0)} KB) — click Analyze & Fill` : '';
+    if (picked && /\.(stl|stp|step|igs|iges)$/i.test(picked.name)) {
+      void mountCADViewer('cad-inline-viewer-host', picked, true); // compact 3D viewer under the form
+    }
   });
   btn.addEventListener('click', () => { if (picked) void analyzeCADInline(picked, commodity); });
 }
@@ -15812,6 +15871,9 @@ function loadCADDemo(commodity: string): void {
 
 (window as unknown as Record<string, unknown>).loadCADDemo = loadCADDemo;
 (window as unknown as Record<string, unknown>).__renderSTLViews = renderSTLViews;
+(window as unknown as Record<string, unknown>).__createCADViewer =
+  (host: HTMLElement, opts?: import('./cad-viewer.js').CADViewerOptions) =>
+    import('./cad-viewer.js').then(m => m.createCADViewer(host, opts));
 
 // ─── Supplier Quote Modal ─────────────────────────────────────────────────────
 

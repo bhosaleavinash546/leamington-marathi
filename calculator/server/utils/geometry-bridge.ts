@@ -153,11 +153,17 @@ function _runPython(tmpPath: string, timeoutMs: number): Promise<OCCTGeometry> {
  * mode. Feeds the client's rendered-views pipeline: the browser renders
  * canonical views from the returned STL so the vision model can see the part.
  */
+export interface TessellationMeta {
+  triFace: number[];
+  faces: Array<{ id: number; type: string; radiusMm: number | null; areaCm2: number | null }>;
+  bodies: number;
+}
+
 export async function tessellateToSTL(
   buffer: Buffer,
   filename: string,
   timeoutMs = 120_000,
-): Promise<{ status: 'success'; stl: Buffer; triangles: number } | { status: 'error'; error: string }> {
+): Promise<{ status: 'success'; stl: Buffer; triangles: number; meta: TessellationMeta | null } | { status: 'error'; error: string }> {
   const ext = (filename.toLowerCase().split('.').pop() ?? 'step');
   const id = randomBytes(8).toString('hex');
   const inPath = join(tmpdir(), `cv-tess-${id}.${ext}`);
@@ -186,11 +192,17 @@ export async function tessellateToSTL(
     if (result.status !== 'success') return { status: 'error', error: result.error ?? 'tessellation failed' };
     const { readFile } = await import('fs/promises');
     const stl = await readFile(outPath);
-    return { status: 'success', stl, triangles: result.triangles ?? 0 };
+    // face-metadata sidecar (per-triangle face ids + exact B-rep face data) — optional
+    let meta: TessellationMeta | null = null;
+    try {
+      meta = JSON.parse(await readFile(outPath + '.json', 'utf-8')) as TessellationMeta;
+    } catch { /* older engine or sidecar write failed — viewer degrades to mesh-only */ }
+    return { status: 'success', stl, triangles: result.triangles ?? 0, meta };
   } catch (err) {
     return { status: 'error', error: err instanceof Error ? err.message : String(err) };
   } finally {
     unlink(inPath).catch(() => {});
     unlink(outPath).catch(() => {});
+    unlink(outPath + '.json').catch(() => {});
   }
 }

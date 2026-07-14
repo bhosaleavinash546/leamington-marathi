@@ -942,6 +942,16 @@ router.post('/tessellate', upload.single('cadFile'), async (req, res): Promise<v
     return;
   }
   console.log(`[CAD] Tessellated ${req.file.originalname}: ${result.triangles} triangles, ${(result.stl.length / 1024).toFixed(0)} KB STL`);
+  // ?meta=1 → JSON with the mesh AND the B-rep face metadata (interactive viewer);
+  // default → bare binary STL (rendered-views pipeline, backward compatible).
+  if (req.query.meta === '1') {
+    res.json({
+      stlBase64: result.stl.toString('base64'),
+      triangles: result.triangles,
+      meta: result.meta,
+    });
+    return;
+  }
   res.set('Content-Type', 'application/octet-stream');
   res.set('X-Triangle-Count', String(result.triangles));
   res.send(result.stl);

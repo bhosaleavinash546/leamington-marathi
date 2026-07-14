@@ -722,6 +722,19 @@ def tessellate_to_stl(filepath, out_path):
 
     try:
         import struct
+        from OCP.BRepAdaptor import BRepAdaptor_Surface
+        from OCP.GeomAbs import GeomAbs_SurfaceType
+        from OCP.BRepGProp import BRepGProp
+        from OCP.GProp import GProp_GProps
+        from OCP.TopAbs import TopAbs_SOLID
+
+        SURF_NAMES = {
+            GeomAbs_SurfaceType.GeomAbs_Plane: "plane",
+            GeomAbs_SurfaceType.GeomAbs_Cylinder: "cylinder",
+            GeomAbs_SurfaceType.GeomAbs_Cone: "cone",
+            GeomAbs_SurfaceType.GeomAbs_Sphere: "sphere",
+            GeomAbs_SurfaceType.GeomAbs_Torus: "torus",
+        }
         box = Bnd_Box()
         BRepBndLib.Add_s(wrapped, box)
         xmin, ymin, zmin, xmax, ymax, zmax = box.Get()
@@ -729,12 +742,42 @@ def tessellate_to_stl(filepath, out_path):
         BRepMesh_IncrementalMesh(wrapped, diag / 300.0, False, 0.5, True)
 
         tris = []
+        tri_face_ids = []   # per-triangle source face id — lets the viewer map a click back to the B-rep
+        faces_meta = []     # per-face exact kernel data: type, radius, area
+        face_id = 0
         exp = TopExp_Explorer(wrapped, TopAbs_FACE)
         while exp.More():
             face = TopoDS.Face_s(exp.Current())
             loc = TopLoc_Location()
             tri = BRep_Tool.Triangulation_s(face, loc)
             if tri is not None:
+                # exact B-rep metadata for this face
+                ftype = "other"
+                radius_mm = None
+                try:
+                    ad = BRepAdaptor_Surface(face)
+                    st = ad.GetType()
+                    ftype = SURF_NAMES.get(st, "freeform")
+                    if st == GeomAbs_SurfaceType.GeomAbs_Cylinder:
+                        radius_mm = ad.Cylinder().Radius()
+                    elif st == GeomAbs_SurfaceType.GeomAbs_Sphere:
+                        radius_mm = ad.Sphere().Radius()
+                except Exception:
+                    pass
+                area_cm2 = None
+                try:
+                    fprops = GProp_GProps()
+                    BRepGProp.SurfaceProperties_s(face, fprops)
+                    area_cm2 = abs(fprops.Mass()) / 100.0
+                except Exception:
+                    pass
+                faces_meta.append({
+                    "id": face_id,
+                    "type": ftype,
+                    "radiusMm": round(radius_mm, 4) if radius_mm is not None else None,
+                    "areaCm2": round(area_cm2, 4) if area_cm2 is not None else None,
+                })
+
                 trsf = loc.Transformation()
                 # honour face orientation so the mesh has consistent outward winding
                 reversed_face = face.Orientation() == TopAbs_Orientation.TopAbs_REVERSED
@@ -747,7 +790,18 @@ def tessellate_to_stl(filepath, out_path):
                     if reversed_face:
                         pts[1], pts[2] = pts[2], pts[1]
                     tris.append(pts)
+                    tri_face_ids.append(face_id)
+                face_id += 1
             exp.Next()
+
+        bodies = 0
+        try:
+            bexp = TopExp_Explorer(wrapped, TopAbs_SOLID)
+            while bexp.More():
+                bodies += 1
+                bexp.Next()
+        except Exception:
+            pass
 
         if not tris:
             return {"status": "error", "error": "Meshing produced no triangles"}
@@ -761,7 +815,14 @@ def tessellate_to_stl(filepath, out_path):
                     f.write(struct.pack("<3f", *pt))
                 f.write(struct.pack("<H", 0))
 
-        return {"status": "success", "triangles": len(tris), "stlBytes": os.path.getsize(out_path)}
+        # face-metadata sidecar for the interactive viewer
+        try:
+            with open(out_path + ".json", "w") as jf:
+                json.dump({"triFace": tri_face_ids, "faces": faces_meta, "bodies": max(bodies, 1)}, jf)
+        except Exception:
+            pass
+
+        return {"status": "success", "triangles": len(tris), "stlBytes": os.path.getsize(out_path), "faces": len(faces_meta), "bodies": max(bodies, 1)}
     except Exception as e:
         return {"status": "error", "error": f"Tessellation error: {e}"}
 
