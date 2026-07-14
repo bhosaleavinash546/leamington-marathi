@@ -674,9 +674,104 @@ def analyze(filepath: str) -> dict:
 
 # ─── Entry point ──────────────────────────────────────────────────────────────
 
+
+
+def tessellate_to_stl(filepath, out_path):
+    """Mesh a STEP/IGES shape and write a binary STL — feeds the client-side
+    rendered-views pipeline (the browser renders canonical views from the STL
+    so the vision model can see the part). Deflection scales with the bounding
+    diagonal so triangle counts stay sane for any part size."""
+    try:
+        # Pure OCP — the tessellate mode has no cadquery dependency.
+        from OCP.BRepMesh import BRepMesh_IncrementalMesh
+        from OCP.BRep import BRep_Tool
+        from OCP.TopExp import TopExp_Explorer
+        from OCP.TopAbs import TopAbs_FACE
+        from OCP.TopoDS import TopoDS
+        from OCP.TopLoc import TopLoc_Location
+        from OCP.Bnd import Bnd_Box
+        from OCP.BRepBndLib import BRepBndLib
+        from OCP.IFSelect import IFSelect_RetDone
+        from OCP.TopAbs import TopAbs_Orientation
+    except ImportError as e:
+        return {"status": "error", "error": f"OCP not available: {e}"}
+
+    ext = os.path.splitext(filepath)[1].lower()
+    wrapped = None
+    try:
+        if ext in (".step", ".stp"):
+            from OCP.STEPControl import STEPControl_Reader
+            reader = STEPControl_Reader()
+            if reader.ReadFile(filepath) != IFSelect_RetDone:
+                return {"status": "error", "error": "STEPControl_Reader failed"}
+            reader.TransferRoots()
+            wrapped = reader.OneShape()
+        elif ext in (".iges", ".igs"):
+            from OCP.IGESControl import IGESControl_Reader
+            reader = IGESControl_Reader()
+            if reader.ReadFile(filepath) != IFSelect_RetDone:
+                return {"status": "error", "error": "IGESControl_Reader failed"}
+            reader.TransferRoots()
+            wrapped = reader.OneShape()
+        else:
+            return {"status": "error", "error": f"Unsupported format: {ext}"}
+    except Exception as e:
+        return {"status": "error", "error": f"File load error: {e}"}
+    if wrapped is None or wrapped.IsNull():
+        return {"status": "error", "error": "No shape loaded"}
+
+    try:
+        import struct
+        box = Bnd_Box()
+        BRepBndLib.Add_s(wrapped, box)
+        xmin, ymin, zmin, xmax, ymax, zmax = box.Get()
+        diag = math.sqrt((xmax - xmin) ** 2 + (ymax - ymin) ** 2 + (zmax - zmin) ** 2) or 1.0
+        BRepMesh_IncrementalMesh(wrapped, diag / 300.0, False, 0.5, True)
+
+        tris = []
+        exp = TopExp_Explorer(wrapped, TopAbs_FACE)
+        while exp.More():
+            face = TopoDS.Face_s(exp.Current())
+            loc = TopLoc_Location()
+            tri = BRep_Tool.Triangulation_s(face, loc)
+            if tri is not None:
+                trsf = loc.Transformation()
+                # honour face orientation so the mesh has consistent outward winding
+                reversed_face = face.Orientation() == TopAbs_Orientation.TopAbs_REVERSED
+                for i in range(1, tri.NbTriangles() + 1):
+                    t = tri.Triangle(i)
+                    pts = []
+                    for k in (1, 2, 3):
+                        pnt = tri.Node(t.Value(k)).Transformed(trsf)
+                        pts.append((pnt.X(), pnt.Y(), pnt.Z()))
+                    if reversed_face:
+                        pts[1], pts[2] = pts[2], pts[1]
+                    tris.append(pts)
+            exp.Next()
+
+        if not tris:
+            return {"status": "error", "error": "Meshing produced no triangles"}
+
+        with open(out_path, "wb") as f:
+            f.write(b"\0" * 80)
+            f.write(struct.pack("<I", len(tris)))
+            for pts in tris:
+                f.write(struct.pack("<3f", 0.0, 0.0, 0.0))  # renderer recomputes normals
+                for pt in pts:
+                    f.write(struct.pack("<3f", *pt))
+                f.write(struct.pack("<H", 0))
+
+        return {"status": "success", "triangles": len(tris), "stlBytes": os.path.getsize(out_path)}
+    except Exception as e:
+        return {"status": "error", "error": f"Tessellation error: {e}"}
+
 if __name__ == "__main__":
+    if len(sys.argv) >= 4 and sys.argv[1] == "--stl":
+        result = tessellate_to_stl(sys.argv[2], sys.argv[3])
+        print(json.dumps(result))
+        sys.exit(0 if result.get("status") == "success" else 1)
     if len(sys.argv) < 2:
-        print(json.dumps({"status": "error", "error": "Usage: python3 cad-geometry-engine.py <filepath>"}))
+        print(json.dumps({"status": "error", "error": "Usage: python3 cad-geometry-engine.py <filepath> | --stl <in> <out>"}))
         sys.exit(1)
     fp = sys.argv[1]
     if not os.path.exists(fp):

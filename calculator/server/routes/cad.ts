@@ -2,7 +2,7 @@ import { Router } from 'express';
 import multer from 'multer';
 import { createAnthropic } from '../utils/ai-client.js';
 import { preprocessCADFile } from '../utils/preprocessor.js';
-import { analyzeGeometry } from '../utils/geometry-bridge.js';
+import { analyzeGeometry, tessellateToSTL } from '../utils/geometry-bridge.js';
 import type { OCCTGeometry } from '../utils/geometry-bridge.js';
 import { parseSTL } from '../services/stl-parser.js';
 import type { STLGeometry } from '../services/stl-parser.js';
@@ -925,6 +925,27 @@ ${alwaysSubs}
   "analysisLimitations": [string]
 }`;
 }
+
+// POST /api/cad/tessellate — mesh a STEP/IGES file to binary STL (no AI, no key).
+// The client renders canonical views from the returned STL so the vision model
+// can see the part; STL uploads skip this and render directly.
+router.post('/tessellate', upload.single('cadFile'), async (req, res): Promise<void> => {
+  if (!req.file) { res.status(400).json({ error: 'No file uploaded' }); return; }
+  const ext = req.file.originalname.toLowerCase().split('.').pop() ?? '';
+  if (!['stp', 'step', 'igs', 'iges'].includes(ext)) {
+    res.status(400).json({ error: 'tessellate accepts STEP/IGES only (STL is already a mesh)' });
+    return;
+  }
+  const result = await tessellateToSTL(req.file.buffer, req.file.originalname);
+  if (result.status !== 'success') {
+    res.status(422).json({ error: result.error });
+    return;
+  }
+  console.log(`[CAD] Tessellated ${req.file.originalname}: ${result.triangles} triangles, ${(result.stl.length / 1024).toFixed(0)} KB STL`);
+  res.set('Content-Type', 'application/octet-stream');
+  res.set('X-Triangle-Count', String(result.triangles));
+  res.send(result.stl);
+});
 
 // POST /api/cad/parse-stl — return raw STL geometry without AI analysis
 // Accepts: multipart/form-data with field "cadFile" (must be .stl)

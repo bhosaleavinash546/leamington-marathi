@@ -147,3 +147,50 @@ function _runPython(tmpPath: string, timeoutMs: number): Promise<OCCTGeometry> {
     });
   });
 }
+
+/**
+ * Tessellate a STEP/IGES file to a binary STL via the OCCT engine's --stl
+ * mode. Feeds the client's rendered-views pipeline: the browser renders
+ * canonical views from the returned STL so the vision model can see the part.
+ */
+export async function tessellateToSTL(
+  buffer: Buffer,
+  filename: string,
+  timeoutMs = 120_000,
+): Promise<{ status: 'success'; stl: Buffer; triangles: number } | { status: 'error'; error: string }> {
+  const ext = (filename.toLowerCase().split('.').pop() ?? 'step');
+  const id = randomBytes(8).toString('hex');
+  const inPath = join(tmpdir(), `cv-tess-${id}.${ext}`);
+  const outPath = join(tmpdir(), `cv-tess-${id}.stl`);
+
+  try {
+    await writeFile(inPath, buffer);
+    const result = await new Promise<{ status: string; triangles?: number; error?: string }>((resolve) => {
+      let stdout = '';
+      let stderr = '';
+      let settled = false;
+      const settle = (r: { status: string; triangles?: number; error?: string }) => { if (!settled) { settled = true; resolve(r); } };
+      const child = spawn('python3', [PYTHON_SCRIPT, '--stl', inPath, outPath], { env: { ...process.env } });
+      const timer = setTimeout(() => { child.kill('SIGKILL'); settle({ status: 'error', error: `Tessellation timed out after ${timeoutMs / 1000}s` }); }, timeoutMs);
+      child.stdout.on('data', (d: Buffer) => { stdout += d.toString(); });
+      child.stderr.on('data', (d: Buffer) => { stderr += d.toString(); });
+      child.on('error', (err) => { clearTimeout(timer); settle({ status: 'error', error: `Python process error: ${err.message}` }); });
+      child.on('close', () => {
+        clearTimeout(timer);
+        if (settled) return;
+        try { settle(JSON.parse(stdout.trim())); }
+        catch { settle({ status: 'error', error: `Tessellation output unparseable. stderr: ${stderr.slice(0, 300)}` }); }
+      });
+    });
+
+    if (result.status !== 'success') return { status: 'error', error: result.error ?? 'tessellation failed' };
+    const { readFile } = await import('fs/promises');
+    const stl = await readFile(outPath);
+    return { status: 'success', stl, triangles: result.triangles ?? 0 };
+  } catch (err) {
+    return { status: 'error', error: err instanceof Error ? err.message : String(err) };
+  } finally {
+    unlink(inPath).catch(() => {});
+    unlink(outPath).catch(() => {});
+  }
+}

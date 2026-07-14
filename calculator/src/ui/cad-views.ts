@@ -7,8 +7,9 @@
  * and renders four canonical views (isometric / front / top / right) with
  * three.js into JPEG snapshots that ride along to the vision model.
  *
- * v1 scope: STL only (the mesh is directly available client-side). STEP/IGES
- * would need server-side tessellation — a follow-up.
+ * STL renders directly (the mesh is available client-side); STEP/IGES is
+ * tessellated to STL server-side first (/api/cad/tessellate, OCCT --stl mode)
+ * and then flows through the same path.
  */
 
 interface ParsedMesh {
@@ -74,7 +75,7 @@ export async function renderSTLViews(file: File, size = 512): Promise<string[]> 
     renderer.setClearColor(0xf4f6f8, 1);
 
     const scene = new THREE.Scene();
-    const mat = new THREE.MeshStandardMaterial({ color: 0x9aa4b2, metalness: 0.35, roughness: 0.55 });
+    const mat = new THREE.MeshStandardMaterial({ color: 0x9aa4b2, metalness: 0.35, roughness: 0.55, side: THREE.DoubleSide });
     const mesh = new THREE.Mesh(geometry, mat);
     mesh.position.set(-sphere.center.x, -sphere.center.y, -sphere.center.z); // centre at origin
     scene.add(mesh);

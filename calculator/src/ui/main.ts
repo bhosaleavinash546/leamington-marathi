@@ -5611,10 +5611,33 @@ async function analyzeCAD(autoCalculate = false): Promise<void> {
     const formData = new FormData();
     formData.append('cadFile', cadFile);
     if (cadDrawingFile) formData.append('drawingPdf', cadDrawingFile);
-    // STL: render 4 canonical views client-side so the vision model can SEE
-    // the shape, not just its metrics. Never blocks the analysis on failure.
+    // Rendered views: 4 canonical snapshots so the vision model can SEE the
+    // shape, not just its metrics. STL renders directly; STEP/IGES is first
+    // tessellated server-side (OCCT --stl mode) into a mesh the renderer can
+    // use. Never blocks the analysis on failure.
+    let meshForViews: File | null = null;
     if (/\.stl$/i.test(cadFile.name)) {
-      const views = await renderSTLViews(cadFile);
+      meshForViews = cadFile;
+    } else if (/\.(stp|step|igs|iges)$/i.test(cadFile.name)) {
+      try {
+        updateProgress(12, 'Tessellating geometry for rendered views…');
+        const fd2 = new FormData();
+        fd2.append('cadFile', cadFile);
+        const tessHeaders: HeadersInit = {};
+        if (apiKey) tessHeaders['x-api-key'] = apiKey;
+        const tr = await fetch('/api/cad/tessellate', { method: 'POST', headers: tessHeaders, body: fd2 });
+        if (tr.ok) {
+          const blob = await tr.blob();
+          meshForViews = new File([blob], cadFile.name.replace(/\.[^.]+$/, '.stl'), { type: 'model/stl' });
+        } else {
+          console.warn('[CAD views] tessellation unavailable:', tr.status);
+        }
+      } catch (e) {
+        console.warn('[CAD views] tessellation skipped:', e instanceof Error ? e.message : String(e));
+      }
+    }
+    if (meshForViews) {
+      const views = await renderSTLViews(meshForViews);
       if (views.length) formData.append('renderViews', JSON.stringify(views.map(v => v.split(',')[1])));
     }
 
