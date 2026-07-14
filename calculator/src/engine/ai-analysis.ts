@@ -56,6 +56,14 @@ export interface OCCTGeometry {
     planarFaceCount: number;
     freeFormFaceCount: number;
   };
+  /** Exact per-feature rows: hole/boss × Ø × depth × through, axis-deduped counts. */
+  featureTable?: Array<{
+    kind: 'hole' | 'boss';
+    diaMm: number;
+    depthMm: number;
+    through: boolean | null;
+    count: number;
+  }>;
   error?: string;
   toolingCostEstimates?: {
     hpdcDieCostGBP: number;

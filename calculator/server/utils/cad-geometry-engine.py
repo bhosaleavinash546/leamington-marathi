@@ -17,6 +17,67 @@ signal.alarm(110)
 
 # ─── Surface / edge type classification ──────────────────────────────────────
 
+def _extract_feature_table(wrapped, extents):
+    """Exact hole/boss feature table from B-rep cylindrical faces.
+
+    Per cylinder face: diameter (exact kernel radius ×2), DEPTH from the
+    cylinder's V-parameter span (V is arc length along the axis — exact),
+    hole-vs-boss from concavity (face orientation XOR axis handedness), and
+    through/blind by comparing depth to the bbox extent projected onto the
+    axis. Faces split by booleans (half-cylinders) share the same underlying
+    axis, so instances are deduped by (axis point, direction) before counting.
+    Returns rows grouped by (kind, diameter, depth, through) with counts.
+    """
+    from OCP.TopExp import TopExp_Explorer
+    from OCP.TopAbs import TopAbs_FACE, TopAbs_Orientation
+    from OCP.TopoDS import TopoDS
+    from OCP.BRepAdaptor import BRepAdaptor_Surface
+    from OCP.GeomAbs import GeomAbs_SurfaceType
+
+    instances = {}
+    exp = TopExp_Explorer(wrapped, TopAbs_FACE)
+    while exp.More():
+        face = TopoDS.Face_s(exp.Current())
+        exp.Next()
+        try:
+            ad = BRepAdaptor_Surface(face)
+            if ad.GetType() != GeomAbs_SurfaceType.GeomAbs_Cylinder:
+                continue
+            cyl = ad.Cylinder()
+            r = cyl.Radius()
+            depth = abs(ad.LastVParameter() - ad.FirstVParameter())
+            if depth <= 0.01 or not math.isfinite(depth):
+                continue
+            ax = cyl.Axis()
+            d = ax.Direction()
+            p = ax.Location()
+            axis_extent = abs(d.X()) * extents[0] + abs(d.Y()) * extents[1] + abs(d.Z()) * extents[2]
+            through = axis_extent > 0 and depth >= axis_extent - max(0.1, axis_extent * 0.02)
+            reversed_param = not cyl.Position().Direct()
+            reversed_face = face.Orientation() == TopAbs_Orientation.TopAbs_REVERSED
+            hole = reversed_face != reversed_param
+            # identity: same axis + radius + span = same physical feature
+            ident = (round(p.X(), 2), round(p.Y(), 2), round(p.Z(), 2),
+                     round(d.X(), 3), round(d.Y(), 3), round(d.Z(), 3),
+                     round(r, 3), round(depth, 1), hole)
+            key = ('hole' if hole else 'boss', round(r * 2, 2), round(depth, 1), bool(through))
+            instances.setdefault(key, set()).add(ident)
+        except Exception:
+            continue
+
+    rows = []
+    for (kind, dia, depth, through), idents in instances.items():
+        rows.append({
+            "kind": kind,
+            "diaMm": dia,
+            "depthMm": depth,
+            "through": through if kind == "hole" else None,
+            "count": len(idents),
+        })
+    rows.sort(key=lambda r: (r["kind"], r["diaMm"], r["depthMm"]))
+    return rows
+
+
 def _classify_faces(faces):
     """Return (type_counts dict, cyl_radii_ALL list — one entry per face)."""
     from OCP.BRep import BRep_Tool
@@ -479,37 +540,82 @@ def _validate_bbox(x_sz: float, y_sz: float, z_sz: float):
 
 # ─── Main analysis ────────────────────────────────────────────────────────────
 
+class _FaceShim:
+    """Minimal stand-in for cadquery.Face — only .wrapped and .geomType() are used."""
+    __slots__ = ("wrapped",)
+    def __init__(self, f): self.wrapped = f
+    def geomType(self):
+        from OCP.BRepAdaptor import BRepAdaptor_Surface
+        from OCP.GeomAbs import GeomAbs_SurfaceType
+        try:
+            t = BRepAdaptor_Surface(self.wrapped).GetType()
+        except Exception:
+            return "OTHER"
+        return "PLANE" if t == GeomAbs_SurfaceType.GeomAbs_Plane else str(t).split(".")[-1]
+
+
+class _EdgeShim:
+    """Minimal stand-in for cadquery.Edge — only .wrapped is used."""
+    __slots__ = ("wrapped",)
+    def __init__(self, e): self.wrapped = e
+
+
+class _ShapeShim:
+    """Pure-OCP replacement for the cadquery Shape wrapper. Drops the cadquery
+    dependency entirely (only the `cadquery-ocp` wheel is needed): Faces()/Edges()
+    enumerate UNIQUE sub-shapes via an indexed map, matching cadquery semantics."""
+    def __init__(self, wrapped): self.wrapped = wrapped
+    def _unique(self, kind, shim, caster):
+        from OCP.TopTools import TopTools_IndexedMapOfShape
+        from OCP.TopExp import TopExp
+        m = TopTools_IndexedMapOfShape()
+        TopExp.MapShapes_s(self.wrapped, kind, m)
+        return [shim(caster(m.FindKey(i))) for i in range(1, m.Extent() + 1)]
+    def Faces(self):
+        from OCP.TopAbs import TopAbs_FACE
+        from OCP.TopoDS import TopoDS
+        return self._unique(TopAbs_FACE, _FaceShim, TopoDS.Face_s)
+    def Edges(self):
+        from OCP.TopAbs import TopAbs_EDGE
+        from OCP.TopoDS import TopoDS
+        return self._unique(TopAbs_EDGE, _EdgeShim, TopoDS.Edge_s)
+
+
 def analyze(filepath: str) -> dict:
     try:
-        import cadquery as cq
         from OCP.BRepGProp import BRepGProp
         from OCP.GProp import GProp_GProps
         from OCP.BRepBndLib import BRepBndLib
         from OCP.Bnd import Bnd_Box
+        from OCP.IFSelect import IFSelect_RetDone
     except ImportError as e:
-        return {"status": "error", "error": f"CadQuery/OCP not available: {e}"}
+        return {"status": "error", "error": f"OCP not available: {e}"}
 
     ext = os.path.splitext(filepath)[1].lower()
 
-    # ── Load file ──────────────────────────────────────────────────────────────
+    # ── Load file (pure OCP — no cadquery dependency) ─────────────────────────
     shape = None
     try:
         if ext in (".step", ".stp"):
-            shape = cq.importers.importStep(filepath).val()
+            from OCP.STEPControl import STEPControl_Reader
+            reader = STEPControl_Reader()
+            if reader.ReadFile(filepath) != IFSelect_RetDone:
+                return {"status": "error", "error": "STEPControl_Reader failed"}
+            reader.TransferRoots()
+            shape = _ShapeShim(reader.OneShape())
         elif ext in (".iges", ".igs"):
             from OCP.IGESControl import IGESControl_Reader
-            from OCP.IFSelect import IFSelect_RetDone
             reader = IGESControl_Reader()
             if reader.ReadFile(filepath) != IFSelect_RetDone:
                 return {"status": "error", "error": "IGESControl_Reader failed"}
             reader.TransferRoots()
-            shape = cq.Shape.cast(reader.OneShape())
+            shape = _ShapeShim(reader.OneShape())
         else:
             return {"status": "error", "error": f"Unsupported format: {ext}"}
     except Exception as e:
         return {"status": "error", "error": f"File load error: {e}"}
 
-    if shape is None:
+    if shape is None or shape.wrapped.IsNull():
         return {"status": "error", "error": "No shape loaded"}
 
     try:
@@ -623,6 +729,11 @@ def analyze(filepath: str) -> dict:
                 ),
                 "planarFaceAreaMm2": round(planar_area, 0),
             },
+            # Exact per-feature table: hole/boss × diameter × depth × through,
+            # axis-deduped counts — feeds the operations mapping in the client.
+            "featureTable": _extract_feature_table(
+                wrapped, (xmax - xmin, ymax - ymin, zmax - zmin)
+            ),
             # ── New precision analysis fields ─────────────────────────────
             "wallThickness": wall_stats,
             "draftAnalysis": draft_info,
@@ -793,6 +904,7 @@ def tessellate_to_stl(filepath, out_path, with_meta=False):
             radius_mm = None    # cylinder/sphere radius; cone ref radius; torus major radius
             radius2_mm = None   # torus minor radius
             angle_deg = None    # cone half-angle
+            depth_mm = None     # cylinders: exact height/depth along the axis
             hole = None         # cylinders: True = internal (drilled/bored), False = external (boss/shaft)
             try:
                 ad = BRepAdaptor_Surface(face)
@@ -801,6 +913,13 @@ def tessellate_to_stl(filepath, out_path, with_meta=False):
                 if st == GeomAbs_SurfaceType.GeomAbs_Cylinder:
                     cyl = ad.Cylinder()
                     radius_mm = cyl.Radius()
+                    # Cylinder V-parameter is arc length along the axis → exact depth/height
+                    try:
+                        depth_mm = abs(ad.LastVParameter() - ad.FirstVParameter())
+                        if not math.isfinite(depth_mm):
+                            depth_mm = None
+                    except Exception:
+                        depth_mm = None
                     # Concavity: a cylinder's natural normal points radially outward
                     # when its coordinate system is right-handed. Material-outward
                     # normals pointing INWARD (toward the axis) mean the face is an
@@ -833,6 +952,7 @@ def tessellate_to_stl(filepath, out_path, with_meta=False):
                 "radiusMm": round(radius_mm, 4) if radius_mm is not None else None,
                 "radius2Mm": round(radius2_mm, 4) if radius2_mm is not None else None,
                 "angleDeg": round(angle_deg, 3) if angle_deg is not None else None,
+                "depthMm": round(depth_mm, 2) if depth_mm is not None else None,
                 "areaCm2": round(area_cm2, 4) if area_cm2 is not None else None,
                 "bodyId": face_body.get(map_idx, -1),
                 "hole": hole,

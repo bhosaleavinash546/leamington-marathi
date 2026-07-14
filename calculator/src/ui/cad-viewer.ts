@@ -25,6 +25,8 @@ export interface FaceMeta {
   radiusMm: number | null;
   radius2Mm?: number | null;
   angleDeg?: number | null;
+  /** cylinders: exact height/depth along the axis (mm) */
+  depthMm?: number | null;
   areaCm2: number | null;
   bodyId?: number;
   hole?: boolean | null;
@@ -675,7 +677,7 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
   }
 
   // ── features panel (holes & bosses from exact B-rep data) ──
-  interface FeatureGroup { kind: 'hole' | 'boss'; diaMm: number; faceIds: number[] }
+  interface FeatureGroup { kind: 'hole' | 'boss'; diaMm: number; depthMm: number | null; faceIds: number[] }
   let featureGroups: FeatureGroup[] = [];
   function buildFeaturesPanel(): void {
     featureGroups = [];
@@ -686,14 +688,15 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
       if (f.type !== 'cylinder' || f.radiusMm == null || f.hole == null) continue;
       const kind = f.hole ? 'hole' : 'boss';
       const dia = Math.round(f.radiusMm * 2 * 100) / 100;
-      const key = `${kind}:${dia}`;
-      if (!groups.has(key)) groups.set(key, { kind, diaMm: dia, faceIds: [] });
+      const depth = f.depthMm != null ? Math.round(f.depthMm * 10) / 10 : null;
+      const key = `${kind}:${dia}:${depth ?? '?'}`;
+      if (!groups.has(key)) groups.set(key, { kind, diaMm: dia, depthMm: depth, faceIds: [] });
       groups.get(key)!.faceIds.push(f.id);
     }
     featureGroups = [...groups.values()].sort((a, b) => a.kind.localeCompare(b.kind) || a.diaMm - b.diaMm);
     featuresList.innerHTML = featureGroups.map((g, i) =>
       `<div class="cv3d-measure-row cv3d-feature-row" data-feat="${i}">
-        <span>${g.kind === 'hole' ? '◎' : '⬤'} ${g.kind === 'hole' ? 'Hole' : 'Boss'} Ø ${g.diaMm.toFixed(2)} mm × ${g.faceIds.length}</span>
+        <span>${g.kind === 'hole' ? '◎' : '⬤'} ${g.kind === 'hole' ? 'Hole' : 'Boss'} Ø ${g.diaMm.toFixed(2)}${g.depthMm != null ? ` × ${g.depthMm.toFixed(1)} deep` : ''} mm × ${g.faceIds.length}</span>
       </div>`).join('') || '<div class="cv3d-measure-row"><span>No cylindrical features detected</span></div>';
     featuresList.querySelectorAll('[data-feat]').forEach(row => {
       row.addEventListener('click', () => {
@@ -953,7 +956,8 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
     const bits = [`<strong>Face #${faceId} — ${FACE_TYPE_LABEL[face.type] ?? face.type}</strong>`];
     if (face.type === 'cylinder' && face.radiusMm != null) {
       const kind = face.hole == null ? '' : face.hole ? ' · hole/bore' : ' · boss/shaft';
-      bits.push(`<span>R ${face.radiusMm.toFixed(3)} mm · Ø ${(face.radiusMm * 2).toFixed(3)} mm <em>(exact, from B-rep)</em>${kind}</span>`);
+      const depth = face.depthMm != null ? ` · ${face.depthMm.toFixed(2)} mm deep` : '';
+      bits.push(`<span>R ${face.radiusMm.toFixed(3)} mm · Ø ${(face.radiusMm * 2).toFixed(3)} mm${depth} <em>(exact, from B-rep)</em>${kind}</span>`);
     } else if (face.type === 'cone' && face.radiusMm != null) {
       bits.push(`<span>Ref R ${face.radiusMm.toFixed(3)} mm${face.angleDeg != null ? ` · ${face.angleDeg.toFixed(1)}° half-angle` : ''} <em>(exact, from B-rep)</em></span>`);
     } else if (face.type === 'torus' && face.radiusMm != null) {

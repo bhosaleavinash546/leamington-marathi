@@ -65,6 +65,7 @@ import { computeCompositeDrivers } from '../engine/modules/composites.js';
 import type { CompositeProcess } from '../engine/modules/composites.js';
 import { computeWiringHarnessDrivers } from '../engine/modules/wiring-harness.js';
 import { buildRegionalLibrary, REGIONAL_DATA, computeRegionalComparison } from '../engine/regional-rates.js';
+import { featureToOperation, drillingOpFromFeatures } from '../engine/feature-ops.js';
 import type { ManufacturingRegion } from '../engine/regional-rates.js';
 import { recommendMachineIds } from '../engine/process-taxonomy.js';
 import { runSensitivity } from '../engine/sensitivity.js';
@@ -9440,6 +9441,32 @@ function buildOCCTPanel(geo: OCCTGeometry | null, source: string): string {
       </div>
       <div class="occt-face-bar">${barSegments}</div>
       <div class="occt-face-legend">${legend}</div>
+      ${buildFeatureOpsTable(geo)}
+    </div>`;
+}
+
+/** Exact geometry → operations table: every hole/boss with Ø, depth, through/blind
+ *  and the operation it implies. This is measured kernel data, not AI estimation. */
+function buildFeatureOpsTable(geo: OCCTGeometry): string {
+  const rows = geo.featureTable ?? [];
+  if (!rows.length) return '';
+  const totalOps = rows.filter(r => r.kind === 'hole').reduce((s, r) => s + r.count, 0);
+  return `
+    <div style="margin-top:10px">
+      <div style="font-size:0.78rem;font-weight:700">🔩 Geometry Feature Table <span style="font-weight:400;color:var(--text-muted)">(exact, from B-rep — ${totalOps} hole operations)</span></div>
+      <table class="data-table" style="margin-top:6px;font-size:0.74rem;font-variant-numeric:tabular-nums">
+        <thead><tr><th>Feature</th><th>Ø (mm)</th><th>Depth (mm)</th><th>Type</th><th>Qty</th><th>→ Operation</th></tr></thead>
+        <tbody>
+          ${rows.map(r => `<tr>
+            <td>${r.kind === 'hole' ? '◎ Hole' : '⬤ Boss'}</td>
+            <td>${r.diaMm.toFixed(2)}</td>
+            <td>${r.depthMm.toFixed(1)}</td>
+            <td>${r.kind === 'hole' ? (r.through ? 'through' : 'blind') : '—'}</td>
+            <td>${r.count}</td>
+            <td>${featureToOperation(r)}</td>
+          </tr>`).join('')}
+        </tbody>
+      </table>
     </div>`;
 }
 
@@ -9615,9 +9642,16 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
         if (container && c.estimatedOperations.length > 0) {
           container.innerHTML = '';
           machOpCount = 0;
+          // Geometry Feature Table → a dedicated MEASURED drilling op. The exact
+          // hole list (Ø × depth × count from the B-rep) drives its cycle time;
+          // the AI-estimated ops are then scaled to the REMAINING OCCT cycle time
+          // so the grand total still matches the bottom-up geometry estimate.
+          const drillPlan = drillingOpFromFeatures(cadOCCTGeometry?.featureTable, cadOCCTGeometry?.cncCycleTimeEstimate?.drillBoreTimeMins);
+          const drillHrs = drillPlan?.cycleTimeHr ?? 0;
           // Scale AI cycle times proportionally if OCCT total differs from AI total
           const aiTotalHrs = c.estimatedOperations.reduce((s, op) => s + op.cycleTimeHr, 0);
-          const scaleFactor = (occtCycleHrs !== null && aiTotalHrs > 0) ? occtCycleHrs / aiTotalHrs : 1;
+          const targetHrs = occtCycleHrs !== null ? Math.max(occtCycleHrs - drillHrs, occtCycleHrs * 0.2) : null;
+          const scaleFactor = (targetHrs !== null && aiTotalHrs > 0) ? targetHrs / aiTotalHrs : 1;
           for (const op of c.estimatedOperations) {
             addMachOp({
               name: op.name,
@@ -9630,6 +9664,21 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
               manning: op.manning,
               labourTimeHr: op.cycleTimeHr * scaleFactor,
               labourEfficiency: op.labourEfficiency,
+            });
+          }
+          if (drillPlan) {
+            const firstAI = c.estimatedOperations[0];
+            addMachOp({
+              name: drillPlan.name,
+              type: 'drilling',
+              machineId: firstAI?.machineId,
+              labourId: firstAI?.labourId || 'lab-uk-skilled',
+              cycleTimeHr: drillPlan.cycleTimeHr,
+              partsPerCycle: 1,
+              oee: firstAI?.oee ?? 0.85,
+              manning: firstAI?.manning ?? 1,
+              labourTimeHr: drillPlan.cycleTimeHr,
+              labourEfficiency: firstAI?.labourEfficiency ?? 0.92,
             });
           }
         }

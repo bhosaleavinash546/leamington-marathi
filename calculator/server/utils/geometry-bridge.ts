@@ -93,6 +93,14 @@ export interface OCCTGeometry {
     planarFaceCount: number;
     freeFormFaceCount: number;
   };
+  /** Exact per-feature rows: hole/boss × Ø × depth × through, axis-deduped counts. */
+  featureTable?: Array<{
+    kind: 'hole' | 'boss';
+    diaMm: number;
+    depthMm: number;
+    through: boolean | null;
+    count: number;
+  }>;
   error?: string;
   toolingCostEstimates?: {
     hpdcDieCostGBP: number;
@@ -190,6 +198,8 @@ export interface TessellationFace {
   radius2Mm: number | null;
   /** cone half-angle (degrees) */
   angleDeg: number | null;
+  /** cylinders: exact height/depth along the axis (mm) */
+  depthMm?: number | null;
   areaCm2: number | null;
   /** solid index this face belongs to; -1 = not part of any solid */
   bodyId: number;
