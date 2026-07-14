@@ -3236,11 +3236,23 @@ textarea:focus-visible {
 .wf-panel-close:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
 /* ── Full-Screen New Costing Split Mode ──────────────────────────────────── */
+/* Effective app-nav offset for the new-costing FIXED panels. These panels are
+   position:fixed, so the shared margin-left content-offset rule shifted them
+   right while their width calc ignored the nav — the whole costing view
+   overflowed the right edge of the screen by the nav width. Anchor them with
+   an explicit left that includes the nav, and right:0 instead of a width. */
+body.cv-new-costing { --cv-nav-offset: var(--anav-w); }
+.cv-nav-collapsed body.cv-new-costing { --cv-nav-offset: var(--anav-w-min); }
+@media (max-width: 880px) {
+  body.cv-new-costing { --cv-nav-offset: 0px; } /* nav becomes an overlay */
+}
+
 body.cv-new-costing #commodity-picker-view {
   display: flex !important;
   flex-direction: column;
   position: fixed;
-  left: 0;
+  left: var(--cv-nav-offset);
+  margin-left: 0 !important;
   top: 57px;
   width: 268px;
   height: calc(100vh - 57px);
@@ -3293,9 +3305,11 @@ body.cv-new-costing #commodity-picker-view .cpicker-ai-row .cpicker-tile {
 body.cv-new-costing #costing-view {
   display: flex !important;
   position: fixed !important;
-  left: 268px;
+  left: calc(var(--cv-nav-offset) + 268px);
+  right: 0;
+  margin-left: 0 !important;
   top: 57px;
-  width: calc(100vw - 268px) !important;
+  width: auto !important;
   height: calc(100vh - 57px);
   overflow-y: auto;
   overflow-x: hidden;
@@ -3321,11 +3335,11 @@ body.cv-new-costing #costing-view .results-panel {
 }
 @media (max-width: 900px) {
   body.cv-new-costing #commodity-picker-view { width: 220px; }
-  body.cv-new-costing #costing-view { left: 220px; width: calc(100vw - 220px) !important; }
+  body.cv-new-costing #costing-view { left: calc(var(--cv-nav-offset) + 220px); width: auto !important; }
 }
 @media (max-width: 640px) {
   body.cv-new-costing #commodity-picker-view { display: none !important; }
-  body.cv-new-costing #costing-view { left: 0; width: 100vw !important; }
+  body.cv-new-costing #costing-view { left: var(--cv-nav-offset); width: auto !important; }
 }
 
 /* ── Regional Comparison Table ───────────────────────────────────────────── */
@@ -3399,8 +3413,8 @@ body.cv-new-costing.sidebar-collapsed #commodity-picker-view {
   overflow: hidden;
 }
 body.cv-new-costing.sidebar-collapsed #costing-view {
-  left: 52px;
-  width: calc(100vw - 52px) !important;
+  left: calc(var(--cv-nav-offset) + 52px);
+  width: auto !important;
 }
 body.cv-new-costing.sidebar-collapsed .cpicker-title-wrap,
 body.cv-new-costing.sidebar-collapsed .cpicker-sub,
@@ -6123,8 +6137,10 @@ input.cv-outlier { border-color: var(--warning) !important; box-shadow: 0 0 0 2p
    costing view span the full viewport width. */
 :root.cv-focus-report body.cv-new-costing #commodity-picker-view { display: none !important; }
 :root.cv-focus-report body.cv-new-costing #costing-view {
-  left: 0 !important;
-  width: 100vw !important;
+  /* span everything right of the (collapsed) nav — left:0/100vw put the first
+     62px of the report underneath the nav rail */
+  left: var(--cv-nav-offset) !important;
+  width: auto !important;
 }
 
 @media (max-width: 900px) {
