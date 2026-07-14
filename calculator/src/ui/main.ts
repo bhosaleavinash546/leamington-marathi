@@ -3227,8 +3227,8 @@ function addMachOp(d?: Partial<MachiningOperation>): void {
     </div>`;
   c.appendChild(div);
   populateSelects();
-  if (d?.machineId) (el<HTMLSelectElement>(`${id}-mach`)).value = d.machineId;
-  if (d?.labourId)  (el<HTMLSelectElement>(`${id}-lab`)).value  = d.labourId;
+  setMachineSelect(`${id}-mach`, d?.machineId, d?.name ?? '');
+  setLabourSelect(`${id}-lab`, d?.labourId);
   if (d?.type)      (el<HTMLSelectElement>(`${id}-type`)).value = d.type;
   div.querySelector('.remove-op')!.addEventListener('click', () => div.remove());
 }
@@ -4790,8 +4790,8 @@ function addBIWStation(d?: {stationName?: string; machineId?: string; labourId?:
     </div>`;
   c.appendChild(div);
   populateSelects();
-  if (d?.machineId) (el<HTMLSelectElement>(`${id}-mach`)).value = d.machineId;
-  if (d?.labourId)  (el<HTMLSelectElement>(`${id}-lab`)).value  = d.labourId;
+  setMachineSelect(`${id}-mach`, d?.machineId, d?.stationName ?? '');
+  setLabourSelect(`${id}-lab`, d?.labourId);
   div.querySelector('.remove-station')!.addEventListener('click', () => div.remove());
 }
 
@@ -5304,8 +5304,8 @@ function addCAMMachOp(d?: Partial<MachiningOperation>): void {
     </div>`;
   c.appendChild(div);
   populateSelects();
-  if (d?.machineId) (el<HTMLSelectElement>(`${id}-mach`)).value = d.machineId;
-  if (d?.labourId)  (el<HTMLSelectElement>(`${id}-lab`)).value  = d.labourId;
+  setMachineSelect(`${id}-mach`, d?.machineId, d?.name ?? '');
+  setLabourSelect(`${id}-lab`, d?.labourId);
   if (d?.type)      (el<HTMLSelectElement>(`${id}-type`)).value = d.type;
   div.querySelector('.remove-op')!.addEventListener('click', () => div.remove());
 }
@@ -9669,6 +9669,8 @@ function resolveMachineIdForOp(rawId: string | undefined, opName: string): strin
   if (/lathe|turn/.test(hay)) return pick('lathe', 'qt200') ?? pick('vmc') ?? ids[0] ?? '';
   if (/drill|bore|ream|tap/.test(hay)) return pick('drill') ?? pick('vmc') ?? ids[0] ?? '';
   if (/grind|hone|lap/.test(hay)) return pick('grind') ?? pick('vmc') ?? ids[0] ?? '';
+  if (/spot|mig|tig|weld|robot/.test(hay)) return pick('weld', 'robot', 'mig') ?? pick('vmc') ?? ids[0] ?? '';
+  if (/bench|assembl|inspect|fixtur/.test(hay)) return pick('bench', 'assembly') ?? pick('vmc') ?? ids[0] ?? '';
   return pick('vmc3') ?? pick('vmc') ?? ids[0] ?? '';
 }
 
@@ -9677,6 +9679,60 @@ function resolveLabourId(rawId: string | undefined): string {
   const ids = library.labour.map(l => l.id);
   if (rawId && ids.includes(rawId)) return rawId;
   return ids.find(id => id.endsWith('-skilled')) ?? ids[0] ?? '';
+}
+
+// Assigning a non-existent option value to a <select> silently leaves it EMPTY
+// (value '', selectedIndex -1) — the root cause of "Machine '' not found in
+// rate library" at Calculate time. These setters/readers make that state
+// unrepresentable: every path that writes or reads an op-card machine/labour
+// select goes through resolution, so an invented AI id, a stale draft, or an
+// old bundle can no longer produce an empty select.
+
+function setMachineSelect(selectId: string, rawId: string | undefined, opName: string): void {
+  const s = el<HTMLSelectElement>(selectId);
+  if (!s) return;
+  if (rawId) s.value = rawId;
+  if (!s.value) s.value = resolveMachineIdForOp(rawId, opName);
+  if (!s.value && s.options.length > 0) s.selectedIndex = 0;
+}
+
+function setLabourSelect(selectId: string, rawId: string | undefined): void {
+  const s = el<HTMLSelectElement>(selectId);
+  if (!s) return;
+  if (rawId) s.value = rawId;
+  if (!s.value) s.value = resolveLabourId(rawId);
+  if (!s.value && s.options.length > 0) s.selectedIndex = 0;
+}
+
+let _lastHealToastAt = 0;
+function _notifyRateHeal(kind: 'machine' | 'labour', selectId: string, healedTo: string): void {
+  console.warn(`[rate-heal] ${kind} select #${selectId} was empty/unknown — auto-assigned '${healedTo}' from the rate library`);
+  const now = Date.now();
+  if (now - _lastHealToastAt > 4000) {
+    _lastHealToastAt = now;
+    showToast('An operation had a missing machine/labour rate — auto-assigned the closest match from the rate library', 'info');
+  }
+}
+
+/** Read a machine <select> at Calculate time, healing empty/unknown values in
+ *  place. Covers every entry path: AI apply, draft restore, stale bundle,
+ *  manual edits, country/library switches. */
+function selMachineHealed(selectId: string, opName: string): string {
+  const s = el<HTMLSelectElement>(selectId);
+  if (!s) return '';
+  if (s.value && library.machines.some(m => m.id === s.value)) return s.value;
+  const healed = resolveMachineIdForOp(s.value || undefined, opName);
+  if (healed) { s.value = healed; _notifyRateHeal('machine', selectId, healed); }
+  return healed;
+}
+
+function selLabourHealed(selectId: string): string {
+  const s = el<HTMLSelectElement>(selectId);
+  if (!s) return '';
+  if (s.value && library.labour.some(l => l.id === s.value)) return s.value;
+  const healed = resolveLabourId(s.value || undefined);
+  if (healed) { s.value = healed; _notifyRateHeal('labour', selectId, healed); }
+  return healed;
 }
 
 function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): void {
@@ -9845,8 +9901,9 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
           const scaleCAM = (camCycleHrs !== null && aiTotalCAM > 0) ? camCycleHrs / aiTotalCAM : 1;
           for (const op of c.estimatedOperations) {
             addCAMMachOp({
-              name: op.name, type: 'milling_3ax', machineId: op.machineId,
-              labourId: op.labourId || 'lab-uk-skilled',
+              name: op.name, type: 'milling_3ax',
+              machineId: resolveMachineIdForOp(op.machineId, op.name),
+              labourId: resolveLabourId(op.labourId),
               cycleTimeHr: op.cycleTimeHr * scaleCAM, partsPerCycle: 1,
               oee: op.oee, manning: op.manning,
               labourTimeHr: op.cycleTimeHr * scaleCAM, labourEfficiency: op.labourEfficiency,
@@ -10646,11 +10703,12 @@ function getUniversalTail(): Pick<UniversalStackInput, 'partName' | 'packagingPe
 function collectMachiningInput(): UniversalStackInput {
   const ops: MachiningOperation[] = Array.from(document.querySelectorAll<HTMLElement>('#mach-ops-container .op-card')).map(card => {
     const id = card.dataset.opId!;
+    const opName = (el<HTMLInputElement>(`${id}-name`))?.value ?? '';
     return {
-      name: (el<HTMLInputElement>(`${id}-name`))?.value ?? '',
+      name: opName,
       type: validSel<MachiningOperation['type']>(`${id}-type`, ['turning','milling_3ax','milling_5ax','drilling','grinding','tapping','boring'], 'turning'),
-      machineId: sel(`${id}-mach`),
-      labourId: sel(`${id}-lab`),
+      machineId: selMachineHealed(`${id}-mach`, opName),
+      labourId: selLabourHealed(`${id}-lab`),
       cycleTimeHr: parseFloat((el<HTMLInputElement>(`${id}-ct`))?.value) || 0,
       partsPerCycle: parseInt((el<HTMLInputElement>(`${id}-ppc`))?.value) || 1,
       oee: parseFloat((el<HTMLInputElement>(`${id}-oee`))?.value) || 0.85,
@@ -10669,8 +10727,8 @@ function collectMachiningInput(): UniversalStackInput {
     setup: {
       setupTimeHr: num('mach-setup-time'),
       batchSize: num('mach-batch-size') || 50,
-      machineId: sel('mach-setup-mach'),
-      labourId: sel('mach-setup-lab'),
+      machineId: selMachineHealed('mach-setup-mach', 'Setup'),
+      labourId: selLabourHealed('mach-setup-lab'),
     },
     programmingNRE: num('mach-prog-nre'),
     toolingCost: num('mach-tooling'),
@@ -11215,10 +11273,11 @@ function collectBIWInput(): UniversalStackInput {
   const stationCards = document.querySelectorAll<HTMLElement>('#biw-stations-container .op-card');
   const stations = Array.from(stationCards).map(card => {
     const id = card.dataset.stationId!;
+    const stationName = (el<HTMLInputElement>(`${id}-name`))?.value ?? 'Station';
     return {
-      stationName: (el<HTMLInputElement>(`${id}-name`))?.value ?? 'Station',
-      machineId: sel(`${id}-mach`),
-      labourId: sel(`${id}-lab`),
+      stationName,
+      machineId: selMachineHealed(`${id}-mach`, stationName),
+      labourId: selLabourHealed(`${id}-lab`),
       cycleTimeHr: parseFloat((el<HTMLInputElement>(`${id}-ct`))?.value) || 0,
       oee: parseFloat((el<HTMLInputElement>(`${id}-oee`))?.value) || 0.85,
       manning: parseFloat((el<HTMLInputElement>(`${id}-manning`))?.value) || 1,
@@ -11328,11 +11387,12 @@ function collectCastAndMachineInput(): UniversalStackInput {
     document.querySelectorAll<HTMLElement>('#cam-mach-ops-container .op-card')
   ).map(card => {
     const id = card.dataset.opId!;
+    const opName = (el<HTMLInputElement>(`${id}-name`))?.value ?? '';
     return {
-      name: (el<HTMLInputElement>(`${id}-name`))?.value ?? '',
+      name: opName,
       type: validSel<MachiningOperation['type']>(`${id}-type`, ['turning','milling_3ax','milling_5ax','drilling','grinding','tapping','boring'], 'milling_3ax'),
-      machineId: sel(`${id}-mach`),
-      labourId: sel(`${id}-lab`),
+      machineId: selMachineHealed(`${id}-mach`, opName),
+      labourId: selLabourHealed(`${id}-lab`),
       cycleTimeHr: parseFloat((el<HTMLInputElement>(`${id}-ct`))?.value) || 0,
       partsPerCycle: parseInt((el<HTMLInputElement>(`${id}-ppc`))?.value) || 1,
       oee: parseFloat((el<HTMLInputElement>(`${id}-oee`))?.value) || 0.85,
@@ -11369,8 +11429,8 @@ function collectCastAndMachineInput(): UniversalStackInput {
     machiningSetup: {
       setupTimeHr: num('cam-mach-setup-time'),
       batchSize: num('cam-mach-batch-size') || 50,
-      machineId: sel('cam-mach-setup-mach'),
-      labourId: sel('cam-mach-setup-lab'),
+      machineId: selMachineHealed('cam-mach-setup-mach', 'Setup'),
+      labourId: selLabourHealed('cam-mach-setup-lab'),
     },
     machiningToolingCost: num('cam-mach-tooling'),
     machiningProgrammingNRE: num('cam-mach-prog-nre'),
