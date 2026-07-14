@@ -7067,7 +7067,7 @@ async function analyzePCBImages(): Promise<void> {
       const an = data.analysis as unknown as Record<string, unknown>;
       const num = (v: unknown, d: number) => (Number.isFinite(Number(v)) ? Number(v) : d);
       const bom = (Array.isArray(an.bom) ? an.bom : []) as Array<Record<string, unknown>>;
-      for (const l of bom) { l.qty = num(l.qty, 1); l.unitPriceGBP = num(l.unitPriceGBP, 0); }
+      for (const l of bom) { l.qty = num(l.qty, 1); l.unitPriceGBP = num(l.unitPriceGBP, 0); l.lineConf = num(l.lineConf, 0.5); }
       an.bom = bom;
       const totalQty = bom.reduce((s, l) => s + (l.qty as number), 0);
       const bomTotal = bom.reduce((s, l) => s + (l.qty as number) * (l.unitPriceGBP as number), 0);
@@ -7081,8 +7081,19 @@ async function analyzePCBImages(): Promise<void> {
         aoiRequired: typeof asm.aoiRequired === 'boolean' ? asm.aoiRequired : true,
         ictTimeSec: num(asm.ictTimeSec, 0),
       };
+      const bstr = (v: unknown, d: string) => (typeof v === 'string' && v ? v : d);
       const bs = (an.boardSpec && typeof an.boardSpec === 'object' ? an.boardSpec : {}) as Record<string, unknown>;
-      an.boardSpec = { ...bs, estimatedLayers: num(bs.estimatedLayers, 4), widthMm: num(bs.widthMm, 100), heightMm: num(bs.heightMm, 80), panelUtilisation: num(bs.panelUtilisation, 0.8), copperWeightOz: num(bs.copperWeightOz, 1) };
+      an.boardSpec = {
+        ...bs,
+        estimatedLayers: num(bs.estimatedLayers, 4), widthMm: num(bs.widthMm, 100), heightMm: num(bs.heightMm, 80),
+        panelUtilisation: num(bs.panelUtilisation, 0.8), copperWeightOz: num(bs.copperWeightOz, 1),
+        // string fields the renderer calls .replace() on — must never be undefined
+        technologyType: bstr(bs.technologyType, 'standard_rigid'),
+        qualityGrade: bstr(bs.qualityGrade, 'industrial'),
+        surfaceFinish: bstr(bs.surfaceFinish, 'HASL'),
+        solderMaskColour: bstr(bs.solderMaskColour, 'green'),
+      };
+      for (const l of bom) if (typeof l.componentType !== 'string' || !l.componentType) l.componentType = 'other';
       const ce = (an.costEstimates && typeof an.costEstimates === 'object' ? an.costEstimates : {}) as Record<string, unknown>;
       const fab = (ce.pcbFabGBP && typeof ce.pcbFabGBP === 'object' ? ce.pcbFabGBP : {}) as Record<string, unknown>;
       const fabMid = num(fab.mid, 2.5);

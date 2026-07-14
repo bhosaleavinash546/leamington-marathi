@@ -65,7 +65,9 @@ function computeConfidenceBand(
     const lineTotal = line.qty * line.unitPriceGBP;
     bomMid += lineTotal;
     if (line.ocrExtracted) ocrCount++;
-    weightedConfSum += line.lineConf * line.qty;
+    // lineConf can be undefined on a sparse AI response → NaN → serialises to
+    // null → crashed the renderer's .toFixed(). Default to 0.5.
+    weightedConfSum += (Number.isFinite(line.lineConf) ? line.lineConf : 0.5) * line.qty;
     totalQtySum += line.qty;
     const isHighValue = HIGH_VALUE_COMP_TYPES.has(line.componentType ?? '');
     const hasPN = String(line.partNumber ?? '').trim().length > 0;
@@ -1790,6 +1792,7 @@ router.post('/analyze-image-stream', upload.fields([
       orderQty: req.body?.orderQty ?? '100',
       nre: req.body?.automotiveNRE ?? req.body?.includeAutomotiveNRE ?? '',
       deep: deepAnalysis,
+      v: 2, // payload-shape version — bump when the response contract changes
     })),
     ...(bomFileForKey ? [bomFileForKey.buffer] : []),
   ]);
@@ -1910,6 +1913,11 @@ router.post('/analyze-image-stream', upload.fields([
     res.end();
     return;
   }
+  // Same structural guarantee as the non-streaming route — the streaming path
+  // is what the browser actually uses, and a sparse AI response (missing
+  // technologyType/qualityGrade strings, or numerics) crashed the renderer
+  // with "Cannot read properties of undefined (reading 'replace')".
+  normalizePCBAnalysis(analysis as Record<string, unknown>);
   emit('stage3', { partName: (analysis as Record<string, unknown>).partName, confidence: (analysis as Record<string, unknown>).confidenceLevel });
 
   emit('progress', { stage: 4, label: 'Stage 4 — Cost breakdown & country comparison', pct: 85 });

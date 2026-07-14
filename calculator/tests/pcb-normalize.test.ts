@@ -39,6 +39,17 @@ describe('normalizePCBAnalysis', () => {
     expect(line.unitPriceGBP).toBe(0);
   });
 
+  it('coerces missing lineConf so BOM-confidence math never yields NaN/null', () => {
+    // A BOM line with no lineConf used to make weightedConfSum NaN → the
+    // confidence band serialised weightedBOMConfidence as null → renderer
+    // crashed on .toFixed(). Every line must get a finite lineConf.
+    const a: Record<string, unknown> = { bom: [{ refDes: 'U1', qty: 1, unitPriceGBP: 2 }] };
+    normalizePCBAnalysis(a);
+    const line = (a.bom as Array<Record<string, number>>)[0];
+    expect(Number.isFinite(line.lineConf)).toBe(true);
+    expect(line.lineConf).toBe(0.5);
+  });
+
   it('preserves valid values untouched', () => {
     const a: Record<string, unknown> = {
       partName: 'ECU Main Board',

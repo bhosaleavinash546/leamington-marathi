@@ -20,6 +20,11 @@ export function normalizePCBAnalysis(a: Record<string, unknown>): void {
     line.qty = num(line.qty, 1);
     line.unitPriceGBP = num(line.unitPriceGBP, 0);
     line.moq = num(line.moq, 1);
+    line.lineConf = num(line.lineConf, 0.5);   // undefined here → NaN → null downstream (crashed .toFixed)
+    line.ocrExtracted = typeof line.ocrExtracted === 'boolean' ? line.ocrExtracted : false;
+    line.automotive = typeof line.automotive === 'boolean' ? line.automotive : false;
+    line.highCost = typeof line.highCost === 'boolean' ? line.highCost : false;
+    line.partNumber = str(line.partNumber, '');
     line.refDes = str(line.refDes, '—');
     line.componentType = str(line.componentType, 'other');
     line.description = str(line.description, '');

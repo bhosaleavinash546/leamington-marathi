@@ -95,7 +95,7 @@ Return JSON only (no prose): {"primary":"casting","conf":0.87,"alt":[{"type":"ma
 router.post('/analyze', upload.fields([
   { name: 'cadFile', maxCount: 1 },
   { name: 'drawingPdf', maxCount: 1 },
-]), async (req, res): Promise<void> => {
+]), asyncRoute(async (req, res): Promise<void> => {
   const filesMap = req.files as Record<string, Express.Multer.File[]> | undefined;
   const cadUpload = filesMap?.cadFile?.[0];
   if (!cadUpload) { res.status(400).json({ error: 'No file uploaded' }); return; }
@@ -302,7 +302,13 @@ router.post('/analyze', upload.fields([
       const s1Raw = s1Msg.content[0]?.type === 'text' ? s1Msg.content[0].text.trim() : '';
       const parsed = JSON.parse(extractJson(s1Raw)) as typeof stage1Selection;
       if (parsed && typeof parsed.primary === 'string') {
-        stage1Selection = parsed;
+        // Coerce the shape — the model can omit conf/alt, and buildPrompt
+        // used to crash on `alt.map` (hung request, unhandled rejection).
+        stage1Selection = {
+          primary: parsed.primary,
+          conf: Number.isFinite(Number(parsed.conf)) ? Number(parsed.conf) : 0.5,
+          alt: Array.isArray(parsed.alt) ? parsed.alt : [],
+        };
         selectedCommodity = parsed.primary;
         console.log(`[CAD] Stage 1 result: ${selectedCommodity} (conf=${parsed.conf})`);
       }
@@ -392,7 +398,7 @@ router.post('/analyze', upload.fields([
   };
   cadCache.set(cacheKey, { ...payload, fromCache: true });
   res.json(payload);
-});
+}));
 
 // ─── JSON extraction helper ──────────────────────────────────────────────────
 // Handles: plain JSON, ```json\n{...}\n```, ```{...}```, "here is json: {...}"
@@ -577,7 +583,7 @@ ${pre.summary}`;
 
   // Stage 1 selection context for the specialist
   const stage1Context = stage1
-    ? `\n=== STAGE 1 PRE-SELECTION (Haiku fast classifier) ===\nPrimary: ${stage1.primary} (conf=${stage1.conf})\nAlternatives: ${stage1.alt.map(a => `${a.type}(${a.conf})`).join(', ')}\nYou are the specialist for: ${selectedCommodity} — focus your analysis accordingly.\n`
+    ? `\n=== STAGE 1 PRE-SELECTION (Haiku fast classifier) ===\nPrimary: ${stage1.primary} (conf=${stage1.conf})\nAlternatives: ${(stage1.alt ?? []).map(a => `${a.type}(${a.conf})`).join(', ')}\nYou are the specialist for: ${selectedCommodity} — focus your analysis accordingly.\n`
     : '';
 
   // Commodity-specific cost input rules
@@ -946,6 +952,19 @@ function safeLogName(name: string): string {
   return name.replace(/[^\x20-\x7e]/g, '_').slice(0, 120);
 }
 
+/** Express 4 does not catch async handler errors — without this wrapper an
+ *  async throw becomes an unhandled rejection and the request hangs forever.
+ *  Any uncaught error now returns a structured 500 immediately. */
+function asyncRoute<T extends (req: Parameters<Parameters<typeof router.post>[1]>[0], res: Parameters<Parameters<typeof router.post>[1]>[1]) => Promise<void>>(fn: T) {
+  return (req: Parameters<T>[0], res: Parameters<T>[1]): void => {
+    fn(req, res).catch((err: unknown) => {
+      const msg = err instanceof Error ? err.message : String(err);
+      console.error('[CAD] Route error:', err instanceof Error ? err.stack ?? msg : msg);
+      if (!res.headersSent) res.status(500).json({ error: `CAD analysis failed: ${msg.slice(0, 300)}` });
+    });
+  };
+}
+
 /** Turn an Anthropic SDK error into a helpful JSON response instead of a crash. */
 function respondAIError(res: Parameters<Parameters<typeof router.post>[1]>[1], err: unknown): void {
   const e = err as { status?: number; message?: string };
@@ -1074,7 +1093,7 @@ router.post('/parse-stl', upload.single('cadFile'), async (req, res): Promise<vo
 });
 
 // POST /api/cad/reanalyze — re-run AI analysis using pre-computed (cached) OCCT geometry; no STEP re-upload needed
-router.post('/reanalyze', async (req, res): Promise<void> => {
+router.post('/reanalyze', asyncRoute(async (req, res): Promise<void> => {
   const geo = req.body.occtGeometry as OCCTGeometry;
   const filename = (req.body.filename as string) || 'cached_part.step';
 
@@ -1136,7 +1155,13 @@ router.post('/reanalyze', async (req, res): Promise<void> => {
       const s1Raw = s1Msg.content[0]?.type === 'text' ? s1Msg.content[0].text.trim() : '';
       const parsed = JSON.parse(extractJson(s1Raw)) as typeof stage1Selection;
       if (parsed && typeof parsed.primary === 'string') {
-        stage1Selection = parsed;
+        // Coerce the shape — the model can omit conf/alt, and buildPrompt
+        // used to crash on `alt.map` (hung request, unhandled rejection).
+        stage1Selection = {
+          primary: parsed.primary,
+          conf: Number.isFinite(Number(parsed.conf)) ? Number(parsed.conf) : 0.5,
+          alt: Array.isArray(parsed.alt) ? parsed.alt : [],
+        };
         selectedCommodity = parsed.primary;
         console.log(`[CAD/reanalyze] Stage 1 result: ${selectedCommodity} (conf=${parsed.conf})`);
       }
@@ -1204,6 +1229,6 @@ router.post('/reanalyze', async (req, res): Promise<void> => {
   };
   cadCache.set(cacheKey, { ...payload, fromCache: true });
   res.json(payload);
-});
+}));
 
 export default router;
