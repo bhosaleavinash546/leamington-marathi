@@ -7060,6 +7060,16 @@ async function analyzePCBImages(): Promise<void> {
     }
     if (streamError) throw new Error(streamError);
     if (!data || !data.analysis) throw new Error('Analysis result empty — the server closed the stream before finishing (possible timeout or crash during Stage 3). Try again, reduce to 1–2 images, or attach a BOM file.');
+    // Defensive: the renderer assumes these sections exist. New servers
+    // guarantee them; this guard also covers older/cached payloads.
+    const an = data.analysis as unknown as Record<string, unknown>;
+    if (!Array.isArray(an.bom)) an.bom = [];
+    if (!an.assembly || typeof an.assembly !== 'object') {
+      const qty = (an.bom as Array<{ quantity?: number }>).reduce((s, l) => s + (Number(l.quantity) || 0), 0);
+      an.assembly = { smtPlacements: qty, throughHoleJoints: 0, manualJoints: 0, bgaCount: 0, complexity: 'Medium', reflowSides: 1, aoiRequired: true, ictTimeSec: 0 };
+    }
+    if (!an.boardSpec || typeof an.boardSpec !== 'object') an.boardSpec = {};
+    if (!an.costEstimates || typeof an.costEstimates !== 'object') an.costEstimates = {};
     pcbImageResult = data.analysis;
     // Attach country data to analysis object for rendering
     if (pcbImageResult) {

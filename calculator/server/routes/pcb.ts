@@ -938,7 +938,9 @@ router.post('/analyze-image', upload.fields([
   const deepAnalysis = isDeep(req);
   const cacheKey = buildCacheKey([
     ...imageFiles.map(f => f.buffer),
-    Buffer.from(JSON.stringify({ country: req.body?.country, orderQty: req.body?.orderQty, deep: deepAnalysis })),
+    // v2: payload-shape version — bumped when the response contract changes so
+    // stale cached payloads (e.g. pre-`assembly`-normalization) never replay.
+    Buffer.from(JSON.stringify({ country: req.body?.country, orderQty: req.body?.orderQty, deep: deepAnalysis, v: 2 })),
   ]);
   const cached = getCached(cacheKey);
   if (cached) {
@@ -1312,6 +1314,35 @@ ${userPromptText}`;
     console.log(`[PCB] Stage 4: qty=${orderQty} volMult=${volumeMultiplier} BOM=${correctedBOMTotal.toFixed(2)} band=${confidenceBand.overallLabel} sanity=${sanityWarnings.length} warnings${domain === 'automotive_adas' ? ` asil=${asilClassification.asilLevel} forced=${automotiveGradeEnforcedCount}` : ''}`);
   } catch (err) {
     console.warn('[PCB] Stage 4 failed:', (err as Error).message);
+  }
+
+  // ── Structural guarantee for the client ─────────────────────────────────
+  // The model occasionally omits a whole section (e.g. `assembly`) even after
+  // JSON repair; the renderer assumes these exist and crashed with
+  // "undefined is not an object (evaluating 'a.smtPlacements')". Fill any
+  // missing section with conservative defaults derived from the BOM.
+  {
+    const a = analysis as Record<string, unknown>;
+    const bomArr = Array.isArray(a.bom) ? (a.bom as Array<Record<string, unknown>>) : [];
+    a.bom = bomArr;
+    const totalQty = bomArr.reduce((s, l) => s + (Number(l.quantity) || 0), 0);
+    const asm = (a.assembly && typeof a.assembly === 'object') ? a.assembly as Record<string, unknown> : {};
+    a.assembly = {
+      smtPlacements: Number(asm.smtPlacements) || totalQty,
+      throughHoleJoints: Number(asm.throughHoleJoints) || 0,
+      manualJoints: Number(asm.manualJoints) || 0,
+      bgaCount: Number(asm.bgaCount) || 0,
+      complexity: typeof asm.complexity === 'string' ? asm.complexity : 'Medium',
+      reflowSides: Number(asm.reflowSides) || 1,
+      aoiRequired: typeof asm.aoiRequired === 'boolean' ? asm.aoiRequired : true,
+      ictTimeSec: Number(asm.ictTimeSec) || 0,
+      ...asm,
+      // re-assert the numerics AFTER the spread so NaN/undefined can't leak back
+      ...(Number.isFinite(Number(asm.smtPlacements)) && asm.smtPlacements != null ? {} : { smtPlacements: totalQty }),
+    };
+    if (!a.boardSpec || typeof a.boardSpec !== 'object') a.boardSpec = {};
+    if (!a.costEstimates || typeof a.costEstimates !== 'object') a.costEstimates = {};
+    if (typeof a.partName !== 'string' || !a.partName) a.partName = 'PCB Assembly';
   }
 
   const finalPayload = {
