@@ -512,7 +512,7 @@ function buildPrompt(
 ): string {
   const validMaterials = 'mat-al6061, mat-al5052, mat-dc01, mat-hss, mat-stainless-316, mat-brass-crz, mat-pp, mat-pa6, mat-pc, mat-lm25, mat-gjl350, mat-az91d, mat-ss304c, mat-bronze-c905';
   const validCommodities = 'machining, sheet_metal, sheet_metal_fab, injection_moulding, casting, forging, cast_and_machine, blow_moulding, thermoforming, rotational_moulding, rubber, composites, wiring_harness, extrusion, pcb_fab, pcba, biw_assembly, painting, assembly';
-  const validMachines = 'mach-vmc3, mach-lathe-cnc, mach-drill, mach-5ax, mach-haas-vf2, mach-dmg-dmu50, mach-haas-umc500, mach-mazak-qt200';
+  const validMachines = 'mach-vmc3, mach-lathe-cnc, mach-drill, mach-vmc5, mach-grind, mach-haas-vf2, mach-dmg-dmu50, mach-haas-umc500, mach-mazak-qt200';
 
   let geometrySection: string;
 
@@ -754,7 +754,7 @@ function buildCommodityRules(
   estimatedCycleTimeHr: ${cncHrs !== null ? cncHrs.toFixed(3) : 'sum of all operation cycle times'}
   estimatedSetupTimeHr: ${setupCount !== null ? ((setupCount * 45) / 60).toFixed(3) : '0.75 per setup, estimate from geometry complexity'}
   Operations: list each distinct setup as a separate operation (roughing, semi-finish, finish, drilling, threading)
-  machineId: choose from mach-vmc3 (3ax), mach-5ax (5ax), mach-lathe-cnc, mach-drill, mach-haas-vf2`;
+  machineId: choose from mach-vmc3 (3-axis), mach-vmc5 (5-axis), mach-lathe-cnc, mach-drill, mach-grind, mach-haas-vf2`;
 
     case 'casting':
     case 'cast_and_machine': {

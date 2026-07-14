@@ -9656,6 +9656,29 @@ async function analyzeCADInline(file: File, commodity: CommodityType): Promise<v
   }
 }
 
+/** Map an AI-suggested machineId to a REAL rate-library machine. The model
+ *  occasionally invents ids ("mach-5ax", "5-axis CNC") — an unknown id left
+ *  the machine select empty and Calculate failed with "Machine '' not found
+ *  in rate library". Resolve by keywords from the id + operation name. */
+function resolveMachineIdForOp(rawId: string | undefined, opName: string): string {
+  const ids = library.machines.map(m => m.id);
+  if (rawId && ids.includes(rawId)) return rawId;
+  const hay = `${rawId ?? ''} ${opName}`.toLowerCase();
+  const pick = (...frags: string[]) => ids.find(id => frags.some(f => id.includes(f)));
+  if (/5[\s-]?ax|5axis|umc|dmu/.test(hay)) return pick('vmc5', 'umc', 'dmu') ?? pick('vmc') ?? ids[0] ?? '';
+  if (/lathe|turn/.test(hay)) return pick('lathe', 'qt200') ?? pick('vmc') ?? ids[0] ?? '';
+  if (/drill|bore|ream|tap/.test(hay)) return pick('drill') ?? pick('vmc') ?? ids[0] ?? '';
+  if (/grind|hone|lap/.test(hay)) return pick('grind') ?? pick('vmc') ?? ids[0] ?? '';
+  return pick('vmc3') ?? pick('vmc') ?? ids[0] ?? '';
+}
+
+/** Same guarantee for labourId — unknown ids fall back to the skilled rate. */
+function resolveLabourId(rawId: string | undefined): string {
+  const ids = library.labour.map(l => l.id);
+  if (rawId && ids.includes(rawId)) return rawId;
+  return ids.find(id => id.endsWith('-skilled')) ?? ids[0] ?? '';
+}
+
 function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): void {
   if (!cadAnalysisResult) return;
   _pendingCostingSource = 'cad'; // tag the next costing record for the accuracy harness
@@ -9709,8 +9732,8 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
             addMachOp({
               name: op.name,
               type: 'milling_3ax',
-              machineId: op.machineId,
-              labourId: op.labourId || 'lab-uk-skilled',
+              machineId: resolveMachineIdForOp(op.machineId, op.name),
+              labourId: resolveLabourId(op.labourId),
               cycleTimeHr: op.cycleTimeHr * scaleFactor,
               partsPerCycle: 1,
               oee: op.oee,
@@ -9724,8 +9747,8 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
             addMachOp({
               name: drillPlan.name,
               type: 'drilling',
-              machineId: firstAI?.machineId,
-              labourId: firstAI?.labourId || 'lab-uk-skilled',
+              machineId: resolveMachineIdForOp(firstAI?.machineId, drillPlan.name),
+              labourId: resolveLabourId(firstAI?.labourId),
               cycleTimeHr: drillPlan.cycleTimeHr,
               partsPerCycle: 1,
               oee: firstAI?.oee ?? 0.85,
