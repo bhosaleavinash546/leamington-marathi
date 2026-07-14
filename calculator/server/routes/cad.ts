@@ -8,6 +8,7 @@ import { parseSTL } from '../services/stl-parser.js';
 import type { STLGeometry } from '../services/stl-parser.js';
 import { createAnalysisCache } from '../utils/analysis-cache.js';
 import { runCADSanityChecks } from '../utils/cad-sanity.js';
+import { CAD_ANALYSIS_SCHEMA, normalizeFieldConfidences } from '../utils/cad-schema.js';
 
 const router = Router();
 
@@ -90,10 +91,17 @@ Return JSON only (no prose): {"primary":"casting","conf":0.87,"alt":[{"type":"ma
 }
 
 // POST /api/cad/analyze
-router.post('/analyze', upload.single('cadFile'), async (req, res): Promise<void> => {
-  if (!req.file) { res.status(400).json({ error: 'No file uploaded' }); return; }
-
-  const { originalname, size, buffer } = req.file;
+router.post('/analyze', upload.fields([
+  { name: 'cadFile', maxCount: 1 },
+  { name: 'drawingPdf', maxCount: 1 },
+]), async (req, res): Promise<void> => {
+  const filesMap = req.files as Record<string, Express.Multer.File[]> | undefined;
+  const cadUpload = filesMap?.cadFile?.[0];
+  if (!cadUpload) { res.status(400).json({ error: 'No file uploaded' }); return; }
+  // Optional 2D engineering drawing — carries tolerances, GD&T, surface
+  // finishes and material callouts that the STEP geometry cannot express.
+  const drawingUpload = filesMap?.drawingPdf?.[0] ?? null;
+  const { originalname, size, buffer } = cadUpload;
   const ext = originalname.toLowerCase().split('.').pop() ?? '';
   if (!['stp', 'step', 'igs', 'iges', 'stl'].includes(ext)) {
     res.status(400).json({ error: 'Unsupported format. Use STEP (.stp/.step), IGES (.igs/.iges), or STL (.stl)' });
@@ -256,9 +264,18 @@ router.post('/analyze', upload.single('cadFile'), async (req, res): Promise<void
   const partPhotoMime   = (typeof req.body?.partPhotoMime === 'string' ? req.body.partPhotoMime : 'image/jpeg') as 'image/jpeg' | 'image/png' | 'image/gif' | 'image/webp';
 
   const deepAnalysis = isDeepReq(req);
+  // Client-rendered canonical views (STL only) — vision input of the shape itself.
+  let renderViews: string[] = [];
+  try {
+    const rv = typeof req.body?.renderViews === 'string' ? JSON.parse(req.body.renderViews) as unknown : null;
+    if (Array.isArray(rv)) renderViews = rv.filter((x): x is string => typeof x === 'string' && x.length > 0 && x.length < 800_000).slice(0, 4);
+  } catch { /* views are an enhancement — ignore malformed input */ }
+
   const cacheKey = cadCache.buildKey([
     buffer,
     Buffer.from(partPhotoBase64),
+    ...(drawingUpload ? [drawingUpload.buffer] : []),
+    ...renderViews.map(v => Buffer.from(v)),
     Buffer.from(JSON.stringify({ ...userOverrides, deep: deepAnalysis })),
   ]);
   const cached = cadCache.get(cacheKey);
@@ -297,45 +314,44 @@ router.post('/analyze', upload.single('cadFile'), async (req, res): Promise<void
   const systemPrompt = SPECIALIST_SYSTEM_PROMPTS[selectedCommodity] ?? DEFAULT_SYSTEM_PROMPT;
   const userPrompt = buildPrompt(geo, preprocessed, originalname, selectedCommodity, stage1Selection, userOverrides);
 
+  // Structured outputs guarantee schema-valid JSON — no extraction, no repair
+  // retries. The specialist system prompt is static per commodity, so it is
+  // cache_control'd: repeat analyses read it at ~10% of input price.
+  const userContent: Array<Record<string, unknown>> = [{ type: 'text', text: userPrompt }];
+  if (partPhotoBase64) {
+    userContent.push({ type: 'image', source: { type: 'base64', media_type: partPhotoMime, data: partPhotoBase64 } });
+  }
+  if (renderViews.length) {
+    userContent.push({ type: 'text', text: `${renderViews.length} rendered views of the CAD geometry follow (isometric, front, top, right). Use them to identify features — ribs, bosses, holes, undercuts, thin walls — and to sanity-check the process recommendation.` });
+    for (const v of renderViews) {
+      userContent.push({ type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: v } });
+    }
+    console.log(`[CAD] ${renderViews.length} rendered view(s) attached`);
+  }
+  if (drawingUpload) {
+    userContent.push(
+      { type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: drawingUpload.buffer.toString('base64') } },
+      { type: 'text', text: 'An engineering drawing PDF is attached. Extract tolerances, GD&T callouts, surface finishes, thread specifications and material/heat-treat notes from it, and factor them into the process recommendations, DFM issues and cycle-time estimates (tight tolerances and fine finishes add operations such as grinding, honing or CMM inspection).' },
+    );
+    console.log(`[CAD] Engineering drawing attached: ${drawingUpload.originalname} (${(drawingUpload.size / 1024).toFixed(0)} KB)`);
+  }
+
   let analysis: unknown;
-  let lastRaw = '';
-
-  const buildUserContent = (text: string, withPhoto: boolean) => {
-    if (!withPhoto || !partPhotoBase64) return text;
-    return [
-      { type: 'text' as const, text },
-      { type: 'image' as const, source: { type: 'base64' as const, media_type: partPhotoMime, data: partPhotoBase64 } },
-    ];
-  };
-
-  for (let attempt = 1; attempt <= 2; attempt++) {
+  {
     const message = await anthropic.messages.create({
       model: cadModel(deepAnalysis),
       max_tokens: 8192,
-      system: systemPrompt,
-      messages: attempt === 1
-        ? [{ role: 'user', content: buildUserContent(userPrompt, true) }]
-        : [
-            { role: 'user', content: buildUserContent(userPrompt, true) },
-            { role: 'assistant', content: lastRaw },
-            { role: 'user', content: 'The JSON above is malformed or incomplete. Return ONLY the corrected, complete JSON object starting with { and ending with }. No markdown, no prose.' },
-          ],
-    });
+      system: [{ type: 'text', text: systemPrompt, cache_control: { type: 'ephemeral' } }],
+      output_config: {
+        format: { type: 'json_schema', schema: CAD_ANALYSIS_SCHEMA },
+        effort: deepAnalysis ? 'high' : 'medium',
+      },
+      messages: [{ role: 'user', content: userContent }],
+    } as Parameters<typeof anthropic.messages.create>[0]);
 
-    const raw = message.content[0]?.type === 'text' ? message.content[0].text : '';
-    lastRaw = raw;
-    const jsonStr = extractJson(raw);
-
-    try {
-      analysis = JSON.parse(jsonStr);
-      break;
-    } catch {
-      if (attempt === 2) {
-        res.status(500).json({ error: `AI returned unparseable JSON after 2 attempts. Raw: ${raw.slice(0, 400)}` });
-        return;
-      }
-      console.warn('[CAD] JSON parse failed on attempt 1, sending repair request…');
-    }
+    const raw = (message as { content: Array<{ type: string; text?: string }> }).content.find(b => b.type === 'text')?.text ?? '';
+    analysis = JSON.parse(raw); // guaranteed valid by output_config.format
+    normalizeFieldConfidences(analysis);
   }
 
   const measuredVol = stlGeometry?.volume ?? (geo.status === 'success' ? (geo.volumeCm3 ?? null) : null);
@@ -897,7 +913,7 @@ function buildJSONSchema(commodity: string, geo: OCCTGeometry): string {
     ],
 ${primarySub}
 ${alwaysSubs}
-    "fieldConfidences": { "<fieldId>": number },
+    "fieldConfidences": [ {"fieldId": string, "confidence": number} ],
     "dfmIssues": [
       {"severity": "Critical"|"High"|"Medium"|"Low", "area": string, "description": string, "impact": string, "fix": string}
     ],
@@ -1051,44 +1067,27 @@ router.post('/reanalyze', async (req, res): Promise<void> => {
   const systemPrompt = SPECIALIST_SYSTEM_PROMPTS[selectedCommodity] ?? DEFAULT_SYSTEM_PROMPT;
   const userPrompt = buildPrompt(geo, preStub as Parameters<typeof buildPrompt>[1], filename, selectedCommodity, stage1Selection, userOverrides);
 
-  const buildContent = (text: string, withPhoto: boolean) => {
-    if (!withPhoto || !partPhotoBase64) return text;
-    return [
-      { type: 'text' as const, text },
-      { type: 'image' as const, source: { type: 'base64' as const, media_type: partPhotoMime, data: partPhotoBase64 } },
-    ];
-  };
+  const userContent: Array<Record<string, unknown>> = [{ type: 'text', text: userPrompt }];
+  if (partPhotoBase64) {
+    userContent.push({ type: 'image', source: { type: 'base64', media_type: partPhotoMime, data: partPhotoBase64 } });
+  }
 
   let analysis: unknown;
-  let lastRaw = '';
-
-  for (let attempt = 1; attempt <= 2; attempt++) {
+  {
     const message = await anthropic.messages.create({
       model: cadModel(deepAnalysis),
       max_tokens: 8192,
-      system: systemPrompt,
-      messages: attempt === 1
-        ? [{ role: 'user', content: buildContent(userPrompt, true) }]
-        : [
-            { role: 'user', content: buildContent(userPrompt, true) },
-            { role: 'assistant', content: lastRaw },
-            { role: 'user', content: 'The JSON above is malformed or incomplete. Return ONLY the corrected, complete JSON object starting with { and ending with }. No markdown, no prose.' },
-          ],
-    });
+      system: [{ type: 'text', text: systemPrompt, cache_control: { type: 'ephemeral' } }],
+      output_config: {
+        format: { type: 'json_schema', schema: CAD_ANALYSIS_SCHEMA },
+        effort: deepAnalysis ? 'high' : 'medium',
+      },
+      messages: [{ role: 'user', content: userContent }],
+    } as Parameters<typeof anthropic.messages.create>[0]);
 
-    const raw = message.content[0]?.type === 'text' ? message.content[0].text : '';
-    lastRaw = raw;
-
-    try {
-      analysis = JSON.parse(extractJson(raw));
-      break;
-    } catch {
-      if (attempt === 2) {
-        res.status(500).json({ error: `AI returned unparseable JSON after 2 attempts. Raw: ${raw.slice(0, 400)}` });
-        return;
-      }
-      console.warn('[CAD/reanalyze] JSON parse failed on attempt 1, sending repair request…');
-    }
+    const raw = (message as { content: Array<{ type: string; text?: string }> }).content.find(b => b.type === 'text')?.text ?? '';
+    analysis = JSON.parse(raw); // guaranteed valid by output_config.format
+    normalizeFieldConfidences(analysis);
   }
 
   const sanityWarnings = runCADSanityChecks(analysis as Parameters<typeof runCADSanityChecks>[0], geo.volumeCm3 ?? null);

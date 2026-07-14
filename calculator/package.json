@@ -20,7 +20,7 @@
     "test:e2e": "tsx e2e/smoke.ts"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.27.0",
+    "@anthropic-ai/sdk": "^0.111.0",
     "@capacitor/android": "^8.4.1",
     "@capacitor/cli": "^8.4.1",
     "@capacitor/core": "^8.4.1",
@@ -46,6 +46,7 @@
     "nodemailer": "^8.0.11",
     "pptxgenjs": "^4.0.1",
     "puppeteer": "^25.1.0",
+    "three": "^0.185.1",
     "xlsx": "^0.18.5",
     "zod": "^4.4.3"
   },
@@ -58,6 +59,7 @@
     "@types/multer": "^1.4.11",
     "@types/node": "^20.14.0",
     "@types/nodemailer": "^8.0.1",
+    "@types/three": "^0.185.1",
     "concurrently": "^8.2.0",
     "playwright": "^1.60.0",
     "tsx": "^4.11.0",

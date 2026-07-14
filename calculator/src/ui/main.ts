@@ -142,6 +142,7 @@ import { initObservability, breadcrumb } from './observability.js';
 import { escHtml } from './toast.js';
 import { el, val, num, sel, fmtPct, validSel } from './helpers.js';
 import { CAD_AI_DEMOS } from './data/cad-ai-demos.js';
+import { renderSTLViews } from './cad-views.js';
 import { CAD_COMMODITY_OPTIONS, CAD_MATERIALS_BY_COMMODITY } from './data/cad-options.js';
 import { COMMODITY_DEMO_SNIPPETS } from './data/demo-snippets.js';
 import { PCB_COUNTRY_META, computeClientRiskProfile } from './data/pcb-country-meta.js';
@@ -201,6 +202,7 @@ let cadFromCache = false;
 // from a CAD analysis; consumed (and reset) by pushCostingRecord.
 let _pendingCostingSource: 'cad' | 'manual' = 'manual';
 let cadPartPhotoBase64 = '';
+let cadDrawingFile: File | null = null;
 let cadPartPhotoMime = 'image/jpeg';
 let pcbImageResult: PCBImageAnalysis | null = null;
 let pcbImageLoading = false;
@@ -5424,6 +5426,15 @@ function renderCADAnalysisForm(): string {
         <span id="cad-photo-info" style="font-size:0.72rem;color:var(--text-muted)">No photo selected</span>
         <button class="btn btn-secondary btn-sm" id="cad-photo-clear" style="display:none;padding:1px 8px">✕ Remove</button>
       </div>
+      <div style="margin-top:8px;font-size:0.75rem;font-weight:600;color:var(--text-secondary)">
+        Engineering drawing <span style="font-weight:400;color:var(--text-muted)">(optional PDF — tolerances, GD&amp;T &amp; finishes drive cost more than shape)</span>
+      </div>
+      <div style="margin-top:6px;display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+        <label class="btn btn-secondary btn-sm" for="cad-drawing-input" style="cursor:pointer">📎 Attach Drawing PDF</label>
+        <input type="file" id="cad-drawing-input" accept="application/pdf,.pdf" style="display:none"/>
+        <span id="cad-drawing-info" style="font-size:0.72rem;color:var(--text-muted)">No drawing attached</span>
+        <button class="btn btn-secondary btn-sm" id="cad-drawing-clear" style="display:none;padding:1px 8px">✕ Remove</button>
+      </div>
     </div>
 
     <div class="cad-btn-row" style="margin-top:10px">
@@ -5483,6 +5494,23 @@ function wireCADEvents(): void {
   }
 
   // Part photo
+  const drawingInput = document.getElementById('cad-drawing-input') as HTMLInputElement | null;
+  const drawingInfo  = document.getElementById('cad-drawing-info');
+  const drawingClear = document.getElementById('cad-drawing-clear') as HTMLButtonElement | null;
+  drawingInput?.addEventListener('change', () => {
+    const f = drawingInput.files?.[0] ?? null;
+    if (f && f.size > 30 * 1024 * 1024) { showToast('Drawing PDF is over 30 MB — attach a smaller export.', 'warning'); drawingInput.value = ''; return; }
+    cadDrawingFile = f;
+    if (drawingInfo) drawingInfo.textContent = f ? `📎 ${f.name} (${(f.size / 1024).toFixed(0)} KB)` : 'No drawing attached';
+    if (drawingClear) drawingClear.style.display = f ? '' : 'none';
+  });
+  drawingClear?.addEventListener('click', () => {
+    cadDrawingFile = null;
+    if (drawingInput) drawingInput.value = '';
+    if (drawingInfo) drawingInfo.textContent = 'No drawing attached';
+    if (drawingClear) drawingClear.style.display = 'none';
+  });
+
   const photoInput = document.getElementById('cad-photo-input') as HTMLInputElement | null;
   const photoInfo  = document.getElementById('cad-photo-info');
   const photoClear = document.getElementById('cad-photo-clear') as HTMLButtonElement | null;
@@ -5582,6 +5610,13 @@ async function analyzeCAD(autoCalculate = false): Promise<void> {
     updateProgress(10, 'Uploading file…');
     const formData = new FormData();
     formData.append('cadFile', cadFile);
+    if (cadDrawingFile) formData.append('drawingPdf', cadDrawingFile);
+    // STL: render 4 canonical views client-side so the vision model can SEE
+    // the shape, not just its metrics. Never blocks the analysis on failure.
+    if (/\.stl$/i.test(cadFile.name)) {
+      const views = await renderSTLViews(cadFile);
+      if (views.length) formData.append('renderViews', JSON.stringify(views.map(v => v.split(',')[1])));
+    }
 
     // User overrides
     const commOvr = (document.getElementById('cad-commodity-override') as HTMLSelectElement | null)?.value ?? '';
@@ -15753,6 +15788,7 @@ function loadCADDemo(commodity: string): void {
 }
 
 (window as unknown as Record<string, unknown>).loadCADDemo = loadCADDemo;
+(window as unknown as Record<string, unknown>).__renderSTLViews = renderSTLViews;
 
 // ─── Supplier Quote Modal ─────────────────────────────────────────────────────
 

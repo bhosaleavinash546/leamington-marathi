@@ -21,9 +21,6 @@ const FAMILY_DENSITY: Record<string, number> = {
   plastic: 1.05,
 };
 
-interface GeoLike {
-  volumeCm3?: number | null;
-}
 
 interface AnalysisLike {
   geometry?: {
