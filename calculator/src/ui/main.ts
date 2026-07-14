@@ -7106,6 +7106,12 @@ async function analyzePCBImages(): Promise<void> {
       for (const k of ['aiInsights', 'dfmIssues', 'highCostComponents', 'optimisationSuggestions', 'analysisLimitations']) {
         if (!Array.isArray(an[k])) an[k] = [];
       }
+      // Final net: an empty BOM is a failed analysis, not a result. New servers
+      // never send one (retry + 422), but an old cached payload still could —
+      // surface a clear error instead of rendering a silently-empty BOM table.
+      if ((an.bom as unknown[]).length === 0) {
+        throw new Error('The AI returned no BOM lines for this board. Click Re-analyze to retry (empty results are no longer cached), add close-up photos with readable chip markings, or attach a BOM file.');
+      }
     }
     pcbImageResult = data.analysis;
     // Attach country data to analysis object for rendering

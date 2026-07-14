@@ -910,6 +910,18 @@ INSTRUCTIONS:
 }
 
 // ── JSON repair prompt ─────────────────────────────────────────────────────
+/** True when the analysis carries no usable BOM lines. An empty BOM must be
+ *  treated as a FAILED analysis: rendering it looks like silent success, and
+ *  caching it poisons every re-run of the same photos. */
+function bomIsEmpty(analysis: unknown): boolean {
+  const bom = (analysis as { bom?: unknown } | null)?.bom;
+  return !Array.isArray(bom) || bom.length === 0;
+}
+
+const EMPTY_BOM_RETRY_NOTE = `
+
+CRITICAL: Your previous response contained ZERO BOM lines. That is never correct for a populated PCB photo — enumerate EVERY visible component (ICs, passive groups, connectors, magnetics, crystals) as BOM lines even at low confidence. If the board is truly bare/unpopulated, state that in analysisLimitations but still return the visible connector/board-level lines.`;
+
 function buildRepairPrompt(raw: string): string {
   return `The following text was supposed to be a valid JSON object but it may be malformed, truncated, or wrapped in code fences. Extract and return ONLY the valid JSON object. Fix any syntax errors. Start your response with { and end with }. Do not add any other text.
 
@@ -943,7 +955,7 @@ router.post('/analyze-image', upload.fields([
     ...imageFiles.map(f => f.buffer),
     // v2: payload-shape version — bumped when the response contract changes so
     // stale cached payloads (e.g. pre-`assembly`-normalization) never replay.
-    Buffer.from(JSON.stringify({ country: req.body?.country, orderQty: req.body?.orderQty, deep: deepAnalysis, v: 3 })),
+    Buffer.from(JSON.stringify({ country: req.body?.country, orderQty: req.body?.orderQty, deep: deepAnalysis, v: 4 })),
   ]);
   const cached = getCached(cacheKey);
   if (cached) {
@@ -1099,7 +1111,7 @@ router.post('/analyze-image', upload.fields([
         console.error('[PCB] Repair raw (first 500):', lastRaw.slice(0, 500));
 
         // ── Attempt 3: Minimal fallback prompt ───────────────────────────
-        const fallbackPrompt = `A PCB image was analysed and the result should have been JSON. The analysis failed. Return a minimal valid JSON object with these exact fields filled with reasonable defaults, and set confidenceLevel to "Low" and include an analysisLimitation explaining the parse failure.
+        const fallbackPrompt = `A PCB image was analysed and the result should have been JSON. The analysis failed. Return a valid JSON object with these exact fields, set confidenceLevel to "Low", and include an analysisLimitation explaining the parse failure. You MUST still enumerate every visible component as bom lines — an empty bom array is not acceptable for a populated board.
 
 ${userPromptText}`;
 
@@ -1132,6 +1144,36 @@ ${userPromptText}`;
     const msg = err instanceof Error ? err.message : String(err);
     console.error('[PCB] Anthropic API error:', msg);
     res.status(502).json({ error: `AI service error: ${msg}` });
+    return;
+  }
+
+  // Empty BOM = failed analysis, not a result (see streaming path). Retry
+  // once with an emphatic instruction; if still empty, 422 without caching.
+  normalizePCBAnalysis(analysis as Record<string, unknown>);
+  if (bomIsEmpty(analysis)) {
+    console.warn('[PCB] Stage 3 returned an EMPTY BOM — retrying once with emphasis');
+    try {
+      const retry = await anthropic.messages.create({
+        model: extractionModel(deepAnalysis), max_tokens: 16384, system: specialistSystem,
+        messages: [{ role: 'user', content: [
+          ...buildImageContentBlocks(imageFiles, imageLabels, multiImage),
+          { type: 'text', text: userPromptText + EMPTY_BOM_RETRY_NOTE },
+        ]}],
+      });
+      if (retry.stop_reason === 'max_tokens') console.warn('[PCB] Empty-BOM retry was TRUNCATED at max_tokens');
+      const retryRaw = retry.content[0]?.type === 'text' ? retry.content[0].text : '';
+      const retryAnalysis = JSON.parse(extractJSON(retryRaw)) as Record<string, unknown>;
+      normalizePCBAnalysis(retryAnalysis);
+      if (!bomIsEmpty(retryAnalysis)) analysis = retryAnalysis;
+    } catch (retryErr) {
+      console.warn('[PCB] Empty-BOM retry failed:', (retryErr as Error).message);
+    }
+  }
+  if (bomIsEmpty(analysis)) {
+    res.status(422).json({
+      error: 'The AI could not identify any components on this board (empty BOM), even after a retry. ' +
+             'Add close-up photos with readable IC markings, or attach a BOM file. This result was NOT cached — analyzing again will run fresh.',
+    });
     return;
   }
 
@@ -1354,7 +1396,8 @@ ${userPromptText}`;
     programPricing,
     fromCache: false,
   };
-  setCached(cacheKey, { ...finalPayload, fromCache: true });
+  // never cache a hollow result — it would replay deterministically forever
+  if (!bomIsEmpty(analysis)) setCached(cacheKey, { ...finalPayload, fromCache: true });
   res.json(finalPayload);
 });
 
@@ -1792,7 +1835,7 @@ router.post('/analyze-image-stream', upload.fields([
       orderQty: req.body?.orderQty ?? '100',
       nre: req.body?.automotiveNRE ?? req.body?.includeAutomotiveNRE ?? '',
       deep: deepAnalysis,
-      v: 2, // payload-shape version — bump when the response contract changes
+      v: 3, // payload-shape version — bump when the response contract changes
     })),
     ...(bomFileForKey ? [bomFileForKey.buffer] : []),
   ]);
@@ -1877,6 +1920,7 @@ router.post('/analyze-image-stream', upload.fields([
         { type: 'text', text: userPromptText2 },
       ]}],
     });
+    if (msg.stop_reason === 'max_tokens') console.warn('[PCB/stream] Stage 3 response TRUNCATED at max_tokens — JSON will likely fail to parse');
     stage3Raw = msg.content[0]?.type === 'text' ? msg.content[0].text : '';
   } catch (err) {
     const raw = (err as Error).message ?? '';
@@ -1918,6 +1962,37 @@ router.post('/analyze-image-stream', upload.fields([
   // technologyType/qualityGrade strings, or numerics) crashed the renderer
   // with "Cannot read properties of undefined (reading 'replace')".
   normalizePCBAnalysis(analysis as Record<string, unknown>);
+
+  // An empty BOM is a FAILED analysis, not a result. Normalizing used to let
+  // it render as silent success and — worse — get cached, so every re-run of
+  // the same photos replayed the empty BOM. Retry once with an emphatic
+  // instruction; if still empty, error out WITHOUT caching.
+  if (bomIsEmpty(analysis)) {
+    console.warn('[PCB/stream] Stage 3 returned an EMPTY BOM — retrying once with emphasis');
+    emit('progress', { stage: 3, label: 'Stage 3 — empty BOM returned, retrying', pct: 65 });
+    try {
+      const retry = await anthropic.messages.create({
+        model: extractionModel(deepAnalysis), max_tokens: 16384, system: specSystem,
+        messages: [{ role: 'user', content: [
+          ...buildImageContentBlocks(imageFiles, imageLabels, multiImage),
+          { type: 'text', text: userPromptText2 + EMPTY_BOM_RETRY_NOTE },
+        ]}],
+      });
+      if (retry.stop_reason === 'max_tokens') console.warn('[PCB/stream] Empty-BOM retry was TRUNCATED at max_tokens');
+      const retryRaw = retry.content[0]?.type === 'text' ? retry.content[0].text : '';
+      const retryAnalysis = JSON.parse(extractJSON(retryRaw)) as Record<string, unknown>;
+      normalizePCBAnalysis(retryAnalysis);
+      if (!bomIsEmpty(retryAnalysis)) analysis = retryAnalysis;
+    } catch (retryErr) {
+      console.warn('[PCB/stream] Empty-BOM retry failed:', (retryErr as Error).message);
+    }
+  }
+  if (bomIsEmpty(analysis)) {
+    emit('error', { message: 'The AI could not identify any components on this board (empty BOM), even after a retry. ' +
+      'Add close-up photos with readable IC markings, or attach a BOM file. This result was NOT cached — Re-analyze will run fresh.' });
+    res.end();
+    return;
+  }
   emit('stage3', { partName: (analysis as Record<string, unknown>).partName, confidence: (analysis as Record<string, unknown>).confidenceLevel });
 
   emit('progress', { stage: 4, label: 'Stage 4 — Cost breakdown & country comparison', pct: 85 });
@@ -2047,7 +2122,7 @@ router.post('/analyze-image-stream', upload.fields([
     programPricing: streamProgramPricing,
   };
   // Store so an identical re-run replays this exact result instead of re-invoking the LLM.
-  setCached(streamCacheKey, streamComplete);
+  if (!bomIsEmpty(analysis)) setCached(streamCacheKey, streamComplete);
   emit('complete', streamComplete);
   res.end();
 });
