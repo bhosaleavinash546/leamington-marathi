@@ -2985,6 +2985,7 @@ async function sendAgentInterpretation(): Promise<void> {
 function _showAgentChatPanel(): void {
   const area = el('commodity-form-area');
   if (!area.querySelector('#agent-chat-wrap')) {
+    disposeAllCADViewers(); // innerHTML swap destroys any mounted viewer's DOM
     area.innerHTML = renderAgentForm();
     _wireAgentInputEvents();
   }
@@ -5454,12 +5455,19 @@ function renderCADAnalysisForm(): string {
 // ─── Interactive 3D CAD viewer mounts ─────────────────────────────────────────
 // Two mounts share src/ui/cad-viewer.ts: the standalone CAD-to-Cost form and the
 // per-commodity inline uploader. Snapshots from the standalone viewer feed the
-// part-photo slot, so a chosen camera angle rides into analysis + reports.
+// part-photo slot, so a chosen camera angle rides into analysis + reports;
+// measurements flow into the CAD results panel as verified dimensions.
 let cadViewer: import('./cad-viewer.js').CADViewerHandle | null = null;
 let cadInlineViewer: import('./cad-viewer.js').CADViewerHandle | null = null;
+let cadViewerMeasurements: import('./cad-viewer.js').MeasurementRecord[] = [];
+// Serialize mounts per host — two rapid file drops must not race each other
+// (the loser would leak an undisposed renderer + rAF loop).
+const cadMountChains = new Map<string, Promise<void>>();
 
 function cadViewerHeaders(): Record<string, string> {
-  const apiKey = sessionStorage.getItem('cad-api-key') ?? '';
+  // Read LIVE: the key field may be filled after the viewer mounts.
+  const field = (document.getElementById('cad-api-key') as HTMLInputElement | null)?.value?.trim();
+  const apiKey = field || sessionStorage.getItem('cad-api-key') || '';
   return apiKey ? { 'x-api-key': apiKey } : {};
 }
 
@@ -5473,32 +5481,55 @@ function attachCADSnapshotAsPhoto(dataUrl: string): void {
   if (photoClear) photoClear.style.display = '';
 }
 
-async function mountCADViewer(hostId: string, file: File, compact: boolean): Promise<void> {
+function mountCADViewer(hostId: string, file: File, compact: boolean): Promise<void> {
+  const chained = (cadMountChains.get(hostId) ?? Promise.resolve()).then(() => _mountCADViewerNow(hostId, file, compact));
+  cadMountChains.set(hostId, chained.catch(() => { /* keep the chain alive after failures */ }));
+  return chained;
+}
+
+async function _mountCADViewerNow(hostId: string, file: File, compact: boolean): Promise<void> {
   const host = document.getElementById(hostId);
   if (!host) return;
+  let handle: import('./cad-viewer.js').CADViewerHandle | null = null;
   try {
     const { createCADViewer } = await import('./cad-viewer.js');
     const existing = hostId === 'cad-viewer-host' ? cadViewer : cadInlineViewer;
     existing?.dispose();
     host.style.display = '';
-    const handle = await createCADViewer(host, {
+    handle = await createCADViewer(host, {
       compact,
-      headers: cadViewerHeaders(),
+      headers: cadViewerHeaders,               // resolved at fetch time, not mount time
       onSnapshot: hostId === 'cad-viewer-host' ? attachCADSnapshotAsPhoto : undefined,
+      onMeasurementsChange: hostId === 'cad-viewer-host'
+        ? (m) => { cadViewerMeasurements = m; }
+        : undefined,
     });
     if (hostId === 'cad-viewer-host') cadViewer = handle; else cadInlineViewer = handle;
     await handle.loadFile(file);
   } catch (err) {
     console.warn('[CAD viewer] mount failed:', err instanceof Error ? err.message : String(err));
-    host.style.display = 'none'; // viewer is an enhancement — analysis flow continues without it
+    // If the viewer itself mounted, keep it visible — its status bar explains
+    // the load error far better than silently hiding the whole thing.
+    if (!handle) host.style.display = 'none';
   }
 }
 
 function unmountCADViewer(): void {
   cadViewer?.dispose();
   cadViewer = null;
+  cadViewerMeasurements = [];
   const host = document.getElementById('cad-viewer-host');
   if (host) { host.innerHTML = ''; host.style.display = 'none'; }
+}
+
+/** Dispose EVERY live viewer — must run before any innerHTML wipe of the form
+ *  area, otherwise orphaned render loops keep burning GPU on detached canvases. */
+function disposeAllCADViewers(): void {
+  cadViewer?.dispose();
+  cadViewer = null;
+  cadInlineViewer?.dispose();
+  cadInlineViewer = null;
+  cadViewerMeasurements = [];
 }
 
 function wireCADEvents(): void {
@@ -5609,6 +5640,10 @@ function wireCADEvents(): void {
 
 function setCADFile(f: File): void {
   const ext = f.name.toLowerCase().split('.').pop() ?? '';
+  if (['x_t', 'x_b', 'xmt_txt', 'jt', 'prt', 'sldprt', 'catpart'].includes(ext)) {
+    alert(`.${ext} is a proprietary CAD format that requires a licensed kernel (Parasolid/JT/native CAD).\n\nExport the part as STEP (.step/.stp) from your CAD tool — every major package supports it — and upload that instead.`);
+    return;
+  }
   if (!['stp', 'step', 'igs', 'iges', 'stl'].includes(ext)) {
     alert('Unsupported file format. Please use STEP (.stp/.step), IGES (.igs/.iges), or STL (.stl).');
     return;
@@ -5854,7 +5889,17 @@ function renderCADResults(r: CADAnalysisResult, autoCalculate = false, annualVol
   // Build OCCT geometry panel HTML
   const occtPanel = buildOCCTPanel(cadOCCTGeometry, cadGeometrySource);
 
-  panel.innerHTML = `
+  // User-verified measurements taken in the 3D viewer — evidence, not estimates,
+  // so they ride into the report alongside the AI/geometry data.
+  const viewerMeasuresPanel = cadViewerMeasurements.length ? `
+    <div class="cad-section" style="margin-top:10px">
+      <div class="cad-section-title" style="font-size:0.78rem;font-weight:700">📐 Viewer Measurements <span style="font-weight:400;color:var(--text-muted)">(user-verified in 3D)</span></div>
+      <ul style="margin:6px 0 0;padding-left:18px;font-size:0.78rem;line-height:1.7;font-variant-numeric:tabular-nums">
+        ${cadViewerMeasurements.map(m => `<li>${escHtml(m.label)}</li>`).join('')}
+      </ul>
+    </div>` : '';
+
+  panel.innerHTML = `${viewerMeasuresPanel}
     <!-- Header summary -->
     <div style="display:flex;align-items:center;gap:16px;padding:12px 0;border-bottom:1px solid var(--border);margin-bottom:12px">
       <div style="text-align:center">
@@ -10050,6 +10095,7 @@ function switchCommodity(type: CommodityType): void {
   if (countryBar) countryBar.style.display = (type as string) === 'ai_agent' ? 'none' : '';
 
   const area = el('commodity-form-area');
+  disposeAllCADViewers(); // the innerHTML swap below destroys any mounted viewer's DOM
   machOpCount = 0; coatCount = 0; joinCount = 0; stationCount = 0; bomCount = 0; camMachOpCount = 0; asmLineCount = 0;
 
   switch (type) {

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { dist3, circumcircle3 } from '../src/ui/cad-viewer.js';
+import { dist3, circumcircle3, angle3, closestPointOnSegment } from '../src/ui/cad-viewer.js';
 
 describe('cad-viewer measurement math', () => {
   it('dist3 measures euclidean distance', () => {
@@ -51,5 +51,53 @@ describe('cad-viewer measurement math', () => {
     expect(circumcircle3({ x: 0, y: 0, z: 0 }, { x: 1, y: 1, z: 1 }, { x: 2, y: 2, z: 2 })).toBeNull();
     // coincident points are also degenerate
     expect(circumcircle3({ x: 5, y: 5, z: 5 }, { x: 5, y: 5, z: 5 }, { x: 9, y: 1, z: 2 })).toBeNull();
+  });
+
+  it('circumcircle3 epsilon is scale-relative: a tiny meter-unit bore still fits', () => {
+    // Ø10 mm bore in an STL exported in METERS: radius 0.005 units.
+    // The old absolute-epsilon test (d < 1e-12, d being length⁴) rejected this
+    // as collinear; the relative test must recover it exactly.
+    const r = 0.005, c = { x: 0.12, y: 0.34, z: 0.02 };
+    const pt = (deg: number) => ({
+      x: c.x + r * Math.cos((deg * Math.PI) / 180),
+      y: c.y + r * Math.sin((deg * Math.PI) / 180),
+      z: c.z,
+    });
+    const res = circumcircle3(pt(5), pt(100), pt(215));
+    expect(res).not.toBeNull();
+    expect(res!.radius).toBeCloseTo(0.005, 12);
+  });
+
+  it('circumcircle3 rejects near-collinear picks on large-coordinate parts', () => {
+    // three near-collinear points ~3 m from origin (mm coords) — the old code
+    // accepted these and produced an absurd multi-kilometre "circle"
+    const res = circumcircle3(
+      { x: 3000, y: 3000, z: 0 },
+      { x: 3010, y: 3010.0000001, z: 0 },
+      { x: 3020, y: 3020, z: 0 },
+    );
+    expect(res).toBeNull();
+  });
+
+  it('angle3 measures the angle at the middle point', () => {
+    expect(angle3({ x: 1, y: 0, z: 0 }, { x: 0, y: 0, z: 0 }, { x: 0, y: 1, z: 0 })).toBeCloseTo(90, 9);
+    expect(angle3({ x: -5, y: 0, z: 0 }, { x: 0, y: 0, z: 0 }, { x: 5, y: 0, z: 0 })).toBeCloseTo(180, 9);
+    expect(angle3({ x: 1, y: 1, z: 0 }, { x: 0, y: 0, z: 0 }, { x: 1, y: 0, z: 0 })).toBeCloseTo(45, 9);
+    // 3D: chamfer-like 120°
+    const a = { x: Math.cos(Math.PI / 3), y: Math.sin(Math.PI / 3), z: 2 };
+    expect(angle3({ x: 1, y: 0, z: 2 }, { x: 0, y: 0, z: 2 }, a)).toBeCloseTo(60, 9);
+  });
+
+  it('angle3 returns null for zero-length legs', () => {
+    expect(angle3({ x: 0, y: 0, z: 0 }, { x: 0, y: 0, z: 0 }, { x: 1, y: 0, z: 0 })).toBeNull();
+  });
+
+  it('closestPointOnSegment clamps to endpoints and projects onto the middle', () => {
+    const a = { x: 0, y: 0, z: 0 }, b = { x: 10, y: 0, z: 0 };
+    expect(closestPointOnSegment({ x: 4, y: 3, z: 0 }, a, b)).toEqual({ x: 4, y: 0, z: 0 });
+    expect(closestPointOnSegment({ x: -5, y: 2, z: 0 }, a, b)).toEqual({ x: 0, y: 0, z: 0 });
+    expect(closestPointOnSegment({ x: 99, y: 2, z: 0 }, a, b)).toEqual({ x: 10, y: 0, z: 0 });
+    // degenerate segment
+    expect(closestPointOnSegment({ x: 1, y: 1, z: 1 }, a, { x: 0, y: 0, z: 0 })).toEqual(a);
   });
 });

@@ -6,7 +6,10 @@ Output: single-line JSON to stdout.
 """
 import sys, json, os, math, signal, random
 
-# Hard 110-second limit (Unix only)
+# Best-effort 110-second limit (Unix only). NOTE: Python signal handlers only
+# run between bytecode instructions, so this CANNOT interrupt a single long
+# native OCCT call (e.g. a pathological BRepMesh_IncrementalMesh). The
+# authoritative timeout is the Node parent's SIGKILL in geometry-bridge.ts.
 def _timeout(_s, _f): raise TimeoutError("Geometry analysis timed out")
 signal.signal(signal.SIGALRM, _timeout)
 signal.alarm(110)
@@ -676,16 +679,23 @@ def analyze(filepath: str) -> dict:
 
 
 
-def tessellate_to_stl(filepath, out_path):
+def tessellate_to_stl(filepath, out_path, with_meta=False):
     """Mesh a STEP/IGES shape and write a binary STL — feeds the client-side
-    rendered-views pipeline (the browser renders canonical views from the STL
-    so the vision model can see the part). Deflection scales with the bounding
-    diagonal so triangle counts stay sane for any part size."""
+    rendered-views pipeline and the interactive 3D viewer. Deflection scales
+    with the bounding diagonal so triangle counts stay sane for any part size.
+
+    with_meta=True additionally writes a `<out_path>.json` sidecar with
+    per-triangle face ids and exact per-face B-rep data (type, radii, area,
+    body id, hole/boss classification) for the interactive viewer.
+
+    Hard cap: CV_MAX_TRIANGLES (default 2M) aborts pathological tessellations
+    (tiny STEP files full of fillets can otherwise amplify into multi-GB
+    meshes — a zip-bomb-shaped DoS)."""
     try:
         # Pure OCP — the tessellate mode has no cadquery dependency.
         from OCP.BRepMesh import BRepMesh_IncrementalMesh
         from OCP.BRep import BRep_Tool
-        from OCP.TopExp import TopExp_Explorer
+        from OCP.TopExp import TopExp_Explorer, TopExp
         from OCP.TopAbs import TopAbs_FACE
         from OCP.TopoDS import TopoDS
         from OCP.TopLoc import TopLoc_Location
@@ -693,6 +703,7 @@ def tessellate_to_stl(filepath, out_path):
         from OCP.BRepBndLib import BRepBndLib
         from OCP.IFSelect import IFSelect_RetDone
         from OCP.TopAbs import TopAbs_Orientation
+        from OCP.TopTools import TopTools_IndexedMapOfShape
     except ImportError as e:
         return {"status": "error", "error": f"OCP not available: {e}"}
 
@@ -741,67 +752,118 @@ def tessellate_to_stl(filepath, out_path):
         diag = math.sqrt((xmax - xmin) ** 2 + (ymax - ymin) ** 2 + (zmax - zmin) ** 2) or 1.0
         BRepMesh_IncrementalMesh(wrapped, diag / 300.0, False, 0.5, True)
 
-        tris = []
-        tri_face_ids = []   # per-triangle source face id — lets the viewer map a click back to the B-rep
-        faces_meta = []     # per-face exact kernel data: type, radius, area
-        face_id = 0
-        exp = TopExp_Explorer(wrapped, TopAbs_FACE)
-        while exp.More():
-            face = TopoDS.Face_s(exp.Current())
-            loc = TopLoc_Location()
-            tri = BRep_Tool.Triangulation_s(face, loc)
-            if tri is not None:
-                # exact B-rep metadata for this face
-                ftype = "other"
-                radius_mm = None
-                try:
-                    ad = BRepAdaptor_Surface(face)
-                    st = ad.GetType()
-                    ftype = SURF_NAMES.get(st, "freeform")
-                    if st == GeomAbs_SurfaceType.GeomAbs_Cylinder:
-                        radius_mm = ad.Cylinder().Radius()
-                    elif st == GeomAbs_SurfaceType.GeomAbs_Sphere:
-                        radius_mm = ad.Sphere().Radius()
-                except Exception:
-                    pass
-                area_cm2 = None
-                try:
-                    fprops = GProp_GProps()
-                    BRepGProp.SurfaceProperties_s(face, fprops)
-                    area_cm2 = abs(fprops.Mass()) / 100.0
-                except Exception:
-                    pass
-                faces_meta.append({
-                    "id": face_id,
-                    "type": ftype,
-                    "radiusMm": round(radius_mm, 4) if radius_mm is not None else None,
-                    "areaCm2": round(area_cm2, 4) if area_cm2 is not None else None,
-                })
+        max_tris = int(os.environ.get("CV_MAX_TRIANGLES", "2000000"))
 
-                trsf = loc.Transformation()
-                # honour face orientation so the mesh has consistent outward winding
-                reversed_face = face.Orientation() == TopAbs_Orientation.TopAbs_REVERSED
-                for i in range(1, tri.NbTriangles() + 1):
-                    t = tri.Triangle(i)
-                    pts = []
-                    for k in (1, 2, 3):
-                        pnt = tri.Node(t.Value(k)).Transformed(trsf)
-                        pts.append((pnt.X(), pnt.Y(), pnt.Z()))
-                    if reversed_face:
-                        pts[1], pts[2] = pts[2], pts[1]
-                    tris.append(pts)
-                    tri_face_ids.append(face_id)
-                face_id += 1
-            exp.Next()
+        # Stable face ids via an indexed map (1-based) — the same map is used to
+        # assign faces to solids, so viewer face ids and body ids stay consistent.
+        face_map = TopTools_IndexedMapOfShape()
+        TopExp.MapShapes_s(wrapped, TopAbs_FACE, face_map)
 
+        # face index -> body id (solids enumerated in order; -1 = not in any solid)
+        face_body = {}
         bodies = 0
         try:
             bexp = TopExp_Explorer(wrapped, TopAbs_SOLID)
             while bexp.More():
+                fexp = TopExp_Explorer(bexp.Current(), TopAbs_FACE)
+                while fexp.More():
+                    idx = face_map.FindIndex(fexp.Current())
+                    if idx > 0 and idx not in face_body:
+                        face_body[idx] = bodies
+                    fexp.Next()
                 bodies += 1
                 bexp.Next()
         except Exception:
             pass
+
+        tris = []
+        tri_face_ids = []   # per-triangle source face id — lets the viewer map a click back to the B-rep
+        faces_meta = []     # per-face exact kernel data: type, radii, area, body, hole/boss
+        skipped_faces = 0   # faces with no/failed triangulation — mesh has holes there
+        face_id = 0
+        for map_idx in range(1, face_map.Extent() + 1):
+            face = TopoDS.Face_s(face_map.FindKey(map_idx))
+            loc = TopLoc_Location()
+            tri = BRep_Tool.Triangulation_s(face, loc)
+            if tri is None:
+                skipped_faces += 1
+                continue
+            # exact B-rep metadata for this face
+            ftype = "other"
+            radius_mm = None    # cylinder/sphere radius; cone ref radius; torus major radius
+            radius2_mm = None   # torus minor radius
+            angle_deg = None    # cone half-angle
+            hole = None         # cylinders: True = internal (drilled/bored), False = external (boss/shaft)
+            try:
+                ad = BRepAdaptor_Surface(face)
+                st = ad.GetType()
+                ftype = SURF_NAMES.get(st, "freeform")
+                if st == GeomAbs_SurfaceType.GeomAbs_Cylinder:
+                    cyl = ad.Cylinder()
+                    radius_mm = cyl.Radius()
+                    # Concavity: a cylinder's natural normal points radially outward
+                    # when its coordinate system is right-handed. Material-outward
+                    # normals pointing INWARD (toward the axis) mean the face is an
+                    # internal wall — a hole/bore. XOR the two flips that decide it.
+                    reversed_param = not cyl.Position().Direct()
+                    reversed_face_o = face.Orientation() == TopAbs_Orientation.TopAbs_REVERSED
+                    hole = reversed_face_o != reversed_param
+                elif st == GeomAbs_SurfaceType.GeomAbs_Sphere:
+                    radius_mm = ad.Sphere().Radius()
+                elif st == GeomAbs_SurfaceType.GeomAbs_Cone:
+                    cone = ad.Cone()
+                    radius_mm = cone.RefRadius()
+                    angle_deg = abs(math.degrees(cone.SemiAngle()))
+                elif st == GeomAbs_SurfaceType.GeomAbs_Torus:
+                    tor = ad.Torus()
+                    radius_mm = tor.MajorRadius()
+                    radius2_mm = tor.MinorRadius()
+            except Exception:
+                pass
+            area_cm2 = None
+            try:
+                fprops = GProp_GProps()
+                BRepGProp.SurfaceProperties_s(face, fprops)
+                area_cm2 = abs(fprops.Mass()) / 100.0
+            except Exception:
+                pass
+            faces_meta.append({
+                "id": face_id,
+                "type": ftype,
+                "radiusMm": round(radius_mm, 4) if radius_mm is not None else None,
+                "radius2Mm": round(radius2_mm, 4) if radius2_mm is not None else None,
+                "angleDeg": round(angle_deg, 3) if angle_deg is not None else None,
+                "areaCm2": round(area_cm2, 4) if area_cm2 is not None else None,
+                "bodyId": face_body.get(map_idx, -1),
+                "hole": hole,
+            })
+
+            trsf = loc.Transformation()
+            # Honour face orientation so the mesh has consistent outward winding.
+            # A mirrored instance transform (negative determinant) flips handedness
+            # and therefore winding — XOR it with the face orientation flag.
+            reversed_face = face.Orientation() == TopAbs_Orientation.TopAbs_REVERSED
+            try:
+                if trsf.IsNegative():
+                    reversed_face = not reversed_face
+            except Exception:
+                pass
+            n_tri = tri.NbTriangles()
+            if len(tris) + n_tri > max_tris:
+                return {"status": "error",
+                        "error": f"Tessellation exceeds {max_tris} triangles — part too complex for interactive viewing. "
+                                 f"Simplify the model or raise CV_MAX_TRIANGLES."}
+            for i in range(1, n_tri + 1):
+                t = tri.Triangle(i)
+                pts = []
+                for k in (1, 2, 3):
+                    pnt = tri.Node(t.Value(k)).Transformed(trsf)
+                    pts.append((pnt.X(), pnt.Y(), pnt.Z()))
+                if reversed_face:
+                    pts[1], pts[2] = pts[2], pts[1]
+                tris.append(pts)
+                tri_face_ids.append(face_id)
+            face_id += 1
 
         if not tris:
             return {"status": "error", "error": "Meshing produced no triangles"}
@@ -815,20 +877,23 @@ def tessellate_to_stl(filepath, out_path):
                     f.write(struct.pack("<3f", *pt))
                 f.write(struct.pack("<H", 0))
 
-        # face-metadata sidecar for the interactive viewer
-        try:
+        # face-metadata sidecar for the interactive viewer — only when requested
+        # (the default rendered-views path never reads it; writing tens of MB of
+        # triFace JSON on every request was wasted I/O). bodies is the HONEST
+        # solid count: 0 means an unstitched surface model (volume unreliable).
+        if with_meta:
             with open(out_path + ".json", "w") as jf:
-                json.dump({"triFace": tri_face_ids, "faces": faces_meta, "bodies": max(bodies, 1)}, jf)
-        except Exception:
-            pass
+                json.dump({"triFace": tri_face_ids, "faces": faces_meta,
+                           "bodies": bodies, "skippedFaces": skipped_faces}, jf)
 
-        return {"status": "success", "triangles": len(tris), "stlBytes": os.path.getsize(out_path), "faces": len(faces_meta), "bodies": max(bodies, 1)}
+        return {"status": "success", "triangles": len(tris), "stlBytes": os.path.getsize(out_path),
+                "faces": len(faces_meta), "bodies": bodies, "skippedFaces": skipped_faces}
     except Exception as e:
         return {"status": "error", "error": f"Tessellation error: {e}"}
 
 if __name__ == "__main__":
     if len(sys.argv) >= 4 and sys.argv[1] == "--stl":
-        result = tessellate_to_stl(sys.argv[2], sys.argv[3])
+        result = tessellate_to_stl(sys.argv[2], sys.argv[3], with_meta="--with-meta" in sys.argv[4:])
         print(json.dumps(result))
         sys.exit(0 if result.get("status") == "success" else 1)
     if len(sys.argv) < 2:

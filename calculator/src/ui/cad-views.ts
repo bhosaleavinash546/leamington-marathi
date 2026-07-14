@@ -20,8 +20,21 @@ interface ParsedMesh {
 /** Parse binary or ASCII STL into a flat position array (9 floats per triangle). */
 export function parseSTLMesh(buf: ArrayBuffer): ParsedMesh {
   const bytes = new Uint8Array(buf);
-  const headText = new TextDecoder().decode(bytes.slice(0, 512)).trimStart().toLowerCase();
-  const looksAscii = headText.startsWith('solid') && headText.includes('facet');
+  // Robust binary/ASCII sniffing: an exact size match (84 + 50·count) is
+  // definitive binary even when an exporter wrote "solid …" into the 80-byte
+  // header; only fall back to the text heuristic when the size check fails.
+  let looksAscii = false;
+  if (buf.byteLength >= 84) {
+    const declared = new DataView(buf).getUint32(80, true);
+    if (84 + declared * 50 === buf.byteLength) looksAscii = false;
+    else {
+      const headText = new TextDecoder().decode(bytes.slice(0, 1024)).trimStart().toLowerCase();
+      looksAscii = headText.startsWith('solid') && headText.includes('facet');
+    }
+  } else {
+    const headText = new TextDecoder().decode(bytes).trimStart().toLowerCase();
+    looksAscii = headText.startsWith('solid');
+  }
 
   if (!looksAscii) {
     const dv = new DataView(buf);
@@ -77,8 +90,14 @@ export async function renderSTLViews(file: File, size = 512): Promise<string[]> 
     const scene = new THREE.Scene();
     const mat = new THREE.MeshStandardMaterial({ color: 0x9aa4b2, metalness: 0.35, roughness: 0.55, side: THREE.DoubleSide });
     const mesh = new THREE.Mesh(geometry, mat);
+    // CAD is Z-up, three.js is Y-up — rotate so the named views (front/top/right)
+    // actually show what their names claim. Without this the vision model gets
+    // a "top" image that is really the CAD front, and mis-reasons about features.
+    const pivot = new THREE.Group();
+    pivot.rotation.x = -Math.PI / 2;
     mesh.position.set(-sphere.center.x, -sphere.center.y, -sphere.center.z); // centre at origin
-    scene.add(mesh);
+    pivot.add(mesh);
+    scene.add(pivot);
     scene.add(new THREE.HemisphereLight(0xffffff, 0x667788, 1.1));
     const dir = new THREE.DirectionalLight(0xffffff, 1.4);
     dir.position.set(1, 2, 1.5);
@@ -98,6 +117,7 @@ export async function renderSTLViews(file: File, size = 512): Promise<string[]> 
     }
 
     renderer.dispose();
+    try { renderer.forceContextLoss(); } catch { /* already lost */ }  // release the WebGL context now, not at GC
     geometry.dispose();
     mat.dispose();
     return shots;

@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import multer from 'multer';
+import rateLimit from 'express-rate-limit';
 import { createAnthropic } from '../utils/ai-client.js';
 import { preprocessCADFile } from '../utils/preprocessor.js';
 import { analyzeGeometry, tessellateToSTL } from '../utils/geometry-bridge.js';
@@ -929,21 +930,60 @@ ${alwaysSubs}
 // POST /api/cad/tessellate — mesh a STEP/IGES file to binary STL (no AI, no key).
 // The client renders canonical views from the returned STL so the vision model
 // can see the part; STL uploads skip this and render directly.
-router.post('/tessellate', upload.single('cadFile'), async (req, res): Promise<void> => {
+//
+// Unauthenticated by design, but each call spawns a Python/OCP process — rate
+// limiting keeps an anonymous request loop from exhausting the box (the spawn
+// semaphore in geometry-bridge caps concurrency independently).
+const tessellateLimiter = rateLimit({ windowMs: 10 * 60_000, max: 60, standardHeaders: true, legacyHeaders: false });
+
+/** Multipart filenames can carry control chars — keep them out of the logs. */
+function safeLogName(name: string): string {
+  return name.replace(/[^\x20-\x7e]/g, '_').slice(0, 120);
+}
+
+router.post('/tessellate', tessellateLimiter, upload.single('cadFile'), async (req, res): Promise<void> => {
   if (!req.file) { res.status(400).json({ error: 'No file uploaded' }); return; }
   const ext = req.file.originalname.toLowerCase().split('.').pop() ?? '';
+  if (['x_t', 'x_b', 'xmt_txt', 'jt', 'prt', 'sldprt', 'catpart'].includes(ext)) {
+    res.status(422).json({
+      error: `.${ext} is a proprietary format that needs a licensed kernel (Parasolid/JT/native CAD). ` +
+             'Export the part as STEP (.step/.stp) — every major CAD tool supports it — and upload that instead.',
+    });
+    return;
+  }
   if (!['stp', 'step', 'igs', 'iges'].includes(ext)) {
     res.status(400).json({ error: 'tessellate accepts STEP/IGES only (STL is already a mesh)' });
     return;
   }
-  const result = await tessellateToSTL(req.file.buffer, req.file.originalname);
+  const wantMeta = req.query.meta === '1' || req.query.meta === 'bin';
+  const result = await tessellateToSTL(req.file.buffer, req.file.originalname, { withMeta: wantMeta });
   if (result.status !== 'success') {
     res.status(422).json({ error: result.error });
     return;
   }
-  console.log(`[CAD] Tessellated ${req.file.originalname}: ${result.triangles} triangles, ${(result.stl.length / 1024).toFixed(0)} KB STL`);
-  // ?meta=1 → JSON with the mesh AND the B-rep face metadata (interactive viewer);
-  // default → bare binary STL (rendered-views pipeline, backward compatible).
+  console.log(`[CAD] Tessellated ${safeLogName(req.file.originalname)}: ${result.triangles} triangles, ${(result.stl.length / 1024).toFixed(0)} KB STL`);
+
+  // ?meta=bin → single binary frame (interactive viewer):
+  //   [u32 headerLen][header JSON][raw STL bytes][triFace as u32 array]
+  // No base64 (+33%), no giant JSON string, no atob loop client-side.
+  if (req.query.meta === 'bin') {
+    const triFace = result.meta?.triFace ?? [];
+    const header = Buffer.from(JSON.stringify({
+      triangles: result.triangles,
+      stlBytes: result.stl.length,
+      triFaceCount: triFace.length,
+      faces: result.meta?.faces ?? [],
+      bodies: result.meta?.bodies ?? null,
+      skippedFaces: result.meta?.skippedFaces ?? 0,
+    }), 'utf-8');
+    const lenBuf = Buffer.alloc(4);
+    lenBuf.writeUInt32LE(header.length, 0);
+    const triBuf = Buffer.from(Uint32Array.from(triFace).buffer);
+    res.set('Content-Type', 'application/octet-stream');
+    res.send(Buffer.concat([lenBuf, header, result.stl, triBuf]));
+    return;
+  }
+  // ?meta=1 → JSON with base64 mesh + metadata (backward compatible).
   if (req.query.meta === '1') {
     res.json({
       stlBase64: result.stl.toString('base64'),

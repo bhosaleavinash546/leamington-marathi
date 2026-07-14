@@ -8,6 +8,33 @@ import { randomBytes } from 'crypto';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const PYTHON_SCRIPT = join(__dirname, 'cad-geometry-engine.py');
 
+/** Temp-file extensions come from user-supplied filenames — keep them boring. */
+function safeExt(filename: string): string {
+  const ext = (filename.toLowerCase().split('.').pop() ?? 'step');
+  return /^[a-z0-9]{1,8}$/.test(ext) ? ext : 'step';
+}
+
+// ── Python spawn semaphore ────────────────────────────────────────────────────
+// Each OCP process costs hundreds of MB RSS; unbounded concurrent spawns let a
+// burst of uploads exhaust the box. Excess requests queue instead of piling on.
+const MAX_CONCURRENT_PYTHON = parseInt(process.env.CV_MAX_PYTHON_PROCS ?? '2', 10);
+let pythonActive = 0;
+const pythonQueue: Array<() => void> = [];
+
+async function acquirePython(): Promise<() => void> {
+  if (pythonActive >= MAX_CONCURRENT_PYTHON) {
+    await new Promise<void>((resolve) => pythonQueue.push(resolve));
+  }
+  pythonActive++;
+  let released = false;
+  return () => {
+    if (released) return;
+    released = true;
+    pythonActive--;
+    pythonQueue.shift()?.();
+  };
+}
+
 export interface OCCTGeometry {
   status: 'success' | 'error';
   partName?: string;
@@ -92,13 +119,14 @@ export async function analyzeGeometry(
   filename: string,
   timeoutMs = 120_000,
 ): Promise<OCCTGeometry> {
-  const ext = (filename.toLowerCase().split('.').pop() ?? 'step');
-  const tmpPath = join(tmpdir(), `cv-cad-${randomBytes(8).toString('hex')}.${ext}`);
+  const tmpPath = join(tmpdir(), `cv-cad-${randomBytes(8).toString('hex')}.${safeExt(filename)}`);
 
+  const release = await acquirePython();
   try {
     await writeFile(tmpPath, buffer);
     return await _runPython(tmpPath, timeoutMs);
   } finally {
+    release();
     unlink(tmpPath).catch(() => {});
   }
 }
@@ -153,30 +181,54 @@ function _runPython(tmpPath: string, timeoutMs: number): Promise<OCCTGeometry> {
  * mode. Feeds the client's rendered-views pipeline: the browser renders
  * canonical views from the returned STL so the vision model can see the part.
  */
+export interface TessellationFace {
+  id: number;
+  type: string;
+  /** cylinder/sphere radius; cone reference radius; torus MAJOR radius (mm) */
+  radiusMm: number | null;
+  /** torus MINOR radius (mm) */
+  radius2Mm: number | null;
+  /** cone half-angle (degrees) */
+  angleDeg: number | null;
+  areaCm2: number | null;
+  /** solid index this face belongs to; -1 = not part of any solid */
+  bodyId: number;
+  /** cylinders only: true = internal wall (hole/bore), false = external (boss/shaft) */
+  hole: boolean | null;
+}
+
 export interface TessellationMeta {
   triFace: number[];
-  faces: Array<{ id: number; type: string; radiusMm: number | null; areaCm2: number | null }>;
+  faces: TessellationFace[];
+  /** HONEST solid count — 0 means an unstitched surface model (volume unreliable) */
   bodies: number;
+  /** faces the mesher produced no triangulation for — the mesh has gaps there */
+  skippedFaces: number;
 }
+
+/** Refuse to buffer pathological outputs into Node heap. */
+const MAX_STL_BYTES = parseInt(process.env.CV_MAX_STL_BYTES ?? String(300 * 1024 * 1024), 10);
 
 export async function tessellateToSTL(
   buffer: Buffer,
   filename: string,
-  timeoutMs = 120_000,
+  opts: { timeoutMs?: number; withMeta?: boolean } = {},
 ): Promise<{ status: 'success'; stl: Buffer; triangles: number; meta: TessellationMeta | null } | { status: 'error'; error: string }> {
-  const ext = (filename.toLowerCase().split('.').pop() ?? 'step');
+  const { timeoutMs = 120_000, withMeta = false } = opts;
   const id = randomBytes(8).toString('hex');
-  const inPath = join(tmpdir(), `cv-tess-${id}.${ext}`);
+  const inPath = join(tmpdir(), `cv-tess-${id}.${safeExt(filename)}`);
   const outPath = join(tmpdir(), `cv-tess-${id}.stl`);
 
+  const release = await acquirePython();
   try {
     await writeFile(inPath, buffer);
+    const args = [PYTHON_SCRIPT, '--stl', inPath, outPath, ...(withMeta ? ['--with-meta'] : [])];
     const result = await new Promise<{ status: string; triangles?: number; error?: string }>((resolve) => {
       let stdout = '';
       let stderr = '';
       let settled = false;
       const settle = (r: { status: string; triangles?: number; error?: string }) => { if (!settled) { settled = true; resolve(r); } };
-      const child = spawn('python3', [PYTHON_SCRIPT, '--stl', inPath, outPath], { env: { ...process.env } });
+      const child = spawn('python3', args, { env: { ...process.env } });
       const timer = setTimeout(() => { child.kill('SIGKILL'); settle({ status: 'error', error: `Tessellation timed out after ${timeoutMs / 1000}s` }); }, timeoutMs);
       child.stdout.on('data', (d: Buffer) => { stdout += d.toString(); });
       child.stderr.on('data', (d: Buffer) => { stderr += d.toString(); });
@@ -190,17 +242,24 @@ export async function tessellateToSTL(
     });
 
     if (result.status !== 'success') return { status: 'error', error: result.error ?? 'tessellation failed' };
-    const { readFile } = await import('fs/promises');
+    const { readFile, stat } = await import('fs/promises');
+    const outStat = await stat(outPath);
+    if (outStat.size > MAX_STL_BYTES) {
+      return { status: 'error', error: `Tessellated mesh is ${(outStat.size / 1048576).toFixed(0)} MB — over the ${(MAX_STL_BYTES / 1048576).toFixed(0)} MB limit.` };
+    }
     const stl = await readFile(outPath);
-    // face-metadata sidecar (per-triangle face ids + exact B-rep face data) — optional
+    // face-metadata sidecar (per-triangle face ids + exact B-rep face data)
     let meta: TessellationMeta | null = null;
-    try {
-      meta = JSON.parse(await readFile(outPath + '.json', 'utf-8')) as TessellationMeta;
-    } catch { /* older engine or sidecar write failed — viewer degrades to mesh-only */ }
+    if (withMeta) {
+      try {
+        meta = JSON.parse(await readFile(outPath + '.json', 'utf-8')) as TessellationMeta;
+      } catch { /* sidecar unreadable — viewer degrades to mesh-only */ }
+    }
     return { status: 'success', stl, triangles: result.triangles ?? 0, meta };
   } catch (err) {
     return { status: 'error', error: err instanceof Error ? err.message : String(err) };
   } finally {
+    release();
     unlink(inPath).catch(() => {});
     unlink(outPath).catch(() => {});
     unlink(outPath + '.json').catch(() => {});
