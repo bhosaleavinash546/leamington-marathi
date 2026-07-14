@@ -1,8 +1,8 @@
-import { createHash } from 'crypto';
+
 import { Router } from 'express';
 import multer from 'multer';
 import Anthropic from '@anthropic-ai/sdk';
-import db from '../db.js';
+import { createAnalysisCache } from '../utils/analysis-cache.js';
 import { createAnthropic } from '../utils/ai-client.js';
 import {
   computeAllCountryCosts,
@@ -128,56 +128,12 @@ const isDeep = (req: { body?: Record<string, unknown> }): boolean =>
   req.body?.deepAnalysis === 'true' || req.body?.deepAnalysis === true;
 
 // ── Image analysis cache (SHA-256 of image buffers + params) ─────────────────
-// Persistent (SQLite) with an in-memory L1. Repeatability is a product promise:
-// the same photo at the same qty/country must return the IDENTICAL should-cost
-// on every run. A fresh LLM pass is not bit-deterministic even at temperature 0,
-// so the previous in-memory 4h cache leaked variance every server restart —
-// users saw a different total for the same board on each iteration.
-const _analysisCache = new Map<string, { ts: number; payload: unknown }>();
-const CACHE_TTL_MS = 30 * 24 * 60 * 60 * 1000; // 30 days
-db.exec(`
-  CREATE TABLE IF NOT EXISTS pcb_analysis_cache (
-    key TEXT PRIMARY KEY,
-    ts  INTEGER NOT NULL,
-    payload TEXT NOT NULL
-  );
-`);
-db.prepare('DELETE FROM pcb_analysis_cache WHERE ts < ?').run(Date.now() - CACHE_TTL_MS);
-
-function buildCacheKey(buffers: Buffer[]): string {
-  const h = createHash('sha256');
-  for (const b of buffers) h.update(b);
-  return h.digest('hex');
-}
-function getCached(key: string): unknown | null {
-  const e = _analysisCache.get(key);
-  if (e && Date.now() - e.ts <= CACHE_TTL_MS) return e.payload;
-  if (e) _analysisCache.delete(key);
-  try {
-    const row = db.prepare('SELECT ts, payload FROM pcb_analysis_cache WHERE key = ?').get(key) as { ts: number; payload: string } | undefined;
-    if (!row) return null;
-    if (Date.now() - row.ts > CACHE_TTL_MS) { db.prepare('DELETE FROM pcb_analysis_cache WHERE key = ?').run(key); return null; }
-    const payload = JSON.parse(row.payload) as unknown;
-    _analysisCache.set(key, { ts: row.ts, payload });
-    return payload;
-  } catch (err) {
-    console.warn('[PCB] cache read failed:', err instanceof Error ? err.message : String(err));
-    return null;
-  }
-}
-function setCached(key: string, payload: unknown): void {
-  if (_analysisCache.size > 200) {
-    const oldest = [..._analysisCache.entries()].sort((a, b) => a[1].ts - b[1].ts)[0];
-    if (oldest) _analysisCache.delete(oldest[0]);
-  }
-  _analysisCache.set(key, { ts: Date.now(), payload });
-  try {
-    db.prepare('INSERT OR REPLACE INTO pcb_analysis_cache (key, ts, payload) VALUES (?, ?, ?)')
-      .run(key, Date.now(), JSON.stringify(payload));
-  } catch (err) {
-    console.warn('[PCB] cache write failed:', err instanceof Error ? err.message : String(err));
-  }
-}
+// Persistent repeatability cache — shared implementation with CAD-to-Cost.
+// Same photo + qty + country -> identical result, across server restarts.
+const pcbCache = createAnalysisCache('pcb_analysis_cache');
+const buildCacheKey = (buffers: Buffer[]): string => pcbCache.buildKey(buffers);
+const getCached = (key: string): unknown | null => pcbCache.get(key);
+const setCached = (key: string, payload: unknown): void => pcbCache.set(key, payload);
 
 // ── Board sanity checks ────────────────────────────────────────────────────────
 interface SanityWarning { code: string; message: string; severity: 'warn' | 'error' }

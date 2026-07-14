@@ -6,8 +6,23 @@ import { analyzeGeometry } from '../utils/geometry-bridge.js';
 import type { OCCTGeometry } from '../utils/geometry-bridge.js';
 import { parseSTL } from '../services/stl-parser.js';
 import type { STLGeometry } from '../services/stl-parser.js';
+import { createAnalysisCache } from '../utils/analysis-cache.js';
+import { runCADSanityChecks } from '../utils/cad-sanity.js';
 
 const router = Router();
+
+// Persistent repeatability cache: same CAD file + photo + overrides -> the
+// byte-identical analysis, across restarts (same guarantee as the PCB pipeline).
+const cadCache = createAnalysisCache('cad_analysis_cache');
+
+// Model tiering: Sonnet 5 is the standard extraction tier (near-Opus on
+// structured analysis, faster, ~40% cheaper); the Deep-analysis toggle
+// escalates to Opus 4.8 for complex or high-value parts.
+const CAD_MODEL = 'claude-sonnet-5';
+const CAD_DEEP_MODEL = 'claude-opus-4-8';
+const cadModel = (deep: boolean): string => (deep ? CAD_DEEP_MODEL : CAD_MODEL);
+const isDeepReq = (req: { body?: Record<string, unknown> }): boolean =>
+  req.body?.deepAnalysis === 'true' || req.body?.deepAnalysis === true;
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 50 * 1024 * 1024 } });
 
 // ─── Specialist system prompts per commodity ─────────────────────────────────
@@ -240,6 +255,19 @@ router.post('/analyze', upload.single('cadFile'), async (req, res): Promise<void
   const partPhotoBase64 = typeof req.body?.partPhotoBase64 === 'string' ? req.body.partPhotoBase64 : '';
   const partPhotoMime   = (typeof req.body?.partPhotoMime === 'string' ? req.body.partPhotoMime : 'image/jpeg') as 'image/jpeg' | 'image/png' | 'image/gif' | 'image/webp';
 
+  const deepAnalysis = isDeepReq(req);
+  const cacheKey = cadCache.buildKey([
+    buffer,
+    Buffer.from(partPhotoBase64),
+    Buffer.from(JSON.stringify({ ...userOverrides, deep: deepAnalysis })),
+  ]);
+  const cached = cadCache.get(cacheKey);
+  if (cached) {
+    console.log(`[CAD] Cache HIT: ${cacheKey.slice(0, 12)}`);
+    res.json(cached);
+    return;
+  }
+
   if (forcedCommodity) {
     selectedCommodity = forcedCommodity;
     stage1Selection = { primary: forcedCommodity, conf: 1.0, alt: [] };
@@ -282,7 +310,7 @@ router.post('/analyze', upload.single('cadFile'), async (req, res): Promise<void
 
   for (let attempt = 1; attempt <= 2; attempt++) {
     const message = await anthropic.messages.create({
-      model: 'claude-opus-4-8',
+      model: cadModel(deepAnalysis),
       max_tokens: 8192,
       system: systemPrompt,
       messages: attempt === 1
@@ -310,9 +338,15 @@ router.post('/analyze', upload.single('cadFile'), async (req, res): Promise<void
     }
   }
 
-  res.json({
+  const measuredVol = stlGeometry?.volume ?? (geo.status === 'success' ? (geo.volumeCm3 ?? null) : null);
+  const sanityWarnings = runCADSanityChecks(analysis as Parameters<typeof runCADSanityChecks>[0], measuredVol);
+  if (sanityWarnings.length) console.log(`[CAD] Sanity: ${sanityWarnings.length} warning(s): ${sanityWarnings.map(x => x.code).join(', ')}`);
+
+  const payload = {
     success: true,
     analysis,
+    sanityWarnings,
+    fromCache: false,
     geometrySource,
     annualVolume,
     occtGeometry: geo.status === 'success' ? geo : null,
@@ -333,7 +367,9 @@ router.post('/analyze', upload.single('cadFile'), async (req, res): Promise<void
       boundingBoxEstMm: preprocessed.boundingBoxEstMm,
       entityStats: preprocessed.entityStats,
     },
-  });
+  };
+  cadCache.set(cacheKey, { ...payload, fromCache: true });
+  res.json(payload);
 });
 
 // ─── JSON extraction helper ──────────────────────────────────────────────────
@@ -956,6 +992,19 @@ router.post('/reanalyze', async (req, res): Promise<void> => {
   const userOverrides = { forcedCommodity, forcedMaterial, annualVolume, ovrWeightKg, ovrVolumeCm3, ovrLengthMm, ovrWidthMm, ovrHeightMm, ovrDensityGcm3 };
   const anthropic = createAnthropic(apiKey);
 
+  const deepAnalysis = isDeepReq(req);
+  const cacheKey = cadCache.buildKey([
+    Buffer.from(JSON.stringify(geo)),
+    Buffer.from(partPhotoBase64),
+    Buffer.from(JSON.stringify({ ...userOverrides, deep: deepAnalysis, filename })),
+  ]);
+  const cached = cadCache.get(cacheKey);
+  if (cached) {
+    console.log(`[CAD/reanalyze] Cache HIT: ${cacheKey.slice(0, 12)}`);
+    res.json(cached);
+    return;
+  }
+
   let stage1Selection: { primary: string; conf: number; alt: Array<{ type: string; conf: number }> } | null = null;
   let selectedCommodity = 'machining';
 
@@ -1015,7 +1064,7 @@ router.post('/reanalyze', async (req, res): Promise<void> => {
 
   for (let attempt = 1; attempt <= 2; attempt++) {
     const message = await anthropic.messages.create({
-      model: 'claude-opus-4-8',
+      model: cadModel(deepAnalysis),
       max_tokens: 8192,
       system: systemPrompt,
       messages: attempt === 1
@@ -1042,14 +1091,19 @@ router.post('/reanalyze', async (req, res): Promise<void> => {
     }
   }
 
-  res.json({
+  const sanityWarnings = runCADSanityChecks(analysis as Parameters<typeof runCADSanityChecks>[0], geo.volumeCm3 ?? null);
+  const payload = {
     success: true,
     analysis,
+    sanityWarnings,
+    fromCache: false,
     geometrySource: 'occt' as const,
     annualVolume,
     occtGeometry: geo,
     preprocessed: { format: 'STEP', partName: filename },
-  });
+  };
+  cadCache.set(cacheKey, { ...payload, fromCache: true });
+  res.json(payload);
 });
 
 export default router;

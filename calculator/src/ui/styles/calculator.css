@@ -6136,3 +6136,13 @@ input.cv-outlier { border-color: var(--warning) !important; box-shadow: 0 0 0 2p
 /* Utility: hard-hide an element. Survives the GSAP entrance tweens, which
    clear inline styles (clearProps:'all') when they complete. */
 .u-hidden { display: none !important; }
+
+/* ── CAD provenance — measured (geometry) vs AI-estimated field markers ────── */
+.input-panel input[data-prov="measured"],
+.input-panel select[data-prov="measured"] {
+  border-left: 3px solid #16a34a !important;
+}
+.input-panel input[data-prov="estimated"],
+.input-panel select[data-prov="estimated"] {
+  border-left: 3px solid #d97706 !important;
+}

@@ -195,6 +195,11 @@ let cadFile: File | null = null;
 let cadAnalysisResult: CADAnalysisResult | null = null;
 let cadOCCTGeometry: OCCTGeometry | null = null;
 let cadGeometrySource: 'occt' | 'text_parsing' = 'text_parsing';
+let cadSanityWarnings: Array<{ code: string; message: string; severity: 'warn' | 'error' }> = [];
+let cadFromCache = false;
+// Provenance for the accuracy harness: 'cad' when the last applied inputs came
+// from a CAD analysis; consumed (and reset) by pushCostingRecord.
+let _pendingCostingSource: 'cad' | 'manual' = 'manual';
 let cadPartPhotoBase64 = '';
 let cadPartPhotoMime = 'image/jpeg';
 let pcbImageResult: PCBImageAnalysis | null = null;
@@ -249,6 +254,8 @@ interface CostingRecord {
   vehicle: string;
   system: string;
   confidence: string;
+  /** Where the inputs came from — lets the accuracy harness score the CAD path separately. */
+  source?: 'cad' | 'manual';
   breakdown?: {
     rawMaterial: number; process: number; labour: number; tooling: number;
     overhead: number; packaging: number; logistics: number; margin: number;
@@ -407,7 +414,9 @@ function pushCostingRecord(r: Partial<CostingRecord> & { totalCost: number }): v
     vehicle: _dashFilters.vehicle || '',
     system: _dashFilters.system || '',
     confidence: r.confidence ?? 'Medium',
+    source: _pendingCostingSource,
   });
+  _pendingCostingSource = 'manual';
   saveCostingHistory(records);
 }
 
@@ -5355,6 +5364,10 @@ function renderCADAnalysisForm(): string {
         <label style="font-size:0.75rem">Annual Volume (pcs/year)</label>
         <input type="number" id="cad-annual-volume" value="100000" min="1" step="1000"
                style="font-size:0.8rem" title="Annual production volume — used for tooling amortisation and volume-cost optimisation"/>
+        <label style="font-size:0.72rem;display:flex;align-items:center;gap:6px;cursor:pointer;margin-top:6px" title="Runs the specialist analysis on Claude Opus 4.8 instead of Sonnet 5 — deeper reasoning on complex geometry and ambiguous materials. Roughly 2x AI cost and slower; best for high-value or intricate parts.">
+          <input type="checkbox" id="cad-deep-analysis" style="margin:0"/>
+          <span>🔬 Deep analysis — Claude Opus 4.8 (complex parts, slower)</span>
+        </label>
       </div>
       <div class="field-group">
         <label style="font-size:0.75rem">Claude API Key <span style="color:var(--text-muted);font-weight:400">(or set on server)</span></label>
@@ -5481,7 +5494,7 @@ function wireCADEvents(): void {
       reader.onload = (ev) => {
         const img = new Image();
         img.onload = () => {
-          const maxDim = 1024;
+          const maxDim = 2576;   // full resolution Claude Sonnet 5 / Opus 4.8 accept — material/finish ID needs the pixels
           const scale = Math.min(1, maxDim / Math.max(img.width, img.height));
           const canvas = document.createElement('canvas');
           canvas.width = Math.round(img.width * scale);
@@ -5594,6 +5607,7 @@ async function analyzeCAD(autoCalculate = false): Promise<void> {
       formData.append('partPhotoBase64', cadPartPhotoBase64);
       formData.append('partPhotoMime', cadPartPhotoMime);
     }
+    formData.append('deepAnalysis', String((document.getElementById('cad-deep-analysis') as HTMLInputElement | null)?.checked ?? false));
 
     const headers: HeadersInit = {};
     if (apiKey) headers['x-api-key'] = apiKey;
@@ -5619,6 +5633,8 @@ async function analyzeCAD(autoCalculate = false): Promise<void> {
     cadAnalysisResult = data.analysis!;
     cadOCCTGeometry = data.occtGeometry ?? null;
     cadGeometrySource = data.geometrySource ?? 'text_parsing';
+    cadSanityWarnings = (data as { sanityWarnings?: typeof cadSanityWarnings }).sanityWarnings ?? [];
+    cadFromCache = (data as { fromCache?: boolean }).fromCache === true;
 
     const partNameEl = el<HTMLInputElement>('part-name');
     if (partNameEl && cadAnalysisResult.partName) partNameEl.value = cadAnalysisResult.partName;
@@ -5743,12 +5759,37 @@ function renderCADResults(r: CADAnalysisResult, autoCalculate = false, annualVol
           <span class="cad-confidence-badge ${r.confidenceLevel}">AI: ${r.confidenceLevel}</span>
           &nbsp;
           <span class="occt-source-badge ${cadGeometrySource === 'occt' ? 'occt' : 'text'}">${cadGeometrySource === 'occt' ? 'OCCT Kernel' : 'Text-parsed'}</span>
+          ${cadFromCache ? '&nbsp;<span title="This exact file + photo + settings was analysed before — the identical result is returned, so the analysis is repeatable run to run." style="background:var(--info-bg,#eff6ff);color:var(--info,#2563eb);border:1px solid var(--info-border,#bfdbfe);font-size:0.62rem;padding:1px 6px;border-radius:10px;font-weight:700">&#8635; Repeat analysis — identical result</span>' : ''}
           &nbsp;
           <span style="font-size:0.72rem;color:var(--text-muted)">${g.estimatedSurfaceAreaCm2.toFixed(0)} cm² surface</span>
           ${r.costInputSuggestions.stage1Selection ? `&nbsp;<span style="font-size:0.68rem;background:var(--border);border-radius:3px;padding:1px 5px;color:var(--text-muted)" title="Stage 1 Haiku pre-selection">⚡ ${escHtml(r.costInputSuggestions.stage1Selection.primary)} (${Math.round((r.costInputSuggestions.stage1Selection.conf ?? 0) * 100)}%)</span>` : ''}
         </div>
       </div>
     </div>
+
+    ${(() => {
+      // Guided-input loop — the CAD analog of the PCB re-capture panel: name
+      // exactly what would raise accuracy instead of failing silently.
+      const asks: string[] = [];
+      if (cadGeometrySource === 'text_parsing') {
+        asks.push('&#9888; Geometry was <strong>text-parsed</strong> (the OCCT kernel could not read this file) — dimensions and weight are rough. Re-export from CAD as <strong>STEP AP203/AP214</strong> for measured geometry.');
+      }
+      const matConf = r.materialAnalysis?.primarySuggestion?.confidencePct ?? 100;
+      if (matConf < 70 && !cadPartPhotoDataUrlPresent()) {
+        asks.push(`&#128247; Material is only <strong>${matConf}% confident</strong> — geometry alone cannot identify the alloy or grade. Add a part photo above and re-analyse.`);
+      }
+      const sanityHtml = cadSanityWarnings.map(sw => `
+        <li style="margin:3px 0;line-height:1.45">
+          <span style="font-weight:700;color:${sw.severity === 'error' ? '#dc2626' : '#d97706'}">${sw.severity === 'error' ? '&#10060;' : '&#9888;'}</span>
+          ${escHtml(sw.message)}
+        </li>`).join('');
+      if (!asks.length && !sanityHtml) return '';
+      return `<div id="cad-guidance-panel" style="margin-bottom:12px;padding:11px 13px;background:rgba(217,119,6,0.06);border:1px solid rgba(217,119,6,0.3);border-left:3px solid #d97706;border-radius:8px">
+        <div style="font-size:0.76rem;font-weight:700;color:var(--text-primary)">&#127919; Improve this analysis</div>
+        ${asks.map(a => `<div style="font-size:0.72rem;color:var(--text-secondary);margin-top:6px;line-height:1.5">${a}</div>`).join('')}
+        ${sanityHtml ? `<div style="font-size:0.68rem;font-weight:700;color:var(--text-muted);margin-top:8px;text-transform:uppercase;letter-spacing:0.04em">Consistency checks</div><ul style="margin:4px 0 0;padding-left:16px;font-size:0.72rem;color:var(--text-secondary)">${sanityHtml}</ul>` : ''}
+      </div>`;
+    })()}
 
     ${occtPanel}
 
@@ -5832,7 +5873,7 @@ function renderCADResults(r: CADAnalysisResult, autoCalculate = false, annualVol
     ${r.costInputSuggestions.costRange ? `
     <!-- Cost range -->
     <div style="margin-bottom:12px">
-      <div class="panel-title" style="margin-bottom:6px">Cost Range Estimate</div>
+      <div class="panel-title" style="margin-bottom:6px">Cost Range Estimate <span style="font-weight:400;font-size:0.68rem;color:var(--text-muted)">— AI ballpark only; Apply &amp; Calc below runs the deterministic engine for the defensible number</span></div>
       <div style="display:flex;gap:8px;align-items:stretch">
         <div style="flex:1;text-align:center;padding:8px 6px;background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.2);border-radius:6px">
           <div style="font-size:0.66rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.03em">Optimistic</div>
@@ -6036,6 +6077,7 @@ async function reanalyzeCAD(): Promise<void> {
     if (commOvr) body['commodity'] = commOvr;
     if (matOvr)  body['material']  = matOvr;
     if (cadPartPhotoBase64) { body['partPhotoBase64'] = cadPartPhotoBase64; body['partPhotoMime'] = cadPartPhotoMime; }
+    body['deepAnalysis'] = (document.getElementById('cad-deep-analysis') as HTMLInputElement | null)?.checked ?? false;
 
     const res = await fetch('/api/cad/reanalyze', {
       method: 'POST',
@@ -6053,6 +6095,8 @@ async function reanalyzeCAD(): Promise<void> {
     if (!res.ok || !data.success) throw new Error(data.error ?? `Server error ${res.status}`);
 
     cadAnalysisResult = data.analysis!;
+    cadSanityWarnings = (data as { sanityWarnings?: typeof cadSanityWarnings }).sanityWarnings ?? [];
+    cadFromCache = (data as { fromCache?: boolean }).fromCache === true;
     const resolvedVol = data.annualVolume ?? (parseFloat(annVol) || 100000);
     renderCADResults(cadAnalysisResult, false, resolvedVol);
   } catch (err) {
@@ -9241,12 +9285,50 @@ function buildOCCTPanel(geo: OCCTGeometry | null, source: string): string {
     </div>`;
 }
 
+// Provenance classification for CAD-filled fields. Geometry-derived quantities
+// (weights, dimensions, volumes) are MEASURED when the OCCT/STL engine parsed
+// the file; everything the AI inferred (material, cycle times, tooling, rates)
+// is ESTIMATED and worth reviewing. Centralised here so every fill site gets
+// classified without per-call changes.
+const CAD_MEASURED_ID = /(net-wt|stock-wt|weight|-vol\b|volume|length|width|height|-len\b|thk|thickness|dia\b|diameter|area)/i;
+function classifyCADProvenance(id: string): 'measured' | 'estimated' {
+  if (cadGeometrySource === 'text_parsing') return 'estimated'; // no measured geometry available
+  return CAD_MEASURED_ID.test(id) ? 'measured' : 'estimated';
+}
+
 function markAIFilled(element: HTMLInputElement | HTMLSelectElement | null): void {
   if (!element) return;
   element.classList.add('ai-filled');
-  // Remove highlight after user edits
-  element.addEventListener('input', () => element.classList.remove('ai-filled'), { once: true });
+  const prov = classifyCADProvenance(element.id || '');
+  element.setAttribute('data-prov', prov);
+  element.title = prov === 'measured'
+    ? 'Measured — derived from the CAD file geometry (OCCT/STL kernel)'
+    : 'AI-estimated — suggested by the analysis; review before calculating';
+  // Remove highlight after user edits (their value now — no longer AI provenance)
+  element.addEventListener('input', () => { element.classList.remove('ai-filled'); element.removeAttribute('data-prov'); }, { once: true });
 }
+
+/** Banner summarising provenance after a CAD auto-fill: how much is measured vs estimated. */
+function showCADProvenanceBanner(): void {
+  document.getElementById('cad-prov-banner')?.remove();
+  const panel = document.querySelector('.input-panel');
+  if (!panel) return;
+  const measured = panel.querySelectorAll('[data-prov="measured"]').length;
+  const estimated = panel.querySelectorAll('[data-prov="estimated"]').length;
+  if (measured + estimated === 0) return;
+  const div = document.createElement('div');
+  div.id = 'cad-prov-banner';
+  div.style.cssText = 'margin:8px 0;padding:9px 12px;background:var(--info-bg,#eff6ff);border:1px solid var(--info-border,#bfdbfe);border-radius:8px;font-size:0.74rem;color:var(--text-secondary);display:flex;align-items:center;gap:8px;flex-wrap:wrap';
+  div.innerHTML = `<strong style="color:var(--text-primary)">CAD auto-fill:</strong>` +
+    `<span><span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:#16a34a;margin-right:4px"></span>${measured} measured (geometry)</span>` +
+    `<span><span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:#d97706;margin-right:4px"></span>${estimated} AI-estimated — review before calculating</span>` +
+    `<button style="margin-left:auto;background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:0.9rem;line-height:1" title="Dismiss" onclick="this.parentElement.remove()">&#10005;</button>`;
+  const anchor = document.getElementById('commodity-tabs');
+  if (anchor?.parentElement) anchor.parentElement.insertBefore(div, anchor.nextSibling);
+  else panel.prepend(div);
+}
+
+function cadPartPhotoDataUrlPresent(): boolean { return cadPartPhotoBase64.length > 0; }
 
 function setMaterial(selectEl: HTMLSelectElement | null, materialId: string): void {
   if (!selectEl || !materialId) return;
@@ -9334,6 +9416,7 @@ async function analyzeCADInline(file: File, commodity: CommodityType): Promise<v
 
 function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): void {
   if (!cadAnalysisResult) return;
+  _pendingCostingSource = 'cad'; // tag the next costing record for the accuracy harness
   const r = cadAnalysisResult;
   const c = r.costInputSuggestions;
   // Longest bounding-box axis (mm) — used to derive an extrusion profile length.
@@ -9809,6 +9892,9 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
         break;
       }
     }
+
+    // Surface provenance: how much of this form is measured geometry vs AI guess.
+    showCADProvenanceBanner();
 
     if (autoCalculate) {
       compute();
