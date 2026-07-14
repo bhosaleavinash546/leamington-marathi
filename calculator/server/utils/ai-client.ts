@@ -51,5 +51,10 @@ export function createAnthropic(apiKey?: string): Anthropic {
     ...(apiKey ? { apiKey } : {}),
     // Explicit (the SDK also reads the env var) so the control point is visible here.
     ...(process.env.ANTHROPIC_BASE_URL ? { baseURL: process.env.ANTHROPIC_BASE_URL } : {}),
+    // Transient 5xx/gateway blips (e.g. Cloudflare 502s) should ride through
+    // instead of failing a 4-stage pipeline at stage 3. The SDK's default is 2
+    // retries with exponential backoff; the long multi-image vision calls are
+    // the most exposed, so give them more headroom.
+    maxRetries: 4,
   });
 }
