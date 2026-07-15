@@ -14,7 +14,7 @@ export default function MobileNav() {
   return (
     <nav
       className="fixed bottom-0 inset-x-0 z-50 pb-safe"
-      style={{ background: '#07111e', borderTop: '1px solid rgba(255,255,255,0.08)' }}
+      style={{ background: 'rgb(var(--navy-950))', borderTop: '1px solid rgba(255,255,255,0.08)' }}
     >
       <div className="flex items-stretch h-14">
         {tabs.map(({ to, icon: Icon, label }) => {
@@ -24,7 +24,7 @@ export default function MobileNav() {
               key={to}
               to={to}
               className="flex-1 flex flex-col items-center justify-center gap-0.5 text-xs transition-colors"
-              style={{ color: active ? '#f59e0b' : 'rgba(255,255,255,0.45)' }}
+              style={{ color: active ? 'rgb(var(--gold-400))' : 'rgba(255,255,255,0.45)' }}
             >
               <Icon size={20} strokeWidth={active ? 2.2 : 1.8} />
               <span className="font-medium">{label}</span>

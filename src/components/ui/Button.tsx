@@ -13,7 +13,7 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const VARIANT: Record<Variant, string> = {
-  primary:   'bg-teal-600 hover:bg-teal-500 text-white border border-transparent',
+  primary:   'bg-gold-500 hover:bg-gold-400 text-navy-950 border border-transparent',
   secondary: 'bg-navy-800 hover:bg-navy-700 text-slate-200 border border-white/10',
   ghost:     'bg-transparent hover:bg-white/5 text-slate-300 border border-white/10',
   danger:    'bg-danger-600 hover:bg-danger-500 text-white border border-transparent',
@@ -40,7 +40,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
       aria-busy={loading || undefined}
       className={[
         'inline-flex items-center justify-center font-semibold transition-all',
-        'focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-400/60 focus-visible:ring-offset-2 focus-visible:ring-offset-navy-950',
+        'focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400/60 focus-visible:ring-offset-2 focus-visible:ring-offset-navy-950',
         'disabled:opacity-50 disabled:cursor-not-allowed',
         VARIANT[variant],
         SIZE[size],

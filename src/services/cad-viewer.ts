@@ -94,6 +94,28 @@ const EDGE_ANGLE_DEG = 24;
 
 // ── Component ─────────────────────────────────────────────────────────────────
 
+// Inline stroke icons in the app's lucide visual language (24-viewBox, 2px
+// round stroke) — the previous unicode/emoji glyphs (⌂🎨📷) rendered
+// differently per OS and read as a bolted-on third-party widget.
+const CV_ICON: Record<string, string> = {
+  home: '<path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/>',
+  fit: '<path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M8 21H3v-5"/><path d="M16 21h5v-5"/>',
+  shaded: '<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M12 3v18"/><path d="M3 3l9 9"/>',
+  wire: '<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/>',
+  bbox: '<rect x="5" y="5" width="14" height="14"/><path d="M5 5 3 3M19 5l2-2M5 19l-2 2M19 19l2 2"/>',
+  palette: '<circle cx="12" cy="12" r="9"/><circle cx="8.5" cy="10" r="1"/><circle cx="12" cy="7.5" r="1"/><circle cx="15.5" cy="10" r="1"/><path d="M12 21a2.5 2.5 0 0 0 0-5h-1.5a1.5 1.5 0 0 1 0-3"/>',
+  clip: '<circle cx="6" cy="6" r="2.5"/><circle cx="6" cy="18" r="2.5"/><path d="M8 7.5 20 19M8 16.5 20 5"/>',
+  features: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="2.5"/>',
+  select: '<path d="M4 3l7 17 2.5-7.5L21 10z"/>',
+  dist: '<path d="M4 12h16"/><path d="M7 8l-4 4 4 4"/><path d="M17 8l4 4-4 4"/>',
+  circle: '<circle cx="12" cy="12" r="8"/>',
+  angle: '<path d="M5 19h15"/><path d="M5 19V5"/><path d="M5 12a7 7 0 0 1 7 7"/>',
+  clear: '<path d="M6 6l12 12M18 6 6 18"/>',
+  camera: '<path d="M4 8h3l2-3h6l2 3h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.5"/>',
+};
+const cvIcon = (name: string) =>
+  `<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${CV_ICON[name]}</svg>`;
+
 export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions = {}): Promise<CADViewerHandle> {
   const THREE = await import('three');
   const { OrbitControls } = await import('three/examples/jsm/controls/OrbitControls.js');
@@ -104,29 +126,29 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
   root.innerHTML = `
     <div class="cv3d-toolbar">
       <div class="cv3d-group">
-        <button data-act="view-iso" title="Isometric view (Home)">⌂</button>
+        <button data-act="view-iso" title="Isometric view (Home)" aria-label="Isometric view">${cvIcon('home')}</button>
         <button data-act="view-front" title="Front view">F</button>
         <button data-act="view-top" title="Top view">T</button>
         <button data-act="view-right" title="Right view">R</button>
-        <button data-act="fit" title="Fit part to screen">⛶</button>
+        <button data-act="fit" title="Fit part to screen" aria-label="Fit to screen">${cvIcon('fit')}</button>
       </div>
       <div class="cv3d-group">
-        <button data-act="mode-shaded" class="active" title="Shaded with edges">◧</button>
-        <button data-act="mode-wire" title="Wireframe">◇</button>
-        <button data-act="bbox" title="Bounding box + dimensions">▣</button>
-        <button data-act="facecolors" title="Colour by machining surface type (STEP/IGES only)" disabled>🎨</button>
-        <button data-act="clip" title="Section view — clipping plane">✂</button>
-        <button data-act="features" title="Detected features — holes &amp; bosses (STEP/IGES only)" disabled>◎</button>
+        <button data-act="mode-shaded" class="active" title="Shaded with edges" aria-label="Shaded">${cvIcon('shaded')}</button>
+        <button data-act="mode-wire" title="Wireframe" aria-label="Wireframe">${cvIcon('wire')}</button>
+        <button data-act="bbox" title="Bounding box + dimensions" aria-label="Bounding box">${cvIcon('bbox')}</button>
+        <button data-act="facecolors" title="Colour by machining surface type (STEP/IGES only)" aria-label="Face colours" disabled>${cvIcon('palette')}</button>
+        <button data-act="clip" title="Section view — clipping plane" aria-label="Section view">${cvIcon('clip')}</button>
+        <button data-act="features" title="Detected features — holes &amp; bosses (STEP/IGES only)" aria-label="Features" disabled>${cvIcon('features')}</button>
       </div>
       <div class="cv3d-group">
-        <button data-act="tool-select" class="active" title="Select — click a face for exact B-rep data">➤</button>
-        <button data-act="tool-dist" title="Measure distance — click two points (snaps to vertices &amp; edges)">↔</button>
-        <button data-act="tool-circle" title="Measure circle — click 3 points on a rim or bore">◯</button>
-        <button data-act="tool-angle" title="Measure angle — click 3 points (vertex is the middle click)">∠</button>
-        <button data-act="clear" title="Clear measurements &amp; selection">✕</button>
+        <button data-act="tool-select" class="active" title="Select — click a face for exact B-rep data" aria-label="Select tool">${cvIcon('select')}</button>
+        <button data-act="tool-dist" title="Measure distance — click two points (snaps to vertices &amp; edges)" aria-label="Measure distance">${cvIcon('dist')}</button>
+        <button data-act="tool-circle" title="Measure circle — click 3 points on a rim or bore" aria-label="Measure circle">${cvIcon('circle')}</button>
+        <button data-act="tool-angle" title="Measure angle — click 3 points (vertex is the middle click)" aria-label="Measure angle">${cvIcon('angle')}</button>
+        <button data-act="clear" title="Clear measurements &amp; selection" aria-label="Clear measurements">${cvIcon('clear')}</button>
       </div>
       <div class="cv3d-group">
-        <button data-act="snap" title="Snapshot — ${opts.onSnapshot ? 'attach to report' : 'download image'}">📷</button>
+        <button data-act="snap" title="Snapshot — ${opts.onSnapshot ? 'attach to report' : 'download image'}" aria-label="Snapshot">${cvIcon('camera')}</button>
       </div>
     </div>
     <div class="cv3d-viewport">

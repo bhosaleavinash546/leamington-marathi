@@ -213,6 +213,17 @@ export default function MarketplacePage() {
     return map;
   }, [ideas]);
 
+  // Sort + incremental rendering: 1,600 unvirtualised motion cards previously
+  // rendered at once with delay=i*0.03 — card #900 faded in after 27 seconds.
+  const [sortBy, setSortBy] = useState<'featured' | 'saving' | 'votes' | 'newest'>('featured');
+  const [visibleCount, setVisibleCount] = useState(60);
+
+  const parseSaving = (v: string) => {
+    const m = /([\d.]+)\s*([MK]?)/i.exec(String(v || '').replace(/,/g, ''));
+    if (!m) return 0;
+    return parseFloat(m[1]) * (m[2].toUpperCase() === 'M' ? 1e6 : m[2].toUpperCase() === 'K' ? 1e3 : 1);
+  };
+
   const filtered = ideas.filter(idea => {
     const matchQ =
       !searchQ ||
@@ -232,6 +243,13 @@ export default function MarketplacePage() {
       filterVoltage === 'All' || !!cls?.voltages.includes(filterVoltage);
     return matchQ && matchCommodity && matchSys && matchDiff && matchLevel && matchPowertrain && matchVoltage;
   });
+
+  const sorted = sortBy === 'featured' ? filtered : [...filtered].sort((a, b) => {
+    if (sortBy === 'saving') return parseSaving(b.annualSaving) - parseSaving(a.annualSaving);
+    if (sortBy === 'votes') return (b.votes || 0) - (a.votes || 0) || b.stars - a.stars;
+    return String(b.id).localeCompare(String(a.id));   // newest ≈ latest pack ids
+  });
+  const visible = sorted.slice(0, visibleCount);
 
   // Counts for the powertrain / voltage chips (respecting the active commodity tab)
   const facetScope = ideas.filter(inCommodity);
@@ -547,14 +565,27 @@ export default function MarketplacePage() {
           </div>
         ) : (
           <div className="space-y-4">
-            {filtered.map((idea, i) => {
+            <div className="flex items-center justify-between gap-3">
+              <p className="text-slate-500 text-xs">{sorted.length.toLocaleString()} idea{sorted.length === 1 ? '' : 's'} match</p>
+              <label className="flex items-center gap-2 text-xs text-slate-400">
+                Sort
+                <select value={sortBy} onChange={e => { setSortBy(e.target.value as typeof sortBy); setVisibleCount(60); }}
+                  className="bg-navy-900 border border-white/10 rounded-lg px-2 py-1.5 text-slate-200 text-xs">
+                  <option value="featured">Featured</option>
+                  <option value="saving">Highest saving</option>
+                  <option value="votes">Most votes</option>
+                  <option value="newest">Newest</option>
+                </select>
+              </label>
+            </div>
+            {visible.map((idea, i) => {
               const commodity = getCommodityForSystem(idea.system);
               return (
                 <motion.div
                   key={idea.id}
                   initial={{ opacity: 0, y: 12 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.03 }}
+                  transition={{ delay: Math.min(i, 12) * 0.03 }}
                   className="bg-navy-900 border border-white/10 rounded-2xl p-5 hover:border-gold-500/25 transition-all"
                 >
                   <div className="flex items-start justify-between gap-4 mb-3">
@@ -682,6 +713,15 @@ export default function MarketplacePage() {
               );
             })}
 
+            {sorted.length > visibleCount && (
+              <button
+                onClick={() => setVisibleCount(c => c + 120)}
+                className="w-full py-3 rounded-2xl border border-white/10 bg-navy-900 text-slate-300 text-sm hover:border-gold-500/30 hover:text-gold-300 transition-colors"
+              >
+                Show more ({(sorted.length - visibleCount).toLocaleString()} remaining)
+              </button>
+            )}
+
             {filtered.length === 0 && (
               <div className="text-center py-16 text-slate-500">
                 <Store size={40} className="mx-auto mb-3 opacity-30" />
@@ -699,7 +739,7 @@ export default function MarketplacePage() {
           </div>
         )}
 
-        <p className="text-center text-slate-700 text-xs mt-8">
+        <p className="text-center text-slate-500 text-xs mt-8">
           Ideas are anonymised community contributions. Always validate applicability for your specific programme.
         </p>
       </div>

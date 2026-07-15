@@ -95,7 +95,7 @@ function ExampleAnalyses() {
           initial={{ opacity: 0, x: -10 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.35, delay: i * 0.05 }}
-          className="flex items-center gap-3 p-3 rounded-xl bg-white/4 border border-white/8 hover:border-white/15 hover:bg-white/6 transition-all group cursor-default"
+          className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/8 hover:border-white/15 hover:bg-white/6 transition-all group cursor-default"
         >
           <div className={`w-2 h-2 rounded-full flex-shrink-0 ${item.color.replace('text-', 'bg-')} group-hover:scale-125 transition-transform`} />
           <div className="flex-1 min-w-0">
@@ -373,7 +373,7 @@ export default function HomePage() {
               </Link>
               <Link
                 to="/trends"
-                className="group inline-flex items-center gap-2 px-8 py-4 rounded-xl border border-white/15 text-slate-300 hover:text-white hover:border-gold-500/40 font-medium text-lg transition-all hover:bg-white/4"
+                className="group inline-flex items-center gap-2 px-8 py-4 rounded-xl border border-white/15 text-slate-300 hover:text-white hover:border-gold-500/40 font-medium text-lg transition-all hover:bg-white/5"
               >
                 <TrendingUp size={18} className="group-hover:text-gold-400 transition-colors" />
                 View Trends
@@ -452,7 +452,7 @@ export default function HomePage() {
                     initial={{ opacity: 0, scale: 0.94 }} animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.3, delay: 0.5 + i * 0.06 }}
                     whileHover={{ scale: 1.03, borderColor: 'rgba(245,158,11,0.3)', transition: { type: 'spring', stiffness: 380, damping: 28 } }}
-                    className="p-3 rounded-xl bg-white/4 border border-white/8 cursor-default transition-all"
+                    className="p-3 rounded-xl bg-white/5 border border-white/8 cursor-default transition-all"
                   >
                     <div className="w-8 h-8 rounded-lg bg-gold-500/15 flex items-center justify-center mb-2">
                       <b.icon size={15} className="text-gold-400" />
@@ -498,7 +498,7 @@ export default function HomePage() {
                   className={`group block p-4 rounded-xl border transition-all duration-300 relative overflow-hidden ${
                     activeSystem === system.id
                       ? 'bg-white/8 border-gold-500/35 -translate-y-1.5 shadow-xl shadow-gold-500/10'
-                      : 'bg-white/4 border-white/10 hover:bg-white/7 hover:border-white/18 hover:-translate-y-1'
+                      : 'bg-white/5 border-white/10 hover:bg-white/7 hover:border-white/20 hover:-translate-y-1'
                   }`}
                 >
                   {/* Hover shimmer */}

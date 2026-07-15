@@ -274,7 +274,7 @@ export default function ShouldCostPage() {
                   return (
                     <button key={op} type="button"
                       onClick={() => setSecondaryOps(s => on ? s.filter(x => x !== op) : [...s, op])}
-                      className={`px-2.5 py-1 rounded-lg border text-[11px] transition ${on ? 'bg-teal-500/20 border-teal-500/40 text-teal-200' : 'bg-white/4 border-white/10 text-slate-400 hover:bg-white/8'}`}>
+                      className={`px-2.5 py-1 rounded-lg border text-[11px] transition ${on ? 'bg-teal-500/20 border-teal-500/40 text-teal-200' : 'bg-white/5 border-white/10 text-slate-400 hover:bg-white/8'}`}>
                       {on ? '✓ ' : '+ '}{op.replace(' (secondary ops)', '').replace(' (batch)', '').replace(' (KTL)', '')}
                     </button>
                   );
@@ -481,7 +481,7 @@ export default function ShouldCostPage() {
                     </div>
                     <div className="overflow-x-auto rounded-xl border border-white/10">
                       <table className="w-full text-xs">
-                        <thead><tr className="text-slate-500 bg-white/4">
+                        <thead><tr className="text-slate-500 bg-white/5">
                           <th className="text-left px-3 py-1.5 font-medium">Operation</th>
                           <th className="text-right px-3 py-1.5 font-medium">Conversion</th>
                           <th className="text-right px-3 py-1.5 font-medium">Tooling</th>
@@ -571,7 +571,7 @@ export default function ShouldCostPage() {
                       {costDown.alternatives.length === 0 ? (
                         <p className="text-slate-400 text-xs">No cheaper compatible alternative was found for this part — the current design is close to cost-optimal in the modelled space.</p>
                       ) : costDown.alternatives.map((a, i) => (
-                        <div key={i} className="p-3 rounded-xl bg-white/4 border border-white/10">
+                        <div key={i} className="p-3 rounded-xl bg-white/5 border border-white/10">
                           <div className="flex items-center justify-between gap-2">
                             <div className="text-white text-sm font-medium">{a.material} · {a.process} · {a.region}</div>
                             <div className="text-emerald-400 text-sm font-bold whitespace-nowrap">−{costDown.baseline.currency === 'EUR' ? '€' : ''}{a.saving.toFixed(2)} ({a.savingPct}%)</div>

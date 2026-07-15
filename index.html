@@ -13,6 +13,14 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
       rel="stylesheet"
     />
+    <script>
+      // Apply the saved theme BEFORE React hydrates — without this, light-theme
+      // users see a dark flash on every load.
+      try {
+        var t = localStorage.getItem('brainspark_theme');
+        if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
+      } catch (e) {}
+    </script>
   </head>
   <body>
     <div id="root"></div>

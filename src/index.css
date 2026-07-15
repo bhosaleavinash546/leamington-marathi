@@ -115,7 +115,8 @@
 .text-slate-200 { color: #dde4ee; }
 .text-slate-300 { color: #b8c6d8; }
 .text-slate-400 { color: #8898ae; }
-.text-slate-500 { color: #5d6e84; }
+.text-slate-500 { color: #7a8ba1; }   /* 4.6:1 on navy-900 — was #5d6e84 at 3.4:1 (failed AA for the 12px meta text it's used on) */
+.text-slate-600 { color: #64748b; }   /* lifted one step for the same reason */
 
 /* ═══════════════════════════════════════════════════════════════════════════
    LIGHT THEME — targeted overrides for Tailwind's fixed-value utilities
@@ -276,4 +277,28 @@
   .bg-white\/2 { background-color: rgba(255,255,255,0.02); }
   .bg-white\/3 { background-color: rgba(255,255,255,0.03); }
   .bg-white\/8 { background-color: rgba(255,255,255,0.08); }
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ACCESSIBILITY — global keyboard-focus restoration + motion
+   74 call sites use focus:outline-none; rather than chase each one, restore a
+   visible ring for KEYBOARD users only (mouse clicks stay ringless). Higher
+   specificity than Tailwind's outline-none utility.
+   ═══════════════════════════════════════════════════════════════════════════ */
+:where(a, button, [role="button"], input, select, textarea, summary):focus-visible {
+  outline: 2px solid rgb(var(--gold-400)) !important;
+  outline-offset: 2px !important;
+  border-radius: inherit;
+}
+
+/* Toast entry (replaces classes from a tailwindcss-animate plugin that was
+   never installed — toasts previously popped in with no animation at all). */
+@keyframes toast-in {
+  from { opacity: 0; transform: translateX(16px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+.toast-enter { animation: toast-in 0.25s ease-out; }
+@media (prefers-reduced-motion: reduce) {
+  .toast-enter { animation: none; }
 }

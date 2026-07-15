@@ -1,3 +1,4 @@
+import { useModalA11y } from '../hooks/useModalA11y';
 import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, ChevronRight, ChevronLeft, Check, Loader2 } from 'lucide-react';
@@ -367,9 +368,16 @@ export default function BusinessCaseModal({
     selectedModels.size > 0 &&
     Array.from(selectedModels).every((m) => (volumeMap[m] ?? 0) > 0);
 
+  // Dialog semantics: Escape closes, focus is trapped, opener refocused on close.
+  const { panelRef, dialogProps } = useModalA11y(onClose);
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" onClick={onClose}>
       <motion.div
+        ref={panelRef}
+        {...dialogProps}
+        aria-label="Business case"
+        onClick={e => e.stopPropagation()}
         initial={{ opacity: 0, scale: 0.96, y: 12 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.96, y: 12 }}

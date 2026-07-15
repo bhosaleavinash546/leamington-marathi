@@ -408,31 +408,31 @@ export default function CadToCostPage() {
             {geometry && !parsing && (
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 {geometry.boundingBox && (
-                  <div className="bg-white/4 rounded-xl p-3">
+                  <div className="bg-white/5 rounded-xl p-3">
                     <p className="text-slate-500 text-xs mb-1">Bounding Box</p>
                     <p className="text-white text-sm font-mono">{geometry.boundingBox.x} × {geometry.boundingBox.y} × {geometry.boundingBox.z} mm</p>
                   </div>
                 )}
                 {geometry.estimatedVolume !== undefined && (
-                  <div className="bg-white/4 rounded-xl p-3">
+                  <div className="bg-white/5 rounded-xl p-3">
                     <p className="text-slate-500 text-xs mb-1">Est. Volume</p>
                     <p className="text-white text-sm font-mono">{geometry.estimatedVolume.toFixed(2)} cm³</p>
                   </div>
                 )}
                 {geometry.estimatedMass !== undefined && (
-                  <div className="bg-white/4 rounded-xl p-3">
+                  <div className="bg-white/5 rounded-xl p-3">
                     <p className="text-slate-500 text-xs mb-1">Est. Mass (steel)</p>
                     <p className="text-white text-sm font-mono">{geometry.estimatedMass} kg</p>
                   </div>
                 )}
                 {geometry.triangleCount !== undefined && (
-                  <div className="bg-white/4 rounded-xl p-3">
+                  <div className="bg-white/5 rounded-xl p-3">
                     <p className="text-slate-500 text-xs mb-1">Triangles</p>
                     <p className="text-white text-sm font-mono">{geometry.triangleCount.toLocaleString()}</p>
                   </div>
                 )}
                 {geometry.featureCounts && Object.entries(geometry.featureCounts).filter(([, v]) => v).map(([k, v]) => (
-                  <div key={k} className="bg-white/4 rounded-xl p-3">
+                  <div key={k} className="bg-white/5 rounded-xl p-3">
                     <p className="text-slate-500 text-xs mb-1 capitalize">{k}</p>
                     <p className="text-white text-sm font-mono">{v}</p>
                   </div>
@@ -444,13 +444,13 @@ export default function CadToCostPage() {
                   </div>
                 )}
                 {geometry.extractedMaterial && (
-                  <div className="col-span-2 bg-white/4 rounded-xl p-3">
+                  <div className="col-span-2 bg-white/5 rounded-xl p-3">
                     <p className="text-slate-500 text-xs mb-1">Material (from drawing)</p>
                     <p className="text-white text-sm">{geometry.extractedMaterial}</p>
                   </div>
                 )}
                 {geometry.extractedDimensions && geometry.extractedDimensions.length > 0 && (
-                  <div className="col-span-2 sm:col-span-4 bg-white/4 rounded-xl p-3">
+                  <div className="col-span-2 sm:col-span-4 bg-white/5 rounded-xl p-3">
                     <p className="text-slate-500 text-xs mb-1">Extracted Dimensions</p>
                     <p className="text-slate-300 text-xs font-mono">{geometry.extractedDimensions.slice(0, 12).join(', ')}</p>
                   </div>
@@ -469,7 +469,7 @@ export default function CadToCostPage() {
             {/* Deterministic mesh feature analysis (STL) */}
             {geometry && !parsing && geometry.featureMap && (
               <div className="mt-3 space-y-3">
-                <div className="bg-white/4 rounded-xl p-3">
+                <div className="bg-white/5 rounded-xl p-3">
                   <p className="text-slate-500 text-xs mb-2 font-semibold uppercase tracking-wider">Mesh Feature Analysis</p>
                   <div className="flex flex-wrap gap-2 text-xs">
                     <span className="px-2 py-1 rounded-lg bg-white/5 text-slate-300">Solidity <span className="text-white font-mono">{geometry.featureMap.solidity}</span></span>
@@ -658,7 +658,7 @@ export default function CadToCostPage() {
                     {/* Cost breakdown detail */}
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-4">
                       {(['material', 'process', 'tooling', 'overhead'] as const).map(key => (
-                        <div key={key} className="bg-white/4 rounded-xl p-3">
+                        <div key={key} className="bg-white/5 rounded-xl p-3">
                           <p className="text-slate-500 text-xs capitalize mb-0.5">{key}</p>
                           <p className="text-white font-semibold">{formatCost(result.costBreakdown![key].value, result.costBreakdown![key].currency)}</p>
                           <p className="text-slate-600 text-[10px] leading-tight mt-1">{result.costBreakdown![key].basis}</p>

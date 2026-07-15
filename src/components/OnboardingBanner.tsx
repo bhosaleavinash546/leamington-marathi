@@ -57,7 +57,7 @@ export default function OnboardingBanner() {
                 <Link
                   key={to}
                   to={to}
-                  className="group flex items-start gap-3 p-3 rounded-xl bg-white/4 border border-white/8 hover:border-gold-500/30 hover:bg-white/6 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400/50"
+                  className="group flex items-start gap-3 p-3 rounded-xl bg-white/5 border border-white/8 hover:border-gold-500/30 hover:bg-white/6 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400/50"
                 >
                   <div className="w-8 h-8 rounded-lg bg-gold-500/10 flex items-center justify-center flex-shrink-0">
                     <Icon size={15} className="text-gold-400" />

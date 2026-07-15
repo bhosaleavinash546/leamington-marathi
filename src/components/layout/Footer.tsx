@@ -54,12 +54,11 @@ export default function Footer() {
                 <p className="text-slate-500 text-xs">Tool Author & Designer</p>
               </div>
             </div>
-            <a
-              href="mailto:avinash.bhosale8925@gmail.com"
-              className="flex items-center gap-2 text-slate-500 hover:text-gold-400 text-xs transition-colors mb-1.5"
-            >
-              <Mail size={11} /> avinash.bhosale8925@gmail.com
-            </a>
+            <div className="flex items-center gap-3 text-slate-500 text-xs mb-1.5">
+              <Link to="/legal/privacy" className="hover:text-gold-400 transition-colors">Privacy</Link>
+              <span aria-hidden="true">·</span>
+              <Link to="/legal/terms" className="hover:text-gold-400 transition-colors">Terms</Link>
+            </div>
             <Link
               to="/help"
               className="flex items-center gap-2 text-slate-500 hover:text-gold-400 text-xs transition-colors"
