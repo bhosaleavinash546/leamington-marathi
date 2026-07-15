@@ -36,6 +36,7 @@ import { registerMarketplaceRoutes } from './routes/marketplace.mjs';
 import { registerRateLibraryRoutes } from './routes/rate-library.mjs';
 import { registerCadRoutes } from './routes/cad.mjs';
 import { registerHarnessRoutes } from './routes/harness.mjs';
+import { registerOrgRoutes } from './routes/orgs.mjs';
 import { analyzeFeatures } from './src/services/cad-features.mjs';
 import { aggregateOcctMeshes, analyzeBrep } from './src/services/cad-brep.mjs';
 
@@ -844,6 +845,25 @@ async function sendOTPEmail(email, otp, type) {
 }
 
 // ─── JWT middleware ───────────────────────────────────────────────────────────
+
+// ── Usage quota (billing substrate) ──────────────────────────────────────────
+// CV_MONTHLY_TOKEN_QUOTA (output tokens per user per calendar month, 0 = off)
+// turns the existing llm_calls telemetry into real metering: over-quota users
+// get 429 + a clear message instead of silent unlimited spend. Stripe can bolt
+// onto this without schema changes.
+const MONTHLY_TOKEN_QUOTA = Number(process.env.CV_MONTHLY_TOKEN_QUOTA ?? 0);
+function checkUsageQuota(req, res, next) {
+  if (!MONTHLY_TOKEN_QUOTA || !req.user?.id) return next();
+  try {
+    const monthStart = new Date(); monthStart.setUTCDate(1); monthStart.setUTCHours(0, 0, 0, 0);
+    const row = db.prepare('SELECT COALESCE(SUM(outputTokens),0) AS t FROM llm_calls WHERE userId = ? AND createdAt >= ?')
+      .get(req.user.id, monthStart.toISOString());
+    if (row.t >= MONTHLY_TOKEN_QUOTA) {
+      return res.status(429).json({ error: `Monthly AI usage quota reached (${MONTHLY_TOKEN_QUOTA.toLocaleString()} tokens). Quota resets on the 1st.` });
+    }
+  } catch { /* metering must never take the API down */ }
+  next();
+}
 
 function requireAuth(req, res, next) {
   const auth = req.headers.authorization;
@@ -2381,7 +2401,7 @@ function deterministicCadCost(g, config) {
   return { calc, sim, input, matRes, procRes, weightKg, density, region, annualVolume, currency, fx };
 }
 
-app.post('/api/cad-analyze', requireAuth, rateLimit(15, 60 * 60 * 1000), async (req, res) => {
+app.post('/api/cad-analyze', requireAuth, checkUsageQuota, rateLimit(15, 60 * 60 * 1000), async (req, res) => {
   try {
     const { config = {} } = req.body;
     const apiKey = resolveApiKey(req);
@@ -2554,7 +2574,7 @@ function autoSaveProject(userId, projectId, systemName, subassemblyName, partNam
   }
 }
 
-app.post('/api/analyze', requireAuth, rateLimit(40, 60 * 60 * 1000), async (req, res) => {
+app.post('/api/analyze', requireAuth, checkUsageQuota, rateLimit(40, 60 * 60 * 1000), async (req, res) => {
   const { config, systemName, subassemblyName, partName, enableSearch, searchApiKey, cadGeometry } = req.body;
   // Body key → stored credential → server env (resolveApiKey reads req.body.apiKey,
   // so mirror config.apiKey into it for the shared resolution order).
@@ -2772,7 +2792,7 @@ app.post('/api/analyze', requireAuth, rateLimit(40, 60 * 60 * 1000), async (req,
 
 // ─── AI CHAT ROUTE ────────────────────────────────────────────────────────────
 
-app.post('/api/chat', requireAuth, rateLimit(120, 60 * 60 * 1000), async (req, res) => {
+app.post('/api/chat', requireAuth, checkUsageQuota, rateLimit(120, 60 * 60 * 1000), async (req, res) => {
   const { apiKey, ideas, config, systemName, subassemblyName, history, message } = req.body;
   if (!apiKey?.trim()) return res.status(400).json({ error: 'API key required.' });
   if (!message?.trim()) return res.status(400).json({ error: 'Message required.' });
@@ -2990,7 +3010,7 @@ async function seedAdminAccount() {
 
 // ─── PATENT WATCH ─────────────────────────────────────────────────────────────
 
-app.post('/api/patent-watch', requireAuth, rateLimit(20, 60 * 60 * 1000), async (req, res) => {
+app.post('/api/patent-watch', requireAuth, checkUsageQuota, rateLimit(20, 60 * 60 * 1000), async (req, res) => {
   const { title, description, apiKey } = req.body;
   if (!title || !apiKey) return res.status(400).json({ error: 'title and apiKey required' });
   try {
@@ -3026,6 +3046,8 @@ registerMarketplaceRoutes(app, { db, requireAuth, rateLimit });
 registerCadRoutes(app, { requireAuth, rateLimit });
 // Wiring-harness should-cost (deterministic parametric model).
 registerHarnessRoutes(app, { requireAuth, rateLimit });
+// Organisations & roles v1 (SaaS substrate: personal orgs, invites, role middleware).
+registerOrgRoutes(app, { db, requireAuth, rateLimit });
 
 // Active rate library with live commodity prices bridged in — shared by the
 // engine-as-tools chat and the agentic cost-down endpoint below.
@@ -3073,7 +3095,7 @@ app.post('/api/webhooks/test', requireAuth, rateLimit(20, 60 * 60 * 1000), async
 });
 
 // ─── CAD Diff Analysis ───────────────────────────────────────────────────────
-app.post('/api/cad-diff', requireAuth, rateLimit(15, 60 * 60 * 1000), async (req, res) => {
+app.post('/api/cad-diff', requireAuth, checkUsageQuota, rateLimit(15, 60 * 60 * 1000), async (req, res) => {
   const { designA, designB, apiKey } = req.body;
   if (!designA || !designB || !apiKey) return res.status(400).json({ error: 'designA, designB, and apiKey required' });
   try {
@@ -3131,7 +3153,7 @@ app.post('/api/projects/:id/cross-pollinate', requireAuth, (req, res) => {
 
 // ─── TEARDOWN VISION ─────────────────────────────────────────────────────────
 
-app.post('/api/teardown-vision', requireAuth, rateLimit(10, 60 * 60 * 1000), async (req, res) => {
+app.post('/api/teardown-vision', requireAuth, checkUsageQuota, rateLimit(10, 60 * 60 * 1000), async (req, res) => {
   const { imageBase64, mimeType, apiKey } = req.body;
   if (!imageBase64 || !apiKey) return res.status(400).json({ error: 'imageBase64 and apiKey required' });
   try {
@@ -3157,7 +3179,7 @@ app.post('/api/teardown-vision', requireAuth, rateLimit(10, 60 * 60 * 1000), asy
 // ─── PCB IMAGE → BOM → COST ───────────────────────────────────────────────────
 
 // Vision: a PCB photo → a structured component BOM estimate, then costed.
-app.post('/api/pcb-bom-cost', requireAuth, rateLimit(15, 60 * 60 * 1000), async (req, res) => {
+app.post('/api/pcb-bom-cost', requireAuth, checkUsageQuota, rateLimit(15, 60 * 60 * 1000), async (req, res) => {
   const { imageBase64, mimeType, apiKey, volume } = req.body;
   if (!imageBase64 || !apiKey) return res.status(400).json({ error: 'imageBase64 and apiKey are required.' });
   if (typeof imageBase64 === 'string' && imageBase64.length > 12_000_000) return res.status(413).json({ error: 'Image too large (max ~9 MB).' });
@@ -3325,7 +3347,7 @@ Be concise, expert, and practical. Use plain English. When explaining BrainSpark
 
 If asked something outside automotive cost engineering or BrainSpark, politely redirect: "I am specialised in automotive cost engineering and BrainSpark. For this question I'd suggest [brief alternative]."`;
 
-app.post('/api/assistant-chat', requireAuth, rateLimit(40, 60 * 60 * 1000), async (req, res) => {
+app.post('/api/assistant-chat', requireAuth, checkUsageQuota, rateLimit(40, 60 * 60 * 1000), async (req, res) => {
   const { message, history = [] } = req.body;
   if (!message?.trim()) return res.status(400).json({ error: 'message is required' });
   const apiKey = resolveApiKey(req);
@@ -3364,7 +3386,7 @@ app.post('/api/assistant-chat', requireAuth, rateLimit(40, 60 * 60 * 1000), asyn
 //    return only engine-verified savings vs the baseline. Every number here is a
 //    real deterministic computation — the LLM explores and narrates, it does not
 //    invent savings. ────────────────────────────────────────────────────────────
-app.post('/api/cost-down', requireAuth, rateLimit(20, 60 * 60 * 1000), validate(SCHEMAS.costDown), async (req, res) => {
+app.post('/api/cost-down', requireAuth, checkUsageQuota, rateLimit(20, 60 * 60 * 1000), validate(SCHEMAS.costDown), async (req, res) => {
   try {
     // NB: destructure process as `proc` — `process` would shadow the Node global
     // and break `process.env` on the next line.
