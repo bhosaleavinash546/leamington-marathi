@@ -1,0 +1,108 @@
+{
+  "hitRate": 78.6,
+  "mape": 20.9,
+  "bias": -7.3,
+  "bandCoverage": 35.7,
+  "hits": 11,
+  "total": 14,
+  "rows": [
+    {
+      "name": "Door module carrier, PA66-GF30 (injection moulded, >0.5 kg)",
+      "ref": 5.8,
+      "modelled": 5.18,
+      "errPct": -10.7,
+      "withinTol": true
+    },
+    {
+      "name": "Washer-fluid bottle, PP (injection moulded, 1.4 kg)",
+      "ref": 4.2,
+      "modelled": 3.83,
+      "errPct": -8.8,
+      "withinTol": true
+    },
+    {
+      "name": "Aluminium crash-management extrusion profile (cut to length)",
+      "ref": 10.5,
+      "modelled": 8.4,
+      "errPct": -20,
+      "withinTol": true
+    },
+    {
+      "name": "E-motor housing, HPDC Al + op-20 machining + wash (routed)",
+      "ref": 26,
+      "modelled": 24.56,
+      "errPct": -5.5,
+      "withinTol": true
+    },
+    {
+      "name": "Zinc die-cast exterior door-handle body",
+      "ref": 2.4,
+      "modelled": 1.91,
+      "errPct": -20.4,
+      "withinTol": true
+    },
+    {
+      "name": "Magnesium die-cast cross-car-beam bracket",
+      "ref": 4.8,
+      "modelled": 5.39,
+      "errPct": 12.3,
+      "withinTol": true
+    },
+    {
+      "name": "Large grey-iron sand casting, axle/diff housing (28 kg)",
+      "ref": 36,
+      "modelled": 38.97,
+      "errPct": 8.2,
+      "withinTol": true
+    },
+    {
+      "name": "Laser-cut + bent steel bracket at LOW volume (10k/yr)",
+      "ref": 4.5,
+      "modelled": 3.64,
+      "errPct": -19.1,
+      "withinTol": true
+    },
+    {
+      "name": "CNC-machined Al fitting at HIGH volume (500k/yr) — expected engine miss",
+      "ref": 5.5,
+      "modelled": 8.02,
+      "errPct": 45.8,
+      "withinTol": false
+    },
+    {
+      "name": "CFRP structural panel, RTM (1.8 kg) — expected engine miss",
+      "ref": 170,
+      "modelled": 104.97,
+      "errPct": -38.3,
+      "withinTol": false
+    },
+    {
+      "name": "Titanium Ti-6Al-4V machined fitting (low volume) — expected engine miss",
+      "ref": 55,
+      "modelled": 29.68,
+      "errPct": -46,
+      "withinTol": false
+    },
+    {
+      "name": "Brass hydraulic manifold fitting (CNC milled)",
+      "ref": 5,
+      "modelled": 6.43,
+      "errPct": 28.6,
+      "withinTol": true
+    },
+    {
+      "name": "Hydroformed HSS engine-cradle rail",
+      "ref": 13.5,
+      "modelled": 11.4,
+      "errPct": -15.6,
+      "withinTol": true
+    },
+    {
+      "name": "MIG-welded steel mount assembly (5.5 kg)",
+      "ref": 10,
+      "modelled": 8.66,
+      "errPct": -13.4,
+      "withinTol": true
+    }
+  ]
+}

@@ -30,11 +30,19 @@ jobs:
       - name: Server syntax
         run: node --check server.mjs
 
-      - name: Unit tests (costing engine, validation, classifiers, CAD features)
+      - name: Unit + HTTP integration tests
         run: npm test
 
       - name: CAD accuracy benchmark (must stay ≥ 90%)
         run: node benchmark/run.mjs --min 0.9
 
+      - name: Cost benchmark (hit-rate ≥ 90%, MAPE ≤ 12%)
+        run: node benchmark/cost-run.mjs --min-hit 0.90 --max-mape 0.12
+
       - name: Production build
         run: npx vite build
+
+      - name: E2E smoke + axe accessibility gate
+        run: |
+          npx playwright-core install --with-deps chromium || npx playwright-core install chromium
+          CHROMIUM_PATH="$(node -e "console.log(require('playwright-core').chromium.executablePath())")" npm run e2e

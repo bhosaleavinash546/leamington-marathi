@@ -398,6 +398,7 @@ export default function MarketplacePage() {
             <select
               value={filterSystem}
               onChange={e => setFilterSystem(e.target.value)}
+              aria-label="Filter by system"
               className="bg-navy-900 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm appearance-none focus:outline-none focus:border-gold-500/30 pr-8"
             >
               {availableSystems.map(s => (
@@ -460,7 +461,7 @@ export default function MarketplacePage() {
                 title={p === 'All' ? 'All powertrains' : `${p}-specific ideas`}
               >
                 {p === 'All' ? 'All' : p}
-                <span className="ml-1 opacity-50">{p === 'All' ? powertrainCounts.All : powertrainCounts[p]}</span>
+                <span className="ml-1 opacity-90">{p === 'All' ? powertrainCounts.All : powertrainCounts[p]}</span>
               </button>
             ))}
           </div>
@@ -479,7 +480,7 @@ export default function MarketplacePage() {
                 title={v === 'All' ? 'All architectures' : `${v} architecture ideas`}
               >
                 {v === 'All' ? 'All' : v}
-                <span className="ml-1 opacity-50">{v === 'All' ? voltageCounts.All : voltageCounts[v]}</span>
+                <span className="ml-1 opacity-90">{v === 'All' ? voltageCounts.All : voltageCounts[v]}</span>
               </button>
             ))}
           </div>
@@ -569,7 +570,7 @@ export default function MarketplacePage() {
               <p className="text-slate-500 text-xs">{sorted.length.toLocaleString()} idea{sorted.length === 1 ? '' : 's'} match</p>
               <label className="flex items-center gap-2 text-xs text-slate-400">
                 Sort
-                <select value={sortBy} onChange={e => { setSortBy(e.target.value as typeof sortBy); setVisibleCount(60); }}
+                <select aria-label="Sort ideas" value={sortBy} onChange={e => { setSortBy(e.target.value as typeof sortBy); setVisibleCount(60); }}
                   className="bg-navy-900 border border-white/10 rounded-lg px-2 py-1.5 text-slate-200 text-xs">
                   <option value="featured">Featured</option>
                   <option value="saving">Highest saving</option>

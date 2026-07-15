@@ -42,6 +42,12 @@ export const MATERIALS = {
   'POM (Acetal)':             { density: 1.41, price: 2.60, scrapRecovery: 0.10, family: 'plastic' },
   'Polycarbonate (PC)':       { density: 1.20, price: 3.00, scrapRecovery: 0.10, family: 'plastic' },
   'CFRP (Carbon Fibre)':      { density: 1.55, price: 28.0, scrapRecovery: 0.00, family: 'composite' },
+  // ── Families the audit flagged as uncostable (e-motors, busbars, seals,
+  //    hoses, glazing, harnesses) ──
+  'Copper (Cu-ETP)':          { density: 8.96, price: 9.20, scrapRecovery: 0.75, family: 'copper' },
+  'Electrical Steel (M250-35A)': { density: 7.65, price: 1.45, scrapRecovery: 0.20, family: 'electricalsteel' },
+  'EPDM Rubber':              { density: 1.20, price: 2.40, scrapRecovery: 0.00, family: 'elastomer' },
+  'Glass (Soda-lime, automotive)': { density: 2.50, price: 0.85, scrapRecovery: 0.15, family: 'glass' },
 };
 
 // ─── Region database ──────────────────────────────────────────────────────────
@@ -203,6 +209,31 @@ export const PROCESSES = {
     setupHr: 1.5, batch: 8000, toolLife: 2_000_000,
     cycleBase: 2, cyclePerKg: 0.5, toolingBase: 25_000, toolingPerKg: 0,
     families: ['aluminium', 'copper'],
+  },
+  'Lamination Stamping (Electrical Steel)': {
+    // High-speed progressive stamping + interlock stacking of motor laminations.
+    // 200+ spm carbide dies over tens of millions of hits; utilisation reflects
+    // slot/skeleton scrap (~30% of the strip becomes remelt).
+    machineRate: 110, operators: 0.4, cavities: 1, utilisation: 0.70, scrapPct: 0.02,
+    setupHr: 3.0, batch: 10_000, toolLife: 40_000_000,
+    cycleBase: 1.5, cyclePerKg: 3.0, toolingBase: 220_000, toolingPerKg: 20_000,
+    families: ['electricalsteel'],
+  },
+  'Rubber Moulding (Compression/Injection)': {
+    // Cure time dominates: 60-180 s in-mould vulcanisation. Multi-cavity tools
+    // offset the slow cycle for seals/grommets/boots.
+    machineRate: 45, operators: 0.6, cavities: 8, utilisation: 0.88, scrapPct: 0.04,
+    setupHr: 2.0, batch: 3000, toolLife: 500_000,
+    cycleBase: 90, cyclePerKg: 60, toolingBase: 22_000, toolingPerKg: 30_000,
+    families: ['elastomer'],
+  },
+  'Glass Forming (Bend + Temper)': {
+    // Automotive glazing: cut/grind → gravity/press bend → temper (or laminate).
+    // Line rate dominates; the bending fixture is cheap relative to the furnace.
+    machineRate: 150, operators: 0.8, cavities: 1, utilisation: 0.82, scrapPct: 0.04,
+    setupHr: 2.5, batch: 2000, toolLife: 300_000,
+    cycleBase: 40, cyclePerKg: 6, toolingBase: 30_000, toolingPerKg: 3_000,
+    families: ['glass'],
   },
   'MIG Welding Assembly': {
     machineRate: 45, operators: 1.2, cavities: 1, utilisation: 0.98, scrapPct: 0.02,

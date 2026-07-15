@@ -35,6 +35,7 @@ import { registerShouldCostRoutes } from './routes/should-cost.mjs';
 import { registerMarketplaceRoutes } from './routes/marketplace.mjs';
 import { registerRateLibraryRoutes } from './routes/rate-library.mjs';
 import { registerCadRoutes } from './routes/cad.mjs';
+import { registerHarnessRoutes } from './routes/harness.mjs';
 import { analyzeFeatures } from './src/services/cad-features.mjs';
 import { aggregateOcctMeshes, analyzeBrep } from './src/services/cad-brep.mjs';
 
@@ -115,11 +116,11 @@ app.use(helmet({
     directives: {
       defaultSrc: ["'self'"],
       scriptSrc: ["'self'"],
-      styleSrc: ["'self'", "'unsafe-inline'"],
+      styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
       imgSrc: ["'self'", 'data:', 'blob:'],
-      connectSrc: ["'self'"],
+      connectSrc: ["'self'", 'https://fonts.googleapis.com', 'https://fonts.gstatic.com'],
       workerSrc: ["'self'", 'blob:'],
-      fontSrc: ["'self'", 'data:'],
+      fontSrc: ["'self'", 'data:', 'https://fonts.gstatic.com'],
       objectSrc: ["'none'"],
       frameAncestors: ["'none'"],
     },
@@ -630,6 +631,7 @@ seedMarketplaceIdeasFromFile('marketplace-driveline-ideas.json', 'premium-SUV dr
 seedMarketplaceIdeasFromFile('marketplace-offroad-luxury-ideas.json', 'off-road luxury cost-reduction ideas');
 // 45 domain-expansion ideas: tolerance/GD&T relaxation, modern joining, E/E & software.
 seedMarketplaceIdeasFromFile('marketplace-domain-expansion-ideas.json', 'domain-expansion ideas (GD&T / joining / E-E)');
+seedMarketplaceIdeasFromFile('marketplace-missing-commodity-ideas.json', 'missing-commodity ideas (seats/glazing/HVAC/restraints/harness/paint)');
 
 const CACHE_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
 
@@ -3022,6 +3024,8 @@ const shouldCostApi = registerShouldCostRoutes(app, { db, requireAuth, rateLimit
 registerMarketplaceRoutes(app, { db, requireAuth, rateLimit });
 // 3D CAD viewer: STEP/IGES tessellation + geometry analysis via the OCCT engine.
 registerCadRoutes(app, { requireAuth, rateLimit });
+// Wiring-harness should-cost (deterministic parametric model).
+registerHarnessRoutes(app, { requireAuth, rateLimit });
 
 // Active rate library with live commodity prices bridged in — shared by the
 // engine-as-tools chat and the agentic cost-down endpoint below.
@@ -3634,6 +3638,24 @@ app.get('/api/business-cases/:id/comments', requireAuth, (req, res) => {
   ).all(req.params.id);
   res.json(comments);
 });
+
+// ─── Production static serving (deployment story) ────────────────────────────
+// `npm run build` emits the front end to dist/; serve it from the same origin
+// so a single process (or container) is a complete deployment. Vite dev mode
+// is unaffected (dist/ simply doesn't exist / isn't hit on :5173).
+const DIST_DIR = path.join(__dirname, 'dist');
+if (fs.existsSync(DIST_DIR)) {
+  app.use(express.static(DIST_DIR, { index: 'index.html', maxAge: '1h', setHeaders: (res, p) => {
+    // Hashed assets are immutable; index.html must always revalidate.
+    if (/\.(js|css|woff2?|png|svg|webmanifest)$/.test(p) && /-[\w]{8,}\./.test(p)) res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+    if (p.endsWith('index.html')) res.setHeader('Cache-Control', 'no-cache');
+  } }));
+  // SPA fallback: non-API GETs land on the app so a refresh on /marketplace works.
+  app.get(/^(?!\/api\/).*/, (req, res, next) => {
+    if (req.method !== 'GET') return next();
+    res.sendFile(path.join(DIST_DIR, 'index.html'));
+  });
+}
 
 // ─── Last-resort error handling ──────────────────────────────────────────────
 // Auto-wrapped async handlers route rejections here; a thrown error becomes a

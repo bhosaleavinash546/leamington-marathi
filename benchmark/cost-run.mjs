@@ -15,10 +15,21 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { computeShouldCost, simulateShouldCost, computeRouteCost, simulateRouteCost } from '../costing-engine.mjs';
 import { COST_FIXTURES } from './cost-fixtures.mjs';
+import fs from 'fs';
+
+// --fixtures <path.json> runs an alternate fixture set (e.g. the HELD-OUT pack
+// authored after calibration freeze — the over-fit detector). JSON shape:
+// { fixtures: [{ name, input, refPriceEur, tol, ... }] } or a bare array.
+function loadFixtureArg() {
+  const i = process.argv.indexOf('--fixtures');
+  if (i === -1) return COST_FIXTURES;
+  const raw = JSON.parse(fs.readFileSync(process.argv[i + 1], 'utf8'));
+  return Array.isArray(raw) ? raw : raw.fixtures;
+}
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 
-export function scoreCost(fixtures = COST_FIXTURES) {
+export function scoreCost(fixtures = loadFixtureArg()) {
   const rows = [];
   for (const fx of fixtures) {
     let modelled, band;
@@ -66,7 +77,8 @@ function main() {
   console.log(`  Bias (signed mean err):  ${r.bias >= 0 ? '+' : ''}${(r.bias * 100).toFixed(1)}%  ${r.bias < -0.05 ? '← engine reads LOW vs market' : r.bias > 0.05 ? '← engine reads HIGH vs market' : ''}`);
   console.log(`  P10–P90 band coverage:   ${(r.bandCoverage * 100).toFixed(1)}%  (Monte-Carlo band rarely spans real price spread — expected low)\n`);
 
-  writeFileSync(join(root, 'benchmark', 'cost-results.json'), JSON.stringify({
+  const resultsName = process.argv.includes('--fixtures') ? 'cost-results-holdout.json' : 'cost-results.json';
+  writeFileSync(join(root, 'benchmark', resultsName), JSON.stringify({
     hitRate: +(r.hitRate * 100).toFixed(1), mape: +(r.mape * 100).toFixed(1), bias: +(r.bias * 100).toFixed(1),
     bandCoverage: +(r.bandCoverage * 100).toFixed(1), hits: r.hits, total: r.total,
     rows: r.rows.map(x => ({ name: x.name, ref: x.ref, modelled: x.modelled, errPct: typeof x.err === 'number' ? +(x.err * 100).toFixed(1) : null, withinTol: x.withinTol })),

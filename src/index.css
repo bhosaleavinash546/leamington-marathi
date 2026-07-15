@@ -115,8 +115,9 @@
 .text-slate-200 { color: #dde4ee; }
 .text-slate-300 { color: #b8c6d8; }
 .text-slate-400 { color: #8898ae; }
-.text-slate-500 { color: #7a8ba1; }   /* 4.6:1 on navy-900 — was #5d6e84 at 3.4:1 (failed AA for the 12px meta text it's used on) */
-.text-slate-600 { color: #64748b; }   /* lifted one step for the same reason */
+.text-slate-500 { color: #8496ab; }   /* ≥4.5:1 even on white/5-tinted tiles — was #5d6e84 at 3.4:1 */
+.text-slate-600 { color: #7286a0; }   /* 4.6:1 on navy-900 — axe flagged the previous step at 4.0 */
+.text-slate-700 { color: #6d7f95; }   /* footer/version text — axe flagged the default at 1.84:1 on navy-950 */
 
 /* ═══════════════════════════════════════════════════════════════════════════
    LIGHT THEME — targeted overrides for Tailwind's fixed-value utilities
