@@ -1,0 +1,109 @@
+/* Interactive CAD viewer (cv3d-*) styles. The viewer builds all its own DOM
+   in services/cad-viewer.ts; this file only styles those elements. Scoped to
+   cv3d-* / cv3d-host so it won't collide with the app's Tailwind globals. */
+
+/* Host wrapper sized by the page; the viewer fills it. Palette vars are scoped
+   here (not :root) so they never leak into the app's Tailwind theme. */
+.cv3d-host {
+  --panel: #171b21; --panel-2: #1e242c; --line: #2a313b;
+  --text: #e7ecf2; --muted: #9aa4b0; --accent: #2563eb; --accent-2: #4f8ef7;
+  width: 100%; height: 520px;
+}
+@media (max-width: 720px) { .cv3d-host { height: 420px; } }
+.cv3d { display: flex; flex-direction: column; width: 100%; height: 100%; }
+
+/* ── CAD viewer component (cv3d-*) ──────────────────────────────────────── */
+.cv3d {
+  display: flex; flex-direction: column;
+  width: 100%; height: 100%;
+  background: var(--panel); border: 1px solid var(--line); border-radius: 14px;
+  overflow: hidden;
+}
+
+.cv3d-toolbar {
+  display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
+  padding: 8px 10px; background: var(--panel-2); border-bottom: 1px solid var(--line);
+}
+.cv3d-group { display: flex; gap: 4px; padding-right: 10px; border-right: 1px solid var(--line); }
+.cv3d-group:last-child { border-right: none; }
+.cv3d-toolbar button {
+  min-width: 30px; height: 30px; padding: 0 8px;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: var(--panel); color: var(--text);
+  border: 1px solid var(--line); border-radius: 8px;
+  font-size: 14px; cursor: pointer; transition: background .12s, border-color .12s;
+}
+.cv3d-toolbar button:hover:not(:disabled) { background: var(--panel-2); border-color: var(--accent); }
+.cv3d-toolbar button.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+.cv3d-toolbar button:disabled { opacity: .4; cursor: not-allowed; }
+
+.cv3d-viewport { position: relative; flex: 1 1 auto; min-height: 0; background: #fff; }
+.cv3d-canvas { display: block; width: 100%; height: 100%; }
+
+/* Floating panels */
+.cv3d-facechip, .cv3d-legend, .cv3d-measures, .cv3d-features-panel, .cv3d-bodies {
+  position: absolute; z-index: 4;
+  background: rgba(23, 27, 33, .94); color: var(--text);
+  border: 1px solid var(--line); border-radius: 10px;
+  padding: 8px 10px; font-size: 12px; box-shadow: 0 6px 20px rgba(0,0,0,.35);
+  max-width: 260px;
+}
+.cv3d-facechip { top: 10px; left: 10px; display: flex; flex-direction: column; gap: 2px; }
+.cv3d-facechip strong { font-size: 12.5px; }
+.cv3d-facechip em { color: var(--muted); font-style: normal; }
+.cv3d-legend { bottom: 10px; left: 10px; display: flex; flex-direction: column; gap: 4px; }
+.cv3d-legend-row { display: flex; align-items: center; gap: 6px; }
+.cv3d-legend-swatch { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
+
+.cv3d-measures { top: 10px; right: 10px; min-width: 190px; }
+.cv3d-features-panel { top: 10px; right: 10px; min-width: 190px; }
+.cv3d-bodies { bottom: 10px; right: 10px; min-width: 150px; }
+.cv3d-measures-title {
+  display: flex; align-items: center; justify-content: space-between;
+  font-weight: 700; margin-bottom: 6px; gap: 8px;
+}
+.cv3d-csv-btn {
+  background: var(--panel); color: var(--text); border: 1px solid var(--line);
+  border-radius: 6px; font-size: 11px; padding: 2px 6px; cursor: pointer;
+}
+.cv3d-csv-btn:hover { border-color: var(--accent); }
+.cv3d-measure-row, .cv3d-body-row {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  padding: 3px 0; border-top: 1px solid var(--line);
+}
+.cv3d-measure-row:first-child, .cv3d-body-row:first-child { border-top: none; }
+.cv3d-measure-row button {
+  background: transparent; color: var(--muted); border: none;
+  cursor: pointer; font-size: 12px; padding: 0 2px;
+}
+.cv3d-measure-row button:hover { color: #ff6b6b; }
+.cv3d-feature-row { cursor: pointer; }
+.cv3d-feature-row:hover { color: var(--accent-2); }
+.cv3d-body-row { cursor: default; justify-content: flex-start; gap: 6px; }
+.cv3d-body-row input { accent-color: var(--accent); }
+
+/* Section / clipping panel */
+.cv3d-clip-panel {
+  position: absolute; z-index: 4; left: 50%; bottom: 12px; transform: translateX(-50%);
+  display: flex; align-items: center; gap: 8px;
+  background: rgba(23, 27, 33, .94); border: 1px solid var(--line);
+  border-radius: 10px; padding: 6px 10px; box-shadow: 0 6px 20px rgba(0,0,0,.35);
+}
+.cv3d-clip-label { font-size: 12px; color: var(--muted); }
+.cv3d-clip-panel button {
+  min-width: 26px; height: 24px; background: var(--panel); color: var(--text);
+  border: 1px solid var(--line); border-radius: 6px; cursor: pointer; font-size: 12px;
+}
+.cv3d-clip-panel button.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+.cv3d-clip-slider { width: 160px; accent-color: var(--accent); }
+
+/* Status bar */
+.cv3d-status {
+  display: flex; flex-wrap: wrap; gap: 6px 16px; align-items: center;
+  padding: 6px 10px; background: var(--panel-2); border-top: 1px solid var(--line);
+  font-size: 12px; color: var(--muted);
+}
+.cv3d-status-file { color: var(--text); font-weight: 600; }
+.cv3d-status-hint { margin-left: auto; }
+
+.cv3d--compact .cv3d-toolbar button { min-width: 26px; height: 26px; font-size: 12px; }

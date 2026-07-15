@@ -33,6 +33,7 @@ import { costBom, COMPONENT_TYPES, COMPONENT_CLASSES } from './pcb-cost.mjs';
 import { registerShouldCostRoutes } from './routes/should-cost.mjs';
 import { registerMarketplaceRoutes } from './routes/marketplace.mjs';
 import { registerRateLibraryRoutes } from './routes/rate-library.mjs';
+import { registerCadRoutes } from './routes/cad.mjs';
 import { analyzeFeatures } from './src/services/cad-features.mjs';
 import { aggregateOcctMeshes, analyzeBrep } from './src/services/cad-brep.mjs';
 
@@ -5435,6 +5436,8 @@ Keep it practical and actionable for an engineering team.`,
 // ─── SHOULD-COST ──────────────────────────────────────────────────────────────
 const shouldCostApi = registerShouldCostRoutes(app, { db, requireAuth, rateLimit, makeAnthropic, getCommodityPrices: () => priceCache });
 registerMarketplaceRoutes(app, { db, requireAuth, rateLimit });
+// 3D CAD viewer: STEP/IGES tessellation + geometry analysis via the OCCT engine.
+registerCadRoutes(app, { requireAuth, rateLimit });
 
 // Active rate library with live commodity prices bridged in — shared by the
 // engine-as-tools chat and the agentic cost-down endpoint below.

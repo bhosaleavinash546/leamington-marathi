@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import ButtonSpinner from '../components/ui/ButtonSpinner';
 import { parseCadFile, formatFileSize, estimateMass, type CadGeometry } from '../services/cad-parser';
+import CadViewer3D from '../components/CadViewer3D';
 import { useAuth } from '../contexts/AuthContext';
 import { ConfidenceLevel } from '../types';
 import { CURRENCIES as SUPPORTED_CURRENCIES, CURRENCY_SYMBOLS } from '../constants/costing';
@@ -388,6 +389,15 @@ export default function CadToCostPage() {
                 <RefreshCw size={13} /> Change file
               </button>
             </div>
+
+            {/* Interactive 3D viewer — STEP/IGES tessellated server-side via the
+                OCCT engine, STL parsed in-browser. Orbit/measure/section + B-rep
+                face intelligence. Independent of the parse/analyse flow below. */}
+            {/\.(step|stp|igs|iges|stl)$/i.test(file.name) && (
+              <div className="mb-4">
+                <CadViewer3D file={file} token={token} />
+              </div>
+            )}
 
             {parsing && (
               <div className="flex items-center gap-2 text-gold-400 text-sm">

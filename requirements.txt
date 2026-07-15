@@ -1,0 +1,4 @@
+# Python geometry engine (cad-engine/cad-geometry-engine.py) dependency.
+# IMPORTANT: the pure OCP wheel — NOT the full `cadquery` package.
+# The engine imports from OCP.* (STEPControl, IGESControl, BRepMesh, …).
+cadquery-ocp>=7.7,<7.9
