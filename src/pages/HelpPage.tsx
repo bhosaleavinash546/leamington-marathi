@@ -4,7 +4,7 @@ import { Search, ChevronDown, ChevronRight, HelpCircle, BookOpen, Mail, Zap, Ter
 import { APP_VERSION } from '../version';
 
 
-const BUILD_DATE = 'June 2026';
+const BUILD_DATE = 'July 2026';
 
 interface FaqItem { q: string; a: string; }
 interface FaqSection { category: string; icon: React.ElementType; items: FaqItem[]; }
@@ -26,6 +26,7 @@ const FAQ: FaqSection[] = [
     items: [
       { q: 'How does the AI generate ideas?', a: 'The Chief Engineer AI persona (30+ years automotive experience) analyses the selected part/subassembly using DFMA principles, material science, supply chain knowledge, and real-time web search data. It then generates structured ideas with savings estimates, implementation steps, risks, and timelines.' },
       { q: 'What does "web search" do?', a: 'When enabled, the AI performs up to 8 targeted internet searches per analysis — looking for current material prices, supplier benchmarks, and manufacturing process costs. This grounds estimates in real market data rather than training knowledge alone.' },
+      { q: 'What does the "Engine check" badge on an idea mean?', a: 'When an idea proposes a material or process substitution (or a mass reduction), BrainSpark runs BOTH sides of the claim through its deterministic cost engine on a reference part and stamps the result: CONFIRMED means the engine agrees the move saves money; CONTRADICTED means it does not (the idea stays listed, honestly flagged). Ideas whose move is not expressible as a baseline-versus-proposed comparison — commonisation, logistics, warranty — carry no stamp rather than a fake one. It validates the direction of the saving, not the exact figure for your specific part.' },
       { q: 'How accurate are the savings estimates?', a: 'Estimates are directionally accurate based on automotive benchmarks and live market data. They should be treated as engineering ballpark figures and validated with detailed cost studies and supplier RFQs before business case commitment.' },
       { q: 'What is the difference between Assembly, Subassembly, and Part level analysis?', a: 'System-level gives broad DFMA opportunities across the entire subsystem. Subassembly level focuses on interface and integration savings. Part level provides surgical, component-specific ideas with the highest precision. All three levels can be analysed for the same target.' },
       { q: 'How many ideas does the AI generate?', a: 'All available ideas in a single run — typically 12–20+ ideas depending on the component. There is no cap: the AI generates every viable cost reduction lever it can identify, spanning material substitution, process optimisation, design changes, commonisation, logistics, and emerging technology. Quick wins (Low difficulty), medium-term, and strategic ideas are all included, along with at least one commonisation and one emerging-tech idea.' },
@@ -33,6 +34,19 @@ const FAQ: FaqSection[] = [
       { q: 'What is the Idea Cache?', a: 'When web search is disabled, BrainSpark stores the analysis result in a server-side cache keyed by a hash of your inputs (system, subassembly, part, vehicle type, region, context). Re-running the same analysis within 7 days returns the cached result instantly — saving API tokens and time. The cache is bypassed automatically when web search is enabled, since live results are time-sensitive.' },
       { q: 'What is Multi-pass Deduplication?', a: 'When you use "Refine Analysis" to generate additional ideas, BrainSpark runs a token-overlap similarity check between the new ideas and the existing set. Any new idea whose title shares more than 50% of its keywords with an existing idea is automatically filtered out before being added to your list. This keeps your results clean regardless of how many refinement passes you run.' },
       { q: 'What is BOM Batch Analysis?', a: 'Available at /bom-analysis, this feature lets you upload an Excel (.xlsx) or CSV file containing a list of parts (system, subassembly, part name columns). BrainSpark analyses each part sequentially using the same Chief Engineer AI, then aggregates the results into a single Excel export showing total ideas, quick wins, and the top saving per part. Useful for programme-level impact assessments across a full vehicle BOM. Up to 100 parts per batch.' },
+    ],
+  },
+  {
+    category: '3D CAD Viewer',
+    icon: Package,
+    items: [
+      { q: 'Which CAD formats can I open in the 3D viewer?', a: 'STEP (.step/.stp), IGES (.igs/.iges), and STL (.stl). STEP and IGES are tessellated server-side by an OpenCascade (OCCT) geometry engine and carry exact B-rep face intelligence — true cylinder radii, hole depths, face types. STL renders instantly in your browser but is mesh-only (no face data). Proprietary formats (SolidWorks .sldprt, CATIA .catpart, Parasolid, JT) need a licensed kernel — export as STEP from your CAD tool instead; the app will tell you the same if you try.' },
+      { q: 'Where does the 3D viewer appear?', a: 'In three places: the Analyze page (it activates automatically when you upload a 3D model before generating ideas), the CAD-to-Cost page (alongside the cost estimate), and the CAD Diff page (one viewer per design, so you can inspect revision A and B side by side).' },
+      { q: 'How do I measure on the model?', a: 'Pick a tool from the toolbar: Distance (click two points — snaps to vertices and edges, reads in mm with ΔX/ΔY/ΔZ), Circle (click three points on a rim or bore — reads the exact diameter), or Angle (three points, vertex in the middle). Measurements persist per file, can be deleted individually, and export to CSV.' },
+      { q: 'What does "colour by machining surface" do?', a: 'For STEP/IGES models, every B-rep face is classified by the geometry kernel: planar faces (milling) in steel blue, cylindrical (drilling/boring/turning) in amber, conical (chamfers) in teal, toroidal (fillets) in rose, freeform (5-axis) in purple. One glance shows where the machining cost lives. Clicking any face shows its exact type, radius, and area.' },
+      { q: 'What is the Features panel?', a: 'For STEP/IGES models with cylindrical faces, the viewer groups detected holes and bosses by diameter and depth (e.g. "Hole Ø 10.00 × 10.0 deep mm × 4"). Click a row to highlight those faces on the model. Values come from the CAD kernel, not the mesh — they are exact.' },
+      { q: 'How does the section view work?', a: 'Click the section tool and choose an axis (X/Y/Z), then drag the slider to sweep a clipping plane through the part — useful for checking internal ribs, wall thickness, and cores. Turn it off with the "off" button.' },
+      { q: 'The viewer says "surface model (no closed solid)" — what does that mean?', a: 'Your file contains unstitched surfaces rather than a watertight solid. The viewer still renders it, but volume-based numbers (mass, volume) are unreliable and some faces may not mesh. Re-export from CAD as a solid body if you need trustworthy geometry analysis.' },
     ],
   },
   {
@@ -62,11 +76,21 @@ const FAQ: FaqSection[] = [
     ],
   },
   {
+    category: 'Teams & Usage',
+    icon: Share2,
+    items: [
+      { q: 'How do workspaces and roles work?', a: 'Every account gets a personal workspace automatically. Workspace owners and admins can invite colleagues by email from the API (POST /api/orgs/:orgId/invites); the invite sits pending and activates the moment that email signs up. Roles are owner, admin, member, and viewer. This is the v1 substrate — org-scoped project sharing builds on it next.' },
+      { q: 'Is there a limit on AI usage?', a: 'Optionally, yes. Administrators can set CV_MONTHLY_TOKEN_QUOTA to cap each user\'s monthly AI token usage. When the quota is reached, AI endpoints return a clear message and the quota resets on the 1st of the month. Usage is metered per user and per endpoint in the llm_calls table, so administrators can see exactly where spend goes.' },
+      { q: 'Where are the privacy policy and terms?', a: 'At /legal/privacy and /legal/terms, linked from the footer of every page. They are written in plain language and are honest about exactly what the app stores (account data, your work, encrypted API keys, usage metadata — never prompt content) and what it does not do (no ads, no data sale, no third-party trackers; CAD files are not retained after analysis).' },
+    ],
+  },
+  {
     category: 'Automotive Coverage',
     icon: BarChart3,
     items: [
       { q: 'Which vehicle systems are covered?', a: 'BIW Body-in-White, Chassis & Frame (incl. air suspension, RWS), Powertrain ICE, Powertrain BEV/MHEV (800V, CTP/CTB, SiC), Transmission & Driveline, Thermal & HVAC (heat pump), Interior, Exterior, Electrical & Electronics, ADAS & Safety, Fuel & Emission, Exterior Trim, and Advanced Next-Gen systems.' },
       { q: 'Is BEV / EV supported?', a: 'Yes. The BEV/MHEV system covers Battery Pack (cell-to-pack, cell-to-body), Battery Management System, Electric Drive Unit (hairpin motor, SiC inverter), 800V high-voltage architecture, MHEV 48V systems, charging port, and thermal management.' },
+      { q: 'Can it cost wiring harnesses, seals, glazing, and e-motor laminations?', a: 'Yes, as of v3.2. Wiring harnesses have a dedicated parametric model (copper mass from gauge mix and circuit lengths, connector/terminal/splice economics, labour minutes) — a 300-circuit harness in Mexico prices around €160 with an honesty band. The main engine also gained copper, electrical steel (lamination stamping with slot-scrap yield), EPDM rubber (cure-dominated moulding), and automotive glass (bend + temper), so stator stacks, door seals, and quarter glass are now costable end-to-end.' },
       { q: 'Does it handle ADAS components?', a: 'Yes. The ADAS & Safety system covers cameras, radar, LiDAR, fusion ECU, airbags, seatbelts, TPMS, stability control, DMS, and HUD.' },
     ],
   },
@@ -165,16 +189,38 @@ export default function HelpPage() {
           </motion.div>
         )}
 
-        {/* What's New in v3.0 */}
+        {/* What's New */}
         {!search && (
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.12 }}>
             <h2 className="text-white font-semibold mb-5 flex items-center gap-2">
-              <Sparkles size={16} className="text-gold-400" /> What's New
+              <Sparkles size={16} className="text-gold-400" /> What's New — v{APP_VERSION}
             </h2>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-8">
+              {[
+                { icon: Package,    color: 'text-gold-400',   bg: 'bg-gold-500/10',   border: 'border-gold-500/20',  title: 'Interactive 3D CAD Viewer', desc: 'Upload STEP/IGES/STL and open it like a CAD tool: orbit/pan/zoom, canonical views, shaded+edges, section plane, mm measurements (distance / circle / angle), and exact B-rep face data — hole Ø × depth, machining-surface colouring. Live on Analyze, CAD-to-Cost, and CAD Diff.' },
+                { icon: Shield,     color: 'text-emerald-400',bg: 'bg-emerald-500/10',border: 'border-emerald-500/20',title: 'Engine-Verified Ideas', desc: 'Material/process-substitution ideas are now cross-checked by the deterministic cost engine at generation time and stamped confirmed or contradicted — the AI can no longer assert a saving unchallenged.' },
+                { icon: Zap,        color: 'text-cyan-400',   bg: 'bg-cyan-500/10',   border: 'border-cyan-500/20',  title: 'Wiring-Harness Costing', desc: 'A dedicated parametric harness model: copper mass from gauge mix × circuit lengths, connector/terminal/splice economics, labour-minutes, and an honesty band. POST /api/harness-cost.' },
+                { icon: BarChart3,  color: 'text-blue-400',   bg: 'bg-blue-500/10',   border: 'border-blue-500/20',  title: 'New Commodity Families', desc: 'Copper, electrical steel, EPDM rubber, and automotive glass join the engine — with lamination stamping, rubber moulding, and glass forming processes. E-motors, seals, and glazing are now costable.' },
+                { icon: Sparkles,   color: 'text-violet-400', bg: 'bg-violet-500/10', border: 'border-violet-500/20',title: 'Marketplace at Scale', desc: '1,630+ ideas with new sorting (highest saving / most votes / newest), fast paged rendering, per-idea voting, and 30 hand-authored ideas for seats, glazing, HVAC, restraints, harness, and paint.' },
+                { icon: Share2,     color: 'text-teal-400',   bg: 'bg-teal-500/10',   border: 'border-teal-500/20',  title: 'Team Workspaces (v1)', desc: 'Every account gets a personal workspace; invite colleagues by email with owner/admin/member/viewer roles. Invites activate when the invitee signs up.' },
+                { icon: Lock,       color: 'text-amber-400',  bg: 'bg-amber-500/10',  border: 'border-amber-500/20', title: 'Usage Quotas & Legal Pages', desc: 'Optional monthly AI-usage quotas with per-user, per-endpoint metering; plain-language Privacy Policy and Terms of Use at /legal.' },
+                { icon: Smartphone, color: 'text-pink-400',   bg: 'bg-pink-500/10',   border: 'border-pink-500/20',  title: 'Accessibility & Polish', desc: 'Keyboard focus everywhere, screen-reader-announced dismissible toasts, focus-trapped dialogs, AA contrast across the dark theme, no more theme flash — verified to zero serious axe violations in CI.' },
+                { icon: Terminal,   color: 'text-red-400',    bg: 'bg-red-500/10',    border: 'border-red-500/20',   title: 'Quality Gates', desc: 'HTTP integration tests, a browser E2E + accessibility gate, a held-out cost benchmark that measures over-fit honestly, and an LLM output eval harness — all wired into CI.' },
+              ].map(({ icon: Icon, color, bg, border, title, desc }) => (
+                <div key={title} className={`rounded-xl ${bg} border ${border} p-4`}>
+                  <div className={`flex items-center gap-2 mb-2`}>
+                    <Icon size={14} className={color} />
+                    <span className={`text-sm font-semibold ${color}`}>{title}</span>
+                  </div>
+                  <p className="text-slate-400 text-xs leading-relaxed">{desc}</p>
+                </div>
+              ))}
+            </div>
+            <h3 className="text-slate-400 font-semibold text-sm mb-4">Earlier in v3.x</h3>
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
               {[
-                { icon: BarChart3,  color: 'text-teal-400',   bg: 'bg-teal-500/10',   border: 'border-teal-500/20',  title: 'Deterministic Should-Cost Engine', desc: 'Bottom-up part cost from real rate × time / mass × price (13 processes, 10 materials, 9 regions) — with a Monte-Carlo P10/P50/P90 band and a unit-cost-vs-volume curve. Numbers are computed, not guessed. See /should-cost.' },
-                { icon: Package,    color: 'text-gold-400',   bg: 'bg-gold-500/10',   border: 'border-gold-500/20',  title: 'Cost-Idea Marketplace', desc: '1,250+ curated, OEM-benchmarked cost-reduction ideas across every commodity, each with a full technical business case. Browse at /marketplace.' },
+                { icon: BarChart3,  color: 'text-teal-400',   bg: 'bg-teal-500/10',   border: 'border-teal-500/20',  title: 'Deterministic Should-Cost Engine', desc: 'Bottom-up part cost from real rate × time / mass × price (27 processes, 23 materials, 9 regions), multi-op routing, tolerance/finish drivers, Monte-Carlo P10/P50/P90 and volume curves. Numbers are computed, not guessed. See /should-cost.' },
+                { icon: Package,    color: 'text-gold-400',   bg: 'bg-gold-500/10',   border: 'border-gold-500/20',  title: 'Cost-Idea Marketplace', desc: '1,630+ curated, OEM-benchmarked cost-reduction ideas across every commodity, each with a full technical business case. Browse at /marketplace.' },
                 { icon: Zap,        color: 'text-emerald-400',bg: 'bg-emerald-500/10',border: 'border-emerald-500/20',title: 'Powertrain & Voltage Facets', desc: 'Filter the Marketplace by commodity, powertrain (ICE/MHEV/PHEV/BEV) and architecture (400V/800V); every card shows its tags at a glance.' },
                 { icon: Shield,     color: 'text-blue-400',   bg: 'bg-blue-500/10',   border: 'border-blue-500/20',  title: 'AI Output Validation', desc: 'Every generated idea is schema-validated and sanity-banded (saving %, payback) before you ever see it — hallucinated figures are caught and flagged.' },
                 { icon: Map,        color: 'text-violet-400', bg: 'bg-violet-500/10', border: 'border-violet-500/20',title: 'VAVE Tracker & Pipeline', desc: 'Push ideas into a VAVE action tracker (6 stages) and a G0–G3 business-case pipeline with ROI/IRR/payback at /vave-tracker and /pipeline.' },
