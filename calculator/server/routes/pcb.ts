@@ -138,6 +138,21 @@ const extractionModel = (deep: boolean): string => (deep ? DEEP_EXTRACT_MODEL : 
 // Truncation-tolerant salvage (pcb-salvage.ts) backs this up for the rare board
 // that still overflows.
 const EXTRACT_MAX_TOKENS = 32000;
+
+// Confidence gate for the heavy automotive path. A low-confidence 'automotive'
+// guess (e.g. a lone connector or heatsink on an otherwise simple board) must
+// NOT trigger the full AEC-Q enumeration + ASIL classification + extra IC pass:
+// that misclassified simple boards as "complex automotive", ran two extra AI
+// calls, and told the model to enumerate & up-price every component at
+// automotive grade — ballooning output until Stage 3 truncated to an empty BOM.
+// Only boards the classifier is genuinely sure about get the automotive machine.
+const AUTOMOTIVE_CONF_MIN = 0.7;
+function gateAutomotive(s: Stage1Result, tag = 'PCB'): void {
+  if (s.domain === 'automotive_adas' && s.conf < AUTOMOTIVE_CONF_MIN) {
+    console.log(`[${tag}] Automotive guess conf=${s.conf} < ${AUTOMOTIVE_CONF_MIN} — treating as a general board (no forced AEC-Q grading; saves tokens & extra calls)`);
+    s.domain = 'general';
+  }
+}
 const isDeep = (req: { body?: Record<string, unknown> }): boolean =>
   req.body?.deepAnalysis === 'true' || req.body?.deepAnalysis === true;
 
@@ -1019,6 +1034,7 @@ router.post('/analyze-image', upload.fields([
       conf: typeof s1Parsed.conf === 'number' ? s1Parsed.conf : 0.5,
       hints: Array.isArray(s1Parsed.hints) ? s1Parsed.hints : [],
     };
+    gateAutomotive(stage1Result);
     console.log(`[PCB] Stage 1: ${stage1Result.domain} (conf=${stage1Result.conf})`);
   } catch (err) {
     console.warn('[PCB] Stage 1 failed, using defaults:', err instanceof Error ? err.message : String(err));
@@ -1954,6 +1970,7 @@ router.post('/analyze-image-stream', upload.fields([
     const s1Raw = s1Msg.content[0]?.type === 'text' ? s1Msg.content[0].text : '';
     const s1P = JSON.parse(extractJSON(s1Raw)) as Stage1Result;
     stage1Result = { domain: s1P.domain ?? 'general', conf: s1P.conf ?? 0.5, hints: s1P.hints ?? [] };
+    gateAutomotive(stage1Result, 'PCB/stream');
     emit('stage1', { domain: stage1Result.domain, conf: stage1Result.conf, hints: stage1Result.hints });
   } catch { emit('progress', { stage: 1, label: 'Stage 1 — using defaults', pct: 20 }); }
 

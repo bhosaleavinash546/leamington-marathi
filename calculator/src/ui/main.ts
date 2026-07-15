@@ -6908,14 +6908,15 @@ function wirePCBImageZone(): void {
 
 /**
  * Downscale a PCB photo to a JPEG bounded by `maxEdge` px before upload.
- * Claude Sonnet 5 / Opus 4.8 accept up to 2576 px on the long edge, and IC
- * part-marking OCR is the accuracy bottleneck — so we keep every pixel the
- * model can use. Full-resolution phone photos (often 4–8 MB) still need
- * bounding or the multi-image request pushes past the Anthropic API's ~32 MB
- * per-request limit → HTTP 413 on Stage 3; 2576 px q0.82 keeps five images
- * comfortably under it. Falls back to the original file if anything fails.
+ * DEFAULT is 1600 px — a balanced resolution that reads most component
+ * outlines and larger markings while keeping image-token cost ~3× lower than
+ * full-res. Deep-analysis mode passes 2576 px (the max Claude Sonnet 5 / Opus
+ * 4.8 accept) when reading tiny IC top-marks on dense boards actually matters.
+ * Either way, phone photos (often 4–8 MB) must be bounded or the multi-image
+ * request pushes past the Anthropic API's ~32 MB per-request limit → HTTP 413.
+ * Falls back to the original file if anything fails.
  */
-async function downscaleImageForUpload(file: File, maxEdge = 2576, quality = 0.82): Promise<File> {
+async function downscaleImageForUpload(file: File, maxEdge = 1600, quality = 0.82): Promise<File> {
   if (!file.type.startsWith('image/')) return file;
   try {
     const dataUrl = await new Promise<string>((resolve, reject) => {
@@ -7020,9 +7021,11 @@ async function analyzePCBImages(): Promise<void> {
   const orderQty = (document.getElementById('pcb-order-qty') as HTMLInputElement)?.value ?? '100';
 
   const formData = new FormData();
-  // Append all selected images (downscaled to ≤1568 px so the multi-image request
-  // stays under the API's 32 MB limit — full-res adds no accuracy) and their labels.
-  const uploadFiles = await Promise.all(selectedFiles.map(x => downscaleImageForUpload(x.file)));
+  // Balanced 1600 px by default (keeps image tokens ~3× lower); full 2576 px
+  // only when Deep analysis is on and reading tiny IC markings is worth the cost.
+  const deepHiRes = (document.getElementById('pcb-deep-analysis') as HTMLInputElement | null)?.checked ?? false;
+  const uploadMaxEdge = deepHiRes ? 2576 : 1600;
+  const uploadFiles = await Promise.all(selectedFiles.map(x => downscaleImageForUpload(x.file, uploadMaxEdge)));
   uploadFiles.forEach(file => formData.append('pcbImages', file));
   formData.append('pcbImageLabels', JSON.stringify(selectedFiles.map(x => x.label)));
 
@@ -7491,10 +7494,11 @@ async function reanalyzePCBWithCorrections(): Promise<void> {
   const orderQty = (document.getElementById('pcb-order-qty') as HTMLInputElement)?.value ?? '100';
 
   const formData = new FormData();
-  // Append images if available (downscaled to ≤1568 px to stay under the API's
-  // 32 MB per-request limit — same guard as the initial analysis).
+  // Same balanced-resolution rule as the initial analysis: 1600 px default,
+  // 2576 px only under Deep analysis (keeps image tokens ~3× lower otherwise).
+  const deepHiRes = (document.getElementById('pcb-deep-analysis') as HTMLInputElement | null)?.checked ?? false;
   const activeFiles = pcbImageFiles.filter((f): f is File => f !== null);
-  const uploadFiles = await Promise.all(activeFiles.map(f => downscaleImageForUpload(f)));
+  const uploadFiles = await Promise.all(activeFiles.map(f => downscaleImageForUpload(f, deepHiRes ? 2576 : 1600)));
   uploadFiles.forEach(f => formData.append('pcbImages', f));
   if (activeFiles.length > 0) {
     formData.append('pcbImageLabels', JSON.stringify(
