@@ -13,6 +13,7 @@ import { markOnboardingStep } from '../components/OnboardingChecklist';
 import { AUTOMOTIVE_SYSTEMS, getSystemById, getSubassemblyById } from '../data/automotive-catalog';
 import { generateCostReductionIdeas, saveFullResult, ProgressEvent } from '../services/claude-service';
 import { parseCadFile, CadGeometry, formatFileSize } from '../services/cad-parser';
+import CadViewer3D from '../components/CadViewer3D';
 import { AnalysisConfig, AnalysisResult, BodyStyle, PlantRegion, Currency } from '../types';
 
 interface ProgressStep {
@@ -208,8 +209,9 @@ export default function AnalyzePage() {
     onDrop,
     accept: {
       'model/stl': ['.stl'],
-      'application/octet-stream': ['.stl', '.step', '.stp', '.dxf'],
+      'application/octet-stream': ['.stl', '.step', '.stp', '.igs', '.iges', '.dxf'],
       'application/step': ['.step', '.stp'],
+      'model/iges': ['.igs', '.iges'],
       'image/png': ['.png'],
       'image/jpeg': ['.jpg', '.jpeg'],
       'image/webp': ['.webp'],
@@ -715,6 +717,18 @@ export default function AnalyzePage() {
                     </div>
                   )}
                 </div>
+
+                {/* Interactive 3D viewer — activates when the uploaded CAD is a
+                    3D model. STEP/IGES tessellate server-side (OCCT engine); STL
+                    renders in-browser. Orbit/measure/section + B-rep faces. */}
+                {cadFile && /\.(step|stp|igs|iges|stl)$/i.test(cadFile.name) && (
+                  <div className="mt-4">
+                    <CadViewer3D
+                      file={cadFile}
+                      token={(() => { try { return JSON.parse(localStorage.getItem('brainspark_auth') || '{}').token; } catch { return ''; } })()}
+                    />
+                  </div>
+                )}
 
                 {/* Teardown Photo Analysis */}
                 <div className="mt-4 p-4 rounded-xl bg-purple-500/5 border border-purple-500/15">
