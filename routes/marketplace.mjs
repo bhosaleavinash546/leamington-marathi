@@ -13,10 +13,29 @@ export function registerMarketplaceRoutes(app, { db, requireAuth, rateLimit }) {
     } catch { res.json({ count: 0 }); }
   });
 
+  // The full list is ~2.5 MB of JSON that changes only on submit/approve/vote —
+  // serialize it ONCE per version and serve 304s. Version bumps invalidate
+  // across all users; a cheap MAX(createdAt)+COUNT probe keeps multi-instance
+  // deployments correct without new write paths.
+  let _mktCache = null;   // { etag, body }
+  function marketplaceStamp() {
+    try {
+      const r = db.prepare("SELECT COUNT(*) c, MAX(createdAt) t FROM marketplace_ideas WHERE status='approved'").get();
+      const v = db.prepare('SELECT COUNT(*) c FROM idea_votes').get();
+      return `${r.c}:${r.t}:${v.c}`;
+    } catch { return String(Date.now()); }
+  }
   app.get('/api/marketplace', (req, res) => {
     try {
-      const ideas = db.prepare("SELECT m.*, (SELECT COUNT(*) FROM idea_votes v WHERE v.ideaId = m.id) AS votes FROM marketplace_ideas m WHERE m.status = 'approved' ORDER BY m.stars DESC, m.createdAt DESC").all();
-      res.json(ideas.map(i => ({ ...i, verified: !!i.verified })));
+      const etag = `W/"mkt-${marketplaceStamp()}"`;
+      if (req.headers['if-none-match'] === etag) return res.status(304).end();
+      if (!_mktCache || _mktCache.etag !== etag) {
+        const ideas = db.prepare("SELECT m.*, (SELECT COUNT(*) FROM idea_votes v WHERE v.ideaId = m.id) AS votes FROM marketplace_ideas m WHERE m.status = 'approved' ORDER BY m.stars DESC, m.createdAt DESC").all();
+        _mktCache = { etag, body: ideas.map(i => ({ ...i, verified: !!i.verified })) };
+      }
+      res.set('ETag', etag);
+      res.set('Cache-Control', 'private, no-cache');   // always revalidate, but 304 is nearly free
+      res.json(_mktCache.body);
     } catch (e) { res.status(500).json({ error: e.message }); }
   });
 

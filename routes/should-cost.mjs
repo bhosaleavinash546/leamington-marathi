@@ -49,14 +49,24 @@ app.get('/api/should-cost/catalogue', (_req, res) => {
 // ratio always compares like-with-like even after a rate-library change. Cached
 // per (user, library version); invalidated when the user adds a quote.
 const calCache = new Map();
+// Multi-instance correctness: the fitted calibration is cached per-process, but
+// the INVALIDATION signal lives in SQLite — a version counter bumped on every
+// quote insert. Any instance's cache key includes the counter, so a quote
+// taught on instance A is picked up by instance B on its next read (one cheap
+// indexed SELECT per estimate; the expensive refit still amortises).
+try { db.prepare('CREATE TABLE IF NOT EXISTS user_cal_version (userId TEXT PRIMARY KEY, v INTEGER NOT NULL DEFAULT 0)').run(); } catch { /* exists */ }
+const _calVGet = db.prepare('SELECT v FROM user_cal_version WHERE userId = ?');
+const _calVBump = db.prepare('INSERT INTO user_cal_version (userId, v) VALUES (?, 1) ON CONFLICT(userId) DO UPDATE SET v = v + 1');
 function invalidateUserCal(userId) {
+  try { _calVBump.run(userId); } catch { /* table missing — cache falls back to per-process */ }
   for (const k of calCache.keys()) if (k.startsWith(`${userId}:`)) calCache.delete(k);
 }
 function getUserCalibration(userId) {
   const { library: lib, pricedAt } = liveLibrary();
   // Include the price vintage in the cache key: a commodity refresh changes both
   // the modelled baseline and the index-rebasing, so the fit must refresh with it.
-  const key = `${userId}:${getActiveMeta().version ?? 'builtin'}:${pricedAt ? pricedAt.slice(0, 10) : 'static'}`;
+  const calV = (() => { try { return _calVGet.get(userId)?.v ?? 0; } catch { return 0; } })();
+  const key = `${userId}:${calV}:${getActiveMeta().version ?? 'builtin'}:${pricedAt ? pricedAt.slice(0, 10) : 'static'}`;
   if (calCache.has(key)) return calCache.get(key);
   const rows = db.prepare('SELECT material, process, weightKg, annualVolume, region, actualPriceEur, matEurAtQuote FROM cost_quotes WHERE userId = ?').all(userId);
   const pairs = [];

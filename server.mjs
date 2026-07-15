@@ -47,6 +47,26 @@ function getOcct() {
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
 
+// Behind a load balancer/reverse proxy, req.ip is the proxy unless we trust the
+// first hop — without this every rate-limit bucket collapses into one global
+// bucket. 1 = trust exactly one hop (safe default; raise via env if chained).
+app.set('trust proxy', Number(process.env.TRUST_PROXY ?? 1));
+
+// Express 4 does NOT catch rejections from async handlers — an uncaught throw
+// becomes an unhandledRejection and (Node ≥15) kills the process. Patch the
+// route-registration methods once so EVERY async handler is auto-wrapped and
+// rejections flow to the error middleware instead.
+for (const method of ['get', 'post', 'put', 'patch', 'delete']) {
+  const orig = app[method].bind(app);
+  app[method] = (path, ...handlers) => {
+    if (typeof path !== 'string' && !(path instanceof RegExp) && !Array.isArray(path)) return orig(path, ...handlers);   // app.get('setting') form
+    const wrapped = handlers.map(h => typeof h === 'function'
+      ? (req, res, next) => Promise.resolve(h(req, res, next)).catch(next)
+      : h);
+    return orig(path, ...wrapped);
+  };
+}
+
 const ALLOWED_ORIGINS = process.env.ALLOWED_ORIGINS
   ? process.env.ALLOWED_ORIGINS.split(',').map(o => o.trim())
   : ['http://localhost:5173', 'http://127.0.0.1:5173'];
@@ -3396,7 +3416,9 @@ function signToken(user) {
 
 // ─── AUTH ROUTES ─────────────────────────────────────────────────────────────
 
-// Sign Up — step 1: create unverified account, send OTP
+// Sign Up: creates a verified account and signs in immediately (product
+// decision: OTP-at-signup was removed for conversion; /verify-signup remains
+// only for older clients mid-flow and issues no new registrations).
 app.post('/api/auth/signup', rateLimit(5, 15 * 60 * 1000), validate(SCHEMAS.signup), async (req, res) => {
   const { name, email, password } = req.body;
   if (!name?.trim() || !email?.trim() || !password) return res.status(400).json({ error: 'Name, email and password are required.' });
@@ -3550,6 +3572,12 @@ app.post('/api/auth/signout', requireAuth, (req, res) => {
 // Replaces the x-anthropic-key header passthrough: the key is stored once,
 // encrypted, and resolved server-side per request. Resolution order everywhere:
 // explicit request body key → stored credential → server env key.
+// One leaked secret must not both forge sessions AND decrypt stored API keys:
+// in production a dedicated CREDENTIALS_SECRET is mandatory.
+if (IS_PROD && !process.env.CREDENTIALS_SECRET) {
+  console.error('FATAL: CREDENTIALS_SECRET must be set in production (do not reuse JWT_SECRET).');
+  process.exit(1);
+}
 const CRED_KEY = crypto.createHash('sha256').update(process.env.CREDENTIALS_SECRET || JWT_SECRET).digest();
 function encryptSecret(plain) {
   const iv = crypto.randomBytes(12);
@@ -4585,18 +4613,36 @@ const jobsApi = {
 };
 setInterval(() => { try { db.prepare("DELETE FROM jobs WHERE createdAt < datetime('now','-7 days')").run(); } catch { /* ignore */ } }, 6 * 60 * 60 * 1000);
 
-function runCadWorker(fileBase64) {
-  return new Promise((resolve) => {
-    let settled = false;
-    const done = (msg) => { if (!settled) { settled = true; resolve(msg); } };
-    try {
-      const w = new Worker(path.join(__dirname, 'workers', 'cad-worker.mjs'), { workerData: { fileBase64 } });
-      const timer = setTimeout(() => { w.terminate(); done({ error: 'STEP parse timed out (120 s) — simplify the model and retry.', status: 504 }); }, 120_000);
-      w.on('message', (m) => { clearTimeout(timer); done(m); w.terminate(); });
-      w.on('error', (e) => { clearTimeout(timer); done({ error: e.message, status: 500 }); });
-      w.on('exit', (code) => { if (code !== 0) done({ error: `Worker exited (${code})`, status: 500 }); });
-    } catch (e) { done({ error: e.message, status: 500 }); }
-  });
+// Each CAD worker instantiates a full occt WASM heap (hundreds of MB) — the
+// same fork-bomb risk the Python bridge already guards against. Cap concurrent
+// workers; excess requests queue instead of OOM-ing the box.
+const MAX_CAD_WORKERS = Number(process.env.CV_MAX_CAD_WORKERS ?? 2);
+let cadWorkersActive = 0;
+const cadWorkerQueue = [];
+async function acquireCadWorker() {
+  if (cadWorkersActive >= MAX_CAD_WORKERS) await new Promise(r => cadWorkerQueue.push(r));
+  cadWorkersActive++;
+  let released = false;
+  return () => { if (!released) { released = true; cadWorkersActive--; cadWorkerQueue.shift()?.(); } };
+}
+
+async function runCadWorker(fileBase64) {
+  const release = await acquireCadWorker();
+  try {
+    return await new Promise((resolve) => {
+      let settled = false;
+      const done = (msg) => { if (!settled) { settled = true; resolve(msg); } };
+      try {
+        const w = new Worker(path.join(__dirname, 'workers', 'cad-worker.mjs'), { workerData: { fileBase64 } });
+        const timer = setTimeout(() => { w.terminate(); done({ error: 'STEP parse timed out (120 s) — simplify the model and retry.', status: 504 }); }, 120_000);
+        w.on('message', (m) => { clearTimeout(timer); done(m); w.terminate(); });
+        w.on('error', (e) => { clearTimeout(timer); done({ error: e.message, status: 500 }); });
+        w.on('exit', (code) => { if (code !== 0) done({ error: `Worker exited (${code})`, status: 500 }); });
+      } catch (e) { done({ error: e.message, status: 500 }); }
+    });
+  } finally {
+    release();
+  }
 }
 
 // Files under this size parse in well under a second — keep them synchronous so
@@ -6049,6 +6095,26 @@ app.get('/api/business-cases/:id/comments', requireAuth, (req, res) => {
     'SELECT * FROM business_case_comments WHERE businessCaseId = ? ORDER BY createdAt ASC'
   ).all(req.params.id);
   res.json(comments);
+});
+
+// ─── Last-resort error handling ──────────────────────────────────────────────
+// Auto-wrapped async handlers route rejections here; a thrown error becomes a
+// clean 500 instead of an unhandledRejection that kills the process.
+// eslint-disable-next-line no-unused-vars
+app.use((err, req, res, _next) => {
+  logger.error({ err: err?.message, path: req.path, m: req.method }, 'unhandled route error');
+  if (res.headersSent) return;
+  res.status(err?.status || 500).json({ error: 'Internal server error.' });
+});
+// Process-level nets: a rejection outside Express (timers, fire-and-forget
+// promises) is logged, not fatal; a synchronous uncaught exception means state
+// may be corrupt — log and exit so the supervisor restarts us clean.
+process.on('unhandledRejection', (reason) => {
+  logger.error({ err: reason instanceof Error ? reason.message : String(reason) }, 'unhandledRejection');
+});
+process.on('uncaughtException', (err) => {
+  logger.fatal({ err: err?.message, stack: err?.stack?.slice(0, 2000) }, 'uncaughtException — exiting');
+  process.exit(1);
 });
 
 // Load persisted commodity prices and schedule daily refresh
