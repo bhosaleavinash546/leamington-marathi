@@ -8,6 +8,7 @@ import {
 import ButtonSpinner from '../components/ui/ButtonSpinner';
 import { useAuth } from '../contexts/AuthContext';
 import { toast } from '../hooks/useToast';
+import { APP_VERSION } from '../version';
 
 type Screen = 'signin' | 'signup' | 'forgot' | 'reset';
 
@@ -208,10 +209,10 @@ function BrandPanel() {
             <span className="text-gold-400">Reduction Intelligence</span>
           </h2>
           <p className="text-slate-400 text-sm leading-relaxed max-w-xs">
-            Chief Engineer AI with 30+ years of cross-OEM expertise, real-time web intelligence, and deep DFMA knowledge across all vehicle systems.
+            Chief Engineer AI grounded by a deterministic should-cost engine — upload CAD, inspect it in 3D, and generate engineering ideas whose savings are engine-verified, not asserted.
           </p>
           <div className="flex flex-wrap gap-2 mt-4">
-            {['13 Systems', '260+ Parts', 'Live Web Search', 'Excel + PPT Export'].map(tag => (
+            {['3D CAD Viewer', 'Deterministic Should-Cost', 'Engine-Verified Ideas', '1,630+ Idea Marketplace', 'Live Commodity Prices', 'Excel · PPT · PDF'].map(tag => (
               <span key={tag} className="px-2.5 py-1 rounded-full bg-white/8 border border-white/15 text-slate-400 text-xs">{tag}</span>
             ))}
           </div>
@@ -453,7 +454,7 @@ export default function AuthPage() {
         </div>
 
         <p className="mt-10 text-slate-700 text-xs text-center">
-          BrainSpark v2.1 · Designed &amp; Created by <span className="text-slate-600 font-medium">Avinash Bhosale</span>
+          BrainSpark v{APP_VERSION} · Designed &amp; Created by <span className="text-slate-600 font-medium">Avinash Bhosale</span>
         </p>
       </div>
     </div>
