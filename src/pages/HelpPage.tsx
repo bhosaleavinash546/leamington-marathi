@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, ChevronDown, ChevronRight, HelpCircle, BookOpen, Mail, Zap, Terminal, Download, Globe, Lock, Shield, Cpu, BarChart3, Sparkles, Map, Share2, Package, Smartphone } from 'lucide-react';
+import { APP_VERSION } from '../version';
 
-const APP_VERSION = '3.1.0';
+
 const BUILD_DATE = 'June 2026';
 
 interface FaqItem { q: string; a: string; }

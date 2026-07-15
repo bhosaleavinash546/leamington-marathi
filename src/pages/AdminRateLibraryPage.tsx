@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import * as XLSX from 'xlsx';
+import { downloadXlsx } from '../services/xlsx-write';
 import { parseWorkbook } from '../services/safe-xlsx';
 import { Database, Download, Upload, RotateCcw, ShieldAlert, CheckCircle, AlertTriangle, History, GitCompare } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
@@ -94,21 +94,20 @@ export default function AdminRateLibraryPage() {
   // existing custom) so the admin edits from real numbers.
   function downloadTemplate() {
     if (!data) return;
-    const wb = XLSX.utils.book_new();
+    const sheets = [];
     for (const t of TABLES) {
       const spec = data.fieldSpecs[t];
       const merged: Rows = { ...data.defaults[t] };
       for (const [k, v] of Object.entries(data.custom[t] || {})) merged[k] = { ...(merged[k] || {}), ...v };
       const header = [spec.key, ...spec.fields.map(f => f.label)];
       const rows = Object.entries(merged).map(([name, row]) => [name, ...spec.fields.map(f => cell(row[f.id]))]);
-      const ws = XLSX.utils.aoa_to_sheet([header, ...rows]);
-      XLSX.utils.book_append_sheet(wb, ws, spec.key + 's');
+      sheets.push({ name: spec.key + 's', rows: [header, ...rows] });
     }
     const cs = data.fieldSpecs.constants;
     const cMerged = { ...(data.defaults.constants), ...(data.custom.constants || {}) } as Record<string, unknown>;
     const cRows = cs.fields.map(f => [f.label, cell(cMerged[f.id])]);
-    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([['Constant', 'Value'], ...cRows]), 'Constants');
-    XLSX.writeFile(wb, 'costvision-rate-library.xlsx');
+    sheets.push({ name: 'Constants', rows: [['Constant', 'Value'], ...cRows] });
+    void downloadXlsx('costvision-rate-library.xlsx', sheets);
   }
 
   // Parse an uploaded workbook, diff every cell against the built-in default, and

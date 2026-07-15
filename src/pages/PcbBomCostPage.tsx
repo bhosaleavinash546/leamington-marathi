@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import * as XLSX from 'xlsx';
+import { downloadXlsx, objectsToAoa } from '../services/xlsx-write';
 import { CircuitBoard, Upload, Cpu, Calculator, Download, Trash2, Plus, AlertTriangle, Info } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import ButtonSpinner from '../components/ui/ButtonSpinner';
@@ -112,9 +112,7 @@ export default function PcbBomCostPage() {
     rows.push({ RefDes: 'Assembly', 'Line €': cost.assemblyCost } as never);
     rows.push({ RefDes: 'Overhead', 'Line €': cost.overhead } as never);
     rows.push({ RefDes: `TOTAL /board @ ${cost.volume}/yr`, 'Line €': cost.total } as never);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(rows), 'PCB BOM Cost');
-    XLSX.writeFile(wb, 'BrainSpark_PCB_BOM_Cost.xlsx');
+    void downloadXlsx('BrainSpark_PCB_BOM_Cost.xlsx', [{ name: 'PCB BOM Cost', rows: objectsToAoa(rows) }]);
   }
 
   return (

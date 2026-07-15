@@ -4,6 +4,7 @@ import { Menu, X, ChevronDown, LayoutDashboard, HelpCircle, LogOut, User, Sun, M
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
+import { APP_VERSION } from '../../version';
 
 const dropdownVariants = {
   hidden: { opacity: 0, y: -6, scale: 0.97 },
@@ -11,7 +12,7 @@ const dropdownVariants = {
   exit:    { opacity: 0, y: -6, scale: 0.97, transition: { duration: 0.1, ease: 'easeIn' } },
 };
 
-const APP_VERSION = '3.0.0';
+
 
 export default function Header() {
   const location = useLocation();

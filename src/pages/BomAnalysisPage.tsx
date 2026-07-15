@@ -2,7 +2,7 @@ import { useState, useCallback, useRef, useEffect } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Upload, FileText, X, Zap, AlertCircle, CheckCircle, BarChart3, Download } from 'lucide-react';
-import * as XLSX from 'xlsx';
+import { downloadXlsx } from '../services/xlsx-write';
 import { parseWorkbook, parseCsv } from '../services/safe-xlsx';
 import ButtonSpinner from '../components/ui/ButtonSpinner';
 import { AUTOMOTIVE_SYSTEMS, getSystemById, getSubassemblyById } from '../data/automotive-catalog';
@@ -96,16 +96,16 @@ export default function BomAnalysisPage() {
   }
 
   function downloadTemplate() {
-    const wb = XLSX.utils.book_new();
-    const ws = XLSX.utils.aoa_to_sheet([
-      ['System Name', 'Subassembly Name', 'Part / Component Name', 'Quantity'],
-      ['BIW Body-in-White', 'Front End Module', 'Front Bumper Beam', '1'],
-      ['Chassis & Frame', 'Front Suspension', 'Front Knuckle / Upright', '2'],
-      ['Powertrain BEV/MHEV', 'Battery Pack & BMS', 'Cell Module Housing', '4'],
-    ]);
-    ws['!cols'] = [{ wch: 30 }, { wch: 28 }, { wch: 32 }, { wch: 12 }];
-    XLSX.utils.book_append_sheet(wb, ws, 'BOM');
-    XLSX.writeFile(wb, 'BrainSpark_BOM_Template.xlsx');
+    void downloadXlsx('BrainSpark_BOM_Template.xlsx', [{
+      name: 'BOM',
+      rows: [
+        ['System Name', 'Subassembly Name', 'Part / Component Name', 'Quantity'],
+        ['BIW Body-in-White', 'Front End Module', 'Front Bumper Beam', '1'],
+        ['Chassis & Frame', 'Front Suspension', 'Front Knuckle / Upright', '2'],
+        ['Powertrain BEV/MHEV', 'Battery Pack & BMS', 'Cell Module Housing', '4'],
+      ],
+      colWidths: [30, 28, 32, 12],
+    }]);
   }
 
   // Checkpoint key: a BOM run survives tab close/refresh — completed rows are
@@ -205,14 +205,14 @@ export default function BomAnalysisPage() {
   })();
 
   function exportBomResults() {
-    const wb = XLSX.utils.book_new();
-    const ws = XLSX.utils.aoa_to_sheet([
-      ['Part / Component', 'Total Ideas', 'Quick Wins', 'Top Idea', 'Top Annual Saving'],
-      ...results.map(r => [r.partName, r.ideasCount, r.quickWins, r.topIdea || '—', r.topSaving || '—']),
-    ]);
-    ws['!cols'] = [{ wch: 36 }, { wch: 14 }, { wch: 14 }, { wch: 60 }, { wch: 24 }];
-    XLSX.utils.book_append_sheet(wb, ws, 'BOM Analysis');
-    XLSX.writeFile(wb, `BrainSpark_BOM_Analysis_${new Date().toISOString().split('T')[0]}.xlsx`);
+    void downloadXlsx(`BrainSpark_BOM_Analysis_${new Date().toISOString().split('T')[0]}.xlsx`, [{
+      name: 'BOM Analysis',
+      rows: [
+        ['Part / Component', 'Total Ideas', 'Quick Wins', 'Top Idea', 'Top Annual Saving'],
+        ...results.map(r => [r.partName, r.ideasCount, r.quickWins, r.topIdea || '—', r.topSaving || '—']),
+      ],
+      colWidths: [36, 14, 14, 60, 24],
+    }]);
   }
 
   return (

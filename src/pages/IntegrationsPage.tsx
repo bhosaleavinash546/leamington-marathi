@@ -58,11 +58,21 @@ export default function IntegrationsPage() {
     setTimeout(() => setTestStatus(s => ({ ...s, [type]: 'idle' })), 4000);
   }
 
-  function handleEarlyAccess(e: React.FormEvent) {
+  async function handleEarlyAccess(e: React.FormEvent) {
     e.preventDefault();
     if (!earlyAccessEmail.trim()) return;
-    toast('Thanks! We will notify you when this integration launches.', 'success');
-    setEarlyAccessEmail('');
+    try {
+      const r = await fetch('/api/interest', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: earlyAccessEmail.trim(), topic: 'integrations-early-access' }),
+      });
+      if (!r.ok) throw new Error();
+      toast('Thanks! We will notify you when this integration launches.', 'success');
+      setEarlyAccessEmail('');
+    } catch {
+      toast('Could not register your interest — please try again.', 'error');
+    }
   }
 
   const StatusIcon = ({ type }: { type: string }) => {

@@ -53,11 +53,11 @@ const GATE_COLORS: Record<string, string> = { G0: '#94a3b8', G1: '#fbbf24', G2: 
 const PIE_COLORS = ['#f59e0b', '#60a5fa', '#34d399', '#a78bfa', '#fb923c'];
 const GATE_DOT: Record<string, string> = { G0: 'bg-slate-400', G1: 'bg-amber-400', G2: 'bg-blue-400', G3: 'bg-green-400' };
 
-function fmtM(n: number) {
-  if (!n) return '£0';
-  if (n >= 1_000_000) return `£${(n / 1_000_000).toFixed(1)}M`;
-  if (n >= 1_000) return `£${Math.round(n / 1_000)}k`;
-  return `£${Math.round(n)}`;
+function fmtM(n: number) {   // EUR — consistent with the app-wide default currency
+  if (!n) return '€0';
+  if (n >= 1_000_000) return `€${(n / 1_000_000).toFixed(1)}M`;
+  if (n >= 1_000) return `€${Math.round(n / 1_000)}k`;
+  return `€${Math.round(n)}`;
 }
 
 function PipelineKpiSection({ kpi }: { kpi: PipelineKpi }) {
@@ -112,7 +112,7 @@ function PipelineKpiSection({ kpi }: { kpi: PipelineKpi }) {
       {/* Charts row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
         <div className="bg-navy-900 border border-white/10 rounded-2xl p-5 shadow-card">
-          <h3 className="text-white font-semibold text-sm mb-4">Gate-wise Savings (£k)</h3>
+          <h3 className="text-white font-semibold text-sm mb-4">Gate-wise Savings (€k)</h3>
           <ResponsiveContainer width="100%" height={160}>
             <BarChart data={gateData} margin={{ top: 0, right: 8, bottom: 0, left: 0 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
@@ -162,7 +162,7 @@ function PipelineKpiSection({ kpi }: { kpi: PipelineKpi }) {
       {/* Bottom row */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
         <div className="bg-navy-900 border border-white/10 rounded-2xl p-5 lg:col-span-1 shadow-card">
-          <h3 className="text-white font-semibold text-sm mb-4">Commodity-wise (£k)</h3>
+          <h3 className="text-white font-semibold text-sm mb-4">Commodity-wise (€k)</h3>
           {commData.length > 0 ? (
             <ResponsiveContainer width="100%" height={180}>
               <BarChart data={commData} layout="vertical" margin={{ top: 0, right: 8, bottom: 0, left: 0 }}>
@@ -179,7 +179,7 @@ function PipelineKpiSection({ kpi }: { kpi: PipelineKpi }) {
         </div>
 
         <div className="bg-navy-900 border border-white/10 rounded-2xl p-5 lg:col-span-1 shadow-card">
-          <h3 className="text-white font-semibold text-sm mb-4">Savings Timeline (£k)</h3>
+          <h3 className="text-white font-semibold text-sm mb-4">Savings Timeline (€k)</h3>
           {yearData.length > 0 ? (
             <ResponsiveContainer width="100%" height={180}>
               <BarChart data={yearData} margin={{ top: 0, right: 8, bottom: 0, left: 0 }}>
@@ -318,7 +318,7 @@ export default function DashboardPage() {
   useEffect(() => {
     function parseAnnual(val?: string): number {
       if (!val) return 0;
-      const c = (val || '').toLowerCase().replace(/[€£$¥₹,\s%]/g, '');
+      const c = (val || '').toLowerCase().replace(/[€€$¥₹,\s%]/g, '');
       const parts = c.split(/[–—]/);
       const parseOne = (s: string) => {
         const m = s.match(/([\d.]+)\s*([mk]?)/);

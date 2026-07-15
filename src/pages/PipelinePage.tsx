@@ -395,7 +395,6 @@ export default function PipelinePage() {
 
   // ── Export to Excel ──
   async function exportExcel() {
-    const XLSX = await import('xlsx');
     const rows = cases.map((c) => ({
       'Idea Number': c.ideaNumber,
       Title: c.ideaTitle,
@@ -413,10 +412,10 @@ export default function PipelinePage() {
       Year: c.implementationYear,
       Notes: c.notes,
     }));
-    const ws = XLSX.utils.json_to_sheet(rows);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Pipeline');
-    XLSX.writeFile(wb, `idea-pipeline-${new Date().toISOString().slice(0, 10)}.xlsx`);
+    const { downloadXlsx, objectsToAoa } = await import('../services/xlsx-write');
+    await downloadXlsx(`idea-pipeline-${new Date().toISOString().slice(0, 10)}.xlsx`, [
+      { name: 'Pipeline', rows: objectsToAoa(rows) },
+    ]);
   }
 
   // ── Filtered list ──

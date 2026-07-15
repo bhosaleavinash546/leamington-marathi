@@ -227,8 +227,10 @@ app.post('/api/should-cost/export', requireAuth, rateLimit(40, 60 * 60 * 1000), 
       commercial: 'Packaging & freight', sgaProfit: 'SG&A + profit',
     };
 
-    const XLSX = await import('xlsx');
-    const wb = XLSX.utils.book_new();
+    // exceljs behind an aoa-shaped shim (xlsx package removed — unpatched CVEs).
+    const { default: ExcelJS } = await import('exceljs');   // CJS default interop
+    const wb = new ExcelJS.Workbook();
+    const addAoaSheet = (aoa, name) => { const ws = wb.addWorksheet(name); ws.addRows(aoa); };
 
     const genAt = new Date().toISOString();
     const summary = [
@@ -260,14 +262,14 @@ app.post('/api/should-cost/export', requireAuth, rateLimit(40, 60 * 60 * 1000), 
       ['Generated at', genAt],
       ['Basis', 'Bottom-up parametric should-cost. Raw/fettled works cost; secondary machining additional. Validate against detailed supplier breakdowns before commercial use.'],
     ];
-    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(summary), 'Summary');
+    addAoaSheet(summary, 'Summary');
 
     const breakdown = [['Cost element', `Value (${currency})`, 'Share %']];
     for (const [k, label] of Object.entries(BREAKDOWN_LABELS)) {
       if (b[k]) breakdown.push([label, cv(b[k].value), b[k].pct]);
     }
     breakdown.push(['TOTAL', cv(calc.totalShouldCost), 100]);
-    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(breakdown), 'Breakdown');
+    addAoaSheet(breakdown, 'Breakdown');
 
     const drivers = [
       ['Driver', 'Value'],
@@ -282,18 +284,18 @@ app.post('/api/should-cost/export', requireAuth, rateLimit(40, 60 * 60 * 1000), 
       ['Tooling amortised over (parts)', d.amortVolume],
       ['Scrap %', d.scrapPct],
     ];
-    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(drivers), 'Drivers');
+    addAoaSheet(drivers, 'Drivers');
 
     // Per-operation lines for routed parts (values per FINAL good part).
     if (isRouteX) {
       const opsSheet = [['Operation', `Conversion (${currency})`, `Tooling (${currency})`, 'Scrap %', 'Out mass (kg)']];
       for (const l of routeCalcX.breakdown.operations) opsSheet.push([l.op, cv(l.conversion), cv(l.tooling), l.scrapPct, l.outMassKg]);
-      XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(opsSheet), 'Operations');
+      addAoaSheet(opsSheet, 'Operations');
     }
 
     const vs = [['Annual volume', `Unit cost (${currency})`]];
     for (const p of curve) vs.push([p.volume, cv(p.unitCost)]);
-    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(vs), 'Volume Sensitivity');
+    addAoaSheet(vs, 'Volume Sensitivity');
 
     const safeName = String(partName || 'should-cost').replace(/[^\w.-]+/g, '_').slice(0, 60);
 
@@ -342,7 +344,7 @@ app.post('/api/should-cost/export', requireAuth, rateLimit(40, 60 * 60 * 1000), 
       return res.send(pbuf);
     }
 
-    const buf = XLSX.write(wb, { type: 'buffer', bookType: 'xlsx' });
+    const buf = Buffer.from(await wb.xlsx.writeBuffer());
     res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     res.setHeader('Content-Disposition', `attachment; filename="CBS_${safeName}.xlsx"`);
     res.send(buf);

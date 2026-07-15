@@ -1,7 +1,8 @@
 import { Link } from 'react-router-dom';
 import { Mail, HelpCircle, ExternalLink } from 'lucide-react';
+import { APP_VERSION } from '../../version';
 
-const APP_VERSION = '3.0.0';
+
 
 export default function Footer() {
   return (

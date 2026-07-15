@@ -779,11 +779,13 @@ export default function AnalyzePage() {
                       if (!file) return;
                       try {
                         const arrayBuffer = await file.arrayBuffer();
-                        const { read, utils } = await import('xlsx');
-                        const wb = read(arrayBuffer);
-                        const sheet = wb.Sheets[wb.SheetNames[0]];
+                        const { parseWorkbook } = await import('../services/safe-xlsx');
+                        const parsed = await parseWorkbook(arrayBuffer);
+                        const aoa = parsed.sheets[parsed.sheetNames[0]] || [];
+                        // header row → object rows (same shape sheet_to_json produced)
+                        const hdrs = (aoa[0] || []).map(String);
                         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                        const rows: any[] = utils.sheet_to_json(sheet, { defval: '' });
+                        const rows: any[] = aoa.slice(1).map(r => Object.fromEntries(hdrs.map((h, i) => [h, r[i] ?? ''])));
                         // Find key columns by fuzzy header matching
                         const headers = rows.length > 0 ? Object.keys(rows[0]) : [];
                         const findCol = (...keywords: string[]) => headers.find(h => keywords.some(k => h.toLowerCase().includes(k))) || '';

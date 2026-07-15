@@ -1,4 +1,4 @@
-import * as XLSX from 'xlsx';
+import { downloadXlsx, type SheetSpec } from './xlsx-write';
 import PptxGenJS from 'pptxgenjs';
 import jsPDF from 'jspdf';
 import { AnalysisResult, CostReductionIdea } from '../types';
@@ -9,8 +9,8 @@ const DIFFICULTY_COLOR: Record<string, string> = {
   High: 'FFFF6B6B',
 };
 
-export function exportToExcel(result: AnalysisResult, systemName: string, subName: string): void {
-  const wb = XLSX.utils.book_new();
+export async function exportToExcel(result: AnalysisResult, systemName: string, subName: string): Promise<void> {
+  const sheets: SheetSpec[] = [];
 
   // --- Sheet 1: Summary ---
   const summaryData = [
@@ -28,9 +28,7 @@ export function exportToExcel(result: AnalysisResult, systemName: string, subNam
     ['Strategic Items (Medium/High)', result.summary.strategicItems],
     ['Web Searches Performed', result.summary.searchesPerformed],
   ];
-  const wsSummary = XLSX.utils.aoa_to_sheet(summaryData);
-  wsSummary['!cols'] = [{ wch: 35 }, { wch: 50 }];
-  XLSX.utils.book_append_sheet(wb, wsSummary, 'Summary');
+  sheets.push({ name: 'Summary', rows: summaryData, colWidths: [35, 50] });
 
   // --- Sheet 2: Ideas Detail ---
   const headers = [
@@ -67,26 +65,17 @@ export function exportToExcel(result: AnalysisResult, systemName: string, subNam
     idea.benchmarkReference || '',
   ]);
 
-  const wsIdeas = XLSX.utils.aoa_to_sheet([headers, ...rows]);
-  wsIdeas['!cols'] = [
-    { wch: 5 }, { wch: 35 }, { wch: 15 }, { wch: 60 }, { wch: 50 },
-    { wch: 30 }, { wch: 20 }, { wch: 25 }, { wch: 25 }, { wch: 12 },
-    { wch: 22 }, { wch: 40 }, { wch: 50 }, { wch: 30 },
-  ];
-
-  // Color difficulty cells
-  rows.forEach((_, i) => {
-    const cellRef = XLSX.utils.encode_cell({ r: i + 1, c: 9 });
-    const diff = result.ideas[i].implementationDifficulty;
-    if (wsIdeas[cellRef]) {
-      wsIdeas[cellRef].s = {
-        fill: { fgColor: { rgb: DIFFICULTY_COLOR[diff]?.slice(2) || 'FFFFFF' } },
-        font: { bold: true },
-      };
-    }
+  sheets.push({
+    name: 'Cost Reduction Ideas',
+    rows: [headers, ...rows],
+    colWidths: [5, 35, 15, 60, 50, 30, 20, 25, 25, 12, 22, 40, 50, 30],
+    // Colour the Difficulty column (0-based col 9; +1 row for the header)
+    fills: rows.map((_, i) => ({
+      row: i + 1, col: 9,
+      argb: DIFFICULTY_COLOR[result.ideas[i].implementationDifficulty] || 'FFFFFFFF',
+      bold: true,
+    })),
   });
-
-  XLSX.utils.book_append_sheet(wb, wsIdeas, 'Cost Reduction Ideas');
 
   // --- Sheet 3: Implementation Roadmap ---
   const roadmapHeaders = ['Priority', 'Idea Title', 'Difficulty', 'Time to Implement', 'Cost Saving Type', 'Potential Saving', 'Owner / Dept', 'Status'];
@@ -105,15 +94,14 @@ export function exportToExcel(result: AnalysisResult, systemName: string, subNam
     'To Be Assessed',
   ]);
 
-  const wsRoadmap = XLSX.utils.aoa_to_sheet([roadmapHeaders, ...roadmapRows]);
-  wsRoadmap['!cols'] = [
-    { wch: 8 }, { wch: 35 }, { wch: 12 }, { wch: 22 }, { wch: 28 },
-    { wch: 25 }, { wch: 28 }, { wch: 20 },
-  ];
-  XLSX.utils.book_append_sheet(wb, wsRoadmap, 'Implementation Roadmap');
+  sheets.push({
+    name: 'Implementation Roadmap',
+    rows: [roadmapHeaders, ...roadmapRows],
+    colWidths: [8, 35, 12, 22, 28, 25, 28, 20],
+  });
 
   const filename = `BrainSpark_${systemName}_${subName}_${new Date().toISOString().split('T')[0]}.xlsx`;
-  XLSX.writeFile(wb, filename);
+  await downloadXlsx(filename, sheets);
 }
 
 export async function exportToPowerPoint(
