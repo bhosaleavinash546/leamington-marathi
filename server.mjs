@@ -20,6 +20,7 @@ import jwt from 'jsonwebtoken';
 import nodemailer from 'nodemailer';
 import Database from 'better-sqlite3';
 import { validateIdeas } from './idea-validation.mjs';
+import { runEngineChecks } from './engine-idea-check.mjs';
 import { getFxRates, FX_FALLBACK, FX_SYMBOLS, FX_CURRENCIES } from './fx-rates.mjs';
 import { computeShouldCost, simulateShouldCost } from './costing-engine.mjs';
 import { resolveMaterial, resolveProcess } from './material-process-resolve.mjs';
@@ -130,6 +131,11 @@ app.use(helmet({
 // One line per API request: id, route, status, latency. Replaces ad-hoc
 // console.log for the request path; LLM usage is tracked in llm_calls below.
 const logger = pino({ level: process.env.LOG_LEVEL || 'info' });
+
+// Model tiering: flagship reasoning stays on Opus; short structured outputs
+// (patent snippets, cad-diff deltas, qualitative narration) run on a smaller,
+// faster, ~5x cheaper tier with no observable quality loss at these lengths.
+const SMALL_MODEL = process.env.CV_SMALL_MODEL || 'claude-sonnet-5';
 app.use((req, res, next) => {
   if (!req.path.startsWith('/api/')) return next();
   const id = crypto.randomUUID().slice(0, 8);
@@ -3695,7 +3701,7 @@ COST ENGINEERING (Current Benchmarks):
 REAL-TIME INTELLIGENCE PROTOCOL:
 You ALWAYS search the web before generating ideas. Execute 3–5 targeted searches for: current commodity prices, recent technology innovations (2024–2025), OEM or Tier-1 benchmarks, supplier technology offers, and regulatory changes.
 
-OUTPUT FORMAT: Return ONLY valid JSON — a JSON array of ALL applicable ideas. Generate as many ideas as genuinely viable — do not cap at 8; typically 12–20+ ideas per component. No markdown, no preamble.
+OUTPUT FORMAT: When your analysis is complete, call the emit_ideas tool EXACTLY ONCE with the full array of ALL applicable ideas as its "ideas" argument. Generate as many ideas as genuinely viable — do not cap at 8; typically 12–20+ ideas per component. Do not print the JSON as text.
 
 COMPETITOR BENCHMARKING: For every idea, populate "benchmarkReference" with SPECIFIC OEM/Tier-1 adoption data — cite manufacturer, model/programme, year, and quantified result. E.g. "BMW Gen5 EDU (2021): hairpin winding reduced copper mass 18%", "Tesla Model Y rear underbody gigacasting: 171 parts → 2 castings, saves $300/vehicle", "Hyundai E-GMP SiC inverter vs IGBT: +54% range, −14% inverter mass". Never leave benchmarkReference blank if any industry evidence exists.`;
 
@@ -4436,7 +4442,7 @@ function buildAnalysisPrompt(config, systemName, subassemblyName, partName, enab
       ? `\nDFMA FINDINGS (deterministic — address these specifically): ${cadGeometry.dfmaFindings.map(f => `[${f.severity}] ${f.finding}`).join(' ')}` : '';
     cadLine = `\nCAD GEOMETRY (parsed client-side): ${parts.join(' | ')}${fmInfo}${procInfo} — ground ideas in these metrics; reference specific values, not generic suggestions.${dfmaInfo}`;
   }
-  const searchInstruction = enableSearch ? `\nIMPORTANT: Use web_search NOW for: (1) current material costs, (2) recent 2024–2025 innovations, (3) OEM/Tier-1 benchmarks. Do 3–5 searches before generating ideas.` : '';
+  const searchInstruction = enableSearch ? `\nIMPORTANT: Use web_search NOW for: (1) current material costs, (2) innovations from the last ~18 months, (3) OEM/Tier-1 benchmarks. Do 3–5 searches before generating ideas.` : '';
 
   const volume = config.annualVolume || 80000;
   const currency = config.currency || 'EUR';
@@ -4544,10 +4550,11 @@ ${regulatoryContext}
 IMPORTANT: Use the actual volume (${volume.toLocaleString()} units/yr) and currency (${currency}) in all annual savings calculations.
 
 Each idea JSON object must have EXACTLY these fields:
-{"id":"slug","title":"≤12 words","technicalDescription":"180-220 words, specific grades/processes/benchmarks","manufacturingImpact":"90-130 words","costSavingTypes":["material|process|logistics|complexity|warranty|tooling|weight|commonisation"],"costSavingPotential":{"qualitative":"High/Medium/Low — reason","percentage":"e.g. 10-18%","annualValue":"e.g. ${currencySymbol}350K–${currencySymbol}650K at ${volume.toLocaleString()} units/yr","calculationBasis":"brief calc logic","paybackMonths":"estimated months to recover tooling/investment cost assuming typical annual volume (integer or null if not applicable)"},"implementationDifficulty":"Low|Medium|High","riskNotes":"70-90 words on NCAP/NVH/durability/regulatory risks + mitigations","dfmaPrinciples":["3-6 principles"],"systemLevel":"Assembly|Subassembly|Part","timeToImplement":"e.g. 6-12 months","benchmarkReference":"specific OEM/supplier example","searchDataUsed":true|false,"confidenceLevel":"verified|benchmarked|estimated|theoretical","regulatoryContext":"1 sentence on relevant regulatory driver or compliance benefit if applicable, else JSON null (not the string null)","evidenceSources":[{"type":"oem_press_release|teardown|patent|industry_report|supplier_data|web_search|regulatory","title":"short source name","year":2024,"confidence":"high|medium|low"}]}
+{"id":"slug","title":"≤12 words","technicalDescription":"180-220 words, specific grades/processes/benchmarks","manufacturingImpact":"90-130 words","costSavingTypes":["material|process|logistics|complexity|warranty|tooling|weight|commonisation"],"costSavingPotential":{"qualitative":"High/Medium/Low — reason","percentage":"e.g. 10-18%","annualValue":"e.g. ${currencySymbol}350K–${currencySymbol}650K at ${volume.toLocaleString()} units/yr","calculationBasis":"brief calc logic","paybackMonths":"estimated months to recover tooling/investment cost assuming typical annual volume (integer or null if not applicable)"},"implementationDifficulty":"Low|Medium|High","riskNotes":"70-90 words on NCAP/NVH/durability/regulatory risks + mitigations","dfmaPrinciples":["3-6 principles"],"systemLevel":"Assembly|Subassembly|Part","timeToImplement":"e.g. 6-12 months","benchmarkReference":"specific OEM/supplier example","searchDataUsed":true|false,"confidenceLevel":"verified|benchmarked|estimated|theoretical","regulatoryContext":"1 sentence on relevant regulatory driver or compliance benefit if applicable, else JSON null (not the string null)","evidenceSources":[{"type":"oem_press_release|teardown|patent|industry_report|supplier_data|web_search|regulatory","title":"short source name","year":2024,"confidence":"high|medium|low","url":"the result URL when the source came from web_search, else null"}],"engineCheckRequest":{"baselineMaterial":"catalogue-style name e.g. Steel (mild)","baselineProcess":"e.g. Stamping / Deep Drawing (chain ops with + if multi-op)","proposedMaterial":"...","proposedProcess":"...","referenceWeightKg":1.2,"proposedWeightKg":0.8} }
 
 CONFIDENCE GUIDE: Use 'verified' only when you can name a specific OEM production programme and year. Use 'benchmarked' for published teardown or industry study data — cite the study name. Use 'estimated' for cost-model derivations — state the model assumption. Use 'theoretical' for first-principles analysis only.
-EVIDENCE SOURCES: List 1-3 real evidence sources per idea (OEM teardowns, patents, press releases, industry reports). Be specific — name the OEM/supplier and year. Always state the commodity price assumption used (e.g., 'based on aluminium at €2,340/t Q2 2025') in the evidenceSources array or technicalDescription when the saving depends on a commodity price.
+EVIDENCE SOURCES: List 1-3 real evidence sources per idea (OEM teardowns, patents, press releases, industry reports). Be specific — name the OEM/supplier and year. When a source came from a web_search result, copy its exact url into the url field so the citation is verifiable; never invent URLs.
+ENGINE CHECK (include on every idea where it applies): when an idea is a material substitution, process change, or mass reduction, include engineCheckRequest with the baseline and proposed material/process/mass so the deterministic costing engine can verify the direction of the saving on a reference part. Use plain descriptive names — they are fuzzy-matched to the engine catalogue. Omit the field for moves that are not expressible as a baseline→proposed comparison (commonisation, logistics, warranty). Always state the commodity price assumption used (e.g., 'based on aluminium at €2,340/t Q2 2025') in the evidenceSources array or technicalDescription when the saving depends on a commodity price.
 Use JSON null (not the string 'null') for any optional field that is not applicable.
 Each idea must address a genuinely different engineering mechanism. Do not generate variations of the same core idea with different titles. If two ideas share the same root cause and technical approach, merge them into one richer idea.
 Cover EVERY viable lever — material substitution, process optimisation, design changes, commonisation, logistics, warranty, tooling amortisation, and emerging technology. Do not stop at 8 — generate all ideas that a Chief Engineer would seriously consider. Include a spread of Low/Medium/High difficulty, at least 1 commonisation idea, and at least 1 emerging-technology idea. Return ONLY the JSON array — no markdown, no preamble.`;
@@ -4557,6 +4564,20 @@ const webSearchTool = {
   name: 'web_search',
   description: 'Search internet for real-time data: material commodity prices, OEM design benchmarks, manufacturing technology innovations, supplier capabilities, regulatory updates.',
   input_schema: { type: 'object', properties: { query: { type: 'string' }, purpose: { type: 'string', enum: ['material_cost', 'technology_benchmark', 'oem_practice', 'supplier_capability', 'regulatory'] } }, required: ['query', 'purpose'] },
+};
+
+// Strict output channel for the flagship generation: the model CALLS this tool
+// with the idea array instead of printing 24k tokens of free-text JSON. The
+// input arrives schema-shaped from the API — no bracket-scanning, and truncation
+// repair becomes a fallback instead of a load-bearing path.
+const emitIdeasTool = {
+  name: 'emit_ideas',
+  description: 'Emit the final, complete array of cost-reduction ideas. Call exactly once, as your final action, with ALL ideas.',
+  input_schema: {
+    type: 'object',
+    properties: { ideas: { type: 'array', items: { type: 'object' } } },
+    required: ['ideas'],
+  },
 };
 
 async function performSearch(query, braveApiKey) {
@@ -5057,7 +5078,7 @@ function repairTruncatedJsonArray(raw) {
   return raw.slice(start, lastEnd + 1) + ']';
 }
 
-const ANALYZE_TIMEOUT_MS = 120_000;
+const ANALYZE_TIMEOUT_MS = Number(process.env.CV_ANALYZE_TIMEOUT_MS ?? 300_000);   // matches the per-call ceiling — the old 120s loop deadline promised '2 minutes' while a single call could legally run 300s
 
 function autoSaveProject(userId, projectId, systemName, subassemblyName, partName, config, ideas, sources) {
   try {
@@ -5153,16 +5174,97 @@ app.post('/api/analyze', requireAuth, rateLimit(40, 60 * 60 * 1000), async (req,
 
   const deadline = Date.now() + ANALYZE_TIMEOUT_MS;
 
+  // Shared completion for BOTH output channels (emit_ideas tool + legacy text
+  // JSON): critic validation → deterministic engine cross-check → prior-art
+  // labelling → autosave → respond.
+  async function finishAnalysis(parsedIdeas) {
+    // Evidence is only "verified" if live retrieval actually returned data.
+    // Otherwise every citation is model-asserted and must be labelled unverified.
+    const searchExecuted = enableSearch && sources.some(s => Array.isArray(s.results) && s.results.length > 0);
+    // Critic pass: schema-validate, coerce enums, sanity-band numbers, drop broken ideas.
+    const { ideas, summary: validationSummary } = validateIdeas(parsedIdeas, { searchExecuted });
+    if (ideas.length === 0) throw new Error('No valid ideas could be generated. Please retry.');
+    if (validationSummary.dropped > 0 || validationSummary.flagged > 0) {
+      console.warn(`[Validation] kept ${validationSummary.kept}/${validationSummary.total}, dropped ${validationSummary.dropped}, flagged ${validationSummary.flagged}, avgQuality ${validationSummary.avgQuality}`);
+    }
+
+    // Deterministic engine cross-check — the same discipline the marketplace
+    // seeds get, now on live ideas. Stamps engineCheck (or honest null).
+    try {
+      const lib = getActiveLibrary();
+      const region = ({ germany: 'Germany', china: 'China', mexico: 'Mexico', usa: 'USA', india: 'India', easterneurope: 'Czech Republic' })[String(config.plantRegion || '').toLowerCase().replace(/[^a-z]/g, '')] || 'Germany';
+      const ecSummary = runEngineChecks(ideas, {
+        region,
+        annualVolume: Number(config.annualVolume) || 80000,
+        library: lib,
+        defaultWeightKg: Number(cadGeometry?.estimatedMass) > 0 ? Number(cadGeometry.estimatedMass) : 1.0,
+      });
+      validationSummary.engineChecks = ecSummary;
+      if (ecSummary.checked > 0) emit({ type: 'progress', message: `Engine-verified ${ecSummary.checked} idea${ecSummary.checked === 1 ? '' : 's'} (${ecSummary.confirmed} confirmed, ${ecSummary.contradicted} contradicted).` });
+    } catch (e) { console.warn('[EngineCheck] skipped:', e?.message); }
+
+    // Prior-art labelling: verify the "do NOT duplicate" instruction was obeyed
+    // by actually querying the marketplace index against each generated title.
+    try {
+      const idx = getIdeaIndex();
+      for (const idea of ideas) {
+        const hits = idx.search(`${idea.title} ${sysName}`, 1);
+        if (hits.length && hits[0].score >= 12) {
+          idea.priorArt = { id: hits[0].doc.id, title: hits[0].doc.title, score: Number(hits[0].score.toFixed(1)) };
+        }
+      }
+    } catch { /* index unavailable — labelling is best-effort */ }
+
+    // Auto-save project to DB
+    const projectId = crypto.randomUUID();
+    autoSaveProject(req.user.id, projectId, sysName, subName, prtName, config, ideas, sources);
+
+    // Cache when search was disabled (results are deterministic)
+    if (!enableSearch && !cadGeometry) {
+      const cacheKey = buildCacheKey(config, sysName, subName, prtName, req.user.id);
+      setAnalysisCache(cacheKey, ideas, sources);
+    }
+
+    if (useSSE) {
+      emit({ type: 'complete', ideas, sources, projectId, validation: validationSummary });
+      res.end();
+    } else {
+      return res.json({ ideas, sources, projectId, validation: validationSummary });
+    }
+  }
+
   try {
     for (let i = 0; i < 8; i++) {
-      if (Date.now() > deadline) throw new Error('Analysis timed out after 2 minutes. Please try again with web search disabled.');
+      if (Date.now() > deadline) throw new Error(`Analysis timed out after ${Math.round(ANALYZE_TIMEOUT_MS / 60000)} minutes. Please try again with web search disabled.`);
       const params = { model: 'claude-opus-4-8', max_tokens: 24000, system: cachedSystem(CHIEF_ENGINEER_PROMPT), messages };
-      if (enableSearch) { params.tools = [webSearchTool]; params.tool_choice = { type: 'auto' }; }
+      params.tools = enableSearch ? [webSearchTool, emitIdeasTool] : [emitIdeasTool];
+      params.tool_choice = { type: 'auto' };
+      // Chief-Engineer-grade tradeoffs deserve actual reasoning: enable extended
+      // thinking (env-tunable; 0 disables). Falls back below if the API rejects it.
+      const thinkBudget = Number(process.env.CV_THINKING_BUDGET ?? 6000);
+      if (thinkBudget >= 1024) params.thinking = { type: 'enabled', budget_tokens: thinkBudget };
 
       // A 24k-token generation legitimately exceeds the default 90s client
       // timeout; give it room and don't retry the full doomed request 3× (which
       // would burn ~4× the tokens before failing).
-      const response = await client.messages.create(params, { timeout: 300_000, maxRetries: 1 });
+      let response;
+      try {
+        response = await client.messages.create(params, { timeout: 300_000, maxRetries: 1 });
+      } catch (e) {
+        // Defensive: if this provider/config combination rejects extended
+        // thinking, retry once without rather than failing the analysis.
+        if (params.thinking && e?.status === 400 && /thinking/i.test(e?.message || '')) {
+          delete params.thinking;
+          response = await client.messages.create(params, { timeout: 300_000, maxRetries: 1 });
+        } else throw e;
+      }
+
+      // Strict path: the model called emit_ideas — its input IS the idea array.
+      const emitBlock = response.content.find(b => b.type === 'tool_use' && b.name === 'emit_ideas');
+      if (emitBlock) {
+        emit({ type: 'synthesizing', message: `Synthesising all available cost-reduction ideas${sources.length > 0 ? ` (${sources.length} searches complete)` : ''}...` });
+        return await finishAnalysis(Array.isArray(emitBlock.input?.ideas) ? emitBlock.input.ideas : []);
+      }
 
       if (response.stop_reason === 'tool_use') {
         const toolResults = [];
@@ -5199,33 +5301,7 @@ app.post('/api/analyze', requireAuth, rateLimit(40, 60 * 60 * 1000), async (req,
           throw new Error('Invalid JSON response from AI. Try with web search disabled to reduce response size.');
         }
         const parsedIdeas = JSON.parse(ideasJson);
-        // Evidence is only "verified" if live retrieval actually returned data.
-        // Otherwise every citation is model-asserted and must be labelled unverified.
-        const searchExecuted = enableSearch && sources.some(s => Array.isArray(s.results) && s.results.length > 0);
-        // Critic pass: schema-validate, coerce enums, sanity-band numbers, drop broken ideas.
-        const { ideas, summary: validationSummary } = validateIdeas(parsedIdeas, { searchExecuted });
-        if (ideas.length === 0) throw new Error('No valid ideas could be generated. Please retry.');
-        if (validationSummary.dropped > 0 || validationSummary.flagged > 0) {
-          console.warn(`[Validation] kept ${validationSummary.kept}/${validationSummary.total}, dropped ${validationSummary.dropped}, flagged ${validationSummary.flagged}, avgQuality ${validationSummary.avgQuality}`);
-        }
-
-        // Auto-save project to DB
-        const projectId = crypto.randomUUID();
-        autoSaveProject(req.user.id, projectId, sysName, subName, prtName, config, ideas, sources);
-
-        // Cache when search was disabled (results are deterministic)
-        if (!enableSearch && !cadGeometry) {
-          const cacheKey = buildCacheKey(config, sysName, subName, prtName, req.user.id);
-          setAnalysisCache(cacheKey, ideas, sources);
-        }
-
-        if (useSSE) {
-          emit({ type: 'complete', ideas, sources, projectId, validation: validationSummary });
-          res.end();
-        } else {
-          return res.json({ ideas, sources, projectId, validation: validationSummary });
-        }
-        return;
+        return await finishAnalysis(parsedIdeas);
       }
     }
     throw new Error('Max search iterations reached — try disabling web search.');
@@ -5456,7 +5532,7 @@ app.post('/api/patent-watch', requireAuth, rateLimit(20, 60 * 60 * 1000), async 
   try {
     const client = makeAnthropic(apiKey);
     const msg = await client.messages.create({
-      model: 'claude-opus-4-8',
+      model: SMALL_MODEL,
       max_tokens: 600,
       messages: [{
         role: 'user',
@@ -5544,7 +5620,7 @@ DESIGN B (Proposed): ${designB}
 Return a JSON array of 4-6 ideas. Each: {"title":"...","delta":"...","saving":"...","difficulty":"Low|Medium|High","action":"..."}
 Return ONLY the JSON array with no markdown fences.`;
     const msg = await client.messages.create({
-      model: 'claude-opus-4-8', max_tokens: 1200,
+      model: SMALL_MODEL, max_tokens: 1200,
       messages: [{ role: 'user', content: prompt }],
     });
     const text = msg.content[0]?.type === 'text' ? msg.content[0].text : '[]';

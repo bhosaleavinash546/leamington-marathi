@@ -575,6 +575,8 @@ Do NOT change any number — interpret them.`;
       // Structured output: the model MUST call this tool, so we read a validated
       // object with no fenced-JSON stripping / parse-failure path.
       const llm = await messagesJson(client, {
+        // Qualitative narration over deterministic figures — small-tier work.
+        model: process.env.CV_SMALL_MODEL || 'claude-sonnet-5',
         maxTokens: 700,
         messages: [{ role: 'user', content: prompt }],
         toolName: 'cost_narrative',

@@ -1,0 +1,123 @@
+{
+  "comment": "HELD-OUT should-cost benchmark set. These 14 fixtures were authored AFTER the engine calibration was frozen and are NEVER used for tuning — their sole purpose is to detect over-fitting to the primary set (benchmark/cost-fixtures.mjs). No part, material/process/volume/region combination is copied from the primary set. Reference anchors are engineering estimates derived from public teardown data and 2025 industry norms — they are NOT proprietary supplier quotes; each fixture's `source` states its basis honestly. Tolerance is a uniform ±35% band because estimate anchors cannot honestly support a tighter gate. Fixtures where the deterministic engine is EXPECTED to miss the band are kept deliberately (see their `note`) so the holdout retains discriminating power. Schema matches benchmark/cost-fixtures.mjs as consumed by benchmark/cost-run.mjs: { name, input:{material, process|route, weightKg, annualVolume, region}, refPriceEur, tol, source } plus holdout/id/note.",
+  "fixtures": [
+    {
+      "id": "holdout-im-door-module-carrier",
+      "holdout": true,
+      "name": "Door module carrier, PA66-GF30 (injection moulded, >0.5 kg)",
+      "input": { "material": "PA66-GF30 (glass-filled)", "process": "Injection Moulding", "weightKg": 0.9, "annualVolume": 250000, "region": "Germany" },
+      "refPriceEur": 5.8, "tol": 0.35,
+      "source": "Engineering estimate, 2025 industry norm: glass-filled PA door carrier ~€5–7 at 250k/yr on a large-tonnage press, EU plant. Not a supplier quote.",
+      "note": "Task brief suggested PP-GF30; that grade is not in the engine material library, so the closest available glass-filled grade (PA66-GF30) is used."
+    },
+    {
+      "id": "holdout-im-washer-bottle",
+      "holdout": true,
+      "name": "Washer-fluid bottle, PP (injection moulded, 1.4 kg)",
+      "input": { "material": "Polypropylene (PP)", "process": "Injection Moulding", "weightKg": 1.4, "annualVolume": 180000, "region": "Czech Republic" },
+      "refPriceEur": 4.2, "tol": 0.35,
+      "source": "Engineering estimate, 2025 industry norm: large polyolefin reservoir ~€3.5–5 at 180k/yr, EU-East. Not a supplier quote.",
+      "note": "Real washer bottles are usually blow-moulded HDPE; HDPE and blow moulding are not in the engine library, so the part is modelled as an injection-moulded PP reservoir of the same mass."
+    },
+    {
+      "id": "holdout-al-extrusion-crash-rail",
+      "holdout": true,
+      "name": "Aluminium crash-management extrusion profile (cut to length)",
+      "input": { "material": "Aluminium 6061", "process": "Extrusion", "weightKg": 2.2, "annualVolume": 120000, "region": "Germany" },
+      "refPriceEur": 10.5, "tol": 0.35,
+      "source": "Engineering estimate, 2025 industry norm: 6xxx structural extrusion ~€4.5–5.5/kg (billet + conversion + die), cut to length, EU, 120k/yr. Not a supplier quote."
+    },
+    {
+      "id": "holdout-route-emotor-housing",
+      "holdout": true,
+      "name": "E-motor housing, HPDC Al + op-20 machining + wash (routed)",
+      "input": { "material": "Aluminium A356 (cast)", "route": ["Die Casting (Aluminium)", "Machining (secondary ops)", "Washing & Final Inspection"], "weightKg": 3.5, "annualVolume": 80000, "region": "Germany" },
+      "refPriceEur": 26.0, "tol": 0.35,
+      "source": "Engineering estimate, 2025 industry norm: finished machined HPDC e-motor housing ~€20–28 at 80k/yr EU (raw casting ~€13–15 + machining/wash). Not a supplier quote."
+    },
+    {
+      "id": "holdout-zn-diecast-door-handle",
+      "holdout": true,
+      "name": "Zinc die-cast exterior door-handle body",
+      "input": { "material": "Zinc (ZAMAK 5)", "process": "Die Casting (Zinc)", "weightKg": 0.35, "annualVolume": 100000, "region": "Germany" },
+      "refPriceEur": 2.4, "tol": 0.35,
+      "source": "Engineering estimate, 2025 industry norm: ZAMAK handle body ~€2–3 raw at 100k/yr, EU (excl. chrome plating). Not a supplier quote."
+    },
+    {
+      "id": "holdout-mg-diecast-bracket",
+      "holdout": true,
+      "name": "Magnesium die-cast cross-car-beam bracket",
+      "input": { "material": "Magnesium AZ31", "process": "Die Casting (Aluminium)", "weightKg": 0.6, "annualVolume": 150000, "region": "China" },
+      "refPriceEur": 4.8, "tol": 0.35,
+      "source": "Engineering estimate, 2025 industry norm: Mg HPDC bracket ~€7–9/kg finished at 150k/yr, China. Not a supplier quote.",
+      "note": "The engine has no dedicated magnesium die-casting process; the HPDC (Aluminium) model explicitly lists the magnesium family as compatible and is used here."
+    },
+    {
+      "id": "holdout-sand-cast-axle-housing",
+      "holdout": true,
+      "name": "Large grey-iron sand casting, axle/diff housing (28 kg)",
+      "input": { "material": "Cast Iron (Grey)", "process": "Sand Casting", "weightKg": 28, "annualVolume": 30000, "region": "India" },
+      "refPriceEur": 36.0, "tol": 0.35,
+      "source": "Engineering estimate, 2025 industry norm: grey-iron sand casting ~€1.1–1.5/kg raw+fettled at 30k/yr, India. Not a supplier quote."
+    },
+    {
+      "id": "holdout-sheet-metal-low-volume",
+      "holdout": true,
+      "name": "Laser-cut + bent steel bracket at LOW volume (10k/yr)",
+      "input": { "material": "Steel (mild)", "process": "Laser Cutting + Bending", "weightKg": 1.1, "annualVolume": 10000, "region": "UK" },
+      "refPriceEur": 4.5, "tol": 0.35,
+      "source": "Engineering estimate, 2025 industry norm: job-shop laser+brake bracket ~€3.5–5.5 at 10k/yr, UK (setup-dominated; hard stamping tooling not viable at this volume). Not a supplier quote."
+    },
+    {
+      "id": "holdout-cnc-high-volume",
+      "holdout": true,
+      "name": "CNC-machined Al fitting at HIGH volume (500k/yr) — expected engine miss",
+      "input": { "material": "Aluminium 6061", "process": "Machining (CNC)", "weightKg": 0.25, "annualVolume": 500000, "region": "China" },
+      "refPriceEur": 5.5, "tol": 0.35,
+      "source": "Engineering estimate, 2025 industry norm: at 500k/yr real suppliers run rotary-transfer / multi-spindle cells with far shorter effective cycles, ~€4.5–6.5, China. Not a supplier quote.",
+      "note": "Deliberate discriminator: the engine's CNC model is a generic job-shop mill (fixed cycleBase + cyclePerKg, 2 setups) with no rotary-transfer or multi-spindle economy at extreme volume — expected to read HIGH vs this anchor."
+    },
+    {
+      "id": "holdout-cfrp-rtm-panel",
+      "holdout": true,
+      "name": "CFRP structural panel, RTM (1.8 kg) — expected engine miss",
+      "input": { "material": "CFRP (Carbon Fibre)", "process": "Composite Layup (RTM)", "weightKg": 1.8, "annualVolume": 8000, "region": "Germany" },
+      "refPriceEur": 170.0, "tol": 0.35,
+      "source": "Engineering estimate, 2025 industry norm: automotive RTM CFRP structural panel ~€80–100/kg piece price at 8k/yr, EU (fabric/preform waste, resin & consumables, NDT inspection). Not a supplier quote.",
+      "note": "Deliberate discriminator: the engine's composite model carries no preform cutting waste beyond utilisation, no resin/consumables line and no NDT/inspection burden — expected to read LOW vs this anchor."
+    },
+    {
+      "id": "holdout-ti-machined-fitting",
+      "holdout": true,
+      "name": "Titanium Ti-6Al-4V machined fitting (low volume) — expected engine miss",
+      "input": { "material": "Titanium Ti-6Al-4V", "process": "Machining (CNC)", "weightKg": 0.3, "annualVolume": 5000, "region": "USA" },
+      "refPriceEur": 55.0, "tol": 0.35,
+      "source": "Engineering estimate, 2025 industry norm: small machined Ti-6Al-4V fitting ~€45–70 at 5k/yr, US (Ti cutting speeds ~3–4x slower than Al/steel, heavy tool wear). Not a supplier quote.",
+      "note": "Deliberate discriminator: the engine's machining cycle model (cycleBase + cyclePerKg) is material-agnostic — it does not slow the cycle or raise perishable tooling for titanium's low machinability — expected to read LOW vs this anchor."
+    },
+    {
+      "id": "holdout-brass-manifold-fitting",
+      "holdout": true,
+      "name": "Brass hydraulic manifold fitting (CNC milled)",
+      "input": { "material": "Brass (CuZn39)", "process": "Machining (CNC)", "weightKg": 0.15, "annualVolume": 60000, "region": "India" },
+      "refPriceEur": 5.0, "tol": 0.35,
+      "source": "Engineering estimate, 2025 industry norm: milled multi-port brass manifold fitting (not a simple screw-machine turning) ~€4–6 at 60k/yr, India; copper-alloy stock dominates the price. Not a supplier quote."
+    },
+    {
+      "id": "holdout-hydroformed-cradle-rail",
+      "holdout": true,
+      "name": "Hydroformed HSS engine-cradle rail",
+      "input": { "material": "Steel (high-strength)", "process": "Hydroforming", "weightKg": 4.5, "annualVolume": 90000, "region": "USA" },
+      "refPriceEur": 13.5, "tol": 0.35,
+      "source": "Engineering estimate, 2025 industry norm: tube-hydroformed HSS cradle rail ~€11–16 at 90k/yr, US (tube + pre-bend + hydroform + trim). Not a supplier quote."
+    },
+    {
+      "id": "holdout-mig-welded-mount-assy",
+      "holdout": true,
+      "name": "MIG-welded steel mount assembly (5.5 kg)",
+      "input": { "material": "Steel (mild)", "process": "MIG Welding Assembly", "weightKg": 5.5, "annualVolume": 60000, "region": "Mexico" },
+      "refPriceEur": 10.0, "tol": 0.35,
+      "source": "Engineering estimate, 2025 industry norm: robotic MIG-welded mild-steel mount assembly ~€8–13 at 60k/yr, Mexico (child-part forming simplified into the weld-cell mass model). Not a supplier quote."
+    }
+  ]
+}

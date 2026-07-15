@@ -23,7 +23,7 @@ const MAX_SAVING_PCT = 60;     // a single idea saving >60% of part cost is impl
 const MIN_SAVING_PCT = 0;
 const MAX_PAYBACK_MONTHS = 120;
 const MIN_EVIDENCE_YEAR = 1990;
-const MAX_EVIDENCE_YEAR = 2027;
+const MAX_EVIDENCE_YEAR = new Date().getFullYear() + 1;   // rolls forward — a fixed year silently starts rejecting valid citations
 
 function str(v, fallback = '') {
   if (typeof v === 'string') return v;
@@ -170,7 +170,7 @@ export function validateIdea(raw, index = 0, ctx = {}) {
   // retrieval evidence backs it; otherwise it is explicitly tagged unverified
   // and cannot carry benchmarked+ confidence. Soft claims without an OEM name
   // are unaffected.
-  const OEM_RE = /\b(bmw|mercedes|audi|porsche|volkswagen|\bvw\b|volvo|toyota|lexus|ford|cadillac|jeep|stellantis|tesla|nio|xpeng|li auto|byd|hongqi|yangwang|aito|rivian|jaguar|land rover|hyundai|kia|magna|bosch|zf\b|continental)\b/i;
+  const OEM_RE = /\b(bmw|mercedes|audi|porsche|volkswagen|\bvw\b|volvo|toyota|lexus|ford|cadillac|gm\b|general motors|chevrolet|jeep|stellantis|renault|nissan|honda|mazda|subaru|tesla|nio|xpeng|li auto|byd|geely|zeekr|chery|great wall|hongqi|yangwang|aito|rivian|lucid|polestar|jaguar|land rover|hyundai|kia|skoda|seat|cupra|magna|bosch|zf\b|continental|denso|valeo|aptiv|forvia|faurecia|brembo|catl|panasonic|lg energy|samsung sdi|gestamp|benteler)\b/i;
   if (idea.benchmarkReference && OEM_RE.test(idea.benchmarkReference)) {
     const backed = idea.searchDataUsed === true || idea.evidenceSources.some(s => s.confidence === 'high');
     if (!backed) {
