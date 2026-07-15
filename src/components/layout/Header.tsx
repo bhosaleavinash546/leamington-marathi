@@ -4,7 +4,6 @@ import { Menu, X, ChevronDown, LayoutDashboard, HelpCircle, LogOut, User, Sun, M
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
-import { APP_VERSION } from '../../version';
 
 const dropdownVariants = {
   hidden: { opacity: 0, y: -6, scale: 0.97 },
@@ -69,14 +68,9 @@ export default function Header() {
               alt="BrainSpark"
               className="w-9 h-9 group-hover:scale-105 transition-transform"
             />
-            <div className="flex items-end gap-1.5">
-              <div>
-                <span className="text-white font-bold text-lg leading-none tracking-tight">Brain</span>
-                <span className="text-gold-400 font-bold text-lg leading-none">Spark</span>
-              </div>
-              <span className="mb-0.5 px-1.5 py-0.5 rounded bg-gold-500/15 border border-gold-500/30 text-gold-400 text-[10px] font-semibold leading-none">
-                v{APP_VERSION}
-              </span>
+            <div>
+              <span className="text-white font-bold text-lg leading-none tracking-tight">Brain</span>
+              <span className="text-gold-400 font-bold text-lg leading-none">Spark</span>
             </div>
           </Link>
 

@@ -8,7 +8,6 @@ import {
 import ButtonSpinner from '../components/ui/ButtonSpinner';
 import { useAuth } from '../contexts/AuthContext';
 import { toast } from '../hooks/useToast';
-import { APP_VERSION } from '../version';
 
 type Screen = 'signin' | 'signup' | 'forgot' | 'reset';
 
@@ -454,7 +453,7 @@ export default function AuthPage() {
         </div>
 
         <p className="mt-10 text-slate-700 text-xs text-center">
-          BrainSpark v{APP_VERSION} · Designed &amp; Created by <span className="text-slate-600 font-medium">Avinash Bhosale</span>
+          BrainSpark · Designed &amp; Created by <span className="text-slate-600 font-medium">Avinash Bhosale</span>
         </p>
       </div>
     </div>

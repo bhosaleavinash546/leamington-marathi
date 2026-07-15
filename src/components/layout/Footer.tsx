@@ -15,9 +15,6 @@ export default function Footer() {
             <div className="flex items-center gap-2 mb-3">
               <img src="/brainspark-logo.svg" alt="BrainSpark" className="w-7 h-7" />
               <span className="text-white font-semibold text-sm">Brain<span className="text-gold-400">Spark</span></span>
-              <span className="px-1.5 py-0.5 rounded bg-gold-500/15 border border-gold-500/25 text-gold-400 text-[10px] font-semibold">
-                v{APP_VERSION}
-              </span>
             </div>
             <p className="text-slate-500 text-xs leading-relaxed">
               AI-Powered Idea Generation Platform.<br />
