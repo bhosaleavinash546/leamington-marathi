@@ -3,6 +3,10 @@ import { useDropzone } from 'react-dropzone';
 import { motion } from 'framer-motion';
 import { GitCompare, Upload, X, Zap, ChevronRight } from 'lucide-react';
 import ButtonSpinner from '../components/ui/ButtonSpinner';
+import CadViewer3D from '../components/CadViewer3D';
+
+const is3dCad = (name: string) => /\.(step|stp|igs|iges|stl)$/i.test(name);
+const authToken = () => { try { return JSON.parse(localStorage.getItem('brainspark_auth') || '{}').token as string; } catch { return ''; } };
 
 interface DeltaIdea {
   title: string;
@@ -26,13 +30,13 @@ export default function CadDiffPage() {
   const onDropB = useCallback((files: File[]) => setFileB(files[0] || null), []);
 
   const dropA = useDropzone({
-    accept: { 'application/octet-stream': ['.step', '.stp', '.stl', '.dxf'] },
+    accept: { 'application/octet-stream': ['.step', '.stp', '.stl', '.igs', '.iges', '.dxf'] },
     maxFiles: 1,
     onDrop: onDropA,
   });
 
   const dropB = useDropzone({
-    accept: { 'application/octet-stream': ['.step', '.stp', '.stl', '.dxf'] },
+    accept: { 'application/octet-stream': ['.step', '.stp', '.stl', '.igs', '.iges', '.dxf'] },
     maxFiles: 1,
     onDrop: onDropB,
   });
@@ -98,10 +102,15 @@ export default function CadDiffPage() {
               <div key={label}>
                 <p className="text-slate-300 text-sm font-medium mb-2">{label}</p>
                 {file ? (
-                  <div className={`flex items-center gap-3 p-4 rounded-2xl bg-${accent}-500/10 border border-${accent}-500/20`}>
-                    <Zap size={16} className={`text-${accent}-400 flex-shrink-0`} />
-                    <span className={`text-${accent}-300 text-sm flex-1 truncate`}>{file.name}</span>
-                    <button onClick={() => setFile(null)}><X size={14} className="text-slate-500 hover:text-red-400" /></button>
+                  <div className="space-y-3">
+                    <div className={`flex items-center gap-3 p-4 rounded-2xl bg-${accent}-500/10 border border-${accent}-500/20`}>
+                      <Zap size={16} className={`text-${accent}-400 flex-shrink-0`} />
+                      <span className={`text-${accent}-300 text-sm flex-1 truncate`}>{file.name}</span>
+                      <button onClick={() => setFile(null)}><X size={14} className="text-slate-500 hover:text-red-400" /></button>
+                    </div>
+                    {/* Interactive 3D viewer — activates for STEP/IGES/STL so each
+                        revision can be inspected (orbit/measure/section) before compare. */}
+                    {is3dCad(file.name) && <CadViewer3D file={file} token={authToken()} />}
                   </div>
                 ) : (
                   <div {...drop.getRootProps()} className={`flex flex-col items-center justify-center gap-3 p-8 rounded-2xl border-2 border-dashed cursor-pointer transition-all ${drop.isDragActive ? 'border-cyan-500/50 bg-cyan-500/5' : 'border-white/15 hover:border-white/30 hover:bg-white/3'}`}>
