@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Lightbulb, Sparkles, ArrowRight, CheckCircle, XCircle, Wand2, Cpu } from 'lucide-react';
+import { Lightbulb, Sparkles, ArrowRight, CheckCircle, XCircle, Wand2, Cpu, Layers } from 'lucide-react';
 import ButtonSpinner from '../components/ui/ButtonSpinner';
 import { useAuth } from '../contexts/AuthContext';
+import BusinessCaseModal from '../components/BusinessCaseModal';
+import { toast } from '../hooks/useToast';
 
 // The TRIZ Studio: type a trade-off in plain English, get inventive principles
 // and concrete, engine-checked cost-reduction ideas. Deliberately one input.
@@ -40,6 +42,7 @@ export default function TrizStudioPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [result, setResult] = useState<TrizResult | null>(null);
+  const [pipelineIdea, setPipelineIdea] = useState<TrizIdea | null>(null);
 
   async function resolve() {
     if (contradiction.trim().length < 8) { setError('Describe the trade-off you want to break.'); return; }
@@ -174,13 +177,31 @@ export default function TrizStudioPage() {
                     <h3 className="text-white font-semibold mb-2">{idea.title}</h3>
                     <p className="text-slate-400 text-sm leading-relaxed mb-2">{idea.technicalDescription}</p>
                     <p className="text-teal-300 text-xs mb-1"><span className="text-slate-500">Cost angle:</span> {idea.costAngle}</p>
-                    {idea.riskNotes && <p className="text-amber-300/80 text-xs"><span className="text-slate-500">Risk:</span> {idea.riskNotes}</p>}
+                    {idea.riskNotes && <p className="text-amber-300/80 text-xs mb-3"><span className="text-slate-500">Risk:</span> {idea.riskNotes}</p>}
+                    <div className="flex justify-end">
+                      <button
+                        onClick={() => setPipelineIdea(idea)}
+                        className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg border border-violet-500/30 bg-violet-500/10 text-violet-300 hover:bg-violet-500/20 transition-colors text-xs"
+                      >
+                        <Layers size={11} /> Add to Pipeline
+                      </button>
+                    </div>
                   </motion.div>
                 ))}
               </div>
             </div>
             <p className="text-slate-600 text-xs text-center">Principles are deterministic TRIZ theory; every € figure is engine-checked or labelled. Validate against detailed studies before commercial use.</p>
           </motion.div>
+        )}
+
+        {pipelineIdea && (
+          <BusinessCaseModal
+            ideaTitle={pipelineIdea.title}
+            ideaSource="triz"
+            systemName={system || (pipelineIdea.triz ? `TRIZ · P${pipelineIdea.triz.id} ${pipelineIdea.triz.name}` : 'TRIZ')}
+            onClose={() => setPipelineIdea(null)}
+            onSaved={() => { setPipelineIdea(null); toast('Added to Pipeline', 'success'); }}
+          />
         )}
 
         {!result && !loading && (
