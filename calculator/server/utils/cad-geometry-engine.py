@@ -78,6 +78,96 @@ def _extract_feature_table(wrapped, extents):
     return rows
 
 
+def _extract_machining_features(wrapped, bbox):
+    """Phase 2 — compound machining features from PLANAR faces.
+
+    Emits two extra featureTable kinds beyond hole/boss:
+      • face   — a machined planar face (datum/mating surface). Grouped by area;
+                 costed as face-milling (area ÷ feed). Default OFF (whether a
+                 planar face is actually machined is an engineering call).
+      • pocket — a planar floor recessed from the bounding box (its outward
+                 normal points to an open side but it sits inside). Floor area +
+                 depth → pocket milling. Conservative + default OFF.
+
+    bbox = (xmin, ymin, zmin, xmax, ymax, zmax). Approximate by design — surfaces
+    candidates for the engineer to confirm, never silently inflates cost.
+    """
+    from OCP.TopExp import TopExp_Explorer
+    from OCP.TopAbs import TopAbs_FACE, TopAbs_Orientation
+    from OCP.TopoDS import TopoDS
+    from OCP.BRepAdaptor import BRepAdaptor_Surface
+    from OCP.GeomAbs import GeomAbs_SurfaceType
+    from OCP.BRepGProp import BRepGProp
+    from OCP.GProp import GProp_GProps
+
+    xmin, ymin, zmin, xmax, ymax, zmax = bbox
+    ext_min = (xmin, ymin, zmin)
+    ext_max = (xmax, ymax, zmax)
+    diag = math.sqrt((xmax - xmin) ** 2 + (ymax - ymin) ** 2 + (zmax - zmin) ** 2)
+    tol = max(0.5, diag * 0.01)          # recess must exceed this to count
+    min_face_area = 400.0                # mm² — only meaningful datum/mating faces
+    min_pocket_area = 80.0
+    axis_ext = (xmax - xmin, ymax - ymin, zmax - zmin)
+
+    faces_area = {}                       # rounded area -> count (facing candidates)
+    pockets = {}                          # (area, depth) -> count
+    props = GProp_GProps()
+    exp = TopExp_Explorer(wrapped, TopAbs_FACE)
+    while exp.More():
+        face = TopoDS.Face_s(exp.Current())
+        exp.Next()
+        try:
+            ad = BRepAdaptor_Surface(face)
+            if ad.GetType() != GeomAbs_SurfaceType.GeomAbs_Plane:
+                continue
+            BRepGProp.SurfaceProperties_s(face, props)
+            area = abs(props.Mass())
+            if area < min_face_area:
+                continue
+            c = props.CentreOfMass()
+            centroid = (c.X(), c.Y(), c.Z())
+            # outward normal (plane normal flipped by face orientation)
+            n = ad.Plane().Axis().Direction()
+            nx, ny, nz = n.X(), n.Y(), n.Z()
+            if face.Orientation() == TopAbs_Orientation.TopAbs_REVERSED:
+                nx, ny, nz = -nx, -ny, -nz
+            comps = (abs(nx), abs(ny), abs(nz))
+            axis = comps.index(max(comps))           # dominant axis 0/1/2
+            if comps[axis] < 0.9:                     # not axis-aligned → skip pocket test
+                is_pocket = False
+                depth = 0.0
+            else:
+                sign = (nx, ny, nz)[axis]
+                pos = centroid[axis]
+                # outward normal points to +axis → floor of a pocket opening that way,
+                # recessed if it sits below the +extreme by > tol
+                if sign > 0:
+                    depth = ext_max[axis] - pos
+                else:
+                    depth = pos - ext_min[axis]
+                # A real pocket FLOOR is recessed only modestly along its normal;
+                # a face recessed by ≳half the part extent is almost always a
+                # side WALL misread as a floor — reject it.
+                is_pocket = (tol < depth < 0.5 * axis_ext[axis]) and area >= min_pocket_area
+            # facing candidate: any substantial planar face (datum/mating surface)
+            faces_area[round(area, 0)] = faces_area.get(round(area, 0), 0) + 1
+            if is_pocket:
+                key = (round(area, 0), round(depth, 1))
+                pockets[key] = pockets.get(key, 0) + 1
+        except Exception:
+            continue
+
+    rows = []
+    # facing: keep the largest few distinct faces (datum/mating candidates)
+    for area, count in sorted(faces_area.items(), reverse=True)[:8]:
+        rows.append({"kind": "face", "diaMm": 0.0, "depthMm": 0.0,
+                     "through": None, "count": count, "areaMm2": area})
+    for (area, depth), count in sorted(pockets.items(), reverse=True)[:8]:
+        rows.append({"kind": "pocket", "diaMm": 0.0, "depthMm": depth,
+                     "through": None, "count": count, "areaMm2": area})
+    return rows
+
+
 def _classify_faces(faces):
     """Return (type_counts dict, cyl_radii_ALL list — one entry per face)."""
     from OCP.BRep import BRep_Tool
@@ -731,8 +821,9 @@ def analyze(filepath: str) -> dict:
             },
             # Exact per-feature table: hole/boss × diameter × depth × through,
             # axis-deduped counts — feeds the operations mapping in the client.
-            "featureTable": _extract_feature_table(
-                wrapped, (xmax - xmin, ymax - ymin, zmax - zmin)
+            "featureTable": (
+                _extract_feature_table(wrapped, (xmax - xmin, ymax - ymin, zmax - zmin))
+                + _extract_machining_features(wrapped, (xmin, ymin, zmin, xmax, ymax, zmax))
             ),
             # ── New precision analysis fields ─────────────────────────────
             "wallThickness": wall_stats,

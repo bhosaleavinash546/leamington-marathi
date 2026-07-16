@@ -58,11 +58,12 @@ export interface OCCTGeometry {
   };
   /** Exact per-feature rows: hole/boss × Ø × depth × through, axis-deduped counts. */
   featureTable?: Array<{
-    kind: 'hole' | 'boss';
+    kind: 'hole' | 'boss' | 'face' | 'pocket' | 'slot';
     diaMm: number;
     depthMm: number;
     through: boolean | null;
     count: number;
+    areaMm2?: number;
   }>;
   error?: string;
   toolingCostEstimates?: {

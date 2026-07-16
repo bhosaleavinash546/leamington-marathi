@@ -8,15 +8,20 @@
  */
 
 export interface FeatureRow {
-  kind: 'hole' | 'boss';
+  kind: 'hole' | 'boss' | 'face' | 'pocket' | 'slot';
   diaMm: number;
   depthMm: number;
   through: boolean | null;
   count: number;
+  /** Planar face / pocket-floor area (mm²) — present on 'face' | 'pocket' | 'slot'. */
+  areaMm2?: number;
 }
 
 /** Map a feature row to the machining operation it implies. */
 export function featureToOperation(row: FeatureRow): string {
+  if (row.kind === 'face') return 'Face milling (facing)';
+  if (row.kind === 'pocket') return 'Pocket milling (rough + finish)';
+  if (row.kind === 'slot') return 'Slot milling';
   if (row.kind === 'boss') return 'Turning (external Ø)';
   if (row.through === false) return row.diaMm <= 13 ? 'Drilling (blind)' : 'Drill + bore (blind)';
   if (row.diaMm <= 13) return 'Drilling';

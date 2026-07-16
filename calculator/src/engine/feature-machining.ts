@@ -49,6 +49,7 @@ export interface FeatureMachiningLine {
   depthMm: number;
   through: boolean | null;
   count: number;
+  areaMm2?: number;
   operation: string;
   minutesEach: number;
   totalMinutes: number;
@@ -66,15 +67,39 @@ export interface FeatureMachiningResult {
   summary: string;                   // e.g. "50×Ø6.0×10, 2×Ø16.0×20"
 }
 
-/** High-confidence default: holes/bores are machined; external bosses need the
- *  engineer to confirm (a cast boss may be left as-cast). */
+// Shop-rate constants for the area/volume-based compound features (Phase 2).
+const FACE_MILL_FEED_MM2_PER_MIN = 8000;   // face-mill area coverage rate
+const POCKET_MRR_MM3_PER_MIN = 6000;       // pocket roughing material-removal rate
+
+/** Short human label for a feature, kind-aware (holes have Ø, faces have area). */
+export function featureLabel(l: { kind: FeatureRow['kind']; count: number; diaMm: number; depthMm: number; areaMm2?: number }): string {
+  if (l.kind === 'face') return `${l.count}× face ${Math.round(l.areaMm2 ?? 0)}mm²`;
+  if (l.kind === 'pocket' || l.kind === 'slot') return `${l.count}× ${l.kind} ${Math.round(l.areaMm2 ?? 0)}mm²×${l.depthMm.toFixed(0)}`;
+  return `${l.count}×Ø${l.diaMm.toFixed(1)}×${l.depthMm.toFixed(0)}`;
+}
+
+/** High-confidence default: holes/bores are machined; external bosses, faced
+ *  surfaces and pockets need the engineer to confirm (a planar face or a
+ *  recess may be cast/forged as-is, not machined). */
 export function defaultInclude(row: FeatureRow): boolean {
   return row.kind === 'hole';
 }
 
 /** Geometry-measured machining minutes for ONE instance of a feature.
- *  Transparent shop heuristic (approach + depth-driven cut + finishing). */
+ *  Transparent shop heuristic (approach + depth/area-driven cut + finishing). */
 export function featureMinutesEach(row: FeatureRow): number {
+  if (row.kind === 'face') {
+    const area = Math.max(row.areaMm2 ?? 0, 1);
+    return 0.20 + area / FACE_MILL_FEED_MM2_PER_MIN;        // facing pass
+  }
+  if (row.kind === 'pocket' || row.kind === 'slot') {
+    const area = Math.max(row.areaMm2 ?? 0, 1);
+    const depth = Math.max(row.depthMm, 1);
+    const rough = (area * depth) / POCKET_MRR_MM3_PER_MIN;   // volume roughing
+    const finishPerimeterMm = 4 * Math.sqrt(area);           // ≈ square perimeter
+    const finish = (finishPerimeterMm * depth) / 12000;      // wall finish pass
+    return 0.30 + rough + finish;
+  }
   const d = row.diaMm;
   const L = Math.max(row.depthMm, 1);
   if (row.kind === 'boss') {
@@ -92,8 +117,13 @@ export function featureMinutesEach(row: FeatureRow): number {
   return t;
 }
 
-/** Cylindrical feature metal volume (cm³) for ONE instance. */
+/** Metal volume removed (cm³) for ONE instance — cylinders for hole/boss,
+ *  floor-area×depth for pockets/slots, ~0 (skim) for facing. */
 export function featureVolumeCm3(row: FeatureRow): number {
+  if (row.kind === 'face') return 0;                          // facing skims stock
+  if (row.kind === 'pocket' || row.kind === 'slot') {
+    return ((row.areaMm2 ?? 0) * Math.max(row.depthMm, 0)) / 1000;
+  }
   const rCm = row.diaMm / 2 / 10;
   const lCm = row.depthMm / 10;
   return Math.PI * rCm * rCm * lCm;
@@ -118,6 +148,7 @@ export function computeFeatureMachining(
       depthMm: row.depthMm,
       through: row.through,
       count: row.count,
+      areaMm2: row.areaMm2,
       operation: featureToOperation(row),
       minutesEach: Math.round(minutesEach * 1000) / 1000,
       totalMinutes: Math.round(minutesEach * row.count * 1000) / 1000,
@@ -135,9 +166,7 @@ export function computeFeatureMachining(
     ? Math.round(active.reduce((s, l) => s + l.volumeCm3, 0) * density * 1000) / 1000
     : 0;
 
-  const summary = active
-    .map(l => `${l.count}×Ø${l.diaMm.toFixed(1)}×${l.depthMm.toFixed(0)}`)
-    .join(', ');
+  const summary = active.map(featureLabel).join(', ');
 
   const operations: OperationInput[] = featureCount === 0 ? [] : [{
     operationName: `CNC Machining — ${featureCount} feature${featureCount === 1 ? '' : 's'} (${summary}) [geometry-measured]`,

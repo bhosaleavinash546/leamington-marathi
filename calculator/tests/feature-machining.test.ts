@@ -80,3 +80,42 @@ describe('computeFeatureMachining', () => {
     expect(defaultInclude({ kind: 'boss', diaMm: 5, depthMm: 5, through: null, count: 1 })).toBe(false);
   });
 });
+
+describe('Phase 2 — compound machining features (facing, pockets)', () => {
+  const FACE: FeatureRow = { kind: 'face', diaMm: 0, depthMm: 0, through: null, count: 1, areaMm2: 8000 };
+  const POCKET: FeatureRow = { kind: 'pocket', diaMm: 0, depthMm: 12, through: null, count: 1, areaMm2: 3000 };
+
+  it('face is costed by area (facing pass), not diameter', () => {
+    const m = featureMinutesEach(FACE);
+    // 0.20 setup + 8000/8000 = ~1.2 min
+    expect(m).toBeCloseTo(0.20 + 8000 / 8000, 3);
+  });
+
+  it('pocket is costed by removed volume + wall finish', () => {
+    const m = featureMinutesEach(POCKET);
+    expect(m).toBeGreaterThan((3000 * 12) / 6000 / 60 * 60); // > pure roughing part
+    expect(m).toBeGreaterThan(0.3);
+  });
+
+  it('faces and pockets are OFF by default (engineer confirms machined surfaces)', () => {
+    expect(defaultInclude(FACE)).toBe(false);
+    expect(defaultInclude(POCKET)).toBe(false);
+    const r = computeFeatureMachining([FACE, POCKET], { machineId: 'm', labourId: 'l' });
+    expect(r.featureCount).toBe(0); // nothing auto-included
+  });
+
+  it('confirming a face + pocket adds a facing + pocket-milling op with real time', () => {
+    const r = computeFeatureMachining([FACE, POCKET], { machineId: 'm', labourId: 'l', includeFlags: [true, true] });
+    expect(r.featureCount).toBe(2);
+    expect(r.totalCycleHr).toBeGreaterThan(0);
+    expect(r.summary).toMatch(/face 8000mm²/);
+    expect(r.summary).toMatch(/pocket 3000mm²×12/);
+  });
+
+  it('facing removes no metal (skim); a solid-billet pocket removes its floor×depth volume', () => {
+    const face = computeFeatureMachining([FACE], { machineId: 'm', labourId: 'l', includeFlags: [true], stockCondition: 'solid_billet', densityKgPerCm3: 0.0078 });
+    expect(face.materialRemovedKg).toBe(0);                 // facing skims
+    const pk = computeFeatureMachining([POCKET], { machineId: 'm', labourId: 'l', includeFlags: [true], stockCondition: 'solid_billet', densityKgPerCm3: 0.0078 });
+    expect(pk.materialRemovedKg).toBeCloseTo((3000 * 12 / 1000) * 0.0078, 3);
+  });
+});

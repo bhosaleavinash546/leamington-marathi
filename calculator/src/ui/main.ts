@@ -9529,9 +9529,9 @@ function buildFeatureOpsTable(geo: OCCTGeometry): string {
         <thead><tr><th>Feature</th><th>Ø (mm)</th><th>Depth (mm)</th><th>Type</th><th>Qty</th><th>→ Operation</th></tr></thead>
         <tbody>
           ${rows.map(r => `<tr>
-            <td>${r.kind === 'hole' ? '◎ Hole' : '⬤ Boss'}</td>
-            <td>${r.diaMm.toFixed(2)}</td>
-            <td>${r.depthMm.toFixed(1)}</td>
+            <td>${r.kind === 'hole' ? '◎ Hole' : r.kind === 'boss' ? '⬤ Boss' : r.kind === 'face' ? '▭ Face' : r.kind === 'pocket' ? '⬒ Pocket' : '▬ Slot'}</td>
+            <td>${r.kind === 'hole' || r.kind === 'boss' ? r.diaMm.toFixed(2) : (r.areaMm2 ? Math.round(r.areaMm2) + ' mm²' : '—')}</td>
+            <td>${r.depthMm > 0 ? r.depthMm.toFixed(1) : '—'}</td>
             <td>${r.kind === 'hole' ? (r.through ? 'through' : 'blind') : '—'}</td>
             <td>${r.count}</td>
             <td>${featureToOperation(r)}</td>
@@ -9568,19 +9568,24 @@ function populateMachinedFeatures(prefix: string): void {
     return;
   }
   const totalHoles = rows.filter(r => r.kind === 'hole').reduce((s, r) => s + r.count, 0);
-  const totalBosses = rows.filter(r => r.kind === 'boss').reduce((s, r) => s + r.count, 0);
+  const nonHole = rows.filter(r => r.kind !== 'hole').reduce((s, r) => s + r.count, 0);
+  const icon = (k: string) => k === 'hole' ? '◎ Hole' : k === 'boss' ? '⬤ Boss' : k === 'face' ? '▭ Face' : k === 'pocket' ? '⬒ Pocket' : k === 'slot' ? '▬ Slot' : k;
+  const dims = (r: FeatureRow) => r.kind === 'hole'
+    ? `Ø${r.diaMm.toFixed(1)} × ${r.depthMm.toFixed(0)} ${r.through ? '(thru)' : '(blind)'}`
+    : r.kind === 'boss' ? `Ø${r.diaMm.toFixed(1)} × ${r.depthMm.toFixed(0)}`
+    : `${Math.round(r.areaMm2 ?? 0)} mm²${r.depthMm > 0 ? ` × ${r.depthMm.toFixed(0)}` : ''}`;
   body.innerHTML = `
     <div style="font-size:0.72rem;color:var(--text-secondary);margin-bottom:6px">
-      ${totalHoles} hole/bore feature(s)${totalBosses ? ` + ${totalBosses} boss(es)` : ''} from the B-rep.
-      Holes are ticked (machined on a near-net part); bosses are unticked — tick only the ones actually turned/faced.
+      ${totalHoles} hole/bore feature(s)${nonHole ? ` + ${nonHole} boss/face/pocket` : ''} from the B-rep.
+      Holes are ticked (machined on a near-net part); bosses, faces and pockets are unticked — tick only the ones actually machined.
     </div>
     <table class="data-table" style="font-size:0.72rem;font-variant-numeric:tabular-nums;width:100%">
-      <thead><tr><th></th><th>Feature</th><th>Ø×depth (mm)</th><th>Qty</th><th>→ Operation</th></tr></thead>
+      <thead><tr><th></th><th>Feature</th><th>Ø×depth / area</th><th>Qty</th><th>→ Operation</th></tr></thead>
       <tbody>
         ${rows.map((r, i) => `<tr>
           <td><input type="checkbox" class="${prefix}-mf-chk" data-idx="${i}" ${r.kind === 'hole' ? 'checked' : ''}/></td>
-          <td>${r.kind === 'hole' ? '◎ Hole' : '⬤ Boss'}</td>
-          <td>Ø${r.diaMm.toFixed(1)} × ${r.depthMm.toFixed(0)}${r.kind === 'hole' ? (r.through ? ' (thru)' : ' (blind)') : ''}</td>
+          <td>${icon(r.kind)}</td>
+          <td>${dims(r as FeatureRow)}</td>
           <td>${r.count}</td>
           <td>${featureToOperation(r as FeatureRow)}</td>
         </tr>`).join('')}
