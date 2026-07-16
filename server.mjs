@@ -38,6 +38,7 @@ import { registerCadRoutes } from './routes/cad.mjs';
 import { registerHarnessRoutes } from './routes/harness.mjs';
 import { registerOrgRoutes } from './routes/orgs.mjs';
 import { registerTrizRoutes } from './routes/triz.mjs';
+import { registerInnovationRoutes } from './routes/innovation.mjs';
 import { analyzeFeatures } from './src/services/cad-features.mjs';
 import { aggregateOcctMeshes, analyzeBrep } from './src/services/cad-brep.mjs';
 
@@ -3057,6 +3058,9 @@ registerOrgRoutes(app, { db, requireAuth, rateLimit });
 // TRIZ innovation studio: plain-English contradiction → inventive principles →
 // costed, engine-checked ideas.
 registerTrizRoutes(app, { requireAuth, rateLimit, makeAnthropic, resolveApiKey, sanitize });
+// Innovation methods (Value Engineering, DFA, Design-to-Cost, SCAMPER,
+// Morphological, Effects & Trends, Circularity) — structured idea generation.
+registerInnovationRoutes(app, { requireAuth, rateLimit, makeAnthropic, resolveApiKey, sanitize });
 
 // Active rate library with live commodity prices bridged in — shared by the
 // engine-as-tools chat and the agentic cost-down endpoint below.
