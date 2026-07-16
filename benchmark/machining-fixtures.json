@@ -1,0 +1,47 @@
+{
+  "comment": "Held-out machined-part fixtures with GEOMETRY (not just mass), authored to test feature-based machining vs the mass model — including the two cases the primary held-out set showed the mass model getting badly wrong (CNC at volume, titanium). Anchor prices are engineering estimates from public teardown/industry norms (piece price ex-works, mid-volume), NOT supplier quotes. Each fixture is a machined-from-billet part. tol band ±35%.",
+  "fixtures": [
+    {
+      "id": "fb-al-bracket",
+      "name": "Aluminium 6061 CNC bracket, moderate features, 25k/yr",
+      "material": "Aluminium 6061", "region": "Germany", "annualVolume": 25000, "batch": 300,
+      "geometry": { "boundingBoxMm": { "x": 120, "y": 80, "z": 35 }, "partVolumeCm3": 150, "surfaceAreaCm2": 360, "holes": [{ "diaMm": 8, "depthMm": 30, "count": 6 }], "setupCount": 2 },
+      "refPriceEur": 14.0, "tol": 0.35, "source": "engineering estimate, 2025 industry norm"
+    },
+    {
+      "id": "fb-steel-flange",
+      "name": "Mild-steel machined flange, few features, 50k/yr",
+      "material": "Steel (mild)", "region": "Germany", "annualVolume": 50000, "batch": 500,
+      "geometry": { "boundingBoxMm": { "x": 90, "y": 90, "z": 25 }, "partVolumeCm3": 120, "surfaceAreaCm2": 300, "holes": [{ "diaMm": 11, "depthMm": 25, "count": 8 }], "setupCount": 2 },
+      "refPriceEur": 11.0, "tol": 0.35, "source": "engineering estimate, 2025 industry norm"
+    },
+    {
+      "id": "fb-ti-fitting",
+      "name": "Titanium Ti-6Al-4V machined fitting (the mass-model −46% miss)",
+      "material": "Titanium Ti-6Al-4V", "region": "Germany", "annualVolume": 5000, "batch": 100,
+      "geometry": { "boundingBoxMm": { "x": 70, "y": 45, "z": 40 }, "partVolumeCm3": 60, "surfaceAreaCm2": 190, "holes": [{ "diaMm": 6, "depthMm": 25, "count": 4 }], "setupCount": 3 },
+      "refPriceEur": 55.0, "tol": 0.35, "source": "engineering estimate — Ti aero/EV fitting band"
+    },
+    {
+      "id": "fb-cnc-high-volume",
+      "name": "Steel CNC part at 500k/yr (the mass-model +46% miss)",
+      "material": "Steel (mild)", "region": "China", "annualVolume": 500000, "batch": 2000,
+      "geometry": { "boundingBoxMm": { "x": 60, "y": 40, "z": 20 }, "partVolumeCm3": 30, "surfaceAreaCm2": 120, "holes": [{ "diaMm": 6, "depthMm": 15, "count": 3 }], "setupCount": 1 },
+      "refPriceEur": 5.5, "tol": 0.35, "source": "engineering estimate, high-volume transfer-line band"
+    },
+    {
+      "id": "fb-stainless-manifold",
+      "name": "Stainless 304 machined manifold, many holes, low volume",
+      "material": "Stainless Steel 304", "region": "Germany", "annualVolume": 8000, "batch": 150,
+      "geometry": { "boundingBoxMm": { "x": 110, "y": 60, "z": 55 }, "partVolumeCm3": 180, "surfaceAreaCm2": 420, "holes": [{ "diaMm": 6, "depthMm": 40, "count": 14 }], "setupCount": 3 },
+      "refPriceEur": 46.0, "tol": 0.35, "source": "engineering estimate — SS fluid manifold"
+    },
+    {
+      "id": "fb-al-nearnet",
+      "name": "Aluminium near-net machined part (low removal, buy-to-fly ~1.4)",
+      "material": "Aluminium 6061", "region": "Germany", "annualVolume": 60000, "batch": 500,
+      "geometry": { "boundingBoxMm": { "x": 80, "y": 55, "z": 30 }, "partVolumeCm3": 95, "surfaceAreaCm2": 240, "holes": [{ "diaMm": 8, "depthMm": 22, "count": 4 }], "setupCount": 1, "stockAllowanceMm": 1 },
+      "refPriceEur": 7.5, "tol": 0.35, "source": "engineering estimate, near-net billet"
+    }
+  ]
+}

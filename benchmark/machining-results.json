@@ -1,0 +1,63 @@
+{
+  "rows": [
+    {
+      "id": "fb-al-bracket",
+      "ref": 14,
+      "feature": 13.63,
+      "featErr": -0.026428571428571374,
+      "mass": 14.85,
+      "massErr": 0.060714285714285686,
+      "tol": 0.35
+    },
+    {
+      "id": "fb-steel-flange",
+      "ref": 11,
+      "feature": 21.98,
+      "featErr": 0.9981818181818182,
+      "mass": 26.63,
+      "massErr": 1.420909090909091,
+      "tol": 0.35
+    },
+    {
+      "id": "fb-ti-fitting",
+      "ref": 55,
+      "feature": 57.4,
+      "featErr": 0.04363636363636361,
+      "mass": 27.12,
+      "massErr": -0.5069090909090909,
+      "tol": 0.35
+    },
+    {
+      "id": "fb-cnc-high-volume",
+      "ref": 5.5,
+      "feature": 4.61,
+      "featErr": -0.16181818181818175,
+      "mass": 6.75,
+      "massErr": 0.22727272727272727,
+      "tol": 0.35
+    },
+    {
+      "id": "fb-stainless-manifold",
+      "ref": 46,
+      "feature": 70.9,
+      "featErr": 0.541304347826087,
+      "mass": 45.86,
+      "massErr": -0.0030434782608695777,
+      "tol": 0.35
+    },
+    {
+      "id": "fb-al-nearnet",
+      "ref": 7.5,
+      "feature": 5.28,
+      "featErr": -0.296,
+      "mass": 10.52,
+      "massErr": 0.4026666666666666,
+      "tol": 0.35
+    }
+  ],
+  "featureMape": 0.3445615471485037,
+  "massMape": 0.43691922328878846,
+  "featureHits": 4,
+  "massHits": 3,
+  "total": 6
+}
