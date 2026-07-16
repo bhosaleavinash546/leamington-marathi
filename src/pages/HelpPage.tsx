@@ -1,7 +1,51 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, ChevronDown, ChevronRight, HelpCircle, BookOpen, Mail, Zap, Terminal, Download, Globe, Lock, Shield, Cpu, BarChart3, Sparkles, Map, Share2, Package, Smartphone } from 'lucide-react';
+import { Search, ChevronDown, ChevronRight, HelpCircle, BookOpen, Mail, Zap, Terminal, Download, Globe, Lock, Shield, Cpu, BarChart3, Sparkles, Map, Share2, Package, Smartphone, Wand2, Layers, CheckCircle } from 'lucide-react';
 import { APP_VERSION } from '../version';
+import { HOW_TO_GUIDES } from '../data/how-to-guides';
+
+// ─── How-To Guide accordion (step-by-step, plain language) ──────────────────
+function HowToGuideCard({ guide }: { guide: typeof HOW_TO_GUIDES[number] }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="border border-white/8 rounded-xl overflow-hidden bg-navy-900/40">
+      <button onClick={() => setOpen(!open)} className="w-full flex items-start justify-between gap-4 px-5 py-4 text-left hover:bg-white/3 transition-colors">
+        <div className="flex items-start gap-3">
+          <Wand2 size={16} className="text-gold-400 flex-shrink-0 mt-0.5" />
+          <div>
+            <span className="text-white text-sm font-semibold block">{guide.tool}</span>
+            <span className="text-slate-400 text-xs">{guide.tagline}</span>
+          </div>
+        </div>
+        <ChevronDown size={16} className={`text-gold-400 flex-shrink-0 mt-1 transition-transform ${open ? 'rotate-180' : ''}`} />
+      </button>
+      <AnimatePresence>
+        {open && (
+          <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.2 }}>
+            <div className="px-5 pb-5 border-t border-white/5 pt-4">
+              <p className="text-xs text-slate-500 mb-4"><span className="text-slate-400 font-medium">When to use it:</span> {guide.whenToUse}</p>
+              <ol className="space-y-3">
+                {guide.steps.map((s, i) => (
+                  <li key={i} className="flex gap-3">
+                    <span className="flex-shrink-0 w-6 h-6 rounded-full bg-gold-500/15 border border-gold-500/25 text-gold-400 text-xs font-bold flex items-center justify-center">{i + 1}</span>
+                    <div>
+                      <p className="text-slate-200 text-sm font-medium">{s.title}</p>
+                      <p className="text-slate-400 text-xs leading-relaxed mt-0.5">{s.detail}</p>
+                    </div>
+                  </li>
+                ))}
+              </ol>
+              <div className="mt-4 flex items-start gap-2 p-3 rounded-lg bg-emerald-500/5 border border-emerald-500/15">
+                <CheckCircle size={13} className="text-emerald-400 flex-shrink-0 mt-0.5" />
+                <p className="text-emerald-300/90 text-xs"><span className="font-medium">Example:</span> {guide.example}</p>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
 
 
 const BUILD_DATE = 'July 2026';
@@ -84,6 +128,16 @@ const FAQ: FaqSection[] = [
       { q: 'How does it actually work under the hood?', a: 'Four steps: (1) an AI maps your plain-English trade-off to the two classical TRIZ engineering parameters (the one improving and the one that would worsen); (2) a DETERMINISTIC recommender picks the inventive principles for that contradiction — curated classical pairs plus an automotive-tuned affinity model, so the principle choice is explainable, not a black box; (3) the AI turns each principle into a specific automotive embodiment for your part; (4) the deterministic cost engine cross-checks each idea and stamps it confirmed or contradicted. The principles come from theory; the numbers come from the engine.' },
       { q: 'Is this the real 40 principles and 39 parameters?', a: 'Yes — all 40 of Altshuller\'s classical inventive principles (each with an automotive cost-engineering example) and the 39 classical engineering parameters are included verbatim. The contradiction-to-principle mapping is an automotive-tuned model INSPIRED by the classical contradiction matrix — high-confidence classic pairs are curated explicitly, and the rest use a deterministic affinity model — rather than a verbatim reproduction of the 1969 matrix. It is labelled as such in the output.' },
       { q: 'What is the TRIZ lens on the Analyze page?', a: 'A one-toggle version: on the Analyze page, switch on "TRIZ Innovation Lens" before generating. The normal idea generation then also resolves engineering contradictions with named inventive principles, surfacing breakthrough ideas alongside the benchmark-driven ones — without leaving your normal workflow. For a focused deep-dive on a single contradiction, use the dedicated TRIZ Studio instead.' },
+    ],
+  },
+  {
+    category: 'Innovation Methods',
+    icon: Sparkles,
+    items: [
+      { q: 'What are the Innovation Methods and where do I find them?', a: 'They are eight structured ways to generate cost-reduction ideas, each based on a proven engineering method rather than free-form brainstorming: TRIZ, Value Engineering (function analysis), DFA / Part Consolidation, Design-to-Cost, SCAMPER, Morphological Analysis, Effects & Evolution Trends, and Design for Circularity. Find them two ways: Tools → Innovation Studio (pick one method and go deep), or on the Analyze page switch on any of them as "Innovation Lenses" so your normal idea generation also thinks that way. Step-by-step guides for all of them are in the How-To Guides section on this page.' },
+      { q: 'Which method should I use when?', a: 'SCAMPER for a fast broad first pass. TRIZ when you are stuck on a trade-off ("lighter but not weaker"). Value Engineering when you suspect you are paying too much for a minor function. DFA / Part Consolidation when an assembly has many parts. Design-to-Cost when you have a hard price target to hit. Morphological for a clean-sheet rethink. Effects & Trends for a next-generation leap. Circularity when end-of-life or recyclability rules matter. You can also switch several on at once as lenses on the Analyze page.' },
+      { q: 'Are these just AI prompts, or real methods?', a: 'The method structure is deterministic code, not a prompt. DFA computes the theoretical minimum part count and design-efficiency from the Boothroyd-Dewhurst rules; Value Engineering computes a real value index (worth ÷ cost) per function; Design-to-Cost computes the cost gap and splits it across cost buckets; Morphological computes the full concept space. The AI only turns that structure into concrete embodiments for your part — and every resulting € figure is then cross-checked by the deterministic cost engine. Method from theory, numbers from the engine.' },
+      { q: 'Do ideas from the Innovation Studio flow into the Pipeline?', a: 'Yes. Every generated idea has an "Add to Pipeline" button that opens the Business Case wizard pre-filled, tagged with the method it came from, so a breakthrough idea carries straight into a G0-G3 business case with ROI, IRR and payback — no retyping.' },
     ],
   },
   {
@@ -208,7 +262,8 @@ export default function HelpPage() {
             </h2>
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-8">
               {[
-                { icon: Sparkles,   color: 'text-gold-400',   bg: 'bg-gold-500/10',   border: 'border-gold-500/20',  title: 'TRIZ Innovation Studio', desc: 'Describe a trade-off in plain English ("lighter without losing stiffness") and TRIZ maps it to the classical inventive principles that break it, then generates concrete, engine-checked ideas. 40 principles, 39 parameters, deterministic recommendation. Also available as a one-toggle lens on the Analyze page. See /triz.' },
+                { icon: Sparkles,   color: 'text-gold-400',   bg: 'bg-gold-500/10',   border: 'border-gold-500/20',  title: 'Innovation Studio — 8 methods', desc: 'A home for structured idea generation: TRIZ, Value Engineering (function analysis), DFA / part consolidation, Design-to-Cost, SCAMPER, Morphological, Effects & Evolution Trends, and Design for Circularity. Each gives the AI a proven thinking framework and returns engine-checked ideas. Also available as one-click lenses on the Analyze page. See /innovate.' },
+                { icon: Sparkles,   color: 'text-violet-400', bg: 'bg-violet-500/10', border: 'border-violet-500/20',title: 'TRIZ Innovation Studio', desc: 'Describe a trade-off in plain English ("lighter without losing stiffness") and TRIZ maps it to the classical inventive principles that break it, then generates concrete, engine-checked ideas. 40 principles, 39 parameters, deterministic recommendation. Also available as a one-toggle lens on the Analyze page. See /triz.' },
                 { icon: Package,    color: 'text-blue-400',   bg: 'bg-blue-500/10',   border: 'border-blue-500/20',  title: 'Interactive 3D CAD Viewer', desc: 'Upload STEP/IGES/STL and open it like a CAD tool: orbit/pan/zoom, canonical views, shaded+edges, section plane, mm measurements (distance / circle / angle), and exact B-rep face data — hole Ø × depth, machining-surface colouring. Live on Analyze, CAD-to-Cost, and CAD Diff.' },
                 { icon: Shield,     color: 'text-emerald-400',bg: 'bg-emerald-500/10',border: 'border-emerald-500/20',title: 'Engine-Verified Ideas', desc: 'Material/process-substitution ideas are now cross-checked by the deterministic cost engine at generation time and stamped confirmed or contradicted — the AI can no longer assert a saving unchallenged.' },
                 { icon: Zap,        color: 'text-cyan-400',   bg: 'bg-cyan-500/10',   border: 'border-cyan-500/20',  title: 'Wiring-Harness Costing', desc: 'A dedicated parametric harness model: copper mass from gauge mix × circuit lengths, connector/terminal/splice economics, labour-minutes, and an honesty band. POST /api/harness-cost.' },
@@ -258,6 +313,19 @@ export default function HelpPage() {
                   <p className="text-slate-400 text-xs leading-relaxed">{desc}</p>
                 </div>
               ))}
+            </div>
+          </motion.div>
+        )}
+
+        {/* How-To Guides — step-by-step, plain language (hidden while searching FAQ) */}
+        {!search && (
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.13 }} className="mb-10">
+            <h2 className="text-white font-semibold flex items-center gap-2 mb-2">
+              <Layers size={16} className="text-gold-400" /> How to Use the Innovation Tools — Step by Step
+            </h2>
+            <p className="text-slate-500 text-xs mb-5">Simple, click-by-click guides for every idea-generation tool. Open Tools → Innovation Studio to try any of them, or switch them on as lenses on the Analyze page.</p>
+            <div className="space-y-2.5">
+              {HOW_TO_GUIDES.map(g => <HowToGuideCard key={g.id} guide={g} />)}
             </div>
           </motion.div>
         )}

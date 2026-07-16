@@ -211,7 +211,7 @@ function BrandPanel() {
             Chief Engineer AI grounded by a deterministic should-cost engine — upload CAD, inspect it in 3D, and generate engineering ideas whose savings are engine-verified, not asserted.
           </p>
           <div className="flex flex-wrap gap-2 mt-4">
-            {['3D CAD Viewer', 'TRIZ Innovation Studio', 'Deterministic Should-Cost', 'Engine-Verified Ideas', '1,630+ Idea Marketplace', 'Excel · PPT · PDF'].map(tag => (
+            {['3D CAD Viewer', 'Innovation Studio · 8 Methods', 'Deterministic Should-Cost', 'Engine-Verified Ideas', '1,630+ Idea Marketplace', 'Excel · PPT · PDF'].map(tag => (
               <span key={tag} className="px-2.5 py-1 rounded-full bg-white/8 border border-white/15 text-slate-400 text-xs">{tag}</span>
             ))}
           </div>
