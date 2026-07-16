@@ -149,6 +149,7 @@ export default function AnalyzePage() {
   const [searchApiKey, setSearchApiKey] = useState(() => localStorage.getItem('brainspark_brave_key') || '');
   const [showApiKey, setShowApiKey] = useState(false);
   const [enableSearch, setEnableSearch] = useState(true);
+  const [trizLens, setTrizLens] = useState(false);
   const [cadFile, setCadFile] = useState<File | null>(null);
   const [cadGeometry, setCadGeometry] = useState<CadGeometry | null>(null);
   const [isParsing, setIsParsing] = useState(false);
@@ -322,6 +323,7 @@ export default function AnalyzePage() {
         cadFileType: cadFile?.name?.split('.').pop()?.toUpperCase(),
         additionalContext: contextFinal,
         apiKey,
+        trizLens,
         cadGeometry: cadGeometry ? (cadGeometry as unknown as Record<string, unknown>) : undefined,
       };
 
@@ -886,6 +888,28 @@ export default function AnalyzePage() {
                         />
                       </div>
                     </div>
+                  )}
+                </div>
+
+                {/* TRIZ Innovation Lens */}
+                <div className="p-4 rounded-xl border border-white/10 bg-white/5">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Zap size={16} className="text-gold-400" />
+                      <span className="text-white font-medium text-sm">TRIZ Innovation Lens</span>
+                      <span className="px-1.5 py-0.5 rounded text-xs bg-gold-500/15 text-gold-300 border border-gold-500/20">Breakthrough</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setTrizLens(!trizLens)}
+                      aria-label="Toggle TRIZ innovation lens"
+                      className={`relative w-11 h-6 rounded-full transition-colors ${trizLens ? 'bg-gold-500' : 'bg-white/15'}`}
+                    >
+                      <div className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${trizLens ? 'translate-x-5.5 left-0' : 'left-0.5'}`} />
+                    </button>
+                  </div>
+                  {trizLens && (
+                    <p className="text-slate-400 text-xs mt-3">The AI will resolve engineering contradictions with classical inventive principles (Segmentation, Merging, Composite materials…) — surfacing breakthrough ideas that break trade-offs instead of accepting them. For a dedicated deep-dive, use the <span className="text-gold-400">TRIZ Studio</span>.</p>
                   )}
                 </div>
 

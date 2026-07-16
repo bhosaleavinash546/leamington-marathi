@@ -39,6 +39,7 @@ const MobileSettingsPage = lazy(() => import('./pages/MobileSettingsPage'));
 const VaveTrackerPage = lazy(() => import('./pages/VaveTrackerPage'));
 const PipelinePage = lazy(() => import('./pages/PipelinePage'));
 const LegalPage = lazy(() => import('./pages/LegalPage'));
+const TrizStudioPage = lazy(() => import('./pages/TrizStudioPage'));
 
 function AnimatedRoutes() {
   const location = useLocation();
@@ -73,6 +74,7 @@ function AnimatedRoutes() {
         {/* Public share view */}
         <Route path="/shared/:token" element={<PageTransition><SharedResultPage /></PageTransition>} />
         <Route path="/legal/:doc" element={<PageTransition><LegalPage /></PageTransition>} />
+        <Route path="/triz" element={<ProtectedRoute><PageTransition><TrizStudioPage /></PageTransition></ProtectedRoute>} />
 
         {/* Fallback */}
         <Route path="*" element={<Navigate to="/" replace />} />

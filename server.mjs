@@ -37,6 +37,7 @@ import { registerRateLibraryRoutes } from './routes/rate-library.mjs';
 import { registerCadRoutes } from './routes/cad.mjs';
 import { registerHarnessRoutes } from './routes/harness.mjs';
 import { registerOrgRoutes } from './routes/orgs.mjs';
+import { registerTrizRoutes } from './routes/triz.mjs';
 import { analyzeFeatures } from './src/services/cad-features.mjs';
 import { aggregateOcctMeshes, analyzeBrep } from './src/services/cad-brep.mjs';
 
@@ -1891,6 +1892,11 @@ function getRegulatorContext(config) {
 
 function buildAnalysisPrompt(config, systemName, subassemblyName, partName, enableSearch, cadGeometry) {
   const scope = partName ? `Part: **${partName}** (within ${subassemblyName}, System: ${systemName})` : `Subassembly: **${subassemblyName}** (System: ${systemName})`;
+  // Optional TRIZ lens: nudge the model to also break trade-offs with inventive
+  // principles, not just benchmark-copy. Compact so it doesn't bloat the prompt.
+  const trizLens = config.trizLens
+    ? `\nTRIZ LENS (apply): treat cost reduction as breaking trade-offs. For at least 3 ideas, identify the engineering contradiction (what improves vs what would classically worsen) and resolve it with a named classical inventive principle — e.g. Segmentation, Local quality, Merging, Universality (multi-function parts), Nested doll, Asymmetry, The other way round, Composite materials, Parameter changes, Mechanics substitution, Preliminary action, Cheap short-living objects. Prefer resolving the contradiction over accepting it; name the principle in the technicalDescription.\n`
+    : '';
   let cadLine = config.cadFileName ? `\nCAD file: ${config.cadFileName} (${config.cadFileType}).` : '';
   if (cadGeometry && !cadGeometry.isImage) {
     const bb = cadGeometry.boundingBox;
@@ -2029,7 +2035,7 @@ EVIDENCE SOURCES: List 1-3 real evidence sources per idea (OEM teardowns, patent
 ENGINE CHECK (include on every idea where it applies): when an idea is a material substitution, process change, or mass reduction, include engineCheckRequest with the baseline and proposed material/process/mass so the deterministic costing engine can verify the direction of the saving on a reference part. Use plain descriptive names — they are fuzzy-matched to the engine catalogue. Omit the field for moves that are not expressible as a baseline→proposed comparison (commonisation, logistics, warranty). Always state the commodity price assumption used (e.g., 'based on aluminium at €2,340/t Q2 2025') in the evidenceSources array or technicalDescription when the saving depends on a commodity price.
 Use JSON null (not the string 'null') for any optional field that is not applicable.
 Each idea must address a genuinely different engineering mechanism. Do not generate variations of the same core idea with different titles. If two ideas share the same root cause and technical approach, merge them into one richer idea.
-Cover EVERY viable lever — material substitution, process optimisation, design changes, commonisation, logistics, warranty, tooling amortisation, and emerging technology. Do not stop at 8 — generate all ideas that a Chief Engineer would seriously consider. Include a spread of Low/Medium/High difficulty, at least 1 commonisation idea, and at least 1 emerging-technology idea. Return ONLY the JSON array — no markdown, no preamble.`;
+Cover EVERY viable lever — material substitution, process optimisation, design changes, commonisation, logistics, warranty, tooling amortisation, and emerging technology. Do not stop at 8 — generate all ideas that a Chief Engineer would seriously consider. Include a spread of Low/Medium/High difficulty, at least 1 commonisation idea, and at least 1 emerging-technology idea.${trizLens}Return ONLY the JSON array — no markdown, no preamble.`;
 }
 
 const webSearchTool = {
@@ -3048,6 +3054,9 @@ registerCadRoutes(app, { requireAuth, rateLimit });
 registerHarnessRoutes(app, { requireAuth, rateLimit });
 // Organisations & roles v1 (SaaS substrate: personal orgs, invites, role middleware).
 registerOrgRoutes(app, { db, requireAuth, rateLimit });
+// TRIZ innovation studio: plain-English contradiction → inventive principles →
+// costed, engine-checked ideas.
+registerTrizRoutes(app, { requireAuth, rateLimit, makeAnthropic, resolveApiKey, sanitize });
 
 // Active rate library with live commodity prices bridged in — shared by the
 // engine-as-tools chat and the agentic cost-down endpoint below.

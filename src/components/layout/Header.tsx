@@ -94,7 +94,7 @@ export default function Header() {
                 {/* Tools dropdown */}
                 <div className="relative" ref={toolsRef}>
                   <button onClick={() => setToolsOpen(v => !v)}
-                    className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-all ${['/bom-analysis','/cad-to-cost','/cad-diff','/should-cost','/trends'].some(p => isActive(p)) ? 'bg-gold-500/20 text-gold-400' : 'text-slate-300 hover:text-white hover:bg-white/5'}`}>
+                    className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-all ${['/triz','/bom-analysis','/cad-to-cost','/pcb-bom-cost','/cad-diff','/should-cost','/trends'].some(p => isActive(p)) ? 'bg-gold-500/20 text-gold-400' : 'text-slate-300 hover:text-white hover:bg-white/5'}`}>
                     Tools <ChevronDown size={13} className={`transition-transform ${toolsOpen ? 'rotate-180' : ''}`} />
                   </button>
                   <AnimatePresence>
@@ -104,6 +104,7 @@ export default function Header() {
                         className="absolute top-full left-0 mt-1.5 w-48 rounded-xl bg-navy-800 border border-white/10 shadow-2xl shadow-black/50 py-1 overflow-hidden z-50"
                       >
                         {[
+                          { path: '/triz', label: 'TRIZ Studio' },
                           { path: '/bom-analysis', label: 'BOM Batch' },
                           { path: '/cad-to-cost', label: 'CAD to Cost' },
                           { path: '/pcb-bom-cost', label: 'PCB → BOM → Cost' },
@@ -251,6 +252,7 @@ export default function Header() {
               </div>
               <Link to="/dashboard"   className="block px-3 py-2 text-sm text-slate-300 hover:text-white rounded-lg hover:bg-white/5" onClick={() => setMenuOpen(false)}>Dashboard</Link>
               <Link to="/analyze"     className="block px-3 py-2 text-sm text-slate-300 hover:text-white rounded-lg hover:bg-white/5" onClick={() => setMenuOpen(false)}>Analyze</Link>
+              <Link to="/triz"        className="block px-3 py-2 text-sm text-slate-300 hover:text-white rounded-lg hover:bg-white/5" onClick={() => setMenuOpen(false)}>TRIZ Studio</Link>
               <Link to="/cad-to-cost" className="block px-3 py-2 text-sm text-slate-300 hover:text-white rounded-lg hover:bg-white/5" onClick={() => setMenuOpen(false)}>CAD to Cost</Link>
               <Link to="/cad-diff"    className="block px-3 py-2 text-sm text-slate-300 hover:text-white rounded-lg hover:bg-white/5" onClick={() => setMenuOpen(false)}>CAD Diff</Link>
               <Link to="/should-cost" className="block px-3 py-2 text-sm text-slate-300 hover:text-white rounded-lg hover:bg-white/5" onClick={() => setMenuOpen(false)}>Should-Cost</Link>
