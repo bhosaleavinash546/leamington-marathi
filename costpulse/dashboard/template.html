@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -8,39 +8,82 @@
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <script>/*__PLOTLY_JS__*/</script>
 <style>
+  /* Design tokens. Light is the base; dark is selected twice — via the OS
+     media query (guarded so an explicit light stamp wins) and via the
+     data-theme stamp set by the toggle, which must win both ways. */
   :root {
-    --ground: #F7F8F9;
-    --panel: #FFFFFF;
+    color-scheme: light;
+    --ground: #F7F8F9;          /* page plane */
+    --panel: #FFFFFF;           /* chart surface */
     --ink: #1A1D21;
-    --ink-soft: #5A616B;
-    --hairline: #D9DDE2;
-    --blue: #1F5AA8;
-    --amber: #D97C00;
-    --red: #B3362B;
-    --chip: #EDEFF2;
+    --ink-soft: #565D66;
+    --ink-muted: #8A9099;
+    --hairline: #DDE1E6;
+    --gridline: #ECEEF1;
+    --baseline: #C6CBD2;
+    --blue: #1F5AA8;            /* engineering blue — primary data hue */
+    --amber: #B36700;           /* reserved: gaps / opportunities (text-safe) */
+    --amber-mark: #D97C00;      /* reserved: gap marks */
+    --red: #B3362B;             /* reserved: data-quality flags */
+    --chip: #EEF1F4;
+    /* categorical slots — validated order, fixed; assigned per entity, never cycled */
+    --s1: #1F5AA8; --s2: #008300; --s3: #e87ba4;
+    --s4: #eda100; --s5: #1baf7a; --s6: #eb6834;
   }
-  html[data-theme="dark"] {
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) {
+      color-scheme: dark;
+      --ground: #16181B;
+      --panel: #1E2126;
+      --ink: #E8EAED;
+      --ink-soft: #A3AAB4;
+      --ink-muted: #798088;
+      --hairline: #33383F;
+      --gridline: #282C31;
+      --baseline: #454B53;
+      --blue: #5B8FD6;
+      --amber: #E0921E;
+      --amber-mark: #E0921E;
+      --red: #C4554A;
+      --chip: #2A2E34;
+      --s1: #3987e5; --s2: #008300; --s3: #d55181;
+      --s4: #c98500; --s5: #199e70; --s6: #d95926;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
     --ground: #16181B;
     --panel: #1E2126;
     --ink: #E8EAED;
-    --ink-soft: #9AA2AC;
+    --ink-soft: #A3AAB4;
+    --ink-muted: #798088;
     --hairline: #33383F;
+    --gridline: #282C31;
+    --baseline: #454B53;
     --blue: #5B8FD6;
     --amber: #E0921E;
+    --amber-mark: #E0921E;
     --red: #C4554A;
     --chip: #2A2E34;
+    --s1: #3987e5; --s2: #008300; --s3: #d55181;
+    --s4: #c98500; --s5: #199e70; --s6: #d95926;
   }
+
   * { box-sizing: border-box; margin: 0; }
+  html { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
   body {
     background: var(--ground);
     color: var(--ink);
     font-family: 'Inter', system-ui, sans-serif;
     font-size: 14px;
     line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
   }
-  .wrap { max-width: 1280px; margin: 0 auto; padding: 0 28px 80px; }
+  .wrap { max-width: 1280px; margin: 0 auto; padding: 0 28px 88px; }
   .mono { font-family: 'JetBrains Mono', ui-monospace, monospace; }
   .display { font-family: 'Space Grotesk', 'Archivo', 'Inter', sans-serif; }
+  :focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; border-radius: 2px; }
 
   header {
     display: flex; align-items: baseline; justify-content: space-between;
@@ -49,10 +92,11 @@
   }
   header h1 { font-size: 21px; font-weight: 700; letter-spacing: -0.01em; }
   header h1 span { color: var(--ink-soft); font-weight: 400; }
-  .header-meta { display: flex; gap: 18px; align-items: center; color: var(--ink-soft); font-size: 13px; }
+  .header-meta { display: flex; gap: 14px; align-items: center; color: var(--ink-soft); font-size: 13px; }
   .trust-badge {
     padding: 3px 10px; border: 1px solid var(--hairline); border-radius: 3px;
     font-family: 'JetBrains Mono', monospace; font-size: 12.5px; color: var(--ink);
+    font-variant-numeric: tabular-nums;
   }
   .trust-badge.low { border-color: var(--red); color: var(--red); }
   .trust-badge.mid { border-color: var(--amber); color: var(--amber); }
@@ -60,104 +104,130 @@
     background: none; border: 1px solid var(--hairline); border-radius: 3px;
     color: var(--ink-soft); padding: 3px 10px; cursor: pointer; font: inherit; font-size: 12.5px;
   }
-  #themeToggle:hover { color: var(--ink); }
+  #themeToggle:hover { color: var(--ink); border-color: var(--ink-muted); }
 
-  .gap-hero { padding: 44px 0 30px; border-bottom: 1px solid var(--hairline); }
-  .gap-hero .label {
-    font-size: 12px; text-transform: none; letter-spacing: 0.06em;
-    color: var(--ink-soft); margin-bottom: 8px;
-  }
+  /* Signature element: the one number the dashboard exists to explain. */
+  .gap-hero { padding: 46px 0 32px; border-bottom: 1px solid var(--hairline); }
+  .gap-hero .label { font-size: 12.5px; letter-spacing: 0.05em; color: var(--ink-soft); margin-bottom: 10px; }
   .gap-hero .figure {
     font-family: 'JetBrains Mono', monospace; font-weight: 600;
     font-size: clamp(44px, 6vw, 72px); line-height: 1.05; letter-spacing: -0.02em;
     color: var(--amber);
   }
-  .gap-hero .rule { height: 1px; background: var(--ink); opacity: .7; margin-top: 14px; width: 320px; }
-  .gap-hero .sub { margin-top: 10px; color: var(--ink-soft); font-size: 13px; }
+  .gap-hero .figure .unit { font-size: 0.42em; font-weight: 400; color: var(--ink-muted); letter-spacing: 0; }
+  .gap-hero .rule { height: 1px; background: var(--ink); opacity: .65; margin-top: 16px; width: 320px; }
+  .gap-hero .sub { margin-top: 10px; color: var(--ink-soft); font-size: 13px; max-width: 72ch; }
 
-  .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; border-bottom: 1px solid var(--hairline); }
+  .kpis { display: grid; grid-template-columns: repeat(4, 1fr); border-bottom: 1px solid var(--hairline); }
   .kpi { padding: 20px 18px 22px; border-right: 1px solid var(--hairline); }
   .kpi:first-child { padding-left: 0; }
   .kpi:last-child { border-right: none; }
   .kpi .k-label { font-size: 12px; color: var(--ink-soft); margin-bottom: 6px; }
-  .kpi .k-value { font-family: 'JetBrains Mono', monospace; font-size: 26px; font-weight: 600; }
-  .kpi .k-unit { font-size: 12px; color: var(--ink-soft); }
+  .kpi .k-value { font-family: 'JetBrains Mono', monospace; font-size: 27px; font-weight: 600; line-height: 1.15; }
+  .kpi .k-unit { font-size: 12px; color: var(--ink-muted); font-weight: 400; margin-left: 2px; }
 
-  .filters { display: flex; gap: 14px; align-items: center; padding: 18px 0; flex-wrap: wrap; }
-  .filters label { font-size: 12.5px; color: var(--ink-soft); }
+  /* One filter row above everything it scopes; sticky so the scope is always visible. */
+  .filters {
+    position: sticky; top: 0; z-index: 30;
+    display: flex; gap: 14px; align-items: center; flex-wrap: wrap;
+    padding: 12px 0; margin: 0 -28px; padding-left: 28px; padding-right: 28px;
+    background: var(--ground); border-bottom: 1px solid var(--hairline);
+  }
+  .filters label { font-size: 12.5px; color: var(--ink-soft); display: flex; align-items: center; gap: 6px; }
   .filters select {
     background: var(--panel); color: var(--ink); border: 1px solid var(--hairline);
     border-radius: 3px; padding: 5px 8px; font: inherit; font-size: 13px; min-width: 130px;
   }
-  .filters .clear { background: none; border: none; color: var(--blue); cursor: pointer; font-size: 12.5px; text-decoration: underline; }
-  .filters .hint { font-size: 12px; color: var(--ink-soft); margin-left: auto; }
+  .filters .clear { background: none; border: none; color: var(--blue); cursor: pointer; font-size: 12.5px; text-decoration: underline; padding: 0; }
+  .filters .scope-note { font-size: 12px; color: var(--ink-muted); margin-left: auto; }
 
-  section { margin-top: 34px; }
-  section > h2 {
-    font-family: 'Space Grotesk', sans-serif; font-size: 16px; font-weight: 500;
-    padding-bottom: 8px; border-bottom: 1px solid var(--hairline); margin-bottom: 4px;
+  section { margin-top: 30px; }
+  .panel {
+    background: var(--panel); border: 1px solid var(--hairline); border-radius: 4px;
+    padding: 20px 22px 14px;
   }
-  section > .method { font-size: 12px; color: var(--ink-soft); margin-bottom: 10px; }
+  .sec-head { display: flex; align-items: baseline; gap: 10px; margin-bottom: 2px; }
+  .sec-head .idx { font-family: 'JetBrains Mono', monospace; font-size: 11.5px; color: var(--ink-muted); }
+  .sec-head h2 { font-family: 'Space Grotesk', sans-serif; font-size: 16px; font-weight: 500; }
+  .method { font-size: 12px; color: var(--ink-muted); margin-bottom: 8px; max-width: 100ch; }
   .chart { width: 100%; min-height: 360px; }
-  .toggle-row { display: flex; gap: 6px; margin: 10px 0 4px; }
+
+  .toggle-row { display: flex; gap: 6px; margin: 8px 0 2px; }
   .toggle-row button {
-    background: var(--panel); border: 1px solid var(--hairline); color: var(--ink-soft);
+    background: none; border: 1px solid var(--hairline); color: var(--ink-soft);
     border-radius: 3px; padding: 4px 12px; cursor: pointer; font: inherit; font-size: 12.5px;
   }
-  .toggle-row button.active { border-color: var(--blue); color: var(--blue); }
+  .toggle-row button[aria-pressed="true"] { border-color: var(--blue); color: var(--blue); font-weight: 500; }
 
-  .split { display: grid; grid-template-columns: 2fr 1fr; gap: 22px; align-items: start; }
+  /* Table twin: every chart's values, reachable without hover. */
+  details.tbl { margin: 6px 0 4px; }
+  details.tbl summary {
+    cursor: pointer; font-size: 12px; color: var(--ink-soft);
+    list-style: none; display: inline-flex; align-items: center; gap: 6px; padding: 3px 0;
+  }
+  details.tbl summary::before { content: "▸"; font-size: 10px; color: var(--ink-muted); }
+  details.tbl[open] summary::before { content: "▾"; }
+  details.tbl summary:hover { color: var(--ink); }
+  .tbl-scroll { max-height: 320px; overflow: auto; margin-top: 6px; border: 1px solid var(--hairline); border-radius: 3px; }
+  table.data { width: 100%; border-collapse: collapse; background: var(--panel); font-size: 12.5px; }
+  table.data th {
+    text-align: left; font-weight: 600; padding: 7px 10px; position: sticky; top: 0;
+    background: var(--panel); border-bottom: 1px solid var(--hairline); color: var(--ink-soft); font-size: 11.5px;
+  }
+  table.data th.num, table.data td.num { text-align: right; }
+  table.data td { padding: 5px 10px; border-bottom: 1px solid var(--gridline); vertical-align: top; }
+  table.data td.num { font-family: 'JetBrains Mono', monospace; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  table.data td.flag { color: var(--red); }
+  table.data tr:last-child td { border-bottom: none; }
+  .export-btn {
+    background: none; border: 1px solid var(--hairline); border-radius: 3px; color: var(--ink-soft);
+    padding: 3px 10px; cursor: pointer; font: inherit; font-size: 12px; margin: 8px 0 4px;
+  }
+  .export-btn:hover { color: var(--ink); border-color: var(--ink-muted); }
+
+  .split { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; align-items: start; }
   #detailPanel {
-    border: 1px solid var(--hairline); background: var(--panel); border-radius: 3px;
+    border: 1px solid var(--hairline); background: var(--ground); border-radius: 3px;
     padding: 16px 18px; min-height: 200px; font-size: 13px;
   }
-  #detailPanel h3 { font-family: 'Space Grotesk', sans-serif; font-size: 14.5px; margin-bottom: 8px; }
+  #detailPanel h3 { font-family: 'Space Grotesk', sans-serif; font-size: 14.5px; margin-bottom: 6px; }
   #detailPanel table { width: 100%; border-collapse: collapse; margin: 8px 0; }
-  #detailPanel td { padding: 3px 0; border-bottom: 1px solid var(--hairline); }
-  #detailPanel td:last-child { text-align: right; font-family: 'JetBrains Mono', monospace; }
-  #detailPanel .prov { font-size: 11.5px; color: var(--ink-soft); margin-top: 10px; }
-  .empty-note { color: var(--ink-soft); font-size: 13px; padding: 16px 0; }
+  #detailPanel td { padding: 3.5px 0; border-bottom: 1px solid var(--gridline); }
+  #detailPanel td:last-child { text-align: right; font-family: 'JetBrains Mono', monospace; font-variant-numeric: tabular-nums; }
+  #detailPanel tr:last-child td { border-bottom: none; }
+  #detailPanel .prov { font-size: 11px; color: var(--ink-muted); margin-top: 10px; line-height: 1.6; }
+  .empty-note { color: var(--ink-muted); font-size: 13px; padding: 14px 0; }
 
-  .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 16px; margin-top: 12px; }
+  .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 14px; margin-top: 10px; }
   .card {
-    background: var(--panel); border: 1px solid var(--hairline); border-radius: 3px;
-    padding: 16px 18px; display: flex; flex-direction: column; gap: 8px;
+    background: var(--panel); border: 1px solid var(--hairline); border-radius: 4px;
+    padding: 16px 18px 12px; display: flex; flex-direction: column; gap: 8px;
   }
   .card .top { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
   .sev {
     font-size: 11px; letter-spacing: 0.05em; padding: 2px 8px; border-radius: 2px;
-    border: 1px solid var(--hairline); color: var(--ink-soft);
+    border: 1px solid var(--hairline); color: var(--ink-soft); display: inline-flex; align-items: center; gap: 5px;
   }
+  .sev::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--ink-muted); }
   .sev.critical { border-color: var(--amber); color: var(--amber); }
+  .sev.critical::before { background: var(--amber-mark); }
   .sev.significant { border-color: var(--blue); color: var(--blue); }
+  .sev.significant::before { background: var(--blue); }
   .card .impact { font-family: 'JetBrains Mono', monospace; font-size: 15px; font-weight: 600; color: var(--amber); }
   .card h3 { font-size: 14px; font-weight: 600; line-height: 1.35; }
   .card p { font-size: 12.5px; color: var(--ink-soft); }
-  .card .tags { font-size: 11.5px; color: var(--ink-soft); }
+  .card .tags { font-size: 11.5px; color: var(--ink-muted); }
   .card .prov {
-    border-top: 1px solid var(--hairline); padding-top: 8px; margin-top: 2px;
-    font-size: 11px; color: var(--ink-soft); font-family: 'JetBrains Mono', monospace;
+    border-top: 1px solid var(--gridline); padding-top: 8px; margin-top: 2px;
+    font-size: 10.5px; color: var(--ink-muted); font-family: 'JetBrains Mono', monospace; line-height: 1.6;
+    overflow-wrap: anywhere;
   }
 
-  table.data {
-    width: 100%; border-collapse: collapse; background: var(--panel);
-    border: 1px solid var(--hairline); font-size: 12.5px; margin-top: 10px;
-  }
-  table.data th {
-    text-align: left; font-weight: 600; padding: 8px 10px;
-    border-bottom: 1px solid var(--hairline); color: var(--ink-soft); font-size: 12px;
-  }
-  table.data td { padding: 6px 10px; border-bottom: 1px solid var(--hairline); vertical-align: top; }
-  table.data td.num { font-family: 'JetBrains Mono', monospace; text-align: right; white-space: nowrap; }
-  table.data td.flag { color: var(--red); }
-  .export-btn {
-    background: none; border: 1px solid var(--hairline); border-radius: 3px; color: var(--ink-soft);
-    padding: 3px 10px; cursor: pointer; font: inherit; font-size: 12px; margin-top: 8px;
-  }
-  .export-btn:hover { color: var(--ink); }
-  footer { margin-top: 46px; padding-top: 14px; border-top: 1px solid var(--hairline); font-size: 12px; color: var(--ink-soft); }
+  footer { margin-top: 46px; padding-top: 14px; border-top: 1px solid var(--hairline); font-size: 12px; color: var(--ink-muted); }
   @media (max-width: 900px) {
     .kpis { grid-template-columns: repeat(2, 1fr); }
+    .kpi:nth-child(2) { border-right: none; }
+    .kpi:nth-child(3) { padding-left: 0; }
     .split { grid-template-columns: 1fr; }
   }
 </style>
@@ -169,12 +239,12 @@
     <div class="header-meta">
       <span id="runDate"></span>
       <span class="trust-badge" id="trustBadge"></span>
-      <button id="themeToggle" type="button">Dark mode</button>
+      <button id="themeToggle" type="button" aria-pressed="false">Dark mode</button>
     </div>
   </header>
 
   <div class="gap-hero">
-    <div class="label">TOTAL ADDRESSABLE GAP — quoted price above should-cost, per year</div>
+    <div class="label">Total addressable gap — quoted price above should-cost, per year</div>
     <div class="figure mono" id="gapCounter">—</div>
     <div class="rule"></div>
     <div class="sub" id="gapSub"></div>
@@ -182,63 +252,88 @@
 
   <div class="kpis" id="kpiRow"></div>
 
-  <div class="filters">
+  <div class="filters" role="group" aria-label="Global filters">
     <label>Commodity <select id="fCommodity"><option value="">All</option></select></label>
     <label>Supplier <select id="fSupplier"><option value="">All</option></select></label>
     <label>Region <select id="fRegion"><option value="">All</option></select></label>
     <button class="clear" id="clearFilters" type="button">Clear filters</button>
-    <span class="hint">Click a Pareto bar or treemap tile to cross-filter. Filtered charts re-aggregate the row-level dataset; headline figures above stay whole-dataset.</span>
+    <span class="scope-note">Filters scope every chart below. Headline figures above stay whole-dataset. Click a Pareto bar or treemap tile to cross-filter.</span>
   </div>
 
   <section>
-    <h2>Annual spend Pareto</h2>
-    <div class="method" id="paretoMethod"></div>
-    <div class="toggle-row" id="paretoToggle">
-      <button data-by="part" class="active" type="button">By part</button>
-      <button data-by="commodity" type="button">By commodity</button>
-      <button data-by="supplier" type="button">By supplier</button>
-    </div>
-    <div id="paretoChart" class="chart"></div>
-  </section>
-
-  <section>
-    <h2>Should-cost gap — ranked</h2>
-    <div class="method" id="gapMethod"></div>
-    <div class="split">
-      <div id="gapChart" class="chart"></div>
-      <div id="detailPanel"><h3>Part detail</h3><div class="empty-note">Click a bar to inspect a part: breakdown split and provenance.</div></div>
+    <div class="panel">
+      <div class="sec-head"><span class="idx">01</span><h2>Annual spend Pareto</h2></div>
+      <div class="method" id="paretoMethod"></div>
+      <div class="toggle-row" id="paretoToggle" role="group" aria-label="Pareto dimension">
+        <button data-by="part" aria-pressed="true" type="button">By part</button>
+        <button data-by="commodity" aria-pressed="false" type="button">By commodity</button>
+        <button data-by="supplier" aria-pressed="false" type="button">By supplier</button>
+      </div>
+      <div id="paretoChart" class="chart" style="min-height:460px" aria-label="Pareto chart of annual spend"></div>
+      <details class="tbl"><summary>View data</summary><div class="tbl-scroll" id="paretoTable"></div>
+        <button class="export-btn" type="button" data-export="paretoTable" data-name="pareto.csv">Export CSV</button></details>
     </div>
   </section>
 
   <section>
-    <h2>Cost breakdown structure by commodity</h2>
-    <div class="method" id="breakdownMethod"></div>
-    <div id="breakdownChart" class="chart"></div>
+    <div class="panel">
+      <div class="sec-head"><span class="idx">02</span><h2>Should-cost gap — ranked</h2></div>
+      <div class="method" id="gapMethod"></div>
+      <div class="split">
+        <div>
+          <div id="gapChart" class="chart" aria-label="Ranked should-cost gap bars"></div>
+          <details class="tbl"><summary>View data</summary><div class="tbl-scroll" id="gapTable"></div>
+            <button class="export-btn" type="button" data-export="gapTable" data-name="should_cost_gap.csv">Export CSV</button></details>
+        </div>
+        <div id="detailPanel" aria-live="polite"><h3>Part detail</h3>
+          <div class="empty-note">Click a bar to inspect a part: breakdown split and provenance.</div></div>
+      </div>
+    </div>
   </section>
 
   <section>
-    <h2>Cost vs mass by commodity</h2>
-    <div class="method" id="scatterMethod"></div>
-    <div id="scatterChart" class="chart" style="min-height:420px"></div>
+    <div class="panel">
+      <div class="sec-head"><span class="idx">03</span><h2>Cost breakdown structure by commodity</h2></div>
+      <div class="method" id="breakdownMethod"></div>
+      <div id="breakdownChart" class="chart" aria-label="Stacked cost element shares per commodity"></div>
+      <details class="tbl"><summary>View data</summary><div class="tbl-scroll" id="breakdownTable"></div>
+        <button class="export-btn" type="button" data-export="breakdownTable" data-name="cost_breakdown.csv">Export CSV</button></details>
+    </div>
   </section>
 
   <section>
-    <h2>Spend treemap — commodity → supplier → part</h2>
-    <div class="method" id="treemapMethod"></div>
-    <div id="treemapChart" class="chart" style="min-height:420px"></div>
+    <div class="panel">
+      <div class="sec-head"><span class="idx">04</span><h2>Cost vs mass by commodity</h2></div>
+      <div class="method" id="scatterMethod"></div>
+      <div id="scatterChart" class="chart" style="min-height:430px" aria-label="Scatter of unit cost against mass"></div>
+      <details class="tbl"><summary>View data</summary><div class="tbl-scroll" id="scatterTable"></div>
+        <button class="export-btn" type="button" data-export="scatterTable" data-name="cost_vs_mass.csv">Export CSV</button></details>
+    </div>
   </section>
 
   <section>
-    <h2>Insights</h2>
+    <div class="panel">
+      <div class="sec-head"><span class="idx">05</span><h2>Spend treemap — commodity → supplier → part</h2></div>
+      <div class="method" id="treemapMethod"></div>
+      <div id="treemapChart" class="chart" style="min-height:430px" aria-label="Treemap of spend hierarchy"></div>
+      <details class="tbl"><summary>View data</summary><div class="tbl-scroll" id="treemapTable"></div>
+        <button class="export-btn" type="button" data-export="treemapTable" data-name="spend_hierarchy.csv">Export CSV</button></details>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head"><span class="idx">06</span><h2 class="display" style="font-size:16px;font-weight:500">Insights</h2></div>
     <div class="cards" id="insightCards"></div>
   </section>
 
   <section>
-    <h2>Data quality appendix</h2>
-    <div class="method">Checks run by the profiler before analysis. Trust score <span class="mono" id="trustInline"></span>/100.</div>
-    <div id="qualityTableWrap"></div>
-    <button class="export-btn" type="button" onclick="exportTableCSV('qualityTable','data_quality.csv')">Export CSV</button>
-    <div id="skippedAnalyses"></div>
+    <div class="panel">
+      <div class="sec-head"><span class="idx">07</span><h2>Data quality appendix</h2></div>
+      <div class="method">Checks run by the profiler before analysis. Trust score <span class="mono" id="trustInline"></span>/100.</div>
+      <div class="tbl-scroll" id="qualityTableWrap" style="max-height:none"></div>
+      <button class="export-btn" type="button" data-export="qualityTableWrap" data-name="data_quality.csv">Export CSV</button>
+      <div id="skippedAnalyses"></div>
+    </div>
   </section>
 
   <footer>
@@ -254,36 +349,71 @@ const INSIGHTS = JSON.parse(document.getElementById("insights-data").textContent
 const DATASET = JSON.parse(document.getElementById("dataset-data").textContent);
 
 const CCY = ({GBP:"£",USD:"$",EUR:"€",INR:"₹"})[INSIGHTS.meta.currency] || "";
-const state = { commodity: "", supplier: "", region: "", paretoBy: "part", dark: false };
+const state = { commodity: "", supplier: "", region: "", paretoBy: "part" };
 
+/* ---------- theme ---------- */
+function effectiveTheme(){
+  const stamped = document.documentElement.getAttribute("data-theme");
+  if (stamped) return stamped;
+  return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+}
 function css(name){ return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
 function theme(){
   return {
-    ink: css("--ink"), soft: css("--ink-soft"), hair: css("--hairline"),
-    blue: css("--blue"), amber: css("--amber"), red: css("--red"),
+    ink: css("--ink"), soft: css("--ink-soft"), muted: css("--ink-muted"),
+    hair: css("--hairline"), grid: css("--gridline"), base: css("--baseline"),
+    blue: css("--blue"), amber: css("--amber-mark"), red: css("--red"),
     panel: css("--panel"), ground: css("--ground"),
+    slots: [css("--s1"), css("--s2"), css("--s3"), css("--s4"), css("--s5"), css("--s6")],
   };
 }
+
+/* ---------- stable entity colors (color follows the entity, never its rank) ---------- */
+const ALL_COMMODITIES = [...new Set(DATASET.map(r => r.commodity).filter(Boolean))].sort();
+function commoditySlot(c){ return ALL_COMMODITIES.indexOf(c); } // -1 → fold to muted
+function commodityColor(c, t){
+  const i = commoditySlot(c);
+  return i >= 0 && i < t.slots.length ? t.slots[i] : t.muted;
+}
+const ELEMENT_ORDER = ["material_cost", "process_cost", "labour_cost", "overhead", "sga_profit", "logistics"];
+const ELEMENT_LABEL = {material_cost: "Material", process_cost: "Process", labour_cost: "Labour",
+                       overhead: "Overhead", sga_profit: "SG&A + profit", logistics: "Logistics"};
+
+/* ---------- formatting ---------- */
 function fmtMoney(v, dp=0){
   if (v === null || v === undefined || Number.isNaN(v)) return "n/a";
   return CCY + v.toLocaleString("en-GB", {minimumFractionDigits: dp, maximumFractionDigits: dp});
 }
+function fmtCompact(v){
+  if (v === null || v === undefined) return "n/a";
+  const abs = Math.abs(v);
+  if (abs >= 1e6) return CCY + (v / 1e6).toLocaleString("en-GB", {maximumFractionDigits: 2}) + "M";
+  if (abs >= 1e4) return CCY + (v / 1e3).toLocaleString("en-GB", {maximumFractionDigits: 0}) + "k";
+  return fmtMoney(v);
+}
 function analysis(name){ return (INSIGHTS.analyses || []).find(a => a.analysis === name); }
+function srcText(source){ return Array.isArray(source) ? source.join(", ") : (source || ""); }
+
+/* ---------- chart chrome ---------- */
 function baseLayout(extra){
   const t = theme();
   return Object.assign({
     paper_bgcolor: "rgba(0,0,0,0)", plot_bgcolor: "rgba(0,0,0,0)",
-    font: {family: "Inter, system-ui, sans-serif", color: t.ink, size: 12},
-    margin: {l: 60, r: 20, t: 10, b: 70},
-    xaxis: {gridcolor: t.hair, zerolinecolor: t.hair, linecolor: t.hair},
-    yaxis: {gridcolor: t.hair, zerolinecolor: t.hair, linecolor: t.hair},
-    hoverlabel: {font: {family: "JetBrains Mono, monospace", size: 12}},
+    font: {family: "Inter, system-ui, sans-serif", color: t.soft, size: 12},
+    margin: {l: 62, r: 16, t: 12, b: 64},
+    xaxis: {gridcolor: t.grid, zerolinecolor: t.base, linecolor: t.base, tickcolor: t.base,
+            tickfont: {color: t.soft}},
+    yaxis: {gridcolor: t.grid, zerolinecolor: t.base, linecolor: t.base, tickcolor: t.base,
+            tickfont: {family: "JetBrains Mono, monospace", size: 11, color: t.soft}},
+    hoverlabel: {bgcolor: t.panel, bordercolor: t.hair,
+                 font: {family: "JetBrains Mono, monospace", size: 12, color: t.ink}},
+    hoverdistance: 24,
     showlegend: false,
   }, extra || {});
 }
 const PLOT_CONFIG = {displayModeBar: false, responsive: true};
 
-// ---- dataset filtering (re-aggregation of engine-produced rows only) ----
+/* ---------- filtering ---------- */
 function filteredRows(){
   return DATASET.filter(r =>
     (!state.commodity || r.commodity === state.commodity) &&
@@ -292,7 +422,40 @@ function filteredRows(){
 }
 function partsIn(rows){ return new Set(rows.map(r => r.part_number)); }
 
-// ---- header, hero, KPIs ----
+/* ---------- table twins (built with textContent — labels are untrusted data) ---------- */
+function buildTable(mountId, columns, rows){
+  const mount = document.getElementById(mountId);
+  if (!mount) return;
+  mount.replaceChildren();
+  const table = document.createElement("table");
+  table.className = "data";
+  const thead = document.createElement("thead");
+  const headRow = document.createElement("tr");
+  columns.forEach(col => {
+    const th = document.createElement("th");
+    th.textContent = col.label;
+    if (col.num) th.className = "num";
+    headRow.appendChild(th);
+  });
+  thead.appendChild(headRow);
+  table.appendChild(thead);
+  const tbody = document.createElement("tbody");
+  rows.forEach(row => {
+    const tr = document.createElement("tr");
+    columns.forEach(col => {
+      const td = document.createElement("td");
+      td.textContent = row[col.key] === null || row[col.key] === undefined ? "" : String(row[col.key]);
+      if (col.num) td.className = "num";
+      if (col.flag && row[col.flag]) td.classList.add("flag");
+      tr.appendChild(td);
+    });
+    tbody.appendChild(tr);
+  });
+  table.appendChild(tbody);
+  mount.appendChild(table);
+}
+
+/* ---------- header, hero, KPIs ---------- */
 function renderHeader(){
   document.getElementById("dsName").textContent = INSIGHTS.meta.dataset;
   document.getElementById("runDate").textContent = "Run " + INSIGHTS.meta.run_id + " · " + INSIGHTS.meta.generated_at;
@@ -303,7 +466,17 @@ function renderHeader(){
   document.getElementById("trustInline").textContent = trust;
 
   const gap = INSIGHTS.kpis.total_addressable_gap_per_year;
-  document.getElementById("gapCounter").textContent = gap === null ? "n/a" : fmtMoney(gap) + "/yr";
+  const counter = document.getElementById("gapCounter");
+  counter.replaceChildren();
+  if (gap === null || gap === undefined){
+    counter.textContent = "n/a";
+  } else {
+    counter.appendChild(document.createTextNode(fmtMoney(gap)));
+    const unit = document.createElement("span");
+    unit.className = "unit";
+    unit.textContent = " /yr";
+    counter.appendChild(unit);
+  }
   const gapA = analysis("should_cost_gap");
   document.getElementById("gapSub").textContent = gapA && gapA.status === "ok"
     ? gapA.result.parts_with_positive_gap + " parts quoted above should-cost. " + gapA.method
@@ -311,17 +484,29 @@ function renderHeader(){
 
   const k = INSIGHTS.kpis;
   const kpis = [
-    ["Total annual spend", k.total_annual_spend === null ? "n/a" : fmtMoney(k.total_annual_spend), "/yr"],
-    ["Parts analysed", k.parts_analysed ?? "n/a", ""],
-    ["Suppliers", k.suppliers ?? "n/a", ""],
+    ["Total annual spend", k.total_annual_spend === null ? "n/a" : fmtCompact(k.total_annual_spend), "/yr",
+     k.total_annual_spend === null ? "" : fmtMoney(k.total_annual_spend, 2) + " per year"],
+    ["Parts analysed", k.parts_analysed ?? "n/a", "", ""],
+    ["Suppliers", k.suppliers ?? "n/a", "", ""],
     ["Top commodity share", k.top_commodity_share_pct !== undefined ? k.top_commodity_share_pct + "%" : "n/a",
-      k.top_commodity ? " " + k.top_commodity : ""],
+     k.top_commodity ? " " + k.top_commodity : "", ""],
   ];
-  document.getElementById("kpiRow").innerHTML = kpis.map(([label, value, unit]) =>
-    `<div class="kpi"><div class="k-label">${label}</div><div class="k-value">${value}<span class="k-unit">${unit}</span></div></div>`).join("");
+  const row = document.getElementById("kpiRow");
+  row.replaceChildren();
+  kpis.forEach(([label, value, unit, title]) => {
+    const tile = document.createElement("div");
+    tile.className = "kpi";
+    if (title) tile.title = title;
+    const l = document.createElement("div"); l.className = "k-label"; l.textContent = label;
+    const v = document.createElement("div"); v.className = "k-value"; v.textContent = value;
+    const u = document.createElement("span"); u.className = "k-unit"; u.textContent = unit;
+    v.appendChild(u);
+    tile.append(l, v);
+    row.appendChild(tile);
+  });
 }
 
-// ---- filters ----
+/* ---------- filters ---------- */
 function initFilters(){
   const fill = (id, values) => {
     const sel = document.getElementById(id);
@@ -345,31 +530,53 @@ function setFilter(kind, value){
   renderCharts();
 }
 
-// ---- Pareto ----
+/* ---------- 01 Pareto — two aligned panels, shared x (never a dual axis) ---------- */
 function renderPareto(){
   const el = document.getElementById("paretoChart");
   const a = analysis("pareto_by_" + state.paretoBy);
-  document.getElementById("paretoMethod").textContent = a ? a.method : "";
+  document.getElementById("paretoMethod").textContent =
+    (a ? a.method + " " : "") + "Two aligned panels share the x axis: annual spend below, cumulative share above with the 80% rule.";
   const rows = filteredRows().filter(r => r.unit_cost > 0 && r.annual_volume > 0);
-  if (!rows.length){ el.innerHTML = '<div class="empty-note">No rows match the current filters (or no spend columns mapped).</div>'; return; }
+  if (!rows.length){ Plotly.purge(el); el.replaceChildren(emptyNote("No rows match the current filters (or no spend columns mapped).")); return; }
   const keyOf = r => state.paretoBy === "part" ? r.part_number : r[state.paretoBy];
   const agg = new Map();
   rows.forEach(r => { const k = keyOf(r); if (k) agg.set(k, (agg.get(k) || 0) + r.unit_cost * r.annual_volume); });
   const sorted = [...agg.entries()].sort((x, y) => y[1] - x[1]);
   const total = sorted.reduce((s, [,v]) => s + v, 0);
   let running = 0;
-  const cum = sorted.map(([,v]) => { running += v; return running / total * 100; });
+  const cumPct = sorted.map(([,v]) => { running += v; return running / total * 100; });
   const t = theme();
+  const labels = sorted.map(e => e[0]);
+  const barColor = state.paretoBy === "commodity" ? labels.map(c => commodityColor(c, t)) : t.blue;
   Plotly.react(el, [
-    {type: "bar", x: sorted.map(e => e[0]), y: sorted.map(e => e[1]), marker: {color: t.blue},
-     hovertemplate: "%{x}<br>" + CCY + "%{y:,.0f}/yr<extra></extra>"},
-    {type: "scatter", mode: "lines+markers", x: sorted.map(e => e[0]), y: cum, yaxis: "y2",
-     line: {color: t.ink, width: 1.5}, marker: {size: 5},
-     hovertemplate: "cumulative %{y:.1f}%<extra></extra>"},
+    {type: "bar", name: "annual spend", x: labels, y: sorted.map(e => e[1]),
+     xaxis: "x", yaxis: "y",
+     marker: {color: barColor, cornerradius: 4},
+     customdata: sorted.map(([,v]) => (v / total * 100).toFixed(1)),
+     hovertemplate: "<b>" + CCY + "%{y:,.0f}</b>/yr · %{customdata}% of spend<br>%{x}<extra></extra>"},
+    {type: "scatter", name: "cumulative share", mode: "lines+markers", x: labels, y: cumPct,
+     xaxis: "x2", yaxis: "y2",
+     line: {color: t.blue, width: 2},
+     marker: {size: 8, color: t.blue, line: {color: t.panel, width: 2}},
+     hovertemplate: "<b>%{y:.1f}%</b> cumulative<br>%{x}<extra></extra>"},
   ], baseLayout({
-    yaxis: {title: {text: "annual spend"}, gridcolor: t.hair, tickprefix: CCY, tickformat: ",.0f"},
-    yaxis2: {overlaying: "y", side: "right", range: [0, 105], ticksuffix: "%", showgrid: false},
-    xaxis: {gridcolor: t.hair, tickangle: -35, automargin: true},
+    bargap: 0.45,
+    margin: {l: 62, r: 16, t: 8, b: 64},
+    yaxis: {domain: [0, 0.64],
+            title: {text: "annual spend (" + (INSIGHTS.meta.currency || "") + "/yr)", font: {family: "Inter", size: 11, color: t.muted}},
+            gridcolor: t.grid, zerolinecolor: t.base, linecolor: t.base,
+            tickfont: {family: "JetBrains Mono, monospace", size: 11, color: t.soft}, tickformat: "~s", rangemode: "tozero"},
+    xaxis: {anchor: "y", gridcolor: "rgba(0,0,0,0)", tickangle: -35, automargin: true, linecolor: t.base,
+            tickfont: {color: t.soft}},
+    yaxis2: {domain: [0.72, 1], range: [0, 105], ticksuffix: "%",
+             title: {text: "cumulative", font: {family: "Inter", size: 11, color: t.muted}},
+             gridcolor: t.grid, linecolor: t.base,
+             tickfont: {family: "JetBrains Mono, monospace", size: 11, color: t.soft}},
+    xaxis2: {anchor: "y2", matches: "x", showticklabels: false, gridcolor: "rgba(0,0,0,0)", linecolor: t.base},
+    shapes: [{type: "line", xref: "paper", yref: "y2", x0: 0, x1: 1, y0: 80, y1: 80,
+              line: {color: t.base, width: 1}}],
+    annotations: [{xref: "paper", yref: "y2", x: 1, y: 80, xanchor: "right", yanchor: "bottom",
+                   text: "80% of spend", showarrow: false, font: {size: 11, color: t.muted}}],
   }), PLOT_CONFIG);
   el.removeAllListeners && el.removeAllListeners("plotly_click");
   el.on("plotly_click", ev => {
@@ -377,107 +584,155 @@ function renderPareto(){
     if (state.paretoBy === "commodity") setFilter("commodity", label);
     if (state.paretoBy === "supplier") setFilter("supplier", label);
   });
+  buildTable("paretoTable",
+    [{key: "label", label: state.paretoBy}, {key: "spend", label: "annual spend", num: true},
+     {key: "share", label: "share %", num: true}, {key: "cum", label: "cumulative %", num: true}],
+    sorted.map(([label, v], i) => ({label, spend: fmtMoney(v), share: (v / total * 100).toFixed(2),
+                                    cum: cumPct[i].toFixed(2)})));
 }
 
-// ---- Should-cost gap ----
+function emptyNote(text){
+  const div = document.createElement("div");
+  div.className = "empty-note";
+  div.textContent = text;
+  return div;
+}
+
+/* ---------- 02 Should-cost gap ---------- */
 function renderGap(){
   const el = document.getElementById("gapChart");
   const a = analysis("should_cost_gap");
   document.getElementById("gapMethod").textContent = a ? (a.status === "ok" ? a.method : a.reason) : "";
-  if (!a || a.status !== "ok"){ el.innerHTML = '<div class="empty-note">' + (a ? a.reason : "Analysis unavailable.") + "</div>"; return; }
+  if (!a || a.status !== "ok"){ Plotly.purge(el); el.replaceChildren(emptyNote(a ? a.reason : "Analysis unavailable.")); return; }
   const visible = partsIn(filteredRows());
   const items = a.result.items.filter(i => i.gap > 0 && visible.has(i.part_number));
-  if (!items.length){ el.innerHTML = '<div class="empty-note">No positive gaps under the current filters.</div>'; return; }
+  if (!items.length){ Plotly.purge(el); el.replaceChildren(emptyNote("No positive gaps under the current filters.")); return; }
   const t = theme();
   const useAnnual = items.some(i => i.annual_gap !== null);
   const y = items.map(i => useAnnual ? i.annual_gap : i.gap);
   Plotly.react(el, [{
     type: "bar", x: items.map(i => i.part_number), y,
-    marker: {color: t.amber},
+    marker: {color: t.amber, cornerradius: 4},
     customdata: items.map(i => i.gap_pct),
-    hovertemplate: "%{x}<br>" + CCY + "%{y:,.0f}" + (useAnnual ? "/yr" : "/pc") + " · %{customdata}% above should-cost<extra></extra>",
+    hovertemplate: "<b>" + CCY + "%{y:,.0f}</b>" + (useAnnual ? "/yr" : "/pc") +
+      " · %{customdata}% above should-cost<br>%{x} — click for detail<extra></extra>",
   }], baseLayout({
-    yaxis: {title: {text: useAnnual ? "addressable gap /yr" : "gap /pc"}, gridcolor: t.hair, tickprefix: CCY, tickformat: ",.0f"},
-    xaxis: {gridcolor: t.hair, tickangle: -35, automargin: true},
+    bargap: 0.45,
+    yaxis: {title: {text: (useAnnual ? "addressable gap (" + (INSIGHTS.meta.currency || "") + "/yr)" : "gap per piece"),
+                    font: {family: "Inter", size: 11, color: t.muted}},
+            gridcolor: t.grid, zerolinecolor: t.base, linecolor: t.base,
+            tickfont: {family: "JetBrains Mono, monospace", size: 11, color: t.soft}, tickformat: "~s", rangemode: "tozero"},
+    xaxis: {gridcolor: "rgba(0,0,0,0)", tickangle: -35, automargin: true, linecolor: t.base},
   }), PLOT_CONFIG);
   el.removeAllListeners && el.removeAllListeners("plotly_click");
   el.on("plotly_click", ev => showDetail(ev.points[0].x, a));
+  buildTable("gapTable",
+    [{key: "part_number", label: "part"}, {key: "supplier", label: "supplier"},
+     {key: "quoted", label: "quoted", num: true}, {key: "should", label: "should-cost", num: true},
+     {key: "gap", label: "gap %", num: true}, {key: "annual", label: "gap /yr", num: true}],
+    items.map(i => ({part_number: i.part_number, supplier: i.supplier, quoted: fmtMoney(i.quoted_price, 2),
+                     should: fmtMoney(i.should_cost, 2), gap: i.gap_pct,
+                     annual: i.annual_gap !== null ? fmtMoney(i.annual_gap) : "n/a"})));
 }
 
 function showDetail(partNumber, gapAnalysis){
   const panel = document.getElementById("detailPanel");
   const item = gapAnalysis.result.items.find(i => i.part_number === partNumber);
   const row = DATASET.find(r => r.part_number === partNumber) || {};
-  const elements = [["material_cost","Material"],["process_cost","Process"],["labour_cost","Labour"],
-                    ["overhead","Overhead"],["sga_profit","SG&A + profit"],["logistics","Logistics"],
-                    ["tooling_amortisation","Tooling amort."]];
-  const breakdownRows = elements
-    .filter(([k]) => row[k] !== null && row[k] !== undefined)
-    .map(([k, label]) => `<tr><td>${label}</td><td>${fmtMoney(row[k], 2)}</td></tr>`).join("");
-  const prov = gapAnalysis.provenance || {};
-  panel.innerHTML = `
-    <h3>${partNumber} — ${row.part_name || ""}</h3>
-    <div>${row.supplier || ""}${row.region ? " · " + row.region : ""}${row.commodity ? " · " + row.commodity : ""}</div>
-    <table>
-      <tr><td>Quoted price</td><td>${fmtMoney(item.quoted_price, 2)}</td></tr>
-      <tr><td>Should-cost</td><td>${fmtMoney(item.should_cost, 2)}</td></tr>
-      <tr><td><strong>Gap</strong></td><td><strong>${fmtMoney(item.gap, 2)} (${item.gap_pct}%)</strong></td></tr>
-      ${item.annual_gap !== null ? `<tr><td>Annualised</td><td>${fmtMoney(item.annual_gap)}/yr</td></tr>` : ""}
-      ${breakdownRows ? `<tr><td colspan="2" style="padding-top:8px;color:var(--ink-soft)">Cost breakdown (unit cost ${fmtMoney(row.unit_cost, 2)})</td></tr>` + breakdownRows : ""}
-    </table>
-    <div class="prov">Provenance — source: ${(prov.source || []).join(", ") || "n/a"} · columns: ${(prov.columns || []).join(", ")} · computation: ${prov.computation || ""}</div>`;
+  if (!item) return;
+  panel.replaceChildren();
+  const h = document.createElement("h3");
+  h.textContent = partNumber + (row.part_name ? " — " + row.part_name : "");
+  const sub = document.createElement("div");
+  sub.textContent = [row.supplier, row.region, row.commodity].filter(Boolean).join(" · ");
+  sub.style.color = "var(--ink-soft)";
+  const table = document.createElement("table");
+  const addRow = (label, value, strong) => {
+    const tr = document.createElement("tr");
+    const td1 = document.createElement("td"); const td2 = document.createElement("td");
+    if (strong){ const b1 = document.createElement("strong"); b1.textContent = label; td1.appendChild(b1);
+                 const b2 = document.createElement("strong"); b2.textContent = value; td2.appendChild(b2); }
+    else { td1.textContent = label; td2.textContent = value; }
+    tr.append(td1, td2); table.appendChild(tr);
+  };
+  addRow("Quoted price", fmtMoney(item.quoted_price, 2));
+  addRow("Should-cost", fmtMoney(item.should_cost, 2));
+  addRow("Gap", fmtMoney(item.gap, 2) + " (" + item.gap_pct + "%)", true);
+  if (item.annual_gap !== null) addRow("Annualised", fmtMoney(item.annual_gap) + "/yr");
+  const elements = ELEMENT_ORDER.filter(k => row[k] !== null && row[k] !== undefined);
+  if (elements.length){
+    const tr = document.createElement("tr");
+    const td = document.createElement("td");
+    td.colSpan = 2; td.style.paddingTop = "8px"; td.style.color = "var(--ink-muted)";
+    td.textContent = "Cost breakdown (unit cost " + fmtMoney(row.unit_cost, 2) + ")";
+    tr.appendChild(td); table.appendChild(tr);
+    elements.forEach(k => addRow(ELEMENT_LABEL[k], fmtMoney(row[k], 2)));
+  }
+  const prov = document.createElement("div");
+  prov.className = "prov";
+  const p = gapAnalysis.provenance || {};
+  prov.textContent = "Provenance — source: " + (srcText(p.source) || "n/a") +
+    " · columns: " + ((p.columns || []).join(", ")) + " · computation: " + (p.computation || "");
+  panel.append(h, sub, table, prov);
 }
 
-// ---- Breakdown structure ----
+/* ---------- 03 Breakdown structure — categorical slots, 2px surface gaps ---------- */
 function renderBreakdown(){
   const el = document.getElementById("breakdownChart");
   const a = analysis("cost_breakdown_structure");
   document.getElementById("breakdownMethod").textContent = a ? (a.status === "ok" ? a.method : a.reason) : "";
-  if (!a || a.status !== "ok"){ el.innerHTML = '<div class="empty-note">' + (a ? a.reason : "Analysis unavailable.") + "</div>"; return; }
+  if (!a || a.status !== "ok"){ Plotly.purge(el); el.replaceChildren(emptyNote(a ? a.reason : "Analysis unavailable.")); return; }
   const per = a.result.per_commodity_pct;
-  let commodities = Object.keys(per);
+  let commodities = Object.keys(per).sort();
   if (state.commodity) commodities = commodities.filter(c => c === state.commodity);
-  if (!commodities.length){ el.innerHTML = '<div class="empty-note">No commodity matches the filter.</div>'; return; }
+  if (!commodities.length){ Plotly.purge(el); el.replaceChildren(emptyNote("No commodity matches the filter.")); return; }
   const t = theme();
-  const shades = [t.blue, "#5B8FD6", "#8FB3E2", "#BCD0EC", t.soft, t.hair];
-  const traces = a.result.elements.map((elName, i) => ({
-    type: "bar", name: elName.replace("_", " "), x: commodities,
+  const elementsPresent = ELEMENT_ORDER.filter(k => a.result.elements.includes(k));
+  const traces = elementsPresent.map((elName, i) => ({
+    type: "bar", name: ELEMENT_LABEL[elName], x: commodities,
     y: commodities.map(c => per[c][elName]),
-    marker: {color: shades[i % shades.length]},
-    hovertemplate: "%{x} · " + elName + ": %{y:.1f}%<extra></extra>",
+    marker: {color: t.slots[i], line: {color: t.panel, width: 2}},
+    hovertemplate: "<b>%{y:.1f}%</b> " + ELEMENT_LABEL[elName] + "<br>%{x}<extra></extra>",
   }));
   Plotly.react(el, traces, baseLayout({
-    barmode: "stack", showlegend: true,
-    legend: {orientation: "h", y: -0.25},
-    yaxis: {title: {text: "share of unit cost"}, ticksuffix: "%", range: [0, 100.5], gridcolor: t.hair},
-    xaxis: {gridcolor: t.hair, automargin: true},
+    barmode: "stack", bargap: 0.5, showlegend: true,
+    legend: {orientation: "h", y: -0.28, traceorder: "normal", font: {family: "Inter", size: 12, color: t.soft}},
+    yaxis: {title: {text: "share of unit cost", font: {family: "Inter", size: 11, color: t.muted}},
+            ticksuffix: "%", range: [0, 101], gridcolor: t.grid, linecolor: t.base,
+            tickfont: {family: "JetBrains Mono, monospace", size: 11, color: t.soft}},
+    xaxis: {gridcolor: "rgba(0,0,0,0)", automargin: true, linecolor: t.base},
   }), PLOT_CONFIG);
+  buildTable("breakdownTable",
+    [{key: "commodity", label: "commodity"},
+     ...elementsPresent.map(k => ({key: k, label: ELEMENT_LABEL[k] + " %", num: true}))],
+    commodities.map(c => Object.assign({commodity: c},
+      Object.fromEntries(elementsPresent.map(k => [k, per[c][k]])))));
 }
 
-// ---- Cost vs mass scatter ----
+/* ---------- 04 Cost vs mass — stable slots, surface rings, labelled outliers ---------- */
 function renderScatter(){
   const el = document.getElementById("scatterChart");
   const a = analysis("cost_vs_mass_regression");
-  const cpk = analysis("cost_per_kg");
-  document.getElementById("scatterMethod").textContent = a ? (a.status === "ok" ? a.method : "Regression " + a.status + ": " + a.reason) : "";
+  document.getElementById("scatterMethod").textContent =
+    (a ? (a.status === "ok" ? a.method : "Regression " + a.status + ": " + a.reason) + " " : "") +
+    "Amber marks with labels sit >1 SD above their commodity's fit line.";
   const rows = filteredRows().filter(r => r.mass_kg > 0 && r.unit_cost > 0);
-  if (!rows.length){ el.innerHTML = '<div class="empty-note">No rows with usable mass and cost under the current filters.</div>'; return; }
+  if (!rows.length){ Plotly.purge(el); el.replaceChildren(emptyNote("No rows with usable mass and cost under the current filters.")); return; }
   const t = theme();
   const commodities = [...new Set(rows.map(r => r.commodity).filter(Boolean))].sort();
-  const palette = [t.blue, "#7A9CC9", "#3E71B5", "#9DB8DA", "#2A62AC", "#B9CCE6"];
   const flagged = new Set();
   if (a && a.status === "ok") a.result.fits.forEach(f => f.parts_above_1sd.forEach(p => flagged.add(p.part_number)));
-  const traces = commodities.map((c, i) => {
+  const traces = commodities.map(c => {
     const pts = rows.filter(r => r.commodity === c);
     return {
       type: "scatter", mode: "markers", name: c,
       x: pts.map(r => r.mass_kg), y: pts.map(r => r.unit_cost),
       text: pts.map(r => r.part_number),
       marker: {
-        color: pts.map(r => flagged.has(r.part_number) ? t.amber : palette[i % palette.length]),
-        size: 9, line: {width: 1, color: t.panel},
+        color: pts.map(r => flagged.has(r.part_number) ? t.amber : commodityColor(c, t)),
+        size: 10, line: {width: 2, color: t.panel},
       },
-      hovertemplate: "%{text} (" + c + ")<br>%{x:.3f} kg · " + CCY + "%{y:,.2f}<extra></extra>",
+      hovertemplate: "<b>" + CCY + "%{y:,.2f}</b> · %{x:.3f} kg<br>%{text} (" + c + ")<extra></extra>",
     };
   });
   const annotations = [];
@@ -491,100 +746,156 @@ function renderScatter(){
       traces.push({
         type: "scatter", mode: "lines", name: fit.commodity + " fit (R²=" + fit.r_squared + ")",
         x: [x0, x1], y: [fit.slope_per_kg * x0 + fit.intercept, fit.slope_per_kg * x1 + fit.intercept],
-        line: {color: t.soft, width: 1, dash: "dot"}, hoverinfo: "skip",
+        line: {color: t.base, width: 2, dash: "dash"}, hoverinfo: "skip",
       });
       fit.parts_above_1sd.forEach(p => annotations.push({
         x: p.mass_kg, y: p.unit_cost, text: p.part_number, showarrow: true,
-        arrowhead: 0, arrowcolor: t.amber, ax: 0, ay: -26, font: {size: 11, color: t.amber, family: "JetBrains Mono, monospace"},
+        arrowhead: 0, arrowcolor: t.amber, arrowwidth: 1, ax: 0, ay: -26,
+        font: {size: 11, color: t.amber, family: "JetBrains Mono, monospace"},
       }));
     });
   }
   Plotly.react(el, traces, baseLayout({
-    showlegend: true, legend: {orientation: "h", y: -0.22},
-    xaxis: {title: {text: "mass (kg)"}, gridcolor: t.hair},
-    yaxis: {title: {text: "unit cost"}, tickprefix: CCY, gridcolor: t.hair},
+    showlegend: true, legend: {orientation: "h", y: -0.22, font: {family: "Inter", size: 12, color: t.soft}},
+    hovermode: "closest",
+    xaxis: {title: {text: "mass (kg)", font: {family: "Inter", size: 11, color: t.muted}},
+            gridcolor: t.grid, linecolor: t.base,
+            tickfont: {family: "JetBrains Mono, monospace", size: 11, color: t.soft}},
+    yaxis: {title: {text: "unit cost", font: {family: "Inter", size: 11, color: t.muted}},
+            tickprefix: CCY, gridcolor: t.grid, linecolor: t.base,
+            tickfont: {family: "JetBrains Mono, monospace", size: 11, color: t.soft}},
     annotations,
   }), PLOT_CONFIG);
+  buildTable("scatterTable",
+    [{key: "part_number", label: "part"}, {key: "commodity", label: "commodity"},
+     {key: "mass", label: "mass kg", num: true}, {key: "cost", label: "unit cost", num: true},
+     {key: "flag", label: "above fit >1 SD"}],
+    rows.map(r => ({part_number: r.part_number, commodity: r.commodity, mass: r.mass_kg,
+                    cost: fmtMoney(r.unit_cost, 2), flag: flagged.has(r.part_number) ? "yes" : ""})));
 }
 
-// ---- Treemap ----
+/* ---------- 05 Treemap — identity at commodity level, depth as lightness ---------- */
+function hexMix(hex, hex2, t01){
+  const p = h => [parseInt(h.slice(1, 3), 16), parseInt(h.slice(3, 5), 16), parseInt(h.slice(5, 7), 16)];
+  const [r1, g1, b1] = p(hex), [r2, g2, b2] = p(hex2);
+  const m = (x, y) => Math.round(x + (y - x) * t01);
+  return "#" + [m(r1, r2), m(g1, g2), m(b1, b2)].map(v => v.toString(16).padStart(2, "0")).join("");
+}
 function renderTreemap(){
   const el = document.getElementById("treemapChart");
   const a = analysis("treemap_spend_hierarchy");
   document.getElementById("treemapMethod").textContent = a ? (a.status === "ok" ? a.method : a.reason) : "";
-  if (!a || a.status !== "ok"){ el.innerHTML = '<div class="empty-note">' + (a ? a.reason : "Analysis unavailable.") + "</div>"; return; }
+  if (!a || a.status !== "ok"){ Plotly.purge(el); el.replaceChildren(emptyNote(a ? a.reason : "Analysis unavailable.")); return; }
   const visible = partsIn(filteredRows());
   const nodes = a.result.nodes.filter(n => visible.has(n.part_number));
-  if (!nodes.length){ el.innerHTML = '<div class="empty-note">Nothing to show under the current filters.</div>'; return; }
-  const ids = [], labels = [], parents = [], values = [];
-  const seen = new Set();
-  const add = (id, label, parent, value) => { if (!seen.has(id)){ seen.add(id); ids.push(id); labels.push(label); parents.push(parent); values.push(value); } };
-  nodes.forEach(n => {
-    add("c:" + n.commodity, n.commodity, "", 0);
-    add("s:" + n.commodity + "|" + n.supplier, n.supplier, "c:" + n.commodity, 0);
-    add("p:" + n.commodity + "|" + n.supplier + "|" + n.part_number, n.part_number,
-        "s:" + n.commodity + "|" + n.supplier, n.annual_spend);
-  });
+  if (!nodes.length){ Plotly.purge(el); el.replaceChildren(emptyNote("Nothing to show under the current filters.")); return; }
   const t = theme();
+  const ids = [], labels = [], parents = [], values = [], colors = [];
+  const seen = new Set();
+  const add = (id, label, parent, value, color) => {
+    if (!seen.has(id)){ seen.add(id); ids.push(id); labels.push(label); parents.push(parent); values.push(value); colors.push(color); }
+  };
+  nodes.forEach(n => {
+    const cColor = commodityColor(n.commodity, t);
+    add("c:" + n.commodity, n.commodity, "", 0, cColor);
+    add("s:" + n.commodity + "|" + n.supplier, n.supplier, "c:" + n.commodity, 0, hexMix(cColor, t.panel, 0.45));
+    add("p:" + n.commodity + "|" + n.supplier + "|" + n.part_number, n.part_number,
+        "s:" + n.commodity + "|" + n.supplier, n.annual_spend, hexMix(cColor, t.panel, 0.72));
+  });
   Plotly.react(el, [{
     type: "treemap", ids, labels, parents, values, branchvalues: "remainder",
-    marker: {colors: ids.map(id => id.startsWith("c:") ? t.blue : id.startsWith("s:") ? "#5B8FD6" : "#8FB3E2"),
-             line: {color: t.ground, width: 1}},
+    marker: {colors, line: {color: t.panel, width: 2}},
     textfont: {family: "Inter, sans-serif", size: 12},
-    hovertemplate: "%{label}<br>" + CCY + "%{value:,.0f}/yr<extra></extra>",
-  }], baseLayout({margin: {l: 4, r: 4, t: 4, b: 4}}), PLOT_CONFIG);
+    pathbar: {visible: true, thickness: 22, textfont: {family: "Inter", size: 12}},
+    hovertemplate: "<b>" + CCY + "%{value:,.0f}</b>/yr<br>%{label}<extra></extra>",
+  }], baseLayout({margin: {l: 4, r: 4, t: 30, b: 4}}), PLOT_CONFIG);
   el.removeAllListeners && el.removeAllListeners("plotly_click");
   el.on("plotly_click", ev => {
     const id = ev.points[0].id || "";
     if (id.startsWith("c:")) setFilter("commodity", id.slice(2));
     else if (id.startsWith("s:")) setFilter("supplier", id.split("|")[1]);
   });
+  buildTable("treemapTable",
+    [{key: "commodity", label: "commodity"}, {key: "supplier", label: "supplier"},
+     {key: "part_number", label: "part"}, {key: "spend", label: "annual spend", num: true}],
+    [...nodes].sort((x, y) => y.annual_spend - x.annual_spend)
+      .map(n => ({commodity: n.commodity, supplier: n.supplier, part_number: n.part_number,
+                  spend: fmtMoney(n.annual_spend)})));
 }
 
-// ---- Insight cards ----
+/* ---------- 06 Insight cards ---------- */
 function renderCards(){
   const wrap = document.getElementById("insightCards");
   const findings = INSIGHTS.findings || [];
-  if (!findings.length){ wrap.innerHTML = '<div class="empty-note">No findings produced.</div>'; return; }
-  wrap.innerHTML = findings.map(f => {
-    const prov = f.provenance || {};
-    return `<div class="card">
-      <div class="top"><span class="sev ${f.severity}">${f.severity}</span>
-        <span class="impact">${f.impact_per_year !== null ? fmtMoney(f.impact_per_year) + "/yr" : ""}</span></div>
-      <h3>${f.title}</h3>
-      <p>${f.detail}</p>
-      ${f.caveats && f.caveats.length ? `<div class="tags">Caveats: ${f.caveats.join(" ")}</div>` : ""}
-      <div class="prov">source: ${(prov.source || []).join(", ") || "n/a"} · cols: ${(prov.columns || []).join(", ")}<br>computation: ${prov.computation || f.method}</div>
-    </div>`;
-  }).join("");
+  wrap.replaceChildren();
+  if (!findings.length){ wrap.appendChild(emptyNote("No findings produced.")); return; }
+  findings.forEach(f => {
+    const card = document.createElement("div"); card.className = "card";
+    const top = document.createElement("div"); top.className = "top";
+    const sev = document.createElement("span"); sev.className = "sev " + f.severity; sev.textContent = f.severity;
+    const impact = document.createElement("span"); impact.className = "impact";
+    impact.textContent = f.impact_per_year !== null ? fmtCompact(f.impact_per_year) + "/yr" : "";
+    if (f.impact_per_year !== null) impact.title = fmtMoney(f.impact_per_year, 2) + " per year";
+    top.append(sev, impact);
+    const h = document.createElement("h3"); h.textContent = f.title;
+    const p = document.createElement("p"); p.textContent = f.detail;
+    card.append(top, h, p);
+    if (f.caveats && f.caveats.length){
+      const tags = document.createElement("div"); tags.className = "tags";
+      tags.textContent = "Caveats: " + f.caveats.join(" ");
+      card.appendChild(tags);
+    }
+    const prov = document.createElement("div"); prov.className = "prov";
+    const pr = f.provenance || {};
+    prov.textContent = "source: " + (srcText(pr.source) || "n/a") +
+      " · cols: " + ((pr.columns || []).join(", ")) + " · " + (pr.computation || f.method);
+    card.appendChild(prov);
+    wrap.appendChild(card);
+  });
 }
 
-// ---- Data quality appendix ----
+/* ---------- 07 Data quality ---------- */
 function renderQuality(){
   const q = INSIGHTS.data_quality;
   const rows = [];
   q.checks.forEach(c => {
     if (c.status === "fail"){
-      c.failing_rows.forEach(r => rows.push([c.name, r.part_number || ("row " + r.row_index),
-        Object.entries(r).filter(([k]) => !["part_number"].includes(k)).map(([k, v]) => k + "=" + JSON.stringify(v)).join(", ")]));
+      c.failing_rows.forEach(r => rows.push({
+        check: c.name, part: r.part_number || ("row " + r.row_index),
+        result: Object.entries(r).filter(([k]) => k !== "part_number")
+          .map(([k, v]) => k + "=" + JSON.stringify(v)).join(", "),
+        bad: true,
+      }));
     } else {
-      rows.push([c.name, "—", c.status === "skipped" ? "skipped: " + c.skipped_reason : "pass"]);
+      rows.push({check: c.name, part: "—",
+                 result: c.status === "skipped" ? "skipped: " + c.skipped_reason : "pass", bad: false});
     }
   });
-  document.getElementById("qualityTableWrap").innerHTML = `<table class="data" id="qualityTable">
-    <thead><tr><th>Check</th><th>Part / row</th><th>Result</th></tr></thead>
-    <tbody>${rows.map(([a, b, c]) =>
-      `<tr><td>${a}</td><td class="num">${b}</td><td class="${c.startsWith("pass") || c.startsWith("skipped") ? "" : "flag"}">${c}</td></tr>`).join("")}</tbody></table>`;
-  const skipped = (INSIGHTS.analyses || []).filter(a => a.status !== "ok");
-  document.getElementById("skippedAnalyses").innerHTML = skipped.length
-    ? '<div class="method" style="margin-top:14px">Analyses not run:</div><ul style="font-size:12.5px;color:var(--ink-soft);padding-left:18px">'
-      + skipped.map(a => `<li><span class="mono">${a.analysis}</span> — ${a.reason}</li>`).join("") + "</ul>"
-    : "";
+  buildTable("qualityTableWrap",
+    [{key: "check", label: "Check"}, {key: "part", label: "Part / row"},
+     {key: "result", label: "Result", flag: "bad"}],
+    rows);
+  const skipped = (INSIGHTS.analyses || []).filter(x => x.status !== "ok");
+  const mount = document.getElementById("skippedAnalyses");
+  mount.replaceChildren();
+  if (skipped.length){
+    const head = document.createElement("div"); head.className = "method"; head.style.marginTop = "14px";
+    head.textContent = "Analyses not run:";
+    const ul = document.createElement("ul");
+    ul.style.cssText = "font-size:12.5px;color:var(--ink-soft);padding-left:18px";
+    skipped.forEach(x => {
+      const li = document.createElement("li");
+      const code = document.createElement("span"); code.className = "mono"; code.textContent = x.analysis;
+      li.append(code, document.createTextNode(" — " + (x.reason || "")));
+      ul.appendChild(li);
+    });
+    mount.append(head, ul);
+  }
 }
 
-// ---- CSV export ----
-function exportTableCSV(tableId, filename){
-  const table = document.getElementById(tableId);
+/* ---------- CSV export (from the table twins) ---------- */
+function exportTableCSV(mountId, filename){
+  const table = document.querySelector("#" + mountId + " table");
   if (!table) return;
   const csv = [...table.querySelectorAll("tr")].map(tr =>
     [...tr.children].map(td => '"' + td.textContent.replace(/"/g, '""') + '"').join(",")).join("\n");
@@ -594,22 +905,35 @@ function exportTableCSV(tableId, filename){
   a.click();
   URL.revokeObjectURL(a.href);
 }
+document.querySelectorAll(".export-btn").forEach(btn =>
+  btn.addEventListener("click", () => exportTableCSV(btn.dataset.export, btn.dataset.name)));
 
-// ---- theme + wiring ----
+/* ---------- theme toggle + wiring ---------- */
 function renderCharts(){ renderPareto(); renderGap(); renderBreakdown(); renderScatter(); renderTreemap(); }
+function syncToggleLabel(){
+  const dark = effectiveTheme() === "dark";
+  const btn = document.getElementById("themeToggle");
+  btn.textContent = dark ? "Light mode" : "Dark mode";
+  btn.setAttribute("aria-pressed", String(dark));
+}
 document.getElementById("themeToggle").addEventListener("click", () => {
-  state.dark = !state.dark;
-  document.documentElement.setAttribute("data-theme", state.dark ? "dark" : "light");
-  document.getElementById("themeToggle").textContent = state.dark ? "Light mode" : "Dark mode";
+  document.documentElement.setAttribute("data-theme", effectiveTheme() === "dark" ? "light" : "dark");
+  syncToggleLabel();
   renderCharts();
 });
 document.querySelectorAll("#paretoToggle button").forEach(btn => btn.addEventListener("click", () => {
-  document.querySelectorAll("#paretoToggle button").forEach(b => b.classList.remove("active"));
-  btn.classList.add("active");
+  document.querySelectorAll("#paretoToggle button").forEach(b => b.setAttribute("aria-pressed", "false"));
+  btn.setAttribute("aria-pressed", "true");
   state.paretoBy = btn.dataset.by;
   renderPareto();
 }));
+if (window.matchMedia){
+  window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
+    if (!document.documentElement.getAttribute("data-theme")){ syncToggleLabel(); renderCharts(); }
+  });
+}
 
+syncToggleLabel();
 renderHeader();
 initFilters();
 renderCards();
