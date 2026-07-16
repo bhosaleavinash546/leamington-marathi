@@ -49,6 +49,7 @@ interface CadResult {
   topRisks: string[];
   // Provenance from the server: 'deterministic' = engine-computed, 'llm-estimate' = un-grounded.
   engine?: 'deterministic' | 'llm-estimate';
+  costMethod?: 'feature-machining' | 'mass' | null;
   resolved?: { material: string; process: string; region: string; approxMaterial?: boolean; approxProcess?: boolean } | null;
   costError?: string | null;
   note?: string;
@@ -636,7 +637,7 @@ export default function CadToCostPage() {
                 <div className="flex flex-wrap items-center gap-2 mb-4 -mt-1">
                   {result.engine === 'deterministic' ? (
                     <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-green-500/10 border border-green-500/20 text-green-300 text-[11px] font-medium">
-                      <Shield size={12} /> Engine-computed (rate library + FX)
+                      <Shield size={12} /> {result.costMethod === 'feature-machining' ? 'Feature-based machining engine' : 'Engine-computed (rate library + FX)'}
                     </span>
                   ) : (
                     <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-300 text-[11px] font-medium">

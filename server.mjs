@@ -23,6 +23,7 @@ import { validateIdeas } from './idea-validation.mjs';
 import { runEngineChecks } from './engine-idea-check.mjs';
 import { getFxRates, FX_FALLBACK, FX_SYMBOLS, FX_CURRENCIES } from './fx-rates.mjs';
 import { computeShouldCost, simulateShouldCost } from './costing-engine.mjs';
+import { featuredMachiningCost } from './machining-feature-cost.mjs';
 import { resolveMaterial, resolveProcess } from './material-process-resolve.mjs';
 import { getActiveLibrary } from './active-library.mjs';
 import { applyLiveMaterialPrices } from './material-commodity.mjs';
@@ -2395,6 +2396,69 @@ function sanitizeGeometry(g) {
 // Deterministic should-cost from parsed geometry — the same engine the rest of
 // the app uses (rate library, FX, family guard, Monte-Carlo). Returns null when
 // material/process/mass can't be resolved (e.g. a drawing image with no volume).
+// Adapt CAD geometry (client parse or server OCCT) into the feature-based
+// machining model, then shape its output like a computeShouldCost result so the
+// cad-analyze route/frontend render it unchanged.
+function featureCostFromCad(g, matKey, region, annualVolume, config, lib) {
+  const bb = g.boundingBox || {};
+  const minDim = Math.min(Number(bb.x) || 1e9, Number(bb.y) || 1e9, Number(bb.z) || 1e9);
+  // Holes: exact from an OCCT featureTable if present, else approximate from the
+  // client's hole COUNT (assume mid-size Ø8 holes ~60% through the thin dimension).
+  let holes = [];
+  if (Array.isArray(g.featureTable)) {
+    holes = g.featureTable.filter(f => f && f.kind === 'hole').map(f => ({ diaMm: Number(f.diaMm) || 8, depthMm: Number(f.depthMm) || 20, count: Number(f.count) || 1 }));
+  } else if (Number(g.featureCounts?.holes) > 0) {
+    holes = [{ diaMm: 8, depthMm: Math.max(6, Math.round((Number.isFinite(minDim) ? minDim : 20) * 0.6)), count: Math.round(Number(g.featureCounts.holes)) }];
+  }
+  const geometry = {
+    boundingBoxMm: { x: Number(bb.x), y: Number(bb.y), z: Number(bb.z) },
+    partVolumeCm3: Number(g.estimatedVolume),
+    surfaceAreaCm2: Number(g.estimatedSurfaceArea) > 0 ? Number(g.estimatedSurfaceArea) : undefined,
+    holes,
+    planarFaceCount: Number(g.featureCounts?.faces) || undefined,
+    setupCount: Number(g.featureCounts?.setups) || 2,
+  };
+  const batch = Math.max(50, Math.min(5000, Math.round(annualVolume / 250)));
+  const feat = featuredMachiningCost({
+    geometry, material: matKey, region, annualVolume, batch,
+    toleranceClass: config.toleranceClass, surfaceFinish: config.surfaceFinish,
+  }, lib);
+  const mat = (lib?.MATERIALS || {})[matKey] || {};
+  const b = feat.breakdown;
+  // Reshape to the computeShouldCost contract the route consumes.
+  const calc = {
+    engine: 'feature-machining',
+    totalShouldCost: feat.totalShouldCost,
+    breakdown: {
+      material: { value: b.material.value },
+      machine: { value: b.machine.value },
+      labour: { value: b.labour.value },
+      setup: { value: b.setup.value },
+      finishing: { value: 0 },   // finishing time is folded into machine in the feature model
+      tooling: { value: 0 },     // machining fixtures amortise via setup, not a tooling bucket
+      overhead: { value: b.overhead.value },
+      commercial: { value: b.commercial.value },
+      sgaProfit: { value: b.sgaProfit.value },
+    },
+    drivers: {
+      inputMassKg: feat.drivers.stockMassKg,
+      pricePerKg: mat.price,
+      cycleSecPerPart: feat.drivers.cycleSec,
+      machineRate: feat.drivers.machineRate,
+      labourRate: (lib?.REGIONS || {})[region]?.labour ?? 50,
+      toolingTotal: 0,
+      amortVolume: batch,
+      buyToFlyRatio: feat.drivers.buyToFlyRatio,
+      removalVolCm3: feat.drivers.removalVolCm3,
+      cycleBreakdownSec: feat.cycleBreakdownSec,
+    },
+  };
+  // Honest band: machining dispersion ≈ ±22% around the point estimate.
+  const t = feat.totalShouldCost;
+  const sim = { p10: Number((t * 0.82).toFixed(2)), p50: t, p90: Number((t * 1.22).toFixed(2)), stdev: Number((t * 0.13).toFixed(2)) };
+  return { calc, sim };
+}
+
 function deterministicCadCost(g, config) {
   const lib = getActiveLibrary();
   const matText = config.materialSpec || g.extractedMaterial;
@@ -2413,14 +2477,26 @@ function deterministicCadCost(g, config) {
   const region = CAD_REGION_MAP[String(config.plantRegion || 'germany').toLowerCase()] || 'Germany';
   const annualVolume = Math.max(1, Math.min(1e8, Number(config.annualVolume) || 50000));
   const input = { material: matRes.key, process: procRes.key, weightKg, annualVolume, region };
+  const currency = FX_CURRENCIES.includes(String(config.currency || 'EUR').toUpperCase()) ? String(config.currency).toUpperCase() : 'EUR';
+  const fx = currency === 'EUR' ? { rates: FX_FALLBACK } : null;   // sync path; FX applied below
+
+  // ── Feature-based path: for machining with real geometry, build the cycle
+  // from removal-volume/surface/holes instead of the mass proxy (materially
+  // more accurate — see benchmark/machining-run.mjs). Falls back to mass below.
+  const isMachining = /machining/i.test(procRes.key);
+  const hasGeometry = g.boundingBox && Number(g.estimatedVolume) > 0 && !g.isImage;
+  if (isMachining && hasGeometry) {
+    try {
+      const feat = featureCostFromCad(g, matRes.key, region, annualVolume, config, lib);
+      if (feat) return { calc: feat.calc, sim: feat.sim, input, matRes, procRes, weightKg, density, region, annualVolume, currency, fx, method: 'feature-machining' };
+    } catch { /* fall through to the mass model */ }
+  }
 
   let calc, sim;
   try { calc = computeShouldCost(input, {}, null, lib); sim = simulateShouldCost(input, 2000, 12345, null, lib); }
   catch (e) { return { error: e.message, matRes, procRes }; }   // e.g. family mismatch — surface honestly
 
-  const currency = FX_CURRENCIES.includes(String(config.currency || 'EUR').toUpperCase()) ? String(config.currency).toUpperCase() : 'EUR';
-  const fx = currency === 'EUR' ? { rates: FX_FALLBACK } : null;   // sync path; FX applied below
-  return { calc, sim, input, matRes, procRes, weightKg, density, region, annualVolume, currency, fx };
+  return { calc, sim, input, matRes, procRes, weightKg, density, region, annualVolume, currency, fx, method: 'mass' };
 }
 
 app.post('/api/cad-analyze', requireAuth, checkUsageQuota, rateLimit(15, 60 * 60 * 1000), async (req, res) => {
@@ -2508,8 +2584,11 @@ app.post('/api/cad-analyze', requireAuth, checkUsageQuota, rateLimit(15, 60 * 60
       recommendations: Array.isArray(llm.recommendations) ? llm.recommendations.slice(0, 8) : [],
       topRisks: Array.isArray(llm.topRisks) ? llm.topRisks.slice(0, 6).map(r => sanitize(String(r), 200)) : [],
       engine, resolved, costError,
+      costMethod: det?.method || null,   // 'feature-machining' | 'mass' — provenance of the deterministic figure
       note: engine === 'deterministic'
-        ? 'Cost computed by the deterministic should-cost engine (rate library + FX). The AI provides DFMA analysis and recommendations only.'
+        ? (det?.method === 'feature-machining'
+            ? 'Cost computed by the FEATURE-BASED machining engine: cycle built from removal volume, surface area and holes (material-specific rates), not a mass proxy. The AI provides DFMA analysis only.'
+            : 'Cost computed by the deterministic should-cost engine (rate library + FX). The AI provides DFMA analysis and recommendations only.')
         : (costError || 'Material/process could not be resolved to the cost library, so this is an un-grounded AI estimate — set material & process for a firm figure.'),
     };
     return res.json(result);
