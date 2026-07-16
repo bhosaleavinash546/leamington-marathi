@@ -38,6 +38,12 @@ export interface ForgingInputs {
   ndtCostPerPart?: number;      // NDT (MPI/UT/CT) cost £/part for safety-critical forgings
   rejectRate?: number;          // forging scrap fraction 0–1
   amortizationVolume: number;
+  /** Feature-based secondary machining ops (from geometry) — appended to the
+   *  forging operations. A forging is near-net; these add machining TIME (bore,
+   *  drill, face, turn), not billet material. See feature-machining.ts. */
+  secondaryMachiningOps?: OperationInput[];
+  /** Fixturing + setup + CNC programming NRE for the secondary machining. */
+  secondaryMachiningToolingCost?: number;
 }
 
 export function getForgingInputSchema(): Record<string, string> {
@@ -188,9 +194,18 @@ export function computeForgingDrivers(inputs: ForgingInputs): CommodityDrivers {
     heatingCostPerPart + heatTreatCostPerPart + descaleCostPerPart +
     (inputs.coiningCostPerPart ?? 0) + (inputs.ndtCostPerPart ?? 0);
 
+  // Feature-based secondary machining (geometry-driven) — appended on top of
+  // the forging process. Near-net → machining TIME only; no extra billet.
+  if (inputs.secondaryMachiningOps && inputs.secondaryMachiningOps.length > 0) {
+    operations.push(...inputs.secondaryMachiningOps);
+  }
+  const finalTooling: ToolingInput = (inputs.secondaryMachiningToolingCost && inputs.secondaryMachiningToolingCost > 0)
+    ? { ...tooling, totalToolingCost: tooling.totalToolingCost + inputs.secondaryMachiningToolingCost }
+    : tooling;
+
   return {
     rawMaterial: consumablesCostPerPart > 0 ? { ...rawMaterial, consumablesCostPerPart } : rawMaterial,
     operations,
-    tooling,
+    tooling: finalTooling,
   };
 }

@@ -66,6 +66,9 @@ import type { CompositeProcess } from '../engine/modules/composites.js';
 import { computeWiringHarnessDrivers } from '../engine/modules/wiring-harness.js';
 import { buildRegionalLibrary, REGIONAL_DATA, computeRegionalComparison } from '../engine/regional-rates.js';
 import { featureToOperation, drillingOpFromFeatures } from '../engine/feature-ops.js';
+import { computeFeatureMachining, type StockCondition } from '../engine/feature-machining.js';
+import type { FeatureRow } from '../engine/feature-ops.js';
+import type { OperationInput } from '../engine/types.js';
 import type { ManufacturingRegion } from '../engine/regional-rates.js';
 import { recommendMachineIds } from '../engine/process-taxonomy.js';
 import { runSensitivity } from '../engine/sensitivity.js';
@@ -9538,6 +9541,108 @@ function buildFeatureOpsTable(geo: OCCTGeometry): string {
     </div>`;
 }
 
+// ─── Feature-based secondary machining (casting / forging etc.) ───────────────
+// Prices the CNC machining a near-net cast/forged part still needs at its
+// functional features (bores, drilled holes, turned bosses) and folds that cost
+// into the total — the accuracy gap that pure weight-based costing misses.
+// `prefix` is the form id root: 'cast' | 'forge'.
+
+/** Empty container the CAD-apply step populates from the geometry feature table. */
+function renderMachinedFeaturesPanel(prefix: string): string {
+  return `
+    <details id="${prefix}-mf-details" style="margin-top:8px" open>
+      <summary style="font-weight:700;font-size:0.78rem;cursor:pointer;color:var(--accent)">🛠 Machined Features from Geometry <span style="font-weight:400;color:var(--text-muted)">— secondary machining on the near-net part</span></summary>
+      <div id="${prefix}-mf-body" style="margin-top:6px">
+        <div style="font-size:0.72rem;color:var(--text-muted)">Upload a CAD file (STEP/IGES) on this form to auto-detect machined features (bores, holes, bosses) and add their machining cost to the total.</div>
+      </div>
+    </details>`;
+}
+
+/** Fill the panel from cadOCCTGeometry.featureTable with per-feature toggles. */
+function populateMachinedFeatures(prefix: string): void {
+  const body = document.getElementById(`${prefix}-mf-body`);
+  if (!body) return;
+  const rows = cadOCCTGeometry?.featureTable ?? [];
+  if (!rows.length) {
+    body.innerHTML = `<div style="font-size:0.72rem;color:var(--text-muted)">No machinable features detected in the geometry (no bores, holes or bosses).</div>`;
+    return;
+  }
+  const totalHoles = rows.filter(r => r.kind === 'hole').reduce((s, r) => s + r.count, 0);
+  const totalBosses = rows.filter(r => r.kind === 'boss').reduce((s, r) => s + r.count, 0);
+  body.innerHTML = `
+    <div style="font-size:0.72rem;color:var(--text-secondary);margin-bottom:6px">
+      ${totalHoles} hole/bore feature(s)${totalBosses ? ` + ${totalBosses} boss(es)` : ''} from the B-rep.
+      Holes are ticked (machined on a near-net part); bosses are unticked — tick only the ones actually turned/faced.
+    </div>
+    <table class="data-table" style="font-size:0.72rem;font-variant-numeric:tabular-nums;width:100%">
+      <thead><tr><th></th><th>Feature</th><th>Ø×depth (mm)</th><th>Qty</th><th>→ Operation</th></tr></thead>
+      <tbody>
+        ${rows.map((r, i) => `<tr>
+          <td><input type="checkbox" class="${prefix}-mf-chk" data-idx="${i}" ${r.kind === 'hole' ? 'checked' : ''}/></td>
+          <td>${r.kind === 'hole' ? '◎ Hole' : '⬤ Boss'}</td>
+          <td>Ø${r.diaMm.toFixed(1)} × ${r.depthMm.toFixed(0)}${r.kind === 'hole' ? (r.through ? ' (thru)' : ' (blind)') : ''}</td>
+          <td>${r.count}</td>
+          <td>${featureToOperation(r as FeatureRow)}</td>
+        </tr>`).join('')}
+      </tbody>
+    </table>
+    <div class="field-row" style="margin-top:6px">
+      <div class="field-group"><label>Machine</label><select id="${prefix}-mf-mach" class="machine-select"></select></div>
+      <div class="field-group"><label>Labour</label><select id="${prefix}-mf-lab" class="labour-select"></select></div>
+    </div>
+    <div class="field-row" style="margin-top:4px">
+      <div class="field-group"><label>Stock condition</label><select id="${prefix}-mf-stock">
+        <option value="near_net" selected>Near-net (cast/forged — holes cored in, no extra material)</option>
+        <option value="solid_billet">Machined from solid (charge removed metal)</option>
+      </select></div>
+      <div class="field-group"><label>Finish</label><select id="${prefix}-mf-finish">
+        <option value="1.0" selected>General machining ×1.0</option>
+        <option value="1.3">Reamed / precision ×1.3</option>
+        <option value="1.6">Ground / tight tol. ×1.6</option>
+      </select></div>
+    </div>
+    <div class="field-row" style="margin-top:4px">
+      <div class="field-group"><label>Machining fixtures + CNC programming NRE (₹)</label><input type="number" id="${prefix}-mf-tooling" min="0" step="1000" value="150000"/></div>
+    </div>
+    <div id="${prefix}-mf-readout" style="margin-top:6px;font-size:0.74rem;font-weight:600;color:var(--accent)"></div>`;
+  populateSelects();
+  // default machine/labour to a CNC cell
+  const machSel = el<HTMLSelectElement>(`${prefix}-mf-mach`); if (machSel) machSel.value = resolveMachineIdForOp('mach-vmc3', 'CNC Milling');
+  const labSel = el<HTMLSelectElement>(`${prefix}-mf-lab`); if (labSel) labSel.value = resolveLabourId('lab-uk-skilled');
+  const refresh = () => updateMachinedFeaturesReadout(prefix);
+  body.querySelectorAll(`.${prefix}-mf-chk, #${prefix}-mf-stock, #${prefix}-mf-finish`).forEach(elm => elm.addEventListener('change', refresh));
+  refresh();
+}
+
+/** Read the panel and build secondary machining ops (null if none active). */
+function collectSecondaryMachining(prefix: string): { ops: OperationInput[]; toolingCost: number; result: ReturnType<typeof computeFeatureMachining> } | null {
+  const rows = (cadOCCTGeometry?.featureTable ?? []) as FeatureRow[];
+  if (!rows.length) return null;
+  const body = document.getElementById(`${prefix}-mf-body`);
+  if (!body) return null;
+  const includeFlags = rows.map((_, i) =>
+    (body.querySelector(`.${prefix}-mf-chk[data-idx="${i}"]`) as HTMLInputElement | null)?.checked ?? false);
+  const machineId = sel(`${prefix}-mf-mach`) || resolveMachineIdForOp('mach-vmc3', 'CNC Milling');
+  const labourId = sel(`${prefix}-mf-lab`) || resolveLabourId('lab-uk-skilled');
+  const stockCondition = (sel(`${prefix}-mf-stock`) || 'near_net') as StockCondition;
+  const finishFactor = parseFloat(sel(`${prefix}-mf-finish`)) || 1.0;
+  const result = computeFeatureMachining(rows, { machineId, labourId, includeFlags, stockCondition, finishFactor });
+  if (result.featureCount === 0) return null;
+  const toolingCost = num(`${prefix}-mf-tooling`);
+  return { ops: result.operations, toolingCost, result };
+}
+
+/** Live "adds N min / ₹ machining" readout in the panel. */
+function updateMachinedFeaturesReadout(prefix: string): void {
+  const out = document.getElementById(`${prefix}-mf-readout`);
+  if (!out) return;
+  const c = collectSecondaryMachining(prefix);
+  if (!c) { out.textContent = 'No features selected — no machining cost added.'; return; }
+  const mins = (c.result.totalCycleHr * 60).toFixed(1);
+  const matNote = c.result.materialRemovedKg > 0 ? ` · ${c.result.materialRemovedKg.toFixed(3)} kg metal removed` : ' · near-net (no extra material)';
+  out.textContent = `⇒ Adds ${c.result.featureCount} machined feature(s): ${mins} min CNC time${matNote}. Included in the total on Calculate.`;
+}
+
 // Provenance classification for CAD-filled fields. Geometry-derived quantities
 // (weights, dimensions, volumes) are MEASURED when the OCCT/STL engine parsed
 // the file; everything the AI inferred (material, cycle times, tooling, rates)
@@ -9868,6 +9973,7 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
             setNumericField('cast-inv-ct', cast.cycleTimeSandGravHr, 4);
           }
         }
+        populateMachinedFeatures('cast');
         break;
       }
 
@@ -9961,6 +10067,7 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
           'mat-al6061': 0.25, 'mat-al5052': 0.23, 'mat-brass-crz': 0.18,
         };
         setNumericField('forge-heat-energy', forgeHeatMap[c.materialId] ?? 0.40, 2);
+        populateMachinedFeatures('forge');
         break;
       }
 
@@ -10406,6 +10513,7 @@ function switchCommodity(type: CommodityType): void {
 
     case 'casting':
       area.innerHTML = renderCastingForm();
+      area.insertAdjacentHTML('beforeend', renderMachinedFeaturesPanel('cast'));
       populateSelects();
       el('cast-subtype')?.addEventListener('change', updateCastingSubtype);
       updateCastingSubtype();
@@ -10419,6 +10527,7 @@ function switchCommodity(type: CommodityType): void {
 
     case 'forging':
       area.innerHTML = renderForgingForm();
+      area.insertAdjacentHTML('beforeend', renderMachinedFeaturesPanel('forge'));
       populateSelects();
       wireForgingAdvisor();
       setTimeout(() => {
@@ -11046,7 +11155,12 @@ function collectCastingInput(): UniversalStackInput {
     );
   }
 
-  const drivers = computeCastingDrivers({ ...common, ...extra });
+  const secondary = collectSecondaryMachining('cast');
+  const drivers = computeCastingDrivers({
+    ...common, ...extra,
+    secondaryMachiningOps: secondary?.ops,
+    secondaryMachiningToolingCost: secondary?.toolingCost,
+  });
   return { ...getUniversalTail(), rawMaterial: drivers.rawMaterial, operations: drivers.operations, tooling: drivers.tooling };
 }
 
@@ -11085,6 +11199,8 @@ function collectForgingInput(): UniversalStackInput {
   const preformMachineId = sel('forge-preform-mach') || undefined;
   const preformLabourId = sel('forge-preform-lab') || undefined;
 
+  const forgeSecondary = collectSecondaryMachining('forge');
+
   const drivers = computeForgingDrivers({
     materialId,
     partWeightKg,
@@ -11108,6 +11224,8 @@ function collectForgingInput(): UniversalStackInput {
     dieImpressions,
     dieComplexity: shapeComplexity,
     amortizationVolume: num('forge-amort') || 1,
+    secondaryMachiningOps: forgeSecondary?.ops,
+    secondaryMachiningToolingCost: forgeSecondary?.toolingCost,
     heatTreatCostPerKg: num('forge-ht-cost') || undefined,
     descaleCostPerKg: num('forge-descale') || undefined,
     coiningCostPerPart: num('forge-coining') || undefined,

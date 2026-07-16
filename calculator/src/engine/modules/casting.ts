@@ -13,6 +13,12 @@ export interface CastingInputs {
   manning: number;
   labourEfficiency: number;
   amortizationVolume: number;
+  /** Feature-based secondary machining ops (from geometry) — appended to the
+   *  process operations. Holes are cored-in on a casting, so these add machining
+   *  TIME, not material (see feature-machining.ts / stockCondition). */
+  secondaryMachiningOps?: OperationInput[];
+  /** Fixturing + setup + CNC programming NRE for the secondary machining. */
+  secondaryMachiningToolingCost?: number;
   // HPDC specific
   hpdc?: {
     machineId: string;
@@ -218,6 +224,15 @@ export function computeCastingDrivers(inputs: CastingInputs): CommodityDrivers {
     const waxRecovery = inputs.investment.waxRecoveryFraction ?? 0.80;
     const effectiveWaxCost = inputs.investment.waxCostPerPart * (1 - waxRecovery);
     consumablesCostPerPart = effectiveWaxCost + inputs.investment.shellBuildCostPerPart;
+  }
+
+  // Feature-based secondary machining (geometry-driven) — appended on top of
+  // the casting process. Near-net → machining TIME only; no extra material.
+  if (inputs.secondaryMachiningOps && inputs.secondaryMachiningOps.length > 0) {
+    operations.push(...inputs.secondaryMachiningOps);
+  }
+  if (inputs.secondaryMachiningToolingCost && inputs.secondaryMachiningToolingCost > 0) {
+    tooling = { ...tooling, totalToolingCost: tooling.totalToolingCost + inputs.secondaryMachiningToolingCost };
   }
 
   return {
