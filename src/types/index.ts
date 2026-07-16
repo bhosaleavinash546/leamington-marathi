@@ -123,7 +123,8 @@ export interface AnalysisConfig {
   cadFileType?: string;
   additionalContext?: string;
   cadGeometry?: Record<string, unknown>;
-  trizLens?: boolean;
+  trizLens?: boolean;   // deprecated — kept for back-compat
+  lenses?: string[];    // innovation lenses to apply (method ids)
   apiKey: string;
 }
 

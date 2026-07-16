@@ -1891,13 +1891,28 @@ function getRegulatorContext(config) {
   return lines.length > 0 ? `\nREGULATORY CONTEXT (${region || 'EU default'} / ${config?.vehicleType || 'passenger car'}):\n${lines.map(l => `  • ${l}`).join('\n')}` : '';
 }
 
+// Compact prompt directives for each innovation lens (Analyze-page toggles).
+const LENS_TEXT = {
+  triz: 'TRIZ: for ≥3 ideas identify the engineering contradiction (what improves vs what would worsen) and resolve it with a named classical inventive principle (Segmentation, Merging, Universality/multi-function, Composite materials, Mechanics substitution, Parameter changes…). Name the principle.',
+  'value-engineering': 'VALUE ENGINEERING: decompose the part into functions (verb-noun), judge each function\'s cost vs its worth, and target ideas at the POOR-VALUE functions (high cost, low worth). Name the function each idea attacks.',
+  dfa: 'DFA / CONSOLIDATION: for the assembly, ask per part — does it move relative to others? must it be a different material for a real reason? must it separate for assembly/service? "No" to all three = deletable. Produce part-count-reduction ideas (casting, integrated features, snap-fits) stating the parts removed.',
+  'design-to-cost': 'DESIGN-TO-COST: treat cost as a target to hit. Size ideas to specific cost buckets (material/process/tooling/overhead) so their savings add up to a meaningful gap; state which bucket each idea attacks.',
+  scamper: 'SCAMPER: sweep the 7 verbs — Substitute, Combine, Adapt, Modify, Put-to-other-use, Eliminate, Reverse — and include at least one idea from each that applies.',
+  morphological: 'MORPHOLOGICAL: split the part\'s job into sub-functions, consider different solution options for each, and propose at least one genuinely different ARCHITECTURE (not a tweak) by recombining options.',
+  'effects-trends': 'EFFECTS & TRENDS: for ≥2 ideas, deliver the part\'s function with a cheaper physical effect (shrink-fit, magnetism, Hall effect, snap-fit…) OR jump to the next technology generation (mechanics→fields, mono→integrated, fixed→dynamic).',
+  circularity: 'CIRCULARITY: include ≥2 ideas that BOTH cut cost and improve end-of-life recyclability (EU ELV) — reversible joints instead of adhesive, mono-material design, fewer fastener types, easy material separation.',
+};
+function buildLensDirectives(lenses) {
+  const picked = (lenses || []).filter(l => LENS_TEXT[l]);
+  if (!picked.length) return '';
+  return `\nINNOVATION LENSES (apply in addition to normal levers):\n${picked.map(l => `- ${LENS_TEXT[l]}`).join('\n')}\n`;
+}
+
 function buildAnalysisPrompt(config, systemName, subassemblyName, partName, enableSearch, cadGeometry) {
   const scope = partName ? `Part: **${partName}** (within ${subassemblyName}, System: ${systemName})` : `Subassembly: **${subassemblyName}** (System: ${systemName})`;
-  // Optional TRIZ lens: nudge the model to also break trade-offs with inventive
-  // principles, not just benchmark-copy. Compact so it doesn't bloat the prompt.
-  const trizLens = config.trizLens
-    ? `\nTRIZ LENS (apply): treat cost reduction as breaking trade-offs. For at least 3 ideas, identify the engineering contradiction (what improves vs what would classically worsen) and resolve it with a named classical inventive principle — e.g. Segmentation, Local quality, Merging, Universality (multi-function parts), Nested doll, Asymmetry, The other way round, Composite materials, Parameter changes, Mechanics substitution, Preliminary action, Cheap short-living objects. Prefer resolving the contradiction over accepting it; name the principle in the technicalDescription.\n`
-    : '';
+  // Optional innovation lenses: nudge the model to also apply structured
+  // idea-generation methods, not just benchmark-copy. Compact per lens.
+  const trizLens = buildLensDirectives(Array.isArray(config.lenses) ? config.lenses : (config.trizLens ? ['triz'] : []));
   let cadLine = config.cadFileName ? `\nCAD file: ${config.cadFileName} (${config.cadFileType}).` : '';
   if (cadGeometry && !cadGeometry.isImage) {
     const bb = cadGeometry.boundingBox;
