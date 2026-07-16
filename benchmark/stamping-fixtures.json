@@ -1,0 +1,47 @@
+{
+  "comment": "Held-out stamped-part fixtures with GEOMETRY, authored to test feature-based stamping vs the flat-rate mass model — spanning the press-tonnage and thickness range where the mass model (one 120 EUR/hr rate, fixed 0.62 nesting) is weakest: a large deep-drawn panel (big slow press) vs a small flat bracket (small fast press). Anchor prices are engineering estimates from public teardown/industry norms (piece price ex-works, mid-volume), NOT supplier quotes. tol band +/-35%.",
+  "fixtures": [
+    {
+      "id": "st-flat-bracket",
+      "name": "Small flat steel bracket, 2 mm, 2 bends, 300k/yr",
+      "material": "Steel (mild)", "region": "Germany", "annualVolume": 300000, "bends": 2, "drawDepthMm": 0,
+      "geometry": { "boundingBoxMm": { "x": 120, "y": 80, "z": 15 }, "partVolumeCm3": 19.2, "surfaceAreaCm2": 230, "thicknessMm": 2.0 },
+      "refPriceEur": 0.85, "tol": 0.35, "source": "engineering estimate, 2025 industry norm"
+    },
+    {
+      "id": "st-body-panel",
+      "name": "Large deep-drawn body panel, 0.8 mm, high tonnage press",
+      "material": "Steel (mild)", "region": "Germany", "annualVolume": 200000, "bends": 1, "drawDepthMm": 120,
+      "geometry": { "boundingBoxMm": { "x": 900, "y": 600, "z": 180 }, "partVolumeCm3": 432, "surfaceAreaCm2": 12000, "thicknessMm": 0.8 },
+      "refPriceEur": 9.5, "tol": 0.35, "source": "engineering estimate, exterior panel band"
+    },
+    {
+      "id": "st-hss-reinforcement",
+      "name": "High-strength-steel reinforcement, 1.5 mm, 4 bends, 250k/yr",
+      "material": "Steel (high-strength)", "region": "Czech Republic", "annualVolume": 250000, "bends": 4, "drawDepthMm": 20,
+      "geometry": { "boundingBoxMm": { "x": 380, "y": 140, "z": 60 }, "partVolumeCm3": 80, "surfaceAreaCm2": 1400, "thicknessMm": 1.5 },
+      "refPriceEur": 2.6, "tol": 0.35, "source": "engineering estimate, BIW reinforcement"
+    },
+    {
+      "id": "st-al-heatshield",
+      "name": "Aluminium heat shield, 1.0 mm, shallow form, 150k/yr",
+      "material": "Aluminium 6061", "region": "Germany", "annualVolume": 150000, "bends": 3, "drawDepthMm": 15,
+      "geometry": { "boundingBoxMm": { "x": 300, "y": 220, "z": 40 }, "partVolumeCm3": 66, "surfaceAreaCm2": 1350, "thicknessMm": 1.0 },
+      "refPriceEur": 2.2, "tol": 0.35, "source": "engineering estimate, Al heat shield"
+    },
+    {
+      "id": "st-seat-panel",
+      "name": "Seat structure stamped panel, 1.2 mm, 6 bends, 120k/yr",
+      "material": "Steel (mild)", "region": "Spain", "annualVolume": 120000, "bends": 6, "drawDepthMm": 30,
+      "geometry": { "boundingBoxMm": { "x": 420, "y": 300, "z": 70 }, "partVolumeCm3": 151, "surfaceAreaCm2": 2600, "thicknessMm": 1.2 },
+      "refPriceEur": 3.4, "tol": 0.35, "source": "engineering estimate, seat structure"
+    },
+    {
+      "id": "st-small-clip",
+      "name": "Very small stamped clip, 0.8 mm, 1 bend, 1M/yr",
+      "material": "Steel (mild)", "region": "China", "annualVolume": 1000000, "bends": 1, "drawDepthMm": 0,
+      "geometry": { "boundingBoxMm": { "x": 40, "y": 25, "z": 8 }, "partVolumeCm3": 0.8, "surfaceAreaCm2": 22, "thicknessMm": 0.8 },
+      "refPriceEur": 0.11, "tol": 0.35, "source": "engineering estimate, high-volume clip"
+    }
+  ]
+}

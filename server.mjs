@@ -24,6 +24,7 @@ import { runEngineChecks } from './engine-idea-check.mjs';
 import { getFxRates, FX_FALLBACK, FX_SYMBOLS, FX_CURRENCIES } from './fx-rates.mjs';
 import { computeShouldCost, simulateShouldCost } from './costing-engine.mjs';
 import { featuredMachiningCost } from './machining-feature-cost.mjs';
+import { stampingFeatureCost, geometryToStampingInput } from './stamping-feature-cost.mjs';
 import { resolveMaterial, resolveProcess } from './material-process-resolve.mjs';
 import { getActiveLibrary } from './active-library.mjs';
 import { applyLiveMaterialPrices } from './material-commodity.mjs';
@@ -2459,6 +2460,57 @@ function featureCostFromCad(g, matKey, region, annualVolume, config, lib) {
   return { calc, sim };
 }
 
+// Adapt CAD geometry into the feature-based STAMPING model, then reshape its
+// output like a computeShouldCost result (same contract the route/frontend
+// consume). Stamping drives cost from press tonnage, gauge and nesting yield —
+// see benchmark/stamping-run.mjs. Bends/draw aren't reliably inferable from raw
+// geometry, so we assume a simple form (bends≈2, flat); the tonnage-tier, gauge
+// and geometry-nesting gains still apply. Falls back to mass on any gap.
+function stampingCostFromCad(g, matKey, region, annualVolume, config, lib) {
+  const geometry = geometryToStampingInput(g);
+  if (!(Number(geometry.partVolumeCm3) > 0) || !(Number(geometry.boundingBoxMm?.x) > 0)) return null;
+  const bends = Number.isFinite(Number(g.featureCounts?.bends)) ? Number(g.featureCounts.bends) : 2;
+  const feat = stampingFeatureCost({
+    geometry, material: matKey, region, annualVolume, bends,
+    toleranceClass: config.toleranceClass,
+  }, lib);
+  const mat = (lib?.MATERIALS || {})[matKey] || {};
+  const b = feat.breakdown;
+  const d = feat.drivers;
+  const calc = {
+    engine: 'feature-stamping',
+    totalShouldCost: feat.totalShouldCost,
+    breakdown: {
+      material: { value: b.material.value },
+      machine: { value: b.machine.value },
+      labour: { value: b.labour.value },
+      setup: { value: b.setup.value },
+      finishing: { value: b.secondary.value },   // deburr/wash/inspect folded into process
+      tooling: { value: b.tooling.value },        // stamping DOES carry a real die bucket
+      overhead: { value: b.overhead.value },
+      commercial: { value: b.commercial.value },
+      sgaProfit: { value: b.sgaProfit.value },
+    },
+    drivers: {
+      inputMassKg: d.blankMassKg,
+      pricePerKg: mat.price,
+      cycleSecPerPart: d.cycleSec,
+      machineRate: d.pressRate,
+      labourRate: (lib?.REGIONS || {})[region]?.labour ?? 50,
+      toolingTotal: d.dieCost,
+      amortVolume: Math.max(1, Math.min(1_500_000, annualVolume * (Number(config.programYears) || 5))),
+      buyToFlyRatio: d.partMassKg > 0 ? Number((d.blankMassKg / d.partMassKg).toFixed(2)) : null,
+      tonnage: d.tonnage,
+      materialUtilisationPct: d.materialUtilisationPct,
+      thicknessMm: d.thicknessMm,
+    },
+  };
+  // Honest band: stamping dispersion ≈ ±25% around the point estimate.
+  const t = feat.totalShouldCost;
+  const sim = { p10: Number((t * 0.80).toFixed(2)), p50: t, p90: Number((t * 1.25).toFixed(2)), stdev: Number((t * 0.15).toFixed(2)) };
+  return { calc, sim };
+}
+
 function deterministicCadCost(g, config) {
   const lib = getActiveLibrary();
   const matText = config.materialSpec || g.extractedMaterial;
@@ -2484,11 +2536,20 @@ function deterministicCadCost(g, config) {
   // from removal-volume/surface/holes instead of the mass proxy (materially
   // more accurate — see benchmark/machining-run.mjs). Falls back to mass below.
   const isMachining = /machining/i.test(procRes.key);
+  const isStamping = /stamp|deep draw/i.test(procRes.key);
   const hasGeometry = g.boundingBox && Number(g.estimatedVolume) > 0 && !g.isImage;
   if (isMachining && hasGeometry) {
     try {
       const feat = featureCostFromCad(g, matRes.key, region, annualVolume, config, lib);
       if (feat) return { calc: feat.calc, sim: feat.sim, input, matRes, procRes, weightKg, density, region, annualVolume, currency, fx, method: 'feature-machining' };
+    } catch { /* fall through to the mass model */ }
+  }
+  // ── Feature-based stamping path: press-tonnage tier, gauge and geometry-driven
+  // nesting yield instead of the flat-rate mass proxy (see benchmark/stamping-run.mjs).
+  if (isStamping && hasGeometry) {
+    try {
+      const feat = stampingCostFromCad(g, matRes.key, region, annualVolume, config, lib);
+      if (feat) return { calc: feat.calc, sim: feat.sim, input, matRes, procRes, weightKg, density, region, annualVolume, currency, fx, method: 'feature-stamping' };
     } catch { /* fall through to the mass model */ }
   }
 
