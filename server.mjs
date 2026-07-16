@@ -52,6 +52,13 @@ function getOcct() {
 }
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+// Load a local .env (if present) so a key saved by the desktop launcher — or by
+// hand — is picked up as the ANTHROPIC_API_KEY fallback. Guarded: absent file or
+// old Node (< 20.6 / no loadEnvFile) is a no-op, never a crash. Real env vars
+// already set win, since loadEnvFile does not overwrite existing keys.
+try { process.loadEnvFile?.(path.join(__dirname, '.env')); } catch { /* no .env — fine */ }
+
 const app = express();
 
 // Behind a load balancer/reverse proxy, req.ip is the proxy unless we trust the

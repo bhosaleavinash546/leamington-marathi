@@ -31,6 +31,57 @@ elif [ -n "$LOCK_BEFORE" ] && [ "$LOCK_BEFORE" != "$LOCK_AFTER" ]; then
   npm install
 fi
 
+# ── Anthropic API key ─────────────────────────────────────────────────────────
+# Ask for the key on launch unless one is already available (shell environment,
+# or a previously-saved .env). Saved once to .env (gitignored) so we don't nag on
+# every start; the server reads .env as its ANTHROPIC_API_KEY fallback.
+set_env_var() {
+  local name="$1" value="$2" file=".env"
+  touch "$file"
+  grep -v -E "^${name}=" "$file" > "${file}.tmp" 2>/dev/null || true
+  printf '%s=%s\n' "$name" "$value" >> "${file}.tmp"
+  mv "${file}.tmp" "$file"
+  chmod 600 "$file" 2>/dev/null
+}
+
+has_key() {
+  [ -n "$ANTHROPIC_API_KEY" ] && return 0
+  [ -f .env ] && grep -qE '^ANTHROPIC_API_KEY=.+' .env && return 0
+  return 1
+}
+
+if ! has_key; then
+  KEY=$(osascript <<'APPLESCRIPT' 2>/dev/null
+try
+  set dlg to display dialog "Enter your Anthropic API key to enable AI analysis.
+
+It starts with \"sk-ant-\". Get one at console.anthropic.com.
+
+Click Skip to add it later in the app's Settings page." default answer "" with hidden answer with title "AutoCost AI — API Key" buttons {"Skip", "Save & Continue"} default button "Save & Continue"
+  if button returned of dlg is "Skip" then
+    return ""
+  else
+    return text returned of dlg
+  end if
+on error
+  return ""
+end try
+APPLESCRIPT
+)
+  # Trim surrounding whitespace
+  KEY="$(printf '%s' "$KEY" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
+  if [ -n "$KEY" ]; then
+    if ! printf '%s' "$KEY" | grep -qE '^sk-ant-'; then
+      osascript -e 'display notification "That does not look like an sk-ant- key, but I saved it anyway. Fix it in Settings if AI analysis fails." with title "AutoCost AI — API Key"' 2>/dev/null
+    fi
+    set_env_var ANTHROPIC_API_KEY "$KEY"
+    export ANTHROPIC_API_KEY="$KEY"
+    echo "API key saved to .env (this folder, git-ignored)."
+  else
+    echo "No API key entered — you can add one later in the app's Settings page."
+  fi
+fi
+
 # Kill anything already running on our ports
 lsof -ti:3001 | xargs kill -9 2>/dev/null
 lsof -ti:5173 | xargs kill -9 2>/dev/null
