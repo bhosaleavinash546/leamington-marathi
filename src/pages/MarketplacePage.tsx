@@ -525,7 +525,7 @@ export default function MarketplacePage() {
               <input
                 value={submitForm.annualSaving}
                 onChange={e => setSubmitForm(f => ({ ...f, annualSaving: e.target.value }))}
-                placeholder="Annual saving (e.g. €500k)"
+                placeholder="Annual saving (e.g. £425k)"
                 className="bg-navy-800 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm placeholder-slate-600 focus:outline-none focus:border-gold-500/30"
               />
             </div>

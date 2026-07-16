@@ -144,7 +144,7 @@ export function registerTrizRoutes(app, { requireAuth, rateLimit, makeAnthropic,
         principles: rec.principles,
         ideas,
         engineChecks: engineSummary,
-        note: 'Principles are deterministic TRIZ theory; every € figure is engine-checked or labelled. Validate against detailed studies before commercial use.',
+        note: 'Principles are deterministic TRIZ theory; every £ figure is engine-checked or labelled. Validate against detailed studies before commercial use.',
       });
     } catch (err) {
       const status = err?.status || err?.response?.status;

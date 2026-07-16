@@ -94,7 +94,7 @@ app.post('/api/should-cost/quotes', requireAuth, rateLimit(120, 60 * 60 * 1000),
   if (!material || !process || !weightKg || !annualVolume || !actualPrice) {
     return res.status(400).json({ error: 'Missing required fields: material, process, weightKg, annualVolume, actualPrice.' });
   }
-  const currency = String(req.body.currency || 'EUR').toUpperCase();
+  const currency = String(req.body.currency || 'GBP').toUpperCase();
   if (!FX_CURRENCIES.includes(currency)) return res.status(400).json({ error: `Unsupported currency "${currency}".` });
   const { library: lib } = liveLibrary();
   const matRes = resolveMaterial(material, lib.MATERIALS);
@@ -153,7 +153,7 @@ app.post('/api/should-cost/export', requireAuth, rateLimit(40, 60 * 60 * 1000), 
     const wNum = Number(weightKg), vNum = Number(annualVolume);
     if (!Number.isFinite(wNum) || wNum <= 0 || wNum > 100_000) return res.status(400).json({ error: 'weightKg out of range.' });
     if (!Number.isFinite(vNum) || vNum <= 0 || vNum > 1e9) return res.status(400).json({ error: 'annualVolume out of range.' });
-    const currency = String(req.body.currency || 'EUR').toUpperCase();
+    const currency = String(req.body.currency || 'GBP').toUpperCase();
     if (!FX_CURRENCIES.includes(currency)) return res.status(400).json({ error: `Unsupported currency "${currency}".` });
 
     const { library: lib, priceBasis, pricedAt } = liveLibrary();
@@ -373,7 +373,7 @@ app.post('/api/should-cost', requireAuth, rateLimit(60, 60 * 60 * 1000), validat
   }
   // Currency must be one we can actually convert — otherwise we'd emit raw EUR
   // numbers under a foreign label (rate would silently fall back to 1).
-  const currency = String(req.body.currency || 'EUR').toUpperCase();
+  const currency = String(req.body.currency || 'GBP').toUpperCase();
   if (!FX_CURRENCIES.includes(currency)) {
     return res.status(400).json({ error: `Unsupported currency "${currency}". Supported: ${FX_CURRENCIES.join(', ')}.` });
   }

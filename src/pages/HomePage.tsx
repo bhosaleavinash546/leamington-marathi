@@ -76,14 +76,14 @@ function KpiCard({
 // ─── Example Analyses ─────────────────────────────────────────────────────────
 
 const ACTIVITY_ITEMS = [
-  { system: 'Electric Drive Unit', action: '16 cost reduction ideas generated', saving: '€2.4M/yr', domain: 'Powertrain', color: 'text-gold-400' },
-  { system: 'BIW Stamping', action: 'Hot-stamp consolidation opportunity', saving: '€1.1M/yr', domain: 'Body Structure', color: 'text-indigo-400' },
-  { system: 'Battery Pack', action: 'CTP architecture benchmarking', saving: '€3.8M/yr', domain: 'Energy Storage', color: 'text-emerald-400' },
-  { system: 'Transmission & Driveline', action: 'ZF 8HP fleet rebate analysis', saving: '€0.9M/yr', domain: 'Driveline', color: 'text-rose-400' },
-  { system: 'Thermal & HVAC', action: 'Heat pump integration study', saving: '€1.6M/yr', domain: 'Thermal', color: 'text-cyan-400' },
-  { system: 'Powertrain ICE', action: 'Turbo housing consolidation', saving: '€0.7M/yr', domain: 'Powertrain', color: 'text-orange-400' },
-  { system: 'Interior Systems', action: 'IP carrier right-sizing', saving: '€1.3M/yr', domain: 'Interior', color: 'text-amber-400' },
-  { system: 'Chassis & Frame', action: 'Aluminium knuckle topology optimisation', saving: '€0.5M/yr', domain: 'Chassis', color: 'text-blue-400' },
+  { system: 'Electric Drive Unit', action: '16 cost reduction ideas generated', saving: '£2.04M/yr', domain: 'Powertrain', color: 'text-gold-400' },
+  { system: 'BIW Stamping', action: 'Hot-stamp consolidation opportunity', saving: '£0.94M/yr', domain: 'Body Structure', color: 'text-indigo-400' },
+  { system: 'Battery Pack', action: 'CTP architecture benchmarking', saving: '£3.23M/yr', domain: 'Energy Storage', color: 'text-emerald-400' },
+  { system: 'Transmission & Driveline', action: 'ZF 8HP fleet rebate analysis', saving: '£0.77M/yr', domain: 'Driveline', color: 'text-rose-400' },
+  { system: 'Thermal & HVAC', action: 'Heat pump integration study', saving: '£1.36M/yr', domain: 'Thermal', color: 'text-cyan-400' },
+  { system: 'Powertrain ICE', action: 'Turbo housing consolidation', saving: '£0.59M/yr', domain: 'Powertrain', color: 'text-orange-400' },
+  { system: 'Interior Systems', action: 'IP carrier right-sizing', saving: '£1.1M/yr', domain: 'Interior', color: 'text-amber-400' },
+  { system: 'Chassis & Frame', action: 'Aluminium knuckle topology optimisation', saving: '£0.42M/yr', domain: 'Chassis', color: 'text-blue-400' },
 ];
 
 function ExampleAnalyses() {
@@ -182,7 +182,7 @@ function CommodityTicker({ items }: { items: LiveCommodity[] }) {
 // ─── Benchmark Panel ──────────────────────────────────────────────────────────
 
 const BENCHMARKS = [
-  { label: 'ZF 8HP fleet rebate', value: '€320/unit', icon: Cog, domain: 'Transmission' },
+  { label: 'ZF 8HP fleet rebate', value: '£272/unit', icon: Cog, domain: 'Transmission' },
   { label: 'BYD 8-in-1 EDU saving', value: '−30% BOM', icon: Zap, domain: 'EDU' },
   { label: 'CF propshaft vs steel', value: '−6 kg', icon: Link2, domain: 'Driveline' },
   { label: 'SiC die shrink (800V)', value: '−25% area', icon: Lightbulb, domain: 'Inverter' },
@@ -279,7 +279,7 @@ const HOW_IT_WORKS = [
 const KPI_CARDS = [
   { icon: Layers, label: 'Vehicle Systems', value: 13, suffix: '', prefix: '', trend: 'up' as const, trendLabel: 'All commodities', color: 'from-blue-500 to-indigo-600', delay: 0 },
   { icon: Lightbulb, label: 'Marketplace Cost Ideas', value: 1250, suffix: '+', prefix: '', trend: 'up' as const, trendLabel: 'Curated & benchmarked', color: 'from-gold-500 to-amber-600', delay: 0.1 },
-  { icon: DollarSign, label: 'Avg Annual Value Found', value: 2.3, suffix: 'M', prefix: '€', trend: 'up' as const, trendLabel: 'Per analysis', color: 'from-emerald-500 to-teal-600', delay: 0.2 },
+  { icon: DollarSign, label: 'Avg Annual Value Found', value: 2.0, suffix: 'M', prefix: '£', trend: 'up' as const, trendLabel: 'Per analysis', color: 'from-emerald-500 to-teal-600', delay: 0.2 },
   { icon: Target, label: 'Cost Reduction Ideas Per Run', value: 15, suffix: '+', prefix: '', trend: undefined, trendLabel: 'Typically 12–20+', color: 'from-purple-500 to-pink-600', delay: 0.3 },
 ];
 

@@ -50,7 +50,7 @@ const CASES = [
     referenceCase: '0.9 kg stamped 2-piece bracket set + assembly → one 0.45 kg PA66-GF30 moulding with integrated clips, 60k/yr, Germany',
     baseline: () => computeRouteCost({ material: 'Steel (mild)', route: ['Stamping / Deep Drawing', 'MIG Welding Assembly'], weightKg: 0.9, annualVolume: V, region: 'Germany' }).totalShouldCost,
     proposed: () => computeShouldCost({ material: 'PA66-GF30 (glass-filled)', process: 'Injection Moulding', weightKg: 0.45, annualVolume: V, region: 'Germany' }).totalShouldCost,
-    note: 'Wins through part consolidation + deleted assembly, not raw €/kg — a lone small steel bracket is usually CHEAPER in steel (the engine will say so).',
+    note: 'Wins through part consolidation + deleted assembly, not raw £/kg — a lone small steel bracket is usually CHEAPER in steel (the engine will say so).',
   },
   {
     match: /topology-optimise/i, key: 'topology-downgauge',
@@ -64,7 +64,7 @@ const CASES = [
     referenceCase: '3.0 kg stamped part with 10% blank mass saved via TWB, 60k/yr, Germany',
     baseline: () => computeShouldCost({ material: 'Steel (high-strength)', process: 'Stamping / Deep Drawing', weightKg: 3.0, annualVolume: V, region: 'Germany' }).totalShouldCost,
     proposed: () => computeShouldCost({ material: 'Steel (high-strength)', process: 'Stamping / Deep Drawing', weightKg: 2.7, annualVolume: V, region: 'Germany' }).totalShouldCost + 0.35,
-    note: 'TWB saves blank mass but adds a laser blank-weld (~€0.35/part) — the engine nets the two.',
+    note: 'TWB saves blank mass but adds a laser blank-weld (~£0.35/part) — the engine nets the two.',
   },
 ];
 

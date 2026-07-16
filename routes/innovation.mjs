@@ -99,7 +99,7 @@ async function buildMethodContext(method, body, client) {
       if (Number.isFinite(cur) && Number.isFinite(tgt)) {
         try { analysis = targetGap(cur, tgt, body?.buckets || []); } catch { /* */ }
       }
-      const gapLine = analysis ? `Cost gap to close: €${analysis.gap} (${analysis.gapPct}% of current). Per-bucket targets: ${analysis.allocations.map(a => `${a.name} €${a.target}`).join('; ') || '(no buckets supplied)'}.` : `Target costing for the ${part}: work backwards from the target. If no numbers supplied, ask the user to run a should-cost first.`;
+      const gapLine = analysis ? `Cost gap to close: £${analysis.gap} (${analysis.gapPct}% of current). Per-bucket targets: ${analysis.allocations.map(a => `${a.name} £${a.target}`).join('; ') || '(no buckets supplied)'}.` : `Target costing for the ${part}: work backwards from the target. If no numbers supplied, ask the user to run a should-cost first.`;
       return {
         analysis,
         directive: `Apply Design-to-Cost to the ${part}. ${gapLine}\nGenerate ideas SIZED to the per-bucket targets so their savings add up to the gap — each idea should state which bucket it attacks and roughly how much of the gap it closes.`,
@@ -178,7 +178,7 @@ export function registerInnovationRoutes(app, { requireAuth, rateLimit, makeAnth
       res.json({
         method: { id: method.id, name: method.name, tier: method.tier, mode: method.mode },
         analysis, ideas, engineChecks,
-        note: 'Method structure is deterministic; every € figure is engine-checked or labelled. Validate before commercial use.',
+        note: 'Method structure is deterministic; every £ figure is engine-checked or labelled. Validate before commercial use.',
       });
     } catch (err) {
       const status = err?.status || err?.response?.status;

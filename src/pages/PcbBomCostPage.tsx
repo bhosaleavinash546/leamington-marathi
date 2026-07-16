@@ -70,7 +70,7 @@ export default function PcbBomCostPage() {
     setCost(c);
     setBoard(c.board);
     // Do NOT seed unitCostOverride — leave it undefined so a Type change reprices
-    // from the class average. It's only set when the user edits the Unit € cell.
+    // from the class average. It's only set when the user edits the Unit £ cell.
     setLines(c.lines.map(l => ({ ...l, unitCostOverride: undefined })));
     setDirty(false);
   }
@@ -105,13 +105,13 @@ export default function PcbBomCostPage() {
 
   function exportXlsx() {
     if (!cost) return;
-    const rows = lines.map(l => ({ RefDes: l.refDes, Type: l.type, Package: l.package, Mount: l.mount, Pins: l.pins, Qty: l.qty, 'Unit €': l.unitCostOverride ?? l.unitCost, 'Line €': +(((l.unitCostOverride ?? l.unitCost) * l.qty)).toFixed(3) }));
+    const rows = lines.map(l => ({ RefDes: l.refDes, Type: l.type, Package: l.package, Mount: l.mount, Pins: l.pins, Qty: l.qty, 'Unit £': l.unitCostOverride ?? l.unitCost, 'Line £': +(((l.unitCostOverride ?? l.unitCost) * l.qty)).toFixed(3) }));
     rows.push({} as never);
-    rows.push({ RefDes: 'Components', 'Line €': cost.componentCost } as never);
-    rows.push({ RefDes: 'PCB fab', 'Line €': cost.fabCost } as never);
-    rows.push({ RefDes: 'Assembly', 'Line €': cost.assemblyCost } as never);
-    rows.push({ RefDes: 'Overhead', 'Line €': cost.overhead } as never);
-    rows.push({ RefDes: `TOTAL /board @ ${cost.volume}/yr`, 'Line €': cost.total } as never);
+    rows.push({ RefDes: 'Components', 'Line £': cost.componentCost } as never);
+    rows.push({ RefDes: 'PCB fab', 'Line £': cost.fabCost } as never);
+    rows.push({ RefDes: 'Assembly', 'Line £': cost.assemblyCost } as never);
+    rows.push({ RefDes: 'Overhead', 'Line £': cost.overhead } as never);
+    rows.push({ RefDes: `TOTAL /board @ ${cost.volume}/yr`, 'Line £': cost.total } as never);
     void downloadXlsx('BrainSpark_PCB_BOM_Cost.xlsx', [{ name: 'PCB BOM Cost', rows: objectsToAoa(rows) }]);
   }
 
@@ -181,7 +181,7 @@ export default function PcbBomCostPage() {
                     <thead className="sticky top-0 bg-navy-900"><tr className="text-slate-500 text-left">
                       <th className="px-2 py-2 font-medium"> </th><th className="px-2 py-2 font-medium">Ref</th><th className="px-2 py-2 font-medium">Type</th><th className="px-2 py-2 font-medium">Pkg</th>
                       <th className="px-2 py-2 font-medium">Mnt</th><th className="px-2 py-2 font-medium">Pins</th><th className="px-2 py-2 font-medium">Qty</th>
-                      <th className="px-2 py-2 font-medium text-right">Unit €</th><th className="px-2 py-2 font-medium text-right">Line €</th><th></th>
+                      <th className="px-2 py-2 font-medium text-right">Unit £</th><th className="px-2 py-2 font-medium text-right">Line £</th><th></th>
                     </tr></thead>
                     <tbody>
                       {lines.map((l, i) => (
@@ -227,14 +227,14 @@ export default function PcbBomCostPage() {
               <div className="bg-teal-500/8 border border-teal-500/25 rounded-2xl p-4">
                 <div className="flex items-baseline justify-between mb-3">
                   <span className="text-slate-400 text-xs uppercase tracking-wider">Board cost / unit</span>
-                  <span className="text-teal-300 font-black text-2xl">€{cost.total.toFixed(2)}</span>
+                  <span className="text-teal-300 font-black text-2xl">£{cost.total.toFixed(2)}</span>
                 </div>
                 <div className="space-y-1.5">
                   {Object.entries(cost.breakdown).map(([k, v]) => (
                     <div key={k} className="flex items-center gap-2 text-xs">
                       <span className="text-slate-300 flex-1 capitalize">{k === 'fab' ? 'PCB fab' : k}</span>
                       <span className="text-slate-400 tabular-nums w-9 text-right">{v.pct}%</span>
-                      <span className="text-slate-200 tabular-nums w-16 text-right font-mono">€{v.value.toFixed(2)}</span>
+                      <span className="text-slate-200 tabular-nums w-16 text-right font-mono">£{v.value.toFixed(2)}</span>
                     </div>
                   ))}
                 </div>

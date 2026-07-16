@@ -12,9 +12,9 @@ import { useTheme } from '../../contexts/ThemeContext';
 
 function fmt(n: number, decimals = 0): string {
   if (!isFinite(n) || isNaN(n)) return '—';
-  if (Math.abs(n) >= 1_000_000) return `€${(n / 1_000_000).toFixed(2)}M`;
-  if (Math.abs(n) >= 1_000) return `€${(n / 1_000).toFixed(decimals === 0 ? 0 : 1)}K`;
-  return `€${n.toFixed(decimals)}`;
+  if (Math.abs(n) >= 1_000_000) return `£${(n / 1_000_000).toFixed(2)}M`;
+  if (Math.abs(n) >= 1_000) return `£${(n / 1_000).toFixed(decimals === 0 ? 0 : 1)}K`;
+  return `£${n.toFixed(decimals)}`;
 }
 
 function fmtMonths(m: number): string {
@@ -37,7 +37,7 @@ interface SliderInputProps {
   isPercent?: boolean;
 }
 
-function SliderInput({ label, icon: Icon, value, onChange, min, max, step = 1, unit = '€', hint, isPercent }: SliderInputProps) {
+function SliderInput({ label, icon: Icon, value, onChange, min, max, step = 1, unit = '£', hint, isPercent }: SliderInputProps) {
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between">
@@ -65,7 +65,7 @@ function SliderInput({ label, icon: Icon, value, onChange, min, max, step = 1, u
   );
 }
 
-function NumberInput({ label, icon: Icon, value, onChange, unit = '€', hint }: {
+function NumberInput({ label, icon: Icon, value, onChange, unit = '£', hint }: {
   label: string; icon: React.ElementType; value: number; onChange: (v: number) => void; unit?: string; hint?: string;
 }) {
   return (

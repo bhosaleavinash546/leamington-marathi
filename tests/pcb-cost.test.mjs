@@ -20,7 +20,7 @@ test('costs a typical board with a breakdown that sums to the total', () => {
   const sum = Object.values(r.breakdown).reduce((a, b) => a + b.value, 0);
   assert.ok(Math.abs(sum - r.total) < 0.05, `breakdown ${sum} vs total ${r.total}`);
   assert.ok(Math.abs((r.componentCost + r.fabCost + r.assemblyCost + r.logistics + r.overhead) - r.total) < 0.05);
-  assert.equal(r.currency, 'EUR');
+  assert.equal(r.currency, 'GBP');
 });
 
 test('placement/lead counts route SMT vs TH correctly, and BGA/active flagged', () => {

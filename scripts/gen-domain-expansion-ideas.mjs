@@ -15,7 +15,7 @@ const OEMS = ['Porsche Cayenne', 'Mercedes GLE', 'BMW X5', 'Audi Q8', 'Volvo EX9
 function mk(seq, system, title, tech, materials, processes, dfma, perVeh, pct, difficulty, time, risk, oem) {
   const id = `dxp${String(seq).padStart(3, '0')}`;
   const annual = perVeh * V;
-  const annualStr = annual >= 1e6 ? `€${(annual / 1e6).toFixed(1)}M` : `€${Math.round(annual / 1e3)}k`;
+  const annualStr = annual >= 1e6 ? `£${(annual / 1e6).toFixed(1)}M` : `£${Math.round(annual / 1e3)}k`;
   return {
     id, title, system, costSavingType: 'Design / Specification', annualSaving: annualStr,
     difficulty, timeToImplement: time,
@@ -26,7 +26,7 @@ function mk(seq, system, title, tech, materials, processes, dfma, perVeh, pct, d
       materialGrade: materials.join(' / '),
       manufacturingImpact: processes.join('; '),
       costSavingTypes: ['design', 'process'],
-      costSavingPotential: { qualitative: dfma[0], percentage: `€${perVeh}/veh (${pct})`, annualValue: annualStr, calculationBasis: `€${perVeh}/veh × ${V / 1000}k veh/yr (indicative)` },
+      costSavingPotential: { qualitative: dfma[0], percentage: `£${perVeh}/veh (${pct})`, annualValue: annualStr, calculationBasis: `£${perVeh}/veh × ${V / 1000}k veh/yr (indicative)` },
       implementationDifficulty: difficulty, riskNotes: risk,
       dfmaPrinciples: dfma, systemLevel: 'Part', timeToImplement: time,
       benchmarkReference: `${oem} programme (indicative)`, confidenceLevel: 'estimated',

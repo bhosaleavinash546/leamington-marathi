@@ -61,15 +61,15 @@ interface CadResult {
 const ACCEPTED_FORMATS = '.step,.stp,.stl,.dxf,.png,.jpg,.jpeg,.webp,.pdf';   // PDFs render server-side via document blocks (multi-sheet packs supported)
 
 const PLANT_REGIONS = [
-  { value: 'germany', label: 'Germany (€45-55/hr)' },
+  { value: 'germany', label: 'Germany (£38-47/hr)' },
   { value: 'uk',      label: 'UK (£35-45/hr)' },
-  { value: 'czech',   label: 'Czech/Slovak (€15-20/hr)' },
-  { value: 'spain',   label: 'Spain (€20-28/hr)' },
+  { value: 'czech',   label: 'Czech/Slovak (£13-17/hr)' },
+  { value: 'spain',   label: 'Spain (£17-24/hr)' },
   { value: 'mexico',  label: 'Mexico ($8-12/hr)' },
   { value: 'usa',     label: 'USA ($40-55/hr)' },
   { value: 'china',   label: 'China (¥70-130/hr)' },
   { value: 'india',   label: 'India (₹800-1,200/hr)' },
-  { value: 'korea',   label: 'Korea (€25-32/hr)' },
+  { value: 'korea',   label: 'Korea (£21-27/hr)' },
 ];
 
 // Derived from the shared supported-currency list so it can't drift from the
@@ -125,7 +125,7 @@ const CONF_CONFIG: Record<ConfidenceLevel, { label: string; color: string }> = {
 };
 
 function currencySymbol(cur: string) {
-  return { EUR: '€', GBP: '£', USD: '$', CNY: '¥' }[cur] ?? '€';
+  return { EUR: '€', GBP: '£', USD: '$', CNY: '¥' }[cur] ?? '£';
 }
 
 function formatCost(value: number, currency: string) {
@@ -219,7 +219,7 @@ export default function CadToCostPage() {
   const [apiKey, setApiKey] = useState(() => localStorage.getItem('brainspark_api_key') || '');
   const [annualVolume, setAnnualVolume] = useState(50000);
   const [plantRegion, setPlantRegion] = useState('germany');
-  const [currency, setCurrency] = useState('EUR');
+  const [currency, setCurrency] = useState('GBP');
   const [programmeLengthYears, setProgrammeLengthYears] = useState(5);
   const [materialSpec, setMaterialSpec] = useState('Auto-detect from drawing');
   const [processSpec, setProcessSpec] = useState('Auto-detect from geometry');

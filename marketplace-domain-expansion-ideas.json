@@ -4,7 +4,7 @@
     "title": "Relax non-functional tolerances on the steering knuckle machined faces",
     "system": "Chassis",
     "costSavingType": "Design / Specification",
-    "annualSaving": "€360k",
+    "annualSaving": "£306k",
     "difficulty": "Low",
     "timeToImplement": "3–6 months",
     "description": "[ALL] Audit every toleranced dimension on the knuckle drawing against actual mating-part function; relax non-datum faces from IT7 to IT9-10 and widen positional tolerances on non-critical bolt bosses. Cuts CNC finishing passes, in-process gauging and CMM time; scrap",
@@ -24,9 +24,9 @@
       ],
       "costSavingPotential": {
         "qualitative": "Tolerance-cost curve discipline",
-        "percentage": "€6/veh (-8% machining)",
-        "annualValue": "€360k",
-        "calculationBasis": "€6/veh × 60k veh/yr (indicative)"
+        "percentage": "£5.1/veh (-8% machining)",
+        "annualValue": "£306k",
+        "calculationBasis": "£5.1/veh × 60k veh/yr (indicative)"
       },
       "implementationDifficulty": "Low",
       "riskNotes": "Stack-up must be re-validated; supplier PPAP re-approval needed on the changed drawing.",
@@ -65,7 +65,7 @@
     "title": "Widen caliper-bracket positional tolerances to match real fixture capability",
     "system": "Braking System",
     "costSavingType": "Design / Specification",
-    "annualSaving": "€240k",
+    "annualSaving": "£204k",
     "difficulty": "Low",
     "timeToImplement": "3–6 months",
     "description": "[ALL] Positional tolerances on caliper-bracket holes are commonly specified at the machine-capability limit rather than the function limit. Widening from ±0.1 to ±0.25 where the bolted joint allows removes a dedicated drill-jig stage and lets the holes run in the ma",
@@ -85,9 +85,9 @@
       ],
       "costSavingPotential": {
         "qualitative": "Function-limit GD&T",
-        "percentage": "€4/veh (-10% bracket machining)",
-        "annualValue": "€240k",
-        "calculationBasis": "€4/veh × 60k veh/yr (indicative)"
+        "percentage": "£3.4/veh (-10% bracket machining)",
+        "annualValue": "£204k",
+        "calculationBasis": "£3.4/veh × 60k veh/yr (indicative)"
       },
       "implementationDifficulty": "Low",
       "riskNotes": "Brake-hose routing and pad wear clearance verified across the widened window.",
@@ -123,7 +123,7 @@
     "title": "Replace tight gap-and-flush specs on hidden trim interfaces",
     "system": "Interior",
     "costSavingType": "Design / Specification",
-    "annualSaving": "€300k",
+    "annualSaving": "£255k",
     "difficulty": "Low",
     "timeToImplement": "3–6 months",
     "description": "[ALL] Gap/flush specs written for A-surfaces are frequently copied onto hidden interfaces (under-console, lower IP). Relaxing hidden-interface gaps from ±0.5 to ±1.5 mm removes mould re-cuts, slide actions and fitting rework at assembly.",
@@ -143,9 +143,9 @@
       ],
       "costSavingPotential": {
         "qualitative": "A-surface vs hidden-surface spec split",
-        "percentage": "€5/veh (-6% trim set)",
-        "annualValue": "€300k",
-        "calculationBasis": "€5/veh × 60k veh/yr (indicative)"
+        "percentage": "£4.3/veh (-6% trim set)",
+        "annualValue": "£255k",
+        "calculationBasis": "£4.3/veh × 60k veh/yr (indicative)"
       },
       "implementationDifficulty": "Low",
       "riskNotes": "Squeak & rattle validated at the wider gaps with foam/felt where needed.",
@@ -181,7 +181,7 @@
     "title": "Relax over-specified tolerances on the B-pillar reinforcement weld-flange",
     "system": "Body Structure",
     "costSavingType": "Design / Specification",
-    "annualSaving": "€180k",
+    "annualSaving": "£153k",
     "difficulty": "Low",
     "timeToImplement": "2–4 months",
     "description": "[ALL] Function-audit the B-pillar reinforcement weld-flange drawing: identify dimensions toleranced tighter than the mating interface requires (legacy copy-paste specs are endemic), relax to the function limit, and delete the finishing/gauging content the tight spec",
@@ -201,9 +201,9 @@
       ],
       "costSavingPotential": {
         "qualitative": "Function-driven GD&T",
-        "percentage": "€3/veh (-5-10% part machining)",
-        "annualValue": "€180k",
-        "calculationBasis": "€3/veh × 60k veh/yr (indicative)"
+        "percentage": "£2.5/veh (-5-10% part machining)",
+        "annualValue": "£153k",
+        "calculationBasis": "£2.5/veh × 60k veh/yr (indicative)"
       },
       "implementationDifficulty": "Low",
       "riskNotes": "Tolerance stack re-validated with the mating parts; PPAP delta approval on the B-pillar reinforcement weld-flange drawing.",
@@ -240,7 +240,7 @@
     "title": "Relax over-specified tolerances on the tailgate hinge bracket",
     "system": "Exterior",
     "costSavingType": "Design / Specification",
-    "annualSaving": "€180k",
+    "annualSaving": "£153k",
     "difficulty": "Low",
     "timeToImplement": "2–4 months",
     "description": "[ALL] Function-audit the tailgate hinge bracket drawing: identify dimensions toleranced tighter than the mating interface requires (legacy copy-paste specs are endemic), relax to the function limit, and delete the finishing/gauging content the tight spec forced. Cla",
@@ -260,9 +260,9 @@
       ],
       "costSavingPotential": {
         "qualitative": "Function-driven GD&T",
-        "percentage": "€3/veh (-5-10% part machining)",
-        "annualValue": "€180k",
-        "calculationBasis": "€3/veh × 60k veh/yr (indicative)"
+        "percentage": "£2.5/veh (-5-10% part machining)",
+        "annualValue": "£153k",
+        "calculationBasis": "£2.5/veh × 60k veh/yr (indicative)"
       },
       "implementationDifficulty": "Low",
       "riskNotes": "Tolerance stack re-validated with the mating parts; PPAP delta approval on the tailgate hinge bracket drawing.",
@@ -299,7 +299,7 @@
     "title": "Relax over-specified tolerances on the compressor bracket",
     "system": "Air Suspension",
     "costSavingType": "Design / Specification",
-    "annualSaving": "€180k",
+    "annualSaving": "£153k",
     "difficulty": "Low",
     "timeToImplement": "2–4 months",
     "description": "[ALL] Function-audit the compressor bracket drawing: identify dimensions toleranced tighter than the mating interface requires (legacy copy-paste specs are endemic), relax to the function limit, and delete the finishing/gauging content the tight spec forced. Classic",
@@ -319,9 +319,9 @@
       ],
       "costSavingPotential": {
         "qualitative": "Function-driven GD&T",
-        "percentage": "€3/veh (-5-10% part machining)",
-        "annualValue": "€180k",
-        "calculationBasis": "€3/veh × 60k veh/yr (indicative)"
+        "percentage": "£2.5/veh (-5-10% part machining)",
+        "annualValue": "£153k",
+        "calculationBasis": "£2.5/veh × 60k veh/yr (indicative)"
       },
       "implementationDifficulty": "Low",
       "riskNotes": "Tolerance stack re-validated with the mating parts; PPAP delta approval on the compressor bracket drawing.",
@@ -358,7 +358,7 @@
     "title": "Relax over-specified tolerances on the column bracket",
     "system": "Steering System",
     "costSavingType": "Design / Specification",
-    "annualSaving": "€180k",
+    "annualSaving": "£153k",
     "difficulty": "Low",
     "timeToImplement": "2–4 months",
     "description": "[ALL] Function-audit the column bracket drawing: identify dimensions toleranced tighter than the mating interface requires (legacy copy-paste specs are endemic), relax to the function limit, and delete the finishing/gauging content the tight spec forced. Classic Boo",
@@ -378,9 +378,9 @@
       ],
       "costSavingPotential": {
         "qualitative": "Function-driven GD&T",
-        "percentage": "€3/veh (-5-10% part machining)",
-        "annualValue": "€180k",
-        "calculationBasis": "€3/veh × 60k veh/yr (indicative)"
+        "percentage": "£2.5/veh (-5-10% part machining)",
+        "annualValue": "£153k",
+        "calculationBasis": "£2.5/veh × 60k veh/yr (indicative)"
       },
       "implementationDifficulty": "Low",
       "riskNotes": "Tolerance stack re-validated with the mating parts; PPAP delta approval on the column bracket drawing.",
@@ -417,7 +417,7 @@
     "title": "Relax over-specified tolerances on the hub-flange face",
     "system": "Axles",
     "costSavingType": "Design / Specification",
-    "annualSaving": "€180k",
+    "annualSaving": "£153k",
     "difficulty": "Low",
     "timeToImplement": "2–4 months",
     "description": "[ALL] Function-audit the hub-flange face drawing: identify dimensions toleranced tighter than the mating interface requires (legacy copy-paste specs are endemic), relax to the function limit, and delete the finishing/gauging content the tight spec forced. Classic Bo",
@@ -437,9 +437,9 @@
       ],
       "costSavingPotential": {
         "qualitative": "Function-driven GD&T",
-        "percentage": "€3/veh (-5-10% part machining)",
-        "annualValue": "€180k",
-        "calculationBasis": "€3/veh × 60k veh/yr (indicative)"
+        "percentage": "£2.5/veh (-5-10% part machining)",
+        "annualValue": "£153k",
+        "calculationBasis": "£2.5/veh × 60k veh/yr (indicative)"
       },
       "implementationDifficulty": "Low",
       "riskNotes": "Tolerance stack re-validated with the mating parts; PPAP delta approval on the hub-flange face drawing.",
@@ -476,7 +476,7 @@
     "title": "Relax over-specified tolerances on the valve-body face",
     "system": "2-Speed Automatic Gearbox",
     "costSavingType": "Design / Specification",
-    "annualSaving": "€180k",
+    "annualSaving": "£153k",
     "difficulty": "Low",
     "timeToImplement": "2–4 months",
     "description": "[ALL] Function-audit the valve-body face drawing: identify dimensions toleranced tighter than the mating interface requires (legacy copy-paste specs are endemic), relax to the function limit, and delete the finishing/gauging content the tight spec forced. Classic Bo",
@@ -496,9 +496,9 @@
       ],
       "costSavingPotential": {
         "qualitative": "Function-driven GD&T",
-        "percentage": "€3/veh (-5-10% part machining)",
-        "annualValue": "€180k",
-        "calculationBasis": "€3/veh × 60k veh/yr (indicative)"
+        "percentage": "£2.5/veh (-5-10% part machining)",
+        "annualValue": "£153k",
+        "calculationBasis": "£2.5/veh × 60k veh/yr (indicative)"
       },
       "implementationDifficulty": "Low",
       "riskNotes": "Tolerance stack re-validated with the mating parts; PPAP delta approval on the valve-body face drawing.",
@@ -535,7 +535,7 @@
     "title": "Relax over-specified tolerances on the cover-plate face",
     "system": "Front & Rear Differentials",
     "costSavingType": "Design / Specification",
-    "annualSaving": "€180k",
+    "annualSaving": "£153k",
     "difficulty": "Low",
     "timeToImplement": "2–4 months",
     "description": "[ALL] Function-audit the cover-plate face drawing: identify dimensions toleranced tighter than the mating interface requires (legacy copy-paste specs are endemic), relax to the function limit, and delete the finishing/gauging content the tight spec forced. Classic B",
@@ -555,9 +555,9 @@
       ],
       "costSavingPotential": {
         "qualitative": "Function-driven GD&T",
-        "percentage": "€3/veh (-5-10% part machining)",
-        "annualValue": "€180k",
-        "calculationBasis": "€3/veh × 60k veh/yr (indicative)"
+        "percentage": "£2.5/veh (-5-10% part machining)",
+        "annualValue": "£153k",
+        "calculationBasis": "£2.5/veh × 60k veh/yr (indicative)"
       },
       "implementationDifficulty": "Low",
       "riskNotes": "Tolerance stack re-validated with the mating parts; PPAP delta approval on the cover-plate face drawing.",
@@ -594,7 +594,7 @@
     "title": "Relax over-specified tolerances on the wheel-nut seat",
     "system": "Tires & Wheels",
     "costSavingType": "Design / Specification",
-    "annualSaving": "€180k",
+    "annualSaving": "£153k",
     "difficulty": "Low",
     "timeToImplement": "2–4 months",
     "description": "[ALL] Function-audit the wheel-nut seat drawing: identify dimensions toleranced tighter than the mating interface requires (legacy copy-paste specs are endemic), relax to the function limit, and delete the finishing/gauging content the tight spec forced. Classic Boo",
@@ -614,9 +614,9 @@
       ],
       "costSavingPotential": {
         "qualitative": "Function-driven GD&T",
-        "percentage": "€3/veh (-5-10% part machining)",
-        "annualValue": "€180k",
-        "calculationBasis": "€3/veh × 60k veh/yr (indicative)"
+        "percentage": "£2.5/veh (-5-10% part machining)",
+        "annualValue": "£153k",
+        "calculationBasis": "£2.5/veh × 60k veh/yr (indicative)"
       },
       "implementationDifficulty": "Low",
       "riskNotes": "Tolerance stack re-validated with the mating parts; PPAP delta approval on the wheel-nut seat drawing.",
@@ -653,7 +653,7 @@
     "title": "Relax over-specified tolerances on the bushing-bore face",
     "system": "Subframe",
     "costSavingType": "Design / Specification",
-    "annualSaving": "€180k",
+    "annualSaving": "£153k",
     "difficulty": "Low",
     "timeToImplement": "2–4 months",
     "description": "[ALL] Function-audit the bushing-bore face drawing: identify dimensions toleranced tighter than the mating interface requires (legacy copy-paste specs are endemic), relax to the function limit, and delete the finishing/gauging content the tight spec forced. Classic ",
@@ -673,9 +673,9 @@
       ],
       "costSavingPotential": {
         "qualitative": "Function-driven GD&T",
-        "percentage": "€3/veh (-5-10% part machining)",
-        "annualValue": "€180k",
-        "calculationBasis": "€3/veh × 60k veh/yr (indicative)"
+        "percentage": "£2.5/veh (-5-10% part machining)",
+        "annualValue": "£153k",
+        "calculationBasis": "£2.5/veh × 60k veh/yr (indicative)"
       },
       "implementationDifficulty": "Low",
       "riskNotes": "Tolerance stack re-validated with the mating parts; PPAP delta approval on the bushing-bore face drawing.",
@@ -712,7 +712,7 @@
     "title": "Relax over-specified tolerances on the ball-joint seat",
     "system": "Control Arms",
     "costSavingType": "Design / Specification",
-    "annualSaving": "€180k",
+    "annualSaving": "£153k",
     "difficulty": "Low",
     "timeToImplement": "2–4 months",
     "description": "[ALL] Function-audit the ball-joint seat drawing: identify dimensions toleranced tighter than the mating interface requires (legacy copy-paste specs are endemic), relax to the function limit, and delete the finishing/gauging content the tight spec forced. Classic Bo",
@@ -732,9 +732,9 @@
       ],
       "costSavingPotential": {
         "qualitative": "Function-driven GD&T",
-        "percentage": "€3/veh (-5-10% part machining)",
-        "annualValue": "€180k",
-        "calculationBasis": "€3/veh × 60k veh/yr (indicative)"
+        "percentage": "£2.5/veh (-5-10% part machining)",
+        "annualValue": "£153k",
+        "calculationBasis": "£2.5/veh × 60k veh/yr (indicative)"
       },
       "implementationDifficulty": "Low",
       "riskNotes": "Tolerance stack re-validated with the mating parts; PPAP delta approval on the ball-joint seat drawing.",
@@ -771,7 +771,7 @@
     "title": "Relax over-specified tolerances on the flange pilot",
     "system": "Prop Shafts",
     "costSavingType": "Design / Specification",
-    "annualSaving": "€180k",
+    "annualSaving": "£153k",
     "difficulty": "Low",
     "timeToImplement": "2–4 months",
     "description": "[ALL] Function-audit the flange pilot drawing: identify dimensions toleranced tighter than the mating interface requires (legacy copy-paste specs are endemic), relax to the function limit, and delete the finishing/gauging content the tight spec forced. Classic Booth",
@@ -791,9 +791,9 @@
       ],
       "costSavingPotential": {
         "qualitative": "Function-driven GD&T",
-        "percentage": "€3/veh (-5-10% part machining)",
-        "annualValue": "€180k",
-        "calculationBasis": "€3/veh × 60k veh/yr (indicative)"
+        "percentage": "£2.5/veh (-5-10% part machining)",
+        "annualValue": "£153k",
+        "calculationBasis": "£2.5/veh × 60k veh/yr (indicative)"
       },
       "implementationDifficulty": "Low",
       "riskNotes": "Tolerance stack re-validated with the mating parts; PPAP delta approval on the flange pilot drawing.",
@@ -830,7 +830,7 @@
     "title": "Relax over-specified tolerances on the boot-groove",
     "system": "Half Shafts",
     "costSavingType": "Design / Specification",
-    "annualSaving": "€180k",
+    "annualSaving": "£153k",
     "difficulty": "Low",
     "timeToImplement": "2–4 months",
     "description": "[ALL] Function-audit the boot-groove drawing: identify dimensions toleranced tighter than the mating interface requires (legacy copy-paste specs are endemic), relax to the function limit, and delete the finishing/gauging content the tight spec forced. Classic Boothr",
@@ -850,9 +850,9 @@
       ],
       "costSavingPotential": {
         "qualitative": "Function-driven GD&T",
-        "percentage": "€3/veh (-5-10% part machining)",
-        "annualValue": "€180k",
-        "calculationBasis": "€3/veh × 60k veh/yr (indicative)"
+        "percentage": "£2.5/veh (-5-10% part machining)",
+        "annualValue": "£153k",
+        "calculationBasis": "£2.5/veh × 60k veh/yr (indicative)"
       },
       "implementationDifficulty": "Low",
       "riskNotes": "Tolerance stack re-validated with the mating parts; PPAP delta approval on the boot-groove drawing.",
@@ -889,7 +889,7 @@
     "title": "Flow-drill screws replace welded nuts on the mixed-material rocker",
     "system": "Body Structure",
     "costSavingType": "Design / Specification",
-    "annualSaving": "€480k",
+    "annualSaving": "£408k",
     "difficulty": "Medium",
     "timeToImplement": "9–14 months",
     "description": "[ALL] Where an Al rocker meets steel reinforcements, replace welded nuts + bolts with flow-drill screws (FDS): single-sided access, no pre-hole, joins Al-steel stacks without weld spatter or galvanic sleeves. Deletes nut-welding stations and hole-punching ops.",
@@ -909,9 +909,9 @@
       ],
       "costSavingPotential": {
         "qualitative": "Single-sided joining",
-        "percentage": "€8/veh (-15% joint cost)",
-        "annualValue": "€480k",
-        "calculationBasis": "€8/veh × 60k veh/yr (indicative)"
+        "percentage": "£6.8/veh (-15% joint cost)",
+        "annualValue": "£408k",
+        "calculationBasis": "£6.8/veh × 60k veh/yr (indicative)"
       },
       "implementationDifficulty": "Medium",
       "riskNotes": "FDS torque window and stripping validated per stack; service-release procedure for repairs.",
@@ -949,7 +949,7 @@
     "title": "Laser brazing replaces spot-weld + sealer on the roof-to-bodyside joint",
     "system": "BIW",
     "costSavingType": "Design / Specification",
-    "annualSaving": "€540k",
+    "annualSaving": "£459k",
     "difficulty": "High",
     "timeToImplement": "18–24 months",
     "description": "[ALL] Convert the roof ditch joint from spot welds + finisher mouldings to laser brazing: a continuous sealed seam that deletes the ditch moulding, its clips and the sealer bead, and improves flushness.",
@@ -969,9 +969,9 @@
       ],
       "costSavingPotential": {
         "qualitative": "Part deletion (moulding + clips)",
-        "percentage": "€9/veh (moulding set deleted)",
-        "annualValue": "€540k",
-        "calculationBasis": "€9/veh × 60k veh/yr (indicative)"
+        "percentage": "£7.6/veh (moulding set deleted)",
+        "annualValue": "£459k",
+        "calculationBasis": "£7.6/veh × 60k veh/yr (indicative)"
       },
       "implementationDifficulty": "High",
       "riskNotes": "Zinc outgassing porosity managed with wire/optics choice; A-surface braze quality gating.",
@@ -1007,7 +1007,7 @@
     "title": "Laser welding replaces bolted busbar joints inside the pack",
     "system": "Battery Pack",
     "costSavingType": "Design / Specification",
-    "annualSaving": "€720k",
+    "annualSaving": "£612k",
     "difficulty": "Medium",
     "timeToImplement": "12–18 months",
     "description": "[ALL] Replace bolted + torque-audited module busbar joints with laser-welded tabs: deletes fasteners, torque stations and re-torque audits, cuts contact resistance and heat. Weld depth control protects cells; vision-checked seams replace torque traceability.",
@@ -1027,9 +1027,9 @@
       ],
       "costSavingPotential": {
         "qualitative": "Fastener elimination",
-        "percentage": "€12/veh (-20% busbar joint cost)",
-        "annualValue": "€720k",
-        "calculationBasis": "€12/veh × 60k veh/yr (indicative)"
+        "percentage": "£10/veh (-20% busbar joint cost)",
+        "annualValue": "£612k",
+        "calculationBasis": "£10/veh × 60k veh/yr (indicative)"
       },
       "implementationDifficulty": "Medium",
       "riskNotes": "Weld penetration windows validated against cell venting; serviceability strategy for module replacement.",
@@ -1066,7 +1066,7 @@
     "title": "Structural adhesive + SPR replaces bolts on the aluminium tailgate inner",
     "system": "Exterior",
     "costSavingType": "Design / Specification",
-    "annualSaving": "€300k",
+    "annualSaving": "£255k",
     "difficulty": "Medium",
     "timeToImplement": "9–15 months",
     "description": "[ALL] Structural adhesive + SPR replaces bolts on the aluminium tailgate inner. Modern joining substitutes the legacy fastened/welded interface: fewer parts, fewer stations, better sealed or lighter joints; validated by joint-strength, fatigue and service-repair stu",
@@ -1086,9 +1086,9 @@
       ],
       "costSavingPotential": {
         "qualitative": "Fastener/part elimination",
-        "percentage": "€5/veh (-10-20% joint cost)",
-        "annualValue": "€300k",
-        "calculationBasis": "€5/veh × 60k veh/yr (indicative)"
+        "percentage": "£4.3/veh (-10-20% joint cost)",
+        "annualValue": "£255k",
+        "calculationBasis": "£4.3/veh × 60k veh/yr (indicative)"
       },
       "implementationDifficulty": "Medium",
       "riskNotes": "Joint validation (static/fatigue/corrosion) and service-repair procedure required before cutover.",
@@ -1125,7 +1125,7 @@
     "title": "Friction-stir welding seals the EDU cooling jacket without a gasket",
     "system": "EDU / Electric Drive Unit",
     "costSavingType": "Design / Specification",
-    "annualSaving": "€300k",
+    "annualSaving": "£255k",
     "difficulty": "Medium",
     "timeToImplement": "9–15 months",
     "description": "[ALL] Friction-stir welding seals the EDU cooling jacket without a gasket. Modern joining substitutes the legacy fastened/welded interface: fewer parts, fewer stations, better sealed or lighter joints; validated by joint-strength, fatigue and service-repair studies.",
@@ -1145,9 +1145,9 @@
       ],
       "costSavingPotential": {
         "qualitative": "Fastener/part elimination",
-        "percentage": "€5/veh (-10-20% joint cost)",
-        "annualValue": "€300k",
-        "calculationBasis": "€5/veh × 60k veh/yr (indicative)"
+        "percentage": "£4.3/veh (-10-20% joint cost)",
+        "annualValue": "£255k",
+        "calculationBasis": "£4.3/veh × 60k veh/yr (indicative)"
       },
       "implementationDifficulty": "Medium",
       "riskNotes": "Joint validation (static/fatigue/corrosion) and service-repair procedure required before cutover.",
@@ -1184,7 +1184,7 @@
     "title": "Ultrasonic welding replaces screws on the inverter busbar stack",
     "system": "Inverter Assembly",
     "costSavingType": "Design / Specification",
-    "annualSaving": "€300k",
+    "annualSaving": "£255k",
     "difficulty": "Medium",
     "timeToImplement": "9–15 months",
     "description": "[ALL] Ultrasonic welding replaces screws on the inverter busbar stack. Modern joining substitutes the legacy fastened/welded interface: fewer parts, fewer stations, better sealed or lighter joints; validated by joint-strength, fatigue and service-repair studies. Typ",
@@ -1204,9 +1204,9 @@
       ],
       "costSavingPotential": {
         "qualitative": "Fastener/part elimination",
-        "percentage": "€5/veh (-10-20% joint cost)",
-        "annualValue": "€300k",
-        "calculationBasis": "€5/veh × 60k veh/yr (indicative)"
+        "percentage": "£4.3/veh (-10-20% joint cost)",
+        "annualValue": "£255k",
+        "calculationBasis": "£4.3/veh × 60k veh/yr (indicative)"
       },
       "implementationDifficulty": "Medium",
       "riskNotes": "Joint validation (static/fatigue/corrosion) and service-repair procedure required before cutover.",
@@ -1243,7 +1243,7 @@
     "title": "MIG-brazing replaces GMAW on thin-wall subframe nodes",
     "system": "Subframe",
     "costSavingType": "Design / Specification",
-    "annualSaving": "€300k",
+    "annualSaving": "£255k",
     "difficulty": "Medium",
     "timeToImplement": "9–15 months",
     "description": "[ALL] MIG-brazing replaces GMAW on thin-wall subframe nodes. Modern joining substitutes the legacy fastened/welded interface: fewer parts, fewer stations, better sealed or lighter joints; validated by joint-strength, fatigue and service-repair studies. Typical autom",
@@ -1263,9 +1263,9 @@
       ],
       "costSavingPotential": {
         "qualitative": "Fastener/part elimination",
-        "percentage": "€5/veh (-10-20% joint cost)",
-        "annualValue": "€300k",
-        "calculationBasis": "€5/veh × 60k veh/yr (indicative)"
+        "percentage": "£4.3/veh (-10-20% joint cost)",
+        "annualValue": "£255k",
+        "calculationBasis": "£4.3/veh × 60k veh/yr (indicative)"
       },
       "implementationDifficulty": "Medium",
       "riskNotes": "Joint validation (static/fatigue/corrosion) and service-repair procedure required before cutover.",
@@ -1302,7 +1302,7 @@
     "title": "IR staking replaces screws on the IP carrier-to-duct joints",
     "system": "Interior",
     "costSavingType": "Design / Specification",
-    "annualSaving": "€300k",
+    "annualSaving": "£255k",
     "difficulty": "Medium",
     "timeToImplement": "9–15 months",
     "description": "[ALL] IR staking replaces screws on the IP carrier-to-duct joints. Modern joining substitutes the legacy fastened/welded interface: fewer parts, fewer stations, better sealed or lighter joints; validated by joint-strength, fatigue and service-repair studies. Typical",
@@ -1322,9 +1322,9 @@
       ],
       "costSavingPotential": {
         "qualitative": "Fastener/part elimination",
-        "percentage": "€5/veh (-10-20% joint cost)",
-        "annualValue": "€300k",
-        "calculationBasis": "€5/veh × 60k veh/yr (indicative)"
+        "percentage": "£4.3/veh (-10-20% joint cost)",
+        "annualValue": "£255k",
+        "calculationBasis": "£4.3/veh × 60k veh/yr (indicative)"
       },
       "implementationDifficulty": "Medium",
       "riskNotes": "Joint validation (static/fatigue/corrosion) and service-repair procedure required before cutover.",
@@ -1361,7 +1361,7 @@
     "title": "CAB-brazed manifold replaces O-ring hose stack-ups",
     "system": "Thermal Management",
     "costSavingType": "Design / Specification",
-    "annualSaving": "€300k",
+    "annualSaving": "£255k",
     "difficulty": "Medium",
     "timeToImplement": "9–15 months",
     "description": "[ALL] CAB-brazed manifold replaces O-ring hose stack-ups. Modern joining substitutes the legacy fastened/welded interface: fewer parts, fewer stations, better sealed or lighter joints; validated by joint-strength, fatigue and service-repair studies. Typical automoti",
@@ -1381,9 +1381,9 @@
       ],
       "costSavingPotential": {
         "qualitative": "Fastener/part elimination",
-        "percentage": "€5/veh (-10-20% joint cost)",
-        "annualValue": "€300k",
-        "calculationBasis": "€5/veh × 60k veh/yr (indicative)"
+        "percentage": "£4.3/veh (-10-20% joint cost)",
+        "annualValue": "£255k",
+        "calculationBasis": "£4.3/veh × 60k veh/yr (indicative)"
       },
       "implementationDifficulty": "Medium",
       "riskNotes": "Joint validation (static/fatigue/corrosion) and service-repair procedure required before cutover.",
@@ -1420,7 +1420,7 @@
     "title": "Magnetic-pulse welding joins the Al tube to steel yoke on the axle shaft",
     "system": "Axles",
     "costSavingType": "Design / Specification",
-    "annualSaving": "€300k",
+    "annualSaving": "£255k",
     "difficulty": "Medium",
     "timeToImplement": "9–15 months",
     "description": "[ALL] Magnetic-pulse welding joins the Al tube to steel yoke on the axle shaft. Modern joining substitutes the legacy fastened/welded interface: fewer parts, fewer stations, better sealed or lighter joints; validated by joint-strength, fatigue and service-repair stu",
@@ -1440,9 +1440,9 @@
       ],
       "costSavingPotential": {
         "qualitative": "Fastener/part elimination",
-        "percentage": "€5/veh (-10-20% joint cost)",
-        "annualValue": "€300k",
-        "calculationBasis": "€5/veh × 60k veh/yr (indicative)"
+        "percentage": "£4.3/veh (-10-20% joint cost)",
+        "annualValue": "£255k",
+        "calculationBasis": "£4.3/veh × 60k veh/yr (indicative)"
       },
       "implementationDifficulty": "Medium",
       "riskNotes": "Joint validation (static/fatigue/corrosion) and service-repair procedure required before cutover.",
@@ -1479,7 +1479,7 @@
     "title": "Inertia friction welding replaces bolted flanges on the prop tube",
     "system": "Prop Shafts",
     "costSavingType": "Design / Specification",
-    "annualSaving": "€300k",
+    "annualSaving": "£255k",
     "difficulty": "Medium",
     "timeToImplement": "9–15 months",
     "description": "[ALL] Inertia friction welding replaces bolted flanges on the prop tube. Modern joining substitutes the legacy fastened/welded interface: fewer parts, fewer stations, better sealed or lighter joints; validated by joint-strength, fatigue and service-repair studies. T",
@@ -1499,9 +1499,9 @@
       ],
       "costSavingPotential": {
         "qualitative": "Fastener/part elimination",
-        "percentage": "€5/veh (-10-20% joint cost)",
-        "annualValue": "€300k",
-        "calculationBasis": "€5/veh × 60k veh/yr (indicative)"
+        "percentage": "£4.3/veh (-10-20% joint cost)",
+        "annualValue": "£255k",
+        "calculationBasis": "£4.3/veh × 60k veh/yr (indicative)"
       },
       "implementationDifficulty": "Medium",
       "riskNotes": "Joint validation (static/fatigue/corrosion) and service-repair procedure required before cutover.",
@@ -1538,7 +1538,7 @@
     "title": "Rotary-friction weld joins forged ends to a tube control arm",
     "system": "Control Arms",
     "costSavingType": "Design / Specification",
-    "annualSaving": "€300k",
+    "annualSaving": "£255k",
     "difficulty": "Medium",
     "timeToImplement": "9–15 months",
     "description": "[ALL] Rotary-friction weld joins forged ends to a tube control arm. Modern joining substitutes the legacy fastened/welded interface: fewer parts, fewer stations, better sealed or lighter joints; validated by joint-strength, fatigue and service-repair studies. Typica",
@@ -1558,9 +1558,9 @@
       ],
       "costSavingPotential": {
         "qualitative": "Fastener/part elimination",
-        "percentage": "€5/veh (-10-20% joint cost)",
-        "annualValue": "€300k",
-        "calculationBasis": "€5/veh × 60k veh/yr (indicative)"
+        "percentage": "£4.3/veh (-10-20% joint cost)",
+        "annualValue": "£255k",
+        "calculationBasis": "£4.3/veh × 60k veh/yr (indicative)"
       },
       "implementationDifficulty": "Medium",
       "riskNotes": "Joint validation (static/fatigue/corrosion) and service-repair procedure required before cutover.",
@@ -1597,7 +1597,7 @@
     "title": "Roller-hemmed closure edge deletes the door-skin adhesive oven pass",
     "system": "Body Structure",
     "costSavingType": "Design / Specification",
-    "annualSaving": "€300k",
+    "annualSaving": "£255k",
     "difficulty": "Medium",
     "timeToImplement": "9–15 months",
     "description": "[ALL] Roller-hemmed closure edge deletes the door-skin adhesive oven pass. Modern joining substitutes the legacy fastened/welded interface: fewer parts, fewer stations, better sealed or lighter joints; validated by joint-strength, fatigue and service-repair studies.",
@@ -1617,9 +1617,9 @@
       ],
       "costSavingPotential": {
         "qualitative": "Fastener/part elimination",
-        "percentage": "€5/veh (-10-20% joint cost)",
-        "annualValue": "€300k",
-        "calculationBasis": "€5/veh × 60k veh/yr (indicative)"
+        "percentage": "£4.3/veh (-10-20% joint cost)",
+        "annualValue": "£255k",
+        "calculationBasis": "£4.3/veh × 60k veh/yr (indicative)"
       },
       "implementationDifficulty": "Medium",
       "riskNotes": "Joint validation (static/fatigue/corrosion) and service-repair procedure required before cutover.",
@@ -1656,7 +1656,7 @@
     "title": "Form-locked caliper bridge replaces two body bolts",
     "system": "Braking System",
     "costSavingType": "Design / Specification",
-    "annualSaving": "€300k",
+    "annualSaving": "£255k",
     "difficulty": "Medium",
     "timeToImplement": "9–15 months",
     "description": "[ALL] Form-locked caliper bridge replaces two body bolts. Modern joining substitutes the legacy fastened/welded interface: fewer parts, fewer stations, better sealed or lighter joints; validated by joint-strength, fatigue and service-repair studies. Typical automoti",
@@ -1676,9 +1676,9 @@
       ],
       "costSavingPotential": {
         "qualitative": "Fastener/part elimination",
-        "percentage": "€5/veh (-10-20% joint cost)",
-        "annualValue": "€300k",
-        "calculationBasis": "€5/veh × 60k veh/yr (indicative)"
+        "percentage": "£4.3/veh (-10-20% joint cost)",
+        "annualValue": "£255k",
+        "calculationBasis": "£4.3/veh × 60k veh/yr (indicative)"
       },
       "implementationDifficulty": "Medium",
       "riskNotes": "Joint validation (static/fatigue/corrosion) and service-repair procedure required before cutover.",
@@ -1715,7 +1715,7 @@
     "title": "Orbital forming replaces circlip + groove on the joint retention",
     "system": "Half Shafts",
     "costSavingType": "Design / Specification",
-    "annualSaving": "€300k",
+    "annualSaving": "£255k",
     "difficulty": "Medium",
     "timeToImplement": "9–15 months",
     "description": "[ALL] Orbital forming replaces circlip + groove on the joint retention. Modern joining substitutes the legacy fastened/welded interface: fewer parts, fewer stations, better sealed or lighter joints; validated by joint-strength, fatigue and service-repair studies. Ty",
@@ -1735,9 +1735,9 @@
       ],
       "costSavingPotential": {
         "qualitative": "Fastener/part elimination",
-        "percentage": "€5/veh (-10-20% joint cost)",
-        "annualValue": "€300k",
-        "calculationBasis": "€5/veh × 60k veh/yr (indicative)"
+        "percentage": "£4.3/veh (-10-20% joint cost)",
+        "annualValue": "£255k",
+        "calculationBasis": "£4.3/veh × 60k veh/yr (indicative)"
       },
       "implementationDifficulty": "Medium",
       "riskNotes": "Joint validation (static/fatigue/corrosion) and service-repair procedure required before cutover.",
@@ -1774,7 +1774,7 @@
     "title": "Zonal harness consolidation deletes the door-module home-runs",
     "system": "Electrical Architecture",
     "costSavingType": "Design / Specification",
-    "annualSaving": "€840k",
+    "annualSaving": "£714k",
     "difficulty": "High",
     "timeToImplement": "24–36 months",
     "description": "[ALL] Move door electronics onto a zonal controller with a CAN-FD/LIN ring: the per-door home-run bundles collapse into short local stubs. Cuts copper mass, connector count and assembly routing time; the zonal ECU is amortised across four doors.",
@@ -1794,9 +1794,9 @@
       ],
       "costSavingPotential": {
         "qualitative": "Wire-length reduction",
-        "percentage": "€14/veh (-18% door-harness cost)",
-        "annualValue": "€840k",
-        "calculationBasis": "€14/veh × 60k veh/yr (indicative)"
+        "percentage": "£12/veh (-18% door-harness cost)",
+        "annualValue": "£714k",
+        "calculationBasis": "£12/veh × 60k veh/yr (indicative)"
       },
       "implementationDifficulty": "High",
       "riskNotes": "Zonal failure modes (single-point door loss) mitigated by limp strategies; EMC re-validation.",
@@ -1834,7 +1834,7 @@
     "title": "Consolidate seat/climate/door ECUs into one comfort domain controller",
     "system": "Electrical Architecture",
     "costSavingType": "Design / Specification",
-    "annualSaving": "€1.1M",
+    "annualSaving": "£0.94M",
     "difficulty": "High",
     "timeToImplement": "24–36 months",
     "description": "[ALL] Replace 4-6 single-function comfort ECUs with one domain controller running mixed-criticality software partitions. Deletes housings, connectors, and per-ECU flash/EOL stations; software becomes the integration point.",
@@ -1854,9 +1854,9 @@
       ],
       "costSavingPotential": {
         "qualitative": "ECU-count reduction",
-        "percentage": "€18/veh (-30% comfort-ECU BOM)",
-        "annualValue": "€1.1M",
-        "calculationBasis": "€18/veh × 60k veh/yr (indicative)"
+        "percentage": "£15/veh (-30% comfort-ECU BOM)",
+        "annualValue": "£0.94M",
+        "calculationBasis": "£15/veh × 60k veh/yr (indicative)"
       },
       "implementationDifficulty": "High",
       "riskNotes": "Supplier software integration risk; ASIL partitioning and OTA strategy must be owned in-house.",
@@ -1892,7 +1892,7 @@
     "title": "Replace shielded sensor lines with unshielded twisted pair + software filtering",
     "system": "Electrical Architecture",
     "costSavingType": "Design / Specification",
-    "annualSaving": "€240k",
+    "annualSaving": "£204k",
     "difficulty": "Medium",
     "timeToImplement": "9–12 months",
     "description": "[ALL] Several chassis/ADAS sensor runs carry legacy shielded cable specified before modern DSP filtering. Where EMC budgets allow, unshielded twisted pair with software-side filtering deletes the shield, drain wire, and shielded-connector premium.",
@@ -1912,9 +1912,9 @@
       ],
       "costSavingPotential": {
         "qualitative": "Cable-spec right-sizing",
-        "percentage": "€4/veh (-25% affected line cost)",
-        "annualValue": "€240k",
-        "calculationBasis": "€4/veh × 60k veh/yr (indicative)"
+        "percentage": "£3.4/veh (-25% affected line cost)",
+        "annualValue": "£204k",
+        "calculationBasis": "£3.4/veh × 60k veh/yr (indicative)"
       },
       "implementationDifficulty": "Medium",
       "riskNotes": "EMC validation per run; keep shields on proven-critical paths (radar, audio).",
@@ -1951,7 +1951,7 @@
     "title": "Software-flash at supplier deleted — single EOL flash-over-diagnostic session",
     "system": "Electrical Architecture",
     "costSavingType": "Design / Specification",
-    "annualSaving": "€360k",
+    "annualSaving": "£306k",
     "difficulty": "Medium",
     "timeToImplement": "12–24 months",
     "description": "[ALL] One consolidated end-of-line flash session replaces per-ECU supplier pre-flash: deletes supplier flash fees and version-mismatch rework. Cost falls through copper mass, connector count, station time and part-number complexity; validated by EMC, functional-safe",
@@ -1971,9 +1971,9 @@
       ],
       "costSavingPotential": {
         "qualitative": "Harness mass reduction",
-        "percentage": "€6/veh (-10-25% affected content)",
-        "annualValue": "€360k",
-        "calculationBasis": "€6/veh × 60k veh/yr (indicative)"
+        "percentage": "£5.1/veh (-10-25% affected content)",
+        "annualValue": "£306k",
+        "calculationBasis": "£5.1/veh × 60k veh/yr (indicative)"
       },
       "implementationDifficulty": "Medium",
       "riskNotes": "EMC + functional-safety re-validation; service/diagnostic tooling updates; supplier resourcing.",
@@ -2012,7 +2012,7 @@
     "title": "LIN replaces CAN on low-rate actuators",
     "system": "Electrical Architecture",
     "costSavingType": "Design / Specification",
-    "annualSaving": "€360k",
+    "annualSaving": "£306k",
     "difficulty": "Medium",
     "timeToImplement": "12–24 months",
     "description": "[ALL] Window-lift, flap and pump actuators on CAN migrate to LIN daisy-chains: cheaper transceivers, less harness. Cost falls through copper mass, connector count, station time and part-number complexity; validated by EMC, functional-safety and service diagnostics r",
@@ -2032,9 +2032,9 @@
       ],
       "costSavingPotential": {
         "qualitative": "Harness mass reduction",
-        "percentage": "€6/veh (-10-25% affected content)",
-        "annualValue": "€360k",
-        "calculationBasis": "€6/veh × 60k veh/yr (indicative)"
+        "percentage": "£5.1/veh (-10-25% affected content)",
+        "annualValue": "£306k",
+        "calculationBasis": "£5.1/veh × 60k veh/yr (indicative)"
       },
       "implementationDifficulty": "Medium",
       "riskNotes": "EMC + functional-safety re-validation; service/diagnostic tooling updates; supplier resourcing.",
@@ -2073,7 +2073,7 @@
     "title": "48V power distribution for heated surfaces",
     "system": "Electrical Architecture",
     "costSavingType": "Design / Specification",
-    "annualSaving": "€360k",
+    "annualSaving": "£306k",
     "difficulty": "Medium",
     "timeToImplement": "12–24 months",
     "description": "[ALL] Heated seats/steering move to the 48V rail: quarter the current, thinner copper, smaller connectors. Cost falls through copper mass, connector count, station time and part-number complexity; validated by EMC, functional-safety and service diagnostics reviews.",
@@ -2093,9 +2093,9 @@
       ],
       "costSavingPotential": {
         "qualitative": "Harness mass reduction",
-        "percentage": "€6/veh (-10-25% affected content)",
-        "annualValue": "€360k",
-        "calculationBasis": "€6/veh × 60k veh/yr (indicative)"
+        "percentage": "£5.1/veh (-10-25% affected content)",
+        "annualValue": "£306k",
+        "calculationBasis": "£5.1/veh × 60k veh/yr (indicative)"
       },
       "implementationDifficulty": "Medium",
       "riskNotes": "EMC + functional-safety re-validation; service/diagnostic tooling updates; supplier resourcing.",
@@ -2134,7 +2134,7 @@
     "title": "Connector family commonisation across the cockpit harness",
     "system": "Electrical Architecture",
     "costSavingType": "Design / Specification",
-    "annualSaving": "€360k",
+    "annualSaving": "£306k",
     "difficulty": "Medium",
     "timeToImplement": "12–24 months",
     "description": "[ALL] Reduce 23 connector families to 8 platform-standard ones: pooled volume, fewer crimp tools, fewer wrong-connector defects. Cost falls through copper mass, connector count, station time and part-number complexity; validated by EMC, functional-safety and service",
@@ -2154,9 +2154,9 @@
       ],
       "costSavingPotential": {
         "qualitative": "Harness mass reduction",
-        "percentage": "€6/veh (-10-25% affected content)",
-        "annualValue": "€360k",
-        "calculationBasis": "€6/veh × 60k veh/yr (indicative)"
+        "percentage": "£5.1/veh (-10-25% affected content)",
+        "annualValue": "£306k",
+        "calculationBasis": "£5.1/veh × 60k veh/yr (indicative)"
       },
       "implementationDifficulty": "Medium",
       "riskNotes": "EMC + functional-safety re-validation; service/diagnostic tooling updates; supplier resourcing.",
@@ -2195,7 +2195,7 @@
     "title": "E-fuses replace melting fuses + relays in the power box",
     "system": "Electrical Architecture",
     "costSavingType": "Design / Specification",
-    "annualSaving": "€360k",
+    "annualSaving": "£306k",
     "difficulty": "Medium",
     "timeToImplement": "12–24 months",
     "description": "[ALL] Solid-state e-fuses delete the fuse/relay box, enable soft-start and diagnostics, and cut wiring by allowing higher protection granularity. Cost falls through copper mass, connector count, station time and part-number complexity; validated by EMC, functional-s",
@@ -2215,9 +2215,9 @@
       ],
       "costSavingPotential": {
         "qualitative": "Harness mass reduction",
-        "percentage": "€6/veh (-10-25% affected content)",
-        "annualValue": "€360k",
-        "calculationBasis": "€6/veh × 60k veh/yr (indicative)"
+        "percentage": "£5.1/veh (-10-25% affected content)",
+        "annualValue": "£306k",
+        "calculationBasis": "£5.1/veh × 60k veh/yr (indicative)"
       },
       "implementationDifficulty": "Medium",
       "riskNotes": "EMC + functional-safety re-validation; service/diagnostic tooling updates; supplier resourcing.",
@@ -2256,7 +2256,7 @@
     "title": "Single 100BASE-T1 backbone replaces LVDS camera home-runs",
     "system": "Electrical Architecture",
     "costSavingType": "Design / Specification",
-    "annualSaving": "€360k",
+    "annualSaving": "£306k",
     "difficulty": "Medium",
     "timeToImplement": "12–24 months",
     "description": "[ALL] Camera streams share an automotive-Ethernet backbone with switch-based zonal aggregation instead of point-to-point coax/LVDS. Cost falls through copper mass, connector count, station time and part-number complexity; validated by EMC, functional-safety and serv",
@@ -2276,9 +2276,9 @@
       ],
       "costSavingPotential": {
         "qualitative": "Harness mass reduction",
-        "percentage": "€6/veh (-10-25% affected content)",
-        "annualValue": "€360k",
-        "calculationBasis": "€6/veh × 60k veh/yr (indicative)"
+        "percentage": "£5.1/veh (-10-25% affected content)",
+        "annualValue": "£306k",
+        "calculationBasis": "£5.1/veh × 60k veh/yr (indicative)"
       },
       "implementationDifficulty": "Medium",
       "riskNotes": "EMC + functional-safety re-validation; service/diagnostic tooling updates; supplier resourcing.",
@@ -2317,7 +2317,7 @@
     "title": "Diagnostic-over-IP consolidates the OBD star wiring",
     "system": "Electrical Architecture",
     "costSavingType": "Design / Specification",
-    "annualSaving": "€360k",
+    "annualSaving": "£306k",
     "difficulty": "Medium",
     "timeToImplement": "12–24 months",
     "description": "[ALL] DoIP over the Ethernet backbone deletes the dedicated K-line/CAN diagnostic star to every ECU. Cost falls through copper mass, connector count, station time and part-number complexity; validated by EMC, functional-safety and service diagnostics reviews.",
@@ -2337,9 +2337,9 @@
       ],
       "costSavingPotential": {
         "qualitative": "Harness mass reduction",
-        "percentage": "€6/veh (-10-25% affected content)",
-        "annualValue": "€360k",
-        "calculationBasis": "€6/veh × 60k veh/yr (indicative)"
+        "percentage": "£5.1/veh (-10-25% affected content)",
+        "annualValue": "£306k",
+        "calculationBasis": "£5.1/veh × 60k veh/yr (indicative)"
       },
       "implementationDifficulty": "Medium",
       "riskNotes": "EMC + functional-safety re-validation; service/diagnostic tooling updates; supplier resourcing.",
@@ -2378,7 +2378,7 @@
     "title": "Right-size ECU compute by consolidating sleep-mode loads",
     "system": "Electrical Architecture",
     "costSavingType": "Design / Specification",
-    "annualSaving": "€360k",
+    "annualSaving": "£306k",
     "difficulty": "Medium",
     "timeToImplement": "12–24 months",
     "description": "[ALL] Quiescent-current audit lets two always-on ECUs sleep behind a zonal wake concentrator: smaller battery, thinner always-hot wiring. Cost falls through copper mass, connector count, station time and part-number complexity; validated by EMC, functional-safety an",
@@ -2398,9 +2398,9 @@
       ],
       "costSavingPotential": {
         "qualitative": "Harness mass reduction",
-        "percentage": "€6/veh (-10-25% affected content)",
-        "annualValue": "€360k",
-        "calculationBasis": "€6/veh × 60k veh/yr (indicative)"
+        "percentage": "£5.1/veh (-10-25% affected content)",
+        "annualValue": "£306k",
+        "calculationBasis": "£5.1/veh × 60k veh/yr (indicative)"
       },
       "implementationDifficulty": "Medium",
       "riskNotes": "EMC + functional-safety re-validation; service/diagnostic tooling updates; supplier resourcing.",
@@ -2439,7 +2439,7 @@
     "title": "Software feature-flagging replaces per-variant hardware",
     "system": "Electrical Architecture",
     "costSavingType": "Design / Specification",
-    "annualSaving": "€360k",
+    "annualSaving": "£306k",
     "difficulty": "Medium",
     "timeToImplement": "12–24 months",
     "description": "[ALL] One hardware level with software-enabled features deletes variant harness/ECU part numbers and EOL complexity. Cost falls through copper mass, connector count, station time and part-number complexity; validated by EMC, functional-safety and service diagnostics",
@@ -2459,9 +2459,9 @@
       ],
       "costSavingPotential": {
         "qualitative": "Harness mass reduction",
-        "percentage": "€6/veh (-10-25% affected content)",
-        "annualValue": "€360k",
-        "calculationBasis": "€6/veh × 60k veh/yr (indicative)"
+        "percentage": "£5.1/veh (-10-25% affected content)",
+        "annualValue": "£306k",
+        "calculationBasis": "£5.1/veh × 60k veh/yr (indicative)"
       },
       "implementationDifficulty": "Medium",
       "riskNotes": "EMC + functional-safety re-validation; service/diagnostic tooling updates; supplier resourcing.",
@@ -2500,7 +2500,7 @@
     "title": "Antenna consolidation into a smart roof module",
     "system": "Electrical Architecture",
     "costSavingType": "Design / Specification",
-    "annualSaving": "€360k",
+    "annualSaving": "£306k",
     "difficulty": "Medium",
     "timeToImplement": "12–24 months",
     "description": "[ALL] GNSS/LTE/BT/UWB antennas + tuners consolidate into one roof module with a single backbone link, deleting four coax home-runs. Cost falls through copper mass, connector count, station time and part-number complexity; validated by EMC, functional-safety and serv",
@@ -2520,9 +2520,9 @@
       ],
       "costSavingPotential": {
         "qualitative": "Harness mass reduction",
-        "percentage": "€6/veh (-10-25% affected content)",
-        "annualValue": "€360k",
-        "calculationBasis": "€6/veh × 60k veh/yr (indicative)"
+        "percentage": "£5.1/veh (-10-25% affected content)",
+        "annualValue": "£306k",
+        "calculationBasis": "£5.1/veh × 60k veh/yr (indicative)"
       },
       "implementationDifficulty": "Medium",
       "riskNotes": "EMC + functional-safety re-validation; service/diagnostic tooling updates; supplier resourcing.",
@@ -2561,7 +2561,7 @@
     "title": "Wireless BMS eliminates the module daisy-chain harness",
     "system": "Electrical Architecture",
     "costSavingType": "Design / Specification",
-    "annualSaving": "€360k",
+    "annualSaving": "£306k",
     "difficulty": "Medium",
     "timeToImplement": "12–24 months",
     "description": "[ALL] wBMS deletes the inter-module comms harness and connectors inside the pack and simplifies module replacement. Cost falls through copper mass, connector count, station time and part-number complexity; validated by EMC, functional-safety and service diagnostics ",
@@ -2581,9 +2581,9 @@
       ],
       "costSavingPotential": {
         "qualitative": "Harness mass reduction",
-        "percentage": "€6/veh (-10-25% affected content)",
-        "annualValue": "€360k",
-        "calculationBasis": "€6/veh × 60k veh/yr (indicative)"
+        "percentage": "£5.1/veh (-10-25% affected content)",
+        "annualValue": "£306k",
+        "calculationBasis": "£5.1/veh × 60k veh/yr (indicative)"
       },
       "implementationDifficulty": "Medium",
       "riskNotes": "EMC + functional-safety re-validation; service/diagnostic tooling updates; supplier resourcing.",
@@ -2622,7 +2622,7 @@
     "title": "HV interlock loop simplification via connector-integrated HVIL",
     "system": "Electrical Architecture",
     "costSavingType": "Design / Specification",
-    "annualSaving": "€360k",
+    "annualSaving": "£306k",
     "difficulty": "Medium",
     "timeToImplement": "12–24 months",
     "description": "[ALL] HVIL contacts integrated in HV connector families delete the separate interlock wiring loop. Cost falls through copper mass, connector count, station time and part-number complexity; validated by EMC, functional-safety and service diagnostics reviews.",
@@ -2642,9 +2642,9 @@
       ],
       "costSavingPotential": {
         "qualitative": "Harness mass reduction",
-        "percentage": "€6/veh (-10-25% affected content)",
-        "annualValue": "€360k",
-        "calculationBasis": "€6/veh × 60k veh/yr (indicative)"
+        "percentage": "£5.1/veh (-10-25% affected content)",
+        "annualValue": "£306k",
+        "calculationBasis": "£5.1/veh × 60k veh/yr (indicative)"
       },
       "implementationDifficulty": "Medium",
       "riskNotes": "EMC + functional-safety re-validation; service/diagnostic tooling updates; supplier resourcing.",

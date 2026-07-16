@@ -4,7 +4,7 @@
     "title": "Front seat frame part-count reduction via tailored-blank side members",
     "system": "Seats",
     "costSavingType": "Part-count reduction",
-    "annualSaving": "€2.7M",
+    "annualSaving": "£2.29M",
     "difficulty": "High",
     "timeToImplement": "24–30 months",
     "description": "[ALL] Front-seat structures on the current programme carry 34 discrete stamped and tubular components per seat: HR340LA side members, HC420LA cross tubes, a separate tilt bracket and eleven welded brackets serving track, recliner and side-airbag mounting.…",
@@ -25,9 +25,9 @@
       ],
       "costSavingPotential": {
         "qualitative": "Fewer stampings, shorter weld seams and fewer fixtures cut piece cost and capital.",
-        "percentage": "€18/veh (-9% front-seat structure cost)",
-        "annualValue": "€2.7M",
-        "calculationBasis": "€18/veh × 150k veh/yr"
+        "percentage": "£15/veh (-9% front-seat structure cost)",
+        "annualValue": "£2.29M",
+        "calculationBasis": "£15/veh × 150k veh/yr"
       },
       "implementationDifficulty": "High",
       "riskNotes": "Gauge transitions in tailored blanks shift strain distribution in the FMVSS 207/210 pull and ECE R14 anchorage tests; the 1.2 mm regions need forming simulation to guard against splitting at the recliner boss. Whiplash (ECE R17 rear-impact) performance depends on backrest stiffness, so the swaged cross tube must be validated before die commitment. Full seat re-certification is triggered if belt anchorage geometry moves more than the homologation tolerance.",
@@ -71,7 +71,7 @@
     "title": "Single taumel recliner family across front and rear 60/40 seats",
     "system": "Seats",
     "costSavingType": "Commonisation",
-    "annualSaving": "€2.6M",
+    "annualSaving": "£2.21M",
     "difficulty": "Medium",
     "timeToImplement": "18–24 months",
     "description": "[ALL] Across the vehicle set the programme buys five recliner variants: two continuous taumel units for the front seats, two discrete-tooth units for the rear 60/40 backrest pivots and one heavy-duty unit for the belt-integrated third row. Torque…",
@@ -92,9 +92,9 @@
       ],
       "costSavingPotential": {
         "qualitative": "Volume pooling on one recliner core outweighs over-speccing the rear application.",
-        "percentage": "€22/veh (-14% recliner spend)",
-        "annualValue": "€2.6M",
-        "calculationBasis": "€22/veh × 120k veh/yr"
+        "percentage": "£19/veh (-14% recliner spend)",
+        "annualValue": "£2.21M",
+        "calculationBasis": "£19/veh × 120k veh/yr"
       },
       "implementationDifficulty": "Medium",
       "riskNotes": "Rear backrest pivots see ECE R17 luggage-retention impact loads; the taumel unit must pass the 18 g block test in the fold-detent condition, which discrete-tooth units historically handled with margin. Handle efforts differ between front and rear ergonomic targets and need spline-ratio tuning rather than core changes. Any belt-integrated seat retains its dedicated heavy-duty unit, so scope discipline is required to avoid re-opening that certification.",
@@ -132,7 +132,7 @@
     "title": "Injection-moulded suspension panel replaces wire mat and border wire",
     "system": "Seats",
     "costSavingType": "Material substitution",
-    "annualSaving": "€0.9M",
+    "annualSaving": "£0.77M",
     "difficulty": "Medium",
     "timeToImplement": "12–18 months",
     "description": "[ALL] Under the front cushion foam sits a legacy suspension assembly of eight formed spring wires in patented-drawn SM steel, a welded border wire, four EPDM isolator sleeves and two clip strips, hand-hooked into the frame at six stations. The idea…",
@@ -153,9 +153,9 @@
       ],
       "costSavingPotential": {
         "qualitative": "One moulding replaces a fifteen-piece wire assembly and its manual fitting labour.",
-        "percentage": "€6/veh (-25% suspension-mat cost)",
-        "annualValue": "€0.9M",
-        "calculationBasis": "€6/veh × 150k veh/yr"
+        "percentage": "£5.1/veh (-25% suspension-mat cost)",
+        "annualValue": "£0.77M",
+        "calculationBasis": "£5.1/veh × 150k veh/yr"
       },
       "implementationDifficulty": "Medium",
       "riskNotes": "Polymer creep can flatten the rate curve over life, degrading H-point retention measured under SAE J826; the static-soak criterion must be agreed with comfort engineering before tool cut. Hot-humid ageing shifts PP modulus more than steel, so the seating index rise across climate cycling needs a tolerance band. Occupant-classification sensing in the cushion, where fitted, must be re-calibrated against the new deflection field per FMVSS 208 low-risk-deployment requirements.",
@@ -193,7 +193,7 @@
     "title": "Dual-hardness MDI foam pour with density reduction to 46 kg/m³",
     "system": "Seats",
     "costSavingType": "Material reduction",
-    "annualSaving": "€0.9M",
+    "annualSaving": "£0.77M",
     "difficulty": "Medium",
     "timeToImplement": "9–12 months",
     "description": "[ALL] Cushion and backrest pads are currently poured as single-hardness TDI-based high-resilience foam at 55 kg/m³ moulded density, a specification inherited from the previous platform's comfort sign-off rather than derived from pressure-mapping data.…",
@@ -213,9 +213,9 @@
       ],
       "costSavingPotential": {
         "qualitative": "Density placed only where pressure mapping requires it cuts chemical mass per set.",
-        "percentage": "€5/veh (-11% foam chemical cost)",
-        "annualValue": "€0.9M",
-        "calculationBasis": "€5/veh × 180k veh/yr"
+        "percentage": "£4.3/veh (-11% foam chemical cost)",
+        "annualValue": "£0.77M",
+        "calculationBasis": "£4.3/veh × 180k veh/yr"
       },
       "implementationDifficulty": "Medium",
       "riskNotes": "Long-term height loss is the dominant risk at reduced density; the 80k-cycle jounce criterion and a hot-humid compression-set gate at 70 degrees Celsius, 95 percent RH must pass before comfort sign-off is reopened. Perceived firmness change can trigger subjective rejection even when objective maps match, so a seat-buck jury clinic belongs in the gateway plan. Trim wrinkling risk rises on the softer top zone and may need revised tie-down geometry.",
@@ -252,7 +252,7 @@
     "title": "Hog-ring and listing-wire deletion through hook-strip trim attachment",
     "system": "Seats",
     "costSavingType": "Process elimination",
-    "annualSaving": "€0.8M",
+    "annualSaving": "£0.68M",
     "difficulty": "Low",
     "timeToImplement": "6–9 months",
     "description": "[ALL] Trim covers are presently secured into foam trenches with steel listing wires sewn into the cover and hog-ringed to wires foamed into the pad, consuming 22 hog rings, six listing wires and about 90 seconds of pneumatic-plier labour per front seat,…",
@@ -273,9 +273,9 @@
       ],
       "costSavingPotential": {
         "qualitative": "Deleted rings, wires and plier labour outweigh a small sewing content increase.",
-        "percentage": "€4/veh (-6% trim assembly cost)",
-        "annualValue": "€0.8M",
-        "calculationBasis": "€4/veh × 200k veh/yr"
+        "percentage": "£3.4/veh (-6% trim assembly cost)",
+        "annualValue": "£0.68M",
+        "calculationBasis": "£3.4/veh × 200k veh/yr"
       },
       "implementationDifficulty": "Low",
       "riskNotes": "Hook-strip retention can relax under hot-humid ageing, risking visible trench gap-open on high-crown cushions; the 40 N/100 mm aged pull-off gate and a 500-cycle ingress-egress rub test cover this. Craftsmanship review must confirm trench definition matches the hog-ring baseline since hook strips seat slightly shallower. Seat-heater mat routing near trenches needs clearance checks to avoid hot spots against the PET scrim.",
@@ -313,7 +313,7 @@
     "title": "One-piece stamped rear seatback panel replacing tube-and-wire frame",
     "system": "Seats",
     "costSavingType": "Part consolidation",
-    "annualSaving": "€1.2M",
+    "annualSaving": "£1.02M",
     "difficulty": "Medium",
     "timeToImplement": "18–24 months",
     "description": "[ALL] Each rear 60/40 backrest is built today as a perimeter frame of four HC340LA tubes, five cross wires, two ISOFIX top-tether reinforcement brackets, a latch bracket and a separate hardboard back panel with felt anti-rattle pads, totalling thirteen…",
@@ -334,9 +334,9 @@
       ],
       "costSavingPotential": {
         "qualitative": "A single stamping absorbs frame, wires, brackets and the trim closer panel.",
-        "percentage": "€9/veh (-18% rear backrest structure cost)",
-        "annualValue": "€1.2M",
-        "calculationBasis": "€9/veh × 130k veh/yr"
+        "percentage": "£7.6/veh (-18% rear backrest structure cost)",
+        "annualValue": "£1.02M",
+        "calculationBasis": "£7.6/veh × 130k veh/yr"
       },
       "implementationDifficulty": "Medium",
       "riskNotes": "The ECE R17 luggage impact and ECE R14 top-tether pull are the sizing cases; bead pattern must prevent panel oil-canning under the 18 g block without local tearing at the latch patch. Springback in DP600 at 0.9 mm demands compensation loops in die development. Acoustic behaviour changes from an open frame to a membrane, so a drumming check against the body-in-white boom mode is required before design freeze.",
@@ -374,7 +374,7 @@
     "title": "Windscreen outer-ply downgauge to 1.8 mm with acoustic PVB retained",
     "system": "Glazing",
     "costSavingType": "Material reduction",
-    "annualSaving": "€1.1M",
+    "annualSaving": "£0.94M",
     "difficulty": "Medium",
     "timeToImplement": "12–18 months",
     "description": "[ALL] The windscreen laminate is specified at 2.1 mm outer and 1.6 mm inner soda-lime plies around a 0.76 mm acoustic tri-layer PVB interlayer. Glass tonnage dominates the piece cost, and the change downgauges the outer ply to 1.8 mm while holding the…",
@@ -393,9 +393,9 @@
       ],
       "costSavingPotential": {
         "qualitative": "Eight percent glass mass out of the highest-tonnage glazing part.",
-        "percentage": "€7/veh (-7% windscreen cost)",
-        "annualValue": "€1.1M",
-        "calculationBasis": "€7/veh × 160k veh/yr"
+        "percentage": "£6/veh (-7% windscreen cost)",
+        "annualValue": "£0.94M",
+        "calculationBasis": "£6/veh × 160k veh/yr"
       },
       "implementationDifficulty": "Medium",
       "riskNotes": "ECE R43 headform and 2.26 kg ball impact must be re-passed on the asymmetric laminate; margin analysis says comfortable but witness testing is mandatory. Field stone-chip claims may rise on gravel-market derivatives, so warranty provisioning should be reviewed for those regions specifically. ADAS camera recalibration is required if the bending recipe shifts local curvature in the camera aperture beyond the supplier optical map tolerance.",
@@ -437,7 +437,7 @@
     "title": "Tempered backlite downgauge with silver-paste grid optimisation",
     "system": "Glazing",
     "costSavingType": "Material reduction",
-    "annualSaving": "€0.6M",
+    "annualSaving": "£0.51M",
     "difficulty": "Low",
     "timeToImplement": "9–12 months",
     "description": "[ALL] Backlite glass is carried at 3.5 mm thermally toughened soda-lime, a gauge chosen when the previous platform's tailgate torsional input was higher. Structural re-analysis of the current tailgate shows the glass contributes little stiffness once the…",
@@ -456,9 +456,9 @@
       ],
       "costSavingPotential": {
         "qualitative": "Thinner substrate plus reduced precious-metal laydown on an unchanged line.",
-        "percentage": "€3/veh (-9% backlite cost)",
-        "annualValue": "€0.6M",
-        "calculationBasis": "€3/veh × 200k veh/yr"
+        "percentage": "£2.5/veh (-9% backlite cost)",
+        "annualValue": "£0.51M",
+        "calculationBasis": "£2.5/veh × 200k veh/yr"
       },
       "implementationDifficulty": "Low",
       "riskNotes": "ECE R43 fragmentation witness test at 3.15 mm is mandatory and the quench balance must be re-centred to keep particle counts in the 40-to-400 window across the plate. Tailgate slam durability and wiper-reversal chatter need one vehicle-level check since panel compliance rises slightly. Antenna gain re-verification protects broadcast reception homologation in markets where it is type-approved.",
@@ -494,7 +494,7 @@
     "title": "In-line TPE encapsulation replaces PVC RIM moulding on quarter glass",
     "system": "Glazing",
     "costSavingType": "Process substitution",
-    "annualSaving": "€0.8M",
+    "annualSaving": "£0.68M",
     "difficulty": "Medium",
     "timeToImplement": "12–15 months",
     "description": "[ALL] Fixed rear quarter lights are encapsulated today by PVC reaction moulding in a heated press tool, a batch process with 90-second cure occupancy, tool-cleaning downtime and a plasticised-PVC recipe facing steady REACH pressure on phthalate content.…",
@@ -515,9 +515,9 @@
       ],
       "costSavingPotential": {
         "qualitative": "Batch RIM press replaced by continuous in-line extrusion, plus trim deletion.",
-        "percentage": "€5/veh (-15% quarter-glass assembly cost)",
-        "annualValue": "€0.8M",
-        "calculationBasis": "€5/veh × 150k veh/yr"
+        "percentage": "£4.3/veh (-15% quarter-glass assembly cost)",
+        "annualValue": "£0.68M",
+        "calculationBasis": "£4.3/veh × 150k veh/yr"
       },
       "implementationDifficulty": "Medium",
       "riskNotes": "Corner mould-on joints are the visual quality risk; witness lines must pass craftsmanship review at arm's length under showroom lighting. Aged peel adhesion after cataplasma and UV exposure gates the primer selection. Gloss-black skin must survive car-wash brush abrasion without hazing where it replaces stainless trim, and ECE R43 marking requirements carry over unchanged since the glass itself is untouched.",
@@ -561,7 +561,7 @@
     "title": "Solar-control coating rationalisation across trim walk",
     "system": "Glazing",
     "costSavingType": "Decontenting",
-    "annualSaving": "€1.4M",
+    "annualSaving": "£1.19M",
     "difficulty": "Low",
     "timeToImplement": "6–9 months",
     "description": "[ALL] Every sidelite in the current trim walk carries IR-reflective coated glass, although take-rate analysis shows the ventilated-seat and premium-climate packages that justify the coating appear on under 30 percent of build. The action re-tiers the…",
@@ -582,9 +582,9 @@
       ],
       "costSavingPotential": {
         "qualitative": "Coating cost removed from seventy percent of sidelite volume with no visible change.",
-        "percentage": "€8/veh (-12% sidelite glazing spend, mix-weighted)",
-        "annualValue": "€1.4M",
-        "calculationBasis": "€8/veh × 180k veh/yr"
+        "percentage": "£6.8/veh (-12% sidelite glazing spend, mix-weighted)",
+        "annualValue": "£1.19M",
+        "calculationBasis": "£6.8/veh × 180k veh/yr"
       },
       "implementationDifficulty": "Low",
       "riskNotes": "Cabin thermal comfort on base trims in hot markets is the customer-facing risk; the summer soak test must confirm pull-down time stays inside the brand target with calibration changes only. Marketing must accept the spec-sheet change where solar glass was a listed feature. ECE R43 light transmission minima for driver-visibility zones are comfortably met by green tint and require paperwork, not testing.",
@@ -620,7 +620,7 @@
     "title": "Frit band reduction and moulded sensor bracket integration on windscreen",
     "system": "Glazing",
     "costSavingType": "Material reduction",
-    "annualSaving": "€0.5M",
+    "annualSaving": "£0.42M",
     "difficulty": "Low",
     "timeToImplement": "6–12 months",
     "description": "[ALL] Two smaller windscreen cost elements compound usefully here. First, the ceramic frit obscuration band is printed at 90 mm width around the full perimeter, sized generations ago for wide urethane beads and hand-glazing tolerance; the current…",
@@ -641,9 +641,9 @@
       ],
       "costSavingPotential": {
         "qualitative": "Frit paste and bracket-chain simplification on every windscreen built.",
-        "percentage": "€3/veh (-3% windscreen assembly cost)",
-        "annualValue": "€0.5M",
-        "calculationBasis": "€3/veh × 170k veh/yr"
+        "percentage": "£2.5/veh (-3% windscreen assembly cost)",
+        "annualValue": "£0.42M",
+        "calculationBasis": "£2.5/veh × 170k veh/yr"
       },
       "implementationDifficulty": "Low",
       "riskNotes": "Urethane bead UV protection is the reason frit exists; the 20 mm margin rule must be validated against worst-case robot path deviation or adhesive durability suffers years later, invisibly. Camera bracket stiffness affects ADAS image stability, so the PA66-GF30 part needs a first-mode target above 120 Hz confirmed by test, plus creep check at 95 degrees Celsius windscreen soak. ECE R43 zone drawings need revision only.",
@@ -681,7 +681,7 @@
     "title": "Film-hinged PP-LGF20 one-shot doors replace PA66-GF30 assemblies",
     "system": "HVAC",
     "costSavingType": "Material substitution",
-    "annualSaving": "€0.8M",
+    "annualSaving": "£0.68M",
     "difficulty": "Medium",
     "timeToImplement": "12–18 months",
     "description": "[ALL] Inside the HVAC case, the temperature blend and mode doors are moulded in PA66-GF30 with separately assembled steel shafts, TPE edge seals glued or clipped on, and bearing bushes at each end, five parts per door across seven doors. The redesign…",
@@ -702,9 +702,9 @@
       ],
       "costSavingPotential": {
         "qualitative": "Cheaper polymer and one-shot integration across every door in the case.",
-        "percentage": "€4/veh (-8% HVAC case internals cost)",
-        "annualValue": "€0.8M",
-        "calculationBasis": "€4/veh × 190k veh/yr"
+        "percentage": "£3.4/veh (-8% HVAC case internals cost)",
+        "annualValue": "£0.68M",
+        "calculationBasis": "£3.4/veh × 190k veh/yr"
       },
       "implementationDifficulty": "Medium",
       "riskNotes": "Film-hinge lip fatigue over 30k actuation cycles at temperature is the wear-out mode; hinge root radius and glass-fibre orientation at the hinge must be controlled by gate placement or lips crack silently and leakage drifts. PP creep can loosen journal fit after summer soak, checked by torque measurement post 500 h at 85 degrees Celsius. Any door adjacent to the heater core needs a local temperature survey before material release.",
@@ -742,7 +742,7 @@
     "title": "Cam-plate kinematics cut HVAC actuator count from five to three",
     "system": "HVAC",
     "costSavingType": "Part-count reduction",
-    "annualSaving": "€0.9M",
+    "annualSaving": "£0.77M",
     "difficulty": "Medium",
     "timeToImplement": "15–20 months",
     "description": "[ALL] Five stepper actuators currently drive the case: one blend door per side, two mode doors and one recirculation flap, each with its own LIN node, harness drop and mounting boss. Analysis of the mode logic shows the two mode doors never move…",
@@ -762,9 +762,9 @@
       ],
       "costSavingPotential": {
         "qualitative": "Two actuators and their wiring replaced by one moulded cam plate.",
-        "percentage": "€6/veh (-11% HVAC actuation cost)",
-        "annualValue": "€0.9M",
-        "calculationBasis": "€6/veh × 150k veh/yr"
+        "percentage": "£5.1/veh (-11% HVAC actuation cost)",
+        "annualValue": "£0.77M",
+        "calculationBasis": "£5.1/veh × 150k veh/yr"
       },
       "implementationDifficulty": "Medium",
       "riskNotes": "Cam-follower wear over 30k cycles with dust ingestion is the durability case; POM-on-PP contact needs a grease-free wear couple confirmed at temperature extremes. Defrost mode must reach full commanded position within the FMVSS 103 warm-up timeline even with the higher combined torque at cold soak, minus 30 degrees Celsius being the sizing point. Failure mode changes from single-door loss to grouped-door loss, which the HVAC ECU diagnostic strategy must reflect.",
@@ -802,7 +802,7 @@
     "title": "Symmetric HVAC case split for LHD/RHD commonisation",
     "system": "HVAC",
     "costSavingType": "Commonisation",
-    "annualSaving": "€1.4M",
+    "annualSaving": "£1.19M",
     "difficulty": "High",
     "timeToImplement": "24–36 months",
     "description": "[ALL] Left-hand and right-hand drive builds today use mirrored HVAC modules: separate case tools, separate evaporator and heater-core tank orientations, and doubled validation, one of the classic hidden costs of a global programme. This architecture…",
@@ -823,9 +823,9 @@
       ],
       "costSavingPotential": {
         "qualitative": "One module, one tool family and one calibration campaign for both steering variants.",
-        "percentage": "€10/veh (-9% HVAC module cost, both-variant weighted)",
-        "annualValue": "€1.4M",
-        "calculationBasis": "€10/veh × 140k veh/yr"
+        "percentage": "£8.5/veh (-9% HVAC module cost, both-variant weighted)",
+        "annualValue": "£1.19M",
+        "calculationBasis": "£8.5/veh × 140k veh/yr"
       },
       "implementationDifficulty": "High",
       "riskNotes": "The 15 mm console-depth concession is the real programme risk, contested by interior design at every gateway. Centreline refrigerant exits change dash-panel pass-through sealing and NVH paths, needing a dash-leak and idle-boom check. Drain routing must work at maximum RHD body attitude to avoid evaporator water carryover, the classic failure of symmetric cases done cheaply. FMVSS 103 defrost distribution must be verified in both variants because duct adapters differ.",
@@ -862,7 +862,7 @@
     "title": "Moulded-in TPV lip seals replace die-cut PU foam case gaskets",
     "system": "HVAC",
     "costSavingType": "Process elimination",
-    "annualSaving": "€0.6M",
+    "annualSaving": "£0.51M",
     "difficulty": "Low",
     "timeToImplement": "9–12 months",
     "description": "[ALL] Case halves, duct outlets and the blower scroll joint are sealed with fourteen die-cut PU foam gaskets and PSA-backed strips, applied by hand with placement checked visually, a persistent source of whistle and leakage warranty findings when strips…",
@@ -883,9 +883,9 @@
       ],
       "costSavingPotential": {
         "qualitative": "Hand-placed foam strips become a moulded, SPC-controlled feature.",
-        "percentage": "€3/veh (-5% case assembly cost)",
-        "annualValue": "€0.6M",
-        "calculationBasis": "€3/veh × 200k veh/yr"
+        "percentage": "£2.5/veh (-5% case assembly cost)",
+        "annualValue": "£0.51M",
+        "calculationBasis": "£2.5/veh × 200k veh/yr"
       },
       "implementationDifficulty": "Low",
       "riskNotes": "Tool conversion economics depend on remaining life of current cavities; converting tools inside two years of end-of-life inverts the business case, so the rollout must follow the tool-replacement calendar. TPV lip compression set at 85 degrees Celsius over life governs long-term leakage and needs one ageing campaign. Squeak at lip interfaces under vibration is checked in the module-level shaker run.",
@@ -923,7 +923,7 @@
     "title": "Instrument-panel-integrated air ducts delete blow-moulded HDPE set",
     "system": "HVAC",
     "costSavingType": "Part consolidation",
-    "annualSaving": "€0.9M",
+    "annualSaving": "£0.77M",
     "difficulty": "Medium",
     "timeToImplement": "18–24 months",
     "description": "[ALL] Nine blow-moulded HDPE ducts route air from the HVAC unit to outlets, each individually clipped to the cross-car beam with foam interface seals at both ends, adding part numbers, assembly time and the rattle population that comes with clip-mounted…",
@@ -944,9 +944,9 @@
       ],
       "costSavingPotential": {
         "qualitative": "Carrier B-surface becomes duct wall, deleting five hollow parts and their fixings.",
-        "percentage": "€7/veh (-30% duct-set cost)",
-        "annualValue": "€0.9M",
-        "calculationBasis": "€7/veh × 130k veh/yr"
+        "percentage": "£6/veh (-30% duct-set cost)",
+        "annualValue": "£0.77M",
+        "calculationBasis": "£6/veh × 130k veh/yr"
       },
       "implementationDifficulty": "Medium",
       "riskNotes": "Weld-seam leakage at defrost pressure is the functional gate, FMVSS 103 distribution depending on it directly; seam design must survive carrier warpage tolerance stack. Condensation inside integrated channels against a cold carrier wall needs a dew-point check in humid-climate cycles. Serviceability worsens since channels are not separable, accepted because duct service events are near zero in warranty data.",
@@ -984,7 +984,7 @@
     "title": "One-piece-woven curtain airbag with reduced silicone coating",
     "system": "Restraints",
     "costSavingType": "Process substitution",
-    "annualSaving": "€1.4M",
+    "annualSaving": "£1.19M",
     "difficulty": "Medium",
     "timeToImplement": "18–24 months",
     "description": "[ALL] Curtain airbags for this programme are cut-and-sew assemblies: two coated PA66 fabric panels seam-sewn into chambers, seam-sealed with silicone bead, then folded, with sewing labour and seam-leak scrap the dominant cost drivers. Conversion to…",
@@ -1005,9 +1005,9 @@
       ],
       "costSavingPotential": {
         "qualitative": "Loom-woven chambers remove sewing and sealing operations from every cushion.",
-        "percentage": "€9/veh (-13% curtain module cost)",
-        "annualValue": "€1.4M",
-        "calculationBasis": "€9/veh × 150k veh/yr"
+        "percentage": "£7.6/veh (-13% curtain module cost)",
+        "annualValue": "£1.19M",
+        "calculationBasis": "£7.6/veh × 150k veh/yr"
       },
       "implementationDifficulty": "Medium",
       "riskNotes": "FMVSS 226 ejection mitigation and FMVSS 208 / ECE R16-linked side-impact protocols require full re-test of the new cushion, the major validation cost against the saving. Reduced coating must still hold standing pressure at the six-second window across minus 35 to plus 85 degrees Celsius deployment corners and after 15-year-equivalent ageing per USCAR-24-style conditioning. Weave-transition permeability at chamber junctions is the OPW-specific failure mode, controlled by loom mapping and 100 percent inflation audit sampling during launch.",
@@ -1051,7 +1051,7 @@
     "title": "Retractor and load-limiter commonisation across seating positions",
     "system": "Restraints",
     "costSavingType": "Commonisation",
-    "annualSaving": "€0.8M",
+    "annualSaving": "£0.68M",
     "difficulty": "Medium",
     "timeToImplement": "15–20 months",
     "description": "[ALL] Seatbelt retractors across the programme total seven variants: two front units with different digressive load-limiter torsion bars per powertrain mass class, three rear variants split by mounting angle, and two carryover specials for the third row.…",
@@ -1072,9 +1072,9 @@
       ],
       "costSavingPotential": {
         "qualitative": "Seven retractor variants collapse to three with measured-equivalence justification.",
-        "percentage": "€5/veh (-8% belt-system cost)",
-        "annualValue": "€0.8M",
-        "calculationBasis": "€5/veh × 160k veh/yr"
+        "percentage": "£4.3/veh (-8% belt-system cost)",
+        "annualValue": "£0.68M",
+        "calculationBasis": "£4.3/veh × 160k veh/yr"
       },
       "implementationDifficulty": "Medium",
       "riskNotes": "Chest-deflection equivalence must hold for the 5th-percentile female ATD as well as the 50th, and FMVSS 208 unbelted corners on the heaviest variant are the sizing case for the single 4.2 kN bar; if the 5th-percentile margin erodes, the consolidation retreats to two front variants. ECE R16 extension testing at worst-case rear angles is mandatory before certificates consolidate. Any future variant heavier than the validated spread reopens the analysis.",
@@ -1111,7 +1111,7 @@
     "title": "Adaptive-vent single-stage inflator replaces dual-stage driver unit",
     "system": "Restraints",
     "costSavingType": "Decontenting",
-    "annualSaving": "€1.0M",
+    "annualSaving": "£0.85M",
     "difficulty": "High",
     "timeToImplement": "24–30 months",
     "description": "[ALL] Driver airbag modules carry dual-stage pyrotechnic inflators on all trims, with the second stage fired for occupant-severity tailoring demanded by FMVSS 208 advanced airbag requirements. Cushion-side adaptivity has matured since that decision: an…",
@@ -1131,9 +1131,9 @@
       ],
       "costSavingPotential": {
         "qualitative": "Second combustion stage and its firing chain replaced by cushion-side venting.",
-        "percentage": "€8/veh (-14% driver module cost)",
-        "annualValue": "€1.0M",
-        "calculationBasis": "€8/veh × 120k veh/yr"
+        "percentage": "£6.8/veh (-14% driver module cost)",
+        "annualValue": "£0.85M",
+        "calculationBasis": "£6.8/veh × 120k veh/yr"
       },
       "implementationDifficulty": "High",
       "riskNotes": "The FMVSS 208 out-of-position and 5th-percentile matrices are pass-fail gates with no engineering-judgement route; a failure late in the campaign forfeits the entire business case, so a supplier with an already-certified vent architecture is a sourcing precondition. Vent-tether release timing interacts with crash-pulse variation and must be robust across the pulse corridor. Field service procedures change since single-stage modules alter the deployment-loop diagnostic map.",
@@ -1169,7 +1169,7 @@
     "title": "Moulded PA6-GF30 passenger airbag housing with integrated chute",
     "system": "Restraints",
     "costSavingType": "Material substitution",
-    "annualSaving": "€0.8M",
+    "annualSaving": "£0.68M",
     "difficulty": "Medium",
     "timeToImplement": "15–20 months",
     "description": "[ALL] Passenger airbag modules use a folded-steel canister housing riveted to a separately moulded deployment chute that is vibration-welded to the instrument panel, three joining technologies stacked in one load path. The redesign moulds housing and…",
@@ -1190,9 +1190,9 @@
       ],
       "costSavingPotential": {
         "qualitative": "Steel canister, rivets and a welding operation folded into one moulding.",
-        "percentage": "€6/veh (-11% PAB module structure cost)",
-        "annualValue": "€0.8M",
-        "calculationBasis": "€6/veh × 140k veh/yr"
+        "percentage": "£5.1/veh (-11% PAB module structure cost)",
+        "annualValue": "£0.68M",
+        "calculationBasis": "£5.1/veh × 140k veh/yr"
       },
       "implementationDifficulty": "Medium",
       "riskNotes": "Cold-corner deployment at minus 35 degrees Celsius is the brittle-failure gate; housing fragmentation is an automatic fail, so the impact-modifier package and weld-line placement near bosses need deployment-witnessed DOE. Creep of the hook ring under folded-cushion preload across 15-year ageing must be bounded by accelerated conditioning. ECE R16 system approval and FMVSS 208 deployments re-run at module level, not full vehicle, if the cushion and inflator carry over exactly.",
@@ -1230,7 +1230,7 @@
     "title": "Signal-circuit downsizing from FLRY-B 0.35 to 0.13 mm² CuMg",
     "system": "Wiring Harness",
     "costSavingType": "Material reduction",
-    "annualSaving": "€1.3M",
+    "annualSaving": "£1.1M",
     "difficulty": "Medium",
     "timeToImplement": "15–20 months",
     "description": "[ALL] Roughly 380 of the body harness's circuits are pure signal lines carrying under 100 mA yet specified in FLRY-B 0.35 mm² plain copper, sized by legacy crimp-catalogue convention rather than electrical need. The downsizing moves qualifying circuits to…",
@@ -1250,9 +1250,9 @@
       ],
       "costSavingPotential": {
         "qualitative": "Sixty percent copper reduction across nearly four hundred over-specified circuits.",
-        "percentage": "€7/veh (-5% harness material cost)",
-        "annualValue": "€1.3M",
-        "calculationBasis": "€7/veh × 180k veh/yr"
+        "percentage": "£6/veh (-5% harness material cost)",
+        "annualValue": "£1.1M",
+        "calculationBasis": "£6/veh × 180k veh/yr"
       },
       "implementationDifficulty": "Medium",
       "riskNotes": "Repairability is the field risk: 0.13 mm² splicing demands dealer tooling and training, so service engineering must release repair methods before launch or warranty costs migrate to whole-harness replacement. Crimp quality windows are narrower at this gauge, making crimp-force monitoring mandatory rather than advisory per LV214-class requirements. Circuits feeding door loops need bend-cycle endurance testing at the reduced section.",
@@ -1295,7 +1295,7 @@
     "title": "Door-module direct plug deletes inline connector pair per door",
     "system": "Wiring Harness",
     "costSavingType": "Part-count reduction",
-    "annualSaving": "€0.9M",
+    "annualSaving": "£0.77M",
     "difficulty": "Medium",
     "timeToImplement": "18–24 months",
     "description": "[ALL] Each door circuit today passes through a 24-way inline connector pair at the A-pillar or B-pillar jamb: body harness header, door harness socket, plus the sealing grommet, four parts and two crimp operations per conductor at the interface. The…",
@@ -1316,9 +1316,9 @@
       ],
       "costSavingPotential": {
         "qualitative": "The vehicle's most expensive sealed connector pair deleted four times over.",
-        "percentage": "€5/veh (-4% harness cost)",
-        "annualValue": "€0.9M",
-        "calculationBasis": "€5/veh × 170k veh/yr"
+        "percentage": "£4.3/veh (-4% harness cost)",
+        "annualValue": "£0.77M",
+        "calculationBasis": "£4.3/veh × 170k veh/yr"
       },
       "implementationDifficulty": "Medium",
       "riskNotes": "Door removal for paint or repair now requires unplugging at the module and feeding the tail back through, so service time for door-off events rises and must be accepted by aftersales explicitly. Bellows endurance at 100k cycles across minus 40 to plus 85 degrees Celsius is the durability gate, with water ingress along the harness core the failure mode LV214-class sealing tests must catch. Direct-plug headers concentrate connector wear on the module, making header replaceability a module design requirement.",
@@ -1355,7 +1355,7 @@
     "title": "Aluminium power distribution cables with ultrasonic CuAl transitions",
     "system": "Wiring Harness",
     "costSavingType": "Material substitution",
-    "annualSaving": "€0.9M",
+    "annualSaving": "£0.77M",
     "difficulty": "Medium",
     "timeToImplement": "12–18 months",
     "description": "[ALL] Power distribution runs, the battery positive to the engine-bay fuse box, the alternator line and the rear power feed, total about 4.2 kg of copper in 8 to 25 mm² sections. Substituting EN AW-1370 aluminium conductor at one gauge step up preserves…",
@@ -1375,9 +1375,9 @@
       ],
       "costSavingPotential": {
         "qualitative": "Metal-market arbitrage on the heaviest conductors in the vehicle.",
-        "percentage": "€6/veh (-40% power-cable conductor cost)",
-        "annualValue": "€0.9M",
-        "calculationBasis": "€6/veh × 150k veh/yr"
+        "percentage": "£5.1/veh (-40% power-cable conductor cost)",
+        "annualValue": "£0.77M",
+        "calculationBasis": "£5.1/veh × 150k veh/yr"
       },
       "implementationDifficulty": "Medium",
       "riskNotes": "The CuAl transition is the single point of truth: galvanic corrosion under salt-humidity cycling and creep relaxation under thermal cycling are the two failure modes, both covered by LV112 ageing sequences that the supplier's weld process must pass with margin. Aluminium work-hardens under vibration at clip exits, so support spacing follows the aluminium-specific standard, not the copper legacy drawing. Service crimping of aluminium is not field-viable, making transition-sleeve spare assemblies the mandated repair method.",
@@ -1414,7 +1414,7 @@
     "title": "Connector portfolio rationalisation onto LV214 standard families",
     "system": "Wiring Harness",
     "costSavingType": "Commonisation",
-    "annualSaving": "€1.3M",
+    "annualSaving": "£1.1M",
     "difficulty": "Medium",
     "timeToImplement": "18–30 months",
     "description": "[ALL] An audit of the harness BOM counts 214 unique connector part numbers across the vehicle, accumulated from three donor platforms and supplier-preferred substitutions never consolidated. Mapping every application against cavity count, sealing class,…",
@@ -1435,9 +1435,9 @@
       ],
       "costSavingPotential": {
         "qualitative": "Volume pooling and orphan-part elimination across the full connector BOM.",
-        "percentage": "€8/veh (-6% harness cost)",
-        "annualValue": "€1.3M",
-        "calculationBasis": "€8/veh × 160k veh/yr"
+        "percentage": "£6.8/veh (-6% harness cost)",
+        "annualValue": "£1.1M",
+        "calculationBasis": "£6.8/veh × 160k veh/yr"
       },
       "implementationDifficulty": "Medium",
       "riskNotes": "Every housing swap touches a mating ECU or device header, so the exception list must capture counterpart constraints or the change order avalanche stalls; governance is the real risk, not engineering. Sealed-class substitutions need LV214 sealing verification in the specific grommet application even when the family is pre-qualified. Congested-zone clearance checks protect against a replacement housing fouling adjacent brackets, the classic late-build discovery.",
@@ -1474,7 +1474,7 @@
     "title": "Zonal taping strategy and dry-zone conduit deletion",
     "system": "Wiring Harness",
     "costSavingType": "Material reduction",
-    "annualSaving": "€0.6M",
+    "annualSaving": "£0.51M",
     "difficulty": "Low",
     "timeToImplement": "6–9 months",
     "description": "[ALL] Harness protection is applied today as full-coverage spiral PVC tape over most bundle lengths plus corrugated PP conduit along runs that saw abrasion findings on ancestor platforms, a belt-and-braces accumulation nobody has re-derived for current…",
@@ -1494,9 +1494,9 @@
       ],
       "costSavingPotential": {
         "qualitative": "Protection re-derived from actual exposure instead of inherited caution.",
-        "percentage": "€3/veh (-2.5% harness cost)",
-        "annualValue": "€0.6M",
-        "calculationBasis": "€3/veh × 200k veh/yr"
+        "percentage": "£2.5/veh (-2.5% harness cost)",
+        "annualValue": "£0.51M",
+        "calculationBasis": "£2.5/veh × 200k veh/yr"
       },
       "implementationDifficulty": "Low",
       "riskNotes": "Under-protection discovered in the field arrives as chafe-through shorts years later, so zone-boundary definition errs conservative and the LV112 scrape validation covers every boundary case, not samples. Spot taping exposes conductor colours, which service diagnostics actually welcome but craftsmanship review must accept where bundles are visible. Any future routing change re-triggers the zone audit, requiring a standing checklist item in the change process.",
@@ -1532,7 +1532,7 @@
     "title": "Zonal e-fuse power distribution enables harness downsizing",
     "system": "Wiring Harness",
     "costSavingType": "Architecture change",
-    "annualSaving": "€1.4M",
+    "annualSaving": "£1.19M",
     "difficulty": "High",
     "timeToImplement": "30–36 months",
     "description": "[ALL] Melting fuses force every protected circuit to be wired for the fuse's worst-case clearing energy rather than the load's actual demand, and the central fuse boxes force star topology with long individual runs. Replacing the front and rear junction…",
@@ -1553,9 +1553,9 @@
       ],
       "costSavingPotential": {
         "qualitative": "Wire sized for load, not fuse physics, across the body power domain.",
-        "percentage": "€14/veh (-10% body power-distribution cost)",
-        "annualValue": "€1.4M",
-        "calculationBasis": "€14/veh × 100k veh/yr"
+        "percentage": "£12/veh (-10% body power-distribution cost)",
+        "annualValue": "£1.19M",
+        "calculationBasis": "£12/veh × 100k veh/yr"
       },
       "implementationDifficulty": "High",
       "riskNotes": "E-fuse trip curves must be characterised against every load's inrush signature or nuisance trips plague launch; motor and lamp loads are the known offenders. Functional-safety classification of channels feeding lighting and wipers imposes ISO 26262 development rigour on the zonal controller, the cost item that erodes weak business cases. Downsized conductors depend permanently on the e-fuse being present, so service substitution with standard fuses must be made physically impossible.",
@@ -1598,7 +1598,7 @@
     "title": "Primerless 3-wet compact paint process deletes primer bake",
     "system": "Paint Shop",
     "costSavingType": "Process elimination",
-    "annualSaving": "€3.8M",
+    "annualSaving": "£3.23M",
     "difficulty": "High",
     "timeToImplement": "24–36 months",
     "description": "[ALL] Paint chemistry has quietly outrun this plant's process layout: the line still runs the classic four-coat sequence, e-coat bake, primer spray and full 160 degree Celsius bake, then basecoat and clearcoat with a final bake, although modern waterborne…",
@@ -1618,9 +1618,9 @@
       ],
       "costSavingPotential": {
         "qualitative": "One full oven pass removed from every body built.",
-        "percentage": "€25/veh (-12% paint cost per unit)",
-        "annualValue": "€3.8M",
-        "calculationBasis": "€25/veh × 150k veh/yr"
+        "percentage": "£21/veh (-12% paint cost per unit)",
+        "annualValue": "£3.23M",
+        "calculationBasis": "£21/veh × 150k veh/yr"
       },
       "implementationDifficulty": "High",
       "riskNotes": "Appearance harmony across body and plastic parts painted off-line is the launch risk, since the 3-wet film stack meters colour differently; bumper-to-fender match needs per-colour master panels signed off before customer builds. Stone-chip performance at reduced total film build must pass ISO 20567-1 on the vulnerable rocker and leading-edge zones. VOC compliance improves with waterborne layers but the 2K clearcoat isocyanate handling and REACH diisocyanate training obligations remain and transition-period dual running doubles chemistry inventory temporarily.",
@@ -1663,7 +1663,7 @@
     "title": "Zirconium thin-film pretreatment replaces trication zinc phosphate",
     "system": "Paint Shop",
     "costSavingType": "Process substitution",
-    "annualSaving": "€0.8M",
+    "annualSaving": "£0.68M",
     "difficulty": "Medium",
     "timeToImplement": "12–18 months",
     "description": "[ALL] Body pretreatment runs a trication zinc phosphate line: multi-stage conditioning, a phosphate bath held at 50 to 55 degrees Celsius generating continuous sludge that is landfilled as filter cake, nickel and manganese in the chemistry, and…",
@@ -1684,9 +1684,9 @@
       ],
       "costSavingPotential": {
         "qualitative": "Chemical mass, bath heat and sludge disposal all drop an order class.",
-        "percentage": "€4/veh (-30% pretreatment cost per body)",
-        "annualValue": "€0.8M",
-        "calculationBasis": "€4/veh × 200k veh/yr"
+        "percentage": "£3.4/veh (-30% pretreatment cost per body)",
+        "annualValue": "£0.68M",
+        "calculationBasis": "£3.4/veh × 200k veh/yr"
       },
       "implementationDifficulty": "Medium",
       "riskNotes": "Corrosion performance on hot-dip galvanised steel is the historical weak point of thin-film chemistry and must pass the OEM cyclic protocol on this body's worst-case seam and hem-flange coupons before any cutover date is set. Line-speed sensitivity is higher than phosphate, so bath monitoring moves from shift sampling to continuous conductivity and zirconium-concentration control. A validated re-phosphate fallback plan protects launch if scab results regress at plant scale.",
@@ -1723,7 +1723,7 @@
     "title": "E-coat film build reduction through throwpower optimisation",
     "system": "Paint Shop",
     "costSavingType": "Material reduction",
-    "annualSaving": "€0.6M",
+    "annualSaving": "£0.51M",
     "difficulty": "Medium",
     "timeToImplement": "9–15 months",
     "description": "[ALL] Measured e-coat film builds across audit bodies tell the usual story: 26 to 30 microns on exterior skins against a 20-micron functional requirement, because voltage and bath solids are set high enough to drag marginal interior cavities up to their…",
@@ -1742,9 +1742,9 @@
       ],
       "costSavingPotential": {
         "qualitative": "Over-coated exterior skins brought down to requirement, cavities protected by chemistry.",
-        "percentage": "€3/veh (-18% e-coat material per body)",
-        "annualValue": "€0.6M",
-        "calculationBasis": "€3/veh × 190k veh/yr"
+        "percentage": "£2.5/veh (-18% e-coat material per body)",
+        "annualValue": "£0.51M",
+        "calculationBasis": "£2.5/veh × 190k veh/yr"
       },
       "implementationDifficulty": "Medium",
       "riskNotes": "Thinner average film narrows the margin for substrate roughness telegraphing through to the primer layer, so surface-finish interaction is checked on the roughest steel supplier's coils specifically. Any future body-style addition with deeper cavities re-opens the anode configuration. Warranty exposure is protected by keeping interior minima unchanged and by holding a two-micron guard band above the corrosion-qualified minimum on exteriors rather than running to the edge.",
@@ -1781,7 +1781,7 @@
     "title": "High-transfer-efficiency clearcoat application with dry separation",
     "system": "Paint Shop",
     "costSavingType": "Process substitution",
-    "annualSaving": "€0.8M",
+    "annualSaving": "£0.68M",
     "difficulty": "Medium",
     "timeToImplement": "15–24 months",
     "description": "[ALL] Clearcoat is the most expensive liquid in the shop per litre and the current booth wastes a third of it: air-assisted electrostatic application achieves about 65 percent transfer efficiency, with overspray captured in a water-wash venturi whose…",
@@ -1802,9 +1802,9 @@
       ],
       "costSavingPotential": {
         "qualitative": "Paint that used to coat the scrubber water now coats cars.",
-        "percentage": "€5/veh (-15% clearcoat cost per body)",
-        "annualValue": "€0.8M",
-        "calculationBasis": "€5/veh × 160k veh/yr"
+        "percentage": "£4.3/veh (-15% clearcoat cost per body)",
+        "annualValue": "£0.68M",
+        "calculationBasis": "£4.3/veh × 160k veh/yr"
       },
       "implementationDifficulty": "Medium",
       "riskNotes": "Bell-bell clearcoat on vertical surfaces risks sag at the higher delivery rates needed for takt, so the robot path and fluid map DOE must precede any commitment on cycle time. Dry-scrubber powder handling introduces a combustible-dust ATEX assessment absent from the wet booth. Appearance harmony with off-line painted plastic parts is re-checked because droplet-spectrum changes shift DOI slightly even at matched film build; REACH diisocyanate handling obligations carry over unchanged.",

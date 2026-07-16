@@ -52,7 +52,7 @@ export default function IdeaStudioPage() {
   const [process, setProcess] = useState('');
   const [annualVolume, setAnnualVolume] = useState('80000');
   const [region, setRegion] = useState('Germany');
-  const [currency, setCurrency] = useState('EUR');
+  const [currency, setCurrency] = useState('GBP');
   const [targetCost, setTargetCost] = useState('');
   const [programYears, setProgramYears] = useState('5');
   const [tolerance, setTolerance] = useState(TOLERANCE[0]);

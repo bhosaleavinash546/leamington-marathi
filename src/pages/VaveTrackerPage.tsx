@@ -50,9 +50,9 @@ function parseSaving(v?: string): number {
   return parseFloat(m[1]) * (m[2] === 'm' ? 1_000_000 : m[2] === 'k' ? 1_000 : 1);
 }
 function fmtSaving(n: number): string {
-  if (n >= 1_000_000) return `€${(n / 1_000_000).toFixed(1)}M`;
-  if (n >= 1_000) return `€${Math.round(n / 1_000)}k`;
-  return n > 0 ? `€${Math.round(n)}` : '—';
+  if (n >= 1_000_000) return `£${(n / 1_000_000).toFixed(1)}M`;
+  if (n >= 1_000) return `£${Math.round(n / 1_000)}k`;
+  return n > 0 ? `£${Math.round(n)}` : '—';
 }
 
 function StageTag({ stage }: { stage: VaveStage }) {
@@ -167,7 +167,7 @@ function EditPanel({ action, onSave, onDelete, onClose }: EditPanelProps) {
             <input
               value={form.targetSaving}
               onChange={e => setForm(f => ({ ...f, targetSaving: e.target.value }))}
-              placeholder="e.g. €480k"
+              placeholder="e.g. £408k"
               className="w-full bg-navy-800 border border-white/10 rounded-lg px-3 py-2 text-white text-sm placeholder-slate-600 focus:outline-none focus:border-gold-500/30"
             />
           </div>
@@ -176,7 +176,7 @@ function EditPanel({ action, onSave, onDelete, onClose }: EditPanelProps) {
             <input
               value={form.confirmedSaving}
               onChange={e => setForm(f => ({ ...f, confirmedSaving: e.target.value }))}
-              placeholder="e.g. €440k (fill when validated)"
+              placeholder="e.g. £374k (fill when validated)"
               className="w-full bg-navy-800 border border-white/10 rounded-lg px-3 py-2 text-white text-sm placeholder-slate-600 focus:outline-none focus:border-gold-500/30"
             />
           </div>

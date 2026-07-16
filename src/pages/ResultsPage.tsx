@@ -283,7 +283,7 @@ function IdeaCard({ idea, index, annotation, onAnnotate, isSelected, onToggleSel
   const sym = idea.costSavingPotential.annualValue?.includes('£') ? '£'
     : idea.costSavingPotential.annualValue?.includes('$') ? '$'
     : idea.costSavingPotential.annualValue?.includes('¥') ? '¥'
-    : '€';
+    : '£';
   const isMat = idea.costSavingTypes.includes('material');
   const adjSav = baseSav * volumeMul * (isMat ? 1 + commodityDelta / 100 : 1);
   const DiffIcon = diff.icon;

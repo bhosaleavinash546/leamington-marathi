@@ -138,9 +138,9 @@ export default function InnovationStudioPage() {
               )}
               {methodId === 'design-to-cost' && (
                 <div className="grid sm:grid-cols-2 gap-3 mt-3">
-                  <input value={currentCost} onChange={e => setCurrentCost(e.target.value)} type="number" placeholder="Current unit cost (€)"
+                  <input value={currentCost} onChange={e => setCurrentCost(e.target.value)} type="number" placeholder="Current unit cost (£)"
                     className="bg-navy-800 border border-white/15 rounded-lg px-3 py-2.5 text-white text-sm placeholder-slate-600 focus:outline-none focus:border-gold-500/40" />
-                  <input value={targetCost} onChange={e => setTargetCost(e.target.value)} type="number" placeholder="Target unit cost (€)"
+                  <input value={targetCost} onChange={e => setTargetCost(e.target.value)} type="number" placeholder="Target unit cost (£)"
                     className="bg-navy-800 border border-white/15 rounded-lg px-3 py-2.5 text-white text-sm placeholder-slate-600 focus:outline-none focus:border-gold-500/40" />
                 </div>
               )}
@@ -192,7 +192,7 @@ export default function InnovationStudioPage() {
                 ))}
               </div>
             </div>
-            <p className="text-slate-600 text-xs text-center">Method structure is deterministic; every € figure is engine-checked or labelled. Validate before commercial use.</p>
+            <p className="text-slate-600 text-xs text-center">Method structure is deterministic; every £ figure is engine-checked or labelled. Validate before commercial use.</p>
           </motion.div>
         )}
 
@@ -249,12 +249,12 @@ function AnalysisPanel({ methodId, analysis }: { methodId: string; analysis: unk
       <div className="bg-navy-900 border border-white/10 rounded-2xl p-5">
         <p className="text-slate-500 text-xs uppercase tracking-wider mb-2">Cost-gap analysis</p>
         <div className="flex flex-wrap gap-2 text-sm">
-          <Stat label="Current" value={`€${a.currentCost}`} />
-          <Stat label="Target" value={`€${a.targetCost}`} />
-          <Stat label="Gap to close" value={`€${a.gap} (${a.gapPct}%)`} gold />
+          <Stat label="Current" value={`£${a.currentCost}`} />
+          <Stat label="Target" value={`£${a.targetCost}`} />
+          <Stat label="Gap to close" value={`£${a.gap} (${a.gapPct}%)`} gold />
         </div>
         {Array.isArray(a.allocations) && a.allocations.length > 0 && (
-          <p className="text-slate-400 text-xs mt-3">Per-bucket targets: {(a.allocations as { name: string; target: number }[]).map(x => `${x.name} €${x.target}`).join(' · ')}</p>
+          <p className="text-slate-400 text-xs mt-3">Per-bucket targets: {(a.allocations as { name: string; target: number }[]).map(x => `${x.name} £${x.target}`).join(' · ')}</p>
         )}
       </div>
     );

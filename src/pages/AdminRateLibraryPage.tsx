@@ -220,7 +220,7 @@ export default function AdminRateLibraryPage() {
           <div className="w-12 h-12 rounded-xl bg-teal-500/15 border border-teal-500/30 flex items-center justify-center flex-shrink-0"><Database size={22} className="text-teal-400" /></div>
           <div>
             <h1 className="text-2xl font-bold text-white">Rate Library</h1>
-            <p className="text-slate-400 text-sm max-w-2xl mt-1">Upload your organisation's own material €/kg, machine &amp; process rates and region labour. Your values are merged over the built-in defaults and drive every should-cost estimate. Anything you don't provide keeps the shipped default.</p>
+            <p className="text-slate-400 text-sm max-w-2xl mt-1">Upload your organisation's own material €/kg, machine &amp; process rates and region labour. Rates are held in the engine's base currency (EUR) and converted to your display currency (£ by default) on every estimate. Your values are merged over the built-in defaults and drive every should-cost estimate. Anything you don't provide keeps the shipped default.</p>
           </div>
         </div>
 

@@ -190,7 +190,7 @@ export default function TrizStudioPage() {
                 ))}
               </div>
             </div>
-            <p className="text-slate-600 text-xs text-center">Principles are deterministic TRIZ theory; every € figure is engine-checked or labelled. Validate against detailed studies before commercial use.</p>
+            <p className="text-slate-600 text-xs text-center">Principles are deterministic TRIZ theory; every £ figure is engine-checked or labelled. Validate against detailed studies before commercial use.</p>
           </motion.div>
         )}
 

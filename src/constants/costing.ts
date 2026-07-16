@@ -2,7 +2,9 @@
 // should-cost engine supports and the cost-component palette, so the
 // Should-Cost and Idea Studio views can never drift apart.
 
-export const CURRENCIES = ['EUR', 'GBP', 'USD', 'CNY'] as const;
+// GBP first — the app's default display currency (values FX-convert from the
+// engine's EUR base). EUR/USD/CNY remain selectable for multi-region quoting.
+export const CURRENCIES = ['GBP', 'EUR', 'USD', 'CNY'] as const;
 export type Currency = typeof CURRENCIES[number];
 
 export const CURRENCY_SYMBOLS: Record<string, string> = { EUR: '€', GBP: '£', USD: '$', CNY: '¥' };

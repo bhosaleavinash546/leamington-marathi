@@ -46,6 +46,8 @@ interface CostDownAlt {
 }
 interface CostDownResult {
   engine: string;
+  symbol?: string;
+  currency?: string;
   baseline: { partName: string; material: string; process: string; region: string; totalShouldCost: number; currency: string };
   alternatives: CostDownAlt[];
   note: string;
@@ -209,7 +211,7 @@ export default function ShouldCostPage() {
       const r = await fetch('/api/cost-down', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ partName, material, process, weightKg: Number(weightKg), annualVolume: Number(annualVolume), region, apiKey }),
+        body: JSON.stringify({ partName, material, process, weightKg: Number(weightKg), annualVolume: Number(annualVolume), region, currency, apiKey }),
       });
       const d = await r.json().catch(() => ({}));
       if (!r.ok) throw new Error(d.error || 'Cost-down failed');
@@ -492,8 +494,8 @@ export default function ShouldCostPage() {
                           {result.route.lines.map((l, i) => (
                             <tr key={i} className="border-t border-white/5 text-slate-300">
                               <td className="px-3 py-1.5">{l.op}</td>
-                              <td className="px-3 py-1.5 text-right">{result.symbol || '€'}{l.conversion.toFixed(2)}</td>
-                              <td className="px-3 py-1.5 text-right">{result.symbol || '€'}{l.tooling.toFixed(2)}</td>
+                              <td className="px-3 py-1.5 text-right">{result.symbol || '£'}{l.conversion.toFixed(2)}</td>
+                              <td className="px-3 py-1.5 text-right">{result.symbol || '£'}{l.tooling.toFixed(2)}</td>
                               <td className="px-3 py-1.5 text-right">{l.scrapPct}%</td>
                               <td className="px-3 py-1.5 text-right">{l.outMassKg}</td>
                             </tr>
@@ -574,9 +576,9 @@ export default function ShouldCostPage() {
                         <div key={i} className="p-3 rounded-xl bg-white/5 border border-white/10">
                           <div className="flex items-center justify-between gap-2">
                             <div className="text-white text-sm font-medium">{a.material} · {a.process} · {a.region}</div>
-                            <div className="text-emerald-400 text-sm font-bold whitespace-nowrap">−{costDown.baseline.currency === 'EUR' ? '€' : ''}{a.saving.toFixed(2)} ({a.savingPct}%)</div>
+                            <div className="text-emerald-400 text-sm font-bold whitespace-nowrap">−{costDown.symbol || '£'}{a.saving.toFixed(2)} ({a.savingPct}%)</div>
                           </div>
-                          <div className="text-slate-500 text-[11px] mt-0.5">Engine should-cost €{a.total.toFixed(2)}/unit vs €{costDown.baseline.totalShouldCost.toFixed(2)} baseline</div>
+                          <div className="text-slate-500 text-[11px] mt-0.5">Engine should-cost {costDown.symbol || '£'}{a.total.toFixed(2)}/unit vs {costDown.symbol || '£'}{costDown.baseline.totalShouldCost.toFixed(2)} baseline</div>
                           {a.rationale && <p className="text-slate-300 text-xs mt-1.5">{a.rationale}</p>}
                           {a.risk && <p className="text-amber-300/80 text-[11px] mt-1">Risk: {a.risk}</p>}
                         </div>

@@ -48,20 +48,28 @@ export const COMPONENT_CLASSES = {
 };
 export const COMPONENT_TYPES = Object.keys(COMPONENT_CLASSES);
 
-// Basis: Asia-sourced bare board + EU/Asia-blend assembly, EUR, at ~1k boards/yr.
-// Bare-board fab rate (EUR / cm²) by layer count.
-const LAYER_RATE = { 1: 0.016, 2: 0.024, 4: 0.060, 6: 0.105, 8: 0.170, 10: 0.24 };
+// This estimator is self-contained (independent of the main should-cost engine).
+// Its constants were compiled on an EUR basis; GBP rebases them to the app's £
+// display currency (linear, so scaling every money input is exact). Dimensionless
+// ratios below (FINISH_MULT, FREIGHT_PCT, yields, ATTRITION, overhead) are NOT scaled.
+const GBP = 0.85;   // £ per € (matches FX_FALLBACK.GBP)
+// Rebase the component price table (unit £ at ~1k qty) in place.
+for (const c of Object.values(COMPONENT_CLASSES)) c.unit = Number((c.unit * GBP).toFixed(4));
+
+// Basis: Asia-sourced bare board + EU/Asia-blend assembly, at ~1k boards/yr.
+// Bare-board fab rate (£ / cm²) by layer count.
+const LAYER_RATE = Object.fromEntries(Object.entries({ 1: 0.016, 2: 0.024, 4: 0.060, 6: 0.105, 8: 0.170, 10: 0.24 }).map(([k, v]) => [k, v * GBP]));
 const FINISH_MULT = { hasl: 1.0, leadfree_hasl: 1.05, enig: 1.25, osp: 0.98, immersion_silver: 1.15 };
-const FAB_NRE = 220;             // panel/tooling €, amortised over annual volume
-const ASSY_NRE = 180;            // stencil + programming €, amortised over annual volume
-const FEEDER_SETUP = 1.6;        // €/unique part (feeder load + changeover), amortised
-const SMT_PLACEMENT = 0.02;      // €/placement (machine + paste + reflow + handling) at ~1k
-const BGA_PREMIUM = 0.15;        // extra €/placement for fine-pitch/BGA (pins ≥ 48, SMT)
-const XRAY_PER_BOARD = 0.20;     // X-ray inspection when any BGA/fine-pitch part present
-const TH_LEAD = 0.035;           // €/lead (selective/hand solder)
-const AOI_FLAT = 0.08;           // €/board optical inspection
-const FCT_BASE = 0.30;           // €/board functional test setup
-const FCT_PER_ACTIVE = 0.08;     // €/board per active device (IC/MCU/SoC…) under test
+const FAB_NRE = 220 * GBP;             // panel/tooling £, amortised over annual volume
+const ASSY_NRE = 180 * GBP;            // stencil + programming £, amortised over annual volume
+const FEEDER_SETUP = 1.6 * GBP;        // £/unique part (feeder load + changeover), amortised
+const SMT_PLACEMENT = 0.02 * GBP;      // £/placement (machine + paste + reflow + handling) at ~1k
+const BGA_PREMIUM = 0.15 * GBP;        // extra £/placement for fine-pitch/BGA (pins ≥ 48, SMT)
+const XRAY_PER_BOARD = 0.20 * GBP;     // X-ray inspection when any BGA/fine-pitch part present
+const TH_LEAD = 0.035 * GBP;           // £/lead (selective/hand solder)
+const AOI_FLAT = 0.08 * GBP;           // £/board optical inspection
+const FCT_BASE = 0.30 * GBP;           // £/board functional test setup
+const FCT_PER_ACTIVE = 0.08 * GBP;     // £/board per active device (IC/MCU/SoC…) under test
 const FREIGHT_PCT = 0.06;        // inbound freight/duty on materials + fab
 const FIRST_PASS_YIELD = 0.985;  // rework/scrap divisor
 const ATTRITION = 1.02;          // component reel/handling attrition
@@ -157,7 +165,7 @@ export function costBom(input, opts = {}) {
 
   const pct = (x) => (total > 0 ? round((x / total) * 100, 1) : 0);
   return {
-    currency: 'EUR',
+    currency: 'GBP',
     board: { widthMm, heightMm, areaCm2: round(areaCm2, 1), layers, finish },
     stats: { lineItems: lines.length, uniqueParts, totalPlacements: placements, bgaPlacements, thLeads, activeDevices },
     lines,

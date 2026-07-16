@@ -20,7 +20,7 @@ import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(__dirname, '..');
-const VOL = 60000; // nominal premium off-road annual volume for €-annualisation
+const VOL = 60000; // nominal premium off-road annual volume for £-annualisation
 
 const OEMS = ['Porsche Cayenne', 'Mercedes G-Class', 'BMW X7', 'Audi Q8 e-tron', 'Volvo EX90',
   'Lexus LX', 'Land Cruiser 300', 'Cadillac Escalade IQ', 'Jeep Grand Cherokee 4xe',
@@ -28,14 +28,14 @@ const OEMS = ['Porsche Cayenne', 'Mercedes G-Class', 'BMW X7', 'Audi Q8 e-tron',
 
 // A MOVE is a reusable cost-reduction pattern. `mk(part, oem)` renders its
 // commodity-specific text. Titles are `${verb} … ${part} …` so each part×move is
-// a distinct title. Savings are labelled estimates (per-vehicle € and % of the
+// a distinct title. Savings are labelled estimates (per-vehicle £ and % of the
 // part cost), annualised at VOL.
 function idea(seq, system, label, part, move, oem) {
   const id = `orl${String(seq).padStart(3, '0')}`;
   const title = move.title(part);
   const perVeh = move.perVeh;
   const annual = perVeh * VOL;
-  const annualStr = annual >= 1e6 ? `€${(annual / 1e6).toFixed(1)}M` : `€${Math.round(annual / 1e3)}k`;
+  const annualStr = annual >= 1e6 ? `£${(annual / 1e6).toFixed(1)}M` : `£${Math.round(annual / 1e3)}k`;
   return {
     id, title, system,
     costSavingType: move.costType,
@@ -55,9 +55,9 @@ function idea(seq, system, label, part, move, oem) {
       costSavingTypes: move.tags,
       costSavingPotential: {
         qualitative: move.qual,
-        percentage: `€${perVeh}/veh (${move.pct})`,
+        percentage: `£${perVeh}/veh (${move.pct})`,
         annualValue: annualStr,
-        calculationBasis: `€${perVeh}/veh × ${(VOL / 1000)}k veh/yr (indicative premium off-road volume)`,
+        calculationBasis: `£${perVeh}/veh × ${(VOL / 1000)}k veh/yr (indicative premium off-road volume)`,
       },
       implementationDifficulty: move.difficulty,
       riskNotes: move.risk(part),

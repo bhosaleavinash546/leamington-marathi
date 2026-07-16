@@ -96,7 +96,7 @@ export const BIW_COMPONENTS: BiwComponent[] = [
     levers: [
       { t: 'Reduce roof bow count: 3→2 with optimised cross-section', save: '1 part + tooling', bench: 'Mazda CX-60, Kia EV6', bodyStyles: ['sedan','suv','coupe','crossover','universal'], conf: 'benchmarked', note: 'Topology optimisation shows 2 bows sufficient with structural adhesive bonding of roof skin' },
       { t: 'Panoramic glass structural bonding (delete reinforcement bows)', save: '2-3 bows deleted', bench: 'BMW iX, Mercedes EQS', bodyStyles: ['sedan','suv','coupe','mpv'], conf: 'estimated', note: 'Glass-bonded panoramic surround acts as structural element — careful NCAP roof-crush validation required' },
-      { t: 'Al roof outer skin (weight-budget BEV)', save: '35-45% roof mass', bench: 'BMW i7, Audi Q8 e-tron', bodyStyles: ['sedan','suv','coupe','universal'], conf: 'benchmarked', note: 'Lowers CG, reduces total BEV weight. Cost premium €18-30 offset by battery savings on range model' },
+      { t: 'Al roof outer skin (weight-budget BEV)', save: '35-45% roof mass', bench: 'BMW i7, Audi Q8 e-tron', bodyStyles: ['sedan','suv','coupe','universal'], conf: 'benchmarked', note: 'Lowers CG, reduces total BEV weight. Cost premium £15-26 offset by battery savings on range model' },
       { t: 'CFRP fixed roof panel (performance)', save: '50-60% roof mass', bench: 'BMW M4, Porsche 718', bodyStyles: ['coupe','sedan'], conf: 'verified', note: 'Lowers CG for performance, premium segment. Delete bows entirely with monocoque CFRP roof' },
       { t: 'Grade right-size: HSLA220 → mild DC04 outer roof', save: '5-8%', bench: 'VW Group (general)', bodyStyles: ['universal'], conf: 'estimated', note: 'Roof outer not a structural load path — 0.65mm DC04 sufficient for Class A surface quality' },
     ],
@@ -145,7 +145,7 @@ export const BIW_MFG_LEVERS: BiwMfgLever[] = [
 ];
 
 export const BIW_TRENDS: BiwTrend[] = [
-  { t: 'Gigacasting (large-format Al HPDC)', status: 'Emerging', save: '30-50% part count', dir: 'Tesla rear-underbody in 1 shot. NIO, Volvo, Toyota adopting. Eliminates 80+ parts. Requires €50-100M press investment. Now proven viable at 200K+/yr.' },
+  { t: 'Gigacasting (large-format Al HPDC)', status: 'Emerging', save: '30-50% part count', dir: 'Tesla rear-underbody in 1 shot. NIO, Volvo, Toyota adopting. Eliminates 80+ parts. Requires £43-85M press investment. Now proven viable at 200K+/yr.' },
   { t: 'Multi-material BIW (steel-Al hybrid)', status: 'Mainstream', save: '10-18% total BIW mass', dir: 'Al closures + roof + inner panels with steel structure. BMW CLAR, JLR MLA. Best mass/cost balance for premium. Full Al still confined to ultra-premium (Jaguar XJ, Bentley).' },
   { t: 'Structural adhesive bonding (weld-bonding)', status: 'Mainstream', save: '15-25% spot weld ops', dir: 'Henkel/Sika/Dow weld-bonding on flanges: 30% torsional rigidity improvement while reducing spot weld count. Standard on BMW/Audi/VW from 2020.' },
   { t: 'Tailor-rolled blanks (TRB) for hot-stamping', status: 'Emerging', save: '8-15% vs TWB', dir: 'ThyssenKrupp/Salzgitter TRB: continuous variable thickness without weld lines. Better fatigue, cleaner forming. BMW G20/G30 B-pillar. Spreading to VW/Hyundai.' },

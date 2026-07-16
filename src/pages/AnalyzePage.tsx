@@ -91,10 +91,10 @@ const BODY_STYLES: { value: BodyStyle; label: string }[] = [
 ];
 
 const PLANT_REGIONS: { value: PlantRegion; label: string }[] = [
-  { value: 'germany', label: 'Germany (€45-55/hr)' },
+  { value: 'germany', label: 'Germany (£38-47/hr)' },
   { value: 'uk',      label: 'UK (£35-45/hr)' },
-  { value: 'czech',   label: 'Czech / Slovakia (€15-20/hr)' },
-  { value: 'spain',   label: 'Spain / Portugal (€20-28/hr)' },
+  { value: 'czech',   label: 'Czech / Slovakia (£13-17/hr)' },
+  { value: 'spain',   label: 'Spain / Portugal (£17-24/hr)' },
   { value: 'mexico',  label: 'Mexico ($8-12/hr)' },
   { value: 'usa',     label: 'USA ($40-55/hr)' },
   { value: 'china',   label: 'China (¥70-130/hr)' },
@@ -103,8 +103,8 @@ const PLANT_REGIONS: { value: PlantRegion; label: string }[] = [
 ];
 
 const CURRENCIES: { value: Currency; label: string }[] = [
-  { value: 'EUR', label: 'EUR (€)' },
   { value: 'GBP', label: 'GBP (£)' },
+  { value: 'EUR', label: 'EUR (€)' },
   { value: 'USD', label: 'USD ($)' },
   { value: 'CNY', label: 'CNY (¥)' },
 ];
@@ -138,7 +138,7 @@ export default function AnalyzePage() {
   const [bodyStyle, setBodyStyle] = useState<BodyStyle>('suv');
   const [annualVolume, setAnnualVolume] = useState(80000);
   const [plantRegion, setPlantRegion] = useState<PlantRegion>('germany');
-  const [currency, setCurrency] = useState<Currency>('EUR');
+  const [currency, setCurrency] = useState<Currency>('GBP');
   const [programmeLengthYears, setProgrammeLengthYears] = useState(5);
   const [additionalContext, setAdditionalContext] = useState('');
   const [voiceActive, setVoiceActive] = useState(false);
