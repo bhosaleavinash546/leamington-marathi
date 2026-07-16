@@ -10128,11 +10128,21 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
       case 'sheet_metal_fab': {
         setMaterial(el<HTMLSelectElement>('smf-mat'), c.materialId);
         setNumericField('smf-part-wt', c.netWeightKg, 3);
-        // Estimate bend count: planar faces form bends; 2 faces per 90° bend minus the flat base
-        const smfPlanar = cadOCCTGeometry?.features?.planarFaceCount ?? 0;
-        if (smfPlanar > 2) {
-          const estimatedBends = Math.max(1, Math.round((smfPlanar - 2) / 2));
-          setNumericField('smf-bends', estimatedBends, 0);
+        // Bend count — prefer the GEOMETRY-MEASURED count (cylindrical bend faces
+        // with in-plane axes) over the crude planar-face proxy. Phase 3.
+        const smfBends = cadOCCTGeometry?.sheetMetal;
+        if (smfBends && smfBends.bendCount > 0) {
+          setNumericField('smf-bends', smfBends.bendCount, 0);
+          if (smfBends.totalBendLengthMm > 0) {
+            _smExtraWarnings.push(
+              `Bends: ${smfBends.bendCount} press-brake bend(s) measured from geometry ` +
+              `(${smfBends.totalBendLengthMm.toFixed(0)} mm total bend length, ${smfBends.thicknessMm.toFixed(1)} mm sheet). Adjust if the flat pattern differs.`
+            );
+          }
+        } else {
+          // Fallback: planar-face proxy (2 faces per 90° bend minus the flat base)
+          const smfPlanar = cadOCCTGeometry?.features?.planarFaceCount ?? 0;
+          if (smfPlanar > 2) setNumericField('smf-bends', Math.max(1, Math.round((smfPlanar - 2) / 2)), 0);
         }
         // Tolerance from wall thickness (5% of mean wall, min 0.1mm)
         const smfWallMean = cadOCCTGeometry?.wallThickness?.meanMm;

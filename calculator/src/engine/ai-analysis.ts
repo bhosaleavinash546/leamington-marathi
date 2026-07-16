@@ -65,6 +65,8 @@ export interface OCCTGeometry {
     count: number;
     areaMm2?: number;
   }>;
+  /** Sheet-metal forming features — geometry-measured bend count for SM Fab. */
+  sheetMetal?: { bendCount: number; totalBendLengthMm: number; thicknessMm: number };
   error?: string;
   toolingCostEstimates?: {
     hpdcDieCostGBP: number;

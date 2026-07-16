@@ -102,6 +102,7 @@ export interface OCCTGeometry {
     count: number;
     areaMm2?: number;
   }>;
+  sheetMetal?: { bendCount: number; totalBendLengthMm: number; thicknessMm: number };
   error?: string;
   toolingCostEstimates?: {
     hpdcDieCostGBP: number;

@@ -168,6 +168,64 @@ def _extract_machining_features(wrapped, bbox):
     return rows
 
 
+def _detect_bends(wrapped, sheet_thickness):
+    """Phase 3 — sheet-metal bend detection (forming feature).
+
+    A press-brake bend is a cylindrical face spanning the part width with a
+    small radius (≈ the material thickness). Inner + outer bend faces share an
+    axis, so distinct axes = bend count. Uses the RAY-CAST sheet thickness (the
+    bounding box of a bent part is not thin) to size the filters and to gate:
+    only plate-like parts (thin, uniform wall) are treated as sheet metal.
+    A bend cylinder is LONG along its axis (spans width) — that separates it
+    from a drilled hole, whose cylinder is only as long as the sheet is thick.
+    """
+    from OCP.TopExp import TopExp_Explorer
+    from OCP.TopAbs import TopAbs_FACE
+    from OCP.TopoDS import TopoDS
+    from OCP.BRepAdaptor import BRepAdaptor_Surface
+    from OCP.GeomAbs import GeomAbs_SurfaceType
+
+    t = sheet_thickness
+    # Gate: needs a real, thin sheet thickness. Non-sheet parts return 0.
+    if not t or t <= 0 or t > 8.0:
+        return {"bendCount": 0, "totalBendLengthMm": 0.0, "thicknessMm": round(t or 0.0, 2)}
+
+    max_bend_r = max(8.0, t * 6)          # bend radius ≈ 0.5–3× thickness (headroom to 6×)
+    min_bend_len = max(10.0, t * 5)       # a bend spans real width; a hole is only ~t deep
+
+    bends = {}                            # axis identity -> length
+    exp = TopExp_Explorer(wrapped, TopAbs_FACE)
+    while exp.More():
+        face = TopoDS.Face_s(exp.Current())
+        exp.Next()
+        try:
+            ad = BRepAdaptor_Surface(face)
+            if ad.GetType() != GeomAbs_SurfaceType.GeomAbs_Cylinder:
+                continue
+            cyl = ad.Cylinder()
+            r = cyl.Radius()
+            if r < 0.3 or r > max_bend_r:
+                continue
+            length = abs(ad.LastVParameter() - ad.FirstVParameter())
+            if length < min_bend_len:               # long cylinder = bend; short = hole
+                continue
+            d = cyl.Axis().Direction()
+            p = cyl.Axis().Location()
+            # dedup inner/outer bend faces of the SAME bend by axis line
+            ident = (round(d.X(), 2), round(d.Y(), 2), round(d.Z(), 2),
+                     round(p.X() - d.X() * p.X(), 1), round(p.Y() - d.Y() * p.Y(), 1))
+            if ident not in bends or length > bends[ident]:
+                bends[ident] = length
+        except Exception:
+            continue
+
+    return {
+        "bendCount": len(bends),
+        "totalBendLengthMm": round(sum(bends.values()), 1),
+        "thicknessMm": round(t, 2),
+    }
+
+
 def _classify_faces(faces):
     """Return (type_counts dict, cyl_radii_ALL list — one entry per face)."""
     from OCP.BRep import BRep_Tool
@@ -825,6 +883,8 @@ def analyze(filepath: str) -> dict:
                 _extract_feature_table(wrapped, (xmax - xmin, ymax - ymin, zmax - zmin))
                 + _extract_machining_features(wrapped, (xmin, ymin, zmin, xmax, ymax, zmax))
             ),
+            # Sheet-metal forming features (bends) — for the SM Fab press-brake cost.
+            "sheetMetal": _detect_bends(wrapped, wall_stats["minMm"] if wall_stats else None),
             # ── New precision analysis fields ─────────────────────────────
             "wallThickness": wall_stats,
             "draftAnalysis": draft_info,
