@@ -29,8 +29,8 @@ def test_loader_finds_header_on_row_3_and_drops_unit_row(synthetic_sheets):
     assert sheet.header_row == 2  # 0-based -> row 3 in Excel terms
     assert sheet.dropped_unit_row is True
     assert "P/N" in sheet.df.columns
-    # 13 part rows + 1 subtotal + 1 total remain after the unit row is gone.
-    assert len(sheet.df) == 15
+    # 19 part rows + 1 subtotal + 1 total remain after the unit row is gone.
+    assert len(sheet.df) == 21
 
 
 def test_header_mapping_exact_and_fuzzy():
@@ -48,9 +48,9 @@ def test_normaliser_full_report(synthetic_sheets):
     # All 18 messy headers map; nothing left over.
     assert len(report.mapped_columns) == 18
     assert report.unmapped_columns == []
-    # SUBTOTAL + TOTAL rows stripped: 15 - 2 = 13 line items.
+    # SUBTOTAL + TOTAL rows stripped: 21 - 2 = 19 line items.
     assert report.subtotal_rows_removed == 2
-    assert len(df) == 13
+    assert len(df) == 19
     assert len(totals) == 2
     # Weight (g): P-1001 is 14200 g -> 14.2 kg.
     assert df.loc[df["part_number"] == "P-1001", "mass_kg"].iloc[0] == 14.2

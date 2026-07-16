@@ -40,6 +40,14 @@ ROWS = [
     ("P-1003", "Con rod", "Forging", "Eta Forge", "Asia", 240000, 8.80, 8.40, 4.20, 2.10, 1.05, 0.63, 0.42, 0.12, 8.30, 8.60, 620, "C70S6"),  # duplicate PN, conflicting cost -> DEFECT
     ("P-1011", "Gear machined", "Machining", "Beta Machining", "EU", 200000, 14.90, 14.00, 5.60, 4.20, 2.10, 1.40, 0.70, 0.22, 12.60, 13.20, 780, "20MnCr5"),
     ("P-1012", "Housing machined", "Machining", "Theta CNC", "Asia", 150000, 21.00, 19.80, 7.92, 5.94, 2.97, 1.98, 0.99, 0.40, 17.90, 18.50, 2100, "AlSi9Cu3"),
+    # Six more machining parts so cost-vs-mass regression clears n >= 8;
+    # P-1018 sits well above the mass-cost line (planted VAVE candidate).
+    ("P-1013", "Shaft machined", "Machining", "Beta Machining", "EU", 220000, 12.90, 12.20, 4.88, 3.66, 1.83, 1.22, 0.61, 0.18, 11.30, 11.80, 500, "42CrMo4"),
+    ("P-1014", "Flange machined", "Machining", "Theta CNC", "Asia", 130000, 16.90, 16.00, 6.40, 4.80, 2.40, 1.60, 0.80, 0.24, 14.60, 15.20, 1200, "AlSi9Cu3"),
+    ("P-1015", "Hub machined", "Machining", "Beta Machining", "EU", 110000, 19.00, 18.00, 7.20, 5.40, 2.70, 1.80, 0.90, 0.28, 16.40, 17.00, 1600, "20MnCr5"),
+    ("P-1016", "Carrier machined", "Machining", "Theta CNC", "Asia", 95000, 25.40, 24.00, 9.60, 7.20, 3.60, 2.40, 1.20, 0.42, 21.80, 22.60, 2800, "AlSi9Cu3"),
+    ("P-1017", "Diff case machined", "Machining", "Beta Machining", "EU", 80000, 29.10, 27.50, 11.00, 8.25, 4.13, 2.75, 1.37, 0.50, 25.10, 26.00, 3500, "GJS-600"),
+    ("P-1018", "Valve body machined", "Machining", "Iota Precision", "EU", 140000, 22.80, 21.50, 8.60, 6.45, 3.23, 2.15, 1.07, 0.30, 15.90, 17.50, 1000, "AlSi9Cu3"),
 ]
 
 HEADERS = [
