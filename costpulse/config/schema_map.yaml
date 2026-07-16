@@ -1,0 +1,232 @@
+# CostPulse canonical schema map.
+# Maps messy real-world column headers to canonical fields.
+# Matching is case-insensitive and ignores punctuation/whitespace; a fuzzy
+# fallback (ratio >= 0.85) catches near-misses. Unmapped columns are reported,
+# never silently guessed.
+#
+# Extend the synonym lists freely — the normaliser reloads this file per run.
+
+canonical_fields:
+  part_number:
+    synonyms:
+      - "p/n"
+      - "pn"
+      - "part no"
+      - "partno"
+      - "part num"
+      - "part number"
+      - "item code"
+      - "item no"
+      - "item number"
+      - "component number"
+      - "material number"
+      - "sap number"
+      - "drawing number"
+      - "ref"
+  part_name:
+    synonyms:
+      - "part name"
+      - "description"
+      - "part description"
+      - "item description"
+      - "component"
+      - "component name"
+      - "designation"
+      - "nomenclature"
+  commodity:
+    synonyms:
+      - "commodity"
+      - "commodity group"
+      - "category"
+      - "part family"
+      - "technology"
+      - "process family"
+      - "manufacturing process"
+      - "segment"
+  supplier:
+    synonyms:
+      - "supplier"
+      - "vendor"
+      - "supplier name"
+      - "vendor name"
+      - "source"
+      - "manufacturer"
+      - "maker"
+  region:
+    synonyms:
+      - "region"
+      - "country"
+      - "supplier region"
+      - "supplier country"
+      - "location"
+      - "plant location"
+      - "source region"
+  annual_volume:
+    synonyms:
+      - "annual volume"
+      - "qty/yr"
+      - "qty per year"
+      - "eau"
+      - "annual usage"
+      - "annual qty"
+      - "volume"
+      - "yearly volume"
+      - "units per year"
+      - "peak volume"
+      - "annual demand"
+  unit_cost:
+    synonyms:
+      - "unit cost"
+      - "cost per piece"
+      - "piece cost"
+      - "cost/pc"
+      - "total cost"
+      - "cost each"
+      - "manufacturing cost"
+      - "ex-works cost"
+  material_cost:
+    synonyms:
+      - "material cost"
+      - "material"
+      - "raw material"
+      - "raw material cost"
+      - "rm cost"
+      - "mat cost"
+      - "bought out parts"
+      - "bop cost"
+  process_cost:
+    synonyms:
+      - "process cost"
+      - "process"
+      - "conversion cost"
+      - "machine cost"
+      - "manufacturing process cost"
+      - "value added"
+      - "va cost"
+  labour_cost:
+    synonyms:
+      - "labour cost"
+      - "labor cost"
+      - "labour"
+      - "labor"
+      - "direct labour"
+      - "direct labor"
+      - "dl cost"
+  overhead:
+    synonyms:
+      - "overhead"
+      - "overheads"
+      - "burden"
+      - "factory overhead"
+      - "foh"
+      - "indirect cost"
+      - "oh cost"
+  sga_profit:
+    synonyms:
+      - "sga profit"
+      - "sg&a"
+      - "sga"
+      - "sg&a + profit"
+      - "sg&a and profit"
+      - "margin"
+      - "profit"
+      - "markup"
+      - "admin & profit"
+  logistics:
+    synonyms:
+      - "logistics"
+      - "logistics cost"
+      - "freight"
+      - "packaging & freight"
+      - "packaging and freight"
+      - "transport"
+      - "transport cost"
+      - "delivery cost"
+  tooling_amortisation:
+    synonyms:
+      - "tooling amortisation"
+      - "tooling amortization"
+      - "tooling amort"
+      - "tool amort"
+      - "amortisation"
+      - "amortization"
+      - "tooling per piece"
+  quoted_price:
+    synonyms:
+      - "quoted price"
+      - "piece price"
+      - "pp"
+      - "unit price"
+      - "quote"
+      - "quote price"
+      - "supplier quote"
+      - "offer price"
+      - "current price"
+      - "purchase price"
+      - "po price"
+      - "price"
+  should_cost:
+    synonyms:
+      - "should cost"
+      - "should-cost"
+      - "shouldcost"
+      - "clean sheet cost"
+      - "cleansheet"
+      - "bottom up cost"
+      - "calculated cost"
+      - "cost model result"
+  target_cost:
+    synonyms:
+      - "target cost"
+      - "target"
+      - "target price"
+      - "objective cost"
+      - "cost target"
+      - "design to cost"
+  mass_kg:
+    synonyms:
+      - "mass kg"
+      - "mass"
+      - "weight"
+      - "weight kg"
+      - "net weight"
+      - "part weight"
+      - "finished mass"
+      - "gross weight"
+  material_grade:
+    synonyms:
+      - "material grade"
+      - "grade"
+      - "material spec"
+      - "material specification"
+      - "alloy"
+      - "steel grade"
+      - "resin"
+      - "material type"
+  currency:
+    synonyms:
+      - "currency"
+      - "curr"
+      - "ccy"
+      - "currency code"
+
+# Known commodity vocabulary (used for validation hints only, never enforced).
+commodity_vocabulary:
+  - casting
+  - machining
+  - sheet metal
+  - plastics
+  - pcba
+  - fasteners
+  - assembly
+  - forging
+  - stamping
+  - e-motor
+  - battery
+  - wiring harness
+
+# Unit hints: header fragments that imply a unit conversion.
+unit_hints:
+  grams: ["(g)", " g)", "grams", "in g"]
+  per_thousand: ["per 1000", "/1000", "per k pcs", "per 1,000"]
+  percent: ["%", "pct", "percent"]
