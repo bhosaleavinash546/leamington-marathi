@@ -66,19 +66,36 @@ const BAR = [
 function ProductPanel() {
   return (
     <div className="relative">
+      {/* AI idea-generation accent */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.6 }} animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.45, delay: 0.55, type: 'spring', stiffness: 240, damping: 18 }}
+        className="absolute -top-6 right-5 z-20 hidden lg:flex flex-col items-center gap-1.5 pointer-events-none"
+      >
+        <motion.div
+          animate={{ y: [0, -5, 0] }} transition={{ duration: 3.6, repeat: Infinity, ease: 'easeInOut' }}
+          className="relative w-14 h-14 rounded-full bg-gradient-to-br from-gold-300 to-gold-600 flex items-center justify-center text-navy-950 shadow-xl shadow-gold-500/40"
+        >
+          <span className="absolute inset-0 rounded-full ring-8 ring-gold-400/10" />
+          <Lightbulb size={26} strokeWidth={2} />
+        </motion.div>
+        <span className="inline-flex items-center gap-1 text-[11px] font-bold text-navy-950 bg-gold-400 px-2.5 py-1 rounded-full shadow-lg shadow-gold-500/30 whitespace-nowrap">
+          <Sparkles size={11} /> +3 AI ideas
+        </span>
+      </motion.div>
       <motion.div
         initial={{ opacity: 0, y: 26, scale: 0.98 }} animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ duration: 0.6, delay: 0.15, ease: 'easeOut' }}
         className="rounded-2xl bg-navy-900 border border-white/10 p-5 shadow-2xl shadow-black/40"
       >
-        <div className="flex items-start justify-between mb-3">
-          <div>
-            <div className="text-slate-300 text-[13px] font-semibold">Front subframe — HPDC Aluminium</div>
-            <div className="text-white text-3xl font-bold tracking-tight mt-0.5">£42.18 <span className="text-slate-500 text-sm font-medium">/ unit</span></div>
+        <div className="mb-3">
+          <div className="text-slate-300 text-[13px] font-semibold">Front subframe — HPDC Aluminium</div>
+          <div className="flex items-center gap-2.5 mt-1">
+            <div className="text-white text-3xl font-bold tracking-tight">£42.18 <span className="text-slate-500 text-sm font-medium">/ unit</span></div>
+            <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/25 px-2.5 py-1 rounded-full">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" /> Engine-verified
+            </span>
           </div>
-          <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/25 px-2.5 py-1 rounded-full">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" /> Engine-verified
-          </span>
         </div>
         <div className="flex h-3 rounded-md overflow-hidden border border-white/5 my-3">
           {BAR.map((b, i) => <div key={i} style={{ width: b.w, background: b.c }} />)}
