@@ -32,7 +32,7 @@ import { buildCostTools, runToolLoop } from './cost-tools.mjs';
 import { messagesJson } from './llm-json.mjs';
 import { validate, SCHEMAS } from './schemas.mjs';
 import { buildIndex } from './idea-index.mjs';
-import { costBom, COMPONENT_TYPES, COMPONENT_CLASSES } from './pcb-cost.mjs';
+import { registerPcbRoutes } from './routes/pcb.mjs';
 import { registerShouldCostRoutes } from './routes/should-cost.mjs';
 import { registerMarketplaceRoutes } from './routes/marketplace.mjs';
 import { registerRateLibraryRoutes } from './routes/rate-library.mjs';
@@ -3242,6 +3242,9 @@ registerTrizRoutes(app, { requireAuth, rateLimit, makeAnthropic, resolveApiKey, 
 // Innovation methods (Value Engineering, DFA, Design-to-Cost, SCAMPER,
 // Morphological, Effects & Trends, Circularity) — structured idea generation.
 registerInnovationRoutes(app, { requireAuth, rateLimit, makeAnthropic, resolveApiKey, sanitize });
+// PCB → BOM → Cost v2: multi-photo vision BOM, multi-region costing, sensitivity,
+// engine-verified insights.
+registerPcbRoutes(app, { requireAuth, checkUsageQuota, rateLimit, makeAnthropic, resolveApiKey, safeLlmError });
 
 // Active rate library with live commodity prices bridged in — shared by the
 // engine-as-tools chat and the agentic cost-down endpoint below.
@@ -3367,76 +3370,6 @@ app.post('/api/teardown-vision', requireAuth, checkUsageQuota, rateLimit(10, 60 
     res.json({ description });
   } catch (e) {
     res.status(500).json({ error: safeLlmError(e) });
-  }
-});
-
-// ─── PCB IMAGE → BOM → COST ───────────────────────────────────────────────────
-
-// Vision: a PCB photo → a structured component BOM estimate, then costed.
-app.post('/api/pcb-bom-cost', requireAuth, checkUsageQuota, rateLimit(15, 60 * 60 * 1000), async (req, res) => {
-  const { imageBase64, mimeType, apiKey, volume } = req.body;
-  if (!imageBase64 || !apiKey) return res.status(400).json({ error: 'imageBase64 and apiKey are required.' });
-  if (typeof imageBase64 === 'string' && imageBase64.length > 12_000_000) return res.status(413).json({ error: 'Image too large (max ~9 MB).' });
-
-  const bottomPopulated = req.body.bottomPopulated === true;
-  const scaleHint = typeof req.body.boardWidthMm === 'number' && req.body.boardWidthMm > 0
-    ? ` The user states the board is ~${Math.round(req.body.boardWidthMm)} mm wide — use that to scale widthMm/heightMm and component sizes.`
-    : ' No physical scale reference was given, so board dimensions are a best guess from recognisable packages/connectors — mark board size as low confidence.';
-
-  const prompt = `You are a PCB teardown estimator. Examine this photo of a printed circuit board and produce a STRUCTURED bill-of-materials ESTIMATE. Group identical components into one line with a qty. Cap the output at 120 grouped lines.${scaleHint}
-${bottomPopulated ? 'The BOTTOM side is also populated but not shown — include your best estimate of likely bottom-side parts (typically mirrored decoupling capacitors and passives) and set their confidence to "low".' : 'Assume single-sided unless the photo clearly shows otherwise.'}
-
-For EACH line give: refDes (silkscreen ref if legible, else ""), type (EXACTLY one of: ${COMPONENT_TYPES.join(', ')}), package (e.g. "0402","0603","SOIC-8","QFN-48","TH"), mount ("SMT" or "TH"), pins (approx pin/lead count), qty (integer), confidence ("high" if clearly identified, "med", or "low" if inferred/hidden).
-Also estimate the board: widthMm, heightMm, layers (one of ${[1, 2, 4, 6, 8, 10].join('/')}), finish (one of ${Object.keys({ hasl: 1, leadfree_hasl: 1, enig: 1, osp: 1, immersion_silver: 1 }).join('/')}), and note which properties you could NOT observe in "assumptions" (e.g. layer count, board size, bottom side).
-
-Rules: estimate conservatively from what is visible; do NOT invent exact manufacturer part numbers; if unsure pick the closest type and your best-guess package/qty.
-Return ONLY minified JSON, no prose: {"board":{"widthMm":0,"heightMm":0,"layers":2,"finish":"hasl","assumptions":""},"components":[{"refDes":"","type":"","package":"","mount":"SMT","pins":2,"qty":1,"confidence":"med"}]}`;
-
-  try {
-    const client = makeAnthropic(apiKey, { userId: req.user?.id, route: '/api/pcb-bom-cost' });
-    const msg = await client.messages.create({
-      model: 'claude-opus-4-8', max_tokens: 8000,
-      messages: [{ role: 'user', content: [
-        { type: 'image', source: { type: 'base64', media_type: mimeType || 'image/jpeg', data: imageBase64 } },
-        { type: 'text', text: prompt },
-      ] }],
-    }, { timeout: 180_000, maxRetries: 1 });
-
-    if (msg.stop_reason === 'max_tokens') {
-      return res.status(502).json({ error: 'This board has too many components to read in one pass. Crop to a section, or use a lower-resolution overview and add the dense areas manually.' });
-    }
-    let raw = (msg.content[0]?.type === 'text' ? msg.content[0].text : '').trim();
-    if (raw.startsWith('```')) raw = raw.replace(/^```[a-z]*\n?/, '').replace(/\n?```$/, '').trim();
-    const s = raw.indexOf('{'), e = raw.lastIndexOf('}');
-    if (s === -1 || e <= s) return res.status(502).json({ error: 'Could not read a BOM from that image — try a sharper, top-down photo.' });
-    let extracted;
-    try { extracted = JSON.parse(raw.slice(s, e + 1)); }
-    catch { return res.status(502).json({ error: 'The BOM read from the image was not valid — please retry.' }); }
-
-    const cost = costBom(extracted, { volume: Number(volume) || 1000 });
-    // carry per-line confidence + board assumptions through for the UI
-    const conf = Array.isArray(extracted.components) ? extracted.components.map(c => (['high', 'med', 'low'].includes(c?.confidence) ? c.confidence : 'med')) : [];
-    cost.lines = cost.lines.map((l, i) => ({ ...l, confidence: conf[i] || 'med' }));
-    res.json({ board: cost.board, cost, assumptions: String(extracted.board?.assumptions || '').slice(0, 400), extraction: 'ai-vision' });
-  } catch (err) {
-    res.status(500).json({ error: safeLlmError(err) });
-  }
-});
-
-// Component classes for the UI dropdown (single source of truth).
-app.get('/api/pcb-cost/catalogue', (_req, res) => {
-  res.json({ types: COMPONENT_TYPES, classes: Object.fromEntries(Object.entries(COMPONENT_CLASSES).map(([k, v]) => [k, { label: v.label, mount: v.mount, unit: v.unit }])) });
-});
-
-// Re-cost an edited BOM (no vision) — deterministic, no API key needed.
-app.post('/api/pcb-cost', requireAuth, rateLimit(120, 60 * 60 * 1000), (req, res) => {
-  const { board, components, volume } = req.body || {};
-  if (!Array.isArray(components) || components.length === 0) return res.status(400).json({ error: 'components array is required.' });
-  if (components.length > 2000) return res.status(400).json({ error: 'Too many BOM lines (max 2000).' });
-  try {
-    res.json({ cost: costBom({ board, components }, { volume: Number(volume) || 1000 }) });
-  } catch (e) {
-    res.status(400).json({ error: e.message || 'Could not cost that BOM.' });
   }
 });
 

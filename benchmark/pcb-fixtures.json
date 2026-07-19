@@ -1,0 +1,83 @@
+{
+  "comment": "Held-out PCBA fixtures. Anchor prices are ENGINEERING ESTIMATES from public turnkey pricing (JLCPCB/PCBWay class) and EMS cost-structure norms — NOT supplier quotes. Authored before running either engine version, to compare v2 (per-class volume curves + regions) against the v1 flat-tier model without anchor overfitting. tol = acceptable relative error band.",
+  "fixtures": [
+    {
+      "id": "iot-sensor-2l-1k",
+      "name": "IoT sensor node, 2L 60x40 HASL, 1k/yr, China, commercial grade",
+      "board": { "widthMm": 60, "heightMm": 40, "layers": 2, "finish": "hasl" },
+      "components": [
+        { "refDes": "U1", "type": "mcu", "qty": 1 },
+        { "refDes": "U2", "type": "module", "qty": 1 },
+        { "refDes": "U3", "type": "ic_power", "qty": 1 },
+        { "refDes": "R", "type": "resistor", "qty": 30 },
+        { "refDes": "C", "type": "capacitor_mlcc", "qty": 25 },
+        { "refDes": "D", "type": "led", "qty": 2 },
+        { "refDes": "J1", "type": "connector", "qty": 1, "pins": 4 }
+      ],
+      "opts": { "volume": 1000, "region": "china", "autoGrade": false },
+      "refPriceGbp": 7.5, "tol": 0.4,
+      "source": "engineering estimate, turnkey 1k-volume class"
+    },
+    {
+      "id": "auto-ecu-4l-150k-cn",
+      "name": "Automotive body ECU, 4L 120x80 ENIG, 150k/yr, China, AEC-Q",
+      "board": { "widthMm": 120, "heightMm": 80, "layers": 4, "finish": "enig" },
+      "components": [
+        { "refDes": "U1", "type": "mcu", "qty": 1, "pins": 100 },
+        { "refDes": "U2", "type": "ic_power", "qty": 4 },
+        { "refDes": "U3", "type": "ic_analog", "qty": 3 },
+        { "refDes": "Q", "type": "mosfet", "qty": 8 },
+        { "refDes": "R", "type": "resistor", "qty": 80 },
+        { "refDes": "C", "type": "capacitor_mlcc", "qty": 60 },
+        { "refDes": "CE", "type": "capacitor_elec", "qty": 4 },
+        { "refDes": "L", "type": "inductor", "qty": 4 },
+        { "refDes": "D", "type": "diode", "qty": 10 },
+        { "refDes": "Y1", "type": "crystal", "qty": 1 },
+        { "refDes": "J", "type": "connector", "qty": 2, "pins": 24 }
+      ],
+      "opts": { "volume": 150000, "region": "china", "autoGrade": true, "sides": "double" },
+      "refPriceGbp": 16.0, "tol": 0.35,
+      "source": "engineering estimate, high-volume automotive ECU band"
+    },
+    {
+      "id": "auto-ecu-4l-150k-de",
+      "name": "Same automotive ECU built in Germany, 150k/yr",
+      "board": { "widthMm": 120, "heightMm": 80, "layers": 4, "finish": "enig" },
+      "components": [
+        { "refDes": "U1", "type": "mcu", "qty": 1, "pins": 100 },
+        { "refDes": "U2", "type": "ic_power", "qty": 4 },
+        { "refDes": "U3", "type": "ic_analog", "qty": 3 },
+        { "refDes": "Q", "type": "mosfet", "qty": 8 },
+        { "refDes": "R", "type": "resistor", "qty": 80 },
+        { "refDes": "C", "type": "capacitor_mlcc", "qty": 60 },
+        { "refDes": "CE", "type": "capacitor_elec", "qty": 4 },
+        { "refDes": "L", "type": "inductor", "qty": 4 },
+        { "refDes": "D", "type": "diode", "qty": 10 },
+        { "refDes": "Y1", "type": "crystal", "qty": 1 },
+        { "refDes": "J", "type": "connector", "qty": 2, "pins": 24 }
+      ],
+      "opts": { "volume": 150000, "region": "germany", "autoGrade": true, "sides": "double" },
+      "refPriceGbp": 20.0, "tol": 0.35,
+      "source": "engineering estimate, EU-build premium ~+25-35% on a component-heavy board"
+    },
+    {
+      "id": "sbc-6l-10k",
+      "name": "SBC-class board, 6L 90x60 ENIG, SoC + memory, 10k/yr, China",
+      "board": { "widthMm": 90, "heightMm": 60, "layers": 6, "finish": "enig" },
+      "components": [
+        { "refDes": "U1", "type": "soc", "qty": 1 },
+        { "refDes": "U2", "type": "memory", "qty": 2 },
+        { "refDes": "U3", "type": "ic_power", "qty": 3 },
+        { "refDes": "U4", "type": "ic_logic", "qty": 2 },
+        { "refDes": "R", "type": "resistor", "qty": 60 },
+        { "refDes": "C", "type": "capacitor_mlcc", "qty": 80 },
+        { "refDes": "L", "type": "inductor", "qty": 5 },
+        { "refDes": "J", "type": "connector", "qty": 4, "pins": 12 },
+        { "refDes": "Y", "type": "crystal", "qty": 2 }
+      ],
+      "opts": { "volume": 10000, "region": "china", "autoGrade": false },
+      "refPriceGbp": 27.0, "tol": 0.35,
+      "source": "engineering estimate, SBC teardown band"
+    }
+  ]
+}

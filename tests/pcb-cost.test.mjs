@@ -19,7 +19,7 @@ test('costs a typical board with a breakdown that sums to the total', () => {
   assert.ok(r.total > 0);
   const sum = Object.values(r.breakdown).reduce((a, b) => a + b.value, 0);
   assert.ok(Math.abs(sum - r.total) < 0.05, `breakdown ${sum} vs total ${r.total}`);
-  assert.ok(Math.abs((r.componentCost + r.fabCost + r.assemblyCost + r.logistics + r.overhead) - r.total) < 0.05);
+  assert.ok(Math.abs((r.componentCost + r.fabCost + r.assemblyCost + r.testCost + r.logistics + r.overhead + r.tariff) - r.total) < 0.05);
   assert.equal(r.currency, 'GBP');
 });
 
@@ -36,9 +36,10 @@ test('cost scales down with volume across tiers (not just NRE)', () => {
   const k1 = costBom(sampleBom, { volume: 1000 });
   const k100 = costBom(sampleBom, { volume: 100000 });
   assert.ok(proto.total > k1.total * 1.4, 'prototype should be well above 1k');
-  assert.ok(k100.total < k1.total * 0.75, 'high volume should be well below 1k');
-  // component unit price itself moves with volume (not just NRE)
-  assert.ok(k100.componentCost < k1.componentCost * 0.7);
+  assert.ok(k100.total < k1.total * 0.80, 'high volume should be well below 1k');
+  // component unit price itself moves with volume (not just NRE); the mix is
+  // MCU-heavy, and silicon discounts flatten — so ~0.75×, not passives-deep.
+  assert.ok(k100.componentCost < k1.componentCost * 0.80);
 });
 
 test('more layers and a larger board cost more to fab', () => {
@@ -98,4 +99,96 @@ test('every component class has a positive unit price and valid mount', () => {
     assert.ok(v.mount === 'SMT' || v.mount === 'TH', `${k} mount`);
     assert.ok(v.pins >= 1, `${k} pins`);
   }
+});
+
+// ── v2: per-class volume curves, regions, test strategy, sensitivity ─────────
+import { costBomMultiRegion, simulatePcbCost, pcbTornado, classVolMult, PCB_REGIONS } from '../pcb-cost.mjs';
+
+test('per-class volume curves diverge at 150k: passives discount far deeper than silicon', () => {
+  const r = classVolMult('resistor', 150000);
+  const soc = classVolMult('soc', 150000);
+  const mcu = classVolMult('mcu', 150000);
+  assert.ok(r < 0.35, `resistor mult ${r} should be deep`);
+  assert.ok(soc > 0.8, `soc mult ${soc} should stay high`);
+  assert.ok(r < mcu && mcu < soc, 'ordering: passives < mcu < soc');
+});
+
+test('no volume cliff: 100k → 150k is smooth and monotonic', () => {
+  for (const cls of ['resistor', 'ic_logic', 'soc']) {
+    const a = classVolMult(cls, 100000), b = classVolMult(cls, 100001), c = classVolMult(cls, 150000);
+    assert.ok(Math.abs(a - b) < 1e-6, `${cls} cliff at 100k`);
+    assert.ok(c < a, `${cls} not monotonic`);
+  }
+  const t1 = costBom(sampleBom, { volume: 100000 }).total;
+  const t2 = costBom(sampleBom, { volume: 150000 }).total;
+  assert.ok(t2 < t1 && t2 > t1 * 0.9, `150k (£${t2}) should be slightly below 100k (£${t1})`);
+});
+
+test('region axis: conversion scales with the hub, materials do not', () => {
+  const cn = costBom(sampleBom, { volume: 150000, region: 'china' });
+  const de = costBom(sampleBom, { volume: 150000, region: 'germany' });
+  const us = costBom(sampleBom, { volume: 150000, region: 'usa' });
+  assert.ok(de.assemblyCost > cn.assemblyCost * 2, 'German conversion well above China (line rate, not wage ratio)');
+  assert.ok(us.total > cn.total, 'USA total above China');
+  // Components are identical across regions (markup lands in overhead, not the line prices).
+  assert.ok(Math.abs(de.componentCost - cn.componentCost) < 0.01, 'component cost region-independent');
+  assert.ok(de.overhead > cn.overhead, 'markup/overhead higher in Germany');
+});
+
+test('multi-region returns all hubs sorted with deltas', () => {
+  const mr = costBomMultiRegion(sampleBom, { volume: 150000 });
+  assert.equal(mr.results.length, Object.keys(PCB_REGIONS).length);
+  for (let i = 1; i < mr.results.length; i++) assert.ok(mr.results[i].total >= mr.results[i - 1].total, 'sorted ascending');
+  assert.equal(mr.results[0].deltaVsCheapest, 0);
+  const labels = mr.results.map(r => r.region);
+  for (const must of ['china', 'india', 'vietnam', 'usa', 'germany']) assert.ok(labels.includes(must), `missing ${must}`);
+});
+
+test('automotive grade uplift raises component cost only', () => {
+  const auto = costBom(sampleBom, { volume: 10000, autoGrade: true });
+  const comm = costBom(sampleBom, { volume: 10000, autoGrade: false });
+  assert.ok(auto.componentCost > comm.componentCost * 1.1, 'AEC-Q uplift on components');
+  assert.ok(Math.abs(auto.assemblyCost - comm.assemblyCost) < 0.01, 'assembly unaffected');
+});
+
+test('test strategy: fixtures amortise and full suite costs more than AOI-only', () => {
+  const aoi = costBom(sampleBom, { volume: 150000, testStrategy: 'aoi' });
+  const full = costBom(sampleBom, { volume: 150000, testStrategy: 'aoi_ict_fct' });
+  assert.ok(full.testCost > aoi.testCost, 'ICT+FCT adds cost');
+  // fixture NRE at 150k is pennies per board, not pounds
+  assert.ok(full.testCost - aoi.testCost < 2, `delta £${(full.testCost - aoi.testCost).toFixed(2)} should be small at volume`);
+  // auto resolves to full suite at automotive volume with active parts
+  assert.equal(costBom(sampleBom, { volume: 150000 }).params.testStrategy, 'aoi_ict_fct');
+});
+
+test('panel utilisation and tariff move the total in the right direction', () => {
+  const base = costBom(sampleBom, { volume: 150000 });
+  const poor = costBom(sampleBom, { volume: 150000, panelUtil: 0.6 });
+  const tar = costBom(sampleBom, { volume: 150000, tariffPct: 25 });
+  assert.ok(poor.fabCost > base.fabCost, 'poor panel utilisation raises fab');
+  assert.ok(tar.total > base.total, 'tariff raises total');
+  assert.ok(tar.breakdown.tariff && tar.breakdown.tariff.value > 0);
+});
+
+test('double-side assembly costs more than single', () => {
+  const s = costBom(sampleBom, { volume: 150000, sides: 'single' });
+  const d = costBom(sampleBom, { volume: 150000, sides: 'double' });
+  assert.ok(d.assemblyCost > s.assemblyCost);
+});
+
+test('sensitivity: seeded Monte-Carlo is deterministic with ordered percentiles', () => {
+  const a = simulatePcbCost(sampleBom, { volume: 150000 });
+  const b = simulatePcbCost(sampleBom, { volume: 150000 });
+  assert.deepEqual(a, b, 'same seed → same result');
+  assert.ok(a.p10 < a.p50 && a.p50 < a.p90, 'percentiles ordered');
+});
+
+test('tornado scenarios are real engine runs ranked by impact', () => {
+  const t = pcbTornado(sampleBom, { volume: 150000 });
+  assert.ok(t.scenarios.length >= 5);
+  for (let i = 1; i < t.scenarios.length; i++) {
+    assert.ok(Math.abs(t.scenarios[i - 1].delta) >= Math.abs(t.scenarios[i].delta), 'sorted by |impact|');
+  }
+  const vol2 = t.scenarios.find(s => s.label === 'Volume ×2');
+  assert.ok(vol2 && vol2.delta < 0, 'doubling volume should reduce unit cost');
 });
