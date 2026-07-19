@@ -7,6 +7,7 @@
  *  - POST /api/pcb-insights   AI cost/DFM/sourcing ideas, engine-verified.
  */
 import { messagesJson } from '../llm-json.mjs';
+import { providerStatus, lookupParts } from '../component-pricing.mjs';
 import {
   costBom, costBomMultiRegion, simulatePcbCost, pcbTornado, classVolMult,
   COMPONENT_TYPES, COMPONENT_CLASSES, PCB_REGIONS, PCB_REGION_KEYS,
@@ -79,7 +80,34 @@ Estimate conservatively from what is visible.`;
 }
 
 export function registerPcbRoutes(app, deps) {
-  const { requireAuth, checkUsageQuota, rateLimit, makeAnthropic, resolveApiKey, safeLlmError } = deps;
+  const { requireAuth, checkUsageQuota, rateLimit, makeAnthropic, resolveApiKey, safeLlmError, db } = deps;
+
+  // ── Live distributor pricing (DigiKey / Octopart) ─────────────────────────
+  app.get('/api/pcb-part-prices/status', requireAuth, (_req, res) => {
+    res.json({ providers: providerStatus() });
+  });
+
+  app.post('/api/pcb-part-prices', requireAuth, rateLimit(30, 60 * 60 * 1000), async (req, res) => {
+    const status = providerStatus();
+    if (!status.digikey && !status.octopart) {
+      return res.status(503).json({ error: 'No pricing provider configured. Set DIGIKEY_CLIENT_ID + DIGIKEY_CLIENT_SECRET and/or NEXAR_TOKEN in the server .env.' });
+    }
+    const lines = Array.isArray(req.body?.lines) ? req.body.lines : [];
+    if (lines.length === 0) return res.status(400).json({ error: 'lines array is required.' });
+    if (lines.length > 40) return res.status(400).json({ error: 'Max 40 lines per request — price the biggest lines first.' });
+    const volume = Number(req.body?.volume) || 1000;
+    const clean = lines.map((l, i) => ({
+      index: Number.isInteger(l?.index) ? l.index : i,
+      query: String(l?.query || '').slice(0, 80),
+      qty: Math.max(1, Math.round(Number(l?.qty) || volume)),
+    })).filter(l => l.query.trim().length >= 3);
+    try {
+      const results = await lookupParts(clean, { qty: volume }, { db });
+      res.json({ providers: status, results });
+    } catch (e) {
+      res.status(500).json({ error: e.message || 'Price lookup failed.' });
+    }
+  });
 
   // Shared: pull v2 costing options out of a request body.
   const costOpts = (b = {}) => ({

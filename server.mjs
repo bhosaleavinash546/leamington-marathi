@@ -3244,7 +3244,7 @@ registerTrizRoutes(app, { requireAuth, rateLimit, makeAnthropic, resolveApiKey, 
 registerInnovationRoutes(app, { requireAuth, rateLimit, makeAnthropic, resolveApiKey, sanitize });
 // PCB → BOM → Cost v2: multi-photo vision BOM, multi-region costing, sensitivity,
 // engine-verified insights.
-registerPcbRoutes(app, { requireAuth, checkUsageQuota, rateLimit, makeAnthropic, resolveApiKey, safeLlmError });
+registerPcbRoutes(app, { requireAuth, checkUsageQuota, rateLimit, makeAnthropic, resolveApiKey, safeLlmError, db });
 
 // Active rate library with live commodity prices bridged in — shared by the
 // engine-as-tools chat and the agentic cost-down endpoint below.

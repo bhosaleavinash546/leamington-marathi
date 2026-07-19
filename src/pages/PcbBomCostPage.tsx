@@ -1,10 +1,10 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { downloadXlsx, objectsToAoa } from '../services/xlsx-write';
-import { CircuitBoard, Upload, Cpu, Calculator, Download, Trash2, Plus, AlertTriangle, Info, X, Globe2, Activity, Lightbulb, Sparkles, CheckCircle2, XCircle, HelpCircle } from 'lucide-react';
+import { CircuitBoard, Upload, Cpu, Calculator, Download, Trash2, Plus, AlertTriangle, Info, X, Globe2, Activity, Lightbulb, Sparkles, CheckCircle2, XCircle, HelpCircle, Zap } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import ButtonSpinner from '../components/ui/ButtonSpinner';
 
-interface Line { refDes: string; type: string; label?: string; package: string; mount: 'SMT' | 'TH'; pins: number; qty: number; unitCost: number; lineCost?: number; unitCostOverride?: number; confidence?: string; markings?: string; partGuess?: string; aiPrice1k?: number | null }
+interface Line { refDes: string; type: string; label?: string; package: string; mount: 'SMT' | 'TH'; pins: number; qty: number; unitCost: number; lineCost?: number; unitCostOverride?: number; confidence?: string; markings?: string; partGuess?: string; aiPrice1k?: number | null; mpn?: string; liveSource?: string; liveMeta?: string }
 interface Board { widthMm: number; heightMm: number; layers: number; finish: string; areaCm2?: number }
 interface Cost {
   currency: string; board: Board; total: number; componentCost: number; fabCost: number; assemblyCost: number; testCost: number; logistics: number; overhead: number; tariff: number; volume: number;
@@ -78,6 +78,8 @@ export default function PcbBomCostPage() {
   const [coverage, setCoverage] = useState<Coverage | null>(null);
   const [insights, setInsights] = useState<Insight[] | null>(null);
   const [insightsBusy, setInsightsBusy] = useState(false);
+  const [pricingProviders, setPricingProviders] = useState<{ digikey: boolean; octopart: boolean } | null>(null);
+  const [pricingBusy, setPricingBusy] = useState(false);
   // costing params
   const [volume, setVolume] = useState('150000');
   const [region, setRegion] = useState('china');
@@ -102,6 +104,14 @@ export default function PcbBomCostPage() {
       if (d?.regions) setRegions(d.regions);
     }).catch(() => {});
   }, []);
+
+  useEffect(() => {
+    if (!token) return;
+    fetch('/api/pcb-part-prices/status', { headers: { Authorization: `Bearer ${token}` } })
+      .then(r => r.ok ? r.json() : null)
+      .then(d => { if (d?.providers) setPricingProviders(d.providers); })
+      .catch(() => {});
+  }, [token]);
 
   const addFiles = useCallback(async (files: File[]) => {
     const imgs = files.filter(f => f.type.startsWith('image/'));
@@ -147,8 +157,9 @@ export default function PcbBomCostPage() {
 
   // AI-priced lines keep their price as an explicit (editable) override; class-priced
   // lines stay override-free so a Type change reprices from the class average.
+  // The MPN/query field seeds from the vision part-family guess.
   function seedLines(ls: Line[]): Line[] {
-    return ls.map(l => ({ ...l, unitCostOverride: l.aiPrice1k ? l.unitCost : undefined }));
+    return ls.map(l => ({ ...l, unitCostOverride: l.aiPrice1k ? l.unitCost : undefined, mpn: l.partGuess || '' }));
   }
 
   function applyCost(c: Cost) {
@@ -182,6 +193,9 @@ export default function PcbBomCostPage() {
         markings: nextLines[i]?.markings,
         partGuess: nextLines[i]?.partGuess,
         aiPrice1k: nextLines[i]?.aiPrice1k,
+        mpn: nextLines[i]?.mpn,
+        liveSource: nextLines[i]?.liveSource,
+        liveMeta: nextLines[i]?.liveMeta,
       })));
       setDirty(false);
     } catch (e) { setError(e instanceof Error ? e.message : 'Could not re-cost.'); }
@@ -208,16 +222,55 @@ export default function PcbBomCostPage() {
   }
 
   function updateLine(i: number, patch: Partial<Line>) {
-    if (patch.type !== undefined) patch = { ...patch, unitCostOverride: undefined, aiPrice1k: null };
+    if (patch.type !== undefined) patch = { ...patch, unitCostOverride: undefined, aiPrice1k: null, liveSource: undefined, liveMeta: undefined };
     setLines(ls => ls.map((l, j) => j === i ? { ...l, ...patch } : l));
     setDirty(true);
+  }
+
+  const pricingConfigured = !!(pricingProviders?.digikey || pricingProviders?.octopart);
+
+  async function getLivePrices() {
+    if (!token || lines.length === 0) return;
+    const vol = Number(volume) || 1000;
+    // Price the lines that have something to search: user MPN, vision part guess, or markings.
+    const payload = lines
+      .map((l, index) => ({ index, query: (l.mpn || l.partGuess || l.markings || '').trim(), qty: vol }))
+      .filter(l => l.query.length >= 3)
+      .slice(0, 40);
+    if (payload.length === 0) { setError('No part numbers to look up — type an MPN in the Part column first.'); return; }
+    setPricingBusy(true); setError('');
+    try {
+      const r = await fetch('/api/pcb-part-prices', {
+        method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ lines: payload, volume: vol }),
+      });
+      const d = await r.json().catch(() => ({}));
+      if (!r.ok) throw new Error(d.error || 'Price lookup failed');
+      const byIndex = new Map<number, any>((d.results || []).map((res: any) => [res.index, res]));
+      const next = lines.map((l, i) => {
+        const res = byIndex.get(i);
+        if (!res?.found) return l;
+        return {
+          ...l,
+          unitCostOverride: res.unitPrice,
+          aiPrice1k: null,
+          mpn: res.match?.mpn || l.mpn,
+          liveSource: res.source,
+          liveMeta: `${res.match?.manufacturer ? res.match.manufacturer + ' ' : ''}${res.match?.mpn || ''} · £${res.unitPrice} @ ${res.breakQty.toLocaleString()}-break${res.atRequestedQty ? '' : ' (best published — negotiated volume pricing typically lower)'}`,
+        };
+      });
+      const priced = next.filter(l => l.liveSource).length;
+      if (priced === 0) { setError('No matches found — check the MPN spellings.'); setLines(next); return; }
+      await recost(next);   // refresh totals with live prices applied
+    } catch (e) { setError(e instanceof Error ? e.message : 'Price lookup failed.'); }
+    finally { setPricingBusy(false); }
   }
   function addLine() { setLines(ls => [...ls, { refDes: '', type: 'resistor', package: '', mount: 'SMT', pins: 2, qty: 1, unitCost: 0, unitCostOverride: undefined }]); setDirty(true); }
   function delLine(i: number) { setLines(ls => ls.filter((_, j) => j !== i)); setDirty(true); }
 
   function exportXlsx() {
     if (!cost) return;
-    const rows = lines.map(l => ({ RefDes: l.refDes, Type: l.type, Package: l.package, Mount: l.mount, Pins: l.pins, Qty: l.qty, Markings: l.markings || '', 'Part guess': l.partGuess || '', 'Unit £': l.unitCostOverride ?? l.unitCost, 'Line £': +(((l.unitCostOverride ?? l.unitCost) * l.qty)).toFixed(3) }));
+    const rows = lines.map(l => ({ RefDes: l.refDes, Type: l.type, Package: l.package, Mount: l.mount, Pins: l.pins, Qty: l.qty, MPN: l.mpn || '', Markings: l.markings || '', 'Unit £': l.unitCostOverride ?? l.unitCost, 'Price source': l.liveSource ? `live:${l.liveSource}` : l.aiPrice1k ? 'AI estimate' : (l.unitCostOverride ? 'manual' : 'class average'), 'Line £': +(((l.unitCostOverride ?? l.unitCost) * l.qty)).toFixed(3) }));
     rows.push({} as never);
     for (const [k, v] of Object.entries(cost.breakdown)) rows.push({ RefDes: k === 'fab' ? 'PCB fab' : k[0].toUpperCase() + k.slice(1), 'Line £': v.value } as never);
     rows.push({ RefDes: `TOTAL /board · ${cost.regionLabel} @ ${cost.volume.toLocaleString()}/yr`, 'Line £': cost.total } as never);
@@ -313,6 +366,16 @@ export default function PcbBomCostPage() {
                 <div className="px-4 py-3 border-b border-white/8 flex items-center justify-between">
                   <p className="text-white font-semibold text-sm flex items-center gap-2"><Calculator size={15} className="text-teal-400" /> Estimated BOM ({lines.length} lines)</p>
                   <div className="flex items-center gap-2">
+                    <button
+                      onClick={getLivePrices}
+                      disabled={pricingBusy || busy || !pricingConfigured}
+                      title={pricingConfigured
+                        ? `Look up real distributor prices by part number (${[pricingProviders?.digikey && 'DigiKey', pricingProviders?.octopart && 'Octopart'].filter(Boolean).join(' · ')})`
+                        : 'Not configured — set DIGIKEY_CLIENT_ID + DIGIKEY_CLIENT_SECRET and/or NEXAR_TOKEN in the server .env'}
+                      className="text-xs px-2.5 py-1 rounded-lg border border-emerald-500/30 text-emerald-300 hover:bg-emerald-500/10 disabled:opacity-40 flex items-center gap-1.5"
+                    >
+                      {pricingBusy ? <><ButtonSpinner size={11} /> Pricing…</> : <><Zap size={12} /> Live prices</>}
+                    </button>
                     <button onClick={addLine} className="text-xs px-2 py-1 rounded-lg border border-white/10 text-slate-300 hover:bg-white/5 flex items-center gap-1"><Plus size={12} /> Row</button>
                     <button onClick={() => recost()} disabled={busy} className="text-xs px-3 py-1 rounded-lg bg-teal-600/80 hover:bg-teal-500 text-white font-medium disabled:opacity-40">{busy ? 'Costing…' : 'Re-cost'}</button>
                   </div>
@@ -321,7 +384,7 @@ export default function PcbBomCostPage() {
                   <table className="w-full text-xs">
                     <thead className="sticky top-0 bg-navy-900"><tr className="text-slate-500 text-left">
                       <th className="px-2 py-2 font-medium"> </th><th className="px-2 py-2 font-medium">Ref</th><th className="px-2 py-2 font-medium">Type</th><th className="px-2 py-2 font-medium">Pkg</th>
-                      <th className="px-2 py-2 font-medium">Part / markings</th>
+                      <th className="px-2 py-2 font-medium">MPN / part</th>
                       <th className="px-2 py-2 font-medium">Mnt</th><th className="px-2 py-2 font-medium">Pins</th><th className="px-2 py-2 font-medium">Qty</th>
                       <th className="px-2 py-2 font-medium text-right">Unit £</th><th className="px-2 py-2 font-medium text-right">Line £</th><th></th>
                     </tr></thead>
@@ -336,18 +399,24 @@ export default function PcbBomCostPage() {
                             </select>
                           </td>
                           <td className="px-1 py-1"><input value={l.package} onChange={e => updateLine(i, { package: e.target.value })} className={`${inp} w-14`} /></td>
-                          <td className="px-1 py-1 max-w-[130px]">
-                            {l.partGuess || l.markings ? (
-                              <span title={`${l.partGuess || ''}${l.markings ? ` · read: "${l.markings}"` : ''}`} className="block truncate text-slate-400">{l.partGuess || l.markings}</span>
-                            ) : <span className="text-slate-700">—</span>}
+                          <td className="px-1 py-1">
+                            <input
+                              value={l.mpn ?? ''}
+                              onChange={e => updateLine(i, { mpn: e.target.value, liveSource: undefined, liveMeta: undefined })}
+                              placeholder={l.markings || 'MPN / query'}
+                              title={l.liveMeta || (l.markings ? `Read off the part: "${l.markings}"` : 'Type a manufacturer part number for live pricing')}
+                              className={`${inp} w-32 ${l.liveSource ? 'border-emerald-500/40 text-emerald-200' : ''}`}
+                            />
                           </td>
                           <td className="px-1 py-1"><select value={l.mount} onChange={e => updateLine(i, { mount: e.target.value as 'SMT' | 'TH' })} className={`${inp} w-14`}><option>SMT</option><option>TH</option></select></td>
                           <td className="px-1 py-1"><input type="number" value={l.pins} onChange={e => updateLine(i, { pins: Number(e.target.value) })} className={`${inp} w-12`} /></td>
                           <td className="px-1 py-1"><input type="number" value={l.qty} onChange={e => updateLine(i, { qty: Number(e.target.value) })} className={`${inp} w-14`} /></td>
                           <td className="px-1 py-1">
                             <div className="relative">
-                              <input type="number" step="0.001" value={l.unitCostOverride ?? l.unitCost} onChange={e => updateLine(i, { unitCostOverride: e.target.value === '' ? undefined : Number(e.target.value), aiPrice1k: null })} className={`${inp} w-16 text-right ${l.aiPrice1k ? 'border-amber-500/40 text-amber-200' : ''}`} />
-                              {l.aiPrice1k ? <span title={`AI-estimated from markings (~£${l.aiPrice1k} @1k). Edit to correct.`} className="absolute -top-1.5 -right-1 text-[8px] font-bold text-amber-400 bg-navy-900 px-0.5 rounded">AI</span> : null}
+                              <input type="number" step="0.001" value={l.unitCostOverride ?? l.unitCost} onChange={e => updateLine(i, { unitCostOverride: e.target.value === '' ? undefined : Number(e.target.value), aiPrice1k: null, liveSource: undefined, liveMeta: undefined })} className={`${inp} w-16 text-right ${l.liveSource ? 'border-emerald-500/50 text-emerald-200' : l.aiPrice1k ? 'border-amber-500/40 text-amber-200' : ''}`} />
+                              {l.liveSource
+                                ? <span title={l.liveMeta || `Live distributor price (${l.liveSource})`} className="absolute -top-1.5 -right-1 text-[8px] font-bold text-emerald-400 bg-navy-900 px-0.5 rounded">LIVE</span>
+                                : l.aiPrice1k ? <span title={`AI-estimated from markings (~£${l.aiPrice1k} @1k). Edit to correct.`} className="absolute -top-1.5 -right-1 text-[8px] font-bold text-amber-400 bg-navy-900 px-0.5 rounded">AI</span> : null}
                             </div>
                           </td>
                           <td className="px-2 py-1 text-right text-slate-300 font-mono">{(((l.unitCostOverride ?? l.unitCost) * l.qty)).toFixed(2)}</td>
@@ -500,7 +569,7 @@ export default function PcbBomCostPage() {
 
             <div className="flex items-start gap-2 text-[11px] text-slate-500 bg-navy-900/60 border border-white/8 rounded-xl px-3 py-2.5">
               <Info size={13} className="mt-0.5 flex-shrink-0" />
-              <span>Engineering estimate from research-based rate priors and class-average component prices shaped by per-class volume curves. AI-read part prices (amber "AI" tag) are estimates — edit them where you know better. Use the P10–P90 band, not a single point. Not a supplier quote.</span>
+              <span>Engineering estimate from research-based rate priors and class-average component prices shaped by per-class volume curves. Green "LIVE" prices are real distributor price-breaks (DigiKey/Octopart); amber "AI" prices are vision estimates — edit either where you know better. Use the P10–P90 band, not a single point. Not a supplier quote.</span>
             </div>
           </div>
         </div>
