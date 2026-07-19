@@ -17126,6 +17126,30 @@ async function init(): Promise<void> {
     setTimeout(() => document.querySelector<HTMLButtonElement>('.rtab[data-panel="scenarios"]')?.click(), 200);
   });
 
+  // ── Start-a-costing block (Phase A) — input-first entry on the home ──────────
+  document.getElementById('hs-mode-cad')?.addEventListener('click', () => showCosting('cad_analysis'));
+  document.getElementById('hs-mode-pcb')?.addEventListener('click', () => showCosting('pcb_fab'));
+  document.getElementById('hs-browse-all')?.addEventListener('click', () => showCommodityPicker());
+  document.querySelectorAll<HTMLElement>('#home-start .hs-chip[data-commodity]').forEach(chip =>
+    chip.addEventListener('click', () => showCosting(chip.dataset.commodity)));
+  // "Describe a part" → open the AI Agent and hand it the brief
+  const describeGo = () => {
+    const inp = document.getElementById('home-describe-input') as HTMLInputElement | null;
+    const brief = (inp?.value ?? '').trim();
+    showCosting('ai_agent');
+    if (brief) {
+      // The agent form renders async inside switchCommodity — prefill once it exists.
+      setTimeout(() => {
+        const ta = document.getElementById('agent-input') as HTMLTextAreaElement | null;
+        if (ta) { ta.value = brief; ta.focus(); }
+      }, 120);
+    }
+  };
+  document.getElementById('home-describe-go')?.addEventListener('click', describeGo);
+  document.getElementById('home-describe-input')?.addEventListener('keydown', e => {
+    if ((e as KeyboardEvent).key === 'Enter') { e.preventDefault(); describeGo(); }
+  });
+
   // Re-open record from table
   document.getElementById('dash-recent-tbody')?.addEventListener('click', e => {
     const btn = (e.target as HTMLElement).closest('.dash-reopen-btn');
