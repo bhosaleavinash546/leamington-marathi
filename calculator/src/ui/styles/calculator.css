@@ -2006,6 +2006,42 @@ textarea.contact-form-input { resize: vertical; min-height: 100px; }
 .home-start { animation: cv-hero-rise 0.58s var(--ease-out-expo) 240ms both; }
 #home-view.cv-motion-done .home-start { animation: none; }
 @media (prefers-reduced-motion: reduce) { .home-start { animation: none; } }
+
+/* ── Home ↔ Portfolio tabs (Phase B) ─────────────────────────────────────────
+   The calm HOME tab (default) shows Start + summary + slim ticker + recents.
+   The PORTFOLIO tab shows the dense analytics (filters, KPI wall, charts). */
+#home-view:not([data-tab="portfolio"]) .dash-filter-bar,
+#home-view:not([data-tab="portfolio"]) .dash-kpi-row,
+#home-view:not([data-tab="portfolio"]) #dash-portfolio-intel,
+#home-view:not([data-tab="portfolio"]) .dash-body { display: none; }
+/* Home keeps ONLY the slim price ticker — not the expandable dashboard panel */
+#home-view:not([data-tab="portfolio"]) #comm-panel { display: none !important; }
+#home-view:not([data-tab="portfolio"]) #comm-panel-toggle { display: none; }
+/* Portfolio tab hides the calm home-only blocks */
+#home-view[data-tab="portfolio"] #home-start,
+#home-view[data-tab="portfolio"] #home-summary { display: none; }
+/* New / empty workspace: no numbers to summarise yet */
+#home-view[data-mode="new"] #home-summary { display: none; }
+/* "Filter portfolio" acts on the filter bar, which lives on the Portfolio tab */
+#home-view:not([data-tab="portfolio"]) #hero-filter-jump { display: none; }
+
+/* Home summary — one headline KPI + pinned tools */
+.home-summary { display: grid; grid-template-columns: 1.5fr 1fr; gap: 16px; margin: 20px 0 4px; }
+.hsum-kpi, .hsum-pin { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-card); box-shadow: var(--shadow-sm); }
+.hsum-kpi { padding: 20px 22px; }
+.hsum-lab { color: var(--text-muted); font-size: 12.5px; }
+.hsum-big { font-size: 34px; font-weight: 800; letter-spacing: -0.02em; margin-top: 6px; font-variant-numeric: tabular-nums; color: var(--text-primary); }
+.hsum-spark { margin-top: 14px; height: 42px; display: flex; align-items: flex-end; gap: 4px; }
+.hsum-spark i { flex: 1; background: var(--accent); opacity: 0.32; border-radius: 3px 3px 0 0; }
+.hsum-spark i:last-child { opacity: 0.85; }
+.hsum-link { display: inline-flex; align-items: center; gap: 6px; margin-top: 16px; background: none; border: none; cursor: pointer; color: var(--accent); font-family: var(--font); font-size: 12.5px; font-weight: 500; padding: 0; }
+.hsum-pin { padding: 18px 20px; }
+.hsum-h { font-size: 13px; font-weight: 650; margin-bottom: 12px; color: var(--text-primary); }
+.hsum-pgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+.hsum-ptile { display: flex; align-items: center; gap: 9px; padding: 10px 11px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); font-family: var(--font); font-size: 12.5px; color: var(--text-secondary); cursor: pointer; transition: border-color var(--transition), color var(--transition); }
+.hsum-ptile:hover { border-color: var(--accent); color: var(--text-primary); }
+.hsum-d { width: 7px; height: 7px; border-radius: 2px; background: var(--accent); opacity: 0.6; flex: 0 0 auto; }
+@media (max-width: 860px) { .home-summary { grid-template-columns: 1fr; } }
 /* Infinite decorative loops must fully STOP under reduced-motion — the global
    1ms duration clamp would otherwise restart them every frame (jitter). */
 @media (prefers-reduced-motion: reduce) {

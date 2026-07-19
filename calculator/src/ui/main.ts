@@ -592,7 +592,7 @@ async function updateKnowledgePanel(result: PartCostResult): Promise<void> {
 
 
 // ─── App-nav active state (sidebar) ──────────────────────────────────────────
-function setNavActive(id: 'home-btn' | 'news-btn' | 'negotiation-btn' | null): void {
+function setNavActive(id: 'home-btn' | 'analytics-btn' | 'news-btn' | 'negotiation-btn' | null): void {
   document.querySelectorAll('#app-nav .anav-item').forEach(el => el.classList.remove('active'));
   if (id) document.getElementById(id)?.classList.add('active');
   // Every view switch passes through here — close the demo-gallery modal so it
@@ -618,7 +618,7 @@ function showHome(): void {
   document.body.classList.remove('sidebar-collapsed');
   document.getElementById('news-view')?.style.setProperty('display', 'none');
   document.getElementById('negotiation-view')?.style.setProperty('display', 'none');
-  if (homeEl) homeEl.style.display = '';
+  if (homeEl) { homeEl.style.display = ''; homeEl.dataset.tab = 'home'; }
   if (pickerEl) pickerEl.style.display = 'none';
   if (backdrop) { backdrop.classList.remove('visible'); backdrop.style.display = 'none'; }
   if (costingEl) {
@@ -630,6 +630,16 @@ function showHome(): void {
   if (warnEl) warnEl.style.display = 'none';
   showDashboardSkeleton();
   setTimeout(renderDashboard, 340);
+}
+
+// Portfolio Analytics — the dense dashboard (KPIs, commodity panel, filters,
+// charts) on its own tab, reached from the sidebar. Home stays calm (Phase B).
+function showAnalytics(): void {
+  showHome();
+  const hv = document.getElementById('home-view');
+  if (hv) hv.dataset.tab = 'portfolio';
+  setNavActive('analytics-btn');
+  window.scrollTo({ top: 0, behavior: 'auto' });
 }
 
 // Negotiation Intelligence — dedicated left-nav view (its own page).
@@ -1821,6 +1831,14 @@ function renderDashboard(): void {
       const dispSavings = savings * _displayFxRate;
       countUp(kpiSaving, dispSavings, v => `${sym}${v < 1000 ? v.toFixed(0) : (v/1000).toFixed(1)+'k'}`);
     } else { kpiSaving.textContent = '—'; }
+  }
+  // Home headline KPI (Phase B) — mirrors the savings number on the calm home
+  const homeKpi = document.getElementById('home-kpi-savings');
+  if (homeKpi) {
+    const sym = CURRENCY_SYMBOL[_displayCurrency] ?? _displayCurrency;
+    homeKpi.textContent = records.length
+      ? `${sym}${(savings * _displayFxRate) < 1000 ? (savings * _displayFxRate).toFixed(0) : ((savings * _displayFxRate)/1000).toFixed(0)+'k'}`
+      : '—';
   }
 
   // Top commodity by count
@@ -16915,6 +16933,19 @@ async function init(): Promise<void> {
   // Home navigation
   document.getElementById('home-btn')?.addEventListener('click', showHome);
   document.getElementById('logo-home-btn')?.addEventListener('click', showHome);
+  // Portfolio Analytics — the dense dashboard lives on its own tab (Phase B)
+  document.getElementById('analytics-btn')?.addEventListener('click', showAnalytics);
+  document.getElementById('home-open-analytics')?.addEventListener('click', showAnalytics);
+  // Home "Jump back in" pinned tools
+  document.querySelectorAll<HTMLElement>('#home-summary .hsum-ptile[data-go]').forEach(t =>
+    t.addEventListener('click', () => {
+      switch (t.dataset.go) {
+        case 'ai': showCosting('ai_agent'); break;
+        case 'cad': showCosting('cad_analysis'); break;
+        case 'neg': showNegotiation(); break;
+        case 'rates': showCosting('machining'); setTimeout(() => document.getElementById('rates-btn')?.click(), 200); break;
+      }
+    }));
 
   // New Costing button → commodity picker
   document.getElementById('new-costing-btn')?.addEventListener('click', showCommodityPicker);
