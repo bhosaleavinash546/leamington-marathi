@@ -1,8 +1,9 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { downloadXlsx, objectsToAoa } from '../services/xlsx-write';
-import { CircuitBoard, Upload, Cpu, Calculator, Download, Trash2, Plus, AlertTriangle, Info, X, Globe2, Activity, Lightbulb, Sparkles, CheckCircle2, XCircle, HelpCircle, Zap } from 'lucide-react';
+import { CircuitBoard, Upload, Cpu, Calculator, Download, Trash2, Plus, AlertTriangle, Info, X, Globe2, Activity, Lightbulb, Sparkles, CheckCircle2, XCircle, HelpCircle, Zap, FileSpreadsheet } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import ButtonSpinner from '../components/ui/ButtonSpinner';
+import { parseBomFile } from '../services/bom-import';
 
 interface Line { refDes: string; type: string; label?: string; package: string; mount: 'SMT' | 'TH'; pins: number; qty: number; unitCost: number; lineCost?: number; unitCostOverride?: number; confidence?: string; markings?: string; partGuess?: string; aiPrice1k?: number | null; mpn?: string; liveSource?: string; liveMeta?: string }
 interface Board { widthMm: number; heightMm: number; layers: number; finish: string; areaCm2?: number }
@@ -80,6 +81,11 @@ export default function PcbBomCostPage() {
   const [insightsBusy, setInsightsBusy] = useState(false);
   const [pricingProviders, setPricingProviders] = useState<{ digikey: boolean; octopart: boolean } | null>(null);
   const [pricingBusy, setPricingBusy] = useState(false);
+  const [entryMode, setEntryMode] = useState<'photos' | 'bom'>('photos');
+  const [importNotes, setImportNotes] = useState('');
+  const [importedCount, setImportedCount] = useState(0);
+  const [pricingNote, setPricingNote] = useState('');
+  const bomFileRef = useRef<HTMLInputElement>(null);
   // costing params
   const [volume, setVolume] = useState('150000');
   const [region, setRegion] = useState('china');
@@ -133,7 +139,7 @@ export default function PcbBomCostPage() {
   async function extractAndCost() {
     if (photos.length === 0 || !token) return;
     const apiKey = localStorage.getItem('brainspark_api_key') || '';
-    setBusy(true); setError(''); setInsights(null);
+    setBusy(true); setError(''); setInsights(null); setImportNotes(''); setImportedCount(0); setPricingNote('');
     try {
       const r = await fetch('/api/pcb-bom-cost', {
         method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
@@ -159,7 +165,30 @@ export default function PcbBomCostPage() {
   // lines stay override-free so a Type change reprices from the class average.
   // The MPN/query field seeds from the vision part-family guess.
   function seedLines(ls: Line[]): Line[] {
-    return ls.map(l => ({ ...l, unitCostOverride: l.aiPrice1k ? l.unitCost : undefined, mpn: l.partGuess || '' }));
+    return ls.map(l => ({ ...l, unitCostOverride: l.aiPrice1k ? l.unitCost : undefined, mpn: l.mpn || l.partGuess || '' }));
+  }
+
+  async function importBom(file: File) {
+    if (!token) return;
+    const apiKey = localStorage.getItem('brainspark_api_key') || '';
+    setBusy(true); setError(''); setInsights(null); setCoverage(null); setAssumptions('');
+    try {
+      const payload = await parseBomFile(file);
+      const r = await fetch('/api/pcb-bom-import', {
+        method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ ...payload, board, ...costParams(), ...(apiKey ? { apiKey } : {}) }),
+      });
+      const d = await r.json().catch(() => ({}));
+      if (!r.ok) throw new Error(d.error || 'BOM import failed');
+      setImportNotes(d.notes || '');
+      setImportedCount(d.imported || 0);
+      applyCost(d.cost);
+      const seeded = seedLines(d.cost.lines);
+      await recost(seeded, d.cost.board);
+      // Exact MPNs are in hand — go straight to live pricing when configured.
+      if (pricingConfigured) await getLivePricesFor(seeded);
+    } catch (e) { setError(e instanceof Error ? e.message : 'Could not import that BOM.'); }
+    finally { setBusy(false); }
   }
 
   function applyCost(c: Cost) {
@@ -229,16 +258,23 @@ export default function PcbBomCostPage() {
 
   const pricingConfigured = !!(pricingProviders?.digikey || pricingProviders?.octopart);
 
-  async function getLivePrices() {
-    if (!token || lines.length === 0) return;
+  async function getLivePricesFor(sourceLines: Line[]) {
+    if (!token || sourceLines.length === 0) return;
     const vol = Number(volume) || 1000;
-    // Price the lines that have something to search: user MPN, vision part guess, or markings.
-    const payload = lines
-      .map((l, index) => ({ index, query: (l.mpn || l.partGuess || l.markings || '').trim(), qty: vol }))
+    // Send every searchable line — the server prices the 40 most cost-dominant
+    // (qty × best-known unit price) within the provider-call budget.
+    const payload = sourceLines
+      .map((l, index) => ({
+        index,
+        query: (l.mpn || l.partGuess || l.markings || '').trim(),
+        qty: l.qty,
+        type: l.type,
+        unitCostOverride: l.unitCostOverride,
+      }))
       .filter(l => l.query.length >= 3)
-      .slice(0, 40);
-    if (payload.length === 0) { setError('No part numbers to look up — type an MPN in the Part column first.'); return; }
-    setPricingBusy(true); setError('');
+      .slice(0, 300);
+    if (payload.length === 0) { setError('No part numbers to look up — type an MPN in the MPN column first.'); return; }
+    setPricingBusy(true); setError(''); setPricingNote('');
     try {
       const r = await fetch('/api/pcb-part-prices', {
         method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
@@ -247,7 +283,7 @@ export default function PcbBomCostPage() {
       const d = await r.json().catch(() => ({}));
       if (!r.ok) throw new Error(d.error || 'Price lookup failed');
       const byIndex = new Map<number, any>((d.results || []).map((res: any) => [res.index, res]));
-      const next = lines.map((l, i) => {
+      const next = sourceLines.map((l, i) => {
         const res = byIndex.get(i);
         if (!res?.found) return l;
         return {
@@ -261,10 +297,12 @@ export default function PcbBomCostPage() {
       });
       const priced = next.filter(l => l.liveSource).length;
       if (priced === 0) { setError('No matches found — check the MPN spellings.'); setLines(next); return; }
+      setPricingNote(`${priced} line${priced === 1 ? '' : 's'} live-priced${d.skipped > 0 ? ` · ${d.skipped} lower-value lines stayed on class prices (40-lookup budget)` : ''}.`);
       await recost(next);   // refresh totals with live prices applied
     } catch (e) { setError(e instanceof Error ? e.message : 'Price lookup failed.'); }
     finally { setPricingBusy(false); }
   }
+  const getLivePrices = () => getLivePricesFor(lines);
   function addLine() { setLines(ls => [...ls, { refDes: '', type: 'resistor', package: '', mount: 'SMT', pins: 2, qty: 1, unitCost: 0, unitCostOverride: undefined }]); setDirty(true); }
   function delLine(i: number) { setLines(ls => ls.filter((_, j) => j !== i)); setDirty(true); }
 
@@ -294,7 +332,7 @@ export default function PcbBomCostPage() {
           <div className="w-12 h-12 rounded-xl bg-teal-500/15 border border-teal-500/30 flex items-center justify-center flex-shrink-0"><CircuitBoard size={22} className="text-teal-400" /></div>
           <div>
             <h1 className="text-2xl font-bold text-white">PCB Photos → BOM → Should-Cost</h1>
-            <p className="text-slate-400 text-sm max-w-2xl mt-1">Upload up to {MAX_PHOTOS} photos of a board (top, bottom, close-ups). AI fuses them into one BOM — reading silkscreen and IC markings — then a deterministic model costs it across the world's PCB manufacturing hubs, with sensitivity bands and engine-verified optimisation ideas.</p>
+            <p className="text-slate-400 text-sm max-w-2xl mt-1">Upload your engineering BOM (.xlsx/.csv/.pdf — exact part numbers, highest accuracy) or up to {MAX_PHOTOS} board photos (AI fuses views, reading silkscreen and IC markings). Live distributor pricing fills real part costs; a deterministic model then costs the board across the world's PCB manufacturing hubs, with sensitivity bands and engine-verified optimisation ideas.</p>
           </div>
         </div>
 
@@ -302,6 +340,31 @@ export default function PcbBomCostPage() {
           {/* Left column */}
           <div className="space-y-4">
             {!cost && (
+              <div className="flex gap-1.5 p-1 rounded-xl bg-navy-900 border border-white/10 w-fit">
+                {([['photos', 'Board photos'], ['bom', 'BOM file (.xlsx / .csv / .pdf)']] as const).map(([mode, label]) => (
+                  <button
+                    key={mode}
+                    onClick={() => setEntryMode(mode)}
+                    className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-colors ${entryMode === mode ? 'bg-teal-600/80 text-white' : 'text-slate-400 hover:text-white'}`}
+                  >{mode === 'bom' ? <span className="inline-flex items-center gap-1.5"><FileSpreadsheet size={12} /> {label}</span> : label}</button>
+                ))}
+              </div>
+            )}
+
+            {!cost && entryMode === 'bom' && (
+              <div
+                onDragOver={e => { e.preventDefault(); setDragOver(true); }} onDragLeave={() => setDragOver(false)}
+                onDrop={e => { e.preventDefault(); setDragOver(false); const f = e.dataTransfer.files?.[0]; if (f) void importBom(f); }}
+                onClick={() => bomFileRef.current?.click()}
+                className={`cursor-pointer rounded-2xl border-2 border-dashed p-8 text-center transition-colors ${dragOver ? 'border-teal-500/60 bg-teal-500/5' : 'border-white/15 hover:border-white/30'}`}>
+                {busy ? <ButtonSpinner size={24} /> : <FileSpreadsheet size={30} className="text-slate-500 mx-auto mb-3" />}
+                <p className="text-white text-sm font-medium">{busy ? 'Reading the BOM…' : 'Drop your BOM (.xlsx, .csv or .pdf), or click to browse'}</p>
+                <p className="text-slate-500 text-xs mt-1">The highest-accuracy path: exact part numbers and per-board quantities — AI maps any column layout{pricingConfigured ? ', then live distributor pricing runs automatically' : ''}.</p>
+                <input ref={bomFileRef} type="file" accept=".xlsx,.xlsm,.csv,.tsv,.pdf" className="hidden" onChange={e => { const f = e.target.files?.[0]; if (f) void importBom(f); e.target.value = ''; }} />
+              </div>
+            )}
+
+            {!cost && entryMode === 'photos' && (
               <>
                 <div
                   onDragOver={e => { e.preventDefault(); setDragOver(true); }} onDragLeave={() => setDragOver(false)}
@@ -347,6 +410,17 @@ export default function PcbBomCostPage() {
             )}
 
             {error && <div className="flex items-start gap-2 text-sm text-danger-300 bg-danger-500/10 border border-danger-500/25 rounded-xl px-4 py-3"><AlertTriangle size={15} className="mt-0.5 flex-shrink-0" /> {error}</div>}
+
+            {cost && (importedCount > 0 || pricingNote) && (
+              <div className="flex items-start gap-2 text-[11px] text-emerald-300/90 bg-emerald-500/8 border border-emerald-500/25 rounded-xl px-3 py-2.5">
+                <CheckCircle2 size={13} className="mt-0.5 flex-shrink-0" />
+                <span>
+                  {importedCount > 0 && <><b className="text-emerald-300">{importedCount} BOM lines imported</b> — exact part numbers, highest-accuracy path. </>}
+                  {pricingNote && <>{pricingNote} </>}
+                  {importNotes && <span className="text-slate-400">Mapper notes: {importNotes}</span>}
+                </span>
+              </div>
+            )}
 
             {cost && (coverage || assumptions) && (
               <div className="flex items-start gap-2 text-[11px] text-amber-300/80 bg-amber-500/8 border border-amber-500/25 rounded-xl px-3 py-2.5">

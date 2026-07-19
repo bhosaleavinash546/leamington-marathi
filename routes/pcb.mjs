@@ -16,6 +16,34 @@ import {
 const FINISHES = ['hasl', 'leadfree_hasl', 'enig', 'osp', 'immersion_silver'];
 const LAYERS = [1, 2, 4, 6, 8, 10];
 
+/** Sanitize an LLM-mapped BOM into engine-ready components (exported for tests). */
+export function normalizeImportedBom(components) {
+  return (Array.isArray(components) ? components : []).slice(0, 300).map(c => ({
+    refDes: String(c?.refDes || '').slice(0, 24),
+    mpn: String(c?.mpn || '').slice(0, 60),
+    description: String(c?.description || '').slice(0, 120),
+    type: COMPONENT_TYPES.includes(String(c?.type)) ? String(c.type) : 'other',
+    package: String(c?.package || '').slice(0, 24),
+    mount: c?.mount === 'TH' ? 'TH' : 'SMT',
+    pins: Math.max(1, Math.min(2000, Math.round(Number(c?.pins) || 0) || 2)),
+    qty: Math.max(1, Math.min(100000, Math.round(Number(c?.qty) || 1))),
+  })).filter(c => c.mpn || c.description || c.refDes);
+}
+
+/** Value-priority pricing selection: within the provider-call cap, price the
+ *  lines that dominate board cost (qty × best-known unit price). Exported for tests. */
+export function selectPricingLines(lines, cap = 40) {
+  const scored = (Array.isArray(lines) ? lines : [])
+    .map((l, i) => {
+      const cls = COMPONENT_CLASSES[String(l?.type || '').toLowerCase()] || COMPONENT_CLASSES.other;
+      const unit = Number(l?.unitCostOverride) > 0 ? Number(l.unitCostOverride) : cls.unit;
+      return { line: l, index: Number.isInteger(l?.index) ? l.index : i, value: unit * Math.max(1, Number(l?.qty) || 1) };
+    })
+    .filter(s => String(s.line?.query || '').trim().length >= 3)
+    .sort((a, b) => b.value - a.value);
+  return { selected: scored.slice(0, cap), skipped: Math.max(0, scored.length - cap) };
+}
+
 const EXTRACT_SCHEMA = {
   type: 'object',
   properties: {
@@ -94,18 +122,112 @@ export function registerPcbRoutes(app, deps) {
     }
     const lines = Array.isArray(req.body?.lines) ? req.body.lines : [];
     if (lines.length === 0) return res.status(400).json({ error: 'lines array is required.' });
-    if (lines.length > 40) return res.status(400).json({ error: 'Max 40 lines per request — price the biggest lines first.' });
+    if (lines.length > 300) return res.status(400).json({ error: 'Max 300 lines per request.' });
     const volume = Number(req.body?.volume) || 1000;
-    const clean = lines.map((l, i) => ({
+    // Value-priority: the 40 provider calls go to the lines that dominate cost.
+    const { selected, skipped } = selectPricingLines(lines.map((l, i) => ({
       index: Number.isInteger(l?.index) ? l.index : i,
       query: String(l?.query || '').slice(0, 80),
-      qty: Math.max(1, Math.round(Number(l?.qty) || volume)),
-    })).filter(l => l.query.trim().length >= 3);
+      qty: Math.max(1, Math.round(Number(l?.qty) || 1)),
+      type: l?.type, unitCostOverride: l?.unitCostOverride,
+    })), 40);
     try {
-      const results = await lookupParts(clean, { qty: volume }, { db });
-      res.json({ providers: status, results });
+      const results = await lookupParts(
+        selected.map(s => ({ index: s.index, query: s.line.query, qty: volume })),
+        { qty: volume }, { db },
+      );
+      res.json({ providers: status, results, skipped });
     } catch (e) {
       res.status(500).json({ error: e.message || 'Price lookup failed.' });
+    }
+  });
+
+  // ── BOM file import: Excel/CSV rows (client-parsed) or a PDF → normalized BOM ─
+  const IMPORT_SCHEMA = {
+    type: 'object',
+    properties: {
+      components: {
+        type: 'array', maxItems: 300,
+        items: {
+          type: 'object',
+          properties: {
+            refDes: { type: 'string' },
+            mpn: { type: 'string', description: 'Manufacturer part number COPIED VERBATIM from the BOM — never invent or "fix" one. Empty if the BOM has none for this line.' },
+            description: { type: 'string' },
+            qty: { type: 'number', description: 'Quantity PER BOARD' },
+            type: { type: 'string', enum: COMPONENT_TYPES, description: 'Classified from description/MPN so unmatched lines still cost by class' },
+            package: { type: 'string' },
+            mount: { type: 'string', enum: ['SMT', 'TH'] },
+            pins: { type: 'number' },
+          },
+          required: ['qty', 'type'],
+        },
+      },
+      notes: { type: 'string', description: 'Anything ambiguous: which row was the header, columns you could not map, whether qty looked per-board or per-batch, skipped sections (DNP lines etc.)' },
+    },
+    required: ['components'],
+  };
+
+  app.post('/api/pcb-bom-import', requireAuth, checkUsageQuota, rateLimit(15, 60 * 60 * 1000), async (req, res) => {
+    const body = req.body || {};
+    const kind = body.kind === 'pdf' ? 'pdf' : 'rows';
+    if (kind === 'rows') {
+      if (!Array.isArray(body.rows) || body.rows.length === 0) return res.status(400).json({ error: 'rows array is required for kind "rows".' });
+      if (body.rows.length > 300) return res.status(400).json({ error: 'BOM too long (max 300 rows).' });
+    } else if (typeof body.pdfBase64 !== 'string' || body.pdfBase64.length === 0) {
+      return res.status(400).json({ error: 'pdfBase64 is required for kind "pdf".' });
+    } else if (body.pdfBase64.length > 11_000_000) {
+      return res.status(413).json({ error: 'PDF too large (max ~8 MB).' });
+    }
+    const apiKey = resolveApiKey(req);
+    if (!apiKey) return res.status(400).json({ error: 'No API key configured — add one in Settings.' });
+
+    const instruction = `You are given a PCB bill-of-materials ${kind === 'pdf' ? 'as a PDF document' : 'as a raw spreadsheet grid (rows of cells, header position unknown)'}.
+Map it to the schema:
+1. Find the header row(s) and identify which columns hold reference designators, manufacturer part numbers, descriptions/values, quantities, packages/footprints.
+2. Emit ONE entry per BOM line. Copy MPNs VERBATIM — never invent, complete, or correct a part number; leave mpn empty when the BOM has none.
+3. qty must be PER BOARD. If a quantity column looks like a batch/order quantity, say so in notes and use your best per-board interpretation.
+4. Classify each line's "type" from its description/MPN (closest enum value; passives/ICs/connectors etc.) so lines without a price match can still be costed by class.
+5. Skip DNP/"do not populate" lines and note how many you skipped. Put every ambiguity in notes.`;
+
+    const content = kind === 'pdf'
+      ? [
+          { type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: body.pdfBase64 } },
+          { type: 'text', text: instruction },
+        ]
+      : `${instruction}\n\nBOM grid (tab-separated, one row per line):\n${body.rows
+          .slice(0, 300)
+          .map(r => (Array.isArray(r) ? r.slice(0, 14).map(c => String(c ?? '').slice(0, 80)).join('\t') : ''))
+          .join('\n')}`;
+
+    try {
+      const client = makeAnthropic(apiKey, { userId: req.user?.id, route: '/api/pcb-bom-import' });
+      const out = await messagesJson(client, {
+        model: 'claude-opus-4-8',
+        maxTokens: 8000,
+        toolName: 'emit_bom',
+        toolDescription: 'Emit the normalized PCB BOM.',
+        messages: [{ role: 'user', content }],
+        schema: IMPORT_SCHEMA,
+        requestOptions: { timeout: 180_000, maxRetries: 1 },
+      });
+      const components = normalizeImportedBom(out.components);
+      if (components.length === 0) return res.status(422).json({ error: 'Could not read any BOM lines from that file — check it has part rows with quantities.' });
+      const opts = costOpts(body);
+      const cost = costBom({ board: body.board, components }, opts);
+      // Carry BOM identity onto the costed lines: exact MPN, description, and
+      // high confidence (the source is the real BOM, not vision inference).
+      cost.lines = cost.lines.map((l, i) => ({
+        ...l,
+        confidence: 'high',
+        mpn: components[i]?.mpn || '',
+        partGuess: components[i]?.description || '',
+        markings: '',
+        aiPrice1k: null,
+      }));
+      res.json({ cost, imported: components.length, notes: String(out.notes || '').slice(0, 500), extraction: 'bom-file' });
+    } catch (err) {
+      res.status(500).json({ error: safeLlmError(err) });
     }
   });
 
