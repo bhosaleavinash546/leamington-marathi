@@ -391,3 +391,15 @@ export function pcbTornado(input, opts = {}) {
   scenarios.sort((a, b) => Math.abs(b.delta) - Math.abs(a.delta));
   return { baseTotal: base.total, scenarios: scenarios.slice(0, 12) };
 }
+
+// Internals surfaced for the detailed CBD engine (pcb-detailed.mjs), which
+// decomposes the SAME constants into an editable driver tree — one engine,
+// two views; parity at defaults is asserted in tests.
+export const PCB_INTERNALS = {
+  LAYER_RATE, FINISH_MULT, FAB_NRE, ASSY_NRE, FEEDER_SETUP, SMT_PLACEMENT,
+  BGA_PREMIUM, XRAY_PER_BOARD, TH_LEAD, AOI_FLAT, FCT_BENCH_BASE,
+  FCT_BENCH_PER_ACTIVE, SECOND_SIDE_ADDER, ICT_FIXTURE_NRE, FCT_FIXTURE_NRE,
+  ICT_SEC, FCT_SEC_BASE, FCT_SEC_PER_ACTIVE, TEST_RATE_HR, FREIGHT_PCT,
+  FIRST_PASS_YIELD, ATTRITION, CONV_OVERHEAD, AEC_Q_UPLIFT,
+  convVolMult, fabVolMult, resolveTestStrategy,
+};

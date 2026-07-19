@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { downloadXlsx, objectsToAoa } from '../services/xlsx-write';
-import { CircuitBoard, Upload, Cpu, Calculator, Download, Trash2, Plus, AlertTriangle, Info, X, Globe2, Activity, Lightbulb, Sparkles, CheckCircle2, XCircle, HelpCircle, Zap, FileSpreadsheet } from 'lucide-react';
+import { CircuitBoard, Upload, Cpu, Calculator, Download, Trash2, Plus, AlertTriangle, Info, X, Globe2, Activity, Lightbulb, Sparkles, CheckCircle2, XCircle, HelpCircle, Zap, FileSpreadsheet, SlidersHorizontal, ChevronDown, RotateCcw } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import ButtonSpinner from '../components/ui/ButtonSpinner';
 import { parseBomFile } from '../services/bom-import';
@@ -56,6 +56,27 @@ function downscalePhoto(file: File): Promise<Photo> {
 }
 
 const CONF_DOT: Record<string, string> = { high: 'bg-emerald-400', med: 'bg-amber-400', low: 'bg-danger-400' };
+
+// ── Detailed manual should-costing (CBD) types ───────────────────────────────
+interface CbdLine { tier: string; label: string; value: number; pct: number; basis: string }
+interface CbdStation { id: string; label: string; cycleSec: number; mhr: number; cost: number; detail?: string }
+interface CbdNre { id: string; label: string; amount: number; amortVolume: number; perBoard: number }
+interface Cbd {
+  lines: CbdLine[]; stations: CbdStation[]; nre: CbdNre[]; rty: number;
+  exWorks: number; landed: number;
+  parity: { simpleTotal: number; detailedTotal: number; deltaPct: number };
+  meta: { regionLabel: string; volume: number; testStrategy: string };
+}
+interface Drivers {
+  material: { attritionPct: number; materialOhPct: number; consumablesPerBoard: number };
+  fab: { ratePerCm2: number; finishMult: number; panelUtil: number };
+  stations: Array<{ id: string; label: string; cycleSec: number; mhr: number; detail?: string }>;
+  yieldD: { fpyPrintPct: number; fpyPlacePct: number; fpyReflowPct: number; fpyTestPct: number; reworkSharePct: number; reworkMin: number; reworkRatePerHr: number };
+  nre: Array<{ id: string; label: string; amount: number; amortVolume: number }>;
+  overheads: { mfgOhPct: number; sgaPct: number; profitPct: number };
+  belowLine: { packagingPerBoard: number; freightPct: number; tariffPct: number };
+}
+type Overrides = Record<string, Record<string, number> | Record<string, Record<string, number>>>;
 
 export default function PcbBomCostPage() {
   const { token } = useAuth();
@@ -593,6 +614,8 @@ export default function PcbBomCostPage() {
                 })}
               </div>
             )}
+            {/* Detailed manual should-costing (CBD) */}
+            {cost && !dirty && <DetailedEngine token={token} board={board} lines={lines} getParams={costParams} />}
           </div>
 
           {/* Right column: parameters + cost summary */}
@@ -648,6 +671,259 @@ export default function PcbBomCostPage() {
           </div>
         </div>
       </div>
+    </div>
+  );
+}
+
+// ─── Detailed manual should-costing engine (CBD waterfall) ───────────────────
+// One engine, two views: drivers are DERIVED from the standard estimate, so at
+// defaults the totals reconcile; every field is overridable with provenance.
+function DetailedEngine({ token, board, lines, getParams }: { token: string | null; board: Board; lines: Line[]; getParams: () => Record<string, unknown> }) {
+  const [open, setOpen] = useState(false);
+  const [drivers, setDrivers] = useState<Drivers | null>(null);
+  const [cbd, setCbd] = useState<Cbd | null>(null);
+  const [ov, setOv] = useState<Overrides>({});
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState('');
+  const [group, setGroup] = useState('');
+  const [mhrFor, setMhrFor] = useState('');
+  const [mhrIn, setMhrIn] = useState({ investment: '1000000', deprYears: '7', operators: '0.75', labourRate: '18', productiveHoursYr: '5000' });
+
+  async function compute(overrides: Overrides) {
+    if (!token) return;
+    setBusy(true); setErr('');
+    try {
+      const r = await fetch('/api/pcb-detailed', {
+        method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({
+          board, ...getParams(), overrides,
+          components: lines.map(l => ({ refDes: l.refDes, type: l.type, package: l.package, mount: l.mount, pins: l.pins, qty: l.qty, unitCostOverride: l.unitCostOverride })),
+        }),
+      });
+      const d = await r.json().catch(() => ({}));
+      if (!r.ok) throw new Error(d.error || 'Detailed costing failed');
+      setDrivers(d.drivers); setCbd(d.cbd);
+    } catch (e) { setErr(e instanceof Error ? e.message : 'Detailed costing failed.'); }
+    finally { setBusy(false); }
+  }
+
+  useEffect(() => { if (open && !cbd) void compute(ov); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, [open]);
+  useEffect(() => {
+    if (!open || !cbd) return;
+    const t = setTimeout(() => void compute(ov), 700);
+    return () => clearTimeout(t);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ov]);
+
+  const setFlat = (grp: string, key: string, raw: string) => {
+    const v = raw === '' ? undefined : Number(raw);
+    setOv(prev => {
+      const g = { ...(prev[grp] as Record<string, number> | undefined) };
+      if (v === undefined || !Number.isFinite(v)) delete g[key]; else g[key] = v;
+      const next = { ...prev, [grp]: g };
+      if (Object.keys(g).length === 0) delete next[grp];
+      return next;
+    });
+  };
+  const setNested = (grp: 'stations' | 'nre', id: string, key: string, raw: string) => {
+    const v = raw === '' ? undefined : Number(raw);
+    setOv(prev => {
+      const g = { ...((prev[grp] as Record<string, Record<string, number>>) || {}) };
+      const e = { ...(g[id] || {}) };
+      if (v === undefined || !Number.isFinite(v)) delete e[key]; else e[key] = v;
+      if (Object.keys(e).length === 0) delete g[id]; else g[id] = e;
+      const next = { ...prev, [grp]: g };
+      if (Object.keys(g).length === 0) delete next[grp];
+      return next;
+    });
+  };
+  const flatVal = (grp: string, key: string, derived: number) =>
+    ((ov[grp] as Record<string, number> | undefined)?.[key] ?? derived);
+  const nestedVal = (grp: 'stations' | 'nre', id: string, key: string, derived: number) =>
+    ((ov[grp] as Record<string, Record<string, number>> | undefined)?.[id]?.[key] ?? derived);
+  const isSet = (grp: string, key: string) => (ov[grp] as Record<string, number> | undefined)?.[key] !== undefined;
+  const isSetN = (grp: 'stations' | 'nre', id: string, key: string) => (ov[grp] as Record<string, Record<string, number>> | undefined)?.[id]?.[key] !== undefined;
+  const hasOv = Object.keys(ov).length > 0;
+
+  async function applyMhr(stationId: string) {
+    if (!token) return;
+    try {
+      const r = await fetch('/api/pcb-detailed/mhr', {
+        method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify(Object.fromEntries(Object.entries(mhrIn).map(([k, v]) => [k, Number(v)]))),
+      });
+      const d = await r.json().catch(() => ({}));
+      if (r.ok && d.mhr) { setNested('stations', stationId, 'mhr', String(d.mhr)); setMhrFor(''); }
+    } catch { /* leave field as-is */ }
+  }
+
+  function exportCbd() {
+    if (!cbd) return;
+    const rows: (string | number)[][] = [
+      ['BrainSpark — PCBA Should-Cost Breakdown (CBD)'],
+      [`Region: ${cbd.meta.regionLabel}`, `Volume: ${cbd.meta.volume.toLocaleString()}/yr`, `Test: ${cbd.meta.testStrategy}`, `RTY: ${cbd.rty}%`],
+      [],
+      ['Tier', 'Cost line', '£/board', '% of landed', 'Basis'],
+      ...cbd.lines.map(l => [l.tier, l.label, l.value, l.pct, l.basis]),
+      [],
+      ['', 'EX-WORKS', cbd.exWorks], ['', 'LANDED', cbd.landed],
+      [],
+      ['Stations'], ['Station', 'Cycle s', '£/hr', '£/board'],
+      ...cbd.stations.map(s => [s.label, s.cycleSec, s.mhr, s.cost]),
+      [],
+      ['NRE & tooling'], ['Item', '£', 'Amortisation qty', '£/board'],
+      ...cbd.nre.map(n => [n.label, n.amount, n.amortVolume, n.perBoard]),
+      [],
+      ['Assumptions'],
+      [hasOv ? `User-overridden drivers: ${JSON.stringify(ov)}` : 'All drivers derived from the standard engine (no overrides).'],
+      ['Engineering estimate — not a supplier quote. Derived defaults carry research-prior uncertainty.'],
+    ];
+    void downloadXlsx('BrainSpark_PCB_CBD_ShouldCost.xlsx', [{ name: 'CBD Should-Cost', rows }]);
+  }
+
+  const inpS = 'w-20 bg-navy-800 border rounded-lg px-2 py-1 text-white text-xs focus:outline-none focus:border-teal-500/40';
+  const bcls = (set: boolean) => `${inpS} ${set ? 'border-gold-500/50 text-gold-200' : 'border-white/10'}`;
+  const Grp = ({ id, title, children }: { id: string; title: string; children: React.ReactNode }) => (
+    <div className="border border-white/8 rounded-xl overflow-hidden">
+      <button onClick={() => setGroup(g => g === id ? '' : id)} className="w-full flex items-center justify-between px-3 py-2 text-xs font-semibold text-slate-300 hover:bg-white/5">
+        {title} <ChevronDown size={13} className={`transition-transform ${group === id ? 'rotate-180' : ''}`} />
+      </button>
+      {group === id && <div className="px-3 pb-3 pt-1 space-y-2">{children}</div>}
+    </div>
+  );
+  const F = ({ grp, k, label, unit, derived, step = 0.1 }: { grp: string; k: string; label: string; unit: string; derived: number; step?: number }) => (
+    <label className="flex items-center gap-2 text-[11.5px] text-slate-400">
+      <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${isSet(grp, k) ? 'bg-gold-400' : 'bg-slate-600'}`} title={isSet(grp, k) ? 'Your value' : 'Derived from the standard engine'} />
+      <span className="flex-1">{label}</span>
+      <input type="number" step={step} value={flatVal(grp, k, derived)} onChange={e => setFlat(grp, k, e.target.value)} className={bcls(isSet(grp, k))} />
+      <span className="w-10 text-slate-600">{unit}</span>
+    </label>
+  );
+
+  if (!token) return null;
+  return (
+    <div className="bg-navy-900 border border-white/10 rounded-2xl p-4">
+      <div className="flex items-center justify-between">
+        <button onClick={() => setOpen(v => !v)} className="flex items-center gap-2 text-white font-semibold text-sm">
+          <SlidersHorizontal size={15} className="text-teal-400" /> Detailed engine — manual should-costing (CBD)
+          <ChevronDown size={14} className={`text-slate-500 transition-transform ${open ? 'rotate-180' : ''}`} />
+        </button>
+        {open && cbd && (
+          <div className="flex items-center gap-2">
+            {hasOv
+              ? <span className="text-[10.5px] font-bold text-gold-300 bg-gold-500/10 border border-gold-500/25 rounded-full px-2 py-0.5">custom drivers</span>
+              : <span className="text-[10.5px] font-bold text-emerald-300 bg-emerald-500/10 border border-emerald-500/25 rounded-full px-2 py-0.5" title={`Simple £${cbd.parity.simpleTotal} vs detailed £${cbd.parity.detailedTotal}`}>matches standard ±{Math.abs(cbd.parity.deltaPct)}%</span>}
+            {hasOv && <button onClick={() => setOv({})} title="Reset every driver to its derived value" className="text-slate-500 hover:text-white"><RotateCcw size={13} /></button>}
+            <button onClick={exportCbd} className="text-xs px-2.5 py-1 rounded-lg border border-white/10 text-slate-300 hover:bg-white/5 flex items-center gap-1"><Download size={11} /> CBD sheet</button>
+          </div>
+        )}
+      </div>
+      {!open && <p className="text-slate-500 text-xs mt-1.5">Open the full industry-standard driver tree — cycle times, machine rates, per-stage yield, NRE amortisation, overhead pools — pre-filled from the standard estimate; override anything you know.</p>}
+
+      {open && (
+        <div className="mt-3 space-y-3">
+          {err && <p className="text-danger-300 text-xs">{err}</p>}
+          {busy && !cbd && <p className="text-slate-500 text-xs">Deriving drivers…</p>}
+          {cbd && (
+            <>
+              {/* CBD waterfall */}
+              <div className="rounded-xl border border-white/8 overflow-hidden">
+                <table className="w-full text-[11.5px]">
+                  <thead><tr className="text-slate-500 text-left bg-white/3">
+                    <th className="px-2.5 py-1.5 font-medium w-8">Tier</th><th className="px-2 py-1.5 font-medium">Cost line</th>
+                    <th className="px-2 py-1.5 font-medium text-right">£/board</th><th className="px-2 py-1.5 font-medium text-right w-12">%</th>
+                  </tr></thead>
+                  <tbody>
+                    {cbd.lines.map((l, i) => (
+                      <tr key={i} className="border-t border-white/5" title={l.basis}>
+                        <td className="px-2.5 py-1 text-slate-600 font-bold">{l.tier}</td>
+                        <td className="px-2 py-1 text-slate-300">{l.label}</td>
+                        <td className="px-2 py-1 text-right font-mono text-slate-200">{l.value.toFixed(3)}</td>
+                        <td className="px-2 py-1 text-right text-slate-500">{l.pct}%</td>
+                      </tr>
+                    ))}
+                    <tr className="border-t border-white/15 font-semibold"><td /><td className="px-2 py-1.5 text-slate-200">Ex-works</td><td className="px-2 py-1.5 text-right font-mono text-white">£{cbd.exWorks.toFixed(2)}</td><td /></tr>
+                    <tr className="font-bold"><td /><td className="px-2 py-1.5 text-teal-300">Landed / delivered</td><td className="px-2 py-1.5 text-right font-mono text-teal-300">£{cbd.landed.toFixed(2)}</td><td /></tr>
+                  </tbody>
+                </table>
+              </div>
+              {busy && <p className="text-slate-600 text-[10.5px]">Recomputing…</p>}
+
+              {/* Driver groups */}
+              {drivers && (
+                <div className="space-y-2">
+                  <Grp id="mat" title="Material & overheads on material">
+                    <F grp="material" k="attritionPct" label="Component attrition" unit="%" derived={drivers.material.attritionPct} />
+                    <F grp="material" k="materialOhPct" label="Material overhead (procurement, inspection, stores)" unit="%" derived={drivers.material.materialOhPct} />
+                    <F grp="material" k="consumablesPerBoard" label="Consumables (paste, flux, coating) — not estimated by default" unit="£" derived={drivers.material.consumablesPerBoard} step={0.01} />
+                  </Grp>
+                  <Grp id="fab" title="Bare PCB">
+                    <F grp="fab" k="ratePerCm2" label="Fab rate" unit="£/cm²" derived={drivers.fab.ratePerCm2} step={0.001} />
+                    <F grp="fab" k="finishMult" label="Surface-finish multiplier" unit="×" derived={drivers.fab.finishMult} step={0.05} />
+                    <F grp="fab" k="panelUtil" label="Panel utilisation" unit="0-1" derived={drivers.fab.panelUtil} step={0.05} />
+                  </Grp>
+                  <Grp id="stn" title="Stations — cycle time & machine-hour rates">
+                    {drivers.stations.map(st => (
+                      <div key={st.id} className="space-y-1">
+                        <div className="flex items-center gap-2 text-[11.5px] text-slate-400">
+                          <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${(isSetN('stations', st.id, 'cycleSec') || isSetN('stations', st.id, 'mhr')) ? 'bg-gold-400' : 'bg-slate-600'}`} />
+                          <span className="flex-1">{st.label}{st.detail ? <span className="text-slate-600"> · {st.detail}</span> : null}</span>
+                          <input type="number" step={0.5} value={nestedVal('stations', st.id, 'cycleSec', st.cycleSec)} onChange={e => setNested('stations', st.id, 'cycleSec', e.target.value)} className={bcls(isSetN('stations', st.id, 'cycleSec'))} title="Cycle seconds per board" />
+                          <span className="text-slate-600">s</span>
+                          <input type="number" step={1} value={nestedVal('stations', st.id, 'mhr', st.mhr)} onChange={e => setNested('stations', st.id, 'mhr', e.target.value)} className={bcls(isSetN('stations', st.id, 'mhr'))} title="Fully-burdened machine-hour rate" />
+                          <span className="text-slate-600">£/hr</span>
+                          <button onClick={() => setMhrFor(m => m === st.id ? '' : st.id)} className="text-teal-400 hover:text-teal-300 text-[10.5px] font-semibold whitespace-nowrap">build-up</button>
+                        </div>
+                        {mhrFor === st.id && (
+                          <div className="ml-3.5 p-2.5 rounded-lg bg-white/4 border border-white/8 grid grid-cols-2 gap-2">
+                            {([['investment', 'Line investment £'], ['deprYears', 'Depreciation yrs'], ['operators', 'Operators/line'], ['labourRate', 'Labour £/hr'], ['productiveHoursYr', 'Productive hrs/yr']] as const).map(([k, lbl]) => (
+                              <label key={k} className="text-[10.5px] text-slate-500">{lbl}
+                                <input type="number" value={mhrIn[k]} onChange={e => setMhrIn(p => ({ ...p, [k]: e.target.value }))} className={`${inpS} border-white/10 w-full mt-0.5`} />
+                              </label>
+                            ))}
+                            <button onClick={() => void applyMhr(st.id)} className="col-span-2 text-[11px] py-1.5 rounded-lg bg-teal-600/80 hover:bg-teal-500 text-white font-medium">Compute & apply MHR</button>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </Grp>
+                  <Grp id="yld" title={`Yield — rolled throughput (RTY ${cbd.rty}%)`}>
+                    <F grp="yieldD" k="fpyPrintPct" label="FPY — paste print" unit="%" derived={drivers.yieldD.fpyPrintPct} />
+                    <F grp="yieldD" k="fpyPlacePct" label="FPY — placement" unit="%" derived={drivers.yieldD.fpyPlacePct} />
+                    <F grp="yieldD" k="fpyReflowPct" label="FPY — reflow" unit="%" derived={drivers.yieldD.fpyReflowPct} />
+                    <F grp="yieldD" k="fpyTestPct" label="FPY — test fallout" unit="%" derived={drivers.yieldD.fpyTestPct} />
+                    <F grp="yieldD" k="reworkSharePct" label="Failures reworked (vs scrapped)" unit="%" derived={drivers.yieldD.reworkSharePct} step={5} />
+                    <F grp="yieldD" k="reworkMin" label="Rework time" unit="min" derived={drivers.yieldD.reworkMin} step={1} />
+                    <F grp="yieldD" k="reworkRatePerHr" label="Rework rate" unit="£/hr" derived={drivers.yieldD.reworkRatePerHr} step={1} />
+                  </Grp>
+                  <Grp id="nre" title="NRE & tooling amortisation">
+                    {drivers.nre.map(n => (
+                      <div key={n.id} className="flex items-center gap-2 text-[11.5px] text-slate-400">
+                        <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${(isSetN('nre', n.id, 'amount') || isSetN('nre', n.id, 'amortVolume')) ? 'bg-gold-400' : 'bg-slate-600'}`} />
+                        <span className="flex-1">{n.label}</span>
+                        <input type="number" step={100} value={nestedVal('nre', n.id, 'amount', n.amount)} onChange={e => setNested('nre', n.id, 'amount', e.target.value)} className={bcls(isSetN('nre', n.id, 'amount'))} title="One-time cost £" />
+                        <span className="text-slate-600">£ ÷</span>
+                        <input type="number" step={1000} value={nestedVal('nre', n.id, 'amortVolume', n.amortVolume)} onChange={e => setNested('nre', n.id, 'amortVolume', e.target.value)} className={bcls(isSetN('nre', n.id, 'amortVolume'))} title="Amortisation quantity (e.g. programme lifetime volume)" />
+                      </div>
+                    ))}
+                  </Grp>
+                  <Grp id="ohd" title="Overheads, SG&A & profit">
+                    <F grp="overheads" k="mfgOhPct" label="Manufacturing overhead (on conversion)" unit="%" derived={drivers.overheads.mfgOhPct} />
+                    <F grp="overheads" k="sgaPct" label="SG&A" unit="%" derived={drivers.overheads.sgaPct} />
+                    <F grp="overheads" k="profitPct" label="Profit" unit="%" derived={drivers.overheads.profitPct} />
+                  </Grp>
+                  <Grp id="log" title="Logistics, duty & packaging">
+                    <F grp="belowLine" k="freightPct" label="Inbound freight (on material)" unit="%" derived={drivers.belowLine.freightPct} />
+                    <F grp="belowLine" k="tariffPct" label="Duty / tariff" unit="%" derived={drivers.belowLine.tariffPct} />
+                    <F grp="belowLine" k="packagingPerBoard" label="Packaging (not estimated by default)" unit="£" derived={drivers.belowLine.packagingPerBoard} step={0.01} />
+                  </Grp>
+                </div>
+              )}
+              <p className="text-[10.5px] text-slate-600">Slate dot = derived from the standard engine · gold dot = your value. Values you know beat any model default — that is the point of this mode.</p>
+            </>
+          )}
+        </div>
+      )}
     </div>
   );
 }

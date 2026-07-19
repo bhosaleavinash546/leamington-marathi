@@ -8,6 +8,7 @@
  */
 import { messagesJson } from '../llm-json.mjs';
 import { providerStatus, lookupParts } from '../component-pricing.mjs';
+import { deriveDrivers, costBomDetailed, sanitizeDriverOverrides, mhrFromBuildup } from '../pcb-detailed.mjs';
 import {
   costBom, costBomMultiRegion, simulatePcbCost, pcbTornado, classVolMult,
   COMPONENT_TYPES, COMPONENT_CLASSES, PCB_REGIONS, PCB_REGION_KEYS,
@@ -348,6 +349,31 @@ Map it to the schema:
     } catch (e) {
       res.status(400).json({ error: e.message || 'Could not cost that BOM.' });
     }
+  });
+
+  // ── Detailed manual should-costing (CBD waterfall) — fully deterministic ──
+  app.post('/api/pcb-detailed', requireAuth, rateLimit(120, 60 * 60 * 1000), (req, res) => {
+    const { board, components } = req.body || {};
+    if (!Array.isArray(components) || components.length === 0) return res.status(400).json({ error: 'components array is required.' });
+    if (components.length > 2000) return res.status(400).json({ error: 'Too many BOM lines (max 2000).' });
+    try {
+      const opts = costOpts(req.body);
+      const input = { board, components };
+      const overrides = sanitizeDriverOverrides(req.body.overrides);
+      res.json({
+        drivers: deriveDrivers(input, opts),
+        cbd: costBomDetailed(input, opts, overrides),
+        overridesApplied: overrides,
+      });
+    } catch (e) {
+      res.status(400).json({ error: e.message || 'Could not compute the detailed cost.' });
+    }
+  });
+
+  // MHR build-up calculator (pure math — lets the UI fill a station rate).
+  app.post('/api/pcb-detailed/mhr', requireAuth, rateLimit(240, 60 * 60 * 1000), (req, res) => {
+    try { res.json({ mhr: mhrFromBuildup(req.body || {}) }); }
+    catch (e) { res.status(400).json({ error: e.message || 'Bad build-up inputs.' }); }
   });
 
   // ── AI insights: cost-optimization / DFM / sourcing, engine-verified ──────
