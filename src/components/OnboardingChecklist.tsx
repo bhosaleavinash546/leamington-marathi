@@ -48,7 +48,8 @@ export default function OnboardingChecklist() {
   const allDone = doneCount === STEPS.length;
   // Only for signed-in users, on main pages, until dismissed/completed.
   if (!token || state.dismissed || allDone) return null;
-  if (['/auth', '/', '/help'].includes(location.pathname) || location.pathname.startsWith('/shared')) return null;
+  // Hidden on /dashboard too — its first-run state renders its own inline checklist.
+  if (['/auth', '/', '/help', '/dashboard'].includes(location.pathname) || location.pathname.startsWith('/shared')) return null;
 
   return (
     <div className="fixed bottom-20 right-4 lg:bottom-6 z-40 w-80 max-w-[calc(100vw-2rem)] rounded-2xl border border-gold-500/25 bg-navy-900/95 backdrop-blur shadow-2xl p-4">

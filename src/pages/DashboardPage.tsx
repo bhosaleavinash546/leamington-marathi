@@ -1,12 +1,15 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ChevronRight, TrendingDown, Clock, BarChart3, Lightbulb, ArrowRight, Star, BookOpen, Target, Activity, Trash2, Share2, CheckCircle, AlertCircle, XCircle, ClipboardList, GitMerge, Box, Image as ImageIcon, Sparkles } from 'lucide-react';
+import {
+  ChevronRight, ArrowRight, Sparkles, Lightbulb, CheckCircle, Trash2, Share2,
+  Zap, Calculator, Box, Target, Store, ShieldCheck, GitMerge,
+} from 'lucide-react';
 import { PieChart, Pie, Cell, Tooltip, BarChart, Bar, XAxis, YAxis, ResponsiveContainer, CartesianGrid } from 'recharts';
 import { useAuth } from '../contexts/AuthContext';
 import { loadFullResult } from '../services/claude-service';
 import { toast } from '../hooks/useToast';
-import OnboardingBanner from '../components/OnboardingBanner';
+import { TOOL_GROUPS } from '../config/tools';
 
 interface PipelineKpi {
   totalPotential: number;
@@ -41,19 +44,12 @@ interface ServerProject {
   generatedAt: string;
 }
 
-const TIPS = [
-  { icon: Target, tip: 'Start with high-volume parts — even 1% saving on 100k units compounds fast.', color: 'text-gold-400' },
-  { icon: Lightbulb, tip: 'Enable web search for live market pricing data to validate savings estimates.', color: 'text-emerald-400' },
-  { icon: BarChart3, tip: 'Export to PowerPoint for management reviews — each idea gets a dedicated slide.', color: 'text-blue-400' },
-  { icon: Activity, tip: 'Analyse at part level for surgical precision, or subassembly for broader DFMA wins.', color: 'text-purple-400' },
-];
-
 // ── helpers shared between PipelineKpiSection and module ──────────────────────
 const GATE_COLORS: Record<string, string> = { G0: '#94a3b8', G1: '#fbbf24', G2: '#60a5fa', G3: '#34d399' };
 const PIE_COLORS = ['#f59e0b', '#60a5fa', '#34d399', '#a78bfa', '#fb923c'];
 const GATE_DOT: Record<string, string> = { G0: 'bg-slate-400', G1: 'bg-amber-400', G2: 'bg-blue-400', G3: 'bg-green-400' };
 
-function fmtM(n: number) {   // EUR — consistent with the app-wide default currency
+function fmtM(n: number) {   // GBP — the app-wide display currency
   if (!n) return '£0';
   if (n >= 1_000_000) return `£${(n / 1_000_000).toFixed(1)}M`;
   if (n >= 1_000) return `£${Math.round(n / 1_000)}k`;
@@ -82,7 +78,7 @@ function PipelineKpiSection({ kpi }: { kpi: PipelineKpi }) {
     .sort((a, b) => Number(a.year) - Number(b.year));
 
   return (
-    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.08 }} className="space-y-5">
+    <div className="space-y-5">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <GitMerge size={18} className="text-violet-400" />
@@ -92,21 +88,6 @@ function PipelineKpiSection({ kpi }: { kpi: PipelineKpi }) {
         <Link to="/pipeline" className="flex items-center gap-1 text-violet-400 hover:text-violet-300 text-sm transition-colors">
           View Pipeline <ChevronRight size={14} />
         </Link>
-      </div>
-
-      {/* KPI cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        {[
-          { label: 'Total Portfolio', value: fmtM(kpi.totalPotential), color: 'text-gold-400', bg: 'bg-gold-500/8 border-gold-500/20' },
-          { label: 'In Progress (G1+G2)', value: fmtM(kpi.inProgressSaving), color: 'text-info-400', bg: 'bg-info-500/8 border-info-500/20' },
-          { label: 'Confirmed (G3)', value: fmtM(kpi.confirmedSaving), color: 'text-success-400', bg: 'bg-success-500/8 border-success-500/20' },
-          { label: 'Idea Pipeline', value: `${kpi.totalCases} ideas`, color: 'text-violet-400', bg: 'bg-violet-500/8 border-violet-500/20' },
-        ].map((k) => (
-          <div key={k.label} className={`rounded-xl p-4 border ${k.bg}`}>
-            <div className="text-slate-500 text-xs mb-1">{k.label}</div>
-            <div className={`text-xl font-bold ${k.color}`}>{k.value}</div>
-          </div>
-        ))}
       </div>
 
       {/* Charts row */}
@@ -214,23 +195,24 @@ function PipelineKpiSection({ kpi }: { kpi: PipelineKpi }) {
           </div>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }
 
-const WHATS_NEW = [
-  'ROI Auto-Ranking — sort ideas by Best ROI, Highest Savings, or Easiest First',
-  'Status Filter — filter ideas by annotation status (Approved / Investigating / Rejected / On Hold)',
-  'SQLite Database — cloud-synced project storage replaces localStorage-only history',
-  'Project History — open, delete, and share any saved analysis from the Dashboard',
-  'Idea Caching — identical analyses return instantly from a 7-day cache',
-  'Multi-pass Deduplication — Refine runs automatically remove near-duplicate ideas',
-  'Competitor Benchmarking — every idea now cites specific OEM/programme/year evidence',
-  'Implementation Roadmap — 3-phase auto-grouped view inside every Results page',
-  'Business Case PDF — Page 2 now shows ROI-ranked top ideas and phase summary boxes',
-  'Team Sharing — generate a 30-day read-only share link for any analysis',
-  'BOM Batch Analysis — upload an Excel BOM and analyse up to 20 parts at once',
-  'Progressive Web App — install BrainSpark on mobile or desktop for offline access',
+// Suggestion chips under the hero input — each deep-links into the right tool.
+const HERO_CHIPS = [
+  { icon: Zap,        label: 'Generate ideas for a system', to: '/analyze' },
+  { icon: Calculator, label: 'Should-cost a part',          to: '/should-cost' },
+  { icon: Box,        label: 'Upload CAD → instant cost',   to: '/cad-to-cost' },
+  { icon: Target,     label: 'Resolve a trade-off with TRIZ', to: '/triz' },
+  { icon: Store,      label: 'Browse proven ideas',         to: '/marketplace' },
+];
+
+// First-run checklist — mirrors the global OnboardingChecklist's tracked steps.
+const SETUP_STEPS = [
+  { id: 'generate',   label: 'Generate your first ideas', sub: 'Pick a vehicle system and let the AI propose savings', to: '/analyze' },
+  { id: 'shouldcost', label: 'Should-cost a part',        sub: 'Get a defensible bottom-up cost in seconds',          to: '/should-cost' },
+  { id: 'teach',      label: 'Teach the engine one real quote', sub: 'Calibrate estimates with a supplier price',      to: '/should-cost' },
 ];
 
 export default function DashboardPage() {
@@ -242,8 +224,8 @@ export default function DashboardPage() {
   const [sharingId, setSharingId] = useState<string | null>(null);
   const [shareUrl, setShareUrl] = useState<string | null>(null);
   const [savingsPipeline, setSavingsPipeline] = useState({ total: 0, investigating: 0, approved: 0, committedSavings: 0, investigatingSavings: 0 });
-  const [viewMode, setViewMode] = useState<'list' | 'rollup'>('list');
   const [pipelineKpi, setPipelineKpi] = useState<PipelineKpi | null>(null);
+  const [ask, setAsk] = useState('');
 
   // Compute annotation summary across all projects from localStorage
   const annotationStats = useMemo(() => {
@@ -251,13 +233,10 @@ export default function DashboardPage() {
     let investigating = 0;
     let rejected = 0;
 
-    // Collect all project ids: server projects + local analyses
     const projectIds = new Set<string>();
     serverProjects.forEach(p => projectIds.add(p.id));
     recentAnalyses.forEach(a => projectIds.add(a.id));
 
-    // Also scan all localStorage keys for any brainspark_annotations_ entries
-    // in case the user has projects not yet listed (edge case)
     try {
       for (let i = 0; i < localStorage.length; i++) {
         const key = localStorage.key(i);
@@ -290,7 +269,6 @@ export default function DashboardPage() {
   }, [serverProjects, recentAnalyses]);
 
   useEffect(() => {
-    // Load localStorage fallback
     try {
       const stored = localStorage.getItem('brainspark_recent_analyses');
       if (stored) setRecentAnalyses(JSON.parse(stored));
@@ -318,7 +296,7 @@ export default function DashboardPage() {
   useEffect(() => {
     function parseAnnual(val?: string): number {
       if (!val) return 0;
-      const c = (val || '').toLowerCase().replace(/[€€$¥₹,\s%]/g, '');
+      const c = (val || '').toLowerCase().replace(/[€€$¥₹£,\s%]/g, '');
       const parts = c.split(/[–—]/);
       const parseOne = (s: string) => {
         const m = s.match(/([\d.]+)\s*([mk]?)/);
@@ -399,476 +377,283 @@ export default function DashboardPage() {
     } catch { toast('Could not load project — please try again', 'error'); }
   }
 
-  function clearHistory() {
-    localStorage.removeItem('brainspark_recent_analyses');
-    setRecentAnalyses([]);
+  function openLocalAnalysis(a: RecentAnalysis) {
+    if (loadFullResult(a.id)) navigate('/results');
+    else toast('This analysis is no longer stored on this device.', 'error');
+  }
+
+  function submitAsk(e: FormEvent) {
+    e.preventDefault();
+    const q = ask.trim();
+    // The typed brief prefills the analysis context — honest routing, no fake NL magic.
+    navigate('/analyze', q ? { state: { prefillContext: q } } : undefined);
   }
 
   const firstName = user?.name?.split(' ')[0] ?? 'there';
   const hour = new Date().getHours();
   const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
 
+  const hasData = serverProjects.length > 0 || recentAnalyses.length > 0;
+  // Prefer the pipeline tool's server-side KPIs; fall back to annotation-derived savings.
+  const committed = pipelineKpi?.confirmedSaving || savingsPipeline.committedSavings;
+  const inFlight = pipelineKpi?.inProgressSaving || savingsPipeline.investigatingSavings;
+  const ideaCount = savingsPipeline.total || annotationStats.total;
+  const reviewedPct = annotationStats.total > 0 ? Math.round((annotationStats.reviewed / annotationStats.total) * 100) : 0;
+  const projectCount = serverProjects.length || recentAnalyses.length;
+  const topIdeas = pipelineKpi?.topIdeas?.slice(0, 3) ?? [];
+
+  // First-run checklist state (shared with the global OnboardingChecklist).
+  const doneSteps = useMemo(() => {
+    try { return (JSON.parse(localStorage.getItem('brainspark_onboarding_v1') || '{}').done || {}) as Record<string, boolean>; }
+    catch { return {} as Record<string, boolean>; }
+  }, []);
+
+  const recents: Array<{ id: string; title: string; sub: string; meta: string; onOpen: () => void; server?: ServerProject }> = serverProjects.length > 0
+    ? serverProjects.slice(0, 6).map(p => ({
+        id: p.id,
+        title: p.systemName,
+        sub: p.partName || p.subassemblyName,
+        meta: `${p.summary?.totalIdeas ?? 0} ideas · ${new Date(p.generatedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}`,
+        onOpen: () => openServerProject(p.id, p),
+        server: p,
+      }))
+    : recentAnalyses.slice(0, 6).map(a => ({
+        id: a.id,
+        title: a.systemName,
+        sub: a.partName || a.subassemblyName,
+        meta: `${a.ideasCount} ideas · ${new Date(a.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}`,
+        onOpen: () => openLocalAnalysis(a),
+      }));
+
   return (
     <div className="min-h-screen bg-navy-950 pt-24 pb-16 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-6xl mx-auto space-y-10">
+      <div className="max-w-5xl mx-auto">
 
-        {/* First-run feature tour (dismissible) */}
-        <div className="!mt-0"><OnboardingBanner /></div>
+        {/* ── Hybrid AI hero ─────────────────────────────────────────────── */}
+        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45 }}>
+          <h1 className="text-[22px] font-semibold text-white tracking-[-0.01em]">
+            {greeting}, {firstName} <span className="text-slate-500 font-normal">— where shall we find savings today?</span>
+          </h1>
 
-        {/* Welcome banner */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="rounded-2xl bg-gradient-to-br from-navy-800 to-navy-900 border border-gold-500/20 p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6"
-        >
-          <div>
-            <p className="text-slate-400 text-sm mb-1">{greeting},</p>
-            <h1 className="text-3xl font-bold text-white">
-              {firstName} <span className="text-gold-400" aria-hidden="true">👋</span>
-            </h1>
-            <p className="text-slate-300 mt-2 max-w-md">
-              Ready to find cost reduction opportunities? Select a vehicle system and let the Chief Engineer AI get to work.
-            </p>
-          </div>
-          <Link
-            to="/analyze"
-            className="flex items-center gap-2 px-6 py-3 rounded-xl bg-gold-500 hover:bg-gold-400 text-navy-950 font-semibold text-sm transition-all hover:scale-105 shadow-lg shadow-gold-500/25 whitespace-nowrap"
-          >
-            Start Analysis <ArrowRight size={16} />
-          </Link>
-        </motion.div>
-
-        {/* ── Pipeline KPI Dashboard ── */}
-        {pipelineKpi && pipelineKpi.totalCases > 0 && (
-          <PipelineKpiSection kpi={pipelineKpi} />
-        )}
-
-        {/* Stats row */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.1 }}
-          className="grid grid-cols-2 lg:grid-cols-4 gap-4"
-        >
-          {[
-            { icon: TrendingDown, label: 'Systems Covered', value: '13', sub: 'BIW to Next-Gen EV', color: 'text-gold-400', bg: 'bg-gold-500/10' },
-            { icon: Lightbulb,   label: 'Parts Catalogued', value: '250+', sub: 'across all systems', color: 'text-blue-400', bg: 'bg-blue-500/10' },
-            { icon: BarChart3,   label: 'Projects Saved', value: String(serverProjects.length || recentAnalyses.length), sub: 'cloud-synced', color: 'text-emerald-400', bg: 'bg-emerald-500/10' },
-            { icon: Star,        label: 'Total Ideas', value: String(serverProjects.reduce((s, p) => s + (p.summary?.totalIdeas || 0), 0) || '—'), sub: 'across all projects', color: 'text-purple-400', bg: 'bg-purple-500/10' },
-          ].map(({ icon: Icon, label, value, sub, color, bg }, i) => (
-            <motion.div
-              key={label}
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 + i * 0.07, duration: 0.38 }}
-              whileHover={{ y: -3, transition: { duration: 0.15 } }}
-              className="rounded-xl bg-navy-900 border border-white/8 p-5 flex items-start gap-4 shadow-card"
-            >
-              <div className={`w-10 h-10 rounded-lg ${bg} flex items-center justify-center flex-shrink-0`}>
-                <Icon size={18} className={color} />
-              </div>
-              <div>
-                <p className="text-2xl font-bold text-white">{value}</p>
-                <p className="text-xs text-slate-400 leading-tight">{label}</p>
-                <p className="text-xs text-slate-600 leading-tight mt-0.5">{sub}</p>
-              </div>
-            </motion.div>
-          ))}
-        </motion.div>
-
-        {/* Generate ideas from your own part — CAD → Idea / Image → Idea */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.12 }}
-        >
-          <div className="flex items-baseline gap-2 mb-3">
-            <h2 className="text-white font-semibold">Generate ideas from your part</h2>
-            <span className="text-slate-500 text-xs">Upload a part + its current condition → grounded cost-reduction ideas</span>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {([
-              { to: '/idea-studio?mode=cad', icon: Box, title: 'CAD → Idea', desc: 'Upload STL / STEP / DXF — geometry, features & DFMA feed the AI', accent: 'from-gold-500/15 to-amber-500/5', ring: 'border-gold-500/25', ic: 'text-gold-400' },
-              { to: '/idea-studio?mode=image', icon: ImageIcon, title: 'Image → Idea', desc: 'Upload a photo or drawing — AI vision reads it, you add the specs', accent: 'from-teal-500/15 to-cyan-500/5', ring: 'border-teal-500/25', ic: 'text-teal-400' },
-            ] as const).map(({ to, icon: Icon, title, desc, accent, ring, ic }) => (
-              <button key={to} onClick={() => navigate(to)}
-                className={`text-left rounded-2xl bg-gradient-to-br ${accent} border ${ring} p-5 hover:scale-[1.01] transition-transform shadow-card`}>
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="w-11 h-11 rounded-xl bg-navy-900/60 flex items-center justify-center flex-shrink-0"><Icon size={22} className={ic} /></div>
-                  <span className="text-white font-bold text-lg">{title}</span>
-                  <Sparkles size={15} className="text-gold-400 ml-auto" />
-                </div>
-                <p className="text-slate-400 text-sm leading-snug">{desc}</p>
+          <form onSubmit={submitAsk} className="mt-4">
+            <div className="flex items-center gap-3 rounded-2xl bg-navy-900 border border-gold-500/30 px-4 py-3.5 shadow-lg shadow-black/30 focus-within:border-gold-500/60 transition-colors">
+              <Sparkles size={18} className="text-gold-400 shrink-0" />
+              <input
+                value={ask}
+                onChange={e => setAsk(e.target.value)}
+                placeholder="Describe a part, a system, or a cost problem — then start the analysis…"
+                className="flex-1 bg-transparent text-[15px] text-white placeholder:text-slate-500 focus:outline-none min-w-0"
+                aria-label="Start a cost analysis"
+              />
+              <button
+                type="submit"
+                className="w-9 h-9 rounded-xl bg-gold-500 hover:bg-gold-400 text-navy-950 flex items-center justify-center transition-colors shrink-0"
+                aria-label="Start analysis"
+              >
+                <ArrowRight size={17} />
               </button>
+            </div>
+          </form>
+
+          <div className="mt-3 flex flex-wrap gap-2">
+            {HERO_CHIPS.map(c => (
+              <Link
+                key={c.label}
+                to={c.to}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-slate-300 text-xs font-medium hover:border-gold-500/30 hover:text-white transition-colors"
+              >
+                <c.icon size={12} className="text-gold-400" /> {c.label}
+              </Link>
             ))}
           </div>
         </motion.div>
 
-        {serverProjects.length > 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.15 }}
-            className="rounded-2xl bg-navy-900 border border-white/8 p-6 shadow-card"
-          >
-            <div className="flex items-center gap-2 mb-5">
-              <TrendingDown size={16} className="text-emerald-400" />
-              <h2 className="text-white font-semibold">Savings Pipeline</h2>
-              <span className="text-slate-600 text-xs ml-auto">Ideas by workflow status across all projects</span>
-            </div>
-            <div className="flex items-end gap-1 h-20 mb-4">
+        {hasData ? (
+          <>
+            {/* ── Savings proof strip ───────────────────────────────────── */}
+            <motion.div
+              initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, delay: 0.08 }}
+              className="mt-8 grid grid-cols-2 lg:grid-cols-[2fr_1fr_1fr_1fr] gap-3.5"
+            >
+              <div className="col-span-2 lg:col-span-1 rounded-2xl bg-navy-900 border border-gold-500/20 p-5">
+                <div className="text-[11px] font-semibold uppercase tracking-[0.06em] text-slate-500">Committed savings</div>
+                <div className="text-[34px] font-bold text-white tracking-tight leading-tight mt-1">
+                  {fmtM(committed)} <span className="text-sm font-medium text-slate-500">/yr</span>
+                </div>
+                <div className="text-xs text-slate-400 mt-1">
+                  {savingsPipeline.approved} approved ideas · <span className="text-gold-300">{fmtM(inFlight)} under investigation</span>
+                </div>
+              </div>
               {[
-                { label: 'Total Ideas', value: savingsPipeline.total, color: 'bg-blue-500', textColor: 'text-blue-400' },
-                { label: 'Investigating', value: savingsPipeline.investigating, color: 'bg-amber-500', textColor: 'text-amber-400' },
-                { label: 'Approved', value: savingsPipeline.approved, color: 'bg-emerald-500', textColor: 'text-emerald-400' },
-              ].map((bar, i) => {
-                const maxVal = savingsPipeline.total || 1;
-                const heightPct = Math.max((bar.value / maxVal) * 100, 4);
-                return (
-                  <div key={i} className="flex-1 flex flex-col items-center justify-end gap-2">
-                    <span className={`text-xs font-bold ${bar.textColor}`}>{bar.value}</span>
-                    <div className={`w-full rounded-t-lg ${bar.color}/70`} style={{ height: `${heightPct}%` }} />
-                  </div>
-                );
-              })}
-            </div>
-            <div className="flex gap-4">
-              {[
-                { label: 'Total Ideas', color: 'bg-blue-500', value: savingsPipeline.total },
-                { label: 'Investigating', color: 'bg-amber-500', value: savingsPipeline.investigating },
-                { label: 'Approved', color: 'bg-emerald-500', value: savingsPipeline.approved },
-              ].map(item => (
-                <div key={item.label} className="flex items-center gap-1.5 text-xs text-slate-400">
-                  <div className={`w-2 h-2 rounded-full ${item.color}`} />
-                  {item.label}: <span className="text-white font-medium">{item.value}</span>
+                { label: 'Ideas generated', value: String(ideaCount || '—'), sub: `${projectCount} saved ${projectCount === 1 ? 'analysis' : 'analyses'}` },
+                { label: 'Reviewed', value: `${reviewedPct}%`, sub: `${annotationStats.reviewed} of ${annotationStats.total} ideas` },
+                { label: 'Investigating', value: String(savingsPipeline.investigating || annotationStats.investigating), sub: 'ideas in review' },
+              ].map(k => (
+                <div key={k.label} className="rounded-2xl bg-navy-900 border border-white/8 p-5">
+                  <div className="text-[11px] font-semibold uppercase tracking-[0.06em] text-slate-500">{k.label}</div>
+                  <div className="text-[24px] font-bold text-white tracking-tight mt-1">{k.value}</div>
+                  <div className="text-xs text-slate-500 mt-1">{k.sub}</div>
                 </div>
               ))}
-            </div>
-            {(savingsPipeline.committedSavings > 0 || savingsPipeline.investigatingSavings > 0) && (
-              <div className="mt-4 pt-4 border-t border-white/8 grid grid-cols-2 gap-4">
-                <div className="p-3 rounded-xl bg-success-500/8 border border-success-500/15">
-                  <div className="text-success-400 text-xs font-semibold uppercase tracking-wider mb-1">Committed Savings</div>
-                  <div className="text-success-300 text-2xl font-black">
-                    {savingsPipeline.committedSavings >= 1_000_000
-                      ? `£${(savingsPipeline.committedSavings / 1_000_000).toFixed(1)}M`
-                      : savingsPipeline.committedSavings >= 1_000
-                      ? `£${Math.round(savingsPipeline.committedSavings / 1_000)}k`
-                      : `£${Math.round(savingsPipeline.committedSavings)}`}/yr
-                  </div>
-                  <div className="text-slate-500 text-xs mt-0.5">{savingsPipeline.approved} approved idea{savingsPipeline.approved !== 1 ? 's' : ''}</div>
-                </div>
-                <div className="p-3 rounded-xl bg-amber-500/8 border border-amber-500/15">
-                  <div className="text-amber-400 text-xs font-semibold uppercase tracking-wider mb-1">Under Investigation</div>
-                  <div className="text-amber-300 text-2xl font-black">
-                    {savingsPipeline.investigatingSavings >= 1_000_000
-                      ? `£${(savingsPipeline.investigatingSavings / 1_000_000).toFixed(1)}M`
-                      : savingsPipeline.investigatingSavings >= 1_000
-                      ? `£${Math.round(savingsPipeline.investigatingSavings / 1_000)}k`
-                      : `£${Math.round(savingsPipeline.investigatingSavings)}`}/yr
-                  </div>
-                  <div className="text-slate-500 text-xs mt-0.5">{savingsPipeline.investigating} idea{savingsPipeline.investigating !== 1 ? 's' : ''}</div>
-                </div>
-              </div>
-            )}
-            {savingsPipeline.committedSavings === 0 && savingsPipeline.total > 0 && (
-              <p className="mt-3 text-slate-600 text-xs">Open any project and annotate ideas as "Approved" to see your committed savings total here.</p>
-            )}
-          </motion.div>
-        )}
+            </motion.div>
 
-        {/* Annotation Summary */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.18 }}
-          className="rounded-2xl bg-navy-900 border border-white/8 p-6 shadow-card"
-        >
-          <div className="flex items-center gap-2 mb-5">
-            <ClipboardList size={16} className="text-gold-400" />
-            <h2 className="text-white font-semibold">Annotation Summary</h2>
-            <span className="text-slate-600 text-xs ml-auto">Ideas reviewed across all projects</span>
-          </div>
-
-          {annotationStats.reviewed === 0 ? (
-            <p className="text-slate-500 text-sm">
-              Start reviewing ideas — open any analysis and annotate ideas as Approved, Investigating, or Rejected.
-            </p>
-          ) : (
-            <>
-              <div className="grid grid-cols-3 gap-4 mb-5">
-                {/* Approved */}
-                <div className="flex items-center gap-3 p-3 rounded-xl bg-success-500/8 border border-success-500/15">
-                  <CheckCircle size={18} className="text-success-400 flex-shrink-0" />
-                  <div>
-                    <p className="text-success-300 text-xl font-bold leading-none">{annotationStats.approved}</p>
-                    <p className="text-success-600 text-xs mt-0.5">Approved</p>
-                  </div>
+            {/* ── Next best actions ─────────────────────────────────────── */}
+            {topIdeas.length > 0 && (
+              <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, delay: 0.14 }} className="mt-8">
+                <div className="flex items-baseline justify-between mb-3">
+                  <h2 className="text-white font-semibold text-[15px]">Next best actions — top savings in your pipeline</h2>
+                  <Link to="/pipeline" className="text-gold-400 hover:text-gold-300 text-xs font-semibold">View pipeline →</Link>
                 </div>
-
-                {/* Investigating */}
-                <div className="flex items-center gap-3 p-3 rounded-xl bg-amber-500/8 border border-amber-500/15">
-                  <AlertCircle size={18} className="text-amber-400 flex-shrink-0" />
-                  <div>
-                    <p className="text-amber-300 text-xl font-bold leading-none">{annotationStats.investigating}</p>
-                    <p className="text-amber-600 text-xs mt-0.5">Investigating</p>
-                  </div>
-                </div>
-
-                {/* Rejected */}
-                <div className="flex items-center gap-3 p-3 rounded-xl bg-danger-500/8 border border-danger-500/15">
-                  <XCircle size={18} className="text-danger-400 flex-shrink-0" />
-                  <div>
-                    <p className="text-danger-300 text-xl font-bold leading-none">{annotationStats.rejected}</p>
-                    <p className="text-danger-600 text-xs mt-0.5">Rejected</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Progress bar */}
-              {annotationStats.total > 0 && (
-                <div>
-                  <div className="flex items-center justify-between mb-1.5">
-                    <span className="text-slate-400 text-xs">
-                      {annotationStats.reviewed} of {annotationStats.total} total ideas reviewed
-                    </span>
-                    <span className="text-slate-500 text-xs font-medium">
-                      {Math.round((annotationStats.reviewed / annotationStats.total) * 100)}%
-                    </span>
-                  </div>
-                  <div className="h-2 rounded-full bg-navy-800 border border-white/5 overflow-hidden">
-                    <div
-                      className="h-full rounded-full bg-gradient-to-r from-gold-500 to-gold-400 transition-all duration-500"
-                      style={{ width: `${Math.min((annotationStats.reviewed / annotationStats.total) * 100, 100)}%` }}
-                    />
-                  </div>
-                </div>
-              )}
-            </>
-          )}
-        </motion.div>
-
-        <div className="grid lg:grid-cols-3 gap-6">
-
-          {/* Recent analyses */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="lg:col-span-2 rounded-2xl bg-navy-900 border border-white/8 p-6 shadow-card"
-          >
-            <div className="flex items-center justify-between mb-5">
-              <div className="flex items-center gap-2">
-                <Clock size={18} className="text-gold-400" />
-                <h2 className="text-white font-semibold">Recent Analyses</h2>
-              </div>
-              <div className="flex items-center gap-2">
-                <button onClick={() => setViewMode('list')} className={`px-2 py-1 rounded text-xs font-medium transition-colors ${viewMode === 'list' ? 'bg-gold-500/20 text-gold-400' : 'text-slate-500 hover:text-white'}`}>List</button>
-                <button onClick={() => setViewMode('rollup')} className={`px-2 py-1 rounded text-xs font-medium transition-colors ${viewMode === 'rollup' ? 'bg-gold-500/20 text-gold-400' : 'text-slate-500 hover:text-white'}`}>Rollup</button>
-                {recentAnalyses.length > 0 && (
-                  <button onClick={clearHistory} className="flex items-center gap-1 text-xs text-slate-500 hover:text-red-400 transition-colors">
-                    <Trash2 size={12} /> Clear
-                  </button>
-                )}
-              </div>
-            </div>
-
-            {shareUrl && (
-              <div className="mb-4 p-3 rounded-xl bg-success-500/10 border border-success-500/20 flex items-center gap-3">
-                <span className="text-success-400 text-xs flex-1 truncate">{shareUrl}</span>
-                <button onClick={() => { navigator.clipboard.writeText(shareUrl); }} className="text-xs text-success-400 hover:text-white border border-success-500/30 px-2 py-1 rounded-lg transition-colors">Copy</button>
-                <button onClick={() => setShareUrl(null)} className="text-slate-500 hover:text-white transition-colors text-xs">✕</button>
-              </div>
-            )}
-            {viewMode === 'rollup' && serverProjects.length > 0 && (
-              <div className="overflow-x-auto">
-                <table className="w-full text-xs">
-                  <thead>
-                    <tr className="text-slate-500 border-b border-white/8">
-                      <th className="text-left py-2 pr-4 font-medium">Programme / System</th>
-                      <th className="text-right py-2 pr-2 font-medium">Ideas</th>
-                      <th className="text-right py-2 pr-2 font-medium">Quick Wins</th>
-                      <th className="text-right py-2 font-medium">Strategic</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {serverProjects.map(p => (
-                      <tr key={p.id} className="border-b border-white/5 hover:bg-white/3 cursor-pointer transition-colors" onClick={() => openServerProject(p.id, p)}>
-                        <td className="py-2.5 pr-4">
-                          <div className="text-white font-medium truncate max-w-[200px]">{p.systemName}</div>
-                          {p.vehicleType && <div className="text-gold-500 text-xs truncate max-w-[200px]">{p.vehicleType}</div>}
-                        </td>
-                        <td className="text-right py-2.5 pr-2 text-blue-400 font-bold">{p.summary?.totalIdeas || 0}</td>
-                        <td className="text-right py-2.5 pr-2 text-success-400">{p.summary?.quickWins || 0}</td>
-                        <td className="text-right py-2.5 text-amber-400">{p.summary?.strategicItems || 0}</td>
-                      </tr>
-                    ))}
-                    <tr className="font-bold text-slate-300">
-                      <td className="py-2.5 pr-4 text-xs uppercase tracking-wider">Total</td>
-                      <td className="text-right py-2.5 pr-2 text-blue-400">{serverProjects.reduce((s, p) => s + (p.summary?.totalIdeas || 0), 0)}</td>
-                      <td className="text-right py-2.5 pr-2 text-success-400">{serverProjects.reduce((s, p) => s + (p.summary?.quickWins || 0), 0)}</td>
-                      <td className="text-right py-2.5 text-amber-400">{serverProjects.reduce((s, p) => s + (p.summary?.strategicItems || 0), 0)}</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            )}
-            {viewMode === 'list' && (
-              serverProjects.length === 0 && recentAnalyses.length === 0 ? (
-                <div className="text-center py-12 text-slate-500">
-                  <img src="/brainspark-logo.svg" className="w-8 h-8 mx-auto mb-3 opacity-30" alt="" />
-                  <p className="text-sm">No analyses yet.</p>
-                  <p className="text-xs mt-1">Run your first analysis to see it here.</p>
-                  <Link to="/analyze" className="inline-flex items-center gap-1 mt-4 text-gold-400 text-sm hover:text-gold-300 transition-colors">
-                    Start now <ChevronRight size={14} />
-                  </Link>
-                </div>
-              ) : serverProjects.length > 0 ? (
-                <div className="space-y-3">
-                  {serverProjects.slice(0, 10).map((p) => (
-                    <div key={p.id} className="flex items-center justify-between p-4 rounded-xl bg-navy-800 border border-white/5 hover:border-gold-500/30 cursor-pointer transition-all group"
-                      onClick={() => openServerProject(p.id, p)}>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-white text-sm font-medium group-hover:text-gold-300 transition-colors truncate">
-                          {p.systemName} › {p.subassemblyName}{p.partName ? ` › ${p.partName}` : ''}
-                        </p>
-                        <div className="flex items-center gap-3 mt-0.5">
-                          {p.vehicleType && <span className="text-gold-500 text-xs">{p.vehicleType}</span>}
-                          <span className="text-slate-500 text-xs">{new Date(p.generatedAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}</span>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2 flex-shrink-0 ml-3">
-                        <span className="text-xs text-success-400 font-medium">{p.summary?.totalIdeas || 0} ideas</span>
-                        {p.summary?.quickWins > 0 && <span className="text-xs text-success-400">{p.summary.quickWins} QW</span>}
-                        <button onClick={e => { e.stopPropagation(); shareProject(p.id); }}
-                          disabled={sharingId === p.id}
-                          className="p-1.5 rounded-lg hover:bg-white/8 text-slate-500 hover:text-blue-400 transition-colors">
-                          <Share2 size={13} />
-                        </button>
-                        <button onClick={e => { e.stopPropagation(); deleteProject(p.id); }}
-                          disabled={deletingId === p.id}
-                          className="p-1.5 rounded-lg hover:bg-white/8 text-slate-500 hover:text-red-400 transition-colors">
-                          <Trash2 size={13} />
-                        </button>
-                        <ChevronRight size={14} className="text-slate-600 group-hover:text-gold-400 transition-colors" />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="space-y-3">
-                  {recentAnalyses.slice(0, 8).map((a) => (
-                    <div
-                      key={a.id}
-                      onClick={() => {
-                        const full = loadFullResult(a.id);
-                        if (full) {
-                          sessionStorage.setItem('analysisResult', JSON.stringify((full as {result: unknown}).result ?? full));
-                          sessionStorage.setItem('analysisSystemName', a.systemName);
-                          sessionStorage.setItem('analysisSubName', a.subassemblyName);
-                          navigate('/results');
-                        } else { navigate('/analyze'); }
-                      }}
-                      className="flex items-center justify-between p-4 rounded-xl bg-navy-800 border border-white/5 hover:border-gold-500/30 cursor-pointer transition-all group"
+                <div className="space-y-2.5">
+                  {topIdeas.map(idea => (
+                    <Link
+                      key={idea.id}
+                      to="/pipeline"
+                      className="flex items-center gap-3.5 rounded-xl bg-navy-900 border border-white/8 hover:border-gold-500/25 px-4 py-3 transition-colors group"
                     >
-                      <div>
-                        <p className="text-white text-sm font-medium group-hover:text-gold-300 transition-colors">
-                          {a.systemName} › {a.subassemblyName}{a.partName ? ` › ${a.partName}` : ''}
+                      <span className="w-9 h-9 rounded-lg bg-gold-500/12 text-gold-400 flex items-center justify-center shrink-0">
+                        <Lightbulb size={16} />
+                      </span>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-white text-[13.5px] font-semibold truncate">{idea.ideaTitle}</p>
+                        <p className="text-slate-500 text-xs mt-0.5">
+                          {idea.commodityName || idea.ideaNumber}
+                          <span className={`inline-block w-1.5 h-1.5 rounded-full mx-2 align-middle ${GATE_DOT[idea.gate] || 'bg-slate-500'}`} />
+                          Gate {idea.gate}
                         </p>
-                        <p className="text-slate-500 text-xs mt-0.5">{a.date}</p>
                       </div>
-                      <div className="flex items-center gap-3">
-                        <span className="text-xs text-success-400 font-medium">{a.ideasCount} ideas</span>
-                        <ChevronRight size={14} className="text-slate-600 group-hover:text-gold-400 transition-colors" />
+                      <div className="text-right shrink-0">
+                        <div className="text-emerald-400 text-sm font-bold">{fmtM(idea.totalAnnualSaving)}/yr</div>
+                        <div className="text-slate-600 text-[10px]">estimated</div>
+                      </div>
+                      <ChevronRight size={15} className="text-slate-600 group-hover:text-gold-400 transition-colors shrink-0" />
+                    </Link>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+
+            {/* ── Recent analyses ───────────────────────────────────────── */}
+            {recents.length > 0 && (
+              <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, delay: 0.2 }} className="mt-8">
+                <div className="flex items-baseline justify-between mb-3">
+                  <h2 className="text-white font-semibold text-[15px]">Recent analyses</h2>
+                  {recentAnalyses.length > 0 && serverProjects.length === 0 && (
+                    <button
+                      onClick={() => { localStorage.removeItem('brainspark_recent_analyses'); setRecentAnalyses([]); }}
+                      className="text-slate-500 hover:text-slate-300 text-xs"
+                    >Clear history</button>
+                  )}
+                </div>
+                {shareUrl && (
+                  <div className="mb-3 flex items-center gap-2 rounded-xl bg-emerald-500/10 border border-emerald-500/25 px-3.5 py-2.5 text-xs text-emerald-300">
+                    <CheckCircle size={13} className="shrink-0" />
+                    <span className="truncate">Share link (30 days): {shareUrl}</span>
+                    <button
+                      onClick={() => { navigator.clipboard?.writeText(shareUrl).then(() => toast('Link copied', 'success')).catch(() => {}); }}
+                      className="ml-auto shrink-0 font-semibold text-emerald-200 hover:text-white"
+                    >Copy</button>
+                    <button onClick={() => setShareUrl(null)} className="shrink-0 text-emerald-400/70 hover:text-white">✕</button>
+                  </div>
+                )}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                  {recents.map(r => (
+                    <div key={r.id} className="rounded-xl bg-navy-900 border border-white/8 hover:border-white/15 p-4 transition-colors group">
+                      <button onClick={r.onOpen} className="block w-full text-left">
+                        <p className="text-white text-[13.5px] font-semibold truncate">{r.title}</p>
+                        <p className="text-slate-500 text-xs truncate mt-0.5">{r.sub}</p>
+                        <p className="text-slate-600 text-[11px] mt-2">{r.meta}</p>
+                      </button>
+                      <div className="mt-2.5 pt-2.5 border-t border-white/6 flex items-center gap-3">
+                        <button onClick={r.onOpen} className="text-gold-400 hover:text-gold-300 text-xs font-semibold">Open →</button>
+                        {r.server && (
+                          <>
+                            <button
+                              onClick={() => shareProject(r.id)}
+                              disabled={sharingId === r.id}
+                              className="ml-auto text-slate-500 hover:text-slate-300 disabled:opacity-40"
+                              title="Share (30-day link)"
+                            ><Share2 size={13} /></button>
+                            <button
+                              onClick={() => deleteProject(r.id)}
+                              disabled={deletingId === r.id}
+                              className="text-slate-500 hover:text-red-400 disabled:opacity-40"
+                              title="Delete"
+                            ><Trash2 size={13} /></button>
+                          </>
+                        )}
                       </div>
                     </div>
                   ))}
                 </div>
-              )
-            )}
-          </motion.div>
-
-          {/* Right column: tips + what's new */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-            className="space-y-6"
-          >
-            {/* Pro tips */}
-            <div className="rounded-2xl bg-navy-900 border border-white/8 p-6 shadow-card">
-              <div className="flex items-center gap-2 mb-4">
-                <Lightbulb size={16} className="text-gold-400" />
-                <h3 className="text-white font-semibold text-sm">Pro Tips</h3>
-              </div>
-              <div className="space-y-3">
-                {TIPS.map(({ icon: Icon, tip, color }) => (
-                  <div key={tip} className="flex items-start gap-3">
-                    <Icon size={14} className={`${color} mt-0.5 flex-shrink-0`} />
-                    <p className="text-slate-400 text-xs leading-relaxed">{tip}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* What's new */}
-            <div className="rounded-2xl bg-navy-900 border border-white/8 p-6 shadow-card">
-              <div className="flex items-center gap-2 mb-4">
-                <BookOpen size={16} className="text-emerald-400" />
-                <h3 className="text-white font-semibold text-sm">What's New in v3.0.0</h3>
-              </div>
-              <ul className="space-y-2">
-                {WHATS_NEW.map((item) => (
-                  <li key={item} className="flex items-start gap-2 text-xs text-slate-400">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 mt-1.5 flex-shrink-0" />
-                    {item}
-                  </li>
-                ))}
-              </ul>
-              <Link to="/help" className="inline-flex items-center gap-1 mt-4 text-gold-400 text-xs hover:text-gold-300 transition-colors">
-                View full changelog <ChevronRight size={12} />
-              </Link>
-            </div>
-          </motion.div>
-        </div>
-
-        {/* Quick-start cards */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.4 }}
-        >
-          <h2 className="text-white font-semibold mb-4">Quick Start</h2>
-          <div className="grid sm:grid-cols-3 gap-4">
-            {[
-              { label: 'BIW Body Structure', system: 'BIW Body-in-White', sub: 'Front End Module', icon: '🏗️' },
-              { label: 'Battery Pack (BEV)', system: 'Powertrain BEV/MHEV', sub: 'Battery Pack & BMS', icon: '🔋' },
-              { label: 'Front Suspension',  system: 'Chassis & Frame', sub: 'Front Suspension', icon: '⚙️' },
-            ].map(({ label, system, sub, icon }, i) => (
-              <motion.div
-                key={label}
-                initial={{ opacity: 0, y: 18 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.42 + i * 0.09, duration: 0.4 }}
-                whileHover={{ y: -4, boxShadow: '0 12px 32px rgba(0,0,0,0.35)', transition: { duration: 0.18 } }}
-              >
-                <Link
-                  to="/analyze"
-                  state={{ preselect: { system, subassembly: sub } }}
-                  className="flex items-center gap-4 p-4 rounded-xl bg-navy-900 border border-white/8 hover:border-gold-500/30 transition-colors group shadow-card"
-                >
-                  <span className="text-2xl" aria-hidden="true">{icon}</span>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-white text-sm font-medium group-hover:text-gold-300 transition-colors truncate">{label}</p>
-                    <p className="text-slate-500 text-xs truncate">{sub}</p>
-                  </div>
-                  <ChevronRight size={14} className="text-slate-600 group-hover:text-gold-400 transition-colors flex-shrink-0" />
-                </Link>
               </motion.div>
-            ))}
-          </div>
-        </motion.div>
+            )}
 
+            {/* ── Pipeline detail (below the fold) ──────────────────────── */}
+            {pipelineKpi && pipelineKpi.totalCases > 0 && (
+              <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, delay: 0.26 }} className="mt-10">
+                <PipelineKpiSection kpi={pipelineKpi} />
+              </motion.div>
+            )}
+          </>
+        ) : (
+          <>
+            {/* ── First-run: designed empty state ───────────────────────── */}
+            <motion.div
+              initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, delay: 0.08 }}
+              className="mt-8 grid lg:grid-cols-[1.35fr_1fr] gap-3.5"
+            >
+              <div className="min-w-0 rounded-2xl bg-navy-900 border border-white/8 p-5">
+                <h2 className="text-white font-semibold text-[15px] mb-2">Get set up</h2>
+                {SETUP_STEPS.map((s, i) => (
+                  <Link key={s.id} to={s.to} className="flex items-center gap-3 py-2.5 border-b border-white/6 last:border-0 group">
+                    {doneSteps[s.id]
+                      ? <span className="w-6 h-6 rounded-full bg-emerald-500 text-navy-950 flex items-center justify-center shrink-0"><CheckCircle size={13} /></span>
+                      : <span className="w-6 h-6 rounded-full border border-white/20 text-slate-500 flex items-center justify-center text-[11px] font-bold shrink-0">{i + 1}</span>}
+                    <div className="min-w-0">
+                      <p className={`text-[13px] font-semibold ${doneSteps[s.id] ? 'text-slate-500 line-through' : 'text-white'}`}>{s.label}</p>
+                      <p className="text-slate-500 text-xs truncate">{s.sub}</p>
+                    </div>
+                    <ChevronRight size={14} className="ml-auto text-slate-600 group-hover:text-gold-400 transition-colors shrink-0" />
+                  </Link>
+                ))}
+              </div>
+              <div className="min-w-0 rounded-2xl bg-navy-900 border border-gold-500/20 p-5">
+                <ShieldCheck size={20} className="text-gold-400 mb-3" />
+                <div className="text-[11px] font-semibold uppercase tracking-[0.06em] text-slate-500 mb-2">Why teams use BrainSpark</div>
+                <p className="text-[13px] text-slate-300 leading-relaxed">
+                  AI proposes cost-reduction ideas.<br />
+                  The deterministic engine verifies every number.<br />
+                  <span className="text-gold-300 font-semibold">You get savings you can defend.</span>
+                </p>
+              </div>
+            </motion.div>
+
+            {/* ── Toolkit explorer ──────────────────────────────────────── */}
+            <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, delay: 0.16 }} className="mt-8">
+              <h2 className="text-white font-semibold text-[15px] mb-3">Explore the toolkit</h2>
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                {TOOL_GROUPS.map(group => (
+                  <div key={group.id}>
+                    <div className="pb-1.5 text-[10px] font-bold uppercase tracking-[0.09em] text-slate-600">{group.label}</div>
+                    <div className="space-y-2">
+                      {group.tools.slice(0, 3).map(t => (
+                        <Link
+                          key={t.id}
+                          to={t.route}
+                          className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl bg-navy-900 border border-white/8 hover:border-gold-500/25 text-[12.5px] font-medium text-slate-300 hover:text-white transition-colors"
+                        >
+                          <t.icon size={14} className="text-gold-400 shrink-0" />
+                          <span className="truncate">{t.label}</span>
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          </>
+        )}
       </div>
     </div>
   );

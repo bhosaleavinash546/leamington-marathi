@@ -6,6 +6,7 @@ import { ThemeProvider } from './contexts/ThemeContext';
 import { ToastContainer } from './hooks/useToast';
 import Header from './components/layout/Header';
 import Footer from './components/layout/Footer';
+import Sidebar from './components/layout/Sidebar';
 import MobileNav from './components/mobile/MobileNav';
 import PageTransition from './components/layout/PageTransition';
 import ProtectedRoute from './components/auth/ProtectedRoute';
@@ -69,7 +70,7 @@ function AnimatedRoutes() {
         <Route path="/cad-diff" element={<ProtectedRoute><PageTransition><CadDiffPage /></PageTransition></ProtectedRoute>} />
         <Route path="/vave-tracker" element={<ProtectedRoute><PageTransition><VaveTrackerPage /></PageTransition></ProtectedRoute>} />
         <Route path="/pipeline" element={<ProtectedRoute><PageTransition><PipelinePage /></PageTransition></ProtectedRoute>} />
-        <Route path="/server-settings" element={<PageTransition><ServerSettingsPage /></PageTransition>} />
+        <Route path="/server-settings" element={<ProtectedRoute><PageTransition><ServerSettingsPage /></PageTransition></ProtectedRoute>} />
         <Route path="/mobile-settings" element={<ProtectedRoute><PageTransition><MobileSettingsPage /></PageTransition></ProtectedRoute>} />
 
         {/* Public share view */}
@@ -91,9 +92,15 @@ function AppShell() {
   return (
     <div className="flex flex-col min-h-screen">
       {!native && <Header />}
-      <main className={`flex-1 ${native ? 'pb-14' : 'pb-14 lg:pb-0'}`}>
-        <AnimatedRoutes />
-      </main>
+      {/* Workspace row: grouped tool sidebar (desktop, authenticated app routes)
+          beside the routed page. Sidebar renders null elsewhere, so marketing
+          pages keep their full-width layout. */}
+      <div className="flex flex-1 min-w-0">
+        {!native && <Sidebar />}
+        <main className={`flex-1 min-w-0 ${native ? 'pb-14' : 'pb-14 lg:pb-0'}`}>
+          <AnimatedRoutes />
+        </main>
+      </div>
       {!native && <Footer />}
       {/* Bottom tab bar: always on native; on mobile-web only (hidden ≥lg). */}
       {native ? <MobileNav /> : <div className="lg:hidden"><MobileNav /></div>}

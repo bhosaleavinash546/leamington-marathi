@@ -176,6 +176,13 @@ export default function AnalyzePage() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Dashboard "Ask BrainSpark" hero — the typed brief prefills the analysis context.
+  useEffect(() => {
+    const prefill = (location.state as { prefillContext?: string } | null)?.prefillContext;
+    if (prefill && typeof prefill === 'string') setAdditionalContext(prefill.slice(0, 2000));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   // When system changes, auto-reset vehicle type if the current selection is now incompatible
   useEffect(() => {
     if (isVehicleDisabled(vehicleType, propulsionRestriction)) {

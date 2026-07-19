@@ -1,9 +1,10 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Menu, X, ChevronDown, LayoutDashboard, HelpCircle, LogOut, User, Sun, Moon, TrendingUp, FileBox, Calculator, Store, Link2, GitCompare, Zap, ClipboardList, GitMerge, CircuitBoard } from 'lucide-react';
+import { Menu, X, ChevronDown, LayoutDashboard, HelpCircle, LogOut, Sun, Moon, Search } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
+import { TOOLS, TOOL_GROUPS, SETTINGS_LINKS } from '../../config/tools';
 
 const dropdownVariants = {
   hidden: { opacity: 0, y: -6, scale: 0.97 },
@@ -11,7 +12,89 @@ const dropdownVariants = {
   exit:    { opacity: 0, y: -6, scale: 0.97, transition: { duration: 0.1, ease: 'easeIn' } },
 };
 
+/** Lightweight tool jumper: type to filter the registry, Enter opens the top hit. */
+function ToolSearch() {
+  const navigate = useNavigate();
+  const [q, setQ] = useState('');
+  const [open, setOpen] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const wrapRef = useRef<HTMLDivElement>(null);
 
+  const matches = useMemo(() => {
+    const s = q.trim().toLowerCase();
+    if (!s) return [];
+    return TOOLS.filter(t =>
+      t.label.toLowerCase().includes(s) || t.description.toLowerCase().includes(s)
+    ).slice(0, 6);
+  }, [q]);
+
+  // ⌘K / Ctrl+K focuses the jumper from anywhere.
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        inputRef.current?.focus();
+      }
+    }
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, []);
+
+  useEffect(() => {
+    function onClickOutside(e: MouseEvent) {
+      if (wrapRef.current && !wrapRef.current.contains(e.target as Node)) setOpen(false);
+    }
+    document.addEventListener('mousedown', onClickOutside);
+    return () => document.removeEventListener('mousedown', onClickOutside);
+  }, []);
+
+  function go(route: string) {
+    setQ(''); setOpen(false); inputRef.current?.blur();
+    navigate(route);
+  }
+
+  return (
+    <div ref={wrapRef} className="relative hidden md:block w-64 lg:w-80">
+      <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 focus-within:border-gold-500/40 transition-colors">
+        <Search size={13} className="text-slate-500 shrink-0" />
+        <input
+          ref={inputRef}
+          value={q}
+          onChange={e => { setQ(e.target.value); setOpen(true); }}
+          onFocus={() => setOpen(true)}
+          onKeyDown={e => {
+            if (e.key === 'Enter' && matches[0]) go(matches[0].route);
+            if (e.key === 'Escape') { setQ(''); setOpen(false); inputRef.current?.blur(); }
+          }}
+          placeholder="Jump to a tool…"
+          className="flex-1 bg-transparent text-sm text-slate-200 placeholder:text-slate-500 focus:outline-none min-w-0"
+          aria-label="Jump to a tool"
+        />
+        <kbd className="text-[10px] text-slate-600 border border-white/12 rounded px-1 py-px shrink-0">⌘K</kbd>
+      </div>
+      <AnimatePresence>
+        {open && matches.length > 0 && (
+          <motion.div
+            variants={dropdownVariants} initial="hidden" animate="visible" exit="exit"
+            className="absolute top-full left-0 right-0 mt-1.5 rounded-xl bg-navy-800 border border-white/10 shadow-2xl shadow-black/50 py-1 overflow-hidden z-50"
+          >
+            {matches.map((t, i) => (
+              <button
+                key={t.id}
+                onClick={() => go(t.route)}
+                className={`w-full flex items-center gap-2.5 px-3.5 py-2.5 text-sm text-left transition-colors ${i === 0 ? 'bg-white/5 text-white' : 'text-slate-300 hover:text-white hover:bg-white/5'}`}
+              >
+                <t.icon size={14} className="text-gold-400 shrink-0" />
+                <span className="font-medium">{t.label}</span>
+                <span className="text-slate-500 text-xs truncate ml-auto">{t.description}</span>
+              </button>
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
 
 export default function Header() {
   const location = useLocation();
@@ -20,9 +103,7 @@ export default function Header() {
   const { theme, toggleTheme } = useTheme();
   const [menuOpen, setMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
-  const [toolsOpen, setToolsOpen] = useState(false);
   const userMenuRef = useRef<HTMLDivElement>(null);
-  const toolsRef = useRef<HTMLDivElement>(null);
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -46,23 +127,16 @@ export default function Header() {
     return () => document.removeEventListener('mousedown', onClickOutside);
   }, []);
 
-  useEffect(() => {
-    function onClickOutside(e: MouseEvent) {
-      if (toolsRef.current && !toolsRef.current.contains(e.target as Node)) {
-        setToolsOpen(false);
-      }
-    }
-    document.addEventListener('mousedown', onClickOutside);
-    return () => document.removeEventListener('mousedown', onClickOutside);
-  }, []);
+  // Close the mobile drawer on navigation.
+  useEffect(() => { setMenuOpen(false); }, [location.pathname]);
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-navy-950/95 backdrop-blur-md border-b border-white/10">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
+      <div className={isAuthenticated ? 'px-4 sm:px-6' : 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'}>
+        <div className="flex items-center justify-between h-16 gap-4">
 
           {/* Logo */}
-          <Link to={isAuthenticated ? '/dashboard' : '/'} className="flex items-center gap-2.5 group">
+          <Link to={isAuthenticated ? '/dashboard' : '/'} className="flex items-center gap-2.5 group shrink-0">
             <img
               src="/brainspark-logo.svg"
               alt="BrainSpark"
@@ -74,77 +148,23 @@ export default function Header() {
             </div>
           </Link>
 
-          {/* Desktop nav */}
-          <nav className="hidden md:flex items-center gap-1">
-            {isAuthenticated ? (
-              <>
-                {[
-                  { path: '/dashboard', label: 'Dashboard' },
-                  { path: '/analyze', label: 'Analyze' },
-                  { path: '/marketplace', label: 'Marketplace' },
-                  { path: '/vave-tracker', label: 'VAVE Tracker' },
-                  { path: '/pipeline',     label: 'Pipeline' },
-                ].map(({ path, label }) => (
-                  <Link key={path} to={path}
-                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${isActive(path) ? 'bg-gold-500/20 text-gold-400' : 'text-slate-300 hover:text-white hover:bg-white/5'}`}>
-                    {label}
-                  </Link>
-                ))}
-
-                {/* Tools dropdown */}
-                <div className="relative" ref={toolsRef}>
-                  <button onClick={() => setToolsOpen(v => !v)}
-                    className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-all ${['/innovate','/triz','/bom-analysis','/cad-to-cost','/pcb-bom-cost','/cad-diff','/should-cost','/trends'].some(p => isActive(p)) ? 'bg-gold-500/20 text-gold-400' : 'text-slate-300 hover:text-white hover:bg-white/5'}`}>
-                    Tools <ChevronDown size={13} className={`transition-transform ${toolsOpen ? 'rotate-180' : ''}`} />
-                  </button>
-                  <AnimatePresence>
-                    {toolsOpen && (
-                      <motion.div
-                        variants={dropdownVariants} initial="hidden" animate="visible" exit="exit"
-                        className="absolute top-full left-0 mt-1.5 w-48 rounded-xl bg-navy-800 border border-white/10 shadow-2xl shadow-black/50 py-1 overflow-hidden z-50"
-                      >
-                        {[
-                          { path: '/innovate', label: 'Innovation Studio' },
-                          { path: '/triz', label: 'TRIZ Studio' },
-                          { path: '/bom-analysis', label: 'BOM Batch' },
-                          { path: '/cad-to-cost', label: 'CAD to Cost' },
-                          { path: '/pcb-bom-cost', label: 'PCB → BOM → Cost' },
-                          { path: '/cad-diff', label: 'CAD Diff' },
-                          { path: '/should-cost', label: 'Should-Cost' },
-                          { path: '/trends', label: 'Trends' },
-                        ].map(({ path, label }, i) => (
-                          <motion.div key={path} initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.04, duration: 0.15 }}>
-                            <Link to={path} onClick={() => setToolsOpen(false)}
-                              className={`block px-4 py-2.5 text-sm transition-colors ${isActive(path) ? 'text-gold-400 bg-gold-500/10' : 'text-slate-300 hover:text-white hover:bg-white/5'}`}>
-                              {label}
-                            </Link>
-                          </motion.div>
-                        ))}
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-
-                <Link to="/help"
-                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${isActive('/help') ? 'bg-gold-500/20 text-gold-400' : 'text-slate-300 hover:text-white hover:bg-white/5'}`}>
-                  Help
+          {/* Authenticated: quick tool jumper (the sidebar owns navigation).
+              Guest: simple marketing links. */}
+          {isAuthenticated ? (
+            <ToolSearch />
+          ) : (
+            <nav className="hidden md:flex items-center gap-1">
+              {[{ path: '/', label: 'Home' }, { path: '/help', label: 'Help' }].map(({ path, label }) => (
+                <Link key={path} to={path}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${isActive(path) ? 'bg-gold-500/20 text-gold-400' : 'text-slate-300 hover:text-white hover:bg-white/5'}`}>
+                  {label}
                 </Link>
-              </>
-            ) : (
-              <>
-                {[{ path: '/', label: 'Home' }, { path: '/help', label: 'Help' }].map(({ path, label }) => (
-                  <Link key={path} to={path}
-                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${isActive(path) ? 'bg-gold-500/20 text-gold-400' : 'text-slate-300 hover:text-white hover:bg-white/5'}`}>
-                    {label}
-                  </Link>
-                ))}
-              </>
-            )}
-          </nav>
+              ))}
+            </nav>
+          )}
 
           {/* Right side */}
-          <div className="hidden md:flex items-center gap-3">
-            {/* Theme toggle */}
+          <div className="hidden md:flex items-center gap-3 shrink-0">
             <button
               onClick={toggleTheme}
               title={theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
@@ -180,28 +200,18 @@ export default function Header() {
                       </div>
                       {[
                         { icon: LayoutDashboard, label: 'Dashboard', path: '/dashboard' },
-                        { icon: Zap,            label: 'Analyze',    path: '/analyze' },
-                        { icon: FileBox,        label: 'CAD to Cost',  path: '/cad-to-cost' },
-                        { icon: CircuitBoard,   label: 'PCB → BOM → Cost', path: '/pcb-bom-cost' },
-                        { icon: GitCompare,     label: 'CAD Diff',     path: '/cad-diff' },
-                        { icon: Calculator,     label: 'Should-Cost',  path: '/should-cost' },
-                        { icon: TrendingUp,     label: 'Trends',       path: '/trends' },
-                        { icon: Store,          label: 'Marketplace',  path: '/marketplace' },
-                        { icon: ClipboardList,  label: 'VAVE Tracker', path: '/vave-tracker' },
-                        { icon: GitMerge,       label: 'Pipeline',     path: '/pipeline' },
-                        { icon: Link2,          label: 'Integrations', path: '/integrations' },
-                        { icon: HelpCircle,     label: 'Help',       path: '/help' },
-                      ].map(({ icon: Icon, label, path }, i) => (
-                        <motion.div key={path} initial={{ opacity: 0, x: 8 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.03, duration: 0.15 }}>
-                          <Link
-                            to={path}
-                            onClick={() => setUserMenuOpen(false)}
-                            className="flex items-center gap-3 px-4 py-2.5 text-slate-300 hover:text-white hover:bg-white/5 text-sm transition-colors"
-                          >
-                            <Icon size={14} className="text-slate-500" />
-                            {label}
-                          </Link>
-                        </motion.div>
+                        ...SETTINGS_LINKS.map(s => ({ icon: s.icon, label: s.label, path: s.route })),
+                        { icon: HelpCircle, label: 'Help', path: '/help' },
+                      ].map(({ icon: Icon, label, path }) => (
+                        <Link
+                          key={path}
+                          to={path}
+                          onClick={() => setUserMenuOpen(false)}
+                          className="flex items-center gap-3 px-4 py-2.5 text-slate-300 hover:text-white hover:bg-white/5 text-sm transition-colors"
+                        >
+                          <Icon size={14} className="text-slate-500" />
+                          {label}
+                        </Link>
                       ))}
                       <div className="border-t border-white/8 mt-1 pt-1">
                         <button
@@ -233,7 +243,7 @@ export default function Header() {
         </div>
       </div>
 
-      {/* Mobile menu */}
+      {/* Mobile menu — grouped, rendered from the tools registry */}
       <AnimatePresence>
       {menuOpen && (
         <motion.div
@@ -241,7 +251,7 @@ export default function Header() {
           animate={{ opacity: 1, height: 'auto' }}
           exit={{ opacity: 0, height: 0 }}
           transition={{ duration: 0.22, ease: 'easeInOut' }}
-          className="md:hidden bg-navy-900 border-t border-white/10 px-4 py-3 space-y-1 overflow-hidden">
+          className="md:hidden bg-navy-900 border-t border-white/10 px-4 py-3 overflow-hidden max-h-[calc(100vh-4rem)] overflow-y-auto">
           {isAuthenticated ? (
             <>
               <div className="flex items-center gap-3 px-3 py-2 mb-2 border-b border-white/8 pb-3">
@@ -251,24 +261,31 @@ export default function Header() {
                   <p className="text-slate-500 text-xs">{user?.email}</p>
                 </div>
               </div>
-              <Link to="/dashboard"   className="block px-3 py-2 text-sm text-slate-300 hover:text-white rounded-lg hover:bg-white/5" onClick={() => setMenuOpen(false)}>Dashboard</Link>
-              <Link to="/analyze"     className="block px-3 py-2 text-sm text-slate-300 hover:text-white rounded-lg hover:bg-white/5" onClick={() => setMenuOpen(false)}>Analyze</Link>
-              <Link to="/innovate"    className="block px-3 py-2 text-sm text-slate-300 hover:text-white rounded-lg hover:bg-white/5" onClick={() => setMenuOpen(false)}>Innovation Studio</Link>
-              <Link to="/triz"        className="block px-3 py-2 text-sm text-slate-300 hover:text-white rounded-lg hover:bg-white/5" onClick={() => setMenuOpen(false)}>TRIZ Studio</Link>
-              <Link to="/cad-to-cost" className="block px-3 py-2 text-sm text-slate-300 hover:text-white rounded-lg hover:bg-white/5" onClick={() => setMenuOpen(false)}>CAD to Cost</Link>
-              <Link to="/cad-diff"    className="block px-3 py-2 text-sm text-slate-300 hover:text-white rounded-lg hover:bg-white/5" onClick={() => setMenuOpen(false)}>CAD Diff</Link>
-              <Link to="/should-cost" className="block px-3 py-2 text-sm text-slate-300 hover:text-white rounded-lg hover:bg-white/5" onClick={() => setMenuOpen(false)}>Should-Cost</Link>
-              <Link to="/trends"       className="block px-3 py-2 text-sm text-slate-300 hover:text-white rounded-lg hover:bg-white/5" onClick={() => setMenuOpen(false)}>Trends</Link>
-              <Link to="/marketplace"   className="block px-3 py-2 text-sm text-slate-300 hover:text-white rounded-lg hover:bg-white/5" onClick={() => setMenuOpen(false)}>Marketplace</Link>
-              <Link to="/vave-tracker"  className="block px-3 py-2 text-sm text-slate-300 hover:text-white rounded-lg hover:bg-white/5" onClick={() => setMenuOpen(false)}>VAVE Tracker</Link>
-              <Link to="/pipeline"      className="block px-3 py-2 text-sm text-slate-300 hover:text-white rounded-lg hover:bg-white/5" onClick={() => setMenuOpen(false)}>Pipeline</Link>
-              <Link to="/integrations"  className="block px-3 py-2 text-sm text-slate-300 hover:text-white rounded-lg hover:bg-white/5" onClick={() => setMenuOpen(false)}>Integrations</Link>
-              <Link to="/help"         className="block px-3 py-2 text-sm text-slate-300 hover:text-white rounded-lg hover:bg-white/5" onClick={() => setMenuOpen(false)}>Help</Link>
-              <button onClick={() => { toggleTheme(); setMenuOpen(false); }} className="w-full flex items-center gap-2 text-left px-3 py-2 text-sm text-slate-300 hover:bg-white/5 rounded-lg">
-                {theme === 'dark' ? <Sun size={14} /> : <Moon size={14} />}
-                {theme === 'dark' ? 'Light Theme' : 'Dark Theme'}
-              </button>
-              <button onClick={handleSignOut} className="w-full text-left px-3 py-2 text-sm text-red-400 hover:bg-red-500/10 rounded-lg">Sign Out</button>
+              <Link to="/dashboard" className="flex items-center gap-2.5 px-3 py-2 text-sm text-slate-300 hover:text-white rounded-lg hover:bg-white/5" onClick={() => setMenuOpen(false)}>
+                <LayoutDashboard size={14} className="text-slate-500" /> Dashboard
+              </Link>
+              {TOOL_GROUPS.map(group => (
+                <div key={group.id}>
+                  <div className="px-3 pt-3 pb-1 text-[10px] font-bold uppercase tracking-[0.09em] text-slate-600">{group.label}</div>
+                  {group.tools.map(t => (
+                    <Link key={t.id} to={t.route} className="flex items-center gap-2.5 px-3 py-2 text-sm text-slate-300 hover:text-white rounded-lg hover:bg-white/5" onClick={() => setMenuOpen(false)}>
+                      <t.icon size={14} className="text-slate-500" /> {t.label}
+                    </Link>
+                  ))}
+                </div>
+              ))}
+              <div className="border-t border-white/8 mt-2 pt-2 space-y-1">
+                {SETTINGS_LINKS.map(s => (
+                  <Link key={s.id} to={s.route} className="flex items-center gap-2.5 px-3 py-2 text-sm text-slate-300 hover:text-white rounded-lg hover:bg-white/5" onClick={() => setMenuOpen(false)}>
+                    <s.icon size={14} className="text-slate-500" /> {s.label}
+                  </Link>
+                ))}
+                <button onClick={() => { toggleTheme(); setMenuOpen(false); }} className="w-full flex items-center gap-2 text-left px-3 py-2 text-sm text-slate-300 hover:bg-white/5 rounded-lg">
+                  {theme === 'dark' ? <Sun size={14} /> : <Moon size={14} />}
+                  {theme === 'dark' ? 'Light Theme' : 'Dark Theme'}
+                </button>
+                <button onClick={handleSignOut} className="w-full text-left px-3 py-2 text-sm text-red-400 hover:bg-red-500/10 rounded-lg">Sign Out</button>
+              </div>
             </>
           ) : (
             <>
