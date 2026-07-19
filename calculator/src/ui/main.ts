@@ -361,6 +361,12 @@ const CPICKER_META: Record<string, { icon: string; name: string }> = {
   wiring_harness:     { icon: '🔋', name: 'Wiring Harness' },
   cast_and_machine:   { icon: '🏭', name: 'Cast + Machine' },
   assembly:           { icon: '🔧', name: 'Assemblies' },
+  extrusion:          { icon: '🧱', name: 'Extrusion' },
+  blow_moulding:      { icon: '🫧', name: 'Blow Moulding' },
+  thermoforming:      { icon: '🥡', name: 'Thermoforming' },
+  rotational_moulding:{ icon: '🛢️', name: 'Rotomoulding' },
+  biw_assembly:       { icon: '🔩', name: 'BIW / Assembly' },
+  painting:           { icon: '🎨', name: 'Painting' },
   ai_agent:            { icon: '✦',  name: 'AI Agent' },
   cad_analysis:        { icon: '📐', name: 'CAD-to-Cost' },
   automotive_software: { icon: '🚗', name: 'Auto SW Cost' },
@@ -16940,10 +16946,10 @@ async function init(): Promise<void> {
   document.querySelectorAll<HTMLElement>('#home-summary .hsum-ptile[data-go]').forEach(t =>
     t.addEventListener('click', () => {
       switch (t.dataset.go) {
-        case 'ai': showCosting('ai_agent'); break;
-        case 'cad': showCosting('cad_analysis'); break;
+        case 'ai': showWorkflowPanel('ai_agent'); break;
+        case 'cad': showWorkflowPanel('cad_analysis'); break;
         case 'neg': showNegotiation(); break;
-        case 'rates': showCosting('machining'); setTimeout(() => document.getElementById('rates-btn')?.click(), 200); break;
+        case 'rates': showWorkflowPanel('machining'); setTimeout(() => document.getElementById('rates-btn')?.click(), 250); break;
       }
     }));
 
@@ -17139,35 +17145,37 @@ async function init(): Promise<void> {
     renderDashboard();
   });
 
-  // Quick action tiles (commodity-specific shortcuts)
-  document.getElementById('tile-casting')?.addEventListener('click', () => showCosting('casting'));
-  document.getElementById('tile-sheet-metal')?.addEventListener('click', () => showCosting('sheet_metal'));
-  document.getElementById('tile-machining')?.addEventListener('click', () => showCosting('machining'));
-  document.getElementById('tile-forging')?.addEventListener('click', () => showCosting('forging'));
-  document.getElementById('tile-plastic')?.addEventListener('click', () => showCosting('injection_moulding'));
-  document.getElementById('tile-cad')?.addEventListener('click', () => showCosting('cad_analysis'));
-  document.getElementById('tile-pcb-image')?.addEventListener('click', () => showCosting('pcb_fab'));
-  document.getElementById('tile-ai-agent')?.addEventListener('click', () => showCosting('ai_agent'));
-  document.getElementById('tile-sw-should-cost')?.addEventListener('click', () => showCosting('automotive_software' as CommodityType));
+  // Quick action tiles (commodity-specific shortcuts) — unified to the picker's
+  // split-screen costing UI so every commodity launch behaves identically.
+  document.getElementById('tile-casting')?.addEventListener('click', () => showWorkflowPanel('casting'));
+  document.getElementById('tile-sheet-metal')?.addEventListener('click', () => showWorkflowPanel('sheet_metal'));
+  document.getElementById('tile-machining')?.addEventListener('click', () => showWorkflowPanel('machining'));
+  document.getElementById('tile-forging')?.addEventListener('click', () => showWorkflowPanel('forging'));
+  document.getElementById('tile-plastic')?.addEventListener('click', () => showWorkflowPanel('injection_moulding'));
+  document.getElementById('tile-cad')?.addEventListener('click', () => showWorkflowPanel('cad_analysis'));
+  document.getElementById('tile-pcb-image')?.addEventListener('click', () => showWorkflowPanel('pcb_fab'));
+  document.getElementById('tile-ai-agent')?.addEventListener('click', () => showWorkflowPanel('ai_agent'));
+  document.getElementById('tile-sw-should-cost')?.addEventListener('click', () => showWorkflowPanel('automotive_software'));
   // legacy ids from Phase 1 (kept for safety)
-  document.getElementById('tile-new-costing')?.addEventListener('click', () => showCosting('machining'));
-  document.getElementById('tile-assembly')?.addEventListener('click', () => showCosting('assembly'));
+  document.getElementById('tile-new-costing')?.addEventListener('click', () => showWorkflowPanel('machining'));
+  document.getElementById('tile-assembly')?.addEventListener('click', () => showWorkflowPanel('assembly'));
   document.getElementById('tile-scenarios')?.addEventListener('click', () => {
-    showCosting('machining');
+    showWorkflowPanel('machining');
     setTimeout(() => document.querySelector<HTMLButtonElement>('.rtab[data-panel="scenarios"]')?.click(), 200);
   });
 
   // ── Start-a-costing block (Phase A) — input-first entry on the home ──────────
-  document.getElementById('hs-mode-cad')?.addEventListener('click', () => showCosting('cad_analysis'));
-  document.getElementById('hs-mode-pcb')?.addEventListener('click', () => showCosting('pcb_fab'));
+  // Route through showWorkflowPanel so home and the picker share ONE costing UI.
+  document.getElementById('hs-mode-cad')?.addEventListener('click', () => showWorkflowPanel('cad_analysis'));
+  document.getElementById('hs-mode-pcb')?.addEventListener('click', () => showWorkflowPanel('pcb_fab'));
   document.getElementById('hs-browse-all')?.addEventListener('click', () => showCommodityPicker());
   document.querySelectorAll<HTMLElement>('#home-start .hs-chip[data-commodity]').forEach(chip =>
-    chip.addEventListener('click', () => showCosting(chip.dataset.commodity)));
+    chip.addEventListener('click', () => { if (chip.dataset.commodity) showWorkflowPanel(chip.dataset.commodity); }));
   // "Describe a part" → open the AI Agent and hand it the brief
   const describeGo = () => {
     const inp = document.getElementById('home-describe-input') as HTMLInputElement | null;
     const brief = (inp?.value ?? '').trim();
-    showCosting('ai_agent');
+    showWorkflowPanel('ai_agent');
     if (brief) {
       // The agent form renders async inside switchCommodity — prefill once it exists.
       setTimeout(() => {
@@ -17685,10 +17693,13 @@ function _cmdkBuild(): CmdkEntry[] {
   const byId = (id: string) => () => document.getElementById(id)?.click();
   const entries: CmdkEntry[] = [
     { label: 'Home dashboard', sub: 'View', icon: 'i-home', run: () => showHome() },
+    { label: 'Portfolio analytics — KPIs, commodity dashboard & charts', sub: 'View', icon: 'i-chart', run: () => showAnalytics() },
     { label: 'New costing — browse all methods', sub: 'View', icon: 'i-plus', run: () => showCommodityPicker() },
     { label: 'Automotive industry news', sub: 'View', icon: 'i-news', run: byId('news-btn') },
     { label: 'Negotiation Intelligence — supplier-quote teardown', sub: 'View', icon: 'i-trend-up', run: () => showNegotiation() },
     { label: 'Demo gallery', sub: 'Open', icon: 'i-play', run: byId('demo-btn') },
+    { label: 'Rate library — edit & version machine / labour rates', sub: 'Open', icon: 'i-factory', run: () => { showCosting('machining'); setTimeout(() => document.getElementById('rates-btn')?.click(), 200); } },
+    { label: "What's new in CostVision", sub: 'Open', icon: 'i-bulb', run: () => { document.getElementById('help-btn')?.click(); setTimeout(() => document.querySelector<HTMLElement>('.help-tab[data-help="whats-new"]')?.click(), 120); } },
     { label: 'Help centre', sub: 'Open', icon: 'i-help', run: byId('help-btn') },
     { label: 'Contact support', sub: 'Open', icon: 'i-mail', run: byId('contact-btn') },
     { label: 'Toggle dark / light theme', sub: 'Action', icon: 'i-moon', run: byId('theme-toggle-btn') },
