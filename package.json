@@ -10,6 +10,8 @@
     "test": "node --test",
     "benchmark": "node benchmark/run.mjs",
     "benchmark:cost": "node benchmark/cost-run.mjs --min-hit 0.90 --max-mape 0.12",
+    "benchmark:ideation": "node benchmark/ideation-eval.mjs",
+    "kb:export": "node scripts/export-kb.mjs",
     "preview": "vite preview",
     "mobile:build": "tsc && vite build && npx cap sync",
     "mobile:android": "npx cap open android",

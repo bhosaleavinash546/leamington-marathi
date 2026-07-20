@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { motion } from 'framer-motion';
-import { GitCompare, Upload, X, Zap, ChevronRight } from 'lucide-react';
+import { GitCompare, Upload, X, Zap, ChevronRight, Gauge } from 'lucide-react';
 import ButtonSpinner from '../components/ui/ButtonSpinner';
 import CadViewer3D from '../components/CadViewer3D';
 
@@ -14,6 +14,14 @@ interface DeltaIdea {
   saving: string;
   difficulty: string;
   action: string;
+  engineCheck?: {
+    referenceCase: string;
+    baselineEur: number;
+    proposedEur: number;
+    savingPct: number;
+    direction: 'confirmed' | 'contradicted';
+    basis: string;
+  } | null;
 }
 
 export default function CadDiffPage() {
@@ -57,7 +65,7 @@ export default function CadDiffPage() {
     try {
       const r = await fetch('/api/cad-diff', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${authToken()}` },
         body: JSON.stringify({ designA: aDesc, designB: bDesc, apiKey }),
       });
       if (!r.ok) { const d = await r.json(); throw new Error(d.error || 'Comparison failed'); }
@@ -169,6 +177,17 @@ export default function CadDiffPage() {
                 <p className="text-cyan-400 text-xs mb-2 font-medium">Δ {idea.delta}</p>
                 <p className="text-slate-400 text-sm leading-relaxed mb-3">{idea.action}</p>
                 <div className="text-gold-400 text-sm font-semibold">{idea.saving}</div>
+                {idea.engineCheck && (
+                  <div
+                    title={`${idea.engineCheck.referenceCase} — ${idea.engineCheck.basis}`}
+                    className={`mt-2 inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md border text-xs font-medium ${idea.engineCheck.direction === 'confirmed' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/25' : 'bg-red-500/10 text-red-400 border-red-500/25'}`}
+                  >
+                    <Gauge size={11} />
+                    {idea.engineCheck.direction === 'confirmed'
+                      ? `Engine-verified: −${Math.abs(idea.engineCheck.savingPct)}% (€${idea.engineCheck.baselineEur.toFixed(2)} → €${idea.engineCheck.proposedEur.toFixed(2)})`
+                      : 'Engine contradicts this saving on a reference part'}
+                  </div>
+                )}
               </motion.div>
             ))}
           </div>

@@ -8,7 +8,7 @@ import {
   Globe, ExternalLink, ChevronRight, Search, DollarSign, Calculator,
   ShieldCheck, BookOpen, FlaskConical, Lightbulb, Scale, Link2,
   MessageSquare, CheckSquare, XSquare, Bot, Send, Map, Share2, ClipboardList, X,
-  Square, Store, Layers
+  Square, Store, Layers, Gauge, ThumbsUp
 } from 'lucide-react';
 import TypingDots from '../components/ui/TypingDots';
 import ButtonSpinner from '../components/ui/ButtonSpinner';
@@ -332,6 +332,31 @@ function IdeaCard({ idea, index, annotation, onAnnotate, isSelected, onToggleSel
                     </div>
                   );
                 })()}
+                {idea.engineCheck && (
+                  <div
+                    title={`${idea.engineCheck.referenceCase} — ${idea.engineCheck.basis}${idea.rank ? `\nRank factors: ${idea.rank.basis}` : ''}`}
+                    className={`flex items-center gap-1 px-1.5 py-0.5 rounded-md border text-xs font-medium ${idea.engineCheck.direction === 'confirmed' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/25' : 'bg-danger-500/10 text-danger-400 border-danger-500/25'}`}
+                  >
+                    <Gauge size={10} />
+                    {idea.engineCheck.direction === 'confirmed' ? `Engine ✓ ${idea.engineCheck.savingPct > 0 ? '−' : ''}${Math.abs(idea.engineCheck.savingPct)}%` : 'Engine contradicts'}
+                  </div>
+                )}
+                {idea.tasteMatch && (
+                  <div
+                    title={`Ranked higher: similar to an idea you previously approved/confirmed — "${idea.tasteMatch.title}"`}
+                    className="flex items-center gap-1 px-1.5 py-0.5 rounded-md border text-xs font-medium bg-violet-500/10 text-violet-400 border-violet-500/25"
+                  >
+                    <ThumbsUp size={10} /> Similar to approved
+                  </div>
+                )}
+                {idea.priorArt && (
+                  <div
+                    title={`Close to an existing marketplace idea: "${idea.priorArt.title}" — check before duplicating effort`}
+                    className="flex items-center gap-1 px-1.5 py-0.5 rounded-md border text-xs font-medium bg-amber-500/10 text-amber-400 border-amber-500/25"
+                  >
+                    <Store size={10} /> Prior art
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -414,6 +439,25 @@ function IdeaCard({ idea, index, annotation, onAnnotate, isSelected, onToggleSel
             <div className="p-3 rounded-xl bg-blue-500/5 border border-blue-500/15">
               <span className="text-blue-400 text-xs font-semibold uppercase tracking-wide">Industry Benchmark: </span>
               <span className="text-slate-300 text-sm">{idea.benchmarkReference}</span>
+            </div>
+          )}
+
+          {idea.engineCheck && (
+            <div className={`p-3 rounded-xl border ${idea.engineCheck.direction === 'confirmed' ? 'bg-emerald-500/5 border-emerald-500/15' : 'bg-danger-500/5 border-danger-500/15'}`}>
+              <span className={`text-xs font-semibold uppercase tracking-wide ${idea.engineCheck.direction === 'confirmed' ? 'text-emerald-400' : 'text-danger-400'}`}>
+                Engine Cross-Check — {idea.engineCheck.direction}:
+              </span>{' '}
+              <span className="text-slate-300 text-sm">
+                €{idea.engineCheck.baselineEur.toFixed(2)} → €{idea.engineCheck.proposedEur.toFixed(2)} ({idea.engineCheck.savingPct > 0 ? '−' : '+'}{Math.abs(idea.engineCheck.savingPct)}%) on {idea.engineCheck.referenceCase}
+              </span>
+              <p className="text-slate-500 text-xs mt-1">{idea.engineCheck.basis}</p>
+            </div>
+          )}
+
+          {(idea.mergedTitles?.length ?? 0) > 0 && (
+            <div className="p-3 rounded-xl bg-white/5 border border-white/10">
+              <span className="text-slate-400 text-xs font-semibold uppercase tracking-wide">Merged near-duplicates: </span>
+              <span className="text-slate-400 text-sm">{idea.mergedTitles!.join(' · ')}</span>
             </div>
           )}
 
@@ -900,8 +944,10 @@ export default function ResultsPage() {
     })
     .sort((a, b) => {
       if (sortBy === 'roi') {
-        const rA = parseAnnualValue(a.costSavingPotential.annualValue) / DIFF_RANK[a.implementationDifficulty];
-        const rB = parseAnnualValue(b.costSavingPotential.annualValue) / DIFF_RANK[b.implementationDifficulty];
+        // Server-stamped rank when available (annual value × payback × quality
+        // × engine check × evidence × taste); legacy heuristic for old projects.
+        const rA = a.rank?.score ?? parseAnnualValue(a.costSavingPotential.annualValue) / DIFF_RANK[a.implementationDifficulty];
+        const rB = b.rank?.score ?? parseAnnualValue(b.costSavingPotential.annualValue) / DIFF_RANK[b.implementationDifficulty];
         return rB - rA;
       }
       if (sortBy === 'savings') return parseAnnualValue(b.costSavingPotential.annualValue) - parseAnnualValue(a.costSavingPotential.annualValue);
@@ -1364,6 +1410,11 @@ export default function ResultsPage() {
               ))}
             </div>
           </div>
+          {sortBy === 'roi' && (
+            <p className="mt-2 text-xs text-slate-500">
+              Ranked by verified value: annual saving × payback speed × validation quality × engine cross-check × evidence status{filtered.some(i => i.tasteMatch) ? ' × similarity to your approved ideas' : ''}. Hover an idea's rank factors via its badges.
+            </p>
+          )}
         </div>
 
         {/* Bulk selection action bar */}

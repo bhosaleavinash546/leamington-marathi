@@ -62,6 +62,17 @@ export interface CostSavingPotential {
   percentage?: string;
   annualValue?: string;
   calculationBasis?: string;
+  paybackMonths?: number | null;
+}
+
+/** Deterministic cost-engine cross-check stamped by the server (or null when the move is not engine-expressible). */
+export interface EngineCheck {
+  referenceCase: string;
+  baselineEur: number;
+  proposedEur: number;
+  savingPct: number;
+  direction: 'confirmed' | 'contradicted';
+  basis: string;
 }
 
 export interface EvidenceSource {
@@ -93,6 +104,16 @@ export interface CostReductionIdea {
   validationFlags?: string[];
   regulatoryContext?: string;
   materialGrade?: string;
+  qualityScore?: number;
+  engineCheck?: EngineCheck | null;
+  /** Closest existing marketplace idea when this one is a near-restatement. */
+  priorArt?: { id: string; title: string; score: number };
+  /** Resembles an idea this org previously approved/confirmed — powers a visible ranking boost. */
+  tasteMatch?: { title: string; score: number };
+  /** Titles of near-duplicate ideas folded into this one by the server dedup pass. */
+  mergedTitles?: string[];
+  /** Server-computed explainable value ranking (annual value × payback × quality × engine check × evidence × taste). */
+  rank?: { score: number; basis: string };
 }
 
 export interface SearchResult {
