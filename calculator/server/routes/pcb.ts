@@ -15,6 +15,7 @@ import {
 } from '../data/pcb-country-rates.js';
 import { fetchLivePrices, fetchLivePricesWithAECQ, resolveNexarAccessToken, type LivePricingProvider, type LivePriceResult } from '../utils/pcb-live-pricing.js';
 import { reconcileBomWithCatalogue, groundingCandidates, offlineCataloguePrices, groundAndSplit } from '../utils/pcb-bom-grounding.js';
+import { stabiliseBoardSpec, stableFabMid } from '../utils/pcb-boardspec-stabilise.js';
 import { parseBOMFile, type ParsedBOMLine } from '../utils/pcb-bom-parser.js';
 import { normalizePCBAnalysis } from '../utils/pcb-normalize.js';
 import { salvageAnalysisFromRaw } from '../utils/pcb-salvage.js';
@@ -1308,6 +1309,14 @@ ${userPromptText}`;
     const assemblyData = a?.assembly as Record<string, unknown> ?? {};
     const costEst = a?.costEstimates as Record<string, unknown> ?? {};
     const pcbFabGBP = costEst?.pcbFabGBP as { min?: number; mid?: number; max?: number } | undefined;
+    // Stabilise the fab-driving board spec (area/layers/vias/tech), then replace
+    // the model's noisy fab guess with a deterministic fab from those stable
+    // features — stops the headline swinging run-to-run on the same board.
+    stabiliseBoardSpec(boardSpec, assemblyData, domain);
+    {
+      const sf = stableFabMid(boardSpec, assemblyData, orderQty, PCB_COUNTRY_RATES[selectedCountry] ? selectedCountry : 'cn');
+      if (pcbFabGBP && sf > 0) { pcbFabGBP.mid = Math.round(sf * 100) / 100; pcbFabGBP.min = Math.round(sf * 80) / 100; pcbFabGBP.max = Math.round(sf * 130) / 100; }
+    }
     const fabCostMid = Number(pcbFabGBP?.mid) || 0;
 
     // Apply volume correction to BOM, flag unconfirmed high-value ICs
@@ -1696,6 +1705,12 @@ router.post('/reanalyze', upload.fields([
     const assemblyData = a?.assembly as Record<string, unknown> ?? {};
     const costEst = a?.costEstimates as Record<string, unknown> ?? {};
     const pcbFabGBP = costEst?.pcbFabGBP as { min?: number; mid?: number; max?: number } | undefined;
+    // Stabilise the board spec + derive a deterministic fab (see analyze path).
+    stabiliseBoardSpec(boardSpec, assemblyData, domain);
+    {
+      const sf = stableFabMid(boardSpec, assemblyData, orderQty, PCB_COUNTRY_RATES[selectedCountry] ? selectedCountry : 'cn');
+      if (pcbFabGBP && sf > 0) { pcbFabGBP.mid = Math.round(sf * 100) / 100; pcbFabGBP.min = Math.round(sf * 80) / 100; pcbFabGBP.max = Math.round(sf * 130) / 100; }
+    }
     const fabCostMid = Number(pcbFabGBP?.mid) || 0;
 
     const rawBOM = Array.isArray(a?.bom) ? (a.bom as Array<Record<string, unknown>>) : [];
@@ -2176,6 +2191,12 @@ router.post('/analyze-image-stream', upload.fields([
     const assemblyData = a.assembly as Record<string, unknown> ?? {};
     const costEst = a.costEstimates as Record<string, unknown> ?? {};
     const pcbFabGBP = costEst.pcbFabGBP as { min?: number; mid?: number; max?: number } | undefined;
+    // Stabilise the board spec + derive a deterministic fab (see analyze path).
+    stabiliseBoardSpec(boardSpec, assemblyData, domain);
+    {
+      const sf = stableFabMid(boardSpec, assemblyData, orderQty2, PCB_COUNTRY_RATES[selectedCountry2] ? selectedCountry2 : 'cn');
+      if (pcbFabGBP && sf > 0) { pcbFabGBP.mid = Math.round(sf * 100) / 100; pcbFabGBP.min = Math.round(sf * 80) / 100; pcbFabGBP.max = Math.round(sf * 130) / 100; }
+    }
     const fabCostMid2 = Number(pcbFabGBP?.mid) || 0;
     const rawBOM2 = Array.isArray(a.bom) ? (a.bom as Array<Record<string, unknown>>) : [];
     let enrichedBOM2 = flagAndEnrichBOM(rawBOM2, volumeMultiplier2);
