@@ -204,8 +204,8 @@ kpi_card(s, Inches(3.65), Inches(2.0), Inches(3.0), Inches(1.75), '£512k/yr', '
          'In our live demo the background agent flagged £512k/yr of pricing issues — with nobody at the keyboard.', RED)
 kpi_card(s, Inches(6.85), Inches(2.0), Inches(3.0), Inches(1.75), '99%', 'Part recognition',
          'A new bracket was matched to 3 past bracket analyses at 98–99% similarity, with reasons shown.', CYAN)
-kpi_card(s, Inches(10.05), Inches(2.0), Inches(2.85), Inches(1.75), '813', 'Automated tests',
-         'Every capability is covered by automated tests and was exercised end-to-end on the running system.', VIOLET)
+kpi_card(s, Inches(10.05), Inches(2.0), Inches(2.85), Inches(1.75), '917', 'Automated tests',
+         'Every capability is covered by automated tests (77 suites) and was exercised end-to-end on the running system.', VIOLET)
 box(s, Inches(0.45), Inches(4.1), Inches(12.45), Inches(2.7), fill=PANEL2, round_=True, radius=0.06)
 text(s, Inches(0.75), Inches(4.35), Inches(11.9), Inches(2.3),
      [[('The idea, in plain words', 15, DARK, True)],
@@ -521,7 +521,7 @@ rows = [
     ('Confidence band on the same part', '±20.4%  →  ±2.8%', GREEN),
     ('Similar-part recognition on live example', '98–99% match, reasons shown', CYAN),
     ('Autonomous findings in unattended demo', '£512,000 / yr surfaced', RED),
-    ('Automated tests protecting all of this', '790 passing (60 suites)', VIOLET),
+    ('Automated tests protecting all of this', '917 passing (77 suites)', VIOLET),
 ]
 for i, (a, b, c) in enumerate(rows):
     y = Inches(2.1 + i * 0.72)
@@ -724,6 +724,51 @@ notes(s, "Two ways to ask 'what if a commodity moves?' On the left, for a single
          "can't defend. The day we connect a live market feed, the same machinery becomes a genuine forecast.")
 
 # ════════════════════════════════════════════════════════════════════════════
+# NEW F — PCB PHOTO → BOM ACCURACY HARDENING
+# ════════════════════════════════════════════════════════════════════════════
+s = header('PCB photo → BOM → should-cost — now supplier-grade', 'New in 2026 · advanced intelligence')
+text(s, Inches(0.45), Inches(1.82), Inches(12.4), Inches(0.42),
+     [[('Photograph a circuit board, get a costed bill of materials in ~60 seconds. This year we hardened it from a '
+        'clever demo into a ', 13, BODY, False),
+       ('number you can put in front of a supplier.', 13, DARK, True)]])
+# Left — Manual vs AI proof chart (real ECU run)
+cd = CategoryChartData()
+cd.categories = ['Components', 'Fab + assembly', 'Total / board']
+cd.add_series('Manual (engineer)', (62.0, 10.0, 73.0))
+cd.add_series('AI (from photo)', (62.29, 6.82, 69.11))
+gf = s.shapes.add_chart(XL_CHART_TYPE.COLUMN_CLUSTERED, Inches(0.45), Inches(2.45), Inches(6.15), Inches(3.35), cd)
+style_chart(gf.chart, [MUTED, BLUE])
+gf.chart.has_legend = True
+gf.chart.legend.position = XL_LEGEND_POSITION.BOTTOM
+gf.chart.legend.include_in_layout = False
+gf.chart.legend.font.size = Pt(10.5)
+text(s, Inches(0.45), Inches(5.82), Inches(6.15), Inches(0.42),
+     [[('Real automotive ECU, China @ 10k/yr — AI landed within ~5% of a half-day manual estimate, in ~60 s.', 10, MUTED, False, True)]],
+     line_spacing=1.05)
+# Right — what we fixed
+box(s, Inches(6.85), Inches(2.45), Inches(6.05), Inches(3.35), fill=PANEL, round_=True, radius=0.05)
+text(s, Inches(7.15), Inches(2.62), Inches(5.5), Inches(0.35), [[('What we fixed this year', 14, DARK, True)]])
+fixes = [
+    ('Empty-BOM bug — killed', 'Complex boards used to return nothing; now we read every block the model emits.', GREEN),
+    ('Catalogue grounding', 'Confirmed parts snap to real market prices — offline, no external API.', BLUE),
+    ('Class-median cap + magnitude guard', 'A misread part can no longer dominate: one MCU £84 → £18, capped & flagged.', VIOLET),
+    ('Deterministic fabrication', 'Fab is derived from stable board features — the headline no longer swings run-to-run.', CYAN),
+    ('Confirmed vs needs-verification', 'The headline splits the £ you can trust from the £ to firm up.', AMBER),
+]
+for i, (a, b, c) in enumerate(fixes):
+    y = Inches(3.05 + i * 0.55)
+    box(s, Inches(7.15), y + Inches(0.05), Inches(0.09), Inches(0.42), fill=c)
+    text(s, Inches(7.42), y, Inches(5.35), Inches(0.55),
+         [[('✓  ' + a + ' — ', 11.5, DARK, True), (b, 10.5, BODY, False)]], line_spacing=1.0)
+box(s, Inches(0.45), Inches(5.98), Inches(12.45), Inches(0.85), fill=PANEL2, round_=True, radius=0.10)
+text(s, Inches(0.75), Inches(6.12), Inches(12.0), Inches(0.6),
+     [[('Result:  ', 12.5, BLUE, True),
+       ('the 2–3× over-costing is gone. That live ECU came back ASIL-B, 23 BOM lines, £69.11/board — with '
+        '£37.65 confirmed and £24.64 honestly flagged to verify. Same photo, same answer, every run.', 12, BODY, False)]],
+     line_spacing=1.15)
+notes(s, "")  # notes rewritten below
+
+# ════════════════════════════════════════════════════════════════════════════
 # NEW E — GLASS-BOX DIFFERENTIATION
 # ════════════════════════════════════════════════════════════════════════════
 s = header('Why ours is different — glass-box autonomy', 'The differentiator')
@@ -763,7 +808,7 @@ s = header('Where we are, and the ask', 'Next steps')
 box(s, Inches(0.45), Inches(2.0), Inches(6.0), Inches(4.4), fill=PANEL, round_=True, radius=0.05)
 text(s, Inches(0.75), Inches(2.25), Inches(5.4), Inches(0.4), [[('Status today', 16, GREEN, True)]])
 st = [
-    'All capabilities built, tested (813 tests) and live — incl. 5 new for 2026',
+    'All capabilities built, tested (917 tests) and live — incl. 6 new for 2026',
     'Verified end-to-end on the running system',
     'Zero extra licence cost — built into our tool',
     'Runs on-premise; no data leaves the company',
@@ -793,6 +838,183 @@ notes(s, "To close: the capability is built, tested and live — at no extra lic
          "one-off import of our historical quotes so the system starts smart — roughly a day or two of effort. "
          "Three: put the agent's findings on the sourcing agenda each month. If we do those three things, this "
          "becomes a compounding asset from day one. Thank you — happy to take questions or show the live system.")
+
+# ════════════════════════════════════════════════════════════════════════════
+# SPEAKER NOTES — rewritten, humanised + punchy, applied in slide order
+# ════════════════════════════════════════════════════════════════════════════
+SPEAKER_NOTES = [
+    # 1 — TITLE
+    "Open strong, then pause. \"Every costing tool on the market does maths. Ours does something none of them do — it "
+    "learns.\" Hold up the idea: the tool remembers every part we've ever costed, recognises the next one, corrects "
+    "itself against real quotes, and goes hunting for savings while nobody's watching. One promise before we start: "
+    "every single number in this deck is from a live run of the real system — no mock-ups, no slideware. Let's go.",
+
+    # 2 — EXECUTIVE SUMMARY
+    "If you remember four numbers, remember these. Error fell thirty-six-fold — eleven percent down to under one — after "
+    "the tool learned from just three real quotes. The background agent found half a million pounds a year of pricing "
+    "issues with nobody at the keyboard. It recognised a brand-new bracket against past parts at ninety-nine percent and "
+    "told us why. And it's production-grade — nine hundred and seventeen automated tests. But here's the one line that "
+    "matters: costing intelligence used to live in people's heads and walk out the door when they left. Now it "
+    "accumulates as a company asset that gets more valuable every day we use it.",
+
+    # 3 — WHAT AGENTIC AI MEANS
+    "\"Agentic\" gets thrown around a lot, so let me make it concrete — four plain verbs. It REMEMBERS: every analysis "
+    "becomes a stored case. It RECOGNISES: new parts get matched to that memory instantly. It SELF-CORRECTS: real quotes "
+    "teach it, and its accuracy is measured, not claimed. And it ACTS: an agent raises findings without being asked. "
+    "One design choice underpins all of it — every suggestion shows its source parts and its arithmetic. That's "
+    "deliberate, because a number you can't defend is worthless in a supplier negotiation. Ours you can defend, line by line.",
+
+    # 4 — THE LEARNING LOOP
+    "Here's the whole machine on one slide — and the punchline is how little it asks of the engineer. They cost a part "
+    "exactly as they do today. Everything blue and automatic happens on its own: it remembers, it recognises, it "
+    "suggests, and the agent keeps watch. There is exactly ONE new habit — a single click, 'Log Actual £,' when a real "
+    "quote lands. That one click is the fuel for every loop on this slide, and every loop makes the next estimate "
+    "sharper. No new workload, compounding returns. That's the deal.",
+
+    # 5 — MEMORY: KNOWLEDGE BASE
+    "Capability one — the memory. For every analysis we keep a fingerprint of the part, the full costed result, any real "
+    "quotes, and — this is the clever bit — the exact places an expert overrode the AI. Those corrections are our "
+    "engineers literally teaching the tool. On the right is why it matters to us specifically: it's shared, so a "
+    "junior inherits senior judgement on day one; it lives on our servers, so it's our asset, not a vendor's; and it "
+    "compounds — genuinely useful after only twenty or thirty analyses. Every costing we run from today is a deposit "
+    "into an account that only grows.",
+
+    # 6 — RECOGNITION & SUGGESTIONS
+    "Capability two, shown with the tool's actual live output. An engineer starts a new aluminium bracket. Before "
+    "they've even finished, the tool has surfaced the three most similar parts we've ever costed — at ninety-eight to "
+    "ninety-nine percent — and it tells you WHY they matched: same material family, same weight class, same region. "
+    "Then it hands over the gold: the median cost, the shared material, and the real prices we actually paid. A junior "
+    "just stood on the shoulders of every senior who came before them. And notice — every number names its source. "
+    "Nothing here is a black box.",
+
+    # 7 — SELF-CALIBRATION
+    "Capability three is the accuracy engine, and this is a real measured result. Our machining estimates ran about "
+    "eleven percent LOW against real prices. After the tool learned from three logged quotes, the error was "
+    "three-tenths of a percent. Now look right — and this is the subtle, important part. Machining ran low; our China "
+    "castings ran high. Average them together and everything looks 'fine' — the errors cancel and hide. The tool "
+    "refuses to average. It corrects each process, material and region separately, so it catches exactly what a "
+    "portfolio average conceals. Accuracy here is measured against reality and reported out loud — not asserted on a slide.",
+
+    # 8 — HONEST UNCERTAINTY
+    "Capability four — honesty about precision, which is a feature, not a weakness. Every estimate now comes as a range: "
+    "optimistic, most likely, conservative. Early on, with no evidence, that range is wide — and that IS the truth. As "
+    "real quotes prove the tool right, the range tightens on its own: on our test part, from plus-or-minus twenty percent "
+    "down to three. Give a buyer this and you've handed them a script — the conservative end is the walk-away, the "
+    "optimistic end is the stretch target. A single number pretends to a confidence early estimates simply don't have. "
+    "This tells the truth, and the truth negotiates better.",
+
+    # 9 — AUTONOMOUS AGENT
+    "Capability five — this is the one that earns the word 'agentic.' A monitor runs on our server on a schedule and "
+    "compares what we PAY against what things SHOULD cost, using everything the tool has learned. In the live demo, with "
+    "nobody at the keyboard, it opened three findings by itself: a renegotiation worth four hundred thousand a year, an "
+    "'underwater' price that flags supply risk, and a stale estimate that needs a fresh quote. Half a million pounds a "
+    "year, surfaced unattended — and every finding shows its arithmetic, ready to carry straight into a supplier meeting. "
+    "The tool isn't waiting to be asked anymore. It's already working.",
+
+    # 10 — SUPPORTING AI BRAINS
+    "The learning loop is the headline, but it stands on a real platform. The assistant answers from our own rate data "
+    "with citations — it quotes our numbers, it doesn't improvise. The RFQ analyst turns a full quote package into a "
+    "costed, risk-flagged negotiation brief. CAD feature costing shows a designer which hole or surface is driving the "
+    "price. And carbon co-costing puts a CO2 figure next to every pound — which automotive and aerospace customers now "
+    "demand in the RFQ itself. Eighteen commodity engines, CAD-to-cost, PCB photo-to-BOM — and the agentic layer sits "
+    "on top of all of it, feeding and fed by the same memory.",
+
+    # 11 — INPUTS REQUIRED
+    "Fair management question: what does this cost the team in effort? Honestly — almost nothing. Engineers keep costing "
+    "parts exactly as they do now; the memory builds itself in the background. The one new habit is a single click when a "
+    "real quote arrives. Two optional accelerants: attach CAD or BOM files for sharper matching, and — my recommended "
+    "first move — a one-off import of our historical quotes so the system starts SMART instead of empty. Low effort in, "
+    "compounding value out. That's the whole ask on the input side.",
+
+    # 12 — RESULTS & ACCURACY
+    "Everything on this slide was measured on the running system — live server, real database, real API calls — not "
+    "projected. Segment error dropped to well under one percent in BOTH directions of bias. The confidence band "
+    "tightened seven-fold. Recognition hit ninety-nine percent on the live example. The unattended agent surfaced half "
+    "a million pounds. And nine hundred and seventeen tests stand guard so none of it quietly regresses. One honest "
+    "caveat, because credibility is the whole game here: these demos ran on small seeded datasets — real-world accuracy "
+    "builds as OUR data accumulates. The mechanism is proven. The asset grows with use.",
+
+    # 13 — BENEFITS
+    "Four benefits, business language. Speed: new parts start from proven history, not a blank sheet. Accuracy: it "
+    "compounds with every quote and it's always measured — which is precisely what makes our numbers defensible with "
+    "suppliers. Retention: your best engineers' judgement becomes company data instead of leaving in a leaver's head. "
+    "And proactive savings: the agent finds money continuously, quantified per year. Then the strategic kicker — a "
+    "competitor can buy the same software tomorrow. They cannot buy our accumulated costing intelligence. That's the "
+    "moat, and it deepens every day.",
+
+    # 14 — NEW A · CONFORMAL CONFIDENCE
+    "New this year, and it sharpens the moat. Every should-cost now carries TWO ranges. On the left, the physics prior — "
+    "a Monte-Carlo band reflecting how well the inputs are known; always available, every part. On the right, the new "
+    "one: an empirical band built from the actual quotes you've logged, using conformal prediction — a method that comes "
+    "with a mathematical coverage guarantee. So the tool stops asserting a precision and starts stating an observed fact: "
+    "'ninety percent of your real quotes for this family landed within plus-or-minus six-and-a-half percent.' That band "
+    "edge is measured error, not a claim — which is exactly why a buyer can defend it in the room. And it tightens on its "
+    "own. No competitor states uncertainty with a guarantee like this.",
+
+    # 15 — NEW B · OUTCOME-WEIGHTED FINDINGS
+    "This closes the loop on the agent. It used to rank findings by the raw gap — the theoretical money. Now it learns "
+    "which findings actually convert into cash. Watch the table: the cast housing shows a two-hundred-thousand-pound "
+    "gap, but in our data casting renegotiations almost never close — twenty percent — so the realizable value is forty "
+    "thousand. The machined knuckle has HALF the raw gap, but machining usually closes — eighty percent — so it's worth "
+    "eighty thousand realizable. The agent now ranks the machining finding ABOVE the bigger one. Why does that matter? "
+    "Sourcing time is scarce — it now points at money you can actually get, and tracks the pounds truly saved so the "
+    "tool proves its own worth. It stopped shouting about theoretical money.",
+
+    # 16 — NEW C · NEGOTIATION COACH
+    "This is where a number becomes leverage. The tool now builds a small causal model of the part — it knows the "
+    "material bucket is driven by a specific commodity index, aluminium here — and it runs the same overhead-and-margin "
+    "maths the engine already uses to work out how sensitive the price is. Then it writes the argument for you. Read the "
+    "live output: material is eight-thirty-nine, driven by aluminium; every one-percent move in the index shifts the "
+    "piece price by eleven pence; a quote of ninety-five is only justified if aluminium were about fourteen percent above "
+    "today — so ask them to prove it, or hold at eighty-six thirty-four. That's a sentence a buyer can say out loud and "
+    "not get argued out of. Should-cost, converted into negotiating power — the number AND the words.",
+
+    # 17 — NEW D · WHAT-IF ENGINE
+    "Two ways to ask 'what if a commodity moves?' Left, one part: drag a slider from minus twenty to plus twenty percent "
+    "and the price recomputes live under your finger — plus fifteen percent aluminium takes this part from eighty-six "
+    "thirty-four to eighty-seven ninety-two. Right, the whole portfolio at once: push a move across every part and watch "
+    "who changes status — steel up ten percent, seven parts flip underwater, here's the money at risk. That's sourcing "
+    "getting ahead of the market instead of reacting to it. And the framing that keeps it honest: it's always a "
+    "conditional — IF the index moves — never a forecast we can't stand behind. Connect a live market feed and the same "
+    "machinery becomes a real forecast overnight.",
+
+    # 18 — NEW F · PCB PHOTO → BOM ACCURACY
+    "Now the feature I'm proudest of this year. Photograph a circuit board, and in about sixty seconds you get a costed "
+    "bill of materials. The story here is honesty about the journey: it started as a clever demo, and complex automotive "
+    "boards would sometimes come back EMPTY — a lot of compute, no result. We fixed that at the root, then hardened the "
+    "whole pipeline. The chart is the proof: the same real ECU, costed by an engineer bottom-up in half a day versus the "
+    "AI from one photo — sixty-nine pounds against seventy-three, within about five percent, in sixty seconds. On the "
+    "right, the five fixes that got us there — grounding prices to a real catalogue, capping any part the model "
+    "misreads so one bad line can't blow up the total, making fabrication deterministic, and splitting the headline into "
+    "what you can trust versus what to verify. Bottom line: the two-to-three-times over-costing is gone. Same photo, same "
+    "answer, every run — and it tells you exactly which lines to firm up before you quote.",
+
+    # 19 — NEW E · GLASS-BOX DIFFERENTIATION
+    "If you take one competitive message away, take this. Rivals can demo continuous learning and adaptive reasoning — "
+    "but as a black box, a number you're told to trust. Our principle is the opposite, and it's the harder thing to "
+    "build: every learned or derived value stays auditable. The bias factor, the conformal band, the hit-rate, the "
+    "coach's arithmetic — all of it is a value a cost engineer can read and defend across the table. The AI narrates and "
+    "explains; it never sets the price in secret. So we match the market on learning, autonomy and causal reasoning — "
+    "and we beat it on the one thing that actually wins deals in this business: defensibility. Autonomous, "
+    "self-improving, glass-box, AND on-premise so the intelligence never leaves our walls. That combination doesn't "
+    "exist anywhere else.",
+
+    # 20 — NEXT STEPS
+    "To close. The capability is built, tested — nine hundred and seventeen tests — and live, at no extra licence cost, "
+    "running on our own infrastructure. I'll be straight about the one dependency: the intelligence starts empty and "
+    "grows with use. So the ask is three small decisions. One: make 'Log Actual £' a one-click habit when quotes come "
+    "in. Two: approve a one-off import of our historical quotes so the system starts smart — a day or two of effort. "
+    "Three: put the agent's findings on the sourcing agenda each month; it's already finding money. Do those three "
+    "things and this becomes a compounding asset from day one. Thank you — I'm happy to take questions, or show you the "
+    "live system right now.",
+]
+
+_slides = list(prs.slides)
+for _i, _slide in enumerate(_slides):
+    if _i < len(SPEAKER_NOTES):
+        _slide.notes_slide.notes_text_frame.text = SPEAKER_NOTES[_i]
+
+assert len(_slides) == len(SPEAKER_NOTES), f"slides={len(_slides)} notes={len(SPEAKER_NOTES)}"
 
 OUT = 'CostVision-Agentic-AI-Management-Presentation.pptx'
 prs.save(OUT)
