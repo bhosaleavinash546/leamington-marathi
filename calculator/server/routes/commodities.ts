@@ -223,7 +223,9 @@ router.get('/', (_req, res) => {
       volatility: comm.volatility,
       trend: comm.trend,
       region: comm.region,
-      source: comm.source,
+      // The price series is a seeded model (bounded random walk around a real
+      // baseline), not a live feed — never present it as sourced market data.
+      source: `${comm.source}-basis (indicative)`,
       impactCoeff: comm.impactCoeff,
       riskLevel: comm.riskLevel,
       forecast30,

@@ -10972,7 +10972,7 @@ function collectMachiningInput(): UniversalStackInput {
     },
     programmingNRE: num('mach-prog-nre'),
     toolingCost: num('mach-tooling'),
-    amortizationVolume: num('mach-amort') || 1,
+    amortizationVolume: num('mach-amort') || num('annual-volume') || 100000,
     rejectRate: num('mach-reject') || undefined,
   });
 
@@ -11070,7 +11070,7 @@ function collectSheetMetalInput(): UniversalStackInput {
     dieType,
     dieLife: num('sm-die-life'),
     dieCostEstimate: num('sm-die-cost'),
-    amortizationVolume: num('sm-amort') || 1,
+    amortizationVolume: num('sm-amort') || num('annual-volume') || 100000,
     rejectRate: num('sm-reject') || undefined,
     secondaryOpsMachineId: sel('sm-sec-mach') || undefined,
     secondaryOpsLabourId: sel('sm-sec-lab') || undefined,
@@ -11190,7 +11190,7 @@ function collectIMMInput(): UniversalStackInput {
     steelClass,
     sideActionsLifters,
     mouldLife: num('imm-mould-life'),
-    amortizationVolume: num('imm-amort') || 1,
+    amortizationVolume: num('imm-amort') || num('annual-volume') || 100000,
     toleranceMm: num('imm-tolerance') || undefined,
     surfaceFinishGrade: validSel<'standard'|'textured'|'high_gloss'|'painted'>('imm-finish', ['standard','textured','high_gloss','painted'], 'standard'),
   });
@@ -11252,7 +11252,7 @@ function collectCastingInput(): UniversalStackInput {
     oee: num('cast-oee'),
     manning: num('cast-manning'),
     labourEfficiency: num('cast-lab-eff'),
-    amortizationVolume: num('cast-amort') || 1,
+    amortizationVolume: num('cast-amort') || num('annual-volume') || 100000,
   };
   let extra = {};
   if (subtype === 'hpdc') extra = { hpdc: { machineId: sel('cast-hpdc-mach'), cycleTimeSec: num('cast-hpdc-ct'), cavities: num('cast-hpdc-cav') || 1, dieCost: num('cast-hpdc-die-cost'), dieLife: num('cast-hpdc-die-life') } };
@@ -11339,7 +11339,7 @@ function collectForgingInput(): UniversalStackInput {
     dieSteel,
     dieImpressions,
     dieComplexity: shapeComplexity,
-    amortizationVolume: num('forge-amort') || 1,
+    amortizationVolume: num('forge-amort') || num('annual-volume') || 100000,
     secondaryMachiningOps: forgeSecondary?.ops,
     secondaryMachiningToolingCost: forgeSecondary?.toolingCost,
     heatTreatCostPerKg: num('forge-ht-cost') || undefined,
@@ -11504,7 +11504,7 @@ function collectPaintingInput(): UniversalStackInput {
     labourEfficiency: num('paint-lab-eff'),
     rejectReworkPct: num('paint-rework'),
     toolingCost: num('paint-tooling'),
-    amortizationVolume: num('paint-amort') || 1,
+    amortizationVolume: num('paint-amort') || num('annual-volume') || 100000,
   });
   return { ...getUniversalTail(), rawMaterial: drivers.rawMaterial, operations: drivers.operations, tooling: drivers.tooling };
 }
@@ -11538,7 +11538,7 @@ function collectBIWInput(): UniversalStackInput {
     joining,
     stations,
     fixturingToolingCost: num('biw-tooling'),
-    amortizationVolume: num('biw-amort') || 1,
+    amortizationVolume: num('biw-amort') || num('annual-volume') || 100000,
   });
   return { ...getUniversalTail(), rawMaterial: drivers.rawMaterial, operations: drivers.operations, tooling: drivers.tooling };
 }
@@ -11572,7 +11572,7 @@ function collectPCBFabInput(): UniversalStackInput {
     qualityGrade:         sel('pcbf-quality') as PCBQualityGrade,
     region:               sel('pcbf-region') as any,
     nreCost:              num('pcbf-nre'),
-    amortizationVolume:   num('pcbf-amort') || 1,
+    amortizationVolume:   num('pcbf-amort') || num('annual-volume') || 100000,
     fabYieldOverride:     yieldOverride > 0 ? yieldOverride : undefined,
   });
   return { ...getUniversalTail(), rawMaterial: drivers.rawMaterial, operations: drivers.operations, tooling: drivers.tooling };
@@ -11613,7 +11613,7 @@ function collectPCBAInput(): UniversalStackInput {
     manualLabourTimeSecPerJoint: num('pcba-man-time'),
     assemblyYield: num('pcba-yield'),
     reworkCostPerFailure: num('pcba-rework-cost'),
-    amortizationVolume: num('pcba-amort') || 1,
+    amortizationVolume: num('pcba-amort') || num('annual-volume') || 100000,
     testCostPerBoard: num('pcba-test-cost') || undefined,
     assemblyComplexity: validSel<AssemblyComplexityLevel>('pcba-complexity', ASSEMBLY_LEVELS, 'low'),
     qualityGrade: validSel<PCBAQualityGrade>('pcba-quality', PCBA_QUALS, 'consumer'),
@@ -11683,7 +11683,7 @@ function collectCastAndMachineInput(): UniversalStackInput {
     },
     machiningToolingCost: num('cam-mach-tooling'),
     machiningProgrammingNRE: num('cam-mach-prog-nre'),
-    amortizationVolume: num('cam-amort') || 1,
+    amortizationVolume: num('cam-amort') || num('annual-volume') || 100000,
     // Post-casting secondary operations
     heatTreatmentCostPerKg: num('cam-ht-cost') || undefined,
     shotBlastCostPerPart: num('cam-shot-blast') || undefined,
@@ -11760,7 +11760,7 @@ function collectSheetMetalFabInput(): UniversalStackInput {
     tigWeldLabourId: tigLen > 0 ? tigLab : undefined,
     tigWeldConsumableCostPerM: num('smf-tig-cons') || 0.60,
     toolingCost: num('smf-tooling'),
-    amortizationVolume: num('smf-amort') || 1,
+    amortizationVolume: num('smf-amort') || num('annual-volume') || 100000,
   });
   return { ...getUniversalTail(), rawMaterial: drivers.rawMaterial, operations: drivers.operations, tooling: drivers.tooling };
 }
@@ -11800,7 +11800,7 @@ function collectBlowMouldingInput(): UniversalStackInput {
     preformCostPerPart: num('bm-preform-cost') || undefined,
     masterbatchCostPerKg: num('bm-masterbatch') || undefined,
     mouldLife: num('bm-mould-life'),
-    amortizationVolume: num('bm-amort') || 1,
+    amortizationVolume: num('bm-amort') || num('annual-volume') || 100000,
     deflashMachineId: deflashCt > 0 ? deflashMach : undefined,
     deflashLabourId: deflashCt > 0 ? deflashLab : undefined,
     deflashCycleTimeSec: deflashCt > 0 ? deflashCt : undefined,
@@ -11880,7 +11880,7 @@ function collectExtrusionInput(): UniversalStackInput {
     labourEfficiency: num('ext-lab-eff'),
     startupScrapFraction: num('ext-scrap'),
     dieCost: num('ext-die-cost'),
-    amortizationVolume: num('ext-amort') || 1,
+    amortizationVolume: num('ext-amort') || num('annual-volume') || 100000,
     family, process, screwType,
     screwDiameterMm: num('ext-screw') || undefined,
     wallThicknessMm: num('ext-wall') || undefined,
@@ -11983,7 +11983,7 @@ function collectThermoformingInput(): UniversalStackInput {
     manning: num('tf-manning'),
     labourEfficiency: num('tf-lab-eff'),
     toolCost: num('tf-tool-cost'),
-    amortizationVolume: num('tf-amort') || 1,
+    amortizationVolume: num('tf-amort') || num('annual-volume') || 100000,
     rejectRate: (num('tf-reject') || 0) / 100,
     family,
     sheetThicknessMm: num('tf-thk') || undefined,
@@ -12038,7 +12038,7 @@ function collectRotationalMouldingInput(): UniversalStackInput {
     labourEfficiency: num('rm-lab-eff'),
     mouldCost: manualMouldCost > 0 ? manualMouldCost : 0,
     mouldLife: num('rm-mould-life'),
-    amortizationVolume: num('rm-amort') || 1,
+    amortizationVolume: num('rm-amort') || num('annual-volume') || 100000,
     wallThicknessMm,
     rotoMaterial,
     coolingMethod,

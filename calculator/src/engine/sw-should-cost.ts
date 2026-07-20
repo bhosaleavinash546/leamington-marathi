@@ -73,7 +73,7 @@ export interface SWProgramInputs {
   programLifeYears:         number;   // 10-15 typical
   annualProductionVolume:   number;   // vehicles/yr to amortize SW cost
   teamSeniorFraction:       number;   // 0-1 fraction that's senior (affects blended rate)
-  overheadMultiplier:       number;   // fully loaded: 1.5 typical (benefits 35%, facilities 15%)
+  overheadMultiplier:       number;   // facilities/programme overhead on an already-loaded base rate (~1.15 typical)
   includeMaintenanceCost:   boolean;
   includeCloudCost:         boolean;
   /** UK senior-blended bare rate (£/PM) before overhead. Defaults to UK_PM_RATE_GBP
@@ -1233,7 +1233,10 @@ export function defaultSWProgramInputs(): SWProgramInputs {
     programLifeYears:        10,
     annualProductionVolume:  80_000,
     teamSeniorFraction:      0.50,
-    overheadMultiplier:      1.60,
+    // 1.15 = facilities/programme overhead ONLY. The £28k/PM base rate is a
+    // contractor day-rate equivalent that already includes benefits — the old
+    // 1.60 (benefits 35% + facilities 15%) double-counted benefits (~26% high).
+    overheadMultiplier:      1.15,
     includeMaintenanceCost:  true,
     includeCloudCost:        true,
     // baseRateGBP intentionally unset → driven by the rate library's ukBaseRatePerPM

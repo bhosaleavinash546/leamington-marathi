@@ -164,10 +164,23 @@ export async function fetchAndCachePrices(
     if (liveRates) {
       const rate = liveRates[entry.symbol];
       if (typeof rate === 'number' && rate > 0) {
-        fromApi = true;
-        priceGbpPerKg = troyOzRateToGbpPerKg(rate) * entry.premium;
-        source = 'metalpriceapi';
-        confidence = 'High';
+        const live = troyOzRateToGbpPerKg(rate) * entry.premium;
+        // The API's unit basis differs by metal/tier (per-tonne vs per-troy-oz,
+        // USD vs GBP base, and symbol collisions like COP=Colombian Peso), so a
+        // wrong assumption can be off by 32,000x. Only accept a live value in a
+        // plausible band around the curated baseline; otherwise keep baseline.
+        const lo = entry.baseKgPrice * entry.premium * 0.4;
+        const hi = entry.baseKgPrice * entry.premium * 2.5;
+        if (live >= lo && live <= hi) {
+          fromApi = true;
+          priceGbpPerKg = live;
+          source = 'metalpriceapi';
+          confidence = 'High';
+        } else {
+          const warn = `Rate for ${entry.symbol} implies £${live.toFixed(2)}/kg — outside plausible band [£${lo.toFixed(2)}–£${hi.toFixed(2)}], using baseline`;
+          console.warn(`[price-fetcher] ${warn}`);
+          errors.push(warn);
+        }
       } else {
         const warn = `No rate for ${entry.symbol} in API response — using baseline`;
         console.warn(`[price-fetcher] ${warn}`);

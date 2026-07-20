@@ -389,8 +389,10 @@ function computeAutomotiveNRE(asilLevel: ASILLevel, bomTotal: number): Automotiv
   const fmeaCost  = [0, 5000, 10000, 18000, 32000][tier];
   const dvprCost  = [0, 8000, 16000, 28000, 50000][tier];
   const asilAudit = [0, 2500,  5000, 10000, 20000][tier];
-  const bomScale  = Math.max(1, bomTotal / 50);  // scale slightly for complex boards
-  const scale     = Math.min(2.0, bomScale);
+  // Scale gently with BOM complexity: +1% per £8 of BOM, capped at +50%. The
+  // old bomTotal/50 with a 2.0 cap saturated to a silent 2x for any board over
+  // £100 BOM — doubling PPAP/FMEA/DVP&R for essentially every real board.
+  const scale     = 1 + Math.min(0.5, bomTotal / 800);
   const r = (n: number) => Math.round(n * scale / 100) * 100;
   return {
     ppapCost: r(ppapCost), fmeaCost: r(fmeaCost),
