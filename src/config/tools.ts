@@ -34,7 +34,7 @@ export const TOOLS: Tool[] = [
   // ── Track & decide ──────────────────────────────────────────────────────
   { id: 'pipeline',    label: 'Pipeline',          route: '/pipeline',     icon: GitMerge,      category: 'track', description: 'Ideas from proposal to confirmed saving' },
   { id: 'vave',        label: 'VAVE Tracker',      route: '/vave-tracker', icon: ClipboardList, category: 'track', description: 'Track approved ideas to realisation' },
-  { id: 'marketplace', label: 'Marketplace',       route: '/marketplace',  icon: Store,         category: 'track', description: 'Proven, benchmarked idea library' },
+  { id: 'marketplace', label: 'Idea Marketplace',  route: '/marketplace',  icon: Store,         category: 'track', description: 'Proven, benchmarked idea library' },
   // ── Learn ───────────────────────────────────────────────────────────────
   { id: 'trends',      label: 'Trends',            route: '/trends',       icon: TrendingUp,   category: 'learn', description: 'Domain cost trends and levers' },
   { id: 'help',        label: 'Help',              route: '/help',         icon: HelpCircle,   category: 'learn', description: 'How-to guides and FAQs' },
