@@ -1314,7 +1314,7 @@ ${userPromptText}`;
     // features — stops the headline swinging run-to-run on the same board.
     stabiliseBoardSpec(boardSpec, assemblyData, domain);
     {
-      const sf = stableFabMid(boardSpec, assemblyData, orderQty, PCB_COUNTRY_RATES[selectedCountry] ? selectedCountry : 'cn');
+      const sf = stableFabMid(boardSpec, assemblyData, orderQty, PCB_COUNTRY_RATES[selectedCountry] ? selectedCountry : 'cn', domain === 'automotive_adas');
       if (pcbFabGBP && sf > 0) { pcbFabGBP.mid = Math.round(sf * 100) / 100; pcbFabGBP.min = Math.round(sf * 80) / 100; pcbFabGBP.max = Math.round(sf * 130) / 100; }
     }
     const fabCostMid = Number(pcbFabGBP?.mid) || 0;
@@ -1708,7 +1708,7 @@ router.post('/reanalyze', upload.fields([
     // Stabilise the board spec + derive a deterministic fab (see analyze path).
     stabiliseBoardSpec(boardSpec, assemblyData, domain);
     {
-      const sf = stableFabMid(boardSpec, assemblyData, orderQty, PCB_COUNTRY_RATES[selectedCountry] ? selectedCountry : 'cn');
+      const sf = stableFabMid(boardSpec, assemblyData, orderQty, PCB_COUNTRY_RATES[selectedCountry] ? selectedCountry : 'cn', domain === 'automotive_adas');
       if (pcbFabGBP && sf > 0) { pcbFabGBP.mid = Math.round(sf * 100) / 100; pcbFabGBP.min = Math.round(sf * 80) / 100; pcbFabGBP.max = Math.round(sf * 130) / 100; }
     }
     const fabCostMid = Number(pcbFabGBP?.mid) || 0;
@@ -2194,7 +2194,7 @@ router.post('/analyze-image-stream', upload.fields([
     // Stabilise the board spec + derive a deterministic fab (see analyze path).
     stabiliseBoardSpec(boardSpec, assemblyData, domain);
     {
-      const sf = stableFabMid(boardSpec, assemblyData, orderQty2, PCB_COUNTRY_RATES[selectedCountry2] ? selectedCountry2 : 'cn');
+      const sf = stableFabMid(boardSpec, assemblyData, orderQty2, PCB_COUNTRY_RATES[selectedCountry2] ? selectedCountry2 : 'cn', domain === 'automotive_adas');
       if (pcbFabGBP && sf > 0) { pcbFabGBP.mid = Math.round(sf * 100) / 100; pcbFabGBP.min = Math.round(sf * 80) / 100; pcbFabGBP.max = Math.round(sf * 130) / 100; }
     }
     const fabCostMid2 = Number(pcbFabGBP?.mid) || 0;

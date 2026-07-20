@@ -100,7 +100,7 @@ export function stabiliseBoardSpec(spec: StabiliseInput, asm: AssemblyInput, dom
  * is what stabilises the headline: the fab number now depends only on stable
  * board features, so the same board costs the same every run.
  */
-export function stableFabMid(spec: StabiliseInput, asm: AssemblyInput, orderQty: number, country: string): number {
+export function stableFabMid(spec: StabiliseInput, asm: AssemblyInput, orderQty: number, country: string, automotive = false): number {
   try {
     const b = computePCBCountryCost({
       widthMm: n(spec.widthMm, 100), heightMm: n(spec.heightMm, 80), layers: n(spec.estimatedLayers, 2),
@@ -112,6 +112,11 @@ export function stableFabMid(spec: StabiliseInput, asm: AssemblyInput, orderQty:
       ictTimeSec: n(asm.ictTimeSec), conformalCoatAreaCm2: 0, totalBOMCostGBP: 0,
       orderQuantity: Math.max(1, orderQty || 1),
     }, country);
-    return b.pcbFabPerBoard;
+    // The headline "PCB Fabrication" band covers ALL non-BOM manufacturing (the
+    // total is BOM + this), so include SMT/TH assembly + AOI/X-ray/ICT, not just
+    // the bare board. Automotive adds an IATF-16949 + high-Tg + IPC-6012 Class 3
+    // inspection premium on the FAB portion (~30%).
+    const fab = automotive ? b.pcbFabPerBoard * 1.30 : b.pcbFabPerBoard;
+    return fab + b.assemblyPerBoard;
   } catch { return 0; }
 }
