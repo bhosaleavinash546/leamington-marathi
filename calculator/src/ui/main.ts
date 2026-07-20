@@ -464,7 +464,41 @@ function saveCalibrationRecords(records: CalibrationRecord[]): void {
   localStorage.setItem('cv-calibration', JSON.stringify(records.slice(-500)));
 }
 /** Log the current result's actual quoted/PO price so the model self-calibrates. */
+/** Headline should-cost of a PCB image result (BOM + fab + assembly), for calibration. */
+function pcbHeadlineTotal(r: PCBImageAnalysis): number {
+  const cb = (r as unknown as { _confidenceBand?: { totalMid?: number } })._confidenceBand;
+  if (cb && typeof cb.totalMid === 'number') return cb.totalMid;
+  const co = r.costEstimates;
+  return (co?.totalBOMCostGBP ?? 0) + (co?.pcbFabGBP?.mid ?? 0) + (co?.smtAssemblyCostGBP ?? 0);
+}
+
+/** Learn-from-actuals loop for the PCB image pipeline — records a 'pcba' calibration
+ *  sample so the should-cost self-corrects toward real quotes over time. */
+function logActualForPCB(): void {
+  const r = pcbImageResult;
+  if (!r) { showToast('Run a PCB analysis first', 'warning'); return; }
+  const est = pcbHeadlineTotal(r);
+  const raw = window.prompt(`Enter the ACTUAL quoted / PO board price for "${r.partName}" (GBP) — the model estimated £${est.toFixed(2)}:`);
+  if (raw === null) return;
+  const actual = parseFloat(raw.replace(/[^0-9.]/g, ''));
+  if (!Number.isFinite(actual) || actual <= 0) { showToast('Please enter a positive number', 'warning'); return; }
+  const recs = getCalibrationRecords();
+  recs.push({
+    id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+    savedAt: Date.now(), commodity: 'pcba',
+    region: (r as unknown as { _selectedCountry?: string })._selectedCountry?.toUpperCase() ?? 'CN',
+    shouldCost: est, actualCost: actual, currency: 'GBP',
+  });
+  saveCalibrationRecords(recs);
+  const s = computeCalibration(recs, 'pcba');
+  showToast(s.applied
+    ? `Logged. PCBA now calibrated ×${s.biasFactor} from ${s.n} quotes (MAPE ${s.calibratedMapePct}%). Re-analyze to apply.`
+    : `Logged (${s.n}/3 PCBA quotes — need ${3 - s.n} more to calibrate).`, 'info');
+}
+
 function logActualQuote(): void {
+  // PCB image-to-BOM keeps its result in pcbImageResult (not lastResult) — route there.
+  if (pcbImageResult && (activeCommodity === 'pcb_fab' || activeCommodity === 'pcba')) { logActualForPCB(); return; }
   if (!lastResult) { showToast('Run Calculate first, then log the actual', 'warning'); return; }
   const raw = window.prompt(`Enter the ACTUAL quoted / PO unit price for "${lastResult.partName}" (${_displayCurrency}) — the model estimated ${_currFmt(lastResult.total)}:`);
   if (raw === null) return;
@@ -7775,6 +7809,20 @@ function buildPCBImagePanel(r: PCBImageAnalysis): string {
           </div>
         </div>`;
       })() : ''}
+
+      ${(() => {
+        // Learn-from-actuals: once ≥3 real PCBA quotes are logged, show the
+        // bias-corrected estimate so the should-cost self-calibrates to reality.
+        const cal = computeCalibration(getCalibrationRecords(), 'pcba');
+        if (!cal.applied) return '';
+        const est = pcbHeadlineTotal(r);
+        const calibrated = applyCalibration(est, cal);
+        const dir = cal.biasFactor < 1 ? 'lower' : 'higher';
+        return `<div style="margin-top:6px;padding:8px 11px;background:rgba(47,95,224,0.06);border:1px solid rgba(47,95,224,0.25);border-radius:8px;font-size:0.68rem">
+          <strong style="color:var(--accent)">Calibrated estimate: &#163;${calibrated.toFixed(2)}</strong>
+          <span style="color:var(--text-muted)"> · learned &times;${cal.biasFactor} (${dir}) from ${cal.n} logged actuals · MAPE ${cal.mapePct}% &rarr; ${cal.calibratedMapePct}%</span>
+        </div>`;
+      })()}
 
       ${(() => {
         // Targeted re-capture loop: name the exact components whose markings the

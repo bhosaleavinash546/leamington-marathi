@@ -10,6 +10,20 @@
 // public distributor references (LCSC / DigiKey / Arrow, early 2026). They are a
 // grounding ANCHOR, not a quote — a real Octopart/RS hit, when available, wins.
 
+/**
+ * Catalogue unit prices are anchored at a ~10k automotive break. Scale to the
+ * actual order quantity (gentle for production volumes; steeper for prototype).
+ * Returns a multiplier relative to the 10k price (1.0 at 10k).
+ */
+export function volumeScaleFrom10k(qty: number): number {
+  const steps: Array<[number, number]> = [
+    [100, 2.4], [500, 1.8], [1000, 1.45], [2500, 1.22],
+    [5000, 1.10], [10000, 1.00], [25000, 0.95], [100000, 0.90],
+  ];
+  for (const [maxQty, mult] of steps) if (qty <= maxQty) return mult;
+  return 0.87;
+}
+
 /** Normalise an MPN for matching: uppercase, drop packaging/grade/rev suffixes. */
 export function normaliseMPN(raw: string): string {
   return (raw || '')

@@ -14,7 +14,7 @@
  */
 
 import type { LivePriceResult } from './pcb-live-pricing.js';
-import { cataloguePrice, classMedianCap } from './pcb-price-catalogue.js';
+import { cataloguePrice, classMedianCap, volumeScaleFrom10k } from './pcb-price-catalogue.js';
 
 export type BomLine = Record<string, unknown>;
 
@@ -111,9 +111,11 @@ export function groundingCandidates(bom: BomLine[], cap = 20): string[] {
  */
 export function offlineCataloguePrices(partNumbers: string[], qty: number): LivePriceResult[] {
   const out: LivePriceResult[] = [];
+  const vscale = volumeScaleFrom10k(qty);   // catalogue anchored at ~10k
   for (const pn of partNumbers) {
-    const price = cataloguePrice(pn);
-    if (price == null) continue;
+    const base = cataloguePrice(pn);
+    if (base == null) continue;
+    const price = round(base * vscale, 4);
     out.push({
       mpn: pn, description: 'offline catalogue', manufacturer: '',
       unitPriceGBP: price, priceBreakQty: qty, stockQty: 0, leadTimeWeeks: null,

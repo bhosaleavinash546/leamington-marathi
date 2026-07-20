@@ -22,10 +22,16 @@ import { salvageAnalysisFromRaw } from '../utils/pcb-salvage.js';
 // ── Volume BOM price correction ────────────────────────────────────────────
 // Pricing table is calibrated to 100K units. Multipliers scale cost up for
 // lower order quantities (below 100K it gets more expensive, above it's cheaper).
+// Recalibrated (accuracy pass): the mid/high-volume steps were too steep — for
+// mainstream automotive silicon the real 10k-vs-100k distributor delta is ~10%,
+// not 35%. 10k is a production volume, not a prototype. Prototype steps (≤1k) stay
+// aggressive. NB: catalogue-grounded lines ignore this entirely (their price comes
+// straight from the catalogue/distributor at the order qty), so this now only
+// affects OCR-confirmed lines whose exact MPN isn't in the catalogue.
 const VOLUME_BOM_MULTIPLIERS: [number, number][] = [
-  [50, 10.0], [100, 8.0], [250, 5.5], [500, 4.0], [1000, 3.0],
-  [2500, 2.2], [5000, 1.7], [10000, 1.35], [25000, 1.15],
-  [50000, 1.06], [100000, 1.00],
+  [50, 8.0], [100, 6.0], [250, 4.0], [500, 2.8], [1000, 2.0],
+  [2500, 1.55], [5000, 1.28], [10000, 1.12], [25000, 1.05],
+  [50000, 1.02], [100000, 1.00],
 ];
 function getVolumeMultiplier(orderQty: number): number {
   for (const [maxQty, mult] of VOLUME_BOM_MULTIPLIERS) {
@@ -48,7 +54,11 @@ interface PCBConfidenceBand {
   volumeMultiplier: number;
 }
 
-const HIGH_VALUE_COMP_TYPES = new Set(['ic_bga', 'ic_tqfp', 'power_module']);
+// Widened (accuracy pass): reading the exact MPN of an unconfirmed high-value IC is
+// what makes it catalogue-groundable, so include the other IC packages that carry
+// real value (QFN/QFP/SOIC), not just BGA/TQFP. Passives stay out — they're cheap
+// and not worth a second Opus pass.
+const HIGH_VALUE_COMP_TYPES = new Set(['ic_bga', 'ic_tqfp', 'ic_qfp', 'ic_qfn', 'ic_soic', 'power_module']);
 
 interface BOMLineForBand {
   qty: number; unitPriceGBP: number; lineConf: number;
@@ -1248,7 +1258,7 @@ ${userPromptText}`;
       !String(l.partNumber ?? '').trim() &&
       Number(l.qty ?? 1) * Number(l.unitPriceGBP ?? 0) > 2.0
     );
-    if (unconfirmedLines.length > 0 && unconfirmedLines.length <= 8) {
+    if (unconfirmedLines.length > 0 && unconfirmedLines.length <= 12) {
       console.log(`[PCB] Stage 3b: refining ${unconfirmedLines.length} unconfirmed high-value IC(s)...`);
       const refinements = await refineUnconfirmedICs(anthropic, imageFiles, imageLabels, domain, unconfirmedLines);
       if (refinements.size > 0) {
