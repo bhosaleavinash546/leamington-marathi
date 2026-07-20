@@ -938,6 +938,7 @@ export default function AnalyzePage() {
                       { id: 'morphological', label: 'Morphological' },
                       { id: 'effects-trends', label: 'Effects & Trends' },
                       { id: 'circularity', label: 'Circularity' },
+                      { id: 'biomimicry', label: 'Biomimicry' },
                     ].map(l => (
                       <button
                         key={l.id}

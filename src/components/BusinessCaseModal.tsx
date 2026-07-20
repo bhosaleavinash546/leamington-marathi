@@ -37,6 +37,8 @@ export interface BusinessCase {
   ideaNumber: string;
   notes: string;
   ideaData?: string | null;
+  /** Per-gate promotion-criteria checklists (soft-gating; server-sanitized). */
+  scorecards?: Record<string, { items: { id: string; label: string; done: boolean; note?: string }[]; updatedAt?: string }>;
   createdAt: string;
   updatedAt: string;
 }

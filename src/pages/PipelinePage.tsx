@@ -384,6 +384,10 @@ export default function PipelinePage() {
         body: JSON.stringify({ gate: newGate }),
       });
       if (r.ok) {
+        const d = await r.json();
+        // Soft gate: promotion with open scorecard items is allowed but the
+        // skipped criteria are surfaced, not swallowed.
+        setGateWarning(Array.isArray(d.scorecardWarning) && d.scorecardWarning.length ? { caseId, items: d.scorecardWarning } : null);
         await loadData();
       }
     } catch {
@@ -391,6 +395,38 @@ export default function PipelinePage() {
     } finally {
       setUpdatingGateId(null);
     }
+  }
+
+  // ── Stage-gate scorecards (soft-gating checklists) ──
+  const [gateCriteria, setGateCriteria] = useState<Record<string, { id: string; label: string }[]>>({});
+  const [gateWarning, setGateWarning] = useState<{ caseId: string; items: string[] } | null>(null);
+  const [savingScorecard, setSavingScorecard] = useState<string | null>(null);
+  useEffect(() => {
+    fetch('/api/business-cases/gate-criteria', { headers: authHeaders() })
+      .then(r => r.ok ? r.json() : null).then(d => { if (d?.criteria) setGateCriteria(d.criteria); }).catch(() => {});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Merge stored state over the default criteria so new defaults appear and
+  // stored done/note flags survive.
+  function scorecardItems(bc: BusinessCase, gate: string): { id: string; label: string; done: boolean; note?: string }[] {
+    const defaults = gateCriteria[gate] || [];
+    const stored = bc.scorecards?.[gate]?.items || [];
+    const byId = new Map(stored.map(i => [i.id, i]));
+    return defaults.map(d => ({ id: d.id, label: d.label, done: byId.get(d.id)?.done === true, note: byId.get(d.id)?.note }));
+  }
+
+  async function toggleScorecardItem(bc: BusinessCase, gate: string, itemId: string) {
+    const items = scorecardItems(bc, gate).map(i => i.id === itemId ? { ...i, done: !i.done } : i);
+    setSavingScorecard(`${bc.id}:${gate}:${itemId}`);
+    try {
+      const r = await fetch(`/api/business-cases/${bc.id}`, {
+        method: 'PATCH',
+        headers: authHeaders(),
+        body: JSON.stringify({ scorecards: { [gate]: { items } } }),
+      });
+      if (r.ok) await loadData();
+    } catch { /* ignore */ } finally { setSavingScorecard(null); }
   }
 
   // ── Export to Excel ──
@@ -883,6 +919,51 @@ export default function PipelinePage() {
                                   </tbody>
                                 </table>
                               </div>
+                            </div>
+                          )}
+
+                          {/* Stage-gate scorecard (soft-gating checklists) */}
+                          {Object.keys(gateCriteria).length > 0 && (
+                            <div className="mb-4 p-3 rounded-xl bg-white/5 border border-white/10">
+                              <p className="text-slate-400 text-xs font-semibold uppercase tracking-wide mb-2">Stage-gate scorecard</p>
+                              <div className="grid sm:grid-cols-3 gap-3">
+                                {(['G1', 'G2', 'G3'] as const).map(g => {
+                                  const items = scorecardItems(bc, g);
+                                  const done = items.filter(i => i.done).length;
+                                  const isPast = GATE_ORDER.indexOf(bc.gate) >= GATE_ORDER.indexOf(g);
+                                  return (
+                                    <div key={g} className={`p-2.5 rounded-lg border ${isPast && done < items.length ? 'border-amber-500/25 bg-amber-500/5' : 'border-white/10'}`}>
+                                      <div className="flex items-center justify-between mb-1.5">
+                                        <span className="text-xs font-semibold text-slate-300">{g} criteria</span>
+                                        <span className={`text-[11px] font-mono ${done === items.length ? 'text-emerald-400' : 'text-slate-500'}`}>{done}/{items.length}</span>
+                                      </div>
+                                      <div className="space-y-1">
+                                        {items.map(item => (
+                                          <label key={item.id} className={`flex items-start gap-1.5 text-[11px] leading-snug ${isOwner ? 'cursor-pointer' : 'cursor-default'} ${item.done ? 'text-slate-500 line-through' : 'text-slate-400'}`}>
+                                            <input
+                                              type="checkbox"
+                                              checked={item.done}
+                                              disabled={!isOwner || savingScorecard === `${bc.id}:${g}:${item.id}`}
+                                              onChange={() => toggleScorecardItem(bc, g, item.id)}
+                                              className="mt-0.5 accent-gold-500"
+                                            />
+                                            {item.label}
+                                          </label>
+                                        ))}
+                                      </div>
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            </div>
+                          )}
+
+                          {gateWarning?.caseId === bc.id && (
+                            <div className="mb-4 p-3 rounded-xl bg-amber-500/10 border border-amber-500/25">
+                              <p className="text-amber-400 text-xs font-semibold mb-1">Gate moved with open scorecard items:</p>
+                              <ul className="text-slate-400 text-[11px] space-y-0.5">
+                                {gateWarning.items.map((w, i) => <li key={i}>• {w}</li>)}
+                              </ul>
                             </div>
                           )}
 

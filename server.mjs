@@ -36,6 +36,7 @@ import { batchDiversity, dedupeIdeas, rankIdeas } from './idea-quality.mjs';
 import { buildTasteProfile, buildTasteContext, tasteMatchIdeas } from './idea-feedback.mjs';
 import { runDeepPass } from './idea-deep.mjs';
 import { buildArchive, coverageGaps, archiveGrid, inferCommodityKey } from './idea-archive.mjs';
+import { searchPatents } from './patent-search.mjs';
 import { registerPcbRoutes } from './routes/pcb.mjs';
 import { registerShouldCostRoutes } from './routes/should-cost.mjs';
 import { registerMarketplaceRoutes } from './routes/marketplace.mjs';
@@ -414,6 +415,7 @@ db.exec(`
 // ─── Migrate: add ideaData column if not already present ─────────────────────
 try { db.exec("ALTER TABLE marketplace_ideas ADD COLUMN ideaData TEXT"); } catch {}
 try { db.exec("ALTER TABLE idea_business_cases ADD COLUMN ideaData TEXT"); } catch {}
+try { db.exec("ALTER TABLE idea_business_cases ADD COLUMN scorecards TEXT DEFAULT '{}'"); } catch {}
 // level: 'part' | 'system' — granularity tag for marketplace ideas
 try { db.exec("ALTER TABLE marketplace_ideas ADD COLUMN level TEXT"); } catch {}
 
@@ -2029,6 +2031,7 @@ const LENS_TEXT = {
   morphological: 'MORPHOLOGICAL: split the part\'s job into sub-functions, consider different solution options for each, and propose at least one genuinely different ARCHITECTURE (not a tweak) by recombining options.',
   'effects-trends': 'EFFECTS & TRENDS: for ≥2 ideas, deliver the part\'s function with a cheaper physical effect (shrink-fit, magnetism, Hall effect, snap-fit…) OR jump to the next technology generation (mechanics→fields, mono→integrated, fixed→dynamic).',
   circularity: 'CIRCULARITY: include ≥2 ideas that BOTH cut cost and improve end-of-life recyclability (EU ELV) — reversible joints instead of adhesive, mono-material design, fewer fastener types, easy material separation.',
+  biomimicry: 'BIOMIMICRY: for ≥1 idea, deliver the part\'s function the way nature does it — sandwich/lattice cores (bone, honeycomb), fibre orientation along load paths (wood, tendon), adhesion without fasteners (gecko, burr/velcro), passive thermal control (termite mound), surface texture for drag/soiling (shark skin, lotus). Name the biological analogue and the cost mechanism it unlocks.',
 };
 function buildLensDirectives(lenses) {
   const picked = (lenses || []).filter(l => LENS_TEXT[l]);
@@ -3374,30 +3377,54 @@ async function seedAdminAccount() {
 
 // ─── PATENT WATCH ─────────────────────────────────────────────────────────────
 
+// Patent Watch v2: with a PatentsView key configured, REAL patents are
+// retrieved and the model narrates risk/design-around grounded ONLY in those
+// records (cited, linked). Without a key the old LLM-only path runs, but the
+// response is explicitly labelled unverified — no patent database queried.
 app.post('/api/patent-watch', requireAuth, checkUsageQuota, rateLimit(20, 60 * 60 * 1000), async (req, res) => {
   const { title, description, apiKey } = req.body;
   if (!title || !apiKey) return res.status(400).json({ error: 'title and apiKey required' });
   try {
     const client = makeAnthropic(apiKey, { userId: req.user?.id, route: '/api/patent-watch' });
+    let retrieval = null;
+    try {
+      retrieval = await searchPatents(String(title), String(description || ''));
+    } catch (e) { console.warn('[PatentWatch] retrieval failed:', e?.message); }
+
+    const grounded = retrieval?.configured && retrieval.patents.length > 0;
+    const patentBlock = grounded
+      ? `RETRIEVED PATENTS (PatentsView, most recent first — cite ONLY these, by number):\n${retrieval.patents.map(p => `- US${p.number} (${p.date}) ${p.assignee}: ${p.title}. ${p.snippet}`).join('\n')}`
+      : retrieval?.configured
+        ? 'The patent database returned NO close matches for this idea\'s terms — say so; do not invent patents.'
+        : 'NO patent database is configured — you may describe typical IP landscapes but MUST NOT cite specific patent numbers, and must state the assessment is unverified.';
+
     const msg = await client.messages.create({
       model: SMALL_MODEL,
-      max_tokens: 600,
+      max_tokens: 700,
       messages: [{
         role: 'user',
-        content: `You are a patent risk analyst for automotive engineering. Analyse this cost reduction idea for potential IP/patent risk:
+        content: `You are a patent risk analyst for automotive engineering. Assess this cost reduction idea (NOT legal advice; an FTO search by counsel is always required before implementation):
 
 Title: ${title}
 Description: ${description}
 
-Provide a concise patent risk assessment (3-4 sentences) covering:
-1. Likelihood of existing patents covering this approach (low/medium/high risk)
-2. Key patent holders that may have IP in this space (cite 1-2 specific companies/patent families if known)
-3. Recommended freedom-to-operate action
-Keep it practical and actionable for an engineering team.`,
+${patentBlock}
+
+Provide a concise assessment (4-5 sentences): (1) risk level low/medium/high with reasoning, (2) ${grounded ? 'which of the retrieved patents (by number) are closest and why' : 'key companies likely holding IP in this space'}, (3) a practical design-around or FTO next step.`,
       }],
     });
     const analysis = msg.content[0]?.type === 'text' ? msg.content[0].text : 'Analysis unavailable';
-    res.json({ analysis });
+    res.json({
+      analysis,
+      patents: retrieval?.patents || [],
+      grounded,
+      providerConfigured: !!retrieval?.configured,
+      note: grounded
+        ? 'Grounded in retrieved PatentsView records (US corpus). Not legal advice.'
+        : retrieval?.configured
+          ? 'Patent database queried — no close matches for these terms. Not legal advice.'
+          : 'Unverified — no patent database queried (set PATENTSVIEW_API_KEY for real retrieval). Not legal advice.',
+    });
   } catch (e) {
     res.status(500).json({ error: safeLlmError(e) });
   }
@@ -3906,7 +3933,10 @@ app.post('/api/business-cases', requireAuth, rateLimit(30, 60 * 60 * 1000), (req
 // List the signed-in user's business cases (scoped — no cross-tenant leakage).
 app.get('/api/business-cases', requireAuth, (req, res) => {
   const rows = db.prepare('SELECT * FROM idea_business_cases WHERE userId = ? ORDER BY createdAt DESC').all(req.user.id);
-  res.json(rows.map(r => ({ ...r, vehicleData: JSON.parse(r.vehicleData || '[]'), ideaData: r.ideaData || null })));
+  res.json(rows.map(r => {
+    let scorecards; try { scorecards = JSON.parse(r.scorecards || '{}'); } catch { scorecards = {}; }
+    return { ...r, vehicleData: JSON.parse(r.vehicleData || '[]'), ideaData: r.ideaData || null, scorecards };
+  }));
 });
 
 // KPI aggregates for dashboard (scoped to the signed-in user).
@@ -3952,6 +3982,51 @@ app.get('/api/business-cases/kpi', requireAuth, rateLimit(120, 60 * 60 * 1000), 
 });
 
 // Update business case (owner only — gate, notes, or full recalc)
+// ── Stage-gate scorecards ────────────────────────────────────────────────────
+// Per-gate promotion criteria checklists persisted on each business case
+// (scorecards JSON column). Soft-gating: promoting past an incomplete
+// scorecard WARNS with the open items but never hard-blocks — the pipeline
+// owner decides, the record shows what was skipped.
+const GATE_CRITERIA = {
+  G1: [
+    { id: 'bc-complete', label: 'Business case complete (volumes, saving/part, tooling, timing)' },
+    { id: 'engine-sanity', label: 'Saving sanity-checked against the should-cost engine or a quote' },
+    { id: 'feasibility', label: 'Engineering feasibility reviewed (no unresolved red flags)' },
+  ],
+  G2: [
+    { id: 'supplier', label: 'Supplier engaged / RFQ issued for the change' },
+    { id: 'validation-plan', label: 'Sample & validation plan agreed (DV/PV scope, timing)' },
+    { id: 'risk-review', label: 'Risk review done (DFMEA delta, warranty, CTQ impact)' },
+  ],
+  G3: [
+    { id: 'implemented', label: 'Change implemented in production (or PPAP approved)' },
+    { id: 'savings-audited', label: 'Savings audited against actuals (finance-confirmed)' },
+    { id: 'lessons', label: 'Lessons learned captured (marketplace / knowledge base)' },
+  ],
+};
+app.get('/api/business-cases/gate-criteria', requireAuth, (_req, res) => res.json({ criteria: GATE_CRITERIA }));
+
+// Whitelist + clamp incoming scorecards to the known shape: only real gates,
+// items keyed to defaults or short custom ids, boolean done, capped note.
+function sanitizeScorecards(raw) {
+  if (!raw || typeof raw !== 'object') return null;
+  const out = {};
+  for (const gate of Object.keys(GATE_CRITERIA)) {
+    const g = raw[gate];
+    if (!g || typeof g !== 'object' || !Array.isArray(g.items)) continue;
+    out[gate] = {
+      items: g.items.slice(0, 12).map(it => ({
+        id: String(it?.id || '').slice(0, 40),
+        label: String(it?.label || '').slice(0, 160),
+        done: it?.done === true,
+        note: String(it?.note || '').slice(0, 300),
+      })).filter(it => it.id && it.label),
+      updatedAt: new Date().toISOString(),
+    };
+  }
+  return out;
+}
+
 app.patch('/api/business-cases/:id', requireAuth, (req, res) => {
   const row = db.prepare('SELECT * FROM idea_business_cases WHERE id = ?').get(req.params.id);
   if (!row) return res.status(404).json({ error: 'Not found' });
@@ -3959,8 +4034,26 @@ app.patch('/api/business-cases/:id', requireAuth, (req, res) => {
 
   const {
     gate, notes, vehicleData, savingPerPart, toolingCost, tvCost,
-    implementationYear, implementationMonths,
+    implementationYear, implementationMonths, scorecards,
   } = req.body;
+
+  // Merge sanitized scorecard updates over what is stored (per-gate replace).
+  let storedScorecards; try { storedScorecards = JSON.parse(row.scorecards || '{}'); } catch { storedScorecards = {}; }
+  const cleanCards = sanitizeScorecards(scorecards);
+  const newScorecards = cleanCards ? { ...storedScorecards, ...cleanCards } : storedScorecards;
+
+  // Soft gate check: promoting to gate N warns when gate N's checklist (the
+  // criteria to ENTER/complete that stage) — or any earlier gate's — is open.
+  let scorecardWarning = null;
+  const GATES = ['G0', 'G1', 'G2', 'G3'];
+  if (gate && GATES.indexOf(gate) > GATES.indexOf(row.gate || 'G0')) {
+    const open = [];
+    for (const g of GATES.slice(1, GATES.indexOf(gate) + 1)) {
+      const doneIds = new Set((newScorecards[g]?.items || []).filter(i => i.done).map(i => i.id));
+      for (const c of GATE_CRITERIA[g] || []) if (!doneIds.has(c.id)) open.push(`${g}: ${c.label}`);
+    }
+    if (open.length) scorecardWarning = open;
+  }
 
   const newVehicleData = vehicleData ? vehicleData : JSON.parse(row.vehicleData || '[]');
   const newSavingPerPart = savingPerPart !== undefined ? savingPerPart : row.savingPerPart;
@@ -3975,6 +4068,7 @@ app.patch('/api/business-cases/:id', requireAuth, (req, res) => {
       toolingCost=?, tvCost=?, roi=?, irr=?, paybackMonths=?,
       implementationYear=COALESCE(?,implementationYear),
       implementationMonths=COALESCE(?,implementationMonths),
+      scorecards=?,
       updatedAt=?
     WHERE id=?
   `).run(
@@ -3982,11 +4076,14 @@ app.patch('/api/business-cases/:id', requireAuth, (req, res) => {
     JSON.stringify(newVehicleData), newSavingPerPart, metrics.totalAnnualSaving,
     newToolingCost, newTvCost, metrics.roi, metrics.irr, metrics.paybackMonths,
     implementationYear || null, implementationMonths || null,
+    JSON.stringify(newScorecards),
     new Date().toISOString(), req.params.id,
   );
 
   const updated = db.prepare('SELECT * FROM idea_business_cases WHERE id = ?').get(req.params.id);
   updated.vehicleData = JSON.parse(updated.vehicleData || '[]');
+  try { updated.scorecards = JSON.parse(updated.scorecards || '{}'); } catch { updated.scorecards = {}; }
+  if (scorecardWarning) updated.scorecardWarning = scorecardWarning;
   res.json(updated);
 });
 

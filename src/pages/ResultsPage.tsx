@@ -191,6 +191,7 @@ function IdeaCard({ idea, index, annotation, onAnnotate, isSelected, onToggleSel
   const [commodityDelta, setCommodityDelta] = useState(0);
   const [patentLoading, setPatentLoading] = useState(false);
   const [patentResult, setPatentResult] = useState<string | null>(null);
+  const [patentData, setPatentData] = useState<{ patents: { number: string; title: string; date: string; assignee: string; url: string }[]; grounded: boolean; providerConfigured: boolean; note?: string } | null>(null);
   const [showRejectModal, setShowRejectModal] = useState(false);
   const [rejectReason, setRejectReason] = useState('');
   const [showVavePrompt, setShowVavePrompt] = useState(false);
@@ -544,14 +545,16 @@ function IdeaCard({ idea, index, annotation, onAnnotate, isSelected, onToggleSel
                   if (!apiKey || patentLoading) return;
                   setPatentLoading(true);
                   setPatentResult(null);
+                  setPatentData(null);
                   try {
                     const r = await fetch('/api/patent-watch', {
                       method: 'POST',
-                      headers: { 'Content-Type': 'application/json' },
+                      headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
                       body: JSON.stringify({ title: idea.title, description: idea.technicalDescription, apiKey }),
                     });
                     const d = await r.json();
                     setPatentResult(d.analysis || d.error || 'No result');
+                    if (Array.isArray(d.patents)) setPatentData({ patents: d.patents, grounded: !!d.grounded, providerConfigured: !!d.providerConfigured, note: d.note });
                   } catch { setPatentResult('Patent search failed. Check server connection.'); }
                   finally { setPatentLoading(false); }
                 }}
@@ -563,16 +566,29 @@ function IdeaCard({ idea, index, annotation, onAnnotate, isSelected, onToggleSel
             </div>
             {patentResult ? (
               <>
+                {patentData && patentData.patents.length > 0 && (
+                  <div className="mb-3 space-y-1.5">
+                    <p className="text-emerald-400 text-[11px] font-semibold uppercase tracking-wide">Retrieved patents (PatentsView, US corpus)</p>
+                    {patentData.patents.map(p => (
+                      <a key={p.number} href={p.url} target="_blank" rel="noopener noreferrer"
+                        className="block p-2 rounded-lg bg-white/5 border border-white/10 hover:border-violet-500/30 transition-colors">
+                        <span className="text-violet-300 text-xs font-mono">US{p.number}</span>
+                        <span className="text-slate-500 text-xs"> · {p.date} · {p.assignee}</span>
+                        <p className="text-slate-300 text-xs truncate">{p.title}</p>
+                      </a>
+                    ))}
+                  </div>
+                )}
                 <p className="text-slate-300 text-xs leading-relaxed">{patentResult}</p>
                 <div className="mt-3 p-2.5 rounded-lg bg-amber-500/8 border border-amber-500/20 flex items-start gap-2">
                   <AlertTriangle size={11} className="text-amber-400 flex-shrink-0 mt-0.5" />
                   <p className="text-amber-300/80 text-xs leading-relaxed">
-                    <strong>Not legal advice.</strong> This is an AI-generated awareness check only — Claude does not have real-time USPTO/EPO access and may cite inaccurate patent numbers. Always commission a formal Freedom-to-Operate opinion from a qualified patent attorney before engineering commitment.
+                    <strong>Not legal advice.</strong> {patentData?.note || 'AI-generated awareness check only.'} Always commission a formal Freedom-to-Operate opinion from a qualified patent attorney before engineering commitment.
                   </p>
                 </div>
               </>
             ) : (
-              <p className="text-slate-500 text-xs">Click to search USPTO/EPO for patent risk on this idea. Uses your AI key. <span className="text-amber-400">AI awareness only — not legal FTO advice.</span></p>
+              <p className="text-slate-500 text-xs">Searches the PatentsView US patent database when a key is configured (real, citable records), plus an AI risk narrative. Uses your AI key. <span className="text-amber-400">Awareness only — not legal FTO advice.</span></p>
             )}
           </div>
 
