@@ -128,6 +128,8 @@ export default function MarketplacePage() {
   const [submitMsg, setSubmitMsg] = useState('');
   const [pipelineIdea, setPipelineIdea] = useState<MarketplaceIdea | null>(null);
   const [expandedIdeaId, setExpandedIdeaId] = useState<string | null>(null);
+  const [showCoverage, setShowCoverage] = useState(false);
+  const [coverage, setCoverage] = useState<{ commodities: string[]; levers: string[]; total: number; grid: { commodity: string; lever: string; count: number; verified: number; bestTitle: string | null }[] } | null>(null);
   const [insights, setInsights] = useState<{
     approvedIdeas: ApprovedIdeaInsight[];
     totalApproved: number;
@@ -382,6 +384,55 @@ export default function MarketplacePage() {
               </span>
             </button>
           ))}
+        </div>
+
+        {/* ── Coverage heatmap (quality-diversity archive) ── */}
+        <div className="mb-6">
+          <button
+            onClick={() => {
+              const next = !showCoverage;
+              setShowCoverage(next);
+              if (next && !coverage) {
+                const token = (() => { try { return JSON.parse(localStorage.getItem('brainspark_auth') || '{}').token; } catch { return null; } })();
+                fetch('/api/idea-archive', { headers: token ? { Authorization: `Bearer ${token}` } : {} })
+                  .then(r => r.ok ? r.json() : null).then(d => { if (d) setCoverage(d); }).catch(() => {});
+              }
+            }}
+            className="text-xs text-slate-400 hover:text-white border border-white/10 hover:border-white/25 px-3 py-1.5 rounded-lg transition-colors"
+          >
+            {showCoverage ? 'Hide' : 'Show'} coverage map — where the corpus is thin
+          </button>
+          {showCoverage && coverage && (
+            <div className="mt-3 p-4 rounded-2xl bg-navy-900 border border-white/10 overflow-x-auto">
+              <p className="text-slate-500 text-xs mb-3">Ideas per commodity × mechanism class ({coverage.total.toLocaleString()} total). Empty and thin cells are exactly where the AI is told to target new ideas.</p>
+              <table className="text-xs min-w-[640px]">
+                <thead>
+                  <tr>
+                    <th className="text-left text-slate-500 font-medium pr-3 pb-1.5"> </th>
+                    {coverage.levers.map(l => <th key={l} className="text-slate-500 font-medium px-1.5 pb-1.5 capitalize">{l}</th>)}
+                  </tr>
+                </thead>
+                <tbody>
+                  {coverage.commodities.map(c => (
+                    <tr key={c}>
+                      <td className="text-slate-300 pr-3 py-0.5 whitespace-nowrap">{c}</td>
+                      {coverage.levers.map(l => {
+                        const cell = coverage.grid.find(g => g.commodity === c && g.lever === l);
+                        const n = cell?.count || 0;
+                        const shade = n === 0 ? 'bg-red-500/15 text-red-400' : n < 3 ? 'bg-amber-500/10 text-amber-300' : n < 15 ? 'bg-white/5 text-slate-400' : 'bg-emerald-500/10 text-emerald-300';
+                        return (
+                          <td key={l} className="px-1 py-0.5">
+                            <div title={cell?.bestTitle ? `Best: ${cell.bestTitle}` : 'No ideas yet — a generation target'}
+                              className={`rounded-md text-center px-1.5 py-1 font-mono ${shade}`}>{n}</div>
+                          </td>
+                        );
+                      })}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
 
         {/* ── Search + sub-filters ── */}

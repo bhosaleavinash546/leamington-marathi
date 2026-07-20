@@ -35,6 +35,7 @@ import { buildIndex, tokenize } from './idea-index.mjs';
 import { batchDiversity, dedupeIdeas, rankIdeas } from './idea-quality.mjs';
 import { buildTasteProfile, buildTasteContext, tasteMatchIdeas } from './idea-feedback.mjs';
 import { runDeepPass } from './idea-deep.mjs';
+import { buildArchive, coverageGaps, archiveGrid, inferCommodityKey } from './idea-archive.mjs';
 import { registerPcbRoutes } from './routes/pcb.mjs';
 import { registerShouldCostRoutes } from './routes/should-cost.mjs';
 import { registerMarketplaceRoutes } from './routes/marketplace.mjs';
@@ -1138,6 +1139,23 @@ app.get('/api/search', requireAuth, (req, res) => {
   res.json({ query: q, ideas, projects, quotes });
 });
 
+// Quality-diversity archive over the marketplace (commodity × lever ×
+// difficulty) — count-keyed cache, same policy as the idea index.
+let _ideaArchive = null, _ideaArchiveCount = -1;
+function getIdeaArchive() {
+  const n = db.prepare("SELECT COUNT(*) c FROM marketplace_ideas WHERE status='approved'").get().c;
+  if (_ideaArchive && n === _ideaArchiveCount) return _ideaArchive;
+  const rows = db.prepare("SELECT id, title, system, costSavingType, annualSaving, difficulty, stars, verified FROM marketplace_ideas WHERE status='approved'").all();
+  _ideaArchive = buildArchive(rows);
+  _ideaArchiveCount = n;
+  return _ideaArchive;
+}
+
+app.get('/api/idea-archive', requireAuth, (_req, res) => {
+  const archive = getIdeaArchive();
+  res.json({ commodities: archive.commodities, levers: archive.levers, total: archive.total, grid: archiveGrid(archive) });
+});
+
 // A/B switch for the ideation-eval harness: BRAINSPARK_IDEATION_MODE=legacy
 // reverts every Phase-1 generation upgrade (positive precedents, taste
 // profile, KB detail, diversity directive, dedup, ranking) so before/after
@@ -1191,6 +1209,16 @@ function buildRetrievalContext(userId, systemName, subassemblyName, partName, ta
       }
     }
   } catch { /* index unavailable — skip */ }
+  try {
+    // Empty-cell targeting from the quality-diversity archive: point the model
+    // at lever types the validated corpus does NOT yet cover for this
+    // commodity — novelty search with a concrete target, not "be creative".
+    const commodity = inferCommodityKey(systemName || '');
+    const gaps = coverageGaps(getIdeaArchive(), commodity);
+    if (gaps.length) {
+      parts.push(`COVERAGE GAPS (data): the validated idea corpus is thin for ${commodity} on these mechanism classes — ${gaps.map(g => `${g.lever} (${g.count} idea${g.count === 1 ? '' : 's'})`).join(', ')}. Where genuinely applicable, target at least one strong idea in each gap class.`);
+    }
+  } catch { /* archive unavailable — skip */ }
   try {
     const taste = buildTasteContext(tasteProfile);
     if (taste) parts.push(taste);
