@@ -357,6 +357,14 @@ function IdeaCard({ idea, index, annotation, onAnnotate, isSelected, onToggleSel
                     <Store size={10} /> Prior art
                   </div>
                 )}
+                {idea.refined && (
+                  <div
+                    title={`Deep mode ${idea.refined.note} — original: "${idea.refined.fromTitle}"`}
+                    className="flex items-center gap-1 px-1.5 py-0.5 rounded-md border text-xs font-medium bg-violet-500/10 text-violet-300 border-violet-500/25"
+                  >
+                    <RefreshCw size={10} /> Refined
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -458,6 +466,24 @@ function IdeaCard({ idea, index, annotation, onAnnotate, isSelected, onToggleSel
             <div className="p-3 rounded-xl bg-white/5 border border-white/10">
               <span className="text-slate-400 text-xs font-semibold uppercase tracking-wide">Merged near-duplicates: </span>
               <span className="text-slate-400 text-sm">{idea.mergedTitles!.join(' · ')}</span>
+            </div>
+          )}
+
+          {(idea.critiques?.length ?? 0) > 0 && (
+            <div className="p-3 rounded-xl bg-violet-500/5 border border-violet-500/15">
+              <span className="text-violet-300 text-xs font-semibold uppercase tracking-wide block mb-2">
+                Expert panel review{typeof idea.eloRating === 'number' ? ` · tournament rating ${idea.eloRating}` : ''}
+              </span>
+              <div className="space-y-1.5">
+                {idea.critiques!.map((c, i) => (
+                  <div key={i} className="flex items-start gap-2 text-xs">
+                    <span className={`flex-shrink-0 px-1.5 py-0.5 rounded font-medium ${c.verdict === 'challenge' ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20' : 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'}`}>
+                      {c.personaName}
+                    </span>
+                    <span className="text-slate-400 leading-relaxed">{c.critique}</span>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
 

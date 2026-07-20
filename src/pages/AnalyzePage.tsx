@@ -149,6 +149,7 @@ export default function AnalyzePage() {
   const [searchApiKey, setSearchApiKey] = useState(() => localStorage.getItem('brainspark_brave_key') || '');
   const [showApiKey, setShowApiKey] = useState(false);
   const [enableSearch, setEnableSearch] = useState(true);
+  const [deepMode, setDeepMode] = useState(false);
   const [lenses, setLenses] = useState<string[]>([]);
   const toggleLens = (id: string) => setLenses(ls => ls.includes(id) ? ls.filter(x => x !== id) : [...ls, id]);
   const [cadFile, setCadFile] = useState<File | null>(null);
@@ -332,6 +333,7 @@ export default function AnalyzePage() {
         additionalContext: contextFinal,
         apiKey,
         lenses,
+        deepMode,
         cadGeometry: cadGeometry ? (cadGeometry as unknown as Record<string, unknown>) : undefined,
       };
 
@@ -897,6 +899,25 @@ export default function AnalyzePage() {
                       </div>
                     </div>
                   )}
+                </div>
+
+                {/* Deep mode: critique panel + Elo tournament + repair pass */}
+                <div className="p-4 rounded-xl border border-white/10 bg-white/5">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Zap size={16} className="text-violet-400" />
+                      <span className="text-white font-medium text-sm">Deep Mode</span>
+                      <span className="px-1.5 py-0.5 rounded text-xs bg-violet-500/15 text-violet-300 border border-violet-500/20">~3–5× token cost</span>
+                    </div>
+                    <button
+                      onClick={() => setDeepMode(!deepMode)}
+                      aria-pressed={deepMode}
+                      className={`relative w-11 h-6 rounded-full transition-colors ${deepMode ? 'bg-violet-500' : 'bg-white/15'}`}
+                    >
+                      <div className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${deepMode ? 'translate-x-5.5 left-0' : 'left-0.5'}`} />
+                    </button>
+                  </div>
+                  <p className="text-slate-400 text-xs mt-2">A 3-persona expert panel (manufacturing, supplier-commercial, quality) critiques every idea, a pairwise Elo tournament ranks them, and engine-contradicted or heavily-challenged ideas get one repair pass — re-verified before they replace the original. Adds ~1–2 minutes.</p>
                 </div>
 
                 {/* Innovation Lenses (structured idea-generation methods) */}

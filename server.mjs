@@ -34,6 +34,7 @@ import { validate, SCHEMAS } from './schemas.mjs';
 import { buildIndex, tokenize } from './idea-index.mjs';
 import { batchDiversity, dedupeIdeas, rankIdeas } from './idea-quality.mjs';
 import { buildTasteProfile, buildTasteContext, tasteMatchIdeas } from './idea-feedback.mjs';
+import { runDeepPass } from './idea-deep.mjs';
 import { registerPcbRoutes } from './routes/pcb.mjs';
 import { registerShouldCostRoutes } from './routes/should-cost.mjs';
 import { registerMarketplaceRoutes } from './routes/marketplace.mjs';
@@ -2987,6 +2988,29 @@ app.post('/api/analyze', requireAuth, checkUsageQuota, rateLimit(40, 60 * 60 * 1
         }
       }
     } catch { /* index unavailable — labelling is best-effort */ }
+
+    // Deep mode (opt-in, ~3-5× token cost, disclosed in the UI): critique
+    // panel → Elo tournament → one repair generation for engine-contradicted /
+    // majority-challenged ideas. Runs AFTER engine checks (refine selection
+    // needs the verdicts) and BEFORE ranking (Elo feeds the rank factor).
+    if (config.deepMode === true && !IDEATION_LEGACY) {
+      try {
+        emit({ type: 'progress', message: 'Deep mode: starting critique panel + tournament…' });
+        const domain = detectContextDomain(config, sysName, subName, prtName);
+        const deep = await runDeepPass(client, ideas, {
+          partName: prtName || subName || sysName,
+          manufacturingContext: kbDetailFor(domain, null, prtName || subName || sysName),
+          commercialContext: retrievalCtx,
+          region: ({ germany: 'Germany', china: 'China', mexico: 'Mexico', usa: 'USA', india: 'India', easterneurope: 'Czech Republic' })[String(config.plantRegion || '').toLowerCase().replace(/[^a-z]/g, '')] || 'Germany',
+          annualVolume: Number(config.annualVolume) || 80000,
+          library: getActiveLibrary(),
+          smallModel: SMALL_MODEL,
+          searchExecuted,
+        }, { emit });
+        validationSummary.deep = deep;
+        if (deep.eloMatches > 0) emit({ type: 'progress', message: `Deep mode complete: ${deep.critiqued} ideas critiqued, ${deep.eloMatches} tournament matches, ${deep.refined} repaired.` });
+      } catch (e) { console.warn('[Deep] skipped:', e?.message); }
+    }
 
     // Taste match + explainable ranking: ideas resembling previously
     // approved/confirmed ones get a VISIBLE boost (never silent), then every

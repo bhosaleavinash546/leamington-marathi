@@ -152,10 +152,15 @@ export function rankIdeas(ideas) {
     const tasteFactor = idea.tasteMatch ? 1.15 : 1;
     if (idea.tasteMatch) basis.push(`similar to previously approved "${idea.tasteMatch.title}" ×1.15`);
 
+    // Deep-mode Elo (bounded ×0.85–1.15, stamped by idea-deep.mjs) — soft-axis
+    // panel judgement, never allowed to outweigh the engine factor.
+    const eloF = typeof idea.eloFactor === 'number' ? Math.min(1.15, Math.max(0.85, idea.eloFactor)) : 1;
+    if (eloF !== 1) basis.push(`panel Elo ${idea.eloRating ?? ''} ×${eloF.toFixed(2)}`);
+
     // Value-less ideas rank on their factors alone (base 1) so verified
     // high-quality ideas still beat broken ones instead of all tying at 0.
     const base = annualMid || 1;
-    const score = base * paybackFactor * qualityFactor * engineFactor * evidenceFactor * tasteFactor;
+    const score = base * paybackFactor * qualityFactor * engineFactor * evidenceFactor * tasteFactor * eloF;
     idea.rank = { score: Number(score.toFixed(1)), basis: basis.join(' · ') };
   }
   return ideas;

@@ -82,6 +82,7 @@ if (!KEY) {
 }
 
 const legacy = process.argv.includes('--legacy');
+const deep = process.argv.includes('--deep');   // measure Deep mode (critique+Elo+refine) — costs ~3-5× tokens per part
 const label = arg('--label') || (existsSync(resultsPath('baseline')) ? 'current' : 'baseline');
 const judgeAgainst = arg('--judge');   // label of the frozen baseline to judge against
 const PORT = 19300 + (process.pid % 100);
@@ -119,7 +120,7 @@ try {
       body: JSON.stringify({
         systemName: g.systemName, subassemblyName: g.subassemblyName, partName: g.partName,
         enableSearch: false,
-        config: { apiKey: KEY, vehicleType: 'Premium SUV', annualVolume: 80000, plantRegion: 'germany', currency: 'EUR', programmeLengthYears: 5 },
+        config: { apiKey: KEY, vehicleType: 'Premium SUV', annualVolume: 80000, plantRegion: 'germany', currency: 'EUR', programmeLengthYears: 5, ...(deep ? { deepMode: true } : {}) },
       }),
     });
     if (!r.ok) { perPart.push({ part: g.partName, error: (await r.json()).error }); continue; }
@@ -140,6 +141,8 @@ try {
       withEvidence: ideas.filter(i => (i.evidenceSources || []).length > 0).length,
       priorArtDup: ideas.filter(i => i.priorArt).length,
       tasteMatched: ideas.filter(i => i.tasteMatch).length,
+      refined: v.deep?.refined ?? 0,
+      critiqued: v.deep?.critiqued ?? 0,
       seconds: Math.round((Date.now() - t0) / 1000),
       // Kept for the pairwise judge: title + description are what soft axes read.
       ideaDigest: ideas.map(i => ({ title: i.title, description: String(i.technicalDescription || '').slice(0, 400) })),
@@ -165,6 +168,7 @@ try {
     evidenceRate: +((sum('withEvidence') / totalIdeas) * 100).toFixed(1),
     dupRate: +((sum('priorArtDup') / totalIdeas) * 100).toFixed(1),
     tasteMatchRate: +((sum('tasteMatched') / totalIdeas) * 100).toFixed(1),
+    ...(deep ? { deepMode: true, refinedTotal: sum('refined'), critiquedTotal: sum('critiqued') } : {}),
     ranAt: new Date().toISOString(),
   };
 

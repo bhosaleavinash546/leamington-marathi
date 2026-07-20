@@ -114,6 +114,13 @@ export interface CostReductionIdea {
   mergedTitles?: string[];
   /** Server-computed explainable value ranking (annual value × payback × quality × engine check × evidence × taste). */
   rank?: { score: number; basis: string };
+  /** Deep-mode persona critiques (manufacturing / commercial / quality). */
+  critiques?: { persona: string; personaName: string; verdict: 'strengthen' | 'challenge'; critique: string }[];
+  /** Deep-mode Elo tournament stamps (bounded ×0.85–1.15 rank influence). */
+  eloFactor?: number;
+  eloRating?: number;
+  /** Set when deep mode repaired this idea after an engine contradiction or panel challenges. */
+  refined?: { fromTitle: string; note: string };
 }
 
 export interface SearchResult {
@@ -146,6 +153,7 @@ export interface AnalysisConfig {
   cadGeometry?: Record<string, unknown>;
   trizLens?: boolean;   // deprecated — kept for back-compat
   lenses?: string[];    // innovation lenses to apply (method ids)
+  deepMode?: boolean;   // opt-in critique panel + Elo tournament + repair pass (~3-5× tokens)
   apiKey: string;
 }
 
