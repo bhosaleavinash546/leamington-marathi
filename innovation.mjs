@@ -14,12 +14,17 @@
 // TRIZ lives in triz.mjs and is surfaced alongside these.
 // ─────────────────────────────────────────────────────────────────────────────
 
+import { computeShouldCost, computeRouteCost } from './costing-engine.mjs';
+import { resolveMaterial, resolveRoute } from './material-process-resolve.mjs';
+
 const round = (x, dp = 1) => Number(Number(x).toFixed(dp));
 
 // ── Method catalogue (drives the UI picker + the Analyze lenses) ─────────────
 export const METHODS = [
   { id: 'triz', name: 'TRIZ', tier: 1, mode: 'contradiction', blurb: 'Break an engineering trade-off with 40 inventive principles.', input: 'contradiction' },
   { id: 'value-engineering', name: 'Value Engineering', tier: 1, mode: 'functional', blurb: 'Find functions where you pay a lot for little value, then attack them.', input: 'part' },
+  { id: 'fast', name: 'FAST Function-Cost Matrix', tier: 1, mode: 'functional', blurb: 'Cross-map every component\'s cost onto the functions it serves; attack poor-value functions.', input: 'part' },
+  { id: 'spec-challenge', name: 'Spec & Tolerance Challenge', tier: 1, mode: 'target', blurb: 'Challenge tolerances, grades, finishes and test levels — CTQ characteristics stay locked.', input: 'part' },
   { id: 'dfa', name: 'DFA / Part Consolidation', tier: 1, mode: 'structural', blurb: 'Find deletable parts — theoretical minimum count via the 3 DFA questions.', input: 'parts' },
   { id: 'design-to-cost', name: 'Design-to-Cost', tier: 1, mode: 'target', blurb: 'Work backwards from a price target; close the cost gap bucket by bucket.', input: 'target' },
   { id: 'scamper', name: 'SCAMPER', tier: 2, mode: 'checklist', blurb: 'Fast 7-verb creativity checklist — broad first pass.', input: 'part' },
@@ -139,6 +144,113 @@ export function targetGap(currentCost, targetCost, buckets = []) {
     allocations = weighted.map(b => ({ name: b.name, target: round(gap * (b.cost * b.red) / wSum, 3) }));
   }
   return { currentCost: round(cur, 3), targetCost: round(tgt, 3), gap, gapPct, achievable: gap <= 0, allocations };
+}
+
+/** FAST function-cost matrix — the classical VE core that valueIndex only
+ *  approximates. Components carry cost; alloc[i][j] is the % of component i's
+ *  cost spent serving function j. Invariants enforced (not assumed):
+ *  every allocation row sums to 100 (±2 tolerance for LLM-proposed rounding),
+ *  so function costs sum exactly to total component cost. Value index per
+ *  function reuses the VE verdict bands (<0.7 poor value, >1.4 under-served).
+ *  `components` = [{ name, cost }] (absolute £ or shares — only ratios matter),
+ *  `functions`  = [{ name, worthPct }] (verb-noun names; worth normalised). */
+export function functionCostMatrix(components, functions, alloc) {
+  if (!Array.isArray(components) || components.length === 0) throw new Error('components must be a non-empty array');
+  if (!Array.isArray(functions) || functions.length === 0) throw new Error('functions must be a non-empty array');
+  if (!Array.isArray(alloc) || alloc.length !== components.length) throw new Error(`alloc needs one row per component (${components.length})`);
+
+  const comps = components.map(c => ({ name: String(c.name || 'component').slice(0, 80), cost: Math.max(0, Number(c.cost) || 0) }));
+  const totalCost = comps.reduce((s, c) => s + c.cost, 0);
+  if (totalCost <= 0) throw new Error('component costs must sum to > 0');
+
+  const norm = alloc.map((row, i) => {
+    if (!Array.isArray(row) || row.length !== functions.length) throw new Error(`alloc row for "${comps[i].name}" needs ${functions.length} entries`);
+    const r = row.map(v => Math.max(0, Number(v) || 0));
+    const sum = r.reduce((s, v) => s + v, 0);
+    if (Math.abs(sum - 100) > 2) throw new Error(`alloc row for "${comps[i].name}" sums to ${round(sum, 1)}% — must sum to 100%`);
+    return r.map(v => (v / sum) * 100);   // exact renormalisation inside tolerance
+  });
+
+  const worthSum = functions.reduce((s, f) => s + Math.max(0, Number(f.worthPct) || 0), 0) || 1;
+  const fnRows = functions.map((f, j) => {
+    const cost = comps.reduce((s, c, i) => s + c.cost * norm[i][j] / 100, 0);
+    const costPct = (cost / totalCost) * 100;
+    const worthPct = (Math.max(0, Number(f.worthPct) || 0) / worthSum) * 100;
+    const vi = costPct > 0 ? worthPct / costPct : (worthPct > 0 ? 9.99 : 1);
+    return {
+      name: String(f.name || 'function').slice(0, 80),
+      cost: round(cost, 2), costPct: round(costPct, 1), worthPct: round(worthPct, 1),
+      valueIndex: round(Math.min(vi, 9.99), 2),
+      verdict: vi < 0.7 ? 'poor value — attack' : vi > 1.4 ? 'under-served' : 'balanced',
+    };
+  });
+  const poorValue = fnRows.filter(r => r.valueIndex < 0.7).sort((a, b) => a.valueIndex - b.valueIndex).map(r => r.name);
+  return {
+    totalCost: round(totalCost, 2),
+    functions: fnRows,
+    components: comps.map((c, i) => ({ ...c, cost: round(c.cost, 2), costPct: round((c.cost / totalCost) * 100, 1), allocations: norm[i].map(v => round(v, 1)) })),
+    poorValueFunctions: poorValue,
+  };
+}
+
+// Relaxation ladders — ordered strict → loose, matching the cost engine's
+// TOL_CLASSES / FIN_CLASSES driver keys exactly.
+const TOL_LADDER = ['precision', 'tight', 'standard'];
+const FIN_LADDER = ['polished', 'fine', 'standard'];
+
+function engineCost(base, library) {
+  return base.routeKeys.length > 1
+    ? computeRouteCost({ ...base.input, route: base.routeKeys }, {}, null, library).totalShouldCost
+    : computeShouldCost({ ...base.input, process: base.routeKeys[0] }, {}, null, library).totalShouldCost;
+}
+
+/** Spec/Tolerance Challenge — REAL engine deltas, not LLM guesses. Re-costs the
+ *  part at each relaxation step (tolerance class down, finish down, critical-
+ *  characteristic count halved/zeroed) via the deterministic engine's own
+ *  drawing drivers, and returns only steps that change the input. The LLM's
+ *  later job is deciding WHICH drawing characteristics can take the relaxation
+ *  and framing the risk — never inventing the saving. */
+export function specRelaxationDeltas(input, library = null) {
+  const mat = resolveMaterial(String(input?.material || ''), library?.MATERIALS);
+  const route = resolveRoute(String(input?.process || ''), library?.PROCESSES);
+  if (!mat || !route || route.keys.length === 0) throw new Error('material/process not recognised by the cost engine');
+  const weightKg = Number(input?.weightKg);
+  if (!Number.isFinite(weightKg) || weightKg <= 0) throw new Error('weightKg must be > 0');
+
+  const tol = TOL_LADDER.includes(input?.toleranceClass) ? input.toleranceClass : 'standard';
+  const fin = FIN_LADDER.includes(input?.surfaceFinish) ? input.surfaceFinish : 'standard';
+  const cc = Math.max(0, Math.min(50, Number(input?.criticalCharacteristics) || 0));
+  const base = {
+    routeKeys: route.keys,
+    input: {
+      material: mat.key, weightKg,
+      annualVolume: Number(input?.annualVolume) > 0 ? Number(input.annualVolume) : 80000,
+      region: input?.region || 'Germany',
+      toleranceClass: tol, surfaceFinish: fin, criticalCharacteristics: cc,
+    },
+  };
+  const baseline = engineCost(base, library);
+  const steps = [];
+  const addStep = (id, kind, label, patch) => {
+    const t = engineCost({ ...base, input: { ...base.input, ...patch } }, library);
+    const savingEur = baseline - t;
+    steps.push({ id, kind, label, newTotal: round(t, 3), savingEur: round(savingEur, 3), savingPct: round((savingEur / baseline) * 100, 1) });
+  };
+  for (let i = TOL_LADDER.indexOf(tol) + 1; i < TOL_LADDER.length; i++) {
+    addStep(`tol-${TOL_LADDER[i]}`, 'tolerance', `Tolerance ${tol} → ${TOL_LADDER[i]}`, { toleranceClass: TOL_LADDER[i] });
+  }
+  for (let i = FIN_LADDER.indexOf(fin) + 1; i < FIN_LADDER.length; i++) {
+    addStep(`fin-${FIN_LADDER[i]}`, 'finish', `Surface finish ${fin} → ${FIN_LADDER[i]}`, { surfaceFinish: FIN_LADDER[i] });
+  }
+  if (cc > 1) addStep('cc-half', 'test', `Critical characteristics ${cc} → ${Math.floor(cc / 2)} (de-designate non-safety CCs)`, { criticalCharacteristics: Math.floor(cc / 2) });
+  if (cc > 0) addStep('cc-zero', 'test', `Critical characteristics ${cc} → 0 (all CCs de-designated)`, { criticalCharacteristics: 0 });
+
+  return {
+    baseline: round(baseline, 3),
+    material: mat.key, process: route.keys.join(' → '), region: base.input.region,
+    current: { toleranceClass: tol, surfaceFinish: fin, criticalCharacteristics: cc },
+    steps,
+  };
 }
 
 /** Morphological (Zwicky): combination space of sub-functions × options, plus a

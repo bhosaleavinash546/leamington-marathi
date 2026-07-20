@@ -19,6 +19,8 @@ interface Result { method: { id: string; name: string }; analysis: unknown; idea
 const METHODS: Method[] = [
   { id: 'triz', name: 'TRIZ', tier: 1, blurb: 'Break an engineering trade-off with 40 inventive principles.', input: 'contradiction' },
   { id: 'value-engineering', name: 'Value Engineering', tier: 1, blurb: 'Find functions where you pay a lot for little value.', input: 'part' },
+  { id: 'fast', name: 'FAST Function-Cost Matrix', tier: 1, blurb: 'Map component cost onto functions; attack poor-value ones.', input: 'part' },
+  { id: 'spec-challenge', name: 'Spec & Tolerance Challenge', tier: 1, blurb: 'Challenge tolerances, grades and tests — CTQs stay locked.', input: 'part' },
   { id: 'dfa', name: 'DFA / Part Consolidation', tier: 1, blurb: 'Find deletable parts — theoretical minimum count.', input: 'parts' },
   { id: 'design-to-cost', name: 'Design-to-Cost', tier: 1, blurb: 'Work back from a price target; close the cost gap.', input: 'target' },
   { id: 'scamper', name: 'SCAMPER', tier: 2, blurb: 'Fast 7-verb creativity checklist — broad first pass.', input: 'part' },
@@ -38,6 +40,13 @@ export default function InnovationStudioPage() {
   const [partsText, setPartsText] = useState('');       // DFA: one part per line
   const [currentCost, setCurrentCost] = useState('');    // design-to-cost
   const [targetCost, setTargetCost] = useState('');
+  // spec-challenge: characteristic register + optional engine cost base
+  const [charsText, setCharsText] = useState('');
+  const [scProcess, setScProcess] = useState('');
+  const [scWeight, setScWeight] = useState('');
+  const [scTol, setScTol] = useState('standard');
+  const [scFin, setScFin] = useState('standard');
+  const [scCc, setScCc] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [result, setResult] = useState<Result | null>(null);
@@ -72,6 +81,25 @@ export default function InnovationStudioPage() {
       if (methodId === 'design-to-cost' && currentCost && targetCost) {
         body.currentCost = Number(currentCost);
         body.targetCost = Number(targetCost);
+      }
+      if (methodId === 'spec-challenge') {
+        if (charsText.trim()) {
+          // "name | kind | current | ctq reason" — 4th field marks critical-to-quality
+          body.characteristics = charsText.split('\n').map(l => l.trim()).filter(Boolean).map(line => {
+            const [name, kind, current, ctqField] = line.split('|').map(s => s.trim());
+            return {
+              name, kind: (kind || 'tolerance').toLowerCase(), current: current || '',
+              ctq: !!ctqField, ctqReason: ctqField || '',
+            };
+          });
+        }
+        if (material && scProcess && scWeight) {
+          body.costBase = {
+            material, process: scProcess, weightKg: Number(scWeight),
+            toleranceClass: scTol, surfaceFinish: scFin,
+            criticalCharacteristics: Number(scCc) || 0,
+          };
+        }
       }
       const r = await fetch('/api/innovate/resolve', {
         method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
@@ -142,6 +170,33 @@ export default function InnovationStudioPage() {
                     className="bg-navy-800 border border-white/15 rounded-lg px-3 py-2.5 text-white text-sm placeholder-slate-600 focus:outline-none focus:border-gold-500/40" />
                   <input value={targetCost} onChange={e => setTargetCost(e.target.value)} type="number" placeholder="Target unit cost (£)"
                     className="bg-navy-800 border border-white/15 rounded-lg px-3 py-2.5 text-white text-sm placeholder-slate-600 focus:outline-none focus:border-gold-500/40" />
+                </div>
+              )}
+              {methodId === 'spec-challenge' && (
+                <div className="mt-3 space-y-3">
+                  <div>
+                    <label className="block text-xs text-slate-400 mb-1">Characteristic register (optional — one per line: "name | tolerance/grade/finish/test | current value | CTQ reason if critical". CTQ rows are locked and never challenged.)</label>
+                    <textarea value={charsText} onChange={e => setCharsText(e.target.value)} rows={4}
+                      placeholder={'e.g.\nbore diameter | tolerance | IT7\nsurface Ra | finish | 0.8\nmounting face flatness | tolerance | 0.05 | crash load path'}
+                      className="w-full bg-navy-800 border border-white/15 rounded-lg px-3 py-2 text-white text-xs placeholder-slate-600 focus:outline-none focus:border-gold-500/40 resize-none font-mono" />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-slate-400 mb-1">Engine cost base (optional — with material above, enables engine-verified relaxation savings)</label>
+                    <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+                      <input value={scProcess} onChange={e => setScProcess(e.target.value)} placeholder="Process (e.g. CNC machining)"
+                        className="col-span-2 sm:col-span-1 bg-navy-800 border border-white/15 rounded-lg px-3 py-2 text-white text-xs placeholder-slate-600 focus:outline-none focus:border-gold-500/40" />
+                      <input value={scWeight} onChange={e => setScWeight(e.target.value)} type="number" placeholder="Weight kg"
+                        className="bg-navy-800 border border-white/15 rounded-lg px-3 py-2 text-white text-xs placeholder-slate-600 focus:outline-none focus:border-gold-500/40" />
+                      <select value={scTol} onChange={e => setScTol(e.target.value)} className="bg-navy-800 border border-white/15 rounded-lg px-2 py-2 text-white text-xs focus:outline-none">
+                        <option value="standard">Std tolerance</option><option value="tight">Tight</option><option value="precision">Precision</option>
+                      </select>
+                      <select value={scFin} onChange={e => setScFin(e.target.value)} className="bg-navy-800 border border-white/15 rounded-lg px-2 py-2 text-white text-xs focus:outline-none">
+                        <option value="standard">Std finish</option><option value="fine">Fine</option><option value="polished">Polished</option>
+                      </select>
+                      <input value={scCc} onChange={e => setScCc(e.target.value)} type="number" placeholder="# CCs"
+                        className="bg-navy-800 border border-white/15 rounded-lg px-3 py-2 text-white text-xs placeholder-slate-600 focus:outline-none focus:border-gold-500/40" />
+                    </div>
+                  </div>
                 </div>
               )}
 
@@ -241,6 +296,61 @@ function AnalysisPanel({ methodId, analysis }: { methodId: string; analysis: unk
             </div>
           ))}
         </div>
+      </div>
+    );
+  }
+  if (methodId === 'fast' && Array.isArray(a.functions)) {
+    return (
+      <div className="bg-navy-900 border border-white/10 rounded-2xl p-5">
+        <p className="text-slate-500 text-xs uppercase tracking-wider mb-3">Function-cost matrix {a.proposedBy === 'ai' ? '(AI-proposed, invariant-validated)' : '(user-supplied)'}</p>
+        <div className="space-y-1.5 mb-3">
+          {(a.functions as { name: string; costPct: number; worthPct: number; valueIndex: number; verdict: string }[]).map((r, i) => (
+            <div key={i} className="flex items-center justify-between text-xs gap-3">
+              <span className="text-slate-300 flex-1 truncate">{r.name}</span>
+              <span className="text-slate-500 font-mono">cost {r.costPct}% · worth {r.worthPct}%</span>
+              <span className={`font-mono font-semibold ${r.valueIndex < 0.7 ? 'text-red-400' : r.valueIndex > 1.4 ? 'text-blue-400' : 'text-emerald-400'}`}>VI {r.valueIndex}</span>
+            </div>
+          ))}
+        </div>
+        {Array.isArray(a.components) && (
+          <p className="text-slate-500 text-xs">Components: {(a.components as { name: string; costPct: number }[]).map(c => `${c.name} ${c.costPct}%`).join(' · ')}</p>
+        )}
+        {Array.isArray(a.poorValueFunctions) && (a.poorValueFunctions as string[]).length > 0 && (
+          <p className="text-slate-400 text-xs mt-2">Attack first: <span className="text-red-400">{(a.poorValueFunctions as string[]).join(', ')}</span></p>
+        )}
+      </div>
+    );
+  }
+  if (methodId === 'spec-challenge' && (Array.isArray(a.register) || a.engineDeltas)) {
+    const reg = (a.register as { name: string; kind: string; current: string; ctq: boolean; ctqReason: string }[]) || [];
+    const deltas = a.engineDeltas as { baseline: number; steps: { id: string; label: string; savingEur: number; savingPct: number }[] } | null;
+    return (
+      <div className="bg-navy-900 border border-white/10 rounded-2xl p-5">
+        <p className="text-slate-500 text-xs uppercase tracking-wider mb-3">Characteristic register</p>
+        {reg.length > 0 && (
+          <div className="space-y-1.5 mb-3">
+            {reg.map((r, i) => (
+              <div key={i} className="flex items-center justify-between text-xs gap-3">
+                <span className={`flex-1 truncate ${r.ctq ? 'text-slate-500' : 'text-slate-300'}`}>{r.name} <span className="text-slate-600">[{r.kind}]</span>{r.current ? ` — ${r.current}` : ''}</span>
+                {r.ctq
+                  ? <span className="text-red-400/80 font-medium" title={r.ctqReason}>🔒 CTQ — locked</span>
+                  : <span className="text-emerald-400">challengeable</span>}
+              </div>
+            ))}
+          </div>
+        )}
+        {deltas && deltas.steps.length > 0 && (
+          <>
+            <p className="text-slate-500 text-xs uppercase tracking-wider mb-2 mt-3">Engine-verified relaxation savings (baseline €{deltas.baseline})</p>
+            <div className="flex flex-wrap gap-2">
+              {deltas.steps.map(s => (
+                <span key={s.id} className="px-2.5 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-xs">
+                  {s.label}: −€{s.savingEur} ({s.savingPct}%)
+                </span>
+              ))}
+            </div>
+          </>
+        )}
       </div>
     );
   }
