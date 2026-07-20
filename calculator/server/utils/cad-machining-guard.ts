@@ -62,6 +62,11 @@ export function capNearNetMachiningHr(rawHr: number, weightKg: number, commodity
   if (!NEAR_NET_COMMODITIES.has(commodity)) {
     return { machiningHr: raw, capped: false, ceilingHr: Infinity };
   }
+  // Without a usable weight the envelope cannot be sized — do NOT collapse the
+  // ceiling to bare setup time (that would under-cost large machined castings).
+  if (n(weightKg) <= 0) {
+    return { machiningHr: raw, capped: false, ceilingHr: Infinity };
+  }
   const ceilingHr = nearNetMachiningCeilingHr(weightKg);
   if (raw > ceilingHr) {
     return {

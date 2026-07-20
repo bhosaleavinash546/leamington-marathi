@@ -361,7 +361,9 @@ router.post('/analyze', upload.fields([
     return;
   }
 
-  const measuredVol = stlGeometry?.volume ?? (geo.status === 'success' ? (geo.volumeCm3 ?? null) : null);
+  // OCCT emits volume as {mm3, cm3} — there is no top-level volumeCm3, so read
+  // volume.cm3 or the ground-truth volume check never fires on the STEP/IGES path.
+  const measuredVol = stlGeometry?.volume ?? (geo.status === 'success' ? (geo.volume?.cm3 ?? null) : null);
   // Cap near-net (cast/forged) machining time before it drives the cost, then run sanity.
   const machiningWarnings = applyNearNetMachiningCap(analysis as Parameters<typeof applyNearNetMachiningCap>[0]);
   const sanityWarnings = [...machiningWarnings, ...runCADSanityChecks(analysis as Parameters<typeof runCADSanityChecks>[0], measuredVol)];
@@ -484,7 +486,16 @@ function normalizeCADAnalysis(a: Record<string, unknown>): void {
 
   const ci = obj(a.costInputSuggestions);
   ci.recommendedCommodity = str(ci.recommendedCommodity, 'machining');
-  ci.netWeightKg = num(ci.netWeightKg, g.estimatedWeightKg && (g.estimatedWeightKg as Record<string, number>).aluminum || 0);
+  {
+    // Default the weight from the material FAMILY the analysis actually picked —
+    // an aluminium-always default costed steel parts at ~34% of their true mass.
+    const wts = (g.estimatedWeightKg ?? {}) as Record<string, number>;
+    const matHint = `${str(ci.materialId, '')} ${String((obj((a.materialAnalysis as Record<string, unknown>)?.primarySuggestion).name) ?? '')}`.toLowerCase();
+    const famWeight = /iron|steel|stainless|en8|4140|1045|s355/.test(matHint) ? wts.steel
+      : /plastic|polymer|nylon|pa6|pp\b|abs|pom|peek|resin/.test(matHint) ? wts.plastic
+      : wts.aluminum;
+    ci.netWeightKg = num(ci.netWeightKg, famWeight || wts.aluminum || 0);
+  }
   ci.estimatedOperations = arr(ci.estimatedOperations);
   const cr = obj(ci.costRange);
   ci.costRange = { low: num(cr.low, 0), mid: num(cr.mid, 0), high: num(cr.high, 0), currency: str(cr.currency, 'GBP') };
@@ -645,7 +656,10 @@ ${pre.summary}`;
   // area). For a near-net cast/forged part only finish stock is removed, so cap
   // the guidance time to the finish-machining envelope before the AI sees it.
   const cncFromSolidHrs = geo.cncCycleTimeEstimate?.estimatedTotalHrs ?? null;
-  const nearNetWeightKg = geo.weights?.aluminiumKg ?? geo.weights?.castIronKg ?? geo.weights?.steelKg ?? 0;
+  // Material is unknown at prompt time, so use the HEAVIEST family weight for a
+  // generous guidance ceiling (aluminium-first under-capped steel/iron parts).
+  // The authoritative post-process cap re-applies with the AI's actual weight.
+  const nearNetWeightKg = Math.max(geo.weights?.aluminiumKg ?? 0, geo.weights?.steelKg ?? 0, geo.weights?.castIronKg ?? 0);
   const cncHrs = cncFromSolidHrs !== null
     ? capNearNetMachiningHr(cncFromSolidHrs, nearNetWeightKg, selectedCommodity).machiningHr
     : null;
@@ -1291,7 +1305,7 @@ router.post('/reanalyze', asyncRoute(async (req, res): Promise<void> => {
   }
 
   const machiningWarnings = applyNearNetMachiningCap(analysis as Parameters<typeof applyNearNetMachiningCap>[0]);
-  const sanityWarnings = [...machiningWarnings, ...runCADSanityChecks(analysis as Parameters<typeof runCADSanityChecks>[0], geo.volumeCm3 ?? null)];
+  const sanityWarnings = [...machiningWarnings, ...runCADSanityChecks(analysis as Parameters<typeof runCADSanityChecks>[0], geo.volume?.cm3 ?? null)];
   const payload = {
     success: true,
     analysis,

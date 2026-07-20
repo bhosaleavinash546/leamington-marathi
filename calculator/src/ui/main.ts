@@ -6117,7 +6117,12 @@ function renderCADResults(r: CADAnalysisResult, autoCalculate = false, annualVol
       let toolingLabel = '';
       const rc = recommendedCommodity;
       if (tc) {
-        if (rc === 'casting' || rc === 'cast_and_machine') { toolingCost = tc.hpdcDieCostGBP; toolingLabel = 'HPDC die'; }
+        if (rc === 'casting' || rc === 'cast_and_machine') {
+          const castSub = (r.costInputSuggestions.casting as { subtype?: string } | undefined)?.subtype;
+          if (castSub === 'sand') { toolingCost = tc.sandPatternCostGBP; toolingLabel = 'Sand pattern'; }
+          else if (castSub === 'gravity') { toolingCost = tc.gravityMouldCostGBP; toolingLabel = 'Gravity mould'; }
+          else { toolingCost = tc.hpdcDieCostGBP; toolingLabel = 'HPDC die'; }
+        }
         else if (rc === 'injection_moulding') { toolingCost = tc.imMouldCostGBP; toolingLabel = 'IM mould'; }
         else if (rc === 'forging') { toolingCost = tc.forgeDieCostGBP; toolingLabel = 'Forge die'; }
         else if (rc === 'sheet_metal') { toolingCost = tc.progressiveDieCostGBP; toolingLabel = 'Progressive die'; }
@@ -6127,7 +6132,7 @@ function renderCADResults(r: CADAnalysisResult, autoCalculate = false, annualVol
       const totalMidWithTooling = costRange ? costRange.mid + toolingPerPart : null;
       return `
     <div style="margin-bottom:12px">
-      <div class="panel-title" style="margin-bottom:6px">Suggested Cost Inputs <span style="font-size:0.68rem;color:var(--text-muted);font-weight:400">@ ${annualVolume.toLocaleString()} pcs/yr</span></div>
+      <div class="panel-title" style="margin-bottom:6px">Suggested Cost Inputs <span style="font-size:0.68rem;color:var(--text-muted);font-weight:400">@ ${annualVolume.toLocaleString()} pcs/yr · UK-rate basis — use the regional panel for other countries</span></div>
       <table class="breakdown-table" style="font-size:0.78rem">
         <tr><td>Net weight</td><td><strong>${r.costInputSuggestions.netWeightKg.toFixed(3)} kg</strong>${confBadge('netWeightKg', 'mach-net-wt', 'cast-part-wt', 'bm-wall')}</td></tr>
         <tr><td>Material</td><td>${escHtml(r.materialAnalysis.primarySuggestion.name)} (${r.costInputSuggestions.materialId})${confBadge('materialId', 'mach-mat', 'cast-mat', 'imm-mat')}</td></tr>
@@ -9961,6 +9966,15 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
   switchCommodity(targetCommodity);
 
   setTimeout(() => {
+    // Tooling amortisation must follow the user's stated volume — the per-
+    // commodity amort fields default to 50k-500k, so leaving them untouched
+    // makes the calculated tooling/part diverge from the suggested panel.
+    if (cadAnnVol) {
+      const amortId = ({ machining: 'mach-amort', casting: 'cast-amort', cast_and_machine: 'cam-amort',
+        injection_moulding: 'imm-amort', forging: 'forge-amort' } as Record<string, string>)[targetCommodity];
+      const amortEl = amortId ? document.getElementById(amortId) as HTMLInputElement | null : null;
+      if (amortEl) { amortEl.value = cadAnnVol; amortEl.dispatchEvent(new Event('input')); }
+    }
     // Part name
     const partNameEl = el<HTMLInputElement>('part-name');
     if (partNameEl) {
@@ -10107,7 +10121,11 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
           camContainer.innerHTML = '';
           camMachOpCount = 0;
           const aiTotalCAM = c.estimatedOperations.reduce((s, op) => s + op.cycleTimeHr, 0);
-          const scaleCAM = (camCycleHrs !== null && aiTotalCAM > 0) ? camCycleHrs / aiTotalCAM : 1;
+          // The OCCT total is a machined-FROM-SOLID estimate; the server has
+          // already capped the AI ops to the near-net finish envelope. Never
+          // scale back UP to from-solid — that re-creates the over-cost the
+          // near-net machining guard exists to prevent.
+          const scaleCAM = (camCycleHrs !== null && aiTotalCAM > 0) ? Math.min(1, camCycleHrs / aiTotalCAM) : 1;
           for (const op of c.estimatedOperations) {
             addCAMMachOp({
               name: op.name, type: 'milling_3ax',

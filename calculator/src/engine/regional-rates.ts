@@ -646,14 +646,24 @@ export function computeRegionalComparison(
     const material = bkd.rawMaterial * rd.materialMultiplier;
     const process = bkd.process * rd.machineRateMultiplier;
     const labour = bkd.labour * (rd.labour.semiskilled / ukSemi);
-    const tooling = bkd.tooling;
-    const overhead = bkd.overhead * rd.overheadMultiplier;
+    // Tooling is bought where the parts are made — scale by the machine-rate
+    // multiplier as a regional capex proxy instead of exporting UK tooling £.
+    const tooling = bkd.tooling * rd.machineRateMultiplier;
+    // Overhead and margin are PERCENTAGES in the core stack. Carrying the UK
+    // absolute £ into a cheaper region overstates both — re-base them on the
+    // region's own costs so each row stays internally consistent.
+    const ukFactoryBase = bkd.rawMaterial + bkd.process + bkd.labour + bkd.tooling;
+    const factoryBase = material + process + labour + tooling;
+    const overhead = (ukFactoryBase > 0 ? bkd.overhead * (factoryBase / ukFactoryBase) : bkd.overhead) * rd.overheadMultiplier;
     const exWorks = material + process + labour + tooling + overhead;
     const packaging = bkd.packaging * rd.packagingMultiplier;
     const logistics = bkd.logistics * rd.logisticsMultiplier;
+    const ukMarginBase = ukFactoryBase + bkd.overhead + bkd.packaging + bkd.logistics;
+    const marginBase = exWorks + packaging + logistics;
+    const margin = ukMarginBase > 0 ? bkd.margin * (marginBase / ukMarginBase) : bkd.margin;
     const adder = opts.landed ? (LANDED_ADDERS[code] ?? { duty: 0.05, shipping: 0.05 }) : { duty: 0, shipping: 0 };
-    const total = exWorks + packaging + logistics + bkd.margin + exWorks * adder.duty + exWorks * adder.shipping;
-    return { code, name: rd.name, currency: rd.currency, material, process, labour, tooling, overhead, exWorks, packaging, logistics, margin: bkd.margin, total, vsBasePct: 0, isBase: code === base };
+    const total = exWorks + packaging + logistics + margin + exWorks * adder.duty + exWorks * adder.shipping;
+    return { code, name: rd.name, currency: rd.currency, material, process, labour, tooling, overhead, exWorks, packaging, logistics, margin, total, vsBasePct: 0, isBase: code === base };
   }).filter((r): r is RegionalComparisonRow => r !== null);
   const baseTotal = rows.find(r => r.code === base)?.total ?? rows[0]?.total ?? 0;
   rows.forEach(r => { r.vsBasePct = baseTotal > 0 ? ((baseTotal - r.total) / baseTotal) * 100 : 0; });

@@ -35,6 +35,12 @@ describe('capNearNetMachiningHr', () => {
     expect(r.machiningHr).toBe(0.15);
   });
 
+  it('skips the cap when weight is unknown — never collapses to bare setup time', () => {
+    const r = capNearNetMachiningHr(0.9, 0, 'cast_and_machine');
+    expect(r.capped).toBe(false);
+    expect(r.machiningHr).toBe(0.9);
+  });
+
   it('does NOT cap machined-from-solid commodities (their estimate is correct)', () => {
     const r = capNearNetMachiningHr(0.9, 2.8, 'machining');
     expect(r.capped).toBe(false);

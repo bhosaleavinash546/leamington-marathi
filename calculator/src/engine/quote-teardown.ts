@@ -245,7 +245,11 @@ export function analyzeQuote(input: TeardownInput): NegotiationReport {
     closingPlays.push({ gap: 'Overall gap', play: pb.closing });
   }
 
-  const totalOpportunityGBP = round0(levers.reduce((s, l) => s + l.expectedRecoveryGBP, 0)) || Math.max(0, annualImpactGBP);
+  // Positive bucket gaps can exceed the net PPV when other buckets are BELOW
+  // should-cost; a supplier will never concede past their net position, so cap
+  // the headline opportunity at the net annual impact.
+  const grossOpportunityGBP = round0(levers.reduce((s, l) => s + l.expectedRecoveryGBP, 0));
+  const totalOpportunityGBP = Math.min(grossOpportunityGBP, Math.max(0, annualImpactGBP)) || Math.max(0, annualImpactGBP);
 
   const headline = ppvPct <= 5
     ? `Quote is within ${Math.abs(ppvPct)}% of should-cost — competitive; hold and confirm.`
