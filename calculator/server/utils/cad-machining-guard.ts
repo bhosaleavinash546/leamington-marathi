@@ -25,15 +25,24 @@ export const NEAR_NET_COMMODITIES = new Set(['cast_and_machine', 'casting', 'for
 // Finish-machining envelope: a near-net part only needs its datum faces trued,
 // journals/bores finished and holes drilled/tapped — not the whole envelope
 // milled from solid. These bound the plausible ceiling, they don't set the value.
-const SETUP_HR = 0.10;          // ~6 min: one or two datum/fixture setups
-const FINISH_HR_PER_KG = 0.07;  // ~4.2 min/kg of finish machining — generous ceiling
+// Tunable against real machined-casting actuals (see nearNetMachiningCeilingHr).
+export const NEAR_NET_ENVELOPE = {
+  setupHr: 0.10,        // ~6 min: one or two datum/fixture setups
+  finishHrPerKg: 0.07,  // ~4.2 min/kg of finish machining — generous ceiling
+};
 
 const n = (v: unknown): number => { const x = Number(v); return Number.isFinite(x) && x > 0 ? x : 0; };
 const round4 = (x: number): number => Math.round(x * 1e4) / 1e4;
 
-/** Finish-machining time ceiling (hours) for a near-net part of the given mass. */
-export function nearNetMachiningCeilingHr(weightKg: number): number {
-  return SETUP_HR + FINISH_HR_PER_KG * n(weightKg);
+/**
+ * Finish-machining time ceiling (hours) for a near-net part of the given mass.
+ * Calibratable: pass an override to tune against known machined-casting actuals.
+ */
+export function nearNetMachiningCeilingHr(
+  weightKg: number,
+  env: { setupHr: number; finishHrPerKg: number } = NEAR_NET_ENVELOPE,
+): number {
+  return env.setupHr + env.finishHrPerKg * n(weightKg);
 }
 
 export interface MachiningCapResult {
@@ -66,6 +75,7 @@ export function capNearNetMachiningHr(rawHr: number, weightKg: number, commodity
 }
 
 interface OperationLike { cycleTimeHr?: unknown; [k: string]: unknown }
+interface ProcessRecLike { commodityType?: unknown; process?: unknown; estimatedCycleTimeHr?: unknown; [k: string]: unknown }
 interface MachiningCapAnalysis {
   costInputSuggestions?: {
     recommendedCommodity?: unknown;
@@ -74,8 +84,13 @@ interface MachiningCapAnalysis {
     estimatedOperations?: OperationLike[];
     [k: string]: unknown;
   };
+  processRecommendations?: ProcessRecLike[];
   [k: string]: unknown;
 }
+
+const MACHINING_RE = /\b(machin|cnc|mill|turn|lathe|bore|drill|ream|grind|hone)\b/i;
+const isMachiningRec = (p: ProcessRecLike): boolean =>
+  String(p.commodityType ?? '') === 'machining' || MACHINING_RE.test(String(p.process ?? ''));
 
 /**
  * Apply the near-net machining cap to a CAD analysis IN PLACE. When the
@@ -100,6 +115,15 @@ export function applyNearNetMachiningCap(analysis: MachiningCapAnalysis): CADSan
   if (Array.isArray(ci.estimatedOperations)) {
     for (const op of ci.estimatedOperations) {
       if (op && Number.isFinite(Number(op.cycleTimeHr))) op.cycleTimeHr = round4(Number(op.cycleTimeHr) * scale);
+    }
+  }
+  // Keep the displayed process table consistent: scale the machining process
+  // recommendation(s) by the same factor (leave the casting/forging rec alone).
+  if (Array.isArray(analysis.processRecommendations)) {
+    for (const p of analysis.processRecommendations) {
+      if (p && isMachiningRec(p) && Number.isFinite(Number(p.estimatedCycleTimeHr))) {
+        p.estimatedCycleTimeHr = round4(Number(p.estimatedCycleTimeHr) * scale);
+      }
     }
   }
   return [{ code: 'near_net_machining_capped', message: res.reason!, severity: 'warn' }];

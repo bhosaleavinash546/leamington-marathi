@@ -75,6 +75,28 @@ describe('applyNearNetMachiningCap — mutates the analysis + scales operations'
     expect(applyNearNetMachiningCap(analysis)).toHaveLength(0);
     expect(analysis.costInputSuggestions.estimatedCycleTimeHr).toBe(0.9);
   });
+
+  it('scales the machining process-recommendation for display consistency, leaves the casting rec alone', () => {
+    const analysis = {
+      costInputSuggestions: { recommendedCommodity: 'cast_and_machine', netWeightKg: 2.8, estimatedCycleTimeHr: 0.9, estimatedOperations: [] },
+      processRecommendations: [
+        { process: 'Gravity Die Casting', commodityType: 'cast_and_machine', estimatedCycleTimeHr: 0.08 },
+        { process: 'CNC finish machining', commodityType: 'machining', estimatedCycleTimeHr: 0.9 },
+      ],
+    };
+    applyNearNetMachiningCap(analysis);
+    // casting rec untouched…
+    expect(analysis.processRecommendations[0].estimatedCycleTimeHr).toBe(0.08);
+    // …machining rec scaled down to match the capped cost (~0.296 h)
+    expect(analysis.processRecommendations[1].estimatedCycleTimeHr).toBeCloseTo(0.296, 2);
+  });
+});
+
+describe('tunable ceiling', () => {
+  it('accepts an override envelope for calibration against actuals', () => {
+    const tighter = nearNetMachiningCeilingHr(2.8, { setupHr: 0.08, finishHrPerKg: 0.05 });
+    expect(tighter).toBeCloseTo(0.22, 3);
+  });
 });
 
 // End-to-end: the reported £116 comes from ~0.9 h machining on the casting.
