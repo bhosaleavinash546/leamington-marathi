@@ -26,7 +26,7 @@ router.post('/analyze', async (req: Request, res: Response): Promise<void> => {
         system: DECOMPOSE_SYSTEM,
         messages: [{ role: 'user', content: text.slice(0, 20000) }],
       });
-      const raw = msg.content[0]?.type === 'text' ? msg.content[0].text : '[]';
+      const raw = (msg.content.map(b => b.type === 'text' ? b.text : '').join('') || '[]');
       const jsonStr = raw.slice(raw.indexOf('['), raw.lastIndexOf(']') + 1) || '[]';
       items = JSON.parse(jsonStr) as RfqLineItem[];
     }

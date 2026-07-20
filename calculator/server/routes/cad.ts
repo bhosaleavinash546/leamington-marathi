@@ -299,7 +299,7 @@ router.post('/analyze', upload.fields([
         system: 'You are a manufacturing process selector. Given part geometry metrics, select the most likely manufacturing commodity. Return ONLY a JSON object, no prose, no markdown.',
         messages: [{ role: 'user', content: stage1Prompt(geo) }],
       });
-      const s1Raw = s1Msg.content[0]?.type === 'text' ? s1Msg.content[0].text.trim() : '';
+      const s1Raw = s1Msg.content.map(b => b.type === 'text' ? b.text : '').join('').trim();
       const parsed = JSON.parse(extractJson(s1Raw)) as typeof stage1Selection;
       if (parsed && typeof parsed.primary === 'string') {
         // Coerce the shape — the model can omit conf/alt, and buildPrompt
@@ -1222,7 +1222,7 @@ router.post('/reanalyze', asyncRoute(async (req, res): Promise<void> => {
         system: 'You are a manufacturing process selector. Given part geometry metrics, select the most likely manufacturing commodity. Return ONLY a JSON object, no prose, no markdown.',
         messages: [{ role: 'user', content: stage1Prompt(geo) }],
       });
-      const s1Raw = s1Msg.content[0]?.type === 'text' ? s1Msg.content[0].text.trim() : '';
+      const s1Raw = s1Msg.content.map(b => b.type === 'text' ? b.text : '').join('').trim();
       const parsed = JSON.parse(extractJson(s1Raw)) as typeof stage1Selection;
       if (parsed && typeof parsed.primary === 'string') {
         // Coerce the shape — the model can omit conf/alt, and buildPrompt

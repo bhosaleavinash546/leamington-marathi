@@ -44,7 +44,7 @@ router.post('/', async (req, res): Promise<void> => {
       system: SYSTEM_PROMPT,
       messages: [{ role: 'user', content: message.trim() }],
     });
-    const text = msg.content[0]?.type === 'text' ? msg.content[0].text : 'No response.';
+    const text = (msg.content.map(b => b.type === 'text' ? b.text : '').join('') || 'No response.');
     res.json({ reply: text });
   } catch (err) {
     const msg2 = err instanceof Error ? err.message : String(err);

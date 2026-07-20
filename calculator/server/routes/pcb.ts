@@ -139,6 +139,15 @@ const extractionModel = (deep: boolean): string => (deep ? DEEP_EXTRACT_MODEL : 
 // that still overflows.
 const EXTRACT_MAX_TOKENS = 32000;
 
+// Read the model's text output ROBUSTLY. Sonnet 5 / Opus 4.8 can return a
+// non-text block first (e.g. a thinking/redacted block), so `content[0]` is not
+// guaranteed to be the text. Reading only content[0] silently discarded the
+// whole BOM — the model spent output tokens but the route saw "" → empty BOM,
+// "again and again". Concatenate every text block instead.
+function textOf(msg: { content: Array<{ type: string; text?: string }> }): string {
+  return msg.content.map(b => (b.type === 'text' ? (b.text ?? '') : '')).join('');
+}
+
 // Confidence gate for the heavy automotive path. A low-confidence 'automotive'
 // guess (e.g. a lone connector or heatsink on an otherwise simple board) must
 // NOT trigger the full AEC-Q enumeration + ASIL classification + extra IC pass:
@@ -231,7 +240,7 @@ If still unreadable, set identifiedPartNumber to "" and adjust lineConf downward
         { type: 'text', text: prompt },
       ]}],
     });
-    const raw = msg.content[0]?.type === 'text' ? msg.content[0].text : '[]';
+    const raw = textOf(msg) || '[]';
     let arr: Array<{ refDes: string; identifiedPartNumber: string; unitPriceGBP: number; lineConf: number }> = [];
     try {
       const start = raw.indexOf('['), end = raw.lastIndexOf(']');
@@ -333,7 +342,7 @@ ASIL levels: QM (no safety), ASIL-A (low), ASIL-B (medium), ASIL-C (high), ASIL-
         { type: 'text', text: prompt },
       ]}],
     });
-    const raw = msg.content[0]?.type === 'text' ? msg.content[0].text : '{}';
+    const raw = textOf(msg) || '{}';
     const start = raw.indexOf('{'), end = raw.lastIndexOf('}');
     if (start !== -1 && end > start) {
       const parsed = JSON.parse(raw.slice(start, end + 1)) as Stage1bASIL;
@@ -1027,7 +1036,7 @@ router.post('/analyze-image', upload.fields([
         ],
       }],
     });
-    const s1Raw = s1Msg.content[0]?.type === 'text' ? s1Msg.content[0].text : '';
+    const s1Raw = textOf(s1Msg);
     const s1Parsed = JSON.parse(extractJSON(s1Raw)) as Stage1Result;
     stage1Result = {
       domain: s1Parsed.domain ?? 'general',
@@ -1068,7 +1077,7 @@ router.post('/analyze-image', upload.fields([
         ],
       }],
     });
-    const s2Raw = s2Msg.content[0]?.type === 'text' ? s2Msg.content[0].text : '';
+    const s2Raw = textOf(s2Msg);
     const s2Parsed = JSON.parse(extractJSON(s2Raw)) as OCRResult;
     ocrResult = {
       icMarkings: Array.isArray(s2Parsed.icMarkings) ? s2Parsed.icMarkings : [],
@@ -1112,7 +1121,7 @@ router.post('/analyze-image', upload.fields([
     });
     if (msg1.stop_reason === 'max_tokens') console.warn('[PCB] Stage 3 hit the output-token limit — BOM likely truncated; will salvage/consolidate');
 
-    lastRaw = msg1.content[0]?.type === 'text' ? msg1.content[0].text : '';
+    lastRaw = textOf(msg1);
 
     try {
       analysis = JSON.parse(extractJSON(lastRaw));
@@ -1137,7 +1146,7 @@ router.post('/analyze-image', upload.fields([
           messages: [{ role: 'user', content: buildRepairPrompt(lastRaw) }],
         });
 
-        lastRaw = msg2.content[0]?.type === 'text' ? msg2.content[0].text : '';
+        lastRaw = textOf(msg2);
 
         try {
           analysis = JSON.parse(extractJSON(lastRaw));
@@ -1169,7 +1178,7 @@ ${userPromptText}`;
               }],
             });
 
-            lastRaw = msg3.content[0]?.type === 'text' ? msg3.content[0].text : '';
+            lastRaw = textOf(msg3);
 
             try {
               analysis = JSON.parse(extractJSON(lastRaw));
@@ -1209,7 +1218,7 @@ ${userPromptText}`;
         ]}],
       });
       if (retry.stop_reason === 'max_tokens') console.warn('[PCB] Empty-BOM retry hit the output-token limit — salvaging');
-      const retryRaw = retry.content[0]?.type === 'text' ? retry.content[0].text : '';
+      const retryRaw = textOf(retry);
       let retryAnalysis: Record<string, unknown> | null;
       try { retryAnalysis = JSON.parse(extractJSON(retryRaw)) as Record<string, unknown>; }
       catch { retryAnalysis = salvageAnalysisFromRaw(retryRaw); }
@@ -1561,7 +1570,7 @@ router.post('/reanalyze', upload.fields([
       }],
     });
 
-    lastRaw = msg1.content[0]?.type === 'text' ? msg1.content[0].text : '';
+    lastRaw = textOf(msg1);
 
     try {
       analysis = JSON.parse(extractJSON(lastRaw));
@@ -1576,7 +1585,7 @@ router.post('/reanalyze', upload.fields([
         messages: [{ role: 'user', content: buildRepairPrompt(lastRaw) }],
       });
 
-      lastRaw = msg2.content[0]?.type === 'text' ? msg2.content[0].text : '';
+      lastRaw = textOf(msg2);
 
       try {
         analysis = JSON.parse(extractJSON(lastRaw));
@@ -1600,7 +1609,7 @@ router.post('/reanalyze', upload.fields([
           }],
         });
 
-        lastRaw = msg3.content[0]?.type === 'text' ? msg3.content[0].text : '';
+        lastRaw = textOf(msg3);
 
         try {
           analysis = JSON.parse(extractJSON(lastRaw));
@@ -1967,7 +1976,7 @@ router.post('/analyze-image-stream', upload.fields([
         { type: 'text', text: stage1Prompt() },
       ]}],
     });
-    const s1Raw = s1Msg.content[0]?.type === 'text' ? s1Msg.content[0].text : '';
+    const s1Raw = textOf(s1Msg);
     const s1P = JSON.parse(extractJSON(s1Raw)) as Stage1Result;
     stage1Result = { domain: s1P.domain ?? 'general', conf: s1P.conf ?? 0.5, hints: s1P.hints ?? [] };
     gateAutomotive(stage1Result, 'PCB/stream');
@@ -1996,7 +2005,7 @@ router.post('/analyze-image-stream', upload.fields([
         { type: 'text', text: stage2Prompt + s2Note },
       ]}],
     });
-    const s2Raw = s2Msg.content[0]?.type === 'text' ? s2Msg.content[0].text : '';
+    const s2Raw = textOf(s2Msg);
     const s2P = JSON.parse(extractJSON(s2Raw)) as OCRResult;
     ocrResult = { icMarkings: s2P.icMarkings ?? [], refDesGroups: s2P.refDesGroups ?? [], connectors: s2P.connectors ?? [], boardText: s2P.boardText ?? [], extractionQuality: s2P.extractionQuality ?? 'low' };
     emit('stage2', { icMarkings: ocrResult.icMarkings, extractionQuality: ocrResult.extractionQuality });
@@ -2027,7 +2036,8 @@ router.post('/analyze-image-stream', upload.fields([
       ]}],
     });
     if (msg.stop_reason === 'max_tokens') console.warn('[PCB/stream] Stage 3 hit the output-token limit — BOM likely truncated; will salvage/consolidate');
-    stage3Raw = msg.content[0]?.type === 'text' ? msg.content[0].text : '';
+    stage3Raw = textOf(msg);
+    console.log('[PCB/stream] Stage 3 stop=%s blocks=%s textLen=%d', msg.stop_reason, JSON.stringify(msg.content.map(b => b.type)), stage3Raw.length);
   } catch (err) {
     const raw = (err as Error).message ?? '';
     const tooLarge = /413|request_too_large|maximum size|too large/i.test(raw);
@@ -2056,7 +2066,7 @@ router.post('/analyze-image-stream', upload.fields([
           system: 'You are a JSON repair assistant. Return ONLY valid JSON — nothing else. Start with { and end with }.',
           messages: [{ role: 'user', content: buildRepairPrompt(stage3Raw) }],
         });
-        const repairRaw = repair.content[0]?.type === 'text' ? repair.content[0].text : '';
+        const repairRaw = textOf(repair);
         try { analysis = JSON.parse(extractJSON(repairRaw)); }
         catch (repErr) {
           const salvaged2 = salvageAnalysisFromRaw(repairRaw);
@@ -2096,7 +2106,7 @@ router.post('/analyze-image-stream', upload.fields([
         ]}],
       });
       if (retry.stop_reason === 'max_tokens') console.warn('[PCB/stream] Empty-BOM retry hit the output-token limit — salvaging');
-      const retryRaw = retry.content[0]?.type === 'text' ? retry.content[0].text : '';
+      const retryRaw = textOf(retry);
       let retryAnalysis: Record<string, unknown> | null;
       try { retryAnalysis = JSON.parse(extractJSON(retryRaw)) as Record<string, unknown>; }
       catch { retryAnalysis = salvageAnalysisFromRaw(retryRaw); }
