@@ -7750,6 +7750,17 @@ function buildPCBImagePanel(r: PCBImageAnalysis): string {
               <div style="font-size:0.8rem;font-weight:700">&#163;${cb.bomCostMid.toFixed(2)}</div>
               <div style="font-size:0.62rem;color:var(--text-muted)">&#163;${cb.bomCostLow.toFixed(2)} – &#163;${cb.bomCostHigh.toFixed(2)}</div>
               <div style="font-size:0.6rem;color:var(--text-muted);margin-top:2px">${cb.ocrConfirmedCount} OCR confirmed · ${Math.round(cb.weightedBOMConfidence*100)}% avg conf</div>
+              ${(() => {
+                const ce = r.costEstimates as unknown as { confirmedBOMCostGBP?: number; unverifiedBOMCostGBP?: number };
+                const nv = (r as unknown as { needsVerificationCount?: number; _needsVerificationCount?: number });
+                const nvc = nv.needsVerificationCount ?? nv._needsVerificationCount ?? 0;
+                if (ce && typeof ce.unverifiedBOMCostGBP === 'number' && ce.unverifiedBOMCostGBP > 0.01) {
+                  return `<div style="font-size:0.58rem;margin-top:3px;line-height:1.3">`
+                    + `<span style="color:#0e9f6e">&#10003; &#163;${(ce.confirmedBOMCostGBP ?? 0).toFixed(2)} confirmed</span>`
+                    + ` · <span style="color:#b45309">&#163;${ce.unverifiedBOMCostGBP.toFixed(2)} to verify${nvc ? ` (${nvc})` : ''}</span></div>`;
+                }
+                return '';
+              })()}
             </div>
             <div style="padding:8px;background:rgba(0,0,0,0.04);border-radius:6px">
               <div style="font-size:0.65rem;color:var(--text-muted);margin-bottom:4px">PCB Fabrication <span style="background:${clr(cb.fabConfidenceLabel)};color:#fff;font-size:0.56rem;padding:0 4px;border-radius:8px">${cb.fabConfidenceLabel}</span></div>

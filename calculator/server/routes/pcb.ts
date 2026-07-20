@@ -14,7 +14,7 @@ import {
   type PCBCostInput,
 } from '../data/pcb-country-rates.js';
 import { fetchLivePrices, fetchLivePricesWithAECQ, resolveNexarAccessToken, type LivePricingProvider, type LivePriceResult } from '../utils/pcb-live-pricing.js';
-import { reconcileBomWithCatalogue, groundingCandidates } from '../utils/pcb-bom-grounding.js';
+import { reconcileBomWithCatalogue, groundingCandidates, offlineCataloguePrices, groundAndSplit } from '../utils/pcb-bom-grounding.js';
 import { parseBOMFile, type ParsedBOMLine } from '../utils/pcb-bom-parser.js';
 import { normalizePCBAnalysis } from '../utils/pcb-normalize.js';
 import { salvageAnalysisFromRaw } from '../utils/pcb-salvage.js';
@@ -1328,7 +1328,40 @@ ${userPromptText}`;
 
     a.bom = enrichedBOM;
 
-    // Re-sum BOM from volume-adjusted prices
+    // Ground BEFORE totals (live provider if keyed, else offline catalogue), cap the
+    // unconfirmed high-value guesses to a class median, and split confirmed vs
+    // needs-verification. (Grounding used to run AFTER the total was summed, so real
+    // prices never reached the headline.)
+    {
+      const candidatePNs = groundingCandidates(enrichedBOM, 20);
+      let livePrices: LivePriceResult[] = [];
+      if (candidatePNs.length > 0) {
+        const octoKey = await resolveNexarAccessToken();
+        const rsKey = process.env.RS_API_KEY ?? '';
+        const liveProvider: LivePricingProvider | null = octoKey ? 'octopart' : rsKey ? 'rs' : null;
+        if (liveProvider) {
+          try {
+            livePrices = await fetchLivePricesWithAECQ(candidatePNs, liveProvider, liveProvider === 'octopart' ? octoKey : rsKey, orderQty, domain === 'automotive_adas');
+          } catch (lpErr) { console.warn('[PCB] Live pricing fetch failed (non-fatal):', (lpErr as Error).message); }
+        }
+        const liveHit = new Set(livePrices.map(p => p.mpn.toUpperCase()));
+        livePrices = [...livePrices, ...offlineCataloguePrices(candidatePNs.filter(pn => !liveHit.has(pn.toUpperCase())), orderQty)];
+      }
+      const grounded = groundAndSplit(enrichedBOM, livePrices);
+      enrichedBOM = grounded.bom as Array<Record<string, unknown>>;
+      a.bom = enrichedBOM;
+      livePriceHits = grounded.matched;
+      if (a.costEstimates && typeof a.costEstimates === 'object') {
+        const ce = a.costEstimates as Record<string, unknown>;
+        ce.confirmedBOMCostGBP = grounded.confirmedTotal;
+        ce.unverifiedBOMCostGBP = grounded.unverifiedTotal;
+      }
+      (a as Record<string, unknown>).catalogueVerifiedCount = grounded.matched;
+      (a as Record<string, unknown>).needsVerificationCount = grounded.needsVerification;
+      (a as Record<string, unknown>).pricesCappedCount = grounded.capped;
+    }
+
+    // Re-sum BOM from grounded + capped prices
     const correctedBOMTotal = enrichedBOM.reduce((sum, line) => sum + Number(line.lineTotalGBP ?? 0), 0);
     if (a.costEstimates && typeof a.costEstimates === 'object') {
       (a.costEstimates as Record<string, unknown>).totalBOMCostGBP = Math.round(correctedBOMTotal * 100) / 100;
@@ -1391,31 +1424,8 @@ ${userPromptText}`;
     // NPI vs production breakdown
     npiBreakdown = computeNPIBreakdown(correctedBOMTotal, fabCostMid, Number(assemblyData.smtPlacements) || 0, orderQty);
 
-    // Rec #1: catalogue grounding — replace AI-guessed prices with real
-    // distributor prices for any part with a plausible MPN (not just OCR-confirmed),
-    // and flag every line's verification state for human review (Rec #3).
-    const candidatePNs = groundingCandidates(enrichedBOM, 20);
-    let livePrices: LivePriceResult[] = [];
-    if (candidatePNs.length > 0) {
-      const octoKey = await resolveNexarAccessToken();   // OAuth2 client-credentials (audit fix)
-      const rsKey = process.env.RS_API_KEY ?? '';
-      const liveProvider: LivePricingProvider | null = octoKey ? 'octopart' : rsKey ? 'rs' : null;
-      if (liveProvider) {
-        try {
-          livePrices = await fetchLivePricesWithAECQ(candidatePNs, liveProvider, liveProvider === 'octopart' ? octoKey : rsKey, orderQty, domain === 'automotive_adas');
-          console.log(`[PCB] Catalogue grounding: ${livePrices.length}/${candidatePNs.length} parts priced via ${liveProvider}`);
-        } catch (lpErr) {
-          console.warn('[PCB] Live pricing fetch failed (non-fatal):', (lpErr as Error).message);
-        }
-      }
-    }
-    // Always reconcile — with catalogue hits when available, else confidence-only.
-    // Works offline (no key) so the human-in-the-loop review is always populated.
-    const reconciled = reconcileBomWithCatalogue(a.bom as Array<Record<string, unknown>>, livePrices);
-    a.bom = reconciled.bom;
-    livePriceHits = reconciled.matched;
-    (a as Record<string, unknown>).needsVerificationCount = reconciled.needsVerification;
-    (a as Record<string, unknown>).catalogueVerifiedCount = reconciled.matched;
+    // (Catalogue grounding + capping + confirmed/unverified split now runs earlier,
+    //  BEFORE the BOM total is summed — see the grounding block above.)
 
     console.log(`[PCB] Stage 4: qty=${orderQty} volMult=${volumeMultiplier} BOM=${correctedBOMTotal.toFixed(2)} band=${confidenceBand.overallLabel} sanity=${sanityWarnings.length} warnings${domain === 'automotive_adas' ? ` asil=${asilClassification.asilLevel} forced=${automotiveGradeEnforcedCount}` : ''}`);
   } catch (err) {
@@ -2178,31 +2188,42 @@ router.post('/analyze-image-stream', upload.fields([
     // the distributor APIs. Ground BEFORE totals so real prices flow into the
     // BOM total and the country comparison. Offline (no key) it still runs
     // reconcile for the needs-verification flags.
-    {
-      const candidatePNs2 = groundingCandidates(enrichedBOM2, 20);
-      let livePrices2: LivePriceResult[] = [];
-      if (candidatePNs2.length > 0) {
-        const octoKey2 = await resolveNexarAccessToken();
-        const rsKey2 = process.env.RS_API_KEY ?? '';
-        const liveProvider2: LivePricingProvider | null = octoKey2 ? 'octopart' : rsKey2 ? 'rs' : null;
-        if (liveProvider2) {
-          emit('progress', { stage: 4, label: 'Stage 4 — grounding prices against distributor catalogue', pct: 90 });
-          try {
-            livePrices2 = await fetchLivePricesWithAECQ(candidatePNs2, liveProvider2, liveProvider2 === 'octopart' ? octoKey2 : rsKey2, orderQty2, domain === 'automotive_adas');
-            console.log(`[PCB/stream] Catalogue grounding: ${livePrices2.length}/${candidatePNs2.length} parts priced via ${liveProvider2}`);
-          } catch (lpErr) {
-            console.warn('[PCB/stream] Live pricing fetch failed (non-fatal):', (lpErr as Error).message);
-          }
+    const candidatePNs2 = groundingCandidates(enrichedBOM2, 20);
+    let livePrices2: LivePriceResult[] = [];
+    if (candidatePNs2.length > 0) {
+      const octoKey2 = await resolveNexarAccessToken();
+      const rsKey2 = process.env.RS_API_KEY ?? '';
+      const liveProvider2: LivePricingProvider | null = octoKey2 ? 'octopart' : rsKey2 ? 'rs' : null;
+      if (liveProvider2) {
+        emit('progress', { stage: 4, label: 'Stage 4 — grounding prices against distributor catalogue', pct: 90 });
+        try {
+          livePrices2 = await fetchLivePricesWithAECQ(candidatePNs2, liveProvider2, liveProvider2 === 'octopart' ? octoKey2 : rsKey2, orderQty2, domain === 'automotive_adas');
+          console.log(`[PCB/stream] Catalogue grounding: ${livePrices2.length}/${candidatePNs2.length} parts priced via ${liveProvider2}`);
+        } catch (lpErr) {
+          console.warn('[PCB/stream] Live pricing fetch failed (non-fatal):', (lpErr as Error).message);
         }
       }
-      const reconciled2 = reconcileBomWithCatalogue(enrichedBOM2, livePrices2);
-      enrichedBOM2 = reconciled2.bom as Array<Record<string, unknown>>;
-      streamLivePriceHits = reconciled2.matched;
-      streamNeedsVerification = reconciled2.needsVerification;
+      // Offline catalogue fills any MPN the live provider didn't price — works
+      // air-gapped, so confirmed lines snap to market even with no distributor key.
+      const liveHit2 = new Set(livePrices2.map(p => p.mpn.toUpperCase()));
+      livePrices2 = [...livePrices2, ...offlineCataloguePrices(candidatePNs2.filter(pn => !liveHit2.has(pn.toUpperCase())), orderQty2)];
     }
+    // Ground + class-median-cap the unconfirmed guesses + split confirmed/unverified.
+    const grounded2 = groundAndSplit(enrichedBOM2, livePrices2);
+    enrichedBOM2 = grounded2.bom as Array<Record<string, unknown>>;
+    streamLivePriceHits = grounded2.matched;
+    streamNeedsVerification = grounded2.needsVerification;
     a.bom = enrichedBOM2;
-    const correctedBOMTotal2 = enrichedBOM2.reduce((s, l) => s + Number(l.lineTotalGBP ?? 0), 0);
-    if (a.costEstimates && typeof a.costEstimates === 'object') (a.costEstimates as Record<string, unknown>).totalBOMCostGBP = Math.round(correctedBOMTotal2 * 100) / 100;
+    const correctedBOMTotal2 = grounded2.bomTotal;
+    if (a.costEstimates && typeof a.costEstimates === 'object') {
+      const ce = a.costEstimates as Record<string, unknown>;
+      ce.totalBOMCostGBP = grounded2.bomTotal;
+      ce.confirmedBOMCostGBP = grounded2.confirmedTotal;
+      ce.unverifiedBOMCostGBP = grounded2.unverifiedTotal;
+    }
+    (a as Record<string, unknown>).catalogueVerifiedCount = grounded2.matched;
+    (a as Record<string, unknown>).needsVerificationCount = grounded2.needsVerification;
+    (a as Record<string, unknown>).pricesCappedCount = grounded2.capped;
     // BOM completeness (all domains)
     streamBomCompleteness = estimateMissingPassives(enrichedBOM2, Number(assemblyData.smtPlacements) || 0);
     // Program pricing (automotive only, or show discount potential)

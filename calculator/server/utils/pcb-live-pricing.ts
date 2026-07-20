@@ -6,7 +6,7 @@ import { isAirGapped } from './ai-client.js';
  * Failures are isolated — a provider error returns empty array, not a server crash.
  */
 
-export type LivePricingProvider = 'octopart' | 'rs' | 'farnell';
+export type LivePricingProvider = 'octopart' | 'rs' | 'farnell' | 'catalogue';
 
 export interface LivePriceResult {
   /** Manufacturer part number queried */
