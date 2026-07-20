@@ -133,21 +133,30 @@ export function offlineCataloguePrices(partNumbers: string[], qty: number): Live
  * (a guessed "AURIX-class MCU" at £60, a "sealed header" at £24), and that single
  * guess can triple the board cost. The cap never RAISES a price.
  */
+// A costly line with NO catalogue/live confirmation is a verification risk even
+// when the model sounded confident: a confident MISREAD (a BGA read as an £84
+// FPGA) escapes every confidence-based check. Any unmatched line above this
+// unit price is treated as unverified — capped to its class median AND flagged.
+const HIGH_VALUE_UNMATCHED_GBP = 10;
+
 export function capUnconfirmedPrices(bom: BomLine[]): { bom: BomLine[]; capped: number } {
   let capped = 0;
   const out = bom.map(line => {
     const verified = line.livePriced === true || line.priceSource === 'catalogue';
+    if (verified) return line;                       // a real catalogue/live hit is trusted
     const pn = String(line.partNumber ?? '').trim();
+    const unit = num(line.unitPriceGBP);
     const unconfirmed = line.needsVerification === true
       || line.unconfirmedHighValue === true
       || pn.length === 0
-      || /\b(class|est|unknown|generic)\b/i.test(pn);
-    if (verified || !unconfirmed) return line;
-    const unit = num(line.unitPriceGBP);
+      || /\b(class|est|unknown|generic)\b/i.test(pn)
+      // Magnitude / no-match guard — the fix for confident misreads.
+      || unit > HIGH_VALUE_UNMATCHED_GBP;
+    if (!unconfirmed) return line;
+    const qty = num(line.qty, 1);
     const capUnit = classMedianCap(String(line.componentType ?? ''), unit);
     if (capUnit < unit - 1e-6) {
       capped++;
-      const qty = num(line.qty, 1);
       return {
         ...line,
         aiEstimatedPriceGBP: (line.aiEstimatedPriceGBP as number) ?? round(unit, 4),
@@ -159,6 +168,11 @@ export function capUnconfirmedPrices(bom: BomLine[]): { bom: BomLine[]; capped: 
         // "needs verification" bucket so it never inflates the confirmed headline.
         needsVerification: true,
       };
+    }
+    // High-value but the class median didn't reduce it (rare): still can't confirm
+    // the price → flag for verification so it leaves the confirmed headline.
+    if (unit > HIGH_VALUE_UNMATCHED_GBP && line.needsVerification !== true) {
+      return { ...line, needsVerification: true };
     }
     return line;
   });

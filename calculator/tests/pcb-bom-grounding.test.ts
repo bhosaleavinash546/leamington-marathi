@@ -3,6 +3,7 @@ import {
   reconcileBomWithCatalogue,
   flagBomConfidence,
   groundingCandidates,
+  capUnconfirmedPrices,
   VERIFY_CONFIDENCE_THRESHOLD,
 } from '../server/utils/pcb-bom-grounding.js';
 import type { LivePriceResult } from '../server/utils/pcb-live-pricing.js';
@@ -104,5 +105,36 @@ describe('threshold', () => {
   it('is a sane fraction', () => {
     expect(VERIFY_CONFIDENCE_THRESHOLD).toBeGreaterThan(0);
     expect(VERIFY_CONFIDENCE_THRESHOLD).toBeLessThan(1);
+  });
+});
+
+describe('capUnconfirmedPrices — magnitude / no-match guard', () => {
+  it('caps + flags a CONFIDENT but unmatched high-value line (confident misread)', () => {
+    // e.g. a BGA read as an £84 Artix-7 FPGA, OCR-confirmed, no catalogue match
+    const bom = [{ refDes: 'U1', partNumber: 'XC7A35T', componentType: 'ic_bga',
+                   qty: 1, unitPriceGBP: 84, lineTotalGBP: 84, lineConf: 0.9, ocrExtracted: true }];
+    const { bom: out, capped } = capUnconfirmedPrices(bom);
+    expect(capped).toBe(1);
+    expect(out[0].unitPriceGBP as number).toBeLessThan(20);      // → ic_bga median (~£18)
+    expect(out[0].needsVerification).toBe(true);                 // → leaves the confirmed headline
+    expect(out[0].aiEstimatedPriceGBP).toBe(84);                 // AI estimate preserved
+    expect(out[0].priceCapped).toBe(true);
+  });
+
+  it('leaves a catalogue-verified high-value line untouched', () => {
+    const bom = [{ refDes: 'U1', partNumber: 'SAK-TC275', componentType: 'ic_bga',
+                   qty: 1, unitPriceGBP: 16.5, lineTotalGBP: 16.5, priceSource: 'catalogue', livePriced: true }];
+    const { bom: out, capped } = capUnconfirmedPrices(bom);
+    expect(capped).toBe(0);
+    expect(out[0].unitPriceGBP).toBe(16.5);
+    expect(out[0].needsVerification).not.toBe(true);
+  });
+
+  it('does not touch a low-value confident line', () => {
+    const bom = [{ refDes: 'R1', partNumber: 'RC0402', componentType: 'passive_0402',
+                   qty: 1, unitPriceGBP: 0.01, lineTotalGBP: 0.01, ocrExtracted: true }];
+    const { bom: out, capped } = capUnconfirmedPrices(bom);
+    expect(capped).toBe(0);
+    expect(out[0].unitPriceGBP).toBe(0.01);
   });
 });
