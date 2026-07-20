@@ -9,6 +9,7 @@ import { parseSTL } from '../services/stl-parser.js';
 import type { STLGeometry } from '../services/stl-parser.js';
 import { createAnalysisCache } from '../utils/analysis-cache.js';
 import { runCADSanityChecks } from '../utils/cad-sanity.js';
+import { capNearNetMachiningHr, applyNearNetMachiningCap } from '../utils/cad-machining-guard.js';
 import { normalizeFieldConfidences } from '../utils/cad-schema.js';
 
 const router = Router();
@@ -361,7 +362,9 @@ router.post('/analyze', upload.fields([
   }
 
   const measuredVol = stlGeometry?.volume ?? (geo.status === 'success' ? (geo.volumeCm3 ?? null) : null);
-  const sanityWarnings = runCADSanityChecks(analysis as Parameters<typeof runCADSanityChecks>[0], measuredVol);
+  // Cap near-net (cast/forged) machining time before it drives the cost, then run sanity.
+  const machiningWarnings = applyNearNetMachiningCap(analysis as Parameters<typeof applyNearNetMachiningCap>[0]);
+  const sanityWarnings = [...machiningWarnings, ...runCADSanityChecks(analysis as Parameters<typeof runCADSanityChecks>[0], measuredVol)];
   if (sanityWarnings.length) console.log(`[CAD] Sanity: ${sanityWarnings.length} warning(s): ${sanityWarnings.map(x => x.code).join(', ')}`);
 
   const payload = {
@@ -638,7 +641,14 @@ File: ${filename}  Size: ${pre.fileSizeKB.toFixed(0)} KB
 ${pre.summary}`;
   }
 
-  const cncHrs = geo.cncCycleTimeEstimate?.estimatedTotalHrs ?? null;
+  // The OCCT CNC estimate times milling as if machined from solid (whole planar
+  // area). For a near-net cast/forged part only finish stock is removed, so cap
+  // the guidance time to the finish-machining envelope before the AI sees it.
+  const cncFromSolidHrs = geo.cncCycleTimeEstimate?.estimatedTotalHrs ?? null;
+  const nearNetWeightKg = geo.weights?.aluminiumKg ?? geo.weights?.castIronKg ?? geo.weights?.steelKg ?? 0;
+  const cncHrs = cncFromSolidHrs !== null
+    ? capNearNetMachiningHr(cncFromSolidHrs, nearNetWeightKg, selectedCommodity).machiningHr
+    : null;
   const setupCount = geo.setupAnalysis?.estimatedSetupCount ?? null;
   const undercutCount = geo.draftAnalysis?.undercutFaceCount ?? 0;
 
@@ -1280,7 +1290,8 @@ router.post('/reanalyze', asyncRoute(async (req, res): Promise<void> => {
     return;
   }
 
-  const sanityWarnings = runCADSanityChecks(analysis as Parameters<typeof runCADSanityChecks>[0], geo.volumeCm3 ?? null);
+  const machiningWarnings = applyNearNetMachiningCap(analysis as Parameters<typeof applyNearNetMachiningCap>[0]);
+  const sanityWarnings = [...machiningWarnings, ...runCADSanityChecks(analysis as Parameters<typeof runCADSanityChecks>[0], geo.volumeCm3 ?? null)];
   const payload = {
     success: true,
     analysis,
