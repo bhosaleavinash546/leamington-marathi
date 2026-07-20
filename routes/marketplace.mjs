@@ -4,6 +4,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 import crypto from 'crypto';
 import { validate, SCHEMAS } from '../schemas.mjs';
+import { similarityMatches, clusterIdeas } from '../idea-quality.mjs';
 
 export function registerMarketplaceRoutes(app, { db, requireAuth, rateLimit }) {
   app.get('/api/marketplace/count', (_req, res) => {
@@ -39,10 +40,58 @@ export function registerMarketplaceRoutes(app, { db, requireAuth, rateLimit }) {
     } catch (e) { res.status(500).json({ error: e.message }); }
   });
 
+  // Approved corpus in duplicate-check shape (id/title/description) —
+  // count-keyed cache, shared by the submit dup-check and /similar helper.
+  let _dupCorpus = null, _dupCorpusCount = -1;
+  function dupCorpus() {
+    const n = db.prepare("SELECT COUNT(*) c FROM marketplace_ideas WHERE status='approved'").get().c;
+    if (_dupCorpus && n === _dupCorpusCount) return _dupCorpus;
+    _dupCorpus = db.prepare("SELECT id, title, description FROM marketplace_ideas WHERE status='approved'").all();
+    _dupCorpusCount = n;
+    return _dupCorpus;
+  }
+
+  // Similarity helper — the submit modal (or any caller) can pre-check a
+  // draft title/description against the approved corpus.
+  app.get('/api/marketplace/similar', requireAuth, rateLimit(120, 60 * 60 * 1000), (req, res) => {
+    const q = String(req.query.q || '').slice(0, 500);
+    if (!q.trim()) return res.status(400).json({ error: 'q is required' });
+    res.json({ matches: similarityMatches({ title: q, description: '' }, dupCorpus(), { threshold: 0.35 }) });
+  });
+
+  // Deterministic theme clusters over the approved corpus (O(n²) cosine —
+  // computed once per corpus version, then served from cache).
+  let _clusters = null, _clustersCount = -1;
+  app.get('/api/marketplace/clusters', requireAuth, (_req, res) => {
+    try {
+      const n = db.prepare("SELECT COUNT(*) c FROM marketplace_ideas WHERE status='approved'").get().c;
+      if (!_clusters || n !== _clustersCount) {
+        const rows = db.prepare("SELECT id, title, description, annualSaving FROM marketplace_ideas WHERE status='approved'").all();
+        const clusters = clusterIdeas(rows, { threshold: 0.45, minSize: 3 });
+        const savingOf = new Map(rows.map(r => [r.id, r.annualSaving]));
+        const parseSaving = (v) => {
+          const m = String(v || '').replace(/[,\s]/g, '').match(/([\d.]+)\s*([mk]?)/i);
+          return m ? parseFloat(m[1]) * (/m/i.test(m[2]) ? 1e6 : /k/i.test(m[2]) ? 1e3 : 1) : 0;
+        };
+        _clusters = clusters.map((c, i) => ({ id: `cluster-${i}`, ...c, totalSaving: Math.round(c.ideaIds.reduce((s, id) => s + parseSaving(savingOf.get(id)), 0)) }));
+        _clustersCount = n;
+      }
+      res.json({ clusters: _clusters });
+    } catch (e) { res.status(500).json({ error: e.message }); }
+  });
+
   app.post('/api/marketplace', requireAuth, rateLimit(5, 60 * 60 * 1000), validate(SCHEMAS.marketplaceSubmit), (req, res) => {
-    const { title, system, costSavingType, annualSaving, difficulty, timeToImplement, description, ideaData } = req.body;
+    const { title, system, costSavingType, annualSaving, difficulty, timeToImplement, description, ideaData, confirmDuplicate } = req.body;
     if (!title || !description) return res.status(400).json({ error: 'title and description required' });
     try {
+      // Duplicate check (Ideanote pattern): warn with the close matches and
+      // require an explicit confirm before inserting a near-restatement.
+      if (confirmDuplicate !== true) {
+        const matches = similarityMatches({ title, description }, dupCorpus(), { threshold: 0.5, max: 3 });
+        if (matches.length) {
+          return res.json({ ok: false, duplicateWarning: matches, message: 'Very similar approved ideas already exist — review them, then submit anyway if yours is genuinely different.' });
+        }
+      }
       const id = crypto.randomUUID();
       db.prepare('INSERT INTO marketplace_ideas (id,title,system,costSavingType,annualSaving,difficulty,timeToImplement,description,ideaData,submittedBy,verified,stars,status,createdAt) VALUES (?,?,?,?,?,?,?,?,?,?,0,0,"pending",?)')
         .run(id, title, system || '', costSavingType || '', annualSaving || '', difficulty || 'Medium', timeToImplement || '', description, ideaData || null, req.user.id, new Date().toISOString());

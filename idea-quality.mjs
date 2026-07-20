@@ -98,6 +98,63 @@ export function dedupeIdeas(ideas, { threshold = 0.6 } = {}) {
 }
 
 /**
+ * Similarity matches of one subject against a corpus of docs
+ * [{ id, title, description }] — powers the submission duplicate check.
+ * Returns [{ id, title, similarity }] best-first above the threshold.
+ */
+export function similarityMatches(subject, docs, { threshold = 0.5, max = 5 } = {}) {
+  const sv = tfVector(`${subject?.title || ''} ${subject?.description || ''}`);
+  if (!sv.size) return [];
+  const out = [];
+  for (const d of Array.isArray(docs) ? docs : []) {
+    const s = cosine(sv, tfVector(`${d.title || ''} ${d.description || ''}`));
+    if (s >= threshold) out.push({ id: d.id, title: d.title, similarity: Number(s.toFixed(3)) });
+  }
+  return out.sort((a, b) => b.similarity - a.similarity).slice(0, max);
+}
+
+/**
+ * Deterministic theme clustering over a corpus [{ id, title, description }]:
+ * pairwise TF-cosine above `threshold` → connected components (union-find).
+ * Cluster labels are the components' most frequent distinctive tokens.
+ * O(n²) pairwise — fine at marketplace scale (~1.6k docs) behind a
+ * count-keyed cache; not for unbounded corpora.
+ */
+export function clusterIdeas(docs, { threshold = 0.45, minSize = 3, maxClusters = 40 } = {}) {
+  const arr = Array.isArray(docs) ? docs : [];
+  const vecs = arr.map(d => tfVector(`${d.title || ''} ${d.description || ''}`));
+  const parent = arr.map((_, i) => i);
+  const find = (x) => { while (parent[x] !== x) { parent[x] = parent[parent[x]]; x = parent[x]; } return x; };
+  const union = (a, b) => { const ra = find(a), rb = find(b); if (ra !== rb) parent[rb] = ra; };
+  for (let i = 0; i < arr.length; i++) {
+    for (let j = i + 1; j < arr.length; j++) {
+      if (cosine(vecs[i], vecs[j]) >= threshold) union(i, j);
+    }
+  }
+  const groups = new Map();
+  for (let i = 0; i < arr.length; i++) {
+    const root = find(i);
+    if (!groups.has(root)) groups.set(root, []);
+    groups.get(root).push(i);
+  }
+  // Corpus-level document frequency, to keep ubiquitous tokens out of labels.
+  const df = new Map();
+  for (const v of vecs) for (const t of v.keys()) df.set(t, (df.get(t) || 0) + 1);
+  const clusters = [];
+  for (const members of groups.values()) {
+    if (members.length < minSize) continue;
+    const tf = new Map();
+    for (const m of members) for (const [t, f] of vecs[m]) tf.set(t, (tf.get(t) || 0) + f);
+    const label = [...tf.entries()]
+      .map(([t, f]) => [t, f * Math.log(arr.length / (1 + (df.get(t) || 0)))])
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 3).map(([t]) => t).join(' · ');
+    clusters.push({ label, count: members.length, ideaIds: members.map(m => arr[m].id) });
+  }
+  return clusters.sort((a, b) => b.count - a.count).slice(0, maxClusters);
+}
+
+/**
  * Midpoint of an annual-value string ("£350K–£650K at 80,000 units/yr" → 500000).
  * Mirrors the client-side parser so server rank and UI sort agree.
  */

@@ -128,6 +128,10 @@ export default function MarketplacePage() {
   const [submitMsg, setSubmitMsg] = useState('');
   const [pipelineIdea, setPipelineIdea] = useState<MarketplaceIdea | null>(null);
   const [expandedIdeaId, setExpandedIdeaId] = useState<string | null>(null);
+  const [dupWarning, setDupWarning] = useState<{ id: string; title: string; similarity: number }[] | null>(null);
+  const [showThemes, setShowThemes] = useState(false);
+  const [themes, setThemes] = useState<{ id: string; label: string; count: number; totalSaving: number; ideaIds: string[] }[] | null>(null);
+  const [themeFilter, setThemeFilter] = useState<Set<string> | null>(null);
   const [showCoverage, setShowCoverage] = useState(false);
   const [coverage, setCoverage] = useState<{ commodities: string[]; levers: string[]; total: number; grid: { commodity: string; lever: string; count: number; verified: number; bestTitle: string | null }[] } | null>(null);
   const [insights, setInsights] = useState<{
@@ -243,7 +247,8 @@ export default function MarketplacePage() {
       filterPowertrain === 'All' || !!cls?.powertrains.includes(filterPowertrain);
     const matchVoltage =
       filterVoltage === 'All' || !!cls?.voltages.includes(filterVoltage);
-    return matchQ && matchCommodity && matchSys && matchDiff && matchLevel && matchPowertrain && matchVoltage;
+    const matchTheme = !themeFilter || themeFilter.has(idea.id);
+    return matchQ && matchCommodity && matchSys && matchDiff && matchLevel && matchPowertrain && matchVoltage && matchTheme;
   });
 
   const sorted = sortBy === 'featured' ? filtered : [...filtered].sort((a, b) => {
@@ -275,7 +280,7 @@ export default function MarketplacePage() {
     setFilterVoltage('All');
   }
 
-  async function handleSubmit() {
+  async function handleSubmit(confirmDuplicate = false) {
     if (!submitForm.title || !submitForm.description) return;
     setSubmitting(true);
     setSubmitMsg('');
@@ -287,9 +292,17 @@ export default function MarketplacePage() {
       const r = await fetch('/api/marketplace', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify(submitForm),
+        body: JSON.stringify({ ...submitForm, ...(confirmDuplicate ? { confirmDuplicate: true } : {}) }),
       });
       const d = await r.json();
+      // Duplicate warning: server found near-restatements of approved ideas —
+      // show them and require an explicit "submit anyway".
+      if (d.ok === false && Array.isArray(d.duplicateWarning)) {
+        setDupWarning(d.duplicateWarning);
+        setSubmitMsg('');
+        return;
+      }
+      setDupWarning(null);
       setSubmitMsg(d.message || 'Submitted!');
       setSubmitForm({
         title: '', system: '', costSavingType: '', annualSaving: '',
@@ -386,22 +399,60 @@ export default function MarketplacePage() {
           ))}
         </div>
 
-        {/* ── Coverage heatmap (quality-diversity archive) ── */}
+        {/* ── Coverage heatmap + theme clusters ── */}
         <div className="mb-6">
-          <button
-            onClick={() => {
-              const next = !showCoverage;
-              setShowCoverage(next);
-              if (next && !coverage) {
-                const token = (() => { try { return JSON.parse(localStorage.getItem('brainspark_auth') || '{}').token; } catch { return null; } })();
-                fetch('/api/idea-archive', { headers: token ? { Authorization: `Bearer ${token}` } : {} })
-                  .then(r => r.ok ? r.json() : null).then(d => { if (d) setCoverage(d); }).catch(() => {});
-              }
-            }}
-            className="text-xs text-slate-400 hover:text-white border border-white/10 hover:border-white/25 px-3 py-1.5 rounded-lg transition-colors"
-          >
-            {showCoverage ? 'Hide' : 'Show'} coverage map — where the corpus is thin
-          </button>
+          <div className="flex flex-wrap gap-2">
+            <button
+              onClick={() => {
+                const next = !showCoverage;
+                setShowCoverage(next);
+                if (next && !coverage) {
+                  const token = (() => { try { return JSON.parse(localStorage.getItem('brainspark_auth') || '{}').token; } catch { return null; } })();
+                  fetch('/api/idea-archive', { headers: token ? { Authorization: `Bearer ${token}` } : {} })
+                    .then(r => r.ok ? r.json() : null).then(d => { if (d) setCoverage(d); }).catch(() => {});
+                }
+              }}
+              className="text-xs text-slate-400 hover:text-white border border-white/10 hover:border-white/25 px-3 py-1.5 rounded-lg transition-colors"
+            >
+              {showCoverage ? 'Hide' : 'Show'} coverage map — where the corpus is thin
+            </button>
+            <button
+              onClick={() => {
+                const next = !showThemes;
+                setShowThemes(next);
+                if (!next) setThemeFilter(null);
+                if (next && !themes) {
+                  const token = (() => { try { return JSON.parse(localStorage.getItem('brainspark_auth') || '{}').token; } catch { return null; } })();
+                  fetch('/api/marketplace/clusters', { headers: token ? { Authorization: `Bearer ${token}` } : {} })
+                    .then(r => r.ok ? r.json() : null).then(d => { if (d?.clusters) setThemes(d.clusters); }).catch(() => {});
+                }
+              }}
+              className="text-xs text-slate-400 hover:text-white border border-white/10 hover:border-white/25 px-3 py-1.5 rounded-lg transition-colors"
+            >
+              {showThemes ? 'Hide' : 'Show'} themes — recurring idea clusters
+            </button>
+            {themeFilter && (
+              <button onClick={() => setThemeFilter(null)} className="text-xs text-gold-400 hover:text-gold-300 px-2 py-1.5 transition-colors">
+                ✕ Clear theme filter
+              </button>
+            )}
+          </div>
+          {showThemes && themes && (
+            <div className="mt-3 flex flex-wrap gap-1.5">
+              {themes.slice(0, 24).map(t => {
+                const active = themeFilter && t.ideaIds.every(id => themeFilter.has(id)) && themeFilter.size === t.ideaIds.length;
+                return (
+                  <button key={t.id}
+                    onClick={() => setThemeFilter(active ? null : new Set(t.ideaIds))}
+                    title={t.totalSaving > 0 ? `~£${(t.totalSaving / 1e6).toFixed(1)}M combined annual saving` : undefined}
+                    className={`px-2.5 py-1 rounded-full text-xs border transition-colors ${active ? 'bg-gold-500/20 border-gold-500/40 text-gold-300' : 'bg-white/5 border-white/10 text-slate-400 hover:border-white/25 hover:text-white'}`}
+                  >
+                    {t.label} <span className="text-slate-600">({t.count})</span>
+                  </button>
+                );
+              })}
+            </div>
+          )}
           {showCoverage && coverage && (
             <div className="mt-3 p-4 rounded-2xl bg-navy-900 border border-white/10 overflow-x-auto">
               <p className="text-slate-500 text-xs mb-3">Ideas per commodity × mechanism class ({coverage.total.toLocaleString()} total). Empty and thin cells are exactly where the AI is told to target new ideas.</p>
@@ -592,16 +643,46 @@ export default function MarketplacePage() {
                 {submitMsg}
               </p>
             )}
+            {dupWarning && (
+              <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/25">
+                <p className="text-amber-400 text-sm font-semibold mb-2">Very similar approved ideas already exist:</p>
+                <ul className="space-y-1 mb-3">
+                  {dupWarning.map(d => (
+                    <li key={d.id} className="text-slate-300 text-xs flex items-center justify-between gap-3">
+                      <button
+                        onClick={() => { setShowSubmit(false); setDupWarning(null); setSearchQ(d.title.slice(0, 60)); }}
+                        className="text-left hover:text-gold-300 underline decoration-dotted transition-colors flex-1 truncate"
+                        title="View this idea in the marketplace"
+                      >
+                        {d.title}
+                      </button>
+                      <span className="text-amber-400/70 font-mono flex-shrink-0">{Math.round(d.similarity * 100)}% similar</span>
+                    </li>
+                  ))}
+                </ul>
+                <p className="text-slate-400 text-xs">Review them first — if yours is genuinely different or goes deeper, submit anyway.</p>
+              </div>
+            )}
             <div className="flex gap-3">
+              {dupWarning ? (
+                <button
+                  onClick={() => handleSubmit(true)}
+                  disabled={submitting}
+                  className="flex-1 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 disabled:opacity-50 text-navy-950 font-semibold text-sm transition-all"
+                >
+                  {submitting ? 'Submitting…' : 'Submit anyway — mine is different'}
+                </button>
+              ) : (
+                <button
+                  onClick={() => handleSubmit()}
+                  disabled={submitting || !submitForm.title || !submitForm.description}
+                  className="flex-1 py-2.5 rounded-xl bg-gold-500 hover:bg-gold-400 disabled:opacity-50 text-navy-950 font-semibold text-sm transition-all shadow-glow-gold"
+                >
+                  {submitting ? 'Submitting…' : 'Submit for Review'}
+                </button>
+              )}
               <button
-                onClick={handleSubmit}
-                disabled={submitting || !submitForm.title || !submitForm.description}
-                className="flex-1 py-2.5 rounded-xl bg-gold-500 hover:bg-gold-400 disabled:opacity-50 text-navy-950 font-semibold text-sm transition-all shadow-glow-gold"
-              >
-                {submitting ? 'Submitting…' : 'Submit for Review'}
-              </button>
-              <button
-                onClick={() => setShowSubmit(false)}
+                onClick={() => { setShowSubmit(false); setDupWarning(null); }}
                 className="px-4 py-2.5 rounded-xl border border-white/10 text-slate-400 text-sm hover:border-white/25 transition-colors"
               >
                 Cancel

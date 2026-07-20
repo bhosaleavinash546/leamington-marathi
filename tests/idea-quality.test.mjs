@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { ideaSimilarity, batchDiversity, dedupeIdeas, parseAnnualValueMid, rankIdeas } from '../idea-quality.mjs';
+import { ideaSimilarity, batchDiversity, dedupeIdeas, parseAnnualValueMid, rankIdeas, similarityMatches, clusterIdeas } from '../idea-quality.mjs';
 
 const mk = (title, desc, extra = {}) => ({ title, technicalDescription: desc, qualityScore: 80, costSavingPotential: {}, ...extra });
 
@@ -73,6 +73,39 @@ test('rankIdeas: engine-contradicted sinks, taste match boosts, basis is explain
   assert.match(ideas[1].rank.basis, /engine contradicted/);
   assert.match(ideas[2].rank.basis, /previously approved/);
   assert.match(ideas[3].rank.basis, /no annual value/);
+});
+
+test('similarityMatches: near-restatement flagged, distinct idea not, best-first and capped', () => {
+  const corpus = [
+    { id: 'a', title: 'Convert stamped steel bracket to aluminium HPDC', description: 'Replace the three-piece welded stamped steel bracket with a single aluminium high pressure die casting.' },
+    { id: 'b', title: 'Hairpin winding for stator', description: 'Rectangular copper bar conductors lift slot fill and cut copper mass.' },
+  ];
+  const dup = similarityMatches(
+    { title: 'Aluminium HPDC casting replaces stamped steel bracket', description: 'Convert the welded stamped steel bracket assembly into one aluminium high pressure die casting part.' },
+    corpus,
+  );
+  assert.equal(dup.length, 1);
+  assert.equal(dup[0].id, 'a');
+  assert.ok(dup[0].similarity >= 0.5);
+  const distinct = similarityMatches({ title: 'Delete the paint line via mould-in-colour PP', description: 'Mould-in-colour polypropylene deletes the primer and topcoat stations.' }, corpus);
+  assert.equal(distinct.length, 0);
+  assert.deepEqual(similarityMatches({ title: '', description: '' }, corpus), []);
+});
+
+test('clusterIdeas: similar ideas cluster with labels, minSize respected, deterministic', () => {
+  const docs = [
+    { id: '1', title: 'Hairpin winding stator copper', description: 'Rectangular copper bar conductors lift slot fill cutting copper mass in the stator winding.' },
+    { id: '2', title: 'Bar winding stator conversion', description: 'Rectangular copper bar conductors improve slot fill and reduce copper mass in the stator.' },
+    { id: '3', title: 'Flat wire stator winding', description: 'Rectangular copper conductors lift slot fill and cut stator copper mass significantly.' },
+    { id: '4', title: 'Composite tailgate SMC', description: 'Sheet moulding compound outer panel with glass mat inner replaces the steel tailgate assembly.' },
+    { id: '5', title: 'Mould-in-colour bumper', description: 'Mould-in-colour polypropylene fascia deletes the paint shop pass entirely for lower trims.' },
+  ];
+  const clusters = clusterIdeas(docs, { threshold: 0.4, minSize: 3 });
+  assert.equal(clusters.length, 1, 'only the 3 stator ideas form a big-enough cluster');
+  assert.deepEqual([...clusters[0].ideaIds].sort(), ['1', '2', '3']);
+  assert.ok(/stator|copper|winding/.test(clusters[0].label), `label "${clusters[0].label}" names the theme`);
+  assert.deepEqual(clusterIdeas(docs, { threshold: 0.4, minSize: 3 }), clusters, 'deterministic');
+  assert.equal(clusterIdeas(docs, { threshold: 0.4, minSize: 4 }).length, 0, 'minSize respected');
 });
 
 test('kb-pack.json: generated pack is present, complete, and shaped for the prompt', () => {
