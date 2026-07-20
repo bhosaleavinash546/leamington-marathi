@@ -4,16 +4,16 @@ import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import {
   METHODS, methodIds, getMethod, SCAMPER, EFFECTS, TRENDS, CIRCULARITY,
-  dfaScore, valueIndex, targetGap, morphology, functionCostMatrix, specRelaxationDeltas,
+  dfaScore, valueIndex, targetGap, morphology, functionCostMatrix, specRelaxationDeltas, teardownDelta,
 } from '../innovation.mjs';
 
 describe('innovation catalogue', () => {
-  it('has all 10 methods across the 3 tiers with required metadata', () => {
-    assert.equal(METHODS.length, 10);
+  it('has all 11 methods across the 3 tiers with required metadata', () => {
+    assert.equal(METHODS.length, 11);
     for (const m of METHODS) {
       assert.ok(m.id && m.name && m.blurb && [1, 2, 3].includes(m.tier), `bad method ${m.id}`);
     }
-    assert.deepEqual([...new Set(methodIds())].length, 10);   // unique ids
+    assert.deepEqual([...new Set(methodIds())].length, 11);   // unique ids
     assert.ok(getMethod('dfa'));
     assert.equal(getMethod('nope'), null);
   });
@@ -189,5 +189,47 @@ describe('specRelaxationDeltas (Spec & Tolerance Challenge)', () => {
   it('rejects unknown material/process and bad weight', () => {
     assert.throws(() => specRelaxationDeltas({ ...BASE, material: 'unobtainium-x99-zzz' }));
     assert.throws(() => specRelaxationDeltas({ ...BASE, weightKg: 0 }), /weightKg/);
+  });
+});
+
+describe('teardownDelta', () => {
+  const SUBJECT = [
+    { name: 'mass kg', value: '4.2' },
+    { name: 'part count', value: 7 },
+    { name: 'fastener count', value: '12' },
+    { name: 'material', value: 'stamped steel' },
+    { name: 'coating', value: 'e-coat' },
+  ];
+  const BENCH = [
+    { name: 'Mass kg', value: '2.9' },          // case-insensitive matching
+    { name: 'part count', value: 3 },
+    { name: 'fastener count', value: '11' },     // within 10% — not significant
+    { name: 'material', value: 'Al HPDC' },
+    { name: 'cycle time s', value: '45' },       // benchmark-only
+  ];
+
+  it('computes numeric deltas with significance at >10% adverse gap', () => {
+    const r = teardownDelta(SUBJECT, BENCH);
+    const mass = r.rows.find(x => x.attribute === 'mass kg');
+    assert.equal(mass.delta, 1.3);
+    assert.ok(mass.significant, 'mass +45% is significant');
+    assert.equal(mass.direction, 'subject-higher');
+    const fasteners = r.rows.find(x => x.attribute === 'fastener count');
+    assert.ok(!fasteners.significant, '+9% is under the 10% significance bar');
+  });
+
+  it('flags categorical mismatches and one-sided attributes', () => {
+    const r = teardownDelta(SUBJECT, BENCH);
+    const mat = r.rows.find(x => x.attribute === 'material');
+    assert.equal(mat.kind, 'categorical');
+    assert.ok(mat.significant, 'material differs');
+    assert.equal(r.rows.find(x => x.attribute === 'coating').kind, 'subject-only');
+    assert.equal(r.rows.find(x => x.attribute === 'cycle time s').kind, 'benchmark-only');
+    assert.equal(r.significantCount, r.rows.filter(x => x.significant).length);
+  });
+
+  it('rejects empty sides', () => {
+    assert.throws(() => teardownDelta([], BENCH));
+    assert.throws(() => teardownDelta(SUBJECT, []));
   });
 });

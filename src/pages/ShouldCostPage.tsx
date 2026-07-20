@@ -39,6 +39,17 @@ interface ShouldCostResult {
   } | null;
 }
 
+interface GapIdea {
+  bucket: string; bucketLabel: string; title: string; technicalDescription: string;
+  costAngle: string; kind: string; riskNotes?: string;
+  engineCheck?: { direction: 'confirmed' | 'contradicted'; savingPct: number; referenceCase: string; basis: string } | null;
+}
+interface GapIdeasResult {
+  gap: { gap: number; gapPct: number; achievable: boolean };
+  buckets: { name: string; target: number }[];
+  ideas: GapIdea[];
+  note?: string;
+}
 interface CostDownAlt {
   material: string; process: string; region: string;
   total: number; saving: number; savingPct: number;
@@ -85,6 +96,9 @@ export default function ShouldCostPage() {
   const [costDown, setCostDown] = useState<CostDownResult | null>(null);
   const [cdLoading, setCdLoading] = useState(false);
   const [cdError, setCdError] = useState('');
+  const [gapIdeas, setGapIdeas] = useState<GapIdeasResult | null>(null);
+  const [gapLoading, setGapLoading] = useState(false);
+  const [gapError, setGapError] = useState('');
   // Process-chain routing: optional downstream operations after the primary op.
   const [secondaryOps, setSecondaryOps] = useState<string[]>([]);
   const [toleranceClass, setToleranceClass] = useState('standard');
@@ -199,6 +213,31 @@ export default function ShouldCostPage() {
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Export failed');
     } finally { setExporting(false); }
+  }
+
+  // Gap-closure ideation: the quote-vs-should-cost gap is deterministically
+  // allocated across the breakdown buckets; the AI proposes how to close each.
+  async function generateGapIdeas() {
+    if (!token || !result || !quotedCost) return;
+    const apiKey = localStorage.getItem('brainspark_api_key') || undefined;
+    if (!apiKey) { setGapError('Add your Anthropic API key in settings to generate gap-closure ideas (the gap math stays deterministic).'); return; }
+    setGapLoading(true); setGapError(''); setGapIdeas(null);
+    try {
+      const r = await fetch('/api/should-cost/delta-ideas', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({
+          partName, material, process, weightKg: Number(weightKg), annualVolume: Number(annualVolume),
+          region, currency, quotedCost: Number(quotedCost), shouldCost: result.totalValue,
+          breakdown: result.breakdown, apiKey,
+        }),
+      });
+      const d = await r.json().catch(() => ({}));
+      if (!r.ok) throw new Error(d.error || 'Gap ideation failed');
+      setGapIdeas(d);
+    } catch (e) {
+      setGapError(e instanceof Error ? e.message : 'Gap ideation failed');
+    } finally { setGapLoading(false); }
   }
 
   // Agentic cost-down: the engine verifies every alternative the AI proposes.
@@ -445,7 +484,56 @@ export default function ShouldCostPage() {
 
                 {result.gapVsQuote && (
                   <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
-                    <div className="text-emerald-400 text-sm font-semibold">Gap vs Supplier Quote: {result.gapVsQuote}</div>
+                    <div className="flex items-center justify-between gap-3 flex-wrap">
+                      <div className="text-emerald-400 text-sm font-semibold">Gap vs Supplier Quote: {result.gapVsQuote}</div>
+                      <button onClick={generateGapIdeas} disabled={gapLoading}
+                        className="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white text-xs font-semibold transition-all">
+                        {gapLoading ? 'Allocating gap & generating…' : 'Generate gap-closure ideas'}
+                      </button>
+                    </div>
+                    {gapError && <p className="text-red-400 text-xs mt-2">{gapError}</p>}
+                  </div>
+                )}
+
+                {gapIdeas && (
+                  <div className="space-y-3">
+                    {gapIdeas.gap.achievable ? (
+                      <p className="text-slate-400 text-sm">{gapIdeas.note}</p>
+                    ) : (
+                      <>
+                        <div className="text-slate-400 text-xs font-semibold uppercase tracking-wider">
+                          Gap-closure plan — {result.symbol || '£'}{gapIdeas.gap.gap.toFixed(2)} to close ({gapIdeas.gap.gapPct}% of quote)
+                        </div>
+                        <div className="flex flex-wrap gap-1.5">
+                          {gapIdeas.buckets.filter(b => b.target >= 0.05).map(b => (
+                            <span key={b.name} className="px-2 py-0.5 rounded-md bg-white/5 border border-white/10 text-slate-300 text-[11px]">
+                              {b.name}: {result.symbol || '£'}{b.target.toFixed(2)}
+                            </span>
+                          ))}
+                        </div>
+                        {gapIdeas.ideas.map((idea, i) => (
+                          <div key={i} className="p-4 rounded-xl bg-navy-800/60 border border-white/10">
+                            <div className="flex items-start justify-between gap-3 mb-1.5 flex-wrap">
+                              <div className="flex items-center gap-2">
+                                <span className="px-2 py-0.5 rounded-md bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[11px] font-semibold">{idea.bucketLabel}</span>
+                                <span className="px-2 py-0.5 rounded-md bg-white/5 border border-white/10 text-slate-400 text-[11px] capitalize">{idea.kind}</span>
+                              </div>
+                              {idea.engineCheck && (
+                                <span title={`${idea.engineCheck.referenceCase} — ${idea.engineCheck.basis}`}
+                                  className={`text-[11px] font-medium ${idea.engineCheck.direction === 'confirmed' ? 'text-emerald-400' : 'text-amber-400'}`}>
+                                  Engine {idea.engineCheck.direction} ({idea.engineCheck.savingPct > 0 ? '−' : '+'}{Math.abs(idea.engineCheck.savingPct)}%)
+                                </span>
+                              )}
+                            </div>
+                            <h4 className="text-white text-sm font-semibold mb-1">{idea.title}</h4>
+                            <p className="text-slate-400 text-xs leading-relaxed mb-1.5">{idea.technicalDescription}</p>
+                            <p className="text-teal-300 text-xs">{idea.costAngle}</p>
+                            {idea.riskNotes && <p className="text-amber-300/80 text-xs mt-1">Risk: {idea.riskNotes}</p>}
+                          </div>
+                        ))}
+                        <p className="text-slate-600 text-[11px]">{gapIdeas.note}</p>
+                      </>
+                    )}
                   </div>
                 )}
 

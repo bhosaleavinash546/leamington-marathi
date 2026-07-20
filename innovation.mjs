@@ -25,6 +25,7 @@ export const METHODS = [
   { id: 'value-engineering', name: 'Value Engineering', tier: 1, mode: 'functional', blurb: 'Find functions where you pay a lot for little value, then attack them.', input: 'part' },
   { id: 'fast', name: 'FAST Function-Cost Matrix', tier: 1, mode: 'functional', blurb: 'Cross-map every component\'s cost onto the functions it serves; attack poor-value functions.', input: 'part' },
   { id: 'spec-challenge', name: 'Spec & Tolerance Challenge', tier: 1, mode: 'target', blurb: 'Challenge tolerances, grades, finishes and test levels — CTQ characteristics stay locked.', input: 'part' },
+  { id: 'teardown-delta', name: 'Teardown Delta', tier: 1, mode: 'benchmark', blurb: 'Compare your part attribute-by-attribute against a benchmark; every gap becomes an idea target.', input: 'part' },
   { id: 'dfa', name: 'DFA / Part Consolidation', tier: 1, mode: 'structural', blurb: 'Find deletable parts — theoretical minimum count via the 3 DFA questions.', input: 'parts' },
   { id: 'design-to-cost', name: 'Design-to-Cost', tier: 1, mode: 'target', blurb: 'Work backwards from a price target; close the cost gap bucket by bucket.', input: 'target' },
   { id: 'scamper', name: 'SCAMPER', tier: 2, mode: 'checklist', blurb: 'Fast 7-verb creativity checklist — broad first pass.', input: 'part' },
@@ -251,6 +252,51 @@ export function specRelaxationDeltas(input, library = null) {
     current: { toleranceClass: tol, surfaceFinish: fin, criticalCharacteristics: cc },
     steps,
   };
+}
+
+/** Teardown delta — the A2Mac1 pattern at manual-entry scale. Two normalized
+ *  attribute sets (subject vs benchmark) → deterministic delta list. Numeric
+ *  attributes get delta/deltaPct and a significance flag (≥10% adverse gap);
+ *  categorical attributes flag any mismatch. The LLM's later job is explaining
+ *  HOW the benchmark achieves each significant delta — never inventing gaps. */
+export function teardownDelta(subject, benchmark) {
+  const rows = [];
+  const norm = (side) => {
+    const out = new Map();
+    for (const a of Array.isArray(side) ? side : []) {
+      const name = String(a?.name || '').trim().slice(0, 80);
+      if (!name) continue;
+      out.set(name.toLowerCase(), { name, value: a?.value });
+    }
+    return out;
+  };
+  const subj = norm(subject);
+  const bench = norm(benchmark);
+  if (subj.size === 0 || bench.size === 0) throw new Error('subject and benchmark each need at least one attribute');
+  for (const [key, s] of subj) {
+    const b = bench.get(key);
+    if (!b) { rows.push({ attribute: s.name, subject: s.value, benchmark: null, kind: 'subject-only', significant: false }); continue; }
+    const sn = Number(s.value), bn = Number(b.value);
+    if (Number.isFinite(sn) && Number.isFinite(bn) && String(s.value).trim() !== '' && String(b.value).trim() !== '') {
+      const delta = round(sn - bn, 3);
+      const deltaPct = bn !== 0 ? round((delta / Math.abs(bn)) * 100, 1) : null;
+      rows.push({
+        attribute: s.name, subject: sn, benchmark: bn, delta, deltaPct, kind: 'numeric',
+        // Adverse = subject carries MORE than the benchmark (mass, parts,
+        // fasteners, cost — for these attributes more is worse).
+        direction: delta > 0 ? 'subject-higher' : delta < 0 ? 'subject-lower' : 'equal',
+        significant: deltaPct != null && deltaPct > 10,
+      });
+    } else {
+      const differs = String(s.value ?? '').trim().toLowerCase() !== String(b.value ?? '').trim().toLowerCase();
+      rows.push({ attribute: s.name, subject: s.value, benchmark: b.value, kind: 'categorical', direction: differs ? 'differs' : 'equal', significant: differs });
+    }
+  }
+  for (const [key, b] of bench) {
+    if (!subj.has(key)) rows.push({ attribute: b.name, subject: null, benchmark: b.value, kind: 'benchmark-only', significant: false });
+  }
+  const significantDeltas = rows.filter(r => r.significant);
+  return { rows, significantDeltas, significantCount: significantDeltas.length };
 }
 
 /** Morphological (Zwicky): combination space of sub-functions × options, plus a

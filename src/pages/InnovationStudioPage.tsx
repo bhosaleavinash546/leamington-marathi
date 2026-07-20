@@ -21,6 +21,7 @@ const METHODS: Method[] = [
   { id: 'value-engineering', name: 'Value Engineering', tier: 1, blurb: 'Find functions where you pay a lot for little value.', input: 'part' },
   { id: 'fast', name: 'FAST Function-Cost Matrix', tier: 1, blurb: 'Map component cost onto functions; attack poor-value ones.', input: 'part' },
   { id: 'spec-challenge', name: 'Spec & Tolerance Challenge', tier: 1, blurb: 'Challenge tolerances, grades and tests — CTQs stay locked.', input: 'part' },
+  { id: 'teardown-delta', name: 'Teardown Delta', tier: 1, blurb: 'Attribute-by-attribute vs a benchmark; every gap becomes a target.', input: 'part' },
   { id: 'dfa', name: 'DFA / Part Consolidation', tier: 1, blurb: 'Find deletable parts — theoretical minimum count.', input: 'parts' },
   { id: 'design-to-cost', name: 'Design-to-Cost', tier: 1, blurb: 'Work back from a price target; close the cost gap.', input: 'target' },
   { id: 'scamper', name: 'SCAMPER', tier: 2, blurb: 'Fast 7-verb creativity checklist — broad first pass.', input: 'part' },
@@ -47,6 +48,10 @@ export default function InnovationStudioPage() {
   const [scTol, setScTol] = useState('standard');
   const [scFin, setScFin] = useState('standard');
   const [scCc, setScCc] = useState('');
+  // teardown-delta: subject/benchmark attribute lines or pasted notes
+  const [tdSubject, setTdSubject] = useState('');
+  const [tdBenchmark, setTdBenchmark] = useState('');
+  const [tdNotes, setTdNotes] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [result, setResult] = useState<Result | null>(null);
@@ -100,6 +105,17 @@ export default function InnovationStudioPage() {
             criticalCharacteristics: Number(scCc) || 0,
           };
         }
+      }
+      if (methodId === 'teardown-delta') {
+        // "attribute | value" lines per side; pasted notes go to AI extraction
+        const parseAttrs = (text: string) => text.split('\n').map(l => l.trim()).filter(Boolean).map(line => {
+          const [name, ...rest] = line.split('|').map(s => s.trim());
+          return { name, value: rest.join(' | ') };
+        }).filter(a => a.name && a.value);
+        const subj = parseAttrs(tdSubject);
+        const bench = parseAttrs(tdBenchmark);
+        if (subj.length && bench.length) { body.subject = subj; body.benchmark = bench; }
+        else if (tdNotes.trim()) body.notes = tdNotes.trim();
       }
       const r = await fetch('/api/innovate/resolve', {
         method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
@@ -196,6 +212,31 @@ export default function InnovationStudioPage() {
                       <input value={scCc} onChange={e => setScCc(e.target.value)} type="number" placeholder="# CCs"
                         className="bg-navy-800 border border-white/15 rounded-lg px-3 py-2 text-white text-xs placeholder-slate-600 focus:outline-none focus:border-gold-500/40" />
                     </div>
+                  </div>
+                </div>
+              )}
+
+              {methodId === 'teardown-delta' && (
+                <div className="mt-3 space-y-3">
+                  <div className="grid sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-xs text-slate-400 mb-1">Your part — attributes ("name | value", one per line)</label>
+                      <textarea value={tdSubject} onChange={e => setTdSubject(e.target.value)} rows={4}
+                        placeholder={'mass kg | 4.2\npart count | 7\nfastener count | 12\nmaterial | stamped steel'}
+                        className="w-full bg-navy-800 border border-white/15 rounded-lg px-3 py-2 text-white text-xs placeholder-slate-600 focus:outline-none focus:border-gold-500/40 resize-none font-mono" />
+                    </div>
+                    <div>
+                      <label className="block text-xs text-slate-400 mb-1">Benchmark part — attributes ("name | value")</label>
+                      <textarea value={tdBenchmark} onChange={e => setTdBenchmark(e.target.value)} rows={4}
+                        placeholder={'mass kg | 2.9\npart count | 3\nfastener count | 4\nmaterial | Al HPDC'}
+                        className="w-full bg-navy-800 border border-white/15 rounded-lg px-3 py-2 text-white text-xs placeholder-slate-600 focus:outline-none focus:border-gold-500/40 resize-none font-mono" />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-xs text-slate-400 mb-1">…or paste raw teardown notes (AI extracts the attribute table verbatim — used only when the tables above are empty)</label>
+                    <textarea value={tdNotes} onChange={e => setTdNotes(e.target.value)} rows={3}
+                      placeholder="e.g. Our bracket: 4.2 kg, 7 stampings, 12 M6 bolts. Benchmark (competitor X): single 2.9 kg aluminium HPDC, 4 bolts…"
+                      className="w-full bg-navy-800 border border-white/15 rounded-lg px-3 py-2 text-white text-xs placeholder-slate-600 focus:outline-none focus:border-gold-500/40 resize-none" />
                   </div>
                 </div>
               )}
@@ -351,6 +392,29 @@ function AnalysisPanel({ methodId, analysis }: { methodId: string; analysis: unk
             </div>
           </>
         )}
+      </div>
+    );
+  }
+  if (methodId === 'teardown-delta' && Array.isArray(a.rows)) {
+    const rows = a.rows as { attribute: string; subject: unknown; benchmark: unknown; kind: string; deltaPct?: number | null; direction?: string; significant: boolean }[];
+    return (
+      <div className="bg-navy-900 border border-white/10 rounded-2xl p-5">
+        <p className="text-slate-500 text-xs uppercase tracking-wider mb-3">Teardown delta ({String(a.significantCount)} significant gap{a.significantCount === 1 ? '' : 's'})</p>
+        <div className="space-y-1.5">
+          {rows.map((r, i) => (
+            <div key={i} className="flex items-center justify-between text-xs gap-3">
+              <span className="text-slate-300 flex-1 truncate">{r.attribute}</span>
+              <span className="text-slate-500 font-mono">{String(r.subject ?? '—')} vs {String(r.benchmark ?? '—')}</span>
+              {r.kind === 'numeric' && r.deltaPct != null && (
+                <span className={`font-mono font-semibold ${r.significant ? 'text-red-400' : 'text-slate-500'}`}>{r.deltaPct > 0 ? '+' : ''}{r.deltaPct}%</span>
+              )}
+              {r.kind === 'categorical' && (
+                <span className={`font-medium ${r.significant ? 'text-amber-400' : 'text-slate-600'}`}>{r.significant ? 'differs' : 'same'}</span>
+              )}
+              {(r.kind === 'subject-only' || r.kind === 'benchmark-only') && <span className="text-slate-600">{r.kind}</span>}
+            </div>
+          ))}
+        </div>
       </div>
     );
   }
