@@ -34,7 +34,7 @@ def _extract_feature_table(wrapped, extents):
     from OCP.BRepAdaptor import BRepAdaptor_Surface
     from OCP.GeomAbs import GeomAbs_SurfaceType
 
-    instances = {}
+    feats = {}   # physical-feature ident -> summed arc span + attributes
     exp = TopExp_Explorer(wrapped, TopAbs_FACE)
     while exp.More():
         face = TopoDS.Face_s(exp.Current())
@@ -48,6 +48,7 @@ def _extract_feature_table(wrapped, extents):
             depth = abs(ad.LastVParameter() - ad.FirstVParameter())
             if depth <= 0.01 or not math.isfinite(depth):
                 continue
+            arc = abs(ad.LastUParameter() - ad.FirstUParameter())   # radians
             ax = cyl.Axis()
             d = ax.Direction()
             p = ax.Location()
@@ -60,19 +61,33 @@ def _extract_feature_table(wrapped, extents):
             ident = (round(p.X(), 2), round(p.Y(), 2), round(p.Z(), 2),
                      round(d.X(), 3), round(d.Y(), 3), round(d.Z(), 3),
                      round(r, 3), round(depth, 1), hole)
-            key = ('hole' if hole else 'boss', round(r * 2, 2), round(depth, 1), bool(through))
-            instances.setdefault(key, set()).add(ident)
+            f = feats.get(ident)
+            if f is not None:
+                f["arc"] += arc          # halves of a boolean-split bore re-join here
+            else:
+                feats[ident] = {"kind": 'hole' if hole else 'boss', "dia": round(r * 2, 2),
+                                "depth": round(depth, 1), "through": bool(through), "arc": arc}
         except Exception:
             continue
 
+    instances = {}
+    for f in feats.values():
+        # Partial concave/convex arcs — pocket corner radii (~90°), slot ends
+        # (~180°), edge fillets — are NOT drillable bores or turned shafts.
+        # Require a near-full cylinder (≥ ~300° summed) to count as a feature.
+        if f["arc"] < 5.2:
+            continue
+        key = (f["kind"], f["dia"], f["depth"], f["through"])
+        instances[key] = instances.get(key, 0) + 1
+
     rows = []
-    for (kind, dia, depth, through), idents in instances.items():
+    for (kind, dia, depth, through), cnt in instances.items():
         rows.append({
             "kind": kind,
             "diaMm": dia,
             "depthMm": depth,
             "through": through if kind == "hole" else None,
-            "count": len(idents),
+            "count": cnt,
         })
     rows.sort(key=lambda r: (r["kind"], r["diaMm"], r["depthMm"]))
     return rows
@@ -145,10 +160,39 @@ def _extract_machining_features(wrapped, bbox):
                     depth = ext_max[axis] - pos
                 else:
                     depth = pos - ext_min[axis]
-                # A real pocket FLOOR is recessed only modestly along its normal;
-                # a face recessed by ≳half the part extent is almost always a
-                # side WALL misread as a floor — reject it.
-                is_pocket = (tol < depth < 0.5 * axis_ext[axis]) and area >= min_pocket_area
+                # Two discriminators replace the old blunt half-extent guard:
+                #  1. A floor bounded ONLY by circular edges is a shaft SHOULDER
+                #     (annular step face), not a milled pocket.
+                #  2. A wall misread as a floor is thin relative to its recess —
+                #     require the floor's smallest in-plane dimension >= depth.
+                all_circular = True
+                try:
+                    from OCP.TopAbs import TopAbs_EDGE
+                    from OCP.BRepAdaptor import BRepAdaptor_Curve
+                    from OCP.GeomAbs import GeomAbs_CurveType
+                    eexp = TopExp_Explorer(face, TopAbs_EDGE)
+                    while eexp.More():
+                        e = TopoDS.Edge_s(eexp.Current())
+                        eexp.Next()
+                        if BRepAdaptor_Curve(e).GetType() != GeomAbs_CurveType.GeomAbs_Circle:
+                            all_circular = False
+                            break
+                except Exception:
+                    all_circular = False
+                min_in_plane = 0.0
+                try:
+                    from OCP.Bnd import Bnd_Box
+                    from OCP.BRepBndLib import BRepBndLib
+                    fb = Bnd_Box()
+                    BRepBndLib.Add_s(face, fb)
+                    fx0, fy0, fz0, fx1, fy1, fz1 = fb.Get()
+                    dims = (fx1 - fx0, fy1 - fy0, fz1 - fz0)
+                    in_plane = [dims[i] for i in range(3) if i != axis]
+                    min_in_plane = min(in_plane) if in_plane else 0.0
+                except Exception:
+                    pass
+                is_pocket = (tol < depth <= 0.85 * axis_ext[axis]) and area >= min_pocket_area \
+                            and (not all_circular) and (min_in_plane >= depth)
             # facing candidate: any substantial planar face (datum/mating surface)
             faces_area[round(area, 0)] = faces_area.get(round(area, 0), 0) + 1
             if is_pocket:
@@ -794,11 +838,18 @@ def analyze(filepath: str) -> dict:
         face_counts, cyl_radii_all = _classify_faces(faces)
         edge_counts, circle_radii = _classify_edges(edges)
 
-        # ── Feature extraction (CORRECTED hole count) ─────────────────────────
-        hole_instances   = [r for r in cyl_radii_all if r < 30]   # total count
-        boss_instances   = [r for r in cyl_radii_all if r >= 30]  # total count
-        hole_radii_uniq  = sorted(set(round(r, 1) for r in hole_instances))
-        boss_radii_uniq  = sorted(set(round(r, 1) for r in boss_instances))
+        # ── Feature extraction — SINGLE SOURCE OF TRUTH: the B-rep feature table
+        # (concavity classifier + axis dedupe + partial-arc filter). The old
+        # radius<30mm heuristic counted shaft steps as "holes" and pocket-corner
+        # radii as bores — over-counting features and drilling time.
+        ft_rows = (_extract_feature_table(wrapped, (x_sz, y_sz, z_sz))
+                   + _extract_machining_features(wrapped, (xmin, ymin, zmin, xmax, ymax, zmax)))
+        table_holes  = [r for r in ft_rows if r.get("kind") == "hole"]
+        table_bosses = [r for r in ft_rows if r.get("kind") == "boss"]
+        n_holes  = sum(r["count"] for r in table_holes)
+        n_bosses = sum(r["count"] for r in table_bosses)
+        hole_radii_uniq  = sorted(set(round(r["diaMm"] / 2, 1) for r in table_holes))
+        boss_radii_uniq  = sorted(set(round(r["diaMm"] / 2, 1) for r in table_bosses))
         all_cyl_uniq     = sorted(set(round(r, 1) for r in cyl_radii_all))
         has_threads = (edge_counts.get("BSPLINE", 0) > 150 or "HELIX" in edge_counts)
 
@@ -825,7 +876,7 @@ def analyze(filepath: str) -> dict:
             planar_area = _compute_planar_face_area(faces)
             cnc_time = _estimate_cnc_cycle(
                 planar_area_mm2=planar_area,
-                cyl_face_count=len(cyl_radii_all),
+                cyl_face_count=n_holes,   # drill time per REAL bore, not per cylindrical face
                 setup_count=setup_info["estimatedSetupCount"] if setup_info else 3,
             )
         except Exception:
@@ -866,9 +917,9 @@ def analyze(filepath: str) -> dict:
             "features": {
                 "cylindricalFaceCount": len(cyl_radii_all),
                 "cylindricalFaceRadiiMm": all_cyl_uniq[:30],
-                "estimatedHoleCount":  len(hole_instances),   # FIXED: total, not unique
+                "estimatedHoleCount":  n_holes,               # from B-rep classifier, deduped
                 "holeRadiiMm":         hole_radii_uniq[:20],  # unique radii for display
-                "bossShaftCount":      len(boss_instances),
+                "bossShaftCount":      n_bosses,
                 "bossShaftRadiiMm":    boss_radii_uniq[:10],
                 "threadFeaturesDetected": has_threads,
                 "planarFaceCount":   face_counts.get("PLANE", 0),
@@ -879,10 +930,7 @@ def analyze(filepath: str) -> dict:
             },
             # Exact per-feature table: hole/boss × diameter × depth × through,
             # axis-deduped counts — feeds the operations mapping in the client.
-            "featureTable": (
-                _extract_feature_table(wrapped, (xmax - xmin, ymax - ymin, zmax - zmin))
-                + _extract_machining_features(wrapped, (xmin, ymin, zmin, xmax, ymax, zmax))
-            ),
+            "featureTable": ft_rows,
             # Sheet-metal forming features (bends) — for the SM Fab press-brake cost.
             "sheetMetal": _detect_bends(wrapped, wall_stats["minMm"] if wall_stats else None),
             # ── New precision analysis fields ─────────────────────────────
@@ -893,7 +941,7 @@ def analyze(filepath: str) -> dict:
             # ── Parametric cost models ──────────────────────────────────────
             "toolingCostEstimates": _estimate_tooling_costs(
                 faces_total=len(faces),
-                hole_count=len(hole_instances),
+                hole_count=n_holes,
                 undercut_count=(draft_info["undercutFaceCount"] if draft_info else 0),
                 free_form_count=(face_counts.get("BSPLINE", 0) + face_counts.get("BEZIER", 0)),
                 bbox={"xMm": x_sz, "yMm": y_sz, "zMm": z_sz},
@@ -906,7 +954,7 @@ def analyze(filepath: str) -> dict:
             ),
             "manufacturabilityScore": _compute_manufacturability_score(
                 face_counts=face_counts,
-                hole_count=len(hole_instances),
+                hole_count=n_holes,
                 undercut_count=(draft_info["undercutFaceCount"] if draft_info else 0),
                 wall_stats=wall_stats,
                 fill_ratio=fill_ratio,
@@ -919,7 +967,7 @@ def analyze(filepath: str) -> dict:
                     fill_ratio=fill_ratio,
                     free_form_pct=(face_counts.get("BSPLINE", 0) + face_counts.get("BEZIER", 0)) / max(1, len(faces)),
                     faces_total=len(faces),
-                    hole_count=len(hole_instances),
+                    hole_count=n_holes,
                 ),
                 "investWaxCostGBP":   _estimate_invest_consumables(sa_mm2 / 100)[0],
                 "investShellCostGBP": _estimate_invest_consumables(sa_mm2 / 100)[1],
