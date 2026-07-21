@@ -6575,3 +6575,64 @@ select:focus-visible, [tabindex]:focus-visible, .hs-mode:focus-visible {
   outline-offset: 2px;
   border-radius: var(--radius-sm);
 }
+
+/* ── P1 — MONEY-SCREEN HERO + CONFIDENCE BAND ──────────────────────────────
+   The headline should-cost, a visual P10–P90 uncertainty band, and
+   provenance/trust chips. Primary anchor of the results pane. */
+.cv-rhero {
+  position: relative;
+  margin: 0 0 18px;
+  padding: 20px 22px;
+  background: var(--surface-elevated, var(--surface));
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--band, var(--accent));
+  border-radius: var(--radius-card, 12px);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+.cv-rhero-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.cv-rhero-label {
+  font-size: 0.72rem; font-weight: 700; letter-spacing: 0.09em;
+  text-transform: uppercase; color: var(--text-muted);
+}
+.cv-rhero-part {
+  font-size: 0.82rem; font-weight: 600; color: var(--text-secondary);
+  max-width: 55%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.cv-rhero-figure { display: flex; align-items: baseline; gap: 12px; margin: 8px 0 18px; }
+.cv-rhero-total {
+  font-size: 2.6rem; font-weight: 800; line-height: 1;
+  letter-spacing: -0.02em; color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+}
+.cv-rhero-pm { font-size: 1.05rem; font-weight: 700; color: var(--band, var(--accent)); }
+.cv-rhero-band { margin: 0 1px; }
+.cv-rhero-track {
+  position: relative; height: 8px; border-radius: 6px;
+  background: linear-gradient(90deg, var(--success) 0%, var(--warning) 52%, var(--danger) 100%);
+  opacity: 0.9;
+}
+.cv-rhero-marker {
+  position: absolute; top: -4px; width: 3px; height: 16px; border-radius: 2px;
+  background: var(--text-primary); transform: translateX(-1.5px);
+  box-shadow: 0 0 0 3px var(--surface-elevated, var(--surface));
+}
+.cv-rhero-scale { display: flex; justify-content: space-between; margin-top: 9px; }
+.cv-rhero-tick { display: flex; flex-direction: column; gap: 1px; }
+.cv-rhero-tick--mid { align-items: center; }
+.cv-rhero-tick--hi { align-items: flex-end; }
+.cv-rhero-tick b { font-size: 0.9rem; font-weight: 700; color: var(--text-primary); font-variant-numeric: tabular-nums; }
+.cv-rhero-tick em { font-size: 0.63rem; font-style: normal; color: var(--text-muted); letter-spacing: 0.02em; }
+.cv-rhero-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+.cv-rchip {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 4px 11px; border-radius: 20px;
+  font-size: 0.72rem; font-weight: 600;
+  background: var(--surface); border: 1px solid var(--border); color: var(--text-secondary);
+}
+.cv-rchip--band { text-transform: capitalize; color: var(--text-primary); }
+.cv-rchip--band .cv-rdot { width: 8px; height: 8px; border-radius: 50%; background: var(--band, var(--accent)); }
+.cv-rchip--ok { color: var(--success); border-color: var(--success); }
+@media (max-width: 640px) {
+  .cv-rhero-total { font-size: 2.05rem; }
+  .cv-rhero-part { max-width: 100%; }
+}

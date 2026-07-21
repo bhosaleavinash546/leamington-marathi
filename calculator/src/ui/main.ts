@@ -13160,6 +13160,77 @@ function initConfidenceIndicators(): void {
 
 // ─── Render: Breakdown ────────────────────────────────────────────────────────
 
+/**
+ * Compute the confidence band for the money-screen hero. Wraps the exact same
+ * deterministic engine calls the AI-Insights pane uses (calibration →
+ * Monte-Carlo uncertainty → conformal band) so the hero and the Insights card
+ * can never disagree. Also refreshes `_lastBandInfo` for the sticky hero — the
+ * panes render lazily, so without this the sticky band would be blank until the
+ * Insights tab is opened.
+ */
+function resultBand(result: PartCostResult, input: UniversalStackInput): {
+  u: ReturnType<typeof computeCostUncertainty>;
+  hcalApplied: boolean; mapePct: number; n: number;
+  conf90: ReturnType<typeof computeConformalBand>; region: string;
+} {
+  const region = (document.getElementById('mfg-region-selector') as HTMLSelectElement)?.value ?? 'UK';
+  const seg = { commodity: activeCommodity, materialFamily: currentMaterialFamily(), region };
+  const hcal = computeCalibrationHierarchical(getCalibrationRecords(), seg);
+  const u = hcal.applied
+    ? computeCostUncertainty(result, input, { baseCvOverride: cvFromMape(hcal.calibratedMapePct) })
+    : computeCostUncertainty(result, input);
+  const conf90 = computeConformalBand(getCalibrationRecords(), seg, 0.9);
+  _lastBandInfo = { pm: u.plusMinusPct, band: String(u.band), conf: hcal.applied ? 'calibrated' : String(u.overallConfidence) };
+  return { u, hcalApplied: hcal.applied, mapePct: hcal.calibratedMapePct, n: hcal.n, conf90, region };
+}
+
+/**
+ * The money-screen hero: the headline should-cost, a visual P10–P90 confidence
+ * band, and provenance/trust chips. This is the primary anchor of the results.
+ */
+function buildResultHeroBlock(result: PartCostResult, input: UniversalStackInput | null): string {
+  const partName = result.partName || 'Unnamed part';
+  if (!input) {
+    // No input to model uncertainty from — headline only, no band.
+    return `<div class="cv-rhero" style="--band:var(--accent)">
+      <div class="cv-rhero-head"><span class="cv-rhero-label">Total should-cost</span><span class="cv-rhero-part">${escHtml(partName)}</span></div>
+      <div class="cv-rhero-figure"><span class="cv-rhero-total tnum">${fmt(result.total)}</span></div>
+    </div>`;
+  }
+  const { u, hcalApplied, mapePct, n, conf90, region } = resultBand(result, input);
+  const bandColor = u.band === 'tight' ? 'var(--success)' : u.band === 'moderate' ? 'var(--warning)' : 'var(--danger)';
+  const span = Math.max(u.p90 - u.p10, 1e-9);
+  const markerPos = Math.max(3, Math.min(97, ((u.p50 - u.p10) / span) * 100));
+  const confLabel = hcalApplied
+    ? `Calibrated · ${mapePct}% MAPE (${n} actual${n === 1 ? '' : 's'})`
+    : `${u.overallConfidence} confidence`;
+  return `
+    <div class="cv-rhero" style="--band:${bandColor}">
+      <div class="cv-rhero-head">
+        <span class="cv-rhero-label">Total should-cost</span>
+        <span class="cv-rhero-part" title="${escHtml(partName)}">${escHtml(partName)}</span>
+      </div>
+      <div class="cv-rhero-figure">
+        <span class="cv-rhero-total tnum">${fmt(result.total)}</span>
+        <span class="cv-rhero-pm">±${u.plusMinusPct}%</span>
+      </div>
+      <div class="cv-rhero-band" title="Monte-Carlo uncertainty — P10 to P90">
+        <div class="cv-rhero-track"><div class="cv-rhero-marker" style="left:${markerPos}%"></div></div>
+        <div class="cv-rhero-scale">
+          <span class="cv-rhero-tick"><b class="tnum">${fmt(u.p10)}</b><em>P10 · optimistic</em></span>
+          <span class="cv-rhero-tick cv-rhero-tick--mid"><b class="tnum">${fmt(u.p50)}</b><em>P50 · median</em></span>
+          <span class="cv-rhero-tick cv-rhero-tick--hi"><b class="tnum">${fmt(u.p90)}</b><em>P90 · conservative</em></span>
+        </div>
+      </div>
+      <div class="cv-rhero-chips">
+        <span class="cv-rchip cv-rchip--band" title="Monte-Carlo band width (CV ${u.cvPct}%)"><span class="cv-rdot"></span>${u.band} band</span>
+        <span class="cv-rchip" title="Rates and material prices in force — edit in the Rate Library">${escHtml(region)} rates · ${RATES_ASOF}</span>
+        <span class="cv-rchip" title="How the band width was derived">${confLabel}</span>
+        ${conf90.applied ? `<span class="cv-rchip cv-rchip--ok" title="Coverage-guaranteed range from ${conf90.n} logged actuals">90% land within ±${conf90.halfWidthPct}%</span>` : ''}
+      </div>
+    </div>`;
+}
+
 function renderBreakdown(result: PartCostResult): void {
   const panel = el('results-breakdown');
   const pcts = breakdownPercentages(result);
@@ -13248,15 +13319,11 @@ function renderBreakdown(result: PartCostResult): void {
   }
 
   panel.innerHTML = `
+    ${buildResultHeroBlock(result, lastInput)}
     ${targetBannerHtml}
     <div id="ai-commentary-box" class="ai-commentary" style="display:none"></div>
     ${photoHtml}
     <div class="summary-cards">
-      <div class="summary-card total-card">
-        <div class="card-label">Total Should Cost</div>
-        <div class="card-value">${fmt(result.total)}</div>
-        <div class="card-sub">${result.partName}</div>
-      </div>
       <div class="summary-card">
         <div class="card-label">Factory Cost</div>
         <div class="card-value">${fmt(result.factoryCost)}</div>
