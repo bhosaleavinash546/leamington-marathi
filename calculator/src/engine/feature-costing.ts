@@ -58,6 +58,25 @@ export interface FeatureCostOptions {
 // Representative cut-time per feature (minutes) at a nominal aluminium baseline.
 const T = { drillBase: 0.30, drillSmallPenalty: 0.35, tap: 0.60, planarFace: 0.85, freeForm: 2.6 };
 
+const MRR_CM3_MIN = 12;      // small-VMC aluminium roughing incl. air moves
+const FINISH_CM2_MIN = 20;   // finishing coverage
+
+/**
+ * Physical ceiling (minutes) on material-removal machining time for a part: you
+ * can't cut more than the stock envelope allows. Removed volume ÷ MRR + surface
+ * finishing + a small approach base, scaled by material hardness. Used to cap the
+ * feature-cost card AND the OCCT cycle estimate on small parts, where a tiny solid
+ * can't physically carry the machining time a naive face-count implies.
+ * Excludes drilling (discrete, count-based) and setup (amortised separately).
+ */
+export function physicalRemovalCeilingMin(
+  partVolumeCm3: number, stockVolumeCm3: number, surfaceAreaCm2 = 0, materialFactor = 1,
+): number {
+  const mf = Math.max(0.5, materialFactor);
+  const removedCm3 = Math.max(0, stockVolumeCm3 - partVolumeCm3);
+  return (1.0 + removedCm3 / MRR_CM3_MIN + surfaceAreaCm2 / FINISH_CM2_MIN) * mf;
+}
+
 /** Standard metric drill sizes (mm dia) — non-standard holes need special tooling. */
 const STD_DRILL_DIA = [1, 1.5, 2, 2.5, 3, 3.3, 4, 4.2, 5, 5.5, 6, 6.8, 8, 8.5, 10, 10.5, 12, 14, 16, 18, 20];
 
@@ -86,10 +105,7 @@ export function computeFeatureCosting(f: RecognizedFeatures, opts: FeatureCostOp
   // engraving), not separate milling ops — this stops the runaway over-count.
   let sizeCapped = false;
   if (opts.partVolumeCm3 != null && opts.stockVolumeCm3 != null) {
-    const removedCm3 = Math.max(0, opts.stockVolumeCm3 - opts.partVolumeCm3);
-    const MRR_CM3_MIN = 12;        // small-VMC aluminium roughing incl. air moves
-    const FINISH_CM2_MIN = 20;     // finishing coverage
-    const cuttingCeilingMin = (1.0 + removedCm3 / MRR_CM3_MIN + (opts.surfaceAreaCm2 ?? 0) / FINISH_CM2_MIN) * mf;
+    const cuttingCeilingMin = physicalRemovalCeilingMin(opts.partVolumeCm3, opts.stockVolumeCm3, opts.surfaceAreaCm2 ?? 0, mf);
     const cutting = raw.filter(l => l.feature === 'Milled faces/pockets' || l.feature === 'Free-form surfacing');
     const cuttingMin = cutting.reduce((s, l) => s + l.totalMinutes, 0);
     if (cuttingMin > cuttingCeilingMin && cuttingMin > 0) {

@@ -126,7 +126,7 @@ import {
 import type { Breakdown8Bucket } from '../engine/types.js';
 import type { PartFingerprint, SimilarCase, CaseSuggestion, ProactiveInsight } from '../engine/part-similarity.js';
 import { computeCarbon } from '../engine/carbon.js';
-import { computeFeatureCosting } from '../engine/feature-costing.js';
+import { computeFeatureCosting, physicalRemovalCeilingMin } from '../engine/feature-costing.js';
 import { generateInsights, totalPotentialSaving, FX_TO_GBP } from '../engine/insights.js';
 import { generateDFMDFA } from '../engine/dfm-dfa.js';
 import type { DFMIssue, CostOptimisation } from '../engine/dfm-dfa.js';
@@ -10249,8 +10249,22 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
         setMaterial(el<HTMLSelectElement>('mach-mat'), c.materialId);
         setNumericField('mach-net-wt', c.netWeightKg, 3);
         setNumericField('mach-stock-wt', c.netWeightKg * 1.4, 3);
-        // Prefer OCCT bottom-up cycle time over Claude's AI estimate
-        const occtCycleHrs = cadOCCTGeometry?.cncCycleTimeEstimate?.estimatedTotalHrs ?? null;
+        // Prefer OCCT bottom-up cycle time over Claude's AI estimate…
+        let occtCycleHrs = cadOCCTGeometry?.cncCycleTimeEstimate?.estimatedTotalHrs ?? null;
+        // …but cap it to a physical envelope: a tiny solid can't carry the cutting
+        // time a naive estimate implies (a 3 g servo horn was billed ~50 min).
+        {
+          const bb = cadOCCTGeometry?.boundingBox;
+          const pv = cadOCCTGeometry?.volume?.cm3;
+          if (occtCycleHrs != null && bb && pv != null) {
+            const stockCm3 = (bb.xMm * bb.yMm * bb.zMm) / 1000;
+            const holes = cadOCCTGeometry?.features?.estimatedHoleCount ?? 0;
+            const ms = (c.materialId || '').toLowerCase();
+            const mf = /ti|titan/.test(ms) ? 2.5 : /steel|stainless|iron/.test(ms) ? 1.5 : /alum/.test(ms) ? 1.0 : 1.2;
+            const ceilHr = (physicalRemovalCeilingMin(pv, stockCm3, cadOCCTGeometry?.surfaceArea?.cm2 ?? 0, mf) + holes * 0.4 * mf) / 60;
+            if (occtCycleHrs > ceilHr) occtCycleHrs = ceilHr;
+          }
+        }
         const occtSetupCount = cadOCCTGeometry?.setupAnalysis?.estimatedSetupCount ?? null;
         const occtSetupMinsPerSetup = cadOCCTGeometry?.cncCycleTimeEstimate?.assumedSetupTimeMinsPerSetup ?? 45;
         // Operations
