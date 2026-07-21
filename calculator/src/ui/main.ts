@@ -9905,10 +9905,12 @@ function classifyCADProvenance(id: string): 'measured' | 'estimated' {
   return CAD_MEASURED_ID.test(id) ? 'measured' : 'estimated';
 }
 
-/** Map a density (kg/m³) to a coarse material family — used to name what the
- *  cost currently assumes and to detect the Al/iron/steel weight ambiguity. */
-function cadFamilyFromDensity(dens?: number): 'aluminium' | 'magnesium' | 'titanium' | 'cast iron' | 'steel' | 'copper alloy' | 'other' {
-  if (!dens || dens < 2000) return 'other';   // plastics / composites
+type CADMatFamily = 'plastic' | 'aluminium' | 'magnesium' | 'titanium' | 'cast iron' | 'steel' | 'copper alloy' | 'other';
+
+/** Map a density (kg/m³) to a coarse material family. */
+function cadFamilyFromDensity(dens?: number): CADMatFamily {
+  if (!dens) return 'other';
+  if (dens < 2000) return 'plastic';           // plastics / composites
   if (dens < 2100) return 'magnesium';
   if (dens < 3400) return 'aluminium';
   if (dens < 5200) return 'titanium';
@@ -9917,32 +9919,77 @@ function cadFamilyFromDensity(dens?: number): 'aluminium' | 'magnesium' | 'titan
   return 'copper alloy';
 }
 
+/** The family the AI's cost actually assumes — density first, then material-id and
+ *  commodity fallbacks so an unresolved id (e.g. mat-pa6) still classifies. */
+function cadChosenFamily(r: CADAnalysisResult): CADMatFamily {
+  const byDens = cadFamilyFromDensity(library.materials.find(m => m.id === r.costInputSuggestions.materialId)?.densityKgPerM3);
+  if (byDens !== 'other') return byDens;
+  const id = (r.costInputSuggestions.materialId || '').toLowerCase();
+  if (/pa6|pa66|nylon|abs|polycarb|-pc\b|-pp\b|peek|pom|acetal|delrin|resin|plastic/.test(id)) return 'plastic';
+  if (/-al|alsi|6061|7075|6082|lm25|adc12|a3\d0|silafont|aural|castasil/.test(id)) return 'aluminium';
+  if (/steel|1045|4140|en8|42crmo|scm440|ss3|ss4|17-4/.test(id)) return 'steel';
+  if (/gjl|gjs|gjv|iron|\badi\b/.test(id)) return 'cast iron';
+  const comm = (r.costInputSuggestions.recommendedCommodity || '').toLowerCase();
+  if (/mould|mold|thermoform|rubber|rotational/.test(comm)) return 'plastic';
+  return 'other';
+}
+
+/** Material family named in the CAD filename, if any — a strong human hint the AI
+ *  must not silently override (the "Aluminium_…" file classified as plastic bug). */
+function cadFilenameMaterialFamily(): CADMatFamily | null {
+  const n = (cadFile?.name || '').toLowerCase();
+  if (!n) return null;
+  if (/nylon|pa6|pa66|\babs\b|polycarb|\bpc\b|polyprop|\bpp\b|\bpeek\b|\bpom\b|acetal|delrin|plastic|resin|glass.?filled/.test(n)) return 'plastic';
+  if (/alumini|\balu\b|6061|7075|6082|lm25|adc12|a3\d0|silafont|aural|castasil/.test(n)) return 'aluminium';
+  if (/magnesium|az91|am60/.test(n)) return 'magnesium';
+  if (/titanium|ti-?6al|grade.?5/.test(n)) return 'titanium';
+  if (/cast.?iron|ductile|\bgjl\b|\bgjs\b|sg.?iron|nodular/.test(n)) return 'cast iron';
+  if (/\bsteel\b|\b1045\b|\b4140\b|\bc45\b|s45c|\ben8\b|42crmo|scm440|16mncr|20mncr/.test(n)) return 'steel';
+  if (/brass|bronze|copper|cuzn|phosphor/.test(n)) return 'copper alloy';
+  return null;
+}
+
+/** Grams for sub-kg parts, kg otherwise — small machined parts weigh grams. */
+function fmtMass(kg: number): string { return kg < 1 ? `${(kg * 1000).toFixed(0)} g` : `${kg.toFixed(2)} kg`; }
+
 /**
- * Material-ambiguity flag: CAD geometry fixes the SHAPE but not the material, and
- * the same solid weighs ~3× more as steel than as aluminium. When the geometry was
- * measured but the alloy was inferred from shape alone (no photo, no CAD metadata),
- * the chosen material — and therefore the whole cost — is a guess. Surface the
- * candidate weights so the engineer can confirm or pin the real material.
+ * Material-ambiguity flag: CAD geometry fixes the SHAPE but not the material.
+ * Two failure modes:
+ *   1. Filename CONTRADICTION — the file is named for a material ("Aluminium…")
+ *      but the analysis chose a different family (plastic). Strongest signal.
+ *   2. Inferred-from-shape — no photo, no metadata, no filename hint: the same
+ *      solid spans plastic → aluminium → steel (~8× by mass), so the chosen
+ *      material and therefore the whole cost (process, tooling, price) are a guess.
  * Returns an HTML advisory string, or null when it doesn't apply.
  */
 function cadMaterialAmbiguityAsk(r: CADAnalysisResult): string | null {
-  if (cadGeometrySource === 'text_parsing') return null;   // geometry itself is unmeasured — different problem
-  if (r.materialAnalysis?.fromMetadata) return null;       // alloy came from the CAD file — not a guess
-  if (cadPartPhotoDataUrlPresent()) return null;           // engineer supplied a visual hint
+  if (cadGeometrySource === 'text_parsing') return null;   // geometry itself unmeasured — different problem
   const w = cadOCCTGeometry?.weights;
   if (!w || !(w.aluminiumKg > 0) || !(w.steelKg > 0)) return null;
-  const chosenDens = library.materials.find(m => m.id === r.costInputSuggestions.materialId)?.densityKgPerM3;
-  const fam = cadFamilyFromDensity(chosenDens);
-  if (fam === 'other') return null;                        // plastics — the metal-weight span doesn't apply
-  if (w.steelKg / w.aluminiumKg < 2) return null;          // guard: only when the span is genuinely large
-  const ci = w.castIronKg ?? w.steelKg * 0.92;
-  const chosenKg = fam === 'aluminium' ? w.aluminiumKg
-    : fam === 'steel' ? w.steelKg
-    : fam === 'cast iron' ? ci
-    : (chosenDens && cadOCCTGeometry?.volume?.cm3 ? (cadOCCTGeometry.volume.cm3 / 1000) * chosenDens / 1000 : w.steelKg);
-  return `&#9878; <strong>Material inferred from shape alone</strong> — geometry can't tell metals apart, and the same solid weighs `
-    + `<strong>Aluminium ${w.aluminiumKg.toFixed(2)} kg &middot; Cast iron ${ci.toFixed(2)} kg &middot; Steel ${w.steelKg.toFixed(2)} kg</strong>. `
-    + `This cost assumes <strong>${fam} (${chosenKg.toFixed(2)} kg)</strong>; if the real material differs the cost can swing ~3×. `
+  const chosen = cadChosenFamily(r);
+  if (chosen === 'other') return null;
+  const plasticKg = w.plasticKg ?? w.aluminiumKg * 0.4;
+  const span = `<strong>Plastic ${fmtMass(plasticKg)} &middot; Aluminium ${fmtMass(w.aluminiumKg)} &middot; Steel ${fmtMass(w.steelKg)}</strong>`;
+
+  // 1) Filename contradiction.
+  const fileFam = cadFilenameMaterialFamily();
+  if (fileFam && fileFam !== chosen) {
+    return `&#9888; <strong>Filename says ${fileFam}, but the analysis chose ${chosen}</strong> — the file is named `
+      + `"<em>${escHtml(cadFile?.name || '')}</em>" yet the cost assumes <strong>${chosen}</strong>, which drives a different process, tooling and price. `
+      + `The same solid weighs ${span}. Pin <strong>${fileFam}</strong> in <em>Re-Analyse / Adjust</em> below, or add a part photo and re-analyse.`;
+  }
+  if (fileFam && fileFam === chosen) return null;          // filename confirms the choice — not ambiguous
+
+  // 2) Inferred from shape alone.
+  if (r.materialAnalysis?.fromMetadata) return null;       // alloy came from CAD metadata
+  if (cadPartPhotoDataUrlPresent()) return null;           // engineer supplied a visual hint
+  const chosenKg = chosen === 'plastic' ? plasticKg
+    : chosen === 'aluminium' ? w.aluminiumKg
+    : chosen === 'steel' ? w.steelKg
+    : chosen === 'cast iron' ? (w.castIronKg ?? w.steelKg * 0.92)
+    : w.steelKg;
+  return `&#9878; <strong>Material inferred from shape alone</strong> — geometry can't tell plastic from metal, and the same solid weighs `
+    + `${span}. This cost assumes <strong>${chosen} (${fmtMass(chosenKg)})</strong>; if the real material differs the process, tooling and cost change completely. `
     + `Add a part photo above and re-analyse, or pin the correct grade in <em>Re-Analyse / Adjust</em> below.`;
 }
 
