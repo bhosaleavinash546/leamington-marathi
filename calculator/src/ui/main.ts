@@ -247,7 +247,30 @@ function _currFmt(n: number): string {
 // Grouped money — thousands separators, variable dp (2 for per-part, 0 for annual).
 function _moneyG(n: number, dp = 2): string {
   const sym = CURRENCY_SYMBOL[_displayCurrency] ?? _displayCurrency;
-  return `${sym}${(n * _displayFxRate).toLocaleString('en-GB', { minimumFractionDigits: dp, maximumFractionDigits: dp })}`;
+  if (!Number.isFinite(n)) return `${sym}—`;
+  const v = n * _displayFxRate;
+  return `${v < 0 ? '−' : ''}${sym}${Math.abs(v).toLocaleString('en-GB', { minimumFractionDigits: dp, maximumFractionDigits: dp })}`;
+}
+
+// Abbreviated money for large headline figures: −£18.5M, £91.7k, £820.
+function _moneyAbbrev(n: number): string {
+  const sym = CURRENCY_SYMBOL[_displayCurrency] ?? _displayCurrency;
+  if (!Number.isFinite(n)) return `${sym}—`;
+  const v = Math.abs(n * _displayFxRate); const sign = n < 0 ? '−' : '';
+  if (v >= 1e6) return `${sign}${sym}${(v / 1e6).toFixed(1)}M`;
+  if (v >= 1e4) return `${sign}${sym}${(v / 1e3).toFixed(0)}k`;
+  return `${sign}${sym}${v.toLocaleString('en-GB', { maximumFractionDigits: 0 })}`;
+}
+
+// Display-clamped percentage. A quote 50× should-cost yields −5000%, which is a
+// data smell, not a headline — cap the SHOWN value so a stray −5101% can't
+// wreck a demo. The underlying number is unchanged; only the label is clamped.
+function _pctFmt(n: number, dp = 1): string {
+  if (!Number.isFinite(n)) return '—';
+  const cap = 999;
+  if (n > cap) return '>+999%';
+  if (n < -cap) return '<−999%';
+  return `${n > 0 ? '+' : n < 0 ? '−' : ''}${Math.abs(n).toFixed(dp)}%`;
 }
 
 // ─── Dashboard state ──────────────────────────────────────────────────────────
@@ -1630,9 +1653,9 @@ function renderNegotiationReport(): void {
 
       <!-- Stat cards -->
       <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px">
-        ${stat('Price variance', `${r.verdict.ppvPct > 0 ? '+' : ''}${r.verdict.ppvPct}%`, ragTok)}
+        ${stat('Price variance', _pctFmt(r.verdict.ppvPct), ragTok)}
         ${stat('Gap / part', _moneyG(r.verdict.ppvGBP), r.verdict.ppvGBP > 0 ? '--danger' : '--success')}
-        ${stat('Annual impact', _moneyG(r.verdict.annualImpactGBP, 0), '--text-primary')}
+        ${stat('Annual impact', _moneyAbbrev(r.verdict.annualImpactGBP), '--text-primary')}
         ${r.levers.length
           // Top lever, not the opportunity total — the total usually equals the
           // annual-impact tile (sum of gaps = whole gap) and it already appears
