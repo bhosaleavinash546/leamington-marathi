@@ -6046,7 +6046,12 @@ function renderCADResults(r: CADAnalysisResult, autoCalculate = false, annualVol
         asks.push('&#9888; Geometry was <strong>text-parsed</strong> (the OCCT kernel could not read this file) — dimensions and weight are rough. Re-export from CAD as <strong>STEP AP203/AP214</strong> for measured geometry.');
       }
       const matConf = r.materialAnalysis?.primarySuggestion?.confidencePct ?? 100;
-      if (matConf < 70 && !cadPartPhotoDataUrlPresent()) {
+      // Material-ambiguity flag takes precedence — it names the actual weight span
+      // and fires even when the AI reported HIGH confidence (a confident wrong guess).
+      const ambiguityAsk = cadMaterialAmbiguityAsk(r);
+      if (ambiguityAsk) {
+        asks.push(ambiguityAsk);
+      } else if (matConf < 70 && !cadPartPhotoDataUrlPresent()) {
         asks.push(`&#128247; Material is only <strong>${matConf}% confident</strong> — geometry alone cannot identify the alloy or grade. Add a part photo above and re-analyse.`);
       }
       const sanityHtml = cadSanityWarnings.map(sw => `
@@ -9890,10 +9895,55 @@ function updateMachinedFeaturesReadout(prefix: string): void {
 // the file; everything the AI inferred (material, cycle times, tooling, rates)
 // is ESTIMATED and worth reviewing. Centralised here so every fill site gets
 // classified without per-call changes.
-const CAD_MEASURED_ID = /(net-wt|stock-wt|weight|-vol\b|volume|length|width|height|-len\b|thk|thickness|dia\b|diameter|area)/i;
+// Geometry-derived fields are MEASURED when a kernel parsed the file. `-wt`
+// catches every commodity's weight field (cast-part-wt, cam-cast-wt/-finish-wt,
+// forge-part-wt, mach-net-wt/-stock-wt) — previously only mach-* matched, so the
+// casting/forging weight was miscounted as AI-estimated ("0 measured").
+const CAD_MEASURED_ID = /(-wt\b|net-wt|stock-wt|weight|-vol\b|volume|length|width|height|-len\b|thk|thickness|dia\b|diameter|area)/i;
 function classifyCADProvenance(id: string): 'measured' | 'estimated' {
   if (cadGeometrySource === 'text_parsing') return 'estimated'; // no measured geometry available
   return CAD_MEASURED_ID.test(id) ? 'measured' : 'estimated';
+}
+
+/** Map a density (kg/m³) to a coarse material family — used to name what the
+ *  cost currently assumes and to detect the Al/iron/steel weight ambiguity. */
+function cadFamilyFromDensity(dens?: number): 'aluminium' | 'magnesium' | 'titanium' | 'cast iron' | 'steel' | 'copper alloy' | 'other' {
+  if (!dens || dens < 2000) return 'other';   // plastics / composites
+  if (dens < 2100) return 'magnesium';
+  if (dens < 3400) return 'aluminium';
+  if (dens < 5200) return 'titanium';
+  if (dens < 7400) return 'cast iron';
+  if (dens < 8200) return 'steel';
+  return 'copper alloy';
+}
+
+/**
+ * Material-ambiguity flag: CAD geometry fixes the SHAPE but not the material, and
+ * the same solid weighs ~3× more as steel than as aluminium. When the geometry was
+ * measured but the alloy was inferred from shape alone (no photo, no CAD metadata),
+ * the chosen material — and therefore the whole cost — is a guess. Surface the
+ * candidate weights so the engineer can confirm or pin the real material.
+ * Returns an HTML advisory string, or null when it doesn't apply.
+ */
+function cadMaterialAmbiguityAsk(r: CADAnalysisResult): string | null {
+  if (cadGeometrySource === 'text_parsing') return null;   // geometry itself is unmeasured — different problem
+  if (r.materialAnalysis?.fromMetadata) return null;       // alloy came from the CAD file — not a guess
+  if (cadPartPhotoDataUrlPresent()) return null;           // engineer supplied a visual hint
+  const w = cadOCCTGeometry?.weights;
+  if (!w || !(w.aluminiumKg > 0) || !(w.steelKg > 0)) return null;
+  const chosenDens = library.materials.find(m => m.id === r.costInputSuggestions.materialId)?.densityKgPerM3;
+  const fam = cadFamilyFromDensity(chosenDens);
+  if (fam === 'other') return null;                        // plastics — the metal-weight span doesn't apply
+  if (w.steelKg / w.aluminiumKg < 2) return null;          // guard: only when the span is genuinely large
+  const ci = w.castIronKg ?? w.steelKg * 0.92;
+  const chosenKg = fam === 'aluminium' ? w.aluminiumKg
+    : fam === 'steel' ? w.steelKg
+    : fam === 'cast iron' ? ci
+    : (chosenDens && cadOCCTGeometry?.volume?.cm3 ? (cadOCCTGeometry.volume.cm3 / 1000) * chosenDens / 1000 : w.steelKg);
+  return `&#9878; <strong>Material inferred from shape alone</strong> — geometry can't tell metals apart, and the same solid weighs `
+    + `<strong>Aluminium ${w.aluminiumKg.toFixed(2)} kg &middot; Cast iron ${ci.toFixed(2)} kg &middot; Steel ${w.steelKg.toFixed(2)} kg</strong>. `
+    + `This cost assumes <strong>${fam} (${chosenKg.toFixed(2)} kg)</strong>; if the real material differs the cost can swing ~3×. `
+    + `Add a part photo above and re-analyse, or pin the correct grade in <em>Re-Analyse / Adjust</em> below.`;
 }
 
 function markAIFilled(element: HTMLInputElement | HTMLSelectElement | null): void {
