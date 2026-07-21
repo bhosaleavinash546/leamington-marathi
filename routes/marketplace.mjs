@@ -93,7 +93,7 @@ export function registerMarketplaceRoutes(app, { db, requireAuth, rateLimit }) {
         }
       }
       const id = crypto.randomUUID();
-      db.prepare('INSERT INTO marketplace_ideas (id,title,system,costSavingType,annualSaving,difficulty,timeToImplement,description,ideaData,submittedBy,verified,stars,status,createdAt) VALUES (?,?,?,?,?,?,?,?,?,?,0,0,"pending",?)')
+      db.prepare('INSERT INTO marketplace_ideas (id,title,system,costSavingType,annualSaving,difficulty,timeToImplement,description,ideaData,submittedBy,verified,stars,origin,status,createdAt) VALUES (?,?,?,?,?,?,?,?,?,?,0,0,"community","pending",?)')
         .run(id, title, system || '', costSavingType || '', annualSaving || '', difficulty || 'Medium', timeToImplement || '', description, ideaData || null, req.user.id, new Date().toISOString());
       res.json({ ok: true, message: 'Idea submitted for review. Thank you!' });
     } catch (e) { res.status(500).json({ error: e.message }); }

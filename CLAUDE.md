@@ -30,7 +30,10 @@ node benchmark/ideation-eval.mjs --label current [--deep]
 node benchmark/ideation-eval.mjs --compare baseline current  # offline metric deltas
 
 npm run kb:export          # REQUIRED after editing src/data/*-knowledge-base.ts (regenerates kb-pack.json)
+npm run eval:status        # measurement-debt report: which gates/evals have results, what is unmeasured
 ```
+
+Operational notes live in `docs/OPERATIONS.md` (incl. automatic DB backups via `db-backup.mjs`, disable with `BRAINSPARK_BACKUPS=0`); architecture decisions in `docs/DECISIONS.md` — add an entry when making a choice that would surprise a newcomer.
 
 Boot a throwaway server for manual endpoint testing (marketplace auto-seeds ~1,600 ideas on first boot):
 

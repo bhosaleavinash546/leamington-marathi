@@ -28,6 +28,8 @@ interface MarketplaceIdea {
   description: string;
   ideaData?: string | null;
   level?: string | null;
+  /** 'curated' = seeded from benchmark/teardown curation; 'community' = submitted by a real user. */
+  origin?: 'curated' | 'community' | null;
 }
 
 interface RecentAnalysis {
@@ -329,10 +331,10 @@ export default function MarketplacePage() {
           </div>
           <h1 className="text-4xl font-black text-white mb-3">Idea Marketplace</h1>
           <p className="text-slate-400">
-            Proven cost reduction ideas from the BrainSpark community — anonymised, validated, and ready to apply to your programme.
+            A curated library of OEM-benchmarked cost ideas, plus your team's own contributions — each labelled by origin, engine-checked where the move is expressible.
           </p>
           <div className="mt-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs">
-            <CheckCircle size={11} /> Verified ideas confirmed in production by OEM engineering teams
+            <CheckCircle size={11} /> Curated = benchmark/teardown-sourced · Community = submitted &amp; reviewed here
           </div>
         </div>
 
@@ -728,6 +730,14 @@ export default function MarketplacePage() {
                         {idea.verified && (
                           <span className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs flex-shrink-0">
                             <CheckCircle size={9} /> Verified
+                          </span>
+                        )}
+                        {idea.origin && (
+                          <span
+                            title={idea.origin === 'community' ? 'Submitted by a user of this platform and approved by review' : 'Seeded from curated OEM benchmark / teardown sources'}
+                            className={`px-1.5 py-0.5 rounded border text-xs flex-shrink-0 ${idea.origin === 'community' ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' : 'bg-white/5 border-white/10 text-slate-400'}`}
+                          >
+                            {idea.origin === 'community' ? 'Community' : 'Curated'}
                           </span>
                         )}
                         {approvedSystems.size > 0 && approvedSystems.has(idea.system.toLowerCase()) && (

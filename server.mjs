@@ -37,6 +37,7 @@ import { buildTasteProfile, buildTasteContext, tasteMatchIdeas } from './idea-fe
 import { runDeepPass } from './idea-deep.mjs';
 import { buildArchive, coverageGaps, archiveGrid, inferCommodityKey } from './idea-archive.mjs';
 import { searchPatents } from './patent-search.mjs';
+import { startBackups } from './db-backup.mjs';
 import { registerPcbRoutes } from './routes/pcb.mjs';
 import { registerShouldCostRoutes } from './routes/should-cost.mjs';
 import { registerMarketplaceRoutes } from './routes/marketplace.mjs';
@@ -274,6 +275,10 @@ function safeLlmError(err) {
 const DATA_DIR = process.env.DATA_DIR || path.join(__dirname, 'data');
 fs.mkdirSync(DATA_DIR, { recursive: true });
 const db = new Database(path.join(DATA_DIR, 'brainspark.db'));
+// Daily online backups with rotation (docs/OPERATIONS.md) — off with BRAINSPARK_BACKUPS=0.
+if (process.env.BRAINSPARK_BACKUPS !== '0') {
+  startBackups(db, path.join(DATA_DIR, 'backups'), { log: (m) => console.log(m) });
+}
 db.pragma('journal_mode = WAL');
 db.exec(`
   CREATE TABLE IF NOT EXISTS projects (
@@ -418,6 +423,17 @@ try { db.exec("ALTER TABLE idea_business_cases ADD COLUMN ideaData TEXT"); } cat
 try { db.exec("ALTER TABLE idea_business_cases ADD COLUMN scorecards TEXT DEFAULT '{}'"); } catch {}
 // level: 'part' | 'system' — granularity tag for marketplace ideas
 try { db.exec("ALTER TABLE marketplace_ideas ADD COLUMN level TEXT"); } catch {}
+// Provenance honesty: the corpus mixes curated/benchmark-derived seeds with
+// real user submissions — label them so the UI never presents seeded content
+// as community-contributed. User submissions store a UUID in submittedBy;
+// seeds store descriptive source names ("Volvo EX90 benchmark").
+try { db.exec("ALTER TABLE marketplace_ideas ADD COLUMN origin TEXT"); } catch {}
+try {
+  db.exec(`UPDATE marketplace_ideas SET origin = CASE
+    WHEN length(submittedBy) = 36 AND submittedBy LIKE '________-____-____-____-____________' THEN 'community'
+    ELSE 'curated' END
+    WHERE origin IS NULL`);
+} catch { /* backfill best-effort */ }
 
 // ─── Commodity price persistence table ────────────────────────────────────────
 db.exec(`CREATE TABLE IF NOT EXISTS commodity_prices (
@@ -650,6 +666,15 @@ seedMarketplaceIdeasFromFile('marketplace-offroad-luxury-ideas.json', 'off-road 
 // 45 domain-expansion ideas: tolerance/GD&T relaxation, modern joining, E/E & software.
 seedMarketplaceIdeasFromFile('marketplace-domain-expansion-ideas.json', 'domain-expansion ideas (GD&T / joining / E-E)');
 seedMarketplaceIdeasFromFile('marketplace-missing-commodity-ideas.json', 'missing-commodity ideas (seats/glazing/HVAC/restraints/harness/paint)');
+
+// Provenance backfill must ALSO run after seeding: on a fresh DB the seed
+// inserts happen after the migration block above, so their origin is NULL here.
+try {
+  db.exec(`UPDATE marketplace_ideas SET origin = CASE
+    WHEN length(submittedBy) = 36 AND submittedBy LIKE '________-____-____-____-____________' THEN 'community'
+    ELSE 'curated' END
+    WHERE origin IS NULL`);
+} catch { /* best-effort */ }
 
 const CACHE_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
 
