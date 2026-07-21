@@ -20,6 +20,17 @@ export interface WallCorrection {
   shellWallMm: number;
 }
 
+/**
+ * Size-aware packaging cost per part (£). A flat default (£0.15) is wrong for a
+ * bumper (bulky → custom dunnage/racks) and for a 3 g part (trivial). Scales with
+ * shipping envelope (bounding-box volume) + weight, floored/capped to sane bounds.
+ */
+export function estimatePackagingPerPart(bboxVolumeCm3: number, weightKg: number): number {
+  const volM3 = Math.max(0, bboxVolumeCm3) / 1e6;          // cm³ → m³ (shipping envelope)
+  const pkg = 0.05 + volM3 * 1.4 + Math.max(0, weightKg) * 0.04;
+  return Math.round(Math.min(6, Math.max(0.05, pkg)) * 100) / 100;
+}
+
 /** Shell-wall estimate (mm) from volume + surface: 2·V/S (both shell faces). */
 export function shellWallEstimateMm(volumeCm3: number, surfaceAreaCm2: number): number {
   if (!(surfaceAreaCm2 > 0) || !(volumeCm3 > 0)) return 0;

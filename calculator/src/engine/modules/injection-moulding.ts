@@ -75,6 +75,19 @@ export function mouldSteelClassFactor(cls: MouldSteelClass | undefined): number 
  * downstream (see computeInjectionMouldingDrivers) so they compose with a manual
  * mouldCost override too.
  */
+/** Smallest standard IM press (by clamp tonnage) that covers the required force.
+ *  A part must be moulded on a press big enough for its projected area — a bumper
+ *  (~3900 T) on a 200 T press is both physically impossible and ~10× too cheap. */
+export function pickIMMPressId(clampTonnes: number): string {
+  const presses: Array<[number, string]> = [
+    [50, 'imm-50t'], [100, 'imm-100t'], [200, 'imm-200t'], [350, 'imm-350t'],
+    [400, 'imm-400t'], [500, 'imm-500t'], [800, 'imm-800t'], [1200, 'imm-1200t'],
+    [2000, 'imm-2000t'], [3500, 'imm-3500t'],
+  ];
+  for (const [t, id] of presses) if (t >= clampTonnes) return id;
+  return 'imm-3500t';
+}
+
 export function estimateMouldCost(inputs: MouldCostInputs): MouldCostBreakdown {
   const cavities = Math.max(1, Math.floor(inputs.cavities || 1));
   const perCavityAreaCm2 = Math.max(0, inputs.projectedAreaCm2) / cavities;

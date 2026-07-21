@@ -81,6 +81,21 @@ Geometry can't distinguish materials, so the AI guesses — and guessed wrong in
   shell in a huge bbox — a feature-count machining view is misleading for a moulded
   part regardless (it's a machining lens on a non-machined process).
 
+### 3b. Process/tooling not sized to the part (calibration)
+The bumper, once correctly classified as injection moulding, still costed £5.68:
+- **Press not sized to tonnage** — it stayed on a small default press (£11/hr) though
+  a bumper needs ~3900 T (projected area 1.09 m² × 35 MPa). Process was £0.09.
+  **Fix:** added 2000 T + 3500 T presses; `pickIMMPressId(tonnage)` sizes the press
+  from `estimateClampingTonnage(projectedArea, cavityPressure)` in the CAD apply.
+  Process £0.09 → £1.12 (3500 T @ £136/hr UK).
+- **Flat packaging** (£0.15) is wrong for a 1.7 m bumper and a 3 g part alike.
+  **Fix:** `estimatePackagingPerPart(bboxVolume, weight)` scales with the shipping
+  envelope. Bumper £0.15 → £0.95; servo horn stays £0.05.
+- The **mould £ itself was fine** for China (~£2/part) — the apparent "tooling
+  gap" was actually the press rate. Result: bumper £5.68 → **£7.79**, on the
+  manual £8–9. (Note: tooling amortises over *annual* volume, not tool life; for a
+  1-year view that's conservative but defensible.)
+
 ### 4. Report defensibility (make the estimate auditable)
 The report now carries: geometry-provenance box, key-assumptions header, a
 **per-feature machining audit** (every detected feature with a Costed? flag),

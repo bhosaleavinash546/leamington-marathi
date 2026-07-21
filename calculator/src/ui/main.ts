@@ -6,7 +6,7 @@ import {
 import type { CADAnalysisResult, OCCTGeometry } from '../engine/ai-analysis.js';
 import { computeMachiningDrivers } from '../engine/modules/machining.js';
 import { computeSheetMetalDrivers, assessPressTonnage } from '../engine/modules/sheet-metal.js';
-import { computeInjectionMouldingDrivers, estimateClampingTonnage, estimateMouldCost, autoCoolFactorForMaterial, type MouldSteelClass } from '../engine/modules/injection-moulding.js';
+import { computeInjectionMouldingDrivers, estimateClampingTonnage, estimateMouldCost, pickIMMPressId, autoCoolFactorForMaterial, type MouldSteelClass } from '../engine/modules/injection-moulding.js';
 import { computeCastingDrivers } from '../engine/modules/casting.js';
 import { computeForgingDrivers } from '../engine/modules/forging.js';
 import {
@@ -68,6 +68,7 @@ import { buildRegionalLibrary, REGIONAL_DATA, computeRegionalComparison } from '
 import { featureToOperation, drillingOpFromFeatures } from '../engine/feature-ops.js';
 import { computeFeatureMachining, defaultInclude, type StockCondition } from '../engine/feature-machining.js';
 import { familyFromFilename, familyFromDensity, type MaterialFamily } from '../engine/material-family.js';
+import { estimatePackagingPerPart } from '../engine/geometry-sanity.js';
 import type { FeatureRow } from '../engine/feature-ops.js';
 import type { OperationInput } from '../engine/types.js';
 import type { ManufacturingRegion } from '../engine/regional-rates.js';
@@ -10244,6 +10245,18 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
       markAIFilled(partNameEl);
     }
 
+    // Size-aware packaging from the shipping envelope + weight (the flat £0.15
+    // default is wrong for a bulky bumper and for a 3 g part alike).
+    {
+      const pbb = cadOCCTGeometry?.boundingBox;
+      const pkgEl = el<HTMLInputElement>('packaging');
+      if (pbb && pkgEl) {
+        const bboxVolCm3 = (pbb.xMm * pbb.yMm * pbb.zMm) / 1000;
+        pkgEl.value = String(estimatePackagingPerPart(bboxVolCm3, c.netWeightKg || 0));
+        pkgEl.dispatchEvent(new Event('input'));
+      }
+    }
+
     switch (targetCommodity) {
       case 'machining': {
         setMaterial(el<HTMLSelectElement>('mach-mat'), c.materialId);
@@ -10593,8 +10606,21 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
         const immPressMap: Record<string, number> = {
           'mat-pp': 35, 'mat-pa6': 55, 'mat-pc': 65,
         };
+        const immCavPress = immPressMap[c.materialId] ?? 50;
         setNumericField('imm-cool-f', immCoolMap[c.materialId] ?? 3.0, 2);
-        setNumericField('imm-cav-press', immPressMap[c.materialId] ?? 50, 0);
+        setNumericField('imm-cav-press', immCavPress, 0);
+        // Size the press to the required clamp tonnage (projected area × cavity
+        // pressure) — a bumper needs ~3900 T, not the small default press that
+        // made the moulding cost ~10× too low.
+        {
+          const projForTon = immBB ? (immBB.xMm * immBB.yMm) / 100 : (im?.projectedAreaCm2 ?? 0);
+          if (projForTon > 0) {
+            const tonnes = estimateClampingTonnage({ projectedAreaCm2: projForTon, cavityPressureMPa: immCavPress });
+            const pressId = pickIMMPressId(tonnes);
+            const machEl = el<HTMLSelectElement>('imm-mach');
+            if (machEl) { machEl.value = resolveMachineIdForOp(pressId, 'Injection Moulding'); }
+          }
+        }
         // Cycle time sub-components from wall thickness
         const wallForCycle = immWall ?? im?.wallThicknessMm ?? 2.5;
         setNumericField('imm-fill', Math.max(1.5, parseFloat((wallForCycle * 0.5).toFixed(1))), 1);
