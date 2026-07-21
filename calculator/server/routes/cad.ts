@@ -22,7 +22,7 @@ const cadCache = createAnalysisCache('cad_analysis_cache');
 // Bump when the prompt/normalisation logic changes so stale cached analyses (which
 // are keyed on inputs, not prompt content) are invalidated. v2: filename material
 // prior + confidence-inversion promotion.
-const CAD_PROMPT_VERSION = 3;
+const CAD_PROMPT_VERSION = 4;
 
 // Model tiering: Sonnet 5 is the standard extraction tier (near-Opus on
 // structured analysis, faster, ~40% cheaper); the Deep-analysis toggle
@@ -87,11 +87,15 @@ function stage1Prompt(geo: OCCTGeometry): string {
   const wallMean = geo.wallThickness?.meanMm ?? null;
   const weights = geo.weights!;
   const maxDim = Math.max(bb.xMm, bb.yMm, bb.zMm);
-  // Thin uniform wall on a large envelope is diagnostic of moulding/sheet, not a
-  // metal casting (thin-wall large metal castings misrun) — a plastic bumper was
-  // being classified as a gravity-die aluminium casting.
-  const thinWallHint = (wallMean != null && wallMean > 0 && wallMean <= 4 && maxDim >= 400)
-    ? `\nSTRONG SIGNAL: thin uniform wall (${wallMean.toFixed(1)}mm) on a large part (${maxDim.toFixed(0)}mm) → almost certainly injection_moulding (plastic) or sheet_metal, NOT a metal casting/forging. Large thin-wall metal castings are not manufacturable. Use the PLASTIC mass, not the aluminium-density figure.`
+  // Thin wall on a large, open/hollow envelope is diagnostic of moulding/sheet/blow,
+  // not a metal casting (thin-wall large metal castings misrun). A plastic bumper
+  // was classed as an aluminium casting, and a blow-moulded HDPE fuel tank (4.6 mm
+  // wall, hollow) as a sand casting. Gate on low fill so chunky castings are safe.
+  const hollow = fill < 0.03;
+  const thinWallHint = (wallMean != null && wallMean > 0 && wallMean <= 6 && maxDim >= 400 && fill < 0.10)
+    ? `\nSTRONG SIGNAL: thin wall (${wallMean.toFixed(1)}mm) on a large part (${maxDim.toFixed(0)}mm, fill ${fill.toFixed(3)}). A large thin-wall metal casting/forging is NOT manufacturable (it misruns), so do NOT pick casting/forging. `
+      + `${hollow ? 'The very low fill ratio means a HOLLOW/enclosed part → blow_moulding (fuel tank, duct, bottle, reservoir) if it encloses a cavity, else injection_moulding or sheet_metal. ' : 'This is injection_moulding (plastic) or sheet_metal. '}`
+      + `Use the PLASTIC mass, not the metal-density figure.`
     : '';
 
   return `Part geometry snapshot:

@@ -114,6 +114,20 @@ commodities to the amort-sync map. Pinned seat £0.87 → £1.11 (tooling £0.05
 on the ~£1.2-1.6 manual. (Convention: amortise over annual volume — a conservative
 1-year view — consistently across every commodity.)
 
+### 1b. Thin-wall classifier hint — widen + detect hollow (blow moulding)
+The thin-wall Stage-1 hint (rules out casting for large thin-wall parts) originally
+gated on wall ≤ 4 mm, so a blow-moulded HDPE fuel tank (4.6 mm wall, 1.5 m, hollow)
+slipped past it and was classed as a **sand casting at £216.97** (metal, 83 kg).
+**Fix:** widened to ≤ 6 mm with a low-fill gate (chunky castings stay safe), and
+added a HOLLOW branch — when the fill ratio is very low the part encloses a cavity,
+so `blow_moulding` (tank/duct/bottle/reservoir) is called out alongside injection
+moulding/sheet metal. Live: Stage-1 flipped casting 0.84 → blow_moulding 0.82;
+tank £216.97 → £16.12, material metal £108 → HDPE £11. `CAD_PROMPT_VERSION → 4`.
+(Remaining calibration: the blow moulder is picked as a small 1–5 L bottle EBM, not
+a large accumulator-head tank machine — the same "press not sized to the part"
+pattern fixed for the IM bumper; and multi-layer barrier HDPE + flash aren't
+modelled, so material is ~£11 vs a ~£15–20 real coex tank.)
+
 ### 4b. Robustness — a missing AI field must never crash the calculation
 The seat cross-member's AI response omitted `mouldLife`/`runnerWeightKg` from the
 injection-moulding sub-object (the bumper's included them — pure response variance).
