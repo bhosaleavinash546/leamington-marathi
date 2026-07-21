@@ -11,6 +11,7 @@ import { createAnalysisCache } from '../utils/analysis-cache.js';
 import { runCADSanityChecks } from '../utils/cad-sanity.js';
 import { capNearNetMachiningHr, applyNearNetMachiningCap } from '../utils/cad-machining-guard.js';
 import { normalizeFieldConfidences } from '../utils/cad-schema.js';
+import { familyFromFilename, proseFamily, promoteHighestConfidence, type MaterialSuggestion } from '../../src/engine/material-family.js';
 
 const router = Router();
 
@@ -483,6 +484,17 @@ function normalizeCADAnalysis(a: Record<string, unknown>): void {
   const ps = obj(ma.primarySuggestion);
   ma.primarySuggestion = { materialId: str(ps.materialId, ''), name: str(ps.name, 'Unspecified'), confidencePct: num(ps.confidencePct, 50), ...ps };
   ma.alternatives = arr(ma.alternatives);
+  // A more-confident alternative must never sit below the primary (the model
+  // returned "PA6-GF 55%" as primary with "Aluminium 6061 65%" as an alternative).
+  {
+    const alts = (ma.alternatives as MaterialSuggestion[]).map(alt => ({ ...obj(alt), materialId: str(obj(alt).materialId, ''), name: str(obj(alt).name, 'Unspecified'), confidencePct: num(obj(alt).confidencePct, 0) } as MaterialSuggestion));
+    const res = promoteHighestConfidence(ma.primarySuggestion as MaterialSuggestion, alts);
+    if (res.promoted) {
+      ma.primarySuggestion = res.primary;
+      ma.alternatives = res.alternatives;
+      ma.promotedFromAlternative = true;
+    }
+  }
   a.materialAnalysis = ma;
 
   const ci = obj(a.costInputSuggestions);
@@ -710,6 +722,14 @@ ${pre.summary}`;
   const overrideLines: string[] = [];
   if (overrides.forcedCommodity) overrideLines.push(`Manufacturing process: ${overrides.forcedCommodity} [USER-FORCED — use this as recommendedCommodity, do NOT override]`);
   if (overrides.forcedMaterial)  overrideLines.push(`Material: ${overrides.forcedMaterial} [USER-FORCED — use this as materialId exactly]`);
+  // Filename material prior — the engineer named the material in the file; do not
+  // silently value-engineer it to something cheaper (an "Aluminium…" file was being
+  // reclassified as injection-moulded plastic).
+  const fnameFam = familyFromFilename(filename);
+  if (fnameFam && !overrides.forcedMaterial) {
+    const fnameMat = proseFamily(fnameFam);
+    overrideLines.push(`FILENAME MATERIAL PRIOR: the source file is named "${filename}", indicating the part material is ${fnameMat}. Treat this as a STRONG prior — classify, select the process for, and cost the part AS ${fnameMat} unless the geometry flatly rules it out. Do NOT substitute a different/cheaper material or "convert to plastic for IM economics": cost the part AS DESIGNED, not as it could be re-engineered. If you genuinely believe another material is correct, keep ${fnameMat} as the primarySuggestion and note the alternative.`);
+  }
   if (overrides.forcedProcess)   overrideLines.push(`Casting / process route: ${overrides.forcedProcess} [USER-FORCED — set costInputSuggestions.casting.subtype AND costInputSuggestions.castCAM.subtype to exactly "${overrides.forcedProcess}"; keep cycle time, machine selection and tooling cost consistent with THIS route, not your own preferred one]`);
   if (overrides.ovrWeightKg !== null)    overrideLines.push(`Part weight: ${overrides.ovrWeightKg} kg [USER-PROVIDED — use this as netWeightKg]`);
   if (overrides.ovrVolumeCm3 !== null)   overrideLines.push(`Volume: ${overrides.ovrVolumeCm3} cm³ [USER-PROVIDED — use this as estimatedVolumeCm3]`);

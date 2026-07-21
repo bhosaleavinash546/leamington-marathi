@@ -40,4 +40,31 @@ describe('feature-based costing', () => {
     expect(r.lines.find(l => l.feature === 'Tapped threads')).toBeUndefined();
     expect(r.lines.find(l => l.feature === 'Drilled holes')).toBeDefined();
   });
+
+  it('caps milling time to the physical envelope on small parts (servo-horn over-count)', () => {
+    // Real servo-horn numbers: 1.19 cm³ part, 96 planar + 24 free-form faces.
+    const horn: RecognizedFeatures = {
+      holeCount: 10, holeRadiiMm: [1.25, 1.25, 1.25, 1.25, 1.25, 1.25, 2.45, 2.45, 2.55, 2.55],
+      threadCount: 0, planarFaceCount: 96, freeFormFaceCount: 24, undercutFaceCount: 5, setupCount: 3,
+    };
+    const uncapped = computeFeatureCosting(horn, { machineRateGBPPerHr: 30 });
+    const capped = computeFeatureCosting(horn, {
+      machineRateGBPPerHr: 30,
+      partVolumeCm3: 1.19, stockVolumeCm3: 3.6, surfaceAreaCm2: 13.5, maxDimMm: 46.9,
+    });
+    // Uncapped bills ~140 min of face milling; capped is a small fraction of that.
+    expect(uncapped.totalCycleMin).toBeGreaterThan(200);
+    expect(capped.totalCycleMin).toBeLessThan(uncapped.totalCycleMin * 0.35);
+    const cutUncapped = uncapped.lines.filter(l => /Milled|Free-form/.test(l.feature)).reduce((s, l) => s + l.totalMinutes, 0);
+    const cutCapped = capped.lines.filter(l => /Milled|Free-form/.test(l.feature)).reduce((s, l) => s + l.totalMinutes, 0);
+    expect(cutCapped).toBeLessThan(cutUncapped * 0.1);   // face milling slashed to the envelope
+    expect(capped.dfm.some(d => /capped/i.test(d.title))).toBe(true);
+  });
+
+  it('does NOT cap a large part where the milling time is physically plausible', () => {
+    // A big part with real removal volume — the ceiling is high, nothing capped.
+    const big: RecognizedFeatures = { ...base, planarFaceCount: 20, freeFormFaceCount: 4, setupCount: 2 };
+    const r = computeFeatureCosting(big, { partVolumeCm3: 4000, stockVolumeCm3: 12000, surfaceAreaCm2: 3000, maxDimMm: 400 });
+    expect(r.dfm.some(d => /capped/i.test(d.title))).toBe(false);
+  });
 });

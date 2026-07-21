@@ -67,6 +67,7 @@ import { computeWiringHarnessDrivers } from '../engine/modules/wiring-harness.js
 import { buildRegionalLibrary, REGIONAL_DATA, computeRegionalComparison } from '../engine/regional-rates.js';
 import { featureToOperation, drillingOpFromFeatures } from '../engine/feature-ops.js';
 import { computeFeatureMachining, defaultInclude, type StockCondition } from '../engine/feature-machining.js';
+import { familyFromFilename, familyFromDensity, type MaterialFamily } from '../engine/material-family.js';
 import type { FeatureRow } from '../engine/feature-ops.js';
 import type { OperationInput } from '../engine/types.js';
 import type { ManufacturingRegion } from '../engine/regional-rates.js';
@@ -5936,11 +5937,24 @@ function buildFeatureCostCard(): string {
   const matFactor = /ti|titan/.test(matStr) ? 2.5 : /inconel|nickel|superalloy/.test(matStr) ? 3.0
     : /steel|stainless|iron/.test(matStr) ? 1.5 : /alum/.test(matStr) ? 1.0 : 1.2;
 
+  // Physical envelope for the small-part cap + a region-consistent CNC rate.
+  const bb = cadOCCTGeometry?.boundingBox;
+  const stockVolumeCm3 = bb ? (bb.xMm * bb.yMm * bb.zMm) / 1000 : undefined;
+  const maxDimMm = bb ? Math.max(bb.xMm, bb.yMm, bb.zMm) : undefined;
+  const cncRate = library.machines.find(m => m.id === resolveMachineIdForOp('mach-vmc3', 'CNC Milling'))?.computedRatePerHr;
+
   const fc = computeFeatureCosting({
     holeCount: f.estimatedHoleCount, holeRadiiMm: f.holeRadiiMm ?? [],
     threadCount, planarFaceCount: f.planarFaceCount, freeFormFaceCount: f.freeFormFaceCount,
     undercutFaceCount: undercuts, setupCount: setups,
-  }, { materialFactor: matFactor });
+  }, {
+    materialFactor: matFactor,
+    machineRateGBPPerHr: cncRate,
+    partVolumeCm3: cadOCCTGeometry?.volume?.cm3,
+    stockVolumeCm3,
+    surfaceAreaCm2: cadOCCTGeometry?.surfaceArea?.cm2,
+    maxDimMm,
+  });
 
   const rows = fc.lines.map(l => `
     <tr>
@@ -9905,18 +9919,11 @@ function classifyCADProvenance(id: string): 'measured' | 'estimated' {
   return CAD_MEASURED_ID.test(id) ? 'measured' : 'estimated';
 }
 
-type CADMatFamily = 'plastic' | 'aluminium' | 'magnesium' | 'titanium' | 'cast iron' | 'steel' | 'copper alloy' | 'other';
+type CADMatFamily = MaterialFamily | 'other';
 
-/** Map a density (kg/m³) to a coarse material family. */
+/** Coarse material family from a density (shared engine helper). */
 function cadFamilyFromDensity(dens?: number): CADMatFamily {
-  if (!dens) return 'other';
-  if (dens < 2000) return 'plastic';           // plastics / composites
-  if (dens < 2100) return 'magnesium';
-  if (dens < 3400) return 'aluminium';
-  if (dens < 5200) return 'titanium';
-  if (dens < 7400) return 'cast iron';
-  if (dens < 8200) return 'steel';
-  return 'copper alloy';
+  return familyFromDensity(dens);
 }
 
 /** The family the AI's cost actually assumes — density first, then material-id and
@@ -9937,16 +9944,7 @@ function cadChosenFamily(r: CADAnalysisResult): CADMatFamily {
 /** Material family named in the CAD filename, if any — a strong human hint the AI
  *  must not silently override (the "Aluminium_…" file classified as plastic bug). */
 function cadFilenameMaterialFamily(): CADMatFamily | null {
-  const n = (cadFile?.name || '').toLowerCase();
-  if (!n) return null;
-  if (/nylon|pa6|pa66|\babs\b|polycarb|\bpc\b|polyprop|\bpp\b|\bpeek\b|\bpom\b|acetal|delrin|plastic|resin|glass.?filled/.test(n)) return 'plastic';
-  if (/alumini|\balu\b|6061|7075|6082|lm25|adc12|a3\d0|silafont|aural|castasil/.test(n)) return 'aluminium';
-  if (/magnesium|az91|am60/.test(n)) return 'magnesium';
-  if (/titanium|ti-?6al|grade.?5/.test(n)) return 'titanium';
-  if (/cast.?iron|ductile|\bgjl\b|\bgjs\b|sg.?iron|nodular/.test(n)) return 'cast iron';
-  if (/\bsteel\b|\b1045\b|\b4140\b|\bc45\b|s45c|\ben8\b|42crmo|scm440|16mncr|20mncr/.test(n)) return 'steel';
-  if (/brass|bronze|copper|cuzn|phosphor/.test(n)) return 'copper alloy';
-  return null;
+  return familyFromFilename(cadFile?.name || '');
 }
 
 /** Grams for sub-kg parts, kg otherwise — small machined parts weigh grams. */
