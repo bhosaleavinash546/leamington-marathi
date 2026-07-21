@@ -18,6 +18,10 @@ const router = Router();
 // Persistent repeatability cache: same CAD file + photo + overrides -> the
 // byte-identical analysis, across restarts (same guarantee as the PCB pipeline).
 const cadCache = createAnalysisCache('cad_analysis_cache');
+// Bump when the prompt/normalisation logic changes so stale cached analyses (which
+// are keyed on inputs, not prompt content) are invalidated. v2: filename material
+// prior + confidence-inversion promotion.
+const CAD_PROMPT_VERSION = 2;
 
 // Model tiering: Sonnet 5 is the standard extraction tier (near-Opus on
 // structured analysis, faster, ~40% cheaper); the Deep-analysis toggle
@@ -280,7 +284,7 @@ router.post('/analyze', upload.fields([
     Buffer.from(partPhotoBase64),
     ...(drawingUpload ? [drawingUpload.buffer] : []),
     ...renderViews.map(v => Buffer.from(v)),
-    Buffer.from(JSON.stringify({ ...userOverrides, deep: deepAnalysis })),
+    Buffer.from(JSON.stringify({ ...userOverrides, deep: deepAnalysis, promptVersion: CAD_PROMPT_VERSION })),
   ]);
   const cached = cadCache.get(cacheKey);
   if (cached) {
@@ -1245,7 +1249,7 @@ router.post('/reanalyze', asyncRoute(async (req, res): Promise<void> => {
   const cacheKey = cadCache.buildKey([
     Buffer.from(JSON.stringify(geo)),
     Buffer.from(partPhotoBase64),
-    Buffer.from(JSON.stringify({ ...userOverrides, deep: deepAnalysis, filename })),
+    Buffer.from(JSON.stringify({ ...userOverrides, deep: deepAnalysis, filename, promptVersion: CAD_PROMPT_VERSION })),
   ]);
   const cached = cadCache.get(cacheKey);
   if (cached) {

@@ -10192,11 +10192,29 @@ function selLabourHealed(selectId: string): string {
   return healed;
 }
 
+/** A sensible default grade id for a material family + commodity, used only when
+ *  the AI returns the right commodity but leaves materialId blank. '' if none fits. */
+function _fallbackMaterialIdForFamily(fam: MaterialFamily | null, commodity: CommodityType): string {
+  if (!fam) return '';
+  const cast = /cast|forg/.test(commodity);
+  const map: Record<MaterialFamily, string> = cast
+    ? { aluminium: 'mat-lm25', magnesium: 'mat-mag-am60', titanium: '', 'cast iron': 'mat-gjs500', steel: 'mat-steel1045', 'copper alloy': '', plastic: '' }
+    : { aluminium: 'mat-al6061', magnesium: 'mat-mag-am60', titanium: 'mat-ti6al4v', 'cast iron': 'mat-steel1045', steel: 'mat-steel1045', 'copper alloy': 'mat-brass-cz121', plastic: 'mat-pa6' };
+  const id = map[fam] || '';
+  return id && library.materials.some(m => m.id === id) ? id : '';
+}
+
 function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): void {
   if (!cadAnalysisResult) return;
   _pendingCostingSource = 'cad'; // tag the next costing record for the accuracy harness
   const r = cadAnalysisResult;
   const c = r.costInputSuggestions;
+  // The AI sometimes returns the right commodity but leaves materialId blank —
+  // fall back to the filename-named material so the cost uses the correct grade.
+  if (!c.materialId) {
+    const fb = _fallbackMaterialIdForFamily(familyFromFilename(cadFile?.name || ''), targetCommodity);
+    if (fb) c.materialId = fb;
+  }
   // Longest bounding-box axis (mm) — used to derive an extrusion profile length.
   const bboxMaxMm = Math.max(r.geometry.boundingBoxMm.x, r.geometry.boundingBoxMm.y, r.geometry.boundingBoxMm.z);
 
