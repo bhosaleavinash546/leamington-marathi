@@ -252,6 +252,7 @@ router.post('/analyze', upload.fields([
 
   const forcedCommodity = typeof req.body?.commodity === 'string' ? req.body.commodity.trim() : '';
   const forcedMaterial  = typeof req.body?.material  === 'string' ? req.body.material.trim()  : '';
+  const forcedProcess   = typeof req.body?.process   === 'string' ? req.body.process.trim()   : '';
   const annualVolume    = parseFloat(req.body?.annualVolume) || 100000;
   const ovrWeightKg     = req.body?.weightKg    ? parseFloat(req.body.weightKg)    : null;
   const ovrVolumeCm3    = req.body?.volumeCm3   ? parseFloat(req.body.volumeCm3)   : null;
@@ -260,7 +261,7 @@ router.post('/analyze', upload.fields([
   const ovrHeightMm     = req.body?.heightMm    ? parseFloat(req.body.heightMm)    : null;
   const ovrDensityGcm3  = req.body?.densityGcm3 ? parseFloat(req.body.densityGcm3) : null;
 
-  const userOverrides = { forcedCommodity, forcedMaterial, annualVolume, ovrWeightKg, ovrVolumeCm3, ovrLengthMm, ovrWidthMm, ovrHeightMm, ovrDensityGcm3 };
+  const userOverrides = { forcedCommodity, forcedMaterial, forcedProcess, annualVolume, ovrWeightKg, ovrVolumeCm3, ovrLengthMm, ovrWidthMm, ovrHeightMm, ovrDensityGcm3 };
 
   const partPhotoBase64 = typeof req.body?.partPhotoBase64 === 'string' ? req.body.partPhotoBase64 : '';
   const partPhotoMime   = (typeof req.body?.partPhotoMime === 'string' ? req.body.partPhotoMime : 'image/jpeg') as 'image/jpeg' | 'image/png' | 'image/gif' | 'image/webp';
@@ -507,6 +508,7 @@ function normalizeCADAnalysis(a: Record<string, unknown>): void {
 interface UserOverrides {
   forcedCommodity: string;
   forcedMaterial: string;
+  forcedProcess: string;
   annualVolume: number;
   ovrWeightKg: number | null;
   ovrVolumeCm3: number | null;
@@ -522,7 +524,7 @@ function buildPrompt(
   filename: string,
   selectedCommodity: string,
   stage1: { primary: string; conf: number; alt: Array<{ type: string; conf: number }> } | null,
-  overrides: UserOverrides = { forcedCommodity: '', forcedMaterial: '', annualVolume: 100000, ovrWeightKg: null, ovrVolumeCm3: null, ovrLengthMm: null, ovrWidthMm: null, ovrHeightMm: null, ovrDensityGcm3: null },
+  overrides: UserOverrides = { forcedCommodity: '', forcedMaterial: '', forcedProcess: '', annualVolume: 100000, ovrWeightKg: null, ovrVolumeCm3: null, ovrLengthMm: null, ovrWidthMm: null, ovrHeightMm: null, ovrDensityGcm3: null },
 ): string {
   const validMaterials = 'mat-al6061, mat-al5052, mat-dc01, mat-hss, mat-stainless-316, mat-brass-crz, mat-pp, mat-pa6, mat-pc, mat-lm25, mat-gjl350, mat-az91d, mat-ss304c, mat-bronze-c905';
   const validCommodities = 'machining, sheet_metal, sheet_metal_fab, injection_moulding, casting, forging, cast_and_machine, blow_moulding, thermoforming, rotational_moulding, rubber, composites, wiring_harness, extrusion, pcb_fab, pcba, biw_assembly, painting, assembly';
@@ -708,6 +710,7 @@ ${pre.summary}`;
   const overrideLines: string[] = [];
   if (overrides.forcedCommodity) overrideLines.push(`Manufacturing process: ${overrides.forcedCommodity} [USER-FORCED — use this as recommendedCommodity, do NOT override]`);
   if (overrides.forcedMaterial)  overrideLines.push(`Material: ${overrides.forcedMaterial} [USER-FORCED — use this as materialId exactly]`);
+  if (overrides.forcedProcess)   overrideLines.push(`Casting / process route: ${overrides.forcedProcess} [USER-FORCED — set costInputSuggestions.casting.subtype AND costInputSuggestions.castCAM.subtype to exactly "${overrides.forcedProcess}"; keep cycle time, machine selection and tooling cost consistent with THIS route, not your own preferred one]`);
   if (overrides.ovrWeightKg !== null)    overrideLines.push(`Part weight: ${overrides.ovrWeightKg} kg [USER-PROVIDED — use this as netWeightKg]`);
   if (overrides.ovrVolumeCm3 !== null)   overrideLines.push(`Volume: ${overrides.ovrVolumeCm3} cm³ [USER-PROVIDED — use this as estimatedVolumeCm3]`);
   if (overrides.ovrLengthMm !== null)    overrideLines.push(`Bounding box L: ${overrides.ovrLengthMm} mm [USER-PROVIDED]`);
@@ -1204,6 +1207,7 @@ router.post('/reanalyze', asyncRoute(async (req, res): Promise<void> => {
 
   const forcedCommodity = typeof req.body?.commodity === 'string' ? req.body.commodity.trim() : '';
   const forcedMaterial  = typeof req.body?.material  === 'string' ? req.body.material.trim()  : '';
+  const forcedProcess   = typeof req.body?.process   === 'string' ? req.body.process.trim()   : '';
   const annualVolume    = parseFloat(req.body?.annualVolume) || 100000;
   const ovrWeightKg     = req.body?.weightKg    ? parseFloat(req.body.weightKg)    : null;
   const ovrVolumeCm3    = req.body?.volumeCm3   ? parseFloat(req.body.volumeCm3)   : null;
@@ -1214,7 +1218,7 @@ router.post('/reanalyze', asyncRoute(async (req, res): Promise<void> => {
   const partPhotoBase64 = typeof req.body?.partPhotoBase64 === 'string' ? req.body.partPhotoBase64 : '';
   const partPhotoMime   = (typeof req.body?.partPhotoMime === 'string' ? req.body.partPhotoMime : 'image/jpeg') as 'image/jpeg' | 'image/png' | 'image/gif' | 'image/webp';
 
-  const userOverrides = { forcedCommodity, forcedMaterial, annualVolume, ovrWeightKg, ovrVolumeCm3, ovrLengthMm, ovrWidthMm, ovrHeightMm, ovrDensityGcm3 };
+  const userOverrides = { forcedCommodity, forcedMaterial, forcedProcess, annualVolume, ovrWeightKg, ovrVolumeCm3, ovrLengthMm, ovrWidthMm, ovrHeightMm, ovrDensityGcm3 };
   const anthropic = createAnthropic(apiKey);
 
   const deepAnalysis = isDeepReq(req);

@@ -9755,7 +9755,18 @@ function populateMachinedFeatures(prefix: string): void {
     ? `Ø${r.diaMm.toFixed(1)} × ${r.depthMm.toFixed(0)} ${r.through ? '(thru)' : '(blind)'}`
     : r.kind === 'boss' ? `Ø${r.diaMm.toFixed(1)} × ${r.depthMm.toFixed(0)}`
     : `${Math.round(r.areaMm2 ?? 0)} mm²${r.depthMm > 0 ? ` × ${r.depthMm.toFixed(0)}` : ''}`;
+  // On the machining form the base ops may already be anchored to the OCCT
+  // bottom-up cycle total (which covers every feature). In that case the panel is
+  // an AUDIT view; only when there's no OCCT cycle estimate (mesh/STL, fallback)
+  // does it actively add feature cost.
+  const machAuditOnly = prefix === 'mach' && !!(cadOCCTGeometry?.cncCycleTimeEstimate?.estimatedTotalHrs);
+  const machNote = prefix === 'mach'
+    ? (machAuditOnly
+        ? `<div style="font-size:0.7rem;color:var(--text-muted);margin-bottom:4px"><strong>Audit view</strong> — these features are already included in the CNC cycle-time estimate in the operations above (from the OCCT bottom-up model), so they are not added again.</div>`
+        : `<div style="font-size:0.7rem;color:var(--amber,#b45309);margin-bottom:4px">No OCCT cycle estimate for this upload — the ticked features below are <strong>added</strong> as machining cost.</div>`)
+    : '';
   body.innerHTML = `
+    ${machNote}
     <div style="font-size:0.72rem;color:var(--text-secondary);margin-bottom:6px">
       ${totalHoles} hole/bore feature(s)${nonHole ? ` + ${nonHole} boss/face/pocket` : ''} from the B-rep.
       Near-net: holes are ticked (bosses/faces/pockets may be as-cast — tick the machined ones).
@@ -10145,6 +10156,17 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
         if (occtSetupCount !== null) {
           const setupHrs = (occtSetupCount * occtSetupMinsPerSetup) / 60;
           setNumericField('mach-setup-time', setupHrs, 3);
+        }
+        // Machined-features panel: audit + fallback costing. A billet part is
+        // machined from solid, so default the stock to solid-billet (every
+        // feature auto-ticked). When the OCCT bottom-up cycle estimate is present
+        // the ops above already cover these features, so the panel is audit-only;
+        // on mesh/STL or text-fallback (no cycle estimate) it becomes the active
+        // feature cost (see collectMachiningInput).
+        populateMachinedFeatures('mach');
+        {
+          const stockEl = el<HTMLSelectElement>('mach-mf-stock');
+          if (stockEl) { stockEl.value = 'solid_billet'; stockEl.dispatchEvent(new Event('change')); }
         }
         break;
       }
@@ -10632,6 +10654,7 @@ function switchCommodity(type: CommodityType): void {
   switch (type) {
     case 'machining':
       area.innerHTML = renderMachiningForm();
+      area.insertAdjacentHTML('beforeend', renderMachinedFeaturesPanel('mach'));
       populateSelects();
       el('add-mach-op-btn')?.addEventListener('click', () => addMachOp());
       addMachOp({ name: 'CNC Turning', type: 'turning', machineId: 'mach-lathe-cnc', labourId: 'lab-uk-skilled', cycleTimeHr: 0.05, partsPerCycle: 1, oee: 0.85, manning: 1, labourTimeHr: 0.05, labourEfficiency: 0.92 });
@@ -11087,7 +11110,20 @@ function collectMachiningInput(): UniversalStackInput {
     rejectRate: num('mach-reject') || undefined,
   });
 
-  return { ...getUniversalTail(), rawMaterial: drivers.rawMaterial, operations: drivers.operations, tooling: drivers.tooling };
+  let operations = drivers.operations;
+  // Geometry feature machining as a FALLBACK cost source: when the OCCT bottom-up
+  // cycle estimate drove the ops above, those already cover every feature — adding
+  // the panel's ops would double-count, so we skip it. On mesh/STL or text-fallback
+  // uploads (no cycle estimate) the features would otherwise be uncosted, so we fold
+  // them in here. Tooling is intentionally NOT added (the form's own tooling/NRE
+  // fields already capture machining fixtures & programming).
+  const hasOcctCycleTotal = !!(cadOCCTGeometry?.cncCycleTimeEstimate?.estimatedTotalHrs);
+  if (!hasOcctCycleTotal) {
+    const secondary = collectSecondaryMachining('mach');
+    if (secondary) operations = [...operations, ...secondary.ops];
+  }
+
+  return { ...getUniversalTail(), rawMaterial: drivers.rawMaterial, operations, tooling: drivers.tooling };
 }
 
 function collectSheetMetalInput(): UniversalStackInput {
@@ -15082,7 +15118,7 @@ function buildCadReportMeta(): CADReportMeta {
   let featureStock: 'near_net' | 'solid_billet' | null = null;
   const rows = (cadOCCTGeometry?.featureTable ?? []) as FeatureRow[];
   if (rows.length) {
-    const prefix = activeCommodity === 'casting' ? 'cast' : activeCommodity === 'forging' ? 'forge' : null;
+    const prefix = activeCommodity === 'casting' ? 'cast' : activeCommodity === 'forging' ? 'forge' : activeCommodity === 'machining' ? 'mach' : null;
     let fm = prefix ? (collectSecondaryMachining(prefix)?.result ?? null) : null;
     let machineId = fm?.operations[0]?.machineId ?? '';
     if (fm && prefix) {
