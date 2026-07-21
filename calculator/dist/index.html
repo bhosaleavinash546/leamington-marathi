@@ -50,12 +50,12 @@
       } catch { window.location.replace(authUrl); }
     })();
   </script>
-  <script type="module" crossorigin src="/calculator/assets/index-DbX6_-LW.js"></script>
+  <script type="module" crossorigin src="/calculator/assets/index-BiikiSky.js"></script>
   <link rel="modulepreload" crossorigin href="/calculator/assets/vendor-motion-DAJjhAeu.js">
   <link rel="modulepreload" crossorigin href="/calculator/assets/vendor-CM2mqF4r.js">
   <link rel="modulepreload" crossorigin href="/calculator/assets/vendor-pdf-hc7gJ01J.js">
   <link rel="modulepreload" crossorigin href="/calculator/assets/vendor-chart-K87R2BAO.js">
-  <link rel="stylesheet" crossorigin href="/calculator/assets/index-onpipo90.css">
+  <link rel="stylesheet" crossorigin href="/calculator/assets/index-r6g8h4_P.css">
 </head>
 <body>
 
@@ -1216,7 +1216,12 @@
     </div>
 
     <div id="results-breakdown">
-      <div class="placeholder">Fill in inputs and click Calculate, or load an example.</div>
+      <div class="cv-empty" id="results-empty">
+        <div class="cv-empty-icon"><svg class="ic"><use href="#i-gauge"/></svg></div>
+        <div class="cv-empty-title">No costing yet</div>
+        <div class="cv-empty-sub">Fill in the inputs on the left and hit <strong>Calculate</strong> to get a full 8-bucket should-cost with a confidence band and DFM guidance.</div>
+        <button class="btn btn-secondary btn-sm" id="results-empty-example"><svg class="ic ic-xs"><use href="#i-play"/></svg> Load an example</button>
+      </div>
     </div>
     <div id="results-detail"      style="display:none"></div>
     <div id="results-insights"    style="display:none"></div>

@@ -908,7 +908,12 @@ async function fetchCommodities(force = false): Promise<void> {
     checkCommAlerts();
     populateAlertSelect();
   } catch {
-    // silently fail — keep previous data or show empty
+    // Fetch failed. Keep any previous data; otherwise resolve the ticker's
+    // perpetual "Loading…" into an honest unavailable state so it never hangs.
+    if (!_commData) {
+      const track = document.getElementById('comm-ticker-track');
+      if (track) track.innerHTML = '<span class="comm-ticker-loading">Live commodity prices unavailable right now</span>';
+    }
   }
 }
 
@@ -13161,6 +13166,24 @@ function initConfidenceIndicators(): void {
 // ─── Render: Breakdown ────────────────────────────────────────────────────────
 
 /**
+ * Shimmer skeleton for an async pane (AI DFM, sensitivity, insights) — reads as
+ * a modern SaaS loading state instead of a bare "Analysing…" line. Reuses the
+ * shared `.skel` shimmer; `msg` is the honest status shown under the bars.
+ */
+function paneSkeleton(msg: string): string {
+  return `<div class="cv-skel-pane" role="status" aria-live="polite">
+    <span class="skel skel--lg" style="width:38%"></span>
+    <div class="cv-skel-lines">
+      <span class="skel" style="width:92%"></span>
+      <span class="skel" style="width:78%"></span>
+      <span class="skel" style="width:85%"></span>
+      <span class="skel" style="width:64%"></span>
+    </div>
+    <div class="cv-skel-note"><span class="cv-spin" aria-hidden="true"></span>${escHtml(msg)}</div>
+  </div>`;
+}
+
+/**
  * Compute the confidence band for the money-screen hero. Wraps the exact same
  * deterministic engine calls the AI-Insights pane uses (calibration →
  * Monte-Carlo uncertainty → conformal band) so the hero and the Insights card
@@ -14023,7 +14046,7 @@ function renderDFMDFA(result: PartCostResult, input: UniversalStackInput): void 
   const panel = el('results-dfm');
   if (!result || !input) { panel.innerHTML = '<div class="placeholder">Run a calculation first.</div>'; return; }
 
-  panel.innerHTML = '<div class="placeholder">Analysing design for manufacture…</div>';
+  panel.innerHTML = paneSkeleton('Analysing design for manufacture…');
 
   setTimeout(() => {
     try {
@@ -14164,7 +14187,7 @@ function renderDFMDFA(result: PartCostResult, input: UniversalStackInput): void 
         const aiResult = document.getElementById('dfm-ai-result')!;
         btn.disabled = true;
         btn.textContent = '⏳ Analysing…';
-        aiResult.innerHTML = '<div class="placeholder">Waiting for AI analysis…</div>';
+        aiResult.innerHTML = paneSkeleton('Waiting for AI analysis…');
         try {
           const token = localStorage.getItem('auth_token') ?? sessionStorage.getItem('auth_token') ?? '';
           const resp = await fetch('/api/dfm/analyze', {
@@ -14196,7 +14219,7 @@ function renderSensitivity(): void {
   const panel = el('results-sensitivity');
   if (!lastInput) { panel.innerHTML = '<div class="placeholder">Run a calculation first.</div>'; return; }
 
-  panel.innerHTML = '<div class="placeholder">Running sensitivity analysis…</div>';
+  panel.innerHTML = paneSkeleton('Running sensitivity analysis…');
 
   setTimeout(() => {
     try {
@@ -17072,6 +17095,7 @@ async function init(): Promise<void> {
   el('save-library-btn')?.addEventListener('click', saveLastResultToLibrary);
   el('log-actual-btn')?.addEventListener('click', logActualQuote);
   el('load-ref-btn')?.addEventListener('click', loadExample);
+  document.getElementById('results-empty-example')?.addEventListener('click', loadExample);
   el('rates-btn')?.addEventListener('click', openRateLibrary);
 
   // Rate modal
