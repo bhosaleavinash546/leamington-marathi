@@ -9740,6 +9740,25 @@ function renderMachinedFeaturesPanel(prefix: string): string {
 }
 
 /** Fill the panel from cadOCCTGeometry.featureTable with per-feature toggles. */
+/** True when the machining form's ops are anchored to the OCCT bottom-up cycle
+ *  total (which already covers every feature). */
+function machiningHasOcctCycleTotal(): boolean {
+  return !!(cadOCCTGeometry?.cncCycleTimeEstimate?.estimatedTotalHrs);
+}
+
+/** True when the engineer has toggled feature machining to be the PRIMARY cost. */
+function machiningFeaturePrimary(): boolean {
+  return (document.getElementById('mach-mf-primary') as HTMLInputElement | null)?.checked ?? false;
+}
+
+/** Human explanation of the current machining feature-panel mode. */
+function machiningFeatureModeText(primary: boolean): string {
+  if (primary) return `<strong>Primary</strong> — feature machining is the cost basis; the operations table above is ignored.`;
+  return machiningHasOcctCycleTotal()
+    ? `<strong>Audit view</strong> — these features are already in the CNC cycle-time estimate above (OCCT bottom-up), so they are not added again.`
+    : `<strong>Fallback</strong> — no OCCT cycle estimate for this upload, so the ticked features are added as machining cost.`;
+}
+
 function populateMachinedFeatures(prefix: string): void {
   const body = document.getElementById(`${prefix}-mf-body`);
   if (!body) return;
@@ -9755,15 +9774,15 @@ function populateMachinedFeatures(prefix: string): void {
     ? `Ø${r.diaMm.toFixed(1)} × ${r.depthMm.toFixed(0)} ${r.through ? '(thru)' : '(blind)'}`
     : r.kind === 'boss' ? `Ø${r.diaMm.toFixed(1)} × ${r.depthMm.toFixed(0)}`
     : `${Math.round(r.areaMm2 ?? 0)} mm²${r.depthMm > 0 ? ` × ${r.depthMm.toFixed(0)}` : ''}`;
-  // On the machining form the base ops may already be anchored to the OCCT
-  // bottom-up cycle total (which covers every feature). In that case the panel is
-  // an AUDIT view; only when there's no OCCT cycle estimate (mesh/STL, fallback)
-  // does it actively add feature cost.
-  const machAuditOnly = prefix === 'mach' && !!(cadOCCTGeometry?.cncCycleTimeEstimate?.estimatedTotalHrs);
+  // On the machining form the panel has three modes (see machiningFeatureModeText):
+  //  · Primary  — the engineer's toggle: feature machining REPLACES the ops table.
+  //  · Audit    — OCCT cycle total already covers the features (not added again).
+  //  · Fallback — no OCCT cycle estimate, so the ticked features are added.
   const machNote = prefix === 'mach'
-    ? (machAuditOnly
-        ? `<div style="font-size:0.7rem;color:var(--text-muted);margin-bottom:4px"><strong>Audit view</strong> — these features are already included in the CNC cycle-time estimate in the operations above (from the OCCT bottom-up model), so they are not added again.</div>`
-        : `<div style="font-size:0.7rem;color:var(--amber,#b45309);margin-bottom:4px">No OCCT cycle estimate for this upload — the ticked features below are <strong>added</strong> as machining cost.</div>`)
+    ? `<label style="display:flex;align-items:center;gap:6px;font-size:0.72rem;margin-bottom:4px;cursor:pointer">
+         <input type="checkbox" id="mach-mf-primary"/> Cost machining from these features (<strong>primary</strong> — replaces the operations table)
+       </label>
+       <div id="mach-mf-mode" style="font-size:0.7rem;color:var(--text-muted);margin-bottom:6px">${machiningFeatureModeText(false)}</div>`
     : '';
   body.innerHTML = `
     ${machNote}
@@ -9820,6 +9839,20 @@ function populateMachinedFeatures(prefix: string): void {
     refresh();
   });
   body.querySelectorAll(`.${prefix}-mf-chk, #${prefix}-mf-stock, #${prefix}-mf-finish`).forEach(elm => elm.addEventListener('change', refresh));
+  // Machining: the "primary" toggle switches the cost basis to features; update the
+  // live mode line so the engineer sees whether the ops table is being ignored.
+  if (prefix === 'mach') {
+    const primaryChk = document.getElementById('mach-mf-primary') as HTMLInputElement | null;
+    const modeEl = document.getElementById('mach-mf-mode');
+    primaryChk?.addEventListener('change', () => {
+      if (modeEl) {
+        const on = primaryChk.checked;
+        modeEl.innerHTML = machiningFeatureModeText(on);
+        modeEl.style.color = on ? 'var(--accent)' : 'var(--text-muted)';
+      }
+      refresh();
+    });
+  }
   refresh();
 }
 
@@ -11092,12 +11125,17 @@ function collectMachiningInput(): UniversalStackInput {
     };
   });
 
+  // "Primary" toggle: feature machining becomes the cost basis, so the operations
+  // table above is dropped and the machining time comes entirely from the geometry
+  // features (material + setup + feature ops).
+  const featurePrimary = machiningFeaturePrimary();
+
   const drivers = computeMachiningDrivers({
     materialId: sel('mach-mat'),
     netWeightKg: num('mach-net-wt'),
     stockWeightKg: num('mach-stock-wt') || num('mach-net-wt') / 0.65,
     materialUtilization: num('mach-mat-util'),
-    operations: ops,
+    operations: featurePrimary ? [] : ops,
     setup: {
       setupTimeHr: num('mach-setup-time'),
       batchSize: num('mach-batch-size') || 50,
@@ -11111,14 +11149,14 @@ function collectMachiningInput(): UniversalStackInput {
   });
 
   let operations = drivers.operations;
-  // Geometry feature machining as a FALLBACK cost source: when the OCCT bottom-up
-  // cycle estimate drove the ops above, those already cover every feature — adding
-  // the panel's ops would double-count, so we skip it. On mesh/STL or text-fallback
-  // uploads (no cycle estimate) the features would otherwise be uncosted, so we fold
-  // them in here. Tooling is intentionally NOT added (the form's own tooling/NRE
-  // fields already capture machining fixtures & programming).
+  // Fold in feature machining when it is the PRIMARY basis (toggle on) OR as a
+  // FALLBACK when the OCCT bottom-up cycle estimate is absent (mesh/STL, text
+  // fallback) — otherwise those features would be uncosted. When the cycle total
+  // IS present and the toggle is off, the ops already cover the features, so we
+  // skip to avoid double-counting. Tooling is intentionally NOT added here (the
+  // form's own tooling/NRE fields already capture machining fixtures & programming).
   const hasOcctCycleTotal = !!(cadOCCTGeometry?.cncCycleTimeEstimate?.estimatedTotalHrs);
-  if (!hasOcctCycleTotal) {
+  if (featurePrimary || !hasOcctCycleTotal) {
     const secondary = collectSecondaryMachining('mach');
     if (secondary) operations = [...operations, ...secondary.ops];
   }
