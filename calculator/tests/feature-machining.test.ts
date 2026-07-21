@@ -75,9 +75,34 @@ describe('computeFeatureMachining', () => {
     expect(precise).toBeCloseTo(base * 1.6, 5);
   });
 
-  it('defaultInclude: holes in, bosses out', () => {
+  it('defaultInclude: near-net → holes in, bosses out', () => {
     expect(defaultInclude({ kind: 'hole', diaMm: 5, depthMm: 5, through: true, count: 1 })).toBe(true);
     expect(defaultInclude({ kind: 'boss', diaMm: 5, depthMm: 5, through: null, count: 1 })).toBe(false);
+  });
+
+  it('defaultInclude: solid-billet → EVERY machinable feature is costed', () => {
+    const s = 'solid_billet' as const;
+    expect(defaultInclude({ kind: 'hole',   diaMm: 5, depthMm: 5, through: true, count: 1 }, s)).toBe(true);
+    expect(defaultInclude({ kind: 'boss',   diaMm: 5, depthMm: 5, through: null, count: 1 }, s)).toBe(true);
+    expect(defaultInclude({ kind: 'face',   diaMm: 0, depthMm: 0, through: null, count: 1, areaMm2: 5000 }, s)).toBe(true);
+    expect(defaultInclude({ kind: 'pocket', diaMm: 0, depthMm: 8, through: null, count: 1, areaMm2: 2000 }, s)).toBe(true);
+    expect(defaultInclude({ kind: 'slot',   diaMm: 0, depthMm: 6, through: null, count: 1, areaMm2: 900 }, s)).toBe(true);
+  });
+
+  it('solid-billet auto-costs faces + pockets (no manual ticking needed) — fixes the machining under-count', () => {
+    const FACE: FeatureRow = { kind: 'face', diaMm: 0, depthMm: 0, through: null, count: 1, areaMm2: 8000 };
+    const POCKET: FeatureRow = { kind: 'pocket', diaMm: 0, depthMm: 12, through: null, count: 1, areaMm2: 3000 };
+    const rows: FeatureRow[] = [
+      { kind: 'hole', diaMm: 10, depthMm: 20, through: true, count: 4 },
+      FACE, POCKET,
+    ];
+    // near-net: only the 4 holes auto-cost
+    const near = computeFeatureMachining(rows, { machineId: 'm', labourId: 'l' });
+    expect(near.featureCount).toBe(4);
+    // solid-billet: holes + face + pocket all auto-cost
+    const billet = computeFeatureMachining(rows, { machineId: 'm', labourId: 'l', stockCondition: 'solid_billet' });
+    expect(billet.featureCount).toBe(6);
+    expect(billet.totalCycleHr).toBeGreaterThan(near.totalCycleHr);
   });
 });
 

@@ -66,7 +66,7 @@ import type { CompositeProcess } from '../engine/modules/composites.js';
 import { computeWiringHarnessDrivers } from '../engine/modules/wiring-harness.js';
 import { buildRegionalLibrary, REGIONAL_DATA, computeRegionalComparison } from '../engine/regional-rates.js';
 import { featureToOperation, drillingOpFromFeatures } from '../engine/feature-ops.js';
-import { computeFeatureMachining, type StockCondition } from '../engine/feature-machining.js';
+import { computeFeatureMachining, defaultInclude, type StockCondition } from '../engine/feature-machining.js';
 import type { FeatureRow } from '../engine/feature-ops.js';
 import type { OperationInput } from '../engine/types.js';
 import type { ManufacturingRegion } from '../engine/regional-rates.js';
@@ -99,7 +99,8 @@ async function ensurePdfLibs(): Promise<void> {
   drawCostVisionLogo = m3.drawCostVisionLogo;
 }
 import { exportToExcelBlob } from '../export/excel.js';
-import type { printPDF as printPDFType, printCADAnalysisPDF as printCADType, drawCostVisionLogo as drawLogoType } from '../export/pdf.js';
+import type { printPDF as printPDFType, printCADAnalysisPDF as printCADType, drawCostVisionLogo as drawLogoType, CADReportMeta } from '../export/pdf.js';
+import type { FeatureMachiningLine } from '../engine/feature-machining.js';
 import { computeCostUncertainty } from '../engine/uncertainty.js';
 import {
   computeCalibration, applyCalibration, computeCalibrationHierarchical, cvFromMape,
@@ -201,6 +202,12 @@ let cadFile: File | null = null;
 let cadAnalysisResult: CADAnalysisResult | null = null;
 let cadOCCTGeometry: OCCTGeometry | null = null;
 let cadGeometrySource: 'occt' | 'text_parsing' = 'text_parsing';
+// Stage-3 user pins: when true the engineer has fixed the grade / process, so AI
+// re-analysis and sanity heuristics must NOT overwrite them. Mirrors pcbPinnedPrices.
+let _cadMaterialLocked = false;
+let _cadProcessLocked = false;
+let _cadPinnedMaterialId = '';
+let _cadPinnedSubtype = '';   // hpdc | sand | gravity | investment
 let cadSanityWarnings: Array<{ code: string; message: string; severity: 'warn' | 'error' }> = [];
 let cadFromCache = false;
 // Provenance for the accuracy harness: 'cad' when the last applied inputs came
@@ -5352,6 +5359,43 @@ function _buildCadMaterialOptions(commodity: string): string {
     mats.map(m => `<option value="${m.id}">${escHtml(m.label)}</option>`).join('');
 }
 
+/** Casting process-route override options (used in the CAD adjust panel). */
+function _buildCadProcessOptions(): string {
+  const opts: Array<[string, string]> = [
+    ['', '— AI selects process —'], ['hpdc', 'HPDC (high-pressure die)'],
+    ['gravity', 'Gravity die'], ['sand', 'Sand casting'], ['investment', 'Investment casting'],
+  ];
+  return opts.map(([v, l]) => `<option value="${v}">${escHtml(l)}</option>`).join('');
+}
+
+/** Warn when a pinned alloy doesn't fit the pinned casting route, or when a
+ *  general die-cast alloy is used on what may be a structural part. */
+function _alloyProcessWarning(materialId: string, subtype: string): string | null {
+  const id = (materialId || '').toLowerCase();
+  const isIron = /gjl|gjs|gjv|simo|\badi\b|cast-?steel|mat-g[jl]/.test(id);
+  if (subtype === 'hpdc' && isIron) {
+    return 'Iron/steel cannot be high-pressure die cast — HPDC is for aluminium, magnesium or zinc. Use sand or investment casting for this alloy.';
+  }
+  if ((subtype === 'sand' || subtype === 'gravity') && /adc12|a380|a383/.test(id)) {
+    return 'ADC12/A380/A383 are pressure-die-casting alloys; for sand/gravity casting choose A356/LM25 or a structural grade.';
+  }
+  if (/adc12|a380|a383|a413|a319/.test(id)) {
+    return 'General die-cast alloy selected. For safety-critical structural parts (steering, suspension, brake, chassis) a structural HPDC alloy (Silafont-36, Aural-5, Castasil-37) with T7 heat-treat + 100% NDT is usually required.';
+  }
+  return null;
+}
+
+/** Re-apply the engineer's pinned grade/process onto an analysis result so an AI
+ *  re-analysis can never silently overwrite a locked choice. */
+function _applyCadPins(a: CADAnalysisResult): void {
+  const c = a.costInputSuggestions as { materialId?: string; casting?: { subtype?: string }; castCAM?: { subtype?: string } };
+  if (_cadMaterialLocked && _cadPinnedMaterialId) c.materialId = _cadPinnedMaterialId;
+  if (_cadProcessLocked && _cadPinnedSubtype) {
+    if (c.casting) c.casting.subtype = _cadPinnedSubtype;
+    if (c.castCAM) c.castCAM.subtype = _cadPinnedSubtype;
+  }
+}
+
 function renderCADAnalysisForm(): string {
   const commOpts = CAD_COMMODITY_OPTIONS
     .map(o => `<option value="${o.value}">${escHtml(o.label)}</option>`).join('');
@@ -5626,6 +5670,7 @@ function wireCADEvents(): void {
   // Clear button
   el('cad-clear-btn')?.addEventListener('click', () => {
     cadFile = null; cadAnalysisResult = null; cadOCCTGeometry = null;
+    _cadMaterialLocked = false; _cadProcessLocked = false; _cadPinnedMaterialId = ''; _cadPinnedSubtype = '';
     unmountCADViewer();
     document.getElementById('cad-file-info')?.style.setProperty('display', 'none');
     document.getElementById('cad-drop-zone')?.style.setProperty('display', '');
@@ -5715,6 +5760,8 @@ function setCADFile(f: File): void {
     return;
   }
   cadFile = f;
+  // A new part starts with a clean slate — clear any pins from the previous file.
+  _cadMaterialLocked = false; _cadProcessLocked = false; _cadPinnedMaterialId = ''; _cadPinnedSubtype = '';
   document.getElementById('cad-drop-zone')?.style.setProperty('display', 'none');
   const cadFileInfo = document.getElementById('cad-file-info');
   if (cadFileInfo) cadFileInfo.style.display = 'flex';
@@ -6205,16 +6252,25 @@ function renderCADResults(r: CADAnalysisResult, autoCalculate = false, annualVol
           </select>
         </div>
         <div class="field-group">
-          <label style="font-size:0.72rem">Material (override &amp; recalc)</label>
+          <label style="font-size:0.72rem">Material grade ${_cadMaterialLocked ? '📌' : ''}(override &amp; recalc)</label>
           <select id="cad-reanalyze-material" style="font-size:0.8rem">
             ${_buildCadMaterialOptions(recommendedCommodity)}
           </select>
         </div>
+        <div class="field-group">
+          <label style="font-size:0.72rem">Process route ${_cadProcessLocked ? '📌' : ''}(if you know it)</label>
+          <select id="cad-reanalyze-process" style="font-size:0.8rem">
+            ${_buildCadProcessOptions()}
+          </select>
+        </div>
       </div>
+      <div id="cad-override-warn" style="display:none;margin-bottom:6px;font-size:0.72rem;color:var(--amber, #b45309);line-height:1.4"></div>
       <div style="display:flex;gap:6px;flex-wrap:wrap">
         <button class="btn btn-primary btn-sm" id="cad-reanalyze-btn">↺ Re-analyse (no re-upload)</button>
-        <button class="btn btn-secondary btn-sm" id="cad-override-recalc-btn">Override &amp; Recalculate ⚡</button>
+        <button class="btn btn-secondary btn-sm" id="cad-override-recalc-btn">Pin &amp; Recalculate ⚡</button>
+        ${(_cadMaterialLocked || _cadProcessLocked) ? '<button class="btn btn-ghost btn-sm" id="cad-clear-pins-btn">Clear pins</button>' : ''}
       </div>
+      <div style="font-size:0.68rem;color:var(--text-muted);margin-top:4px">Pinned grade/process 📌 survive AI re-analysis — the AI classifies, you decide.</div>
       <div id="cad-reanalyze-status" style="display:none;margin-top:6px;font-size:0.75rem;color:var(--text-muted)">Running AI analysis…</div>
     </div>` : ''}
 
@@ -6251,14 +6307,35 @@ function renderCADResults(r: CADAnalysisResult, autoCalculate = false, annualVol
   // Wire re-analyse button (uses cached OCCT geometry — no re-upload)
   document.getElementById('cad-reanalyze-btn')?.addEventListener('click', () => { void reanalyzeCAD(); });
 
-  // Wire override & recalculate button (mutates cached result's material, then applies)
+  // Live alloy↔process compatibility hint as the engineer picks overrides.
+  const overrideWarnEl = document.getElementById('cad-override-warn');
+  const procSel = document.getElementById('cad-reanalyze-process') as HTMLSelectElement | null;
+  const refreshOverrideWarn = () => {
+    if (!overrideWarnEl) return;
+    const m = (document.getElementById('cad-reanalyze-material') as HTMLSelectElement | null)?.value ?? '';
+    const p = procSel?.value ?? '';
+    const w = _alloyProcessWarning(m, p);
+    if (w) { overrideWarnEl.textContent = `⚠ ${w}`; overrideWarnEl.style.display = ''; }
+    else { overrideWarnEl.style.display = 'none'; }
+  };
+
+  // Wire pin & recalculate: fixes the grade / process so AI re-analysis can't
+  // silently overwrite them (the ADC12-on-structural-knuckle class of bug).
   document.getElementById('cad-override-recalc-btn')?.addEventListener('click', () => {
     if (!cadAnalysisResult) return;
-    const matOvr = (document.getElementById('cad-reanalyze-material') as HTMLSelectElement | null)?.value;
-    if (matOvr) {
-      cadAnalysisResult.costInputSuggestions.materialId = matOvr;
-    }
+    const matOvr = (document.getElementById('cad-reanalyze-material') as HTMLSelectElement | null)?.value ?? '';
+    const procOvr = procSel?.value ?? '';
+    if (matOvr) { _cadMaterialLocked = true; _cadPinnedMaterialId = matOvr; }
+    if (procOvr) { _cadProcessLocked = true; _cadPinnedSubtype = procOvr; }
+    _applyCadPins(cadAnalysisResult);
     applyCADToForm(cadAnalysisResult.costInputSuggestions.recommendedCommodity as CommodityType, true);
+  });
+
+  document.getElementById('cad-clear-pins-btn')?.addEventListener('click', () => {
+    _cadMaterialLocked = false; _cadProcessLocked = false;
+    _cadPinnedMaterialId = ''; _cadPinnedSubtype = '';
+    const vol = parseFloat((document.getElementById('cad-annual-volume') as HTMLInputElement | null)?.value ?? '') || 100000;
+    if (cadAnalysisResult) renderCADResults(cadAnalysisResult, false, vol);
   });
 
   // Commodity change in re-analyse section rebuilds material dropdown
@@ -6267,8 +6344,15 @@ function renderCADResults(r: CADAnalysisResult, autoCalculate = false, annualVol
   if (reanalyzeCommSel && reanalyzeMatSel) {
     reanalyzeCommSel.addEventListener('change', () => {
       reanalyzeMatSel.innerHTML = _buildCadMaterialOptions(reanalyzeCommSel.value);
+      refreshOverrideWarn();
     });
   }
+  reanalyzeMatSel?.addEventListener('change', refreshOverrideWarn);
+  procSel?.addEventListener('change', refreshOverrideWarn);
+  // Pre-select any active pins so the panel reflects the locked state.
+  if (_cadMaterialLocked && reanalyzeMatSel) reanalyzeMatSel.value = _cadPinnedMaterialId;
+  if (_cadProcessLocked && procSel) procSel.value = _cadPinnedSubtype;
+  refreshOverrideWarn();
 
   // Auto-calculate if triggered from "Analyze & Calculate" button
   if (autoCalculate) {
@@ -6284,7 +6368,9 @@ async function reanalyzeCAD(): Promise<void> {
   }
 
   const commOvr = (document.getElementById('cad-reanalyze-commodity') as HTMLSelectElement | null)?.value ?? '';
-  const matOvr  = (document.getElementById('cad-reanalyze-material')  as HTMLSelectElement | null)?.value ?? '';
+  // Prefer the engineer's pin over the transient select value so a lock always wins.
+  const matOvr  = (_cadMaterialLocked && _cadPinnedMaterialId) || (document.getElementById('cad-reanalyze-material') as HTMLSelectElement | null)?.value || '';
+  const procOvr = (_cadProcessLocked && _cadPinnedSubtype) || (document.getElementById('cad-reanalyze-process') as HTMLSelectElement | null)?.value || '';
   const annVol  = (document.getElementById('cad-annual-volume') as HTMLInputElement | null)?.value ?? '100000';
   const apiKey  = val('cad-api-key');
 
@@ -6305,6 +6391,7 @@ async function reanalyzeCAD(): Promise<void> {
     };
     if (commOvr) body['commodity'] = commOvr;
     if (matOvr)  body['material']  = matOvr;
+    if (procOvr) body['process']   = procOvr;
     if (cadPartPhotoBase64) { body['partPhotoBase64'] = cadPartPhotoBase64; body['partPhotoMime'] = cadPartPhotoMime; }
     body['deepAnalysis'] = (document.getElementById('cad-deep-analysis') as HTMLInputElement | null)?.checked ?? false;
 
@@ -6324,6 +6411,8 @@ async function reanalyzeCAD(): Promise<void> {
     if (!res.ok || !data.success) throw new Error(data.error ?? `Server error ${res.status}`);
 
     cadAnalysisResult = data.analysis!;
+    // Locked grade/process win over anything the AI re-derived — the human decides.
+    _applyCadPins(cadAnalysisResult);
     cadSanityWarnings = (data as { sanityWarnings?: typeof cadSanityWarnings }).sanityWarnings ?? [];
     cadFromCache = (data as { fromCache?: boolean }).fromCache === true;
     const resolvedVol = data.annualVolume ?? (parseFloat(annVol) || 100000);
@@ -9669,13 +9758,14 @@ function populateMachinedFeatures(prefix: string): void {
   body.innerHTML = `
     <div style="font-size:0.72rem;color:var(--text-secondary);margin-bottom:6px">
       ${totalHoles} hole/bore feature(s)${nonHole ? ` + ${nonHole} boss/face/pocket` : ''} from the B-rep.
-      Holes are ticked (machined on a near-net part); bosses, faces and pockets are unticked — tick only the ones actually machined.
+      Near-net: holes are ticked (bosses/faces/pockets may be as-cast — tick the machined ones).
+      Switch <strong>Stock condition</strong> to “machined from solid” and every feature is auto-ticked (all cut from the billet).
     </div>
     <table class="data-table" style="font-size:0.72rem;font-variant-numeric:tabular-nums;width:100%">
       <thead><tr><th></th><th>Feature</th><th>Ø×depth / area</th><th>Qty</th><th>→ Operation</th></tr></thead>
       <tbody>
         ${rows.map((r, i) => `<tr>
-          <td><input type="checkbox" class="${prefix}-mf-chk" data-idx="${i}" ${r.kind === 'hole' ? 'checked' : ''}/></td>
+          <td><input type="checkbox" class="${prefix}-mf-chk" data-idx="${i}" ${defaultInclude(r as FeatureRow, 'near_net') ? 'checked' : ''}/></td>
           <td>${icon(r.kind)}</td>
           <td>${dims(r as FeatureRow)}</td>
           <td>${r.count}</td>
@@ -9707,6 +9797,17 @@ function populateMachinedFeatures(prefix: string): void {
   const machSel = el<HTMLSelectElement>(`${prefix}-mf-mach`); if (machSel) machSel.value = resolveMachineIdForOp('mach-vmc3', 'CNC Milling');
   const labSel = el<HTMLSelectElement>(`${prefix}-mf-lab`); if (labSel) labSel.value = resolveLabourId('lab-uk-skilled');
   const refresh = () => updateMachinedFeaturesReadout(prefix);
+  // Switching stock condition re-applies the smart default: machined-from-solid
+  // ticks every feature (all cut from the billet); near-net reverts to holes-only.
+  const stockSel = el<HTMLSelectElement>(`${prefix}-mf-stock`);
+  stockSel?.addEventListener('change', () => {
+    const stock = (stockSel.value || 'near_net') as StockCondition;
+    rows.forEach((r, i) => {
+      const box = body.querySelector(`.${prefix}-mf-chk[data-idx="${i}"]`) as HTMLInputElement | null;
+      if (box) box.checked = defaultInclude(r as FeatureRow, stock);
+    });
+    refresh();
+  });
   body.querySelectorAll(`.${prefix}-mf-chk, #${prefix}-mf-stock, #${prefix}-mf-finish`).forEach(elm => elm.addEventListener('change', refresh));
   refresh();
 }
@@ -14966,10 +15067,53 @@ function currentPartPhotoDataUrl(): string | null {
   return null;
 }
 
+/** Assemble the CAD provenance + geometry metadata for the should-cost report.
+ *  Empty ({}) for non-CAD costings so the report is unchanged for them. */
+function buildCadReportMeta(): CADReportMeta {
+  if (!cadAnalysisResult || !lastInput) return {};
+  const volCm3 = cadOCCTGeometry?.volume?.cm3 ?? null;
+  const matRate = library.materials.find(m => m.id === lastInput!.rawMaterial.materialId);
+  const measuredWeightKg = (volCm3 != null && matRate)
+    ? Math.round((volCm3 / 1e6) * matRate.densityKgPerM3 * 1000) / 1000
+    : null;
+
+  let featureLines: FeatureMachiningLine[] | null = null;
+  let featureMachineRatePerHr: number | null = null;
+  let featureStock: 'near_net' | 'solid_billet' | null = null;
+  const rows = (cadOCCTGeometry?.featureTable ?? []) as FeatureRow[];
+  if (rows.length) {
+    const prefix = activeCommodity === 'casting' ? 'cast' : activeCommodity === 'forging' ? 'forge' : null;
+    let fm = prefix ? (collectSecondaryMachining(prefix)?.result ?? null) : null;
+    let machineId = fm?.operations[0]?.machineId ?? '';
+    if (fm && prefix) {
+      featureStock = (sel(`${prefix}-mf-stock`) as 'near_net' | 'solid_billet') || 'near_net';
+    } else {
+      const stock: StockCondition = activeCommodity === 'machining' ? 'solid_billet' : 'near_net';
+      featureStock = stock;
+      machineId = resolveMachineIdForOp('mach-vmc3', 'CNC Milling');
+      fm = computeFeatureMachining(rows, { machineId, labourId: resolveLabourId('lab-uk-skilled'), stockCondition: stock });
+    }
+    featureLines = fm.lines;
+    featureMachineRatePerHr = library.machines.find(m => m.id === machineId)?.computedRatePerHr ?? 45;
+  }
+
+  return {
+    geometrySource: cadGeometrySource,
+    measuredVolumeCm3: volCm3,
+    measuredWeightKg,
+    featureLines,
+    featureMachineRatePerHr,
+    featureStock,
+    userSpecifiedMaterial: _cadMaterialLocked,
+    userSpecifiedProcess: _cadProcessLocked,
+    annualVolume: (lastInput as { annualVolume?: number }).annualVolume ?? null,
+  };
+}
+
 async function openPDF(): Promise<void> {
   if (!lastResult || !lastInput) return;
   await ensurePdfLibs();
-  printPDF!(lastResult, lastInput, library, _displayCurrency, _displayFxRate, activeCommodity, currentPartPhotoDataUrl(), _mfgRegion, listScenarios());
+  printPDF!(lastResult, lastInput, library, _displayCurrency, _displayFxRate, activeCommodity, currentPartPhotoDataUrl(), _mfgRegion, listScenarios(), buildCadReportMeta());
 }
 
 // ─── Scenario modal ───────────────────────────────────────────────────────────
