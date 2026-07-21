@@ -49,6 +49,7 @@ const CAD_COST_INPUTS = obj({
   blowMoulding: obj({
     subtype: { type: 'string', enum: ['ebm', 'ibm', 'sbm'] },
     wallThicknessMm: num, flashWeightKg: num, cavities: num, mouldCostGBP: num, mouldLife: num, blowTimeSec: num, openCloseSec: num,
+    barrierMultilayer: { type: 'boolean' },
   }),
   thermoforming: obj({
     method: { type: 'string', enum: ['vacuum', 'pressure', 'twin_sheet'] },

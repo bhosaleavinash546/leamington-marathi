@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { correctShellWallMm, shellWallEstimateMm, estimatePackagingPerPart } from '../src/engine/geometry-sanity.js';
 import { pickIMMPressId } from '../src/engine/modules/injection-moulding.js';
+import { pickEBMMachineId, barrierMaterialId } from '../src/engine/modules/blow-moulding.js';
 
 describe('shell wall-thickness correction', () => {
   it('recovers the ~2.5 mm wall of a bumper the ray-cast read as 27 mm', () => {
@@ -62,5 +63,29 @@ describe('IM press sizing', () => {
     expect(pickIMMPressId(1100)).toBe('imm-1200t');
     expect(pickIMMPressId(1900)).toBe('imm-2000t');
     expect(pickIMMPressId(3900)).toBe('imm-3500t');   // bumper — biggest available
+  });
+});
+
+describe('EBM machine sizing', () => {
+  it('picks the machine by shot weight — a fuel tank gets the accumulator head', () => {
+    expect(pickEBMMachineId(0.1)).toBe('blow-ebm-2head');     // small bottle
+    expect(pickEBMMachineId(0.8)).toBe('blow-ebm-100l');      // up to 5 L
+    expect(pickEBMMachineId(3)).toBe('blow-ebm-500l');        // 5–100 L container
+    expect(pickEBMMachineId(13)).toBe('blow-ebm-large');      // ~12 kg fuel-tank shot → accumulator head
+  });
+});
+
+describe('barrier (coex) material selection', () => {
+  it('upgrades a mono-HDPE grade to the real 6-layer EVOH barrier grade when the wall is barrier', () => {
+    expect(barrierMaterialId('mat-hdpe-bm', true)).toBe('mat-hdpe-fuel-coex');
+    expect(barrierMaterialId('mat-hdpe', true)).toBe('mat-hdpe-fuel-coex');
+    expect(barrierMaterialId('mat-lldpe-bm', true)).toBe('mat-hdpe-fuel-coex');
+  });
+  it('leaves the grade untouched when the wall is not barrier', () => {
+    expect(barrierMaterialId('mat-hdpe-bm', false)).toBe('mat-hdpe-bm');
+  });
+  it('does not upgrade a non-PE barrier grade (a barrier PP/PET keeps its own resin)', () => {
+    expect(barrierMaterialId('mat-pp', true)).toBe('mat-pp');
+    expect(barrierMaterialId('mat-pet-bg', true)).toBe('mat-pet-bg');
   });
 });

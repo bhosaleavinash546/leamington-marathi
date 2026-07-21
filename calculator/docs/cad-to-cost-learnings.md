@@ -28,6 +28,8 @@ have questioned, or a geometry measurement that was physically implausible.
 | Stub axle (PRCR002) | forged **steel** 8.14 kg | £41.97 as **aluminium** 2.8 kg | ~£30 | material family wrong (chose lightest metal) |
 | 25T servo horn | **aluminium** CNC, 3 g | £1.27 as **injection-moulded plastic** | ~£2.2 | material CLASS wrong (metal→plastic), £333 feature card |
 | Front bumper | **plastic** injection moulding | £29.18 as **Al gravity-die casting** | ~£8–9 | material CLASS wrong (plastic→metal), 27 mm bogus wall |
+| Seat LH cross-member | **steel** sheet-metal stamping | £2.84 as PA6 injection moulding | ~£1.4 | sheet-metal↔plastic ambiguous from geometry; crash on missing AI field |
+| Fuel tank | **plastic** blow-moulded coex HDPE | £216.97 as sand **casting** (83 kg metal) | ~£20–30 | thin-wall hollow → casting; then bottle-sized machine + no barrier |
 
 ## Bug taxonomy + fixes
 
@@ -123,10 +125,31 @@ added a HOLLOW branch — when the fill ratio is very low the part encloses a ca
 so `blow_moulding` (tank/duct/bottle/reservoir) is called out alongside injection
 moulding/sheet metal. Live: Stage-1 flipped casting 0.84 → blow_moulding 0.82;
 tank £216.97 → £16.12, material metal £108 → HDPE £11. `CAD_PROMPT_VERSION → 4`.
-(Remaining calibration: the blow moulder is picked as a small 1–5 L bottle EBM, not
-a large accumulator-head tank machine — the same "press not sized to the part"
-pattern fixed for the IM bumper; and multi-layer barrier HDPE + flash aren't
-modelled, so material is ~£11 vs a ~£15–20 real coex tank.)
+
+### 3d. Blow-moulder not sized to the shot; barrier wall + flash not modelled (calibration)
+Same two patterns the IM bumper hit, now for EBM. On the 11.1 kg fuel tank:
+- **Machine not sized to the shot** — the form defaulted to a small 1–5 L bottle
+  head (`blow-ebm-2head`), and the old apply code selected on a `bm-ebm` prefix
+  that never matched the real `blow-ebm-*` ids, so a 13.6 kg parison stayed on the
+  bottle machine (process £0.92 UK). **Fix:** `pickEBMMachineId(grossWeightKg)`
+  (mirrors `pickIMMPressId`) picks by shot weight — ≥6 kg → the accumulator head
+  (`blow-ebm-large`, 20–200 L). The apply now matches on the exact id. Process
+  £0.92 → £2.25 (2.45×), the right machine for a tank.
+- **Pinch-off flash not size-aware** — a big accumulator-head parison sheds far
+  more than a bottle. **Fix:** flash floored to 22% of net for parts >3 kg (12%
+  below), so gross (and material, charged on gross) reflects the real scrap.
+  Tank flash 1.34 → 2.45 kg.
+- **Multi-layer barrier wall not modelled** — an automotive fuel tank is a 6-layer
+  coextruded HDPE/tie/EVOH/tie/HDPE structure, not mono-HDPE. **Fix:** the AI now
+  *classifies* the wall (`barrierMultilayer` in the Stage-2 schema/prompt); the
+  engine prices it on the real coex grade already in the rate library
+  (`mat-hdpe-fuel-coex`, £1.55/kg) via `barrierMaterialId()` — bounded, so a "fuel
+  tank" label can't inflate material without limit, and a barrier PP/PET keeps its
+  own resin. A large HDPE accumulator shot is treated as barrier when the flag is
+  absent (old cache / air-gapped). Material £13.8 (PP) / £11 (mono-HDPE) → £20.8
+  (coex), landing a real coex tank in the £15–20+ range. `CAD_PROMPT_VERSION → 5`.
+  (Verified deterministically through the engine; the golden rule holds — the AI
+  only classifies barrier vs mono, the £/kg is fixed catalogue data.)
 
 ### 4b. Robustness — a missing AI field must never crash the calculation
 The seat cross-member's AI response omitted `mouldLife`/`runnerWeightKg` from the

@@ -32,7 +32,7 @@ import {
   estimateLaminationFinishing, analyseLaminationDFM, type StackMethod,
 } from '../engine/modules/lamination-advisor.js';
 import type { FabBlankingMethod, AssistGas } from '../engine/modules/sheet-metal-fab.js';
-import { computeBlowMouldingDrivers } from '../engine/modules/blow-moulding.js';
+import { computeBlowMouldingDrivers, pickEBMMachineId, barrierMaterialId } from '../engine/modules/blow-moulding.js';
 import {
   estimateBlowMouldCost, analyseBlowDFM,
   type BlowProcess, type BlowMouldMaterial,
@@ -10653,26 +10653,41 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
       case 'blow_moulding': {
         const bm = c.blowMoulding;
         const bmWall = cadOCCTGeometry?.wallThickness?.meanMm;
-        setMaterial(el<HTMLSelectElement>('bm-mat'), c.materialId);
+        const bmSub = bm?.subtype;
+        // Pinch-off flash scales with part size — a large accumulator-head parison
+        // (tank) sheds far more than a small bottle. Floor the AI value accordingly.
+        const bmFlashFrac = c.netWeightKg > 3 ? 0.22 : 0.12;
+        const bmGrossKg = c.netWeightKg * (1 + bmFlashFrac);
+        // Multi-layer barrier (coex) wall: the AI *classifies* it (fuel tank /
+        // AdBlue duct → HDPE/tie/EVOH/tie/HDPE). Fallback when the flag is absent
+        // (old cache / air-gapped): a large HDPE accumulator-head EBM shot is a
+        // barrier tank in practice. The engine then prices the real coex grade.
+        const bmBarrier = bm?.barrierMultilayer
+          ?? (bmSub !== 'ibm' && bmSub !== 'sbm' && bmGrossKg >= 6 && /hdpe|lldpe|pe-bm/i.test(c.materialId));
+        setMaterial(el<HTMLSelectElement>('bm-mat'), barrierMaterialId(c.materialId, !!bmBarrier));
         setNumericField('bm-part-wt', c.netWeightKg, 4);
         if (bm) {
-          setNumericField('bm-flash-wt', bm.flashWeightKg, 4);
+          setNumericField('bm-flash-wt', Math.max(bm.flashWeightKg ?? 0, c.netWeightKg * bmFlashFrac), 4);
           setNumericField('bm-wall', bm.wallThicknessMm ?? bmWall ?? 2.0, 1);
           setNumericField('bm-cav', bm.cavities, 0);
           setNumericField('bm-mould-cost', bm.mouldCostGBP, 0);
           setNumericField('bm-mould-life', bm.mouldLife, 0);
           setNumericField('bm-blow-t', bm.blowTimeSec, 0);
           setNumericField('bm-open-close', bm.openCloseSec, 0);
-          // Machine prefix from subtype
-          const bmMachPfx = bm.subtype === 'ibm' ? 'bm-ibm' : bm.subtype === 'sbm' ? 'bm-sbm' : 'bm-ebm';
-          const bmMachEl = el<HTMLSelectElement>('bm-mach');
-          if (bmMachEl) {
-            const match = Array.from(bmMachEl.options).find(o => o.value.startsWith(bmMachPfx));
-            if (match) { bmMachEl.value = match.value; markAIFilled(bmMachEl); }
-          }
         } else if (bmWall) {
           setNumericField('bm-wall', bmWall, 1);
-          setNumericField('bm-flash-wt', c.netWeightKg * 0.12, 4);
+          setNumericField('bm-flash-wt', c.netWeightKg * bmFlashFrac, 4);
+        }
+        // Size the machine to the shot weight (part + flash). EBM picks by size;
+        // IBM/SBM by subtype. Ids are `blow-ebm-*` (the old `bm-ebm` prefix never
+        // matched, so a fuel tank stayed on the small 1–5 L bottle default).
+        {
+          const bmMachId = bmSub === 'ibm' ? 'blow-ibm-linear' : bmSub === 'sbm' ? 'blow-sbm-2stage' : pickEBMMachineId(bmGrossKg);
+          const bmMachEl = el<HTMLSelectElement>('bm-mach');
+          if (bmMachEl) {
+            const match = Array.from(bmMachEl.options).find(o => o.value === bmMachId) ?? Array.from(bmMachEl.options).find(o => o.value.startsWith('blow-ebm'));
+            if (match) { bmMachEl.value = match.value; markAIFilled(bmMachEl); }
+          }
         }
         // Cooling time factor: HDPE/LDPE ~3.5, PP ~3.16, PET ~3.0
         const bmCoolMap: Record<string, number> = { 'mat-pp': 3.16, 'mat-pc': 4.5 };

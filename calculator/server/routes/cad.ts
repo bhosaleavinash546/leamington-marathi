@@ -22,7 +22,7 @@ const cadCache = createAnalysisCache('cad_analysis_cache');
 // Bump when the prompt/normalisation logic changes so stale cached analyses (which
 // are keyed on inputs, not prompt content) are invalidated. v2: filename material
 // prior + confidence-inversion promotion.
-const CAD_PROMPT_VERSION = 4;
+const CAD_PROMPT_VERSION = 5;
 
 // Model tiering: Sonnet 5 is the standard extraction tier (near-Opus on
 // structured analysis, faster, ~40% cheaper); the Deep-analysis toggle
@@ -989,8 +989,13 @@ function buildJSONSchema(commodity: string, geo: OCCTGeometry): string {
       "mouldCostGBP": number,
       "mouldLife": number,
       "blowTimeSec": number,
-      "openCloseSec": number
-    },`,
+      "openCloseSec": number,
+      "barrierMultilayer": true|false
+    },
+    // barrierMultilayer: true ONLY for coextruded multi-layer barrier walls —
+    // automotive fuel tanks and AdBlue/fuel-system ducts need a hydrocarbon/O2
+    // barrier (HDPE / tie / EVOH / tie / HDPE, 6-layer). false for mono-layer
+    // bottles, containers, water/coolant drums.`,
     thermoforming: `    "thermoforming": {
       "method": "vacuum"|"pressure"|"twin_sheet",
       "sheetWeightKg": number,
