@@ -31,6 +31,9 @@ jobs:
       # that once shipped the feature completely broken.
       - name: Unit tests
         run: npm test
+        env:
+          # Enforce the CAD feature-detection eval floor (current aggregate ≈0.96).
+          CAD_GOLDEN_MIN_F1: '0.90'
 
       - name: Production build
         run: npm run build

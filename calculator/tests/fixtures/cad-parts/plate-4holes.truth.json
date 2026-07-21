@@ -1,0 +1,7 @@
+{
+  "part": "plate-4holes",
+  "note": "100x60x10 mm plate, 4 x Ø8 through-holes near the corners.",
+  "features": { "hole": 4, "boss": 0, "pocket": 0 },
+  "volumeCm3": 57.99,
+  "volumeTolPct": 1
+}

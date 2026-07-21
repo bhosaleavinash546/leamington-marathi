@@ -18,7 +18,8 @@
     "accuracy": "tsx scripts/accuracy-report.ts",
     "dev:full": "concurrently \"npm run dev\" \"npm run server\"",
     "test:e2e": "tsx e2e/smoke.ts",
-    "test:visual": "tsx e2e/visual.ts"
+    "test:visual": "tsx e2e/visual.ts",
+    "gen:cad-golden": "python3 scripts/gen-cad-golden.py"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.111.0",

@@ -1,0 +1,7 @@
+{
+  "part": "flange-6holes-boss",
+  "note": "Ø80x12 flange, 6 x Ø6 bolt holes on Ø60 PCD, 1 central Ø30x8 raised boss. Design-intent boss count is 1; the engine currently also counts the disc OD as a turned shaft feature (detects 2) — a known classification nuance this fixture measures.",
+  "features": { "hole": 6, "boss": 1, "pocket": 0 },
+  "volumeCm3": 63.94,
+  "volumeTolPct": 1
+}

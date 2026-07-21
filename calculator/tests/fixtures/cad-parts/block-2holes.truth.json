@@ -1,0 +1,7 @@
+{
+  "part": "block-2holes",
+  "note": "60x40x20 mm block, 2 x Ø10 through-holes.",
+  "features": { "hole": 2, "boss": 0, "pocket": 0 },
+  "volumeCm3": 44.86,
+  "volumeTolPct": 1
+}

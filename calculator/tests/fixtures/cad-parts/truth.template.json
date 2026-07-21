@@ -1,0 +1,8 @@
+{
+  "part": "my-part-name",
+  "note": "One line describing the part and its real features (for humans).",
+  "features": { "hole": 0, "boss": 0, "pocket": 0 },
+  "materialFamily": "aluminum",
+  "volumeCm3": 0,
+  "volumeTolPct": 5
+}

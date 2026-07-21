@@ -1,0 +1,164 @@
+{
+  "status": "success",
+  "partName": "plate-4holes",
+  "boundingBox": {
+    "xMm": 100.0,
+    "yMm": 60.0,
+    "zMm": 10.0
+  },
+  "volume": {
+    "mm3": 57989.4,
+    "cm3": 57.989
+  },
+  "surfaceArea": {
+    "mm2": 15803.2,
+    "cm2": 158.032
+  },
+  "fillRatio": 0.9665,
+  "weights": {
+    "aluminiumKg": 0.1566,
+    "steelKg": 0.4552,
+    "plasticKg": 0.0609,
+    "castIronKg": 0.4146,
+    "copperKg": 0.5196,
+    "titaniumKg": 0.2569
+  },
+  "faces": {
+    "total": 10,
+    "byType": {
+      "PLANE": 6,
+      "CYLINDER": 4
+    }
+  },
+  "edges": {
+    "total": 24,
+    "byType": {
+      "LINE": 16,
+      "CIRCLE": 8
+    },
+    "sampleCircleRadiiMm": [
+      4.0
+    ]
+  },
+  "features": {
+    "cylindricalFaceCount": 4,
+    "cylindricalFaceRadiiMm": [
+      4.0
+    ],
+    "estimatedHoleCount": 4,
+    "holeRadiiMm": [
+      4.0
+    ],
+    "bossShaftCount": 0,
+    "bossShaftRadiiMm": [],
+    "threadFeaturesDetected": false,
+    "planarFaceCount": 6,
+    "freeFormFaceCount": 0,
+    "planarFaceAreaMm2": 14798.0
+  },
+  "featureTable": [
+    {
+      "kind": "hole",
+      "diaMm": 8.0,
+      "depthMm": 10.0,
+      "through": true,
+      "count": 4
+    },
+    {
+      "kind": "face",
+      "diaMm": 0.0,
+      "depthMm": 0.0,
+      "through": null,
+      "count": 2,
+      "areaMm2": 5799.0
+    },
+    {
+      "kind": "face",
+      "diaMm": 0.0,
+      "depthMm": 0.0,
+      "through": null,
+      "count": 2,
+      "areaMm2": 1000.0
+    },
+    {
+      "kind": "face",
+      "diaMm": 0.0,
+      "depthMm": 0.0,
+      "through": null,
+      "count": 2,
+      "areaMm2": 600.0
+    }
+  ],
+  "sheetMetal": {
+    "bendCount": 0,
+    "totalBendLengthMm": 0.0,
+    "thicknessMm": 9.95
+  },
+  "wallThickness": {
+    "minMm": 9.95,
+    "maxMm": 99.95,
+    "meanMm": 56.62,
+    "stdDevMm": 36.82,
+    "sampleCount": 3,
+    "method": "ray_cast",
+    "uniformity": "non-uniform"
+  },
+  "draftAnalysis": {
+    "drawDirectionXYZ": [
+      0.0,
+      0.0,
+      1.0
+    ],
+    "undercutFaceCount": 0,
+    "zeroDraftFaceCount": 8,
+    "adequateDraftFaceCount": 2,
+    "minPositiveDraftDeg": 90.0,
+    "maxPositiveDraftDeg": 90.0,
+    "analyzedFaceCount": 10
+  },
+  "setupAnalysis": {
+    "estimatedSetupCount": 3,
+    "principalDirections": [
+      {
+        "directionLabel": "+X",
+        "faceCount": 6
+      },
+      {
+        "directionLabel": "+Y",
+        "faceCount": 2
+      },
+      {
+        "directionLabel": "+Z",
+        "faceCount": 2
+      }
+    ]
+  },
+  "cncCycleTimeEstimate": {
+    "setupTimeMins": 45.0,
+    "planarMillingTimeMins": 3.0,
+    "drillBoreTimeMins": 2.0,
+    "estimatedTotalMins": 50.0,
+    "estimatedTotalHrs": 0.8327,
+    "assumedFeedRateMm2PerMin": 5000.0,
+    "assumedDrillBoreMinPerFeature": 0.5,
+    "assumedSetupTimeMinsPerSetup": 15.0
+  },
+  "toolingCostEstimates": {
+    "hpdcDieCostGBP": 40000,
+    "gravityMouldCostGBP": 8000,
+    "sandPatternCostGBP": 2500,
+    "imMouldCostGBP": 30000,
+    "forgeDieCostGBP": 15000,
+    "progressiveDieCostGBP": 20000
+  },
+  "manufacturabilityScore": 87,
+  "processSpecificEstimates": {
+    "sandCycleTimeHr": 0.1563,
+    "sandCycleTimeHrFerrous": 0.1666,
+    "forgeStrokes": 6,
+    "investWaxCostGBP": 2.37,
+    "investShellCostGBP": 7.11
+  },
+  "assemblyWarning": null,
+  "unitWarning": null
+}
