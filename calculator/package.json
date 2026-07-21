@@ -17,7 +17,8 @@
     "server": "tsx server/index.ts",
     "accuracy": "tsx scripts/accuracy-report.ts",
     "dev:full": "concurrently \"npm run dev\" \"npm run server\"",
-    "test:e2e": "tsx e2e/smoke.ts"
+    "test:e2e": "tsx e2e/smoke.ts",
+    "test:visual": "tsx e2e/visual.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.111.0",
@@ -59,9 +60,12 @@
     "@types/multer": "^1.4.11",
     "@types/node": "^20.14.0",
     "@types/nodemailer": "^8.0.1",
+    "@types/pngjs": "^6.0.5",
     "@types/three": "^0.185.1",
     "concurrently": "^8.2.0",
+    "pixelmatch": "^7.2.0",
     "playwright": "^1.60.0",
+    "pngjs": "^7.0.0",
     "tsx": "^4.11.0",
     "typescript": "^5.4.0",
     "vite": "^5.2.0",

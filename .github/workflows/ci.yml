@@ -43,3 +43,19 @@ jobs:
 
       - name: Headless smoke-launch
         run: npm run test:e2e
+
+      # Visual regression: screenshot key screens (auth, home, money-screen hero,
+      # empty state) in dark + light and diff against committed baselines. Fails
+      # on unintended layout/colour drift — the class of bug (e.g. a CSS-class
+      # collision) that a green build otherwise hides. If a change is intentional,
+      # regenerate: `npm run test:visual -- --update` and commit e2e/baselines.
+      - name: Visual regression
+        run: npm run test:visual
+
+      - name: Upload visual diffs on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: visual-diffs
+          path: calculator/e2e/visual-diffs/
+          if-no-files-found: ignore
