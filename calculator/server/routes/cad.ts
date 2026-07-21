@@ -12,6 +12,7 @@ import { runCADSanityChecks } from '../utils/cad-sanity.js';
 import { capNearNetMachiningHr, applyNearNetMachiningCap } from '../utils/cad-machining-guard.js';
 import { normalizeFieldConfidences } from '../utils/cad-schema.js';
 import { familyFromFilename, proseFamily, promoteHighestConfidence, type MaterialSuggestion } from '../../src/engine/material-family.js';
+import { correctShellWallMm } from '../../src/engine/geometry-sanity.js';
 
 const router = Router();
 
@@ -21,7 +22,7 @@ const cadCache = createAnalysisCache('cad_analysis_cache');
 // Bump when the prompt/normalisation logic changes so stale cached analyses (which
 // are keyed on inputs, not prompt content) are invalidated. v2: filename material
 // prior + confidence-inversion promotion.
-const CAD_PROMPT_VERSION = 2;
+const CAD_PROMPT_VERSION = 3;
 
 // Model tiering: Sonnet 5 is the standard extraction tier (near-Opus on
 // structured analysis, faster, ~40% cheaper); the Deep-analysis toggle
@@ -85,12 +86,19 @@ function stage1Prompt(geo: OCCTGeometry): string {
   const holes = geo.features?.estimatedHoleCount ?? 0;
   const wallMean = geo.wallThickness?.meanMm ?? null;
   const weights = geo.weights!;
+  const maxDim = Math.max(bb.xMm, bb.yMm, bb.zMm);
+  // Thin uniform wall on a large envelope is diagnostic of moulding/sheet, not a
+  // metal casting (thin-wall large metal castings misrun) — a plastic bumper was
+  // being classified as a gravity-die aluminium casting.
+  const thinWallHint = (wallMean != null && wallMean > 0 && wallMean <= 4 && maxDim >= 400)
+    ? `\nSTRONG SIGNAL: thin uniform wall (${wallMean.toFixed(1)}mm) on a large part (${maxDim.toFixed(0)}mm) → almost certainly injection_moulding (plastic) or sheet_metal, NOT a metal casting/forging. Large thin-wall metal castings are not manufacturable. Use the PLASTIC mass, not the aluminium-density figure.`
+    : '';
 
   return `Part geometry snapshot:
 Bounding box: ${bb.xMm.toFixed(0)}×${bb.yMm.toFixed(0)}×${bb.zMm.toFixed(0)}mm
 Volume: ${vol.cm3.toFixed(1)} cm³  Fill ratio: ${fill.toFixed(2)}  Faces: ${faces}  Free-form: ${freeForms}  Holes: ${holes}
 Wall mean: ${wallMean?.toFixed(1) ?? 'N/A'} mm
-Weights — Al: ${weights.aluminiumKg.toFixed(3)} kg  Steel: ${weights.steelKg.toFixed(3)} kg  Plastic: ${weights.plasticKg.toFixed(3)} kg
+Weights — Al: ${weights.aluminiumKg.toFixed(3)} kg  Steel: ${weights.steelKg.toFixed(3)} kg  Plastic: ${weights.plasticKg.toFixed(3)} kg${thinWallHint}
 
 Valid commodity types: machining, sheet_metal, sheet_metal_fab, injection_moulding, casting, forging, cast_and_machine, blow_moulding, thermoforming, rotational_moulding, rubber, composites, wiring_harness, extrusion, pcb_fab, pcba, biw_assembly, painting, assembly
 
@@ -219,6 +227,18 @@ router.post('/analyze', upload.fields([
 
     if (geo.status === 'success') {
       geometrySource = 'occt';
+      // Correct the ray-cast wall on thin shells (a bumper read 27 mm vs ~2.5 mm),
+      // so the moulding cooling time and the process classifier see the real wall.
+      if (geo.wallThickness && geo.volume && geo.surfaceArea) {
+        const wc = correctShellWallMm(geo.wallThickness.meanMm, geo.volume.cm3, geo.surfaceArea.cm2, geo.fillRatio ?? 1);
+        if (wc.corrected) {
+          console.log(`[CAD] Wall corrected (thin shell): ${geo.wallThickness.meanMm}mm → ${wc.meanMm}mm (2·V/S)`);
+          geo.wallThickness.meanMm = wc.meanMm;
+          geo.wallThickness.minMm = Math.min(geo.wallThickness.minMm ?? wc.meanMm, wc.meanMm);
+          geo.wallThickness.maxMm = wc.meanMm * 1.4;
+          (geo.wallThickness as { method?: string }).method = wc.method;
+        }
+      }
       console.log(`[CAD] OCCT success — V=${geo.volume!.cm3.toFixed(1)}cm³  SA=${geo.surfaceArea!.cm2.toFixed(0)}cm²  faces=${geo.faces!.total}`);
     } else {
       console.warn(`[CAD] OCCT failed (${geo.error}) — falling back to text preprocessor`);
