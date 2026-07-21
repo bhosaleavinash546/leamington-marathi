@@ -5552,6 +5552,7 @@ function unmountCADViewer(): void {
   cadViewerMeasurements = [];
   const host = document.getElementById('cad-viewer-host');
   if (host) { host.innerHTML = ''; host.style.display = 'none'; }
+  hidePersistentCADViewer();
 }
 
 /** Dispose EVERY live viewer — must run before any innerHTML wipe of the form
@@ -5562,6 +5563,39 @@ function disposeAllCADViewers(): void {
   cadInlineViewer?.dispose();
   cadInlineViewer = null;
   cadViewerMeasurements = [];
+}
+
+// ── Persistent CAD viewer ──────────────────────────────────────────────────
+// "Analyse & Calculate" swaps the CAD form (with its 3D viewer) out for the
+// commodity form, which would destroy the viewer. This compact viewer lives in
+// #cad-persist-viewer-host — a stable node in the input panel OUTSIDE the
+// swapped form area — so the model stays on screen through analyse → calculate
+// and any later commodity change. Tracked separately from the two form-area
+// viewers so disposeAllCADViewers() (form swap) never tears it down.
+let cadPersistViewer: import('./cad-viewer.js').CADViewerHandle | null = null;
+
+async function showPersistentCADViewer(file: File): Promise<void> {
+  const host = document.getElementById('cad-persist-viewer-host');
+  if (!host) return;
+  try {
+    const { createCADViewer } = await import('./cad-viewer.js');
+    cadPersistViewer?.dispose();
+    host.style.display = '';
+    const handle = await createCADViewer(host, { compact: true, headers: cadViewerHeaders });
+    cadPersistViewer = handle;
+    await handle.loadFile(file);
+  } catch (err) {
+    console.warn('[CAD persist viewer] mount failed:', err instanceof Error ? err.message : String(err));
+    cadPersistViewer = null;
+    host.style.display = 'none';
+  }
+}
+
+function hidePersistentCADViewer(): void {
+  cadPersistViewer?.dispose();
+  cadPersistViewer = null;
+  const host = document.getElementById('cad-persist-viewer-host');
+  if (host) { host.innerHTML = ''; host.style.display = 'none'; }
 }
 
 function wireCADEvents(): void {
@@ -10448,6 +10482,11 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
     // Surface provenance: how much of this form is measured geometry vs AI guess.
     showCADProvenanceBanner();
 
+    // Keep the 3D model on screen: the CAD form (with its viewer) was just
+    // swapped for this commodity form, so remount a compact viewer in the
+    // persistent host that survives the swap.
+    if (cadFile) void showPersistentCADViewer(cadFile);
+
     if (autoCalculate) {
       compute();
     }
@@ -10486,6 +10525,7 @@ function switchCommodity(type: CommodityType): void {
 
   const area = el('commodity-form-area');
   disposeAllCADViewers(); // the innerHTML swap below destroys any mounted viewer's DOM
+  hidePersistentCADViewer(); // hidden by default; applyCADToForm re-shows it after a CAD apply
   machOpCount = 0; coatCount = 0; joinCount = 0; stationCount = 0; bomCount = 0; camMachOpCount = 0; asmLineCount = 0;
 
   switch (type) {

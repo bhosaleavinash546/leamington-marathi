@@ -1135,6 +1135,11 @@
     <!-- Dynamic commodity form area -->
     <div id="commodity-form-area"></div>
 
+    <!-- Persistent CAD 3D viewer — stays visible through Analyse & Calculate and
+         commodity switches (lives OUTSIDE commodity-form-area so form swaps don't
+         destroy it). Mounted by showPersistentCADViewer(). -->
+    <div id="cad-persist-viewer-host" style="display:none;margin-top:10px"></div>
+
     <!-- Universal costs (always visible) -->
     <div id="universal-costs">
       <div class="section-title">Universal Costs</div>

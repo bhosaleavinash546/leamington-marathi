@@ -50,7 +50,7 @@
       } catch { window.location.replace(authUrl); }
     })();
   </script>
-  <script type="module" crossorigin src="/calculator/assets/index-B7PJstbP.js"></script>
+  <script type="module" crossorigin src="/calculator/assets/index-BeKVLkqQ.js"></script>
   <link rel="modulepreload" crossorigin href="/calculator/assets/vendor-motion-DAJjhAeu.js">
   <link rel="modulepreload" crossorigin href="/calculator/assets/vendor-CM2mqF4r.js">
   <link rel="modulepreload" crossorigin href="/calculator/assets/vendor-pdf-hc7gJ01J.js">
@@ -1140,6 +1140,11 @@
 
     <!-- Dynamic commodity form area -->
     <div id="commodity-form-area"></div>
+
+    <!-- Persistent CAD 3D viewer — stays visible through Analyse & Calculate and
+         commodity switches (lives OUTSIDE commodity-form-area so form swaps don't
+         destroy it). Mounted by showPersistentCADViewer(). -->
+    <div id="cad-persist-viewer-host" style="display:none;margin-top:10px"></div>
 
     <!-- Universal costs (always visible) -->
     <div id="universal-costs">
