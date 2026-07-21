@@ -103,6 +103,24 @@ machine-rate derivation note, alloy/spec DFM callout, a "what's excluded" panel,
 part render, and a confidence-driver line. Rates are correctly localised to the
 region (verified China machine rates are ~0.55× UK, not a UK rate leaking through).
 
+### 4b. Robustness — a missing AI field must never crash the calculation
+The seat cross-member's AI response omitted `mouldLife`/`runnerWeightKg` from the
+injection-moulding sub-object (the bumper's included them — pure response variance).
+`setNumericField(id, undefined)` then threw `undefined.toFixed()` and blanked the
+whole result. **Fix:** `setNumericField` skips non-finite values (keeps the form
+default). Principle: the AI response is untrusted input — every field it can omit
+must degrade gracefully, never crash.
+
+### 4c. Sheet-metal vs plastic is genuinely ambiguous from geometry
+A thin uniform wall rules out casting/machining, but does NOT distinguish a steel
+STAMPING from a plastic MOULDING — both are thin-wall. The seat cross-member (1.5 mm
+uniform steel, formed bead + flanges) was classified as PA6 injection moulding
+(£2.84) vs a ~£1.4 steel-stamping manual. There is no reliable geometry-only signal;
+the safety nets are the material-ambiguity flag (fires: Plastic 35 g · Aluminium
+89 g · Steel 260 g — "assumes plastic") and the material/process override (pin
+steel + sheet_metal). Filename terms like "cross member / rail / reinforcement"
+hint at structural metal, but that's a weak prior, not a rule.
+
 ### 5. Caching gotcha
 The analysis cache is SQLite-backed and keyed on **inputs, not prompt content**, so
 prompt/normalisation changes didn't invalidate already-analysed parts.

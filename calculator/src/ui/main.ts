@@ -10032,9 +10032,12 @@ function setMaterial(selectEl: HTMLSelectElement | null, materialId: string): vo
   if (opt) { selectEl.value = opt.value; markAIFilled(selectEl); }
 }
 
-function setNumericField(id: string, value: number, decimals = 3): void {
+function setNumericField(id: string, value: number | null | undefined, decimals = 3): void {
   const el2 = el<HTMLInputElement>(id);
-  if (el2) { el2.value = value.toFixed(decimals); markAIFilled(el2); }
+  // Skip non-finite values (the AI omits fields per response — a missing mouldLife
+  // must not crash the whole apply/calculate with `undefined.toFixed`). The field
+  // keeps its form default instead.
+  if (el2 && Number.isFinite(value as number)) { el2.value = (value as number).toFixed(decimals); markAIFilled(el2); }
 }
 
 // ─── Inline CAD-to-fill (per-commodity uploader) ──────────────────────────────
