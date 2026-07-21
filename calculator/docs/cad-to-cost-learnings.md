@@ -103,6 +103,17 @@ machine-rate derivation note, alloy/spec DFM callout, a "what's excluded" panel,
 part render, and a confidence-driver line. Rates are correctly localised to the
 region (verified China machine rates are ~0.55× UK, not a UK rate leaking through).
 
+### 3c. Tooling amortisation not synced to annual volume (calibration)
+Applying a CAD part sets the per-commodity amortisation-volume field to the user's
+annual volume — but only for machining/casting/cast+machine/IM/forging. Sheet
+metal, sheet-metal-fab, extrusion, thermoforming, rotomoulding and composites were
+**missing from that map**, so their die/tool amortised over the 500k form default.
+On the seat cross-member (pinned to sheet-metal steel) a £25k progressive die read
+£0.05/part (£25k ÷ 500k) instead of £0.25/part (£25k ÷ 100k). **Fix:** added the six
+commodities to the amort-sync map. Pinned seat £0.87 → £1.11 (tooling £0.05 → £0.25),
+on the ~£1.2-1.6 manual. (Convention: amortise over annual volume — a conservative
+1-year view — consistently across every commodity.)
+
 ### 4b. Robustness — a missing AI field must never crash the calculation
 The seat cross-member's AI response omitted `mouldLife`/`runnerWeightKg` from the
 injection-moulding sub-object (the bumper's included them — pure response variance).

@@ -10236,8 +10236,14 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
     // commodity amort fields default to 50k-500k, so leaving them untouched
     // makes the calculated tooling/part diverge from the suggested panel.
     if (cadAnnVol) {
+      // Amortise tooling over the user's stated annual volume for EVERY commodity
+      // that has an amort field — sheet metal / fab / extrusion / thermoforming /
+      // rotomoulding / composites were missing, so their die/tool stayed on the
+      // 500k form default (a progressive die read £0.05/part instead of £0.25).
       const amortId = ({ machining: 'mach-amort', casting: 'cast-amort', cast_and_machine: 'cam-amort',
-        injection_moulding: 'imm-amort', forging: 'forge-amort' } as Record<string, string>)[targetCommodity];
+        injection_moulding: 'imm-amort', forging: 'forge-amort', sheet_metal: 'sm-amort',
+        sheet_metal_fab: 'smf-amort', extrusion: 'ext-amort', thermoforming: 'tf-amort',
+        rotational_moulding: 'rm-amort', composites: 'comp-amort' } as Record<string, string>)[targetCommodity];
       const amortEl = amortId ? document.getElementById(amortId) as HTMLInputElement | null : null;
       if (amortEl) { amortEl.value = cadAnnVol; amortEl.dispatchEvent(new Event('input')); }
     }
