@@ -238,7 +238,10 @@ const CURRENCY_SYMBOL: Record<string, string> = {
 
 function _currFmt(n: number): string {
   const sym = CURRENCY_SYMBOL[_displayCurrency] ?? _displayCurrency;
-  return `${sym}${(n * _displayFxRate).toFixed(2)}`;
+  const v = n * _displayFxRate;
+  if (!Number.isFinite(v)) return `${sym}—`;
+  const s = Math.abs(v).toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  return `${v < 0 ? '−' : ''}${sym}${s}`;  // grouped thousands; sign before the symbol
 }
 
 // Grouped money — thousands separators, variable dp (2 for per-part, 0 for annual).
