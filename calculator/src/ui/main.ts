@@ -10214,6 +10214,19 @@ function _fallbackMaterialIdForFamily(fam: MaterialFamily | null, commodity: Com
   return id && library.materials.some(m => m.id === id) ? id : '';
 }
 
+/** Single source of truth: every commodity's tooling-amortisation input field.
+ *  Used to sync amort to the user's annual volume for ALL commodities (a partial
+ *  map + per-case hard-codes previously left several commodities amortising over
+ *  a stale form default). Add a commodity here when it grows an amort field. */
+const COMMODITY_AMORT_FIELD: Record<string, string> = {
+  machining: 'mach-amort', casting: 'cast-amort', cast_and_machine: 'cam-amort',
+  injection_moulding: 'imm-amort', forging: 'forge-amort', sheet_metal: 'sm-amort',
+  sheet_metal_fab: 'smf-amort', extrusion: 'ext-amort', thermoforming: 'tf-amort',
+  rotational_moulding: 'rm-amort', composites: 'comp-amort', blow_moulding: 'bm-amort',
+  rubber: 'rub-amort', wiring_harness: 'harn-amort', painting: 'paint-amort',
+  biw_assembly: 'biw-amort', pcb_fab: 'pcbf-amort', pcba: 'pcba-amort',
+};
+
 function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): void {
   if (!cadAnalysisResult) return;
   _pendingCostingSource = 'cad'; // tag the next costing record for the accuracy harness
@@ -10243,13 +10256,9 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
     // makes the calculated tooling/part diverge from the suggested panel.
     if (cadAnnVol) {
       // Amortise tooling over the user's stated annual volume for EVERY commodity
-      // that has an amort field — sheet metal / fab / extrusion / thermoforming /
-      // rotomoulding / composites were missing, so their die/tool stayed on the
-      // 500k form default (a progressive die read £0.05/part instead of £0.25).
-      const amortId = ({ machining: 'mach-amort', casting: 'cast-amort', cast_and_machine: 'cam-amort',
-        injection_moulding: 'imm-amort', forging: 'forge-amort', sheet_metal: 'sm-amort',
-        sheet_metal_fab: 'smf-amort', extrusion: 'ext-amort', thermoforming: 'tf-amort',
-        rotational_moulding: 'rm-amort', composites: 'comp-amort' } as Record<string, string>)[targetCommodity];
+      // that has an amort field (see COMMODITY_AMORT_FIELD — the single source of
+      // truth). Per-case defaults below only apply when no annual volume is given.
+      const amortId = COMMODITY_AMORT_FIELD[targetCommodity];
       const amortEl = amortId ? document.getElementById(amortId) as HTMLInputElement | null : null;
       if (amortEl) { amortEl.value = cadAnnVol; amortEl.dispatchEvent(new Event('input')); }
     }
@@ -10698,7 +10707,7 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
         // Cooling time factor: HDPE/LDPE ~3.5, PP ~3.16, PET ~3.0
         const bmCoolMap: Record<string, number> = { 'mat-pp': 3.16, 'mat-pc': 4.5 };
         setNumericField('bm-cool-f', bmCoolMap[c.materialId] ?? 3.5, 2);
-        setNumericField('bm-amort', 100000, 0);
+        if (!cadAnnVol) setNumericField('bm-amort', 100000, 0);   // fallback default only when no annual volume
         break;
       }
 
@@ -10725,7 +10734,7 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
           const tfPlastic = cadOCCTGeometry?.weights?.plasticKg ?? c.netWeightKg;
           setNumericField('tf-sheet-wt', tfPlastic * 1.35, 4);
         }
-        setNumericField('tf-amort', 50000, 0);
+        if (!cadAnnVol) setNumericField('tf-amort', 50000, 0);   // fallback default only when no annual volume
         break;
       }
 
@@ -10748,7 +10757,7 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
           setNumericField('rm-num-arms', 3, 0);
           setNumericField('rm-parts-per-arm', c.netWeightKg > 5 ? 1 : 2, 0);
         }
-        setNumericField('rm-amort', 20000, 0);
+        if (!cadAnnVol) setNumericField('rm-amort', 20000, 0);   // fallback default only when no annual volume
         break;
       }
 
@@ -10773,7 +10782,7 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
           setNumericField('rub-cycle-sec', 180, 0);
           setNumericField('rub-cavities', 2, 0);
         }
-        setNumericField('rub-amort', 50000, 0);
+        if (!cadAnnVol) setNumericField('rub-amort', 50000, 0);   // fallback default only when no annual volume
         break;
       }
 
@@ -10806,14 +10815,14 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
           setNumericField('comp-fibre-frac', 0.45, 2);
           setNumericField('comp-waste-frac', 0.20, 2);
         }
-        setNumericField('comp-amort', 10000, 0);
+        if (!cadAnnVol) setNumericField('comp-amort', 10000, 0);   // fallback default only when no annual volume
         break;
       }
 
       case 'wiring_harness': {
         // Wiring harness has no geometry-driven sub-object; populate sensible defaults
         setNumericField('harn-asm-time', c.estimatedCycleTimeHr * 3600, 0);
-        setNumericField('harn-amort', 10000, 0);
+        if (!cadAnnVol) setNumericField('harn-amort', 10000, 0);   // fallback default only when no annual volume
         break;
       }
     }
