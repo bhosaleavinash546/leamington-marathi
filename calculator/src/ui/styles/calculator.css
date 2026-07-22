@@ -6659,6 +6659,72 @@ input.cv-outlier { border-color: var(--warning) !important; box-shadow: 0 0 0 2p
 }
 .cv3d-explode-slider { width: 150px; accent-color: #4f8ef7; }
 
+/* Explode axis segmented control (Radial / X / Y / Z) */
+.cv3d-axis-seg { display: inline-flex; gap: 3px; }
+.cv3d-axis-seg button {
+  appearance: none;
+  border: 1px solid transparent;
+  background: rgba(255, 255, 255, 0.05);
+  color: #aeb6c2;
+  min-width: 26px;
+  height: 22px;
+  padding: 0 7px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.cv3d-axis-seg button:hover { color: #e8ecf2; background: rgba(255, 255, 255, 0.1); }
+.cv3d-axis-seg button.active {
+  background: rgba(79, 142, 247, 0.25);
+  border-color: rgba(79, 142, 247, 0.55);
+  color: #9cc0ff;
+}
+
+/* Rotate panel — component picker + per-axis sliders (top-centre, below Explode) */
+.cv3d-rotate-panel {
+  position: absolute;
+  top: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  background: rgba(15, 18, 22, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  backdrop-filter: blur(4px);
+  z-index: 3;
+}
+.cv3d-rotate-panel .cv3d-clip-row input[type="range"] { width: 90px; }
+.cv3d-rotate-body {
+  appearance: none;
+  background: rgba(255, 255, 255, 0.06);
+  color: #e8ecf2;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 5px;
+  padding: 3px 7px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.cv3d-rotate-panel .cv3d-clip-row span { width: 12px; text-align: center; color: #8b93a0; }
+.cv3d-rotate-reset {
+  appearance: none;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.05);
+  color: #aeb6c2;
+  height: 22px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.cv3d-rotate-reset:hover { color: #e8ecf2; background: rgba(255, 255, 255, 0.1); }
+
 /* keep the bodies panel above the bottom-right orientation cube */
 .cv3d-bodies { bottom: 150px; }
 

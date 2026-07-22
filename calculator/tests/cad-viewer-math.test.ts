@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { dist3, circumcircle3, angle3, closestPointOnSegment, draftBucket, thicknessColor } from '../src/ui/cad-viewer.js';
+import { dist3, circumcircle3, angle3, closestPointOnSegment, draftBucket, thicknessColor, bodyColorRGB, BODY_COLORS } from '../src/ui/cad-viewer.js';
 
 describe('cad-viewer measurement math', () => {
   it('dist3 measures euclidean distance', () => {
@@ -161,5 +161,30 @@ describe('cad-viewer wall-thickness heatmap ramp', () => {
   it('the ramp goes hot→cold: red channel falls and blue channel rises overall', () => {
     expect(thicknessColor(0)[0]).toBeGreaterThan(thicknessColor(1)[0]); // more red at the thin end
     expect(thicknessColor(1)[2]).toBeGreaterThan(thicknessColor(0)[2]); // more blue at the thick end
+  });
+});
+
+describe('component (per-body) colour palette', () => {
+  it('gives each of the first N bodies a distinct palette colour', () => {
+    const seen = new Set(BODY_COLORS.map((_, i) => bodyColorRGB(i).join(',')));
+    expect(seen.size).toBe(BODY_COLORS.length); // no duplicates within one cycle
+  });
+
+  it('cycles the palette for indices beyond its length', () => {
+    const n = BODY_COLORS.length;
+    expect(bodyColorRGB(0)).toEqual(bodyColorRGB(n));
+    expect(bodyColorRGB(1)).toEqual(bodyColorRGB(n + 1));
+  });
+
+  it('handles negative indices without going out of range', () => {
+    const n = BODY_COLORS.length;
+    expect(bodyColorRGB(-1)).toEqual(bodyColorRGB(n - 1));
+    for (const c of bodyColorRGB(-5)) { expect(c).toBeGreaterThanOrEqual(0); expect(c).toBeLessThanOrEqual(1); }
+  });
+
+  it('every channel is a valid [0,1] intensity', () => {
+    for (let i = 0; i < BODY_COLORS.length; i++) {
+      for (const ch of bodyColorRGB(i)) { expect(ch).toBeGreaterThanOrEqual(0); expect(ch).toBeLessThanOrEqual(1); }
+    }
   });
 });

@@ -155,6 +155,32 @@ export function thicknessColor(t: number): [number, number, number] {
   return [a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f, a[2] + (b[2] - a[2]) * f];
 }
 
+// ── Per-component (per-body) colour palette (assembly identification mode) ────
+// A categorical palette: each body of a multi-solid assembly is painted a
+// distinct, legible colour so components can be told apart at a glance. Colours
+// cycle when an assembly has more bodies than the palette.
+export const BODY_COLORS: [number, number, number][] = [
+  [0.30, 0.56, 0.91], // blue
+  [0.95, 0.61, 0.24], // orange
+  [0.29, 0.72, 0.45], // green
+  [0.86, 0.36, 0.42], // red
+  [0.60, 0.45, 0.86], // purple
+  [0.25, 0.73, 0.72], // teal
+  [0.91, 0.45, 0.69], // pink
+  [0.74, 0.68, 0.26], // olive
+  [0.42, 0.62, 0.31], // moss
+  [0.56, 0.53, 0.49], // taupe
+  [0.22, 0.50, 0.63], // slate
+  [0.83, 0.53, 0.25], // amber
+];
+/** Distinct colour for body index `i`, cycling through the palette (safe for any
+ *  integer, including negatives). */
+export function bodyColorRGB(i: number): [number, number, number] {
+  const n = BODY_COLORS.length;
+  const p = BODY_COLORS[((i % n) + n) % n];
+  return [p[0], p[1], p[2]];
+}
+
 /** Classify a triangle/face by draft relative to a pull axis.
  *  `theta` is the angle between the outward normal and the pull axis:
  *  ~0/180° → perpendicular-to-pull top/bottom face (neutral); ~90° → wall.
@@ -250,7 +276,21 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
       </div>
       <div class="cv3d-explode-panel" style="display:none">
         <span class="cv3d-clip-label">Explode</span>
+        <div class="cv3d-axis-seg" data-explode-axes>
+          <button data-explode-axis="radial" class="active" title="Explode radially from the centre">Radial</button>
+          <button data-explode-axis="x" title="Explode along X">X</button>
+          <button data-explode-axis="y" title="Explode along Y">Y</button>
+          <button data-explode-axis="z" title="Explode along Z">Z</button>
+        </div>
         <input type="range" class="cv3d-explode-slider" min="0" max="100" value="0" step="1"/>
+      </div>
+      <div class="cv3d-rotate-panel" style="display:none">
+        <span class="cv3d-clip-label">Rotate</span>
+        <select class="cv3d-rotate-body" title="Component to rotate"></select>
+        <label class="cv3d-clip-row"><span>X</span><input type="range" data-rot-axis="x" min="-180" max="180" value="0" step="1"/></label>
+        <label class="cv3d-clip-row"><span>Y</span><input type="range" data-rot-axis="y" min="-180" max="180" value="0" step="1"/></label>
+        <label class="cv3d-clip-row"><span>Z</span><input type="range" data-rot-axis="z" min="-180" max="180" value="0" step="1"/></label>
+        <button class="cv3d-rotate-reset" title="Reset this component's rotation">Reset</button>
       </div>
     </div>
     <div class="cv3d-toolbar">
@@ -270,12 +310,14 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
           <button data-act="mode-shaded" class="active" title="Shaded with edges"><b>◧</b><span>Shaded</span></button>
           <button data-act="mode-wire" title="Wireframe"><b>◇</b><span>Wire</span></button>
           <button data-act="bbox" title="Bounding box + dimensions"><b>▣</b><span>Box</span></button>
+          <button data-act="grid" class="active" title="Show / hide the ground grid"><b>▦</b><span>Grid</span></button>
         </div>
       </div>
       <div class="cv3d-grp">
         <span class="cv3d-grp-cap">Analysis</span>
         <div class="cv3d-grp-row">
           <button data-act="facecolors" title="Colour by machining surface type (STEP/IGES only)" disabled><b>🎨</b><span>Faces</span></button>
+          <button data-act="bodycolors" title="Colour each component a distinct colour (multi-body assemblies)" disabled><b>🧩</b><span>Components</span></button>
           <button data-act="draft" title="Draft &amp; undercut analysis — colour by pull direction"><b>📐</b><span>Draft</span></button>
           <button data-act="thickness" title="Wall-thickness heatmap (STEP/IGES only)" disabled><b>🌡</b><span>Thickness</span></button>
         </div>
@@ -287,6 +329,7 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
           <button data-act="features" title="Detected features — holes &amp; bosses (STEP/IGES only)" disabled><b>◎</b><span>Holes</span></button>
           <button data-act="clip" title="Section view — clipping planes (X/Y/Z)"><b>✂</b><span>Section</span></button>
           <button data-act="explode" title="Exploded view (multi-body only)" disabled><b>💥</b><span>Explode</span></button>
+          <button data-act="rotate" title="Rotate a component about its own X / Y / Z" disabled><b>⟳</b><span>Rotate</span></button>
         </div>
       </div>
       <div class="cv3d-grp cv3d-grp--measure">
@@ -332,6 +375,8 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
   const clipPanel = $('.cv3d-clip-panel');
   const explodePanel = $('.cv3d-explode-panel');
   const explodeSlider = $<HTMLInputElement>('.cv3d-explode-slider');
+  const rotatePanel = $('.cv3d-rotate-panel');
+  const rotateBodySelect = $<HTMLSelectElement>('.cv3d-rotate-body');
   const statusFile = $('.cv3d-status-file');
   const statusDims = $('.cv3d-status-dims');
   const statusHint = $('.cv3d-status-hint');
@@ -407,7 +452,12 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
   let thicknessOn = false;
   let thicknessRange: { min: number; max: number } | null = null;
   let explodeFactor = 0;
-  let bodyExplodeDir: Array<InstanceType<typeof THREE.Vector3>> = []; // per-body outward unit vector
+  let explodeAxis: 'radial' | 'x' | 'y' | 'z' = 'radial';
+  let bodyExplodeDir: Array<InstanceType<typeof THREE.Vector3>> = []; // per-body explode vector (dir × relative distance)
+  let bodyCentroid: Array<InstanceType<typeof THREE.Vector3>> = [];   // per-body centroid (part space) — rotation pivot
+  let bodyRot: Array<{ x: number; y: number; z: number }> = [];       // per-body rotation in degrees
+  let gridOn = true;
+  let bodyColorsOn = false;
 
   // ── resource disposal helpers ──
   function disposeMaterialDeep(m: unknown): void {
@@ -749,6 +799,7 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
     grid = new THREE.GridHelper(gridSize, 20, 0x9aa4b0, 0xdde2e8); // light greys — readable on the white viewport
     grid.rotation.x = Math.PI / 2;
     grid.position.z = -partSpan.z / 2 - partRadius * 0.02;
+    grid.visible = gridOn;
     partGroup.add(grid);
 
     buildBBox();
@@ -775,6 +826,14 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
     const explodeBtn = $<HTMLButtonElement>('[data-act="explode"]');
     explodeBtn.disabled = bodyMeshes.length < 2;
     explodeBtn.title = bodyMeshes.length < 2 ? 'Exploded view needs a multi-body model' : 'Exploded view';
+    // component colouring — assemblies only (≥2 bodies)
+    const bcBtn = $<HTMLButtonElement>('[data-act="bodycolors"]');
+    bcBtn.disabled = bodyMeshes.length < 2;
+    bcBtn.title = bodyMeshes.length < 2 ? 'Component colours need a multi-body assembly' : 'Colour each component a distinct colour';
+    if (bodyMeshes.length < 2) { bodyColorsOn = false; bcBtn.classList.remove('active'); }
+    // per-component rotate — any loaded model (rotates the whole part when single-body)
+    const rotBtn = $<HTMLButtonElement>('[data-act="rotate"]');
+    rotBtn.disabled = bodyMeshes.length < 1;
     // wall-thickness heatmap: enabled only when the sidecar carries per-face thickness
     const thkVals = (meta?.faces ?? []).map(f => f.thicknessMm).filter((v): v is number => typeof v === 'number' && v > 0);
     thicknessRange = thkVals.length >= 2 ? { min: Math.min(...thkVals), max: Math.max(...thkVals) } : null;
@@ -783,8 +842,9 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
     thkBtn.title = thicknessRange ? 'Wall-thickness heatmap' : 'Wall thickness needs STEP/IGES (B-rep) — STL is mesh-only';
     if (!thicknessRange) { thicknessOn = false; thkBtn.classList.remove('active'); }
 
-    // reset section + explode state for the new part
+    // reset section + explode + rotate state for the new part
     explodeFactor = 0; explodeSlider.value = '0';
+    bodyRot = bodyMeshes.map(() => ({ x: 0, y: 0, z: 0 }));
     (['x', 'y', 'z'] as const).forEach(a => {
       clipState[a].on = false; clipState[a].off = 0;
       const cb = clipPanel.querySelector(`input[data-clip-axis="${a}"]`) as HTMLInputElement | null; if (cb) cb.checked = false;
@@ -794,8 +854,10 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
     buildBodiesPanel();
     buildFeaturesPanel();
     computeExplodeDirs();
+    buildRotatePanel();
+    applyBodyTransforms(); // clear any stale explode/rotation offsets
     if (treeBox.style.display !== 'none') buildTreePanel();
-    applyColorMode(); // reapply active face-type / draft shading to the new meshes
+    applyColorMode(); // reapply active face-type / draft / component shading to the new meshes
     applyClipping();
 
     resize();
@@ -912,25 +974,70 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
     }));
   }
 
-  // ── exploded view (multi-body) ──
+  // ── exploded view + per-component rotation (multi-body / assemblies) ──
+  const DEG2RAD = Math.PI / 180;
+  /** Record each body's centroid (rotation pivot) once per load, then derive the
+   *  explode direction for the active axis. */
   function computeExplodeDirs(): void {
-    bodyExplodeDir = [];
-    if (bodyMeshes.length < 2) return;
-    for (const mesh of bodyMeshes) {
+    bodyCentroid = bodyMeshes.map(mesh => {
       const bb = mesh.geometry.boundingBox;
-      const c = bb ? bb.getCenter(new THREE.Vector3()) : new THREE.Vector3();
-      bodyExplodeDir.push(c.lengthSq() > 1e-9 ? c.clone().normalize() : new THREE.Vector3(0, 0, 1));
-    }
+      return (bb ? bb.getCenter(new THREE.Vector3()) : new THREE.Vector3());
+    });
+    updateExplodeDirs();
   }
-  function applyExplode(): void {
-    if (!bodyExplodeDir.length) return;
+  /** Per-body explode vector for the active axis. Radial = outward unit vector.
+   *  X/Y/Z = along that axis, signed by the body's side, with magnitude scaled by
+   *  how far the body sits from the axis centre so parts fan out without piling up. */
+  function updateExplodeDirs(): void {
+    if (explodeAxis === 'radial') {
+      bodyExplodeDir = bodyCentroid.map(c => c.lengthSq() > 1e-9 ? c.clone().normalize() : new THREE.Vector3(0, 0, 1));
+      return;
+    }
+    const key = explodeAxis;
+    const comps = bodyCentroid.map(c => c[key]);
+    const maxAbs = Math.max(1e-6, ...comps.map(Math.abs));
+    bodyExplodeDir = comps.map(comp => {
+      const v = new THREE.Vector3();
+      v[key] = (comp >= 0 ? 1 : -1) * (Math.abs(comp) / maxAbs || 1);
+      return v;
+    });
+  }
+  /** Apply explode offset + per-body rotation (about the body's own centroid) to
+   *  every body mesh and its edge overlay. Rotating about the centroid keeps the
+   *  component in place while it spins; picking still works via the world matrix. */
+  function applyBodyTransforms(): void {
     const dist = explodeFactor * partRadius * 1.4;
     for (let i = 0; i < bodyMeshes.length; i++) {
-      const off = bodyExplodeDir[i].clone().multiplyScalar(dist);
-      bodyMeshes[i].position.copy(off);
+      const c = bodyCentroid[i] ?? new THREE.Vector3();
+      const off = (bodyExplodeDir[i] ?? new THREE.Vector3()).clone().multiplyScalar(dist);
+      const r = bodyRot[i] ?? { x: 0, y: 0, z: 0 };
+      const q = new THREE.Quaternion().setFromEuler(new THREE.Euler(r.x * DEG2RAD, r.y * DEG2RAD, r.z * DEG2RAD));
+      // displayed = R·(v − c) + c + off  ⇒  position = c − R·c + off, quaternion = R
+      const pos = c.clone().sub(c.clone().applyQuaternion(q)).add(off);
+      bodyMeshes[i].quaternion.copy(q);
+      bodyMeshes[i].position.copy(pos);
       const e = bodyEdges[i];
-      if (e) e.position.copy(off);
+      if (e) { e.quaternion.copy(q); e.position.copy(pos); }
     }
+  }
+  /** (Re)build the component picker in the rotate panel and sync the sliders to
+   *  the currently-selected body's rotation. */
+  function buildRotatePanel(): void {
+    const prev = rotateBodySelect.value;
+    rotateBodySelect.innerHTML = bodyMeshes.map((_, i) => `<option value="${i}">Body ${i + 1}</option>`).join('');
+    if (prev && Number(prev) < bodyMeshes.length) rotateBodySelect.value = prev;
+    syncRotateSliders();
+  }
+  function selectedRotateBody(): number {
+    const i = Number(rotateBodySelect.value);
+    return Number.isFinite(i) && i >= 0 && i < bodyMeshes.length ? i : 0;
+  }
+  function syncRotateSliders(): void {
+    const r = bodyRot[selectedRotateBody()] ?? { x: 0, y: 0, z: 0 };
+    (['x', 'y', 'z'] as const).forEach(a => {
+      const sl = rotatePanel.querySelector(`input[data-rot-axis="${a}"]`) as HTMLInputElement | null;
+      if (sl) sl.value = String(r[a]);
+    });
   }
 
   // ── features panel (holes & bosses from exact B-rep data) ──
@@ -1352,17 +1459,20 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
    *  shading are mutually exclusive. Rebuilds the colour buffer for the active
    *  mode (or strips it when neither is on). */
   function applyColorMode(): void {
-    const mode: 'none' | 'facetype' | 'draft' | 'thickness' =
+    const mode: 'none' | 'facetype' | 'draft' | 'thickness' | 'body' =
       draftOn ? 'draft'
       : (thicknessOn && meta && triFaceAll && thicknessRange) ? 'thickness'
-      : (faceColorsOn && meta ? 'facetype' : 'none');
+      : (faceColorsOn && meta ? 'facetype' : (bodyColorsOn && bodyMeshes.length >= 2 ? 'body' : 'none'));
     const pull: [number, number, number] = draftAxis === 'x' ? [1, 0, 0] : draftAxis === 'y' ? [0, 1, 0] : [0, 0, 1];
     for (let bi = 0; bi < bodyMeshes.length; bi++) {
       const mesh = bodyMeshes[bi];
       const mat = bodyMats[bi];
-      if (mode === 'none') {
+      if (mode === 'none' || mode === 'body') {
+        // solid per-material colour — grey when off, a distinct palette colour per
+        // component when in Components mode. No vertex-colour buffer needed.
         mat.vertexColors = false;
-        mat.color.set(0xaeb6c2);
+        if (mode === 'body') { const c = bodyColorRGB(bi); mat.color.setRGB(c[0], c[1], c[2]); }
+        else mat.color.set(0xaeb6c2);
         if (mesh.geometry.getAttribute('color')) mesh.geometry.deleteAttribute('color');
         mat.needsUpdate = true;
         continue;
@@ -1416,6 +1526,9 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
         `<span><i style="background:${rgbCss(thicknessColor(0))}"></i>${min.toFixed(1)} mm (thin)</span>` +
         `<span><i style="background:${rgbCss(thicknessColor(0.5))}"></i>${mid.toFixed(1)} mm</span>` +
         `<span><i style="background:${rgbCss(thicknessColor(1))}"></i>${max.toFixed(1)} mm (thick)</span>`;
+    } else if (mode === 'body') {
+      legendEl.innerHTML = bodyMeshes.map((_, i) =>
+        `<span><i style="background:${rgbCss(bodyColorRGB(i))}"></i>Body ${i + 1}</span>`).join('');
     }
     legendEl.style.display = mode === 'none' ? 'none' : '';
   }
@@ -1456,7 +1569,27 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
   });
   explodeSlider.addEventListener('input', () => {
     explodeFactor = Number(explodeSlider.value) / 100;
-    applyExplode();
+    applyBodyTransforms();
+  });
+  // explode axis selector (Radial / X / Y / Z)
+  explodePanel.querySelectorAll('[data-explode-axis]').forEach(b => b.addEventListener('click', () => {
+    explodeAxis = (b as HTMLElement).dataset.explodeAxis as 'radial' | 'x' | 'y' | 'z';
+    explodePanel.querySelectorAll('[data-explode-axis]').forEach(o => o.classList.toggle('active', o === b));
+    updateExplodeDirs();
+    applyBodyTransforms();
+  }));
+  // per-component rotate: sliders drive the selected body's rotation
+  rotateBodySelect.addEventListener('change', syncRotateSliders);
+  rotatePanel.querySelectorAll('input[data-rot-axis]').forEach(sl => sl.addEventListener('input', () => {
+    const a = (sl as HTMLInputElement).dataset.rotAxis as 'x' | 'y' | 'z';
+    const i = selectedRotateBody();
+    if (bodyRot[i]) { bodyRot[i][a] = Number((sl as HTMLInputElement).value); applyBodyTransforms(); }
+  }));
+  $('.cv3d-rotate-reset').addEventListener('click', () => {
+    const i = selectedRotateBody();
+    bodyRot[i] = { x: 0, y: 0, z: 0 };
+    syncRotateSliders();
+    applyBodyTransforms();
   });
 
   root.querySelector('.cv3d-toolbar')!.addEventListener('click', (ev) => {
@@ -1489,21 +1622,41 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
         if (bboxHelper) bboxHelper.visible = bboxOn;
         bboxLabels.forEach(l => { l.visible = bboxOn; });
         break;
+      case 'grid':
+        gridOn = !gridOn;
+        btn.classList.toggle('active', gridOn);
+        if (grid) grid.visible = gridOn;
+        statusHint.textContent = gridOn ? 'Ground grid shown' : 'Ground grid hidden';
+        break;
       case 'facecolors':
         faceColorsOn = !faceColorsOn;
         if (faceColorsOn) {
-          draftOn = false; thicknessOn = false;
+          draftOn = false; thicknessOn = false; bodyColorsOn = false;
           root.querySelector('[data-act="draft"]')?.classList.remove('active');
           root.querySelector('[data-act="thickness"]')?.classList.remove('active');
+          root.querySelector('[data-act="bodycolors"]')?.classList.remove('active');
         }
         btn.classList.toggle('active', faceColorsOn);
         applyColorMode();
         break;
+      case 'bodycolors':
+        bodyColorsOn = !bodyColorsOn;
+        if (bodyColorsOn) {
+          faceColorsOn = false; draftOn = false; thicknessOn = false;
+          root.querySelector('[data-act="facecolors"]')?.classList.remove('active');
+          root.querySelector('[data-act="draft"]')?.classList.remove('active');
+          root.querySelector('[data-act="thickness"]')?.classList.remove('active');
+        }
+        btn.classList.toggle('active', bodyColorsOn);
+        applyColorMode();
+        statusHint.textContent = bodyColorsOn ? 'Components coloured — each body a distinct colour' : 'Component colours off';
+        break;
       case 'draft':
         // click cycles the pull axis: off → Z → X → Y → off
-        faceColorsOn = false; thicknessOn = false;
+        faceColorsOn = false; thicknessOn = false; bodyColorsOn = false;
         root.querySelector('[data-act="facecolors"]')?.classList.remove('active');
         root.querySelector('[data-act="thickness"]')?.classList.remove('active');
+        root.querySelector('[data-act="bodycolors"]')?.classList.remove('active');
         if (!draftOn) { draftOn = true; draftAxis = 'z'; }
         else if (draftAxis === 'z') draftAxis = 'x';
         else if (draftAxis === 'x') draftAxis = 'y';
@@ -1515,9 +1668,10 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
       case 'thickness':
         thicknessOn = !thicknessOn;
         if (thicknessOn) {
-          draftOn = false; faceColorsOn = false;
+          draftOn = false; faceColorsOn = false; bodyColorsOn = false;
           root.querySelector('[data-act="draft"]')?.classList.remove('active');
           root.querySelector('[data-act="facecolors"]')?.classList.remove('active');
+          root.querySelector('[data-act="bodycolors"]')?.classList.remove('active');
         }
         btn.classList.toggle('active', thicknessOn);
         applyColorMode();
@@ -1533,6 +1687,13 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
         const show = explodePanel.style.display === 'none';
         explodePanel.style.display = show ? '' : 'none';
         btn.classList.toggle('active', show);
+        break;
+      }
+      case 'rotate': {
+        const show = rotatePanel.style.display === 'none';
+        rotatePanel.style.display = show ? '' : 'none';
+        btn.classList.toggle('active', show);
+        if (show) { buildRotatePanel(); statusHint.textContent = 'Rotate: pick a component, then drag its X / Y / Z slider'; }
         break;
       }
       case 'tree': {
