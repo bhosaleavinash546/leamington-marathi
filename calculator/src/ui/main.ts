@@ -690,9 +690,12 @@ async function updateKnowledgePanel(result: PartCostResult): Promise<void> {
 
 
 // ─── App-nav active state (sidebar) ──────────────────────────────────────────
-function setNavActive(id: 'home-btn' | 'analytics-btn' | 'news-btn' | 'negotiation-btn' | null): void {
+function setNavActive(id: 'home-btn' | 'analytics-btn' | 'news-btn' | 'negotiation-btn' | 'viewer-btn' | null): void {
   document.querySelectorAll('#app-nav .anav-item').forEach(el => el.classList.remove('active'));
   if (id) document.getElementById(id)?.classList.add('active');
+  // every view switch passes through here — hide the standalone 3D viewer page
+  // (showViewer re-shows it right after calling this)
+  document.getElementById('viewer-view')?.style.setProperty('display', 'none');
   // Every view switch passes through here — close the demo-gallery modal so it
   // can't stay glued on top of the next view, and restore page scroll (its
   // opener sets body overflow:hidden).
@@ -757,6 +760,49 @@ function showNegotiation(): void {
   if (el) el.style.display = '';
   renderNegotiationPanel();
   window.scrollTo({ top: 0, behavior: 'auto' });
+}
+
+// 3D CAD Viewer — standalone open-for-analysis page (its own left-nav view).
+// No costing: just inspect, measure and analyse a STEP/IGES/STL model.
+let viewerStandalone: import('./cad-viewer.js').CADViewerHandle | null = null;
+function showViewer(): void {
+  setNavActive('viewer-btn');
+  document.getElementById('wizard-overlay')?.remove();
+  document.body.classList.remove('cv-new-costing');
+  document.body.classList.remove('sidebar-collapsed');
+  document.getElementById('home-view')?.style.setProperty('display', 'none');
+  document.getElementById('commodity-picker-view')?.style.setProperty('display', 'none');
+  document.getElementById('news-view')?.style.setProperty('display', 'none');
+  document.getElementById('negotiation-view')?.style.setProperty('display', 'none');
+  const costingEl = document.getElementById('costing-view');
+  if (costingEl) { costingEl.classList.remove('wf-panel', 'wf-panel--open'); costingEl.style.display = 'none'; }
+  document.getElementById('wf-panel-header')?.style?.setProperty('display', 'none');
+  document.getElementById('picker-backdrop')?.style.setProperty('display', 'none');
+  document.getElementById('viewer-view')?.style.setProperty('display', '');
+  window.scrollTo({ top: 0, behavior: 'auto' });
+}
+
+async function loadViewerFile(file: File): Promise<void> {
+  const dz = document.getElementById('viewer-dropzone');
+  const hostWrap = document.getElementById('viewer-standalone-host');
+  if (!hostWrap) return;
+  if (dz) dz.style.display = 'none';
+  hostWrap.style.display = '';
+  try {
+    if (!viewerStandalone) {
+      const { createCADViewer } = await import('./cad-viewer.js');
+      viewerStandalone = await createCADViewer(hostWrap, { compact: false, headers: cadViewerHeaders });
+    }
+    await viewerStandalone.loadFile(file);
+  } catch (err) {
+    hostWrap.style.display = 'none';
+    if (dz) {
+      dz.style.display = '';
+      const msg = err instanceof Error ? err.message : 'could not open file';
+      const hint = dz.querySelector('div:last-child');
+      if (hint) hint.textContent = `Couldn't open ${file.name}: ${msg}`;
+    }
+  }
 }
 
 
@@ -17814,6 +17860,27 @@ async function init(): Promise<void> {
 
   // ─── Negotiation Intelligence section wiring ──────────────────────────────
   document.getElementById('negotiation-btn')?.addEventListener('click', showNegotiation);
+
+  // 3D CAD Viewer (standalone) — nav + open/back + drag-drop
+  document.getElementById('viewer-btn')?.addEventListener('click', showViewer);
+  document.getElementById('viewer-back-btn')?.addEventListener('click', showHome);
+  document.getElementById('viewer-open-btn')?.addEventListener('click', () => document.getElementById('viewer-file-input')?.click());
+  document.getElementById('viewer-file-input')?.addEventListener('change', (e) => {
+    const f = (e.target as HTMLInputElement).files?.[0];
+    if (f) void loadViewerFile(f);
+    (e.target as HTMLInputElement).value = ''; // allow re-opening the same file
+  });
+  const viewerDz = document.getElementById('viewer-dropzone');
+  if (viewerDz) {
+    viewerDz.addEventListener('click', () => document.getElementById('viewer-file-input')?.click());
+    viewerDz.addEventListener('dragover', (e) => { e.preventDefault(); viewerDz.classList.add('dragover'); });
+    viewerDz.addEventListener('dragleave', () => viewerDz.classList.remove('dragover'));
+    viewerDz.addEventListener('drop', (e) => {
+      e.preventDefault(); viewerDz.classList.remove('dragover');
+      const f = (e as DragEvent).dataTransfer?.files?.[0];
+      if (f) void loadViewerFile(f);
+    });
+  }
   document.getElementById('nego-back-btn')?.addEventListener('click', showHome);
   document.getElementById('news-refresh-btn')?.addEventListener('click', () => { void refreshNews(); });
 
@@ -18470,6 +18537,7 @@ function _cmdkBuild(): CmdkEntry[] {
     { label: 'New costing — browse all methods', sub: 'View', icon: 'i-plus', run: () => showCommodityPicker() },
     { label: 'Automotive industry news', sub: 'View', icon: 'i-news', run: byId('news-btn') },
     { label: 'Negotiation Intelligence — supplier-quote teardown', sub: 'View', icon: 'i-trend-up', run: () => showNegotiation() },
+    { label: '3D CAD Viewer — open a model for analysis & measurement', sub: 'View', icon: 'i-cube', run: () => showViewer() },
     { label: 'Demo gallery', sub: 'Open', icon: 'i-play', run: byId('demo-btn') },
     { label: 'Rate library — edit & version machine / labour rates', sub: 'Open', icon: 'i-factory', run: () => { showCosting('machining'); setTimeout(() => document.getElementById('rates-btn')?.click(), 200); } },
     { label: 'Calibration & actuals — bulk-import PO prices, see coverage', sub: 'Open', icon: 'i-trend-up', run: () => openCalibrationModal() },

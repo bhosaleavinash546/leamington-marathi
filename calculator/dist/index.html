@@ -50,18 +50,19 @@
       } catch { window.location.replace(authUrl); }
     })();
   </script>
-  <script type="module" crossorigin src="/calculator/assets/index-D8QDG7IC.js"></script>
+  <script type="module" crossorigin src="/calculator/assets/index-Bb1_2o31.js"></script>
   <link rel="modulepreload" crossorigin href="/calculator/assets/vendor-motion-DAJjhAeu.js">
-  <link rel="modulepreload" crossorigin href="/calculator/assets/vendor-dk9zuiyo.js">
-  <link rel="modulepreload" crossorigin href="/calculator/assets/vendor-pdf-BefExTow.js">
+  <link rel="modulepreload" crossorigin href="/calculator/assets/vendor-CftVFUJH.js">
+  <link rel="modulepreload" crossorigin href="/calculator/assets/vendor-pdf-U2w36xKv.js">
   <link rel="modulepreload" crossorigin href="/calculator/assets/vendor-chart-K87R2BAO.js">
-  <link rel="stylesheet" crossorigin href="/calculator/assets/index-qaRCp3yM.css">
+  <link rel="stylesheet" crossorigin href="/calculator/assets/index-CxFxhpOg.css">
 </head>
 <body>
 
 <!-- ── Icon sprite — single SVG system (Lucide-style), stroke = currentColor ── -->
 <svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
   <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></symbol>
+  <symbol id="i-cube" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><path d="M3.27 6.96 12 12.01l8.73-5.05"/><path d="M12 22.08V12"/></symbol>
   <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
   <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5z"/></symbol>
   <symbol id="i-news" viewBox="0 0 24 24"><path d="M4 5h13v14H4z"/><path d="M17 8h3v9a2 2 0 0 1-2 2"/><path d="M7 9h7M7 12.5h7M7 16h4"/></symbol>
@@ -169,6 +170,7 @@
     <button class="anav-item" id="demo-btn" aria-label="Open demo gallery" title="Load luxury SUV demo examples for any commodity" data-cv-tip="Browse 50+ pre-loaded luxury SUV demos across all 19+ commodity types. One click loads full cost breakdown." data-cv-tip-title="Demo Gallery"><svg class="ic"><use href="#i-car"/></svg><span class="anav-label">Demos</span></button>
     <button class="anav-item" id="news-btn" aria-label="Automotive Industry News" title="Live automotive manufacturing &amp; costing news" data-cv-tip="120 articles from 30 curated feeds — battery, EV, materials, supply chain. Auto-refreshes every 15 min." data-cv-tip-title="Market Intelligence"><svg class="ic"><use href="#i-news"/></svg><span class="anav-label">News</span></button>
     <button class="anav-item" id="negotiation-btn" aria-label="Negotiation Intelligence" title="Supplier-quote teardown vs should-cost" data-cv-tip="Paste a supplier quote — the agent tears it down against should-cost and hands you the levers, questions and closing plays. Export to PDF or PowerPoint." data-cv-tip-title="Negotiation Intelligence"><svg class="ic"><use href="#i-trend-up"/></svg><span class="anav-label">Negotiation</span></button>
+    <button class="anav-item" id="viewer-btn" aria-label="3D CAD Viewer" title="Open a 3D CAD model for analysis &amp; measurement" data-cv-tip="Open a STEP / IGES / STL model to inspect, measure and analyse geometry — no costing. Rotate, section, measure, wall-thickness &amp; draft." data-cv-tip-title="3D CAD Viewer"><svg class="ic"><use href="#i-cube"/></svg><span class="anav-label">3D Viewer</span></button>
   </div>
   <div class="anav-group anav-group--bottom">
     <button class="anav-item" id="help-btn" aria-label="Open help centre" data-cv-tip="Help Centre with search, guides, keyboard shortcuts (?), and the product tour." data-cv-tip-title="Help Centre"><svg class="ic"><use href="#i-help"/></svg><span class="anav-label">Help</span></button>
@@ -713,6 +715,27 @@
   </div>
   <!-- Negotiation Intelligence card — supplier-quote teardown (rendered by JS) -->
   <div id="dash-negotiation"></div>
+</section>
+
+<!-- ── 3D CAD Viewer view (standalone open-for-analysis; its own left-nav section) ── -->
+<section id="viewer-view" style="display:none;padding:0 24px 40px;max-width:1500px">
+  <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin:14px 0 12px;flex-wrap:wrap">
+    <div>
+      <h1 style="font-size:1.35rem;font-weight:800;margin:0">3D CAD Viewer</h1>
+      <p style="margin:4px 0 0;color:var(--text-muted);font-size:0.85rem">Open a STEP / IGES / STL model to inspect, measure and analyse geometry — no costing.</p>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn btn-primary btn-sm" id="viewer-open-btn" type="button">＋ Open CAD file</button>
+      <button class="btn btn-secondary btn-sm" id="viewer-back-btn" type="button">← Back to Home</button>
+    </div>
+  </div>
+  <input type="file" id="viewer-file-input" accept=".step,.stp,.iges,.igs,.stl" style="display:none"/>
+  <div id="viewer-dropzone" class="viewer-dropzone">
+    <svg class="ic" style="width:44px;height:44px;opacity:.55"><use href="#i-cube"/></svg>
+    <div style="font-weight:700;font-size:1.02rem;margin-top:10px">Drop a CAD file here, or click “Open CAD file”</div>
+    <div style="color:var(--text-muted);font-size:0.82rem;margin-top:5px">STEP · IGES · STL — rotate, section, measure, wall-thickness &amp; draft analysis</div>
+  </div>
+  <div id="viewer-standalone-host" style="display:none"></div>
 </section>
 
 <section id="news-view" style="display:none;padding:0 24px 48px;max-width:1400px">
