@@ -889,8 +889,21 @@ def analyze(filepath: str) -> dict:
         fill_ratio = round(volume_mm3 / bbox_vol, 4) if bbox_vol > 0 else 0.5
 
         # ── Face & edge classification ────────────────────────────────────────
-        faces = shape.Faces()
-        edges = shape.Edges()
+        faces = list(shape.Faces())
+        edges = list(shape.Edges())
+
+        # Guard against pathological topology (audit RK3): analyze runs several
+        # O(faces)+O(edges) passes with no ceiling, so a file declaring millions
+        # of faces would exhaust CPU/RAM. Real parts have hundreds–low thousands
+        # of faces; even large assemblies stay well under these limits.
+        max_faces = int(os.environ.get("CV_MAX_ANALYZE_FACES", "100000"))
+        max_edges = int(os.environ.get("CV_MAX_ANALYZE_EDGES", "300000"))
+        if len(faces) > max_faces or len(edges) > max_edges:
+            return {"status": "error",
+                    "error": (f"Model topology too large to analyze "
+                              f"({len(faces)} faces, {len(edges)} edges; limits "
+                              f"{max_faces}/{max_edges}). Simplify or defeature the model.")}
+
         face_counts, cyl_radii_all = _classify_faces(faces)
         edge_counts, circle_radii = _classify_edges(edges)
 

@@ -23,6 +23,9 @@ export interface STLGeometry {
   estimatedWallThicknessMm: number; // heuristic: (vol_mm3 / sa_mm2) * 2
   estimatedPartWeightKg: (densityKgPerM3: number) => number;
   format: 'ascii' | 'binary';
+  /** True when the file declared more triangles than maxTriangles, so the mesh
+   *  was parsed only partially — volume/area/bbox are computed over the prefix. */
+  truncated: boolean;
   parseTimeMs: number;
 }
 
@@ -103,7 +106,7 @@ function accumulateTriangle(
  *     [36..47] 3×float32  vertex 3
  *     [48..49] uint16     attribute byte count (ignored)
  */
-function parseBinary(buf: Buffer, maxTriangles: number): { acc: Accumulator; triangleCount: number } {
+function parseBinary(buf: Buffer, maxTriangles: number): { acc: Accumulator; triangleCount: number; truncated: boolean } {
   if (buf.length < 84) throw new Error('STL binary: buffer too small (< 84 bytes)');
 
   const declaredCount = buf.readUInt32LE(80);
@@ -116,6 +119,7 @@ function parseBinary(buf: Buffer, maxTriangles: number): { acc: Accumulator; tri
     );
   }
 
+  const truncated = declaredCount > maxTriangles;
   const triangleCount = Math.min(declaredCount, maxTriangles);
   const acc = makeAccumulator();
 
@@ -134,7 +138,7 @@ function parseBinary(buf: Buffer, maxTriangles: number): { acc: Accumulator; tri
     accumulateTriangle(acc, x1, y1, z1, x2, y2, z2, x3, y3, z3);
   }
 
-  return { acc, triangleCount };
+  return { acc, triangleCount, truncated };
 }
 
 // ─── ASCII STL parser ────────────────────────────────────────────────────────
@@ -149,7 +153,7 @@ function parseBinary(buf: Buffer, maxTriangles: number): { acc: Accumulator; tri
  *     endloop
  *   endfacet
  */
-function parseAscii(buf: Buffer, maxTriangles: number): { acc: Accumulator; triangleCount: number } {
+function parseAscii(buf: Buffer, maxTriangles: number): { acc: Accumulator; triangleCount: number; truncated: boolean } {
   const text = buf.toString('utf-8');
   const acc = makeAccumulator();
 
@@ -176,7 +180,9 @@ function parseAscii(buf: Buffer, maxTriangles: number): { acc: Accumulator; tria
     triangleCount++;
   }
 
-  return { acc, triangleCount };
+  // Hit the cap AND more vertices remain → the mesh was only partially parsed.
+  const truncated = triangleCount === maxTriangles && vertexRe.exec(text) !== null;
+  return { acc, triangleCount, truncated };
 }
 
 // ─── Format detection ────────────────────────────────────────────────────────
@@ -234,13 +240,27 @@ export function parseSTL(
   const maxTriangles = options.maxTriangles ?? 2_000_000;
 
   const format = detectFormat(buffer);
-  const { acc, triangleCount } =
+  const { acc, triangleCount, truncated } =
     format === 'binary'
       ? parseBinary(buffer, maxTriangles)
       : parseAscii(buffer, maxTriangles);
 
   if (triangleCount === 0) {
     throw new Error('STL parse error: no triangles found in file');
+  }
+
+  // ── Integrity guard: reject non-finite geometry ────────────────────────────
+  // A malformed/adversarial STL can carry NaN or ±Infinity vertex bytes. NaN
+  // poisons signedVolume/surfaceArea (any + NaN = NaN) and, because NaN fails
+  // every < / > test, an all-NaN mesh leaves the bbox seeds at ±Infinity. Left
+  // unchecked this silently yields garbage volume/weight/cost. Reject it here so
+  // a corrupt file is a clear error, never a plausible-looking wrong number.
+  const finite = (n: number) => Number.isFinite(n);
+  if (!finite(acc.signedVolume) || !finite(acc.surfaceArea) ||
+      !finite(acc.xMin) || !finite(acc.xMax) ||
+      !finite(acc.yMin) || !finite(acc.yMax) ||
+      !finite(acc.zMin) || !finite(acc.zMax)) {
+    throw new Error('STL parse error: file contains non-finite (NaN/Infinity) vertex data — file is corrupt');
   }
 
   // ── Convert units ─────────────────────────────────────────────────────────
@@ -278,6 +298,7 @@ export function parseSTL(
     estimatedPartWeightKg: (densityKgPerM3: number) =>
       (volumeCm3 / 1e6) * densityKgPerM3,   // cm³ → m³ → kg
     format,
+    truncated,
     parseTimeMs,
   };
 }

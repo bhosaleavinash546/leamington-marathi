@@ -21,6 +21,12 @@ const MAX_CONCURRENT_PYTHON = parseInt(process.env.CV_MAX_PYTHON_PROCS ?? '2', 1
 let pythonActive = 0;
 const pythonQueue: Array<() => void> = [];
 
+// Ceiling on subprocess stdout accumulated in the Node heap. `analyze` returns
+// its whole geometry JSON via stdout; without a cap a runaway/crafted subprocess
+// could grow the heap unbounded (audit RK7). 64 MB is far above any legitimate
+// geometry JSON (the triangle-heavy sidecar goes to a file, not stdout).
+const MAX_STDOUT_BYTES = parseInt(process.env.CV_MAX_STDOUT_BYTES ?? String(64 * 1024 * 1024), 10);
+
 async function acquirePython(): Promise<() => void> {
   if (pythonActive >= MAX_CONCURRENT_PYTHON) {
     await new Promise<void>((resolve) => pythonQueue.push(resolve));
@@ -160,8 +166,15 @@ function _runPython(tmpPath: string, timeoutMs: number): Promise<OCCTGeometry> {
       settle({ status: 'error', error: `Geometry engine timed out after ${timeoutMs / 1000}s` });
     }, timeoutMs);
 
-    child.stdout.on('data', (d: Buffer) => { stdout += d.toString(); });
-    child.stderr.on('data', (d: Buffer) => { stderr += d.toString(); });
+    child.stdout.on('data', (d: Buffer) => {
+      stdout += d.toString();
+      if (stdout.length > MAX_STDOUT_BYTES) {
+        child.kill('SIGKILL');
+        clearTimeout(timer);
+        settle({ status: 'error', error: `Geometry engine output exceeded ${(MAX_STDOUT_BYTES / 1048576).toFixed(0)} MB — aborted.` });
+      }
+    });
+    child.stderr.on('data', (d: Buffer) => { if (stderr.length < 8192) stderr += d.toString(); });
 
     child.on('error', (err) => {
       clearTimeout(timer);
@@ -244,8 +257,11 @@ export async function tessellateToSTL(
       const settle = (r: { status: string; triangles?: number; error?: string }) => { if (!settled) { settled = true; resolve(r); } };
       const child = spawn('python3', args, { env: { ...process.env } });
       const timer = setTimeout(() => { child.kill('SIGKILL'); settle({ status: 'error', error: `Tessellation timed out after ${timeoutMs / 1000}s` }); }, timeoutMs);
-      child.stdout.on('data', (d: Buffer) => { stdout += d.toString(); });
-      child.stderr.on('data', (d: Buffer) => { stderr += d.toString(); });
+      child.stdout.on('data', (d: Buffer) => {
+        stdout += d.toString();
+        if (stdout.length > MAX_STDOUT_BYTES) { child.kill('SIGKILL'); clearTimeout(timer); settle({ status: 'error', error: `Tessellation output exceeded ${(MAX_STDOUT_BYTES / 1048576).toFixed(0)} MB — aborted.` }); }
+      });
+      child.stderr.on('data', (d: Buffer) => { if (stderr.length < 8192) stderr += d.toString(); });
       child.on('error', (err) => { clearTimeout(timer); settle({ status: 'error', error: `Python process error: ${err.message}` }); });
       child.on('close', () => {
         clearTimeout(timer);

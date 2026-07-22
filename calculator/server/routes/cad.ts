@@ -35,6 +35,14 @@ const isDeepReq = (req: { body?: Record<string, unknown> }): boolean =>
   req.body?.deepAnalysis === 'true' || req.body?.deepAnalysis === true;
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 50 * 1024 * 1024 } });
 
+// Per-IP rate limits for the anonymous CAD endpoints (audit RK3). Defined here,
+// before the routes that use them, so there is no temporal-dead-zone at load.
+// /analyze spawns Python AND calls the paid AI (tightest budget); tessellate
+// spawns Python only; /parse-stl is pure-TS but still takes a 50 MB upload.
+const tessellateLimiter = rateLimit({ windowMs: 10 * 60_000, max: 60, standardHeaders: true, legacyHeaders: false });
+const analyzeLimiter = rateLimit({ windowMs: 10 * 60_000, max: 40, standardHeaders: true, legacyHeaders: false });
+const parseStlLimiter = rateLimit({ windowMs: 10 * 60_000, max: 120, standardHeaders: true, legacyHeaders: false });
+
 // ─── Specialist system prompts per commodity ─────────────────────────────────
 
 const SPECIALIST_SYSTEM_PROMPTS: Record<string, string> = {
@@ -111,7 +119,7 @@ Return JSON only (no prose): {"primary":"casting","conf":0.87,"alt":[{"type":"ma
 }
 
 // POST /api/cad/analyze
-router.post('/analyze', upload.fields([
+router.post('/analyze', analyzeLimiter, upload.fields([
   { name: 'cadFile', maxCount: 1 },
   { name: 'drawingPdf', maxCount: 1 },
 ]), asyncRoute(async (req, res): Promise<void> => {
@@ -1096,11 +1104,44 @@ ${alwaysSubs}
 // Unauthenticated by design, but each call spawns a Python/OCP process — rate
 // limiting keeps an anonymous request loop from exhausting the box (the spawn
 // semaphore in geometry-bridge caps concurrency independently).
-const tessellateLimiter = rateLimit({ windowMs: 10 * 60_000, max: 60, standardHeaders: true, legacyHeaders: false });
-
 /** Multipart filenames can carry control chars — keep them out of the logs. */
 function safeLogName(name: string): string {
   return name.replace(/[^\x20-\x7e]/g, '_').slice(0, 120);
+}
+
+/** Lightweight content sniff so a non-CAD blob renamed .step/.iges can't reach
+ *  the Python subprocess (audit RK6 — extension-only validation). STEP must
+ *  begin with the ISO-10303-21 magic; IGES is 80-column ASCII text, so reject a
+ *  header that is mostly non-printable. Not a full validator — OCCT is the final
+ *  judge — just enough to stop obvious garbage before we spawn a process. */
+function sniffCadContent(ext: string, buf: Buffer): string | null {
+  const head = buf.subarray(0, 4096);
+  if (ext === 'step' || ext === 'stp') {
+    if (!/ISO-10303-21/i.test(head.toString('latin1'))) {
+      return 'File does not look like a STEP file (missing ISO-10303-21 header). Re-export the part as STEP.';
+    }
+    return null;
+  }
+  if (ext === 'igs' || ext === 'iges') {
+    let printable = 0;
+    for (let i = 0; i < head.length; i++) {
+      const c = head[i];
+      if (c === 9 || c === 10 || c === 13 || (c >= 32 && c <= 126)) printable++;
+    }
+    if (head.length > 0 && printable / head.length < 0.85) {
+      return 'File does not look like an IGES text file. Re-export the part as STEP or IGES.';
+    }
+    return null;
+  }
+  return null;
+}
+
+/** Strip absolute paths and cap length before returning a downstream error to
+ *  the client, so Python stderr / tmp paths aren't disclosed (audit RK6). */
+function clientSafeError(msg: string): string {
+  // Only collapse real filesystem paths (≥2 segments, e.g. /tmp/cv-ab12.stl) —
+  // NOT single tokens like "NaN/Infinity" that happen to contain a slash.
+  return msg.replace(/(?:\/[\w.-]+){2,}\/?/g, '<path>').slice(0, 300);
 }
 
 /** Express 4 does not catch async handler errors — without this wrapper an
@@ -1136,7 +1177,7 @@ function respondAIError(res: Parameters<Parameters<typeof router.post>[1]>[1], e
   res.status(502).json({ error: `AI service error: ${msg.slice(0, 300)}` });
 }
 
-router.post('/tessellate', tessellateLimiter, upload.single('cadFile'), async (req, res): Promise<void> => {
+router.post('/tessellate', tessellateLimiter, upload.single('cadFile'), asyncRoute(async (req, res): Promise<void> => {
   if (!req.file) { res.status(400).json({ error: 'No file uploaded' }); return; }
   const ext = req.file.originalname.toLowerCase().split('.').pop() ?? '';
   if (['x_t', 'x_b', 'xmt_txt', 'jt', 'prt', 'sldprt', 'catpart'].includes(ext)) {
@@ -1150,10 +1191,12 @@ router.post('/tessellate', tessellateLimiter, upload.single('cadFile'), async (r
     res.status(400).json({ error: 'tessellate accepts STEP/IGES only (STL is already a mesh)' });
     return;
   }
+  const sniff = sniffCadContent(ext, req.file.buffer);
+  if (sniff) { res.status(422).json({ error: sniff }); return; }
   const wantMeta = req.query.meta === '1' || req.query.meta === 'bin';
   const result = await tessellateToSTL(req.file.buffer, req.file.originalname, { withMeta: wantMeta });
   if (result.status !== 'success') {
-    res.status(422).json({ error: result.error });
+    res.status(422).json({ error: clientSafeError(result.error ?? 'tessellation failed') });
     return;
   }
   console.log(`[CAD] Tessellated ${safeLogName(req.file.originalname)}: ${result.triangles} triangles, ${(result.stl.length / 1024).toFixed(0)} KB STL`);
@@ -1190,11 +1233,11 @@ router.post('/tessellate', tessellateLimiter, upload.single('cadFile'), async (r
   res.set('Content-Type', 'application/octet-stream');
   res.set('X-Triangle-Count', String(result.triangles));
   res.send(result.stl);
-});
+}));
 
 // POST /api/cad/parse-stl — return raw STL geometry without AI analysis
 // Accepts: multipart/form-data with field "cadFile" (must be .stl)
-router.post('/parse-stl', upload.single('cadFile'), async (req, res): Promise<void> => {
+router.post('/parse-stl', parseStlLimiter, upload.single('cadFile'), asyncRoute(async (req, res): Promise<void> => {
   if (!req.file) { res.status(400).json({ error: 'No file uploaded' }); return; }
 
   const { originalname, size, buffer } = req.file;
@@ -1205,8 +1248,10 @@ router.post('/parse-stl', upload.single('cadFile'), async (req, res): Promise<vo
   }
 
   try {
-    const maxTriangles = parseInt(req.query['maxTriangles'] as string ?? '2000000', 10);
-    const geo = parseSTL(buffer, { maxTriangles: isNaN(maxTriangles) ? 2_000_000 : maxTriangles });
+    // The parse cap is server-fixed (2 M). It is NOT read from the client: a
+    // caller-supplied lower cap would silently truncate the mesh and understate
+    // volume/weight/cost (audit RK3). Genuine >2 M-triangle files set geo.truncated.
+    const geo = parseSTL(buffer, { maxTriangles: 2_000_000 });
 
     console.log(
       `[CAD/parse-stl] ${originalname} (${(size / 1024).toFixed(0)} KB) — ` +
@@ -1234,14 +1279,15 @@ router.post('/parse-stl', upload.single('cadFile'), async (req, res): Promise<vo
         copper:     geo.estimatedPartWeightKg(8960),
       },
       format: geo.format,
+      truncated: geo.truncated,   // true when the file exceeded the 2 M-triangle cap
       parseTimeMs: geo.parseTimeMs,
     });
   } catch (err) {
     const msg = (err as Error).message;
     console.error(`[CAD/parse-stl] Error: ${msg}`);
-    res.status(422).json({ error: msg });
+    res.status(422).json({ error: clientSafeError(msg) });
   }
-});
+}));
 
 // POST /api/cad/reanalyze — re-run AI analysis using pre-computed (cached) OCCT geometry; no STEP re-upload needed
 router.post('/reanalyze', asyncRoute(async (req, res): Promise<void> => {
@@ -1377,5 +1423,19 @@ router.post('/reanalyze', asyncRoute(async (req, res): Promise<void> => {
   cadCache.set(cacheKey, { ...payload, fromCache: true });
   res.json(payload);
 }));
+
+// Multer upload errors (e.g. LIMIT_FILE_SIZE at the 50 MB cap) reach the router
+// as errors — turn them into a clean JSON 413/400 instead of a generic 500
+// (audit RK6). Router-scoped so it only catches this router's uploads.
+router.use((err: unknown, _req: import('express').Request, res: import('express').Response, next: import('express').NextFunction) => {
+  if (err instanceof multer.MulterError) {
+    const tooBig = err.code === 'LIMIT_FILE_SIZE';
+    res.status(tooBig ? 413 : 400).json({
+      error: tooBig ? 'File is too large — the upload limit is 50 MB. Simplify or compress the model and try again.' : `Upload error: ${err.message}`,
+    });
+    return;
+  }
+  next(err);
+});
 
 export default router;
