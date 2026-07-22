@@ -13,6 +13,7 @@
  * from the rate library or the annual amortisation volume, never a £.
  */
 import { sizeProcessMachine, SIZE_TIERED_COMMODITIES, type MachineSizingParams } from './machine-sizing.js';
+import { physicalRemovalCeilingMin } from './feature-costing.js';
 import type { UniversalStackInput, RateLibrary } from './types.js';
 
 export type AuditSeverity = 'high' | 'medium' | 'low';
@@ -165,8 +166,51 @@ const checkWeightVsGeometry: Check = (ctx) => {
   };
 };
 
+/** Lesson: a thin hollow shell on a large envelope is atypical for casting/forging
+ *  (chunky solids) — the fuel-tank-costed-as-sand-casting error. Flag the process. */
+const checkThinHollowNotCast: Check = (ctx) => {
+  const g = ctx.geometry;
+  if (!g || g.fillRatio == null || !g.bboxMm) return null;
+  if (!(ctx.commodity === 'casting' || ctx.commodity === 'cast_and_machine' || ctx.commodity === 'forging')) return null;
+  const maxDim = Math.max(g.bboxMm.x, g.bboxMm.y, g.bboxMm.z);
+  if (g.fillRatio < 0.05 && maxDim > 300) {
+    return {
+      id: 'thin-hollow-not-cast',
+      title: 'Thin hollow shape is atypical for casting/forging',
+      severity: 'high',
+      message: `Fill ratio ${(g.fillRatio * 100).toFixed(1)}% on a ${maxDim.toFixed(0)} mm envelope is a thin enclosed shell — castings/forgings are chunky solids. More likely injection/blow moulding or sheet metal (the fuel-tank sand-casting error). Verify the process.`,
+      expected: 'moulding / blow / sheet',
+      actual: ctx.commodity,
+    };
+  }
+  return null;
+};
+
+/** Lesson: machining time can't exceed the stock-removal envelope (volume ÷ MRR +
+ *  surface finishing) — the servo-horn 266-min-on-a-3 g-part over-count. */
+const checkMachiningEnvelope: Check = (ctx) => {
+  if (ctx.commodity !== 'machining') return null;
+  const g = ctx.geometry;
+  if (!g?.volumeCm3 || !g.bboxMm) return null;
+  const stockCm3 = (g.bboxMm.x * g.bboxMm.y * g.bboxMm.z) / 1000;   // billet stock ≈ bbox
+  if (stockCm3 <= 0) return null;
+  const ceilingMin = physicalRemovalCeilingMin(g.volumeCm3, stockCm3, g.surfaceAreaCm2 ?? 0, 1);
+  const actualMin = ctx.input.operations.reduce((s, op) => s + (op.cycleTimeHr / Math.max(1, op.partsPerCycle)) * 60, 0);
+  if (actualMin <= 0 || ceilingMin <= 0 || actualMin <= ceilingMin * 2) return null;
+  return {
+    id: 'machining-over-envelope',
+    title: 'Machining time exceeds the removal envelope',
+    severity: 'medium',
+    message: `Costed machine time ${actualMin.toFixed(0)} min is >2× the ${ceilingMin.toFixed(0)} min a machinist needs to remove ${(stockCm3 - g.volumeCm3).toFixed(0)} cm³ of stock + finishing. Likely an over-counted cycle (the servo-horn class of error).`,
+    expected: `~${ceilingMin.toFixed(0)} min`,
+    actual: `${actualMin.toFixed(0)} min`,
+  };
+};
+
 const CHECKS: ReadonlyArray<Check> = [
   checkMachineSizing,
+  checkThinHollowNotCast,
+  checkMachiningEnvelope,
   checkWallPlausible,
   checkWeightVsGeometry,
   checkAmortVolume,

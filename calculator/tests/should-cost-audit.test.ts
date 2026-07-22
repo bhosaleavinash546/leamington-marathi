@@ -98,6 +98,35 @@ describe('weight-vs-geometry lesson', () => {
   });
 });
 
+describe('thin-hollow-not-cast lesson', () => {
+  it('flags a large thin hollow shell costed as a casting (the fuel-tank error)', () => {
+    const f = runShouldCostAudit(base({
+      commodity: 'casting',
+      geometry: { fillRatio: 0.0178, bboxMm: { x: 1528, y: 658, z: 594 } },
+    }));
+    expect(f.find(x => x.id === 'thin-hollow-not-cast')?.severity).toBe('high');
+  });
+  it('does not flag a chunky casting', () => {
+    const f = runShouldCostAudit(base({
+      commodity: 'casting',
+      geometry: { fillRatio: 0.35, bboxMm: { x: 200, y: 150, z: 120 } },
+    }));
+    expect(f.find(x => x.id === 'thin-hollow-not-cast')).toBeUndefined();
+  });
+});
+
+describe('machining-over-envelope lesson', () => {
+  it('flags a tiny part costed with huge machine time (servo-horn class)', () => {
+    const input = mkInput('mat-al6061', 0.003, 100000);
+    input.operations = [{ operationName: 'mill', machineId: 'mach-vmc5', labourId: 'lab-uk-skilled', cycleTimeHr: 4.4, partsPerCycle: 1, oee: 0.85, manning: 1, labourTimeHr: 4.4, labourEfficiency: 0.9 }];
+    const f = runShouldCostAudit(base({
+      commodity: 'machining', input,
+      geometry: { volumeCm3: 1.2, surfaceAreaCm2: 13.5, bboxMm: { x: 47, y: 10, z: 7.5 } },
+    }));
+    expect(f.find(x => x.id === 'machining-over-envelope')?.severity).toBe('medium');
+  });
+});
+
 describe('runShouldCostAudit ordering', () => {
   it('returns findings most-severe first', () => {
     const f = runShouldCostAudit(base({

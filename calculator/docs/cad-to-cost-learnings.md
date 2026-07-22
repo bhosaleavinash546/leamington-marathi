@@ -200,6 +200,30 @@ prompt/normalisation changes didn't invalidate already-analysed parts.
 **Fix:** `CAD_PROMPT_VERSION` in the cache key — bump it whenever the prompt or
 normalisation logic changes.
 
+### 5b. The self-audit agent — lessons as automated pre-flight checks (Phase 2)
+The lessons above were promoted from "things to remember" to a deterministic layer
+that runs on EVERY estimate. `engine/should-cost-audit.ts` (`runShouldCostAudit`)
+encodes each lesson as a detector that recomputes what the physics/geometry demand
+and flags disagreement, ranked by severity, with a bounded correction where safe:
+- **machine-undersized** — recompute the required machine via `sizeProcessMachine`;
+  flag an under-capacity selection → correction is the sized machine id.
+- **thin-hollow-not-cast** — a thin enclosed shell on a large envelope costed as a
+  casting/forging (the fuel-tank error).
+- **machining-over-envelope** — machine time > 2× the stock-removal ceiling
+  (`physicalRemovalCeilingMin`) (the servo-horn over-count).
+- **wall-exceeds-bbox / wall-over-measured** — impossible or 3×-too-thick shell wall.
+- **weight-geometry-mismatch** — net weight vs measured volume × material density.
+- **amort-not-annual** — tooling amortised over a stale default → correction is the
+  annual volume.
+Wired into the live flow: after every Calculate a "Self-Audit" panel surfaces the
+findings at the top of the breakdown with one-click **Apply fix** for the safe
+corrections (a rate-library machine id or the amort volume — never a £), and a
+"✓ Self-audit" pass chip when clean. The audit *re-derives independently* from the
+form + geometry, so it catches a user override or a future regression, not just the
+original bug. Golden rule intact — the audit flags and proposes bounded corrections;
+it never sets a price. A new commodity added to `SIZE_TIERED_COMMODITIES` inherits
+the machine check automatically.
+
 ## Checklist for the next real part
 1. Measure with `cad-geometry-engine.py`; sanity-check volume/weight vs the picture,
    and wall thickness vs `2·V/S`.
