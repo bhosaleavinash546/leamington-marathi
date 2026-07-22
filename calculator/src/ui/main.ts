@@ -6,7 +6,8 @@ import {
 import type { CADAnalysisResult, OCCTGeometry } from '../engine/ai-analysis.js';
 import { computeMachiningDrivers } from '../engine/modules/machining.js';
 import { computeSheetMetalDrivers, assessPressTonnage, estimateTonnageTonnes } from '../engine/modules/sheet-metal.js';
-import { sizeProcessMachine } from '../engine/machine-sizing.js';
+import { sizeProcessMachine, type MachineSizingParams } from '../engine/machine-sizing.js';
+import { runShouldCostAudit, type AuditCorrection, type AuditFinding } from '../engine/should-cost-audit.js';
 import { computeInjectionMouldingDrivers, estimateClampingTonnage, estimateMouldCost, pickIMMPressId, autoCoolFactorForMaterial, type MouldSteelClass } from '../engine/modules/injection-moulding.js';
 import { computeCastingDrivers } from '../engine/modules/casting.js';
 import { computeForgingDrivers } from '../engine/modules/forging.js';
@@ -10248,7 +10249,7 @@ function sizeHPDCMachineFor(selId: string, cavities: number): void {
   const hpdcTonnes = estimateClampingTonnage({
     projectedAreaCm2: projAreaCm2 * Math.max(1, cavities),
     cavityPressureMPa: 70,
-    safetyfactor: 1.2,
+    safetyfactor: 1.0,   // raw die-fill force; pickHPDCMachineId adds the machine margin
   });
   const id = sizeProcessMachine('casting', { hpdcTonnes });
   const sel2 = document.getElementById(selId) as HTMLSelectElement | null;
@@ -12871,6 +12872,7 @@ function compute(): void {
     pushCostingRecord({ totalCost: result.total, confidence: result.warnings?.length ? 'Medium' : 'High', breakdown: result.breakdown, warnings: result.warnings, detail: buildPartDetail(result, input) });
     showResultsArea();
     renderBreakdown(result);
+    renderSelfAudit(input);   // deterministic lessons layer — flags physics/geometry inconsistencies
     updateTabBadges(result, input);
     fetchAICommentary(result);
 
@@ -13669,6 +13671,113 @@ function buildResultHeroBlock(result: PartCostResult, input: UniversalStackInput
         ${conf90.applied ? `<span class="cv-rchip cv-rchip--ok" title="Coverage-guaranteed range from ${conf90.n} logged actuals">90% land within ±${conf90.halfWidthPct}%</span>` : ''}
       </div>
     </div>`;
+}
+
+/** Independently recompute the size-tiered machine + its physics driver from the
+ *  current form + geometry, so the self-audit can compare against what's selected.
+ *  (Reuses the same estimators the apply uses — the audit re-derives, not trusts.) */
+function _auditSizing(commodity: string): { sizingParams?: MachineSizingParams; selectedMachineId?: string | null } {
+  const footprint = _projectedFootprintCm2();
+  switch (commodity) {
+    case 'injection_moulding': {
+      const area = num('imm-area'), press = num('imm-cav-press') || 30;
+      const clampTonnes = area > 0 ? estimateClampingTonnage({ projectedAreaCm2: area, cavityPressureMPa: press }) : undefined;
+      return { sizingParams: clampTonnes != null ? { clampTonnes } : undefined, selectedMachineId: sel('imm-mach') };
+    }
+    case 'blow_moulding': {
+      const shotKg = num('bm-part-wt') + num('bm-flash-wt');
+      return { sizingParams: shotKg > 0 ? { shotKg } : undefined, selectedMachineId: sel('bm-mach') };
+    }
+    case 'forging': {
+      const forgeTonnes = footprint > 0 ? estimateForgingTonnage({ projectedAreaCm2: footprint, alloyFamily: forgingAlloyFamilyFor(sel('forge-mat')), shapeComplexity: 'moderate' }) : undefined;
+      return { sizingParams: forgeTonnes != null ? { forgeTonnes } : undefined, selectedMachineId: sel('forge-mach') };
+    }
+    case 'sheet_metal': {
+      const perim = num('sm-perim'), thick = num('sm-thick'), shear = num('sm-shear');
+      const stampTonnes = (perim > 0 && thick > 0 && shear > 0) ? estimateTonnageTonnes({ perimeterMm: perim, thicknessMm: thick, shearStrengthMPa: shear }) : undefined;
+      return { sizingParams: stampTonnes != null ? { stampTonnes } : undefined, selectedMachineId: sel('sm-press') };
+    }
+    case 'casting':
+    case 'cast_and_machine': {
+      const cavId = commodity === 'casting' ? 'cast-hpdc-cav' : 'cam-hpdc-cav';
+      const machId = commodity === 'casting' ? 'cast-hpdc-mach' : 'cam-hpdc-mach';
+      const hpdcTonnes = footprint > 0 ? estimateClampingTonnage({ projectedAreaCm2: footprint * Math.max(1, num(cavId) || 1), cavityPressureMPa: 70, safetyfactor: 1.0 }) : undefined;
+      return { sizingParams: hpdcTonnes != null ? { hpdcTonnes } : undefined, selectedMachineId: sel(machId) };
+    }
+    default: return {};
+  }
+}
+
+const _AUDIT_MACHINE_FIELD: Record<string, string> = {
+  injection_moulding: 'imm-mach', blow_moulding: 'bm-mach', forging: 'forge-mach',
+  sheet_metal: 'sm-press', casting: 'cast-hpdc-mach', cast_and_machine: 'cam-hpdc-mach',
+};
+
+/** Apply a bounded audit correction (a machine id or the amort volume — never a £),
+ *  then recompute so the headline reflects the fix. */
+function _applyAuditFix(corr: AuditCorrection): void {
+  if (corr.kind === 'machineId') {
+    const selId = _AUDIT_MACHINE_FIELD[activeCommodity];
+    const s = selId ? el<HTMLSelectElement>(selId) : null;
+    if (s) { const m = Array.from(s.options).find(o => o.value === corr.machineId); if (m) { s.value = m.value; markAIFilled(s); } }
+  } else if (corr.kind === 'amortVolume') {
+    const amId = COMMODITY_AMORT_FIELD[activeCommodity];
+    const a = amId ? document.getElementById(amId) as HTMLInputElement | null : null;
+    if (a) { a.value = String(corr.value); a.dispatchEvent(new Event('input')); }
+  }
+  el('calc-btn')?.click();
+}
+
+/** Run the deterministic lessons layer on the current estimate and surface any
+ *  findings (with one-click bounded fixes) at the top of the breakdown. */
+function renderSelfAudit(input: UniversalStackInput): void {
+  const panel = document.getElementById('results-breakdown');
+  document.getElementById('self-audit-panel')?.remove();
+  if (!panel) return;
+  const { sizingParams, selectedMachineId } = _auditSizing(activeCommodity);
+  const geo = cadOCCTGeometry;
+  const geometry = geo ? {
+    volumeCm3: geo.volume?.cm3 ?? null,
+    surfaceAreaCm2: geo.surfaceArea?.cm2 ?? null,
+    bboxMm: geo.boundingBox ? { x: geo.boundingBox.xMm, y: geo.boundingBox.yMm, z: geo.boundingBox.zMm } : null,
+    wallMeanMm: geo.wallThickness?.meanMm ?? null,
+    fillRatio: geo.fillRatio ?? null,
+  } : undefined;
+  const findings: AuditFinding[] = runShouldCostAudit({
+    commodity: activeCommodity, input, library,
+    annualVolume: num('annual-volume') || (input.annualVolume ?? null),
+    selectedMachineId, sizingParams, geometry,
+  });
+
+  const div = document.createElement('div');
+  div.id = 'self-audit-panel';
+  div.style.cssText = 'margin-bottom:12px';
+  if (!findings.length) {
+    if (!geometry && !sizingParams) return;   // nothing meaningful was checked — stay quiet
+    div.innerHTML = `<div style="background:#f0faf4;border:1px solid #b7e4c7;border-radius:6px;padding:8px 12px;font-size:0.78rem;color:#1b6b3a"><strong>✓ Self-audit</strong> — no physics/geometry inconsistencies detected on this estimate.</div>`;
+    panel.prepend(div);
+    return;
+  }
+  const sevColor: Record<string, [string, string, string]> = {
+    high: ['#fdecea', '#f5b7b1', '#a12b1c'], medium: ['#fff4e5', '#ffcc80', '#8a5300'], low: ['#eef1f4', '#cdd5dc', '#4a5560'],
+  };
+  const rows = findings.map((f, i) => {
+    const [bg, bd, fg] = sevColor[f.severity];
+    const fix = f.correction ? `<button class="btn btn-sm sa-fix" data-i="${i}" style="margin-left:auto;font-size:0.7rem;padding:3px 10px">Apply fix</button>` : '';
+    return `<div style="background:${bg};border:1px solid ${bd};border-radius:6px;padding:8px 12px;margin-top:6px">
+      <div style="display:flex;align-items:center;gap:8px"><span style="font-size:0.62rem;font-weight:700;color:${fg};letter-spacing:0.04em">${f.severity.toUpperCase()}</span><strong style="font-size:0.8rem;color:${fg}">${escHtml(f.title)}</strong>${fix}</div>
+      <div style="font-size:0.75rem;color:#333;margin-top:3px">${escHtml(f.message)}</div>
+      ${f.expected ? `<div style="font-size:0.7rem;color:#666;margin-top:2px">expected <strong>${escHtml(f.expected)}</strong> · actual ${escHtml(f.actual ?? '')}</div>` : ''}
+    </div>`;
+  }).join('');
+  div.innerHTML = `<div style="font-size:0.82rem;font-weight:700;color:var(--text-primary,#222);display:flex;align-items:center;gap:6px">
+    <span style="background:#e65100;color:#fff;border-radius:4px;padding:2px 7px;font-size:0.66rem">⚑ SELF-AUDIT</span>
+    ${findings.length} check${findings.length > 1 ? 's' : ''} to review — the deterministic lessons layer flagged these automatically.</div>${rows}`;
+  panel.prepend(div);
+  findings.forEach((f, i) => {
+    if (!f.correction) return;
+    div.querySelector(`.sa-fix[data-i="${i}"]`)?.addEventListener('click', () => _applyAuditFix(f.correction!));
+  });
 }
 
 function renderBreakdown(result: PartCostResult): void {
