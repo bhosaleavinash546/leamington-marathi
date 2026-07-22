@@ -1010,19 +1010,11 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
   }
 
   // ── bodies panel (multi-solid files) ──
+  // Kept hidden: the Model Tree's Bodies section now carries the same per-body
+  // visibility checkboxes, so the floating top-right panel was redundant clutter.
   function buildBodiesPanel(): void {
-    if (bodyMeshes.length < 2) { bodiesBox.style.display = 'none'; bodiesList.innerHTML = ''; return; }
-    bodiesBox.style.display = '';
-    bodiesList.innerHTML = bodyMeshes.map((_, i) =>
-      `<label class="cv3d-body-row"><input type="checkbox" data-body="${i}" checked/> Body ${i + 1}</label>`).join('');
-    bodiesList.querySelectorAll('input[data-body]').forEach(cb => {
-      cb.addEventListener('change', () => {
-        const i = Number((cb as HTMLInputElement).dataset.body);
-        setBodyVisible(i, (cb as HTMLInputElement).checked);
-        const t = treeList.querySelector(`input[data-tbody="${i}"]`) as HTMLInputElement | null;
-        if (t) t.checked = bodyVisible[i];
-      });
-    });
+    bodiesBox.style.display = 'none';
+    bodiesList.innerHTML = '';
   }
 
   function setBodyVisible(i: number, vis: boolean): void {
