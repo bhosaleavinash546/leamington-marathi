@@ -209,6 +209,12 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
   const THREE = await import('three');
   const { OrbitControls } = await import('three/examples/jsm/controls/OrbitControls.js');
   const { ViewHelper } = await import('three/examples/jsm/helpers/ViewHelper.js');
+  const { toCreasedNormals } = await import('three/examples/jsm/utils/BufferGeometryUtils.js');
+  const { RoomEnvironment } = await import('three/examples/jsm/environments/RoomEnvironment.js');
+  // Crease angle for smooth shading: normals are averaged across facets that meet
+  // below this angle (round cylinders/fillets) and kept hard above it (real edges).
+  const CREASE_ANGLE = (40 * Math.PI) / 180;
+  const pixelRatio = () => Math.min(window.devicePixelRatio * 1.5, 2.5); // supersample for crisper edges
 
   // ── DOM scaffold ──
   const root = document.createElement('div');
@@ -313,10 +319,21 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
 
   // ── three.js scene ──
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, preserveDrawingBuffer: true });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setPixelRatio(pixelRatio());
   renderer.localClippingEnabled = true;
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(0xffffff);
+
+  // Image-based lighting (a neutral studio room) gives metals soft, believable
+  // highlights — the difference between a flat "student" render and a CAD-tool
+  // one. Baked once via PMREM; the viewer still works if it fails.
+  let envTexture: InstanceType<typeof THREE.Texture> | null = null;
+  try {
+    const pmrem = new THREE.PMREMGenerator(renderer);
+    envTexture = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+    scene.environment = envTexture;
+    pmrem.dispose();
+  } catch { /* IBL is a nicety — direct lights below still light the part */ }
   const camera = new THREE.PerspectiveCamera(40, 1, 0.1, 10000);
   const controls = new OrbitControls(camera, canvas);
   controls.enableDamping = true;
@@ -487,7 +504,7 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
   function resize(): void {
     const w = viewport.clientWidth, h = viewport.clientHeight;
     if (w === 0 || h === 0) return;
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // tracks monitor moves
+    renderer.setPixelRatio(pixelRatio()); // tracks monitor moves
     renderer.setSize(w, h, false);
     camera.aspect = w / h;
     camera.updateProjectionMatrix();
@@ -670,12 +687,16 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
       for (let bi = 0; bi < bodyList.length; bi++) {
         const nTris = counts[bi];
         const slice = masterPositions.subarray(triCursor * 9, (triCursor + nTris) * 9);
-        const geometry = new THREE.BufferGeometry();
-        geometry.setAttribute('position', new THREE.BufferAttribute(slice.slice(), 3));
-        geometry.computeVertexNormals();
+        const raw = new THREE.BufferGeometry();
+        raw.setAttribute('position', new THREE.BufferAttribute(slice.slice(), 3));
+        // Creased normals = smooth shading on curved faces, crisp normals at real
+        // edges (the fix for the faceted "low-def" look). Preserves triangle order,
+        // so the face-id/colour buffers stay aligned.
+        const geometry = toCreasedNormals(raw, CREASE_ANGLE);
+        if (geometry !== raw) raw.dispose();
         geometry.computeBoundingBox();
         geometry.computeBoundingSphere();
-        const mat = new THREE.MeshStandardMaterial({ color: 0xaeb6c2, metalness: 0.45, roughness: 0.5, side: THREE.DoubleSide });
+        const mat = new THREE.MeshStandardMaterial({ color: 0xb7bec9, metalness: 0.35, roughness: 0.55, envMapIntensity: 0.7, side: THREE.DoubleSide });
         const mesh = new THREE.Mesh(geometry, mat);
         mesh.userData = { triOffset: triCursor, bodySlot: bi };
         partGroup.add(mesh);
@@ -1556,6 +1577,7 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
       ro.disconnect();
       controls.dispose();
       if (viewHelper) { try { viewHelper.dispose(); } catch { /* already gone */ } viewHelper = null; }
+      if (envTexture) { envTexture.dispose(); envTexture = null; }
       // free every GPU resource this instance created
       scene.traverse(disposeObject);
       renderer.dispose();

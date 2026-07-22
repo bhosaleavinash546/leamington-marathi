@@ -1116,7 +1116,13 @@ def tessellate_to_stl(filepath, out_path, with_meta=False):
         BRepBndLib.Add_s(wrapped, box)
         xmin, ymin, zmin, xmax, ymax, zmax = box.Get()
         diag = math.sqrt((xmax - xmin) ** 2 + (ymax - ymin) ** 2 + (zmax - zmin) ** 2) or 1.0
-        BRepMesh_IncrementalMesh(wrapped, diag / 300.0, False, 0.5, True)
+        # Finer meshing for a smooth, HD look: tighter linear deflection (curve
+        # chord error) AND much tighter angular deflection so curved silhouettes
+        # read as round, not faceted. 0.3 rad ≈ 17° between adjacent facet normals
+        # (was 0.5 rad ≈ 29°). Paired with creased vertex normals in the viewer,
+        # this is the main smoothness win. Triangle count stays bounded by
+        # CV_MAX_TRIANGLES; diag/500 keeps small detailed parts from exploding.
+        BRepMesh_IncrementalMesh(wrapped, diag / 500.0, False, 0.3, True)
 
         max_tris = int(os.environ.get("CV_MAX_TRIANGLES", "2000000"))
 
