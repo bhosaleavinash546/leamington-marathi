@@ -6606,7 +6606,42 @@ input.cv-outlier { border-color: var(--warning) !important; box-shadow: 0 0 0 2p
   overflow: hidden;
   z-index: 3;
 }
-.cv3d-tree-list { overflow-y: auto; padding: 4px 0; }
+.cv3d-tree-list { overflow-y: auto; padding: 2px 0; flex: 1; }
+/* Header bar: title + collapse + close, CATIA/NX-style */
+.cv3d-tree-head {
+  display: flex; align-items: center; gap: 6px;
+  padding: 6px 8px 6px 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  flex-shrink: 0;
+}
+.cv3d-tree-title { flex: 1; font-size: 11px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: #c7cdd6; }
+.cv3d-tree-head button {
+  appearance: none; border: none; background: none; cursor: pointer;
+  color: #8b93a0; padding: 3px; border-radius: 5px; display: inline-flex;
+}
+.cv3d-tree-head button:hover { color: #e8ecf2; background: rgba(255, 255, 255, 0.1); }
+.cv3d-tree-head button svg { width: 15px; height: 15px; display: block; }
+/* Collapsed: keep only the header bar */
+.cv3d-tree.cv3d-tree--collapsed { bottom: auto; }
+.cv3d-tree--collapsed .cv3d-tree-list, .cv3d-tree--collapsed .cv3d-tree-resize { display: none; }
+.cv3d-tree--collapsed .cv3d-tree-collapse { opacity: 0.6; }
+/* Collapsible sections */
+.cv3d-tree-sec { border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
+.cv3d-tree-sec > summary {
+  list-style: none; cursor: pointer; user-select: none;
+  padding: 7px 12px; font-size: 10px; font-weight: 700; letter-spacing: 0.05em;
+  text-transform: uppercase; color: #7b8698; display: flex; align-items: center; gap: 6px;
+}
+.cv3d-tree-sec > summary::-webkit-details-marker { display: none; }
+.cv3d-tree-sec > summary::before { content: "▸"; font-size: 9px; transition: transform 120ms; color: #6b7688; }
+.cv3d-tree-sec[open] > summary::before { transform: rotate(90deg); }
+.cv3d-tree-sec > summary:hover { color: #c7cdd6; }
+/* Right-edge resize handle */
+.cv3d-tree-resize {
+  position: absolute; top: 0; right: 0; width: 6px; height: 100%;
+  cursor: ew-resize; z-index: 1;
+}
+.cv3d-tree-resize:hover { background: rgba(79, 142, 247, 0.35); }
 .cv3d-tree-group {
   padding: 7px 12px 3px;
   font-size: 10px;

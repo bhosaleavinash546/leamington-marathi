@@ -293,8 +293,13 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
       <div class="cv3d-facechip" style="display:none"></div>
       <div class="cv3d-legend" style="display:none"></div>
       <div class="cv3d-tree" style="display:none">
-        <div class="cv3d-measures-title">Model tree</div>
+        <div class="cv3d-tree-head">
+          <button class="cv3d-tree-collapse" title="Collapse / expand the tree">${ICON['tree']}</button>
+          <span class="cv3d-tree-title">Model tree</span>
+          <button class="cv3d-tree-close" title="Close tree">${ICON['clear']}</button>
+        </div>
         <div class="cv3d-tree-list"></div>
+        <div class="cv3d-tree-resize" title="Drag to resize"></div>
       </div>
       <div class="cv3d-measures" style="display:none">
         <div class="cv3d-measures-title">Measurements <button class="cv3d-csv-btn" title="Export measurements as CSV">⬇ CSV</button></div>
@@ -1033,23 +1038,33 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
     treeList.innerHTML = '';
     treeTypeIds = null;
     if (!bodyMeshes.length) { treeList.innerHTML = '<div class="cv3d-tree-row">No model loaded</div>'; return; }
+    // Each section is a native <details> so it collapses/expands like a CATIA/NX
+    // spec tree — the Bodies section starts collapsed for big assemblies so 250+
+    // rows don't fill the panel; the list scrolls either way.
+    const bodiesOpen = bodyMeshes.length <= 24 ? 'open' : '';
     const parts: string[] = [];
-    parts.push(`<div class="cv3d-tree-group">Bodies · ${bodyMeshes.length}</div>`);
-    parts.push(bodyMeshes.map((_, i) =>
-      `<label class="cv3d-tree-row cv3d-tree-body"><input type="checkbox" data-tbody="${i}" ${bodyVisible[i] ? 'checked' : ''}/> Body ${i + 1}</label>`).join(''));
+    parts.push(
+      `<details class="cv3d-tree-sec" ${bodiesOpen}><summary>Bodies · ${bodyMeshes.length}</summary>` +
+      bodyMeshes.map((_, i) =>
+        `<label class="cv3d-tree-row cv3d-tree-body"><input type="checkbox" data-tbody="${i}" ${bodyVisible[i] ? 'checked' : ''}/> Body ${i + 1}</label>`).join('') +
+      `</details>`);
     if (featureGroups.length) {
-      parts.push(`<div class="cv3d-tree-group">Features · ${featureGroups.length}</div>`);
-      parts.push(featureGroups.map((g, i) =>
-        `<div class="cv3d-tree-row cv3d-tree-click" data-tfeat="${i}">${g.kind === 'hole' ? '◎' : '⬤'} ${g.kind === 'hole' ? 'Hole' : 'Boss'} Ø${g.diaMm.toFixed(1)}${g.depthMm != null ? `×${g.depthMm.toFixed(1)}` : ''} · ${g.faceIds.length}</div>`).join(''));
+      parts.push(
+        `<details class="cv3d-tree-sec" open><summary>Features · ${featureGroups.length}</summary>` +
+        featureGroups.map((g, i) =>
+          `<div class="cv3d-tree-row cv3d-tree-click" data-tfeat="${i}">${g.kind === 'hole' ? '◎' : '⬤'} ${g.kind === 'hole' ? 'Hole' : 'Boss'} Ø${g.diaMm.toFixed(1)}${g.depthMm != null ? `×${g.depthMm.toFixed(1)}` : ''} · ${g.faceIds.length}</div>`).join('') +
+        `</details>`);
     }
     if (meta) {
       const byType = new Map<string, number[]>();
       for (const f of meta.faces) { if (!byType.has(f.type)) byType.set(f.type, []); byType.get(f.type)!.push(f.id); }
       treeTypeIds = byType;
       const typesSorted = [...byType.entries()].sort((a, b) => b[1].length - a[1].length);
-      parts.push(`<div class="cv3d-tree-group">Faces by type · ${meta.faces.length}</div>`);
-      parts.push(typesSorted.map(([t, ids]) =>
-        `<div class="cv3d-tree-row cv3d-tree-click" data-ttype="${t}"><i style="background:${rgbCss(FACE_COLORS[t] ?? FACE_COLORS.other)}"></i>${FACE_TYPE_LABEL[t] ?? t} · ${ids.length}</div>`).join(''));
+      parts.push(
+        `<details class="cv3d-tree-sec" open><summary>Faces by type · ${meta.faces.length}</summary>` +
+        typesSorted.map(([t, ids]) =>
+          `<div class="cv3d-tree-row cv3d-tree-click" data-ttype="${t}"><i style="background:${rgbCss(FACE_COLORS[t] ?? FACE_COLORS.other)}"></i>${FACE_TYPE_LABEL[t] ?? t} · ${ids.length}</div>`).join('') +
+        `</details>`);
     } else {
       parts.push('<div class="cv3d-tree-row">Face tree needs STEP/IGES (B-rep) — STL is mesh-only</div>');
     }
@@ -1735,6 +1750,30 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
     syncMoveSliders();
     applyBodyTransforms();
   });
+
+  // ── tree panel controls: collapse/expand, close, drag-to-resize ──
+  $('.cv3d-tree-collapse').addEventListener('click', () => {
+    treeBox.classList.toggle('cv3d-tree--collapsed');
+  });
+  $('.cv3d-tree-close').addEventListener('click', () => {
+    treeBox.style.display = 'none';
+    root.classList.remove('cv3d--tree-open');
+    $('[data-act="tree"]').classList.remove('active');
+  });
+  {
+    const handle = $('.cv3d-tree-resize');
+    let startX = 0, startW = 0, dragging = false;
+    const onMove = (e: PointerEvent) => {
+      if (!dragging) return;
+      treeBox.style.width = `${Math.max(190, Math.min(460, startW + (e.clientX - startX)))}px`;
+    };
+    const onUp = () => { dragging = false; window.removeEventListener('pointermove', onMove); window.removeEventListener('pointerup', onUp); };
+    handle.addEventListener('pointerdown', (e) => {
+      dragging = true; startX = (e as PointerEvent).clientX; startW = treeBox.getBoundingClientRect().width;
+      window.addEventListener('pointermove', onMove); window.addEventListener('pointerup', onUp);
+      e.preventDefault();
+    });
+  }
 
   root.querySelector('.cv3d-toolbar')!.addEventListener('click', (ev) => {
     const btn = (ev.target as HTMLElement).closest('button');
