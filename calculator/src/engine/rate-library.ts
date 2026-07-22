@@ -783,6 +783,12 @@ export const DEFAULT_RATE_LIBRARY: RateLibrary = {
     makeMachine('imm-1200t', '1200T Injection Moulding Machine',
       { annualDepreciation: 100000, maintenance: 46000, energy: 150000, floorSpace: 20000, indirectSupport: 20000, financeCost: 12500, annualAvailableHours: 4000, machineUtilization: 0.78 },
       'UK', 'UK plastics benchmark (large structural mouldings), Jun 2026'),
+    makeMachine('imm-2000t', '2000T Injection Moulding Machine',
+      { annualDepreciation: 158000, maintenance: 72000, energy: 232000, floorSpace: 30000, indirectSupport: 31000, financeCost: 19750, annualAvailableHours: 4000, machineUtilization: 0.76 },
+      'UK', 'UK plastics benchmark (large automotive mouldings — door panels, cladding), Jun 2026'),
+    makeMachine('imm-3500t', '3500T Injection Moulding Machine',
+      { annualDepreciation: 265000, maintenance: 120000, energy: 390000, floorSpace: 48000, indirectSupport: 50000, financeCost: 33125, annualAvailableHours: 4000, machineUtilization: 0.74 },
+      'UK', 'UK plastics benchmark (very large automotive — bumpers, IPs, tailgates; high clamp tonnage), Jun 2026'),
     // ── HPDC Machines ─────────────────────────────────────────────────────
     makeMachine('hpdc-500t', 'HPDC 500T',
       { annualDepreciation: 50000, maintenance: 25000, energy: 40000, floorSpace: 12000, indirectSupport: 10000, financeCost: 6250, annualAvailableHours: 3500, machineUtilization: 0.78 },

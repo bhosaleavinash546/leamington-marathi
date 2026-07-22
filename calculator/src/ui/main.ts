@@ -5,8 +5,10 @@ import {
 } from '../engine/index.js';
 import type { CADAnalysisResult, OCCTGeometry } from '../engine/ai-analysis.js';
 import { computeMachiningDrivers } from '../engine/modules/machining.js';
-import { computeSheetMetalDrivers, assessPressTonnage } from '../engine/modules/sheet-metal.js';
-import { computeInjectionMouldingDrivers, estimateClampingTonnage, estimateMouldCost, autoCoolFactorForMaterial, type MouldSteelClass } from '../engine/modules/injection-moulding.js';
+import { computeSheetMetalDrivers, assessPressTonnage, estimateTonnageTonnes } from '../engine/modules/sheet-metal.js';
+import { sizeProcessMachine, type MachineSizingParams } from '../engine/machine-sizing.js';
+import { runShouldCostAudit, type AuditCorrection, type AuditFinding } from '../engine/should-cost-audit.js';
+import { computeInjectionMouldingDrivers, estimateClampingTonnage, estimateMouldCost, pickIMMPressId, autoCoolFactorForMaterial, type MouldSteelClass } from '../engine/modules/injection-moulding.js';
 import { computeCastingDrivers } from '../engine/modules/casting.js';
 import { computeForgingDrivers } from '../engine/modules/forging.js';
 import {
@@ -32,7 +34,7 @@ import {
   estimateLaminationFinishing, analyseLaminationDFM, type StackMethod,
 } from '../engine/modules/lamination-advisor.js';
 import type { FabBlankingMethod, AssistGas } from '../engine/modules/sheet-metal-fab.js';
-import { computeBlowMouldingDrivers } from '../engine/modules/blow-moulding.js';
+import { computeBlowMouldingDrivers, pickEBMMachineId, barrierMaterialId } from '../engine/modules/blow-moulding.js';
 import {
   estimateBlowMouldCost, analyseBlowDFM,
   type BlowProcess, type BlowMouldMaterial,
@@ -66,7 +68,9 @@ import type { CompositeProcess } from '../engine/modules/composites.js';
 import { computeWiringHarnessDrivers } from '../engine/modules/wiring-harness.js';
 import { buildRegionalLibrary, REGIONAL_DATA, computeRegionalComparison } from '../engine/regional-rates.js';
 import { featureToOperation, drillingOpFromFeatures } from '../engine/feature-ops.js';
-import { computeFeatureMachining, type StockCondition } from '../engine/feature-machining.js';
+import { computeFeatureMachining, defaultInclude, type StockCondition } from '../engine/feature-machining.js';
+import { familyFromFilename, familyFromDensity, type MaterialFamily } from '../engine/material-family.js';
+import { estimatePackagingPerPart } from '../engine/geometry-sanity.js';
 import type { FeatureRow } from '../engine/feature-ops.js';
 import type { OperationInput } from '../engine/types.js';
 import type { ManufacturingRegion } from '../engine/regional-rates.js';
@@ -89,6 +93,7 @@ let autoTable: any;
 let printPDF: typeof printPDFType | undefined;
 let printCADAnalysisPDF: typeof printCADType | undefined;
 let drawCostVisionLogo: typeof drawLogoType | undefined;
+let renderShouldCostSections: typeof renderSCType | undefined;
 async function ensurePdfLibs(): Promise<void> {
   if (jsPDF && autoTable && printPDF) return;
   const [m1, m2, m3] = await Promise.all([import('jspdf'), import('jspdf-autotable'), import('../export/pdf.js')]);
@@ -97,15 +102,18 @@ async function ensurePdfLibs(): Promise<void> {
   printPDF = m3.printPDF;
   printCADAnalysisPDF = m3.printCADAnalysisPDF;
   drawCostVisionLogo = m3.drawCostVisionLogo;
+  renderShouldCostSections = m3.renderShouldCostSections;
 }
 import { exportToExcelBlob } from '../export/excel.js';
-import type { printPDF as printPDFType, printCADAnalysisPDF as printCADType, drawCostVisionLogo as drawLogoType } from '../export/pdf.js';
+import type { printPDF as printPDFType, printCADAnalysisPDF as printCADType, drawCostVisionLogo as drawLogoType, renderShouldCostSections as renderSCType, CADReportMeta } from '../export/pdf.js';
+import type { FeatureMachiningLine } from '../engine/feature-machining.js';
 import { computeCostUncertainty } from '../engine/uncertainty.js';
 import {
   computeCalibration, applyCalibration, computeCalibrationHierarchical, cvFromMape,
-  computeConformalBand, applyConformalBand,
+  computeConformalBand, applyConformalBand, segmentDrift, calibrationCoverage, calibrationSummary,
   type CalibrationRecord,
 } from '../engine/calibration.js';
+import { parseActualsCsv } from '../engine/actuals-import.js';
 import {
   buildCausalModel, counterfactual, coachSentence, impliedIndexPremiumPct,
   type CommodityIndexRef,
@@ -124,7 +132,7 @@ import {
 import type { Breakdown8Bucket } from '../engine/types.js';
 import type { PartFingerprint, SimilarCase, CaseSuggestion, ProactiveInsight } from '../engine/part-similarity.js';
 import { computeCarbon } from '../engine/carbon.js';
-import { computeFeatureCosting } from '../engine/feature-costing.js';
+import { computeFeatureCosting, physicalRemovalCeilingMin } from '../engine/feature-costing.js';
 import { generateInsights, totalPotentialSaving, FX_TO_GBP } from '../engine/insights.js';
 import { generateDFMDFA } from '../engine/dfm-dfa.js';
 import type { DFMIssue, CostOptimisation } from '../engine/dfm-dfa.js';
@@ -201,6 +209,12 @@ let cadFile: File | null = null;
 let cadAnalysisResult: CADAnalysisResult | null = null;
 let cadOCCTGeometry: OCCTGeometry | null = null;
 let cadGeometrySource: 'occt' | 'text_parsing' = 'text_parsing';
+// Stage-3 user pins: when true the engineer has fixed the grade / process, so AI
+// re-analysis and sanity heuristics must NOT overwrite them. Mirrors pcbPinnedPrices.
+let _cadMaterialLocked = false;
+let _cadProcessLocked = false;
+let _cadPinnedMaterialId = '';
+let _cadPinnedSubtype = '';   // hpdc | sand | gravity | investment
 let cadSanityWarnings: Array<{ code: string; message: string; severity: 'warn' | 'error' }> = [];
 let cadFromCache = false;
 // Provenance for the accuracy harness: 'cad' when the last applied inputs came
@@ -230,6 +244,10 @@ let _mfgRegion: ManufacturingRegion = 'UK';
 let _breakdownChart: Chart | null = null;
 let _displayCurrency = 'GBP';
 let _displayFxRate = 1.0;
+// Once the user picks a display currency by hand, keep it across region changes
+// (e.g. source from China but keep the headline in GBP). Until then, changing
+// region auto-follows that region's native currency as a helpful default.
+let _currencyUserPinned = false;
 
 const CURRENCY_SYMBOL: Record<string, string> = {
   GBP: '£', EUR: '€', USD: '$', CNY: '¥', INR: '₹',
@@ -496,6 +514,81 @@ function logActualQuote(): void {
     ? `Logged. ${activeCommodity.replace(/_/g, ' ')} now calibrated ×${s.biasFactor} from ${s.n} quotes (MAPE ${s.calibratedMapePct}%).`
     : `Logged (${s.n}/${3} quotes for ${activeCommodity.replace(/_/g, ' ')} — need ${3 - s.n} more to calibrate).`, 'info');
   if (lastResult && lastInput) renderInsights(lastResult, lastInput);
+}
+
+// ─── Calibration & Actuals (bulk import + coverage) ────────────────────────────
+
+function openCalibrationModal(): void {
+  renderCalibrationCoverage();
+  el('calibration-modal').style.display = 'flex';
+}
+
+/** Ingest a pasted CSV of real actuals into the calibration store, teaching the
+ *  model across many segments at once. */
+function importActualsFromText(): void {
+  const ta = document.getElementById('cal-import-text') as HTMLTextAreaElement | null;
+  const status = document.getElementById('cal-import-status');
+  const text = ta?.value ?? '';
+  if (!text.trim()) { if (status) { status.textContent = 'Paste some CSV rows first.'; status.style.color = 'var(--warning)'; } return; }
+  const res = parseActualsCsv(text, Date.now());
+  if (res.imported > 0) {
+    const recs = getCalibrationRecords();
+    recs.push(...res.records);
+    saveCalibrationRecords(recs);
+    if (ta) ta.value = '';
+  }
+  if (status) {
+    const errNote = res.errors.length ? ` · ${res.skipped} skipped (${escHtml(res.errors.slice(0, 3).join('; '))}${res.errors.length > 3 ? '…' : ''})` : '';
+    status.innerHTML = `<strong style="color:${res.imported ? 'var(--success)' : 'var(--danger)'}">Imported ${res.imported} actual${res.imported === 1 ? '' : 's'}</strong>${errNote}`;
+  }
+  renderCalibrationCoverage();
+  // If a costing is on screen, refresh its audit strip so calibration shows immediately.
+  if (lastResult && lastInput) renderSelfAudit(lastResult, lastInput);
+}
+
+/** Coverage table: every segment (commodity × material × region) with logged
+ *  actuals — sample count, learned bias, MAPE, calibrated flag, drift. */
+function renderCalibrationCoverage(): void {
+  const host = document.getElementById('cal-coverage');
+  if (!host) return;
+  const recs = getCalibrationRecords();
+  const cov = calibrationCoverage(recs);
+  const sum = calibrationSummary(recs);
+  if (!cov.length) {
+    host.innerHTML = `<div style="font-size:0.78rem;color:var(--text-muted);padding:10px 0">No actuals logged yet. Paste a CSV above, or use <strong>Log Actual £</strong> after a costing, to start calibrating.</div>`;
+    return;
+  }
+  const sym = CURRENCY_SYMBOL[_displayCurrency] ?? '';
+  void sym;
+  const rows = cov.map(c => {
+    const drift = segmentDrift(recs, { commodity: c.commodity, materialFamily: c.materialFamily, region: c.region });
+    const seg = `${(COMMODITY_LABELS[c.commodity] ?? c.commodity)}${c.materialFamily ? ' · ' + c.materialFamily : ''}${c.region ? ' · ' + c.region : ''}`;
+    const badge = c.calibrated
+      ? `<span style="background:#e6f4ea;color:#1b6b3a;border-radius:4px;padding:1px 7px;font-size:0.66rem;font-weight:700">×${c.biasFactor}</span>`
+      : `<span style="background:#eef1f4;color:#647084;border-radius:4px;padding:1px 7px;font-size:0.66rem">${c.n}/3</span>`;
+    const driftCell = drift.drifting
+      ? `<span style="color:#8a5300;font-weight:600">⚠ ${drift.deltaPct > 0 ? '+' : ''}${drift.deltaPct}%</span>`
+      : '<span style="color:var(--text-muted)">—</span>';
+    return `<tr>
+      <td style="padding:5px 8px">${escHtml(seg)}</td>
+      <td style="padding:5px 8px;text-align:right">${c.n}</td>
+      <td style="padding:5px 8px;text-align:center">${badge}</td>
+      <td style="padding:5px 8px;text-align:right">${c.calibrated ? c.calibratedMapePct + '%' : '—'}</td>
+      <td style="padding:5px 8px;text-align:center">${driftCell}</td>
+    </tr>`;
+  }).join('');
+  host.innerHTML = `
+    <div style="font-size:0.74rem;color:var(--text-secondary);margin-bottom:6px">Portfolio: <strong>${sum.totalSamples}</strong> actuals · calibrated MAPE <strong>${sum.weightedCalibratedMapePct}%</strong> (raw ${sum.weightedMapePct}%)</div>
+    <div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:0.76rem">
+      <thead><tr style="border-bottom:1px solid var(--border)">
+        <th style="padding:5px 8px;text-align:left">Segment (commodity · material · region)</th>
+        <th style="padding:5px 8px;text-align:right">Actuals</th>
+        <th style="padding:5px 8px;text-align:center">Bias</th>
+        <th style="padding:5px 8px;text-align:right">MAPE</th>
+        <th style="padding:5px 8px;text-align:center">Drift</th>
+      </tr></thead>
+      <tbody>${rows}</tbody>
+    </table></div>`;
 }
 
 // ─── Knowledge base (self-learning memory) ─────────────────────────────────────
@@ -5352,6 +5445,43 @@ function _buildCadMaterialOptions(commodity: string): string {
     mats.map(m => `<option value="${m.id}">${escHtml(m.label)}</option>`).join('');
 }
 
+/** Casting process-route override options (used in the CAD adjust panel). */
+function _buildCadProcessOptions(): string {
+  const opts: Array<[string, string]> = [
+    ['', '— AI selects process —'], ['hpdc', 'HPDC (high-pressure die)'],
+    ['gravity', 'Gravity die'], ['sand', 'Sand casting'], ['investment', 'Investment casting'],
+  ];
+  return opts.map(([v, l]) => `<option value="${v}">${escHtml(l)}</option>`).join('');
+}
+
+/** Warn when a pinned alloy doesn't fit the pinned casting route, or when a
+ *  general die-cast alloy is used on what may be a structural part. */
+function _alloyProcessWarning(materialId: string, subtype: string): string | null {
+  const id = (materialId || '').toLowerCase();
+  const isIron = /gjl|gjs|gjv|simo|\badi\b|cast-?steel|mat-g[jl]/.test(id);
+  if (subtype === 'hpdc' && isIron) {
+    return 'Iron/steel cannot be high-pressure die cast — HPDC is for aluminium, magnesium or zinc. Use sand or investment casting for this alloy.';
+  }
+  if ((subtype === 'sand' || subtype === 'gravity') && /adc12|a380|a383/.test(id)) {
+    return 'ADC12/A380/A383 are pressure-die-casting alloys; for sand/gravity casting choose A356/LM25 or a structural grade.';
+  }
+  if (/adc12|a380|a383|a413|a319/.test(id)) {
+    return 'General die-cast alloy selected. For safety-critical structural parts (steering, suspension, brake, chassis) a structural HPDC alloy (Silafont-36, Aural-5, Castasil-37) with T7 heat-treat + 100% NDT is usually required.';
+  }
+  return null;
+}
+
+/** Re-apply the engineer's pinned grade/process onto an analysis result so an AI
+ *  re-analysis can never silently overwrite a locked choice. */
+function _applyCadPins(a: CADAnalysisResult): void {
+  const c = a.costInputSuggestions as { materialId?: string; casting?: { subtype?: string }; castCAM?: { subtype?: string } };
+  if (_cadMaterialLocked && _cadPinnedMaterialId) c.materialId = _cadPinnedMaterialId;
+  if (_cadProcessLocked && _cadPinnedSubtype) {
+    if (c.casting) c.casting.subtype = _cadPinnedSubtype;
+    if (c.castCAM) c.castCAM.subtype = _cadPinnedSubtype;
+  }
+}
+
 function renderCADAnalysisForm(): string {
   const commOpts = CAD_COMMODITY_OPTIONS
     .map(o => `<option value="${o.value}">${escHtml(o.label)}</option>`).join('');
@@ -5552,6 +5682,7 @@ function unmountCADViewer(): void {
   cadViewerMeasurements = [];
   const host = document.getElementById('cad-viewer-host');
   if (host) { host.innerHTML = ''; host.style.display = 'none'; }
+  hidePersistentCADViewer();
 }
 
 /** Dispose EVERY live viewer — must run before any innerHTML wipe of the form
@@ -5562,6 +5693,39 @@ function disposeAllCADViewers(): void {
   cadInlineViewer?.dispose();
   cadInlineViewer = null;
   cadViewerMeasurements = [];
+}
+
+// ── Persistent CAD viewer ──────────────────────────────────────────────────
+// "Analyse & Calculate" swaps the CAD form (with its 3D viewer) out for the
+// commodity form, which would destroy the viewer. This compact viewer lives in
+// #cad-persist-viewer-host — a stable node in the input panel OUTSIDE the
+// swapped form area — so the model stays on screen through analyse → calculate
+// and any later commodity change. Tracked separately from the two form-area
+// viewers so disposeAllCADViewers() (form swap) never tears it down.
+let cadPersistViewer: import('./cad-viewer.js').CADViewerHandle | null = null;
+
+async function showPersistentCADViewer(file: File): Promise<void> {
+  const host = document.getElementById('cad-persist-viewer-host');
+  if (!host) return;
+  try {
+    const { createCADViewer } = await import('./cad-viewer.js');
+    cadPersistViewer?.dispose();
+    host.style.display = '';
+    const handle = await createCADViewer(host, { compact: true, headers: cadViewerHeaders });
+    cadPersistViewer = handle;
+    await handle.loadFile(file);
+  } catch (err) {
+    console.warn('[CAD persist viewer] mount failed:', err instanceof Error ? err.message : String(err));
+    cadPersistViewer = null;
+    host.style.display = 'none';
+  }
+}
+
+function hidePersistentCADViewer(): void {
+  cadPersistViewer?.dispose();
+  cadPersistViewer = null;
+  const host = document.getElementById('cad-persist-viewer-host');
+  if (host) { host.innerHTML = ''; host.style.display = 'none'; }
 }
 
 function wireCADEvents(): void {
@@ -5592,6 +5756,7 @@ function wireCADEvents(): void {
   // Clear button
   el('cad-clear-btn')?.addEventListener('click', () => {
     cadFile = null; cadAnalysisResult = null; cadOCCTGeometry = null;
+    _cadMaterialLocked = false; _cadProcessLocked = false; _cadPinnedMaterialId = ''; _cadPinnedSubtype = '';
     unmountCADViewer();
     document.getElementById('cad-file-info')?.style.setProperty('display', 'none');
     document.getElementById('cad-drop-zone')?.style.setProperty('display', '');
@@ -5681,6 +5846,8 @@ function setCADFile(f: File): void {
     return;
   }
   cadFile = f;
+  // A new part starts with a clean slate — clear any pins from the previous file.
+  _cadMaterialLocked = false; _cadProcessLocked = false; _cadPinnedMaterialId = ''; _cadPinnedSubtype = '';
   document.getElementById('cad-drop-zone')?.style.setProperty('display', 'none');
   const cadFileInfo = document.getElementById('cad-file-info');
   if (cadFileInfo) cadFileInfo.style.display = 'flex';
@@ -5855,11 +6022,24 @@ function buildFeatureCostCard(): string {
   const matFactor = /ti|titan/.test(matStr) ? 2.5 : /inconel|nickel|superalloy/.test(matStr) ? 3.0
     : /steel|stainless|iron/.test(matStr) ? 1.5 : /alum/.test(matStr) ? 1.0 : 1.2;
 
+  // Physical envelope for the small-part cap + a region-consistent CNC rate.
+  const bb = cadOCCTGeometry?.boundingBox;
+  const stockVolumeCm3 = bb ? (bb.xMm * bb.yMm * bb.zMm) / 1000 : undefined;
+  const maxDimMm = bb ? Math.max(bb.xMm, bb.yMm, bb.zMm) : undefined;
+  const cncRate = library.machines.find(m => m.id === resolveMachineIdForOp('mach-vmc3', 'CNC Milling'))?.computedRatePerHr;
+
   const fc = computeFeatureCosting({
     holeCount: f.estimatedHoleCount, holeRadiiMm: f.holeRadiiMm ?? [],
     threadCount, planarFaceCount: f.planarFaceCount, freeFormFaceCount: f.freeFormFaceCount,
     undercutFaceCount: undercuts, setupCount: setups,
-  }, { materialFactor: matFactor });
+  }, {
+    materialFactor: matFactor,
+    machineRateGBPPerHr: cncRate,
+    partVolumeCm3: cadOCCTGeometry?.volume?.cm3,
+    stockVolumeCm3,
+    surfaceAreaCm2: cadOCCTGeometry?.surfaceArea?.cm2,
+    maxDimMm,
+  });
 
   const rows = fc.lines.map(l => `
     <tr>
@@ -5965,7 +6145,12 @@ function renderCADResults(r: CADAnalysisResult, autoCalculate = false, annualVol
         asks.push('&#9888; Geometry was <strong>text-parsed</strong> (the OCCT kernel could not read this file) — dimensions and weight are rough. Re-export from CAD as <strong>STEP AP203/AP214</strong> for measured geometry.');
       }
       const matConf = r.materialAnalysis?.primarySuggestion?.confidencePct ?? 100;
-      if (matConf < 70 && !cadPartPhotoDataUrlPresent()) {
+      // Material-ambiguity flag takes precedence — it names the actual weight span
+      // and fires even when the AI reported HIGH confidence (a confident wrong guess).
+      const ambiguityAsk = cadMaterialAmbiguityAsk(r);
+      if (ambiguityAsk) {
+        asks.push(ambiguityAsk);
+      } else if (matConf < 70 && !cadPartPhotoDataUrlPresent()) {
         asks.push(`&#128247; Material is only <strong>${matConf}% confident</strong> — geometry alone cannot identify the alloy or grade. Add a part photo above and re-analyse.`);
       }
       const sanityHtml = cadSanityWarnings.map(sw => `
@@ -6171,16 +6356,25 @@ function renderCADResults(r: CADAnalysisResult, autoCalculate = false, annualVol
           </select>
         </div>
         <div class="field-group">
-          <label style="font-size:0.72rem">Material (override &amp; recalc)</label>
+          <label style="font-size:0.72rem">Material grade ${_cadMaterialLocked ? '📌' : ''}(override &amp; recalc)</label>
           <select id="cad-reanalyze-material" style="font-size:0.8rem">
             ${_buildCadMaterialOptions(recommendedCommodity)}
           </select>
         </div>
+        <div class="field-group">
+          <label style="font-size:0.72rem">Process route ${_cadProcessLocked ? '📌' : ''}(if you know it)</label>
+          <select id="cad-reanalyze-process" style="font-size:0.8rem">
+            ${_buildCadProcessOptions()}
+          </select>
+        </div>
       </div>
+      <div id="cad-override-warn" style="display:none;margin-bottom:6px;font-size:0.72rem;color:var(--amber, #b45309);line-height:1.4"></div>
       <div style="display:flex;gap:6px;flex-wrap:wrap">
         <button class="btn btn-primary btn-sm" id="cad-reanalyze-btn">↺ Re-analyse (no re-upload)</button>
-        <button class="btn btn-secondary btn-sm" id="cad-override-recalc-btn">Override &amp; Recalculate ⚡</button>
+        <button class="btn btn-secondary btn-sm" id="cad-override-recalc-btn">Pin &amp; Recalculate ⚡</button>
+        ${(_cadMaterialLocked || _cadProcessLocked) ? '<button class="btn btn-ghost btn-sm" id="cad-clear-pins-btn">Clear pins</button>' : ''}
       </div>
+      <div style="font-size:0.68rem;color:var(--text-muted);margin-top:4px">Pinned grade/process 📌 survive AI re-analysis — the AI classifies, you decide.</div>
       <div id="cad-reanalyze-status" style="display:none;margin-top:6px;font-size:0.75rem;color:var(--text-muted)">Running AI analysis…</div>
     </div>` : ''}
 
@@ -6217,14 +6411,35 @@ function renderCADResults(r: CADAnalysisResult, autoCalculate = false, annualVol
   // Wire re-analyse button (uses cached OCCT geometry — no re-upload)
   document.getElementById('cad-reanalyze-btn')?.addEventListener('click', () => { void reanalyzeCAD(); });
 
-  // Wire override & recalculate button (mutates cached result's material, then applies)
+  // Live alloy↔process compatibility hint as the engineer picks overrides.
+  const overrideWarnEl = document.getElementById('cad-override-warn');
+  const procSel = document.getElementById('cad-reanalyze-process') as HTMLSelectElement | null;
+  const refreshOverrideWarn = () => {
+    if (!overrideWarnEl) return;
+    const m = (document.getElementById('cad-reanalyze-material') as HTMLSelectElement | null)?.value ?? '';
+    const p = procSel?.value ?? '';
+    const w = _alloyProcessWarning(m, p);
+    if (w) { overrideWarnEl.textContent = `⚠ ${w}`; overrideWarnEl.style.display = ''; }
+    else { overrideWarnEl.style.display = 'none'; }
+  };
+
+  // Wire pin & recalculate: fixes the grade / process so AI re-analysis can't
+  // silently overwrite them (the ADC12-on-structural-knuckle class of bug).
   document.getElementById('cad-override-recalc-btn')?.addEventListener('click', () => {
     if (!cadAnalysisResult) return;
-    const matOvr = (document.getElementById('cad-reanalyze-material') as HTMLSelectElement | null)?.value;
-    if (matOvr) {
-      cadAnalysisResult.costInputSuggestions.materialId = matOvr;
-    }
+    const matOvr = (document.getElementById('cad-reanalyze-material') as HTMLSelectElement | null)?.value ?? '';
+    const procOvr = procSel?.value ?? '';
+    if (matOvr) { _cadMaterialLocked = true; _cadPinnedMaterialId = matOvr; }
+    if (procOvr) { _cadProcessLocked = true; _cadPinnedSubtype = procOvr; }
+    _applyCadPins(cadAnalysisResult);
     applyCADToForm(cadAnalysisResult.costInputSuggestions.recommendedCommodity as CommodityType, true);
+  });
+
+  document.getElementById('cad-clear-pins-btn')?.addEventListener('click', () => {
+    _cadMaterialLocked = false; _cadProcessLocked = false;
+    _cadPinnedMaterialId = ''; _cadPinnedSubtype = '';
+    const vol = parseFloat((document.getElementById('cad-annual-volume') as HTMLInputElement | null)?.value ?? '') || 100000;
+    if (cadAnalysisResult) renderCADResults(cadAnalysisResult, false, vol);
   });
 
   // Commodity change in re-analyse section rebuilds material dropdown
@@ -6233,8 +6448,15 @@ function renderCADResults(r: CADAnalysisResult, autoCalculate = false, annualVol
   if (reanalyzeCommSel && reanalyzeMatSel) {
     reanalyzeCommSel.addEventListener('change', () => {
       reanalyzeMatSel.innerHTML = _buildCadMaterialOptions(reanalyzeCommSel.value);
+      refreshOverrideWarn();
     });
   }
+  reanalyzeMatSel?.addEventListener('change', refreshOverrideWarn);
+  procSel?.addEventListener('change', refreshOverrideWarn);
+  // Pre-select any active pins so the panel reflects the locked state.
+  if (_cadMaterialLocked && reanalyzeMatSel) reanalyzeMatSel.value = _cadPinnedMaterialId;
+  if (_cadProcessLocked && procSel) procSel.value = _cadPinnedSubtype;
+  refreshOverrideWarn();
 
   // Auto-calculate if triggered from "Analyze & Calculate" button
   if (autoCalculate) {
@@ -6250,7 +6472,9 @@ async function reanalyzeCAD(): Promise<void> {
   }
 
   const commOvr = (document.getElementById('cad-reanalyze-commodity') as HTMLSelectElement | null)?.value ?? '';
-  const matOvr  = (document.getElementById('cad-reanalyze-material')  as HTMLSelectElement | null)?.value ?? '';
+  // Prefer the engineer's pin over the transient select value so a lock always wins.
+  const matOvr  = (_cadMaterialLocked && _cadPinnedMaterialId) || (document.getElementById('cad-reanalyze-material') as HTMLSelectElement | null)?.value || '';
+  const procOvr = (_cadProcessLocked && _cadPinnedSubtype) || (document.getElementById('cad-reanalyze-process') as HTMLSelectElement | null)?.value || '';
   const annVol  = (document.getElementById('cad-annual-volume') as HTMLInputElement | null)?.value ?? '100000';
   const apiKey  = val('cad-api-key');
 
@@ -6271,6 +6495,7 @@ async function reanalyzeCAD(): Promise<void> {
     };
     if (commOvr) body['commodity'] = commOvr;
     if (matOvr)  body['material']  = matOvr;
+    if (procOvr) body['process']   = procOvr;
     if (cadPartPhotoBase64) { body['partPhotoBase64'] = cadPartPhotoBase64; body['partPhotoMime'] = cadPartPhotoMime; }
     body['deepAnalysis'] = (document.getElementById('cad-deep-analysis') as HTMLInputElement | null)?.checked ?? false;
 
@@ -6290,6 +6515,8 @@ async function reanalyzeCAD(): Promise<void> {
     if (!res.ok || !data.success) throw new Error(data.error ?? `Server error ${res.status}`);
 
     cadAnalysisResult = data.analysis!;
+    // Locked grade/process win over anything the AI re-derived — the human decides.
+    _applyCadPins(cadAnalysisResult);
     cadSanityWarnings = (data as { sanityWarnings?: typeof cadSanityWarnings }).sanityWarnings ?? [];
     cadFromCache = (data as { fromCache?: boolean }).fromCache === true;
     const resolvedVol = data.annualVolume ?? (parseFloat(annVol) || 100000);
@@ -9617,6 +9844,25 @@ function renderMachinedFeaturesPanel(prefix: string): string {
 }
 
 /** Fill the panel from cadOCCTGeometry.featureTable with per-feature toggles. */
+/** True when the machining form's ops are anchored to the OCCT bottom-up cycle
+ *  total (which already covers every feature). */
+function machiningHasOcctCycleTotal(): boolean {
+  return !!(cadOCCTGeometry?.cncCycleTimeEstimate?.estimatedTotalHrs);
+}
+
+/** True when the engineer has toggled feature machining to be the PRIMARY cost. */
+function machiningFeaturePrimary(): boolean {
+  return (document.getElementById('mach-mf-primary') as HTMLInputElement | null)?.checked ?? false;
+}
+
+/** Human explanation of the current machining feature-panel mode. */
+function machiningFeatureModeText(primary: boolean): string {
+  if (primary) return `<strong>Primary</strong> — feature machining is the cost basis; the operations table above is ignored.`;
+  return machiningHasOcctCycleTotal()
+    ? `<strong>Audit view</strong> — these features are already in the CNC cycle-time estimate above (OCCT bottom-up), so they are not added again.`
+    : `<strong>Fallback</strong> — no OCCT cycle estimate for this upload, so the ticked features are added as machining cost.`;
+}
+
 function populateMachinedFeatures(prefix: string): void {
   const body = document.getElementById(`${prefix}-mf-body`);
   if (!body) return;
@@ -9632,16 +9878,28 @@ function populateMachinedFeatures(prefix: string): void {
     ? `Ø${r.diaMm.toFixed(1)} × ${r.depthMm.toFixed(0)} ${r.through ? '(thru)' : '(blind)'}`
     : r.kind === 'boss' ? `Ø${r.diaMm.toFixed(1)} × ${r.depthMm.toFixed(0)}`
     : `${Math.round(r.areaMm2 ?? 0)} mm²${r.depthMm > 0 ? ` × ${r.depthMm.toFixed(0)}` : ''}`;
+  // On the machining form the panel has three modes (see machiningFeatureModeText):
+  //  · Primary  — the engineer's toggle: feature machining REPLACES the ops table.
+  //  · Audit    — OCCT cycle total already covers the features (not added again).
+  //  · Fallback — no OCCT cycle estimate, so the ticked features are added.
+  const machNote = prefix === 'mach'
+    ? `<label style="display:flex;align-items:center;gap:6px;font-size:0.72rem;margin-bottom:4px;cursor:pointer">
+         <input type="checkbox" id="mach-mf-primary"/> Cost machining from these features (<strong>primary</strong> — replaces the operations table)
+       </label>
+       <div id="mach-mf-mode" style="font-size:0.7rem;color:var(--text-muted);margin-bottom:6px">${machiningFeatureModeText(false)}</div>`
+    : '';
   body.innerHTML = `
+    ${machNote}
     <div style="font-size:0.72rem;color:var(--text-secondary);margin-bottom:6px">
       ${totalHoles} hole/bore feature(s)${nonHole ? ` + ${nonHole} boss/face/pocket` : ''} from the B-rep.
-      Holes are ticked (machined on a near-net part); bosses, faces and pockets are unticked — tick only the ones actually machined.
+      Near-net: holes are ticked (bosses/faces/pockets may be as-cast — tick the machined ones).
+      Switch <strong>Stock condition</strong> to “machined from solid” and every feature is auto-ticked (all cut from the billet).
     </div>
     <table class="data-table" style="font-size:0.72rem;font-variant-numeric:tabular-nums;width:100%">
       <thead><tr><th></th><th>Feature</th><th>Ø×depth / area</th><th>Qty</th><th>→ Operation</th></tr></thead>
       <tbody>
         ${rows.map((r, i) => `<tr>
-          <td><input type="checkbox" class="${prefix}-mf-chk" data-idx="${i}" ${r.kind === 'hole' ? 'checked' : ''}/></td>
+          <td><input type="checkbox" class="${prefix}-mf-chk" data-idx="${i}" ${defaultInclude(r as FeatureRow, 'near_net') ? 'checked' : ''}/></td>
           <td>${icon(r.kind)}</td>
           <td>${dims(r as FeatureRow)}</td>
           <td>${r.count}</td>
@@ -9673,7 +9931,32 @@ function populateMachinedFeatures(prefix: string): void {
   const machSel = el<HTMLSelectElement>(`${prefix}-mf-mach`); if (machSel) machSel.value = resolveMachineIdForOp('mach-vmc3', 'CNC Milling');
   const labSel = el<HTMLSelectElement>(`${prefix}-mf-lab`); if (labSel) labSel.value = resolveLabourId('lab-uk-skilled');
   const refresh = () => updateMachinedFeaturesReadout(prefix);
+  // Switching stock condition re-applies the smart default: machined-from-solid
+  // ticks every feature (all cut from the billet); near-net reverts to holes-only.
+  const stockSel = el<HTMLSelectElement>(`${prefix}-mf-stock`);
+  stockSel?.addEventListener('change', () => {
+    const stock = (stockSel.value || 'near_net') as StockCondition;
+    rows.forEach((r, i) => {
+      const box = body.querySelector(`.${prefix}-mf-chk[data-idx="${i}"]`) as HTMLInputElement | null;
+      if (box) box.checked = defaultInclude(r as FeatureRow, stock);
+    });
+    refresh();
+  });
   body.querySelectorAll(`.${prefix}-mf-chk, #${prefix}-mf-stock, #${prefix}-mf-finish`).forEach(elm => elm.addEventListener('change', refresh));
+  // Machining: the "primary" toggle switches the cost basis to features; update the
+  // live mode line so the engineer sees whether the ops table is being ignored.
+  if (prefix === 'mach') {
+    const primaryChk = document.getElementById('mach-mf-primary') as HTMLInputElement | null;
+    const modeEl = document.getElementById('mach-mf-mode');
+    primaryChk?.addEventListener('change', () => {
+      if (modeEl) {
+        const on = primaryChk.checked;
+        modeEl.innerHTML = machiningFeatureModeText(on);
+        modeEl.style.color = on ? 'var(--accent)' : 'var(--text-muted)';
+      }
+      refresh();
+    });
+  }
   refresh();
 }
 
@@ -9711,10 +9994,86 @@ function updateMachinedFeaturesReadout(prefix: string): void {
 // the file; everything the AI inferred (material, cycle times, tooling, rates)
 // is ESTIMATED and worth reviewing. Centralised here so every fill site gets
 // classified without per-call changes.
-const CAD_MEASURED_ID = /(net-wt|stock-wt|weight|-vol\b|volume|length|width|height|-len\b|thk|thickness|dia\b|diameter|area)/i;
+// Geometry-derived fields are MEASURED when a kernel parsed the file. `-wt`
+// catches every commodity's weight field (cast-part-wt, cam-cast-wt/-finish-wt,
+// forge-part-wt, mach-net-wt/-stock-wt) — previously only mach-* matched, so the
+// casting/forging weight was miscounted as AI-estimated ("0 measured").
+const CAD_MEASURED_ID = /(-wt\b|net-wt|stock-wt|weight|-vol\b|volume|length|width|height|-len\b|thk|thickness|dia\b|diameter|area)/i;
 function classifyCADProvenance(id: string): 'measured' | 'estimated' {
   if (cadGeometrySource === 'text_parsing') return 'estimated'; // no measured geometry available
   return CAD_MEASURED_ID.test(id) ? 'measured' : 'estimated';
+}
+
+type CADMatFamily = MaterialFamily | 'other';
+
+/** Coarse material family from a density (shared engine helper). */
+function cadFamilyFromDensity(dens?: number): CADMatFamily {
+  return familyFromDensity(dens);
+}
+
+/** The family the AI's cost actually assumes — density first, then material-id and
+ *  commodity fallbacks so an unresolved id (e.g. mat-pa6) still classifies. */
+function cadChosenFamily(r: CADAnalysisResult): CADMatFamily {
+  const byDens = cadFamilyFromDensity(library.materials.find(m => m.id === r.costInputSuggestions.materialId)?.densityKgPerM3);
+  if (byDens !== 'other') return byDens;
+  const id = (r.costInputSuggestions.materialId || '').toLowerCase();
+  if (/pa6|pa66|nylon|abs|polycarb|-pc\b|-pp\b|peek|pom|acetal|delrin|resin|plastic/.test(id)) return 'plastic';
+  if (/-al|alsi|6061|7075|6082|lm25|adc12|a3\d0|silafont|aural|castasil/.test(id)) return 'aluminium';
+  if (/steel|1045|4140|en8|42crmo|scm440|ss3|ss4|17-4/.test(id)) return 'steel';
+  if (/gjl|gjs|gjv|iron|\badi\b/.test(id)) return 'cast iron';
+  const comm = (r.costInputSuggestions.recommendedCommodity || '').toLowerCase();
+  if (/mould|mold|thermoform|rubber|rotational/.test(comm)) return 'plastic';
+  return 'other';
+}
+
+/** Material family named in the CAD filename, if any — a strong human hint the AI
+ *  must not silently override (the "Aluminium_…" file classified as plastic bug). */
+function cadFilenameMaterialFamily(): CADMatFamily | null {
+  return familyFromFilename(cadFile?.name || '');
+}
+
+/** Grams for sub-kg parts, kg otherwise — small machined parts weigh grams. */
+function fmtMass(kg: number): string { return kg < 1 ? `${(kg * 1000).toFixed(0)} g` : `${kg.toFixed(2)} kg`; }
+
+/**
+ * Material-ambiguity flag: CAD geometry fixes the SHAPE but not the material.
+ * Two failure modes:
+ *   1. Filename CONTRADICTION — the file is named for a material ("Aluminium…")
+ *      but the analysis chose a different family (plastic). Strongest signal.
+ *   2. Inferred-from-shape — no photo, no metadata, no filename hint: the same
+ *      solid spans plastic → aluminium → steel (~8× by mass), so the chosen
+ *      material and therefore the whole cost (process, tooling, price) are a guess.
+ * Returns an HTML advisory string, or null when it doesn't apply.
+ */
+function cadMaterialAmbiguityAsk(r: CADAnalysisResult): string | null {
+  if (cadGeometrySource === 'text_parsing') return null;   // geometry itself unmeasured — different problem
+  const w = cadOCCTGeometry?.weights;
+  if (!w || !(w.aluminiumKg > 0) || !(w.steelKg > 0)) return null;
+  const chosen = cadChosenFamily(r);
+  if (chosen === 'other') return null;
+  const plasticKg = w.plasticKg ?? w.aluminiumKg * 0.4;
+  const span = `<strong>Plastic ${fmtMass(plasticKg)} &middot; Aluminium ${fmtMass(w.aluminiumKg)} &middot; Steel ${fmtMass(w.steelKg)}</strong>`;
+
+  // 1) Filename contradiction.
+  const fileFam = cadFilenameMaterialFamily();
+  if (fileFam && fileFam !== chosen) {
+    return `&#9888; <strong>Filename says ${fileFam}, but the analysis chose ${chosen}</strong> — the file is named `
+      + `"<em>${escHtml(cadFile?.name || '')}</em>" yet the cost assumes <strong>${chosen}</strong>, which drives a different process, tooling and price. `
+      + `The same solid weighs ${span}. Pin <strong>${fileFam}</strong> in <em>Re-Analyse / Adjust</em> below, or add a part photo and re-analyse.`;
+  }
+  if (fileFam && fileFam === chosen) return null;          // filename confirms the choice — not ambiguous
+
+  // 2) Inferred from shape alone.
+  if (r.materialAnalysis?.fromMetadata) return null;       // alloy came from CAD metadata
+  if (cadPartPhotoDataUrlPresent()) return null;           // engineer supplied a visual hint
+  const chosenKg = chosen === 'plastic' ? plasticKg
+    : chosen === 'aluminium' ? w.aluminiumKg
+    : chosen === 'steel' ? w.steelKg
+    : chosen === 'cast iron' ? (w.castIronKg ?? w.steelKg * 0.92)
+    : w.steelKg;
+  return `&#9878; <strong>Material inferred from shape alone</strong> — geometry can't tell plastic from metal, and the same solid weighs `
+    + `${span}. This cost assumes <strong>${chosen} (${fmtMass(chosenKg)})</strong>; if the real material differs the process, tooling and cost change completely. `
+    + `Add a part photo above and re-analyse, or pin the correct grade in <em>Re-Analyse / Adjust</em> below.`;
 }
 
 function markAIFilled(element: HTMLInputElement | HTMLSelectElement | null): void {
@@ -9757,9 +10116,12 @@ function setMaterial(selectEl: HTMLSelectElement | null, materialId: string): vo
   if (opt) { selectEl.value = opt.value; markAIFilled(selectEl); }
 }
 
-function setNumericField(id: string, value: number, decimals = 3): void {
+function setNumericField(id: string, value: number | null | undefined, decimals = 3): void {
   const el2 = el<HTMLInputElement>(id);
-  if (el2) { el2.value = value.toFixed(decimals); markAIFilled(el2); }
+  // Skip non-finite values (the AI omits fields per response — a missing mouldLife
+  // must not crash the whole apply/calculate with `undefined.toFixed`). The field
+  // keeps its form default instead.
+  if (el2 && Number.isFinite(value as number)) { el2.value = (value as number).toFixed(decimals); markAIFilled(el2); }
 }
 
 // ─── Inline CAD-to-fill (per-commodity uploader) ──────────────────────────────
@@ -9918,11 +10280,72 @@ function selLabourHealed(selectId: string): string {
   return healed;
 }
 
+/** A sensible default grade id for a material family + commodity, used only when
+ *  the AI returns the right commodity but leaves materialId blank. '' if none fits. */
+function _fallbackMaterialIdForFamily(fam: MaterialFamily | null, commodity: CommodityType): string {
+  if (!fam) return '';
+  const cast = /cast|forg/.test(commodity);
+  const map: Record<MaterialFamily, string> = cast
+    ? { aluminium: 'mat-lm25', magnesium: 'mat-mag-am60', titanium: '', 'cast iron': 'mat-gjs500', steel: 'mat-steel1045', 'copper alloy': '', plastic: '' }
+    : { aluminium: 'mat-al6061', magnesium: 'mat-mag-am60', titanium: 'mat-ti6al4v', 'cast iron': 'mat-steel1045', steel: 'mat-steel1045', 'copper alloy': 'mat-brass-cz121', plastic: 'mat-pa6' };
+  const id = map[fam] || '';
+  return id && library.materials.some(m => m.id === id) ? id : '';
+}
+
+/** Single source of truth: every commodity's tooling-amortisation input field.
+ *  Used to sync amort to the user's annual volume for ALL commodities (a partial
+ *  map + per-case hard-codes previously left several commodities amortising over
+ *  a stale form default). Add a commodity here when it grows an amort field. */
+const COMMODITY_AMORT_FIELD: Record<string, string> = {
+  machining: 'mach-amort', casting: 'cast-amort', cast_and_machine: 'cam-amort',
+  injection_moulding: 'imm-amort', forging: 'forge-amort', sheet_metal: 'sm-amort',
+  sheet_metal_fab: 'smf-amort', extrusion: 'ext-amort', thermoforming: 'tf-amort',
+  rotational_moulding: 'rm-amort', composites: 'comp-amort', blow_moulding: 'bm-amort',
+  rubber: 'rub-amort', wiring_harness: 'harn-amort', painting: 'paint-amort',
+  biw_assembly: 'biw-amort', pcb_fab: 'pcbf-amort', pcba: 'pcba-amort',
+};
+
+/** Plan-view projected footprint (cm²) — two largest bbox dims, measured OCCT
+ *  bbox preferred, AI-analysis bbox as fallback. Drives press/clamp tonnage. */
+function _projectedFootprintCm2(): number {
+  const bb = cadOCCTGeometry?.boundingBox;
+  const g = cadAnalysisResult?.geometry?.boundingBoxMm;
+  const dims = bb ? [bb.xMm, bb.yMm, bb.zMm] : g ? [g.x, g.y, g.z] : null;
+  if (!dims) return 0;
+  const s = [...dims].sort((a, b) => b - a);
+  return (s[0] * s[1]) / 100;
+}
+
+/** Size an HPDC machine select to the clamp/locking force for the part footprint.
+ *  HPDC intensification pressure on the metal ~70 MPa (700 bar, Al); clamp force =
+ *  total projected area × specific pressure — reuses the IM clamp-tonnage math. */
+function sizeHPDCMachineFor(selId: string, cavities: number): void {
+  const projAreaCm2 = _projectedFootprintCm2();
+  if (projAreaCm2 <= 0) return;
+  const hpdcTonnes = estimateClampingTonnage({
+    projectedAreaCm2: projAreaCm2 * Math.max(1, cavities),
+    cavityPressureMPa: 70,
+    safetyfactor: 1.0,   // raw die-fill force; pickHPDCMachineId adds the machine margin
+  });
+  const id = sizeProcessMachine('casting', { hpdcTonnes });
+  const sel2 = document.getElementById(selId) as HTMLSelectElement | null;
+  if (id && sel2) {
+    const m = Array.from(sel2.options).find(o => o.value === id);
+    if (m) { sel2.value = m.value; markAIFilled(sel2); }
+  }
+}
+
 function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): void {
   if (!cadAnalysisResult) return;
   _pendingCostingSource = 'cad'; // tag the next costing record for the accuracy harness
   const r = cadAnalysisResult;
   const c = r.costInputSuggestions;
+  // The AI sometimes returns the right commodity but leaves materialId blank —
+  // fall back to the filename-named material so the cost uses the correct grade.
+  if (!c.materialId) {
+    const fb = _fallbackMaterialIdForFamily(familyFromFilename(cadFile?.name || ''), targetCommodity);
+    if (fb) c.materialId = fb;
+  }
   // Longest bounding-box axis (mm) — used to derive an extrusion profile length.
   const bboxMaxMm = Math.max(r.geometry.boundingBoxMm.x, r.geometry.boundingBoxMm.y, r.geometry.boundingBoxMm.z);
 
@@ -9940,8 +10363,10 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
     // commodity amort fields default to 50k-500k, so leaving them untouched
     // makes the calculated tooling/part diverge from the suggested panel.
     if (cadAnnVol) {
-      const amortId = ({ machining: 'mach-amort', casting: 'cast-amort', cast_and_machine: 'cam-amort',
-        injection_moulding: 'imm-amort', forging: 'forge-amort' } as Record<string, string>)[targetCommodity];
+      // Amortise tooling over the user's stated annual volume for EVERY commodity
+      // that has an amort field (see COMMODITY_AMORT_FIELD — the single source of
+      // truth). Per-case defaults below only apply when no annual volume is given.
+      const amortId = COMMODITY_AMORT_FIELD[targetCommodity];
       const amortEl = amortId ? document.getElementById(amortId) as HTMLInputElement | null : null;
       if (amortEl) { amortEl.value = cadAnnVol; amortEl.dispatchEvent(new Event('input')); }
     }
@@ -9952,13 +10377,39 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
       markAIFilled(partNameEl);
     }
 
+    // Size-aware packaging from the shipping envelope + weight (the flat £0.15
+    // default is wrong for a bulky bumper and for a 3 g part alike).
+    {
+      const pbb = cadOCCTGeometry?.boundingBox;
+      const pkgEl = el<HTMLInputElement>('packaging');
+      if (pbb && pkgEl) {
+        const bboxVolCm3 = (pbb.xMm * pbb.yMm * pbb.zMm) / 1000;
+        pkgEl.value = String(estimatePackagingPerPart(bboxVolCm3, c.netWeightKg || 0));
+        pkgEl.dispatchEvent(new Event('input'));
+      }
+    }
+
     switch (targetCommodity) {
       case 'machining': {
         setMaterial(el<HTMLSelectElement>('mach-mat'), c.materialId);
         setNumericField('mach-net-wt', c.netWeightKg, 3);
         setNumericField('mach-stock-wt', c.netWeightKg * 1.4, 3);
-        // Prefer OCCT bottom-up cycle time over Claude's AI estimate
-        const occtCycleHrs = cadOCCTGeometry?.cncCycleTimeEstimate?.estimatedTotalHrs ?? null;
+        // Prefer OCCT bottom-up cycle time over Claude's AI estimate…
+        let occtCycleHrs = cadOCCTGeometry?.cncCycleTimeEstimate?.estimatedTotalHrs ?? null;
+        // …but cap it to a physical envelope: a tiny solid can't carry the cutting
+        // time a naive estimate implies (a 3 g servo horn was billed ~50 min).
+        {
+          const bb = cadOCCTGeometry?.boundingBox;
+          const pv = cadOCCTGeometry?.volume?.cm3;
+          if (occtCycleHrs != null && bb && pv != null) {
+            const stockCm3 = (bb.xMm * bb.yMm * bb.zMm) / 1000;
+            const holes = cadOCCTGeometry?.features?.estimatedHoleCount ?? 0;
+            const ms = (c.materialId || '').toLowerCase();
+            const mf = /ti|titan/.test(ms) ? 2.5 : /steel|stainless|iron/.test(ms) ? 1.5 : /alum/.test(ms) ? 1.0 : 1.2;
+            const ceilHr = (physicalRemovalCeilingMin(pv, stockCm3, cadOCCTGeometry?.surfaceArea?.cm2 ?? 0, mf) + holes * 0.4 * mf) / 60;
+            if (occtCycleHrs > ceilHr) occtCycleHrs = ceilHr;
+          }
+        }
         const occtSetupCount = cadOCCTGeometry?.setupAnalysis?.estimatedSetupCount ?? null;
         const occtSetupMinsPerSetup = cadOCCTGeometry?.cncCycleTimeEstimate?.assumedSetupTimeMinsPerSetup ?? 45;
         // Operations
@@ -10011,6 +10462,17 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
           const setupHrs = (occtSetupCount * occtSetupMinsPerSetup) / 60;
           setNumericField('mach-setup-time', setupHrs, 3);
         }
+        // Machined-features panel: audit + fallback costing. A billet part is
+        // machined from solid, so default the stock to solid-billet (every
+        // feature auto-ticked). When the OCCT bottom-up cycle estimate is present
+        // the ops above already cover these features, so the panel is audit-only;
+        // on mesh/STL or text-fallback (no cycle estimate) it becomes the active
+        // feature cost (see collectMachiningInput).
+        populateMachinedFeatures('mach');
+        {
+          const stockEl = el<HTMLSelectElement>('mach-mf-stock');
+          if (stockEl) { stockEl.value = 'solid_billet'; stockEl.dispatchEvent(new Event('change')); }
+        }
         break;
       }
 
@@ -10033,6 +10495,7 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
             setNumericField('cast-hpdc-cav', cast.cavities, 0);
             setNumericField('cast-hpdc-die-cost', occtTC?.hpdcDieCostGBP ?? cast.dieMouldCostGBP, 0);
             setNumericField('cast-hpdc-die-life', cast.dieMouldLife, 0);
+            sizeHPDCMachineFor('cast-hpdc-mach', cast.cavities || 1);
           } else if (cast.subtype === 'sand') {
             setNumericField('cast-sand-ct', occtPS?.sandCycleTimeHr ?? cast.cycleTimeSandGravHr, 4);
             setNumericField('cast-sand-pat-cost', occtTC?.sandPatternCostGBP ?? cast.dieMouldCostGBP, 0);
@@ -10070,6 +10533,7 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
             setNumericField('cam-hpdc-cav', castCAM.cavities, 0);
             setNumericField('cam-hpdc-die-cost', camTC?.hpdcDieCostGBP ?? castCAM.dieMouldCostGBP, 0);
             setNumericField('cam-hpdc-die-life', castCAM.dieMouldLife, 0);
+            sizeHPDCMachineFor('cam-hpdc-mach', castCAM.cavities || 1);
           } else if (castCAM.subtype === 'sand') {
             setNumericField('cam-sand-ct', camPS?.sandCycleTimeHr ?? castCAM.cycleTimeSandGravHr, 4);
             setNumericField('cam-sand-pat-cost', camTC?.sandPatternCostGBP ?? castCAM.dieMouldCostGBP, 0);
@@ -10143,6 +10607,30 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
           'mat-al6061': 0.25, 'mat-al5052': 0.23, 'mat-brass-crz': 0.18,
         };
         setNumericField('forge-heat-energy', forgeHeatMap[c.materialId] ?? 0.40, 2);
+        // Size the forging press to the die-fill force (F = Kt·σflow·A_projected),
+        // not the small form default — the same "size the machine to the part" rule
+        // as IM/EBM, now generalised via sizeProcessMachine.
+        {
+          const fbb = cadOCCTGeometry?.boundingBox;
+          const fdims = (fbb
+            ? [fbb.xMm, fbb.yMm, fbb.zMm]
+            : [r.geometry.boundingBoxMm.x, r.geometry.boundingBoxMm.y, r.geometry.boundingBoxMm.z]
+          ).sort((a, b) => b - a);   // fall back to AI-analysis bbox when OCCT absent
+          const projAreaCm2 = (fdims[0] * fdims[1]) / 100;   // two largest dims → footprint mm²→cm²
+          if (projAreaCm2 > 0) {
+            const forgeTonnes = estimateForgingTonnage({
+              projectedAreaCm2: projAreaCm2,
+              alloyFamily: forgingAlloyFamilyFor(c.materialId),
+              shapeComplexity: 'moderate',
+            });
+            const forgeId = sizeProcessMachine('forging', { forgeTonnes });
+            const forgeMachEl = el<HTMLSelectElement>('forge-mach');
+            if (forgeId && forgeMachEl) {
+              const m = Array.from(forgeMachEl.options).find(o => o.value === forgeId);
+              if (m) { forgeMachEl.value = m.value; markAIFilled(forgeMachEl); }
+            }
+          }
+        }
         populateMachinedFeatures('forge');
         break;
       }
@@ -10192,6 +10680,20 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
           setNumericField('sm-num-ops', sm.numOps, 0);
         } else if (smTC) {
           setNumericField('sm-die-cost', smTC.progressiveDieCostGBP, 0);
+        }
+        // Size the stamping press to the blanking force (perimeter × thickness ×
+        // shear), not the small form default — generalised via sizeProcessMachine.
+        {
+          const smPerim = num('sm-perim'), smThick = num('sm-thick'), smShear = num('sm-shear');
+          if (smPerim > 0 && smThick > 0 && smShear > 0) {
+            const stampTonnes = estimateTonnageTonnes({ perimeterMm: smPerim, thicknessMm: smThick, shearStrengthMPa: smShear });
+            const pressId = sizeProcessMachine('sheet_metal', { stampTonnes });
+            const smPressEl = el<HTMLSelectElement>('sm-press');
+            if (pressId && smPressEl) {
+              const m = Array.from(smPressEl.options).find(o => o.value === pressId);
+              if (m) { smPressEl.value = m.value; markAIFilled(smPressEl); }
+            }
+          }
         }
         break;
       }
@@ -10276,8 +10778,21 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
         const immPressMap: Record<string, number> = {
           'mat-pp': 35, 'mat-pa6': 55, 'mat-pc': 65,
         };
+        const immCavPress = immPressMap[c.materialId] ?? 50;
         setNumericField('imm-cool-f', immCoolMap[c.materialId] ?? 3.0, 2);
-        setNumericField('imm-cav-press', immPressMap[c.materialId] ?? 50, 0);
+        setNumericField('imm-cav-press', immCavPress, 0);
+        // Size the press to the required clamp tonnage (projected area × cavity
+        // pressure) — a bumper needs ~3900 T, not the small default press that
+        // made the moulding cost ~10× too low.
+        {
+          const projForTon = immBB ? (immBB.xMm * immBB.yMm) / 100 : (im?.projectedAreaCm2 ?? 0);
+          if (projForTon > 0) {
+            const tonnes = estimateClampingTonnage({ projectedAreaCm2: projForTon, cavityPressureMPa: immCavPress });
+            const pressId = pickIMMPressId(tonnes);
+            const machEl = el<HTMLSelectElement>('imm-mach');
+            if (machEl) { machEl.value = resolveMachineIdForOp(pressId, 'Injection Moulding'); }
+          }
+        }
         // Cycle time sub-components from wall thickness
         const wallForCycle = immWall ?? im?.wallThicknessMm ?? 2.5;
         setNumericField('imm-fill', Math.max(1.5, parseFloat((wallForCycle * 0.5).toFixed(1))), 1);
@@ -10301,31 +10816,46 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
       case 'blow_moulding': {
         const bm = c.blowMoulding;
         const bmWall = cadOCCTGeometry?.wallThickness?.meanMm;
-        setMaterial(el<HTMLSelectElement>('bm-mat'), c.materialId);
+        const bmSub = bm?.subtype;
+        // Pinch-off flash scales with part size — a large accumulator-head parison
+        // (tank) sheds far more than a small bottle. Floor the AI value accordingly.
+        const bmFlashFrac = c.netWeightKg > 3 ? 0.22 : 0.12;
+        const bmGrossKg = c.netWeightKg * (1 + bmFlashFrac);
+        // Multi-layer barrier (coex) wall: the AI *classifies* it (fuel tank /
+        // AdBlue duct → HDPE/tie/EVOH/tie/HDPE). Fallback when the flag is absent
+        // (old cache / air-gapped): a large HDPE accumulator-head EBM shot is a
+        // barrier tank in practice. The engine then prices the real coex grade.
+        const bmBarrier = bm?.barrierMultilayer
+          ?? (bmSub !== 'ibm' && bmSub !== 'sbm' && bmGrossKg >= 6 && /hdpe|lldpe|pe-bm/i.test(c.materialId));
+        setMaterial(el<HTMLSelectElement>('bm-mat'), barrierMaterialId(c.materialId, !!bmBarrier));
         setNumericField('bm-part-wt', c.netWeightKg, 4);
         if (bm) {
-          setNumericField('bm-flash-wt', bm.flashWeightKg, 4);
+          setNumericField('bm-flash-wt', Math.max(bm.flashWeightKg ?? 0, c.netWeightKg * bmFlashFrac), 4);
           setNumericField('bm-wall', bm.wallThicknessMm ?? bmWall ?? 2.0, 1);
           setNumericField('bm-cav', bm.cavities, 0);
           setNumericField('bm-mould-cost', bm.mouldCostGBP, 0);
           setNumericField('bm-mould-life', bm.mouldLife, 0);
           setNumericField('bm-blow-t', bm.blowTimeSec, 0);
           setNumericField('bm-open-close', bm.openCloseSec, 0);
-          // Machine prefix from subtype
-          const bmMachPfx = bm.subtype === 'ibm' ? 'bm-ibm' : bm.subtype === 'sbm' ? 'bm-sbm' : 'bm-ebm';
-          const bmMachEl = el<HTMLSelectElement>('bm-mach');
-          if (bmMachEl) {
-            const match = Array.from(bmMachEl.options).find(o => o.value.startsWith(bmMachPfx));
-            if (match) { bmMachEl.value = match.value; markAIFilled(bmMachEl); }
-          }
         } else if (bmWall) {
           setNumericField('bm-wall', bmWall, 1);
-          setNumericField('bm-flash-wt', c.netWeightKg * 0.12, 4);
+          setNumericField('bm-flash-wt', c.netWeightKg * bmFlashFrac, 4);
+        }
+        // Size the machine to the shot weight (part + flash). EBM picks by size;
+        // IBM/SBM by subtype. Ids are `blow-ebm-*` (the old `bm-ebm` prefix never
+        // matched, so a fuel tank stayed on the small 1–5 L bottle default).
+        {
+          const bmMachId = bmSub === 'ibm' ? 'blow-ibm-linear' : bmSub === 'sbm' ? 'blow-sbm-2stage' : pickEBMMachineId(bmGrossKg);
+          const bmMachEl = el<HTMLSelectElement>('bm-mach');
+          if (bmMachEl) {
+            const match = Array.from(bmMachEl.options).find(o => o.value === bmMachId) ?? Array.from(bmMachEl.options).find(o => o.value.startsWith('blow-ebm'));
+            if (match) { bmMachEl.value = match.value; markAIFilled(bmMachEl); }
+          }
         }
         // Cooling time factor: HDPE/LDPE ~3.5, PP ~3.16, PET ~3.0
         const bmCoolMap: Record<string, number> = { 'mat-pp': 3.16, 'mat-pc': 4.5 };
         setNumericField('bm-cool-f', bmCoolMap[c.materialId] ?? 3.5, 2);
-        setNumericField('bm-amort', 100000, 0);
+        if (!cadAnnVol) setNumericField('bm-amort', 100000, 0);   // fallback default only when no annual volume
         break;
       }
 
@@ -10352,7 +10882,7 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
           const tfPlastic = cadOCCTGeometry?.weights?.plasticKg ?? c.netWeightKg;
           setNumericField('tf-sheet-wt', tfPlastic * 1.35, 4);
         }
-        setNumericField('tf-amort', 50000, 0);
+        if (!cadAnnVol) setNumericField('tf-amort', 50000, 0);   // fallback default only when no annual volume
         break;
       }
 
@@ -10375,7 +10905,7 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
           setNumericField('rm-num-arms', 3, 0);
           setNumericField('rm-parts-per-arm', c.netWeightKg > 5 ? 1 : 2, 0);
         }
-        setNumericField('rm-amort', 20000, 0);
+        if (!cadAnnVol) setNumericField('rm-amort', 20000, 0);   // fallback default only when no annual volume
         break;
       }
 
@@ -10400,7 +10930,7 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
           setNumericField('rub-cycle-sec', 180, 0);
           setNumericField('rub-cavities', 2, 0);
         }
-        setNumericField('rub-amort', 50000, 0);
+        if (!cadAnnVol) setNumericField('rub-amort', 50000, 0);   // fallback default only when no annual volume
         break;
       }
 
@@ -10433,20 +10963,25 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
           setNumericField('comp-fibre-frac', 0.45, 2);
           setNumericField('comp-waste-frac', 0.20, 2);
         }
-        setNumericField('comp-amort', 10000, 0);
+        if (!cadAnnVol) setNumericField('comp-amort', 10000, 0);   // fallback default only when no annual volume
         break;
       }
 
       case 'wiring_harness': {
         // Wiring harness has no geometry-driven sub-object; populate sensible defaults
         setNumericField('harn-asm-time', c.estimatedCycleTimeHr * 3600, 0);
-        setNumericField('harn-amort', 10000, 0);
+        if (!cadAnnVol) setNumericField('harn-amort', 10000, 0);   // fallback default only when no annual volume
         break;
       }
     }
 
     // Surface provenance: how much of this form is measured geometry vs AI guess.
     showCADProvenanceBanner();
+
+    // Keep the 3D model on screen: the CAD form (with its viewer) was just
+    // swapped for this commodity form, so remount a compact viewer in the
+    // persistent host that survives the swap.
+    if (cadFile) void showPersistentCADViewer(cadFile);
 
     if (autoCalculate) {
       compute();
@@ -10486,11 +11021,13 @@ function switchCommodity(type: CommodityType): void {
 
   const area = el('commodity-form-area');
   disposeAllCADViewers(); // the innerHTML swap below destroys any mounted viewer's DOM
+  hidePersistentCADViewer(); // hidden by default; applyCADToForm re-shows it after a CAD apply
   machOpCount = 0; coatCount = 0; joinCount = 0; stationCount = 0; bomCount = 0; camMachOpCount = 0; asmLineCount = 0;
 
   switch (type) {
     case 'machining':
       area.innerHTML = renderMachiningForm();
+      area.insertAdjacentHTML('beforeend', renderMachinedFeaturesPanel('mach'));
       populateSelects();
       el('add-mach-op-btn')?.addEventListener('click', () => addMachOp());
       addMachOp({ name: 'CNC Turning', type: 'turning', machineId: 'mach-lathe-cnc', labourId: 'lab-uk-skilled', cycleTimeHr: 0.05, partsPerCycle: 1, oee: 0.85, manning: 1, labourTimeHr: 0.05, labourEfficiency: 0.92 });
@@ -10928,12 +11465,17 @@ function collectMachiningInput(): UniversalStackInput {
     };
   });
 
+  // "Primary" toggle: feature machining becomes the cost basis, so the operations
+  // table above is dropped and the machining time comes entirely from the geometry
+  // features (material + setup + feature ops).
+  const featurePrimary = machiningFeaturePrimary();
+
   const drivers = computeMachiningDrivers({
     materialId: sel('mach-mat'),
     netWeightKg: num('mach-net-wt'),
     stockWeightKg: num('mach-stock-wt') || num('mach-net-wt') / 0.65,
     materialUtilization: num('mach-mat-util'),
-    operations: ops,
+    operations: featurePrimary ? [] : ops,
     setup: {
       setupTimeHr: num('mach-setup-time'),
       batchSize: num('mach-batch-size') || 50,
@@ -10946,7 +11488,20 @@ function collectMachiningInput(): UniversalStackInput {
     rejectRate: num('mach-reject') || undefined,
   });
 
-  return { ...getUniversalTail(), rawMaterial: drivers.rawMaterial, operations: drivers.operations, tooling: drivers.tooling };
+  let operations = drivers.operations;
+  // Fold in feature machining when it is the PRIMARY basis (toggle on) OR as a
+  // FALLBACK when the OCCT bottom-up cycle estimate is absent (mesh/STL, text
+  // fallback) — otherwise those features would be uncosted. When the cycle total
+  // IS present and the toggle is off, the ops already cover the features, so we
+  // skip to avoid double-counting. Tooling is intentionally NOT added here (the
+  // form's own tooling/NRE fields already capture machining fixtures & programming).
+  const hasOcctCycleTotal = !!(cadOCCTGeometry?.cncCycleTimeEstimate?.estimatedTotalHrs);
+  if (featurePrimary || !hasOcctCycleTotal) {
+    const secondary = collectSecondaryMachining('mach');
+    if (secondary) operations = [...operations, ...secondary.ops];
+  }
+
+  return { ...getUniversalTail(), rawMaterial: drivers.rawMaterial, operations, tooling: drivers.tooling };
 }
 
 function collectSheetMetalInput(): UniversalStackInput {
@@ -12393,6 +12948,7 @@ function compute(): void {
     pushCostingRecord({ totalCost: result.total, confidence: result.warnings?.length ? 'Medium' : 'High', breakdown: result.breakdown, warnings: result.warnings, detail: buildPartDetail(result, input) });
     showResultsArea();
     renderBreakdown(result);
+    renderSelfAudit(result, input);   // deterministic lessons layer + learned-calibration status
     updateTabBadges(result, input);
     fetchAICommentary(result);
 
@@ -13191,6 +13747,140 @@ function buildResultHeroBlock(result: PartCostResult, input: UniversalStackInput
         ${conf90.applied ? `<span class="cv-rchip cv-rchip--ok" title="Coverage-guaranteed range from ${conf90.n} logged actuals">90% land within ±${conf90.halfWidthPct}%</span>` : ''}
       </div>
     </div>`;
+}
+
+/** Independently recompute the size-tiered machine + its physics driver from the
+ *  current form + geometry, so the self-audit can compare against what's selected.
+ *  (Reuses the same estimators the apply uses — the audit re-derives, not trusts.) */
+function _auditSizing(commodity: string): { sizingParams?: MachineSizingParams; selectedMachineId?: string | null } {
+  const footprint = _projectedFootprintCm2();
+  switch (commodity) {
+    case 'injection_moulding': {
+      const area = num('imm-area'), press = num('imm-cav-press') || 30;
+      const clampTonnes = area > 0 ? estimateClampingTonnage({ projectedAreaCm2: area, cavityPressureMPa: press }) : undefined;
+      return { sizingParams: clampTonnes != null ? { clampTonnes } : undefined, selectedMachineId: sel('imm-mach') };
+    }
+    case 'blow_moulding': {
+      const shotKg = num('bm-part-wt') + num('bm-flash-wt');
+      return { sizingParams: shotKg > 0 ? { shotKg } : undefined, selectedMachineId: sel('bm-mach') };
+    }
+    case 'forging': {
+      const forgeTonnes = footprint > 0 ? estimateForgingTonnage({ projectedAreaCm2: footprint, alloyFamily: forgingAlloyFamilyFor(sel('forge-mat')), shapeComplexity: 'moderate' }) : undefined;
+      return { sizingParams: forgeTonnes != null ? { forgeTonnes } : undefined, selectedMachineId: sel('forge-mach') };
+    }
+    case 'sheet_metal': {
+      const perim = num('sm-perim'), thick = num('sm-thick'), shear = num('sm-shear');
+      const stampTonnes = (perim > 0 && thick > 0 && shear > 0) ? estimateTonnageTonnes({ perimeterMm: perim, thicknessMm: thick, shearStrengthMPa: shear }) : undefined;
+      return { sizingParams: stampTonnes != null ? { stampTonnes } : undefined, selectedMachineId: sel('sm-press') };
+    }
+    case 'casting':
+    case 'cast_and_machine': {
+      const cavId = commodity === 'casting' ? 'cast-hpdc-cav' : 'cam-hpdc-cav';
+      const machId = commodity === 'casting' ? 'cast-hpdc-mach' : 'cam-hpdc-mach';
+      const hpdcTonnes = footprint > 0 ? estimateClampingTonnage({ projectedAreaCm2: footprint * Math.max(1, num(cavId) || 1), cavityPressureMPa: 70, safetyfactor: 1.0 }) : undefined;
+      return { sizingParams: hpdcTonnes != null ? { hpdcTonnes } : undefined, selectedMachineId: sel(machId) };
+    }
+    default: return {};
+  }
+}
+
+const _AUDIT_MACHINE_FIELD: Record<string, string> = {
+  injection_moulding: 'imm-mach', blow_moulding: 'bm-mach', forging: 'forge-mach',
+  sheet_metal: 'sm-press', casting: 'cast-hpdc-mach', cast_and_machine: 'cam-hpdc-mach',
+};
+
+/** Apply a bounded audit correction (a machine id or the amort volume — never a £),
+ *  then recompute so the headline reflects the fix. */
+function _applyAuditFix(corr: AuditCorrection): void {
+  if (corr.kind === 'machineId') {
+    const selId = _AUDIT_MACHINE_FIELD[activeCommodity];
+    const s = selId ? el<HTMLSelectElement>(selId) : null;
+    if (s) { const m = Array.from(s.options).find(o => o.value === corr.machineId); if (m) { s.value = m.value; markAIFilled(s); } }
+  } else if (corr.kind === 'amortVolume') {
+    const amId = COMMODITY_AMORT_FIELD[activeCommodity];
+    const a = amId ? document.getElementById(amId) as HTMLInputElement | null : null;
+    if (a) { a.value = String(corr.value); a.dispatchEvent(new Event('input')); }
+  }
+  el('calc-btn')?.click();
+}
+
+/** The learned layer: whether THIS segment (commodity × material × region) is
+ *  calibrated from actuals, plus a drift warning and a Log-Actual CTA. Returns ''
+ *  when calibrated and stable (the hero already shows that) to avoid clutter. */
+function _modelLearningStrip(result: PartCostResult): string {
+  const region = (document.getElementById('mfg-region-selector') as HTMLSelectElement)?.value ?? 'UK';
+  const seg = { commodity: activeCommodity, materialFamily: currentMaterialFamily(), region };
+  const recs = getCalibrationRecords();
+  const hcal = computeCalibrationHierarchical(recs, seg);
+  const drift = segmentDrift(recs, seg);
+  if (hcal.applied && !drift.drifting) return '';   // hero already reports calibrated status
+  const segLabel = `${activeCommodity.replace(/_/g, ' ')}${seg.materialFamily ? ' · ' + seg.materialFamily : ''} · ${region}`;
+  let body: string;
+  if (hcal.applied) {
+    const cal = applyCalibration(result.total, hcal);
+    body = `<strong>✓ Calibrated ×${hcal.biasFactor}</strong> from ${hcal.n} actuals · calibrated → <strong>${fmt(cal)}</strong>`;
+  } else {
+    body = `<strong>Uncalibrated</strong> for ${escHtml(segLabel)} (${hcal.n}/3 actuals) — log a real PO/quote to teach the model. <button class="btn btn-sm sa-logactual" style="font-size:0.68rem;padding:2px 9px;margin-left:4px">Log actual £</button>`;
+  }
+  const driftLine = drift.drifting
+    ? `<div style="margin-top:4px;color:#8a5300"><strong>⚠ Drift</strong> — recent quotes for this segment run ${drift.deltaPct > 0 ? '+' : ''}${drift.deltaPct}% vs the older ones (${drift.n} actuals). Re-calibrate.</div>`
+    : '';
+  return `<div style="background:#eef4fb;border:1px solid #cfe0f2;border-radius:6px;padding:8px 12px;margin-top:6px;font-size:0.75rem;color:#274b6d"><span style="font-size:0.62rem;font-weight:700;letter-spacing:0.04em">MODEL LEARNING</span> ${body}${driftLine}</div>`;
+}
+
+/** Run the deterministic lessons layer + the learned-calibration status on the
+ *  current estimate and surface them (with one-click actions) atop the breakdown. */
+function renderSelfAudit(result: PartCostResult, input: UniversalStackInput): void {
+  const panel = document.getElementById('results-breakdown');
+  document.getElementById('self-audit-panel')?.remove();
+  if (!panel) return;
+  const { sizingParams, selectedMachineId } = _auditSizing(activeCommodity);
+  const geo = cadOCCTGeometry;
+  const geometry = geo ? {
+    volumeCm3: geo.volume?.cm3 ?? null,
+    surfaceAreaCm2: geo.surfaceArea?.cm2 ?? null,
+    bboxMm: geo.boundingBox ? { x: geo.boundingBox.xMm, y: geo.boundingBox.yMm, z: geo.boundingBox.zMm } : null,
+    wallMeanMm: geo.wallThickness?.meanMm ?? null,
+    fillRatio: geo.fillRatio ?? null,
+  } : undefined;
+  const findings: AuditFinding[] = runShouldCostAudit({
+    commodity: activeCommodity, input, library,
+    annualVolume: num('annual-volume') || (input.annualVolume ?? null),
+    selectedMachineId, sizingParams, geometry,
+  });
+
+  const strip = _modelLearningStrip(result);
+  if (!findings.length && !strip && !geometry && !sizingParams) return;   // nothing to say — stay quiet
+
+  const div = document.createElement('div');
+  div.id = 'self-audit-panel';
+  div.style.cssText = 'margin-bottom:12px';
+  if (findings.length) {
+    const sevColor: Record<string, [string, string, string]> = {
+      high: ['#fdecea', '#f5b7b1', '#a12b1c'], medium: ['#fff4e5', '#ffcc80', '#8a5300'], low: ['#eef1f4', '#cdd5dc', '#4a5560'],
+    };
+    const rows = findings.map((f, i) => {
+      const [bg, bd, fg] = sevColor[f.severity];
+      const fix = f.correction ? `<button class="btn btn-sm sa-fix" data-i="${i}" style="margin-left:auto;font-size:0.7rem;padding:3px 10px">Apply fix</button>` : '';
+      return `<div style="background:${bg};border:1px solid ${bd};border-radius:6px;padding:8px 12px;margin-top:6px">
+        <div style="display:flex;align-items:center;gap:8px"><span style="font-size:0.62rem;font-weight:700;color:${fg};letter-spacing:0.04em">${f.severity.toUpperCase()}</span><strong style="font-size:0.8rem;color:${fg}">${escHtml(f.title)}</strong>${fix}</div>
+        <div style="font-size:0.75rem;color:#333;margin-top:3px">${escHtml(f.message)}</div>
+        ${f.expected ? `<div style="font-size:0.7rem;color:#666;margin-top:2px">expected <strong>${escHtml(f.expected)}</strong> · actual ${escHtml(f.actual ?? '')}</div>` : ''}
+      </div>`;
+    }).join('');
+    div.innerHTML = `<div style="font-size:0.82rem;font-weight:700;color:var(--text-primary,#222);display:flex;align-items:center;gap:6px">
+      <span style="background:#e65100;color:#fff;border-radius:4px;padding:2px 7px;font-size:0.66rem">⚑ SELF-AUDIT</span>
+      ${findings.length} check${findings.length > 1 ? 's' : ''} to review — the deterministic lessons layer flagged these automatically.</div>${rows}`;
+  } else {
+    div.innerHTML = `<div style="background:#f0faf4;border:1px solid #b7e4c7;border-radius:6px;padding:8px 12px;font-size:0.78rem;color:#1b6b3a"><strong>✓ Self-audit</strong> — no physics/geometry inconsistencies detected on this estimate.</div>`;
+  }
+  if (strip) div.insertAdjacentHTML('beforeend', strip);
+  panel.prepend(div);
+  findings.forEach((f, i) => {
+    if (!f.correction) return;
+    div.querySelector(`.sa-fix[data-i="${i}"]`)?.addEventListener('click', () => _applyAuditFix(f.correction!));
+  });
+  div.querySelector('.sa-logactual')?.addEventListener('click', () => logActualQuote());
 }
 
 function renderBreakdown(result: PartCostResult): void {
@@ -14409,8 +15099,6 @@ async function printMasterPDF(): Promise<void> {
     y += 10;
   };
 
-  const hdr_bg: RGB = [240, 240, 240];
-
   // ══ COVER PAGE ═══════════════════════════════════════════════════════════════
   doc.setFillColor(...SLATE);
   doc.rect(0, 0, W, 52, 'F');
@@ -14495,161 +15183,52 @@ async function printMasterPDF(): Promise<void> {
   }
 
   // ══ PART A: SHOULD-COST ════════════════════════════════════════════════════
-  if (hasCost && lastResult && lastInput) {
-    const sym = _displayCurrency === 'GBP' ? '£' : _displayCurrency === 'EUR' ? '€' : '$';
-    const c = (n: number) => `${sym}${(n * _displayFxRate).toFixed(2)}`;
-    const pct = (n: number) => `${n.toFixed(1)}%`;
-    const pcts = breakdownPercentages(lastResult);
+  // Full detailed should-cost — the SAME body as the standalone Should-Cost
+  // report (region, material detail, machine-rate buildup, rate traceability,
+  // uncertainty, sensitivity, §9 regional 10-country comparison, carbon,
+  // insights, DFM/DFA, optimisation, roadmap). Shared via renderShouldCostSections.
+  if (hasCost && lastResult && lastInput && renderShouldCostSections) {
+    partPage('PART A — SHOULD-COST ANALYSIS', `${lastResult.partName}  ·  ${COMMODITY_LABELS[activeCommodity] ?? activeCommodity}  ·  ${_mfgRegion}  ·  ${dateStr}`, ORANGE);
 
-    partPage('PART A — SHOULD-COST ANALYSIS', `${lastResult.partName}  ·  ${COMMODITY_LABELS[activeCommodity] ?? activeCommodity}  ·  ${dateStr}`, ORANGE);
+    // Manufacturing basis line — the manufacturing country was previously absent
+    // from the Master report; surface it explicitly at the top of Part A.
+    const _ohPct  = (lastInput.overheadPct * 100).toFixed(0);
+    const _mgnPct = (lastInput.marginPct * 100).toFixed(0);
+    const _annVol = ((lastInput as { annualVolume?: number }).annualVolume ?? 100000).toLocaleString();
+    doc.setFillColor(...LIGHT);
+    doc.roundedRect(mg, y, cW, 12, 1.5, 1.5, 'F');
+    doc.setFontSize(7.5); doc.setFont('helvetica', 'bold'); doc.setTextColor(...ORANGE);
+    doc.text('Manufacturing Basis', mg + 4, y + 5);
+    doc.setFont('helvetica', 'normal'); doc.setTextColor(...SLATE);
+    doc.text(`Region: ${_mfgRegion}   ·   Currency: ${_displayCurrency}   ·   Annual volume: ${_annVol}   ·   Overhead ${_ohPct}%   ·   Margin ${_mgnPct}%`, mg + 4, y + 9.5);
+    y += 16;
 
-    // §A0 Uploaded part photo (any commodity)
+    // Uploaded part photo (any commodity)
     const partPhoto = currentPartPhotoDataUrl();
     if (partPhoto) {
       try {
         const props = doc.getImageProperties(partPhoto);
-        const maxH = 44, maxW = cW * 0.45;
+        const maxH = 40, maxW = cW * 0.42;
         let iw = maxH * (props.width / props.height), ih = maxH;
         if (iw > maxW) { iw = maxW; ih = maxW * (props.height / props.width); }
-        secBar('§A0 — Uploaded Part Photo', ORANGE);
         doc.setDrawColor(...GREY); doc.setLineWidth(0.25);
         doc.roundedRect(mg, y, iw + 4, ih + 4, 2, 2, 'S');
         doc.addImage(partPhoto, props.fileType || 'JPEG', mg + 2, y + 2, iw, ih, undefined, 'FAST');
         y += ih + 8;
-      } catch { /* skip */ }
+      } catch { /* skip an image that fails to embed */ }
     }
 
-    // §A1 Cost Breakdown
-    secBar('§A1 — 8-Bucket Cost Breakdown', ORANGE);
-    const buckets: [string, number, number, string][] = [
-      ['1. Raw Material', lastResult.breakdown.rawMaterial, pcts.rawMaterial, ''],
-      ['2. Process (Machine)', lastResult.breakdown.process, pcts.process, ''],
-      ['3. Direct Labour', lastResult.breakdown.labour, pcts.labour, ''],
-      ['4. Tooling (amortised)', lastResult.breakdown.tooling, pcts.tooling, ''],
-      ['5. Packaging', lastResult.breakdown.packaging, pcts.packaging, ''],
-      ['6. Logistics', lastResult.breakdown.logistics, pcts.logistics, ''],
-      ['— Factory Cost', lastResult.factoryCost, (lastResult.factoryCost / lastResult.total) * 100, 'sub'],
-      ['7. Overhead (SG&A)', lastResult.breakdown.overhead, pcts.overhead, ''],
-      ['— Subtotal', lastResult.subtotal, (lastResult.subtotal / lastResult.total) * 100, 'sub'],
-      ['8. Supplier Margin', lastResult.breakdown.margin, pcts.margin, ''],
-      ['TOTAL SHOULD COST', lastResult.total, 100, 'total'],
-    ];
-    autoTable(doc, {
-      startY: y, margin: { left: mg, right: mg },
-      head: [['Cost Bucket', `Amount (${_displayCurrency})`, '% of Total', 'Cost Bar']],
-      // Cost Bar column left blank in text — the bar is drawn as a rectangle in didDrawCell
-      // (a block glyph like U+2588 is not in jsPDF's WinAnsi font and renders as garbage).
-      body: buckets.map(([label, val, p]) => [label, c(val), pct(p), '']),
-      styles: { fontSize: 8 }, headStyles: { fillColor: hdr_bg, textColor: SLATE, fontStyle: 'bold' },
-      columnStyles: { 0: { cellWidth: 70 }, 1: { cellWidth: 30, halign: 'right' }, 2: { cellWidth: 22, halign: 'right' }, 3: {} },
-      didParseCell: (d: any) => {
-        const rt = buckets[d.row.index]?.[3];
-        if (rt === 'total') { d.cell.styles.fontStyle = 'bold'; d.cell.styles.fillColor = [255, 243, 230]; }
-        else if (rt === 'sub') { d.cell.styles.fontStyle = 'bold'; d.cell.styles.fillColor = hdr_bg; }
-      },
-      didDrawCell: (d: any) => {
-        if (d.section !== 'body' || d.column.index !== 3) return;
-        const p = Math.max(0, Math.min(100, buckets[d.row.index]?.[2] ?? 0));
-        const pad = 2;
-        const trackW = d.cell.width - pad * 2;
-        if (trackW <= 0) return;
-        const bh = 2.6;
-        const bx = d.cell.x + pad;
-        const by = d.cell.y + d.cell.height / 2 - bh / 2;
-        doc.setFillColor(...hdr_bg);                       // track
-        doc.roundedRect(bx, by, trackW, bh, 0.6, 0.6, 'F');
-        const bw = Math.max(0.4, trackW * (p / 100));
-        doc.setFillColor(...ORANGE);                       // filled portion
-        doc.roundedRect(bx, by, bw, bh, 0.6, 0.6, 'F');
-      },
+    y = renderShouldCostSections(doc, y, {
+      result: lastResult,
+      input: lastInput,
+      library,
+      currency: _displayCurrency,
+      fxRate: _displayFxRate,
+      commodityType: activeCommodity,
+      region: _mfgRegion,
+      scenarios: listScenarios(),
+      cadMeta: buildCadReportMeta(),
     });
-    y = lastY() + 5;
-
-    // §A2 Operations
-    secBar('§A2 — Operations Detail', ORANGE);
-    autoTable(doc, {
-      startY: y, margin: { left: mg, right: mg },
-      head: [['Operation', 'Machine', 'Cycle min', 'OEE', 'Process £', 'Labour Grade', 'Manning', 'Labour £', 'Total']],
-      body: lastResult.operationDetails.map(op => {
-        const mObj = library.machines.find(m => m.id === op.machineId);
-        const lObj = library.labour.find(l => l.id === op.labourId);
-        return [op.operationName, mObj?.machineClass ?? op.machineId, (op.cycleTimeHr * 60).toFixed(2), pct(op.oee * 100), c(op.processCost), lObj?.skillLevel ?? op.labourId, String(op.manning), c(op.labourCost), c(op.processCost + op.labourCost)];
-      }),
-      styles: { fontSize: 7 }, headStyles: { fillColor: hdr_bg, textColor: SLATE, fontStyle: 'bold', fontSize: 7 },
-      columnStyles: { 0: { cellWidth: 38 }, 4: { halign: 'right' }, 7: { halign: 'right' }, 8: { halign: 'right', fontStyle: 'bold' } },
-    });
-    y = lastY() + 5;
-
-    // §A3–§A5 DFM/DFA
-    try {
-      const dfm = generateDFMDFA(lastResult, lastInput, activeCommodity);
-
-      secBar(`§A3 — DFM Analysis  (Score: ${dfm.dfm.score.toFixed(1)}/10  ·  Potential: ${dfm.dfm.totalSavingPct.toFixed(0)}%)`, ORANGE);
-      if (dfm.dfm.summary) {
-        doc.setFontSize(7.5); doc.setTextColor(...GREY);
-        const ls = doc.splitTextToSize(dfm.dfm.summary, cW) as string[];
-        doc.text(ls, mg, y); y += ls.length * 4 + 3;
-      }
-      if (dfm.dfm.issues.length > 0) {
-        autoTable(doc, {
-          startY: y, margin: { left: mg, right: mg },
-          head: [['Severity', 'Category', 'Issue', 'Description', 'Save %', 'Recommendation']],
-          body: dfm.dfm.issues.map(i => [i.severity.toUpperCase(), i.category, i.title, i.description, `${i.savingPct.toFixed(0)}%`, i.recommendation]),
-          styles: { fontSize: 7, overflow: 'linebreak' }, headStyles: { fillColor: hdr_bg, textColor: SLATE, fontStyle: 'bold', fontSize: 7 },
-          columnStyles: { 0: { cellWidth: 18, fontStyle: 'bold' }, 1: { cellWidth: 18 }, 2: { cellWidth: 28 }, 3: { cellWidth: 45 }, 4: { cellWidth: 13, halign: 'right' }, 5: { cellWidth: cW - 125 } },
-          didParseCell: (d: any) => {
-            if (d.section === 'body' && d.column.index === 0) {
-              const sev = dfm.dfm.issues[d.row.index]?.severity;
-              d.cell.styles.textColor = sev === 'critical' ? RED_R : sev === 'major' ? AMB_R : sev === 'opportunity' ? GRN_R : GREY;
-            }
-          },
-        });
-        y = lastY() + 5;
-      }
-
-      chk(10);
-      secBar(`§A4 — DFA Analysis  (Score: ${dfm.dfa.score.toFixed(1)}/10  ·  Potential: ${dfm.dfa.totalSavingPct.toFixed(0)}%)`, ORANGE);
-      if (dfm.dfa.summary) {
-        doc.setFontSize(7.5); doc.setTextColor(...GREY);
-        const ls = doc.splitTextToSize(dfm.dfa.summary, cW) as string[];
-        doc.text(ls, mg, y); y += ls.length * 4 + 3;
-      }
-      if (dfm.dfa.issues.length > 0) {
-        autoTable(doc, {
-          startY: y, margin: { left: mg, right: mg },
-          head: [['Severity', 'Category', 'Issue', 'Description', 'Save %', 'Recommendation']],
-          body: dfm.dfa.issues.map(i => [i.severity.toUpperCase(), i.category, i.title, i.description, `${i.savingPct.toFixed(0)}%`, i.recommendation]),
-          styles: { fontSize: 7, overflow: 'linebreak' }, headStyles: { fillColor: hdr_bg, textColor: SLATE, fontStyle: 'bold', fontSize: 7 },
-          columnStyles: { 0: { cellWidth: 18, fontStyle: 'bold' }, 1: { cellWidth: 18 }, 2: { cellWidth: 28 }, 3: { cellWidth: 45 }, 4: { cellWidth: 13, halign: 'right' }, 5: { cellWidth: cW - 125 } },
-          didParseCell: (d: any) => {
-            if (d.section === 'body' && d.column.index === 0) {
-              const sev = dfm.dfa.issues[d.row.index]?.severity;
-              d.cell.styles.textColor = sev === 'critical' ? RED_R : sev === 'major' ? AMB_R : sev === 'opportunity' ? GRN_R : GREY;
-            }
-          },
-        });
-        y = lastY() + 5;
-      }
-
-      if (dfm.costOptimisations.length > 0) {
-        chk(10);
-        secBar(`§A5 — Cost Optimisation Opportunities  (${dfm.totalPotentialSavingPct.toFixed(0)}% total potential)`, ORANGE);
-        autoTable(doc, {
-          startY: y, margin: { left: mg, right: mg },
-          head: [['Action', 'Save %', 'Timeframe', 'Risk', 'Description & Justification']],
-          body: dfm.costOptimisations.map(o => [o.title, `${o.expectedSavingPct.toFixed(0)}%`, o.timeframe, o.risk, `${o.description}  ·  ${o.technicalJustification}`]),
-          styles: { fontSize: 7, overflow: 'linebreak' }, headStyles: { fillColor: hdr_bg, textColor: SLATE, fontStyle: 'bold', fontSize: 7 },
-          columnStyles: { 0: { cellWidth: 35, fontStyle: 'bold' }, 1: { cellWidth: 14, halign: 'right' }, 2: { cellWidth: 22 }, 3: { cellWidth: 12 }, 4: { cellWidth: cW - 86 } },
-          didParseCell: (d: any) => {
-            if (d.section === 'body' && d.column.index === 1) {
-              const o = dfm.costOptimisations[d.row.index];
-              if (o && o.expectedSavingPct >= 10) d.cell.styles.textColor = GRN_R;
-            }
-          },
-        });
-        y = lastY() + 5;
-      }
-    } catch { /* DFM not available for this commodity */ }
   }
 
   // ══ PART B: CAD ANALYSIS ══════════════════════════════════════════════════
@@ -14926,10 +15505,53 @@ function currentPartPhotoDataUrl(): string | null {
   return null;
 }
 
+/** Assemble the CAD provenance + geometry metadata for the should-cost report.
+ *  Empty ({}) for non-CAD costings so the report is unchanged for them. */
+function buildCadReportMeta(): CADReportMeta {
+  if (!cadAnalysisResult || !lastInput) return {};
+  const volCm3 = cadOCCTGeometry?.volume?.cm3 ?? null;
+  const matRate = library.materials.find(m => m.id === lastInput!.rawMaterial.materialId);
+  const measuredWeightKg = (volCm3 != null && matRate)
+    ? Math.round((volCm3 / 1e6) * matRate.densityKgPerM3 * 1000) / 1000
+    : null;
+
+  let featureLines: FeatureMachiningLine[] | null = null;
+  let featureMachineRatePerHr: number | null = null;
+  let featureStock: 'near_net' | 'solid_billet' | null = null;
+  const rows = (cadOCCTGeometry?.featureTable ?? []) as FeatureRow[];
+  if (rows.length) {
+    const prefix = activeCommodity === 'casting' ? 'cast' : activeCommodity === 'forging' ? 'forge' : activeCommodity === 'machining' ? 'mach' : null;
+    let fm = prefix ? (collectSecondaryMachining(prefix)?.result ?? null) : null;
+    let machineId = fm?.operations[0]?.machineId ?? '';
+    if (fm && prefix) {
+      featureStock = (sel(`${prefix}-mf-stock`) as 'near_net' | 'solid_billet') || 'near_net';
+    } else {
+      const stock: StockCondition = activeCommodity === 'machining' ? 'solid_billet' : 'near_net';
+      featureStock = stock;
+      machineId = resolveMachineIdForOp('mach-vmc3', 'CNC Milling');
+      fm = computeFeatureMachining(rows, { machineId, labourId: resolveLabourId('lab-uk-skilled'), stockCondition: stock });
+    }
+    featureLines = fm.lines;
+    featureMachineRatePerHr = library.machines.find(m => m.id === machineId)?.computedRatePerHr ?? 45;
+  }
+
+  return {
+    geometrySource: cadGeometrySource,
+    measuredVolumeCm3: volCm3,
+    measuredWeightKg,
+    featureLines,
+    featureMachineRatePerHr,
+    featureStock,
+    userSpecifiedMaterial: _cadMaterialLocked,
+    userSpecifiedProcess: _cadProcessLocked,
+    annualVolume: (lastInput as { annualVolume?: number }).annualVolume ?? null,
+  };
+}
+
 async function openPDF(): Promise<void> {
   if (!lastResult || !lastInput) return;
   await ensurePdfLibs();
-  printPDF!(lastResult, lastInput, library, _displayCurrency, _displayFxRate, activeCommodity, currentPartPhotoDataUrl(), _mfgRegion, listScenarios());
+  printPDF!(lastResult, lastInput, library, _displayCurrency, _displayFxRate, activeCommodity, currentPartPhotoDataUrl(), _mfgRegion, listScenarios(), buildCadReportMeta());
 }
 
 // ─── Scenario modal ───────────────────────────────────────────────────────────
@@ -16889,8 +17511,21 @@ async function init(): Promise<void> {
     }
   };
   el<HTMLSelectElement>('currency-selector')?.addEventListener('change', e => {
+    _currencyUserPinned = true;   // explicit choice — survives region changes
+    try { localStorage.setItem('cv-currency-pin', (e.target as HTMLSelectElement).value); } catch { /* ignore */ }
     _applyCurrency((e.target as HTMLSelectElement).value);
   });
+  // Restore a currency the user pinned in a previous session, so it survives
+  // reloads and keeps overriding region auto-switch.
+  try {
+    const savedCur = localStorage.getItem('cv-currency-pin');
+    if (savedCur) {
+      _currencyUserPinned = true;
+      const curSel = el<HTMLSelectElement>('currency-selector');
+      if (curSel && Array.from(curSel.options).some(o => o.value === savedCur)) curSel.value = savedCur;
+      _applyCurrency(savedCur);
+    }
+  } catch { /* ignore */ }
 
   // Country for Costing bar — rebuilds library, updates currency, overhead default, auto-recalculates
   const _applyCountry = (code: string) => {
@@ -16918,8 +17553,9 @@ async function init(): Promise<void> {
       const logEl = el<HTMLInputElement>('logistics-cost');
       if (pkgEl) pkgEl.value = (0.15 * rd.packagingMultiplier).toFixed(2);
       if (logEl) logEl.value = (0.25 * rd.logisticsMultiplier).toFixed(2);
-      // Update display currency
-      const cur = rd.currency;
+      // Update display currency to the region's native currency — unless the
+      // user has pinned a currency (e.g. China rates but keep the headline in GBP).
+      const cur = _currencyUserPinned ? _displayCurrency : rd.currency;
       const curSel = el<HTMLSelectElement>('currency-selector');
       if (curSel && Array.from(curSel.options).some(o => o.value === cur)) {
         curSel.value = cur;
@@ -16972,10 +17608,11 @@ async function init(): Promise<void> {
     } else {
       library = buildRegionalLibrary(recomputeMachineRates(getLibraryFromStorage()), region);
     }
-    // Auto-switch display currency to region's native currency
+    // Auto-switch display currency to region's native currency — unless the user
+    // has pinned a currency (source from China but keep the headline in GBP).
     const nativeCur = REGIONAL_DATA[region]?.currency;
     const curSel = el<HTMLSelectElement>('currency-selector');
-    if (nativeCur && curSel && Array.from(curSel.options).some(o => o.value === nativeCur)) {
+    if (!_currencyUserPinned && nativeCur && curSel && Array.from(curSel.options).some(o => o.value === nativeCur)) {
       curSel.value = nativeCur;
       _applyCurrency(nativeCur);
     }
@@ -16986,7 +17623,7 @@ async function init(): Promise<void> {
       const infoEl = document.getElementById('country-bar-info');
       if (infoEl) {
         const rd = REGIONAL_DATA[region];
-        if (rd) infoEl.textContent = `${rd.name} · ${nativeCur ?? region}`;
+        if (rd) infoEl.textContent = `${rd.name} · ${_currencyUserPinned ? _displayCurrency : (nativeCur ?? region)}`;
       }
     }
     // Auto-recalculate so results reflect new regional rates
@@ -17033,6 +17670,9 @@ async function init(): Promise<void> {
   el('save-scenario-btn')?.addEventListener('click', openScenarioModal);
   el('save-library-btn')?.addEventListener('click', saveLastResultToLibrary);
   el('log-actual-btn')?.addEventListener('click', logActualQuote);
+  el('calibration-btn')?.addEventListener('click', openCalibrationModal);
+  el('cal-import-btn')?.addEventListener('click', importActualsFromText);
+  el('cal-close-btn')?.addEventListener('click', () => { el('calibration-modal').style.display = 'none'; });
   el('load-ref-btn')?.addEventListener('click', loadExample);
   document.getElementById('results-empty-example')?.addEventListener('click', loadExample);
   el('rates-btn')?.addEventListener('click', openRateLibrary);
@@ -17832,6 +18472,7 @@ function _cmdkBuild(): CmdkEntry[] {
     { label: 'Negotiation Intelligence — supplier-quote teardown', sub: 'View', icon: 'i-trend-up', run: () => showNegotiation() },
     { label: 'Demo gallery', sub: 'Open', icon: 'i-play', run: byId('demo-btn') },
     { label: 'Rate library — edit & version machine / labour rates', sub: 'Open', icon: 'i-factory', run: () => { showCosting('machining'); setTimeout(() => document.getElementById('rates-btn')?.click(), 200); } },
+    { label: 'Calibration & actuals — bulk-import PO prices, see coverage', sub: 'Open', icon: 'i-trend-up', run: () => openCalibrationModal() },
     { label: "What's new in CostVision", sub: 'Open', icon: 'i-bulb', run: () => { document.getElementById('help-btn')?.click(); setTimeout(() => document.querySelector<HTMLElement>('.help-tab[data-help="whats-new"]')?.click(), 120); } },
     { label: 'Help centre', sub: 'Open', icon: 'i-help', run: byId('help-btn') },
     { label: 'Contact support', sub: 'Open', icon: 'i-mail', run: byId('contact-btn') },

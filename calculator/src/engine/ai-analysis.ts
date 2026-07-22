@@ -209,6 +209,8 @@ export interface CADAnalysisResult {
       mouldLife: number;
       blowTimeSec: number;
       openCloseSec: number;
+      /** true for coextruded multi-layer barrier walls (fuel tanks, AdBlue ducts). */
+      barrierMultilayer?: boolean;
     };
     thermoforming?: {
       /** 'vacuum' | 'pressure' | 'twin_sheet' */

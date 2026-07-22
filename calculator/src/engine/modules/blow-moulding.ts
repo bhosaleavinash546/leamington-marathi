@@ -62,6 +62,27 @@ export function getBlowMouldingInputSchema(): Record<string, string> {
   };
 }
 
+/** Smallest EBM machine (by shot/gross weight) that can mould the part. A large
+ *  ~12 kg fuel-tank parison needs a large accumulator-head machine, not the small
+ *  1–5 L bottle head the form defaults to (which mis-costs the process ~10×). */
+export function pickEBMMachineId(grossWeightKg: number): string {
+  if (grossWeightKg >= 6) return 'blow-ebm-large';    // accumulator head 20–200 L (tanks, drums)
+  if (grossWeightKg >= 1.5) return 'blow-ebm-500l';   // 5–100 L containers
+  if (grossWeightKg >= 0.3) return 'blow-ebm-100l';   // up to 5 L
+  return 'blow-ebm-2head';                            // small bottles 1–5 L
+}
+
+/** When the AI classifies the wall as a coextruded multi-layer barrier (fuel
+ *  tank / AdBlue duct), price it on the real 6-layer HDPE/tie/EVOH/tie/HDPE
+ *  barrier grade (`mat-hdpe-fuel-coex`, ~£1.55/kg in the rate library) instead
+ *  of the mono-HDPE blow grade the AI may have picked — the EVOH barrier + tie
+ *  layers carry a real material premium. Only polyethylene grades upgrade; a
+ *  barrier PP/PET keeps its own grade, and a non-barrier part is untouched. */
+export function barrierMaterialId(materialId: string, isBarrier: boolean): string {
+  if (!isBarrier) return materialId;
+  return /hdpe|lldpe|biope|rhdpe|pe100|pe-bm/i.test(materialId) ? 'mat-hdpe-fuel-coex' : materialId;
+}
+
 export function computeBlowMouldingDrivers(inputs: BlowMouldingInputs): CommodityDrivers {
   const rejectUplift = (inputs.rejectRate && inputs.rejectRate > 0)
     ? 1 / (1 - inputs.rejectRate)

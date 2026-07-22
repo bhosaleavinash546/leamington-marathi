@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import {
   computeCalibration, applyCalibration, calibrationSummary, MIN_SAMPLES,
   computeCalibrationHierarchical, cvFromMape, computeConformalBand, applyConformalBand,
+  segmentDrift, calibrationCoverage,
   type CalibrationRecord,
 } from '../src/engine/calibration.js';
 
@@ -151,5 +152,56 @@ describe('conformal confidence bands', () => {
     const band = computeConformalBand(recs, { commodity: 'casting', materialFamily: 'Aluminium', region: 'CN' }, 0.9);
     expect(band.segment).toBe('commodity+family+region');
     expect(band.n).toBe(3);
+  });
+});
+
+describe('segment drift — recent actuals diverging from the learned model', () => {
+  let t = 0;
+  const rt = (commodity: string, shouldCost: number, actualCost: number, family?: string, region?: string): CalibrationRecord =>
+    ({ id: String(_id++), savedAt: ++t, commodity, shouldCost, actualCost, currency: 'GBP', materialFamily: family, region });
+
+  it('flags a segment whose recent quotes run materially above the older ones', () => {
+    const recs = [
+      rt('casting', 100, 100), rt('casting', 100, 101), rt('casting', 100, 99),   // older ~1.0
+      rt('casting', 100, 125), rt('casting', 100, 124), rt('casting', 100, 126),  // recent ~1.25
+    ];
+    const d = segmentDrift(recs, { commodity: 'casting' });
+    expect(d.drifting).toBe(true);
+    expect(d.direction).toBe('up');
+    expect(d.deltaPct).toBeGreaterThan(15);
+    expect(d.n).toBe(6);
+  });
+
+  it('does not flag a stable segment', () => {
+    const recs = [
+      rt('machining', 100, 110), rt('machining', 100, 108), rt('machining', 100, 112),
+      rt('machining', 100, 109), rt('machining', 100, 111), rt('machining', 100, 110),
+    ];
+    expect(segmentDrift(recs, { commodity: 'machining' }).drifting).toBe(false);
+  });
+
+  it('stays quiet without enough data on each side', () => {
+    const recs = [rt('forging', 100, 100), rt('forging', 100, 150), rt('forging', 100, 150)];
+    const d = segmentDrift(recs, { commodity: 'forging' });
+    expect(d.drifting).toBe(false);
+    expect(d.n).toBe(3);
+  });
+});
+
+describe('calibration coverage — where the model has learned', () => {
+  it('reports per-segment counts and calibrated flag', () => {
+    const mk = (commodity: string, family: string, region: string, s: number, a: number): CalibrationRecord =>
+      ({ id: String(_id++), savedAt: 0, commodity, shouldCost: s, actualCost: a, currency: 'GBP', materialFamily: family, region });
+    const recs = [
+      mk('casting', 'Aluminium', 'CN', 100, 112), mk('casting', 'Aluminium', 'CN', 100, 114), mk('casting', 'Aluminium', 'CN', 100, 113),
+      mk('machining', 'Steel', 'UK', 100, 105),   // only 1 → uncalibrated segment
+    ];
+    const cov = calibrationCoverage(recs);
+    expect(cov.length).toBe(2);
+    expect(cov[0].n).toBe(3);                 // most-covered first
+    expect(cov[0].calibrated).toBe(true);
+    const uk = cov.find(c => c.commodity === 'machining');
+    expect(uk?.n).toBe(1);
+    expect(uk?.calibrated).toBe(false);
   });
 });

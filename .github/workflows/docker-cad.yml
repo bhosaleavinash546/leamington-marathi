@@ -1,0 +1,68 @@
+name: Docker CAD image
+
+# Build-tests calculator/Dockerfile.cad (the glibc + cadquery/OCP image that gives
+# the deployed container the STEP/IGES geometry path). Runs only when something that
+# affects that image changes — the Dockerfile, the dependency manifests, or the
+# Python geometry engine — plus on demand. It both builds the image AND measures a
+# real committed STEP fixture inside it, so a broken cadquery/OCP packaging (the
+# exact thing musl/Alpine couldn't do) fails CI instead of the first `fly deploy`.
+on:
+  push:
+    paths:
+      - 'calculator/Dockerfile.cad'
+      - 'calculator/package.json'
+      - 'calculator/package-lock.json'
+      - 'calculator/server/utils/cad-geometry-engine.py'
+      - 'calculator/tests/fixtures/cad-parts/**'
+      - '.github/workflows/docker-cad.yml'
+  pull_request:
+    paths:
+      - 'calculator/Dockerfile.cad'
+      - 'calculator/package.json'
+      - 'calculator/package-lock.json'
+      - 'calculator/server/utils/cad-geometry-engine.py'
+      - '.github/workflows/docker-cad.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: docker-cad-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-cad-image:
+    name: Build & smoke-test Dockerfile.cad
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Build the CAD image (glibc + cadquery/OCP)
+        uses: docker/build-push-action@v6
+        with:
+          context: calculator
+          file: calculator/Dockerfile.cad
+          tags: costvision-cad:ci
+          load: true            # load into the daemon so we can run it below
+          push: false           # build-test only — no registry push
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Smoke-test — cadquery/OCP import inside the image
+        run: |
+          docker run --rm costvision-cad:ci \
+            python3 -c "import cadquery, OCP; print('cadquery', cadquery.__version__, '+ OCP OK')"
+
+      - name: Smoke-test — measure a real STEP fixture end-to-end
+        run: |
+          out=$(docker run --rm costvision-cad:ci \
+            python3 server/utils/cad-geometry-engine.py tests/fixtures/cad-parts/flange-6holes-boss.step)
+          echo "$out"
+          echo "$out" | python3 -c "
+          import sys, json
+          d = json.load(sys.stdin)
+          assert d.get('status') == 'success', d
+          assert d['volume']['cm3'] > 0, d
+          assert d['faces']['total'] > 0, d
+          print(f\"OK - STEP measured: {d['volume']['cm3']} cm3, {d['faces']['total']} B-rep faces\")
+          "

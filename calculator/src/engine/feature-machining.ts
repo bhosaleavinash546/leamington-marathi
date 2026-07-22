@@ -78,10 +78,21 @@ export function featureLabel(l: { kind: FeatureRow['kind']; count: number; diaMm
   return `${l.count}×Ø${l.diaMm.toFixed(1)}×${l.depthMm.toFixed(0)}`;
 }
 
-/** High-confidence default: holes/bores are machined; external bosses, faced
- *  surfaces and pockets need the engineer to confirm (a planar face or a
- *  recess may be cast/forged as-is, not machined). */
-export function defaultInclude(row: FeatureRow): boolean {
+/** Every machinable feature kind the geometry engine can emit. */
+const MACHINABLE_KINDS: readonly FeatureRow['kind'][] = ['hole', 'boss', 'face', 'pocket', 'slot'];
+
+/** Stock-aware default inclusion — the fix for the "features detected but not
+ *  costed" under-count.
+ *  - `solid_billet` (machined from bar/plate): EVERY detected feature is
+ *    physically cut from the billet, so all machinable features are costed by
+ *    default. Leaving faces/pockets off here silently under-counts a machined
+ *    part (the exact bug that made a 14-hole knuckle cost one face-mill).
+ *  - `near_net` (cast/forged/moulded): only holes/bores are reliably machined;
+ *    external bosses, faced datums and recesses may be as-cast, so they stay
+ *    off until the engineer confirms them — but the UI/report surface them
+ *    loudly so the omission is never invisible. */
+export function defaultInclude(row: FeatureRow, stock: StockCondition = 'near_net'): boolean {
+  if (stock === 'solid_billet') return MACHINABLE_KINDS.includes(row.kind);
   return row.kind === 'hole';
 }
 
@@ -139,7 +150,7 @@ export function computeFeatureMachining(
   const flags = opts.includeFlags;
 
   const lines: FeatureMachiningLine[] = (rows ?? []).map((row, i) => {
-    const auto = defaultInclude(row);
+    const auto = defaultInclude(row, stock);
     const included = flags ? Boolean(flags[i]) : auto;
     const minutesEach = featureMinutesEach(row) * finish;
     return {

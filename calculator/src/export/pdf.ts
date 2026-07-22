@@ -9,6 +9,28 @@ import { computeCostUncertainty } from '../engine/uncertainty.js';
 import { runSensitivity } from '../engine/sensitivity.js';
 import { computeCarbon } from '../engine/carbon.js';
 import { computeRegionalComparison, type ManufacturingRegion } from '../engine/regional-rates.js';
+import type { FeatureMachiningLine } from '../engine/feature-machining.js';
+
+/**
+ * CAD-derived provenance + geometry metadata that rides into the should-cost
+ * report so a reviewer can see WHERE each number came from. All optional — when
+ * absent the report renders exactly as before (non-CAD flows are unaffected).
+ */
+export interface CADReportMeta {
+  /** How the geometry was obtained: precise B-rep (occt), mesh (stl_parser), or
+   *  the text/heuristic fallback (text_parsing) that only estimates weight. */
+  geometrySource?: 'occt' | 'stl_parser' | 'text_parsing' | null;
+  measuredVolumeCm3?: number | null;
+  measuredWeightKg?: number | null;   // measured mass for the chosen material family
+  /** Per-feature secondary-machining breakdown actually used in the cost. */
+  featureLines?: FeatureMachiningLine[] | null;
+  featureMachineRatePerHr?: number | null;
+  featureStock?: 'near_net' | 'solid_billet' | null;
+  /** True when the engineer pinned the grade / process (locks out AI + sanity). */
+  userSpecifiedMaterial?: boolean;
+  userSpecifiedProcess?: boolean;
+  annualVolume?: number | null;
+}
 
 // ─── Shared constants ─────────────────────────────────────────────────────────
 type RGB = [number, number, number];
@@ -73,6 +95,33 @@ function secBar(doc: jsPDF, y: number, title: string, right?: string): number {
   return y + 13;
 }
 
+/** Draw a compact titled call-out box (tint fill + accent left rule + wrapped
+ *  body lines). Returns the new y. Used for provenance / assumptions / exclusions
+ *  / DFM advisories so they read as first-class report content, not footnotes. */
+function calloutBox(
+  doc: jsPDF, y: number, title: string, lines: string[],
+  accent: RGB = NAVY, fill: RGB = HDR,
+): number {
+  doc.setFontSize(7.5); doc.setFont('helvetica', 'normal');
+  const wrapped: string[] = [];
+  for (const ln of lines) {
+    const parts = doc.splitTextToSize(ln, CW - 12) as string[];
+    for (const p of parts) wrapped.push(p);
+  }
+  const boxH = 8 + wrapped.length * 3.9 + 2;
+  y = chk(doc, y, boxH + 4);
+  doc.setFillColor(...fill);
+  doc.roundedRect(MG, y, CW, boxH, 1.5, 1.5, 'F');
+  doc.setFillColor(...accent);
+  doc.rect(MG, y, 1.6, boxH, 'F');
+  doc.setFontSize(8); doc.setFont('helvetica', 'bold'); doc.setTextColor(...accent);
+  doc.text(title, MG + 5, y + 5.5);
+  doc.setFontSize(7.5); doc.setFont('helvetica', 'normal'); doc.setTextColor(...SLATE);
+  let ty = y + 10.5;
+  for (const w of wrapped) { doc.text(w, MG + 5, ty); ty += 3.9; }
+  return y + boxH + 5;
+}
+
 /** Shared autoTable head styles. */
 const TH = {
   headStyles: {
@@ -113,161 +162,32 @@ export function drawCostVisionLogo(doc: jsPDF, x: number, y: number, badgeH = 4.
 //  MAIN SHOULD-COST PDF
 // ════════════════════════════════════════════════════════════════════════════
 
-export function printPDF(
-  result: PartCostResult,
-  input:  UniversalStackInput,
-  library: RateLibrary,
-  currency = 'GBP',
-  fxRate   = 1,
-  commodityType: CommodityType = 'machining',
-  partPhotoDataUrl?: string | null,
-  region: ManufacturingRegion = 'UK',
-  scenarios: Scenario[] = []
-): void {
-
-  const sym  = ({ GBP: '£', EUR: '€', USD: '$', CNY: '¥', INR: '₹' } as Record<string,string>)[currency] ?? currency;
+/** Shared should-cost report body — §1 through §16 (breakdown, ops, machine
+ *  buildup, traceability, uncertainty, sensitivity, regional 10-country
+ *  comparison, carbon, insights, DFM/DFA, optimisation, roadmap, scenarios).
+ *  Drawn into any jsPDF doc at cursor `y`; returns the new `y`. Used by both
+ *  the standalone Should-Cost report (printPDF) and the Master report Part A. */
+export function renderShouldCostSections(
+  doc: jsPDF,
+  y: number,
+  ctx: {
+    result: PartCostResult;
+    input: UniversalStackInput;
+    library: RateLibrary;
+    currency: string;
+    fxRate: number;
+    commodityType: CommodityType;
+    region: ManufacturingRegion;
+    scenarios: Scenario[];
+    cadMeta: CADReportMeta;
+  },
+): number {
+  const { result, input, library, currency, fxRate, commodityType, region, scenarios, cadMeta } = ctx;
+  const sym  = ({ GBP: '£', EUR: '€', USD: '$', CNY: '¥', INR: '₹' } as Record<string, string>)[currency] ?? currency;
   const c    = (n: number) => `${sym}${(n * fxRate).toFixed(2)}`;
   const pct  = (n: number) => `${n.toFixed(1)}%`;
   const pcts = breakdownPercentages(result);
-  const dateStr = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
-  const timeStr = new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
-
-  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-
-  // ── Footer (added last) ──────────────────────────────────────────────────
-  const addFooters = () => {
-    const total = pageCount(doc);
-    for (let i = 1; i <= total; i++) {
-      doc.setPage(i);
-      doc.setDrawColor(...ORANGE); doc.setLineWidth(0.4);
-      doc.line(MG, 285, W - MG, 285);
-      const lw = drawCostVisionLogo(doc, MG, 287, 4);
-      doc.setFontSize(6.5); doc.setFont('helvetica', 'normal'); doc.setTextColor(...GREY);
-      doc.text('Should-Cost Analysis Report  ·  CONFIDENTIAL', MG + lw + 3, 291);
-      doc.text(`${dateStr}  ${timeStr}`, W / 2, 291, { align: 'center' });
-      doc.text(`Page ${i} of ${total}`, W - MG, 291, { align: 'right' });
-    }
-  };
-
-  // ════════════════════════════════════════════════════════════════════════
-  // COVER PAGE
-  // ════════════════════════════════════════════════════════════════════════
-
-  // Hero banner
-  doc.setFillColor(...NAVY);
-  doc.rect(0, 0, W, 68, 'F');
-  // Orange left stripe
-  doc.setFillColor(...ORANGE);
-  doc.rect(0, 0, 7, 68, 'F');
-
-  // Logo box
-  doc.setFillColor(...WHITE);
-  doc.roundedRect(MG + 5, 10, 24, 15, 2, 2, 'F');
-  doc.setTextColor(...NAVY); doc.setFontSize(11); doc.setFont('helvetica', 'bold');
-  doc.text('CV', MG + 17, 20, { align: 'center' });
-
-  // Brand name
-  doc.setTextColor(...WHITE); doc.setFontSize(20); doc.setFont('helvetica', 'bold');
-  doc.text('CostVision', MG + 35, 20);
-  doc.setFontSize(8); doc.setFont('helvetica', 'normal'); doc.setTextColor(185, 200, 230);
-  doc.text('Manufacturing Should-Cost Intelligence Platform', MG + 35, 27);
-
-  // Report badge
-  doc.setFillColor(...ORANGE);
-  doc.roundedRect(MG + 35, 32, 62, 7, 1.5, 1.5, 'F');
-  doc.setFontSize(7); doc.setFont('helvetica', 'bold'); doc.setTextColor(...WHITE);
-  doc.text('SHOULD-COST ANALYSIS REPORT', MG + 66, 37, { align: 'center' });
-
-  // Date + tag line
-  doc.setFontSize(7.5); doc.setFont('helvetica', 'normal'); doc.setTextColor(200, 215, 240);
-  doc.text(`Generated: ${dateStr}  ·  ${timeStr}`, MG + 35, 46);
-  doc.text('Bottom-Up Manufacturing Cost Model  ·  Fully Traceable Rate Data', MG + 35, 52);
-
-  // ── Part summary card ────────────────────────────────────────────────────
-  let y = 76;
-  doc.setFillColor(245, 247, 252);
-  doc.roundedRect(MG, y, CW, 34, 2.5, 2.5, 'F');
-  doc.setDrawColor(...NAVY); doc.setLineWidth(0.25);
-  doc.roundedRect(MG, y, CW, 34, 2.5, 2.5, 'S');
-  // Top accent line
-  doc.setFillColor(...ORANGE);
-  doc.roundedRect(MG, y, CW, 2.5, 1, 1, 'F');
-
-  doc.setFont('helvetica', 'bold'); doc.setTextColor(...NAVY);
-  // Shrink-to-fit then ellipsis so long part names never overflow the summary card.
-  const nameMaxW = CW - 12;
-  let nameSize = 13;
-  doc.setFontSize(nameSize);
-  while (doc.getTextWidth(result.partName) > nameMaxW && nameSize > 9) { nameSize -= 0.5; doc.setFontSize(nameSize); }
-  let partName = result.partName;
-  if (doc.getTextWidth(partName) > nameMaxW) {
-    while (partName.length > 8 && doc.getTextWidth(partName + '...') > nameMaxW) partName = partName.slice(0, -1);
-    partName = partName.replace(/\s+$/, '') + '...';
-  }
-  doc.text(partName, MG + 6, y + 12);
-
-  doc.setFontSize(7.5); doc.setFont('helvetica', 'normal'); doc.setTextColor(...GREY);
-  const meta = [
-    `Commodity: ${commodityType.replace(/_/g, ' ').toUpperCase()}`,
-    `Currency: ${currency}`,
-    `FX Rate: ${fxRate.toFixed(4)} to GBP`,
-    `Operations: ${result.operationDetails.length}`,
-    `Region: ${(input as { region?: string }).region ?? 'UK'}`,
-  ].join('   ·   ');
-  doc.text(meta, MG + 6, y + 19);
-
-  // Metrics chips row
-  const chips: [string, string, RGB][] = [
-    ['Total Should-Cost',   `${sym}${(result.total * fxRate).toFixed(2)}`, ORANGE],
-    ['Material',            pct(pcts.rawMaterial), SLATE],
-    ['Process',             pct(pcts.process), SLATE],
-    ['Labour',              pct(pcts.labour), SLATE],
-    ['Margin',              pct(pcts.margin), SLATE],
-  ];
-  const chipW = CW / chips.length;
-  chips.forEach(([lbl, val, col], i) => {
-    const cx = MG + i * chipW + 4;
-    doc.setFontSize(6); doc.setFont('helvetica', 'normal'); doc.setTextColor(...LGREY);
-    doc.text(lbl, cx, y + 26);
-    doc.setFontSize(i === 0 ? 10 : 9); doc.setFont('helvetica', 'bold'); doc.setTextColor(...col);
-    doc.text(val, cx, y + 32);
-  });
-
-  y += 42;
-
-  // ── Uploaded part photo (any commodity) ──────────────────────────────────
-  if (partPhotoDataUrl) {
-    try {
-      const props = doc.getImageProperties(partPhotoDataUrl);
-      const maxH = 42, maxW = CW * 0.5;
-      let iw = maxH * (props.width / props.height), ih = maxH;
-      if (iw > maxW) { iw = maxW; ih = maxW * (props.height / props.width); }
-      doc.setFontSize(7.5); doc.setFont('helvetica', 'bold'); doc.setTextColor(...NAVY);
-      doc.text('Uploaded Part Photo', MG, y + 3);
-      doc.setDrawColor(...NAVY); doc.setLineWidth(0.25);
-      doc.roundedRect(MG, y + 5, iw + 4, ih + 4, 2, 2, 'S');
-      doc.addImage(partPhotoDataUrl, props.fileType || 'JPEG', MG + 2, y + 7, iw, ih, undefined, 'FAST');
-      y += ih + 12;
-    } catch { /* skip an image that fails to embed */ }
-  }
-
-  // ── Confidence & traceability summary ────────────────────────────────────
-  const highCount = result.traceability.filter(t => t.confidence === 'High').length;
-  const allCount  = result.traceability.length;
-  const overallConf = allCount === 0 ? 'Medium'
-    : highCount / allCount >= 0.7 ? 'High'
-    : highCount / allCount >= 0.4 ? 'Medium' : 'Low';
-  const confColor: RGB = overallConf === 'High' ? GN : overallConf === 'Medium' ? AM : RD;
-
-  doc.setFillColor(...HDR);
-  doc.roundedRect(MG, y, CW, 11, 1.5, 1.5, 'F');
-  doc.setFontSize(7.5); doc.setFont('helvetica', 'bold'); doc.setTextColor(...NAVY);
-  doc.text('Model Confidence:', MG + 5, y + 7);
-  doc.setTextColor(...confColor);
-  doc.text(overallConf, MG + 44, y + 7);
-  doc.setTextColor(...GREY); doc.setFont('helvetica', 'normal');
-  doc.text(`·  ${result.operationDetails.length} traced operations  ·  ${allCount} data points auditable`, MG + 62, y + 7);
-  y += 17;
+  const alloyMat = library.materials.find(m => m.id === input.rawMaterial.materialId);
 
   // ════════════════════════════════════════════════════════════════════════
   // §1 — 8-Bucket Cost Breakdown
@@ -436,7 +356,23 @@ export function printPDF(
       }
     },
   });
-  y = lastFinalY(doc) + 10;
+  y = lastFinalY(doc) + 8;
+
+  // ── Alloy / specification advisory (casting commodities) ──────────────────
+  // A general die-cast alloy on a safety-critical structural part is the exact
+  // silent mis-spec the knuckle exposed. Flag it; don't leave it implicit.
+  const matId = input.rawMaterial.materialId.toLowerCase();
+  const isCasting = /cast/.test(commodityType);
+  const generalDieCast = /adc12|a380|a383|a413|a319|a360|zamak/.test(matId);
+  const hasHeatTreatOp = result.operationDetails.some(op => /heat|t6|t7|solution|age|temper|ndt|x-?ray/i.test(op.operationName));
+  if (isCasting && generalDieCast) {
+    const bullets = [
+      `Selected grade "${alloyMat?.grade ?? input.rawMaterial.materialId}" is a GENERAL die-cast alloy (good castability, not high-ductility).`,
+      'For safety-critical / structural parts (steering, suspension, brake, chassis, sub-frame) a structural HPDC alloy — Silafont-36, Aural-5 or Castasil-37 — plus T7 heat-treat and 100% NDT/X-ray is typically mandated.',
+    ];
+    if (!hasHeatTreatOp) bullets.push('No heat-treat or NDT operation is present in this cost. If the part is structural, add them (they raise the true cost) or confirm the part is non-structural.');
+    y = calloutBox(doc, y, 'Alloy & Specification Check', bullets, AM, OR_LT);
+  }
 
   // ════════════════════════════════════════════════════════════════════════
   // §4 — Operations Detail  (split into two focused tables)
@@ -538,6 +474,70 @@ export function printPDF(
   });
   y = lastFinalY(doc) + 10;
 
+  // ── 4C  Per-feature machining audit (from measured geometry) ──────────────
+  // Every detected feature gets a row with its machining time and whether it was
+  // COSTED — so an under-count (features detected but not machined) is visible,
+  // not silent. This is the audit surface the knuckle case exposed.
+  if (cadMeta.featureLines && cadMeta.featureLines.length > 0) {
+    y = chk(doc, y, 26);
+    doc.setFontSize(7.5); doc.setFont('helvetica', 'bold'); doc.setTextColor(...NAVY);
+    doc.text('4C  Machined Features — Geometry Audit', MG, y); y += 5;
+
+    const rate = cadMeta.featureMachineRatePerHr ?? 0;
+    const kindLbl: Record<string, string> = { hole: 'Hole / bore', boss: 'Boss', face: 'Face', pocket: 'Pocket', slot: 'Slot' };
+    let costedMin = 0, notMin = 0, costedCnt = 0, notCnt = 0;
+    const featRows = cadMeta.featureLines.map(l => {
+      const dim = (l.kind === 'hole' || l.kind === 'boss')
+        ? `Ø${l.diaMm.toFixed(1)} × ${l.depthMm.toFixed(0)}${l.kind === 'hole' ? (l.through ? ' thru' : ' blind') : ''}`
+        : `${Math.round(l.areaMm2 ?? 0)} mm²${l.depthMm > 0 ? ` × ${l.depthMm.toFixed(0)}` : ''}`;
+      const lineCost = (l.totalMinutes / 60) * rate;
+      if (l.included) { costedMin += l.totalMinutes; costedCnt += l.count; } else { notMin += l.totalMinutes; notCnt += l.count; }
+      return [
+        kindLbl[l.kind] ?? l.kind,
+        dim,
+        String(l.count),
+        l.operation,
+        l.totalMinutes.toFixed(2),
+        l.included ? c(lineCost) : '—',
+        l.included ? 'Yes' : 'No',
+      ];
+    });
+    featRows.push(['TOTAL costed', '', String(costedCnt), '', costedMin.toFixed(2), c((costedMin / 60) * rate), 'Yes']);
+
+    autoTable(doc, {
+      startY: y, margin: { left: MG, right: MG },
+      head: [['Feature', 'Ø×depth / area', 'Qty', 'Operation', 'Min', 'Cost', 'Costed?']],
+      body: featRows,
+      theme: 'plain',
+      headStyles: { ...TH.headStyles, fontSize: 7 },
+      bodyStyles: { fontSize: 7, textColor: SLATE, cellPadding: { top: 2, bottom: 2, left: 3, right: 3 } },
+      alternateRowStyles: { fillColor: LIGHT },
+      columnStyles: {
+        0: { cellWidth: 26 }, 1: { cellWidth: 34 }, 2: { cellWidth: 12, halign: 'right' },
+        3: { cellWidth: 54, fontSize: 6.5, textColor: GREY }, 4: { cellWidth: 18, halign: 'right' },
+        5: { cellWidth: 22, halign: 'right' }, 6: { cellWidth: 16, halign: 'center' },
+      },
+      didParseCell: (d) => {
+        if (d.section !== 'body') return;
+        const isTotal = d.row.index === featRows.length - 1;
+        if (isTotal) { d.cell.styles.fontStyle = 'bold'; d.cell.styles.fillColor = OR_LT; d.cell.styles.textColor = NAVY; return; }
+        if (d.column.index === 6) {
+          const v = Array.isArray(d.cell.text) ? d.cell.text[0] : String(d.cell.text);
+          if (v === 'No') { d.cell.styles.textColor = RD; d.cell.styles.fontStyle = 'bold'; }
+          else { d.cell.styles.textColor = GN; }
+        }
+      },
+    });
+    y = lastFinalY(doc) + 4;
+    if (notCnt > 0) {
+      y = calloutBox(doc, y, `${notCnt} detected feature(s) NOT costed`, [
+        `${notCnt} machinable feature instance(s) (${notMin.toFixed(1)} min) were detected in the geometry but are NOT included in this cost — on a near-net part they may be as-cast. If they are machined, tick them in the Machined-Features panel and re-cost; this could add up to ${c((notMin / 60) * rate)}.`,
+      ], AM, OR_LT);
+    } else {
+      y += 4;
+    }
+  }
+
   // ════════════════════════════════════════════════════════════════════════
   // §5 — Machine Rate Buildup
   // ════════════════════════════════════════════════════════════════════════
@@ -598,7 +598,11 @@ export function printPDF(
         }
       },
     });
-    y = lastFinalY(doc) + 8;
+    y = lastFinalY(doc) + 6;
+    y = calloutBox(doc, y, 'How to read the machine rate', [
+      'Rate/hr = (annual depreciation + maintenance + energy + floor + indirect + finance) ÷ effective hours, where effective hours = available hours × utilisation.',
+      'Effective hours encode the shift pattern: a lower hours-base raises £/hr and a higher one lowers it. A challenge from a supplier will target this divisor and whether depreciation is machine-only or full-cell (machine + dosing furnace + trim + robots/extraction) — state your basis when defending the number.',
+    ], NAVY, HDR);
   }
 
   // ════════════════════════════════════════════════════════════════════════
@@ -640,8 +644,13 @@ export function printPDF(
   // ════════════════════════════════════════════════════════════════════════
   doc.addPage(); y = 18;
   {
-    const u = computeCostUncertainty(result, input);
-    y = secBar(doc, y, '§7 — Should-Cost with Uncertainty', `Monte-Carlo  ·  ${u.overallConfidence} confidence`);
+    // When geometry was NOT measured (text/heuristic fallback), the volume/weight
+    // themselves are guesses — so the band must widen beyond what the rate
+    // confidences alone imply. Force a Low-plus base CV in that case.
+    const geomEstimated = cadMeta.geometrySource === 'text_parsing';
+    const u = computeCostUncertainty(result, input, geomEstimated ? { baseCvOverride: 0.28 } : {});
+    const confShown = geomEstimated ? 'Low' : u.overallConfidence;
+    y = secBar(doc, y, '§7 — Should-Cost with Uncertainty', `Monte-Carlo  ·  ${confShown} confidence`);
     autoTable(doc, {
       startY: y, margin: { left: MG, right: MG }, theme: 'grid',
       head: [['Estimate (± band)', 'P10 · optimistic', 'P50 · median', 'P90 · conservative', 'Band', 'CV']],
@@ -653,7 +662,34 @@ export function printPDF(
     y = lastFinalY(doc) + 3;
     doc.setFont('helvetica', 'normal'); doc.setFontSize(7.5); doc.setTextColor(...GREY);
     const note = doc.splitTextToSize('Range reflects how well each cost driver is known (High / Medium / Low confidence). Tighten it by attaching CAD, a BOM, or logging an actual quote.', CW);
-    doc.text(note, MG, y + 3); y += note.length * 3.6 + 8;
+    doc.text(note, MG, y + 3); y += note.length * 3.6 + 4;
+
+    // Confidence-driver line — WHY the band is what it is (not just the grade).
+    const lowRates = result.traceability.filter(t => t.confidence === 'Low').length;
+    const drivers: string[] = [];
+    if (geomEstimated) drivers.push('geometry weight/volume estimated (not measured)');
+    if (lowRates > 0) drivers.push(`${lowRates} rate(s) at Low confidence`);
+    drivers.push('tooling amortisation carries the widest per-bucket spread');
+    if (cadMeta.featureLines?.some(l => !l.included)) drivers.push('some detected features not costed (see §4C)');
+    y = calloutBox(doc, y, `Why confidence is ${confShown}`, [
+      `Main band drivers: ${drivers.join('; ')}.`,
+    ], confShown === 'High' ? GN : confShown === 'Medium' ? AM : RD,
+       confShown === 'High' ? [237, 247, 237] : confShown === 'Low' ? [252, 236, 236] : OR_LT);
+  }
+
+  // ── What's excluded from this unit cost ───────────────────────────────────
+  // One consolidated list, so silence never reads as "included". Some items are
+  // conditional — heat-treat/NDT only flagged when no such operation is present.
+  {
+    const excl: string[] = [
+      'One-time NRE — tooling / die, fixtures and CNC programming — is amortised separately, not in this unit cost.',
+      'Import duty and international freight (regional table is Ex-Works).',
+      'Formal embodied-carbon reporting (figures are indicative cradle-to-gate — replace with supplier EPDs).',
+    ];
+    if (isCasting && !hasHeatTreatOp) excl.push('Heat-treat (T6/T7), HIP and 100% NDT/X-ray are NOT in this cost — add them for structural / safety-critical parts.');
+    if (isCasting) excl.push('Trim/degate, shot-blast/deflash and impregnation are only included where shown as operations.');
+    if (cadMeta.geometrySource === 'text_parsing') excl.push('A measured geometry — this cost used an ESTIMATED weight/volume (see Geometry Provenance).');
+    y = calloutBox(doc, y, "What's excluded from this unit cost", excl, GREY, HDR);
   }
 
   // ════════════════════════════════════════════════════════════════════════
@@ -968,6 +1004,205 @@ export function printPDF(
       columnStyles: { 0: { fontStyle: 'bold' }, 1: { halign: 'right' }, 2: { halign: 'right', fontStyle: 'bold' }, 3: { halign: 'right', textColor: GREY as RGB } },
     });
   }
+
+  return y;
+}
+
+export function printPDF(
+  result: PartCostResult,
+  input:  UniversalStackInput,
+  library: RateLibrary,
+  currency = 'GBP',
+  fxRate   = 1,
+  commodityType: CommodityType = 'machining',
+  partPhotoDataUrl?: string | null,
+  region: ManufacturingRegion = 'UK',
+  scenarios: Scenario[] = [],
+  cadMeta: CADReportMeta = {}
+): void {
+
+  const sym  = ({ GBP: '£', EUR: '€', USD: '$', CNY: '¥', INR: '₹' } as Record<string,string>)[currency] ?? currency;
+  const pct  = (n: number) => `${n.toFixed(1)}%`;
+  const pcts = breakdownPercentages(result);
+  const dateStr = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+  const timeStr = new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+
+  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+
+  // ── Footer (added last) ──────────────────────────────────────────────────
+  const addFooters = () => {
+    const total = pageCount(doc);
+    for (let i = 1; i <= total; i++) {
+      doc.setPage(i);
+      doc.setDrawColor(...ORANGE); doc.setLineWidth(0.4);
+      doc.line(MG, 285, W - MG, 285);
+      const lw = drawCostVisionLogo(doc, MG, 287, 4);
+      doc.setFontSize(6.5); doc.setFont('helvetica', 'normal'); doc.setTextColor(...GREY);
+      doc.text('Should-Cost Analysis Report  ·  CONFIDENTIAL', MG + lw + 3, 291);
+      doc.text(`${dateStr}  ${timeStr}`, W / 2, 291, { align: 'center' });
+      doc.text(`Page ${i} of ${total}`, W - MG, 291, { align: 'right' });
+    }
+  };
+
+  // ════════════════════════════════════════════════════════════════════════
+  // COVER PAGE
+  // ════════════════════════════════════════════════════════════════════════
+
+  // Hero banner
+  doc.setFillColor(...NAVY);
+  doc.rect(0, 0, W, 68, 'F');
+  // Orange left stripe
+  doc.setFillColor(...ORANGE);
+  doc.rect(0, 0, 7, 68, 'F');
+
+  // Logo box
+  doc.setFillColor(...WHITE);
+  doc.roundedRect(MG + 5, 10, 24, 15, 2, 2, 'F');
+  doc.setTextColor(...NAVY); doc.setFontSize(11); doc.setFont('helvetica', 'bold');
+  doc.text('CV', MG + 17, 20, { align: 'center' });
+
+  // Brand name
+  doc.setTextColor(...WHITE); doc.setFontSize(20); doc.setFont('helvetica', 'bold');
+  doc.text('CostVision', MG + 35, 20);
+  doc.setFontSize(8); doc.setFont('helvetica', 'normal'); doc.setTextColor(185, 200, 230);
+  doc.text('Manufacturing Should-Cost Intelligence Platform', MG + 35, 27);
+
+  // Report badge
+  doc.setFillColor(...ORANGE);
+  doc.roundedRect(MG + 35, 32, 62, 7, 1.5, 1.5, 'F');
+  doc.setFontSize(7); doc.setFont('helvetica', 'bold'); doc.setTextColor(...WHITE);
+  doc.text('SHOULD-COST ANALYSIS REPORT', MG + 66, 37, { align: 'center' });
+
+  // Date + tag line
+  doc.setFontSize(7.5); doc.setFont('helvetica', 'normal'); doc.setTextColor(200, 215, 240);
+  doc.text(`Generated: ${dateStr}  ·  ${timeStr}`, MG + 35, 46);
+  doc.text('Bottom-Up Manufacturing Cost Model  ·  Fully Traceable Rate Data', MG + 35, 52);
+
+  // ── Part summary card ────────────────────────────────────────────────────
+  let y = 76;
+  doc.setFillColor(245, 247, 252);
+  doc.roundedRect(MG, y, CW, 34, 2.5, 2.5, 'F');
+  doc.setDrawColor(...NAVY); doc.setLineWidth(0.25);
+  doc.roundedRect(MG, y, CW, 34, 2.5, 2.5, 'S');
+  // Top accent line
+  doc.setFillColor(...ORANGE);
+  doc.roundedRect(MG, y, CW, 2.5, 1, 1, 'F');
+
+  doc.setFont('helvetica', 'bold'); doc.setTextColor(...NAVY);
+  // Shrink-to-fit then ellipsis so long part names never overflow the summary card.
+  const nameMaxW = CW - 12;
+  let nameSize = 13;
+  doc.setFontSize(nameSize);
+  while (doc.getTextWidth(result.partName) > nameMaxW && nameSize > 9) { nameSize -= 0.5; doc.setFontSize(nameSize); }
+  let partName = result.partName;
+  if (doc.getTextWidth(partName) > nameMaxW) {
+    while (partName.length > 8 && doc.getTextWidth(partName + '...') > nameMaxW) partName = partName.slice(0, -1);
+    partName = partName.replace(/\s+$/, '') + '...';
+  }
+  doc.text(partName, MG + 6, y + 12);
+
+  doc.setFontSize(7.5); doc.setFont('helvetica', 'normal'); doc.setTextColor(...GREY);
+  const meta = [
+    `Commodity: ${commodityType.replace(/_/g, ' ').toUpperCase()}`,
+    `Currency: ${currency}`,
+    `FX Rate: ${fxRate.toFixed(4)} to GBP`,
+    `Operations: ${result.operationDetails.length}`,
+    `Region: ${(input as { region?: string }).region ?? 'UK'}`,
+  ].join('   ·   ');
+  doc.text(meta, MG + 6, y + 19);
+
+  // Metrics chips row
+  const chips: [string, string, RGB][] = [
+    ['Total Should-Cost',   `${sym}${(result.total * fxRate).toFixed(2)}`, ORANGE],
+    ['Material',            pct(pcts.rawMaterial), SLATE],
+    ['Process',             pct(pcts.process), SLATE],
+    ['Labour',              pct(pcts.labour), SLATE],
+    ['Margin',              pct(pcts.margin), SLATE],
+  ];
+  const chipW = CW / chips.length;
+  chips.forEach(([lbl, val, col], i) => {
+    const cx = MG + i * chipW + 4;
+    doc.setFontSize(6); doc.setFont('helvetica', 'normal'); doc.setTextColor(...LGREY);
+    doc.text(lbl, cx, y + 26);
+    doc.setFontSize(i === 0 ? 10 : 9); doc.setFont('helvetica', 'bold'); doc.setTextColor(...col);
+    doc.text(val, cx, y + 32);
+  });
+
+  y += 42;
+
+  // ── Uploaded part photo (any commodity) ──────────────────────────────────
+  if (partPhotoDataUrl) {
+    try {
+      const props = doc.getImageProperties(partPhotoDataUrl);
+      const maxH = 42, maxW = CW * 0.5;
+      let iw = maxH * (props.width / props.height), ih = maxH;
+      if (iw > maxW) { iw = maxW; ih = maxW * (props.height / props.width); }
+      doc.setFontSize(7.5); doc.setFont('helvetica', 'bold'); doc.setTextColor(...NAVY);
+      doc.text('Uploaded Part Photo', MG, y + 3);
+      doc.setDrawColor(...NAVY); doc.setLineWidth(0.25);
+      doc.roundedRect(MG, y + 5, iw + 4, ih + 4, 2, 2, 'S');
+      doc.addImage(partPhotoDataUrl, props.fileType || 'JPEG', MG + 2, y + 7, iw, ih, undefined, 'FAST');
+      y += ih + 12;
+    } catch { /* skip an image that fails to embed */ }
+  }
+
+  // ── Confidence & traceability summary ────────────────────────────────────
+  const highCount = result.traceability.filter(t => t.confidence === 'High').length;
+  const allCount  = result.traceability.length;
+  const overallConf = allCount === 0 ? 'Medium'
+    : highCount / allCount >= 0.7 ? 'High'
+    : highCount / allCount >= 0.4 ? 'Medium' : 'Low';
+  const confColor: RGB = overallConf === 'High' ? GN : overallConf === 'Medium' ? AM : RD;
+
+  doc.setFillColor(...HDR);
+  doc.roundedRect(MG, y, CW, 11, 1.5, 1.5, 'F');
+  doc.setFontSize(7.5); doc.setFont('helvetica', 'bold'); doc.setTextColor(...NAVY);
+  doc.text('Model Confidence:', MG + 5, y + 7);
+  doc.setTextColor(...confColor);
+  doc.text(overallConf, MG + 44, y + 7);
+  doc.setTextColor(...GREY); doc.setFont('helvetica', 'normal');
+  doc.text(`·  ${result.operationDetails.length} traced operations  ·  ${allCount} data points auditable`, MG + 62, y + 7);
+  y += 17;
+
+  // ── Geometry provenance (CAD flows) — measured vs estimated ───────────────
+  const alloyMat = library.materials.find(m => m.id === input.rawMaterial.materialId);
+  if (cadMeta.geometrySource) {
+    const src = cadMeta.geometrySource;
+    const wt = cadMeta.measuredWeightKg != null ? `${cadMeta.measuredWeightKg.toFixed(3)} kg` : '—';
+    const vol = cadMeta.measuredVolumeCm3 != null ? `${cadMeta.measuredVolumeCm3.toFixed(1)} cm³` : '—';
+    if (src === 'occt') {
+      y = calloutBox(doc, y, 'Geometry Provenance — MEASURED (OCCT B-rep kernel)', [
+        `Volume, weight and every feature were measured from the CAD solid by the Open CASCADE kernel. Measured volume ${vol}; mass for the selected material family ${wt}.`,
+        'Material cost and geometry-derived machining are grounded in the actual solid — not an estimate.',
+      ], GN, [237, 247, 237]);
+    } else if (src === 'stl_parser') {
+      y = calloutBox(doc, y, 'Geometry Provenance — MEASURED FROM MESH (STL)', [
+        `Volume and weight were measured from the STL mesh (measured volume ${vol}; mass ${wt}). B-rep feature recognition (holes/bores/faces) is limited on mesh data — confirm machined features manually.`,
+      ], AM, OR_LT);
+    } else {
+      y = calloutBox(doc, y, 'Geometry Provenance — NOT MEASURED (text/heuristic estimate)', [
+        'The CAD kernel could not read this file in the deployed container, so weight and volume are TEXT/HEURISTIC ESTIMATES, not measured from the solid.',
+        'Material cost and any geometry-derived machining are INDICATIVE only and may be materially wrong. To get a measured cost, attach an STL of the same part or re-run in a kernel-enabled environment.',
+      ], RD, [252, 236, 236]);
+    }
+  }
+
+  // ── Key assumptions (always) — the six drivers that move the answer most ──
+  const utilPct = (input.rawMaterial.materialUtilization * 100);
+  const wtNote = cadMeta.geometrySource === 'text_parsing' ? ' (estimated — see provenance above)'
+    : cadMeta.geometrySource ? ' (measured)' : '';
+  const pinNote = [
+    cadMeta.userSpecifiedMaterial ? 'grade user-specified' : '',
+    cadMeta.userSpecifiedProcess ? 'process user-specified' : '',
+  ].filter(Boolean).join(', ');
+  y = calloutBox(doc, y, 'Key Assumptions', [
+    `Annual volume: ${(cadMeta.annualVolume ?? (input as { annualVolume?: number }).annualVolume ?? '—').toLocaleString?.() ?? '—'}   ·   Region: ${(input as { region?: string }).region ?? region}   ·   Commodity: ${commodityType.replace(/_/g, ' ')}`,
+    `Alloy / material: ${alloyMat?.grade ?? input.rawMaterial.materialId}${pinNote ? ` (${pinNote})` : ''}   ·   Net weight: ${input.rawMaterial.netWeightKg.toFixed(3)} kg${wtNote}`,
+    `Material utilisation: ${utilPct.toFixed(0)}%   ·   Overhead: ${(input.overheadPct * 100).toFixed(0)}% of factory base   ·   Margin: ${(input.marginPct * 100).toFixed(0)}% of subtotal   ·   Operations: ${result.operationDetails.length}`,
+  ], NAVY, HDR);
+
+
+  y = renderShouldCostSections(doc, y, { result, input, library, currency, fxRate, commodityType, region, scenarios, cadMeta });
 
   addFooters();
 

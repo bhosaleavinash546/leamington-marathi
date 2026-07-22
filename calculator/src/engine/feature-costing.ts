@@ -45,18 +45,48 @@ export interface FeatureCostOptions {
   machineRateGBPPerHr?: number;   // loaded CNC cell rate
   setupMinutesEach?: number;
   materialFactor?: number;        // 1.0 aluminium; >1 for harder alloys (Ti ~2.5, steel ~1.5)
+  // Geometry for the small-part physical cap (all optional). Without them the
+  // face/free-form counts are billed as-is; with them, cutting time can't exceed
+  // what the stock volume + surface area physically allow (a 1 cm³ part cannot
+  // carry 140 min of face-milling just because it has 96 tiny B-rep faces).
+  partVolumeCm3?: number;
+  stockVolumeCm3?: number;        // bounding-box / billet envelope
+  surfaceAreaCm2?: number;
+  maxDimMm?: number;              // largest bounding-box dimension
 }
 
 // Representative cut-time per feature (minutes) at a nominal aluminium baseline.
 const T = { drillBase: 0.30, drillSmallPenalty: 0.35, tap: 0.60, planarFace: 0.85, freeForm: 2.6 };
+
+const MRR_CM3_MIN = 12;      // small-VMC aluminium roughing incl. air moves
+const FINISH_CM2_MIN = 20;   // finishing coverage
+
+/**
+ * Physical ceiling (minutes) on material-removal machining time for a part: you
+ * can't cut more than the stock envelope allows. Removed volume ÷ MRR + surface
+ * finishing + a small approach base, scaled by material hardness. Used to cap the
+ * feature-cost card AND the OCCT cycle estimate on small parts, where a tiny solid
+ * can't physically carry the machining time a naive face-count implies.
+ * Excludes drilling (discrete, count-based) and setup (amortised separately).
+ */
+export function physicalRemovalCeilingMin(
+  partVolumeCm3: number, stockVolumeCm3: number, surfaceAreaCm2 = 0, materialFactor = 1,
+): number {
+  const mf = Math.max(0.5, materialFactor);
+  const removedCm3 = Math.max(0, stockVolumeCm3 - partVolumeCm3);
+  return (1.0 + removedCm3 / MRR_CM3_MIN + surfaceAreaCm2 / FINISH_CM2_MIN) * mf;
+}
 
 /** Standard metric drill sizes (mm dia) — non-standard holes need special tooling. */
 const STD_DRILL_DIA = [1, 1.5, 2, 2.5, 3, 3.3, 4, 4.2, 5, 5.5, 6, 6.8, 8, 8.5, 10, 10.5, 12, 14, 16, 18, 20];
 
 export function computeFeatureCosting(f: RecognizedFeatures, opts: FeatureCostOptions = {}): FeatureCostResult {
   const rate = opts.machineRateGBPPerHr ?? 75;
-  const setupMin = opts.setupMinutesEach ?? 30;
   const mf = Math.max(0.5, opts.materialFactor ?? 1.0);
+  // Setup is size-aware: loading a small part into a small fixture is not a 30-min
+  // bridge-mill setup. Scale toward the part's size when geometry is known.
+  const baseSetupMin = opts.setupMinutesEach ?? 30;
+  const setupMin = opts.maxDimMm != null ? Math.min(baseSetupMin, 4 + opts.maxDimMm * 0.12) : baseSetupMin;
 
   // Drilling: small holes (< 2 mm dia) carry a slow/fragile penalty.
   const smallHoles = f.holeRadiiMm.filter(r => r * 2 < 2).length;
@@ -68,6 +98,22 @@ export function computeFeatureCosting(f: RecognizedFeatures, opts: FeatureCostOp
     { feature: 'Free-form surfacing',  count: f.freeFormFaceCount, minutesEach: T.freeForm * mf, totalMinutes: f.freeFormFaceCount * T.freeForm * mf },
     { feature: 'Setups',               count: f.setupCount,       minutesEach: setupMin,        totalMinutes: f.setupCount * setupMin },
   ].filter(l => l.count > 0);
+
+  // Physical cap: the milled-face + free-form time can't exceed what the stock
+  // envelope allows (removal volume ÷ MRR + surface finishing). On small parts the
+  // face count is dominated by facets of the SAME feature (chamfers, hole ends,
+  // engraving), not separate milling ops — this stops the runaway over-count.
+  let sizeCapped = false;
+  if (opts.partVolumeCm3 != null && opts.stockVolumeCm3 != null) {
+    const cuttingCeilingMin = physicalRemovalCeilingMin(opts.partVolumeCm3, opts.stockVolumeCm3, opts.surfaceAreaCm2 ?? 0, mf);
+    const cutting = raw.filter(l => l.feature === 'Milled faces/pockets' || l.feature === 'Free-form surfacing');
+    const cuttingMin = cutting.reduce((s, l) => s + l.totalMinutes, 0);
+    if (cuttingMin > cuttingCeilingMin && cuttingMin > 0) {
+      const k = cuttingCeilingMin / cuttingMin;
+      for (const l of cutting) { l.totalMinutes *= k; l.minutesEach *= k; }
+      sizeCapped = true;
+    }
+  }
 
   const totalCycleMin = raw.reduce((s, l) => s + l.totalMinutes, 0);
   const machiningCostGBP = round2((totalCycleMin / 60) * rate);
@@ -84,6 +130,7 @@ export function computeFeatureCosting(f: RecognizedFeatures, opts: FeatureCostOp
   if (nonStd > 0) dfm.push({ severity: 'minor', title: `${nonStd} non-standard hole diameter(s) — special/reamed tooling`, recommendation: 'Snap hole diameters to standard drill sizes to use stock tooling and cut cost.' });
   if (f.freeFormFaceCount >= 6) dfm.push({ severity: 'major', title: `${f.freeFormFaceCount} free-form faces — 5-axis surfacing dominates cost`, recommendation: 'Flatten non-functional free-form surfaces; each adds slow finishing passes.' });
   if (f.setupCount >= 4) dfm.push({ severity: 'minor', title: `${f.setupCount} setups — consider fixturing/consolidation`, recommendation: 'Combine features onto fewer faces to reduce re-fixturing and datum error.' });
+  if (sizeCapped) dfm.push({ severity: 'minor', title: 'Face-milling time capped to the part’s physical envelope', recommendation: 'Small part: many B-rep faces are facets of one feature (chamfers, hole ends, engraving), not separate milling ops — cutting time is bounded by stock volume + surface area.' });
 
   return {
     lines, totalCycleMin: round1(totalCycleMin), machiningCostGBP, dfm,

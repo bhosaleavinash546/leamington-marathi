@@ -11,12 +11,18 @@ import { createAnalysisCache } from '../utils/analysis-cache.js';
 import { runCADSanityChecks } from '../utils/cad-sanity.js';
 import { capNearNetMachiningHr, applyNearNetMachiningCap } from '../utils/cad-machining-guard.js';
 import { normalizeFieldConfidences } from '../utils/cad-schema.js';
+import { familyFromFilename, proseFamily, promoteHighestConfidence, type MaterialSuggestion } from '../../src/engine/material-family.js';
+import { correctShellWallMm } from '../../src/engine/geometry-sanity.js';
 
 const router = Router();
 
 // Persistent repeatability cache: same CAD file + photo + overrides -> the
 // byte-identical analysis, across restarts (same guarantee as the PCB pipeline).
 const cadCache = createAnalysisCache('cad_analysis_cache');
+// Bump when the prompt/normalisation logic changes so stale cached analyses (which
+// are keyed on inputs, not prompt content) are invalidated. v2: filename material
+// prior + confidence-inversion promotion.
+const CAD_PROMPT_VERSION = 5;
 
 // Model tiering: Sonnet 5 is the standard extraction tier (near-Opus on
 // structured analysis, faster, ~40% cheaper); the Deep-analysis toggle
@@ -80,12 +86,23 @@ function stage1Prompt(geo: OCCTGeometry): string {
   const holes = geo.features?.estimatedHoleCount ?? 0;
   const wallMean = geo.wallThickness?.meanMm ?? null;
   const weights = geo.weights!;
+  const maxDim = Math.max(bb.xMm, bb.yMm, bb.zMm);
+  // Thin wall on a large, open/hollow envelope is diagnostic of moulding/sheet/blow,
+  // not a metal casting (thin-wall large metal castings misrun). A plastic bumper
+  // was classed as an aluminium casting, and a blow-moulded HDPE fuel tank (4.6 mm
+  // wall, hollow) as a sand casting. Gate on low fill so chunky castings are safe.
+  const hollow = fill < 0.03;
+  const thinWallHint = (wallMean != null && wallMean > 0 && wallMean <= 6 && maxDim >= 400 && fill < 0.10)
+    ? `\nSTRONG SIGNAL: thin wall (${wallMean.toFixed(1)}mm) on a large part (${maxDim.toFixed(0)}mm, fill ${fill.toFixed(3)}). A large thin-wall metal casting/forging is NOT manufacturable (it misruns), so do NOT pick casting/forging. `
+      + `${hollow ? 'The very low fill ratio means a HOLLOW/enclosed part → blow_moulding (fuel tank, duct, bottle, reservoir) if it encloses a cavity, else injection_moulding or sheet_metal. ' : 'This is injection_moulding (plastic) or sheet_metal. '}`
+      + `Use the PLASTIC mass, not the metal-density figure.`
+    : '';
 
   return `Part geometry snapshot:
 Bounding box: ${bb.xMm.toFixed(0)}×${bb.yMm.toFixed(0)}×${bb.zMm.toFixed(0)}mm
 Volume: ${vol.cm3.toFixed(1)} cm³  Fill ratio: ${fill.toFixed(2)}  Faces: ${faces}  Free-form: ${freeForms}  Holes: ${holes}
 Wall mean: ${wallMean?.toFixed(1) ?? 'N/A'} mm
-Weights — Al: ${weights.aluminiumKg.toFixed(3)} kg  Steel: ${weights.steelKg.toFixed(3)} kg  Plastic: ${weights.plasticKg.toFixed(3)} kg
+Weights — Al: ${weights.aluminiumKg.toFixed(3)} kg  Steel: ${weights.steelKg.toFixed(3)} kg  Plastic: ${weights.plasticKg.toFixed(3)} kg${thinWallHint}
 
 Valid commodity types: machining, sheet_metal, sheet_metal_fab, injection_moulding, casting, forging, cast_and_machine, blow_moulding, thermoforming, rotational_moulding, rubber, composites, wiring_harness, extrusion, pcb_fab, pcba, biw_assembly, painting, assembly
 
@@ -214,6 +231,18 @@ router.post('/analyze', upload.fields([
 
     if (geo.status === 'success') {
       geometrySource = 'occt';
+      // Correct the ray-cast wall on thin shells (a bumper read 27 mm vs ~2.5 mm),
+      // so the moulding cooling time and the process classifier see the real wall.
+      if (geo.wallThickness && geo.volume && geo.surfaceArea) {
+        const wc = correctShellWallMm(geo.wallThickness.meanMm, geo.volume.cm3, geo.surfaceArea.cm2, geo.fillRatio ?? 1);
+        if (wc.corrected) {
+          console.log(`[CAD] Wall corrected (thin shell): ${geo.wallThickness.meanMm}mm → ${wc.meanMm}mm (2·V/S)`);
+          geo.wallThickness.meanMm = wc.meanMm;
+          geo.wallThickness.minMm = Math.min(geo.wallThickness.minMm ?? wc.meanMm, wc.meanMm);
+          geo.wallThickness.maxMm = wc.meanMm * 1.4;
+          (geo.wallThickness as { method?: string }).method = wc.method;
+        }
+      }
       console.log(`[CAD] OCCT success — V=${geo.volume!.cm3.toFixed(1)}cm³  SA=${geo.surfaceArea!.cm2.toFixed(0)}cm²  faces=${geo.faces!.total}`);
     } else {
       console.warn(`[CAD] OCCT failed (${geo.error}) — falling back to text preprocessor`);
@@ -252,6 +281,7 @@ router.post('/analyze', upload.fields([
 
   const forcedCommodity = typeof req.body?.commodity === 'string' ? req.body.commodity.trim() : '';
   const forcedMaterial  = typeof req.body?.material  === 'string' ? req.body.material.trim()  : '';
+  const forcedProcess   = typeof req.body?.process   === 'string' ? req.body.process.trim()   : '';
   const annualVolume    = parseFloat(req.body?.annualVolume) || 100000;
   const ovrWeightKg     = req.body?.weightKg    ? parseFloat(req.body.weightKg)    : null;
   const ovrVolumeCm3    = req.body?.volumeCm3   ? parseFloat(req.body.volumeCm3)   : null;
@@ -260,7 +290,7 @@ router.post('/analyze', upload.fields([
   const ovrHeightMm     = req.body?.heightMm    ? parseFloat(req.body.heightMm)    : null;
   const ovrDensityGcm3  = req.body?.densityGcm3 ? parseFloat(req.body.densityGcm3) : null;
 
-  const userOverrides = { forcedCommodity, forcedMaterial, annualVolume, ovrWeightKg, ovrVolumeCm3, ovrLengthMm, ovrWidthMm, ovrHeightMm, ovrDensityGcm3 };
+  const userOverrides = { forcedCommodity, forcedMaterial, forcedProcess, annualVolume, ovrWeightKg, ovrVolumeCm3, ovrLengthMm, ovrWidthMm, ovrHeightMm, ovrDensityGcm3 };
 
   const partPhotoBase64 = typeof req.body?.partPhotoBase64 === 'string' ? req.body.partPhotoBase64 : '';
   const partPhotoMime   = (typeof req.body?.partPhotoMime === 'string' ? req.body.partPhotoMime : 'image/jpeg') as 'image/jpeg' | 'image/png' | 'image/gif' | 'image/webp';
@@ -278,7 +308,7 @@ router.post('/analyze', upload.fields([
     Buffer.from(partPhotoBase64),
     ...(drawingUpload ? [drawingUpload.buffer] : []),
     ...renderViews.map(v => Buffer.from(v)),
-    Buffer.from(JSON.stringify({ ...userOverrides, deep: deepAnalysis })),
+    Buffer.from(JSON.stringify({ ...userOverrides, deep: deepAnalysis, promptVersion: CAD_PROMPT_VERSION })),
   ]);
   const cached = cadCache.get(cacheKey);
   if (cached) {
@@ -482,6 +512,17 @@ function normalizeCADAnalysis(a: Record<string, unknown>): void {
   const ps = obj(ma.primarySuggestion);
   ma.primarySuggestion = { materialId: str(ps.materialId, ''), name: str(ps.name, 'Unspecified'), confidencePct: num(ps.confidencePct, 50), ...ps };
   ma.alternatives = arr(ma.alternatives);
+  // A more-confident alternative must never sit below the primary (the model
+  // returned "PA6-GF 55%" as primary with "Aluminium 6061 65%" as an alternative).
+  {
+    const alts = (ma.alternatives as MaterialSuggestion[]).map(alt => ({ ...obj(alt), materialId: str(obj(alt).materialId, ''), name: str(obj(alt).name, 'Unspecified'), confidencePct: num(obj(alt).confidencePct, 0) } as MaterialSuggestion));
+    const res = promoteHighestConfidence(ma.primarySuggestion as MaterialSuggestion, alts);
+    if (res.promoted) {
+      ma.primarySuggestion = res.primary;
+      ma.alternatives = res.alternatives;
+      ma.promotedFromAlternative = true;
+    }
+  }
   a.materialAnalysis = ma;
 
   const ci = obj(a.costInputSuggestions);
@@ -507,6 +548,7 @@ function normalizeCADAnalysis(a: Record<string, unknown>): void {
 interface UserOverrides {
   forcedCommodity: string;
   forcedMaterial: string;
+  forcedProcess: string;
   annualVolume: number;
   ovrWeightKg: number | null;
   ovrVolumeCm3: number | null;
@@ -522,7 +564,7 @@ function buildPrompt(
   filename: string,
   selectedCommodity: string,
   stage1: { primary: string; conf: number; alt: Array<{ type: string; conf: number }> } | null,
-  overrides: UserOverrides = { forcedCommodity: '', forcedMaterial: '', annualVolume: 100000, ovrWeightKg: null, ovrVolumeCm3: null, ovrLengthMm: null, ovrWidthMm: null, ovrHeightMm: null, ovrDensityGcm3: null },
+  overrides: UserOverrides = { forcedCommodity: '', forcedMaterial: '', forcedProcess: '', annualVolume: 100000, ovrWeightKg: null, ovrVolumeCm3: null, ovrLengthMm: null, ovrWidthMm: null, ovrHeightMm: null, ovrDensityGcm3: null },
 ): string {
   const validMaterials = 'mat-al6061, mat-al5052, mat-dc01, mat-hss, mat-stainless-316, mat-brass-crz, mat-pp, mat-pa6, mat-pc, mat-lm25, mat-gjl350, mat-az91d, mat-ss304c, mat-bronze-c905';
   const validCommodities = 'machining, sheet_metal, sheet_metal_fab, injection_moulding, casting, forging, cast_and_machine, blow_moulding, thermoforming, rotational_moulding, rubber, composites, wiring_harness, extrusion, pcb_fab, pcba, biw_assembly, painting, assembly';
@@ -708,6 +750,15 @@ ${pre.summary}`;
   const overrideLines: string[] = [];
   if (overrides.forcedCommodity) overrideLines.push(`Manufacturing process: ${overrides.forcedCommodity} [USER-FORCED — use this as recommendedCommodity, do NOT override]`);
   if (overrides.forcedMaterial)  overrideLines.push(`Material: ${overrides.forcedMaterial} [USER-FORCED — use this as materialId exactly]`);
+  // Filename material prior — the engineer named the material in the file; do not
+  // silently value-engineer it to something cheaper (an "Aluminium…" file was being
+  // reclassified as injection-moulded plastic).
+  const fnameFam = familyFromFilename(filename);
+  if (fnameFam && !overrides.forcedMaterial) {
+    const fnameMat = proseFamily(fnameFam);
+    overrideLines.push(`FILENAME MATERIAL PRIOR: the source file is named "${filename}", indicating the part material is ${fnameMat}. Treat this as a STRONG prior — classify, select the process for, and cost the part AS ${fnameMat} unless the geometry flatly rules it out. Do NOT substitute a different/cheaper material or "convert to plastic for IM economics": cost the part AS DESIGNED, not as it could be re-engineered. If you genuinely believe another material is correct, keep ${fnameMat} as the primarySuggestion and note the alternative.`);
+  }
+  if (overrides.forcedProcess)   overrideLines.push(`Casting / process route: ${overrides.forcedProcess} [USER-FORCED — set costInputSuggestions.casting.subtype AND costInputSuggestions.castCAM.subtype to exactly "${overrides.forcedProcess}"; keep cycle time, machine selection and tooling cost consistent with THIS route, not your own preferred one]`);
   if (overrides.ovrWeightKg !== null)    overrideLines.push(`Part weight: ${overrides.ovrWeightKg} kg [USER-PROVIDED — use this as netWeightKg]`);
   if (overrides.ovrVolumeCm3 !== null)   overrideLines.push(`Volume: ${overrides.ovrVolumeCm3} cm³ [USER-PROVIDED — use this as estimatedVolumeCm3]`);
   if (overrides.ovrLengthMm !== null)    overrideLines.push(`Bounding box L: ${overrides.ovrLengthMm} mm [USER-PROVIDED]`);
@@ -938,8 +989,13 @@ function buildJSONSchema(commodity: string, geo: OCCTGeometry): string {
       "mouldCostGBP": number,
       "mouldLife": number,
       "blowTimeSec": number,
-      "openCloseSec": number
-    },`,
+      "openCloseSec": number,
+      "barrierMultilayer": true|false
+    },
+    // barrierMultilayer: true ONLY for coextruded multi-layer barrier walls —
+    // automotive fuel tanks and AdBlue/fuel-system ducts need a hydrocarbon/O2
+    // barrier (HDPE / tie / EVOH / tie / HDPE, 6-layer). false for mono-layer
+    // bottles, containers, water/coolant drums.`,
     thermoforming: `    "thermoforming": {
       "method": "vacuum"|"pressure"|"twin_sheet",
       "sheetWeightKg": number,
@@ -1204,6 +1260,7 @@ router.post('/reanalyze', asyncRoute(async (req, res): Promise<void> => {
 
   const forcedCommodity = typeof req.body?.commodity === 'string' ? req.body.commodity.trim() : '';
   const forcedMaterial  = typeof req.body?.material  === 'string' ? req.body.material.trim()  : '';
+  const forcedProcess   = typeof req.body?.process   === 'string' ? req.body.process.trim()   : '';
   const annualVolume    = parseFloat(req.body?.annualVolume) || 100000;
   const ovrWeightKg     = req.body?.weightKg    ? parseFloat(req.body.weightKg)    : null;
   const ovrVolumeCm3    = req.body?.volumeCm3   ? parseFloat(req.body.volumeCm3)   : null;
@@ -1214,14 +1271,14 @@ router.post('/reanalyze', asyncRoute(async (req, res): Promise<void> => {
   const partPhotoBase64 = typeof req.body?.partPhotoBase64 === 'string' ? req.body.partPhotoBase64 : '';
   const partPhotoMime   = (typeof req.body?.partPhotoMime === 'string' ? req.body.partPhotoMime : 'image/jpeg') as 'image/jpeg' | 'image/png' | 'image/gif' | 'image/webp';
 
-  const userOverrides = { forcedCommodity, forcedMaterial, annualVolume, ovrWeightKg, ovrVolumeCm3, ovrLengthMm, ovrWidthMm, ovrHeightMm, ovrDensityGcm3 };
+  const userOverrides = { forcedCommodity, forcedMaterial, forcedProcess, annualVolume, ovrWeightKg, ovrVolumeCm3, ovrLengthMm, ovrWidthMm, ovrHeightMm, ovrDensityGcm3 };
   const anthropic = createAnthropic(apiKey);
 
   const deepAnalysis = isDeepReq(req);
   const cacheKey = cadCache.buildKey([
     Buffer.from(JSON.stringify(geo)),
     Buffer.from(partPhotoBase64),
-    Buffer.from(JSON.stringify({ ...userOverrides, deep: deepAnalysis, filename })),
+    Buffer.from(JSON.stringify({ ...userOverrides, deep: deepAnalysis, filename, promptVersion: CAD_PROMPT_VERSION })),
   ]);
   const cached = cadCache.get(cacheKey);
   if (cached) {

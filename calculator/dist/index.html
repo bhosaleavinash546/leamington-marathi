@@ -50,7 +50,7 @@
       } catch { window.location.replace(authUrl); }
     })();
   </script>
-  <script type="module" crossorigin src="/calculator/assets/index-B7PJstbP.js"></script>
+  <script type="module" crossorigin src="/calculator/assets/index-DKzUGBQr.js"></script>
   <link rel="modulepreload" crossorigin href="/calculator/assets/vendor-motion-DAJjhAeu.js">
   <link rel="modulepreload" crossorigin href="/calculator/assets/vendor-CM2mqF4r.js">
   <link rel="modulepreload" crossorigin href="/calculator/assets/vendor-pdf-hc7gJ01J.js">
@@ -1141,6 +1141,11 @@
     <!-- Dynamic commodity form area -->
     <div id="commodity-form-area"></div>
 
+    <!-- Persistent CAD 3D viewer — stays visible through Analyse & Calculate and
+         commodity switches (lives OUTSIDE commodity-form-area so form swaps don't
+         destroy it). Mounted by showPersistentCADViewer(). -->
+    <div id="cad-persist-viewer-host" style="display:none;margin-top:10px"></div>
+
     <!-- Universal costs (always visible) -->
     <div id="universal-costs">
       <div class="section-title">Universal Costs</div>
@@ -1191,6 +1196,7 @@
       <button class="btn btn-secondary" id="save-scenario-btn" style="display:none">Save Scenario</button>
       <button class="btn btn-primary" id="save-library-btn" title="Save this costing to your Parts Library — appears in the dashboard and saved results">&#11014; Save to Library</button>
       <button class="btn btn-secondary" id="log-actual-btn" title="Log the real quoted/PO price so the model learns and self-calibrates for this commodity">&#127919; Log Actual £</button>
+      <button class="btn btn-secondary" id="calibration-btn" title="Bulk-import real PO/quote actuals and see where the model has calibrated (per commodity × material × region)">&#128202; Calibration</button>
       <button class="btn btn-secondary" id="load-ref-btn">Load Example</button>
       <button class="btn btn-secondary" id="rates-btn">Edit Rates</button>
     </div>
@@ -1295,6 +1301,29 @@
       <button class="btn btn-primary" id="confirm-add-quote">Add Quote</button>
       <button class="btn btn-secondary" id="cancel-add-quote">Cancel</button>
     </div>
+  </div>
+</div>
+
+<!-- ── Calibration & Actuals Modal ───────────────────────────────────────── -->
+<div id="calibration-modal" role="dialog" aria-modal="true" aria-labelledby="calibration-modal-title" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:100;align-items:center;justify-content:center">
+  <div class="modal-inner" style="max-width:760px;width:100%;max-height:88vh;overflow:auto">
+    <h2 id="calibration-modal-title" style="font-size:1rem;color:var(--accent);margin-bottom:6px">📊 Calibration &amp; Actuals</h2>
+    <p style="font-size:0.78rem;color:var(--text-secondary);margin-bottom:14px">Paste real PO/quote actuals to teach the model across many segments at once. The bias correction learns per <strong>commodity × material × region</strong> once a segment has 3+ actuals.</p>
+
+    <div class="field-group" style="margin-bottom:6px">
+      <label>Paste CSV — header row required. Columns: <code>commodity, estimate, actual</code> (required) · <code>region, material, currency, date, part</code> (optional)</label>
+      <textarea id="cal-import-text" rows="6" style="width:100%;font-family:monospace;font-size:0.72rem" placeholder="commodity,region,material,estimate,actual,part
+casting,CN,Aluminium,16.20,18.00,RH Knuckle
+injection_moulding,DE,PA6-GF,4.10,3.90,Bumper clip"></textarea>
+    </div>
+    <div class="btn-row" style="margin-bottom:6px">
+      <button class="btn btn-primary" id="cal-import-btn">Import actuals</button>
+      <button class="btn btn-secondary" id="cal-close-btn">Close</button>
+    </div>
+    <div id="cal-import-status" style="font-size:0.74rem;margin:4px 0 14px"></div>
+
+    <h3 style="font-size:0.82rem;color:var(--text-primary);margin:8px 0 6px">Coverage — where the model has learned</h3>
+    <div id="cal-coverage"></div>
   </div>
 </div>
 

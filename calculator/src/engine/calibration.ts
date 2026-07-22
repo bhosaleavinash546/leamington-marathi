@@ -139,6 +139,84 @@ export function calibrationSummary(records: CalibrationRecord[]): {
   };
 }
 
+// ── Segment drift + coverage ────────────────────────────────────────────────
+
+export interface SegmentDrift {
+  /** true when the recent actuals diverge from the older ones beyond the threshold. */
+  drifting: boolean;
+  n: number;            // total actuals in the segment
+  priorBias: number;    // median(actual÷estimate) over the older half
+  recentBias: number;   // median(actual÷estimate) over the recent half
+  deltaPct: number;     // (recentBias ÷ priorBias − 1) × 100
+  direction: 'up' | 'down' | 'stable';
+}
+
+/**
+ * Has the segment drifted? Split its actuals oldest→newest in half and compare the
+ * bias of each half. A material move (the market shifted, or the model went stale)
+ * shows as the recent half diverging from the older — the signal to re-calibrate.
+ * Needs `minPerHalf` on each side so two noisy quotes don't cry drift.
+ */
+export function segmentDrift(
+  records: CalibrationRecord[], q: SegmentQuery,
+  opts: { minPerHalf?: number; thresholdPct?: number } = {},
+): SegmentDrift {
+  const minPerHalf = opts.minPerHalf ?? 3;
+  const thresholdPct = opts.thresholdPct ?? 15;
+  const rs = records
+    .filter(r => r.commodity === q.commodity && r.shouldCost > 0 && r.actualCost > 0
+      && (!q.materialFamily || r.materialFamily === q.materialFamily)
+      && (!q.region || r.region === q.region))
+    .sort((a, b) => a.savedAt - b.savedAt);
+  const n = rs.length;
+  if (n < minPerHalf * 2) return { drifting: false, n, priorBias: 1, recentBias: 1, deltaPct: 0, direction: 'stable' };
+  const mid = Math.floor(n / 2);
+  const priorBias = median(rs.slice(0, mid).map(r => r.actualCost / r.shouldCost));
+  const recentBias = median(rs.slice(mid).map(r => r.actualCost / r.shouldCost));
+  const deltaPct = priorBias > 0 ? (recentBias / priorBias - 1) * 100 : 0;
+  return {
+    drifting: Math.abs(deltaPct) >= thresholdPct,
+    n,
+    priorBias: round3(priorBias),
+    recentBias: round3(recentBias),
+    deltaPct: round1(deltaPct),
+    direction: deltaPct > 3 ? 'up' : deltaPct < -3 ? 'down' : 'stable',
+  };
+}
+
+export interface SegmentCoverage {
+  commodity: string;
+  region?: string;
+  materialFamily?: string;
+  n: number;
+  biasFactor: number;
+  mapePct: number;
+  calibratedMapePct: number;
+  calibrated: boolean;   // has ≥ MIN_SAMPLES → a trusted correction
+}
+
+/** Per-segment (commodity × region × material) coverage map — where the model has
+ *  learned from actuals and where it hasn't. Most-covered segments first. */
+export function calibrationCoverage(records: CalibrationRecord[]): SegmentCoverage[] {
+  const groups = new Map<string, CalibrationRecord[]>();
+  for (const r of records) {
+    if (!(r.shouldCost > 0 && r.actualCost > 0)) continue;
+    const key = `${r.commodity}|${r.region ?? ''}|${r.materialFamily ?? ''}`;
+    const g = groups.get(key);
+    if (g) g.push(r); else groups.set(key, [r]);
+  }
+  const out: SegmentCoverage[] = [];
+  for (const [key, rs] of groups) {
+    const [commodity, region, materialFamily] = key.split('|');
+    const s = computeCalibration(rs, commodity);
+    out.push({
+      commodity, region: region || undefined, materialFamily: materialFamily || undefined,
+      n: s.n, biasFactor: s.biasFactor, mapePct: s.mapePct, calibratedMapePct: s.calibratedMapePct, calibrated: s.applied,
+    });
+  }
+  return out.sort((a, b) => b.n - a.n);
+}
+
 // ── Conformal prediction bands ──────────────────────────────────────────────
 /**
  * Split-conformal confidence band on a should-cost estimate.
