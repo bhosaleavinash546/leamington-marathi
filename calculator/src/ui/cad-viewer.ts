@@ -239,7 +239,14 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
   // Crease angle for smooth shading: normals are averaged across facets that meet
   // below this angle (round cylinders/fillets) and kept hard above it (real edges).
   const CREASE_ANGLE = (40 * Math.PI) / 180;
-  const pixelRatio = () => Math.min(window.devicePixelRatio * 1.5, 2.5); // supersample for crisper edges
+  // Adaptive resolution: supersample when the view is still (crisp edges), but
+  // drop to ~device resolution while the user is orbiting so big meshes stay
+  // smooth; a final crisp frame is drawn once motion settles.
+  let lowRes = false;
+  const pixelRatio = () => {
+    const dpr = window.devicePixelRatio || 1;
+    return lowRes ? Math.min(dpr, 1.25) : Math.min(dpr * 1.5, 2.5);
+  };
 
   // ── DOM scaffold ──
   const root = document.createElement('div');
@@ -382,7 +389,10 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
   const statusHint = $('.cv3d-status-hint');
 
   // ── three.js scene ──
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, preserveDrawingBuffer: true });
+  // preserveDrawingBuffer:false lets the driver discard the buffer after compositing
+  // (faster). The snapshot path stays correct because it renders synchronously right
+  // before toDataURL, in the same call stack, so the buffer is still valid then.
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, preserveDrawingBuffer: false });
   renderer.setPixelRatio(pixelRatio());
   renderer.localClippingEnabled = true;
   const scene = new THREE.Scene();
@@ -549,16 +559,35 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
     }
   }
 
-  // ── render loop ──
-  function tick(): void {
+  // ── render loop — on-demand ──────────────────────────────────────────────
+  // The scene is static between interactions, so instead of rendering 60 fps
+  // forever we render only when something changes: invalidate() schedules one
+  // frame; camera motion (controls 'change'), resize, load, and every scene
+  // mutation call it. The frame keeps re-scheduling itself while OrbitControls
+  // damping or the ViewHelper animation is still settling, then stops.
+  let renderPending = false;
+  let renderHandle = 0;
+  function invalidate(): void {
+    if (renderPending || disposed) return;
+    renderPending = true;
+    renderHandle = requestAnimationFrame(frame);
+  }
+  function applyPixelRatio(): void {
+    const w = viewport.clientWidth, h = viewport.clientHeight;
+    if (w === 0 || h === 0) return;
+    renderer.setPixelRatio(pixelRatio());
+    renderer.setSize(w, h, false);
+  }
+  function frame(): void {
+    renderPending = false;
     if (disposed) return;
-    requestAnimationFrame(tick);
     const delta = clock.getDelta();
+    let animating = false;
     if (viewHelper) {
       viewHelper.center = controls.target; // orbit the cube about the current target
-      if (viewHelper.animating) viewHelper.update(delta);
+      if (viewHelper.animating) { viewHelper.update(delta); animating = true; }
     }
-    controls.update();
+    const moved = controls.update(); // true while damping is still settling
     scaleLabels();
     renderer.render(scene, camera);
     if (viewHelper) {
@@ -569,6 +598,11 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
       viewHelper.render(renderer);
       renderer.autoClear = true;
     }
+    if (animating || moved) {
+      invalidate();                 // keep going until motion settles
+    } else if (lowRes) {
+      lowRes = false; applyPixelRatio(); invalidate(); // one crisp frame once still
+    }
   }
 
   function resize(): void {
@@ -578,9 +612,15 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
     renderer.setSize(w, h, false);
     camera.aspect = w / h;
     camera.updateProjectionMatrix();
+    invalidate();
   }
   const ro = new ResizeObserver(resize);
   ro.observe(viewport);
+
+  // On-demand drivers: repaint on any camera change; drop resolution while the
+  // user is actively dragging so large meshes stay responsive.
+  controls.addEventListener('change', invalidate);
+  controls.addEventListener('start', () => { lowRes = true; applyPixelRatio(); invalidate(); });
 
   // ── views ──
   function setView(dir: [number, number, number]): void {
@@ -633,6 +673,7 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
     for (const m of bodyMats) m.clippingPlanes = planes;
     for (const e of bodyEdges) if (e) (e.material as InstanceType<typeof THREE.LineBasicMaterial>).clippingPlanes = planes;
     if (highlight) (highlight.material as InstanceType<typeof THREE.MeshBasicMaterial>).clippingPlanes = planes;
+    invalidate();
   }
 
   // ── load ──
@@ -1019,6 +1060,7 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
       const e = bodyEdges[i];
       if (e) { e.quaternion.copy(q); e.position.copy(pos); }
     }
+    invalidate();
   }
   /** (Re)build the component picker in the rotate panel and sync the sliders to
    *  the currently-selected body's rotation. */
@@ -1131,6 +1173,7 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
     m.position.copy(p);
     overlayGroup.add(m);
     pickMarkers.push(m);
+    invalidate();
   }
 
   interface Measurement { record: MeasurementRecord; objects: Obj3[] }
@@ -1143,6 +1186,7 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
     if (opts.persist !== false && fileKey) persistSave(fileKey, measurementRecords());
     opts.onMeasurementsChange?.(measurementRecords());
     renderMeasureList();
+    invalidate();
   }
 
   function renderMeasureList(): void {
@@ -1181,6 +1225,7 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
     pickNormals = [];
     pickMarkers.forEach(m => removeAndDispose(overlayGroup, m));
     pickMarkers = [];
+    invalidate();
   }
 
   function clearMeasurements(notify = true): void {
@@ -1195,6 +1240,7 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
   function clearHighlight(): void {
     if (highlight) { removeAndDispose(overlayGroup, highlight); highlight = null; }
     faceChip.style.display = 'none';
+    invalidate();
   }
 
   const toTuple = (v: Vec3): [number, number, number] => [v.x, v.y, v.z];
@@ -1531,6 +1577,7 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
         `<span><i style="background:${rgbCss(bodyColorRGB(i))}"></i>Body ${i + 1}</span>`).join('');
     }
     legendEl.style.display = mode === 'none' ? 'none' : '';
+    invalidate();
   }
 
   function setTool(t: Tool): void {
@@ -1739,11 +1786,12 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
         break;
       }
     }
+    invalidate(); // any toolbar action (mode/bbox/grid/view/panels) repaints once
   });
 
   resize();
   setView([1, 0.8, 1]);
-  tick();
+  invalidate();
 
   return {
     loadFile,
@@ -1753,6 +1801,7 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
       if (disposed) return;
       disposed = true;
       loadSeq++; // invalidate any in-flight load
+      if (renderHandle) cancelAnimationFrame(renderHandle);
       window.removeEventListener('keydown', onKeyDown);
       canvas.removeEventListener('pointerdown', onPointerDown);
       canvas.removeEventListener('pointerup', onPointerUp);
