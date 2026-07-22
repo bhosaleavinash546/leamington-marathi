@@ -90,7 +90,7 @@ def slide_header(slide, slide_num, section_label, title_text, subtitle_text=""):
     rect(slide, 0, 0, W, Inches(0.06), ACCENT_B)
 
     # Slide number (top-left)
-    txb(slide, f"SLIDE {slide_num:02d} / 16", Inches(0.35), Inches(0.12), Inches(2), Inches(0.35),
+    txb(slide, f"SLIDE {slide_num:02d} / 17", Inches(0.35), Inches(0.12), Inches(2), Inches(0.35),
         size=7, color=TEXT_D, bold=True)
 
     # CostVision logo (top-right)
@@ -1037,10 +1037,71 @@ notes(slide,
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-# SLIDE 12 — 2026 Agentic Intelligence: self-audit, learn-from-actuals, validation
+# SLIDE 12 — Agentic vs Autonomous Agentic AI (concept, with examples)
 # ══════════════════════════════════════════════════════════════════════════════
 slide = add_slide()
-slide_header(slide, 12, "New in 2026 · Agentic Intelligence",
+slide_header(slide, 12, "The Concept · Explained",
+             "Agentic vs Autonomous Agentic AI — With Examples",
+             "Two levels of \"agentic\": on the left the AI acts because you asked; on the right it acts on its own, unattended.")
+
+def _agentic_panel(x, accent, head, tag, examples):
+    w, y, h = Inches(6.05), Inches(2.0), Inches(4.4)
+    rect(slide, x, y, w, h, SURFACE2, BORDER, Pt(0.5))
+    rect(slide, x, y, Inches(0.06), h, accent)
+    txb(slide, head, x + Inches(0.2), y + Inches(0.12), w - Inches(0.35), Inches(0.34),
+        size=14, bold=True, color=accent)
+    txb(slide, tag, x + Inches(0.2), y + Inches(0.5), w - Inches(0.35), Inches(0.3),
+        size=8.5, color=TEXT_G, italic=True)
+    ry, rh = y + Inches(0.9), Inches(0.74)
+    for lab, sub in examples:
+        rect(slide, x + Inches(0.18), ry, w - Inches(0.36), rh, SURFACE, BORDER, Pt(0.3))
+        rect(slide, x + Inches(0.18), ry, Inches(0.05), rh, accent)
+        txb(slide, lab, x + Inches(0.34), ry + Inches(0.07), w - Inches(0.52), Inches(0.24),
+            size=10, bold=True, color=TEXT_W)
+        txb(slide, sub, x + Inches(0.34), ry + Inches(0.31), w - Inches(0.52), rh - Inches(0.36),
+            size=8, color=TEXT_G, wrap=True)
+        ry += rh + Inches(0.1)
+
+_agentic_panel(Inches(0.45), ACCENT_B, "Agentic AI",
+    "Assisted — you trigger it and stay in the loop; a human approves",
+    [("AI Agent", "Describe a part in plain English — it builds the full cost model for you."),
+     ("CAD / photo → cost", "Upload a STEP file — it measures geometry and infers material & process."),
+     ("Negotiation coach", "Open a part — it drafts the buyer's counter-argument and target price."),
+     ("Rate-data assistant", "Ask a costing question — it answers from your own rates, with citations.")])
+_agentic_panel(Inches(6.83), ACCENT_P, "Autonomous Agentic AI",
+    "Self-directed — runs unattended on a schedule, within limits you set",
+    [("Savings monitor", "Runs on the server, compares paid vs should-cost, opens findings itself — £0.5M/yr unattended."),
+     ("Self-audit", "Re-checks every estimate for known errors and corrects within bounds — unasked."),
+     ("Calibration & drift", "Learns from logged quotes, re-derives factors, watches for drift continuously."),
+     ("Outcome-weighted ranking", "Learns which findings actually convert and re-prioritises its own queue.")])
+
+rect(slide, Inches(0.45), Inches(6.5), Inches(12.45), Inches(0.5), SURFACE2, ACCENT_G, Pt(0.6))
+txb(slide, "The common thread:  you set the boundaries and every action stays glass-box and auditable — "
+    "autonomy never means the AI sets a price in secret.",
+    Inches(0.72), Inches(6.6), Inches(12.0), Inches(0.32), size=9.5, color=TEXT_G)
+
+notes(slide,
+    "This is the slide to slow down on if the room is new to the word 'agentic', because there are really two levels "
+    "and people run them together. On the left is agentic AI in the everyday sense: the AI takes actions and uses "
+    "tools, but you started the task and you stay in the loop. You describe a part and it builds the cost model; you "
+    "upload a CAD file and it reads the geometry and picks the process; you open a part and it drafts the negotiation "
+    "argument; you ask a question and it answers from our own rate data, with citations. Genuinely useful — but it's "
+    "waiting for you to ask. On the right is the step that surprises people: autonomous agentic AI, where nobody is at "
+    "the keyboard. A monitor runs on our server on a schedule, compares what we pay against what things should cost, "
+    "and opens findings on its own — that's the half a million pounds a year it surfaced unattended in the demo. The "
+    "self-audit re-checks every estimate for known mistakes and corrects them without being asked; the calibration "
+    "keeps learning from logged quotes and watching for drift; the agent even re-prioritises its own queue toward the "
+    "findings that actually convert to cash. The line at the bottom is the one I'd underline: the difference between "
+    "the two columns is only who starts the action — in both, the human sets the boundaries and every action stays "
+    "glass-box and auditable. Autonomy here never means the AI quietly sets a price; it means it does the watching for "
+    "us, and shows its working the moment it finds something worth acting on.")
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# SLIDE 13 — 2026 Agentic Intelligence: self-audit, learn-from-actuals, validation
+# ══════════════════════════════════════════════════════════════════════════════
+slide = add_slide()
+slide_header(slide, 13, "New in 2026 · Agentic Intelligence",
              "The Tool Now Checks Its Own Work — and Learns",
              "A deterministic self-audit re-checks every estimate, calibration learns from real quotes, and it is proven on real parts.")
 
@@ -1140,10 +1201,10 @@ notes(slide,
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-# SLIDE 13 — Demo: Real-World Cost Benchmarks
+# SLIDE 14 — Demo: Real-World Cost Benchmarks
 # ══════════════════════════════════════════════════════════════════════════════
 slide = add_slide()
-slide_header(slide, 13, "Live Demo Data", "Real-World Cost Benchmarks — Luxury SUV Programme",
+slide_header(slide, 14, "Live Demo Data", "Real-World Cost Benchmarks — Luxury SUV Programme",
              "All figures generated by CostVision's should-cost engine. UK manufacturing region, GBP.")
 
 headers12 = ["Commodity", "Demo Part", "Key Inputs", "Should-Cost", "AI Top Insight", "DFM Flag"]
@@ -1184,10 +1245,10 @@ notes(slide,
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-# SLIDE 14 — Export, Reporting & Team Collaboration
+# SLIDE 15 — Export, Reporting & Team Collaboration
 # ══════════════════════════════════════════════════════════════════════════════
 slide = add_slide()
-slide_header(slide, 14, "Reporting & Collaboration", "Export, Share & Collaborate — Enterprise Ready",
+slide_header(slide, 15, "Reporting & Collaboration", "Export, Share & Collaborate — Enterprise Ready",
              "From individual engineer to global team — CostVision scales to any organisation size.")
 
 export_cards = [
@@ -1254,10 +1315,10 @@ notes(slide,
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-# SLIDE 15 — Business Benefits & ROI
+# SLIDE 16 — Business Benefits & ROI
 # ══════════════════════════════════════════════════════════════════════════════
 slide = add_slide()
-slide_header(slide, 15, "Value Delivered", "Business Impact & Measurable ROI",
+slide_header(slide, 16, "Value Delivered", "Business Impact & Measurable ROI",
              "Quantified improvements across speed, accuracy, and cost reduction that directly impact the bottom line.")
 
 # Stat row
@@ -1320,10 +1381,10 @@ notes(slide,
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-# SLIDE 16 — Roadmap & Next Steps
+# SLIDE 17 — Roadmap & Next Steps
 # ══════════════════════════════════════════════════════════════════════════════
 slide = add_slide()
-slide_header(slide, 16, "Vision & Next Steps", "Intelligent, Instant, Integrated — What Comes Next",
+slide_header(slide, 17, "Vision & Next Steps", "Intelligent, Instant, Integrated — What Comes Next",
              "CostVision is live today. Here is what comes next — and how to get started.")
 
 # Current capabilities

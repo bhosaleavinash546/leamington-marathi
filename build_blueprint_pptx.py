@@ -202,6 +202,62 @@ notes(s, "Thirty seconds of background for anyone new. CostVision costs parts bo
          "accurate and even raising savings findings on its own. The green bar shows verified results from live runs, "
          "including half a million pounds a year of findings surfaced autonomously in our demonstration.")
 
+# ═══════════════ 3A — AGENTIC vs AUTONOMOUS AGENTIC (EXAMPLES) ═══════════════
+s = header('Agentic vs autonomous agentic — with examples', 'The concept · explained')
+text(s, Inches(0.45), Inches(1.78), Inches(12.4), Inches(0.4),
+     [[('Two levels of "agentic". On the left the AI acts because you asked and you stay in the loop; '
+        'on the right it acts on its own, unattended, within limits you set.', 12.5, BODY, False, True)]],
+     line_spacing=1.05)
+
+def _agent_panel(x, accent, fillc, head, tag, examples):
+    w, y, h = Inches(6.08), Inches(2.28), Inches(4.06)
+    box(s, x, y, w, h, fill=fillc, round_=True, radius=0.06)
+    box(s, x, y, Inches(0.08), h, fill=accent)
+    text(s, x + Inches(0.28), y + Inches(0.16), w - Inches(0.5), Inches(0.34), [[(head, 15.5, accent, True)]])
+    text(s, x + Inches(0.28), y + Inches(0.54), w - Inches(0.5), Inches(0.32), [[(tag, 10.5, MUTED, False, True)]])
+    ry, rh = y + Inches(0.98), Inches(0.7)
+    for lab, sub in examples:
+        box(s, x + Inches(0.24), ry, w - Inches(0.48), rh, fill=BG, round_=True, radius=0.08)
+        box(s, x + Inches(0.24), ry, Inches(0.05), rh, fill=accent)
+        text(s, x + Inches(0.42), ry, w - Inches(0.66), rh,
+             [[(lab + '   ', 11, DARK, True), (sub, 9.5, MUTED, False)]],
+             anchor=MSO_ANCHOR.MIDDLE, line_spacing=1.0)
+        ry += rh + Inches(0.06)
+
+_agent_panel(Inches(0.45), BLUE, PANEL, 'Agentic AI',
+    'Assisted — you trigger it and stay in the loop; a human approves',
+    [('AI Agent', 'Describe a part in plain English — it builds the full cost model for you.'),
+     ('CAD / photo → cost', 'Upload a STEP file — it measures the geometry and interprets material & process.'),
+     ('Negotiation coach', "Open a part — it drafts the buyer's counter-argument and target price."),
+     ('Rate-data assistant', 'Ask a costing question — it answers from your own rates, with citations.')])
+_agent_panel(Inches(6.8), VIOLET, PANEL2, 'Autonomous Agentic AI',
+    'Self-directed — runs unattended on a schedule, within limits you set',
+    [('Savings monitor', 'Runs on the server, compares paid vs should-cost, opens findings itself — £0.5M/yr found unattended.'),
+     ('Self-audit', 'Re-checks every estimate for known errors and corrects within bounds — nobody asks it to.'),
+     ('Calibration & drift', 'Learns from logged quotes, re-derives factors, and watches for drift continuously.'),
+     ('Outcome-weighted ranking', 'Learns which findings actually convert and re-prioritises the queue on its own.')])
+
+box(s, Inches(0.45), Inches(6.5), Inches(12.43), Inches(0.68), fill=DARK, round_=True, radius=0.08)
+text(s, Inches(0.78), Inches(6.5), Inches(11.9), Inches(0.68),
+     [[('The common thread:  ', 11.5, BG, True),
+       ('you set the boundaries and every action stays glass-box and auditable — autonomy never means the AI sets a price in secret.',
+        11.5, RGBColor(0xE8, 0xEE, 0xFF), False)]],
+     anchor=MSO_ANCHOR.MIDDLE, line_spacing=1.0)
+notes(s, "Slow down here if the room is new to the word 'agentic', because there are really two levels and people run "
+         "them together. On the LEFT is agentic AI in the everyday sense: the AI takes actions and uses tools, but you "
+         "started the task and you stay in the loop. You describe a part and it builds the cost model; you upload a CAD "
+         "file and it reads the geometry and picks the process; you open a part and it drafts the negotiation argument; "
+         "you ask a question and it answers from our own rate data, with citations. Useful — but it's waiting for you to "
+         "ask. On the RIGHT is the step that surprises people: autonomous agentic AI, where nobody is at the keyboard. A "
+         "monitor runs on our server on a schedule, compares what we pay against what things should cost, and opens "
+         "findings on its own — that's the half a million pounds a year it surfaced unattended in the demo. The "
+         "self-audit re-checks every estimate for known mistakes and corrects them without being asked. The calibration "
+         "keeps learning from logged quotes and watches for drift. The agent even re-prioritises its own queue toward "
+         "the findings that actually convert to cash. The line at the bottom is the one I'd underline: the difference "
+         "between the two columns is only who starts the action — in BOTH, the human sets the boundaries and every "
+         "action stays glass-box and auditable. For a deployment audience that matters twice over: autonomy here never "
+         "means the AI quietly sets a price, and nothing it does happens off the record.")
+
 # ═══════════════ 3B — LATEST AGENTIC INTELLIGENCE (2026) ═══════════════
 s = header('Latest intelligence — six upgrades that widen the moat', 'Background · new in 2026')
 rows = [
