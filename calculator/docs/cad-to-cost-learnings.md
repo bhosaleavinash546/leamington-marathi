@@ -224,6 +224,24 @@ original bug. Golden rule intact — the audit flags and proposes bounded correc
 it never sets a price. A new commodity added to `SIZE_TIERED_COMMODITIES` inherits
 the machine check automatically.
 
+### 5c. Closing the loop — learned calibration + drift, surfaced on every estimate (Phase 3)
+The platform already records real PO/quote actuals per **commodity × material × region**
+and learns a hierarchical bias correction + conformal band from them
+(`calibration.ts`, "Log Actual £"). Phase 3 made that learning **visible and
+actionable on every estimate** and added drift detection:
+- **`segmentDrift(records, segment)`** — splits a segment's actuals oldest→newest and
+  compares the bias of each half; flags when the recent quotes diverge from the older
+  ones beyond a threshold (the market moved or the model went stale → re-calibrate).
+- **`calibrationCoverage(records)`** — the per-segment coverage map (where the model
+  has learned vs where it hasn't).
+- The **Self-Audit panel** (Phase 2) now also carries a "Model learning" strip: the
+  calibrated status + calibrated figure when the segment has ≥3 actuals, a **⚠ Drift**
+  warning when `segmentDrift` fires, and an **Uncalibrated → Log actual £** CTA when
+  the segment has no correction yet. So the two agentic layers — deterministic physics
+  audit and learned calibration — sit together on the money screen, on every costing.
+  Golden rule intact: calibration adjusts the confidence band and shows a *separate*
+  calibrated figure; the headline stays the deterministic, defensible number.
+
 ## Checklist for the next real part
 1. Measure with `cad-geometry-engine.py`; sanity-check volume/weight vs the picture,
    and wall thickness vs `2·V/S`.

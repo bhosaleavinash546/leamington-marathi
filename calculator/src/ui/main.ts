@@ -110,7 +110,7 @@ import type { FeatureMachiningLine } from '../engine/feature-machining.js';
 import { computeCostUncertainty } from '../engine/uncertainty.js';
 import {
   computeCalibration, applyCalibration, computeCalibrationHierarchical, cvFromMape,
-  computeConformalBand, applyConformalBand,
+  computeConformalBand, applyConformalBand, segmentDrift,
   type CalibrationRecord,
 } from '../engine/calibration.js';
 import {
@@ -12872,7 +12872,7 @@ function compute(): void {
     pushCostingRecord({ totalCost: result.total, confidence: result.warnings?.length ? 'Medium' : 'High', breakdown: result.breakdown, warnings: result.warnings, detail: buildPartDetail(result, input) });
     showResultsArea();
     renderBreakdown(result);
-    renderSelfAudit(input);   // deterministic lessons layer — flags physics/geometry inconsistencies
+    renderSelfAudit(result, input);   // deterministic lessons layer + learned-calibration status
     updateTabBadges(result, input);
     fetchAICommentary(result);
 
@@ -13728,9 +13728,33 @@ function _applyAuditFix(corr: AuditCorrection): void {
   el('calc-btn')?.click();
 }
 
-/** Run the deterministic lessons layer on the current estimate and surface any
- *  findings (with one-click bounded fixes) at the top of the breakdown. */
-function renderSelfAudit(input: UniversalStackInput): void {
+/** The learned layer: whether THIS segment (commodity × material × region) is
+ *  calibrated from actuals, plus a drift warning and a Log-Actual CTA. Returns ''
+ *  when calibrated and stable (the hero already shows that) to avoid clutter. */
+function _modelLearningStrip(result: PartCostResult): string {
+  const region = (document.getElementById('mfg-region-selector') as HTMLSelectElement)?.value ?? 'UK';
+  const seg = { commodity: activeCommodity, materialFamily: currentMaterialFamily(), region };
+  const recs = getCalibrationRecords();
+  const hcal = computeCalibrationHierarchical(recs, seg);
+  const drift = segmentDrift(recs, seg);
+  if (hcal.applied && !drift.drifting) return '';   // hero already reports calibrated status
+  const segLabel = `${activeCommodity.replace(/_/g, ' ')}${seg.materialFamily ? ' · ' + seg.materialFamily : ''} · ${region}`;
+  let body: string;
+  if (hcal.applied) {
+    const cal = applyCalibration(result.total, hcal);
+    body = `<strong>✓ Calibrated ×${hcal.biasFactor}</strong> from ${hcal.n} actuals · calibrated → <strong>${fmt(cal)}</strong>`;
+  } else {
+    body = `<strong>Uncalibrated</strong> for ${escHtml(segLabel)} (${hcal.n}/3 actuals) — log a real PO/quote to teach the model. <button class="btn btn-sm sa-logactual" style="font-size:0.68rem;padding:2px 9px;margin-left:4px">Log actual £</button>`;
+  }
+  const driftLine = drift.drifting
+    ? `<div style="margin-top:4px;color:#8a5300"><strong>⚠ Drift</strong> — recent quotes for this segment run ${drift.deltaPct > 0 ? '+' : ''}${drift.deltaPct}% vs the older ones (${drift.n} actuals). Re-calibrate.</div>`
+    : '';
+  return `<div style="background:#eef4fb;border:1px solid #cfe0f2;border-radius:6px;padding:8px 12px;margin-top:6px;font-size:0.75rem;color:#274b6d"><span style="font-size:0.62rem;font-weight:700;letter-spacing:0.04em">MODEL LEARNING</span> ${body}${driftLine}</div>`;
+}
+
+/** Run the deterministic lessons layer + the learned-calibration status on the
+ *  current estimate and surface them (with one-click actions) atop the breakdown. */
+function renderSelfAudit(result: PartCostResult, input: UniversalStackInput): void {
   const panel = document.getElementById('results-breakdown');
   document.getElementById('self-audit-panel')?.remove();
   if (!panel) return;
@@ -13749,35 +13773,38 @@ function renderSelfAudit(input: UniversalStackInput): void {
     selectedMachineId, sizingParams, geometry,
   });
 
+  const strip = _modelLearningStrip(result);
+  if (!findings.length && !strip && !geometry && !sizingParams) return;   // nothing to say — stay quiet
+
   const div = document.createElement('div');
   div.id = 'self-audit-panel';
   div.style.cssText = 'margin-bottom:12px';
-  if (!findings.length) {
-    if (!geometry && !sizingParams) return;   // nothing meaningful was checked — stay quiet
+  if (findings.length) {
+    const sevColor: Record<string, [string, string, string]> = {
+      high: ['#fdecea', '#f5b7b1', '#a12b1c'], medium: ['#fff4e5', '#ffcc80', '#8a5300'], low: ['#eef1f4', '#cdd5dc', '#4a5560'],
+    };
+    const rows = findings.map((f, i) => {
+      const [bg, bd, fg] = sevColor[f.severity];
+      const fix = f.correction ? `<button class="btn btn-sm sa-fix" data-i="${i}" style="margin-left:auto;font-size:0.7rem;padding:3px 10px">Apply fix</button>` : '';
+      return `<div style="background:${bg};border:1px solid ${bd};border-radius:6px;padding:8px 12px;margin-top:6px">
+        <div style="display:flex;align-items:center;gap:8px"><span style="font-size:0.62rem;font-weight:700;color:${fg};letter-spacing:0.04em">${f.severity.toUpperCase()}</span><strong style="font-size:0.8rem;color:${fg}">${escHtml(f.title)}</strong>${fix}</div>
+        <div style="font-size:0.75rem;color:#333;margin-top:3px">${escHtml(f.message)}</div>
+        ${f.expected ? `<div style="font-size:0.7rem;color:#666;margin-top:2px">expected <strong>${escHtml(f.expected)}</strong> · actual ${escHtml(f.actual ?? '')}</div>` : ''}
+      </div>`;
+    }).join('');
+    div.innerHTML = `<div style="font-size:0.82rem;font-weight:700;color:var(--text-primary,#222);display:flex;align-items:center;gap:6px">
+      <span style="background:#e65100;color:#fff;border-radius:4px;padding:2px 7px;font-size:0.66rem">⚑ SELF-AUDIT</span>
+      ${findings.length} check${findings.length > 1 ? 's' : ''} to review — the deterministic lessons layer flagged these automatically.</div>${rows}`;
+  } else {
     div.innerHTML = `<div style="background:#f0faf4;border:1px solid #b7e4c7;border-radius:6px;padding:8px 12px;font-size:0.78rem;color:#1b6b3a"><strong>✓ Self-audit</strong> — no physics/geometry inconsistencies detected on this estimate.</div>`;
-    panel.prepend(div);
-    return;
   }
-  const sevColor: Record<string, [string, string, string]> = {
-    high: ['#fdecea', '#f5b7b1', '#a12b1c'], medium: ['#fff4e5', '#ffcc80', '#8a5300'], low: ['#eef1f4', '#cdd5dc', '#4a5560'],
-  };
-  const rows = findings.map((f, i) => {
-    const [bg, bd, fg] = sevColor[f.severity];
-    const fix = f.correction ? `<button class="btn btn-sm sa-fix" data-i="${i}" style="margin-left:auto;font-size:0.7rem;padding:3px 10px">Apply fix</button>` : '';
-    return `<div style="background:${bg};border:1px solid ${bd};border-radius:6px;padding:8px 12px;margin-top:6px">
-      <div style="display:flex;align-items:center;gap:8px"><span style="font-size:0.62rem;font-weight:700;color:${fg};letter-spacing:0.04em">${f.severity.toUpperCase()}</span><strong style="font-size:0.8rem;color:${fg}">${escHtml(f.title)}</strong>${fix}</div>
-      <div style="font-size:0.75rem;color:#333;margin-top:3px">${escHtml(f.message)}</div>
-      ${f.expected ? `<div style="font-size:0.7rem;color:#666;margin-top:2px">expected <strong>${escHtml(f.expected)}</strong> · actual ${escHtml(f.actual ?? '')}</div>` : ''}
-    </div>`;
-  }).join('');
-  div.innerHTML = `<div style="font-size:0.82rem;font-weight:700;color:var(--text-primary,#222);display:flex;align-items:center;gap:6px">
-    <span style="background:#e65100;color:#fff;border-radius:4px;padding:2px 7px;font-size:0.66rem">⚑ SELF-AUDIT</span>
-    ${findings.length} check${findings.length > 1 ? 's' : ''} to review — the deterministic lessons layer flagged these automatically.</div>${rows}`;
+  if (strip) div.insertAdjacentHTML('beforeend', strip);
   panel.prepend(div);
   findings.forEach((f, i) => {
     if (!f.correction) return;
     div.querySelector(`.sa-fix[data-i="${i}"]`)?.addEventListener('click', () => _applyAuditFix(f.correction!));
   });
+  div.querySelector('.sa-logactual')?.addEventListener('click', () => logActualQuote());
 }
 
 function renderBreakdown(result: PartCostResult): void {
