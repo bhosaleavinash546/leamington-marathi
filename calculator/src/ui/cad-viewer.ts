@@ -690,7 +690,11 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
       const fd = new FormData();
       fd.append('cadFile', file);
       const aborter = new AbortController();
-      const timer = setTimeout(() => aborter.abort(new DOMException('Tessellation timed out after 120 s', 'TimeoutError')), 120_000);
+      // Outer safety net — kept longer than the server's own timeout (default
+      // 300 s) so the server's structured error surfaces before the client gives
+      // up. Large STEP assemblies can take minutes to mesh.
+      const CLIENT_TESS_TIMEOUT_MS = 330_000;
+      const timer = setTimeout(() => aborter.abort(new DOMException(`Tessellation timed out after ${CLIENT_TESS_TIMEOUT_MS / 1000} s`, 'TimeoutError')), CLIENT_TESS_TIMEOUT_MS);
       let resp: Response;
       try {
         resp = await fetch('/api/cad/tessellate?meta=bin', {

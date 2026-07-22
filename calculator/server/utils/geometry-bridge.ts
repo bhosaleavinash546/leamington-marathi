@@ -27,6 +27,13 @@ const pythonQueue: Array<() => void> = [];
 // geometry JSON (the triangle-heavy sidecar goes to a file, not stdout).
 const MAX_STDOUT_BYTES = parseInt(process.env.CV_MAX_STDOUT_BYTES ?? String(64 * 1024 * 1024), 10);
 
+// Authoritative geometry-engine timeout (ms). The Node parent SIGKILLs the
+// Python process at this bound; the Python engine self-aborts ~10 s earlier
+// (CV_TESS_TIMEOUT_MS, read there too) so a clean error beats the kill, and the
+// client fetch aborts a little later still. Default 300 s so large STEP
+// assemblies have room to mesh; env-tunable for bigger jobs.
+const DEFAULT_TESS_TIMEOUT_MS = parseInt(process.env.CV_TESS_TIMEOUT_MS ?? '300000', 10) || 300000;
+
 async function acquirePython(): Promise<() => void> {
   if (pythonActive >= MAX_CONCURRENT_PYTHON) {
     await new Promise<void>((resolve) => pythonQueue.push(resolve));
@@ -133,7 +140,7 @@ export interface OCCTGeometry {
 export async function analyzeGeometry(
   buffer: Buffer,
   filename: string,
-  timeoutMs = 120_000,
+  timeoutMs = DEFAULT_TESS_TIMEOUT_MS,
 ): Promise<OCCTGeometry> {
   const tmpPath = join(tmpdir(), `cv-cad-${randomBytes(8).toString('hex')}.${safeExt(filename)}`);
 
@@ -234,14 +241,14 @@ export interface TessellationMeta {
 }
 
 /** Refuse to buffer pathological outputs into Node heap. */
-const MAX_STL_BYTES = parseInt(process.env.CV_MAX_STL_BYTES ?? String(300 * 1024 * 1024), 10);
+const MAX_STL_BYTES = parseInt(process.env.CV_MAX_STL_BYTES ?? String(750 * 1024 * 1024), 10);
 
 export async function tessellateToSTL(
   buffer: Buffer,
   filename: string,
   opts: { timeoutMs?: number; withMeta?: boolean } = {},
 ): Promise<{ status: 'success'; stl: Buffer; triangles: number; meta: TessellationMeta | null } | { status: 'error'; error: string }> {
-  const { timeoutMs = 120_000, withMeta = false } = opts;
+  const { timeoutMs = DEFAULT_TESS_TIMEOUT_MS, withMeta = false } = opts;
   const id = randomBytes(8).toString('hex');
   const inPath = join(tmpdir(), `cv-tess-${id}.${safeExt(filename)}`);
   const outPath = join(tmpdir(), `cv-tess-${id}.stl`);

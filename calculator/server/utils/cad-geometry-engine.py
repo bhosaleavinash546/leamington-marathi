@@ -6,13 +6,15 @@ Output: single-line JSON to stdout.
 """
 import sys, json, os, math, signal, random
 
-# Best-effort 110-second limit (Unix only). NOTE: Python signal handlers only
-# run between bytecode instructions, so this CANNOT interrupt a single long
-# native OCCT call (e.g. a pathological BRepMesh_IncrementalMesh). The
-# authoritative timeout is the Node parent's SIGKILL in geometry-bridge.ts.
+# Best-effort self-timeout (Unix only). NOTE: Python signal handlers only run
+# between bytecode instructions, so this CANNOT interrupt a single long native
+# OCCT call (e.g. a pathological BRepMesh_IncrementalMesh). The authoritative
+# timeout is the Node parent's SIGKILL in geometry-bridge.ts; we self-abort ~10 s
+# earlier so a clean structured error beats the kill. Derived from the shared
+# CV_TESS_TIMEOUT_MS (default 300 s) so all layers move together.
 def _timeout(_s, _f): raise TimeoutError("Geometry analysis timed out")
 signal.signal(signal.SIGALRM, _timeout)
-signal.alarm(110)
+signal.alarm(max(30, int(os.environ.get("CV_TESS_TIMEOUT_MS", "300000")) // 1000 - 10))
 
 
 # ─── Surface / edge type classification ──────────────────────────────────────
@@ -1067,7 +1069,7 @@ def tessellate_to_stl(filepath, out_path, with_meta=False):
     per-triangle face ids and exact per-face B-rep data (type, radii, area,
     body id, hole/boss classification) for the interactive viewer.
 
-    Hard cap: CV_MAX_TRIANGLES (default 2M) aborts pathological tessellations
+    Hard cap: CV_MAX_TRIANGLES (default 5M) aborts pathological tessellations
     (tiny STEP files full of fillets can otherwise amplify into multi-GB
     meshes — a zip-bomb-shaped DoS)."""
     try:
@@ -1137,7 +1139,7 @@ def tessellate_to_stl(filepath, out_path, with_meta=False):
         # CV_MAX_TRIANGLES; diag/500 keeps small detailed parts from exploding.
         BRepMesh_IncrementalMesh(wrapped, diag / 500.0, False, 0.3, True)
 
-        max_tris = int(os.environ.get("CV_MAX_TRIANGLES", "2000000"))
+        max_tris = int(os.environ.get("CV_MAX_TRIANGLES", "5000000"))
 
         # Stable face ids via an indexed map (1-based) — the same map is used to
         # assign faces to solids, so viewer face ids and body ids stay consistent.
