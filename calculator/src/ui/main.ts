@@ -91,6 +91,7 @@ let autoTable: any;
 let printPDF: typeof printPDFType | undefined;
 let printCADAnalysisPDF: typeof printCADType | undefined;
 let drawCostVisionLogo: typeof drawLogoType | undefined;
+let renderShouldCostSections: typeof renderSCType | undefined;
 async function ensurePdfLibs(): Promise<void> {
   if (jsPDF && autoTable && printPDF) return;
   const [m1, m2, m3] = await Promise.all([import('jspdf'), import('jspdf-autotable'), import('../export/pdf.js')]);
@@ -99,9 +100,10 @@ async function ensurePdfLibs(): Promise<void> {
   printPDF = m3.printPDF;
   printCADAnalysisPDF = m3.printCADAnalysisPDF;
   drawCostVisionLogo = m3.drawCostVisionLogo;
+  renderShouldCostSections = m3.renderShouldCostSections;
 }
 import { exportToExcelBlob } from '../export/excel.js';
-import type { printPDF as printPDFType, printCADAnalysisPDF as printCADType, drawCostVisionLogo as drawLogoType, CADReportMeta } from '../export/pdf.js';
+import type { printPDF as printPDFType, printCADAnalysisPDF as printCADType, drawCostVisionLogo as drawLogoType, renderShouldCostSections as renderSCType, CADReportMeta } from '../export/pdf.js';
 import type { FeatureMachiningLine } from '../engine/feature-machining.js';
 import { computeCostUncertainty } from '../engine/uncertainty.js';
 import {
@@ -14801,8 +14803,6 @@ async function printMasterPDF(): Promise<void> {
     y += 10;
   };
 
-  const hdr_bg: RGB = [240, 240, 240];
-
   // ══ COVER PAGE ═══════════════════════════════════════════════════════════════
   doc.setFillColor(...SLATE);
   doc.rect(0, 0, W, 52, 'F');
@@ -14887,161 +14887,52 @@ async function printMasterPDF(): Promise<void> {
   }
 
   // ══ PART A: SHOULD-COST ════════════════════════════════════════════════════
-  if (hasCost && lastResult && lastInput) {
-    const sym = _displayCurrency === 'GBP' ? '£' : _displayCurrency === 'EUR' ? '€' : '$';
-    const c = (n: number) => `${sym}${(n * _displayFxRate).toFixed(2)}`;
-    const pct = (n: number) => `${n.toFixed(1)}%`;
-    const pcts = breakdownPercentages(lastResult);
+  // Full detailed should-cost — the SAME body as the standalone Should-Cost
+  // report (region, material detail, machine-rate buildup, rate traceability,
+  // uncertainty, sensitivity, §9 regional 10-country comparison, carbon,
+  // insights, DFM/DFA, optimisation, roadmap). Shared via renderShouldCostSections.
+  if (hasCost && lastResult && lastInput && renderShouldCostSections) {
+    partPage('PART A — SHOULD-COST ANALYSIS', `${lastResult.partName}  ·  ${COMMODITY_LABELS[activeCommodity] ?? activeCommodity}  ·  ${_mfgRegion}  ·  ${dateStr}`, ORANGE);
 
-    partPage('PART A — SHOULD-COST ANALYSIS', `${lastResult.partName}  ·  ${COMMODITY_LABELS[activeCommodity] ?? activeCommodity}  ·  ${dateStr}`, ORANGE);
+    // Manufacturing basis line — the manufacturing country was previously absent
+    // from the Master report; surface it explicitly at the top of Part A.
+    const _ohPct  = (lastInput.overheadPct * 100).toFixed(0);
+    const _mgnPct = (lastInput.marginPct * 100).toFixed(0);
+    const _annVol = ((lastInput as { annualVolume?: number }).annualVolume ?? 100000).toLocaleString();
+    doc.setFillColor(...LIGHT);
+    doc.roundedRect(mg, y, cW, 12, 1.5, 1.5, 'F');
+    doc.setFontSize(7.5); doc.setFont('helvetica', 'bold'); doc.setTextColor(...ORANGE);
+    doc.text('Manufacturing Basis', mg + 4, y + 5);
+    doc.setFont('helvetica', 'normal'); doc.setTextColor(...SLATE);
+    doc.text(`Region: ${_mfgRegion}   ·   Currency: ${_displayCurrency}   ·   Annual volume: ${_annVol}   ·   Overhead ${_ohPct}%   ·   Margin ${_mgnPct}%`, mg + 4, y + 9.5);
+    y += 16;
 
-    // §A0 Uploaded part photo (any commodity)
+    // Uploaded part photo (any commodity)
     const partPhoto = currentPartPhotoDataUrl();
     if (partPhoto) {
       try {
         const props = doc.getImageProperties(partPhoto);
-        const maxH = 44, maxW = cW * 0.45;
+        const maxH = 40, maxW = cW * 0.42;
         let iw = maxH * (props.width / props.height), ih = maxH;
         if (iw > maxW) { iw = maxW; ih = maxW * (props.height / props.width); }
-        secBar('§A0 — Uploaded Part Photo', ORANGE);
         doc.setDrawColor(...GREY); doc.setLineWidth(0.25);
         doc.roundedRect(mg, y, iw + 4, ih + 4, 2, 2, 'S');
         doc.addImage(partPhoto, props.fileType || 'JPEG', mg + 2, y + 2, iw, ih, undefined, 'FAST');
         y += ih + 8;
-      } catch { /* skip */ }
+      } catch { /* skip an image that fails to embed */ }
     }
 
-    // §A1 Cost Breakdown
-    secBar('§A1 — 8-Bucket Cost Breakdown', ORANGE);
-    const buckets: [string, number, number, string][] = [
-      ['1. Raw Material', lastResult.breakdown.rawMaterial, pcts.rawMaterial, ''],
-      ['2. Process (Machine)', lastResult.breakdown.process, pcts.process, ''],
-      ['3. Direct Labour', lastResult.breakdown.labour, pcts.labour, ''],
-      ['4. Tooling (amortised)', lastResult.breakdown.tooling, pcts.tooling, ''],
-      ['5. Packaging', lastResult.breakdown.packaging, pcts.packaging, ''],
-      ['6. Logistics', lastResult.breakdown.logistics, pcts.logistics, ''],
-      ['— Factory Cost', lastResult.factoryCost, (lastResult.factoryCost / lastResult.total) * 100, 'sub'],
-      ['7. Overhead (SG&A)', lastResult.breakdown.overhead, pcts.overhead, ''],
-      ['— Subtotal', lastResult.subtotal, (lastResult.subtotal / lastResult.total) * 100, 'sub'],
-      ['8. Supplier Margin', lastResult.breakdown.margin, pcts.margin, ''],
-      ['TOTAL SHOULD COST', lastResult.total, 100, 'total'],
-    ];
-    autoTable(doc, {
-      startY: y, margin: { left: mg, right: mg },
-      head: [['Cost Bucket', `Amount (${_displayCurrency})`, '% of Total', 'Cost Bar']],
-      // Cost Bar column left blank in text — the bar is drawn as a rectangle in didDrawCell
-      // (a block glyph like U+2588 is not in jsPDF's WinAnsi font and renders as garbage).
-      body: buckets.map(([label, val, p]) => [label, c(val), pct(p), '']),
-      styles: { fontSize: 8 }, headStyles: { fillColor: hdr_bg, textColor: SLATE, fontStyle: 'bold' },
-      columnStyles: { 0: { cellWidth: 70 }, 1: { cellWidth: 30, halign: 'right' }, 2: { cellWidth: 22, halign: 'right' }, 3: {} },
-      didParseCell: (d: any) => {
-        const rt = buckets[d.row.index]?.[3];
-        if (rt === 'total') { d.cell.styles.fontStyle = 'bold'; d.cell.styles.fillColor = [255, 243, 230]; }
-        else if (rt === 'sub') { d.cell.styles.fontStyle = 'bold'; d.cell.styles.fillColor = hdr_bg; }
-      },
-      didDrawCell: (d: any) => {
-        if (d.section !== 'body' || d.column.index !== 3) return;
-        const p = Math.max(0, Math.min(100, buckets[d.row.index]?.[2] ?? 0));
-        const pad = 2;
-        const trackW = d.cell.width - pad * 2;
-        if (trackW <= 0) return;
-        const bh = 2.6;
-        const bx = d.cell.x + pad;
-        const by = d.cell.y + d.cell.height / 2 - bh / 2;
-        doc.setFillColor(...hdr_bg);                       // track
-        doc.roundedRect(bx, by, trackW, bh, 0.6, 0.6, 'F');
-        const bw = Math.max(0.4, trackW * (p / 100));
-        doc.setFillColor(...ORANGE);                       // filled portion
-        doc.roundedRect(bx, by, bw, bh, 0.6, 0.6, 'F');
-      },
+    y = renderShouldCostSections(doc, y, {
+      result: lastResult,
+      input: lastInput,
+      library,
+      currency: _displayCurrency,
+      fxRate: _displayFxRate,
+      commodityType: activeCommodity,
+      region: _mfgRegion,
+      scenarios: listScenarios(),
+      cadMeta: buildCadReportMeta(),
     });
-    y = lastY() + 5;
-
-    // §A2 Operations
-    secBar('§A2 — Operations Detail', ORANGE);
-    autoTable(doc, {
-      startY: y, margin: { left: mg, right: mg },
-      head: [['Operation', 'Machine', 'Cycle min', 'OEE', 'Process £', 'Labour Grade', 'Manning', 'Labour £', 'Total']],
-      body: lastResult.operationDetails.map(op => {
-        const mObj = library.machines.find(m => m.id === op.machineId);
-        const lObj = library.labour.find(l => l.id === op.labourId);
-        return [op.operationName, mObj?.machineClass ?? op.machineId, (op.cycleTimeHr * 60).toFixed(2), pct(op.oee * 100), c(op.processCost), lObj?.skillLevel ?? op.labourId, String(op.manning), c(op.labourCost), c(op.processCost + op.labourCost)];
-      }),
-      styles: { fontSize: 7 }, headStyles: { fillColor: hdr_bg, textColor: SLATE, fontStyle: 'bold', fontSize: 7 },
-      columnStyles: { 0: { cellWidth: 38 }, 4: { halign: 'right' }, 7: { halign: 'right' }, 8: { halign: 'right', fontStyle: 'bold' } },
-    });
-    y = lastY() + 5;
-
-    // §A3–§A5 DFM/DFA
-    try {
-      const dfm = generateDFMDFA(lastResult, lastInput, activeCommodity);
-
-      secBar(`§A3 — DFM Analysis  (Score: ${dfm.dfm.score.toFixed(1)}/10  ·  Potential: ${dfm.dfm.totalSavingPct.toFixed(0)}%)`, ORANGE);
-      if (dfm.dfm.summary) {
-        doc.setFontSize(7.5); doc.setTextColor(...GREY);
-        const ls = doc.splitTextToSize(dfm.dfm.summary, cW) as string[];
-        doc.text(ls, mg, y); y += ls.length * 4 + 3;
-      }
-      if (dfm.dfm.issues.length > 0) {
-        autoTable(doc, {
-          startY: y, margin: { left: mg, right: mg },
-          head: [['Severity', 'Category', 'Issue', 'Description', 'Save %', 'Recommendation']],
-          body: dfm.dfm.issues.map(i => [i.severity.toUpperCase(), i.category, i.title, i.description, `${i.savingPct.toFixed(0)}%`, i.recommendation]),
-          styles: { fontSize: 7, overflow: 'linebreak' }, headStyles: { fillColor: hdr_bg, textColor: SLATE, fontStyle: 'bold', fontSize: 7 },
-          columnStyles: { 0: { cellWidth: 18, fontStyle: 'bold' }, 1: { cellWidth: 18 }, 2: { cellWidth: 28 }, 3: { cellWidth: 45 }, 4: { cellWidth: 13, halign: 'right' }, 5: { cellWidth: cW - 125 } },
-          didParseCell: (d: any) => {
-            if (d.section === 'body' && d.column.index === 0) {
-              const sev = dfm.dfm.issues[d.row.index]?.severity;
-              d.cell.styles.textColor = sev === 'critical' ? RED_R : sev === 'major' ? AMB_R : sev === 'opportunity' ? GRN_R : GREY;
-            }
-          },
-        });
-        y = lastY() + 5;
-      }
-
-      chk(10);
-      secBar(`§A4 — DFA Analysis  (Score: ${dfm.dfa.score.toFixed(1)}/10  ·  Potential: ${dfm.dfa.totalSavingPct.toFixed(0)}%)`, ORANGE);
-      if (dfm.dfa.summary) {
-        doc.setFontSize(7.5); doc.setTextColor(...GREY);
-        const ls = doc.splitTextToSize(dfm.dfa.summary, cW) as string[];
-        doc.text(ls, mg, y); y += ls.length * 4 + 3;
-      }
-      if (dfm.dfa.issues.length > 0) {
-        autoTable(doc, {
-          startY: y, margin: { left: mg, right: mg },
-          head: [['Severity', 'Category', 'Issue', 'Description', 'Save %', 'Recommendation']],
-          body: dfm.dfa.issues.map(i => [i.severity.toUpperCase(), i.category, i.title, i.description, `${i.savingPct.toFixed(0)}%`, i.recommendation]),
-          styles: { fontSize: 7, overflow: 'linebreak' }, headStyles: { fillColor: hdr_bg, textColor: SLATE, fontStyle: 'bold', fontSize: 7 },
-          columnStyles: { 0: { cellWidth: 18, fontStyle: 'bold' }, 1: { cellWidth: 18 }, 2: { cellWidth: 28 }, 3: { cellWidth: 45 }, 4: { cellWidth: 13, halign: 'right' }, 5: { cellWidth: cW - 125 } },
-          didParseCell: (d: any) => {
-            if (d.section === 'body' && d.column.index === 0) {
-              const sev = dfm.dfa.issues[d.row.index]?.severity;
-              d.cell.styles.textColor = sev === 'critical' ? RED_R : sev === 'major' ? AMB_R : sev === 'opportunity' ? GRN_R : GREY;
-            }
-          },
-        });
-        y = lastY() + 5;
-      }
-
-      if (dfm.costOptimisations.length > 0) {
-        chk(10);
-        secBar(`§A5 — Cost Optimisation Opportunities  (${dfm.totalPotentialSavingPct.toFixed(0)}% total potential)`, ORANGE);
-        autoTable(doc, {
-          startY: y, margin: { left: mg, right: mg },
-          head: [['Action', 'Save %', 'Timeframe', 'Risk', 'Description & Justification']],
-          body: dfm.costOptimisations.map(o => [o.title, `${o.expectedSavingPct.toFixed(0)}%`, o.timeframe, o.risk, `${o.description}  ·  ${o.technicalJustification}`]),
-          styles: { fontSize: 7, overflow: 'linebreak' }, headStyles: { fillColor: hdr_bg, textColor: SLATE, fontStyle: 'bold', fontSize: 7 },
-          columnStyles: { 0: { cellWidth: 35, fontStyle: 'bold' }, 1: { cellWidth: 14, halign: 'right' }, 2: { cellWidth: 22 }, 3: { cellWidth: 12 }, 4: { cellWidth: cW - 86 } },
-          didParseCell: (d: any) => {
-            if (d.section === 'body' && d.column.index === 1) {
-              const o = dfm.costOptimisations[d.row.index];
-              if (o && o.expectedSavingPct >= 10) d.cell.styles.textColor = GRN_R;
-            }
-          },
-        });
-        y = lastY() + 5;
-      }
-    } catch { /* DFM not available for this commodity */ }
   }
 
   // ══ PART B: CAD ANALYSIS ══════════════════════════════════════════════════
