@@ -242,6 +242,23 @@ actionable on every estimate** and added drift detection:
   Golden rule intact: calibration adjusts the confidence band and shows a *separate*
   calibrated figure; the headline stays the deterministic, defensible number.
 
+### 5d. Bulk actuals import + coverage — fuelling the loop (Phase 4)
+The learn-from-actuals loop is only as good as the data in it, and one-prompt-at-a-
+time ("Log Actual £") is a bottleneck for a fleet with hundreds of POs. Phase 4 adds
+a way to pour history in and see where the model stands:
+- **`actuals-import.ts` `parseActualsCsv(text, nowMs)`** — a forgiving, header-driven
+  CSV parser (quoted fields, flexible column synonyms, commodity-label normalisation,
+  currency-symbol stripping, per-row validation with row-numbered errors). Required
+  columns: commodity, estimate, actual; optional region/material/currency/date/part.
+- **Calibration & Actuals modal** (button by "Log Actual £" + a ⌘K entry): paste a
+  CSV → records merge into the calibration store → a **coverage table** shows every
+  segment (commodity · material · region) with its sample count, learned bias, MAPE,
+  calibrated flag, and drift, plus a portfolio MAPE line. So a buyer can seed the
+  model from a spreadsheet of quotes and immediately see which segments are trusted.
+Verified live: pasting 8 rows calibrated the Casting·Aluminium·CN segment (×1.15,
+⚠ +30% drift) and left Machining·Steel·UK at 2/3. Honest note: this is the *pipe*
+for real data — the accuracy gain is only realised once real actuals flow through it.
+
 ## Checklist for the next real part
 1. Measure with `cad-geometry-engine.py`; sanity-check volume/weight vs the picture,
    and wall thickness vs `2·V/S`.

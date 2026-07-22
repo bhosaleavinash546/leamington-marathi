@@ -110,9 +110,10 @@ import type { FeatureMachiningLine } from '../engine/feature-machining.js';
 import { computeCostUncertainty } from '../engine/uncertainty.js';
 import {
   computeCalibration, applyCalibration, computeCalibrationHierarchical, cvFromMape,
-  computeConformalBand, applyConformalBand, segmentDrift,
+  computeConformalBand, applyConformalBand, segmentDrift, calibrationCoverage, calibrationSummary,
   type CalibrationRecord,
 } from '../engine/calibration.js';
+import { parseActualsCsv } from '../engine/actuals-import.js';
 import {
   buildCausalModel, counterfactual, coachSentence, impliedIndexPremiumPct,
   type CommodityIndexRef,
@@ -513,6 +514,81 @@ function logActualQuote(): void {
     ? `Logged. ${activeCommodity.replace(/_/g, ' ')} now calibrated ×${s.biasFactor} from ${s.n} quotes (MAPE ${s.calibratedMapePct}%).`
     : `Logged (${s.n}/${3} quotes for ${activeCommodity.replace(/_/g, ' ')} — need ${3 - s.n} more to calibrate).`, 'info');
   if (lastResult && lastInput) renderInsights(lastResult, lastInput);
+}
+
+// ─── Calibration & Actuals (bulk import + coverage) ────────────────────────────
+
+function openCalibrationModal(): void {
+  renderCalibrationCoverage();
+  el('calibration-modal').style.display = 'flex';
+}
+
+/** Ingest a pasted CSV of real actuals into the calibration store, teaching the
+ *  model across many segments at once. */
+function importActualsFromText(): void {
+  const ta = document.getElementById('cal-import-text') as HTMLTextAreaElement | null;
+  const status = document.getElementById('cal-import-status');
+  const text = ta?.value ?? '';
+  if (!text.trim()) { if (status) { status.textContent = 'Paste some CSV rows first.'; status.style.color = 'var(--warning)'; } return; }
+  const res = parseActualsCsv(text, Date.now());
+  if (res.imported > 0) {
+    const recs = getCalibrationRecords();
+    recs.push(...res.records);
+    saveCalibrationRecords(recs);
+    if (ta) ta.value = '';
+  }
+  if (status) {
+    const errNote = res.errors.length ? ` · ${res.skipped} skipped (${escHtml(res.errors.slice(0, 3).join('; '))}${res.errors.length > 3 ? '…' : ''})` : '';
+    status.innerHTML = `<strong style="color:${res.imported ? 'var(--success)' : 'var(--danger)'}">Imported ${res.imported} actual${res.imported === 1 ? '' : 's'}</strong>${errNote}`;
+  }
+  renderCalibrationCoverage();
+  // If a costing is on screen, refresh its audit strip so calibration shows immediately.
+  if (lastResult && lastInput) renderSelfAudit(lastResult, lastInput);
+}
+
+/** Coverage table: every segment (commodity × material × region) with logged
+ *  actuals — sample count, learned bias, MAPE, calibrated flag, drift. */
+function renderCalibrationCoverage(): void {
+  const host = document.getElementById('cal-coverage');
+  if (!host) return;
+  const recs = getCalibrationRecords();
+  const cov = calibrationCoverage(recs);
+  const sum = calibrationSummary(recs);
+  if (!cov.length) {
+    host.innerHTML = `<div style="font-size:0.78rem;color:var(--text-muted);padding:10px 0">No actuals logged yet. Paste a CSV above, or use <strong>Log Actual £</strong> after a costing, to start calibrating.</div>`;
+    return;
+  }
+  const sym = CURRENCY_SYMBOL[_displayCurrency] ?? '';
+  void sym;
+  const rows = cov.map(c => {
+    const drift = segmentDrift(recs, { commodity: c.commodity, materialFamily: c.materialFamily, region: c.region });
+    const seg = `${(COMMODITY_LABELS[c.commodity] ?? c.commodity)}${c.materialFamily ? ' · ' + c.materialFamily : ''}${c.region ? ' · ' + c.region : ''}`;
+    const badge = c.calibrated
+      ? `<span style="background:#e6f4ea;color:#1b6b3a;border-radius:4px;padding:1px 7px;font-size:0.66rem;font-weight:700">×${c.biasFactor}</span>`
+      : `<span style="background:#eef1f4;color:#647084;border-radius:4px;padding:1px 7px;font-size:0.66rem">${c.n}/3</span>`;
+    const driftCell = drift.drifting
+      ? `<span style="color:#8a5300;font-weight:600">⚠ ${drift.deltaPct > 0 ? '+' : ''}${drift.deltaPct}%</span>`
+      : '<span style="color:var(--text-muted)">—</span>';
+    return `<tr>
+      <td style="padding:5px 8px">${escHtml(seg)}</td>
+      <td style="padding:5px 8px;text-align:right">${c.n}</td>
+      <td style="padding:5px 8px;text-align:center">${badge}</td>
+      <td style="padding:5px 8px;text-align:right">${c.calibrated ? c.calibratedMapePct + '%' : '—'}</td>
+      <td style="padding:5px 8px;text-align:center">${driftCell}</td>
+    </tr>`;
+  }).join('');
+  host.innerHTML = `
+    <div style="font-size:0.74rem;color:var(--text-secondary);margin-bottom:6px">Portfolio: <strong>${sum.totalSamples}</strong> actuals · calibrated MAPE <strong>${sum.weightedCalibratedMapePct}%</strong> (raw ${sum.weightedMapePct}%)</div>
+    <div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:0.76rem">
+      <thead><tr style="border-bottom:1px solid var(--border)">
+        <th style="padding:5px 8px;text-align:left">Segment (commodity · material · region)</th>
+        <th style="padding:5px 8px;text-align:right">Actuals</th>
+        <th style="padding:5px 8px;text-align:center">Bias</th>
+        <th style="padding:5px 8px;text-align:right">MAPE</th>
+        <th style="padding:5px 8px;text-align:center">Drift</th>
+      </tr></thead>
+      <tbody>${rows}</tbody>
+    </table></div>`;
 }
 
 // ─── Knowledge base (self-learning memory) ─────────────────────────────────────
@@ -17594,6 +17670,9 @@ async function init(): Promise<void> {
   el('save-scenario-btn')?.addEventListener('click', openScenarioModal);
   el('save-library-btn')?.addEventListener('click', saveLastResultToLibrary);
   el('log-actual-btn')?.addEventListener('click', logActualQuote);
+  el('calibration-btn')?.addEventListener('click', openCalibrationModal);
+  el('cal-import-btn')?.addEventListener('click', importActualsFromText);
+  el('cal-close-btn')?.addEventListener('click', () => { el('calibration-modal').style.display = 'none'; });
   el('load-ref-btn')?.addEventListener('click', loadExample);
   document.getElementById('results-empty-example')?.addEventListener('click', loadExample);
   el('rates-btn')?.addEventListener('click', openRateLibrary);
@@ -18393,6 +18472,7 @@ function _cmdkBuild(): CmdkEntry[] {
     { label: 'Negotiation Intelligence — supplier-quote teardown', sub: 'View', icon: 'i-trend-up', run: () => showNegotiation() },
     { label: 'Demo gallery', sub: 'Open', icon: 'i-play', run: byId('demo-btn') },
     { label: 'Rate library — edit & version machine / labour rates', sub: 'Open', icon: 'i-factory', run: () => { showCosting('machining'); setTimeout(() => document.getElementById('rates-btn')?.click(), 200); } },
+    { label: 'Calibration & actuals — bulk-import PO prices, see coverage', sub: 'Open', icon: 'i-trend-up', run: () => openCalibrationModal() },
     { label: "What's new in CostVision", sub: 'Open', icon: 'i-bulb', run: () => { document.getElementById('help-btn')?.click(); setTimeout(() => document.querySelector<HTMLElement>('.help-tab[data-help="whats-new"]')?.click(), 120); } },
     { label: 'Help centre', sub: 'Open', icon: 'i-help', run: byId('help-btn') },
     { label: 'Contact support', sub: 'Open', icon: 'i-mail', run: byId('contact-btn') },
