@@ -241,6 +241,10 @@ let _mfgRegion: ManufacturingRegion = 'UK';
 let _breakdownChart: Chart | null = null;
 let _displayCurrency = 'GBP';
 let _displayFxRate = 1.0;
+// Once the user picks a display currency by hand, keep it across region changes
+// (e.g. source from China but keep the headline in GBP). Until then, changing
+// region auto-follows that region's native currency as a helpful default.
+let _currencyUserPinned = false;
 
 const CURRENCY_SYMBOL: Record<string, string> = {
   GBP: '£', EUR: '€', USD: '$', CNY: '¥', INR: '₹',
@@ -17215,8 +17219,21 @@ async function init(): Promise<void> {
     }
   };
   el<HTMLSelectElement>('currency-selector')?.addEventListener('change', e => {
+    _currencyUserPinned = true;   // explicit choice — survives region changes
+    try { localStorage.setItem('cv-currency-pin', (e.target as HTMLSelectElement).value); } catch { /* ignore */ }
     _applyCurrency((e.target as HTMLSelectElement).value);
   });
+  // Restore a currency the user pinned in a previous session, so it survives
+  // reloads and keeps overriding region auto-switch.
+  try {
+    const savedCur = localStorage.getItem('cv-currency-pin');
+    if (savedCur) {
+      _currencyUserPinned = true;
+      const curSel = el<HTMLSelectElement>('currency-selector');
+      if (curSel && Array.from(curSel.options).some(o => o.value === savedCur)) curSel.value = savedCur;
+      _applyCurrency(savedCur);
+    }
+  } catch { /* ignore */ }
 
   // Country for Costing bar — rebuilds library, updates currency, overhead default, auto-recalculates
   const _applyCountry = (code: string) => {
@@ -17244,8 +17261,9 @@ async function init(): Promise<void> {
       const logEl = el<HTMLInputElement>('logistics-cost');
       if (pkgEl) pkgEl.value = (0.15 * rd.packagingMultiplier).toFixed(2);
       if (logEl) logEl.value = (0.25 * rd.logisticsMultiplier).toFixed(2);
-      // Update display currency
-      const cur = rd.currency;
+      // Update display currency to the region's native currency — unless the
+      // user has pinned a currency (e.g. China rates but keep the headline in GBP).
+      const cur = _currencyUserPinned ? _displayCurrency : rd.currency;
       const curSel = el<HTMLSelectElement>('currency-selector');
       if (curSel && Array.from(curSel.options).some(o => o.value === cur)) {
         curSel.value = cur;
@@ -17298,10 +17316,11 @@ async function init(): Promise<void> {
     } else {
       library = buildRegionalLibrary(recomputeMachineRates(getLibraryFromStorage()), region);
     }
-    // Auto-switch display currency to region's native currency
+    // Auto-switch display currency to region's native currency — unless the user
+    // has pinned a currency (source from China but keep the headline in GBP).
     const nativeCur = REGIONAL_DATA[region]?.currency;
     const curSel = el<HTMLSelectElement>('currency-selector');
-    if (nativeCur && curSel && Array.from(curSel.options).some(o => o.value === nativeCur)) {
+    if (!_currencyUserPinned && nativeCur && curSel && Array.from(curSel.options).some(o => o.value === nativeCur)) {
       curSel.value = nativeCur;
       _applyCurrency(nativeCur);
     }
@@ -17312,7 +17331,7 @@ async function init(): Promise<void> {
       const infoEl = document.getElementById('country-bar-info');
       if (infoEl) {
         const rd = REGIONAL_DATA[region];
-        if (rd) infoEl.textContent = `${rd.name} · ${nativeCur ?? region}`;
+        if (rd) infoEl.textContent = `${rd.name} · ${_currencyUserPinned ? _displayCurrency : (nativeCur ?? region)}`;
       }
     }
     // Auto-recalculate so results reflect new regional rates
