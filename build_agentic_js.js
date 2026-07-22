@@ -94,6 +94,42 @@ const CHART=(colors,extra={})=>({showLegend:false,chartColors:colors,showValue:t
    0.45,6.0,12.4,0.9,{lineSpacingMultiple:1.15});
  s.addNotes("\"Agentic\" gets thrown around, so let me make it concrete — four plain verbs. It REMEMBERS: every analysis becomes a stored case. It RECOGNISES: new parts get matched to that memory instantly. It SELF-CORRECTS: real quotes teach it, and its accuracy is measured, not claimed. And it ACTS: an agent raises findings without being asked. One design choice underpins all of it — every suggestion shows its source parts and its arithmetic. A number you can't defend is worthless in a negotiation. Ours you can defend, line by line.");})();
 
+// ════ 3B — AGENTIC vs AUTONOMOUS AGENTIC (EXAMPLES) ════
+(()=>{const s=header('Agentic vs autonomous agentic — with examples','The concept · explained');
+ txt(s,'Two levels of "agentic". On the left the AI acts because you asked and you stay in the loop; on the right it acts on its own, unattended, within limits you set.',
+   0.45,1.74,12.4,0.4,{fontSize:12.5,color:C.BODY,italic:true});
+ const panel=(x,accent,fillc,head,tag,ex)=>{
+   const w=6.08, y=2.20, h=4.14;
+   rrect(s,x,y,w,h,fillc,{rectRadius:0.09});
+   rect(s,x,y,0.08,h,accent);
+   txt(s,head,x+0.28,y+0.16,w-0.5,0.32,{fontSize:15.5,bold:true,color:accent});
+   txt(s,tag,x+0.28,y+0.52,w-0.5,0.34,{fontSize:10.5,color:C.MUTED,italic:true,lineSpacingMultiple:1.03});
+   let ry=y+0.96; const rh=0.72;
+   ex.forEach(([lab,sub])=>{
+     rrect(s,x+0.24,ry,w-0.48,rh,C.BG,{rectRadius:0.06});
+     rect(s,x+0.24,ry,0.05,rh,accent);
+     s.addText([{text:lab+'   ',options:{fontSize:11,bold:true,color:C.DARK}},
+                {text:sub,options:{fontSize:9.5,color:C.MUTED}}],
+       {x:x+0.42,y:ry+0.05,w:w-0.66,h:rh-0.1,fontFace:BODY,valign:'middle',margin:0,lineSpacingMultiple:1.0});
+     ry+=rh+0.06;
+   });
+ };
+ panel(0.45,C.BLUE,C.PANEL,'Agentic AI','Assisted — you trigger it and stay in the loop; a human approves',
+   [['AI Agent',"Describe a part in plain English — it builds the full cost model for you."],
+    ['CAD / photo → cost',"Upload a STEP file — it measures the geometry and interprets material & process."],
+    ['Negotiation coach',"Open a part — it drafts the buyer's counter-argument and target price."],
+    ['Rate-data assistant',"Ask a costing question — it answers from your own rates, with citations."]]);
+ panel(6.8,C.VIOLET,C.PANEL2,'Autonomous Agentic AI','Self-directed — runs unattended on a schedule, within limits you set',
+   [['Savings monitor',"Runs on the server, compares paid vs should-cost, opens findings itself — £0.5M/yr found unattended."],
+    ['Self-audit',"Re-checks every estimate for known errors and corrects within bounds — nobody asks it to."],
+    ['Calibration & drift',"Learns from logged quotes, re-derives factors, and watches for drift continuously."],
+    ['Outcome-weighted ranking',"Learns which findings actually convert and re-prioritises the queue on its own."]]);
+ rrect(s,0.45,6.48,12.43,0.7,C.DARK,{rectRadius:0.07});
+ s.addText([{text:'The common thread:  ',options:{fontSize:11.5,bold:true,color:'FFFFFF'}},
+   {text:'you set the boundaries and every action stays glass-box and auditable — autonomy never means the AI sets a price in secret.',options:{fontSize:11.5,color:'E8EEFF'}}],
+   {x:0.78,y:6.48,w:11.8,h:0.7,fontFace:BODY,valign:'middle',margin:0,lineSpacingMultiple:1.0});
+ s.addNotes("Slow down here if the room is new to the word 'agentic', because there are really two levels and people run them together. On the LEFT is agentic AI in the everyday sense: the AI takes actions and uses tools, but you started the task and you stay in the loop. You describe a part and it builds the cost model; you upload a CAD file and it reads the geometry and picks the process; you open a part and it drafts the negotiation argument; you ask a question and it answers from our own rate data, with citations. Genuinely useful — but it's waiting for you to ask. On the RIGHT is the step that surprises people: autonomous agentic AI, where nobody is at the keyboard. A monitor runs on our server on a schedule, compares what we pay against what things should cost, and opens findings on its own — that's the half a million pounds a year it surfaced unattended in the demo. The self-audit re-checks every estimate for known mistakes and corrects them without being asked. The calibration keeps learning from logged quotes and watches for drift. The agent even re-prioritises its own queue toward the findings that actually convert to cash. The line at the bottom is the one I'd underline: the difference between the two columns is only who starts the action — in BOTH, the human sets the boundaries and every action stays glass-box and auditable. Autonomy here never means the AI quietly sets a price; it means it does the watching for us, and shows its working the moment it finds something worth acting on.");})();
+
 // ════ 4 — LEARNING LOOP ════
 (()=>{const s=header('How it works — the learning loop','How it works');
  const steps=[['1 · Analyse','Engineer costs a part as usual',C.BLUE],['2 · Remember','Saved automatically to the knowledge base',C.INDIGO],
