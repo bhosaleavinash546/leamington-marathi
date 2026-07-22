@@ -486,7 +486,14 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
     controls.update();
     scaleLabels();
     renderer.render(scene, camera);
-    if (viewHelper) viewHelper.render(renderer);
+    if (viewHelper) {
+      // ViewHelper.render() calls renderer.render() internally; with the default
+      // autoClear=true that would CLEAR the whole framebuffer (wiping the scene we
+      // just drew) before painting the gizmo in its corner. Suppress the clear.
+      renderer.autoClear = false;
+      viewHelper.render(renderer);
+      renderer.autoClear = true;
+    }
   }
 
   function resize(): void {
