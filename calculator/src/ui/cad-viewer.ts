@@ -220,42 +220,6 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
   const root = document.createElement('div');
   root.className = 'cv3d' + (opts.compact ? ' cv3d--compact' : '');
   root.innerHTML = `
-    <div class="cv3d-toolbar">
-      <div class="cv3d-group">
-        <button data-act="view-iso" title="Isometric view (Home)">⌂</button>
-        <button data-act="view-front" title="Front view">F</button>
-        <button data-act="view-top" title="Top view">T</button>
-        <button data-act="view-right" title="Right view">R</button>
-        <button data-act="fit" title="Fit part to screen">⛶</button>
-      </div>
-      <div class="cv3d-group">
-        <button data-act="mode-shaded" class="active" title="Shaded with edges">◧</button>
-        <button data-act="mode-wire" title="Wireframe">◇</button>
-        <button data-act="bbox" title="Bounding box + dimensions">▣</button>
-        <button data-act="facecolors" title="Colour by machining surface type (STEP/IGES only)" disabled>🎨</button>
-        <button data-act="draft" title="Draft &amp; undercut analysis — colour by pull direction">📐</button>
-        <button data-act="thickness" title="Wall-thickness heatmap (STEP/IGES only)" disabled>🌡</button>
-        <button data-act="clip" title="Section view — clipping planes (X/Y/Z)">✂</button>
-        <button data-act="explode" title="Exploded view (multi-body only)" disabled>💥</button>
-      </div>
-      <div class="cv3d-group">
-        <button data-act="tree" title="Model tree — bodies, features &amp; face types (STEP/IGES only)" disabled>☰</button>
-        <button data-act="features" title="Detected features — holes &amp; bosses (STEP/IGES only)" disabled>◎</button>
-      </div>
-      <div class="cv3d-group">
-        <button data-act="tool-select" class="active" title="Select — click a face for exact B-rep data">➤</button>
-        <button data-act="tool-dist" title="Measure distance — click two points (snaps to vertices &amp; edges)">↔</button>
-        <button data-act="tool-circle" title="Measure circle — click 3 points on a rim or bore">◯</button>
-        <button data-act="tool-angle" title="Measure angle — click 3 points (vertex is the middle click)">∠</button>
-        <button data-act="tool-point" title="Point — click to read X/Y/Z coordinates">⌖</button>
-        <button data-act="tool-facedist" title="Face-to-face — perpendicular distance between two faces">⊥</button>
-        <button data-act="clear" title="Clear measurements &amp; selection">✕</button>
-      </div>
-      <div class="cv3d-group cv3d-group--right">
-        <button data-act="snap" title="Snapshot — ${opts.onSnapshot ? 'attach to report' : 'download image'}">📷</button>
-        <button data-act="maximize" title="Maximize viewer (Esc to exit)">⤢</button>
-      </div>
-    </div>
     <div class="cv3d-viewport">
       <canvas class="cv3d-canvas"></canvas>
       <div class="cv3d-facechip" style="display:none"></div>
@@ -288,6 +252,62 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
       <div class="cv3d-explode-panel" style="display:none">
         <span class="cv3d-clip-label">Explode</span>
         <input type="range" class="cv3d-explode-slider" min="0" max="100" value="0" step="1"/>
+      </div>
+    </div>
+    <div class="cv3d-toolbar">
+      <div class="cv3d-grp">
+        <span class="cv3d-grp-cap">Views</span>
+        <div class="cv3d-grp-row">
+          <button data-act="view-iso" title="Isometric (Home)"><b>⌂</b><span>Home</span></button>
+          <button data-act="view-front" title="Front view"><b>F</b><span>Front</span></button>
+          <button data-act="view-top" title="Top view"><b>T</b><span>Top</span></button>
+          <button data-act="view-right" title="Right view"><b>R</b><span>Right</span></button>
+          <button data-act="fit" title="Fit part to screen"><b>⛶</b><span>Fit</span></button>
+        </div>
+      </div>
+      <div class="cv3d-grp">
+        <span class="cv3d-grp-cap">Display</span>
+        <div class="cv3d-grp-row">
+          <button data-act="mode-shaded" class="active" title="Shaded with edges"><b>◧</b><span>Shaded</span></button>
+          <button data-act="mode-wire" title="Wireframe"><b>◇</b><span>Wire</span></button>
+          <button data-act="bbox" title="Bounding box + dimensions"><b>▣</b><span>Box</span></button>
+        </div>
+      </div>
+      <div class="cv3d-grp">
+        <span class="cv3d-grp-cap">Analysis</span>
+        <div class="cv3d-grp-row">
+          <button data-act="facecolors" title="Colour by machining surface type (STEP/IGES only)" disabled><b>🎨</b><span>Faces</span></button>
+          <button data-act="draft" title="Draft &amp; undercut analysis — colour by pull direction"><b>📐</b><span>Draft</span></button>
+          <button data-act="thickness" title="Wall-thickness heatmap (STEP/IGES only)" disabled><b>🌡</b><span>Thickness</span></button>
+        </div>
+      </div>
+      <div class="cv3d-grp">
+        <span class="cv3d-grp-cap">Structure</span>
+        <div class="cv3d-grp-row">
+          <button data-act="tree" title="Model tree — bodies, features &amp; face types (STEP/IGES only)" disabled><b>☰</b><span>Tree</span></button>
+          <button data-act="features" title="Detected features — holes &amp; bosses (STEP/IGES only)" disabled><b>◎</b><span>Holes</span></button>
+          <button data-act="clip" title="Section view — clipping planes (X/Y/Z)"><b>✂</b><span>Section</span></button>
+          <button data-act="explode" title="Exploded view (multi-body only)" disabled><b>💥</b><span>Explode</span></button>
+        </div>
+      </div>
+      <div class="cv3d-grp cv3d-grp--measure">
+        <span class="cv3d-grp-cap">Measure &amp; Inspect</span>
+        <div class="cv3d-grp-row">
+          <button data-act="tool-select" class="active" title="Select — click a face for exact B-rep data"><b>➤</b><span>Select</span></button>
+          <button data-act="tool-dist" title="Distance — click two points (snaps to vertices &amp; edges)"><b>↔</b><span>Distance</span></button>
+          <button data-act="tool-circle" title="Radius / diameter — click 3 points on a rim or bore"><b>◯</b><span>Radius</span></button>
+          <button data-act="tool-angle" title="Angle — click 3 points (vertex is the middle click)"><b>∠</b><span>Angle</span></button>
+          <button data-act="tool-point" title="Point — read X / Y / Z coordinates"><b>⌖</b><span>Point</span></button>
+          <button data-act="tool-facedist" title="Face-to-face — perpendicular distance between two faces"><b>⊥</b><span>Face–Face</span></button>
+          <button data-act="clear" title="Clear measurements &amp; selection"><b>✕</b><span>Clear</span></button>
+        </div>
+      </div>
+      <div class="cv3d-grp">
+        <span class="cv3d-grp-cap">Capture</span>
+        <div class="cv3d-grp-row">
+          <button data-act="snap" title="Snapshot — ${opts.onSnapshot ? 'attach to report' : 'download image'}"><b>📷</b><span>Snapshot</span></button>
+          <button data-act="maximize" title="Maximize viewer (Esc to exit)"><b>⤢</b><span>Expand</span></button>
+        </div>
       </div>
     </div>
     <div class="cv3d-status">

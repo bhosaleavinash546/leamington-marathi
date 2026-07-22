@@ -6250,49 +6250,82 @@ input.cv-outlier { border-color: var(--warning) !important; box-shadow: 0 0 0 2p
 }
 .cv3d--compact { height: 420px; }
 
+/* NOTE: the cv3d chrome is deliberately dark in both app themes — the classic
+   CAD-tool look (light modelling space, dark chrome). Do not migrate to theme
+   variables. The toolbar sits at the BOTTOM (see DOM order) as a named ribbon. */
 .cv3d-toolbar {
   display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 6px 10px;
-  background: linear-gradient(180deg, #2b313a 0%, #262c34 100%);
-  border-bottom: 1px solid #1b1f25;
-  flex-wrap: wrap;
-}
-.cv3d-group {
-  display: flex;
+  align-items: flex-end;
   gap: 2px;
-  padding: 2px;
-  background: rgba(0, 0, 0, 0.22);
-  border-radius: 7px;
+  padding: 6px 8px 7px;
+  background: linear-gradient(180deg, #232936 0%, #1a202a 100%);
+  border-top: 1px solid #12161b;
+  flex-wrap: wrap;
+  row-gap: 6px;
 }
-/* NOTE: the cv3d chrome is deliberately dark in both app themes — the classic
-   CAD-tool look (light modelling space, dark chrome) and a stable frame for
-   the white viewport. Do not migrate these to theme variables. */
+/* a named group of tools */
+.cv3d-grp {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 0 9px;
+  border-right: 1px solid rgba(255, 255, 255, 0.07);
+}
+.cv3d-grp:last-child { border-right: none; }
+.cv3d-grp-cap {
+  font-size: 8.5px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: #6d7789;
+  white-space: nowrap;
+}
+.cv3d-grp-row { display: flex; gap: 2px; }
 .cv3d-toolbar button {
   appearance: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  min-width: 48px;
+  height: 44px;
+  padding: 3px 6px;
   border: 1px solid transparent;
+  border-radius: 7px;
   background: transparent;
-  color: #aeb6c2;
-  min-width: 30px;
-  height: 28px;
-  padding: 0 7px;
-  border-radius: 5px;
-  font-size: 14px;
-  line-height: 1;
+  color: #b3bccb;
   cursor: pointer;
   transition: background 0.12s ease, color 0.12s ease, border-color 0.12s ease;
 }
-.cv3d-toolbar button:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.08);
-  color: #e8ecf2;
-}
+.cv3d-toolbar button b { font-size: 16px; line-height: 1; font-weight: 400; }
+.cv3d-toolbar button span { font-size: 9px; line-height: 1; white-space: nowrap; letter-spacing: 0.02em; }
+.cv3d-toolbar button:hover:not(:disabled) { background: rgba(255, 255, 255, 0.08); color: #eef1f6; }
 .cv3d-toolbar button.active {
   background: rgba(79, 142, 247, 0.22);
   border-color: rgba(79, 142, 247, 0.55);
   color: #9cc0ff;
 }
-.cv3d-toolbar button:disabled { opacity: 0.35; cursor: not-allowed; }
+.cv3d-toolbar button:disabled { opacity: 0.32; cursor: not-allowed; }
+/* the Measure group is the star — larger buttons, subtly highlighted */
+.cv3d-grp--measure {
+  background: rgba(79, 142, 247, 0.07);
+  border: 1px solid rgba(79, 142, 247, 0.18);
+  border-radius: 9px;
+  padding: 2px 8px 3px;
+  margin: 0 2px;
+}
+.cv3d-grp--measure .cv3d-grp-cap { color: #8fb4f0; }
+.cv3d-grp--measure button { min-width: 62px; height: 50px; }
+.cv3d-grp--measure button b { font-size: 19px; }
+.cv3d-grp--measure button span { font-size: 10px; font-weight: 600; }
+/* compact/inline mount: hide captions, tighten buttons */
+.cv3d--compact .cv3d-grp-cap { display: none; }
+.cv3d--compact .cv3d-toolbar button { min-width: 40px; height: 38px; }
+.cv3d--compact .cv3d-toolbar button b { font-size: 14px; }
+.cv3d--compact .cv3d-toolbar button span { font-size: 8px; }
+.cv3d--compact .cv3d-grp--measure button { min-width: 50px; height: 42px; }
 
 .cv3d-viewport {
   position: relative;
@@ -6531,7 +6564,6 @@ input.cv-outlier { border-color: var(--warning) !important; box-shadow: 0 0 0 2p
 .cv3d-clip-off { font-weight: 400 !important; }
 
 /* Right-aligned toolbar group (snapshot + maximize) */
-.cv3d-group--right { margin-left: auto; }
 
 /* Maximize / full-window mode */
 .cv3d.cv3d--max {
