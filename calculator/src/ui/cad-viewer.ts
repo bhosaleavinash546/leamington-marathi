@@ -350,8 +350,8 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
       </div>
     </div>
     <div class="cv3d-toolbar">
-      <div class="cv3d-grp">
-        <span class="cv3d-grp-cap">Views</span>
+      <div class="cv3d-grp" data-grp="views">
+        <span class="cv3d-grp-cap" title="Drag to reorder · double-click to reset">Views</span>
         <div class="cv3d-grp-row">
           <button data-act="view-iso" title="Isometric (Home)"><b>${ICON['view-iso']}</b><span>Home</span></button>
           <button data-act="view-front" title="Front view"><b>${ICON['view-front']}</b><span>Front</span></button>
@@ -360,8 +360,8 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
           <button data-act="fit" title="Fit part to screen"><b>${ICON['fit']}</b><span>Fit</span></button>
         </div>
       </div>
-      <div class="cv3d-grp">
-        <span class="cv3d-grp-cap">Display</span>
+      <div class="cv3d-grp" data-grp="display">
+        <span class="cv3d-grp-cap" title="Drag to reorder · double-click to reset">Display</span>
         <div class="cv3d-grp-row">
           <button data-act="mode-shaded" class="active" title="Shaded with edges"><b>${ICON['shaded']}</b><span>Shaded</span></button>
           <button data-act="mode-wire" title="Wireframe"><b>${ICON['wire']}</b><span>Wire</span></button>
@@ -369,8 +369,8 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
           <button data-act="grid" class="active" title="Show / hide the ground grid"><b>${ICON['grid']}</b><span>Grid</span></button>
         </div>
       </div>
-      <div class="cv3d-grp">
-        <span class="cv3d-grp-cap">Analysis</span>
+      <div class="cv3d-grp" data-grp="analysis">
+        <span class="cv3d-grp-cap" title="Drag to reorder · double-click to reset">Analysis</span>
         <div class="cv3d-grp-row">
           <button data-act="facecolors" title="Colour by machining surface type (STEP/IGES only)" disabled><b>${ICON['faces']}</b><span>Faces</span></button>
           <button data-act="bodycolors" title="Colour each component a distinct colour (multi-body assemblies)" disabled><b>${ICON['components']}</b><span>Components</span></button>
@@ -378,8 +378,8 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
           <button data-act="thickness" title="Wall-thickness heatmap (STEP/IGES only)" disabled><b>${ICON['thickness']}</b><span>Thickness</span></button>
         </div>
       </div>
-      <div class="cv3d-grp">
-        <span class="cv3d-grp-cap">Structure</span>
+      <div class="cv3d-grp" data-grp="structure">
+        <span class="cv3d-grp-cap" title="Drag to reorder · double-click to reset">Structure</span>
         <div class="cv3d-grp-row">
           <button data-act="tree" title="Model tree — bodies, features &amp; face types (STEP/IGES only)" disabled><b>${ICON['tree']}</b><span>Tree</span></button>
           <button data-act="features" title="Detected features — holes &amp; bosses (STEP/IGES only)" disabled><b>${ICON['holes']}</b><span>Holes</span></button>
@@ -389,8 +389,8 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
           <button data-act="move" title="Move a component along X / Y / Z" disabled><b>${ICON['move']}</b><span>Move</span></button>
         </div>
       </div>
-      <div class="cv3d-grp cv3d-grp--measure">
-        <span class="cv3d-grp-cap">Measure &amp; Inspect</span>
+      <div class="cv3d-grp cv3d-grp--measure" data-grp="measure">
+        <span class="cv3d-grp-cap" title="Drag to reorder · double-click to reset">Measure &amp; Inspect</span>
         <div class="cv3d-grp-row">
           <button data-act="tool-select" class="active" title="Select — click a face for exact B-rep data"><b>${ICON['select']}</b><span>Select</span></button>
           <button data-act="tool-dist" title="Distance — click two points (snaps to vertices &amp; edges)"><b>${ICON['distance']}</b><span>Distance</span></button>
@@ -401,8 +401,8 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
           <button data-act="clear" title="Clear measurements &amp; selection"><b>${ICON['clear']}</b><span>Clear</span></button>
         </div>
       </div>
-      <div class="cv3d-grp">
-        <span class="cv3d-grp-cap">Capture</span>
+      <div class="cv3d-grp" data-grp="capture">
+        <span class="cv3d-grp-cap" title="Drag to reorder · double-click to reset">Capture</span>
         <div class="cv3d-grp-row">
           <button data-act="snap" title="Snapshot — ${opts.onSnapshot ? 'attach to report' : 'download image'}"><b>${ICON['snapshot']}</b><span>Snapshot</span></button>
           <button data-act="maximize" title="Maximize viewer (Esc to exit)"><b>${ICON['expand']}</b><span>Expand</span></button>
@@ -1772,6 +1772,52 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
       dragging = true; startX = (e as PointerEvent).clientX; startW = treeBox.getBoundingClientRect().width;
       window.addEventListener('pointermove', onMove); window.addEventListener('pointerup', onUp);
       e.preventDefault();
+    });
+  }
+
+  // ── draggable / reorderable toolbar groups (persisted; double-click cap = reset) ──
+  {
+    const toolbar = root.querySelector('.cv3d-toolbar') as HTMLElement;
+    const ORDER_KEY = 'cv3d-toolbar-order';
+    const defaultOrder = Array.from(toolbar.querySelectorAll('.cv3d-grp')).map(g => (g as HTMLElement).dataset.grp!);
+    const applyOrder = (order: string[]): void => {
+      for (const key of order) {
+        const g = toolbar.querySelector(`.cv3d-grp[data-grp="${key}"]`);
+        if (g) toolbar.appendChild(g); // re-append in saved order; unknown keys drop through
+      }
+    };
+    try {
+      const saved = JSON.parse(localStorage.getItem(ORDER_KEY) ?? 'null');
+      if (Array.isArray(saved) && saved.length) applyOrder(saved as string[]);
+    } catch { /* corrupt/blocked storage → default order */ }
+
+    let dragEl: HTMLElement | null = null;
+    const onMove = (e: PointerEvent): void => {
+      if (!dragEl) return;
+      const others = Array.from(toolbar.querySelectorAll('.cv3d-grp')).filter(g => g !== dragEl) as HTMLElement[];
+      const after = others.find(g => {
+        const r = g.getBoundingClientRect();
+        return e.clientY < r.bottom && e.clientX < r.left + r.width / 2; // wrap-aware insert point
+      });
+      if (after) toolbar.insertBefore(dragEl, after); else toolbar.appendChild(dragEl);
+    };
+    const onUp = (): void => {
+      if (!dragEl) return;
+      dragEl.classList.remove('cv3d-grp--dragging');
+      dragEl = null;
+      window.removeEventListener('pointermove', onMove);
+      window.removeEventListener('pointerup', onUp);
+      try { localStorage.setItem(ORDER_KEY, JSON.stringify(Array.from(toolbar.querySelectorAll('.cv3d-grp')).map(g => (g as HTMLElement).dataset.grp))); } catch { /* storage blocked */ }
+    };
+    toolbar.querySelectorAll('.cv3d-grp-cap').forEach(cap => {
+      cap.addEventListener('pointerdown', (e) => {
+        dragEl = (cap as HTMLElement).closest('.cv3d-grp') as HTMLElement;
+        dragEl.classList.add('cv3d-grp--dragging');
+        window.addEventListener('pointermove', onMove);
+        window.addEventListener('pointerup', onUp);
+        (e as PointerEvent).preventDefault();
+      });
+      cap.addEventListener('dblclick', () => { try { localStorage.removeItem(ORDER_KEY); } catch { /* ignore */ } applyOrder(defaultOrder); });
     });
   }
 

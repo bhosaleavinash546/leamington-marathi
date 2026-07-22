@@ -6310,6 +6310,11 @@ input.cv-outlier { border-color: var(--warning) !important; box-shadow: 0 0 0 2p
   cursor: pointer;
   transition: background 0.12s ease, color 0.12s ease, border-color 0.12s ease;
 }
+/* draggable group captions (reorder the whole group; double-click resets order) */
+.cv3d-grp-cap { cursor: grab; user-select: none; touch-action: none; }
+.cv3d-grp-cap:hover { color: #aeb6c2; }
+.cv3d-grp--dragging { opacity: 0.5; }
+.cv3d-grp--dragging .cv3d-grp-cap { cursor: grabbing; }
 .cv3d-toolbar button b { font-size: 16px; line-height: 1; font-weight: 400; display: inline-flex; }
 .cv3d-toolbar button b svg { width: 19px; height: 19px; display: block; }
 .cv3d-toolbar button span { font-size: 9px; line-height: 1; white-space: nowrap; letter-spacing: 0.02em; }
