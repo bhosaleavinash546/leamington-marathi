@@ -348,6 +348,7 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
         <label class="cv3d-clip-row"><span>Z</span><input type="range" data-mov-axis="z" min="-100" max="100" value="0" step="1"/></label>
         <button class="cv3d-move-reset" title="Reset this component's position">Reset</button>
       </div>
+      <button class="cv3d-tools-toggle" title="Hide / show the tools bar" aria-label="Hide or show the tools bar">${svgIcon('<path d="M6 9l6 6 6-6"/>')}</button>
     </div>
     <div class="cv3d-toolbar">
       <div class="cv3d-grp" data-grp="views">
@@ -1766,6 +1767,18 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
       e.preventDefault();
     });
   }
+
+  // ── bottom tools bar: slide down / up toggle (animated, persisted) ──
+  try { if (localStorage.getItem('cv3d-tools-collapsed') === '1') root.classList.add('cv3d--tools-collapsed'); } catch { /* storage blocked */ }
+  $('.cv3d-tools-toggle').addEventListener('click', () => {
+    const collapsed = root.classList.toggle('cv3d--tools-collapsed');
+    try { localStorage.setItem('cv3d-tools-collapsed', collapsed ? '1' : '0'); } catch { /* storage blocked */ }
+    // the viewport (flex:1) grows/shrinks as the bar slides — refit the canvas as
+    // it animates (the ResizeObserver also tracks it) and once it settles.
+    let n = 0;
+    const step = (): void => { resize(); if (++n < 20) requestAnimationFrame(step); };
+    requestAnimationFrame(step);
+  });
 
   // ── draggable / reorderable toolbar groups (persisted; double-click cap = reset) ──
   {

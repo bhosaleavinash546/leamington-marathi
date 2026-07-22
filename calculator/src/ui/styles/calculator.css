@@ -6273,7 +6273,48 @@ input.cv-outlier { border-color: var(--warning) !important; box-shadow: 0 0 0 2p
   border-top: 1px solid #12161b;
   flex-wrap: wrap;
   row-gap: 6px;
+  /* slide up/down animation for the whole tools bar */
+  max-height: 300px;
+  overflow: hidden;
+  transition: max-height 300ms var(--ease-std, cubic-bezier(.22,.61,.36,1)),
+              opacity 220ms ease, transform 300ms var(--ease-std, cubic-bezier(.22,.61,.36,1)),
+              padding 300ms var(--ease-std, cubic-bezier(.22,.61,.36,1));
 }
+.cv3d--tools-collapsed .cv3d-toolbar {
+  max-height: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  opacity: 0;
+  transform: translateY(14px);
+  border-top-color: transparent;
+  pointer-events: none;
+}
+/* the slide handle — anchored to the viewport's bottom edge, so it stays reachable
+   whether the bar is open or slid down */
+.cv3d-tools-toggle {
+  position: absolute;
+  left: 50%;
+  bottom: 6px;
+  transform: translateX(-50%);
+  z-index: 4;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 20px;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 7px;
+  background: rgba(24, 28, 34, 0.82);
+  color: #aeb6c2;
+  cursor: pointer;
+  backdrop-filter: blur(4px);
+  transition: color 140ms, background 140ms;
+}
+.cv3d-tools-toggle:hover { color: #eef1f6; background: rgba(36, 42, 52, 0.92); }
+.cv3d-tools-toggle svg { width: 17px; height: 17px; display: block; transition: transform 300ms var(--ease-std, cubic-bezier(.22,.61,.36,1)); }
+/* chevron points down when open (click to hide), flips up when collapsed (click to show) */
+.cv3d--tools-collapsed .cv3d-tools-toggle svg { transform: rotate(180deg); }
 /* a named group of tools */
 .cv3d-grp {
   display: flex;
