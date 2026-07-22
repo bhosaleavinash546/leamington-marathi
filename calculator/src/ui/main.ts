@@ -5,7 +5,8 @@ import {
 } from '../engine/index.js';
 import type { CADAnalysisResult, OCCTGeometry } from '../engine/ai-analysis.js';
 import { computeMachiningDrivers } from '../engine/modules/machining.js';
-import { computeSheetMetalDrivers, assessPressTonnage } from '../engine/modules/sheet-metal.js';
+import { computeSheetMetalDrivers, assessPressTonnage, estimateTonnageTonnes } from '../engine/modules/sheet-metal.js';
+import { sizeProcessMachine } from '../engine/machine-sizing.js';
 import { computeInjectionMouldingDrivers, estimateClampingTonnage, estimateMouldCost, pickIMMPressId, autoCoolFactorForMaterial, type MouldSteelClass } from '../engine/modules/injection-moulding.js';
 import { computeCastingDrivers } from '../engine/modules/casting.js';
 import { computeForgingDrivers } from '../engine/modules/forging.js';
@@ -10497,6 +10498,30 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
           'mat-al6061': 0.25, 'mat-al5052': 0.23, 'mat-brass-crz': 0.18,
         };
         setNumericField('forge-heat-energy', forgeHeatMap[c.materialId] ?? 0.40, 2);
+        // Size the forging press to the die-fill force (F = Kt·σflow·A_projected),
+        // not the small form default — the same "size the machine to the part" rule
+        // as IM/EBM, now generalised via sizeProcessMachine.
+        {
+          const fbb = cadOCCTGeometry?.boundingBox;
+          const fdims = (fbb
+            ? [fbb.xMm, fbb.yMm, fbb.zMm]
+            : [r.geometry.boundingBoxMm.x, r.geometry.boundingBoxMm.y, r.geometry.boundingBoxMm.z]
+          ).sort((a, b) => b - a);   // fall back to AI-analysis bbox when OCCT absent
+          const projAreaCm2 = (fdims[0] * fdims[1]) / 100;   // two largest dims → footprint mm²→cm²
+          if (projAreaCm2 > 0) {
+            const forgeTonnes = estimateForgingTonnage({
+              projectedAreaCm2: projAreaCm2,
+              alloyFamily: forgingAlloyFamilyFor(c.materialId),
+              shapeComplexity: 'moderate',
+            });
+            const forgeId = sizeProcessMachine('forging', { forgeTonnes });
+            const forgeMachEl = el<HTMLSelectElement>('forge-mach');
+            if (forgeId && forgeMachEl) {
+              const m = Array.from(forgeMachEl.options).find(o => o.value === forgeId);
+              if (m) { forgeMachEl.value = m.value; markAIFilled(forgeMachEl); }
+            }
+          }
+        }
         populateMachinedFeatures('forge');
         break;
       }
@@ -10546,6 +10571,20 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
           setNumericField('sm-num-ops', sm.numOps, 0);
         } else if (smTC) {
           setNumericField('sm-die-cost', smTC.progressiveDieCostGBP, 0);
+        }
+        // Size the stamping press to the blanking force (perimeter × thickness ×
+        // shear), not the small form default — generalised via sizeProcessMachine.
+        {
+          const smPerim = num('sm-perim'), smThick = num('sm-thick'), smShear = num('sm-shear');
+          if (smPerim > 0 && smThick > 0 && smShear > 0) {
+            const stampTonnes = estimateTonnageTonnes({ perimeterMm: smPerim, thicknessMm: smThick, shearStrengthMPa: smShear });
+            const pressId = sizeProcessMachine('sheet_metal', { stampTonnes });
+            const smPressEl = el<HTMLSelectElement>('sm-press');
+            if (pressId && smPressEl) {
+              const m = Array.from(smPressEl.options).find(o => o.value === pressId);
+              if (m) { smPressEl.value = m.value; markAIFilled(smPressEl); }
+            }
+          }
         }
         break;
       }
