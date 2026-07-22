@@ -1,8 +1,14 @@
-.PHONY: start stop restart logs open status update
+.PHONY: start dev stop restart logs open status update
 
 # ── Start the app (guided first-run setup + launch) ───────────────────────────
 start:
 	@./start.sh
+
+# ── Local dev with the STEP-capable 3D viewer (foreground, shows the OTP) ──────
+#    Use this to validate the 3D viewer on real STEP/IGES parts (needs cadquery:
+#    pip install cadquery). Opens http://localhost:5174/calculator/ automatically.
+dev:
+	@./dev-start.sh
 
 # ── Stop the app ─────────────────────────────────────────────────────────────
 stop:
