@@ -392,7 +392,10 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
   // preserveDrawingBuffer:false lets the driver discard the buffer after compositing
   // (faster). The snapshot path stays correct because it renders synchronously right
   // before toDataURL, in the same call stack, so the buffer is still valid then.
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, preserveDrawingBuffer: false });
+  // logarithmicDepthBuffer distributes depth precision logarithmically — essential
+  // for large models (e.g. a 4.8 m chassis) where a linear buffer z-fights and the
+  // surfaces "shatter" when you zoom in close.
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, preserveDrawingBuffer: false, logarithmicDepthBuffer: true });
   renderer.setPixelRatio(pixelRatio());
   renderer.localClippingEnabled = true;
   const scene = new THREE.Scene();
@@ -632,9 +635,12 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
   }
   const fit = () => setView([1, 0.8, 1]);
 
-  /** Frustum must track part size — fixed planes blank out metre-scale parts. */
+  /** Frustum must track part size — fixed planes blank out metre-scale parts.
+   *  With the logarithmic depth buffer a wide near..far range keeps full precision,
+   *  so near can sit close (deep zoom without clipping) while far still clears the
+   *  whole part. */
   function updateFrustum(): void {
-    camera.near = Math.max(partRadius / 1000, 0.001);
+    camera.near = Math.max(partRadius / 5000, 0.001);
     camera.far = partRadius * 100;
     camera.updateProjectionMatrix();
   }
