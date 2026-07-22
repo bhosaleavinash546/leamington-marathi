@@ -34,6 +34,12 @@ const FORGE_PRESS_TIERS: ReadonlyArray<readonly [number, string]> = [
   [4000, 'forge-press-4000t'], [8000, 'forge-press-8000t'],
 ];
 
+/** High-pressure die-casting machines (clamp/locking force, metric tonnes). */
+const HPDC_MACHINE_TIERS: ReadonlyArray<readonly [number, string]> = [
+  [160, 'hpdc-160t'], [500, 'hpdc-500t'], [800, 'hpdc-800t'], [1600, 'hpdc-1600t'],
+  [6100, 'hpdc-giga-6100t'], [9000, 'hpdc-giga-9000t'],
+];
+
 /** Smallest stamping press covering the blanking/forming force × safety factor. */
 export function pickStampingPressId(requiredTonnes: number, safety = 1.25): string {
   return pickTier(STAMPING_PRESS_TIERS, Math.max(0, requiredTonnes) * safety);
@@ -42,6 +48,11 @@ export function pickStampingPressId(requiredTonnes: number, safety = 1.25): stri
 /** Smallest forging press covering the die-fill force × safety factor. */
 export function pickForgePressId(requiredTonnes: number, safety = 1.2): string {
   return pickTier(FORGE_PRESS_TIERS, Math.max(0, requiredTonnes) * safety);
+}
+
+/** Smallest HPDC machine covering the clamp/locking force × safety factor. */
+export function pickHPDCMachineId(requiredTonnes: number, safety = 1.2): string {
+  return pickTier(HPDC_MACHINE_TIERS, Math.max(0, requiredTonnes) * safety);
 }
 
 /** Physics inputs for the dispatcher — each commodity reads only the field it needs. */
@@ -54,15 +65,22 @@ export interface MachineSizingParams {
   forgeTonnes?: number;
   /** sheet-metal stamping: estimated blanking force, metric tonnes. */
   stampTonnes?: number;
+  /** HPDC (casting / cast+machine): estimated clamp/locking force, metric tonnes. */
+  hpdcTonnes?: number;
 }
 
 /** Commodities whose machine is tiered by part size, and the driver that tiers it.
- *  The self-audit layer reads this to know which estimates to check. */
+ *  The self-audit layer reads this to know which estimates to check. Casting is
+ *  tiered only for the HPDC subtype — sand/gravity/investment are not machine-force
+ *  tiered. Rubber / rotomoulding / extrusion are process-variant tiered (compression
+ *  vs injection, arm style, screw line), NOT part-size tiered, so they are absent. */
 export const SIZE_TIERED_COMMODITIES: Record<string, keyof MachineSizingParams> = {
   injection_moulding: 'clampTonnes',
   blow_moulding: 'shotKg',
   forging: 'forgeTonnes',
   sheet_metal: 'stampTonnes',
+  casting: 'hpdcTonnes',
+  cast_and_machine: 'hpdcTonnes',
 };
 
 /** Pick the right machine id for a size-tiered commodity, or null if the commodity
@@ -73,6 +91,8 @@ export function sizeProcessMachine(commodity: string, p: MachineSizingParams): s
     case 'blow_moulding':      return p.shotKg != null ? pickEBMMachineId(p.shotKg) : null;
     case 'forging':            return p.forgeTonnes != null ? pickForgePressId(p.forgeTonnes) : null;
     case 'sheet_metal':        return p.stampTonnes != null ? pickStampingPressId(p.stampTonnes) : null;
+    case 'casting':
+    case 'cast_and_machine':   return p.hpdcTonnes != null ? pickHPDCMachineId(p.hpdcTonnes) : null;
     default:                   return null;
   }
 }

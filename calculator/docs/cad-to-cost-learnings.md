@@ -151,6 +151,31 @@ Same two patterns the IM bumper hit, now for EBM. On the 11.1 kg fuel tank:
   (Verified deterministically through the engine; the golden rule holds — the AI
   only classifies barrier vs mono, the £/kg is fixed catalogue data.)
 
+### 3e. Generalising the lessons across commodities (Phase 1 — agentic accuracy)
+The per-part fixes above were the right corrections but landed as point patches on
+one or two commodities. Two of them were promoted to universal mechanisms so a new
+commodity (or a future one) inherits them for free:
+- **Tooling amortises over annual volume for EVERY commodity.** The old code had a
+  partial 11-commodity allow-list *and* six commodity cases that hard-coded their
+  amort volume *after* the sync — silently clobbering it (blow/thermoforming/roto/
+  rubber/composites/harness amortised over a stale form default). **Fix:** one
+  `COMMODITY_AMORT_FIELD` map (all 18 commodities); per-case defaults apply only
+  when no annual volume is given. Verified live: thermoforming 50k default → 100k.
+- **Machine sized to the part for every size-tiered commodity.** "Size the machine
+  to the part" (fuel-tank bottle machine, bumper press) was live only for IM + EBM.
+  **Fix:** `engine/machine-sizing.ts` — one `sizeProcessMachine(commodity, params)`
+  dispatcher + a `SIZE_TIERED_COMMODITIES` registry (the single place the self-audit
+  layer will ask "is the machine sized to this part?"), reusing existing tonnage
+  physics: IM clamp (`estimateClampingTonnage`), EBM shot weight, forging die-fill
+  (`estimateForgingTonnage`), sheet-metal blanking (`estimateTonnageTonnes`), HPDC
+  clamp (casting + cast+machine). `applyCADToForm` now sizes forge-mach, sm-press,
+  cast-hpdc-mach, cam-hpdc-mach from geometry+material. Verified live: forging →
+  forge-press-1600t, sheet-metal → press-100t, casting → hpdc-800t, cast+machine →
+  hpdc-1600t. The picker only *selects* a rate-library machine id — £/hr stays
+  deterministic (golden rule). Rubber / rotomoulding / extrusion are intentionally
+  absent: they are process-variant tiered (compression vs injection, arm style,
+  screw line), not part-size tiered, so forcing a tonnage ladder would be wrong.
+
 ### 4b. Robustness — a missing AI field must never crash the calculation
 The seat cross-member's AI response omitted `mouldLife`/`runnerWeightKg` from the
 injection-moulding sub-object (the bumper's included them — pure response variance).

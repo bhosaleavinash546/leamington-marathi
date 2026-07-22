@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import {
-  pickStampingPressId, pickForgePressId, sizeProcessMachine, SIZE_TIERED_COMMODITIES,
+  pickStampingPressId, pickForgePressId, pickHPDCMachineId, sizeProcessMachine, SIZE_TIERED_COMMODITIES,
 } from '../src/engine/machine-sizing.js';
 import { estimateForgingTonnage } from '../src/engine/modules/forging-advisor.js';
 import { estimateTonnageTonnes } from '../src/engine/modules/sheet-metal.js';
@@ -22,20 +22,31 @@ describe('forge press sizing', () => {
   });
 });
 
+describe('HPDC machine sizing', () => {
+  it('picks the smallest die-casting machine covering the clamp force', () => {
+    expect(pickHPDCMachineId(120)).toBe('hpdc-160t');    // 120×1.2=144 → 160t
+    expect(pickHPDCMachineId(600)).toBe('hpdc-800t');    // 600×1.2=720 → 800t
+    expect(pickHPDCMachineId(5000)).toBe('hpdc-giga-6100t'); // megacasting territory
+  });
+});
+
 describe('sizeProcessMachine dispatcher', () => {
   it('routes each size-tiered commodity to its picker', () => {
     expect(sizeProcessMachine('injection_moulding', { clampTonnes: 180 })).toBe('imm-200t');
     expect(sizeProcessMachine('blow_moulding', { shotKg: 13 })).toBe('blow-ebm-large');
     expect(sizeProcessMachine('forging', { forgeTonnes: 1500 })).toBe('forge-press-2500t');
     expect(sizeProcessMachine('sheet_metal', { stampTonnes: 200 })).toBe('press-400t');
+    expect(sizeProcessMachine('casting', { hpdcTonnes: 600 })).toBe('hpdc-800t');
+    expect(sizeProcessMachine('cast_and_machine', { hpdcTonnes: 120 })).toBe('hpdc-160t');
   });
   it('returns null when the commodity is not size-tiered or the driver is missing', () => {
-    expect(sizeProcessMachine('casting', { forgeTonnes: 1000 })).toBeNull();
+    expect(sizeProcessMachine('rubber', { forgeTonnes: 1000 })).toBeNull();
     expect(sizeProcessMachine('forging', {})).toBeNull();
+    expect(sizeProcessMachine('casting', {})).toBeNull();
   });
   it('registry lists exactly the commodities the dispatcher handles', () => {
     expect(Object.keys(SIZE_TIERED_COMMODITIES).sort())
-      .toEqual(['blow_moulding', 'forging', 'injection_moulding', 'sheet_metal']);
+      .toEqual(['blow_moulding', 'cast_and_machine', 'casting', 'forging', 'injection_moulding', 'sheet_metal']);
   });
 });
 

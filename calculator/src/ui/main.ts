@@ -10228,6 +10228,36 @@ const COMMODITY_AMORT_FIELD: Record<string, string> = {
   biw_assembly: 'biw-amort', pcb_fab: 'pcbf-amort', pcba: 'pcba-amort',
 };
 
+/** Plan-view projected footprint (cm²) — two largest bbox dims, measured OCCT
+ *  bbox preferred, AI-analysis bbox as fallback. Drives press/clamp tonnage. */
+function _projectedFootprintCm2(): number {
+  const bb = cadOCCTGeometry?.boundingBox;
+  const g = cadAnalysisResult?.geometry?.boundingBoxMm;
+  const dims = bb ? [bb.xMm, bb.yMm, bb.zMm] : g ? [g.x, g.y, g.z] : null;
+  if (!dims) return 0;
+  const s = [...dims].sort((a, b) => b - a);
+  return (s[0] * s[1]) / 100;
+}
+
+/** Size an HPDC machine select to the clamp/locking force for the part footprint.
+ *  HPDC intensification pressure on the metal ~70 MPa (700 bar, Al); clamp force =
+ *  total projected area × specific pressure — reuses the IM clamp-tonnage math. */
+function sizeHPDCMachineFor(selId: string, cavities: number): void {
+  const projAreaCm2 = _projectedFootprintCm2();
+  if (projAreaCm2 <= 0) return;
+  const hpdcTonnes = estimateClampingTonnage({
+    projectedAreaCm2: projAreaCm2 * Math.max(1, cavities),
+    cavityPressureMPa: 70,
+    safetyfactor: 1.2,
+  });
+  const id = sizeProcessMachine('casting', { hpdcTonnes });
+  const sel2 = document.getElementById(selId) as HTMLSelectElement | null;
+  if (id && sel2) {
+    const m = Array.from(sel2.options).find(o => o.value === id);
+    if (m) { sel2.value = m.value; markAIFilled(sel2); }
+  }
+}
+
 function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): void {
   if (!cadAnalysisResult) return;
   _pendingCostingSource = 'cad'; // tag the next costing record for the accuracy harness
@@ -10388,6 +10418,7 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
             setNumericField('cast-hpdc-cav', cast.cavities, 0);
             setNumericField('cast-hpdc-die-cost', occtTC?.hpdcDieCostGBP ?? cast.dieMouldCostGBP, 0);
             setNumericField('cast-hpdc-die-life', cast.dieMouldLife, 0);
+            sizeHPDCMachineFor('cast-hpdc-mach', cast.cavities || 1);
           } else if (cast.subtype === 'sand') {
             setNumericField('cast-sand-ct', occtPS?.sandCycleTimeHr ?? cast.cycleTimeSandGravHr, 4);
             setNumericField('cast-sand-pat-cost', occtTC?.sandPatternCostGBP ?? cast.dieMouldCostGBP, 0);
@@ -10425,6 +10456,7 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
             setNumericField('cam-hpdc-cav', castCAM.cavities, 0);
             setNumericField('cam-hpdc-die-cost', camTC?.hpdcDieCostGBP ?? castCAM.dieMouldCostGBP, 0);
             setNumericField('cam-hpdc-die-life', castCAM.dieMouldLife, 0);
+            sizeHPDCMachineFor('cam-hpdc-mach', castCAM.cavities || 1);
           } else if (castCAM.subtype === 'sand') {
             setNumericField('cam-sand-ct', camPS?.sandCycleTimeHr ?? castCAM.cycleTimeSandGravHr, 4);
             setNumericField('cam-sand-pat-cost', camTC?.sandPatternCostGBP ?? castCAM.dieMouldCostGBP, 0);
