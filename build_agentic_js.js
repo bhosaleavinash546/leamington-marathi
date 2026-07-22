@@ -68,7 +68,7 @@ const CHART=(colors,extra={})=>({showLegend:false,chartColors:colors,showValue:t
  kpiCard(s,0.45,2.0,3.0,1.75,'36×','Error reduction','Estimating error fell from 10.9% to 0.3% after the tool learned from just 3 real quotes (verified live).',C.GREEN);
  kpiCard(s,3.65,2.0,3.0,1.75,'£512k/yr','Found autonomously','In our live demo the background agent flagged £512k/yr of pricing issues — with nobody at the keyboard.',C.RED);
  kpiCard(s,6.85,2.0,3.0,1.75,'99%','Part recognition','A new bracket was matched to 3 past bracket analyses at 98–99% similarity, with reasons shown.',C.CYAN);
- kpiCard(s,10.05,2.0,2.85,1.75,'917','Automated tests','Every capability is covered by automated tests (77 suites) and was exercised end-to-end on the running system.',C.VIOLET);
+ kpiCard(s,10.05,2.0,2.85,1.75,'1,005','Automated tests','Every capability is covered by automated tests (86 suites), exercised end-to-end on the running system — and the container build is CI-verified.',C.VIOLET);
  rrect(s,0.45,4.1,12.45,2.7,C.PANEL2,{rectRadius:0.06});
  txt(s,[{text:'The idea, in plain words',options:{fontSize:15,bold:true,color:C.DARK,breakLine:true}},
    {text:'Until now, every costing started from zero and the result depended on who did it. ',options:{fontSize:13.5,color:C.BODY}},
@@ -76,7 +76,7 @@ const CHART=(colors,extra={})=>({showLegend:false,chartColors:colors,showValue:t
    {text:'every analysis is stored, every real supplier quote teaches it, and every new part is compared against everything we have costed before.',options:{fontSize:13.5,color:C.BODY,breakLine:true}},
    {text:'The knowledge stays in our database, on our servers — it becomes a company asset that gets more valuable with use, and it does not walk out of the door when an expert leaves.',options:{fontSize:13.5,color:C.BODY}}],
    0.75,4.35,11.9,2.3,{lineSpacingMultiple:1.15,paraSpaceAfter:8});
- s.addNotes("If you remember four numbers, remember these. Error fell thirty-six-fold — eleven percent to under one — after the tool learned from just three real quotes. The background agent found half a million pounds a year of pricing issues with nobody at the keyboard. It recognised a brand-new bracket against past parts at ninety-nine percent and told us why. And it's production-grade — nine hundred and seventeen automated tests. The one line that matters: costing intelligence used to live in people's heads and walk out the door. Now it accumulates as a company asset that gets more valuable every day.");})();
+ s.addNotes("If you remember four numbers, remember these. Error fell thirty-six-fold — eleven percent to under one — after the tool learned from just three real quotes. The background agent found half a million pounds a year of pricing issues with nobody at the keyboard. It recognised a brand-new bracket against past parts at ninety-nine percent and told us why. And it's production-grade — just over a thousand automated tests, and it now runs as a deployable container with the build verified in CI. The one line that matters: costing intelligence used to live in people's heads and walk out the door. Now it accumulates as a company asset that gets more valuable every day.");})();
 
 // ════ 3 — WHAT AGENTIC AI MEANS ════
 (()=>{const s=header('What "Agentic AI" means here — four plain words','The concept');
@@ -225,14 +225,14 @@ const CHART=(colors,extra={})=>({showLegend:false,chartColors:colors,showValue:t
 (()=>{const s=header('Results & accuracy — measured, not promised','Evidence');
  [['Estimating error after learning (machining segment)','10.9%  →  0.3%',C.GREEN],['Estimating error after learning (casting · China)','8.7%  →  0.6%',C.GREEN],
   ['Confidence band on the same part','±20.4%  →  ±2.8%',C.GREEN],['Similar-part recognition on live example','98–99% match, reasons shown',C.CYAN],
-  ['Autonomous findings in unattended demo','£512,000 / yr surfaced',C.RED],['Automated tests protecting all of this','917 passing (77 suites)',C.VIOLET]]
+  ['Autonomous findings in unattended demo','£512,000 / yr surfaced',C.RED],['Automated tests protecting all of this','1,005 passing (86 suites)',C.VIOLET]]
  .forEach((r,i)=>{const y=2.1+i*0.72; rrect(s,0.45,y,12.45,0.6,i%2===0?C.PANEL:C.BG,{rectRadius:0.14});
    txt(s,r[0],0.8,y+0.11,8.2,0.4,{fontSize:13,color:C.BODY});
    txt(s,r[1],8.6,y+0.09,4.1,0.42,{fontSize:14,bold:true,color:r[2],align:'right'});});
  rrect(s,0.45,6.5,12.45,0.72,C.PANEL2,{rectRadius:0.1});
  txt(s,[{text:'How we verified: ',options:{bold:true,color:C.DARK}},
    {text:'every number above comes from running the real system end-to-end — live server, real database, real API calls — not from slides or simulations.',options:{color:C.BODY}}],0.75,6.62,11.9,0.5,{fontSize:12});
- s.addNotes("Everything on this slide was measured on the running system — live server, real database, real API calls — not projected. Segment error dropped to well under one percent in BOTH directions of bias. The confidence band tightened seven-fold. Recognition hit ninety-nine percent. The unattended agent surfaced half a million pounds. And nine hundred and seventeen tests stand guard so none of it quietly regresses. One honest caveat: these demos ran on small seeded datasets — real-world accuracy builds as OUR data accumulates. The mechanism is proven. The asset grows with use.");})();
+ s.addNotes("Everything on this slide was measured on the running system — live server, real database, real API calls — not projected. Segment error dropped to well under one percent in BOTH directions of bias. The confidence band tightened seven-fold. Recognition hit ninety-nine percent. The unattended agent surfaced half a million pounds. And just over a thousand tests stand guard so none of it quietly regresses. One honest caveat: these demos ran on small seeded datasets — real-world accuracy builds as OUR data accumulates. The mechanism is proven. The asset grows with use.");})();
 
 // ════ 13 — BENEFITS ════
 (()=>{const s=header('What this means for the business','Benefits');
@@ -342,6 +342,43 @@ const CHART=(colors,extra={})=>({showLegend:false,chartColors:colors,showValue:t
    {text:'the 2–3× over-costing is gone. That live ECU came back ASIL-B, 23 BOM lines, £69.11/board — with £37.65 confirmed and £24.64 honestly flagged to verify. Same photo, same answer, every run.',options:{fontSize:12,color:C.BODY}}],0.75,6.12,12.0,0.6,{lineSpacingMultiple:1.15});
  s.addNotes("Now the feature I'm proudest of this year. Photograph a circuit board, and in about sixty seconds you get a costed bill of materials. The story is honesty about the journey: it started as a clever demo, and complex automotive boards would sometimes come back EMPTY — a lot of compute, no result. We fixed that at the root, then hardened the whole pipeline. The chart is the proof: the same real ECU, costed by an engineer in half a day versus the AI from one photo — sixty-nine pounds against seventy-three, within about five percent, in sixty seconds. On the right, the five fixes that got us there. Bottom line: the two-to-three-times over-costing is gone. Same photo, same answer, every run — and it tells you exactly which lines to firm up before you quote.");})();
 
+// ════ 18B — SELF-AUDIT / GUARDRAILS ════
+(()=>{const s=header('The tool now checks its own homework','New in 2026 · advanced intelligence');
+ txt(s,[{text:'Every lesson we learned fixing real parts became a ',options:{color:C.BODY}},
+   {text:'deterministic check that runs on every single estimate',options:{bold:true,color:C.DARK}},
+   {text:' — catching a wrong machine, an implausible wall, or a mis-set weight before it ever reaches a supplier.',options:{color:C.BODY}}],0.45,1.82,12.4,0.5,{fontSize:13});
+ const checks=[['Machine sized to the part','Flags an under-sized press or mould and offers the right one in one click',C.BLUE],
+  ['Geometry sanity','A wall thicker than the part, or a thin hollow shell mis-read as solid — caught',C.CYAN],
+  ['Weight vs. geometry','Costed weight must match the measured volume × the chosen material’s density',C.VIOLET],
+  ['Tooling amortised right','Tooling must amortise over the stated annual volume — every commodity, no exceptions',C.GREEN]];
+ checks.forEach((c,i)=>{const y=2.5+i*0.82; rrect(s,0.45,y,12.45,0.7,i%2===0?C.PANEL:C.BG,{rectRadius:0.1}); rect(s,0.45,y,0.09,0.7,c[2]);
+   txt(s,'✓  '+c[0],0.75,y+0.19,4.5,0.4,{fontSize:12.5,bold:true,color:c[2]});
+   txt(s,c[1],5.3,y+0.19,7.4,0.4,{fontSize:11.5,color:C.BODY});});
+ rrect(s,0.45,5.95,12.45,0.95,C.PANEL2,{rectRadius:0.08});
+ txt(s,[{text:'Live proof:  ',options:{fontSize:12.5,bold:true,color:C.GREEN}},
+   {text:'we deliberately put a forging on a 2-tonne hand-hammer; the tool flagged it HIGH, named the right 1,600-tonne press, and one click restored it. It re-derives from physics — so it also catches a colleague’s override or a future code regression, not just yesterday’s bug.',options:{fontSize:12,color:C.BODY}}],0.75,6.12,11.9,0.75,{lineSpacingMultiple:1.15});
+ s.addNotes("Here's the newest layer, and it's pure glass-box. Over the last stretch we hammered the tool against real automotive CAD and found a handful of ways an estimate could quietly go wrong — the wrong machine, a mis-read wall, a weight that doesn't match the shape. The important bit is what we did next: instead of just fixing each part, we turned every lesson into a deterministic check that now runs on EVERY estimate. It sizes the machine to the part across every process, sanity-checks the geometry, ties the weight to the measured volume, and makes sure tooling amortises over the real volume. And because it re-derives from the physics — here's the clever part — it catches a colleague overriding it, or a future code change breaking something, not only the original bug. Live proof: we put a forging on a two-tonne hand-hammer on purpose; it flagged it, named the right sixteen-hundred-tonne press, and one click fixed it. The tool checks its own homework now.");})();
+
+// ════ 18C — REAL-PART VALIDATION ════
+(()=>{const s=header('Proven on five real automotive CAD parts','New in 2026 · advanced intelligence');
+ txt(s,'Five real STEP files, run end-to-end. On each, the tool’s first answer had a specific, explainable error — every one is now fixed and guarded by a test.',0.45,1.82,12.4,0.5,{fontSize:13,color:C.BODY});
+ const cx=[0.65,3.25,6.15,8.7]; rect(s,0.45,2.55,12.45,0.5,C.DARK);
+ ['Part','First answer','Corrected','What it caught'].forEach((h,i)=>txt(s,h,cx[i],2.63,3.0,0.35,{fontSize:11,bold:true,color:C.BG}));
+ [['Fuel tank','£216.97 sand casting','£24.62 blow-moulded','thin hollow shell ≠ a metal casting'],
+  ['Front bumper','£29.18 Al casting','£7.79 injection-moulded','plastic mis-read as metal; 27 mm phantom wall'],
+  ['Servo horn','£333 machining card','£6.40','266 min of cutting on a 3 g part'],
+  ['Stub axle','wrong — lightest metal','forged steel, 8.1 kg','picked the lightest material, not the real one'],
+  ['Seat cross-member','crash — missing field','£1.11 steel stamping','a missing AI field must never break the calc']]
+ .forEach((r,i)=>{const y=3.05+i*0.62; rect(s,0.45,y,12.45,0.6,i%2===0?C.PANEL:C.BG);
+   txt(s,r[0],cx[0],y+0.15,2.5,0.35,{fontSize:12,bold:true,color:C.DARK});
+   txt(s,r[1],cx[1],y+0.15,2.9,0.35,{fontSize:11,color:C.MUTED});
+   txt(s,r[2],cx[2],y+0.15,2.5,0.35,{fontSize:11.5,bold:true,color:C.GREEN});
+   txt(s,r[3],cx[3],y+0.15,4.55,0.35,{fontSize:10.5,color:C.BODY});});
+ rrect(s,0.45,6.25,12.45,0.8,C.PANEL2,{rectRadius:0.1});
+ txt(s,[{text:'The point:  ',options:{fontSize:12.5,bold:true,color:C.BLUE}},
+   {text:'geometry is ground truth; the AI only classifies material and process — and when it slips, the guardrails now catch it. Every fix shipped with a test, so the same mistake can’t come back.',options:{fontSize:12,color:C.BODY}}],0.75,6.4,11.9,0.55,{fontSize:12,lineSpacingMultiple:1.1});
+ s.addNotes("This is the evidence slide I'd stake the pitch on. We didn't test on toy shapes — we ran five real automotive parts, actual STEP files, end to end. And I'll be completely straight with you: on every one, the tool's FIRST answer had an error. A fuel tank came back as a two-hundred-pound sand casting, because to raw geometry a thin hollow tank looks a bit like a casting — it's really a twenty-four-pound blow-moulded part. A bumper priced as an aluminium casting instead of injection-moulded plastic. A three-gram horn with over four hours of imaginary machining. Each one we diagnosed, fixed at the root, and — crucially — pinned with a test so it can't come back. That's the line between a demo and a tool you trust: it has been wrong on real parts, in ways we can explain, and it's now guarded against every one of them. Being honest about the misses is exactly what earns trust in the hits.");})();
+
 // ════ 19 — GLASS-BOX ════
 (()=>{const s=header('Why ours is different — glass-box autonomy','The differentiator');
  rrect(s,0.45,2.0,12.45,1.3,C.PANEL2,{rectRadius:0.06});
@@ -361,7 +398,7 @@ const CHART=(colors,extra={})=>({showLegend:false,chartColors:colors,showValue:t
 (()=>{const s=header('Where we are, and the ask','Next steps');
  rrect(s,0.45,2.0,6.0,4.4,C.PANEL,{rectRadius:0.05});
  txt(s,'Status today',0.75,2.25,5.4,0.4,{fontSize:16,bold:true,color:C.GREEN});
- ['All capabilities built, tested (917 tests) and live — incl. 6 new for 2026','Verified end-to-end on the running system',
+ ['All capabilities built, tested (1,005 tests) and live — incl. 8 new for 2026','Verified end-to-end; ships as a container (CAD engine included), CI build-tested',
   'Zero extra licence cost — built into our tool','Runs on-premise; no data leaves the company']
  .forEach((t,i)=>txt(s,[{text:'✓  ',options:{bold:true,color:C.GREEN}},{text:t,options:{color:C.BODY}}],0.75,2.8+i*0.55,5.4,0.5,{fontSize:12.5}));
  txt(s,[{text:'Honest note: ',options:{fontSize:12,bold:true,color:C.DARK}},
@@ -374,7 +411,7 @@ const CHART=(colors,extra={})=>({showLegend:false,chartColors:colors,showValue:t
  .forEach((r,i)=>{const y=2.85+i*1.05;
    txt(s,[{text:r[0],options:{fontSize:13.5,bold:true,color:C.DARK,breakLine:true}},{text:'     '+r[1],options:{fontSize:11.5,color:C.BODY}}],7.15,y,5.5,1.0,{lineSpacingMultiple:1.1});});
  rect(s,0,H-0.16,W,0.16,C.INDIGO);
- s.addNotes("To close. The capability is built, tested — nine hundred and seventeen tests — and live, at no extra licence cost, on our own infrastructure. I'll be straight about the one dependency: the intelligence starts empty and grows with use. So the ask is three small decisions. One: make 'Log Actual £' a one-click habit. Two: approve a one-off import of our historical quotes so it starts smart — a day or two of effort. Three: put the agent's findings on the sourcing agenda each month; it's already finding money. Do those three things and this becomes a compounding asset from day one. Thank you — happy to take questions, or show you the live system right now.");})();
+ s.addNotes("To close. The capability is built, tested — just over a thousand tests — and live, at no extra licence cost, on our own infrastructure, now shipping as a deployable container. I'll be straight about the one dependency: the intelligence starts empty and grows with use. So the ask is three small decisions. One: make 'Log Actual £' a one-click habit. Two: approve a one-off import of our historical quotes so it starts smart — a day or two of effort. Three: put the agent's findings on the sourcing agenda each month; it's already finding money. Do those three things and this becomes a compounding asset from day one. Thank you — happy to take questions, or show you the live system right now.");})();
 
 const OUT='/home/user/leamington-marathi/CostVision-Agentic-AI-Management-Presentation.pptx';
 p.writeFile({fileName:OUT}).then(f=>console.log('wrote',f));
