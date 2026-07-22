@@ -229,6 +229,42 @@ function persistLoad(fileKey: string): Array<{ kind: MeasurementRecord['kind']; 
 const EDGE_WORKER_THRESHOLD = 30_000;
 const EDGE_ANGLE_DEG = 24;
 
+// ── Toolbar icon set ──────────────────────────────────────────────────────────
+// Consistent single-weight line icons (Lucide/Feather style) drawn in currentColor
+// so they inherit the button's active/disabled state and adapt to light/dark.
+const svgIcon = (inner: string): string =>
+  `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${inner}</svg>`;
+const ICON: Record<string, string> = {
+  'view-iso':   svgIcon('<path d="M12 2.6 3.6 7v10L12 21.4 20.4 17V7z"/><path d="M3.6 7 12 11.5 20.4 7"/><path d="M12 11.5v9.9"/>'),
+  'view-front': svgIcon('<rect x="4.5" y="4.5" width="15" height="15" rx="1.5"/>'),
+  'view-top':   svgIcon('<rect x="4.5" y="4.5" width="15" height="15" rx="1.5"/><path d="M4.5 9.2h15"/>'),
+  'view-right': svgIcon('<rect x="4.5" y="4.5" width="15" height="15" rx="1.5"/><path d="M14.8 4.5v15"/>'),
+  'fit':        svgIcon('<path d="M4 9V5a1 1 0 0 1 1-1h4"/><path d="M20 9V5a1 1 0 0 0-1-1h-4"/><path d="M4 15v4a1 1 0 0 0 1 1h4"/><path d="M20 15v4a1 1 0 0 1-1 1h-4"/>'),
+  'shaded':     svgIcon('<rect x="4" y="4" width="16" height="16" rx="2"/><path d="M20 8 8 20" opacity=".5"/><path d="M20 13 13 20" opacity=".5"/>'),
+  'wire':       svgIcon('<path d="M12 3 3.5 7.5v9L12 21l8.5-4.5v-9z"/><path d="M3.5 7.5 12 12l8.5-4.5M12 12v9"/>'),
+  'bbox':       svgIcon('<rect x="4.5" y="4.5" width="15" height="15" rx="1" stroke-dasharray="3 2.3"/>'),
+  'grid':       svgIcon('<rect x="4" y="4" width="16" height="16" rx="1.5"/><path d="M4 9.3h16M4 14.6h16M9.3 4v16M14.6 4v16"/>'),
+  'faces':      svgIcon('<rect x="4" y="4" width="7" height="7" rx="1"/><rect x="13" y="4" width="7" height="7" rx="1"/><rect x="4" y="13" width="7" height="7" rx="1"/><rect x="13" y="13" width="7" height="7" rx="1"/>'),
+  'components': svgIcon('<rect x="4" y="4" width="7.5" height="7.5" rx="1.2"/><rect x="12.5" y="12.5" width="7.5" height="7.5" rx="1.2"/><path d="M11.5 7.7h3a1.8 1.8 0 0 1 1.8 1.8v3"/>'),
+  'draft':      svgIcon('<path d="M4 20h16"/><path d="M4 20 16.5 4.5"/><path d="M4 20a8 8 0 0 0 2.5-5.8"/>'),
+  'thickness':  svgIcon('<path d="M6 4v16M18 4v16"/><path d="M9 12h6"/><path d="M11 10l-2 2 2 2M13 10l2 2-2 2"/>'),
+  'tree':       svgIcon('<path d="M10 6h10M10 12h10M10 18h10"/><circle cx="5" cy="6" r="1.5"/><circle cx="5" cy="12" r="1.5"/><circle cx="5" cy="18" r="1.5"/>'),
+  'holes':      svgIcon('<circle cx="12" cy="12" r="8.4"/><circle cx="12" cy="12" r="3.1"/>'),
+  'section':    svgIcon('<rect x="4" y="4" width="16" height="16" rx="1.5"/><path d="M4 14h16"/><path d="M7 14v3.2M11 14v3.2M15 14v3.2"/>'),
+  'explode':    svgIcon('<path d="M12 2v5m0 10v5M2 12h5m10 0h5"/><path d="M10 4.2 12 2l2 2.2M10 19.8 12 22l2-2.2M4.2 10 2 12l2.2 2M19.8 10 22 12l-2.2 2"/>'),
+  'rotate':     svgIcon('<path d="M20 12a8 8 0 1 1-2.4-5.7"/><path d="M20 4.5V9h-4.5"/>'),
+  'move':       svgIcon('<path d="M12 3v18M3 12h18"/><path d="M9.5 5.5 12 3l2.5 2.5M9.5 18.5 12 21l2.5-2.5M5.5 9.5 3 12l2.5 2.5M18.5 9.5 21 12l-2.5 2.5"/>'),
+  'select':     svgIcon('<path d="M5 3.5 10 19l2.4-6.4L19 10z"/>'),
+  'distance':   svgIcon('<path d="M4 12h16"/><path d="M4 8v8M20 8v8"/><path d="M7.5 12 9.5 10M7.5 12l2 2M16.5 12l-2-2M16.5 12l-2 2"/>'),
+  'radius':     svgIcon('<circle cx="12" cy="12" r="8.4"/><path d="M12 12 18.5 9"/><circle cx="12" cy="12" r="1.2"/>'),
+  'angle':      svgIcon('<path d="M5 19h14"/><path d="M5 19 17.5 6"/><path d="M5 19a9 9 0 0 0 3.3-5.4"/>'),
+  'point':      svgIcon('<path d="M12 3v5M12 16v5M3 12h5M16 12h5"/><circle cx="12" cy="12" r="1.6"/>'),
+  'facedist':   svgIcon('<path d="M6 4v16M18 4v16"/><path d="M9 12h6"/><path d="M11 9.5 8.5 12l2.5 2.5M13 9.5l2.5 2.5-2.5 2.5"/>'),
+  'clear':      svgIcon('<path d="M6 6 18 18M18 6 6 18"/>'),
+  'snapshot':   svgIcon('<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8.5 7 10 4.5h4L15.5 7"/><circle cx="12" cy="13.5" r="3.2"/>'),
+  'expand':     svgIcon('<path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/>'),
+};
+
 // ── Component ─────────────────────────────────────────────────────────────────
 
 export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions = {}): Promise<CADViewerHandle> {
@@ -299,63 +335,72 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
         <label class="cv3d-clip-row"><span>Z</span><input type="range" data-rot-axis="z" min="-180" max="180" value="0" step="1"/></label>
         <button class="cv3d-rotate-reset" title="Reset this component's rotation">Reset</button>
       </div>
+      <div class="cv3d-move-panel" style="display:none">
+        <span class="cv3d-clip-label">Move</span>
+        <select class="cv3d-move-body" title="Component to move"></select>
+        <label class="cv3d-clip-row"><span>X</span><input type="range" data-mov-axis="x" min="-100" max="100" value="0" step="1"/></label>
+        <label class="cv3d-clip-row"><span>Y</span><input type="range" data-mov-axis="y" min="-100" max="100" value="0" step="1"/></label>
+        <label class="cv3d-clip-row"><span>Z</span><input type="range" data-mov-axis="z" min="-100" max="100" value="0" step="1"/></label>
+        <button class="cv3d-move-reset" title="Reset this component's position">Reset</button>
+      </div>
     </div>
     <div class="cv3d-toolbar">
       <div class="cv3d-grp">
         <span class="cv3d-grp-cap">Views</span>
         <div class="cv3d-grp-row">
-          <button data-act="view-iso" title="Isometric (Home)"><b>⌂</b><span>Home</span></button>
-          <button data-act="view-front" title="Front view"><b>F</b><span>Front</span></button>
-          <button data-act="view-top" title="Top view"><b>T</b><span>Top</span></button>
-          <button data-act="view-right" title="Right view"><b>R</b><span>Right</span></button>
-          <button data-act="fit" title="Fit part to screen"><b>⛶</b><span>Fit</span></button>
+          <button data-act="view-iso" title="Isometric (Home)"><b>${ICON['view-iso']}</b><span>Home</span></button>
+          <button data-act="view-front" title="Front view"><b>${ICON['view-front']}</b><span>Front</span></button>
+          <button data-act="view-top" title="Top view"><b>${ICON['view-top']}</b><span>Top</span></button>
+          <button data-act="view-right" title="Right view"><b>${ICON['view-right']}</b><span>Right</span></button>
+          <button data-act="fit" title="Fit part to screen"><b>${ICON['fit']}</b><span>Fit</span></button>
         </div>
       </div>
       <div class="cv3d-grp">
         <span class="cv3d-grp-cap">Display</span>
         <div class="cv3d-grp-row">
-          <button data-act="mode-shaded" class="active" title="Shaded with edges"><b>◧</b><span>Shaded</span></button>
-          <button data-act="mode-wire" title="Wireframe"><b>◇</b><span>Wire</span></button>
-          <button data-act="bbox" title="Bounding box + dimensions"><b>▣</b><span>Box</span></button>
-          <button data-act="grid" class="active" title="Show / hide the ground grid"><b>▦</b><span>Grid</span></button>
+          <button data-act="mode-shaded" class="active" title="Shaded with edges"><b>${ICON['shaded']}</b><span>Shaded</span></button>
+          <button data-act="mode-wire" title="Wireframe"><b>${ICON['wire']}</b><span>Wire</span></button>
+          <button data-act="bbox" title="Bounding box + dimensions"><b>${ICON['bbox']}</b><span>Box</span></button>
+          <button data-act="grid" class="active" title="Show / hide the ground grid"><b>${ICON['grid']}</b><span>Grid</span></button>
         </div>
       </div>
       <div class="cv3d-grp">
         <span class="cv3d-grp-cap">Analysis</span>
         <div class="cv3d-grp-row">
-          <button data-act="facecolors" title="Colour by machining surface type (STEP/IGES only)" disabled><b>🎨</b><span>Faces</span></button>
-          <button data-act="bodycolors" title="Colour each component a distinct colour (multi-body assemblies)" disabled><b>🧩</b><span>Components</span></button>
-          <button data-act="draft" title="Draft &amp; undercut analysis — colour by pull direction"><b>📐</b><span>Draft</span></button>
-          <button data-act="thickness" title="Wall-thickness heatmap (STEP/IGES only)" disabled><b>🌡</b><span>Thickness</span></button>
+          <button data-act="facecolors" title="Colour by machining surface type (STEP/IGES only)" disabled><b>${ICON['faces']}</b><span>Faces</span></button>
+          <button data-act="bodycolors" title="Colour each component a distinct colour (multi-body assemblies)" disabled><b>${ICON['components']}</b><span>Components</span></button>
+          <button data-act="draft" title="Draft &amp; undercut analysis — colour by pull direction"><b>${ICON['draft']}</b><span>Draft</span></button>
+          <button data-act="thickness" title="Wall-thickness heatmap (STEP/IGES only)" disabled><b>${ICON['thickness']}</b><span>Thickness</span></button>
         </div>
       </div>
       <div class="cv3d-grp">
         <span class="cv3d-grp-cap">Structure</span>
         <div class="cv3d-grp-row">
-          <button data-act="tree" title="Model tree — bodies, features &amp; face types (STEP/IGES only)" disabled><b>☰</b><span>Tree</span></button>
-          <button data-act="features" title="Detected features — holes &amp; bosses (STEP/IGES only)" disabled><b>◎</b><span>Holes</span></button>
-          <button data-act="clip" title="Section view — clipping planes (X/Y/Z)"><b>✂</b><span>Section</span></button>
-          <button data-act="explode" title="Exploded view (multi-body only)" disabled><b>💥</b><span>Explode</span></button>
-          <button data-act="rotate" title="Rotate a component about its own X / Y / Z" disabled><b>⟳</b><span>Rotate</span></button>
+          <button data-act="tree" title="Model tree — bodies, features &amp; face types (STEP/IGES only)" disabled><b>${ICON['tree']}</b><span>Tree</span></button>
+          <button data-act="features" title="Detected features — holes &amp; bosses (STEP/IGES only)" disabled><b>${ICON['holes']}</b><span>Holes</span></button>
+          <button data-act="clip" title="Section view — clipping planes (X/Y/Z)"><b>${ICON['section']}</b><span>Section</span></button>
+          <button data-act="explode" title="Exploded view (multi-body only)" disabled><b>${ICON['explode']}</b><span>Explode</span></button>
+          <button data-act="rotate" title="Rotate a component about its own X / Y / Z" disabled><b>${ICON['rotate']}</b><span>Rotate</span></button>
+          <button data-act="move" title="Move a component along X / Y / Z" disabled><b>${ICON['move']}</b><span>Move</span></button>
         </div>
       </div>
       <div class="cv3d-grp cv3d-grp--measure">
         <span class="cv3d-grp-cap">Measure &amp; Inspect</span>
         <div class="cv3d-grp-row">
-          <button data-act="tool-select" class="active" title="Select — click a face for exact B-rep data"><b>➤</b><span>Select</span></button>
-          <button data-act="tool-dist" title="Distance — click two points (snaps to vertices &amp; edges)"><b>↔</b><span>Distance</span></button>
-          <button data-act="tool-circle" title="Radius / diameter — click 3 points on a rim or bore"><b>◯</b><span>Radius</span></button>
-          <button data-act="tool-angle" title="Angle — click 3 points (vertex is the middle click)"><b>∠</b><span>Angle</span></button>
-          <button data-act="tool-point" title="Point — read X / Y / Z coordinates"><b>⌖</b><span>Point</span></button>
-          <button data-act="tool-facedist" title="Face-to-face — perpendicular distance between two faces"><b>⊥</b><span>Face–Face</span></button>
-          <button data-act="clear" title="Clear measurements &amp; selection"><b>✕</b><span>Clear</span></button>
+          <button data-act="tool-select" class="active" title="Select — click a face for exact B-rep data"><b>${ICON['select']}</b><span>Select</span></button>
+          <button data-act="tool-dist" title="Distance — click two points (snaps to vertices &amp; edges)"><b>${ICON['distance']}</b><span>Distance</span></button>
+          <button data-act="tool-circle" title="Radius / diameter — click 3 points on a rim or bore"><b>${ICON['radius']}</b><span>Radius</span></button>
+          <button data-act="tool-angle" title="Angle — click 3 points (vertex is the middle click)"><b>${ICON['angle']}</b><span>Angle</span></button>
+          <button data-act="tool-point" title="Point — read X / Y / Z coordinates"><b>${ICON['point']}</b><span>Point</span></button>
+          <button data-act="tool-facedist" title="Face-to-face — perpendicular distance between two faces"><b>${ICON['facedist']}</b><span>Face–Face</span></button>
+          <button data-act="clear" title="Clear measurements &amp; selection"><b>${ICON['clear']}</b><span>Clear</span></button>
         </div>
       </div>
       <div class="cv3d-grp">
         <span class="cv3d-grp-cap">Capture</span>
         <div class="cv3d-grp-row">
-          <button data-act="snap" title="Snapshot — ${opts.onSnapshot ? 'attach to report' : 'download image'}"><b>📷</b><span>Snapshot</span></button>
-          <button data-act="maximize" title="Maximize viewer (Esc to exit)"><b>⤢</b><span>Expand</span></button>
+          <button data-act="snap" title="Snapshot — ${opts.onSnapshot ? 'attach to report' : 'download image'}"><b>${ICON['snapshot']}</b><span>Snapshot</span></button>
+          <button data-act="maximize" title="Maximize viewer (Esc to exit)"><b>${ICON['expand']}</b><span>Expand</span></button>
         </div>
       </div>
     </div>
@@ -384,6 +429,8 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
   const explodeSlider = $<HTMLInputElement>('.cv3d-explode-slider');
   const rotatePanel = $('.cv3d-rotate-panel');
   const rotateBodySelect = $<HTMLSelectElement>('.cv3d-rotate-body');
+  const movePanel = $('.cv3d-move-panel');
+  const moveBodySelect = $<HTMLSelectElement>('.cv3d-move-body');
   const statusFile = $('.cv3d-status-file');
   const statusDims = $('.cv3d-status-dims');
   const statusHint = $('.cv3d-status-hint');
@@ -469,6 +516,7 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
   let bodyExplodeDir: Array<InstanceType<typeof THREE.Vector3>> = []; // per-body explode vector (dir × relative distance)
   let bodyCentroid: Array<InstanceType<typeof THREE.Vector3>> = [];   // per-body centroid (part space) — rotation pivot
   let bodyRot: Array<{ x: number; y: number; z: number }> = [];       // per-body rotation in degrees
+  let bodyMove: Array<{ x: number; y: number; z: number }> = [];      // per-body translation (mm, part space)
   let gridOn = true;
   let bodyColorsOn = false;
 
@@ -882,9 +930,11 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
     bcBtn.disabled = bodyMeshes.length < 2;
     bcBtn.title = bodyMeshes.length < 2 ? 'Component colours need a multi-body assembly' : 'Colour each component a distinct colour';
     if (bodyMeshes.length < 2) { bodyColorsOn = false; bcBtn.classList.remove('active'); }
-    // per-component rotate — any loaded model (rotates the whole part when single-body)
+    // per-component rotate / move — any loaded model (acts on the whole part when single-body)
     const rotBtn = $<HTMLButtonElement>('[data-act="rotate"]');
     rotBtn.disabled = bodyMeshes.length < 1;
+    const movBtn = $<HTMLButtonElement>('[data-act="move"]');
+    movBtn.disabled = bodyMeshes.length < 1;
     // wall-thickness heatmap: enabled only when the sidecar carries per-face thickness
     const thkVals = (meta?.faces ?? []).map(f => f.thicknessMm).filter((v): v is number => typeof v === 'number' && v > 0);
     thicknessRange = thkVals.length >= 2 ? { min: Math.min(...thkVals), max: Math.max(...thkVals) } : null;
@@ -896,6 +946,7 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
     // reset section + explode + rotate state for the new part
     explodeFactor = 0; explodeSlider.value = '0';
     bodyRot = bodyMeshes.map(() => ({ x: 0, y: 0, z: 0 }));
+    bodyMove = bodyMeshes.map(() => ({ x: 0, y: 0, z: 0 }));
     (['x', 'y', 'z'] as const).forEach(a => {
       clipState[a].on = false; clipState[a].off = 0;
       const cb = clipPanel.querySelector(`input[data-clip-axis="${a}"]`) as HTMLInputElement | null; if (cb) cb.checked = false;
@@ -906,7 +957,8 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
     buildFeaturesPanel();
     computeExplodeDirs();
     buildRotatePanel();
-    applyBodyTransforms(); // clear any stale explode/rotation offsets
+    buildMovePanel();
+    applyBodyTransforms(); // clear any stale explode/rotation/move offsets
     if (treeBox.style.display !== 'none') buildTreePanel();
     applyColorMode(); // reapply active face-type / draft / component shading to the new meshes
     applyClipping();
@@ -1062,9 +1114,11 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
       const c = bodyCentroid[i] ?? new THREE.Vector3();
       const off = (bodyExplodeDir[i] ?? new THREE.Vector3()).clone().multiplyScalar(dist);
       const r = bodyRot[i] ?? { x: 0, y: 0, z: 0 };
+      const mv = bodyMove[i] ?? { x: 0, y: 0, z: 0 };
       const q = new THREE.Quaternion().setFromEuler(new THREE.Euler(r.x * DEG2RAD, r.y * DEG2RAD, r.z * DEG2RAD));
-      // displayed = R·(v − c) + c + off  ⇒  position = c − R·c + off, quaternion = R
-      const pos = c.clone().sub(c.clone().applyQuaternion(q)).add(off);
+      // displayed = R·(v − c) + c + off + move  ⇒  position = c − R·c + off + move, quaternion = R.
+      // move/off/rot are per-body, so manipulating one component never disturbs the others.
+      const pos = c.clone().sub(c.clone().applyQuaternion(q)).add(off).add(new THREE.Vector3(mv.x, mv.y, mv.z));
       bodyMeshes[i].quaternion.copy(q);
       bodyMeshes[i].position.copy(pos);
       const e = bodyEdges[i];
@@ -1089,6 +1143,26 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
     (['x', 'y', 'z'] as const).forEach(a => {
       const sl = rotatePanel.querySelector(`input[data-rot-axis="${a}"]`) as HTMLInputElement | null;
       if (sl) sl.value = String(r[a]);
+    });
+  }
+  // ── per-component move (translate) — mirrors rotate, isolated to one body ──
+  function buildMovePanel(): void {
+    const prev = moveBodySelect.value;
+    moveBodySelect.innerHTML = bodyMeshes.map((_, i) => `<option value="${i}">Body ${i + 1}</option>`).join('');
+    if (prev && Number(prev) < bodyMeshes.length) moveBodySelect.value = prev;
+    syncMoveSliders();
+  }
+  function selectedMoveBody(): number {
+    const i = Number(moveBodySelect.value);
+    return Number.isFinite(i) && i >= 0 && i < bodyMeshes.length ? i : 0;
+  }
+  /** Sliders are −100..100 → ±partRadius of translation along each part axis. */
+  function syncMoveSliders(): void {
+    const mv = bodyMove[selectedMoveBody()] ?? { x: 0, y: 0, z: 0 };
+    const denom = partRadius || 1;
+    (['x', 'y', 'z'] as const).forEach(a => {
+      const sl = movePanel.querySelector(`input[data-mov-axis="${a}"]`) as HTMLInputElement | null;
+      if (sl) sl.value = String(Math.round((mv[a] / denom) * 100));
     });
   }
 
@@ -1648,6 +1722,19 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
     syncRotateSliders();
     applyBodyTransforms();
   });
+  // per-component move: sliders (−100..100 → ±partRadius) translate the selected body
+  moveBodySelect.addEventListener('change', syncMoveSliders);
+  movePanel.querySelectorAll('input[data-mov-axis]').forEach(sl => sl.addEventListener('input', () => {
+    const a = (sl as HTMLInputElement).dataset.movAxis as 'x' | 'y' | 'z';
+    const i = selectedMoveBody();
+    if (bodyMove[i]) { bodyMove[i][a] = (Number((sl as HTMLInputElement).value) / 100) * partRadius; applyBodyTransforms(); }
+  }));
+  $('.cv3d-move-reset').addEventListener('click', () => {
+    const i = selectedMoveBody();
+    bodyMove[i] = { x: 0, y: 0, z: 0 };
+    syncMoveSliders();
+    applyBodyTransforms();
+  });
 
   root.querySelector('.cv3d-toolbar')!.addEventListener('click', (ev) => {
     const btn = (ev.target as HTMLElement).closest('button');
@@ -1751,6 +1838,13 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
         rotatePanel.style.display = show ? '' : 'none';
         btn.classList.toggle('active', show);
         if (show) { buildRotatePanel(); statusHint.textContent = 'Rotate: pick a component, then drag its X / Y / Z slider'; }
+        break;
+      }
+      case 'move': {
+        const show = movePanel.style.display === 'none';
+        movePanel.style.display = show ? '' : 'none';
+        btn.classList.toggle('active', show);
+        if (show) { buildMovePanel(); statusHint.textContent = 'Move: pick a component, then drag its X / Y / Z slider (does not move the rest)'; }
         break;
       }
       case 'tree': {

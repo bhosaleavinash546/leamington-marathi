@@ -6310,7 +6310,8 @@ input.cv-outlier { border-color: var(--warning) !important; box-shadow: 0 0 0 2p
   cursor: pointer;
   transition: background 0.12s ease, color 0.12s ease, border-color 0.12s ease;
 }
-.cv3d-toolbar button b { font-size: 16px; line-height: 1; font-weight: 400; }
+.cv3d-toolbar button b { font-size: 16px; line-height: 1; font-weight: 400; display: inline-flex; }
+.cv3d-toolbar button b svg { width: 19px; height: 19px; display: block; }
 .cv3d-toolbar button span { font-size: 9px; line-height: 1; white-space: nowrap; letter-spacing: 0.02em; }
 .cv3d-toolbar button:hover:not(:disabled) { background: rgba(255, 255, 255, 0.08); color: #eef1f6; }
 .cv3d-toolbar button.active {
@@ -6335,6 +6336,7 @@ input.cv-outlier { border-color: var(--warning) !important; box-shadow: 0 0 0 2p
 .cv3d--compact .cv3d-grp-cap { display: none; }
 .cv3d--compact .cv3d-toolbar button { min-width: 40px; height: 38px; }
 .cv3d--compact .cv3d-toolbar button b { font-size: 14px; }
+.cv3d--compact .cv3d-toolbar button b svg { width: 16px; height: 16px; }
 .cv3d--compact .cv3d-toolbar button span { font-size: 8px; }
 .cv3d--compact .cv3d-grp--measure button { min-width: 50px; height: 42px; }
 
@@ -6700,6 +6702,50 @@ input.cv-outlier { border-color: var(--warning) !important; box-shadow: 0 0 0 2p
   z-index: 3;
 }
 .cv3d-rotate-panel .cv3d-clip-row input[type="range"] { width: 90px; }
+
+/* Move panel — component picker + per-axis translate sliders (top-centre, below Rotate) */
+.cv3d-move-panel {
+  position: absolute;
+  top: 108px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  background: rgba(15, 18, 22, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  backdrop-filter: blur(4px);
+  z-index: 3;
+}
+.cv3d-move-panel .cv3d-clip-row span { width: 12px; text-align: center; color: #8b93a0; }
+.cv3d-move-panel .cv3d-clip-row input[type="range"] { width: 90px; }
+.cv3d-move-body {
+  appearance: none;
+  background: rgba(255, 255, 255, 0.06);
+  color: #e8ecf2;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 5px;
+  padding: 3px 7px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.cv3d-move-reset {
+  appearance: none;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.05);
+  color: #aeb6c2;
+  height: 22px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.cv3d-move-reset:hover { color: #e8ecf2; background: rgba(255, 255, 255, 0.1); }
 .cv3d-rotate-body {
   appearance: none;
   background: rgba(255, 255, 255, 0.06);
