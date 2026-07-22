@@ -33,12 +33,19 @@ const CAD_DEEP_MODEL = 'claude-opus-4-8';
 const cadModel = (deep: boolean): string => (deep ? CAD_DEEP_MODEL : CAD_MODEL);
 const isDeepReq = (req: { body?: Record<string, unknown> }): boolean =>
   req.body?.deepAnalysis === 'true' || req.body?.deepAnalysis === true;
-const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 50 * 1024 * 1024 } });
+// Max CAD upload size. Large STEP assemblies routinely exceed the old 50 MB
+// cap, so the default is 250 MB and it is env-tunable (CV_MAX_UPLOAD_MB). Note
+// the file is buffered in memory (multer.memoryStorage), so this also sets the
+// worst-case RSS per in-flight upload — raise the container's memory to match if
+// you push it much higher.
+const MAX_UPLOAD_MB = parseInt(process.env.CV_MAX_UPLOAD_MB ?? '250', 10) || 250;
+const MAX_UPLOAD_BYTES = MAX_UPLOAD_MB * 1024 * 1024;
+const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: MAX_UPLOAD_BYTES } });
 
 // Per-IP rate limits for the anonymous CAD endpoints (audit RK3). Defined here,
 // before the routes that use them, so there is no temporal-dead-zone at load.
 // /analyze spawns Python AND calls the paid AI (tightest budget); tessellate
-// spawns Python only; /parse-stl is pure-TS but still takes a 50 MB upload.
+// spawns Python only; /parse-stl is pure-TS.
 const tessellateLimiter = rateLimit({ windowMs: 10 * 60_000, max: 60, standardHeaders: true, legacyHeaders: false });
 const analyzeLimiter = rateLimit({ windowMs: 10 * 60_000, max: 40, standardHeaders: true, legacyHeaders: false });
 const parseStlLimiter = rateLimit({ windowMs: 10 * 60_000, max: 120, standardHeaders: true, legacyHeaders: false });
@@ -1431,7 +1438,7 @@ router.use((err: unknown, _req: import('express').Request, res: import('express'
   if (err instanceof multer.MulterError) {
     const tooBig = err.code === 'LIMIT_FILE_SIZE';
     res.status(tooBig ? 413 : 400).json({
-      error: tooBig ? 'File is too large — the upload limit is 50 MB. Simplify or compress the model and try again.' : `Upload error: ${err.message}`,
+      error: tooBig ? `File is too large — the upload limit is ${MAX_UPLOAD_MB} MB. Simplify or compress the model and try again.` : `Upload error: ${err.message}`,
     });
     return;
   }
