@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { dist3, circumcircle3, angle3, closestPointOnSegment } from '../src/ui/cad-viewer.js';
+import { dist3, circumcircle3, angle3, closestPointOnSegment, draftBucket } from '../src/ui/cad-viewer.js';
 
 describe('cad-viewer measurement math', () => {
   it('dist3 measures euclidean distance', () => {
@@ -99,5 +99,42 @@ describe('cad-viewer measurement math', () => {
     expect(closestPointOnSegment({ x: 99, y: 2, z: 0 }, a, b)).toEqual({ x: 10, y: 0, z: 0 });
     // degenerate segment
     expect(closestPointOnSegment({ x: 1, y: 1, z: 1 }, a, { x: 0, y: 0, z: 0 })).toEqual(a);
+  });
+});
+
+describe('cad-viewer draft / undercut analysis', () => {
+  // pull axis = +Z throughout
+  it('top & bottom faces (normal parallel to pull) are neutral — no draft needed', () => {
+    expect(draftBucket(0, 0, 1, 0, 0, 1)).toBe('neutral');   // top face, normal +Z
+    expect(draftBucket(0, 0, -1, 0, 0, 1)).toBe('neutral');  // bottom face, normal −Z
+    expect(draftBucket(0.05, 0.05, 1, 0, 0, 1)).toBe('neutral'); // ~4° off-axis, still a top face
+  });
+
+  it('a perfectly vertical wall (normal ⟂ pull) is a near-zero-draft risk', () => {
+    expect(draftBucket(1, 0, 0, 0, 0, 1)).toBe('zero');   // wall facing +X
+    expect(draftBucket(0, 1, 0, 0, 0, 1)).toBe('zero');   // wall facing +Y
+  });
+
+  it('a wall tapering outward (positive draft) releases cleanly', () => {
+    // normal tilted 5° toward +Z from horizontal → +5° draft → adequate
+    const t = (5 * Math.PI) / 180;
+    expect(draftBucket(Math.cos(t), 0, Math.sin(t), 0, 0, 1)).toBe('ok');
+  });
+
+  it('a wall leaning the wrong way is flagged as an undercut', () => {
+    // normal tilted 5° BELOW horizontal (toward −Z) → negative draft → undercut
+    const t = (5 * Math.PI) / 180;
+    expect(draftBucket(Math.cos(t), 0, -Math.sin(t), 0, 0, 1)).toBe('undercut');
+  });
+
+  it('honours a non-Z pull axis', () => {
+    // pull = +X: a wall whose normal is +Z is now a vertical wall (zero draft)
+    expect(draftBucket(0, 0, 1, 1, 0, 0)).toBe('zero');
+    // and the +X face is now a top face (neutral)
+    expect(draftBucket(1, 0, 0, 1, 0, 0)).toBe('neutral');
+  });
+
+  it('is robust to unnormalised inputs', () => {
+    expect(draftBucket(0, 0, 7, 0, 0, 3)).toBe('neutral'); // both scaled, still parallel
   });
 });

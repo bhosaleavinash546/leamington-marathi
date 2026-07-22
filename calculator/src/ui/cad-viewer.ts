@@ -34,9 +34,9 @@ export interface FaceMeta {
 export interface TessMeta { triFace: number[] | Uint32Array; faces: FaceMeta[]; bodies: number | null; skippedFaces?: number }
 
 export interface MeasurementRecord {
-  kind: 'dist' | 'circle' | 'angle';
+  kind: 'dist' | 'circle' | 'angle' | 'point' | 'facedist';
   label: string;
-  /** mm for dist/circle (circle = diameter), degrees for angle */
+  /** mm for dist/circle/facedist (circle = diameter), degrees for angle, 0 for point */
   value: number;
   points: Array<[number, number, number]>;
 }
@@ -121,6 +121,39 @@ export const FACE_TYPE_LABEL: Record<string, string> = {
   sphere: 'Spherical', torus: 'Toroidal (fillet)', freeform: 'Freeform (5-axis)', other: 'Other',
 };
 
+// ── Draft / undercut analysis (mould/casting pull-direction shading) ─────────
+export type DraftClass = 'neutral' | 'ok' | 'zero' | 'undercut';
+export const DRAFT_COLORS: Record<DraftClass, [number, number, number]> = {
+  neutral:  [0.60, 0.64, 0.70], // faces perpendicular to pull — no draft needed (grey)
+  ok:       [0.28, 0.72, 0.46], // adequate draft — releases cleanly (green)
+  zero:     [0.95, 0.66, 0.20], // near-zero draft — risky vertical wall (amber)
+  undercut: [0.90, 0.30, 0.34], // undercut — cannot demould without a slide (red)
+};
+export const DRAFT_LABEL: Record<DraftClass, string> = {
+  neutral: 'Perpendicular to pull', ok: 'Adequate draft', zero: 'Near-zero draft (wall)', undercut: 'Undercut — needs a slide',
+};
+
+/** Classify a triangle/face by draft relative to a pull axis.
+ *  `theta` is the angle between the outward normal and the pull axis:
+ *  ~0/180° → perpendicular-to-pull top/bottom face (neutral); ~90° → wall.
+ *  Draft = 90 − theta: positive opens toward the pull, negative is an undercut.
+ *  `neutralDeg` = half-cone around the pull axis counted as top/bottom;
+ *  `okDeg` = minimum positive draft to be "adequate". */
+export function draftBucket(
+  nx: number, ny: number, nz: number,
+  dx: number, dy: number, dz: number,
+  okDeg = 1, neutralDeg = 8,
+): DraftClass {
+  const nl = Math.hypot(nx, ny, nz) || 1, dl = Math.hypot(dx, dy, dz) || 1;
+  const dot = Math.min(1, Math.max(-1, (nx * dx + ny * dy + nz * dz) / (nl * dl)));
+  const theta = (Math.acos(dot) * 180) / Math.PI;
+  if (theta <= neutralDeg || theta >= 180 - neutralDeg) return 'neutral';
+  const draft = 90 - theta;
+  if (draft >= okDeg) return 'ok';
+  if (draft >= 0) return 'zero';
+  return 'undercut';
+}
+
 // Measurement persistence (per file, LRU-capped)
 const PERSIST_PREFIX = 'cv3d:m:';
 const PERSIST_INDEX = 'cv3d:m:keys';
@@ -153,6 +186,7 @@ const EDGE_ANGLE_DEG = 24;
 export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions = {}): Promise<CADViewerHandle> {
   const THREE = await import('three');
   const { OrbitControls } = await import('three/examples/jsm/controls/OrbitControls.js');
+  const { ViewHelper } = await import('three/examples/jsm/helpers/ViewHelper.js');
 
   // ── DOM scaffold ──
   const root = document.createElement('div');
@@ -171,7 +205,12 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
         <button data-act="mode-wire" title="Wireframe">◇</button>
         <button data-act="bbox" title="Bounding box + dimensions">▣</button>
         <button data-act="facecolors" title="Colour by machining surface type (STEP/IGES only)" disabled>🎨</button>
-        <button data-act="clip" title="Section view — clipping plane">✂</button>
+        <button data-act="draft" title="Draft &amp; undercut analysis — colour by pull direction">📐</button>
+        <button data-act="clip" title="Section view — clipping planes (X/Y/Z)">✂</button>
+        <button data-act="explode" title="Exploded view (multi-body only)" disabled>💥</button>
+      </div>
+      <div class="cv3d-group">
+        <button data-act="tree" title="Model tree — bodies, features &amp; face types (STEP/IGES only)" disabled>☰</button>
         <button data-act="features" title="Detected features — holes &amp; bosses (STEP/IGES only)" disabled>◎</button>
       </div>
       <div class="cv3d-group">
@@ -179,16 +218,23 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
         <button data-act="tool-dist" title="Measure distance — click two points (snaps to vertices &amp; edges)">↔</button>
         <button data-act="tool-circle" title="Measure circle — click 3 points on a rim or bore">◯</button>
         <button data-act="tool-angle" title="Measure angle — click 3 points (vertex is the middle click)">∠</button>
+        <button data-act="tool-point" title="Point — click to read X/Y/Z coordinates">⌖</button>
+        <button data-act="tool-facedist" title="Face-to-face — perpendicular distance between two faces">⊥</button>
         <button data-act="clear" title="Clear measurements &amp; selection">✕</button>
       </div>
-      <div class="cv3d-group">
+      <div class="cv3d-group cv3d-group--right">
         <button data-act="snap" title="Snapshot — ${opts.onSnapshot ? 'attach to report' : 'download image'}">📷</button>
+        <button data-act="maximize" title="Maximize viewer (Esc to exit)">⤢</button>
       </div>
     </div>
     <div class="cv3d-viewport">
       <canvas class="cv3d-canvas"></canvas>
       <div class="cv3d-facechip" style="display:none"></div>
       <div class="cv3d-legend" style="display:none"></div>
+      <div class="cv3d-tree" style="display:none">
+        <div class="cv3d-measures-title">Model tree</div>
+        <div class="cv3d-tree-list"></div>
+      </div>
       <div class="cv3d-measures" style="display:none">
         <div class="cv3d-measures-title">Measurements <button class="cv3d-csv-btn" title="Export measurements as CSV">⬇ CSV</button></div>
         <div class="cv3d-measures-list"></div>
@@ -203,11 +249,16 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
       </div>
       <div class="cv3d-clip-panel" style="display:none">
         <span class="cv3d-clip-label">Section</span>
-        <button data-axis="x" class="active">X</button>
-        <button data-axis="y">Y</button>
-        <button data-axis="z">Z</button>
-        <input type="range" class="cv3d-clip-slider" min="-100" max="100" value="0" step="1"/>
+        <div class="cv3d-clip-axes">
+          <label class="cv3d-clip-row"><input type="checkbox" data-clip-axis="x"/><span>X</span><input type="range" data-clip-slider="x" min="-100" max="100" value="0" step="1"/></label>
+          <label class="cv3d-clip-row"><input type="checkbox" data-clip-axis="y"/><span>Y</span><input type="range" data-clip-slider="y" min="-100" max="100" value="0" step="1"/></label>
+          <label class="cv3d-clip-row"><input type="checkbox" data-clip-axis="z"/><span>Z</span><input type="range" data-clip-slider="z" min="-100" max="100" value="0" step="1"/></label>
+        </div>
         <button class="cv3d-clip-off" title="Turn section view off">off</button>
+      </div>
+      <div class="cv3d-explode-panel" style="display:none">
+        <span class="cv3d-clip-label">Explode</span>
+        <input type="range" class="cv3d-explode-slider" min="0" max="100" value="0" step="1"/>
       </div>
     </div>
     <div class="cv3d-status">
@@ -228,8 +279,11 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
   const featuresList = $('.cv3d-features-list');
   const bodiesBox = $('.cv3d-bodies');
   const bodiesList = $('.cv3d-bodies-list');
+  const treeBox = $('.cv3d-tree');
+  const treeList = $('.cv3d-tree-list');
   const clipPanel = $('.cv3d-clip-panel');
-  const clipSlider = $<HTMLInputElement>('.cv3d-clip-slider');
+  const explodePanel = $('.cv3d-explode-panel');
+  const explodeSlider = $<HTMLInputElement>('.cv3d-explode-slider');
   const statusFile = $('.cv3d-status-file');
   const statusDims = $('.cv3d-status-dims');
   const statusHint = $('.cv3d-status-hint');
@@ -245,6 +299,15 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
   controls.enableDamping = true;
   controls.dampingFactor = 0.12;
   controls.zoomToCursor = true; // CAD convention: zoom at the pointer, not the screen centre
+
+  // Orientation cube (bottom-right gizmo) — click a face/axis to snap to that view.
+  type ViewHelperT = InstanceType<typeof ViewHelper>;
+  let viewHelper: ViewHelperT | null = null;
+  try {
+    viewHelper = new ViewHelper(camera, renderer.domElement);
+    viewHelper.location = { top: null, right: 8, bottom: 8, left: null };
+  } catch { viewHelper = null; }
+  const clock = new THREE.Clock();
 
   scene.add(new THREE.HemisphereLight(0xffffff, 0x445566, 1.0));
   const keyLight = new THREE.DirectionalLight(0xffffff, 1.5);
@@ -285,6 +348,11 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
   let fileKey = '';
   let disposed = false;
   let loadSeq = 0;
+  let maximized = false;
+  let draftOn = false;
+  let draftAxis: 'x' | 'y' | 'z' = 'z'; // moulding/casting pull defaults to part Z
+  let explodeFactor = 0;
+  let bodyExplodeDir: Array<InstanceType<typeof THREE.Vector3>> = []; // per-body outward unit vector
 
   // ── resource disposal helpers ──
   function disposeMaterialDeep(m: unknown): void {
@@ -380,9 +448,15 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
   function tick(): void {
     if (disposed) return;
     requestAnimationFrame(tick);
+    const delta = clock.getDelta();
+    if (viewHelper) {
+      viewHelper.center = controls.target; // orbit the cube about the current target
+      if (viewHelper.animating) viewHelper.update(delta);
+    }
     controls.update();
     scaleLabels();
     renderer.render(scene, camera);
+    if (viewHelper) viewHelper.render(renderer);
   }
 
   function resize(): void {
@@ -413,28 +487,40 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
     camera.updateProjectionMatrix();
   }
 
-  // ── clipping / section plane ──
-  let clipOn = false;
-  let clipAxis: 'x' | 'y' | 'z' = 'x';
-  const clipPlane = new THREE.Plane(new THREE.Vector3(-1, 0, 0), 0);
+  // ── clipping / section planes (independent X/Y/Z) ──
+  type Axis = 'x' | 'y' | 'z';
   // Part-space axis → world-space direction (partGroup is rotated -90° on X):
   // part X → world +X · part Y → world −Z · part Z → world +Y
-  const AXIS_WORLD: Record<'x' | 'y' | 'z', [number, number, number]> = {
+  const AXIS_WORLD: Record<Axis, [number, number, number]> = {
     x: [1, 0, 0], y: [0, 0, -1], z: [0, 1, 0],
   };
+  const clipState: Record<Axis, { on: boolean; off: number }> = {
+    x: { on: false, off: 0 }, y: { on: false, off: 0 }, z: { on: false, off: 0 },
+  };
+  const clipPlanes: Record<Axis, InstanceType<typeof THREE.Plane>> = {
+    x: new THREE.Plane(new THREE.Vector3(-1, 0, 0), 0),
+    y: new THREE.Plane(new THREE.Vector3(0, 0, 1), 0),
+    z: new THREE.Plane(new THREE.Vector3(0, -1, 0), 0),
+  };
+  function activeClipPlanes(): InstanceType<typeof THREE.Plane>[] {
+    const out: InstanceType<typeof THREE.Plane>[] = [];
+    for (const a of ['x', 'y', 'z'] as Axis[]) {
+      if (!clipState[a].on) continue;
+      const [nx, ny, nz] = AXIS_WORLD[a];
+      const offset = (clipState[a].off / 100) * partRadius;
+      // keep fragments where axis·p ≤ offset (slider slides the cut through the part)
+      clipPlanes[a].normal.set(-nx, -ny, -nz);
+      clipPlanes[a].constant = offset;
+      out.push(clipPlanes[a]);
+    }
+    return out;
+  }
   function applyClipping(): void {
-    const planes = clipOn ? [clipPlane] : null;
+    const active = activeClipPlanes();
+    const planes = active.length ? active : null;
     for (const m of bodyMats) m.clippingPlanes = planes;
     for (const e of bodyEdges) if (e) (e.material as InstanceType<typeof THREE.LineBasicMaterial>).clippingPlanes = planes;
     if (highlight) (highlight.material as InstanceType<typeof THREE.MeshBasicMaterial>).clippingPlanes = planes;
-  }
-  function updateClipPlane(): void {
-    const [nx, ny, nz] = AXIS_WORLD[clipAxis];
-    const offset = (Number(clipSlider.value) / 100) * partRadius;
-    // keep fragments where axis·p ≤ offset (slider slides the cut through the part)
-    clipPlane.normal.set(-nx, -ny, -nz);
-    clipPlane.constant = offset;
-    applyClipping();
   }
 
   // ── load ──
@@ -615,9 +701,26 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
     const hasCyl = !!meta?.faces.some(f => f.type === 'cylinder');
     featBtn.disabled = !hasCyl;
     featBtn.title = hasCyl ? 'Detected features — holes & bosses' : 'Feature detection needs STEP/IGES with cylindrical faces';
+    const treeBtn = $<HTMLButtonElement>('[data-act="tree"]');
+    treeBtn.disabled = !meta;
+    treeBtn.title = meta ? 'Model tree — bodies, features & face types' : 'Model tree needs STEP/IGES (B-rep) — STL is mesh-only';
+    const explodeBtn = $<HTMLButtonElement>('[data-act="explode"]');
+    explodeBtn.disabled = bodyMeshes.length < 2;
+    explodeBtn.title = bodyMeshes.length < 2 ? 'Exploded view needs a multi-body model' : 'Exploded view';
+
+    // reset section + explode state for the new part
+    explodeFactor = 0; explodeSlider.value = '0';
+    (['x', 'y', 'z'] as const).forEach(a => {
+      clipState[a].on = false; clipState[a].off = 0;
+      const cb = clipPanel.querySelector(`input[data-clip-axis="${a}"]`) as HTMLInputElement | null; if (cb) cb.checked = false;
+      const sl = clipPanel.querySelector(`input[data-clip-slider="${a}"]`) as HTMLInputElement | null; if (sl) sl.value = '0';
+    });
 
     buildBodiesPanel();
     buildFeaturesPanel();
+    computeExplodeDirs();
+    if (treeBox.style.display !== 'none') buildTreePanel();
+    applyColorMode(); // reapply active face-type / draft shading to the new meshes
     applyClipping();
 
     resize();
@@ -631,6 +734,8 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
         if (saved.kind === 'dist' && pts.length === 2) completeDistance(pts, false);
         if (saved.kind === 'circle' && pts.length === 3) completeCircle(pts, false);
         if (saved.kind === 'angle' && pts.length === 3) completeAngle(pts, false);
+        if (saved.kind === 'point' && pts.length === 1) completePoint(pts[0], false);
+        // 'facedist' is not restorable — it needs the captured face normals
       }
       if (measurements.length) statusHint.textContent = `${measurements.length} saved measurement${measurements.length > 1 ? 's' : ''} restored`;
     }
@@ -668,12 +773,89 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
     bodiesList.querySelectorAll('input[data-body]').forEach(cb => {
       cb.addEventListener('change', () => {
         const i = Number((cb as HTMLInputElement).dataset.body);
-        bodyVisible[i] = (cb as HTMLInputElement).checked;
-        bodyMeshes[i].visible = bodyVisible[i];
-        const e = bodyEdges[i];
-        if (e) e.visible = bodyVisible[i] && edgesOn;
+        setBodyVisible(i, (cb as HTMLInputElement).checked);
+        const t = treeList.querySelector(`input[data-tbody="${i}"]`) as HTMLInputElement | null;
+        if (t) t.checked = bodyVisible[i];
       });
     });
+  }
+
+  function setBodyVisible(i: number, vis: boolean): void {
+    bodyVisible[i] = vis;
+    bodyMeshes[i].visible = vis;
+    const e = bodyEdges[i];
+    if (e) e.visible = vis && edgesOn;
+  }
+
+  // ── model tree (bodies · features · faces by type) ──
+  let treeTypeIds: Map<string, number[]> | null = null;
+  function buildTreePanel(): void {
+    treeList.innerHTML = '';
+    treeTypeIds = null;
+    if (!bodyMeshes.length) { treeList.innerHTML = '<div class="cv3d-tree-row">No model loaded</div>'; return; }
+    const parts: string[] = [];
+    parts.push(`<div class="cv3d-tree-group">Bodies · ${bodyMeshes.length}</div>`);
+    parts.push(bodyMeshes.map((_, i) =>
+      `<label class="cv3d-tree-row cv3d-tree-body"><input type="checkbox" data-tbody="${i}" ${bodyVisible[i] ? 'checked' : ''}/> Body ${i + 1}</label>`).join(''));
+    if (featureGroups.length) {
+      parts.push(`<div class="cv3d-tree-group">Features · ${featureGroups.length}</div>`);
+      parts.push(featureGroups.map((g, i) =>
+        `<div class="cv3d-tree-row cv3d-tree-click" data-tfeat="${i}">${g.kind === 'hole' ? '◎' : '⬤'} ${g.kind === 'hole' ? 'Hole' : 'Boss'} Ø${g.diaMm.toFixed(1)}${g.depthMm != null ? `×${g.depthMm.toFixed(1)}` : ''} · ${g.faceIds.length}</div>`).join(''));
+    }
+    if (meta) {
+      const byType = new Map<string, number[]>();
+      for (const f of meta.faces) { if (!byType.has(f.type)) byType.set(f.type, []); byType.get(f.type)!.push(f.id); }
+      treeTypeIds = byType;
+      const typesSorted = [...byType.entries()].sort((a, b) => b[1].length - a[1].length);
+      parts.push(`<div class="cv3d-tree-group">Faces by type · ${meta.faces.length}</div>`);
+      parts.push(typesSorted.map(([t, ids]) =>
+        `<div class="cv3d-tree-row cv3d-tree-click" data-ttype="${t}"><i style="background:${rgbCss(FACE_COLORS[t] ?? FACE_COLORS.other)}"></i>${FACE_TYPE_LABEL[t] ?? t} · ${ids.length}</div>`).join(''));
+    } else {
+      parts.push('<div class="cv3d-tree-row">Face tree needs STEP/IGES (B-rep) — STL is mesh-only</div>');
+    }
+    treeList.innerHTML = parts.join('');
+    treeList.querySelectorAll('input[data-tbody]').forEach(cb => cb.addEventListener('change', () => {
+      const i = Number((cb as HTMLInputElement).dataset.tbody);
+      setBodyVisible(i, (cb as HTMLInputElement).checked);
+      const b = bodiesList.querySelector(`input[data-body="${i}"]`) as HTMLInputElement | null;
+      if (b) b.checked = bodyVisible[i];
+    }));
+    treeList.querySelectorAll('[data-tfeat]').forEach(row => row.addEventListener('click', () => {
+      const g = featureGroups[Number((row as HTMLElement).dataset.tfeat)];
+      if (!g) return;
+      highlightFaces(new Set(g.faceIds));
+      faceChip.innerHTML = `<strong>${g.faceIds.length} × ${g.kind === 'hole' ? 'hole/bore' : 'boss/shaft'} Ø ${g.diaMm.toFixed(2)} mm</strong>`;
+      faceChip.style.display = '';
+    }));
+    treeList.querySelectorAll('[data-ttype]').forEach(row => row.addEventListener('click', () => {
+      const t = (row as HTMLElement).dataset.ttype!;
+      const ids = treeTypeIds?.get(t);
+      if (!ids) return;
+      highlightFaces(new Set(ids));
+      faceChip.innerHTML = `<strong>${ids.length} × ${FACE_TYPE_LABEL[t] ?? t}</strong>`;
+      faceChip.style.display = '';
+    }));
+  }
+
+  // ── exploded view (multi-body) ──
+  function computeExplodeDirs(): void {
+    bodyExplodeDir = [];
+    if (bodyMeshes.length < 2) return;
+    for (const mesh of bodyMeshes) {
+      const bb = mesh.geometry.boundingBox;
+      const c = bb ? bb.getCenter(new THREE.Vector3()) : new THREE.Vector3();
+      bodyExplodeDir.push(c.lengthSq() > 1e-9 ? c.clone().normalize() : new THREE.Vector3(0, 0, 1));
+    }
+  }
+  function applyExplode(): void {
+    if (!bodyExplodeDir.length) return;
+    const dist = explodeFactor * partRadius * 1.4;
+    for (let i = 0; i < bodyMeshes.length; i++) {
+      const off = bodyExplodeDir[i].clone().multiplyScalar(dist);
+      bodyMeshes[i].position.copy(off);
+      const e = bodyEdges[i];
+      if (e) e.position.copy(off);
+    }
   }
 
   // ── features panel (holes & bosses from exact B-rep data) ──
@@ -711,10 +893,11 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
   }
 
   // ── picking / tools ──
-  type Tool = 'select' | 'dist' | 'circle' | 'angle';
+  type Tool = 'select' | 'dist' | 'circle' | 'angle' | 'point' | 'facedist';
   let tool: Tool = 'select';
   let picks: Vec3[] = [];
   let pickMarkers: Mesh3[] = [];
+  let pickNormals: Vec3[] = []; // world-space face normals captured for face-to-face measure
   const raycaster = new THREE.Raycaster();
 
   function screenToNDC(ev: PointerEvent | MouseEvent): InstanceType<typeof THREE.Vector2> {
@@ -813,6 +996,7 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
 
   function finishPicks(): void {
     picks = [];
+    pickNormals = [];
     pickMarkers.forEach(m => removeAndDispose(overlayGroup, m));
     pickMarkers = [];
   }
@@ -922,6 +1106,53 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
     if (interactive) { measurementsChanged(); picks = []; } else renderMeasureList();
   }
 
+  /** World-space outward normal of the picked triangle (for face-to-face measure). */
+  function faceWorldNormal(hit: { face: { a: number; b: number; c: number } | null; object: Obj3 }): Vec3 {
+    if (!hit.face) return new THREE.Vector3(0, 0, 1);
+    const mesh = hit.object as Mesh3;
+    const pos = mesh.geometry.getAttribute('position');
+    const va = new THREE.Vector3().fromBufferAttribute(pos as never, hit.face.a).applyMatrix4(mesh.matrixWorld);
+    const vb = new THREE.Vector3().fromBufferAttribute(pos as never, hit.face.b).applyMatrix4(mesh.matrixWorld);
+    const vc = new THREE.Vector3().fromBufferAttribute(pos as never, hit.face.c).applyMatrix4(mesh.matrixWorld);
+    return new THREE.Vector3().subVectors(vb, va).cross(new THREE.Vector3().subVectors(vc, va)).normalize();
+  }
+
+  function completePoint(p: Vec3, interactive = true): void {
+    const partInv = new THREE.Matrix4().copy(partGroup.matrixWorld).invert();
+    const local = p.clone().applyMatrix4(partInv); // world → part (CAD) coordinates
+    const dot = new THREE.Mesh(new THREE.SphereGeometry(partRadius * 0.012, 12, 12),
+      new THREE.MeshBasicMaterial({ color: 0x22d3ee, depthTest: false }));
+    dot.renderOrder = 998; dot.position.copy(p);
+    const label = makeLabel(`(${local.x.toFixed(1)}, ${local.y.toFixed(1)}, ${local.z.toFixed(1)})`);
+    label.position.copy(p);
+    overlayGroup.add(dot, label);
+    measurements.push({
+      record: { kind: 'point', label: `⌖ (${local.x.toFixed(2)}, ${local.y.toFixed(2)}, ${local.z.toFixed(2)}) mm`, value: 0, points: [toTuple(p)] },
+      objects: [dot, label],
+    });
+    finishPicks();
+    if (interactive) measurementsChanged(); else renderMeasureList();
+  }
+
+  function completeFaceDist(pts: Vec3[], normals: Vec3[], interactive = true): void {
+    const [a, b] = pts;
+    const nA = normals[0] ?? new THREE.Vector3(0, 0, 1);
+    const perp = Math.abs(new THREE.Vector3().subVectors(b, a).dot(nA)); // gap along face A's normal
+    const straight = a.distanceTo(b);
+    const ends = interactive ? consumePickMarkers(2) : [];
+    const line = new THREE.Line(new THREE.BufferGeometry().setFromPoints([a, b]),
+      new THREE.LineBasicMaterial({ color: 0x22d3ee, depthTest: false }));
+    line.renderOrder = 997;
+    const label = makeLabel(`⊥ ${perp.toFixed(2)} mm`);
+    label.position.copy(a.clone().add(b).multiplyScalar(0.5));
+    overlayGroup.add(line, label);
+    measurements.push({
+      record: { kind: 'facedist', label: `⊥ ${perp.toFixed(2)} mm  (direct ${straight.toFixed(2)})`, value: perp, points: [toTuple(a), toTuple(b)] },
+      objects: [line, label, ...ends],
+    });
+    if (interactive) { measurementsChanged(); picks = []; pickNormals = []; } else renderMeasureList();
+  }
+
   function highlightFaces(faceIds: Set<number>): void {
     clearHighlight();
     if (!masterPositions || !triFaceAll) return;
@@ -973,24 +1204,33 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
   }
 
   const onPointerDown = (ev: PointerEvent) => {
-    if (ev.button !== 0 || !bodyMeshes.length) return;
+    if (ev.button !== 0) return;
     (canvas as unknown as { __downAt?: [number, number] }).__downAt = [ev.clientX, ev.clientY];
   };
   const onPointerUp = (ev: PointerEvent) => {
-    if (ev.button !== 0 || !bodyMeshes.length) return;
+    if (ev.button !== 0) return;
     const down = (canvas as unknown as { __downAt?: [number, number] }).__downAt;
-    if (!down || Math.hypot(ev.clientX - down[0], ev.clientY - down[1]) > 5) return; // it was a drag
+    const wasClick = !!down && Math.hypot(ev.clientX - down[0], ev.clientY - down[1]) <= 5;
+    // orientation cube consumes clicks in its corner (works even before a model loads)
+    if (wasClick && viewHelper && viewHelper.handleClick(ev)) return;
+    if (!wasClick || !bodyMeshes.length) return;
     const hits = raycastMeshes(ev);
     if (!hits.length) { if (tool === 'select') clearHighlight(); return; }
     const hit = hits[0];
     if (tool === 'select') {
       const triGlobal = ((hit.object as Mesh3).userData.triOffset as number) + (hit.faceIndex ?? 0);
       selectFace(triGlobal);
+    } else if (tool === 'point') {
+      completePoint(snapPoint(hit as never, ev));
     } else {
       const p = snapPoint(hit as never, ev);
       picks.push(p);
       addMarker(p);
-      if (tool === 'dist' && picks.length === 2) completeDistance(picks);
+      if (tool === 'facedist') {
+        pickNormals.push(faceWorldNormal(hit as never));
+        if (picks.length === 2) completeFaceDist(picks, pickNormals);
+        else statusHint.textContent = 'Face-to-face: pick a point on the SECOND face';
+      } else if (tool === 'dist' && picks.length === 2) completeDistance(picks);
       else if (tool === 'circle' && picks.length === 3) completeCircle(picks);
       else if (tool === 'angle' && picks.length === 3) completeAngle(picks);
       else {
@@ -1015,7 +1255,14 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
     controls.update();
   };
   const onKeyDown = (ev: KeyboardEvent) => {
-    if (ev.key === 'Escape' && picks.length) { finishPicks(); statusHint.textContent = 'Cancelled'; }
+    if (ev.key !== 'Escape') return;
+    if (picks.length) { finishPicks(); statusHint.textContent = 'Cancelled'; }
+    else if (maximized) {
+      maximized = false;
+      root.classList.remove('cv3d--max');
+      $('[data-act="maximize"]').classList.remove('active');
+      requestAnimationFrame(resize);
+    }
   };
   canvas.addEventListener('pointerdown', onPointerDown);
   canvas.addEventListener('pointerup', onPointerUp);
@@ -1024,39 +1271,60 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
 
   // ── toolbar wiring ──
   let faceColorsOn = false;
-  function applyFaceColors(): void {
+  const rgbCss = (c: [number, number, number]) => `rgb(${c.map(x => Math.round(x * 255)).join(',')})`;
+
+  /** Single vertex-colour engine: face-type colouring and draft/undercut
+   *  shading are mutually exclusive. Rebuilds the colour buffer for the active
+   *  mode (or strips it when neither is on). */
+  function applyColorMode(): void {
+    const mode: 'none' | 'facetype' | 'draft' = draftOn ? 'draft' : (faceColorsOn && meta ? 'facetype' : 'none');
+    const pull: [number, number, number] = draftAxis === 'x' ? [1, 0, 0] : draftAxis === 'y' ? [0, 1, 0] : [0, 0, 1];
     for (let bi = 0; bi < bodyMeshes.length; bi++) {
       const mesh = bodyMeshes[bi];
       const mat = bodyMats[bi];
-      if (faceColorsOn && meta && triFaceAll) {
-        if (!mesh.geometry.getAttribute('color')) {
-          // built lazily — only pay for the colour buffer when the mode is used
-          const triOffset = mesh.userData.triOffset as number;
-          const nTris = (mesh.geometry.getAttribute('position') as InstanceType<typeof THREE.BufferAttribute>).count / 3;
-          const colors = new Float32Array(nTris * 9);
-          for (let t = 0; t < nTris; t++) {
-            const f = meta.faces[triFaceAll[triOffset + t]];
-            const col = FACE_COLORS[f?.type ?? 'other'] ?? FACE_COLORS.other;
-            for (let v = 0; v < 3; v++) colors.set(col, t * 9 + v * 3);
-          }
-          mesh.geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-        }
-        mat.vertexColors = true;
-        mat.color.set(0xffffff);
-      } else {
+      if (mode === 'none') {
         mat.vertexColors = false;
         mat.color.set(0xaeb6c2);
+        if (mesh.geometry.getAttribute('color')) mesh.geometry.deleteAttribute('color');
+        mat.needsUpdate = true;
+        continue;
       }
+      const posAttr = mesh.geometry.getAttribute('position') as InstanceType<typeof THREE.BufferAttribute>;
+      const nTris = posAttr.count / 3;
+      const colors = new Float32Array(nTris * 9);
+      if (mode === 'facetype' && meta && triFaceAll) {
+        const triOffset = mesh.userData.triOffset as number;
+        for (let t = 0; t < nTris; t++) {
+          const f = meta.faces[triFaceAll[triOffset + t]];
+          const col = FACE_COLORS[f?.type ?? 'other'] ?? FACE_COLORS.other;
+          for (let v = 0; v < 3; v++) colors.set(col, t * 9 + v * 3);
+        }
+      } else { // draft: classify each triangle by its geometric normal vs the pull axis (part space)
+        const pos = posAttr.array as Float32Array;
+        for (let t = 0; t < nTris; t++) {
+          const o = t * 9;
+          const ux = pos[o + 3] - pos[o], uy = pos[o + 4] - pos[o + 1], uz = pos[o + 5] - pos[o + 2];
+          const vx = pos[o + 6] - pos[o], vy = pos[o + 7] - pos[o + 1], vz = pos[o + 8] - pos[o + 2];
+          const nx = uy * vz - uz * vy, ny = uz * vx - ux * vz, nz = ux * vy - uy * vx;
+          const col = DRAFT_COLORS[draftBucket(nx, ny, nz, pull[0], pull[1], pull[2])];
+          for (let v = 0; v < 3; v++) colors.set(col, o + v * 3);
+        }
+      }
+      mesh.geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+      mat.vertexColors = true;
+      mat.color.set(0xffffff);
       mat.needsUpdate = true;
     }
-    if (faceColorsOn && meta) {
+    if (mode === 'facetype' && meta) {
       const present = [...new Set(meta.faces.map(f => f.type))];
-      legendEl.innerHTML = present.map(t => {
-        const c = FACE_COLORS[t] ?? FACE_COLORS.other;
-        return `<span><i style="background:rgb(${c.map(x => Math.round(x * 255)).join(',')})"></i>${FACE_TYPE_LABEL[t] ?? t}</span>`;
-      }).join('');
+      legendEl.innerHTML = present.map(t =>
+        `<span><i style="background:${rgbCss(FACE_COLORS[t] ?? FACE_COLORS.other)}"></i>${FACE_TYPE_LABEL[t] ?? t}</span>`).join('');
+    } else if (mode === 'draft') {
+      legendEl.innerHTML = (['undercut', 'zero', 'ok', 'neutral'] as DraftClass[]).map(k =>
+        `<span><i style="background:${rgbCss(DRAFT_COLORS[k])}"></i>${DRAFT_LABEL[k]}</span>`).join('') +
+        `<span style="opacity:.75">Pull axis: ${draftAxis.toUpperCase()} — click 📐 to cycle</span>`;
     }
-    legendEl.style.display = faceColorsOn ? '' : 'none';
+    legendEl.style.display = mode === 'none' ? 'none' : '';
   }
 
   function setTool(t: Tool): void {
@@ -1067,23 +1335,35 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
     statusHint.textContent = t === 'select' ? 'Click a face for exact B-rep data'
       : t === 'dist' ? 'Distance: pick two points (snaps to vertices & edges)'
       : t === 'circle' ? 'Circle: pick 3 points on a rim or bore'
-      : 'Angle: pick point, corner, point';
+      : t === 'angle' ? 'Angle: pick point, corner, point'
+      : t === 'point' ? 'Point: click to read X/Y/Z coordinates'
+      : 'Face-to-face: pick a point on each of two faces';
   }
 
   $('.cv3d-csv-btn').addEventListener('click', (ev) => { ev.stopPropagation(); exportCSV(); });
-  clipPanel.querySelectorAll('button[data-axis]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      clipAxis = (btn as HTMLElement).dataset.axis as 'x' | 'y' | 'z';
-      clipPanel.querySelectorAll('button[data-axis]').forEach(b => b.classList.toggle('active', b === btn));
-      updateClipPlane();
-    });
-  });
-  clipSlider.addEventListener('input', updateClipPlane);
+  clipPanel.querySelectorAll('input[data-clip-axis]').forEach(cb => cb.addEventListener('change', () => {
+    const a = (cb as HTMLInputElement).dataset.clipAxis as 'x' | 'y' | 'z';
+    clipState[a].on = (cb as HTMLInputElement).checked;
+    applyClipping();
+  }));
+  clipPanel.querySelectorAll('input[data-clip-slider]').forEach(sl => sl.addEventListener('input', () => {
+    const a = (sl as HTMLInputElement).dataset.clipSlider as 'x' | 'y' | 'z';
+    clipState[a].off = Number((sl as HTMLInputElement).value);
+    if (clipState[a].on) applyClipping();
+  }));
   $('.cv3d-clip-off').addEventListener('click', () => {
-    clipOn = false;
+    (['x', 'y', 'z'] as const).forEach(a => {
+      clipState[a].on = false;
+      const cb = clipPanel.querySelector(`input[data-clip-axis="${a}"]`) as HTMLInputElement | null;
+      if (cb) cb.checked = false;
+    });
     clipPanel.style.display = 'none';
     $('[data-act="clip"]').classList.remove('active');
     applyClipping();
+  });
+  explodeSlider.addEventListener('input', () => {
+    explodeFactor = Number(explodeSlider.value) / 100;
+    applyExplode();
   });
 
   root.querySelector('.cv3d-toolbar')!.addEventListener('click', (ev) => {
@@ -1118,14 +1398,47 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
         break;
       case 'facecolors':
         faceColorsOn = !faceColorsOn;
+        if (faceColorsOn) { draftOn = false; root.querySelector('[data-act="draft"]')?.classList.remove('active'); }
         btn.classList.toggle('active', faceColorsOn);
-        applyFaceColors();
+        applyColorMode();
         break;
-      case 'clip':
-        clipOn = !clipOn;
-        btn.classList.toggle('active', clipOn);
-        clipPanel.style.display = clipOn ? '' : 'none';
-        if (clipOn) updateClipPlane(); else applyClipping();
+      case 'draft':
+        // click cycles the pull axis: off → Z → X → Y → off
+        faceColorsOn = false; root.querySelector('[data-act="facecolors"]')?.classList.remove('active');
+        if (!draftOn) { draftOn = true; draftAxis = 'z'; }
+        else if (draftAxis === 'z') draftAxis = 'x';
+        else if (draftAxis === 'x') draftAxis = 'y';
+        else draftOn = false;
+        btn.classList.toggle('active', draftOn);
+        applyColorMode();
+        statusHint.textContent = draftOn ? `Draft analysis — pull axis ${draftAxis.toUpperCase()} (click again to change)` : 'Draft analysis off';
+        break;
+      case 'clip': {
+        const show = clipPanel.style.display === 'none';
+        clipPanel.style.display = show ? '' : 'none';
+        btn.classList.toggle('active', show);
+        break;
+      }
+      case 'explode': {
+        const show = explodePanel.style.display === 'none';
+        explodePanel.style.display = show ? '' : 'none';
+        btn.classList.toggle('active', show);
+        break;
+      }
+      case 'tree': {
+        const show = treeBox.style.display === 'none';
+        treeBox.style.display = show ? '' : 'none';
+        btn.classList.toggle('active', show);
+        root.classList.toggle('cv3d--tree-open', show);
+        if (show) buildTreePanel();
+        break;
+      }
+      case 'maximize':
+        maximized = !maximized;
+        root.classList.toggle('cv3d--max', maximized);
+        btn.classList.toggle('active', maximized);
+        requestAnimationFrame(resize);
+        statusHint.textContent = maximized ? 'Maximized — press Esc to exit' : '';
         break;
       case 'features': {
         const show = featuresBox.style.display === 'none';
@@ -1138,6 +1451,8 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
       case 'tool-dist': setTool('dist'); break;
       case 'tool-circle': setTool('circle'); break;
       case 'tool-angle': setTool('angle'); break;
+      case 'tool-point': setTool('point'); break;
+      case 'tool-facedist': setTool('facedist'); break;
       case 'clear': clearMeasurements(); statusHint.textContent = 'Cleared'; break;
       case 'snap': {
         renderer.render(scene, camera);
@@ -1173,6 +1488,7 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
       canvas.removeEventListener('dblclick', onDblClick);
       ro.disconnect();
       controls.dispose();
+      if (viewHelper) { try { viewHelper.dispose(); } catch { /* already gone */ } viewHelper = null; }
       // free every GPU resource this instance created
       scene.traverse(disposeObject);
       renderer.dispose();
