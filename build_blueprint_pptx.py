@@ -132,7 +132,7 @@ logo(s, x=Inches(0.5), y=Inches(0.45), scale=1.25)
 text(s, Inches(0.9), Inches(2.15), Inches(11.8), Inches(1.0),
      [[('CostVision Implementation Blueprint', 36, DARK, True)]])
 text(s, Inches(0.9), Inches(3.1), Inches(11.4), Inches(0.9),
-     [[('Secure enterprise deployment inside our network — and integration with CAPEE.', 19, BODY, False)],
+     [[('Secure deployment inside our network — integrated into CAPEE, our existing should-cost software.', 19, BODY, False)],
       [('All CAD models, drawings and images stay inside the company. Verified in the code.', 19, BODY, False)]])
 for i, (t, c) in enumerate([('100% CAD stays internal', GREEN), ('AI controls BUILT & tested', BLUE), ('~3–5 weeks remaining', VIOLET), ('6-phase rollout', CYAN)]):
     x = Inches(0.9 + i * 2.95)
@@ -161,7 +161,7 @@ text(s, Inches(0.8), Inches(2.35), Inches(11.8), Inches(1.1),
 pts = [
     ('Why now', 'The tool is built, tested (1,005 automated tests) and proven on live runs — the value is waiting on deployment, not development.', BLUE),
     ('Why it is safe', 'CAD processing already runs fully inside the server. The private AI routing and the air-gapped switch are now BUILT and tested live.', GREEN),
-    ('Why CAPEE wins', 'CAPEE keeps the workflow; CostVision adds the AI, physics and organisational memory behind it. No tool replacement.', VIOLET),
+    ('Why CAPEE wins', 'CAPEE is our existing should-cost software; CostVision plugs into it to upgrade its engine with AI, physics and memory. No rip-and-replace.', VIOLET),
 ]
 for i, (t, d, c) in enumerate(pts):
     x = Inches(0.45 + i * 4.25)
@@ -174,7 +174,8 @@ notes(s, "One clear ask: approve the first two phases — the security assessmen
          "finished and proven; what remains is deployment. Why is it safe? Because CAD processing already happens "
          "entirely inside the server — we verified this in the code — and the two security controls this plan called "
          "for, private AI routing and the air-gapped switch, are now built into the platform and tested live. "
-         "And why does CAPEE win? Because we are not replacing CAPEE — we're giving it an AI engine and a memory.")
+         "And why does CAPEE win? Because we are not replacing CAPEE — it stays the should-cost software our teams "
+         "already use; CostVision integrates into it and upgrades its engine with AI, physics and a memory.")
 
 # ═══════════════ 3 — WHAT COSTVISION IS ═══════════════
 s = header('What CostVision is — a quick recap', 'Background')
@@ -480,17 +481,17 @@ notes(s, "Function by function: where does CAD data actually go? Opening and mea
          "than take our word for it.")
 
 # ═══════════════ 10 — CAPEE INTEGRATION ═══════════════
-s = header('CAPEE + CostVision — better together', 'Integration')
+s = header('CostVision inside CAPEE — should-cost, upgraded', 'Integration')
 box(s, Inches(0.45), Inches(2.0), Inches(5.6), Inches(2.1), fill=PANEL, round_=True, radius=0.06)
 text(s, Inches(0.75), Inches(2.2), Inches(5.0), Inches(1.8),
-     [[('CAPEE  (stays the front door)', 15, DARK, True)],
-      [('• Costing workflow, approvals, reporting', 12, BODY, False)],
+     [[('CAPEE  (existing should-cost software)', 15, DARK, True)],
+      [('• Should-cost workflow, approvals, reporting', 12, BODY, False)],
       [('• System of record — unchanged for users', 12, BODY, False)],
-      [('• Calls CostVision services behind the scenes', 12, BODY, False)]],
+      [('• Its costing engine now powered by CostVision', 12, BODY, False)]],
      space_after=5, line_spacing=1.12)
 box(s, Inches(7.3), Inches(2.0), Inches(5.6), Inches(2.1), fill=PANEL2, round_=True, radius=0.06)
 text(s, Inches(7.6), Inches(2.2), Inches(5.0), Inches(1.8),
-     [[('CostVision  (the engine behind it)', 15, BLUE, True)],
+     [[('CostVision  (the engine it plugs in)', 15, BLUE, True)],
       [('• 18 physics cost engines + CAD reading', 12, BODY, False)],
       [('• AI memory: similar parts, self-calibration', 12, BODY, False)],
       [('• Autonomous findings for sourcing', 12, BODY, False)]],
@@ -515,13 +516,15 @@ for i, (a, b) in enumerate(flows):
     x = Inches(0.75 + (i % 3) * 4.1); y = Inches(5.2 + (i // 3) * 0.75)
     text(s, x, y, Inches(3.9), Inches(0.7),
          [[(a + ' ', 12, BLUE, True), (b, 11.5, BODY, False)]], line_spacing=1.1)
-notes(s, "The integration philosophy: CAPEE stays the front door — the workflow, approvals and reporting our teams "
-         "already know. CostVision becomes the engine behind it, called over internal APIs that already exist. "
+notes(s, "The integration philosophy in one line: CostVision integrates INTO CAPEE, the should-cost software our teams "
+         "already use — it doesn't sit beside it. CAPEE keeps the workflow, the approvals and the reporting; what "
+         "changes is that its costing engine is now powered by CostVision underneath, called over internal APIs that "
+         "already exist. So users open CAPEE exactly as they do today and simply get better should-cost numbers. "
          "The six flows that matter: CAPEE sends a part, gets a full should-cost back. It sends a CAD file, gets "
          "auto-filled inputs. It asks about a new part, gets similar history and suggestions. And the best one: "
-         "every PO price CAPEE already captures feeds the learning loop automatically — CAPEE's data makes "
-         "CostVision smarter without anyone lifting a finger. One shared rate library and knowledge database means "
-         "one version of the truth.")
+         "every PO price CAPEE already captures feeds the learning loop automatically — CAPEE's own data makes the "
+         "engine smarter without anyone lifting a finger. One shared rate library and knowledge database means one "
+         "version of the truth across both.")
 
 # ═══════════════ 11 — WHAT EACH SIDE NEEDS ═══════════════
 s = header('What each side needs to change', 'Scope of work')
@@ -664,7 +667,7 @@ notes(s, "The honest risk view. If the cloud tenancy isn't approved, we don't st
 s = header('Feasibility verdict — and the ask', 'Decision')
 verdicts = [
     ('Secure deployment, CAD fully internal', 'FEASIBLE — CAD never leaves; AI routing + air-gap switch already BUILT', GREEN),
-    ('CAPEE + CostVision integration', 'FEASIBLE — API-first design; CAPEE stays the front door', GREEN),
+    ('Integration into CAPEE', 'FEASIBLE — API-first; plugs into CAPEE as its should-cost engine, no rip-and-replace', GREEN),
     ('Changes required', 'Head start delivered: 2 of 6 items built — ~3–5 engineering weeks remain', BLUE),
     ('Long-term governance', 'Rate-library board · monthly findings review · quarterly access & egress audit', VIOLET),
 ]
@@ -682,8 +685,9 @@ text(s, Inches(0.8), Inches(5.8), Inches(11.8), Inches(0.9),
 box(s, 0, H - Inches(0.16), W, Inches(0.16), fill=INDIGO)
 notes(s, "To summarise: secure deployment with CAD fully internal is feasible — in fact, the platform was built that "
          "way, and the two controls that complete it — private AI routing and the air-gapped switch — are already "
-         "built, tested and demonstrated live. CAPEE integration is feasible and high-value, with CAPEE remaining "
-         "the front door. The remaining changes are bounded — roughly three to five weeks, not months — and "
+         "built, tested and demonstrated live. Integrating into CAPEE is feasible and high-value: CostVision plugs in "
+         "as the should-cost engine while CAPEE stays the tool teams work in. The remaining changes are bounded — "
+         "roughly three to five weeks, not months — and "
          "governance is defined. The ask today is simple: approve Phases 1 and 2, the security assessment and the "
          "architecture design. The full written plan, including the security checklist, is ready to hand to the "
          "IT-Security team. Thank you — questions welcome.")
