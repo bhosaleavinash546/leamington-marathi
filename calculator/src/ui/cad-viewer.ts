@@ -210,7 +210,6 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
   const { OrbitControls } = await import('three/examples/jsm/controls/OrbitControls.js');
   const { ViewHelper } = await import('three/examples/jsm/helpers/ViewHelper.js');
   const { toCreasedNormals } = await import('three/examples/jsm/utils/BufferGeometryUtils.js');
-  const { RoomEnvironment } = await import('three/examples/jsm/environments/RoomEnvironment.js');
   // Crease angle for smooth shading: normals are averaged across facets that meet
   // below this angle (round cylinders/fillets) and kept hard above it (real edges).
   const CREASE_ANGLE = (40 * Math.PI) / 180;
@@ -344,17 +343,10 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(0xffffff);
 
-  // Image-based lighting (a neutral studio room) gives metals soft, believable
-  // highlights — the "CAD-tool" look. Baked once via PMREM; fully guarded so a
-  // driver/allocation failure can never blank the view (the direct lights below
-  // still light the part).
-  let envTexture: InstanceType<typeof THREE.Texture> | null = null;
-  try {
-    const pmrem = new THREE.PMREMGenerator(renderer);
-    envTexture = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
-    scene.environment = envTexture;
-    pmrem.dispose();
-  } catch { envTexture = null; /* IBL is a nicety — direct lights still light the part */ }
+  // Lighting is direct-only (hemisphere + key + rim, set up below). An earlier
+  // image-based-lighting (RoomEnvironment) pass washed the matte grey material
+  // out to near-white, so it was removed to restore the solid CAD grey the user
+  // preferred — the smoothness comes from creased normals, not the IBL.
   const camera = new THREE.PerspectiveCamera(40, 1, 0.1, 10000);
   const controls = new OrbitControls(camera, canvas);
   controls.enableDamping = true;
@@ -724,7 +716,9 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
         if (geometry !== raw) raw.dispose();
         geometry.computeBoundingBox();
         geometry.computeBoundingSphere();
-        const mat = new THREE.MeshStandardMaterial({ color: 0xb1b8c4, metalness: 0.4, roughness: 0.52, envMapIntensity: 0.75, side: THREE.DoubleSide });
+        // Solid matte CAD grey (the look the user preferred). Direct-light only —
+        // no IBL env map, which had washed this to near-white.
+        const mat = new THREE.MeshStandardMaterial({ color: 0xaeb6c2, metalness: 0.45, roughness: 0.5, side: THREE.DoubleSide });
         const mesh = new THREE.Mesh(geometry, mat);
         mesh.userData = { triOffset: triCursor, bodySlot: bi };
         partGroup.add(mesh);
@@ -1605,7 +1599,6 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
       ro.disconnect();
       controls.dispose();
       if (viewHelper) { try { viewHelper.dispose(); } catch { /* already gone */ } viewHelper = null; }
-      if (envTexture) { envTexture.dispose(); envTexture = null; }
       // free every GPU resource this instance created
       scene.traverse(disposeObject);
       renderer.dispose();
