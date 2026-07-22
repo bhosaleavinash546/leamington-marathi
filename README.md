@@ -58,6 +58,20 @@ A single Docker container runs both:
 
 Config lives in `calculator/.env` (created on first run, never committed to git).
 
+### 3D CAD & STEP support
+
+`make start` builds the **STEP/IGES-capable** image (`calculator/Dockerfile.cad`,
+glibc + cadquery/OCP) — the same image production runs on Fly.io — so **CAD-to-Cost
+and the 3D viewer work with `.step` / `.stp` / `.iges` files, not just `.stl`.**
+The first build is larger (~1.5 GB) and slower as a result.
+
+If you only need the STL fast path and want a smaller, quicker container, opt in to
+the Alpine image:
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.stl-only.yml up --build
+```
+
 ---
 
 ## 🛠 Troubleshooting

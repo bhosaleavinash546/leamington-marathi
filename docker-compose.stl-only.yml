@@ -1,0 +1,12 @@
+# Opt-in override: build the small, fast Alpine image (STL fast path only — no
+# STEP/IGES geometry, because cadquery/OCP wheels are glibc, not musl).
+#
+# Use when you want a quick local container and don't need STEP measurement:
+#   docker compose -f docker-compose.yml -f docker-compose.stl-only.yml up --build
+#
+# The default `docker compose up` (and `make start`) uses Dockerfile.cad, which
+# DOES support STEP/IGES — same image production runs on Fly.io.
+services:
+  costvision:
+    build:
+      dockerfile: Dockerfile

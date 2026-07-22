@@ -2,7 +2,12 @@ services:
   costvision:
     build:
       context: ./calculator
-      dockerfile: Dockerfile
+      # Dockerfile.cad = glibc base with cadquery/OCP, so the STEP/IGES geometry
+      # path (CAD-to-Cost + 3D viewer) works in the container, not just the STL
+      # fast path. This matches the production Fly.io image (calculator/fly.toml).
+      # First build is larger (~1.5 GB) and slower; for a fast STL-only local run
+      # use the override:  docker compose -f docker-compose.yml -f docker-compose.stl-only.yml up --build
+      dockerfile: Dockerfile.cad
     container_name: costvision
     ports:
       # Express serves the built frontend + API — map to :5174 so the URL stays the same
