@@ -26,6 +26,11 @@ ENV PATH="/opt/cq/bin:${PATH}"
 
 WORKDIR /app
 
+# puppeteer is a dependency but its bundled Chrome is never used at runtime (the
+# server doesn't import it) — skip the browser download so `npm ci` doesn't fail in
+# the slim image (no network for the download, and no `unzip`).
+ENV PUPPETEER_SKIP_DOWNLOAD=1
+
 COPY package*.json ./
 RUN npm ci
 
