@@ -1,0 +1,46 @@
+# Fly.io deployment for CostVision — a full-stack app (Express API + built Vite UI
+# + SQLite), NOT a static site. Deploy from THIS directory (calculator/) so the
+# Docker build context matches the Dockerfile, which COPYs the calculator app and
+# runs `tsx server/index.ts` on :3002 (serving /calculator and /api together).
+#
+# One-time setup — see DEPLOY.md. In short:
+#   fly apps create costvision                                  # pick a unique name; update `app` below
+#   fly volume create costvision_data --region lhr --size 1     # SQLite lives on this volume
+#   fly secrets set ANTHROPIC_API_KEY=sk-ant-... JWT_SECRET="$(openssl rand -hex 32)"
+#   fly deploy                                                   # or let the GitHub Action do it
+
+app = "costvision"
+primary_region = "lhr"          # London — close to the UK-anchored rate library
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  NODE_ENV = "production"
+  PORT = "3002"
+
+[http_service]
+  internal_port = 3002
+  force_https = true
+  # Scale to zero when idle (cheap for a demo); first request cold-starts the machine.
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  min_machines_running = 0
+
+  # Fly waits for this to pass before routing traffic to a new machine.
+  [[http_service.checks]]
+    method = "GET"
+    path = "/api/health"
+    interval = "30s"
+    timeout = "5s"
+    grace_period = "20s"
+
+# Persist the SQLite database (knowledge base, rate overrides, projects, auth)
+# across deploys and restarts. Mount point matches server/db.ts → /app/data.
+[[mounts]]
+  source = "costvision_data"
+  destination = "/app/data"
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "1gb"               # tsx runtime + better-sqlite3 + AI SDK; bump to 2gb if OOM
