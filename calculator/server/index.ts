@@ -5,6 +5,7 @@ import morgan from 'morgan';
 import path from 'path';
 import type { Request, Response, NextFunction } from 'express';
 import { config } from 'dotenv';
+import { hasUsableServerKey } from './utils/api-key.js';
 import cadRouter from './routes/cad.js';
 import syncRouter from './routes/sync.js';
 import agentRouter from './routes/agent.js';
@@ -95,7 +96,7 @@ if (IS_PROD) {
 app.get('/api/health', (_req, res) => {
   res.json({
     status: 'ok',
-    apiKeyConfigured: !!process.env.ANTHROPIC_API_KEY,
+    apiKeyConfigured: hasUsableServerKey(),
     teamAuthEnabled: !!process.env.TEAM_API_KEY,
     smtpConfigured: !!(process.env.SMTP_HOST && process.env.SMTP_USER),
     jwtConfigured: !!process.env.JWT_SECRET,
@@ -123,7 +124,7 @@ process.on('uncaughtException', (err) => {
 const server = app.listen(PORT, () => {
   console.log(`Should-Cost server running on http://localhost:${PORT}`);
   console.log(`[Deployment] AI egress: ${aiEndpointDescription()}`);
-  console.log(`API key:      ${process.env.ANTHROPIC_API_KEY ? '✓ configured' : '✗ NOT SET — set ANTHROPIC_API_KEY in .env'}`);
+  console.log(`API key:      ${hasUsableServerKey() ? '✓ configured' : '✗ NOT SET — set ANTHROPIC_API_KEY in .env (run: make dev, or ./dev-start.sh)'}`);
   console.log(`JWT secret:   ${process.env.JWT_SECRET ? '✓ configured' : '⚠  using dev default — set JWT_SECRET in .env'}`);
   console.log(`SMTP:         ${process.env.SMTP_HOST ? `✓ ${process.env.SMTP_HOST}` : 'not configured — OTPs logged to console'}`);
   console.log(`Team sync:    ${process.env.TEAM_API_KEY ? '✓ enabled' : 'disabled'}`);

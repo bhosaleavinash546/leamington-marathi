@@ -1,5 +1,6 @@
 
 import { Router } from 'express';
+import { resolveApiKey } from '../utils/api-key.js';
 import multer from 'multer';
 import Anthropic from '@anthropic-ai/sdk';
 import { createAnalysisCache } from '../utils/analysis-cache.js';
@@ -1023,7 +1024,7 @@ router.post('/analyze-image', upload.fields([
     }
   }
 
-  const apiKey = process.env.ANTHROPIC_API_KEY ?? (req.headers['x-api-key'] as string);
+  const apiKey = resolveApiKey(req);
   if (!apiKey) {
     res.status(400).json({ error: 'ANTHROPIC_API_KEY not configured. Add it in Settings or set the environment variable.' });
     return;
@@ -1534,7 +1535,7 @@ router.post('/reanalyze', upload.fields([
   const imageFiles = files?.pcbImages ?? [];
   const deepAnalysis = isDeep(req);
 
-  const apiKey = process.env.ANTHROPIC_API_KEY ?? (req.headers['x-api-key'] as string);
+  const apiKey = resolveApiKey(req);
   if (!apiKey) {
     res.status(400).json({ error: 'ANTHROPIC_API_KEY not configured. Add it in Settings or set the environment variable.' });
     return;
@@ -1962,7 +1963,7 @@ router.post('/analyze-image-stream', upload.fields([
   const primaryImage = imageFiles[0];
   if (!primaryImage) { emit('error', { message: 'No image uploaded' }); res.end(); return; }
 
-  const apiKey = process.env.ANTHROPIC_API_KEY ?? (req.headers['x-api-key'] as string);
+  const apiKey = resolveApiKey(req);
   if (!apiKey) { emit('error', { message: 'ANTHROPIC_API_KEY not configured' }); res.end(); return; }
 
   let imageLabels: string[] = DEFAULT_IMAGE_LABELS;

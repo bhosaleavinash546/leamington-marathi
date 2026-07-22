@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { resolveApiKey } from '../utils/api-key.js';
 import { createAnthropic } from '../utils/ai-client.js';
 
 const router = Router();
@@ -30,7 +31,7 @@ router.post('/', async (req, res): Promise<void> => {
   const { message } = req.body as { message?: string };
   if (!message?.trim()) { res.status(400).json({ error: 'No message provided' }); return; }
 
-  const apiKey = process.env.ANTHROPIC_API_KEY ?? (req.headers['x-api-key'] as string);
+  const apiKey = resolveApiKey(req);
   if (!apiKey) {
     res.json({ reply: 'AI assistant requires an Anthropic API key. Add it in Settings or set the ANTHROPIC_API_KEY environment variable.' });
     return;

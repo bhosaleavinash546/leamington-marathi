@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { resolveApiKey } from '../utils/api-key.js';
 import Anthropic from '@anthropic-ai/sdk';
 import { createAnthropic } from '../utils/ai-client.js';
 import { z } from 'zod';
@@ -952,7 +953,7 @@ router.post('/chat', async (req, res): Promise<void> => {
     return;
   }
 
-  const apiKey = process.env.ANTHROPIC_API_KEY ?? (req.headers['x-api-key'] as string);
+  const apiKey = resolveApiKey(req);
   if (!apiKey) {
     res.status(400).json({ error: 'ANTHROPIC_API_KEY not configured.' });
     return;
@@ -1039,7 +1040,7 @@ router.post('/chat/stream', async (req, res): Promise<void> => {
     return;
   }
 
-  const apiKey = process.env.ANTHROPIC_API_KEY ?? (req.headers['x-api-key'] as string);
+  const apiKey = resolveApiKey(req);
   if (!apiKey) {
     res.status(400).json({ error: 'ANTHROPIC_API_KEY not configured.' });
     return;

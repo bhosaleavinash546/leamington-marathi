@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { resolveApiKey } from '../utils/api-key.js';
 import multer from 'multer';
 import rateLimit from 'express-rate-limit';
 import { createAnthropic } from '../utils/ai-client.js';
@@ -127,7 +128,7 @@ router.post('/analyze', upload.fields([
     return;
   }
 
-  const apiKey = process.env.ANTHROPIC_API_KEY ?? (req.headers['x-api-key'] as string);
+  const apiKey = resolveApiKey(req);
   if (!apiKey) {
     res.status(400).json({ error: 'ANTHROPIC_API_KEY not configured. Set it in .env or pass as x-api-key header.' });
     return;
@@ -1252,7 +1253,7 @@ router.post('/reanalyze', asyncRoute(async (req, res): Promise<void> => {
     return;
   }
 
-  const apiKey = process.env.ANTHROPIC_API_KEY ?? (req.headers['x-api-key'] as string);
+  const apiKey = resolveApiKey(req);
   if (!apiKey) {
     res.status(400).json({ error: 'ANTHROPIC_API_KEY not configured. Set it in .env or pass as x-api-key header.' });
     return;
