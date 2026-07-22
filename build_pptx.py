@@ -1,5 +1,5 @@
 """
-CostVision — 15-Slide Executive Presentation Generator
+CostVision — 16-Slide Executive Presentation Generator
 Produces a professional .pptx file with dark theme, data tables,
 two-column layouts and branded colour scheme.
 """
@@ -90,7 +90,7 @@ def slide_header(slide, slide_num, section_label, title_text, subtitle_text=""):
     rect(slide, 0, 0, W, Inches(0.06), ACCENT_B)
 
     # Slide number (top-left)
-    txb(slide, f"SLIDE {slide_num:02d} / 15", Inches(0.35), Inches(0.12), Inches(2), Inches(0.35),
+    txb(slide, f"SLIDE {slide_num:02d} / 16", Inches(0.35), Inches(0.12), Inches(2), Inches(0.35),
         size=7, color=TEXT_D, bold=True)
 
     # CostVision logo (top-right)
@@ -237,6 +237,11 @@ def add_table(slide, rows, cols, x, y, w, h, header_row, data_rows,
                 run.font.color.rgb = TEXT_G
 
 
+def notes(slide, text):
+    """Attach plain-text speaker notes to a slide (humanised, conversational)."""
+    slide.notes_slide.notes_text_frame.text = text.strip()
+
+
 # ══════════════════════════════════════════════════════════════════════════════
 # SLIDE 1 — Title Slide
 # ══════════════════════════════════════════════════════════════════════════════
@@ -296,9 +301,22 @@ for label, col, px in pill2_data:
 
 # Footer
 rect(slide, 0, H - Inches(0.45), W, Inches(0.008), BORDER)
-txb(slide, "CONFIDENTIAL — Management Review  |  June 2026",
+txb(slide, "CONFIDENTIAL — Management Review  |  July 2026",
     Inches(0.4), H - Inches(0.4), W - Inches(0.8), Inches(0.35),
     size=7.5, color=TEXT_D, align=PP_ALIGN.CENTER)
+
+notes(slide,
+    "Welcome, and thanks for making the time. What you're looking at is CostVision — a "
+    "should-cost platform I've built to answer one deceptively simple question: what should this "
+    "part actually cost to make? Not what a supplier quotes, but what the engineering and the "
+    "economics say it should be. "
+    "The one principle I want you to hold onto for the whole session is this: the AI never sets a "
+    "price. It reads the input — a CAD model, a photo of a board, a plain-English description — and "
+    "it classifies and interprets. Every pound of cost after that is deterministic arithmetic we can "
+    "trace line by line. That's what makes the number defensible in a negotiation. "
+    "Across the next few slides I'll show you the breadth — twenty-one commodities, twenty regions — "
+    "and then the part I'm proudest of: as of this year the tool checks its own homework and learns "
+    "from real quotes, and I've proven that on five real automotive CAD parts.")
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -345,6 +363,19 @@ txb(slide, "of part cost is locked in at the design stage — yet most cost anal
     Inches(1.8), Inches(5.52), Inches(10.8), Inches(0.62),
     size=9.5, color=TEXT_G)
 
+notes(slide,
+    "Before I show you the tool, let me be honest about the problem it's solving, because most of "
+    "us in this room have lived it. A should-cost done by hand takes two to four weeks per part. By "
+    "the time it lands, the sourcing decision has often already been made. And because everyone "
+    "builds their model slightly differently, you can't compare one engineer's number to another's — "
+    "there's no single method, no auditable trail. "
+    "The stat at the bottom is the one that really matters: roughly eighty percent of a part's cost "
+    "is locked in at the design stage, but almost all of our cost analysis happens after the design "
+    "is frozen — when changing anything is expensive. So we discover the cost problem at exactly the "
+    "point we can no longer cheaply fix it. "
+    "Everything CostVision does is aimed at pulling that intelligence forward, to the concept phase, "
+    "where a change is still just a conversation.")
+
 
 # ══════════════════════════════════════════════════════════════════════════════
 # SLIDE 3 — Solution Overview
@@ -384,6 +415,19 @@ for i, (col, ico, title, body) in enumerate(cards_data):
     cx = sx + c * (cw + gap)
     cy = sy + r * (ch + gap)
     card(slide, cx, cy, cw, ch, f"{ico}  {title}", body, accent=col)
+
+notes(slide,
+    "So here's the whole platform on one slide. I'll come back to several of these in detail, so "
+    "don't feel you need to read every card. "
+    "The three I'd point you to first are the entry points, because they're what make it fast. You "
+    "can describe a part in plain English and the AI builds the model for you. You can upload a CAD "
+    "file or even a photo, and it measures the geometry and infers the process. Or, if you prefer, "
+    "you fill in the form yourself. Whichever door you come in, you land on the same engine — "
+    "twenty-one engineering-grade commodity models underneath. "
+    "The rest of the cards are the things that make it a real tool rather than a calculator: assembly "
+    "roll-ups, learning curves for volume pricing, supplier-quote comparison, DFM scoring, twenty "
+    "regions with automatic currency, and full export. The theme to notice is that the AI is doing "
+    "the reading and interpreting — the cost maths stays deterministic underneath.")
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -459,6 +503,19 @@ for i, b in enumerate(benefits):
     bx = rx + Inches(0.1) + (i % 2) * Inches(3.0)
     by = cy2 + Inches(0.34) + (i // 2) * Inches(0.3)
     txb(slide, b, bx, by, Inches(2.9), Inches(0.25), size=7.5, color=TEXT_G)
+
+notes(slide,
+    "This is the feature that gets the biggest reaction in a live demo, so let me walk the flow on "
+    "the right. Someone types a description — here, a four-layer PCB with an ENIG finish, ten "
+    "thousand a year, made in the UK. The AI reads that, fills in the whole model — layer count, "
+    "finish premium, test method, the NRE spread over the batch — and comes back with four pounds "
+    "eighteen a board, plus a manufacturability score. "
+    "The thing I always stress at this point: the AI didn't invent that price. It interpreted the "
+    "words into engineering inputs, and the deterministic engine did the arithmetic. So every one of "
+    "those assumptions is visible and editable — nothing is a black box. "
+    "What it buys you is zero manual form-filling, it works for any commodity, and there's a full "
+    "audit trail behind every figure. That last point is what makes the number safe to take into a "
+    "supplier meeting.")
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -549,6 +606,21 @@ txb(slide, "Supported formats:", Inches(0.6), Inches(2.16), Inches(1.5), Inches(
 txb(slide, ".STEP   .IGES   .STP   .IGS   .JPG   .PNG   .HEIC   (drag-drop or file picker)",
     Inches(2.1), Inches(2.18), Inches(5.0), Inches(0.25), size=8, color=ACCENT_B)
 
+notes(slide,
+    "This is the automation path, and there's one design decision here I really want to land: the "
+    "geometry is the ground truth. When you upload a STEP file, a proper CAD kernel measures it — the "
+    "real volume, the bounding box, the B-rep faces, the holes and pockets. The AI then interprets "
+    "that measured geometry; it doesn't get to overrule it. If the AI ever suggests a number that "
+    "contradicts the measured volume or weight, we treat that as a bug and the sanity layer catches "
+    "it. "
+    "A quick note for the technically minded, because it matters for deployment: measuring STEP and "
+    "IGES files needs a heavyweight geometry kernel, and we now ship that inside the deployed "
+    "container — the build that carries it is verified in our continuous-integration pipeline on "
+    "every change, so it isn't a 'works on my laptop' story. STL files take a lighter, pure-code fast "
+    "path. "
+    "Net effect: geometry to a full should-cost in minutes, ten times faster than doing the routing "
+    "by hand, with the machine doing the tedious measurement and a human still owning the judgement.")
+
 
 # ══════════════════════════════════════════════════════════════════════════════
 # SLIDE 6 — End-to-End Workflow
@@ -601,6 +673,17 @@ for tag in tags:
         size=7.5, color=ACCENT_B)
     tx += Inches(1.78)
 
+notes(slide,
+    "This slide is really just to show that all three entry points — plain English, CAD upload, or "
+    "manual entry — funnel into the same eight-step flow. I won't read the boxes out; the shape is "
+    "what matters. "
+    "The important beat is in the middle: steps three and four, where the AI extracts the features "
+    "and sequences the operations. That's the part that used to take an experienced cost engineer "
+    "days, and it's where most of the time saving comes from. Everything after it — the eight-bucket "
+    "calculation, the insights, the DFM check, the export — is deterministic and fast. "
+    "So the headline is the first tag at the bottom: minutes, not weeks, but with auditable "
+    "assumptions the whole way through. Speed without a black box.")
+
 
 # ══════════════════════════════════════════════════════════════════════════════
 # SLIDE 7 — 21 Commodities
@@ -646,6 +729,19 @@ for i, (ico, name, sub) in enumerate(commodities):
     cy2 = sy_c + r * (ch_c + Inches(0.065))
     col = ACCENT_B if i < 18 else ACCENT_G
     comm_card(slide, cx2, cy2, cw_c, ch_c, ico, name, sub, color=col)
+
+notes(slide,
+    "Breadth is the point of this slide. Twenty-one commodities, from CNC machining and casting and "
+    "forging, through the whole plastics family — injection, blow, extrusion, thermoforming, "
+    "rotomoulding — into rubber and composites, then electronics: PCB fabrication, assembly, wiring "
+    "harness, and body-in-white. "
+    "Why does that matter? Because a real product isn't one process. A door module is stampings plus "
+    "a harness plus a PCBA plus paint. If your costing tool only does machining, you're stuck the "
+    "moment the part is plastic. CostVision costs all of them with the same rigour and the same "
+    "eight-bucket structure, which is exactly what lets the assembly roll-up add them together into "
+    "one number. "
+    "And the last tile is the AI agent — the natural-language front door into any of the other "
+    "twenty.")
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -693,6 +789,20 @@ for i, (col, title, body) in enumerate(depth_cards):
     cx_d = sx_d + c * (cw_d + gap_d)
     cy_d = sy_d + r * (ch_d + gap_d)
     card(slide, cx_d, cy_d, cw_d, ch_d, title, body, accent=col)
+
+notes(slide,
+    "If anyone in the room is going to be sceptical, it's usually about depth — is this a real "
+    "engineering model, or a spreadsheet with a nice front end? This slide is the answer. "
+    "Underneath every commodity there's a material database with the real grades and FX-adjusted "
+    "prices, a machine and rate library you can edit per project and region, and proper routing "
+    "logic — each operation has a machine, a cycle time, an OEE, a setup, a labour grade. Yield and "
+    "scrap are modelled, not guessed. Tooling and NRE are amortised over real volume with tool-life "
+    "curves. "
+    "The two I'd draw a manager's eye to are benchmarking and the learning curve. Every cost element "
+    "is checked against published benchmark ranges, so an outlier gets flagged rather than quietly "
+    "shipped. And Wright's Law lets you project cost as volume grows — which is exactly the "
+    "conversation you need for a long-term agreement. This is the layer that makes the output "
+    "defensible rather than just plausible.")
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -764,6 +874,19 @@ for col, title, body in adv_right:
         size=8, color=TEXT_G, wrap=True)
     yy9r += Inches(1.62)
 
+notes(slide,
+    "These are the features that turn a cost number into commercial leverage. "
+    "Top left, the learning curve — as volume doubles, cost comes down by a set percentage, so you "
+    "can quote the cost at year-three volume, not just the prototype cost. Below it, the assembly "
+    "roll-up I keep coming back to: build a multi-level BOM from any mix of commodities and get a "
+    "total with the per-component breakdown intact. "
+    "On the right is the negotiation toolkit. Log a supplier's quote and the tool tells you, in "
+    "plain terms, 'this supplier is eighteen percent above should-cost,' and hands you the talking "
+    "points to say so. The tornado chart shows which inputs actually move the number, so you know "
+    "what to validate before you sit down. And scenarios let you hold baseline, target, and stretch "
+    "side by side. This is where the tool stops being an estimator and starts being a negotiator's "
+    "brief.")
+
 
 # ══════════════════════════════════════════════════════════════════════════════
 # SLIDE 10 — DFM / DFA Intelligence
@@ -825,6 +948,21 @@ for i, (col, title, body) in enumerate(dfm_dfa):
     dy = Inches(3.0) + r * (ch_d2 + Inches(0.1))
     card(slide, dx, dy, cw_d2, ch_d2, title, body, accent=col)
 
+notes(slide,
+    "One thing I was careful about here: the DFM and DFA layer runs after the should-cost, and it "
+    "never touches the calculation. It reads the finished cost structure and asks manufacturing "
+    "questions of it. That separation is deliberate — I didn't want a 'design advice' feature "
+    "quietly nudging the price. "
+    "What it gives you is a manufacturability score and an assembly-efficiency score out of ten, and "
+    "then something more useful than a grade: a ranked list of levers with rough savings against "
+    "each. Automate a high-labour operation, five to twenty percent. Move to a near-net shape, five "
+    "to fifteen percent on material. Increase volume to dilute the tooling NRE — quick win, low "
+    "risk. "
+    "And if you want more than the rule-based read, there's a deep-analysis button that has the AI "
+    "write the root-cause commentary and a negotiation strategy. So the cost number comes with a "
+    "'here's how to make it cheaper' attached — at the concept stage, where it's still free to act "
+    "on.")
+
 
 # ══════════════════════════════════════════════════════════════════════════════
 # SLIDE 11 — Regional & Currency Intelligence
@@ -885,12 +1023,127 @@ for col, title, body in key_points:
         size=8, color=TEXT_G, wrap=True)
     yy11 += Inches(1.18)
 
+notes(slide,
+    "A part made in Poland doesn't just have cheaper labour — it has a different machine rate, "
+    "different energy cost, a different currency. Getting that right by hand is where manual "
+    "should-costs quietly go wrong. "
+    "Here you pick the region and everything reprices at once: the four labour tiers, electricity "
+    "and gas, machine rates, material prices, and the display currency flips automatically — pick "
+    "China and you're reading yuan. And because the AI Insights tab estimates the same part across "
+    "all twenty regions at once, you get instant regional arbitrage: 'this is X in the UK, Y in "
+    "Mexico, Z in Vietnam' — a make-versus-buy answer backed by rates, not a gut feel. "
+    "Every rate is editable too, so if you have a real supplier quote or a fresher market price, you "
+    "drop it in and the model uses it.")
+
 
 # ══════════════════════════════════════════════════════════════════════════════
-# SLIDE 12 — Demo: Real-World Cost Benchmarks
+# SLIDE 12 — 2026 Agentic Intelligence: self-audit, learn-from-actuals, validation
 # ══════════════════════════════════════════════════════════════════════════════
 slide = add_slide()
-slide_header(slide, 12, "Live Demo Data", "Real-World Cost Benchmarks — Luxury SUV Programme",
+slide_header(slide, 12, "New in 2026 · Agentic Intelligence",
+             "The Tool Now Checks Its Own Work — and Learns",
+             "A deterministic self-audit re-checks every estimate, calibration learns from real quotes, and it is proven on real parts.")
+
+# Left column — three new-capability cards
+lx12, lw12 = Inches(0.45), Inches(5.55)
+agentic_cards = [
+    (ACCENT_G, "🔍 Self-Audit — it checks its own homework",
+     "A deterministic layer re-runs every estimate looking for known mistakes: a part classed as "
+     "the wrong process, machining time over the physical finish envelope, a wall thinner than the "
+     "geometry allows, weight that disagrees with the CAD. It applies bounded corrections and shows "
+     "its working — the AI never overrules the measured geometry."),
+    (ACCENT_B, "📈 Calibration & Drift — learns from actuals",
+     "Bulk-import real supplier quotes as a CSV. The engine learns per-segment correction factors, "
+     "carries a conformal confidence band, and watches for drift — so the estimate tightens as your "
+     "own history grows. Calibration status now rides on every single estimate, not a hidden report."),
+    (ORANGE, "🛠️ Universal Machine-Sizing — right press, any commodity",
+     "One dispatcher now sizes the machine for the part across commodities — forging presses, "
+     "stamping presses, HPDC and moulding tonnage, extrusion and more — instead of a single "
+     "hard-coded tier. Tooling amortises over annual volume everywhere by one universal rule."),
+]
+yy12 = Inches(2.0)
+for col, title, body in agentic_cards:
+    h = Inches(1.55)
+    rect(slide, lx12, yy12, lw12, h, SURFACE2, BORDER, Pt(0.5))
+    rect(slide, lx12, yy12, Inches(0.06), h, col)
+    txb(slide, title, lx12 + Inches(0.14), yy12 + Inches(0.08), lw12 - Inches(0.2), Inches(0.28),
+        size=9.5, bold=True, color=TEXT_W)
+    txb(slide, body, lx12 + Inches(0.14), yy12 + Inches(0.36), lw12 - Inches(0.2), h - Inches(0.46),
+        size=8, color=TEXT_G, wrap=True)
+    yy12 += Inches(1.62)
+
+# Right column — validation on 5 real automotive CAD parts
+rx12 = Inches(6.35)
+rw12 = Inches(6.55)
+rect(slide, rx12, Inches(2.0), rw12, Inches(0.04), ACCENT_G)
+txb(slide, "Proven on five real automotive CAD parts", rx12, Inches(2.1), rw12, Inches(0.3),
+    size=10, bold=True, color=ACCENT_G)
+txb(slide, "Each was mis-costed on the first pass; the self-audit caught it and corrected it.",
+    rx12, Inches(2.42), rw12, Inches(0.28), size=8, color=TEXT_G)
+
+headers12a = ["Real Part", "AI First Pass", "What Was Wrong", "Corrected"]
+data12a = [
+    ("Fuel tank",         "£216.97", "Treated as cast",       "£24.62 blow-mould"),
+    ("Front bumper",      "£29.18",  "Machined, not moulded", "£7.79 injection"),
+    ("Servo horn",        "£333.00", "Bulk, not net-shape",   "£6.40 net-shape"),
+    ("Stub axle",         "mis-class","Wrong process/weight",  "Forged steel 8.1 kg"),
+    ("Seat cross-member", "engine crash","Sizing gap",         "£1.11 runs clean"),
+]
+col_ws12a = [Inches(1.55), Inches(1.15), Inches(1.95), Inches(1.9)]
+add_table(slide, len(data12a) + 1, 4,
+          rx12, Inches(2.78), rw12, Inches(2.55),
+          headers12a, data12a, col_widths=col_ws12a)
+
+# Credibility strip under the table
+rect(slide, rx12, Inches(5.5), rw12, Inches(1.42), SURFACE2, BORDER, Pt(0.5))
+rect(slide, rx12, Inches(5.5), Inches(0.06), Inches(1.42), ACCENT_B)
+txb(slide, "Built to be trusted, not just believed", rx12 + Inches(0.16), Inches(5.58),
+    rw12 - Inches(0.25), Inches(0.28), size=9.5, bold=True, color=TEXT_W)
+cred_items = [
+    "1,005 automated tests across 86 suites — a logic regression fails the build, not the demo",
+    "The self-audit re-checks every estimate before you ever see the number",
+    "The CAD geometry engine ships inside a container whose build is verified in CI",
+]
+yyc = Inches(5.9)
+for it in cred_items:
+    rect(slide, rx12 + Inches(0.2), yyc + Inches(0.11), Inches(0.06), Inches(0.06), ACCENT_B)
+    txb(slide, it, rx12 + Inches(0.38), yyc, rw12 - Inches(0.55), Inches(0.3),
+        size=8, color=TEXT_G, wrap=True)
+    yyc += Inches(0.32)
+
+notes(slide,
+    "This is the slide I most want to talk you through, because it's what's new this year and it's "
+    "the honest answer to 'can I trust the number?' "
+    "Earlier versions of this tool were confident and sometimes wrong. So I built a self-audit — a "
+    "deterministic layer that re-checks every estimate against a list of mistakes I've actually seen "
+    "it make. Did it treat a hollow part as a solid casting? Is the machining time longer than it "
+    "would physically take to finish the part? Does the weight disagree with the CAD? When it finds "
+    "one of those, it applies a bounded correction and shows its working. Crucially, the AI is never "
+    "allowed to overrule the measured geometry — the geometry wins. "
+    "Alongside that, the tool now learns. You can bulk-import your real supplier quotes, and it "
+    "builds per-segment correction factors and a confidence band, so the estimate gets tighter as "
+    "your own history grows. And the machine-sizing that used to be hard-coded for a couple of "
+    "processes is now universal — it picks the right press or tonnage for the part across "
+    "commodities. "
+    "The right-hand side is the proof, and I'm deliberately showing you the failures. Five real "
+    "automotive CAD parts, every one mis-costed on the first pass. A fuel tank that came out at two "
+    "hundred and seventeen pounds because it was treated as a casting — the audit spotted it's a "
+    "thin hollow part, re-routed it to blow moulding, and it dropped to twenty-five. A servo horn "
+    "that priced from a solid billet at three hundred and thirty-three pounds, corrected to six "
+    "forty on a net shape. A stub axle that was mis-classified until the audit forced it to forged "
+    "steel. And a seat cross-member that used to crash the engine outright and now runs clean at a "
+    "pound eleven. "
+    "Underneath all of it: just over a thousand automated tests, the self-audit on every estimate, "
+    "and the CAD engine shipping in a container we build-test in CI. That's what lets me stand here "
+    "and say the number is defensible — it's checked, it's proven, and it's honest about what it got "
+    "wrong.")
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# SLIDE 13 — Demo: Real-World Cost Benchmarks
+# ══════════════════════════════════════════════════════════════════════════════
+slide = add_slide()
+slide_header(slide, 13, "Live Demo Data", "Real-World Cost Benchmarks — Luxury SUV Programme",
              "All figures generated by CostVision's should-cost engine. UK manufacturing region, GBP.")
 
 headers12 = ["Commodity", "Demo Part", "Key Inputs", "Should-Cost", "AI Top Insight", "DFM Flag"]
@@ -918,12 +1171,23 @@ txb(slide, "All costs in GBP  |  AI insights generated per part  |  DFM/DFA scor
     Inches(0.6), Inches(6.96), Inches(12.1), Inches(0.28),
     size=7.5, color=TEXT_D, align=PP_ALIGN.CENTER)
 
+notes(slide,
+    "To make the last slide concrete, here's a spread of real outputs across the commodities on a "
+    "luxury-SUV programme — every figure came out of the engine, not off a rate card. "
+    "I won't read the table; I'd rather you notice the pattern in the two right-hand columns. Each "
+    "part comes with an AI insight that points at the biggest lever and a DFM flag that tells you "
+    "whether it's clean or needs attention. The machined bracket says process is forty-four percent, "
+    "go near-net-shape and save eight pounds. The wiring harness says labour is over half, so it's an "
+    "automation candidate. The sheet-metal door flags that blank nesting is under sixty-five percent. "
+    "That's the whole pitch in one table: not just a price, but a costed price with a reason and a "
+    "next action attached to it — consistently, across ten very different processes.")
+
 
 # ══════════════════════════════════════════════════════════════════════════════
-# SLIDE 13 — Export, Reporting & Team Collaboration
+# SLIDE 14 — Export, Reporting & Team Collaboration
 # ══════════════════════════════════════════════════════════════════════════════
 slide = add_slide()
-slide_header(slide, 13, "Reporting & Collaboration", "Export, Share & Collaborate — Enterprise Ready",
+slide_header(slide, 14, "Reporting & Collaboration", "Export, Share & Collaborate — Enterprise Ready",
              "From individual engineer to global team — CostVision scales to any organisation size.")
 
 export_cards = [
@@ -976,12 +1240,24 @@ for i, (col, title, body) in enumerate(export_cards):
     cy_e = sy_e + r * (ch_e + gap_e)
     card(slide, cx_e, cy_e, cw_e, ch_e, title, body, accent=col)
 
+notes(slide,
+    "A cost number that lives in one engineer's head isn't worth much, so this slide is about "
+    "getting it out and shared. "
+    "The Excel export is six sheets — not just the total, but the full build-up: material, every "
+    "operation, the rate library snapshot, and a traceability sheet that records the assumptions and "
+    "the AI notes with a version and date. That last sheet is what makes an estimate auditable "
+    "months later. The PDF is the boardroom version, cover photo to DFM recommendations. "
+    "And it's genuinely multi-user — scenarios live in a database with proper authentication, so the "
+    "whole team works off one baseline instead of emailing spreadsheets around and losing track of "
+    "which version is current. It scales from one engineer to a global team without changing how it "
+    "works.")
+
 
 # ══════════════════════════════════════════════════════════════════════════════
-# SLIDE 14 — Business Benefits & ROI
+# SLIDE 15 — Business Benefits & ROI
 # ══════════════════════════════════════════════════════════════════════════════
 slide = add_slide()
-slide_header(slide, 14, "Value Delivered", "Business Impact & Measurable ROI",
+slide_header(slide, 15, "Value Delivered", "Business Impact & Measurable ROI",
              "Quantified improvements across speed, accuracy, and cost reduction that directly impact the bottom line.")
 
 # Stat row
@@ -1029,12 +1305,25 @@ for i, (col, title, body) in enumerate(benefits14):
     cy_b = sy_b + r * (ch_b + gap_b)
     card(slide, cx_b, cy_b, cw_b, ch_b, title, body, accent=col)
 
+notes(slide,
+    "Let me translate all of that into the numbers a manager actually cares about. "
+    "Speed first: what took two to four weeks now takes minutes. That's the seventy-to-ninety "
+    "percent time reduction, and it means engineers spend their day on decisions instead of "
+    "spreadsheets. On accuracy, the models are calibrated to real shop-floor data and now corrected "
+    "by the self-audit — which is exactly what tightens that plus-or-minus-eight-percent band over "
+    "time. "
+    "But the line that pays for the whole thing is negotiation power. When you walk into a supplier "
+    "meeting with a defensible floor price, a fifteen-to-twenty-five percent reduction is a "
+    "realistic ask — and the far-right stat makes it concrete: on five hundred million of spend, a "
+    "three percent improvement is fifteen million pounds. This tool doesn't need to be perfect to "
+    "pay for itself many times over; it needs to be defensible and fast, and it is both.")
+
 
 # ══════════════════════════════════════════════════════════════════════════════
-# SLIDE 15 — Roadmap & Next Steps
+# SLIDE 16 — Roadmap & Next Steps
 # ══════════════════════════════════════════════════════════════════════════════
 slide = add_slide()
-slide_header(slide, 15, "Vision & Next Steps", "The Future of Cost Engineering is Intelligent, Instant & Integrated",
+slide_header(slide, 16, "Vision & Next Steps", "Intelligent, Instant, Integrated — What Comes Next",
              "CostVision is live today. Here is what comes next — and how to get started.")
 
 # Current capabilities
@@ -1047,15 +1336,16 @@ live_items = [
     "21 commodity should-cost models — fully parametric, engineering-grade",
     "AI Agent — describe a part in plain English, AI builds the cost model",
     "AI CAD Analysis — STEP / photo → geometry → cost in minutes",
+    "Self-audit — re-checks every estimate, corrects known errors, geometry stays truth",
+    "Learns from actuals — bulk-import quotes, per-segment calibration + drift watch",
+    "Universal machine-sizing — right press / tonnage picked across all commodities",
     "Assembly BOM Rollup — multi-part, multi-commodity assemblies",
-    "Learning Curve (Wright's Law) — volume-cost projection",
-    "Supplier Quote Comparison — log quotes, identify margin gaps instantly",
+    "Learning Curve (Wright's Law) + Supplier Quote Comparison + A/B/C scenarios",
     "DFM / DFA Intelligence — bolt-on AI layer, 1–10 scores",
     "20 global regions · 10 currencies with live auto-switching",
-    "6-sheet Excel export + professional PDF report with part photo",
-    "Scenario A/B/C comparison + tornado sensitivity analysis",
+    "6-sheet Excel + professional PDF report with part photo",
     "Cloud sync, team sharing & secure JWT authentication",
-    "7-tab Help Centre, Glossary, FAQ and Troubleshooting guide",
+    "1,005 automated tests · CAD engine ships in a CI-verified container",
 ]
 
 yy15 = Inches(2.44)
@@ -1063,7 +1353,7 @@ for item in live_items:
     rect(slide, Inches(0.65), yy15 + Inches(0.13), Inches(0.06), Inches(0.06), ACCENT_G)
     txb(slide, item, Inches(0.84), yy15, Inches(5.3), Inches(0.3),
         size=8, color=TEXT_G, wrap=True)
-    yy15 += Inches(0.33)
+    yy15 += Inches(0.34)
 
 # Roadmap
 rx15 = Inches(6.6)
@@ -1071,36 +1361,36 @@ ry15 = Inches(2.0)
 rw15 = Inches(6.3)
 
 phases = [
-    (ORANGE,   "Phase 2 — Q3 2026",
+    (ORANGE,   "Phase 2 — H2 2026",
      "PLM/ERP integration connectors (Teamcenter, SAP)\n"
-     "Mass-import BOM costing from CSV/Excel\n"
-     "Supplier quotation comparison matrix (multi-supplier)\n"
-     "Cost target waterfall dashboard for programme teams"),
-    (ACCENT_P, "Phase 3 — Q1 2027",
-     "Market price learning engine (auto-update material prices)\n"
-     "Should-cost vs actual variance tracker\n"
+     "Cost-target waterfall dashboard for programme teams\n"
+     "Multi-supplier quotation comparison matrix\n"
+     "Harden the Fly.io cloud deploy to multi-tenant"),
+    (ACCENT_P, "Phase 3 — 2027",
+     "Auto-tune calibration from a live ERP actuals feed\n"
      "Autonomous sourcing RFQ generation from should-cost output\n"
-     "Executive analytics dashboard (portfolio cost view)"),
+     "Executive portfolio analytics dashboard\n"
+     "Wider CAD coverage — assemblies and IGES edge cases"),
     (ACCENT_B, "Phase 4 — 2027+",
-     "Digital Twin cost model (live cost update as design changes)\n"
+     "Digital Twin cost model (live update as the design changes)\n"
      "Generative AI component redesign suggestions\n"
-     "Supplier risk scoring and supply chain resilience index\n"
+     "Supplier risk scoring + supply-chain resilience index\n"
      "Mobile app for shop-floor and supplier visits"),
 ]
 
 yy15r = ry15
 for col, title, body in phases:
-    rect(slide, rx15, yy15r, rw15, Inches(1.42), SURFACE2, BORDER, Pt(0.5))
-    rect(slide, rx15, yy15r, Inches(0.06), Inches(1.42), col)
-    txb(slide, title, rx15 + Inches(0.14), yy15r + Inches(0.08), rw15 - Inches(0.2), Inches(0.28),
+    rect(slide, rx15, yy15r, rw15, Inches(1.06), SURFACE2, BORDER, Pt(0.5))
+    rect(slide, rx15, yy15r, Inches(0.06), Inches(1.06), col)
+    txb(slide, title, rx15 + Inches(0.14), yy15r + Inches(0.06), rw15 - Inches(0.2), Inches(0.28),
         size=9, bold=True, color=col)
-    txb(slide, body, rx15 + Inches(0.14), yy15r + Inches(0.34), rw15 - Inches(0.2), Inches(1.0),
+    txb(slide, body, rx15 + Inches(0.14), yy15r + Inches(0.32), rw15 - Inches(0.2), Inches(0.72),
         size=8, color=TEXT_G, wrap=True)
-    yy15r += Inches(1.52)
+    yy15r += Inches(1.14)
 
 # Pilot invite + contact
-rect(slide, rx15, yy15r, rw15, Inches(1.36), SURFACE2, BORDER, Pt(0.5))
-rect(slide, rx15, yy15r, Inches(0.06), Inches(1.36), ACCENT_G)
+rect(slide, rx15, yy15r, rw15, Inches(1.42), SURFACE2, BORDER, Pt(0.5))
+rect(slide, rx15, yy15r, Inches(0.06), Inches(1.42), ACCENT_G)
 txb(slide, "🚀  Pilot Rollout — Next Steps", rx15 + Inches(0.14), yy15r + Inches(0.08),
     rw15 - Inches(0.2), Inches(0.28), size=9, bold=True, color=ACCENT_G)
 pilot_text = (
@@ -1117,6 +1407,23 @@ rect(slide, Inches(0.45), Inches(7.08), W - Inches(0.9), Inches(0.36), SURFACE2,
 txb(slide, '"Every engineer should have instant access to accurate, defensible should-cost intelligence — at concept stage, across every commodity, in every region."  — Avinash Bhosale',
     Inches(0.65), Inches(7.11), W - Inches(1.3), Inches(0.28),
     size=8, color=TEXT_D, italic=True, align=PP_ALIGN.CENTER)
+
+notes(slide,
+    "So where does that leave us. The left column is not a wish list — it's live today. Twenty-one "
+    "commodities, the AI front doors, and this year's additions: the self-audit on every estimate, "
+    "learning from your actuals, universal machine-sizing, and the whole thing deployable to the "
+    "cloud with the CAD engine and a thousand-plus tests behind it. That's a working platform, not a "
+    "prototype. "
+    "The right-hand column is honest about what's next. Near-term it's about fitting into your "
+    "existing systems — PLM and ERP connectors, a cost-target waterfall for programme teams. "
+    "Further out, the calibration learns automatically from a live actuals feed, it starts "
+    "generating the RFQ itself, and eventually a digital-twin cost model that updates as the design "
+    "moves. "
+    "But I don't want the roadmap to distract from the ask, which is small and concrete. It's at the "
+    "bottom of the box: a four-to-six week pilot on two or three commodity families, one programme "
+    "team, measured against real supplier quotes, with the success bar set at finding at least "
+    "fifteen percent per part. If it clears that bar on your parts, the business case makes itself. "
+    "That's what I'd like to agree today. Thank you — I'm happy to take questions.")
 
 
 # ─── Save ─────────────────────────────────────────────────────────────────────
