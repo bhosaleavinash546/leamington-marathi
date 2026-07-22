@@ -30,6 +30,8 @@ export interface FaceMeta {
   areaCm2: number | null;
   bodyId?: number;
   hole?: boolean | null;
+  /** single-ray wall thickness at the face centroid (mm); null when the ray missed */
+  thicknessMm?: number | null;
 }
 export interface TessMeta { triFace: number[] | Uint32Array; faces: FaceMeta[]; bodies: number | null; skippedFaces?: number }
 
@@ -133,6 +135,26 @@ export const DRAFT_LABEL: Record<DraftClass, string> = {
   neutral: 'Perpendicular to pull', ok: 'Adequate draft', zero: 'Near-zero draft (wall)', undercut: 'Undercut — needs a slide',
 };
 
+// ── Wall-thickness heatmap ramp (thin = hot/red, thick = cold/blue) ──────────
+export const NO_THICKNESS_COLOR: [number, number, number] = [0.55, 0.58, 0.63];
+/** Map a normalised thickness t∈[0,1] (0 = thinnest, 1 = thickest) to a jet-style
+ *  ramp: red → orange → yellow → green → blue — the CAD/DFM heatmap convention. */
+export function thicknessColor(t: number): [number, number, number] {
+  const x = Math.min(1, Math.max(0, t));
+  const stops: [number, number, number][] = [
+    [0.86, 0.20, 0.22], // thinnest — red (cost/mould risk)
+    [0.95, 0.55, 0.20], // orange
+    [0.92, 0.86, 0.25], // yellow
+    [0.30, 0.72, 0.46], // green
+    [0.25, 0.45, 0.90], // thickest — blue
+  ];
+  const p = x * (stops.length - 1);
+  const i = Math.min(stops.length - 2, Math.floor(p));
+  const f = p - i;
+  const a = stops[i], b = stops[i + 1];
+  return [a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f, a[2] + (b[2] - a[2]) * f];
+}
+
 /** Classify a triangle/face by draft relative to a pull axis.
  *  `theta` is the angle between the outward normal and the pull axis:
  *  ~0/180° → perpendicular-to-pull top/bottom face (neutral); ~90° → wall.
@@ -206,6 +228,7 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
         <button data-act="bbox" title="Bounding box + dimensions">▣</button>
         <button data-act="facecolors" title="Colour by machining surface type (STEP/IGES only)" disabled>🎨</button>
         <button data-act="draft" title="Draft &amp; undercut analysis — colour by pull direction">📐</button>
+        <button data-act="thickness" title="Wall-thickness heatmap (STEP/IGES only)" disabled>🌡</button>
         <button data-act="clip" title="Section view — clipping planes (X/Y/Z)">✂</button>
         <button data-act="explode" title="Exploded view (multi-body only)" disabled>💥</button>
       </div>
@@ -351,6 +374,8 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
   let maximized = false;
   let draftOn = false;
   let draftAxis: 'x' | 'y' | 'z' = 'z'; // moulding/casting pull defaults to part Z
+  let thicknessOn = false;
+  let thicknessRange: { min: number; max: number } | null = null;
   let explodeFactor = 0;
   let bodyExplodeDir: Array<InstanceType<typeof THREE.Vector3>> = []; // per-body outward unit vector
 
@@ -707,6 +732,13 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
     const explodeBtn = $<HTMLButtonElement>('[data-act="explode"]');
     explodeBtn.disabled = bodyMeshes.length < 2;
     explodeBtn.title = bodyMeshes.length < 2 ? 'Exploded view needs a multi-body model' : 'Exploded view';
+    // wall-thickness heatmap: enabled only when the sidecar carries per-face thickness
+    const thkVals = (meta?.faces ?? []).map(f => f.thicknessMm).filter((v): v is number => typeof v === 'number' && v > 0);
+    thicknessRange = thkVals.length >= 2 ? { min: Math.min(...thkVals), max: Math.max(...thkVals) } : null;
+    const thkBtn = $<HTMLButtonElement>('[data-act="thickness"]');
+    thkBtn.disabled = !thicknessRange;
+    thkBtn.title = thicknessRange ? 'Wall-thickness heatmap' : 'Wall thickness needs STEP/IGES (B-rep) — STL is mesh-only';
+    if (!thicknessRange) { thicknessOn = false; thkBtn.classList.remove('active'); }
 
     // reset section + explode state for the new part
     explodeFactor = 0; explodeSlider.value = '0';
@@ -1277,7 +1309,10 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
    *  shading are mutually exclusive. Rebuilds the colour buffer for the active
    *  mode (or strips it when neither is on). */
   function applyColorMode(): void {
-    const mode: 'none' | 'facetype' | 'draft' = draftOn ? 'draft' : (faceColorsOn && meta ? 'facetype' : 'none');
+    const mode: 'none' | 'facetype' | 'draft' | 'thickness' =
+      draftOn ? 'draft'
+      : (thicknessOn && meta && triFaceAll && thicknessRange) ? 'thickness'
+      : (faceColorsOn && meta ? 'facetype' : 'none');
     const pull: [number, number, number] = draftAxis === 'x' ? [1, 0, 0] : draftAxis === 'y' ? [0, 1, 0] : [0, 0, 1];
     for (let bi = 0; bi < bodyMeshes.length; bi++) {
       const mesh = bodyMeshes[bi];
@@ -1297,6 +1332,15 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
         for (let t = 0; t < nTris; t++) {
           const f = meta.faces[triFaceAll[triOffset + t]];
           const col = FACE_COLORS[f?.type ?? 'other'] ?? FACE_COLORS.other;
+          for (let v = 0; v < 3; v++) colors.set(col, t * 9 + v * 3);
+        }
+      } else if (mode === 'thickness' && meta && triFaceAll && thicknessRange) {
+        const triOffset = mesh.userData.triOffset as number;
+        const { min, max } = thicknessRange;
+        const span = (max - min) || 1;
+        for (let t = 0; t < nTris; t++) {
+          const thk = meta.faces[triFaceAll[triOffset + t]]?.thicknessMm;
+          const col = thk == null ? NO_THICKNESS_COLOR : thicknessColor((thk - min) / span);
           for (let v = 0; v < 3; v++) colors.set(col, t * 9 + v * 3);
         }
       } else { // draft: classify each triangle by its geometric normal vs the pull axis (part space)
@@ -1323,6 +1367,12 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
       legendEl.innerHTML = (['undercut', 'zero', 'ok', 'neutral'] as DraftClass[]).map(k =>
         `<span><i style="background:${rgbCss(DRAFT_COLORS[k])}"></i>${DRAFT_LABEL[k]}</span>`).join('') +
         `<span style="opacity:.75">Pull axis: ${draftAxis.toUpperCase()} — click 📐 to cycle</span>`;
+    } else if (mode === 'thickness' && thicknessRange) {
+      const { min, max } = thicknessRange, mid = (min + max) / 2;
+      legendEl.innerHTML = `<span style="opacity:.75">Wall thickness</span>` +
+        `<span><i style="background:${rgbCss(thicknessColor(0))}"></i>${min.toFixed(1)} mm (thin)</span>` +
+        `<span><i style="background:${rgbCss(thicknessColor(0.5))}"></i>${mid.toFixed(1)} mm</span>` +
+        `<span><i style="background:${rgbCss(thicknessColor(1))}"></i>${max.toFixed(1)} mm (thick)</span>`;
     }
     legendEl.style.display = mode === 'none' ? 'none' : '';
   }
@@ -1398,13 +1448,19 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
         break;
       case 'facecolors':
         faceColorsOn = !faceColorsOn;
-        if (faceColorsOn) { draftOn = false; root.querySelector('[data-act="draft"]')?.classList.remove('active'); }
+        if (faceColorsOn) {
+          draftOn = false; thicknessOn = false;
+          root.querySelector('[data-act="draft"]')?.classList.remove('active');
+          root.querySelector('[data-act="thickness"]')?.classList.remove('active');
+        }
         btn.classList.toggle('active', faceColorsOn);
         applyColorMode();
         break;
       case 'draft':
         // click cycles the pull axis: off → Z → X → Y → off
-        faceColorsOn = false; root.querySelector('[data-act="facecolors"]')?.classList.remove('active');
+        faceColorsOn = false; thicknessOn = false;
+        root.querySelector('[data-act="facecolors"]')?.classList.remove('active');
+        root.querySelector('[data-act="thickness"]')?.classList.remove('active');
         if (!draftOn) { draftOn = true; draftAxis = 'z'; }
         else if (draftAxis === 'z') draftAxis = 'x';
         else if (draftAxis === 'x') draftAxis = 'y';
@@ -1412,6 +1468,17 @@ export async function createCADViewer(host: HTMLElement, opts: CADViewerOptions 
         btn.classList.toggle('active', draftOn);
         applyColorMode();
         statusHint.textContent = draftOn ? `Draft analysis — pull axis ${draftAxis.toUpperCase()} (click again to change)` : 'Draft analysis off';
+        break;
+      case 'thickness':
+        thicknessOn = !thicknessOn;
+        if (thicknessOn) {
+          draftOn = false; faceColorsOn = false;
+          root.querySelector('[data-act="draft"]')?.classList.remove('active');
+          root.querySelector('[data-act="facecolors"]')?.classList.remove('active');
+        }
+        btn.classList.toggle('active', thicknessOn);
+        applyColorMode();
+        statusHint.textContent = thicknessOn ? 'Wall-thickness heatmap — thin (red) → thick (blue)' : 'Thickness heatmap off';
         break;
       case 'clip': {
         const show = clipPanel.style.display === 'none';

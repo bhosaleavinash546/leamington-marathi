@@ -207,6 +207,8 @@ export interface TessellationFace {
   bodyId: number;
   /** cylinders only: true = internal wall (hole/bore), false = external (boss/shaft) */
   hole: boolean | null;
+  /** single-ray wall thickness at the face centroid (mm) — viewer heatmap; null when the ray missed */
+  thicknessMm?: number | null;
 }
 
 export interface TessellationMeta {

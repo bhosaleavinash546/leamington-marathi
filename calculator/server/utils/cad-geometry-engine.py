@@ -401,6 +401,62 @@ def _compute_wall_thickness(shape, faces, max_samples: int = 30) -> dict:
     }
 
 
+def _per_face_thickness(wrapped, face_map, diag: float, max_faces: int = 4000) -> dict:
+    """Single-ray wall thickness per B-rep face for the interactive viewer heatmap.
+
+    From each face's UV-mid point, cast a ray inward along the MATERIAL-outward
+    normal (flipped for REVERSED faces) and measure the distance to the first
+    opposite surface — the classic single-ray wall-thickness method. Returns a
+    { face_map_index (1-based) -> thickness_mm } dict; missing faces (grazing
+    rays, open surfaces) are simply absent. Bounded to `max_faces` so a fillet-
+    heavy model can't turn this into a ray-casting DoS."""
+    result = {}
+    try:
+        from OCP.IntCurvesFace import IntCurvesFace_ShapeIntersector
+        from OCP.GeomLProp import GeomLProp_SLProps
+        from OCP.BRepTools import BRepTools
+        from OCP.BRep import BRep_Tool
+        from OCP.TopAbs import TopAbs_Orientation
+        from OCP.TopoDS import TopoDS
+        from OCP.gp import gp_Lin, gp_Dir, gp_Pnt
+    except ImportError:
+        return result
+
+    n_faces = face_map.Extent()
+    if n_faces == 0 or n_faces > max_faces:
+        return result
+
+    inter = IntCurvesFace_ShapeIntersector()
+    inter.Load(wrapped, 1e-4)
+    eps = max(diag * 1e-4, 1e-3)
+    tmax = diag * 1.05
+
+    for idx in range(1, n_faces + 1):
+        try:
+            face = TopoDS.Face_s(face_map.FindKey(idx))
+            surf = BRep_Tool.Surface_s(face)
+            umin, umax, vmin, vmax = BRepTools.UVBounds_s(face)
+            u_mid, v_mid = (umin + umax) / 2, (vmin + vmax) / 2
+            props = GeomLProp_SLProps(surf, u_mid, v_mid, 1, 1e-7)
+            if not props.IsNormalDefined():
+                continue
+            P, Ng = props.Value(), props.Normal()
+            nx, ny, nz = Ng.X(), Ng.Y(), Ng.Z()
+            # material-outward normal: flip the geometric normal on REVERSED faces
+            if face.Orientation() == TopAbs_Orientation.TopAbs_REVERSED:
+                nx, ny, nz = -nx, -ny, -nz
+            start = gp_Pnt(P.X() - nx * eps, P.Y() - ny * eps, P.Z() - nz * eps)
+            ray = gp_Lin(start, gp_Dir(-nx, -ny, -nz))  # into the material
+            inter.PerformNearest(ray, eps, tmax)
+            if inter.IsDone() and inter.NbPnt() > 0:
+                dist = start.Distance(inter.Pnt(1)) + eps
+                if 0.05 < dist < tmax:
+                    result[idx] = round(dist, 3)
+        except Exception:
+            continue
+    return result
+
+
 # ─── Draft angle & undercut analysis ─────────────────────────────────────────
 
 def _compute_draft_analysis(faces, draw_dir=(0.0, 0.0, 1.0)) -> dict:
@@ -1086,6 +1142,10 @@ def tessellate_to_stl(filepath, out_path, with_meta=False):
         except Exception:
             pass
 
+        # per-face wall thickness (single-ray) — only for the interactive viewer
+        # heatmap, which is the only consumer of the metadata sidecar.
+        thickness_by_idx = _per_face_thickness(wrapped, face_map, diag) if with_meta else {}
+
         tris = []
         tri_face_ids = []   # per-triangle source face id — lets the viewer map a click back to the B-rep
         faces_meta = []     # per-face exact kernel data: type, radii, area, body, hole/boss
@@ -1155,6 +1215,7 @@ def tessellate_to_stl(filepath, out_path, with_meta=False):
                 "areaCm2": round(area_cm2, 4) if area_cm2 is not None else None,
                 "bodyId": face_body.get(map_idx, -1),
                 "hole": hole,
+                "thicknessMm": thickness_by_idx.get(map_idx),
             })
 
             trsf = loc.Transformation()

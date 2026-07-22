@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { dist3, circumcircle3, angle3, closestPointOnSegment, draftBucket } from '../src/ui/cad-viewer.js';
+import { dist3, circumcircle3, angle3, closestPointOnSegment, draftBucket, thicknessColor } from '../src/ui/cad-viewer.js';
 
 describe('cad-viewer measurement math', () => {
   it('dist3 measures euclidean distance', () => {
@@ -136,5 +136,30 @@ describe('cad-viewer draft / undercut analysis', () => {
 
   it('is robust to unnormalised inputs', () => {
     expect(draftBucket(0, 0, 7, 0, 0, 3)).toBe('neutral'); // both scaled, still parallel
+  });
+});
+
+describe('cad-viewer wall-thickness heatmap ramp', () => {
+  const rgb = (c: readonly number[]) => c.map(x => Math.round(x * 255));
+
+  it('endpoints are red (thin) and blue (thick)', () => {
+    expect(rgb(thicknessColor(0))).toEqual([219, 51, 56]);   // thinnest → red
+    expect(rgb(thicknessColor(1))).toEqual([64, 115, 230]);  // thickest → blue
+  });
+
+  it('every output channel stays in [0,1]', () => {
+    for (let t = 0; t <= 1.0001; t += 0.05) {
+      for (const ch of thicknessColor(t)) { expect(ch).toBeGreaterThanOrEqual(0); expect(ch).toBeLessThanOrEqual(1); }
+    }
+  });
+
+  it('clamps out-of-range inputs to the endpoints', () => {
+    expect(thicknessColor(-3)).toEqual(thicknessColor(0));
+    expect(thicknessColor(9)).toEqual(thicknessColor(1));
+  });
+
+  it('the ramp goes hot→cold: red channel falls and blue channel rises overall', () => {
+    expect(thicknessColor(0)[0]).toBeGreaterThan(thicknessColor(1)[0]); // more red at the thin end
+    expect(thicknessColor(1)[2]).toBeGreaterThan(thicknessColor(0)[2]); // more blue at the thick end
   });
 });
