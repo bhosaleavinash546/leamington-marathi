@@ -61,13 +61,26 @@ fly certs add costvision.example.com     # then add the CNAME/A records Fly prin
 (Do **not** reuse `leamingtonmarathi.com` — that stays with the Marathi community
 site on GitHub Pages.)
 
-## Known limitation — STEP/IGES CAD geometry
+## CAD geometry images — STEP/IGES vs STL
 
-The Alpine image installs `python3` but **not** cadquery/OCP (musl-incompatible), so
-in the deployed container the STEP/IGES measurement path does not run — only the
-pure-TS **STL** fast path. Everything else works: the deterministic cost engine, the
-self-audit + calibration layers, PCB and CAD *text/vision* AI, auth, and persistence.
+Two Dockerfiles ship, so you choose the size/capability trade-off:
 
-To enable STEP measurement in production, switch the base image to a glibc distro
-(e.g. `node:22-bookworm-slim`) and install cadquery (`pip install cadquery` or a
-mamba/conda OCP env) — a larger image (~1.5 GB) and a separate follow-up.
+| Image | Base | CAD support | Size | Use |
+|---|---|---|---|---|
+| **`Dockerfile.cad`** (fly.toml default) | Debian glibc + cadquery/OCP | **STEP/IGES + STL** | ~1.5 GB | Production — full CAD measurement |
+| `Dockerfile` | Alpine (musl) | **STL only** | ~400 MB | Fast local runs / `make start` |
+
+`Dockerfile.cad` installs cadquery 2.8.0 into a venv and puts it on `PATH`, so the
+`python3` the server spawns (`geometry-bridge.ts`) is the one with OCP. Verified: it
+measures real STEP files (volume, bbox, B-rep faces, per-material weights) on this
+exact glibc runtime. It needs the 2 GB VM in `fly.toml` (each OCP process costs a few
+hundred MB; `CV_MAX_PYTHON_PROCS` caps concurrency) and takes longer to build.
+
+To trade STEP for a smaller/faster image, set `dockerfile = "Dockerfile"` in
+`fly.toml` — the STL fast path and everything else (cost engine, self-audit,
+calibration, PCB/CAD AI, auth, persistence) still work; only STEP/IGES measurement
+is unavailable.
+
+> Note: the Docker image build itself wasn't run in this environment (no daemon).
+> The cadquery/OCP runtime was verified directly on glibc; confirm the full image on
+> your first `fly deploy` (or a local `docker build -f Dockerfile.cad .`).

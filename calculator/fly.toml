@@ -13,7 +13,10 @@ app = "costvision"
 primary_region = "lhr"          # London — close to the UK-anchored rate library
 
 [build]
-  dockerfile = "Dockerfile"
+  # Dockerfile.cad = glibc base with cadquery/OCP, so the STEP/IGES geometry path
+  # works in production (not just STL). Swap to "Dockerfile" for a smaller, faster
+  # Alpine image if you don't need STEP measurement.
+  dockerfile = "Dockerfile.cad"
 
 [env]
   NODE_ENV = "production"
@@ -43,4 +46,6 @@ primary_region = "lhr"          # London — close to the UK-anchored rate libra
 
 [[vm]]
   size = "shared-cpu-1x"
-  memory = "1gb"               # tsx runtime + better-sqlite3 + AI SDK; bump to 2gb if OOM
+  memory = "2gb"               # OCP/cadquery STEP processes cost a few hundred MB each
+                               # (up to CV_MAX_PYTHON_PROCS=2) on top of node — 2gb headroom
+

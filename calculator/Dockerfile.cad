@@ -1,0 +1,40 @@
+# CostVision production image WITH the STEP/IGES CAD geometry engine.
+#
+# The default (Alpine) Dockerfile can't run cadquery/OCP — the OpenCASCADE Python
+# wheels are manylinux/glibc, not musl. This image uses a glibc base so the STEP
+# measurement path works in production, not just the STL fast path. It is larger
+# (~1.5 GB) and slower to build, which is why it's a separate file; fly.toml points
+# here, while the small Alpine Dockerfile stays for fast local runs.
+#
+# Verified: cadquery 2.8.0 + OCP measures real STEP files on this exact glibc
+# runtime (volume, bbox, B-rep faces, per-material weights).
+FROM node:22-bookworm-slim
+
+# node-gyp build tools (better-sqlite3, bcrypt) + Python + the X/GL shared libs that
+# OpenCASCADE (OCP) links against at import time, even when run headless.
+RUN apt-get update && apt-get install -y --no-install-recommends \
+      python3 python3-venv python3-pip \
+      build-essential \
+      libgl1 libglu1-mesa libx11-6 libxext6 libxrender1 libsm6 libice6 libfontconfig1 libxi6 \
+    && rm -rf /var/lib/apt/lists/*
+
+# cadquery/OCP in an isolated venv (PEP 668-safe on Debian 12). Prepend it to PATH so
+# the `python3` the server spawns (server/utils/geometry-bridge.ts) is this one — the
+# interpreter that has cadquery. node/npm stay resolvable via the inherited PATH.
+RUN python3 -m venv /opt/cq && /opt/cq/bin/pip install --no-cache-dir cadquery==2.8.0
+ENV PATH="/opt/cq/bin:${PATH}"
+
+WORKDIR /app
+
+COPY package*.json ./
+RUN npm ci
+
+COPY . .
+RUN npm run build
+
+EXPOSE 3002
+ENV NODE_ENV=production
+# Cap concurrent OCP processes to the memory budget (each costs a few hundred MB).
+ENV CV_MAX_PYTHON_PROCS=2
+
+CMD ["npx", "tsx", "server/index.ts"]
