@@ -77,12 +77,14 @@ open_browser() {
   command -v xdg-open >/dev/null 2>&1 && xdg-open  "$URL" && return
 }
 
-# ── 3. Already running? Just open it. ─────────────────────────────────────────
-if [ "$CODE_CHANGED" = false ] && curl -fsS "$URL" >/dev/null 2>&1; then
-  echo "  ✅ CostVision is already running — opening $URL"
-  open_browser
-  read -r -p "  Press Enter to close this window… " _
-  exit 0
+# ── 3. Note running state, but ALWAYS rebuild below. ──────────────────────────
+# We intentionally do NOT early-exit when the app is already up: a container
+# built from older code would keep serving the stale UI (e.g. "5 photos" after
+# the 8-photo update shipped). `docker compose up -d --build` in step 5 is
+# layer-cached, so a no-change rebuild is only a few seconds — cheap insurance
+# that what you see always matches the latest committed build.
+if curl -fsS "$URL" >/dev/null 2>&1; then
+  echo "  ♻️  CostVision is running — rebuilding to pick up the latest changes…"
 fi
 
 # ── 4. Require Docker (the STEP/CAD path needs the cadquery image) ─────────────
@@ -122,7 +124,8 @@ for _ in $(seq 1 60); do
 done
 echo ""
 echo "  ─────────────────────────────────────────────"
-echo "  Upload BUMPER.stp → CAD-to-Cost → it auto-classifies Injection Moulding."
+echo "  If the page looks unchanged, hard-refresh the browser to clear the"
+echo "  cached app:  ⌘⇧R (Mac) · Ctrl+Shift+R (Win/Linux)."
 echo "  Close this window anytime — the app stays up."
 echo "  To stop:  make stop   (or: docker compose down)"
 echo "  ─────────────────────────────────────────────"
