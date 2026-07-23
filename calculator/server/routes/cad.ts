@@ -23,7 +23,7 @@ const cadCache = createAnalysisCache('cad_analysis_cache');
 // Bump when the prompt/normalisation logic changes so stale cached analyses (which
 // are keyed on inputs, not prompt content) are invalidated. v2: filename material
 // prior + confidence-inversion promotion.
-const CAD_PROMPT_VERSION = 5;
+const CAD_PROMPT_VERSION = 6;
 
 // Model tiering: Sonnet 5 is the standard extraction tier (near-Opus on
 // structured analysis, faster, ~40% cheaper); the Deep-analysis toggle
@@ -122,7 +122,52 @@ Weights — Al: ${weights.aluminiumKg.toFixed(3)} kg  Steel: ${weights.steelKg.t
 
 Valid commodity types: machining, sheet_metal, sheet_metal_fab, injection_moulding, casting, forging, cast_and_machine, blow_moulding, thermoforming, rotational_moulding, rubber, composites, wiring_harness, extrusion, pcb_fab, pcba, biw_assembly, painting, assembly
 
-Return JSON only (no prose): {"primary":"casting","conf":0.87,"alt":[{"type":"machining","conf":0.61},{"type":"forging","conf":0.31}]}`;
+Return JSON only (no prose) — this is FORMAT only, choose the type from the geometry above, do NOT copy the placeholder: {"primary":"<type>","conf":0.0,"alt":[{"type":"<type>","conf":0.0}]}`;
+}
+
+// ─── Deterministic geometry guard on the commodity (golden rule) ─────────────
+// The AI classifier is a hint, not the authority. Some geometries are physically
+// incompatible with the process the model picks, and a large hollow shell
+// mis-called a metal CASTING is the worst offender (a blow-moulded HDPE fuel
+// tank was costed as an aluminium sand casting — 28 kg of Al instead of ~10 kg
+// of plastic). A fully-enclosed hollow part (tiny fill ratio) with a large
+// envelope CANNOT be a single casting/forging/machined-from-solid part — you
+// could never extract the core. So when the measured geometry is decisive we
+// OVERRIDE the AI, deterministically, rather than hoping a stochastic hint holds.
+const SOLID_PROCESS_COMMODITIES = new Set([
+  'casting', 'forging', 'cast_and_machine', 'machining', 'biw_assembly',
+]);
+
+export function enforceGeometryCommodity(
+  commodity: string,
+  geo: OCCTGeometry,
+): { commodity: string; corrected: boolean; reason?: string } {
+  if (geo.status !== 'success' || geo.fillRatio == null || !geo.boundingBox) {
+    return { commodity, corrected: false };
+  }
+  const fill = geo.fillRatio;
+  const wall = geo.wallThickness?.meanMm ?? null;
+  const maxDim = Math.max(geo.boundingBox.xMm, geo.boundingBox.yMm, geo.boundingBox.zMm);
+  // Fully-enclosed hollow shell: fill ratio this low means the solid is a thin
+  // skin around a sealed cavity. Physically un-castable / un-forgeable / not
+  // machined-from-billet. Gate on size so tiny sparse brackets are untouched,
+  // and (when known) on a thin wall so a genuinely chunky sparse lattice is safe.
+  const enclosedHollowShell =
+    fill < 0.03 && maxDim >= 250 && (wall == null || wall <= 10);
+  if (enclosedHollowShell && SOLID_PROCESS_COMMODITIES.has(commodity)) {
+    return {
+      commodity: 'blow_moulding',
+      corrected: true,
+      reason:
+        `Geometry override: fill ratio ${fill.toFixed(3)}` +
+        (wall != null ? `, ${wall.toFixed(1)} mm uniform wall` : '') +
+        `, ${maxDim.toFixed(0)} mm envelope — a large enclosed hollow shell cannot be ` +
+        `manufactured as "${commodity}" (no core extraction). Reclassified as blow_moulding ` +
+        `(hollow moulded tank/duct/bottle; alternatives: rotational_moulding for very large ` +
+        `tanks, or sheet_metal_fab for a welded metal tank).`,
+    };
+  }
+  return { commodity, corrected: false };
 }
 
 // POST /api/cad/analyze
@@ -362,6 +407,21 @@ router.post('/analyze', analyzeLimiter, upload.fields([
     } catch (err) {
       console.warn('[CAD] Stage 1 Haiku failed, using default commodity:', (err as Error).message);
     }
+    // Deterministic geometry guard — physics overrides a stochastic AI hint.
+    const guarded = enforceGeometryCommodity(selectedCommodity, geo);
+    if (guarded.corrected) {
+      console.warn(`[CAD] ${guarded.reason}`);
+      const priorPrimary = selectedCommodity;
+      selectedCommodity = guarded.commodity;
+      stage1Selection = {
+        primary: guarded.commodity,
+        conf: 0.9,
+        alt: [
+          { type: 'rotational_moulding', conf: 0.4 },
+          { type: priorPrimary, conf: 0.1 },
+        ],
+      };
+    }
   }
 
   // --- Phase 4: Stage 2 — Specialist deep analysis (Sonnet) ---
@@ -548,8 +608,16 @@ function normalizeCADAnalysis(a: Record<string, unknown>): void {
     // an aluminium-always default costed steel parts at ~34% of their true mass.
     const wts = (g.estimatedWeightKg ?? {}) as Record<string, number>;
     const matHint = `${str(ci.materialId, '')} ${String((obj((a.materialAnalysis as Record<string, unknown>)?.primarySuggestion).name) ?? '')}`.toLowerCase();
-    const famWeight = /iron|steel|stainless|en8|4140|1045|s355/.test(matHint) ? wts.steel
-      : /plastic|polymer|nylon|pa6|pp\b|abs|pom|peek|resin/.test(matHint) ? wts.plastic
+    // A plastic-moulding commodity is always a plastic part, whatever the material
+    // name looks like — so the weight MUST come off the plastic density, never the
+    // aluminium default. (An HDPE fuel tank costed at aluminium density read 28 kg
+    // instead of ~10 kg.) The name regex also now recognises HDPE/PE/PVC/PET, which
+    // it silently missed before — those fell through to the aluminium weight.
+    const plasticCommodity = /blow_mould|injection_mould|rotational_mould|thermoform/.test(String(ci.recommendedCommodity));
+    const famWeight =
+      plasticCommodity ? wts.plastic
+      : /iron|steel|stainless|en8|4140|1045|s355/.test(matHint) ? wts.steel
+      : /plastic|polymer|nylon|pa6|pp\b|abs|pom|peek|resin|hdpe|ldpe|polyeth|pe\b|pvc|petg|pet\b|tpe|tpo|acrylic|pmma|delrin/.test(matHint) ? wts.plastic
       : wts.aluminum;
     ci.netWeightKg = num(ci.netWeightKg, famWeight || wts.aluminum || 0);
   }
@@ -582,7 +650,7 @@ function buildPrompt(
   stage1: { primary: string; conf: number; alt: Array<{ type: string; conf: number }> } | null,
   overrides: UserOverrides = { forcedCommodity: '', forcedMaterial: '', forcedProcess: '', annualVolume: 100000, ovrWeightKg: null, ovrVolumeCm3: null, ovrLengthMm: null, ovrWidthMm: null, ovrHeightMm: null, ovrDensityGcm3: null },
 ): string {
-  const validMaterials = 'mat-al6061, mat-al5052, mat-dc01, mat-hss, mat-stainless-316, mat-brass-crz, mat-pp, mat-pa6, mat-pc, mat-lm25, mat-gjl350, mat-az91d, mat-ss304c, mat-bronze-c905';
+  const validMaterials = 'mat-al6061, mat-al5052, mat-dc01, mat-hss, mat-stainless-316, mat-brass-crz, mat-pp, mat-hdpe, mat-pa6, mat-pc, mat-lm25, mat-gjl350, mat-az91d, mat-ss304c, mat-bronze-c905';
   const validCommodities = 'machining, sheet_metal, sheet_metal_fab, injection_moulding, casting, forging, cast_and_machine, blow_moulding, thermoforming, rotational_moulding, rubber, composites, wiring_harness, extrusion, pcb_fab, pcba, biw_assembly, painting, assembly';
   const validMachines = 'mach-vmc3, mach-lathe-cnc, mach-drill, mach-vmc5, mach-grind, mach-haas-vf2, mach-dmg-dmu50, mach-haas-umc500, mach-mazak-qt200';
 
@@ -609,7 +677,8 @@ function buildPrompt(
       .join('\n');
 
     const fillHint =
-      geo.fillRatio! < 0.20 ? 'very sparse/hollow → sheet metal, casting, or thin-wall machined'
+      geo.fillRatio! < 0.05 ? 'enclosed hollow shell → blow/rotational-moulded plastic or a fabricated/welded sheet-metal tank/duct — NOT a single casting/forging (a sealed hollow cannot be cored out)'
+      : geo.fillRatio! < 0.20 ? 'very sparse/thin-wall → sheet metal, injection moulding, or thin-wall machined'
       : geo.fillRatio! < 0.40 ? 'moderate fill → casting or machined from billet'
       : geo.fillRatio! < 0.65 ? 'semi-solid → forging or heavy section casting'
       : 'near-solid → forging or machined from solid bar';
@@ -888,6 +957,7 @@ ${commodity === 'cast_and_machine' ? `  MACHINING SECTION: estimatedCycleTimeHr=
 
     case 'blow_moulding':
       return `BLOW MOULDING COST INPUT RULES:
+  material: fuel tanks, jerricans, drums, large industrial tanks/ducts → HDPE / HMW-HDPE (mat-hdpe); household & detergent bottles → HDPE; PET/PP bottles → PET or PP. Do NOT default a hollow tank to PP when HDPE is the correct resin.
   subtype: "ebm" for hollow extrusions (cans, tanks, ducts, jerricans); "ibm" for small precision bottles (<250ml); "sbm" for PET/PP bottles (>250ml stretch)
   wallThicknessMm=${wallMean ? wallMean.toFixed(1) : '2.0'} (OCCT mean wall — use verbatim)
   flashWeightKg = partWeightKg × 0.12 (pinch-off + neck trim typical 10–15%)
