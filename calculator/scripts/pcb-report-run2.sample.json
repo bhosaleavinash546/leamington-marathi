@@ -1,0 +1,241 @@
+{
+ "part": "Automotive 77GHz Radar Module (NXP S32R294) — COLD RE-RUN (Run 2)",
+ "region": "China (Shenzhen / Suzhou)",
+ "volume": 150000,
+ "programYears": 5,
+ "ai": {
+  "total": 72.28,
+  "fab": 6.07,
+  "asm": 5.67,
+  "bom": 56.4,
+  "logi": 2.64
+ },
+ "manual": {
+  "fab": 1.98,
+  "asm": 5.67,
+  "bom": 56.4,
+  "logi": 2.64,
+  "total": 66.69
+ },
+ "asil": "ASIL-C",
+ "asilRationale": "NXP S32R automotive radar MCU with integrated safety features, dual large electrolytic capacitors for redundant power conditioning, dense mixed-signal IC population for sensor signal processing, organized RF signal routing with EMI shielding, and automotive-grade component layout indicate a safety-critical radar perception system. The presence of multiple power distribution circuits, thermal management design, and high-frequency signal conditioning circuits suggest ASIL-C level functional safety requirements typical of advanced driver assistance systems (ADAS) radar processing.",
+ "safetyFns": [
+  "Radar signal acquisition and processing",
+  "Object detection and tracking",
+  "Collision avoidance support",
+  "Power supply monitoring and fault detection",
+  "Thermal management and protection"
+ ],
+ "spec_ai": {
+  "layers": 8,
+  "w": 85,
+  "h": 155,
+  "areaCm2": 131.8,
+  "finish": "ENIG",
+  "tech": "HDI RIGID"
+ },
+ "spec_gt": {
+  "layers": 8,
+  "w": 87.8,
+  "h": 48.9,
+  "areaCm2": 42.9,
+  "finish": "Immersion Silver",
+  "tech": "Rigid FR4",
+  "thk": 1.31,
+  "wt": 26.4
+ },
+ "assembly": {
+  "smtPlacements": 274
+ },
+ "bom": [
+  {
+   "refDes": "U1",
+   "description": "NXP S32R294 automotive radar MCU (FS32R294KCMJD QMR2445D)",
+   "qty": 1,
+   "unitPriceGBP": 18
+  },
+  {
+   "refDes": "U2",
+   "description": "77GHz FMCW radar transceiver MMIC (under glob-top epoxy, near antenna feed)",
+   "qty": 1,
+   "unitPriceGBP": 4
+  },
+  {
+   "refDes": "U3",
+   "description": "Automotive system basis chip / PMIC (FS65/FS85-class)",
+   "qty": 1,
+   "unitPriceGBP": 4.84
+  },
+  {
+   "refDes": "U4",
+   "description": "Automotive safety PMIC (TLF35584-class)",
+   "qty": 1,
+   "unitPriceGBP": 4.524
+  },
+  {
+   "refDes": "U5, U6",
+   "description": "CAN FD transceiver (TJA1044-class)",
+   "qty": 2,
+   "unitPriceGBP": 0.8265
+  },
+  {
+   "refDes": "U7-U9",
+   "description": "Automotive LDO voltage regulator",
+   "qty": 3,
+   "unitPriceGBP": 3.08
+  },
+  {
+   "refDes": "U10",
+   "description": "Unmarked support IC (LVDS/gatekeeper/interface)",
+   "qty": 1,
+   "unitPriceGBP": 4
+  },
+  {
+   "refDes": "U11",
+   "description": "Secondary interface IC (bottom side, near ref 31)",
+   "qty": 1,
+   "unitPriceGBP": 1.76
+  },
+  {
+   "refDes": "Y1",
+   "description": "Automotive TCXO oscillator (SMD can)",
+   "qty": 1,
+   "unitPriceGBP": 2
+  },
+  {
+   "refDes": "C1, C2",
+   "description": "Aluminium electrolytic capacitor 100V (JW 100uF)",
+   "qty": 2,
+   "unitPriceGBP": 1.936
+  },
+  {
+   "refDes": "D1-D6",
+   "description": "Automotive TVS/protection diode",
+   "qty": 6,
+   "unitPriceGBP": 0.264
+  },
+  {
+   "refDes": "Q1-Q4",
+   "description": "Automotive MOSFET/small-signal transistor",
+   "qty": 4,
+   "unitPriceGBP": 0.44
+  },
+  {
+   "refDes": "R1-R90",
+   "description": "AEC-Q200 automotive resistor",
+   "qty": 90,
+   "unitPriceGBP": 0.0053
+  },
+  {
+   "refDes": "C10-C119",
+   "description": "AEC-Q200 X7R MLCC capacitor",
+   "qty": 110,
+   "unitPriceGBP": 0.0132
+  },
+  {
+   "refDes": "C120-C159",
+   "description": "AEC-Q200 X7R MLCC capacitor (power rail decoupling)",
+   "qty": 40,
+   "unitPriceGBP": 0.0264
+  },
+  {
+   "refDes": "L1-L12",
+   "description": "AEC-Q200 automotive inductor/ferrite bead",
+   "qty": 12,
+   "unitPriceGBP": 0.03
+  },
+  {
+   "refDes": "J1, J2",
+   "description": "2x9 THT pin header (board-to-board interconnect)",
+   "qty": 2,
+   "unitPriceGBP": 1.32
+  },
+  {
+   "refDes": "J3",
+   "description": "Small 2x5 THT header (bottom side, ref 0338)",
+   "qty": 1,
+   "unitPriceGBP": 0.88
+  }
+ ],
+ "needsVerif": 13,
+ "nre": {
+  "ppapCost": 11200,
+  "fmeaCost": 20200,
+  "dvprCost": 31400,
+  "asilAuditCost": 11200,
+  "totalNRE": 74000,
+  "asilLevel": "ASIL-C"
+ },
+ "program": {
+  "spotBOMTotal": 64.09,
+  "programBOMTotal": 32.04,
+  "savingsGBP": 32.05,
+  "savingsPct": 50,
+  "annualProgramVolume": 600000,
+  "pricingTier": "tier1_contract",
+  "multiplier": 0.5
+ },
+ "countries": [
+  {
+   "countryName": "China (Shenzhen / Suzhou)",
+   "pcbFabPerBoard": 6.07,
+   "assemblyPerBoard": 5.67,
+   "bomCostPerBoard": 56.4,
+   "totalPerBoard": 72.28
+  },
+  {
+   "countryName": "Vietnam (Ho Chi Minh City / Hanoi)",
+   "pcbFabPerBoard": 7.67,
+   "assemblyPerBoard": 4.92,
+   "bomCostPerBoard": 58.96,
+   "totalPerBoard": 77.48
+  },
+  {
+   "countryName": "Malaysia (Penang / Johor Bahru)",
+   "pcbFabPerBoard": 9.01,
+   "assemblyPerBoard": 7.75,
+   "bomCostPerBoard": 58.32,
+   "totalPerBoard": 80.72
+  },
+  {
+   "countryName": "India (Pune / Bengaluru / Chennai)",
+   "pcbFabPerBoard": 9.01,
+   "assemblyPerBoard": 6.43,
+   "bomCostPerBoard": 60.89,
+   "totalPerBoard": 82.84
+  },
+  {
+   "countryName": "Thailand (Bangkok / Ayutthaya)",
+   "pcbFabPerBoard": 9.77,
+   "assemblyPerBoard": 7.34,
+   "bomCostPerBoard": 59.6,
+   "totalPerBoard": 82.6
+  },
+  {
+   "countryName": "Taiwan (Taoyuan / Hsinchu / Taichung)",
+   "pcbFabPerBoard": 15.49,
+   "assemblyPerBoard": 11.54,
+   "bomCostPerBoard": 57.68,
+   "totalPerBoard": 89
+  },
+  {
+   "countryName": "Mexico (Juárez / Monterrey / Guadalajara)",
+   "pcbFabPerBoard": 13.95,
+   "assemblyPerBoard": 8.88,
+   "bomCostPerBoard": 62.81,
+   "totalPerBoard": 90.51
+  },
+  {
+   "countryName": "South Korea (Suwon / Busan)",
+   "pcbFabPerBoard": 18.75,
+   "assemblyPerBoard": 13.23,
+   "bomCostPerBoard": 58.96,
+   "totalPerBoard": 92.05
+  }
+ ],
+ "band": {
+  "totalLow": 60.54,
+  "totalMid": 77.33,
+  "totalHigh": 114.67
+ }
+}
