@@ -18,6 +18,7 @@
  * Uses the Playwright library directly (no @playwright/test), matching smoke.ts.
  */
 import { createServer, type Server } from 'node:http';
+import { connect as netConnect } from 'node:net';
 import { readFile } from 'node:fs/promises';
 import { chromium, type Browser, type BrowserContext, type Page } from 'playwright';
 import { mkdirSync, existsSync, readFileSync, writeFileSync, rmSync } from 'node:fs';
@@ -69,11 +70,18 @@ function log(m: string) { process.stdout.write(`[visual] ${m}\n`); }
 function isBrowserMissing(msg: string): boolean {
   return /Executable doesn't exist|requires the chromium snap|Target page, context or browser has been closed|Failed to launch|spawn .* ENOENT/i.test(msg);
 }
-async function waitForServer(url: string, timeoutMs = 30_000): Promise<void> {
+async function waitForServer(port: number, timeoutMs = 30_000): Promise<void> {
   const deadline = Date.now() + timeoutMs;
   while (Date.now() < deadline) {
-    try { const r = await fetch(url); if (r.ok) return; } catch { /* not up */ }
-    await new Promise(r => setTimeout(r, 400));
+    const up = await new Promise<boolean>((resolve) => {
+      const sock = netConnect(port, '127.0.0.1');
+      const done = (ok: boolean) => { sock.destroy(); resolve(ok); };
+      sock.once('connect', () => done(true));
+      sock.once('error', () => done(false));
+      sock.setTimeout(1000, () => done(false));
+    });
+    if (up) return;
+    await new Promise(r => setTimeout(r, 300));
   }
   throw new Error(`Preview server did not start within ${timeoutMs}ms`);
 }
@@ -185,7 +193,7 @@ async function main(): Promise<void> {
   const cleanup = () => { try { browser?.close(); } catch {} try { server.close(); } catch {} };
 
   try {
-    await waitForServer(BASE);
+    await waitForServer(PORT);
     log('preview server up');
     try {
       browser = await chromium.launch({ executablePath: process.env.PLAYWRIGHT_CHROMIUM_PATH || undefined });
