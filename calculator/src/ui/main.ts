@@ -134,7 +134,7 @@ import type { Breakdown8Bucket } from '../engine/types.js';
 import type { PartFingerprint, SimilarCase, CaseSuggestion, ProactiveInsight } from '../engine/part-similarity.js';
 import { computeCarbon } from '../engine/carbon.js';
 import { computeFeatureCosting, physicalRemovalCeilingMin } from '../engine/feature-costing.js';
-import { generateInsights, totalPotentialSaving, FX_TO_GBP } from '../engine/insights.js';
+import { generateInsights, totalPotentialSaving, FX_TO_GBP, CURRENCY_SYMBOL } from '../engine/insights.js';
 import { generateDFMDFA } from '../engine/dfm-dfa.js';
 import type { DFMIssue, CostOptimisation } from '../engine/dfm-dfa.js';
 import type { RateLibrary, UniversalStackInput, PartCostResult, CommodityType, SupplierQuote } from '../engine/types.js';
@@ -250,11 +250,8 @@ let _displayFxRate = 1.0;
 // region auto-follows that region's native currency as a helpful default.
 let _currencyUserPinned = false;
 
-const CURRENCY_SYMBOL: Record<string, string> = {
-  GBP: '£', EUR: '€', USD: '$', CNY: '¥', INR: '₹',
-  MXN: '$M', THB: '฿', VND: '₫', BRL: 'R$', KRW: '₩',
-  PLN: 'zł', CZK: 'Kč', TRY: '₺', SEK: 'kr', RON: 'lei', HUF: 'Ft',
-};
+// CURRENCY_SYMBOL is imported from engine/insights.js — one canonical map shared
+// by the UI and every export, so no partial copy can drift.
 
 function _currFmt(n: number): string {
   const sym = CURRENCY_SYMBOL[_displayCurrency] ?? _displayCurrency;

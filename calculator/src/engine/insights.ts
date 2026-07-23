@@ -134,6 +134,21 @@ export const FX_TO_GBP: Record<string, number> = {
   TRY: 0.02381, SEK: 0.07246, RON: 0.17241, HUF: 0.002222,
 };
 
+// Canonical display symbol for every supported currency — the single source of
+// truth shared by the UI and every export (PDF/Excel). Kept in step with the
+// currency dropdown; partial copies in the export layer caused a report to show
+// "฿12.34" in one section and "THB12.34" in another. Keys must cover FX_TO_GBP.
+export const CURRENCY_SYMBOL: Record<string, string> = {
+  GBP: '£', EUR: '€', USD: '$', CNY: '¥', INR: '₹',
+  MXN: '$M', THB: '฿', VND: '₫', BRL: 'R$', KRW: '₩',
+  PLN: 'zł', CZK: 'Kč', TRY: '₺', SEK: 'kr', RON: 'lei', HUF: 'Ft',
+};
+
+/** Display symbol for a currency code, falling back to "CODE " when unknown. */
+export function currencySymbol(code: string): string {
+  return CURRENCY_SYMBOL[code] ?? code + ' ';
+}
+
 // ─── Insight generation ───────────────────────────────────────────────────────
 
 export function generateInsights(

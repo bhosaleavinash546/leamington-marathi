@@ -3,7 +3,7 @@ import autoTable from 'jspdf-autotable';
 import type { PartCostResult, UniversalStackInput, RateLibrary, CommodityType, Scenario } from '../engine/types.js';
 import type { CADAnalysisResult } from '../engine/ai-analysis.js';
 import { breakdownPercentages } from '../engine/core.js';
-import { generateInsights, totalPotentialSaving } from '../engine/insights.js';
+import { generateInsights, totalPotentialSaving, currencySymbol } from '../engine/insights.js';
 import { generateDFMDFA } from '../engine/dfm-dfa.js';
 import { computeCostUncertainty } from '../engine/uncertainty.js';
 import { runSensitivity } from '../engine/sensitivity.js';
@@ -183,7 +183,7 @@ export function renderShouldCostSections(
   },
 ): number {
   const { result, input, library, currency, fxRate, commodityType, region, scenarios, cadMeta } = ctx;
-  const sym  = ({ GBP: '£', EUR: '€', USD: '$', CNY: '¥', INR: '₹' } as Record<string, string>)[currency] ?? currency;
+  const sym  = currencySymbol(currency);
   const c    = (n: number) => `${sym}${(n * fxRate).toFixed(2)}`;
   const pct  = (n: number) => `${n.toFixed(1)}%`;
   const pcts = breakdownPercentages(result);
@@ -1029,7 +1029,7 @@ export function printPDF(
   cadMeta: CADReportMeta = {}
 ): void {
 
-  const sym  = ({ GBP: '£', EUR: '€', USD: '$', CNY: '¥', INR: '₹' } as Record<string,string>)[currency] ?? currency;
+  const sym  = currencySymbol(currency);
   const pct  = (n: number) => `${n.toFixed(1)}%`;
   const pcts = breakdownPercentages(result);
   const dateStr = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
@@ -1228,7 +1228,7 @@ export function printCADAnalysisPDF(r: CADAnalysisResult, partPhotoDataUrl?: str
   type RGB3 = [number, number, number];
   // AI cost range and tooling figures are GBP-denominated — convert to the
   // chosen display currency so a CNY/EUR report is not littered with £.
-  const cadCurSym = ({ GBP: '£', EUR: '€', USD: '$', CNY: '¥', INR: '₹' } as Record<string, string>)[currency] ?? currency + ' ';
+  const cadCurSym = currencySymbol(currency);
   const cadMoney = (n: number) => `${cadCurSym}${(n * fxRate).toFixed(2)}`;
   const cadMoney0 = (n: number) => `${cadCurSym}${Math.round(n * fxRate).toLocaleString()}`;
 
