@@ -13027,6 +13027,19 @@ function showResultsArea(): void {
   // Make sure the tab bar is actually in view (its scroll container may have been
   // left scrolled past the top by a previous render / demo switch).
   (resultsEl.closest('.results-panel') as HTMLElement | null)?.scrollTo?.({ top: 0 });
+  // Land the user on the cost after Calculate — bring the result hero (total)
+  // into the viewport instead of leaving them on the form. Gated on a real
+  // result, and honours reduced-motion. Hero when it is on-screen, else the
+  // whole results panel; runs next frame so layout has settled.
+  if (lastResult) {
+    const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
+    const hero = document.getElementById('cv-result-hero');
+    const target = (hero && hero.offsetParent !== null ? hero
+      : resultsEl.closest('.results-panel')) as HTMLElement | null;
+    requestAnimationFrame(() => {
+      target?.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+    });
+  }
   // Animate results panel after Chart.js renders (needs one frame)
   setTimeout(() => {
     onResultsReady();
