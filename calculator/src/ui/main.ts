@@ -13541,6 +13541,9 @@ function getWeightInputId(commodity: string): string | null {
 }
 
 function maybeShowWizard(commodity: string): void {
+  // Escape hatch for automation / power users: the guided-wizard overlay
+  // otherwise intercepts pointer events on the commodity picker.
+  try { if (localStorage.getItem('cv-wizard-off') === '1') return; } catch { /* storage blocked */ }
   if (_wizardSeen.has(commodity)) return;
   _wizardSeen.add(commodity);
   const history = getCostingHistory();

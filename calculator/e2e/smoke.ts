@@ -89,6 +89,8 @@ async function main(): Promise<void> {
       localStorage.setItem('auth_user', JSON.stringify({ name: 'Smoke' }));
       // Suppress the first-run product tour, whose overlay intercepts clicks.
       localStorage.setItem('cv-tour-v41-seen', '1');
+      // Suppress the per-commodity guided-wizard overlay (also intercepts clicks).
+      localStorage.setItem('cv-wizard-off', '1');
     });
 
     await page.goto(BASE, { waitUntil: 'domcontentloaded' });
