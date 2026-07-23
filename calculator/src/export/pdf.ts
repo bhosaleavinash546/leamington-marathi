@@ -722,13 +722,16 @@ export function renderShouldCostSections(
   // §9 — Regional Cost Comparison (Ex-Works)
   // ════════════════════════════════════════════════════════════════════════
   {
-    const rc = computeRegionalComparison(result.breakdown, { landed: false });
+    // Re-base to the region the part was costed in, so the source-region row
+    // equals the headline should-cost (not a UK breakdown scaled the wrong way).
+    const rc = computeRegionalComparison(result.breakdown, { landed: false, sourceRegion: region as ManufacturingRegion });
     const cheapest = Math.min(...rc.map(r => r.total));
+    const baseName = rc.find(r => r.isBase)?.name ?? 'base';
     doc.addPage(); y = 18;
-    y = secBar(doc, y, '§9 — Regional Cost Comparison', 'Ex-Works  ·  per-region should-cost  ·  vs UK');
+    y = secBar(doc, y, '§9 — Regional Cost Comparison', `Ex-Works  ·  per-region should-cost  ·  vs ${baseName}`);
     autoTable(doc, {
       startY: y, margin: { left: MG, right: MG }, theme: 'grid',
-      head: [['Region', 'Material', 'Process', 'Labour', 'Tooling', 'Overhead', 'Ex-Works', 'Logistics', 'Total', 'vs UK']],
+      head: [['Region', 'Material', 'Process', 'Labour', 'Tooling', 'Overhead', 'Ex-Works', 'Logistics', 'Total', `vs ${baseName}`]],
       body: rc.map(r => [
         `${r.name} (${r.currency})`, c(r.material), c(r.process), c(r.labour), c(r.tooling), c(r.overhead), c(r.exWorks), c(r.logistics), c(r.total),
         r.isBase ? 'Base' : `${r.vsBasePct >= 0 ? '-' : '+'}${Math.abs(r.vsBasePct).toFixed(0)}%`,

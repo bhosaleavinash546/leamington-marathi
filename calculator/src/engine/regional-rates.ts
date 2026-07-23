@@ -635,32 +635,59 @@ const DEFAULT_RC_REGIONS: ManufacturingRegion[] = ['UK', 'DE', 'FR', 'ES', 'PL',
 
 export function computeRegionalComparison(
   bkd: Breakdown8Bucket,
-  opts: { regions?: ManufacturingRegion[]; baseRegion?: ManufacturingRegion; landed?: boolean } = {},
+  opts: { regions?: ManufacturingRegion[]; baseRegion?: ManufacturingRegion; landed?: boolean; sourceRegion?: ManufacturingRegion } = {},
 ): RegionalComparisonRow[] {
   const regions = opts.regions ?? DEFAULT_RC_REGIONS;
-  const base = opts.baseRegion ?? 'UK';
   const ukSemi = REGIONAL_DATA['UK'].labour.semiskilled;
+  // The multipliers below are defined RELATIVE TO UK. But the breakdown passed in
+  // was computed for `sourceRegion` (e.g. a China should-cost), so we must first
+  // normalise it back to a UK-equivalent baseline — otherwise the UK row wrongly
+  // shows the source-region cost and the source region gets discounted twice (a
+  // China ¥80 headline came out as ¥58 in this table). Default 'UK' → no-op, so
+  // existing callers are unchanged.
+  const source = opts.sourceRegion ?? 'UK';
+  const base = opts.baseRegion ?? source;   // compare against the region we costed in
+  const srcRD = REGIONAL_DATA[source] ?? REGIONAL_DATA['UK'];
+  const srcLab = (srcRD.labour.semiskilled / ukSemi) || 1;
+  const uk: Breakdown8Bucket = {
+    rawMaterial: bkd.rawMaterial / (srcRD.materialMultiplier || 1),
+    process: bkd.process / (srcRD.machineRateMultiplier || 1),
+    labour: bkd.labour / srcLab,
+    tooling: bkd.tooling / (srcRD.machineRateMultiplier || 1),
+    overhead: bkd.overhead / (srcRD.overheadMultiplier || 1),
+    packaging: bkd.packaging / (srcRD.packagingMultiplier || 1),
+    logistics: bkd.logistics / (srcRD.logisticsMultiplier || 1),
+    margin: bkd.margin,
+  };
   const rows = regions.map((code): RegionalComparisonRow | null => {
     const rd = REGIONAL_DATA[code];
     if (!rd) return null;
-    const material = bkd.rawMaterial * rd.materialMultiplier;
-    const process = bkd.process * rd.machineRateMultiplier;
-    const labour = bkd.labour * (rd.labour.semiskilled / ukSemi);
+    // The source region reproduces the actual computed breakdown exactly (it IS
+    // the headline) — no round-trip through the multiplier model.
+    if (code === source) {
+      const exW = bkd.rawMaterial + bkd.process + bkd.labour + bkd.tooling + bkd.overhead;
+      const add = opts.landed ? (LANDED_ADDERS[code] ?? { duty: 0.05, shipping: 0.05 }) : { duty: 0, shipping: 0 };
+      const tot = exW + bkd.packaging + bkd.logistics + bkd.margin + exW * add.duty + exW * add.shipping;
+      return { code, name: rd.name, currency: rd.currency, material: bkd.rawMaterial, process: bkd.process, labour: bkd.labour, tooling: bkd.tooling, overhead: bkd.overhead, exWorks: exW, packaging: bkd.packaging, logistics: bkd.logistics, margin: bkd.margin, total: tot, vsBasePct: 0, isBase: code === base };
+    }
+    const material = uk.rawMaterial * rd.materialMultiplier;
+    const process = uk.process * rd.machineRateMultiplier;
+    const labour = uk.labour * (rd.labour.semiskilled / ukSemi);
     // Tooling is bought where the parts are made — scale by the machine-rate
     // multiplier as a regional capex proxy instead of exporting UK tooling £.
-    const tooling = bkd.tooling * rd.machineRateMultiplier;
+    const tooling = uk.tooling * rd.machineRateMultiplier;
     // Overhead and margin are PERCENTAGES in the core stack. Carrying the UK
     // absolute £ into a cheaper region overstates both — re-base them on the
     // region's own costs so each row stays internally consistent.
-    const ukFactoryBase = bkd.rawMaterial + bkd.process + bkd.labour + bkd.tooling;
+    const ukFactoryBase = uk.rawMaterial + uk.process + uk.labour + uk.tooling;
     const factoryBase = material + process + labour + tooling;
-    const overhead = (ukFactoryBase > 0 ? bkd.overhead * (factoryBase / ukFactoryBase) : bkd.overhead) * rd.overheadMultiplier;
+    const overhead = (ukFactoryBase > 0 ? uk.overhead * (factoryBase / ukFactoryBase) : uk.overhead) * rd.overheadMultiplier;
     const exWorks = material + process + labour + tooling + overhead;
-    const packaging = bkd.packaging * rd.packagingMultiplier;
-    const logistics = bkd.logistics * rd.logisticsMultiplier;
-    const ukMarginBase = ukFactoryBase + bkd.overhead + bkd.packaging + bkd.logistics;
+    const packaging = uk.packaging * rd.packagingMultiplier;
+    const logistics = uk.logistics * rd.logisticsMultiplier;
+    const ukMarginBase = ukFactoryBase + uk.overhead + uk.packaging + uk.logistics;
     const marginBase = exWorks + packaging + logistics;
-    const margin = ukMarginBase > 0 ? bkd.margin * (marginBase / ukMarginBase) : bkd.margin;
+    const margin = ukMarginBase > 0 ? uk.margin * (marginBase / ukMarginBase) : uk.margin;
     const adder = opts.landed ? (LANDED_ADDERS[code] ?? { duty: 0.05, shipping: 0.05 }) : { duty: 0, shipping: 0 };
     const total = exWorks + packaging + logistics + margin + exWorks * adder.duty + exWorks * adder.shipping;
     return { code, name: rd.name, currency: rd.currency, material, process, labour, tooling, overhead, exWorks, packaging, logistics, margin, total, vsBasePct: 0, isBase: code === base };

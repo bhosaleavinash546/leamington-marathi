@@ -31,4 +31,31 @@ describe('regional cost comparison', () => {
   it('returns all default regions', () => {
     expect(computeRegionalComparison(bkd).length).toBe(10);
   });
+
+  it('re-bases to the source region: that row reproduces the headline exactly', () => {
+    // A breakdown COMPUTED for China must not be read as a UK breakdown — the
+    // China row has to equal the input total, not be discounted a second time.
+    const headline = 10 + 8 + 6 + 2 + 3 + 0.5 + 1 + 2; // 32.5
+    const rows = computeRegionalComparison(bkd, { sourceRegion: 'CN' });
+    const cn = rows.find(r => r.code === 'CN')!;
+    expect(cn.isBase).toBe(true);
+    expect(cn.vsBasePct).toBe(0);
+    expect(cn.total).toBeCloseTo(headline, 5);
+    expect(cn.material).toBeCloseTo(bkd.rawMaterial, 5);
+  });
+
+  it('with a China source, the UK row is MORE expensive (proper re-basing, no double discount)', () => {
+    const rows = computeRegionalComparison(bkd, { sourceRegion: 'CN' });
+    const cn = rows.find(r => r.code === 'CN')!;
+    const uk = rows.find(r => r.code === 'UK')!;
+    expect(uk.total).toBeGreaterThan(cn.total);       // UK dearer than China
+    expect(uk.vsBasePct).toBeLessThan(0);             // "+% vs China" (more expensive)
+  });
+
+  it('default source (UK) is unchanged — full back-compat', () => {
+    const rows = computeRegionalComparison(bkd);
+    const uk = rows.find(r => r.code === 'UK')!;
+    expect(uk.isBase).toBe(true);
+    expect(uk.total).toBeCloseTo(32.5, 5);
+  });
 });

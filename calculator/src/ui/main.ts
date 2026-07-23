@@ -11251,6 +11251,11 @@ function switchCommodity(type: CommodityType): void {
       setTimeout(() => {
         const machEl = el<HTMLSelectElement>('imm-mach');
         if (machEl) { const opt = Array.from(machEl.options).find(o => o.value.includes('imm-200t')); if (opt) machEl.value = opt.value; }
+        // Injection moulding is run by semi-skilled moulding operators, not skilled
+        // machinists — default the labour grade accordingly (it otherwise fell to the
+        // first option, "Skilled Machinist").
+        const immLabEl = el<HTMLSelectElement>('imm-lab');
+        if (immLabEl) { const opt = Array.from(immLabEl.options).find(o => o.value.includes('semiskilled')); if (opt) immLabEl.value = opt.value; }
         const matEl = el<HTMLSelectElement>('imm-mat');
         if (matEl) {
           const opt = Array.from(matEl.options).find(o => o.value.includes('mat-pp')); if (opt) matEl.value = opt.value;
@@ -14615,7 +14620,10 @@ function renderInsights(result: PartCostResult, input: UniversalStackInput): voi
 
   // Regional comparison — computed by the shared engine helper (same figures back
   // the on-screen table and the PDF export). Landed toggle adds duty + freight.
-  const rcRows = computeRegionalComparison(result.breakdown, { landed: _landedCostMode });
+  // Pass the region the part was actually costed in so the table re-bases from it
+  // (the source-region row then equals the headline exactly, instead of the whole
+  // table being read as a UK breakdown and the source region double-discounted).
+  const rcRows = computeRegionalComparison(result.breakdown, { landed: _landedCostMode, sourceRegion: _mfgRegion });
 
   type RCCol = 'material' | 'process' | 'labour' | 'overhead' | 'exWorks' | 'total';
   const rcCols: RCCol[] = ['material', 'process', 'labour', 'overhead', 'exWorks', 'total'];
@@ -14634,13 +14642,13 @@ function renderInsights(result: PartCostResult, input: UniversalStackInput): voi
     return '';
   };
 
-  const ukTotal = rcRows.find(r => r.code === 'UK')?.total ?? result.total;
+  const baseTotal = rcRows.find(r => r.code === _mfgRegion)?.total ?? result.total;
   const isDarkMode = document.documentElement.getAttribute('data-theme') !== 'light';
   const thRowBg = isDarkMode ? '#1e293b' : '#f8fafc';
 
   const rcTableRows = rcRows.map(r => {
-    const savingPct = ((ukTotal - r.total) / ukTotal) * 100;
-    const isUK = r.code === 'UK';
+    const savingPct = ((baseTotal - r.total) / baseTotal) * 100;
+    const isUK = r.code === _mfgRegion;
     const rowStyle = isUK ? `background:var(--accent-light);font-weight:600` : '';
     const vsUK = isUK ? '<span style="color:#888;font-size:0.72rem">Base</span>'
       : savingPct > 0.5
@@ -14674,7 +14682,7 @@ function renderInsights(result: PartCostResult, input: UniversalStackInput): voi
             <th style="border-left:2px solid var(--border)">Ex-Works</th>
             <th>Logistics</th>
             <th style="border-left:2px solid var(--border)">Total</th>
-            <th>vs UK</th>
+            <th>vs ${escHtml(REGIONAL_DATA[_mfgRegion]?.name ?? String(_mfgRegion))}</th>
           </tr>
         </thead>
         <tbody>${rcTableRows}</tbody>
