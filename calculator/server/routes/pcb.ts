@@ -168,6 +168,19 @@ function textOf(msg: { content: Array<{ type: string; text?: string }> }): strin
 // automotive grade — ballooning output until Stage 3 truncated to an empty BOM.
 // Only boards the classifier is genuinely sure about get the automotive machine.
 const AUTOMOTIVE_CONF_MIN = 0.7;
+
+// Unambiguous automotive-silicon part-number signatures. If OCR reads one of
+// these, the board is automotive regardless of what the top-image classifier
+// guessed — radar MCUs/transceivers, automotive MCUs/SoCs, safety SBCs/PMICs,
+// automotive Ethernet/CAN PHYs. Matched case-insensitively against IC markings.
+const AUTOMOTIVE_SILICON_RE =
+  /\bF?S32[RKGVZ]\d|\bMPC5\d{3}|\bSPC5\d{1,2}|\bTC2\d{2}|\bTC3\d{2}|\bTC4\d\b|\bAURIX|\bMR3003|\bMR2001|\bTEF81|\bTEF82|\bTDA[234]\b|\bEYEQ[45]?|R[- ]?CAR|\bRH850|\bSJA11(?:05|10)|\bTJA1(?:04|10|14)\d|\bFS(?:65|85)\b|\bTLF35584|\bAWR[12]\d{3}|\bIWR[16]\d{3}/i;
+
+/** True when an IC marking is an unmistakable automotive part number. */
+export function looksAutomotiveSilicon(markings: string[]): boolean {
+  return markings.some(m => typeof m === 'string' && AUTOMOTIVE_SILICON_RE.test(m));
+}
+
 function gateAutomotive(s: Stage1Result, tag = 'PCB'): void {
   if (s.domain === 'automotive_adas' && s.conf < AUTOMOTIVE_CONF_MIN) {
     console.log(`[${tag}] Automotive guess conf=${s.conf} < ${AUTOMOTIVE_CONF_MIN} — treating as a general board (no forced AEC-Q grading; saves tokens & extra calls)`);
@@ -345,16 +358,28 @@ Return ONLY valid JSON:
 {"asilLevel":"ASIL-B","asilRationale":"Dual-core lockstep MCU with safety PMIC suggests ASIL-B/C chassis control","safetyFunctions":["Electronic power steering","Fault detection"]}
 
 ASIL levels: QM (no safety), ASIL-A (low), ASIL-B (medium), ASIL-C (high), ASIL-D (highest).`;
+  // Salvage the ASIL level/rationale by regex when strict JSON.parse fails — the
+  // model occasionally wraps the JSON in prose or truncates the safetyFunctions
+  // array, and a single formatting quirk must NOT blank the safety classification
+  // on a genuinely safety-critical board.
+  const salvage = (raw: string): Stage1bASIL => {
+    const lvl = /"?asilLevel"?\s*:\s*"?(ASIL-?[ABCD]|QM)"?/i.exec(raw)?.[1]?.replace('ASIL', 'ASIL-').replace('ASIL--', 'ASIL-');
+    const rat = /"?asilRationale"?\s*:\s*"([^"]{0,400})"/i.exec(raw)?.[1] ?? '';
+    const fnsBlock = /"safetyFunctions"\s*:\s*\[([^\]]*)/i.exec(raw)?.[1] ?? '';
+    const fns = [...fnsBlock.matchAll(/"([^"]{2,60})"/g)].map(m => m[1]);
+    return { asilLevel: (lvl as ASILLevel) ?? 'Unknown', asilRationale: rat, safetyFunctions: fns };
+  };
+  let raw = '{}';
   try {
     const msg = await anthropic.messages.create({ temperature: 0,
-      model: 'claude-haiku-4-5-20251001', max_tokens: 512,
-      system: 'You are an automotive functional safety engineer. Return ONLY valid JSON.',
+      model: 'claude-haiku-4-5-20251001', max_tokens: 768,
+      system: 'You are an automotive functional safety engineer. Return ONLY valid JSON — one object, no prose.',
       messages: [{ role: 'user', content: [
         ...buildImageContentBlocks(imageFiles, imageLabels, imageFiles.length > 1),
         { type: 'text', text: prompt },
       ]}],
     });
-    const raw = textOf(msg) || '{}';
+    raw = textOf(msg) || '{}';
     const start = raw.indexOf('{'), end = raw.lastIndexOf('}');
     if (start !== -1 && end > start) {
       const parsed = JSON.parse(raw.slice(start, end + 1)) as Stage1bASIL;
@@ -365,9 +390,14 @@ ASIL levels: QM (no safety), ASIL-A (low), ASIL-B (medium), ASIL-C (high), ASIL-
       };
     }
   } catch (err) {
+    const s = salvage(raw);
+    if (s.asilLevel !== 'Unknown') {
+      console.warn('[PCB] Stage 1b JSON parse failed — salvaged ASIL from text:', s.asilLevel);
+      return s;
+    }
     console.warn('[PCB] Stage 1b ASIL classification failed:', (err as Error).message);
   }
-  return { asilLevel: 'Unknown', asilRationale: '', safetyFunctions: [] };
+  return salvage(raw);
 }
 
 // ── Automotive NRE breakdown ──────────────────────────────────────────────────
@@ -714,8 +744,8 @@ function stage1Prompt(): string {
 {"domain":"automotive_adas"|"rf_microwave"|"industrial_power"|"industrial_control"|"consumer_iot"|"medical"|"general","conf":0.0-1.0,"hints":["visual clue 1","visual clue 2"]}
 
 Clues per domain:
-- automotive_adas: CAN/LIN connectors, AEC markings, heat spreaders, ADAS SoCs (TDA, EyeQ)
-- rf_microwave: Rogers/PTFE substrate, SMA connectors, RF shielding cans, spiral inductors
+- automotive_adas: CAN/LIN/FlexRay/FAKRA/HSD connectors, AEC markings, heat spreaders / EMI shield frames, ADAS SoCs (TI TDA, Mobileye EyeQ), automotive MCUs (NXP S32/MPC, Infineon AURIX TC2xx/TC3xx, Renesas RH850). AUTOMOTIVE RADAR modules are automotive_adas — signs: a patch / series-fed ANTENNA ARRAY etched on the board (rows of copper rectangles), an NXP S32R radar MCU, a 77/79 GHz FMCW transceiver MMIC (NXP MR3003/TEF810x, TI AWR/IWR), tapered RF feed traces, an EMI-shield fence. A radar board with an automotive MCU is automotive_adas, NOT rf_microwave.
+- rf_microwave: Rogers/PTFE substrate, SMA/N connectors, RF shielding cans, spiral inductors — but NOT if it carries an automotive radar MCU (that is automotive_adas)
 - industrial_power: large capacitors/inductors, IGBTs/MOSFETs, optocouplers, heatsinks
 - industrial_control: DIN rail mount, fieldbus connectors (RJ45 banks, DB9), industrial MCUs
 - consumer_iot: tiny form factor, WiFi/BT antenna area, USB-C, MEMS sensors, coin cell
@@ -735,7 +765,7 @@ Return JSON only:
 
 // ── Specialist system prompts ──────────────────────────────────────────────
 const SPECIALIST_SYSTEM_PROMPTS: Record<string, string> = {
-  automotive_adas: 'You are a senior Tier-1 automotive PCB cost engineer with 20+ years in ASIL-rated PCBA design. MANDATORY PRICING RULES — NO EXCEPTIONS: (1) Price EVERY component at AEC-Q qualified automotive grade — ICs: 3–8× consumer, passives/MLCCs: 3–6×, crystals/oscillators: 3×. (2) Set automotive=true on ALL components. (3) Sealed IP67 automotive connectors (Amphenol, TE AMP, Molex MX150, Kostal): £3–35 each. FAKRA SMB £4–18, HSD £5–22, MATEnet £6–25. (4) AEC-Q200 MLCC only — X7R/C0G grade: 0402 resistors £0.003–0.012, 0402 caps £0.008–0.025, 0603 caps £0.015–0.06. (5) KNOWN AUTOMOTIVE IC PRICES (100K volume): AURIX TC2xx £18–55, TC3xx £35–90, TC39x/TC4xx £65–130; NXP S32K1xx £4.50–15, S32K3xx £12–45, S32G2/G3 £40–90; TI TDA4VM £85–220, TDA4AL £120–280; NXP SJA1105 £8–22, SJA1110 £15–40; TJA1101/1103 100BASE-T1 PHY £3–9; TJA1044/1042 CAN xcvr £0.80–2.80; NXP FS65/FS85 SBC £2.50–7; Infineon TLF35584 safety PMIC £3.50–9; Renesas RH850/V4H £18–80; NXP MPC5748G £22–65. Return ONLY valid JSON.',
+  automotive_adas: 'You are a senior Tier-1 automotive PCB cost engineer with 20+ years in ASIL-rated PCBA design. MANDATORY PRICING RULES — NO EXCEPTIONS: (1) Price EVERY component at AEC-Q qualified automotive grade — ICs: 3–8× consumer, passives/MLCCs: 3–6×, crystals/oscillators: 3×. (2) Set automotive=true on ALL components. (3) Sealed IP67 automotive connectors (Amphenol, TE AMP, Molex MX150, Kostal): £3–35 each. FAKRA SMB £4–18, HSD £5–22, MATEnet £6–25. (4) AEC-Q200 MLCC only — X7R/C0G grade: 0402 resistors £0.003–0.012, 0402 caps £0.008–0.025, 0603 caps £0.015–0.06. (5) KNOWN AUTOMOTIVE IC PRICES (100K volume): AURIX TC2xx £18–55, TC3xx £35–90, TC39x/TC4xx £65–130; NXP S32K1xx £4.50–15, S32K3xx £12–45, S32G2/G3 £40–90; TI TDA4VM £85–220, TDA4AL £120–280; NXP SJA1105 £8–22, SJA1110 £15–40; TJA1101/1103 100BASE-T1 PHY £3–9; TJA1044/1042 CAN xcvr £0.80–2.80; NXP FS65/FS85 SBC £2.50–7; Infineon TLF35584 safety PMIC £3.50–9; Renesas RH850/V4H £18–80; NXP MPC5748G £22–65. AUTOMOTIVE RADAR: NXP S32R294/S32R274 radar MCU £22–48, NXP S32R45/S32R41 £45–95; 77/79GHz FMCW transceiver MMIC (NXP MR3003/TEF810x, TI AWR1243/AWR1642/AWR2944) £9–22 each — a radar board ALWAYS has at least one transceiver MMIC near the antenna feed, price it even if the die is under a glob-top/epoxy or shield. Return ONLY valid JSON.',
   rf_microwave: 'You are an RF/microwave PCB design and cost engineer with expertise in Rogers/PTFE substrates, impedance-controlled layouts, and RF component selection. You understand PA/LNA/PLL/filter/balun component pricing, the cost premium of RF substrates (Rogers 4350B: 8–12×), controlled-impedance PCB fab, and RF module pricing from suppliers like Mini-Circuits, Würth, and Murata. Return ONLY valid JSON.',
   industrial_power: 'You are a power electronics PCB cost engineer specialising in motor drives, power converters, UPS, and industrial power supplies. You know IGBT/SiC MOSFET pricing, gate driver ICs, isolated DC-DC converter modules, high-capacitance bulk capacitors, current sensor ICs, and thermal management components. You understand that industrial-grade components cost 2–4× consumer parts. Return ONLY valid JSON.',
   industrial_control: 'You are an industrial control and automation PCB cost engineer with expertise in PLCs, motion controllers, fieldbus nodes (EtherCAT, PROFIBUS, CANopen, Modbus), and industrial Ethernet switches. You know Siemens/Beckhoff/Rockwell component choices, ruggedised connector pricing, industrial-grade MCU/DSP costs, and conformal coating requirements. Return ONLY valid JSON.',
@@ -1004,7 +1034,7 @@ router.post('/analyze-image', upload.fields([
     ...imageFiles.map(f => f.buffer),
     // v2: payload-shape version — bumped when the response contract changes so
     // stale cached payloads (e.g. pre-`assembly`-normalization) never replay.
-    Buffer.from(JSON.stringify({ country: req.body?.country, orderQty: req.body?.orderQty, deep: deepAnalysis, v: 4 })),
+    Buffer.from(JSON.stringify({ country: req.body?.country, orderQty: req.body?.orderQty, deep: deepAnalysis, v: 6 })),
   ]);
   const cached = getCached(cacheKey);
   if (cached) {
@@ -1063,7 +1093,7 @@ router.post('/analyze-image', upload.fields([
     console.warn('[PCB] Stage 1 failed, using defaults:', err instanceof Error ? err.message : String(err));
   }
 
-  const domain = stage1Result.domain;
+  let domain = stage1Result.domain;
 
   // ── Stage 1b: ASIL classification (Haiku) — automotive_adas only ────────
   let asilClassification: Stage1bASIL = { asilLevel: 'Unknown', asilRationale: '', safetyFunctions: [] };
@@ -1103,6 +1133,29 @@ router.post('/analyze-image', upload.fields([
     console.log(`[PCB] Stage 2: ${ocrResult.icMarkings.length} IC markings, extraction quality=${ocrResult.extractionQuality}`);
   } catch (err) {
     console.warn('[PCB] Stage 2 failed, using defaults:', err instanceof Error ? err.message : String(err));
+  }
+
+  // ── Deterministic automotive promotion from IC markings ─────────────────
+  // Stage 1 classifies the domain from the TOP image before OCR reads any part
+  // number, so an automotive RADAR module (NXP S32R + antenna array) or a board
+  // whose flagship IC is an automotive MCU can be mislabelled rf_microwave/general
+  // — silently disabling ASIL, program pricing and AEC-Q grading. When the OCR
+  // markings expose an unmistakable automotive-silicon signature we force the
+  // automotive path (and run the ASIL step Stage 1 skipped). Ground truth wins.
+  if (domain !== 'automotive_adas' && looksAutomotiveSilicon(ocrResult.icMarkings)) {
+    const sig = ocrResult.icMarkings.find(m => looksAutomotiveSilicon([m])) ?? 'automotive IC';
+    console.log(`[PCB] Promoted domain -> automotive_adas from IC marking "${sig}" (Stage 1 said ${domain})`);
+    domain = 'automotive_adas';
+    stage1Result.domain = 'automotive_adas';
+    stage1Result.conf = Math.max(stage1Result.conf, 0.9);
+    if (asilClassification.asilLevel === 'Unknown') {
+      try {
+        asilClassification = await classifyASILLevel(anthropic, imageFiles, imageLabels, ocrResult.icMarkings.join(', ') || domain);
+        console.log(`[PCB] ASIL (post-promotion): ${asilClassification.asilLevel}`);
+      } catch (err) {
+        console.warn('[PCB] Post-promotion ASIL failed:', err instanceof Error ? err.message : String(err));
+      }
+    }
   }
 
   // ── Stage 3: Full BOM analysis with specialist persona (Sonnet) ────────
