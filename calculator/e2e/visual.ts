@@ -54,14 +54,14 @@ function startStaticServer(): Server {
     }
   });
   srv.on('error', (e) => log(`static server error: ${(e as Error).message}`));
-  srv.listen(PORT, () => log(`static server listening on ${PORT}`));
+  srv.listen(PORT, '127.0.0.1', () => log(`static server listening on ${PORT}`));
   return srv;
 }
 const BASELINE_DIR = join(__dir, 'baselines');
 const DIFF_DIR = join(__dir, 'visual-diffs');
 const UPDATE = process.argv.includes('--update');
 const PORT = Number(process.env.VISUAL_PORT ?? 4190);
-const BASE = `http://localhost:${PORT}/calculator/`;
+const BASE = `http://127.0.0.1:${PORT}/calculator/`;
 const IS_CI = !!process.env.CI;
 const MAX_DIFF_RATIO = 0.02; // >2% of pixels differing = a real regression
 
