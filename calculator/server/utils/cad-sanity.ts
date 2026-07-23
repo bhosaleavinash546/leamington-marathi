@@ -38,9 +38,45 @@ interface AnalysisLike {
   };
 }
 
+// Optional measured-geometry + selection context for the cross-commodity
+// plausibility checks. Everything is optional so existing callers still work.
+export interface CADGeometryContext {
+  commodity?: string;
+  fillRatio?: number | null;
+  wallMeanMm?: number | null;
+  maxDimMm?: number | null;
+  materialName?: string;
+}
+
+// A single sealed cavity cannot come out of these bulk/solid metal processes,
+// and a large thin-wall part misruns as a casting — used for the geometry↔
+// process plausibility flag (a warning, not an override: an open thin-wall part
+// could still be legitimate HPDC, so we surface it rather than force it).
+const BULK_SOLID_METAL_PROCESSES = new Set([
+  'casting', 'forging', 'cast_and_machine', 'machining', 'extrusion', 'biw_assembly',
+]);
+const PLASTIC_MOULDING_PROCESSES = new Set([
+  'injection_moulding', 'blow_moulding', 'rotational_moulding', 'thermoforming',
+]);
+const THIN_WALL_PROCESSES = new Set([
+  ...PLASTIC_MOULDING_PROCESSES, 'sheet_metal', 'sheet_metal_fab',
+]);
+const METAL_PROCESSES = new Set([
+  'casting', 'forging', 'cast_and_machine', 'machining', 'extrusion',
+  'sheet_metal', 'sheet_metal_fab', 'biw_assembly', 'stamping',
+]);
+
+function looksPlasticMaterial(name: string): boolean {
+  return /plastic|polymer|resin|nylon|\bpa6|\bpa66|\babs\b|\bpp\b|\bpom\b|peek|hdpe|ldpe|polyeth|\bpvc\b|\bpet\b|petg|\btpe\b|\btpo\b|acrylic|pmma|polycarbon|\bpc\b|delrin|thermoplast/i.test(name);
+}
+function looksMetalMaterial(name: string): boolean {
+  return /alumin|\bsteel\b|\biron\b|brass|bronze|copper|titanium|magnesium|\bzinc\b|lm25|a356|az91|stainless|\ben8\b|4140|1045|s355|casting alloy|die.?cast|ductile|gjl|gjs/i.test(name);
+}
+
 export function runCADSanityChecks(
   analysis: AnalysisLike,
   measuredVolumeCm3: number | null,
+  context?: CADGeometryContext,
 ): CADSanityWarning[] {
   const w: CADSanityWarning[] = [];
   const geoVol = analysis.geometry?.estimatedVolumeCm3;
@@ -123,6 +159,60 @@ export function runCADSanityChecks(
   const util = analysis.costInputSuggestions?.materialUtilization;
   if (typeof util === 'number' && (util <= 0 || util > 1)) {
     w.push({ code: 'utilization_out_of_range', message: `Material utilisation ${util} outside (0, 1].`, severity: 'error' });
+  }
+
+  // 7-9. Cross-commodity geometry↔process plausibility. These generalise the
+  //      fuel-tank learning to EVERY commodity: where the measured geometry and
+  //      the chosen process disagree we surface a flag, even in the cases we
+  //      cannot safely auto-override (an open thin-wall part could be real HPDC).
+  if (context?.commodity) {
+    const c = context.commodity;
+    const fill = context.fillRatio ?? null;
+    const wall = context.wallMeanMm ?? null;
+    const maxDim = context.maxDimMm ?? null;
+    const matName = context.materialName ?? analysis.materialAnalysis?.primarySuggestion?.name ?? '';
+
+    // 7. A bulk/solid-metal process on a thin-wall, low-fill part. A large
+    //    thin-wall sand/gravity casting misruns, and a thin shell is rarely
+    //    machined from solid — the failure mode behind the fuel-tank mis-cost.
+    if (
+      BULK_SOLID_METAL_PROCESSES.has(c) &&
+      wall != null && wall > 0 && wall <= 4 &&
+      fill != null && fill < 0.25 &&
+      (maxDim == null || maxDim >= 200)
+    ) {
+      w.push({
+        code: 'process_geometry_implausible',
+        message: `A ${wall.toFixed(1)} mm wall at ${(fill * 100).toFixed(0)}% fill is unusual for "${c}" — a large thin-wall casting misruns and a thin shell is rarely machined from solid. Confirm HPDC, or an injection/blow-moulded or sheet-metal process.`,
+        severity: 'warn',
+      });
+    }
+
+    // 8. Material family vs process mismatch (either direction).
+    if (matName) {
+      if (PLASTIC_MOULDING_PROCESSES.has(c) && looksMetalMaterial(matName) && !looksPlasticMaterial(matName)) {
+        w.push({
+          code: 'material_process_mismatch',
+          message: `Process "${c}" is a plastics process but the material reads as metal ("${matName}") — confirm the material family before quoting.`,
+          severity: 'warn',
+        });
+      } else if (METAL_PROCESSES.has(c) && looksPlasticMaterial(matName) && !looksMetalMaterial(matName)) {
+        w.push({
+          code: 'material_process_mismatch',
+          message: `Process "${c}" is a metal process but the material reads as plastic ("${matName}") — confirm the material family before quoting.`,
+          severity: 'warn',
+        });
+      }
+    }
+
+    // 9. A near-solid part costed as a thin-wall/sheet process.
+    if (THIN_WALL_PROCESSES.has(c) && fill != null && fill > 0.6) {
+      w.push({
+        code: 'process_geometry_implausible',
+        message: `A near-solid part (${(fill * 100).toFixed(0)}% fill) is inconsistent with the thin-wall process "${c}" — this looks machined, cast or forged. Confirm the process.`,
+        severity: 'warn',
+      });
+    }
   }
 
   return w;

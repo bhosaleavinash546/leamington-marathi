@@ -9,7 +9,7 @@ import type { OCCTGeometry } from '../utils/geometry-bridge.js';
 import { parseSTL } from '../services/stl-parser.js';
 import type { STLGeometry } from '../services/stl-parser.js';
 import { createAnalysisCache } from '../utils/analysis-cache.js';
-import { runCADSanityChecks } from '../utils/cad-sanity.js';
+import { runCADSanityChecks, type CADGeometryContext } from '../utils/cad-sanity.js';
 import { capNearNetMachiningHr, applyNearNetMachiningCap } from '../utils/cad-machining-guard.js';
 import { normalizeFieldConfidences } from '../utils/cad-schema.js';
 import { familyFromFilename, proseFamily, promoteHighestConfidence, type MaterialSuggestion } from '../../src/engine/material-family.js';
@@ -168,6 +168,24 @@ export function enforceGeometryCommodity(
     };
   }
   return { commodity, corrected: false };
+}
+
+// Assemble the measured-geometry + selection context the cross-commodity
+// plausibility checks (cad-sanity §7-9) consume. Applies to every commodity.
+function buildGeoSanityContext(geo: OCCTGeometry, analysis: unknown): CADGeometryContext {
+  const a = analysis as {
+    costInputSuggestions?: { recommendedCommodity?: string };
+    materialAnalysis?: { primarySuggestion?: { name?: string } };
+  };
+  const ok = geo.status === 'success';
+  const bb = ok ? geo.boundingBox : undefined;
+  return {
+    commodity: a?.costInputSuggestions?.recommendedCommodity,
+    fillRatio: ok ? (geo.fillRatio ?? null) : null,
+    wallMeanMm: ok ? (geo.wallThickness?.meanMm ?? null) : null,
+    maxDimMm: bb ? Math.max(bb.xMm, bb.yMm, bb.zMm) : null,
+    materialName: a?.materialAnalysis?.primarySuggestion?.name,
+  };
 }
 
 // POST /api/cad/analyze
@@ -472,7 +490,7 @@ router.post('/analyze', analyzeLimiter, upload.fields([
   const measuredVol = stlGeometry?.volume ?? (geo.status === 'success' ? (geo.volume?.cm3 ?? null) : null);
   // Cap near-net (cast/forged) machining time before it drives the cost, then run sanity.
   const machiningWarnings = applyNearNetMachiningCap(analysis as Parameters<typeof applyNearNetMachiningCap>[0]);
-  const sanityWarnings = [...machiningWarnings, ...runCADSanityChecks(analysis as Parameters<typeof runCADSanityChecks>[0], measuredVol)];
+  const sanityWarnings = [...machiningWarnings, ...runCADSanityChecks(analysis as Parameters<typeof runCADSanityChecks>[0], measuredVol, buildGeoSanityContext(geo, analysis))];
   if (sanityWarnings.length) console.log(`[CAD] Sanity: ${sanityWarnings.length} warning(s): ${sanityWarnings.map(x => x.code).join(', ')}`);
 
   const payload = {
@@ -1486,7 +1504,7 @@ router.post('/reanalyze', asyncRoute(async (req, res): Promise<void> => {
   }
 
   const machiningWarnings = applyNearNetMachiningCap(analysis as Parameters<typeof applyNearNetMachiningCap>[0]);
-  const sanityWarnings = [...machiningWarnings, ...runCADSanityChecks(analysis as Parameters<typeof runCADSanityChecks>[0], geo.volume?.cm3 ?? null)];
+  const sanityWarnings = [...machiningWarnings, ...runCADSanityChecks(analysis as Parameters<typeof runCADSanityChecks>[0], geo.volume?.cm3 ?? null, buildGeoSanityContext(geo, analysis))];
   const payload = {
     success: true,
     analysis,
