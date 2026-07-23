@@ -46,6 +46,14 @@ export interface CADGeometryContext {
   wallMeanMm?: number | null;
   maxDimMm?: number | null;
   materialName?: string;
+  materialConfidencePct?: number | null;
+  /** Measured mass of the same solid at each family density (kg) — the Al↔steel gap. */
+  aluminiumKg?: number | null;
+  steelKg?: number | null;
+}
+
+function looksAluminiumMaterial(name: string): boolean {
+  return /alumin|\ba356\b|\blm\d|\b6061\b|\b6082\b|\b5052\b|\b7075\b|\badc12\b|\bal-?si\b|\bal\b/i.test(name);
 }
 
 // A single sealed cavity cannot come out of these bulk/solid metal processes,
@@ -210,6 +218,29 @@ export function runCADSanityChecks(
       w.push({
         code: 'process_geometry_implausible',
         message: `A near-solid part (${(fill * 100).toFixed(0)}% fill) is inconsistent with the thin-wall process "${c}" — this looks machined, cast or forged. Confirm the process.`,
+        severity: 'warn',
+      });
+    }
+
+    // 10. The lightest-metal trap. Geometry cannot tell aluminium from steel — the
+    //     same solid is ~3x heavier in steel — so a bare part with no material
+    //     metadata can be silently costed as aluminium when it is really a steel
+    //     forging/casting (axles, knuckles, spindles, hubs, gears). Never ship
+    //     that assumption silently: if a solid metal part is priced as aluminium
+    //     and steel would be materially heavier, surface the alternative + mass.
+    const alKg = context.aluminiumKg ?? null;
+    const stKg = context.steelKg ?? null;
+    const matConf10 = context.materialConfidencePct ?? 100;
+    if (
+      METAL_PROCESSES.has(c) &&
+      looksAluminiumMaterial(matName) &&
+      (fill == null || fill >= 0.05) &&            // a solid, not a thin HPDC shell
+      alKg != null && stKg != null && stKg >= alKg * 1.8 &&
+      matConf10 < 90
+    ) {
+      w.push({
+        code: 'material_assumed_lightest_metal',
+        message: `Costed as aluminium (~${alKg.toFixed(2)} kg). Geometry cannot distinguish metals — if this part is steel (a forged/cast axle, knuckle, spindle, hub, shaft or gear typically is), it weighs ~${stKg.toFixed(2)} kg (${(stKg / alKg).toFixed(1)}x) and the should-cost is materially higher. Confirm the material before quoting.`,
         severity: 'warn',
       });
     }

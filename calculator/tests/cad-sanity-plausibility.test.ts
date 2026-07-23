@@ -53,4 +53,29 @@ describe('cross-commodity geometry↔process plausibility (generalised fuel-tank
   it('emits nothing extra when no context is supplied (back-compat)', () => {
     expect(runCADSanityChecks(clean as never, 100)).toEqual([]);
   });
+
+  it('flags the lightest-metal trap: a solid part costed as aluminium that could be steel (the stub-axle bug)', () => {
+    // Real PRCR002 numbers: fill 0.092, Al 2.80 kg vs steel 8.14 kg, LM25 @ 68%.
+    const c = codes({ commodity: 'casting', fillRatio: 0.092, materialName: 'LM25 (A356-equiv) Aluminium Casting Alloy',
+      materialConfidencePct: 68, aluminiumKg: 2.80, steelKg: 8.14 });
+    expect(c).toContain('material_assumed_lightest_metal');
+  });
+
+  it('does NOT flag when the aluminium call is high-confidence', () => {
+    const c = codes({ commodity: 'casting', fillRatio: 0.092, materialName: 'A356 aluminium',
+      materialConfidencePct: 95, aluminiumKg: 2.80, steelKg: 8.14 });
+    expect(c).not.toContain('material_assumed_lightest_metal');
+  });
+
+  it('does NOT flag a thin-wall HPDC aluminium part (fill too low = genuine Al casting)', () => {
+    const c = codes({ commodity: 'casting', fillRatio: 0.02, materialName: 'ADC12 aluminium',
+      materialConfidencePct: 70, aluminiumKg: 0.5, steelKg: 1.45 });
+    expect(c).not.toContain('material_assumed_lightest_metal');
+  });
+
+  it('does NOT flag a steel part (already steel)', () => {
+    const c = codes({ commodity: 'forging', fillRatio: 0.3, materialName: 'EN8 steel',
+      materialConfidencePct: 70, aluminiumKg: 2.80, steelKg: 8.14 });
+    expect(c).not.toContain('material_assumed_lightest_metal');
+  });
 });

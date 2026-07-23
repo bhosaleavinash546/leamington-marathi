@@ -24,7 +24,7 @@ const cadCache = createAnalysisCache('cad_analysis_cache');
 // Bump when the prompt/normalisation logic changes so stale cached analyses (which
 // are keyed on inputs, not prompt content) are invalidated. v2: filename material
 // prior + confidence-inversion promotion.
-const CAD_PROMPT_VERSION = 6;
+const CAD_PROMPT_VERSION = 7;
 
 // Stage-1 commodity pre-selection shape (module-level so the JSON.parse casts
 // below get a concrete type instead of `typeof` inference collapsing to never).
@@ -180,7 +180,7 @@ export function enforceGeometryCommodity(
 function buildGeoSanityContext(geo: OCCTGeometry, analysis: unknown): CADGeometryContext {
   const a = analysis as {
     costInputSuggestions?: { recommendedCommodity?: string };
-    materialAnalysis?: { primarySuggestion?: { name?: string } };
+    materialAnalysis?: { primarySuggestion?: { name?: string; confidencePct?: number } };
   };
   const ok = geo.status === 'success';
   const bb = ok ? geo.boundingBox : undefined;
@@ -190,6 +190,9 @@ function buildGeoSanityContext(geo: OCCTGeometry, analysis: unknown): CADGeometr
     wallMeanMm: ok ? (geo.wallThickness?.meanMm ?? null) : null,
     maxDimMm: bb ? Math.max(bb.xMm, bb.yMm, bb.zMm) : null,
     materialName: a?.materialAnalysis?.primarySuggestion?.name,
+    materialConfidencePct: a?.materialAnalysis?.primarySuggestion?.confidencePct ?? null,
+    aluminiumKg: ok ? (geo.weights?.aluminiumKg ?? null) : null,
+    steelKg: ok ? (geo.weights?.steelKg ?? null) : null,
   };
 }
 
@@ -779,6 +782,7 @@ Weight at density:
   Plastic 1.05 g/cm³: ${w.plasticKg.toFixed(3)} kg
   Copper 8.96 g/cm³: ${w.copperKg.toFixed(3)} kg
   Titanium 4.43 g/cm³: ${w.titaniumKg.toFixed(3)} kg
+MATERIAL — do NOT default to the lightest metal. The same solid is ~2.9x heavier in steel than aluminium, so guessing aluminium silently under-costs a steel part. A dense, thick-section solid — especially a drivetrain / suspension / powertrain component (axle, stub axle, knuckle, spindle, hub, shaft, gear, sprocket, crankshaft, connecting rod, yoke, kingpin, lever arm) — is almost always forged or cast STEEL (e.g. EN8, 4140, 42CrMo, cast ductile iron), NOT aluminium, unless there is an explicit aluminium signal: an aluminium hint in the filename/drawing, a thin-wall high-pressure-die-cast wall (2–4 mm uniform), or a lightweighting note. When unsure between aluminium and steel on a solid metal part, prefer steel and say so in the reasoning.
 
 === FACE TOPOLOGY (B-rep surface classification) ===
 Total faces: ${faces.total}
