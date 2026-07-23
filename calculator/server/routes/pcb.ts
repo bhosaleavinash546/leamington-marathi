@@ -13,9 +13,10 @@ import {
   PCB_COUNTRY_RATES,
   COUNTRY_DISPLAY_ORDER,
   type PCBCostInput,
+  type PCBCountryCostBreakdown,
 } from '../data/pcb-country-rates.js';
 import { fetchLivePrices, fetchLivePricesWithAECQ, resolveNexarAccessToken, type LivePricingProvider, type LivePriceResult } from '../utils/pcb-live-pricing.js';
-import { reconcileBomWithCatalogue, groundingCandidates, offlineCataloguePrices, groundAndSplit } from '../utils/pcb-bom-grounding.js';
+import { groundingCandidates, offlineCataloguePrices, groundAndSplit } from '../utils/pcb-bom-grounding.js';
 import { stabiliseBoardSpec, stableFabMid } from '../utils/pcb-boardspec-stabilise.js';
 import { parseBOMFile, type ParsedBOMLine } from '../utils/pcb-bom-parser.js';
 import { normalizePCBAnalysis } from '../utils/pcb-normalize.js';
@@ -295,7 +296,7 @@ interface NPIBreakdown {
   unitCostProd: number;   // cost at orderQty
   setupPerUnit50: number; // NRE amortised over 50 units
 }
-function computeNPIBreakdown(bomTotal: number, fabMid: number, smtPlacements: number, orderQty: number): NPIBreakdown {
+function computeNPIBreakdown(bomTotal: number, fabMid: number, smtPlacements: number, _orderQty: number): NPIBreakdown {
   const stencilCost = smtPlacements > 300 ? 220 : smtPlacements > 100 ? 160 : 120;
   const firstArticleCost = 280; // first-article inspection
   const toolingTotal = stencilCost + firstArticleCost;
@@ -464,7 +465,6 @@ function flagSingleSourceRisks(bom: Array<Record<string, unknown>>): SingleSourc
         partDescription: desc.trim(),
         vendor: match.vendor,
         premium: match.premium,
-        unitPrice,
         unitPriceGBP: unitPrice,
         premiumAmountGBP: Math.round(unitPrice * match.premium * 100) / 100,
       });
@@ -669,8 +669,8 @@ function buildImageContentBlocks(
   files: Express.Multer.File[],
   labels: string[],
   includeLabels: boolean,
-): Array<{ type: 'image'; source: { type: 'base64'; media_type: string; data: string } } | { type: 'text'; text: string }> {
-  type Block = { type: 'image'; source: { type: 'base64'; media_type: string; data: string } } | { type: 'text'; text: string };
+): Array<{ type: 'image'; source: { type: 'base64'; media_type: 'image/jpeg' | 'image/png' | 'image/gif' | 'image/webp'; data: string } } | { type: 'text'; text: string }> {
+  type Block = { type: 'image'; source: { type: 'base64'; media_type: 'image/jpeg' | 'image/png' | 'image/gif' | 'image/webp'; data: string } } | { type: 'text'; text: string };
   const out: Block[] = [];
   // Rec #2: when multiple views are supplied, tell the model how to exploit them —
   // this resolves components hidden on one side and lets it measure board size
@@ -1344,7 +1344,7 @@ ${userPromptText}`;
   const orderQty = parseInt(req.body?.orderQty as string ?? '100', 10) || 100;
 
   let countryComparison: ReturnType<typeof computeAllCountryCosts> = [];
-  let selectedCountryBreakdown: ReturnType<typeof computePCBCountryCost> | null = null;
+  let selectedCountryBreakdown: PCBCountryCostBreakdown | null = null;
   let volumeCurves: Record<string, ReturnType<typeof computeVolumeCurve>> = {};
   let complexityScore: ReturnType<typeof computeComplexityScore> | null = null;
   let confidenceBand: PCBConfidenceBand | null = null;
@@ -1397,7 +1397,7 @@ ${userPromptText}`;
       // Conformal coating
       conformalCoatingCost = computeConformalCoatingCost(boardSpec, domain, asilClassification.asilLevel);
       // Automotive assembly cost model
-      const countryAssemblyPerBoard = selectedCountryBreakdown?.assemblyPerBoard ?? 0;
+      const countryAssemblyPerBoard = (selectedCountryBreakdown as PCBCountryCostBreakdown | null)?.assemblyPerBoard ?? 0;
       automotiveAssemblyCost = computeAutomotiveAssemblyCost(assemblyData, asilClassification.asilLevel, orderQty, countryAssemblyPerBoard);
       // Automotive fab adjustment
       automotiveFabAdjustment = computeAutomotiveFabAdjustment(boardSpec, fabCostMid, domain);
@@ -1641,7 +1641,7 @@ router.post('/reanalyze', upload.fields([
 
   try {
     // ── Attempt 1: Full analysis with correction context ─────────────────
-    const contentBlocks: Array<{ type: 'image'; source: { type: 'base64'; media_type: string; data: string } } | { type: 'text'; text: string }> =
+    const contentBlocks: Array<{ type: 'image'; source: { type: 'base64'; media_type: 'image/jpeg' | 'image/png' | 'image/gif' | 'image/webp'; data: string } } | { type: 'text'; text: string }> =
       imageFiles.length > 0 ? buildImageContentBlocks(imageFiles, imageLabels, multiImage) : [];
 
     const msg1 = await anthropic.messages.create({
@@ -1680,7 +1680,7 @@ router.post('/reanalyze', upload.fields([
         console.error('[PCB/reanalyze] Attempt 2 JSON repair failed:', String(e2));
 
         // ── Attempt 3: Minimal fallback ───────────────────────────────
-        const fallbackContentBlocks: Array<{ type: 'image'; source: { type: 'base64'; media_type: string; data: string } } | { type: 'text'; text: string }> =
+        const fallbackContentBlocks: Array<{ type: 'image'; source: { type: 'base64'; media_type: 'image/jpeg' | 'image/png' | 'image/gif' | 'image/webp'; data: string } } | { type: 'text'; text: string }> =
           imageFiles.length > 0 ? buildImageContentBlocks(imageFiles, imageLabels, multiImage) : [];
 
         const msg3 = await anthropic.messages.create({
@@ -1743,7 +1743,7 @@ router.post('/reanalyze', upload.fields([
   const orderQty = parseInt(req.body?.orderQty as string ?? '100', 10) || 100;
 
   let countryComparison: ReturnType<typeof computeAllCountryCosts> = [];
-  let selectedCountryBreakdown: ReturnType<typeof computePCBCountryCost> | null = null;
+  let selectedCountryBreakdown: PCBCountryCostBreakdown | null = null;
   let volumeCurves: Record<string, ReturnType<typeof computeVolumeCurve>> = {};
   let complexityScore: ReturnType<typeof computeComplexityScore> | null = null;
   let confidenceBand: PCBConfidenceBand | null = null;
@@ -1783,7 +1783,7 @@ router.post('/reanalyze', upload.fields([
       reanalAutomotiveNRE = computeAutomotiveNRE('Unknown', bomTotalForNRE);
       reanalConformalCoatingCost = computeConformalCoatingCost(boardSpec, domain, 'Unknown');
       // Automotive assembly cost model
-      const reanalCountryAssemblyPerBoard = selectedCountryBreakdown?.assemblyPerBoard ?? 0;
+      const reanalCountryAssemblyPerBoard = (selectedCountryBreakdown as PCBCountryCostBreakdown | null)?.assemblyPerBoard ?? 0;
       reanalAutomotiveAssemblyCost = computeAutomotiveAssemblyCost(assemblyData, 'Unknown' as ASILLevel, orderQty, reanalCountryAssemblyPerBoard);
       // Automotive fab adjustment
       reanalAutomotiveFabAdjustment = computeAutomotiveFabAdjustment(boardSpec, fabCostMid, domain);
@@ -2229,7 +2229,7 @@ router.post('/analyze-image-stream', upload.fields([
   const orderQty2 = parseInt(req.body?.orderQty as string ?? '100', 10) || 100;
   const volumeMultiplier2 = getVolumeMultiplier(orderQty2);
   let countryComparison2: ReturnType<typeof computeAllCountryCosts> = [];
-  let selectedCountryBreakdown2: ReturnType<typeof computePCBCountryCost> | null = null;
+  let selectedCountryBreakdown2: PCBCountryCostBreakdown | null = null;
   let volumeCurves2: Record<string, ReturnType<typeof computeVolumeCurve>> = {};
   let complexityScore2: ReturnType<typeof computeComplexityScore> | null = null;
   let confidenceBand2: PCBConfidenceBand | null = null;
@@ -2270,7 +2270,7 @@ router.post('/analyze-image-stream', upload.fields([
       streamAutomotiveNRE = computeAutomotiveNRE(streamAsilClassification.asilLevel, bomTotNRE);
       streamConformalCoatingCost = computeConformalCoatingCost(boardSpec, domain, streamAsilClassification.asilLevel);
       // Automotive assembly cost model
-      const streamCountryAssemblyPerBoard = selectedCountryBreakdown2?.assemblyPerBoard ?? 0;
+      const streamCountryAssemblyPerBoard = (selectedCountryBreakdown2 as PCBCountryCostBreakdown | null)?.assemblyPerBoard ?? 0;
       streamAutomotiveAssemblyCost = computeAutomotiveAssemblyCost(assemblyData, streamAsilClassification.asilLevel, orderQty2, streamCountryAssemblyPerBoard);
       // Automotive fab adjustment
       streamAutomotiveFabAdjustment = computeAutomotiveFabAdjustment(boardSpec, fabCostMid2, domain);
