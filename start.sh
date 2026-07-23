@@ -1,7 +1,7 @@
 #!/bin/bash
 # ──────────────────────────────────────────────────────────────────────────────
 #  CostVision — One-click launcher  (macOS)
-#  Double-click Start.command, or run:  ./start.sh
+#  Double-click start.command, or run:  ./start.sh
 # ──────────────────────────────────────────────────────────────────────────────
 cd "$(dirname "$0")" || exit 1
 
@@ -131,7 +131,7 @@ if ! command -v docker >/dev/null 2>&1; then
   echo "  Easiest fix — install Node.js (free, no account needed):"
   echo "  → https://nodejs.org  (click the LTS download button)"
   echo ""
-  echo "  Then double-click Start.command again."
+  echo "  Then double-click start.command again."
   open "https://nodejs.org" 2>/dev/null || true
   read -r -p "  Press Enter to close... " _
   exit 1
@@ -140,7 +140,7 @@ fi
 if ! docker info >/dev/null 2>&1; then
   echo "  ❌ Docker is installed but not running."
   echo "     Open the Docker Desktop app, wait for the whale icon to appear"
-  echo "     in the menu bar, then double-click Start.command again."
+  echo "     in the menu bar, then double-click start.command again."
   open -a "Docker" 2>/dev/null || true
   read -r -p "  Press Enter to close... " _
   exit 1
