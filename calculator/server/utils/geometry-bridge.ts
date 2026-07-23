@@ -55,6 +55,20 @@ export interface OCCTGeometry {
   volume?: { mm3: number; cm3: number };
   surfaceArea?: { mm2: number; cm2: number };
   fillRatio?: number;
+  /** Sealed-hollow-body vs open-drape topology (distinguishes a fuel tank from a bumper). */
+  topology?: {
+    available: boolean;
+    solidCount?: number;
+    shellCount?: number;
+    voidCount?: number;
+    freeEdgeCount?: number;
+    freeEdgeRatio?: number;
+    /** True → encloses a sealed cavity (blow/rotational-moulding candidate). */
+    enclosesSealedVoid?: boolean;
+    /** True → thin open drape with no enclosed void (injection-moulding / thermoforming). */
+    openShell?: boolean;
+    note?: string;
+  } | null;
   wallThickness?: {
     minMm: number; maxMm: number; meanMm: number; stdDevMm: number;
     sampleCount: number; method: 'ray_cast' | 'formula'; uniformity: string;

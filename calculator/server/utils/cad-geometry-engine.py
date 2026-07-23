@@ -304,6 +304,50 @@ def _classify_faces(faces):
     return counts, cyl_radii
 
 
+def _topology_signals(shape):
+    """Sealed-hollow-body vs open-drape topology signal.
+
+    voidCount = shells − solids: a solid enclosing a sealed cavity carries an
+    extra (inner) shell, so a blow-/rotational-moulded tank/bottle/duct scores
+    voidCount ≥ 1, while an injection-moulded / thermoformed open drape (bumper,
+    trim, cover) scores 0. freeEdgeCount (edges bounding only one face) confirms
+    an open sheet body. Cheap topology counts — no meshing.
+    """
+    from OCP.TopExp import TopExp_Explorer, TopExp
+    from OCP.TopAbs import TopAbs_SHELL, TopAbs_SOLID, TopAbs_EDGE, TopAbs_FACE
+    from OCP.TopTools import TopTools_IndexedDataMapOfShapeListOfShape
+
+    # Accept either a cadquery Shape wrapper or a raw TopoDS_Shape.
+    raw = getattr(shape, "wrapped", shape)
+
+    def _count(kind):
+        e = TopExp_Explorer(raw, kind); n = 0
+        while e.More():
+            n += 1; e.Next()
+        return n
+
+    solids = _count(TopAbs_SOLID)
+    shells = _count(TopAbs_SHELL)
+    emap = TopTools_IndexedDataMapOfShapeListOfShape()
+    TopExp.MapShapesAndAncestors_s(raw, TopAbs_EDGE, TopAbs_FACE, emap)
+    total_e = emap.Extent()
+    free_e = sum(1 for i in range(1, total_e + 1) if emap.FindFromIndex(i).Extent() == 1)
+    # Each solid contributes one outer shell; extra shells are enclosed voids.
+    void_count = max(0, shells - max(1, solids))
+    encloses_void = void_count >= 1
+    return {
+        "available": True,
+        "solidCount": solids,
+        "shellCount": shells,
+        "voidCount": void_count,
+        "freeEdgeCount": free_e,
+        "freeEdgeRatio": round(free_e / max(1, total_e), 4),
+        # Sealed hollow body → blow/roto candidate. Open drape → injection/thermoform.
+        "enclosesSealedVoid": bool(encloses_void),
+        "openShell": bool(not encloses_void),
+    }
+
+
 def _classify_edges(edges):
     """Return (type_counts dict, circle_radii list)."""
     from OCP.BRepAdaptor import BRepAdaptor_Curve
@@ -909,6 +953,20 @@ def analyze(filepath: str) -> dict:
         face_counts, cyl_radii_all = _classify_faces(faces)
         edge_counts, circle_radii = _classify_edges(edges)
 
+        # ── Topology: sealed hollow body vs open thin-wall drape ──────────────
+        # A blow-/rotational-moulded part (tank, bottle, duct) is a CLOSED shell
+        # that encloses a sealed void — OCCT models that void as an extra (inner)
+        # shell, so shells > solids. An injection-moulded / thermoformed panel
+        # (bumper fascia, trim, cover) is a thin drape with NO enclosed void —
+        # one shell per solid, and a handful of naked edges at most. Both read
+        # as low fill-ratio thin-wall shells, so this void signal is what tells a
+        # bumper apart from a fuel tank (the fuel-tank↔bumper failure mode).
+        topology = None
+        try:
+            topology = _topology_signals(shape)
+        except Exception as _te:  # never let topology break the pipeline
+            topology = {"available": False, "note": str(_te)[:120]}
+
         # ── Feature extraction — SINGLE SOURCE OF TRUTH: the B-rep feature table
         # (concavity classifier + axis dedupe + partial-arc filter). The old
         # radius<30mm heuristic counted shaft steps as "holes" and pocket-corner
@@ -968,6 +1026,7 @@ def analyze(filepath: str) -> dict:
                 "cm2": round(sa_mm2 / 100, 3),
             },
             "fillRatio": fill_ratio,
+            "topology": topology,
             "weights": {
                 "aluminiumKg": round(volume_mm3 * 2.70e-6, 4),
                 "steelKg":     round(volume_mm3 * 7.85e-6, 4),

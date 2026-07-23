@@ -24,7 +24,7 @@ const cadCache = createAnalysisCache('cad_analysis_cache');
 // Bump when the prompt/normalisation logic changes so stale cached analyses (which
 // are keyed on inputs, not prompt content) are invalidated. v2: filename material
 // prior + confidence-inversion promotion.
-const CAD_PROMPT_VERSION = 9;
+const CAD_PROMPT_VERSION = 10;
 
 // Stage-1 commodity pre-selection shape (module-level so the JSON.parse casts
 // below get a concrete type instead of `typeof` inference collapsing to never).
@@ -113,9 +113,19 @@ function stage1Prompt(geo: OCCTGeometry): string {
   // was classed as an aluminium casting, and a blow-moulded HDPE fuel tank (4.6 mm
   // wall, hollow) as a sand casting. Gate on low fill so chunky castings are safe.
   const hollow = fill < 0.03;
+  // Topology decides hollow-container vs open-drape — the fuel-tank↔bumper split.
+  const topo = geo.topology;
+  const sealedVoid: boolean | null =
+    topo && topo.available ? (topo.enclosesSealedVoid ?? null) : null;
+  const voidPhrase =
+    sealedVoid === true
+      ? `Measured topology ENCLOSES A SEALED VOID (${topo?.voidCount ?? 1} cavity) → this is a hollow container: blow_moulding (fuel tank, duct, bottle, reservoir) or rotational_moulding for very large tanks. `
+      : sealedVoid === false
+        ? `Measured topology is an OPEN thin-wall drape (no enclosed void, ${topo?.shellCount ?? 1} shell) → this is injection_moulding (bumper fascia, trim panel, cover, housing) or sheet_metal — NOT blow_moulding/rotational_moulding, which need a sealed parison. `
+        : `The very low fill ratio means a HOLLOW/enclosed part → blow_moulding (fuel tank, duct, bottle, reservoir) if it encloses a cavity, else injection_moulding or sheet_metal. `;
   const thinWallHint = (wallMean != null && wallMean > 0 && wallMean <= 6 && maxDim >= 400 && fill < 0.10)
     ? `\nSTRONG SIGNAL: thin wall (${wallMean.toFixed(1)}mm) on a large part (${maxDim.toFixed(0)}mm, fill ${fill.toFixed(3)}). A large thin-wall metal casting/forging is NOT manufacturable (it misruns), so do NOT pick casting/forging. `
-      + `${hollow ? 'The very low fill ratio means a HOLLOW/enclosed part → blow_moulding (fuel tank, duct, bottle, reservoir) if it encloses a cavity, else injection_moulding or sheet_metal. ' : 'This is injection_moulding (plastic) or sheet_metal. '}`
+      + `${hollow || sealedVoid === false ? voidPhrase : 'This is injection_moulding (plastic) or sheet_metal. '}`
       + `Use the PLASTIC mass, not the metal-density figure.`
     : '';
 
@@ -142,6 +152,12 @@ Return JSON only (no prose) — this is FORMAT only, choose the type from the ge
 const SOLID_PROCESS_COMMODITIES = new Set([
   'casting', 'forging', 'cast_and_machine', 'machining', 'biw_assembly',
 ]);
+// Hollow-moulding processes need a SEALED cavity (a parison blown against the
+// tool). An open thin-wall drape (bumper fascia, trim, cover) cannot be blow- or
+// rotationally-moulded — it is injection-moulded (or thermoformed).
+const HOLLOW_MOULDING_COMMODITIES = new Set([
+  'blow_moulding', 'rotational_moulding',
+]);
 
 export function enforceGeometryCommodity(
   commodity: string,
@@ -153,24 +169,56 @@ export function enforceGeometryCommodity(
   const fill = geo.fillRatio;
   const wall = geo.wallThickness?.meanMm ?? null;
   const maxDim = Math.max(geo.boundingBox.xMm, geo.boundingBox.yMm, geo.boundingBox.zMm);
-  // Fully-enclosed hollow shell: fill ratio this low means the solid is a thin
-  // skin around a sealed cavity. Physically un-castable / un-forgeable / not
-  // machined-from-billet. Gate on size so tiny sparse brackets are untouched,
-  // and (when known) on a thin wall so a genuinely chunky sparse lattice is safe.
-  const enclosedHollowShell =
+  // Topology: does the solid enclose a SEALED void (tank/bottle/duct) or is it a
+  // thin OPEN drape (bumper/trim/cover)? Both read as low-fill thin-wall shells,
+  // so this is what separates a fuel tank from a bumper. `null` = unknown
+  // (STL fast-path or older geometry) → fall back to the size/fill heuristic only.
+  const topo = geo.topology;
+  const sealedVoid: boolean | null =
+    topo && topo.available ? (topo.enclosesSealedVoid ?? null) : null;
+  const largeThinShell =
     fill < 0.03 && maxDim >= 250 && (wall == null || wall <= 10);
-  if (enclosedHollowShell && SOLID_PROCESS_COMMODITIES.has(commodity)) {
-    return {
-      commodity: 'blow_moulding',
-      corrected: true,
-      reason:
-        `Geometry override: fill ratio ${fill.toFixed(3)}` +
-        (wall != null ? `, ${wall.toFixed(1)} mm uniform wall` : '') +
-        `, ${maxDim.toFixed(0)} mm envelope — a large enclosed hollow shell cannot be ` +
-        `manufactured as "${commodity}" (no core extraction). Reclassified as blow_moulding ` +
-        `(hollow moulded tank/duct/bottle; alternatives: rotational_moulding for very large ` +
-        `tanks, or sheet_metal_fab for a welded metal tank).`,
-    };
+  if (largeThinShell) {
+    const isSolidProc = SOLID_PROCESS_COMMODITIES.has(commodity);
+    const isHollowMould = HOLLOW_MOULDING_COMMODITIES.has(commodity);
+
+    // 1. Open thin-wall drape (measured to enclose NO void): cannot be a solid
+    //    process (misruns / no core) AND cannot be blow/rotationally moulded
+    //    (no sealed parison). It is an injection-moulded panel — the fuel-tank↔
+    //    bumper fix. Only fires when topology is decisive (sealedVoid === false).
+    if (sealedVoid === false && (isSolidProc || isHollowMould)) {
+      return {
+        commodity: 'injection_moulding',
+        corrected: true,
+        reason:
+          `Geometry override: measured topology is an OPEN thin-wall shell ` +
+          `(${topo?.shellCount ?? 1} shell, ${topo?.voidCount ?? 0} enclosed voids` +
+          (wall != null ? `, ${wall.toFixed(1)} mm wall` : '') +
+          `, ${maxDim.toFixed(0)} mm envelope) — it does not enclose a sealed cavity, so it ` +
+          `cannot be ${commodity.replace(/_/g, ' ')} ` +
+          `${isHollowMould ? '(which needs a sealed parison)' : '(a large thin-wall metal part misruns)'}. ` +
+          `A large open drape at this scale is an injection-moulded panel (bumper fascia, trim, cover). ` +
+          `Reclassified as injection_moulding.`,
+      };
+    }
+
+    // 2. A large thin shell that ENCLOSES A SEALED VOID (or whose topology is
+    //    unknown — legacy size/fill gate) cannot come out of a solid process
+    //    (no core extraction) → blow moulding.
+    if (sealedVoid !== false && isSolidProc) {
+      return {
+        commodity: 'blow_moulding',
+        corrected: true,
+        reason:
+          `Geometry override: fill ratio ${fill.toFixed(3)}` +
+          (wall != null ? `, ${wall.toFixed(1)} mm uniform wall` : '') +
+          (sealedVoid ? ', sealed enclosed void' : '') +
+          `, ${maxDim.toFixed(0)} mm envelope — a large enclosed hollow shell cannot be ` +
+          `manufactured as "${commodity}" (no core extraction). Reclassified as blow_moulding ` +
+          `(hollow moulded tank/duct/bottle; alternatives: rotational_moulding for very large ` +
+          `tanks, or sheet_metal_fab for a welded metal tank).`,
+      };
+    }
   }
   return { commodity, corrected: false };
 }
