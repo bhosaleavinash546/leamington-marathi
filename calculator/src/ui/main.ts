@@ -9,6 +9,7 @@ import { computeSheetMetalDrivers, assessPressTonnage, estimateTonnageTonnes } f
 import { sizeProcessMachine, type MachineSizingParams } from '../engine/machine-sizing.js';
 import { runShouldCostAudit, type AuditCorrection, type AuditFinding } from '../engine/should-cost-audit.js';
 import { computeInjectionMouldingDrivers, estimateClampingTonnage, estimateMouldCost, pickIMMPressId, autoCoolFactorForMaterial, type MouldSteelClass } from '../engine/modules/injection-moulding.js';
+import { analyseInjectionDFM, type ResinType } from '../engine/modules/injection-advisor.js';
 import { computeCastingDrivers } from '../engine/modules/casting.js';
 import { computeForgingDrivers } from '../engine/modules/forging.js';
 import {
@@ -3783,6 +3784,36 @@ function wireSheetMetalFabAdvisor(): void {
 
 function renderInjectionForm(): string {
   return `
+    <details style="background:#f3f8ff;border:1px solid #b9d4ff;border-radius:6px;padding:6px 8px;margin-bottom:8px">
+      <summary style="font-weight:600;font-size:0.78rem;cursor:pointer;color:#1451a3">🔬 Moulding DFM Advisor — wall / sink / draft / weld-line / flow check</summary>
+      <div style="margin-top:6px">
+        <div class="field-row">
+          <div class="field-group"><label>Resin Behaviour</label><select id="imm-adv-resin"><option value="amorphous">Amorphous (ABS/PC/PS)</option><option value="semi_crystalline" selected>Semi-crystalline (PP/PE/PA/POM)</option><option value="filled">Glass/Mineral Filled</option></select></div>
+          <div class="field-group"><label>Nominal Wall (mm)</label><input type="number" id="imm-adv-wall" step="0.1" min="0" value="2.0"/></div>
+        </div>
+        <div class="field-row" style="margin-top:4px">
+          <div class="field-group"><label>Min Wall (mm)</label><input type="number" id="imm-adv-minwall" step="0.1" min="0" value="1.5"/></div>
+          <div class="field-group"><label>Max Wall (mm)</label><input type="number" id="imm-adv-maxwall" step="0.1" min="0" value="2.5"/></div>
+        </div>
+        <div class="field-row" style="margin-top:4px">
+          <div class="field-group"><label>Rib : Wall ratio</label><input type="number" id="imm-adv-rib" step="0.05" min="0" value="0.5"/></div>
+          <div class="field-group"><label>Boss : Wall ratio</label><input type="number" id="imm-adv-boss" step="0.05" min="0" value="0.5"/></div>
+        </div>
+        <div class="field-row" style="margin-top:4px">
+          <div class="field-group"><label>Draft (°)</label><input type="number" id="imm-adv-draft" step="0.5" min="0" value="1.5"/></div>
+          <div class="field-group"><label>Textured?</label><select id="imm-adv-textured"><option value="no" selected>No</option><option value="yes">Yes (grained)</option></select></div>
+        </div>
+        <div class="field-row" style="margin-top:4px">
+          <div class="field-group"><label>Undercuts (count)</label><input type="number" id="imm-adv-undercut" step="1" min="0" value="0"/></div>
+          <div class="field-group"><label>Flow Length (mm)</label><input type="number" id="imm-adv-flow" step="5" min="0" value="0" title="Longest flow path from the gate. 0 = skip L/t check."/></div>
+        </div>
+        <div class="field-row" style="margin-top:4px">
+          <div class="field-group"><label>Weld line on critical face?</label><select id="imm-adv-weld"><option value="no" selected>No</option><option value="yes">Yes (cosmetic/structural)</option></select></div>
+          <div class="field-group" style="display:flex;align-items:flex-end"><button class="btn btn-secondary btn-sm" id="imm-adv-btn" style="width:100%">Advise →</button></div>
+        </div>
+        <div id="imm-adv-result" style="margin-top:6px;font-size:0.75rem;display:none"></div>
+      </div>
+    </details>
     <div class="section-title">Material</div>
     <div class="field-row">
       <div class="field-group"><label>Material</label><select id="imm-mat" class="material-select"></select></div>
@@ -3828,6 +3859,14 @@ function renderInjectionForm(): string {
     <div class="field-row">
       <div class="field-group"><label>Tightest Tolerance (mm) <span title="Drives mould precision: ≥0.20→×1.0, ≥0.10→×1.2, ≥0.05→×1.5, <0.05→×2.0 on mould cost. Leave 0 for standard ±0.2mm.">ℹ</span></label><input type="number" id="imm-tolerance" step="0.01" min="0" value="0.2" title="Tightest critical dimension tolerance on part mm"/></div>
       <div class="field-group"><label>Surface Finish <span title="Affects mould cost: standard×1.0, textured×1.1, high_gloss×1.4 (+15% cool time), painted×1.6.">ℹ</span></label><select id="imm-finish"><option value="standard" selected>Standard moulded</option><option value="textured">Textured mould</option><option value="high_gloss">High gloss / optical</option><option value="painted">Painted / coated</option></select></div>
+    </div>
+    <div class="section-title" style="margin-top:8px">Secondary Operations <span title="Post-mould operations added to the piece cost: threaded inserts, ultrasonic welding, pad-printing, over-moulding, assembly. Leave 0 for none.">ℹ</span></div>
+    <div class="field-row">
+      <div class="field-group"><label>Inserts (count)</label><input type="number" id="imm-insert-count" step="1" min="0" value="0" title="Metal inserts installed after moulding (heat-stake / ultrasonic / mould-in)"/></div>
+      <div class="field-group"><label>Insert Unit Cost (£)</label><input type="number" id="imm-insert-cost" step="0.01" min="0" value="0.05" title="Cost of one insert component (brass/steel)"/></div>
+    </div>
+    <div class="field-row" style="margin-top:6px">
+      <div class="field-group"><label>Secondary Op Cost (£/part) <span title="All-in per-part cost for insert installation labour, ultrasonic welding, pad-printing, degating, over-moulding second shot, assembly.">ℹ</span></label><input type="number" id="imm-secondary-cost" step="0.01" min="0" value="0"/></div>
     </div>
     <div class="section-title" style="margin-top:8px">Tooling</div>
     <div class="field-row">
@@ -11208,6 +11247,7 @@ function switchCommodity(type: CommodityType): void {
     case 'injection_moulding':
       area.innerHTML = renderInjectionForm();
       populateSelects();
+      wireInjectionAdvisor();
       setTimeout(() => {
         const machEl = el<HTMLSelectElement>('imm-mach');
         if (machEl) { const opt = Array.from(machEl.options).find(o => o.value.includes('imm-200t')); if (opt) machEl.value = opt.value; }
@@ -11805,6 +11845,9 @@ function collectIMMInput(): UniversalStackInput {
     amortizationVolume: num('imm-amort') || num('annual-volume') || 100000,
     toleranceMm: num('imm-tolerance') || undefined,
     surfaceFinishGrade: validSel<'standard'|'textured'|'high_gloss'|'painted'>('imm-finish', ['standard','textured','high_gloss','painted'], 'standard'),
+    insertCount: num('imm-insert-count') || undefined,
+    insertUnitCost: num('imm-insert-cost') || undefined,
+    secondaryOpCostPerPart: num('imm-secondary-cost') || undefined,
   });
 
   // H5: clamping-tonnage validation — warn if the part needs more clamp than the selected machine.
@@ -12086,6 +12129,50 @@ function wireForgingAdvisor(): void {
           <span style="font-weight:700">DFM score: <span style="color:${scoreColor}">${dfm.score}/10</span></span>
           ${issuesHtml}
         </div>
+      </div>`;
+    resultEl.style.display = 'block';
+  });
+}
+
+/** Surface the injection-moulding DFM advisor (wall/sink/draft/weld-line/flow) on the IM form. */
+function wireInjectionAdvisor(): void {
+  const btn = document.getElementById('imm-adv-btn');
+  if (!btn) return;
+  btn.addEventListener('click', () => {
+    const resinType = validSel<ResinType>('imm-adv-resin', ['amorphous', 'semi_crystalline', 'filled'], 'semi_crystalline');
+    const dfm = analyseInjectionDFM({
+      wallThicknessMm: num('imm-adv-wall') || num('imm-wall') || 2.0,
+      minWallMm: num('imm-adv-minwall') || undefined,
+      maxWallMm: num('imm-adv-maxwall') || undefined,
+      resinType,
+      ribThicknessRatio: num('imm-adv-rib') || undefined,
+      bossWallRatio: num('imm-adv-boss') || undefined,
+      draftAngleDeg: num('imm-adv-draft') || undefined,
+      textured: sel('imm-adv-textured') === 'yes',
+      undercutCount: num('imm-adv-undercut') || undefined,
+      flowLengthMm: num('imm-adv-flow') || undefined,
+      weldLineOnCriticalFace: sel('imm-adv-weld') === 'yes',
+      toleranceMm: num('imm-tolerance') || undefined,
+    });
+
+    const sevColor: Record<string, string> = { critical: '#c62828', major: '#e65100', minor: '#f9a825', opportunity: '#2e7d32' };
+    const scoreColor = dfm.score >= 8 ? '#2e7d32' : dfm.score >= 5 ? '#e65100' : '#c62828';
+    const issuesHtml = dfm.issues.length === 0
+      ? `<div style="color:#2e7d32;margin-top:4px">✓ ${escHtml(dfm.summary)}</div>`
+      : dfm.issues.map(i => `
+          <div style="margin-top:4px;padding-left:6px;border-left:3px solid ${sevColor[i.severity] ?? '#999'}">
+            <div style="font-weight:600;color:${sevColor[i.severity] ?? '#555'}">[${i.severity.toUpperCase()}] ${escHtml(i.title)}</div>
+            <div style="color:#555">${escHtml(i.description)}</div>
+            <div style="color:#333"><em>Fix:</em> ${escHtml(i.recommendation)}</div>
+          </div>`).join('');
+
+    const resultEl = document.getElementById('imm-adv-result');
+    if (!resultEl) return;
+    resultEl.innerHTML = `
+      <div style="background:#fff;border:1px solid #e0e0e0;border-radius:4px;padding:8px">
+        <span style="font-weight:700">Moulding DFM score: <span style="color:${scoreColor}">${dfm.score}/10</span></span>
+        <span style="color:#777;margin-left:6px">${escHtml(dfm.summary)}</span>
+        ${issuesHtml}
       </div>`;
     resultEl.style.display = 'block';
   });

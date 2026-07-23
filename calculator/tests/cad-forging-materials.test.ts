@@ -3,6 +3,7 @@ import {
   validMaterialsForCommodity,
   CAD_FORGING_BILLET_MATERIALS,
   CAD_GENERIC_MATERIALS,
+  CAD_INJECTION_RESINS,
 } from '../server/routes/cad.js';
 import { DEFAULT_RATE_LIBRARY } from '../src/engine/rate-library.js';
 
@@ -10,9 +11,10 @@ const ids = (csv: string) => csv.split(',').map(s => s.trim()).filter(Boolean);
 const matById = (id: string) => DEFAULT_RATE_LIBRARY.materials.find(m => m.id === id);
 
 describe('CAD-to-Cost material scoping by commodity', () => {
-  it('offers wrought forging billets for forging, generic grades otherwise', () => {
+  it('offers billets for forging, resins for IM, generic grades otherwise', () => {
     expect(validMaterialsForCommodity('forging')).toBe(CAD_FORGING_BILLET_MATERIALS);
-    for (const c of ['machining', 'casting', 'injection_moulding', 'sheet_metal', 'extrusion']) {
+    expect(validMaterialsForCommodity('injection_moulding')).toBe(CAD_INJECTION_RESINS);
+    for (const c of ['machining', 'casting', 'sheet_metal', 'extrusion']) {
       expect(validMaterialsForCommodity(c)).toBe(CAD_GENERIC_MATERIALS);
     }
   });
@@ -54,6 +56,35 @@ describe('CAD-to-Cost material scoping by commodity', () => {
   it('does not leak plastic grades into the forging list', () => {
     for (const id of ids(CAD_FORGING_BILLET_MATERIALS)) {
       expect(id).not.toMatch(/mat-(pp|hdpe|pa6|pc|abs|pom)/);
+    }
+  });
+});
+
+describe('CAD-to-Cost injection-moulding resin scoping', () => {
+  it('every resin id exists and is a thermoplastic the imm-mat dropdown accepts', () => {
+    // imm-mat is scoped to /Thermoplastic|Engineering Plastic|Additive|Masterbatch/ — every
+    // offered resin must match, or setMaterial() silently no-ops on upload.
+    for (const id of ids(CAD_INJECTION_RESINS)) {
+      const m = matById(id);
+      expect(m, `missing resin ${id}`).toBeTruthy();
+      expect(m!.category, `${id} category "${m!.category}" not a mouldable resin`)
+        .toMatch(/Thermoplastic|Engineering Plastic/i);
+    }
+  });
+
+  it('spans commodity, engineering and glass-filled resins (not just the old 4)', () => {
+    const list = CAD_INJECTION_RESINS;
+    // The old generic list only had these four — the new list must add more.
+    expect(ids(list).length).toBeGreaterThan(8);
+    for (const id of ['mat-abs', 'mat-pom', 'mat-pc-abs']) expect(list).toContain(id);
+    // at least one glass-filled engineering grade so structural parts cost correctly
+    expect(ids(list).some(id => /gf\d/i.test(id))).toBe(true);
+  });
+
+  it('contains no metal grades', () => {
+    for (const id of ids(CAD_INJECTION_RESINS)) {
+      const m = matById(id)!;
+      expect(m.category).not.toMatch(/Steel|Aluminium|Billet|Iron|Brass|Bronze|Titanium|Nickel/i);
     }
   });
 });

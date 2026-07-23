@@ -35,6 +35,14 @@ export interface InjectionMouldingInputs {
   steelClass?: MouldSteelClass;    // tool durability class → cost multiplier
   sideActionsLifters?: number;     // count of slides + lifters for undercuts
   hotRunnerDrops?: number;         // hot-runner gates (default = cavities when runnerSystem='hot')
+  // ── Post-mould secondary operations (flat £/part adders) ──
+  /** Metal (brass/steel) inserts installed after moulding — heat-stake / ultrasonic / mould-in. */
+  insertCount?: number;
+  /** Cost per insert £ — the insert component itself. */
+  insertUnitCost?: number;
+  /** All-in secondary-op cost £/part: insert installation, ultrasonic welding, pad-printing,
+   *  degating/trimming, over-moulding second shot, assembly. Deterministic catch-all adder. */
+  secondaryOpCostPerPart?: number;
 }
 
 // ─── Parametric mould-cost estimator (H3) ─────────────────────────────────────
@@ -269,5 +277,18 @@ export function computeInjectionMouldingDrivers(inputs: InjectionMouldingInputs)
     mode: 'amortized',
   };
 
-  return { rawMaterial, operations, tooling };
+  // Post-mould secondary operations — flat £/part adders (inserts, ultrasonic welding,
+  // pad-print, over-moulding, assembly). Priced on GOOD parts (installed after the moulding
+  // reject is taken), so no reject uplift. Flow through consumablesCostPerPart, the same
+  // mechanism forging uses for coining/NDT — keeps the 8-bucket stack deterministic.
+  const insertsCostPerPart = Math.max(0, inputs.insertCount ?? 0) * Math.max(0, inputs.insertUnitCost ?? 0);
+  const secondaryCostPerPart = insertsCostPerPart + Math.max(0, inputs.secondaryOpCostPerPart ?? 0);
+
+  return {
+    rawMaterial: secondaryCostPerPart > 0
+      ? { ...rawMaterial, consumablesCostPerPart: secondaryCostPerPart }
+      : rawMaterial,
+    operations,
+    tooling,
+  };
 }

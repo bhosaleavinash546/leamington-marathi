@@ -24,7 +24,7 @@ const cadCache = createAnalysisCache('cad_analysis_cache');
 // Bump when the prompt/normalisation logic changes so stale cached analyses (which
 // are keyed on inputs, not prompt content) are invalidated. v2: filename material
 // prior + confidence-inversion promotion.
-const CAD_PROMPT_VERSION = 8;
+const CAD_PROMPT_VERSION = 9;
 
 // Stage-1 commodity pre-selection shape (module-level so the JSON.parse casts
 // below get a concrete type instead of `typeof` inference collapsing to never).
@@ -681,9 +681,19 @@ export const CAD_FORGING_BILLET_MATERIALS =
 export const CAD_GENERIC_MATERIALS =
   'mat-al6061, mat-al5052, mat-dc01, mat-hss, mat-stainless-316, mat-brass-crz, mat-pp, mat-hdpe, mat-pa6, mat-pc, mat-lm25, mat-gjl350, mat-az91d, mat-ss304c, mat-bronze-c905';
 
+// Injection moulding needs a real thermoplastic menu, not the 4 resins in the generic
+// list. Without this an ABS / POM / PBT / PC-ABS / glass-filled-nylon part gets mapped to
+// the nearest of PP/HDPE/PA6/PC — wrong resin price and cool-time. Every id here is a
+// Thermoplastic-category grade the imm-mat dropdown accepts, spanning commodity, engineering
+// and glass-filled resins so a moulded part is costed as the polymer it actually is.
+export const CAD_INJECTION_RESINS =
+  'mat-pp, mat-hdpe, mat-abs, mat-pc, mat-pc-abs, mat-pa6, mat-pa66, mat-pa66gf30, mat-pa6-gf30, mat-pom, mat-pbt-gf30, mat-pp-gf30, mat-asa, mat-hips';
+
 /** Comma-separated valid materialId list to offer the AI for a given commodity. */
 export function validMaterialsForCommodity(commodity: string): string {
-  return commodity === 'forging' ? CAD_FORGING_BILLET_MATERIALS : CAD_GENERIC_MATERIALS;
+  if (commodity === 'forging') return CAD_FORGING_BILLET_MATERIALS;
+  if (commodity === 'injection_moulding') return CAD_INJECTION_RESINS;
+  return CAD_GENERIC_MATERIALS;
 }
 
 function buildPrompt(

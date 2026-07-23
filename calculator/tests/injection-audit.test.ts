@@ -8,6 +8,7 @@ import {
   type InjectionMouldingInputs,
 } from '../src/engine/modules/injection-moulding.js';
 import { analyseInjectionDFM } from '../src/engine/modules/injection-advisor.js';
+import { computeUniversalStack } from '../src/engine/core.js';
 import { DEFAULT_RATE_LIBRARY } from '../src/engine/rate-library.js';
 import {
   buildRegionalLibrary,
@@ -85,6 +86,47 @@ describe('H3 — parametric mould-cost estimator', () => {
     expect(manual.tooling.totalToolingCost).toBeGreaterThan(0);
     // different basis → different tooling cost (proves the estimate path is live)
     expect(estimated.tooling.totalToolingCost).not.toBeCloseTo(manual.tooling.totalToolingCost, 0);
+  });
+});
+
+// ─── Post-mould secondary operations (inserts / assembly) ─────────────────────
+
+describe('injection secondary operations — inserts + secondary-op adders', () => {
+  const common: InjectionMouldingInputs = {
+    materialId: 'mat-pa66gf30', partWeightKg: 0.08, runnerWeightKg: 0.01, regrindFraction: 0,
+    cavities: 2, projectedAreaCm2: 60, cavityPressureMPa: 45, wallThicknessMm: 2.5,
+    coolTimeFactorSPerMm2: 3.16, fillTimeSec: 2, packTimeSec: 3, ejectTimeSec: 2,
+    machineId: 'imm-200t', labourId: 'lab-uk-semiskilled', oee: 0.85, manning: 0.25,
+    labourEfficiency: 0.95, mouldCost: 25000, mouldLife: 500000, amortizationVolume: 500000,
+  };
+
+  it('adds insert cost (count × unit) to the per-part consumables', () => {
+    const plain = computeInjectionMouldingDrivers(common);
+    const withInserts = computeInjectionMouldingDrivers({ ...common, insertCount: 4, insertUnitCost: 0.05 });
+    expect(plain.rawMaterial.consumablesCostPerPart ?? 0).toBe(0);
+    expect(withInserts.rawMaterial.consumablesCostPerPart).toBeCloseTo(0.20, 6); // 4 × £0.05
+  });
+
+  it('adds the flat secondary-op cost on top of inserts', () => {
+    const r = computeInjectionMouldingDrivers({ ...common, insertCount: 2, insertUnitCost: 0.10, secondaryOpCostPerPart: 0.15 });
+    expect(r.rawMaterial.consumablesCostPerPart).toBeCloseTo(0.35, 6); // 2×0.10 + 0.15
+  });
+
+  it('leaves consumables unset when no secondary operations are specified', () => {
+    const r = computeInjectionMouldingDrivers(common);
+    expect(r.rawMaterial.consumablesCostPerPart).toBeUndefined();
+  });
+
+  it('flows the secondary cost into the finished part total (higher than plain)', () => {
+    const tail = { packagingPerPart: 0.02, logisticsPerPart: 0.03, overheadPct: 0.12, marginPct: 0.10 };
+    const plain = computeUniversalStack({ partName: 'IM bracket', ...computeInjectionMouldingDrivers(common), ...tail }, DEFAULT_RATE_LIBRARY);
+    const withOps = computeUniversalStack({ partName: 'IM bracket', ...computeInjectionMouldingDrivers({ ...common, insertCount: 3, insertUnitCost: 0.08, secondaryOpCostPerPart: 0.10 }), ...tail }, DEFAULT_RATE_LIBRARY);
+    expect(withOps.total).toBeGreaterThan(plain.total);
+  });
+
+  it('ignores negative/blank secondary inputs (no negative cost)', () => {
+    const r = computeInjectionMouldingDrivers({ ...common, insertCount: -5, insertUnitCost: -1, secondaryOpCostPerPart: -2 });
+    expect(r.rawMaterial.consumablesCostPerPart).toBeUndefined();
   });
 });
 
