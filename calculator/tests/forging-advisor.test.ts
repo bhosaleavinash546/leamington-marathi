@@ -3,8 +3,13 @@ import {
   adviseForgingProcess,
   analyseForgingDFM,
   estimateForgingSecondaryAdders,
+  estimateForgingDieLife,
+  forgingHeatKwhPerKg,
   FORGING_PROCESS_REFERENCE,
+  FORGING_HEAT_KWH_PER_KG,
+  FORGING_DIE_LIFE_BASE,
   type ForgingAdvisorInputs,
+  type ForgingAlloyFamily,
 } from '../src/engine/modules/forging-advisor.js';
 import { computeForgingDrivers } from '../src/engine/modules/forging.js';
 import { computeUniversalStack } from '../src/engine/core.js';
@@ -154,5 +159,50 @@ describe('forging NDT/coining adders flow into part cost', () => {
     assertPartCostInvariants(cPlain);
     assertPartCostInvariants(cNDT);
     expect(cNDT.total).toBeGreaterThan(cPlain.total);
+  });
+});
+
+describe('alloy-aware forging heating energy (F2-C)', () => {
+  const ALL: ForgingAlloyFamily[] = [
+    'carbon-steel', 'alloy-steel', 'microalloyed-steel', 'stainless-steel',
+    'aluminium', 'titanium', 'superalloy', 'copper',
+  ];
+
+  it('covers every alloy family with a positive, physically-plausible kWh/kg', () => {
+    for (const f of ALL) {
+      const e = forgingHeatKwhPerKg(f);
+      expect(e).toBe(FORGING_HEAT_KWH_PER_KG[f]);
+      expect(e).toBeGreaterThan(0);
+      expect(e).toBeLessThan(1); // sanity bound — no family should exceed ~1 kWh/kg
+    }
+  });
+
+  it('orders heating energy by forging temperature: aluminium < carbon-steel < superalloy', () => {
+    expect(forgingHeatKwhPerKg('aluminium'))
+      .toBeLessThan(forgingHeatKwhPerKg('carbon-steel'));
+    expect(forgingHeatKwhPerKg('carbon-steel'))
+      .toBeLessThan(forgingHeatKwhPerKg('superalloy'));
+    // copper forges warm — below the steels; stainless runs hotter than carbon steel.
+    expect(forgingHeatKwhPerKg('copper')).toBeLessThan(forgingHeatKwhPerKg('carbon-steel'));
+    expect(forgingHeatKwhPerKg('stainless-steel')).toBeGreaterThan(forgingHeatKwhPerKg('carbon-steel'));
+  });
+
+  it('aluminium takes roughly half the heat of steel', () => {
+    const ratio = forgingHeatKwhPerKg('aluminium') / forgingHeatKwhPerKg('carbon-steel');
+    expect(ratio).toBeGreaterThan(0.3);
+    expect(ratio).toBeLessThan(0.7);
+  });
+});
+
+describe('alloy-aware forging die life (F2-A) ordering', () => {
+  it('aluminium dies outlast carbon-steel dies, which outlast superalloy dies', () => {
+    const al = estimateForgingDieLife({ alloyFamily: 'aluminium', complexity: 'moderate' });
+    const cs = estimateForgingDieLife({ alloyFamily: 'carbon-steel', complexity: 'moderate' });
+    const su = estimateForgingDieLife({ alloyFamily: 'superalloy', complexity: 'moderate' });
+    expect(al).toBeGreaterThan(cs);
+    expect(cs).toBeGreaterThan(su);
+    // Base table agrees with the ordering.
+    expect(FORGING_DIE_LIFE_BASE.aluminium).toBeGreaterThan(FORGING_DIE_LIFE_BASE['carbon-steel']);
+    expect(FORGING_DIE_LIFE_BASE['carbon-steel']).toBeGreaterThan(FORGING_DIE_LIFE_BASE.superalloy);
   });
 });

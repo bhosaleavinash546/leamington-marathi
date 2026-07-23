@@ -587,3 +587,31 @@ export function estimateForgingDieLife(inputs: ForgingDieLifeInputs): number {
   const sizeFactor = area <= 100 ? 1.0 : Math.pow(100 / area, 0.2);
   return Math.max(250, Math.round(base * complexityFactor * sizeFactor));
 }
+
+// ─── Alloy-aware forging heating energy (F2-C) ────────────────────────────────
+
+/**
+ * Furnace/induction heating energy to bring one kilogram of stock to forging
+ * temperature (kWh/kg), by alloy family. Aluminium forges warm (~450 °C) so it
+ * takes far less heat than steel (~1200 °C); titanium and stainless run hotter
+ * and less efficiently; nickel superalloys are hottest of all. These feed the
+ * "heating energy" cost input so the energy bucket reflects the metal, not a
+ * flat steel default. Values are electrical-equivalent kWh/kg at the billet and
+ * are deliberately conservative — override with a measured furnace figure when
+ * one is known.
+ */
+export const FORGING_HEAT_KWH_PER_KG: Record<ForgingAlloyFamily, number> = {
+  aluminium: 0.18,
+  copper: 0.22,
+  titanium: 0.32,
+  'carbon-steel': 0.35,
+  'microalloyed-steel': 0.35,
+  'alloy-steel': 0.36,
+  'stainless-steel': 0.40,
+  superalloy: 0.45,
+};
+
+/** Heating energy (kWh/kg) to reach forging temperature for the given alloy family. */
+export function forgingHeatKwhPerKg(alloyFamily: ForgingAlloyFamily): number {
+  return FORGING_HEAT_KWH_PER_KG[alloyFamily];
+}

@@ -13,7 +13,7 @@ import { computeCastingDrivers } from '../engine/modules/casting.js';
 import { computeForgingDrivers } from '../engine/modules/forging.js';
 import {
   estimateForgingTonnage, resolveFurnaceEnergyPricePerKwh, estimateForgingDieCost,
-  estimateForgingDieLife, adviseForgingProcess, analyseForgingDFM,
+  estimateForgingDieLife, forgingHeatKwhPerKg, adviseForgingProcess, analyseForgingDFM,
   type FurnaceType, type ShapeComplexity, type DieSteel, type ForgingAlloyFamily,
   type ForgingProcess, type ComplexityLevel, type ToleranceClass,
 } from '../engine/modules/forging-advisor.js';
@@ -10683,13 +10683,17 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
           setNumericField('forge-yield', 0.9, 2);
           if (forgePS) setNumericField('forge-strokes', forgePS.forgeStrokes, 0);
           if (forgeTC) setNumericField('forge-die-cost', forgeTC.forgeDieCostGBP, 0);
+          // Alloy-aware die life so an Al forging (long die life) isn't left at the
+          // steel-default guess — the same "cost the metal, not steel" learning.
+          setNumericField('forge-die-life', estimateForgingDieLife({
+            alloyFamily: forgingAlloyFamilyFor(c.materialId), complexity: 'moderate',
+          }), 0);
         }
-        // Material-specific heating energy (kWh/kg)
-        const forgeHeatMap: Record<string, number> = {
-          'mat-dc01': 0.35, 'mat-hss': 0.38, 'mat-stainless-316': 0.42, 'mat-ss304c': 0.42,
-          'mat-al6061': 0.25, 'mat-al5052': 0.23, 'mat-brass-crz': 0.18,
-        };
-        setNumericField('forge-heat-energy', forgeHeatMap[c.materialId] ?? 0.40, 2);
+        // Alloy-aware heating energy (kWh/kg): aluminium forges warm (~0.18) vs
+        // steel (~0.36) vs nickel superalloy (~0.45). Keyed by the resolved alloy
+        // family, not a stale material-id map, so every forging billet is covered.
+        setNumericField('forge-heat-energy',
+          forgingHeatKwhPerKg(forgingAlloyFamilyFor(c.materialId)), 2);
         // Size the forging press to the die-fill force (F = Kt·σflow·A_projected),
         // not the small form default — the same "size the machine to the part" rule
         // as IM/EBM, now generalised via sizeProcessMachine.
