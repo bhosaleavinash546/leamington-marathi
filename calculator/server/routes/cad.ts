@@ -24,7 +24,7 @@ const cadCache = createAnalysisCache('cad_analysis_cache');
 // Bump when the prompt/normalisation logic changes so stale cached analyses (which
 // are keyed on inputs, not prompt content) are invalidated. v2: filename material
 // prior + confidence-inversion promotion.
-const CAD_PROMPT_VERSION = 7;
+const CAD_PROMPT_VERSION = 8;
 
 // Stage-1 commodity pre-selection shape (module-level so the JSON.parse casts
 // below get a concrete type instead of `typeof` inference collapsing to never).
@@ -668,6 +668,24 @@ interface UserOverrides {
   ovrDensityGcm3: number | null;
 }
 
+// Material choices offered to the AI are scoped to the commodity so it picks a
+// grade the form can actually use. Forging must offer wrought FORGING BILLETS
+// (…-forge / …-bar), not the generic machining/casting grades — otherwise an
+// aluminium forging lands on `mat-al6061` (a bar/machining grade) that the
+// billet-scoped forge-mat dropdown silently rejects, leaving a steel-billet
+// default and the wrong material cost. The billet list spans every alloy family
+// (carbon/alloy/microalloy steel, stainless, aluminium, titanium, nickel, brass)
+// so a forged part is costed as the metal it actually is.
+export const CAD_FORGING_BILLET_MATERIALS =
+  'mat-steel1020, mat-steel4340, mat-steel4130, mat-steel-38mnvs6, mat-ss304l-bar, mat-ss316l-bar, mat-al6061-forge, mat-al7075-forge, mat-ti-6al4v-forge, mat-inconel718-forge, mat-brass-cz122-forge';
+export const CAD_GENERIC_MATERIALS =
+  'mat-al6061, mat-al5052, mat-dc01, mat-hss, mat-stainless-316, mat-brass-crz, mat-pp, mat-hdpe, mat-pa6, mat-pc, mat-lm25, mat-gjl350, mat-az91d, mat-ss304c, mat-bronze-c905';
+
+/** Comma-separated valid materialId list to offer the AI for a given commodity. */
+export function validMaterialsForCommodity(commodity: string): string {
+  return commodity === 'forging' ? CAD_FORGING_BILLET_MATERIALS : CAD_GENERIC_MATERIALS;
+}
+
 function buildPrompt(
   geo: OCCTGeometry,
   pre: ReturnType<typeof preprocessCADFile>,
@@ -676,7 +694,7 @@ function buildPrompt(
   stage1: { primary: string; conf: number; alt: Array<{ type: string; conf: number }> } | null,
   overrides: UserOverrides = { forcedCommodity: '', forcedMaterial: '', forcedProcess: '', annualVolume: 100000, ovrWeightKg: null, ovrVolumeCm3: null, ovrLengthMm: null, ovrWidthMm: null, ovrHeightMm: null, ovrDensityGcm3: null },
 ): string {
-  const validMaterials = 'mat-al6061, mat-al5052, mat-dc01, mat-hss, mat-stainless-316, mat-brass-crz, mat-pp, mat-hdpe, mat-pa6, mat-pc, mat-lm25, mat-gjl350, mat-az91d, mat-ss304c, mat-bronze-c905';
+  const validMaterials = validMaterialsForCommodity(selectedCommodity);
   const validCommodities = 'machining, sheet_metal, sheet_metal_fab, injection_moulding, casting, forging, cast_and_machine, blow_moulding, thermoforming, rotational_moulding, rubber, composites, wiring_harness, extrusion, pcb_fab, pcba, biw_assembly, painting, assembly';
   const validMachines = 'mach-vmc3, mach-lathe-cnc, mach-drill, mach-vmc5, mach-grind, mach-haas-vf2, mach-dmg-dmu50, mach-haas-umc500, mach-mazak-qt200';
 
