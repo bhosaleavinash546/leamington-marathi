@@ -15332,7 +15332,9 @@ async function printMasterPDF(): Promise<void> {
 
   // Summary boxes per loaded part
   if (hasCost && lastResult) {
-    const sym = _displayCurrency === 'GBP' ? '£' : _displayCurrency === 'EUR' ? '€' : '$';
+    // Use the full currency-symbol map — the old GBP/EUR/$ ternary printed "$" for
+    // CNY/INR/etc, so a China (CNY) should-cost showed "$80.13" on the cover.
+    const sym = CURRENCY_SYMBOL[_displayCurrency] ?? _displayCurrency + ' ';
     const fmt = (n: number) => `${sym}${(n * _displayFxRate).toFixed(2)}`;
     const pcts = breakdownPercentages(lastResult);
     doc.setFillColor(255, 243, 230);
@@ -15348,6 +15350,10 @@ async function printMasterPDF(): Promise<void> {
 
   if (hasCAD && cadAnalysisResult) {
     const cr = cadAnalysisResult.costInputSuggestions.costRange;
+    // The AI cost range is GBP-based; convert to the display currency so it is
+    // consistent with the should-cost figures (a CNY report showed a £ range).
+    const cadSym = CURRENCY_SYMBOL[_displayCurrency] ?? _displayCurrency + ' ';
+    const cadFx = (n: number) => `${cadSym}${(n * _displayFxRate).toFixed(2)}`;
     doc.setFillColor(232, 248, 243);
     doc.roundedRect(mg, y, cW, 26, 2, 2, 'F');
     doc.setFillColor(...GREEN); doc.roundedRect(mg, y, 4, 26, 1, 1, 'F');
@@ -15355,7 +15361,7 @@ async function printMasterPDF(): Promise<void> {
     doc.text('CAD Analysis Summary', mg + 8, y + 7);
     doc.setFontSize(7.5); doc.setFont('helvetica', 'normal'); doc.setTextColor(...SLATE);
     doc.text(`Part: ${cadAnalysisResult.partName}`, mg + 8, y + 13);
-    doc.text(`Recommended: ${cadAnalysisResult.processRecommendations[0]?.commodityType ?? '—'}  ·  Manufacturability: ${cadAnalysisResult.manufacturabilityScore}/10  ·  Confidence: ${cadAnalysisResult.confidenceLevel}${cr ? `  ·  Cost range: £${cr.low.toFixed(2)}–£${cr.high.toFixed(2)}` : ''}`, mg + 8, y + 19);
+    doc.text(`Recommended: ${cadAnalysisResult.processRecommendations[0]?.commodityType ?? '—'}  ·  Manufacturability: ${cadAnalysisResult.manufacturabilityScore}/100  ·  Confidence: ${cadAnalysisResult.confidenceLevel}${cr ? `  ·  Cost range: ${cadFx(cr.low)}–${cadFx(cr.high)}` : ''}`, mg + 8, y + 19);
     y += 30;
   }
 

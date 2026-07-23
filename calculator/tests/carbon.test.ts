@@ -21,6 +21,23 @@ describe('carbon co-costing', () => {
     expect(alC.totalKgCO2e).toBeGreaterThan(0);
   });
 
+  it('classes a glass-FILLED thermoplastic (PP-GF30) as a plastic, not an 8.1 GFRP composite', () => {
+    const c = computeCarbon({ result, input: mkInput('mat-pp-gf30', 1), library: lib, commodity: 'injection_moulding', region: 'CN' });
+    // Was mis-mapped to 8.1 "Glass-fibre composite"; a filled PP should be ~2–4.
+    expect(c.materialFactorKgPerKg).toBeLessThan(4.5);
+    expect(c.materialFactorKgPerKg).toBeGreaterThan(2.0);   // filler uplift over base PP (2.0)
+    expect(c.materialClass.toLowerCase()).toContain('polypropylene');
+    expect(c.materialClass.toLowerCase()).not.toContain('composite');
+  });
+
+  it('still treats a true GFRP/SMC composite as a glass-fibre composite (8.1)', () => {
+    const gfrp = lib.materials.find(m => /gfrp|smc|bmc|fibreglass|glass.?fibre/i.test(`${m.grade} ${m.id}`));
+    if (!gfrp) return; // only assert if the library carries a true composite grade
+    const c = computeCarbon({ result, input: mkInput(gfrp.id, 1), library: lib, commodity: 'composites', region: 'UK' });
+    expect(c.materialClass.toLowerCase()).toContain('composite');
+    expect(c.materialFactorKgPerKg).toBeGreaterThan(6);
+  });
+
   it('a dirtier grid raises the process carbon', () => {
     const steel = firstMat((g, c) => (g + c).includes('steel'));
     const uk = computeCarbon({ result, input: mkInput(steel, 1), library: lib, commodity: 'casting', region: 'UK' });

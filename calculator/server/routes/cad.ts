@@ -677,6 +677,28 @@ function normalizeCADAnalysis(a: Record<string, unknown>): void {
 
   const ci = obj(a.costInputSuggestions);
   ci.recommendedCommodity = str(ci.recommendedCommodity, 'machining');
+
+  // Cost what we RECOMMEND. The model sometimes puts a lower-confidence
+  // alternative in costInputSuggestions.materialId (e.g. it costed PP-GF30 while
+  // the primary suggestion was unfilled PP/TPO at 78% — inflating the material
+  // bucket with a glass-filled grade the analysis did not actually recommend).
+  // When the primary has a concrete materialId that differs, and the costed id is
+  // only a same-or-lower-confidence alternative, align the costed grade to the
+  // primary so the report costs the material it recommends.
+  {
+    const primary = ma.primarySuggestion as MaterialSuggestion;
+    const costedId = str(ci.materialId, '');
+    if (primary.materialId && costedId && primary.materialId !== costedId) {
+      const altMatch = (ma.alternatives as MaterialSuggestion[]).find(al => al.materialId === costedId);
+      const costedConf = altMatch?.confidencePct ?? 0;
+      if ((primary.confidencePct ?? 0) >= costedConf) {
+        ci.materialAlignedNote =
+          `Costed material aligned to the primary suggestion (${primary.materialId}, ${primary.confidencePct}%) ` +
+          `instead of ${costedId}${altMatch ? ` (${costedConf}% alternative)` : ''}.`;
+        ci.materialId = primary.materialId;
+      }
+    }
+  }
   {
     // Default the weight from the material FAMILY the analysis actually picked —
     // an aluminium-always default costed steel parts at ~34% of their true mass.

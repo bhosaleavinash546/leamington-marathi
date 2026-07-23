@@ -38,20 +38,30 @@ function materialCarbonFactor(m: MaterialRate | undefined): { factor: number; cl
   if (has('stainless')) return { factor: 6.15, cls: 'Stainless steel' };
   if (has('electrical steel', 'silicon steel', 'grain-oriented', 'go-', 'nife', 'cofe')) return { factor: 3.0, cls: 'Electrical steel' };
   if (has('steel', 'iron', 'ferrous', 'hslä', 'hsla', 'dp', 'boron')) return { factor: 2.1, cls: 'Steel' };
-  // Composites
+  // Composites — TRUE structural laminates only. A glass-FILLED thermoplastic
+  // (e.g. "PP GF30 (Short Glass)", "PA66 GF30") is NOT a GFRP composite: it is
+  // mostly its base resin and is priced/emitted near it, so it must fall through
+  // to the resin ladder below and pick up a small filler uplift — not the 8.1
+  // structural-composite factor. Match explicit composite tokens, not bare "glass".
   if (has('carbon fibre', 'carbon fiber', 'cfrp', 'prepreg')) return { factor: 24.0, cls: 'Carbon-fibre composite' };
-  if (has('glass', 'gfrp', 'smc', 'bmc')) return { factor: 8.1, cls: 'Glass-fibre composite' };
-  // Plastics / elastomers
-  if (has('peek', 'pei', 'ultem', 'pps', 'psu')) return { factor: 8.5, cls: 'High-perf polymer' };
-  if (has('pa6', 'pa66', 'pa12', 'nylon', 'polyamide')) return { factor: 7.0, cls: 'Polyamide' };
-  if (has('pc/abs', 'pc-abs', 'polycarbon', 'pc ')) return { factor: 5.5, cls: 'Polycarbonate' };
-  if (has('abs')) return { factor: 3.5, cls: 'ABS' };
-  if (has('pmma', 'acrylic')) return { factor: 5.0, cls: 'Acrylic' };
-  if (has('pet', 'petg', 'apet', 'cpet')) return { factor: 2.7, cls: 'PET' };
-  if (has('pvc')) return { factor: 2.4, cls: 'PVC' };
-  if (has('hips', 'gpps', 'polystyr', ' ps ')) return { factor: 3.2, cls: 'Polystyrene' };
-  if (has('pp', 'polypropyl')) return { factor: 2.0, cls: 'Polypropylene' };
-  if (has('pe', 'hdpe', 'ldpe', 'lldpe', 'polyethyl')) return { factor: 2.1, cls: 'Polyethylene' };
+  if (has('gfrp', 'grp', 'smc', 'bmc', 'fibreglass', 'fiberglass', 'glass fibre', 'glass-fibre', 'glass fiber', 'glass-fiber', 'glass laminate'))
+    return { factor: 8.1, cls: 'Glass-fibre composite' };
+  // Plastics / elastomers — resin base factor, then a glass/mineral-fill uplift.
+  const filled = /\bgf\d|\bmf\d|\bgb\d|short glass|glass.?fill|mineral.?fill|talc|\d+%\s*(glass|gf|mineral|talc)/i.test(
+    `${m?.grade ?? ''} ${m?.id ?? ''}`,
+  );
+  const withFill = (r: { factor: number; cls: string }) =>
+    filled ? { factor: Math.round(r.factor * 1.35 * 10) / 10, cls: `${r.cls} (filled)` } : r;
+  if (has('peek', 'pei', 'ultem', 'pps', 'psu')) return withFill({ factor: 8.5, cls: 'High-perf polymer' });
+  if (has('pa6', 'pa66', 'pa12', 'nylon', 'polyamide')) return withFill({ factor: 7.0, cls: 'Polyamide' });
+  if (has('pc/abs', 'pc-abs', 'polycarbon', 'pc ')) return withFill({ factor: 5.5, cls: 'Polycarbonate' });
+  if (has('abs')) return withFill({ factor: 3.5, cls: 'ABS' });
+  if (has('pmma', 'acrylic')) return withFill({ factor: 5.0, cls: 'Acrylic' });
+  if (has('pbt', 'pet', 'petg', 'apet', 'cpet')) return withFill({ factor: 2.7, cls: 'Polyester (PET/PBT)' });
+  if (has('pvc')) return withFill({ factor: 2.4, cls: 'PVC' });
+  if (has('hips', 'gpps', 'polystyr', ' ps ')) return withFill({ factor: 3.2, cls: 'Polystyrene' });
+  if (has('pp', 'polypropyl')) return withFill({ factor: 2.0, cls: 'Polypropylene' });
+  if (has('pe', 'hdpe', 'ldpe', 'lldpe', 'polyethyl')) return withFill({ factor: 2.1, cls: 'Polyethylene' });
   if (has('silicone', 'lsr')) return { factor: 5.0, cls: 'Silicone' };
   if (has('epdm', 'nbr', 'rubber', 'elastomer', 'tpe', 'tpu', 'tpv')) return { factor: 3.0, cls: 'Rubber/elastomer' };
   return { factor: 3.0, cls: 'Generic (assumed)' };   // conservative default
