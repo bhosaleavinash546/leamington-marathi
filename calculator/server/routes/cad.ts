@@ -3,6 +3,7 @@ import { resolveApiKey } from '../utils/api-key.js';
 import multer from 'multer';
 import rateLimit from 'express-rate-limit';
 import { createAnthropic } from '../utils/ai-client.js';
+import type Anthropic from '@anthropic-ai/sdk';
 import { preprocessCADFile } from '../utils/preprocessor.js';
 import { analyzeGeometry, tessellateToSTL } from '../utils/geometry-bridge.js';
 import type { OCCTGeometry } from '../utils/geometry-bridge.js';
@@ -24,6 +25,10 @@ const cadCache = createAnalysisCache('cad_analysis_cache');
 // are keyed on inputs, not prompt content) are invalidated. v2: filename material
 // prior + confidence-inversion promotion.
 const CAD_PROMPT_VERSION = 6;
+
+// Stage-1 commodity pre-selection shape (module-level so the JSON.parse casts
+// below get a concrete type instead of `typeof` inference collapsing to never).
+type Stage1Selection = { primary: string; conf: number; alt: Array<{ type: string; conf: number }> };
 
 // Model tiering: Sonnet 5 is the standard extraction tier (near-Opus on
 // structured analysis, faster, ~40% cheaper); the Deep-analysis toggle
@@ -355,7 +360,7 @@ router.post('/analyze', analyzeLimiter, upload.fields([
   const anthropic = createAnthropic(apiKey);
 
   // --- Phase 3: Stage 1 — Fast commodity pre-selection (Haiku) OR user override ---
-  let stage1Selection: { primary: string; conf: number; alt: Array<{ type: string; conf: number }> } | null = null;
+  let stage1Selection: Stage1Selection | null = null;
   let selectedCommodity = 'machining'; // fallback
 
   const forcedCommodity = typeof req.body?.commodity === 'string' ? req.body.commodity.trim() : '';
@@ -410,7 +415,7 @@ router.post('/analyze', analyzeLimiter, upload.fields([
         messages: [{ role: 'user', content: stage1Prompt(geo) }],
       });
       const s1Raw = s1Msg.content.map(b => b.type === 'text' ? b.text : '').join('').trim();
-      const parsed = JSON.parse(extractJson(s1Raw)) as typeof stage1Selection;
+      const parsed = JSON.parse(extractJson(s1Raw)) as Stage1Selection | null;
       if (parsed && typeof parsed.primary === 'string') {
         // Coerce the shape — the model can omit conf/alt, and buildPrompt
         // used to crash on `alt.map` (hung request, unhandled rejection).
@@ -923,8 +928,8 @@ function buildCommodityRules(
   bb: { xMm: number; yMm: number; zMm: number } | null,
   cncHrs: number | null,
   setupCount: number | null,
-  undercutCount: number,
-  mfgScore: number | null,
+  _undercutCount: number,
+  _mfgScore: number | null,
 ): string {
   switch (commodity) {
     case 'machining':
@@ -1429,7 +1434,7 @@ router.post('/reanalyze', asyncRoute(async (req, res): Promise<void> => {
     return;
   }
 
-  let stage1Selection: { primary: string; conf: number; alt: Array<{ type: string; conf: number }> } | null = null;
+  let stage1Selection: Stage1Selection | null = null;
   let selectedCommodity = 'machining';
 
   if (forcedCommodity) {
@@ -1446,7 +1451,7 @@ router.post('/reanalyze', asyncRoute(async (req, res): Promise<void> => {
         messages: [{ role: 'user', content: stage1Prompt(geo) }],
       });
       const s1Raw = s1Msg.content.map(b => b.type === 'text' ? b.text : '').join('').trim();
-      const parsed = JSON.parse(extractJson(s1Raw)) as typeof stage1Selection;
+      const parsed = JSON.parse(extractJson(s1Raw)) as Stage1Selection | null;
       if (parsed && typeof parsed.primary === 'string') {
         // Coerce the shape — the model can omit conf/alt, and buildPrompt
         // used to crash on `alt.map` (hung request, unhandled rejection).
