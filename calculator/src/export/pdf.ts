@@ -699,12 +699,12 @@ export function renderShouldCostSections(
     const sens = runSensitivity(input, library, 10);
     if (sens.drivers.length) {
       y = chk(doc, y, 46);
-      y = secBar(doc, y, '§8 — Sensitivity Analysis', `± ${sens.variationPct}% driver swing  ·  ranked by £ impact`);
+      y = secBar(doc, y, '§8 — Sensitivity Analysis', `± ${sens.variationPct}% driver swing  ·  ranked by ${sym} impact`);
       const r1 = (n: number) => Math.round(n * 10) / 10;
       const r2v = (n: number) => Math.round(n * 100) / 100;
       autoTable(doc, {
         startY: y, margin: { left: MG, right: MG }, theme: 'grid',
-        head: [['Cost Driver', 'Base', `-${sens.variationPct}% cost`, `+${sens.variationPct}% cost`, 'Range £']],
+        head: [['Cost Driver', 'Base', `-${sens.variationPct}% cost`, `+${sens.variationPct}% cost`, `Range ${sym}`]],
         body: sens.drivers.slice(0, 8).map(d => [
           d.driver, `${r2v(d.baseValue)}${d.unit}`,
           `${d.minusPct > 0 ? '+' : ''}${r1(d.minusPct)}%`, `${d.plusPct > 0 ? '+' : ''}${r1(d.plusPct)}%`, c(d.range),
