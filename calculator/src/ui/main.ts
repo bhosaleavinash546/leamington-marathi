@@ -232,8 +232,10 @@ let pcbImageDataURL: string | null = null;
 // every export report (PDF, Excel) can embed the exact images the analysis used.
 let pcbUploadedImages: { label: string; dataUrl: string; w: number; h: number }[] = [];
 let pcbNREEnabled = false;
-// Slot 0=Top (primary), 1=Bottom, 2-4=Additional 1-3
-let pcbImageFiles: (File | null)[] = [null, null, null, null, null];
+// Slot 0=Top (primary), 1=Bottom, 2-7=Close-up 1-6
+const PCB_IMAGE_MAX = 8;
+const PCB_SLOT_LABELS = ['Top side', 'Bottom side', 'Close-up 1', 'Close-up 2', 'Close-up 3', 'Close-up 4', 'Close-up 5', 'Close-up 6'];
+let pcbImageFiles: (File | null)[] = Array(PCB_IMAGE_MAX).fill(null);
 let pcbEditMode = false;
 const pcbPinnedPrices = new Map<number, number>(); // BOM row index → pinned unitPriceGBP
 let _pcbVolumeChart: Chart | null = null;
@@ -7095,13 +7097,13 @@ function buildPCBImageUploadZone(): string {
         <!-- Multi-image slots: Top, Bottom, + 3 Additional -->
         <div style="margin-top:10px">
           <div style="font-size:0.68rem;color:var(--text-secondary);margin-bottom:2px;text-align:center">
-            Upload up to 5 photos — top &amp; bottom sides + close-ups for best accuracy
+            Upload up to 8 photos — top &amp; bottom sides + up to 6 IC close-ups for best accuracy
           </div>
           <div style="font-size:0.63rem;color:var(--text-muted);margin-bottom:6px;text-align:center">
             📸 Fill the frame, avoid glare — accuracy depends on IC part markings being readable
           </div>
           <div style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap">
-            ${(['Top side ★', 'Bottom side', 'Close-up 1', 'Close-up 2', 'Close-up 3'] as const).map((label, idx) => `
+            ${PCB_SLOT_LABELS.map((base, idx) => { const label = idx === 0 ? `${base} ★` : base; return `
               <div id="pcb-img-slot-${idx}"
                    style="width:96px;min-height:90px;border:1.5px dashed var(--border);border-radius:8px;cursor:pointer;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;transition:border-color 0.15s;overflow:hidden;background:var(--card-bg)"
                    title="Click to choose ${label.replace(' ★', '')} image">
@@ -7119,7 +7121,7 @@ function buildPCBImageUploadZone(): string {
                           style="position:absolute;top:2px;right:2px;background:#ef4444;color:#fff;border:none;border-radius:50%;width:18px;height:18px;font-size:0.65rem;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;line-height:1"
                           title="Remove this image">×</button>
                 </div>
-              </div>`).join('')}
+              </div>`; }).join('')}
           </div>
           <div id="pcb-img-count" style="font-size:0.62rem;color:var(--text-muted);margin-top:4px;text-align:center">No images selected</div>
         </div>
@@ -7188,7 +7190,7 @@ let _pcbSetSlot: ((idx: number, file: File) => void) | null = null;
 function wirePCBImageZone(): void {
   const analyzeBtn = el<HTMLButtonElement>('pcb-img-analyze-btn');
   const countLabel = el('pcb-img-count');
-  const SLOT_LABELS = ['Top side', 'Bottom side', 'Close-up 1', 'Close-up 2', 'Close-up 3'];
+  const SLOT_LABELS = PCB_SLOT_LABELS;
 
   function updateAnalyzeBtn(): void {
     const selected = pcbImageFiles.filter(Boolean);
@@ -7228,8 +7230,8 @@ function wirePCBImageZone(): void {
     updateAnalyzeBtn();
   }
 
-  // Wire each of the 5 slots
-  [0, 1, 2, 3, 4].forEach(idx => {
+  // Wire each of the 8 slots
+  Array.from({ length: PCB_IMAGE_MAX }, (_, i) => i).forEach(idx => {
     const slot = el(`pcb-img-slot-${idx}`);
     const input = el<HTMLInputElement>(`pcb-img-input-${idx}`);
     const removeBtn = el(`pcb-img-remove-${idx}`);
@@ -7260,7 +7262,7 @@ function wirePCBImageZone(): void {
     zone.classList.remove('drag-over');
     const dropped = Array.from((e as DragEvent).dataTransfer?.files ?? [])
       .filter(f => f.type.startsWith('image/'))
-      .slice(0, 5);
+      .slice(0, PCB_IMAGE_MAX);
     dropped.forEach(f => {
       const emptySlot = pcbImageFiles.findIndex(s => s === null);
       if (emptySlot !== -1) setSlot(emptySlot, f);
@@ -7384,7 +7386,7 @@ function normalizePCBPayloadForRender(an: Record<string, unknown>): void {
 }
 
 async function analyzePCBImages(): Promise<void> {
-  const selectedFiles = pcbImageFiles.map((f, i) => f ? { file: f, label: ['Top side', 'Bottom side', 'Close-up 1', 'Close-up 2', 'Close-up 3'][i] } : null).filter((x): x is { file: File; label: string } => x !== null);
+  const selectedFiles = pcbImageFiles.map((f, i) => f ? { file: f, label: PCB_SLOT_LABELS[i] } : null).filter((x): x is { file: File; label: string } => x !== null);
   if (!selectedFiles.length || pcbImageLoading) return;
 
   pcbImageLoading = true;
@@ -7631,7 +7633,7 @@ function injectPCBImagePanel(): void {
     const placed: string[] = [];
     for (const f of files) {
       let idx = pcbImageFiles.findIndex((s, i) => i >= 2 && s === null);
-      if (idx === -1) idx = 4;
+      if (idx === -1) idx = PCB_IMAGE_MAX - 1;
       _pcbSetSlot(idx, f);
       placed.push(`Close-up ${idx - 1}`);
     }
@@ -7644,7 +7646,7 @@ function injectPCBImagePanel(): void {
   });
   el('pcb-clear-btn')?.addEventListener('click', () => {
     pcbImageResult = null;
-    pcbImageFiles = [null, null, null, null, null];
+    pcbImageFiles = Array(PCB_IMAGE_MAX).fill(null);
     pcbImageDataURL = null;
     pcbUploadedImages = [];
     if (_pcbVolumeChart) { _pcbVolumeChart.destroy(); _pcbVolumeChart = null; }
@@ -7884,7 +7886,7 @@ async function reanalyzePCBWithCorrections(): Promise<void> {
   uploadFiles.forEach(f => formData.append('pcbImages', f));
   if (activeFiles.length > 0) {
     formData.append('pcbImageLabels', JSON.stringify(
-      pcbImageFiles.map((f, i) => f ? ['Top side','Bottom side','Close-up 1','Close-up 2','Close-up 3'][i] : null).filter(Boolean)
+      pcbImageFiles.map((f, i) => f ? PCB_SLOT_LABELS[i] : null).filter(Boolean)
     ));
   }
   formData.append('correctedSpec', JSON.stringify(correctedSpec));

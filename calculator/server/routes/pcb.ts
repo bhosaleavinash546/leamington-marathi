@@ -659,8 +659,10 @@ const upload = multer({
   },
 });
 
-// Slot labels sent from the frontend (Top side, Bottom side, Additional 1…3)
-const DEFAULT_IMAGE_LABELS = ['Top side', 'Bottom side', 'Additional 1', 'Additional 2', 'Additional 3'];
+// Slot labels sent from the frontend (Top side, Bottom side, Additional 1…6)
+const DEFAULT_IMAGE_LABELS = ['Top side', 'Bottom side', 'Additional 1', 'Additional 2', 'Additional 3', 'Additional 4', 'Additional 5', 'Additional 6'];
+// Max PCB photos accepted per analysis (top + bottom + up to 6 close-ups).
+const PCB_MAX_IMAGES = 8;
 
 /** Build Claude content blocks for one or more PCB images, with optional label text prefixes. */
 function buildImageContentBlocks(
@@ -1010,7 +1012,7 @@ ${raw}`;
 
 // POST /api/pcb/analyze-image
 router.post('/analyze-image', upload.fields([
-  { name: 'pcbImages', maxCount: 5 },   // up to 5 images: top, bottom, + 3 additional
+  { name: 'pcbImages', maxCount: PCB_MAX_IMAGES },   // up to 8 images: top, bottom, + 6 close-ups
   { name: 'bomFile', maxCount: 1 },
 ]), async (req, res): Promise<void> => {
   const files = req.files as Record<string, Express.Multer.File[]> | undefined;
@@ -1582,7 +1584,7 @@ function buildCorrectionContext(
 
 // POST /api/pcb/reanalyze — skip Stages 1 & 2, run Stage 3+4 with corrected values
 router.post('/reanalyze', upload.fields([
-  { name: 'pcbImages', maxCount: 5 },
+  { name: 'pcbImages', maxCount: PCB_MAX_IMAGES },
 ]), async (req, res): Promise<void> => {
   const files = req.files as Record<string, Express.Multer.File[]> | undefined;
   const imageFiles = files?.pcbImages ?? [];
@@ -1998,7 +2000,7 @@ router.post('/scenario', (req, res): void => {
 // POST /api/pcb/analyze-image-stream — SSE streaming variant of analyze-image
 // Emits progress events after each stage so the UI can show live stage updates.
 router.post('/analyze-image-stream', upload.fields([
-  { name: 'pcbImages', maxCount: 5 },
+  { name: 'pcbImages', maxCount: PCB_MAX_IMAGES },
   { name: 'bomFile', maxCount: 1 },
 ]), async (req, res): Promise<void> => {
   res.setHeader('Content-Type', 'text/event-stream');
