@@ -1617,7 +1617,12 @@ export function printCADAnalysisPDF(r: CADAnalysisResult, partPhotoDataUrl?: str
     const st = ci.stage1Selection;
     doc.text(
       `Stage-1 pre-selection: ${st.primary} (${Math.round((st.conf ?? 0) * 100)}%)  ·  ` +
-      ((st.alt ?? []) as { type: string; conf: number }[]).map(a => `${a.type} (${Math.round(a.conf * 100)}%)`).join(' · '),
+      // alt may arrive as {type,conf} objects or as bare commodity strings — handle both.
+      ((st.alt ?? []) as Array<{ type?: string; conf?: number } | string>)
+        .map(a => typeof a === 'string'
+          ? a
+          : `${a.type ?? '—'}${typeof a.conf === 'number' ? ` (${Math.round(a.conf * 100)}%)` : ''}`)
+        .filter(Boolean).join(' · '),
       MG, y
     );
     y += 5;
