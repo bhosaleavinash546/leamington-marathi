@@ -370,5 +370,35 @@ function card(s,x,y,w,h,accent,title,body,tsize=11,bsize=9.5){
    0.75,5.88,11.9,0.8,{fontSize:11,valign:'top',lineSpacingMultiple:1.12});
  s.addNotes("Let me land it on why this is worth doing and what I'd actually ask for. The benefits stack up in plain terms: more auto-capture means fewer fields typed and faster quotes; capturing a driver instead of typing it removes a place the estimate drifts; on-model DFM catches cost problems at concept while a change is still free; a big CAD-grade viewer wins demos — literally the reaction you had to the competitor; reading tolerances from the model prices precision parts correctly, which is a genuine differentiator; and all of it stays glass-box and on our own secure, learning platform. My recommendation is deliberately modest: approve Phase zero now — the bigger viewer plus painting the data we already compute, one to two weeks — because it delivers both of your asks fastest and de-risks everything after it. Then Phases one and two as a fast-follow, and we green-light the Phase-three research only once the gap you can see is already closed. Small ask, fast proof, compounding payoff. That's the challenge met — happy to start on Phase zero whenever you say go.");})();
 
+// ════════════════════ Auto-capture → Cost engine ════════════════════
+(()=>{ const s=header('What the Viewer Captures — Fed Straight to the Cost Engine','CAD-to-Cost · zero manual entry');
+  const rows=[
+    ['Volume — exact (OCCT kernel)','Material mass · stock size'],
+    ['Weight = volume × density','Raw-material £ (Al/steel/iron/Cu/Ti)'],
+    ['Bounding box / envelope','Machine sizing · stock · setups'],
+    ['Body / component count','Assembly cost · BOM line count'],
+    ['Hole & boss table — Ø, depth, count','Drill / bore / tap operations'],
+    ['Wall thickness — min/mean/heatmap','Mould & cast feasibility · cooling'],
+    ['Draft & undercut analysis','Tooling complexity — slides'],
+    ['Face-type areas (planar/cyl)','Machining area · paint area'],
+    ['CNC cycle-time & setup estimate','Process-time baseline'],
+  ];
+  const lx=0.45, lw=7.4, cx=lx+4.15; let y=1.95;
+  rr(s,lx,y,lw,0.4,C.SURF2,{line:{color:C.BORDER,width:0.75}});
+  T(s,'Auto-captured from geometry (no typing)',lx+0.15,y+0.07,3.95,0.28,{fontSize:9.5,bold:true,color:C.W});
+  T(s,'→ Feeds this cost driver',cx+0.1,y+0.07,lw-4.25,0.28,{fontSize:9.5,bold:true,color:C.CYAN});
+  y+=0.46;
+  for(const [a,b] of rows){
+    rr(s,lx,y,lw,0.42,C.SURF,{line:{color:C.BORDER,width:0.5}});
+    T(s,a,lx+0.15,y+0.09,3.95,0.28,{fontSize:9.5,bold:true,color:C.BLUE});
+    T(s,b,cx+0.1,y+0.09,lw-4.25,0.28,{fontSize:9.5,color:C.GREY});
+    y+=0.46;
+  }
+  card(s,8.05,1.95,4.85,2.75,C.BLUE,'Worked example — Spur Gear (m3 · z38)',
+    '20MnCr5 case-hardening steel — captured automatically:\n  Volume 264.9 cm³  ·  Weight 2.08 kg\n  Envelope 120 × 120 × 30 mm  ·  1 body\n\n→ Should-cost, India ex-works (GBP):\n  Material £3.36 · Process £11.40 · Labour £1.36\n  Overhead £1.95 · Margin £1.83  + heat-treat £1.77\n  =  £21.90 / part  (≈ ₹2,398)  ·  £10.53 / kg',9.5);
+  card(s,8.05,4.85,4.85,1.65,C.GREEN,'The golden rule',
+    'AI never sets a price. It only classifies material & process; every £ is deterministic arithmetic on the measured geometry, bounded and traceable to the rate library — which is what makes the output defensible.',10.5,9.5);
+  s.addNotes("This is the slide that answers the ask directly: what does the tool capture on its own, and where does it go. Left column — every item is measured off the CAD model with nothing typed in; right column — the cost driver it feeds. Volume and weight come straight from the kernel, so material is exact, not guessed; the bounding box sizes the machine and stock; body count gives assembly and BOM scope; the hole-and-boss table becomes drilling operations; wall thickness decides mould and cast feasibility; draft flags undercuts that need tool slides; face areas drive machining and paint area; and there's a first-cut cycle-time estimate. On the right, the real gear we costed — two kilos of gear steel, about twenty-two pounds ex-works from India, all in sterling. And the guardrail underneath: the AI never sets the price. It classifies; the engine does deterministic maths on the geometry, every rate traceable. That's a defensible should-cost, not a black box.");})();
+
 const OUT='/home/user/leamington-marathi/CostVision-3D-CAD-Viewer-Study-and-Roadmap.pptx';
 p.writeFile({fileName:OUT}).then(f=>console.log('wrote',f));

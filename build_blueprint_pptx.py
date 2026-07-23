@@ -1077,6 +1077,57 @@ notes(s, "CAD-to-cost from the same three angles. Technology: the geometry work 
          "the green bar restates the point that matters most in this room: the CAD never leaves our walls, full "
          "stop.")
 
+# ════════════════════ Auto-capture → Cost engine ════════════════════
+slide = header("What's Auto-Captured — Fed to the Cost Engine", 'CAD-to-Cost · zero manual entry')
+_rows = [
+    ('Volume — exact (OCCT kernel)', 'Material mass · stock size'),
+    ('Weight = volume × density', 'Raw-material £ (Al/steel/iron/Cu/Ti)'),
+    ('Bounding box / envelope', 'Machine sizing · stock · setups'),
+    ('Body / component count', 'Assembly cost · BOM line count'),
+    ('Hole & boss table — Ø, depth, count', 'Drill / bore / tap operations'),
+    ('Wall thickness — min/mean/heatmap', 'Mould & cast feasibility · cooling'),
+    ('Draft & undercut analysis', 'Tooling complexity — slides'),
+    ('Face-type areas (planar/cyl)', 'Machining area · paint area'),
+    ('CNC cycle-time & setup estimate', 'Process-time baseline'),
+]
+_lx, _lw, _cxo = Inches(0.45), Inches(7.35), Inches(4.15)
+_y = Inches(1.72)
+box(slide, _lx, _y, _lw, Inches(0.4), fill=PANEL2, line=LINE, round_=True, radius=0.08)
+text(slide, _lx + Inches(0.15), _y + Inches(0.06), Inches(3.95), Inches(0.3), [[('Auto-captured from geometry (no typing)', 9.5, DARK, True)]])
+text(slide, _lx + _cxo + Inches(0.1), _y + Inches(0.06), _lw - Inches(4.25), Inches(0.3), [[('→ Feeds this cost driver', 9.5, BLUE, True)]])
+_y += Inches(0.46)
+for _a, _b in _rows:
+    box(slide, _lx, _y, _lw, Inches(0.42), fill=PANEL, round_=True, radius=0.06)
+    text(slide, _lx + Inches(0.15), _y + Inches(0.08), Inches(3.95), Inches(0.3), [[(_a, 9.5, INDIGO, True)]])
+    text(slide, _lx + _cxo + Inches(0.1), _y + Inches(0.08), _lw - Inches(4.25), Inches(0.3), [[(_b, 9.5, BODY, False)]])
+    _y += Inches(0.46)
+_rx, _rw = Inches(8.05), Inches(4.85)
+box(slide, _rx, Inches(1.72), _rw, Inches(2.75), fill=PANEL, round_=True, radius=0.05)
+box(slide, _rx, Inches(1.72), Inches(0.07), Inches(2.75), fill=BLUE)
+text(slide, _rx + Inches(0.2), Inches(1.84), _rw - Inches(0.32), Inches(0.3), [[('⚙  Worked example — Spur Gear (m3 · z38)', 11, DARK, True)]])
+text(slide, _rx + Inches(0.2), Inches(2.22), _rw - Inches(0.32), Inches(2.1), [
+    [('20MnCr5 case-hardening steel — captured automatically:', 9.5, BODY, False)],
+    [('   Volume 264.9 cm³  ·  Weight 2.08 kg', 9.5, DARK, True)],
+    [('   Envelope 120 × 120 × 30 mm  ·  1 body', 9.5, BODY, False)],
+    [('→ Should-cost, India ex-works (GBP):', 9.5, GREEN, True)],
+    [('   Material £3.36 · Process £11.40 · Labour £1.36', 9.5, BODY, False)],
+    [('   Overhead £1.95 · Margin £1.83  + heat-treat £1.77', 9.5, BODY, False)],
+    [('   =  £21.90 / part  (≈ ₹2,398)  ·  £10.53 / kg', 10, DARK, True)],
+], line_spacing=1.05)
+box(slide, _rx, Inches(4.6), _rw, Inches(1.75), fill=PANEL2, line=GREEN, round_=True, radius=0.05)
+box(slide, _rx, Inches(4.6), Inches(0.07), Inches(1.75), fill=GREEN)
+text(slide, _rx + Inches(0.2), Inches(4.72), _rw - Inches(0.32), Inches(0.3), [[('\U0001F512  The golden rule', 11, GREEN, True)]])
+text(slide, _rx + Inches(0.2), Inches(5.08), _rw - Inches(0.32), Inches(1.2),
+     [[('AI never sets a price. It only classifies material & process; every £ is deterministic arithmetic on the measured geometry, bounded and traceable to the rate library — which is what makes the output defensible.', 9.5, BODY, False)]], line_spacing=1.05)
+notes(slide,
+      "This is the slide that answers the question directly: what does the tool pull off the model on its own, and "
+      "where does each thing go. Left, every item is measured with nothing typed; right, the cost driver it feeds. "
+      "Volume and weight from the kernel make material exact; the envelope sizes machine and stock; body count is "
+      "assembly and BOM scope; holes become drilling; wall thickness decides mould and cast feasibility; draft "
+      "flags undercuts that need slides; face areas drive machining and paint. On the right, the real gear — two "
+      "kilos of gear steel, about twenty-two pounds ex-works from India, in sterling. And the guardrail: the AI "
+      "never sets the price. It classifies; the engine does deterministic maths on the geometry, every rate traceable.")
+
 OUT = 'CostVision-Implementation-Blueprint.pptx'
 prs.save(OUT)
 print(f'Wrote {OUT} with {len(prs.slides._sldIdLst)} slides')

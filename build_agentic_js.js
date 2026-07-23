@@ -449,5 +449,39 @@ const CHART=(colors,extra={})=>({showLegend:false,chartColors:colors,showValue:t
  rect(s,0,H-0.16,W,0.16,C.INDIGO);
  s.addNotes("To close. The capability is built, tested — just over a thousand tests — and live, at no extra licence cost, on our own infrastructure, now shipping as a deployable container. I'll be straight about the one dependency: the intelligence starts empty and grows with use. So the ask is three small decisions. One: make 'Log Actual £' a one-click habit. Two: approve a one-off import of our historical quotes so it starts smart — a day or two of effort. Three: put the agent's findings on the sourcing agenda each month; it's already finding money. Do those three things and this becomes a compounding asset from day one. Thank you — happy to take questions, or show you the live system right now.");})();
 
+// ════════════════════ Auto-capture → Cost engine ════════════════════
+(()=>{ const s=header("What's Auto-Captured — Fed to the Cost Engine",'CAD-to-Cost · zero manual entry');
+  const rows=[
+    ['Volume — exact (OCCT kernel)','Material mass · stock size'],
+    ['Weight = volume × density','Raw-material £ (Al/steel/iron/Cu/Ti)'],
+    ['Bounding box / envelope','Machine sizing · stock · setups'],
+    ['Body / component count','Assembly cost · BOM line count'],
+    ['Hole & boss table — Ø, depth, count','Drill / bore / tap operations'],
+    ['Wall thickness — min/mean/heatmap','Mould & cast feasibility · cooling'],
+    ['Draft & undercut analysis','Tooling complexity — slides'],
+    ['Face-type areas (planar/cyl)','Machining area · paint area'],
+    ['CNC cycle-time & setup estimate','Process-time baseline'],
+  ];
+  const lx=0.45, lw=7.35, cx=lx+4.15; let y=1.72;
+  rrect(s,lx,y,lw,0.4,C.PANEL2,{rectRadius:0.05,line:{color:C.LINE,width:1}});
+  txt(s,'Auto-captured from geometry (no typing)',lx+0.15,y+0.07,3.95,0.28,{fontSize:9.5,bold:true,color:C.DARK});
+  txt(s,'→ Feeds this cost driver',cx+0.1,y+0.07,lw-4.25,0.28,{fontSize:9.5,bold:true,color:C.BLUE});
+  y+=0.46;
+  for(const [a,b] of rows){
+    rrect(s,lx,y,lw,0.42,C.PANEL,{rectRadius:0.04});
+    txt(s,a,lx+0.15,y+0.09,3.95,0.28,{fontSize:9.5,bold:true,color:C.INDIGO});
+    txt(s,b,cx+0.1,y+0.09,lw-4.25,0.28,{fontSize:9.5,color:C.BODY});
+    y+=0.46;
+  }
+  rrect(s,8.05,1.72,4.85,2.75,C.PANEL,{rectRadius:0.05}); rect(s,8.05,1.72,0.07,2.75,C.BLUE);
+  txt(s,'Worked example — Spur Gear (m3 · z38)',8.27,1.84,4.5,0.3,{fontSize:11,bold:true,color:C.DARK});
+  txt(s,'20MnCr5 case-hardening steel — captured automatically:\n  Volume 264.9 cm³  ·  Weight 2.08 kg\n  Envelope 120 × 120 × 30 mm  ·  1 body\n\n→ Should-cost, India ex-works (GBP):\n  Material £3.36 · Process £11.40 · Labour £1.36\n  Overhead £1.95 · Margin £1.83  + heat-treat £1.77\n  =  £21.90 / part  (≈ ₹2,398)  ·  £10.53 / kg',
+    8.27,2.2,4.5,2.15,{fontSize:9.5,color:C.BODY,lineSpacingMultiple:1.06});
+  rrect(s,8.05,4.62,4.85,1.75,C.PANEL2,{rectRadius:0.05,line:{color:C.GREEN,width:1}}); rect(s,8.05,4.62,0.07,1.75,C.GREEN);
+  txt(s,'The golden rule',8.27,4.74,4.5,0.3,{fontSize:11,bold:true,color:C.GREEN});
+  txt(s,'AI never sets a price. It only classifies material & process; every £ is deterministic arithmetic on the measured geometry, bounded and traceable to the rate library — which is what makes the output defensible.',
+    8.27,5.1,4.5,1.2,{fontSize:9.5,color:C.BODY,lineSpacingMultiple:1.06});
+  s.addNotes("This is the plain answer to 'what does the tool do on its own.' Left column: every item is read straight off the CAD model, nothing typed; right column: the cost driver it feeds. Volume and weight come from the kernel, so material is exact; the envelope sizes the machine and stock; body count gives assembly and BOM scope; holes become drilling; wall thickness decides mould and cast feasibility; draft flags undercuts needing tool slides; face areas drive machining and paint. On the right is the real gear we costed — two kilos of gear steel, about twenty-two pounds ex-works from India, in sterling. And the guardrail: the AI never sets the price; it classifies, the engine does deterministic maths on the geometry, every rate traceable. Automatic capture, defensible number.");})();
+
 const OUT='/home/user/leamington-marathi/CostVision-Agentic-AI-Management-Presentation.pptx';
 p.writeFile({fileName:OUT}).then(f=>console.log('wrote',f));

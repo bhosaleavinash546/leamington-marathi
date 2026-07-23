@@ -90,7 +90,7 @@ def slide_header(slide, slide_num, section_label, title_text, subtitle_text=""):
     rect(slide, 0, 0, W, Inches(0.06), ACCENT_B)
 
     # Slide number (top-left)
-    txb(slide, f"SLIDE {slide_num:02d} / 17", Inches(0.35), Inches(0.12), Inches(2), Inches(0.35),
+    txb(slide, f"SLIDE {slide_num:02d} / 19", Inches(0.35), Inches(0.12), Inches(2), Inches(0.35),
         size=7, color=TEXT_D, bold=True)
 
     # CostVision logo (top-right)
@@ -623,10 +623,119 @@ notes(slide,
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-# SLIDE 6 — End-to-End Workflow
+# SLIDE 6 — 3D CAD Viewer (latest capabilities)
+# ══════════════════════════════════════════════════════════════════════════════
+TEAL = RGBColor(0x22, 0xB8, 0xC4)
+slide = add_slide()
+slide_header(slide, 6, "New in 2026 · Engineering-Grade Viewer",
+             "3D CAD Viewer — Inspect, Measure & Analyse",
+             "A SaaS-grade CAD viewer built into CostVision — STEP / IGES / STL, in the browser, no separate CAD seat.")
+
+_vg = [
+    (ACCENT_B, "Views & Navigation",
+     "Iso / Front / Top / Right, Fit, orientation view-cube, smooth logarithmic-depth zoom (no z-fighting on metre-scale parts), maximize / full-window."),
+    (ACCENT_G, "Display & DFM Analysis",
+     "Shaded / wireframe, bounding-box dims, grid toggle, colour-by-face-type, per-component colours + legend, draft & undercut heatmap, wall-thickness heatmap."),
+    (ACCENT_P, "Structure & Assembly",
+     "Collapsible model tree (bodies · features · faces), section planes X/Y/Z, exploded view (Radial / X / Y / Z), per-part Move & Rotate — isolated, the rest of the assembly stays put."),
+    (ORANGE, "Measure & Inspect",
+     "Distance, radius / diameter, angle, point X/Y/Z, face-to-face perpendicular — exact B-rep readouts, CSV export, snapshot straight into the cost report."),
+    (TEAL, "SaaS-grade UX",
+     "Docked collapsible tree, drag-to-reorder tool groups, slide-away toolbar, professional line-icon set — fits cleanly beside the app sidebar at any width."),
+]
+_gx, _gy, _gw, _gh, _ggap = Inches(0.45), Inches(2.02), Inches(3.98), Inches(2.18), Inches(0.24)
+for i, (col, t, b) in enumerate(_vg):
+    r, c = divmod(i, 3)
+    card(slide, _gx + c * (_gw + _ggap), _gy + r * (_gh + Inches(0.2)), _gw, _gh, t, b, accent=col)
+# 6th cell — summary stat
+_sx = _gx + 2 * (_gw + _ggap); _sy = _gy + 1 * (_gh + Inches(0.2))
+rect(slide, _sx, _sy, _gw, _gh, SURFACE2, BORDER, Pt(0.5))
+rect(slide, _sx, _sy, Inches(0.06), _gh, ACCENT_G)
+txb(slide, "One viewer, many jobs", _sx + Inches(0.16), _sy + Inches(0.12), _gw - Inches(0.24), Inches(0.3), size=10, bold=True, color=ACCENT_G)
+txb(slide, "24 tools · 6 groups\nSTEP / IGES / STL\nRuns in the browser\nB-rep-accurate geometry\n\nEverything measured here\nfeeds the cost engine →",
+    _sx + Inches(0.16), _sy + Inches(0.5), _gw - Inches(0.24), _gh - Inches(0.6), size=9, color=TEXT_G, wrap=True)
+
+notes(slide,
+    "This is the 3D CAD viewer, and it's now genuinely engineering-grade — it lives inside CostVision, in the "
+    "browser, so nobody needs a separate CAD seat just to look at a part. Left to right: full navigation with a "
+    "view-cube and smooth zoom that no longer shatters on big automotive parts; a display and DFM column that "
+    "colours faces by type, colours each component of an assembly, and heat-maps draft and wall thickness — those "
+    "last two are pure manufacturability signals. Then structure and assembly: a proper collapsible tree, section "
+    "planes, exploded views along any axis, and the ability to move or rotate a single component in isolation. "
+    "Measurement is exact B-rep, not mesh approximation, and it exports. And the whole thing has SaaS-grade polish "
+    "— docked tree, draggable tools, a clean icon set. But the punchline is the box on the right: everything the "
+    "viewer measures is the same geometry that feeds the cost engine, which is the next slide.")
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# SLIDE 7 — Automatic data capture → Cost engine
 # ══════════════════════════════════════════════════════════════════════════════
 slide = add_slide()
-slide_header(slide, 6, "Workflow", "AI Agent — 8-Step End-to-End Flow",
+slide_header(slide, 7, "CAD-to-Cost · Zero Manual Entry",
+             "What's Auto-Captured — Fed to the Cost Engine",
+             "Geometry is measured, not typed. AI only classifies material & process; every £ is deterministic and traceable.")
+
+_hdr = ["Auto-captured from geometry (no typing)", "→ Feeds this cost driver"]
+_rows = [
+    ["Volume — exact, from the CAD kernel (OCCT)", "Material mass · stock size"],
+    ["Weight per material = volume × density", "Raw-material £  (Al / steel / iron / Cu / Ti)"],
+    ["Bounding box / envelope", "Machine sizing · stock · setups"],
+    ["Body / component count", "Assembly cost · BOM line count"],
+    ["Hole & boss table — Ø, depth, count", "Secondary machining: drill / bore / tap"],
+    ["Wall thickness — min / mean / heatmap", "Moulding & casting feasibility · cooling"],
+    ["Draft & undercut analysis", "Tooling complexity — slides for undercuts"],
+    ["Face-type areas (planar / cylindrical)", "Machining area · paint / coat area"],
+    ["CNC cycle-time & setup estimate", "Process-time baseline"],
+]
+add_table(slide, len(_rows) + 1, 2, Inches(0.45), Inches(2.05), Inches(7.35), Inches(4.55),
+          _hdr, _rows, col_widths=[Inches(4.15), Inches(3.2)])
+
+# Right column — worked example + golden rule
+_rx, _rw = Inches(8.05), Inches(4.85)
+rect(slide, _rx, Inches(2.05), _rw, Inches(2.72), SURFACE2, BORDER, Pt(0.5))
+rect(slide, _rx, Inches(2.05), Inches(0.06), Inches(2.72), ACCENT_B)
+txb(slide, "⚙  Worked example — Spur Gear (m3 · z38)", _rx + Inches(0.16), Inches(2.14), _rw - Inches(0.26), Inches(0.3),
+    size=10, bold=True, color=TEXT_W)
+txb(slide,
+    "20MnCr5 case-hardening steel — captured automatically:\n"
+    "   Volume 264.9 cm³   ·   Weight 2.08 kg\n"
+    "   Envelope 120 × 120 × 30 mm   ·   1 body\n\n"
+    "→ Should-cost, India ex-works (GBP):\n"
+    "   Material £3.36 · Process £11.40 · Labour £1.36\n"
+    "   Overhead £1.95 · Margin £1.83  + heat-treat £1.77\n"
+    "   =  £21.90 / part   (≈ ₹2,398)   ·   £10.53 / kg",
+    _rx + Inches(0.16), Inches(2.5), _rw - Inches(0.26), Inches(2.2), size=9, color=TEXT_G, wrap=True)
+
+rect(slide, _rx, Inches(4.95), _rw, Inches(1.65), SURFACE2, ACCENT_G, Pt(0.9))
+rect(slide, _rx, Inches(4.95), Inches(0.06), Inches(1.65), ACCENT_G)
+txb(slide, "🔒  The golden rule", _rx + Inches(0.16), Inches(5.04), _rw - Inches(0.26), Inches(0.3),
+    size=10, bold=True, color=ACCENT_G)
+txb(slide,
+    "AI never sets a price. It only reads and classifies — material family, process route, feature intent. "
+    "Every number above is deterministic arithmetic in the cost engine, bounded by the measured geometry and "
+    "traceable to the rate library. That is what makes the output defensible.",
+    _rx + Inches(0.16), Inches(5.4), _rw - Inches(0.26), Inches(1.15), size=9, color=TEXT_G, wrap=True)
+
+notes(slide,
+    "This is the slide to dwell on, because it's the heart of the automation. On the left is exactly what the "
+    "tool pulls off the CAD model with no human typing anything in — and next to each item, the cost driver it "
+    "feeds. Volume and weight come straight from the CAD kernel, so the material bucket is exact, not a guess — "
+    "and weight is just volume times the density of whichever material you pick. The bounding box sizes the "
+    "machine and the stock. Body count gives you assembly and BOM scope. The hole-and-boss table becomes drilling "
+    "and boring operations. Wall thickness tells you if a part can even be moulded or cast. Draft analysis flags "
+    "undercuts that need slides in the tool. Face areas drive machining and paint area. And there's a first-cut "
+    "cycle-time estimate. On the right is a real worked example — the gear we just costed: two kilos of gear "
+    "steel, captured automatically, costing about twenty-two pounds ex-works from India, all in sterling. "
+    "And the box underneath is the guardrail that makes all of this trustworthy in front of a supplier: the AI "
+    "never sets the price. It classifies; the engine does deterministic arithmetic on the measured geometry, and "
+    "every rate traces back to the library. That's the difference between a defensible should-cost and a guess.")
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# SLIDE 8 — End-to-End Workflow
+# ══════════════════════════════════════════════════════════════════════════════
+slide = add_slide()
+slide_header(slide, 8, "Workflow", "AI Agent — 8-Step End-to-End Flow",
              "Three entry points. One intelligent engine. Full cost intelligence in under 5 minutes.")
 
 # Entry point banner
@@ -689,7 +798,7 @@ notes(slide,
 # SLIDE 7 — 21 Commodities
 # ══════════════════════════════════════════════════════════════════════════════
 slide = add_slide()
-slide_header(slide, 7, "Full Coverage", "21 Manufacturing Commodities — One Platform",
+slide_header(slide, 9, "Full Coverage", "21 Manufacturing Commodities — One Platform",
              "Every major manufacturing process — all modelled to engineering depth with full routing, yield, and tooling logic.")
 
 # 21 commodity cards in 7×3 grid
@@ -748,7 +857,7 @@ notes(slide,
 # SLIDE 8 — Should-Cost Model Depth
 # ══════════════════════════════════════════════════════════════════════════════
 slide = add_slide()
-slide_header(slide, 8, "Engineering Depth", "Should-Cost Model Architecture",
+slide_header(slide, 10, "Engineering Depth", "Should-Cost Model Architecture",
              "Built on aPriori-calibrated benchmarks, IPC standards, and first-principles manufacturing engineering.")
 
 depth_cards = [
@@ -809,7 +918,7 @@ notes(slide,
 # SLIDE 9 — Advanced Features
 # ══════════════════════════════════════════════════════════════════════════════
 slide = add_slide()
-slide_header(slide, 9, "Advanced Capabilities", "Advanced Cost Modelling & Intelligence Features",
+slide_header(slide, 11, "Advanced Capabilities", "Advanced Cost Modelling & Intelligence Features",
              "CostVision goes beyond basic costing — it models commercial reality with precision.")
 
 # Left col
@@ -892,7 +1001,7 @@ notes(slide,
 # SLIDE 10 — DFM / DFA Intelligence
 # ══════════════════════════════════════════════════════════════════════════════
 slide = add_slide()
-slide_header(slide, 10, "AI Intelligence Layer", "DFM / DFA — Design for Manufacture & Assembly",
+slide_header(slide, 12, "AI Intelligence Layer", "DFM / DFA — Design for Manufacture & Assembly",
              "A bolt-on AI intelligence layer that runs AFTER the should-cost, without modifying any calculation logic.")
 
 # Score banner
@@ -968,7 +1077,7 @@ notes(slide,
 # SLIDE 11 — Regional & Currency Intelligence
 # ══════════════════════════════════════════════════════════════════════════════
 slide = add_slide()
-slide_header(slide, 11, "Global Coverage", "20 Manufacturing Regions — 10 Currencies",
+slide_header(slide, 13, "Global Coverage", "20 Manufacturing Regions — 10 Currencies",
              "Select a region and every rate adjusts automatically — labour, machines, energy, material and currency.")
 
 # Regions table
@@ -1040,7 +1149,7 @@ notes(slide,
 # SLIDE 12 — Agentic vs Autonomous Agentic AI (concept, with examples)
 # ══════════════════════════════════════════════════════════════════════════════
 slide = add_slide()
-slide_header(slide, 12, "The Concept · Explained",
+slide_header(slide, 14, "The Concept · Explained",
              "Agentic vs Autonomous Agentic AI — With Examples",
              "Two levels of \"agentic\": on the left the AI acts because you asked; on the right it acts on its own, unattended.")
 
@@ -1101,7 +1210,7 @@ notes(slide,
 # SLIDE 13 — 2026 Agentic Intelligence: self-audit, learn-from-actuals, validation
 # ══════════════════════════════════════════════════════════════════════════════
 slide = add_slide()
-slide_header(slide, 13, "New in 2026 · Agentic Intelligence",
+slide_header(slide, 15, "New in 2026 · Agentic Intelligence",
              "The Tool Now Checks Its Own Work — and Learns",
              "A deterministic self-audit re-checks every estimate, calibration learns from real quotes, and it is proven on real parts.")
 
@@ -1204,7 +1313,7 @@ notes(slide,
 # SLIDE 14 — Demo: Real-World Cost Benchmarks
 # ══════════════════════════════════════════════════════════════════════════════
 slide = add_slide()
-slide_header(slide, 14, "Live Demo Data", "Real-World Cost Benchmarks — Luxury SUV Programme",
+slide_header(slide, 16, "Live Demo Data", "Real-World Cost Benchmarks — Luxury SUV Programme",
              "All figures generated by CostVision's should-cost engine. UK manufacturing region, GBP.")
 
 headers12 = ["Commodity", "Demo Part", "Key Inputs", "Should-Cost", "AI Top Insight", "DFM Flag"]
@@ -1248,7 +1357,7 @@ notes(slide,
 # SLIDE 15 — Export, Reporting & Team Collaboration
 # ══════════════════════════════════════════════════════════════════════════════
 slide = add_slide()
-slide_header(slide, 15, "Reporting & Collaboration", "Export, Share & Collaborate — Enterprise Ready",
+slide_header(slide, 17, "Reporting & Collaboration", "Export, Share & Collaborate — Enterprise Ready",
              "From individual engineer to global team — CostVision scales to any organisation size.")
 
 export_cards = [
@@ -1318,7 +1427,7 @@ notes(slide,
 # SLIDE 16 — Business Benefits & ROI
 # ══════════════════════════════════════════════════════════════════════════════
 slide = add_slide()
-slide_header(slide, 16, "Value Delivered", "Business Impact & Measurable ROI",
+slide_header(slide, 18, "Value Delivered", "Business Impact & Measurable ROI",
              "Quantified improvements across speed, accuracy, and cost reduction that directly impact the bottom line.")
 
 # Stat row
@@ -1384,7 +1493,7 @@ notes(slide,
 # SLIDE 17 — Roadmap & Next Steps
 # ══════════════════════════════════════════════════════════════════════════════
 slide = add_slide()
-slide_header(slide, 17, "Vision & Next Steps", "Intelligent, Instant, Integrated — What Comes Next",
+slide_header(slide, 19, "Vision & Next Steps", "Intelligent, Instant, Integrated — What Comes Next",
              "CostVision is live today. Here is what comes next — and how to get started.")
 
 # Current capabilities
