@@ -46,7 +46,7 @@ export const DEFAULT_RATE_LIBRARY: RateLibrary = {
     },
     {
       id: 'mat-steel1045',
-      grade: '1045',
+      grade: '1045 / C45 / 080M46 (Medium-Carbon Steel)',
       category: 'Carbon Steel',
       pricePerKg: 0.95,
       scrapRecoveryPricePerKg: 0.22,
@@ -70,7 +70,7 @@ export const DEFAULT_RATE_LIBRARY: RateLibrary = {
     },
     {
       id: 'mat-steel4140',
-      grade: '4140',
+      grade: '4140 / 42CrMo4 / EN19 (Chromoly Alloy Steel)',
       category: 'Alloy Steel',
       pricePerKg: 1.21,
       scrapRecoveryPricePerKg: 0.22,
@@ -322,7 +322,7 @@ export const DEFAULT_RATE_LIBRARY: RateLibrary = {
     { id: 'mat-pc-glazing', grade: 'PC Glazing Grade (Automotive)', category: 'Thermoplastic', pricePerKg: 4.20, scrapRecoveryPricePerKg: 0.08, densityKgPerM3: 1200, region: 'UK', effectiveDate: '2026-07', sourceNote: 'UK resin distributor. Index-anchored 2026-07. Hard-coat-ready PC for polycarbonate glazing — panoramic roofs, fixed side windows, lightweighting vs glass. coolFactor ~2.5 s/mm².', confidence: 'Low' },
     // ── Casting alloys ─────────────────────────────────────────────────────
     { id: 'mat-adc12', grade: 'ADC12 / A383', category: 'Die Cast Aluminium', pricePerKg: 2.78, scrapRecoveryPricePerKg: 0.55, densityKgPerM3: 2700, region: 'UK', effectiveDate: '2026-07', sourceNote: 'UK Al alloy ingot, Jun 2026. Index-anchored 2026-07 (see CASTING PRICING BASIS).', confidence: 'Medium' },
-    { id: 'mat-a380', grade: 'A380', category: 'Die Cast Aluminium', pricePerKg: 2.83, scrapRecoveryPricePerKg: 0.55, densityKgPerM3: 2680, region: 'UK', effectiveDate: '2026-07', sourceNote: 'UK Al alloy ingot, Jun 2026. Index-anchored 2026-07 (see CASTING PRICING BASIS).', confidence: 'Medium' },
+    { id: 'mat-a380', grade: 'A380 / EN AC-46000 (Al-Si Die-Cast Alloy)', category: 'Die Cast Aluminium', pricePerKg: 2.83, scrapRecoveryPricePerKg: 0.55, densityKgPerM3: 2680, region: 'UK', effectiveDate: '2026-07', sourceNote: 'UK Al alloy ingot, Jun 2026. Index-anchored 2026-07 (see CASTING PRICING BASIS).', confidence: 'Medium' },
     { id: 'mat-gjl250', grade: 'EN-GJL-250', category: 'Grey Cast Iron', pricePerKg: 0.64, scrapRecoveryPricePerKg: 0.12, densityKgPerM3: 7200, region: 'UK', effectiveDate: '2026-07', sourceNote: 'UK iron foundry, Jun 2026. Index-anchored 2026-07 (see CASTING PRICING BASIS).', confidence: 'Low' },
     // ── Additional casting alloys (Cast+Machine module) ────────────────────
     { id: 'mat-lm25', grade: 'LM25 / A356', category: 'Gravity/Sand Aluminium', pricePerKg: 3.04, scrapRecoveryPricePerKg: 0.55, densityKgPerM3: 2680, region: 'UK', effectiveDate: '2026-07', sourceNote: 'UK Al alloy ingot, Jun 2026. Index-anchored 2026-07 (see CASTING PRICING BASIS).', confidence: 'Medium' },
@@ -398,7 +398,7 @@ export const DEFAULT_RATE_LIBRARY: RateLibrary = {
     { id: 'mat-inconel718-cast', grade: 'Inconel 718 (Investment Cast Superalloy)', category: 'Nickel Superalloy Casting', pricePerKg: 42.00, scrapRecoveryPricePerKg: 8.00, densityKgPerM3: 8190, region: 'UK', effectiveDate: '2026-07', sourceNote: 'Index-anchored 2026-07 (see CASTING PRICING BASIS). Ni-Cr-Fe superalloy investment casting — turbine/hot-section, high-temperature structural; nickel + cobalt dominated, low casting yield.', confidence: 'Low' },
     // ── Forging billets ────────────────────────────────────────────────────
     { id: 'mat-steel1020', grade: '1020 / S20C', category: 'Carbon Steel Billet', pricePerKg: 0.82, scrapRecoveryPricePerKg: 0.19, densityKgPerM3: 7850, region: 'UK', effectiveDate: '2026-07', sourceNote: 'UK steel billet, Jun 2026. Index-anchored 2026-07 (see FORGING PRICING BASIS).', confidence: 'Medium' },
-    { id: 'mat-steel4340', grade: '4340', category: 'Alloy Steel Billet', pricePerKg: 1.45, scrapRecoveryPricePerKg: 0.22, densityKgPerM3: 7850, region: 'UK', effectiveDate: '2026-07', sourceNote: 'UK alloy billet, Jun 2026. Index-anchored 2026-07 (see FORGING PRICING BASIS).', confidence: 'Medium' },
+    { id: 'mat-steel4340', grade: '4340 / 40NiCrMo22 / EN24 (Ni-Cr-Mo Alloy Steel)', category: 'Alloy Steel Billet', pricePerKg: 1.45, scrapRecoveryPricePerKg: 0.22, densityKgPerM3: 7850, region: 'UK', effectiveDate: '2026-07', sourceNote: 'UK alloy billet, Jun 2026. Index-anchored 2026-07 (see FORGING PRICING BASIS).', confidence: 'Medium' },
     /*
      * ══════════════════════════════════════════════════════════════════════
      *  FORGING PRICING BASIS (index-anchored, refreshed 2026-07)

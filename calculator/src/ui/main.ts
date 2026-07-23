@@ -3295,6 +3295,27 @@ function _setSelectOpts(sel: HTMLSelectElement, html: string, sig: string): void
   sel.dataset.libSig = sig;
 }
 
+// Which material CATEGORIES each commodity form's material dropdown should show,
+// keyed by the <select> id. Matched (case-insensitive) against a RateLibrary
+// material's `category`. This keeps a forging picker on steel / aluminium /
+// titanium BILLETS and an injection-moulding picker on thermoplastics, instead
+// of dumping all ~320 grades (plastics, paint, rubber…) into every form.
+// Any select id not listed here falls back to the full catalogue.
+const MATERIAL_SCOPE_BY_SELECT: Record<string, RegExp> = {
+  'forge-mat': /Billet/i,                                                                    // closed-die forging → wrought billets
+  'mach-mat':  /Billet|^Carbon Steel$|^Alloy Steel$|^Stainless Steel$|^Aluminium$|^Titanium$|Copper Alloy|Magnesium Alloy|Spring Steel|Engineering Plastic/i, // machined from bar/billet
+  'cast-mat':  /Cast|Iron|HPDC|Die Cast|Gravity\/Sand|Zinc Die|Magnesium Alloy/i,            // foundry alloys
+  'cam-mat':   /Cast|Iron|HPDC|Die Cast|Gravity\/Sand|Zinc Die|Magnesium Alloy/i,            // cast-and-machine = cast alloys
+  'imm-mat':   /Thermoplastic|Engineering Plastic|Additive|Masterbatch/i,                    // injection-moulding resins
+  'bm-mat':    /Blow Moulding|Thermoplastic Elastomer/i,                                      // blow-moulding grades
+  'rm-mat':    /Rotational Moulding/i,
+  'tf-mat':    /Thermoforming/i,
+  'ext-mat':   /Extrusion/i,
+  'rub-mat':   /Rubber|Thermoplastic Elastomer/i,
+  'sm-mat':    /Sheet|Spring Steel Strip/i,                                                   // sheet-metal grades
+  'smf-mat':   /Sheet|Spring Steel Strip/i,
+};
+
 function populateSelects(): void {
   const sig = _currentLibSig();
   if (sig === _libSig) {
@@ -3306,9 +3327,9 @@ function populateSelects(): void {
   }
   _libSig = sig;
 
-  const matOpts = library.materials.map(m =>
-    `<option value="${m.id}">${m.grade} (${m.region}) — ${_currFmt(m.pricePerKg)}/kg</option>`
-  ).join('');
+  const optFor = (m: typeof library.materials[number]) =>
+    `<option value="${m.id}">${m.grade} (${m.region}) — ${_currFmt(m.pricePerKg)}/kg</option>`;
+  const matOptsAll = library.materials.map(optFor).join('');
   const machOpts = library.machines.map(m =>
     `<option value="${m.id}">${m.machineClass} — ${_currFmt(m.computedRatePerHr)}/hr</option>`
   ).join('');
@@ -3316,7 +3337,23 @@ function populateSelects(): void {
     `<option value="${l.id}">${l.skillLevel} (${l.region}) — ${_currFmt(l.fullyLoadedRatePerHr)}/hr</option>`
   ).join('');
 
-  document.querySelectorAll<HTMLSelectElement>('.material-select').forEach(s => _setSelectOpts(s, matOpts, sig));
+  // Scope each commodity form's material dropdown to the material FAMILIES that
+  // commodity actually uses — a forging picker should list steel/Al/Ti billets,
+  // not thermoplastics or paint. Keyed by the select's id; anything unmapped
+  // falls back to the full catalogue. Categories are matched by the regexes in
+  // MATERIAL_SCOPE_BY_SELECT (tested against material.category).
+  const scopedMatCache = new Map<string, string>();
+  const matOptsForSelect = (id: string): string => {
+    const rx = MATERIAL_SCOPE_BY_SELECT[id];
+    if (!rx) return matOptsAll;
+    const cached = scopedMatCache.get(id);
+    if (cached != null) return cached;
+    const opts = library.materials.filter(m => rx.test(m.category)).map(optFor).join('') || matOptsAll;
+    scopedMatCache.set(id, opts);
+    return opts;
+  };
+
+  document.querySelectorAll<HTMLSelectElement>('.material-select').forEach(s => _setSelectOpts(s, matOptsForSelect(s.id), sig));
   document.querySelectorAll<HTMLSelectElement>('.machine-select').forEach(s => _setSelectOpts(s, machOpts, sig));
   document.querySelectorAll<HTMLSelectElement>('.labour-select').forEach(s => _setSelectOpts(s, labOpts, sig));
 }
