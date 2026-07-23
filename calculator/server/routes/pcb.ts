@@ -1936,7 +1936,10 @@ router.post('/live-pricing', async (req, res): Promise<void> => {
       resolvedApiKey,
       qty ?? 100,
     );
-    res.json({ success: true, provider, prices, count: prices.length });
+    // Reaching here means the provider accepted our credentials (auth failures throw
+    // above), so `authenticated` lets the client distinguish "token OK but 0 matches"
+    // from "token rejected" when the price list comes back empty.
+    res.json({ success: true, provider, prices, count: prices.length, authenticated: true });
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
     console.error('[PCB/live-pricing] Error:', msg);

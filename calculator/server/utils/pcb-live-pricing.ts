@@ -178,7 +178,14 @@ export async function fetchOctopartPrices(
       errors?: Array<{ message: string }>;
     };
     if (data.errors?.length) {
-      console.warn('[LivePricing/Octopart] GraphQL errors:', data.errors.map(e => e.message).join('; '));
+      const joined = data.errors.map(e => e.message).join('; ');
+      console.warn('[LivePricing/Octopart] GraphQL errors:', joined);
+      // A bad/expired token often comes back as HTTP 200 with a GraphQL-level auth
+      // error rather than a 401. Surface it as an auth failure instead of letting it
+      // masquerade as "0 matches" (which wrongly blames the part numbers).
+      if (/auth|token|unauthor|forbidden|credential|permission/i.test(joined)) {
+        throw new Error(`Octopart/Nexar authentication failed — ${joined}. The access token is missing, invalid or expired.`);
+      }
     }
 
     const results: LivePriceResult[] = [];

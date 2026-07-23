@@ -7664,14 +7664,19 @@ function injectPCBImagePanel(): void {
     drawVolumeCurveChart(pcbImageResult);
   }
 
-  // Enable live pricing on every identified part number in the BOM. The OCR
+  // Enable live pricing on every REAL manufacturer part number in the BOM. The OCR
   // icMarkings list is frequently empty even when the BOM has real MPNs — gating
-  // solely on it left the button permanently greyed. Union both, keep plausible MPNs.
-  const bomMPNs = (pcbImageResult.bom ?? [])
-    .map(it => (it.partNumber ?? '').trim())
-    .filter(pn => pn.length >= 3 && /\d/.test(pn));
-  const ocrMPNs = (pcbImageResult.ocrExtraction?.icMarkings ?? []).map(s => s.trim()).filter(Boolean);
-  const priceableMPNs = Array.from(new Set([...bomMPNs, ...ocrMPNs]));
+  // solely on it left the button permanently greyed. Union both, then reduce each to
+  // an orderable MPN via cleanMPNForPricing() — AI-inferred guesses ("assumed NXP
+  // FS85") and descriptions ("Automotive LDO regulator") are dropped, since sending
+  // them to Octopart guarantees 0 matches and a misleading "verify your API key" error.
+  const rawCandidates = [
+    ...(pcbImageResult.bom ?? []).map(it => it.partNumber ?? ''),
+    ...(pcbImageResult.ocrExtraction?.icMarkings ?? []),
+  ];
+  const priceableMPNs = Array.from(new Set(
+    rawCandidates.map(cleanMPNForPricing).filter((x): x is string => x !== null),
+  ));
   const liveFetchBtn = document.getElementById('pcb-live-fetch-btn') as HTMLButtonElement | null;
   const liveStatusEl = document.getElementById('pcb-live-status');
   if (liveFetchBtn) {
@@ -7685,7 +7690,7 @@ function injectPCBImagePanel(): void {
     } else {
       liveFetchBtn.disabled = true;
       liveFetchBtn.onclick = null;
-      if (liveStatusEl) liveStatusEl.textContent = 'No manufacturer part numbers were detected in the BOM to price.';
+      if (liveStatusEl) liveStatusEl.textContent = 'No orderable manufacturer part numbers in this BOM to price live — the lines are AI-inferred or passives. Live pricing needs real MPNs (confirm exact part numbers first).';
     }
   }
 
@@ -7757,6 +7762,28 @@ function injectPCBImagePanel(): void {
   });
 }
 
+/**
+ * Reduce an AI-extracted BOM part field to an orderable manufacturer part number,
+ * or null if it's a guess/description. Octopart/Nexar can only price real MPNs —
+ * sending "assumed NXP FS85" or "Automotive LDO regulator" returns 0 matches and a
+ * misleading "verify your API key" error, so drop those before querying.
+ */
+function cleanMPNForPricing(raw: string | null | undefined): string | null {
+  let s = (raw ?? '').trim();
+  if (!s) return null;
+  // strip AI hedge prefixes ("assumed NXP TEF810x", "likely ...")
+  s = s.replace(/^(assumed|likely|probably|possibly|approx\.?|maybe|~)\s+/i, '');
+  // reject descriptive phrases (a component class word means it's not a part number)
+  if (/\b(class|grade|assumed|unmarked|generic|unknown|support|interface|controller|transceiver|regulator|capacitor|resistor|inductor|diode|oscillator|crystal|header|connector|ferrite|choke|module|sensor|driver|bridge)\b/i.test(s)) return null;
+  // take the first token (drop trailing notes / alternates after space, comma or slash)
+  const tok = s.split(/[\s,/|]+/)[0].replace(/[()[\]]/g, '').trim();
+  // a real MPN carries both letters and digits, is a sane length, MPN charset only
+  if (tok.length >= 4 && tok.length <= 32 && /[0-9]/.test(tok) && /[A-Za-z]/.test(tok) && /^[A-Za-z0-9.+-]+$/.test(tok)) {
+    return tok.toUpperCase();
+  }
+  return null;
+}
+
 async function fetchLivePricingForBOM(icMarkings: string[]): Promise<void> {
   const provider = (document.getElementById('pcb-live-provider') as HTMLSelectElement)?.value ?? 'octopart';
   const apiKey = (document.getElementById('pcb-live-api-key') as HTMLInputElement)?.value?.trim() ?? '';
@@ -7776,17 +7803,24 @@ async function fetchLivePricingForBOM(icMarkings: string[]): Promise<void> {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ partNumbers: icMarkings, provider, apiKey, qty: 100 }),
     });
-    const data = await resp.json() as { success?: boolean; prices?: Array<{ mpn: string; unitPriceGBP: number; stockQty: number; distPartNumber: string; description: string }>; error?: string };
+    const data = await resp.json() as { success?: boolean; authenticated?: boolean; prices?: Array<{ mpn: string; unitPriceGBP: number; stockQty: number; distPartNumber: string; description: string }>; error?: string };
     if (!resp.ok || data.error) throw new Error(data.error ?? resp.statusText);
 
     const prices = data.prices ?? [];
     if (prices.length === 0) {
-      // A valid request that returns nothing almost always means the key/token was
-      // rejected (Octopart needs a Nexar OAuth access token, not a plain key) or the
-      // MPNs weren't recognised — surface that instead of a misleading "success".
-      const hint = provider === 'octopart' ? ' Octopart/Nexar needs a valid access token (not a plain API key).' : '';
-      if (statusEl) statusEl.textContent = `⚠ 0/${icMarkings.length} priced — check your ${provider} API key/token is valid.${hint}`;
-      showToast(`No live prices returned from ${provider} — verify your API key/token`, 'warning');
+      if (data.authenticated) {
+        // Token was accepted (auth failures throw on the server) — the parts simply
+        // aren't in the distributor's catalogue. Common on AI-extracted BOMs where
+        // most lines are inferred or passive. Don't blame the key here.
+        if (statusEl) statusEl.textContent = `✓ ${provider} token accepted, but 0/${icMarkings.length} part number(s) matched its catalogue — mostly AI-inferred or passive lines. Confirm exact MPNs to price them.`;
+        showToast(`${provider}: token OK, but 0/${icMarkings.length} MPNs found in catalogue`, 'warning');
+      } else {
+        // No auth confirmation — most likely the token was rejected. Octopart needs a
+        // Nexar OAuth access token, not a plain API key (and never the Anthropic key).
+        const hint = provider === 'octopart' ? ' Octopart/Nexar needs a valid OAuth access token (not a plain API key).' : '';
+        if (statusEl) statusEl.textContent = `⚠ 0/${icMarkings.length} priced — check your ${provider} API key/token is valid.${hint}`;
+        showToast(`No live prices returned from ${provider} — verify your API key/token`, 'warning');
+      }
       return;
     }
     if (statusEl) statusEl.textContent = `✓ Live prices fetched for ${prices.length}/${icMarkings.length} parts.`;
