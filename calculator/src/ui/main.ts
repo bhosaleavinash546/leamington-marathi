@@ -9275,6 +9275,13 @@ async function exportPCBAnalysisPrint(r: PCBImageAnalysis): Promise<void> {
   let y = margin;
   const dateStr = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
 
+  // Currency: the internal PCB numbers are GBP; render in the user's selected
+  // display currency (matches what the on-screen result shows, e.g. ¥/CNY).
+  const csym = CURRENCY_SYMBOL[_displayCurrency] ?? `${_displayCurrency} `;
+  const fx = _displayFxRate;
+  const money = (gbp: number) => `${csym}${(gbp * fx).toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  const num = (gbp: number, dp = 2) => (gbp * fx).toLocaleString('en-GB', { minimumFractionDigits: dp, maximumFractionDigits: dp });
+
   const checkPage = (need: number) => {
     if (y + need > 285) { doc.addPage(); y = margin; }
   };
@@ -9378,6 +9385,96 @@ async function exportPCBAnalysisPrint(r: PCBImageAnalysis): Promise<void> {
     } catch { /* skip an image that fails to embed */ }
   }
 
+  // ── HEADLINE SHOULD-COST + PROGRAMME PARAMETERS (pulled to the top) ──────────
+  const sel = r._selectedCountryBreakdown;
+  const band = r._confidenceBand;
+  const asil = r._asilLevel && !/^(unknown|n\/?a|none)$/i.test(r._asilLevel) ? r._asilLevel : null;
+  const domainLabel = r.stage1Classification?.domain?.replace(/_/g, ' ') ?? 'general';
+  const regionName = sel?.countryName ?? (r._selectedCountry ? r._selectedCountry.toUpperCase() : '—');
+  const annualQty = (document.getElementById('pcb-order-qty') as HTMLInputElement | null)?.value?.trim() || '';
+  const headlineGBP = sel?.totalPerBoard ?? (r.costEstimates.pcbFabGBP.mid + r.costEstimates.totalBOMCostGBP + r.costEstimates.smtAssemblyCostGBP);
+
+  // Headline should-cost card
+  checkPage(26);
+  doc.setFillColor(...DARK);
+  doc.roundedRect(margin, y, usable, 22, 2.5, 2.5, 'F');
+  doc.setFont('helvetica', 'bold'); doc.setTextColor(...WHITE); doc.setFontSize(7.5);
+  doc.text('SHOULD-COST / BOARD', margin + 5, y + 6);
+  doc.setFontSize(19);
+  doc.text(money(headlineGBP), margin + 5, y + 16);
+  if (band) {
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(7); doc.setTextColor(200, 212, 240);
+    doc.text(`Confidence band  ${money(band.totalLow)}  –  ${money(band.totalMid)}  –  ${money(band.totalHigh)}   (${band.overallLabel})`, margin + 5, y + 21);
+  }
+  // Right-side ASIL badge on the headline card
+  if (asil) {
+    const badge = `ISO 26262 · ${asil}`;
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(9);
+    const bw = doc.getTextWidth(badge) + 10;
+    doc.setFillColor(...RED_R);
+    doc.roundedRect(margin + usable - bw - 5, y + 6, bw, 10, 2, 2, 'F');
+    doc.setTextColor(...WHITE);
+    doc.text(badge, margin + usable - bw - 5 + 5, y + 12.6);
+  }
+  y += 26;
+
+  // Programme parameters strip
+  sectionTitle('Programme Parameters');
+  const prog = r._programPricing;
+  autoTable(doc, {
+    startY: y,
+    margin: { left: margin, right: margin },
+    head: [['Parameter', 'Value', 'Parameter', 'Value']],
+    body: [
+      ['Part', r.partName, 'Domain', domainLabel],
+      ['Manufacturing region', regionName, 'Functional safety', asil ? `ISO 26262 · ${asil}` : 'Not safety-rated'],
+      ['Annual volume', annualQty ? `${Number(annualQty).toLocaleString('en-GB')} /yr` : '—', 'Currency', _displayCurrency],
+      ['Program pricing tier', prog ? String(prog.pricingTier).replace(/_/g, ' ') : '—', 'Program BOM saving', prog ? `${prog.savingsPct}%` : '—'],
+      ['Analysis confidence', r.confidenceLevel, 'Generated', dateStr],
+    ],
+    styles: { fontSize: 7.5, cellPadding: 2 },
+    headStyles: { fillColor: BLUE, textColor: WHITE, fontStyle: 'bold', fontSize: 7.5 },
+    columnStyles: { 0: { fontStyle: 'bold', textColor: GREY }, 2: { fontStyle: 'bold', textColor: GREY } },
+    alternateRowStyles: { fillColor: LIGHT },
+    theme: 'grid',
+  });
+  y = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 5;
+
+  // ── FUNCTIONAL SAFETY (ISO 26262) — only for safety-rated automotive boards ──
+  if (asil) {
+    sectionTitle('Functional Safety (ISO 26262) & Automotive NRE');
+    if (r._asilRationale) {
+      doc.setFontSize(7.5); doc.setFont('helvetica', 'bold'); doc.setTextColor(...DARK);
+      doc.text(`ASIL ${asil}`, margin + 2, y + 1);
+      doc.setFont('helvetica', 'normal'); doc.setTextColor(...GREY);
+      const rat = doc.splitTextToSize(r._asilRationale.replace(/\s+/g, ' ').trim(), usable - 4);
+      doc.text(rat as string[], margin + 2, y + 5.5);
+      y += 5 + (rat as string[]).length * 3.6 + 2;
+    }
+    if (r._asilSafetyFunctions && r._asilSafetyFunctions.length) {
+      doc.setFontSize(7.5); doc.setFont('helvetica', 'normal'); doc.setTextColor(...DARK);
+      const sf = doc.splitTextToSize(`Safety functions: ${r._asilSafetyFunctions.join('; ')}`, usable - 4);
+      checkPage((sf as string[]).length * 3.6 + 3);
+      doc.text(sf as string[], margin + 2, y + 2);
+      y += (sf as string[]).length * 3.6 + 3;
+    }
+    const nre = r._automotiveNRE;
+    if (nre) {
+      const k = (n: number) => money(n);
+      autoTable(doc, {
+        startY: y,
+        margin: { left: margin, right: margin },
+        head: [['Automotive NRE (one-time, amortised separately)', 'PPAP', 'FMEA', 'DVP&R', 'ASIL audit', 'Total']],
+        body: [['One-time engineering', k(nre.ppapCost), k(nre.fmeaCost), k(nre.dvprCost), k(nre.asilAuditCost), k(nre.totalNRE)]],
+        styles: { fontSize: 7, cellPadding: 1.8, halign: 'right' },
+        headStyles: { fillColor: RED_R, textColor: WHITE, fontStyle: 'bold', fontSize: 6.8, halign: 'right' },
+        columnStyles: { 0: { halign: 'left', fontStyle: 'bold' }, 5: { fontStyle: 'bold' } },
+        theme: 'grid',
+      });
+      y = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 5;
+    }
+  }
+
   // ── §1 BOARD SPECIFICATION ───────────────────────────────────────────────────
   const b = r.boardSpec;
   sectionTitle('§1  Board Specification');
@@ -9429,14 +9526,14 @@ async function exportPCBAnalysisPrint(r: PCBImageAnalysis): Promise<void> {
   autoTable(doc, {
     startY: y,
     margin: { left: margin, right: margin },
-    head: [['Cost Element', 'Min (£)', 'Mid (£)', 'Max (£)']],
+    head: [['Cost Element', `Min (${_displayCurrency})`, `Mid (${_displayCurrency})`, `Max (${_displayCurrency})`]],
     body: [
-      ['PCB Fabrication', c.pcbFabGBP.min.toFixed(2), c.pcbFabGBP.mid.toFixed(2), c.pcbFabGBP.max.toFixed(2)],
-      ['BOM (components)', '—', c.totalBOMCostGBP.toFixed(2), '—'],
-      ['SMT Assembly', '—', c.smtAssemblyCostGBP.toFixed(2), '—'],
-      ['Total Estimate', (c.pcbFabGBP.min + c.totalBOMCostGBP + c.smtAssemblyCostGBP).toFixed(2),
-       (c.pcbFabGBP.mid + c.totalBOMCostGBP + c.smtAssemblyCostGBP).toFixed(2),
-       (c.pcbFabGBP.max + c.totalBOMCostGBP + c.smtAssemblyCostGBP).toFixed(2)],
+      ['PCB Fabrication', num(c.pcbFabGBP.min), num(c.pcbFabGBP.mid), num(c.pcbFabGBP.max)],
+      ['BOM (components)', '—', num(c.totalBOMCostGBP), '—'],
+      ['SMT Assembly', '—', num(c.smtAssemblyCostGBP), '—'],
+      ['Total Estimate', num(c.pcbFabGBP.min + c.totalBOMCostGBP + c.smtAssemblyCostGBP),
+       num(c.pcbFabGBP.mid + c.totalBOMCostGBP + c.smtAssemblyCostGBP),
+       num(c.pcbFabGBP.max + c.totalBOMCostGBP + c.smtAssemblyCostGBP)],
     ],
     styles: { fontSize: 8, cellPadding: 2.5 },
     headStyles: { fillColor: BLUE, textColor: WHITE, fontStyle: 'bold' },
@@ -9461,14 +9558,14 @@ async function exportPCBAnalysisPrint(r: PCBImageAnalysis): Promise<void> {
     autoTable(doc, {
       startY: y,
       margin: { left: margin, right: margin },
-      head: [['Country', 'PCB Fab', 'Assembly', 'BOM', 'Logistics', 'Total/Board', 'Lead Time', 'Quality']],
+      head: [['Country', `PCB Fab (${_displayCurrency})`, 'Assembly', 'BOM', 'Logistics', 'Total/Board', 'Lead Time', 'Quality']],
       body: sorted.map(ct => [
         ct.countryName,
-        `£${ct.pcbFabPerBoard.toFixed(2)}`,
-        `£${ct.assemblyPerBoard.toFixed(2)}`,
-        `£${ct.bomCostPerBoard.toFixed(2)}`,
-        `£${ct.logisticsPerBoard.toFixed(2)}`,
-        `£${ct.totalPerBoard.toFixed(2)}`,
+        num(ct.pcbFabPerBoard),
+        num(ct.assemblyPerBoard),
+        num(ct.bomCostPerBoard),
+        num(ct.logisticsPerBoard),
+        num(ct.totalPerBoard),
         `${ct.leadTimeWeeks}w`,
         ct.qualityIndex ? `${(ct.qualityIndex * 100).toFixed(0)}%` : '—',
       ]),
@@ -9495,7 +9592,7 @@ async function exportPCBAnalysisPrint(r: PCBImageAnalysis): Promise<void> {
   autoTable(doc, {
     startY: y,
     margin: { left: margin, right: margin },
-    head: [['#', 'RefDes', 'Description', 'Pkg', 'Value', 'Qty', 'Unit £', 'Ext £', 'Flags']],
+    head: [['#', 'RefDes', 'Description', 'Pkg', 'Value', 'Qty', `Unit ${_displayCurrency}`, `Ext ${_displayCurrency}`, 'Flags']],
     body: r.bom.map((item, i) => [
       String(i + 1),
       item.refDes,
@@ -9503,11 +9600,11 @@ async function exportPCBAnalysisPrint(r: PCBImageAnalysis): Promise<void> {
       item.pkg,
       item.value,
       String(item.qty),
-      item.unitPriceGBP.toFixed(3),
-      (item.qty * item.unitPriceGBP).toFixed(2),
+      num(item.unitPriceGBP, 3),
+      num(item.qty * item.unitPriceGBP),
       [item.automotive ? 'AEC' : '', item.highCost ? '$$' : '', item.ocrExtracted ? 'OCR' : ''].filter(Boolean).join(' '),
     ]),
-    foot: [['', '', '', '', '', '', 'Total BOM', `£${r.costEstimates.totalBOMCostGBP.toFixed(2)}`, '']],
+    foot: [['', '', '', '', '', '', 'Total BOM', num(r.costEstimates.totalBOMCostGBP), '']],
     styles: { fontSize: 6.5, cellPadding: 1.5 },
     headStyles: { fillColor: BLUE, textColor: WHITE, fontStyle: 'bold', fontSize: 7 },
     footStyles: { fillColor: LIGHT, fontStyle: 'bold', fontSize: 7, textColor: DARK },
@@ -15281,6 +15378,13 @@ async function printMasterPDF(): Promise<void> {
   const hasCAD  = !!cadAnalysisResult;
   const hasPCB  = !!pcbImageResult;
 
+  // A PCB Image→BOM run leaves its should-cost record as a directCost pass-through.
+  // The generic weight-based Part A is meaningless noise for a PCB (0% process /
+  // labour, "mat-virtual", casting/forging DFM, £ rate-traceability), so suppress it
+  // and let Part C (the real PCB analysis) stand alone as a clean PCB report.
+  const scIsPcbPassthrough = hasPCB && hasCost && lastInput?.rawMaterial?.directCost !== undefined;
+  const showCostPart = hasCost && !scIsPcbPassthrough;
+
   if (!hasCost && !hasCAD && !hasPCB) {
     showToast('Nothing to export — run a calculation or load a demo first.', 'warning');
     return;
@@ -15345,7 +15449,7 @@ async function printMasterPDF(): Promise<void> {
   doc.text('CostVision  ·  Comprehensive Analysis Package', mg + 4, 29);
   doc.setFontSize(8);
   doc.text(`Generated: ${dateStr}`, mg + 4, 37);
-  doc.text(`Parts Loaded: ${[hasCost && 'Should-Cost', hasCAD && 'CAD Analysis', hasPCB && 'PCB Analysis'].filter(Boolean).join('  ·  ')}`, mg + 4, 44);
+  doc.text(`Parts Loaded: ${[showCostPart && 'Should-Cost', hasCAD && 'CAD Analysis', hasPCB && 'PCB Analysis'].filter(Boolean).join('  ·  ')}`, mg + 4, 44);
 
   y = 62;
 
@@ -15354,7 +15458,7 @@ async function printMasterPDF(): Promise<void> {
   doc.text('Report Contents', mg, y); y += 8;
 
   const toc: [string, string, boolean, RGB][] = [
-    ['PART A', 'Should-Cost Analysis  (§A1–§A5: breakdown, operations, DFM/DFA, optimisations)', hasCost, ORANGE],
+    ['PART A', 'Should-Cost Analysis  (§A1–§A5: breakdown, operations, DFM/DFA, optimisations)', showCostPart, ORANGE],
     ['PART B', 'AI CAD-to-Cost Analysis  (§B1–§B5: geometry, process recs, materials, risks)', hasCAD, GREEN],
     ['PART C', 'PCB Image Analysis  (§C1–§C6: board spec, assembly, BOM, country comparison)', hasPCB, BLUE],
   ];
@@ -15372,7 +15476,7 @@ async function printMasterPDF(): Promise<void> {
   y += 6;
 
   // Summary boxes per loaded part
-  if (hasCost && lastResult) {
+  if (showCostPart && lastResult) {
     // Use the full currency-symbol map — the old GBP/EUR/$ ternary printed "$" for
     // CNY/INR/etc, so a China (CNY) should-cost showed "$80.13" on the cover.
     const sym = CURRENCY_SYMBOL[_displayCurrency] ?? _displayCurrency + ' ';
@@ -15427,7 +15531,7 @@ async function printMasterPDF(): Promise<void> {
   // report (region, material detail, machine-rate buildup, rate traceability,
   // uncertainty, sensitivity, §9 regional 10-country comparison, carbon,
   // insights, DFM/DFA, optimisation, roadmap). Shared via renderShouldCostSections.
-  if (hasCost && lastResult && lastInput && renderShouldCostSections) {
+  if (showCostPart && lastResult && lastInput && renderShouldCostSections) {
     partPage('PART A — SHOULD-COST ANALYSIS', `${lastResult.partName}  ·  ${COMMODITY_LABELS[activeCommodity] ?? activeCommodity}  ·  ${_mfgRegion}  ·  ${dateStr}`, ORANGE);
 
     // Manufacturing basis line — the manufacturing country was previously absent
@@ -15590,7 +15694,8 @@ async function printMasterPDF(): Promise<void> {
   // ══ PART C: PCB ANALYSIS ══════════════════════════════════════════════════
   if (hasPCB && pcbImageResult) {
     const r = pcbImageResult;
-    partPage('PART C — PCB IMAGE ANALYSIS', `${r.partName}  ·  ${r.confidenceLevel} Confidence  ·  ${dateStr}`, BLUE);
+    const pcbAsil = r._asilLevel && !/^(unknown|n\/?a|none)$/i.test(r._asilLevel) ? r._asilLevel : null;
+    partPage('PART C — PCB IMAGE ANALYSIS', `${r.partName}  ·  ${r.confidenceLevel} Confidence${pcbAsil ? `  ·  ISO 26262 ${pcbAsil}` : ''}  ·  ${dateStr}`, BLUE);
 
     // §C1 Board Spec
     secBar('§C1 — Board Specification', BLUE);
@@ -15606,10 +15711,28 @@ async function printMasterPDF(): Promise<void> {
         ['Micro Vias', String(b.microVias), 'Copper Weight', `${b.copperWeightOz} oz`],
         ['Impedance Control', b.impedanceControlRequired ? 'Yes' : 'No', 'BGA Detected', b.bgaDetected ? 'Yes' : 'No'],
         ['Board Domain', r.stage1Classification?.domain?.replace(/_/g,' ') ?? '—', 'OCR ICs Found', String(r.ocrExtraction?.icMarkings?.length ?? 0)],
+        ['Functional Safety', pcbAsil ? `ISO 26262 · ${pcbAsil}` : 'Not safety-rated', 'Automotive NRE', r._automotiveNRE ? `${CURRENCY_SYMBOL[_displayCurrency] ?? _displayCurrency + ' '}${Math.round(r._automotiveNRE.totalNRE * _displayFxRate).toLocaleString('en-GB')}` : '—'],
       ],
       styles: { fontSize: 7.5 }, headStyles: { fillColor: [219,234,254], textColor: SLATE, fontStyle: 'bold' }, theme: 'grid',
     });
     y = lastY() + 5;
+
+    // §C1b Functional Safety (ISO 26262) — safety-rated automotive boards only
+    if (pcbAsil && (r._asilRationale || r._asilSafetyFunctions?.length)) {
+      secBar('§C1b — Functional Safety (ISO 26262)', RED_R);
+      if (r._asilRationale) {
+        doc.setFontSize(7.5); doc.setFont('helvetica', 'bold'); doc.setTextColor(...SLATE);
+        doc.text(`ASIL ${pcbAsil}`, mg + 1, y + 1);
+        doc.setFont('helvetica', 'normal'); doc.setTextColor(...GREY);
+        const rl = doc.splitTextToSize(r._asilRationale.replace(/\s+/g, ' ').trim(), cW - 2);
+        doc.text(rl as string[], mg + 1, y + 5.5); y += 5 + (rl as string[]).length * 3.6 + 2;
+      }
+      if (r._asilSafetyFunctions?.length) {
+        doc.setFontSize(7.5); doc.setFont('helvetica', 'normal'); doc.setTextColor(...SLATE);
+        const sfl = doc.splitTextToSize(`Safety functions: ${r._asilSafetyFunctions.join('; ')}`, cW - 2);
+        doc.text(sfl as string[], mg + 1, y + 2); y += (sfl as string[]).length * 3.6 + 4;
+      }
+    }
 
     // §C2 Assembly
     secBar('§C2 — Assembly Overview', BLUE);
