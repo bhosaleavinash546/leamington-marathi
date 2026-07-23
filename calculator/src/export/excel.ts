@@ -12,7 +12,8 @@ export async function exportToExcelBlob(
   currency = 'GBP',
   fxRate = 1
 ): Promise<Blob> {
-  const sym = currency === 'GBP' ? '£' : currency === 'EUR' ? '€' : currency === 'USD' ? '$' : currency;
+  // Full symbol map so ¥/₹/etc render (was falling through to the bare code, e.g. "CNY80.13").
+  const sym = ({ GBP: '£', EUR: '€', USD: '$', CNY: '¥', INR: '₹' } as Record<string, string>)[currency] ?? currency + ' ';
   const c = (n: number) => `${sym}${(n * fxRate).toFixed(2)}`;
   const sheets: SheetSpec[] = [];
   const pcts = breakdownPercentages(result);

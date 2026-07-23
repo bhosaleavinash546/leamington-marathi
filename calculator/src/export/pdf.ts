@@ -705,10 +705,15 @@ export function renderShouldCostSections(
       autoTable(doc, {
         startY: y, margin: { left: MG, right: MG }, theme: 'grid',
         head: [['Cost Driver', 'Base', `-${sens.variationPct}% cost`, `+${sens.variationPct}% cost`, `Range ${sym}`]],
-        body: sens.drivers.slice(0, 8).map(d => [
-          d.driver, `${r2v(d.baseValue)}${d.unit}`,
-          `${d.minusPct > 0 ? '+' : ''}${r1(d.minusPct)}%`, `${d.plusPct > 0 ? '+' : ''}${r1(d.plusPct)}%`, c(d.range),
-        ]),
+        body: sens.drivers.slice(0, 8).map(d => {
+          // Monetary drivers carry a '£' in their unit (e.g. "£/kg", "£/hr") and a
+          // GBP-denominated baseValue. Convert those to the display currency + symbol;
+          // non-money drivers (%, hr, parts) stay as-is. (The header/Range use `sym`.)
+          const money = d.unit.includes('£');
+          const base = money ? `${c(d.baseValue)}${d.unit.replace('£', '')}` : `${r2v(d.baseValue)}${d.unit}`;
+          return [d.driver, base,
+            `${d.minusPct > 0 ? '+' : ''}${r1(d.minusPct)}%`, `${d.plusPct > 0 ? '+' : ''}${r1(d.plusPct)}%`, c(d.range)];
+        }),
         headStyles: { fillColor: NAVY as RGB, textColor: WHITE as RGB, fontStyle: 'bold', fontSize: 7.5 },
         bodyStyles: { fontSize: 8, cellPadding: 2.5 },
         alternateRowStyles: { fillColor: LIGHT as RGB },
@@ -1219,8 +1224,13 @@ export { printPDF as openPDF };
 // ════════════════════════════════════════════════════════════════════════════
 //  AI CAD-to-COST ANALYSIS PDF
 // ════════════════════════════════════════════════════════════════════════════
-export function printCADAnalysisPDF(r: CADAnalysisResult, partPhotoDataUrl?: string | null): void {
+export function printCADAnalysisPDF(r: CADAnalysisResult, partPhotoDataUrl?: string | null, currency = 'GBP', fxRate = 1): void {
   type RGB3 = [number, number, number];
+  // AI cost range and tooling figures are GBP-denominated — convert to the
+  // chosen display currency so a CNY/EUR report is not littered with £.
+  const cadCurSym = ({ GBP: '£', EUR: '€', USD: '$', CNY: '¥', INR: '₹' } as Record<string, string>)[currency] ?? currency + ' ';
+  const cadMoney = (n: number) => `${cadCurSym}${(n * fxRate).toFixed(2)}`;
+  const cadMoney0 = (n: number) => `${cadCurSym}${Math.round(n * fxRate).toLocaleString()}`;
 
   const TEAL:   RGB3 = [13,  148, 136];
   const DARK:   RGB3 = [15,  23,  42];
@@ -1545,9 +1555,9 @@ export function printCADAnalysisPDF(r: CADAnalysisResult, partPhotoDataUrl?: str
     doc.text('CONSERVATIVE',  MG + thirds * 2 + 4, y + 6);
 
     doc.setFontSize(14); doc.setFont('helvetica', 'bold');
-    doc.setTextColor(...GRN3);  doc.text(`£${cr.low.toFixed(2)}`,  MG + thirds * 0 + 8, y + 14);
-    doc.setTextColor(...BLUE3); doc.text(`£${cr.mid.toFixed(2)}`,  MG + thirds * 1 + 8, y + 14);
-    doc.setTextColor(...RED3);  doc.text(`£${cr.high.toFixed(2)}`, MG + thirds * 2 + 8, y + 14);
+    doc.setTextColor(...GRN3);  doc.text(cadMoney(cr.low),  MG + thirds * 0 + 8, y + 14);
+    doc.setTextColor(...BLUE3); doc.text(cadMoney(cr.mid),  MG + thirds * 1 + 8, y + 14);
+    doc.setTextColor(...RED3);  doc.text(cadMoney(cr.high), MG + thirds * 2 + 8, y + 14);
     doc.setFont('helvetica', 'normal'); doc.setTextColor(...DARK);
     y += 24;
   }
@@ -1578,9 +1588,9 @@ export function printCADAnalysisPDF(r: CADAnalysisResult, partPhotoDataUrl?: str
 
   // Process-specific params
   const specific: string[][] = [];
-  if (ci.casting)          { specific.push(['Casting Subtype', ci.casting.subtype], ['Die/Mould Cost', `£${ci.casting.dieMouldCostGBP.toLocaleString()}`], ['Die Life', `${ci.casting.dieMouldLife.toLocaleString()} shots`], ['Cavities', String(ci.casting.cavities)], ['Yield', `${(ci.casting.yieldFraction * 100).toFixed(1)}%`]); }
-  if (ci.forging)          { specific.push(['Flash Weight', `${ci.forging.flashKg.toFixed(3)} kg`], ['Yield', `${(ci.forging.yieldFraction * 100).toFixed(1)}%`], ['Die Cost', `£${ci.forging.dieCostGBP.toLocaleString()}`], ['Strokes', String(ci.forging.strokes)]); }
-  if (ci.injectionMoulding){ specific.push(['Cavities', String(ci.injectionMoulding.cavities)], ['Wall Thickness', `${ci.injectionMoulding.wallThicknessMm} mm`], ['Mould Cost', `£${ci.injectionMoulding.mouldCostGBP.toLocaleString()}`], ['Mould Life', `${ci.injectionMoulding.mouldLife.toLocaleString()} shots`], ['Projected Area', `${ci.injectionMoulding.projectedAreaCm2.toFixed(1)} cm²`]); }
+  if (ci.casting)          { specific.push(['Casting Subtype', ci.casting.subtype], ['Die/Mould Cost', cadMoney0(ci.casting.dieMouldCostGBP)], ['Die Life', `${ci.casting.dieMouldLife.toLocaleString()} shots`], ['Cavities', String(ci.casting.cavities)], ['Yield', `${(ci.casting.yieldFraction * 100).toFixed(1)}%`]); }
+  if (ci.forging)          { specific.push(['Flash Weight', `${ci.forging.flashKg.toFixed(3)} kg`], ['Yield', `${(ci.forging.yieldFraction * 100).toFixed(1)}%`], ['Die Cost', cadMoney0(ci.forging.dieCostGBP)], ['Strokes', String(ci.forging.strokes)]); }
+  if (ci.injectionMoulding){ specific.push(['Cavities', String(ci.injectionMoulding.cavities)], ['Wall Thickness', `${ci.injectionMoulding.wallThicknessMm} mm`], ['Mould Cost', cadMoney0(ci.injectionMoulding.mouldCostGBP)], ['Mould Life', `${ci.injectionMoulding.mouldLife.toLocaleString()} shots`], ['Projected Area', `${ci.injectionMoulding.projectedAreaCm2.toFixed(1)} cm²`]); }
   if (specific.length > 0) {
     ck(specific.length * 5 + 12);
     doc.setFontSize(7.5); doc.setFont('helvetica', 'bold'); doc.setTextColor(...GREY3);

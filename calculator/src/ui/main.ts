@@ -6519,7 +6519,7 @@ function renderCADResults(r: CADAnalysisResult, autoCalculate = false, annualVol
   // Wire PDF export button
   el('cad-export-pdf-btn')?.addEventListener('click', () => {
     if (!cadAnalysisResult) return;
-    void ensurePdfLibs().then(() => printCADAnalysisPDF!(cadAnalysisResult!, currentPartPhotoDataUrl()));
+    void ensurePdfLibs().then(() => printCADAnalysisPDF!(cadAnalysisResult!, currentPartPhotoDataUrl(), _displayCurrency, _displayFxRate));
   });
 
   // Wire alternative process cards
@@ -15382,7 +15382,10 @@ async function printMasterPDF(): Promise<void> {
     doc.text('PCB Analysis Summary', mg + 8, y + 7);
     doc.setFontSize(7.5); doc.setFont('helvetica', 'normal'); doc.setTextColor(...SLATE);
     doc.text(`Board: ${pcbImageResult.partName}`, mg + 8, y + 13);
-    doc.text(`${pcbImageResult.boardSpec.estimatedLayers}-layer ${pcbImageResult.boardSpec.technologyType}  ·  BOM: £${co.totalBOMCostGBP.toFixed(2)}  ·  Fab: £${co.pcbFabGBP.mid.toFixed(2)}  ·  Confidence: ${pcbImageResult.confidenceLevel}`, mg + 8, y + 19);
+    // PCB costs are GBP-denominated — convert to the display currency.
+    const pcbSym = CURRENCY_SYMBOL[_displayCurrency] ?? _displayCurrency + ' ';
+    const pcbFx = (n: number) => `${pcbSym}${(n * _displayFxRate).toFixed(2)}`;
+    doc.text(`${pcbImageResult.boardSpec.estimatedLayers}-layer ${pcbImageResult.boardSpec.technologyType}  ·  BOM: ${pcbFx(co.totalBOMCostGBP)}  ·  Fab: ${pcbFx(co.pcbFabGBP.mid)}  ·  Confidence: ${pcbImageResult.confidenceLevel}`, mg + 8, y + 19);
     y += 30;
   }
 
@@ -15439,7 +15442,7 @@ async function printMasterPDF(): Promise<void> {
   if (hasCAD && cadAnalysisResult) {
     const r = cadAnalysisResult;
     const geo = r.geometry;
-    partPage('PART B — AI CAD-TO-COST ANALYSIS', `${r.partName}  ·  Manufacturability: ${r.manufacturabilityScore}/10  ·  ${r.confidenceLevel} Confidence  ·  ${dateStr}`, GREEN);
+    partPage('PART B — AI CAD-TO-COST ANALYSIS', `${r.partName}  ·  Manufacturability: ${r.manufacturabilityScore}/100  ·  ${r.confidenceLevel} Confidence  ·  ${dateStr}`, GREEN);
 
     // §B1 Geometry
     secBar('§B1 — Geometry Summary', GREEN);
@@ -15451,7 +15454,7 @@ async function printMasterPDF(): Promise<void> {
         ['Bounding Box', `${bb.x.toFixed(0)} × ${bb.y.toFixed(0)} × ${bb.z.toFixed(0)} mm`, 'Volume', `${geo.estimatedVolumeCm3.toFixed(1)} cm³`],
         ['Weight (Al)', `${geo.estimatedWeightKg.aluminum.toFixed(3)} kg`, 'Weight (Steel)', `${geo.estimatedWeightKg.steel.toFixed(3)} kg`],
         ['Weight (Plastic)', `${geo.estimatedWeightKg.plastic.toFixed(3)} kg`, 'Features Detected', String(r.detectedFeatures.length)],
-        ['Manufacturability Score', `${r.manufacturabilityScore}/10`, 'Confidence', r.confidenceLevel],
+        ['Manufacturability Score', `${r.manufacturabilityScore}/100`, 'Confidence', r.confidenceLevel],
       ],
       styles: { fontSize: 7.5 }, headStyles: { fillColor: [232,248,243], textColor: SLATE, fontStyle: 'bold' }, theme: 'grid',
     });
@@ -15508,13 +15511,17 @@ async function printMasterPDF(): Promise<void> {
     if (cadDFM.length > 0 || cadCR) {
       secBar('§B5 — DFM Issues & Cost Estimate Range', GREEN);
       if (cadCR) {
+        // AI cost range is GBP-based — convert to the display currency (a CNY
+        // master report was showing £ here while the cover showed ¥).
+        const cadSym = CURRENCY_SYMBOL[_displayCurrency] ?? _displayCurrency + ' ';
+        const cadFx = (n: number) => `${cadSym}${(n * _displayFxRate).toFixed(2)}`;
         autoTable(doc, {
           startY: y, margin: { left: mg, right: mg },
           head: [['Scenario', 'Cost/Part', 'Notes']],
           body: [
-            ['Optimistic', `£${cadCR.low.toFixed(2)}`, 'Best-case: high volume, efficient process'],
-            ['Mid-point',  `£${cadCR.mid.toFixed(2)}`, 'Expected should-cost at target volume'],
-            ['Conservative', `£${cadCR.high.toFixed(2)}`, 'Worst-case: complexity + low volume'],
+            ['Optimistic', cadFx(cadCR.low), 'Best-case: high volume, efficient process'],
+            ['Mid-point',  cadFx(cadCR.mid), 'Expected should-cost at target volume'],
+            ['Conservative', cadFx(cadCR.high), 'Worst-case: complexity + low volume'],
           ],
           styles: { fontSize: 8 }, headStyles: { fillColor: [232,248,243], textColor: SLATE, fontStyle: 'bold' },
           columnStyles: { 0: { cellWidth: 28, fontStyle: 'bold' }, 1: { cellWidth: 22, halign: 'right' }, 2: { cellWidth: cW - 53 } },
@@ -15587,17 +15594,20 @@ async function printMasterPDF(): Promise<void> {
     });
     y = lastY() + 5;
 
-    // §C3 Cost Overview
+    // §C3 Cost Overview.  PCB costs are GBP-denominated — convert to the display
+    // currency + symbol so Part C matches the report's chosen currency.
+    const pcSym = CURRENCY_SYMBOL[_displayCurrency] ?? _displayCurrency + ' ';
+    const pcv = (n: number) => (n * _displayFxRate).toFixed(2);
     secBar('§C3 — Cost Overview', BLUE);
     const co = r.costEstimates;
     autoTable(doc, {
       startY: y, margin: { left: mg, right: mg },
-      head: [['Cost Element', 'Min (£)', 'Mid (£)', 'Max (£)']],
+      head: [['Cost Element', `Min (${pcSym})`, `Mid (${pcSym})`, `Max (${pcSym})`]],
       body: [
-        ['PCB Fabrication', co.pcbFabGBP.min.toFixed(2), co.pcbFabGBP.mid.toFixed(2), co.pcbFabGBP.max.toFixed(2)],
-        ['BOM (components)', '—', co.totalBOMCostGBP.toFixed(2), '—'],
-        ['SMT Assembly', '—', co.smtAssemblyCostGBP.toFixed(2), '—'],
-        ['Total Estimate', (co.pcbFabGBP.min+co.totalBOMCostGBP+co.smtAssemblyCostGBP).toFixed(2), (co.pcbFabGBP.mid+co.totalBOMCostGBP+co.smtAssemblyCostGBP).toFixed(2), (co.pcbFabGBP.max+co.totalBOMCostGBP+co.smtAssemblyCostGBP).toFixed(2)],
+        ['PCB Fabrication', pcv(co.pcbFabGBP.min), pcv(co.pcbFabGBP.mid), pcv(co.pcbFabGBP.max)],
+        ['BOM (components)', '—', pcv(co.totalBOMCostGBP), '—'],
+        ['SMT Assembly', '—', pcv(co.smtAssemblyCostGBP), '—'],
+        ['Total Estimate', pcv(co.pcbFabGBP.min+co.totalBOMCostGBP+co.smtAssemblyCostGBP), pcv(co.pcbFabGBP.mid+co.totalBOMCostGBP+co.smtAssemblyCostGBP), pcv(co.pcbFabGBP.max+co.totalBOMCostGBP+co.smtAssemblyCostGBP)],
       ],
       styles: { fontSize: 8 }, headStyles: { fillColor: [219,234,254], textColor: SLATE, fontStyle: 'bold' },
       columnStyles: { 0: { fontStyle: 'bold' }, 1: { halign: 'right' }, 2: { halign: 'right' }, 3: { halign: 'right' } },
@@ -15615,7 +15625,7 @@ async function printMasterPDF(): Promise<void> {
       autoTable(doc, {
         startY: y, margin: { left: mg, right: mg },
         head: [['Country', 'PCB Fab', 'Assembly', 'BOM', 'Logistics', 'Total/Board', 'Lead Time']],
-        body: sorted.map(ct => [ct.countryName, `£${ct.pcbFabPerBoard.toFixed(2)}`, `£${ct.assemblyPerBoard.toFixed(2)}`, `£${ct.bomCostPerBoard.toFixed(2)}`, `£${ct.logisticsPerBoard.toFixed(2)}`, `£${ct.totalPerBoard.toFixed(2)}`, `${ct.leadTimeWeeks}w`]),
+        body: sorted.map(ct => [ct.countryName, `${pcSym}${pcv(ct.pcbFabPerBoard)}`, `${pcSym}${pcv(ct.assemblyPerBoard)}`, `${pcSym}${pcv(ct.bomCostPerBoard)}`, `${pcSym}${pcv(ct.logisticsPerBoard)}`, `${pcSym}${pcv(ct.totalPerBoard)}`, `${ct.leadTimeWeeks}w`]),
         styles: { fontSize: 7 }, headStyles: { fillColor: [219,234,254], textColor: SLATE, fontStyle: 'bold', fontSize: 7 },
         columnStyles: { 0: { cellWidth: 30 }, 1: { halign: 'right' }, 2: { halign: 'right' }, 3: { halign: 'right' }, 4: { halign: 'right' }, 5: { halign: 'right', fontStyle: 'bold', textColor: BLUE }, 6: { halign: 'right' } },
         didParseCell: (d: any) => {
@@ -15629,9 +15639,9 @@ async function printMasterPDF(): Promise<void> {
     secBar(`§C5 — Bill of Materials  (${r.bom.length} lines · ${r.assembly.smtPlacements} SMT placements)`, BLUE);
     autoTable(doc, {
       startY: y, margin: { left: mg, right: mg },
-      head: [['#', 'RefDes', 'Description', 'Pkg', 'Value', 'Qty', 'Unit £', 'Ext £']],
-      body: r.bom.map((item, i) => [String(i+1), item.refDes, item.description, item.pkg, item.value, String(item.qty), item.unitPriceGBP.toFixed(3), (item.qty*item.unitPriceGBP).toFixed(2)]),
-      foot: [['', '', '', '', '', '', 'BOM Total', `£${co.totalBOMCostGBP.toFixed(2)}`]],
+      head: [['#', 'RefDes', 'Description', 'Pkg', 'Value', 'Qty', `Unit ${pcSym}`, `Ext ${pcSym}`]],
+      body: r.bom.map((item, i) => [String(i+1), item.refDes, item.description, item.pkg, item.value, String(item.qty), (item.unitPriceGBP * _displayFxRate).toFixed(3), pcv(item.qty*item.unitPriceGBP)]),
+      foot: [['', '', '', '', '', '', 'BOM Total', `${pcSym}${pcv(co.totalBOMCostGBP)}`]],
       styles: { fontSize: 6.5 }, headStyles: { fillColor: [219,234,254], textColor: SLATE, fontStyle: 'bold', fontSize: 7 },
       footStyles: { fillColor: LIGHT, fontStyle: 'bold' },
       columnStyles: { 0: { cellWidth: 7, halign: 'center' }, 1: { cellWidth: 14 }, 6: { halign: 'right' }, 7: { halign: 'right', fontStyle: 'bold' } },
