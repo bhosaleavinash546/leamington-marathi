@@ -10993,6 +10993,22 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
             }
           }
         }
+        // Realistic press speed from geometry — the default 80 SPM implies a
+        // near-zero press cost, but a large multi-bend bracket is feed- AND
+        // forming-limited: a progressive line feeds ~18 m/min, and each extra
+        // bend/station slows indexing. Without this the forming line collapsed
+        // to ~¥0.02 on a 340 mm, 15-bend part.
+        {
+          const smBends = cadOCCTGeometry?.sheetMetal?.bendCount ?? 0;
+          const pitchMm = num('sm-pitch') || smBlankL || 0;
+          if (pitchMm > 0) {
+            let spm = 18000 / pitchMm;                 // feed-limited SPM (18 m/min ÷ pitch)
+            if (smBends >= 4)  spm *= 0.8;             // forming-complexity de-rate
+            if (smBends >= 8)  spm *= 0.8;
+            if (smBends >= 14) spm *= 0.8;
+            setNumericField('sm-spm', Math.round(Math.min(120, Math.max(10, spm))), 0);
+          }
+        }
         break;
       }
 
