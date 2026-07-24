@@ -412,6 +412,19 @@ function fitText(doc: jsPDF, text: string, maxWidth: number): string {
   return t.trimEnd() + '…';
 }
 
+/** Column x-positions from widths: x[i] = ML + sum(widths before i).
+ *  (Replaces a reduce that mis-seeded the accumulator and scrambled every
+ *  table's column origins — the root cause of text piling up at the left.) */
+function colPositions(widths: number[], ml: number): number[] {
+  return widths.map((_, i) => ml + widths.slice(0, i).reduce((a, b) => a + b, 0));
+}
+
+/** Download filenames must not contain filesystem-reserved characters —
+ *  system names like "BEV / MHEV" otherwise produce broken downloads. */
+function safeFilename(name: string): string {
+  return name.replace(/[\\/:*?"<>|]/g, '-');
+}
+
 // ─── PDF Export ───────────────────────────────────────────────────────────────
 
 export function exportToPdf(result: AnalysisResult, systemName: string, subName: string): void {
@@ -478,7 +491,7 @@ export function exportToPdf(result: AnalysisResult, systemName: string, subName:
     { label: 'Total Ideas',     value: String(result.summary.totalIdeas),       rgb: [59, 130, 246] as const },
     { label: 'Quick Wins',      value: String(result.summary.quickWins),         rgb: [34, 197, 94] as const },
     { label: 'Strategic Items', value: String(result.summary.strategicItems),    rgb: [245, 158, 11] as const },
-    { label: 'Web Searches',    value: String(result.summary.searchesPerformed), rgb: [139, 92, 246] as const },
+    { label: 'Web Searches',    value: String(result.summary.searchesPerformed ?? result.sources?.length ?? 0), rgb: [139, 92, 246] as const },
   ];
 
   const boxW = (CW - 9) / 4;
@@ -506,8 +519,8 @@ export function exportToPdf(result: AnalysisResult, systemName: string, subName:
   doc.text('Executive Summary', ML, 136);
 
   // Table header
-  const cols = [8, 75, 22, 38, 30, 19];
-  const colX = cols.reduce<number[]>((acc, w, i) => [...acc, (acc[i - 1] ?? ML) + (i === 0 ? 0 : cols[i - 1])], [ML]);
+  const cols = [8, 74, 20, 34, 28, 18];   // sums to CW=182 — no right-margin bleed
+  const colX = colPositions(cols, ML);
   const headers = ['No.', 'Idea Title', 'Difficulty', 'Cost Saving Types', 'Potential', 'Level'];
   setFill(doc, NAVY_RGB);
   doc.rect(ML, 140, CW, 7, 'F');
@@ -516,12 +529,21 @@ export function exportToPdf(result: AnalysisResult, systemName: string, subName:
   doc.setFont('helvetica', 'bold');
   headers.forEach((h, i) => doc.text(h, colX[i] + 1, 145.5));
 
-  // Table rows
+  // Table rows — stop above the footer and say how many rows were left out
+  // rather than silently colliding with it.
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(7);
+  const maxExecRows = Math.floor((PH - 26 - 147) / 8);
+  if (result.ideas.length > maxExecRows) {
+    setColor(doc, GRAY_RGB);
+    doc.setFontSize(7);
+    doc.setFont('helvetica', 'italic');
+    doc.text(`+ ${result.ideas.length - maxExecRows} more ideas — see the detail pages`, ML, 147 + maxExecRows * 8 + 4);
+    doc.setFont('helvetica', 'normal');
+  }
   result.ideas.forEach((idea, idx) => {
     const ry = 147 + idx * 8;
-    if (ry > PH - 20) return; // clip to first page
+    if (idx >= maxExecRows) return; // clip to first page (counted above)
     const bg: readonly [number, number, number] = idx % 2 === 0 ? LIGHT_RGB : WHITE_RGB;
     setFill(doc, bg);
     doc.rect(ML, ry, CW, 8, 'F');
@@ -611,8 +633,8 @@ export function exportToPdf(result: AnalysisResult, systemName: string, subName:
     .sort((a, b) => b._roi - a._roi)
     .slice(0, 10);
 
-  const rCols = [6, 72, 22, 36, 26, 20];
-  const rColX = rCols.reduce<number[]>((acc, w, i) => [...acc, (acc[i - 1] ?? ML) + (i === 0 ? 0 : rCols[i - 1])], [ML]);
+  const rCols = [6, 72, 22, 36, 26, 20];   // sums to CW=182
+  const rColX = colPositions(rCols, ML);
   const rHeaders = ['#', 'Idea', 'Difficulty', 'Annual Value', 'Saving %', 'Timeline'];
   setFill(doc, NAVY_RGB);
   doc.rect(ML, 64, CW, 7, 'F');
@@ -683,6 +705,44 @@ export function exportToPdf(result: AnalysisResult, systemName: string, subName:
 
     let y = 28;
 
+    // Continuation support: long ideas flow onto extra pages instead of being
+    // silently cut — the old fixed boxes lost the tail of every long section.
+    const LH = 3.6;                       // body line height (mm) at 8pt
+    const LHF = LH / (8 * 0.3528);        // jsPDF lineHeightFactor for that
+    const BOTTOM = PH - 16;
+    function continuation() {
+      newPage();
+      setFill(doc, NAVY_RGB);
+      doc.rect(0, 0, PW, 12, 'F');
+      setColor(doc, WHITE_RGB);
+      doc.setFontSize(9);
+      doc.setFont('helvetica', 'bold');
+      doc.text(fitText(doc, `Idea ${idx + 1} (continued) — ${idea.title}`, CW), ML, 8);
+      y = 20;
+    }
+    function flowSection(title: string, body: string, fill: readonly [number, number, number], textCol: readonly [number, number, number], titleCol: readonly [number, number, number] = NAVY_RGB) {
+      if (!body.trim()) return;
+      doc.setFontSize(8); doc.setFont('helvetica', 'normal');
+      let lines: string[] = wrapText(doc, body, CW - 4);
+      let first = true;
+      while (lines.length) {
+        if (y > BOTTOM - 22) continuation();
+        const avail = Math.max(3, Math.floor((BOTTOM - (y + 9)) / LH));
+        const chunk = lines.slice(0, avail);
+        lines = lines.slice(chunk.length);
+        setColor(doc, titleCol); doc.setFontSize(9); doc.setFont('helvetica', 'bold');
+        doc.text(first ? title : `${title} (continued)`, ML, y);
+        y += 4;
+        const h = chunk.length * LH + 4.5;
+        setFill(doc, fill);
+        doc.roundedRect(ML, y, CW, h, 1.5, 1.5, 'F');
+        setColor(doc, textCol); doc.setFontSize(8); doc.setFont('helvetica', 'normal');
+        doc.text(chunk, ML + 2, y + 4.2, { lineHeightFactor: LHF });
+        y += h + 5;
+        first = false;
+      }
+    }
+
     // Metrics strip
     const mLabels = ['System Level', 'Cost Saving', 'Potential', 'Time to Implement'];
     const mVals = [
@@ -703,45 +763,16 @@ export function exportToPdf(result: AnalysisResult, systemName: string, subName:
       setColor(doc, NAVY_RGB);
       doc.setFontSize(8.5);
       doc.setFont('helvetica', 'bold');
-      const val = mVals[i].length > 22 ? mVals[i].slice(0, 20) + '…' : mVals[i];
-      doc.text(val, mx + 2, y + 11);
+      doc.text(fitText(doc, mVals[i], mW - 5), mx + 2, y + 11);
     });
     y += 18;
 
-    // Technical description
-    setColor(doc, NAVY_RGB);
-    doc.setFontSize(9);
-    doc.setFont('helvetica', 'bold');
-    doc.text('Technical Description', ML, y);
-    y += 4;
-    setFill(doc, LIGHT_RGB);
-    const descLines = wrapText(doc, idea.technicalDescription, CW);
-    const descH = Math.min(descLines.length * 4.5 + 4, 50);
-    doc.rect(ML, y, CW, descH, 'F');
-    setColor(doc, [55, 65, 81]);
-    doc.setFontSize(8);
-    doc.setFont('helvetica', 'normal');
-    doc.text(descLines.slice(0, 10), ML + 2, y + 5);
-    y += descH + 4;
+    flowSection('Technical Description', idea.technicalDescription, LIGHT_RGB, [55, 65, 81]);
+    flowSection('Manufacturing & Assembly Impact', idea.manufacturingImpact, [240, 253, 244], [55, 65, 81]);
 
-    // Manufacturing impact
-    setColor(doc, NAVY_RGB);
-    doc.setFontSize(9);
-    doc.setFont('helvetica', 'bold');
-    doc.text('Manufacturing & Assembly Impact', ML, y);
-    y += 4;
-    setFill(doc, [240, 253, 244]);
-    const mfgLines = wrapText(doc, idea.manufacturingImpact, CW);
-    const mfgH = Math.min(mfgLines.length * 4.5 + 4, 32);
-    doc.rect(ML, y, CW, mfgH, 'F');
-    setColor(doc, [55, 65, 81]);
-    doc.setFontSize(8);
-    doc.setFont('helvetica', 'normal');
-    doc.text(mfgLines.slice(0, 6), ML + 2, y + 5);
-    y += mfgH + 4;
-
-    // DFMA principles
+    // DFMA principles (single line, width-fitted)
     if (idea.dfmaPrinciples.length > 0) {
+      if (y > BOTTOM - 14) continuation();
       setColor(doc, NAVY_RGB);
       doc.setFontSize(9);
       doc.setFont('helvetica', 'bold');
@@ -750,39 +781,44 @@ export function exportToPdf(result: AnalysisResult, systemName: string, subName:
       setColor(doc, [79, 70, 229]);
       doc.setFontSize(8);
       doc.setFont('helvetica', 'normal');
-      doc.text(idea.dfmaPrinciples.slice(0, 4).join('  ·  '), ML, y);
+      doc.text(fitText(doc, idea.dfmaPrinciples.slice(0, 4).join('  ·  '), CW), ML, y);
       y += 6;
     }
 
-    // Risk notes
-    setColor(doc, [180, 83, 9]);
+    flowSection('Risk & Impact Notes', idea.riskNotes, [255, 251, 235], [120, 53, 15], [180, 83, 9]);
+    if (idea.benchmarkReference) {
+      flowSection('Benchmark Reference', idea.benchmarkReference, [240, 253, 244], [21, 94, 55]);
+    }
+
+    // Verification & evidence — the provenance the platform stamps on every
+    // idea belongs in the report (it IS the trust story).
+    const ec = idea.engineCheck;
+    const evid = idea.evidenceSources ?? [];
+    if (y > BOTTOM - 30) continuation();
+    setColor(doc, NAVY_RGB);
     doc.setFontSize(9);
     doc.setFont('helvetica', 'bold');
-    doc.text('Risk & Impact Notes', ML, y);
+    doc.text('Verification & Evidence', ML, y);
     y += 4;
-    setFill(doc, [255, 251, 235]);
-    const riskLines = wrapText(doc, idea.riskNotes, CW);
-    const riskH = Math.min(riskLines.length * 4.5 + 4, 28);
-    doc.rect(ML, y, CW, riskH, 'F');
-    setColor(doc, [120, 53, 15]);
-    doc.setFontSize(8);
-    doc.setFont('helvetica', 'normal');
-    doc.text(riskLines.slice(0, 5), ML + 2, y + 5);
-    y += riskH + 4;
-
-    // Benchmark reference
-    if (idea.benchmarkReference) {
-      setColor(doc, NAVY_RGB);
-      doc.setFontSize(9);
-      doc.setFont('helvetica', 'bold');
-      doc.text('Benchmark Reference', ML, y);
-      y += 5;
-      setColor(doc, [34, 197, 94]);
-      doc.setFontSize(8);
-      doc.setFont('helvetica', 'normal');
-      const bLines = wrapText(doc, idea.benchmarkReference, CW);
-      doc.text(bLines.slice(0, 3), ML, y);
-    }
+    const ecText = ec
+      ? `Engine cross-check (${ec.direction.toUpperCase()}): €${ec.baselineEur.toFixed(2)} → €${ec.proposedEur.toFixed(2)} (${ec.savingPct > 0 ? '−' : '+'}${Math.abs(ec.savingPct)}%) on ${ec.referenceCase}. ${ec.basis}`
+      : 'Engine cross-check: not expressible as a material/process/mass substitution — saving is AI-estimated, validate before commercial use.';
+    doc.setFontSize(8); doc.setFont('helvetica', 'normal');
+    const ecLines = wrapText(doc, pdfSafe(ecText), CW - 4);
+    const ecFill: readonly [number, number, number] = ec ? (ec.direction === 'confirmed' ? [236, 253, 245] : [254, 242, 242]) : [241, 245, 249];
+    const ecCol: readonly [number, number, number] = ec ? (ec.direction === 'confirmed' ? [6, 95, 70] : [153, 27, 27]) : [71, 85, 105];
+    const ecH = ecLines.length * LH + 4.5;
+    setFill(doc, ecFill);
+    doc.roundedRect(ML, y, CW, ecH, 1.5, 1.5, 'F');
+    setColor(doc, ecCol);
+    doc.text(ecLines, ML + 2, y + 4.2, { lineHeightFactor: LHF });
+    y += ecH + 3;
+    setColor(doc, GRAY_RGB);
+    doc.setFontSize(7.5);
+    const evidLine = evid.length
+      ? `Confidence: ${idea.confidenceLevel ?? 'estimated'}${idea.evidenceUnverified ? ' (evidence not independently verified)' : ''}  ·  Sources: ${evid.slice(0, 3).map(s => `${s.title}${s.year ? ` (${s.year})` : ''}`).join('; ')}`
+      : `Confidence: ${idea.confidenceLevel ?? 'estimated'} — no external evidence sources attached.`;
+    doc.text(wrapText(doc, fitText(doc, evidLine, CW * 2), CW), ML, y);
   });
 
   // ── Final page: Implementation Roadmap ────────────────────────────────────
@@ -808,8 +844,21 @@ export function exportToPdf(result: AnalysisResult, systemName: string, subName:
   ];
 
   let ry = 24;
+  // Roadmap flows onto extra pages instead of silently dropping ideas or
+  // colliding with the footer (both happened beyond ~15 ideas).
+  function roadmapEnsure(needed: number) {
+    if (ry + needed <= PH - 22) return;
+    newPage();
+    setFill(doc, NAVY_RGB);
+    doc.rect(0, 0, PW, 12, 'F');
+    setColor(doc, WHITE_RGB);
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Implementation Roadmap (continued)', ML, 8);
+    ry = 20;
+  }
   phases.forEach(phase => {
-    // Phase header
+    roadmapEnsure(24);   // header + at least one item together
     setFill(doc, phase.rgb);
     doc.roundedRect(ML, ry, CW, 8, 2, 2, 'F');
     setColor(doc, WHITE_RGB);
@@ -828,7 +877,7 @@ export function exportToPdf(result: AnalysisResult, systemName: string, subName:
     }
 
     phase.items.forEach(item => {
-      if (ry > PH - 25) return;
+      roadmapEnsure(15);
       setFill(doc, [30, 41, 59]);
       doc.roundedRect(ML, ry, CW, 13, 1.5, 1.5, 'F');
       setFill(doc, phase.rgb);
@@ -851,7 +900,7 @@ export function exportToPdf(result: AnalysisResult, systemName: string, subName:
   doc.setFontSize(8);
   doc.text('BrainSpark Platform  |  Confidential — Internal Use Only', PW / 2, PH - 14, { align: 'center' });
 
-  const filename = `BrainSpark_${systemName}_${subName}_${today}.pdf`;
+  const filename = safeFilename(`BrainSpark_${systemName}_${subName}_${today}.pdf`);
   doc.save(filename);
 }
 
@@ -947,67 +996,92 @@ export function exportRfqPdf(
 
     setColor(doc, WHITE_RGB);
     doc.setFontSize(13);
-    const titleLines = doc.splitTextToSize(idea.title, CW - 30);
-    doc.text(titleLines, ML, 21);
+    // Header bar is 28mm — cap the title at 2 lines so it can never spill
+    // (invisibly, in white) onto the page body below the bar.
+    const titleLines: string[] = doc.splitTextToSize(idea.title, CW - 30);
+    if (titleLines.length > 2) {
+      titleLines.length = 2;
+      titleLines[1] = fitText(doc, titleLines[1] + '…', CW - 30);
+    }
+    doc.text(titleLines, ML, titleLines.length > 1 ? 17 : 21);
 
     let cy = 40;
+    // Long specs flow onto continuation pages — the old layout ran straight
+    // off the sheet with today's 200-word descriptions.
+    function rfqEnsure(needed: number) {
+      if (cy + needed <= PH - 22) return;
+      doc.addPage();
+      setFill(doc, NAVY_RGB);
+      doc.rect(0, 0, PW, 12, 'F');
+      setColor(doc, GOLD_RGB);
+      doc.setFontSize(8);
+      doc.setFont('helvetica', 'bold');
+      doc.text(`RFQ ITEM ${idx + 1} OF ${approvedIdeas.length} (CONTINUED)`, ML, 8);
+      cy = 20;
+    }
+    function rfqSection(title: string, body: string) {
+      setColor(doc, NAVY_RGB);
+      doc.setFontSize(9);
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(9); doc.setFont('helvetica', 'normal');
+      let lines: string[] = doc.splitTextToSize(body, CW - 8);
+      let first = true;
+      while (lines.length) {
+        rfqEnsure(28);
+        const avail = Math.max(3, Math.floor((PH - 22 - (cy + 11)) / 4.2));
+        const chunk = lines.slice(0, avail);
+        lines = lines.slice(chunk.length);
+        setColor(doc, NAVY_RGB); doc.setFontSize(9); doc.setFont('helvetica', 'bold');
+        doc.text(first ? title : `${title} (CONTINUED)`, ML, cy);
+        cy += 5;
+        const h = chunk.length * 4.2 + 6;
+        setFill(doc, LIGHT_RGB);
+        doc.rect(ML, cy, CW, h, 'F');
+        setColor(doc, [30, 50, 70]);
+        doc.setFontSize(9); doc.setFont('helvetica', 'normal');
+        doc.text(chunk, ML + 4, cy + 5.2, { lineHeightFactor: 4.2 / (9 * 0.3528) });
+        cy += h + 6;
+        first = false;
+      }
+    }
 
-    // Difficulty + types
+    // Meta grid: 2×2 with width-fitted values — four unbounded values on one
+    // row previously collided and ran off the page edge.
+    const halfW = CW / 2;
+    const meta: Array<[string, string]> = [
+      ['DIFFICULTY', idea.implementationDifficulty],
+      ['TARGET TIMELINE', idea.timeToImplement],
+      ['SAVING TYPES', idea.costSavingTypes.join(', ')],
+      ['ANNUAL SAVING', idea.costSavingPotential.annualValue || 'TBC'],
+    ];
     setFill(doc, LIGHT_RGB);
-    doc.rect(ML, cy, CW, 22, 'F');
-    setColor(doc, [30, 50, 70]);
-    doc.setFontSize(8);
-    doc.setFont('helvetica', 'bold');
-    doc.text('DIFFICULTY', ML + 4, cy + 7);
-    doc.text('SAVING TYPES', ML + 40, cy + 7);
-    doc.text('TARGET TIMELINE', ML + 100, cy + 7);
-    doc.text('ANNUAL SAVING', ML + 145, cy + 7);
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(10);
-    doc.text(idea.implementationDifficulty, ML + 4, cy + 16);
-    doc.text(idea.costSavingTypes.join(', '), ML + 40, cy + 16);
-    doc.text(idea.timeToImplement, ML + 100, cy + 16);
-    doc.text(idea.costSavingPotential.annualValue || 'TBC', ML + 145, cy + 16);
-    cy += 30;
+    doc.rect(ML, cy, CW, 26, 'F');
+    meta.forEach(([label, value], i) => {
+      const mx = ML + (i % 2) * halfW + 4;
+      const my = cy + Math.floor(i / 2) * 13;
+      setColor(doc, [30, 50, 70]);
+      doc.setFontSize(7.5);
+      doc.setFont('helvetica', 'bold');
+      doc.text(label, mx, my + 5.5);
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(9.5);
+      doc.text(fitText(doc, value, halfW - 10), mx, my + 10.5);
+    });
+    cy += 34;
 
-    // Technical specification
-    setColor(doc, NAVY_RGB);
-    doc.setFontSize(9);
-    doc.setFont('helvetica', 'bold');
-    doc.text('TECHNICAL SPECIFICATION', ML, cy);
-    cy += 5;
-    setFill(doc, LIGHT_RGB);
-    const descLines = doc.splitTextToSize(idea.technicalDescription, CW);
-    const descH = Math.max(descLines.length * 5 + 8, 25);
-    doc.rect(ML, cy, CW, descH, 'F');
-    setColor(doc, [30, 50, 70]);
-    doc.setFontSize(9);
-    doc.setFont('helvetica', 'normal');
-    doc.text(descLines, ML + 4, cy + 6);
-    cy += descH + 6;
-
-    // Manufacturing impact
-    setColor(doc, NAVY_RGB);
-    doc.setFontSize(9);
-    doc.setFont('helvetica', 'bold');
-    doc.text('MANUFACTURING & ASSEMBLY IMPACT', ML, cy);
-    cy += 5;
-    const mfgLines = doc.splitTextToSize(idea.manufacturingImpact, CW);
-    const mfgH = Math.max(mfgLines.length * 5 + 8, 20);
-    setFill(doc, LIGHT_RGB);
-    doc.rect(ML, cy, CW, mfgH, 'F');
-    setColor(doc, [30, 50, 70]);
-    doc.setFontSize(9);
-    doc.setFont('helvetica', 'normal');
-    doc.text(mfgLines, ML + 4, cy + 6);
-    cy += mfgH + 6;
+    rfqSection('TECHNICAL SPECIFICATION', idea.technicalDescription);
+    rfqSection('MANUFACTURING & ASSEMBLY IMPACT', idea.manufacturingImpact);
 
     // RFQ Requirements
+    rfqEnsure(50);
     setColor(doc, NAVY_RGB);
     doc.setFontSize(9);
     doc.setFont('helvetica', 'bold');
     doc.text('SUPPLIER RESPONSE REQUIREMENTS', ML, cy);
     cy += 6;
+    const riskBrief = idea.riskNotes.length > 110
+      ? idea.riskNotes.slice(0, 110).replace(/\s+\S*$/, '') + '…'   // cut at a word, not mid-word
+      : idea.riskNotes;
     const reqs = [
       `1. Confirm technical feasibility for: ${idea.title}`,
       `2. Provide unit cost breakdown (material / process / overhead)`,
@@ -1015,19 +1089,25 @@ export function exportRfqPdf(
       `4. Detail tooling investment (NRE) required`,
       `5. Confirm implementation timeline: ${idea.timeToImplement}`,
       `6. State PPAP level and qualification plan`,
-      `7. Identify risk items: ${idea.riskNotes.slice(0, 100)}`,
+      `7. Identify risk items: ${riskBrief}`,
     ];
     setColor(doc, [50, 70, 90]);
     doc.setFontSize(8.5);
     doc.setFont('helvetica', 'normal');
     reqs.forEach(req => {
-      const reqLines = doc.splitTextToSize(req, CW - 4);
+      const reqLines: string[] = doc.splitTextToSize(req, CW - 4);
+      rfqEnsure(reqLines.length * 4.5 + 3);
+      setColor(doc, [50, 70, 90]);
+      doc.setFontSize(8.5);
+      doc.setFont('helvetica', 'normal');
       doc.text(reqLines, ML + 2, cy);
-      cy += reqLines.length * 5 + 2;
+      cy += reqLines.length * 4.5 + 2.5;
     });
 
     // Benchmark reference
     if (idea.benchmarkReference) {
+      const bmkLines: string[] = doc.splitTextToSize(idea.benchmarkReference, CW - 35);
+      rfqEnsure(bmkLines.length * 4 + 8);
       cy += 4;
       setColor(doc, [100, 60, 0]);
       doc.setFontSize(8);
@@ -1035,7 +1115,6 @@ export function exportRfqPdf(
       doc.text('INDUSTRY BENCHMARK:', ML, cy);
       setColor(doc, GRAY_RGB);
       doc.setFont('helvetica', 'normal');
-      const bmkLines = doc.splitTextToSize(idea.benchmarkReference, CW - 35);
       doc.text(bmkLines, ML + 38, cy);
     }
 
@@ -1046,6 +1125,6 @@ export function exportRfqPdf(
     doc.text(`BrainSpark RFQ  |  ${systemName} – ${subName}  |  ${today}  |  Page ${idx + 2}`, PW / 2, PH - 10, { align: 'center' });
   });
 
-  const filename = `BrainSpark_RFQ_${systemName}_${today.replace(/ /g, '_')}.pdf`;
+  const filename = safeFilename(`BrainSpark_RFQ_${systemName}_${today.replace(/ /g, '_')}.pdf`);
   doc.save(filename);
 }
