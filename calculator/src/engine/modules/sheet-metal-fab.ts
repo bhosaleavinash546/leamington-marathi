@@ -1,4 +1,10 @@
 import type { CommodityDrivers, OperationInput, RawMaterialInput, ToolingInput } from '../types.js';
+import type { SheetHardwareItem } from './sheet-metal-hardware.js';
+import {
+  hardwareConsumableCostPerPart,
+  hardwareInstallOperation,
+  hardwarePurchaseCostPerPart,
+} from './sheet-metal-hardware.js';
 
 export type FabBlankingMethod = 'laser' | 'plasma' | 'waterjet' | 'punch' | 'shear';
 export type AssistGas = 'nitrogen' | 'oxygen' | 'air';
@@ -147,6 +153,12 @@ export interface SheetMetalFabInputs {
   /** Argon gas + filler rod cost per metre of TIG bead. Typical £0.50–0.80/m. Default 0.60. */
   tigWeldConsumableCostPerM?: number;
 
+  // ── Fastening hardware (weld nuts/studs, PEM, rivnuts) ──────────────────────
+  hardware?: SheetHardwareItem[];
+  /** Machine for hardware installation (defaults sensibly to a pedestal spot welder in the UI). */
+  hardwareMachineId?: string;
+  hardwareLabourId?: string;
+
   // ── Tooling ──────────────────────────────────────────────────────────────────
   toolingCost: number;
   amortizationVolume: number;
@@ -188,6 +200,9 @@ export function getSheetMetalFabInputSchema(): Record<string, string> {
     tigWeldMachineId: 'string? — TIG welder machine ID (required when tigWeldLengthM > 0)',
     tigWeldLabourId: 'string? — labour rate ID for TIG welding (skilled welder required)',
     tigWeldConsumableCostPerM: 'number? — argon + filler rod cost £/m of TIG bead (default 0.60)',
+    hardware: 'HardwareItem[]? — weld nuts/studs, clinch (PEM) nuts, rivnuts: each {type: weld_nut_hex|weld_nut_square|weld_stud|clinch_nut|clinch_stud|rivnut, threadSize: M4–M12, count, unitCostGBP?, installTimeSec?, consumableCostPerPiece?} — defaults from built-in catalogue when omitted',
+    hardwareMachineId: 'string? — hardware install machine ID (required to cost install time; e.g. spotweld-gun-manual)',
+    hardwareLabourId: 'string? — hardware install labour rate ID (required to cost install time)',
     toolingCost: 'number — press brake tooling + nesting/CNC programming NRE £',
     amortizationVolume: 'number — volume over which to amortize tooling',
   };
@@ -239,7 +254,12 @@ export function computeSheetMetalFabDrivers(inputs: SheetMetalFabInputs): Commod
   const tigConsumableCost =
     (inputs.tigWeldLengthM ?? 0) * (inputs.tigWeldConsumableCostPerM ?? 0.60) * rejectUplift;
 
-  const consumablesCostPerPart = gasAdder + abrasiveAdder + migConsumableCost + tigConsumableCost;
+  // Purchased fastening hardware + its install consumables (electrode wear…).
+  // Lost with a scrapped part, so uplifted like the weld consumables above.
+  const hardwareCost =
+    (hardwarePurchaseCostPerPart(inputs.hardware) + hardwareConsumableCostPerPart(inputs.hardware)) * rejectUplift;
+
+  const consumablesCostPerPart = gasAdder + abrasiveAdder + migConsumableCost + tigConsumableCost + hardwareCost;
 
   const rawMaterial: RawMaterialInput = {
     materialId: inputs.materialId,
@@ -344,6 +364,19 @@ export function computeSheetMetalFabDrivers(inputs: SheetMetalFabInputs): Commod
       labourEfficiency: inputs.labourEfficiency,
     });
   }
+
+  // Fastening-hardware installation (projection weld / clinch press / rivnut set).
+  // OEE 1.0 like the other joining stations here — their cycle inputs are
+  // all-in per-piece times, not rate-limited machine cycles.
+  const hardwareOp = hardwareInstallOperation(inputs.hardware, {
+    machineId: inputs.hardwareMachineId ?? '',
+    labourId: inputs.hardwareLabourId ?? '',
+    oee: 1.0,
+    manning: inputs.manning,
+    labourEfficiency: inputs.labourEfficiency,
+    rejectUplift,
+  });
+  if (hardwareOp) operations.push(hardwareOp);
 
   const tooling: ToolingInput = {
     totalToolingCost: inputs.toolingCost,

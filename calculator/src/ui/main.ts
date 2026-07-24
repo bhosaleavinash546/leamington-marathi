@@ -35,6 +35,7 @@ import {
   estimateLaminationFinishing, analyseLaminationDFM, type StackMethod,
 } from '../engine/modules/lamination-advisor.js';
 import type { FabBlankingMethod, AssistGas } from '../engine/modules/sheet-metal-fab.js';
+import type { SheetHardwareItem } from '../engine/modules/sheet-metal-hardware.js';
 import { computeBlowMouldingDrivers, pickEBMMachineId, barrierMaterialId } from '../engine/modules/blow-moulding.js';
 import {
   estimateBlowMouldCost, analyseBlowDFM,
@@ -3521,6 +3522,29 @@ function renderSheetMetalForm(): string {
       <div class="field-group"><label>Op 3 — Labour</label><select id="sm-sec3-lab" class="labour-select"><option value="">— None —</option></select></div>
       <div class="field-group"><label>Op 3 — Cycle (hr, 0=none)</label><input type="number" id="sm-sec3-ct" step="0.001" min="0" value="0"/></div>
     </div>
+    <div class="section-title" style="margin-top:8px">Weld Nuts / Fastening Hardware (optional) <span title="Purchased weld nuts, weld studs, clinch (PEM) nuts or rivnuts installed on the pressing. Piece price defaults from the built-in catalogue (override with Unit £); installation is costed as a projection-weld/press operation.">ℹ</span></div>
+    <div class="field-row">
+      <div class="field-group"><label>HW 1 — Type</label><select id="sm-hw1-type"><option value="" selected>— None —</option><option value="weld_nut_hex">Hex weld nut (DIN 929)</option><option value="weld_nut_square">Square weld nut (DIN 928)</option><option value="weld_stud">Weld stud</option><option value="clinch_nut">Clinch nut (PEM)</option><option value="clinch_stud">Clinch stud (PEM)</option><option value="rivnut">Rivnut</option></select></div>
+      <div class="field-group"><label>Size</label><select id="sm-hw1-size"><option>M4</option><option>M5</option><option value="M6" selected>M6</option><option>M8</option><option>M10</option><option>M12</option></select></div>
+      <div class="field-group"><label>Qty</label><input type="number" id="sm-hw1-qty" step="1" min="0" value="0"/></div>
+      <div class="field-group"><label>Unit £ (0=auto)</label><input type="number" id="sm-hw1-cost" step="0.005" min="0" value="0"/></div>
+    </div>
+    <div class="field-row" style="margin-top:6px">
+      <div class="field-group"><label>HW 2 — Type</label><select id="sm-hw2-type"><option value="" selected>— None —</option><option value="weld_nut_hex">Hex weld nut (DIN 929)</option><option value="weld_nut_square">Square weld nut (DIN 928)</option><option value="weld_stud">Weld stud</option><option value="clinch_nut">Clinch nut (PEM)</option><option value="clinch_stud">Clinch stud (PEM)</option><option value="rivnut">Rivnut</option></select></div>
+      <div class="field-group"><label>Size</label><select id="sm-hw2-size"><option>M4</option><option>M5</option><option value="M6" selected>M6</option><option>M8</option><option>M10</option><option>M12</option></select></div>
+      <div class="field-group"><label>Qty</label><input type="number" id="sm-hw2-qty" step="1" min="0" value="0"/></div>
+      <div class="field-group"><label>Unit £ (0=auto)</label><input type="number" id="sm-hw2-cost" step="0.005" min="0" value="0"/></div>
+    </div>
+    <div class="field-row" style="margin-top:6px">
+      <div class="field-group"><label>HW 3 — Type</label><select id="sm-hw3-type"><option value="" selected>— None —</option><option value="weld_nut_hex">Hex weld nut (DIN 929)</option><option value="weld_nut_square">Square weld nut (DIN 928)</option><option value="weld_stud">Weld stud</option><option value="clinch_nut">Clinch nut (PEM)</option><option value="clinch_stud">Clinch stud (PEM)</option><option value="rivnut">Rivnut</option></select></div>
+      <div class="field-group"><label>Size</label><select id="sm-hw3-size"><option>M4</option><option>M5</option><option value="M6" selected>M6</option><option>M8</option><option>M10</option><option>M12</option></select></div>
+      <div class="field-group"><label>Qty</label><input type="number" id="sm-hw3-qty" step="1" min="0" value="0"/></div>
+      <div class="field-group"><label>Unit £ (0=auto)</label><input type="number" id="sm-hw3-cost" step="0.005" min="0" value="0"/></div>
+    </div>
+    <div class="field-row" style="margin-top:6px">
+      <div class="field-group"><label>Install Machine <span title="Machine costing the install time. Leave as Default to use the Pedestal Spot Welding Machine (projection welding).">ℹ</span></label><select id="sm-hw-mach" class="machine-select"><option value="">— Default: pedestal spot welder —</option></select></div>
+      <div class="field-group"><label>Install Labour <span title="Leave as Default to use the press labour rate.">ℹ</span></label><select id="sm-hw-lab" class="labour-select"><option value="">— Default: press labour —</option></select></div>
+    </div>
     <div class="section-title" style="margin-top:8px">Hot Stamping / Press-Hardening (optional)</div>
     <div class="field-row">
       <div class="field-group"><label>Hot Stamping? <span title="Boron/Usibor press-hardening: austenitise ~900°C then form+quench in water-cooled dies. Adds furnace energy and a quench-dwell cycle.">ℹ</span></label><select id="sm-hs-on"><option value="no" selected>No (cold stamping)</option><option value="yes">Yes (press-hardening)</option></select></div>
@@ -3742,6 +3766,29 @@ function renderSheetMetalFabForm(): string {
         </div>
       </div>
     </details>
+    <div class="section-title" style="margin-top:8px">Weld Nuts / Fastening Hardware (optional) <span title="Purchased weld nuts, weld studs, clinch (PEM) nuts or rivnuts. Piece price defaults from the built-in catalogue (override with Unit £); installation is costed as a projection-weld/press operation.">ℹ</span></div>
+    <div class="field-row">
+      <div class="field-group"><label>HW 1 — Type</label><select id="smf-hw1-type"><option value="" selected>— None —</option><option value="weld_nut_hex">Hex weld nut (DIN 929)</option><option value="weld_nut_square">Square weld nut (DIN 928)</option><option value="weld_stud">Weld stud</option><option value="clinch_nut">Clinch nut (PEM)</option><option value="clinch_stud">Clinch stud (PEM)</option><option value="rivnut">Rivnut</option></select></div>
+      <div class="field-group"><label>Size</label><select id="smf-hw1-size"><option>M4</option><option>M5</option><option value="M6" selected>M6</option><option>M8</option><option>M10</option><option>M12</option></select></div>
+      <div class="field-group"><label>Qty</label><input type="number" id="smf-hw1-qty" step="1" min="0" value="0"/></div>
+      <div class="field-group"><label>Unit £ (0=auto)</label><input type="number" id="smf-hw1-cost" step="0.005" min="0" value="0"/></div>
+    </div>
+    <div class="field-row" style="margin-top:6px">
+      <div class="field-group"><label>HW 2 — Type</label><select id="smf-hw2-type"><option value="" selected>— None —</option><option value="weld_nut_hex">Hex weld nut (DIN 929)</option><option value="weld_nut_square">Square weld nut (DIN 928)</option><option value="weld_stud">Weld stud</option><option value="clinch_nut">Clinch nut (PEM)</option><option value="clinch_stud">Clinch stud (PEM)</option><option value="rivnut">Rivnut</option></select></div>
+      <div class="field-group"><label>Size</label><select id="smf-hw2-size"><option>M4</option><option>M5</option><option value="M6" selected>M6</option><option>M8</option><option>M10</option><option>M12</option></select></div>
+      <div class="field-group"><label>Qty</label><input type="number" id="smf-hw2-qty" step="1" min="0" value="0"/></div>
+      <div class="field-group"><label>Unit £ (0=auto)</label><input type="number" id="smf-hw2-cost" step="0.005" min="0" value="0"/></div>
+    </div>
+    <div class="field-row" style="margin-top:6px">
+      <div class="field-group"><label>HW 3 — Type</label><select id="smf-hw3-type"><option value="" selected>— None —</option><option value="weld_nut_hex">Hex weld nut (DIN 929)</option><option value="weld_nut_square">Square weld nut (DIN 928)</option><option value="weld_stud">Weld stud</option><option value="clinch_nut">Clinch nut (PEM)</option><option value="clinch_stud">Clinch stud (PEM)</option><option value="rivnut">Rivnut</option></select></div>
+      <div class="field-group"><label>Size</label><select id="smf-hw3-size"><option>M4</option><option>M5</option><option value="M6" selected>M6</option><option>M8</option><option>M10</option><option>M12</option></select></div>
+      <div class="field-group"><label>Qty</label><input type="number" id="smf-hw3-qty" step="1" min="0" value="0"/></div>
+      <div class="field-group"><label>Unit £ (0=auto)</label><input type="number" id="smf-hw3-cost" step="0.005" min="0" value="0"/></div>
+    </div>
+    <div class="field-row" style="margin-top:6px">
+      <div class="field-group"><label>Install Machine <span title="Machine costing the install time. Leave as Default to use the Pedestal Spot Welding Machine (projection welding).">ℹ</span></label><select id="smf-hw-mach" class="machine-select"><option value="">— Default: pedestal spot welder —</option></select></div>
+      <div class="field-group"><label>Install Labour <span title="Leave as Default to use the blanking labour rate.">ℹ</span></label><select id="smf-hw-lab" class="labour-select"><option value="">— Default: blanking labour —</option></select></div>
+    </div>
     <div class="section-title" style="margin-top:8px">Tooling</div>
     <div class="field-row">
       <div class="field-group"><label>Tooling Cost (£) <span title="Press brake tooling + nesting/CNC programming NRE. Laser: £500–3k. Punch: £2k–10k. Stamping die: £15k–150k.">ℹ</span></label><input type="number" id="smf-tooling" step="500" min="0" value="2000"/></div>
@@ -10587,6 +10634,53 @@ function sizeHPDCMachineFor(selId: string, cavities: number): void {
   }
 }
 
+/**
+ * Pre-fill the fastening-hardware rows from geometry-detected weld nuts/studs
+ * (golden rule: pre-filled and EDITABLE — the user confirms, geometry proposes).
+ * Also corrects the blank weight: detected hardware is purchased, not blanked,
+ * so its volume comes off the net weight at the sheet material's density.
+ */
+function applyDetectedHardware(prefix: 'sm' | 'smf', weightFieldId: string, materialId: string): void {
+  const hw = cadOCCTGeometry?.detectedHardware;
+  if (!hw?.available || !hw.detected?.length) return;
+  const rows = hw.detected.slice(0, 3);
+  rows.forEach((r, i) => {
+    const n = i + 1;
+    const typeEl = document.getElementById(`${prefix}-hw${n}-type`) as HTMLSelectElement | null;
+    const sizeEl = document.getElementById(`${prefix}-hw${n}-size`) as HTMLSelectElement | null;
+    if (!typeEl || !sizeEl) return;
+    if (Array.from(typeEl.options).some(o => o.value === r.type)) {
+      typeEl.value = r.type;
+      markAIFilled(typeEl);
+    }
+    if (Array.from(sizeEl.options).some(o => o.value === r.threadSize)) {
+      sizeEl.value = r.threadSize;
+      markAIFilled(sizeEl);
+    }
+    setNumericField(`${prefix}-hw${n}-qty`, r.count, 0);
+  });
+  const summary = rows
+    .map(r => `${r.count}× ${r.threadSize} ${r.type.replace(/_/g, ' ')}${r.onSheetHole ? '' : ' (no coaxial sheet hole — verify)'}`)
+    .join(', ');
+  _smExtraWarnings.push(
+    `Hardware detected from geometry: ${summary}. Piece prices default from the built-in catalogue — confirm or edit the hardware rows before relying on the cost.` +
+    (hw.detected.length > 3 ? ` ${hw.detected.length - 3} further hardware group(s) not auto-filled (3 rows available).` : '')
+  );
+  // Blank-weight correction at the sheet material's density (the merged-solid
+  // weight estimate counted the nut steel as blanked strip).
+  const curWt = num(weightFieldId);
+  if ((hw.totalVolumeCm3 ?? 0) > 0 && curWt > 0) {
+    const dens = library.materials.find(m => m.id === materialId)?.densityKgPerM3 ?? 7850;
+    const subKg = (hw.totalVolumeCm3 as number) * 1e-6 * dens;
+    if (subKg < curWt) {
+      setNumericField(weightFieldId, curWt - subKg, 3);
+      _smExtraWarnings.push(
+        `Blank weight reduced by ${subKg.toFixed(3)} kg — detected hardware is purchased, not blanked from the strip.`
+      );
+    }
+  }
+}
+
 function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): void {
   if (!cadAnalysisResult) return;
   _pendingCostingSource = 'cad'; // tag the next costing record for the accuracy harness
@@ -11009,6 +11103,7 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
             setNumericField('sm-spm', Math.round(Math.min(120, Math.max(10, spm))), 0);
           }
         }
+        applyDetectedHardware('sm', 'sm-net-wt', c.materialId);
         break;
       }
 
@@ -11056,6 +11151,7 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
         if (smFab) {
           setNumericField('smf-tooling', smFab.dieCostGBP, 0);
         }
+        applyDetectedHardware('smf', 'smf-part-wt', c.materialId);
         break;
       }
 
@@ -11824,6 +11920,42 @@ function collectMachiningInput(): UniversalStackInput {
   return { ...getUniversalTail(), rawMaterial: drivers.rawMaterial, operations, tooling: drivers.tooling };
 }
 
+/**
+ * Read the 3-row fastening-hardware table shared by the sheet_metal and
+ * sheet_metal_fab forms. Machine/labour default deterministically (pedestal
+ * spot welder + the form's main labour rate) so a filled row is never
+ * silently purchase-only.
+ */
+function collectSheetHardware(prefix: 'sm' | 'smf', fallbackLabourId: string): {
+  hardware?: SheetHardwareItem[];
+  hardwareMachineId?: string;
+  hardwareLabourId?: string;
+} {
+  const items: SheetHardwareItem[] = [];
+  for (let i = 1; i <= 3; i++) {
+    const type = sel(`${prefix}-hw${i}-type`);
+    const count = num(`${prefix}-hw${i}-qty`);
+    if (!type || !(count > 0)) continue;
+    const unit = num(`${prefix}-hw${i}-cost`);
+    items.push({
+      type: type as SheetHardwareItem['type'],
+      threadSize: (sel(`${prefix}-hw${i}-size`) || 'M6') as SheetHardwareItem['threadSize'],
+      count,
+      ...(unit > 0 ? { unitCostGBP: unit } : {}),
+    });
+  }
+  if (!items.length) return {};
+  const hardwareLabourId = sel(`${prefix}-hw-lab`) || fallbackLabourId || undefined;
+  if (!hardwareLabourId) {
+    _smExtraWarnings.push('Fastening hardware: no install labour available — install time omitted (piece price still counted).');
+  }
+  return {
+    hardware: items,
+    hardwareMachineId: sel(`${prefix}-hw-mach`) || 'spotweld-gun-manual',
+    hardwareLabourId,
+  };
+}
+
 function collectSheetMetalInput(): UniversalStackInput {
   const materialId = sel('sm-mat');
   const pressId = sel('sm-press');
@@ -11935,6 +12067,7 @@ function collectSheetMetalInput(): UniversalStackInput {
     furnaceLabourId: hotStamping ? (sel('sm-hs-furn-lab') || undefined) : undefined,
     furnaceCycleHrPerPart: hotStamping ? (num('sm-hs-furn-ct') || undefined) : undefined,
     extraConsumablesPerPart,
+    ...collectSheetHardware('sm', sel('sm-lab')),
   });
 
   if (hotStamping) {
@@ -12653,6 +12786,7 @@ function collectSheetMetalFabInput(): UniversalStackInput {
     tigWeldConsumableCostPerM: num('smf-tig-cons') || 0.60,
     toolingCost: num('smf-tooling'),
     amortizationVolume: num('smf-amort') || num('annual-volume') || 100000,
+    ...collectSheetHardware('smf', sel('smf-blank-lab')),
   });
   return { ...getUniversalTail(), rawMaterial: drivers.rawMaterial, operations: drivers.operations, tooling: drivers.tooling };
 }

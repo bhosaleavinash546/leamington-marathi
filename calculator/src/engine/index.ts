@@ -5,6 +5,7 @@ export * from './sensitivity.js';
 export * from './scenario.js';
 export * from './modules/machining.js';
 export * from './modules/sheet-metal.js';
+export * from './modules/sheet-metal-hardware.js';
 export * from './modules/injection-moulding.js';
 export * from './modules/casting.js';
 export * from './modules/forging.js';

@@ -1,5 +1,11 @@
 import type { CommodityDrivers, OperationInput, RawMaterialInput, ToolingInput } from '../types.js';
 import { estimateStampingDieCost, estimateStampingDieLife } from './sheet-metal-advisor.js';
+import type { SheetHardwareItem } from './sheet-metal-hardware.js';
+import {
+  hardwareConsumableCostPerPart,
+  hardwareInstallOperation,
+  hardwarePurchaseCostPerPart,
+} from './sheet-metal-hardware.js';
 
 export type DieType = 'single_stage' | 'progressive' | 'transfer' | 'fine_blanking';
 
@@ -61,6 +67,12 @@ export interface SheetMetalInputs {
    * ratio (nesting only) when omitted, preserving legacy behaviour.
    */
   densityKgPerM3?: number;
+  /** Weld nuts / studs / clinch hardware installed on the pressing (purchased pieces + install op). */
+  hardware?: SheetHardwareItem[];
+  /** Machine for hardware installation (e.g. spotweld-gun-manual for projection-welded nuts). */
+  hardwareMachineId?: string;
+  /** Labour rate ID for hardware installation. */
+  hardwareLabourId?: string;
 }
 
 export function getSheetMetalInputSchema(): Record<string, string> {
@@ -102,6 +114,9 @@ export function getSheetMetalInputSchema(): Record<string, string> {
     furnaceMachineId: 'string? — austenitising furnace machine ID (hot stamping)',
     furnaceLabourId: 'string? — furnace labour ID',
     furnaceCycleHrPerPart: 'number? — effective furnace occupancy per part hr',
+    hardware: 'HardwareItem[]? — weld nuts/studs, clinch (PEM) nuts, rivnuts: each {type: weld_nut_hex|weld_nut_square|weld_stud|clinch_nut|clinch_stud|rivnut, threadSize: M4–M12, count, unitCostGBP?, installTimeSec?, consumableCostPerPiece?} — piece price + install consumable default from the built-in catalogue when omitted',
+    hardwareMachineId: 'string? — hardware install machine ID (required to cost install time; e.g. spotweld-gun-manual)',
+    hardwareLabourId: 'string? — hardware install labour rate ID (required to cost install time)',
   };
 }
 
@@ -141,9 +156,16 @@ export function computeSheetMetalDrivers(inputs: SheetMetalInputs): CommodityDri
     ? (inputs.austenitiseEnergyKwhPerKg ?? 0.30) * grossBlankKg * (inputs.hotStampingEnergyPricePerKwh ?? 0.23)
     : 0;
 
+  // Purchased fastening hardware (weld nuts/studs, PEM, rivnuts): piece price +
+  // install consumables (electrode wear…). Hardware on a scrapped part is lost
+  // with it, so the reject uplift applies to the purchase too.
+  const hardwareCostPerPart =
+    (hardwarePurchaseCostPerPart(inputs.hardware) + hardwareConsumableCostPerPart(inputs.hardware)) * rejectUplift;
+
   // Per-part material-bucket consumables: hot-stamp furnace heat + any extra
   // (e.g. lamination join/anneal-energy/coating passed via extraConsumablesPerPart).
-  const consumablesCostPerPart = furnaceEnergyPerPart + Math.max(0, inputs.extraConsumablesPerPart ?? 0);
+  const consumablesCostPerPart =
+    furnaceEnergyPerPart + hardwareCostPerPart + Math.max(0, inputs.extraConsumablesPerPart ?? 0);
 
   const rawMaterial: RawMaterialInput = {
     materialId: inputs.materialId,
@@ -242,6 +264,17 @@ export function computeSheetMetalDrivers(inputs: SheetMetalInputs): CommodityDri
       labourEfficiency: op.labourEfficiency ?? inputs.labourEfficiency,
     });
   }
+
+  // Fastening-hardware installation (projection weld / clinch press / rivnut set).
+  const hardwareOp = hardwareInstallOperation(inputs.hardware, {
+    machineId: inputs.hardwareMachineId ?? '',
+    labourId: inputs.hardwareLabourId ?? '',
+    oee: inputs.oee,
+    manning: inputs.manning,
+    labourEfficiency: inputs.labourEfficiency,
+    rejectUplift,
+  });
+  if (hardwareOp) operations.push(hardwareOp);
 
   // Die life: use the given value, else predict from material hardness / thickness / die type.
   const dieLife = inputs.dieLife > 0

@@ -86,6 +86,23 @@ export interface OCCTGeometry {
   };
   assemblyWarning?: string | null;
   unitWarning?: string | null;
+  /** Weld-nut / weld-stud hardware detected from distinct small solids (kernel-exact). */
+  detectedHardware?: {
+    available: boolean;
+    note?: string;
+    solidCount?: number;
+    totalVolumeCm3?: number;
+    estSteelMassKg?: number;
+    detected?: Array<{
+      type: string;
+      threadSize: string;
+      count: number;
+      boreDiaMm: number;
+      heightMm: number;
+      sideFlats: number;
+      onSheetHole: boolean;
+    }>;
+  } | null;
 }
 
 export interface DetectedFeature {

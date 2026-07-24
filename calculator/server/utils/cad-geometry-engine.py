@@ -854,6 +854,208 @@ class _EdgeShim:
     def __init__(self, e): self.wrapped = e
 
 
+# ─── Sheet-metal fastening-hardware detection (weld nuts / studs) ─────────────
+
+# Metric thread sizes: (name, tapping-drill bore mm, nominal OD mm). A modelled
+# weld nut usually carries either the tapping bore or the nominal clearance as
+# its inner cylinder; a weld stud's OUTER cylinder is the nominal dia.
+_THREAD_SIZES = [
+    ("M4", 3.3, 4.0), ("M5", 4.2, 5.0), ("M6", 5.0, 6.0),
+    ("M8", 6.8, 8.0), ("M10", 8.5, 10.0), ("M12", 10.2, 12.0),
+]
+_THREAD_TOL_MM = 0.35
+
+
+def _match_thread(dia_mm, use_nominal=False):
+	for name, bore, nominal in _THREAD_SIZES:
+	    ref = nominal if use_nominal else bore
+	    if abs(dia_mm - ref) <= _THREAD_TOL_MM:
+	        return name
+	return None
+
+
+def _detect_sheet_hardware(wrapped):
+	"""Detect weld-nut / weld-stud hardware bodies in a multi-solid sheet model.
+
+	Deterministic geometry only: a candidate is a SMALL solid (≤30 mm, ≤8 cm³)
+	distinct from the largest solid (the sheet). A nut has a near-full coaxial
+	bore whose diameter matches a metric tapping/clearance table and 4 (square)
+	or 6 (hex) side flats perpendicular to the bore; a stud is bore-less with a
+	nominal-diameter outer cylinder ≥1.5× longer than wide. Each detection is
+	cross-checked for a coaxial hole in the sheet solid (onSheetHole). Single
+	merged solids are declared not-separable — an honest miss, never a guess.
+	"""
+	from OCP.TopExp import TopExp, TopExp_Explorer
+	from OCP.TopTools import TopTools_IndexedMapOfShape
+	from OCP.TopAbs import TopAbs_SOLID, TopAbs_FACE
+	from OCP.TopoDS import TopoDS
+	from OCP.BRepAdaptor import BRepAdaptor_Surface
+	from OCP.GeomAbs import GeomAbs_SurfaceType
+	from OCP.BRepGProp import BRepGProp
+	from OCP.GProp import GProp_GProps
+	from OCP.Bnd import Bnd_Box
+	from OCP.BRepBndLib import BRepBndLib
+
+	m = TopTools_IndexedMapOfShape()
+	TopExp.MapShapes_s(wrapped, TopAbs_SOLID, m)
+	n_solids = m.Extent()
+	if n_solids < 2:
+	    return {"available": False,
+	            "note": "single merged solid — hardware bodies not separable; add hardware manually"}
+	if n_solids > 200:
+	    return {"available": False, "note": f"{n_solids} solids — too many to classify"}
+
+	def solid_faces(solid):
+	    out = []
+	    exp = TopExp_Explorer(solid, TopAbs_FACE)
+	    while exp.More():
+	        try:
+	            f = TopoDS.Face_s(exp.Current())
+	            out.append((f, BRepAdaptor_Surface(f)))
+	        except Exception:
+	            pass
+	        exp.Next()
+	    return out
+
+	def cylinders(faces):
+	    """Full-arc cylinders grouped by (radius, axis), with concavity:
+	    hole=True is a bore (concave), hole=False a shaft (convex) — same
+	    orientation-XOR-handedness test as the main feature table."""
+	    from OCP.TopAbs import TopAbs_Orientation
+	    groups = {}
+	    for f, ad in faces:
+	        try:
+	            if ad.GetType() != GeomAbs_SurfaceType.GeomAbs_Cylinder:
+	                continue
+	            cyl = ad.Cylinder()
+	            r = cyl.Radius()
+	            ax = cyl.Axis(); p = ax.Location(); d = ax.Direction()
+	            hole = (f.Orientation() == TopAbs_Orientation.TopAbs_REVERSED) != (not cyl.Position().Direct())
+	            key = (round(r, 2), round(p.X(), 1), round(p.Y(), 1), round(p.Z(), 1),
+	                   round(abs(d.X()), 2), round(abs(d.Y()), 2), round(abs(d.Z()), 2), hole)
+	            arc = abs(ad.LastUParameter() - ad.FirstUParameter())
+	            vspan = abs(ad.LastVParameter() - ad.FirstVParameter())
+	            g = groups.setdefault(key, {"r": r, "arc": 0.0, "v": 0.0, "p": p, "d": d, "hole": hole})
+	            g["arc"] += arc
+	            g["v"] = max(g["v"], vspan)
+	        except Exception:
+	            continue
+	    return [g for g in groups.values() if g["arc"] >= 5.2]   # ≥ ~300° = real bore/shaft
+
+	sols = []
+	for i in range(1, n_solids + 1):
+	    s = m.FindKey(i)
+	    gp = GProp_GProps()
+	    try:
+	        BRepGProp.VolumeProperties_s(s, gp)
+	    except Exception:
+	        continue
+	    vol = abs(gp.Mass())
+	    bb = Bnd_Box(); BRepBndLib.Add_s(s, bb)
+	    try:
+	        x0, y0, z0, x1, y1, z1 = bb.Get()
+	        max_dim = max(x1 - x0, y1 - y0, z1 - z0)
+	    except Exception:
+	        continue
+	    sols.append({"shape": s, "vol": vol, "maxDim": max_dim})
+	if not sols:
+	    return {"available": False, "note": "no measurable solids"}
+
+	sheet = max(sols, key=lambda s: s["vol"])
+	sheet_cyls = cylinders(solid_faces(sheet["shape"]))
+
+	def coaxial_sheet_hole(p, d):
+	    for g in sheet_cyls:
+	        gd = g["d"]
+	        dot = abs(d.X() * gd.X() + d.Y() * gd.Y() + d.Z() * gd.Z())
+	        if dot < 0.99:
+	            continue
+	        # lateral distance between the two axis points, perpendicular to d
+	        vx, vy, vz = g["p"].X() - p.X(), g["p"].Y() - p.Y(), g["p"].Z() - p.Z()
+	        along = vx * d.X() + vy * d.Y() + vz * d.Z()
+	        lat2 = (vx * vx + vy * vy + vz * vz) - along * along
+	        if lat2 <= 1.5 ** 2:
+	            return True
+	    return False
+
+	found = {}
+	hw_volume_mm3 = 0.0
+	for s in sols:
+	    if s is sheet or s["maxDim"] > 30 or s["vol"] > 8000 or s["vol"] <= 1:
+	        continue
+	    faces = solid_faces(s["shape"])
+	    cyls = cylinders(faces)
+	    if not cyls:
+	        continue
+
+	    # planar side flats (normal ⊥ candidate bore axis) → hex vs square
+	    planes = []
+	    for _f, ad in faces:
+	        try:
+	            if ad.GetType() == GeomAbs_SurfaceType.GeomAbs_Plane:
+	                planes.append(ad.Plane().Axis().Direction())
+	        except Exception:
+	            continue
+
+	    bores  = [g for g in cyls if g["hole"]]
+	    shafts = [g for g in cyls if not g["hole"]]
+	    bore = min(bores, key=lambda g: g["r"]) if bores else None
+	    thread = (_match_thread(bore["r"] * 2) or _match_thread(bore["r"] * 2, use_nominal=True)) if bore else None
+	    row = None
+	    if bore and thread and bore["v"] >= 1.0:
+	        d = bore["d"]
+	        side_flats = sum(
+	            1 for n in planes
+	            if abs(n.X() * d.X() + n.Y() * d.Y() + n.Z() * d.Z()) < 0.25
+	        )
+	        kind = ("weld_nut_square" if 3 <= side_flats <= 4
+	                else "weld_nut_hex" if side_flats >= 5
+	                else "weld_nut_hex")   # round/flanged weld nut — commonest default
+	        row = {
+	            "type": kind, "threadSize": thread,
+	            "boreDiaMm": round(bore["r"] * 2, 2),
+	            "heightMm": round(bore["v"], 1),
+	            "sideFlats": side_flats,
+	            "onSheetHole": coaxial_sheet_hole(bore["p"], bore["d"]),
+	        }
+	    elif shafts:
+	        # stud: no thread-matching bore; convex shaft at nominal dia, slender
+	        outer = max(shafts, key=lambda g: g["r"])
+	        stud_thread = _match_thread(outer["r"] * 2, use_nominal=True)
+	        if stud_thread and outer["v"] >= outer["r"] * 2 * 1.5:
+	            row = {
+	                "type": "weld_stud", "threadSize": stud_thread,
+	                "boreDiaMm": round(outer["r"] * 2, 2),
+	                "heightMm": round(outer["v"], 1),
+	                "sideFlats": 0,
+	                "onSheetHole": coaxial_sheet_hole(outer["p"], outer["d"]),
+	            }
+	    if row is None:
+	        continue
+	    hw_volume_mm3 += s["vol"]
+	    key = (row["type"], row["threadSize"])
+	    if key in found:
+	        found[key]["count"] += 1
+	        found[key]["onSheetHole"] = found[key]["onSheetHole"] and row["onSheetHole"]
+	    else:
+	        found[key] = {**row, "count": 1}
+
+	rows = sorted(found.values(), key=lambda r: -r["count"])
+	if not rows:
+	    return {"available": True, "detected": [], "solidCount": n_solids,
+	            "note": "multi-solid model but no weld-nut/stud-like bodies matched"}
+	return {
+	    "available": True,
+	    "detected": rows,
+	    "solidCount": n_solids,
+	    "totalVolumeCm3": round(hw_volume_mm3 / 1000, 3),
+	    "estSteelMassKg": round(hw_volume_mm3 * 7.85e-6, 4),
+	    "note": ("purchased hardware detected from geometry — piece prices default from the "
+	             "catalogue; subtract estSteelMassKg from the blank net weight (hardware is "
+	             "bought, not blanked)"),
+	}
+
+
 class _ShapeShim:
     """Pure-OCP replacement for the cadquery Shape wrapper. Drops the cadquery
     dependency entirely (only the `cadquery-ocp` wheel is needed): Faces()/Edges()
@@ -873,6 +1075,14 @@ class _ShapeShim:
         from OCP.TopAbs import TopAbs_EDGE
         from OCP.TopoDS import TopoDS
         return self._unique(TopAbs_EDGE, _EdgeShim, TopoDS.Edge_s)
+
+
+def _try_detect_hardware(wrapped):
+	"""Hardware detection must never break the analysis pipeline."""
+	try:
+	    return _detect_sheet_hardware(wrapped)
+	except Exception as e:
+	    return {"available": False, "note": f"detection error: {str(e)[:120]}"}
 
 
 def analyze(filepath: str) -> dict:
@@ -1104,6 +1314,7 @@ def analyze(filepath: str) -> dict:
             },
             "assemblyWarning": _detect_assembly(filepath),
             "unitWarning": _validate_bbox(x_sz, y_sz, z_sz),
+            "detectedHardware": _try_detect_hardware(wrapped),
         }
 
     except Exception as e:
