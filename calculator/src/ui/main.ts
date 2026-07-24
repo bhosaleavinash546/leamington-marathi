@@ -10752,12 +10752,15 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
             setNumericField('cast-sand-ct', occtPS?.sandCycleTimeHr ?? cast.cycleTimeSandGravHr, 4);
             setNumericField('cast-sand-pat-cost', occtTC?.sandPatternCostGBP ?? cast.dieMouldCostGBP, 0);
             setNumericField('cast-sand-pat-life', cast.dieMouldLife, 0);
+            setMachineSelect('cast-sand-line', 'sand-cast-line', 'Sand Casting — Moulding');
           } else if (cast.subtype === 'gravity') {
             setNumericField('cast-grav-ct', cast.cycleTimeSandGravHr, 4);
             setNumericField('cast-grav-mould-cost', occtTC?.gravityMouldCostGBP ?? cast.dieMouldCostGBP, 0);
             setNumericField('cast-grav-mould-life', cast.dieMouldLife, 0);
+            setMachineSelect('cast-grav-mach', 'grav-die-cast-std', 'Gravity Die Casting');
           } else if (cast.subtype === 'investment') {
             setNumericField('cast-inv-ct', cast.cycleTimeSandGravHr, 4);
+            setMachineSelect('cast-inv-mach', 'invest-cast-furnace', 'Investment Casting');
           }
         }
         populateMachinedFeatures('cast');
@@ -10790,12 +10793,17 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
             setNumericField('cam-sand-ct', camPS?.sandCycleTimeHr ?? castCAM.cycleTimeSandGravHr, 4);
             setNumericField('cam-sand-pat-cost', camTC?.sandPatternCostGBP ?? castCAM.dieMouldCostGBP, 0);
             setNumericField('cam-sand-pat-life', castCAM.dieMouldLife, 0);
+            // Pin the foundry moulding cell — without this the select defaulted to
+            // option 0 (CNC Lathe), costing sand casting on a lathe rate.
+            setMachineSelect('cam-sand-line', 'sand-cast-line', 'Sand Casting — Moulding');
           } else if (castCAM.subtype === 'gravity') {
             setNumericField('cam-grav-ct', castCAM.cycleTimeSandGravHr, 4);
             setNumericField('cam-grav-mould-cost', camTC?.gravityMouldCostGBP ?? castCAM.dieMouldCostGBP, 0);
             setNumericField('cam-grav-mould-life', castCAM.dieMouldLife, 0);
+            setMachineSelect('cam-grav-mach', 'grav-die-cast-std', 'Gravity Die Casting');
           } else if (castCAM.subtype === 'investment') {
             setNumericField('cam-inv-ct', castCAM.cycleTimeSandGravHr, 4);
+            setMachineSelect('cam-inv-mach', 'invest-cast-furnace', 'Investment Casting');
           }
         }
         // Machining section — populate ops and setup time
@@ -10820,6 +10828,24 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
               cycleTimeHr: op.cycleTimeHr * scaleCAM, partsPerCycle: 1,
               oee: op.oee, manning: op.manning,
               labourTimeHr: op.cycleTimeHr * scaleCAM, labourEfficiency: op.labourEfficiency,
+            });
+          }
+          // Turned bearing journals (a stub-axle spindle, hub seats) need a
+          // precision cylindrical GRIND after turning — the AI usually stops at
+          // turning, under-costing the finishing that defines the part. Add one
+          // grind pass when a journal/spindle turned feature is present and the
+          // AI didn't already emit a grinding op.
+          const hasJournal =
+            (cadOCCTGeometry?.features?.bossShaftRadiiMm?.length ?? 0) > 0 ||
+            c.estimatedOperations.some(o => /journal|bearing|spindle|OD finish|turning/i.test(o.name));
+          const alreadyGround = c.estimatedOperations.some(o => /grind|hone|lap/i.test(o.name));
+          if (hasJournal && !alreadyGround) {
+            addCAMMachOp({
+              name: 'Cylindrical Grinding — Bearing Journal', type: 'grinding',
+              machineId: 'mach-grind', labourId: resolveLabourId(undefined),
+              cycleTimeHr: 0.06, partsPerCycle: 1,
+              oee: 0.82, manning: 1,
+              labourTimeHr: 0.06, labourEfficiency: 0.9,
             });
           }
         }

@@ -535,7 +535,7 @@ router.post('/analyze', analyzeLimiter, upload.fields([
     // repair retry gives us robust parsing without that limit.
     analysis = await cadAnalyzeJSON(anthropic, deepAnalysis, systemPrompt, userContent);
     normalizeFieldConfidences(analysis);
-    normalizeCADAnalysis(analysis as Record<string, unknown>);
+    normalizeCADAnalysis(analysis as Record<string, unknown>, geo?.weights);
   } catch (err) {
     respondAIError(res, err);
     return;
@@ -634,7 +634,12 @@ async function cadAnalyzeJSON(
  * can't crash the renderer (it reads many nested numbers via .toFixed()).
  * Guarantees the top-level sections and their key numerics exist.
  */
-function normalizeCADAnalysis(a: Record<string, unknown>): void {
+/** Measured per-material masses from the OCCT/STL kernel (volume × density) —
+ *  the ground truth for net weight. Passed in so the AI's own weight can be
+ *  clamped to it and the cast-iron mass is not discarded. */
+interface MeasuredWeights { aluminiumKg?: number; steelKg?: number; castIronKg?: number; plasticKg?: number }
+
+function normalizeCADAnalysis(a: Record<string, unknown>, measured?: MeasuredWeights): void {
   const num = (v: unknown, d: number) => (Number.isFinite(Number(v)) ? Number(v) : d);
   const str = (v: unknown, d: string) => (typeof v === 'string' && v ? v : d);
   const obj = (v: unknown) => (v && typeof v === 'object' ? v as Record<string, unknown> : {});
@@ -655,7 +660,15 @@ function normalizeCADAnalysis(a: Record<string, unknown>): void {
   g.estimatedVolumeCm3 = num(g.estimatedVolumeCm3, 0);
   g.estimatedSurfaceAreaCm2 = num(g.estimatedSurfaceAreaCm2, 0);
   const w = obj(g.estimatedWeightKg);
-  g.estimatedWeightKg = { aluminum: num(w.aluminum, 0), steel: num(w.steel, 0), plastic: num(w.plastic, 0) };
+  // Prefer the MEASURED kernel masses (volume × density) over whatever the model
+  // echoed — and retain cast iron, which was previously dropped so an iron part
+  // fell back to the (heavier) steel mass. Ground truth beats the AI estimate.
+  g.estimatedWeightKg = {
+    aluminum: num(measured?.aluminiumKg, num(w.aluminum, 0)),
+    steel:    num(measured?.steelKg,     num(w.steel, 0)),
+    castIron: num(measured?.castIronKg,  num((w as Record<string, unknown>).castIron, 0)),
+    plastic:  num(measured?.plasticKg,   num(w.plastic, 0)),
+  };
   a.geometry = g;
 
   const ma = obj(a.materialAnalysis);
@@ -700,6 +713,21 @@ function normalizeCADAnalysis(a: Record<string, unknown>): void {
     }
   }
   {
+    // Grey cast iron (EN-GJL, flake graphite) is brittle and unsafe for a
+    // structural / suspension part — a steering knuckle, stub axle, hub, control
+    // arm or upright must be ductile (nodular) iron EN-GJS-500-7 or forged steel.
+    // Redirect a grey-iron pick to ductile for those parts.
+    const nameBlob = `${str(a.partName, '')} ${String(obj((a.materialAnalysis as Record<string, unknown>)?.primarySuggestion).name ?? '')}`.toLowerCase();
+    const structural = /knuckle|stub.?axle|control.?arm|suspension|steering|upright|kingpin|spindle|hub carrier|wishbone|trailing arm|tie.?rod/.test(nameBlob);
+    if (structural && /^mat-gjl/.test(str(ci.materialId, ''))) {
+      ci.materialSafetyNote =
+        'Grey cast iron redirected to ductile iron EN-GJS-500-7 — grey (flake) iron is brittle and unsuitable for a structural/suspension part.';
+      ci.materialId = 'mat-gjs500';
+      const prim = ma.primarySuggestion as MaterialSuggestion;
+      if (/^mat-gjl/.test(str(prim.materialId, ''))) { prim.materialId = 'mat-gjs500'; prim.name = 'EN-GJS-500-7 (Ductile Iron)'; }
+    }
+  }
+  {
     // Default the weight from the material FAMILY the analysis actually picked —
     // an aluminium-always default costed steel parts at ~34% of their true mass.
     const wts = (g.estimatedWeightKg ?? {}) as Record<string, number>;
@@ -710,12 +738,28 @@ function normalizeCADAnalysis(a: Record<string, unknown>): void {
     // instead of ~10 kg.) The name regex also now recognises HDPE/PE/PVC/PET, which
     // it silently missed before — those fell through to the aluminium weight.
     const plasticCommodity = /blow_mould|injection_mould|rotational_mould|thermoform/.test(String(ci.recommendedCommodity));
+    // Cast iron (grey OR ductile) must use the cast-iron mass (7.15 g/cm³), not the
+    // steel mass (7.85) — the latter over-stated an iron knuckle's weight ~10%.
+    const isCastIron = /\biron\b|gjl|gjs|ggg|ductile|nodular|grey cast|gray cast|cast iron/.test(matHint);
     const famWeight =
       plasticCommodity ? wts.plastic
-      : /iron|steel|stainless|en8|4140|1045|s355/.test(matHint) ? wts.steel
+      : isCastIron ? (wts.castIron || wts.steel)
+      : /steel|stainless|en8|4140|1045|s355/.test(matHint) ? wts.steel
       : /plastic|polymer|nylon|pa6|pp\b|abs|pom|peek|resin|hdpe|ldpe|polyeth|pe\b|pvc|petg|pet\b|tpe|tpo|acrylic|pmma|delrin/.test(matHint) ? wts.plastic
       : wts.aluminum;
-    ci.netWeightKg = num(ci.netWeightKg, famWeight || wts.aluminum || 0);
+    const measuredNet = famWeight || wts.aluminum || 0;
+    // Clamp the AI's netWeightKg to the measured mass. The model is asked to fill
+    // netWeightKg and sometimes over-states it (a knuckle came back 8.79 kg vs the
+    // measured 7.42 kg cast iron, +18% — inflating the material bucket and even
+    // contradicting the report's own provenance line). Never trust an AI mass that
+    // exceeds measured volume × density by more than a hair.
+    let net = num(ci.netWeightKg, measuredNet);
+    if (measuredNet > 0 && net > measuredNet * 1.05) {
+      ci.netWeightClampNote =
+        `netWeightKg clamped from AI ${net.toFixed(3)} kg to measured ${measuredNet.toFixed(3)} kg (volume × density).`;
+      net = measuredNet;
+    }
+    ci.netWeightKg = net;
   }
   ci.estimatedOperations = arr(ci.estimatedOperations);
   const cr = obj(ci.costRange);
@@ -749,7 +793,7 @@ interface UserOverrides {
 export const CAD_FORGING_BILLET_MATERIALS =
   'mat-steel1020, mat-steel4340, mat-steel4130, mat-steel-38mnvs6, mat-ss304l-bar, mat-ss316l-bar, mat-al6061-forge, mat-al7075-forge, mat-ti-6al4v-forge, mat-inconel718-forge, mat-brass-cz122-forge';
 export const CAD_GENERIC_MATERIALS =
-  'mat-al6061, mat-al5052, mat-dc01, mat-hss, mat-stainless-316, mat-brass-crz, mat-pp, mat-hdpe, mat-pa6, mat-pc, mat-lm25, mat-gjl350, mat-az91d, mat-ss304c, mat-bronze-c905';
+  'mat-al6061, mat-al5052, mat-dc01, mat-hss, mat-stainless-316, mat-brass-crz, mat-pp, mat-hdpe, mat-pa6, mat-pc, mat-lm25, mat-gjs500, mat-gjs600, mat-gjl350, mat-adi, mat-az91d, mat-ss304c, mat-bronze-c905';
 
 // Injection moulding needs a real thermoplastic menu, not the 4 resins in the generic
 // list. Without this an ABS / POM / PBT / PC-ABS / glass-filled-nylon part gets mapped to
@@ -1604,7 +1648,7 @@ router.post('/reanalyze', asyncRoute(async (req, res): Promise<void> => {
     // repair retry gives us robust parsing without that limit.
     analysis = await cadAnalyzeJSON(anthropic, deepAnalysis, systemPrompt, userContent);
     normalizeFieldConfidences(analysis);
-    normalizeCADAnalysis(analysis as Record<string, unknown>);
+    normalizeCADAnalysis(analysis as Record<string, unknown>, geo?.weights);
   } catch (err) {
     respondAIError(res, err);
     return;
