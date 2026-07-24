@@ -162,6 +162,19 @@ export function drawCostVisionLogo(doc: jsPDF, x: number, y: number, badgeH = 4.
 //  MAIN SHOULD-COST PDF
 // ════════════════════════════════════════════════════════════════════════════
 
+/** Commodity-appropriate material-utilisation benchmark for the §3 note. The old
+ *  text hard-coded "casting 65–85 %, machining 60–75 %", which is wrong on a
+ *  sheet-metal report (blanking yield is nesting-driven, ~55–75 %). */
+function utilisationBenchmarkNote(commodity?: string): string {
+  const c = String(commodity ?? '');
+  if (/sheet_metal|stamp/.test(c))      return 'Benchmark: stamping/blanking 55–75 % (nesting + skeleton scrap)';
+  if (/forging/.test(c))                return 'Benchmark: forging 75–90 % (flash + bar drop)';
+  if (/machining/.test(c))              return 'Benchmark: machining 60–75 % (stock removal)';
+  if (/cast/.test(c))                   return 'Benchmark: casting 65–85 % (runners + risers)';
+  if (/extrusion/.test(c))              return 'Benchmark: extrusion 85–95 % (end crop)';
+  return 'Benchmark: casting 65–85 %, machining 60–75 %';
+}
+
 /** Shared should-cost report body — §1 through §16 (breakdown, ops, machine
  *  buildup, traceability, uncertainty, sensitivity, regional 10-country
  *  comparison, carbon, insights, DFM/DFA, optimisation, roadmap, scenarios).
@@ -314,7 +327,7 @@ export function renderShouldCostSections(
     matRows.push(
       ['Gross Weight (stock)',        `${grossWt.toFixed(4)} kg`,                              'kg',           'Net ÷ utilisation ratio'],
       ['Scrap / Runner Weight',       `${scrapWt.toFixed(4)} kg`,                             'kg',           'Gross - Net'],
-      ['Material Utilisation',        pct(input.rawMaterial.materialUtilization * 100),        '%',            'Benchmark: casting 65–85 %, machining 60–75 %'],
+      ['Material Utilisation',        pct(input.rawMaterial.materialUtilization * 100),        '%',            utilisationBenchmarkNote(commodityType)],
       ['Material Price',              c(mat?.pricePerKg ?? 0),                                `${currency}/kg`, mat?.sourceNote ?? ''],
       ['Scrap Recovery Price',        c(mat?.scrapRecoveryPricePerKg ?? 0),                   `${currency}/kg`, ''],
       ['Gross Material Cost',         c(grossWt * (mat?.pricePerKg ?? 0)),                    currency,       'Gross × price/kg'],
