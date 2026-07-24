@@ -2889,7 +2889,12 @@ function repairTruncatedJsonArray(raw) {
   return raw.slice(start, lastEnd + 1) + ']';
 }
 
-const ANALYZE_TIMEOUT_MS = Number(process.env.CV_ANALYZE_TIMEOUT_MS ?? 300_000);   // matches the per-call ceiling — the old 120s loop deadline promised '2 minutes' while a single call could legally run 300s
+// Total loop budget. Since the retrieval/KB/learning upgrades the generation
+// prompt is far richer and the final 24k-token call with extended thinking can
+// legitimately run 3-5 minutes on its own — 300s total made search-enabled runs
+// time out routinely. 600s total / 420s per call; both env-tunable.
+const ANALYZE_TIMEOUT_MS = Number(process.env.CV_ANALYZE_TIMEOUT_MS ?? 600_000);
+const ANALYZE_CALL_TIMEOUT_MS = Number(process.env.CV_ANALYZE_CALL_TIMEOUT_MS ?? 420_000);
 
 function autoSaveProject(userId, projectId, systemName, subassemblyName, partName, config, ideas, sources) {
   try {
@@ -2948,6 +2953,11 @@ app.post('/api/analyze', requireAuth, checkUsageQuota, rateLimit(40, 60 * 60 * 1
     res.setHeader('Cache-Control', 'no-cache');
     res.setHeader('Connection', 'keep-alive');
     res.flushHeaders();
+    // Heartbeat: the final generation call can run for minutes with no events —
+    // an idle SSE stream gets dropped by some proxies/browsers. SSE comments
+    // (":hb") are invisible to the client parser but keep the pipe warm.
+    const hb = setInterval(() => { try { res.write(':hb\n\n'); } catch { /* closed */ } }, 15_000);
+    res.on('close', () => clearInterval(hb));
   }
 
   function emit(data) {
@@ -3113,13 +3123,13 @@ app.post('/api/analyze', requireAuth, checkUsageQuota, rateLimit(40, 60 * 60 * 1
       // would burn ~4× the tokens before failing).
       let response;
       try {
-        response = await client.messages.create(params, { timeout: 300_000, maxRetries: 1 });
+        response = await client.messages.create(params, { timeout: ANALYZE_CALL_TIMEOUT_MS, maxRetries: 1 });
       } catch (e) {
         // Defensive: if this provider/config combination rejects extended
         // thinking, retry once without rather than failing the analysis.
         if (params.thinking && e?.status === 400 && /thinking/i.test(e?.message || '')) {
           delete params.thinking;
-          response = await client.messages.create(params, { timeout: 300_000, maxRetries: 1 });
+          response = await client.messages.create(params, { timeout: ANALYZE_CALL_TIMEOUT_MS, maxRetries: 1 });
         } else throw e;
       }
 
