@@ -10840,9 +10840,12 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
           // turning, under-costing the finishing that defines the part. Add one
           // grind pass when a journal/spindle turned feature is present and the
           // AI didn't already emit a grinding op.
-          const hasJournal =
-            (cadOCCTGeometry?.features?.bossShaftRadiiMm?.length ?? 0) > 0 ||
-            c.estimatedOperations.some(o => /journal|bearing|spindle|OD finish|turning/i.test(o.name));
+          // Only grind when the AI actually identified a turned bearing journal /
+          // spindle OD / shaft diameter — NOT merely because a cast boss exists.
+          // A cast bracket has bosses but no ground journals; keying on boss count
+          // false-added a grind pass and over-costed it.
+          const hasJournal = c.estimatedOperations.some(o =>
+            /journal|bearing seat|spindle|\bOD\b|OD finish|turned (?:shaft|shank|diameter|journal)/i.test(o.name));
           const alreadyGround = c.estimatedOperations.some(o => /grind|hone|lap/i.test(o.name));
           if (hasJournal && !alreadyGround) {
             addCAMMachOp({
