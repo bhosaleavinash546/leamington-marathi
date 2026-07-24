@@ -160,7 +160,18 @@ export function computeSheetMetalDrivers(inputs: SheetMetalInputs): CommodityDri
   const baseCycleHr = (inputs.hotStamping && (inputs.quenchDwellSec ?? 0) > 0)
     ? (inputs.quenchDwellSec as number) / 3600
     : inputs.strokesPerMin > 0 ? 1 / (inputs.strokesPerMin * 60) : NaN;
-  const cycleTimeHr = baseCycleHr * rejectUplift;
+  // Effective press-LINE cycle floor. The bare die-close stroke (1/SPM) counts
+  // only the press stroke and ignores coil feed, sensing, part-out and line
+  // losses across the whole stamping line (decoiler → straightener → feeder →
+  // press → scrap). Without a floor the forming line collapses to ~zero on a
+  // fast nameplate SPM. Floor the effective cycle by die type (transfer/fine-
+  // blank run slower than progressive/single). Hot stamping is quench-limited —
+  // never floor it. Only ever RAISES the cycle, never speeds it up.
+  const lineFloorSec = inputs.hotStamping ? 0
+    : inputs.dieType === 'transfer' || inputs.dieType === 'fine_blanking' ? 4.5
+    : inputs.dieType === 'progressive' ? 3.0
+    : 2.0; // single_stage
+  const cycleTimeHr = Math.max(baseCycleHr, lineFloorSec / 3600) * rejectUplift;
 
   const operations: OperationInput[] = [];
 

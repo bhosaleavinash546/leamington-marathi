@@ -47,16 +47,27 @@ describe('Sheet Metal module', () => {
     expect(d.rawMaterial.materialUtilization).toBeCloseTo(expected, 6);
   });
 
-  it('cycle time = 1/(SPM × 60)', () => {
-    const d = computeSheetMetalDrivers(SM_INPUTS);
-    const expected = 1 / (80 * 60);
+  it('cycle time = 1/(SPM × 60) when the raw stroke is slower than the press-line floor', () => {
+    // At a slow SPM the bare-stroke time (1/(SPM·60)) exceeds the line floor and
+    // is used verbatim. 10 SPM → 1/600 hr = 6 s > 3 s progressive floor.
+    const d = computeSheetMetalDrivers({ ...SM_INPUTS, strokesPerMin: 10 });
+    const expected = 1 / (10 * 60);
     expect(d.operations[0].cycleTimeHr).toBeCloseTo(expected, 8);
+  });
+
+  it('press-line cycle floor binds when nameplate SPM is faster than realistic line throughput', () => {
+    // 80 SPM → bare stroke 1/(80·60) hr = 0.75 s, below the 3 s progressive line
+    // floor (coil feed, sensing, part-out, line losses). Effective cycle is floored.
+    const d = computeSheetMetalDrivers(SM_INPUTS);
+    const floorHr = 3.0 / 3600;
+    expect(d.operations[0].cycleTimeHr).toBeCloseTo(floorHr, 8);
+    expect(d.operations[0].cycleTimeHr).toBeGreaterThan(1 / (80 * 60));
   });
 
   it('multi-part die: cycleTimeHr stays per-stroke, allocation via partsPerCycle (no double count)', () => {
     const d = computeSheetMetalDrivers({ ...SM_INPUTS, partsPerStroke: 2 });
-    // Per-stroke time is independent of parts per stroke…
-    expect(d.operations[0].cycleTimeHr).toBeCloseTo(1 / (80 * 60), 8);
+    // Per-stroke (line-floored) time is independent of parts per stroke…
+    expect(d.operations[0].cycleTimeHr).toBeCloseTo(Math.max(1 / (80 * 60), 3.0 / 3600), 8);
     // …and the core allocates per part through partsPerCycle
     expect(d.operations[0].partsPerCycle).toBe(2);
     // Net effect: 2-out die halves per-part press cost vs 1-out, not quarters it
