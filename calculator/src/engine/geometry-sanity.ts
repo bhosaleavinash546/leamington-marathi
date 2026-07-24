@@ -31,6 +31,17 @@ export function estimatePackagingPerPart(bboxVolumeCm3: number, weightKg: number
   return Math.round(Math.min(6, Math.max(0.05, pkg)) * 100) / 100;
 }
 
+/**
+ * Size-aware inbound-freight (logistics) cost per part (£). The flat £0.25 default
+ * overcharges a 0.2 kg stamping (it read 35% of a hood bracket's cost) and
+ * undercharges a heavy casting. Freight scales with mass + shipping envelope.
+ */
+export function estimateLogisticsPerPart(weightKg: number, bboxVolumeCm3: number): number {
+  const volM3 = Math.max(0, bboxVolumeCm3) / 1e6;
+  const log = 0.04 + Math.max(0, weightKg) * 0.09 + volM3 * 0.8;   // base + per-kg + volumetric
+  return Math.round(Math.min(4, Math.max(0.03, log)) * 100) / 100;
+}
+
 /** Shell-wall estimate (mm) from volume + surface: 2·V/S (both shell faces). */
 export function shellWallEstimateMm(volumeCm3: number, surfaceAreaCm2: number): number {
   if (!(surfaceAreaCm2 > 0) || !(volumeCm3 > 0)) return 0;

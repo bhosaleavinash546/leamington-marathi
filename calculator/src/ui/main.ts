@@ -71,7 +71,7 @@ import { buildRegionalLibrary, REGIONAL_DATA, computeRegionalComparison } from '
 import { featureToOperation, drillingOpFromFeatures } from '../engine/feature-ops.js';
 import { computeFeatureMachining, defaultInclude, type StockCondition } from '../engine/feature-machining.js';
 import { familyFromFilename, familyFromDensity, type MaterialFamily } from '../engine/material-family.js';
-import { estimatePackagingPerPart } from '../engine/geometry-sanity.js';
+import { estimatePackagingPerPart, estimateLogisticsPerPart } from '../engine/geometry-sanity.js';
 import type { FeatureRow } from '../engine/feature-ops.js';
 import type { OperationInput } from '../engine/types.js';
 import type { ManufacturingRegion } from '../engine/regional-rates.js';
@@ -10639,6 +10639,14 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
         pkgEl.value = String(estimatePackagingPerPart(bboxVolCm3, c.netWeightKg || 0));
         pkgEl.dispatchEvent(new Event('input'));
       }
+      // Size-aware inbound freight — the flat £0.25 default read as 35% of a
+      // 0.2 kg stamping's cost. Scale to mass + shipping envelope.
+      const logEl = el<HTMLInputElement>('logistics');
+      if (pbb && logEl) {
+        const bboxVolCm3 = (pbb.xMm * pbb.yMm * pbb.zMm) / 1000;
+        logEl.value = String(estimateLogisticsPerPart(c.netWeightKg || 0, bboxVolCm3));
+        logEl.dispatchEvent(new Event('input'));
+      }
     }
 
     switch (targetCommodity) {
@@ -17854,6 +17862,19 @@ async function init(): Promise<void> {
       el('universal-costs').style.display = '';
       switchCommodity(type as CommodityType);
     });
+  });
+
+  // Keep the active commodity's tooling-amortisation field in sync with the
+  // universal "Annual Volume" the user types. Without this, a per-commodity
+  // amort default (sheet metal = 500,000) silently shadows the entered volume —
+  // collectSheetMetalInput reads `num('sm-amort') || num('annual-volume')`, so a
+  // stale 500k default always wins and the user's 100k never reaches tooling.
+  document.getElementById('annual-volume')?.addEventListener('input', () => {
+    const v = (document.getElementById('annual-volume') as HTMLInputElement | null)?.value;
+    if (!v || !(parseFloat(v) > 0)) return;
+    const amortId = COMMODITY_AMORT_FIELD[activeCommodity];
+    const amortEl = amortId ? (document.getElementById(amortId) as HTMLInputElement | null) : null;
+    if (amortEl && amortEl.value !== v) { amortEl.value = v; amortEl.dispatchEvent(new Event('input')); }
   });
 
   // Results tabs

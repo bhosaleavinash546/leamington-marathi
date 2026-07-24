@@ -176,6 +176,25 @@ export function enforceGeometryCommodity(
   const topo = geo.topology;
   const sealedVoid: boolean | null =
     topo && topo.available ? (topo.enclosesSealedVoid ?? null) : null;
+
+  // Sheet-metal signal beats the thin-shell MOULDING redirect below. A stamped /
+  // formed panel is a thin OPEN shell (low fill, thin wall) — exactly what the
+  // injection/blow-moulding branch would otherwise grab (a 0.7 mm hood bracket
+  // was mis-read as injection moulding). If the kernel measured real bends at a
+  // sheet gauge, it is sheet metal, not a moulding.
+  const sm = geo.sheetMetal;
+  if (sm && (sm.bendCount ?? 0) >= 2 && (sm.thicknessMm ?? 99) > 0 && (sm.thicknessMm ?? 99) <= 6 &&
+      !['sheet_metal', 'sheet_metal_fab', 'biw_assembly'].includes(commodity)) {
+    return {
+      commodity: 'sheet_metal',
+      corrected: true,
+      reason:
+        `Geometry override: kernel measured ${sm.bendCount} bends at a ${sm.thicknessMm?.toFixed(1)} mm ` +
+        `sheet gauge (fill ${fill.toFixed(3)}, ${maxDim.toFixed(0)} mm envelope) — a formed sheet-metal ` +
+        `panel, not ${commodity.replace(/_/g, ' ')}. Reclassified as sheet_metal.`,
+    };
+  }
+
   const largeThinShell =
     fill < 0.03 && maxDim >= 250 && (wall == null || wall <= 10);
   if (largeThinShell) {
