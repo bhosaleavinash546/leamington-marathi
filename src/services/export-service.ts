@@ -2,6 +2,7 @@ import { downloadXlsx, type SheetSpec } from './xlsx-write';
 import PptxGenJS from 'pptxgenjs';
 import jsPDF from 'jspdf';
 import { pdfSafe, deepPdfSafe } from './pdf-safe.mjs';
+import { LOGO_PNG } from './brainspark-logo-png';
 import { AnalysisResult, CostReductionIdea } from '../types';
 
 const DIFFICULTY_COLOR: Record<string, string> = {
@@ -444,6 +445,7 @@ export function exportToPdf(result: AnalysisResult, systemName: string, subName:
   let page = 1;
 
   function addPageNumber() {
+    doc.addImage(LOGO_PNG, 'PNG', ML, PH - 10.2, 5.5, 5.5);   // brand mark, left footer
     setColor(doc, GRAY_RGB);
     doc.setFontSize(8);
     doc.text(`BrainSpark  |  ${systemName} — ${subName}  |  Page ${page}`, PW / 2, PH - 6, { align: 'center' });
@@ -465,11 +467,12 @@ export function exportToPdf(result: AnalysisResult, systemName: string, subName:
   setFill(doc, GOLD_RGB);
   doc.rect(0, 120, PW, 1.2, 'F');
 
-  // Brand name
+  // Brand: logo beside the name
+  doc.addImage(LOGO_PNG, 'PNG', ML, 20, 13, 13);
   setColor(doc, GOLD_RGB);
   doc.setFontSize(28);
   doc.setFont('helvetica', 'bold');
-  doc.text('BrainSpark', ML, 30);
+  doc.text('BrainSpark', ML + 16, 30);
 
   setColor(doc, WHITE_RGB);
   doc.setFontSize(18);
@@ -938,6 +941,12 @@ export function exportRfqPdf(
   setFill(doc, GOLD_RGB);
   doc.rect(0, PH * 0.4, PW, 1.5, 'F');
 
+  doc.addImage(LOGO_PNG, 'PNG', ML, 28, 16, 16);
+  setColor(doc, GOLD_RGB);
+  doc.setFontSize(14);
+  doc.setFont('helvetica', 'bold');
+  doc.text('BrainSpark', ML + 19, 38.5);
+
   setColor(doc, GOLD_RGB);
   doc.setFontSize(10);
   doc.setFont('helvetica', 'bold');
@@ -1118,7 +1127,8 @@ export function exportRfqPdf(
       doc.text(bmkLines, ML + 38, cy);
     }
 
-    // Footer
+    // Footer (brand mark left, meta centered)
+    doc.addImage(LOGO_PNG, 'PNG', ML, PH - 14, 5.5, 5.5);
     setColor(doc, GRAY_RGB);
     doc.setFontSize(7.5);
     doc.setFont('helvetica', 'normal');
