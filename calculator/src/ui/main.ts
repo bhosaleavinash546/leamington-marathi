@@ -10821,6 +10821,11 @@ function applyCADToForm(targetCommodity: CommodityType, autoCalculate = false): 
           // near-net machining guard exists to prevent.
           const scaleCAM = (camCycleHrs !== null && aiTotalCAM > 0) ? Math.min(1, camCycleHrs / aiTotalCAM) : 1;
           for (const op of c.estimatedOperations) {
+            // The AI sometimes lists the CASTING step (mould/pour/shakeout) inside
+            // estimatedOperations; that belongs to the casting section, not the
+            // machining list — costing it here puts a foundry pour on a 5-axis mill
+            // rate and double-counts the casting. Skip those.
+            if (/\bcast|mould|mold|pour|shakeout|melt|foundry|sand cast|die cast|investment cast/i.test(op.name)) continue;
             addCAMMachOp({
               name: op.name, type: 'milling_3ax',
               machineId: resolveMachineIdForOp(op.machineId, op.name),
