@@ -1,6 +1,7 @@
 import { downloadXlsx, type SheetSpec } from './xlsx-write';
 import PptxGenJS from 'pptxgenjs';
 import jsPDF from 'jspdf';
+import { pdfSafe, deepPdfSafe } from './pdf-safe.mjs';
 import { AnalysisResult, CostReductionIdea } from '../types';
 
 const DIFFICULTY_COLOR: Record<string, string> = {
@@ -402,9 +403,23 @@ function wrapText(doc: jsPDF, text: string, maxWidth: number): string[] {
   return doc.splitTextToSize(text, maxWidth);
 }
 
+/** Truncate to a measured width (current font) with an ellipsis — table cells
+ *  must never bleed into the neighbouring column, whatever the LLM wrote. */
+function fitText(doc: jsPDF, text: string, maxWidth: number): string {
+  if (doc.getTextWidth(text) <= maxWidth) return text;
+  let t = text;
+  while (t.length > 1 && doc.getTextWidth(t + '…') > maxWidth) t = t.slice(0, -1);
+  return t.trimEnd() + '…';
+}
+
 // ─── PDF Export ───────────────────────────────────────────────────────────────
 
 export function exportToPdf(result: AnalysisResult, systemName: string, subName: string): void {
+  // jsPDF's WinAnsi fonts garble any Unicode outside cp1252 (arrows etc. that
+  // LLM text uses freely) — sanitize ALL report data once, up front.
+  result = deepPdfSafe(result);
+  systemName = pdfSafe(systemName);
+  subName = pdfSafe(subName);
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
   const PW = 210;  // page width mm
   const PH = 297;  // page height mm
@@ -517,10 +532,10 @@ export function exportToPdf(result: AnalysisResult, systemName: string, subName:
     setColor(doc, [55, 65, 81]);
     const rowData = [
       String(idx + 1),
-      idea.title.length > 42 ? idea.title.slice(0, 40) + '…' : idea.title,
+      fitText(doc, idea.title, cols[1] - 2),
       idea.implementationDifficulty,
-      idea.costSavingTypes.slice(0, 2).join(', '),
-      idea.costSavingPotential.percentage || idea.costSavingPotential.qualitative.split(' ')[0],
+      fitText(doc, idea.costSavingTypes.slice(0, 2).join(', '), cols[3] - 2),
+      fitText(doc, idea.costSavingPotential.percentage || idea.costSavingPotential.qualitative.split(' ')[0], cols[4] - 2),
       idea.systemLevel,
     ];
     rowData.forEach((d, i) => {
@@ -618,11 +633,11 @@ export function exportToPdf(result: AnalysisResult, systemName: string, subName:
     doc.rect(ML, ry2, CW, 8, 'S');
     const rowD = [
       String(idx + 1),
-      idea.title.length > 40 ? idea.title.slice(0, 38) + '…' : idea.title,
+      fitText(doc, idea.title, rCols[1] - 2),
       idea.implementationDifficulty,
-      idea.costSavingPotential.annualValue || '—',
-      idea.costSavingPotential.percentage || '—',
-      idea.timeToImplement.length > 14 ? idea.timeToImplement.slice(0, 13) + '…' : idea.timeToImplement,
+      fitText(doc, idea.costSavingPotential.annualValue || '—', rCols[3] - 2),
+      fitText(doc, idea.costSavingPotential.percentage || '—', rCols[4] - 2),
+      fitText(doc, idea.timeToImplement, rCols[5] - 2),
     ];
     rowD.forEach((d, i) => {
       if (i === 2) setColor(doc, diffRgb(idea.implementationDifficulty));
@@ -821,13 +836,12 @@ export function exportToPdf(result: AnalysisResult, systemName: string, subName:
       setColor(doc, WHITE_RGB);
       doc.setFontSize(8.5);
       doc.setFont('helvetica', 'bold');
-      const title = item.title.length > 65 ? item.title.slice(0, 62) + '…' : item.title;
-      doc.text(title, ML + 5, ry + 5.5);
+      doc.text(fitText(doc, item.title, CW - 10), ML + 5, ry + 5.5);
       setColor(doc, phase.rgb);
       doc.setFontSize(7.5);
       doc.setFont('helvetica', 'normal');
       const saving = item.costSavingPotential.percentage || item.costSavingPotential.qualitative.split(' ')[0];
-      doc.text(`${saving}  |  ${item.timeToImplement}`, ML + 5, ry + 10.5);
+      doc.text(fitText(doc, `${saving}  |  ${item.timeToImplement}`, CW - 10), ML + 5, ry + 10.5);
       ry += 15;
     });
     ry += 4;
@@ -847,6 +861,11 @@ export function exportRfqPdf(
   subName: string,
   approvedIdeas: CostReductionIdea[]
 ): void {
+  // Same WinAnsi discipline as exportToPdf — sanitize every string up front.
+  result = deepPdfSafe(result);
+  systemName = pdfSafe(systemName);
+  subName = pdfSafe(subName);
+  approvedIdeas = deepPdfSafe(approvedIdeas);
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
   const today = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' });
   const PW = 210;
