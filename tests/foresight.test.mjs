@@ -132,6 +132,7 @@ const COVERAGE_QUERIES = [
   'pistons', 'timing chain', 'intercooler', 'muffler', 'spark plug', 'cvt', 'dc-dc converter', 'eps',
   'evaporator', 'ptc heater', 'radiator', 'condenser', 'cooling fan', 'relay', 'antenna', 'amplifier',
   'fuel cell stack', 'pyro fuse', '12v battery', 'window regulator', 'door module', 'sun visor', 'washer system',
+  '48v mhev battery', 'stator rotor lamination', 'electrical steel',
 ];
 
 test('coverage: every realistic part query resolves to technologies', () => {
@@ -421,6 +422,9 @@ test('foresightFor: term-matched queries rank by relevance before momentum', () 
   const first = r.horizons.H1[0];
   assert.equal(first.id, '48v-battery-nextgen', `top hit was ${first.id}`);
   assert.ok(r.horizons.H1.slice(0, 3).some((c) => c.id === '48v-mhev-decontent'));
+  // Lamination query leads with the lamination technology, not brake rotors.
+  const lam = foresightFor({ query: 'stator and rotor lamination' });
+  assert.equal(lam.horizons.H1[0].id, 'thin-gauge-lamination', `top hit was ${lam.horizons.H1[0].id}`);
   // Commodity-only queries (no term match) still rank purely by momentum.
   const c = foresightFor({ commodity: 'EDU' });
   const ms = c.horizons.H1.map((x) => x.momentum);
